@@ -149,24 +149,9 @@ namespace VTX::Renderer::Context::GL
 			}
 
 			// Handle #include.
-			while ( true )
-			{
-				size_t startPosInclude = src.find( "#include" );
-				if ( startPosInclude == std::string::npos )
-				{
-					break;
-				}
+			_handleInclude( src, path.parent_path() );
 
-				size_t		endPosInclude		= src.find( "\n", startPosInclude );
-				std::string includeRelativePath = src.substr( startPosInclude, endPosInclude - startPosInclude );
-				size_t		startPosPath		= includeRelativePath.find( '"' );
-				size_t		endPosPath			= includeRelativePath.find( '"', startPosPath + 1 );
-				includeRelativePath = includeRelativePath.substr( startPosPath + 1, endPosPath - startPosPath - 1 );
-				FilePath includeAbsolutePath = path.parent_path();
-				includeAbsolutePath /= includeRelativePath;
-				const std::string srcInclude = Util::Filesystem::readPath( includeAbsolutePath );
-				src.replace( startPosInclude, endPosInclude - startPosInclude, srcInclude );
-			}
+			// VTX_DEBUG( "{}", src );
 
 			const char * shaderCode = src.c_str();
 			glShaderSource( shaderId, 1, &shaderCode, 0 );
@@ -192,6 +177,36 @@ namespace VTX::Renderer::Context::GL
 		}
 
 		return shaderId;
+	}
+
+	void ProgramManager::_handleInclude( std::string & p_src, const FilePath & p_path )
+	{
+		std::vector<std::string> included;
+		while ( true )
+		{
+			size_t startPosInclude = p_src.find( "#include" );
+			if ( startPosInclude == std::string::npos )
+			{
+				break;
+			}
+
+			size_t		endPosInclude		= p_src.find( "\n", startPosInclude );
+			std::string includeRelativePath = p_src.substr( startPosInclude, endPosInclude - startPosInclude );
+			size_t		startPosPath		= includeRelativePath.find( '"' );
+			size_t		endPosPath			= includeRelativePath.find( '"', startPosPath + 1 );
+			includeRelativePath = includeRelativePath.substr( startPosPath + 1, endPosPath - startPosPath - 1 );
+
+			// Check if already included.
+			if ( std::find( included.begin(), included.end(), includeRelativePath ) != included.end() )
+			{
+				p_src.erase( startPosInclude, endPosInclude - startPosInclude );
+				continue;
+			}
+
+			const std::string srcInclude = Util::Filesystem::readPath( p_path / includeRelativePath );
+			p_src.replace( startPosInclude, endPosInclude - startPosInclude, srcInclude );
+			included.push_back( includeRelativePath );
+		}
 	}
 
 	GLuint ProgramManager::getShader( const std::string & p_name ) const

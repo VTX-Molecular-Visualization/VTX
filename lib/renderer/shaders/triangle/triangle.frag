@@ -3,9 +3,8 @@
 #include "../struct_data_packed.glsl"
 
 // In.
-in
-#include "struct_vertex_shader.glsl"
-inData;
+flat out StructVertexShaderFlat vsDataFlat; 
+smooth out StructVertexShaderSmooth vsDataSmooth;
 
 // Out.
 layout( location = 0 ) out PackedData outDataPacked;
@@ -14,7 +13,7 @@ layout( location = 2 ) out uvec2 outId;
 
 void main()
 {
-	packData( inData.viewPosition, inData.normal, inData.selected, outDataPacked );
-	outColor = inData.color;
-	outId    = uvec2( inData.id, 0 );
+	packData( vsDataSmooth.viewPosition, vsDataSmooth.normal, vsDataFlat.selected, outDataPacked );
+	outColor = vsDataSmooth.color;
+	outId    = uvec2( vsDataFlat.id, 0 );
 }

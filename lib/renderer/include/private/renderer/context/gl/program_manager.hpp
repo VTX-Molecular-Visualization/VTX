@@ -46,6 +46,7 @@ namespace VTX
 			MapStringToGLuint  _shaders	 = MapStringToGLuint();
 
 			GLuint		_createShader( const FilePath &, const std::string & = "", const std::string & = "" );
+			void		_handleInclude( std::string &, const FilePath & );
 			std::string _getShaderErrors( const GLuint );
 		};
 	} // namespace Renderer::Context::GL

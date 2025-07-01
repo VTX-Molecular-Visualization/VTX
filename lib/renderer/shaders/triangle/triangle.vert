@@ -2,6 +2,7 @@
 
 #include "../layout_uniforms_camera.glsl"
 #include "../layout_uniforms_model.glsl"
+#include "struct_vertex_shader.glsl"
 
 // In.
 layout( location = 0 ) in vec3 inVertexPosition;
@@ -13,9 +14,8 @@ layout( location = 5 ) in uint inVertexId;
 layout( location = 6 ) in uint inVertexModel;
 
 // Out.
-out 
-#include "struct_vertex_shader.glsl"
-outData;
+flat out StructVertexShaderFlat vsDataFlat; 
+smooth out StructVertexShaderSmooth vsDataSmooth;
 
 void main()
 {
@@ -24,11 +24,11 @@ void main()
 		return;
 	}
 
-	outData.viewPosition	= vec3( uniformsModel[ inVertexModel ].matrixModelView * vec4( inVertexPosition, 1.f ) );
-	outData.normal			= vec3( uniformsModel[ inVertexModel ].matrixNormal * vec4( inVertexNormal, 1.f ) );
-	outData.color			= inVertexColor;
-	outData.selected		= inVertexSelected;
-	outData.id				= inVertexId;
+	vsDataSmooth.viewPosition	= vec3( uniformsModel[ inVertexModel ].matrixModelView * vec4( inVertexPosition, 1.f ) );
+	vsDataSmooth.normal			= vec3( uniformsModel[ inVertexModel ].matrixNormal * vec4( inVertexNormal, 1.f ) );
+	vsDataSmooth.color			= inVertexColor;
+	vsDataFlat.selected			= inVertexSelected;
+	vsDataFlat.id				= inVertexId;
 
-	gl_Position =  uniformsCamera.matrixProjection * vec4( outData.viewPosition, 1.f );
+	gl_Position =  uniformsCamera.matrixProjection * vec4( vsDataSmooth.viewPosition, 1.f );
 }

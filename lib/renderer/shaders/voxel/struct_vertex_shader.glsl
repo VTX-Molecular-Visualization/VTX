@@ -1,5 +1,5 @@
-StructVertexShader
+struct StructVertexShader
 {
-	flat vec3 voxelSize;
-	flat vec3 center;
-}
+	vec3 voxelSize;
+	vec3 center;
+};

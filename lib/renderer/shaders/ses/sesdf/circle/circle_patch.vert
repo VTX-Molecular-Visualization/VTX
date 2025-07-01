@@ -1,35 +1,21 @@
-#version 450
+#version 450 core
 
-struct DisplayFullCircle
-{
-	vec4  firstAtom;  // ith pos + ith radius
-	vec4  secondAtom; // jth pos + jth radius
-	vec4  center;	  // Circle center + circle radius
-	vec4  normal;	  // normal + isExterior
-	vec3  bbPos;
-	vec3  bbDim;
-	vec4  rot;
-	vec4  vSphere;
-};
+#include "../../../constant.glsl"
+#include "../../../layout_uniforms_camera.glsl"
+#include "../../../layout_uniforms_color.glsl"
+#include "../../../layout_uniforms_model.glsl"
+#include "../../../layout_uniforms_representation.glsl"
 
-layout(location = 0) in uvec2 atomsId;
-
-flat out vec3			   vImpU; // Impostor vectors.
-flat out vec3			   vImpV;
-flat out DisplayFullCircle vCircle;
-
-layout(std140, binding=0) uniform SesdfSettings
-{
-	mat4  uMVMatrix;
-	mat4  uProjMatrix;
-	mat4  uInvMVMatrix;
-	float uProbeRadius;
-	uint  uMaxProbeNeighborNb;
-};
-
-layout(std140, binding = 1) readonly buffer SortedAtoms {
+// In.
+layout( location = 0 ) in uvec2 atomsId;
+layout( std140, binding = 1 ) readonly buffer SortedAtoms {
 	vec4 atoms[];
 };
+
+// Out.
+out 
+#include "struct_vertex_shader.glsl"
+outData;
 
 float length2(vec3 v){return dot(v,v);}
 
@@ -148,9 +134,10 @@ void main()
 	// TODO: simplify normalize ? (vImpU.x == 0) but normalize should be hard optimized on GPU...
 	// But for cross always better doing no calculation.
 	// vImpU = normalize( cross( dir, vec3( 1.f, 0.f, 0.f ) ) ); becomes:
-	vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
+	outData.vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
 	// TODO: simplify cross ? (vImpU.x == 0) but cross should be hard optimized on GPU...
-	vImpV = cross( vImpU, view ) * impSize; // No need to normalize.
-	vImpU *= impSize;
+	outData.vImpV = cross( vImpU, view ) * impSize; // No need to normalize.
+	outData.vImpU *= impSize;
 
-	gl_Position = vec4( viewImpPos, 1.f );}
+	gl_Position = vec4( viewImpPos, 1.f );
+}

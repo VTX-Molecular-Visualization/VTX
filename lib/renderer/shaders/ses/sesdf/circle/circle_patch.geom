@@ -1,35 +1,21 @@
-#version 450
+#version 450 core
+
+#include "../layout_uniforms_camera.glsl"
 
 layout( points ) in;
 layout( triangle_strip, max_vertices = 4 ) out;
 
-struct DisplayFullCircle
-{
-	vec4  firstAtom;  // ith pos + ith radius
-	vec4  secondAtom; // jth pos + jth radius
-	vec4  center;	  // Circle center + circle radius
-	vec4  normal;	  // normal + isExterior
-	vec3  bbPos;
-	vec3  bbDim;
-	vec4  rot;
-	vec4  vSphere;
-};
+// In.
+in 
+#include "struct_vertex_shader.glsl"
+inData[];
 
-flat in vec3			   vImpU[]; // Impostor vectors.
-flat in vec3			   vImpV[];
-flat in DisplayFullCircle vCircle[];
+// Out.
+out 
+#include "struct_geometry_shader.glsl"
+outData;
 
-smooth out vec3				 viewImpPos;  // Impostor position in view space.
-flat   out DisplayFullCircle circle;
 
-layout(std140, binding=0) uniform SesdfSettings
-{
-	mat4  uMVMatrix;
-	mat4  uProjMatrix;
-	mat4  uInvMVMatrix;
-	float uProbeRadius;
-	uint  uMaxProbeNeighborNb;
-};
 
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
