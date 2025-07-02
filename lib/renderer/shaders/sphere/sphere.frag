@@ -90,7 +90,6 @@ void main()
 
 			// Output data.
 			packData( gsData.viewImpPos, -gsSphere.viewPos, gsSphere.isSelected, outDataPacked );
-			outViewPositionNormal = viewPositionNormalCompressed;
 			outColor			  = vec4( 1.f, 0.f, 1.f, 1.f );
 
 			gl_FragDepth = computeDepth( gsData.viewImpPos );

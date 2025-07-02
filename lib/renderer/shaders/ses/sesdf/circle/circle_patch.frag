@@ -1,40 +1,22 @@
-#version 450
+#version 450 core
+
+#include "../../../layout_uniforms_camera.glsl"
+#include "../../../layout_uniforms_representation.glsl"
+#include "../../../struct_data_packed.glsl"
+#include "struct_circle.glsl"
+#include "struct_geometry_shader.glsl"
 
 // #define SHOW_IMPOSTORS
 
 layout (depth_greater) out float gl_FragDepth;
 
-struct DisplayFullCircle
-{
-	vec4  firstAtom;  // ith pos + ith radius
-	vec4  secondAtom; // jth pos + jth radius
-	vec4  center;	  // Circle center + circle radius
-	vec4  normal;	  // normal + isExterior
-	vec3  bbPos;
-	vec3  bbDim;
-	vec4  rot;
-	vec4  vSphere;
-};
+// In.
+smooth in StructGeometryShader gsData;
+flat in StructCircle gsCircle;
 
-smooth in vec3				viewImpPos;  // Impostor position in view space.
-flat   in DisplayFullCircle circle;
-
-// 3 16 bits for position.
-// 3 16 bits for normal.
-// 1 32 bits for padding.
-layout( location = 0 ) out uvec4 outViewPositionNormal;
-// 3 32 bits for color.
-// 1 32 bits for specular.
+ // Out.
+layout( location = 0 ) out PackedData outDataPacked;
 layout( location = 1 ) out vec4 outColor;
-
-layout(std140, binding=0) uniform SesdfSettings
-{
-	mat4  uMVMatrix;
-	mat4  uProjMatrix;
-	mat4  uInvMVMatrix;
-	float uProbeRadius;
-	uint  uMaxProbeNeighborNb;
-};
 
 const float Epsilon			   = 1e-8;
 const float Pi				   = 3.1415926;
@@ -43,33 +25,29 @@ const float TwoPi			   = 6.2831853;
 float computeDepth( const vec3 v )
 {
 	// Computes 'v' NDC depth ([-1,1])
-	const float ndcDepth = ( v.z * uProjMatrix[ 2 ].z + uProjMatrix[ 3 ].z ) / -v.z;
+	const float ndcDepth = ( v.z * uniformsCamera.matrixProjection[ 2 ].z + uniformsCamera.matrixProjection[ 3 ].z ) / -v.z;
 	// Return depth according to depth range
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
 
 void submit(in vec3 p, in vec3 n, in vec3 c)
 {
-	n = faceforward(n, viewImpPos, n);
+	n = faceforward(n, gsData.viewImpPos, n);
 
 	// fill G-buffers.
-	uvec4 viewPositionNormalCompressed;
-	viewPositionNormalCompressed.x = packHalf2x16( p.xy );
-	viewPositionNormalCompressed.y = packHalf2x16( vec2( p.z, n ) );
-	viewPositionNormalCompressed.z = packHalf2x16( n.yz );
-	viewPositionNormalCompressed.w = 0; // Padding.
+	packData( p, n, 0, outDataPacked );
 
-	// Output data.
-	outViewPositionNormal = viewPositionNormalCompressed;
+	// Output data.	
 	gl_FragDepth = computeDepth( p );
 
-	outColor = vec4( c, 32.f ); // w = specular shininess.
+	//outColor = vec4( c, 32.f ); // w = specular shininess.
+	outColor = vec4( 1.f );
 }
 
 void handleImpostor()
 {
 #ifdef SHOW_IMPOSTORS
-		submit(viewImpPos, normalize(-viewImpPos), vec3(1.));
+		submit(gsData.viewImpPos, normalize(-gsData.viewImpPos), vec3(1.));
 #else
 		discard;
 #endif
@@ -108,8 +86,8 @@ vec3 closestPointOnCircle( vec3 circleCenter, vec3 circleNormal, float circleRad
 
 float sdToroidalPatch(const in vec3 point, out vec3 closestPoint )
 {
-	closestPoint = closestPointOnCircle(circle.center.xyz, circle.normal.xyz, circle.center.w, point);
-	return -distance(point, closestPoint) + uProbeRadius;
+	closestPoint = closestPointOnCircle(gsCircle.center.xyz, gsCircle.normal.xyz, gsCircle.center.w, point);
+	return -distance(point, closestPoint) + uniformsRepresentation[ 0 ].SESProbeRadius;
 }
 
 const int MaxSteps		 = 100;
@@ -153,6 +131,7 @@ vec2 iBox( in vec3 ro, in vec3 rd, in vec3 pMin, in vec3 pMax )
 
 	return vec2( tN, tF );
 }
+
 vec2 iSphere( in vec3 ro, in vec3 rd, in vec4 sph )
 {
 	vec3 oc = ro - sph.xyz;
@@ -172,11 +151,11 @@ vec2 iOOBB( in vec3 ro, in vec3 rd, in vec3 p, in vec3 dim, in vec4 rot)
 
 void main()
 {
-	const vec3 ro = viewImpPos;
-	const vec3 rd = normalize(viewImpPos);
+	const vec3 ro = gsData.viewImpPos;
+	const vec3 rd = normalize(gsData.viewImpPos);
 	
-	vec2 dist = iOOBB(ro, rd, circle.bbPos, circle.bbDim, circle.rot);
-	vec2 sDist = iSphere(ro, rd, circle.vSphere);
+	vec2 dist = iOOBB(ro, rd, gsCircle.bbPos, gsCircle.bbDim, gsCircle.rot);
+	vec2 sDist = iSphere(ro, rd, gsCircle.vSphere);
 	
 	if ( dist.x == -1. || sDist.x == -1. )
 	{

@@ -1,38 +1,37 @@
 #version 450 core
 
-#include "../layout_uniforms_camera.glsl"
+#include "../../../layout_uniforms_camera.glsl"
+#include "struct_circle.glsl"
+#include "struct_vertex_shader.glsl"
+#include "struct_geometry_shader.glsl"
 
 layout( points ) in;
 layout( triangle_strip, max_vertices = 4 ) out;
 
 // In.
-in 
-#include "struct_vertex_shader.glsl"
-inData[];
+flat in StructVertexShader vsData[];
+flat in StructCircle vsCircle[];
 
 // Out.
-out 
-#include "struct_geometry_shader.glsl"
-outData;
-
-
+smooth out StructGeometryShader gsData;
+flat out StructCircle gsCircle;
 
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
-	viewImpPos	= v1;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gsData.viewImpPos	= v1;
+	gl_Position 		= uniformsCamera.matrixProjection * vec4( gsData.viewImpPos, 1.f );
 	EmitVertex();
 
-	viewImpPos	= v2;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gsData.viewImpPos	= v2;
+	gl_Position 		= uniformsCamera.matrixProjection * vec4( gsData.viewImpPos, 1.f );
 	EmitVertex();
 
-	viewImpPos	= v3;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gsData.viewImpPos	= v3;
+	gl_Position 		= uniformsCamera.matrixProjection * vec4( gsData.viewImpPos, 1.f );
 	EmitVertex();
 
-	viewImpPos	= v4;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gsData.viewImpPos	= v4;
+	gl_Position 		= uniformsCamera.matrixProjection * vec4( gsData.viewImpPos, 1.f );
 	EmitVertex();
 
 	EndPrimitive();
@@ -41,13 +40,13 @@ void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 void main()
 {
 	// Output data.
-	circle = vCircle[ 0 ];
+	gsCircle = vsCircle[ 0 ];
 
 	// Compute impostors vertices.
-	const vec3 v1 = gl_in[ 0 ].gl_Position.xyz - vImpU[ 0 ] - vImpV[ 0 ];
-	const vec3 v2 = gl_in[ 0 ].gl_Position.xyz + vImpU[ 0 ] - vImpV[ 0 ];
-	const vec3 v3 = gl_in[ 0 ].gl_Position.xyz - vImpU[ 0 ] + vImpV[ 0 ];
-	const vec3 v4 = gl_in[ 0 ].gl_Position.xyz + vImpU[ 0 ] + vImpV[ 0 ];
+	const vec3 v1 = gl_in[ 0 ].gl_Position.xyz - vsData[ 0 ].vImpU - vsData[ 0 ].vImpV;
+	const vec3 v2 = gl_in[ 0 ].gl_Position.xyz + vsData[ 0 ].vImpU - vsData[ 0 ].vImpV;
+	const vec3 v3 = gl_in[ 0 ].gl_Position.xyz - vsData[ 0 ].vImpU + vsData[ 0 ].vImpV;
+	const vec3 v4 = gl_in[ 0 ].gl_Position.xyz + vsData[ 0 ].vImpU + vsData[ 0 ].vImpV;
 
 	emitQuad( v1, v2, v3, v4 );
 }

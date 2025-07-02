@@ -181,12 +181,10 @@ namespace VTX::Renderer
 		_sesSurface = _sesData->getGraphics();
 		VTX_DEBUG( "CUDA DONE" );
 
-		/*
 		_sesProgramConcave = _pm.createProgram( "SESConcave", "ses/sesdf/concave" );
 		_sesProgramSegment = _pm.createProgram( "SESSegment", "ses/sesdf/segment" );
 		_sesProgramCircle  = _pm.createProgram( "SESCircle", "ses/sesdf/circle" );
 		_sesProgramConvex  = _pm.createProgram( "SESConvex", "ses/sesdf/convex" );
-		*/
 
 		glCreateVertexArrays( 1, &_sesVao );
 		if ( _sesSurface.segmentPatches.size > 0 )
@@ -1617,7 +1615,6 @@ namespace VTX::Renderer
 				= [ this ]() { return showSESSegments && drawRangeSESSegments.counts.size() > 0; };
 				*/
 #ifdef WITH_CUDA
-			/*
 			geo->renderFunc = [ & ]()
 			{
 				constexpr auto bindBuffer = []( uint32_t bindingPoint, bcs::HandleSpan<GLuint> buffer )
@@ -1665,7 +1662,6 @@ namespace VTX::Renderer
 
 				glBindVertexArray( 0 );
 			};
-			*/
 #endif
 		}
 

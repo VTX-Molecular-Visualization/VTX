@@ -5,6 +5,8 @@
 #include "../../../layout_uniforms_color.glsl"
 #include "../../../layout_uniforms_model.glsl"
 #include "../../../layout_uniforms_representation.glsl"
+#include "struct_circle.glsl"
+#include "struct_vertex_shader.glsl"
 
 // In.
 layout( location = 0 ) in uvec2 atomsId;
@@ -13,16 +15,15 @@ layout( std140, binding = 1 ) readonly buffer SortedAtoms {
 };
 
 // Out.
-out 
-#include "struct_vertex_shader.glsl"
-outData;
+flat out StructVertexShader vsData;
+flat out StructCircle vsCircle;
 
 float length2(vec3 v){return dot(v,v);}
 
 vec3 computeCircleCenter( vec4 c1, vec4 c2 )
 {
-	c1.w += uProbeRadius;
-	c2.w += uProbeRadius;
+	c1.w += uniformsRepresentation[ 0 ].SESProbeRadius;
+	c2.w += uniformsRepresentation[ 0 ].SESProbeRadius;
 	const float d = length2( c1.xyz - c2.xyz );
 	const float t = ( c1.w * c1.w - c2.w * c2.w + d ) / ( 2.f * d );
 	return c1.xyz + ( c2.xyz - c1.xyz ) * t;
@@ -79,36 +80,36 @@ void main()
 {
 	const vec4 atom1 = atoms[atomsId.x];
 	const vec4 atom2 = atoms[atomsId.y];
-	vCircle.firstAtom  = vec4(( uMVMatrix * vec4( atom1.xyz, 1.f ) ).xyz, atom1.w);
-	const float ithExtendedRadius = vCircle.firstAtom.w + uProbeRadius;
-	vCircle.secondAtom = vec4(( uMVMatrix * vec4( atom2.xyz, 1.f ) ).xyz, atom2.w);
+	vsCircle.firstAtom  = vec4(( uniformsModel[ 0 ].matrixModelView * vec4( atom1.xyz, 1.f ) ).xyz, atom1.w);
+	const float ithExtendedRadius = vsCircle.firstAtom.w + uniformsRepresentation[ 0 ].SESProbeRadius;
+	vsCircle.secondAtom = vec4(( uniformsModel[ 0 ].matrixModelView * vec4( atom2.xyz, 1.f ) ).xyz, atom2.w);
 
-	const vec3  circleCenter = computeCircleCenter(vCircle.firstAtom, vCircle.secondAtom);
-	const vec3  circleToI    = vCircle.firstAtom.xyz - circleCenter;
+	const vec3  circleCenter = computeCircleCenter(vsCircle.firstAtom, vsCircle.secondAtom);
+	const vec3  circleToI    = vsCircle.firstAtom.xyz - circleCenter;
 	const float squaredCircleDistance = dot( circleToI, circleToI );
 	const float radius = sqrt( ithExtendedRadius * ithExtendedRadius - squaredCircleDistance );
 
-	vCircle.center = vec4( circleCenter, radius );
-	vCircle.normal = vec4( normalize( vCircle.secondAtom.xyz - vCircle.firstAtom.xyz ), 0. );
+	vsCircle.center = vec4( circleCenter, radius );
+	vsCircle.normal = vec4( normalize( vsCircle.secondAtom.xyz - vsCircle.firstAtom.xyz ), 0. );
 
-	vCircle.rot = toLocalSpaceTransform(vCircle.normal.xyz);
+	vsCircle.rot = toLocalSpaceTransform(vsCircle.normal.xyz);
 	const Bound bound = Bound(-vec3(1., 1., 0.), vec3(1., 1., 0.)); // getCircleBoundingBox(vec3(0., 0., 1.));
 
-	const vec3 x1p = circleCenter + orthogonalVector(vCircle.normal.xyz) * radius;
-	const vec4 sCircle  = computeSmallCircle(vCircle.firstAtom,  vCircle.normal.xyz, x1p);
-    const vec4 sCircle2 = computeSmallCircle(vCircle.secondAtom, vCircle.normal.xyz, x1p);
+	const vec3 x1p = circleCenter + orthogonalVector(vsCircle.normal.xyz) * radius;
+	const vec4 sCircle  = computeSmallCircle(vsCircle.firstAtom,  vsCircle.normal.xyz, x1p);
+    const vec4 sCircle2 = computeSmallCircle(vsCircle.secondAtom, vsCircle.normal.xyz, x1p);
 	
     const float rad = max(sCircle.w, sCircle2.w);
-    vec3 sMin = min(bound.pMin * rad, bound.pMin * max(0., radius - uProbeRadius));
-    vec3 sMax = max(bound.pMax * rad, bound.pMax * max(0., radius - uProbeRadius));
+    vec3 sMin = min(bound.pMin * rad, bound.pMin * max(0., radius - uniformsRepresentation[ 0 ].SESProbeRadius));
+    vec3 sMax = max(bound.pMax * rad, bound.pMax * max(0., radius - uniformsRepresentation[ 0 ].SESProbeRadius));
 
     const vec2 dim = abs((sMax - sMin).xy * .5);
-    vCircle.bbDim = vec3(dim, length(sCircle.xyz - sCircle2.xyz) * .5);
+    vsCircle.bbDim = vec3(dim, length(sCircle.xyz - sCircle2.xyz) * .5);
 
-    sMin = quatMult(vec4(-vCircle.rot.xyz, vCircle.rot.w), sMin);
-    sMax = quatMult(vec4(-vCircle.rot.xyz, vCircle.rot.w), sMax);
+    sMin = quatMult(vec4(-vsCircle.rot.xyz, vsCircle.rot.w), sMin);
+    sMax = quatMult(vec4(-vsCircle.rot.xyz, vsCircle.rot.w), sMax);
 
-	vCircle.bbPos = (sCircle.xyz + sCircle2.xyz) * .5 + (sMax + sMin) * .5;
+	vsCircle.bbPos = (sCircle.xyz + sCircle2.xyz) * .5 + (sMax + sMin) * .5;
 
 	// Compute normalized view vector.
 	const float dotViewSpherePos  = dot( circleCenter, circleCenter );
@@ -116,17 +117,17 @@ void main()
 	const vec3	view			  = circleCenter / dSphereCenter;
 
 	vec3 p = x1p;
-	vec3 x = normalize(p - vCircle.firstAtom.xyz) * vCircle.firstAtom.w;
-	vec3 c = (length(p - vCircle.firstAtom.xyz) / (length(p - vCircle.secondAtom.xyz) + length(p - vCircle.firstAtom.xyz))) * (vCircle.secondAtom.xyz - vCircle.firstAtom.xyz);
+	vec3 x = normalize(p - vsCircle.firstAtom.xyz) * vsCircle.firstAtom.w;
+	vec3 c = (length(p - vsCircle.firstAtom.xyz) / (length(p - vsCircle.secondAtom.xyz) + length(p - vsCircle.firstAtom.xyz))) * (vsCircle.secondAtom.xyz - vsCircle.firstAtom.xyz);
 	float d = length(x - c);
-	c = c + vCircle.firstAtom.xyz;
-	vCircle.vSphere = vec4(c, d);
+	c = c + vsCircle.firstAtom.xyz;
+	vsCircle.vSphere = vec4(c, d);
 
 	// Impostor in front of the sphere.
-	const vec3 viewImpPos = vCircle.vSphere.xyz - vCircle.vSphere.w * view;
+	const vec3 viewImpPos = vsCircle.vSphere.xyz - vsCircle.vSphere.w * view;
 
 	// Compute impostor size.
-	const float sinAngle = vCircle.vSphere.w / dSphereCenter;
+	const float sinAngle = vsCircle.vSphere.w / dSphereCenter;
 	const float tanAngle = tan( asin( sinAngle ) );
 	const float impSize	 = tanAngle * length( viewImpPos );
 
@@ -134,10 +135,10 @@ void main()
 	// TODO: simplify normalize ? (vImpU.x == 0) but normalize should be hard optimized on GPU...
 	// But for cross always better doing no calculation.
 	// vImpU = normalize( cross( dir, vec3( 1.f, 0.f, 0.f ) ) ); becomes:
-	outData.vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
+	vsData.vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
 	// TODO: simplify cross ? (vImpU.x == 0) but cross should be hard optimized on GPU...
-	outData.vImpV = cross( vImpU, view ) * impSize; // No need to normalize.
-	outData.vImpU *= impSize;
+	vsData.vImpV = cross( vsData.vImpU, view ) * impSize; // No need to normalize.
+	vsData.vImpU *= impSize;
 
 	gl_Position = vec4( viewImpPos, 1.f );
 }
