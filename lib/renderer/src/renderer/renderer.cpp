@@ -227,6 +227,9 @@ namespace VTX::Renderer
 		}
 
 		glBindVertexArray( 0 );
+
+		uint sesMaxProbeNeighborNb = _sesData->getMaxNeighborPerAtom();
+		setValue( sesMaxProbeNeighborNb, "RepresentationsSESMaxProbeNeighborNb", 0 );
 #endif
 	}
 
@@ -560,9 +563,11 @@ namespace VTX::Renderer
 			setValue( cylinderRadius, "RepresentationsCylinderRadius", 0 );
 		}
 
+#ifdef WITH_CUDA
 		/////////////////////////////////////
 		float sesProbeRadius = p_representation->get<float>( E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS );
 		setValue( sesProbeRadius, "RepresentationsSESProbeRadius", 0 );
+#endif
 	}
 
 	void Renderer::setProxyRepresentation( Proxy::Representation & p_proxy )

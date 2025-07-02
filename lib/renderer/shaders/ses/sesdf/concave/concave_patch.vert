@@ -1,35 +1,15 @@
-#version 450
+#version 450 core
 
-struct Plane 
-{
-	vec3 n;
-	float d;
-};
+#include "../../../constant.glsl"
+#include "../../../layout_uniforms_camera.glsl"
+#include "../../../layout_uniforms_color.glsl"
+#include "../../../layout_uniforms_model.glsl"
+#include "../../../layout_uniforms_representation.glsl"
+#include "struct_plane.glsl"
+#include "struct_tetrahedron.glsl"
+#include "struct_vertex_shader.glsl"
 
-struct DisplayTetrahedron
-{
-	vec4 point;			  // (x, y, z): coordinate of the point
-	Plane plane1;
-	Plane plane2;
-	Plane plane3;
-	int  startNeighborId;
-	int  neighborNb;
-	vec3 color;
-};
-
-flat out vec3 vImpU; // Impostor vectors.
-flat out vec3 vImpV;
-flat out DisplayTetrahedron vTetrahedron;
-
-layout(std140, binding=0) uniform SesdfSettings
-{
-	mat4  uMVMatrix;
-	mat4  uProjMatrix;
-	mat4  uInvMVMatrix;
-	float uProbeRadius;
-	uint  uMaxProbeNeighborNb;
-};
-
+// In.
 layout(std140, binding = 1) readonly buffer SortedAtoms {
 	vec4 atoms[];
 };
@@ -42,6 +22,10 @@ layout(std140, binding = 4) readonly buffer ProbesAtomIndices {
 	ivec4 probesAtomIndices[];
 };
 
+// Out.
+flat out StructVertexShader vsData;
+flat out StructTetrahedron vsTetrahedron;
+
 //https://www.shadertoy.com/view/Xt3cDn
 uint baseHash(uint p)
 {
@@ -53,6 +37,7 @@ uint baseHash(uint p)
     h32 = PRIME32_3*(h32^(h32 >> 13));
     return h32^(h32 >> 16);
 }
+
 vec3 hash31(uint x)
 {
     uint n = baseHash(x);
@@ -67,22 +52,22 @@ void main()
 	const vec4 intersectionCenter   = probes[gl_VertexID];
 	const ivec4 intersectionIndices = probesAtomIndices[gl_VertexID];
 	
-	vTetrahedron.point.w   = gl_VertexID;
-	vTetrahedron.point.xyz = ( uMVMatrix * vec4( intersectionCenter.xyz, 1.f ) ).xyz;
+	vsTetrahedron.point.w   = gl_VertexID;
+	vsTetrahedron.point.xyz = ( uniformsModel[ 0 ].matrixModelView * vec4( intersectionCenter.xyz, 1.f ) ).xyz;
 
-	vTetrahedron.startNeighborId = int(gl_VertexID * uMaxProbeNeighborNb);
-	vTetrahedron.neighborNb		 = int(intersectionIndices.w);
+	vsTetrahedron.startNeighborId = int(gl_VertexID * uniformsRepresentation[ 0 ].SESMaxProbeNeighborNb);
+	vsTetrahedron.neighborNb		 = int(intersectionIndices.w);
 	
 	vec4 atom1 = atoms[intersectionIndices.x];
-	atom1 = vec4(( uMVMatrix * vec4( atom1.xyz, 1.f ) ).xyz, atom1.w);
+	atom1 = vec4(( uniformsModel[ 0 ].matrixModelView * vec4( atom1.xyz, 1.f ) ).xyz, atom1.w);
 	vec4 atom2 = atoms[intersectionIndices.y];
-	atom2 = vec4(( uMVMatrix * vec4( atom2.xyz, 1.f ) ).xyz, atom2.w);
+	atom2 = vec4(( uniformsModel[ 0 ].matrixModelView * vec4( atom2.xyz, 1.f ) ).xyz, atom2.w);
 	vec4 atom3 = atoms[intersectionIndices.z];
-	atom3 = vec4(( uMVMatrix * vec4( atom3.xyz, 1.f ) ).xyz, atom3.w);
+	atom3 = vec4(( uniformsModel[ 0 ].matrixModelView * vec4( atom3.xyz, 1.f ) ).xyz, atom3.w);
 	
-	vTetrahedron.color = vec3(1.);//vec3(hash31(intersectionIndices.x) + hash31(intersectionIndices.y) + + hash31(intersectionIndices.z)) / 3.;
+	vsTetrahedron.color = vec3(1.);//vec3(hash31(intersectionIndices.x) + hash31(intersectionIndices.y) + + hash31(intersectionIndices.z)) / 3.;
 
-	vec3 p1 = vTetrahedron.point.xyz;
+	vec3 p1 = vsTetrahedron.point.xyz;
 	vec3 p2 = atom1.xyz;
 	vec3 p3 = atom2.xyz;
 	vec3 p4 = atom3.xyz;
@@ -102,9 +87,9 @@ void main()
 	n2 *= sign(dot(dirToCenter, n2)) ;
 	n3 *= sign(dot(dirToCenter, n3)) ;
 
-	vTetrahedron.plane1 = Plane(n1, dot(p1, n1));
-	vTetrahedron.plane2 = Plane(n2, dot(p1, n2)); 
-	vTetrahedron.plane3 = Plane(n3, dot(p1, n3));
+	vsTetrahedron.plane1 = Plane(n1, dot(p1, n1));
+	vsTetrahedron.plane2 = Plane(n2, dot(p1, n2)); 
+	vsTetrahedron.plane3 = Plane(n3, dot(p1, n3));
 
 	// Impostor in front of the sphere.
 	vec3 vViewCenter			 = p1;
@@ -112,7 +97,7 @@ void main()
 	const float dSphereCenter	 = sqrt( dotViewSpherePos );
 	const vec3	view			 = vViewCenter / dSphereCenter;
 
-	const float sphereRad = uProbeRadius;
+	const float sphereRad = uniformsRepresentation[ 0 ].SESProbeRadius;
 	const vec3 viewImpPos = vViewCenter - sphereRad * view;
 
 	// Compute impostor size.
@@ -121,13 +106,13 @@ void main()
 	const float impSize	 = tanAngle * length( viewImpPos );
 
 	// Compute impostor vectors.
-	// TODO: simplify normalize ? (vImpU.x == 0) but normalize should be hard optimized on GPU...
+	// TODO: simplify normalize ? (vsData.vImpU.x == 0) but normalize should be hard optimized on GPU...
 	// But for cross always better doing no calculation.
-	// vImpU = normalize( cross( dir, vec3( 1.f, 0.f, 0.f ) ) ); becomes:
-	vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
-	// TODO: simplify cross ? (vImpU.x == 0) but cross should be hard optimized on GPU...
-	vImpV = cross( vImpU, view ) * impSize; // No need to normalize.
-	vImpU *= impSize;
+	// vsData.vImpU = normalize( cross( dir, vec3( 1.f, 0.f, 0.f ) ) ); becomes:
+	vsData.vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
+	// TODO: simplify cross ? (vsData.vImpU.x == 0) but cross should be hard optimized on GPU...
+	vsData.vImpV = cross( vsData.vImpU, view ) * impSize; // No need to normalize.
+	vsData.vImpU *= impSize;
 
 	gl_Position = vec4( viewImpPos, 1.f );
 }
