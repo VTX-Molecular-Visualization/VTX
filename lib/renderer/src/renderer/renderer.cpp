@@ -559,6 +559,10 @@ namespace VTX::Renderer
 		{
 			setValue( cylinderRadius, "RepresentationsCylinderRadius", 0 );
 		}
+
+		/////////////////////////////////////
+		float sesProbeRadius = p_representation->get<float>( E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS );
+		setValue( sesProbeRadius, "RepresentationsSESProbeRadius", 0 );
 	}
 
 	void Renderer::setProxyRepresentation( Proxy::Representation & p_proxy )
