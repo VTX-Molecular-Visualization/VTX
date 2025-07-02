@@ -1,48 +1,36 @@
-#version 450
+#version 450 core
 
-struct DisplayConvexPatch
-{
-	uint atomId;
-	vec4 wsAtomData;	 // world space ith pos + ith radius
-	vec4 vAtomData;		 // View space ith pos + ith Extended radius
-	uvec2 elementsId;
-};
+#include "../../../constant.glsl"
+#include "../../../layout_uniforms_model.glsl"
+#include "struct_convex_patch.glsl"
+#include "struct_vertex_shader.glsl"
 
+// In.
 layout(location = 0) in uvec2 elementIds;
-
-flat out vec3				vImpU; // Impostor vectors.
-flat out vec3				vImpV;
-flat out DisplayConvexPatch vPatchData;
-
-layout(std140, binding = 0) uniform SesdfSettings
-{
-	mat4  uMVMatrix;
-	mat4  uProjMatrix;
-	mat4  uInvMVMatrix;
-	float uProbeRadius;
-	uint  uMaxProbeNeighborNb;
-};
-
 layout(std140, binding = 1) readonly buffer SortedAtoms {
 	vec4 atoms[];
 };
 
+// Out.
+flat out StructVertexShader vsData;
+flat out StructConvexPatch vsPatchData;
+
 void main()
 {
 	const vec4 ithData		 = atoms[gl_VertexID];
-	vPatchData.atomId = gl_VertexID;
-	vPatchData.wsAtomData	 = ithData;
-	vPatchData.vAtomData.xyz = (uMVMatrix * vec4(ithData.xyz, 1.)).xyz;
-	vPatchData.vAtomData.w   = ithData.w;
-	vPatchData.elementsId	 = elementIds;
+	vsPatchData.atomId = gl_VertexID;
+	vsPatchData.wsAtomData	 = ithData;
+	vsPatchData.vAtomData.xyz = (uniformsModel[ 0 ].matrixModelView * vec4(ithData.xyz, 1.)).xyz;
+	vsPatchData.vAtomData.w   = ithData.w;
+	vsPatchData.elementsId	 = elementIds;
 
 	// Compute normalized view vector.
-	const float dotViewSpherePos  = dot( vPatchData.vAtomData.xyz, vPatchData.vAtomData.xyz );
+	const float dotViewSpherePos  = dot( vsPatchData.vAtomData.xyz, vsPatchData.vAtomData.xyz );
 	const float dSphereCenter	  = sqrt( dotViewSpherePos );
-	const vec3	view			  = vPatchData.vAtomData.xyz / dSphereCenter;
+	const vec3	view			  = vsPatchData.vAtomData.xyz / dSphereCenter;
 
 	// Impostor in front of the sphere.
-	const vec3 viewImpPos = vPatchData.vAtomData.xyz - ithData.w * view;
+	const vec3 viewImpPos = vsPatchData.vAtomData.xyz - ithData.w * view;
 
 	// Compute impostor size.
 	const float sinAngle = ithData.w / dSphereCenter;
@@ -50,12 +38,13 @@ void main()
 	const float impSize	 = tanAngle * length( viewImpPos );
 
 	// Compute impostor vectors.
-	// TODO: simplify normalize ? (vImpU.x == 0) but normalize should be hard optimized on GPU...
+	// TODO: simplify normalize ? (vsData.vImpU.x == 0) but normalize should be hard optimized on GPU...
 	// But for cross always better doing no calculation.
-	// vImpU = normalize( cross( dir, vec3( 1.f, 0.f, 0.f ) ) ); becomes:
-	vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
-	// TODO: simplify cross ? (vImpU.x == 0) but cross should be hard optimized on GPU...
-	vImpV = cross( vImpU, view ) * impSize; // No need to normalize.
-	vImpU *= impSize;
+	// vsData.vImpU = normalize( cross( dir, vec3( 1.f, 0.f, 0.f ) ) ); becomes:
+	vsData.vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
+	// TODO: simplify cross ? (vsData.vImpU.x == 0) but cross should be hard optimized on GPU...
+	vsData.vImpV = cross( vsData.vImpU, view ) * impSize; // No need to normalize.
+	vsData.vImpU *= impSize;
 
-	gl_Position = vec4( viewImpPos, 1.f );}
+	gl_Position = vec4( viewImpPos, 1.f );
+}

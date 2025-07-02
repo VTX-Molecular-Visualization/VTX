@@ -1,58 +1,38 @@
 #version 450
 
+#include "../../../layout_uniforms_camera.glsl"
+#include "struct_segment.glsl"
+#include "struct_vertex_shader.glsl"
+#include "struct_geometry_shader.glsl"
+
 layout( points ) in;
 layout( triangle_strip, max_vertices = 4 ) out;
 
-struct DisplaySegment
-{
-	vec3  v1;
-	vec3  v2;
-	vec4  startAtom;
-	vec4  circle; // circle center + radius
-	vec4  normal; // normal + segment angle
-	vec3  bbPos;
-	vec3  bbDim;
-	vec4  rot;
-	vec4  vSphere;
-};
+// In.
+flat in StructVertexShader vsData[];
+flat in StructSegment vsSegment[];
 
-flat in vec3		   vImpU[]; // Impostor vectors.
-flat in vec3		   vImpV[];
-flat in DisplaySegment vSegment[];
-flat in vec4		   vColor[];
-
-smooth out vec3			  viewImpPos;  // Impostor position in view space.
-flat   out DisplaySegment segment;
-flat   out vec4			  color;
-flat   out vec3			  obbRadius;
-flat   out vec3			  obbPos;
-flat   out vec4			  orientation;
-
-layout(std140, binding = 0) uniform SesdfSettings
-{
-	mat4  uMVMatrix;
-	mat4  uProjMatrix;
-	mat4  uInvMVMatrix;
-	float uProbeRadius;
-	uint  uMaxProbeNeighborNb;
-};
+// Out.
+smooth out StructGeometryShaderSmooth gsDataSmooth;
+smooth out StructGeometryShaderFlat gsDataFlat;
+flat out StructSegment gsSegment;
 
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
-	viewImpPos	= v1;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gsDataSmooth.viewImpPos	= v1;
+	gl_Position = uniformsCamera.matrixProjection * vec4( gsDataSmooth.viewImpPos, 1.f );
 	EmitVertex();
 
-	viewImpPos	= v2;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gsDataSmooth.viewImpPos	= v2;
+	gl_Position = uniformsCamera.matrixProjection * vec4( gsDataSmooth.viewImpPos, 1.f );
 	EmitVertex();
 
-	viewImpPos	= v3;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gsDataSmooth.viewImpPos	= v3;
+	gl_Position = uniformsCamera.matrixProjection * vec4( gsDataSmooth.viewImpPos, 1.f );
 	EmitVertex();
 
-	viewImpPos	= v4;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gsDataSmooth.viewImpPos	= v4;
+	gl_Position = uniformsCamera.matrixProjection * vec4( gsDataSmooth.viewImpPos, 1.f );
 	EmitVertex();
 
 	EndPrimitive();
@@ -61,14 +41,14 @@ void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 void main()
 {
 	// Output data.
-	segment		= vSegment[ 0 ];
-	color		= vColor[ 0 ];
+	gsSegment = vsSegment[ 0 ];
+	gsDataFlat.color = vsData[ 0 ].vColor;
 
 	// Compute impostors vertices.
-	const vec3 v1 = gl_in[ 0 ].gl_Position.xyz - vImpU[ 0 ] - vImpV[ 0 ];
-	const vec3 v2 = gl_in[ 0 ].gl_Position.xyz + vImpU[ 0 ] - vImpV[ 0 ];
-	const vec3 v3 = gl_in[ 0 ].gl_Position.xyz - vImpU[ 0 ] + vImpV[ 0 ];
-	const vec3 v4 = gl_in[ 0 ].gl_Position.xyz + vImpU[ 0 ] + vImpV[ 0 ];
+	const vec3 v1 = gl_in[ 0 ].gl_Position.xyz - vsData[ 0 ].vImpU - vsData[ 0 ].vImpV;
+	const vec3 v2 = gl_in[ 0 ].gl_Position.xyz + vsData[ 0 ].vImpU - vsData[ 0 ].vImpV;
+	const vec3 v3 = gl_in[ 0 ].gl_Position.xyz - vsData[ 0 ].vImpU + vsData[ 0 ].vImpV;
+	const vec3 v4 = gl_in[ 0 ].gl_Position.xyz + vsData[ 0 ].vImpU + vsData[ 0 ].vImpV;
 
 	emitQuad( v1, v2, v3, v4 );
 }

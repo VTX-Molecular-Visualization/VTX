@@ -1,35 +1,22 @@
-#version 450
+#version 450 core
+
+#include "../../../layout_uniforms_camera.glsl"
+#include "../../../layout_uniforms_model.glsl"
+#include "../../../layout_uniforms_representation.glsl"
+#include "../../../struct_data_packed.glsl"
+#include "struct_convex_patch.glsl"
+#include "struct_geometry_shader.glsl"
 
 // #define SHOW_IMPOSTORS
 
 layout (depth_greater) out float gl_FragDepth;
 
-struct DisplayConvexPatch
-{
-    uint atomId;
-    vec4 wsAtomData;	 // world space ith pos + ith radius
-    vec4 vAtomData;		 // View space ith pos + ith Extended radius
-    uvec2 elementsId;
-};
+// In.
+smooth in StructGeometryShader gsData;
+flat in StructConvexPatch gsPatchData;
 
-smooth in vec3				 viewImpPos;  // Impostor position in view space.
-flat   in DisplayConvexPatch patchData;
-
-layout(std140, binding=0) uniform SesdfSettings
-{
-    mat4  uMVMatrix;
-    mat4  uProjMatrix;
-    mat4  uInvMVMatrix;
-    float uProbeRadius;
-    uint  uMaxProbeNeighborNb;
-};
-
-// 3 16 bits for position.
-// 3 16 bits for normal.
-// 1 32 bits for padding.
-layout( location = 0 ) out uvec4 outViewPositionNormal;
-// 3 32 bits for color.
-// 1 32 bits for specular.
+ // Out.
+layout( location = 0 ) out PackedData outDataPacked;
 layout( location = 1 ) out vec4 outColor;
 
 layout(std140, binding = 1) readonly buffer SortedAtoms {
@@ -57,8 +44,8 @@ const float TwoPi   = 6.2831853;
 float length2(vec3 v){return dot(v,v);}
 vec3 computeCircleCenter( vec4 c1, vec4 c2 )
 {
-    c1.w += uProbeRadius;
-    c2.w += uProbeRadius;
+    c1.w += uniformsRepresentation[ 0 ].SESProbeRadius;
+    c2.w += uniformsRepresentation[ 0 ].SESProbeRadius;
     const float d = length2( c1.xyz - c2.xyz );
     const float t = ( c1.w * c1.w - c2.w * c2.w + d ) / ( 2.f * d );
     return c1.xyz + ( c2.xyz - c1.xyz ) * t;
@@ -67,7 +54,7 @@ vec3 computeCircleCenter( vec4 c1, vec4 c2 )
 float computeDepth( const vec3 v )
 {
     // Computes 'v' NDC depth ([-1,1])
-    const float ndcDepth = ( v.z * uProjMatrix[ 2 ].z + uProjMatrix[ 3 ].z ) / -v.z;
+    const float ndcDepth = ( v.z * uniformsCamera.matrixProjection[ 2 ].z + uniformsCamera.matrixProjection[ 3 ].z ) / -v.z;
     // Return depth according to depth range
     return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
@@ -80,10 +67,10 @@ bool isInSector(vec3 p, vec3 o, float r)
 
 bool isInPatch(const vec3 viewP)
 {
-    //if(patchData.elementsId.y - patchData.elementsId.x != 16)
-    const vec3 centerToPoint = (uInvMVMatrix * vec4((viewP - patchData.vAtomData.xyz) / patchData.wsAtomData.w, 0.)).xyz;
+    //if(gsPatchData.elementsId.y - gsPatchData.elementsId.x != 16)
+    const vec3 centerToPoint = (uniformsModel[ 0 ].matrixModelViewInv * vec4((viewP - gsPatchData.vAtomData.xyz) / gsPatchData.wsAtomData.w, 0.)).xyz;
     bool isIn = true;
-    for( uint i = patchData.elementsId.x; i < patchData.elementsId.y && isIn; i++) 
+    for( uint i = gsPatchData.elementsId.x; i < gsPatchData.elementsId.y && isIn; i++) 
     {
         const vec4 sector = sectors[i];
         // if(!isnan(sector.w))
@@ -99,18 +86,13 @@ void handleImpostor()
     // Show impostors for debugging purpose.
     uvec4 colorNormal = uvec4( 0 );
     // fill G-buffers.
-    vec3 normal = normalize(-viewImpPos);
-    uvec4 viewPositionNormalCompressed;
-    viewPositionNormalCompressed.x = packHalf2x16( viewImpPos.xy );
-    viewPositionNormalCompressed.y = packHalf2x16( vec2( viewImpPos.z, normal.x ) );
-    viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
-    viewPositionNormalCompressed.w = 0; // Padding.
+    vec3 normal = normalize(-gsData.viewImpPos);
 
     // Output data.
-    outViewPositionNormal = viewPositionNormalCompressed;
+    packData( gsData.viewImpPos, normal, 0, outDataPacked );
     outColor			  = vec4( 1., 0., 0., 32.f ); // w = specular shininess.
 
-    gl_FragDepth = computeDepth( viewImpPos );
+    gl_FragDepth = computeDepth( gsData.viewImpPos );
 #else
     discard;
 #endif
@@ -118,12 +100,12 @@ void handleImpostor()
 
 void main()
 {
-    const vec3 ro = viewImpPos;
-    const vec3 rd = normalize(viewImpPos);
+    const vec3 ro = gsData.viewImpPos;
+    const vec3 rd = normalize(gsData.viewImpPos);
 
-    const vec3 oc = ro - patchData.vAtomData.xyz;
+    const vec3 oc = ro - gsPatchData.vAtomData.xyz;
     const float b = dot( oc, rd );
-    const float c = dot( oc, oc ) - patchData.wsAtomData.w * patchData.wsAtomData.w;
+    const float c = dot( oc, oc ) - gsPatchData.wsAtomData.w * gsPatchData.wsAtomData.w;
     const float h = b*b - c;
     const float dist = h >= 0. ? -b - sqrt( h ) : -1.;
 
@@ -147,7 +129,7 @@ void main()
         }
         else
         {
-            vec3 normal = -normalize(hit - patchData.vAtomData.xyz);
+            vec3 normal = -normalize(hit - gsPatchData.vAtomData.xyz);
 
             // Both sides of the patch can be seen
             // so we make sure that its normal face the camera
@@ -155,16 +137,9 @@ void main()
 
             // Fill depth buffer.
             gl_FragDepth = computeDepth( hit );
-
-            // Compress position and normal.
-            uvec4 viewPositionNormalCompressed;
-            viewPositionNormalCompressed.x = packHalf2x16( hit.xy );
-            viewPositionNormalCompressed.y = packHalf2x16( vec2( hit.z, normal.x ) );
-            viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
-            viewPositionNormalCompressed.w = 0; // Padding.
             
             // Output data.
-            outViewPositionNormal = viewPositionNormalCompressed;
+            packData( hit, normal, 0, outDataPacked );
             // outColor = vec4(hash31(uint(res)), 32.f); // w = specular shininess.
             outColor = vec4(vec3(1., 1., 1.), 32.f); // w = specular shininess.
         }

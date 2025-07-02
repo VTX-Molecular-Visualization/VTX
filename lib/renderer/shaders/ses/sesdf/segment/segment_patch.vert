@@ -1,34 +1,16 @@
 #version 450
 
-struct DisplaySegment
-{
-	vec3  v1;
-	vec3  v2;
-	vec4  startAtom;
-	vec4  circle; // circle center + radius
-	vec4  normal; // normal + segment angle
-	vec3  bbPos;
-	vec3  bbDim;
-	vec4  rot;
-	vec4  vSphere;
-};
+#include "../../../constant.glsl"
+#include "../../../layout_uniforms_camera.glsl"
+#include "../../../layout_uniforms_color.glsl"
+#include "../../../layout_uniforms_model.glsl"
+#include "../../../layout_uniforms_representation.glsl"
+#include "struct_segment.glsl"
+#include "struct_vertex_shader.glsl"
 
 layout(location = 0) in uvec4 segmentIds;
 
-flat out vec3			vImpU; // Impostor vectors.
-flat out vec3			vImpV;
-flat out DisplaySegment vSegment;
-flat out vec4			vColor;
-
-layout(std140, binding = 0) uniform SesdfSettings
-{
-	mat4  uMVMatrix;
-	mat4  uProjMatrix;
-	mat4  uInvMVMatrix;
-	float uProbeRadius;
-	uint  uMaxProbeNeighborNb;
-};
-
+// In.
 layout(std140, binding = 1) readonly buffer SortedAtoms {
 	vec4 atoms[];
 };
@@ -36,6 +18,10 @@ layout(std140, binding = 1) readonly buffer SortedAtoms {
 layout(std140, binding = 3) readonly buffer Probes {
 	vec4 probes[];
 };
+
+// Out.
+flat out StructVertexShader vsData;
+flat out StructSegment vsSegment;
 
 const float TwoPi = 6.2831853;
 
@@ -79,8 +65,8 @@ vec3 hash31(uint x)
 float length2(vec3 v){return dot(v,v);}
 vec4 computeMidCircle( vec4 c1, vec4 c2 )
 {
-	c1.w += uProbeRadius;
-	c2.w += uProbeRadius;
+	c1.w += uniformsRepresentation[ 0 ].SESProbeRadius;
+	c2.w += uniformsRepresentation[ 0 ].SESProbeRadius;
 	float d = length2( c1.xyz - c2.xyz );
 	float t = ( c1.w * c1.w - c2.w * c2.w + d ) / ( 2.f * d );
     vec3 p = c1.xyz + ( c2.xyz - c1.xyz ) * t;
@@ -145,52 +131,52 @@ vec3 orthogonalVector(vec3 normal)
 void main()
 {
 	uint startAtomId = segmentIds.x ;
-	vSegment.startAtom = atoms[startAtomId];
-	vSegment.startAtom.xyz = ( uMVMatrix * vec4( vSegment.startAtom.xyz, 1.f ) ).xyz;
+	vsSegment.startAtom = atoms[startAtomId];
+	vsSegment.startAtom.xyz = ( uniformsModel[ 0 ].matrixModelView * vec4( vsSegment.startAtom.xyz, 1.f ) ).xyz;
 
 	vec4 endAtom = atoms[segmentIds.y];
-	endAtom.xyz  = ( uMVMatrix * vec4( endAtom.xyz,  1.f ) ).xyz;
+	endAtom.xyz  = ( uniformsModel[ 0 ].matrixModelView * vec4( endAtom.xyz,  1.f ) ).xyz;
 	
 	const vec4 startIntersection = probes[segmentIds.z];
 	const vec4 endIntersection   = probes[segmentIds.w];
 
-	vSegment.circle = computeMidCircle(vSegment.startAtom, endAtom);
+	vsSegment.circle = computeMidCircle(vsSegment.startAtom, endAtom);
 
-	vec3 x1p = (uMVMatrix * vec4(startIntersection.xyz, 1.) ).xyz;
-	vSegment.v1 = (x1p - vSegment.circle.xyz) / vSegment.circle.w;
-	vec3 x2p = (uMVMatrix * vec4(endIntersection.xyz, 1.) ).xyz;
-	vSegment.v2 = (x2p - vSegment.circle.xyz) / vSegment.circle.w;
+	vec3 x1p = (uniformsModel[ 0 ].matrixModelView * vec4(startIntersection.xyz, 1.) ).xyz;
+	vsSegment.v1 = (x1p - vsSegment.circle.xyz) / vsSegment.circle.w;
+	vec3 x2p = (uniformsModel[ 0 ].matrixModelView * vec4(endIntersection.xyz, 1.) ).xyz;
+	vsSegment.v2 = (x2p - vsSegment.circle.xyz) / vsSegment.circle.w;
 
-	vSegment.normal.xyz = normalize( endAtom.xyz - vSegment.startAtom.xyz );
-	float maxAngle      = angleBetweenEdges(vSegment.v1, vSegment.v2, vSegment.normal.xyz);;
-	vSegment.normal.w   = maxAngle;
+	vsSegment.normal.xyz = normalize( endAtom.xyz - vsSegment.startAtom.xyz );
+	float maxAngle      = angleBetweenEdges(vsSegment.v1, vsSegment.v2, vsSegment.normal.xyz);;
+	vsSegment.normal.w   = maxAngle;
 
-	vColor = vec4(hash31(uint(gl_VertexID)), 1.);
+	vsData.vColor = vec4(hash31(uint(gl_VertexID)), 1.);
 
-    vec4 sCircle  = computeSmallCircle(vSegment.startAtom, vSegment.normal.xyz, x1p);
-    vec4 sCircle2 = computeSmallCircle(endAtom,			   vSegment.normal.xyz, x1p);
+    vec4 sCircle  = computeSmallCircle(vsSegment.startAtom, vsSegment.normal.xyz, x1p);
+    vec4 sCircle2 = computeSmallCircle(endAtom,			   vsSegment.normal.xyz, x1p);
     
-    vSegment.rot = toLocalSpaceTransform(vSegment.normal.xyz);
-    Bound bound = getArcBoundingBox(quatMult(vSegment.rot, vSegment.v1), quatMult(vSegment.rot, vSegment.v2), vec3(0., 0., 1.), maxAngle);
+    vsSegment.rot = toLocalSpaceTransform(vsSegment.normal.xyz);
+    Bound bound = getArcBoundingBox(quatMult(vsSegment.rot, vsSegment.v1), quatMult(vsSegment.rot, vsSegment.v2), vec3(0., 0., 1.), maxAngle);
     
     float rad  = max(sCircle.w, sCircle2.w);
-    vec3  sMin = min(bound.pMin * rad, bound.pMin * max(0., vSegment.circle.w - uProbeRadius));
-    vec3  sMax = max(bound.pMax * rad, bound.pMax * max(0., vSegment.circle.w - uProbeRadius));
+    vec3  sMin = min(bound.pMin * rad, bound.pMin * max(0., vsSegment.circle.w - uniformsRepresentation[ 0 ].SESProbeRadius));
+    vec3  sMax = max(bound.pMax * rad, bound.pMax * max(0., vsSegment.circle.w - uniformsRepresentation[ 0 ].SESProbeRadius));
     
     vec2 dim = abs((sMax - sMin).xy * .5);
-    vSegment.bbDim = vec3(dim, length(sCircle.xyz - sCircle2.xyz) * .5);
+    vsSegment.bbDim = vec3(dim, length(sCircle.xyz - sCircle2.xyz) * .5);
     
-    sMin = quatMult(vec4(-vSegment.rot.xyz, vSegment.rot.w), sMin);
-    sMax = quatMult(vec4(-vSegment.rot.xyz, vSegment.rot.w), sMax);
+    sMin = quatMult(vec4(-vsSegment.rot.xyz, vsSegment.rot.w), sMin);
+    sMax = quatMult(vec4(-vsSegment.rot.xyz, vsSegment.rot.w), sMax);
 
-    vSegment.bbPos = (sCircle.xyz + sCircle2.xyz) * .5 + (sMax + sMin) * .5;
+    vsSegment.bbPos = (sCircle.xyz + sCircle2.xyz) * .5 + (sMax + sMin) * .5;
 
     vec3 p = x1p;
-    vec3 x = normalize(p - vSegment.startAtom.xyz) * vSegment.startAtom.w;
-    vec3 c = (length(p - vSegment.startAtom.xyz) / (length(p - endAtom.xyz) + length(p - vSegment.startAtom.xyz))) * (endAtom.xyz - vSegment.startAtom.xyz);
+    vec3 x = normalize(p - vsSegment.startAtom.xyz) * vsSegment.startAtom.w;
+    vec3 c = (length(p - vsSegment.startAtom.xyz) / (length(p - endAtom.xyz) + length(p - vsSegment.startAtom.xyz))) * (endAtom.xyz - vsSegment.startAtom.xyz);
     float d = length(x - c);
-    c = c + vSegment.startAtom.xyz;
-	vSegment.vSphere = vec4(c, d);
+    c = c + vsSegment.startAtom.xyz;
+	vsSegment.vSphere = vec4(c, d);
 
 	vec4 boundingSphere;
 	vec3 pMax = (sCircle2.xyz + sMax);
@@ -209,13 +195,13 @@ void main()
 	const float impSize	 = tanAngle * length( viewImpPos );
 
 	// Compute impostor vectors.
-	// TODO: simplify normalize ? (vImpU.x == 0) but normalize should be hard optimized on GPU...
+	// TODO: simplify normalize ? (vsData.vImpU.x == 0) but normalize should be hard optimized on GPU...
 	// But for cross always better doing no calculation.
-	// vImpU = normalize( cross( dir, vec3( 1.f, 0.f, 0.f ) ) ); becomes:
-	vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
-	// TODO: simplify cross ? (vImpU.x == 0) but cross should be hard optimized on GPU...
-	vImpV = cross( vImpU, view ) * impSize; // No need to normalize.
-	vImpU *= impSize;
+	// vsData.vImpU = normalize( cross( dir, vec3( 1.f, 0.f, 0.f ) ) ); becomes:
+	vsData.vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
+	// TODO: simplify cross ? (vsData.vImpU.x == 0) but cross should be hard optimized on GPU...
+	vsData.vImpV = cross( vsData.vImpU, view ) * impSize; // No need to normalize.
+	vsData.vImpU *= impSize;
 
 	gl_Position = vec4( viewImpPos, 1.f );
 }
