@@ -125,8 +125,19 @@ class VTXUiRecipe(ConanFile):
         tc.generate()
         
         copy(self, "*.cmake", self.source_folder, self.build_folder)
-        copy(self, "*.dll", self.dependencies["qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
-        copy(self, "*.dll", os.path.join(self.dependencies["qt"].package_folder, "plugins"), os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
+
+        # Copy Qt plugins and DLLs to the build folder.
+        qtBinDir = self.dependencies["qt"].cpp_info.bindir
+        qtPluginsDir = os.path.join(self.dependencies["qt"].package_folder, "plugins")
+        destDir = os.path.join(self.build_folder, self.cpp.build.libdirs[0])
+
+        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll" ]
+        for file in binFiles:
+            copy(self, file, qtBinDir, destDir)
+
+        pluginsFolers = [ "imageformats", "platforms", "sytles", "tls" ]
+        for folder in pluginsFolers:
+            copy(self, "*.dll", os.path.join(qtPluginsDir, folder), os.path.join(destDir, folder))
 
     def build(self):
         cmake = CMake(self)
