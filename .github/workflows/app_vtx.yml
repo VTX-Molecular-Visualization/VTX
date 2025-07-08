@@ -6,7 +6,10 @@ on:
     paths: ['.github/workflows/app_vtx.yml']
   workflow_dispatch:
     inputs:
-
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
 env:
   ROOT_DIR: ${{github.workspace}}
 
