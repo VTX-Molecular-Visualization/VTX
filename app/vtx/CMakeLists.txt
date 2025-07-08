@@ -21,7 +21,7 @@ find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 set(_VTX_CONAN " ")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
-install(TARGETS vtx)
+install(TARGETS vtx DESTINATION .)
 install(DIRECTORY ${DIR_SHADERS} DESTINATION .)
 install(DIRECTORY ${DIR_PYTHON_SCRIPT} DESTINATION .)
 install(DIRECTORY libraries DESTINATION .)
