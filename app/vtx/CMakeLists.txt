@@ -21,6 +21,9 @@ find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 set(_VTX_CONAN " ")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+include(InstallRequiredSystemLibraries)
+  
 install(TARGETS vtx DESTINATION .)
 install(DIRECTORY ${DIR_SHADERS} DESTINATION .)
 install(DIRECTORY ${DIR_PYTHON_SCRIPT} DESTINATION .)
@@ -30,6 +33,63 @@ install(DIRECTORY internal_data DESTINATION .)
 install(FILES README.md DESTINATION .)
 install(FILES CHANGELOG.md DESTINATION .)
 install(FILES license.txt DESTINATION .)
+install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
+
+# Copy dlls from build dir.
+file(GLOB QT_DLLS ${CMAKE_BINARY_DIR}/*.dll)
+install(FILES ${QT_DLLS} DESTINATION .)
+install(DIRECTORY ${CMAKE_BINARY_DIR}/platforms DESTINATION .)
+install(DIRECTORY ${CMAKE_BINARY_DIR}/imageformats DESTINATION .)
+install(DIRECTORY ${CMAKE_BINARY_DIR}/tls DESTINATION .)
+
+# Infinite loop.
+#install(DIRECTORY ${CMAKE_BINARY_DIR}/
+#  DESTINATION .
+#  FILES_MATCHING
+#  PATTERN "*.dll"
+#  PATTERN "install" EXCLUDE
+#)
+
+# Copy python and cuda dlls.
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+find_package(CUDAToolkit REQUIRED)
+
+if(Python3_EXECUTABLE)
+  get_filename_component(PYTHON_DIR "${Python3_EXECUTABLE}" DIRECTORY)
+endif()
+
+file(GLOB PY_DLLS "${PYTHON_DIR}/python3*.dll")
+if(PY_DLLS)
+    install(FILES ${PY_DLLS} DESTINATION .)
+else()
+    message(WARNING "No Python DLL found in: ${PYTHON_DIR}")
+endif()
+
+file(GLOB CUDA_DLLS "${CUDAToolkit_BIN_DIR}/cudart*.dll")
+if(CUDA_DLLS)
+    install(FILES ${CUDA_DLLS} DESTINATION .)
+else()
+    message(WARNING "No Cuda DLL found in: ${CUDAToolkit_BIN_DIR}")
+endif()
+
+# Include a lot of files from system32.
+#install(CODE [[
+#  file(GET_RUNTIME_DEPENDENCIES
+#    EXECUTABLES "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/vtx.exe"
+#    RESOLVED_DEPENDENCIES_VAR resolved_deps
+#    UNRESOLVED_DEPENDENCIES_VAR unresolved_deps
+#    PRE_INCLUDE_REGEXES ".*\\.[Dd][Ll][Ll]$"
+#	#PRE_EXCLUDE_REGEXES "$ENV{WINDIR}"
+#    DIRECTORIES ${CMAKE_BINARY_DIR} ${PYTHON_DIR} ${CUDAToolkit_BIN_DIR}
+#  )
+#  foreach(dep IN LISTS resolved_deps)
+#    file(INSTALL DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}" TYPE SHARED_LIBRARY FILES "${dep}")
+#  endforeach()
+#
+#  if (unresolved_deps)
+#    message(WARNING "Certaines dépendances n'ont pas pu être résolues : ${unresolved_deps}")
+#  endif()
+#]])
 
 set(CPACK_PACKAGE_NAME "VTX")
 set(CPACK_PACKAGE_VENDOR "VTX dev team")
@@ -37,5 +97,7 @@ set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 set(CPACK_PACKAGE_EXECUTABLES "vtx" "VTX" )
+
+set(CPACK_NSIS_INSTALL_ROOT "$LOCALAPPDATA")
 
 include(CPack)
