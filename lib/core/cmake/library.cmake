@@ -21,6 +21,13 @@ if (NOT DEFINED _VTX_CORE_CONAN)
 	
 	file(GLOB_RECURSE PDB100_GEN_SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/pdb100/gen/*")
 
+# PLEASE CHANGE THIS 
+# This should be a project global to all vtx (and limited to the dev as it requires massive amount of data)
+# So the following should be extracted from this file and put into some "secondary_structure.cmake" in the dev folder.
+# Thus, we'll be able to use the io code to get core::system and not reinvent the wheel. Maybe we shall parse for helix and strands structure though.
+# And the idea of writing a .cpp file containing the data is too dirty, even for this limited use. So I shall multi thread : workers for reading file and the main thread will be able to produce and compare results with our in-house algorithm. When all database is parsed, a report will be generated so we can investigate errors . 
+# Maybe we will provide a list of structure that we will ignore to validate our algorithms for some specific reasons.
+
 	# vtx_core_pdb100_gen is a project that aim to generate a datafile containing the pdb100 data on atom coordinates, helixes and strands.
 	add_executable(vtx_core_pdb100_gen "${PDB100_GEN_SOURCES}")
 
