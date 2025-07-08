@@ -27,8 +27,9 @@ find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(re2 CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED) # Needed for multiprocessing on pdb database test
-find_package(LibArchive REQUIRED)
+find_package(LibArchive REQUIRED) # Needed for pdb100 archive reading
 
+set(PDB100_DIRECTORY_PATH "C:/Users/Valen/data/pdb100") # Needed for pdb100 related projects
 
 # Util.
 include("${DIR_LIBS}/util/cmake/library.cmake")

@@ -432,6 +432,23 @@ namespace VTX::Util::Math
 	}
 
 	template<typename T>
+	inline float _torsionalAngle( const T & p_point0, const T & p_point1, const T & p_point2, const T & p_point3 )
+	{
+		// This function is a temporary test as the actual implementation seems cubersome to some extend. I leave this
+		// non-working example as a token of remembrance to investigate for useless operations on the implementation.
+		const Vec3f v01 = p_point1 - p_point0;
+		const Vec3f v32 = p_point2 - p_point3;
+		const Vec3f v12 = p_point2 - p_point1;
+
+		Vec3f q = cross( v12, v32 );
+		Vec3f p = cross( v12, v01 );
+
+		q = glm::normalize( q );
+		p = glm::normalize( p );
+
+		return glm::angle( p, q );
+	}
+	template<typename T>
 	inline float torsionalAngle( const T & p_point0, const T & p_point1, const T & p_point2, const T & p_point3 )
 	{
 		const Vec3f v01 = p_point0 - p_point1;

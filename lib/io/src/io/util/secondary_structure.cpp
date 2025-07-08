@@ -13,7 +13,7 @@ namespace VTX::IO::Util::SecondaryStructure
 
 		std::vector<Core::ChemDB::SecondaryStructure::TYPE> & types = p_system.residueSecondaryStructureTypes;
 
-		for ( uint chainIdx = 0; chainIdx < p_system.getChainCount(); ++chainIdx )
+		for ( uint chainIdx = 0; chainIdx < p_system.getChainCount(); ++chainIdx ) // Assume that chains are disjointed
 		{
 			/*
 			const Model::Chain * const chainPtr = p_system.getChain( chainIdx );

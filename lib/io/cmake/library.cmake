@@ -32,7 +32,7 @@ if (NOT DEFINED _VTX_IO_CONAN)
 	target_link_libraries(vtx_io_new_process PRIVATE Boost::headers)
 
 	add_executable(vtx_io_pdb100 "${CMAKE_CURRENT_LIST_DIR}/../test/new_process/pdb100.cpp")
-	target_compile_definitions(vtx_io_pdb100 PRIVATE PDB_DATABASE_DIR="C:/Users/Valen/data/pdb100")
+	target_compile_definitions(vtx_io_pdb100 PRIVATE PDB_DATABASE_DIR="${PDB100_DIRECTORY_PATH}")
 	target_compile_definitions(vtx_io_pdb100 PRIVATE NUM_PROCESSES=24)
 	target_include_directories(vtx_io_pdb100 PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../test/include;")
 	configure_target(vtx_io_pdb100)
