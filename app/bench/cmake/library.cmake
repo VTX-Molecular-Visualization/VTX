@@ -5,6 +5,7 @@ set(_VTX_RENDERER_BENCH_VENDOR_DIR "${CMAKE_CURRENT_LIST_DIR}/../vendor")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 file(GLOB_RECURSE VENDORS_STATIC "${_VTX_RENDERER_BENCH_VENDOR_DIR}/imnodes/*")
 file(GLOB_RECURSE VENDORS_DYNAMIC ./vendor/*)
+
 add_executable(vtx_renderer_bench ${SOURCES} ${VENDORS_STATIC} ${VENDORS_DYNAMIC})
 configure_target(vtx_renderer_bench)
 link_cuda(vtx_renderer_bench)
@@ -28,4 +29,4 @@ endif()
 target_link_libraries(vtx_renderer_bench PRIVATE SDL3::SDL3)
 target_link_libraries(vtx_renderer_bench PRIVATE imgui::imgui)
 	
-#vtx_copy_registered_data(vtx_renderer_bench)
+vtx_copy_registered_data(vtx_renderer_bench)

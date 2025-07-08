@@ -9,10 +9,9 @@ find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(imgui REQUIRED)
-#find_package(assimp CONFIG REQUIRED)
 
-set(_VTX_RENDERER_BENCH_CONAN " ") # So the right target name can be linked
-include(cmake/library.cmake)
+set(_VTX_RENDERER_BENCH_CONAN " ")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 set_target_properties(vtx_renderer_bench PROPERTIES OUTPUT_NAME bench)
 
