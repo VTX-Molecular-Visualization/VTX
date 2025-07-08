@@ -47,8 +47,8 @@ jobs:
         conan export lib/renderer
         conan export lib/ui/qt
         conan export lib/util
-        conan export /tool/example
-        conan export /tool/mdprep
+        conan export tool/example
+        conan export tool/mdprep
         conan create app/vtx -b missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
 
     - name: Read package path from output.json
