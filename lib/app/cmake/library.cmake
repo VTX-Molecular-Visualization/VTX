@@ -12,6 +12,7 @@ target_sources(vtx_app
 file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_app_test ${SOURCES_TEST})
 configure_target(vtx_app_test)
+link_cuda(vtx_app_test)
 
 if (NOT DEFINED _VTX_APP_CONAN)
 	target_link_libraries(vtx_app PRIVATE vtx_util)

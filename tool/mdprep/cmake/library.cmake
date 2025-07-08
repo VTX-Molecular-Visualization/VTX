@@ -40,6 +40,7 @@ file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/src/*")
 
 add_executable(vtx_tool_mdprep_test ${SOURCES} )
 configure_target(vtx_tool_mdprep_test)
+link_cuda(vtx_tool_mdprep_test)
 
 target_include_directories(vtx_tool_mdprep_test PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include")
 

@@ -19,6 +19,7 @@ add_resources(vtx_tool_example ${CMAKE_CURRENT_LIST_DIR}/../asset z_vtx_tool_exa
 file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_tool_example_test ${SOURCES_TEST})
 configure_target(vtx_tool_example_test)
+link_cuda(vtx_tool_example_test)
 
 # Link internal dependencies.
 if (NOT DEFINED _VTX_TOOL_EXAMPLE_CONAN)

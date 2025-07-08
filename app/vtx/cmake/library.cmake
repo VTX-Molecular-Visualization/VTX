@@ -5,6 +5,7 @@ endif()
 
 add_executable(vtx ${SOURCES} ${RESOURCES})
 configure_target(vtx)
+link_cuda(vtx)
 
 if (NOT DEFINED _VTX_CONAN)
 	target_link_libraries(vtx PRIVATE vtx_util)
