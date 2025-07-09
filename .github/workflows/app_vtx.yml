@@ -22,6 +22,7 @@ on:
         description: 'Include tool Mdprep'
         required: false
         default: true
+        type: boolean
       cuda_arch:
         description: 'Cuda architectures'
         required: true
