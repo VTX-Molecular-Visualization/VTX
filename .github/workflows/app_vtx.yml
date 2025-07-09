@@ -1,0 +1,87 @@
+name: App VTX
+
+on:
+  push:
+#    branches: [ "master", "dev", "dev-ndy", "dev-sge", "dev-vge" ]
+#    paths: ['.github/workflows/app_vtx.yml']
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'Debug'
+        type: choice
+        options:
+        - Debug
+        - Release
+      version: 
+        description: 'Version'
+        required: true
+        default: '1.0.0'
+      tool_mdprep:
+        description: 'Include tool Mdprep'
+        required: false
+        default: true
+      cuda_arch:
+        description: 'Cuda architectures'
+        required: true
+        default: '50;52;60;61;70;75;80;86;89;90'
+        
+env:
+  ROOT_DIR: ${{github.workspace}}
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2022, ubuntu-22.04, windows-latest, ubuntu-latest]
+      fail-fast: false
+
+    steps:
+    - name: Set git to use CRLF
+      run: |
+        git config --global core.autocrlf true
+        git config --global core.eol crlf
+        
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive   
+        
+    - name: Get Conan
+      uses: turtlebrowser/get-conan@v1.2
+      
+    - name: Create default profile
+      run: conan profile detect --force
+
+    - name: Add custom remote
+      run: |
+        conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
+
+    - name: Create package
+      working-directory: ${{env.ROOT_DIR}}
+      run:  |
+        conan export lib/app
+        conan export lib/core
+        conan export lib/io
+        conan export lib/python_binding        
+        conan export lib/renderer
+        conan export lib/ui/qt
+        conan export lib/util
+        conan export tool/example
+        conan export tool/mdprep
+        conan create app/vtx -b missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
+
+    - name: Read package path from output.json
+      id: read_package_path
+      working-directory: ${{env.ROOT_DIR}}
+      run: echo "PACKAGE_PATH=$(jq -r '.graph.nodes["1"].package_folder' output.json)" >> "$GITHUB_OUTPUT"
+      shell: bash
+        
+    - uses: actions/upload-artifact@v4.3.1
+      env:
+        PACKAGE_PATH: ${{ steps.read_package_path.outputs.PACKAGE_PATH }}
+      with:
+        name: VTX_${{matrix.os}}
+        path: ${{env.PACKAGE_PATH}}
