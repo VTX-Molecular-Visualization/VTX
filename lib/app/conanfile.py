@@ -32,8 +32,6 @@ class VTXAppRecipe(ConanFile):
          
     def generate(self):
         tc = CMakeToolchain(self)
-        dir_shaders = self.dependencies["vtx_renderer"].conf_info.get("user.myconf:dir_shaders")
-        tc.cache_variables["DIR_SHADERS"] = dir_shaders
         tc.generate()
 
     def build(self):
