@@ -54,8 +54,6 @@ install(DIRECTORY ${CMAKE_BINARY_DIR}/tls DESTINATION .)
 
 # Copy python and cuda dlls.
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
-find_package(CUDAToolkit REQUIRED)
-
 if(Python3_EXECUTABLE)
   get_filename_component(PYTHON_DIR "${Python3_EXECUTABLE}" DIRECTORY)
   file(GLOB PY_DLLS "${PYTHON_DIR}/python3*.dll")
@@ -66,7 +64,10 @@ if(Python3_EXECUTABLE)
 	endif()
 endif()
 
+include(CheckLanguage)
+check_language(CUDA)
 if (CMAKE_CUDA_COMPILER)
+	find_package(CUDAToolkit REQUIRED)
 	file(GLOB CUDA_DLLS "${CUDAToolkit_BIN_DIR}/cudart*.dll")
 	if(CUDA_DLLS)
 		install(FILES ${CUDA_DLLS} DESTINATION .)
