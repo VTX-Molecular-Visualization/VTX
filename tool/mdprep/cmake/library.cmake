@@ -12,7 +12,7 @@ target_sources(vtx_tool_mdprep
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
-add_resources(vtx_tool_mdprep ${CMAKE_CURRENT_LIST_DIR}/../asset z_vtx_tool_mdprep)
+add_resources(vtx_tool_mdprep ${CMAKE_CURRENT_LIST_DIR}/../asset vtx_qt_resources_tool_mdprep)
 
 if (NOT DEFINED _VTX_MDPREP_CONAN)
 	target_link_libraries(vtx_tool_mdprep PRIVATE vtx_util)

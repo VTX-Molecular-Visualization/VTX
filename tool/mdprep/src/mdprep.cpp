@@ -37,6 +37,9 @@
 //
 #include "tool/mdprep/ui/form.hpp"
 //
+#include <ui/qt/macros.hpp>
+
+VTX_INIT_RESOURCES( vtx_qt_resources_tool_mdprep )
 
 namespace VTX::Tool::Mdprep
 {
@@ -80,8 +83,9 @@ namespace VTX::Tool::Mdprep
 			_screen.emplace(
 				screenWidget,
 				_paramaeters,
-				VTX::Tool::Mdprep::ui::ValidationSignaler { [ & ]( VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate p_
-															) { this->_preparationStarted( std::move( p_ ) ); } }
+				VTX::Tool::Mdprep::ui::ValidationSignaler {
+					[ & ]( VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate p_ )
+					{ this->_preparationStarted( std::move( p_ ) ); } }
 			);
 		}
 	};

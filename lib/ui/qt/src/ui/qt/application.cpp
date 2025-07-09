@@ -1,4 +1,5 @@
 #include "ui/qt/application.hpp"
+#include "ui/qt/macros.hpp"
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/resources.hpp"
 #include <QApplication>
@@ -6,6 +7,8 @@
 #include <QIcon>
 #include <QStyle>
 #include <app/infos.hpp>
+
+VTX_INIT_RESOURCES( vtx_qt_resources_ui )
 
 namespace VTX::UI::QT
 {
