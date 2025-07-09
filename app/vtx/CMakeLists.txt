@@ -25,17 +25,19 @@ set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
 include(InstallRequiredSystemLibraries)
   
 install(TARGETS vtx DESTINATION .)
-install(DIRECTORY ${DIR_SHADERS} DESTINATION .)
-install(DIRECTORY ${DIR_PYTHON_SCRIPT} DESTINATION .)
+# Data from other libs.
+install(DIRECTORY ${CMAKE_BINARY_DIR}/shaders DESTINATION .)
+install(DIRECTORY ${CMAKE_BINARY_DIR}/python_script DESTINATION .)
+# Data from VTX.
 install(DIRECTORY libraries DESTINATION .)
 install(DIRECTORY data DESTINATION .)
 install(DIRECTORY internal_data DESTINATION .)
 install(FILES README.md DESTINATION .)
 install(FILES CHANGELOG.md DESTINATION .)
 install(FILES license.txt DESTINATION .)
+# Runtime DLLs.
 install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
-
-# Copy dlls from build dir.
+# DLLS from build dir.
 file(GLOB QT_DLLS ${CMAKE_BINARY_DIR}/*.dll)
 install(FILES ${QT_DLLS} DESTINATION .)
 install(DIRECTORY ${CMAKE_BINARY_DIR}/platforms DESTINATION .)

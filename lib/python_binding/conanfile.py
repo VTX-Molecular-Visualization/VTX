@@ -55,7 +55,6 @@ class VTXPythonBindingRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_python_binding"]
-        self.conf_info.define("user.myconf:dir_python_script", os.path.join(self.package_folder, "python_script").replace("\\","/"))
         cmake_file_list = ["cmake/vtx_python_binding_copy_files.cmake"]
         
         # Give away cmake code to be executed by the consumer of this package

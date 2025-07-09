@@ -44,5 +44,4 @@ class VTXRendererRecipe(ConanFile):
 
     def package_info(self):    
         self.cpp_info.libs = ["vtx_renderer"]      
-        self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder, "shaders").replace("\\","/"))
         self.cpp_info.set_property("cmake_build_modules", ["cmake/copy_shaders.cmake"])

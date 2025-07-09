@@ -30,10 +30,6 @@ class VTXRecipe(ConanFile):
         
     def generate(self):
         tc = CMakeToolchain(self)
-        dir_shaders = self.dependencies["vtx_renderer"].conf_info.get("user.myconf:dir_shaders")
-        tc.cache_variables["DIR_SHADERS"] = dir_shaders
-        dir_python_script = self.dependencies["vtx_python_binding"].conf_info.get("user.myconf:dir_python_script")
-        tc.cache_variables["DIR_PYTHON_SCRIPT"] = dir_python_script
         tc.generate()
 
         copy(self, "*.dll", self.dependencies["vtx_ui_qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
