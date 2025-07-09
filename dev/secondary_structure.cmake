@@ -1,0 +1,16 @@
+# The purpose of this project is to benchmark our secondary-structure algorithm against the rcsb-pdb data. 
+# The goal is to use the rcsb-pdb data to improve our algorithm to predict secondary structure in a more reliable way without relying on user input data (that might be missing or garbage)
+
+
+file(GLOB_RECURSE PDB100_GEN_SOURCES "${CMAKE_CURRENT_LIST_DIR}/local/secondary_structure/src/*")
+
+# I shall multi thread : workers for reading file and the main thread will be able to produce and compare results with our in-house algorithm. When all database is parsed, a report will be generated so we can investigate errors . 
+# Maybe we will provide a list of structure that we will ignore to validate our algorithms for some specific reasons.
+add_executable(secondary_structure "${PDB100_GEN_SOURCES}")
+
+target_compile_definitions(secondary_structure PRIVATE PDB100_DATABASE_DIR="${PDB100_DIRECTORY_PATH}")
+
+target_link_libraries(secondary_structure PRIVATE vtx_util)
+target_link_libraries(secondary_structure PRIVATE vtx_core)
+target_link_libraries(secondary_structure PRIVATE vtx_io)
+target_link_libraries(secondary_structure PRIVATE LibArchive::LibArchive)	

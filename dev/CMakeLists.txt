@@ -29,7 +29,6 @@ find_package(re2 CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED) # Needed for multiprocessing on pdb database test
 find_package(LibArchive REQUIRED) # Needed for pdb100 archive reading
 
-set(PDB100_DIRECTORY_PATH "C:/Users/Valen/data/pdb100") # Needed for pdb100 related projects
 
 # Util.
 include("${DIR_LIBS}/util/cmake/library.cmake")
@@ -77,3 +76,11 @@ vtx_clear_registered_copies() # Prevent data from previous package to be copied 
 # VTX.
 include("${DIR_APPS}/vtx/cmake/library.cmake")
 vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
+
+
+## Following projects will be local-dev exclusives. It either serves no purpose to have them built in the clould or it would be to resource-intensive.
+# 
+
+# PDB100
+set(PDB100_DIRECTORY_PATH "C:/Users/Valen/data/pdb100") # Needed for pdb100 related projects
+include("${CMAKE_CURRENT_LIST_DIR}/secondary_structure.cmake") # Project for secondary structure algorithm benchmark
