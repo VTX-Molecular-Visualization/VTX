@@ -1,15 +1,12 @@
 name: App VTX
 
 on:
-  push:
-#    branches: [ "master", "dev", "dev-ndy", "dev-sge", "dev-vge" ]
-#    paths: ['.github/workflows/app_vtx.yml']
   workflow_dispatch:
     inputs:
       build_type:
         description: 'Build type'
         required: true
-        default: 'Debug'
+        default: 'Release'
         type: choice
         options:
         - Debug
@@ -35,6 +32,11 @@ on:
         
 env:
   ROOT_DIR: ${{github.workspace}}
+  BUILD_TYPE: ${{ inputs.build_type }}
+  VERSION: ${{ inputs.version }}
+  TOOL_EXAMPLE: ${{ inputs.tool_example == true && 'True' || 'False' }}
+  TOOL_MDPREP: ${{ inputs.tool_mdprep == true && 'True' || 'False' }}
+  CUDA_ARCH: ${{ inputs.cuda_arch }}
 
 jobs:
   build:
@@ -77,7 +79,7 @@ jobs:
         conan export lib/util
         conan export tool/example
         conan export tool/mdprep
-        conan create app/vtx -b missing -s build_type=${{ inputs.build_type }} -s compiler.cppstd=20 -o vtx/*:version="${{ inputs.version }}" -o vtx_app/*:version="${{ inputs.version }}" -o vtx/*:tool_example=${{ inputs.tool_example == true && 'True' || 'False' }} -o vtx/*:tool_mdprep=${{ inputs.tool_mdprep == true && 'True' || 'False' }} -o vtx_renderer/*:cuda_arch="${{ inputs.cuda_arch }}" -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
+        conan create app/vtx -b missing -s build_type=$BUILD_TYPE -s compiler.cppstd=20 -o vtx/*:version=$VERSION -o vtx_app/*:version=$VERSION -o vtx/*:tool_example=$TOOL_EXAMPLE -o vtx/*:tool_mdprep=$TOOL_MDPREP -o vtx_renderer/*:cuda_arch=$CUDA_ARCH -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
 
     - name: Read package path from output.json
       id: read_package_path
