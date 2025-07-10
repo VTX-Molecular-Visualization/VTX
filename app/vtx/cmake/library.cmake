@@ -1,6 +1,28 @@
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/../src/*)
+
+# Generate .rc file.
 if(MSVC)
-	file(GLOB_RECURSE RESOURCES ${CMAKE_CURRENT_LIST_DIR}/../asset/windows_resources/*.rc)
+	if (NOT DEFINED VTX_VERSION_MAJOR)
+		set(VTX_VERSION_MAJOR 0)
+	endif()
+	if (NOT DEFINED VTX_VERSION_MINOR)
+		set(VTX_VERSION_MINOR 0)
+	endif()
+	if (NOT DEFINED VTX_VERSION_PATCH)
+		set(VTX_VERSION_PATCH 0)
+	endif()
+
+	set(VERSION_STRING "${VTX_VERSION_MAJOR}.${VTX_VERSION_MINOR}.${VTX_VERSION_PATCH}.0")
+	string(REPLACE "." "," VERSION_COMMA "${VERSION_STRING}")
+	string(TIMESTAMP YEAR "%Y")
+	set(COPYRIGHT "Copyright (C) ${YEAR}")
+	set(FILENAME "VTX.rc")
+	set(WIN_RC_SRC ${CMAKE_CURRENT_LIST_DIR}/../asset/windows_resources)
+	set(WIN_RC_DEST ${CMAKE_CURRENT_BINARY_DIR}/asset/windows_resources)
+	file(COPY ${WIN_RC_SRC}/resource.h DESTINATION ${WIN_RC_DEST})
+	configure_file(${WIN_RC_SRC}/VTX.rc.in ${WIN_RC_DEST}/VTX.rc @ONLY)	
+
+	file(GLOB_RECURSE RESOURCES ${WIN_RC_DEST}/*.rc)
 endif()
 
 add_executable(vtx ${SOURCES} ${RESOURCES})

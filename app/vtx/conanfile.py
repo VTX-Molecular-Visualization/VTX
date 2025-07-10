@@ -9,8 +9,8 @@ class VTXRecipe(ConanFile):
     package_type = "application"
     
     settings = "os", "compiler", "build_type", "arch"
-    options = {"tool_example": [True, False], "tool_mdprep": [True, False]}
-    default_options = {"tool_example": False, "tool_mdprep": True }
+    options = {"version": ["ANY"], "tool_example": [True, False], "tool_mdprep": [True, False]}
+    default_options = {"version": "0.0.0", "tool_example": False, "tool_mdprep": True }
 
     generators = "CMakeDeps"
     
@@ -32,6 +32,10 @@ class VTXRecipe(ConanFile):
         
     def generate(self):
         tc = CMakeToolchain(self)
+        versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
+        tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
+        tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor
+        tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
         tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
         tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
         tc.generate()
