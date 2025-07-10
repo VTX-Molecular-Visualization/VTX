@@ -70,14 +70,14 @@ namespace VTX::App
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 	}
 
-	void VTXApp::start( const Args & p_args )
+	void VTXApp::start()
 	{
-		VTX_INFO( "Starting application: {}", p_args.toString() );
+		VTX_INFO( "Starting application: {}", _args.toString() );
 
 		// Build the renderer (graphic api backend context ready).
 		auto & renderer = RENDERER_SYSTEM();
 
-		if ( p_args.has( ARG_NO_GRAPHICS ) )
+		if ( _args.has( ARG_NO_GRAPHICS ) )
 		{
 			VTX_WARNING( "No graphics" );
 			renderer.setDefault();
@@ -110,12 +110,12 @@ namespace VTX::App
 		// Updater.
 		UPDATER().onUpdateAvailable += []( const uint, const uint, const uint ) { UPDATER().downloadUpdate(); };
 
-		if ( not p_args.has( ARG_NO_UPDATE ) )
+		if ( not _args.has( ARG_NO_UPDATE ) )
 		{
-			UPDATER().checkForUpdate();
+			// UPDATER().checkForUpdate();
 		}
 
-		_handleArgs( p_args );
+		_handleArgs( _args );
 	}
 
 	void VTXApp::update( const float p_deltaTime, const float p_elapsedTime )
@@ -211,6 +211,8 @@ namespace VTX::App
 
 	void VTXApp::_handleArgs( const Args & args )
 	{
+		// TODO: load pdb automatically or python script.
+
 		/*
 		using FILE_TYPE_ENUM = IO::Internal::Filesystem::FILE_TYPE_ENUM;
 		for ( const auto arg : args.all() )

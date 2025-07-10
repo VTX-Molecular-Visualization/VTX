@@ -72,7 +72,7 @@ jobs:
         conan export lib/util
         conan export tool/example
         conan export tool/mdprep
-        conan create app/vtx -b missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
+        conan create app/vtx -b missing -s build_type=${{ inputs.build_type }} -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
 
     - name: Read package path from output.json
       id: read_package_path

@@ -5,12 +5,15 @@
 #include <util/types.hpp>
 #include <vector>
 
-// TODO: replace by dll loading?
-// TODO: move to conan.
-#define VTX_UI_QT
+// Tools.
 // #define VTX_TOOL_EXAMPLE
-#define VTX_TOOL_MDPREP
 
+#ifndef VTX_TOOL_MDPREP
+#define VTX_TOOL_MDPREP // Default enabled.
+#endif
+
+// Conditional includes.
+#define VTX_UI_QT
 #ifdef VTX_UI_QT
 #include <ui/qt/application.hpp>
 #else
@@ -26,6 +29,7 @@
 #endif
 
 #ifdef _WIN32
+// Force high performance GPU on Windows.
 extern "C"
 {
 	__declspec( dllexport ) uint32_t NvOptimusEnablement				  = 0x00000001;
@@ -41,10 +45,10 @@ int main( int p_argc, char * p_argv[] )
 	{
 		App::Args args( p_argc, p_argv );
 
-		bool debug = args.has( App::ARG_DEBUG );
 #ifdef _DEBUG
-		debug = true;
+		args.add( App::ARG_DEBUG );
 #endif
+		bool debug = args.has( App::ARG_DEBUG );
 
 #ifdef _WIN32
 		//  Hide console.
@@ -61,11 +65,11 @@ int main( int p_argc, char * p_argv[] )
 		if ( not args.has( App::ARG_NO_GUI ) )
 		{
 			UI::QT::Application::configure();
-			app = std::make_unique<UI::QT::Application>();
+			app = std::make_unique<UI::QT::Application>( args );
 		}
 		else
 		{
-			app = std::make_unique<App::VTXApp>();
+			app = std::make_unique<App::VTXApp>( args );
 		}
 #else
 		app = std::make_unique<App::VTXApp>();
@@ -96,7 +100,7 @@ int main( int p_argc, char * p_argv[] )
 		args.add( moleculePath.string() );
 
 		// Starting main application loop.
-		app->start( args );
+		app->start();
 
 		LOGGER::stop();
 		return EXIT_SUCCESS;

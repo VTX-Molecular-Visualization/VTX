@@ -21,7 +21,8 @@ namespace VTX::UI::QT
 
 	// Create QApplication with zero argc and nullptr argv.
 	int zero = 0;
-	Application::Application() : App::UI::BaseApplication<Widget::MainWindow>(), QApplication( zero, nullptr )
+	Application::Application( const App::Args & p_args ) :
+		App::UI::BaseApplication<Widget::MainWindow>( p_args ), QApplication( zero, nullptr )
 
 	{
 		using namespace Resources;
@@ -30,10 +31,18 @@ namespace VTX::UI::QT
 		//_qSplashScreen->show();
 		//_qSplashScreen->showMessage( "Loading..." );
 
+		const std::string version = std::to_string( VERSION_MAJOR ) + "." + std::to_string( VERSION_MINOR ) + "."
+									+ std::to_string( VERSION_REVISION );
+		std::string displayName = APPLICATION_DISPLAY_NAME.data() + std::string( " - v" ) + version;
+		if ( p_args.has( App::ARG_DEBUG ) )
+		{
+			displayName += " (Debug)";
+		}
+
 		setWindowIcon( QIcon( SPRITE_LOGO.data() ) );
-		setApplicationDisplayName( QString::fromStdString( APPLICATION_DISPLAY_NAME.data() ) );
+		setApplicationDisplayName( QString::fromStdString( displayName ) );
 		setApplicationName( QString::fromStdString( APPLICATION_NAME.data() ) );
-		setApplicationVersion( QString::fromStdString( APPLICATION_VERSION.data() ) );
+		setApplicationVersion( QString::fromStdString( version ) );
 		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME.data() ) );
 		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN.data() ) );
 		// setQuitOnLastWindowClosed( false );

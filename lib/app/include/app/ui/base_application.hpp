@@ -13,10 +13,10 @@ namespace VTX::App::UI
 	class BaseApplication : public App::VTXApp
 	{
 	  public:
-		BaseApplication() : VTXApp() {}
+		BaseApplication( const App::Args & p_args ) : VTXApp( p_args ) {}
 		virtual ~BaseApplication() { _mainWindow.reset(); }
 
-		void start( const App::Args & p_args ) override
+		void start() override
 		{
 			// Create all the UI.
 			_mainWindow = std::make_unique<MW>();
@@ -31,7 +31,7 @@ namespace VTX::App::UI
 			_mainWindow->prepare();
 
 			// Start the main app.
-			VTXApp::start( p_args );
+			VTXApp::start();
 
 			// Start the UI.
 			_start();

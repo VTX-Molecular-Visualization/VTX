@@ -29,6 +29,7 @@ namespace VTX::App
 	class VTXApp
 	{
 	  public:
+		VTXApp( const Args & p_args ) { _args = p_args; }
 		virtual ~VTXApp() = default;
 
 		/**
@@ -40,7 +41,7 @@ namespace VTX::App
 		 * @brief Start the application.
 		 * @param the command line arguments.
 		 */
-		virtual void start( const Args & );
+		virtual void start();
 
 		/**
 		 * @brief Main loop update function.
@@ -56,6 +57,7 @@ namespace VTX::App
 
 		inline static void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
 
+		inline static const Args & getArgs() { return _args; }
 		// TODO: get entity from ecs directly?
 		inline static Application::Scene & getScene() { return *_scene; }
 
@@ -84,6 +86,7 @@ namespace VTX::App
 		inline static std::vector<Tool::BaseTool *> _tools;
 
 	  private:
+		inline static Args				   _args;
 		inline static Application::Scene * _scene;
 
 		static void _handleArgs( const Args & p_args );
