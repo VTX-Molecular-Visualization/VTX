@@ -2,11 +2,22 @@ name: Lib Util
 
 on:
   push:
-    branches: [ "master", "dev", "dev-ndy", "dev-sge", "dev-vge" ]
+    branches: [ "master", "dev", "dev-sge", "dev-vge" ]
     paths: ['lib/util/**', '.github/workflows/lib_util.yml']
+  workflow_dispatch:
+      inputs:
+        build_type:
+          description: 'Build type'
+          required: true
+          default: 'Release'
+          type: choice
+          options:
+          - Debug
+          - Release
 
 env:
   LIB_DIR: ${{github.workspace}}/lib/
+  BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
 
 jobs:
   build:
@@ -39,7 +50,7 @@ jobs:
            
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
-      run: conan create util -b missing -s compiler.cppstd=20 -o vtx_util/*:test=True 
+      run: conan create util -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=20 -o vtx_util/*:test=True 
                
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}
