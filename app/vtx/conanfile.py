@@ -40,7 +40,7 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
         tc.generate()
 
-        copy(self, "*.dll", self.dependencies["vtx_ui_qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
+        copy(self, "*.dll", self.dependencies["vtx_ui_qt"].package_folder, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
 
     def build(self):
         cmake = CMake(self)
