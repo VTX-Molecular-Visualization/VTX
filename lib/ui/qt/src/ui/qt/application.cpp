@@ -26,13 +26,13 @@ namespace VTX::UI::QT
 
 	{
 		using namespace Resources;
-		using namespace VTX::App::Info;
+		using namespace VTX::App;
 		//_qSplashScreen = new QSplashScreen( QPixmap( SPRITE_SPLASH ) );
 		//_qSplashScreen->show();
 		//_qSplashScreen->showMessage( "Loading..." );
 
 		const std::string version = std::to_string( VERSION_MAJOR ) + "." + std::to_string( VERSION_MINOR ) + "."
-									+ std::to_string( VERSION_REVISION );
+									+ std::to_string( VERSION_PATCH );
 		std::string displayName = APPLICATION_DISPLAY_NAME.data() + std::string( " - v" ) + version;
 		if ( p_args.has( App::ARG_DEBUG ) )
 		{

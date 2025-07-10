@@ -26,11 +26,17 @@ if (CMAKE_CUDA_COMPILER)
 	enable_language(CUDA)
 	find_package(CUDAToolkit)
 	target_link_libraries(vtx_renderer PRIVATE CUDA::toolkit)
+
+	# Check if the CUDA architecture is defined in the Conan options, or use a default value.
+	if (NOT DEFINED VTX_CUDA_ARCH)
+		set(VTX_CUDA_ARCH "native")
+	endif()
+
 	set_target_properties(vtx_renderer PROPERTIES
 		#https://en.wikipedia.org/wiki/CUDA
 		#CUDA_ARCHITECTURES "50;52;60;61;70;75;80;86;89;90"
 		#CUDA_ARCHITECTURES "120-real" 
-		CUDA_ARCHITECTURES "native"
+		CUDA_ARCHITECTURES ${VTX_CUDA_ARCH}
 		CUDA_SEPARABLE_COMPILATION ON
 		CUDA_RESOLVE_DEVICE_SYMBOLS ON
 		CUDA_STANDARD 20

@@ -9,7 +9,9 @@ class VTXRecipe(ConanFile):
     package_type = "application"
     
     settings = "os", "compiler", "build_type", "arch"
-    
+    options = {"tool_example": [True, False], "tool_mdprep": [True, False]}
+    default_options = {"tool_example": False, "tool_mdprep": True }
+
     generators = "CMakeDeps"
     
     exports_sources = "CMakeLists.txt", "include/*", "src/*", "asset/*", "data/*", "cmake/*", "internal_data/*", "libraries/*", "CHANGELOG.md", "README.md", "license.txt"
@@ -30,6 +32,8 @@ class VTXRecipe(ConanFile):
         
     def generate(self):
         tc = CMakeToolchain(self)
+        tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
+        tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
         tc.generate()
 
         copy(self, "*.dll", self.dependencies["vtx_ui_qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))

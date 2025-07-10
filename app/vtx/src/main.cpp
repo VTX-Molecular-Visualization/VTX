@@ -5,26 +5,19 @@
 #include <util/types.hpp>
 #include <vector>
 
-// Tools.
-// #define VTX_TOOL_EXAMPLE
-
-#ifndef VTX_TOOL_MDPREP
-#define VTX_TOOL_MDPREP // Default enabled.
-#endif
-
 // Conditional includes.
-#define VTX_UI_QT
-#ifdef VTX_UI_QT
+#define VTX_UI_QT 1
+#if VTX_UI_QT
 #include <ui/qt/application.hpp>
 #else
 #include <app/vtx_app.hpp>
 #endif
 
-#ifdef VTX_TOOL_EXAMPLE
+#if VTX_TOOL_EXAMPLE
 #include <tool/example/example_tool.hpp>
 #endif
 
-#ifdef VTX_TOOL_MDPREP
+#if VTX_TOOL_MDPREP
 #include <tool/mdprep/mdprep.hpp>
 #endif
 
@@ -61,7 +54,7 @@ int main( int p_argc, char * p_argv[] )
 		LOGGER::init( VTX::App::Filesystem::getLogsDir(), debug );
 
 		std::unique_ptr<App::VTXApp> app;
-#ifdef VTX_UI_QT
+#if VTX_UI_QT
 		if ( not args.has( App::ARG_NO_GUI ) )
 		{
 			UI::QT::Application::configure();
@@ -79,12 +72,12 @@ int main( int p_argc, char * p_argv[] )
 		assert( app != nullptr );
 
 // Add tools.
-#ifdef VTX_TOOL_EXAMPLE
+#if VTX_TOOL_EXAMPLE
 		auto exampleTool = std::make_unique<Tool::Example::ExampleTool>();
 		app->addTool( exampleTool.get() );
 #endif
 // Add tools.
-#ifdef VTX_TOOL_MDPREP
+#if VTX_TOOL_MDPREP
 		auto mdprepTool = std::make_unique<Tool::Mdprep::MdPrep>();
 		app->addTool( mdprepTool.get() );
 #endif

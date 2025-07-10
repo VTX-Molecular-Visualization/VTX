@@ -34,5 +34,16 @@ target_link_libraries(vtx PRIVATE Qt6::Gui)
 target_link_libraries(vtx PRIVATE Qt6::Widgets)
 target_link_libraries(vtx PRIVATE Qt6::OpenGLWidgets)
 
+# Declare preprocessor definitions.
+if (NOT DEFINED VTX_TOOL_EXAMPLE)
+	set(VTX_TOOL_EXAMPLE 0)
+endif()
+if (NOT DEFINED VTX_TOOL_MDPREP)
+	set(VTX_TOOL_MDPREP 1)
+endif()
+
+target_compile_definitions(vtx PRIVATE VTX_TOOL_EXAMPLE=${VTX_TOOL_EXAMPLE})
+target_compile_definitions(vtx PRIVATE VTX_TOOL_MDPREP=${VTX_TOOL_MDPREP})
+
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "./data")
 vtx_copy_registered_data(vtx) # allow declared files to be copied on build
