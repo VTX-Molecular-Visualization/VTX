@@ -3,14 +3,17 @@
 
 
 file(GLOB_RECURSE PDB100_GEN_SOURCES "${CMAKE_CURRENT_LIST_DIR}/local/secondary_structure/src/*")
+file(GLOB_RECURSE PDB100_GEN_HEADERS "${CMAKE_CURRENT_LIST_DIR}/local/secondary_structure/include/*")
 
 # I shall multi thread : workers for reading file and the main thread will be able to produce and compare results with our in-house algorithm. When all database is parsed, a report will be generated so we can investigate errors . 
 # Maybe we will provide a list of structure that we will ignore to validate our algorithms for some specific reasons.
 add_executable(secondary_structure "${PDB100_GEN_SOURCES}")
+target_include_directories(secondary_structure PUBLIC "${CMAKE_CURRENT_LIST_DIR}/local/secondary_structure/include")
 
 target_compile_definitions(secondary_structure PRIVATE PDB100_DATABASE_DIR="${PDB100_DIRECTORY_PATH}")
 
 target_link_libraries(secondary_structure PRIVATE vtx_util)
 target_link_libraries(secondary_structure PRIVATE vtx_core)
 target_link_libraries(secondary_structure PRIVATE vtx_io)
+target_link_libraries(secondary_structure PRIVATE fmt::fmt)
 target_link_libraries(secondary_structure PRIVATE LibArchive::LibArchive)	
