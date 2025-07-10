@@ -23,11 +23,11 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
 include(InstallRequiredSystemLibraries)
-  
+
 install(TARGETS vtx DESTINATION .)
 # Data from other libs.
-install(DIRECTORY ${CMAKE_BINARY_DIR}/shaders DESTINATION .)
-install(DIRECTORY ${CMAKE_BINARY_DIR}/python_script DESTINATION .)
+install(DIRECTORY $<TARGET_FILE_DIR:vtx>/shaders DESTINATION .)
+install(DIRECTORY $<TARGET_FILE_DIR:vtx>/python_script DESTINATION .)
 # Data from VTX.
 install(DIRECTORY libraries DESTINATION .)
 install(DIRECTORY data DESTINATION .)
@@ -38,11 +38,11 @@ install(FILES license.txt DESTINATION .)
 # Runtime DLLs.
 install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
 # DLLS from build dir.
-file(GLOB DLLS ${CMAKE_BINARY_DIR}/*.dll)
+file(GLOB DLLS $<TARGET_FILE_DIR:vtx>/*.dll)
 install(FILES ${DLLS} DESTINATION .)
-install(DIRECTORY ${CMAKE_BINARY_DIR}/platforms DESTINATION .)
-install(DIRECTORY ${CMAKE_BINARY_DIR}/imageformats DESTINATION .)
-install(DIRECTORY ${CMAKE_BINARY_DIR}/tls DESTINATION .)
+install(DIRECTORY $<TARGET_FILE_DIR:vtx>/platforms DESTINATION .)
+install(DIRECTORY $<TARGET_FILE_DIR:vtx>/imageformats DESTINATION .)
+install(DIRECTORY $<TARGET_FILE_DIR:vtx>/tls DESTINATION .)
 
 # Infinite loop.
 #install(DIRECTORY ${CMAKE_BINARY_DIR}/

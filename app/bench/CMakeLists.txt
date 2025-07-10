@@ -19,5 +19,5 @@ set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
 include(InstallRequiredSystemLibraries)
 
 install(TARGETS vtx_renderer_bench DESTINATION .)
-install(DIRECTORY ${CMAKE_BINARY_DIR}/shaders DESTINATION .)
+install(DIRECTORY $<TARGET_FILE_DIR:vtx_renderer_bench>/shaders DESTINATION .)
 install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
