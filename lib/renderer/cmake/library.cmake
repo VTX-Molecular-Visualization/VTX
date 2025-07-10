@@ -1,9 +1,9 @@
-include(CheckLanguage)
-include("${CMAKE_CURRENT_LIST_DIR}/copy_shaders.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/vtx_link_cuda.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/vtx_renderer_copy_files.cmake")
 
 # Lib.
 add_library(vtx_renderer)
-configure_target(vtx_renderer)
+vtx_configure_target(vtx_renderer)
 
 file(GLOB_RECURSE HEADERS_PUBLIC "${CMAKE_CURRENT_LIST_DIR}/../include/public/*")
 file(GLOB_RECURSE HEADERS_PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include/private/*")
@@ -21,6 +21,7 @@ target_sources(vtx_renderer
 )
 
 # Cuda.
+include(CheckLanguage)
 check_language(CUDA)
 if (CMAKE_CUDA_COMPILER)
 	enable_language(CUDA)
@@ -62,7 +63,7 @@ endif()
 # Tests.
 file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_renderer_test ${TESTS})
-configure_target(vtx_renderer_test)
+vtx_configure_target(vtx_renderer_test)
 
 if (NOT DEFINED _VTX_RENDERER_CONAN)
 	target_link_libraries(vtx_renderer PRIVATE vtx_util)

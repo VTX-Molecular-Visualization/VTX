@@ -10,3 +10,4 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 install(TARGETS vtx_renderer FILE_SET public_headers DESTINATION include)
 install(DIRECTORY shaders DESTINATION .)
+install(DIRECTORY cmake DESTINATION .)

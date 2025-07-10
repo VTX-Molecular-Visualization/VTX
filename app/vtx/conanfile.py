@@ -41,7 +41,6 @@ class VTXRecipe(ConanFile):
         tc.generate()
 
         copy(self, "*.dll", self.dependencies["vtx_ui_qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
-        #copy(self, "*", os.path.join(self.dependencies["vtx_tool"].cpp_info.bindir, "data"), os.path.join(self.build_folder, "data"))
 
     def build(self):
         cmake = CMake(self)

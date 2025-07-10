@@ -28,8 +28,6 @@ class VTXRendererRecipe(ConanFile):
         tc = CMakeToolchain(self)
         tc.cache_variables["VTX_CUDA_ARCH"] = self.options.cuda_arch
         tc.generate()
-
-        copy(self, "*.cmake", self.source_folder, self.build_folder)
         
     def layout(self):
         cmake_layout(self)
@@ -45,8 +43,7 @@ class VTXRendererRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
-        copy(self, "*.cmake", self.build_folder, self.package_folder)
 
     def package_info(self):    
         self.cpp_info.libs = ["vtx_renderer"]      
-        self.cpp_info.set_property("cmake_build_modules", ["cmake/copy_shaders.cmake"])
+        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_renderer_copy_files.cmake", "cmake/vtx_link_cuda.cmake"])

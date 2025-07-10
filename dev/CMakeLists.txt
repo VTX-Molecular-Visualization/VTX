@@ -2,9 +2,9 @@ set(DIR_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 set(DIR_APPS ${CMAKE_CURRENT_SOURCE_DIR}/../app)
 set(DIR_TOOLS ${CMAKE_CURRENT_SOURCE_DIR}/../tool)
 
-include("${DIR_LIBS}/util/cmake/configure_target.cmake")
-include("${DIR_LIBS}/util/cmake/copy_registration.cmake")
-include("${DIR_LIBS}/util/cmake/link_cuda.cmake")
+include("${DIR_LIBS}/util/cmake/vtx_configure_target.cmake")
+include("${DIR_LIBS}/util/cmake/vtx_copy_registration.cmake")
+include("${DIR_LIBS}/renderer/cmake/vtx_link_cuda.cmake")
 
 set(PYBIND11_FINDPYTHON ON)
 

@@ -34,9 +34,6 @@ class VTXUtilRecipe(ConanFile):
         cmake_layout(self)
         # self.cpp.source and cpp.build are only for editable.
 
-    def generate(self):
-        copy(self, "*.cmake", self.source_folder, self.build_folder)
-
     def build(self):
         cmake = CMake(self)
         cmake.configure()
@@ -47,15 +44,9 @@ class VTXUtilRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)        
         cmake.install()
-        copy(self, "*.cmake", self.build_folder, self.package_folder)
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_util"]
-        cmake_files = [
-                        os.path.join("cmake", "configure_target.cmake"),
-                        os.path.join("cmake", "copy_registration.cmake"),
-                        os.path.join("cmake", "link_cuda.cmake")
-                      ]
-        self.cpp_info.set_property("cmake_build_modules", cmake_files)
+        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_configure_target.cmake", "cmake/vtx_copy_registration.cmake"])
         # Same as self.cpp.package.includedirs in layout()
         #self.cpp_info.includedirs = []

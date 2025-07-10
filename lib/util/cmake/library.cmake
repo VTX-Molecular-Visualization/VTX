@@ -1,9 +1,9 @@
-include("${CMAKE_CURRENT_LIST_DIR}/configure_target.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/copy_registration.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/vtx_configure_target.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/vtx_copy_registration.cmake")
 
 # Lib.
 add_library(vtx_util)
-configure_target(vtx_util)
+vtx_configure_target(vtx_util)
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
@@ -14,7 +14,7 @@ target_sources(vtx_util
 # Tests.
 file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_util_test ${TESTS})
-configure_target(vtx_util_test)
+vtx_configure_target(vtx_util_test)
 
 target_link_libraries(vtx_util PUBLIC glm::glm)
 target_link_libraries(vtx_util PUBLIC spdlog::spdlog)

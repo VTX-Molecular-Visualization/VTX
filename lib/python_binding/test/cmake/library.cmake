@@ -1,7 +1,7 @@
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 
 add_executable(vtx_python_binding_test ${SOURCES})
-configure_target(vtx_python_binding_test)
+vtx_configure_target(vtx_python_binding_test)
 
 if (NOT DEFINED _VTX_PYTHON_BINDING_TEST_CONAN)
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_util)

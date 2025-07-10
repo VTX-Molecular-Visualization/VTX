@@ -17,3 +17,9 @@ set(_VTX_UI_QT_CONAN " ") # So the right target name can be linked
 include("./cmake/library.cmake")
 
 install(TARGETS vtx_ui_qt FILE_SET public_headers DESTINATION include)
+install(DIRECTORY cmake DESTINATION .)
+file(GLOB DLLS ${CMAKE_BINARY_DIR}/*.dll)
+install(FILES ${DLLS} DESTINATION .)
+install(DIRECTORY ${CMAKE_BINARY_DIR}/platforms DESTINATION .)
+install(DIRECTORY ${CMAKE_BINARY_DIR}/imageformats DESTINATION .)
+install(DIRECTORY ${CMAKE_BINARY_DIR}/tls DESTINATION .)

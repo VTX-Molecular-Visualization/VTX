@@ -1,4 +1,4 @@
-function(link_cuda p_target)
+function(vtx_link_cuda p_target)
 	include(CheckLanguage)
 	check_language(CUDA)
 	if (CMAKE_CUDA_COMPILER)

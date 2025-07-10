@@ -7,8 +7,8 @@ file(GLOB_RECURSE VENDORS_STATIC "${_VTX_RENDERER_BENCH_VENDOR_DIR}/imnodes/*")
 file(GLOB_RECURSE VENDORS_DYNAMIC ./vendor/*)
 
 add_executable(vtx_renderer_bench ${SOURCES} ${VENDORS_STATIC} ${VENDORS_DYNAMIC})
-configure_target(vtx_renderer_bench)
-link_cuda(vtx_renderer_bench)
+vtx_configure_target(vtx_renderer_bench)
+vtx_link_cuda(vtx_renderer_bench)
 
 if(NOT DEFINED _VTX_RENDERER_BENCH_CONAN)
 	target_include_directories(vtx_renderer_bench PRIVATE "${_VTX_RENDERER_BENCH_VENDOR_DIR}" ./vendor)

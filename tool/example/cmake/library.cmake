@@ -1,7 +1,6 @@
 # Create the library.
-#configure_qt()
 add_library(vtx_tool_example)
-configure_target(vtx_tool_example)
+vtx_configure_target(vtx_tool_example)
 
 # Get files.
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
@@ -13,13 +12,13 @@ target_sources(vtx_tool_example
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
 # Add assets.
-add_resources(vtx_tool_example ${CMAKE_CURRENT_LIST_DIR}/../asset vtx_qt_resources_tool_example)
+vtx_qt_add_resources(vtx_tool_example ${CMAKE_CURRENT_LIST_DIR}/../asset vtx_qt_resources_tool_example)
 
 # Test exec.
 file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_tool_example_test ${SOURCES_TEST})
-configure_target(vtx_tool_example_test)
-link_cuda(vtx_tool_example_test)
+vtx_configure_target(vtx_tool_example_test)
+vtx_link_cuda(vtx_tool_example_test)
 
 # Link internal dependencies.
 if (NOT DEFINED _VTX_TOOL_EXAMPLE_CONAN)

@@ -1,4 +1,4 @@
-function(configure_target p_target)
+function(vtx_configure_target p_target)
 	if(CMAKE_COMPILER_IS_GNUCC)
 		target_compile_options(${p_target} PRIVATE -Wpedantic -Wall)
 	elseif(MSVC)
