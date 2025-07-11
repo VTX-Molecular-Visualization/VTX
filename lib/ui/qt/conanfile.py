@@ -131,10 +131,12 @@ class VTXUiQtRecipe(ConanFile):
 
         binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll" ]
         for file in binFiles:
+            self.output.highlight(f"Copying {file} from Qt bin directory to {destDir}")
             copy(self, file, qtBinDir, destDir)
 
         pluginsFolers = [ "imageformats", "platforms", "sytles", "tls" ]
         for folder in pluginsFolers:
+            self.output.highlight(f"Copying *.dll from Qt {folder} directory to {destDir}/{folder}")
             copy(self, "*.dll", os.path.join(qtPluginsDir, folder), os.path.join(destDir, folder))
 
     def build(self):
