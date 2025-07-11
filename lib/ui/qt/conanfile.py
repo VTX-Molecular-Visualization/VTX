@@ -148,6 +148,7 @@ class VTXUiQtRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_ui_qt"]
+        self.cpp_info.bindirs = [""]
         self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_qt_configure.cmake", "cmake/vtx_qt_add_resources.cmake"])
         if self.settings.os == "Windows":
             self.cpp_info.system_libs.append('d3d12')
