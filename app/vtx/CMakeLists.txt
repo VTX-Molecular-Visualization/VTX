@@ -38,15 +38,18 @@ install(FILES license.txt DESTINATION .)
 # Runtime DLLs.
 install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
 # DLLS from build dir.
-install(FILES
-    $<TARGET_FILE_DIR:vtx>/Qt6Core$<$<CONFIG:Debug>:d>.dll
-    $<TARGET_FILE_DIR:vtx>/Qt6Gui$<$<CONFIG:Debug>:d>.dll
-    $<TARGET_FILE_DIR:vtx>/Qt6Widgets$<$<CONFIG:Debug>:d>.dll
-    DESTINATION .
-)
-install(DIRECTORY $<TARGET_FILE_DIR:vtx>/platforms DESTINATION .)
-install(DIRECTORY $<TARGET_FILE_DIR:vtx>/imageformats DESTINATION .)
-install(DIRECTORY $<TARGET_FILE_DIR:vtx>/tls DESTINATION .)
+if(WIN32)
+	install(FILES
+		$<TARGET_FILE_DIR:vtx>/Qt6Core$<$<CONFIG:Debug>:d>.dll
+		$<TARGET_FILE_DIR:vtx>/Qt6Gui$<$<CONFIG:Debug>:d>.dll
+		$<TARGET_FILE_DIR:vtx>/Qt6Widgets$<$<CONFIG:Debug>:d>.dll
+		DESTINATION .
+	)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/platforms DESTINATION .)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/imageformats DESTINATION .)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/tls DESTINATION .)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/styles DESTINATION .)
+endif()
 
 # Infinite loop.
 #install(DIRECTORY ${CMAKE_BINARY_DIR}/
