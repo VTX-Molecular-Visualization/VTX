@@ -37,12 +37,6 @@ install(FILES CHANGELOG.md DESTINATION .)
 install(FILES license.txt DESTINATION .)
 # Runtime DLLs.
 install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
-# DLLS from build dir.
-file(GLOB DLLS $<TARGET_FILE_DIR:vtx>/*.dll)
-install(FILES ${DLLS} DESTINATION .)
-install(DIRECTORY $<TARGET_FILE_DIR:vtx>/platforms DESTINATION .)
-install(DIRECTORY $<TARGET_FILE_DIR:vtx>/imageformats DESTINATION .)
-install(DIRECTORY $<TARGET_FILE_DIR:vtx>/tls DESTINATION .)
 
 # Infinite loop.
 #install(DIRECTORY ${CMAKE_BINARY_DIR}/
