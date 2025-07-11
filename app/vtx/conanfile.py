@@ -50,7 +50,6 @@ class VTXRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
-        copy(self, "*.dll", self.build_folder, self.package_folder)
 
     def package_info(self):
         self.cpp_info.libs = ["vtx"]
