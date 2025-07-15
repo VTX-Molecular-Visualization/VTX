@@ -28,7 +28,7 @@ namespace VTX::UI::QT::DockWidget
 
 		connect(
 			_checkBoxVSync,
-			&QCheckBox::stateChanged,
+			&QCheckBox::checkStateChanged,
 			[ this ]( const int p_state )
 			{
 				// TODO: use action? available in script?

@@ -131,6 +131,10 @@ namespace VTX::Renderer
 		drawRangeCylinders.offsets.clear();
 		drawRangeRibbons.counts.clear();
 		drawRangeRibbons.offsets.clear();
+
+#ifdef WITH_CUDA
+		_sesData.reset();
+#endif
 	}
 
 	void Renderer::render( const float p_deltaTime, const float p_elapsedTime )

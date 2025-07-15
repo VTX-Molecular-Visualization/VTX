@@ -180,11 +180,8 @@ namespace VTX::UI::QT::Widget
 	{
 		VTX_TRACE( "Qt main window close event" );
 
-		if ( not _closing )
-		{
-			App::ACTION_SYSTEM().execute<App::Action::Application::Quit>();
-			p_event->ignore();
-		}
+		App::ACTION_SYSTEM().execute<App::Action::Application::Quit>();
+		p_event->ignore();
 	}
 
 	void MainWindow::dragEnterEvent( QDragEnterEvent * p_event ) { p_event->acceptProposedAction(); }

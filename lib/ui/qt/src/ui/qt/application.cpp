@@ -84,7 +84,9 @@ namespace VTX::UI::QT
 		onStop += [ this ]
 		{
 			VTX_TRACE( "Qt stop callback" );
-			_mainWindow->setClosing( true );
+
+			SETTINGS.save();
+			_mainWindow.reset();
 			QApplication::quit();
 		};
 
@@ -98,7 +100,6 @@ namespace VTX::UI::QT
 
 				try
 				{
-					SETTINGS.save();
 				}
 				catch ( const std::exception & e )
 				{

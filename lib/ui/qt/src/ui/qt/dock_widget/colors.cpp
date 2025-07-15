@@ -38,7 +38,7 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( _checkBoxHide );
 		connect(
 			_checkBoxHide,
-			&QCheckBox::stateChanged,
+			&QCheckBox::checkStateChanged,
 			[ this ]( const int p_state )
 			{
 				using namespace VTX::Core::ChemDB;

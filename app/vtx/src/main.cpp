@@ -47,7 +47,7 @@ int main( int p_argc, char * p_argv[] )
 		//  Hide console.
 		if ( not debug )
 		{
-			FreeConsole();
+			// FreeConsole();
 		}
 #endif
 

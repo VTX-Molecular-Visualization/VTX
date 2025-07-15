@@ -190,6 +190,7 @@ namespace VTX::App
 		VTX_INFO( "Stopping application" );
 
 		SCENE().reset();
+		RENDERER_SYSTEM().clean();
 
 		//// Prevent events throw for nothing when quitting app
 		// Old::Manager::EventManager::get().freezeEvent( true );

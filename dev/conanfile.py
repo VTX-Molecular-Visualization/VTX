@@ -25,7 +25,7 @@ class VTXRecipe(ConanFile):
         self.requires("stb/cci.20240531")
         self.requires("entt/3.14.0")
         self.requires("pybind11/2.13.6")
-        self.requires("qt/6.6.3")
+        self.requires("qt/6.8.3")
         self.requires("gromacs/2024.0")
         self.requires("re2/20240702")
         self.requires("libarchive/3.7.9")
@@ -138,7 +138,7 @@ class VTXRecipe(ConanFile):
         for file in binFiles:
             copy(self, file, qtBinDir, destDir)
 
-        pluginsFolers = [ "imageformats", "platforms", "sytles", "tls" ]
+        pluginsFolers = [ "imageformats", "platforms", "styles", "tls" ]
         for folder in pluginsFolers:
             copy(self, "*.dll", os.path.join(qtPluginsDir, folder), os.path.join(destDir, folder))
         

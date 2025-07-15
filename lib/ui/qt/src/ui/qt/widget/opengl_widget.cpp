@@ -51,7 +51,11 @@ namespace VTX::UI::QT::Widget
 		APP::onPostRender += [ this ]( const float ) { render(); };
 	}
 
-	OpenGLWidget::~OpenGLWidget() { _context->doneCurrent(); }
+	OpenGLWidget::~OpenGLWidget()
+	{
+		_context->doneCurrent();
+		_container->removeEventFilter( this );
+	}
 
 	void OpenGLWidget::render()
 	{
@@ -69,10 +73,9 @@ namespace VTX::UI::QT::Widget
 		_window->resize( p_event->size() );
 		_container->resize( p_event->size() );
 
-		QSize scaledSize  = p_event->size() * devicePixelRatioF();
+		QSize scaledSize = p_event->size() * devicePixelRatioF();
 
-		App::ACTION_SYSTEM().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height()
-		);
+		App::ACTION_SYSTEM().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
 	}
 
 	void OpenGLWidget::setVSync( const bool p_vsync )
