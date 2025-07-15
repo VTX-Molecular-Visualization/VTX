@@ -51,16 +51,33 @@ namespace pdb100
 		{
 			return line.starts_with( "_struct_conf" );
 		}
+
+		bool notEmpty( const std::ranges::subrange<std::string_view::iterator> & it ) { return it.size() != 0; }
+		std::string_view toStringView( const std::ranges::subrange<std::string_view::iterator> & it )
+		{
+			return std::string_view( it.data(), it.size() );
+		}
+
+		void setValue( const std::string_view & in, uint32_t & value )
+		{
+			value = std::strtoul( in.data(), nullptr, 10 );
+		}
+
+		template<size_t SIZE>
+		void setValue( const std::string_view & in, char ( &value )[ SIZE ] )
+		{
+			strcpy_s( value, SIZE, in.data() );
+		}
 		template<typename T>
 		void getValue( const std::string_view & line, const uint32_t & idx, T & value )
 		{
-
-			/*
-			const auto value
-				= line | rviews::split( ' ' )
-				  | rviews::filter( []( const auto && element ) { return std::ranges::distance( element ) == 0; } );
-			line.find( ' ' );
-			*/
+			auto splitStr = line | std::views::split( ' ' ) | std::views::filter( &notEmpty )
+							| std::views::transform( &toStringView );
+			const size_t size = std::ranges::distance( splitStr );
+			if ( size <= idx )
+				throw std::runtime_error( fmt::format( "Couldn't get the {}th element of line <{}>", idx, line ) );
+			const std::string_view valueStr = *std::ranges::next( splitStr.begin(), idx );
+			setValue( valueStr, value );
 		}
 
 	} // namespace
