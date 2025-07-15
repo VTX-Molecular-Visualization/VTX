@@ -1,7 +1,10 @@
 #include <cstring>
 #include <fstream>
+#include <ranges>
 #include <string_view>
 #include <vtx/secondary_structure/parse.hpp>
+
+namespace rviews = std::ranges::views;
 
 namespace pdb100
 {
@@ -51,7 +54,13 @@ namespace pdb100
 		template<typename T>
 		void getValue( const std::string_view & line, const uint32_t & idx, T & value )
 		{
-			line.find( ' ' )
+
+			/*
+			const auto value
+				= line | rviews::split( ' ' )
+				  | rviews::filter( []( const auto && element ) { return std::ranges::distance( element ) == 0; } );
+			line.find( ' ' );
+			*/
 		}
 
 	} // namespace
