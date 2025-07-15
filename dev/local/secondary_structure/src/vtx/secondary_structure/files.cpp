@@ -18,6 +18,9 @@ namespace pdb100
 	{
 		for ( auto & it_fsItem : fs::directory_iterator( dir ) )
 		{
+			if ( contextData.size() > 100 )
+				break;
+
 			if ( fs::is_directory( it_fsItem ) )
 				walkDir( contextData, it_fsItem.path() );
 			if ( fs::is_regular_file( it_fsItem ) )

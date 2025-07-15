@@ -66,7 +66,7 @@ namespace pdb100
 		template<size_t SIZE>
 		void setValue( const std::string_view & in, char ( &value )[ SIZE ] )
 		{
-			strcpy_s( value, SIZE, in.data() );
+			memcpy_s( value, SIZE, in.data(), in.size() );
 		}
 		template<typename T>
 		void getValue( const std::string_view & line, const uint32_t & idx, T & value )
@@ -81,7 +81,8 @@ namespace pdb100
 		}
 
 	} // namespace
-	void parse( const fs::path & p_systemPath, std::vector<Strand> & p_collection )
+	template<typename SS>
+	void _parse( const fs::path & p_systemPath, std::vector<SS> & p_collection )
 	{
 		std::ifstream inFile { p_systemPath };
 		char		  lineBuf[ 1024 ];
@@ -112,14 +113,14 @@ namespace pdb100
 
 			if ( context.inLoop and context.mustCheckLoopType )
 			{
-				context.inRightLoop		   = rightTablePrefix<Strand>( lineView );
+				context.inRightLoop		   = rightTablePrefix<SS>( lineView );
 				context.mustCheckLoopType  = false;
 				context.parsingRightColumn = true;
 			}
 			if ( not context.inRightLoop )
 				continue;
 
-			if ( context.parsingRightColumn and not rightTablePrefix<Strand>( lineView ) )
+			if ( context.parsingRightColumn and not rightTablePrefix<SS>( lineView ) )
 			{
 				context.parsingRightColumn = false;
 				context.parsingRightData   = true;
@@ -134,7 +135,7 @@ namespace pdb100
 				getValue( lineView, context.colnums.endResidueChain, end.chain_name );
 				getValue( lineView, context.colnums.endResidueId, end.num );
 				getValue( lineView, context.colnums.endResidueName, end.res_3letterCode );
-				p_collection.emplace_back( Strand { .ss = SecondaryStruct { std::move( begin ), std::move( end ) } } );
+				p_collection.emplace_back( SS { .ss = SecondaryStruct { std::move( begin ), std::move( end ) } } );
 			}
 			if ( context.parsingRightColumn )
 			{
@@ -157,6 +158,7 @@ namespace pdb100
 			}
 		}
 	}
-	void parse( const fs::path & p_systemPath, std::vector<Helix> & p_helixes ) {}
+	void parse( const fs::path & p_systemPath, std::vector<Helix> & p_ss ) { _parse( p_systemPath, p_ss ); }
+	void parse( const fs::path & p_systemPath, std::vector<Strand> & p_ss ) { _parse( p_systemPath, p_ss ); }
 
 } // namespace pdb100

@@ -1,4 +1,5 @@
 #include <core/chemdb/secondary_structure.hpp>
+#include <iostream>
 #include <thread>
 //
 #include <fmt/format.h>
@@ -19,6 +20,15 @@ namespace pdb100
 			fs::remove( decompressedFile );
 		decompressFile( p_systemPath, decompressedFile );
 
+		parse( decompressedFile, p_system.strands );
+		parse( decompressedFile, p_system.helixes );
+
+		if ( p_system.strands.empty() and p_system.helixes.empty() )
+		{
+			std::cout << "Not secondary struct for <" << std::string_view(p_system.code, sizeof(p_system.code)) << ">\n";
+			return;
+		}
+
 		VTX::IO::Reader::System reader;
 
 		reader.readFile( decompressedFile, p_system.system );
@@ -26,30 +36,31 @@ namespace pdb100
 		for ( auto & resSsType : p_system.system.residueSecondaryStructureTypes )
 		{
 			if ( resSsType != VTX::Core::ChemDB::SecondaryStructure::TYPE::UNKNOWN )
-				throw std::exception(
+				throw std::runtime_error(
 					fmt::format(
-						"System <{}> has already secondary structure informations for residue <{}>",
+						"Chemfile System <{}> has already secondary structure informations for residue <{}>",
 						p_system.code,
 						resIdx
 					)
-						.c_str()
 				);
 			resIdx++;
 		}
-
-		parse( p_systemPath, p_system.strands );
-		parse( p_systemPath, p_system.helixes );
 	}
 	void testSystem( const fs::path & p_systemPath, SystemMap & p_systemMap )
 	{
-		std::string systemName = p_systemPath.filename().string();
-		uint32_t	idx		   = *reinterpret_cast<uint32_t *>( systemName.data() );
-		if ( systemName.size() == 4 )
+		std::string systemName = p_systemPath.stem().string();
+		systemName			   = std::string( systemName.data(), systemName.find( '.' ) );
+
+		uint32_t idx = *reinterpret_cast<uint32_t *>( systemName.data() );
+		if ( systemName.size() > 4 )
 			throw std::exception( std::format( "System name <{}> larger than 4 char", systemName ).c_str() );
 		if ( p_systemMap.contains( idx ) )
 			throw std::exception( std::format( "System <{}> already in map", systemName ).c_str() );
 		p_systemMap.emplace( idx, System {} );
+
 		System & newSystem = p_systemMap.at( idx );
+		memcpy_s( newSystem.code, sizeof( newSystem.code ), systemName.data(), systemName.size() );
+
 		testSystem( p_systemPath, newSystem );
 	}
 } // namespace pdb100

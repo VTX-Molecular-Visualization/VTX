@@ -10,7 +10,8 @@ int main()
 		pdb100::Context context;
 		pdb100::reporter( context.log );
 		pdb100::enumerateFiles( context );
-		pdb100::testSystem( *context.pdb100_system.begin(), context.results );
+		for ( auto & s : context.pdb100_system )
+			pdb100::testSystem( s, context.results );
 	}
 	catch ( std::exception & e )
 	{
