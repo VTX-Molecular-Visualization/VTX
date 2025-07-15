@@ -1,5 +1,5 @@
 add_library(vtx_core)
-configure_target(vtx_core)
+vtx_configure_target(vtx_core)
 
 set(HEADERS "")
 set(SOURCES "")

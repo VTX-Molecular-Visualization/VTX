@@ -2,18 +2,29 @@ name: Lib App
 
 on:
   push:
-    branches: [ "master", "dev", "dev-ndy", "dev-sge", "dev-vge" ]
+    branches: [ "master", "dev", "dev-sge", "dev-vge" ]
     paths: ['lib/app/**', '.github/workflows/lib_app.yml']
+  workflow_dispatch:
+      inputs:
+        build_type:
+          description: 'Build type'
+          required: true
+          default: 'Release'
+          type: choice
+          options:
+          - Debug
+          - Release
 
 env:
   LIB_DIR: ${{github.workspace}}/lib
+  BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-2019, ubuntu-22.04]
+        os: [windows-2022, ubuntu-22.04, windows-latest, ubuntu-latest]
       fail-fast: false
 
     steps:
@@ -50,7 +61,7 @@ jobs:
         conan export io
         conan export renderer
         conan export python_binding
-        conan create app -b missing -s compiler.cppstd=20 -o vtx_app/*:test=True
+        conan create app -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=20 -o vtx_app/*:test=True
       
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}

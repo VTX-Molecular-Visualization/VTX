@@ -233,7 +233,7 @@ namespace VTX::UI::QT::Dialog
 		_sliderRatio->setValue( int( ratio * 10000 ) );
 
 		// Delay because widget sizes are not updated yet.
-		APP().onEndOfFrameOneShot += [ this ]() { _updatePreview(); };
+		APP::onEndOfFrameOneShot += [ this ]() { _updatePreview(); };
 	}
 
 	void ExportImage::_onRatio()

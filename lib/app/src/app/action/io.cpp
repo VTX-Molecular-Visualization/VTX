@@ -59,11 +59,13 @@ namespace VTX::App::Action::Io
 
 	void DownloadSystem::execute()
 	{
-		std::string	   data;
-		const FilePath cachePath = Filesystem::getCachePath( _filename );
-
-		NETWORK_SYSTEM().downloadFile( _url.str.data(), _filename.string(), &data, true );
-		App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( _filename, &data );
+		FilePath filepath = _filename;
+		NETWORK_SYSTEM().downloadFile(
+			_url.str.data(),
+			_filename.string(),
+			[ filepath ]( const std::string & p_text )
+			{ App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( filepath, &p_text ); }
+		);
 	}
 
 	LoadSettings::LoadSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}

@@ -1,5 +1,5 @@
-StructVertexShader
+struct StructVertexShader
 {
-	smooth vec3 viewPosition;
-	smooth vec3 normal;
-}
+	vec3 viewPosition;
+	vec3 normal;
+};

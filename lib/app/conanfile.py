@@ -7,8 +7,8 @@ class VTXAppRecipe(ConanFile):
     package_type = "library"
     
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
-    default_options = {"shared": False, "fPIC": True, "test": False}
+    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False], "version": ["ANY"]}
+    default_options = {"shared": False, "fPIC": True, "test": False, "version": "0.0.0" }
     
     generators = "CMakeDeps"
     
@@ -32,8 +32,10 @@ class VTXAppRecipe(ConanFile):
          
     def generate(self):
         tc = CMakeToolchain(self)
-        dir_shaders = self.dependencies["vtx_renderer"].conf_info.get("user.myconf:dir_shaders")
-        tc.cache_variables["DIR_SHADERS"] = dir_shaders
+        versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
+        tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
+        tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor
+        tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch        
         tc.generate()
 
     def build(self):

@@ -33,6 +33,7 @@ namespace VTX::UI::QT::DockWidget
 	void RenderSettings::_createGroupBoxShading( App::Component::Representation::RenderSettings * const p_component )
 	{
 		using namespace Renderer::Proxy;
+		using namespace Renderer::Settings;
 
 		// Shading group.
 		auto * groupBoxShading = new QGroupBox( "Lighting" );
@@ -45,7 +46,7 @@ namespace VTX::UI::QT::DockWidget
 
 		for ( int i = 0; i < int( Renderer::E_SHADING::COUNT ); ++i )
 		{
-			comboBoxShading->addItem( Renderer::SHADING_STR[ i ].data() );
+			comboBoxShading->addItem( SHADING_STR[ i ].data() );
 		}
 		comboBoxShading->setCurrentIndex( p_component->getSettings().shadingMode );
 
@@ -94,8 +95,8 @@ namespace VTX::UI::QT::DockWidget
 		auto * sliderSpecularFactor = new QSlider( Qt::Horizontal, groupBoxShading );
 		layout->addWidget( labelSpecularFactor );
 		layout->addWidget( sliderSpecularFactor );
-		sliderSpecularFactor->setMinimum( Renderer::SPECULAR_FACTOR_MIN * 100 );
-		sliderSpecularFactor->setMaximum( Renderer::SPECULAR_FACTOR_MAX * 100 );
+		sliderSpecularFactor->setMinimum( SPECULAR_FACTOR_MIN * 100 );
+		sliderSpecularFactor->setMaximum( SPECULAR_FACTOR_MAX * 100 );
 		sliderSpecularFactor->setValue( p_component->getSettings().specularFactor * 100 );
 		connect(
 			sliderSpecularFactor,
@@ -115,8 +116,8 @@ namespace VTX::UI::QT::DockWidget
 		auto * sliderShininess = new QSlider( Qt::Horizontal, groupBoxShading );
 		layout->addWidget( labelShininess );
 		layout->addWidget( sliderShininess );
-		sliderShininess->setMinimum( Renderer::SHININESS_MIN * 100 );
-		sliderShininess->setMaximum( Renderer::SHININESS_MAX * 100 );
+		sliderShininess->setMinimum( SHININESS_MIN * 100 );
+		sliderShininess->setMaximum( SHININESS_MAX * 100 );
 		sliderShininess->setValue( p_component->getSettings().shininess * 100 );
 		connect(
 			sliderShininess,
@@ -135,8 +136,8 @@ namespace VTX::UI::QT::DockWidget
 		auto * sliderToonSteps = new QSlider( Qt::Horizontal, groupBoxShading );
 		layout->addWidget( labelToonSteps );
 		layout->addWidget( sliderToonSteps );
-		sliderToonSteps->setMinimum( Renderer::TOON_STEPS_MIN );
-		sliderToonSteps->setMaximum( Renderer::TOON_STEPS_MAX );
+		sliderToonSteps->setMinimum( TOON_STEPS_MIN );
+		sliderToonSteps->setMaximum( TOON_STEPS_MAX );
 		sliderToonSteps->setValue( p_component->getSettings().toonSteps );
 		connect(
 			sliderToonSteps,
@@ -219,6 +220,7 @@ namespace VTX::UI::QT::DockWidget
 	void RenderSettings::_createGroupBoxSSAO( App::Component::Representation::RenderSettings * const p_component )
 	{
 		using namespace Renderer::Proxy;
+		using namespace Renderer::Settings;
 
 		auto * groupBoxSSAO = new QGroupBox( "Shadows" );
 		auto * layout		= new QVBoxLayout( groupBoxSSAO );
@@ -245,8 +247,8 @@ namespace VTX::UI::QT::DockWidget
 		auto * sliderSSAOIntensity = new QSlider( Qt::Horizontal, groupBoxSSAO );
 		layout->addWidget( labelSSAOIntensity );
 		layout->addWidget( sliderSSAOIntensity );
-		sliderSSAOIntensity->setMinimum( Renderer::SSAO_INTENSITY_MIN * 100 );
-		sliderSSAOIntensity->setMaximum( Renderer::SSAO_INTENSITY_MAX * 100 );
+		sliderSSAOIntensity->setMinimum( SSAO_INTENSITY_MIN * 100 );
+		sliderSSAOIntensity->setMaximum( SSAO_INTENSITY_MAX * 100 );
 		sliderSSAOIntensity->setValue( p_component->getSettings().ssaoIntensity * 100 );
 		connect(
 			sliderSSAOIntensity,
@@ -266,8 +268,8 @@ namespace VTX::UI::QT::DockWidget
 		auto * sliderBlurSize = new QSlider( Qt::Horizontal, groupBoxSSAO );
 		layout->addWidget( labelBlurSize );
 		layout->addWidget( sliderBlurSize );
-		sliderBlurSize->setMinimum( Renderer::BLUR_SIZE_MIN * 100 );
-		sliderBlurSize->setMaximum( Renderer::BLUR_SIZE_MAX * 100 );
+		sliderBlurSize->setMinimum( BLUR_SIZE_MIN * 100 );
+		sliderBlurSize->setMaximum( BLUR_SIZE_MAX * 100 );
 		sliderBlurSize->setValue( p_component->getSettings().blurSize * 100 );
 		connect(
 			sliderBlurSize,
@@ -303,6 +305,7 @@ namespace VTX::UI::QT::DockWidget
 	void RenderSettings::_createGroupBoxOutline( App::Component::Representation::RenderSettings * const p_component )
 	{
 		using namespace Renderer::Proxy;
+		using namespace Renderer::Settings;
 
 		auto * groupBoxOutline = new QGroupBox( "Outline" );
 		auto * layout		   = new QVBoxLayout( groupBoxOutline );
@@ -343,8 +346,8 @@ namespace VTX::UI::QT::DockWidget
 		auto * sliderOutlineSensitivity = new QSlider( Qt::Horizontal, groupBoxOutline );
 		layout->addWidget( labelOutlineSensitivity );
 		layout->addWidget( sliderOutlineSensitivity );
-		sliderOutlineSensitivity->setMinimum( Renderer::OUTLINE_SENSITIVITY_MIN * 100 );
-		sliderOutlineSensitivity->setMaximum( Renderer::OUTLINE_SENSITIVITY_MAX * 100 );
+		sliderOutlineSensitivity->setMinimum( OUTLINE_SENSITIVITY_MIN * 100 );
+		sliderOutlineSensitivity->setMaximum( OUTLINE_SENSITIVITY_MAX * 100 );
 		sliderOutlineSensitivity->setValue( p_component->getSettings().outlineSensitivity * 100 );
 		connect(
 			sliderOutlineSensitivity,
@@ -364,8 +367,8 @@ namespace VTX::UI::QT::DockWidget
 		auto * sliderOutlineThickness = new QSlider( Qt::Horizontal, groupBoxOutline );
 		layout->addWidget( labelOutlineThickness );
 		layout->addWidget( sliderOutlineThickness );
-		sliderOutlineThickness->setMinimum( Renderer::OUTLINE_THICKNESS_MIN );
-		sliderOutlineThickness->setMaximum( Renderer::OUTLINE_THICKNESS_MAX );
+		sliderOutlineThickness->setMinimum( OUTLINE_THICKNESS_MIN );
+		sliderOutlineThickness->setMaximum( OUTLINE_THICKNESS_MAX );
 		sliderOutlineThickness->setValue( p_component->getSettings().outlineThickness );
 		connect(
 			sliderOutlineThickness,
@@ -399,6 +402,7 @@ namespace VTX::UI::QT::DockWidget
 	void RenderSettings::_createGroupBoxFog( App::Component::Representation::RenderSettings * const p_component )
 	{
 		using namespace Renderer::Proxy;
+		using namespace Renderer::Settings;
 
 		auto * groupBoxFog = new QGroupBox( "Fog" );
 		auto * layout	   = new QVBoxLayout( groupBoxFog );
@@ -439,8 +443,8 @@ namespace VTX::UI::QT::DockWidget
 		auto * sliderFogNear = new QSlider( Qt::Horizontal, groupBoxFog );
 		layout->addWidget( labelFogNear );
 		layout->addWidget( sliderFogNear );
-		sliderFogNear->setMinimum( Renderer::FOG_NEAR_MIN * 100 );
-		sliderFogNear->setMaximum( Renderer::FOG_NEAR_MAX * 100 );
+		sliderFogNear->setMinimum( FOG_NEAR_MIN * 100 );
+		sliderFogNear->setMaximum( FOG_NEAR_MAX * 100 );
 		sliderFogNear->setValue( p_component->getSettings().fogNear * 100 );
 		connect(
 			sliderFogNear,
@@ -459,8 +463,8 @@ namespace VTX::UI::QT::DockWidget
 		auto * sliderFogFar = new QSlider( Qt::Horizontal, groupBoxFog );
 		layout->addWidget( labelFogFar );
 		layout->addWidget( sliderFogFar );
-		sliderFogFar->setMinimum( Renderer::FOG_FAR_MIN * 100 );
-		sliderFogFar->setMaximum( Renderer::FOG_FAR_MAX * 100 );
+		sliderFogFar->setMinimum( FOG_FAR_MIN * 100 );
+		sliderFogFar->setMaximum( FOG_FAR_MAX * 100 );
 		sliderFogFar->setValue( p_component->getSettings().fogFar * 100 );
 		connect(
 			sliderFogFar,
@@ -479,8 +483,8 @@ namespace VTX::UI::QT::DockWidget
 		auto * sliderFogDensity = new QSlider( Qt::Horizontal, groupBoxFog );
 		layout->addWidget( labelFogDensity );
 		layout->addWidget( sliderFogDensity );
-		sliderFogDensity->setMinimum( Renderer::FOG_DENSITY_MIN * 100 );
-		sliderFogDensity->setMaximum( Renderer::FOG_DENSITY_MAX * 100 );
+		sliderFogDensity->setMinimum( FOG_DENSITY_MIN * 100 );
+		sliderFogDensity->setMaximum( FOG_DENSITY_MAX * 100 );
 		sliderFogDensity->setValue( p_component->getSettings().fogDensity * 100 );
 		connect(
 			sliderFogDensity,

@@ -2,7 +2,7 @@
 include ("${CMAKE_CURRENT_LIST_DIR}/vtx_tool_mdprep_copy_files.cmake")
 
 add_library(vtx_tool_mdprep)
-configure_target(vtx_tool_mdprep)
+vtx_configure_target(vtx_tool_mdprep)
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 message("mdprep headers : <${HEADERS}>")
@@ -12,7 +12,7 @@ target_sources(vtx_tool_mdprep
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
-add_resources(vtx_tool_mdprep ${CMAKE_CURRENT_LIST_DIR}/../asset z_vtx_tool_mdprep)
+vtx_qt_add_resources(vtx_tool_mdprep ${CMAKE_CURRENT_LIST_DIR}/../asset vtx_qt_resources_tool_mdprep)
 
 if (NOT DEFINED _VTX_MDPREP_CONAN)
 	target_link_libraries(vtx_tool_mdprep PRIVATE vtx_util)
@@ -37,9 +37,9 @@ target_link_libraries(vtx_tool_mdprep PRIVATE re2::re2)
 
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/src/*")
 
-
 add_executable(vtx_tool_mdprep_test ${SOURCES} )
-configure_target(vtx_tool_mdprep_test)
+vtx_configure_target(vtx_tool_mdprep_test)
+vtx_link_cuda(vtx_tool_mdprep_test)
 
 target_include_directories(vtx_tool_mdprep_test PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include")
 

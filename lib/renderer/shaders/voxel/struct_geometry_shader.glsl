@@ -1,4 +1,4 @@
-StructGeometryShader
+struct StructGeometryShader
 {
-	flat vec3 center;
-}
+	vec3 center;
+};

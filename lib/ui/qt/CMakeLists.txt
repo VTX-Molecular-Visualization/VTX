@@ -17,3 +17,18 @@ set(_VTX_UI_QT_CONAN " ") # So the right target name can be linked
 include("./cmake/library.cmake")
 
 install(TARGETS vtx_ui_qt FILE_SET public_headers DESTINATION include)
+install(DIRECTORY cmake DESTINATION .)
+
+
+if(WIN32)
+    install(FILES
+        $<TARGET_FILE_DIR:vtx_ui_qt>/Qt6Core$<$<CONFIG:Debug>:d>.dll
+        $<TARGET_FILE_DIR:vtx_ui_qt>/Qt6Gui$<$<CONFIG:Debug>:d>.dll
+        $<TARGET_FILE_DIR:vtx_ui_qt>/Qt6Widgets$<$<CONFIG:Debug>:d>.dll
+        DESTINATION .
+    )
+    install(DIRECTORY $<TARGET_FILE_DIR:vtx_ui_qt>/platforms DESTINATION .)
+    install(DIRECTORY $<TARGET_FILE_DIR:vtx_ui_qt>/imageformats DESTINATION .)
+    install(DIRECTORY $<TARGET_FILE_DIR:vtx_ui_qt>/tls DESTINATION .)
+    install(DIRECTORY $<TARGET_FILE_DIR:vtx_ui_qt>/styles DESTINATION .)
+endif()

@@ -25,7 +25,9 @@ namespace VTX::Core::Struct
 		uint ribbonColorBlending;
 
 		// SES.
-		bool hasSes = false;
+		bool  hasSes;
+		float sesProbeRadius;
+		bool  sesIsExterior;
 	};
 } // namespace VTX::Core::Struct
 

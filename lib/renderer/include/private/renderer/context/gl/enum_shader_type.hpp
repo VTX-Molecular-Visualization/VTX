@@ -1,11 +1,11 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_ENUM_SHADER_TYPE__
 #define __VTX_RENDERER_CONTEXT_GL_ENUM_SHADER_TYPE__
 
-#include <glad/glad.h>
+#include "include_opengl.hpp"
 
 namespace VTX::Renderer::Context::GL
 {
-	enum class ENUM_SHADER_TYPE : uint32_t
+	enum class ENUM_SHADER_TYPE : GLenum
 	{
 		VERTEX			= GL_VERTEX_SHADER,
 		FRAGMENT		= GL_FRAGMENT_SHADER,

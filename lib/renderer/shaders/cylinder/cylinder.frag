@@ -3,13 +3,15 @@
 #include "../struct_data_packed.glsl"
 #include "../layout_uniforms_camera.glsl"
 #include "../layout_uniforms_representation.glsl"
+#include "struct_geometry_shader.glsl"
+#include "struct_cylinder.glsl"
 
 //#define SHOW_IMPOSTORS
 
 // In.
-in
-#include "struct_geometry_shader.glsl"
-inData;
+smooth in StructGeometryShaderSmooth gsDataSmooth;
+flat in StructGeometryShaderFlat gsDataFlat[ 2 ];
+flat in StructCylinder gsCylinder[ 2 ];
 
  // Out.
 layout( location = 0 ) out PackedData outDataPacked;
@@ -19,7 +21,7 @@ layout( location = 2 ) out uvec2 outId;
 float computeDepth( const vec3 p_v )
 {
 	// Computes 'v' NDC depth ([-1,1]).
-	const float ndcDepth = ( p_v.z *uniformsCamera.matrixProjection[ 2 ].z +uniformsCamera.matrixProjection[ 3 ].z ) / -p_v.z;
+	const float ndcDepth = ( p_v.z * uniformsCamera.matrixProjection[ 2 ].z + uniformsCamera.matrixProjection[ 3 ].z ) / -p_v.z;
 	// Return depth according to depth range.
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
@@ -27,22 +29,23 @@ float computeDepth( const vec3 p_v )
 float computeDepthOrtho( const vec3 p_v )
 {
 	// Computes 'v' NDC depth ([-1,1]).
-	const float ndcDepth = ( p_v.z *uniformsCamera.matrixProjection[ 2 ].z +uniformsCamera.matrixProjection[ 3 ].z );
+	const float ndcDepth = ( p_v.z * uniformsCamera.matrixProjection[ 2 ].z + uniformsCamera.matrixProjection[ 3 ].z );
 	// Return depth according to depth range.
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
 
 void main()
 {
-	float radiusCylinder	= uniformsRepresentation[ inData.vertexIdRepresentation[ 0 ] ].radiusCylinder;
-	uint colorBlendingMode	= uniformsRepresentation[ inData.vertexIdRepresentation[ 0 ] ].cylinderColorBlendingMode;
+	uint representationId = gsCylinder[ 0 ].representation;
+	float radiusCylinder	= uniformsRepresentation[ representationId ].radiusCylinder;
+	uint colorBlendingMode	= uniformsRepresentation[ representationId ].cylinderColorBlendingMode;
 
 	if ( uniformsCamera.isCameraPerspective == 1 )
 	{
 		// Only consider cylinder body.
-		const vec3 v1v0	  = inData.viewVertices[ 1 ] - inData.viewVertices[ 0 ];
-		const vec3 v0	  = -inData.viewVertices[ 0 ];
-		const vec3 rayDir = normalize( inData.viewImpostorPosition );
+		const vec3 v1v0	  = gsDataFlat[ 1 ].viewVertice - gsDataFlat[ 0 ].viewVertice;
+		const vec3 v0	  = -gsDataFlat[ 0 ].viewVertice;
+		const vec3 rayDir = normalize( gsDataSmooth.viewImpostorPosition );
 
 		const float d0 = dot( v1v0, v1v0 );
 		const float d1 = dot( v1v0, rayDir );
@@ -58,10 +61,10 @@ void main()
 		{
 	#ifdef SHOW_IMPOSTORS		
 			// Output data.
-			packData( inData.viewImpostorPosition, -rayDir, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
+			packData( gsDataSmooth.viewImpostorPosition, -rayDir, gsCylinder[ 0 ].isSelected & gsCylinder[ 1 ].isSelected, outDataPacked );
 			outColor			  = vec4( 1.f, 0.f, 0.f, 1.f );
 
-			gl_FragDepth = computeDepth( inData.viewImpostorPosition );
+			gl_FragDepth = computeDepth( gsDataSmooth.viewImpostorPosition );
 	#else
 			discard;
 	#endif
@@ -77,10 +80,10 @@ void main()
 			{
 	#ifdef SHOW_IMPOSTORS
 				// Output data.
-				packData( inData.viewImpostorPosition, -rayDir, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
+				packData( gsDataSmooth.viewImpostorPosition, -rayDir, gsCylinder[ 0 ].isSelected & gsCylinder[ 1 ].isSelected, outDataPacked );
 				outColor			  = vec4( 1.f, 0.f, 0.f, 1.f );
 
-				gl_FragDepth = computeDepth( inData.viewImpostorPosition );
+				gl_FragDepth = computeDepth( gsDataSmooth.viewImpostorPosition );
 	#else
 				discard;
 	#endif
@@ -95,21 +98,21 @@ void main()
 				gl_FragDepth = computeDepth( hit );
 
 				// Color with good color extremity.			
-				vec4 color = inData.colors[ int( y > d0 * 0.5f ) ];			
+				vec4 color = gsCylinder[ int( y > d0 * 0.5f ) ].color;			
 				if( colorBlendingMode == 1 ) // Gradient.
 				{
-					color = mix( inData.colors[0], inData.colors[1], y / d0 );
+					color = mix( gsCylinder[ 0 ].color, gsCylinder[ 1 ].color, y / d0 );
 				}
 
 				// Output data.
-				packData( hit, normal, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
+				packData( hit, normal, gsCylinder[ 0 ].isSelected & gsCylinder[ 1 ].isSelected, outDataPacked );
 				outColor			  = color;
 
 				const int selectAtom0 = 1 - int( floor( 0.85f + ( y / d0 ) ) );
 				const int selectAtom1 = int( ceil( ( y / d0) - 0.85f ) );
 
-				const uint id0 = selectAtom0 * inData.vertexId[ 0 ] + selectAtom1 * inData.vertexId[ 1 ] + (1-(selectAtom0 + selectAtom1)) *inData.vertexId[ 0 ];
-				const uint id1 = (1-(selectAtom0 + selectAtom1)) *inData.vertexId[ 1 ]; 
+				const uint id0 = selectAtom0 * gsCylinder[ 0 ].id + selectAtom1 * gsCylinder[ 1 ].id + (1-(selectAtom0 + selectAtom1)) * gsCylinder[ 0 ].id;
+				const uint id1 = (1-(selectAtom0 + selectAtom1)) * gsCylinder[ 1 ].id; 
 
 				outId				  = uvec2( id0, id1 );
 			}
@@ -118,8 +121,8 @@ void main()
 	else // Orthographic
 	{ 
 		// Only consider cylinder body.
-		const vec3 v1v0	  = inData.viewVertices[ 1 ] - inData.viewVertices[ 0 ];
-		const vec3 v0	  = inData.viewImpostorPosition - inData.viewVertices[ 0 ];
+		const vec3 v1v0	  = gsDataFlat[ 1 ].viewVertice - gsDataFlat[ 0 ].viewVertice;
+		const vec3 v0	  = gsDataSmooth.viewImpostorPosition - gsDataFlat[ 0 ].viewVertice;
 		const vec3 rayDir = vec3(0, 0, -1);
 
 		const float d0 = dot( v1v0, v1v0 );
@@ -136,10 +139,10 @@ void main()
 		{
 	#ifdef SHOW_IMPOSTORS
 			// Output data.
-			packData( inData.viewImpostorPosition, -rayDir, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
+			packData( gsDataSmooth.viewImpostorPosition, -rayDir, gsCylinder[ 0 ].isSelected & gsCylinder[ 1 ].isSelected, outDataPacked );
 			outColor			  = vec4( 1.f, 0.f, 1.f, 1.f );
 
-			gl_FragDepth = computeDepthOrtho( inData.viewImpostorPosition );
+			gl_FragDepth = computeDepthOrtho( gsDataSmooth.viewImpostorPosition );
 	#else
 			discard;
 	#endif
@@ -155,10 +158,10 @@ void main()
 			{
 	#ifdef SHOW_IMPOSTORS				
 				// Output data.
-				packData( inData.viewImpostorPosition, -rayDir, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
+				packData( gsDataSmooth.viewImpostorPosition, -rayDir, gsCylinder[ 0 ].isSelected & gsCylinder[ 1 ].isSelected, outDataPacked );
 				outColor			  = vec4( 1.f, 0.f, 1.f, 1.f );
 
-				gl_FragDepth = computeDepthOrtho( inData.viewImpostorPosition );
+				gl_FragDepth = computeDepthOrtho( gsDataSmooth.viewImpostorPosition );
 	#else
 				discard;
 	#endif
@@ -166,30 +169,30 @@ void main()
 			else
 			{
 				// Compute hit point and normal (always in view space).
-				const vec3 hit	  = inData.viewImpostorPosition + vec3(0, 0, -t);
-				const vec3 normal = normalize( hit - inData.viewVertices[ 0 ] - v1v0 * y / d0 );
+				const vec3 hit	  = gsDataSmooth.viewImpostorPosition + vec3(0, 0, -t);
+				const vec3 normal = normalize( hit - gsDataFlat[ 0 ].viewVertice - v1v0 * y / d0 );
 
 				// Fill depth buffer.
 				gl_FragDepth = computeDepthOrtho( hit );
 
 				// Color with good color extremity.			
-				vec4 color = inData.colors[ int( y > d0 * 0.5f ) ];			
+				vec4 color = gsCylinder[ int( y > d0 * 0.5f ) ].color;			
 				if( colorBlendingMode == 1 ) // Gradient.
 				{
-					color = mix( inData.colors[0], inData.colors[1], y / d0 );
+					color = mix( gsCylinder[0].color, gsCylinder[1].color, y / d0 );
 				}
 
 				// Output data.
-				packData( hit, normal, inData.vertexSelected[ 0 ] & inData.vertexSelected[ 1 ], outDataPacked );
+				packData( hit, normal, gsCylinder[ 0 ].isSelected & gsCylinder[ 1 ].isSelected, outDataPacked );
 				outColor			  = color;
 
 				const int selectAtom0 = 1 - int(floor(0.85f + (y / d0)) );
 				const int selectAtom1 = int(ceil((y / d0) - 0.85f));
 
-				const uint id0 = selectAtom0 * inData.vertexId[ 0 ] + selectAtom1 * inData.vertexId[ 1 ] + (1-(selectAtom0 + selectAtom1)) *inData.vertexId[ 0 ];
-				const uint id1 = (1-(selectAtom0 + selectAtom1)) *inData.vertexId[ 1 ]; 
+				const uint id0 = selectAtom0 * gsCylinder[ 0 ].id + selectAtom1 * gsCylinder[ 1 ].id + (1-(selectAtom0 + selectAtom1)) * gsCylinder[ 0 ].id;
+				const uint id1 = (1-(selectAtom0 + selectAtom1)) * gsCylinder[ 1 ].id; 
 
-				outId				  = uvec2( id0, id1 );
+				outId = uvec2( id0, id1 );
 			}
 		}
 	}

@@ -10,66 +10,77 @@
 
 namespace VTX::Renderer
 {
-
 	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height )
 	{
 		// Passes.
 		_refreshGraph();
 
 		// Shared data.
-		addGlobalData( { "Camera",
-						 15,
-						 { { "MatrixView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-						   { "MatrixProjection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-						   { "Position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
-						   { "ClipInfos", // { _near * _far, _far, _far - _near, _near }
-							 E_TYPE::VEC4F,
-							 BufferValue<Vec4f> { VEC4F_ZERO } },
-						   { "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
-						   { "MousePosition", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
-						   { "IsPerspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
-						 0,
-						 nullptr,
-						 false,
-						 true } );
+		addGlobalData(
+			{ "Camera",
+			  15,
+			  { { "MatrixView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				{ "MatrixProjection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				{ "Position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
+				{ "ClipInfos", // { _near * _far, _far, _far - _near, _near }
+				  E_TYPE::VEC4F,
+				  BufferValue<Vec4f> { VEC4F_ZERO } },
+				{ "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
+				{ "MousePosition", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
+				{ "IsPerspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
+			  0,
+			  nullptr,
+			  false,
+			  true }
+		);
 
-		addGlobalData( { "ColorLayout",
-						 14,
-						 { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } },
-						 4096,
-						 nullptr,
-						 false,
-						 true } );
+		addGlobalData(
+			{ "ColorLayout",
+			  14,
+			  { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } },
+			  4096,
+			  nullptr,
+			  false,
+			  true }
+		);
 
-		addGlobalData( { "Models",
-						 13,
-						 { { "MatrixModelView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-						   { "MatrixNormal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } } },
-						 0,
-						 nullptr,
-						 true } );
+		addGlobalData(
+			{ "Models",
+			  13,
+			  {
+				  { "MatrixModelView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				  { "MatrixModelViewInv", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				  { "MatrixNormal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+			  },
+			  0,
+			  nullptr,
+			  true }
+		);
 
-		addGlobalData( { "Representations",
-						 12,
-						 { { "SphereRadiusFixed", E_TYPE::FLOAT, BufferValue<float> {} },
-						   { "SphereRadiusAdd", E_TYPE::FLOAT, BufferValue<float> {} },
-						   { "IsSphereRadiusFixed", E_TYPE::UINT, BufferValue<uint> {} },
-						   { "CylinderRadius", E_TYPE::FLOAT, BufferValue<float> {} },
-
-						   { "CylinderColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
-						   { "RibbonColorBlending", E_TYPE::UINT, BufferValue<uint> {} } },
-						 0,
-						 nullptr,
-						 true } );
+		addGlobalData(
+			{ "Representations",
+			  12,
+			  {
+				  { "SphereRadiusFixed", E_TYPE::FLOAT, BufferValue<float> {} },
+				  { "SphereRadiusAdd", E_TYPE::FLOAT, BufferValue<float> {} },
+				  { "IsSphereRadiusFixed", E_TYPE::UINT, BufferValue<uint> {} },
+				  { "CylinderRadius", E_TYPE::FLOAT, BufferValue<float> {} },
+				  { "CylinderColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
+				  { "RibbonColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
+				  { "SESProbeRadius", E_TYPE::FLOAT, BufferValue<float> {} },
+				  { "SESMaxProbeNeighborNb", E_TYPE::UINT, BufferValue<uint> {} },
+			  },
+			  0,
+			  nullptr,
+			  true }
+		);
 	}
 
 	void Renderer::build()
 	{
-		bool isFirstBuild = not _context.hasContext<Context::OpenGL45>();
-
 		// Build renderer _graph.
 		float buildTime = Util::CHRONO_CPU(
-			[ & ]()
+			[ this ]()
 			{
 				const RenderQueue & queue = _graph.build<Scheduler::DepthFirstSearch>();
 
@@ -155,6 +166,73 @@ namespace VTX::Renderer
 	{
 		_addProxySystem( p_proxy );
 		_refreshDataSystems();
+
+#ifdef WITH_CUDA
+		std::vector<Vec4f> molecule( p_proxy.atomPositions->size() );
+		Util::Math::AABB   aabb;
+		// Fill molecule with atom positions and radius in the last component.
+		for ( size_t i = 0; i < p_proxy.atomPositions->size(); ++i )
+		{
+			molecule[ i ] = Vec4f( ( *p_proxy.atomPositions )[ i ], p_proxy.atomRadii[ i ] );
+			aabb.extend( ( *p_proxy.atomPositions )[ i ] );
+		}
+		bcs::Aabb aabbBCS( aabb.getMin(), aabb.getMax() );
+		_sesData	= std::make_unique<bcs::Sesdf>( molecule, aabbBCS );
+		_sesSurface = _sesData->getGraphics();
+		VTX_DEBUG( "CUDA DONE" );
+
+		_sesProgramConcave = _pm.createProgram( "SESConcave", "ses/sesdf/concave" );
+		_sesProgramSegment = _pm.createProgram( "SESSegment", "ses/sesdf/segment" );
+		_sesProgramCircle  = _pm.createProgram( "SESCircle", "ses/sesdf/circle" );
+		_sesProgramConvex  = _pm.createProgram( "SESConvex", "ses/sesdf/convex" );
+
+		glCreateVertexArrays( 1, &_sesVao );
+		if ( _sesSurface.segmentPatches.size > 0 )
+		{
+			glCreateVertexArrays( 1, &_sesSegmentVao );
+
+			glBindVertexArray( _sesSegmentVao );
+			glBindBuffer( GL_ARRAY_BUFFER, _sesSurface.segmentPatches.handle );
+			glEnableVertexAttribArray( 0 );
+
+			const std::size_t offset = _sesSurface.segmentPatches.offset;
+			glVertexAttribIPointer( 0, 4, GL_UNSIGNED_INT, sizeof( glm::uvec4 ), reinterpret_cast<void *>( offset ) );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		}
+
+		if ( _sesSurface.convexPatches.size > 0 )
+		{
+			glCreateVertexArrays( 1, &_sesCircleVao );
+			glBindVertexArray( _sesCircleVao );
+
+			glBindBuffer( GL_ARRAY_BUFFER, _sesSurface.circlePatches.handle );
+			glEnableVertexAttribArray( 0 );
+
+			const std::size_t offset = _sesSurface.circlePatches.offset;
+			glVertexAttribIPointer( 0, 2, GL_UNSIGNED_INT, sizeof( glm::uvec2 ), reinterpret_cast<void *>( offset ) );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		}
+
+		if ( _sesSurface.convexPatches.size > 0 )
+		{
+			glCreateVertexArrays( 1, &_sesConvexVao );
+			glBindVertexArray( _sesConvexVao );
+
+			glBindBuffer( GL_ARRAY_BUFFER, _sesSurface.convexPatches.handle );
+			glEnableVertexAttribArray( 0 );
+
+			const std::size_t offset = _sesSurface.convexPatches.offset;
+			glVertexAttribIPointer( 0, 2, GL_UNSIGNED_INT, sizeof( glm::uvec2 ), reinterpret_cast<void *>( offset ) );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		}
+
+		glBindVertexArray( 0 );
+
+		uint sesMaxProbeNeighborNb = _sesData->getMaxNeighborPerAtom();
+		setValue( sesMaxProbeNeighborNb, "RepresentationsSESMaxProbeNeighborNb", 0 );
+		float sesProbeRadius = _proxyRepresentation->get<float>( Proxy::E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS );
+		setValue( sesProbeRadius, "RepresentationsSESProbeRadius", 0 );
+#endif
 	}
 
 	void Renderer::removeProxySystem( Proxy::System & p_proxy )
@@ -200,11 +278,13 @@ namespace VTX::Renderer
 		// Transform.
 		p_proxy.onTransform += [ this, &p_proxy ]()
 		{
-			const Mat4f matrixModelView = *_proxyCamera->matrixView * *p_proxy.transform;
-			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
+			const Mat4f matrixModelView	   = *_proxyCamera->matrixView * *p_proxy.transform;
+			const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
+			const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
 
 			BinaryBuffer buffer;
 			buffer.write( matrixModelView );
+			buffer.write( matrixModelViewInv );
 			buffer.write( matrixNormal );
 			buffer.close();
 
@@ -430,6 +510,7 @@ namespace VTX::Renderer
 		bool hasSphere	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE );
 		bool hasCylinder = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
 		bool hasRibbon	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_RIBBON );
+		bool hasSES		 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SES );
 
 		showAtoms	= hasSphere;
 		showBonds	= hasCylinder;
@@ -437,6 +518,7 @@ namespace VTX::Renderer
 
 		float cylinderRadius = p_representation->get<float>( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER );
 
+		// Optimizations for renderer primitives.
 		// Spheres asked.
 		if ( hasSphere )
 		{
@@ -1421,10 +1503,12 @@ namespace VTX::Renderer
 			assert( proxy->transform );
 			assert( _proxyCamera );
 
-			const Mat4f matrixModelView = *_proxyCamera->matrixView * *proxy->transform;
-			const Mat4f matrixNormal	= Util::Math::transpose( Util::Math::inverse( matrixModelView ) );
+			const Mat4f matrixModelView	   = *_proxyCamera->matrixView * *proxy->transform;
+			const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
+			const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
 
 			buffer.write( matrixModelView );
+			buffer.write( matrixModelViewInv );
 			buffer.write( matrixNormal );
 		}
 
@@ -1506,6 +1590,7 @@ namespace VTX::Renderer
 		// Geometric.
 		if ( not geo )
 		{
+			// TODO: refacto!
 			geo									   = _graph.addPass( descPassGeometric );
 			geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
 			geo->programs[ 0 ].draw.value().needRenderFunc
@@ -1519,6 +1604,70 @@ namespace VTX::Renderer
 			geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
 			geo->programs[ 3 ].draw.value().needRenderFunc
 				= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
+			// TODO: add SES range.
+			/*
+			geo->programs[ 4 ].draw.value().ranges = &drawRangeSESCircles;
+			geo->programs[ 4 ].draw.value().needRenderFunc
+				= [ this ]() { return showSESCircles && drawRangeSESCircles.counts.size() > 0; };
+			geo->programs[ 5 ].draw.value().ranges = &drawRangeSESConcaves;
+			geo->programs[ 5 ].draw.value().needRenderFunc
+				= [ this ]() { return showSESConcaves && drawRangeSESConcaves.counts.size() > 0; };
+			geo->programs[ 6 ].draw.value().ranges = &drawRangeSESConvexes;
+			geo->programs[ 6 ].draw.value().needRenderFunc
+				= [ this ]() { return showSESConvexes && drawRangeSESConvexes.counts.size() > 0; };
+			geo->programs[ 7 ].draw.value().ranges = &drawRangeSESSegments;
+			geo->programs[ 7 ].draw.value().needRenderFunc
+				= [ this ]() { return showSESSegments && drawRangeSESSegments.counts.size() > 0; };
+				*/
+#ifdef WITH_CUDA
+			geo->renderFunc = [ & ]()
+			{
+				constexpr auto bindBuffer = []( uint32_t bindingPoint, bcs::HandleSpan<GLuint> buffer )
+				{
+					if ( buffer.size > 0 )
+						glBindBufferRange(
+							GL_SHADER_STORAGE_BUFFER, bindingPoint, buffer.handle, buffer.offset, buffer.size
+						);
+				};
+
+				bindBuffer( 1, _sesSurface.atoms );
+				bindBuffer( 2, _sesSurface.segmentPatches );
+				bindBuffer( 3, _sesSurface.concavePatchesPosition );
+				bindBuffer( 4, _sesSurface.concavePatchesId );
+				bindBuffer( 5, _sesSurface.concavePatchesNeighbors );
+				bindBuffer( 6, _sesSurface.sectors );
+
+				if ( _sesSurface.concavePatchNb > 0 )
+				{
+					_sesProgramConcave->use();
+					glBindVertexArray( _sesVao );
+					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.concavePatchNb ) );
+				}
+
+				if ( _sesSurface.circlePatchNb )
+				{
+					_sesProgramCircle->use();
+					glBindVertexArray( _sesCircleVao );
+					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.circlePatchNb ) );
+				}
+
+				if ( _sesSurface.convexPatchNb > 0 )
+				{
+					_sesProgramConvex->use();
+					glBindVertexArray( _sesConvexVao );
+					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.convexPatchNb ) );
+				}
+
+				if ( _sesSurface.segmentPatchNb > 0 )
+				{
+					_sesProgramSegment->use();
+					glBindVertexArray( _sesSegmentVao );
+					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.segmentPatchNb ) );
+				}
+
+				glBindVertexArray( 0 );
+			};
+#endif
 		}
 
 		// Depth.

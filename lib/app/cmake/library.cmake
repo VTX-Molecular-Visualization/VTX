@@ -1,6 +1,6 @@
 # Lib.
 add_library(vtx_app)
-configure_target(vtx_app)
+vtx_configure_target(vtx_app)
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
@@ -11,7 +11,8 @@ target_sources(vtx_app
 # Tests.
 file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_app_test ${SOURCES_TEST})
-configure_target(vtx_app_test)
+vtx_configure_target(vtx_app_test)
+vtx_link_cuda(vtx_app_test)
 
 if (NOT DEFINED _VTX_APP_CONAN)
 	target_link_libraries(vtx_app PRIVATE vtx_util)
@@ -40,6 +41,21 @@ endif()
 target_link_libraries(vtx_app PUBLIC EnTT::EnTT)
 target_link_libraries(vtx_app_test PRIVATE vtx_app)
 target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
+
+# Declare preprocessor definitions.
+if (NOT DEFINED VTX_VERSION_MAJOR)
+	set(VTX_VERSION_MAJOR 0)
+endif()
+if (NOT DEFINED VTX_VERSION_MINOR)
+	set(VTX_VERSION_MINOR 0)
+endif()
+if (NOT DEFINED VTX_VERSION_PATCH)
+	set(VTX_VERSION_PATCH 0)
+endif()
+
+target_compile_definitions(vtx_app PRIVATE VTX_VERSION_MAJOR=${VTX_VERSION_MAJOR})
+target_compile_definitions(vtx_app PRIVATE VTX_VERSION_MINOR=${VTX_VERSION_MINOR})
+target_compile_definitions(vtx_app PRIVATE VTX_VERSION_PATCH=${VTX_VERSION_PATCH})
 
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../data" "./data")
 vtx_copy_registered_data(vtx_app_test) # allow declared files to be copied on build.

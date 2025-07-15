@@ -20,12 +20,14 @@
 #include "app/python_binding/run_script.hpp"
 #include "app/selection/selection_manager.hpp"
 #include "app/settings.hpp"
+#include "app/updater.hpp"
 #include <exception>
 #include <io/internal/filesystem.hpp>
 #include <python_binding/interpretor.hpp>
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
+#include <util/monitoring/stats.hpp>
 //
 #include "app/python_binding/interpretor.hpp"
 
@@ -36,6 +38,7 @@ namespace VTX::App
 	{
 		VTX_DEBUG( "Init application" );
 
+		// TODO: move to start to handle gui dialog?
 		Settings::initSettings();
 
 		// Create scene.
@@ -67,14 +70,14 @@ namespace VTX::App
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 	}
 
-	void VTXApp::start( const Args & p_args )
+	void VTXApp::start()
 	{
-		VTX_INFO( "Starting application: {}", p_args.toString() );
+		VTX_INFO( "Starting application: {}", _args.toString() );
 
 		// Build the renderer (graphic api backend context ready).
 		auto & renderer = RENDERER_SYSTEM();
 
-		if ( p_args.has( Args::NO_GRAPHICS ) )
+		if ( _args.has( ARG_NO_GRAPHICS ) )
 		{
 			VTX_WARNING( "No graphics" );
 			renderer.setDefault();
@@ -104,7 +107,15 @@ namespace VTX::App
 			tool->onAppStart();
 		}
 
-		_handleArgs( p_args );
+		// Updater.
+		UPDATER().onUpdateAvailable += []( const uint, const uint, const uint ) { UPDATER().downloadUpdate(); };
+
+		if ( not _args.has( ARG_NO_UPDATE ) )
+		{
+			// UPDATER().checkForUpdate();
+		}
+
+		_handleArgs( _args );
 	}
 
 	void VTXApp::update( const float p_deltaTime, const float p_elapsedTime )
@@ -200,6 +211,8 @@ namespace VTX::App
 
 	void VTXApp::_handleArgs( const Args & args )
 	{
+		// TODO: load pdb automatically or python script.
+
 		/*
 		using FILE_TYPE_ENUM = IO::Internal::Filesystem::FILE_TYPE_ENUM;
 		for ( const auto arg : args.all() )
@@ -271,5 +284,6 @@ namespace VTX::App
 	// TODO.
 	Application::Scene &	  SCENE() { return APP::getScene(); }
 	Util::Monitoring::Stats & STATS() { return Util::Singleton<Util::Monitoring::Stats>::get(); }
+	Updater &				  UPDATER() { return Util::Singleton<Updater>::get(); }
 
 } // namespace VTX::App

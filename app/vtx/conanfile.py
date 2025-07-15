@@ -9,17 +9,19 @@ class VTXRecipe(ConanFile):
     package_type = "application"
     
     settings = "os", "compiler", "build_type", "arch"
-    
+    options = {"version": ["ANY"], "tool_example": [True, False], "tool_mdprep": [True, False]}
+    default_options = {"version": "0.0.0", "tool_example": False, "tool_mdprep": True }
+
     generators = "CMakeDeps"
     
-    exports_sources = "CMakeLists.txt", "include/*", "src/*", "asset/*", "data/*", "internal_data/*", "libraries/*", "CHANGELOG.md", "README.md", "license.txt"
+    exports_sources = "CMakeLists.txt", "include/*", "src/*", "asset/*", "data/*", "cmake/*", "internal_data/*", "libraries/*", "CHANGELOG.md", "README.md", "license.txt"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_app/1.0")
         self.requires("vtx_core/1.0")
         self.requires("vtx_io/1.0")
-        #self.requires("vtx_python_binding/1.0")
+        self.requires("vtx_python_binding/1.0")
         self.requires("vtx_renderer/1.0")
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_tool_example/1.0")
@@ -30,16 +32,15 @@ class VTXRecipe(ConanFile):
         
     def generate(self):
         tc = CMakeToolchain(self)
-        dir_shaders = self.dependencies["vtx_renderer"].conf_info.get("user.myconf:dir_shaders")
-        tc.cache_variables["DIR_SHADERS"] = dir_shaders
-        #dir_python_script = self.dependencies["vtx_python_binding"].conf_info.get("user.myconf:dir_python_script")
-        #tc.cache_variables["DIR_PYTHON_SCRIPT"] = dir_python_script
-        #path_python_module = self.dependencies["vtx_python_binding"].conf_info.get("user.myconf:path_python_module")
-        #tc.cache_variables["PATH_PYTHON_MODULE"] = path_python_module
+        versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
+        tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
+        tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor
+        tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
+        tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
+        tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
         tc.generate()
 
-        copy(self, "*.dll", self.dependencies["vtx_ui_qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
-        #copy(self, "*", os.path.join(self.dependencies["vtx_tool"].cpp_info.bindir, "data"), os.path.join(self.build_folder, "data"))
+        copy(self, "*.dll", self.dependencies["vtx_ui_qt"].cpp_info.bindirs[0], os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
 
     def build(self):
         cmake = CMake(self)
@@ -49,9 +50,6 @@ class VTXRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
-        copy(self, "*.dll", self.build_folder, os.path.join(self.package_folder, "bin"))
-        
-        # TODO: cpack
 
     def package_info(self):
         self.cpp_info.libs = ["vtx"]

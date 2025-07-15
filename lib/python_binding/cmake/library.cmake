@@ -2,7 +2,7 @@
 include ("${CMAKE_CURRENT_LIST_DIR}/vtx_python_binding_copy_files.cmake")
 
 add_library(vtx_python_binding)
-configure_target(vtx_python_binding)
+vtx_configure_target(vtx_python_binding)
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
@@ -14,7 +14,7 @@ target_sources(vtx_python_binding
 add_executable(vtx_python_binding_test "${SOURCES};${SOURCES_TEST}")
 target_include_directories(vtx_python_binding_test PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include")
 
-configure_target(vtx_python_binding_test)
+vtx_configure_target(vtx_python_binding_test)
 
 
 if(NOT DEFINED _VTX_PYTHON_BINDING_CONAN)

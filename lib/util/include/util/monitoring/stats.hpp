@@ -10,7 +10,7 @@
 
 namespace VTX::Util::Monitoring
 {
-	struct Stats
+	class Stats
 	{
 	  public:
 		FrameInfo & newFrame();

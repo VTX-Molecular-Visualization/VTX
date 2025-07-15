@@ -1,8 +1,12 @@
-StructVertexShader
+struct StructVertexShaderSmooth
 {
-	smooth vec3 viewPosition;
-	smooth vec3 normal;
-	smooth vec4	color;
-	flat uint   selected;
-	flat uint   id;
-}
+	vec3 viewPosition;
+	vec3 normal;
+	vec4 color;
+};
+
+struct StructVertexShaderFlat
+{
+	uint selected;
+	uint id;
+};

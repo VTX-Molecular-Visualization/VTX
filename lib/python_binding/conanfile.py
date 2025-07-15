@@ -16,7 +16,7 @@ class VTXPythonBindingRecipe(ConanFile):
     
     generators = "CMakeDeps"
     
-    exports_sources = "CMakeLists.txt", "src/*", "module/*", "include/*", "cmake/*", "cmake/library.cmake", "cmake/vtx_python_binding_copy_files.cmake", "python_script/*", "test/*"
+    exports_sources = "CMakeLists.txt", "src/*", "module/*", "include/*", "cmake/*", "python_script/*", "test/*"
     
     def _generated_cmake_prefix(self):
         return "pybind11-"
@@ -54,8 +54,6 @@ class VTXPythonBindingRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["vtx_python_binding"]
-        cmake_file_list = ["cmake/vtx_python_binding_copy_files.cmake"]
-        
+        self.cpp_info.libs = ["vtx_python_binding"]       
         # Give away cmake code to be executed by the consumer of this package
-        self.cpp_info.set_property("cmake_build_modules", cmake_file_list) 
+        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_python_binding_copy_files.cmake"]) 

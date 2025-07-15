@@ -1,6 +1,11 @@
 #ifndef __VTX_RENDERER_RENDERER__
 #define __VTX_RENDERER_RENDERER__
 
+// #undef WITH_CUDA
+
+#ifdef WITH_CUDA
+#include "bcs/sesdf/sesdf.hpp"
+#endif
 #include "caches.hpp"
 #include "context/context_wrapper.hpp"
 #include "passes.hpp"
@@ -40,7 +45,7 @@ namespace VTX::Renderer
 		 * @param p_index is the index of the data to set if we need to update only one value in an array.
 		 */
 		template<typename T>
-		inline void setValue( const T & p_value, const std::string & p_key, const size_t p_index = 0 )
+		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index = 0 )
 		{
 			_context.setValue<T>( p_value, p_key, p_index );
 			setNeedUpdate( true );
@@ -154,15 +159,23 @@ namespace VTX::Renderer
 		/**
 		 * @brief Buffer swapping count.
 		 */
-		static const size_t BUFFER_COUNT = 2;
+		static constexpr size_t BUFFER_COUNT = 2;
 
 		/**
 		 * @brief Primitives to show.
 		 */
+
+		// TODO: facto geometries with RL, DR and cache?
+		// TODO: facto proxies in enumed collection?
+
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
 		bool showVoxels	 = true;
+		// bool showSESCircles	 = true;
+		// bool showSESConcaves = true;
+		// bool showSESConvexes = true;
+		// bool showSESSegments = true;
 
 		/**
 		 * @brief Force update each frame.
@@ -174,13 +187,43 @@ namespace VTX::Renderer
 		 */
 		// TODO: test render time with/without ranges/multidraw.
 		using RangeList = Util::Math::RangeList<size_t>;
-		RangeList	drawRangeSpheresRL;
-		RangeList	drawRangeCylindersRL;
-		RangeList	drawRangeRibbonsRL;
+		RangeList drawRangeSpheresRL;
+		RangeList drawRangeCylindersRL;
+		RangeList drawRangeRibbonsRL;
+		// RangeList	drawRangeVoxelsRL;
+		/*
+		RangeList drawRangeSESCirclesRL;
+		RangeList drawRangeSESConcavesRL;
+		RangeList drawRangeSESConvexesRL;
+		RangeList drawRangeSESSegmentsRL;
+		*/
+
 		Draw::Range drawRangeSpheres;
 		Draw::Range drawRangeCylinders;
 		Draw::Range drawRangeRibbons;
 		Draw::Range drawRangeVoxels;
+		/*
+		Draw::Range drawRangeSESCircles;
+		Draw::Range drawRangeSESConcaves;
+		Draw::Range drawRangeSESConvexes;
+		Draw::Range drawRangeSESSegments;
+		*/
+
+#ifdef WITH_CUDA
+		std::unique_ptr<bcs::Sesdf> _sesData;
+		bcs::sesdf::SesdfGraphics	_sesSurface {};
+		GLuint						_sesVao		   = GL_INVALID_VALUE;
+		GLuint						_sesSegmentVao = GL_INVALID_VALUE;
+		GLuint						_sesCircleVao  = GL_INVALID_VALUE;
+		GLuint						_sesConvexVao  = GL_INVALID_VALUE;
+		Context::GL::ProgramManager _pm
+			= Context::GL::ProgramManager( VTX::Util::Filesystem::getExecutableDir() / "shaders" );
+		Context::GL::Program * _sesProgramConcave;
+		Context::GL::Program * _sesProgramSegment;
+		Context::GL::Program * _sesProgramCircle;
+		Context::GL::Program * _sesProgramConvex;
+
+#endif
 
 		/**
 		 * @brief Callback triggered when the renderering context is ready and _graph built (first time only).

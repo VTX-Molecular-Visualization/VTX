@@ -20,13 +20,10 @@ class VTXRendererBenchRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_io/1.0")
         self.requires("sdl/3.2.14")
-        self.requires("imgui/1.91.8")        
-        #self.requires("assimp/5.2.2") 
+        self.requires("imgui/1.91.8")
     
     def generate(self):
         tc = CMakeToolchain(self)
-        dir_shaders = self.dependencies["vtx_renderer"].conf_info.get("user.myconf:dir_shaders")
-        tc.cache_variables["DIR_SHADERS"] = dir_shaders
         tc.generate()
         
         copy(self, "*sdl3*", os.path.join(self.dependencies["imgui"].package_folder,

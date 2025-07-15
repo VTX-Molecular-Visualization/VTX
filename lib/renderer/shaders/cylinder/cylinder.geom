@@ -2,36 +2,36 @@
 
 #include "../layout_uniforms_camera.glsl"
 #include "../layout_uniforms_representation.glsl"
+#include "struct_geometry_shader.glsl"
+#include "struct_cylinder.glsl"
 
 layout( lines ) in;
 layout( triangle_strip, max_vertices = 4 ) out;
 
 // In.
-in 
-#include "struct_vertex_shader.glsl"
-inData[];
+flat in StructCylinder vsCylinder[];
 
 // Out.
-out 
-#include "struct_geometry_shader.glsl"
-outData;
+smooth out StructGeometryShaderSmooth gsDataSmooth;
+flat out StructGeometryShaderFlat gsDataFlat[ 2 ];
+flat out StructCylinder gsCylinder[ 2 ];
 
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
-	outData.viewImpostorPosition = v1;
-	gl_Position				     = uniformsCamera.matrixProjection * vec4( outData.viewImpostorPosition, 1.f );
+	gsDataSmooth.viewImpostorPosition = v1;
+	gl_Position = uniformsCamera.matrixProjection * vec4( gsDataSmooth.viewImpostorPosition, 1.f );
 	EmitVertex();
 
-	outData.viewImpostorPosition = v2;
-	gl_Position				     = uniformsCamera.matrixProjection * vec4( outData.viewImpostorPosition, 1.f );
+	gsDataSmooth.viewImpostorPosition = v2;
+	gl_Position = uniformsCamera.matrixProjection * vec4( gsDataSmooth.viewImpostorPosition, 1.f );
 	EmitVertex();
 
-	outData.viewImpostorPosition = v3;
-	gl_Position				     = uniformsCamera.matrixProjection * vec4( outData.viewImpostorPosition, 1.f );
+	gsDataSmooth.viewImpostorPosition = v3;
+	gl_Position = uniformsCamera.matrixProjection * vec4( gsDataSmooth.viewImpostorPosition, 1.f );
 	EmitVertex();
 
-	outData.viewImpostorPosition = v4;
-	gl_Position				     = uniformsCamera.matrixProjection * vec4( outData.viewImpostorPosition, 1.f );
+	gsDataSmooth.viewImpostorPosition = v4;
+	gl_Position	= uniformsCamera.matrixProjection * vec4( gsDataSmooth.viewImpostorPosition, 1.f );
 	EmitVertex();
 
 	EndPrimitive();
@@ -40,37 +40,31 @@ void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 void main()
 {
 	// Do not emit primitive if cylinder is not visible.
-	if ( inData[ 0 ].vertexVisible == 0 || inData[ 1 ].vertexVisible == 0 )
+	if ( vsCylinder[ 0 ].isVisible == 0 || vsCylinder[ 1 ].isVisible == 0 )
 	{
 		return;
 	}
 
 	// Output data.
-	outData.viewVertices[ 0 ]			= gl_in[ 0 ].gl_Position.xyz;
-	outData.viewVertices[ 1 ]			= gl_in[ 1 ].gl_Position.xyz;
-	outData.colors[ 0 ]					= inData[ 0 ].vertexColor;
-	outData.colors[ 1 ]					= inData[ 1 ].vertexColor;
-	outData.vertexSelected[ 0 ]			= inData[ 0 ].vertexSelected;
-	outData.vertexSelected[ 1 ]			= inData[ 1 ].vertexSelected;
-	outData.vertexId[ 0 ]				= inData[ 0 ].vertexId;
-	outData.vertexId[ 1 ]				= inData[ 1 ].vertexId;
-	outData.vertexIdRepresentation[ 0 ]	= inData[ 0 ].vertexIdRepresentation;
-	outData.vertexIdRepresentation[ 1 ]	= inData[ 1 ].vertexIdRepresentation;
+	gsDataFlat[ 0 ].viewVertice = gl_in[ 0 ].gl_Position.xyz;
+	gsDataFlat[ 1 ].viewVertice = gl_in[ 1 ].gl_Position.xyz;
+	gsCylinder[ 0 ]				= vsCylinder[ 0 ];
+	gsCylinder[ 1 ]				= vsCylinder[ 1 ];
 
 	// Flip is vertex 0 is farther than vertex 1.
 	vec3 viewImpPos0, viewImpPos1;
-	if ( outData.viewVertices[ 0 ].z < outData.viewVertices[ 1 ].z )
+	if ( gsDataFlat[ 0 ].viewVertice.z < gsDataFlat[ 1 ].viewVertice.z )
 	{
-		viewImpPos0 = outData.viewVertices[ 1 ];
-		viewImpPos1 = outData.viewVertices[ 0 ];
+		viewImpPos0 = gsDataFlat[ 1 ].viewVertice;
+		viewImpPos1 = gsDataFlat[ 0 ].viewVertice;
 	}
 	else
 	{
-		viewImpPos0 = outData.viewVertices[ 0 ];
-		viewImpPos1 = outData.viewVertices[ 1 ];
+		viewImpPos0 = gsDataFlat[ 0 ].viewVertice;
+		viewImpPos1 = gsDataFlat[ 1 ].viewVertice;
 	}
 
-	float radiusCylinder = uniformsRepresentation[ inData[ 0 ].vertexIdRepresentation ].radiusCylinder;
+	float radiusCylinder = uniformsRepresentation[ vsCylinder[ 0 ].representation ].radiusCylinder;
 
 	if ( uniformsCamera.isCameraPerspective == 1 )
 	{

@@ -6,12 +6,13 @@
 
 namespace VTX::Renderer::Context
 {
-
-	/**
-	 * @brief Function pointers to the context implementation.
-	 */
-	using FunctionBuild = std::function<
-		void( const RenderQueue &, const Links &, const std::vector<BufferData> &, Instructions &, InstructionsDurationRanges & )>;
+	using FunctionBuild				  = std::function<void(
+		  const RenderQueue &,
+		  const Links &,
+		  const std::vector<BufferData> &,
+		  Instructions &,
+		  InstructionsDurationRanges &
+	  )>;
 	using FunctionResize			  = std::function<void( const RenderQueue &, size_t, size_t )>;
 	using FunctionSetOutput			  = std::function<void( Handle )>;
 	using FunctionSetValue			  = std::function<void( const Key &, const void * const, size_t )>;
@@ -27,75 +28,78 @@ namespace VTX::Renderer::Context
 	using FunctionGetTextureData = std::function<void( const Key &, std::any &, size_t, size_t, E_CHAN_OUT )>;
 	using FunctionCompute		 = std::function<void( const ComputePass & )>;
 
-	/**
-	 * @brief Type-erased context wrapper.
-	 */
+	struct ContextInterface
+	{
+		FunctionBuild				build;
+		FunctionResize				resize;
+		FunctionSetOutput			setOutput;
+		FunctionSetValue			setValue;
+		FunctionReserveData			reserveData;
+		FunctionSet					set;
+		FunctionSetSub				setSub;
+		FunctionGet					get;
+		FunctionFillInfos			fillInfos;
+		FunctionMeasureTaskDuration measureTaskDuration;
+		FunctionCompileShaders		compileShaders;
+		FunctionSnapshot			snapshot;
+		FunctionGetTextureData		getTextureData;
+		FunctionCompute				compute;
+
+		void clear()
+		{
+			build				= nullptr;
+			resize				= nullptr;
+			setOutput			= nullptr;
+			setValue			= nullptr;
+			reserveData			= nullptr;
+			set					= nullptr;
+			setSub				= nullptr;
+			get					= nullptr;
+			fillInfos			= nullptr;
+			measureTaskDuration = nullptr;
+			compileShaders		= nullptr;
+			snapshot			= nullptr;
+			getTextureData		= nullptr;
+			compute				= nullptr;
+		}
+	};
+
 	class ContextWrapper
 	{
 	  public:
-		/**
-		 * @brief Set the current context implementation.
-		 */
 		template<ConceptContextImpl C, typename... Args>
 		void set( Args &&... p_p_args )
 		{
-			// Create or get context.
 			C * context;
 			if ( _contexts.has<C>() )
-			{
 				context = _contexts.get<C>();
-			}
 			else
-			{
 				context = _contexts.create<C>( std::forward<Args>( p_p_args )... );
-			}
 
-			// Connect functions.
-			_build
-				= [ context ]( auto &&... p_args ) { context->build( std::forward<decltype( p_args )>( p_args )... ); };
-			_resize = [ context ]( auto &&... p_args )
-			{ context->resize( std::forward<decltype( p_args )>( p_args )... ); };
-			_setOutput = [ context ]( auto &&... p_args )
-			{ context->setOutput( std::forward<decltype( p_args )>( p_args )... ); };
-			_setValue = [ context ]( auto &&... p_args )
-			{ context->setValue( std::forward<decltype( p_args )>( p_args )... ); };
-			_reserveData = [ context ]( auto &&... p_args )
-			{ context->reserveData( std::forward<decltype( p_args )>( p_args )... ); };
-			_set = [ context ]( auto &&... p_args ) { context->set( std::forward<decltype( p_args )>( p_args )... ); };
-			_setSub = [ context ]( auto &&... p_args )
-			{ context->setSub( std::forward<decltype( p_args )>( p_args )... ); };
-			_get = [ context ]( auto &&... p_args ) { context->get( std::forward<decltype( p_args )>( p_args )... ); };
-			_fillInfos = [ context ]( auto &&... p_args )
-			{ context->fillInfos( std::forward<decltype( p_args )>( p_args )... ); };
-			_measureTaskDuration = [ context ]( auto &&... p_args )
-			{ return context->measureTaskDuration( std::forward<decltype( p_args )>( p_args )... ); };
-			_compileShaders = [ context ]( auto &&... p_args )
-			{ context->compileShaders( std::forward<decltype( p_args )>( p_args )... ); };
-			_snapshot = [ context ]( auto &&... p_args )
-			{ context->snapshot( std::forward<decltype( p_args )>( p_args )... ); };
-			_getTextureData = [ context ]( auto &&... p_args )
-			{ context->getTextureData( std::forward<decltype( p_args )>( p_args )... ); };
-			_compute = [ context ]( auto &&... p_args )
-			{ context->compute( std::forward<decltype( p_args )>( p_args )... ); };
+#define BIND_CONTEXT_FN( name ) \
+	_impl.name = [ context ]( auto &&... args ) { return context->name( std::forward<decltype( args )>( args )... ); }
+
+			BIND_CONTEXT_FN( build );
+			BIND_CONTEXT_FN( resize );
+			BIND_CONTEXT_FN( setOutput );
+			BIND_CONTEXT_FN( setValue );
+			BIND_CONTEXT_FN( reserveData );
+			BIND_CONTEXT_FN( set );
+			BIND_CONTEXT_FN( setSub );
+			BIND_CONTEXT_FN( get );
+			BIND_CONTEXT_FN( fillInfos );
+			BIND_CONTEXT_FN( measureTaskDuration );
+			BIND_CONTEXT_FN( compileShaders );
+			BIND_CONTEXT_FN( snapshot );
+			BIND_CONTEXT_FN( getTextureData );
+			BIND_CONTEXT_FN( compute );
+
+#undef BIND_CONTEXT_FN
 		}
 
 		void reset()
 		{
-			_build				 = nullptr;
-			_resize				 = nullptr;
-			_setOutput			 = nullptr;
-			_setValue			 = nullptr;
-			_reserveData		 = nullptr;
-			_set				 = nullptr;
-			_setSub				 = nullptr;
-			_get				 = nullptr;
-			_fillInfos			 = nullptr;
-			_measureTaskDuration = nullptr;
-			_compileShaders		 = nullptr;
-			_snapshot			 = nullptr;
-			_getTextureData		 = nullptr;
-			_compute			 = nullptr;
-
+			_impl.clear();
 			_contexts.clear();
 		}
 
@@ -106,141 +110,112 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename... Args>
-		inline void build( Args &&... p_args )
+		inline void build( Args &&... args )
 		{
-			_build( std::forward<Args>( p_args )... );
+			_impl.build( std::forward<Args>( args )... );
 		}
-
 		template<typename... Args>
-		inline void resize( Args &&... p_args )
+		inline void resize( Args &&... args )
 		{
-			_resize( std::forward<Args>( p_args )... );
+			_impl.resize( std::forward<Args>( args )... );
 		}
-
 		template<typename... Args>
-		inline void setOutput( Args &&... p_args )
+		inline void setOutput( Args &&... args )
 		{
-			_setOutput( std::forward<Args>( p_args )... );
-		}
-
-		// TODO: change parameter order.
-		template<typename T>
-		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index )
-		{
-			_setValue( p_key, static_cast<const void * const>( &p_value ), p_index );
+			_impl.setOutput( std::forward<Args>( args )... );
 		}
 
 		template<typename T>
-		inline void reserveData( const size_t p_size, const Key & p_key, const T p_dummy = T() )
+		inline void setValue( const T & value, const Key & key, size_t index )
 		{
-			size_t size = sizeof( T ) * p_size;
-			_reserveData( p_key, size );
+			_impl.setValue( key, static_cast<const void * const>( &value ), index );
 		}
 
 		template<typename T>
-		inline void set( const std::vector<T> & p_data, const Key & p_key )
+		inline void reserveData( size_t count, const Key & key, const T dummy = T() )
 		{
-			size_t size = sizeof( T ) * p_data.size();
-			_set( p_key, static_cast<const void * const>( p_data.data() ), size );
+			_impl.reserveData( key, sizeof( T ) * count );
 		}
 
-		inline void set( const BinaryBuffer & p_buffer, const Key & p_key )
+		template<typename T>
+		inline void set( const std::vector<T> & data, const Key & key )
 		{
-			_set( p_key, p_buffer.data(), p_buffer.size() );
+			_impl.set( key, data.data(), sizeof( T ) * data.size() );
+		}
+
+		inline void set( const BinaryBuffer & buffer, const Key & key )
+		{
+			_impl.set( key, buffer.data(), buffer.size() );
 		}
 
 		template<typename T>
 		inline void setSub(
-			const std::vector<T> & p_data,
-			const Key &			   p_key,
-			const size_t		   p_offset	   = 0,
-			const size_t		   p_offsetSrc = 0,
-			const size_t		   p_size	   = 0
+			const std::vector<T> & data,
+			const Key &			   key,
+			size_t				   offset	 = 0,
+			size_t				   offsetSrc = 0,
+			size_t				   size		 = 0
 		)
 		{
-			size_t size	  = sizeof( T ) * ( p_size ? p_size : p_data.size() );
-			size_t offset = sizeof( T ) * p_offset;
-			_setSub( p_key, static_cast<const void * const>( p_data.data() + p_offsetSrc ), size, offset );
+			size_t byteSize	  = sizeof( T ) * ( size ? size : data.size() );
+			size_t byteOffset = sizeof( T ) * offset;
+			_impl.setSub( key, data.data() + offsetSrc, byteSize, byteOffset );
 		}
 
-		inline void setSub(
-			const BinaryBuffer & p_buffer,
-			const Key &			 p_key,
-			const size_t		 p_index = 0
-
-		)
+		inline void setSub( const BinaryBuffer & buffer, const Key & key, size_t index = 0 )
 		{
-			_setSub( p_key, p_buffer.data(), p_buffer.size(), p_buffer.size() * p_index );
+			_impl.setSub( key, buffer.data(), buffer.size(), buffer.size() * index );
 		}
 
 		template<typename T>
-		inline void get( std::vector<T> & p_data, const Key & p_key )
+		inline void get( std::vector<T> & data, const Key & key )
 		{
-			size_t size = sizeof( T ) * p_data.size();
-			_get( p_key, static_cast<void * const>( p_data.data() ), size );
+			_impl.get( key, data.data(), sizeof( T ) * data.size() );
 		}
 
 		template<typename... Args>
-		inline void fillInfos( Args &&... p_args ) const
+		inline void fillInfos( Args &&... args ) const
 		{
-			_fillInfos( std::forward<Args>( p_args )... );
+			_impl.fillInfos( std::forward<Args>( args )... );
 		}
 
 		template<typename... Args>
-		inline float measureTaskDuration( Args &&... p_args )
+		inline float measureTaskDuration( Args &&... args )
 		{
-			return _measureTaskDuration( std::forward<Args>( p_args )... );
+			return _impl.measureTaskDuration( std::forward<Args>( args )... );
 		}
 
 		template<typename... Args>
-		inline void compileShaders( Args &&... p_args ) const
+		inline void compileShaders( Args &&... args ) const
 		{
-			_compileShaders( std::forward<Args>( p_args )... );
+			_impl.compileShaders( std::forward<Args>( args )... );
 		}
 
 		template<typename... Args>
-		inline void snapshot( Args &&... p_args )
+		inline void snapshot( Args &&... args )
 		{
-			_snapshot( std::forward<Args>( p_args )... );
+			_impl.snapshot( std::forward<Args>( args )... );
 		}
 
 		template<typename T>
-		inline T getTextureData( const Key & p_key, const size_t p_x, const size_t p_y, const E_CHAN_OUT p_channel )
-			const
+		inline T getTextureData( const Key & key, size_t x, size_t y, E_CHAN_OUT channel ) const
 		{
-			std::any textureData = std::make_any<Vec2i>();
-			_getTextureData( p_key, textureData, p_x, p_y, p_channel );
-			return std::any_cast<T>( textureData );
+			std::any result;
+			_impl.getTextureData( key, result, x, y, channel );
+			return std::any_cast<T>( result );
 		}
 
 		template<typename... Args>
-		inline void compute( Args &&... p_args )
+		inline void compute( Args &&... args )
 		{
-			_compute( std::forward<Args>( p_args )... );
+			_impl.compute( std::forward<Args>( args )... );
 		}
 
 		inline void clear() { _contexts.clear(); }
 
 	  private:
-		/**
-		 * @brief Created context implementations.
-		 */
 		Util::Collection<std::unique_ptr<BaseContext>> _contexts;
-
-		FunctionBuild				_build;
-		FunctionResize				_resize;
-		FunctionSetOutput			_setOutput;
-		FunctionSetValue			_setValue;
-		FunctionReserveData			_reserveData;
-		FunctionSet					_set;
-		FunctionSetSub				_setSub;
-		FunctionGet					_get;
-		FunctionFillInfos			_fillInfos;
-		FunctionMeasureTaskDuration _measureTaskDuration;
-		FunctionCompileShaders		_compileShaders;
-		FunctionSnapshot			_snapshot;
-		FunctionGetTextureData		_getTextureData;
-		FunctionCompute				_compute;
+		ContextInterface							   _impl;
 	};
 } // namespace VTX::Renderer::Context
 

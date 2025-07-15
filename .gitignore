@@ -12,3 +12,5 @@
 **/CMakeSettings.json
 /doc/
 /*.ini
+/*.APS
+/*.rc

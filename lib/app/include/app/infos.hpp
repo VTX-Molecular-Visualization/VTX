@@ -3,18 +3,18 @@
 
 #include <string>
 
-namespace VTX::App::Info
+namespace VTX::App
 {
-	constexpr int VERSION_MAJOR	   = 1;
-	constexpr int VERSION_MINOR	   = 0;
-	constexpr int VERSION_REVISION = 0;
+	// Resolved in .cpp with preprocessor definitions only passed to App.
+	extern const int VERSION_MAJOR;
+	extern const int VERSION_MINOR;
+	extern const int VERSION_PATCH;
 
 	constexpr std::string_view APPLICATION_DISPLAY_NAME = "VTX";
 	constexpr std::string_view APPLICATION_NAME			= "VTX";
 	constexpr std::string_view ORGANIZATION_NAME		= "VTX";
 	constexpr std::string_view ORGANIZATION_DOMAIN		= "vtx.drugdesign.fr";
-	constexpr std::string_view APPLICATION_VERSION		= "1.0.0";
 
-} // namespace VTX::App::Info
+} // namespace VTX::App
 
 #endif

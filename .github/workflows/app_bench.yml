@@ -2,18 +2,29 @@ name: App Bench
 
 on:
   push:
-    branches: [ "master", "dev", "dev-ndy", "dev-sge", "dev-vge" ]
+    branches: [ "master", "dev", "dev-sge", "dev-vge" ]
     paths: ['app/bench/**', 'lib/renderer/**', '.github/workflows/app_bench.yml']
+  workflow_dispatch:
+      inputs:
+        build_type:
+          description: 'Build type'
+          required: true
+          default: 'Release'
+          type: choice
+          options:
+          - Debug
+          - Release
 
 env:
   ROOT_DIR: ${{github.workspace}}
+  BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-2019, ubuntu-22.04]
+        os: [windows-2022, ubuntu-22.04, windows-latest, ubuntu-latest]
       fail-fast: false
 
     steps:
@@ -44,13 +55,12 @@ jobs:
         conan export lib/renderer
         conan export lib/core
         conan export lib/io
-        conan create app/bench -b missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
+        conan create app/bench -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
 
     - name: Upload dependencies
       run: |
         conan upload sdl -r=cano7782
         conan upload imgui -r=cano7782
-        conan upload stb -r=cano7782
 
     - name: Read package path from output.json
       id: read_package_path
@@ -62,5 +72,5 @@ jobs:
       env:
         PACKAGE_PATH: ${{ steps.read_package_path.outputs.PACKAGE_PATH }}
       with:
-        name: VTXRendererBench_${{runner.os}}
+        name: VTXRendererBench_${{matrix.os}}
         path: ${{env.PACKAGE_PATH}}

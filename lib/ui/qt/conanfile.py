@@ -3,7 +3,7 @@ from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 from conan.tools.files import copy
 
-class VTXUiRecipe(ConanFile):
+class VTXUiQtRecipe(ConanFile):
     name = "vtx_ui_qt"
     version = "1.0"
     package_type = "library"
@@ -123,10 +123,21 @@ class VTXUiRecipe(ConanFile):
     def generate(self):    
         tc = CMakeToolchain(self)
         tc.generate()
-        
-        copy(self, "*.cmake", self.source_folder, self.build_folder)
-        copy(self, "*.dll", self.dependencies["qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
-        copy(self, "*.dll", os.path.join(self.dependencies["qt"].package_folder, "plugins"), os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
+
+        # Copy Qt plugins and DLLs to the build folder.
+        qtBinDir = self.dependencies["qt"].cpp_info.bindir
+        qtPluginsDir = os.path.join(self.dependencies["qt"].package_folder, "plugins")
+        destDir = os.path.join(self.build_folder, self.cpp.build.libdirs[0])
+
+        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll" ]
+        for file in binFiles:
+            self.output.highlight(f"Copying {file} from Qt bin directory to {destDir}")
+            copy(self, file, qtBinDir, destDir)
+
+        pluginsFolers = [ "imageformats", "platforms", "styles", "tls" ]
+        for folder in pluginsFolers:
+            self.output.highlight(f"Copying *.dll from Qt {folder} directory to {destDir}/{folder}")
+            copy(self, "*.dll", os.path.join(qtPluginsDir, folder), os.path.join(destDir, folder))
 
     def build(self):
         cmake = CMake(self)
@@ -136,12 +147,10 @@ class VTXUiRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
-        copy(self, "*.cmake", self.build_folder, self.package_folder)
-        copy(self, "*.dll", self.build_folder, os.path.join(self.package_folder, "bin"))
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_ui_qt"]
-        cmake_file = os.path.join("cmake", "qt_helper.cmake")
-        self.cpp_info.set_property("cmake_build_modules", [cmake_file])
+        self.cpp_info.bindirs = [""]
+        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_qt_configure.cmake", "cmake/vtx_qt_add_resources.cmake"])
         if self.settings.os == "Windows":
             self.cpp_info.system_libs.append('d3d12')

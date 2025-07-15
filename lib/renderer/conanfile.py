@@ -1,6 +1,6 @@
 import os
 from conan import ConanFile
-from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 from conan.tools.files import copy
 
 class VTXRendererRecipe(ConanFile):
@@ -9,10 +9,10 @@ class VTXRendererRecipe(ConanFile):
     package_type = "library"
     
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
-    default_options = {"shared": False, "fPIC": True, "test": False}
+    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False], "cuda_arch": ["ANY"]}
+    default_options = {"shared": False, "fPIC": True, "test": False, "cuda_arch": "native"}
     
-    generators = "CMakeDeps", "CMakeToolchain"
+    generators = "CMakeDeps"
     
     exports_sources = "CMakeLists.txt", "src/*", "include/*", "vendor/*", "shaders/*", "cmake/*", "test/*"
     
@@ -25,10 +25,13 @@ class VTXRendererRecipe(ConanFile):
             del self.options.fPIC
 
     def generate(self):
-        copy(self, "*.cmake", self.source_folder, self.build_folder)
+        tc = CMakeToolchain(self)
+        tc.cache_variables["VTX_CUDA_ARCH"] = self.options.cuda_arch
+        tc.generate()
         
     def layout(self):
         cmake_layout(self)
+        self.cpp.source.includedirs = ["include/public"]
         
     def build(self):
         cmake = CMake(self)
@@ -40,10 +43,7 @@ class VTXRendererRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
-        copy(self, "*.cmake", self.build_folder, self.package_folder)
 
     def package_info(self):    
         self.cpp_info.libs = ["vtx_renderer"]      
-        self.conf_info.define("user.myconf:dir_shaders", os.path.join(self.package_folder, "shaders"))
-        self.cpp_info.set_property("cmake_build_modules", ["cmake/copy_shaders.cmake"])
-        
+        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_renderer_copy_files.cmake", "cmake/vtx_link_cuda.cmake"])

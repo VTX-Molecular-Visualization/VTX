@@ -16,6 +16,7 @@ class VTXRecipe(ConanFile):
         self.requires("glm/1.0.1")
         self.requires("spdlog/1.15.1")
         self.requires("magic_enum/0.9.7")
+        self.requires("nlohmann_json/3.12.0")
         self.requires("cpr/1.11.2")
         self.requires("catch2/3.8.1")
         self.requires("chemfiles/0.10.4.2")
@@ -128,8 +129,18 @@ class VTXRecipe(ConanFile):
         copy(self, "*opengl3*", os.path.join(self.dependencies["imgui"].package_folder,
             "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
 
-        copy(self, "*.dll", self.dependencies["qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
-        copy(self, "*.dll", os.path.join(self.dependencies["qt"].package_folder, "plugins"), os.path.join(self.build_folder, self.cpp.build.libdirs[0]))    
+        # Copy Qt plugins and DLLs to the build folder.
+        qtBinDir = self.dependencies["qt"].cpp_info.bindir
+        qtPluginsDir = os.path.join(self.dependencies["qt"].package_folder, "plugins")
+        destDir = os.path.join(self.build_folder, self.cpp.build.libdirs[0])
+
+        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll" ]
+        for file in binFiles:
+            copy(self, file, qtBinDir, destDir)
+
+        pluginsFolers = [ "imageformats", "platforms", "sytles", "tls" ]
+        for folder in pluginsFolers:
+            copy(self, "*.dll", os.path.join(qtPluginsDir, folder), os.path.join(destDir, folder))
         
         copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "external"), os.path.join(self.build_folder, "external"))        
         copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "data", "tools","mdprep","gromacs","top"), os.path.join(self.build_folder, "data", "tools", "mdprep", "gromacs", "top" ))        

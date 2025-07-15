@@ -2,6 +2,7 @@
 #include "app/monitoring/constants.hpp"
 #include <app/core/renderer/renderer_system.hpp>
 #include <app/vtx_app.hpp>
+#include <util/monitoring/stats.hpp>
 
 namespace VTX::UI::QT::Widget
 {

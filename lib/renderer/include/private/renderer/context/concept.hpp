@@ -10,8 +10,6 @@
 
 namespace VTX::Renderer::Context
 {
-	using Key  = std::string;
-	using Keys = std::vector<Key>;
 
 	/**
 	 * @brief Shared attributes for all render contexts.

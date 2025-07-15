@@ -1,10 +1,10 @@
 #ifndef __VTX_APP_ARGS__
 #define __VTX_APP_ARGS__
 
+#include <algorithm>
 #include <numeric>
 #include <string>
-#include <vector>
-#include <algorithm>
+#include <unordered_set>
 
 namespace VTX::App
 {
@@ -13,19 +13,15 @@ namespace VTX::App
 	class Args
 	{
 	  public:
-		static inline Arg NO_GRAPHICS { "--no-graphics" };
-
+		Args() = default;
 		Args( const int p_argc, const char * const p_argv[] ) : _args( { p_argv, p_argv + p_argc } ) {}
-		Args( const std::vector<Arg> & p_args ) : _args( p_args ) {}
+		Args( const std::unordered_set<Arg> & p_args ) : _args( p_args ) {}
 
-		inline bool has( const Arg p_arg ) const
-		{
-			return std::find( _args.begin(), _args.end(), p_arg ) != _args.end();
-		}
+		inline bool has( const Arg p_arg ) const { return _args.contains( p_arg ); }
 
-		inline void add( const Arg p_arg ) { _args.push_back( p_arg ); }
+		inline void add( const Arg p_arg ) { _args.emplace( p_arg ); }
 
-		inline const std::vector<Arg> & all() const { return _args; }
+		inline const std::unordered_set<Arg> & all() const { return _args; }
 
 		inline std::string toString() const
 		{
@@ -38,7 +34,7 @@ namespace VTX::App
 		}
 
 	  private:
-		std::vector<Arg> _args;
+		std::unordered_set<Arg> _args;
 	};
 } // namespace VTX::App
 

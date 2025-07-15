@@ -9,21 +9,15 @@ find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(imgui REQUIRED)
-#find_package(assimp CONFIG REQUIRED)
 
-set(_VTX_RENDERER_BENCH_CONAN " ") # So the right target name can be linked
-include(cmake/library.cmake)
+set(_VTX_RENDERER_BENCH_CONAN " ")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 set_target_properties(vtx_renderer_bench PROPERTIES OUTPUT_NAME bench)
 
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+include(InstallRequiredSystemLibraries)
+
 install(TARGETS vtx_renderer_bench DESTINATION .)
-install(DIRECTORY ${DIR_SHADERS} DESTINATION .)
-
-set(CPACK_PACKAGE_NAME "VTX Benchmarker")
-set(CPACK_PACKAGE_VENDOR "VTX dev team")
-set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "0")
-set(CPACK_PACKAGE_VERSION_PATCH "0")
-set(CPACK_PACKAGE_EXECUTABLES "bench" "Benchmarker" )
-
-include(CPack)
+install(DIRECTORY $<TARGET_FILE_DIR:vtx_renderer_bench>/shaders DESTINATION .)
+install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)

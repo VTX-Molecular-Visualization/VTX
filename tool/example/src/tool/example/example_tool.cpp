@@ -5,7 +5,11 @@
 #include <QFile>
 #include <ui/qt/application.hpp>
 #include <ui/qt/dock_widget/inspector.hpp>
+#include <ui/qt/macros.hpp>
 #include <util/logger.hpp>
+
+// Use the same target name as in the CMake file when using add_resources().
+VTX_INIT_RESOURCES( vtx_qt_resources_tool_example )
 
 namespace VTX::Tool::Example
 {

@@ -1,19 +1,17 @@
-include("${CMAKE_CURRENT_LIST_DIR}/qt_helper.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/vtx_qt_configure.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/vtx_qt_add_resources.cmake")
 
-configure_qt()
+vtx_qt_configure()
 add_library(vtx_ui_qt)
-configure_target(vtx_ui_qt)
-
-set(QT_RESOURCES_PATH ${CMAKE_CURRENT_LIST_DIR}/../asset)
+vtx_configure_target(vtx_ui_qt)
 
 file(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_LIST_DIR}/../include/*)
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/../src/*)
-file(GLOB_RECURSE QT_RESOURCES ${QT_RESOURCES_PATH}/*)
 target_sources(vtx_ui_qt
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_LIST_DIR}/../include FILES ${HEADERS})
 	
-add_resources(vtx_ui_qt ${CMAKE_CURRENT_LIST_DIR}/../asset vtx_qt_resources_ui)
+vtx_qt_add_resources(vtx_ui_qt ${CMAKE_CURRENT_LIST_DIR}/../asset vtx_qt_resources_ui)
 
 if (NOT DEFINED _VTX_UI_QT_CONAN)
 	target_link_libraries(vtx_ui_qt PRIVATE vtx_util)

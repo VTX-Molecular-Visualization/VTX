@@ -15,7 +15,7 @@ namespace VTX::UI::QT
 	class Application final : public App::UI::BaseApplication<Widget::MainWindow>, public QApplication
 	{
 	  public:
-		Application();
+		Application( const App::Args & );
 		~Application();
 
 		static void configure();

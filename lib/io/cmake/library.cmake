@@ -1,6 +1,6 @@
 # Lib.
 add_library(vtx_io)
-configure_target(vtx_io)
+vtx_configure_target(vtx_io)
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
@@ -11,7 +11,7 @@ target_sources(vtx_io
 # Tests.
 file(GLOB_RECURSE TEST_SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/src/*")
 add_executable(vtx_io_test ${TEST_SOURCES})
-configure_target(vtx_io_test)
+vtx_configure_target(vtx_io_test)
 
 if (NOT DEFINED _VTX_IO_CONAN)
 	target_link_libraries(vtx_io PRIVATE vtx_util)
@@ -22,7 +22,7 @@ if (NOT DEFINED _VTX_IO_CONAN)
 	# WIP
 	add_executable(vtx_io_new_process "${CMAKE_CURRENT_LIST_DIR}/../test/new_process/new_process.cpp")
 	target_include_directories(vtx_io_new_process PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../test/include;")
-	configure_target(vtx_io_new_process)
+	vtx_configure_target(vtx_io_new_process)
 
 	target_link_libraries(vtx_io_new_process PRIVATE vtx_util)
 	target_link_libraries(vtx_io_new_process PRIVATE vtx_core)	
@@ -35,7 +35,7 @@ if (NOT DEFINED _VTX_IO_CONAN)
 	target_compile_definitions(vtx_io_pdb100 PRIVATE PDB_DATABASE_DIR="${PDB100_DIRECTORY_PATH}")
 	target_compile_definitions(vtx_io_pdb100 PRIVATE NUM_PROCESSES=24)
 	target_include_directories(vtx_io_pdb100 PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../test/include;")
-	configure_target(vtx_io_pdb100)
+	vtx_configure_target(vtx_io_pdb100)
 	target_link_libraries(vtx_io_pdb100 PRIVATE vtx_util)
 	target_link_libraries(vtx_io_pdb100 PRIVATE vtx_core)	
 	target_link_libraries(vtx_io_pdb100 PRIVATE fmt::fmt)	
