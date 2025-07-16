@@ -23,8 +23,26 @@ namespace pdb100
 		Reporter( Reporter && )					 = delete;
 		Reporter & operator=( Reporter && )		 = delete;
 
+		struct Item
+		{
+			enum class ResultSummary
+			{
+				none,	 // no results yet
+				success, // secondary structure match perfectly with file's data
+				fail,	 // difference have been found between prediction and file's data
+				no_ss	 // no secondary structure in file's data
+			} resultSummary;
+			std::string pdb;
+			std::string details;
+		};
+
+		void add( Item );
+
 	  private:
-		// std::stringstream _out;
+		std::vector<Item> _items;
+		uint32_t		  _num_success = 0;
+		uint32_t		  _num_failed  = 0;
+		uint32_t		  _num_noSs	   = 0;
 	};
 
 	/**
