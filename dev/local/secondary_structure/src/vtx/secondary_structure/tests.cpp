@@ -74,7 +74,7 @@ namespace pdb100
 				return "incorrect";
 			};
 			return fmt::format(
-				"Predicted SS : {}\n\tFrom {}-{} to {}-{}\n\tBegin is {}\n\tEnd is {}",
+				"Predicted SS : {}\n\tFrom {}-{} to {}-{}\n\tBegin is {}\n\tEnd is {}\n",
 				string( p_type ),
 				chainName( p_chemSystem, p_startIdx ),
 				p_chemSystem.residueOriginalIds[ p_startIdx ],
@@ -83,6 +83,46 @@ namespace pdb100
 				isCorrect( p_isBeginCorrect ),
 				isCorrect( p_isEndCorrect )
 			);
+		}
+		std::string writeSs( const SecondaryStruct & p_ss )
+		{
+			std::string ret = fmt::format(
+				"\t\tBegin : {}-{}\n\t\tEnd : {}-{}\n",
+				p_ss.begin.chain_name,
+				p_ss.begin.num,
+				p_ss.end.chain_name,
+				p_ss.end.num
+			);
+			return ret;
+		}
+		std::string writeRcsbSs( const System & p_system )
+		{
+			std::string ret;
+			ret += "RCSB PDB Secondary Structure : \n";
+			if ( p_system.strands.empty() )
+				ret += "\tNo Beta-sheet\n";
+			if ( p_system.helixes.empty() )
+				ret += "\tNo right Alpha-helix\n";
+
+			if ( p_system.helixes.empty() or p_system.strands.empty() )
+				ret += "\n";
+
+			if ( not p_system.helixes.empty() )
+			{
+				ret += "\tHelixes : \n";
+				for ( auto & ss : p_system.helixes )
+					ret += writeSs( ss.ss );
+				ret += "\n";
+			}
+
+			if ( not p_system.strands.empty() )
+			{
+				ret += "\tBeta-sheets : \n";
+				for ( auto & ss : p_system.strands )
+					ret += writeSs( ss.ss );
+				ret += "\n";
+			}
+			return ret;
 		}
 
 		struct TestContext
@@ -128,6 +168,14 @@ namespace pdb100
 		{
 			return p_.inHelix;
 		}
+		inline bool & ssTypeBegin( TestContext & p_, const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type )
+		{
+			if ( p_type == VTX::Core::ChemDB::SecondaryStructure::TYPE::STRAND )
+				return p_.inStrand;
+			if ( p_type == VTX::Core::ChemDB::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT )
+				return p_.inHelix;
+			return p_.inHelix;
+		}
 
 		template<typename SS>
 		inline bool & otherSsTypeBegin( TestContext & p_ )
@@ -145,13 +193,50 @@ namespace pdb100
 			return p_.inStrand;
 		}
 
+		template<typename SS>
+		inline const std::vector<SS> & ssCollection( const System & p_system )
+		{
+			static_assert( false );
+		}
+		template<>
+		inline const std::vector<Strand> & ssCollection<Strand>( const System & p_system )
+		{
+			return p_system.strands;
+		}
+		template<>
+		inline const std::vector<Helix> & ssCollection<Helix>( const System & p_system )
+		{
+			return p_system.helixes;
+		}
+
+		template<typename SS>
+		void terminateSs(
+			const VTX::Core::ChemDB::SecondaryStructure::TYPE & type,
+			const System &										p_system,
+			TestContext &										p_context
+		)
+		{
+			ssTypeBegin( p_context, type ) = false;
+			bool endSsCorrect			   = isSsBorder( ssCollection<SS>( p_system ), p_context.currentIdx, &endNum );
+			if ( not endSsCorrect )
+				p_context.isEverythingCorrect = false;
+			p_context.report += writeSsReportString(
+				p_system.system,
+				type,
+				p_context.beginSsCorrect,
+				endSsCorrect,
+				p_context.beginSsIdx,
+				p_context.currentIdx
+			);
+		}
+
 		/**
 		 * @brief Do the SS specific action
 		 * @return wether or not the loop shall continue
 		 */
-		template<typename SS>
+		template<typename SS, typename OtherSS>
 		inline bool specificSsComparison(
-			const VTX::Core::Struct::System &			  p_chemSystem,
+			const System &								  p_system,
 			VTX::Core::ChemDB::SecondaryStructure::TYPE & p_currentType,
 			const std::vector<SS> &						  p_ssCollection,
 			TestContext &								  p_context
@@ -163,22 +248,14 @@ namespace pdb100
 
 			if ( ssTypeBegin<SS>( p_context ) and ssType<SS>() != p_currentType ) // Ending the SS
 			{
-				ssTypeBegin<SS>( p_context ) = false;
-				bool endSsCorrect			 = isSsBorder( p_ssCollection, p_context.currentIdx, &endNum );
-				if ( not endSsCorrect )
-					p_context.isEverythingCorrect = false;
-				p_context.report += writeSsReportString(
-					p_chemSystem,
-					ssType<SS>(),
-					p_context.beginSsCorrect,
-					endSsCorrect,
-					p_context.beginSsIdx,
-					p_context.currentIdx
-				);
-				return true;
+				terminateSs<SS>( ssType<SS>(), p_system, p_context );
+				return false;
 			}
 			if ( not ssTypeBegin<SS>( p_context ) and ssType<SS>() == p_currentType ) // Begining the SS
 			{
+				if ( otherSsTypeBegin<SS>( p_context ) )
+					terminateSs<OtherSS>( ssType<OtherSS>(), p_system, p_context );
+
 				p_context.beginSsIdx			  = p_context.currentIdx;
 				otherSsTypeBegin<SS>( p_context ) = false;
 				ssTypeBegin<SS>( p_context )	  = true;
@@ -191,45 +268,6 @@ namespace pdb100
 
 			return false;
 		}
-
-		std::string writeSs( SecondaryStruct & p_ss )
-		{
-			std::string ret = fmt::format(
-				"\t\tBegin : {}-{}\n\t\tEnd : {}-{}",
-				p_ss.begin.chain_name,
-				p_ss.begin.num,
-				p_ss.end.chain_name,
-				p_ss.end.num
-			);
-			return ret;
-		}
-		std::string writeRcsbSs( System & p_system )
-		{
-			std::string ret;
-			ret += "RCSB PDB Secondary Structure : \n";
-			if ( p_system.strands.empty() )
-				ret += "\tNo Beta-sheet\n";
-			if ( p_system.helixes.empty() )
-				ret += "\tNo right Alpha-helix\n";
-
-			if ( p_system.helixes.empty() or p_system.strands.empty() )
-				ret += "\n";
-
-			if ( not p_system.helixes.empty() )
-			{
-				ret += "\tHelixes : \n";
-				for ( auto & ss : p_system.helixes )
-					ret += writeSs( ss.ss );
-			}
-
-			if ( not p_system.strands.empty() )
-			{
-				ret += "\tBeta-sheets : \n";
-				for ( auto & ss : p_system.strands )
-					ret += writeSs( ss.ss );
-			}
-		}
-
 		/**
 		 * @brief Compute differences between our prediction and RCSB's and post a report item
 		 */
@@ -241,19 +279,23 @@ namespace pdb100
 			{
 				Type & type = p_system.system.residueSecondaryStructureTypes[ context.currentIdx ];
 
-				if ( specificSsComparison( p_system.system, type, p_system.helixes, context ) )
+				if ( specificSsComparison<Helix, Strand>( p_system, type, p_system.helixes, context ) )
 					continue;
 
-				if ( specificSsComparison( p_system.system, type, p_system.strands, context ) )
+				if ( specificSsComparison<Strand, Helix>( p_system, type, p_system.strands, context ) )
 					continue;
 			}
+			if ( context.inHelix )
+				terminateSs<Helix>( Type::HELIX_ALPHA_RIGHT, p_system, context );
+			if ( context.inStrand )
+				terminateSs<Strand>( Type::STRAND, p_system, context );
+
 			Reporter::Item::ResultSummary summary = Reporter::Item::ResultSummary::success;
 			if ( not context.isEverythingCorrect )
 			{
 				summary		   = Reporter::Item::ResultSummary::fail;
-				context.report = std::string( "" ) + context.report;
+				context.report = writeRcsbSs( p_system ) + context.report;
 			}
-
 			reporter().open()->add(
 				Reporter::Item { .resultSummary = std::move( summary ),
 								 .pdb			= std::string( p_system.code, sizeof( p_system.code ) ),
@@ -299,6 +341,7 @@ namespace pdb100
 				);
 			resIdx++;
 		}
+
 		VTX::IO::Util::SecondaryStructure::computeStride( p_system.system );
 		compare( p_system );
 	}

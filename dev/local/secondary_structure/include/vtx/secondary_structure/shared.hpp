@@ -16,12 +16,12 @@ namespace pdb100
 	class Reporter
 	{
 	  public:
-		Reporter() = default;
+		Reporter( fs::path );
 		~Reporter();
 		Reporter( const Reporter & )			 = delete;
 		Reporter & operator=( const Reporter & ) = delete;
-		Reporter( Reporter && )					 = delete;
-		Reporter & operator=( Reporter && )		 = delete;
+		Reporter( Reporter && )					 = default;
+		Reporter & operator=( Reporter && )		 = default;
 
 		struct Item
 		{
@@ -39,6 +39,8 @@ namespace pdb100
 		void add( Item );
 
 	  private:
+		bool			  _mustWrite = false;
+		fs::path		  _reportPath;
 		std::vector<Item> _items;
 		uint32_t		  _num_success = 0;
 		uint32_t		  _num_failed  = 0;
@@ -96,7 +98,7 @@ namespace pdb100
 	struct Context
 	{
 		fs::path						dbDir = g_pdb100DirectoryPath;
-		VTX::Util::DataLocker<Reporter> log;
+		VTX::Util::DataLocker<Reporter> log { "report.txt" };
 		FileCollection					pdb100_system;
 		SystemMap						results;
 	};

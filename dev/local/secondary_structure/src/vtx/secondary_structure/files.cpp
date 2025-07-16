@@ -18,7 +18,7 @@ namespace pdb100
 	{
 		for ( auto & it_fsItem : fs::directory_iterator( dir ) )
 		{
-			if ( contextData.size() > 100 )
+			if ( contextData.size() > 30 )
 				break;
 
 			if ( fs::is_directory( it_fsItem ) )
