@@ -52,4 +52,4 @@ jobs:
       working-directory: ${{env.LIB_DIR}}
       run: |
         conan export util
-        conan create core -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=20
+        conan create core -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }}

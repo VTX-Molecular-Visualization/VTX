@@ -50,7 +50,7 @@ jobs:
            
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
-      run: conan create util -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=20 -o vtx_util/*:test=True 
+      run: conan create util -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -o vtx_util/*:test=True 
                
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}
