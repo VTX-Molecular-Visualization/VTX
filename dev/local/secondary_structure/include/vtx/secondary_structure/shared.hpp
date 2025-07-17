@@ -1,50 +1,34 @@
 #pragma once
-#include <core/struct/system.hpp>
+
+#include <concepts>
 #include <filesystem>
 #include <unordered_map>
 #include <util/datalocker.hpp>
 #include <vector>
+#include <vtx/secondary_structure/report.hpp>
 namespace fs = std::filesystem;
 
 namespace pdb100
 {
+
+	template<std::integral INT>
+	inline INT oneIfZero( const INT & i )
+	{
+		return i == 0 ? 1 : i;
+	}
+
 	inline const fs::path g_pdb100DirectoryPath { PDB100_DATABASE_DIR };
 
-	/**
-	 * @brief Class responsible for generating a report at the application teardown
-	 */
-	class Reporter
+	using SystemMap		 = std::unordered_map<uint32_t, System>;
+	using FileCollection = std::list<std::string>;
+
+	class Reporter;
+	struct Context
 	{
-	  public:
-		Reporter( fs::path );
-		~Reporter();
-		Reporter( const Reporter & )			 = delete;
-		Reporter & operator=( const Reporter & ) = delete;
-		Reporter( Reporter && )					 = default;
-		Reporter & operator=( Reporter && )		 = default;
-
-		struct Item
-		{
-			enum class ResultSummary
-			{
-				none,	 // no results yet
-				success, // secondary structure match perfectly with file's data
-				fail,	 // difference have been found between prediction and file's data
-				no_ss	 // no secondary structure in file's data
-			} resultSummary;
-			std::string pdb;
-			std::string details;
-		};
-
-		void add( Item );
-
-	  private:
-		bool			  _mustWrite = false;
-		fs::path		  _reportPath;
-		std::vector<Item> _items;
-		uint32_t		  _num_success = 0;
-		uint32_t		  _num_failed  = 0;
-		uint32_t		  _num_noSs	   = 0;
+		fs::path						dbDir = g_pdb100DirectoryPath;
+		VTX::Util::DataLocker<Reporter> log { "report.txt" };
+		FileCollection					pdb100_system;
+		SystemMap						results;
 	};
 
 	/**
@@ -56,50 +40,4 @@ namespace pdb100
 	 * @return
 	 */
 	VTX::Util::DataLocker<Reporter> & reporter() noexcept;
-
-	struct Atom
-	{
-		float x = 0.f;
-		float y = 0.f;
-		float z = 0.f;
-		char  name[ 4 ] { '\0' };
-		char  symbol[ 2 ] { '\0' };
-	};
-	struct Residue
-	{
-		char	 res_3letterCode[ 3 ] { '\0' };
-		uint32_t num = 0;
-		char	 chain_name[ 3 ] { '\0' };
-	};
-	struct SecondaryStruct
-	{
-		Residue begin;
-		Residue end;
-	};
-	struct Helix
-	{
-		SecondaryStruct ss;
-	};
-	struct Strand
-	{
-		SecondaryStruct ss;
-	};
-	struct System
-	{
-		char					  code[ 4 ] { '\0' };
-		VTX::Core::Struct::System system;
-		// std::vector<Atom>	atoms;
-		std::vector<Helix>	helixes;
-		std::vector<Strand> strands;
-	};
-	using SystemMap		 = std::unordered_map<uint32_t, System>;
-	using FileCollection = std::list<std::string>;
-
-	struct Context
-	{
-		fs::path						dbDir = g_pdb100DirectoryPath;
-		VTX::Util::DataLocker<Reporter> log { "report.txt" };
-		FileCollection					pdb100_system;
-		SystemMap						results;
-	};
 } // namespace pdb100

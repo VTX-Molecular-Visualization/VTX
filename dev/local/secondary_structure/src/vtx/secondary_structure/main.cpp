@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vtx/secondary_structure/files.hpp>
 #include <vtx/secondary_structure/parse.hpp>
+#include <vtx/secondary_structure/report.hpp>
 #include <vtx/secondary_structure/tests.hpp>
 
 int main()
