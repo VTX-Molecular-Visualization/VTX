@@ -11,6 +11,14 @@ on:
         options:
         - Debug
         - Release
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'Archive'
+        type: choice
+        options:
+        - Archive
+        - Installer
       version: 
         description: 'Version'
         required: true
@@ -29,6 +37,11 @@ on:
         description: 'Cuda architectures'
         required: true
         default: '50;52;60;61;70;75;80;86;89;90'
+      publish:
+        description: 'Publish release'
+        required: false
+        default: false
+        type: boolean
         
 env:
   ROOT_DIR: ${{github.workspace}}
@@ -37,6 +50,7 @@ env:
   TOOL_EXAMPLE: ${{ inputs.tool_example == true && 'True' || 'False' }}
   TOOL_MDPREP: ${{ inputs.tool_mdprep == true && 'True' || 'False' }}
   CUDA_ARCH: ${{ inputs.cuda_arch }}
+  PUBLISH: ${{ inputs.publish }}
 
 jobs:
   build:
@@ -79,7 +93,7 @@ jobs:
         conan export lib/util
         conan export tool/example
         conan export tool/mdprep
-        conan create app/vtx -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -o vtx/*:version=${{env.VERSION}} -o vtx_app/*:version=${{env.VERSION}} -o vtx/*:tool_example=${{env.TOOL_EXAMPLE}} -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} -o vtx_renderer/*:cuda_arch=${{env.CUDA_ARCH}} -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
+        conan create app/vtx -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -o vtx/*:version=${{env.VERSION}} -o vtx_app/*:version=${{env.VERSION}} -o vtx/*:tool_example=${{env.TOOL_EXAMPLE}} -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} -o vtx_renderer/*:cuda_arch="${{env.CUDA_ARCH}}" -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
 
     - name: Read package path from output.json
       id: read_package_path
