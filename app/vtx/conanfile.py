@@ -24,8 +24,10 @@ class VTXRecipe(ConanFile):
         self.requires("vtx_python_binding/1.0")
         self.requires("vtx_renderer/1.0")
         self.requires("vtx_ui_qt/1.0")
-        self.requires("vtx_tool_example/1.0")
-        self.requires("vtx_tool_mdprep/1.0")
+        if self.options.tool_example:
+            self.requires("vtx_tool_example/1.0")
+        if self.options.tool_mdprep:
+            self.requires("vtx_tool_mdprep/1.0")
 
     def layout(self):
         cmake_layout(self)
