@@ -25,7 +25,7 @@ find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 set(_VTX_CONAN " ")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
-set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+#set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
 include(InstallRequiredSystemLibraries)
 
 install(TARGETS vtx DESTINATION .)

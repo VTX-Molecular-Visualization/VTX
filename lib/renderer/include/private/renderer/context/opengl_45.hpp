@@ -161,7 +161,7 @@ namespace VTX::Renderer::Context
 
 		void getTextureData(
 			const Key &		 p_key,
-			std::any &		 p_textureData,
+			void * const	 p_textureData,
 			const size_t	 p_x,
 			const size_t	 p_y,
 			const E_CHAN_OUT p_channel
@@ -188,7 +188,7 @@ namespace VTX::Renderer::Context
 				1,
 				_mapFormatInternalTypes[ format ],
 				_mapTypes[ _mapFormatTypes[ format ] ],
-				&p_textureData
+				p_textureData
 			);
 			fbo->unbind();
 		}
