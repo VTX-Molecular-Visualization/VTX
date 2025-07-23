@@ -7,7 +7,7 @@
 #include "ui/qt/dock_widget/render_settings.hpp"
 #include "ui/qt/dock_widget/representations.hpp"
 #include "ui/qt/dock_widget/scene.hpp"
-#include "ui/qt/dock_widget/sequence.hpp"
+#include "ui/qt/dock_widget/sequences.hpp"
 #include "ui/qt/menu/camera.hpp"
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/menu/help.hpp"
@@ -80,7 +80,7 @@ namespace VTX::UI::QT::Widget
 		setCentralWidget( _openGLWidget );
 
 		// Dock widgets.
-		createDockWidget<DockWidget::Sequence>( Qt::TopDockWidgetArea );
+		createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );
 
 		createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
 		createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea );
