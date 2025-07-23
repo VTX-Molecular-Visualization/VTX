@@ -1,6 +1,11 @@
 #include "ui/qt/dock_widget/sequence.hpp"
 #include "ui/qt/helper.hpp"
+#include <QGraphicsScene>
+#include <QGraphicsTextItem>
+#include <QGraphicsView>
 #include <QHeaderView>
+#include <QLabel>
+#include <QTextBrowser>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/residue.hpp>
@@ -23,8 +28,6 @@ namespace VTX::UI::QT::DockWidget
 
 		App::SCENE().onSceneItemAdded += [ this ]( const SceneItemComponent & p_system )
 		{
-			return;
-
 			setUpdatesEnabled( false );
 
 			Util::Chrono timer;
@@ -40,7 +43,109 @@ namespace VTX::UI::QT::DockWidget
 						App::ECS_REGISTRY().getEntity( scene )
 					);
 
-				// Size.
+				// QLabel.
+				/*
+				QLabel * label = new QLabel( this );
+				label->setTextInteractionFlags( Qt::TextBrowserInteraction );
+				label->setOpenExternalLinks( false );
+				label->setWordWrap( false );
+				label->setTextFormat( Qt::RichText );
+				label->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+
+				QString html;
+				int		residueIndex = 0;
+
+				for ( const auto & chain : system.getChains() )
+				{
+					for ( size_t i = 0; i < chain->getResidueCount(); ++i )
+					{
+						const size_t	   r	   = chain->getIndexFirstResidue() + i;
+						const auto * const residue = system.getResidue( r );
+						const QColor	   colorResidue
+							= Helper::toQColor( colorlayout.getResidueColor( size_t( residue->getSymbol() ) ) );
+						QString colorString = colorResidue.name( QColor::HexRgb );
+
+						QString text = QString::fromStdString( residue->getShortName().data() );
+						html += QString( "<a href='%1' style='color:%2; text-decoration:none;'>%3</a>" )
+									.arg( residueIndex++ )
+									.arg( colorString )
+									.arg( text );
+					}
+				}
+
+				label->setText( html );
+				QScrollArea * scrollArea = new QScrollArea( this );
+				scrollArea->setWidgetResizable( true );
+				scrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
+				scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+
+				scrollArea->setWidget( label );
+				_layout->addWidget( scrollArea );
+				*/
+
+				// QTextBrowser.
+				/*
+				QTextBrowser * browser = new QTextBrowser( this );
+				browser->setOpenLinks( false );
+				// browser->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
+				browser->setLineWrapMode( QTextEdit::NoWrap );
+
+				QString html;
+				int		residueGlobalIndex = 0;
+
+				for ( const auto & chain : system.getChains() )
+				{
+					for ( size_t i = 0; i < chain->getResidueCount(); ++i )
+					{
+						// Residue.
+						const size_t	   r	   = chain->getIndexFirstResidue() + i;
+						const auto * const residue = system.getResidue( r );
+						const QColor	   colorResidue
+							= Helper::toQColor( colorlayout.getResidueColor( size_t( residue->getSymbol() ) ) );
+
+						QString colorString = colorResidue.name( QColor::HexRgb );
+						QString shortName	= QString::fromStdString( residue->getShortName().data() );
+						html += QString( "<a href='%1' style='text-decoration:none; color:%2;'>%3</a>" )
+									.arg( r )
+									.arg( colorString )
+									.arg( shortName );
+					}
+				}
+
+				browser->setHtml( html );
+				_layout->addWidget( browser );
+				*/
+
+				// QGraphicsView.
+				/*
+				QGraphicsScene * graphicScene = new QGraphicsScene( this );
+				QGraphicsView *	 graphicView  = new QGraphicsView( graphicScene );
+
+				int x = 0;
+				for ( const auto & chain : system.getChains() )
+				{
+					for ( size_t i = 0; i < chain->getResidueCount(); ++i )
+					{
+						// Residue.
+						const size_t	   r	   = chain->getIndexFirstResidue() + i;
+						const auto * const residue = system.getResidue( r );
+						const QColor	   colorResidue
+							= Helper::toQColor( colorlayout.getResidueColor( size_t( residue->getSymbol() ) ) );
+
+						auto * item = new QGraphicsTextItem( residue->getShortName().data() );
+						item->setDefaultTextColor( colorResidue );
+						item->setPos( x, 0 );
+						graphicScene->addItem( item );
+						x += 12;
+					}
+				}
+
+				_layout->addWidget( graphicView );
+				*/
+
+				// QTable.
+				/*
+				* // Size.
 				const size_t chainCount	  = system.getChains().size();
 				const size_t residueCount = system.getResidues().size();
 				const size_t columnCount  = 1 + chainCount + residueCount;
@@ -116,6 +221,7 @@ namespace VTX::UI::QT::DockWidget
 				_systemComponents.emplace( table, &system );
 
 				_layout->addWidget( table );
+				*/
 			}
 
 			setUpdatesEnabled( true );
