@@ -10,12 +10,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 
-		// onSceneItemAdded.
-		using namespace App::Component;
-		using namespace App::Component::Scene;
-		using namespace App::Component::Chemistry;
-
-		App::SCENE().onSceneItemAdded += [ this ]( const SceneItemComponent & p_system )
+		App::SCENE().onSceneItemAdded += [ this ]( const App::Component::Scene::SceneItemComponent & p_system )
 		{
 			if ( App::ECS_REGISTRY().hasComponent<App::Component::Chemistry::System>( p_system ) )
 			{

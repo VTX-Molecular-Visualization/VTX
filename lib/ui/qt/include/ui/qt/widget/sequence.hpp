@@ -11,15 +11,8 @@ namespace VTX::UI::QT::Widget
 {
 	class Sequence : public QAbstractScrollArea
 	{
-		// Q_OBJECT
-
 	  public:
 		Sequence( App::Component::Chemistry::System &, QWidget * );
-
-		// void setSequence( const std::vector<QChar> &, const std::vector<QColor> & );
-
-		// signals:
-		// void residueClicked( size_t );
 
 	  protected:
 		void paintEvent( QPaintEvent * ) override;
@@ -27,11 +20,6 @@ namespace VTX::UI::QT::Widget
 		void resizeEvent( QResizeEvent * ) override;
 
 	  private:
-		static const uint DEFAULT_CHAR_WIDTH  = 12;
-		static const uint DEFAULT_CHAR_HEIGHT = 18;
-
-		// std::vector<QChar>	_sequence;
-		// std::vector<QColor> _colors;
 		App::Component::Chemistry::System & _system;
 
 		void updateScrollBars();

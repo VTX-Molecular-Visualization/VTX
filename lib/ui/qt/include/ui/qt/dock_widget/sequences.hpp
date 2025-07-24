@@ -16,14 +16,6 @@ namespace VTX::UI::QT::DockWidget
 	{
 	  public:
 		Sequences( QWidget * );
-
-	  private:
-		using WidgetData = size_t;
-
-		/**
-		 * @brief Map top level items to system components.
-		 */
-		std::map<const QTableWidget * const, App::Component::Chemistry::System * const> _systemComponents;
 	};
 
 } // namespace VTX::UI::QT::DockWidget

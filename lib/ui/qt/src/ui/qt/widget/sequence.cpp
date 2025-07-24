@@ -9,6 +9,8 @@
 
 namespace VTX::UI::QT::Widget
 {
+	constexpr uint DEFAULT_CHAR_WIDTH  = 12;
+	constexpr uint DEFAULT_CHAR_HEIGHT = 18;
 
 	Sequence::Sequence( App::Component::Chemistry::System & p_system, QWidget * p_parent ) :
 
@@ -28,19 +30,32 @@ namespace VTX::UI::QT::Widget
 			App::ECS_REGISTRY().getEntity( scene )
 		);
 
-		int	 xOffset	= horizontalScrollBar()->value();
-		int	 startIndex = xOffset / DEFAULT_CHAR_WIDTH;
-		uint endIndex	= Util::Math::min(
-			  startIndex + ( viewport()->width() / DEFAULT_CHAR_WIDTH ) + 2, uint( _system.getResidues().size() )
-		  );
+		const int xOffset	 = horizontalScrollBar()->value();
+		const int startIndex = xOffset / DEFAULT_CHAR_WIDTH;
+		uint	  endIndex	 = Util::Math::min(
+			   startIndex + ( viewport()->width() / DEFAULT_CHAR_WIDTH ) + 2, uint( _system.getResidues().size() )
+		   );
 
 		int x = -( xOffset % int( DEFAULT_CHAR_WIDTH ) );
 
+		// Headers.
+		const auto * firstResidue = _system.getResidue( startIndex );
+		const auto * firstChain	  = firstResidue->getChainPtr();
+
+		QString label
+			= QString( "%1 / %2" )
+				  .arg( QString::fromStdString( _system.getName() ), QString::fromStdString( firstChain->getName() ) );
+		painter.drawText( 0, DEFAULT_CHAR_HEIGHT, label );
+
+		// Draw the residue sequence.
 		for ( size_t i = startIndex; i < endIndex; ++i )
 		{
 			const auto * residue = _system.getResidue( i );
-			painter.setPen( Helper::toQColor( colorlayout.getResidueColor( size_t( residue->getSymbol() ) ) ) );
-			painter.drawText( x, DEFAULT_CHAR_HEIGHT, QString( residue->getShortName().at( 0 ) ) );
+			// painter.setPen( Helper::toQColor( colorlayout.getResidueColor( size_t( residue->getSymbol() ) ) ) );
+			painter.setPen(
+				Helper::toQColor( colorlayout.getChainColor( size_t( residue->getChainPtr()->getIndex() + 1 ) ) )
+			);
+			painter.drawText( x, DEFAULT_CHAR_HEIGHT * 2, QString( residue->getShortName().at( 0 ) ) );
 			x += DEFAULT_CHAR_WIDTH;
 		}
 	}
