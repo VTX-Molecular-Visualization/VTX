@@ -20,7 +20,7 @@ namespace VTX::UI::QT::Widget
 		void resizeEvent( QResizeEvent * ) override;
 
 	  private:
-		App::Component::Chemistry::System & _system;
+		const App::Component::Chemistry::System & _system;
 
 		void updateScrollBars();
 	};
