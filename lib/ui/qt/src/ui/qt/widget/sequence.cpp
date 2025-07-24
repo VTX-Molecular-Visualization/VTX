@@ -9,8 +9,9 @@
 
 namespace VTX::UI::QT::Widget
 {
-	constexpr uint DEFAULT_CHAR_WIDTH  = 12;
-	constexpr uint DEFAULT_CHAR_HEIGHT = 18;
+	constexpr uint CHAR_WIDTH  = 12;
+	constexpr uint CHAR_HEIGHT = 18;
+	constexpr uint RULE_STEP   = 5;
 
 	Sequence::Sequence( App::Component::Chemistry::System & p_system, QWidget * p_parent ) :
 
@@ -30,43 +31,74 @@ namespace VTX::UI::QT::Widget
 			App::ECS_REGISTRY().getEntity( scene )
 		);
 
-		const int xOffset	 = horizontalScrollBar()->value();
-		const int startIndex = xOffset / DEFAULT_CHAR_WIDTH;
-		uint	  endIndex	 = Util::Math::min(
-			   startIndex + ( viewport()->width() / DEFAULT_CHAR_WIDTH ) + 2, uint( _system.getResidues().size() )
-		   );
+		const int  xOffset	  = horizontalScrollBar()->value();
+		const uint startIndex = xOffset / CHAR_WIDTH;
+		uint	   endIndex	  = Util::Math::min(
+			startIndex + ( viewport()->width() / CHAR_WIDTH ) + 2, uint( _system.getResidues().size() )
+		);
 
-		int x = -( xOffset % int( DEFAULT_CHAR_WIDTH ) );
+		int x = -( xOffset % int( CHAR_WIDTH ) );
 
-		// Headers.
+		// Label with current chain.
 		const auto * firstResidue = _system.getResidue( startIndex );
 		const auto * firstChain	  = firstResidue->getChainPtr();
 
-		QString label
-			= QString( "%1 / %2" )
-				  .arg( QString::fromStdString( _system.getName() ), QString::fromStdString( firstChain->getName() ) );
-		painter.drawText( 0, DEFAULT_CHAR_HEIGHT, label );
+		const QString headerLabel = QString( "%1/%2" ).arg(
+			QString::fromStdString( _system.getName() ), QString::fromStdString( firstChain->getName() )
+		);
+		painter.setPen( Helper::toQColor( colorlayout.getChainColor( size_t( firstChain->getIndex() + 1 ) ) ) );
+		painter.drawText( 0, CHAR_HEIGHT, headerLabel );
+		const int labelWidth = painter.fontMetrics().horizontalAdvance( headerLabel );
 
 		// Draw the residue sequence.
+		const auto * lastChain = firstChain;
 		for ( size_t i = startIndex; i < endIndex; ++i )
 		{
 			const auto * residue = _system.getResidue( i );
-			// painter.setPen( Helper::toQColor( colorlayout.getResidueColor( size_t( residue->getSymbol() ) ) ) );
+			const auto * chain	 = residue->getChainPtr();
 			painter.setPen(
 				Helper::toQColor( colorlayout.getChainColor( size_t( residue->getChainPtr()->getIndex() + 1 ) ) )
 			);
-			painter.drawText( x, DEFAULT_CHAR_HEIGHT * 2, QString( residue->getShortName().at( 0 ) ) );
-			x += DEFAULT_CHAR_WIDTH;
+
+			// Chain labels.
+			int labelChainWidth = 0;
+			if ( chain != lastChain )
+			{
+				if ( x > labelWidth )
+				{
+					QString chainLabel = QString( "/%1" ).arg( QString::fromStdString( chain->getName() ) );
+					painter.drawText( x, CHAR_HEIGHT, chainLabel );
+					labelChainWidth = painter.fontMetrics().horizontalAdvance( chainLabel );
+				}
+				lastChain = chain;
+			}
+
+			// Rule.
+			const size_t indexInChain = i - chain->getIndexFirstResidue() + 1;
+			if ( x > labelWidth && x > labelChainWidth && indexInChain % RULE_STEP == 0 )
+			{
+				painter.drawText( x, CHAR_HEIGHT, QString::number( indexInChain ) );
+			}
+
+			// Residue symbol.
+			// painter.setPen( Helper::toQColor( colorlayout.getResidueColor( size_t( residue->getSymbol() ) ) ) );
+			painter.drawText( x, CHAR_HEIGHT * 2, QString( residue->getShortName().at( 0 ) ) );
+
+			x += CHAR_WIDTH;
 		}
 	}
 
 	void Sequence::mousePressEvent( QMouseEvent * p_event )
 	{
-		int	   xOffset = horizontalScrollBar()->value();
-		int	   clickX  = p_event->pos().x() + xOffset;
-		size_t index   = clickX / DEFAULT_CHAR_WIDTH;
+		const int	 xOffset   = horizontalScrollBar()->value();
+		const int	 yOffset   = verticalScrollBar()->value();
+		const int	 clickX	   = p_event->pos().x() + xOffset;
+		const int	 clickY	   = p_event->pos().y() + yOffset;
+		const size_t index	   = clickX / CHAR_WIDTH;
+		const int	 topMargin = contentsMargins().top();
 
-		if ( index >= 0 && index < _system.getResidues().size() )
+		if ( ( clickY > ( topMargin + int( CHAR_HEIGHT ) ) ) && ( clickY < ( topMargin + int( CHAR_HEIGHT ) * 2 ) )
+			 && ( index >= 0 ) && ( index < _system.getResidues().size() ) )
 		{
 			qDebug() << "Residue clicked:" << index;
 		}
@@ -76,7 +108,7 @@ namespace VTX::UI::QT::Widget
 
 	void Sequence::updateScrollBars()
 	{
-		const uint contentWidth = uint( _system.getResidues().size() ) * DEFAULT_CHAR_WIDTH;
+		const uint contentWidth = uint( _system.getResidues().size() ) * CHAR_WIDTH;
 		horizontalScrollBar()->setRange( 0, contentWidth - viewport()->width() );
 		horizontalScrollBar()->setPageStep( viewport()->width() );
 	}
