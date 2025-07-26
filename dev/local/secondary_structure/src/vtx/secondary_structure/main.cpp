@@ -17,7 +17,7 @@ int main()
 			auto fl = context.pdb100_system.open();
 			std::cout << fl->size() << " pdb structures found.\n";
 		}
-		std::cout << "Starting threads ...\n";
+		std::cout << "Starting processes ...\n";
 		// pdb100::testSystems( context.pdb100_system ); // Start N threads as defined in the cmake
 		std::cout << "Calculation is over.\n";
 	}

@@ -25,6 +25,9 @@ namespace pdb100
 			const char MUTEX[]	 = "VTX__SHM_RSLT_MAP_MUTEX";
 		} // namespace rsltMap
 
+		/**
+		 * @brief Will hold timestamp to prove that a thread is still alive, as well as the process ID of a thead
+		 */
 		namespace livingProof
 		{
 			const char SEGNAME[] = "VTX__SHM_SS_LIVINGPROOF";

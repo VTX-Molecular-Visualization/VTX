@@ -13,6 +13,7 @@ namespace fs = std::filesystem;
 namespace pdb100
 {
 	const size_t NUM_THREADS = 16;
+	const size_t NUM_PROCESSES = 16;
 	template<std::integral INT>
 	inline INT oneIfZero( const INT & i )
 	{
