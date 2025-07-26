@@ -11,4 +11,11 @@ namespace pdb100
 	 */
 	void testSystem( const fs::path & p_systemPath, SystemMap & p_systemMap );
 
+	/**
+	 * @brief Starts N threads (defined in the cmake) that will serve as a worker pool to analyze each file
+	 * consecutively
+	 * @param p_systemPaths Files to be analyzing
+	 */
+	void testSystems( VTX::Util::DataLocker<FileCollection> & p_systemPaths );
+
 } // namespace pdb100

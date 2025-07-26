@@ -91,6 +91,9 @@ namespace pdb100
 
 		while ( inFile.getline( lineBuf, sizeof( lineBuf ) ) )
 		{
+			if ( lineBuf[ 0 ] == '#' and context.parsingRightData )
+				break;
+
 			if ( lineBuf[ 0 ] == '#' and context.inLoop )
 			{
 				context.inLoop = context.inRightLoop = context.parsingRightColumn = context.parsingRightData

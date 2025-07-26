@@ -2,15 +2,17 @@
 
 #include <concepts>
 #include <filesystem>
+#include <stack>
 #include <unordered_map>
 #include <util/datalocker.hpp>
 #include <vector>
 #include <vtx/secondary_structure/report.hpp>
+
 namespace fs = std::filesystem;
 
 namespace pdb100
 {
-
+	const size_t NUM_THREADS = 16;
 	template<std::integral INT>
 	inline INT oneIfZero( const INT & i )
 	{
@@ -20,15 +22,15 @@ namespace pdb100
 	inline const fs::path g_pdb100DirectoryPath { PDB100_DATABASE_DIR };
 
 	using SystemMap		 = std::unordered_map<uint32_t, System>;
-	using FileCollection = std::list<std::string>;
+	using FileCollection = std::stack<std::string>;
 
 	class Reporter;
 	struct Context
 	{
-		fs::path						dbDir = g_pdb100DirectoryPath;
-		VTX::Util::DataLocker<Reporter> log { "report.txt" };
-		FileCollection					pdb100_system;
-		SystemMap						results;
+		fs::path							  dbDir = g_pdb100DirectoryPath;
+		VTX::Util::DataLocker<Reporter>		  log { "report.txt" };
+		VTX::Util::DataLocker<FileCollection> pdb100_system;
+		SystemMap							  results;
 	};
 
 	/**

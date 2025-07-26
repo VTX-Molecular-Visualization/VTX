@@ -89,3 +89,4 @@ vtx_clear_registered_copies() # Prevent data from previous package to be copied 
 # PDB100
 set(PDB100_DIRECTORY_PATH "C:/Users/Valen/data/pdb/pdb100") # Needed for pdb100 related projects
 include("${CMAKE_CURRENT_LIST_DIR}/secondary_structure.cmake") # Project for secondary structure algorithm benchmark
+include("${CMAKE_CURRENT_LIST_DIR}/io_vs_pdb100.cmake") # Project for secondary structure algorithm benchmark

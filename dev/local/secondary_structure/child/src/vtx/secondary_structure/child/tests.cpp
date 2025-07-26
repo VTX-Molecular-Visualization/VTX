@@ -1,3 +1,4 @@
+#include <array>
 #include <core/chemdb/secondary_structure.hpp>
 #include <io/util/secondary_structure.hpp>
 #include <iostream>
@@ -302,21 +303,59 @@ namespace pdb100
 		VTX::IO::Util::SecondaryStructure::computeStride( p_system.system );
 		compare( p_system );
 	}
-	void testSystem( const fs::path & p_systemPath, SystemMap & p_systemMap )
+	void testSystem( const fs::path & p_systemPath )
 	{
 		std::string systemName = p_systemPath.stem().string();
-		systemName			   = std::string( systemName.data(), systemName.find( '.' ) );
+		try
+		{
+			System newSystem;
+			memcpy_s( newSystem.code, sizeof( newSystem.code ), systemName.data(), sizeof( newSystem.code ) );
 
-		uint32_t idx = *reinterpret_cast<uint32_t *>( systemName.data() );
-		if ( systemName.size() > 4 )
-			throw std::exception( std::format( "System name <{}> larger than 4 char", systemName ).c_str() );
-		if ( p_systemMap.contains( idx ) )
-			throw std::exception( std::format( "System <{}> already in map", systemName ).c_str() );
-		p_systemMap.emplace( idx, System {} );
-
-		System & newSystem = p_systemMap.at( idx );
-		memcpy_s( newSystem.code, sizeof( newSystem.code ), systemName.data(), systemName.size() );
-
-		testSystem( p_systemPath, newSystem );
+			testSystem( p_systemPath, newSystem );
+		}
+		catch ( std::exception & e )
+		{
+			std::cout << "Structure <" << systemName << "> throws because <" << e.what() << ">\n";
+		}
 	}
+	/**
+	 * @brief Meant to be the main function of a new thread. Analyze available file until there is no more.
+	 * @param p_systemPaths
+	 */
+	void _testSystems( VTX::Util::DataLocker<FileCollection> & p_systemPaths )
+	{
+		while ( true )
+		{
+			fs::path sys;
+			{
+				auto paths = p_systemPaths.open();
+				if ( paths->size() % 1000 == 0 )
+					std::cout << "<" << paths->size() << "> pdb structures left.\n";
+				if ( paths->empty() )
+					break;
+				sys = paths->top();
+				paths->pop();
+			}
+			try
+			{
+				testSystem( sys );
+			}
+			catch ( ... )
+			{
+				std::cout << "Something went wrong with <" << sys.stem() << ">\n";
+			}
+		}
+	}
+	void testSystems( VTX::Util::DataLocker<FileCollection> & p_systemPaths )
+	{
+		std::array<std::jthread, NUM_THREADS> threads;
+		size_t								  thr_idx = 0;
+		for ( auto & thr : threads )
+		{
+			thr_idx++;
+			std::cout << "Starting thread " << thr_idx << ".\n";
+			thr = std::jthread( [ &p_systemPaths ]() { _testSystems( p_systemPaths ); } );
+		}
+	}
+
 } // namespace pdb100

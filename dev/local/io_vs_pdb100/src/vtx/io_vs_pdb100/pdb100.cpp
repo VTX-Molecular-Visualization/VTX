@@ -1,5 +1,5 @@
-#include "test/process/shared.hpp"
 #include <algorithm>
+#include <bit>
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
@@ -12,6 +12,7 @@
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
+#include <vtx/io_vs_pdb100/shared.hpp>
 
 // We test it only in dev mode.
 #ifdef PDB_DATABASE_DIR
@@ -133,6 +134,10 @@ namespace
 				file << fs::path( *it_strRslt.first ).stem().string() << "\t" << *it_strRslt.first << std::endl;
 		}
 	}
+	int byteswap( const int & _Val )
+	{
+		return ( _Val << 24 ) | ( ( _Val << 8 ) & 0x00FF'0000 ) | ( ( _Val >> 8 ) & 0x0000'FF00 ) | ( _Val >> 24 );
+	}
 	/**
 	 * @brief Class responsible for starting an independant worker, and restarting it if it crashes. If the worker
 	 * finish normally, it is not restarted and the finished method return true.
@@ -146,14 +151,16 @@ namespace
 			bool		 finished	 = false;
 			int			 thr_retcode = 1;
 			std::string	 startStr	 = fmt::format( "{} {}", exeStr, num );
+
 			std::jthread thr { [ & ]()
 							   {
 								   while ( this->thr_retcode != 0 )
 								   {
 									   VTX::VTX_INFO( "Starting worker {}.", this->num, this->thr_retcode );
-									   this->thr_retcode = system( startStr.data() );
+									   this->thr_retcode = std::system( startStr.data() );
+
 									   VTX::VTX_INFO(
-										   "Worker {} terminated with return code {}.", this->num, this->thr_retcode
+										   "Worker {} terminated with return code {:32b}.", this->num, this->thr_retcode
 									   );
 								   }
 								   VTX::VTX_INFO( "Worker {} won't restart.", this->num );
@@ -175,10 +182,10 @@ namespace
 	{
 		using namespace VTX::IO::test;
 
-		const size_t size_shm_deque
-			= contextData.pdb100_system.size()
-				  * ( contextData.pdb100_system.begin()->size() + sizeof( String ) + 50 /* deque memory overhead ? */ )
-			  + 500;
+		const size_t size_shm_deque = contextData.pdb100_system.size()
+										  * ( contextData.pdb100_system.begin()->size() + sizeof( String )
+											  + sizeof( StringDeque ) /* deque memory overhead ? */ )
+									  + 1000;
 
 		boost::interprocess::managed_shared_memory sharedSegment(
 			boost::interprocess::create_only, VTX::IO::test::SHM_FILESTR_DEQUE_SEGNAME, size_shm_deque
@@ -192,6 +199,7 @@ namespace
 			fileStrDeque->emplace_back( strAlloc ); // segfault ?
 			fileStrDeque->back().assign( it_filepathStr.begin(), it_filepathStr.end() );
 		}
+		std::cout << fileStrDeque->size();
 	}
 	/**
 	 * @brief Initilize shared memory map
@@ -296,7 +304,7 @@ namespace
 		_constructMap( contextData );
 
 		const int					   NUM_WORKER = NUM_PROCESSES;
-		const char *				   startStr	  = "vtx_io_new_process";
+		const char *				   startStr	  = CHILD_PROCESS_NAME;
 		std::vector<RestartableWorker> workerPool;
 		workerPool.reserve( NUM_WORKER );
 		VTX::VTX_INFO( "Creating {} workers ...", NUM_WORKER );

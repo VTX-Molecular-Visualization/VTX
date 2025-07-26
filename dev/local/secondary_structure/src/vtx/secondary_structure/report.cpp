@@ -1,5 +1,6 @@
 #include <fmt/format.h>
 #include <fstream>
+#include <iostream>
 #include <optional>
 #include <vtx/secondary_structure/report.hpp>
 #include <vtx/secondary_structure/shared.hpp>
@@ -105,6 +106,8 @@ namespace pdb100
 	{
 		if ( not _mustWrite )
 			return;
+
+		std::cout << "Writing report ... ";
 		_betaSheetCorrectnessRate /= oneIfZero( _items.size() );
 		_alphaHelixCorrectnessRate /= oneIfZero( _items.size() );
 
@@ -144,18 +147,33 @@ namespace pdb100
 				continue;
 			outFile << "Structure :" << it.pdb << "\n";
 			outFile << "\n";
-			outFile << "Successful Beta-sheet start prediction : " << it.correctnessRates.beginBetaSheet << "\n";
-			outFile << "Successful Beta-sheet end prediction : " << it.correctnessRates.endBetaSheet << "\n";
-			outFile << "Successful full Beta-sheet prediction : " << it.correctnessRates.fullBetaSheet << "\n";
-			outFile << "Successful Alpha-helix start prediction : " << it.correctnessRates.beginAlphaHelix << "\n";
-			outFile << "Successful Alpha-helix end prediction : " << it.correctnessRates.endAlphaHelix << "\n";
-			outFile << "Successful full Alpha-helix prediction : " << it.correctnessRates.fullAlphaHelix << "\n";
+			if ( it.correctnessRates.numBetaSheet > 0 )
+			{
+				outFile << "Successful Beta-sheet start prediction : " << it.correctnessRates.beginBetaSheet << "\n";
+				outFile << "Successful Beta-sheet end prediction : " << it.correctnessRates.endBetaSheet << "\n";
+				outFile << "Successful full Beta-sheet prediction : " << it.correctnessRates.fullBetaSheet << "\n";
+			}
+			else
+			{
+				outFile << "No predicted Beta-sheets.\n";
+			}
+			if ( it.correctnessRates.numAlphaHelix )
+			{
+				outFile << "Successful Alpha-helix start prediction : " << it.correctnessRates.beginAlphaHelix << "\n";
+				outFile << "Successful Alpha-helix end prediction : " << it.correctnessRates.endAlphaHelix << "\n";
+				outFile << "Successful full Alpha-helix prediction : " << it.correctnessRates.fullAlphaHelix << "\n";
+			}
+			else
+			{
+				outFile << "No predicted Alpha-helixes.\n";
+			}
 			outFile << "\n";
 			outFile << it.details << "\n";
 			outFile << "\n";
 			outFile << "______________________\n";
 			outFile << "\n";
 		}
+		std::cout << "done.\n";
 	}
 
 	void Reporter::add( Item p_item )
