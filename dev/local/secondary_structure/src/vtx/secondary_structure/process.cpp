@@ -1,10 +1,14 @@
-#include <array>
-#include <thread>
+
 //
+#include <boost/asio.hpp>
 #include <boost/process/process.hpp>
+//
+#include <array>
+//
 #include <vtx/secondary_structure/shared.hpp>
 #include <vtx/secondary_structure/shared/interprocess.hpp>
 //
+#include <thread>
 #include <vtx/secondary_structure/process.hpp>
 
 namespace pdb100
@@ -102,6 +106,24 @@ namespace pdb100
 					break;
 			}
 		}
+		template<typename T>
+		RestartingProcess _generate( boost::asio::io_context & p_arg, T )
+		{
+			return { p_arg };
+		}
+		template<std::size_t... array_pack>
+		std::array<RestartingProcess, NUM_PROCESSES> _generate(
+			boost::asio::io_context & p_arg,
+			std::index_sequence<array_pack...>
+		)
+		{
+			return { _generate( p_arg, array_pack )... };
+		}
+
+		std::array<RestartingProcess, NUM_PROCESSES> generate( boost::asio::io_context & p_arg )
+		{
+			return _generate( p_arg, std::make_index_sequence<NUM_PROCESSES> {} );
+		}
 
 	} // namespace
 
@@ -111,8 +133,8 @@ namespace pdb100
 		shm::createLivingProofCollection( p_context );
 		shm::createResultMap( p_context );
 
-		boost::asio::io_context						 io_context;
-		std::array<RestartingProcess, NUM_PROCESSES> processes { io_context };
+		boost::asio::io_context io_context;
+		auto					processes = generate( io_context );
 		watchProcesses( processes );
 	}
 } // namespace pdb100

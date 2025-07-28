@@ -29,6 +29,7 @@ target_link_libraries(secondary_structure PRIVATE vtx_io)
 target_link_libraries(secondary_structure PRIVATE fmt::fmt)
 target_link_libraries(secondary_structure PRIVATE LibArchive::LibArchive)		
 target_link_libraries(secondary_structure PRIVATE Boost::headers)
+target_link_libraries(secondary_structure PRIVATE Boost::process)
 
 target_link_libraries(secondary_structure_child PRIVATE vtx_util)
 target_link_libraries(secondary_structure_child PRIVATE vtx_core)
@@ -36,3 +37,4 @@ target_link_libraries(secondary_structure_child PRIVATE vtx_io)
 target_link_libraries(secondary_structure_child PRIVATE fmt::fmt)
 target_link_libraries(secondary_structure_child PRIVATE LibArchive::LibArchive)		
 target_link_libraries(secondary_structure_child PRIVATE Boost::headers)
+
