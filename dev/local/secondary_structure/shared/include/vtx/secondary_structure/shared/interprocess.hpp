@@ -59,6 +59,9 @@ namespace pdb100
 	typedef map<uint64_t, ResultFlag, std::less<uint64_t>, Uint64ResultFlagPairAllocator> ResultFlagMap;
 	typedef allocator<ResultFlagMap, managed_shared_memory::segment_manager>			  ResultFlagMapAllocator;
 
+	typedef ResultFlagMap		   LivingProofMap;
+	typedef ResultFlagMapAllocator LivingProofMapAllocator;
+
 	using _ResultFlagInt = std::underlying_type<ResultFlag>::type;
 	ResultFlag operator|( const ResultFlag & l, const ResultFlag & r ) noexcept
 	{

@@ -46,7 +46,7 @@ namespace pdb100
 			if ( fs::is_directory( it_fsItem ) )
 				walkDir( contextData, it_fsItem.path() );
 			if ( fs::is_regular_file( it_fsItem ) and notAnException( it_fsItem ) )
-				contextData.push( it_fsItem.path().string() );
+				contextData.push_back( it_fsItem.path().string() );
 		}
 	}
 	/**

@@ -23,7 +23,7 @@ namespace pdb100
 	inline const fs::path g_pdb100DirectoryPath { PDB100_DATABASE_DIR };
 
 	using SystemMap		 = std::unordered_map<uint32_t, System>;
-	using FileCollection = std::stack<std::string>;
+	using FileCollection = std::vector<std::string>;
 
 	class Reporter;
 	struct Context
