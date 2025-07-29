@@ -1,13 +1,14 @@
-
 //
 #include <boost/asio.hpp>
 #include <boost/process/process.hpp>
 //
 #include <array>
 //
+#include <boost/interprocess/sync/named_mutex.hpp>
 #include <vtx/secondary_structure/shared.hpp>
 #include <vtx/secondary_structure/shared/interprocess.hpp>
 //
+#include <iostream>
 #include <thread>
 #include <vtx/secondary_structure/process.hpp>
 
@@ -51,15 +52,16 @@ namespace pdb100
 		void createResultMap( Context & p_context )
 		{
 			auto		 contextData = p_context.pdb100_system.open();
-			const size_t shm_size	 = contextData->size() * ( contextData->back().size() + sizeof( String ) + 50 )
-									+ sizeof( ResultFlagMap ) + 1000;
+			const size_t shm_size
+				= contextData->size() * ( contextData->back().size() + sizeof( ReportItem<String> ) + 50 )
+				  + sizeof( ReportItemCollection ) + 1000;
 			boost::interprocess::managed_shared_memory sharedSegment(
 				boost::interprocess::create_only, pdb100::shm::rsltMap::SEGNAME, shm_size
 			);
-			ResultFlagMapAllocator mapAllocator( sharedSegment.get_segment_manager() );
-			ResultFlagMap *		   map
-				= sharedSegment.construct<ResultFlagMap>( pdb100::shm::rsltMap::OBJNAME )( mapAllocator );
-			map->allocate( contextData->size() );
+			ReportItemAllocator	   mapAllocator( sharedSegment.get_segment_manager() );
+			ReportItemCollection * map
+				= sharedSegment.construct<ReportItemCollection>( pdb100::shm::rsltMap::OBJNAME )( mapAllocator );
+			map->reserve( contextData->size() );
 		}
 	} // namespace shm
 	namespace
@@ -67,7 +69,8 @@ namespace pdb100
 		class RestartingProcess
 		{
 		  public:
-			RestartingProcess( boost::asio::io_context & p_ctx ) : _proc( p_ctx.get_executor(), CHILD_PROCESS_NAME, {} )
+			RestartingProcess( boost::asio::io_context & p_ctx ) :
+				_ctxt( &p_ctx ), _proc( p_ctx.get_executor(), CHILD_PROCESS_NAME, {} )
 			{
 			}
 
@@ -76,26 +79,60 @@ namespace pdb100
 			ID	 getId() { return _proc.id(); }
 			bool finished() { return true; }
 			void kill() { _proc.terminate(); }
+			void restart() { _proc = boost::process::process( _ctxt->get_executor(), CHILD_PROCESS_NAME, {} ); }
 
 		  private:
-			boost::process::process _proc; // TODO
+			boost::asio::io_context * _ctxt;
+			boost::process::process	  _proc;
 		};
 
-		template<size_t SIZE>
-		void restartCrashedProcess( std::array<RestartingProcess, SIZE> & p_processes )
+		void restartCrashedProcess( std::array<RestartingProcess, NUM_PROCESSES> & p_processes )
 		{
+			boost::interprocess::named_mutex		   mutex( open_or_create, shm::livingProof::MUTEX );
+			boost::interprocess::managed_shared_memory sharedSegment(
+				boost::interprocess::open_only, pdb100::shm::livingProof::SEGNAME
+			);
+			auto livingProofMapPair		   = sharedSegment.find<LivingProofMap>( pdb100::shm::livingProof::OBJNAME );
+			constexpr uint64_t	 NO_REMOVE = 0xffffffffffffffff;
+			std::stack<uint64_t> removeKeys;
+			for ( auto & it_pair : *livingProofMapPair.first )
+			{
+				uint64_t timestamp = getTimeStamp();
+				if ( it_pair.second > timestamp + 5 )
+				{
+					auto findRslt = std::find_if(
+						p_processes.begin(),
+						p_processes.end(),
+						[ id = it_pair.first ]( RestartingProcess & p ) { return p.getId() == id; }
+					);
+					if ( findRslt != std::end( p_processes ) )
+					{
+						removeKeys.push( it_pair.first );
+						std::cout << "Restarting process <" << it_pair.first
+								  << "> that didn't give proof of life since " << timestamp - it_pair.second << "s\n";
+						findRslt->kill();
+						findRslt->restart();
+					}
+				}
+			}
+			while ( not removeKeys.empty() )
+			{
+				livingProofMapPair.first->erase( removeKeys.top() );
+				removeKeys.pop();
+			}
 		}
+
 		/**
-		 * @brief Look at processes timestamp to detect processes that crashed and restart it if needed.
+		 * @brief Look at processes timestamp to detect processes that crashed and restart it if needed. Yield once all
+		 * processes are finished
 		 * @tparam SIZE
 		 * @param p_processes
 		 */
-		template<size_t SIZE>
-		void watchProcesses( std ::array<RestartingProcess, SIZE> & p_processes )
+		void watchProcesses( std ::array<RestartingProcess, NUM_PROCESSES> & p_processes )
 		{
 			while ( true )
 			{
-				std::this_thread::sleep_for( std::chrono::seconds( 3 ) );
+				std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
 				restartCrashedProcess( p_processes );
 				bool finished = true;
 				for ( auto & it_process : p_processes )
@@ -106,6 +143,7 @@ namespace pdb100
 					break;
 			}
 		}
+
 		template<typename T>
 		RestartingProcess _generate( boost::asio::io_context & p_arg, T )
 		{

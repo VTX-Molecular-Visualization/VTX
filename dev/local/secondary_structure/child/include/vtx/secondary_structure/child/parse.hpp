@@ -1,5 +1,5 @@
 #pragma once
-#include <vtx/secondary_structure/shared.hpp>
+#include <vtx/secondary_structure/shared/shared.hpp>
 
 namespace pdb100
 {

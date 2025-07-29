@@ -1,9 +1,12 @@
+#pragma once
 
 #include <boost/interprocess/containers/deque.hpp>
 #include <boost/interprocess/containers/map.hpp>
 #include <boost/interprocess/containers/string.hpp>
+#include <boost/interprocess/containers/vector.hpp>
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <chrono>
+#include <vtx/secondary_structure/shared/shared.hpp>
 
 namespace pdb100
 {
@@ -55,23 +58,29 @@ namespace pdb100
 	typedef allocator<ResultFlag, managed_shared_memory::segment_manager> ResultFlagAllocator;
 	typedef allocator<std::pair<const uint64_t, ResultFlag>, managed_shared_memory::segment_manager>
 		Uint64ResultFlagPairAllocator;
+	typedef allocator<std::pair<const uint64_t, uint64_t>, managed_shared_memory::segment_manager> Uint64PairAllocator;
 
 	typedef map<uint64_t, ResultFlag, std::less<uint64_t>, Uint64ResultFlagPairAllocator> ResultFlagMap;
 	typedef allocator<ResultFlagMap, managed_shared_memory::segment_manager>			  ResultFlagMapAllocator;
 
-	typedef ResultFlagMap		   LivingProofMap;
-	typedef ResultFlagMapAllocator LivingProofMapAllocator;
+	typedef map<uint64_t, uint64_t, std::less<uint64_t>, Uint64PairAllocator> LivingProofMap;
+	typedef allocator<LivingProofMap, managed_shared_memory::segment_manager> LivingProofMapAllocator;
+
+	typedef allocator<float, managed_shared_memory::segment_manager>			  FloatAllocator;
+	typedef allocator<uint16_t, managed_shared_memory::segment_manager>			  UInt16Allocator;
+	typedef allocator<ReportItem<String>, managed_shared_memory::segment_manager> ReportItemAllocator;
+	typedef vector<ReportItem<String>, ReportItemAllocator>						  ReportItemCollection;
 
 	using _ResultFlagInt = std::underlying_type<ResultFlag>::type;
-	ResultFlag operator|( const ResultFlag & l, const ResultFlag & r ) noexcept
+	inline ResultFlag operator|( const ResultFlag & l, const ResultFlag & r ) noexcept
 	{
 		return static_cast<ResultFlag>( static_cast<_ResultFlagInt>( l ) | static_cast<_ResultFlagInt>( r ) );
 	}
-	ResultFlag operator&( const ResultFlag & l, const ResultFlag & r ) noexcept
+	inline ResultFlag operator&( const ResultFlag & l, const ResultFlag & r ) noexcept
 	{
 		return static_cast<ResultFlag>( static_cast<_ResultFlagInt>( l ) & static_cast<_ResultFlagInt>( r ) );
 	}
-	ResultFlag operator*( const bool & l, const ResultFlag & r ) noexcept
+	inline ResultFlag operator*( const bool & l, const ResultFlag & r ) noexcept
 	{
 		return static_cast<ResultFlag>( l * static_cast<_ResultFlagInt>( r ) );
 	}

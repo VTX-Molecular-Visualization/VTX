@@ -4,76 +4,11 @@
 #include <optional>
 #include <vtx/secondary_structure/report.hpp>
 #include <vtx/secondary_structure/shared.hpp>
+#include <vtx/secondary_structure/shared/interprocess.hpp>
 
 namespace pdb100
 {
 
-	std::string writeRcsbSs( const System & p_system )
-	{
-		std::string ret;
-		ret += "RCSB PDB Secondary Structure : \n";
-		if ( p_system.strands.empty() )
-			ret += "\tNo Beta-sheet\n";
-		if ( p_system.helixes.empty() )
-			ret += "\tNo right Alpha-helix\n";
-
-		if ( p_system.helixes.empty() or p_system.strands.empty() )
-			ret += "\n";
-
-		if ( not p_system.helixes.empty() )
-		{
-			ret += "\tHelixes : \n";
-			for ( auto & ss : p_system.helixes )
-				ret += writeSs( ss.ss );
-			ret += "\n";
-		}
-
-		if ( not p_system.strands.empty() )
-		{
-			ret += "\tBeta-sheets : \n";
-			for ( auto & ss : p_system.strands )
-				ret += writeSs( ss.ss );
-			ret += "\n";
-		}
-		return ret;
-	}
-	std::string writeSs( const SecondaryStruct & p_ss )
-	{
-		std::string ret = fmt::format(
-			"\t\tBegin : {}-{}\n\t\tEnd : {}-{}\n",
-			p_ss.begin.chain_name,
-			p_ss.begin.num,
-			p_ss.end.chain_name,
-			p_ss.end.num
-		);
-		return ret;
-	}
-	std::string writeSsReportString(
-		const VTX::Core::Struct::System &					p_chemSystem,
-		const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type,
-		const bool &										p_isBeginCorrect,
-		const bool &										p_isEndCorrect,
-		const uint64_t &									p_startIdx,
-		const uint64_t &									p_endIdx
-	)
-	{
-		static const auto correctnessStr = []( bool _ ) -> const char *
-		{
-			if ( _ )
-				return "correct";
-			return "incorrect";
-		};
-		return fmt::format(
-			"Predicted SS : {}\n\tFrom {}-{} to {}-{}\n\tBegin is {}\n\tEnd is {}\n",
-			string( p_type ),
-			chainName( p_chemSystem, p_startIdx ),
-			p_chemSystem.residueOriginalIds[ p_startIdx ],
-			chainName( p_chemSystem, p_endIdx ),
-			p_chemSystem.residueOriginalIds[ p_endIdx ],
-			correctnessStr( p_isBeginCorrect ),
-			correctnessStr( p_isEndCorrect )
-		);
-	}
 	const char * string( const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_ )
 	{
 		using Type = VTX::Core::ChemDB::SecondaryStructure::TYPE;
@@ -84,6 +19,33 @@ namespace pdb100
 		case Type::HELIX_ALPHA_RIGHT: return "Alpha-helix right";
 		default: return "other";
 		}
+	}
+	const std::string & chainName( const VTX::Core::Struct::System & p_sys, const uint64_t & p_vtxResId );
+	std::string			writeSsReportString(
+				const VTX::Core::Struct::System &					p_chemSystem,
+				const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type,
+				const bool &										p_isBeginCorrect,
+				const bool &										p_isEndCorrect,
+				const uint64_t &									p_startIdx,
+				const uint64_t &									p_endIdx
+			)
+	{
+		static const auto correctnessStr = []( bool _ ) -> const char *
+		{
+			if ( _ )
+				return "correct";
+			return "incorrect";
+		};
+		return fmt::format(
+			"Predicted SS : {}\n\tFrom {}-{} to {}-{}\n\tBegin is {}\n\tEnd is {}\n",
+			pdb100::string( p_type ),
+			chainName( p_chemSystem, p_startIdx ),
+			p_chemSystem.residueOriginalIds[ p_startIdx ],
+			chainName( p_chemSystem, p_endIdx ),
+			p_chemSystem.residueOriginalIds[ p_endIdx ],
+			correctnessStr( p_isBeginCorrect ),
+			correctnessStr( p_isEndCorrect )
+		);
 	}
 	const std::string & chainName( const VTX::Core::Struct::System & p_sys, const uint64_t & p_vtxResId )
 	{
@@ -143,7 +105,7 @@ namespace pdb100
 		outFile << "\n";
 		for ( auto & it : _items )
 		{
-			if ( it.resultSummary != Item::ResultSummary::fail )
+			if ( it.resultSummary != ReportItem<std::string>::ResultSummary::fail )
 				continue;
 			outFile << "Structure :" << it.pdb << "\n";
 			outFile << "\n";
@@ -176,13 +138,13 @@ namespace pdb100
 		std::cout << "done.\n";
 	}
 
-	void Reporter::add( Item p_item )
+	void Reporter::add( ReportItem<std::string> p_item )
 	{
 		switch ( p_item.resultSummary )
 		{
-		case Item::ResultSummary::success: _num_success++; break;
-		case Item::ResultSummary::fail: _num_failed++; break;
-		case Item::ResultSummary::no_ss: _num_noSs++; break;
+		case ReportItem<std::string>::ResultSummary::success: _num_success++; break;
+		case ReportItem<std::string>::ResultSummary::fail: _num_failed++; break;
+		case ReportItem<std::string>::ResultSummary::no_ss: _num_noSs++; break;
 		}
 		_num_betaSheet += p_item.correctnessRates.numBetaSheet;
 		_num_alphaHelix += p_item.correctnessRates.numAlphaHelix;

@@ -55,35 +55,4 @@ namespace pdb100
 	 */
 	void enumerateFiles( Context & contextData ) { walkDir( *contextData.pdb100_system.open(), contextData.dbDir ); }
 
-	void decompressFile( const fs::path & src, const fs::path & dest )
-	{
-		std::vector<char> cpp_buffer;
-		cpp_buffer.resize( fs::file_size( src ) );
-
-		struct archive *	   a;
-		struct archive_entry * entry;
-		int					   r;
-
-		a = archive_read_new();
-		archive_read_support_filter_gzip( a );
-		archive_read_support_format_raw( a );
-
-		r = archive_read_open_file( a, src.string().c_str(), 10240 );
-		if ( r != ARCHIVE_OK )
-			throw VTX::VTXException( "Issue with archive <{}>. Opening error.", src.string() );
-		if ( archive_read_next_header( a, &entry ) != ARCHIVE_OK )
-			throw VTX::VTXException( "Issue with archive <{}>. Header readin error.", src.string() );
-
-		size_t		  redBytes = 0;
-		std::ofstream outStrm( dest );
-		do
-		{
-			redBytes = archive_read_data( a, cpp_buffer.data(), cpp_buffer.size() );
-			outStrm.write( cpp_buffer.data(), redBytes );
-		} while ( redBytes != 0 );
-
-		r = archive_read_free( a );
-		if ( r != ARCHIVE_OK )
-			throw VTX::VTXException( "Issue with archive <{}>. Freeing error.", src.string() );
-	}
 } // namespace pdb100

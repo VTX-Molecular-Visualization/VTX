@@ -1,9 +1,12 @@
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <ranges>
 #include <string_view>
-#include <vtx/secondary_structure/parse.hpp>
+#include <vector>
+#include <vtx/secondary_structure/child/parse.hpp>
 
+namespace fs	 = std::filesystem;
 namespace rviews = std::ranges::views;
 
 namespace pdb100

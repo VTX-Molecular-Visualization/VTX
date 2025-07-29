@@ -1,18 +1,131 @@
+#include <archive.h>
+#include <archive_entry.h>
 #include <array>
 #include <core/chemdb/secondary_structure.hpp>
+#include <filesystem>
+#include <fstream>
 #include <io/util/secondary_structure.hpp>
 #include <iostream>
 #include <thread>
 //
 #include <fmt/format.h>
 #include <io/reader/system.hpp>
-#include <vtx/secondary_structure/files.hpp>
-#include <vtx/secondary_structure/parse.hpp>
-#include <vtx/secondary_structure/report.hpp>
-#include <vtx/secondary_structure/tests.hpp>
+//
+#include <boost/interprocess/sync/named_mutex.hpp>
+#include <vtx/secondary_structure/child/parse.hpp>
+#include <vtx/secondary_structure/child/tests.hpp>
+#include <vtx/secondary_structure/shared/interprocess.hpp>
+#include <vtx/secondary_structure/shared/shared.hpp>
+namespace fs = std::filesystem;
 
 namespace pdb100
 {
+
+	/**
+	 * @brief Use libarchive to decompress the directory , take the first file and write it at destination.
+	 * @param src
+	 * @param dest
+	 */
+	void decompressFile( const fs::path & src, const fs::path & dest );
+
+	void decompressFile( const fs::path & src, const fs::path & dest )
+	{
+		std::vector<char> cpp_buffer;
+		cpp_buffer.resize( fs::file_size( src ) );
+
+		struct archive *	   a;
+		struct archive_entry * entry;
+		int					   r;
+
+		a = archive_read_new();
+		archive_read_support_filter_gzip( a );
+		archive_read_support_format_raw( a );
+
+		r = archive_read_open_file( a, src.string().c_str(), 10240 );
+		if ( r != ARCHIVE_OK )
+			throw VTX::VTXException( "Issue with archive <{}>. Opening error.", src.string() );
+		if ( archive_read_next_header( a, &entry ) != ARCHIVE_OK )
+			throw VTX::VTXException( "Issue with archive <{}>. Header readin error.", src.string() );
+
+		size_t		  redBytes = 0;
+		std::ofstream outStrm( dest );
+		do
+		{
+			redBytes = archive_read_data( a, cpp_buffer.data(), cpp_buffer.size() );
+			outStrm.write( cpp_buffer.data(), redBytes );
+		} while ( redBytes != 0 );
+
+		r = archive_read_free( a );
+		if ( r != ARCHIVE_OK )
+			throw VTX::VTXException( "Issue with archive <{}>. Freeing error.", src.string() );
+	}
+	const std::string & chainName( const VTX::Core::Struct::System & p_sys, const uint64_t & p_vtxResId )
+	{
+		if ( p_sys.chainNames.size() == 1 )
+			return p_sys.chainNames[ 0 ];
+
+		const std::string * ret		 = &p_sys.chainNames[ 0 ];
+		uint64_t			chainIdx = 1;
+		for ( ; chainIdx < p_sys.chainNames.size(); chainIdx++ )
+		{
+			if ( p_sys.chainFirstResidues[ chainIdx ] > p_vtxResId )
+				return *ret;
+			ret = &p_sys.chainNames[ chainIdx - 1 ];
+		}
+		return *ret;
+	}
+	const char * string( const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_ );
+	std::string	 writeSsReportString(
+		 const VTX::Core::Struct::System &					 p_chemSystem,
+		 const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type,
+		 const bool &										 p_isBeginCorrect,
+		 const bool &										 p_isEndCorrect,
+		 const uint64_t &									 p_startIdx,
+		 const uint64_t &									 p_endIdx
+	 );
+	std::string writeSs( const SecondaryStruct & p_ss );
+	std::string writeRcsbSs( const System & p_system );
+
+	std::string writeRcsbSs( const System & p_system )
+	{
+		std::string ret;
+		ret += "RCSB PDB Secondary Structure : \n";
+		if ( p_system.strands.empty() )
+			ret += "\tNo Beta-sheet\n";
+		if ( p_system.helixes.empty() )
+			ret += "\tNo right Alpha-helix\n";
+
+		if ( p_system.helixes.empty() or p_system.strands.empty() )
+			ret += "\n";
+
+		if ( not p_system.helixes.empty() )
+		{
+			ret += "\tHelixes : \n";
+			for ( auto & ss : p_system.helixes )
+				ret += writeSs( ss.ss );
+			ret += "\n";
+		}
+
+		if ( not p_system.strands.empty() )
+		{
+			ret += "\tBeta-sheets : \n";
+			for ( auto & ss : p_system.strands )
+				ret += writeSs( ss.ss );
+			ret += "\n";
+		}
+		return ret;
+	}
+	std::string writeSs( const SecondaryStruct & p_ss )
+	{
+		std::string ret = fmt::format(
+			"\t\tBegin : {}-{}\n\t\tEnd : {}-{}\n",
+			p_ss.begin.chain_name,
+			p_ss.begin.num,
+			p_ss.end.chain_name,
+			p_ss.end.num
+		);
+		return ret;
+	}
 
 	namespace
 	{
@@ -194,7 +307,7 @@ namespace pdb100
 
 			return false;
 		}
-		void computeCorrectnessRates( const TestContext & p_context, Reporter::Item::Rates & p_rates )
+		void computeCorrectnessRates( const TestContext & p_context, ReportItem<std::string>::Rates & p_rates )
 		{
 			for ( auto & it : p_context.ssSumaries )
 			{
@@ -222,6 +335,7 @@ namespace pdb100
 			p_rates.endBetaSheet /= oneIfZero( p_rates.numBetaSheet );
 			p_rates.fullBetaSheet /= oneIfZero( p_rates.numBetaSheet );
 		}
+		void postReportItem( ReportItem<std::string> p_item ) {}
 
 		/**
 		 * @brief Compute differences between our prediction and RCSB's and post a report item
@@ -245,19 +359,19 @@ namespace pdb100
 			if ( context.inStrand )
 				terminateSs<Strand>( Type::STRAND, p_system, context );
 
-			Reporter::Item::ResultSummary summary = Reporter::Item::ResultSummary::success;
+			ReportItem<std::string>::ResultSummary summary = ReportItem<std::string>::ResultSummary::success;
 			if ( not context.isEverythingCorrect )
 			{
-				summary		   = Reporter::Item::ResultSummary::fail;
+				summary		   = ReportItem<std::string>::ResultSummary::fail;
 				context.report = writeRcsbSs( p_system ) + context.report;
 			}
-			Reporter::Item::Rates rates;
+			ReportItem<std::string>::Rates rates;
 			computeCorrectnessRates( context, rates );
-			reporter().open()->add(
-				Reporter::Item { .resultSummary	   = std::move( summary ),
-								 .correctnessRates = std::move( rates ),
-								 .pdb			   = std::string( p_system.code, sizeof( p_system.code ) ),
-								 .details		   = std::move( context.report ) }
+			postReportItem(
+				ReportItem<std::string> { .resultSummary	= std::move( summary ),
+										  .correctnessRates = std::move( rates ),
+										  .pdb				= std::string( p_system.code, sizeof( p_system.code ) ),
+										  .details			= std::move( context.report ) }
 			);
 		}
 	} // namespace
@@ -276,9 +390,9 @@ namespace pdb100
 
 		if ( p_system.strands.empty() and p_system.helixes.empty() )
 		{
-			reporter().open()->add(
-				Reporter::Item { .resultSummary = Reporter::Item::ResultSummary::no_ss,
-								 .pdb			= std::string( p_system.code, sizeof( p_system.code ) ) }
+			postReportItem(
+				ReportItem<std::string> { .resultSummary = ReportItem<std::string>::ResultSummary::no_ss,
+										  .pdb			 = std::string( p_system.code, sizeof( p_system.code ) ) }
 			);
 			return;
 		}
@@ -319,42 +433,30 @@ namespace pdb100
 		}
 	}
 	/**
-	 * @brief Meant to be the main function of a new thread. Analyze available file until there is no more.
-	 * @param p_systemPaths
+	 * @brief Return A path pointing toward a system archive, or empty string if there is none left.
+	 * @return
 	 */
-	void _testSystems( VTX::Util::DataLocker<FileCollection> & p_systemPaths )
+	std::string fetchSystemArchivePath()
+	{
+		boost::interprocess::named_mutex		   mutex( open_or_create, shm::filestrDeque::MUTEX );
+		boost::interprocess::managed_shared_memory sharedSegment(
+			boost::interprocess::open_only, pdb100::shm::filestrDeque::SEGNAME
+		);
+		auto fileStrDeque = sharedSegment.find<StringDeque>( pdb100::shm::filestrDeque::OBJNAME );
+		if ( fileStrDeque.first->empty() )
+			return {};
+		std::string ret( fileStrDeque.first->back().begin(), fileStrDeque.first->back().end() );
+		fileStrDeque.first->pop_back();
+		return ret;
+	}
+	void testSystems()
 	{
 		while ( true )
 		{
-			fs::path sys;
-			{
-				auto paths = p_systemPaths.open();
-				if ( paths->size() % 1000 == 0 )
-					std::cout << "<" << paths->size() << "> pdb structures left.\n";
-				if ( paths->empty() )
-					break;
-				sys = paths->top();
-				paths->pop();
-			}
-			try
-			{
-				testSystem( sys );
-			}
-			catch ( ... )
-			{
-				std::cout << "Something went wrong with <" << sys.stem() << ">\n";
-			}
-		}
-	}
-	void testSystems( VTX::Util::DataLocker<FileCollection> & p_systemPaths )
-	{
-		std::array<std::jthread, NUM_THREADS> threads;
-		size_t								  thr_idx = 0;
-		for ( auto & thr : threads )
-		{
-			thr_idx++;
-			std::cout << "Starting thread " << thr_idx << ".\n";
-			thr = std::jthread( [ &p_systemPaths ]() { _testSystems( p_systemPaths ); } );
+			std::string systemToTest = fetchSystemArchivePath();
+			if ( systemToTest.empty() )
+				break;
+			testSystem( systemToTest );
 		}
 	}
 

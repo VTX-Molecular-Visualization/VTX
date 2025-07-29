@@ -1,7 +1,5 @@
-
-#include <vtx/secondary_structure/report.hpp>
-//
 #include <vtx/secondary_structure/shared.hpp>
+
 namespace pdb100
 {
 	namespace
