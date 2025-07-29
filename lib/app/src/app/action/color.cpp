@@ -5,7 +5,7 @@
 namespace VTX::App::Action::Color
 {
 
-	ChangeLayoutColor::ChangeLayoutColor( const size_t p_index, const Util::Color::Rgba & p_color ) :
+	ChangeLayoutColor::ChangeLayoutColor( const Index p_index, const Util::Color::Rgba & p_color ) :
 		_index( p_index ), _color( p_color )
 	{
 	}

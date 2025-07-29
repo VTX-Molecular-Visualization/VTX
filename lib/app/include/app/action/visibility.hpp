@@ -21,7 +21,7 @@ namespace VTX::App::Action::Visibility
 		explicit SetVisible(
 			App::Component::Chemistry::System * const p_system,
 			const bool								  p_visible,
-			const std::optional<size_t>				  p_id
+			const std::optional<Index>				  p_id
 		) : _system( p_system ), _visible( p_visible ), _id( p_id )
 		{
 		}
@@ -52,7 +52,7 @@ namespace VTX::App::Action::Visibility
 			else if constexpr ( T == E_ITEM_TYPE::ATOM )
 			{
 				assert( _id.has_value() );
-				auto * const atom = _system->getAtom( atom_index_t( _id.value() ) );
+				auto * const atom = _system->getAtom( Index( _id.value() ) );
 				assert( atom );
 				atom->setVisible( _visible );
 			}
@@ -61,7 +61,7 @@ namespace VTX::App::Action::Visibility
 	  private:
 		App::Component::Chemistry::System * const _system;
 		const bool								  _visible;
-		const std::optional<size_t>				  _id;
+		const std::optional<Index>				  _id;
 	};
 
 } // namespace VTX::App::Action::Visibility

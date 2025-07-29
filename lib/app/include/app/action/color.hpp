@@ -9,11 +9,11 @@ namespace VTX::App::Action::Color
 	class ChangeLayoutColor final : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeLayoutColor( const size_t, const Util::Color::Rgba & );
+		ChangeLayoutColor( const Index, const Util::Color::Rgba & );
 		void execute() override;
 
 	  private:
-		const size_t			  _index;
+		const Index				  _index;
 		const Util::Color::Rgba & _color;
 	};
 

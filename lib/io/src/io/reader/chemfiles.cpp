@@ -71,8 +71,8 @@ namespace VTX::IO::Reader
 
 	Chemfiles::ResidueIt::~ResidueIt() = default;
 
-	atom_index_t Chemfiles::ResidueIt::operator*() const { return atom_index_t( *( _internalIterator->it ) ); }
-	atom_index_t Chemfiles::ResidueIt::operator->() const { return atom_index_t( *( _internalIterator->it ) ); }
+	Index Chemfiles::ResidueIt::operator*() const { return Index( *( _internalIterator->it ) ); }
+	Index Chemfiles::ResidueIt::operator->() const { return Index( *( _internalIterator->it ) ); }
 
 	// Prefix increment
 	Chemfiles::ResidueIt & Chemfiles::ResidueIt::operator++()
@@ -109,7 +109,7 @@ namespace VTX::IO::Reader
 		std::unique_ptr<Chemfiles> chemfilesReader = std::make_unique<Chemfiles>( p_path );
 
 		chrono.stop();
-		//VTX_INFO( "readFile : {}", Util::String::durationToStr( chrono.elapsedTime() ) );
+		// VTX_INFO( "readFile : {}", Util::String::durationToStr( chrono.elapsedTime() ) );
 
 		return chemfilesReader;
 	}
@@ -255,10 +255,10 @@ namespace VTX::IO::Reader
 	void Chemfiles::readNextFrame() { _readingData->readNextFrame(); }
 
 	// Trajectory //////////////////////////////////
-	size_t Chemfiles::getFrameCount() const { return _readingData->_trajectory.nsteps(); }
-	size_t Chemfiles::getResidueCount() const { return _readingData->_residues->size(); }
-	size_t Chemfiles::getAtomCount() const { return _readingData->_currentFrame.size(); }
-	size_t Chemfiles::getBondCount() const { return _readingData->_currentFrame.topology().bonds().size(); }
+	Index Chemfiles::getFrameCount() const { return Index( _readingData->_trajectory.nsteps() ); }
+	Index Chemfiles::getResidueCount() const { return Index( _readingData->_residues->size() ); }
+	Index Chemfiles::getAtomCount() const { return Index( _readingData->_currentFrame.size() ); }
+	Index Chemfiles::getBondCount() const { return Index( _readingData->_currentFrame.topology().bonds().size() ); }
 
 	// Frame //////////////////////////////////
 	const std::string Chemfiles::getFrameName() const
@@ -294,25 +294,24 @@ namespace VTX::IO::Reader
 	{
 		return _readingData->_currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_double();
 	}
-	const bool Chemfiles::getCurrentResidueBoolProperty( const std::string & p_property, const bool p_defaultValue )
-		const
+	const bool Chemfiles::getCurrentResidueBoolProperty(
+		const std::string & p_property,
+		const bool			p_defaultValue
+	) const
 	{
 		return _readingData->_currentResidue->properties().get( p_property ).value_or( p_defaultValue ).as_bool();
 	}
 
 	const std::string & Chemfiles::getCurrentResidueName() const { return _readingData->_currentResidue->name(); }
-	const size_t		Chemfiles::getCurrentResidueId() const
+	const Index			Chemfiles::getCurrentResidueId() const
 	{
-		return size_t( _readingData->_currentResidue->id().value_or( INVALID_INDEX ) );
+		return Index( _readingData->_currentResidue->id().value_or( INVALID_INDEX ) );
 	}
-	const atom_index_t Chemfiles::getCurrentResidueFirstAtomIndex() const
+	const Index Chemfiles::getCurrentResidueFirstAtomIndex() const
 	{
-		return atom_index_t( *( _readingData->_currentResidue->begin() ) );
+		return Index( *( _readingData->_currentResidue->begin() ) );
 	}
-	const atom_index_t Chemfiles::getCurrentResidueAtomCount() const
-	{
-		return atom_index_t( _readingData->_currentResidue->size() );
-	}
+	const Index Chemfiles::getCurrentResidueAtomCount() const { return Index( _readingData->_currentResidue->size() ); }
 
 	Chemfiles::ResidueIt Chemfiles::getCurrentResidueAtomIteratorBegin() const
 	{
@@ -326,7 +325,7 @@ namespace VTX::IO::Reader
 	}
 
 	// Atom //////////////////////////////////////
-	void Chemfiles::setCurrentAtom( const size_t p_index )
+	void Chemfiles::setCurrentAtom( const Index p_index )
 	{
 		_readingData->_currentAtom		= &( _readingData->_currentFrame[ p_index ] );
 		_readingData->_currentAtomIndex = p_index;
@@ -345,8 +344,10 @@ namespace VTX::IO::Reader
 			= _readingData->_currentAtom->properties()->get( p_property );
 		return optionalProperty ? optionalProperty.value().as_string() : p_defaultValue;
 	}
-	const double Chemfiles::getCurrentAtomDoubleProperty( const std::string & p_property, const double p_defaultValue )
-		const
+	const double Chemfiles::getCurrentAtomDoubleProperty(
+		const std::string & p_property,
+		const double		p_defaultValue
+	) const
 	{
 		if ( !_readingData->_currentAtom->properties() )
 			return p_defaultValue;
@@ -399,14 +400,8 @@ namespace VTX::IO::Reader
 		_readingData->_currentBondIndex = p_bondIndex;
 	}
 
-	atom_index_t Chemfiles::getCurrentBondFirstAtomIndex() const
-	{
-		return atom_index_t( ( *_readingData->_currentBond )[ 0 ] );
-	}
-	atom_index_t Chemfiles::getCurrentBondSecondAtomIndex() const
-	{
-		return atom_index_t( ( *_readingData->_currentBond )[ 1 ] );
-	}
+	Index Chemfiles::getCurrentBondFirstAtomIndex() const { return Index( ( *_readingData->_currentBond )[ 0 ] ); }
+	Index Chemfiles::getCurrentBondSecondAtomIndex() const { return Index( ( *_readingData->_currentBond )[ 1 ] ); }
 
 	const VTX::Core::ChemDB::Bond::ORDER Chemfiles::getCurrentBondOrder() const
 	{

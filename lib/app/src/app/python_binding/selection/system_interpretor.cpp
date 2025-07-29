@@ -109,7 +109,7 @@ namespace VTX::App::PythonBinding::Selection
 		if ( p_kwargs.hasSpecifySystem() )
 		{
 			const std::vector<std::string> & systemNames   = p_kwargs.systemNames;
-			const std::vector<size_t>		 systemIndexes = p_kwargs.systemIndexes;
+			const std::vector<Index>		 systemIndexes = p_kwargs.systemIndexes;
 
 			for ( const std::string & molName : systemNames )
 			{
@@ -122,7 +122,7 @@ namespace VTX::App::PythonBinding::Selection
 
 				systems.emplace( &systemComponent );
 			}
-			for ( const size_t molIndex : systemIndexes )
+			for ( const Index molIndex : systemIndexes )
 			{
 				App::Core::ECS::BaseEntity systemEntity = App::SCENE().getItem( molIndex );
 
@@ -172,7 +172,7 @@ namespace VTX::App::PythonBinding::Selection
 				}
 			}
 
-			for ( const size_t chainIndex : p_kwargs.chainIndexes )
+			for ( const Index chainIndex : p_kwargs.chainIndexes )
 			{
 				Chain * const chain = system.getChain( chainIndex );
 
@@ -235,7 +235,7 @@ namespace VTX::App::PythonBinding::Selection
 
 				for ( const std::unique_ptr<Residue> & residue : system.getResidues() )
 				{
-					for ( const size_t residueIndex : p_kwargs.residueIndexes )
+					for ( const Index residueIndex : p_kwargs.residueIndexes )
 					{
 						if ( residue->getIndexInOriginalChain() == residueIndex )
 						{
@@ -249,7 +249,7 @@ namespace VTX::App::PythonBinding::Selection
 			}
 			else
 			{
-				for ( const size_t chainID : chainIDs )
+				for ( const Index chainID : chainIDs )
 				{
 					const Chain * chainPtr = system.getChain( chainID );
 					const Chain & chain	   = *chainPtr;
@@ -268,7 +268,7 @@ namespace VTX::App::PythonBinding::Selection
 						}
 					}
 
-					for ( const size_t residueIndex : p_kwargs.residueIndexes )
+					for ( const Index residueIndex : p_kwargs.residueIndexes )
 					{
 						for ( const Residue & residue : chain.residues() )
 						{
@@ -309,12 +309,12 @@ namespace VTX::App::PythonBinding::Selection
 			if ( chainIDs.isEmpty() )
 			{
 				_addAtomsFollowingKwargs(
-					0, atom_index_t( system.getAtoms().size() - 1 ), system, p_systemSelectionData, p_kwargs
+					0, Index( system.getAtoms().size() - 1 ), system, p_systemSelectionData, p_kwargs
 				);
 			}
 			else
 			{
-				for ( const size_t chainID : chainIDs )
+				for ( const Index chainID : chainIDs )
 				{
 					const Chain * const chain = system.getChain( chainID );
 
@@ -331,7 +331,7 @@ namespace VTX::App::PythonBinding::Selection
 		{
 			const App::Selection::SystemData::IndexRangeList & residueIDs = p_systemSelectionData.getResidueIds();
 
-			for ( const size_t residueID : residueIDs )
+			for ( const Index residueID : residueIDs )
 			{
 				const Residue * const residue = system.getResidue( residueID );
 
@@ -346,14 +346,14 @@ namespace VTX::App::PythonBinding::Selection
 	}
 
 	void SystemInterpretor::_addAtomsFollowingKwargs(
-		const atom_index_t			 p_firstAtom,
-		const atom_index_t			 p_lastAtom,
+		const Index					 p_firstAtom,
+		const Index					 p_lastAtom,
 		System &					 p_system,
 		App::Selection::SystemData & p_systemSelectionData,
 		const InterpretedKwargs &	 p_kwargs
 	)
 	{
-		for ( atom_index_t atomID = p_firstAtom; atomID <= p_lastAtom; atomID++ )
+		for ( Index atomID = p_firstAtom; atomID <= p_lastAtom; atomID++ )
 		{
 			Atom * const atom = p_system.getAtom( atomID );
 

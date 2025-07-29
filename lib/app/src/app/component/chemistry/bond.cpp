@@ -4,19 +4,16 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	atom_index_t Bond::getIndexFirstAtom() const
-	{
-		return _systemPtr->_systemStruct.bondPairAtomIndexes[ _index * 2 ];
-	}
-	void Bond::setIndexFirstAtom( const atom_index_t p_atomIndex )
+	Index Bond::getIndexFirstAtom() const { return _systemPtr->_systemStruct.bondPairAtomIndexes[ _index * 2 ]; }
+
+	void Bond::setIndexFirstAtom( const Index p_atomIndex )
 	{
 		_systemPtr->_systemStruct.bondPairAtomIndexes[ _index * 2 ] = p_atomIndex;
 	}
-	atom_index_t Bond::getIndexSecondAtom() const
-	{
-		return _systemPtr->_systemStruct.bondPairAtomIndexes[ _index * 2 + 1 ];
-	}
-	void Bond::setIndexSecondAtom( const atom_index_t p_atomIndex )
+
+	Index Bond::getIndexSecondAtom() const { return _systemPtr->_systemStruct.bondPairAtomIndexes[ _index * 2 + 1 ]; }
+
+	void Bond::setIndexSecondAtom( const Index p_atomIndex )
 	{
 		_systemPtr->_systemStruct.bondPairAtomIndexes[ _index * 2 + 1 ] = p_atomIndex;
 	}
@@ -30,7 +27,7 @@ namespace VTX::App::Component::Chemistry
 	}
 	void Bond::setVisible( const bool p_visible )
 	{
-		AtomIndexRangeList atomRange = AtomIndexRangeList();
+		IndexRangeList atomRange;
 
 		atomRange.addValue( getIndexFirstAtom() );
 		atomRange.addValue( getIndexSecondAtom() );

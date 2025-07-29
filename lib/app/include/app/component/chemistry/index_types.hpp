@@ -7,14 +7,8 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	using AtomIndexRange	 = Util::Math::Range<atom_index_t>;
-	using AtomIndexRangeList = Util::Math::RangeList<atom_index_t>;
-
-	using ResidueIndexRange		= Util::Math::Range<size_t>;
-	using ResidueIndexRangeList = Util::Math::RangeList<size_t>;
-
-	using ChainIndexRange	  = Util::Math::Range<size_t>;
-	using ChainIndexRangeList = Util::Math::RangeList<size_t>;
+	using IndexRange	 = Util::Math::Range<Index>;
+	using IndexRangeList = Util::Math::RangeList<Index>;
 
 } // namespace VTX::App::Component::Chemistry
 

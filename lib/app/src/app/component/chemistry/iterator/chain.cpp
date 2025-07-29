@@ -3,7 +3,7 @@
 
 namespace VTX::App::Component::Chemistry::Iterator
 {
-	ChainContainer::ChainIt::ChainIt( System * const p_system, const size_t p_index, const size_t p_end ) :
+	ChainContainer::ChainIt::ChainIt( System * const p_system, const Index p_index, const Index p_end ) :
 		_system( p_system ), _index( p_index ), _end( p_end )
 	{
 		_getValid();
@@ -49,11 +49,8 @@ namespace VTX::App::Component::Chemistry::Iterator
 		}
 	}
 
-	ChainContainer::ChainContainer(
-		System * const p_system,
-		const size_t   p_firstChainIndex,
-		const size_t   p_ChainCount
-	) : _system( p_system ), _firstChainIndex( p_firstChainIndex ), _chainCount( p_ChainCount )
+	ChainContainer::ChainContainer( System * const p_system, const Index p_firstChainIndex, const Index p_ChainCount ) :
+		_system( p_system ), _firstChainIndex( p_firstChainIndex ), _chainCount( p_ChainCount )
 	{
 	}
 

@@ -13,25 +13,23 @@ namespace VTX::App::Component::Chemistry
 	  public:
 		Bond() {}
 		Bond( System * const p_systemPtr ) : _systemPtr( p_systemPtr ) {}
-		Bond( System * const p_systemPtr, const size_t p_index ) : _systemPtr( p_systemPtr ), _index( p_index )
-		{
-		}
+		Bond( System * const p_systemPtr, const Index p_index ) : _systemPtr( p_systemPtr ), _index( p_index ) {}
 
 		const System * const getSystemPtr() const { return _systemPtr; }
-		System * const	   getSystemPtr() { return _systemPtr; }
+		System * const		 getSystemPtr() { return _systemPtr; }
 
-		atom_index_t getIndexFirstAtom() const;
-		void		 setIndexFirstAtom( const atom_index_t p_atomIndex );
+		Index getIndexFirstAtom() const;
+		void  setIndexFirstAtom( const Index p_atomIndex );
 
-		atom_index_t getIndexSecondAtom() const;
-		void		 setIndexSecondAtom( const atom_index_t p_atomIndex );
+		Index getIndexSecondAtom() const;
+		void  setIndexSecondAtom( const Index p_atomIndex );
 
 		bool isVisible() const;
 		void setVisible( const bool p_visible );
 
 	  private:
 		System * _systemPtr = nullptr;
-		size_t	   _index		= INVALID_INDEX;
+		Index	 _index		= INVALID_INDEX;
 	};
 
 } // namespace VTX::App::Component::Chemistry

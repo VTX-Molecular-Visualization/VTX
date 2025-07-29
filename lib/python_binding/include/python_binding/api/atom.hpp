@@ -34,13 +34,13 @@ namespace VTX::PythonBinding::API
 	  public:
 		Atom() = default;
 
-		inline atom_index_t getIndex() const
+		inline Index getIndex() const
 		{
 			if ( _ptr )
 				return _ptr->getIndex();
 			return 0xffffffff;
 		}
-		inline void setIndex( const atom_index_t p_index )
+		inline void setIndex( const Index p_index )
 		{
 			if ( _ptr )
 				_ptr->setIndex( p_index );
@@ -133,8 +133,8 @@ namespace VTX::PythonBinding::API
 		{
 			virtual ~_interface() = default;
 
-			virtual atom_index_t  getIndex() const						 = 0;
-			virtual void		  setIndex( const atom_index_t p_index ) = 0;
+			virtual Index  getIndex() const						 = 0;
+			virtual void		  setIndex( const Index p_index ) = 0;
 			virtual Residue		  getResidue()							 = 0;
 			virtual const Residue getResidue() const					 = 0;
 			virtual Chain		  getChain()							 = 0;
@@ -184,8 +184,8 @@ namespace VTX::PythonBinding::API
 		  public:
 			_wrapper( T & p_ ) : _obj( p_ ) {}
 
-			virtual atom_index_t getIndex() const override { return obj().getIndex(); }
-			virtual void		 setIndex( const atom_index_t p_index ) override
+			virtual Index getIndex() const override { return obj().getIndex(); }
+			virtual void		 setIndex( const Index p_index ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().setIndex( p_index );
@@ -273,13 +273,13 @@ namespace VTX::PythonBinding::API
 		{
 			// static_assert(
 			//	requires( const T t ) {
-			//		{ t.getIndex() } -> std::same_as<atom_index_t>;
-			//	}, "Missing |atom_index_t getIndex() const| class method."
+			//		{ t.getIndex() } -> std::same_as<Index>;
+			//	}, "Missing |Index getIndex() const| class method."
 			//);
 			// static_assert(
-			//	requires( T t, const atom_index_t idx ) {
+			//	requires( T t, const Index idx ) {
 			//		{ t.setIndex( idx ) };
-			//	}, "Missing |void setIndex( const atom_index_t p_index )| class method."
+			//	}, "Missing |void setIndex( const Index p_index )| class method."
 			//);
 			//  TODO : The rest of the static assertion to help maintainance, when we're sure this design works
 		}

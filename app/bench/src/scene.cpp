@@ -11,13 +11,15 @@ namespace VTX::Bench
 
 	Scene::Scene( const size_t p_width, const size_t p_height ) :
 		_camera( p_width, p_height ), _colorLayout( Core::ChemDB::Color::COLOR_LAYOUT_JMOL ),
-		_proxyCamera( { _camera.getMatrixViewPtr(),
-						_camera.getMatrixProjectionPtr(),
-						_camera.getPosition(),
-						VEC2I_ZERO,
-						_camera.getNear(),
-						_camera.getFar(),
-						_camera.isPerspective() } )
+		_proxyCamera(
+			{ _camera.getMatrixViewPtr(),
+			  _camera.getMatrixProjectionPtr(),
+			  _camera.getPosition(),
+			  VEC2I_ZERO,
+			  _camera.getNear(),
+			  _camera.getFar(),
+			  _camera.isPerspective() }
+		)
 	{
 		_camera.callbackMatrixView += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixView(); };
 		_camera.callbackMatrixProjection += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixProjection(); };
@@ -115,10 +117,10 @@ namespace VTX::Bench
 		const Core::Struct::Category & categoryCarbohydrate
 			= p_system.getCategory( Core::ChemDB::Category::TYPE::CARBOHYDRATE );
 
-		const std::vector<size_t> & polymerChainIds		 = categoryPolymer.getLinkedChains();
-		const std::vector<size_t> & carbohydrateChainIds = categoryCarbohydrate.getLinkedChains();
+		const std::vector<Index> & polymerChainIds		= categoryPolymer.getLinkedChains();
+		const std::vector<Index> & carbohydrateChainIds = categoryCarbohydrate.getLinkedChains();
 
-		const std::vector<Vec3f> *atomsPositions = &p_system.trajectory.getCurrentFrame();
+		const std::vector<Vec3f> * atomsPositions = &p_system.trajectory.getCurrentFrame();
 
 		return std::make_unique<Renderer::Proxy::System>( Renderer::Proxy::System {
 			&p_system.transform,

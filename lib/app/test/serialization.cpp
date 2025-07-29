@@ -300,7 +300,7 @@ TEST_CASE( "VTX_APP - Serialization - Scene", "[unit]" )
 	App::Component::Chemistry::System & system
 		= SCENE().getComponentByName<App::Component::Chemistry::System>( systemName );
 
-	for ( atom_index_t i = system.getResidue( 1 )->getIndexFirstAtom();
+	for ( Index i = system.getResidue( 1 )->getIndexFirstAtom();
 		  i <= system.getResidue( 1 )->getIndexLastAtom();
 		  i++ )
 	{

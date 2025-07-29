@@ -3,7 +3,7 @@
 
 namespace VTX::App::Component::Chemistry::Iterator
 {
-	ResidueContainer::ResidueIt::ResidueIt( System * const p_system, const size_t p_index, const size_t p_end ) :
+	ResidueContainer::ResidueIt::ResidueIt( System * const p_system, const Index p_index, const Index p_end ) :
 		_system( p_system ), _index( p_index ), _end( p_end )
 	{
 		_getValid();
@@ -51,8 +51,8 @@ namespace VTX::App::Component::Chemistry::Iterator
 
 	ResidueContainer::ResidueContainer(
 		System * const p_system,
-		const size_t   p_firstResidueIndex,
-		const size_t   p_residueCount
+		const Index	   p_firstResidueIndex,
+		const Index	   p_residueCount
 	) : _system( p_system ), _firstResidueIndex( p_firstResidueIndex ), _residueCount( p_residueCount )
 	{
 	}

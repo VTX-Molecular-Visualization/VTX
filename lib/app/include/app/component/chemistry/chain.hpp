@@ -2,10 +2,10 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_CHAIN__
 
 #include "_fwd.hpp"
-#include "app/component/chemistry/index_types.hpp"
 #include "app/component/chemistry/iterator/atom.hpp"
 #include "app/component/chemistry/iterator/residue.hpp"
 #include "app/core/ecs/base_component.hpp"
+#include "index_types.hpp"
 #include <string>
 #include <util/color/rgba.hpp>
 #include <util/constants.hpp>
@@ -17,10 +17,10 @@ namespace VTX::App::Component::Chemistry
 	{
 	  public:
 		Chain();
-		Chain( System * const p_system, const size_t p_index );
+		Chain( System * const p_system, const Index p_index );
 
-		const size_t getIndex() const { return _index; }
-		void		 setIndex( const size_t p_index ) { _index = p_index; }
+		const Index getIndex() const { return _index; }
+		void		setIndex( const Index p_index ) { _index = p_index; }
 
 		System * const		 getSystemPtr() const { return _systemPtr; };
 		const System * const getConstSystemPtr() const { return _systemPtr; };
@@ -29,15 +29,15 @@ namespace VTX::App::Component::Chemistry
 		const std::string & getName() const;
 		void				setName( const std::string & p_name );
 
-		size_t getIndexFirstResidue() const;
-		size_t getIndexLastResidue() const;
-		void   setIndexFirstResidue( const size_t p_residueIndex );
+		Index getIndexFirstResidue() const;
+		Index getIndexLastResidue() const;
+		void  setIndexFirstResidue( const Index p_residueIndex );
 
-		size_t getResidueCount() const;
-		void   setResidueCount( const size_t p_residueCount );
+		Index getResidueCount() const;
+		void  setResidueCount( const Index p_residueCount );
 
-		atom_index_t getIndexFirstAtom() const;
-		atom_index_t getIndexLastAtom() const;
+		Index getIndexFirstAtom() const;
+		Index getIndexLastAtom() const;
 
 		const std::string & getOriginalChainID() const { return _originalChainID; }
 		void				setOriginalChainID( const std::string & p_chainId ) { _originalChainID = p_chainId; }
@@ -45,8 +45,8 @@ namespace VTX::App::Component::Chemistry
 		// const Util::Color::Rgba & getColor() const { return _defaultColor; };
 		// void setColor( const Util::Color::Rgba & p_defaultColor ) { _defaultColor = p_defaultColor; };
 
-		ResidueIndexRange getResidueRange() const;
-		AtomIndexRange	  getAtomRange() const;
+		IndexRange getResidueRange() const;
+		IndexRange getAtomRange() const;
 
 		Iterator::ResidueContainer residues() const;
 		Iterator::AtomContainer	   atoms() const;
@@ -60,7 +60,7 @@ namespace VTX::App::Component::Chemistry
 
 	  private:
 		System *		  _systemPtr	   = nullptr;
-		size_t			  _index		   = INVALID_INDEX;
+		Index			  _index		   = INVALID_INDEX;
 		std::string		  _originalChainID = "";
 		Util::Color::Rgba _defaultColor	   = COLOR_WHITE;
 	};

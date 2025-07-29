@@ -9,60 +9,56 @@ namespace VTX::App::Component::Chemistry
 	{
 		return _systemPtr->getChain( _systemPtr->_systemStruct.residueChainIndexes[ _index ] );
 	}
+
 	Chain * const Residue::getChainPtr() const
 	{
 		return _systemPtr->getChain( _systemPtr->_systemStruct.residueChainIndexes[ _index ] );
 	}
+
 	void Residue::setChainPtr( Chain * const p_chainPtr )
 	{
 		_systemPtr->_systemStruct.residueChainIndexes[ _index ] = p_chainPtr->getIndex();
 	}
 
-	atom_index_t Residue::getIndexFirstAtom() const
-	{
-		return _systemPtr->_systemStruct.residueFirstAtomIndexes[ _index ];
-	}
-	void Residue::setIndexFirstAtom( const atom_index_t p_indexFirstAtom )
-	{
-		_systemPtr->_systemStruct.residueFirstAtomIndexes[ _index ] = atom_index_t( p_indexFirstAtom );
-	}
-	atom_index_t Residue::getIndexLastAtom() const { return getIndexFirstAtom() + getAtomCount() - 1; }
+	Index Residue::getIndexFirstAtom() const { return _systemPtr->_systemStruct.residueFirstAtomIndexes[ _index ]; }
 
-	atom_index_t Residue::getAtomCount() const { return _systemPtr->_systemStruct.residueAtomCounts[ _index ]; }
-	void		 Residue::setAtomCount( const atom_index_t p_atomCount )
+	void Residue::setIndexFirstAtom( const Index p_indexFirstAtom )
+	{
+		_systemPtr->_systemStruct.residueFirstAtomIndexes[ _index ] = Index( p_indexFirstAtom );
+	}
+
+	Index Residue::getIndexLastAtom() const { return getIndexFirstAtom() + getAtomCount() - 1; }
+
+	Index Residue::getAtomCount() const { return _systemPtr->_systemStruct.residueAtomCounts[ _index ]; }
+
+	void Residue::setAtomCount( const Index p_atomCount )
 	{
 		_systemPtr->_systemStruct.residueAtomCounts[ _index ] = p_atomCount;
 	}
 
-	size_t Residue::getIndexFirstBond() const
-	{
-		return _systemPtr->_systemStruct.residueFirstBondIndexes[ _index ];
-	}
-	void Residue::setIndexFirstBond( const size_t p_indexFirstBond )
+	Index Residue::getIndexFirstBond() const { return _systemPtr->_systemStruct.residueFirstBondIndexes[ _index ]; }
+
+	void Residue::setIndexFirstBond( const Index p_indexFirstBond )
 	{
 		_systemPtr->_systemStruct.residueFirstBondIndexes[ _index ] = p_indexFirstBond;
 	}
 
-	size_t Residue::getBondCount() const { return _systemPtr->_systemStruct.residueBondCounts[ _index ]; }
-	void   Residue::setBondCount( const size_t p_bondCount )
+	Index Residue::getBondCount() const { return _systemPtr->_systemStruct.residueBondCounts[ _index ]; }
+
+	void Residue::setBondCount( const Index p_bondCount )
 	{
 		_systemPtr->_systemStruct.residueBondCounts[ _index ] = p_bondCount;
 	}
 
-	ChemDB::Residue::SYMBOL Residue::getSymbol() const
-	{
-		return _systemPtr->_systemStruct.residueSymbols[ _index ];
-	}
-	void Residue::setSymbol( const ChemDB::Residue::SYMBOL p_symbol )
+	ChemDB::Residue::SYMBOL Residue::getSymbol() const { return _systemPtr->_systemStruct.residueSymbols[ _index ]; }
+	void					Residue::setSymbol( const ChemDB::Residue::SYMBOL p_symbol )
 	{
 		_systemPtr->_systemStruct.residueSymbols[ _index ] = p_symbol;
 	}
 
-	size_t Residue::getIndexInOriginalChain() const
-	{
-		return _systemPtr->_systemStruct.residueOriginalIds[ _index ];
-	}
-	void Residue::setIndexInOriginalChain( const size_t p_index )
+	Index Residue::getIndexInOriginalChain() const { return _systemPtr->_systemStruct.residueOriginalIds[ _index ]; }
+
+	void Residue::setIndexInOriginalChain( const Index p_index )
 	{
 		_systemPtr->_systemStruct.residueOriginalIds[ _index ] = p_index;
 	}
@@ -79,6 +75,7 @@ namespace VTX::App::Component::Chemistry
 			return ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
 		}
 	}
+
 	const std::string_view Residue::getName() const
 	{
 		ChemDB::Residue::SYMBOL symbol = getSymbol();
@@ -107,8 +104,7 @@ namespace VTX::App::Component::Chemistry
 
 	ChemDB::Atom::TYPE Residue::getAtomType() const
 	{
-		Util::Math::Range<atom_index_t> atomRange
-			= Util::Math::Range<atom_index_t>( getIndexFirstAtom(), getAtomCount() );
+		Util::Math::Range<Index> atomRange = Util::Math::Range<Index>( getIndexFirstAtom(), getAtomCount() );
 
 		if ( _systemPtr->_systemStruct.atomSolvents.contains( atomRange ) )
 			return ChemDB::Atom::TYPE::SOLVENT;
@@ -117,10 +113,10 @@ namespace VTX::App::Component::Chemistry
 
 		return ChemDB::Atom::TYPE::NORMAL;
 	}
+
 	void Residue::setAtomType( const ChemDB::Atom::TYPE p_type )
 	{
-		Util::Math::Range<atom_index_t> atomRange
-			= Util::Math::Range<atom_index_t>( getIndexFirstAtom(), getAtomCount() );
+		Util::Math::Range<Index> atomRange = Util::Math::Range<Index>( getIndexFirstAtom(), getAtomCount() );
 
 		switch ( p_type )
 		{
@@ -139,7 +135,7 @@ namespace VTX::App::Component::Chemistry
 		}
 	}
 
-	AtomIndexRange Residue::getAtomRange() const { return AtomIndexRange( getIndexFirstAtom(), getAtomCount() ); }
+	IndexRange Residue::getAtomRange() const { return IndexRange( getIndexFirstAtom(), getAtomCount() ); }
 
 	Iterator::AtomContainer Residue::atoms() const
 	{
@@ -148,24 +144,25 @@ namespace VTX::App::Component::Chemistry
 
 	bool Residue::isVisible() const
 	{
-		const AtomIndexRange atomRange = AtomIndexRange( getIndexFirstAtom(), getAtomCount() );
+		const IndexRange atomRange = IndexRange( getIndexFirstAtom(), getAtomCount() );
 		return _systemPtr->_visibleAtomIds.intersectWith( atomRange );
 	}
+
 	bool Residue::isFullyVisible() const
 	{
-		const AtomIndexRange atomRange = AtomIndexRange( getIndexFirstAtom(), getAtomCount() );
+		const IndexRange atomRange = IndexRange( getIndexFirstAtom(), getAtomCount() );
 		return _systemPtr->_visibleAtomIds.contains( atomRange );
 	}
 
 	void Residue::setVisible( const bool p_visible )
 	{
-		const AtomIndexRange atomRange = AtomIndexRange( getIndexFirstAtom(), getAtomCount() );
+		const IndexRange atomRange = IndexRange( getIndexFirstAtom(), getAtomCount() );
 		_systemPtr->setVisible( atomRange, p_visible );
 	}
 
 	void Residue::remove()
 	{
-		const AtomIndexRange atomRange = AtomIndexRange( getIndexFirstAtom(), getAtomCount() );
+		const IndexRange atomRange = IndexRange( getIndexFirstAtom(), getAtomCount() );
 		_systemPtr->remove( atomRange );
 	}
 

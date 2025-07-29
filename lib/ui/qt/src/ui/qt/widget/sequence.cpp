@@ -13,7 +13,7 @@ namespace VTX::UI::QT::Widget
 	constexpr uint SEQ_CHAR_HEIGHT = 18;
 	constexpr uint SEQ_RULE_STEP   = 5;
 
-	Sequence::Sequence( App::Component::Chemistry::System & p_system, QWidget * p_parent ) :
+	Sequence::Sequence( const App::Component::Chemistry::System & p_system, QWidget * p_parent ) :
 
 		QAbstractScrollArea( p_parent ), _system( p_system )
 	{
@@ -31,10 +31,10 @@ namespace VTX::UI::QT::Widget
 			App::ECS_REGISTRY().getEntity( scene )
 		);
 
-		const int  xOffset	  = horizontalScrollBar()->value();
-		const uint startIndex = xOffset / SEQ_CHAR_WIDTH;
-		uint	   endIndex	  = Util::Math::min(
-			startIndex + ( viewport()->width() / SEQ_CHAR_WIDTH ) + 2, uint( _system.getResidues().size() )
+		const int	xOffset	   = horizontalScrollBar()->value();
+		const Index startIndex = xOffset / SEQ_CHAR_WIDTH;
+		Index		endIndex   = Util::Math::min(
+			startIndex + ( viewport()->width() / SEQ_CHAR_WIDTH ) + 2, Index( _system.getResidues().size() )
 		);
 
 		int x = -( xOffset % int( SEQ_CHAR_WIDTH ) );
@@ -46,13 +46,13 @@ namespace VTX::UI::QT::Widget
 		const QString headerLabel = QString( "%1/%2" ).arg(
 			QString::fromStdString( _system.getName() ), QString::fromStdString( firstChain->getName() )
 		);
-		painter.setPen( Helper::toQColor( colorlayout.getChainColor( size_t( firstChain->getIndex() + 1 ) ) ) );
+		painter.setPen( Helper::toQColor( colorlayout.getChainColor( firstChain->getIndex() + 1 ) ) );
 		painter.drawText( 0, SEQ_CHAR_HEIGHT, headerLabel );
 		const int labelWidth = painter.fontMetrics().horizontalAdvance( headerLabel );
 
 		// Draw the residue sequence.
 		const auto * lastChain = firstChain;
-		for ( size_t i = startIndex; i < endIndex; ++i )
+		for ( Index i = startIndex; i < endIndex; ++i )
 		{
 			const auto * residue = _system.getResidue( i );
 			const auto * chain	 = residue->getChainPtr();

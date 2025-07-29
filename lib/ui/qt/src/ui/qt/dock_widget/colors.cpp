@@ -189,7 +189,9 @@ namespace VTX::UI::QT::DockWidget
 
 	void Colors::_changeColor( const size_t p_index, const QColor & p_color )
 	{
-		App::ACTION_SYSTEM().execute<App::Action::Color::ChangeLayoutColor>( p_index, Helper::fromQColor( p_color ) );
+		App::ACTION_SYSTEM().execute<App::Action::Color::ChangeLayoutColor>(
+			Index( p_index ), Helper::fromQColor( p_color )
+		);
 	}
 
 	void Colors::save() { SETTINGS.setValue( _SETTING_KEY_HIDE, _checkBoxHide->isChecked() ); }

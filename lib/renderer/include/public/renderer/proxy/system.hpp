@@ -20,16 +20,16 @@ namespace VTX::Renderer::Proxy
 		const std::vector<uchar> *		 residueSecondaryStructureTypes;
 		const std::vector<uint> *		 residueFirstAtomIndexes;
 		const std::vector<uint> *		 residueAtomCounts;
-		const std::vector<size_t> *		 chainFirstResidues;
-		const std::vector<size_t> *		 chainResidueCounts;
+		const std::vector<uint> *		 chainFirstResidues;
+		const std::vector<uint> *		 chainResidueCounts;
 
-		const std::vector<uchar>  atomColors;
-		const std::vector<float>  atomRadii;
-		const std::vector<uint>	  atomIds;
-		const std::vector<uchar>  residueColors;
-		const std::vector<uint>	  residueIds;
-		const std::vector<size_t> categoryPolymerChainIds;
-		const std::vector<size_t> categoryCarbohydrateChainIds;
+		const std::vector<uchar> atomColors;
+		const std::vector<float> atomRadii;
+		const std::vector<uint>	 atomIds;
+		const std::vector<uchar> residueColors;
+		const std::vector<uint>	 residueIds;
+		const std::vector<uint>	 categoryPolymerChainIds;
+		const std::vector<uint>	 categoryCarbohydrateChainIds;
 
 		const uint idDefaultRepresentation = 0;
 

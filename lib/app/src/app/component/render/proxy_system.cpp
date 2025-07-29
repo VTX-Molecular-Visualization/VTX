@@ -139,8 +139,8 @@ namespace VTX::App::Component::Render
 	}
 
 	void ProxySystem::_applyOnVisibility(
-		const Component::Chemistry::AtomIndexRangeList & p_rangeList,
-		const App::Core::VISIBILITY_APPLY_MODE			 p_applyMode
+		const Component::Chemistry::IndexRangeList & p_rangeList,
+		const App::Core::VISIBILITY_APPLY_MODE		 p_applyMode
 	)
 	{
 		switch ( p_applyMode )
@@ -166,20 +166,20 @@ namespace VTX::App::Component::Render
 	{
 		Component::Chemistry::System & system = ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 
-		system.onVisibilityChange += [ this ](
-										 const Component::Chemistry::AtomIndexRangeList & p_rangeList,
-										 App::Core::VISIBILITY_APPLY_MODE				  p_applyMode
-									 )
+		system.onVisibilityChange +=
+			[ this ](
+				const Component::Chemistry::IndexRangeList & p_rangeList, App::Core::VISIBILITY_APPLY_MODE p_applyMode
+			)
 		{
 			Component::Chemistry::System & system = ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 
-			const Component::Chemistry::AtomIndexRangeList activeAtoms
+			const Component::Chemistry::IndexRangeList activeAtoms
 				= Util::Algorithm::Range::intersect( p_rangeList, system.getActiveAtoms() );
 
 			_applyOnVisibility( activeAtoms, p_applyMode );
 		};
 
-		system.onAtomRemoved += [ this ]( const Component::Chemistry::AtomIndexRangeList & p_rangeList )
+		system.onAtomRemoved += [ this ]( const Component::Chemistry::IndexRangeList & p_rangeList )
 		{ _applyOnVisibility( p_rangeList, App::Core::VISIBILITY_APPLY_MODE::HIDE ); };
 	}
 

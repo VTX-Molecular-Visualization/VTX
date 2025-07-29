@@ -14,13 +14,13 @@ namespace VTX::App::Component::Representation
 	void ColorLayout::setupProxy()
 	{
 		_proxy = std::make_unique<Renderer::Proxy::ColorLayout>( Renderer::Proxy::ColorLayout { &_layout.layout } );
-		onChange += [ this ]( const size_t p_index ) { _proxy->onChange( p_index ); };
+		onChange += [ this ]( const Index p_index ) { _proxy->onChange( p_index ); };
 		onChangeAll += [ this ]() { _proxy->onChangeAll(); };
 
 		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyColorLayout( *_proxy ); };
 	}
 
-	void ColorLayout::setColor( const size_t p_index, const Util::Color::Rgba & p_color )
+	void ColorLayout::setColor( const Index p_index, const Util::Color::Rgba & p_color )
 	{
 		assert( p_index >= 0 );
 		assert( p_index < VTX::Core::Struct::ColorLayout::LAYOUT_SIZE );
@@ -36,7 +36,7 @@ namespace VTX::App::Component::Representation
 		onChangeAll();
 	}
 
-	const Util::Color::Rgba & ColorLayout::getChainColor( const size_t p_index ) const
+	const Util::Color::Rgba & ColorLayout::getChainColor( const Index p_index ) const
 	{
 		assert( p_index >= 0 );
 		assert( p_index < VTX::Core::ChemDB::Color::LAYOUT_COUNT_CHAINS );
@@ -44,7 +44,7 @@ namespace VTX::App::Component::Representation
 		return _layout.layout[ VTX::Core::ChemDB::Color::LAYOUT_OFFSET_CHAINS + p_index ];
 	}
 
-	const Util::Color::Rgba & ColorLayout::getResidueColor( const size_t p_index ) const
+	const Util::Color::Rgba & ColorLayout::getResidueColor( const Index p_index ) const
 	{
 		assert( p_index >= 0 );
 		assert( p_index < VTX::Core::ChemDB::Color::LAYOUT_COUNT_RESIDUES );

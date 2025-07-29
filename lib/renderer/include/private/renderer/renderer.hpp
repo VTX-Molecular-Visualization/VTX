@@ -318,7 +318,6 @@ namespace VTX::Renderer
 		{
 			_refreshDataSpheresCylinders();
 			_refreshDataRibbons();
-			_refreshDataSES();
 			_refreshDataModels();
 
 			setNeedUpdate( true );
@@ -326,7 +325,6 @@ namespace VTX::Renderer
 
 		void _refreshDataSpheresCylinders();
 		void _refreshDataRibbons();
-		void _refreshDataSES();
 		void _refreshDataModels();
 		void _refreshDataVoxels();
 

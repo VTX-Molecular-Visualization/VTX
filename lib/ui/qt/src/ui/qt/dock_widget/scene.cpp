@@ -129,7 +129,9 @@ namespace VTX::UI::QT::DockWidget
 
 				// Add top level item.
 				_addTreeItem(
-					{ p_system.getName(), WidgetData( p_system.getPersistentSceneID() ), system.getChains().size() },
+					{ p_system.getName(),
+					  WidgetData( p_system.getPersistentSceneID() ),
+					  Index( system.getChains().size() ) },
 					nullptr,
 					[ this, &system ]( const E_DEPTH p_depth, QTreeWidgetItem * const p_item )
 					{
@@ -161,7 +163,7 @@ namespace VTX::UI::QT::DockWidget
 						{
 							auto * chain = system.getChain( parentWidgetData );
 							assert( chain );
-							for ( size_t index = chain->getIndexFirstResidue(); index <= chain->getIndexLastResidue();
+							for ( Index index = chain->getIndexFirstResidue(); index <= chain->getIndexLastResidue();
 								  ++index )
 							{
 								auto * residue = system.getResidue( index );
@@ -182,10 +184,10 @@ namespace VTX::UI::QT::DockWidget
 						{
 							auto * residue = system.getResidue( parentWidgetData );
 							assert( residue );
-							for ( size_t index = residue->getIndexFirstAtom(); index <= residue->getIndexLastAtom();
+							for ( Index index = residue->getIndexFirstAtom(); index <= residue->getIndexLastAtom();
 								  ++index )
 							{
-								auto * atom = system.getAtom( atom_index_t( index ) );
+								auto * atom = system.getAtom( Index( index ) );
 								_addTreeItem(
 									{ atom->getName(),
 									  index,
@@ -253,7 +255,7 @@ namespace VTX::UI::QT::DockWidget
 					}
 					case E_DEPTH::ATOM:
 					{
-						selectionData.selectAtom( *system.getAtom( atom_index_t( widgetData ) ) );
+						selectionData.selectAtom( *system.getAtom( Index( widgetData ) ) );
 						break;
 					}
 					default: assert( true ); break;
@@ -420,9 +422,7 @@ namespace VTX::UI::QT::DockWidget
 
 			// Visibility callback.
 			system->onVisibilityChange +=
-				[ this,
-				  item,
-				  system ]( App::Component::Chemistry::AtomIndexRangeList, App::Core::VISIBILITY_APPLY_MODE )
+				[ this, item, system ]( App::Component::Chemistry::IndexRangeList, App::Core::VISIBILITY_APPLY_MODE )
 			{
 				Util::Chrono chrono;
 				chrono.start();
@@ -464,7 +464,7 @@ namespace VTX::UI::QT::DockWidget
 						{
 							QTreeWidgetItem * const atomWidget = residueWidget->child( k );
 							WidgetData				atomId = atomWidget->data( 0, Qt::UserRole ).value<WidgetData>();
-							const auto * const		atom   = system->getAtom( atom_index_t( atomId ) );
+							const auto * const		atom   = system->getAtom( Index( atomId ) );
 							_applyVisibility(
 								atom->isVisible() ? E_VISIBILITY::VISIBLE : E_VISIBILITY::HIDDEN, atomWidget
 							);
@@ -478,10 +478,10 @@ namespace VTX::UI::QT::DockWidget
 				/*
 				// Get residues to refresh.
 				// Need a full atom loop...
-				std::unordered_set<size_t> residues;
-				std::unordered_set<size_t> chains;
+				std::unordered_set<Index> residues;
+				std::unordered_set<Index> chains;
 
-				for ( const atom_index_t atomIndex : p_range )
+				for ( const Index atomIndex : p_range )
 				{
 					auto * atom = system->getAtom( atomIndex );
 					assert( atom );

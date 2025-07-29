@@ -22,11 +22,7 @@ namespace VTX::IO::Reader
 		System() {};
 
 		void readFile( const FilePath & p_path, VTX::Core::Struct::System & p_system );
-		void readBuffer(
-			const std::string &			p_buffer,
-			const FilePath &			p_path,
-			VTX::Core::Struct::System & p_system
-		);
+		void readBuffer( const std::string & p_buffer, const FilePath & p_path, VTX::Core::Struct::System & p_system );
 
 		void setConfiguration( const Struct::SystemConfiguration & p_configuration )
 		{
@@ -46,9 +42,9 @@ namespace VTX::IO::Reader
 
 		// TODO do this function here or in IO::Reader::ChemfilesTrajectory ?
 		void _readTrajectoryFrames(
-			IO::Reader::Chemfiles &												p_chemfileStruct,
-			const std::vector<std::pair<VTX::Core::Struct::System *, size_t>> & p_targets,
-			const size_t														p_trajectoryFrameStart
+			IO::Reader::Chemfiles &											   p_chemfileStruct,
+			const std::vector<std::pair<VTX::Core::Struct::System *, Index>> & p_targets,
+			const Index														   p_trajectoryFrameStart
 		);
 
 		ChemDB::Atom::TYPE _getTypeInConfiguration( const IO::Reader::Chemfiles & p_chemfileStruct ) const;

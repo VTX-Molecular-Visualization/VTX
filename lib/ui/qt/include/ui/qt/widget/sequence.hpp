@@ -12,7 +12,7 @@ namespace VTX::UI::QT::Widget
 	class Sequence : public QAbstractScrollArea
 	{
 	  public:
-		Sequence( App::Component::Chemistry::System &, QWidget * );
+		Sequence( const App::Component::Chemistry::System &, QWidget * );
 
 	  protected:
 		void paintEvent( QPaintEvent * ) override;
