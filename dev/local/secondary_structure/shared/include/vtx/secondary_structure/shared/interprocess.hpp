@@ -6,6 +6,7 @@
 #include <boost/interprocess/containers/string.hpp>
 #include <boost/interprocess/containers/vector.hpp>
 #include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/sync/named_mutex.hpp>
 #include <chrono>
 #include <vtx/secondary_structure/shared/shared.hpp>
 

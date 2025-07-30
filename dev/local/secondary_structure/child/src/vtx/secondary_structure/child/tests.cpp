@@ -11,7 +11,6 @@
 #include <fmt/format.h>
 #include <io/reader/system.hpp>
 //
-#include <boost/interprocess/sync/named_mutex.hpp>
 #include <vtx/secondary_structure/child/parse.hpp>
 #include <vtx/secondary_structure/child/tests.hpp>
 #include <vtx/secondary_structure/shared/interprocess.hpp>

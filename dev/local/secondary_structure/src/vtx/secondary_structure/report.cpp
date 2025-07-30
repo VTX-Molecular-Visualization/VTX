@@ -8,6 +8,30 @@
 
 namespace pdb100
 {
+	namespace
+	{
+		void convert( const ReportItem<String> & p_in, ReportItem<std::string> & p_out )
+		{
+			p_out.correctnessRates = p_in.correctnessRates;
+			p_out.resultSummary	   = p_in.resultSummary;
+			p_out.details.assign( p_out.details.begin(), p_out.details.end() );
+			p_out.pdb.assign( p_out.pdb.begin(), p_out.pdb.end() );
+		}
+		void fetchItems( std::vector<ReportItem<std::string>> & p_in )
+		{
+			boost::interprocess::named_mutex		   mutex( open_or_create, shm::rsltMap::MUTEX );
+			boost::interprocess::managed_shared_memory sharedSegment(
+				boost::interprocess::open_only, pdb100::shm::rsltMap::SEGNAME
+			);
+			auto rsltMapAndInt = sharedSegment.find<ReportItemCollection>( pdb100::shm::rsltMap::OBJNAME );
+			while ( not rsltMapAndInt.first->empty() )
+			{
+				p_in.push_back( {} );
+				convert( rsltMapAndInt.first->back(), p_in.back() );
+				rsltMapAndInt.first->pop_back();
+			}
+		}
+	} // namespace
 
 	Reporter::Reporter( fs::path p_ ) : _mustWrite( true ), _reportPath( std::move( p_ ) ) {}
 
@@ -15,6 +39,8 @@ namespace pdb100
 	{
 		if ( not _mustWrite )
 			return;
+
+		fetchItems( _items );
 
 		std::cout << "Writing report ... ";
 		_betaSheetCorrectnessRate /= oneIfZero( _items.size() );
