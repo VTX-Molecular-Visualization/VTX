@@ -127,6 +127,43 @@ namespace pdb100
 		return ret;
 	}
 
+	const char * string( const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_ )
+	{
+		using Type = VTX::Core::ChemDB::SecondaryStructure::TYPE;
+
+		switch ( p_ )
+		{
+		case Type::STRAND: return "Beta-sheet";
+		case Type::HELIX_ALPHA_RIGHT: return "Alpha-helix right";
+		default: return "other";
+		}
+	}
+	std::string writeSsReportString(
+		const VTX::Core::Struct::System &					p_chemSystem,
+		const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type,
+		const bool &										p_isBeginCorrect,
+		const bool &										p_isEndCorrect,
+		const uint64_t &									p_startIdx,
+		const uint64_t &									p_endIdx
+	)
+	{
+		static const auto correctnessStr = []( bool _ ) -> const char *
+		{
+			if ( _ )
+				return "correct";
+			return "incorrect";
+		};
+		return fmt::format(
+			"Predicted SS : {}\n\tFrom {}-{} to {}-{}\n\tBegin is {}\n\tEnd is {}\n",
+			pdb100::string( p_type ),
+			chainName( p_chemSystem, p_startIdx ),
+			p_chemSystem.residueOriginalIds[ p_startIdx ],
+			chainName( p_chemSystem, p_endIdx ),
+			p_chemSystem.residueOriginalIds[ p_endIdx ],
+			correctnessStr( p_isBeginCorrect ),
+			correctnessStr( p_isEndCorrect )
+		);
+	}
 	namespace
 	{
 
@@ -335,7 +372,27 @@ namespace pdb100
 			p_rates.endBetaSheet /= oneIfZero( p_rates.numBetaSheet );
 			p_rates.fullBetaSheet /= oneIfZero( p_rates.numBetaSheet );
 		}
-		void postReportItem( ReportItem<std::string> p_item ) {}
+		void convert( const ReportItem<std::string> & p_in, ReportItem<String> & p_out )
+		{
+			p_out.correctnessRates = p_in.correctnessRates;
+			p_out.resultSummary	   = p_in.resultSummary;
+			p_out.details.assign( p_out.details.begin(), p_out.details.end() );
+			p_out.pdb.assign( p_out.pdb.begin(), p_out.pdb.end() );
+		}
+		void postReportItem( ReportItem<std::string> p_item )
+		{
+			boost::interprocess::named_mutex		   mutex( open_or_create, shm::rsltMap::MUTEX );
+			boost::interprocess::managed_shared_memory sharedSegment(
+				boost::interprocess::open_only, pdb100::shm::rsltMap::SEGNAME
+			);
+
+			void_allocator alloc( sharedSegment.get_segment_manager() );
+			auto		   rsltMapAndInt = sharedSegment.find<ReportItemCollection>( pdb100::shm::rsltMap::OBJNAME );
+
+			ReportItem<String> item { .pdb = String( alloc ), .details = String( alloc ) };
+			convert( p_item, item );
+			rsltMapAndInt.first->push_back( std::move( item ) );
+		}
 
 		/**
 		 * @brief Compute differences between our prediction and RCSB's and post a report item
@@ -451,12 +508,14 @@ namespace pdb100
 	}
 	void testSystems()
 	{
+		uint64_t testedSystemNumber = 0;
 		while ( true )
 		{
 			std::string systemToTest = fetchSystemArchivePath();
 			if ( systemToTest.empty() )
 				break;
 			testSystem( systemToTest );
+			testedSystemNumber++;
 		}
 	}
 

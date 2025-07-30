@@ -4,8 +4,8 @@
 
 file(GLOB_RECURSE PDB100_GEN_SOURCES "${CMAKE_CURRENT_LIST_DIR}/local/secondary_structure/src/*")
 file(GLOB_RECURSE PDB100_GEN_HEADERS "${CMAKE_CURRENT_LIST_DIR}/local/secondary_structure/include/*")
-file(GLOB_RECURSE PDB100_GEN_SHARED_HEADERS "${CMAKE_CURRENT_LIST_DIR}/local/secondary_structure/shared/include/*")
 set(PDB100_GEN_SHARED_HEADER_DIR "${CMAKE_CURRENT_LIST_DIR}/local/secondary_structure/shared/include")
+file(GLOB_RECURSE PDB100_GEN_SHARED_HEADERS "${PDB100_GEN_SHARED_HEADER_DIR}/*")
 
 file(GLOB_RECURSE PDB100_CHILD_GEN_SOURCES "${CMAKE_CURRENT_LIST_DIR}/local/secondary_structure/child/src/*")
 file(GLOB_RECURSE PDB100_CHILD_GEN_HEADERS "${CMAKE_CURRENT_LIST_DIR}/local/secondary_structure/child/include/*")
@@ -37,4 +37,6 @@ target_link_libraries(secondary_structure_child PRIVATE vtx_io)
 target_link_libraries(secondary_structure_child PRIVATE fmt::fmt)
 target_link_libraries(secondary_structure_child PRIVATE LibArchive::LibArchive)		
 target_link_libraries(secondary_structure_child PRIVATE Boost::headers)
+target_link_libraries(secondary_structure_child PRIVATE Boost::process)
 
+add_dependencies(secondary_structure secondary_structure_child ) # QoL

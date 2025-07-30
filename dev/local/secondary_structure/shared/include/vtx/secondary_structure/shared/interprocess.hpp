@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/interprocess/allocators/allocator.hpp>
 #include <boost/interprocess/containers/deque.hpp>
 #include <boost/interprocess/containers/map.hpp>
 #include <boost/interprocess/containers/string.hpp>
@@ -36,6 +37,8 @@ namespace pdb100
 			const char SEGNAME[] = "VTX__SHM_SS_LIVINGPROOF";
 			const char OBJNAME[] = "ss_liveProof";
 			const char MUTEX[]	 = "VTX__SHM_SS_LIVINGPROOF_MUTEX";
+
+			const uint64_t tolerenceTime = 5;
 		} // namespace livingProof
 
 	} // namespace shm
@@ -46,6 +49,7 @@ namespace pdb100
 		crashed		  = 1 << 7
 	};
 
+	typedef allocator<void, managed_shared_memory::segment_manager>	  void_allocator;
 	typedef allocator<char, managed_shared_memory::segment_manager>	  CharAllocator;
 	typedef basic_string<char, std::char_traits<char>, CharAllocator> String;
 	typedef allocator<String, managed_shared_memory::segment_manager> StringAllocator;
@@ -87,7 +91,10 @@ namespace pdb100
 
 	inline uint64_t getTimeStamp()
 	{
-		return static_cast<uint64_t>( std::chrono::time_point<std::chrono::system_clock>().time_since_epoch().count() );
+		return static_cast<uint64_t>(
+			std::chrono::duration_cast<std::chrono::seconds>( std::chrono::system_clock::now().time_since_epoch() )
+				.count()
+		);
 	}
 
 } // namespace pdb100

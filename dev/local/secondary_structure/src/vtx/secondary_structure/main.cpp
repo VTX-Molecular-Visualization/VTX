@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vtx/secondary_structure/files.hpp>
 // #include <vtx/secondary_structure/parse.hpp>
+#include <vtx/secondary_structure/process.hpp>
 #include <vtx/secondary_structure/report.hpp>
 // #include <vtx/secondary_structure/tests.hpp>
 
@@ -18,7 +19,7 @@ int main()
 			std::cout << fl->size() << " pdb structures found.\n";
 		}
 		std::cout << "Starting processes ...\n";
-		// pdb100::testSystems( context.pdb100_system ); // Start N threads as defined in the cmake
+		pdb100::testSystems( context );
 		std::cout << "Calculation is over.\n";
 	}
 	catch ( std::exception & e )

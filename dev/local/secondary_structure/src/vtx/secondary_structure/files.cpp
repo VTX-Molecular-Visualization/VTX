@@ -38,10 +38,15 @@ namespace pdb100
 	 */
 	void walkDir( FileCollection & contextData, const std::filesystem::path & dir )
 	{
-		static const uint64_t skippy = 220650;
+		static const uint64_t maxFiles = 55;
+		static const uint64_t skippy   = 250;
+		uint64_t			  count	   = 0;
 		for ( auto & it_fsItem : fs::directory_iterator( dir ) )
 		{
-			if ( contextData.size() > skippy )
+			count++;
+			if ( count < skippy )
+				continue;
+			if ( contextData.size() > maxFiles )
 				break;
 			if ( fs::is_directory( it_fsItem ) )
 				walkDir( contextData, it_fsItem.path() );

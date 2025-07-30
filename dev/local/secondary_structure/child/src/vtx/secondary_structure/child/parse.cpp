@@ -1,5 +1,6 @@
 #include <cstring>
 #include <filesystem>
+#include <fmt/format.h>
 #include <fstream>
 #include <ranges>
 #include <string_view>

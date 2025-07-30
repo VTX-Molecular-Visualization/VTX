@@ -9,59 +9,6 @@
 namespace pdb100
 {
 
-	const char * string( const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_ )
-	{
-		using Type = VTX::Core::ChemDB::SecondaryStructure::TYPE;
-
-		switch ( p_ )
-		{
-		case Type::STRAND: return "Beta-sheet";
-		case Type::HELIX_ALPHA_RIGHT: return "Alpha-helix right";
-		default: return "other";
-		}
-	}
-	const std::string & chainName( const VTX::Core::Struct::System & p_sys, const uint64_t & p_vtxResId );
-	std::string			writeSsReportString(
-				const VTX::Core::Struct::System &					p_chemSystem,
-				const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type,
-				const bool &										p_isBeginCorrect,
-				const bool &										p_isEndCorrect,
-				const uint64_t &									p_startIdx,
-				const uint64_t &									p_endIdx
-			)
-	{
-		static const auto correctnessStr = []( bool _ ) -> const char *
-		{
-			if ( _ )
-				return "correct";
-			return "incorrect";
-		};
-		return fmt::format(
-			"Predicted SS : {}\n\tFrom {}-{} to {}-{}\n\tBegin is {}\n\tEnd is {}\n",
-			pdb100::string( p_type ),
-			chainName( p_chemSystem, p_startIdx ),
-			p_chemSystem.residueOriginalIds[ p_startIdx ],
-			chainName( p_chemSystem, p_endIdx ),
-			p_chemSystem.residueOriginalIds[ p_endIdx ],
-			correctnessStr( p_isBeginCorrect ),
-			correctnessStr( p_isEndCorrect )
-		);
-	}
-	const std::string & chainName( const VTX::Core::Struct::System & p_sys, const uint64_t & p_vtxResId )
-	{
-		if ( p_sys.chainNames.size() == 1 )
-			return p_sys.chainNames[ 0 ];
-
-		const std::string * ret		 = &p_sys.chainNames[ 0 ];
-		uint64_t			chainIdx = 1;
-		for ( ; chainIdx < p_sys.chainNames.size(); chainIdx++ )
-		{
-			if ( p_sys.chainFirstResidues[ chainIdx ] > p_vtxResId )
-				return *ret;
-			ret = &p_sys.chainNames[ chainIdx - 1 ];
-		}
-		return *ret;
-	}
 	Reporter::Reporter( fs::path p_ ) : _mustWrite( true ), _reportPath( std::move( p_ ) ) {}
 
 	Reporter::~Reporter()

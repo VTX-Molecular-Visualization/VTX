@@ -1,7 +1,10 @@
 #pragma once
 
 #include <core/chemdb/secondary_structure.hpp>
+#include <core/struct/system.hpp>
+#include <filesystem>
 #include <vector>
+namespace fs = std::filesystem;
 namespace pdb100
 {
 
@@ -33,30 +36,33 @@ namespace pdb100
 		std::vector<Helix>		  helixes;
 		std::vector<Strand>		  strands;
 	};
-
+	struct Rates
+	{
+		float	 beginBetaSheet	 = 0.f;
+		float	 endBetaSheet	 = 0.f;
+		float	 fullBetaSheet	 = 0.f;
+		uint16_t numBetaSheet	 = 0;
+		float	 beginAlphaHelix = 0.f;
+		float	 endAlphaHelix	 = 0.f;
+		float	 fullAlphaHelix	 = 0.f;
+		uint16_t numAlphaHelix	 = 0;
+	};
+	enum class ResultSummary
+	{
+		none,	 // no results yet
+		success, // secondary structure match perfectly with file's data
+		fail,	 // difference have been found between prediction and file's data
+		no_ss	 // no secondary structure in file's data
+	};
 	template<typename StringType>
 	struct ReportItem
 	{
-		enum class ResultSummary
-		{
-			none,	 // no results yet
-			success, // secondary structure match perfectly with file's data
-			fail,	 // difference have been found between prediction and file's data
-			no_ss	 // no secondary structure in file's data
-		} resultSummary;
-		struct Rates
-		{
-			float	 beginBetaSheet	 = 0.f;
-			float	 endBetaSheet	 = 0.f;
-			float	 fullBetaSheet	 = 0.f;
-			uint16_t numBetaSheet	 = 0;
-			float	 beginAlphaHelix = 0.f;
-			float	 endAlphaHelix	 = 0.f;
-			float	 fullAlphaHelix	 = 0.f;
-			uint16_t numAlphaHelix	 = 0;
-		} correctnessRates;
-		StringType pdb;
-		StringType details;
+		using Rates			= pdb100::Rates;
+		using ResultSummary = pdb100::ResultSummary;
+		ResultSummary resultSummary;
+		Rates		  correctnessRates;
+		StringType	  pdb;
+		StringType	  details;
 	};
 	template<std::integral INT>
 	inline INT oneIfZero( const INT & i )

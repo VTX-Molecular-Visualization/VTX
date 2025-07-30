@@ -1,15 +1,22 @@
-#include <boost/interprocess/sync/named_mutex.hpp>
+#include <boost/asio.hpp>
 #include <boost/process.hpp>
+#include <boost/process/v2/pid.hpp>
+//
+#include <boost/interprocess/sync/named_mutex.hpp>
+#include <fstream>
 #include <thread>
 #include <vtx/secondary_structure/child/tests.hpp>
 #include <vtx/secondary_structure/shared/interprocess.hpp>
 
 namespace pdb100
 {
-	std::jthread g_livingProofThread;
-	bool		 g_testsOver = false;
-	void		 startLivingProofPosting()
+	const fs::path g_logPath( "ChildLog.log" );
+	std::jthread   g_livingProofThread;
+	bool		   g_testsOver = false;
+	std::ofstream  log() { return std::ofstream( g_logPath, std::ios::app ); }
+	void		   startLivingProofPosting()
 	{
+		log() << "Starting living thread\n";
 		g_livingProofThread = std::jthread(
 			[]
 			{
@@ -21,9 +28,13 @@ namespace pdb100
 						boost::interprocess::open_only, pdb100::shm::livingProof::SEGNAME
 					);
 					auto livingProofMapPair = sharedSegment.find<LivingProofMap>( pdb100::shm::livingProof::OBJNAME );
-					if ( livingProofMapPair.first->contains( processId ) )
+
+					if ( not livingProofMapPair.first->contains( processId ) )
 						livingProofMapPair.first->emplace( processId, getTimeStamp() );
-					livingProofMapPair.first->at( processId ) = getTimeStamp();
+					else
+						livingProofMapPair.first->at( processId ) = getTimeStamp();
+					log() << "LivingProof sent.\n";
+					std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
 				}
 			}
 		);
@@ -44,6 +55,8 @@ int main()
 
 	*/
 	pdb100::startLivingProofPosting();
+	pdb100::log() << "Living thread started\n";
+
 	pdb100::testSystems();
 	pdb100::g_testsOver = true;
 	return 0;
