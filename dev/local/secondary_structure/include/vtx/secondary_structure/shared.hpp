@@ -13,7 +13,7 @@ namespace fs = std::filesystem;
 
 namespace pdb100
 {
-	const size_t NUM_PROCESSES = 1;
+	const size_t NUM_PROCESSES = 8;
 
 	inline const fs::path g_pdb100DirectoryPath { PDB100_DATABASE_DIR };
 

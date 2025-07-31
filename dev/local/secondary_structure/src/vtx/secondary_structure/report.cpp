@@ -17,7 +17,7 @@ namespace pdb100
 			p_out.details.assign( p_out.details.begin(), p_out.details.end() );
 			p_out.pdb.assign( p_out.pdb.begin(), p_out.pdb.end() );
 		}
-		void fetchItems( std::vector<ReportItem<std::string>> & p_in )
+		void fetchItems( Reporter & p_reporter )
 		{
 			boost::interprocess::named_mutex		   mutex( open_or_create, shm::rsltMap::MUTEX );
 			boost::interprocess::managed_shared_memory sharedSegment(
@@ -26,8 +26,9 @@ namespace pdb100
 			auto rsltMapAndInt = sharedSegment.find<ReportItemCollection>( pdb100::shm::rsltMap::OBJNAME );
 			while ( not rsltMapAndInt.first->empty() )
 			{
-				p_in.push_back( {} );
-				convert( rsltMapAndInt.first->back(), p_in.back() );
+				ReportItem<std::string> item;
+				convert( rsltMapAndInt.first->back(), item );
+				p_reporter.add( std::move( item ) );
 				rsltMapAndInt.first->pop_back();
 			}
 		}
@@ -40,7 +41,7 @@ namespace pdb100
 		if ( not _mustWrite )
 			return;
 
-		fetchItems( _items );
+		fetchItems( *this );
 
 		std::cout << "Writing report ... ";
 		_betaSheetCorrectnessRate /= oneIfZero( _items.size() );
@@ -50,6 +51,7 @@ namespace pdb100
 
 		outFile << "Report Summary\n";
 		outFile << "\tNumber of structures inspected : " << _items.size() << "\n";
+		outFile << "\tNumber of structures that caused a crash : " << _num_crashed << "\n";
 		outFile << "\tNumber of structures without secondary structure data : " << _num_noSs << "\n";
 		outFile << "\tNumber of RCSB Beta-sheet : " << _num_betaSheet << "\n";
 		outFile << "\tNumber of RCSB Alpha-helix : " << _num_alphaHelix << "\n";
@@ -73,13 +75,18 @@ namespace pdb100
 		outFile << "______________________\n";
 		outFile << "\n";
 		outFile << "Details\n";
-		outFile << "\n";
-		outFile << "______________________\n";
-		outFile << "\n";
 		for ( auto & it : _items )
 		{
-			if ( it.resultSummary != ReportItem<std::string>::ResultSummary::fail )
+			outFile << "\n";
+			outFile << "______________________\n";
+			outFile << "\n";
+
+			if ( it.resultSummary != ReportItem<std::string>::ResultSummary::fail
+				 or it.resultSummary != ReportItem<std::string>::ResultSummary::crashed )
+			{
+				outFile << "Structure :" << it.pdb << " crashed." << "\n";
 				continue;
+			}
 			outFile << "Structure :" << it.pdb << "\n";
 			outFile << "\n";
 			if ( it.correctnessRates.numBetaSheet > 0 )
@@ -104,9 +111,6 @@ namespace pdb100
 			}
 			outFile << "\n";
 			outFile << it.details << "\n";
-			outFile << "\n";
-			outFile << "______________________\n";
-			outFile << "\n";
 		}
 		std::cout << "done.\n";
 	}
@@ -118,6 +122,7 @@ namespace pdb100
 		case ReportItem<std::string>::ResultSummary::success: _num_success++; break;
 		case ReportItem<std::string>::ResultSummary::fail: _num_failed++; break;
 		case ReportItem<std::string>::ResultSummary::no_ss: _num_noSs++; break;
+		case ReportItem<std::string>::ResultSummary::crashed: _num_crashed++; break;
 		}
 		_num_betaSheet += p_item.correctnessRates.numBetaSheet;
 		_num_alphaHelix += p_item.correctnessRates.numAlphaHelix;

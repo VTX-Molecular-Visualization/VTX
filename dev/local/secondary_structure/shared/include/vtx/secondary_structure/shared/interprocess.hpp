@@ -7,6 +7,7 @@
 #include <boost/interprocess/containers/vector.hpp>
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/sync/named_mutex.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
 #include <chrono>
 #include <vtx/secondary_structure/shared/shared.hpp>
 

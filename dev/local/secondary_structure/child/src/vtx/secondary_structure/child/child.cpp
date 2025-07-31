@@ -10,34 +10,40 @@
 
 namespace pdb100
 {
-	const fs::path g_logPath( "ChildLog.log" );
-	std::jthread   g_livingProofThread;
-	bool		   g_testsOver = false;
-	std::ofstream  log() { return std::ofstream( g_logPath, std::ios::app ); }
-	void		   startLivingProofPosting()
+	bool g_testsOver = false;
+	void startLivingProofPosting( std::jthread & p_thr )
 	{
-		log() << "Starting living thread\n";
-		g_livingProofThread = std::jthread(
+		p_thr = std::jthread(
 			[]
 			{
 				uint64_t processId = boost::process::current_pid();
 				while ( not g_testsOver )
 				{
-					boost::interprocess::named_mutex		   mutex( open_or_create, shm::livingProof::MUTEX );
-					boost::interprocess::managed_shared_memory sharedSegment(
+					boost::interprocess::named_mutex mutex( open_or_create, shm::livingProof::MUTEX );
+					boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock( mutex );
+					boost::interprocess::managed_shared_memory						   sharedSegment(
 						boost::interprocess::open_only, pdb100::shm::livingProof::SEGNAME
 					);
 					auto livingProofMapPair = sharedSegment.find<LivingProofMap>( pdb100::shm::livingProof::OBJNAME );
 
-					if ( not livingProofMapPair.first->contains( processId ) )
-						livingProofMapPair.first->emplace( processId, getTimeStamp() );
-					else
-						livingProofMapPair.first->at( processId ) = getTimeStamp();
-					log() << "LivingProof sent.\n";
+					livingProofMapPair.first->at( processId ) = getTimeStamp();
 					std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
 				}
 			}
 		);
+	}
+	void createLivingProofEntry()
+	{
+		uint64_t						 processId = boost::process::current_pid();
+		boost::interprocess::named_mutex mutex( open_or_create, shm::livingProof::MUTEX );
+		boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock( mutex );
+		boost::interprocess::managed_shared_memory						   sharedSegment(
+			boost::interprocess::open_only, pdb100::shm::livingProof::SEGNAME
+		);
+		auto livingProofMapPair = sharedSegment.find<LivingProofMap>( pdb100::shm::livingProof::OBJNAME );
+
+		if ( not livingProofMapPair.first->contains( processId ) )
+			livingProofMapPair.first->emplace( processId, getTimeStamp() );
 	}
 } // namespace pdb100
 
@@ -54,10 +60,19 @@ int main()
 		Rinse and repeat
 
 	*/
-	pdb100::startLivingProofPosting();
-	pdb100::log() << "Living thread started\n";
+	try
+	{
+		pdb100::log() << "Starting process\n";
+		pdb100::createLivingProofEntry();
+		std::jthread thread;
+		pdb100::startLivingProofPosting( thread );
 
-	pdb100::testSystems();
+		pdb100::testSystems();
+	}
+	catch ( std::exception & e )
+	{
+		pdb100::log() << "Exception catched : <" << e.what() << ">\n";
+	}
 	pdb100::g_testsOver = true;
 	return 0;
 }

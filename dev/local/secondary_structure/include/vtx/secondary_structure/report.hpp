@@ -30,6 +30,7 @@ namespace pdb100
 		uint32_t							 _num_success				= 0;
 		uint32_t							 _num_failed				= 0;
 		uint32_t							 _num_noSs					= 0;
+		uint32_t							 _num_crashed				= 0;
 		uint32_t							 _num_betaSheet				= 0;
 		uint32_t							 _num_alphaHelix			= 0;
 		float								 _betaSheetCorrectnessRate	= 0.f;

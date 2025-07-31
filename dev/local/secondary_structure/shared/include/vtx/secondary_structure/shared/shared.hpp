@@ -32,6 +32,7 @@ namespace pdb100
 	struct System
 	{
 		char					  code[ 4 ] { '\0' };
+		size_t					  resultIndex = 0xffffffffffffffff;
 		VTX::Core::Struct::System system;
 		std::vector<Helix>		  helixes;
 		std::vector<Strand>		  strands;
@@ -52,7 +53,8 @@ namespace pdb100
 		none,	 // no results yet
 		success, // secondary structure match perfectly with file's data
 		fail,	 // difference have been found between prediction and file's data
-		no_ss	 // no secondary structure in file's data
+		no_ss,	 // no secondary structure in file's data
+		crashed, // Structure reading failed miserably
 	};
 	template<typename StringType>
 	struct ReportItem

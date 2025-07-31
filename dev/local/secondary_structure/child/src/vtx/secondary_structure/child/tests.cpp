@@ -378,10 +378,17 @@ namespace pdb100
 			p_out.details.assign( p_out.details.begin(), p_out.details.end() );
 			p_out.pdb.assign( p_out.pdb.begin(), p_out.pdb.end() );
 		}
-		void postReportItem( ReportItem<std::string> p_item )
+
+		/**
+		 * @brief Report results in place of an existing entry
+		 * @param p_index index of the entry
+		 * @param p_item
+		 */
+		void postReportItem( const size_t & p_index, ReportItem<std::string> p_item )
 		{
-			boost::interprocess::named_mutex		   mutex( open_or_create, shm::rsltMap::MUTEX );
-			boost::interprocess::managed_shared_memory sharedSegment(
+			boost::interprocess::named_mutex mutex( open_or_create, shm::rsltMap::MUTEX );
+			boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock( mutex );
+			boost::interprocess::managed_shared_memory						   sharedSegment(
 				boost::interprocess::open_only, pdb100::shm::rsltMap::SEGNAME
 			);
 
@@ -390,7 +397,37 @@ namespace pdb100
 
 			ReportItem<String> item { .pdb = String( alloc ), .details = String( alloc ) };
 			convert( p_item, item );
+			rsltMapAndInt.first->at( p_index ) = std::move( item );
+		}
+
+		/**
+		 * @brief Put a crashed report in the shared memory.
+		 * @return Index of the crashed report
+		 */
+		size_t postCrashItem( std::string p_pdbCode )
+		{
+			boost::interprocess::named_mutex mutex( open_or_create, shm::rsltMap::MUTEX );
+			boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock( mutex );
+			boost::interprocess::managed_shared_memory						   sharedSegment(
+				boost::interprocess::open_only, pdb100::shm::rsltMap::SEGNAME
+			);
+			const size_t itemSizeApproximation = sizeof( ReportItem<String> ) + 400;
+			if ( sharedSegment.get_free_memory() < itemSizeApproximation )
+				boost::interprocess::managed_shared_memory::grow(
+					pdb100::shm::rsltMap::SEGNAME, itemSizeApproximation
+				);
+
+			void_allocator alloc( sharedSegment.get_segment_manager() );
+			auto		   rsltMapAndInt = sharedSegment.find<ReportItemCollection>( pdb100::shm::rsltMap::OBJNAME );
+
+			ReportItem<String> item { .resultSummary = ResultSummary::crashed,
+									  .pdb			 = String( alloc ),
+									  .details		 = String( alloc ) };
+			p_pdbCode[ 4 ] = '\0';
+			item.pdb.assign( p_pdbCode.begin(), p_pdbCode.end() );
+			size_t ret = rsltMapAndInt.first->size();
 			rsltMapAndInt.first->push_back( std::move( item ) );
+			return ret;
 		}
 
 		/**
@@ -424,6 +461,7 @@ namespace pdb100
 			ReportItem<std::string>::Rates rates;
 			computeCorrectnessRates( context, rates );
 			postReportItem(
+				p_system.resultIndex,
 				ReportItem<std::string> { .resultSummary	= std::move( summary ),
 										  .correctnessRates = std::move( rates ),
 										  .pdb				= std::string( p_system.code, sizeof( p_system.code ) ),
@@ -447,6 +485,7 @@ namespace pdb100
 		if ( p_system.strands.empty() and p_system.helixes.empty() )
 		{
 			postReportItem(
+				p_system.resultIndex,
 				ReportItem<std::string> { .resultSummary = ReportItem<std::string>::ResultSummary::no_ss,
 										  .pdb			 = std::string( p_system.code, sizeof( p_system.code ) ) }
 			);
@@ -480,7 +519,7 @@ namespace pdb100
 		{
 			System newSystem;
 			memcpy_s( newSystem.code, sizeof( newSystem.code ), systemName.data(), sizeof( newSystem.code ) );
-
+			newSystem.resultIndex = postCrashItem( newSystem.code );
 			testSystem( p_systemPath, newSystem );
 		}
 		catch ( std::exception & e )
@@ -494,11 +533,13 @@ namespace pdb100
 	 */
 	std::string fetchSystemArchivePath()
 	{
-		boost::interprocess::named_mutex		   mutex( open_or_create, shm::filestrDeque::MUTEX );
-		boost::interprocess::managed_shared_memory sharedSegment(
+		boost::interprocess::named_mutex mutex( open_or_create, shm::filestrDeque::MUTEX );
+		boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock( mutex );
+		boost::interprocess::managed_shared_memory						   sharedSegment(
 			boost::interprocess::open_only, pdb100::shm::filestrDeque::SEGNAME
 		);
 		auto fileStrDeque = sharedSegment.find<StringDeque>( pdb100::shm::filestrDeque::OBJNAME );
+		log() << "Size of Deque : <" << fileStrDeque.first->size() << ">\n";
 		if ( fileStrDeque.first->empty() )
 			return {};
 		std::string ret( fileStrDeque.first->back().begin(), fileStrDeque.first->back().end() );
@@ -511,6 +552,7 @@ namespace pdb100
 		while ( true )
 		{
 			std::string systemToTest = fetchSystemArchivePath();
+			continue; // Solving shm issue for now.
 			if ( systemToTest.empty() )
 				break;
 			testSystem( systemToTest );

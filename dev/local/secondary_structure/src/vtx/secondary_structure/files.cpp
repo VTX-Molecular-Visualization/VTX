@@ -38,26 +38,32 @@ namespace pdb100
 	 */
 	void walkDir( FileCollection & contextData, const std::filesystem::path & dir )
 	{
-		static const uint64_t maxFiles = 55;
-		static const uint64_t skippy   = 250;
-		uint64_t			  count	   = 0;
+		// static const uint64_t maxFiles = 8;
+		//  static const uint64_t skippy   = 20000;
+		//  uint64_t			  count	   = 0;
 		for ( auto & it_fsItem : fs::directory_iterator( dir ) )
 		{
-			count++;
-			if ( count < skippy )
-				continue;
-			if ( contextData.size() > maxFiles )
-				break;
+			// count++;
+			//  if ( count < skippy )
+			//	continue;
+			// if ( contextData.size() >= maxFiles )
+			//	break;
 			if ( fs::is_directory( it_fsItem ) )
 				walkDir( contextData, it_fsItem.path() );
-			if ( fs::is_regular_file( it_fsItem ) and notAnException( it_fsItem ) )
+			if ( fs::is_regular_file( it_fsItem ) /*and not notAnException( it_fsItem )*/ )
 				contextData.push_back( it_fsItem.path().string() );
 		}
+		return;
 	}
 	/**
 	 * @brief Open each directory from the dbDir and list the files in the pdb100_system collection
 	 * @param contextData
 	 */
-	void enumerateFiles( Context & contextData ) { walkDir( *contextData.pdb100_system.open(), contextData.dbDir ); }
+	void enumerateFiles( Context & contextData )
+	{
+		auto collection = contextData.pdb100_system.open();
+		collection->reserve( 250000 );
+		walkDir( *collection, contextData.dbDir );
+	}
 
 } // namespace pdb100

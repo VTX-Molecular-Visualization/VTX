@@ -55,7 +55,7 @@ namespace pdb100
 		void createLivingProofCollection( Context & p_context )
 		{
 			const size_t shm_size
-				= NUM_PROCESSES * ( sizeof( std::pair<uint64_t, uint64_t> ) ) + sizeof( LivingProofMap ) + 1000;
+				= ( NUM_PROCESSES * 2 ) * ( sizeof( std::pair<uint64_t, uint64_t> ) ) + sizeof( LivingProofMap ) + 1000;
 
 			boost::interprocess::managed_shared_memory sharedSegment(
 				boost::interprocess::create_only, pdb100::shm::livingProof::SEGNAME, shm_size
@@ -113,8 +113,9 @@ namespace pdb100
 
 		void restartCrashedProcess( std::array<RestartingProcess, NUM_PROCESSES> & p_processes )
 		{
-			boost::interprocess::named_mutex		   mutex( open_or_create, shm::livingProof::MUTEX );
-			boost::interprocess::managed_shared_memory sharedSegment(
+			boost::interprocess::named_mutex mutex( open_or_create, shm::livingProof::MUTEX );
+			boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock( mutex );
+			boost::interprocess::managed_shared_memory						   sharedSegment(
 				boost::interprocess::open_only, pdb100::shm::livingProof::SEGNAME
 			);
 			auto livingProofMapPair		   = sharedSegment.find<LivingProofMap>( pdb100::shm::livingProof::OBJNAME );
@@ -125,6 +126,7 @@ namespace pdb100
 				uint64_t timestamp = getTimeStamp();
 				if ( timestamp > it_pair.second + shm::livingProof::tolerenceTime )
 				{
+					removeKeys.push( it_pair.first );
 					auto findRslt = std::find_if(
 						p_processes.begin(),
 						p_processes.end(),
@@ -133,7 +135,6 @@ namespace pdb100
 					if ( findRslt != std::end( p_processes ) )
 					{
 						RestartingProcess & child = *findRslt;
-						removeKeys.push( it_pair.first );
 						std::cout << "Restarting process <" << it_pair.first
 								  << "> that didn't give proof of life since " << timestamp - it_pair.second << "s\n";
 						if ( child.running() )
@@ -141,6 +142,10 @@ namespace pdb100
 							child.kill(); // Best part
 						}
 						child.restart();
+					}
+					else
+					{
+						std::cout << "Process attached to pid <" << it_pair.first << "> not found. Weird.\n";
 					}
 				}
 			}
