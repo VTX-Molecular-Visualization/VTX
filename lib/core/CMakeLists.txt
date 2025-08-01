@@ -10,3 +10,4 @@ include(cmake/library.cmake)
 
 install(TARGETS vtx_core FILE_SET public_headers)
 install(DIRECTORY data DESTINATION .)
+install(DIRECTORY cmake DESTINATION .)
