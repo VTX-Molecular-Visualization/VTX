@@ -20,7 +20,7 @@ namespace VTX::App::Core::Network
 		Util::Network::httpRequestGet( p_url, text );
 
 		// Save to cache.
-		Util::Filesystem::writeFile( Filesystem::getCachePath( filepath ), text );
+		Util::Filesystem::writeFile( Filesystem::getCacheDir() / filepath, text );
 		onFileCached();
 		p_callback( text );
 	}

@@ -70,7 +70,7 @@ namespace VTX::UI::QT::Dialog
 				Util::String::trim( pdb );
 				if ( pdb.length() == 4 )
 				{
-					FilePath path = App::Filesystem::getCachePath( pdb + ".pdb" );
+					FilePath path = App::Filesystem::getCacheDir() / ( pdb + ".pdb" );
 					if ( std::filesystem::exists( path ) )
 					{
 						// Show radio buttons.
@@ -97,7 +97,7 @@ namespace VTX::UI::QT::Dialog
 				_url = _comboBoxURL->currentText().trimmed();
 				_pdb = _comboBoxPDB->currentText().trimmed();
 
-				FilePath path = App::Filesystem::getCachePath( _pdb.toStdString() + ".pdb" );
+				FilePath path = App::Filesystem::getCacheDir() / ( _pdb.toStdString() + ".pdb" );
 				if ( std::filesystem::exists( path ) and _radioButtonOpen->isChecked() )
 				{
 					App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( path );

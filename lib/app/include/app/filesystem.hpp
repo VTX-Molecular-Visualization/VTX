@@ -7,78 +7,38 @@
 namespace VTX::App::Filesystem
 {
 
-	inline const FilePath EXECUTABLE_ABSOLUTE_PATH = VTX::Util::Filesystem::getExecutableDir();
+	inline const FilePath EXECUTABLE_DIR = VTX::Util::Filesystem::getExecutableDir();
+	inline const FilePath USER_DATA_DIR	 = VTX::Util::Filesystem::getUserDataDir();
 
-	inline const FilePath getExecutableDir()
-	{
-		assert( std::filesystem::exists( EXECUTABLE_ABSOLUTE_PATH ) );
-		return EXECUTABLE_ABSOLUTE_PATH;
-	}
+	// System.
+	inline const FilePath getShadersDir() { return EXECUTABLE_DIR / "shaders"; }
+	inline const FilePath getDataDir() { return EXECUTABLE_DIR / "data"; }
+	inline const FilePath getResidueDataDir() { return getDataDir() / "residue"; }
 
-	// Directories.
-	inline const FilePath getShadersDir() { return getExecutableDir() / "shaders"; }
-	inline const FilePath getSnapshotsDir() { return getExecutableDir() / "snapshots"; }
-	inline const FilePath getRendersDir() { return getExecutableDir() / "renders"; }
-	inline const FilePath getLogsDir() { return getExecutableDir() / "logs"; }
-	inline const FilePath getCacheDir() { return getExecutableDir() / "cache"; }
-	inline const FilePath getLibrariesDir() { return getExecutableDir() / "libraries"; }
-	inline const FilePath getRepresentationsLibraryDir() { return getLibrariesDir() / "representations"; }
-	inline const FilePath getRenderEffectPresetsLibraryDir() { return getLibrariesDir() / "render_effects"; }
-	inline const FilePath getThemesLibraryDir() { return getLibrariesDir() / "themes"; }
-	inline const FilePath getInternalDataDir() { return getExecutableDir() / "data"; }
-	inline const FilePath getResidueDataDir() { return getInternalDataDir() / "residue_data"; }
+	inline const FilePath getLicenseFile() { return EXECUTABLE_DIR / "license.txt"; }
 
-	// Files.
-	inline const FilePath getConfigIniFile() { return getExecutableDir() / "config.ini"; }
-	inline const FilePath getSettingJsonFile() { return getExecutableDir() / "setting.json"; }
-	inline const FilePath getLicenseFile() { return getExecutableDir() / "license.txt"; }
+	// User.
+	inline const FilePath getLogsDir() { return USER_DATA_DIR / "logs"; }
+	inline const FilePath getCacheDir() { return USER_DATA_DIR / "cache"; }
+	inline const FilePath getSnapshotsDir() { return USER_DATA_DIR / "snapshots"; }
+	inline const FilePath getRepresentationsDir() { return USER_DATA_DIR / "representations"; }
+	inline const FilePath getColorsDir() { return USER_DATA_DIR / "colors"; }
+	inline const FilePath getEffectsDir() { return USER_DATA_DIR / "effects"; }
 
-	// Dev directories.
-	// static const FilePath SHADERS_DIR_SRC		  = FilePath( "../src/shader" );
-	inline const FilePath DEFAULT_SAVE_FOLDER	  = FilePath( "../save" );
-	inline const FilePath DEFAULT_MOLECULE_FOLDER = FilePath( "../data" );
+	inline const FilePath getConfigIniFile() { return USER_DATA_DIR / "config.ini"; }
+	inline const FilePath getSettingJsonFile() { return USER_DATA_DIR / "setting.json"; }
 
-	inline const FilePath getShadersPath( const FilePath & p_filename )
-	{
-		std::filesystem::create_directory( getShadersDir() );
-		return FilePath( getShadersDir() / p_filename );
-	}
-
-	inline const FilePath getSnapshotsPath( const FilePath & p_filename )
-	{
-		std::filesystem::create_directory( getSnapshotsDir() );
-		return FilePath( getSnapshotsDir() / p_filename );
-	}
-
-	inline const FilePath getRendersPath( const FilePath & p_filename )
-	{
-		std::filesystem::create_directory( getRendersDir() );
-		return FilePath( getRendersDir() / p_filename );
-	}
-
-	inline const FilePath getLogsPath( const FilePath & p_filename )
+	inline void createUserDirectories()
 	{
 		std::filesystem::create_directory( getLogsDir() );
-		return FilePath( getLogsDir() / p_filename );
-	}
-
-	inline const FilePath getCachePath( const FilePath & p_filename )
-	{
 		std::filesystem::create_directory( getCacheDir() );
-		return FilePath( getCacheDir() / p_filename );
+		std::filesystem::create_directory( getSnapshotsDir() );
+		std::filesystem::create_directory( getRepresentationsDir() );
+		std::filesystem::create_directory( getColorsDir() );
+		std::filesystem::create_directory( getEffectsDir() );
 	}
 
-	inline const FilePath getRepresentationPath( const FilePath & p_filename )
-	{
-		std::filesystem::create_directory( getRepresentationsLibraryDir() );
-		return FilePath( getRepresentationsLibraryDir() / p_filename );
-	}
-
-	inline const FilePath getRenderEffectPath( const FilePath & p_filename )
-	{
-		std::filesystem::create_directory( getRenderEffectPresetsLibraryDir() );
-		return FilePath( getRenderEffectPresetsLibraryDir() / p_filename );
-	}
+	// TODO: clean old:
 
 	inline bool isSessionFile( const FilePath & p_filePath ) { return p_filePath.extension().string() == "vtx"; }
 

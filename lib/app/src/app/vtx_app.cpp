@@ -38,6 +38,7 @@ namespace VTX::App
 	{
 		VTX_DEBUG( "Init application" );
 
+		Filesystem::createUserDirectories();
 		// TODO: move to start to handle gui dialog?
 		Settings::initSettings();
 

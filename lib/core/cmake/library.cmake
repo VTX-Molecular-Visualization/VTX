@@ -1,3 +1,5 @@
+include("${CMAKE_CURRENT_LIST_DIR}/vtx_core_copy_files.cmake")
+
 add_library(vtx_core)
 vtx_configure_target(vtx_core)
 
@@ -14,3 +16,5 @@ if (NOT DEFINED _VTX_CORE_CONAN)
 else()
 	target_link_libraries(vtx_core PRIVATE vtx_util::vtx_util)
 endif()
+
+vtx_copy_registered_data(vtx_core) # allow declared files to be copied on build

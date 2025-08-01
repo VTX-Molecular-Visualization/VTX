@@ -23,6 +23,12 @@ namespace VTX::Util::Filesystem
 #endif
 	}
 
+	FilePath getUserDataDir()
+	{
+		// TODO.
+		return getExecutableDir();
+	}
+
 	std::string getFileName( const FilePath & p_filePath )
 	{
 		std::string filenameWithExtension = p_filePath.filename().string();
