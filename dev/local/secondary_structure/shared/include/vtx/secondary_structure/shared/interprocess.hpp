@@ -15,6 +15,8 @@ namespace pdb100
 {
 	using namespace boost::interprocess;
 
+	const uint64_t showProgressInterval = 60;
+
 	namespace shm
 	{
 		namespace filestrDeque
@@ -40,7 +42,7 @@ namespace pdb100
 			const char OBJNAME[] = "ss_liveProof";
 			const char MUTEX[]	 = "VTX__SHM_SS_LIVINGPROOF_MUTEX";
 
-			const uint64_t tolerenceTime = 5;
+			const uint64_t tolerenceTime = 8;
 		} // namespace livingProof
 
 	} // namespace shm

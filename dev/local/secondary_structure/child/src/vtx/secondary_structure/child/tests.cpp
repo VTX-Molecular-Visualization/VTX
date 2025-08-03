@@ -394,7 +394,8 @@ namespace pdb100
 
 			void_allocator alloc( sharedSegment.get_segment_manager() );
 			auto		   rsltMapAndInt = sharedSegment.find<ReportItemCollection>( pdb100::shm::rsltMap::OBJNAME );
-
+			if ( rsltMapAndInt.first->size() <= p_index )
+				return;
 			ReportItem<String> item { .pdb = String( alloc ), .details = String( alloc ) };
 			convert( p_item, item );
 			rsltMapAndInt.first->at( p_index ) = std::move( item );
@@ -539,7 +540,6 @@ namespace pdb100
 			boost::interprocess::open_only, pdb100::shm::filestrDeque::SEGNAME
 		);
 		auto fileStrDeque = sharedSegment.find<StringDeque>( pdb100::shm::filestrDeque::OBJNAME );
-		log() << "Size of Deque : <" << fileStrDeque.first->size() << ">\n";
 		if ( fileStrDeque.first->empty() )
 			return {};
 		std::string ret( fileStrDeque.first->back().begin(), fileStrDeque.first->back().end() );
@@ -552,7 +552,6 @@ namespace pdb100
 		while ( true )
 		{
 			std::string systemToTest = fetchSystemArchivePath();
-			continue; // Solving shm issue for now.
 			if ( systemToTest.empty() )
 				break;
 			testSystem( systemToTest );

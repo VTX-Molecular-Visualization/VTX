@@ -1,5 +1,6 @@
 #pragma once
 
+#include <fmt/format.h>
 #include <fstream>
 #include <vtx/secondary_structure/shared/interprocess.hpp>
 //
@@ -11,11 +12,15 @@ namespace pdb100
 	 */
 	void testSystems();
 
-	const fs::path		 g_logPath( "ChildLog.log" );
 	inline std::ofstream log()
 	{
-		std::ofstream f( g_logPath, std::ios::app );
-		f << boost::process::current_pid() << " - ";
+		fs::path dirName = "childlogs";
+		if ( not fs::exists( dirName ) )
+			fs::create_directories( dirName );
+
+		fs::path logPath( dirName / fmt::format( "ChildLog-{}.log", boost::process::current_pid() ) );
+
+		std::ofstream f( logPath, std::ios::app );
 		return f;
 	}
 } // namespace pdb100

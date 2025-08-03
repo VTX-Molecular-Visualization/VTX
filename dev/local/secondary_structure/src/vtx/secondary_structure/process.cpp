@@ -99,7 +99,7 @@ namespace pdb100
 			bool running() { return _proc.running(); }
 			void kill()
 			{
-				_proc.terminate();
+				_proc.interrupt();
 				_proc.wait();
 				//_lastExitCode = _proc.exit_code();
 			}
@@ -139,6 +139,17 @@ namespace pdb100
 								  << "> that didn't give proof of life since " << timestamp - it_pair.second << "s\n";
 						if ( child.running() )
 						{
+							boost::interprocess::named_mutex mutexes[ 3 ] {
+								{ open_or_create, shm::rsltMap::MUTEX },
+								{ open_or_create, shm::livingProof::MUTEX },
+								{ open_or_create, shm::filestrDeque::MUTEX },
+							};
+							using Lock = boost::interprocess::scoped_lock<boost::interprocess::named_mutex>;
+							Lock locks[ 3 ] {
+								Lock { mutexes[ 0 ] },
+								Lock { mutexes[ 1 ] },
+								Lock { mutexes[ 2 ] },
+							};
 							child.kill(); // Best part
 						}
 						child.restart();
@@ -156,14 +167,35 @@ namespace pdb100
 			}
 		}
 
+		void showProgress( const size_t & p_initialStructureNumber )
+		{
+			size_t currentSize = 0;
+			{
+				boost::interprocess::named_mutex mutex( open_or_create, shm::filestrDeque::MUTEX );
+				boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock( mutex );
+				boost::interprocess::managed_shared_memory						   sharedSegment(
+					boost::interprocess::open_only, pdb100::shm::filestrDeque::SEGNAME
+				);
+				auto fileStrDeque = sharedSegment.find<StringDeque>( pdb100::shm::filestrDeque::OBJNAME );
+				currentSize		  = fileStrDeque.first->size();
+			}
+			std::cout << fmt::format(
+				"Progression : {:0.2f}% ({}/{})\n",
+				100. * currentSize / p_initialStructureNumber,
+				currentSize,
+				p_initialStructureNumber
+			);
+		}
+
 		/**
 		 * @brief Look at processes timestamp to detect processes that crashed and restart it if needed. Yield once all
 		 * processes are finished
 		 * @tparam SIZE
 		 * @param p_processes
 		 */
-		void watchProcesses( std ::array<RestartingProcess, NUM_PROCESSES> & p_processes )
+		void watchProcesses( const Context & p_context, std ::array<RestartingProcess, NUM_PROCESSES> & p_processes )
 		{
+			auto lastProgressPrint = getTimeStamp();
 			while ( true )
 			{
 				std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
@@ -173,6 +205,8 @@ namespace pdb100
 				{
 					finished &= ( not it_process.running() ) and it_process.finished();
 				}
+				if ( lastProgressPrint + showProgressInterval > getTimeStamp() )
+					showProgress( p_context.pdb100_system.open()->size() );
 				if ( finished )
 					break;
 			}
@@ -207,6 +241,6 @@ namespace pdb100
 
 		boost::asio::io_context io_context;
 		auto					processes = generate( io_context );
-		watchProcesses( processes );
+		watchProcesses( p_context, processes );
 	}
 } // namespace pdb100
