@@ -72,6 +72,11 @@ namespace VTX::UI::QT::Widget
 					);
 				}
 			);
+
+			_library->onLibraryChanged += [ this ]()
+			{
+				_refreshComboBox();
+			};
 		}
 
 	  private:

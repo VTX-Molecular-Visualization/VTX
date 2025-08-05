@@ -31,6 +31,8 @@ namespace VTX::App::Core::Library
 			}
 
 			_items.emplace( name, T() );
+			onLibraryChanged();
+
 			return &_items[ name ];
 		}
 
@@ -47,6 +49,8 @@ namespace VTX::App::Core::Library
 			}
 
 			_items.emplace( name, _items[ src ] );
+			onLibraryChanged();
+
 			return &_items[ name ];
 		}
 
@@ -96,7 +100,7 @@ namespace VTX::App::Core::Library
 			// TODO: loop through items and save them to the filesystem.
 		}
 
-		Util::Callback<void()> onLibraryChanged;
+		Util::Callback<> onLibraryChanged;
 
 	  private:
 		const FilePath			 _path;
