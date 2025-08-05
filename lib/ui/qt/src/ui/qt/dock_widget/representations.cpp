@@ -60,22 +60,20 @@ namespace VTX::UI::QT::DockWidget
 		return groupBox;
 	}
 
-	QGroupBox * const Representations::_createGroupBoxSphere(
+	Core::Widget::HideableGroupBox * const Representations::_createGroupBoxSphere(
 		App::Component::Representation::Representation * const p_component
 	)
 	{
 		using namespace Renderer::Proxy;
 
-		auto * groupBox = new QGroupBox( "Atoms" );
-		auto * layout	= new QVBoxLayout( groupBox );
+		auto * groupBox = new Core::Widget::HideableGroupBox( "Atoms", this );
 
 		// Active.
-		groupBox->setCheckable( true );
 		groupBox->setChecked( p_component->getRepresentation().hasSphere );
 
 		connect(
 			groupBox,
-			&QGroupBox::toggled,
+			&Core::Widget::HideableGroupBox::toggled,
 			[]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
@@ -89,7 +87,7 @@ namespace VTX::UI::QT::DockWidget
 		// Fixed.
 		auto * comboBox = new QComboBox( groupBox );
 
-		layout->addWidget( comboBox );
+		groupBox->addWidget( comboBox );
 		comboBox->addItem( "Van der Waals radius" );
 		comboBox->addItem( "Fixed radius" );
 		comboBox->setCurrentIndex( int( p_component->getRepresentation().radiusFixed ) );
@@ -113,8 +111,8 @@ namespace VTX::UI::QT::DockWidget
 		// Radius add (VdW only).
 		auto * labelRadiusAdd  = new QLabel( "Radius add", groupBox );
 		auto * sliderRadiusAdd = new QSlider( Qt::Orientation::Horizontal, groupBox );
-		layout->addWidget( labelRadiusAdd );
-		layout->addWidget( sliderRadiusAdd );
+		groupBox->addWidget( labelRadiusAdd );
+		groupBox->addWidget( sliderRadiusAdd );
 		// TODO: move min and max to representation.
 		// sliderRadiusAdd->setMinimum( -( VTX::Core::ChemDB::Atom::VDW_RADIUS_MIN ) * 100 + 1 );
 		sliderRadiusAdd->setMinimum( 0 );
@@ -136,8 +134,8 @@ namespace VTX::UI::QT::DockWidget
 		// Radius fixed.
 		auto * labelRadiusFixed	 = new QLabel( "Radius", groupBox );
 		auto * sliderRadiusFixed = new QSlider( Qt::Orientation::Horizontal, groupBox );
-		layout->addWidget( labelRadiusFixed );
-		layout->addWidget( sliderRadiusFixed );
+		groupBox->addWidget( labelRadiusFixed );
+		groupBox->addWidget( sliderRadiusFixed );
 		sliderRadiusFixed->setMinimum( 1 );
 		sliderRadiusFixed->setMaximum( 300 );
 		sliderRadiusFixed->setValue( p_component->getRepresentation().radiusSphereFixed * 100 );
@@ -188,22 +186,20 @@ namespace VTX::UI::QT::DockWidget
 		return groupBox;
 	}
 
-	QGroupBox * const Representations::_createGroupBoxCylinder(
+	Core::Widget::HideableGroupBox * const Representations::_createGroupBoxCylinder(
 		App::Component::Representation::Representation * const p_component
 	)
 	{
 		using namespace Renderer::Proxy;
 
-		auto * groupBox = new QGroupBox( "Bonds" );
-		auto * layout	= new QVBoxLayout( groupBox );
+		auto * groupBox = new Core::Widget::HideableGroupBox( "Bonds", this );
 
 		// Active.
-		groupBox->setCheckable( true );
 		groupBox->setChecked( p_component->getRepresentation().hasCylinder );
 
 		connect(
 			groupBox,
-			&QGroupBox::toggled,
+			&Core::Widget::HideableGroupBox::toggled,
 			[]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
@@ -215,8 +211,8 @@ namespace VTX::UI::QT::DockWidget
 		// Radius.
 		auto * labelRadius = new QLabel( "Radius", groupBox );
 		auto * slider	   = new QSlider( Qt::Orientation::Horizontal, groupBox );
-		layout->addWidget( labelRadius );
-		layout->addWidget( slider );
+		groupBox->addWidget( labelRadius );
+		groupBox->addWidget( slider );
 		slider->setMinimum( 1 );
 		slider->setMaximum( 100 );
 		slider->setValue( p_component->getRepresentation().radiusCylinder * 100 );
@@ -235,7 +231,7 @@ namespace VTX::UI::QT::DockWidget
 
 		// Color blending.
 		auto * checkBoxColorBlending = new QCheckBox( "Blend colors", groupBox );
-		layout->addWidget( checkBoxColorBlending );
+		groupBox->addWidget( checkBoxColorBlending );
 		checkBoxColorBlending->setChecked( p_component->getRepresentation().cylinderColorBlending );
 		connect(
 			checkBoxColorBlending,
@@ -264,22 +260,20 @@ namespace VTX::UI::QT::DockWidget
 		return groupBox;
 	}
 
-	QGroupBox * const Representations::_createGroupBoxRibbon(
+	Core::Widget::HideableGroupBox * const Representations::_createGroupBoxRibbon(
 		App::Component::Representation::Representation * const p_component
 	)
 	{
 		using namespace Renderer::Proxy;
 
-		auto * groupBox = new QGroupBox( "Ribbons" );
-		auto * layout	= new QVBoxLayout( groupBox );
+		auto * groupBox = new Core::Widget::HideableGroupBox( "Ribbons", this );
 
 		// Active.
-		groupBox->setCheckable( true );
 		groupBox->setChecked( p_component->getRepresentation().hasRibbon );
 
 		connect(
 			groupBox,
-			&QGroupBox::toggled,
+			&Core::Widget::HideableGroupBox::toggled,
 			[]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
@@ -292,7 +286,7 @@ namespace VTX::UI::QT::DockWidget
 
 		// Color blending.
 		auto * checkBoxColorBlending = new QCheckBox( "Blend colors", groupBox );
-		layout->addWidget( checkBoxColorBlending );
+		groupBox->addWidget( checkBoxColorBlending );
 		checkBoxColorBlending->setChecked( p_component->getRepresentation().ribbonColorBlending );
 		connect(
 			checkBoxColorBlending,
@@ -316,22 +310,20 @@ namespace VTX::UI::QT::DockWidget
 		return groupBox;
 	}
 
-	QGroupBox * const Representations::_createGroupBoxSES(
+	Core::Widget::HideableGroupBox * const Representations::_createGroupBoxSES(
 		App::Component::Representation::Representation * const p_component
 	)
 	{
 		using namespace Renderer::Proxy;
 
-		auto * groupBox = new QGroupBox( "SES" );
-		auto * layout	= new QVBoxLayout( groupBox );
+		auto * groupBox = new Core::Widget::HideableGroupBox( "SES", this );
 
 		// Active.
-		groupBox->setCheckable( true );
 		groupBox->setChecked( p_component->getRepresentation().hasSes );
 
 		connect(
 			groupBox,
-			&QGroupBox::toggled,
+			&Core::Widget::HideableGroupBox::toggled,
 			[]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
@@ -345,8 +337,8 @@ namespace VTX::UI::QT::DockWidget
 		// Probe Radius.
 		auto * labelRadius = new QLabel( "Probe radius", groupBox );
 		auto * slider	   = new QSlider( Qt::Orientation::Horizontal, groupBox );
-		layout->addWidget( labelRadius );
-		layout->addWidget( slider );
+		groupBox->addWidget( labelRadius );
+		groupBox->addWidget( slider );
 		slider->setMinimum( App::Settings::Representation::SES_PROBE_RADIUS_MIN * 100 );
 		slider->setMaximum( App::Settings::Representation::SES_PROBE_RADIUS_MAX * 100 );
 		slider->setValue( p_component->getRepresentation().sesProbeRadius * 100 );
@@ -365,7 +357,7 @@ namespace VTX::UI::QT::DockWidget
 
 		// Is exterior.
 		auto * checkBox = new QCheckBox( "Exterior only", groupBox );
-		layout->addWidget( checkBox );
+		groupBox->addWidget( checkBox );
 		checkBox->setChecked( p_component->getRepresentation().sesIsExterior );
 		connect(
 			checkBox,
