@@ -12,6 +12,9 @@
 
 namespace VTX::UI::QT::Widget
 {
+	/**
+	 * @brief Base class for preset selectors to permit signals (not possible on templated class).
+	 */
 	class BasePresetSelector : public QWidget
 	{
 		Q_OBJECT
@@ -38,6 +41,7 @@ namespace VTX::UI::QT::Widget
 
 			_comboBox = new QComboBox( this );
 			_refreshComboBox();
+			_comboBox->setCurrentIndex( 0 );
 			layout->addWidget( _comboBox, 0, 0, 1, 3 );
 			connect( _comboBox, &QComboBox::currentTextChanged, this, &PresetSelector::presetChanged );
 
@@ -73,9 +77,24 @@ namespace VTX::UI::QT::Widget
 				}
 			);
 
-			_library->onLibraryChanged += [ this ]()
+			_library->onPresetAdded += [ this ]( std::string_view p_name )
 			{
 				_refreshComboBox();
+				_comboBox->setCurrentText( QString::fromStdString( std::string( p_name ) ) );
+			};
+			_library->onPresetRenamed += [ this ]( std::string_view )
+			{
+				QString selectedName = _comboBox->currentText();
+				_refreshComboBox();
+				_comboBox->setCurrentText( selectedName );
+			};
+			_library->onPresetDeleted += [ this ]( std::string_view )
+			{
+				_refreshComboBox();
+				assert( _comboBox->count() > 0 );
+				_comboBox->setCurrentIndex( 0 );
+				// Emit the signal to notify that the preset has changed.
+				emit presetChanged( _comboBox->currentText() );
 			};
 		}
 
@@ -85,11 +104,15 @@ namespace VTX::UI::QT::Widget
 
 		void _refreshComboBox()
 		{
+			_comboBox->blockSignals( true );
+
 			_comboBox->clear();
 			for ( const auto & [ name, _ ] : _library->getItems() )
 			{
 				_comboBox->addItem( QString::fromStdString( name ) );
 			}
+
+			_comboBox->blockSignals( false );
 		}
 
 	  public:

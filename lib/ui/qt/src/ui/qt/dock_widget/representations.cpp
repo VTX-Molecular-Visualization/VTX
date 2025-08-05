@@ -54,7 +54,7 @@ namespace VTX::UI::QT::DockWidget
 			presetSelector,
 			&Widget::PresetSelector<VTX::Core::Struct::Representation>::presetChanged,
 			this,
-			[]() { VTX_INFO( "Preset changed." ); }
+			[]( const QString & p_name ) { VTX_INFO( "Preset changed: {}", p_name.toStdString() ); }
 		);
 
 		return groupBox;

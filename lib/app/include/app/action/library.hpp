@@ -30,7 +30,7 @@ namespace VTX::App::Action::Library
 		void execute() override { this->_library->createItem( _name ); }
 
 	  private:
-		const std::optional<std::string_view> _name;
+		const std::optional<std::string> _name;
 	};
 
 	template<typename T>
@@ -45,8 +45,8 @@ namespace VTX::App::Action::Library
 		void execute() override { this->_library->copyItem( _src, _dest ); }
 
 	  private:
-		const std::string_view				  _src;
-		const std::optional<std::string_view> _dest;
+		const std::string				 _src;
+		const std::optional<std::string> _dest;
 	};
 
 	template<typename T>
@@ -62,7 +62,7 @@ namespace VTX::App::Action::Library
 		}
 
 	  private:
-		const std::string_view _name;
+		const std::string _name;
 	};
 
 	/*

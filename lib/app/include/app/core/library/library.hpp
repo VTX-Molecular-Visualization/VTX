@@ -23,7 +23,7 @@ namespace VTX::App::Core::Library
 
 		T * const createItem( const std::optional<std::string_view> p_name )
 		{
-			std::string name = p_name.has_value() ? std::string { p_name.value() } : "new";
+			std::string name = p_name.has_value() ? std::string { p_name.value() } : "New preset";
 
 			while ( _items.contains( name ) )
 			{
@@ -31,7 +31,7 @@ namespace VTX::App::Core::Library
 			}
 
 			_items.emplace( name, T() );
-			onLibraryChanged();
+			onPresetAdded( name );
 
 			return &_items[ name ];
 		}
@@ -49,16 +49,27 @@ namespace VTX::App::Core::Library
 			}
 
 			_items.emplace( name, _items[ src ] );
-			onLibraryChanged();
+			onPresetAdded( name );
 
 			return &_items[ name ];
 		}
 
 		void removeItem( const std::string_view p_name )
 		{
-			// TODO
+			std::string name { p_name };
+			assert( _items.contains( name ) );
+
+			_items.erase( name );
+
+			if ( _items.size() == 0 )
+			{
+				createItem( "Default" );
+			}
+
+			onPresetDeleted( p_name );
 		}
 
+		/*
 		void setDefault( const std::string_view p_name )
 		{
 			if ( _items.contains( p_name ) )
@@ -70,6 +81,7 @@ namespace VTX::App::Core::Library
 				VTX_ERROR( "Default item '{}' does not exist in library.", p_name );
 			}
 		}
+		*/
 
 		void load()
 		{
@@ -100,12 +112,14 @@ namespace VTX::App::Core::Library
 			// TODO: loop through items and save them to the filesystem.
 		}
 
-		Util::Callback<> onLibraryChanged;
+		Util::Callback<std::string_view> onPresetAdded;
+		Util::Callback<std::string_view> onPresetRenamed;
+		Util::Callback<std::string_view> onPresetDeleted;
 
 	  private:
 		const FilePath			 _path;
 		std::map<std::string, T> _items;
-		T *						 _defaultItem = nullptr;
+		// T *						 _defaultItem = nullptr;
 	};
 
 } // namespace VTX::App::Core::Library
