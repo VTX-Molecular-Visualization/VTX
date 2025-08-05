@@ -376,13 +376,26 @@ namespace VTX::UI::QT::Action
 	} // namespace Help
 	namespace Option
 	{
-
-		ShowToolBarText::ShowToolBarText()
+		namespace Cache
 		{
-			name = "Show toolbar text";
-			tip	 = "Show/hide text beside tool buttons";
-		}
+			Open::Open()
+			{
+				name = "Open";
+				tip	 = "Open the cache folder in explorer";
+			}
 
+			Clear::Clear()
+			{
+				name = "Clear";
+				tip	 = "Delete all cached files";
+			}
+
+			Refresh::Refresh()
+			{
+				name = "Refresh";
+				tip	 = "Refresh cache size";
+			}
+		} // namespace Cache
 	} // namespace Option
 
 } // namespace VTX::UI::QT::Action

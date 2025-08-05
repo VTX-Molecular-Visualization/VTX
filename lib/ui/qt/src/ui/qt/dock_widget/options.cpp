@@ -1,5 +1,7 @@
 #include "ui/qt/dock_widget/options.hpp"
+#include "ui/qt/actions.hpp"
 #include "ui/qt/application.hpp"
+#include "ui/qt/core/widget/actionable_push_button.hpp"
 #include "ui/qt/widget/opengl_widget.hpp"
 #include <QDesktopServices>
 #include <QFileDialog>
@@ -42,10 +44,14 @@ namespace VTX::UI::QT::DockWidget
 		auto * groupBoxCache = new QGroupBox( "Data cache" );
 		auto * layoutCache	 = new QVBoxLayout( groupBoxCache );
 
-		auto * layoutCacheButton  = new QHBoxLayout();
-		auto * buttonOpenCache	  = new QPushButton( "Open", this );
-		auto * buttonClearCache	  = new QPushButton( "Clear", this );
-		auto * buttonRefreshCache = new QPushButton( "Refresh", this );
+		auto * layoutCacheButton = new QHBoxLayout();
+
+		using namespace Core::Widget;
+		using namespace Action;
+
+		auto * buttonOpenCache	  = new ActionablePushButton( Factory::get<Option::Cache::Open>(), this );
+		auto * buttonClearCache	  = new ActionablePushButton( Factory::get<Option::Cache::Clear>(), this );
+		auto * buttonRefreshCache = new ActionablePushButton( Factory::get<Option::Cache::Refresh>(), this );
 
 		const FilePath cachePath = App::Filesystem::getCacheDir();
 		connect(

@@ -184,10 +184,23 @@ namespace VTX::UI::QT
 		} // namespace Help
 		namespace Option
 		{
-			struct ShowToolBarText : public App::UI::DescAction
+			namespace Cache
 			{
-				ShowToolBarText();
-			};
+				struct Open : public App::UI::DescAction
+				{
+					Open();
+				};
+
+				struct Clear : public App::UI::DescAction
+				{
+					Clear();
+				};
+
+				struct Refresh : public App::UI::DescAction
+				{
+					Refresh();
+				};
+			} // namespace Cache
 		} // namespace Option
 
 		namespace Preset
