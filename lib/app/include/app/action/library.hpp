@@ -36,12 +36,33 @@ namespace VTX::App::Action::Library
 	template<typename T>
 	class DuplicatePreset final : public BaseActionPreset<T>
 	{
+	  public:
+		DuplicatePreset( const std::string_view p_src, const std::optional<std::string_view> p_dest = std::nullopt ) :
+			_src( p_src ), _dest( p_dest )
+		{
+		}
+
+		void execute() override { this->_library->copyItem( _src, _dest ); }
+
+	  private:
+		const std::string_view				  _src;
+		const std::optional<std::string_view> _dest;
 	};
 
 	template<typename T>
 	class DeletePreset final : public BaseActionPreset<T>
 	{
-		// TODO: check if used before deleting.
+	  public:
+		DeletePreset( const std::string_view p_name ) : _name( p_name ) {}
+
+		void execute() override
+		{
+			// TODO: check if used.
+			this->_library->removeItem( _name );
+		}
+
+	  private:
+		const std::string_view _name;
 	};
 
 	/*

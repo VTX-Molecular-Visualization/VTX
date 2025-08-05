@@ -34,12 +34,20 @@ namespace VTX::App::Core::Library
 			return &_items[ name ];
 		}
 
-		T * const copyItem( const std::string_view p_name, const std::string_view p_newName )
+		T * const copyItem( const std::string_view p_src, const std::optional<std::string_view> p_dest )
 		{
-			assert( _items.contains( p_name ) );
+			std::string src { p_src };
+			assert( _items.contains( src ) );
 
-			_items.emplace( p_newName, _items[ p_name ] );
-			return &_items[ p_newName ];
+			std::string name = p_dest.has_value() ? std::string { p_dest.value() } : src;
+
+			while ( _items.contains( name ) )
+			{
+				name += "_copy";
+			}
+
+			_items.emplace( name, _items[ src ] );
+			return &_items[ name ];
 		}
 
 		void removeItem( const std::string_view p_name )
@@ -88,7 +96,7 @@ namespace VTX::App::Core::Library
 			// TODO: loop through items and save them to the filesystem.
 		}
 
-		// TODO: callbacks.
+		Util::Callback<void()> onLibraryChanged;
 
 	  private:
 		const FilePath			 _path;

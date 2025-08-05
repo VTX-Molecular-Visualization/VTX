@@ -50,6 +50,13 @@ namespace VTX::UI::QT::DockWidget
 		auto * presetSelector = new Widget::PresetSelector<VTX::Core::Struct::Representation>( groupBox );
 		layout->addWidget( presetSelector );
 
+		connect(
+			presetSelector,
+			&Widget::PresetSelector<VTX::Core::Struct::Representation>::presetChanged,
+			this,
+			[]() { VTX_INFO( "Preset changed." ); }
+		);
+
 		return groupBox;
 	}
 
