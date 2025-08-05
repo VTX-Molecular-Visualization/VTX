@@ -30,6 +30,7 @@ class VTXRecipe(ConanFile):
         self.requires("re2/20240702")
         self.requires("libarchive/3.7.9")
         self.requires("boost/1.88.0")
+        self.requires("platformfolders/4.3.0")
 
     def config_options(self):        
         # Package options.

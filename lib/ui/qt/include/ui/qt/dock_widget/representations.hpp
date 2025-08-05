@@ -19,11 +19,13 @@ namespace VTX::UI::QT::DockWidget
 		Representations( QWidget * );
 
 	  private:
+		QPointer<QGroupBox> _gbPreset;
 		QPointer<QGroupBox> _gbSphere;
 		QPointer<QGroupBox> _gbCylinder;
 		QPointer<QGroupBox> _gbRibbon;
 		QPointer<QGroupBox> _gbSES;
 
+		QGroupBox * const _createGroupBoxPreset();
 		QGroupBox * const _createGroupBoxSphere( App::Component::Representation::Representation * const );
 		QGroupBox * const _createGroupBoxCylinder( App::Component::Representation::Representation * const );
 		QGroupBox * const _createGroupBoxRibbon( App::Component::Representation::Representation * const );

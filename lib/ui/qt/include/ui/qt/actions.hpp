@@ -3,6 +3,8 @@
 
 #include <QAction>
 #include <QActionGroup>
+#include <QStyle>
+#include <app/action/library.hpp>
 #include <app/core/action/action_system.hpp>
 #include <app/ui/concepts.hpp>
 #include <app/vtx_app.hpp>
@@ -188,6 +190,42 @@ namespace VTX::UI::QT
 			};
 		} // namespace Option
 
+		namespace Preset
+		{
+			template<typename T>
+			struct Add : public App::UI::DescAction
+			{
+				Add()
+				{
+					name	= "New";
+					tip		= "Create a new empty preset";
+					icon	= QStyle::StandardPixmap::SP_FileIcon;
+					trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Library::AddPreset<T>>(); };
+				}
+			};
+
+			template<typename T>
+			struct Duplicate : public App::UI::DescAction
+			{
+				Duplicate()
+				{
+					name = "Duplicate";
+					tip	 = "Create a new preset from this one";
+					icon = QStyle::StandardPixmap::SP_DialogSaveButton;
+				}
+			};
+
+			template<typename T>
+			struct Delete : public App::UI::DescAction
+			{
+				Delete()
+				{
+					name = "Delete";
+					tip	 = "Delete this preset";
+					icon = QStyle::StandardPixmap::SP_TrashIcon;
+				}
+			};
+		} // namespace Preset
 	} // namespace Action
 
 } // namespace VTX::UI::QT

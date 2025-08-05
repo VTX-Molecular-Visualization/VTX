@@ -12,9 +12,6 @@ namespace VTX::Util::Filesystem
 	// Return path to user data directory
 	FilePath getUserDataDir();
 
-	// Return filename without extension
-	std::string getFileName( const FilePath & p_filePath );
-
 	// Read file at path and return content as a string
 	const std::string readPath( const FilePath & p_filePath );
 

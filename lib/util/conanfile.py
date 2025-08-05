@@ -25,6 +25,7 @@ class VTXUtilRecipe(ConanFile):
         self.requires("cpr/1.11.2")
         self.requires("stb/cci.20240531")
         self.requires("catch2/3.8.1")
+        self.requires("platformfolders/4.3.0")
         
     def config_options(self):
         if self.settings.os == "Windows":

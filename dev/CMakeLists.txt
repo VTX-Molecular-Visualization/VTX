@@ -33,6 +33,7 @@ find_package(fmt CONFIG REQUIRED)
 find_package(re2 CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED) # Needed for multiprocessing on pdb database test
 find_package(LibArchive REQUIRED)
+find_package(platform_folders REQUIRED)
 
 
 # Util.

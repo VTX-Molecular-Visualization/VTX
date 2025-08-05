@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_RENDERER__
 #define __VTX_RENDERER_RENDERER__
 
-#undef WITH_CUDA
+// #undef WITH_CUDA
 
 #ifdef WITH_CUDA
 #include "bcs/sesdf/sesdf.hpp"

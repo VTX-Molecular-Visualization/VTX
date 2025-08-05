@@ -35,7 +35,6 @@ install(DIRECTORY $<TARGET_FILE_DIR:vtx>/python_script DESTINATION .)
 # Data from VTX.
 install(DIRECTORY libraries DESTINATION .)
 install(DIRECTORY data DESTINATION .)
-install(DIRECTORY internal_data DESTINATION .)
 install(FILES README.md DESTINATION .)
 install(FILES CHANGELOG.md DESTINATION .)
 install(FILES license.txt DESTINATION .)

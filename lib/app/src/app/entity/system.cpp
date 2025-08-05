@@ -65,7 +65,7 @@ namespace VTX::App::Entity
 
 		system.setPdbIdCode( pdbId );
 
-		const std::string systemName = pdbId == "" ? Util::Filesystem::getFileName( _path ) : pdbId;
+		const std::string systemName = pdbId == "" ? _path.stem().string() : pdbId;
 		system.setName( systemName );
 
 		// UID.
@@ -159,7 +159,8 @@ namespace VTX::App::Entity
 						{
 							molData.set( Selection::SystemGranularity::getSelectionData( *firstAtomPtr, granularity ) );
 
-							molData.add( Selection::SystemGranularity::getSelectionData( *secondAtomPtr, granularity )
+							molData.add(
+								Selection::SystemGranularity::getSelectionData( *secondAtomPtr, granularity )
 							);
 						}
 					}

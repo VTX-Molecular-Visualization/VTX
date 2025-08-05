@@ -1,12 +1,14 @@
 #include "ui/qt/dock_widget/representations.hpp"
+#include "ui/qt/widget/preset_selector.hpp"
 #include <QCheckBox>
-#include <QComboBox>
 #include <QLabel>
+#include <QLineEdit>
 #include <QSlider>
 #include <QVBoxLayout>
 #include <app/action/representation.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/representation/representation.hpp>
+#include <app/core/library/library_system.hpp>
 #include <app/settings.hpp>
 #include <core/chemdb/atom.hpp>
 
@@ -23,17 +25,32 @@ namespace VTX::UI::QT::DockWidget
 			  App::ECS_REGISTRY().getEntity( scene )
 		  );
 
+		_gbPreset	= _createGroupBoxPreset();
 		_gbCylinder = _createGroupBoxCylinder( component );
 		_gbRibbon	= _createGroupBoxRibbon( component );
 		_gbSphere	= _createGroupBoxSphere( component ); // Last because need others in the callback.
 		_gbSES		= _createGroupBoxSES( component );
 
-		_layout->addWidget( _gbSphere );
-		_layout->addWidget( _gbCylinder );
-		_layout->addWidget( _gbRibbon );
-		_layout->addWidget( _gbSES );
+		_layout->addWidget( _gbPreset );
+		_gbPreset->layout()->addWidget( _gbCylinder );
+		_gbPreset->layout()->addWidget( _gbRibbon );
+		_gbPreset->layout()->addWidget( _gbSphere );
+		_gbPreset->layout()->addWidget( _gbSES );
 
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+	}
+
+	QGroupBox * const Representations::_createGroupBoxPreset()
+	{
+		auto * groupBox = new QGroupBox( "Preset" );
+		auto * layout	= new QVBoxLayout( groupBox );
+
+		groupBox->setCheckable( false );
+
+		auto * presetSelector = new Widget::PresetSelector<VTX::Core::Struct::Representation>( groupBox );
+		layout->addWidget( presetSelector );
+
+		return groupBox;
 	}
 
 	QGroupBox * const Representations::_createGroupBoxSphere(

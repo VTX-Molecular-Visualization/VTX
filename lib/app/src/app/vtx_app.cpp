@@ -9,6 +9,7 @@
 #include "app/controller/camera/trackball.hpp"
 #include "app/core/action/action_system.hpp"
 #include "app/core/ecs/registry.hpp"
+#include "app/core/library/library_system.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/threading/base_thread.hpp"
 #include "app/core/threading/threading_system.hpp"
@@ -21,6 +22,7 @@
 #include "app/selection/selection_manager.hpp"
 #include "app/settings.hpp"
 #include "app/updater.hpp"
+#include <core/struct/representation.hpp>
 #include <exception>
 #include <io/internal/filesystem.hpp>
 #include <python_binding/interpretor.hpp>
@@ -38,7 +40,6 @@ namespace VTX::App
 	{
 		VTX_DEBUG( "Init application" );
 
-		Filesystem::createUserDirectories();
 		// TODO: move to start to handle gui dialog?
 		Settings::initSettings();
 
@@ -69,6 +70,7 @@ namespace VTX::App
 		//	= MVC_MANAGER().instantiateModel<Application::Representation::RepresentationLibrary>();
 		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
+		LIBRARY_SYSTEM().load<VTX::Core::Struct::Representation>( Filesystem::getRepresentationsDir() );
 	}
 
 	void VTXApp::start()

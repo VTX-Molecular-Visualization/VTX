@@ -28,16 +28,6 @@ namespace VTX::App::Filesystem
 	inline const FilePath getConfigIniFile() { return USER_DATA_DIR / "config.ini"; }
 	inline const FilePath getSettingJsonFile() { return USER_DATA_DIR / "setting.json"; }
 
-	inline void createUserDirectories()
-	{
-		std::filesystem::create_directory( getLogsDir() );
-		std::filesystem::create_directory( getCacheDir() );
-		std::filesystem::create_directory( getSnapshotsDir() );
-		std::filesystem::create_directory( getRepresentationsDir() );
-		std::filesystem::create_directory( getColorsDir() );
-		std::filesystem::create_directory( getEffectsDir() );
-	}
-
 	// TODO: clean old:
 
 	inline bool isSessionFile( const FilePath & p_filePath ) { return p_filePath.extension().string() == "vtx"; }
