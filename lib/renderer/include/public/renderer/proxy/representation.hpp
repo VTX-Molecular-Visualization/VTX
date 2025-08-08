@@ -5,6 +5,7 @@
 
 namespace VTX::Renderer::Proxy
 {
+
 	enum E_REPRESENTATION_SETTINGS
 	{
 		HAS_SPHERE,
@@ -20,8 +21,7 @@ namespace VTX::Renderer::Proxy
 		RIBBON_COLOR_BLENDING,
 
 		HAS_SES,
-		SES_PROBE_RADIUS,
-		SES_IS_EXTERIOR
+		SES_PROBE_RADIUS
 	};
 
 	/**

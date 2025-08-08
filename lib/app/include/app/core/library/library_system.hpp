@@ -10,18 +10,18 @@ namespace VTX::App::Core::Library
 	class LibrarySystem
 	{
 	  public:
-		template<typename T>
+		template<typename P>
 		void load( const FilePath & p_path )
 		{
-			assert( not _libraries.has<Library<T>>() );
-			_libraries.create<Library<T>>( p_path );
+			assert( not _libraries.has<Library<P>>() );
+			_libraries.create<Library<P>>( p_path );
 		}
 
-		template<typename T>
-		inline Library<T> * const getLibrary()
+		template<typename P>
+		inline Library<P> * const getLibrary()
 		{
-			assert( _libraries.has<Library<T>>() );
-			return _libraries.get<Library<T>>();
+			assert( _libraries.has<Library<P>>() );
+			return _libraries.get<Library<P>>();
 		}
 
 	  private:

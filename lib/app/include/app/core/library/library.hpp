@@ -6,82 +6,110 @@
 
 namespace VTX::App::Core::Library
 {
+	class IPreset
+	{
+	  public:
+		virtual ~IPreset() = default;
+	};
+
+	template<typename T>
+	class Preset : public IPreset
+	{
+	  public:
+		virtual ~Preset() = default;
+
+		inline const T & getData() const { return _data; }
+		inline T &		 getData() { return _data; }
+
+		// TODO and set virtual =
+		virtual void save() = 0;
+		virtual void load() = 0;
+
+	  protected:
+		T _data;
+	};
+
+	template<typename P>
+	concept ConceptPreset = std::is_base_of_v<IPreset, P>;
+
 	class ILibrary
 	{
 	  public:
 		virtual ~ILibrary() = default;
 	};
 
-	template<typename T>
+	template<ConceptPreset P>
 	class Library : public ILibrary
 	{
 	  public:
+		using MapPresetsByName = std::map<std::string, P, std::less<>>;
+
 		Library() = delete;
 		Library( const FilePath & p_path ) : _path( p_path ) { load(); }
 
-		const std::map<std::string, T> & getItems() { return _items; }
+		const MapPresetsByName & getPresets() { return _presets; }
 
-		T * const createItem( const std::optional<std::string_view> p_name )
+		P * const getPreset( const std::string_view p_name )
 		{
-			std::string name = p_name.has_value() ? std::string { p_name.value() } : "New preset";
-
-			while ( _items.contains( name ) )
-			{
-				name += "_copy";
-			}
-
-			_items.emplace( name, T() );
-			onPresetAdded( name );
-
-			return &_items[ name ];
+			assert( _presets.contains( p_name ) );
+			return &_presets[ std::string { p_name } ];
 		}
 
-		T * const copyItem( const std::string_view p_src, const std::optional<std::string_view> p_dest )
+		P * const createPreset( const std::optional<std::string_view> & p_name )
 		{
-			std::string src { p_src };
-			assert( _items.contains( src ) );
+			std::string name = std::string { p_name.has_value() ? p_name.value() : "New preset" };
 
-			std::string name = p_dest.has_value() ? std::string { p_dest.value() } : src;
+			_makeNameUnique( name );
+			_presets.emplace( name, P() );
 
-			while ( _items.contains( name ) )
-			{
-				name += "_copy";
-			}
-
-			_items.emplace( name, _items[ src ] );
 			onPresetAdded( name );
 
-			return &_items[ name ];
+			return &_presets[ name ];
 		}
 
-		void removeItem( const std::string_view p_name )
+		P * const copyPreset( const std::string_view p_src, const std::optional<std::string_view> & p_dest )
 		{
-			std::string name { p_name };
-			assert( _items.contains( name ) );
+			assert( _presets.contains( p_src ) );
+			std::string name = std::string { p_dest.has_value() ? p_dest.value() : p_src };
 
-			_items.erase( name );
+			_makeNameUnique( name );
+			_presets.emplace( name, _presets.at( std::string { p_src } ) );
 
-			if ( _items.size() == 0 )
+			onPresetAdded( name );
+
+			return &_presets[ name ];
+		}
+
+		void removePreset( const std::string_view p_name )
+		{
+			assert( _presets.contains( p_name ) );
+
+			_presets.erase( std::string { p_name } );
+
+			if ( _presets.size() == 0 )
 			{
-				createItem( "Default" );
+				createPreset( "Default" );
 			}
 
 			onPresetDeleted( p_name );
 		}
 
-		/*
-		void setDefault( const std::string_view p_name )
+		void renamePreset( const std::string_view p_src, const std::string_view p_dest )
 		{
-			if ( _items.contains( p_name ) )
-			{
-				_defaultItem = &_items[ p_name ];
-			}
-			else
-			{
-				VTX_ERROR( "Default item '{}' does not exist in library.", p_name );
-			}
+			if ( p_src == p_dest )
+				return;
+
+			std::string src { p_src };
+			std::string dest { p_dest };
+
+			assert( _presets.contains( src ) );
+
+			_makeNameUnique( dest );
+			_presets[ dest ] = std::move( _presets[ src ] );
+			_presets.erase( src );
+
+			onPresetRenamed( dest );
 		}
-		*/
 
 		void load()
 		{
@@ -93,14 +121,14 @@ namespace VTX::App::Core::Library
 					{
 						const std::string name = entry.path().stem().string();
 						VTX_INFO( "Loading item: {}", name );
-						createItem( name );
+						createPreset( name );
 					}
 				}
 			}
 
-			if ( _items.size() == 0 )
+			if ( _presets.size() == 0 )
 			{
-				createItem( "Default" );
+				createPreset( "Default" );
 			}
 
 			// TODO: set default from settings.
@@ -116,10 +144,24 @@ namespace VTX::App::Core::Library
 		Util::Callback<std::string_view> onPresetRenamed;
 		Util::Callback<std::string_view> onPresetDeleted;
 
+		template<int S, typename C>
+		Util::Callback<const C> & callback()
+		{
+			static Util::Callback<const C> callback;
+			return callback;
+		}
+
 	  private:
-		const FilePath			 _path;
-		std::map<std::string, T> _items;
-		// T *						 _defaultItem = nullptr;
+		const FilePath	 _path;
+		MapPresetsByName _presets;
+
+		void _makeNameUnique( std::string & p_name )
+		{
+			while ( _presets.contains( p_name ) )
+			{
+				p_name += "_copy";
+			}
+		}
 	};
 
 } // namespace VTX::App::Core::Library

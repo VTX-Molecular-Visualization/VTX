@@ -1,16 +1,8 @@
 #include "ui/qt/dock_widget/representations.hpp"
-#include "ui/qt/widget/preset_selector.hpp"
 #include <QCheckBox>
 #include <QLabel>
-#include <QLineEdit>
-#include <QSlider>
-#include <QVBoxLayout>
 #include <app/action/representation.hpp>
-#include <app/application/scene.hpp>
-#include <app/component/representation/representation.hpp>
-#include <app/core/library/library_system.hpp>
 #include <app/settings.hpp>
-#include <core/chemdb/atom.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -20,66 +12,51 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
-		const auto & scene	   = App::SCENE();
-		auto *		 component = &App::ECS_REGISTRY().getComponent<App::Component::Representation::Representation>(
-			  App::ECS_REGISTRY().getEntity( scene )
-		  );
-
-		_gbPreset	= _createGroupBoxPreset();
-		_gbCylinder = _createGroupBoxCylinder( component );
-		_gbRibbon	= _createGroupBoxRibbon( component );
-		_gbSphere	= _createGroupBoxSphere( component ); // Last because need others in the callback.
-		_gbSES		= _createGroupBoxSES( component );
-
-		_layout->addWidget( _gbPreset );
-		_gbPreset->layout()->addWidget( _gbCylinder );
-		_gbPreset->layout()->addWidget( _gbRibbon );
-		_gbPreset->layout()->addWidget( _gbSphere );
-		_gbPreset->layout()->addWidget( _gbSES );
-
-		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
-	}
-
-	QGroupBox * const Representations::_createGroupBoxPreset()
-	{
-		auto * groupBox = new QGroupBox( "Preset" );
-		auto * layout	= new QVBoxLayout( groupBox );
-
-		groupBox->setCheckable( false );
-
-		auto * presetSelector = new Widget::PresetSelector<VTX::Core::Struct::Representation>( groupBox );
-		layout->addWidget( presetSelector );
-
+		_presetSelector = new Widget::PresetSelector<App::Library::Preset::Representation>( this );
+		_layout->addWidget( _presetSelector );
 		connect(
-			presetSelector,
-			&Widget::PresetSelector<VTX::Core::Struct::Representation>::presetChanged,
+			_presetSelector,
+			&Widget::PresetSelector<App::Library::Preset::Representation>::presetChanged,
 			this,
 			[]( const QString & p_name ) { VTX_INFO( "Preset changed: {}", p_name.toStdString() ); }
 		);
 
-		return groupBox;
+		auto * groupBox = new QGroupBox( "Edit representation", this );
+		auto * layout	= new QVBoxLayout( groupBox );
+
+		_gbSphere	= _createGroupBoxSphere();
+		_gbCylinder = _createGroupBoxCylinder();
+		_gbRibbon	= _createGroupBoxRibbon();
+		_gbSES		= _createGroupBoxSES();
+
+		layout->addWidget( _gbSphere );
+		layout->addWidget( _gbCylinder );
+		layout->addWidget( _gbRibbon );
+		layout->addWidget( _gbSES );
+
+		_layout->addWidget( groupBox );
+
+		layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 	}
 
-	Core::Widget::HideableGroupBox * const Representations::_createGroupBoxSphere(
-		App::Component::Representation::Representation * const p_component
-	)
+	Core::Widget::HideableGroupBox * const Representations::_createGroupBoxSphere()
 	{
 		using namespace Renderer::Proxy;
 
 		auto * groupBox = new Core::Widget::HideableGroupBox( "Atoms", this );
 
 		// Active.
-		groupBox->setChecked( p_component->getRepresentation().hasSphere );
+		// groupBox->setChecked( p_component->getRepresentation().hasSphere );
 
 		connect(
 			groupBox,
 			&Core::Widget::HideableGroupBox::toggled,
-			[]( const bool p_checked )
+			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
 					.execute<
 						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_SETTINGS::HAS_SPHERE, bool>>(
-						p_checked
+						_presetSelector->getCurrentPreset(), p_checked
 					);
 			}
 		);
@@ -90,7 +67,7 @@ namespace VTX::UI::QT::DockWidget
 		groupBox->addWidget( comboBox );
 		comboBox->addItem( "Van der Waals radius" );
 		comboBox->addItem( "Fixed radius" );
-		comboBox->setCurrentIndex( int( p_component->getRepresentation().radiusFixed ) );
+		// comboBox->setCurrentIndex( int( p_component->getRepresentation().radiusFixed ) );
 
 		connect(
 			comboBox,
@@ -100,11 +77,9 @@ namespace VTX::UI::QT::DockWidget
 				bool isFixed = bool( p_index );
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>>( isFixed
+								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>>(
+						_presetSelector->getCurrentPreset(), isFixed
 					);
-
-				_gbCylinder->setVisible( isFixed );
-				_gbRibbon->setVisible( isFixed );
 			}
 		);
 
@@ -117,16 +92,16 @@ namespace VTX::UI::QT::DockWidget
 		// sliderRadiusAdd->setMinimum( -( VTX::Core::ChemDB::Atom::VDW_RADIUS_MIN ) * 100 + 1 );
 		sliderRadiusAdd->setMinimum( 0 );
 		sliderRadiusAdd->setMaximum( 300 );
-		sliderRadiusAdd->setValue( p_component->getRepresentation().radiusSphereAdd * 100 );
+		// sliderRadiusAdd->setValue( p_component->getRepresentation().radiusSphereAdd * 100 );
 		connect(
 			sliderRadiusAdd,
 			&QSlider::valueChanged,
-			[]( const int p_value )
+			[ this ]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
 								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, float>>(
-						float( p_value ) / 100.f
+						_presetSelector->getCurrentPreset(), float( p_value ) / 100.f
 					);
 			}
 		);
@@ -138,21 +113,22 @@ namespace VTX::UI::QT::DockWidget
 		groupBox->addWidget( sliderRadiusFixed );
 		sliderRadiusFixed->setMinimum( 1 );
 		sliderRadiusFixed->setMaximum( 300 );
-		sliderRadiusFixed->setValue( p_component->getRepresentation().radiusSphereFixed * 100 );
+		// sliderRadiusFixed->setValue( p_component->getRepresentation().radiusSphereFixed * 100 );
 		connect(
 			sliderRadiusFixed,
 			&QSlider::valueChanged,
-			[]( const int p_value )
+			[ this ]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
 								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, float>>(
-						float( p_value ) / 100.f
+						_presetSelector->getCurrentPreset(), float( p_value ) / 100.f
 					);
 			}
 		);
 
 		// Callbacks.
+		/*
 		p_component->callback<E_REPRESENTATION_SETTINGS::HAS_SPHERE, bool>() +=
 			[ groupBox ]( const bool p_value ) { groupBox->setChecked( p_value ); };
 		p_component->callback<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>() +=
@@ -179,32 +155,30 @@ namespace VTX::UI::QT::DockWidget
 			[ sliderRadiusAdd ]( const float p_value ) { sliderRadiusAdd->setValue( p_value * 100 ); };
 		p_component->callback<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, float>() +=
 			[ sliderRadiusFixed ]( const float p_value ) { sliderRadiusFixed->setValue( p_value * 100 ); };
-
-		// Emit init.
-		emit comboBox->currentIndexChanged( comboBox->currentIndex() );
+			*/
 
 		return groupBox;
 	}
 
-	Core::Widget::HideableGroupBox * const Representations::_createGroupBoxCylinder(
-		App::Component::Representation::Representation * const p_component
-	)
+	Core::Widget::HideableGroupBox * const Representations::_createGroupBoxCylinder()
 	{
 		using namespace Renderer::Proxy;
 
 		auto * groupBox = new Core::Widget::HideableGroupBox( "Bonds", this );
 
 		// Active.
-		groupBox->setChecked( p_component->getRepresentation().hasCylinder );
+		// groupBox->setChecked( p_component->getRepresentation().hasCylinder );
 
 		connect(
 			groupBox,
 			&Core::Widget::HideableGroupBox::toggled,
-			[]( const bool p_checked )
+			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bool>>( p_checked );
+								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bool>>(
+						_presetSelector->getCurrentPreset(), p_checked
+					);
 			}
 		);
 
@@ -215,16 +189,16 @@ namespace VTX::UI::QT::DockWidget
 		groupBox->addWidget( slider );
 		slider->setMinimum( 1 );
 		slider->setMaximum( 100 );
-		slider->setValue( p_component->getRepresentation().radiusCylinder * 100 );
+		// slider->setValue( p_component->getRepresentation().radiusCylinder * 100 );
 		connect(
 			slider,
 			&QSlider::valueChanged,
-			[]( const int p_value )
+			[ this ]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
 								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, float>>(
-						static_cast<float>( p_value ) / 100.f
+						_presetSelector->getCurrentPreset(), static_cast<float>( p_value ) / 100.f
 					);
 			}
 		);
@@ -232,54 +206,51 @@ namespace VTX::UI::QT::DockWidget
 		// Color blending.
 		auto * checkBoxColorBlending = new QCheckBox( "Blend colors", groupBox );
 		groupBox->addWidget( checkBoxColorBlending );
-		checkBoxColorBlending->setChecked( p_component->getRepresentation().cylinderColorBlending );
+		// checkBoxColorBlending->setChecked( p_component->getRepresentation().cylinderColorBlending );
 		connect(
 			checkBoxColorBlending,
 			&QCheckBox::toggled,
-			[]( const bool p_checked )
+			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
 								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>>(
-						p_checked
+						_presetSelector->getCurrentPreset(), p_checked
 					);
 			}
 		);
 
 		// Callbacks.
+		/*
 		p_component->callback<E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bool>() +=
 			[ groupBox ]( const bool p_value ) { groupBox->setChecked( p_value ); };
 		p_component->callback<E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, float>() +=
 			[ slider ]( const float p_value ) { slider->setValue( p_value * 100 ); };
 		p_component->callback<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>() +=
 			[ checkBoxColorBlending ]( const bool p_value ) { checkBoxColorBlending->setChecked( p_value ); };
-
-		// Emit init.
-		emit groupBox->toggled( groupBox->isChecked() );
+*/
 
 		return groupBox;
 	}
 
-	Core::Widget::HideableGroupBox * const Representations::_createGroupBoxRibbon(
-		App::Component::Representation::Representation * const p_component
-	)
+	Core::Widget::HideableGroupBox * const Representations::_createGroupBoxRibbon()
 	{
 		using namespace Renderer::Proxy;
 
 		auto * groupBox = new Core::Widget::HideableGroupBox( "Ribbons", this );
 
 		// Active.
-		groupBox->setChecked( p_component->getRepresentation().hasRibbon );
+		// groupBox->setChecked( p_component->getRepresentation().hasRibbon );
 
 		connect(
 			groupBox,
 			&Core::Widget::HideableGroupBox::toggled,
-			[]( const bool p_checked )
+			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
 					.execute<
 						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_SETTINGS::HAS_RIBBON, bool>>(
-						p_checked
+						_presetSelector->getCurrentPreset(), p_checked
 					);
 			}
 		);
@@ -287,49 +258,50 @@ namespace VTX::UI::QT::DockWidget
 		// Color blending.
 		auto * checkBoxColorBlending = new QCheckBox( "Blend colors", groupBox );
 		groupBox->addWidget( checkBoxColorBlending );
-		checkBoxColorBlending->setChecked( p_component->getRepresentation().ribbonColorBlending );
+		// checkBoxColorBlending->setChecked( p_component->getRepresentation().ribbonColorBlending );
 		connect(
 			checkBoxColorBlending,
 			&QCheckBox::toggled,
-			[]( const bool p_checked )
+			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
 								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>>(
-						p_checked
+						_presetSelector->getCurrentPreset(), p_checked
 					);
 			}
 		);
 
 		// Callbacks.
+		/*
 		p_component->callback<E_REPRESENTATION_SETTINGS::HAS_RIBBON, bool>() +=
 			[ groupBox ]( const bool p_value ) { groupBox->setChecked( p_value ); };
 		p_component->callback<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>() +=
 			[ checkBoxColorBlending ]( const bool p_value ) { checkBoxColorBlending->setChecked( p_value ); };
+			*/
 
 		return groupBox;
 	}
 
-	Core::Widget::HideableGroupBox * const Representations::_createGroupBoxSES(
-		App::Component::Representation::Representation * const p_component
-	)
+	Core::Widget::HideableGroupBox * const Representations::_createGroupBoxSES()
 	{
 		using namespace Renderer::Proxy;
+		using namespace App::Library::Preset;
 
 		auto * groupBox = new Core::Widget::HideableGroupBox( "SES", this );
 
 		// Active.
-		groupBox->setChecked( p_component->getRepresentation().hasSes );
+		// groupBox->setChecked( p_component->getRepresentation().hasSes );
 
 		connect(
 			groupBox,
 			&Core::Widget::HideableGroupBox::toggled,
-			[]( const bool p_checked )
+			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
 					.execute<
 						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_SETTINGS::HAS_SES, bool>>(
-						p_checked
+						_presetSelector->getCurrentPreset(), p_checked
 					);
 			}
 		);
@@ -339,45 +311,32 @@ namespace VTX::UI::QT::DockWidget
 		auto * slider	   = new QSlider( Qt::Orientation::Horizontal, groupBox );
 		groupBox->addWidget( labelRadius );
 		groupBox->addWidget( slider );
-		slider->setMinimum( App::Settings::Representation::SES_PROBE_RADIUS_MIN * 100 );
-		slider->setMaximum( App::Settings::Representation::SES_PROBE_RADIUS_MAX * 100 );
-		slider->setValue( p_component->getRepresentation().sesProbeRadius * 100 );
+		slider->setMinimum( SES_PROBE_RADIUS_MIN * 100 );
+		slider->setMaximum( SES_PROBE_RADIUS_MAX * 100 );
+		// slider->setValue( p_component->getRepresentation().sesProbeRadius * 100 );
 		connect(
 			slider,
 			&QSlider::valueChanged,
-			[]( const int p_value )
+			[ this ]( const int p_value )
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
 								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS, float>>(
-						static_cast<float>( p_value ) / 100.f
+						_presetSelector->getCurrentPreset(), static_cast<float>( p_value ) / 100.f
 					);
 			}
 		);
 
-		// Is exterior.
-		auto * checkBox = new QCheckBox( "Exterior only", groupBox );
-		groupBox->addWidget( checkBox );
-		checkBox->setChecked( p_component->getRepresentation().sesIsExterior );
-		connect(
-			checkBox,
-			&QCheckBox::toggled,
-			[]( const bool p_checked )
-			{
-				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::SES_IS_EXTERIOR, bool>>( p_checked );
-			}
-		);
-
 		// Callbacks.
+		/*
 		p_component->callback<E_REPRESENTATION_SETTINGS::HAS_SES, bool>() +=
 			[ groupBox ]( const bool p_value ) { groupBox->setChecked( p_value ); };
 		p_component->callback<E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS, float>() +=
 			[ slider ]( const float p_value ) { slider->setValue( p_value * 100 ); };
 		return groupBox;
-		p_component->callback<E_REPRESENTATION_SETTINGS::SES_IS_EXTERIOR, bool>() +=
-			[ checkBox ]( const bool p_value ) { checkBox->setChecked( p_value ); };
+			*/
+
+		return groupBox;
 	}
 
 } // namespace VTX::UI::QT::DockWidget

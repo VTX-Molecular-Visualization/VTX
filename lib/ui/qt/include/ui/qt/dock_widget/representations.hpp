@@ -1,9 +1,10 @@
 #ifndef __VTX_UI_QT_DOCK_WIDGET_REPRESENTATIONS__
 #define __VTX_UI_QT_DOCK_WIDGET_REPRESENTATIONS__
 
+#include "app/library/preset/representation.hpp"
 #include "ui/qt/core/base_dock_widget.hpp"
 #include "ui/qt/core/widget/hideable_goupe_box.hpp"
-#include <QDockWidget>
+#include "ui/qt/widget/preset_selector.hpp"
 
 namespace VTX::App::Component::Representation
 {
@@ -19,25 +20,19 @@ namespace VTX::UI::QT::DockWidget
 		Representations( QWidget * );
 
 	  private:
-		QPointer<QGroupBox>						 _gbPreset;
+		QPointer<Widget::PresetSelector<App::Library::Preset::Representation>> _presetSelector;
+
 		QPointer<Core::Widget::HideableGroupBox> _gbSphere;
 		QPointer<Core::Widget::HideableGroupBox> _gbCylinder;
 		QPointer<Core::Widget::HideableGroupBox> _gbRibbon;
 		QPointer<Core::Widget::HideableGroupBox> _gbSES;
 
-		QGroupBox * const					   _createGroupBoxPreset();
-		Core::Widget::HideableGroupBox * const _createGroupBoxSphere(
-			App::Component::Representation::Representation * const
-		);
-		Core::Widget::HideableGroupBox * const _createGroupBoxCylinder(
-			App::Component::Representation::Representation * const
-		);
-		Core::Widget::HideableGroupBox * const _createGroupBoxRibbon(
-			App::Component::Representation::Representation * const
-		);
-		Core::Widget::HideableGroupBox * const _createGroupBoxSES(
-			App::Component::Representation::Representation * const
-		);
+		Core::Widget::HideableGroupBox * const _createGroupBoxSphere();
+		Core::Widget::HideableGroupBox * const _createGroupBoxCylinder();
+		Core::Widget::HideableGroupBox * const _createGroupBoxRibbon();
+		Core::Widget::HideableGroupBox * const _createGroupBoxSES();
+
+		void setPreset() {}
 	};
 
 } // namespace VTX::UI::QT::DockWidget

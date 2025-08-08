@@ -2,8 +2,9 @@
 #define __VTX_APP_ACTION_REPRESENTATION__
 
 #include "app/core/action/base_action.hpp"
-#include <app/application/scene.hpp>
-#include <app/component/representation/representation.hpp>
+#include "app/core/library/library_system.hpp"
+#include "app/library/preset/representation.hpp"
+#include <renderer/proxy/representation.hpp>
 
 namespace VTX::App::Action::Representation
 {
@@ -11,20 +12,21 @@ namespace VTX::App::Action::Representation
 	class ChangeRepresentation final : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeRepresentation( const T p_value ) : _value( p_value ) {}
+		ChangeRepresentation( const std::string_view p_name, const T p_value ) : _name( p_name ), _value( p_value ) {}
 
 		void execute() override
 		{
-			const auto & scene	   = App::SCENE();
-			auto &		 component = App::ECS_REGISTRY().getComponent<App::Component::Representation::Representation>(
-				  App::ECS_REGISTRY().getEntity( scene )
-			  );
+			using namespace Renderer::Proxy;
 
-			component.set<S>( _value );
+			auto * const library = LIBRARY_SYSTEM().getLibrary<App::Library::Preset::Representation>();
+			auto * const preset	 = library->getPreset( _name );
+
+			preset->setValue<S>( _value );
 		}
 
 	  private:
-		const T _value;
+		const std::string _name;
+		const T			  _value;
 	};
 
 } // namespace VTX::App::Action::Representation

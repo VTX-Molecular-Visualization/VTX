@@ -19,6 +19,14 @@ namespace VTX::App::Action::Library
 	template<typename T>
 	class RenamePreset final : public BaseActionPreset<T>
 	{
+	  public:
+		RenamePreset( const std::string_view p_src, const std::string_view p_dest ) : _src( p_src ), _dest( p_dest ) {}
+
+		void execute() override { this->_library->renamePreset( _src, _dest ); }
+
+	  private:
+		const std::string _src;
+		const std::string _dest;
 	};
 
 	template<typename T>
@@ -27,7 +35,7 @@ namespace VTX::App::Action::Library
 	  public:
 		AddPreset( const std::optional<std::string_view> p_name = std::nullopt ) : _name( p_name ) {}
 
-		void execute() override { this->_library->createItem( _name ); }
+		void execute() override { this->_library->createPreset( _name ); }
 
 	  private:
 		const std::optional<std::string> _name;
@@ -42,7 +50,7 @@ namespace VTX::App::Action::Library
 		{
 		}
 
-		void execute() override { this->_library->copyItem( _src, _dest ); }
+		void execute() override { this->_library->copyPreset( _src, _dest ); }
 
 	  private:
 		const std::string				 _src;
@@ -58,7 +66,7 @@ namespace VTX::App::Action::Library
 		void execute() override
 		{
 			// TODO: check if used.
-			this->_library->removeItem( _name );
+			this->_library->removePreset( _name );
 		}
 
 	  private:

@@ -12,12 +12,18 @@ namespace VTX::Util
 
 	using CallbackId = size_t;
 
+	class ICallback
+	{
+	  public:
+		virtual ~ICallback() = default;
+	};
+
 	/**
 	 * @brief Class responsible for holding a collection of callbacks to call them in subscription order.
 	 * @tparam ...Args
 	 */
 	template<typename... Args>
-	class Callback
+	class Callback : public ICallback
 	{
 	  public:
 		using Func = std::function<void( Args... )>;

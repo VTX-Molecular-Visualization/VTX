@@ -205,7 +205,7 @@ namespace VTX::UI::QT
 
 		namespace Preset
 		{
-			template<typename T>
+			template<typename P>
 			struct Add : public App::UI::DescAction
 			{
 				Add()
@@ -213,11 +213,11 @@ namespace VTX::UI::QT
 					name	= "New";
 					tip		= "Create a new empty preset";
 					icon	= QStyle::StandardPixmap::SP_FileIcon;
-					trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Library::AddPreset<T>>(); };
+					trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Library::AddPreset<P>>(); };
 				}
 			};
 
-			template<typename T>
+			template<typename P>
 			struct Duplicate : public App::UI::DescAction
 			{
 				Duplicate()
@@ -228,7 +228,7 @@ namespace VTX::UI::QT
 				}
 			};
 
-			template<typename T>
+			template<typename P>
 			struct Delete : public App::UI::DescAction
 			{
 				Delete()

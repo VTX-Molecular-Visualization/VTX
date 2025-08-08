@@ -6,7 +6,6 @@
 namespace VTX::Core::Struct
 {
 
-	// TODO: move default values.
 	struct Representation
 	{
 		// Sphere.

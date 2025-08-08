@@ -271,6 +271,7 @@ namespace VTX::App::Application
 		// addPath( path );
 	}
 
+	// TODO: facto with template.
 	void Scene::_createDefaultColorLayout()
 	{
 		auto & comp

@@ -15,6 +15,7 @@
 #include "app/core/threading/threading_system.hpp"
 #include "app/entity/scene.hpp"
 #include "app/filesystem.hpp"
+#include "app/library/preset/representation.hpp"
 #include "app/mode/visualization.hpp"
 #include "app/monitoring/constants.hpp"
 #include "app/python_binding/python_binding.hpp"
@@ -70,7 +71,7 @@ namespace VTX::App
 		//	= MVC_MANAGER().instantiateModel<Application::Representation::RepresentationLibrary>();
 		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
-		LIBRARY_SYSTEM().load<VTX::Core::Struct::Representation>( Filesystem::getRepresentationsDir() );
+		LIBRARY_SYSTEM().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
 	}
 
 	void VTXApp::start()

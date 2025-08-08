@@ -212,9 +212,6 @@ namespace VTX::UI::QT::DockWidget
 			[ sliderShininess ]( const float p_value ) { sliderShininess->setValue( p_value * 100 ); };
 		p_component->callback<E_RENDER_SETTINGS::TOON_STEPS, uint>() +=
 			[ sliderToonSteps ]( const uint p_value ) { sliderToonSteps->setValue( p_value ); };
-
-		// Emit init.
-		emit comboBoxShading->currentIndexChanged( comboBoxShading->currentIndex() );
 	}
 
 	void RenderSettings::_createGroupBoxSSAO( App::Component::Representation::RenderSettings * const p_component )
@@ -295,9 +292,6 @@ namespace VTX::UI::QT::DockWidget
 			[ sliderSSAOIntensity ]( const float p_value ) { sliderSSAOIntensity->setValue( p_value * 100 ); };
 		p_component->callback<E_RENDER_SETTINGS::BLUR_SIZE, float>() +=
 			[ sliderBlurSize ]( const float p_value ) { sliderBlurSize->setValue( p_value * 100 ); };
-
-		// Emit init.
-		emit groupBoxSSAO->toggled( groupBoxSSAO->isChecked() );
 	}
 
 	void RenderSettings::_createGroupBoxOutline( App::Component::Representation::RenderSettings * const p_component )
@@ -390,9 +384,6 @@ namespace VTX::UI::QT::DockWidget
 		{ sliderOutlineSensitivity->setValue( p_value * 100 ); };
 		p_component->callback<E_RENDER_SETTINGS::OUTLINE_THICKNESS, uint>() +=
 			[ sliderOutlineThickness ]( const uint p_value ) { sliderOutlineThickness->setValue( p_value ); };
-
-		// Emit init.
-		emit groupBoxOutline->toggled( groupBoxOutline->isChecked() );
 	}
 
 	void RenderSettings::_createGroupBoxFog( App::Component::Representation::RenderSettings * const p_component )
@@ -504,9 +495,6 @@ namespace VTX::UI::QT::DockWidget
 			[ sliderFogFar ]( const float p_value ) { sliderFogFar->setValue( p_value * 100 ); };
 		p_component->callback<E_RENDER_SETTINGS::FOG_DENSITY, float>() +=
 			[ sliderFogDensity ]( const float p_value ) { sliderFogDensity->setValue( p_value * 100 ); };
-
-		// Emit init.
-		emit groupBoxFog->toggled( groupBoxFog->isChecked() );
 	}
 
 	void RenderSettings::_createGroupBoxSelection( App::Component::Representation::RenderSettings * const p_component )
@@ -557,9 +545,6 @@ namespace VTX::UI::QT::DockWidget
 		p_component->callback<E_RENDER_SETTINGS::COLOR_SELECTION, Util::Color::Rgba>() +=
 			[ colorPickerSelection ]( const Util::Color::Rgba & p_color )
 		{ colorPickerSelection->setColor( Helper::toQColor( p_color ) ); };
-
-		// Emit init.
-		emit groupBoxSelection->toggled( groupBoxSelection->isChecked() );
 	}
 
 } // namespace VTX::UI::QT::DockWidget
