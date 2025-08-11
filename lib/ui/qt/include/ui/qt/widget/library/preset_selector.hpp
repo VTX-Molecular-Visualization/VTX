@@ -11,7 +11,7 @@
 #include <app/action/library.hpp>
 #include <app/core/library/library_system.hpp>
 
-namespace VTX::UI::QT::Widget
+namespace VTX::UI::QT::Widget::Library
 {
 	/**
 	 * @brief Base class for preset selectors to permit signals (not possible on templated class).
@@ -126,7 +126,7 @@ namespace VTX::UI::QT::Widget
 			};
 		}
 
-		std::string getCurrentPreset() const { return _comboBox->currentText().toStdString(); }
+		inline std::string getCurrentPreset() const { return _comboBox->currentText().toStdString(); }
 
 	  private:
 		App::Core::Library::Library<P> * const _library = App::LIBRARY_SYSTEM().getLibrary<P>();
@@ -145,5 +145,5 @@ namespace VTX::UI::QT::Widget
 			_comboBox->blockSignals( false );
 		}
 	};
-} // namespace VTX::UI::QT::Widget
+} // namespace VTX::UI::QT::Widget::Library
 #endif

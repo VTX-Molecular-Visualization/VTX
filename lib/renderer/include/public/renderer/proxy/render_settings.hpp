@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_PROXY_RENDER_SETTINGS__
 
 #include "proxy_pointer_collection.hpp"
+#include <util/callback.hpp>
 
 namespace VTX::Renderer::Proxy
 {

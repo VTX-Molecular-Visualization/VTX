@@ -511,6 +511,7 @@ namespace VTX::Renderer
 	{
 		using namespace Proxy;
 
+		/*
 		bool hasSphere	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_SPHERE );
 		bool hasCylinder = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_CYLINDER );
 		bool hasRibbon	 = p_representation->get<bool>( E_REPRESENTATION_SETTINGS::HAS_RIBBON );
@@ -568,6 +569,7 @@ namespace VTX::Renderer
 		{
 			setValue( cylinderRadius, "RepresentationsCylinderRadius", 0 );
 		}
+		*/
 	}
 
 	void Renderer::setProxyRepresentation( Proxy::Representation & p_proxy )
@@ -576,6 +578,7 @@ namespace VTX::Renderer
 
 		_proxyRepresentation = &p_proxy;
 
+		/*
 		BinaryBuffer buffer;
 
 		buffer.write( p_proxy.get<float>( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED ) );
@@ -617,6 +620,7 @@ namespace VTX::Renderer
 		buffer.close();
 
 		_context.set( buffer, "Representations" );
+		*/
 
 		// TODO: remove useless primitives with multi calls.
 		// TODO: compute ss if needed

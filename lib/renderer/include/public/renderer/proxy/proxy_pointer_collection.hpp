@@ -2,7 +2,6 @@
 #define __VTX_RENDERER_PROXY_POINTER_COLLECTION__
 
 #include <unordered_map>
-#include <util/callback.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer::Proxy
@@ -14,20 +13,22 @@ namespace VTX::Renderer::Proxy
 		void set( const uint p_key, const T & p_value )
 		{
 			_collection.emplace( p_key, &p_value );
+			_types.emplace( p_key, typeid( T ).hash_code() );
 		}
 
-		// TODO: type check?
 		template<typename T>
 		const T & get( const uint p_key )
 		{
 			assert( _collection.contains( p_key ) );
 			assert( _collection[ p_key ] != nullptr );
+			assert( _types[ p_key ] == typeid( T ).hash_code() );
 
 			return *static_cast<const T *>( _collection[ p_key ] );
 		}
 
 	  private:
 		std::unordered_map<uint, const void *> _collection;
+		std::unordered_map<uint, const size_t> _types;
 	};
 
 } // namespace VTX::Renderer::Proxy

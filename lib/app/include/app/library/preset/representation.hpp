@@ -3,10 +3,29 @@
 
 #include "app/core/library/library.hpp"
 #include <core/struct/representation.hpp>
-#include <renderer/proxy/representation.hpp>
+#include <util/math.hpp>
 
 namespace VTX::App::Library::Preset
 {
+
+	enum E_REPRESENTATION_SETTINGS
+	{
+		HAS_SPHERE,
+		RADIUS_SPHERE_FIXED,
+		RADIUS_SPHERE_ADD,
+		IS_SPHERE_RADIUS_FIXED,
+
+		HAS_CYLINDER,
+		RADIUS_CYLINDER,
+		CYLINDER_COLOR_BLENDING,
+
+		HAS_RIBBON,
+		RIBBON_COLOR_BLENDING,
+
+		HAS_SES,
+		SES_PROBE_RADIUS
+	};
+
 	// Default values.
 	constexpr bool	HAS_SPHERE_DEFAULT			   = true;
 	constexpr float RADIUS_SPHERE_FIXED_DEFAULT	   = 0.5f;
@@ -53,12 +72,10 @@ namespace VTX::App::Library::Preset
 		void save() override {}
 		void load() override {}
 
-		template<Renderer::Proxy::E_REPRESENTATION_SETTINGS S, typename T>
+		template<E_REPRESENTATION_SETTINGS S, typename T>
 		void setValue( const T p_value )
 		{
-			using namespace Renderer::Proxy;
-
-			// TODO: check min max values.
+			using namespace Util::Math;
 
 			// Sphere.
 			if constexpr ( S == E_REPRESENTATION_SETTINGS::HAS_SPHERE )
@@ -67,11 +84,13 @@ namespace VTX::App::Library::Preset
 			}
 			else if constexpr ( S == E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED )
 			{
-				_data.radiusSphereFixed = p_value;
+				T value					= clamp( p_value, RADIUS_SPHERE_FIXED_MIN, RADIUS_SPHERE_FIXED_MAX );
+				_data.radiusSphereFixed = value;
 			}
 			else if constexpr ( S == E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD )
 			{
-				_data.radiusSphereAdd = p_value;
+				T value				  = clamp( p_value, RADIUS_SPHERE_ADD_MIN, RADIUS_SPHERE_ADD_MAX );
+				_data.radiusSphereAdd = value;
 			}
 			else if constexpr ( S == E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED )
 			{
@@ -84,7 +103,8 @@ namespace VTX::App::Library::Preset
 			}
 			else if constexpr ( S == E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER )
 			{
-				_data.radiusCylinder = p_value;
+				T value				 = clamp( p_value, RADIUS_CYLINDER_MIN, RADIUS_CYLINDER_MAX );
+				_data.radiusCylinder = value;
 			}
 			else if constexpr ( S == E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING )
 			{
@@ -106,7 +126,8 @@ namespace VTX::App::Library::Preset
 			}
 			else if constexpr ( S == E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS )
 			{
-				_data.sesProbeRadius = p_value;
+				T value				 = clamp( p_value, SES_PROBE_RADIUS_MIN, SES_PROBE_RADIUS_MAX );
+				_data.sesProbeRadius = value;
 			}
 			else
 			{

@@ -1,7 +1,6 @@
 #ifndef __VTX_RENDERER_BINARY_BUFFER__
 #define __VTX_RENDERER_BINARY_BUFFER__
 
-#include <util/color/rgba.hpp>
 #include <vector>
 
 namespace VTX::Renderer

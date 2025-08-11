@@ -26,7 +26,6 @@ namespace VTX::Core::Struct
 		// SES.
 		bool  hasSes;
 		float sesProbeRadius;
-		bool  sesIsExterior;
 	};
 } // namespace VTX::Core::Struct
 
