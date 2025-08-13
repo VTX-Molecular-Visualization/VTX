@@ -17,7 +17,7 @@ namespace VTX::UI::QT::Core::Widget
 		Q_OBJECT
 
 	  public:
-		explicit HideableGroupBox( const QString & p_title, QWidget * p_parent = nullptr ) : QWidget( p_parent )
+		explicit HideableGroupBox( const QString & p_title, QWidget * p_parent ) : QWidget( p_parent )
 		{
 			_toggleButton = new QToolButton( this );
 			_toggleButton->setText( p_title );
@@ -33,7 +33,7 @@ namespace VTX::UI::QT::Core::Widget
 			auto * mainLayout = new QVBoxLayout( this );
 
 			mainLayout->setContentsMargins( 0, 0, 0, 0 );
-			mainLayout->setSpacing( 0 );
+			//mainLayout->setSpacing( 0 );
 
 			mainLayout->addWidget( _toggleButton );
 			mainLayout->addWidget( _groupbox );

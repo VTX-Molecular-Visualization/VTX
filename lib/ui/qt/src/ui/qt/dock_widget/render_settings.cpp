@@ -219,7 +219,7 @@ namespace VTX::UI::QT::DockWidget
 		using namespace Renderer::Proxy;
 		using namespace Renderer::Settings;
 
-		auto * groupBoxSSAO = new Core::Widget::HideableGroupBox( "Shadows" );
+		auto * groupBoxSSAO = new Core::Widget::HideableGroupBox( "Shadows", this );
 		_layout->addWidget( groupBoxSSAO );
 
 		// Active.

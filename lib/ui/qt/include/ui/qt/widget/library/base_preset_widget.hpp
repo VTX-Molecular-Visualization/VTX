@@ -4,7 +4,7 @@
 #include "preset_selector.hpp"
 #include <QGroupBox>
 #include <QVBoxLayout>
-#include <app/core/library/library.hpp>
+#include <app/library/preset/representation.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
@@ -16,30 +16,41 @@ namespace VTX::UI::QT::Widget::Library
 		{
 			_presetSelector = new PresetSelector<App::Library::Preset::Representation>( this );
 			_groupboxPreset = new QGroupBox( this );
-			_layout			= new QVBoxLayout( this );
+			_groupboxPreset->setLayout( new QVBoxLayout() );
+
+			_layout = new QVBoxLayout( this );
 			setLayout( _layout );
-			// _layout->setContentsMargins( 0, 0, 0, 0 );
+			_layout->setContentsMargins( 0, 0, 0, 0 );
 
 			_layout->addWidget( _presetSelector );
+			_layout->addWidget( _groupboxPreset );
 
+			_preset
+				= App::LIBRARY_SYSTEM().getLibrary<P>()->getPreset( _presetSelector->getCurrentPreset().toStdString() );
 			connect( _presetSelector, &PresetSelector<P>::presetChanged, this, &BasePresetWidget::_presetChanged );
 		}
 
-		inline std::string getCurrentPreset() const { return _presetSelector->getCurrentPreset(); }
+		inline std::string getCurrentPreset() const { return _presetSelector->getCurrentPreset().toStdString(); }
 
 	  protected:
 		QPointer<QVBoxLayout>						 _layout;
 		QPointer<Widget::Library::PresetSelector<P>> _presetSelector;
 		QPointer<QGroupBox>							 _groupboxPreset;
 
+		// TODO: const!
+		// P * const preset() { return _preset; }
+		P * _preset;
+		/**
+		 * @brief Called when the preset has changed, signals blocked.
+		 */
 		virtual void _onPresetChanged() = 0;
 
 	  private:
-		const P * _preset;
-
 		void _presetChanged( const QString & p_name )
 		{
-			_preset = App::LIBRARY_SYSTEM().getLibrary<P>()->getPreset( p_name.toStdString() );
+			std::string name = p_name.toStdString();
+			VTX_DEBUG( "Preset changed: {}", name );
+			_preset = App::LIBRARY_SYSTEM().getLibrary<P>()->getPreset( name );
 			_onPresetChanged();
 		}
 	};

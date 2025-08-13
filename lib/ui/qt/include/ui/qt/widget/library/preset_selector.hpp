@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <QComboBox>
 #include <QGridLayout>
+#include <QGroupBox>
 #include <QLineEdit>
 #include <QPushButton>
 #include <app/action/library.hpp>
@@ -35,7 +36,8 @@ namespace VTX::UI::QT::Widget::Library
 	class PresetSelector : public BasePresetSelector
 	{
 	  public:
-		PresetSelector( QWidget * p_parent ) : BasePresetSelector( p_parent )
+		PresetSelector( QWidget * p_parent ) :
+			BasePresetSelector( p_parent ), _library( App::LIBRARY_SYSTEM().getLibrary<P>() )
 		{
 			// auto * groupBox = new QGroupBox( "Presets" );
 			// auto * layout	= new QVBoxLayout( groupBox );
@@ -124,25 +126,25 @@ namespace VTX::UI::QT::Widget::Library
 				// TOFIX: signal blocked (???)
 				_comboBox->setCurrentText( _comboBox->itemText( 0 ) );
 			};
+
+			emit presetChanged( _comboBox->currentText() );
 		}
 
-		inline std::string getCurrentPreset() const { return _comboBox->currentText().toStdString(); }
+		inline QString getCurrentPreset() const { return _comboBox->currentText(); }
 
 	  private:
-		App::Core::Library::Library<P> * const _library = App::LIBRARY_SYSTEM().getLibrary<P>();
+		App::Core::Library::Library<P> * const _library;
 		QPointer<QComboBox>					   _comboBox;
 
 		void _refreshComboBox()
 		{
-			_comboBox->blockSignals( true );
+			const QSignalBlocker blocker( _comboBox );
 
 			_comboBox->clear();
 			for ( const auto & [ name, _ ] : _library->getPresets() )
 			{
 				_comboBox->addItem( QString::fromStdString( name ) );
 			}
-
-			_comboBox->blockSignals( false );
 		}
 	};
 } // namespace VTX::UI::QT::Widget::Library
