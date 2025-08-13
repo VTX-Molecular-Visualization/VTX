@@ -4,7 +4,7 @@
 #include "base_preset_widget.hpp"
 #include "ui/qt/core/widget/editable_slider.hpp"
 #include "ui/qt/core/widget/hideable_goupe_box.hpp"
-#include <QCheckbox>
+#include <QCheckBox>
 #include <QLabel>
 #include <app/action/representation.hpp>
 #include <app/library/preset/representation.hpp>
