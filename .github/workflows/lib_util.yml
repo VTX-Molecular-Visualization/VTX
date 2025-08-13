@@ -64,4 +64,5 @@ jobs:
         conan upload fmt -r=cano7782
         conan upload zlib -r=cano7782
         conan upload libcurl -r=cano7782
+        conan upload platformfolders -r=cano7782
         conan upload catch2 -r=cano7782
