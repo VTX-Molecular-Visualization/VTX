@@ -32,21 +32,24 @@ namespace pdb100
 	struct System
 	{
 		char					  code[ 4 ] { '\0' };
-		size_t					  resultIndex = 0xffffffffffffffff;
+		size_t					  resultIndex			  = 0xffffffffffffffff;
+		float					  computeStridesElapsedMs = 0.f;
 		VTX::Core::Struct::System system;
 		std::vector<Helix>		  helixes;
 		std::vector<Strand>		  strands;
 	};
 	struct Rates
 	{
-		float	 beginBetaSheet	 = 0.f;
-		float	 endBetaSheet	 = 0.f;
-		float	 fullBetaSheet	 = 0.f;
-		uint16_t numBetaSheet	 = 0;
-		float	 beginAlphaHelix = 0.f;
-		float	 endAlphaHelix	 = 0.f;
-		float	 fullAlphaHelix	 = 0.f;
-		uint16_t numAlphaHelix	 = 0;
+		float	 beginBetaSheet			 = 0.f;
+		float	 endBetaSheet			 = 0.f;
+		float	 fullBetaSheet			 = 0.f;
+		uint16_t numBetaSheet			 = 0;
+		float	 beginAlphaHelix		 = 0.f;
+		float	 endAlphaHelix			 = 0.f;
+		float	 fullAlphaHelix			 = 0.f;
+		uint16_t numAlphaHelix			 = 0;
+		float	 computeStridesElapsedMs = 0.f;
+		uint32_t numResidues			 = 0;
 	};
 	enum class ResultSummary
 	{

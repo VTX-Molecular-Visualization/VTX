@@ -13,7 +13,8 @@ namespace fs = std::filesystem;
 
 namespace pdb100
 {
-	const size_t NUM_PROCESSES = 16;
+	const size_t   NUM_PROCESSES	= 16; // Number of child working simultaneously
+	const uint32_t STRUCTURE_STRIDE = 1;  // Control the downsampling of the database for quick results
 
 	inline const fs::path g_pdb100DirectoryPath { PDB100_DATABASE_DIR };
 
@@ -26,6 +27,7 @@ namespace pdb100
 		fs::path							  dbDir = g_pdb100DirectoryPath;
 		VTX::Util::DataLocker<Reporter>		  log { "report.txt" };
 		VTX::Util::DataLocker<FileCollection> pdb100_system;
+		size_t								  initialFileCollectionSize = 0;
 		SystemMap							  results;
 	};
 

@@ -7,6 +7,7 @@
 #include <io/util/secondary_structure.hpp>
 #include <iostream>
 #include <thread>
+#include <util/chrono.hpp>
 //
 #include <fmt/format.h>
 #include <io/reader/system.hpp>
@@ -83,7 +84,6 @@ namespace pdb100
 		 const uint64_t &									 p_endIdx
 	 );
 	std::string writeSs( const SecondaryStruct & p_ss );
-	std::string writeRcsbSs( const System & p_system );
 
 	std::string writeRcsbSs( const System & p_system )
 	{
@@ -137,6 +137,16 @@ namespace pdb100
 		default: return "other";
 		}
 	}
+	/**
+	 * @brief Return a detailed report on the comparison between PDB assignement and VTX assignement
+	 * @param p_chemSystem
+	 * @param p_type
+	 * @param p_isBeginCorrect
+	 * @param p_isEndCorrect
+	 * @param p_startIdx
+	 * @param p_endIdx
+	 * @return
+	 */
 	std::string writeSsReportString(
 		const VTX::Core::Struct::System &					p_chemSystem,
 		const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type,
@@ -184,6 +194,9 @@ namespace pdb100
 			return false;
 		}
 
+		/**
+		 * @brief Structure that carries analysis data over the workflows functions
+		 */
 		struct TestContext
 		{
 			struct SsSummary
@@ -275,7 +288,13 @@ namespace pdb100
 		{
 			return p_system.helixes;
 		}
-
+		/**
+		 * @brief Called when we reach the end of the SS currently being iterated over.
+		 * @tparam SS
+		 * @param type
+		 * @param p_system
+		 * @param p_context
+		 */
 		template<typename SS>
 		void terminateSs(
 			const VTX::Core::ChemDB::SecondaryStructure::TYPE & type,
@@ -304,7 +323,8 @@ namespace pdb100
 		}
 
 		/**
-		 * @brief Do the SS specific action
+		 * @brief Compare expected secondary struct with the assigned one. This template is used for helix as well as
+		 * beta sheets.
 		 * @return wether or not the loop shall continue
 		 */
 		template<typename SS, typename OtherSS>
@@ -343,6 +363,11 @@ namespace pdb100
 
 			return false;
 		}
+		/**
+		 * @brief Fill report with result rates from the comparison
+		 * @param p_context
+		 * @param p_rates
+		 */
 		void computeCorrectnessRates( const TestContext & p_context, ReportItem<std::string>::Rates & p_rates )
 		{
 			for ( auto & it : p_context.ssSumaries )
@@ -386,19 +411,16 @@ namespace pdb100
 		 */
 		void postReportItem( const size_t & p_index, ReportItem<std::string> p_item )
 		{
-			boost::interprocess::named_mutex mutex( open_or_create, shm::rsltMap::MUTEX );
-			boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock( mutex );
-			boost::interprocess::managed_shared_memory						   sharedSegment(
+			LazyLock<shm::rsltMap::MUTEX>			   lock;
+			boost::interprocess::managed_shared_memory sharedSegment(
 				boost::interprocess::open_only, pdb100::shm::rsltMap::SEGNAME
 			);
 
-			void_allocator alloc( sharedSegment.get_segment_manager() );
-			auto		   rsltMapAndInt = sharedSegment.find<ReportItemCollection>( pdb100::shm::rsltMap::OBJNAME );
+			auto rsltMapAndInt = sharedSegment.find<ReportItemCollection>( pdb100::shm::rsltMap::OBJNAME );
 			if ( rsltMapAndInt.first->size() <= p_index )
 				return;
-			ReportItem<String> item { .pdb = String( alloc ), .details = String( alloc ) };
+			ReportItem<String> & item = rsltMapAndInt.first->at( p_index );
 			convert( p_item, item );
-			rsltMapAndInt.first->at( p_index ) = std::move( item );
 		}
 
 		/**
@@ -407,9 +429,8 @@ namespace pdb100
 		 */
 		size_t postCrashItem( std::string p_pdbCode )
 		{
-			boost::interprocess::named_mutex mutex( open_or_create, shm::rsltMap::MUTEX );
-			boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock( mutex );
-			boost::interprocess::managed_shared_memory						   sharedSegment(
+			LazyLock<shm::rsltMap::MUTEX>			   lock;
+			boost::interprocess::managed_shared_memory sharedSegment(
 				boost::interprocess::open_only, pdb100::shm::rsltMap::SEGNAME
 			);
 			const size_t itemSizeApproximation = sizeof( ReportItem<String> ) + 400;
@@ -424,6 +445,7 @@ namespace pdb100
 			ReportItem<String> item { .resultSummary = ResultSummary::crashed,
 									  .pdb			 = String( alloc ),
 									  .details		 = String( alloc ) };
+			p_pdbCode.resize( 5 );
 			p_pdbCode[ 4 ] = '\0';
 			item.pdb.assign( p_pdbCode.begin(), p_pdbCode.end() );
 			size_t ret = rsltMapAndInt.first->size();
@@ -461,6 +483,8 @@ namespace pdb100
 			}
 			ReportItem<std::string>::Rates rates;
 			computeCorrectnessRates( context, rates );
+			rates.computeStridesElapsedMs = p_system.computeStridesElapsedMs;
+			rates.numResidues			  = p_system.system.getResidueCount();
 			postReportItem(
 				p_system.resultIndex,
 				ReportItem<std::string> { .resultSummary	= std::move( summary ),
@@ -471,6 +495,12 @@ namespace pdb100
 		}
 	} // namespace
 
+	/**
+	 * @brief Decompress input file, parse secondary structure data, assign these with VTX as well then compare the
+	 * result with those red from the file
+	 * @param p_systemPath
+	 * @param p_system
+	 */
 	void testSystem( const fs::path & p_systemPath, System & p_system )
 	{
 		std::stringstream strm;
@@ -510,9 +540,15 @@ namespace pdb100
 			resIdx++;
 		}
 
-		VTX::IO::Util::SecondaryStructure::computeStride( p_system.system );
+		p_system.computeStridesElapsedMs
+			= VTX::Util::CHRONO_CPU( [ system = &p_system.system ]
+									 { VTX::IO::Util::SecondaryStructure::computeStride( *system ); } );
 		compare( p_system );
 	}
+	/**
+	 * @brief Test input system and send a report entry
+	 * @param p_systemPath
+	 */
 	void testSystem( const fs::path & p_systemPath )
 	{
 		std::string systemName = p_systemPath.stem().string();
@@ -529,14 +565,14 @@ namespace pdb100
 		}
 	}
 	/**
-	 * @brief Return A path pointing toward a system archive, or empty string if there is none left.
+	 * @brief Return A path pointing toward a system archive, or empty string if there is none left.Then, remove the
+	 * file path from the collection
 	 * @return
 	 */
 	std::string fetchSystemArchivePath()
 	{
-		boost::interprocess::named_mutex mutex( open_or_create, shm::filestrDeque::MUTEX );
-		boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock( mutex );
-		boost::interprocess::managed_shared_memory						   sharedSegment(
+		LazyLock<shm::filestrDeque::MUTEX>		   lock;
+		boost::interprocess::managed_shared_memory sharedSegment(
 			boost::interprocess::open_only, pdb100::shm::filestrDeque::SEGNAME
 		);
 		auto fileStrDeque = sharedSegment.find<StringDeque>( pdb100::shm::filestrDeque::OBJNAME );
@@ -546,6 +582,9 @@ namespace pdb100
 		fileStrDeque.first->pop_back();
 		return ret;
 	}
+	/**
+	 * @brief Test each structure consecutively until there is no more left
+	 */
 	void testSystems()
 	{
 		uint64_t testedSystemNumber = 0;

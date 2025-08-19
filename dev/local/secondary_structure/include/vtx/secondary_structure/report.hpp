@@ -35,6 +35,9 @@ namespace pdb100
 		uint32_t							 _num_alphaHelix			= 0;
 		float								 _betaSheetCorrectnessRate	= 0.f;
 		float								 _alphaHelixCorrectnessRate = 0.f;
+		uint32_t _computeStrideEfficiencyNumStruct						= 0; // Count struct that actually have residues
+		double	 _computeStrideEfficiencyRateMean						= 0.f;
+		float	 _computeStrideEfficiencyStdDev							= 0.f;
 	};
 
 } // namespace pdb100

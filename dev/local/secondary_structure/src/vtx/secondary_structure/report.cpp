@@ -10,16 +10,33 @@ namespace pdb100
 {
 	namespace
 	{
+		/**
+		 * @brief Compute the performance metric related to VTX SS assignement algorithm execution time. The metric
+		 * shall incorporate the size of the structure being analyze as there is a huge variance between individual and
+		 * this shall naturally affect execution time. We do not plan to make our implementatin constant time or
+		 * whatever
+		 * @param p_rates
+		 * @return
+		 */
+		double computeStrideEfficiency( const Rates & p_rates )
+		{
+			return 1000 * p_rates.computeStridesElapsedMs / p_rates.numResidues;
+		}
+
 		void convert( const ReportItem<String> & p_in, ReportItem<std::string> & p_out )
 		{
 			p_out.correctnessRates = p_in.correctnessRates;
 			p_out.resultSummary	   = p_in.resultSummary;
-			p_out.details.assign( p_out.details.begin(), p_out.details.end() );
-			p_out.pdb.assign( p_out.pdb.begin(), p_out.pdb.end() );
+			p_out.details.assign( p_in.details.begin(), p_in.details.end() );
+			p_out.pdb.assign( p_in.pdb.begin(), p_in.pdb.end() );
 		}
+
+		/**
+		 * @brief Grab each report entries and feed them into the reporter
+		 * @param p_reporter
+		 */
 		void fetchItems( Reporter & p_reporter )
 		{
-			boost::interprocess::named_mutex		   mutex( open_or_create, shm::rsltMap::MUTEX );
 			boost::interprocess::managed_shared_memory sharedSegment(
 				boost::interprocess::open_only, pdb100::shm::rsltMap::SEGNAME
 			);
@@ -38,6 +55,9 @@ namespace pdb100
 
 	Reporter::~Reporter()
 	{
+		/* Actual main function of the reporter. Meant to be trigger on normal teardown and on some program termination
+		 * so the results are not lost.
+		 */
 		if ( not _mustWrite )
 			return;
 
@@ -46,6 +66,12 @@ namespace pdb100
 		std::cout << "Writing report ... ";
 		_betaSheetCorrectnessRate /= oneIfZero( _items.size() );
 		_alphaHelixCorrectnessRate /= oneIfZero( _items.size() );
+		_computeStrideEfficiencyRateMean /= oneIfZero( _computeStrideEfficiencyNumStruct );
+		for ( auto & it : _items )
+			if ( it.correctnessRates.numResidues > 0 )
+				_computeStrideEfficiencyStdDev
+					+= abs( _computeStrideEfficiencyRateMean - computeStrideEfficiency( it.correctnessRates ) );
+		_computeStrideEfficiencyStdDev /= oneIfZero( _computeStrideEfficiencyNumStruct );
 
 		std::ofstream outFile { _reportPath };
 
@@ -57,6 +83,9 @@ namespace pdb100
 		outFile << "\tNumber of RCSB Alpha-helix : " << _num_alphaHelix << "\n";
 		outFile << "\tNumber of failed predictions : " << _num_failed << "\n";
 		outFile << "\tNumber of fully successful system predictions : " << _num_success << "\n";
+		outFile << "\tAssignement efficiency (microseconds/residue) mean : " << _computeStrideEfficiencyRateMean
+				<< "\n";
+		outFile << "\tAssignement efficiency standard deviation: " << _computeStrideEfficiencyStdDev << "\n";
 		outFile << "\n";
 		outFile << "\tsuccess rate : "
 				<< static_cast<double>(
@@ -81,13 +110,16 @@ namespace pdb100
 			outFile << "______________________\n";
 			outFile << "\n";
 
-			if ( it.resultSummary != ReportItem<std::string>::ResultSummary::fail
-				 or it.resultSummary != ReportItem<std::string>::ResultSummary::crashed )
+			if ( it.resultSummary == ReportItem<std::string>::ResultSummary::crashed )
 			{
 				outFile << "Structure :" << it.pdb << " crashed." << "\n";
 				continue;
 			}
 			outFile << "Structure :" << it.pdb << "\n";
+			if ( it.correctnessRates.numResidues == 0 )
+				outFile << "0 res found ?" << "\n";
+			else
+				outFile << "Computation efficiency :" << computeStrideEfficiency( it.correctnessRates ) << "\n";
 			outFile << "\n";
 			if ( it.correctnessRates.numBetaSheet > 0 )
 			{
@@ -128,7 +160,11 @@ namespace pdb100
 		_num_alphaHelix += p_item.correctnessRates.numAlphaHelix;
 		_betaSheetCorrectnessRate += p_item.correctnessRates.fullBetaSheet;
 		_alphaHelixCorrectnessRate += p_item.correctnessRates.fullAlphaHelix;
-
+		if ( p_item.correctnessRates.numResidues > 0 )
+		{
+			_computeStrideEfficiencyRateMean += computeStrideEfficiency( p_item.correctnessRates );
+			_computeStrideEfficiencyNumStruct++;
+		}
 		_items.push_back( std::move( p_item ) );
 	}
 

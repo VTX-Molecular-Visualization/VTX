@@ -10,20 +10,23 @@
 
 namespace pdb100
 {
-	bool g_testsOver = false;
+	/**
+	 * @brief Start a thread that will be responsible for updating the livingproof entry as long as it can, and shall
+	 * stop when the computation is over.
+	 * @param p_thr
+	 */
 	void startLivingProofPosting( std::jthread & p_thr )
 	{
 		p_thr = std::jthread(
-			[]
+			[]( std::stop_token token )
 			{
 				uint64_t processId = boost::process::current_pid();
-				while ( not g_testsOver )
+				while ( not token.stop_requested() )
 				{
-					std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+					std::this_thread::sleep_for( std::chrono::seconds( shm::livingProof::tolerenceTime / 2 ) );
 					{
-						boost::interprocess::named_mutex mutex( open_or_create, shm::livingProof::MUTEX );
-						boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock( mutex );
-						boost::interprocess::managed_shared_memory						   sharedSegment(
+						LazyLock<shm::livingProof::MUTEX>		   lock;
+						boost::interprocess::managed_shared_memory sharedSegment(
 							boost::interprocess::open_only, pdb100::shm::livingProof::SEGNAME
 						);
 						auto livingProofMapPair
@@ -35,12 +38,15 @@ namespace pdb100
 			}
 		);
 	}
+
+	/**
+	 * @brief Lock the livingProof mutex and create an entry
+	 */
 	void createLivingProofEntry()
 	{
-		uint64_t						 processId = boost::process::current_pid();
-		boost::interprocess::named_mutex mutex( open_or_create, shm::livingProof::MUTEX );
-		boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock( mutex );
-		boost::interprocess::managed_shared_memory						   sharedSegment(
+		uint64_t								   processId = boost::process::current_pid();
+		LazyLock<shm::livingProof::MUTEX>		   lock;
+		boost::interprocess::managed_shared_memory sharedSegment(
 			boost::interprocess::open_only, pdb100::shm::livingProof::SEGNAME
 		);
 		auto livingProofMapPair = sharedSegment.find<LivingProofMap>( pdb100::shm::livingProof::OBJNAME );
@@ -50,13 +56,26 @@ namespace pdb100
 	}
 } // namespace pdb100
 
+#include <iostream>
 int main()
 {
+	/* Process meant to be spawned by the secondary structure parent. It goes as follow :
+	 * 1 - Create an entry in the living proof data structure
+	 * 2 - Spawn a thread that will improve this entry
+	 * 3 - Mine a file from the file shared memory collection
+	 * 4 - Analyze it with VTX algorithm and by reading PDB information
+	 * 5 - Compare VTX result with information from PDB
+	 * 6 - Add report entry into the shared memory report entry list
+	 * 7 - Restart from 3 until there is no file left
+	 *
+	 * This process is meant to crash at some point. The idea is for the parent to see that the process is crashed to
+	 * restart it.
+	 */
 	try
 	{
+		std::jthread thread;
 		pdb100::log() << "Starting process\n";
 		pdb100::createLivingProofEntry();
-		std::jthread thread;
 		pdb100::startLivingProofPosting( thread );
 
 		pdb100::testSystems();
@@ -64,7 +83,7 @@ int main()
 	catch ( std::exception & e )
 	{
 		pdb100::log() << "Exception catched : <" << e.what() << ">\n";
+		return 1;
 	}
-	pdb100::g_testsOver = true;
 	return 0;
 }

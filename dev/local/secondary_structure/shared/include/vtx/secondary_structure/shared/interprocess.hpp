@@ -9,13 +9,14 @@
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <chrono>
+#include <optional>
 #include <vtx/secondary_structure/shared/shared.hpp>
 
 namespace pdb100
 {
 	using namespace boost::interprocess;
 
-	const uint64_t showProgressInterval = 60;
+	const uint64_t showProgressInterval = 30;
 
 	namespace shm
 	{
@@ -47,6 +48,40 @@ namespace pdb100
 
 	} // namespace shm
 
+	using namespace boost::interprocess;
+	struct MutexAndLock
+	{
+		std::optional<named_mutex>				mutex;
+		std::optional<scoped_lock<named_mutex>> lock;
+	};
+	inline void lock( MutexAndLock & ml, const char * p_name )
+	{
+	begin:
+		ml.mutex.emplace( open_or_create, p_name );
+		ml.lock.emplace( *ml.mutex, try_to_lock );
+		if ( not ml.lock.value() )
+		{
+			ml.lock.reset();
+			ml.mutex.reset();
+			std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+			goto begin;
+		}
+	}
+	template<const char * MUTEX_NAME>
+	class LazyLock
+	{
+	  public:
+		inline LazyLock() { lock( ml, MUTEX_NAME ); }
+		inline ~LazyLock()
+		{
+			if ( ml.lock )
+				ml.lock->unlock();
+		}
+
+	  private:
+		MutexAndLock ml;
+	};
+
 	enum class ResultFlag : uint8_t
 	{
 		fully_working = 0,
@@ -58,7 +93,7 @@ namespace pdb100
 	typedef basic_string<char, std::char_traits<char>, CharAllocator> String;
 	typedef allocator<String, managed_shared_memory::segment_manager> StringAllocator;
 
-	typedef deque<String, StringAllocator>								   StringDeque;
+	typedef vector<String, StringAllocator>								   StringDeque;
 	typedef allocator<StringDeque, managed_shared_memory::segment_manager> StringDequeAllocator;
 
 	typedef allocator<uint64_t, managed_shared_memory::segment_manager> Uint64Allocator;

@@ -7,8 +7,9 @@
 #include <boost/process/v2/pid.hpp>
 namespace pdb100
 {
+
 	/**
-	 * @brief Fetch and tests systems
+	 * @brief Test each structure consecutively until there is no more left
 	 */
 	void testSystems();
 
