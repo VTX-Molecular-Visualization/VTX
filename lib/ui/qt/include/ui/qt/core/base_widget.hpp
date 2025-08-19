@@ -39,7 +39,7 @@ namespace VTX::UI::QT::Core
 		{
 			const auto name = VTX::Util::typeName<T>();
 			W::setObjectName( name );
-			VTX_TRACE( "UI widget created: {}", name );
+			VTX_TRACE( "BaseWidget: {}", name );
 
 			// Ensure that only one instance of the widget is created.
 			assert( not WIDGETS::get().has<T>() );
@@ -50,7 +50,7 @@ namespace VTX::UI::QT::Core
 		virtual ~BaseWidget()
 		{
 			const auto name = VTX::Util::typeName<T>();
-			VTX_TRACE( "UI widget destroyed: {}", name );
+			VTX_TRACE( "~BaseWidget: {}", name );
 
 			assert( WIDGETS::get().has<T>() );
 

@@ -19,10 +19,10 @@ namespace VTX::App::Component::Chemistry
 		Atom() = default;
 		Atom( Residue * const p_residue );
 		Atom( System * const p_system ) : _systemPtr( p_system ) {};
-		Atom( System * const p_system, const atom_index_t p_index ) : _systemPtr( p_system ), _index( p_index ) {};
+		Atom( System * const p_system, const Index p_index ) : _systemPtr( p_system ), _index( p_index ) {};
 
-		atom_index_t		  getIndex() const { return _index; }
-		void				  setIndex( const atom_index_t p_index ) { _index = p_index; }
+		Index				  getIndex() const { return _index; }
+		void				  setIndex( const Index p_index ) { _index = p_index; }
 		Residue *			  getResiduePtr() const;
 		const Residue *		  getConstResiduePtr() const;
 		void				  setResiduePtr( Residue * const p_residue );
@@ -51,8 +51,8 @@ namespace VTX::App::Component::Chemistry
 
 	  private:
 		// Store systemPtr or use residuePtr->getChainPtr()->getSystemPtr() ?
-		System *	 _systemPtr = nullptr;
-		atom_index_t _index		= INVALID_ATOM_INDEX;
+		System * _systemPtr = nullptr;
+		Index	 _index		= INVALID_INDEX;
 	};
 
 } // namespace VTX::App::Component::Chemistry

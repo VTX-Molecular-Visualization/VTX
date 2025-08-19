@@ -23,24 +23,24 @@ namespace VTX::PythonBinding::API
 	  public:
 		System() = default;
 
-		inline void initChains( const size_t p_chainCount )
+		inline void initChains( const Index p_chainCount )
 		{
 			if ( _ptr )
 				_ptr->initChains( p_chainCount );
 		}
-		inline void initResidues( const size_t p_residueCount )
+		inline void initResidues( const Index p_residueCount )
 		{
 			if ( _ptr )
 				_ptr->initResidues( p_residueCount );
 		}
 
-		inline void initAtoms( const size_t p_atomCount )
+		inline void initAtoms( const Index p_atomCount )
 		{
 			if ( _ptr )
 				_ptr->initAtoms( p_atomCount );
 		}
 
-		inline void initBonds( const size_t p_bondCount )
+		inline void initBonds( const Index p_bondCount )
 		{
 			if ( _ptr )
 				_ptr->initBonds( p_bondCount );
@@ -89,38 +89,38 @@ namespace VTX::PythonBinding::API
 			if ( _ptr )
 				_ptr->setVisible( p_visible );
 		}
-		inline void setVisible( const atom_index_t & p_atomId, bool p_visible )
+		inline void setVisible( const Index & p_atomId, bool p_visible )
 		{
 			if ( _ptr )
 				_ptr->setVisible( p_visible );
 		}
 
-		inline void remove( const atom_index_t & p_atomIndex )
+		inline void remove( const Index & p_atomIndex )
 		{
 			if ( _ptr )
 				_ptr->remove( p_atomIndex );
 		}
 
-		inline size_t getRealChainCount() const
+		inline Index getRealChainCount() const
 		{
 			if ( _ptr )
 				return _ptr->getRealChainCount();
 			return 0;
 		}
-		inline size_t getRealResidueCount() const
+		inline Index getRealResidueCount() const
 		{
 			if ( _ptr )
 				return _ptr->getRealResidueCount();
 			return 0;
 		}
-		inline size_t getRealAtomCount() const
+		inline Index getRealAtomCount() const
 		{
 			if ( _ptr )
 				return _ptr->getRealAtomCount();
 			return 0;
 		}
-		Chain					 getChain( const size_t p_index );
-		const Chain				 getChain( const size_t p_index ) const;
+		Chain					 getChain( const Index p_index );
+		const Chain				 getChain( const Index p_index ) const;
 		inline Collection<Chain> getChains()
 		{
 			if ( _ptr )
@@ -145,8 +145,8 @@ namespace VTX::PythonBinding::API
 				return _ptr->getResidues();
 			return {};
 		}
-		Residue					getResidue( const size_t p_index );
-		const Residue			getResidue( const size_t p_index ) const;
+		Residue					getResidue( const Index p_index );
+		const Residue			getResidue( const Index p_index ) const;
 		inline Collection<Atom> getAtoms()
 		{
 			if ( _ptr )
@@ -159,27 +159,27 @@ namespace VTX::PythonBinding::API
 				return _ptr->getAtoms();
 			return {};
 		}
-		Atom	   getAtom( const atom_index_t p_index );
-		const Atom getAtom( const atom_index_t p_index ) const;
+		Atom	   getAtom( const Index p_index );
+		const Atom getAtom( const Index p_index ) const;
 
 	  private:
 		struct _interface
 		{
 			virtual ~_interface() = default;
 
-			virtual void		initChains( const size_t p_chainCount ) = 0;
-			virtual Chain		getChain( const size_t p_index )		= 0;
-			virtual const Chain getChain( const size_t p_index ) const	= 0;
+			virtual void		initChains( const Index p_chainCount ) = 0;
+			virtual Chain		getChain( const Index p_index )		   = 0;
+			virtual const Chain getChain( const Index p_index ) const  = 0;
 
-			virtual void		  initResidues( const size_t p_residueCount ) = 0;
-			virtual Residue		  getResidue( const size_t p_index )		  = 0;
-			virtual const Residue getResidue( const size_t p_index ) const	  = 0;
+			virtual void		  initResidues( const Index p_residueCount ) = 0;
+			virtual Residue		  getResidue( const Index p_index )			 = 0;
+			virtual const Residue getResidue( const Index p_index ) const	 = 0;
 
-			virtual void	   initAtoms( const size_t p_atomCount )	   = 0;
-			virtual Atom	   getAtom( const atom_index_t p_index )	   = 0;
-			virtual const Atom getAtom( const atom_index_t p_index ) const = 0;
+			virtual void	   initAtoms( const Index p_atomCount ) = 0;
+			virtual Atom	   getAtom( const Index p_index )		= 0;
+			virtual const Atom getAtom( const Index p_index ) const = 0;
 
-			virtual void initBonds( const size_t p_bondCount ) = 0;
+			virtual void initBonds( const Index p_bondCount ) = 0;
 
 			virtual const std::string & getName() const						  = 0;
 			virtual void				setName( const std::string & p_name ) = 0;
@@ -190,14 +190,14 @@ namespace VTX::PythonBinding::API
 			virtual bool isVisible() const		= 0;
 			virtual bool isFullyVisible() const = 0;
 
-			virtual void setVisible( const bool p_visible )							 = 0;
-			virtual void setVisible( const atom_index_t & p_atomId, bool p_visible ) = 0;
+			virtual void setVisible( const bool p_visible )					  = 0;
+			virtual void setVisible( const Index & p_atomId, bool p_visible ) = 0;
 
-			virtual void remove( const atom_index_t & p_atomIndex ) = 0;
+			virtual void remove( const Index & p_atomIndex ) = 0;
 
-			virtual size_t getRealChainCount() const   = 0;
-			virtual size_t getRealResidueCount() const = 0;
-			virtual size_t getRealAtomCount() const	   = 0;
+			virtual Index getRealChainCount() const	  = 0;
+			virtual Index getRealResidueCount() const = 0;
+			virtual Index getRealAtomCount() const	  = 0;
 
 			virtual Collection<Chain>		  getChains()		  = 0;
 			virtual const Collection<Chain>	  getChains() const	  = 0;
@@ -224,8 +224,8 @@ namespace VTX::PythonBinding::API
 			const AtomIndexRangeList & getActiveAtoms() const ;
 
 			const Core::UID::UIDRange & getAtomUIDs() const ;
-			Bond *		 getBond( const size_t p_index ) ;
-			const Bond * getBond( const size_t p_index ) const ;
+			Bond *		 getBond( const Index p_index ) ;
+			const Bond * getBond( const Index p_index ) const ;
 			const Util::Math::Transform & getTransform() const ;
 			Util::Math::Transform &		  getTransform() ;
 
@@ -264,46 +264,43 @@ namespace VTX::PythonBinding::API
 		  public:
 			_wrapper( T & p_ ) : _obj( p_ ) {}
 
-			virtual void initChains( const size_t p_chainCount ) override
+			virtual void initChains( const Index p_chainCount ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().initChains( p_chainCount );
 			}
-			virtual Chain		getChain( const size_t p_index ) override { return { *obj().getChain( p_index ) }; }
-			virtual const Chain getChain( const size_t p_index ) const override
+			virtual Chain		getChain( const Index p_index ) override { return { *obj().getChain( p_index ) }; }
+			virtual const Chain getChain( const Index p_index ) const override
 			{
 				return { *obj().getChain( p_index ) };
 			}
 
-			virtual void initResidues( const size_t p_residueCount ) override
+			virtual void initResidues( const Index p_residueCount ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().initResidues( p_residueCount );
 			}
-			virtual Residue getResidue( const size_t p_index ) override { return { *obj().getResidue( p_index ) }; }
-			virtual const Residue getResidue( const size_t p_index ) const override
+			virtual Residue getResidue( const Index p_index ) override { return { *obj().getResidue( p_index ) }; }
+			virtual const Residue getResidue( const Index p_index ) const override
 			{
 				return { *obj().getResidue( p_index ) };
 			}
 
-			virtual void initAtoms( const size_t p_atomCount ) override
+			virtual void initAtoms( const Index p_atomCount ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().initAtoms( p_atomCount );
 			}
-			virtual Atom getAtom( const atom_index_t p_index ) override
+			virtual Atom getAtom( const Index p_index ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					return { *obj().getAtom( p_index ) };
 				else
 					return const_cast<const _wrapper<T> *>( this )->getAtom( p_index );
 			}
-			virtual const Atom getAtom( const atom_index_t p_index ) const override
-			{
-				return { *obj().getAtom( p_index ) };
-			}
+			virtual const Atom getAtom( const Index p_index ) const override { return { *obj().getAtom( p_index ) }; }
 
-			virtual void initBonds( const size_t p_bondCount ) override
+			virtual void initBonds( const Index p_bondCount ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().initBonds( p_bondCount );
@@ -331,21 +328,21 @@ namespace VTX::PythonBinding::API
 				if constexpr ( not std::is_const<T>::value )
 					obj().setVisible( p_visible );
 			}
-			virtual void setVisible( const atom_index_t & p_atomId, bool p_visible ) override
+			virtual void setVisible( const Index & p_atomId, bool p_visible ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().setVisible( p_visible );
 			}
 
-			virtual void remove( const atom_index_t & p_atomIndex ) override
+			virtual void remove( const Index & p_atomIndex ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().remove( p_atomIndex );
 			}
 
-			virtual size_t getRealChainCount() const override { return obj().getRealChainCount(); }
-			virtual size_t getRealResidueCount() const override { return obj().getRealResidueCount(); }
-			virtual size_t getRealAtomCount() const override { return obj().getRealAtomCount(); }
+			virtual Index getRealChainCount() const override { return obj().getRealChainCount(); }
+			virtual Index getRealResidueCount() const override { return obj().getRealResidueCount(); }
+			virtual Index getRealAtomCount() const override { return obj().getRealAtomCount(); }
 
 			Collection<Chain>		  getChains() override { return obj().getChains(); }
 			const Collection<Chain>	  getChains() const override { return obj().getChains(); }

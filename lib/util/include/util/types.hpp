@@ -1,12 +1,12 @@
 #ifndef __VTX_UTIL_TYPES__
 #define __VTX_UTIL_TYPES__
 
+#include <cstdint>
 #include <filesystem>
 #include <glm/detail/qualifier.hpp>
 #include <glm/detail/type_quat.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-#include <cstdint>
 
 namespace VTX
 {
@@ -37,8 +37,9 @@ namespace VTX
 	using Quatf = glm::quat;
 	using Quatd = glm::dquat;
 
-	using atom_index_t = uint;
-	using ByteNumber   = size_t;
+	using Index = uint;
+
+	using ByteNumber = size_t;
 
 	using Hash = size_t;
 } // namespace VTX

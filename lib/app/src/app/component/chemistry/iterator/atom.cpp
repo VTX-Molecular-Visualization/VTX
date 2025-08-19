@@ -3,7 +3,7 @@
 
 namespace VTX::App::Component::Chemistry::Iterator
 {
-	AtomContainer::AtomIt::AtomIt( System * const p_system, const atom_index_t p_index, const atom_index_t p_end ) :
+	AtomContainer::AtomIt::AtomIt( System * const p_system, const Index p_index, const Index p_end ) :
 		_system( p_system ), _index( p_index ), _end( p_end )
 	{
 		_getValid();
@@ -51,8 +51,8 @@ namespace VTX::App::Component::Chemistry::Iterator
 
 	AtomContainer::AtomContainer(
 		System * const	   p_system,
-		const atom_index_t p_firstAtomIndex,
-		const atom_index_t p_atomCount
+		const Index p_firstAtomIndex,
+		const Index p_atomCount
 	) : _system( p_system ), _firstAtomIndex( p_firstAtomIndex ), _atomCount( p_atomCount )
 	{
 	}

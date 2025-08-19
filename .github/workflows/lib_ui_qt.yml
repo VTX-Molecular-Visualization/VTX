@@ -16,7 +16,7 @@ on:
           - Release
 
 env:
-  LIB_DIR: ${{github.workspace}}/lib
+  LIB_DIR: ${{ github.workspace }}/lib
   BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
 
 jobs:
@@ -62,7 +62,7 @@ jobs:
         conan export renderer
         conan export app
         conan export python_binding
-        conan create ui/qt -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
+        conan create ui/qt -b missing -s build_type=${{ env.BUILD_TYPE }} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
     
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}

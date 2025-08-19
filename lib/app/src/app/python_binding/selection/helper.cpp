@@ -24,17 +24,17 @@ namespace VTX::App::PythonBinding::Selection
 
 		return res;
 	}
-	std::vector<atom_index_t> _getAtomIndexListInKwargs(
+	std::vector<Index> _getAtomIndexListInKwargs(
 		const pybind11::kwargs & p_kwargs,
 		const std::string &		 p_param
 	)
 	{
-		std::vector<atom_index_t> res;
+		std::vector<Index> res;
 
 		if ( !p_kwargs.contains( p_param ) )
-			res = std::vector<atom_index_t>();
+			res = std::vector<Index>();
 		else
-			res = _getListFromParam<pybind11::int_, atom_index_t>( p_kwargs[ p_param.c_str() ] );
+			res = _getListFromParam<pybind11::int_, Index>( p_kwargs[ p_param.c_str() ] );
 
 		return res;
 	}

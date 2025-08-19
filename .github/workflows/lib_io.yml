@@ -53,7 +53,7 @@ jobs:
       run:  |
         conan export util
         conan export core
-        conan create io -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=20 -o vtx_io/*:test=True
+        conan create io -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -o vtx_io/*:test=True
 
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}

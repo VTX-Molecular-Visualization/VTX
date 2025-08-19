@@ -17,30 +17,30 @@ namespace VTX::PythonBinding::API
 	  public:
 		Residue() = default;
 
-		inline size_t getIndex() const
+		inline Index getIndex() const
 		{
 			if ( _ptr )
 				return _ptr->getIndex();
 			return 0;
 		}
-		inline void setIndex( const size_t p_index )
+		inline void setIndex( const Index p_index )
 		{
 			if ( _ptr )
 				_ptr->setIndex( p_index );
 		}
 
-		inline atom_index_t getIndexFirstAtom() const
+		inline Index getIndexFirstAtom() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexFirstAtom();
 			return 0;
 		}
-		inline void setIndexFirstAtom( const atom_index_t p_indexFirstAtom )
+		inline void setIndexFirstAtom( const Index p_indexFirstAtom )
 		{
 			if ( _ptr )
 				_ptr->setIndexFirstAtom( p_indexFirstAtom );
 		}
-		inline atom_index_t getIndexLastAtom() const
+		inline Index getIndexLastAtom() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexLastAtom();
@@ -53,37 +53,37 @@ namespace VTX::PythonBinding::API
 				return _ptr->getAtomCount();
 			return 0;
 		}
-		inline void setAtomCount( const atom_index_t p_atomCount )
+		inline void setAtomCount( const Index p_atomCount )
 		{
 			if ( _ptr )
 				_ptr->setAtomCount( p_atomCount );
 		}
 
-		inline size_t getIndexFirstBond() const
+		inline Index getIndexFirstBond() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexFirstBond();
 			return 0;
 		}
-		inline void setIndexFirstBond( const size_t p_indexFirstBond )
+		inline void setIndexFirstBond( const Index p_indexFirstBond )
 		{
 			if ( _ptr )
 				_ptr->setIndexFirstBond( p_indexFirstBond );
 		}
 
-		inline size_t getBondCount() const
+		inline Index getBondCount() const
 		{
 			if ( _ptr )
 				return _ptr->getBondCount();
 			return 0;
 		}
-		inline void setBondCount( const size_t p_bondCount )
+		inline void setBondCount( const Index p_bondCount )
 		{
 			if ( _ptr )
 				_ptr->setBondCount( p_bondCount );
 		}
 
-		inline size_t getIndexInOriginalChain() const
+		inline Index getIndexInOriginalChain() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexInOriginalChain();
@@ -109,7 +109,7 @@ namespace VTX::PythonBinding::API
 			return {};
 		}
 
-		inline void setIndexInOriginalChain( const size_t p_index )
+		inline void setIndexInOriginalChain( const Index p_index )
 		{
 			if ( _ptr )
 				_ptr->setIndexInOriginalChain( p_index );
@@ -143,29 +143,29 @@ namespace VTX::PythonBinding::API
 		{
 			virtual ~_interface() = default;
 
-			virtual size_t getIndex() const					= 0;
-			virtual void   setIndex( const size_t p_index ) = 0;
+			virtual Index getIndex() const				  = 0;
+			virtual void  setIndex( const Index p_index ) = 0;
 
-			virtual atom_index_t getIndexFirstAtom() const								  = 0;
-			virtual void		 setIndexFirstAtom( const atom_index_t p_indexFirstAtom ) = 0;
-			virtual atom_index_t getIndexLastAtom() const								  = 0;
+			virtual Index getIndexFirstAtom() const							= 0;
+			virtual void  setIndexFirstAtom( const Index p_indexFirstAtom ) = 0;
+			virtual Index getIndexLastAtom() const							= 0;
 
-			virtual uint64_t getAtomCount() const							= 0;
-			virtual void	 setAtomCount( const atom_index_t p_atomCount ) = 0;
+			virtual uint64_t getAtomCount() const					 = 0;
+			virtual void	 setAtomCount( const Index p_atomCount ) = 0;
 
-			virtual size_t getIndexFirstBond() const						  = 0;
-			virtual void   setIndexFirstBond( const size_t p_indexFirstBond ) = 0;
+			virtual Index getIndexFirstBond() const							= 0;
+			virtual void  setIndexFirstBond( const Index p_indexFirstBond ) = 0;
 
-			virtual size_t getBondCount() const						= 0;
-			virtual void   setBondCount( const size_t p_bondCount ) = 0;
+			virtual Index getBondCount() const					  = 0;
+			virtual void  setBondCount( const Index p_bondCount ) = 0;
 
-			virtual size_t getIndexInOriginalChain() const = 0;
+			virtual Index getIndexInOriginalChain() const = 0;
 
 			virtual const std::string_view getShortName() const = 0;
 			virtual const std::string_view getName() const		= 0;
 			virtual const std::string_view getLongName() const	= 0;
 
-			virtual void setIndexInOriginalChain( const size_t p_index ) = 0;
+			virtual void setIndexInOriginalChain( const Index p_index ) = 0;
 
 			virtual void setVisible( const bool p_visible ) = 0;
 			virtual bool isVisible() const					= 0;
@@ -200,49 +200,49 @@ namespace VTX::PythonBinding::API
 		  public:
 			_wrapper( T & p_ ) : _obj( p_ ) {}
 
-			virtual size_t getIndex() const override { return obj().getIndex(); }
-			virtual void   setIndex( const size_t p_index ) override
+			virtual Index getIndex() const override { return obj().getIndex(); }
+			virtual void  setIndex( const Index p_index ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().setIndex( p_index );
 			}
 
-			virtual atom_index_t getIndexFirstAtom() const override { return obj().getIndexFirstAtom(); }
-			virtual void		 setIndexFirstAtom( const atom_index_t p_indexFirstAtom )
+			virtual Index getIndexFirstAtom() const override { return obj().getIndexFirstAtom(); }
+			virtual void  setIndexFirstAtom( const Index p_indexFirstAtom )
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().setIndexFirstAtom( p_indexFirstAtom );
 			}
-			virtual atom_index_t getIndexLastAtom() const override { return obj().getIndexLastAtom(); }
+			virtual Index getIndexLastAtom() const override { return obj().getIndexLastAtom(); }
 
 			virtual uint64_t getAtomCount() const override { return obj().getAtomCount(); }
-			virtual void	 setAtomCount( const atom_index_t p_atomCount ) override
+			virtual void	 setAtomCount( const Index p_atomCount ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().setAtomCount( p_atomCount );
 			}
 
-			virtual size_t getIndexFirstBond() const override { return obj().getIndexFirstBond(); }
-			virtual void   setIndexFirstBond( const size_t p_indexFirstBond ) override
+			virtual Index getIndexFirstBond() const override { return obj().getIndexFirstBond(); }
+			virtual void  setIndexFirstBond( const Index p_indexFirstBond ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().setIndexFirstBond( p_indexFirstBond );
 			}
 
-			virtual size_t getBondCount() const override { return obj().getBondCount(); }
-			virtual void   setBondCount( const size_t p_bondCount ) override
+			virtual Index getBondCount() const override { return obj().getBondCount(); }
+			virtual void  setBondCount( const Index p_bondCount ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().setBondCount( p_bondCount );
 			}
 
-			virtual size_t getIndexInOriginalChain() const override { return obj().getIndexInOriginalChain(); }
+			virtual Index getIndexInOriginalChain() const override { return obj().getIndexInOriginalChain(); }
 
 			virtual const std::string_view getShortName() const override { return obj().getShortName(); }
 			virtual const std::string_view getName() const override { return obj().getName(); }
 			virtual const std::string_view getLongName() const override { return obj().getLongName(); }
 
-			virtual void setIndexInOriginalChain( const size_t p_index ) override
+			virtual void setIndexInOriginalChain( const Index p_index ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().setIndexInOriginalChain( p_index );

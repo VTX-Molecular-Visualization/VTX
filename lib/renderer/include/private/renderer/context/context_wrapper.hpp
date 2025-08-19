@@ -25,7 +25,7 @@ namespace VTX::Renderer::Context
 	using FunctionCompileShaders	  = std::function<void()>;
 	using FunctionSnapshot
 		= std::function<void( std::vector<uchar> &, const RenderQueue &, const Instructions &, size_t, size_t )>;
-	using FunctionGetTextureData = std::function<void( const Key &, std::any &, size_t, size_t, E_CHAN_OUT )>;
+	using FunctionGetTextureData = std::function<void( const Key &, void * const, size_t, size_t, E_CHAN_OUT )>;
 	using FunctionCompute		 = std::function<void( const ComputePass & )>;
 
 	struct ContextInterface
@@ -200,9 +200,9 @@ namespace VTX::Renderer::Context
 		template<typename T>
 		inline T getTextureData( const Key & key, size_t x, size_t y, E_CHAN_OUT channel ) const
 		{
-			std::any result;
-			_impl.getTextureData( key, result, x, y, channel );
-			return std::any_cast<T>( result );
+			T result;
+			_impl.getTextureData( key, (void * const)&result, x, y, channel );
+			return result;
 		}
 
 		template<typename... Args>

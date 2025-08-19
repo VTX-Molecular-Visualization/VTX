@@ -18,11 +18,8 @@ namespace VTX::App::Selection
 	class SystemData : public SelectionData
 	{
 	  public:
-		using IndexRange	 = Util::Math::Range<size_t>;
-		using IndexRangeList = Util::Math::RangeList<size_t>;
-
-		using AtomIndexRange	 = Util::Math::Range<atom_index_t>;
-		using AtomIndexRangeList = Util::Math::RangeList<atom_index_t>;
+		using IndexRange	 = Util::Math::Range<Index>;
+		using IndexRangeList = Util::Math::RangeList<Index>;
 
 		enum class CurrentObjectTypeEnum : int
 		{
@@ -80,12 +77,12 @@ namespace VTX::App::Selection
 		void referenceChains( const IndexRangeList & p_rangeList );
 		void selectFullChains( const IndexRangeList & p_rangeList );
 
-		void unselectChain( const size_t p_chainIndex );
+		void unselectChain( const Index p_chainIndex );
 		void unselectChain( const Chain & p_chain );
 		void unselectChains( const IndexRange & p_chain );
 		void unselectChains( const IndexRangeList & p_chain );
 		void unselectChains( const std::initializer_list<const Chain *> & p_chains );
-		void unselectChains( const std::initializer_list<size_t> & p_chains );
+		void unselectChains( const std::initializer_list<Index> & p_chains );
 		template<ContainerOfType<const Chain *> C>
 		void unselectChains( const C & p_chains )
 		{
@@ -96,18 +93,18 @@ namespace VTX::App::Selection
 			}
 		}
 
-		bool isChainSelected( const size_t & p_chainIndex ) const;
+		bool isChainSelected( const Index & p_chainIndex ) const;
 		bool isChainSelected( const Chain & p_chain ) const;
-		bool isChainFullySelected( const size_t & p_chainIndex ) const;
+		bool isChainFullySelected( const Index & p_chainIndex ) const;
 		bool isChainFullySelected( const Chain & p_chain ) const;
 		bool areChainsSelected( const IndexRange & p_chains ) const;
 		bool areChainsSelected( const IndexRangeList & p_chains ) const;
 		bool areChainsSelected( const std::initializer_list<const Chain *> & p_chains ) const;
-		bool areChainsSelected( const std::initializer_list<size_t> & p_chains ) const;
+		bool areChainsSelected( const std::initializer_list<Index> & p_chains ) const;
 		bool areChainsFullySelected( const IndexRange & p_chains ) const;
 		bool areChainsFullySelected( const IndexRangeList & p_chains ) const;
 		bool areChainsFullySelected( const std::initializer_list<const Chain *> & p_chains ) const;
-		bool areChainsFullySelected( const std::initializer_list<size_t> & p_chains ) const;
+		bool areChainsFullySelected( const std::initializer_list<Index> & p_chains ) const;
 		template<ContainerOfType<const Chain *> C>
 		bool areChainSelected( const C & p_chains ) const
 		{
@@ -162,12 +159,12 @@ namespace VTX::App::Selection
 		void referenceResidues( const IndexRangeList & p_rangeList );
 		void selectFullResidues( const IndexRangeList & p_rangeList );
 
-		void unselectResidue( const size_t p_residueIndex );
+		void unselectResidue( const Index p_residueIndex );
 		void unselectResidue( const Residue & p_residue );
 		void unselectResidues( const IndexRange & p_residues );
 		void unselectResidues( const IndexRangeList & p_residues );
 		void unselectResidues( const std::initializer_list<const Residue *> & p_residues );
-		void unselectResidues( const std::initializer_list<size_t> & p_residues );
+		void unselectResidues( const std::initializer_list<Index> & p_residues );
 		template<ContainerOfType<const Residue *> C>
 		void unselectResidues( const C & p_residues )
 		{
@@ -178,18 +175,18 @@ namespace VTX::App::Selection
 			}
 		}
 
-		bool isResidueSelected( const size_t & p_residueIndex ) const;
+		bool isResidueSelected( const Index & p_residueIndex ) const;
 		bool isResidueSelected( const Residue & p_residue ) const;
-		bool isResidueFullySelected( const size_t & p_residueIndex ) const;
+		bool isResidueFullySelected( const Index & p_residueIndex ) const;
 		bool isResidueFullySelected( const Residue & p_residue ) const;
 		bool areResiduesSelected( const IndexRange & p_residues ) const;
 		bool areResiduesSelected( const IndexRangeList & p_residues ) const;
 		bool areResiduesSelected( const std::initializer_list<const Residue *> & p_residues ) const;
-		bool areResiduesSelected( const std::initializer_list<size_t> & p_residues ) const;
+		bool areResiduesSelected( const std::initializer_list<Index> & p_residues ) const;
 		bool areResiduesFullySelected( const IndexRange & p_residues ) const;
 		bool areResiduesFullySelected( const IndexRangeList & p_residues ) const;
 		bool areResiduesFullySelected( const std::initializer_list<const Residue *> & p_residues ) const;
-		bool areResiduesFullySelected( const std::initializer_list<size_t> & p_residues ) const;
+		bool areResiduesFullySelected( const std::initializer_list<Index> & p_residues ) const;
 
 		template<ContainerOfType<const Residue *> C>
 		bool areResiduesSelected( const C & p_residues ) const
@@ -227,15 +224,15 @@ namespace VTX::App::Selection
 					_referenceAtom( *atomPtr );
 			}
 		}
-		void selectAtoms( const AtomIndexRange & p_range );
-		void selectAtoms( const AtomIndexRangeList & p_rangeList );
+		void selectAtoms( const IndexRange & p_range );
+		void selectAtoms( const IndexRangeList & p_rangeList );
 
 		void unselectAtom( const Atom & p_atom );
-		void unselectAtom( const atom_index_t p_atomIndex );
-		void unselectAtoms( const AtomIndexRange & p_atoms );
-		void unselectAtoms( const AtomIndexRangeList & p_atoms );
+		void unselectAtom( const Index p_atomIndex );
+		void unselectAtoms( const IndexRange & p_atoms );
+		void unselectAtoms( const IndexRangeList & p_atoms );
 		void unselectAtoms( const std::initializer_list<const Atom *> & p_atoms );
-		void unselectAtoms( const std::initializer_list<atom_index_t> & p_atoms );
+		void unselectAtoms( const std::initializer_list<Index> & p_atoms );
 		template<ContainerOfType<const Atom *> C>
 		void unselectAtoms( const C & p_atoms )
 		{
@@ -246,12 +243,12 @@ namespace VTX::App::Selection
 			}
 		}
 
-		bool isAtomSelected( const atom_index_t & p_atomIndex ) const;
+		bool isAtomSelected( const Index & p_atomIndex ) const;
 		bool isAtomSelected( const Atom & p_atom ) const;
-		bool areAtomsSelected( const AtomIndexRange & p_atoms ) const;
-		bool areAtomsSelected( const AtomIndexRangeList & p_atoms ) const;
+		bool areAtomsSelected( const IndexRange & p_atoms ) const;
+		bool areAtomsSelected( const IndexRangeList & p_atoms ) const;
 		bool areAtomsSelected( const std::initializer_list<const Atom *> & p_atoms ) const;
-		bool areAtomsSelected( const std::initializer_list<atom_index_t> & p_atoms ) const;
+		bool areAtomsSelected( const std::initializer_list<Index> & p_atoms ) const;
 		template<ContainerOfType<const Atom *> C>
 		bool areAtomsSelected( const C & p_atoms ) const
 		{
@@ -267,7 +264,7 @@ namespace VTX::App::Selection
 		inline Component::Chemistry::System & getSystem() const { return *_system; }
 		inline const IndexRangeList &		  getChainIds() const { return _chainIds; }
 		inline const IndexRangeList &		  getResidueIds() const { return _residueIds; }
-		inline const AtomIndexRangeList &	  getAtomIds() const { return _atomIds; }
+		inline const IndexRangeList &		  getAtomIds() const { return _atomIds; }
 
 		void setCurrentObject( const Component::Chemistry::System & p_system );
 		void setCurrentObject( const Chain & p_chain );
@@ -304,9 +301,9 @@ namespace VTX::App::Selection
 		void _unselectResidues( const IndexRange & p_range );
 
 		void _referenceAtom( const Atom & p_atom );
-		void _referenceAtoms( const AtomIndexRange & p_range );
+		void _referenceAtoms( const IndexRange & p_range );
 		void _unselectAtom( const Atom & p_atom );
-		void _unselectAtoms( const AtomIndexRange & p_range );
+		void _unselectAtoms( const IndexRange & p_range );
 
 		void _refreshCurrentObject();
 
@@ -314,11 +311,11 @@ namespace VTX::App::Selection
 
 		Component::Chemistry::System * const _system;
 		CurrentObjectTypeEnum				 _currentObjectType	 = CurrentObjectTypeEnum::System;
-		size_t								 _currentObjectIndex = INVALID_INDEX;
+		Index								 _currentObjectIndex = INVALID_INDEX;
 
-		IndexRangeList	   _chainIds   = IndexRangeList();
-		IndexRangeList	   _residueIds = IndexRangeList();
-		AtomIndexRangeList _atomIds	   = AtomIndexRangeList();
+		IndexRangeList _chainIds   = IndexRangeList();
+		IndexRangeList _residueIds = IndexRangeList();
+		IndexRangeList _atomIds	   = IndexRangeList();
 
 		mutable Util::Math::AABB _localAABB = Util::Math::AABB();
 	};

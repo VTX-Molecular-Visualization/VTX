@@ -3,6 +3,7 @@
 
 #include "app/component/chemistry/_fwd.hpp"
 #include <cstddef>
+#include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry::Iterator
 {
@@ -10,7 +11,7 @@ namespace VTX::App::Component::Chemistry::Iterator
 	{
 		struct ResidueIt
 		{
-			ResidueIt( System * const p_system, const size_t p_index, const size_t p_end );
+			ResidueIt( System * const p_system, const Index p_index, const Index p_end );
 
 			Residue & operator*() const;
 			Residue * operator->();
@@ -26,21 +27,21 @@ namespace VTX::App::Component::Chemistry::Iterator
 
 		  private:
 			System * const _system;
-			size_t			 _index;
-			const size_t	 _end;
+			Index		   _index;
+			const Index	   _end;
 
 			void _getValid();
 		};
 
-		ResidueContainer( System * const p_system, const size_t p_firstResidueIndex, const size_t p_residueCount );
+		ResidueContainer( System * const p_system, const Index p_firstResidueIndex, const Index p_residueCount );
 
 		ResidueIt begin();
 		ResidueIt end();
 
 	  private:
 		System * const _system;
-		const size_t	 _firstResidueIndex;
-		const size_t	 _residueCount;
+		const Index	   _firstResidueIndex;
+		const Index	   _residueCount;
 	};
 } // namespace VTX::App::Component::Chemistry::Iterator
 #endif

@@ -52,4 +52,4 @@ jobs:
       working-directory: ${{env.LIB_DIR}}
       run:  |
         conan export util         
-        conan create renderer -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=20 -o vtx_renderer/*:test=True
+        conan create renderer -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -o vtx_renderer/*:test=True

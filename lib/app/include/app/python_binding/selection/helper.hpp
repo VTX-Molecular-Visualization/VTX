@@ -48,7 +48,7 @@ namespace VTX::App::PythonBinding::Selection
 
 	std::vector<std::string>  _getStringListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
 	std::vector<size_t>		  _getIndexListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
-	std::vector<atom_index_t> _getAtomIndexListInKwargs(
+	std::vector<Index> _getAtomIndexListInKwargs(
 		const pybind11::kwargs & p_kwargs,
 		const std::string &		 p_param
 	);

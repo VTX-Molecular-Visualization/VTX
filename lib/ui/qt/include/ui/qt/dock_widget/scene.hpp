@@ -2,11 +2,10 @@
 #define __VTX_UI_QT_DOCK_WIDGET_SCENE__
 
 #include "ui/qt/core/base_dock_widget.hpp"
+#include "ui/qt/widget/tree/model.hpp"
 #include <QPointer>
 #include <QTreeWidget>
 #include <app/component/chemistry/system.hpp>
-/*#include <app/component/scene/scene_item_component.hpp>
-*/
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -37,7 +36,7 @@ namespace VTX::UI::QT::DockWidget
 			PARTIAL
 		};
 
-		using WidgetData = size_t;
+		using WidgetData = Index;
 
 		/**
 		 * @brief Load data function.
@@ -51,7 +50,7 @@ namespace VTX::UI::QT::DockWidget
 		{
 			std::string_view name;
 			WidgetData		 data;
-			size_t			 childrenCount;
+			Index			 childrenCount;
 			E_VISIBILITY	 visibility;
 		};
 

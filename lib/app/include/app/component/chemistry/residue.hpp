@@ -2,9 +2,9 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_RESIDUE__
 
 #include "_fwd.hpp"
-#include "app/component/chemistry/index_types.hpp"
 #include "app/component/chemistry/iterator/atom.hpp"
 #include "app/core/ecs/base_component.hpp"
+#include "index_types.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
@@ -18,7 +18,7 @@ namespace VTX::App::Component::Chemistry
 	{
 	  public:
 		Residue() = default;
-		Residue( System * const p_system, const size_t p_index ) : _systemPtr( p_system ), _index( p_index ) {}
+		Residue( System * const p_system, const Index p_index ) : _systemPtr( p_system ), _index( p_index ) {}
 
 		const Chain * const getConstChainPtr() const;
 		Chain * const		getChainPtr() const;
@@ -27,22 +27,22 @@ namespace VTX::App::Component::Chemistry
 		const System * const getConstSystemPtr() const { return _systemPtr; }
 		System * const		 getSystemPtr() const { return _systemPtr; }
 
-		size_t getIndex() const { return _index; }
-		void   setIndex( const size_t p_index ) { _index = p_index; }
+		Index getIndex() const { return _index; }
+		void  setIndex( const Index p_index ) { _index = p_index; }
 
-		atom_index_t			getIndexFirstAtom() const;
-		void					setIndexFirstAtom( const atom_index_t p_indexFirstAtom );
-		atom_index_t			getIndexLastAtom() const;
-		atom_index_t			getAtomCount() const;
-		void					setAtomCount( const atom_index_t p_atomCount );
-		size_t					getIndexFirstBond() const;
-		void					setIndexFirstBond( const size_t p_indexFirstBond );
-		size_t					getBondCount() const;
-		void					setBondCount( const size_t p_bondCount );
+		Index					getIndexFirstAtom() const;
+		void					setIndexFirstAtom( const Index p_indexFirstAtom );
+		Index					getIndexLastAtom() const;
+		Index					getAtomCount() const;
+		void					setAtomCount( const Index p_atomCount );
+		Index					getIndexFirstBond() const;
+		void					setIndexFirstBond( const Index p_indexFirstBond );
+		Index					getBondCount() const;
+		void					setBondCount( const Index p_bondCount );
 		ChemDB::Residue::SYMBOL getSymbol() const;
 		void					setSymbol( const ChemDB::Residue::SYMBOL p_symbol );
-		size_t					getIndexInOriginalChain() const;
-		void					setIndexInOriginalChain( const size_t p_index );
+		Index					getIndexInOriginalChain() const;
+		void					setIndexInOriginalChain( const Index p_index );
 
 		const std::string_view getShortName() const;
 		const std::string_view getName() const;
@@ -63,7 +63,7 @@ namespace VTX::App::Component::Chemistry
 		ChemDB::SecondaryStructure::TYPE getSecondaryStructure() const { return _ssType; }
 		void setSecondaryStructure( const ChemDB::SecondaryStructure::TYPE p_ssType ) { _ssType = p_ssType; }
 
-		AtomIndexRange			getAtomRange() const;
+		IndexRange				getAtomRange() const;
 		Iterator::AtomContainer atoms() const;
 
 		bool isVisible() const;
@@ -75,10 +75,10 @@ namespace VTX::App::Component::Chemistry
 
 	  private:
 		System * _systemPtr = nullptr;
-		size_t	 _index		= INVALID_INDEX;
+		Index	 _index		= INVALID_INDEX;
 
 		Util::Color::Rgba	  _color				= COLOR_WHITE;
-		size_t				  _indexInOriginalChain = INVALID_INDEX;
+		Index				  _indexInOriginalChain = INVALID_INDEX;
 		ChemDB::Residue::TYPE _type					= ChemDB::Residue::TYPE::STANDARD;
 		char				  _insertionCode		= ' ';
 

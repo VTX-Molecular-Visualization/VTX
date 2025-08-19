@@ -46,9 +46,9 @@ namespace VTX::App::Component::Chemistry
 
 	ChemDB::Atom::TYPE Atom::getType() const
 	{
-		if ( _systemPtr->_systemStruct.atomSolvents.contains( atom_index_t( _index ) ) )
+		if ( _systemPtr->_systemStruct.atomSolvents.contains( Index( _index ) ) )
 			return ChemDB::Atom::TYPE::SOLVENT;
-		else if ( _systemPtr->_systemStruct.atomIons.contains( atom_index_t( _index ) ) )
+		else if ( _systemPtr->_systemStruct.atomIons.contains( Index( _index ) ) )
 			return ChemDB::Atom::TYPE::ION;
 
 		return ChemDB::Atom::TYPE::NORMAL;
@@ -58,16 +58,16 @@ namespace VTX::App::Component::Chemistry
 		switch ( p_type )
 		{
 		case ChemDB::Atom::TYPE::SOLVENT:
-			_systemPtr->_systemStruct.atomSolvents.addValue( atom_index_t( _index ) );
-			_systemPtr->_systemStruct.atomIons.removeValue( atom_index_t( _index ) );
+			_systemPtr->_systemStruct.atomSolvents.addValue( Index( _index ) );
+			_systemPtr->_systemStruct.atomIons.removeValue( Index( _index ) );
 			break;
 		case ChemDB::Atom::TYPE::ION:
-			_systemPtr->_systemStruct.atomSolvents.removeValue( atom_index_t( _index ) );
-			_systemPtr->_systemStruct.atomIons.addValue( atom_index_t( _index ) );
+			_systemPtr->_systemStruct.atomSolvents.removeValue( Index( _index ) );
+			_systemPtr->_systemStruct.atomIons.addValue( Index( _index ) );
 			break;
 		case ChemDB::Atom::TYPE::NORMAL:
-			_systemPtr->_systemStruct.atomSolvents.removeValue( atom_index_t( _index ) );
-			_systemPtr->_systemStruct.atomIons.removeValue( atom_index_t( _index ) );
+			_systemPtr->_systemStruct.atomSolvents.removeValue( Index( _index ) );
+			_systemPtr->_systemStruct.atomIons.removeValue( Index( _index ) );
 			break;
 		}
 	}
@@ -79,7 +79,7 @@ namespace VTX::App::Component::Chemistry
 	{
 		// I think the design of having an object remove itself by calling a method from another object is fragile
 		// design that led to 9aa18d50c29192684ab96892e9c8f0b7f31e7003 commit bug already.
-		const VTX::atom_index_t index = _index;
+		const VTX::Index index = _index;
 		_systemPtr->remove( index );
 	}
 } // namespace VTX::App::Component::Chemistry

@@ -9,6 +9,7 @@
 #include <QPointer>
 #include <QResizeEvent>
 #include <QWindow>
+#include <util/callback.hpp>
 
 namespace VTX::UI::QT::Widget
 {

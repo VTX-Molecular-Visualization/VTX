@@ -42,10 +42,10 @@ namespace VTX::App::Test::Util
 	}
 
 	std::unique_ptr<Selection::SystemData> Selection::generateSystemData(
-		const std::string &				  p_molName,
-		const std::vector<size_t> &		  p_chains,
-		const std::vector<size_t> &		  p_residues,
-		const std::vector<atom_index_t> & p_atoms
+		const std::string &		   p_molName,
+		const std::vector<Index> & p_chains,
+		const std::vector<Index> & p_residues,
+		const std::vector<Index> & p_atoms
 	)
 	{
 		const App::Core::ECS::BaseEntity entity = SCENE().getItem( p_molName );
@@ -62,11 +62,11 @@ namespace VTX::App::Test::Util
 			res->clear();
 
 			if ( not p_chains.empty() )
-				res->selectFullChains( VTX::Util::Math::RangeList<size_t>::fromList( p_chains ) );
+				res->selectFullChains( VTX::Util::Math::RangeList<Index>::fromList( p_chains ) );
 			if ( not p_residues.empty() )
-				res->selectFullResidues( VTX::Util::Math::RangeList<size_t>::fromList( p_residues ) );
+				res->selectFullResidues( VTX::Util::Math::RangeList<Index>::fromList( p_residues ) );
 			if ( not p_atoms.empty() )
-				res->selectAtoms( VTX::Util::Math::RangeList<atom_index_t>::fromList( p_atoms ) );
+				res->selectAtoms( VTX::Util::Math::RangeList<Index>::fromList( p_atoms ) );
 		}
 
 		return std::move( res );

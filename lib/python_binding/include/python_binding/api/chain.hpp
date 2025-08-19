@@ -2,7 +2,7 @@
 #define __VTX_PYTHON_API_CHAIN__
 
 #include <concepts>
-#include <util/types.hpp>
+#include <util/constants.hpp>
 
 namespace VTX::PythonBinding::API
 {
@@ -14,13 +14,13 @@ namespace VTX::PythonBinding::API
 	  public:
 		Chain() = default;
 
-		inline const size_t getIndex() const
+		inline const Index getIndex() const
 		{
 			if ( _ptr )
 				return _ptr->getIndex();
-			return 0xffffffffffffffff;
+			return INVALID_INDEX;
 		}
-		inline void setIndex( const size_t p_index )
+		inline void setIndex( const Index p_index )
 		{
 			if ( _ptr )
 				_ptr->setIndex( p_index );
@@ -39,47 +39,47 @@ namespace VTX::PythonBinding::API
 				_ptr->setName( p_name );
 		}
 
-		inline size_t getIndexFirstResidue() const
+		inline Index getIndexFirstResidue() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexFirstResidue();
 			return 0;
 		}
-		inline size_t getIndexLastResidue() const
+		inline Index getIndexLastResidue() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexLastResidue();
 			return 0;
 		}
-		inline void setIndexFirstResidue( const size_t p_residueIndex )
+		inline void setIndexFirstResidue( const Index p_residueIndex )
 		{
 			if ( _ptr )
 				_ptr->setIndexFirstResidue( p_residueIndex );
 		}
 
-		inline size_t getResidueCount() const
+		inline Index getResidueCount() const
 		{
 			if ( _ptr )
 				return _ptr->getResidueCount();
 			return 0;
 		}
-		inline void setResidueCount( const size_t p_residueCount )
+		inline void setResidueCount( const Index p_residueCount )
 		{
 			if ( _ptr )
 				_ptr->setResidueCount( p_residueCount );
 		}
 
-		inline atom_index_t getIndexFirstAtom() const
+		inline Index getIndexFirstAtom() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexFirstAtom();
-			return 0xffffffff;
+			return INVALID_INDEX;
 		}
-		inline atom_index_t getIndexLastAtom() const
+		inline Index getIndexLastAtom() const
 		{
 			if ( _ptr )
 				return _ptr->getIndexLastAtom();
-			return 0xffffffff;
+			return INVALID_INDEX;
 		}
 
 		inline const std::string & getOriginalChainID() const
@@ -125,21 +125,21 @@ namespace VTX::PythonBinding::API
 		{
 			virtual ~_interface() = default;
 
-			virtual const size_t getIndex() const				  = 0;
-			virtual void		 setIndex( const size_t p_index ) = 0;
+			virtual const Index getIndex() const				= 0;
+			virtual void		setIndex( const Index p_index ) = 0;
 
 			virtual const std::string & getName() const						  = 0;
 			virtual void				setName( const std::string & p_name ) = 0;
 
-			virtual size_t getIndexFirstResidue() const						   = 0;
-			virtual size_t getIndexLastResidue() const						   = 0;
-			virtual void   setIndexFirstResidue( const size_t p_residueIndex ) = 0;
+			virtual Index getIndexFirstResidue() const						 = 0;
+			virtual Index getIndexLastResidue() const						 = 0;
+			virtual void  setIndexFirstResidue( const Index p_residueIndex ) = 0;
 
-			virtual size_t getResidueCount() const						  = 0;
-			virtual void   setResidueCount( const size_t p_residueCount ) = 0;
+			virtual Index getResidueCount() const						= 0;
+			virtual void  setResidueCount( const Index p_residueCount ) = 0;
 
-			virtual atom_index_t getIndexFirstAtom() const = 0;
-			virtual atom_index_t getIndexLastAtom() const  = 0;
+			virtual Index getIndexFirstAtom() const = 0;
+			virtual Index getIndexLastAtom() const	= 0;
 
 			virtual const std::string & getOriginalChainID() const							= 0;
 			virtual void				setOriginalChainID( const std::string & p_chainId ) = 0;
@@ -176,8 +176,8 @@ namespace VTX::PythonBinding::API
 		  public:
 			_wrapper( T & p_ ) : _obj( p_ ) {}
 
-			const size_t getIndex() const override { return obj().getIndex(); }
-			void		 setIndex( const size_t p_index )
+			const Index getIndex() const override { return obj().getIndex(); }
+			void		setIndex( const Index p_index )
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().setIndex( p_index );
@@ -190,23 +190,23 @@ namespace VTX::PythonBinding::API
 					obj().setName( p_name );
 			}
 
-			size_t getIndexFirstResidue() const override { return obj().getIndexFirstResidue(); }
-			size_t getIndexLastResidue() const override { return obj().getIndexLastResidue(); }
-			void   setIndexFirstResidue( const size_t p_residueIndex )
+			Index getIndexFirstResidue() const override { return obj().getIndexFirstResidue(); }
+			Index getIndexLastResidue() const override { return obj().getIndexLastResidue(); }
+			void  setIndexFirstResidue( const Index p_residueIndex )
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().setIndexFirstResidue( p_residueIndex );
 			}
 
-			size_t getResidueCount() const override { return obj().getResidueCount(); }
-			void   setResidueCount( const size_t p_residueCount )
+			Index getResidueCount() const override { return obj().getResidueCount(); }
+			void  setResidueCount( const Index p_residueCount )
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().setResidueCount( p_residueCount );
 			}
 
-			atom_index_t getIndexFirstAtom() const override { return obj().getIndexFirstAtom(); }
-			atom_index_t getIndexLastAtom() const override { return obj().getIndexLastAtom(); }
+			Index getIndexFirstAtom() const override { return obj().getIndexFirstAtom(); }
+			Index getIndexLastAtom() const override { return obj().getIndexLastAtom(); }
 
 			const std::string & getOriginalChainID() const override { return obj().getOriginalChainID(); }
 			void				setOriginalChainID( const std::string & p_chainId )

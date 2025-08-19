@@ -91,7 +91,7 @@ namespace VTX::App::PythonBinding::Selection
 				= _selection->getSelectionDataFromComponent<App::Selection::SystemData>( mol
 				); // TODO : is this working properly ?
 
-			for ( const size_t & chainID : molSelection.getChainIds() )
+			for ( const Index & chainID : molSelection.getChainIds() )
 			{
 				res.emplace_back( mol.getChain( chainID ) );
 			}
@@ -115,7 +115,7 @@ namespace VTX::App::PythonBinding::Selection
 				= _selection->getSelectionDataFromComponent<App::Selection::SystemData>( mol
 				); // TODO : is this working properly ?
 
-			for ( const size_t & residueID : molSelection.getResidueIds() )
+			for ( const Index & residueID : molSelection.getResidueIds() )
 			{
 				res.emplace_back( mol.getResidue( residueID ) );
 			}
@@ -136,7 +136,7 @@ namespace VTX::App::PythonBinding::Selection
 			const App::Selection::SystemData & molSelection
 				= _selection->getSelectionDataFromComponent<App::Selection::SystemData>( mol );
 
-			for ( const atom_index_t & atomID : molSelection.getAtomIds() )
+			for ( const Index & atomID : molSelection.getAtomIds() )
 			{
 				res.emplace_back( mol.getAtom( atomID ) );
 			}

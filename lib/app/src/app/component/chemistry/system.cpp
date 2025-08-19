@@ -59,7 +59,7 @@ namespace VTX::App::Component::Chemistry
 		initBonds( _systemStruct.getBondCount() );
 	}
 
-	void System::initChains( const size_t p_chainCount )
+	void System::initChains( const Index p_chainCount )
 	{
 		_chains.resize( p_chainCount );
 		std::generate(
@@ -71,7 +71,7 @@ namespace VTX::App::Component::Chemistry
 		_realChainCount = p_chainCount;
 	}
 
-	void System::initResidues( const size_t p_residueCount )
+	void System::initResidues( const Index p_residueCount )
 	{
 		_residues.resize( p_residueCount );
 		std::generate(
@@ -85,7 +85,7 @@ namespace VTX::App::Component::Chemistry
 		_realResidueCount = p_residueCount;
 	}
 
-	void System::initAtoms( const size_t p_atomCount )
+	void System::initAtoms( const Index p_atomCount )
 	{
 		_atoms.resize( p_atomCount );
 		std::generate(
@@ -95,13 +95,13 @@ namespace VTX::App::Component::Chemistry
 		);
 
 		_atomUidRange = UID_SYSTEM().registerRange( Core::UID::uid( p_atomCount ) );
-		_visibleAtomIds.addRange( AtomIndexRange( 0, atom_index_t( p_atomCount ) ) );
-		_activeAtomIds.addRange( AtomIndexRange( 0, atom_index_t( p_atomCount ) ) );
+		_visibleAtomIds.addRange( IndexRange( 0, Index( p_atomCount ) ) );
+		_activeAtomIds.addRange( IndexRange( 0, Index( p_atomCount ) ) );
 
 		_realAtomCount = p_atomCount;
 	}
 
-	void System::initBonds( const size_t p_bondCount )
+	void System::initBonds( const Index p_bondCount )
 	{
 		_bonds.resize( p_bondCount );
 		std::generate(
@@ -134,11 +134,11 @@ namespace VTX::App::Component::Chemistry
 	}
 
 	bool System::isVisible() const { return !_visibleAtomIds.isEmpty(); }
-	bool System::isFullyVisible() const { return _visibleAtomIds.count() == atom_index_t( _atoms.size() ); }
+	bool System::isFullyVisible() const { return _visibleAtomIds.count() == Index( _atoms.size() ); }
 
 	void System::setVisible( const bool p_visible )
 	{
-		const AtomIndexRange atomRange = AtomIndexRange( 0, atom_index_t( _atoms.size() ) );
+		const IndexRange atomRange = IndexRange( 0, Index( _atoms.size() ) );
 
 		if ( p_visible )
 		{
@@ -153,9 +153,9 @@ namespace VTX::App::Component::Chemistry
 		const App::Core::VISIBILITY_APPLY_MODE applyMode
 			= p_visible ? App::Core::VISIBILITY_APPLY_MODE::SHOW : App::Core::VISIBILITY_APPLY_MODE::HIDE;
 
-		onVisibilityChange( AtomIndexRangeList( { atomRange } ), applyMode );
+		onVisibilityChange( IndexRangeList( { atomRange } ), applyMode );
 	}
-	void System::setVisible( const atom_index_t & p_atomId, bool p_visible )
+	void System::setVisible( const Index & p_atomId, bool p_visible )
 	{
 		App::Core::VISIBILITY_APPLY_MODE applyMode;
 
@@ -170,9 +170,9 @@ namespace VTX::App::Component::Chemistry
 			applyMode = App::Core::VISIBILITY_APPLY_MODE::HIDE;
 		}
 
-		onVisibilityChange( AtomIndexRangeList( { AtomIndexRange( p_atomId ) } ), applyMode );
+		onVisibilityChange( IndexRangeList( { IndexRange( p_atomId ) } ), applyMode );
 	}
-	void System::setVisible( const AtomIndexRange & p_atomRange, bool p_visible )
+	void System::setVisible( const IndexRange & p_atomRange, bool p_visible )
 	{
 		App::Core::VISIBILITY_APPLY_MODE applyMode;
 
@@ -187,10 +187,10 @@ namespace VTX::App::Component::Chemistry
 			applyMode = App::Core::VISIBILITY_APPLY_MODE::HIDE;
 		}
 
-		onVisibilityChange( AtomIndexRangeList( { p_atomRange } ), applyMode );
+		onVisibilityChange( IndexRangeList( { p_atomRange } ), applyMode );
 	}
 
-	void System::setVisible( const AtomIndexRangeList & p_atomRange, bool p_visible )
+	void System::setVisible( const IndexRangeList & p_atomRange, bool p_visible )
 	{
 		App::Core::VISIBILITY_APPLY_MODE applyMode;
 
@@ -208,34 +208,33 @@ namespace VTX::App::Component::Chemistry
 		onVisibilityChange( p_atomRange, applyMode );
 	}
 
-	void System::setAtomVisibilities( const AtomIndexRangeList & p_visibility )
+	void System::setAtomVisibilities( const IndexRangeList & p_visibility )
 	{
 		_visibleAtomIds = p_visibility;
 		onVisibilityChange( _visibleAtomIds, App::Core::VISIBILITY_APPLY_MODE::SET );
 	}
 
-	void System::remove( const atom_index_t & p_atomIndex )
+	void System::remove( const Index & p_atomIndex )
 	{
 		_activeAtomIds.removeValue( p_atomIndex );
 		_deleteTopologyPointers( p_atomIndex );
 		_resizeTopologyVectors();
 
-		onAtomRemoved( AtomIndexRangeList( p_atomIndex ) );
+		onAtomRemoved( IndexRangeList( p_atomIndex ) );
 	}
-	void System::remove( const AtomIndexRange & p_atomRange )
+	void System::remove( const IndexRange & p_atomRange )
 	{
 		_activeAtomIds.removeRange( p_atomRange );
 		_deleteTopologyPointers( p_atomRange );
 		_resizeTopologyVectors();
 
-		onAtomRemoved( AtomIndexRangeList( { p_atomRange } ) );
+		onAtomRemoved( IndexRangeList( { p_atomRange } ) );
 	}
-	void System::remove( const AtomIndexRangeList & p_atomRangeList )
+	void System::remove( const IndexRangeList & p_atomRangeList )
 	{
 		Util::Algorithm::Range::substractInSitu( _activeAtomIds, p_atomRangeList );
 
-		for ( AtomIndexRangeList::RangeConstIterator it = p_atomRangeList.rangeBegin();
-			  it != p_atomRangeList.rangeEnd();
+		for ( IndexRangeList::RangeConstIterator it = p_atomRangeList.rangeBegin(); it != p_atomRangeList.rangeEnd();
 			  it++ )
 		{
 			_deleteTopologyPointers( *it );
@@ -245,22 +244,22 @@ namespace VTX::App::Component::Chemistry
 		onAtomRemoved( p_atomRangeList );
 	}
 
-	void System::_deleteTopologyPointers( const atom_index_t p_atomIndex )
+	void System::_deleteTopologyPointers( const Index p_atomIndex )
 	{
 		_internalDeleteAtom( p_atomIndex );
 
-		const size_t residueIndex = _systemStruct.atomResidueIndexes[ p_atomIndex ];
+		const Index residueIndex = _systemStruct.atomResidueIndexes[ p_atomIndex ];
 		_refreshResidueRemovedState( residueIndex );
 
-		const size_t chainIndex = _systemStruct.residueChainIndexes[ residueIndex ];
+		const Index chainIndex = _systemStruct.residueChainIndexes[ residueIndex ];
 		_refreshChainRemovedState( chainIndex );
 	}
-	void System::_deleteTopologyPointers( const AtomIndexRange & p_atomRange )
+	void System::_deleteTopologyPointers( const IndexRange & p_atomRange )
 	{
 		_internalDeleteAtoms( p_atomRange );
 
-		const size_t firstResidueIndex = _systemStruct.atomResidueIndexes[ p_atomRange.getFirst() ];
-		const size_t lastResidueIndex  = _systemStruct.atomResidueIndexes[ p_atomRange.getLast() ];
+		const Index firstResidueIndex = _systemStruct.atomResidueIndexes[ p_atomRange.getFirst() ];
+		const Index lastResidueIndex  = _systemStruct.atomResidueIndexes[ p_atomRange.getLast() ];
 
 		if ( firstResidueIndex == lastResidueIndex )
 		{
@@ -268,8 +267,7 @@ namespace VTX::App::Component::Chemistry
 		}
 		else
 		{
-			const ResidueIndexRange rangeToDelete
-				= ResidueIndexRange::createFirstLast( firstResidueIndex + 1, lastResidueIndex - 1 );
+			const IndexRange rangeToDelete = IndexRange::createFirstLast( firstResidueIndex + 1, lastResidueIndex - 1 );
 
 			if ( rangeToDelete.isValid() )
 				_internalDeleteResidues( rangeToDelete );
@@ -278,8 +276,8 @@ namespace VTX::App::Component::Chemistry
 			_refreshResidueRemovedState( lastResidueIndex );
 		}
 
-		const size_t firstChainIndex = _systemStruct.residueChainIndexes[ firstResidueIndex ];
-		const size_t lastChainIndex	 = _systemStruct.residueChainIndexes[ lastResidueIndex ];
+		const Index firstChainIndex = _systemStruct.residueChainIndexes[ firstResidueIndex ];
+		const Index lastChainIndex	= _systemStruct.residueChainIndexes[ lastResidueIndex ];
 
 		if ( firstChainIndex == lastChainIndex )
 		{
@@ -287,8 +285,7 @@ namespace VTX::App::Component::Chemistry
 		}
 		else
 		{
-			const ChainIndexRange rangeToDelete
-				= ChainIndexRange::createFirstLast( firstChainIndex + 1, lastChainIndex - 1 );
+			const IndexRange rangeToDelete = IndexRange::createFirstLast( firstChainIndex + 1, lastChainIndex - 1 );
 
 			if ( rangeToDelete.isValid() )
 				_internalDeleteChains( rangeToDelete );
@@ -298,13 +295,13 @@ namespace VTX::App::Component::Chemistry
 		}
 	}
 
-	void System::_refreshResidueRemovedState( const size_t p_residueIndex )
+	void System::_refreshResidueRemovedState( const Index p_residueIndex )
 	{
 		const Residue * const residue = getResidue( p_residueIndex );
 
 		if ( residue != nullptr )
 		{
-			const AtomIndexRange atomRange = residue->getAtomRange();
+			const IndexRange atomRange = residue->getAtomRange();
 
 			if ( !_activeAtomIds.intersectWith( atomRange ) )
 			{
@@ -319,8 +316,8 @@ namespace VTX::App::Component::Chemistry
 					_systemStruct.residueAtomCounts[ p_residueIndex ]--;
 				}
 
-				atom_index_t lastAtom = _systemStruct.residueFirstAtomIndexes[ p_residueIndex ]
-										+ _systemStruct.residueAtomCounts[ p_residueIndex ] - 1;
+				Index lastAtom = _systemStruct.residueFirstAtomIndexes[ p_residueIndex ]
+								 + _systemStruct.residueAtomCounts[ p_residueIndex ] - 1;
 
 				while ( _atoms[ lastAtom ] == nullptr )
 				{
@@ -330,22 +327,22 @@ namespace VTX::App::Component::Chemistry
 			}
 		}
 	}
-	void System::_refreshChainRemovedState( const size_t p_chainIndex )
+	void System::_refreshChainRemovedState( const Index p_chainIndex )
 	{
 		const Chain * const chain = getChain( p_chainIndex );
 
 		if ( chain != nullptr )
 		{
-			const atom_index_t firstAtomIndex
+			const Index firstAtomIndex
 				= _systemStruct.residueFirstAtomIndexes[ _systemStruct.chainFirstResidues[ p_chainIndex ] ];
 
-			const size_t lastResidueIndex = _systemStruct.chainFirstResidues[ p_chainIndex ]
-											+ _systemStruct.chainResidueCounts[ p_chainIndex ] - 1;
+			const Index lastResidueIndex = _systemStruct.chainFirstResidues[ p_chainIndex ]
+										   + _systemStruct.chainResidueCounts[ p_chainIndex ] - 1;
 
-			const atom_index_t lastAtomIndex = _systemStruct.residueFirstAtomIndexes[ lastResidueIndex ]
-											   + _systemStruct.residueAtomCounts[ lastResidueIndex ] - 1;
+			const Index lastAtomIndex = _systemStruct.residueFirstAtomIndexes[ lastResidueIndex ]
+										+ _systemStruct.residueAtomCounts[ lastResidueIndex ] - 1;
 
-			const AtomIndexRange atomRange = AtomIndexRange::createFirstLast( firstAtomIndex, lastAtomIndex );
+			const IndexRange atomRange = IndexRange::createFirstLast( firstAtomIndex, lastAtomIndex );
 
 			if ( !_activeAtomIds.intersectWith( atomRange ) )
 			{
@@ -359,8 +356,8 @@ namespace VTX::App::Component::Chemistry
 					_systemStruct.chainResidueCounts[ p_chainIndex ]--;
 				}
 
-				size_t lastResidue = _systemStruct.chainFirstResidues[ p_chainIndex ]
-									 + _systemStruct.chainResidueCounts[ p_chainIndex ] - 1;
+				Index lastResidue = _systemStruct.chainFirstResidues[ p_chainIndex ]
+									+ _systemStruct.chainResidueCounts[ p_chainIndex ] - 1;
 
 				while ( _residues[ lastResidue ] == nullptr )
 				{
@@ -371,38 +368,38 @@ namespace VTX::App::Component::Chemistry
 		}
 	}
 
-	void System::_internalDeleteAtom( const atom_index_t p_index )
+	void System::_internalDeleteAtom( const Index p_index )
 	{
 		_atoms[ p_index ] = nullptr;
 		_realAtomCount--;
 	}
-	void System::_internalDeleteAtoms( const AtomIndexRange & p_range )
+	void System::_internalDeleteAtoms( const IndexRange & p_range )
 	{
-		for ( atom_index_t iAtom = p_range.getFirst(); iAtom <= p_range.getLast(); iAtom++ )
+		for ( Index iAtom = p_range.getFirst(); iAtom <= p_range.getLast(); iAtom++ )
 			_atoms[ iAtom ] = nullptr;
 
 		_realAtomCount -= p_range.getCount();
 	}
-	void System::_internalDeleteResidue( const size_t p_index )
+	void System::_internalDeleteResidue( const Index p_index )
 	{
 		_residues[ p_index ] = nullptr;
 		_realResidueCount--;
 	}
-	void System::_internalDeleteResidues( const ResidueIndexRange & p_range )
+	void System::_internalDeleteResidues( const IndexRange & p_range )
 	{
-		for ( size_t iResidue = p_range.getFirst(); iResidue <= p_range.getLast(); iResidue++ )
+		for ( Index iResidue = p_range.getFirst(); iResidue <= p_range.getLast(); iResidue++ )
 			_residues[ iResidue ] = nullptr;
 
 		_realResidueCount -= p_range.getCount();
 	}
-	void System::_internalDeleteChain( const size_t p_index )
+	void System::_internalDeleteChain( const Index p_index )
 	{
 		_chains[ p_index ] = nullptr;
 		_realChainCount--;
 	}
-	void System::_internalDeleteChains( const ChainIndexRange & p_range )
+	void System::_internalDeleteChains( const IndexRange & p_range )
 	{
-		for ( size_t iChain = p_range.getFirst(); iChain <= p_range.getLast(); iChain++ )
+		for ( Index iChain = p_range.getFirst(); iChain <= p_range.getLast(); iChain++ )
 			_chains[ iChain ] = nullptr;
 
 		_realChainCount -= p_range.getCount();

@@ -32,8 +32,6 @@ namespace VTX::UI::QT::Widget
 		void addToolBarAction( const App::UI::WidgetId & p_toolbar, const App::UI::DescAction & p_action );
 		void resetLayout();
 
-		inline void setClosing( const bool p_closing ) { _closing = p_closing; }
-
 		void changeEvent( QEvent * ) override;
 		void closeEvent( QCloseEvent * ) override;
 
@@ -92,8 +90,6 @@ namespace VTX::UI::QT::Widget
 		// TODO: keep like that or re-tabify?
 		QByteArray _defaultGeometry;
 		QByteArray _defaultState;
-
-		bool _closing = false;
 	};
 
 } // namespace VTX::UI::QT::Widget

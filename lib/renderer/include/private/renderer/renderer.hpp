@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_RENDERER__
 #define __VTX_RENDERER_RENDERER__
 
-// #undef WITH_CUDA
+#undef WITH_CUDA
 
 #ifdef WITH_CUDA
 #include "bcs/sesdf/sesdf.hpp"
@@ -318,7 +318,6 @@ namespace VTX::Renderer
 		{
 			_refreshDataSpheresCylinders();
 			_refreshDataRibbons();
-			_refreshDataSES();
 			_refreshDataModels();
 
 			setNeedUpdate( true );
@@ -326,7 +325,6 @@ namespace VTX::Renderer
 
 		void _refreshDataSpheresCylinders();
 		void _refreshDataRibbons();
-		void _refreshDataSES();
 		void _refreshDataModels();
 		void _refreshDataVoxels();
 

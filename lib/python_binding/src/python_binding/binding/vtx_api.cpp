@@ -23,7 +23,7 @@ namespace VTX::PythonBinding::Binding
 			)
 			.def(
 				"__getitem__",
-				[]( API::Collection<ITEM> & _, const size_t & idx )
+				[]( API::Collection<ITEM> & _, const Index & idx )
 				{
 					if ( _.size() > idx )
 						return _[ idx ];
@@ -113,17 +113,11 @@ namespace VTX::PythonBinding::Binding
 			.def( "getAtoms", []( API::System & p_mol ) { return p_mol.getAtoms(); } )
 			.def( "getAtoms", []( const API::System & p_mol ) { return p_mol.getAtoms(); } )
 			.def(
-				"getChain",
-				[]( const API::System & p_mol, const size_t & p_index ) { return p_mol.getChain( p_index ); }
+				"getChain", []( const API::System & p_mol, const Index & p_index ) { return p_mol.getChain( p_index ); }
 			)
-			.def( "getChain", []( API::System & p_mol, const size_t & p_index ) { return p_mol.getChain( p_index ); } )
-			.def(
-				"getAtom",
-				[]( const API::System & p_mol, const atom_index_t p_index ) { return p_mol.getAtom( p_index ); }
-			)
-			.def(
-				"getAtom", []( API::System & p_mol, const atom_index_t p_index ) { return p_mol.getAtom( p_index ); }
-			)
+			.def( "getChain", []( API::System & p_mol, const Index & p_index ) { return p_mol.getChain( p_index ); } )
+			.def( "getAtom", []( const API::System & p_mol, const Index p_index ) { return p_mol.getAtom( p_index ); } )
+			.def( "getAtom", []( API::System & p_mol, const Index p_index ) { return p_mol.getAtom( p_index ); } )
 			.def( "initAtoms", &API::System::initAtoms )
 			.def( "initBonds", &API::System::initBonds )
 			.def( "initChains", &API::System::initChains )
@@ -135,10 +129,10 @@ namespace VTX::PythonBinding::Binding
 			.def( "getResidues", []( API::System & p_mol ) { return p_mol.getResidues(); } )
 			.def(
 				"getResidue",
-				[]( const API::System & p_mol, const size_t & p_index ) { return p_mol.getResidue( p_index ); }
+				[]( const API::System & p_mol, const Index & p_index ) { return p_mol.getResidue( p_index ); }
 			)
 			.def(
-				"getResidue", []( API::System & p_mol, const size_t & p_index ) { return p_mol.getResidue( p_index ); }
+				"getResidue", []( API::System & p_mol, const Index & p_index ) { return p_mol.getResidue( p_index ); }
 			)
 
 			;

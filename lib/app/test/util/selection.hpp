@@ -57,10 +57,10 @@ namespace VTX::App::Test::Util
 		}
 
 		static std::unique_ptr<SystemData> generateSystemData(
-			const std::string &				  p_molName,
-			const std::vector<size_t> &		  p_chains	 = {},
-			const std::vector<size_t> &		  p_residues = {},
-			const std::vector<atom_index_t> & p_atoms	 = {}
+			const std::string &		   p_molName,
+			const std::vector<Index> & p_chains	  = {},
+			const std::vector<Index> & p_residues = {},
+			const std::vector<Index> & p_atoms	  = {}
 		);
 	};
 } // namespace VTX::App::Test::Util

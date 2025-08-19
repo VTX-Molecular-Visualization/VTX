@@ -31,8 +31,8 @@ namespace VTX::IO::Reader
 
 			~ResidueIt();
 
-			atom_index_t operator*() const;
-			atom_index_t operator->() const;
+			Index operator*() const;
+			Index operator->() const;
 
 			// Prefix increment
 			ResidueIt & operator++();
@@ -67,10 +67,10 @@ namespace VTX::IO::Reader
 		const FilePath & getPath() { return _path; }
 
 		// Trajectory
-		size_t getFrameCount() const;
-		size_t getResidueCount() const;
-		size_t getAtomCount() const;
-		size_t getBondCount() const;
+		Index getFrameCount() const;
+		Index getResidueCount() const;
+		Index getAtomCount() const;
+		Index getBondCount() const;
 
 		// Frame
 		const std::string getFrameName() const;
@@ -90,30 +90,38 @@ namespace VTX::IO::Reader
 			const std::string & p_property,
 			const std::string & p_defaultValue = ""
 		) const;
-		const double getCurrentResidueDoubleProperty( const std::string & p_property, const double p_defaultValue = 0. )
-			const;
-		const bool getCurrentResidueBoolProperty( const std::string & p_property, const bool p_defaultValue = false )
-			const;
+		const double getCurrentResidueDoubleProperty(
+			const std::string & p_property,
+			const double		p_defaultValue = 0.
+		) const;
+		const bool getCurrentResidueBoolProperty(
+			const std::string & p_property,
+			const bool			p_defaultValue = false
+		) const;
 
 		const std::string & getCurrentResidueName() const;
-		const size_t		getCurrentResidueId() const;
-		const atom_index_t	getCurrentResidueFirstAtomIndex() const;
-		const atom_index_t	getCurrentResidueAtomCount() const;
+		const Index			getCurrentResidueId() const;
+		const Index			getCurrentResidueFirstAtomIndex() const;
+		const Index			getCurrentResidueAtomCount() const;
 
 		ResidueIt getCurrentResidueAtomIteratorBegin() const;
 		ResidueIt getCurrentResidueAtomIteratorEnd() const;
 
 		// Atom
-		void setCurrentAtom( const size_t p_index );
+		void setCurrentAtom( const Index p_index );
 
 		const std::string getCurrentAtomStringProperty(
 			const std::string & p_property,
 			const std::string & p_defaultValue = ""
 		) const;
-		const double getCurrentAtomDoubleProperty( const std::string & p_property, const double p_defaultValue = 0. )
-			const;
-		const bool getCurrentAtomBoolProperty( const std::string & p_property, const bool p_defaultValue = false )
-			const;
+		const double getCurrentAtomDoubleProperty(
+			const std::string & p_property,
+			const double		p_defaultValue = 0.
+		) const;
+		const bool getCurrentAtomBoolProperty(
+			const std::string & p_property,
+			const bool			p_defaultValue = false
+		) const;
 
 		const std::string &				getCurrentAtomName() const;
 		Vec3f							getCurrentAtomPosition() const;
@@ -123,8 +131,8 @@ namespace VTX::IO::Reader
 		// Bonds
 		void setCurrentBond( const size_t p_bondIndex );
 
-		atom_index_t						 getCurrentBondFirstAtomIndex() const;
-		atom_index_t						 getCurrentBondSecondAtomIndex() const;
+		Index								 getCurrentBondFirstAtomIndex() const;
+		Index								 getCurrentBondSecondAtomIndex() const;
 		const VTX::Core::ChemDB::Bond::ORDER getCurrentBondOrder() const;
 
 	  protected:

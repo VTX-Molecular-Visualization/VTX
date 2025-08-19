@@ -89,8 +89,7 @@ TEST_CASE( "VTX_APP - Selection - Systems", "[unit][systems]" )
 
 	using SystemData	 = Selection::SystemData;
 	using AssignmentType = Selection::AssignmentType;
-	using IndexRange	 = Util::Math::Range<size_t>;
-	using AtomIndexRange = Util::Math::Range<atom_index_t>;
+	using IndexRange	 = Util::Math::Range<Index>;
 
 	App::Fixture app;
 
@@ -150,9 +149,7 @@ TEST_CASE( "VTX_APP - Selection - Systems", "[unit][systems]" )
 		IndexRange( mol1.getChain( 0 )->getIndexFirstResidue(), mol1.getChain( 0 )->getResidueCount() )
 	) );
 	CHECK( !molSelData1.areAtomsSelected(
-		AtomIndexRange::createFirstLast(
-			mol1.getChain( 0 )->getIndexFirstAtom(), mol1.getChain( 0 )->getIndexLastAtom()
-		)
+		IndexRange::createFirstLast( mol1.getChain( 0 )->getIndexFirstAtom(), mol1.getChain( 0 )->getIndexLastAtom() )
 	) );
 
 	CHECK( molSelData1.getCurrentObjectType() == SystemData::CurrentObjectTypeEnum::None );
@@ -204,8 +201,8 @@ TEST_CASE( "VTX_APP - Selection - Benchmark", "[.][perfs]" )
 	{
 		Selection::SystemData & molData = CURRENT_SELECTION().select<Selection::SystemData>( selectableMol1 );
 
-		const atom_index_t atomCount = atom_index_t( mol1.getAtoms().size() );
-		for ( atom_index_t i = 0; i < atomCount; i += 2 )
+		const Index atomCount = Index( mol1.getAtoms().size() );
+		for ( Index i = 0; i < atomCount; i += 2 )
 		{
 			molData.selectAtom( *mol1.getAtom( i ) );
 		}

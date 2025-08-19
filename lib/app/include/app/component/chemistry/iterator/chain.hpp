@@ -3,6 +3,7 @@
 
 #include "app/component/chemistry/_fwd.hpp"
 #include <cstddef>
+#include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry::Iterator
 {
@@ -10,7 +11,7 @@ namespace VTX::App::Component::Chemistry::Iterator
 	{
 		struct ChainIt
 		{
-			ChainIt( System * const p_system, const size_t p_index, const size_t p_end );
+			ChainIt( System * const p_system, const Index p_index, const Index p_end );
 
 			Chain & operator*() const;
 			Chain * operator->();
@@ -26,21 +27,21 @@ namespace VTX::App::Component::Chemistry::Iterator
 
 		  private:
 			System * const _system;
-			size_t			 _index;
-			const size_t	 _end;
+			Index		   _index;
+			const Index	   _end;
 
 			void _getValid();
 		};
 
-		ChainContainer( System * const p_system, const size_t p_firstChainIndex, const size_t p_chainCount );
+		ChainContainer( System * const p_system, const Index p_firstChainIndex, const Index p_chainCount );
 
 		ChainIt begin();
 		ChainIt end();
 
 	  private:
 		System * const _system;
-		const size_t	 _firstChainIndex;
-		const size_t	 _chainCount;
+		const Index	   _firstChainIndex;
+		const Index	   _chainCount;
 	};
 } // namespace VTX::App::Component::Chemistry::Iterator
 #endif

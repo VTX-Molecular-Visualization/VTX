@@ -32,14 +32,14 @@ namespace VTX::App::Helper::Chemistry
 	{
 		using namespace VTX::Core;
 
-		std::vector<Component::Chemistry::Residue *> res	  = std::vector<Component::Chemistry::Residue *>();
+		std::vector<Component::Chemistry::Residue *> res	= std::vector<Component::Chemistry::Residue *>();
 		Component::Chemistry::System &				 system = *( p_chain.getSystemPtr() );
 
 		const ChemDB::Residue::SYMBOL residueSymbol = ChemDB::Residue::getSymbolFromAnyName( p_residueName );
 
 		if ( residueSymbol != ChemDB::Residue::SYMBOL::UNKNOWN )
 		{
-			for ( size_t iRes = p_chain.getIndexFirstResidue(); iRes <= p_chain.getIndexLastResidue(); iRes++ )
+			for ( Index iRes = p_chain.getIndexFirstResidue(); iRes <= p_chain.getIndexLastResidue(); iRes++ )
 			{
 				Component::Chemistry::Residue * const residue = system.getResidue( iRes );
 
@@ -49,7 +49,7 @@ namespace VTX::App::Helper::Chemistry
 		}
 		else // Unknown symbol => check names
 		{
-			for ( size_t iRes = p_chain.getIndexFirstResidue(); iRes <= p_chain.getIndexLastResidue(); iRes++ )
+			for ( Index iRes = p_chain.getIndexFirstResidue(); iRes <= p_chain.getIndexLastResidue(); iRes++ )
 			{
 				Component::Chemistry::Residue * const residue = system.getResidue( iRes );
 

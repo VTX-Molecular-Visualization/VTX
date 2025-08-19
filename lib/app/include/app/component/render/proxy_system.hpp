@@ -32,8 +32,8 @@ namespace VTX::App::Component::Render
 		std::vector<uint>  _generateResidueUids( const Component::Chemistry::System & p_molComp ) const;
 
 		void _applyOnVisibility(
-			const Component::Chemistry::AtomIndexRangeList & p_rangeList,
-			const App::Core::VISIBILITY_APPLY_MODE			 p_applyMode
+			const Component::Chemistry::IndexRangeList & p_rangeList,
+			const App::Core::VISIBILITY_APPLY_MODE		 p_applyMode
 		);
 
 		void _applyVisibilityCallbacks();

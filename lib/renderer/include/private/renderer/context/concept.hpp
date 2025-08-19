@@ -51,7 +51,7 @@ namespace VTX::Renderer::Context
 			  std::vector<uchar> &			  p_image,
 			  const std::string &			  p_pass,
 			  const E_CHAN_OUT				  p_channel,
-			  std::any &					  p_textureData,
+			  void * const					  p_textureData,
 			  const ComputePass &			  p_computePass
 		  ) {
 				 {

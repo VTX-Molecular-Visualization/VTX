@@ -29,17 +29,17 @@ namespace VTX::App::PythonBinding::Selection
 			bool hasSpecifyAtom() const;
 
 			std::vector<std::string> systemNames;
-			std::vector<size_t>		 systemIndexes;
+			std::vector<Index>		 systemIndexes;
 
 			std::vector<std::string> chainNames;
-			std::vector<size_t>		 chainIndexes;
+			std::vector<Index>		 chainIndexes;
 
 			std::vector<std::string> residueNames;
-			std::vector<size_t>		 residueIndexes;
+			std::vector<Index>		 residueIndexes;
 
 			std::vector<std::string>					 atomNames;
 			std::vector<VTX::Core::ChemDB::Atom::SYMBOL> atomSymbols;
-			std::vector<atom_index_t>					 atomIndexes;
+			std::vector<Index>							 atomIndexes;
 
 		  private:
 			bool _hasSystemParams;
@@ -72,8 +72,8 @@ namespace VTX::App::PythonBinding::Selection
 		);
 
 		static void _addAtomsFollowingKwargs(
-			const atom_index_t					p_firstAtom,
-			const atom_index_t					p_lastAtom,
+			const Index							p_firstAtom,
+			const Index							p_lastAtom,
 			App::Component::Chemistry::System & p_system,
 			App::Selection::SystemData &		p_systemSelectionData,
 			const InterpretedKwargs &			p_kwargs
