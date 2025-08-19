@@ -34,16 +34,16 @@ namespace VTX::UI::QT::Widget::Library
 			_sliderSphereRadiusAdd = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSphere );
 			_groupboxSphere->addWidget( new QLabel( "Radius add", _groupboxSphere ) );
 			_groupboxSphere->addWidget( _sliderSphereRadiusAdd );
-			// TODO: move min and max to representation.
-			// sliderRadiusAdd->setMinimum( -( VTX::Core::ChemDB::Atom::VDW_RADIUS_MIN ) * 100 + 1 );
 			_sliderSphereRadiusAdd->setMinimum( RADIUS_SPHERE_ADD_MIN );
 			_sliderSphereRadiusAdd->setMaximum( RADIUS_SPHERE_ADD_MAX );
+			_sliderSphereRadiusAdd->setSuffix( QStringLiteral( u"\u00C5" ) );
 
 			_sliderSphereRadiusFixed = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSphere );
 			_groupboxSphere->addWidget( new QLabel( "Radius", _groupboxSphere ) );
 			_groupboxSphere->addWidget( _sliderSphereRadiusFixed );
 			_sliderSphereRadiusFixed->setMinimum( RADIUS_SPHERE_FIXED_MIN );
 			_sliderSphereRadiusFixed->setMaximum( RADIUS_SPHERE_FIXED_MAX );
+			_sliderSphereRadiusFixed->setSuffix( QStringLiteral( u"\u00C5" ) );
 
 			// Cylinder.
 			_groupboxCylinder = new HideableGroupBox( "Bonds", _groupboxPreset );
@@ -54,6 +54,7 @@ namespace VTX::UI::QT::Widget::Library
 			_groupboxCylinder->addWidget( _sliderCylinderRadius );
 			_sliderCylinderRadius->setMinimum( RADIUS_CYLINDER_MIN );
 			_sliderCylinderRadius->setMaximum( RADIUS_CYLINDER_MAX );
+			_sliderCylinderRadius->setSuffix( QStringLiteral( u"\u00C5" ) );
 
 			_checkBoxCylinderColorBlending = new QCheckBox( "Blend colors", _groupboxCylinder );
 			_groupboxCylinder->addWidget( _checkBoxCylinderColorBlending );
@@ -69,8 +70,15 @@ namespace VTX::UI::QT::Widget::Library
 			_groupboxSes = new HideableGroupBox( "SES", _groupboxPreset );
 			_groupboxPreset->layout()->addWidget( _groupboxSes );
 
+			_sliderSesProbeRadius = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSes );
+			_groupboxSes->addWidget( new QLabel( "Probe radius", _groupboxSes ) );
+			_groupboxSes->addWidget( _sliderSesProbeRadius );
+			_sliderSesProbeRadius->setMinimum( SES_PROBE_RADIUS_MIN );
+			_sliderSesProbeRadius->setMaximum( SES_PROBE_RADIUS_MAX );
+			_sliderSesProbeRadius->setSuffix( QStringLiteral( u"\u00C5" ) );
+
 			// Connect callbacks.
-			// TODO: this->_preset is a copy of pointer.
+			// TODO: _preset is a copy of pointer.
 			connect(
 				_groupboxSphere,
 				&HideableGroupBox::toggled,
@@ -79,7 +87,7 @@ namespace VTX::UI::QT::Widget::Library
 					App::ACTION_SYSTEM()
 						.execute<App::Action::Representation::
 									 ChangeRepresentation<E_REPRESENTATION_SETTINGS::HAS_SPHERE, bool>>(
-							this->_preset, p_checked
+							_preset, p_checked
 						);
 				}
 			);
@@ -93,7 +101,7 @@ namespace VTX::UI::QT::Widget::Library
 					App::ACTION_SYSTEM()
 						.execute<App::Action::Representation::
 									 ChangeRepresentation<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>>(
-							this->_preset, isFixed
+							_preset, isFixed
 						);
 				}
 			);
@@ -106,7 +114,7 @@ namespace VTX::UI::QT::Widget::Library
 					App::ACTION_SYSTEM()
 						.execute<App::Action::Representation::
 									 ChangeRepresentation<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, float>>(
-							this->_preset, p_value
+							_preset, p_value
 						);
 				}
 			);
@@ -119,7 +127,7 @@ namespace VTX::UI::QT::Widget::Library
 					App::ACTION_SYSTEM()
 						.execute<App::Action::Representation::
 									 ChangeRepresentation<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, float>>(
-							this->_preset, p_value
+							_preset, p_value
 						);
 				}
 			);
@@ -132,7 +140,7 @@ namespace VTX::UI::QT::Widget::Library
 					App::ACTION_SYSTEM()
 						.execute<App::Action::Representation::
 									 ChangeRepresentation<E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bool>>(
-							this->_preset, p_checked
+							_preset, p_checked
 						);
 				}
 			);
@@ -145,7 +153,7 @@ namespace VTX::UI::QT::Widget::Library
 					App::ACTION_SYSTEM()
 						.execute<App::Action::Representation::
 									 ChangeRepresentation<E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, float>>(
-							this->_preset, p_value
+							_preset, p_value
 						);
 				}
 			);
@@ -158,7 +166,7 @@ namespace VTX::UI::QT::Widget::Library
 					App::ACTION_SYSTEM()
 						.execute<App::Action::Representation::
 									 ChangeRepresentation<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>>(
-							this->_preset, p_checked
+							_preset, p_checked
 						);
 				}
 			);
@@ -171,7 +179,7 @@ namespace VTX::UI::QT::Widget::Library
 					App::ACTION_SYSTEM()
 						.execute<App::Action::Representation::
 									 ChangeRepresentation<E_REPRESENTATION_SETTINGS::HAS_RIBBON, bool>>(
-							this->_preset, p_checked
+							_preset, p_checked
 						);
 				}
 			);
@@ -184,7 +192,7 @@ namespace VTX::UI::QT::Widget::Library
 					App::ACTION_SYSTEM()
 						.execute<App::Action::Representation::
 									 ChangeRepresentation<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>>(
-							this->_preset, p_checked
+							_preset, p_checked
 						);
 				}
 			);
@@ -197,7 +205,20 @@ namespace VTX::UI::QT::Widget::Library
 					App::ACTION_SYSTEM()
 						.execute<App::Action::Representation::
 									 ChangeRepresentation<E_REPRESENTATION_SETTINGS::HAS_SES, bool>>(
-							this->_preset, p_checked
+							_preset, p_checked
+						);
+				}
+			);
+
+			connect(
+				_sliderSesProbeRadius,
+				&EditableSlider::valueChanged,
+				[ this ]( const float p_value )
+				{
+					App::ACTION_SYSTEM()
+						.execute<App::Action::Representation::
+									 ChangeRepresentation<E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS, float>>(
+							_preset, p_value
 						);
 				}
 			);
@@ -209,7 +230,7 @@ namespace VTX::UI::QT::Widget::Library
 	  protected:
 		void _onPresetChanged() override
 		{
-			assert( this->_preset != nullptr );
+			assert( _preset != nullptr );
 
 			const QSignalBlocker blocker0( _groupboxSphere );
 			const QSignalBlocker blocker1( _comboBoxSphereRadiusType );
@@ -221,6 +242,7 @@ namespace VTX::UI::QT::Widget::Library
 			const QSignalBlocker blocker7( _groupboxRibbon );
 			const QSignalBlocker blocker8( _checkBoxRibbonColorBlending );
 			const QSignalBlocker blocker9( _groupboxSes );
+			const QSignalBlocker blocker10( _sliderSesProbeRadius );
 
 			_groupboxSphere->setChecked( _preset->getData().hasSphere );
 			_comboBoxSphereRadiusType->setCurrentIndex( _preset->getData().radiusFixed ? 1 : 0 );
@@ -232,6 +254,7 @@ namespace VTX::UI::QT::Widget::Library
 			_groupboxRibbon->setChecked( _preset->getData().hasRibbon );
 			_checkBoxRibbonColorBlending->setChecked( _preset->getData().ribbonColorBlending );
 			_groupboxSes->setChecked( _preset->getData().hasSes );
+			_sliderSesProbeRadius->setValue( _preset->getData().sesProbeRadius );
 		}
 
 	  private:
@@ -252,6 +275,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		// SES.
 		QPointer<Core::Widget::HideableGroupBox> _groupboxSes;
+		QPointer<Core::Widget::EditableSlider>	 _sliderSesProbeRadius;
 
 		/*
 		Core::Widget::HideableGroupBox * const _createGroupBoxSphere()
@@ -327,7 +351,7 @@ namespace VTX::UI::QT::Widget::Library
 					App::ACTION_SYSTEM()
 						.execute<App::Action::Representation::
 									 ChangeRepresentation<E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS, float>>(
-							this->_preset, static_cast<float>( p_value ) / 100.f
+							_preset, static_cast<float>( p_value ) / 100.f
 						);
 				}
 			);

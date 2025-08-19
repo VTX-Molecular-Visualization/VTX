@@ -53,24 +53,10 @@ namespace VTX::App::Library::Preset
 	class Representation : public Core::Library::Preset<VTX::Core::Struct::Representation>
 	{
 	  public:
-		Representation()
-		{
-			// Set default values.
-			_data.hasSphere				= HAS_SPHERE_DEFAULT;
-			_data.radiusSphereFixed		= RADIUS_SPHERE_FIXED_DEFAULT;
-			_data.radiusSphereAdd		= RADIUS_SPHERE_ADD_DEFAULT;
-			_data.radiusFixed			= IS_SPHERE_RADIUS_FIXED_DEFAULT;
-			_data.hasCylinder			= HAS_CYLINDER_DEFAULT;
-			_data.radiusCylinder		= RADIUS_CYLINDER_DEFAULT;
-			_data.cylinderColorBlending = CYLINDER_COLOR_BLENDING_DEFAULT;
-			_data.hasRibbon				= HAS_RIBBON_DEFAULT;
-			_data.ribbonColorBlending	= RIBBON_COLOR_BLENDING_DEFAULT;
-			_data.hasSes				= HAS_SES_DEFAULT;
-			_data.sesProbeRadius		= SES_PROBE_RADIUS_DEFAULT;
-		}
+		Representation();
 
-		void save() override {}
-		void load() override {}
+		void save() override;
+		void load() override;
 
 		template<E_REPRESENTATION_SETTINGS S, typename T>
 		void setValue( const T p_value )
@@ -134,8 +120,12 @@ namespace VTX::App::Library::Preset
 				static_assert( std::is_same_v<T, void>, "Unknown representation setting." );
 			}
 
-			// callback<S, T>()( p_value );
+			// onChange<S, T>()( p_value );
 		}
+
+		// Callbacks.
+
+	  private:
 	};
 } // namespace VTX::App::Library::Preset
 

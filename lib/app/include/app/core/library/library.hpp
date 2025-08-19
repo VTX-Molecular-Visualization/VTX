@@ -1,36 +1,14 @@
 #ifndef __VTX_APP_CORE_LIBRARY_LIBRARY__
 #define __VTX_APP_CORE_LIBRARY_LIBRARY__
 
+#include "preset.hpp"
+#include <util/callback.hpp>
+#include <util/collection.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Core::Library
 {
-	class IPreset
-	{
-	  public:
-		virtual ~IPreset() = default;
-	};
-
-	template<typename T>
-	class Preset : public IPreset
-	{
-	  public:
-		virtual ~Preset() = default;
-
-		inline const T & getData() const { return _data; }
-		inline T &		 getData() { return _data; }
-
-		// TODO and set virtual =
-		virtual void save() = 0;
-		virtual void load() = 0;
-
-	  protected:
-		T _data;
-	};
-
-	template<typename P>
-	concept ConceptPreset = std::is_base_of_v<IPreset, P>;
 
 	class ILibrary
 	{

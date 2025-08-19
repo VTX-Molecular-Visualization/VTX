@@ -33,7 +33,7 @@ namespace VTX::UI::QT::Core::Widget
 			auto * mainLayout = new QVBoxLayout( this );
 
 			mainLayout->setContentsMargins( 0, 0, 0, 0 );
-			//mainLayout->setSpacing( 0 );
+			// mainLayout->setSpacing( 0 );
 
 			mainLayout->addWidget( _toggleButton );
 			mainLayout->addWidget( _groupbox );
@@ -51,11 +51,11 @@ namespace VTX::UI::QT::Core::Widget
 			);
 		}
 
-		void setChecked( const bool p_checked ) { _toggleButton->setChecked( p_checked ); }
+		inline void setChecked( const bool p_checked ) { _toggleButton->setChecked( p_checked ); }
 
-		bool isChecked() const { return _toggleButton->isChecked(); }
+		inline bool isChecked() const { return _toggleButton->isChecked(); }
 
-		void addWidget( QWidget * widget ) { _groupbox->layout()->addWidget( widget ); }
+		inline void addWidget( QWidget * widget ) { _groupbox->layout()->addWidget( widget ); }
 
 	  signals:
 		void toggled( bool );

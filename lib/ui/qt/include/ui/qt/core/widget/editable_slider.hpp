@@ -25,6 +25,7 @@ namespace VTX::UI::QT::Core::Widget
 
 			_slider->setSingleStep( 1 );
 			_spinbox->setSingleStep( 0.01 );
+			_spinbox->setDecimals( 2 );
 
 			auto * layout = new QHBoxLayout( this );
 			layout->setContentsMargins( 0, 0, 0, 0 );
@@ -57,19 +58,21 @@ namespace VTX::UI::QT::Core::Widget
 			);
 		}
 
-		void setValue( const float p_value ) { _spinbox->setValue( p_value ); }
+		inline void setValue( const float p_value ) { _spinbox->setValue( p_value ); }
 
-		void setMinimum( const float p_min )
+		inline void setMinimum( const float p_min )
 		{
 			_slider->setMinimum( std::lround( p_min * 100.0f ) );
 			_spinbox->setMinimum( p_min );
 		}
 
-		void setMaximum( const float p_max )
+		inline void setMaximum( const float p_max )
 		{
 			_slider->setMaximum( std::lround( p_max * 100.0f ) );
 			_spinbox->setMaximum( p_max );
 		}
+
+		inline void setSuffix( const QString & p_suffix ) { _spinbox->setSuffix( " " + p_suffix ); }
 
 	  signals:
 		void valueChanged( const float value );
