@@ -2,6 +2,7 @@
 #define __VTX_APP_CORE_LIBRARY_LIBRARY__
 
 #include "preset.hpp"
+#include <optional>
 #include <util/callback.hpp>
 #include <util/collection.hpp>
 #include <util/logger.hpp>
