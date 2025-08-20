@@ -4,11 +4,9 @@
 #include "app/component/representation/render_settings.hpp"
 #include "app/component/representation/representation.hpp"
 #include "app/component/scene/aabb_component.hpp"
-#include "app/component/scene/updatable.hpp"
 #include "app/core/ecs/base_entity.hpp"
-#include "app/core/renderer/renderer_system.hpp"
+#include "app/core/library/library_system.hpp"
 #include "app/entity/camera.hpp"
-#include <renderer/proxy/representation.hpp>
 
 namespace VTX::App::Application
 {
@@ -289,9 +287,10 @@ namespace VTX::App::Application
 
 	void Scene::_createDefaultRepresentation()
 	{
-		auto & comp
-			= ECS_REGISTRY().addComponent<Component::Representation::Representation>( ECS_REGISTRY().getEntity( *this )
-			);
+		auto * preset = LIBRARY_SYSTEM().getLibrary<Library::Preset::Representation>()->getPreset( "Default" );
+		auto & comp	  = ECS_REGISTRY().addComponent<Component::Representation::Representation>(
+			  ECS_REGISTRY().getEntity( *this ), *preset
+		  );
 		comp.setupProxy();
 	}
 } // namespace VTX::App::Application

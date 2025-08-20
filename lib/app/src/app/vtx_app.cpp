@@ -41,6 +41,9 @@ namespace VTX::App
 	{
 		VTX_DEBUG( "Init application" );
 
+		// Load preset libraries.
+		LIBRARY_SYSTEM().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
+
 		// TODO: move to start to handle gui dialog?
 		Settings::initSettings();
 
@@ -65,13 +68,6 @@ namespace VTX::App
 				p_interpretor.add( VTX::App::PythonBinding::RunScript() );
 			}
 		);
-
-		// Create Databases
-		//_representationLibrary
-		//	= MVC_MANAGER().instantiateModel<Application::Representation::RepresentationLibrary>();
-		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
-		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
-		LIBRARY_SYSTEM().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
 	}
 
 	void VTXApp::start()

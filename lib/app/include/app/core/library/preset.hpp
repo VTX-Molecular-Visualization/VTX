@@ -17,15 +17,10 @@ namespace VTX::App::Core::Library
 
 		IPreset & operator=( const IPreset & ) { return *this; }
 
-		template<int S, typename T>
-		Util::Callback<T> & getCallback()
+		template<int S, typename... Args>
+		Util::Callback<Args...> & getCallback()
 		{
-			if ( not _callbacks.has( S ) )
-			{
-				_callbacks.createWithHash<Util::Callback<T>>( S );
-			}
-
-			return *_callbacks.get<Util::Callback<T>>( S );
+			return *_callbacks.getOrCreateWithHash<Util::Callback<Args...>>( S );
 		}
 
 	  private:

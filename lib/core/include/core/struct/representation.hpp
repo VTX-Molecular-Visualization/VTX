@@ -5,7 +5,7 @@
 
 namespace VTX::Core::Struct
 {
-	enum struct E_REPRESENTATION_VALUES
+	enum E_REPRESENTATION_VALUES // Not a class to avoid static_cast<int>.
 	{
 		HAS_SPHERE,
 		RADIUS_SPHERE_FIXED,

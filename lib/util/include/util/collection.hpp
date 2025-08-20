@@ -3,7 +3,7 @@
 
 #include <functional>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 #include <util/concepts.hpp>
 #include <util/hashing.hpp>
 #include <util/singleton.hpp>
@@ -49,6 +49,19 @@ namespace VTX::Util
 		}
 
 		template<typename T>
+		inline T * const getOrCreateWithHash( const Hash & p_hash )
+		{
+			if ( has( p_hash ) )
+			{
+				return get<T>( p_hash );
+			}
+			else
+			{
+				return createWithHash<T>( p_hash );
+			}
+		}
+
+		template<typename T>
 		inline T * const get( const Hash & p_hash )
 		{
 			assert( _map.contains( p_hash ) );
@@ -63,10 +76,12 @@ namespace VTX::Util
 			{
 				return static_cast<T *>( _map[ p_hash ].get() );
 			}
+			/*
 			else if constexpr ( std::is_class_v<C> )
 			{
 				return static_cast<T *>( &_map[ p_hash ] );
 			}
+			*/
 			else
 			{
 				static_assert( std::is_same_v<T, void>, "Util::Collection::create(): unrecognized type." );
@@ -115,10 +130,12 @@ namespace VTX::Util
 			{
 				_map[ p_hash ] = std::unique_ptr<T>( p_value );
 			}
+			/*
 			else if constexpr ( std::is_class_v<C> )
 			{
 				_map[ p_hash ] = static_cast<C>( *p_value );
 			}
+			*/
 			else
 			{
 				static_assert( std::is_same_v<T, void>, "Util::Collection::create(): unrecognized type." );
@@ -150,7 +167,7 @@ namespace VTX::Util
 		}
 
 	  private:
-		std::map<Hash, C> _map;
+		std::unordered_map<Hash, C> _map;
 
 		template<typename T, typename... Args>
 		inline T * _create( const Hash & p_hash, Args &&... p_args )
@@ -167,10 +184,12 @@ namespace VTX::Util
 			{
 				_map.emplace( p_hash, std::make_unique<T>( std::forward<Args>( p_args )... ) );
 			}
+			/*
 			else if constexpr ( std::is_class_v<C> )
 			{
 				_map.emplace( p_hash, T( std::forward<Args>( p_args )... ) );
 			}
+			*/
 			else
 			{
 				static_assert( std::is_same_v<T, void>, "Util::Collection::create(): unrecognized type." );

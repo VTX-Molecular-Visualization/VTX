@@ -103,7 +103,7 @@ namespace VTX::App::Library::Preset
 				static_assert( std::is_same_v<T, void>, "Unknown representation setting." );
 			}
 
-			getCallback<static_cast<int>( S ), T>()( p_value );
+			getCallback<S, T>()( p_value );
 		}
 	};
 } // namespace VTX::App::Library::Preset

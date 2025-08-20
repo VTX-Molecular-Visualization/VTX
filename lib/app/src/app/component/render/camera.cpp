@@ -8,10 +8,12 @@
 namespace VTX::App::Component::Render
 {
 	Camera::Camera() :
-		_near( Util::Math::max(
-			1e-1f,
-			SETTINGS_SYSTEM().get<float>( Settings::Camera::NEAR_CLIP_KEY )
-		) ), // Avoid to little value.
+		_near(
+			Util::Math::max(
+				1e-1f,
+				SETTINGS_SYSTEM().get<float>( Settings::Camera::NEAR_CLIP_KEY )
+			)
+		), // Avoid to little value.
 		_far( Util::Math::max( _near, SETTINGS_SYSTEM().get<float>( Settings::Camera::FAR_CLIP_KEY ) ) ),
 		_fov( SETTINGS_SYSTEM().get<float>( Settings::Camera::FOV_KEY ) )
 	{
@@ -50,8 +52,7 @@ namespace VTX::App::Component::Render
 		onProjectionChange += [ this ]( Camera::PROJECTION p_projection )
 		{ _proxy->onPerspective( p_projection == Camera::PROJECTION::PERSPECTIVE ); };
 
-		Component::Scene::Transform & transformComp
-			= ECS_REGISTRY().getComponent<Component::Scene::Transform>( *this );
+		Component::Scene::Transform & transformComp = ECS_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 		transformComp.onTransform += [ this ]( const Util::Math::Transform & p_transform )
 		{ _proxy->onCameraPosition( p_transform.getTranslationVector() ); };
 
