@@ -14,20 +14,20 @@ namespace VTX::App::Component::Representation
 		_proxy = std::make_unique<Renderer::Proxy::Representation>();
 
 		/*
-		_proxy->set( E_REPRESENTATION_SETTINGS::HAS_SPHERE, _representation.hasSphere );
-		_proxy->set( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, _representation.radiusSphereFixed );
-		_proxy->set( E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, _representation.radiusSphereAdd );
-		_proxy->set( E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, _representation.radiusFixed );
+		_proxy->set( E_REPRESENTATION_VALUES::HAS_SPHERE, _representation.hasSphere );
+		_proxy->set( E_REPRESENTATION_VALUES::RADIUS_SPHERE_FIXED, _representation.radiusSphereFixed );
+		_proxy->set( E_REPRESENTATION_VALUES::RADIUS_SPHERE_ADD, _representation.radiusSphereAdd );
+		_proxy->set( E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED, _representation.radiusFixed );
 
-		_proxy->set( E_REPRESENTATION_SETTINGS::HAS_CYLINDER, _representation.hasCylinder );
-		_proxy->set( E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, _representation.radiusCylinder );
-		_proxy->set( E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, _representation.cylinderColorBlending );
+		_proxy->set( E_REPRESENTATION_VALUES::HAS_CYLINDER, _representation.hasCylinder );
+		_proxy->set( E_REPRESENTATION_VALUES::RADIUS_CYLINDER, _representation.radiusCylinder );
+		_proxy->set( E_REPRESENTATION_VALUES::CYLINDER_COLOR_BLENDING, _representation.cylinderColorBlending );
 
-		_proxy->set( E_REPRESENTATION_SETTINGS::HAS_RIBBON, _representation.hasRibbon );
-		_proxy->set( E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, _representation.ribbonColorBlending );
+		_proxy->set( E_REPRESENTATION_VALUES::HAS_RIBBON, _representation.hasRibbon );
+		_proxy->set( E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING, _representation.ribbonColorBlending );
 
-		_proxy->set( E_REPRESENTATION_SETTINGS::HAS_SES, _representation.hasSes );
-		_proxy->set( E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS, _representation.sesProbeRadius );
+		_proxy->set( E_REPRESENTATION_VALUES::HAS_SES, _representation.hasSes );
+		_proxy->set( E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, _representation.sesProbeRadius );
 
 		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyRepresentation( *_proxy ); };
 		*/

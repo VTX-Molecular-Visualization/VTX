@@ -41,9 +41,9 @@ namespace VTX::UI::QT::Widget::Library
 		/*
 		Core::Widget::HideableGroupBox * const _createGroupBoxSphere()
 		{
-			p_component->callback<E_REPRESENTATION_SETTINGS::HAS_SPHERE, bool>() +=
+			p_component->callback<E_REPRESENTATION_VALUES::HAS_SPHERE, bool>() +=
 				[ groupBox ]( const bool p_value ) { groupBox->setChecked( p_value ); };
-			p_component->callback<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>() +=
+			p_component->callback<E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED, bool>() +=
 				[ comboBox, labelRadiusAdd, sliderRadiusAdd, labelRadiusFixed, sliderRadiusFixed ]( const bool p_value )
 			{
 				comboBox->setCurrentIndex( int( p_value ) );
@@ -63,9 +63,9 @@ namespace VTX::UI::QT::Widget::Library
 					break;
 				}
 			};
-			p_component->callback<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, float>() +=
+			p_component->callback<E_REPRESENTATION_VALUES::RADIUS_SPHERE_ADD, float>() +=
 				[ sliderRadiusAdd ]( const float p_value ) { sliderRadiusAdd->setValue( p_value * 100 ); };
-			p_component->callback<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, float>() +=
+			p_component->callback<E_REPRESENTATION_VALUES::RADIUS_SPHERE_FIXED, float>() +=
 				[ sliderRadiusFixed ]( const float p_value ) { sliderRadiusFixed->setValue( p_value * 100 ); };
 
 			return groupBox;
@@ -74,11 +74,11 @@ namespace VTX::UI::QT::Widget::Library
 
 		Core::Widget::HideableGroupBox * const _createGroupBoxCylinder()
 		{
-			p_component->callback<E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bool>() +=
+			p_component->callback<E_REPRESENTATION_VALUES::HAS_CYLINDER, bool>() +=
 				[ groupBox ]( const bool p_value ) { groupBox->setChecked( p_value ); };
-			p_component->callback<E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, float>() +=
+			p_component->callback<E_REPRESENTATION_VALUES::RADIUS_CYLINDER, float>() +=
 				[ slider ]( const float p_value ) { slider->setValue( p_value * 100 ); };
-			p_component->callback<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>() +=
+			p_component->callback<E_REPRESENTATION_VALUES::CYLINDER_COLOR_BLENDING, bool>() +=
 				[ checkBoxColorBlending ]( const bool p_value ) { checkBoxColorBlending->setChecked( p_value ); };
 
 			return groupBox;
@@ -86,9 +86,9 @@ namespace VTX::UI::QT::Widget::Library
 
 		Core::Widget::HideableGroupBox * const _createGroupBoxRibbon()
 		{
-			p_component->callback<E_REPRESENTATION_SETTINGS::HAS_RIBBON, bool>() +=
+			p_component->callback<E_REPRESENTATION_VALUES::HAS_RIBBON, bool>() +=
 				[ groupBox ]( const bool p_value ) { groupBox->setChecked( p_value ); };
-			p_component->callback<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>() +=
+			p_component->callback<E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING, bool>() +=
 				[ checkBoxColorBlending ]( const bool p_value ) { checkBoxColorBlending->setChecked( p_value ); };
 
 			return groupBox;
@@ -111,16 +111,16 @@ namespace VTX::UI::QT::Widget::Library
 				{
 					App::ACTION_SYSTEM()
 						.execute<App::Action::Representation::
-									 ChangeRepresentation<E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS, float>>(
+									 ChangeRepresentation<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>>(
 							_preset, static_cast<float>( p_value ) / 100.f
 						);
 				}
 			);
 
 			// Callbacks.
-			p_component->callback<E_REPRESENTATION_SETTINGS::HAS_SES, bool>() +=
+			p_component->callback<E_REPRESENTATION_VALUES::HAS_SES, bool>() +=
 				[ groupBox ]( const bool p_value ) { groupBox->setChecked( p_value ); };
-			p_component->callback<E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS, float>() +=
+			p_component->callback<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>() +=
 				[ slider ]( const float p_value ) { slider->setValue( p_value * 100 ); };
 			return groupBox;
 

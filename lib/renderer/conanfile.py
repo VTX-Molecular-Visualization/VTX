@@ -18,6 +18,7 @@ class VTXRendererRecipe(ConanFile):
     
     def requirements(self):
         self.requires("vtx_util/1.0")
+        self.requires("vtx_core/1.0")
         self.requires("catch2/3.8.1")
         
     def config_options(self):

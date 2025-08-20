@@ -9,7 +9,7 @@
 
 namespace VTX::App::Action::Representation
 {
-	template<App::Library::Preset::E_REPRESENTATION_SETTINGS S, typename T>
+	template<VTX::Core::Struct::E_REPRESENTATION_VALUES S, typename T>
 	class ChangeRepresentation final : public App::Core::Action::BaseAction
 	{
 	  public:

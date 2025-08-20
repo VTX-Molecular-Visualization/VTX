@@ -7,6 +7,7 @@ namespace VTX::UI::QT::Widget::Library
 
 	Representation::Representation( QWidget * p_parent ) : BasePresetWidget( p_parent )
 	{
+		using namespace VTX::Core::Struct;
 		using namespace App::Library::Preset;
 		using namespace Core::Widget;
 
@@ -75,7 +76,7 @@ namespace VTX::UI::QT::Widget::Library
 			{
 				App::ACTION_SYSTEM()
 					.execute<
-						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_SETTINGS::HAS_SPHERE, bool>>(
+						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_VALUES::HAS_SPHERE, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -89,7 +90,7 @@ namespace VTX::UI::QT::Widget::Library
 				bool isFixed = bool( p_index );
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bool>>(
+								 ChangeRepresentation<E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED, bool>>(
 						_preset, isFixed
 					);
 			}
@@ -102,7 +103,7 @@ namespace VTX::UI::QT::Widget::Library
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, float>>(
+								 ChangeRepresentation<E_REPRESENTATION_VALUES::RADIUS_SPHERE_ADD, float>>(
 						_preset, p_value
 					);
 			}
@@ -115,7 +116,7 @@ namespace VTX::UI::QT::Widget::Library
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, float>>(
+								 ChangeRepresentation<E_REPRESENTATION_VALUES::RADIUS_SPHERE_FIXED, float>>(
 						_preset, p_value
 					);
 			}
@@ -128,7 +129,7 @@ namespace VTX::UI::QT::Widget::Library
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bool>>(
+								 ChangeRepresentation<E_REPRESENTATION_VALUES::HAS_CYLINDER, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -141,7 +142,7 @@ namespace VTX::UI::QT::Widget::Library
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, float>>(
+								 ChangeRepresentation<E_REPRESENTATION_VALUES::RADIUS_CYLINDER, float>>(
 						_preset, p_value
 					);
 			}
@@ -154,7 +155,7 @@ namespace VTX::UI::QT::Widget::Library
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bool>>(
+								 ChangeRepresentation<E_REPRESENTATION_VALUES::CYLINDER_COLOR_BLENDING, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -167,7 +168,7 @@ namespace VTX::UI::QT::Widget::Library
 			{
 				App::ACTION_SYSTEM()
 					.execute<
-						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_SETTINGS::HAS_RIBBON, bool>>(
+						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_VALUES::HAS_RIBBON, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -180,7 +181,7 @@ namespace VTX::UI::QT::Widget::Library
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bool>>(
+								 ChangeRepresentation<E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -193,7 +194,7 @@ namespace VTX::UI::QT::Widget::Library
 			{
 				App::ACTION_SYSTEM()
 					.execute<
-						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_SETTINGS::HAS_SES, bool>>(
+						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_VALUES::HAS_SES, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -206,7 +207,7 @@ namespace VTX::UI::QT::Widget::Library
 			{
 				App::ACTION_SYSTEM()
 					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS, float>>(
+								 ChangeRepresentation<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>>(
 						_preset, p_value
 					);
 			}

@@ -18,7 +18,7 @@ namespace VTX::App::Component::Representation
 
 		// const VTX::Core::Struct::Representation & getRepresentation() const { return _representation; }
 
-		// template<Renderer::Proxy::E_REPRESENTATION_SETTINGS S, typename T>
+		// template<Renderer::Proxy::E_REPRESENTATION_VALUES S, typename T>
 		// void set( const T p_value )
 		//{
 		//  TODO: check presets for modification then update the rep on gpu.
