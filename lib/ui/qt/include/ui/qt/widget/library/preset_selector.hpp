@@ -8,6 +8,7 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QLineEdit>
+#include <QPointer>
 #include <QPushButton>
 #include <app/action/library.hpp>
 #include <app/core/library/library_system.hpp>
