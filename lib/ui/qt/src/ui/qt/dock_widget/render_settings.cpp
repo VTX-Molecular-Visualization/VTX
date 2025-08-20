@@ -1,8 +1,8 @@
 #include "ui/qt/dock_widget/render_settings.hpp"
+#include "ui/qt/core/widget/hideable_goupe_box.hpp"
 #include "ui/qt/helper.hpp"
 #include "ui/qt/widget/color_picker.hpp"
 #include <QComboBox>
-#include <QGroupBox>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <app/action/render_settings.hpp>
@@ -36,7 +36,7 @@ namespace VTX::UI::QT::DockWidget
 		using namespace Renderer::Settings;
 
 		// Shading group.
-		auto * groupBoxShading = new QGroupBox( "Lighting" );
+		auto * groupBoxShading = new QGroupBox( "Lighting", this );
 		auto * layout		   = new QVBoxLayout( groupBoxShading );
 		_layout->addWidget( groupBoxShading );
 
@@ -212,9 +212,6 @@ namespace VTX::UI::QT::DockWidget
 			[ sliderShininess ]( const float p_value ) { sliderShininess->setValue( p_value * 100 ); };
 		p_component->callback<E_RENDER_SETTINGS::TOON_STEPS, uint>() +=
 			[ sliderToonSteps ]( const uint p_value ) { sliderToonSteps->setValue( p_value ); };
-
-		// Emit init.
-		emit comboBoxShading->currentIndexChanged( comboBoxShading->currentIndex() );
 	}
 
 	void RenderSettings::_createGroupBoxSSAO( App::Component::Representation::RenderSettings * const p_component )
@@ -222,17 +219,15 @@ namespace VTX::UI::QT::DockWidget
 		using namespace Renderer::Proxy;
 		using namespace Renderer::Settings;
 
-		auto * groupBoxSSAO = new QGroupBox( "Shadows" );
-		auto * layout		= new QVBoxLayout( groupBoxSSAO );
+		auto * groupBoxSSAO = new Core::Widget::HideableGroupBox( "Shadows", this );
 		_layout->addWidget( groupBoxSSAO );
 
 		// Active.
-		groupBoxSSAO->setCheckable( true );
 		groupBoxSSAO->setChecked( p_component->getSettings().activeSSAO );
 
 		connect(
 			groupBoxSSAO,
-			&QGroupBox::toggled,
+			&Core::Widget::HideableGroupBox::toggled,
 			[]( const bool p_state )
 			{
 				App::ACTION_SYSTEM()
@@ -245,8 +240,8 @@ namespace VTX::UI::QT::DockWidget
 		// Intensity.
 		auto * labelSSAOIntensity  = new QLabel( "Intensity", groupBoxSSAO );
 		auto * sliderSSAOIntensity = new QSlider( Qt::Horizontal, groupBoxSSAO );
-		layout->addWidget( labelSSAOIntensity );
-		layout->addWidget( sliderSSAOIntensity );
+		groupBoxSSAO->addWidget( labelSSAOIntensity );
+		groupBoxSSAO->addWidget( sliderSSAOIntensity );
 		sliderSSAOIntensity->setMinimum( SSAO_INTENSITY_MIN * 100 );
 		sliderSSAOIntensity->setMaximum( SSAO_INTENSITY_MAX * 100 );
 		sliderSSAOIntensity->setValue( p_component->getSettings().ssaoIntensity * 100 );
@@ -266,8 +261,8 @@ namespace VTX::UI::QT::DockWidget
 		// Blur.
 		auto * labelBlurSize  = new QLabel( "Blur size", groupBoxSSAO );
 		auto * sliderBlurSize = new QSlider( Qt::Horizontal, groupBoxSSAO );
-		layout->addWidget( labelBlurSize );
-		layout->addWidget( sliderBlurSize );
+		groupBoxSSAO->addWidget( labelBlurSize );
+		groupBoxSSAO->addWidget( sliderBlurSize );
 		sliderBlurSize->setMinimum( BLUR_SIZE_MIN * 100 );
 		sliderBlurSize->setMaximum( BLUR_SIZE_MAX * 100 );
 		sliderBlurSize->setValue( p_component->getSettings().blurSize * 100 );
@@ -297,9 +292,6 @@ namespace VTX::UI::QT::DockWidget
 			[ sliderSSAOIntensity ]( const float p_value ) { sliderSSAOIntensity->setValue( p_value * 100 ); };
 		p_component->callback<E_RENDER_SETTINGS::BLUR_SIZE, float>() +=
 			[ sliderBlurSize ]( const float p_value ) { sliderBlurSize->setValue( p_value * 100 ); };
-
-		// Emit init.
-		emit groupBoxSSAO->toggled( groupBoxSSAO->isChecked() );
 	}
 
 	void RenderSettings::_createGroupBoxOutline( App::Component::Representation::RenderSettings * const p_component )
@@ -307,17 +299,15 @@ namespace VTX::UI::QT::DockWidget
 		using namespace Renderer::Proxy;
 		using namespace Renderer::Settings;
 
-		auto * groupBoxOutline = new QGroupBox( "Outline" );
-		auto * layout		   = new QVBoxLayout( groupBoxOutline );
+		auto * groupBoxOutline = new Core::Widget::HideableGroupBox( "Outline", this );
 		_layout->addWidget( groupBoxOutline );
 
 		// Active.
-		groupBoxOutline->setCheckable( true );
 		groupBoxOutline->setChecked( p_component->getSettings().activeOutline );
 
 		connect(
 			groupBoxOutline,
-			&QGroupBox::toggled,
+			&Core::Widget::HideableGroupBox::toggled,
 			[]( const bool p_state )
 			{
 				App::ACTION_SYSTEM()
@@ -329,7 +319,7 @@ namespace VTX::UI::QT::DockWidget
 
 		// Color.
 		Widget::ColorPicker * colorPickerOutline = new Widget::ColorPicker( groupBoxOutline );
-		layout->addWidget( colorPickerOutline );
+		groupBoxOutline->addWidget( colorPickerOutline );
 		colorPickerOutline->setColor( Helper::toQColor( p_component->getSettings().colorOutline ) );
 		colorPickerOutline->setText( "Color" );
 		colorPickerOutline->onColorChanged += [ p_component ]( const QColor & p_color )
@@ -344,8 +334,8 @@ namespace VTX::UI::QT::DockWidget
 		// Sensitivity.
 		auto * labelOutlineSensitivity	= new QLabel( "Sensitivity", groupBoxOutline );
 		auto * sliderOutlineSensitivity = new QSlider( Qt::Horizontal, groupBoxOutline );
-		layout->addWidget( labelOutlineSensitivity );
-		layout->addWidget( sliderOutlineSensitivity );
+		groupBoxOutline->addWidget( labelOutlineSensitivity );
+		groupBoxOutline->addWidget( sliderOutlineSensitivity );
 		sliderOutlineSensitivity->setMinimum( OUTLINE_SENSITIVITY_MIN * 100 );
 		sliderOutlineSensitivity->setMaximum( OUTLINE_SENSITIVITY_MAX * 100 );
 		sliderOutlineSensitivity->setValue( p_component->getSettings().outlineSensitivity * 100 );
@@ -365,8 +355,8 @@ namespace VTX::UI::QT::DockWidget
 		// Thickness.
 		auto * labelOutlineThickness  = new QLabel( "Thickness", groupBoxOutline );
 		auto * sliderOutlineThickness = new QSlider( Qt::Horizontal, groupBoxOutline );
-		layout->addWidget( labelOutlineThickness );
-		layout->addWidget( sliderOutlineThickness );
+		groupBoxOutline->addWidget( labelOutlineThickness );
+		groupBoxOutline->addWidget( sliderOutlineThickness );
 		sliderOutlineThickness->setMinimum( OUTLINE_THICKNESS_MIN );
 		sliderOutlineThickness->setMaximum( OUTLINE_THICKNESS_MAX );
 		sliderOutlineThickness->setValue( p_component->getSettings().outlineThickness );
@@ -394,9 +384,6 @@ namespace VTX::UI::QT::DockWidget
 		{ sliderOutlineSensitivity->setValue( p_value * 100 ); };
 		p_component->callback<E_RENDER_SETTINGS::OUTLINE_THICKNESS, uint>() +=
 			[ sliderOutlineThickness ]( const uint p_value ) { sliderOutlineThickness->setValue( p_value ); };
-
-		// Emit init.
-		emit groupBoxOutline->toggled( groupBoxOutline->isChecked() );
 	}
 
 	void RenderSettings::_createGroupBoxFog( App::Component::Representation::RenderSettings * const p_component )
@@ -404,17 +391,15 @@ namespace VTX::UI::QT::DockWidget
 		using namespace Renderer::Proxy;
 		using namespace Renderer::Settings;
 
-		auto * groupBoxFog = new QGroupBox( "Fog" );
-		auto * layout	   = new QVBoxLayout( groupBoxFog );
+		auto * groupBoxFog = new Core::Widget::HideableGroupBox( "Fog", this );
 		_layout->addWidget( groupBoxFog );
 
 		// Active.
-		groupBoxFog->setCheckable( true );
 		groupBoxFog->setChecked( p_component->getSettings().activeFog );
 
 		connect(
 			groupBoxFog,
-			&QGroupBox::toggled,
+			&Core::Widget::HideableGroupBox::toggled,
 			[]( const bool p_state )
 			{
 				App::ACTION_SYSTEM()
@@ -426,7 +411,7 @@ namespace VTX::UI::QT::DockWidget
 
 		// Color.
 		Widget::ColorPicker * colorPickerFog = new Widget::ColorPicker( groupBoxFog );
-		layout->addWidget( colorPickerFog );
+		groupBoxFog->addWidget( colorPickerFog );
 		colorPickerFog->setColor( Helper::toQColor( p_component->getSettings().colorFog ) );
 		colorPickerFog->setText( "Color" );
 		colorPickerFog->onColorChanged += []( const QColor & p_color )
@@ -441,8 +426,8 @@ namespace VTX::UI::QT::DockWidget
 		// Near.
 		auto * labelFogNear	 = new QLabel( "Near", groupBoxFog );
 		auto * sliderFogNear = new QSlider( Qt::Horizontal, groupBoxFog );
-		layout->addWidget( labelFogNear );
-		layout->addWidget( sliderFogNear );
+		groupBoxFog->addWidget( labelFogNear );
+		groupBoxFog->addWidget( sliderFogNear );
 		sliderFogNear->setMinimum( FOG_NEAR_MIN * 100 );
 		sliderFogNear->setMaximum( FOG_NEAR_MAX * 100 );
 		sliderFogNear->setValue( p_component->getSettings().fogNear * 100 );
@@ -461,8 +446,8 @@ namespace VTX::UI::QT::DockWidget
 		// Far.
 		auto * labelFogFar	= new QLabel( "Far", groupBoxFog );
 		auto * sliderFogFar = new QSlider( Qt::Horizontal, groupBoxFog );
-		layout->addWidget( labelFogFar );
-		layout->addWidget( sliderFogFar );
+		groupBoxFog->addWidget( labelFogFar );
+		groupBoxFog->addWidget( sliderFogFar );
 		sliderFogFar->setMinimum( FOG_FAR_MIN * 100 );
 		sliderFogFar->setMaximum( FOG_FAR_MAX * 100 );
 		sliderFogFar->setValue( p_component->getSettings().fogFar * 100 );
@@ -481,8 +466,8 @@ namespace VTX::UI::QT::DockWidget
 		// Density.
 		auto * labelFogDensity	= new QLabel( "Density", groupBoxFog );
 		auto * sliderFogDensity = new QSlider( Qt::Horizontal, groupBoxFog );
-		layout->addWidget( labelFogDensity );
-		layout->addWidget( sliderFogDensity );
+		groupBoxFog->addWidget( labelFogDensity );
+		groupBoxFog->addWidget( sliderFogDensity );
 		sliderFogDensity->setMinimum( FOG_DENSITY_MIN * 100 );
 		sliderFogDensity->setMaximum( FOG_DENSITY_MAX * 100 );
 		sliderFogDensity->setValue( p_component->getSettings().fogDensity * 100 );
@@ -510,26 +495,21 @@ namespace VTX::UI::QT::DockWidget
 			[ sliderFogFar ]( const float p_value ) { sliderFogFar->setValue( p_value * 100 ); };
 		p_component->callback<E_RENDER_SETTINGS::FOG_DENSITY, float>() +=
 			[ sliderFogDensity ]( const float p_value ) { sliderFogDensity->setValue( p_value * 100 ); };
-
-		// Emit init.
-		emit groupBoxFog->toggled( groupBoxFog->isChecked() );
 	}
 
 	void RenderSettings::_createGroupBoxSelection( App::Component::Representation::RenderSettings * const p_component )
 	{
 		using namespace Renderer::Proxy;
 
-		auto * groupBoxSelection = new QGroupBox( "Selection" );
-		auto * layout			 = new QVBoxLayout( groupBoxSelection );
+		auto * groupBoxSelection = new Core::Widget::HideableGroupBox( "Selection", this );
 		_layout->addWidget( groupBoxSelection );
 
 		// Active.
-		groupBoxSelection->setCheckable( true );
 		groupBoxSelection->setChecked( p_component->getSettings().activeSelection );
 
 		connect(
 			groupBoxSelection,
-			&QGroupBox::toggled,
+			&Core::Widget::HideableGroupBox::toggled,
 			[]( const bool p_state )
 			{
 				App::ACTION_SYSTEM()
@@ -542,7 +522,7 @@ namespace VTX::UI::QT::DockWidget
 
 		// Color.
 		Widget::ColorPicker * colorPickerSelection = new Widget::ColorPicker( groupBoxSelection );
-		layout->addWidget( colorPickerSelection );
+		groupBoxSelection->addWidget( colorPickerSelection );
 		colorPickerSelection->setText( "Color" );
 		colorPickerSelection->setColor( Helper::toQColor( p_component->getSettings().colorSelection ) );
 		colorPickerSelection->onColorChanged += []( const QColor & p_color )
@@ -565,9 +545,6 @@ namespace VTX::UI::QT::DockWidget
 		p_component->callback<E_RENDER_SETTINGS::COLOR_SELECTION, Util::Color::Rgba>() +=
 			[ colorPickerSelection ]( const Util::Color::Rgba & p_color )
 		{ colorPickerSelection->setColor( Helper::toQColor( p_color ) ); };
-
-		// Emit init.
-		emit groupBoxSelection->toggled( groupBoxSelection->isChecked() );
 	}
 
 } // namespace VTX::UI::QT::DockWidget

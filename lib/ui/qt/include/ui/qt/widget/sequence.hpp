@@ -9,6 +9,9 @@
 
 namespace VTX::UI::QT::Widget
 {
+	/**
+	 * @brief Custom widget for sequence that paint only the displayed area.
+	 */
 	class Sequence : public QAbstractScrollArea
 	{
 	  public:

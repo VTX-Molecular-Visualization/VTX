@@ -41,7 +41,9 @@ namespace VTX::App::Component::Representation
 		assert( p_index >= 0 );
 		assert( p_index < VTX::Core::ChemDB::Color::LAYOUT_COUNT_CHAINS );
 
-		return _layout.layout[ VTX::Core::ChemDB::Color::LAYOUT_OFFSET_CHAINS + p_index ];
+		const Index index = p_index % VTX::Core::ChemDB::Color::LAYOUT_COUNT_CHAINS;
+
+		return _layout.layout[ VTX::Core::ChemDB::Color::LAYOUT_OFFSET_CHAINS + index ];
 	}
 
 	const Util::Color::Rgba & ColorLayout::getResidueColor( const Index p_index ) const
@@ -49,7 +51,9 @@ namespace VTX::App::Component::Representation
 		assert( p_index >= 0 );
 		assert( p_index < VTX::Core::ChemDB::Color::LAYOUT_COUNT_RESIDUES );
 
-		return _layout.layout[ VTX::Core::ChemDB::Color::LAYOUT_OFFSET_RESIDUES + p_index ];
+		const Index index = p_index % VTX::Core::ChemDB::Color::LAYOUT_COUNT_RESIDUES;
+
+		return _layout.layout[ VTX::Core::ChemDB::Color::LAYOUT_OFFSET_RESIDUES + index ];
 	}
 
 } // namespace VTX::App::Component::Representation

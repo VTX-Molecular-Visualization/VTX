@@ -145,19 +145,19 @@ int main( int, char ** )
 
 		Renderer::Proxy::Representation representation;
 
-		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_SPHERE, bTrue );
-		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED, fZeroFive );
-		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD, fZero );
-		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED, bTrue );
+		representation.set( 0, bTrue );
+		representation.set( 1, fZeroFive );
+		representation.set( 2, fZero );
+		representation.set( 3, bTrue );
 
-		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_CYLINDER, bTrue );
-		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER, fZeroOne );
-		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING, bFalse );
+		representation.set( 4, bTrue );
+		representation.set( 5, fZeroOne );
+		representation.set( 6, bFalse );
 
-		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_RIBBON, bTrue );
-		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING, bTrue );
+		representation.set( 7, bTrue );
+		representation.set( 8, bTrue );
 
-		representation.set( Renderer::Proxy::E_REPRESENTATION_SETTINGS::HAS_SES, bFalse );
+		representation.set( 9, bFalse );
 
 		renderer.setProxyRepresentation( representation );
 

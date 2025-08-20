@@ -3,6 +3,8 @@
 
 #include <QAction>
 #include <QActionGroup>
+#include <QStyle>
+#include <app/action/library.hpp>
 #include <app/core/action/action_system.hpp>
 #include <app/ui/concepts.hpp>
 #include <app/vtx_app.hpp>
@@ -182,12 +184,61 @@ namespace VTX::UI::QT
 		} // namespace Help
 		namespace Option
 		{
-			struct ShowToolBarText : public App::UI::DescAction
+			namespace Cache
 			{
-				ShowToolBarText();
-			};
+				struct Open : public App::UI::DescAction
+				{
+					Open();
+				};
+
+				struct Clear : public App::UI::DescAction
+				{
+					Clear();
+				};
+
+				struct Refresh : public App::UI::DescAction
+				{
+					Refresh();
+				};
+			} // namespace Cache
 		} // namespace Option
 
+		namespace Preset
+		{
+			template<typename P>
+			struct Add : public App::UI::DescAction
+			{
+				Add()
+				{
+					name	= "New";
+					tip		= "Create a new empty preset";
+					icon	= QStyle::StandardPixmap::SP_FileIcon;
+					trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Library::AddPreset<P>>(); };
+				}
+			};
+
+			template<typename P>
+			struct Duplicate : public App::UI::DescAction
+			{
+				Duplicate()
+				{
+					name = "Duplicate";
+					tip	 = "Create a new preset from this one";
+					icon = QStyle::StandardPixmap::SP_DialogSaveButton;
+				}
+			};
+
+			template<typename P>
+			struct Delete : public App::UI::DescAction
+			{
+				Delete()
+				{
+					name = "Delete";
+					tip	 = "Delete this preset";
+					icon = QStyle::StandardPixmap::SP_TrashIcon;
+				}
+			};
+		} // namespace Preset
 	} // namespace Action
 
 } // namespace VTX::UI::QT

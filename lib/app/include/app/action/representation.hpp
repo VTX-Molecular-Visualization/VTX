@@ -2,29 +2,41 @@
 #define __VTX_APP_ACTION_REPRESENTATION__
 
 #include "app/core/action/base_action.hpp"
-#include <app/application/scene.hpp>
-#include <app/component/representation/representation.hpp>
+#include "app/core/library/library_system.hpp"
+#include "app/library/preset/representation.hpp"
+#include <string>
+#include <variant>
 
 namespace VTX::App::Action::Representation
 {
-	template<Renderer::Proxy::E_REPRESENTATION_SETTINGS S, typename T>
+	template<App::Library::Preset::E_REPRESENTATION_SETTINGS S, typename T>
 	class ChangeRepresentation final : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeRepresentation( const T p_value ) : _value( p_value ) {}
+		ChangeRepresentation(
+			const std::variant<App::Library::Preset::Representation *, std::string> p_preset,
+			const T																	p_value
+		) : _preset( p_preset ), _value( p_value )
+		{
+		}
 
 		void execute() override
 		{
-			const auto & scene	   = App::SCENE();
-			auto &		 component = App::ECS_REGISTRY().getComponent<App::Component::Representation::Representation>(
-				  App::ECS_REGISTRY().getEntity( scene )
-			  );
-
-			component.set<S>( _value );
+			if ( std::holds_alternative<std::string>( _preset ) )
+			{
+				auto * const library = LIBRARY_SYSTEM().getLibrary<App::Library::Preset::Representation>();
+				library->getPreset( std::get<std::string>( _preset ) )->setValue<S>( _value );
+			}
+			else
+			{
+				assert( std::holds_alternative<App::Library::Preset::Representation *>( _preset ) );
+				std::get<App::Library::Preset::Representation *>( _preset )->setValue<S>( _value );
+			}
 		}
 
 	  private:
-		const T _value;
+		const std::variant<App::Library::Preset::Representation *, std::string> _preset;
+		const T																	_value;
 	};
 
 } // namespace VTX::App::Action::Representation

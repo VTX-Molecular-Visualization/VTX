@@ -2,16 +2,34 @@
 #include "util/exceptions.hpp"
 #include <filesystem>
 #include <fstream>
+#include <sago/platform_folders.h>
 
 #ifdef _WIN32
 #include <windows.h>
 #endif
+
+#include <iostream>
 
 namespace VTX::Util::Filesystem
 {
 	// Partly copied from https://stackoverflow.com/questions/50889647/best-way-to-get-exe-folder-path
 	FilePath getExecutableDir()
 	{
+		/*
+		std::cout << "Config: " << sago::getConfigHome() << "\n";
+		std::cout << "Data: " << sago::getDataHome() << "\n";
+		std::cout << "State: " << sago::getStateDir() << "\n";
+		std::cout << "Cache: " << sago::getCacheDir() << "\n";
+		std::cout << "Documents: " << sago::getDocumentsFolder() << "\n";
+		std::cout << "Desktop: " << sago::getDesktopFolder() << "\n";
+		std::cout << "Pictures: " << sago::getPicturesFolder() << "\n";
+		std::cout << "Music: " << sago::getMusicFolder() << "\n";
+		std::cout << "Video: " << sago::getVideoFolder() << "\n";
+		std::cout << "Download: " << sago::getDownloadFolder() << "\n";
+		std::cout << "Save Games 1: " << sago::getSaveGamesFolder1() << "\n";
+		std::cout << "Save Games 2: " << sago::getSaveGamesFolder2() << "\n";
+		*/
+
 #ifdef _WIN32
 		// Windows specific
 		wchar_t szPath[ MAX_PATH ];
@@ -23,10 +41,10 @@ namespace VTX::Util::Filesystem
 #endif
 	}
 
-	std::string getFileName( const FilePath & p_filePath )
+	FilePath getUserDataDir()
 	{
-		std::string filenameWithExtension = p_filePath.filename().string();
-		return filenameWithExtension.substr( 0, filenameWithExtension.find_last_of( '.' ) );
+		// TODO.
+		return getExecutableDir();
 	}
 
 	const std::string readPath( const FilePath & p_filePath )
@@ -49,6 +67,7 @@ namespace VTX::Util::Filesystem
 
 	void writeFile( const FilePath & p_filePath, const std::string & p_content )
 	{
+		std::filesystem::create_directories( p_filePath.parent_path() );
 		std::ofstream outputFile( p_filePath );
 
 		if ( outputFile.is_open() )

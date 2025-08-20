@@ -12,7 +12,7 @@ class VTXCoreRecipe(ConanFile):
     
     generators = "CMakeDeps", "CMakeToolchain"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "test/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "test/*", "data/*"
         
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -38,4 +38,5 @@ class VTXCoreRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_core"]
+        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_core_copy_files.cmake"])
 

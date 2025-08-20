@@ -91,7 +91,7 @@ namespace VTX::App::Action::Io
 	{
 		const auto & camera = SCENE().getCamera();
 
-		_path = Filesystem::getSnapshotsPath( std::to_string( Util::Chrono::getTimestamp() ) );
+		_path = Filesystem::getSnapshotsDir() / std::to_string( Util::Chrono::getTimestamp() );
 		// TODO: set value from settings.
 		_format = Util::Image::E_FORMAT::PNG;
 		_width	= camera.getScreenWidth();

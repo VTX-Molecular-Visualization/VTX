@@ -71,17 +71,6 @@ namespace VTX::App::Settings
 		const std::string URL_API_DEFAULT = "URL_API";
 	} // namespace Network
 
-	namespace Representation
-	{
-		const std::string SES_PROBE_RADIUS_KEY	   = "REPRESENTATION_SES_PROBE_RADIUS";
-		constexpr float	  SES_PROBE_RADIUS_DEFAULT = 1.4f;
-		constexpr float	  SES_PROBE_RADIUS_MIN	   = 0.2f;
-		constexpr float	  SES_PROBE_RADIUS_MAX	   = 3.f;
-
-		const std::string SES_IS_EXTERIOR_KEY	  = "REPRESENTATION_SES_IS_EXTERIOR";
-		constexpr bool	  SES_IS_EXTERIOR_DEFAULT = false;
-	} // namespace Representation
-
 	void initSettings();
 } // namespace VTX::App::Settings
 

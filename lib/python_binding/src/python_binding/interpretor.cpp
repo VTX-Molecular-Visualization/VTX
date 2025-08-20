@@ -153,7 +153,7 @@ namespace VTX::PythonBinding
 		const std::string dir = p_path.parent_path().string();
 		getModule().core().runFunction<void>( "addSysPath", dir );
 
-		const std::string filename = Util::Filesystem::getFileName( p_path );
+		const std::string filename = p_path.stem().string();
 		pybind11::module  loadedModule;
 		try
 		{

@@ -63,6 +63,9 @@ namespace VTX::UI::QT::Core
 			_layout = new L( _root );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 			//_layout->setSizeConstraint( QLayout::SetNoConstraint );
+
+			// Hide title bar.
+			QDockWidget::setTitleBarWidget( new QWidget() );
 		}
 
 		virtual ~BaseDockWidget() = default;

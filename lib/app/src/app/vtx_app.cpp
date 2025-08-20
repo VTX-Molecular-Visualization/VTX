@@ -9,11 +9,13 @@
 #include "app/controller/camera/trackball.hpp"
 #include "app/core/action/action_system.hpp"
 #include "app/core/ecs/registry.hpp"
+#include "app/core/library/library_system.hpp"
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/threading/base_thread.hpp"
 #include "app/core/threading/threading_system.hpp"
 #include "app/entity/scene.hpp"
 #include "app/filesystem.hpp"
+#include "app/library/preset/representation.hpp"
 #include "app/mode/visualization.hpp"
 #include "app/monitoring/constants.hpp"
 #include "app/python_binding/python_binding.hpp"
@@ -21,6 +23,7 @@
 #include "app/selection/selection_manager.hpp"
 #include "app/settings.hpp"
 #include "app/updater.hpp"
+#include <core/struct/representation.hpp>
 #include <exception>
 #include <io/internal/filesystem.hpp>
 #include <python_binding/interpretor.hpp>
@@ -68,6 +71,7 @@ namespace VTX::App
 		//	= MVC_MANAGER().instantiateModel<Application::Representation::RepresentationLibrary>();
 		//_renderEffectLibrary = MVC_MANAGER().instantiateModel<Application::RenderEffect::RenderEffectLibrary>();
 		//_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
+		LIBRARY_SYSTEM().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
 	}
 
 	void VTXApp::start()

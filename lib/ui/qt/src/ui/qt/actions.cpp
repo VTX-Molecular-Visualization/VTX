@@ -2,6 +2,7 @@
 #include "ui/qt/dialog/download.hpp"
 #include "ui/qt/dialog/export_image.hpp"
 #include "ui/qt/dialog/open.hpp"
+#include <QApplication>
 #include <app/action/application.hpp>
 #include <app/action/camera.hpp>
 #include <app/action/controller.hpp>
@@ -53,7 +54,22 @@ namespace VTX::UI::QT::Action
 			// Icon.
 			if ( p_action.icon.has_value() )
 			{
-				qAction->setIcon( QIcon( ( ":/" + p_action.icon.value() ).c_str() ) );
+				if ( std::holds_alternative<int>( p_action.icon.value() ) )
+				{
+					qAction->setIcon(
+						QApplication::style()->standardIcon(
+							static_cast<QStyle::StandardPixmap>( std::get<int>( p_action.icon.value() ) )
+						)
+					);
+				}
+				else if ( std::holds_alternative<std::string>( p_action.icon.value() ) )
+				{
+					qAction->setIcon( QIcon( ( ":/" + std::get<std::string>( p_action.icon.value() ) ).c_str() ) );
+				}
+				else
+				{
+					VTX_ERROR( "Invalid icon type for action: {}", p_action.name );
+				}
 			}
 			// Shortcut.
 			if ( p_action.shortcut.has_value() )
@@ -73,6 +89,7 @@ namespace VTX::UI::QT::Action
 		return _ACTIONS.get<QAction>( p_hash );
 	}
 
+	// TODO: move all action to ui?
 	// System.
 	namespace System
 	{
@@ -359,12 +376,26 @@ namespace VTX::UI::QT::Action
 	} // namespace Help
 	namespace Option
 	{
-
-		ShowToolBarText::ShowToolBarText()
+		namespace Cache
 		{
-			name = "Show toolbar text";
-			tip	 = "Show/hide text beside tool buttons";
-		}
+			Open::Open()
+			{
+				name = "Open";
+				tip	 = "Open the cache folder in explorer";
+			}
 
+			Clear::Clear()
+			{
+				name = "Clear";
+				tip	 = "Delete all cached files";
+			}
+
+			Refresh::Refresh()
+			{
+				name = "Refresh";
+				tip	 = "Refresh cache size";
+			}
+		} // namespace Cache
 	} // namespace Option
+
 } // namespace VTX::UI::QT::Action

@@ -8,7 +8,7 @@
 
 namespace VTX::App::Component::Representation
 {
-
+	// !!! un proxy par rep utilisee donc un component !
 	class Representation : public Core::ECS::BaseComponentProxy<Renderer::Proxy::Representation>
 	{
 	  public:
@@ -16,86 +16,24 @@ namespace VTX::App::Component::Representation
 
 		void setupProxy() override;
 
-		const VTX::Core::Struct::Representation & getRepresentation() const { return _representation; }
+		// const VTX::Core::Struct::Representation & getRepresentation() const { return _representation; }
 
-		template<Renderer::Proxy::E_REPRESENTATION_SETTINGS S, typename T>
-		void set( const T p_value )
-		{
-			using namespace Renderer::Proxy;
+		// template<Renderer::Proxy::E_REPRESENTATION_SETTINGS S, typename T>
+		// void set( const T p_value )
+		//{
+		//  TODO: check presets for modification then update the rep on gpu.
+		//  No more model there?
+		//  Move enum to core?
 
-			// Sphere.
-			if constexpr ( S == E_REPRESENTATION_SETTINGS::HAS_SPHERE )
-			{
-				_representation.hasSphere = p_value;
-			}
-			else if constexpr ( S == E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_FIXED )
-			{
-				_representation.radiusSphereFixed = p_value;
-			}
-			else if constexpr ( S == E_REPRESENTATION_SETTINGS::RADIUS_SPHERE_ADD )
-			{
-				_representation.radiusSphereAdd = p_value;
-			}
-			else if constexpr ( S == E_REPRESENTATION_SETTINGS::IS_SPHERE_RADIUS_FIXED )
-			{
-				_representation.radiusFixed = p_value;
-			}
-			// Cylinder.
-			else if constexpr ( S == E_REPRESENTATION_SETTINGS::HAS_CYLINDER )
-			{
-				_representation.hasCylinder = p_value;
-			}
-			else if constexpr ( S == E_REPRESENTATION_SETTINGS::RADIUS_CYLINDER )
-			{
-				_representation.radiusCylinder = p_value;
-			}
-			else if constexpr ( S == E_REPRESENTATION_SETTINGS::CYLINDER_COLOR_BLENDING )
-			{
-				_representation.cylinderColorBlending = p_value;
-			}
-			// Ribbon.
-			else if constexpr ( S == E_REPRESENTATION_SETTINGS::HAS_RIBBON )
-			{
-				_representation.hasRibbon = p_value;
-			}
-			else if constexpr ( S == E_REPRESENTATION_SETTINGS::RIBBON_COLOR_BLENDING )
-			{
-				_representation.ribbonColorBlending = p_value;
-			}
-			// SES.
-			else if constexpr ( S == E_REPRESENTATION_SETTINGS::HAS_SES )
-			{
-				_representation.hasSes = p_value;
-			}
-			else if constexpr ( S == E_REPRESENTATION_SETTINGS::SES_PROBE_RADIUS )
-			{
-				_representation.sesProbeRadius = p_value;
-			}
-			else if constexpr ( S == E_REPRESENTATION_SETTINGS::SES_IS_EXTERIOR )
-			{
-				_representation.sesIsExterior = p_value;
-			}
-			else
-			{
-				static_assert( std::is_same_v<T, void>, "Unknown representation setting." );
-			}
+		// callback<S, T>()( p_value );
 
-			// Trigger UI.
-			callback<S, T>()( p_value );
+		// Trigger renderer.
 
-			// Trigger renderer.
-			_proxy->onChange<S, T>()( p_value );
-		}
-
-		template<Renderer::Proxy::E_REPRESENTATION_SETTINGS S, typename T>
-		Util::Callback<const T> & callback()
-		{
-			static Util::Callback<const T> callback;
-			return callback;
-		}
+		//_proxy->onChange<S, T>()( p_value );
+		//}
 
 	  private:
-		VTX::Core::Struct::Representation _representation;
+		// VTX::Core::Struct::Representation _representation;
 	};
 
 } // namespace VTX::App::Component::Representation

@@ -65,7 +65,7 @@ TEST_CASE( "VTX_APP - Full sequence", "[integration]" )
 	{ addSceneItemTest.checked = !p_sceneItem.getName().empty(); };
 
 	// Create System
-	const FilePath			  systemPath = App::Filesystem::getInternalDataDir() / systemPathname;
+	const FilePath			  systemPath = App::Filesystem::getDataDir() / systemPathname;
 	Action::Scene::LoadSystem openAction = Action::Scene::LoadSystem( systemPath );
 	openAction.execute();
 
@@ -114,7 +114,7 @@ TEST_CASE( "VTX_APP - Benchmark", "[.][perfs]" )
 	App::Fixture app;
 
 	// Create System
-	const FilePath systemPath = App::Filesystem::getInternalDataDir() / systemPathname;
+	const FilePath systemPath = App::Filesystem::getDataDir() / systemPathname;
 
 	Action::Scene::LoadSystem openAction = Action::Scene::LoadSystem( systemPath );
 	openAction.execute();

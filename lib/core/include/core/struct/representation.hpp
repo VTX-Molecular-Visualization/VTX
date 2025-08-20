@@ -6,7 +6,6 @@
 namespace VTX::Core::Struct
 {
 
-	// TODO: move default values.
 	struct Representation
 	{
 		// Sphere.
@@ -27,7 +26,6 @@ namespace VTX::Core::Struct
 		// SES.
 		bool  hasSes;
 		float sesProbeRadius;
-		bool  sesIsExterior;
 	};
 } // namespace VTX::Core::Struct
 

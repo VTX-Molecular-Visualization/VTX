@@ -14,11 +14,13 @@ namespace VTX::App::UI
 	 */
 	struct DescAction
 	{
+		using Icon = std::variant<std::string, int>;
+
 	  public:
 		std::string				   name;
 		std::optional<std::string> group = std::nullopt;
 		std::optional<std::string> tip	 = std::nullopt;
-		std::optional<std::string> icon	 = std::nullopt;
+		std::optional<Icon>		   icon	 = std::nullopt;
 		std::optional<std::string> shortcut;
 
 		/**

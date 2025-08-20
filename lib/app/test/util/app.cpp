@@ -14,7 +14,7 @@ namespace VTX::App::Test::Util
 	void App::loadSystem( const std::string & p_systemPath )
 	{
 		// Create System
-		const FilePath				systemPath	   = VTX::App::Filesystem::getInternalDataDir() / p_systemPath;
+		const FilePath			  systemPath	   = VTX::App::Filesystem::getDataDir() / p_systemPath;
 		Action::Scene::LoadSystem loadSystemAction = Action::Scene::LoadSystem( systemPath );
 		loadSystemAction.execute();
 	}
