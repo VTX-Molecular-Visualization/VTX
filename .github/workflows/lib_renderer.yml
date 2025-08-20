@@ -51,5 +51,6 @@ jobs:
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
       run:  |
-        conan export util         
+        conan export util
+        conan export core
         conan create renderer -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -o vtx_renderer/*:test=True
