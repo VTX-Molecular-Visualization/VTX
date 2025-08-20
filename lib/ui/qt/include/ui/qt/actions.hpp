@@ -235,7 +235,7 @@ namespace VTX::UI::QT
 				{
 					name = "Delete";
 					tip	 = "Delete this preset";
-					icon.emplace( QStyle::StandardPixmap::SP_TrashIcon );
+					icon = QStyle::StandardPixmap::SP_TrashIcon;
 				}
 			};
 		} // namespace Preset
