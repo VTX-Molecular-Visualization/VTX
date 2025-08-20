@@ -8,7 +8,7 @@
 namespace VTX::App::Library::Preset
 {
 
-	enum E_REPRESENTATION_SETTINGS
+	enum struct E_REPRESENTATION_SETTINGS
 	{
 		HAS_SPHERE,
 		RADIUS_SPHERE_FIXED,
@@ -120,7 +120,7 @@ namespace VTX::App::Library::Preset
 				static_assert( std::is_same_v<T, void>, "Unknown representation setting." );
 			}
 
-			// onChange<S, T>()( p_value );
+			getCallback<static_cast<int>( S ), T>()( p_value );
 		}
 
 		// Callbacks.
