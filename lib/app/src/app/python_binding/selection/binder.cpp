@@ -30,7 +30,7 @@ namespace VTX::App::PythonBinding::Selection
 			"select",
 			[]( const pybind11::kwargs & kw )
 			{ return VTX::App::PythonBinding::Selection::SelectionInterpretor::select( kw ); },
-			pybind11::return_value_policy::reference
+			pybind11::return_value_policy::move
 		);
 
 		p_apiModule.def( "intersect", &VTX::App::PythonBinding::Selection::SelectionWrapper::intersect );
@@ -56,7 +56,7 @@ namespace VTX::App::PythonBinding::Selection
 				"save",
 				&VTX::App::PythonBinding::Selection::SelectionWrapper::save,
 				pybind11::keep_alive<1, 2>(
-				) /* I suspect that a segfault sometimes occurs here. This might be due to the object being garbage
+				) /* I suspect that a segfault sometimes occurs here. This might be due to the object being garb age
 					 collected a the wrong time. So here I try to prevent these segfaults. It is difficult to test as
 					 these occurances are quite random  */
 			)
@@ -67,26 +67,22 @@ namespace VTX::App::PythonBinding::Selection
 			.def(
 				"getSystems",
 				[]( VTX::App::PythonBinding::Selection::SelectionWrapper & _ )
-				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::System> { _.getSystems() }; },
-				pybind11::keep_alive<1, 2>()
+				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::System> { _.getSystems() }; }
 			)
 			.def(
 				"getChains",
 				[]( VTX::App::PythonBinding::Selection::SelectionWrapper & _ )
-				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::Chain>( _.getChains() ); },
-				pybind11::keep_alive<1, 2>()
+				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::Chain>( _.getChains() ); }
 			)
 			.def(
 				"getResidues",
 				[]( VTX::App::PythonBinding::Selection::SelectionWrapper & _ )
-				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::Residue>( _.getResidues() ); },
-				pybind11::keep_alive<1, 2>()
+				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::Residue>( _.getResidues() ); }
 			)
 			.def(
 				"getAtoms",
 				[]( VTX::App::PythonBinding::Selection::SelectionWrapper & _ )
-				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::Atom>( _.getAtoms() ); },
-				pybind11::keep_alive<1, 2>()
+				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::Atom>( _.getAtoms() ); }
 			)
 			//.def( "getAtoms", &VTX::App::PythonBinding::Selection::SelectionWrapper::getAtoms )
 			//.def(
