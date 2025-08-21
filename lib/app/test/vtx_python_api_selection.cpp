@@ -42,7 +42,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", _future );
 		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
-		_future.wait();
+		_future.wait(); // Necessary on ubunutu for some reason
 		if ( _future.valid() )
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionAtom" ) != rslt.resultStr.npos );
