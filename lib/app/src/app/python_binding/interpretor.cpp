@@ -126,7 +126,7 @@ namespace VTX::App::PythonBinding
 			}
 			catch ( CommandException & p_e )
 			{
-				VTX_PYTHON_OUT( "{}", p_e.what() );
+				VTX_PYTHON_OUT( "Command exception raised in python command : {}", p_e.what() );
 				rslt = p_e.what();
 			}
 			catch ( ScriptException & p_e )
