@@ -42,6 +42,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", _future );
 		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
+		_future.wait();
 		if ( _future.valid() )
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionAtom" ) != rslt.resultStr.npos );
@@ -55,6 +56,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getResidues()", _future );
 		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
+		_future.wait();
 		if ( _future.valid() )
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionResidue" ) != rslt.resultStr.npos );
@@ -68,6 +70,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getChains()", _future );
 		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
+		_future.wait();
 		if ( _future.valid() )
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionChain" ) != rslt.resultStr.npos );
@@ -81,6 +84,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getSystems()", _future );
 		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
+		_future.wait();
 		if ( _future.valid() )
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionSystem" ) != rslt.resultStr.npos );
@@ -104,6 +108,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Collection crash", "[app][python][integ
 	{
 		INTERPRETOR().runCommand( "len(select(system_names='1AGA').getAtoms())", _future );
 		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
+		_future.wait();
 		if ( _future.valid() )
 			rslt = _future.get();
 		CHECK( rslt.resultStr == "126" );
