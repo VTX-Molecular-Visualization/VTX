@@ -65,6 +65,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 		);
 		CHECK( false );
 	}
+	_future = std::future<AsyncJobResult>();
 	try
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getResidues()", _future );
@@ -87,6 +88,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 		);
 		CHECK( false );
 	}
+	_future = std::future<AsyncJobResult>();
 	try
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getChains()", _future );
@@ -109,6 +111,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 		);
 		CHECK( false );
 	}
+	_future = std::future<AsyncJobResult>();
 	try
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getSystems()", _future );
