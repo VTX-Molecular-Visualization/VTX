@@ -67,22 +67,26 @@ namespace VTX::App::PythonBinding::Selection
 			.def(
 				"getSystems",
 				[]( VTX::App::PythonBinding::Selection::SelectionWrapper & _ )
-				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::System> { _.getSystems() }; }
+				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::System> { _.getSystems() }; },
+				pybind11::keep_alive<1, 2>()
 			)
 			.def(
 				"getChains",
 				[]( VTX::App::PythonBinding::Selection::SelectionWrapper & _ )
-				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::Chain>( _.getChains() ); }
+				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::Chain>( _.getChains() ); },
+				pybind11::keep_alive<1, 2>()
 			)
 			.def(
 				"getResidues",
 				[]( VTX::App::PythonBinding::Selection::SelectionWrapper & _ )
-				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::Residue>( _.getResidues() ); }
+				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::Residue>( _.getResidues() ); },
+				pybind11::keep_alive<1, 2>()
 			)
 			.def(
 				"getAtoms",
 				[]( VTX::App::PythonBinding::Selection::SelectionWrapper & _ )
-				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::Atom>( _.getAtoms() ); }
+				{ return VTX::PythonBinding::API::Collection<VTX::PythonBinding::API::Atom>( _.getAtoms() ); },
+				pybind11::keep_alive<1, 2>()
 			)
 			//.def( "getAtoms", &VTX::App::PythonBinding::Selection::SelectionWrapper::getAtoms )
 			//.def(
