@@ -46,7 +46,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	}
 	catch ( CommandException & e )
 	{
-		VTX_ERROR( "{}", e.what() );
+		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );
 	}
 	try
@@ -57,7 +57,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	}
 	catch ( CommandException & e )
 	{
-		VTX_ERROR( "{}", e.what() );
+		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );
 	}
 	try
@@ -68,7 +68,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	}
 	catch ( CommandException & e )
 	{
-		VTX_ERROR( "{}", e.what() );
+		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );
 	}
 	try
@@ -79,7 +79,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	}
 	catch ( CommandException & e )
 	{
-		VTX_ERROR( "{}", e.what() );
+		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );
 	}
 }
