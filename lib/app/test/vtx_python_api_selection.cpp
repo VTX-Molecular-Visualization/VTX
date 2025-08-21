@@ -14,6 +14,7 @@
 #include <util/math/range_list.hpp>
 //
 #include <app/python_binding/interpretor.hpp>
+#include <source_location>
 namespace Test
 {
 	void loadSystem( const char * p_filename )
@@ -22,6 +23,10 @@ namespace Test
 		const FilePath systemPath = VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename;
 		VTX::App::Action::Scene::LoadSystem openAction = VTX::App::Action::Scene::LoadSystem( systemPath );
 		openAction.execute();
+	}
+	std::string string( std::source_location p_ )
+	{
+		return fmt::format( "file : <{}>:l{}", p_.file_name(), p_.line() );
 	}
 } // namespace Test
 using AsyncJobResult = VTX::App::PythonBinding::Interpretor::AsyncJobResult;
@@ -52,6 +57,14 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );
 	}
+	catch ( ... )
+	{
+		VTX_ERROR(
+			"Unknown exception raised in python command and catched in the UT at {}",
+			Test::string( std::source_location() )
+		);
+		CHECK( false );
+	}
 	try
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getResidues()", _future );
@@ -64,6 +77,14 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	catch ( CommandException & e )
 	{
 		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
+		CHECK( false );
+	}
+	catch ( ... )
+	{
+		VTX_ERROR(
+			"Unknown exception raised in python command and catched in the UT at {}",
+			Test::string( std::source_location() )
+		);
 		CHECK( false );
 	}
 	try
@@ -80,6 +101,14 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );
 	}
+	catch ( ... )
+	{
+		VTX_ERROR(
+			"Unknown exception raised in python command and catched in the UT at {}",
+			Test::string( std::source_location() )
+		);
+		CHECK( false );
+	}
 	try
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getSystems()", _future );
@@ -92,6 +121,14 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	catch ( CommandException & e )
 	{
 		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
+		CHECK( false );
+	}
+	catch ( ... )
+	{
+		VTX_ERROR(
+			"Unknown exception raised in python command and catched in the UT at {}",
+			Test::string( std::source_location() )
+		);
 		CHECK( false );
 	}
 }

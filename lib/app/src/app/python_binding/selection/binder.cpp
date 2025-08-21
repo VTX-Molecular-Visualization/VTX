@@ -30,7 +30,7 @@ namespace VTX::App::PythonBinding::Selection
 			"select",
 			[]( const pybind11::kwargs & kw )
 			{ return VTX::App::PythonBinding::Selection::SelectionInterpretor::select( kw ); },
-			pybind11::return_value_policy::move
+			pybind11::return_value_policy::move // An attempt to hopefully prevent random segfault
 		);
 
 		p_apiModule.def( "intersect", &VTX::App::PythonBinding::Selection::SelectionWrapper::intersect );
