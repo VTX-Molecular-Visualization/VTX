@@ -41,8 +41,10 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	try
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", _future );
-		auto str = _future.get();
-		CHECK( str.resultStr.find( "CollectionAtom" ) != str.resultStr.npos );
+		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
+		if ( _future.valid() )
+			rslt = _future.get();
+		CHECK( rslt.resultStr.find( "CollectionAtom" ) != rslt.resultStr.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -52,8 +54,10 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	try
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getResidues()", _future );
-		auto str = _future.get();
-		CHECK( str.resultStr.find( "CollectionResidue" ) != str.resultStr.npos );
+		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
+		if ( _future.valid() )
+			rslt = _future.get();
+		CHECK( rslt.resultStr.find( "CollectionResidue" ) != rslt.resultStr.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -63,8 +67,10 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	try
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getChains()", _future );
-		auto str = _future.get();
-		CHECK( str.resultStr.find( "CollectionChain" ) != str.resultStr.npos );
+		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
+		if ( _future.valid() )
+			rslt = _future.get();
+		CHECK( rslt.resultStr.find( "CollectionChain" ) != rslt.resultStr.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -74,8 +80,10 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	try
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getSystems()", _future );
-		auto str = _future.get();
-		CHECK( str.resultStr.find( "CollectionSystem" ) != str.resultStr.npos );
+		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
+		if ( _future.valid() )
+			rslt = _future.get();
+		CHECK( rslt.resultStr.find( "CollectionSystem" ) != rslt.resultStr.npos );
 	}
 	catch ( CommandException & e )
 	{
@@ -95,8 +103,10 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Collection crash", "[app][python][integ
 	try
 	{
 		INTERPRETOR().runCommand( "len(select(system_names='1AGA').getAtoms())", _future );
-		auto str = _future.get();
-		CHECK( str.resultStr == "126" );
+		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
+		if ( _future.valid() )
+			rslt = _future.get();
+		CHECK( rslt.resultStr == "126" );
 	}
 	catch ( ... )
 	{
@@ -111,6 +121,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Collection crash", "[app][python][integ
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[1000]", _future );
 		_future.wait();
 	}
+	REQUIRE( _future.valid() );
 	CHECK( _future.get().success == false );
 }
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integration][selection]" )
@@ -340,13 +351,19 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	std::future<AsyncJobResult> _ret;
 	INTERPRETOR().runScript( scriptPath, _ret );
 	_ret.wait();
-	CHECK( _ret.get().success == true );
-
+	if ( _ret.valid() )
+		CHECK( _ret.get().success == true );
+	else
+		CHECK( false );
 	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
 
 	INTERPRETOR().runScript( badScriptPath, _ret );
 	_ret.wait();
-	CHECK( _ret.get().success == false );
+
+	if ( _ret.valid() )
+		CHECK( _ret.get().success == false );
+	else
+		CHECK( false );
 }
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][nothing]" )
 {
@@ -370,9 +387,15 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][bindin
 	ssCommandRun << "runScript(" << scriptPath << " )";
 	INTERPRETOR().runCommand( ssCommandRun.str(), _future );
 	_future.wait();
-	CHECK( _future.get().success == true );
+	if ( _future.valid() )
+		CHECK( _future.get().success == true );
+	else
+		CHECK( false );
 
 	INTERPRETOR().runCommand( "runScript('bzzzz')", _future );
 	_future.wait();
-	CHECK( _future.get().success == false );
+	if ( _future.valid() )
+		CHECK( _future.get().success == false );
+	else
+		CHECK( false );
 }
