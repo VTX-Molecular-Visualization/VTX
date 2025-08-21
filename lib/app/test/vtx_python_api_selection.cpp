@@ -26,7 +26,7 @@ namespace Test
 	}
 	std::string string( std::source_location p_ )
 	{
-		return fmt::format( "file : <{}>:l{}", p_.file_name(), p_.line() );
+		return fmt::format( "file : <{}> at line <{}>", p_.file_name(), p_.line() );
 	}
 } // namespace Test
 using AsyncJobResult = VTX::App::PythonBinding::Interpretor::AsyncJobResult;
