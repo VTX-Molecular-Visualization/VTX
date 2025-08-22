@@ -31,6 +31,57 @@ namespace Test
 } // namespace Test
 using AsyncJobResult = VTX::App::PythonBinding::Interpretor::AsyncJobResult;
 
+TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python][integration][types][random]" )
+{
+	/**
+	 * @brief The intend of this test is to diagnose a bug that occurs randomly in release mode.
+	 */
+	using namespace VTX;
+	using SelectionUtil = App::Test::Util::Selection;
+	App::Fixture app;
+
+	Test::loadSystem( "1AGA.mmtf" );
+	for ( uint32_t it_idx = 0; it_idx < 20; it_idx++ )
+	{
+		std::shared_ptr<std::promise<AsyncJobResult>>		 promise = std::make_shared<std::promise<AsyncJobResult>>();
+		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
+		try
+		{
+			INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", promise );
+		}
+		catch ( CommandException & e )
+		{
+			VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
+			CHECK( false );
+		}
+		catch ( std::exception & e )
+		{
+			VTX_ERROR( "Anonymous exception raised in python command and catched in the UT : {}", e.what() );
+			CHECK( false );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR(
+				"Unknown exception raised in python command and catched in the UT at {}",
+				Test::string( std::source_location() )
+			);
+			CHECK( false );
+		}
+		try
+		{
+			auto _future = promise->get_future();
+			_future.wait(); // Necessary on ubunutu for some reason
+			if ( _future.valid() )
+				rslt = _future.get();
+		}
+		catch ( std::exception & e )
+		{
+			VTX_ERROR( "Anonymous exception raised in the future get in the UT : {}", e.what() );
+			CHECK( false );
+		}
+		CHECK( rslt.resultStr.find( "CollectionAtom" ) != rslt.resultStr.npos );
+	}
+}
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python][integration][types]" )
 {
 	/**
@@ -41,13 +92,13 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	using SelectionUtil = App::Test::Util::Selection;
 	App::Fixture app;
 
-	std::future<AsyncJobResult> _future;
+	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
+	std::future<AsyncJobResult>					  _future = promise->get_future();
 	Test::loadSystem( "1AGA.mmtf" );
 	try
 	{
-		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", _future );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", promise );
 		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
-		_future.wait(); // Necessary on ubunutu for some reason
 		if ( _future.valid() )
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionAtom" ) != rslt.resultStr.npos );
@@ -65,10 +116,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 		);
 		CHECK( false );
 	}
-	_future = std::future<AsyncJobResult>();
+	promise = std::make_shared<std::promise<AsyncJobResult>>();
+	_future = promise->get_future();
 	try
 	{
-		INTERPRETOR().runCommand( "select(system_names='1AGA').getResidues()", _future );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getResidues()", promise );
 		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
 		_future.wait();
 		if ( _future.valid() )
@@ -88,10 +140,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 		);
 		CHECK( false );
 	}
-	_future = std::future<AsyncJobResult>();
+	promise = std::make_shared<std::promise<AsyncJobResult>>();
+	_future = promise->get_future();
 	try
 	{
-		INTERPRETOR().runCommand( "select(system_names='1AGA').getChains()", _future );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getChains()", promise );
 		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
 		_future.wait();
 		if ( _future.valid() )
@@ -111,10 +164,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 		);
 		CHECK( false );
 	}
-	_future = std::future<AsyncJobResult>();
+	promise = std::make_shared<std::promise<AsyncJobResult>>();
+	_future = promise->get_future();
 	try
 	{
-		INTERPRETOR().runCommand( "select(system_names='1AGA').getSystems()", _future );
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getSystems()", promise );
 		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
 		_future.wait();
 		if ( _future.valid() )
@@ -142,11 +196,12 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Collection crash", "[app][python][integ
 	App::Fixture app;
 
 	Test::loadSystem( "1AGA.mmtf" );
-	std::future<AsyncJobResult> _future;
+	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
+	std::future<AsyncJobResult>					  _future = promise->get_future();
 
 	try
 	{
-		INTERPRETOR().runCommand( "len(select(system_names='1AGA').getAtoms())", _future );
+		INTERPRETOR().runCommand( "len(select(system_names='1AGA').getAtoms())", promise );
 		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
 		_future.wait();
 		if ( _future.valid() )
@@ -158,12 +213,16 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Collection crash", "[app][python][integ
 		CHECK( false );
 	}
 	{
-		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[100]", _future );
+		promise = std::make_shared<std::promise<AsyncJobResult>>();
+		_future = promise->get_future();
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[100]", promise );
 		_future.wait();
 	}
 	CHECK( _future.get().success == true );
 	{
-		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[1000]", _future );
+		promise = std::make_shared<std::promise<AsyncJobResult>>();
+		_future = promise->get_future();
+		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()[1000]", promise );
 		_future.wait();
 	}
 	REQUIRE( _future.valid() );
@@ -393,29 +452,33 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
 	const FilePath scriptPath	   = internalDataDir / "script_test.py";
 
-	std::future<AsyncJobResult> _ret;
-	INTERPRETOR().runScript( scriptPath, _ret );
-	_ret.wait();
-	if ( _ret.valid() )
-		CHECK( _ret.get().success == true );
+	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
+	std::future<AsyncJobResult>					  _future = promise->get_future();
+	INTERPRETOR().runScript( scriptPath, promise );
+	_future.wait();
+	if ( _future.valid() )
+		CHECK( _future.get().success == true );
 	else
 		CHECK( false );
 	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
 
-	INTERPRETOR().runScript( badScriptPath, _ret );
-	_ret.wait();
+	promise = std::make_shared<std::promise<AsyncJobResult>>();
+	_future = promise->get_future();
+	INTERPRETOR().runScript( badScriptPath, promise );
+	_future.wait();
 
-	if ( _ret.valid() )
-		CHECK( _ret.get().success == false );
+	if ( _future.valid() )
+		CHECK( _future.get().success == false );
 	else
 		CHECK( false );
 }
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][nothing]" )
 {
 	using namespace VTX;
-	App::Fixture				app;
-	std::future<AsyncJobResult> _future;
-	INTERPRETOR().runCommand( "s = 1", _future );
+	App::Fixture								  app;
+	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
+	std::future<AsyncJobResult>					  _future = promise->get_future();
+	INTERPRETOR().runCommand( "s = 1", promise );
 	_future.wait();
 	// std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
 }
@@ -427,17 +490,20 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][bindin
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
 	const FilePath scriptPath	   = internalDataDir / "script_test.py";
 
-	std::future<AsyncJobResult> _future;
-	std::stringstream			ssCommandRun = std::stringstream();
+	std::shared_ptr<std::promise<AsyncJobResult>> promise	   = std::make_shared<std::promise<AsyncJobResult>>();
+	std::future<AsyncJobResult>					  _future	   = promise->get_future();
+	std::stringstream							  ssCommandRun = std::stringstream();
 	ssCommandRun << "runScript(" << scriptPath << " )";
-	INTERPRETOR().runCommand( ssCommandRun.str(), _future );
+	INTERPRETOR().runCommand( ssCommandRun.str(), promise );
 	_future.wait();
 	if ( _future.valid() )
 		CHECK( _future.get().success == true );
 	else
 		CHECK( false );
 
-	INTERPRETOR().runCommand( "runScript('bzzzz')", _future );
+	promise = std::make_shared<std::promise<AsyncJobResult>>();
+	_future = promise->get_future();
+	INTERPRETOR().runCommand( "runScript('bzzzz')", promise );
 	_future.wait();
 	if ( _future.valid() )
 		CHECK( _future.get().success == false );
