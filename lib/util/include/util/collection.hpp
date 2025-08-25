@@ -12,14 +12,6 @@
 
 namespace VTX::Util
 {
-	// using CollectionKey = std::string_view;
-
-	/*
-	template<typename C>
-	concept ConceptCollectionable = requires( C p_collectionable ) {
-		{ p_collectionable.getName() } -> std::same_as<CollectionKey>;
-	};
-	*/
 
 	/**
 	 * @brief A utility class to store a collection of objects, mapped on a given hash, or generated hash from typename.
@@ -29,44 +21,6 @@ namespace VTX::Util
 	class Collection
 	{
 	  public:
-		/**
-		 * @brief Auto register the derived class in a static collection.
-		 * @tparam T is the derived class type.
-		 */
-		/*
-		template<typename T>
-		class GlobalStorage
-		{
-		  public:
-			GlobalStorage() { Singleton<Collection<C>>::get().template set<T>( static_cast<T *>( this ) ); }
-			virtual ~GlobalStorage() { Singleton<Collection<C>>::get().template remove<T>(); }
-		};
-		*/
-		/**
-		 * @brief Register a key to create item from.
-		 * @tparam T is the derived class type.
-		 */
-		/*
-		template<typename T>
-		class Registration final
-		{
-		  public:
-			Registration( const CollectionKey & p_key = Util::typeName<T>() )
-			{
-				Singleton<Collection<C>>::get().template registerKey<T>( p_key );
-			}
-		};
-		*/
-
-	  public:
-		/*		template<typename T>
-		inline void registerKey( const CollectionKey & p_key )
-		{
-			assert( not _creators.contains( p_key ) );
-			_creators[ p_key ] = &Collection::_createHelper<T>;
-		}
-		*/
-
 		template<typename T>
 		inline bool has() const
 		{
@@ -95,6 +49,19 @@ namespace VTX::Util
 		}
 
 		template<typename T>
+		inline T * const getOrCreateWithHash( const Hash & p_hash )
+		{
+			if ( has( p_hash ) )
+			{
+				return get<T>( p_hash );
+			}
+			else
+			{
+				return createWithHash<T>( p_hash );
+			}
+		}
+
+		template<typename T>
 		inline T * const get( const Hash & p_hash )
 		{
 			assert( _map.contains( p_hash ) );
@@ -109,10 +76,15 @@ namespace VTX::Util
 			{
 				return static_cast<T *>( _map[ p_hash ].get() );
 			}
+			/*
+			else if constexpr ( std::is_class_v<C> )
+			{
+				return static_cast<T *>( &_map[ p_hash ] );
+			}
+			*/
 			else
 			{
-				static_assert( std::is_same_v<T, void>, "Util::Collection::get(): unrecognized type." );
-				return nullptr;
+				static_assert( std::is_same_v<T, void>, "Util::Collection::create(): unrecognized type." );
 			}
 		}
 
@@ -121,17 +93,6 @@ namespace VTX::Util
 		{
 			return *get<T>();
 		}
-
-		/*
-		template<typename T>
-		inline T * const createFromKey( const CollectionKey & p_key )
-		{
-			assert( _creators.contains( p_key ) );
-
-			_creators[ p_key ]( this );
-			return get<T>();
-		}
-		*/
 
 		template<typename T, typename... Args>
 		inline T * const create( Args &&... p_args )
@@ -169,9 +130,15 @@ namespace VTX::Util
 			{
 				_map[ p_hash ] = std::unique_ptr<T>( p_value );
 			}
+			/*
+			else if constexpr ( std::is_class_v<C> )
+			{
+				_map[ p_hash ] = static_cast<C>( *p_value );
+			}
+			*/
 			else
 			{
-				static_assert( std::is_same_v<T, void>, "Util::Collection::set(): unrecognized type." );
+				static_assert( std::is_same_v<T, void>, "Util::Collection::create(): unrecognized type." );
 			}
 		}
 
@@ -180,8 +147,6 @@ namespace VTX::Util
 		{
 			remove( hash<T>() );
 		}
-
-		// inline void remove( const CollectionKey & p_key ) { remove( Util::hash( p_key ) ); }
 
 		inline void remove( const Hash & p_hash )
 		{
@@ -202,10 +167,7 @@ namespace VTX::Util
 		}
 
 	  private:
-		// using CreateFunc = void ( * )( Collection * const );
-
 		std::unordered_map<Hash, C> _map;
-		// std::unordered_map<CollectionKey, CreateFunc> _creators;
 
 		template<typename T, typename... Args>
 		inline T * _create( const Hash & p_hash, Args &&... p_args )
@@ -222,6 +184,12 @@ namespace VTX::Util
 			{
 				_map.emplace( p_hash, std::make_unique<T>( std::forward<Args>( p_args )... ) );
 			}
+			/*
+			else if constexpr ( std::is_class_v<C> )
+			{
+				_map.emplace( p_hash, T( std::forward<Args>( p_args )... ) );
+			}
+			*/
 			else
 			{
 				static_assert( std::is_same_v<T, void>, "Util::Collection::create(): unrecognized type." );

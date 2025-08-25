@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_PROXY_POINTER_COLLECTION__
 #define __VTX_RENDERER_PROXY_POINTER_COLLECTION__
 
-#include <unordered_map>
+#include <util/collection.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer::Proxy

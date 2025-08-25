@@ -5,6 +5,23 @@
 
 namespace VTX::Core::Struct
 {
+	enum E_REPRESENTATION_VALUES // Not a class to avoid static_cast<int>.
+	{
+		HAS_SPHERE,
+		RADIUS_SPHERE_FIXED,
+		RADIUS_SPHERE_ADD,
+		IS_SPHERE_RADIUS_FIXED,
+
+		HAS_CYLINDER,
+		RADIUS_CYLINDER,
+		CYLINDER_COLOR_BLENDING,
+
+		HAS_RIBBON,
+		RIBBON_COLOR_BLENDING,
+
+		HAS_SES,
+		SES_PROBE_RADIUS
+	};
 
 	struct Representation
 	{

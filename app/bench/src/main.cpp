@@ -143,8 +143,9 @@ int main( int, char ** )
 		float fZeroOne	= 0.1f;
 		float fZeroFive = 0.5f;
 
-		Renderer::Proxy::Representation representation;
+		// Renderer::Proxy::Representation representation;
 
+		/*
 		representation.set( 0, bTrue );
 		representation.set( 1, fZeroFive );
 		representation.set( 2, fZero );
@@ -158,8 +159,9 @@ int main( int, char ** )
 		representation.set( 8, bTrue );
 
 		representation.set( 9, bFalse );
+		*/
 
-		renderer.setProxyRepresentation( representation );
+		// renderer.setProxyRepresentation( representation );
 
 		// Renderer::Proxy::RenderSettings renderSettings
 		//	= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,

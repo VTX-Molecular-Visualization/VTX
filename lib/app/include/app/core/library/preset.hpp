@@ -11,32 +11,26 @@ namespace VTX::App::Core::Library
 	class IPreset
 	{
 	  public:
+		IPreset()		   = default;
 		virtual ~IPreset() = default;
+		IPreset( const IPreset & ) {}
 
-		/*
-		template<int S, typename T>
-		Util::Callback<T> * onChange()
+		IPreset & operator=( const IPreset & ) { return *this; }
+
+		template<int S, typename... Args>
+		Util::Callback<Args...> & getCallback()
 		{
-			if ( not _callbacks.has( S ) )
-			{
-				_callbacks.createWithHash<Util::Callback<T>>( S );
-				//_callbacks.emplace( S, std::make_unique<Util::Callback<T>>() );
-			}
-			// return *static_cast<Util::Callback<T> *>( _callbacks[ S ].get() );
-			return _callbacks.get<Util::Callback<T>>( S );
+			return *_callbacks.getOrCreateWithHash<Util::Callback<Args...>>( S );
 		}
-		*/
 
 	  private:
-		// std::unordered_map<int, std::unique_ptr<Util::ICallback>> _callbacks;
-		Util::Collection<Util::ICallback> _callbacks;
+		Util::Collection<std::unique_ptr<Util::ICallback>> _callbacks;
 	};
 
 	template<typename T>
 	class Preset : public IPreset
 	{
 	  public:
-		Preset() = default;
 		virtual ~Preset() = default;
 
 		inline const T & getData() const { return _data; }
