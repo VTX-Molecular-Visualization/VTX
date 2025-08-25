@@ -1,0 +1,139 @@
+#pragma once
+
+#include <boost/interprocess/allocators/allocator.hpp>
+#include <boost/interprocess/containers/deque.hpp>
+#include <boost/interprocess/containers/map.hpp>
+#include <boost/interprocess/containers/string.hpp>
+#include <boost/interprocess/containers/vector.hpp>
+#include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/sync/named_mutex.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
+#include <chrono>
+#include <optional>
+#include <vtx/secondary_structure/shared/shared.hpp>
+
+namespace pdb100
+{
+	using namespace boost::interprocess;
+
+	const uint64_t showProgressInterval = 30;
+
+	namespace shm
+	{
+		namespace filestrDeque
+		{
+			const char SEGNAME[] = "VTX__SHM_FILESTR_DEQUE";
+			const char OBJNAME[] = "file_collection";
+			const char MUTEX[]	 = "VTX__SHM_FILESTR_MUTEX";
+		} // namespace filestrDeque
+
+		namespace rsltMap
+		{
+			const char SEGNAME[] = "VTX__SHM_SS_RSLT_MAP";
+			const char OBJNAME[] = "result_map";
+			const char MUTEX[]	 = "VTX__SHM_RSLT_MAP_MUTEX";
+		} // namespace rsltMap
+
+		/**
+		 * @brief Will hold timestamp to prove that a thread is still alive, as well as the process ID of a thead
+		 */
+		namespace livingProof
+		{
+			const char SEGNAME[] = "VTX__SHM_SS_LIVINGPROOF";
+			const char OBJNAME[] = "ss_liveProof";
+			const char MUTEX[]	 = "VTX__SHM_SS_LIVINGPROOF_MUTEX";
+
+			const uint64_t tolerenceTime = 8;
+		} // namespace livingProof
+
+	} // namespace shm
+
+	using namespace boost::interprocess;
+	struct MutexAndLock
+	{
+		std::optional<named_mutex>				mutex;
+		std::optional<scoped_lock<named_mutex>> lock;
+	};
+	inline void lock( MutexAndLock & ml, const char * p_name )
+	{
+	begin:
+		ml.mutex.emplace( open_or_create, p_name );
+		ml.lock.emplace( *ml.mutex, try_to_lock );
+		if ( not ml.lock.value() )
+		{
+			ml.lock.reset();
+			ml.mutex.reset();
+			std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+			goto begin;
+		}
+	}
+	template<const char * MUTEX_NAME>
+	class LazyLock
+	{
+	  public:
+		inline LazyLock() { lock( ml, MUTEX_NAME ); }
+		inline ~LazyLock()
+		{
+			if ( ml.lock )
+				ml.lock->unlock();
+		}
+
+	  private:
+		MutexAndLock ml;
+	};
+
+	enum class ResultFlag : uint8_t
+	{
+		fully_working = 0,
+		crashed		  = 1 << 7
+	};
+
+	typedef allocator<void, managed_shared_memory::segment_manager>	  void_allocator;
+	typedef allocator<char, managed_shared_memory::segment_manager>	  CharAllocator;
+	typedef basic_string<char, std::char_traits<char>, CharAllocator> String;
+	typedef allocator<String, managed_shared_memory::segment_manager> StringAllocator;
+
+	typedef vector<String, StringAllocator>								   StringDeque;
+	typedef allocator<StringDeque, managed_shared_memory::segment_manager> StringDequeAllocator;
+
+	typedef allocator<uint64_t, managed_shared_memory::segment_manager> Uint64Allocator;
+
+	typedef allocator<ResultFlag, managed_shared_memory::segment_manager> ResultFlagAllocator;
+	typedef allocator<std::pair<const uint64_t, ResultFlag>, managed_shared_memory::segment_manager>
+		Uint64ResultFlagPairAllocator;
+	typedef allocator<std::pair<const uint64_t, uint64_t>, managed_shared_memory::segment_manager> Uint64PairAllocator;
+
+	typedef map<uint64_t, ResultFlag, std::less<uint64_t>, Uint64ResultFlagPairAllocator> ResultFlagMap;
+	typedef allocator<ResultFlagMap, managed_shared_memory::segment_manager>			  ResultFlagMapAllocator;
+
+	typedef map<uint64_t, uint64_t, std::less<uint64_t>, Uint64PairAllocator> LivingProofMap;
+	typedef allocator<LivingProofMap, managed_shared_memory::segment_manager> LivingProofMapAllocator;
+
+	typedef allocator<float, managed_shared_memory::segment_manager>			  FloatAllocator;
+	typedef allocator<uint16_t, managed_shared_memory::segment_manager>			  UInt16Allocator;
+	typedef allocator<ReportItem<String>, managed_shared_memory::segment_manager> ReportItemAllocator;
+	typedef vector<ReportItem<String>, ReportItemAllocator>						  ReportItemCollection;
+
+	using _ResultFlagInt = std::underlying_type<ResultFlag>::type;
+	inline ResultFlag operator|( const ResultFlag & l, const ResultFlag & r ) noexcept
+	{
+		return static_cast<ResultFlag>( static_cast<_ResultFlagInt>( l ) | static_cast<_ResultFlagInt>( r ) );
+	}
+	inline ResultFlag operator&( const ResultFlag & l, const ResultFlag & r ) noexcept
+	{
+		return static_cast<ResultFlag>( static_cast<_ResultFlagInt>( l ) & static_cast<_ResultFlagInt>( r ) );
+	}
+	inline ResultFlag operator*( const bool & l, const ResultFlag & r ) noexcept
+	{
+		return static_cast<ResultFlag>( l * static_cast<_ResultFlagInt>( r ) );
+	}
+
+	inline uint64_t getTimeStamp()
+	{
+		return static_cast<uint64_t>(
+			std::chrono::duration_cast<std::chrono::seconds>( std::chrono::system_clock::now().time_since_epoch() )
+				.count()
+		);
+	}
+
+} // namespace pdb100

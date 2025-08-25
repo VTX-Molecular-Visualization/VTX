@@ -1,5 +1,5 @@
-#include "test/process/shared.hpp"
 #include <algorithm>
+#include <bit>
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
@@ -12,6 +12,7 @@
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
+#include <vtx/io_vs_pdb100/shared.hpp>
 
 // We test it only in dev mode.
 #ifdef PDB_DATABASE_DIR
@@ -44,7 +45,7 @@ namespace
 	struct DataBaseTestContext
 	{
 		fs::path	   dbDir;
-		FileCollection tested_structs;
+		FileCollection pdb100_system;
 		TestResults	   testResults;
 
 		uint32_t num_fullyworking		 = 0;
@@ -71,50 +72,50 @@ namespace
 		}
 	}
 	/**
-	 * @brief Open each directory from the dbDir and list the files in the tested_structs collection
+	 * @brief Open each directory from the dbDir and list the files in the pdb100_system collection
 	 * @param contextData
 	 */
 	void enumerateFiles( DataBaseTestContext & contextData )
 	{
-		walkDir( contextData.tested_structs, contextData.dbDir );
+		walkDir( contextData.pdb100_system, contextData.dbDir );
 	}
 	void writeReportSummary( DataBaseTestContext & contextData )
 	{
 		VTX::VTX_INFO(
 			"Fully working : {:0.02f}% ({}/{})",
-			static_cast<double>( contextData.num_fullyworking ) / contextData.tested_structs.size() * 100.,
+			static_cast<double>( contextData.num_fullyworking ) / contextData.pdb100_system.size() * 100.,
 			contextData.num_fullyworking,
-			contextData.tested_structs.size()
+			contextData.pdb100_system.size()
 		);
 		VTX::VTX_INFO(
 			"Atom mismatch : {:0.02f}% ({}/{})",
-			static_cast<double>( contextData.num_atomNumNotMatch ) / contextData.tested_structs.size() * 100.,
+			static_cast<double>( contextData.num_atomNumNotMatch ) / contextData.pdb100_system.size() * 100.,
 			contextData.num_atomNumNotMatch,
-			contextData.tested_structs.size()
+			contextData.pdb100_system.size()
 		);
 		VTX::VTX_INFO(
 			"Residue mismatch : {:0.02f}% ({}/{})",
-			static_cast<double>( contextData.num_residuesNumNotMatch ) / contextData.tested_structs.size() * 100.,
+			static_cast<double>( contextData.num_residuesNumNotMatch ) / contextData.pdb100_system.size() * 100.,
 			contextData.num_residuesNumNotMatch,
-			contextData.tested_structs.size()
+			contextData.pdb100_system.size()
 		);
 		VTX::VTX_INFO(
 			"Chain mismatch : {:0.02f}% ({}/{})",
-			static_cast<double>( contextData.num_chainNumNotMatch ) / contextData.tested_structs.size() * 100.,
+			static_cast<double>( contextData.num_chainNumNotMatch ) / contextData.pdb100_system.size() * 100.,
 			contextData.num_chainNumNotMatch,
-			contextData.tested_structs.size()
+			contextData.pdb100_system.size()
 		);
 		VTX::VTX_INFO(
 			"Frame mismatch : {:0.02f}% ({}/{})",
-			static_cast<double>( contextData.num_frameNumNotMatch ) / contextData.tested_structs.size() * 100.,
+			static_cast<double>( contextData.num_frameNumNotMatch ) / contextData.pdb100_system.size() * 100.,
 			contextData.num_frameNumNotMatch,
-			contextData.tested_structs.size()
+			contextData.pdb100_system.size()
 		);
 		VTX::VTX_INFO(
 			"Crashes : {:0.02f}% ({}/{})",
-			static_cast<double>( contextData.num_crashed ) / contextData.tested_structs.size() * 100.,
+			static_cast<double>( contextData.num_crashed ) / contextData.pdb100_system.size() * 100.,
 			contextData.num_crashed,
-			contextData.tested_structs.size()
+			contextData.pdb100_system.size()
 		);
 	}
 	void writeResultFile(
@@ -133,6 +134,10 @@ namespace
 				file << fs::path( *it_strRslt.first ).stem().string() << "\t" << *it_strRslt.first << std::endl;
 		}
 	}
+	int byteswap( const int & _Val )
+	{
+		return ( _Val << 24 ) | ( ( _Val << 8 ) & 0x00FF'0000 ) | ( ( _Val >> 8 ) & 0x0000'FF00 ) | ( _Val >> 24 );
+	}
 	/**
 	 * @brief Class responsible for starting an independant worker, and restarting it if it crashes. If the worker
 	 * finish normally, it is not restarted and the finished method return true.
@@ -146,14 +151,16 @@ namespace
 			bool		 finished	 = false;
 			int			 thr_retcode = 1;
 			std::string	 startStr	 = fmt::format( "{} {}", exeStr, num );
+
 			std::jthread thr { [ & ]()
 							   {
 								   while ( this->thr_retcode != 0 )
 								   {
 									   VTX::VTX_INFO( "Starting worker {}.", this->num, this->thr_retcode );
-									   this->thr_retcode = system( startStr.data() );
+									   this->thr_retcode = std::system( startStr.data() );
+
 									   VTX::VTX_INFO(
-										   "Worker {} terminated with return code {}.", this->num, this->thr_retcode
+										   "Worker {} terminated with return code {:32b}.", this->num, this->thr_retcode
 									   );
 								   }
 								   VTX::VTX_INFO( "Worker {} won't restart.", this->num );
@@ -175,10 +182,10 @@ namespace
 	{
 		using namespace VTX::IO::test;
 
-		const size_t size_shm_deque
-			= contextData.tested_structs.size()
-				  * ( contextData.tested_structs.begin()->size() + sizeof( String ) + 50 /* deque memory overhead ? */ )
-			  + 500;
+		const size_t size_shm_deque = contextData.pdb100_system.size()
+										  * ( contextData.pdb100_system.begin()->size() + sizeof( String )
+											  + sizeof( StringDeque ) /* deque memory overhead ? */ )
+									  + 1000;
 
 		boost::interprocess::managed_shared_memory sharedSegment(
 			boost::interprocess::create_only, VTX::IO::test::SHM_FILESTR_DEQUE_SEGNAME, size_shm_deque
@@ -187,11 +194,12 @@ namespace
 		StringAllocator		 strAlloc( sharedSegment.get_segment_manager() );
 		StringDeque * fileStrDeque = sharedSegment.construct<StringDeque>( SHM_FILESTR_DEQUE_OBJNAME )( dequeAlloc );
 
-		for ( auto & it_filepathStr : contextData.tested_structs )
+		for ( auto & it_filepathStr : contextData.pdb100_system )
 		{
 			fileStrDeque->emplace_back( strAlloc ); // segfault ?
 			fileStrDeque->back().assign( it_filepathStr.begin(), it_filepathStr.end() );
 		}
+		std::cout << fileStrDeque->size();
 	}
 	/**
 	 * @brief Initilize shared memory map
@@ -201,7 +209,7 @@ namespace
 	{
 		using namespace VTX::IO::test;
 		const size_t size_shm_map
-			= contextData.tested_structs.size() * ( 50 + sizeof( RereadResult ) + sizeof( uint64_t ) ) + 500;
+			= contextData.pdb100_system.size() * ( 50 + sizeof( RereadResult ) + sizeof( uint64_t ) ) + 500;
 
 		boost::interprocess::managed_shared_memory sharedSegment(
 			boost::interprocess::create_only, VTX::IO::test::SHM_REREADRSLT_MAP_SEGNAME, size_shm_map
@@ -228,7 +236,7 @@ namespace
 		}
 		RereadResultMap * rsltMap = rsltMapPair.first;
 
-		for ( auto & it_filepathStr : contextData.tested_structs )
+		for ( auto & it_filepathStr : contextData.pdb100_system )
 		{
 			uint64_t key = std::hash<std::string>()( it_filepathStr );
 			if ( not rsltMap->contains( key ) )
@@ -277,9 +285,9 @@ namespace
 		}
 		VTX::VTX_INFO(
 			"Job status : {:0.2f}% completion ({}/{})",
-			100. * static_cast<double>( mapSize ) / static_cast<double>( contextData.tested_structs.size() ),
+			100. * static_cast<double>( mapSize ) / static_cast<double>( contextData.pdb100_system.size() ),
 			mapSize,
-			contextData.tested_structs.size()
+			contextData.pdb100_system.size()
 		);
 	}
 	/**
@@ -296,7 +304,7 @@ namespace
 		_constructMap( contextData );
 
 		const int					   NUM_WORKER = NUM_PROCESSES;
-		const char *				   startStr	  = "vtx_io_new_process";
+		const char *				   startStr	  = CHILD_PROCESS_NAME;
 		std::vector<RestartableWorker> workerPool;
 		workerPool.reserve( NUM_WORKER );
 		VTX::VTX_INFO( "Creating {} workers ...", NUM_WORKER );
@@ -368,7 +376,7 @@ int main( int argc, char * argv[] )
 
 	VTX::VTX_INFO( "Enumerating data ..." );
 	enumerateFiles( contextData );
-	VTX::VTX_INFO( "{} files found.", contextData.tested_structs.size() );
+	VTX::VTX_INFO( "{} files found.", contextData.pdb100_system.size() );
 
 	Logger l( contextData );
 	testFiles( contextData );

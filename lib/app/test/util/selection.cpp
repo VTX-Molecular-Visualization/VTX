@@ -17,12 +17,14 @@ namespace VTX::App::Test::Util
 		const SelectionObj & p_expectedResult
 	)
 	{
+		using AsyncJobResult	  = VTX::App::PythonBinding::Interpretor::AsyncJobResult;
 		std::stringstream command = std::stringstream();
 		command << "(" << p_command << ").save('" << p_selName << "')";
 
-		std::future<VTX::App::PythonBinding::Interpretor::AsyncJobResult> ret;
-		INTERPRETOR().runCommand( command.str(), ret );
-		ret.wait();
+		std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
+		std::future<AsyncJobResult>					  _future = promise->get_future();
+		INTERPRETOR().runCommand( command.str(), promise );
+		_future.wait();
 
 		const SelectionObj & result = App::SELECTION_MANAGER().getSaved( p_selName );
 

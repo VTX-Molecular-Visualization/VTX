@@ -32,7 +32,7 @@ find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(re2 CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED) # Needed for multiprocessing on pdb database test
-find_package(LibArchive REQUIRED)
+find_package(LibArchive REQUIRED) # Needed for pdb100 archive reading
 find_package(platform_folders REQUIRED)
 
 
@@ -82,3 +82,12 @@ vtx_clear_registered_copies() # Prevent data from previous package to be copied 
 # VTX.
 include("${DIR_APPS}/vtx/cmake/library.cmake")
 vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
+
+
+## Following projects will be local-dev exclusives. It either serves no purpose to have them built in the clould or it would be to resource-intensive.
+# 
+
+# PDB100
+set(PDB100_DIRECTORY_PATH "C:/Users/Valen/data/pdb/pdb100") # Needed for pdb100 related projects
+include("${CMAKE_CURRENT_LIST_DIR}/secondary_structure.cmake") # Project for secondary structure algorithm benchmark
+include("${CMAKE_CURRENT_LIST_DIR}/io_vs_pdb100.cmake") # Project for secondary structure algorithm benchmark

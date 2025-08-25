@@ -15,10 +15,12 @@ namespace VTX::App::PythonBinding
 
 			void execute()
 			{
-				std::future<VTX::App::PythonBinding::Interpretor::AsyncJobResult> ret;
-				INTERPRETOR().runScript( _path, ret );
-				if ( ret.get().success == false )
-					throw pybind11::value_error( ret.get().resultStr );
+				std::shared_ptr<std::promise<Interpretor::AsyncJobResult>> promise
+					= std::make_shared<std::promise<Interpretor::AsyncJobResult>>();
+				std::future<Interpretor::AsyncJobResult> _future = promise->get_future();
+				INTERPRETOR().runScript( _path, promise );
+				if ( _future.get().success == false )
+					throw pybind11::value_error( _future.get().resultStr );
 			}
 
 		  private:

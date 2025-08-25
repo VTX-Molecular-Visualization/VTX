@@ -31,7 +31,18 @@ namespace VTX::Util
 
 	  public:
 		// Default-construct inner data class/struct provided in class template
-		DataLocker()  = default;
+		DataLocker() = default;
+
+		template<typename T = void>
+			requires std::movable<DataType>
+		DataLocker( DataType p_ ) : _data( std::move( p_ ) )
+		{
+		}
+
+		template<typename... Args>
+		DataLocker( Args... args ) : _data( std::forward<Args>( args )... )
+		{
+		}
 		~DataLocker() = default;
 
 		inline DataLocker( DataLocker<DataType> && p_ ) : _data( std::move( p_._data ) ) {}

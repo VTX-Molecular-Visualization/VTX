@@ -1,4 +1,3 @@
-#include "test/process/shared.hpp"
 #include <archive.h>
 #include <archive_entry.h>
 #include <boost/interprocess/sync/named_mutex.hpp>
@@ -10,11 +9,15 @@
 #include <io/writer/system.hpp>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
+#include <vtx/io_vs_pdb100/shared.hpp>
 
 namespace fs = std::filesystem;
 
 namespace
 {
+	std::string	  g_log_name;
+	std::ofstream log() { return std::ofstream( g_log_name, std::ios::app ); }
+
 	/**
 	 * @brief Use libarchive to decompress the directory , take the first file and write it at destination.
 	 * @param src
@@ -22,6 +25,7 @@ namespace
 	 */
 	void decompressFile( const VTX::FilePath & src, const VTX::FilePath & dest )
 	{
+		log() << "Entering decompressFile function\n";
 		std::vector<char> cpp_buffer;
 		cpp_buffer.resize( fs::file_size( src ) );
 
@@ -72,6 +76,11 @@ namespace
 			IO::Reader::System systemReader = IO::Reader::System();
 
 			systemReader.readFile( structureFile, system );
+#ifdef FIRST_READ_ONLY
+
+			rslt = RereadResult::fully_working;
+			return;
+#endif
 		}
 		uint64_t init_atomCount	 = system.getAtomCount();
 		uint64_t init_chainCount = system.getChainCount();
@@ -103,7 +112,7 @@ namespace
 		rslt = ( numMismatch_atom * RereadResult::atom_mismatch ) | ( numMismatch_chain * RereadResult::chain_mismatch )
 			   | ( numMismatch_res * RereadResult::residue_mismatch )
 			   | ( numMismatch_frame * RereadResult::frame_mismatch );
-
+		return;
 		// Bond are not reliably written in files so we won't check them.
 		// e.g. 2qwo has disulfide bond that is not retrieved when reloading the file
 	}
@@ -154,8 +163,9 @@ namespace
 			throw;
 
 		if ( dequePair.first->empty() )
+		{
 			return;
-
+		}
 		out.assign( dequePair.first->front().begin(), dequePair.first->front().end() );
 		dequePair.first->pop_front();
 	}
@@ -163,6 +173,7 @@ namespace
 
 int main( int argc, char * argv[] )
 {
+	g_log_name = fmt::format( "child_log_{}.log", boost::interprocess::ipcdetail::get_current_process_id() );
 	if ( argc != 2 )
 		return 0;
 
@@ -188,6 +199,7 @@ int main( int argc, char * argv[] )
 		}
 		catch ( ... )
 		{
+			log() << "Crash of testFile function\n";
 		}
 		writeResultEntry( filePathStr, result );
 

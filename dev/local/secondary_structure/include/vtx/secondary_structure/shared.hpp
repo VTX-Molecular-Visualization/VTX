@@ -1,0 +1,43 @@
+#pragma once
+
+#include <concepts>
+#include <filesystem>
+#include <stack>
+#include <unordered_map>
+#include <util/datalocker.hpp>
+#include <vector>
+#include <vtx/secondary_structure/report.hpp>
+#include <vtx/secondary_structure/shared/shared.hpp>
+
+namespace fs = std::filesystem;
+
+namespace pdb100
+{
+	const size_t   NUM_PROCESSES	= 16; // Number of child working simultaneously
+	const uint32_t STRUCTURE_STRIDE = 1;  // Control the downsampling of the database for quick results
+
+	inline const fs::path g_pdb100DirectoryPath { PDB100_DATABASE_DIR };
+
+	using SystemMap		 = std::unordered_map<uint32_t, System>;
+	using FileCollection = std::vector<std::string>;
+
+	class Reporter;
+	struct Context
+	{
+		fs::path							  dbDir = g_pdb100DirectoryPath;
+		VTX::Util::DataLocker<Reporter>		  log { "report.txt" };
+		VTX::Util::DataLocker<FileCollection> pdb100_system;
+		size_t								  initialFileCollectionSize = 0;
+		SystemMap							  results;
+	};
+
+	/**
+	 * @brief Set the reporter for the entire process
+	 */
+	void reporter( VTX::Util::DataLocker<Reporter> & ) noexcept;
+	/**
+	 * @brief Get current process's reporter
+	 * @return
+	 */
+	VTX::Util::DataLocker<Reporter> & reporter() noexcept;
+} // namespace pdb100

@@ -30,7 +30,7 @@ namespace VTX::App::PythonBinding::Selection
 			"select",
 			[]( const pybind11::kwargs & kw )
 			{ return VTX::App::PythonBinding::Selection::SelectionInterpretor::select( kw ); },
-			pybind11::return_value_policy::reference
+			pybind11::return_value_policy::move // An attempt to hopefully prevent random segfault
 		);
 
 		p_apiModule.def( "intersect", &VTX::App::PythonBinding::Selection::SelectionWrapper::intersect );
@@ -52,7 +52,14 @@ namespace VTX::App::PythonBinding::Selection
 				&VTX::App::PythonBinding::Selection::SelectionWrapper::remove,
 				pybind11::return_value_policy::reference
 			)
-			.def( "save", &VTX::App::PythonBinding::Selection::SelectionWrapper::save )
+			.def(
+				"save",
+				&VTX::App::PythonBinding::Selection::SelectionWrapper::save,
+				pybind11::keep_alive<1, 2>(
+				) /* I suspect that a segfault sometimes occurs here. This might be due to the object being garb age
+					 collected a the wrong time. So here I try to prevent these segfaults. It is difficult to test as
+					 these occurances are quite random  */
+			)
 
 			// I don't like the 4 following definition but the "implicitly_convertible" pybind function doesn't work
 			// here and is seems that having the method signature conversion makes python garbage the memory while we

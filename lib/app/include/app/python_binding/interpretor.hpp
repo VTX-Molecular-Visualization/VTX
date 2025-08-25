@@ -41,7 +41,7 @@ namespace VTX::App::PythonBinding
 		/**
 		 * @brief Run input python command asynchronously and fill the future value with its result.
 		 */
-		void runCommand( const std::string &, std::future<AsyncJobResult> & ) noexcept;
+		void runCommand( const std::string &, std::shared_ptr<std::promise<AsyncJobResult>> ) noexcept;
 
 		/**
 		 * @brief Run python script located in the input file asynchronously.
@@ -53,7 +53,7 @@ namespace VTX::App::PythonBinding
 		 * @param
 		 * @param  Will be true if the script was successfuly executed
 		 */
-		void runScript( const FilePath &, std::future<AsyncJobResult> & ) noexcept;
+		void runScript( const FilePath &, std::shared_ptr<std::promise<AsyncJobResult>> ) noexcept;
 
 		/**
 		 * @brief Slow the response time down. Python command are not actually executed right away. They are queue up

@@ -212,7 +212,7 @@ namespace VTX::UI::QT
 				{
 					name	= "New";
 					tip		= "Create a new empty preset";
-					icon	= int( QStyle::StandardPixmap::SP_FileIcon );
+					icon	= static_cast<int>( QStyle::StandardPixmap::SP_FileIcon );
 					trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Library::AddPreset<P>>(); };
 				}
 			};
@@ -224,7 +224,7 @@ namespace VTX::UI::QT
 				{
 					name = "Duplicate";
 					tip	 = "Create a new preset from this one";
-					icon = int( QStyle::StandardPixmap::SP_DialogSaveButton );
+					icon = static_cast<int>( QStyle::StandardPixmap::SP_DialogSaveButton );
 				}
 			};
 
@@ -235,7 +235,7 @@ namespace VTX::UI::QT
 				{
 					name = "Delete";
 					tip	 = "Delete this preset";
-					icon = int( QStyle::StandardPixmap::SP_TrashIcon );
+					icon = static_cast<int>( QStyle::StandardPixmap::SP_TrashIcon );
 				}
 			};
 		} // namespace Preset
