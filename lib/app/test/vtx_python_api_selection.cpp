@@ -37,11 +37,12 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	 * @brief The intend of this test is to diagnose a bug that occurs randomly in release mode.
 	 */
 	using namespace VTX;
-	using SelectionUtil = App::Test::Util::Selection;
-	App::Fixture app;
+	using SelectionUtil				   = App::Test::Util::Selection;
+	const uint32_t NUMBER_OF_ITERATION = 20;
+	App::Fixture   app;
 
 	Test::loadSystem( "1AGA.mmtf" );
-	for ( uint32_t it_idx = 0; it_idx < 20; it_idx++ )
+	for ( uint32_t it_idx = 0; it_idx < NUMBER_OF_ITERATION; it_idx++ )
 	{
 		std::shared_ptr<std::promise<AsyncJobResult>>		 promise = std::make_shared<std::promise<AsyncJobResult>>();
 		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
@@ -191,6 +192,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 }
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Collection crash", "[app][python][integration][collection]" )
 {
+	/**
+	 * @brief We test collection behavior
+	 */
 	using namespace VTX;
 	using SelectionUtil = App::Test::Util::Selection;
 	App::Fixture app;
@@ -230,6 +234,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Collection crash", "[app][python][integ
 }
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integration][selection]" )
 {
+	/**
+	 * @brief We Check that the selection work as intended
+	 */
 	using namespace VTX;
 	using SelectionUtil = App::Test::Util::Selection;
 	App::Fixture app;
@@ -436,16 +443,13 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 			SelectionUtil::createSelection( allHistidineOn4HHB )
 		)
 	);
-
-	// CHECK( SelectionUtil::checkSelection(
-	//	"test_system_names_chain_str_i_1", "select( system_names='4HHB', chain_indexes='1' )",
-	// PythonFixture::Application::Selection::Selection() ) ); // NO => manage param as str
-
-	// interpretor.runCommand( "select( system_names='4HHB', residue_indexes=range(0, 100) )" );
 };
 
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][binding][script][method]" )
 {
+	/**
+	 * @brief We make sure calling with an existing method works but calling a non-existing one doesn't
+	 */
 	using namespace VTX;
 	App::Fixture app;
 
@@ -474,16 +478,22 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 }
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][nothing]" )
 {
+	/**
+	 * @brief We test one of the most basic python (i.e. assigning an int to a named var) command to make sure it works
+	 */
 	using namespace VTX;
 	App::Fixture								  app;
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
 	std::future<AsyncJobResult>					  _future = promise->get_future();
 	INTERPRETOR().runCommand( "s = 1", promise );
 	_future.wait();
-	// std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
 }
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][binding][command][script]" )
 {
+	/**
+	 * @brief We ensure the runScript command works with a good path, and doesn't work with a path that point toward a
+	 * non-existing element.
+	 */
 	using namespace VTX;
 	App::Fixture app;
 
