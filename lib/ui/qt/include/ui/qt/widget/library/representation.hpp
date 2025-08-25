@@ -16,6 +16,7 @@ namespace VTX::UI::QT::Widget::Library
 		Representation( QWidget * p_parent );
 
 	  protected:
+		void _onPresetAdded( const std::string_view ) override;
 		void _onPresetChanged() override;
 
 	  private:
@@ -37,6 +38,8 @@ namespace VTX::UI::QT::Widget::Library
 		// SES.
 		QPointer<Core::Widget::HideableGroupBox> _groupboxSes;
 		QPointer<Core::Widget::EditableSlider>	 _sliderSesProbeRadius;
+
+		void _applyLogic();
 
 		/*
 		Core::Widget::HideableGroupBox * const _createGroupBoxSphere()

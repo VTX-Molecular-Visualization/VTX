@@ -128,8 +128,8 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_VALUES::HAS_CYLINDER, bool>>(
+					.execute<
+						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_VALUES::HAS_CYLINDER, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -193,8 +193,7 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
-					.execute<
-						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_VALUES::HAS_SES, bool>>(
+					.execute<App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_VALUES::HAS_SES, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -212,11 +211,99 @@ namespace VTX::UI::QT::Widget::Library
 					);
 			}
 		);
+	}
 
-		// TODO: connect with app: only if current
+	void Representation::_onPresetAdded( const std::string_view p_name )
+	{
+		using namespace VTX::Core::Struct;
+		auto * const preset = _library->getPreset( p_name );
 
-		// Set default values.
-		_onPresetChanged();
+		// Connect app to widgets.
+		preset->getCallback<E_REPRESENTATION_VALUES::HAS_SPHERE, bool>() += [ this, preset ]( const bool p_value )
+		{
+			if ( _preset != preset )
+				return;
+			const QSignalBlocker blocker( _groupboxSphere );
+			_groupboxSphere->setChecked( p_value );
+		};
+		preset->getCallback<E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED, bool>() +=
+			[ this, preset ]( const bool p_value )
+		{
+			if ( _preset != preset )
+				return;
+			const QSignalBlocker blocker( _comboBoxSphereRadiusType );
+			_comboBoxSphereRadiusType->setCurrentIndex( int( p_value ) );
+			_applyLogic();
+		};
+		preset->getCallback<E_REPRESENTATION_VALUES::RADIUS_SPHERE_ADD, float>() +=
+			[ this, preset ]( const float p_value )
+		{
+			if ( _preset != preset )
+				return;
+			const QSignalBlocker blocker( _sliderSphereRadiusAdd );
+			_sliderSphereRadiusAdd->setValue( p_value );
+		};
+		preset->getCallback<E_REPRESENTATION_VALUES::RADIUS_SPHERE_FIXED, float>() +=
+			[ this, preset ]( const float p_value )
+		{
+			if ( _preset != preset )
+				return;
+			const QSignalBlocker blocker( _sliderSphereRadiusFixed );
+			_sliderSphereRadiusFixed->setValue( p_value );
+		};
+		preset->getCallback<E_REPRESENTATION_VALUES::HAS_CYLINDER, bool>() += [ this, preset ]( const bool p_value )
+		{
+			if ( _preset != preset )
+				return;
+			const QSignalBlocker blocker( _groupboxCylinder );
+			_groupboxCylinder->setChecked( p_value );
+		};
+		preset->getCallback<E_REPRESENTATION_VALUES::RADIUS_CYLINDER, float>() +=
+			[ this, preset ]( const float p_value )
+		{
+			if ( _preset != preset )
+				return;
+			const QSignalBlocker blocker( _sliderCylinderRadius );
+			_sliderCylinderRadius->setValue( p_value );
+		};
+		preset->getCallback<E_REPRESENTATION_VALUES::CYLINDER_COLOR_BLENDING, bool>() +=
+			[ this, preset ]( const bool p_value )
+		{
+			if ( _preset != preset )
+				return;
+			const QSignalBlocker blocker( _checkBoxCylinderColorBlending );
+			_checkBoxCylinderColorBlending->setChecked( p_value );
+		};
+		preset->getCallback<E_REPRESENTATION_VALUES::HAS_RIBBON, bool>() += [ this, preset ]( const bool p_value )
+		{
+			if ( _preset != preset )
+				return;
+			const QSignalBlocker blocker( _groupboxRibbon );
+			_groupboxRibbon->setChecked( p_value );
+		};
+		preset->getCallback<E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING, bool>() +=
+			[ this, preset ]( const bool p_value )
+		{
+			if ( _preset != preset )
+				return;
+			const QSignalBlocker blocker( _checkBoxRibbonColorBlending );
+			_checkBoxRibbonColorBlending->setChecked( p_value );
+		};
+		preset->getCallback<E_REPRESENTATION_VALUES::HAS_SES, bool>() += [ this, preset ]( const bool p_value )
+		{
+			if ( _preset != preset )
+				return;
+			const QSignalBlocker blocker( _groupboxSes );
+			_groupboxSes->setChecked( p_value );
+		};
+		preset->getCallback<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>() +=
+			[ this, preset ]( const float p_value )
+		{
+			if ( _preset != preset )
+				return;
+
+			_sliderSesProbeRadius->setValue( p_value );
+		};
 	}
 
 	void Representation::_onPresetChanged()
@@ -246,6 +333,16 @@ namespace VTX::UI::QT::Widget::Library
 		_checkBoxRibbonColorBlending->setChecked( _preset->getData().ribbonColorBlending );
 		_groupboxSes->setChecked( _preset->getData().hasSes );
 		_sliderSesProbeRadius->setValue( _preset->getData().sesProbeRadius );
+
+		_applyLogic();
+	}
+
+	void Representation::_applyLogic()
+	{
+		// Sphere.
+		const bool isFixed = _comboBoxSphereRadiusType->currentIndex() == 1;
+		_sliderSphereRadiusAdd->setVisible( not isFixed );
+		_sliderSphereRadiusFixed->setVisible( isFixed );
 	}
 
 } // namespace VTX::UI::QT::Widget::Library
