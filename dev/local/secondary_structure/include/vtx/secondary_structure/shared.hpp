@@ -13,8 +13,8 @@ namespace fs = std::filesystem;
 
 namespace pdb100
 {
-	const size_t   NUM_PROCESSES	= 16; // Number of child working simultaneously
-	const uint32_t STRUCTURE_STRIDE = 1;  // Control the downsampling of the database for quick results
+	const size_t   NUM_PROCESSES	= 16;	// Number of child working simultaneously
+	const uint32_t STRUCTURE_STRIDE = 1000; // Control the downsampling of the database for quick results
 
 	inline const fs::path g_pdb100DirectoryPath { PDB100_DATABASE_DIR };
 

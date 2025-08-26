@@ -67,10 +67,19 @@ namespace pdb100
 		_betaSheetCorrectnessRate /= oneIfZero( _items.size() );
 		_alphaHelixCorrectnessRate /= oneIfZero( _items.size() );
 		_computeStrideEfficiencyRateMean /= oneIfZero( _computeStrideEfficiencyNumStruct );
+		_ssTanimotoMean /= oneIfZero( _items.size() - _num_noSs );
 		for ( auto & it : _items )
+		{
 			if ( it.correctnessRates.numResidues > 0 )
 				_computeStrideEfficiencyStdDev
 					+= abs( _computeStrideEfficiencyRateMean - computeStrideEfficiency( it.correctnessRates ) );
+			if ( it.correctnessRates.residuesInSs > 0 )
+				_ssTanimotoStdDev += abs(
+					( static_cast<float>( it.correctnessRates.matchingResidues ) / it.correctnessRates.residuesInSs )
+					- _ssTanimotoMean
+				);
+		}
+		_ssTanimotoStdDev /= oneIfZero( _items.size() - _num_noSs );
 		_computeStrideEfficiencyStdDev /= oneIfZero( _computeStrideEfficiencyNumStruct );
 
 		std::ofstream outFile { _reportPath };
@@ -100,6 +109,8 @@ namespace pdb100
 		outFile << "\tno data rate : " << ( static_cast<double>( _num_noSs ) / ( _items.size() ) ) << "\n";
 		outFile << "\tFully correct Beta-sheet rate mean : " << _betaSheetCorrectnessRate << "\n";
 		outFile << "\tFully correct Alpha-helix rate mean : " << _alphaHelixCorrectnessRate << "\n";
+		outFile << "\tTanimoto mean : " << _ssTanimotoMean << "\n";
+		outFile << "\tTanimoto standard deviation : " << _ssTanimotoStdDev << "\n";
 		outFile << "\n";
 		outFile << "______________________\n";
 		outFile << "\n";
@@ -116,6 +127,11 @@ namespace pdb100
 				continue;
 			}
 			outFile << "Structure :" << it.pdb << "\n";
+			outFile << "Tanimoto : "
+					<< static_cast<float>( it.correctnessRates.matchingResidues ) / it.correctnessRates.residuesInSs
+					<< "\n";
+			outFile << "matching res : " << it.correctnessRates.matchingResidues << "\n";
+			outFile << "res in ss : " << it.correctnessRates.residuesInSs << "\n";
 			if ( it.correctnessRates.numResidues == 0 )
 				outFile << "0 res found ?" << "\n";
 			else
@@ -164,6 +180,11 @@ namespace pdb100
 		{
 			_computeStrideEfficiencyRateMean += computeStrideEfficiency( p_item.correctnessRates );
 			_computeStrideEfficiencyNumStruct++;
+		}
+		if ( p_item.correctnessRates.residuesInSs > 0 )
+		{
+			_ssTanimotoMean += static_cast<double>( p_item.correctnessRates.matchingResidues )
+							   / p_item.correctnessRates.residuesInSs;
 		}
 		_items.push_back( std::move( p_item ) );
 	}

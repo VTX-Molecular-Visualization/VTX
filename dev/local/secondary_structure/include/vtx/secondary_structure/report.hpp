@@ -38,6 +38,8 @@ namespace pdb100
 		uint32_t _computeStrideEfficiencyNumStruct						= 0; // Count struct that actually have residues
 		double	 _computeStrideEfficiencyRateMean						= 0.f;
 		float	 _computeStrideEfficiencyStdDev							= 0.f;
+		float	 _ssTanimotoMean										= 0.f;
+		float	 _ssTanimotoStdDev										= 0.f;
 	};
 
 } // namespace pdb100

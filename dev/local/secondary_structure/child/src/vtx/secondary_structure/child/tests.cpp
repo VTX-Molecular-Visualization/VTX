@@ -215,6 +215,9 @@ namespace pdb100
 
 			uint64_t beginSsIdx = 0;
 			uint64_t currentIdx = 0;
+
+			uint32_t matchingResidues = 0;
+			uint32_t residuesInSs	  = 0;
 		};
 
 		template<typename SS>
@@ -337,7 +340,10 @@ namespace pdb100
 		{
 			using Type = VTX::Core::ChemDB::SecondaryStructure::TYPE;
 			if ( ssTypeBegin<SS>( p_context ) and ssType<SS>() == p_currentType ) // Still in the SS
+			{
+				p_context.matchingResidues++;
 				return true;
+			}
 
 			if ( ssTypeBegin<SS>( p_context ) and ssType<SS>() != p_currentType ) // Ending the SS
 			{
@@ -355,6 +361,7 @@ namespace pdb100
 				p_context.beginSsCorrect		  = isSsBorder(
 					 p_ssCollection, p_system.system.residueOriginalIds[ p_context.currentIdx ], &beginNum
 				 );
+				p_context.matchingResidues++;
 				if ( not p_context.beginSsCorrect )
 					p_context.isEverythingCorrect = false;
 
@@ -395,6 +402,8 @@ namespace pdb100
 			p_rates.beginBetaSheet /= oneIfZero( p_rates.numBetaSheet );
 			p_rates.endBetaSheet /= oneIfZero( p_rates.numBetaSheet );
 			p_rates.fullBetaSheet /= oneIfZero( p_rates.numBetaSheet );
+			p_rates.matchingResidues = p_context.matchingResidues;
+			p_rates.residuesInSs	 = p_context.residuesInSs;
 		}
 		void convert( const ReportItem<std::string> & p_in, ReportItem<String> & p_out )
 		{
@@ -474,6 +483,12 @@ namespace pdb100
 				terminateSs<Helix>( Type::HELIX_ALPHA_RIGHT, p_system, context );
 			if ( context.inStrand )
 				terminateSs<Strand>( Type::STRAND, p_system, context );
+
+			for ( auto & it_strand : p_system.strands )
+				context.residuesInSs += it_strand.ss.end.num - it_strand.ss.begin.num;
+
+			for ( auto & it_helix : p_system.helixes )
+				context.residuesInSs += it_helix.ss.end.num - it_helix.ss.begin.num;
 
 			ReportItem<std::string>::ResultSummary summary = ReportItem<std::string>::ResultSummary::success;
 			if ( not context.isEverythingCorrect )

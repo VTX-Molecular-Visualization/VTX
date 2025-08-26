@@ -7,6 +7,7 @@ namespace VTX::IO::Util::SecondaryStructure
 {
 
 	void computeStride( VTX::Core::Struct::System & p_system );
+	void assignSecondaryStructure( VTX::Core::Struct::System & p_system );
 
 } // namespace VTX::IO::Util::SecondaryStructure
 
