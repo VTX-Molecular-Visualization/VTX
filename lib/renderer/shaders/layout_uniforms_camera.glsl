@@ -2,6 +2,8 @@ struct Camera
 {
     mat4 matrixView;    
     mat4 matrixProjection;
+	mat4 matrixViewInv;
+	mat4 matrixViewInvTrans;
     vec3 cameraPosition;
     vec4 cameraClipInfos; // _near * _far, _far, _far - _near, _near
     ivec2 resolution;
