@@ -109,7 +109,7 @@ namespace VTX::IO::Reader
 			}
 
 			const std::string secondaryStructure
-				= p_chemfileStruct.getCurrentResidueStringProperty( "secondary_structure" );
+				= p_chemfileStruct.getCurrentResidueStringProperty( "secondary_structure" ); // TODO : Around here
 			if ( secondaryStructure != "" )
 			{
 				p_system.residueSecondaryStructureTypes[ residueIdx ]
