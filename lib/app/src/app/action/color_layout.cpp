@@ -1,16 +1,11 @@
-#include "app/action/color.hpp"
-#include <app/application/scene.hpp>
-#include <app/component/representation/color_layout.hpp>
+#include "app/action/color_layout.hpp"
 
-namespace VTX::App::Action::Color
+namespace VTX::App::Action::ColorLayout
 {
 
-	ChangeLayoutColor::ChangeLayoutColor( const Index p_index, const Util::Color::Rgba & p_color ) :
-		_index( p_index ), _color( p_color )
-	{
-	}
+	Change::Change( const Index p_index, const Util::Color::Rgba & p_color ) : _index( p_index ), _color( p_color ) {}
 
-	void ChangeLayoutColor::execute()
+	void Change::execute()
 	{
 		const auto & scene	   = App::SCENE();
 		auto &		 component = App::ECS_REGISTRY().getComponent<App::Component::Representation::ColorLayout>(
@@ -19,9 +14,9 @@ namespace VTX::App::Action::Color
 		component.setColor( _index, _color );
 	}
 
-	ChangeLayoutColors::ChangeLayoutColors( const std::vector<Util::Color::Rgba> & p_colors ) : _colors( p_colors ) {}
+	ChangeAll::ChangeAll( const std::vector<Util::Color::Rgba> & p_colors ) : _colors( p_colors ) {}
 
-	void ChangeLayoutColors::execute()
+	void ChangeAll::execute()
 	{
 		const auto & scene	   = App::SCENE();
 		auto &		 component = App::ECS_REGISTRY().getComponent<App::Component::Representation::ColorLayout>(
@@ -30,7 +25,7 @@ namespace VTX::App::Action::Color
 		component.setColors( _colors );
 	}
 
-	void RandomizeLayoutColors::execute()
+	void Randomize::execute()
 	{
 		std::vector<Util::Color::Rgba> randomColors( VTX::Core::Struct::ColorLayout::LAYOUT_SIZE );
 		std::generate( randomColors.begin(), randomColors.end(), [] { return Util::Color::Rgba::random(); } );
@@ -41,4 +36,4 @@ namespace VTX::App::Action::Color
 		component.setColors( randomColors );
 	}
 
-} // namespace VTX::App::Action::Color
+} // namespace VTX::App::Action::ColorLayout

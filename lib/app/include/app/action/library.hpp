@@ -10,14 +10,32 @@ namespace VTX::App::Action::Library
 	 * @brief Base class for library actions.
 	 */
 	template<typename T>
-	class BaseActionPreset : public App::Core::Action::BaseAction
+	class BaseActionLibrary : public App::Core::Action::BaseAction
 	{
+	  public:
+		virtual ~BaseActionLibrary() = default;
+
 	  protected:
 		Core::Library::Library<T> * const _library = LIBRARY_SYSTEM().getLibrary<T>();
 	};
 
+	/**
+	 * @brief Base class for preset actions that can retrieve a preset by its name.
+	 */
 	template<typename T>
-	class RenamePreset final : public BaseActionPreset<T>
+	class BaseActionPreset : public App::Action::Library::BaseActionLibrary<T>
+	{
+	  public:
+		BaseActionPreset( T * const p_preset ) : _preset( p_preset ) {}
+		BaseActionPreset( const std::string_view p_name ) { _preset = _library->getPreset( p_name ); }
+		virtual ~BaseActionPreset() = default;
+
+	  protected:
+		T * _preset;
+	};
+
+	template<typename T>
+	class RenamePreset final : public BaseActionLibrary<T>
 	{
 	  public:
 		RenamePreset( const std::string_view p_src, const std::string_view p_dest ) : _src( p_src ), _dest( p_dest ) {}
@@ -30,7 +48,7 @@ namespace VTX::App::Action::Library
 	};
 
 	template<typename T>
-	class AddPreset final : public BaseActionPreset<T>
+	class AddPreset final : public BaseActionLibrary<T>
 	{
 	  public:
 		AddPreset( const std::optional<std::string_view> p_name = std::nullopt ) : _name( p_name ) {}
@@ -42,7 +60,7 @@ namespace VTX::App::Action::Library
 	};
 
 	template<typename T>
-	class DuplicatePreset final : public BaseActionPreset<T>
+	class DuplicatePreset final : public BaseActionLibrary<T>
 	{
 	  public:
 		DuplicatePreset( const std::string_view p_src, const std::optional<std::string_view> p_dest = std::nullopt ) :
@@ -58,7 +76,7 @@ namespace VTX::App::Action::Library
 	};
 
 	template<typename T>
-	class DeletePreset final : public BaseActionPreset<T>
+	class DeletePreset final : public BaseActionLibrary<T>
 	{
 	  public:
 		DeletePreset( const std::string_view p_name ) : _name( p_name ) {}
@@ -75,7 +93,7 @@ namespace VTX::App::Action::Library
 
 	/*
 	template<typename T>
-	class SavePreset final : public BaseActionPreset<T>
+	class SavePreset final : public BaseActionLibrary<T>
 	{
 	};
 	*/

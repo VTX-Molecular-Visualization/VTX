@@ -2,21 +2,16 @@
 #define __VTX_CORE_STRUCT_COLOR_LAYOUT__
 
 #include <array>
-#include <string>
-#include <util/callback.hpp>
 #include <util/color/rgba.hpp>
 
 namespace VTX::Core::Struct
 {
-	class ColorLayout
+	constexpr size_t COLOR_LAYOUT_SIZE = 256;
+	using ColorLayoutArray			   = std::array<Util::Color::Rgba, COLOR_LAYOUT_SIZE>;
+
+	struct ColorLayout
 	{
-	  public:
-		static inline const size_t LAYOUT_SIZE = 256;
-
-		ColorLayout();
-		ColorLayout( const std::vector<Util::Color::Rgba> & p_layout );
-
-		std::vector<Util::Color::Rgba> layout;
+		ColorLayoutArray layout;
 	};
 } // namespace VTX::Core::Struct
 

@@ -1,18 +1,19 @@
 #ifndef __VTX_RENDERER_PROXY_COLOR_LAYOUT__
 #define __VTX_RENDERER_PROXY_COLOR_LAYOUT__
 
-#include <array>
+#include <core/struct/color_layout.hpp>
 #include <util/callback.hpp>
-#include <util/color/rgba.hpp>
 
 namespace VTX::Renderer::Proxy
 {
 	/**
 	 * @brief Color layout data provider.
 	 */
-	struct ColorLayout
+	class ColorLayout
 	{
-		const std::vector<Util::Color::Rgba> * colors;
+		const Core::Struct::ColorLayout & data;
+
+		ColorLayout( const Core::Struct::ColorLayout & p_data ) : data( p_data ) {}
 
 		Util::Callback<>	   onChangeAll;
 		Util::Callback<size_t> onChange;
