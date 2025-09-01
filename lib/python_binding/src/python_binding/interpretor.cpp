@@ -26,14 +26,20 @@ PYBIND11_EMBEDDED_MODULE( vtx_python_api, m )
 
 namespace VTX::PythonBinding
 {
-
+	namespace
+	{
+		pybind11::scoped_interpreter createInterpretor( const std::wstring & p_pythonHomePath )
+		{
+			Py_SetPythonHome( p_pythonHomePath.data() );
+			return pybind11::scoped_interpreter();
+		}
+	} // namespace
 	struct Interpretor::Impl
 	{
 	  public:
 		Impl()
 		{
 			VTX::VTX_INFO( "Importing python module <{}>", vtx_module_name() );
-
 			// Allow the python "print" function to be funneled into our log system
 			_vtxModule.import( "sys" ).attr( "stdout" ) = _vtxModule.attr( "LogRedirection" );
 
@@ -73,11 +79,11 @@ namespace VTX::PythonBinding
 		void getPythonModule( pybind11::module_ ** p_modulePtr ) { *p_modulePtr = &_vtxModule; }
 
 	  private:
-		LogRedirection				 _logger;
-		pybind11::scoped_interpreter _interpretor {};
+		const std::wstring _pythonBinDir { ( Util::Filesystem::getExecutableDir() / "external" / "python" ).wstring() };
+		LogRedirection	   _logger;
+		pybind11::scoped_interpreter _interpretor = createInterpretor( _pythonBinDir );
 		pybind11::module_			 _vtxModule { pybind11::module_::import( vtx_module_name() ) };
-
-		std::unique_ptr<PyTXModule> _pyTXModule
+		std::unique_ptr<PyTXModule>	 _pyTXModule
 			= std::make_unique<PyTXModule>( Wrapper::Module( _vtxModule, vtx_module_name() ) );
 
 		std::vector<Binder> _binders;

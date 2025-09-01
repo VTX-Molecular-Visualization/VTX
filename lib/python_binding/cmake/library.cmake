@@ -1,5 +1,4 @@
 
-include ("${CMAKE_CURRENT_LIST_DIR}/vtx_python_binding_copy_files.cmake")
 
 add_library(vtx_python_binding)
 vtx_configure_target(vtx_python_binding)
@@ -45,7 +44,10 @@ target_link_libraries(vtx_python_binding_test PRIVATE pybind11::embed)
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding)
 target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
 
-# All other find_package call
+include ("${CMAKE_CURRENT_LIST_DIR}/vtx_python_binding_copy_files.cmake")# All other find_package call
+vtx_copy_registered_data(vtx_python_binding)
+vtx_clear_registered_copies()
+
 vtx_register_build_directory_copy("${CMAKE_CURRENT_LIST_DIR}/../test/data" "./data")
 vtx_copy_registered_data(vtx_python_binding_test)
 

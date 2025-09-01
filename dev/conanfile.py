@@ -31,6 +31,7 @@ class VTXRecipe(ConanFile):
         self.requires("libarchive/3.7.9")
         self.requires("boost/1.87.0") # 1.88 version break process package on windows
         self.requires("platformfolders/4.3.0")
+        self.requires("cpython/3.9.19") # v >= 3.10 not working with msvc compiler so far
 
     def config_options(self):        
         # Package options.
@@ -145,6 +146,7 @@ class VTXRecipe(ConanFile):
         
         copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "external"), os.path.join(self.build_folder, "external"))        
         copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "data", "tools","mdprep","gromacs","top"), os.path.join(self.build_folder, "data", "tools", "mdprep", "gromacs", "top" ))        
+        copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder,"bin"), os.path.join(self.build_folder, "external","python"))        
 
     def layout(self):
         cmake_layout(self)
