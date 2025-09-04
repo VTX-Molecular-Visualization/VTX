@@ -688,17 +688,17 @@ namespace VTX::Renderer
 	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
 	{
 		_proxyColorLayout = &p_proxy;
-		_context.set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
+		_context.set( p_proxy.layout.colors, "ColorLayout" );
 		setNeedUpdate( true );
 
 		p_proxy.onChangeAll += [ this, &p_proxy ]()
 		{
-			_context.set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
+			_context.set( p_proxy.layout.colors, "ColorLayout" );
 			setNeedUpdate( true );
 		};
 		p_proxy.onChange += [ this, &p_proxy ]( const size_t p_index )
 		{
-			_context.setSub<Util::Color::Rgba>( { ( *p_proxy.colors )[ p_index ] }, "ColorLayout", p_index );
+			_context.setValue( p_proxy.layout.colors[ p_index ], "ColorLayout", p_index );
 			setNeedUpdate( true );
 		};
 	}

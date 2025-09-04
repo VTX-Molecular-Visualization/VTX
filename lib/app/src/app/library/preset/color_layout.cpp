@@ -3,10 +3,7 @@
 
 namespace VTX::App::Library::Preset
 {
-	ColorLayout::ColorLayout()
-	{
-		// setColorLayouts( VTX::Core::ChemDB::ColorLayout::COLOR_LAYOUT_JMOL.layout );
-	}
+	ColorLayout::ColorLayout() { _data.colors = VTX::Core::ChemDB::ColorLayout::COLOR_LAYOUT_JMOL.colors; }
 
 	void ColorLayout::save() {}
 	void ColorLayout::load() {}
@@ -16,14 +13,14 @@ namespace VTX::App::Library::Preset
 		assert( p_index >= 0 );
 		assert( p_index < VTX::Core::Struct::COLOR_LAYOUT_SIZE );
 
-		_data.layout[ p_index ] = p_color;
+		_data.colors[ p_index ] = p_color;
 		onChange( p_index );
 	}
 	void ColorLayout::setColors( const VTX::Core::Struct::ColorLayoutArray & p_colors )
 	{
 		assert( p_colors.size() == VTX::Core::Struct::COLOR_LAYOUT_SIZE );
 
-		_data.layout = p_colors;
+		_data.colors = p_colors;
 		onChangeAll();
 	}
 
@@ -34,7 +31,7 @@ namespace VTX::App::Library::Preset
 
 		const Index index = p_index % VTX::Core::ChemDB::ColorLayout::LAYOUT_COUNT_CHAINS;
 
-		return _data.layout[ VTX::Core::ChemDB::ColorLayout::LAYOUT_OFFSET_CHAINS + index ];
+		return _data.colors[ VTX::Core::ChemDB::ColorLayout::LAYOUT_OFFSET_CHAINS + index ];
 	}
 
 	const Util::Color::Rgba & ColorLayout::getResidueColor( const Index p_index ) const
@@ -44,6 +41,6 @@ namespace VTX::App::Library::Preset
 
 		const Index index = p_index % VTX::Core::ChemDB::ColorLayout::LAYOUT_COUNT_RESIDUES;
 
-		return _data.layout[ VTX::Core::ChemDB::ColorLayout::LAYOUT_OFFSET_RESIDUES + index ];
+		return _data.colors[ VTX::Core::ChemDB::ColorLayout::LAYOUT_OFFSET_RESIDUES + index ];
 	}
 } // namespace VTX::App::Library::Preset

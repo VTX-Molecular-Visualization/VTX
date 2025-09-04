@@ -7,10 +7,11 @@
 
 namespace VTX::App::Action::ColorLayout
 {
-	class Change final : public App::Action::Library::BaseActionPreset<VTX::App::Library::Preset::ColorLayout>
+	class Change final : public App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>
 	{
 	  public:
-		Change( const Index, const Util::Color::Rgba & );
+		Change( App::Library::Preset::ColorLayout * const, const Index, const Util::Color::Rgba & );
+		Change( const std::string_view, const Index, const Util::Color::Rgba & );
 		void execute() override;
 
 	  private:
@@ -18,20 +19,23 @@ namespace VTX::App::Action::ColorLayout
 		const Util::Color::Rgba & _color;
 	};
 
-	class ChangeAll final : public App::Core::Action::BaseAction
+	class ChangeAll final : public App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>
 	{
 	  public:
-		ChangeAll( const std::vector<Util::Color::Rgba> & p_colors );
+		ChangeAll( App::Library::Preset::ColorLayout * const, const VTX::Core::Struct::ColorLayoutArray & p_colors );
+		ChangeAll( const std::string_view, const VTX::Core::Struct::ColorLayoutArray & p_colors );
 		void execute() override;
 
 	  private:
-		const std::vector<Util::Color::Rgba> & _colors;
+		const VTX::Core::Struct::ColorLayoutArray & _colors;
 	};
 
-	class Randomize final : public App::Core::Action::BaseAction
+	class Randomize final : public App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>
 	{
 	  public:
-		Randomize() {}
+		Randomize( App::Library::Preset::ColorLayout * const );
+		Randomize( const std::string_view );
+
 		void execute() override;
 	};
 

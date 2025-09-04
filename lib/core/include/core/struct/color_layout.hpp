@@ -11,7 +11,7 @@ namespace VTX::Core::Struct
 
 	struct ColorLayout
 	{
-		ColorLayoutArray layout;
+		ColorLayoutArray colors;
 	};
 } // namespace VTX::Core::Struct
 

@@ -15,6 +15,7 @@
 #include "app/core/threading/threading_system.hpp"
 #include "app/entity/scene.hpp"
 #include "app/filesystem.hpp"
+#include "app/library/preset/color_layout.hpp"
 #include "app/library/preset/representation.hpp"
 #include "app/mode/visualization.hpp"
 #include "app/monitoring/constants.hpp"
@@ -43,6 +44,7 @@ namespace VTX::App
 
 		// Load preset libraries.
 		LIBRARY_SYSTEM().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
+		LIBRARY_SYSTEM().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
 
 		// TODO: move to start to handle gui dialog?
 		Settings::initSettings();

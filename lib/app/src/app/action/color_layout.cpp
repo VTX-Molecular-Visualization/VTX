@@ -2,38 +2,52 @@
 
 namespace VTX::App::Action::ColorLayout
 {
-
-	Change::Change( const Index p_index, const Util::Color::Rgba & p_color ) : _index( p_index ), _color( p_color ) {}
-
-	void Change::execute()
+	Change::Change(
+		App::Library::Preset::ColorLayout * const p_preset,
+		const Index								  p_index,
+		const Util::Color::Rgba &				  p_color
+	) :
+		App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>( p_preset ), _index( p_index ),
+		_color( p_color )
 	{
-		const auto & scene	   = App::SCENE();
-		auto &		 component = App::ECS_REGISTRY().getComponent<App::Component::Representation::ColorLayout>(
-			  App::ECS_REGISTRY().getEntity( scene )
-		  );
-		component.setColor( _index, _color );
 	}
 
-	ChangeAll::ChangeAll( const std::vector<Util::Color::Rgba> & p_colors ) : _colors( p_colors ) {}
-
-	void ChangeAll::execute()
+	Change::Change( const std::string_view p_preset, const Index p_index, const Util::Color::Rgba & p_color ) :
+		App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>( p_preset ), _index( p_index ),
+		_color( p_color )
 	{
-		const auto & scene	   = App::SCENE();
-		auto &		 component = App::ECS_REGISTRY().getComponent<App::Component::Representation::ColorLayout>(
-			  App::ECS_REGISTRY().getEntity( scene )
-		  );
-		component.setColors( _colors );
 	}
 
+	void Change::execute() { _preset->setColor( _index, _color ); }
+
+	ChangeAll::ChangeAll(
+		App::Library::Preset::ColorLayout * const	p_preset,
+		const VTX::Core::Struct::ColorLayoutArray & p_colors
+	) : App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>( p_preset ), _colors( p_colors )
+	{
+	}
+
+	ChangeAll::ChangeAll( const std::string_view p_preset, const VTX::Core::Struct::ColorLayoutArray & p_colors ) :
+		App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>( p_preset ), _colors( p_colors )
+	{
+	}
+
+	void ChangeAll::execute() { _preset->setColors( _colors ); }
+
+	Randomize::Randomize( App::Library::Preset::ColorLayout * const p_preset ) :
+		App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>( p_preset )
+	{
+	}
+
+	Randomize::Randomize( const std::string_view p_preset ) :
+		App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>( p_preset )
+	{
+	}
 	void Randomize::execute()
 	{
-		std::vector<Util::Color::Rgba> randomColors( VTX::Core::Struct::ColorLayout::LAYOUT_SIZE );
+		VTX::Core::Struct::ColorLayoutArray randomColors;
 		std::generate( randomColors.begin(), randomColors.end(), [] { return Util::Color::Rgba::random(); } );
-		const auto & scene	   = App::SCENE();
-		auto &		 component = App::ECS_REGISTRY().getComponent<App::Component::Representation::ColorLayout>(
-			  App::ECS_REGISTRY().getEntity( scene )
-		  );
-		component.setColors( randomColors );
+		_preset->setColors( randomColors );
 	}
 
 } // namespace VTX::App::Action::ColorLayout

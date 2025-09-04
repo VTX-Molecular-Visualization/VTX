@@ -1,6 +1,6 @@
 #include "scene.hpp"
 #include "util.hpp"
-#include <core/chemdb/color.hpp>
+#include <core/chemdb/color_layout.hpp>
 #include <io/util/secondary_structure.hpp>
 #include <numeric>
 #include <renderer/facade.hpp>
@@ -10,16 +10,16 @@ namespace VTX::Bench
 {
 
 	Scene::Scene( const size_t p_width, const size_t p_height ) :
-		_camera( p_width, p_height ), _colorLayout( Core::ChemDB::Color::COLOR_LAYOUT_JMOL ),
-		_proxyCamera(
-			{ _camera.getMatrixViewPtr(),
-			  _camera.getMatrixProjectionPtr(),
-			  _camera.getPosition(),
-			  VEC2I_ZERO,
-			  _camera.getNear(),
-			  _camera.getFar(),
-			  _camera.isPerspective() }
-		)
+		_camera( p_width, p_height ), _proxyCamera(
+										  { _camera.getMatrixViewPtr(),
+											_camera.getMatrixProjectionPtr(),
+											_camera.getPosition(),
+											VEC2I_ZERO,
+											_camera.getNear(),
+											_camera.getFar(),
+											_camera.isPerspective() }
+									  ),
+		_colorLayout( Core::ChemDB::ColorLayout::COLOR_LAYOUT_JMOL ), _proxyLayoutColor( _colorLayout )
 	{
 		_camera.callbackMatrixView += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixView(); };
 		_camera.callbackMatrixProjection += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixProjection(); };
@@ -29,8 +29,6 @@ namespace VTX::Bench
 			[ & ]( const float p_near, const float p_far ) { _proxyCamera.onCameraNearFar( p_near, p_far ); };
 		_camera.callbackPerspective +=
 			[ & ]( const bool p_isPerspective ) { _proxyCamera.onPerspective( p_isPerspective ); };
-
-		_proxyLayoutColor.colors = &( _colorLayout.layout );
 	}
 
 	Renderer::Proxy::System & Scene::addSystem( const std::string & p_name )
@@ -88,7 +86,9 @@ namespace VTX::Bench
 		std::vector<uchar> atomColors( sizeAtoms );
 		size_t			   i = 0;
 		std::generate(
-			atomColors.begin(), atomColors.end(), [ & ] { return Core::ChemDB::Color::getColorIndex( symbols[ i++ ] ); }
+			atomColors.begin(),
+			atomColors.end(),
+			[ & ] { return Core::ChemDB::ColorLayout::getColorIndex( symbols[ i++ ] ); }
 		);
 
 		auto atomRadii = std::vector<float>( sizeAtoms );
@@ -110,7 +110,7 @@ namespace VTX::Bench
 		std::generate(
 			residueColors.begin(),
 			residueColors.end(),
-			[ & ] { return Core::ChemDB::Color::getColorIndex( p_system.residueSecondaryStructureTypes[ i++ ] ); }
+			[ & ] { return Core::ChemDB::ColorLayout::getColorIndex( p_system.residueSecondaryStructureTypes[ i++ ] ); }
 		);
 
 		const Core::Struct::Category & categoryPolymer = p_system.getCategory( Core::ChemDB::Category::TYPE::POLYMER );

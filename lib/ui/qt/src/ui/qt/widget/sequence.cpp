@@ -46,7 +46,7 @@ namespace VTX::UI::QT::Widget
 		const QString headerLabel = QString( "%1/%2" ).arg(
 			QString::fromStdString( _system.getName() ), QString::fromStdString( firstChain->getName() )
 		);
-		painter.setPen( Helper::toQColor( colorlayout.getChainColor( firstChain->getIndex() + 1 ) ) );
+		painter.setPen( Helper::toQColor( colorlayout.getPreset().getChainColor( firstChain->getIndex() + 1 ) ) );
 		painter.drawText( 0, SEQ_CHAR_HEIGHT, headerLabel );
 		const int labelWidth = painter.fontMetrics().horizontalAdvance( headerLabel );
 
@@ -57,7 +57,9 @@ namespace VTX::UI::QT::Widget
 			const auto * residue = _system.getResidue( i );
 			const auto * chain	 = residue->getChainPtr();
 			painter.setPen(
-				Helper::toQColor( colorlayout.getChainColor( size_t( residue->getChainPtr()->getIndex() + 1 ) ) )
+				Helper::toQColor(
+					colorlayout.getPreset().getChainColor( size_t( residue->getChainPtr()->getIndex() + 1 ) )
+				)
 			);
 
 			// Chain labels.

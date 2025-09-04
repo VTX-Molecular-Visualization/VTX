@@ -3,6 +3,7 @@
 
 #include "concept.hpp"
 #include "renderer/binary_buffer.hpp"
+#include <span>
 
 namespace VTX::Renderer::Context
 {
@@ -68,13 +69,13 @@ namespace VTX::Renderer::Context
 	{
 	  public:
 		template<ConceptContextImpl C, typename... Args>
-		void set( Args &&... p_p_args )
+		void set( Args &&... p_args )
 		{
 			C * context;
 			if ( _contexts.has<C>() )
 				context = _contexts.get<C>();
 			else
-				context = _contexts.create<C>( std::forward<Args>( p_p_args )... );
+				context = _contexts.create<C>( std::forward<Args>( p_args )... );
 
 #define BIND_CONTEXT_FN( name ) \
 	_impl.name = [ context ]( auto &&... args ) { return context->name( std::forward<decltype( args )>( args )... ); }
@@ -110,105 +111,123 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename... Args>
-		inline void build( Args &&... args )
+		inline void build( Args &&... p_args )
 		{
-			_impl.build( std::forward<Args>( args )... );
+			_impl.build( std::forward<Args>( p_args )... );
 		}
 		template<typename... Args>
-		inline void resize( Args &&... args )
+		inline void resize( Args &&... p_args )
 		{
-			_impl.resize( std::forward<Args>( args )... );
+			_impl.resize( std::forward<Args>( p_args )... );
 		}
 		template<typename... Args>
-		inline void setOutput( Args &&... args )
+		inline void setOutput( Args &&... p_args )
 		{
-			_impl.setOutput( std::forward<Args>( args )... );
+			_impl.setOutput( std::forward<Args>( p_args )... );
 		}
 
 		template<typename T>
-		inline void setValue( const T & value, const Key & key, size_t index )
+		inline void setValue( const T & p_value, const Key & p_key, size_t p_index )
 		{
-			_impl.setValue( key, static_cast<const void * const>( &value ), index );
+			_impl.setValue( p_key, static_cast<const void * const>( &p_value ), p_index );
 		}
 
 		template<typename T>
-		inline void reserveData( size_t count, const Key & key, const T dummy = T() )
+		inline void reserveData( size_t p_count, const Key & p_key, const T p_dummy = T() )
 		{
-			_impl.reserveData( key, sizeof( T ) * count );
+			_impl.reserveData( p_key, sizeof( T ) * p_count );
 		}
 
 		template<typename T>
-		inline void set( const std::vector<T> & data, const Key & key )
+		inline void set( const std::span<const T> p_data, const Key & p_key )
 		{
-			_impl.set( key, data.data(), sizeof( T ) * data.size() );
+			_impl.set( p_key, p_data.data(), sizeof( T ) * p_data.size() );
 		}
 
-		inline void set( const BinaryBuffer & buffer, const Key & key )
+		/*
+		inline void set( const BinaryBuffer & p_buffer, const Key & p_key )
 		{
-			_impl.set( key, buffer.data(), buffer.size() );
+			_impl.set( p_key, p_buffer.data(), p_buffer.size() );
+		}
+		*/
+
+		template<std::ranges::contiguous_range R>
+		void set( const R & r, const Key & key )
+		{
+			using T = std::remove_cv_t<std::ranges::range_value_t<R>>;
+			set<T>( std::span<const T>( std::data( r ), std::size( r ) ), key );
 		}
 
 		template<typename T>
 		inline void setSub(
-			const std::vector<T> & data,
-			const Key &			   key,
-			size_t				   offset	 = 0,
-			size_t				   offsetSrc = 0,
-			size_t				   size		 = 0
+			const std::span<const T> p_data,
+			const Key &				 p_key,
+			size_t					 p_offset	 = 0,
+			size_t					 p_offsetSrc = 0,
+			size_t					 p_size		 = 0
 		)
 		{
-			size_t byteSize	  = sizeof( T ) * ( size ? size : data.size() );
-			size_t byteOffset = sizeof( T ) * offset;
-			_impl.setSub( key, data.data() + offsetSrc, byteSize, byteOffset );
+			size_t byteSize	  = sizeof( T ) * ( p_size ? p_size : p_data.size() );
+			size_t byteOffset = sizeof( T ) * p_offset;
+			_impl.setSub( p_key, p_data.data() + p_offsetSrc, byteSize, byteOffset );
 		}
 
-		inline void setSub( const BinaryBuffer & buffer, const Key & key, size_t index = 0 )
+		/*
+		inline void setSub( const BinaryBuffer & p_buffer, const Key & p_key, size_t p_index = 0 )
 		{
-			_impl.setSub( key, buffer.data(), buffer.size(), buffer.size() * index );
+			_impl.setSub( p_key, p_buffer.data(), p_buffer.size(), p_buffer.size() * p_index );
+		}
+		*/
+
+		template<std::ranges::contiguous_range R>
+		void setSub( const R & r, const Key & key, size_t p_offset = 0, size_t p_offsetSrc = 0, size_t p_size = 0 )
+		{
+			using T = std::remove_cv_t<std::ranges::range_value_t<R>>;
+			setSub<T>( std::span<const T>( std::data( r ), std::size( r ) ), key, p_offset, p_offsetSrc, p_size );
 		}
 
 		template<typename T>
-		inline void get( std::vector<T> & data, const Key & key )
+		inline void get( std::vector<T> & p_data, const Key & p_key )
 		{
-			_impl.get( key, data.data(), sizeof( T ) * data.size() );
+			_impl.get( p_key, p_data.data(), sizeof( T ) * p_data.size() );
 		}
 
 		template<typename... Args>
-		inline void fillInfos( Args &&... args ) const
+		inline void fillInfos( Args &&... p_args ) const
 		{
-			_impl.fillInfos( std::forward<Args>( args )... );
+			_impl.fillInfos( std::forward<Args>( p_args )... );
 		}
 
 		template<typename... Args>
-		inline float measureTaskDuration( Args &&... args )
+		inline float measureTaskDuration( Args &&... p_args )
 		{
-			return _impl.measureTaskDuration( std::forward<Args>( args )... );
+			return _impl.measureTaskDuration( std::forward<Args>( p_args )... );
 		}
 
 		template<typename... Args>
-		inline void compileShaders( Args &&... args ) const
+		inline void compileShaders( Args &&... p_args ) const
 		{
-			_impl.compileShaders( std::forward<Args>( args )... );
+			_impl.compileShaders( std::forward<Args>( p_args )... );
 		}
 
 		template<typename... Args>
-		inline void snapshot( Args &&... args )
+		inline void snapshot( Args &&... p_args )
 		{
-			_impl.snapshot( std::forward<Args>( args )... );
+			_impl.snapshot( std::forward<Args>( p_args )... );
 		}
 
 		template<typename T>
-		inline T getTextureData( const Key & key, size_t x, size_t y, E_CHAN_OUT channel ) const
+		inline T getTextureData( const Key & p_key, size_t p_x, size_t p_y, E_CHAN_OUT p_channel ) const
 		{
 			T result;
-			_impl.getTextureData( key, (void * const)&result, x, y, channel );
+			_impl.getTextureData( p_key, (void * const)&result, p_x, p_y, p_channel );
 			return result;
 		}
 
 		template<typename... Args>
-		inline void compute( Args &&... args )
+		inline void compute( Args &&... p_args )
 		{
-			_impl.compute( std::forward<Args>( args )... );
+			_impl.compute( std::forward<Args>( p_args )... );
 		}
 
 		inline void clear() { _contexts.clear(); }

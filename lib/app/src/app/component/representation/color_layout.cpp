@@ -1,11 +1,9 @@
 #include "app/component/representation/color_layout.hpp"
 #include "app/core/renderer/renderer_system.hpp"
-#include <core/chemdb/color.hpp>
-#include <util/logger.hpp>
 
 namespace VTX::App::Component::Representation
 {
-	ColorLayout::ColorLayout( Library::Preset::Color & p_preset ) : BaseComponentProxyPreset( p_preset )
+	ColorLayout::ColorLayout( Library::Preset::ColorLayout & p_preset ) : BaseComponentProxyPreset( p_preset )
 	{
 		// TODO: where to set default values?
 	}

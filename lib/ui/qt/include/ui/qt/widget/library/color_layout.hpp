@@ -1,34 +1,20 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_COLORS__
-#define __VTX_UI_QT_DOCK_WIDGET_COLORS__
+#ifndef __VTX_UI_QT_WIDGET_LIBRARY_COLOR_LAYOUT__
+#define __VTX_UI_QT_WIDGET_LIBRARY_COLOR_LAYOUT__
 
-#include "ui/qt/core/base_dock_widget.hpp"
-#include "ui/qt/settings.hpp"
+#include "base_preset_widget.hpp"
 #include "ui/qt/widget/color_picker.hpp"
-#include <QCheckBox>
-#include <QDockWidget>
+#include <app/library/preset/color_layout.hpp>
 
-namespace VTX::Core::Struct
-{
-	class ColorLayout;
-}
-
-namespace VTX::UI::QT::DockWidget
+namespace VTX::UI::QT::Widget::Library
 {
 
-	class Colors : public Core::BaseDockWidget<Colors>, public Savable
+	class ColorLayout final : public BasePresetWidget<App::Library::Preset::Representation>
 	{
 	  public:
-		Colors( QWidget * p_parent );
-
-		void save() override;
-		void restore() override;
-
+	  protected:
 	  private:
-		inline static const QString _SETTING_KEY_HIDE = "colors/hide_non_common";
-		inline static const int		_BUTTON_SIZE	  = 32;
-
+		/*
 		std::vector<QPointer<Widget::ColorPicker>> _buttons;
-		QPointer<QCheckBox>						   _checkBoxHide;
 
 		void _createGroupBox(
 			const std::string_view				   p_title,
@@ -49,8 +35,8 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		void _changeColor( const size_t, const QColor & );
+		*/
 	};
-
-} // namespace VTX::UI::QT::DockWidget
+} // namespace VTX::UI::QT::Widget::Library
 
 #endif

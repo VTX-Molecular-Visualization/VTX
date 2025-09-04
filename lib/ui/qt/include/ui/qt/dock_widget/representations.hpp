@@ -3,11 +3,6 @@
 
 #include "ui/qt/core/base_dock_widget.hpp"
 
-namespace VTX::App::Component::Representation
-{
-	class Representation;
-}
-
 namespace VTX::UI::QT::DockWidget
 {
 

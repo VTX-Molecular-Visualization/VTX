@@ -9,11 +9,11 @@ namespace VTX::Renderer::Proxy
 	/**
 	 * @brief Color layout data provider.
 	 */
-	class ColorLayout
+	struct ColorLayout
 	{
-		const Core::Struct::ColorLayout & data;
+		const Core::Struct::ColorLayout & layout;
 
-		ColorLayout( const Core::Struct::ColorLayout & p_data ) : data( p_data ) {}
+		ColorLayout( const Core::Struct::ColorLayout & p_layout ) : layout( p_layout ) {}
 
 		Util::Callback<>	   onChangeAll;
 		Util::Callback<size_t> onChange;

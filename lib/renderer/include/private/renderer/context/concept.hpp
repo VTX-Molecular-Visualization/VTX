@@ -3,7 +3,6 @@
 
 #include "renderer/descriptors.hpp"
 #include "renderer/struct_infos.hpp"
-#include <any>
 #include <concepts>
 #include <util/chrono.hpp>
 #include <util/collection.hpp>

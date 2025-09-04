@@ -75,8 +75,7 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
-					.execute<
-						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_VALUES::HAS_SPHERE, bool>>(
+					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::HAS_SPHERE, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -89,8 +88,8 @@ namespace VTX::UI::QT::Widget::Library
 			{
 				bool isFixed = bool( p_index );
 				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED, bool>>(
+					.execute<
+						App::Action::Representation::Change<E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED, bool>>(
 						_preset, isFixed
 					);
 			}
@@ -102,8 +101,7 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]( const float p_value )
 			{
 				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_VALUES::RADIUS_SPHERE_ADD, float>>(
+					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::RADIUS_SPHERE_ADD, float>>(
 						_preset, p_value
 					);
 			}
@@ -115,8 +113,7 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]( const float p_value )
 			{
 				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_VALUES::RADIUS_SPHERE_FIXED, float>>(
+					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::RADIUS_SPHERE_FIXED, float>>(
 						_preset, p_value
 					);
 			}
@@ -128,8 +125,7 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
-					.execute<
-						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_VALUES::HAS_CYLINDER, bool>>(
+					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::HAS_CYLINDER, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -141,8 +137,7 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]( const float p_value )
 			{
 				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_VALUES::RADIUS_CYLINDER, float>>(
+					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::RADIUS_CYLINDER, float>>(
 						_preset, p_value
 					);
 			}
@@ -154,8 +149,8 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_VALUES::CYLINDER_COLOR_BLENDING, bool>>(
+					.execute<
+						App::Action::Representation::Change<E_REPRESENTATION_VALUES::CYLINDER_COLOR_BLENDING, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -167,8 +162,7 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
-					.execute<
-						App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_VALUES::HAS_RIBBON, bool>>(
+					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::HAS_RIBBON, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -180,8 +174,7 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING, bool>>(
+					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -193,7 +186,7 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]( const bool p_checked )
 			{
 				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::ChangeRepresentation<E_REPRESENTATION_VALUES::HAS_SES, bool>>(
+					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::HAS_SES, bool>>(
 						_preset, p_checked
 					);
 			}
@@ -205,8 +198,7 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]( const float p_value )
 			{
 				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::
-								 ChangeRepresentation<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>>(
+					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>>(
 						_preset, p_value
 					);
 			}

@@ -7,15 +7,15 @@
 namespace VTX::App::Action::Representation
 {
 	template<VTX::Core::Struct::E_REPRESENTATION_VALUES S, typename T>
-	class Change final : public App::Core::Action::BaseActionPreset<T>
+	class Change final : public Library::BaseActionPreset<App::Library::Preset::Representation>
 	{
 	  public:
-		Change( App::Library::Preset::Representation * const, const T p_value ) :
-			App::Core::Action::BaseActionPreset<T>( p_preset ), _value( p_value )
+		Change( App::Library::Preset::Representation * const p_preset, const T p_value ) :
+			Library::BaseActionPreset<App::Library::Preset::Representation>( p_preset ), _value( p_value )
 		{
 		}
 		Change( const std::string_view p_preset, const T p_value ) :
-			App::Core::Action::BaseActionPreset<T>( p_preset ), _value( p_value )
+			Library::BaseActionPreset<App::Library::Preset::Representation>( p_preset ), _value( p_value )
 		{
 		}
 

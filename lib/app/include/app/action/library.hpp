@@ -23,15 +23,18 @@ namespace VTX::App::Action::Library
 	 * @brief Base class for preset actions that can retrieve a preset by its name.
 	 */
 	template<typename T>
-	class BaseActionPreset : public App::Action::Library::BaseActionLibrary<T>
+	class BaseActionPreset : public BaseActionLibrary<T>
 	{
 	  public:
 		BaseActionPreset( T * const p_preset ) : _preset( p_preset ) {}
-		BaseActionPreset( const std::string_view p_name ) { _preset = _library->getPreset( p_name ); }
+		BaseActionPreset( const std::string_view p_name ) :
+			_preset( BaseActionLibrary<T>::_library->getPreset( p_name ) )
+		{
+		}
 		virtual ~BaseActionPreset() = default;
 
 	  protected:
-		T * _preset;
+		T * const _preset;
 	};
 
 	template<typename T>
