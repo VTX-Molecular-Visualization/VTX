@@ -12,7 +12,7 @@ namespace VTX::Util::Factories
 
 	/**
 	 * @brief Factory function that constructs an object and calls its init method.
-	 * Expections handled with unique_ptr guard.
+	 * Expections handled with unique_ptr guard to avoid memory leaks.
 	 * @return a raw pointer.
 	 */
 	template<ConceptInitializable T, class... Args>

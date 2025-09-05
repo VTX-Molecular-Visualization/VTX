@@ -8,13 +8,14 @@
 
 namespace VTX::UI::QT::Widget::Library
 {
+
 	template<App::Core::Library::ConceptPreset P>
 	class BasePresetWidget : public QWidget
 	{
 	  public:
-		BasePresetWidget( QWidget * p_parent ) : QWidget( p_parent )
+		BasePresetWidget( QWidget * p_parent ) : QWidget( p_parent ), _library( App::LIBRARY_SYSTEM().getLibrary<P>() )
 		{
-			_presetSelector = new PresetSelector<App::Library::Preset::Representation>( this );
+			_presetSelector = new PresetSelector<P>( this );
 			_groupboxPreset = new QGroupBox( this );
 			_groupboxPreset->setLayout( new QVBoxLayout() );
 
@@ -24,33 +25,52 @@ namespace VTX::UI::QT::Widget::Library
 
 			_layout->addWidget( _presetSelector );
 			_layout->addWidget( _groupboxPreset );
+		}
 
-			_preset
-				= App::LIBRARY_SYSTEM().getLibrary<P>()->getPreset( _presetSelector->getCurrentPreset().toStdString() );
+		virtual void init()
+		{
 			connect( _presetSelector, &PresetSelector<P>::presetChanged, this, &BasePresetWidget::_presetChanged );
+
+			_library->onPresetAdded += [ this ]( const std::string_view p_name ) { _onPresetAdded( p_name ); };
+			for ( const auto & [ name, _ ] : _library->getPresets() )
+			{
+				_onPresetAdded( name );
+			}
+
+			_preset = _library->getPreset( _presetSelector->getCurrentPreset().toStdString() );
+			_onPresetChanged();
 		}
 
 		inline std::string getCurrentPreset() const { return _presetSelector->getCurrentPreset().toStdString(); }
+
+		inline void addWidget( QWidget * const p_widget ) { _groupboxPreset->layout()->addWidget( p_widget ); }
+		inline void setTitle( const QString & p_title ) { _groupboxPreset->setTitle( p_title ); }
 
 	  protected:
 		QPointer<QVBoxLayout>						 _layout;
 		QPointer<Widget::Library::PresetSelector<P>> _presetSelector;
 		QPointer<QGroupBox>							 _groupboxPreset;
 
+		App::Core::Library::Library<P> * const _library;
 		// TODO: const!
-		// P * const preset() { return _preset; }
 		P * _preset;
+
 		/**
-		 * @brief Called when the preset has changed, signals blocked.
+		 * @brief Called when a new preset is added to the library.
+		 * @param name of the added preset.
 		 */
-		virtual void _onPresetChanged() = 0;
+		virtual void _onPresetAdded( const std::string_view ) {}
+
+		/**
+		 * @brief Called when the preset has changed.
+		 */
+		virtual void _onPresetChanged() {}
 
 	  private:
 		void _presetChanged( const QString & p_name )
 		{
 			std::string name = p_name.toStdString();
-			VTX_DEBUG( "Preset changed: {}", name );
-			_preset = App::LIBRARY_SYSTEM().getLibrary<P>()->getPreset( name );
+			_preset			 = App::LIBRARY_SYSTEM().getLibrary<P>()->getPreset( name );
 			_onPresetChanged();
 		}
 	};

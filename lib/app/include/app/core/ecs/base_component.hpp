@@ -35,6 +35,9 @@ namespace VTX::App::Core::ECS
 		BaseComponentProxyPreset( PRE & p_preset ) : _preset( p_preset ) {}
 		virtual ~BaseComponentProxyPreset() {}
 
+		inline PRE &	   getPreset() { return _preset; }
+		inline const PRE & getPreset() const { return _preset; }
+
 	  protected:
 		PRE & _preset;
 	};

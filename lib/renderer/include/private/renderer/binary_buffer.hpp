@@ -72,6 +72,8 @@ namespace VTX::Renderer
 	class BinaryBuffer
 	{
 	  public:
+		using value_type = uint8_t;
+
 		/**
 		 * @brief Write data adn padding at the current offset.
 		 */
@@ -104,14 +106,21 @@ namespace VTX::Renderer
 			_opened = false;
 		}
 
-		inline const void * data() const { return _data.data(); }
-		inline size_t		size() const { return _data.size(); }
-		inline size_t		offset() const { return _offset; }
+		inline const value_type * data() const { return _data.data(); }
+		inline value_type *		  data() { return _data.data(); }
+		inline size_t			  size() const { return _data.size(); }
+		inline size_t			  offset() const { return _offset; }
+		inline bool				  empty() const { return _data.empty(); }
+
+		const value_type * begin() const noexcept { return _data.data(); }
+		const value_type * end() const noexcept { return _data.data() + _data.size(); }
+		value_type *	   begin() noexcept { return _data.data(); }
+		value_type *	   end() noexcept { return _data.data() + _data.size(); }
 
 	  private:
-		std::vector<uint8_t> _data;
-		bool				 _opened = true;
-		size_t				 _offset = 0;
+		std::vector<value_type> _data;
+		bool					_opened = true;
+		size_t					_offset = 0;
 	};
 
 } // namespace VTX::Renderer

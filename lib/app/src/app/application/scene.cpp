@@ -272,16 +272,18 @@ namespace VTX::App::Application
 	// TODO: facto with template.
 	void Scene::_createDefaultColorLayout()
 	{
-		auto & comp
-			= ECS_REGISTRY().addComponent<Component::Representation::ColorLayout>( ECS_REGISTRY().getEntity( *this ) );
+		auto * preset = LIBRARY_SYSTEM().getLibrary<Library::Preset::ColorLayout>()->getPreset( "Default" );
+		auto & comp	  = ECS_REGISTRY().addComponent<Component::Representation::ColorLayout>(
+			  ECS_REGISTRY().getEntity( *this ), *preset
+		  );
 		comp.setupProxy();
 	}
 
 	void Scene::_createDefaultRenderSettings()
 	{
-		auto & comp
-			= ECS_REGISTRY().addComponent<Component::Representation::RenderSettings>( ECS_REGISTRY().getEntity( *this )
-			);
+		auto & comp = ECS_REGISTRY().addComponent<Component::Representation::RenderSettings>(
+			ECS_REGISTRY().getEntity( *this )
+		);
 		comp.setupProxy();
 	}
 

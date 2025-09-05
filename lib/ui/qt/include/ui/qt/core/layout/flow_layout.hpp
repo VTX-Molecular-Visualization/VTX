@@ -6,7 +6,7 @@
 #include <QStyle>
 #include <QWidget>
 
-namespace VTX::UI::QT::Layout
+namespace VTX::UI::QT::Core::Layout
 {
 	/**
 	 * @brief https://doc.qt.io/qt-6.7/qtwidgets-layouts-flowlayout-example.html
@@ -39,6 +39,6 @@ namespace VTX::UI::QT::Layout
 		int					 _hSpace;
 		int					 _vSpace;
 	};
-} // namespace VTX::UI::QT::Layout
+} // namespace VTX::UI::QT::Core::Layout
 
 #endif

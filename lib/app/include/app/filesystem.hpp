@@ -22,7 +22,7 @@ namespace VTX::App::Filesystem
 	inline const FilePath getCacheDir() { return USER_DATA_DIR / "cache"; }
 	inline const FilePath getSnapshotsDir() { return USER_DATA_DIR / "snapshots"; }
 	inline const FilePath getRepresentationsDir() { return USER_DATA_DIR / "representations"; }
-	inline const FilePath getColorsDir() { return USER_DATA_DIR / "colors"; }
+	inline const FilePath getColorLayoutsDir() { return USER_DATA_DIR / "colors"; }
 	inline const FilePath getEffectsDir() { return USER_DATA_DIR / "effects"; }
 
 	inline const FilePath getConfigIniFile() { return USER_DATA_DIR / "config.ini"; }
