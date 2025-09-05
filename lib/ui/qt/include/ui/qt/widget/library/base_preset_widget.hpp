@@ -15,7 +15,7 @@ namespace VTX::UI::QT::Widget::Library
 	  public:
 		BasePresetWidget( QWidget * p_parent ) : QWidget( p_parent ), _library( App::LIBRARY_SYSTEM().getLibrary<P>() )
 		{
-			_presetSelector = new PresetSelector<App::Library::Preset::Representation>( this );
+			_presetSelector = new PresetSelector<P>( this );
 			_groupboxPreset = new QGroupBox( this );
 			_groupboxPreset->setLayout( new QVBoxLayout() );
 
@@ -42,6 +42,9 @@ namespace VTX::UI::QT::Widget::Library
 		}
 
 		inline std::string getCurrentPreset() const { return _presetSelector->getCurrentPreset().toStdString(); }
+
+		inline void addWidget( QWidget * const p_widget ) { _groupboxPreset->layout()->addWidget( p_widget ); }
+		inline void setTitle( const QString & p_title ) { _groupboxPreset->setTitle( p_title ); }
 
 	  protected:
 		QPointer<QVBoxLayout>						 _layout;

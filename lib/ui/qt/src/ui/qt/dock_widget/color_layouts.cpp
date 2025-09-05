@@ -1,20 +1,6 @@
 #include "ui/qt/dock_widget/color_layouts.hpp"
-#include "ui/qt/helper.hpp"
-#include "ui/qt/layout/flow_layout.hpp"
-#include <QColor>
-#include <QColorDialog>
-#include <QGroupBox>
-#include <QLineEdit>
-#include <QVBoxLayout>
-#include <app/action/color_layout.hpp>
-#include <app/application/scene.hpp>
-#include <app/component/representation/color_layout.hpp>
-#include <core/chemdb/chain.hpp>
-#include <core/chemdb/color_layout.hpp>
-#include <core/struct/color_layout.hpp>
-#include <util/chrono.hpp>
-#include <util/color/rgba.hpp>
-#include <util/string.hpp>
+#include "ui/qt/widget/library/color_layout.hpp"
+#include <util/factories.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -26,26 +12,21 @@ namespace VTX::UI::QT::DockWidget
 		// Checkbox to hide non usual items.
 		_checkBoxHide = new QCheckBox( "Hide non usual", _root );
 		_layout->addWidget( _checkBoxHide );
-		/*
+
+		auto * const colorLayoutWidget = Util::Factories::newInit<Widget::Library::ColorLayout>( this );
+		_layout->addWidget( colorLayoutWidget );
+
+		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+
 		connect(
 			_checkBoxHide,
 			&QCheckBox::checkStateChanged,
-			[ this ]( const int p_state )
+			[ colorLayoutWidget ]( const int p_state )
 			{
-				using namespace VTX::Core::ChemDB;
 				const bool hide = p_state == Qt::Checked;
-				_refreshButtonVisibility(
-					hide, ColorLayout::LAYOUT_OFFSET_ATOMS, ColorLayout::LAYOUT_COUNT_ATOMS, Atom::SYMBOL_IS_COMMON
-				);
-				_refreshButtonVisibility(
-					hide,
-					ColorLayout::LAYOUT_OFFSET_RESIDUES,
-					ColorLayout::LAYOUT_COUNT_RESIDUES,
-					Residue::SYMBOL_IS_COMMON
-				);
+				colorLayoutWidget->refreshVisibility( hide );
 			}
 		);
-		*/
 	}
 
 	void ColorLayouts::save() { SETTINGS.setValue( _SETTING_KEY_HIDE, _checkBoxHide->isChecked() ); }

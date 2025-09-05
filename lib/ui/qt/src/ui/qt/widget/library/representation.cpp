@@ -1,6 +1,5 @@
 #include "ui/qt/widget/library/representation.hpp"
 #include <QLabel>
-#include <app/action/representation.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
@@ -11,11 +10,11 @@ namespace VTX::UI::QT::Widget::Library
 		using namespace App::Library::Preset;
 		using namespace Core::Widget;
 
-		_groupboxPreset->setTitle( "Edit representation" );
+		setTitle( "Edit representation" );
 
 		// Sphere.
 		_groupboxSphere = new HideableGroupBox( "Atoms", _groupboxPreset );
-		_groupboxPreset->layout()->addWidget( _groupboxSphere );
+		addWidget( _groupboxSphere );
 
 		_comboBoxSphereRadiusType = new QComboBox( _groupboxSphere );
 		_groupboxSphere->addWidget( _comboBoxSphereRadiusType );
@@ -38,7 +37,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		// Cylinder.
 		_groupboxCylinder = new HideableGroupBox( "Bonds", _groupboxPreset );
-		_groupboxPreset->layout()->addWidget( _groupboxCylinder );
+		addWidget( _groupboxCylinder );
 
 		_sliderCylinderRadius = new EditableSlider( Qt::Orientation::Horizontal, _groupboxCylinder );
 		_groupboxCylinder->addWidget( new QLabel( "Radius", _groupboxCylinder ) );
@@ -52,14 +51,14 @@ namespace VTX::UI::QT::Widget::Library
 
 		// Ribbon.
 		_groupboxRibbon = new HideableGroupBox( "Ribbons", _groupboxPreset );
-		_groupboxPreset->layout()->addWidget( _groupboxRibbon );
+		addWidget( _groupboxRibbon );
 
 		_checkBoxRibbonColorBlending = new QCheckBox( "Blend colors", _groupboxRibbon );
 		_groupboxRibbon->addWidget( _checkBoxRibbonColorBlending );
 
 		// SES.
 		_groupboxSes = new HideableGroupBox( "SES", _groupboxPreset );
-		_groupboxPreset->layout()->addWidget( _groupboxSes );
+		addWidget( _groupboxSes );
 
 		_sliderSesProbeRadius = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSes );
 		_groupboxSes->addWidget( new QLabel( "Probe radius", _groupboxSes ) );
@@ -72,124 +71,67 @@ namespace VTX::UI::QT::Widget::Library
 		connect(
 			_groupboxSphere,
 			&HideableGroupBox::toggled,
-			[ this ]( const bool p_checked )
-			{
-				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::HAS_SPHERE, bool>>(
-						_preset, p_checked
-					);
-			}
+			[ this ]( const bool p_checked ) { _changeValue<E_REPRESENTATION_VALUES::HAS_SPHERE, bool>( p_checked ); }
 		);
 
 		connect(
 			_comboBoxSphereRadiusType,
 			QOverload<int>::of( &QComboBox::currentIndexChanged ),
 			[ this ]( const int p_index )
-			{
-				bool isFixed = bool( p_index );
-				App::ACTION_SYSTEM()
-					.execute<
-						App::Action::Representation::Change<E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED, bool>>(
-						_preset, isFixed
-					);
-			}
+			{ _changeValue<E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED, bool>( bool( p_index ) ); }
 		);
 
 		connect(
 			_sliderSphereRadiusAdd,
 			&EditableSlider::valueChanged,
 			[ this ]( const float p_value )
-			{
-				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::RADIUS_SPHERE_ADD, float>>(
-						_preset, p_value
-					);
-			}
+			{ _changeValue<E_REPRESENTATION_VALUES::RADIUS_SPHERE_ADD, float>( p_value ); }
 		);
 
 		connect(
 			_sliderSphereRadiusFixed,
 			&EditableSlider::valueChanged,
 			[ this ]( const float p_value )
-			{
-				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::RADIUS_SPHERE_FIXED, float>>(
-						_preset, p_value
-					);
-			}
+			{ _changeValue<E_REPRESENTATION_VALUES::RADIUS_SPHERE_FIXED, float>( p_value ); }
 		);
 
 		connect(
 			_groupboxCylinder,
 			&HideableGroupBox::toggled,
-			[ this ]( const bool p_checked )
-			{
-				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::HAS_CYLINDER, bool>>(
-						_preset, p_checked
-					);
-			}
+			[ this ]( const bool p_checked ) { _changeValue<E_REPRESENTATION_VALUES::HAS_CYLINDER, bool>( p_checked ); }
 		);
 
 		connect(
 			_sliderCylinderRadius,
 			&EditableSlider::valueChanged,
 			[ this ]( const float p_value )
-			{
-				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::RADIUS_CYLINDER, float>>(
-						_preset, p_value
-					);
-			}
+			{ _changeValue<E_REPRESENTATION_VALUES::RADIUS_CYLINDER, float>( p_value ); }
 		);
 
 		connect(
 			_checkBoxCylinderColorBlending,
 			&QCheckBox::toggled,
 			[ this ]( const bool p_checked )
-			{
-				App::ACTION_SYSTEM()
-					.execute<
-						App::Action::Representation::Change<E_REPRESENTATION_VALUES::CYLINDER_COLOR_BLENDING, bool>>(
-						_preset, p_checked
-					);
-			}
+			{ _changeValue<E_REPRESENTATION_VALUES::CYLINDER_COLOR_BLENDING, bool>( p_checked ); }
 		);
 
 		connect(
 			_groupboxRibbon,
 			&HideableGroupBox::toggled,
-			[ this ]( const bool p_checked )
-			{
-				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::HAS_RIBBON, bool>>(
-						_preset, p_checked
-					);
-			}
+			[ this ]( const bool p_checked ) { _changeValue<E_REPRESENTATION_VALUES::HAS_RIBBON, bool>( p_checked ); }
 		);
 
 		connect(
 			_checkBoxRibbonColorBlending,
 			&QCheckBox::toggled,
 			[ this ]( const bool p_checked )
-			{
-				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING, bool>>(
-						_preset, p_checked
-					);
-			}
+			{ _changeValue<E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING, bool>( p_checked ); }
 		);
 
 		connect(
 			_groupboxSes,
 			&HideableGroupBox::toggled,
-			[ this ]( const bool p_checked )
-			{
-				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::HAS_SES, bool>>(
-						_preset, p_checked
-					);
-			}
+			[ this ]( const bool p_checked ) { _changeValue<E_REPRESENTATION_VALUES::HAS_SES, bool>( p_checked ); }
 		);
 
 		connect(
@@ -197,10 +139,7 @@ namespace VTX::UI::QT::Widget::Library
 			&EditableSlider::valueChanged,
 			[ this ]( const float p_value )
 			{
-				App::ACTION_SYSTEM()
-					.execute<App::Action::Representation::Change<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>>(
-						_preset, p_value
-					);
+				_changeValue<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>( p_value );
 			}
 		);
 	}

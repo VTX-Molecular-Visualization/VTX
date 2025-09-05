@@ -1,5 +1,6 @@
 #include "renderer/renderer.hpp"
 #include "renderer/binary_buffer.hpp"
+#include "renderer/renderer.hpp"
 #include "renderer/scheduler/depth_first_search.hpp"
 #include <execution>
 #include <util/math.hpp>
@@ -698,7 +699,9 @@ namespace VTX::Renderer
 		};
 		p_proxy.onChange += [ this, &p_proxy ]( const size_t p_index )
 		{
-			_context.setValue( p_proxy.layout.colors[ p_index ], "ColorLayout", p_index );
+			_context.setSub(
+				std::vector<Util::Color::Rgba> { p_proxy.layout.colors[ p_index ] }, "ColorLayout", p_index
+			);
 			setNeedUpdate( true );
 		};
 	}

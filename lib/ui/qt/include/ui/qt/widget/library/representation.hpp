@@ -5,6 +5,7 @@
 #include "ui/qt/core/widget/editable_slider.hpp"
 #include "ui/qt/core/widget/hideable_goupe_box.hpp"
 #include <QCheckBox>
+#include <app/action/representation.hpp>
 #include <app/library/preset/representation.hpp>
 
 namespace VTX::UI::QT::Widget::Library
@@ -38,6 +39,12 @@ namespace VTX::UI::QT::Widget::Library
 		// SES.
 		QPointer<Core::Widget::HideableGroupBox> _groupboxSes;
 		QPointer<Core::Widget::EditableSlider>	 _sliderSesProbeRadius;
+
+		template<VTX::Core::Struct::E_REPRESENTATION_VALUES S, typename T>
+		void _changeValue( const T p_value )
+		{
+			App::ACTION_SYSTEM().execute<App::Action::Representation::Change<S, T>>( _preset, p_value );
+		}
 
 		void _applyLogic();
 
