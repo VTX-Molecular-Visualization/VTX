@@ -54,12 +54,5 @@ void main()
 	const vec3 v3 = gl_in[ 0 ].gl_Position.xyz - vsData[ 0 ].vImpU + vsData[ 0 ].vImpV;
 	const vec3 v4 = gl_in[ 0 ].gl_Position.xyz + vsData[ 0 ].vImpU + vsData[ 0 ].vImpV;
 
-	////////////////////
-	vec4 plane = vec4( 0.f, 0.f, 1.f, -50.f );
-	vec4 planeEye = uniformsCamera.matrixViewInvTrans * plane;	
-	float s = dot( planeEye.xyz, vsSphere[ 0 ].viewPos ) + planeEye.w;
-    gl_ClipDistance[ 0 ] = s;// - vsSphere[ 0 ].radius;
-	////////////////////
-
 	emitQuad( v1, v2, v3, v4 );
 }

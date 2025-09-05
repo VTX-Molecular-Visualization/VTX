@@ -66,13 +66,6 @@ void main()
 
 	float radiusCylinder = uniformsRepresentation[ vsCylinder[ 0 ].representation ].radiusCylinder;
 
-	////////////////////
-	vec4 plane = vec4( 0.f, 0.f, 1.f, -50.f );
-	vec4 planeEye = uniformsCamera.matrixViewInvTrans * plane;
-	float s = dot( planeEye.xyz, (gsDataFlat[ 0 ].viewVertice + gsDataFlat[ 1 ].viewVertice) / 2.f ) + planeEye.w;
-	gl_ClipDistance[ 0 ] = s;
-	////////////////////
-
 	if ( uniformsCamera.isCameraPerspective == 1 )
 	{
 		// Compute normalized view vector to cylinder center.
@@ -147,6 +140,4 @@ void main()
 
 		emitQuad( v1, v2, v3, v4 );
 	}
-
-	
 }

@@ -128,13 +128,5 @@ void main()
 	outData.visibility   = inData[ 1 ].visibility;
 	outData.id		     = inData[ 1 ].id;
 
-	////////////////////
-	vec4 plane = vec4( 0.f, 0.f, 1.f, -50.f );
-	vec4 planeEye = uniformsCamera.matrixViewInvTrans * plane;
-	float s = dot( planeEye.xyz, outData.viewPosition ) + planeEye.w;
-	gl_ClipDistance[ 0 ] = s;
-	////////////////////
-
-
 	gl_Position = uniformsCamera.matrixProjection * vec4( outData.viewPosition, 1.f );
 }
