@@ -4,6 +4,7 @@
 #include "app/core/library/library.hpp"
 #include <renderer/settings.hpp>
 #include <util/constants.hpp>
+#include <util/math.hpp>
 
 namespace VTX::App::Library::Preset
 {
