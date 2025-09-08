@@ -7,18 +7,6 @@
 namespace VTX::Renderer
 {
 	/**
-	 * @brief All shading modes.
-	 */
-	enum struct E_SHADING
-	{
-		DIFFUSE,
-		GLOSSY,
-		TOON,
-		FLAT,
-		COUNT
-	};
-
-	/**
 	 * @brief All input channels.
 	 */
 	enum struct E_CHAN_IN

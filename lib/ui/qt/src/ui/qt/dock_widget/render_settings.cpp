@@ -1,14 +1,6 @@
 #include "ui/qt/dock_widget/render_settings.hpp"
-#include "ui/qt/core/widget/hideable_goupe_box.hpp"
-#include "ui/qt/helper.hpp"
-#include "ui/qt/widget/color_picker.hpp"
-#include <QComboBox>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <app/action/render_settings.hpp>
-#include <app/application/scene.hpp>
-#include <app/component/representation/render_settings.hpp>
-#include <util/color/rgba.hpp>
+#include "ui/qt/widget/library/render_settings.hpp"
+#include <util/factories.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -17,19 +9,12 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
-		const auto & scene	   = App::SCENE();
-		auto *		 component = &App::ECS_REGISTRY().getComponent<App::Component::Representation::RenderSettings>(
-			  App::ECS_REGISTRY().getEntity( scene )
-		  );
-
-		_createGroupBoxShading( component );
-		_createGroupBoxSSAO( component );
-		_createGroupBoxOutline( component );
-		_createGroupBoxFog( component );
-		_createGroupBoxSelection( component );
+		auto * const renderSettingsWidget = Util::Factories::newInit<Widget::Library::RenderSettings>( this );
+		_layout->addWidget( renderSettingsWidget );
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 	}
 
+	/*
 	void RenderSettings::_createGroupBoxShading( App::Component::Representation::RenderSettings * const p_component )
 	{
 		using namespace Renderer::Proxy;
@@ -546,5 +531,7 @@ namespace VTX::UI::QT::DockWidget
 			[ colorPickerSelection ]( const Util::Color::Rgba & p_color )
 		{ colorPickerSelection->setColor( Helper::toQColor( p_color ) ); };
 	}
+
+	*/
 
 } // namespace VTX::UI::QT::DockWidget

@@ -281,9 +281,10 @@ namespace VTX::App::Application
 
 	void Scene::_createDefaultRenderSettings()
 	{
-		auto & comp = ECS_REGISTRY().addComponent<Component::Representation::RenderSettings>(
-			ECS_REGISTRY().getEntity( *this )
-		);
+		auto * preset = LIBRARY_SYSTEM().getLibrary<Library::Preset::RenderSettings>()->getPreset( "Default" );
+		auto & comp	  = ECS_REGISTRY().addComponent<Component::Representation::RenderSettings>(
+			  ECS_REGISTRY().getEntity( *this ), *preset
+		  );
 		comp.setupProxy();
 	}
 

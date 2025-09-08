@@ -17,20 +17,6 @@ namespace VTX::App::Component::Representation
 		Representation( Library::Preset::Representation & p_preset );
 
 		void setupProxy() override;
-
-		// const VTX::Core::Struct::Representation & getRepresentation() const { return _representation; }
-
-		// template<Renderer::Proxy::E_REPRESENTATION_VALUES S, typename T>
-		// void set( const T p_value )
-		//{
-		//  TODO: check presets for modification then update the rep on gpu.
-		//  No more model there?
-
-		// callback<S, T>()( p_value );
-
-		// Trigger renderer.
-		//_proxy->onChange<S, T>()( p_value );
-		//}
 	};
 
 } // namespace VTX::App::Component::Representation

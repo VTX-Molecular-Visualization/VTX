@@ -152,10 +152,12 @@ namespace VTX::Renderer::Context
 		*/
 
 		template<std::ranges::contiguous_range R>
-		void set( const R & r, const Key & key )
+		void set( const R & p_data, const Key & p_key )
 		{
 			using T = std::remove_cv_t<std::ranges::range_value_t<R>>;
-			set<T>( std::span<const T>( std::data( r ), std::size( r ) ), key );
+			set<T>( std::span<const T>( std::data( p_data ), std::size( p_data ) ), p_key );
+
+			//_impl.set( p_key, p_data.data(), sizeof( T ) * p_data.size() );
 		}
 
 		template<typename T>

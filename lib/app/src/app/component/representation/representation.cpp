@@ -1,7 +1,5 @@
 #include "app/component/representation/representation.hpp"
 #include "app/core/renderer/renderer_system.hpp"
-#include "app/settings.hpp"
-#include <vector>
 
 namespace VTX::App::Component::Representation
 {

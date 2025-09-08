@@ -1,27 +1,25 @@
 #ifndef __VTX_APP_ACTION_RENDER_SETTINGS__
 #define __VTX_APP_ACTION_RENDER_SETTINGS__
 
-#include "app/core/action/base_action.hpp"
-#include <app/application/scene.hpp>
-#include <app/component/representation/render_settings.hpp>
+#include "app/action/library.hpp"
+#include "app/library/preset/render_settings.hpp"
 
 namespace VTX::App::Action::RenderSettings
 {
-	template<Renderer::Proxy::E_RENDER_SETTINGS S, typename T>
-	class ChangeRenderSetting final : public App::Core::Action::BaseAction
+	template<VTX::Renderer::E_RENDER_SETTINGS S, typename T>
+	class Change final : public Library::BaseActionPreset<App::Library::Preset::RenderSettings>
 	{
 	  public:
-		ChangeRenderSetting( const T p_value ) : _value( p_value ) {}
-
-		void execute() override
+		Change( App::Library::Preset::RenderSettings * const p_preset, const T p_value ) :
+			Library::BaseActionPreset<App::Library::Preset::RenderSettings>( p_preset ), _value( p_value )
 		{
-			const auto & scene	   = App::SCENE();
-			auto &		 component = App::ECS_REGISTRY().getComponent<App::Component::Representation::RenderSettings>(
-				  App::ECS_REGISTRY().getEntity( scene )
-			  );
-
-			component.set<S>( _value );
 		}
+		Change( const std::string_view p_preset, const T p_value ) :
+			Library::BaseActionPreset<App::Library::Preset::RenderSettings>( p_preset ), _value( p_value )
+		{
+		}
+
+		void execute() override { _preset->setValue<S>( _value ); }
 
 	  private:
 		const T _value;
