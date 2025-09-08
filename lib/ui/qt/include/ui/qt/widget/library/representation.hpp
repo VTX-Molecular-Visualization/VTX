@@ -5,6 +5,7 @@
 #include "ui/qt/core/widget/editable_slider.hpp"
 #include "ui/qt/core/widget/hideable_goupe_box.hpp"
 #include <QCheckBox>
+#include <QLabel>
 #include <app/action/representation.hpp>
 #include <app/library/preset/representation.hpp>
 
@@ -24,7 +25,9 @@ namespace VTX::UI::QT::Widget::Library
 		// Sphere.
 		QPointer<Core::Widget::HideableGroupBox> _groupboxSphere;
 		QPointer<QComboBox>						 _comboBoxSphereRadiusType;
+		QPointer<QLabel>						 _labelSphereRadiusAdd;
 		QPointer<Core::Widget::EditableSlider>	 _sliderSphereRadiusAdd;
+		QPointer<QLabel>						 _labelSphereRadiusFixed;
 		QPointer<Core::Widget::EditableSlider>	 _sliderSphereRadiusFixed;
 
 		// Cylinder.

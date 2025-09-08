@@ -22,14 +22,16 @@ namespace VTX::UI::QT::Widget::Library
 		_comboBoxSphereRadiusType->addItem( "Fixed radius" );
 
 		_sliderSphereRadiusAdd = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSphere );
-		_groupboxSphere->addWidget( new QLabel( "Radius add", _groupboxSphere ) );
+		_labelSphereRadiusAdd  = new QLabel( "Radius add", _groupboxSphere );
+		_groupboxSphere->addWidget( _labelSphereRadiusAdd );
 		_groupboxSphere->addWidget( _sliderSphereRadiusAdd );
 		_sliderSphereRadiusAdd->setMinimum( RADIUS_SPHERE_ADD_MIN );
 		_sliderSphereRadiusAdd->setMaximum( RADIUS_SPHERE_ADD_MAX );
 		_sliderSphereRadiusAdd->setSuffix( QStringLiteral( u"\u00C5" ) );
 
 		_sliderSphereRadiusFixed = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSphere );
-		_groupboxSphere->addWidget( new QLabel( "Radius", _groupboxSphere ) );
+		_labelSphereRadiusFixed	 = new QLabel( "Radius", _groupboxSphere );
+		_groupboxSphere->addWidget( _labelSphereRadiusFixed );
 		_groupboxSphere->addWidget( _sliderSphereRadiusFixed );
 		_sliderSphereRadiusFixed->setMinimum( RADIUS_SPHERE_FIXED_MIN );
 		_sliderSphereRadiusFixed->setMaximum( RADIUS_SPHERE_FIXED_MAX );
@@ -138,9 +140,7 @@ namespace VTX::UI::QT::Widget::Library
 			_sliderSesProbeRadius,
 			&EditableSlider::valueChanged,
 			[ this ]( const float p_value )
-			{
-				_changeValue<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>( p_value );
-			}
+			{ _changeValue<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>( p_value ); }
 		);
 	}
 
@@ -272,7 +272,9 @@ namespace VTX::UI::QT::Widget::Library
 	{
 		// Sphere.
 		const bool isFixed = _comboBoxSphereRadiusType->currentIndex() == 1;
+		_labelSphereRadiusAdd->setVisible( not isFixed );
 		_sliderSphereRadiusAdd->setVisible( not isFixed );
+		_labelSphereRadiusFixed->setVisible( isFixed );
 		_sliderSphereRadiusFixed->setVisible( isFixed );
 	}
 
