@@ -122,6 +122,10 @@ class VTXRecipe(ConanFile):
         self.options["qt"].qtquickeffectmaker = False
         self.options["qt"].qtgraphs = False
 
+        self.options["cpython"].with_gdbm = False # Doesn't work on windows. I'm not sure what it does.
+        self.options["cpython"].shared = True # False by default. If set to False, DLLs will be missing.
+
+
     def generate(self):
         tc = CMakeToolchain(self)        
         tc.generate()

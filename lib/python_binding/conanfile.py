@@ -27,17 +27,24 @@ class VTXPythonBindingRecipe(ConanFile):
         self.requires("vtx_io/1.0")
         self.requires("pybind11/2.13.6", transitive_headers=True)
         self.requires("catch2/3.8.1")
+        self.requires("cpython/3.9.19") # v >= 3.10 not working with msvc compiler so far
         
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
+
+        self.options["cpython"].with_gdbm = False # Doesn't work on windows. I'm not sure what it does.
+        self.options["cpython"].shared = True # False by default. If set to False, DLLs will be missing.
+        
             
     def generate(self):
         tc = CMakeToolchain(self)
         for r, d in self.dependencies.items(): 
             self.output.info(f"Requirement {r}")
             self.output.info(f"Is test {r.is_test} is override {r.override}")
-        tc.generate()    
+        tc.generate()      
+        
+        copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder,"bin"), os.path.join(self.build_folder, "external","python"))        
     
     def layout(self):
         cmake_layout(self)
