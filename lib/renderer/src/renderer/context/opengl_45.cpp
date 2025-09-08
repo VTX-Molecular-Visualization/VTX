@@ -72,6 +72,8 @@ namespace VTX::Renderer::Context
 		glEnable( GL_DEBUG_OUTPUT );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
 		glDebugMessageCallback( _debugMessageCallback, nullptr );
+
+		glEnable( GL_CLIP_DISTANCE0 );
 	}
 
 	void OpenGL45::build(

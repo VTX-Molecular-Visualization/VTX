@@ -1,5 +1,6 @@
 #include "renderer/renderer.hpp"
 #include "renderer/binary_buffer.hpp"
+#include "renderer/renderer.hpp"
 #include "renderer/scheduler/depth_first_search.hpp"
 #include <execution>
 #include <util/math.hpp>
@@ -21,6 +22,8 @@ namespace VTX::Renderer
 			  15,
 			  { { "MatrixView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
 				{ "MatrixProjection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				{ "MatrixViewInv", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
+				{ "MatrixViewInvTrans", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
 				{ "Position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
 				{ "ClipInfos", // { _near * _far, _far, _far - _near, _near }
 				  E_TYPE::VEC4F,
@@ -631,9 +634,14 @@ namespace VTX::Renderer
 
 		_proxyCamera = &p_proxy;
 
+		const Mat4f matrixViewInv	   = Util::Math::inverse( *p_proxy.matrixView );
+		const Mat4f matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
+
 		BinaryBuffer buffer;
 		buffer.write( *p_proxy.matrixView );
 		buffer.write( *p_proxy.matrixProjection );
+		buffer.write( matrixViewInv );
+		buffer.write( matrixViewInvTrans );
 		buffer.write( p_proxy.cameraPosition );
 		buffer.write( Vec4f(
 			p_proxy.cameraNear * p_proxy.cameraFar,
@@ -651,6 +659,12 @@ namespace VTX::Renderer
 		p_proxy.onMatrixView += [ this, &p_proxy ]()
 		{
 			setValue( *p_proxy.matrixView, "CameraMatrixView" );
+
+			const Mat4f matrixViewInv = Util::Math::inverse( *p_proxy.matrixView );
+			setValue( matrixViewInv, "CameraMatrixViewInv" );
+			const Mat4f matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
+			setValue( matrixViewInvTrans, "CameraMatrixViewInvTrans" );
+
 			_refreshDataModels();
 		};
 
@@ -675,17 +689,19 @@ namespace VTX::Renderer
 	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
 	{
 		_proxyColorLayout = &p_proxy;
-		_context.set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
+		_context.set( p_proxy.layout.colors, "ColorLayout" );
 		setNeedUpdate( true );
 
 		p_proxy.onChangeAll += [ this, &p_proxy ]()
 		{
-			_context.set<Util::Color::Rgba>( *p_proxy.colors, "ColorLayout" );
+			_context.set( p_proxy.layout.colors, "ColorLayout" );
 			setNeedUpdate( true );
 		};
 		p_proxy.onChange += [ this, &p_proxy ]( const size_t p_index )
 		{
-			_context.setSub<Util::Color::Rgba>( { ( *p_proxy.colors )[ p_index ] }, "ColorLayout", p_index );
+			_context.setSub(
+				std::vector<Util::Color::Rgba> { p_proxy.layout.colors[ p_index ] }, "ColorLayout", p_index
+			);
 			setNeedUpdate( true );
 		};
 	}

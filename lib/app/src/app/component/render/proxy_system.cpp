@@ -6,7 +6,7 @@
 #include "app/selection/selection_manager.hpp"
 #include "app/selection/system_data.hpp"
 #include <core/chemdb/atom.hpp>
-#include <core/chemdb/color.hpp>
+#include <core/chemdb/color_layout.hpp>
 #include <io/util/secondary_structure.hpp>
 #include <renderer/facade.hpp>
 #include <util/algorithm/range.hpp>
@@ -101,7 +101,7 @@ namespace VTX::App::Component::Render
 			atomColors.begin(),
 			atomColors.end(),
 			[ &p_molStruct, i = 0 ]() mutable
-			{ return VTX::Core::ChemDB::Color::getColorIndex( p_molStruct.atomSymbols[ i++ ] ); }
+			{ return VTX::Core::ChemDB::ColorLayout::getColorIndex( p_molStruct.atomSymbols[ i++ ] ); }
 		);
 
 		return atomColors;
@@ -139,7 +139,11 @@ namespace VTX::App::Component::Render
 			residueColors.begin(),
 			residueColors.end(),
 			[ this, &p_molStruct, i = 0 ]() mutable
-			{ return VTX::Core::ChemDB::Color::getColorIndex( p_molStruct.residueSecondaryStructureTypes[ i++ ] ); }
+			{
+				return VTX::Core::ChemDB::ColorLayout::getColorIndex(
+					p_molStruct.residueSecondaryStructureTypes[ i++ ]
+				);
+			}
 		);
 
 		return residueColors;

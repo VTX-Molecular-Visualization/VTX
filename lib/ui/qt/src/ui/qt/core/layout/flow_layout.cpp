@@ -1,6 +1,6 @@
-#include "ui/qt/layout/flow_layout.hpp"
+#include "ui/qt/core/layout/flow_layout.hpp"
 
-namespace VTX::UI::QT::Layout
+namespace VTX::UI::QT::Core::Layout
 {
 
 	FlowLayout::FlowLayout( QWidget * p_parent, int p_margin, int p_hSpacing, int p_vSpacing ) :
@@ -156,4 +156,4 @@ namespace VTX::UI::QT::Layout
 			return static_cast<QLayout *>( p_parent )->spacing();
 		}
 	}
-} // namespace VTX::UI::QT::Layout
+} // namespace VTX::UI::QT::Core::Layout

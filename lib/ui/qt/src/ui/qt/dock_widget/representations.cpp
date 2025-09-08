@@ -1,5 +1,6 @@
 #include "ui/qt/dock_widget/representations.hpp"
 #include "ui/qt/widget/library/representation.hpp"
+#include <util/factories.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -9,7 +10,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
-		auto * const representationWidget = new Widget::Library::Representation( this );
+		auto * const representationWidget = Util::Factories::newInit<Widget::Library::Representation>( this );
 		_layout->addWidget( representationWidget );
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 	}

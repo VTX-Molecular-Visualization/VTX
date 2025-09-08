@@ -89,7 +89,7 @@ int main( int, char ** )
 				{
 					VTX::Core::Struct::ColorLayout colorLayout;
 					std::generate(
-						colorLayout.layout.begin(), colorLayout.layout.end(), [] { return Color::Rgba::random(); }
+						colorLayout.colors.begin(), colorLayout.colors.end(), [] { return Color::Rgba::random(); }
 					);
 					scene.setColorLayout( colorLayout );
 				}
