@@ -60,7 +60,7 @@ jobs:
         conan export core
         conan export io
         conan export renderer
-        conan create python_binding -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -o vtx_python_binding/*:test=True
+        conan create python_binding -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -o vtx_python_binding/*:test=True -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
 
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}
