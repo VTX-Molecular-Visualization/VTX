@@ -28,13 +28,32 @@ namespace VTX::App::Component::Render
 
 	void ProxySystem::_removeFromRenderer() { _proxy->onRemove(); }
 
+	namespace
+	{
+		/**
+		 * @brief Check if there is at least one residue that has a secondary structure information.
+		 * @param p_struct
+		 * @return
+		 */
+		inline bool hasSecondaryStructureSet( const VTX::Core::Struct::System & p_struct )
+		{
+			return std::find_if(
+					   p_struct.residueSecondaryStructureTypes.begin(),
+					   p_struct.residueSecondaryStructureTypes.end(),
+					   []( const VTX::Core::ChemDB::SecondaryStructure::TYPE & it )
+					   { return it != VTX::Core::ChemDB::SecondaryStructure::TYPE::UNKNOWN; }
+				   )
+				   != p_struct.residueSecondaryStructureTypes.end();
+		}
+	} // namespace
+
 	void ProxySystem::_addInRenderer( Renderer::Facade & p_renderer )
 	{
 		Component::Chemistry::System & molComp	 = ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 		VTX::Core::Struct::System &	   molStruct = molComp._systemStruct;
 
-		// TODO: how to handle this?
-		IO::Util::SecondaryStructure::computeStride( molComp._systemStruct );
+		if ( not hasSecondaryStructureSet( molStruct ) )
+			IO::Util::SecondaryStructure::computeStride( molComp._systemStruct );
 
 		Component::Scene::Transform & transformComp = ECS_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 

@@ -50,6 +50,8 @@ namespace pdb100
 		uint16_t numAlphaHelix			 = 0;
 		float	 computeStridesElapsedMs = 0.f;
 		uint32_t numResidues			 = 0;
+		uint32_t matchingResidues		 = 0;
+		uint32_t residuesInSs			 = 0;
 	};
 	enum class ResultSummary
 	{

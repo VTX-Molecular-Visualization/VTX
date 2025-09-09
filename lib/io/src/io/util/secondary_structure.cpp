@@ -4,6 +4,14 @@
 
 namespace VTX::IO::Util::SecondaryStructure
 {
+	namespace
+	{
+
+	}
+	void assignSecondaryStructure( VTX::Core::Struct::System & p_system )
+	{
+		// This new algorithm will utilize H-bond to assign Beta-sheet and Alpha-helix
+	}
 
 	void computeStride( Core::Struct::System & p_system )
 	{
@@ -52,7 +60,7 @@ namespace VTX::IO::Util::SecondaryStructure
 
 			auto findFirstAtomByName = [ &p_system ]( const size_t p_residueIdx, const std::string & p_name )
 			{
-				const Index atomCount	= p_system.residueAtomCounts[ p_residueIdx ];
+				const Index atomCount	 = p_system.residueAtomCounts[ p_residueIdx ];
 				const Index idxFirstAtom = p_system.residueFirstAtomIndexes[ p_residueIdx ];
 
 				for ( int i = idxFirstAtom; i < int( idxFirstAtom + atomCount ); ++i )
