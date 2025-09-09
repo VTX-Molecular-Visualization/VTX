@@ -271,7 +271,7 @@ namespace VTX::UI::QT::Widget::Library
 	void Representation::_applyLogic()
 	{
 		// Sphere.
-		const bool isFixed = _comboBoxSphereRadiusType->currentIndex() == 1;
+		const bool isFixed = _preset->getData().radiusFixed;
 		_labelSphereRadiusAdd->setVisible( not isFixed );
 		_sliderSphereRadiusAdd->setVisible( not isFixed );
 		_labelSphereRadiusFixed->setVisible( isFixed );
