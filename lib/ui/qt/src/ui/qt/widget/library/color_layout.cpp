@@ -102,7 +102,7 @@ namespace VTX::UI::QT::Widget::Library
 		{
 			// QString text = p_text ? QString::fromStdString( p_text[ offset ].data() ) : QString::number( i );
 
-			_buttons[ i ] = new Widget::ColorPicker( groupBox );
+			_buttons[ i ] = new Core::Widget::ColorPicker( groupBox );
 			_buttons[ i ]->setFixedSize( _BUTTON_SIZE, _BUTTON_SIZE );
 
 			if ( p_text )

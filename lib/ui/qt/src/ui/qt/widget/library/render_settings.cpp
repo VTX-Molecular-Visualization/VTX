@@ -13,6 +13,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		// Shading.
 		_groupboxShading = new HideableGroupBox( "Lighting", _groupboxPreset );
+		_groupboxShading->setChecked( true );
 		addWidget( _groupboxShading );
 
 		_comboBoxShadingMode = new QComboBox( _groupboxShading );
@@ -22,11 +23,11 @@ namespace VTX::UI::QT::Widget::Library
 			_comboBoxShadingMode->addItem( SHADING_STR[ i ].data() );
 		}
 
-		_colorPickerBackground = new Widget::ColorPicker( _groupboxShading );
+		_colorPickerBackground = new ColorPicker( _groupboxShading );
 		_groupboxShading->addWidget( _colorPickerBackground );
 		_colorPickerBackground->setText( "Background" );
 
-		_colorPickerLight = new Widget::ColorPicker( _groupboxShading );
+		_colorPickerLight = new ColorPicker( _groupboxShading );
 		_groupboxShading->addWidget( _colorPickerLight );
 		_colorPickerLight->setText( "Light" );
 
@@ -71,7 +72,7 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxOutline = new HideableGroupBox( "Outline", _groupboxPreset );
 		addWidget( _groupboxOutline );
 
-		_colorPickerOutline = new Widget::ColorPicker( _groupboxOutline );
+		_colorPickerOutline = new ColorPicker( _groupboxOutline );
 		_groupboxOutline->addWidget( _colorPickerOutline );
 
 		_sliderOutlineSensitivity = new EditableSlider( Qt::Orientation::Horizontal, _groupboxOutline );
@@ -90,7 +91,7 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxFog = new HideableGroupBox( "Fog", _groupboxPreset );
 		addWidget( _groupboxFog );
 
-		_colorPickerFog = new Widget::ColorPicker( _groupboxFog );
+		_colorPickerFog = new ColorPicker( _groupboxFog );
 		_groupboxFog->addWidget( _colorPickerFog );
 
 		_sliderFogNear = new EditableSlider( Qt::Orientation::Horizontal, _groupboxFog );
@@ -115,7 +116,7 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxSelection = new HideableGroupBox( "Selection", _groupboxPreset );
 		addWidget( _groupboxSelection );
 
-		_colorPickerSelection = new Widget::ColorPicker( _groupboxSelection );
+		_colorPickerSelection = new ColorPicker( _groupboxSelection );
 		_groupboxSelection->addWidget( _colorPickerSelection );
 
 		// Connect widget callbacks.
@@ -152,7 +153,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		connect(
 			_groupboxSSAO,
-			&Core::Widget::HideableGroupBox::toggled,
+			&HideableGroupBox::toggled,
 			[ this ]( const bool p_state ) { _changeValue<E_RENDER_SETTINGS::ACTIVE_SSAO, bool>( p_state ); }
 		);
 
@@ -170,7 +171,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		connect(
 			_groupboxOutline,
-			&Core::Widget::HideableGroupBox::toggled,
+			&HideableGroupBox::toggled,
 			[ this ]( const bool p_state ) { _changeValue<E_RENDER_SETTINGS::ACTIVE_OUTLINE, bool>( p_state ); }
 		);
 
@@ -191,7 +192,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		connect(
 			_groupboxFog,
-			&Core::Widget::HideableGroupBox::toggled,
+			&HideableGroupBox::toggled,
 			[ this ]( const bool p_state ) { _changeValue<E_RENDER_SETTINGS::ACTIVE_FOG, bool>( p_state ); }
 		);
 
@@ -218,7 +219,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		connect(
 			_groupboxSelection,
-			&Core::Widget::HideableGroupBox::toggled,
+			&HideableGroupBox::toggled,
 			[ this ]( const bool p_state ) { _changeValue<E_RENDER_SETTINGS::ACTIVE_SELECTION, bool>( p_state ); }
 		);
 
