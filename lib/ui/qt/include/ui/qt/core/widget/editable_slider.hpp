@@ -72,6 +72,14 @@ namespace VTX::UI::QT::Core::Widget
 			_spinbox->setMaximum( p_max );
 		}
 
+		inline void setStep( const float p_step )
+		{
+			_slider->setSingleStep( std::lround( p_step * 100.0f ) );
+			_spinbox->setSingleStep( p_step );
+		}
+
+		inline void setDecimals( const int p_decimals ) { _spinbox->setDecimals( p_decimals ); }
+
 		inline void setSuffix( const QString & p_suffix ) { _spinbox->setSuffix( " " + p_suffix ); }
 
 	  signals:

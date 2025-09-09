@@ -14,6 +14,7 @@ namespace VTX::UI::QT::Widget::Library
 		// Shading.
 		_groupboxShading = new HideableGroupBox( "Lighting", _groupboxPreset );
 		_groupboxShading->setChecked( true );
+		_groupboxShading->freeze( true );
 		addWidget( _groupboxShading );
 
 		_comboBoxShadingMode = new QComboBox( _groupboxShading );
@@ -51,6 +52,8 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxShading->addWidget( _sliderToonSteps );
 		_sliderToonSteps->setMinimum( TOON_STEPS_MIN );
 		_sliderToonSteps->setMaximum( TOON_STEPS_MAX );
+		_sliderToonSteps->setStep( 1 );
+		_sliderToonSteps->setDecimals( 0 );
 
 		// SSAO.
 		_groupboxSSAO = new HideableGroupBox( "Shadows", _groupboxPreset );
@@ -86,6 +89,8 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxOutline->addWidget( _sliderOutlineThickness );
 		_sliderOutlineThickness->setMinimum( OUTLINE_THICKNESS_MIN );
 		_sliderOutlineThickness->setMaximum( OUTLINE_THICKNESS_MAX );
+		_sliderOutlineThickness->setStep( 1 );
+		_sliderOutlineThickness->setDecimals( 0 );
 
 		// Fog.
 		_groupboxFog = new HideableGroupBox( "Fog", _groupboxPreset );

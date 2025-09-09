@@ -57,14 +57,14 @@ namespace VTX::UI::QT::Core::Widget
 
 		inline void addWidget( QWidget * widget ) { _groupbox->layout()->addWidget( widget ); }
 
+		inline void freeze( const bool p_freeze ) { _toggleButton->blockSignals( p_freeze ); }
+
 	  signals:
 		void toggled( bool );
 
 	  private:
 		QPointer<QToolButton> _toggleButton;
 		QPointer<QGroupBox>	  _groupbox;
-
-	  protected:
 	};
 } // namespace VTX::UI::QT::Core::Widget
 #endif
