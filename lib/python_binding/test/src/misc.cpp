@@ -19,3 +19,13 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor runCommand test", "[python][binding
 	CHECK( VTX::INTERPRETOR().runCommand( "l.append(4)" ).empty() );
 	CHECK( VTX::INTERPRETOR().runCommand( "l" ) == "[1, 2, 3, 4]" );
 }
+
+TEST_CASE( "VTX_PYTHON_BINDING - Python version", "[python][binding][version]" )
+{
+	VTX::App::Test::Util::PythonFixture f;
+
+	CHECK( VTX::INTERPRETOR().runCommand( "import sys" ).empty() );
+	std::string v = VTX::INTERPRETOR().runCommand( "sys.version" );
+
+	CHECK( v.find( "3.9.19" ) != std::string::npos );
+}
