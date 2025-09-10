@@ -37,8 +37,7 @@ class VTXPythonBindingRecipe(ConanFile):
             del self.options.fPIC
 
         self.options["cpython"].with_gdbm = False # Doesn't work on windows. I'm not sure what it does.
-        if self.settings.os == "Windows":
-            self.options["cpython"].shared = True # False by default. If set to False, DLLs will be missing.
+        self.options["cpython"].shared = self.settings.os == "Windows" # False by default. If set to False, DLLs will be missing.
         
             
     def generate(self):
