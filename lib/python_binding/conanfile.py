@@ -2,6 +2,7 @@ import os
 import glob
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeDeps, CMakeToolchain
+from conan.tools.env import VirtualBuildEnv, Environment
 from conan.tools.files import copy
 from pathlib import Path
 
@@ -17,6 +18,8 @@ class VTXPythonBindingRecipe(ConanFile):
     generators = "CMakeDeps"
     
     exports_sources = "CMakeLists.txt", "src/*", "module/*", "include/*", "cmake/*", "python_script/*", "test/*"
+    
+    _former_LD_LIBRARY_PATH = None
     
     def _generated_cmake_prefix(self):
         return "pybind11-"
@@ -34,7 +37,8 @@ class VTXPythonBindingRecipe(ConanFile):
             del self.options.fPIC
 
         self.options["cpython"].with_gdbm = False # Doesn't work on windows. I'm not sure what it does.
-        self.options["cpython"].shared = True # False by default. If set to False, DLLs will be missing.
+        if self.settings.os == "Windows":
+            self.options["cpython"].shared = True # False by default. If set to False, DLLs will be missing.
         
             
     def generate(self):
@@ -44,7 +48,12 @@ class VTXPythonBindingRecipe(ConanFile):
             self.output.info(f"Is test {r.is_test} is override {r.override}")
         tc.generate()      
         
-        copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder,"bin"), os.path.join(self.build_folder, "external","python"))        
+        if self.settings.os == "Windows":
+            copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder,"bin"), os.path.join(self.build_folder, "external","python"))        
+        else:
+            for subdir in ("bin","lib","include"):
+                copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder, subdir), os.path.join(self.build_folder, "external","python",subdir)) 
+        
     
     def layout(self):
         cmake_layout(self)
@@ -52,7 +61,9 @@ class VTXPythonBindingRecipe(ConanFile):
     def build(self):
         cmake = CMake(self)
         cmake.configure()
+        
         cmake.build()
+        
         if self.options.test == True:
             cmake.ctest(["--output-on-failure"])
 
