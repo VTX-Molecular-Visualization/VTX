@@ -3,6 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <pybind11/embed.h>
 #include <python_binding/interpretor.hpp>
+#include <util/logger.hpp>
 
 TEST_CASE( "VTX_PYTHON_BINDING - Interpretor runCommand test", "[python][binding][interpretor]" )
 {
@@ -27,5 +28,12 @@ TEST_CASE( "VTX_PYTHON_BINDING - Python version", "[python][binding][version]" )
 	CHECK( VTX::INTERPRETOR().runCommand( "import sys" ).empty() );
 	std::string v = VTX::INTERPRETOR().runCommand( "sys.version" );
 
-	CHECK( v.find( "3.9.19" ) != std::string::npos );
+	bool rightVersion = v.find( "3.9.19" ) != std::string::npos;
+	if ( not rightVersion )
+	{
+		VTX::VTX_INFO( "Python version used : <{}>", v );
+		VTX::VTX_INFO( "Python Executable used : <{}>", VTX::INTERPRETOR().runCommand( "sys.executable" ) );
+	}
+
+	CHECK( rightVersion );
 }
