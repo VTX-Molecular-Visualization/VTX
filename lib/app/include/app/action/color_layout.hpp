@@ -7,6 +7,14 @@
 
 namespace VTX::App::Action::ColorLayout
 {
+	class SetCurrent final : public App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>
+	{
+	  public:
+		SetCurrent( App::Library::Preset::ColorLayout * const );
+		SetCurrent( const std::string_view );
+		void execute() override;
+	};
+
 	class Change final : public App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>
 	{
 	  public:

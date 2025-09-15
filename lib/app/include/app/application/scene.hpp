@@ -5,6 +5,7 @@
 #include "app/component/scene/scene_item_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
 #include "app/core/ecs/ecs_system.hpp"
+#include "app/library/preset/color_layout.hpp"
 #include "app/vtx_app.hpp"
 #include <concepts>
 #include <functional>
@@ -130,6 +131,8 @@ namespace VTX::App::Application
 		// Camera.
 		inline const Component::Render::Camera & getCamera() const { return *_camera; }
 		inline Component::Render::Camera &		 getCamera() { return *_camera; }
+
+		inline void setColorLayoutPreset( const Library::Preset::ColorLayout & p_preset ) {}
 
 		// Callbacks
 		Util::Callback<const Component::Scene::SceneItemComponent &> onSceneItemAdded;

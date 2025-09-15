@@ -1,7 +1,24 @@
 #include "app/action/color_layout.hpp"
+#include "app/component/representation/color_layout.hpp"
+#include "app/core/ecs/registry.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX::App::Action::ColorLayout
 {
+	SetCurrent::SetCurrent( App::Library::Preset::ColorLayout * const p_preset ) :
+		App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>( p_preset )
+	{
+	}
+	SetCurrent::SetCurrent( const std::string_view p_preset ) :
+		App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>( p_preset )
+	{
+	}
+
+	void SetCurrent::execute()
+	{
+		// auto & c = App::ECS_REGISTRY().getComponent<Component::Representation::ColorLayout>();
+	}
+
 	Change::Change(
 		App::Library::Preset::ColorLayout * const p_preset,
 		const Index								  p_index,
