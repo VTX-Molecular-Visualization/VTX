@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Valen/.conan2/p/b/cpyth578f0199b6952/p/bin/**)",
+      "Read(//c/Users/Valen/dev/external/cpython/Modules/**)",
+      "Read(//c/Users/Valen/dev/external/cpython/PC/**)",
+      "Read(//c/Users/Valen/dev/external/cpython/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
