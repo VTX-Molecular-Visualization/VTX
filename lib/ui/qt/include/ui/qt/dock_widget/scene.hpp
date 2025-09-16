@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_DOCK_WIDGET_SCENE__
 
 #include "ui/qt/core/base_dock_widget.hpp"
-#include "ui/qt/widget/tree/model.hpp"
+#include "ui/qt/widget/tree.hpp"
 #include <QPointer>
 #include <QTreeWidget>
 #include <app/component/chemistry/system.hpp>

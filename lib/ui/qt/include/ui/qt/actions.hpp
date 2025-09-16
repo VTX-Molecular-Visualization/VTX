@@ -182,27 +182,28 @@ namespace VTX::UI::QT
 			};
 
 		} // namespace Help
-		namespace Option
+		namespace Selection
 		{
-			namespace Cache
+			struct SetGranularitySystem : public App::UI::DescAction
 			{
-				struct Open : public App::UI::DescAction
-				{
-					Open();
-				};
+				SetGranularitySystem();
+			};
 
-				struct Clear : public App::UI::DescAction
-				{
-					Clear();
-				};
+			struct SetGranularityChain : public App::UI::DescAction
+			{
+				SetGranularityChain();
+			};
 
-				struct Refresh : public App::UI::DescAction
-				{
-					Refresh();
-				};
-			} // namespace Cache
-		} // namespace Option
+			struct SetGranularityResidue : public App::UI::DescAction
+			{
+				SetGranularityResidue();
+			};
 
+			struct SetGranularityAtom : public App::UI::DescAction
+			{
+				SetGranularityAtom();
+			};
+		} // namespace Selection
 		namespace Preset
 		{
 			template<typename P>
@@ -239,6 +240,26 @@ namespace VTX::UI::QT
 				}
 			};
 		} // namespace Preset
+		namespace Option
+		{
+			namespace Cache
+			{
+				struct Open : public App::UI::DescAction
+				{
+					Open();
+				};
+
+				struct Clear : public App::UI::DescAction
+				{
+					Clear();
+				};
+
+				struct Refresh : public App::UI::DescAction
+				{
+					Refresh();
+				};
+			} // namespace Cache
+		} // namespace Option
 	} // namespace Action
 
 } // namespace VTX::UI::QT
