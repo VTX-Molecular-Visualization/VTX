@@ -58,7 +58,7 @@ namespace VTX::App::Component::Representation
 			[ this ]( const Util::Color::Rgba p_value )
 		{ _proxy->getCallback<E_RENDER_SETTINGS::COLOR_SELECTION>()(); };
 
-		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyRenderSettings( *_proxy ); };
+		RENDERER_SYSTEM().onReady( [ this ]() { RENDERER_SYSTEM().setProxyRenderSettings( *_proxy ); } );
 	}
 
 } // namespace VTX::App::Component::Representation

@@ -20,6 +20,8 @@ namespace VTX::Renderer
 		drawRangeVoxels	   = &_renderer->drawRangeVoxels;
 	}
 
+	bool Facade::hasContext() const { return _renderer->hasContext(); }
+
 	void Facade::setDefault() { _renderer->set<Context::Default>(); }
 
 	void Facade::setOpenGL45( const FilePath & p_shaderPath, void * p_loader )
@@ -132,7 +134,13 @@ namespace VTX::Renderer
 
 	const std::vector<Pass *> & Facade::getAvailablePasses() const { return _renderer->getAvailablePasses(); }
 
-	Util::Callback<> & Facade::onReady() { return _renderer->onReady; }
+	void Facade::onReady( const std::function<void( void )> & p_callback )
+	{
+		if ( _renderer->hasContext() )
+			p_callback();
+		else
+			_renderer->onReady += p_callback;
+	}
 
 	void Facade::setValue( const float p_value, const Key & p_key, const size_t p_index )
 	{

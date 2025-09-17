@@ -1,6 +1,7 @@
 #include "app/action/color_layout.hpp"
+#include "app/application/scene.hpp"
 #include "app/component/representation/color_layout.hpp"
-#include "app/core/ecs/registry.hpp"
+#include "app/core/ecs/ecs_system.hpp"
 #include "app/vtx_app.hpp"
 
 namespace VTX::App::Action::ColorLayout
@@ -16,7 +17,12 @@ namespace VTX::App::Action::ColorLayout
 
 	void SetCurrent::execute()
 	{
-		// auto & c = App::ECS_REGISTRY().getComponent<Component::Representation::ColorLayout>();
+		// TODO: dangerous
+		ECS_REGISTRY().removeComponent<Component::Representation::ColorLayout>( ECS_REGISTRY().getEntity( SCENE() ) );
+		auto & comp = ECS_REGISTRY().addComponent<Component::Representation::ColorLayout>(
+			ECS_REGISTRY().getEntity( SCENE() ), *_preset
+		);
+		comp.setupProxy();
 	}
 
 	Change::Change(

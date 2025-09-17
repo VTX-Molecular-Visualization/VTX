@@ -30,6 +30,7 @@ namespace VTX::Renderer
 		Facade( const size_t p_width, const size_t p_height );
 		~Facade();
 
+		bool hasContext() const;
 		void setDefault();
 		void setOpenGL45( const FilePath & p_shaderPath, void * p_loader = nullptr );
 
@@ -107,7 +108,7 @@ namespace VTX::Renderer
 		Draw::Range * drawRangeRibbons;
 		Draw::Range * drawRangeVoxels;
 
-		Util::Callback<> & onReady();
+		void onReady( const std::function<void( void )> & );
 
 	  private:
 		std::unique_ptr<Renderer> _renderer;

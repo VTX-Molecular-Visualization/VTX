@@ -390,6 +390,8 @@ namespace VTX::UI::QT::Widget::Library
 	{
 		assert( _preset != nullptr );
 
+		App::ACTION_SYSTEM().execute<App::Action::RenderSettings::SetCurrent>( _preset );
+
 		const QSignalBlocker blocker0( _comboBoxShadingMode );
 		const QSignalBlocker blocker1( _colorPickerBackground );
 		const QSignalBlocker blocker2( _colorPickerLight );

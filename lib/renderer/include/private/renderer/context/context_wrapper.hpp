@@ -110,6 +110,8 @@ namespace VTX::Renderer::Context
 			return _contexts.has<C>();
 		}
 
+		bool hasContext() const { return not _contexts.empty(); }
+
 		template<typename... Args>
 		inline void build( Args &&... p_args )
 		{

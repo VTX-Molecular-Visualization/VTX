@@ -38,12 +38,6 @@ namespace VTX::App::Core::ECS
 		inline PRE &	   getPreset() { return _preset; }
 		inline const PRE & getPreset() const { return _preset; }
 
-		inline void setPreset( PRE & p_preset )
-		{
-			_preset = p_preset;
-			this->setupProxy();
-		}
-
 	  protected:
 		PRE & _preset;
 	};
