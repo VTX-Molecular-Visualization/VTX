@@ -65,7 +65,7 @@ namespace VTX::App::Library::Preset
 			}
 			else if constexpr ( S == E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED )
 			{
-				_data.radiusFixed = value;
+				_data.isRadiusSphereFixed = value;
 			}
 			// Cylinder.
 			else if constexpr ( S == E_REPRESENTATION_VALUES::HAS_CYLINDER )

@@ -173,6 +173,7 @@ namespace VTX::Renderer
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
+		bool showSES	 = true;
 		bool showVoxels	 = true;
 		// bool showSESCircles	 = true;
 		// bool showSESConcaves = true;
@@ -311,7 +312,7 @@ namespace VTX::Renderer
 		 */
 		std::map<const Proxy::System * const, Cache::SphereCylinder> _cacheSpheresCylinders;
 		std::map<const Proxy::System * const, Cache::Ribbon>		 _cacheRibbons;
-		std::map<const Proxy::System * const, Cache::SES>			 _cacheSES;
+		// std::map<const Proxy::System * const, Cache::SES>			 _cacheSES;
 
 		void _refreshGraph();
 
@@ -330,7 +331,7 @@ namespace VTX::Renderer
 		void _refreshDataModels();
 		void _refreshDataVoxels();
 
-		void _applyRepresentationLogic( const Proxy::Representation & );
+		void _applyRepresentationLogic();
 
 		enum E_ELEMENT_FLAGS
 		{
