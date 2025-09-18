@@ -31,6 +31,7 @@ namespace VTX::PythonBinding
 		pybind11::scoped_interpreter createInterpretor( const std::wstring & p_pythonHomePath )
 		{
 			PyConfig config;
+			PyConfig_InitPythonConfig( &config );
 			config.isolated		   = 1;
 			config.use_environment = 0;
 #ifdef _WIN32
@@ -41,8 +42,10 @@ namespace VTX::PythonBinding
 			PyConfig_SetString( &config, &config.platlibdir, platlibdir.c_str() );
 			PyConfig_SetString( &config, &config.home, p_pythonHomePath.c_str() );
 
-			Py_SetPythonHome( p_pythonHomePath.data() );
-			return pybind11::scoped_interpreter();
+			// Py_SetPythonHome( p_pythonHomePath.data() );
+			pybind11::scoped_interpreter interpretor( &config );
+			PyConfig_Clear( &config );
+			return interpretor;
 		}
 	} // namespace
 	struct Interpretor::Impl
