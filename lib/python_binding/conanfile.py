@@ -42,16 +42,16 @@ class VTXPythonBindingRecipe(ConanFile):
             
     def generate(self):
         tc = CMakeToolchain(self)
-        for r, d in self.dependencies.items(): 
-            self.output.info(f"Requirement {r}")
-            self.output.info(f"Is test {r.is_test} is override {r.override}")
         tc.generate()      
         
+        
         if self.settings.os == "Windows":
-            copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder,"bin"), os.path.join(self.build_folder, "external","python"))        
+            for subdir in ("DLLs","Lib"):
+                copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder,"bin", subdir), os.path.join(self.build_folder, "external","python",subdir))  
+            copy(self, "*.dll", os.path.join(self.dependencies["cpython"].package_folder,"bin"), os.path.join(self.build_folder))        
         else:
-            for subdir in ("bin","lib","include"):
-                copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder, subdir), os.path.join(self.build_folder, "external","python",subdir)) 
+            for subdir in ("bin","lib"):
+                copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder, subdir), os.path.join(self.build_folder, "external","python",subdir))  
         
     
     def layout(self):

@@ -30,6 +30,17 @@ namespace VTX::PythonBinding
 	{
 		pybind11::scoped_interpreter createInterpretor( const std::wstring & p_pythonHomePath )
 		{
+			PyConfig config;
+			config.isolated		   = 1;
+			config.use_environment = 1;
+#ifdef _WIN32
+			std::wstring platlibdir = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
+#else
+			std::wstring platlibdir = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
+#endif
+			PyConfig_SetString( &config, &config.platlibdir, platlibdir.c_str() );
+			PyConfig_SetString( &config, &config.home, p_pythonHomePath.c_str() );
+
 			Py_SetPythonHome( p_pythonHomePath.data() );
 			return pybind11::scoped_interpreter();
 		}
