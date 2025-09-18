@@ -32,7 +32,7 @@ namespace VTX::PythonBinding
 		{
 			PyConfig config;
 			config.isolated		   = 1;
-			config.use_environment = 1;
+			config.use_environment = 0;
 #ifdef _WIN32
 			std::wstring platlibdir = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
 #else
