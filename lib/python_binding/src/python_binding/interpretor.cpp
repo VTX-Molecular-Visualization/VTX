@@ -42,6 +42,11 @@ namespace VTX::PythonBinding
 			PyConfig_SetString( &config, &config.platlibdir, platlibdir.c_str() );
 			PyConfig_SetString( &config, &config.home, p_pythonHomePath.c_str() );
 
+			// Add the build directory to module search paths so Python can find python39.zip
+			// The build directory is the parent of external/python where python39.zip is located
+			std::wstring buildDir = Util::Filesystem::getExecutableDir().wstring();
+			PyWideStringList_Append( &config.module_search_paths, buildDir.c_str() );
+
 			// Py_SetPythonHome( p_pythonHomePath.data() );
 			pybind11::scoped_interpreter interpretor( &config );
 			PyConfig_Clear( &config );
