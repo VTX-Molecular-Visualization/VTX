@@ -6,7 +6,7 @@
 #include <util/callback.hpp>
 #include <util/color/rgba.hpp>
 
-namespace VTX::UI::QT::Widget
+namespace VTX::UI::QT::Core::Widget
 {
 	class ColorPicker : public QPushButton
 	{
@@ -23,5 +23,5 @@ namespace VTX::UI::QT::Widget
 	  private:
 		QColor _color;
 	};
-} // namespace VTX::UI::QT::Widget
+} // namespace VTX::UI::QT::Core::Widget
 #endif

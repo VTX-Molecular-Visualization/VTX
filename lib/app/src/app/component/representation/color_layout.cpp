@@ -12,7 +12,7 @@ namespace VTX::App::Component::Representation
 		_preset.onChange += [ this ]( const Index p_index ) { _proxy->onChange( p_index ); };
 		_preset.onChangeAll += [ this ]() { _proxy->onChangeAll(); };
 
-		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyColorLayout( *_proxy ); };
+		RENDERER_SYSTEM().onReady( [ this ]() { RENDERER_SYSTEM().setProxyColorLayout( *_proxy ); } );
 	}
 
 } // namespace VTX::App::Component::Representation

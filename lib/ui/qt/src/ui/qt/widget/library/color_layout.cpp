@@ -40,6 +40,15 @@ namespace VTX::UI::QT::Widget::Library
 		_createGroupBox( "Chain", LAYOUT_OFFSET_CHAINS, LAYOUT_COUNT_CHAINS, Chain::NAME );
 		_createGroupBox( "Ribbon", LAYOUT_OFFSET_RIBBONS, LAYOUT_COUNT_RIBBONS );
 		_createGroupBox( "Custom", LAYOUT_OFFSET_CUSTOM, LAYOUT_COUNT_CUSTOM );
+
+		// Randomize.
+		auto * const buttonRandomize = new QPushButton( "Randomize", this );
+		connect(
+			buttonRandomize,
+			&QPushButton::clicked,
+			[ this ]() { App::ACTION_SYSTEM().execute<App::Action::ColorLayout::Randomize>( _preset ); }
+		);
+		addWidget( buttonRandomize );
 	}
 
 	void ColorLayout::_onPresetAdded( const std::string_view p_name )
@@ -69,6 +78,8 @@ namespace VTX::UI::QT::Widget::Library
 	void ColorLayout::_onPresetChanged()
 	{
 		assert( _preset != nullptr );
+
+		App::ACTION_SYSTEM().execute<App::Action::ColorLayout::SetCurrent>( _preset );
 
 		for ( size_t i = 0; i < VTX::Core::Struct::COLOR_LAYOUT_SIZE; ++i )
 		{
@@ -102,7 +113,7 @@ namespace VTX::UI::QT::Widget::Library
 		{
 			// QString text = p_text ? QString::fromStdString( p_text[ offset ].data() ) : QString::number( i );
 
-			_buttons[ i ] = new Widget::ColorPicker( groupBox );
+			_buttons[ i ] = new Core::Widget::ColorPicker( groupBox );
 			_buttons[ i ]->setFixedSize( _BUTTON_SIZE, _BUTTON_SIZE );
 
 			if ( p_text )

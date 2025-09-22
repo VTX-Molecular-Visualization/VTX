@@ -155,6 +155,8 @@ namespace VTX::Util
 			_map.erase( p_hash );
 		}
 
+		inline bool empty() const { return _map.empty(); }
+
 		inline void clear() { _map.clear(); }
 
 		template<typename T>

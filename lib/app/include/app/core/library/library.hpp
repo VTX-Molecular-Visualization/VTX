@@ -21,7 +21,7 @@ namespace VTX::App::Core::Library
 	class Library : public ILibrary
 	{
 	  public:
-		using MapPresetsByName = std::map<std::string, P, std::less<>>;
+		using MapPresetsByName = std::map<std::string, std::unique_ptr<P>, std::less<>>;
 
 		Library() = delete;
 		Library( const FilePath & p_path ) : _path( p_path ) { load(); }
@@ -31,7 +31,7 @@ namespace VTX::App::Core::Library
 		P * const getPreset( const std::string_view p_name )
 		{
 			assert( _presets.contains( p_name ) );
-			return &_presets[ std::string { p_name } ];
+			return _presets[ std::string { p_name } ].get();
 		}
 
 		P * const createPreset( const std::optional<std::string_view> & p_name )
@@ -39,11 +39,11 @@ namespace VTX::App::Core::Library
 			std::string name = std::string { p_name.has_value() ? p_name.value() : "New preset" };
 
 			_makeNameUnique( name );
-			_presets.emplace( name, P() );
+			_presets.emplace( name, std::make_unique<P>() );
 
 			onPresetAdded( name );
 
-			return &_presets[ name ];
+			return _presets[ name ].get();
 		}
 
 		P * const copyPreset( const std::string_view p_src, const std::optional<std::string_view> & p_dest )
@@ -52,11 +52,12 @@ namespace VTX::App::Core::Library
 			std::string name = std::string { p_dest.has_value() ? p_dest.value() : p_src };
 
 			_makeNameUnique( name );
-			_presets.emplace( name, _presets.at( std::string { p_src } ) );
+			_presets.emplace( name, std::make_unique<P>() );
+			*_presets[ name ] = *_presets.at( std::string { p_src } );
 
 			onPresetAdded( name );
 
-			return &_presets[ name ];
+			return _presets[ name ].get();
 		}
 
 		void removePreset( const std::string_view p_name )

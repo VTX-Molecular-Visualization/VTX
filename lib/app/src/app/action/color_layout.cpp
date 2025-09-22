@@ -1,7 +1,30 @@
 #include "app/action/color_layout.hpp"
+#include "app/application/scene.hpp"
+#include "app/component/representation/color_layout.hpp"
+#include "app/core/ecs/ecs_system.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX::App::Action::ColorLayout
 {
+	SetCurrent::SetCurrent( App::Library::Preset::ColorLayout * const p_preset ) :
+		App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>( p_preset )
+	{
+	}
+	SetCurrent::SetCurrent( const std::string_view p_preset ) :
+		App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>( p_preset )
+	{
+	}
+
+	void SetCurrent::execute()
+	{
+		// TODO: dangerous
+		ECS_REGISTRY().removeComponent<Component::Representation::ColorLayout>( ECS_REGISTRY().getEntity( SCENE() ) );
+		auto & comp = ECS_REGISTRY().addComponent<Component::Representation::ColorLayout>(
+			ECS_REGISTRY().getEntity( SCENE() ), *_preset
+		);
+		comp.setupProxy();
+	}
+
 	Change::Change(
 		App::Library::Preset::ColorLayout * const p_preset,
 		const Index								  p_index,

@@ -11,6 +11,7 @@
 #include "ui/qt/menu/camera.hpp"
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/menu/help.hpp"
+#include "ui/qt/menu/selection.hpp"
 #include "ui/qt/menu/theme.hpp"
 #include "ui/qt/menu/view.hpp"
 #include "ui/qt/tool_bar/camera.hpp"
@@ -55,6 +56,7 @@ namespace VTX::UI::QT::Widget
 		// Main menu.
 		createMenu<Menu::File>();
 		createMenu<Menu::Camera>();
+		createMenu<Menu::Selection>();
 		// createMenu<Menu::View>();
 		createMenu<Menu::Theme>();
 		createMenu<Menu::Help>();

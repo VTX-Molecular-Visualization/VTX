@@ -2,6 +2,8 @@
 #define __VTX_UI_QT_BASE_WIDGET__
 
 #include "ui/qt/actions.hpp"
+#include "ui/qt/model.hpp"
+#include "ui/qt/selection.hpp"
 #include <QGuiApplication>
 #include <QScreen>
 #include <QWidget>
@@ -23,7 +25,9 @@ namespace VTX::UI::QT::Core
 	/**
 	 * @brief An accessor to the singleton that store all widgets.
 	 */
-	using WIDGETS = VTX::Util::Singleton<WIDGET_COLLECTION>;
+	using WIDGETS	= VTX::Util::Singleton<WIDGET_COLLECTION>;
+	using MODEL		= VTX::Util::Singleton<Model>;
+	using SELECTION = VTX::Util::Singleton<Selection>;
 
 	/**
 	 * @brief Abstract class that describes a widget behaviour.

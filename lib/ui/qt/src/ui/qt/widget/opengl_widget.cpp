@@ -44,8 +44,8 @@ namespace VTX::UI::QT::Widget
 		_context->makeCurrent( _window );
 
 		// Set output.
-		App::RENDERER_SYSTEM().onReady() +=
-			[ this ]() { App::RENDERER_SYSTEM().setOutput( _context->defaultFramebufferObject() ); };
+		App::RENDERER_SYSTEM().onReady( [ this ]()
+										{ App::RENDERER_SYSTEM().setOutput( _context->defaultFramebufferObject() ); } );
 
 		// Connect signals.
 		APP::onPostRender += [ this ]( const float ) { render(); };

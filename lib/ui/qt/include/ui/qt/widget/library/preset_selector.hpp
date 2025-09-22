@@ -124,8 +124,7 @@ namespace VTX::UI::QT::Widget::Library
 			{
 				_refreshComboBox();
 				assert( _comboBox->count() > 0 );
-				// TOFIX: signal blocked (???)
-				_comboBox->setCurrentText( _comboBox->itemText( 0 ) );
+				_comboBox->setCurrentIndex( 0 );
 			};
 
 			emit presetChanged( _comboBox->currentText() );
@@ -147,6 +146,7 @@ namespace VTX::UI::QT::Widget::Library
 			{
 				_comboBox->addItem( QString::fromStdString( name ) );
 			}
+			_comboBox->setCurrentIndex( -1 );
 		}
 	};
 } // namespace VTX::UI::QT::Widget::Library

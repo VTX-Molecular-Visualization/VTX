@@ -57,6 +57,14 @@ namespace VTX::App::Component::Chemistry
 		initResidues( _systemStruct.getResidueCount() );
 		initAtoms( _systemStruct.getAtomCount() );
 		initBonds( _systemStruct.getBondCount() );
+
+		// Display size.
+
+		VTX_DEBUG( "System '{}' loaded:", _systemStruct.name );
+		VTX_DEBUG( " - Chains  : {}", _chains.size() );
+		VTX_DEBUG( " - Residues: {}", _residues.size() );
+		VTX_DEBUG( " - Atoms   : {}", _atoms.size() );
+		VTX_DEBUG( " - Bonds   : {}", _bonds.size() );
 	}
 
 	void System::initChains( const Index p_chainCount )

@@ -1,9 +1,9 @@
-#include "ui/qt/widget/color_picker.hpp"
+#include "ui/qt/core/widget/color_picker.hpp"
 #include "ui/qt/helper.hpp"
 #include <QColorDialog>
 #include <QPalette>
 
-namespace VTX::UI::QT::Widget
+namespace VTX::UI::QT::Core::Widget
 {
 	ColorPicker::ColorPicker( QWidget * p_parent )
 	{
@@ -56,4 +56,4 @@ namespace VTX::UI::QT::Widget
 		setPalette( palette );
 	}
 
-} // namespace VTX::UI::QT::Widget
+} // namespace VTX::UI::QT::Core::Widget

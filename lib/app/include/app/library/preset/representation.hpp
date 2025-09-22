@@ -46,56 +46,58 @@ namespace VTX::App::Library::Preset
 			using namespace VTX::Core::Struct;
 			using namespace Util::Math;
 
+			T value = p_value;
+
 			// Sphere.
 			if constexpr ( S == E_REPRESENTATION_VALUES::HAS_SPHERE )
 			{
-				_data.hasSphere = p_value;
+				_data.hasSphere = value;
 			}
 			else if constexpr ( S == E_REPRESENTATION_VALUES::RADIUS_SPHERE_FIXED )
 			{
-				T value					= clamp( p_value, RADIUS_SPHERE_FIXED_MIN, RADIUS_SPHERE_FIXED_MAX );
+				value					= clamp( value, RADIUS_SPHERE_FIXED_MIN, RADIUS_SPHERE_FIXED_MAX );
 				_data.radiusSphereFixed = value;
 			}
 			else if constexpr ( S == E_REPRESENTATION_VALUES::RADIUS_SPHERE_ADD )
 			{
-				T value				  = clamp( p_value, RADIUS_SPHERE_ADD_MIN, RADIUS_SPHERE_ADD_MAX );
+				value				  = clamp( value, RADIUS_SPHERE_ADD_MIN, RADIUS_SPHERE_ADD_MAX );
 				_data.radiusSphereAdd = value;
 			}
 			else if constexpr ( S == E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED )
 			{
-				_data.radiusFixed = p_value;
+				_data.radiusFixed = value;
 			}
 			// Cylinder.
 			else if constexpr ( S == E_REPRESENTATION_VALUES::HAS_CYLINDER )
 			{
-				_data.hasCylinder = p_value;
+				_data.hasCylinder = value;
 			}
 			else if constexpr ( S == E_REPRESENTATION_VALUES::RADIUS_CYLINDER )
 			{
-				T value				 = clamp( p_value, RADIUS_CYLINDER_MIN, RADIUS_CYLINDER_MAX );
+				value				 = clamp( value, RADIUS_CYLINDER_MIN, RADIUS_CYLINDER_MAX );
 				_data.radiusCylinder = value;
 			}
 			else if constexpr ( S == E_REPRESENTATION_VALUES::CYLINDER_COLOR_BLENDING )
 			{
-				_data.cylinderColorBlending = p_value;
+				_data.cylinderColorBlending = value;
 			}
 			// Ribbon.
 			else if constexpr ( S == E_REPRESENTATION_VALUES::HAS_RIBBON )
 			{
-				_data.hasRibbon = p_value;
+				_data.hasRibbon = value;
 			}
 			else if constexpr ( S == E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING )
 			{
-				_data.ribbonColorBlending = p_value;
+				_data.ribbonColorBlending = value;
 			}
 			// SES.
 			else if constexpr ( S == E_REPRESENTATION_VALUES::HAS_SES )
 			{
-				_data.hasSes = p_value;
+				_data.hasSes = value;
 			}
 			else if constexpr ( S == E_REPRESENTATION_VALUES::SES_PROBE_RADIUS )
 			{
-				T value				 = clamp( p_value, SES_PROBE_RADIUS_MIN, SES_PROBE_RADIUS_MAX );
+				value				 = clamp( value, SES_PROBE_RADIUS_MIN, SES_PROBE_RADIUS_MAX );
 				_data.sesProbeRadius = value;
 			}
 			else
@@ -103,7 +105,7 @@ namespace VTX::App::Library::Preset
 				static_assert( std::is_same_v<T, void>, "Unknown representation setting." );
 			}
 
-			getCallback<S, T>()( p_value );
+			getCallback<S, T>()( value );
 		}
 	};
 } // namespace VTX::App::Library::Preset

@@ -52,8 +52,9 @@ namespace VTX::App::Component::Render
 		Component::Chemistry::System & molComp	 = ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 		VTX::Core::Struct::System &	   molStruct = molComp._systemStruct;
 
-		if ( not hasSecondaryStructureSet( molStruct ) )
-			IO::Util::SecondaryStructure::computeStride( molComp._systemStruct );
+		// if ( not hasSecondaryStructureSet( molStruct ) ) // We comment this because relying on chemfiles SS makes our
+		// renderer go wild. We need to investigate.
+		IO::Util::SecondaryStructure::computeStride( molComp._systemStruct );
 
 		Component::Scene::Transform & transformComp = ECS_REGISTRY().getComponent<Component::Scene::Transform>( *this );
 

@@ -57,7 +57,7 @@ namespace VTX::App::Component::Render
 		{ _proxy->onCameraPosition( p_transform.getTranslationVector() ); };
 
 		// Set in renderer.
-		RENDERER_SYSTEM().onReady() += [ this ]() { RENDERER_SYSTEM().setProxyCamera( *_proxy ); };
+		RENDERER_SYSTEM().onReady( [ this ]() { RENDERER_SYSTEM().setProxyCamera( *_proxy ); } );
 	}
 
 	void Camera::setScreenSize( const size_t p_width, const size_t p_height )

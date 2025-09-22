@@ -335,6 +335,56 @@ namespace VTX::UI::QT::Action
 		}
 
 	} // namespace Snapshot
+	namespace Selection
+	{
+		SetGranularitySystem::SetGranularitySystem()
+		{
+			name  = "System";
+			group = "SelectionGranularity";
+			tip	  = "Change selection granularity to system";
+			// icon = "sprite/selection/granularity.png";
+			//  shortcut = "G";
+			//   trigger	 = []() {
+			//   App::ACTION_SYSTEM().execute<App::Action::Application::ChangeSelectionGranularity>();
+			//   };
+		}
+
+		SetGranularityChain::SetGranularityChain()
+		{
+			name  = "Chain";
+			group = "SelectionGranularity";
+			tip	  = "Change selection granularity to chain";
+			// icon = "sprite/selection/granularity.png";
+			//  shortcut = "G";
+			//   trigger	 = []() {
+			//   App::ACTION_SYSTEM().execute<App::Action::Application::ChangeSelectionGranularity>();
+			//   };
+		}
+
+		SetGranularityResidue::SetGranularityResidue()
+		{
+			name  = "Residue";
+			group = "SelectionGranularity";
+			tip	  = "Change selection granularity to residue";
+			// icon = "sprite/selection/granularity.png";
+			//  shortcut = "G";
+			//   trigger	 = []() {
+			//   App::ACTION_SYSTEM().execute<App::Action::Application::ChangeSelectionGranularity>();
+			//   };
+		}
+
+		SetGranularityAtom::SetGranularityAtom()
+		{
+			name  = "Atom";
+			group = "SelectionGranularity";
+			tip	  = "Change selection granularity to atom";
+			// icon = "sprite/selection/granularity.png";
+			//  shortcut = "G";
+			//   trigger	 = []() {
+			//   App::ACTION_SYSTEM().execute<App::Action::Application::ChangeSelectionGranularity>();
+			//   };
+		}
+	} // namespace Selection
 	namespace Theme
 	{
 
@@ -362,18 +412,6 @@ namespace VTX::UI::QT::Action
 		ResetLayout::ResetLayout() { name = "Reset layout"; }
 
 	} // namespace Theme
-	namespace Help
-	{
-
-		Documentation::Documentation() { name = "Documentation"; }
-
-		Report::Report() { name = "Report a bug"; }
-
-		CheckUpdates::CheckUpdates() { name = "Check for updates"; }
-
-		About::About() { name = "About"; }
-
-	} // namespace Help
 	namespace Option
 	{
 		namespace Cache
@@ -397,5 +435,17 @@ namespace VTX::UI::QT::Action
 			}
 		} // namespace Cache
 	} // namespace Option
+	namespace Help
+	{
+
+		Documentation::Documentation() { name = "Documentation"; }
+
+		Report::Report() { name = "Report a bug"; }
+
+		CheckUpdates::CheckUpdates() { name = "Check for updates"; }
+
+		About::About() { name = "About"; }
+
+	} // namespace Help
 
 } // namespace VTX::UI::QT::Action

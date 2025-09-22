@@ -3,8 +3,6 @@
 
 #include "ui/qt/core/base_widget.hpp"
 #include <QMenu>
-#include <app/controller/camera/freefly.hpp>
-#include <app/controller/camera/trackball.hpp>
 
 namespace VTX::UI::QT::Menu
 {

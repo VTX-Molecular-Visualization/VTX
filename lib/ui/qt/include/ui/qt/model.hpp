@@ -1,6 +1,7 @@
-﻿#ifndef __VTX_UI_QT_WIDGET_TREE_MODEL__
-#define __VTX_UI_QT_WIDGET_TREE_MODEL__
+﻿#ifndef __VTX_UI_QT_MODEL__
+#define __VTX_UI_QT_MODEL__
 
+#include "selection.hpp"
 #include <QAbstractItemModel>
 #include <QString>
 #include <app/component/chemistry/atom.hpp>
@@ -8,7 +9,7 @@
 #include <app/component/chemistry/residue.hpp>
 #include <vector>
 
-namespace VTX::UI::QT::Widget::Tree
+namespace VTX::UI::QT
 {
 
 	class Model : public QAbstractItemModel
@@ -22,7 +23,6 @@ namespace VTX::UI::QT::Widget::Tree
 
 		// QModelIndex = quint64 = size_t
 
-		/*
 		int columnCount( const QModelIndex & p_parent = QModelIndex() ) const override {}
 
 		int rowCount( const QModelIndex & p_parent = QModelIndex() ) const override {}
@@ -32,11 +32,10 @@ namespace VTX::UI::QT::Widget::Tree
 		QModelIndex index( int p_row, int p_column, const QModelIndex & p_parent = QModelIndex() ) const override {}
 
 		QModelIndex parent( const QModelIndex & p_index ) const override {}
-		*/
 
 	  private:
 		const App::Component::Chemistry::System & _system;
 	};
 
-} // namespace VTX::UI::QT::Widget::Tree
+} // namespace VTX::UI::QT
 #endif

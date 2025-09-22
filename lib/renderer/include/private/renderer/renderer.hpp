@@ -82,6 +82,8 @@ namespace VTX::Renderer
 			}
 		}
 
+		inline bool hasContext() const { return _context.hasContext(); }
+
 		/**
 		 * @brief Build the renderer with the current _graph.
 		 */
