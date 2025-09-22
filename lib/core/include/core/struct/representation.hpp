@@ -29,7 +29,7 @@ namespace VTX::Core::Struct
 		bool  hasSphere;
 		float radiusSphereFixed;
 		float radiusSphereAdd;
-		bool  radiusFixed;
+		bool  isRadiusSphereFixed;
 
 		// Cylinder.
 		bool  hasCylinder;

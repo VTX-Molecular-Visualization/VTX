@@ -256,7 +256,7 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker10( _sliderSesProbeRadius );
 
 		_groupboxSphere->setChecked( _preset->getData().hasSphere );
-		_comboBoxSphereRadiusType->setCurrentIndex( _preset->getData().radiusFixed ? 1 : 0 );
+		_comboBoxSphereRadiusType->setCurrentIndex( _preset->getData().isRadiusSphereFixed ? 1 : 0 );
 		_sliderSphereRadiusAdd->setValue( _preset->getData().radiusSphereAdd );
 		_sliderSphereRadiusFixed->setValue( _preset->getData().radiusSphereFixed );
 		_groupboxCylinder->setChecked( _preset->getData().hasCylinder );
@@ -273,7 +273,7 @@ namespace VTX::UI::QT::Widget::Library
 	void Representation::_applyLogic()
 	{
 		// Sphere.
-		const bool isFixed = _preset->getData().radiusFixed;
+		const bool isFixed = _preset->getData().isRadiusSphereFixed;
 		_labelSphereRadiusAdd->setVisible( not isFixed );
 		_sliderSphereRadiusAdd->setVisible( not isFixed );
 		_labelSphereRadiusFixed->setVisible( isFixed );

@@ -78,6 +78,7 @@ namespace VTX::Renderer::Cache
 		}
 	};
 
+	/*
 	struct SES
 	{
 		bool			   isEmpty = false;
@@ -102,6 +103,7 @@ namespace VTX::Renderer::Cache
 			return totalSize;
 		}
 	};
+	*/
 
 } // namespace VTX::Renderer::Cache
 

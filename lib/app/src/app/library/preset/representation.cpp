@@ -8,7 +8,7 @@ namespace VTX::App::Library::Preset
 		_data.hasSphere				= HAS_SPHERE_DEFAULT;
 		_data.radiusSphereFixed		= RADIUS_SPHERE_FIXED_DEFAULT;
 		_data.radiusSphereAdd		= RADIUS_SPHERE_ADD_DEFAULT;
-		_data.radiusFixed			= IS_SPHERE_RADIUS_FIXED_DEFAULT;
+		_data.isRadiusSphereFixed	= IS_SPHERE_RADIUS_FIXED_DEFAULT;
 		_data.hasCylinder			= HAS_CYLINDER_DEFAULT;
 		_data.radiusCylinder		= RADIUS_CYLINDER_DEFAULT;
 		_data.cylinderColorBlending = CYLINDER_COLOR_BLENDING_DEFAULT;
