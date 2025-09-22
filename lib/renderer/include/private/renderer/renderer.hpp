@@ -175,7 +175,7 @@ namespace VTX::Renderer
 		bool showRibbons = true;
 		bool showSES	 = true;
 		bool showVoxels	 = true;
-		// bool showSESCircles	 = true;
+		// bool showSESCircles	= true;
 		// bool showSESConcaves = true;
 		// bool showSESConvexes = true;
 		// bool showSESSegments = true;
@@ -193,7 +193,7 @@ namespace VTX::Renderer
 		RangeList drawRangeSpheresRL;
 		RangeList drawRangeCylindersRL;
 		RangeList drawRangeRibbonsRL;
-		// RangeList	drawRangeVoxelsRL;
+		// RangeList drawRangeVoxelsRL;
 		/*
 		RangeList drawRangeSESCirclesRL;
 		RangeList drawRangeSESConcavesRL;

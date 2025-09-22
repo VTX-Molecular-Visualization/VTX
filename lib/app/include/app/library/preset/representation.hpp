@@ -108,6 +108,95 @@ namespace VTX::App::Library::Preset
 			getCallback<S, T>()( value );
 		}
 	};
+
+	namespace Representations
+	{
+		inline const VTX::Core::Struct::Representation STICKS { // Sphere.
+																false,
+																0.f,
+																0.f,
+																true,
+																// Cylinder.
+																true,
+																0.15f,
+																false,
+																// Ribbon.
+																false,
+																false,
+																// SES.
+																false,
+																0.f
+		};
+
+		inline const VTX::Core::Struct::Representation BALLS_AND_STICKS { // Sphere.
+																		  true,
+																		  0.4f,
+																		  0.f,
+																		  true,
+																		  // Cylinder.
+																		  true,
+																		  0.15f,
+																		  false,
+																		  // Ribbon.
+																		  false,
+																		  false,
+																		  // SES.
+																		  false,
+																		  0.f
+		};
+
+		inline const VTX::Core::Struct::Representation VAN_DER_WAALS { // Sphere.
+																	   true,
+																	   0.f,
+																	   0.f,
+																	   false,
+																	   // Cylinder.
+																	   false,
+																	   0.f,
+																	   false,
+																	   // Ribbon.
+																	   false,
+																	   false,
+																	   // SES.
+																	   false,
+																	   0.f
+		};
+
+		inline const VTX::Core::Struct::Representation RIBBONS { // Sphere.
+																 false,
+																 0.f,
+																 0.f,
+																 true,
+																 // Cylinder.
+																 false,
+																 0.f,
+																 false,
+																 // Ribbon.
+																 true,
+																 true,
+																 // SES.
+																 false,
+																 0.f
+		};
+
+		inline const VTX::Core::Struct::Representation SES { // Sphere.
+															 false,
+															 0.f,
+															 0.f,
+															 false,
+															 // Cylinder.
+															 false,
+															 0.f,
+															 false,
+															 // Ribbon.
+															 false,
+															 false,
+															 // SES.
+															 true,
+															 1.4f
+		};
+	} // namespace Representations
+
 } // namespace VTX::App::Library::Preset
 
 #endif

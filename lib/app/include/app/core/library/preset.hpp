@@ -31,10 +31,13 @@ namespace VTX::App::Core::Library
 	class Preset : public IPreset
 	{
 	  public:
+		Preset() = default;
+		Preset( const T & p_data ) : _data( p_data ) {}
 		virtual ~Preset() = default;
 
 		inline const T & getData() const { return _data; }
 		inline T &		 getData() { return _data; }
+		inline void		 setData( const T & p_data ) { _data = p_data; }
 
 		virtual void save() = 0;
 		virtual void load() = 0;
