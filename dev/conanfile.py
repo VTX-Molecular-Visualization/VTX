@@ -2,6 +2,7 @@ import os
 from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMake, CMakeToolchain
 from conan.tools.files import copy
+from pathlib import Path
 
 class VTXRecipe(ConanFile):
     name = "vtx"
@@ -150,8 +151,49 @@ class VTXRecipe(ConanFile):
         
         copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "external"), os.path.join(self.build_folder, "external"))        
         copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "data", "tools","mdprep","gromacs","top"), os.path.join(self.build_folder, "data", "tools", "mdprep", "gromacs", "top" ))        
-        copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder,"bin"), os.path.join(self.build_folder, "external","python"))        
 
+        self._doPythonCopies()
+    
+    def _doPythonCopies(self):
+        if self.settings.os == "Windows":
+            for subdir in ("DLLs","Lib"):
+                copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder,"bin", subdir), os.path.join(self.build_folder, "external","python",subdir))  
+            copy(self, "*.dll", os.path.join(self.dependencies["cpython"].package_folder,"bin"), os.path.join(self.build_folder))        
+            # Create python39.zip from the Python standard library
+            python_lib_path = os.path.join(self.dependencies["cpython"].package_folder, "lib")
+            zip_destination = os.path.join(self.build_folder, "python39.zip")
+            self._create_python39_zip(python_lib_path, zip_destination)
+        else:
+            for subdir in ("bin","lib"):
+                copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder, subdir), os.path.join(self.build_folder, "external","python",subdir))  
+            # Create python39.zip from the Python standard library (Linux/macOS)
+            python_lib_path = os.path.join(self.dependencies["cpython"].package_folder, "lib", "python3.9")
+            zip_destination = os.path.join(self.build_folder, "python39.zip")
+            self._create_python39_zip(python_lib_path, zip_destination)   
+        
+
+    def _create_python39_zip(self, python_lib_path, zip_destination):
+        import zipfile
+        """Create python39.zip from the Python standard library"""
+        self.output.info(f"Creating python39.zip from {python_lib_path} to {zip_destination}")
+ 
+        with zipfile.ZipFile(zip_destination, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            lib_path = Path(python_lib_path)
+            if lib_path.exists():
+                for file_path in lib_path.rglob('*.py'):
+                    # Calculate the archive name (relative path from lib directory)
+                    arcname = file_path.relative_to(lib_path)
+                    zipf.write(file_path, arcname)
+
+                # Also include .pyc files if they exist
+                for file_path in lib_path.rglob('*.pyc'):
+                    arcname = file_path.relative_to(lib_path)
+                    zipf.write(file_path, arcname)
+
+                self.output.info(f"Successfully created python39.zip with {len(zipf.namelist())} files")
+            else:
+                self.output.warning(f"Python lib path {python_lib_path} does not exist, skipping python39.zip creation")
+             
     def layout(self):
         cmake_layout(self)
 
