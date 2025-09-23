@@ -69,6 +69,8 @@ class VTXPythonBindingRecipe(ConanFile):
         if self.settings.os == "Windows":
             for subdir in ("DLLs","Lib"):
                 copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder,"bin", subdir), os.path.join(self.build_folder, "external","python",subdir))  
+            copy(self, "*.exe", os.path.join(self.dependencies["cpython"].package_folder,"bin"), os.path.join(self.build_folder, "external","python"))  
+            copy(self, "*.dll", os.path.join(self.dependencies["cpython"].package_folder,"bin"), os.path.join(self.build_folder, "external","python"))  
             copy(self, "*.dll", os.path.join(self.dependencies["cpython"].package_folder,"bin"), os.path.join(self.build_folder))        
             # Create python39.zip from the Python standard library
             python_lib_path = os.path.join(self.dependencies["cpython"].package_folder, "lib")

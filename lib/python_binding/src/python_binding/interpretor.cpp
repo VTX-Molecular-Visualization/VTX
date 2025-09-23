@@ -32,8 +32,8 @@ namespace VTX::PythonBinding
 		{
 			PyConfig config;
 			PyConfig_InitPythonConfig( &config );
-			// config.isolated		   = 1;
-			// config.use_environment = 0;
+			config.isolated		   = 1;
+			config.use_environment = 0;
 #ifdef _WIN32
 			std::wstring platlibdir = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
 #else
@@ -43,7 +43,7 @@ namespace VTX::PythonBinding
 			PyConfig_SetString( &config, &config.home, p_pythonHomePath.c_str() );
 			PyConfig_SetString( &config, &config.prefix, p_pythonHomePath.c_str() );
 			std::wstring execDirPath = VTX::Util::Filesystem::getExecutableDir().wstring();
-			PyConfig_SetString( &config, &config.exec_prefix, execDirPath.c_str() );
+			PyConfig_SetString( &config, &config.exec_prefix, platlibdir.c_str() );
 
 			// Add the build directory to module search paths so Python can find python39.zip
 			// The build directory is the parent of external/python where python39.zip is located
