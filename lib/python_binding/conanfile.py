@@ -72,15 +72,11 @@ class VTXPythonBindingRecipe(ConanFile):
             copy(self, "*.dll", os.path.join(self.dependencies["cpython"].package_folder,"bin"), os.path.join(self.build_folder))        
             # Create python39.zip from the Python standard library
             python_lib_path = os.path.join(self.dependencies["cpython"].package_folder, "lib")
-            zip_destination = os.path.join(self.build_folder, "python39.zip")
+            zip_destination = os.path.join(self.build_folder, "external", "python", "python39.zip")
             self._create_python39_zip(python_lib_path, zip_destination)
         else:
             for subdir in ("bin","lib"):
                 copy(self, "*", os.path.join(self.dependencies["cpython"].package_folder, subdir), os.path.join(self.build_folder, "external","python",subdir))  
-            # Create python39.zip from the Python standard library (Linux/macOS)
-            python_lib_path = os.path.join(self.dependencies["cpython"].package_folder, "lib", "python3.9")
-            zip_destination = os.path.join(self.build_folder, "python39.zip")
-            self._create_python39_zip(python_lib_path, zip_destination)   
         
     
     def layout(self):
