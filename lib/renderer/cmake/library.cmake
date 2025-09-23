@@ -55,7 +55,7 @@ if (CMAKE_CUDA_COMPILER)
 			-Wno-deprecated-gpu-targets
 		>
 	)
-	target_compile_definitions(vtx_renderer PRIVATE WITH_CUDA)
+	target_compile_definitions(vtx_renderer PRIVATE VTX_CUDA_ENABLED)
 else()
 	message(STATUS "CUDA not found")
 endif()

@@ -44,7 +44,18 @@ namespace VTX::App
 		VTX_DEBUG( "Init application" );
 
 		// Load preset libraries.
-		LIBRARY_SYSTEM().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
+		auto * lib	  = LIBRARY_SYSTEM().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
+		auto * preset = lib->createPreset( "Sticks" );
+		preset->setData( App::Library::Preset::Representations::STICKS );
+		preset = lib->createPreset( "Balls and sticks" );
+		preset->setData( App::Library::Preset::Representations::BALLS_AND_STICKS );
+		preset = lib->createPreset( "Van der Waals" );
+		preset->setData( App::Library::Preset::Representations::VAN_DER_WAALS );
+		preset = lib->createPreset( "Ribbons" );
+		preset->setData( App::Library::Preset::Representations::RIBBONS );
+		preset = lib->createPreset( "SES" );
+		preset->setData( App::Library::Preset::Representations::SES );
+
 		LIBRARY_SYSTEM().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
 		LIBRARY_SYSTEM().load<Library::Preset::RenderSettings>( Filesystem::getEffectsDir() );
 

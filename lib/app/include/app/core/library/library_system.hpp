@@ -11,10 +11,11 @@ namespace VTX::App::Core::Library
 	{
 	  public:
 		template<typename P>
-		void load( const FilePath & p_path )
+		inline Library<P> * load( const FilePath & p_path )
 		{
 			assert( not _libraries.has<Library<P>>() );
 			_libraries.create<Library<P>>( p_path );
+			return getLibrary<P>();
 		}
 
 		template<typename P>

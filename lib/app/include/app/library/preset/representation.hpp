@@ -108,6 +108,95 @@ namespace VTX::App::Library::Preset
 			getCallback<S, T>()( value );
 		}
 	};
+
+	namespace Representations
+	{
+		inline const VTX::Core::Struct::Representation STICKS { // Sphere.
+																false,
+																RADIUS_SPHERE_FIXED_DEFAULT,
+																RADIUS_SPHERE_ADD_DEFAULT,
+																true,
+																// Cylinder.
+																true,
+																0.15f,
+																false,
+																// Ribbon.
+																false,
+																false,
+																// SES.
+																false,
+																SES_PROBE_RADIUS_DEFAULT
+		};
+
+		inline const VTX::Core::Struct::Representation BALLS_AND_STICKS { // Sphere.
+																		  true,
+																		  0.4f,
+																		  RADIUS_SPHERE_ADD_DEFAULT,
+																		  true,
+																		  // Cylinder.
+																		  true,
+																		  0.15f,
+																		  false,
+																		  // Ribbon.
+																		  false,
+																		  false,
+																		  // SES.
+																		  false,
+																		  SES_PROBE_RADIUS_DEFAULT
+		};
+
+		inline const VTX::Core::Struct::Representation VAN_DER_WAALS { // Sphere.
+																	   true,
+																	   RADIUS_SPHERE_FIXED_DEFAULT,
+																	   RADIUS_SPHERE_ADD_DEFAULT,
+																	   false,
+																	   // Cylinder.
+																	   false,
+																	   RADIUS_CYLINDER_DEFAULT,
+																	   false,
+																	   // Ribbon.
+																	   false,
+																	   false,
+																	   // SES.
+																	   false,
+																	   SES_PROBE_RADIUS_DEFAULT
+		};
+
+		inline const VTX::Core::Struct::Representation RIBBONS { // Sphere.
+																 false,
+																 RADIUS_SPHERE_FIXED_DEFAULT,
+																 RADIUS_SPHERE_ADD_DEFAULT,
+																 true,
+																 // Cylinder.
+																 false,
+																 RADIUS_CYLINDER_DEFAULT,
+																 false,
+																 // Ribbon.
+																 true,
+																 true,
+																 // SES.
+																 false,
+																 SES_PROBE_RADIUS_DEFAULT
+		};
+
+		inline const VTX::Core::Struct::Representation SES { // Sphere.
+															 false,
+															 RADIUS_SPHERE_FIXED_DEFAULT,
+															 RADIUS_SPHERE_ADD_DEFAULT,
+															 false,
+															 // Cylinder.
+															 false,
+															 RADIUS_CYLINDER_DEFAULT,
+															 false,
+															 // Ribbon.
+															 false,
+															 false,
+															 // SES.
+															 true,
+															 SES_PROBE_RADIUS_DEFAULT
+		};
+	} // namespace Representations
+
 } // namespace VTX::App::Library::Preset
 
 #endif
