@@ -1,9 +1,9 @@
 #ifndef __VTX_RENDERER_RENDERER__
 #define __VTX_RENDERER_RENDERER__
 
-#undef WITH_CUDA
+// #undef VTX_CUDA_ENABLED
 
-#ifdef WITH_CUDA
+#ifdef VTX_CUDA_ENABLED
 #include "bcs/sesdf/sesdf.hpp"
 #endif
 #include "caches.hpp"
@@ -212,21 +212,21 @@ namespace VTX::Renderer
 		Draw::Range drawRangeSESSegments;
 		*/
 
-#ifdef WITH_CUDA
+#ifdef VTX_CUDA_ENABLED
 		std::unique_ptr<bcs::Sesdf> _sesData;
 		bcs::sesdf::SesdfGraphics	_sesSurface {};
 		GLuint						_sesVao		   = GL_INVALID_VALUE;
 		GLuint						_sesSegmentVao = GL_INVALID_VALUE;
 		GLuint						_sesCircleVao  = GL_INVALID_VALUE;
 		GLuint						_sesConvexVao  = GL_INVALID_VALUE;
+#endif
 		Context::GL::ProgramManager _pm
 			= Context::GL::ProgramManager( VTX::Util::Filesystem::getExecutableDir() / "shaders" );
 		Context::GL::Program * _sesProgramConcave;
 		Context::GL::Program * _sesProgramSegment;
 		Context::GL::Program * _sesProgramCircle;
 		Context::GL::Program * _sesProgramConvex;
-
-#endif
+		void				   _createSes( Proxy::System & p_proxy );
 
 		/**
 		 * @brief Callback triggered when the renderering context is ready and _graph built (first time only).

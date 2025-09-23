@@ -135,7 +135,7 @@ namespace VTX::Renderer
 		drawRangeRibbons.counts.clear();
 		drawRangeRibbons.offsets.clear();
 
-#ifdef WITH_CUDA
+#ifdef VTX_CUDA_ENABLED
 		_sesData.reset();
 #endif
 	}
@@ -174,7 +174,15 @@ namespace VTX::Renderer
 		_addProxySystem( p_proxy );
 		_refreshDataSystems();
 
-#ifdef WITH_CUDA
+		if ( showSES )
+		{
+			_createSes( p_proxy );
+		}
+	}
+
+	void Renderer::_createSes( Proxy::System & p_proxy )
+	{
+#ifdef VTX_CUDA_ENABLED
 		std::vector<Vec4f> molecule( p_proxy.atomPositions->size() );
 		Util::Math::AABB   aabb;
 		// Fill molecule with atom positions and radius in the last component.
@@ -517,11 +525,24 @@ namespace VTX::Renderer
 		// Asked SES, hide all others.
 		if ( showSES )
 		{
+#ifdef VTX_CUDA_ENABLED
+			if ( not _sesData and _proxiesSystems.size() > 0 )
+			{
+				_createSes( *_proxiesSystems[ 0 ] );
+			}
+#endif
+
 			showAtoms	= false;
 			showBonds	= false;
 			showRibbons = false;
 			return;
 		}
+#ifdef VTX_CUDA_ENABLED
+		else if ( _sesData )
+		{
+			_sesData.reset();
+		}
+#endif
 
 		const bool	isSphereRadiusFixed = _proxyRepresentation->data.isRadiusSphereFixed;
 		const float cylinderRadius		= _proxyRepresentation->data.radiusCylinder;
@@ -1421,7 +1442,7 @@ namespace VTX::Renderer
 			geo->programs[ 7 ].draw.value().needRenderFunc
 				= [ this ]() { return showSESSegments && drawRangeSESSegments.counts.size() > 0; };
 				*/
-#ifdef WITH_CUDA
+#ifdef VTX_CUDA_ENABLED
 			geo->renderFunc = [ & ]()
 			{
 				constexpr auto bindBuffer = []( uint32_t bindingPoint, bcs::HandleSpan<GLuint> buffer )
@@ -1432,42 +1453,45 @@ namespace VTX::Renderer
 						);
 				};
 
-				bindBuffer( 1, _sesSurface.atoms );
-				bindBuffer( 2, _sesSurface.segmentPatches );
-				bindBuffer( 3, _sesSurface.concavePatchesPosition );
-				bindBuffer( 4, _sesSurface.concavePatchesId );
-				bindBuffer( 5, _sesSurface.concavePatchesNeighbors );
-				bindBuffer( 6, _sesSurface.sectors );
-
-				if ( _sesSurface.concavePatchNb > 0 )
+				if ( _sesData )
 				{
-					_sesProgramConcave->use();
-					glBindVertexArray( _sesVao );
-					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.concavePatchNb ) );
-				}
+					bindBuffer( 1, _sesSurface.atoms );
+					bindBuffer( 2, _sesSurface.segmentPatches );
+					bindBuffer( 3, _sesSurface.concavePatchesPosition );
+					bindBuffer( 4, _sesSurface.concavePatchesId );
+					bindBuffer( 5, _sesSurface.concavePatchesNeighbors );
+					bindBuffer( 6, _sesSurface.sectors );
 
-				if ( _sesSurface.circlePatchNb )
-				{
-					_sesProgramCircle->use();
-					glBindVertexArray( _sesCircleVao );
-					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.circlePatchNb ) );
-				}
+					if ( _sesSurface.concavePatchNb > 0 )
+					{
+						_sesProgramConcave->use();
+						glBindVertexArray( _sesVao );
+						glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.concavePatchNb ) );
+					}
 
-				if ( _sesSurface.convexPatchNb > 0 )
-				{
-					_sesProgramConvex->use();
-					glBindVertexArray( _sesConvexVao );
-					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.convexPatchNb ) );
-				}
+					if ( _sesSurface.circlePatchNb )
+					{
+						_sesProgramCircle->use();
+						glBindVertexArray( _sesCircleVao );
+						glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.circlePatchNb ) );
+					}
 
-				if ( _sesSurface.segmentPatchNb > 0 )
-				{
-					_sesProgramSegment->use();
-					glBindVertexArray( _sesSegmentVao );
-					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.segmentPatchNb ) );
-				}
+					if ( _sesSurface.convexPatchNb > 0 )
+					{
+						_sesProgramConvex->use();
+						glBindVertexArray( _sesConvexVao );
+						glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.convexPatchNb ) );
+					}
 
-				glBindVertexArray( 0 );
+					if ( _sesSurface.segmentPatchNb > 0 )
+					{
+						_sesProgramSegment->use();
+						glBindVertexArray( _sesSegmentVao );
+						glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.segmentPatchNb ) );
+					}
+
+					glBindVertexArray( 0 );
+				}
 			};
 #endif
 		}
