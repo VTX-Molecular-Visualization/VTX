@@ -43,7 +43,15 @@ namespace VTX::PythonBinding
 			PyConfig_SetString( &config, &config.home, p_pythonHomePath.c_str() );
 			PyConfig_SetString( &config, &config.prefix, p_pythonHomePath.c_str() );
 			std::wstring execDirPath = VTX::Util::Filesystem::getExecutableDir().wstring();
-			PyConfig_SetString( &config, &config.exec_prefix, platlibdir.c_str() );
+			PyConfig_SetString( &config, &config.exec_prefix, p_pythonHomePath.c_str() );
+
+			VTX::FilePath python39Path = VTX::FilePath( p_pythonHomePath ) / "python39.zip";
+			std::wstring  python39Str( python39Path.wstring() );
+			PyWideStringList_Append( &config.module_search_paths, python39Str.c_str() );
+			if ( std::filesystem::exists( python39Path ) )
+				VTX_DEBUG( "zip file : <{}> does exist.", python39Path.string() );
+			else
+				VTX_ERROR( "zip file : <{}> does not exist !", python39Path.string() );
 
 			// Add the build directory to module search paths so Python can find python39.zip
 			// The build directory is the parent of external/python where python39.zip is located
@@ -51,9 +59,18 @@ namespace VTX::PythonBinding
 			// PyWideStringList_Append( &config.module_search_paths, platlibdir.c_str() );
 
 			// Py_SetPythonHome( p_pythonHomePath.data() );
-			pybind11::scoped_interpreter interpretor( &config );
+			std::optional<pybind11::scoped_interpreter> interpetor;
+			try
+			{
+				interpetor.emplace( &config );
+			}
+			catch ( std::exception & e )
+			{
+				VTX_ERROR( "Interpetor failed to initialize with message : <{}>", e.what() );
+				throw VTX::LibException( "Error in python lib : <{}>", e.what() );
+			}
 			PyConfig_Clear( &config );
-			return interpretor;
+			return std::move( interpetor.value() );
 		}
 	} // namespace
 	struct Interpretor::Impl

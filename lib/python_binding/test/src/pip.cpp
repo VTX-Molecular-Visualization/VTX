@@ -6,8 +6,15 @@
 #include <python_binding/interpretor.hpp>
 #include <util/filesystem.hpp>
 
-TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][pip]" )
+TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][binding][pip]" )
 {
+#ifdef DEBUG
+	/**
+	 * @brief This test is bound to fail in debug as numpy will look for files whom's name is declined in debug mode.
+	 * Consequently, the lookout will fail and so the test.
+	 */
+	return;
+#endif // DEBUG
 	using namespace VTX;
 	App::Test::Util::PythonFixture f;
 
@@ -18,21 +25,23 @@ TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][pip]" 
 	interpretor.runCommand( "import sys" );
 	interpretor.runCommand( "print( sys.path)" );
 	interpretor.runCommand( "import subprocess" );
-#ifdef DEBUG
-	std::string pythonPath = ( pythonHome / "python_d.exe" ).string();
-#else
-	std::string pythonPath = ( pythonHome / "python.exe" ).string();
 
-#endif // DEBUG
-	size_t backslashPos = pythonPath.find( "\\" );
+#ifdef _WIN32
+	std::string pythonPath	 = ( pythonHome / "python.exe" ).string();
+	size_t		backslashPos = pythonPath.find( "\\" );
 	while ( backslashPos != std::string::npos )
 	{
 		pythonPath.replace( backslashPos, 1, "\\\\" );
 		backslashPos = pythonPath.find( "\\", backslashPos + 2 );
 	}
+#else
+	std::string pythonPath = ( pythonHome / "bin" / "python" ).string();
+#endif // _WIN32
 
-	interpretor.runCommand( fmt::format( "subprocess.run('{} -m pip install numpy')", pythonPath ) );
+	interpretor.runCommand( fmt::format( "subprocess.run('{} -m pip install numpy', shell=True)", pythonPath ) );
 	// interpretor.runCommand( "import pip" );
 	// interpretor.runCommand( "pip.main(['install', 'numpy'])" );
 	interpretor.runCommand( "import numpy" );
+	std::string npArray = interpretor.runCommand( "numpy.array([1,2,3])" );
+	CHECK( npArray == "array([1, 2, 3])" );
 }

@@ -11,6 +11,10 @@ target_sources(vtx_python_binding
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
 add_executable(vtx_python_binding_test "${SOURCES};${SOURCES_TEST}")
+if (UNIX)
+	# This allow python submodules to find python symbols on unix, as explained here : https://stackoverflow.com/questions/67891197/ctypes-cpython-39-x86-64-linux-gnu-so-undefined-symbol-pyfloat-type-in-embedd
+	target_link_options(vtx_python_binding_test PUBLIC -Xlinker -export-dynamic)
+endif()
 target_include_directories(vtx_python_binding_test PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include")
 
 vtx_configure_target(vtx_python_binding_test)
