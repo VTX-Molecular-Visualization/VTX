@@ -4,6 +4,7 @@
 #include "app/application/_fwd.hpp"
 #include "app/tool/base_tool.hpp"
 #include "args.hpp"
+#include <entt/entity/registry.hpp>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -29,7 +30,7 @@ namespace VTX::App
 	class VTXApp
 	{
 	  public:
-		VTXApp( const Args & p_args ) { _args = p_args; }
+		VTXApp( const Args & p_args );
 		virtual ~VTXApp() = default;
 
 		/**
@@ -88,6 +89,8 @@ namespace VTX::App
 	  private:
 		inline static Args				   _args;
 		inline static Application::Scene * _scene;
+
+		entt::registry _registry;
 
 		static void _handleArgs( const Args & p_args );
 		static void _update( const float p_deltaTime, const float p_elapsedTime );

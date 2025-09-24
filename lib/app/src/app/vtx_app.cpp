@@ -13,6 +13,7 @@
 #include "app/core/renderer/renderer_system.hpp"
 #include "app/core/threading/base_thread.hpp"
 #include "app/core/threading/threading_system.hpp"
+#include "app/ecs.hpp"
 #include "app/entity/scene.hpp"
 #include "app/filesystem.hpp"
 #include "app/library/preset/color_layout.hpp"
@@ -38,6 +39,12 @@
 
 namespace VTX::App
 {
+
+	VTXApp::VTXApp( const Args & p_args )
+	{
+		_args = p_args;
+		ECS::setRegistry( _registry );
+	}
 
 	void VTXApp::init()
 	{
