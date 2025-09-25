@@ -10,6 +10,25 @@ namespace VTX::App::ECS
 
 	void	   setRegistry( Registry & );
 	Registry & registry() noexcept;
+
+	template<class T, class... Args>
+	T & setCtx( Args &&... p_args )
+	{
+		return registry().ctx().emplace_or_replace<T>( std::forward<Args>( p_args )... );
+	}
+
+	template<class T>
+	T & getCtx()
+	{
+		return registry().ctx().get<T>();
+	}
+
+	template<class T>
+	bool hasCtx()
+	{
+		return registry().ctx().contains<T>();
+	}
+
 } // namespace VTX::App::ECS
 
 namespace VTX::App
