@@ -14,7 +14,7 @@ namespace VTX::App
 			{
 				Args args( { ARG_NO_GRAPHICS, ARG_NO_UPDATE } );
 				_app = std::make_unique<APP>( args );
-				APP::init();
+				_app->init();
 			}
 
 			_app->start();

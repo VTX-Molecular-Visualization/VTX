@@ -36,7 +36,7 @@ namespace VTX::App
 		/**
 		 * @brief Initialize the application.
 		 */
-		static void init();
+		void init();
 
 		/**
 		 * @brief Start the application.
@@ -54,12 +54,12 @@ namespace VTX::App
 		/**
 		 * @brief Stop the application.
 		 */
-		static void stop();
+		void stop();
 
-		inline static void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
+		inline void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
 
-		inline static const Args & getArgs() { return _args; }
-		// TODO: get entity from ecs directly?
+		// inline const Args & getArgs() { return _args; }
+		//  TODO: get entity from ecs directly?
 		inline static Application::Scene & getScene() { return *_scene; }
 
 		// Main loop calllbacks.
@@ -87,7 +87,7 @@ namespace VTX::App
 		inline static std::vector<Tool::BaseTool *> _tools;
 
 	  private:
-		inline static Args				   _args;
+		// inline static Args				   _args;
 		inline static Application::Scene * _scene;
 
 		entt::registry _registry;

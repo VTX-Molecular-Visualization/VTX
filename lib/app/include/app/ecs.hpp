@@ -14,7 +14,7 @@ namespace VTX::App::ECS
 	template<class T, class... Args>
 	T & setCtx( Args &&... p_args )
 	{
-		return registry().ctx().emplace_or_replace<T>( std::forward<Args>( p_args )... );
+		return registry().ctx().emplace<T>( std::forward<Args>( p_args )... );
 	}
 
 	template<class T>

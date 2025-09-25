@@ -42,8 +42,8 @@ namespace VTX::App
 
 	VTXApp::VTXApp( const Args & p_args )
 	{
-		_args = p_args;
 		ECS::setRegistry( _registry );
+		ECS::setCtx<Args>( p_args );
 	}
 
 	void VTXApp::init()
@@ -94,12 +94,12 @@ namespace VTX::App
 
 	void VTXApp::start()
 	{
-		VTX_INFO( "Starting application: {}", _args.toString() );
+		VTX_INFO( "Starting application: {}", ECS::getCtx<Args>().toString() );
 
 		// Build the renderer (graphic api backend context ready).
 		auto & renderer = RENDERER_SYSTEM();
 
-		if ( _args.has( ARG_NO_GRAPHICS ) )
+		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) )
 		{
 			VTX_WARNING( "No graphics" );
 			renderer.setDefault();
@@ -132,12 +132,12 @@ namespace VTX::App
 		// Updater.
 		UPDATER().onUpdateAvailable += []( const uint, const uint, const uint ) { UPDATER().downloadUpdate(); };
 
-		if ( not _args.has( ARG_NO_UPDATE ) )
+		if ( not ECS::getCtx<Args>().has( ARG_NO_UPDATE ) )
 		{
 			// UPDATER().checkForUpdate();
 		}
 
-		_handleArgs( _args );
+		//_handleArgs( _args );
 	}
 
 	void VTXApp::update( const float p_deltaTime, const float p_elapsedTime )
