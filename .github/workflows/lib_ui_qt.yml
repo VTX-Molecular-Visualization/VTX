@@ -47,7 +47,14 @@ jobs:
       run: |
         conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
-           
+      
+    - name: Add missing lib
+      run: |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          sudo apt-get install libnsl2
+        fi
+      shell : bash
+      
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
       run: |

@@ -7,16 +7,17 @@ import importlib.util
 
 
 
-def import_module_from_file(module_name, file_path):
+def import_module_from_file(file_path):
     file_path = str(Path(__file__).resolve().parent / file_path)
-    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    spec = importlib.util.spec_from_file_location("conanfile.py", file_path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
     
 
-python_binding_module = import_module_from_file("python_binding.py", Path("..") / "lib" / "python_binding" / "conanfile.py" )
-qt_module = import_module_from_file("python_binding.py", Path("..") / "lib" / "ui"/ "qt" / "conanfile.py" )
+python_binding_module = import_module_from_file( Path("..") / "lib" / "python_binding" / "conanfile.py" )
+qt_module = import_module_from_file( Path("..") / "lib" / "ui"/ "qt" / "conanfile.py" )
+mdprep_module = import_module_from_file( Path("..") / "tool" / "mdprep"/ "conanfile.py" )
 
 class VTXRecipe(ConanFile):
     name = "vtx"
@@ -50,10 +51,7 @@ class VTXRecipe(ConanFile):
 
     def config_options(self):   
         qt_module.config_options_qt(self)
-        
-        self.options["cpython"].with_gdbm = False # Doesn't work on windows. I'm not sure what it does.
-        self.options["cpython"].shared = True # False by default. If set to False, DLLs will be missing.
-
+        python_binding_module.config_options_cpython(self)
 
     def generate(self):
         tc = CMakeToolchain(self)        
@@ -66,13 +64,9 @@ class VTXRecipe(ConanFile):
 
 
         qt_module.generate_qt(self)
-        
-        copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "external"), os.path.join(self.build_folder, "external"))        
-        copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "data", "tools","mdprep","gromacs","top"), os.path.join(self.build_folder, "data", "tools", "mdprep", "gromacs", "top" ))        
-
-        
-
         python_binding_module.doPythonCopies(self)
+        mdprep_module.copy_gromacs_stuff(self)
+
         
     def layout(self):
         cmake_layout(self)

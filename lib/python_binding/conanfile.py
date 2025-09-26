@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 def executable_folder(p_conanFile: ConanFile):
-    if is_msvc(p_conanFile):
+    if Path(p_conanFile.build_folder).name == "build":
         return str(Path(p_conanFile.build_folder) / p_conanFile.settings.get_safe("build_type", default="Release"))
     else:
         return p_conanFile.build_folder
@@ -39,20 +39,30 @@ def create_python39_zip(p_conanFile: ConanFile, python_lib_path, zip_destination
 
 
 def doPythonCopies(p_conanFile: ConanFile):
+    p_conanFile.output.info("Doing python-related copy.")
     if p_conanFile.settings.os == "Windows":
+        p_conanFile.output.info("Copying from <{}> to <{}>".format(
+            os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin")
+            ,  os.path.join(executable_folder(p_conanFile), "external","python")
+        ))
+        
         for subdir in ("DLLs","Lib"):
             copy(p_conanFile, "*", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin", subdir), os.path.join(executable_folder(p_conanFile), "external","python",subdir))  
         copy(p_conanFile, "*.exe", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"), os.path.join(executable_folder(p_conanFile), "external","python"))  
         copy(p_conanFile, "*.dll", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"), os.path.join(executable_folder(p_conanFile), "external","python"))  
         copy(p_conanFile, "*.dll", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"), os.path.join(executable_folder(p_conanFile)))        
         # Create python39.zip from the Python standard library
-        python_lib_path = os.path.join(p_conanFile.dependencies["cpython"].package_folder, "lib")
+        python_lib_path = os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin", "lib")
         zip_destination = os.path.join(executable_folder(p_conanFile), "external", "python", "python39.zip")
         create_python39_zip(p_conanFile, python_lib_path, zip_destination)
     else:
         for subdir in ("bin","lib"):
             copy(p_conanFile, "*", os.path.join(p_conanFile.dependencies["cpython"].package_folder, subdir), os.path.join(executable_folder(p_conanFile), "external","python",subdir))  
 
+
+def config_options_cpython(p_conanFile: ConanFile):
+    p_conanFile.options["cpython"].with_gdbm = False # Doesn't work on windows. I'm not sure what it does.
+    p_conanFile.options["cpython"].shared = p_conanFile.settings.os == "Windows" # False by default. If set to False, DLLs will be missing.
 
 
 class VTXPythonBindingRecipe(ConanFile):    
@@ -66,9 +76,7 @@ class VTXPythonBindingRecipe(ConanFile):
     
     generators = "CMakeDeps"
     
-    exports_sources = "CMakeLists.txt", "python_binding.py", "src/*", "module/*", "include/*", "cmake/*", "python_script/*", "test/*"
-    
-    _former_LD_LIBRARY_PATH = None
+    exports_sources = "CMakeLists.txt", "src/*", "module/*", "include/*", "cmake/*", "python_script/*", "test/*"
         
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -81,9 +89,8 @@ class VTXPythonBindingRecipe(ConanFile):
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
-
-        self.options["cpython"].with_gdbm = False # Doesn't work on windows. I'm not sure what it does.
-        self.options["cpython"].shared = self.settings.os == "Windows" # False by default. If set to False, DLLs will be missing.
+        
+        config_options_cpython(self)
                 
     def generate(self):
         tc = CMakeToolchain(self)
