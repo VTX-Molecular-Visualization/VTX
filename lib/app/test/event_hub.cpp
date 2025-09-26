@@ -89,4 +89,27 @@ TEST_CASE( "VTX_APP - EVENT HUB", "[unit]" )
 
 	// Equeued event processed.
 	CHECK( value == 16 );
+
+	{
+		EventHub::ScopedConnection c = hub.connect<TestEvent, &ClassTest::memberFunction>( classTest );
+		hub.trigger<TestEvent>();
+
+		// 16+2.
+		CHECK( value == 18 );
+	}
+
+	hub.trigger<TestEvent>();
+
+	// 18+1 (classTest disconnected when out of scope).
+	CHECK( value == 19 );
+
+	hub.connect<TestEvent, &freeFunction>();
+	hub.connect<TestEvent, &freeFunction>();
+	hub.connect<TestEvent, &freeFunction>();
+	hub.connect<TestEvent, &freeFunction>();
+	hub.connect<TestEvent, &freeFunction>();
+	hub.trigger<TestEvent>();
+
+	// Cant connect multiple times.
+	CHECK( value == 20 );
 }

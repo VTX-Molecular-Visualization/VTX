@@ -149,6 +149,7 @@ namespace VTX::App
 		 */
 		void sweepOwned()
 		{
+			// TOFIX: not deleted.
 			_owned.erase(
 				std::remove_if( _owned.begin(), _owned.end(), []( const Owned & p_o ) { return not p_o.connexion; } ),
 				_owned.end()

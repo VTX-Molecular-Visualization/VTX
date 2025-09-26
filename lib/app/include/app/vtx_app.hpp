@@ -62,9 +62,6 @@ namespace VTX::App
 		//  TODO: get entity from ecs directly?
 		inline static Application::Scene & getScene() { return *_scene; }
 
-		// Main loop calllbacks.
-		inline static Util::Callback<> onStart;
-
 		// inline static Util::Callback<float> onPreUpdate;
 		inline static Util::Callback<float, float> onUpdate;
 		// inline static Util::Callback<float> onLateUpdate;

@@ -15,6 +15,8 @@
 #include "app/core/threading/threading_system.hpp"
 #include "app/ecs.hpp"
 #include "app/entity/scene.hpp"
+#include "app/event_hub.hpp"
+#include "app/events.hpp"
 #include "app/filesystem.hpp"
 #include "app/library/preset/color_layout.hpp"
 #include "app/library/preset/render_settings.hpp"
@@ -44,6 +46,7 @@ namespace VTX::App
 	{
 		ECS::setRegistry( _registry );
 		ECS::setCtx<Args>( p_args );
+		ECS::setCtx<EventHub>();
 	}
 
 	void VTXApp::init()
@@ -122,8 +125,8 @@ namespace VTX::App
 		// Internal::initSettings( App::SETTINGS() );
 
 		ACTION_SYSTEM().execute<Action::Mode::SetMode<Mode::Visualization>>();
+		HUB().trigger<Events::ApplicationStarted>();
 
-		onStart();
 		for ( Tool::BaseTool * const tool : _tools )
 		{
 			tool->onAppStart();
