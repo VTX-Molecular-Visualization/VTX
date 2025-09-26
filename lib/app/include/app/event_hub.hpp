@@ -93,7 +93,7 @@ namespace VTX::App
 		 * @brief Trigger an event immediately.
 		 */
 		template<typename Ev>
-		void trigger( Ev p_ev = {} )
+		void trigger( Ev p_ev )
 		{
 			_bus.trigger<Ev>( std::move( p_ev ) );
 		}
@@ -104,14 +104,14 @@ namespace VTX::App
 		template<typename Ev, typename... Args>
 		void trigger( Args &&... p_args )
 		{
-			_bus.trigger<Ev>( std::forward<Args>( p_args )... );
+			_bus.trigger<Ev>( Ev( p_args... ) );
 		}
 
 		/**
 		 * @brief Enqueue an event to be triggered at the next update.
 		 */
 		template<typename Ev>
-		void enqueue( Ev p_ev = {} )
+		void enqueue( Ev p_ev )
 		{
 			_bus.enqueue<Ev>( std::move( p_ev ) );
 		}
@@ -122,7 +122,7 @@ namespace VTX::App
 		template<typename Ev, typename... Args>
 		void enqueue( Args &&... p_args )
 		{
-			_bus.enqueue<Ev>( std::forward<Args>( p_args )... );
+			_bus.enqueue<Ev>( Ev( p_args... ) );
 		}
 
 		/**
