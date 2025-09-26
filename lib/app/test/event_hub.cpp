@@ -1,0 +1,92 @@
+#include "app/event_hub.hpp"
+#include <catch2/benchmark/catch_benchmark.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <util/logger.hpp>
+
+int value = 0;
+
+struct TestEvent
+{
+};
+
+class ClassTest
+{
+  public:
+	void memberFunction( TestEvent & p_e ) { value++; }
+};
+
+void freeFunction( TestEvent & p_e ) { value++; }
+
+TEST_CASE( "VTX_APP - EVENT HUB", "[unit]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+
+	VTX_INFO( "VTX_APP - EVENT HUB" );
+
+	EventHub hub;
+
+	// Free function.
+	auto conn = hub.connect<TestEvent, &freeFunction>();
+
+	// Local method.
+	ClassTest classTest;
+	hub.connect<TestEvent, &ClassTest::memberFunction>( classTest );
+
+	// Lambda not owned by hub.
+	auto lambda = [ & ]( TestEvent & p_e ) { value++; };
+	hub.connect<TestEvent>( lambda );
+
+	CHECK( hub.ownedConnectionCount() == 0 );
+
+	// Owned lambda.
+	hub.connect<TestEvent>( [ & ]( TestEvent & p_e ) { value++; } );
+
+	// One shot owned lambda.
+	hub.connectOnce<TestEvent>( [ & ]( TestEvent & p_e ) { value++; } );
+
+	// Owning lambdas.
+	CHECK( hub.ownedConnectionCount() == 2 );
+
+	// Trigger event.
+	TestEvent event;
+	hub.trigger<TestEvent>( event );
+
+	CHECK( value == 5 );
+
+	hub.trigger<TestEvent>();
+
+	// 5+4 (connectOnce disconnected).
+	CHECK( value == 9 );
+
+	hub.disconnect( conn );
+	hub.trigger<TestEvent>();
+
+	// 9+3 (free function disconnected).
+	CHECK( value == 12 );
+
+	hub.disconnectAllOf( classTest );
+	hub.trigger<TestEvent>();
+
+	// 12+2 (classTest disconnected).
+	CHECK( value == 14 );
+
+	hub.disconnectAllListenersOf<TestEvent>();
+	hub.trigger<TestEvent>();
+
+	// 14+0 (all disconnected).
+
+	CHECK( value == 14 );
+
+	hub.connect<TestEvent, &freeFunction>();
+	hub.enqueue<TestEvent>( event );
+	hub.enqueue<TestEvent>();
+
+	// Nothing.
+	CHECK( value == 14 );
+
+	hub.update();
+
+	// Equeued event processed.
+	CHECK( value == 16 );
+}
