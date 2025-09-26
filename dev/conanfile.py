@@ -3,57 +3,20 @@ from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMake, CMakeToolchain
 from conan.tools.files import copy
 from pathlib import Path
+import importlib.util
 
 
-"""
-def executable_folder(p_conanFile: ConanFile):
-    if is_msvc(p_conanFile):
-        return str(Path(self.build_folder) / p_conanFile.settings.get_safe("build_type", default="Release"))
-    else:
-        return self.build_folder
 
+def import_module_from_file(module_name, file_path):
+    file_path = str(Path(__file__).resolve().parent / file_path)
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+    
 
-def create_python39_zip(p_conanFile: ConanFile, python_lib_path, zip_destination):
-    import zipfile
-    # Create python39.zip from the Python standard library
-    p_conanFile.output.info(f"Creating python39.zip from {python_lib_path} to {zip_destination}")
-
-    with zipfile.ZipFile(zip_destination, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        lib_path = Path(python_lib_path)
-        if lib_path.exists():
-            for file_path in lib_path.rglob('*.py'):
-                # Calculate the archive name (relative path from lib directory)
-                arcname = file_path.relative_to(lib_path)
-                zipf.write(file_path, arcname)
-
-            # Also include .pyc files if they exist
-            for file_path in lib_path.rglob('*.pyc'):
-                arcname = file_path.relative_to(lib_path)
-                zipf.write(file_path, arcname)
-
-            p_conanFile.output.info(f"Successfully created python39.zip with {len(zipf.namelist())} files")
-        else:
-            p_conanFile.output.warning(f"Python lib path {python_lib_path} does not exist, skipping python39.zip creation")
-
-
-def doPythonCopies(p_conanFile: ConanFile):
-    if p_conanFile.settings.os == "Windows":
-        for subdir in ("DLLs","Lib"):
-            copy(p_conanFile, "*", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin", subdir), os.path.join(p_conanFile.build_folder, "external","python",subdir))  
-        copy(p_conanFile, "*.exe", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"), os.path.join(p_conanFile.build_folder, "external","python"))  
-        copy(p_conanFile, "*.dll", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"), os.path.join(p_conanFile.build_folder, "external","python"))  
-        copy(p_conanFile, "*.dll", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"), os.path.join(p_conanFile.build_folder))        
-        # Create python39.zip from the Python standard library
-        python_lib_path = os.path.join(p_conanFile.dependencies["cpython"].package_folder, "lib")
-        zip_destination = os.path.join(p_conanFile.build_folder, "external", "python", "python39.zip")
-        create_python39_zip(p_conanFile, python_lib_path, zip_destination)
-    else:
-        for subdir in ("bin","lib"):
-            copy(p_conanFile, "*", os.path.join(p_conanFile.dependencies["cpython"].package_folder, subdir), os.path.join(p_conanFile.build_folder, "external","python",subdir))  
-
-"""
-
-
+python_binding_module = import_module_from_file("python_binding.py", Path("..") / "lib" / "python_binding" / "conanfile.py" )
+qt_module = import_module_from_file("python_binding.py", Path("..") / "lib" / "ui"/ "qt" / "conanfile.py" )
 
 class VTXRecipe(ConanFile):
     name = "vtx"
@@ -85,95 +48,9 @@ class VTXRecipe(ConanFile):
         self.requires("platformfolders/4.3.0")
         self.requires("cpython/3.9.19") # v >= 3.10 not working with msvc compiler so far
 
-    def config_options(self):        
-        # Package options.
-        self.options["qt"].shared = True
-        self.options["qt"].opengl = "desktop"
-        self.options["qt"].with_vulkan = False
-        self.options["qt"].openssl = True
-        self.options["qt"].with_pcre2 = True
-        self.options["qt"].with_glib = False
-        self.options["qt"].with_doubleconversion = True
-        self.options["qt"].with_freetype = True
-        self.options["qt"].with_fontconfig = False
-        self.options["qt"].with_icu = False
-        self.options["qt"].with_harfbuzz = False
-        self.options["qt"].with_libjpeg = "libjpeg"
-        self.options["qt"].with_libpng = True
-        self.options["qt"].with_sqlite3 = False
-        self.options["qt"].with_mysql = False
-        self.options["qt"].with_pq = False
-        self.options["qt"].with_odbc = False
-        self.options["qt"].with_zstd = False
-        self.options["qt"].with_brotli = False
-        self.options["qt"].with_dbus = False
-        self.options["qt"].with_libalsa = False
-        self.options["qt"].with_openal = False
-        self.options["qt"].with_gstreamer = False
-        self.options["qt"].with_pulseaudio = False
-        self.options["qt"].with_gssapi = False
-        self.options["qt"].with_md4c = False
-        self.options["qt"].with_x11 = False
-        self.options["qt"].with_egl = False
+    def config_options(self):   
+        qt_module.config_options_qt(self)
         
-        self.options["qt"].gui = True
-        self.options["qt"].widgets = True
-        
-        self.options["qt"].device: None
-        self.options["qt"].cross_compile: None
-        self.options["qt"].sysroot: None
-        #self.options["qt"].multiconfiguration: True
-        self.options["qt"].disabled_features = ""
-        
-        # Qt modules.        
-        self.options["qt"].essential_modules = False;
-        self.options["qt"].addon_modules = False;
-        self.options["qt"].deprecated_modules = False;
-        self.options["qt"].preview_modules = False;
-        
-        self.options["qt"].qtsvg = False
-        self.options["qt"].qtdeclarative = False
-        self.options["qt"].qttools = False
-        self.options["qt"].qttranslations = False
-        self.options["qt"].qtdoc = False
-        self.options["qt"].qtwayland = False
-        self.options["qt"].qtquickcontrols2 = False
-        self.options["qt"].qtquicktimeline = False
-        self.options["qt"].qtquick3d = False
-        self.options["qt"].qtshadertools = False
-        self.options["qt"].qt5compat = False
-        self.options["qt"].qtactiveqt = False
-        self.options["qt"].qtcharts = False
-        self.options["qt"].qtdatavis3d = False
-        self.options["qt"].qtlottie = False
-        self.options["qt"].qtscxml = False
-        self.options["qt"].qtvirtualkeyboard = False
-        self.options["qt"].qt3d = False
-        self.options["qt"].qtimageformats = True
-        self.options["qt"].qtnetworkauth = False
-        self.options["qt"].qtcoap = False
-        self.options["qt"].qtmqtt = False
-        self.options["qt"].qtopcua = False
-        self.options["qt"].qtmultimedia = False
-        self.options["qt"].qtlocation = False
-        self.options["qt"].qtsensors = False
-        self.options["qt"].qtconnectivity = False
-        self.options["qt"].qtserialbus = False
-        self.options["qt"].qtserialport = False
-        self.options["qt"].qtwebsockets = False
-        self.options["qt"].qtwebchannel = False
-        self.options["qt"].qtwebengine = False
-        self.options["qt"].qtwebview = False
-        self.options["qt"].qtremoteobjects = False
-        self.options["qt"].qtpositioning = False
-        self.options["qt"].qtlanguageserver = False
-        self.options["qt"].qtspeech = False
-        self.options["qt"].qthttpserver = False
-        self.options["qt"].qtquick3dphysics = False
-        self.options["qt"].qtgrpc = False
-        self.options["qt"].qtquickeffectmaker = False
-        self.options["qt"].qtgraphs = False
-
         self.options["cpython"].with_gdbm = False # Doesn't work on windows. I'm not sure what it does.
         self.options["cpython"].shared = True # False by default. If set to False, DLLs will be missing.
 
@@ -187,31 +64,13 @@ class VTXRecipe(ConanFile):
         copy(self, "*opengl3*", os.path.join(self.dependencies["imgui"].package_folder,
             "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
 
-        # Copy Qt plugins and DLLs to the build folder.
-        qtBinDir = self.dependencies["qt"].cpp_info.bindir
-        qtPluginsDir = os.path.join(self.dependencies["qt"].package_folder, "plugins")
-        destDir = os.path.join(self.build_folder, self.cpp.build.libdirs[0])
 
-        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll" ]
-        for file in binFiles:
-            copy(self, file, qtBinDir, destDir)
-
-        pluginsFolers = [ "imageformats", "platforms", "styles", "tls" ]
-        for folder in pluginsFolers:
-            copy(self, "*.dll", os.path.join(qtPluginsDir, folder), os.path.join(destDir, folder))
+        qt_module.generate_qt(self)
         
         copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "external"), os.path.join(self.build_folder, "external"))        
         copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "data", "tools","mdprep","gromacs","top"), os.path.join(self.build_folder, "data", "tools", "mdprep", "gromacs", "top" ))        
 
-        import importlib.util
-
-        def import_module_from_file(module_name, file_path):
-            spec = importlib.util.spec_from_file_location(module_name, file_path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            return module
         
-        python_binding_module = import_module_from_file("python_binding.py",str(Path(__file__).resolve().parent / ".." / "lib" / "python_binding" / "conanfile.py" ))
 
         python_binding_module.doPythonCopies(self)
         
