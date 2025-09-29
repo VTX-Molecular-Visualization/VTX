@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_PIPELINE__
 #define __VTX_APP_PIPELINE__
 
-#include "app/event_hub.hpp"
+#include "app/ecs.hpp"
 #include "app/events.hpp"
 #include <util/logger.hpp>
 
@@ -12,7 +12,7 @@ namespace VTX::App
 	{
 		inline void update( const float p_delta, const float p_elapsed )
 		{
-			EventHub & hub = HUB();
+			Util::EventHub & hub = HUB();
 			hub.trigger<Events::FrameStarted>();
 			hub.trigger<Events::PreUpdate>( p_delta, p_elapsed );
 			hub.trigger<Events::Update>( p_delta, p_elapsed );

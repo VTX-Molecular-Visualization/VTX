@@ -2,7 +2,6 @@
 #include "app/core/renderer/renderer_system.hpp"
 #include "ui/qt/application.hpp"
 #include <app/action/application.hpp>
-#include <app/event_hub.hpp>
 #include <app/events.hpp>
 
 namespace VTX::UI::QT::Widget

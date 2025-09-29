@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_ECS__
 #define __VTX_APP_ECS__
 
-#include <entt/entt.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::App::ECS
 {
@@ -49,7 +49,8 @@ namespace VTX::App::ECS
 
 namespace VTX::App
 {
-	inline ECS::Registry & REG() { return ECS::registry(); }
+	inline ECS::Registry &	REG() { return ECS::registry(); }
+	inline Util::EventHub & HUB() { return ECS::getCtx<Util::EventHub>(); }
 } // namespace VTX::App
 
 #endif

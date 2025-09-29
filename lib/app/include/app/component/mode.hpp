@@ -44,9 +44,9 @@ namespace VTX::App::Component
 		Util::Callback<Hash> onModeExit;
 
 	  private:
-		Hash						 _currentHash;
-		Core::Mode::BaseMode *		 _current;
-		EventHub::ScopedConnection * _currentUpdateCallback;
+		Hash							   _currentHash;
+		Core::Mode::BaseMode *			   _current;
+		Util::EventHub::ScopedConnection * _currentUpdateCallback;
 
 		Util::Collection<std::unique_ptr<Core::Mode::BaseMode>> _modes;
 	};

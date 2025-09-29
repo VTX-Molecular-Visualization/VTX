@@ -62,7 +62,7 @@ namespace VTX::App::Component::Chemistry
 
 		System *								  _systemPtr = nullptr;
 		std::unique_ptr<Core::Player::BasePlayer> _player;
-		EventHub::Connection					  _currentUpdateCallback;
+		Util::EventHub::Connection				  _currentUpdateCallback;
 
 		const FilePath _path;
 	};

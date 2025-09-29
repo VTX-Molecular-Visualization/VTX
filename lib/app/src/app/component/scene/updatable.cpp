@@ -5,15 +5,15 @@ namespace VTX::App::Component::Scene
 {
 	Updatable::~Updatable() {}
 
-	EventHub::ScopedConnection * Updatable::addUpdateFunction( const UpdateFunction & p_callback )
+	Util::EventHub::ScopedConnection * Updatable::addUpdateFunction( const UpdateFunction & p_callback )
 	{
 		_connections.emplace_back(
-			std::make_unique<EventHub::ScopedConnection>( HUB().connect<Events::Update>( p_callback ) )
+			std::make_unique<Util::EventHub::ScopedConnection>( HUB().connect<Events::Update>( p_callback ) )
 		);
 		return _connections.back().get();
 	}
 
-	void Updatable::removeUpdateFunction( const EventHub::ScopedConnection * const p_c )
+	void Updatable::removeUpdateFunction( const Util::EventHub::ScopedConnection * const p_c )
 	{
 		auto it = std::find_if(
 			_connections.begin(), _connections.end(), [ p_c ]( auto const & uptr ) { return uptr.get() == p_c; }

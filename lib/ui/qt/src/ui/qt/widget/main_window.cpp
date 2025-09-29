@@ -21,7 +21,6 @@
 #include <QMimeData>
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
-#include <app/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {

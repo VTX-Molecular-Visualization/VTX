@@ -1,9 +1,9 @@
-#ifndef __VTX_APP_EVENT_HUB__
-#define __VTX_APP_EVENT_HUB__
+#ifndef __VTX_UTIL_EVENT_HUB__
+#define __VTX_UTIL_EVENT_HUB__
 
-#include "app/ecs.hpp"
+#include <entt/entt.hpp>
 
-namespace VTX::App
+namespace VTX::Util
 {
 	/**
 	 * @brief A centralized event management system using the EnTT library.
@@ -187,8 +187,6 @@ namespace VTX::App
 		 */
 		std::vector<Owned> _owned;
 	};
-
-	inline EventHub & HUB() { return ECS::getCtx<EventHub>(); }
-} // namespace VTX::App
+} // namespace VTX::Util
 
 #endif

@@ -18,8 +18,8 @@ namespace VTX::App::Component
 		controller->setCamera( &SCENE().getCamera() );
 
 		// Register update callback.
-		EventHub::ScopedConnection * id = addUpdateFunction( [ controller ]( const Events::Update & p_e )
-															 { controller->update( p_e.delta, p_e.elapsed ); } );
+		Util::EventHub::ScopedConnection * id = addUpdateFunction( [ controller ]( const Events::Update & p_e )
+																   { controller->update( p_e.delta, p_e.elapsed ); } );
 
 		// Save callback id.
 		_activeCallbacks.emplace( controller_hash, id );

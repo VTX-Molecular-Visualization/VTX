@@ -38,7 +38,6 @@ else()
 	target_link_libraries(vtx_app_test PRIVATE vtx_python_binding::vtx_python_binding)
 endif()
 
-target_link_libraries(vtx_app PUBLIC EnTT::EnTT)
 target_link_libraries(vtx_app_test PRIVATE vtx_app)
 target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
 

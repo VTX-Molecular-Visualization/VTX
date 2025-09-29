@@ -14,7 +14,6 @@
 #include "app/core/threading/base_thread.hpp"
 #include "app/core/threading/threading_system.hpp"
 #include "app/entity/scene.hpp"
-#include "app/event_hub.hpp"
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
 #include "app/library/preset/color_layout.hpp"
@@ -45,7 +44,7 @@ namespace VTX::App
 	{
 		ECS::setRegistry( _registry );
 		ECS::setCtx<Args>( p_args );
-		ECS::setCtx<EventHub>();
+		ECS::setCtx<Util::EventHub>();
 	}
 
 	void VTXApp::init()
