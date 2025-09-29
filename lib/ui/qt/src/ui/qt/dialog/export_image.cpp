@@ -74,6 +74,8 @@ namespace VTX::UI::QT::Dialog
 		_spinBoxHeight->setMaximum( _MAX_TEXTURE_SIZE );
 		_spinBoxHeight->setSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed );
 
+		QSignalBlocker blockerWidth( _spinBoxWidth );
+		QSignalBlocker blockerHeight( _spinBoxHeight );
 		connect( _spinBoxWidth, QOverload<int>::of( &QSpinBox::valueChanged ), this, &ExportImage::_onSize );
 		connect( _spinBoxHeight, QOverload<int>::of( &QSpinBox::valueChanged ), this, &ExportImage::_onSize );
 
@@ -202,6 +204,8 @@ namespace VTX::UI::QT::Dialog
 				close();
 			}
 		);
+
+		QTimer::singleShot( 0, this, &ExportImage::_updatePreview );
 	}
 
 	void ExportImage::_onResolution( const int p_resolutionIndex )
@@ -214,10 +218,16 @@ namespace VTX::UI::QT::Dialog
 		const auto & resolution = _RESOLUTIONS[ p_resolutionIndex - 1 ];
 
 		// Update size.
+		QSignalBlocker blockerWidth( _spinBoxWidth );
+		QSignalBlocker blockerHeight( _spinBoxHeight );
 		_spinBoxWidth->setValue( int( resolution.width ) );
 		_spinBoxHeight->setValue( int( resolution.height ) );
 
 		_comboBoxResolution->setCurrentIndex( 0 );
+
+		_updatePreview();
+
+		APP_QT::processEvents();
 
 	} // namespace VTX::UI::QT::Dialog
 
@@ -230,10 +240,13 @@ namespace VTX::UI::QT::Dialog
 		const double ratio = double( width ) / height;
 
 		_labelRatioValue->setText( QString::number( ratio, 'f', 2 ) );
+		QSignalBlocker blocker( _sliderRatio );
 		_sliderRatio->setValue( int( ratio * 10000 ) );
 
+		_updatePreview();
 		// Delay because widget sizes are not updated yet.
-		APP::onEndOfFrameOneShot += [ this ]() { _updatePreview(); };
+		// App::HUB().connectOnce<App::Events::FrameEnded>( [ this ]( const App::Events::FrameEnded & )
+		//												 { _updatePreview(); } );
 	}
 
 	void ExportImage::_onRatio()
@@ -243,11 +256,31 @@ namespace VTX::UI::QT::Dialog
 		// Update Height.
 		const int width	 = _spinBoxWidth->value();
 		const int height = int( double( width ) / ratio );
+
+		QSignalBlocker blockerHeight( _spinBoxHeight );
 		_spinBoxHeight->setValue( height );
+
+		_updatePreview();
+	}
+
+	void ExportImage::_onFormat( const int p_formatIndex )
+	{
+		const bool hasAlpha = p_formatIndex == int( Util::Image::E_FORMAT::PNG );
+		_labelBackgroundOpacity->setVisible( hasAlpha );
+		_sliderBackgroundOpacity->setVisible( hasAlpha );
+		_labelBackgroundOpacityValue->setVisible( hasAlpha );
+	}
+
+	void ExportImage::_onBackgroundOpacity()
+	{
+		_labelBackgroundOpacityValue->setText( QString::number( _sliderBackgroundOpacity->value() ) );
+		_updatePreview();
 	}
 
 	void ExportImage::_updatePreview()
 	{
+		static int counter = 0;
+
 		// Size.
 		int width  = _spinBoxWidth->value();
 		int height = _spinBoxHeight->value();
@@ -271,28 +304,18 @@ namespace VTX::UI::QT::Dialog
 			width  = int( float( height ) * ratio );
 		}
 
+		VTX_ERROR( "UPDATE PREVIEW {} - {} x {}", counter++, width, height );
+
 		// Get preview image.
 		const auto &	   camera = App::SCENE().getCamera();
 		std::vector<uchar> image;
 		App::RENDERER_SYSTEM().snapshot( image, width, height, camera.getFov(), camera.getNear(), camera.getFar() );
 
-		QImage qImage( image.data(), width, height, QImage::Format::Format_RGBA8888 );
+		QImage qImage(
+			image.data(), width * devicePixelRatioF(), height * devicePixelRatioF(), QImage::Format::Format_RGBA8888
+		);
 		qImage = qImage.mirrored( false, true );
 		_preview->setPixmap( QPixmap::fromImage( qImage ) );
-	}
-
-	void ExportImage::_onFormat( const int p_formatIndex )
-	{
-		const bool hasAlpha = p_formatIndex == int( Util::Image::E_FORMAT::PNG );
-		_labelBackgroundOpacity->setVisible( hasAlpha );
-		_sliderBackgroundOpacity->setVisible( hasAlpha );
-		_labelBackgroundOpacityValue->setVisible( hasAlpha );
-	}
-
-	void ExportImage::_onBackgroundOpacity()
-	{
-		_labelBackgroundOpacityValue->setText( QString::number( _sliderBackgroundOpacity->value() ) );
-		_updatePreview();
 	}
 
 	void ExportImage::save()
@@ -306,6 +329,13 @@ namespace VTX::UI::QT::Dialog
 
 	void ExportImage::restore()
 	{
+		// Block signals.
+		QSignalBlocker b( _spinBoxWidth );
+		QSignalBlocker b2( _spinBoxHeight );
+		QSignalBlocker b3( _comboBoxFormat );
+		QSignalBlocker b4( _sliderBackgroundOpacity );
+		QSignalBlocker b5( _comboBoxResolution );
+
 		if ( SETTINGS.contains( _SETTING_KEY_WIDTH ) )
 		{
 			_spinBoxWidth->setValue( SETTINGS.value( _SETTING_KEY_WIDTH ).toInt() );

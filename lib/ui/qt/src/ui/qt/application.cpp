@@ -81,14 +81,7 @@ namespace VTX::UI::QT
 		_mainWindow->show();
 
 		// On quit.
-		onStop += [ this ]
-		{
-			VTX_TRACE( "Qt stop callback" );
-
-			SETTINGS.save();
-			_mainWindow.reset();
-			QApplication::quit();
-		};
+		App::HUB().connect<App::Events::ApplicationStopped, &Application::_stop>( this );
 
 		// Connect quit action.
 		connect(
@@ -167,6 +160,15 @@ namespace VTX::UI::QT
 		QPalette lightPalette = QApplication::style()->standardPalette();
 
 		setPalette( p );
+	}
+
+	void Application::_stop()
+	{
+		VTX_TRACE( "Qt stop callback" );
+
+		SETTINGS.save();
+		_mainWindow.reset();
+		QApplication::quit();
 	}
 
 } // namespace VTX::UI::QT

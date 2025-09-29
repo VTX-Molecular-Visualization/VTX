@@ -2,6 +2,8 @@
 #include "app/core/renderer/renderer_system.hpp"
 #include "ui/qt/application.hpp"
 #include <app/action/application.hpp>
+#include <app/event_hub.hpp>
+#include <app/events.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -48,7 +50,8 @@ namespace VTX::UI::QT::Widget
 										{ App::RENDERER_SYSTEM().setOutput( _context->defaultFramebufferObject() ); } );
 
 		// Connect signals.
-		APP::onPostRender += [ this ]( const float ) { render(); };
+		// APP::onPostRender += [ this ]( const float ) { render(); };
+		App::HUB().connect<App::Events::PostRender, &OpenGLWidget::render>( this );
 	}
 
 	OpenGLWidget::~OpenGLWidget()

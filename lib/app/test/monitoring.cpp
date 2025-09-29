@@ -66,17 +66,17 @@ TEST_CASE( "VTX_APP - Monitoring", "[integration]" )
 
 	// APP::onPreUpdate +=
 	//	[]( float deltaTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 12 ) ); };
-	APP::onUpdate +=
-		[]( float deltaTime, float elapsedTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 12 ) ); };
+	// APP::onUpdate +=
+	//	[]( float deltaTime, float elapsedTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 12 ) ); };
 	// APP::onLateUpdate +=
 	//	[]( float deltaTime ) { std::this_thread::sleep_for( std::chrono::milliseconds( 18 ) ); };
-	APP::onPostUpdate += []( float deltaTime ) { std::this_thread::sleep_for( std::chrono::nanoseconds( 500 ) ); };
+	// APP::onPostUpdate += []( float deltaTime ) { std::this_thread::sleep_for( std::chrono::nanoseconds( 500 ) ); };
 
 	long long lastDisplayTimestamp = Util::Chrono::getTimestamp();
 
 	for ( int i = 0; i < 200; i++ )
 	{
-		APP::update( 0, 0 );
+		// APP::update( 0, 0 );
 
 		const long long currentTimestamp = Util::Chrono::getTimestamp();
 		if ( ( currentTimestamp - lastDisplayTimestamp ) >= 1000 )

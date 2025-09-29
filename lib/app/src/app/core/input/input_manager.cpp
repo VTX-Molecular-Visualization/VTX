@@ -50,14 +50,15 @@ namespace VTX::App::Core::Input
 	InputManager::InputManager()
 	{
 		// TODO: consume events, no auto clear.
+		App::HUB().connect<Events::PostUpdate>(
+			[ this ]( const Events::PostUpdate & )
+			{
+				_deltaMousePosition.x = 0;
+				_deltaMousePosition.y = 0;
 
-		APP::onPostUpdate += [ this ]( const float p_deltaTime )
-		{
-			_deltaMousePosition.x = 0;
-			_deltaMousePosition.y = 0;
-
-			_deltaMouseWheel = 0;
-		};
+				_deltaMouseWheel = 0;
+			}
+		);
 	}
 
 	InputManager::~InputManager() {}

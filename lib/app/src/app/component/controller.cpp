@@ -18,8 +18,8 @@ namespace VTX::App::Component
 		controller->setCamera( &SCENE().getCamera() );
 
 		// Register update callback.
-		Util::CallbackId id = addUpdateFunction( [ controller ]( const float p_delta, const float p_elapsed )
-												 { controller->update( p_delta, p_elapsed ); } );
+		EventHub::ScopedConnection * id = addUpdateFunction( [ controller ]( const Events::Update & p_e )
+															 { controller->update( p_e.delta, p_e.elapsed ); } );
 
 		// Save callback id.
 		_activeCallbacks.emplace( controller_hash, id );
@@ -73,7 +73,15 @@ namespace VTX::App::Component
 			[ this, controller_hash ]( const Vec3f & p_target )
 			{
 				SCENE().getCamera().setTargetWorld( p_target );
-				APP::onEndOfFrameOneShot += [ this, controller_hash ]() { disableController( controller_hash ); };
+				HUB().connectOnce<Events::FrameEnded>(
+					[ this, controller_hash ]( const Events::FrameEnded & )
+					{
+						if ( isControllerEnabled( controller_hash ) )
+						{
+							disableController( controller_hash );
+						}
+					}
+				);
 			}
 		);
 

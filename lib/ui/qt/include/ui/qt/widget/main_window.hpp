@@ -11,6 +11,7 @@
 #include <QPointer>
 #include <app/ui/concepts.hpp>
 // #include <ui/qt/dialog/progress.hpp>
+#include <app/events.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Dialog
@@ -90,6 +91,10 @@ namespace VTX::UI::QT::Widget
 		// TODO: keep like that or re-tabify?
 		QByteArray _defaultGeometry;
 		QByteArray _defaultState;
+
+		void _onBlockingOperationStarted( const App::Events::BlockingOperationStarted & );
+		void _onBlockingOperationProgress( const App::Events::BlockingOperationProgress & );
+		void _onBlockingOperationEnded( const App::Events::BlockingOperationEnded & );
 	};
 
 } // namespace VTX::UI::QT::Widget

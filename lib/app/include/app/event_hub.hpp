@@ -5,6 +5,9 @@
 
 namespace VTX::App
 {
+	/**
+	 * @brief A centralized event management system using the EnTT library.
+	 */
 	class EventHub
 	{
 	  public:
@@ -35,19 +38,21 @@ namespace VTX::App
 		 * @brief Connect a callable to an event and own its lifetime.
 		 */
 		template<typename Ev, typename Callable>
-		void connect( Callable && p_cb )
+		Connection connect( Callable && p_cb )
 		{
 			using Fn		  = std::remove_cvref_t<Callable>;
 			auto	   holder = std::make_shared<Fn>( std::forward<Callable>( p_cb ) );
 			Connection c	  = _bus.sink<Ev>().template connect<&Fn::operator()>( *holder );
 			_owned.push_back( Owned { std::move( holder ), std::move( c ) } );
+			return c;
 		}
 
 		/**
 		 * @brief Connect a callable to an event that will be called only once, then disconnected.
 		 */
+		// TODO: remove and use named queues?
 		template<typename Ev, typename Callable>
-		void connectOnce( Callable && p_cb )
+		Connection connectOnce( Callable && p_cb )
 		{
 			using Fn = std::remove_cvref_t<Callable>;
 			struct Once
@@ -64,6 +69,7 @@ namespace VTX::App
 			Connection c   = _bus.sink<Ev>().template connect<&Once::operator()>( *obj );
 			obj->conn	   = c;
 			_owned.push_back( Owned { std::move( obj ), std::move( c ) } );
+			return c;
 		}
 
 		/**
@@ -104,7 +110,7 @@ namespace VTX::App
 		template<typename Ev, typename... Args>
 		void trigger( Args &&... p_args )
 		{
-			_bus.trigger<Ev>( Ev( p_args... ) );
+			_bus.trigger<Ev>( Ev( std::forward<Args>( p_args )... ) );
 		}
 
 		/**
@@ -122,7 +128,7 @@ namespace VTX::App
 		template<typename Ev, typename... Args>
 		void enqueue( Args &&... p_args )
 		{
-			_bus.enqueue<Ev>( Ev( p_args... ) );
+			_bus.enqueue<Ev>( Ev( std::forward<Args>( p_args )... ) );
 		}
 
 		/**

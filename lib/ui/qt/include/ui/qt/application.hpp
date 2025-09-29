@@ -35,6 +35,7 @@ namespace VTX::UI::QT
 		QPointer<QSplashScreen> _qSplashScreen;
 
 		void _loadTheme();
+		void _stop();
 	};
 } // namespace VTX::UI::QT
 

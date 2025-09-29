@@ -35,13 +35,15 @@ namespace VTX::App::Component::Chemistry
 			if ( _player )
 			{
 				_player.reset();
-				APP::onUpdate -= _currentUpdateCallback;
+				_currentUpdateCallback.release();
 			}
 
 			// Create and connect new player.
 			_player				   = std::make_unique<P>();
-			_currentUpdateCallback = APP::onUpdate += [ this ]( const float p_deltaTime, const float p_elapsedTime )
-			{ static_cast<P *>( _player.get() )->update( p_deltaTime, p_elapsedTime ); };
+			_currentUpdateCallback = HUB().connect<Events::Update>(
+				[ this ]( const Events::Update & p_e )
+				{ static_cast<P *>( _player.get() )->update( p_e.delta, p_e.elapsed ); }
+			);
 
 			_player->setCount( _systemPtr->getTrajectory().getFrameCount() );
 
@@ -60,7 +62,7 @@ namespace VTX::App::Component::Chemistry
 
 		System *								  _systemPtr = nullptr;
 		std::unique_ptr<Core::Player::BasePlayer> _player;
-		Util::CallbackId						  _currentUpdateCallback;
+		EventHub::Connection					  _currentUpdateCallback;
 
 		const FilePath _path;
 	};

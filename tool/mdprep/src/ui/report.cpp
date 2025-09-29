@@ -75,7 +75,10 @@ namespace VTX::Tool::Mdprep::ui
 				if ( p_report.itemGeneric != Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField )
 					return;
 				_reportData->report = p_report;
-				VTX::APP::onEndOfFrameOneShot += ReportResultPoster( *_reportData, std::move( _sendReportUi ) );
+				App::HUB().connectOnce<App::Events::FrameEnded>(
+					[ & ]( const App::Events::FrameEnded & )
+					{ ReportResultPoster( *_reportData, std::move( _sendReportUi ) ); }
+				);
 			}
 
 		  private:

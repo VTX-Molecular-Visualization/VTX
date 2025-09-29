@@ -2,6 +2,8 @@
 #define __VTX_APP_VTX_APP__
 
 #include "app/application/_fwd.hpp"
+#include "app/ecs.hpp"
+#include "app/pipeline.hpp"
 #include "app/tool/base_tool.hpp"
 #include "args.hpp"
 #include <entt/entity/registry.hpp>
@@ -46,10 +48,13 @@ namespace VTX::App
 
 		/**
 		 * @brief Main loop update function.
-		 * @param p_deltaTime the time since the last frame. In milliseconds ?
+		 * @param p_deltaTime the time since the last frame. In milliseconds.
 		 * @param p_elapsedTime the time since the start of the application.
 		 */
-		static void update( const float p_deltaTime, const float p_elapsedTime );
+		inline void update( const float p_deltaTime, const float p_elapsedTime )
+		{
+			_pipeline.update( p_deltaTime, p_elapsedTime );
+		}
 
 		/**
 		 * @brief Stop the application.
@@ -58,39 +63,21 @@ namespace VTX::App
 
 		inline void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
 
-		// inline const Args & getArgs() { return _args; }
 		//  TODO: get entity from ecs directly?
 		inline static Application::Scene & getScene() { return *_scene; }
 
-		// inline static Util::Callback<float> onPreUpdate;
-		inline static Util::Callback<float, float> onUpdate;
-		// inline static Util::Callback<float> onLateUpdate;
-		inline static Util::Callback<float> onPostUpdate;
-		// inline static Util::Callback<float> onPreRender;
-		// inline static Util::Callback<float> onRender;
-		inline static Util::Callback<float> onPostRender;
-		inline static Util::Callback<>		onEndOfFrameOneShot;
-		inline static Util::Callback<>
-			onStop; // TODO : Clarify : Is this the application stop ? So it will execute once ?
-
-		// Progress dialog callbacks.
-		inline static Util::Callback<std::string_view> onStartBlockingOperation;
-		inline static Util::Callback<float>			   onUpdateBlockingOperation;
-		inline static Util::Callback<>				   onEndBlockingOperation;
-
-		// TODO: thread callbacks?
+		// inline static Util::Callback<float, float> onUpdate;
 
 	  protected:
 		inline static std::vector<Tool::BaseTool *> _tools;
 
 	  private:
-		// inline static Args				   _args;
+		ECS::Registry _registry;
+		Pipeline	  _pipeline;
+
 		inline static Application::Scene * _scene;
 
-		entt::registry _registry;
-
 		static void _handleArgs( const Args & p_args );
-		static void _update( const float p_deltaTime, const float p_elapsedTime );
 	};
 
 	Application::Scene &	  SCENE();

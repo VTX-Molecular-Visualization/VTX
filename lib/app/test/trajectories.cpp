@@ -21,6 +21,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration][trajectories]" )
 	// TODO : Make it work
 	return;
 
+	/*
 	App::Fixture app;
 	Test::Util::App::loadTestTrajectorySystem();
 
@@ -137,4 +138,5 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration][trajectories]" )
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 19 );
 		REQUIRE( trajectoryComponent.getPlayer().isPlaying() == true );
 	}
+	*/
 };

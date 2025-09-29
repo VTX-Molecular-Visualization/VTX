@@ -36,17 +36,17 @@ namespace VTX::App::Component
 			onModeEnter( _currentHash );
 
 			// Connect update callback.
-			_currentUpdateCallback = addUpdateFunction( [ mode ]( const float p_delta, const float p_elapsed )
-												  { mode->update( p_delta, p_elapsed ); } );
+			_currentUpdateCallback = addUpdateFunction( [ mode ]( const Events::Update & p_e )
+														{ mode->update( p_e.delta, p_e.elapsed ); } );
 		}
 
 		Util::Callback<Hash> onModeEnter;
 		Util::Callback<Hash> onModeExit;
 
 	  private:
-		Hash				   _currentHash;
-		Core::Mode::BaseMode * _current;
-		Util::CallbackId	   _currentUpdateCallback;
+		Hash						 _currentHash;
+		Core::Mode::BaseMode *		 _current;
+		EventHub::ScopedConnection * _currentUpdateCallback;
 
 		Util::Collection<std::unique_ptr<Core::Mode::BaseMode>> _modes;
 	};
