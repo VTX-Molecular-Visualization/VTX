@@ -38,26 +38,55 @@ def create_python39_zip(p_conanFile: ConanFile, python_lib_path, zip_destination
             p_conanFile.output.warning(f"Python lib path {python_lib_path} does not exist, skipping python39.zip creation")
 
 
-def doPythonCopies(p_conanFile: ConanFile):
+def _doPythonCopies(p_conanFile: ConanFile, dest):
     p_conanFile.output.info("Doing python-related copy.")
     if p_conanFile.settings.os == "Windows":
         p_conanFile.output.info("Copying from <{}> to <{}>".format(
             os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin")
-            ,  os.path.join(executable_folder(p_conanFile), "external","python")
+            ,  os.path.join(dest, "external","python")
         ))
         
         for subdir in ("DLLs","Lib"):
-            copy(p_conanFile, "*", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin", subdir), os.path.join(executable_folder(p_conanFile), "external","python",subdir))  
-        copy(p_conanFile, "*.exe", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"), os.path.join(executable_folder(p_conanFile), "external","python"))  
-        copy(p_conanFile, "*.dll", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"), os.path.join(executable_folder(p_conanFile), "external","python"))  
-        copy(p_conanFile, "*.dll", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"), os.path.join(executable_folder(p_conanFile)))        
+            copy(p_conanFile, "*", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin", subdir), os.path.join(dest, "external","python",subdir))  
+        copy(p_conanFile, "*.exe", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"), os.path.join(dest, "external","python"))  
+        copy(p_conanFile, "*.dll", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"), os.path.join(dest, "external","python"))  
+        copy(p_conanFile, "*.dll", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"), os.path.join(dest))        
         # Create python39.zip from the Python standard library
         python_lib_path = os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin", "lib")
-        zip_destination = os.path.join(executable_folder(p_conanFile), "external", "python", "python39.zip")
+        zip_destination = os.path.join(dest, "external", "python", "python39.zip")
         create_python39_zip(p_conanFile, python_lib_path, zip_destination)
     else:
         for subdir in ("bin","lib"):
-            copy(p_conanFile, "*", os.path.join(p_conanFile.dependencies["cpython"].package_folder, subdir), os.path.join(executable_folder(p_conanFile), "external","python",subdir))  
+            copy(p_conanFile, "*", os.path.join(p_conanFile.dependencies["cpython"].package_folder, subdir), os.path.join(dest, "external","python",subdir))  
+
+def generate_cmake_copy_instructions(p_conanFile):
+    out = ""
+    if p_conanFile.settings.os == "Windows":
+        out = \
+        """vtx_register_build_directory_copy("{}" "external/python/DLLs")\nvtx_register_build_directory_copy("{}" "external/python/Lib")\n"""\
+        .format(Path(p_conanFile.dependencies["cpython"].package_folder,"bin", "DLLs").as_posix(),
+            Path(p_conanFile.dependencies["cpython"].package_folder,"bin", "Lib").as_posix()
+        )
+        for element in (Path(p_conanFile.dependencies["cpython"].package_folder) / "bin").iterdir():
+            if element.suffix in (".exe",".dll"):
+                out += """vtx_register_build_file_copy("{}" "external/python")\n""".format(element.as_posix())
+            if element.suffix == ".dll":
+                out += """vtx_register_build_file_copy("{}" ".")\n""".format(element.as_posix())
+        out += """vtx_register_build_file_copy("{}" "external/python")\n""".format(
+            Path(p_conanFile.package_folder, "external", "python", "python39.zip").as_posix()
+        )
+    else:
+        out = \
+        """
+        vtx_register_build_directory_copy("{}" "external/python/bin")
+        vtx_register_build_directory_copy("{}" "external/python/lib")
+        """.format(os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"),
+            os.path.join(p_conanFile.dependencies["cpython"].package_folder,"lib")
+        )
+    return out
+    
+def doPythonCopies(p_conanFile: ConanFile):
+    _doPythonCopies(p_conanFile, executable_folder(p_conanFile))
 
 
 def config_options_cpython(p_conanFile: ConanFile):
@@ -129,8 +158,11 @@ class VTXPythonBindingRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
+        _doPythonCopies(self, self.package_folder) 
+        cmake_instructions = generate_cmake_copy_instructions(self)
+        Path(self.package_folder, "cmake", "python_copy_instructions.cmake").write_text(cmake_instructions)
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_python_binding"]       
         # Give away cmake code to be executed by the consumer of this package
-        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_python_binding_copy_files.cmake"]) 
+        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_python_binding_copy_files.cmake", "cmake/python_copy_instructions.cmake"]) 
