@@ -48,12 +48,14 @@ jobs:
         conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
       
-    - name: Add missing lib
-      run: |
-        if [ "$RUNNER_OS" == "Linux" ]; then
-          sudo apt-get install libnsl2
-        fi
-      shell : bash
+    # Error : /usr/bin/ld: cannot find -lnsl
+    # Missing libnsl2-devel on ubuntu-lastest the 2025-09-29. Not found in apt-get. If issue persists after a month, investigate.
+    #- name: Add missing lib
+    #  run: |
+    #    if [ "$RUNNER_OS" == "Linux" ]; then
+    #      sudo apt-get install libnsl2-devel
+    #    fi
+    #  shell : bash
       
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
