@@ -48,31 +48,6 @@ namespace VTX::Util
 		}
 
 		/**
-		 * @brief Connect a callable to an event that will be called only once, then disconnected.
-		 */
-		// TODO: remove and use named queues?
-		template<typename Ev, typename Callable>
-		Connection connectOnce( Callable && p_cb )
-		{
-			using Fn = std::remove_cvref_t<Callable>;
-			struct Once
-			{
-				Fn		   fn;
-				Connection conn;
-				void	   operator()( Ev & p_e )
-				{
-					fn( p_e );
-					conn.release();
-				}
-			};
-			auto	   obj = std::make_shared<Once>( Once { std::forward<Callable>( p_cb ), {} } );
-			Connection c   = _bus.sink<Ev>().template connect<&Once::operator()>( *obj );
-			obj->conn	   = c;
-			_owned.push_back( Owned { std::move( obj ), std::move( c ) } );
-			return c;
-		}
-
-		/**
 		 * @brief Disconnect a connection.
 		 */
 		static void disconnect( Connection & p_c ) { p_c.release(); }

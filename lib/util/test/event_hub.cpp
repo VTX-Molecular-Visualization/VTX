@@ -42,9 +42,6 @@ TEST_CASE( "VTX_UTIL - EVENT HUB", "[unit]" )
 	// Owned lambda.
 	hub.connect<TestEvent>( [ & ]( TestEvent & p_e ) { value++; } );
 
-	// One shot owned lambda.
-	hub.connectOnce<TestEvent>( [ & ]( TestEvent & p_e ) { value++; } );
-
 	// Owning lambdas.
 	CHECK( hub.ownedConnectionCount() == 2 );
 
@@ -52,7 +49,7 @@ TEST_CASE( "VTX_UTIL - EVENT HUB", "[unit]" )
 	TestEvent event;
 	hub.trigger<TestEvent>( event );
 
-	CHECK( value == 5 );
+	CHECK( value == 4 );
 
 	hub.trigger<TestEvent>();
 
