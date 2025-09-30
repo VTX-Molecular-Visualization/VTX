@@ -10,7 +10,6 @@
 #include "app/core/action/action_system.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/core/library/library_system.hpp"
-#include "app/core/renderer/renderer_system.hpp"
 #include "app/core/threading/base_thread.hpp"
 #include "app/core/threading/threading_system.hpp"
 #include "app/entity/scene.hpp"
@@ -23,8 +22,10 @@
 #include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
 #include "app/selection/selection_manager.hpp"
+#include "app/services.hpp"
 #include "app/settings.hpp"
 #include "app/updater.hpp"
+#include "renderer/facade.hpp"
 #include <core/struct/representation.hpp>
 #include <exception>
 #include <io/internal/filesystem.hpp>
@@ -41,10 +42,16 @@ namespace VTX::App
 
 	VTXApp::VTXApp( const Args & p_args )
 	{
+		// Set global registry.
 		ECS::setRegistry( _registry );
+		// Store args.
 		ECS::setCtx<Args>( p_args );
+		// Store main event bus.
 		ECS::setCtx<Util::EventHub>();
+		// Store statistics.
 		ECS::setCtx<Util::Monitoring::Stats>();
+		// Store renderer.
+		ECS::setCtx<Renderer::Facade>();
 	}
 
 	void VTXApp::init()
@@ -98,7 +105,7 @@ namespace VTX::App
 		VTX_INFO( "Starting application: {}", ECS::getCtx<Args>().toString() );
 
 		// Build the renderer (graphic api backend context ready).
-		auto & renderer = RENDERER_SYSTEM();
+		auto & renderer = RENDERER();
 
 		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) )
 		{
@@ -121,7 +128,7 @@ namespace VTX::App
 
 		// Connect render event.
 		HUB().connect<Events::Render>( []( const Events::Render & p_e )
-									   { RENDERER_SYSTEM().render( p_e.delta, p_e.elapsed ); } );
+									   { RENDERER().render( p_e.delta, p_e.elapsed ); } );
 
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
@@ -135,7 +142,7 @@ namespace VTX::App
 		}
 
 		// Updater.
-		UPDATER().onUpdateAvailable += []( const uint, const uint, const uint ) { UPDATER().downloadUpdate(); };
+		// UPDATER().onUpdateAvailable += []( const uint, const uint, const uint ) { UPDATER().downloadUpdate(); };
 
 		if ( not ECS::getCtx<Args>().has( ARG_NO_UPDATE ) )
 		{
@@ -145,70 +152,12 @@ namespace VTX::App
 		//_handleArgs( _args );
 	}
 
-	/*
-	void VTXApp::update( const float p_deltaTime, const float p_elapsedTime )
-	{
-		Util::Monitoring::FrameInfo & frameInfo = STATS().newFrame();
-		frameInfo.set(
-			Monitoring::TICK_RATE_KEY,
-			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]() { _update( p_deltaTime, p_elapsedTime ); } )
-		);
-	}
-
-	void VTXApp::_update( const float p_deltaTime, const float p_elapsedTime )
-	{
-		Util::Monitoring::FrameInfo & frameInfo = STATS().getCurrentFrame();
-
-
-		frameInfo.set(
-			Monitoring::PRE_UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreUpdate( p_elapsedTime ); } )
-		);
-
-
-	frameInfo.set(
-		Monitoring::UPDATE_DURATION_KEY,
-		Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]() { onUpdate( p_deltaTime, p_elapsedTime ); } )
-	);
-
-
-	frameInfo.set(
-		Monitoring::LATE_UPDATE_DURATION_KEY,
-		Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onLateUpdate( p_elapsedTime ); } )
-	);
-
-
-	frameInfo.set(
-		Monitoring::POST_UPDATE_DURATION_KEY,
-		Util::CHRONO_CPU( [ p_elapsedTime ]() { onPostUpdate( p_elapsedTime ); } )
-	);
-
-
-	frameInfo.set(
-		Monitoring::PRE_RENDER_DURATION_KEY,
-		Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreRender( p_elapsedTime ); } )
-	);
-
-
-	frameInfo.set(
-		Monitoring::RENDER_DURATION_KEY,
-		Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]() { RENDERER_SYSTEM().render( p_deltaTime, p_elapsedTime ); } )
-	);
-
-	frameInfo.set(
-		Monitoring::POST_RENDER_DURATION_KEY,
-		Util::CHRONO_CPU( [ p_elapsedTime ]() { onPostRender( p_elapsedTime ); } )
-	);
-
-	);
-	*/
-
 	void VTXApp::stop()
 	{
 		VTX_INFO( "Stopping application" );
 
 		SCENE().reset();
-		RENDERER_SYSTEM().clean();
+		RENDERER().clean();
 
 		//// Prevent events throw for nothing when quitting app
 		// Old::Manager::EventManager::get().freezeEvent( true );

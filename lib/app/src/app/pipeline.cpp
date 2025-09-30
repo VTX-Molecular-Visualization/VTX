@@ -1,5 +1,8 @@
 #include "app/pipeline.hpp"
 #include "app/events.hpp"
+#include "app/services.hpp"
+#include <util/event_hub.hpp>
+#include <util/monitoring/stats.hpp>
 
 namespace
 {

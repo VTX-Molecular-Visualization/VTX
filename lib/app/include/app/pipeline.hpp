@@ -1,11 +1,12 @@
 #ifndef __VTX_APP_PIPELINE__
 #define __VTX_APP_PIPELINE__
 
-#include "app/ecs.hpp"
-#include "app/events.hpp"
 #include <util/hashing.hpp>
-#include <util/logger.hpp>
-#include <util/monitoring/stats.hpp>
+
+namespace VTX::Util::Monitoring
+{
+	class Stats;
+}
 
 namespace VTX::App
 {

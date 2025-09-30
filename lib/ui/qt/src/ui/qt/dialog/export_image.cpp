@@ -1,5 +1,6 @@
 #include "ui/qt/dialog/export_image.hpp"
 #include "app/application/scene.hpp"
+#include "app/services.hpp"
 #include "ui/qt/application.hpp"
 #include <QDialogButtonBox>
 #include <QFileDialog>
@@ -10,7 +11,7 @@
 #include <app/action/io.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
-#include <app/core/renderer/renderer_system.hpp>
+#include <renderer/facade.hpp>
 
 namespace VTX::UI::QT::Dialog
 {
@@ -309,7 +310,7 @@ namespace VTX::UI::QT::Dialog
 		// Get preview image.
 		const auto &	   camera = App::SCENE().getCamera();
 		std::vector<uchar> image;
-		App::RENDERER_SYSTEM().snapshot( image, width, height, camera.getFov(), camera.getNear(), camera.getFar() );
+		App::RENDERER().snapshot( image, width, height, camera.getFov(), camera.getNear(), camera.getFar() );
 
 		QImage qImage(
 			image.data(), width * devicePixelRatioF(), height * devicePixelRatioF(), QImage::Format::Format_RGBA8888

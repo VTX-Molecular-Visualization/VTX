@@ -10,20 +10,41 @@ namespace VTX::App
 {
 	using Arg = std::string_view;
 
+	/**
+	 * @brief Store command line arguments.
+	 */
 	class Args
 	{
 	  public:
-		Args() = default;
+		/**
+		 * @brief Construct from argc/argv pair.
+		 */
 		Args( const int p_argc, const char * const p_argv[] ) : _args( { p_argv, p_argv + p_argc } ) {}
+
+		/**
+		 * @brief Construct from set.
+		 */
 		Args( const std::unordered_set<Arg> & p_args ) : _args( p_args ) {}
 
+		/**
+		 * @brief Check argument existence.
+		 */
 		inline bool has( const Arg p_arg ) const { return _args.contains( p_arg ); }
 
+		/**
+		 * @brief Add an argument.
+		 */
 		inline void add( const Arg p_arg ) { _args.emplace( p_arg ); }
 
+		/**
+		 * @brief Get all arguments.
+		 */
 		inline const std::unordered_set<Arg> & all() const { return _args; }
 
-		inline std::string toString() const
+		/**
+		 * @brief Convert arguments to a single string.
+		 */
+		std::string toString() const
 		{
 			std::string str;
 			for ( const auto arg : _args )
@@ -34,6 +55,9 @@ namespace VTX::App
 		}
 
 	  private:
+		/**
+		 * @brief Stored arguments.
+		 */
 		std::unordered_set<Arg> _args;
 	};
 } // namespace VTX::App

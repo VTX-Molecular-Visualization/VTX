@@ -1,5 +1,7 @@
 #include "app/component/scene/updatable.hpp"
+#include "app/services.hpp"
 #include "app/vtx_app.hpp"
+#include <util/event_hub.hpp>
 
 namespace VTX::App::Component::Scene
 {

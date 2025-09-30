@@ -1,4 +1,5 @@
 #include "ui/qt/widget/main_window.hpp"
+#include "app/services.hpp"
 #include "ui/qt/dialog/progress.hpp"
 #include "ui/qt/dock_widget/color_layouts.hpp"
 #include "ui/qt/dock_widget/console.hpp"
@@ -21,6 +22,7 @@
 #include <QMimeData>
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {

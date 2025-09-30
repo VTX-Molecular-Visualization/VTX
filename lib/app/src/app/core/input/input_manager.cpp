@@ -1,6 +1,9 @@
 #include "app/core/input/input_manager.hpp"
+#include "app/events.hpp"
+#include "app/services.hpp"
 #include <app/vtx_app.hpp>
 #include <util/enum.hpp>
+#include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
 

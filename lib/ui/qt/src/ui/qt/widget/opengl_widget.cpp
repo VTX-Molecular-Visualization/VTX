@@ -1,8 +1,10 @@
 #include "ui/qt/widget/opengl_widget.hpp"
-#include "app/core/renderer/renderer_system.hpp"
+#include "app/services.hpp"
 #include "ui/qt/application.hpp"
 #include <app/action/application.hpp>
 #include <app/events.hpp>
+#include <renderer/facade.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -45,8 +47,7 @@ namespace VTX::UI::QT::Widget
 		_context->makeCurrent( _window );
 
 		// Set output.
-		App::RENDERER_SYSTEM().onReady( [ this ]()
-										{ App::RENDERER_SYSTEM().setOutput( _context->defaultFramebufferObject() ); } );
+		App::RENDERER().onReady( [ this ]() { App::RENDERER().setOutput( _context->defaultFramebufferObject() ); } );
 
 		// Connect signals.
 		// APP::onPostRender += [ this ]( const float ) { render(); };

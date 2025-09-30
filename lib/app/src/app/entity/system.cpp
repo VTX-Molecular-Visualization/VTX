@@ -12,11 +12,11 @@
 // #include "app/component/scene/updatable.hpp"
 #include "app/core/player/circular_buffer.hpp"
 #include "app/core/player/loop.hpp"
-#include "app/core/renderer/renderer_system.hpp"
 #include "app/core/settings/settings_system.hpp"
 #include "app/entity/system.hpp"
 #include "app/selection/system_data.hpp"
 #include "app/selection/system_granularity.hpp"
+#include "app/services.hpp"
 #include "app/settings.hpp"
 #include <io/reader/system.hpp>
 #include <renderer/proxy/system.hpp>
@@ -104,7 +104,7 @@ namespace VTX::App::Entity
 		}
 
 		// Proxy.
-		proxy.setup( App::RENDERER_SYSTEM() );
+		proxy.setup( RENDERER() );
 
 		// Picking.
 		pickable.setPickingFunction(

@@ -1,5 +1,7 @@
 #include "app/component/representation/representation.hpp"
-#include "app/core/renderer/renderer_system.hpp"
+#include "app/services.hpp"
+#include "app/vtx_app.hpp"
+#include <renderer/facade.hpp>
 
 namespace VTX::App::Component::Representation
 {
@@ -40,7 +42,7 @@ namespace VTX::App::Component::Representation
 		_preset.getCallback<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>() +=
 			[ this ]( const float p_value ) { _proxy->getCallback<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS>()(); };
 
-		RENDERER_SYSTEM().onReady( [ this ]() { RENDERER_SYSTEM().setProxyRepresentation( *_proxy ); } );
+		RENDERER().onReady( [ this ]() { RENDERER().setProxyRepresentation( *_proxy ); } );
 	}
 
 } // namespace VTX::App::Component::Representation

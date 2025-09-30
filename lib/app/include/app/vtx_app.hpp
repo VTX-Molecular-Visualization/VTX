@@ -15,14 +15,8 @@
 #include <util/exceptions.hpp>
 #include <vector>
 
-namespace VTX::Util::Monitoring
-{
-	class Stats;
-}
-
 namespace VTX::App
 {
-	class Updater;
 
 	constexpr Arg ARG_DEBUG		  = "-debug";
 	constexpr Arg ARG_NO_GUI	  = "-no-gui";
@@ -81,7 +75,7 @@ namespace VTX::App
 	};
 
 	Application::Scene & SCENE();
-	Updater &			 UPDATER();
+
 } // namespace VTX::App
 
 namespace VTX

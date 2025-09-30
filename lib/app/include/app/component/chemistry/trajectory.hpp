@@ -6,9 +6,12 @@
 #include "app/core/ecs/ecs_system.hpp"
 #include "app/core/player/base_player.hpp"
 #include "app/core/player/concepts.hpp"
+#include "app/events.hpp"
+#include "app/services.hpp"
 #include "app/vtx_app.hpp"
 #include "enum_trajectory.hpp"
 #include <util/callback.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::App::Component::Chemistry
 {

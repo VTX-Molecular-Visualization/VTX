@@ -1,13 +1,14 @@
 #include "app/controller/picker/selection.hpp"
 #include "app/core/input/input_manager.hpp"
+#include "app/services.hpp"
 #include <app/application/scene_utility.hpp>
 #include <app/component/scene/pickable.hpp>
 #include <app/core/action/action_system.hpp>
 #include <app/core/ecs/registry.hpp>
-#include <app/core/renderer/renderer_system.hpp>
 #include <app/selection/selection.hpp>
 #include <app/selection/selection_manager.hpp>
 #include <optional>
+#include <renderer/facade.hpp>
 #include <util/logger.hpp>
 
 namespace
@@ -53,8 +54,7 @@ namespace VTX::App::Controller::Picker
 
 	void Selection::_onMouseLeftClick( const Vec2i & p_mousePos )
 	{
-		const PickingInfo pickingInfo
-			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+		const PickingInfo pickingInfo = PickingInfo( App::RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
 		VTX_DEBUG( "PickingInfo : {}, {}.", pickingInfo.getFirst(), pickingInfo.getSecond() );
 
@@ -64,8 +64,7 @@ namespace VTX::App::Controller::Picker
 
 	void Selection::_onMouseRightClick( const Vec2i & p_mousePos )
 	{
-		const PickingInfo pickingInfo
-			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+		const PickingInfo pickingInfo = PickingInfo( App::RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
 		if ( !_isTargetSelected( pickingInfo ) )
 		{
@@ -90,8 +89,7 @@ namespace VTX::App::Controller::Picker
 
 	void Selection::_onMouseLeftDoubleClick( const Vec2i & p_mousePos )
 	{
-		const PickingInfo pickingInfo
-			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+		const PickingInfo pickingInfo = PickingInfo( App::RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
 		if ( not pickingInfo.hasValue() || pickingInfo != _lastPickingInfo )
 		{
