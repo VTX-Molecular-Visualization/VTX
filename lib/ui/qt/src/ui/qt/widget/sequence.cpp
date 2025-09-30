@@ -37,6 +37,11 @@ namespace VTX::UI::QT::Widget
 			startIndex + ( viewport()->width() / SEQ_CHAR_WIDTH ) + 2, Index( _system.getResidues().size() )
 		);
 
+		if ( endIndex <= startIndex )
+		{
+			return;
+		}
+
 		int x = -( xOffset % int( SEQ_CHAR_WIDTH ) );
 
 		// Label with current chain.
