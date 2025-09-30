@@ -52,4 +52,3 @@ class VTXAppRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_app"]
-

@@ -45,6 +45,7 @@ namespace VTX::PythonBinding
 			std::wstring execDirPath = VTX::Util::Filesystem::getExecutableDir().wstring();
 			PyConfig_SetString( &config, &config.exec_prefix, p_pythonHomePath.c_str() );
 
+#ifdef _WIN32
 			VTX::FilePath python39Path = VTX::FilePath( p_pythonHomePath ) / "python39.zip";
 			std::wstring  python39Str( python39Path.wstring() );
 			PyWideStringList_Append( &config.module_search_paths, python39Str.c_str() );
@@ -52,6 +53,7 @@ namespace VTX::PythonBinding
 				VTX_DEBUG( "zip file : <{}> does exist.", python39Path.string() );
 			else
 				VTX_ERROR( "zip file : <{}> does not exist !", python39Path.string() );
+#endif
 
 			// Add the build directory to module search paths so Python can find python39.zip
 			// The build directory is the parent of external/python where python39.zip is located
