@@ -1,32 +1,37 @@
 #ifndef __VTX_APP_VTX_APP__
 #define __VTX_APP_VTX_APP__
 
-#include "app/application/_fwd.hpp"
+#include "app/application/_fwd.hpp" // TODO: remove
 #include "app/ecs.hpp"
 #include "app/pipeline.hpp"
 #include "app/tool/base_tool.hpp"
 #include "args.hpp"
-#include <entt/entity/registry.hpp>
-#include <iostream>
-#include <memory>
-#include <string>
-#include <util/callback.hpp>
-#include <util/chrono.hpp>
-#include <util/exceptions.hpp>
 #include <vector>
 
 namespace VTX::App
 {
-
+	/**
+	 * @brief Available command line arguments.
+	 */
 	constexpr Arg ARG_DEBUG		  = "-debug";
 	constexpr Arg ARG_NO_GUI	  = "-no-gui";
 	constexpr Arg ARG_NO_GRAPHICS = "-no-graphics";
 	constexpr Arg ARG_NO_UPDATE	  = "-no-update";
 
+	/**
+	 * @brief Main application class.
+	 */
 	class VTXApp
 	{
 	  public:
+		/**
+		 * @brief Constructs a VTXApp object with the specified arguments.
+		 */
 		VTXApp( const Args & p_args );
+
+		/**
+		 * @brief Virtual destructor.
+		 */
 		virtual ~VTXApp() = default;
 
 		/**
@@ -35,15 +40,12 @@ namespace VTX::App
 		void init();
 
 		/**
-		 * @brief Start the application.
-		 * @param the command line arguments.
+		 * @brief Start the application, can be overidden by gui.
 		 */
 		virtual void start();
 
 		/**
-		 * @brief Main loop update function.
-		 * @param p_deltaTime the time since the last frame. In milliseconds.
-		 * @param p_elapsedTime the time since the start of the application.
+		 * @brief Main loop update function (called from gui thread).
 		 */
 		inline void update( const float p_deltaTime, const float p_elapsedTime )
 		{
@@ -55,23 +57,36 @@ namespace VTX::App
 		 */
 		void stop();
 
+		/**
+		 * @brief Register a tool from another Conan package.
+		 */
 		inline void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
 
-		//  TODO: get entity from ecs directly?
+		//  TODO: remove.
 		inline static Application::Scene & getScene() { return *_scene; }
 
-		// inline static Util::Callback<float, float> onUpdate;
-
 	  protected:
-		inline static std::vector<Tool::BaseTool *> _tools;
+		/**
+		 * @brief External tools.
+		 */
+		std::vector<Tool::BaseTool *> _tools;
 
 	  private:
+		/**
+		 * @brief Main ECS registry.
+		 */
 		ECS::Registry _registry;
-		Pipeline	  _pipeline;
 
+		/**
+		 * @brief Application pipeline (main loop).
+		 */
+		Pipeline _pipeline;
+
+		// TODO: remove.
 		inline static Application::Scene * _scene;
 
-		static void _handleArgs( const Args & p_args );
+		// TODO: redo.
+		void _handleArgs( const Args & p_args );
 	};
 
 	Application::Scene & SCENE();
@@ -80,7 +95,7 @@ namespace VTX::App
 
 namespace VTX
 {
-	//
+	// TODO: remove.
 	using APP = App::VTXApp;
 } // namespace VTX
 

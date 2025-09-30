@@ -12,11 +12,11 @@
 #include <app/selection/system_data.hpp>
 #include <ui/qt/widget/trajectory/trajectory_manager.hpp>
 #include <unordered_set>
+#include <util/chrono.hpp>
 #include <util/string.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
-
 	Scene::Scene( QWidget * p_parent ) : Core::BaseDockWidget<Scene>( "Scene", p_parent )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );

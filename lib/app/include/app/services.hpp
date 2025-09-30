@@ -24,11 +24,22 @@ namespace VTX::App
 }
 namespace VTX::App
 {
-
-	inline Args &					 ARGS() { return ECS::getCtx<Args>(); }
-	inline Util::EventHub &			 HUB() { return ECS::getCtx<Util::EventHub>(); }
+	/**
+	 * @brief Arguments launching the application with.
+	 */
+	inline Args & ARGS() { return ECS::getCtx<Args>(); }
+	/**
+	 * @brief Main event bus.
+	 */
+	inline Util::EventHub & HUB() { return ECS::getCtx<Util::EventHub>(); }
+	/**
+	 * @brief Statistics.
+	 */
 	inline Util::Monitoring::Stats & STATS() { return ECS::getCtx<Util::Monitoring::Stats>(); }
-	inline Renderer::Facade &		 RENDERER() { return ECS::getCtx<Renderer::Facade>(); }
+	/**
+	 * @brief Renderer facade.
+	 */
+	inline Renderer::Facade & RENDERER() { return ECS::getCtx<Renderer::Facade>(); }
 } // namespace VTX::App
 
 #endif

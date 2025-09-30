@@ -1,17 +1,9 @@
 #include "app/vtx_app.hpp"
-#include "app/action/application.hpp"
 #include "app/action/mode.hpp"
-#include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
-#include "app/component/io/scene_file_info.hpp"
-#include "app/component/render/camera.hpp"
-#include "app/component/render/proxy_system.hpp"
-#include "app/controller/camera/trackball.hpp"
 #include "app/core/action/action_system.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/core/library/library_system.hpp"
-#include "app/core/threading/base_thread.hpp"
-#include "app/core/threading/threading_system.hpp"
 #include "app/entity/scene.hpp"
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
@@ -19,23 +11,16 @@
 #include "app/library/preset/render_settings.hpp"
 #include "app/library/preset/representation.hpp"
 #include "app/mode/visualization.hpp"
+#include "app/python_binding/interpretor.hpp"
 #include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
-#include "app/selection/selection_manager.hpp"
 #include "app/services.hpp"
 #include "app/settings.hpp"
-#include "app/updater.hpp"
 #include "renderer/facade.hpp"
-#include <core/struct/representation.hpp>
 #include <exception>
-#include <io/internal/filesystem.hpp>
 #include <python_binding/interpretor.hpp>
-#include <util/chrono.hpp>
-#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/monitoring/stats.hpp>
-//
-#include "app/python_binding/interpretor.hpp"
 
 namespace VTX::App
 {
@@ -251,6 +236,5 @@ namespace VTX::App
 
 	// TODO.
 	Application::Scene & SCENE() { return APP::getScene(); }
-	Updater &			 UPDATER() { return Util::Singleton<Updater>::get(); }
 
 } // namespace VTX::App
