@@ -40,10 +40,10 @@ namespace VTX::Util::Monitoring
 			return get<T>( Util::hash( p_key ) );
 		}
 
-		bool has( const Hash & p_hashedKey ) const { return _metricsMap.contains( p_hashedKey ); }
-		bool has( const key_t & p_key ) const { return _metricsMap.contains( Util::hash( p_key ) ); }
+		inline bool has( const Hash & p_hashedKey ) const { return _metricsMap.contains( p_hashedKey ); }
+		inline bool has( const key_t & p_key ) const { return _metricsMap.contains( Util::hash( p_key ) ); }
 
-		// long long getTimestamp() const { return _timestamp; }
+		inline long long getTimestamp() const { return _timestamp; }
 
 	  private:
 		long long _timestamp;

@@ -26,7 +26,6 @@ namespace VTX::Util::Monitoring
 			}
 
 			T res = 0;
-
 			for ( const FrameInfo & frameInfo : _frames )
 			{
 				if ( frameInfo.has( p_hashedKey ) )
@@ -36,6 +35,18 @@ namespace VTX::Util::Monitoring
 			}
 
 			return res / T( _frames.size() );
+		}
+
+		float getAverage() const
+		{
+			if ( _frames.size() == 0 )
+			{
+				return 0;
+			}
+
+			long long res = _frames.back().getTimestamp() - _frames.front().getTimestamp();
+
+			return res / float( _frames.size() );
 		}
 
 	  private:
