@@ -73,6 +73,7 @@ namespace VTX::App::Component
 			[ this, controller_hash ]( const Vec3f & p_target )
 			{
 				SCENE().getCamera().setTargetWorld( p_target );
+				/*
 				HUB().connectOnce<Events::FrameEnded>(
 					[ this, controller_hash ]( const Events::FrameEnded & )
 					{
@@ -82,6 +83,7 @@ namespace VTX::App::Component
 						}
 					}
 				);
+				*/
 			}
 		);
 

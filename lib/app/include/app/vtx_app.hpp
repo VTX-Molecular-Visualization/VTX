@@ -53,7 +53,7 @@ namespace VTX::App
 		 */
 		inline void update( const float p_deltaTime, const float p_elapsedTime )
 		{
-			_pipeline.update( p_deltaTime, p_elapsedTime );
+			_pipeline.process( ECS::getCtx<Util::Monitoring::Stats>(), p_deltaTime, p_elapsedTime );
 		}
 
 		/**
@@ -80,9 +80,8 @@ namespace VTX::App
 		static void _handleArgs( const Args & p_args );
 	};
 
-	Application::Scene &	  SCENE();
-	Util::Monitoring::Stats & STATS();
-	Updater &				  UPDATER();
+	Application::Scene & SCENE();
+	Updater &			 UPDATER();
 } // namespace VTX::App
 
 namespace VTX

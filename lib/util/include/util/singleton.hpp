@@ -3,7 +3,9 @@
 
 namespace VTX::Util
 {
-
+	/**
+	 * @brief Basic Meyer singleton.
+	 */
 	template<typename T>
 	class Singleton final
 	{

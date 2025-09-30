@@ -1,4 +1,5 @@
 #include <QPointer>
+#include <QTimer>
 //
 #include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/input_checker.hpp"
@@ -75,10 +76,7 @@ namespace VTX::Tool::Mdprep::ui
 				if ( p_report.itemGeneric != Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField )
 					return;
 				_reportData->report = p_report;
-				App::HUB().connectOnce<App::Events::FrameEnded>(
-					[ & ]( const App::Events::FrameEnded & )
-					{ ReportResultPoster( *_reportData, std::move( _sendReportUi ) ); }
-				);
+				QTimer::singleShot( 0, [ & ]() { ReportResultPoster( *_reportData, std::move( _sendReportUi ) ); } );
 			}
 
 		  private:

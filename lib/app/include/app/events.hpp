@@ -11,16 +11,6 @@ namespace VTX::App::Events
 	{
 	};
 
-	struct FrameStarted
-	{
-	};
-
-	struct PreUpdate
-	{
-		float delta;
-		float elapsed;
-	};
-
 	struct Update
 	{
 		float delta;
@@ -43,10 +33,6 @@ namespace VTX::App::Events
 	{
 		float delta;
 		float elapsed;
-	};
-
-	struct FrameEnded
-	{
 	};
 
 	struct BlockingOperationStarted

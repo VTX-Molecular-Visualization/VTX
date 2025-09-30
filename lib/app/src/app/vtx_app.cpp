@@ -20,7 +20,6 @@
 #include "app/library/preset/render_settings.hpp"
 #include "app/library/preset/representation.hpp"
 #include "app/mode/visualization.hpp"
-#include "app/monitoring/constants.hpp"
 #include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
 #include "app/selection/selection_manager.hpp"
@@ -45,6 +44,7 @@ namespace VTX::App
 		ECS::setRegistry( _registry );
 		ECS::setCtx<Args>( p_args );
 		ECS::setCtx<Util::EventHub>();
+		ECS::setCtx<Util::Monitoring::Stats>();
 	}
 
 	void VTXApp::init()
@@ -200,18 +200,8 @@ namespace VTX::App
 		Util::CHRONO_CPU( [ p_elapsedTime ]() { onPostRender( p_elapsedTime ); } )
 	);
 
-	frameInfo.set(
-		Monitoring::END_OF_FRAME_ONE_SHOT_DURATION_KEY,
-		Util::CHRONO_CPU(
-			[ p_elapsedTime ]()
-			{
-				onEndOfFrameOneShot();
-				onEndOfFrameOneShot.clear();
-			}
-		)
 	);
-}
-*/
+	*/
 
 	void VTXApp::stop()
 	{
@@ -311,8 +301,7 @@ namespace VTX::App
 	//	}
 
 	// TODO.
-	Application::Scene &	  SCENE() { return APP::getScene(); }
-	Util::Monitoring::Stats & STATS() { return Util::Singleton<Util::Monitoring::Stats>::get(); }
-	Updater &				  UPDATER() { return Util::Singleton<Updater>::get(); }
+	Application::Scene & SCENE() { return APP::getScene(); }
+	Updater &			 UPDATER() { return Util::Singleton<Updater>::get(); }
 
 } // namespace VTX::App

@@ -1,5 +1,4 @@
 #include "ui/qt/widget/status_bar.hpp"
-#include "app/monitoring/constants.hpp"
 #include <app/core/renderer/renderer_system.hpp>
 #include <app/vtx_app.hpp>
 #include <util/monitoring/stats.hpp>
@@ -39,9 +38,9 @@ namespace VTX::UI::QT::Widget
 			this,
 			[ this, fpsLabel ]()
 			{
-				const double tickrate = App::STATS().getAverage<double>( App::Monitoring::TICK_RATE_KEY );
+				// const double tickrate = App::STATS().getAverage<double>( App::Monitoring::TICK_RATE_KEY );
 
-				fpsLabel->setText( QString( "%1 FPS" ).arg( uint( 1000.0 / tickrate ) ) );
+				// fpsLabel->setText( QString( "%1 FPS" ).arg( uint( 1000.0 / tickrate ) ) );
 			}
 		);
 		timer->start( 1000 );

@@ -2,7 +2,6 @@
 #define __VTX_RENDERER_CONTEXT_GL_CHRONO__
 
 #include <cassert>
-#include <util/chrono.hpp>
 
 namespace VTX::Renderer::Context::GL
 {
@@ -48,14 +47,15 @@ namespace VTX::Renderer::Context::GL
 		uint32_t _queryEnd	 = 0;
 	};
 
-	inline const float CHRONO_GPU( const Util::Chrono::Task & p_task )
+	template<class F, class... Args>
+		requires( std::is_void_v<std::invoke_result_t<F, Args...>> )
+	inline float CHRONO_GPU( F && p_f, Args &&... p_args )
 	{
 		Chrono c;
 		c.start();
-		p_task();
-		c.stop();
+		std::invoke( std::forward<F>( p_f ), std::forward<Args>( p_args )... );
 		return float( c.stop() );
-	};
+	}
 } // namespace VTX::Renderer::Context::GL
 
 #endif
