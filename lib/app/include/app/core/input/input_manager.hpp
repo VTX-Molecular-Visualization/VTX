@@ -7,6 +7,7 @@
 #include <set>
 #include <util/callback.hpp>
 #include <util/concepts.hpp>
+#include <util/enum.hpp>
 #include <util/singleton.hpp>
 #include <util/types.hpp>
 
@@ -22,7 +23,7 @@ namespace VTX::App::Core::Input
 		static Key			  getKeyFromQwerty( const Key p_key );
 
 	  private:
-		static ModifierEnum _getModifierFromKey( const Key & p_key );
+		static Modifier _getModifierFromKey( const Key & p_key );
 
 	  public:
 		InputManager();
@@ -44,10 +45,10 @@ namespace VTX::App::Core::Input
 			return false;
 		}
 
-		inline const ModifierFlag & getCurrentModifiers() const { return _modifiers; }
-		bool						isModifier( const ModifierFlag & p_modifier ) const;
-		bool						isModifierExclusive( const ModifierFlag & p_modifier ) const;
-		void						clearKeyboardBuffer();
+		inline const Modifier & getCurrentModifiers() const { return _modifiers; }
+		bool					isModifier( const Modifier & p_modifier ) const;
+		bool					isModifierExclusive( const Modifier & p_modifier ) const;
+		void					clearKeyboardBuffer();
 
 		Util::Callback<Key> onKeyPressed;
 		Util::Callback<Key> onKeyReleased;
@@ -103,7 +104,7 @@ namespace VTX::App::Core::Input
 
 		// Keyboard
 		std::set<Key> _pressedKeys = std::set<Key>();
-		ModifierFlag  _modifiers   = ModifierEnum::None;
+		Modifier	  _modifiers   = Modifier::None;
 
 		// Mouse
 		bool  _mouseLeftPressed		   = false;

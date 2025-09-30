@@ -1,10 +1,7 @@
 #include "app/core/input/input_manager.hpp"
 #include "app/events.hpp"
 #include "app/services.hpp"
-#include <app/vtx_app.hpp>
-#include <util/enum.hpp>
 #include <util/event_hub.hpp>
-#include <util/logger.hpp>
 #include <util/math.hpp>
 
 namespace VTX::App::Core::Input
@@ -71,8 +68,8 @@ namespace VTX::App::Core::Input
 		if ( p_event.isRepeating )
 			return;
 
-		const Key		   key		= Key( p_event.key );
-		const ModifierEnum modifier = _getModifierFromKey( key );
+		const Key	   key		= Key( p_event.key );
+		const Modifier modifier = _getModifierFromKey( key );
 
 		switch ( p_event.type )
 		{
@@ -80,7 +77,7 @@ namespace VTX::App::Core::Input
 		{
 			_pressedKeys.emplace( key );
 
-			if ( modifier != ModifierEnum::None )
+			if ( modifier != Modifier::None )
 				_modifiers |= modifier;
 
 			onKeyPressed( key );
@@ -91,8 +88,10 @@ namespace VTX::App::Core::Input
 		{
 			_pressedKeys.erase( key );
 
-			if ( modifier != ModifierEnum::None )
-				_modifiers &= !modifier;
+			if ( modifier != Modifier::None )
+			{
+				_modifiers &= compl modifier;
+			}
 
 			onKeyReleased( key );
 			break;
@@ -105,15 +104,12 @@ namespace VTX::App::Core::Input
 	{
 		return _pressedKeys.find( p_key ) != _pressedKeys.end();
 	}
-	bool InputManager::isModifier( const ModifierFlag & p_modifier ) const
-	{
-		return uint( _modifiers & p_modifier ) != 0;
-	}
-	bool InputManager::isModifierExclusive( const ModifierFlag & p_modifier ) const { return _modifiers == p_modifier; }
+	bool InputManager::isModifier( const Modifier & p_modifier ) const { return uint( _modifiers & p_modifier ) != 0; }
+	bool InputManager::isModifierExclusive( const Modifier & p_modifier ) const { return _modifiers == p_modifier; }
 	void InputManager::clearKeyboardBuffer()
 	{
 		_pressedKeys.clear();
-		_modifiers = ModifierEnum::None;
+		_modifiers = Modifier::None;
 	}
 
 	// Mouse
@@ -248,7 +244,7 @@ namespace VTX::App::Core::Input
 	}
 	void InputManager::_handleMouseWheelEvent( const WheelEvent & p_event )
 	{
-		if ( isModifier( ModifierEnum::Alt ) )
+		if ( isModifier( Modifier::Alt ) )
 			_deltaMouseWheel = p_event.angleDelta.x;
 		else
 			_deltaMouseWheel = p_event.angleDelta.y;
@@ -260,17 +256,17 @@ namespace VTX::App::Core::Input
 		clearKeyboardBuffer();
 	}
 
-	ModifierEnum InputManager::_getModifierFromKey( const Key & p_key )
+	Modifier InputManager::_getModifierFromKey( const Key & p_key )
 	{
-		ModifierEnum modifier;
+		Modifier modifier;
 
 		switch ( p_key )
 		{
-		case Key::Key_Control: modifier = ModifierEnum::Ctrl; break;
-		case Key::Key_Shift: modifier = ModifierEnum::Shift; break;
-		case Key::Key_Alt: modifier = ModifierEnum::Alt; break;
-		case Key::Key_AltGr: modifier = ModifierEnum::AltGr; break;
-		default: modifier = ModifierEnum::None; break;
+		case Key::Key_Control: modifier = Modifier::Ctrl; break;
+		case Key::Key_Shift: modifier = Modifier::Shift; break;
+		case Key::Key_Alt: modifier = Modifier::Alt; break;
+		case Key::Key_AltGr: modifier = Modifier::AltGr; break;
+		default: modifier = Modifier::None; break;
 		}
 
 		return modifier;

@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_CORE_INPUT_KEYS__
 #define __VTX_APP_CORE_INPUT_KEYS__
 
-#include <util/enum_flag.hpp>
+#include <util/enum.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Core::Input
@@ -81,19 +81,18 @@ namespace VTX::App::Core::Input
 		Key_Unkown
 	};
 
-	enum ModifierEnum
+	enum struct Modifier
 	{
+		VTX_ENUM_ENABLE_BITMASK,
 		None  = 0,
 		Ctrl  = 1 << 0,
 		Shift = 1 << 1,
 		Alt	  = 1 << 2,
-		AltGr = 1 << 3,
-
-		Ctrl_Shift = Ctrl | Shift,
-		Ctrl_Alt   = Ctrl | Alt,
-
+		AltGr = 1 << 3
 	};
-	VTX_FLAG( ModifierFlag, ModifierEnum );
+
+	inline constexpr Modifier Ctrl_Shift = Modifier::Ctrl | Modifier::Shift;
+	inline constexpr Modifier Ctrl_Alt	 = Modifier::Ctrl | Modifier::Alt;
 
 	enum struct KeyboardLayout
 	{
@@ -102,4 +101,5 @@ namespace VTX::App::Core::Input
 	};
 
 } // namespace VTX::App::Core::Input
+
 #endif

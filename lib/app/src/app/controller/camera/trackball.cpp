@@ -117,11 +117,11 @@ namespace VTX::App::Controller::Camera
 		{
 			deltaDistance *= translationSpeed;
 
-			if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Shift ) )
+			if ( INPUT_MANAGER().isModifierExclusive( Input::Modifier::Shift ) )
 			{
 				deltaDistance *= accelerationFactor;
 			}
-			if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Alt ) )
+			if ( INPUT_MANAGER().isModifierExclusive( Input::Modifier::Alt ) )
 			{
 				deltaDistance /= decelerationFactor;
 			}
@@ -131,11 +131,11 @@ namespace VTX::App::Controller::Camera
 
 		if ( deltaVelocity != VEC3F_ZERO )
 		{
-			if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Shift ) )
+			if ( INPUT_MANAGER().isModifierExclusive( Input::Modifier::Shift ) )
 			{
 				deltaVelocity *= accelerationFactor;
 			}
-			if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Alt ) )
+			if ( INPUT_MANAGER().isModifierExclusive( Input::Modifier::Alt ) )
 			{
 				deltaVelocity /= decelerationFactor;
 			}

@@ -96,7 +96,7 @@ namespace VTX::App::Controller::Picker
 			return;
 		}
 
-		if ( INPUT_MANAGER().isModifierExclusive( Core::Input::ModifierEnum::None ) )
+		if ( INPUT_MANAGER().isModifierExclusive( Core::Input::Modifier::None ) )
 		{
 			// App::VTX_ACTION().execute<QT::Action::Selection::Orient>( App::CURRENT_SELECTION() );
 		}
@@ -107,7 +107,7 @@ namespace VTX::App::Controller::Picker
 		// Append to selection if CTRL modifier pressed.
 		// TODO: move to action? Is input manager still needed?
 		const App::Component::Scene::Pickable::PickType pickType
-			= INPUT_MANAGER().isModifierExclusive( Core::Input::ModifierEnum::Ctrl )
+			= INPUT_MANAGER().isModifierExclusive( Core::Input::Modifier::Ctrl )
 				  ? App::Component::Scene::Pickable::PickType::TOGGLE
 				  : App::Component::Scene::Pickable::PickType::SET;
 

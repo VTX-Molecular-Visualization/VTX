@@ -2,7 +2,7 @@
 
 namespace VTX::App::Core::Input
 {
-	bool KeySequence::match( const Key & p_key, const ModifierFlag & p_modifier ) const
+	bool KeySequence::match( const Key & p_key, const Modifier & p_modifier ) const
 	{
 		return _key == p_key && _modifier == p_modifier;
 	}

@@ -18,7 +18,7 @@ namespace VTX::App::Core::Input
 		void referenceShortcut( const Shortcut & p_shortcut );
 		void removeShortcut( const Shortcut & p_shortcut );
 
-		const Shortcut * tryGet( const Key & p_key, const ModifierFlag & p_modifiers ) const;
+		const Shortcut * tryGet( const Key & p_key, const Modifier & p_modifiers ) const;
 
 	  private:
 		std::map<Key, std::set<Shortcut>> _mapTriggerKeyShortcut = std::map<Key, std::set<Shortcut>>();

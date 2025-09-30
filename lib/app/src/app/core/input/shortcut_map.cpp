@@ -7,7 +7,7 @@ namespace VTX::App::Core::Input
 		_mapTriggerKeyShortcut[ p_shortcut.getSequence().getKey() ].emplace( p_shortcut );
 	}
 
-	const Shortcut * ShortcutMap::tryGet( const Input::Key & p_key, const Input::ModifierFlag & p_modifiers ) const
+	const Shortcut * ShortcutMap::tryGet( const Input::Key & p_key, const Input::Modifier & p_modifiers ) const
 	{
 		auto it = _mapTriggerKeyShortcut.find( p_key );
 

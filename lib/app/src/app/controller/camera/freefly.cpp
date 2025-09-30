@@ -76,11 +76,11 @@ namespace VTX::App::Controller::Camera
 		translation *= translationSpeed;
 		translation *= p_deltaTime * 1e-3f;
 
-		if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Shift ) )
+		if ( INPUT_MANAGER().isModifierExclusive( Input::Modifier::Shift ) )
 		{
 			translation *= accelerationFactor;
 		}
-		if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Alt ) )
+		if ( INPUT_MANAGER().isModifierExclusive( Input::Modifier::Alt ) )
 		{
 			translation /= decelerationFactor;
 		}
