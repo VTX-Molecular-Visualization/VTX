@@ -13,42 +13,45 @@ namespace VTX::Util::Monitoring
 	struct FrameInfo
 	{
 	  public:
-		using key_t = std::string;
+		FrameInfo() : _timepoint( Util::Chrono::now() ) {}
 
-	  public:
-		FrameInfo();
-		bool isValid() const;
-
+		/**
+		 * @brief Sets the value associated with a given hash.
+		 */
 		template<typename T>
 		void set( const Hash & p_hashedKey, const T & p_value )
 		{
 			_metricsMap[ p_hashedKey ] = p_value;
 		}
-		template<typename T>
-		void set( const key_t & p_key, const T & p_value )
-		{
-			set( Util::hash( p_key ), p_value );
-		}
 
+		/**
+		 * @brief Gets the value associated with the specified hash.
+		 */
 		template<typename T>
 		const T get( const Hash & p_hashedKey ) const
 		{
 			return _metricsMap.at( p_hashedKey ).get<T>();
 		}
-		template<typename T>
-		const T get( const key_t & p_key ) const
-		{
-			return get<T>( Util::hash( p_key ) );
-		}
 
+		/**
+		 * @brief Checks if the specified hashed key exists.
+		 */
 		inline bool has( const Hash & p_hashedKey ) const { return _metricsMap.contains( p_hashedKey ); }
-		inline bool has( const key_t & p_key ) const { return _metricsMap.contains( Util::hash( p_key ) ); }
 
+		/**
+		 * @brief Get the frame start time point.
+		 */
 		inline Util::Chrono::TimePoint getTimepoint() const { return _timepoint; }
 
 	  private:
+		/**
+		 * @brief Frame start time point.
+		 */
 		Util::Chrono::TimePoint _timepoint;
 
+		/**
+		 * @brief Stored data.
+		 */
 		std::map<Hash, Util::VTXVariant> _metricsMap;
 	};
 } // namespace VTX::Util::Monitoring

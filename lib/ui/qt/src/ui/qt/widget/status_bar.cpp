@@ -38,7 +38,7 @@ namespace VTX::UI::QT::Widget
 			this,
 			[ this, fpsLabel ]()
 			{
-				const float tickrate = App::ECS::getCtx<Util::Monitoring::Stats>().getAverage();
+				const float tickrate = App::ECS::getCtx<Util::Monitoring::Stats>().average();
 				fpsLabel->setText( QString( "%1 FPS" ).arg( uint( 1000.0 / tickrate ) ) );
 			}
 		);
