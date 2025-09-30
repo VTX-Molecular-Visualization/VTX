@@ -29,7 +29,6 @@ int main()
 		}
 		std::cout << "Commencing calculation.\n";
 		pdb100::testSystems( context );
-		chrono.stop();
 		std::cout << "Calculation is over. It took " << chrono.elapsedTime() / 60000 << "min.\n";
 	}
 	catch ( std::exception & e )

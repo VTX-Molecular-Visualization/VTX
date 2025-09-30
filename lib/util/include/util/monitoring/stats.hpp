@@ -39,18 +39,18 @@ namespace VTX::Util::Monitoring
 
 		float getAverage() const
 		{
-			if ( _frames.size() == 0 )
+			if ( _frames.size() < 2 )
 			{
 				return 0;
 			}
 
-			long long res = _frames.back().getTimestamp() - _frames.front().getTimestamp();
+			float res = Util::Chrono::elapsedTime( _frames.front().getTimepoint(), _frames.back().getTimepoint() );
 
-			return res / float( _frames.size() );
+			return res / float( _frames.size() - 1 );
 		}
 
 	  private:
-		static const uint ACTIVE_FRAME_COUNT = 1000;
+		inline static const uint ACTIVE_FRAME_COUNT = 1000;
 
 		std::list<FrameInfo> _frames;
 	};

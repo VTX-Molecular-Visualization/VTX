@@ -105,12 +105,10 @@ namespace VTX::UI::QT
 		connect(
 			&_timer,
 			&QTimer::timeout,
-			[ this ] { VTXApp::update( _deltaTimer.intervalTime(), _elapsedTimer.elapsedTime() ); }
+			[ this ] { VTXApp::update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); }
 		);
 		_timer.start( 0 );
-		//_timer.setTimerType( Qt::PreciseTimer );
-		_elapsedTimer.start();
-		_deltaTimer.start();
+		_durationTimer.start();
 
 		// Then block to run Qt events loop.
 		exec();

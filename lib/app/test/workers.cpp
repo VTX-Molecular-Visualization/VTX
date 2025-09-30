@@ -52,7 +52,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration][workers][wait]" )
 	Util::Chrono chrono = Util::Chrono();
 	chrono.start();
 	threadToWait.wait();
-	chrono.stop();
+
 	CHECK( threadToWait.isFinished() );
 	CHECK( chrono.elapsedTime() > 1.3f ); // Ensure wait sufficient time (sleep_for not really accurate).
 }
@@ -71,7 +71,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration][workers][stop]" )
 	threadToStop.stop();
 	threadToStop.wait();
 	CHECK( threadToStop.isFinished() );
-	chrono.stop();
+
 	CHECK( threadToStop.get<int>() == MANUALLY_STOPPED_THREAD ); // Ensure thread stopped before it's real end.
 
 	// Flush WorkerManager

@@ -303,7 +303,6 @@ namespace VTX::IO::Reader
 #endif // DEBUG
 		}
 
-		timeReadingFrames.stop();
 		// VTX_INFO( "Frames read in: {}s", timeReadingFrames.elapsedTime() );
 
 		// Erase supernumeraries frames

@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <util/chrono.hpp>
 #include <util/hashing.hpp>
 #include <util/variant.hpp>
 #include <utility>
@@ -43,10 +44,10 @@ namespace VTX::Util::Monitoring
 		inline bool has( const Hash & p_hashedKey ) const { return _metricsMap.contains( p_hashedKey ); }
 		inline bool has( const key_t & p_key ) const { return _metricsMap.contains( Util::hash( p_key ) ); }
 
-		inline long long getTimestamp() const { return _timestamp; }
+		inline Util::Chrono::TimePoint getTimepoint() const { return _timepoint; }
 
 	  private:
-		long long _timestamp;
+		Util::Chrono::TimePoint _timepoint;
 
 		std::map<Hash, Util::VTXVariant> _metricsMap;
 	};

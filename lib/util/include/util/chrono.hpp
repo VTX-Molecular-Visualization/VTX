@@ -7,28 +7,67 @@
 
 namespace VTX::Util
 {
+	/**
+	 * @brief Provides utility functions for measuring time intervals using a steady clock.
+	 * Measures time in milliseconds with floating-point precision.
+	 */
 	class Chrono
 	{
 	  public:
-		// using Timer = std::function<float( const Chrono::Task & )>;
+		using Clock		= std::chrono::steady_clock;
+		using Duration	= std::chrono::duration<float, std::milli>;
+		using TimePoint = Clock::time_point;
+		using TimeUnit	= std::chrono::milliseconds;
 
-		static long long getTimestamp() noexcept;
+		/**
+		 * @brief Returns the current timestamp.
+		 */
+		inline static long long getTimestamp() noexcept
+		{
+			return std::chrono::duration_cast<TimeUnit>( now().time_since_epoch() ).count();
+		}
 
-		void  start() noexcept;
-		void  stop() noexcept;
-		float elapsedTime() const noexcept;
-		float intervalTime() noexcept;
+		/**
+		 * @brief Returns the current time point.
+		 */
+		inline static TimePoint now() noexcept { return Clock::now(); }
+
+		/**
+		 * @brief Calculates the elapsed time between two time points.
+		 */
+		inline static float elapsedTime( const TimePoint p_start, const TimePoint p_end = now() ) noexcept
+		{
+			return std::chrono::duration_cast<Duration>( p_end - p_start ).count();
+		}
+
+		/**
+		 * @brief Start or restart the chrono.
+		 */
+		inline void start() noexcept { _begin = _interval = now(); }
+
+		/**
+		 * @brief Time since start.
+		 */
+		inline float elapsedTime() const noexcept { return elapsedTime( _begin ); }
+
+		/**
+		 * @brief Time since last call.
+		 */
+		inline float intervalTime() noexcept
+		{
+			float intervalTime = elapsedTime( _interval );
+			_interval		   = now();
+			return intervalTime;
+		}
 
 	  private:
-		using SystemClock = std::chrono::system_clock;
-		using Clock		  = std::chrono::steady_clock;
-		using Duration	  = std::chrono::duration<float, std::milli>;
-
-		Clock::time_point _begin;
-		Clock::time_point _interval;
-		Clock::time_point _end;
+		TimePoint _begin;
+		TimePoint _interval;
 	};
 
+	/**
+	 * @brief Utility function to measure the execution time of a callable.
+	 */
 	template<class F, class... Args>
 		requires( std::is_void_v<std::invoke_result_t<F, Args...>> )
 	inline float CHRONO_CPU( F && p_f, Args &&... p_args )
@@ -36,7 +75,6 @@ namespace VTX::Util
 		Chrono c;
 		c.start();
 		std::invoke( std::forward<F>( p_f ), std::forward<Args>( p_args )... );
-		c.stop();
 		return c.elapsedTime();
 	}
 } // namespace VTX::Util

@@ -3,7 +3,7 @@
 
 namespace VTX::Util::Monitoring
 {
-	FrameInfo::FrameInfo() : _timestamp( Util::Chrono::getTimestamp() ) {}
+	FrameInfo::FrameInfo() : _timepoint( Util::Chrono::now() ) {}
 
 	bool FrameInfo::isValid() const { return _metricsMap.size() > 0; }
 
