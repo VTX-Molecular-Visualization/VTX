@@ -7,50 +7,27 @@
 namespace VTX
 {
 
-	template<typename>
-	struct is_vec2f : std::false_type
-	{
-	};
-	template<>
-	struct is_vec2f<Vec2f> : std::true_type
-	{
-	};
+	template<class T>
+	using is_vec2f = std::is_same<std::remove_cvref_t<T>, Vec2f>;
+	template<class T>
+	using is_vec2i = std::is_same<std::remove_cvref_t<T>, Vec2i>;
+	template<class T>
+	using is_vec3f = std::is_same<std::remove_cvref_t<T>, Vec3f>;
+	template<class T>
+	using is_vec3i = std::is_same<std::remove_cvref_t<T>, Vec3i>;
+	template<class T>
+	using is_color4 = std::is_same<std::remove_cvref_t<T>, Util::Color::Rgba>;
 
-	template<typename>
-	struct is_vec2i : std::false_type
-	{
-	};
-	template<>
-	struct is_vec2i<Vec2i> : std::true_type
-	{
-	};
-
-	template<typename>
-	struct is_vec3f : std::false_type
-	{
-	};
-	template<>
-	struct is_vec3f<Vec3f> : std::true_type
-	{
-	};
-
-	template<typename>
-	struct is_vec3i : std::false_type
-	{
-	};
-	template<>
-	struct is_vec3i<Vec3i> : std::true_type
-	{
-	};
-
-	template<typename>
-	struct is_color4 : std::false_type
-	{
-	};
-	template<>
-	struct is_color4<Util::Color::Rgba> : std::true_type
-	{
-	};
+	template<class T>
+	inline constexpr bool is_vec2f_v = is_vec2f<T>::value;
+	template<class T>
+	inline constexpr bool is_vec2i_v = is_vec2i<T>::value;
+	template<class T>
+	inline constexpr bool is_vec3f_v = is_vec3f<T>::value;
+	template<class T>
+	inline constexpr bool is_vec3i_v = is_vec3i<T>::value;
+	template<class T>
+	inline constexpr bool is_color4_v = is_color4<T>::value;
 
 } // namespace VTX
 
