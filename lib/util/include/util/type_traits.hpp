@@ -6,7 +6,9 @@
 
 namespace VTX
 {
-
+	/**
+	 * @brief Type trait that checks if a type is T, ignoring const, volatile, and reference qualifiers.
+	 */
 	template<class T>
 	using is_vec2f = std::is_same<std::remove_cvref_t<T>, Vec2f>;
 	template<class T>
