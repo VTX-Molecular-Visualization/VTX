@@ -1,9 +1,8 @@
 #include "app/controller/picker/selection.hpp"
-#include "app/action/action_manager.hpp"
 #include "app/application/scene_utility.hpp"
 #include "app/component/scene/pickable.hpp"
 #include "app/core/ecs/registry.hpp"
-#include "app/core/input/input_manager.hpp"
+#include "app/input/input_manager.hpp"
 #include "app/selection/selection.hpp"
 #include "app/selection/selection_manager.hpp"
 #include "app/services.hpp"
@@ -35,20 +34,20 @@ namespace VTX::App::Controller::Picker
 		// Connect/disconnect mouse events.
 		if ( p_active )
 		{
-			_mouseLeftClickCallbackID = INPUT_MANAGER().onMouseLeftClicked +=
+			_mouseLeftClickCallbackID = INPUT().onMouseLeftClicked +=
 				[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftClick( p_mousePosition ); };
 
-			_mouseLeftDoubleClickCallbackID = INPUT_MANAGER().onMouseLeftDoubleClicked +=
+			_mouseLeftDoubleClickCallbackID = INPUT().onMouseLeftDoubleClicked +=
 				[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftDoubleClick( p_mousePosition ); };
 
-			_mouseRightClickCallbackID = INPUT_MANAGER().onMouseRightClicked +=
+			_mouseRightClickCallbackID = INPUT().onMouseRightClicked +=
 				[ this ]( const Vec2i & p_mousePosition ) { _onMouseRightClick( p_mousePosition ); };
 		}
 		else
 		{
-			INPUT_MANAGER().onMouseLeftClicked -= _mouseLeftClickCallbackID;
-			INPUT_MANAGER().onMouseLeftDoubleClicked -= _mouseLeftDoubleClickCallbackID;
-			INPUT_MANAGER().onMouseRightClicked -= _mouseRightClickCallbackID;
+			INPUT().onMouseLeftClicked -= _mouseLeftClickCallbackID;
+			INPUT().onMouseLeftDoubleClicked -= _mouseLeftDoubleClickCallbackID;
+			INPUT().onMouseRightClicked -= _mouseRightClickCallbackID;
 		}
 	}
 
@@ -96,7 +95,7 @@ namespace VTX::App::Controller::Picker
 			return;
 		}
 
-		if ( INPUT_MANAGER().isModifierExclusive( Core::Input::Modifier::None ) )
+		if ( INPUT().isModifierExclusive( Input::Modifier::None ) )
 		{
 			// App::VTX_ACTION().execute<QT::Action::Selection::Orient>( App::CURRENT_SELECTION() );
 		}
@@ -107,9 +106,8 @@ namespace VTX::App::Controller::Picker
 		// Append to selection if CTRL modifier pressed.
 		// TODO: move to action? Is input manager still needed?
 		const App::Component::Scene::Pickable::PickType pickType
-			= INPUT_MANAGER().isModifierExclusive( Core::Input::Modifier::Ctrl )
-				  ? App::Component::Scene::Pickable::PickType::TOGGLE
-				  : App::Component::Scene::Pickable::PickType::SET;
+			= INPUT().isModifierExclusive( Input::Modifier::Ctrl ) ? App::Component::Scene::Pickable::PickType::TOGGLE
+																   : App::Component::Scene::Pickable::PickType::SET;
 
 		if ( not p_pickingInfo.hasValue() )
 		{

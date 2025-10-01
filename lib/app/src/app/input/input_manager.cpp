@@ -1,10 +1,10 @@
-#include "app/core/input/input_manager.hpp"
+#include "app/input/input_manager.hpp"
 #include "app/events.hpp"
 #include "app/services.hpp"
 #include <util/event_hub.hpp>
 #include <util/math.hpp>
 
-namespace VTX::App::Core::Input
+namespace VTX::App::Input
 {
 	KeyboardLayout InputManager::getKeyboardLayout()
 	{
@@ -277,4 +277,4 @@ namespace VTX::App::Core::Input
 	//	Controller::BaseKeyboardController::clearKey( p_key );
 	// }
 
-} // namespace VTX::App::Core::Input
+} // namespace VTX::App::Input

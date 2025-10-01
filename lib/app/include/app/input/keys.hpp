@@ -1,10 +1,10 @@
-#ifndef __VTX_APP_CORE_INPUT_KEYS__
-#define __VTX_APP_CORE_INPUT_KEYS__
+#ifndef __VTX_APP_INPUT_KEYS__
+#define __VTX_APP_INPUT_KEYS__
 
 #include <util/enum.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Core::Input
+namespace VTX::App::Input
 {
 
 	enum struct Key
@@ -100,6 +100,6 @@ namespace VTX::App::Core::Input
 		AZERTY
 	};
 
-} // namespace VTX::App::Core::Input
+} // namespace VTX::App::Input
 
 #endif

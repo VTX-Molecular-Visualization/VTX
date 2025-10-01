@@ -1,10 +1,10 @@
-#ifndef __VTX_APP_CORE_INPUT_KEY_SEQUENCE__
-#define __VTX_APP_CORE_INPUT_KEY_SEQUENCE__
+#ifndef __VTX_APP_INPUT_KEY_SEQUENCE__
+#define __VTX_APP_INPUT_KEY_SEQUENCE__
 
 #include "keys.hpp"
 #include <compare>
 
-namespace VTX::App::Core::Input
+namespace VTX::App::Input
 {
 	class KeySequence
 	{
@@ -25,5 +25,5 @@ namespace VTX::App::Core::Input
 		Key		 _key;
 		Modifier _modifier;
 	};
-} // namespace VTX::App::Core::Input
+} // namespace VTX::App::Input
 #endif

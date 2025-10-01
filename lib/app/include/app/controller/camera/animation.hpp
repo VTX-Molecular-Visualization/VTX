@@ -3,7 +3,7 @@
 
 #include "app/animation/concepts.hpp"
 #include "app/controller/base_controller.hpp"
-#include "app/core/input/key_mapping.hpp"
+#include "app/input/key_mapping.hpp"
 #include "app/settings.hpp"
 #include <util/hashing.hpp>
 

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CORE_INPUT_SHORTCUT_MAP__
-#define __VTX_APP_CORE_INPUT_SHORTCUT_MAP__
+#ifndef __VTX_APP_INPUT_SHORTCUT_MAP__
+#define __VTX_APP_INPUT_SHORTCUT_MAP__
 
 #include "keys.hpp"
 #include "shortcut.hpp"
@@ -7,7 +7,7 @@
 #include <map>
 #include <set>
 
-namespace VTX::App::Core::Input
+namespace VTX::App::Input
 {
 	class ShortcutMap
 	{
@@ -23,5 +23,5 @@ namespace VTX::App::Core::Input
 	  private:
 		std::map<Key, std::set<Shortcut>> _mapTriggerKeyShortcut = std::map<Key, std::set<Shortcut>>();
 	};
-} // namespace VTX::App::Core::Input
+} // namespace VTX::App::Input
 #endif

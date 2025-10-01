@@ -25,6 +25,10 @@ namespace VTX::App
 	{
 		class ActionManager;
 	}
+	namespace Input
+	{
+		class InputManager;
+	}
 } // namespace VTX::App
 namespace VTX::App
 {
@@ -48,6 +52,10 @@ namespace VTX::App
 	 * @brief Action manager.
 	 */
 	inline Action::ActionManager & ACTION() { return ECS::getCtx<Action::ActionManager>(); }
+	/**
+	 * @brief Input manager.
+	 */
+	inline Input::InputManager & INPUT() { return ECS::getCtx<Input::InputManager>(); }
 } // namespace VTX::App
 
 #endif

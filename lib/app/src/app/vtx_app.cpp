@@ -7,6 +7,7 @@
 #include "app/entity/scene.hpp"
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
+#include "app/input/input_manager.hpp"
 #include "app/library/preset/color_layout.hpp"
 #include "app/library/preset/render_settings.hpp"
 #include "app/library/preset/representation.hpp"
@@ -39,6 +40,8 @@ namespace VTX::App
 		ECS::setCtx<Renderer::Facade>();
 		// Store action manager.
 		ECS::setCtx<Action::ActionManager>();
+		// Store input manager.
+		ECS::setCtx<Input::InputManager>();
 	}
 
 	void VTXApp::init()

@@ -1,6 +1,6 @@
-#include "app/core/input/shortcut_map.hpp"
+#include "app/input/shortcut_map.hpp"
 
-namespace VTX::App::Core::Input
+namespace VTX::App::Input
 {
 	void ShortcutMap::referenceShortcut( const Shortcut & p_shortcut )
 	{
@@ -24,4 +24,4 @@ namespace VTX::App::Core::Input
 
 		return nullptr;
 	}
-} // namespace VTX::App::Core::Input
+} // namespace VTX::App::Input

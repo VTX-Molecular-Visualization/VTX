@@ -1,10 +1,10 @@
-#ifndef __VTX_APP_CORE_INPUT_EVENTS__
-#define __VTX_APP_CORE_INPUT_EVENTS__
+#ifndef __VTX_APP_INPUT_EVENTS__
+#define __VTX_APP_INPUT_EVENTS__
 
 #include "keys.hpp"
 #include <util/types.hpp>
 
-namespace VTX::App::Core::Input
+namespace VTX::App::Input
 {
 	struct MouseEvent
 	{
@@ -53,5 +53,5 @@ namespace VTX::App::Core::Input
 		Vec2i angleDelta;
 	};
 
-} // namespace VTX::App::Core::Input
+} // namespace VTX::App::Input
 #endif

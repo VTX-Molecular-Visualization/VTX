@@ -2,7 +2,7 @@
 #define __VTX_APP_CONTROLLER_CAMERA_TRACKBALL__
 
 #include "app/controller/base_controller.hpp"
-#include "app/core/input/key_mapping.hpp"
+#include "app/input/key_mapping.hpp"
 #include "app/settings.hpp"
 #include <app/component/render/camera.hpp>
 #include <util/hashing.hpp>

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_INPUT_INPUT_MANAGER__
-#define __VTX_UI_QT_INPUT_INPUT_MANAGER__
+#ifndef __VTX_APP_INPUT_INPUT_MANAGER__
+#define __VTX_APP_INPUT_INPUT_MANAGER__
 
 #include "events.hpp"
 #include <map>
@@ -11,7 +11,7 @@
 #include <util/singleton.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Core::Input
+namespace VTX::App::Input
 {
 	class InputManager
 	{
@@ -126,11 +126,6 @@ namespace VTX::App::Core::Input
 		// void _flushEventMouse( QMouseEvent * const, const App::Old::VTX_ID & );
 		// void _flushEventWheel( QWheelEvent * const, const App::Old::VTX_ID & );
 	};
-} // namespace VTX::App::Core::Input
-
-namespace VTX::App
-{
-	inline Core::Input::InputManager & INPUT_MANAGER() { return Util::Singleton<Core::Input::InputManager>::get(); }
-} // namespace VTX::App
+} // namespace VTX::App::Input
 
 #endif

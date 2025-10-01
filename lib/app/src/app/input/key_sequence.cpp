@@ -1,6 +1,6 @@
-#include "app/core/input/key_sequence.hpp"
+#include "app/input/key_sequence.hpp"
 
-namespace VTX::App::Core::Input
+namespace VTX::App::Input
 {
 	bool KeySequence::match( const Key & p_key, const Modifier & p_modifier ) const
 	{
@@ -18,4 +18,4 @@ namespace VTX::App::Core::Input
 
 		return p_lhs._key <=> p_rhs._key;
 	}
-} // namespace VTX::App::Core::Input
+} // namespace VTX::App::Input

@@ -1,12 +1,12 @@
-#ifndef __VTX_APP_CORE_INPUT_SHORTCUT__
-#define __VTX_APP_CORE_INPUT_SHORTCUT__
+#ifndef __VTX_APP_INPUT_SHORTCUT__
+#define __VTX_APP_INPUT_SHORTCUT__
 
 #include "app/action/action_manager.hpp"
 #include "app/services.hpp"
 #include "key_sequence.hpp"
 #include <functional>
 
-namespace VTX::App::Core::Input
+namespace VTX::App::Input
 {
 	class Shortcut
 	{
@@ -41,5 +41,5 @@ namespace VTX::App::Core::Input
 		KeySequence	   _sequence;
 		ActionFunction _action;
 	};
-} // namespace VTX::App::Core::Input
+} // namespace VTX::App::Input
 #endif

@@ -2,7 +2,8 @@
 #define __VTX_APP_CORE_CONTROLLER_BASE_CONTROLLER__
 
 #include "app/component/render/camera.hpp"
-#include "app/core/input/key_mapping.hpp"
+#include "app/input/key_mapping.hpp"
+
 namespace VTX::App::Controller
 {
 
@@ -16,7 +17,7 @@ namespace VTX::App::Controller
 
 	  protected:
 		Component::Render::Camera * _camera;
-		Core::Input::KeyMapping		_mapping;
+		Input::KeyMapping			_mapping;
 	};
 
 } // namespace VTX::App::Controller
