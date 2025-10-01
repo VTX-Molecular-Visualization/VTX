@@ -62,10 +62,6 @@ namespace VTX::App
 		// TODO: move to start to handle gui dialog?
 		Settings::initSettings();
 
-		// Create scene.
-		auto sceneEntity = ECS_REGISTRY().createEntity<Entity::Scene>();
-		_scene			 = &ECS_REGISTRY().getComponent<Application::Scene>( sceneEntity );
-
 		// Init tools.
 		for ( Tool::BaseTool * const tool : _tools )
 		{
@@ -141,19 +137,9 @@ namespace VTX::App
 	{
 		VTX_INFO( "Stopping application" );
 
-		SCENE().reset();
 		RENDERER().clean();
 
-		//// Prevent events throw for nothing when quitting app
-		// Old::Manager::EventManager::get().freezeEvent( true );
-		//  Manager::WorkerManager::get().stopAll();
-
 		//_setting.backup();
-
-		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
-		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
-
-		// Old::Selection::SelectionManager::get().deleteModel();
 
 		for ( Tool::BaseTool * const tool : _tools )
 		{
@@ -233,8 +219,5 @@ namespace VTX::App
 	//		return hasSavePath && sceneHasChanged;
 	// #endif
 	//	}
-
-	// TODO.
-	Application::Scene & SCENE() { return APP::getScene(); }
 
 } // namespace VTX::App

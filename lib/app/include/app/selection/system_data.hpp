@@ -6,7 +6,6 @@
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/chemistry/system.hpp"
 #include "selection_data.hpp"
-#include <util/concepts.hpp>
 #include <util/math/range.hpp>
 #include <util/math/range_list.hpp>
 #include <util/types.hpp>
@@ -54,8 +53,7 @@ namespace VTX::App::Selection
 
 		void referenceChain( const Chain & p_chain );
 		void selectFullChain( const Chain & p_chain );
-		template<ContainerOfType<const Chain *> C>
-		void referenceChains( const C & p_chains )
+		void referenceChains( const std::span<const Chain *> & p_chains )
 		{
 			for ( const Chain * const chainPtr : p_chains )
 			{
@@ -63,8 +61,7 @@ namespace VTX::App::Selection
 					_referenceChain( *chainPtr );
 			}
 		}
-		template<ContainerOfType<const Chain *> C>
-		void selectFullChains( const C & p_chains )
+		void selectFullChains( const std::span<const Chain *> & p_chains )
 		{
 			for ( const Chain * const chainPtr : p_chains )
 			{
@@ -83,8 +80,7 @@ namespace VTX::App::Selection
 		void unselectChains( const IndexRangeList & p_chain );
 		void unselectChains( const std::initializer_list<const Chain *> & p_chains );
 		void unselectChains( const std::initializer_list<Index> & p_chains );
-		template<ContainerOfType<const Chain *> C>
-		void unselectChains( const C & p_chains )
+		void unselectChains( const std::span<const Chain *> & p_chains )
 		{
 			for ( const Chain * const chainPtr : p_chains )
 			{
@@ -105,8 +101,7 @@ namespace VTX::App::Selection
 		bool areChainsFullySelected( const IndexRangeList & p_chains ) const;
 		bool areChainsFullySelected( const std::initializer_list<const Chain *> & p_chains ) const;
 		bool areChainsFullySelected( const std::initializer_list<Index> & p_chains ) const;
-		template<ContainerOfType<const Chain *> C>
-		bool areChainSelected( const C & p_chains ) const
+		bool areChainSelected( const std::span<const Chain *> & p_chains ) const
 		{
 			for ( const Chain * const chainPtr : p_chains )
 			{
@@ -116,8 +111,7 @@ namespace VTX::App::Selection
 
 			return true;
 		}
-		template<ContainerOfType<const Chain *> C>
-		bool areChainsFullySelected( const C & p_chains ) const
+		bool areChainsFullySelected( const std::span<const Chain *> & p_chains ) const
 		{
 			for ( const Chain * const chainPtr : p_chains )
 			{
@@ -130,8 +124,7 @@ namespace VTX::App::Selection
 
 		void referenceResidue( const Residue & p_residue );
 		void selectFullResidue( const Residue & p_residue );
-		template<ContainerOfType<const Residue *> C>
-		void referenceResidues( const C & p_residues )
+		void referenceResidues( const std::span<const Residue *> & p_residues )
 		{
 			for ( const Residue * const residuePtr : p_residues )
 			{
@@ -142,8 +135,7 @@ namespace VTX::App::Selection
 				}
 			}
 		}
-		template<ContainerOfType<const Residue *> C>
-		void selectFullResidues( const C & p_residues )
+		void selectFullResidues( const std::span<const Residue *> & p_residues )
 		{
 			for ( const Residue * const residuePtr : p_residues )
 			{
@@ -165,8 +157,8 @@ namespace VTX::App::Selection
 		void unselectResidues( const IndexRangeList & p_residues );
 		void unselectResidues( const std::initializer_list<const Residue *> & p_residues );
 		void unselectResidues( const std::initializer_list<Index> & p_residues );
-		template<ContainerOfType<const Residue *> C>
-		void unselectResidues( const C & p_residues )
+
+		void unselectResidues( const std::span<const Residue *> & p_residues )
 		{
 			for ( const Residue * const residuePtr : p_residues )
 			{
@@ -188,8 +180,7 @@ namespace VTX::App::Selection
 		bool areResiduesFullySelected( const std::initializer_list<const Residue *> & p_residues ) const;
 		bool areResiduesFullySelected( const std::initializer_list<Index> & p_residues ) const;
 
-		template<ContainerOfType<const Residue *> C>
-		bool areResiduesSelected( const C & p_residues ) const
+		bool areResiduesSelected( const std::span<const Residue *> & p_residues ) const
 		{
 			for ( const Residue * const residuePtr : p_residues )
 			{
@@ -199,8 +190,8 @@ namespace VTX::App::Selection
 
 			return true;
 		}
-		template<ContainerOfType<const Residue *> C>
-		bool areResiduesFullySelected( const C & p_residues ) const
+
+		bool areResiduesFullySelected( const std::span<const Residue *> & p_residues ) const
 		{
 			for ( const Residue * const residuePtr : p_residues )
 			{
@@ -212,8 +203,7 @@ namespace VTX::App::Selection
 		}
 
 		void selectAtom( const Atom & p_atom );
-		template<ContainerOfType<const Residue *> C>
-		void selectAtoms( const C & p_atoms )
+		void selectAtoms( const std::span<const Atom *> & p_atoms )
 		{
 			for ( const Atom * const atomPtr : p_atoms )
 			{
@@ -233,8 +223,8 @@ namespace VTX::App::Selection
 		void unselectAtoms( const IndexRangeList & p_atoms );
 		void unselectAtoms( const std::initializer_list<const Atom *> & p_atoms );
 		void unselectAtoms( const std::initializer_list<Index> & p_atoms );
-		template<ContainerOfType<const Atom *> C>
-		void unselectAtoms( const C & p_atoms )
+
+		void unselectAtoms( const std::span<const Atom *> & p_atoms )
 		{
 			for ( const Atom * const atomPtr : p_atoms )
 			{
@@ -249,8 +239,8 @@ namespace VTX::App::Selection
 		bool areAtomsSelected( const IndexRangeList & p_atoms ) const;
 		bool areAtomsSelected( const std::initializer_list<const Atom *> & p_atoms ) const;
 		bool areAtomsSelected( const std::initializer_list<Index> & p_atoms ) const;
-		template<ContainerOfType<const Atom *> C>
-		bool areAtomsSelected( const C & p_atoms ) const
+
+		bool areAtomsSelected( const std::span<const Atom *> & p_atoms ) const
 		{
 			for ( const Atom * const atomPtr : p_atoms )
 			{

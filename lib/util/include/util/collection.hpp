@@ -4,9 +4,9 @@
 #include <functional>
 #include <iostream>
 #include <unordered_map>
-#include <util/concepts.hpp>
 #include <util/hashing.hpp>
 #include <util/singleton.hpp>
+#include <util/type_traits.hpp>
 
 #define DEBUG_HASH 0
 

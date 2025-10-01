@@ -62,9 +62,6 @@ namespace VTX::App
 		 */
 		inline void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
 
-		//  TODO: remove.
-		inline static Application::Scene & getScene() { return *_scene; }
-
 	  protected:
 		/**
 		 * @brief External tools.
@@ -89,14 +86,6 @@ namespace VTX::App
 		void _handleArgs( const Args & p_args );
 	};
 
-	Application::Scene & SCENE();
-
 } // namespace VTX::App
-
-namespace VTX
-{
-	// TODO: remove.
-	using APP = App::VTXApp;
-} // namespace VTX
 
 #endif

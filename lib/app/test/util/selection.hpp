@@ -4,7 +4,6 @@
 #include <app/selection/selection.hpp>
 #include <app/selection/system_data.hpp>
 #include <string>
-#include <util/concepts.hpp>
 #include <util/math/range_list.hpp>
 
 namespace VTX::App::Test::Util
@@ -41,8 +40,7 @@ namespace VTX::App::Test::Util
 			return res;
 		}
 
-		template<ContainerOfType<const SelectionData *> C>
-		static SelectionObj createSelection( const C & p_items )
+		static SelectionObj createSelection( const std::span<const SelectionData *> & p_items )
 		{
 			SelectionObj res = SelectionObj();
 

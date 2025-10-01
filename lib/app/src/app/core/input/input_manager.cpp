@@ -104,8 +104,20 @@ namespace VTX::App::Core::Input
 	{
 		return _pressedKeys.find( p_key ) != _pressedKeys.end();
 	}
+
+	bool InputManager::isAnyKeyPressed( const std::span<Key> & p_keys ) const
+	{
+		for ( const Key & key : p_keys )
+			if ( isKeyPressed( key ) )
+				return true;
+
+		return false;
+	}
+
 	bool InputManager::isModifier( const Modifier & p_modifier ) const { return uint( _modifiers & p_modifier ) != 0; }
+
 	bool InputManager::isModifierExclusive( const Modifier & p_modifier ) const { return _modifiers == p_modifier; }
+
 	void InputManager::clearKeyboardBuffer()
 	{
 		_pressedKeys.clear();

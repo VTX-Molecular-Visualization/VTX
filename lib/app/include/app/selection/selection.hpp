@@ -8,8 +8,8 @@
 #include <concepts>
 #include <map>
 #include <set>
+#include <span>
 #include <util/callback.hpp>
-#include <util/concepts.hpp>
 #include <util/math/aabb.hpp>
 
 namespace VTX::App::Selection
@@ -195,8 +195,10 @@ namespace VTX::App::Selection
 			const AssignmentType												p_assignment = AssignmentType::SET
 		);
 
-		template<ContainerOfType<const Component::Scene::Selectable *> C>
-		void selectAll( const C & p_items, const AssignmentType p_assignment = AssignmentType::SET )
+		void selectAll(
+			const std::span<const Component::Scene::Selectable *> & p_items,
+			const AssignmentType									p_assignment = AssignmentType::SET
+		)
 		{
 			if ( p_assignment == AssignmentType::SET )
 				clear();
@@ -205,8 +207,10 @@ namespace VTX::App::Selection
 				select( *item, AssignmentType::APPEND );
 		}
 
-		template<ContainerOfType<const SelectionData *> C>
-		void selectAll( const C & p_data, const AssignmentType p_assignment = AssignmentType::SET )
+		void selectAll(
+			const std::span<const SelectionData *> & p_data,
+			const AssignmentType					 p_assignment = AssignmentType::SET
+		)
 		{
 			if ( p_assignment == AssignmentType::SET )
 				clear();
@@ -216,16 +220,20 @@ namespace VTX::App::Selection
 				select( dataPtr->getSelectionComponent(), *dataPtr, AssignmentType::APPEND );
 			}
 		}
-		template<ContainerOfType<const Component::Scene::Selectable *> C1, ContainerOfType<const SelectionData *> C2>
-		void selectAll( const C1 & p_items, const C2 & p_data, const AssignmentType p_assignment = AssignmentType::SET )
+
+		void selectAll(
+			const std::span<const Component::Scene::Selectable *> & p_items,
+			const std::span<const SelectionData *> &				p_data,
+			const AssignmentType									p_assignment = AssignmentType::SET
+		)
 		{
 			assert( p_items.size() == p_data.size() );
 
 			if ( p_assignment == AssignmentType::SET )
 				clear();
 
-			typename C1::iterator itItem = p_items.begin();
-			typename C2::iterator itData = p_data.begin();
+			auto itItem = p_items.begin();
+			auto itData = p_data.begin();
 
 			while ( itItem != p_items.end() && itData != p_data.end() )
 			{
@@ -238,8 +246,7 @@ namespace VTX::App::Selection
 
 		void unselect( const Component::Scene::Selectable & p_selectableComponent );
 
-		template<ContainerOfType<const Component::Scene::Selectable *> C>
-		void unselectAll( const C & p_items )
+		void unselectAll( const std::span<const Component::Scene::Selectable *> & p_items )
 		{
 			for ( const Component::Scene::Selectable * const item : p_items )
 				unselect( *item );
@@ -273,8 +280,7 @@ namespace VTX::App::Selection
 			return true;
 		}
 
-		template<ContainerOfType<const SelectionData *> C>
-		bool areSelected( const C & p_items ) const
+		bool areSelected( const std::span<const SelectionData *> & p_items ) const
 		{
 			if ( p_items.size() == 0 )
 				return false;

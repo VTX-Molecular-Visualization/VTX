@@ -1,7 +1,6 @@
 #ifndef __VTX_UTIL_DATALOCKER__
 #define __VTX_UTIL_DATALOCKER__
 
-#include "concepts.hpp"
 #include <mutex>
 #include <optional>
 #include <util/exceptions.hpp>
@@ -91,8 +90,9 @@ namespace VTX::Util
 		ReservedData() = delete;
 
 		friend DataLocker<ReservedDataType>;
-		friend DataLocker<typename RemoveConst<ReservedDataType>::type>; // Very nice trick to befriend a datalocker
-																		 // while being a const data
+		using ReservedDataTypeClean = std::remove_cvref_t<ReservedDataType>;
+		friend DataLocker<typename ReservedDataTypeClean>; // Very nice trick to befriend a datalocker
+														   // while being a const data
 
 	  public:
 		ReservedDataType *		 operator->() { return _dataPtr; }
