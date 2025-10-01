@@ -1,7 +1,8 @@
 #include "util/app.hpp"
-#include <app/core/threading/base_thread.hpp>
-#include <app/core/threading/threading_system.hpp>
 #include <app/fixture.hpp>
+#include <app/services.hpp>
+#include <app/threading/base_thread.hpp>
+#include <app/threading/thread_manager.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <chrono>
@@ -17,8 +18,8 @@ namespace
 	const int FINISHED_THREAD		  = 100;
 	const int THREAD_NUM_STEPS		  = 100;
 
-	VTX::App::Core::Threading::BaseThread::StoppableAsyncOp asyncOp
-		= []( VTX::Util::StopToken p_token, VTX::App::Core::Threading::BaseThread & p_thread )
+	VTX::App::Threading::BaseThread::StoppableAsyncOp asyncOp
+		= []( VTX::Util::StopToken p_token, VTX::App::Threading::BaseThread & p_thread )
 	{
 		for ( int i = 0; i < THREAD_NUM_STEPS; i++ )
 		{
@@ -46,7 +47,7 @@ TEST_CASE( "VTX_APP - Workers", "[integration][workers][wait]" )
 
 	App::Fixture app;
 
-	App::Core::Threading::BaseThread & threadToWait = THREADING_SYSTEM().createThread( asyncOp );
+	App::Threading::BaseThread & threadToWait = THREAD().createThread( asyncOp );
 	CHECK( !threadToWait.isFinished() );
 
 	Util::Chrono chrono = Util::Chrono();
@@ -63,8 +64,8 @@ TEST_CASE( "VTX_APP - Workers", "[integration][workers][stop]" )
 
 	App::Fixture app;
 
-	Util::Chrono					   chrono		= Util::Chrono();
-	App::Core::Threading::BaseThread & threadToStop = THREADING_SYSTEM().createThread( asyncOp );
+	Util::Chrono				 chrono		  = Util::Chrono();
+	App::Threading::BaseThread & threadToStop = THREAD().createThread( asyncOp );
 	CHECK( !threadToStop.isFinished() );
 
 	chrono.start();
@@ -82,10 +83,10 @@ TEST_CASE( "VTX_APP - Workers", "[integration][workers][progress]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	App::Fixture					   app;
-	App::Core::Threading::BaseThread & thread = THREADING_SYSTEM().createThread(
+	App::Fixture				 app;
+	App::Threading::BaseThread & thread = THREAD().createThread(
 		asyncOp,
-		[]( App::Core::Threading::BaseThread & p_thread, uint p_res )
+		[]( App::Threading::BaseThread & p_thread, uint p_res )
 		{
 			const int threadData = p_thread.get<int>();
 			CHECK( p_res == 1 );

@@ -1,7 +1,8 @@
 #include <python_binding/interpretor.hpp>
 //
-#include "app/core/threading/threading_system.hpp"
 #include "app/python_binding/interpretor.hpp"
+#include "app/services.hpp"
+#include "app/threading/thread_manager.hpp"
 #include <atomic>
 #include <optional>
 #include <queue>
@@ -24,10 +25,10 @@ namespace VTX::App::PythonBinding
 	{
 	  public:
 		_Impl() :
-			_thread( &THREADING_SYSTEM().createThread(
-				[ this ]( Util::StopToken p_stopToken, App::Core::Threading::BaseThread & p_thread )
-				{ return runPythonThread( p_stopToken, p_thread ); }
-			) )
+			_thread(
+				&THREAD().createThread( [ this ]( Util::StopToken p_stopToken, App::Threading::BaseThread & p_thread )
+										{ return runPythonThread( p_stopToken, p_thread ); } )
+			)
 		{
 		}
 		~_Impl()
@@ -76,7 +77,7 @@ namespace VTX::App::PythonBinding
 			_instructions += std::move( p_instruction );
 		}
 
-		inline int runPythonThread( Util::StopToken p_stopToken, App::Core::Threading::BaseThread & _ )
+		inline int runPythonThread( Util::StopToken p_stopToken, App::Threading::BaseThread & _ )
 		{
 			_stopToken = std::move( p_stopToken );
 			_thread	   = &_;
@@ -171,7 +172,7 @@ namespace VTX::App::PythonBinding
 		std::optional<VTX::PythonBinding::Interpretor>
 			_interpretor; // Optional because it will be created and destroyed in the python thread
 		Util::DataLocker<std::queue<WaitingPythonCommand>> _lockedCmdQueue;
-		App::Core::Threading::BaseThread *				   _thread = nullptr;
+		App::Threading::BaseThread *					   _thread = nullptr;
 		Util::StopToken									   _stopToken;
 		Util::Callback<VTX::PythonBinding::Interpretor &>  _instructions;
 	};

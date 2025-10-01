@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CORE_THREADING_BASE_THREAD__
-#define __VTX_APP_CORE_THREADING_BASE_THREAD__
+#ifndef __VTX_APP_THREADING_BASE_THREAD__
+#define __VTX_APP_THREADING_BASE_THREAD__
 
 #include <any>
 #include <functional>
@@ -10,12 +10,12 @@
 #include <util/thread.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Core::Threading
+namespace VTX::App::Threading
 {
 	/**
-	 * @brief Thread managed by ThreadingSystem
+	 * @brief Thread managed by ThreadManager
 	 */
-	class ThreadingSystem;
+	class ThreadManager;
 
 	class BaseThread
 	{
@@ -26,10 +26,10 @@ namespace VTX::App::Core::Threading
 
 	  public:
 		/**
-		 * @brief Default ctor. Never used directly. ThreadingSystem manager is responsible of the creation of
+		 * @brief Default ctor. Never used directly. ThreadManager manager is responsible of the creation of
 		 * BaseThread object.
 		 */
-		BaseThread( ThreadingSystem & p_manager ) : _manager( p_manager ) {};
+		BaseThread( ThreadManager & p_manager ) : _manager( p_manager ) {};
 		~BaseThread();
 
 		/**
@@ -69,7 +69,7 @@ namespace VTX::App::Core::Threading
 		}
 
 	  private:
-		ThreadingSystem & _manager;
+		ThreadManager & _manager;
 
 		std::jthread _thread;
 		float		 _progress = 0.f;
@@ -80,5 +80,5 @@ namespace VTX::App::Core::Threading
 		Util::StopToken _stopToken;
 		void			_finish();
 	};
-} // namespace VTX::App::Core::Threading
+} // namespace VTX::App::Threading
 #endif

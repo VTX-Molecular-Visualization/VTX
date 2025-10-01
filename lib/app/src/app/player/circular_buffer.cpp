@@ -1,7 +1,7 @@
 #include <app/component/chemistry/trajectory.hpp>
 #include <app/component/render/proxy_system.hpp>
-#include <app/core/threading/threading_system.hpp>
 #include <app/player/circular_buffer.hpp>
+#include <app/threading/thread_manager.hpp>
 #include <io/reader/system.hpp>
 #include <util/logger.hpp>
 
@@ -31,9 +31,9 @@ namespace VTX::App::Player
 			}
 		}
 
-		Core::Threading::ThreadingSystem & threader	 = App::THREADING_SYSTEM();
-		auto							   funcWrite = std::function<uint( App::Core::Threading::BaseThread & )> {};
-		funcWrite									 = [ this ]( App::Core::Threading::BaseThread & baseThread )
+		Threading::ThreadManager & threader	 = App::THREAD();
+		auto					   funcWrite = std::function<uint( App::Threading::BaseThread & )> {};
+		funcWrite							 = [ this ]( App::Threading::BaseThread & baseThread )
 		{
 			VTX_INFO( "writethread start" );
 
@@ -137,8 +137,8 @@ namespace VTX::App::Player
 			VTX_INFO( "writethread end" );
 			return 1;
 		};
-		auto funcRead = std::function<uint( App::Core::Threading::BaseThread & )> {};
-		funcRead	  = [ this ]( App::Core::Threading::BaseThread & baseThread )
+		auto funcRead = std::function<uint( App::Threading::BaseThread & )> {};
+		funcRead	  = [ this ]( App::Threading::BaseThread & baseThread )
 		{
 			VTX_INFO( "readthread start" );
 			for ( auto iter = App::ECS_REGISTRY().findComponents<App::Component::Chemistry::Trajectory>().begin();

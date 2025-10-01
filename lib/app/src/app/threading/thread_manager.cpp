@@ -1,8 +1,8 @@
-#include "app/core/threading/threading_system.hpp"
+#include "app/threading/thread_manager.hpp"
 
-namespace VTX::App::Core::Threading
+namespace VTX::App::Threading
 {
-	ThreadingSystem::~ThreadingSystem()
+	ThreadManager::~ThreadManager()
 	{
 		for ( std::shared_ptr<BaseThread> & p_threadPtr : _threads )
 		{
@@ -16,7 +16,7 @@ namespace VTX::App::Core::Threading
 	{
 		template<typename callable>
 		BaseThread & _createThread(
-			ThreadingSystem *						 p_system,
+			ThreadManager *						 p_system,
 			std::list<std::shared_ptr<BaseThread>> & p_threadCollection,
 			callable								 p_func
 		)
@@ -31,7 +31,7 @@ namespace VTX::App::Core::Threading
 
 		template<typename callable>
 		BaseThread & _createThread(
-			ThreadingSystem *						 p_system,
+			ThreadManager *						 p_system,
 			std::list<std::shared_ptr<BaseThread>> & p_threadCollection,
 			callable								 p_asyncOp,
 			const BaseThread::EndCallback &			 p_callback
@@ -45,15 +45,15 @@ namespace VTX::App::Core::Threading
 			return *threadPtr;
 		}
 	} // namespace
-	BaseThread & ThreadingSystem::createThread( const BaseThread::AsyncOp & p_asyncOp )
+	BaseThread & ThreadManager::createThread( const BaseThread::AsyncOp & p_asyncOp )
 	{
 		return _createThread( this, _threads, p_asyncOp );
 	}
-	BaseThread & ThreadingSystem::createThread( const BaseThread::StoppableAsyncOp & p_asyncOp )
+	BaseThread & ThreadManager::createThread( const BaseThread::StoppableAsyncOp & p_asyncOp )
 	{
 		return _createThread( this, _threads, p_asyncOp );
 	}
-	BaseThread & ThreadingSystem::createThread(
+	BaseThread & ThreadManager::createThread(
 		const BaseThread::AsyncOp &		p_asyncOp,
 		const BaseThread::EndCallback & p_callback
 	)
@@ -61,7 +61,7 @@ namespace VTX::App::Core::Threading
 		return _createThread( this, _threads, p_asyncOp, p_callback );
 	}
 
-	BaseThread & ThreadingSystem::createThread(
+	BaseThread & ThreadManager::createThread(
 		const BaseThread::StoppableAsyncOp & p_asyncOp,
 		const BaseThread::EndCallback &		 p_callback
 	)
@@ -69,9 +69,9 @@ namespace VTX::App::Core::Threading
 		return _createThread( this, _threads, p_asyncOp, p_callback );
 	}
 
-	void ThreadingSystem::lateUpdate() { _clearStoppedThreads(); }
+	void ThreadManager::lateUpdate() { _clearStoppedThreads(); }
 
-	void ThreadingSystem::_killThread( const BaseThread & p_thread )
+	void ThreadManager::_killThread( const BaseThread & p_thread )
 	{
 		const std::list<std::shared_ptr<BaseThread>>::const_iterator it = _findPtrFromThread( p_thread );
 
@@ -82,9 +82,9 @@ namespace VTX::App::Core::Threading
 		}
 	}
 
-	void ThreadingSystem::_clearStoppedThreads() { _stoppingThreads.clear(); }
+	void ThreadManager::_clearStoppedThreads() { _stoppingThreads.clear(); }
 
-	std::list<std::shared_ptr<BaseThread>>::const_iterator ThreadingSystem::_findPtrFromThread(
+	std::list<std::shared_ptr<BaseThread>>::const_iterator ThreadManager::_findPtrFromThread(
 		const BaseThread & p_thread
 	) const
 	{
@@ -96,4 +96,4 @@ namespace VTX::App::Core::Threading
 			[ threadPtr ]( const std::shared_ptr<BaseThread> & p_ptr ) { return threadPtr == p_ptr.get(); }
 		);
 	}
-} // namespace VTX::App::Core::Threading
+} // namespace VTX::App::Threading

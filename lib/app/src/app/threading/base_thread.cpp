@@ -1,8 +1,8 @@
-#include "app/core/threading/base_thread.hpp"
-#include "app/core/threading/threading_system.hpp"
+#include "app/threading/base_thread.hpp"
+#include "app/threading/thread_manager.hpp"
 #include <util/math.hpp>
 
-namespace VTX::App::Core::Threading
+namespace VTX::App::Threading
 {
 	BaseThread::~BaseThread()
 	{
@@ -93,4 +93,4 @@ namespace VTX::App::Core::Threading
 
 	void BaseThread::_finish() { _manager._killThread( *this ); }
 
-} // namespace VTX::App::Core::Threading
+} // namespace VTX::App::Threading

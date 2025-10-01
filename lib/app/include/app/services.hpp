@@ -41,6 +41,10 @@ namespace VTX::App
 	{
 		class SettingsManager;
 	}
+	namespace Threading
+	{
+		class ThreadManager;
+	}
 } // namespace VTX::App
 namespace VTX::App
 {
@@ -80,6 +84,10 @@ namespace VTX::App
 	 * @brief Settings manager.
 	 */
 	inline Settings::SettingsManager & SETTINGS() { return ECS::getCtx<Settings::SettingsManager>(); }
+	/**
+	 * @brief Thread manager.
+	 */
+	inline Threading::ThreadManager & THREAD() { return ECS::getCtx<Threading::ThreadManager>(); }
 } // namespace VTX::App
 
 #endif

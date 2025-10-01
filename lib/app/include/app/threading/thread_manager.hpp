@@ -1,12 +1,12 @@
-#ifndef __VTX_APP_CORE_THREADING_MANAGER__
-#define __VTX_APP_CORE_THREADING_MANAGER__
+#ifndef __VTX_APP_THREADING_MANAGER__
+#define __VTX_APP_THREADING_MANAGER__
 
-#include "app/core/threading/base_thread.hpp"
+#include "app/threading/base_thread.hpp"
 #include <list>
 #include <memory>
 #include <util/singleton.hpp>
 
-namespace VTX::App::Core::Threading
+namespace VTX::App::Threading
 {
 	/**
 	 * @brief Thread manager.
@@ -14,15 +14,15 @@ namespace VTX::App::Core::Threading
 	 * thread.
 	 * Once the function returns the thread is put in the _stoppingThreads list and properly cleaned.
 	 */
-	class ThreadingSystem
+	class ThreadManager
 	{
 		friend class BaseThread;
 
 	  public:
-		ThreadingSystem() {}
-		ThreadingSystem( const ThreadingSystem & )			   = delete;
-		ThreadingSystem & operator=( const ThreadingSystem & ) = delete;
-		~ThreadingSystem();
+		ThreadManager() {}
+		ThreadManager( const ThreadManager & )			   = delete;
+		ThreadManager & operator=( const ThreadManager & ) = delete;
+		~ThreadManager();
 
 		/*
 		 * @brief Spawn a thread and executes the content of p_asyncOp in the new thread context.
@@ -58,15 +58,6 @@ namespace VTX::App::Core::Threading
 		std::list<std::shared_ptr<BaseThread>>::const_iterator _findPtrFromThread( const BaseThread & p_thread ) const;
 	};
 
-} // namespace VTX::App::Core::Threading
-
-namespace VTX::App
-{
-	// Access to the worker manager class in order to launch thread.
-	inline Core::Threading::ThreadingSystem & THREADING_SYSTEM()
-	{
-		return Util::Singleton<Core::Threading::ThreadingSystem>::get();
-	}
-} // namespace VTX::App
+} // namespace VTX::App::Threading
 
 #endif

@@ -19,6 +19,7 @@
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
+#include "app/threading/thread_manager.hpp"
 #include "renderer/facade.hpp"
 #include <exception>
 #include <python_binding/interpretor.hpp>
@@ -50,6 +51,8 @@ namespace VTX::App
 		ECS::setCtx<Network::NetworkManager>();
 		// Store settings manager.
 		// ECS::setCtx<Settings::SettingsManager>();
+		// Store thread manager.
+		ECS::setCtx<Threading::ThreadManager>();
 	}
 
 	void VTXApp::init()
@@ -86,7 +89,7 @@ namespace VTX::App
 		}
 
 		// Register loop events.
-		// onPostUpdate += []( const float p_elapsedTime ) { THREADING_SYSTEM().lateUpdate(); };
+		// onPostUpdate += []( const float p_elapsedTime ) { THREAD().lateUpdate(); };
 
 		// Initialize python interpretor.
 		INTERPRETOR().subscribe(

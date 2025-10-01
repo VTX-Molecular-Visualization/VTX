@@ -1,7 +1,7 @@
 #include "app/python_binding/interpretor.hpp"
 // pybind MUST be included before any QT because of macro shenanigans
 #include "ui/qt/widget/command_launcher.hpp"
-#include <app/core/threading/threading_system.hpp>
+#include <app/threading/thread_manager.hpp>
 #include <qevent.h>
 #include <util/logger.hpp>
 

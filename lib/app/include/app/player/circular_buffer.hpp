@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_PLAYER_CIRCULAR_BUFFER__
 #define __VTX_APP_PLAYER_CIRCULAR_BUFFER__
 
-#include <app/core/threading/base_thread.hpp>
+#include <app/threading/base_thread.hpp>
 #include <app/player/base_player.hpp>
 #include <core/struct/frames_to_render.hpp>
 
@@ -25,7 +25,7 @@ namespace VTX::App::Player
 		void update( const float, const float );
 
 		/**
-		 * @brief Creates two threads managed by the ThreadingSystem.
+		 * @brief Creates two threads managed by the ThreadManager.
 		 * First thread reads trajectory file and writes circular buffer data.
 		 * Second thread reads circular buffer data and writes Frames to be displayed in a FramesToRender object (queue
 		 * container).
@@ -53,8 +53,8 @@ namespace VTX::App::Player
 
 	  private:
 		VTX::Core::Struct::FramesToRender  _displayFrames;
-		App::Core::Threading::BaseThread * _readThread	= nullptr;
-		App::Core::Threading::BaseThread * _writeThread = nullptr;
+		App::Threading::BaseThread * _readThread	= nullptr;
+		App::Threading::BaseThread * _writeThread = nullptr;
 	};
 } // namespace VTX::App::Player
 #endif
