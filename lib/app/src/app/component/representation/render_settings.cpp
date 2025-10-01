@@ -1,11 +1,13 @@
 #include "app/component/representation/render_settings.hpp"
 #include "app/services.hpp"
-#include "app/vtx_app.hpp"
 #include <renderer/facade.hpp>
 
 namespace VTX::App::Component::Representation
 {
-	RenderSettings::RenderSettings( Library::Preset::RenderSettings & p_preset ) : BaseComponentProxyPreset( p_preset )
+	RenderSettings::RenderSettings( Library::Preset::RenderSettings & p_preset ) :
+		Core::ECS::BaseComponentProxyPreset<Renderer::Proxy::RenderSettings, App::Library::Preset::RenderSettings>(
+			p_preset
+		)
 	{
 	}
 

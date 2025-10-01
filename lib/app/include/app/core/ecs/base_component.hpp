@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_CORE_ECS_BASE_COMPONENT__
 #define __VTX_APP_CORE_ECS_BASE_COMPONENT__
 
-#include "app/core/library/preset.hpp"
+#include "app/library/base_preset.hpp"
 #include <memory>
 
 namespace VTX::App::Core::ECS
@@ -27,7 +27,7 @@ namespace VTX::App::Core::ECS
 		std::unique_ptr<P> _proxy;
 	};
 
-	template<typename PRO, Core::Library::ConceptPreset PRE>
+	template<typename PRO, Library::ConceptPreset PRE>
 	class BaseComponentProxyPreset : public BaseComponentProxy<PRO>
 	{
 	  public:

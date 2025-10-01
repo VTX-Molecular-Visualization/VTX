@@ -9,11 +9,11 @@
 namespace VTX::UI::QT::Widget::Library
 {
 
-	template<App::Core::Library::ConceptPreset P>
+	template<App::Library::ConceptPreset P>
 	class BasePresetWidget : public QWidget
 	{
 	  public:
-		BasePresetWidget( QWidget * p_parent ) : QWidget( p_parent ), _library( App::LIBRARY_SYSTEM().getLibrary<P>() )
+		BasePresetWidget( QWidget * p_parent ) : QWidget( p_parent ), _library( App::LIBRARY().getLibrary<P>() )
 		{
 			_presetSelector = new PresetSelector<P>( this );
 			_groupboxPreset = new QGroupBox( this );
@@ -51,7 +51,7 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<Widget::Library::PresetSelector<P>> _presetSelector;
 		QPointer<QGroupBox>							 _groupboxPreset;
 
-		App::Core::Library::Library<P> * const _library;
+		App::Library::BaseLibrary<P> * const _library;
 		// TODO: const!
 		P * _preset;
 
@@ -70,7 +70,7 @@ namespace VTX::UI::QT::Widget::Library
 		void _presetChanged( const QString & p_name )
 		{
 			std::string name = p_name.toStdString();
-			_preset			 = App::LIBRARY_SYSTEM().getLibrary<P>()->getPreset( name );
+			_preset			 = App::LIBRARY().getLibrary<P>()->getPreset( name );
 			_onPresetChanged();
 		}
 	};

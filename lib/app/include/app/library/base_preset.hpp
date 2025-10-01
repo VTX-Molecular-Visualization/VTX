@@ -1,12 +1,10 @@
-#ifndef __VTX_APP_CORE_LIBRARY_PRESET__
-#define __VTX_APP_CORE_LIBRARY_PRESET__
+#ifndef __VTX_APP_LIBRARY_PRESET__
+#define __VTX_APP_LIBRARY_PRESET__
 
 #include <util/callback.hpp>
 #include <util/collection.hpp>
-#include <util/logger.hpp>
-#include <util/types.hpp>
 
-namespace VTX::App::Core::Library
+namespace VTX::App::Library
 {
 	class IPreset
 	{
@@ -28,12 +26,12 @@ namespace VTX::App::Core::Library
 	};
 
 	template<typename T>
-	class Preset : public IPreset
+	class BasePreset : public IPreset
 	{
 	  public:
-		Preset() = default;
-		Preset( const T & p_data ) : _data( p_data ) {}
-		virtual ~Preset() = default;
+		BasePreset() = default;
+		BasePreset( const T & p_data ) : _data( p_data ) {}
+		virtual ~BasePreset() = default;
 
 		inline const T & getData() const { return _data; }
 		inline T &		 getData() { return _data; }
@@ -49,6 +47,6 @@ namespace VTX::App::Core::Library
 	template<typename P>
 	concept ConceptPreset = std::is_base_of_v<IPreset, P>;
 
-} // namespace VTX::App::Core::Library
+} // namespace VTX::App::Library
 
 #endif

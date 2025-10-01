@@ -2,7 +2,8 @@
 #define __VTX_APP_ACTION_LIBRARY__
 
 #include "app/action/base_action.hpp"
-#include <app/core/library/library_system.hpp>
+#include "app/library/library_manager.hpp"
+#include "app/services.hpp"
 
 namespace VTX::App::Action::Library
 {
@@ -16,7 +17,7 @@ namespace VTX::App::Action::Library
 		virtual ~BaseActionLibrary() = default;
 
 	  protected:
-		Core::Library::Library<T> * const _library = LIBRARY_SYSTEM().getLibrary<T>();
+		App::Library::BaseLibrary<T> * const _library = LIBRARY().getLibrary<T>();
 	};
 
 	/**

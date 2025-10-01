@@ -1,14 +1,13 @@
-#ifndef __VTX_APP_CORE_LIBRARY_LIBRARY__
-#define __VTX_APP_CORE_LIBRARY_LIBRARY__
+#ifndef __VTX_APP_LIBRARY_LIBRARY__
+#define __VTX_APP_LIBRARY_LIBRARY__
 
-#include "preset.hpp"
+#include "app/library/base_preset.hpp"
 #include <optional>
 #include <util/callback.hpp>
-#include <util/collection.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Core::Library
+namespace VTX::App::Library
 {
 
 	class ILibrary
@@ -18,13 +17,13 @@ namespace VTX::App::Core::Library
 	};
 
 	template<ConceptPreset P>
-	class Library : public ILibrary
+	class BaseLibrary : public ILibrary
 	{
 	  public:
 		using MapPresetsByName = std::map<std::string, std::unique_ptr<P>, std::less<>>;
 
-		Library() = delete;
-		Library( const FilePath & p_path ) : _path( p_path ) { load(); }
+		BaseLibrary() = delete;
+		BaseLibrary( const FilePath & p_path ) : _path( p_path ) { load(); }
 
 		const MapPresetsByName & getPresets() { return _presets; }
 
@@ -144,6 +143,6 @@ namespace VTX::App::Core::Library
 		}
 	};
 
-} // namespace VTX::App::Core::Library
+} // namespace VTX::App::Library
 
 #endif

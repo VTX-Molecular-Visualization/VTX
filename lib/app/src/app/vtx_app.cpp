@@ -3,11 +3,11 @@
 #include "app/action/mode.hpp"
 #include "app/application/scene.hpp"
 #include "app/core/ecs/registry.hpp"
-#include "app/core/library/library_system.hpp"
 #include "app/entity/scene.hpp"
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
 #include "app/input/input_manager.hpp"
+#include "app/library/library_manager.hpp"
 #include "app/library/preset/color_layout.hpp"
 #include "app/library/preset/render_settings.hpp"
 #include "app/library/preset/representation.hpp"
@@ -42,6 +42,8 @@ namespace VTX::App
 		ECS::setCtx<Action::ActionManager>();
 		// Store input manager.
 		ECS::setCtx<Input::InputManager>();
+		// Store library manager.
+		ECS::setCtx<Library::LibraryManager>();
 	}
 
 	void VTXApp::init()
@@ -49,7 +51,7 @@ namespace VTX::App
 		VTX_DEBUG( "Init application" );
 
 		// Load preset libraries.
-		auto * lib	  = LIBRARY_SYSTEM().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
+		auto * lib	  = LIBRARY().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
 		auto * preset = lib->createPreset( "Sticks" );
 		preset->setData( App::Library::Preset::Representations::STICKS );
 		preset = lib->createPreset( "Balls and sticks" );
@@ -61,8 +63,8 @@ namespace VTX::App
 		preset = lib->createPreset( "SES" );
 		preset->setData( App::Library::Preset::Representations::SES );
 
-		LIBRARY_SYSTEM().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
-		LIBRARY_SYSTEM().load<Library::Preset::RenderSettings>( Filesystem::getEffectsDir() );
+		LIBRARY().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
+		LIBRARY().load<Library::Preset::RenderSettings>( Filesystem::getEffectsDir() );
 
 		// TODO: move to start to handle gui dialog?
 		Settings::initSettings();

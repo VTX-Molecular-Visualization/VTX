@@ -5,8 +5,9 @@
 #include "app/component/representation/representation.hpp"
 #include "app/component/scene/aabb_component.hpp"
 #include "app/core/ecs/base_entity.hpp"
-#include "app/core/library/library_system.hpp"
 #include "app/entity/camera.hpp"
+#include "app/library/library_manager.hpp"
+#include "app/services.hpp"
 
 namespace VTX::App::Application
 {
@@ -272,7 +273,7 @@ namespace VTX::App::Application
 	// TODO: facto with template.
 	void Scene::_createDefaultColorLayout()
 	{
-		auto * preset = LIBRARY_SYSTEM().getLibrary<Library::Preset::ColorLayout>()->getPreset( "Default" );
+		auto * preset = LIBRARY().getLibrary<Library::Preset::ColorLayout>()->getPreset( "Default" );
 		auto & comp	  = ECS_REGISTRY().addComponent<Component::Representation::ColorLayout>(
 			  ECS_REGISTRY().getEntity( *this ), *preset
 		  );
@@ -281,7 +282,7 @@ namespace VTX::App::Application
 
 	void Scene::_createDefaultRenderSettings()
 	{
-		auto * preset = LIBRARY_SYSTEM().getLibrary<Library::Preset::RenderSettings>()->getPreset( "Default" );
+		auto * preset = LIBRARY().getLibrary<Library::Preset::RenderSettings>()->getPreset( "Default" );
 		auto & comp	  = ECS_REGISTRY().addComponent<Component::Representation::RenderSettings>(
 			  ECS_REGISTRY().getEntity( *this ), *preset
 		  );
@@ -290,7 +291,7 @@ namespace VTX::App::Application
 
 	void Scene::_createDefaultRepresentation()
 	{
-		auto * preset = LIBRARY_SYSTEM().getLibrary<Library::Preset::Representation>()->getPreset( "Default" );
+		auto * preset = LIBRARY().getLibrary<Library::Preset::Representation>()->getPreset( "Default" );
 		auto & comp	  = ECS_REGISTRY().addComponent<Component::Representation::Representation>(
 			  ECS_REGISTRY().getEntity( *this ), *preset
 		  );

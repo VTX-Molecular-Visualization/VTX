@@ -172,7 +172,7 @@ namespace VTX::Util
 		std::unordered_map<Hash, C> _map;
 
 		template<typename T, typename... Args>
-		inline T * _create( const Hash & p_hash, Args &&... p_args )
+		inline T * const _create( const Hash & p_hash, Args &&... p_args )
 		{
 			assert( not _map.contains( p_hash ) );
 
