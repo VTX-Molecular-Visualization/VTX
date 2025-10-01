@@ -1,10 +1,10 @@
 #ifndef __VTX_UTIL_MATH_RANGE_VECTOR__
 #define __VTX_UTIL_MATH_RANGE_VECTOR__
 
+#include "util/concepts.hpp"
 #include "util/math/range.hpp"
 #include <concepts>
 #include <list>
-#include <span>
 #include <type_traits>
 #include <vector>
 
@@ -111,8 +111,8 @@ namespace VTX::Util::Math
 		 * @param p_container
 		 * @return
 		 */
-		template<typename T>
-		static RangeList<T> fromList( const std::span<T> & p_container )
+		template<ContainerOfType<T> ContainerType>
+		static RangeList<T> fromList( const ContainerType & p_container )
 		{
 			RangeList res = RangeList();
 
@@ -341,12 +341,25 @@ namespace VTX::Util::Math
 			return false;
 		}
 
-		template<typename T>
-		bool contains( const std::span<Range<T>> & p_ranges ) const
+		template<ContainerOfType<Range<T>> C>
+		bool contains( const C & p_ranges ) const
 		{
 			for ( const Range<T> & range : p_ranges )
 			{
-				if ( not contains( range ) )
+				if ( !contains( range ) )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+		template<ContainerOfType<T> C>
+		bool contains( const C & p_values ) const
+		{
+			for ( const T & value : p_values )
+			{
+				if ( !contains( value ) )
 				{
 					return false;
 				}

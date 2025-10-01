@@ -7,7 +7,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
 #include <string>
-#include <util/enum.hpp>
+#include <util/concepts.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -46,11 +46,14 @@ namespace VTX::App::PythonBinding::Selection
 		return res;
 	}
 
-	std::vector<std::string> _getStringListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
-	std::vector<size_t>		 _getIndexListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
-	std::vector<Index> _getAtomIndexListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
+	std::vector<std::string>  _getStringListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
+	std::vector<size_t>		  _getIndexListInKwargs( const pybind11::kwargs & p_kwargs, const std::string & p_param );
+	std::vector<Index> _getAtomIndexListInKwargs(
+		const pybind11::kwargs & p_kwargs,
+		const std::string &		 p_param
+	);
 
-	template<Util::Enum::Concept EnumType>
+	template<EnumConcept EnumType>
 	std::vector<EnumType> _getEnumListFromStrInKwargs(
 		const pybind11::kwargs &							   p_kwargs,
 		const std::string &									   p_param,

@@ -51,18 +51,14 @@ TEST_CASE( "Util::Math::RangeList", "[unit]" )
 	CHECK( rangeList.contains( Util::Math::Range<size_t>::createFirstLast( 18, 20 ) ) );
 	CHECK( !rangeList.contains( Util::Math::Range<size_t>::createFirstLast( 18, 50 ) ) );
 
-	CHECK( rangeList.contains(
-		{ Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
-		  Util::Math::Range<size_t>::createFirstLast( 50, 50 ),
-		  Util::Math::Range<size_t>::createFirstLast( 12, 14 ),
-		  Util::Math::Range<size_t>::createFirstLast( 18, 20 ) }
-	) );
+	CHECK( rangeList.contains( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
+								 Util::Math::Range<size_t>::createFirstLast( 50, 50 ),
+								 Util::Math::Range<size_t>::createFirstLast( 12, 14 ),
+								 Util::Math::Range<size_t>::createFirstLast( 18, 20 ) } ) );
 
-	CHECK( !rangeList.contains(
-		{ Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
-		  Util::Math::Range<size_t>::createFirstLast( 50, 50 ),
-		  Util::Math::Range<size_t>::createFirstLast( 7, 14 ) }
-	) );
+	CHECK( !rangeList.contains( { Util::Math::Range<size_t>::createFirstLast( 5, 8 ),
+								  Util::Math::Range<size_t>::createFirstLast( 50, 50 ),
+								  Util::Math::Range<size_t>::createFirstLast( 7, 14 ) } ) );
 };
 
 TEST_CASE( "Util::Math::RangeList - Operators", "[unit]" )
@@ -83,11 +79,9 @@ TEST_CASE( "Util::Math::RangeList - Operators", "[unit]" )
 
 	// Check Merges
 	Util::Math::RangeList<size_t> rangeListRes1 = Util::Algorithm::Range::merge( rangeListA, rangeListB );
-	CHECK( rangeListRes1.contains(
-		{ Util::Math::Range<size_t>::createFirstLast( 0, 1 ),
-		  Util::Math::Range<size_t>::createFirstLast( 4, 20 ),
-		  Util::Math::Range<size_t>::createFirstLast( 50, 50 ) }
-	) );
+	CHECK( rangeListRes1.contains( { Util::Math::Range<size_t>::createFirstLast( 0, 1 ),
+									 Util::Math::Range<size_t>::createFirstLast( 4, 20 ),
+									 Util::Math::Range<size_t>::createFirstLast( 50, 50 ) } ) );
 
 	Util::Math::RangeList<size_t> rangeListRes2 = Util::Algorithm::Range::merge( rangeListB, rangeListA );
 	CHECK( rangeListRes1 == rangeListRes2 );
@@ -98,18 +92,14 @@ TEST_CASE( "Util::Math::RangeList - Operators", "[unit]" )
 
 	// Check Substract
 	rangeListRes1 = Util::Algorithm::Range::substract( rangeListA, rangeListB );
-	CHECK( rangeListRes1.contains(
-		{ Util::Math::Range<size_t>::createFirstLast( 6, 6 ),
-		  Util::Math::Range<size_t>::createFirstLast( 15, 17 ),
-		  Util::Math::Range<size_t>::createFirstLast( 20, 20 ) }
-	) );
+	CHECK( rangeListRes1.contains( { Util::Math::Range<size_t>::createFirstLast( 6, 6 ),
+									 Util::Math::Range<size_t>::createFirstLast( 15, 17 ),
+									 Util::Math::Range<size_t>::createFirstLast( 20, 20 ) } ) );
 
 	rangeListRes2 = Util::Algorithm::Range::substract( rangeListB, rangeListA );
-	CHECK( rangeListRes2.contains(
-		{ Util::Math::Range<size_t>::createFirstLast( 0, 1 ),
-		  Util::Math::Range<size_t>::createFirstLast( 4, 4 ),
-		  Util::Math::Range<size_t>::createFirstLast( 9, 11 ) }
-	) );
+	CHECK( rangeListRes2.contains( { Util::Math::Range<size_t>::createFirstLast( 0, 1 ),
+									 Util::Math::Range<size_t>::createFirstLast( 4, 4 ),
+									 Util::Math::Range<size_t>::createFirstLast( 9, 11 ) } ) );
 
 	rangeListRes2 = rangeListA;
 	Util::Algorithm::Range::substractInSitu( rangeListRes2, rangeListB );
@@ -117,13 +107,11 @@ TEST_CASE( "Util::Math::RangeList - Operators", "[unit]" )
 
 	// Check Intersect
 	rangeListRes1 = Util::Algorithm::Range::intersect( rangeListA, rangeListB );
-	CHECK( rangeListRes1.contains(
-		{ Util::Math::Range<size_t>::createFirstLast( 5, 5 ),
-		  Util::Math::Range<size_t>::createFirstLast( 7, 8 ),
-		  Util::Math::Range<size_t>::createFirstLast( 12, 14 ),
-		  Util::Math::Range<size_t>::createFirstLast( 18, 19 ),
-		  Util::Math::Range<size_t>::createFirstLast( 50, 50 ) }
-	) );
+	CHECK( rangeListRes1.contains( { Util::Math::Range<size_t>::createFirstLast( 5, 5 ),
+									 Util::Math::Range<size_t>::createFirstLast( 7, 8 ),
+									 Util::Math::Range<size_t>::createFirstLast( 12, 14 ),
+									 Util::Math::Range<size_t>::createFirstLast( 18, 19 ),
+									 Util::Math::Range<size_t>::createFirstLast( 50, 50 ) } ) );
 
 	rangeListRes2 = Util::Algorithm::Range::intersect( rangeListB, rangeListA );
 	CHECK( rangeListRes1 == rangeListRes2 );
@@ -134,12 +122,10 @@ TEST_CASE( "Util::Math::RangeList - Operators", "[unit]" )
 
 	// Check Exclusive
 	rangeListRes1 = Util::Algorithm::Range::exclusive( rangeListA, rangeListB );
-	CHECK( rangeListRes1.contains(
-		{ Util::Math::Range<size_t>::createFirstLast( 0, 1 ),
-		  Util::Math::Range<size_t>::createFirstLast( 4, 4 ),
-		  Util::Math::Range<size_t>::createFirstLast( 15, 17 ),
-		  Util::Math::Range<size_t>::createFirstLast( 20, 20 ) }
-	) );
+	CHECK( rangeListRes1.contains( { Util::Math::Range<size_t>::createFirstLast( 0, 1 ),
+									 Util::Math::Range<size_t>::createFirstLast( 4, 4 ),
+									 Util::Math::Range<size_t>::createFirstLast( 15, 17 ),
+									 Util::Math::Range<size_t>::createFirstLast( 20, 20 ) } ) );
 
 	rangeListRes2 = Util::Algorithm::Range::exclusive( rangeListB, rangeListA );
 	CHECK( rangeListRes1 == rangeListRes2 );

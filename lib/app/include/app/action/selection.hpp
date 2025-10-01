@@ -6,6 +6,7 @@
 #include "app/selection/selection.hpp"
 #include "app/selection/selection_data.hpp"
 #include <set>
+#include <util/concepts.hpp>
 
 namespace VTX::App::Action::Selection
 {
@@ -21,12 +22,10 @@ namespace VTX::App::Action::Selection
 			_assignment = p_assignment;
 		}
 
-		Select(
-			std::span<const App::Selection::SelectionData *> & p_selectionData,
-			const App::Selection::AssignmentType			   p_assignment
-		)
+		template<ContainerOfType<const App::Selection::SelectionData *> C1>
+		Select( C1 & p_selectionData, const App::Selection::AssignmentType p_assignment )
 		{
-			for ( const App::Selection::SelectionData * selectionData : p_selectionData )
+			for ( App::Selection::SelectionData * selectionData : p_selectionData )
 			{
 				_selectionData.emplace( selectionData );
 			}
@@ -51,9 +50,10 @@ namespace VTX::App::Action::Selection
 			_selectionData.emplace( &p_selectionData );
 		}
 
-		Unselect( std::span<const App::Selection::SelectionData *> & p_selectionData )
+		template<ContainerOfType<const App::Selection::SelectionData *> C1>
+		Unselect( C1 & p_selectionData )
 		{
-			for ( const App::Selection::SelectionData * selectionData : p_selectionData )
+			for ( App::Selection::SelectionData * selectionData : p_selectionData )
 			{
 				_selectionData.emplace( selectionData );
 			}

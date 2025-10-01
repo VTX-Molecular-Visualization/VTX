@@ -3,6 +3,7 @@
 
 #include <core/chemdb/atom.hpp>
 #include <memory>
+#include <util/concepts.hpp>
 #include <util/types.hpp>
 
 namespace VTX::PythonBinding::API
@@ -132,14 +133,14 @@ namespace VTX::PythonBinding::API
 		{
 			virtual ~_interface() = default;
 
-			virtual Index		  getIndex() const				  = 0;
+			virtual Index  getIndex() const						 = 0;
 			virtual void		  setIndex( const Index p_index ) = 0;
-			virtual Residue		  getResidue()					  = 0;
-			virtual const Residue getResidue() const			  = 0;
-			virtual Chain		  getChain()					  = 0;
-			virtual const Chain	  getChain() const				  = 0;
-			virtual System		  getSystem()					  = 0;
-			virtual const System  getSystem() const				  = 0;
+			virtual Residue		  getResidue()							 = 0;
+			virtual const Residue getResidue() const					 = 0;
+			virtual Chain		  getChain()							 = 0;
+			virtual const Chain	  getChain() const						 = 0;
+			virtual System		  getSystem()							 = 0;
+			virtual const System  getSystem() const						 = 0;
 
 			virtual const std::string &				   getName() const											= 0;
 			virtual void							   setName( const std::string & p_name )					= 0;
@@ -184,7 +185,7 @@ namespace VTX::PythonBinding::API
 			_wrapper( T & p_ ) : _obj( p_ ) {}
 
 			virtual Index getIndex() const override { return obj().getIndex(); }
-			virtual void  setIndex( const Index p_index ) override
+			virtual void		 setIndex( const Index p_index ) override
 			{
 				if constexpr ( not std::is_const<T>::value )
 					obj().setIndex( p_index );
@@ -257,17 +258,17 @@ namespace VTX::PythonBinding::API
 			= nullptr; // We want the atom to be copyable at it will point toward the same entity eventually
 	  public:
 		template<class T, typename D>
-			requires( not std::same_as<std::remove_cvref_t<T>, Atom> )
+			requires( not std::same_as<std::remove_cvref_t<T>, Atom> ) 
 		Atom( std::unique_ptr<T, D> & p_ ) : _ptr( new _wrapper<T>( *p_ ) )
 		{
 		}
 		template<class T, typename D>
-			requires( not std::same_as<std::remove_cvref_t<T>, Atom> )
+			requires( not std::same_as<std::remove_cvref_t<T>, Atom> ) 
 		Atom( const std::unique_ptr<T, D> & p_ ) : _ptr( new _wrapper<T>( *p_ ) )
 		{
 		}
 		template<class T>
-			requires( not std::same_as<std::remove_cvref_t<T>, Atom> )
+			requires( not std::same_as<std::remove_cvref_t<T>, Atom> ) 
 		Atom( T & p_ ) : _ptr( new _wrapper<T>( p_ ) )
 		{
 			// static_assert(

@@ -31,12 +31,6 @@ namespace VTX
 	template<class T>
 	inline constexpr bool is_color4_v = is_color4<T>::value;
 
-	template<typename T>
-	concept IsSmartPtr
-		= std::is_same_v<std::remove_cvref_t<T>, std::unique_ptr<typename std::remove_cvref_t<T>::element_type>>
-		  || std::is_same_v<std::remove_cvref_t<T>, std::shared_ptr<typename std::remove_cvref_t<T>::element_type>>
-		  || std::is_same_v<std::remove_cvref_t<T>, std::weak_ptr<typename std::remove_cvref_t<T>::element_type>>;
-
 } // namespace VTX
 
 #endif

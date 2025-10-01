@@ -5,8 +5,8 @@
 #include <map>
 #include <queue>
 #include <set>
-#include <span>
 #include <util/callback.hpp>
+#include <util/concepts.hpp>
 #include <util/enum.hpp>
 #include <util/singleton.hpp>
 #include <util/types.hpp>
@@ -32,9 +32,19 @@ namespace VTX::App::Core::Input
 		~InputManager();
 
 		// Keyboard
-		void					handleKeyboardEvent( const KeyEvent & p_event );
-		bool					isKeyPressed( const Key & p_key ) const;
-		bool					isAnyKeyPressed( const std::span<Key> & p_keys ) const;
+		void handleKeyboardEvent( const KeyEvent & p_event );
+		bool isKeyPressed( const Key & p_key ) const;
+
+		template<ContainerOfType<Key> C>
+		bool isAnyKeyPressed( const C & p_keys ) const
+		{
+			for ( const Key & key : p_keys )
+				if ( isKeyPressed( key ) )
+					return true;
+
+			return false;
+		}
+
 		inline const Modifier & getCurrentModifiers() const { return _modifiers; }
 		bool					isModifier( const Modifier & p_modifier ) const;
 		bool					isModifierExclusive( const Modifier & p_modifier ) const;

@@ -132,11 +132,8 @@ namespace VTX::Util::Algorithm::Range
 	}
 
 	// Generate a RangeList of index from any container following a predicate on its items
-	template<typename C, std::predicate<typename C::value_type> Predicate>
-	RangeList<typename C::size_type> generateIndexRangeList(
-		const std::span<C> & p_container,
-		const Predicate &	 p_predicate
-	)
+	template<Container C, std::predicate<typename C::value_type> Predicate>
+	RangeList<typename C::size_type> generateIndexRangeList( const C & p_container, const Predicate & p_predicate )
 	{
 		using RangeType			 = typename C::size_type;
 		RangeList<RangeType> res = RangeList<RangeType>();
@@ -151,7 +148,6 @@ namespace VTX::Util::Algorithm::Range
 
 		return res;
 	}
-
 } // namespace VTX::Util::Algorithm::Range
 
 #endif
