@@ -2,7 +2,7 @@
 #define __VTX_UI_ACTION_TRAJECTORY__
 
 #include "app/action/base_action.hpp"
-#include "app/core/player/concepts.hpp"
+#include "app/player/concepts.hpp"
 #include <app/component/chemistry/system.hpp>
 #include <app/component/chemistry/trajectory.hpp>
 #include <app/component/scene/uid_component.hpp>
@@ -75,7 +75,7 @@ namespace VTX::App::Action::Trajectory
 		const size_t							  _value;
 	};
 
-	template<Core::Player::ConceptPlayer P>
+	template<Player::ConceptPlayer P>
 	class SetLegacyPlayerType final : public BaseAction
 	{
 	  public:

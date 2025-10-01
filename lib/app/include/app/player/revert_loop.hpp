@@ -1,9 +1,9 @@
-#ifndef __VTX_APP_CORE_PLAYER_REVERT_LOOP__
-#define __VTX_APP_CORE_PLAYER_REVERT_LOOP__
+#ifndef __VTX_APP_PLAYER_REVERT_LOOP__
+#define __VTX_APP_PLAYER_REVERT_LOOP__
 
-#include "app/core/player/base_player.hpp"
+#include "app/player/base_player.hpp"
 
-namespace VTX::App::Core::Player
+namespace VTX::App::Player
 {
 	class RevertLoop : public BasePlayer
 	{
@@ -21,5 +21,5 @@ namespace VTX::App::Core::Player
 
 		void stackFrame( Frame elem ) override {}; // FIXME
 	};
-} // namespace VTX::App::Core::Player
+} // namespace VTX::App::Player
 #endif

@@ -1,6 +1,6 @@
-#include "app/core/player/ping_pong.hpp"
+#include "app/player/ping_pong.hpp"
 
-namespace VTX::App::Core::Player
+namespace VTX::App::Player
 {
 	void PingPong::reset()
 	{
@@ -49,4 +49,4 @@ namespace VTX::App::Core::Player
 
 		setCurrent( newFrameIndex );
 	}
-} // namespace VTX::App::Core::Player
+} // namespace VTX::App::Player

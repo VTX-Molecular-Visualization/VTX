@@ -4,7 +4,7 @@
 #include <app/component/chemistry/trajectory.hpp>
 #include <app/component/render/proxy_system.hpp>
 #include <app/core/ecs/registry.hpp>
-#include <app/core/player/circular_buffer.hpp>
+#include <app/player/circular_buffer.hpp>
 
 namespace VTX::App::Action::Trajectory
 {

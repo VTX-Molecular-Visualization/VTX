@@ -1,6 +1,6 @@
-#include "app/core/player/revert_once.hpp"
+#include "app/player/revert_once.hpp"
 
-namespace VTX::App::Core::Player
+namespace VTX::App::Player
 {
 	void RevertOnce::reset() { setCurrent( getCount() - 1 ); }
 	void RevertOnce::nextFrame( const size_t p_frameCount )
@@ -16,4 +16,4 @@ namespace VTX::App::Core::Player
 		}
 	}
 
-} // namespace VTX::App::Core::Player
+} // namespace VTX::App::Player

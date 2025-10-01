@@ -1,6 +1,6 @@
-#include "app/core/player/stop.hpp"
+#include "app/player/stop.hpp"
 
-namespace VTX::App::Core::Player
+namespace VTX::App::Player
 {
 	Stop::Stop() : BasePlayer() { pause(); }
 	Stop::Stop( const Stop & p_source ) : BasePlayer( p_source ) { pause(); }
@@ -10,4 +10,4 @@ namespace VTX::App::Core::Player
 	void Stop::reset() { setCurrent( 0 ); }
 	void Stop::nextFrame( const size_t p_frameCount ) {}
 
-} // namespace VTX::App::Core::Player
+} // namespace VTX::App::Player

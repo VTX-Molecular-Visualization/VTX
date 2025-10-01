@@ -1,11 +1,11 @@
-#ifndef __VTX_APP_CORE_PLAYER_CIRCULAR_BUFFER__
-#define __VTX_APP_CORE_PLAYER_CIRCULAR_BUFFER__
+#ifndef __VTX_APP_PLAYER_CIRCULAR_BUFFER__
+#define __VTX_APP_PLAYER_CIRCULAR_BUFFER__
 
-#include <app/core/player/base_player.hpp>
 #include <app/core/threading/base_thread.hpp>
+#include <app/player/base_player.hpp>
 #include <core/struct/frames_to_render.hpp>
 
-namespace VTX::App::Core::Player
+namespace VTX::App::Player
 {
 	class CircularBuffer : public BasePlayer
 	{
@@ -56,5 +56,5 @@ namespace VTX::App::Core::Player
 		App::Core::Threading::BaseThread * _readThread	= nullptr;
 		App::Core::Threading::BaseThread * _writeThread = nullptr;
 	};
-} // namespace VTX::App::Core::Player
+} // namespace VTX::App::Player
 #endif

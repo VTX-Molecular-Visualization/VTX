@@ -4,9 +4,9 @@
 #include "_fwd.hpp"
 #include "app/component/chemistry/system.hpp"
 #include "app/core/ecs/ecs_system.hpp"
-#include "app/core/player/base_player.hpp"
-#include "app/core/player/concepts.hpp"
 #include "app/events.hpp"
+#include "app/player/base_player.hpp"
+#include "app/player/concepts.hpp"
 #include "app/services.hpp"
 #include "app/vtx_app.hpp"
 #include "enum_trajectory.hpp"
@@ -29,9 +29,9 @@ namespace VTX::App::Component::Chemistry
 
 		size_t getFrameCount() const;
 
-		App::Core::Player::BasePlayer & getPlayer() const { return *_player; }
+		App::Player::BasePlayer & getPlayer() const { return *_player; }
 
-		template<Core::Player::ConceptPlayer P>
+		template<Player::ConceptPlayer P>
 		void setPlayer()
 		{
 			// Delete old player.
@@ -63,9 +63,9 @@ namespace VTX::App::Component::Chemistry
 	  private:
 		void _referenceUpdateFunction();
 
-		System *								  _systemPtr = nullptr;
-		std::unique_ptr<Core::Player::BasePlayer> _player;
-		Util::EventHub::Connection				  _currentUpdateCallback;
+		System *							_systemPtr = nullptr;
+		std::unique_ptr<Player::BasePlayer> _player;
+		Util::EventHub::Connection			_currentUpdateCallback;
 
 		const FilePath _path;
 	};

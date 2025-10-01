@@ -1,10 +1,10 @@
-#include "app/core/player/base_player.hpp"
+#include "app/player/base_player.hpp"
 #include <app/component/chemistry/trajectory.hpp>
 #include <app/component/render/proxy_system.hpp>
 #include <app/core/ecs/registry.hpp>
 #include <util/math.hpp>
 
-namespace VTX::App::Core::Player
+namespace VTX::App::Player
 {
 	void BasePlayer::setCount( const size_t p_count )
 	{
@@ -116,4 +116,4 @@ namespace VTX::App::Core::Player
 			onFPSChange( p_fps );
 		}
 	}
-} // namespace VTX::App::Core::Player
+} // namespace VTX::App::Player

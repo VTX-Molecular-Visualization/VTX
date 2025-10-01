@@ -4,7 +4,7 @@
 #include <QLabel>
 #include <app/action/trajectory.hpp>
 #include <app/component/chemistry/trajectory.hpp>
-#include <app/core/player/circular_buffer.hpp>
+#include <app/player/circular_buffer.hpp>
 #include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -29,7 +29,7 @@ namespace VTX::UI::QT::Widget
 		// adds circular buffer label
 		void setupAdditionalElts()
 		{
-			_circbuffElt = new QLabel( App::Core::Player::CircularBuffer::DISPLAYED_NAME.c_str() );
+			_circbuffElt = new QLabel( App::Player::CircularBuffer::DISPLAYED_NAME.c_str() );
 			_circbuffElt->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Maximum );
 		}
 
@@ -49,7 +49,7 @@ namespace VTX::UI::QT::Widget
 
 			// display current frame index in selector lineedit
 			frameSelectorElt->setText( QLocale().toString(
-				(int)dynamic_cast<VTX::App::Core::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex()
+				(int)dynamic_cast<VTX::App::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex()
 			) );
 
 			// update both slider and lineedit zone with current frame
@@ -59,7 +59,7 @@ namespace VTX::UI::QT::Widget
 					"trajectory_player frame changed  = {}", traj.getSystemPtr()->getTrajectory().getCurrentFrameIndex()
 				);*/
 				int currentFrameIdx
-					= (int)dynamic_cast<VTX::App::Core::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex();
+					= (int)dynamic_cast<VTX::App::Player::CircularBuffer *>( &traj.getPlayer() )->getIndex();
 				getProgressElt()->setValue( currentFrameIdx );
 				getFrameSelectorElt()->setText( QLocale().toString( currentFrameIdx ) );
 			};

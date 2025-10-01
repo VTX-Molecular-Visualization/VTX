@@ -1,10 +1,10 @@
-#ifndef __VTX_APP_CORE_PLAYER_CONCEPTS__
-#define __VTX_APP_CORE_PLAYER_CONCEPTS__
+#ifndef __VTX_APP_PLAYER_CONCEPTS__
+#define __VTX_APP_PLAYER_CONCEPTS__
 
 #include "base_player.hpp"
 #include <concepts>
 
-namespace VTX::App::Core::Player
+namespace VTX::App::Player
 {
 
 	template<typename P>
@@ -13,5 +13,5 @@ namespace VTX::App::Core::Player
 								   { p_player.update( p_deltaTime, p_elapsedTime ) } -> std::same_as<void>;
 							   };
 
-} // namespace VTX::App::Core::Player
+} // namespace VTX::App::Player
 #endif

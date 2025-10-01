@@ -1,9 +1,9 @@
-#ifndef __VTX_APP_CORE_PLAYER_PING_PONG__
-#define __VTX_APP_CORE_PLAYER_PING_PONG__
+#ifndef __VTX_APP_PLAYER_PING_PONG__
+#define __VTX_APP_PLAYER_PING_PONG__
 
-#include "app/core/player/base_player.hpp"
+#include "app/player/base_player.hpp"
 
-namespace VTX::App::Core::Player
+namespace VTX::App::Player
 {
 	class PingPong : public BasePlayer
 	{
@@ -27,5 +27,5 @@ namespace VTX::App::Core::Player
 	  private:
 		bool _forward = true;
 	};
-} // namespace VTX::App::Core::Player
+} // namespace VTX::App::Player
 #endif

@@ -1,11 +1,11 @@
 #include <app/component/chemistry/trajectory.hpp>
 #include <app/component/render/proxy_system.hpp>
-#include <app/core/player/circular_buffer.hpp>
 #include <app/core/threading/threading_system.hpp>
+#include <app/player/circular_buffer.hpp>
 #include <io/reader/system.hpp>
 #include <util/logger.hpp>
 
-namespace VTX::App::Core::Player
+namespace VTX::App::Player
 {
 	void CircularBuffer::reset() { setCurrent( 0 ); }
 	void CircularBuffer::nextFrame( const size_t p_count )
@@ -218,4 +218,4 @@ namespace VTX::App::Core::Player
 		//////////////////////////
 	}
 
-} // namespace VTX::App::Core::Player
+} // namespace VTX::App::Player

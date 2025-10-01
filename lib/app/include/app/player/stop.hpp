@@ -1,9 +1,9 @@
-#ifndef __VTX_APP_CORE_PLAYER_STOP__
-#define __VTX_APP_CORE_PLAYER_STOP__
+#ifndef __VTX_APP_PLAYER_STOP__
+#define __VTX_APP_PLAYER_STOP__
 
-#include "app/core/player/base_player.hpp"
+#include "app/player/base_player.hpp"
 
-namespace VTX::App::Core::Player
+namespace VTX::App::Player
 {
 	class Stop : public BasePlayer
 	{
@@ -23,5 +23,5 @@ namespace VTX::App::Core::Player
 
 		void stackFrame( Frame elem ) override {}; // FIXME
 	};
-} // namespace VTX::App::Core::Player
+} // namespace VTX::App::Player
 #endif

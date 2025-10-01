@@ -1,7 +1,7 @@
-#include "app/core/player/loop.hpp"
+#include "app/player/loop.hpp"
 #include <util/logger.hpp>
 
-namespace VTX::App::Core::Player
+namespace VTX::App::Player
 {
 	void Loop::reset() { setCurrent( 0 ); }
 	void Loop::nextFrame( const size_t p_count )
@@ -10,4 +10,4 @@ namespace VTX::App::Core::Player
 		setCurrent( newFrameIndex );
 	}
 
-} // namespace VTX::App::Core::Player
+} // namespace VTX::App::Player

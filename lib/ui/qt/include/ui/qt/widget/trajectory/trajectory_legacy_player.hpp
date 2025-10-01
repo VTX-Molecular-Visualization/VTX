@@ -4,12 +4,12 @@
 #include <QComboBox>
 #include <app/action/trajectory.hpp>
 #include <app/component/chemistry/trajectory.hpp>
-#include <app/core/player/loop.hpp>
-#include <app/core/player/once.hpp>
-#include <app/core/player/ping_pong.hpp>
-#include <app/core/player/revert_loop.hpp>
-#include <app/core/player/revert_once.hpp>
-#include <app/core/player/stop.hpp>
+#include <app/player/loop.hpp>
+#include <app/player/once.hpp>
+#include <app/player/ping_pong.hpp>
+#include <app/player/revert_loop.hpp>
+#include <app/player/revert_once.hpp>
+#include <app/player/stop.hpp>
 #include <ui/qt/widget/trajectory/trajectory_base_player.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -39,12 +39,12 @@ namespace VTX::UI::QT::Widget
 			_playerSelector = new QComboBox( this );
 			_playerSelector->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
 
-			_playerSelector->addItem( App::Core::Player::Loop::DISPLAYED_NAME.c_str() );
-			_playerSelector->addItem( App::Core::Player::Once::DISPLAYED_NAME.c_str() );
-			_playerSelector->addItem( App::Core::Player::PingPong::DISPLAYED_NAME.c_str() );
-			_playerSelector->addItem( App::Core::Player::RevertOnce::DISPLAYED_NAME.c_str() );
-			_playerSelector->addItem( App::Core::Player::RevertLoop::DISPLAYED_NAME.c_str() );
-			_playerSelector->addItem( App::Core::Player::Stop::DISPLAYED_NAME.c_str() );
+			_playerSelector->addItem( App::Player::Loop::DISPLAYED_NAME.c_str() );
+			_playerSelector->addItem( App::Player::Once::DISPLAYED_NAME.c_str() );
+			_playerSelector->addItem( App::Player::PingPong::DISPLAYED_NAME.c_str() );
+			_playerSelector->addItem( App::Player::RevertOnce::DISPLAYED_NAME.c_str() );
+			_playerSelector->addItem( App::Player::RevertLoop::DISPLAYED_NAME.c_str() );
+			_playerSelector->addItem( App::Player::Stop::DISPLAYED_NAME.c_str() );
 
 			auto & traj	  = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Trajectory>( *getSystem() );
 			auto   player = traj.getPlayer().getDisplayName();
@@ -97,7 +97,7 @@ namespace VTX::UI::QT::Widget
 				this,
 				[ & ]( const int p_index )
 				{
-					using namespace App::Core::Player;
+					using namespace App::Player;
 					using namespace App::Action::Trajectory;
 
 					switch ( p_index )

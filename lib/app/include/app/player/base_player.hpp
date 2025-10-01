@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CORE_PLAYER_BASE_PLAYER__
-#define __VTX_APP_CORE_PLAYER_BASE_PLAYER__
+#ifndef __VTX_APP_PLAYER_BASE_PLAYER__
+#define __VTX_APP_PLAYER_BASE_PLAYER__
 
 #include <atomic>
 #include <memory>
@@ -8,7 +8,7 @@
 #include <util/collection.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Core::Player
+namespace VTX::App::Player
 {
 	using Frame = std::vector<Vec3f>;
 	class BasePlayer
@@ -84,5 +84,5 @@ namespace VTX::App::Core::Player
 		uint			  _fps			   = 1u;
 		float			  _trajectoryTimer = 0.f;
 	};
-} // namespace VTX::App::Core::Player
+} // namespace VTX::App::Player
 #endif
