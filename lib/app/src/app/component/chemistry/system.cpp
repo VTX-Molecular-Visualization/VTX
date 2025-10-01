@@ -4,7 +4,8 @@
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/scene/scene_item_component.hpp"
-#include "app/core/uid/uid_system.hpp"
+#include "app/services.hpp"
+#include "app/uid/uid_manager.hpp"
 #include "app/vtx_app.hpp"
 #include <algorithm>
 #include <util/algorithm/range.hpp>
@@ -40,12 +41,12 @@ namespace VTX::App::Component::Chemistry
 	{
 		if ( _atomUidRange.isValid() )
 		{
-			UID_SYSTEM().unregister( _atomUidRange );
+			UID().unregister( _atomUidRange );
 		}
 
 		if ( _residueUidRange.isValid() )
 		{
-			UID_SYSTEM().unregister( _residueUidRange );
+			UID().unregister( _residueUidRange );
 		}
 	}
 
@@ -88,7 +89,7 @@ namespace VTX::App::Component::Chemistry
 			[ this, n = 0 ]() mutable { return std::move( std::make_unique<Residue>( this, n++ ) ); }
 		);
 
-		_residueUidRange = UID_SYSTEM().registerRange( Core::UID::uid( p_residueCount ) );
+		_residueUidRange = UID().registerRange( Uid::uid( p_residueCount ) );
 
 		_realResidueCount = p_residueCount;
 	}
@@ -102,7 +103,7 @@ namespace VTX::App::Component::Chemistry
 			[ this, n = 0 ]() mutable { return std::move( std::make_unique<Atom>( this, n++ ) ); }
 		);
 
-		_atomUidRange = UID_SYSTEM().registerRange( Core::UID::uid( p_atomCount ) );
+		_atomUidRange = UID().registerRange( Uid::uid( p_atomCount ) );
 		_visibleAtomIds.addRange( IndexRange( 0, Index( p_atomCount ) ) );
 		_activeAtomIds.addRange( IndexRange( 0, Index( p_atomCount ) ) );
 
@@ -127,19 +128,13 @@ namespace VTX::App::Component::Chemistry
 		_systemStruct.name = p_name;
 	}
 
-	const Atom * System::getAtomFromUID( Core::UID::uid p_uid ) const
-	{
-		return getAtom( p_uid - _atomUidRange.getFirst() );
-	}
-	Atom * System::getAtomFromUID( Core::UID::uid p_uid ) { return getAtom( p_uid - _atomUidRange.getFirst() ); }
-	const Residue * System::getResidueFromUID( Core::UID::uid p_uid ) const
+	const Atom * System::getAtomFromUID( Uid::uid p_uid ) const { return getAtom( p_uid - _atomUidRange.getFirst() ); }
+	Atom *		 System::getAtomFromUID( Uid::uid p_uid ) { return getAtom( p_uid - _atomUidRange.getFirst() ); }
+	const Residue * System::getResidueFromUID( Uid::uid p_uid ) const
 	{
 		return getResidue( p_uid - _residueUidRange.getFirst() );
 	}
-	Residue * System::getResidueFromUID( Core::UID::uid p_uid )
-	{
-		return getResidue( p_uid - _residueUidRange.getFirst() );
-	}
+	Residue * System::getResidueFromUID( Uid::uid p_uid ) { return getResidue( p_uid - _residueUidRange.getFirst() ); }
 
 	bool System::isVisible() const { return !_visibleAtomIds.isEmpty(); }
 	bool System::isFullyVisible() const { return _visibleAtomIds.count() == Index( _atoms.size() ); }

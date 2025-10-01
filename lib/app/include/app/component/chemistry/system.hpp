@@ -3,7 +3,7 @@
 
 #include "_fwd.hpp"
 #include "app/core/ecs/ecs_system.hpp"
-#include "app/core/uid/uid.hpp"
+#include "app/uid/uid.hpp"
 #include "index_types.hpp"
 #include <app/core/visibility/enum.hpp>
 #include <core/struct/system.hpp>
@@ -96,14 +96,14 @@ namespace VTX::App::Component::Chemistry
 
 		const IndexRangeList & getActiveAtoms() const { return _activeAtomIds; }
 
-		const Core::UID::UIDRange & getAtomUIDs() const { return _atomUidRange; }
-		const Atom *				getAtomFromUID( Core::UID::uid p_uid ) const;
+		const Uid::UIDRange & getAtomUIDs() const { return _atomUidRange; }
+		const Atom *		  getAtomFromUID( Uid::uid p_uid ) const;
 
-		Atom * getAtomFromUID( Core::UID::uid p_uid );
+		Atom * getAtomFromUID( Uid::uid p_uid );
 
-		const Core::UID::UIDRange & getResidueUIDs() const { return _residueUidRange; }
-		const Residue *				getResidueFromUID( Core::UID::uid p_uid ) const;
-		Residue *					getResidueFromUID( Core::UID::uid p_uid );
+		const Uid::UIDRange & getResidueUIDs() const { return _residueUidRange; }
+		const Residue *		  getResidueFromUID( Uid::uid p_uid ) const;
+		Residue *			  getResidueFromUID( Uid::uid p_uid );
 
 		Util::Callback<>												 onStruct;
 		Util::Callback<IndexRangeList, App::Core::VISIBILITY_APPLY_MODE> onVisibilityChange;
@@ -142,8 +142,8 @@ namespace VTX::App::Component::Chemistry
 		IndexRangeList _visibleAtomIds;
 		IndexRangeList _activeAtomIds;
 
-		Core::UID::UIDRange _atomUidRange;
-		Core::UID::UIDRange _residueUidRange;
+		Uid::UIDRange _atomUidRange;
+		Uid::UIDRange _residueUidRange;
 	};
 
 } // namespace VTX::App::Component::Chemistry

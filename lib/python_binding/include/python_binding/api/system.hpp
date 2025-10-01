@@ -214,7 +214,7 @@ namespace VTX::PythonBinding::API
 
 			bool							hasTrajectory();
 			VTX::Core::Struct::Trajectory & getTrajectory();
-			const Atom * getAtomFromUID( Core::UID::uid p_uid ) const;
+			const Atom * getAtomFromUID( Uid::uid p_uid ) const;
 			void setVisible( const AtomIndexRange & p_atomRange, bool p_visible );
 			void setVisible( const AtomIndexRangeList & p_atomRangeList, bool p_visible );
 			void remove( const AtomIndexRange & p_atomRange );
@@ -223,17 +223,17 @@ namespace VTX::PythonBinding::API
 			void					   setAtomVisibilities( const AtomIndexRangeList & p_visibility );
 			const AtomIndexRangeList & getActiveAtoms() const ;
 
-			const Core::UID::UIDRange & getAtomUIDs() const ;
+			const Uid::UIDRange & getAtomUIDs() const ;
 			Bond *		 getBond( const Index p_index ) ;
 			const Bond * getBond( const Index p_index ) const ;
 			const Util::Math::Transform & getTransform() const ;
 			Util::Math::Transform &		  getTransform() ;
 
-			Atom * getAtomFromUID( Core::UID::uid p_uid );
+			Atom * getAtomFromUID( Uid::uid p_uid );
 
-			const Core::UID::UIDRange & getResidueUIDs() const ;
-			const Residue *				getResidueFromUID( Core::UID::uid p_uid ) const;
-			Residue *					getResidueFromUID( Core::UID::uid p_uid );
+			const Uid::UIDRange & getResidueUIDs() const ;
+			const Residue *				getResidueFromUID( Uid::uid p_uid ) const;
+			Residue *					getResidueFromUID( Uid::uid p_uid );
 			*/
 		};
 

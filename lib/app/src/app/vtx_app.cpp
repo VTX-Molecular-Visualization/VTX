@@ -20,6 +20,7 @@
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
 #include "app/threading/thread_manager.hpp"
+#include "app/uid/uid_manager.hpp"
 #include "renderer/facade.hpp"
 #include <exception>
 #include <python_binding/interpretor.hpp>
@@ -53,6 +54,8 @@ namespace VTX::App
 		// ECS::setCtx<Settings::SettingsManager>();
 		// Store thread manager.
 		ECS::setCtx<Threading::ThreadManager>();
+		// Store uid manager.
+		ECS::setCtx<Uid::UIDManager>();
 	}
 
 	void VTXApp::init()

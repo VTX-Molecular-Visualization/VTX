@@ -1,6 +1,6 @@
 #include "util/app.hpp"
-#include <app/core/uid/uid.hpp>
-#include <app/core/uid/uid_system.hpp>
+#include <app/uid/uid.hpp>
+#include <app/uid/uid_manager.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <exception>
@@ -11,14 +11,14 @@
 TEST_CASE( "VTX_APP - UID", "[unit]" )
 {
 	using namespace VTX;
-	using namespace VTX::App::Core::UID;
+	using namespace VTX::App::Uid;
 
 	VTX_INFO( "VTX_APP - UID" );
 
 	uid		 value;
 	UIDRange range;
 
-	UIDSystem registration = UIDSystem();
+	UIDManager registration = UIDManager();
 
 	value = registration.registerValue();
 	CHECK( value == 1 );

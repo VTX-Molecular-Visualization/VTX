@@ -1,15 +1,14 @@
-#ifndef __VTX_APP_CORE_UID_UID_SYSTEM__
-#define __VTX_APP_CORE_UID_UID_SYSTEM__
+#ifndef __VTX_APP_CORE_UID_UID_MANAGER__
+#define __VTX_APP_CORE_UID_UID_MANAGER__
 
-#include "app/core/uid/uid.hpp"
+#include "app/uid/uid.hpp"
 #include <mutex>
 #include <util/math/range.hpp>
 #include <util/math/range_list.hpp>
-#include <util/singleton.hpp>
 
-namespace VTX::App::Core::UID
+namespace VTX::App::Uid
 {
-	class UIDSystem
+	class UIDManager
 	{
 	  private:
 		inline static const Util::Math::RangeList<uid> DEFAULT_RANGE_LIST()
@@ -22,8 +21,8 @@ namespace VTX::App::Core::UID
 		}
 
 	  public:
-		UIDSystem() {};
-		~UIDSystem() = default;
+		UIDManager() {};
+		~UIDManager() = default;
 
 		inline const uid	  registerValue() { return _reserveValue(); }
 		inline const UIDRange registerRange( const uid p_count ) { return _reserveRange( p_count ); }
@@ -43,12 +42,6 @@ namespace VTX::App::Core::UID
 		void _freeValue( const uint p_value );
 		void _freeRange( const UIDRange & p_range );
 	};
-} // namespace VTX::App::Core::UID
-
-namespace VTX::App
-{
-	// Access to UIDSystem to get / release UIDs.
-	inline Core::UID::UIDSystem & UID_SYSTEM() { return Util::Singleton<App::Core::UID::UIDSystem>::get(); }
-} // namespace VTX::App
+} // namespace VTX::App::Uid
 
 #endif

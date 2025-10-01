@@ -39,10 +39,10 @@ namespace VTX::App::Component::Scene
 		default: assert( false ); break;
 		}
 	}
-	bool Pickable::isSelected( const Core::UID::uid & p_uid ) const
+	bool Pickable::isSelected( const Uid::uid & p_uid ) const
 	{
 		const std::unique_ptr<Selection::SelectionData> selectionData
-			= _pickableFunc( { p_uid, Core::UID::INVALID_UID } );
+			= _pickableFunc( { p_uid, Uid::INVALID_UID } );
 
 		return _isSelectionDataSelected( *selectionData );
 	}

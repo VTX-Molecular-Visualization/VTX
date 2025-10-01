@@ -17,13 +17,13 @@ namespace VTX::App::Selection
 		return p_lhs._firstUid != p_rhs._firstUid || p_lhs._secondUid != p_rhs._secondUid;
 	}
 
-	bool PickingInfo::hasValue() const { return _firstUid != App::Core::UID::INVALID_UID; }
+	bool PickingInfo::hasValue() const { return _firstUid != App::Uid::INVALID_UID; }
 	bool PickingInfo::hasOneValue() const
 	{
-		return _firstUid != Core::UID::INVALID_UID && _secondUid == App::Core::UID::INVALID_UID;
+		return _firstUid != Uid::INVALID_UID && _secondUid == App::Uid::INVALID_UID;
 	};
 	bool PickingInfo::hasTwoValues() const
 	{
-		return _firstUid != Core::UID::INVALID_UID && _secondUid != App::Core::UID::INVALID_UID;
+		return _firstUid != Uid::INVALID_UID && _secondUid != App::Uid::INVALID_UID;
 	}
 } // namespace VTX::App::Selection

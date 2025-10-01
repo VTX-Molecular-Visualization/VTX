@@ -45,6 +45,10 @@ namespace VTX::App
 	{
 		class ThreadManager;
 	}
+	namespace Uid
+	{
+		class UIDManager;
+	}
 } // namespace VTX::App
 namespace VTX::App
 {
@@ -88,6 +92,10 @@ namespace VTX::App
 	 * @brief Thread manager.
 	 */
 	inline Threading::ThreadManager & THREAD() { return ECS::getCtx<Threading::ThreadManager>(); }
+	/**
+	 * @brief UID manager.
+	 */
+	inline Uid::UIDManager & UID() { return ECS::getCtx<Uid::UIDManager>(); }
 } // namespace VTX::App
 
 #endif

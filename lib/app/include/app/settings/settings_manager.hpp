@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SETTINGS_SYSTEM__
-#define __VTX_APP_SETTINGS_SYSTEM__
+#ifndef __VTX_APP_SETTINGS_MANAGER__
+#define __VTX_APP_SETTINGS_MANAGER__
 
 #include "base_setting.hpp"
 #include "setting_change_info.hpp"

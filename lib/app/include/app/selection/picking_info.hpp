@@ -1,14 +1,14 @@
 #ifndef __VTX_APP_SELECTION_PICKING_INFO__
 #define __VTX_APP_SELECTION_PICKING_INFO__
 
-#include "app/core/uid/uid.hpp"
+#include "app/uid/uid.hpp"
 #include <util/types.hpp>
 
 namespace VTX::App::Selection
 {
 	struct PickingInfo
 	{
-		using uid = App::Core::UID::uid;
+		using uid = App::Uid::uid;
 
 		PickingInfo() = default;
 		PickingInfo( const uid p_firstUid, const uid p_secondUid );
@@ -26,8 +26,8 @@ namespace VTX::App::Selection
 		uid getSecond() const { return _secondUid; }
 
 	  private:
-		uid _firstUid  = Core::UID::INVALID_UID;
-		uid _secondUid = Core::UID::INVALID_UID;
+		uid _firstUid  = Uid::INVALID_UID;
+		uid _secondUid = Uid::INVALID_UID;
 	};
 
 } // namespace VTX::App::Selection

@@ -13,7 +13,7 @@
 namespace
 {
 	std::optional<const VTX::App::Component::Scene::Pickable> _tryGetPickableFromUid(
-		const VTX::App::Core::UID::uid p_uid
+		const VTX::App::Uid::uid p_uid
 	)
 	{
 		const VTX::App::Core::ECS::BaseEntity entity = VTX::App::Application::SceneUtility::findItemByUID( p_uid );

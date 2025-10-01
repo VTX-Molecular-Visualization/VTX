@@ -126,7 +126,7 @@ namespace VTX::App::Component::Render
 		std::vector<uint> atomUids;
 		const uint		  offset = uint( p_molComp._atomUidRange.getFirst() );
 
-		atomUids.resize( p_molComp.getAtoms().size(), Core::UID::INVALID_UID );
+		atomUids.resize( p_molComp.getAtoms().size(), Uid::INVALID_UID );
 		std::generate( atomUids.begin(), atomUids.end(), [ this, offset, i = 0 ]() mutable { return offset + i++; } );
 
 		return atomUids;
@@ -154,7 +154,7 @@ namespace VTX::App::Component::Render
 		std::vector<uint> residueUids;
 		const uint		  offset = uint( p_molComp._residueUidRange.getFirst() );
 
-		residueUids.resize( p_molComp.getResidues().size(), Core::UID::INVALID_UID );
+		residueUids.resize( p_molComp.getResidues().size(), Uid::INVALID_UID );
 		std::generate(
 			residueUids.begin(), residueUids.end(), [ this, offset, i = 0 ]() mutable { return offset + i++; }
 		);
