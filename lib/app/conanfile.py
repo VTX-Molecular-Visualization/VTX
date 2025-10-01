@@ -30,6 +30,22 @@ class VTXAppRecipe(ConanFile):
 
     def layout(self):
         cmake_layout(self)
+        
+        
+    def _print_dir_content(self, p_dir):
+        # Print build folder contents for debugging
+        self.output.info("=== Build folder contents before running tests ===")
+        try:
+            for root, dirs, files in os.walk(p_dir):
+                level = root.replace(self.build_folder, '').count(os.sep)
+                indent = ' ' * 2 * level
+                self.output.info(f"{indent}{os.path.basename(root)}/")
+                subindent = ' ' * 2 * (level + 1)
+                for file in files:
+                    self.output.info(f"{subindent}{file}")
+        except Exception as e:
+            self.output.warning(f"Failed to list build folder contents: {e}")
+        self.output.info("=== End build folder contents ===")
          
     def generate(self):
         tc = CMakeToolchain(self)
@@ -43,6 +59,7 @@ class VTXAppRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+        self._print_dir_content(self.build_folder)
         if self.options.test == True:
             cmake.ctest(["--output-on-failure"])
 
