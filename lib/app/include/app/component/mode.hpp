@@ -2,7 +2,7 @@
 #define __VTX_APP_COMPONENT_MODE__
 
 #include "app/component/scene/updatable.hpp"
-#include "app/core/mode/concepts.hpp"
+#include "app/mode/concepts.hpp"
 #include <util/callback.hpp>
 #include <util/collection.hpp>
 #include <util/hashing.hpp>
@@ -16,7 +16,7 @@ namespace VTX::App::Component
 		Mode()				 = default;
 		Mode( const Mode & ) = delete;
 
-		template<Core::Mode::ConceptMode M>
+		template<App::Mode::ConceptMode M>
 		inline void setMode()
 		{
 			if ( _current )
@@ -31,7 +31,7 @@ namespace VTX::App::Component
 			M * mode	 = _modes.getOrCreate<M>();
 			_currentHash = Util::hash<M>();
 
-			_current = static_cast<Core::Mode::BaseMode *>( mode );
+			_current = static_cast<App::Mode::BaseMode *>( mode );
 			_current->enter();
 			onModeEnter( _currentHash );
 
@@ -45,10 +45,10 @@ namespace VTX::App::Component
 
 	  private:
 		Hash							   _currentHash;
-		Core::Mode::BaseMode *			   _current;
+		App::Mode::BaseMode *			   _current;
 		Util::EventHub::ScopedConnection * _currentUpdateCallback;
 
-		Util::Collection<std::unique_ptr<Core::Mode::BaseMode>> _modes;
+		Util::Collection<std::unique_ptr<App::Mode::BaseMode>> _modes;
 	};
 } // namespace VTX::App::Component
 

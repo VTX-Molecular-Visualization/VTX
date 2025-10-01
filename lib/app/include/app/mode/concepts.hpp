@@ -1,10 +1,10 @@
-#ifndef __VTX_APP_CORE_MODE_CONCEPTS__
-#define __VTX_APP_CORE_MODE_CONCEPTS__
+#ifndef __VTX_APP_MODE_CONCEPTS__
+#define __VTX_APP_MODE_CONCEPTS__
 
 #include "base_mode.hpp"
 #include <concepts>
 
-namespace VTX::App::Core::Mode
+namespace VTX::App::Mode
 {
 
 	template<typename M>
@@ -13,5 +13,5 @@ namespace VTX::App::Core::Mode
 								 { p_mode.update( p_deltaTime, p_elapsedTime ) } -> std::same_as<void>;
 							 };
 
-} // namespace VTX::App::Core::Mode
+} // namespace VTX::App::Mode
 #endif
