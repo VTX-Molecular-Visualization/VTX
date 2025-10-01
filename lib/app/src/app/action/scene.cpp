@@ -7,10 +7,10 @@
 #include "app/component/render/viewpoint.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/core/ecs/ecs_system.hpp"
-#include "app/core/network/network_system.hpp"
 #include "app/entity/system.hpp"
 #include "app/entity/viewpoint.hpp"
 #include "app/filesystem.hpp"
+#include "app/network/network_manager.hpp"
 #include "app/services.hpp"
 #include <util/filesystem.hpp>
 

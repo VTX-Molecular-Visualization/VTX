@@ -8,9 +8,9 @@
 #include <util/network.hpp>
 #include <util/singleton.hpp>
 
-namespace VTX::App::Core::Network
+namespace VTX::App::Network
 {
-	class NetworkSystem
+	class NetworkManager
 	{
 	  public:
 		/**
@@ -28,14 +28,6 @@ namespace VTX::App::Core::Network
 		Util::Callback<> onFileCached;
 	};
 
-} // namespace VTX::App::Core::Network
-
-namespace VTX::App
-{
-	inline Core::Network::NetworkSystem & NETWORK_SYSTEM()
-	{
-		return Util::Singleton<Core::Network::NetworkSystem>::get();
-	}
-} // namespace VTX::App
+} // namespace VTX::App::Network
 
 #endif

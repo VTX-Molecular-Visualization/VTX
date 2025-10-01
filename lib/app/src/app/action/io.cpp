@@ -3,9 +3,9 @@
 #include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/core/network/network_system.hpp"
 #include "app/core/settings/settings_system.hpp"
 #include "app/filesystem.hpp"
+#include "app/network/network_manager.hpp"
 #include "app/services.hpp"
 #include <renderer/facade.hpp>
 #include <util/chrono.hpp>
@@ -61,7 +61,7 @@ namespace VTX::App::Action::Io
 	void DownloadSystem::execute()
 	{
 		FilePath filepath = _filename;
-		NETWORK_SYSTEM().downloadFile(
+		NETWORK().downloadFile(
 			_url.str.data(),
 			_filename.string(),
 			[ filepath ]( const std::string & p_text )

@@ -12,6 +12,7 @@
 #include "app/library/preset/render_settings.hpp"
 #include "app/library/preset/representation.hpp"
 #include "app/mode/visualization.hpp"
+#include "app/network/network_manager.hpp"
 #include "app/python_binding/interpretor.hpp"
 #include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
@@ -44,6 +45,8 @@ namespace VTX::App
 		ECS::setCtx<Input::InputManager>();
 		// Store library manager.
 		ECS::setCtx<Library::LibraryManager>();
+		// Store network manager.
+		ECS::setCtx<Network::NetworkManager>();
 	}
 
 	void VTXApp::init()

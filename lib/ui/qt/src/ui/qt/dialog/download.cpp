@@ -8,7 +8,7 @@
 #include <QVBoxLayout>
 #include <app/action/io.hpp>
 #include <app/action/scene.hpp>
-#include <app/core/network/network_system.hpp>
+#include <app/network/network_manager.hpp>
 
 namespace VTX::UI::QT::Dialog
 {

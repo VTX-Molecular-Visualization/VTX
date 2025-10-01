@@ -33,6 +33,10 @@ namespace VTX::App
 	{
 		class LibraryManager;
 	}
+	namespace Network
+	{
+		class NetworkManager;
+	}
 } // namespace VTX::App
 namespace VTX::App
 {
@@ -64,6 +68,10 @@ namespace VTX::App
 	 * @brief Library manager.
 	 */
 	inline Library::LibraryManager & LIBRARY() { return ECS::getCtx<Library::LibraryManager>(); }
+	/**
+	 * @brief Network manager.
+	 */
+	inline Network::NetworkManager & NETWORK() { return ECS::getCtx<Network::NetworkManager>(); }
 } // namespace VTX::App
 
 #endif

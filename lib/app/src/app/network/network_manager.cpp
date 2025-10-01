@@ -1,11 +1,11 @@
-#include "app/core/network/network_system.hpp"
+#include "app/network/network_manager.hpp"
 #include "app/filesystem.hpp"
 #include <util/logger.hpp>
 
-namespace VTX::App::Core::Network
+namespace VTX::App::Network
 {
 
-	void NetworkSystem::downloadFile(
+	void NetworkManager::downloadFile(
 		const std::string_view				   p_url,
 		const std::string_view				   p_filename,
 		const Util::Network::CallbackHttpGet & p_callback
@@ -25,4 +25,4 @@ namespace VTX::App::Core::Network
 		p_callback( text );
 	}
 
-} // namespace VTX::App::Core::Network
+} // namespace VTX::App::Network
