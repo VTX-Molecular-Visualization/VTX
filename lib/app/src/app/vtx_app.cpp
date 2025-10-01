@@ -17,7 +17,8 @@
 #include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
 #include "app/services.hpp"
-#include "app/settings.hpp"
+#include "app/settings/settings.hpp"
+#include "app/settings/settings_manager.hpp"
 #include "renderer/facade.hpp"
 #include <exception>
 #include <python_binding/interpretor.hpp>
@@ -47,6 +48,8 @@ namespace VTX::App
 		ECS::setCtx<Library::LibraryManager>();
 		// Store network manager.
 		ECS::setCtx<Network::NetworkManager>();
+		// Store settings manager.
+		// ECS::setCtx<Settings::SettingsManager>();
 	}
 
 	void VTXApp::init()

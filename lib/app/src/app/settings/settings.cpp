@@ -1,11 +1,12 @@
-#include "app/settings.hpp"
-#include "app/core/settings/settings_system.hpp"
+#include "app/settings/settings.hpp"
+#include "app/services.hpp"
+#include "app/settings/settings_manager.hpp"
 
 namespace VTX::App::Settings
 {
 	void initSettings()
 	{
-		auto & settings = SETTINGS_SYSTEM();
+		auto & settings = SETTINGS();
 
 		// Camera.
 		settings.referenceSetting( Camera::NEAR_CLIP_KEY, Camera::NEAR_DEFAULT );

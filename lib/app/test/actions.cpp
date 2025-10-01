@@ -7,10 +7,10 @@
 #include <app/component/render/camera.hpp>
 #include <app/component/render/viewpoint.hpp>
 #include <app/core/ecs/base_entity.hpp>
-#include <app/core/settings/settings_system.hpp>
 #include <app/fixture.hpp>
 #include <app/services.hpp>
-#include <app/settings.hpp>
+#include <app/settings/settings.hpp>
+#include <app/settings/settings_manager.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <util/filesystem.hpp>
@@ -75,11 +75,11 @@ TEST_CASE( "VTX_APP - Action - Application - Settings", "[integration]" )
 	App::Fixture app;
 
 	// Settings
-	const App::Core::Settings::SettingsSystem settings = SETTINGS_SYSTEM();
+	const App::Settings::SettingsManager settings = SETTINGS();
 
-	SETTINGS_SYSTEM().set<float>( Settings::Camera::FAR_CLIP_KEY, 33.f );
+	SETTINGS().set<float>( Settings::Camera::FAR_CLIP_KEY, 33.f );
 
-	const App::Core::Settings::SettingsSystem modifiedSettings = SETTINGS_SYSTEM();
+	const App::Settings::SettingsManager modifiedSettings = SETTINGS();
 
 	/*
 	if ( std::filesystem::exists( Filesystem::getSettingJsonFile() ) )
@@ -88,12 +88,12 @@ TEST_CASE( "VTX_APP - Action - Application - Settings", "[integration]" )
 	CHECK( !std::filesystem::exists( Filesystem::getSettingJsonFile() ) );
 	ACTION().execute<Action::Application::SaveSettings>();
 	CHECK( std::filesystem::exists( Filesystem::getSettingJsonFile() ) );
-	CHECK( SETTINGS_SYSTEM() == modifiedSettings );
+	CHECK( SETTINGS() == modifiedSettings );
 
 	ACTION().execute<Action::Application::ResetSettings>();
-	CHECK( SETTINGS_SYSTEM() == settings );
+	CHECK( SETTINGS() == settings );
 
 	ACTION().execute<Action::Application::LoadSettings>();
-	CHECK( SETTINGS_SYSTEM() == modifiedSettings );
+	CHECK( SETTINGS() == modifiedSettings );
 	*/
 };

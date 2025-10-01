@@ -1,11 +1,11 @@
-#ifndef __VTX_APP_CORE_SETTINGS_BASE_SETTING__
-#define __VTX_APP_CORE_SETTINGS_BASE_SETTING__
+#ifndef __VTX_APP_SETTINGS_BASE_SETTING__
+#define __VTX_APP_SETTINGS_BASE_SETTING__
 
 #include <concepts>
 #include <memory>
 #include <optional>
 
-namespace VTX::App::Core::Settings
+namespace VTX::App::Settings
 {
 	class BaseSetting
 	{
@@ -61,5 +61,5 @@ namespace VTX::App::Core::Settings
 		T				 _value;
 		std::optional<T> _defaultValue;
 	};
-} // namespace VTX::App::Core::Settings
+} // namespace VTX::App::Settings
 #endif

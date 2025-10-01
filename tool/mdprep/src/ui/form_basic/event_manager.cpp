@@ -34,7 +34,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_connectSettingsNvt();
 		_connectSettingsNpt();
 		_connectSettingsProd();
-		_connectSettingsSystem();
+		_connectSettingsManager();
 		_connectInputCheck();
 	}
 
@@ -55,7 +55,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_connectSettingsNvt();
 		_connectSettingsNpt();
 		_connectSettingsProd();
-		_connectSettingsSystem();
+		_connectSettingsManager();
 		_connectInputCheck();
 
 		return *this;
@@ -90,7 +90,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	void EventManager::setSystemSettings( QPushButton * p_ ) noexcept
 	{
 		_uiObjects._buttonSystemSettings = p_;
-		_connectSettingsSystem();
+		_connectSettingsManager();
 	}
 
 	void EventManager::setSystemMsg( QVBoxLayout * p_ ) noexcept
@@ -140,10 +140,10 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			_uiObjects._buttonProductionSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsProd(); }
 		);
 	}
-	void EventManager::_connectSettingsSystem() noexcept
+	void EventManager::_connectSettingsManager() noexcept
 	{
 		QPushButton::connect(
-			_uiObjects._buttonSystemSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsSystem(); }
+			_uiObjects._buttonSystemSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsManager(); }
 		);
 	}
 	void EventManager::_connectInputCheck() noexcept
@@ -216,7 +216,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			std::function<void()> _callback;
 		};
 	} // namespace
-	void EventManager::_openSettingsSystem() noexcept
+	void EventManager::_openSettingsManager() noexcept
 	{
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );

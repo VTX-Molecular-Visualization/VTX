@@ -37,6 +37,10 @@ namespace VTX::App
 	{
 		class NetworkManager;
 	}
+	namespace Settings
+	{
+		class SettingsManager;
+	}
 } // namespace VTX::App
 namespace VTX::App
 {
@@ -72,6 +76,10 @@ namespace VTX::App
 	 * @brief Network manager.
 	 */
 	inline Network::NetworkManager & NETWORK() { return ECS::getCtx<Network::NetworkManager>(); }
+	/**
+	 * @brief Settings manager.
+	 */
+	inline Settings::SettingsManager & SETTINGS() { return ECS::getCtx<Settings::SettingsManager>(); }
 } // namespace VTX::App
 
 #endif

@@ -3,7 +3,7 @@
 
 #include "app/controller/base_controller.hpp"
 #include "app/input/key_mapping.hpp"
-#include "app/settings.hpp"
+#include "app/settings/settings.hpp"
 #include <util/hashing.hpp>
 
 namespace VTX::App::Controller::Camera

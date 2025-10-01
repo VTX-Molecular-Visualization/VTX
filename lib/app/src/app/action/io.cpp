@@ -3,7 +3,7 @@
 #include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/core/settings/settings_system.hpp"
+#include "app/settings/settings_manager.hpp"
 #include "app/filesystem.hpp"
 #include "app/network/network_manager.hpp"
 #include "app/services.hpp"
@@ -74,7 +74,7 @@ namespace VTX::App::Action::Io
 	SaveSettings::SaveSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}
 	void SaveSettings::execute() {}
 	void ReloadSettings::execute() {}
-	void ResetSettings::execute() { SETTINGS_SYSTEM().reset(); }
+	void ResetSettings::execute() { SETTINGS().reset(); }
 	void SaveScene::execute() {}
 
 	void OpenScene::execute() {}

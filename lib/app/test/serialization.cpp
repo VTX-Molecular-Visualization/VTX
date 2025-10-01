@@ -343,7 +343,7 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 	SERIALIZATION_SYSTEM().registerSerializationFunction<CustomClass>( &CustomClass::serialize );
 	SERIALIZATION_SYSTEM().registerDeserializationFunction<CustomClass>( &CustomClass::deserialize );
 
-	App::Core::Settings::SettingsSystem settings;
+	App::Settings::SettingsManager settings;
 
 	settings.referenceSetting( "INT_SETTING", 0 );
 	settings.referenceSetting( "FLOAT_SETTING", 0.f );
@@ -391,12 +391,12 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 	CHECK( settings.get<CustomClass>( "CUSTOM_CLASS_SETTING" ) == newCustomClass );
 
 	// Setting version check
-	App::Core::Settings::SettingsSystem settingsV0;
+	App::Settings::SettingsManager settingsV0;
 	settingsV0.referenceSetting<int>( "SETTING_1", 0 );
 	settingsV0.referenceSetting<int>( "SETTING_2", 0 );
 	settingsV0.referenceSetting<std::string>( "SETTING_3", "<default>" );
 
-	App::Core::Settings::SettingsSystem settingsV1;
+	App::Settings::SettingsManager settingsV1;
 	settingsV1.referenceSetting<int>( "SETTING_1", 0 ); // This setting has been kept
 	// settingsV1.referenceSetting<int>( "SETTING_2" ); // This setting has been removed
 	settingsV1.referenceSetting<float>( "SETTING_3", 0.f );						// This setting has changed type
@@ -413,9 +413,9 @@ TEST_CASE( "VTX_APP - Serialization - Settings", "[unit]" )
 	CHECK( settingsV1.get<float>( "SETTING_3" ) == 0.f );					  // Don't change (type issue)
 	CHECK( settingsV1.get<std::string>( "SETTING_4" ) == "<set_4_default>" ); // Don't change (doesn't exists before)
 
-	SERIALIZATION_SYSTEM().registerUpgrade<App::Core::Settings::SettingsSystem>(
+	SERIALIZATION_SYSTEM().registerUpgrade<App::Settings::SettingsManager>(
 		{ 1, 0, 0 },
-		[]( Util::JSon::Object & p_json, App::Core::Settings::SettingsSystem & p_settings )
+		[]( Util::JSon::Object & p_json, App::Settings::SettingsManager & p_settings )
 		{ p_json[ "MAP" ][ "SETTING_3" ] = 12.f; }
 	);
 

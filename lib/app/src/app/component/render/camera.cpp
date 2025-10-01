@@ -1,7 +1,7 @@
 #include "app/component/render/camera.hpp"
-#include "app/core/settings/settings_system.hpp"
 #include "app/services.hpp"
-#include "app/settings.hpp"
+#include "app/settings/settings.hpp"
+#include "app/settings/settings_manager.hpp"
 #include <renderer/facade.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
@@ -12,11 +12,11 @@ namespace VTX::App::Component::Render
 		_near(
 			Util::Math::max(
 				1e-1f,
-				SETTINGS_SYSTEM().get<float>( Settings::Camera::NEAR_CLIP_KEY )
+				SETTINGS().get<float>( Settings::Camera::NEAR_CLIP_KEY )
 			)
 		), // Avoid to little value.
-		_far( Util::Math::max( _near, SETTINGS_SYSTEM().get<float>( Settings::Camera::FAR_CLIP_KEY ) ) ),
-		_fov( SETTINGS_SYSTEM().get<float>( Settings::Camera::FOV_KEY ) )
+		_far( Util::Math::max( _near, SETTINGS().get<float>( Settings::Camera::FAR_CLIP_KEY ) ) ),
+		_fov( SETTINGS().get<float>( Settings::Camera::FOV_KEY ) )
 	{
 		// Link transform component.
 		assert( ECS_REGISTRY().hasComponent<Component::Scene::Transform>( *this ) );
@@ -25,7 +25,7 @@ namespace VTX::App::Component::Render
 		_transform->onTransform += [ this ]( const Util::Math::Transform & ) { _updateViewMatrix(); };
 
 		// Set settings default values.
-		auto & cameraProjection = SETTINGS_SYSTEM().get<PROJECTION>( Settings::Camera::PROJECTION_KEY );
+		auto & cameraProjection = SETTINGS().get<PROJECTION>( Settings::Camera::PROJECTION_KEY );
 		setCameraProjection( cameraProjection );
 	}
 

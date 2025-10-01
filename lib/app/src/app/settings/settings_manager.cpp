@@ -1,8 +1,8 @@
-#include "app/core/settings/settings_system.hpp"
+#include "app/settings/settings_manager.hpp"
 
-namespace VTX::App::Core::Settings
+namespace VTX::App::Settings
 {
-	SettingsSystem::SettingsSystem( const SettingsSystem & p_source )
+	SettingsManager::SettingsManager( const SettingsManager & p_source )
 	{
 		for ( const auto & pair : p_source._settings )
 		{
@@ -10,7 +10,7 @@ namespace VTX::App::Core::Settings
 		}
 	}
 
-	void SettingsSystem::reset()
+	void SettingsManager::reset()
 	{
 		for ( auto & pair : _settings )
 		{
@@ -18,7 +18,7 @@ namespace VTX::App::Core::Settings
 		}
 	}
 
-	bool operator==( const SettingsSystem & p_lhs, const SettingsSystem & p_rhs )
+	bool operator==( const SettingsManager & p_lhs, const SettingsManager & p_rhs )
 	{
 		if ( p_lhs._settings.size() != p_rhs._settings.size() )
 			return false;
@@ -31,7 +31,7 @@ namespace VTX::App::Core::Settings
 
 		return true;
 	}
-	bool operator!=( const SettingsSystem & p_lhs, const SettingsSystem & p_rhs )
+	bool operator!=( const SettingsManager & p_lhs, const SettingsManager & p_rhs )
 	{
 		if ( p_lhs._settings.size() != p_rhs._settings.size() )
 			return true;
@@ -46,4 +46,4 @@ namespace VTX::App::Core::Settings
 
 		return false;
 	}
-} // namespace VTX::App::Core::Settings
+} // namespace VTX::App::Settings

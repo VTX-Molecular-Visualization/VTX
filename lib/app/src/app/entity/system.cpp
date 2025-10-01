@@ -10,14 +10,14 @@
 #include "app/component/scene/transform_component.hpp"
 #include "app/component/scene/uid_component.hpp"
 // #include "app/component/scene/updatable.hpp"
-#include "app/core/settings/settings_system.hpp"
+#include "app/settings/settings_manager.hpp"
 #include "app/entity/system.hpp"
 #include "app/player/circular_buffer.hpp"
 #include "app/player/loop.hpp"
 #include "app/selection/system_data.hpp"
 #include "app/selection/system_granularity.hpp"
 #include "app/services.hpp"
-#include "app/settings.hpp"
+#include "app/settings/settings.hpp"
 #include <io/reader/system.hpp>
 #include <renderer/proxy/system.hpp>
 #include <util/logger.hpp>
@@ -111,7 +111,7 @@ namespace VTX::App::Entity
 			[ & ]( const Selection::PickingInfo & p_pickingInfo )
 			{
 				const auto granularity
-					= SETTINGS_SYSTEM().get<Selection::Granularity>( Settings::Selection::MOLECULE_GRANULARITY_KEY );
+					= SETTINGS().get<Selection::Granularity>( Settings::Selection::MOLECULE_GRANULARITY_KEY );
 
 				std::unique_ptr<Selection::SelectionData> res = std::make_unique<Selection::SystemData>( selectable );
 				auto &									  molData = dynamic_cast<Selection::SystemData &>( *res );
