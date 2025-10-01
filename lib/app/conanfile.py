@@ -33,6 +33,7 @@ class VTXAppRecipe(ConanFile):
         
         
     def _print_dir_content(self, p_dir):
+        import os
         # Print build folder contents for debugging
         self.output.info("=== Build folder contents before running tests ===")
         try:
