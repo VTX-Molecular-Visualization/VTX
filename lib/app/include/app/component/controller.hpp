@@ -1,11 +1,11 @@
 #ifndef __VTX_APP_COMPONENT_CONTROLLER__
 #define __VTX_APP_COMPONENT_CONTROLLER__
 
+#include "app/animation/concepts.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/component/scene/updatable.hpp"
 #include "app/controller/camera/animation.hpp"
-#include "app/core/animation/concepts.hpp"
 #include "app/core/controller/base_controller.hpp"
 #include "app/core/controller/concepts.hpp"
 #include "app/core/ecs/ecs_system.hpp"

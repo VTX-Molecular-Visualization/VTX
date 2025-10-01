@@ -1,12 +1,9 @@
-#ifndef __VTX_APP_CORE_ANIMATION_CONCEPTS__
-#define __VTX_APP_CORE_ANIMATION_CONCEPTS__
+#ifndef __VTX_APP_ANIMATION_CONCEPTS__
+#define __VTX_APP_ANIMATION_CONCEPTS__
 
-#include "app/core/animation/travel_manager.hpp"
-#include <util/callback.hpp>
-#include <util/collection.hpp>
-#include <util/math.hpp>
+#include "app/animation/travel_manager.hpp"
 
-namespace VTX::App::Core::Animation
+namespace VTX::App::Animation
 {
 
 	using ProgressCallback = std::function<void( const Vec3f &, const Quatf & )>;
@@ -22,6 +19,6 @@ namespace VTX::App::Core::Animation
 									  // { p_animation.exit() } -> std::same_as<void>;
 								  };
 
-} // namespace VTX::App::Core::Animation
+} // namespace VTX::App::Animation
 
 #endif

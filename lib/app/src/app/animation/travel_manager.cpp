@@ -1,7 +1,7 @@
-#include "app/core/animation/travel_manager.hpp"
+#include "app/animation/travel_manager.hpp"
 #include <util/math.hpp>
 
-namespace VTX::App::Core::Animation
+namespace VTX::App::Animation
 {
 
 	TravelManager::TravelManager(
@@ -61,4 +61,4 @@ namespace VTX::App::Core::Animation
 		onEnd( _target );
 	};
 
-} // namespace VTX::App::Core::Animation
+} // namespace VTX::App::Animation

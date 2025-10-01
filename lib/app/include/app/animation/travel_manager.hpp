@@ -1,10 +1,10 @@
-#ifndef __VTX_APP_CORE_ANIMATION_TRAVEL_MANAGER__
-#define __VTX_APP_CORE_ANIMATION_TRAVEL_MANAGER__
+#ifndef __VTX_APP_ANIMATION_TRAVEL_MANAGER__
+#define __VTX_APP_ANIMATION_TRAVEL_MANAGER__
 
 #include <util/callback.hpp>
 #include <util/math/transform.hpp>
 
-namespace VTX::App::Core::Animation
+namespace VTX::App::Animation
 {
 
 	class TravelManager
@@ -57,6 +57,6 @@ namespace VTX::App::Core::Animation
 
 		Vec3f _target = VEC3F_ZERO;
 	};
-} // namespace VTX::App::Core::Animation
+} // namespace VTX::App::Animation
 
 #endif
