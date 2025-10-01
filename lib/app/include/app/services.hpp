@@ -21,7 +21,11 @@ namespace VTX::Util
 namespace VTX::App
 {
 	class Args;
-}
+	namespace Action
+	{
+		class ActionManager;
+	}
+} // namespace VTX::App
 namespace VTX::App
 {
 	/**
@@ -40,6 +44,10 @@ namespace VTX::App
 	 * @brief Renderer facade.
 	 */
 	inline Renderer::Facade & RENDERER() { return ECS::getCtx<Renderer::Facade>(); }
+	/**
+	 * @brief Action manager.
+	 */
+	inline Action::ActionManager & ACTION() { return ECS::getCtx<Action::ActionManager>(); }
 } // namespace VTX::App
 
 #endif

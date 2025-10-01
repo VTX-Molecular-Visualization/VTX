@@ -1,7 +1,7 @@
 #include "app/vtx_app.hpp"
+#include "app/action/action_manager.hpp"
 #include "app/action/mode.hpp"
 #include "app/application/scene.hpp"
-#include "app/core/action/action_system.hpp"
 #include "app/core/ecs/registry.hpp"
 #include "app/core/library/library_system.hpp"
 #include "app/entity/scene.hpp"
@@ -37,6 +37,8 @@ namespace VTX::App
 		ECS::setCtx<Util::Monitoring::Stats>();
 		// Store renderer.
 		ECS::setCtx<Renderer::Facade>();
+		// Store action manager.
+		ECS::setCtx<Action::ActionManager>();
 	}
 
 	void VTXApp::init()
@@ -118,7 +120,7 @@ namespace VTX::App
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
 
-		ACTION_SYSTEM().execute<Action::Mode::SetMode<Mode::Visualization>>();
+		ACTION().execute<Action::Mode::SetMode<Mode::Visualization>>();
 		HUB().trigger<Events::ApplicationStarted>();
 
 		for ( Tool::BaseTool * const tool : _tools )
@@ -182,11 +184,11 @@ namespace VTX::App
 					{
 					case FILE_TYPE_ENUM::MOLECULE:
 					case FILE_TYPE_ENUM::TRAJECTORY:
-						App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( arg );
+						App::ACTION().execute<App::Action::Scene::LoadSystem>( arg );
 						break;
 
 					case FILE_TYPE_ENUM::SCENE:
-						App::ACTION_SYSTEM().execute<App::Action::Application::OpenScene>( arg );
+						App::ACTION().execute<App::Action::Application::OpenScene>( arg );
 						break;
 
 					case FILE_TYPE_ENUM::SCRIPT:
@@ -205,7 +207,7 @@ namespace VTX::App
 				// Check only letter and number.
 				if ( std::all_of( arg.begin(), arg.end(), []( const char c ) { return std::isalnum( c ); } ) )
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadSystem>(
+					App::ACTION().execute<App::Action::Scene::DownloadSystem>(
 						arg, std::string( arg ) + ".pdb"
 					);
 				}

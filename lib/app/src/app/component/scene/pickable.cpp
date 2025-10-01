@@ -1,7 +1,8 @@
 #include "app/component/scene/pickable.hpp"
+#include "app/action/action_manager.hpp"
 #include "app/action/selection.hpp"
 #include "app/selection/selection_manager.hpp"
-#include "app/core/action/action_system.hpp"
+#include "app/services.hpp"
 
 namespace VTX::App::Component::Scene
 {
@@ -16,9 +17,7 @@ namespace VTX::App::Component::Scene
 		{
 		case PickType::SET:
 		{
-			ACTION_SYSTEM().execute<Action::Selection::Select>(
-				*selectionData, Selection::AssignmentType::SET
-			);
+			ACTION().execute<Action::Selection::Select>( *selectionData, Selection::AssignmentType::SET );
 		}
 		break;
 
@@ -28,13 +27,11 @@ namespace VTX::App::Component::Scene
 
 			if ( _isSelectionDataSelected( *selectionData ) )
 			{
-				ACTION_SYSTEM().execute<Action::Selection::Unselect>( *selectionData );
+				ACTION().execute<Action::Selection::Unselect>( *selectionData );
 			}
 			else
 			{
-				ACTION_SYSTEM().execute<Action::Selection::Select>(
-					*selectionData, Selection::AssignmentType::APPEND
-				);
+				ACTION().execute<Action::Selection::Select>( *selectionData, Selection::AssignmentType::APPEND );
 			}
 		}
 		break;

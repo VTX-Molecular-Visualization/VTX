@@ -58,7 +58,7 @@ namespace VTX::UI::QT::Widget::Library
 		template<VTX::Renderer::E_RENDER_SETTINGS S, typename T>
 		void _changeValue( const T p_value )
 		{
-			App::ACTION_SYSTEM().execute<App::Action::RenderSettings::Change<S, T>>( _preset, p_value );
+			App::ACTION().execute<App::Action::RenderSettings::Change<S, T>>( _preset, p_value );
 		}
 
 		void _applyLogic();

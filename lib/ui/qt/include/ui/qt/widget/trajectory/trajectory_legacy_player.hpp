@@ -102,12 +102,12 @@ namespace VTX::UI::QT::Widget
 
 					switch ( p_index )
 					{
-					case 0: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<Loop>>( getSystem() ); break;
-					case 1: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<Once>>( getSystem() ); break;
-					case 2: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<PingPong>>( getSystem() ); break;
-					case 3: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<RevertOnce>>( getSystem() ); break;
-					case 4: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<RevertLoop>>( getSystem() ); break;
-					case 5: App::ACTION_SYSTEM().execute<SetLegacyPlayerType<Stop>>( getSystem() ); break;
+					case 0: App::ACTION().execute<SetLegacyPlayerType<Loop>>( getSystem() ); break;
+					case 1: App::ACTION().execute<SetLegacyPlayerType<Once>>( getSystem() ); break;
+					case 2: App::ACTION().execute<SetLegacyPlayerType<PingPong>>( getSystem() ); break;
+					case 3: App::ACTION().execute<SetLegacyPlayerType<RevertOnce>>( getSystem() ); break;
+					case 4: App::ACTION().execute<SetLegacyPlayerType<RevertLoop>>( getSystem() ); break;
+					case 5: App::ACTION().execute<SetLegacyPlayerType<Stop>>( getSystem() ); break;
 					default: break;
 					}
 

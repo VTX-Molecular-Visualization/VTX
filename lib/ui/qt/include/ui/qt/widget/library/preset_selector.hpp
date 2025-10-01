@@ -83,7 +83,7 @@ namespace VTX::UI::QT::Widget::Library
 				&QPushButton::clicked,
 				[ this ]()
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Library::DuplicatePreset<P>>(
+					App::ACTION().execute<App::Action::Library::DuplicatePreset<P>>(
 						_comboBox->currentText().toStdString()
 					);
 				}
@@ -93,7 +93,7 @@ namespace VTX::UI::QT::Widget::Library
 				&QPushButton::clicked,
 				[ this ]()
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Library::DeletePreset<P>>(
+					App::ACTION().execute<App::Action::Library::DeletePreset<P>>(
 						_comboBox->currentText().toStdString()
 					);
 				}
@@ -103,7 +103,7 @@ namespace VTX::UI::QT::Widget::Library
 				&QLineEdit::editingFinished,
 				[ this, lineRename ]()
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Library::RenamePreset<P>>(
+					App::ACTION().execute<App::Action::Library::RenamePreset<P>>(
 						_comboBox->currentText().toStdString(), lineRename->text().toStdString()
 					);
 				}

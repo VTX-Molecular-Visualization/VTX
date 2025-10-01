@@ -78,7 +78,7 @@ namespace VTX::UI::QT::Widget
 
 		QSize scaledSize = p_event->size() * devicePixelRatioF();
 
-		App::ACTION_SYSTEM().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
+		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
 	}
 
 	void OpenGLWidget::setVSync( const bool p_vsync )

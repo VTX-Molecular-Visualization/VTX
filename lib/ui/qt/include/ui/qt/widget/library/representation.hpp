@@ -46,7 +46,7 @@ namespace VTX::UI::QT::Widget::Library
 		template<VTX::Core::Struct::E_REPRESENTATION_VALUES S, typename T>
 		void _changeValue( const T p_value )
 		{
-			App::ACTION_SYSTEM().execute<App::Action::Representation::Change<S, T>>( _preset, p_value );
+			App::ACTION().execute<App::Action::Representation::Change<S, T>>( _preset, p_value );
 		}
 
 		void _applyLogic();

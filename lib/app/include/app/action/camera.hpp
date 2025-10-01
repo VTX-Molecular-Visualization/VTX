@@ -1,35 +1,35 @@
 #ifndef __VTX_APP_ACTION_CAMERA__
 #define __VTX_APP_ACTION_CAMERA__
 
+#include "app/action/base_action.hpp"
 #include "app/python_binding/viewpoint_manager.hpp"
-#include <app/core/action/base_action.hpp>
 #include <util/math/aabb.hpp>
 
 namespace VTX::App::Action::Camera
 {
 
-	class SetCameraProjectionOrthographic final : public Core::Action::BaseAction
+	class SetCameraProjectionOrthographic final : public BaseAction
 	{
 	  public:
 		SetCameraProjectionOrthographic() {}
 		void execute() override;
 	};
 
-	class SetCameraProjectionPerspective final : public Core::Action::BaseAction
+	class SetCameraProjectionPerspective final : public BaseAction
 	{
 	  public:
 		SetCameraProjectionPerspective() {}
 		void execute() override;
 	};
 
-	class ToggleCameraProjection final : public Core::Action::BaseAction
+	class ToggleCameraProjection final : public BaseAction
 	{
 	  public:
 		ToggleCameraProjection() {}
 		void execute() override;
 	};
 
-	class Reset final : public Core::Action::BaseAction
+	class Reset final : public BaseAction
 	{
 	  public:
 		Reset() {}
@@ -39,7 +39,7 @@ namespace VTX::App::Action::Camera
 	/**
 	 * @brief Move the camera in a straight line from the current position to the one in arguments
 	 */
-	class MoveCamera final : public Core::Action::BaseAction
+	class MoveCamera final : public BaseAction
 	{
 	  public:
 		inline MoveCamera(
@@ -81,7 +81,7 @@ namespace VTX::App::Action::Camera
 	/**
 	 * @brief Set the camera position to the target location, effectively "teleporting" the point of view
 	 */
-	class SetCameraPosition final : public Core::Action::BaseAction
+	class SetCameraPosition final : public BaseAction
 	{
 	  public:
 		inline SetCameraPosition( float p_x, float p_y, float p_z ) :
@@ -96,7 +96,7 @@ namespace VTX::App::Action::Camera
 		float _z = 0.f;
 	};
 
-	class Orient final : public App::Core::Action::BaseAction
+	class Orient final : public BaseAction
 	{
 	  public:
 		inline Orient( const float & p_x, const float & p_y, const float & p_z ) : _target( Vec3f { p_x, p_y, p_z } ) {}

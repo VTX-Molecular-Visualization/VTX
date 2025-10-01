@@ -261,7 +261,7 @@ namespace VTX::UI::QT::DockWidget
 					default: assert( true ); break;
 					}
 
-					App::ACTION_SYSTEM().execute<Select>( selectionData, AssignmentType::SET );
+					App::ACTION().execute<Select>( selectionData, AssignmentType::SET );
 				}
 				// Visibility
 				else if ( p_column == 1 )
@@ -275,28 +275,28 @@ namespace VTX::UI::QT::DockWidget
 					{
 					case E_DEPTH::SYSTEM:
 					{
-						App::ACTION_SYSTEM().execute<SetVisible<E_ITEM_TYPE::SYSTEM>>(
+						App::ACTION().execute<SetVisible<E_ITEM_TYPE::SYSTEM>>(
 							_systemComponents.at( topLevelWidget ), isVisible, std::nullopt
 						);
 						break;
 					}
 					case E_DEPTH::CHAIN:
 					{
-						App::ACTION_SYSTEM().execute<SetVisible<E_ITEM_TYPE::CHAIN>>(
+						App::ACTION().execute<SetVisible<E_ITEM_TYPE::CHAIN>>(
 							_systemComponents.at( topLevelWidget ), isVisible, widgetData
 						);
 						break;
 					}
 					case E_DEPTH::RESIDUE:
 					{
-						App::ACTION_SYSTEM().execute<SetVisible<E_ITEM_TYPE::RESIDUE>>(
+						App::ACTION().execute<SetVisible<E_ITEM_TYPE::RESIDUE>>(
 							_systemComponents.at( topLevelWidget ), isVisible, widgetData
 						);
 						break;
 					}
 					case E_DEPTH::ATOM:
 					{
-						App::ACTION_SYSTEM().execute<SetVisible<E_ITEM_TYPE::ATOM>>(
+						App::ACTION().execute<SetVisible<E_ITEM_TYPE::ATOM>>(
 							_systemComponents.at( topLevelWidget ), isVisible, widgetData
 						);
 						break;
@@ -333,7 +333,7 @@ namespace VTX::UI::QT::DockWidget
 				{
 				case E_DEPTH::SYSTEM:
 				{
-					// App::ACTION_SYSTEM().execute<Orient>( _systemComponents.at( topLevelWidget )->getAABB() );
+					// App::ACTION().execute<Orient>( _systemComponents.at( topLevelWidget )->getAABB() );
 					break;
 				}
 				case E_DEPTH::CHAIN:

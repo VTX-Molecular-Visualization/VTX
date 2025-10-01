@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_ACTION_LIBRARY__
 #define __VTX_APP_ACTION_LIBRARY__
 
-#include "app/core/action/base_action.hpp"
+#include "app/action/base_action.hpp"
 #include <app/core/library/library_system.hpp>
 
 namespace VTX::App::Action::Library
@@ -10,7 +10,7 @@ namespace VTX::App::Action::Library
 	 * @brief Base class for library actions.
 	 */
 	template<typename T>
-	class BaseActionLibrary : public App::Core::Action::BaseAction
+	class BaseActionLibrary : public BaseAction
 	{
 	  public:
 		virtual ~BaseActionLibrary() = default;

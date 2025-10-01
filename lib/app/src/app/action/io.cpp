@@ -1,8 +1,8 @@
 #include "app/action/io.hpp"
+#include "app/action/action_manager.hpp"
 #include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/core/action/action_system.hpp"
 #include "app/core/network/network_system.hpp"
 #include "app/core/settings/settings_system.hpp"
 #include "app/filesystem.hpp"
@@ -65,7 +65,7 @@ namespace VTX::App::Action::Io
 			_url.str.data(),
 			_filename.string(),
 			[ filepath ]( const std::string & p_text )
-			{ App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( filepath, &p_text ); }
+			{ App::ACTION().execute<App::Action::Scene::LoadSystem>( filepath, &p_text ); }
 		);
 	}
 

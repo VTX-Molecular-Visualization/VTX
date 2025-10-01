@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_ACTION_VISIBILLITY__
 #define __VTX_APP_ACTION_VISIBILLITY__
 
-#include "app/core/action/base_action.hpp"
+#include "app/action/base_action.hpp"
 
 namespace VTX::App::Action::Visibility
 {
@@ -15,7 +15,7 @@ namespace VTX::App::Action::Visibility
 	};
 
 	template<E_ITEM_TYPE T>
-	class SetVisible final : public App::Core::Action::BaseAction
+	class SetVisible final : public BaseAction
 	{
 	  public:
 		explicit SetVisible(

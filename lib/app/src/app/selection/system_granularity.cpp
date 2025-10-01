@@ -1,12 +1,13 @@
 #include "app/selection/system_granularity.hpp"
+#include "app/action/action_manager.hpp"
 #include "app/action/selection.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/chemistry/system.hpp"
 #include "app/component/scene/selectable.hpp"
-#include "app/core/action/action_system.hpp"
 #include "app/selection/selection_manager.hpp"
+#include "app/services.hpp"
 #include "app/vtx_app.hpp"
 
 namespace VTX::App::Selection
@@ -77,7 +78,7 @@ namespace VTX::App::Selection
 
 		const SystemData molData = getSelectionData( p_atom, p_granularity );
 
-		ACTION_SYSTEM().execute<App::Action::Selection::Select>( molData, p_assignment );
+		ACTION().execute<App::Action::Selection::Select>( molData, p_assignment );
 	}
 	void SystemGranularity::unselect( const Atom & p_atom, const Granularity & p_granularity )
 	{
@@ -86,7 +87,7 @@ namespace VTX::App::Selection
 
 		const SystemData molData = getSelectionData( p_atom, p_granularity );
 
-		ACTION_SYSTEM().execute<App::Action::Selection::Unselect>( molData );
+		ACTION().execute<App::Action::Selection::Unselect>( molData );
 	}
 
 	void SystemGranularity::select(
@@ -100,7 +101,7 @@ namespace VTX::App::Selection
 
 		const SystemData molData = getSelectionData( p_residue, p_granularity );
 
-		ACTION_SYSTEM().execute<App::Action::Selection::Select>( molData, p_assignment );
+		ACTION().execute<App::Action::Selection::Select>( molData, p_assignment );
 	}
 	void SystemGranularity::unselect( const Residue & p_residue, const Granularity & p_granularity )
 	{
@@ -109,7 +110,7 @@ namespace VTX::App::Selection
 
 		const SystemData molData = getSelectionData( p_residue, p_granularity );
 
-		ACTION_SYSTEM().execute<App::Action::Selection::Unselect>( molData );
+		ACTION().execute<App::Action::Selection::Unselect>( molData );
 	}
 
 	void SystemGranularity::select(
@@ -123,7 +124,7 @@ namespace VTX::App::Selection
 
 		const SystemData molData = getSelectionData( p_chain, p_granularity );
 
-		ACTION_SYSTEM().execute<App::Action::Selection::Select>( molData, p_assignment );
+		ACTION().execute<App::Action::Selection::Select>( molData, p_assignment );
 	}
 	void SystemGranularity::unselect( const Chain & p_chain, const Granularity & p_granularity )
 	{
@@ -132,6 +133,6 @@ namespace VTX::App::Selection
 
 		const SystemData molData = getSelectionData( p_chain, p_granularity );
 
-		ACTION_SYSTEM().execute<App::Action::Selection::Unselect>( molData );
+		ACTION().execute<App::Action::Selection::Unselect>( molData );
 	}
 } // namespace VTX::App::Selection

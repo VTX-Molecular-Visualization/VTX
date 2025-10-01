@@ -180,7 +180,7 @@ namespace VTX::UI::QT::Dialog
 					return;
 				}
 
-				App::ACTION_SYSTEM().execute<App::Action::Io::Snapshot>(
+				App::ACTION().execute<App::Action::Io::Snapshot>(
 					path.toStdString(),
 					_comboBoxFormat->currentIndex() == 0 ? Util::Image::E_FORMAT::PNG : Util::Image::E_FORMAT::JPEG,
 					_spinBoxWidth->value(),

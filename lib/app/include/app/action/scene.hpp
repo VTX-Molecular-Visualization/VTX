@@ -3,7 +3,7 @@
 
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/component/render/_fwd.hpp"
-#include "app/core/action/base_action.hpp"
+#include "app/action/base_action.hpp"
 #include <map>
 #include <string>
 #include <util/types.hpp>
@@ -12,7 +12,7 @@
 namespace VTX::App::Action::Scene
 {
 
-	class LoadSystem final : public App::Core::Action::BaseAction
+	class LoadSystem final : public BaseAction
 	{
 	  public:
 		explicit LoadSystem( const FilePath & p_path ) : _path( p_path ) {}
@@ -30,7 +30,7 @@ namespace VTX::App::Action::Scene
 		std::vector<Component::Chemistry::System *> _trajectoryTargets;
 	};
 
-	class CreateViewpoint final : public App::Core::Action::BaseAction
+	class CreateViewpoint final : public BaseAction
 	{
 	  public:
 		explicit CreateViewpoint();
@@ -47,7 +47,7 @@ namespace VTX::App::Action::Scene
 		Quatf _rotation;
 	};
 
-	class ClearScene final : public Core::Action::BaseAction
+	class ClearScene final : public BaseAction
 	{
 	  public:
 		void execute() override;

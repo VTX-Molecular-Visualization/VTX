@@ -1,11 +1,12 @@
 #ifndef __VTX_UI_QT_ACTIONS__
 #define __VTX_UI_QT_ACTIONS__
 
+#include "app/services.hpp"
 #include <QAction>
 #include <QActionGroup>
 #include <QStyle>
+#include <app/action/action_manager.hpp>
 #include <app/action/library.hpp>
-#include <app/core/action/action_system.hpp>
 #include <app/ui/concepts.hpp>
 #include <app/vtx_app.hpp>
 #include <util/collection.hpp>
@@ -214,7 +215,7 @@ namespace VTX::UI::QT
 					name	= "New";
 					tip		= "Create a new empty preset";
 					icon	= static_cast<int>( QStyle::StandardPixmap::SP_FileIcon );
-					trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Library::AddPreset<P>>(); };
+					trigger = []() { App::ACTION().execute<App::Action::Library::AddPreset<P>>(); };
 				}
 			};
 

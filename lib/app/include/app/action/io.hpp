@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_ACTION_IO__
 #define __VTX_APP_ACTION_IO__
 
-#include "app/core/action/base_action.hpp"
+#include "app/action/base_action.hpp"
 #include <util/filesystem.hpp>
 #include <util/image.hpp>
 #include <util/types.hpp>
@@ -18,7 +18,7 @@ namespace VTX::Util::Url
 namespace VTX::App::Action::Io
 {
 
-	class Open final : public Core::Action::BaseAction
+	class Open final : public BaseAction
 	{
 	  public:
 		explicit Open( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
@@ -46,7 +46,7 @@ namespace VTX::App::Action::Io
 		//	= std::vector<Component::Chemistry::System *>();
 	};
 
-	class DownloadSystem final : public App::Core::Action::BaseAction
+	class DownloadSystem final : public BaseAction
 	{
 	  public:
 		DownloadSystem( VTX::Util::Url::SystemId );
@@ -66,7 +66,7 @@ namespace VTX::App::Action::Io
 		const FilePath				  _filename;
 	};
 
-	class SaveScene final : public Core::Action::BaseAction
+	class SaveScene final : public BaseAction
 	{
 	  public:
 		explicit SaveScene() : _path( "" ) /*, _callback( nullptr )*/ {}
@@ -83,7 +83,7 @@ namespace VTX::App::Action::Io
 		// VTX::App::Old::Core::Worker::CallbackThread * const _callback;
 	};
 
-	class LoadSettings final : public Core::Action::BaseAction
+	class LoadSettings final : public BaseAction
 	{
 	  public:
 		explicit LoadSettings();
@@ -94,7 +94,7 @@ namespace VTX::App::Action::Io
 	  private:
 		const FilePath _path;
 	};
-	class SaveSettings final : public Core::Action::BaseAction
+	class SaveSettings final : public BaseAction
 	{
 	  public:
 		explicit SaveSettings();
@@ -105,20 +105,20 @@ namespace VTX::App::Action::Io
 	  private:
 		const FilePath _path;
 	};
-	class ReloadSettings final : public Core::Action::BaseAction
+	class ReloadSettings final : public BaseAction
 	{
 	  public:
 		explicit ReloadSettings() {}
 		void execute() override;
 	};
-	class ResetSettings final : public Core::Action::BaseAction
+	class ResetSettings final : public BaseAction
 	{
 	  public:
 		explicit ResetSettings() {}
 		void execute() override;
 	};
 
-	class OpenScene final : public Core::Action::BaseAction
+	class OpenScene final : public BaseAction
 	{
 	  public:
 		explicit OpenScene( const FilePath & p_path ) : _path( p_path ) {}
@@ -128,7 +128,7 @@ namespace VTX::App::Action::Io
 		FilePath _path = FilePath();
 	};
 
-	class Snapshot final : public App::Core::Action::BaseAction
+	class Snapshot final : public BaseAction
 	{
 	  public:
 		Snapshot( const FilePath, const Util::Image::E_FORMAT, const size_t, const size_t );
