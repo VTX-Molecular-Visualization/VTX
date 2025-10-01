@@ -4,7 +4,7 @@
 #include "base_controller.hpp"
 #include <concepts>
 
-namespace VTX::App::Core::Controller
+namespace VTX::App::Controller
 {
 	template<typename C>
 	concept ConceptController
@@ -13,6 +13,6 @@ namespace VTX::App::Core::Controller
 				 { p_mode.update( p_deltaTime, p_elapsedTime ) } -> std::same_as<void>;
 			 };
 
-} // namespace VTX::App::Core::Controller
+} // namespace VTX::App::Controller
 
 #endif

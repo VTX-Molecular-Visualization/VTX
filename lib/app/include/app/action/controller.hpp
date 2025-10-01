@@ -4,11 +4,11 @@
 #include "app/action/base_action.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/controller.hpp"
-#include "app/core/controller/concepts.hpp"
+#include "app/controller/concepts.hpp"
 
 namespace VTX::App::Action::Controller
 {
-	template<Core::Controller::ConceptController C>
+	template<App::Controller::ConceptController C>
 	class EnableController final : public BaseAction
 	{
 	  public:
@@ -21,7 +21,7 @@ namespace VTX::App::Action::Controller
 		}
 	};
 
-	template<Core::Controller::ConceptController C>
+	template<App::Controller::ConceptController C>
 	class DisableController final : public BaseAction
 	{
 	  public:

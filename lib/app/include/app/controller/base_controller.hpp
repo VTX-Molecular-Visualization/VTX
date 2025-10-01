@@ -3,7 +3,7 @@
 
 #include "app/component/render/camera.hpp"
 #include "app/core/input/key_mapping.hpp"
-namespace VTX::App::Core::Controller
+namespace VTX::App::Controller
 {
 
 	class BaseController
@@ -19,6 +19,6 @@ namespace VTX::App::Core::Controller
 		Core::Input::KeyMapping		_mapping;
 	};
 
-} // namespace VTX::App::Core::Controller
+} // namespace VTX::App::Controller
 
 #endif

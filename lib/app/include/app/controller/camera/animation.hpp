@@ -2,7 +2,7 @@
 #define __VTX_APP_CONTROLLER_CAMERA_ANIMATION__
 
 #include "app/animation/concepts.hpp"
-#include "app/core/controller/base_controller.hpp"
+#include "app/controller/base_controller.hpp"
 #include "app/core/input/key_mapping.hpp"
 #include "app/settings.hpp"
 #include <util/hashing.hpp>
@@ -10,7 +10,7 @@
 namespace VTX::App::Controller::Camera
 {
 	template<App::Animation::ConceptAnimation A>
-	class Animation : public Core::Controller::BaseController
+	class Animation : public BaseController
 	{
 	  public:
 		template<typename... Args>
@@ -35,7 +35,7 @@ namespace VTX::App::Controller::Camera
 	/**
 	 * @brief Class responsible allowing animation manipulation to consumers
 	 */
-	class GenericAnimation : public Core::Controller::BaseController
+	class GenericAnimation : public BaseController
 	{
 	  public:
 		GenericAnimation() = default;
