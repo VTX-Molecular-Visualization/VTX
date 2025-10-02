@@ -14,11 +14,11 @@ TEST_CASE( "Util::Monitoring::Stats", "[unit]" )
 	frame1.set<float>( hash( "metric2" ), 20.f );
 
 	FrameInfo & frame2 = stats.newFrame();
-	frame1.set<int>( hash( "metric1" ), 20 );
-	frame1.set<float>( hash( "metric2" ), 80.f );
+	frame2.set<int>( hash( "metric1" ), 20 );
+	frame2.set<float>( hash( "metric2" ), 80.f );
 
 	int averageMetric1 = stats.average<int>( hash( "metric1" ) );
 	CHECK( averageMetric1 == 15 );
 	float averageMetric2 = stats.average<float>( hash( "metric2" ) );
-	CHECK( averageMetric2 == 40.f );
+	CHECK( averageMetric2 == 50.f );
 }

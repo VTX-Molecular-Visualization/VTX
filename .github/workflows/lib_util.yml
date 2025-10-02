@@ -59,6 +59,7 @@ jobs:
         conan upload spdlog -r=cano7782
         conan upload magic_enum -r=cano7782
         conan upload nlohmann_json -r=cano7782
+        conan upload entt -r=cano7782
         conan upload cpr -r=cano7782
         conan upload stb -r=cano7782
         conan upload fmt -r=cano7782
