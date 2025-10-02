@@ -153,41 +153,42 @@ namespace VTX::App::Component::Chemistry
 			_visibleAtomIds.clear();
 		}
 
-		const App::Core::VISIBILITY_APPLY_MODE applyMode
-			= p_visible ? App::Core::VISIBILITY_APPLY_MODE::SHOW : App::Core::VISIBILITY_APPLY_MODE::HIDE;
+		const Component::Chemistry::VISIBILITY_APPLY_MODE applyMode
+			= p_visible ? Component::Chemistry::VISIBILITY_APPLY_MODE::SHOW
+						: Component::Chemistry::VISIBILITY_APPLY_MODE::HIDE;
 
 		onVisibilityChange( IndexRangeList( { atomRange } ), applyMode );
 	}
 	void System::setVisible( const Index & p_atomId, bool p_visible )
 	{
-		App::Core::VISIBILITY_APPLY_MODE applyMode;
+		Component::Chemistry::VISIBILITY_APPLY_MODE applyMode;
 
 		if ( p_visible )
 		{
 			_visibleAtomIds.addValue( p_atomId );
-			applyMode = App::Core::VISIBILITY_APPLY_MODE::SHOW;
+			applyMode = Component::Chemistry::VISIBILITY_APPLY_MODE::SHOW;
 		}
 		else
 		{
 			_visibleAtomIds.removeValue( p_atomId );
-			applyMode = App::Core::VISIBILITY_APPLY_MODE::HIDE;
+			applyMode = Component::Chemistry::VISIBILITY_APPLY_MODE::HIDE;
 		}
 
 		onVisibilityChange( IndexRangeList( { IndexRange( p_atomId ) } ), applyMode );
 	}
 	void System::setVisible( const IndexRange & p_atomRange, bool p_visible )
 	{
-		App::Core::VISIBILITY_APPLY_MODE applyMode;
+		Component::Chemistry::VISIBILITY_APPLY_MODE applyMode;
 
 		if ( p_visible )
 		{
 			_visibleAtomIds.addRange( p_atomRange );
-			applyMode = App::Core::VISIBILITY_APPLY_MODE::SHOW;
+			applyMode = Component::Chemistry::VISIBILITY_APPLY_MODE::SHOW;
 		}
 		else
 		{
 			_visibleAtomIds.removeRange( p_atomRange );
-			applyMode = App::Core::VISIBILITY_APPLY_MODE::HIDE;
+			applyMode = Component::Chemistry::VISIBILITY_APPLY_MODE::HIDE;
 		}
 
 		onVisibilityChange( IndexRangeList( { p_atomRange } ), applyMode );
@@ -195,17 +196,17 @@ namespace VTX::App::Component::Chemistry
 
 	void System::setVisible( const IndexRangeList & p_atomRange, bool p_visible )
 	{
-		App::Core::VISIBILITY_APPLY_MODE applyMode;
+		Component::Chemistry::VISIBILITY_APPLY_MODE applyMode;
 
 		if ( p_visible )
 		{
 			Util::Algorithm::Range::mergeInSitu( _visibleAtomIds, p_atomRange );
-			applyMode = App::Core::VISIBILITY_APPLY_MODE::SHOW;
+			applyMode = Component::Chemistry::VISIBILITY_APPLY_MODE::SHOW;
 		}
 		else
 		{
 			Util::Algorithm::Range::substractInSitu( _visibleAtomIds, p_atomRange );
-			applyMode = App::Core::VISIBILITY_APPLY_MODE::HIDE;
+			applyMode = Component::Chemistry::VISIBILITY_APPLY_MODE::HIDE;
 		}
 
 		onVisibilityChange( p_atomRange, applyMode );
@@ -214,7 +215,7 @@ namespace VTX::App::Component::Chemistry
 	void System::setAtomVisibilities( const IndexRangeList & p_visibility )
 	{
 		_visibleAtomIds = p_visibility;
-		onVisibilityChange( _visibleAtomIds, App::Core::VISIBILITY_APPLY_MODE::SET );
+		onVisibilityChange( _visibleAtomIds, Component::Chemistry::VISIBILITY_APPLY_MODE::SET );
 	}
 
 	void System::remove( const Index & p_atomIndex )

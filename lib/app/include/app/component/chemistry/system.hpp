@@ -5,7 +5,6 @@
 #include "app/core/ecs/ecs_system.hpp"
 #include "app/uid/uid.hpp"
 #include "index_types.hpp"
-#include <app/core/visibility/enum.hpp>
 #include <core/struct/system.hpp>
 #include <memory>
 #include <util/callback.hpp>
@@ -21,6 +20,13 @@ namespace VTX::App::Component::Render
 
 namespace VTX::App::Component::Chemistry
 {
+	enum class VISIBILITY_APPLY_MODE
+	{
+		SHOW,
+		HIDE,
+		SET
+	};
+
 	class System : public Core::ECS::BaseComponent
 	{
 	  private:
@@ -105,10 +111,10 @@ namespace VTX::App::Component::Chemistry
 		const Residue *		  getResidueFromUID( Uid::uid p_uid ) const;
 		Residue *			  getResidueFromUID( Uid::uid p_uid );
 
-		Util::Callback<>												 onStruct;
-		Util::Callback<IndexRangeList, App::Core::VISIBILITY_APPLY_MODE> onVisibilityChange;
-		Util::Callback<IndexRangeList>									 onAtomRemoved;
-		Util::Callback<>												 onTrajectoryAdded;
+		Util::Callback<>									  onStruct;
+		Util::Callback<IndexRangeList, VISIBILITY_APPLY_MODE> onVisibilityChange;
+		Util::Callback<IndexRangeList>						  onAtomRemoved;
+		Util::Callback<>									  onTrajectoryAdded;
 
 	  private:
 		void _deleteTopologyPointers( const Index p_atomIndex );

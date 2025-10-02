@@ -422,7 +422,9 @@ namespace VTX::UI::QT::DockWidget
 
 			// Visibility callback.
 			system->onVisibilityChange +=
-				[ this, item, system ]( App::Component::Chemistry::IndexRangeList, App::Core::VISIBILITY_APPLY_MODE )
+				[ this, item, system ](
+					App::Component::Chemistry::IndexRangeList, App::Component::Chemistry::VISIBILITY_APPLY_MODE
+				)
 			{
 				Util::Chrono chrono;
 				chrono.start();

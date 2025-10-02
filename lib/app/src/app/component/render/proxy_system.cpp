@@ -163,17 +163,17 @@ namespace VTX::App::Component::Render
 	}
 
 	void ProxySystem::_applyOnVisibility(
-		const Component::Chemistry::IndexRangeList & p_rangeList,
-		const App::Core::VISIBILITY_APPLY_MODE		 p_applyMode
+		const Component::Chemistry::IndexRangeList &	  p_rangeList,
+		const Component::Chemistry::VISIBILITY_APPLY_MODE p_applyMode
 	)
 	{
 		switch ( p_applyMode )
 		{
-		case App::Core::VISIBILITY_APPLY_MODE::SHOW: _proxy->onAtomVisibilities( p_rangeList, true ); break;
+		case Component::Chemistry::VISIBILITY_APPLY_MODE::SHOW: _proxy->onAtomVisibilities( p_rangeList, true ); break;
 
-		case App::Core::VISIBILITY_APPLY_MODE::HIDE: _proxy->onAtomVisibilities( p_rangeList, false ); break;
+		case Component::Chemistry::VISIBILITY_APPLY_MODE::HIDE: _proxy->onAtomVisibilities( p_rangeList, false ); break;
 
-		case App::Core::VISIBILITY_APPLY_MODE::SET:
+		case Component::Chemistry::VISIBILITY_APPLY_MODE::SET:
 			//_proxy->onVisible( false );
 			_proxy->onAtomVisibilities( p_rangeList, true );
 			break;
@@ -190,10 +190,10 @@ namespace VTX::App::Component::Render
 	{
 		Component::Chemistry::System & system = ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 
-		system.onVisibilityChange +=
-			[ this ](
-				const Component::Chemistry::IndexRangeList & p_rangeList, App::Core::VISIBILITY_APPLY_MODE p_applyMode
-			)
+		system.onVisibilityChange += [ this ](
+										 const Component::Chemistry::IndexRangeList & p_rangeList,
+										 Component::Chemistry::VISIBILITY_APPLY_MODE  p_applyMode
+									 )
 		{
 			Component::Chemistry::System & system = ECS_REGISTRY().getComponent<Component::Chemistry::System>( *this );
 
@@ -204,7 +204,7 @@ namespace VTX::App::Component::Render
 		};
 
 		system.onAtomRemoved += [ this ]( const Component::Chemistry::IndexRangeList & p_rangeList )
-		{ _applyOnVisibility( p_rangeList, App::Core::VISIBILITY_APPLY_MODE::HIDE ); };
+		{ _applyOnVisibility( p_rangeList, Component::Chemistry::VISIBILITY_APPLY_MODE::HIDE ); };
 	}
 
 	void ProxySystem::_applySelectionCallbacks()

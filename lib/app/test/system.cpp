@@ -189,7 +189,7 @@ TEST_CASE( "VTX_APP - System - Visibility", "[unit]" )
 	bool  callbackValidated			= 0;
 
 	systemComponent.onVisibilityChange +=
-		[ & ]( const IndexRangeList & p_atoms, const App::Core::VISIBILITY_APPLY_MODE p_applyMode )
+		[ & ]( const IndexRangeList & p_atoms, const Component::Chemistry::VISIBILITY_APPLY_MODE p_applyMode )
 	{ callbackValidated = ( expectedModifiedAtomCount == p_atoms.count() ); };
 
 	// Atom visibility
