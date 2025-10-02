@@ -51,7 +51,7 @@ namespace VTX::App
 		// Store network manager.
 		ECS::setCtx<Network::NetworkManager>();
 		// Store settings manager.
-		// ECS::setCtx<Settings::SettingsManager>();
+		ECS::setCtx<Settings::SettingsManager>();
 		// Store thread manager.
 		ECS::setCtx<Threading::ThreadManager>();
 		// Store uid manager.

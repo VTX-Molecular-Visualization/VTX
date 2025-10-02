@@ -20,6 +20,7 @@ namespace VTX::App::Settings
 	  public:
 		SettingsManager() = default;
 		SettingsManager( const SettingsManager & p_source );
+		SettingsManager( SettingsManager && ) = default;
 
 		template<typename T>
 		void referenceSetting( const std::string & p_key, const T & p_defaultValue = T() )
