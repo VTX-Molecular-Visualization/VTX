@@ -41,7 +41,7 @@ namespace VTX::App
 
 	void VTXApp::init()
 	{
-		VTX_DEBUG( "Init application" );
+		VTX_INFO( "Init application" );
 
 		// Load preset libraries.
 		auto * lib	  = LIBRARY_SYSTEM().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
@@ -75,6 +75,7 @@ namespace VTX::App
 		// Register loop events.
 		onPostUpdate += []( const float p_elapsedTime ) { THREADING_SYSTEM().lateUpdate(); };
 
+		VTX_INFO( "App initializing interpretor." );
 		// Initialize python interpretor.
 		INTERPRETOR().subscribe(
 			[]( VTX::PythonBinding::Interpretor & p_interpretor )

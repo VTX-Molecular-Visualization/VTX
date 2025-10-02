@@ -60,7 +60,7 @@ class VTXAppRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
-        self._print_dir_content(self.build_folder)
+        #self._print_dir_content(self.build_folder)
         if self.options.test == True:
             cmake.ctest(["--output-on-failure"])
 

@@ -30,40 +30,78 @@ namespace VTX::PythonBinding
 	{
 		pybind11::scoped_interpreter createInterpretor( const std::wstring & p_pythonHomePath )
 		{
+			VTX_INFO( "PY - Creating interpretor ..." );
+
+			VTX_INFO( "PY - preInit python config" );
+			PyPreConfig preConfig;
+			PyPreConfig_InitIsolatedConfig( &preConfig );
+			preConfig.allocator		  = 1;
+			preConfig.isolated		  = 1;
+			preConfig.use_environment = 0;
+			Py_PreInitialize( &preConfig );
+			VTX_INFO( "PY - preInit python config done." );
+
 			PyConfig config;
+			VTX_INFO( "PY - Init python config" );
 			PyConfig_InitPythonConfig( &config );
-			config.isolated		   = 1;
-			config.use_environment = 0;
+			VTX_INFO( "PY - Init python config done." );
+			config.isolated				   = 1;
+			config.use_environment		   = 0;
+			config.module_search_paths_set = 1;
 #ifdef _WIN32
-			std::wstring platlibdir = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
+			std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
+			std::wstring platlibdir	 = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
+			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "python"
+#ifdef _DEBUG
+			"_d"
+#endif // _DEBUG
+				".exe" ).wstring();
 #else
-			std::wstring platlibdir = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
+			std::wstring pyScriptDir	  = ( VTX::FilePath( p_pythonHomePath ) / "lib" / "python3.9" ).wstring();
+			std::wstring platlibdir		  = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
+			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin" / "python" ).wstring();
+
 #endif
+			VTX_INFO( "PY - SetString." );
 			PyConfig_SetString( &config, &config.platlibdir, platlibdir.c_str() );
 			PyConfig_SetString( &config, &config.home, p_pythonHomePath.c_str() );
 			PyConfig_SetString( &config, &config.prefix, p_pythonHomePath.c_str() );
 			std::wstring execDirPath = VTX::Util::Filesystem::getExecutableDir().wstring();
 			PyConfig_SetString( &config, &config.exec_prefix, p_pythonHomePath.c_str() );
+			PyConfig_SetString( &config, &config.executable, pythonExecutable.c_str() );
+			PyConfig_SetString( &config, &config.base_executable, pythonExecutable.c_str() );
 
-#ifdef _WIN32
 			VTX::FilePath python39Path = VTX::FilePath( p_pythonHomePath ) / "python39.zip";
 			std::wstring  python39Str( python39Path.wstring() );
-			PyWideStringList_Append( &config.module_search_paths, python39Str.c_str() );
 			if ( std::filesystem::exists( python39Path ) )
-				VTX_DEBUG( "zip file : <{}> does exist.", python39Path.string() );
+				VTX_INFO( "PY - zip file : <{}> does exist.", python39Path.string() );
 			else
-				VTX_ERROR( "zip file : <{}> does not exist !", python39Path.string() );
-#endif
+				VTX_ERROR( "PY - zip file : <{}> does not exist !", python39Path.string() );
+
+			std::string execDirPath_string = VTX::Util::Filesystem::getExecutableDir().string();
+			VTX_INFO( "PY - StringList Appending execDirPath : <{}>.", execDirPath_string );
 
 			// Add the build directory to module search paths so Python can find python39.zip
 			// The build directory is the parent of external/python where python39.zip is located
+			PyWideStringList_Append( &config.module_search_paths, L"" );
+
+			PyWideStringList_Append( &config.module_search_paths, python39Str.c_str() );
 			PyWideStringList_Append( &config.module_search_paths, execDirPath.c_str() );
+			PyWideStringList_Append( &config.module_search_paths, platlibdir.c_str() );
+#ifndef _WIN32
+			std::wstring dynloadDir = ( VTX::FilePath( pyScriptDir ) / "lib-dynload" ).wstring();
+			PyWideStringList_Append( &config.module_search_paths, dynloadDir.c_str() );
+#endif // !_WIN32
+
+			PyWideStringList_Append( &config.module_search_paths, pyScriptDir.c_str() );
 			// PyWideStringList_Append( &config.module_search_paths, platlibdir.c_str() );
+			VTX_INFO( "PY - StringList Append done." );
 
 			// Py_SetPythonHome( p_pythonHomePath.data() );
 			std::optional<pybind11::scoped_interpreter> interpetor;
 			try
 			{
+				VTX_INFO( "PY - About to instanciate interpretor ..." );
 				interpetor.emplace( &config );
 			}
 			catch ( std::exception & e )
@@ -72,6 +110,7 @@ namespace VTX::PythonBinding
 				throw VTX::LibException( "Error in python lib : <{}>", e.what() );
 			}
 			PyConfig_Clear( &config );
+			VTX_INFO( "PY - Interpretor Created." );
 			return std::move( interpetor.value() );
 		}
 	} // namespace
