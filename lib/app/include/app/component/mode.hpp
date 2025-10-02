@@ -36,8 +36,8 @@ namespace VTX::App::Component
 			onModeEnter( _currentHash );
 
 			// Connect update callback.
-			_currentUpdateCallback = addUpdateFunction( [ mode ]( const Events::Update & p_e )
-														{ mode->update( p_e.delta, p_e.elapsed ); } );
+			_currentUpdateCallback = nullptr;
+			addUpdateFunction( [ mode ]( const Events::Update & p_e ) { mode->update( p_e.delta, p_e.elapsed ); } );
 		}
 
 		Util::Callback<Hash> onModeEnter;
