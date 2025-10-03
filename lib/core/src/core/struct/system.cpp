@@ -4,39 +4,20 @@
 
 namespace VTX::Core::Struct
 {
-	System::System()
-	{
-		for ( size_t i = 0; i < CATEGORY_COUNT; i++ )
-		{
-			categories[ i ] = std::make_unique<Struct::Category>( ChemDB::Category::TYPE( i ) );
-		}
-	}
-	// Categories
-	Struct::Category & System::getCategory( const ChemDB::Category::TYPE p_categoryType )
-	{
-		return *( categories[ Index( p_categoryType ) ] );
-	}
-	const Struct::Category & System::getCategory( const ChemDB::Category::TYPE p_categoryType ) const
-	{
-		return *( categories[ Index( p_categoryType ) ] );
-	}
-
-	// Chain data
-	void System::initChains( const Index p_count )
-	{
-		chainNames.resize( p_count );
-		chainFirstResidues.resize( p_count, INVALID_INDEX );
-		chainResidueCounts.resize( p_count, 0 );
-	}
 	void System::appendNewChain()
 	{
 		chainNames.emplace_back( "" );
 		chainFirstResidues.emplace_back( INVALID_INDEX );
 		chainResidueCounts.emplace_back( 0 );
 	}
-	Index System::getChainCount() const { return Index( chainNames.size() ); }
 
-	// Residue data
+	void System::initChains( const Index p_count )
+	{
+		chainNames.resize( p_count );
+		chainFirstResidues.resize( p_count, INVALID_INDEX );
+		chainResidueCounts.resize( p_count, 0 );
+	}
+
 	void System::initResidues( const Index p_count )
 	{
 		residueSymbols.resize( p_count, ChemDB::Residue::SYMBOL::UNKNOWN );
@@ -49,26 +30,21 @@ namespace VTX::Core::Struct
 		residueSecondaryStructureTypes.resize( p_count, ChemDB::SecondaryStructure::TYPE::UNKNOWN );
 		residueUnknownNames.resize( p_count );
 	}
-	Index System::getResidueCount() const { return Index( residueSymbols.size() ); }
 
-	// Atom data
 	void System::initAtoms( const Index p_count )
 	{
-		assert( p_count < std::numeric_limits<Index>::max() );
+		assert( p_count < INDEX_MAX );
 
 		atomSymbols.resize( p_count, ChemDB::Atom::SYMBOL::UNKNOWN );
 		atomResidueIndexes.resize( p_count, INVALID_INDEX );
 		atomNames.resize( p_count );
 	}
-	Index System::getAtomCount() const { return Index( atomSymbols.size() ); }
 
-	// Bond data
 	void System::initBonds( const Index p_count )
 	{
 		bondOrders.resize( p_count, ChemDB::Bond::ORDER::UNKNOWN );
 		bondPairAtomIndexes.resize( p_count * 2, INVALID_INDEX );
 	}
-	Index System::getBondCount() const { return Index( bondOrders.size() ); }
 
 	ByteNumber dynamicMemoryUsage( const System & p_sys ) noexcept
 	{

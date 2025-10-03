@@ -23,6 +23,9 @@ namespace VTX
 	constexpr size_t SIZE_T_MIN = std::numeric_limits<size_t>::min();
 	constexpr size_t SIZE_T_MAX = std::numeric_limits<size_t>::max();
 
+	constexpr Index INDEX_MIN = std::numeric_limits<Index>::min();
+	constexpr Index INDEX_MAX = std::numeric_limits<Index>::max();
+
 	constexpr float EPSILON = 1e-4f;
 
 	constexpr Vec2i VEC2I_ZERO	 = Vec2i( 0, 0 );

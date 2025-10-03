@@ -113,12 +113,10 @@ namespace VTX::Bench
 			[ & ] { return Core::ChemDB::ColorLayout::getColorIndex( p_system.residueSecondaryStructureTypes[ i++ ] ); }
 		);
 
-		const Core::Struct::Category & categoryPolymer = p_system.getCategory( Core::ChemDB::Category::TYPE::POLYMER );
-		const Core::Struct::Category & categoryCarbohydrate
-			= p_system.getCategory( Core::ChemDB::Category::TYPE::CARBOHYDRATE );
-
-		const std::vector<Index> & polymerChainIds		= categoryPolymer.getLinkedChains();
-		const std::vector<Index> & carbohydrateChainIds = categoryCarbohydrate.getLinkedChains();
+		const std::vector<Index> & polymerChainIds
+			= p_system.getChainIndexesFromCategory( Core::ChemDB::Category::TYPE::POLYMER );
+		const std::vector<Index> & carbohydrateChainIds
+			= p_system.getChainIndexesFromCategory( Core::ChemDB::Category::TYPE::CARBOHYDRATE );
 
 		const std::vector<Vec3f> * atomsPositions = &p_system.trajectory.getCurrentFrame();
 

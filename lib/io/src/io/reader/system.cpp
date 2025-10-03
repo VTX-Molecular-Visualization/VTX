@@ -75,12 +75,11 @@ namespace VTX::IO::Reader
 				p_system.appendNewChain();
 				currentChainIndex++;
 
-				p_system.chainNames[ currentChainIndex ]		 = chainName;
+				p_system.chainNames[ currentChainIndex ] = chainName;
+				p_system.categories[ uint( categoryEnum ) ].push_back( currentChainIndex );
 				p_system.chainFirstResidues[ currentChainIndex ] = residueIdx;
 
 				currentChainResidueCount = 0;
-
-				p_system.getCategory( categoryEnum ).referenceChain( currentChainIndex );
 
 				if ( not seenChainNames.contains( chainName ) )
 					seenChainNames.emplace( chainName );
