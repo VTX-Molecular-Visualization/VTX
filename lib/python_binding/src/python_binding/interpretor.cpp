@@ -35,7 +35,7 @@ namespace VTX::PythonBinding
 			VTX_INFO( "PY - preInit python config" );
 			PyPreConfig preConfig;
 			PyPreConfig_InitIsolatedConfig( &preConfig );
-			preConfig.allocator		  = 1;
+			preConfig.allocator		  = 3;
 			preConfig.isolated		  = 1;
 			preConfig.use_environment = 0;
 			Py_PreInitialize( &preConfig );
@@ -45,9 +45,11 @@ namespace VTX::PythonBinding
 			VTX_INFO( "PY - Init python config" );
 			PyConfig_InitPythonConfig( &config );
 			VTX_INFO( "PY - Init python config done." );
-			config.isolated				   = 1;
-			config.use_environment		   = 0;
-			config.module_search_paths_set = 1;
+			config.isolated					  = 1;
+			config.use_environment			  = 0;
+			config.module_search_paths_set	  = 1;
+			config.module_search_paths.length = 0;
+			config.module_search_paths.items  = nullptr;
 #ifdef _WIN32
 			std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
 			std::wstring platlibdir	 = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
@@ -56,10 +58,12 @@ namespace VTX::PythonBinding
 			"_d"
 #endif // _DEBUG
 				".exe" ).wstring();
+			std::wstring pythonExecDir = p_pythonHomePath;
 #else
 			std::wstring pyScriptDir	  = ( VTX::FilePath( p_pythonHomePath ) / "lib" / "python3.9" ).wstring();
 			std::wstring platlibdir		  = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
 			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin" / "python" ).wstring();
+			std::wstring pythonExecDir	  = ( VTX::FilePath( p_pythonHomePath ) / "bin" ).wstring();
 
 #endif
 			VTX_INFO( "PY - SetString." );
@@ -67,9 +71,14 @@ namespace VTX::PythonBinding
 			PyConfig_SetString( &config, &config.home, p_pythonHomePath.c_str() );
 			PyConfig_SetString( &config, &config.prefix, p_pythonHomePath.c_str() );
 			std::wstring execDirPath = VTX::Util::Filesystem::getExecutableDir().wstring();
+
 			PyConfig_SetString( &config, &config.exec_prefix, p_pythonHomePath.c_str() );
-			PyConfig_SetString( &config, &config.executable, pythonExecutable.c_str() );
-			PyConfig_SetString( &config, &config.base_executable, pythonExecutable.c_str() );
+			std::wstring execPath = ( VTX::Util::Filesystem::getExecutableDir() / "vtx_app_test" ).wstring();
+			PyConfig_SetString( &config, &config.executable, execPath.c_str() );
+			PyConfig_SetString( &config, &config.base_executable, execPath.c_str() );
+
+			// PyConfig_SetString( &config, &config.executable, pythonExecutable.c_str() );
+			// PyConfig_SetString( &config, &config.base_executable, pythonExecutable.c_str() );
 
 			VTX::FilePath python39Path = VTX::FilePath( p_pythonHomePath ) / "python39.zip";
 			std::wstring  python39Str( python39Path.wstring() );
@@ -83,7 +92,14 @@ namespace VTX::PythonBinding
 
 			// Add the build directory to module search paths so Python can find python39.zip
 			// The build directory is the parent of external/python where python39.zip is located
-			PyWideStringList_Append( &config.module_search_paths, L"" );
+			try
+			{
+				PyWideStringList_Append( &config.module_search_paths, L"" );
+			}
+			catch ( std::exception & e )
+			{
+				VTX_ERROR( "Exception on PyWideStringList_Append : {}", e.what() );
+			}
 
 			PyWideStringList_Append( &config.module_search_paths, python39Str.c_str() );
 			PyWideStringList_Append( &config.module_search_paths, execDirPath.c_str() );
@@ -108,6 +124,11 @@ namespace VTX::PythonBinding
 			{
 				VTX_ERROR( "Interpetor failed to initialize with message : <{}>", e.what() );
 				throw VTX::LibException( "Error in python lib : <{}>", e.what() );
+			}
+			catch ( ... )
+			{
+				VTX_ERROR( "Interpetor failed to initialize with unknown exception type" );
+				throw;
 			}
 			PyConfig_Clear( &config );
 			VTX_INFO( "PY - Interpretor Created." );
