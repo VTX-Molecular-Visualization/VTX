@@ -46,7 +46,9 @@ namespace VTX::App
 			// Create pass.
 			T * const p = _passes.create<T>( std::forward<Args>( args )... );
 			// Register update delegate.
-			_delegates.push_back( Util::EventHub::Delegate<UpdateFunctionArgs>::template create<T, &T::update>( *p ) );
+			UpdateDelegate d;
+			d.template connect<&T::update>( p );
+			_delegates.push_back( std::move( d ) );
 
 			return p;
 		}
