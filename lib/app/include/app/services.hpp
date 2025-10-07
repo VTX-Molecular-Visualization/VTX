@@ -21,6 +21,7 @@ namespace VTX::Util
 namespace VTX::App
 {
 	class Args;
+	class PassManager;
 	namespace Action
 	{
 		class ActionManager;
@@ -96,6 +97,10 @@ namespace VTX::App
 	 * @brief UID manager.
 	 */
 	inline Uid::UIDManager & UID() { return ECS::getCtx<Uid::UIDManager>(); }
+	/**
+	 * @brief Pass manager.
+	 */
+	inline PassManager & PASS() { return ECS::getCtx<PassManager>(); }
 } // namespace VTX::App
 
 #endif

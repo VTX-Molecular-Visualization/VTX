@@ -15,10 +15,11 @@ namespace VTX::App
 	 */
 	struct Pipeline
 	{
-		inline static const Hash UPDATE		 = Util::hash( "UPDATE" );
-		inline static const Hash POST_UPDATE = Util::hash( "POST_UPDATE" );
-		inline static const Hash RENDER		 = Util::hash( "RENDER" );
-		inline static const Hash POST_RENDER = Util::hash( "POST_RENDER" );
+		inline static const Hash UPDATE_PASSES = Util::hash( "UPDATE_PASSES" );
+		inline static const Hash UPDATE_EVENTS = Util::hash( "UPDATE_EVENTS" );
+		inline static const Hash POST_UPDATE   = Util::hash( "POST_UPDATE" );
+		inline static const Hash RENDER		   = Util::hash( "RENDER" );
+		inline static const Hash POST_RENDER   = Util::hash( "POST_RENDER" );
 
 		/**
 		 * @brief Process each step and log their duration.

@@ -10,7 +10,6 @@
 #include "app/component/scene/transform_component.hpp"
 #include "app/component/scene/uid_component.hpp"
 // #include "app/component/scene/updatable.hpp"
-#include "app/settings/settings_manager.hpp"
 #include "app/entity/system.hpp"
 #include "app/player/circular_buffer.hpp"
 #include "app/player/loop.hpp"
@@ -18,6 +17,7 @@
 #include "app/selection/system_granularity.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
+#include "app/settings/settings_manager.hpp"
 #include <io/reader/system.hpp>
 #include <renderer/proxy/system.hpp>
 #include <util/logger.hpp>

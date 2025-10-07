@@ -13,6 +13,7 @@
 #include "app/library/preset/representation.hpp"
 #include "app/mode/visualization.hpp"
 #include "app/network/network_manager.hpp"
+#include "app/new/pass_manager.hpp"
 #include "app/python_binding/interpretor.hpp"
 #include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
@@ -34,6 +35,7 @@ namespace VTX::App
 	{
 		// Set global registry.
 		ECS::setRegistry( _registry );
+
 		// Store args.
 		ECS::setCtx<Args>( p_args );
 		// Store main event bus.
@@ -56,6 +58,12 @@ namespace VTX::App
 		ECS::setCtx<Threading::ThreadManager>();
 		// Store uid manager.
 		ECS::setCtx<Uid::UIDManager>();
+		// Store pass manager.
+		ECS::setCtx<PassManager>();
+
+		// Create scene.
+		ECS::Entity scene = REG().create();
+		// TODO: add AABB component, and update it on item add/remove.
 	}
 
 	void VTXApp::init()
@@ -129,10 +137,6 @@ namespace VTX::App
 				// TODO: exit?
 			}
 		}
-
-		// Connect render event.
-		HUB().connect<Events::Render>( []( const Events::Render & p_e )
-									   { RENDERER().render( p_e.delta, p_e.elapsed ); } );
 
 		// ?
 		// Internal::initSettings( App::SETTINGS() );

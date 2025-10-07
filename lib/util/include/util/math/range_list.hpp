@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_MATH_RANGE_VECTOR__
-#define __VTX_UTIL_MATH_RANGE_VECTOR__
+#ifndef __VTX_UTIL_MATH_RANGE_LIST__
+#define __VTX_UTIL_MATH_RANGE_LIST__
 
 #include "util/concepts.hpp"
 #include "util/math/range.hpp"

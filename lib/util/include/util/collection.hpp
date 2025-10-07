@@ -168,6 +168,15 @@ namespace VTX::Util
 			return Util::hash<T>();
 		}
 
+		auto begin() noexcept { return _map.begin(); }
+		auto end() noexcept { return _map.end(); }
+
+		auto begin() const noexcept { return _map.begin(); }
+		auto end() const noexcept { return _map.end(); }
+
+		auto cbegin() const noexcept { return _map.cbegin(); }
+		auto cend() const noexcept { return _map.cend(); }
+
 	  private:
 		std::unordered_map<Hash, C> _map;
 

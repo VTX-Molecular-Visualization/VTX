@@ -23,12 +23,6 @@ namespace VTX::App::Events
 		float elapsed;
 	};
 
-	struct Render
-	{
-		float delta;
-		float elapsed;
-	};
-
 	struct PostRender
 	{
 		float delta;

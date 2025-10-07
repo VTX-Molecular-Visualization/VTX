@@ -50,6 +50,10 @@ namespace VTX::Core::Struct
 		 */
 		std::vector<Index> residueChainIndexes;
 		/**
+		 * @brief Original residue IDs from the input file.
+		 */
+		std::vector<Index> residueOriginalIds;
+		/**
 		 * @brief Indexes of the first of the atoms that compose each residues.
 		 * All atoms with index between vector[N] and vector[N+1] are considered part of the residue N.
 		 */
@@ -80,6 +84,10 @@ namespace VTX::Core::Struct
 		 */
 		std::vector<Index> atomResidueIndexes;
 		/**
+		 * @brief Atom names.
+		 */
+		std::vector<std::string> atomNames;
+		/**
 		 * @brief All bond orders.
 		 */
 		std::vector<ChemDB::Bond::ORDER> bondOrders;
@@ -90,17 +98,14 @@ namespace VTX::Core::Struct
 
 		//////////////////////////////////////////
 		// TODO: move in metadata component.
-		std::string name	  = "unknown";
-		Mat4f		transform = MAT4F_ID;
+		std::string name = "unknown";
+		// Use transform component?
+		Mat4f transform = MAT4F_ID;
 		// TODO Manage Atom types and residue types with sparse_set
 		Util::Math::RangeList<Index> atomSolvents;
 		Util::Math::RangeList<Index> atomIons;
 		// TODO : migrate toward unordered_map
 		std::vector<std::string> residueUnknownNames;
-		// TODO: remove?
-		std::vector<Index> residueOriginalIds;
-		// TODO: remove?
-		std::vector<std::string> atomNames;
 
 		/**
 		 * @brief Convenient methods to reserve data vectors.
