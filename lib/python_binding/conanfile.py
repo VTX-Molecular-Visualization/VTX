@@ -132,8 +132,7 @@ class VTXPythonBindingRecipe(ConanFile):
                 
     def generate(self):
         tc = CMakeToolchain(self)
-        tc.generate()      
-        
+        tc.generate()
         doPythonCopies(self) 
         
     def _print_dir_content(self, p_dir):
@@ -172,6 +171,11 @@ class VTXPythonBindingRecipe(ConanFile):
         Path(self.package_folder, "cmake", "python_copy_instructions.cmake").write_text(cmake_instructions)
 
     def package_info(self):
-        self.cpp_info.libs = ["vtx_python_binding"]       
+        self.cpp_info.libs = ["vtx_python_binding"]
         # Give away cmake code to be executed by the consumer of this package
-        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_python_binding_copy_files.cmake", "cmake/python_copy_instructions.cmake"]) 
+        self.cpp_info.set_property("cmake_build_modules", [
+            "cmake/vtx_python_binding_copy_files.cmake",
+            "cmake/python_copy_instructions.cmake"
+        ])
+
+        

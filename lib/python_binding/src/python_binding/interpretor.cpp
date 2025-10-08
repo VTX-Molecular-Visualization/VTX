@@ -6,6 +6,7 @@
 #include "python_binding/log_redirection.hpp"
 #include "python_binding/vtx_python_module.hpp"
 #include "python_binding/wrapper/module.hpp"
+#include <algorithm>
 #include <io/internal/filesystem.hpp>
 #include <pybind11/embed.h>
 #include <pybind11/eval.h>
@@ -28,6 +29,8 @@ namespace VTX::PythonBinding
 {
 	namespace
 	{
+		std::string print_wchart( const std::wstring & txt ) { return std::filesystem::path( txt ).string(); }
+
 		pybind11::scoped_interpreter createInterpretor( const std::wstring & p_pythonHomePath )
 		{
 			VTX_INFO( "PY - Creating interpretor ..." );
@@ -35,7 +38,7 @@ namespace VTX::PythonBinding
 			VTX_INFO( "PY - preInit python config" );
 			PyPreConfig preConfig;
 			PyPreConfig_InitIsolatedConfig( &preConfig );
-			preConfig.allocator		  = 3;
+			preConfig.allocator		  = 1;
 			preConfig.isolated		  = 1;
 			preConfig.use_environment = 0;
 			Py_PreInitialize( &preConfig );
@@ -45,9 +48,12 @@ namespace VTX::PythonBinding
 			VTX_INFO( "PY - Init python config" );
 			PyConfig_InitPythonConfig( &config );
 			VTX_INFO( "PY - Init python config done." );
-			config.isolated					  = 1;
-			config.use_environment			  = 0;
-			config.module_search_paths_set	  = 1;
+			config.isolated				   = 1;
+			config.use_environment		   = 0;
+			config.module_search_paths_set = 1;
+
+			// If module_search_paths are not initialized manually like so, calling PyWideStringList_Append result in a
+			// segfault on ubuntu
 			config.module_search_paths.length = 0;
 			config.module_search_paths.items  = nullptr;
 #ifdef _WIN32
@@ -62,7 +68,7 @@ namespace VTX::PythonBinding
 #else
 			std::wstring pyScriptDir	  = ( VTX::FilePath( p_pythonHomePath ) / "lib" / "python3.9" ).wstring();
 			std::wstring platlibdir		  = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
-			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin" / "python" ).wstring();
+			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin" / "python3.9" ).wstring();
 			std::wstring pythonExecDir	  = ( VTX::FilePath( p_pythonHomePath ) / "bin" ).wstring();
 
 #endif
@@ -73,11 +79,8 @@ namespace VTX::PythonBinding
 			std::wstring execDirPath = VTX::Util::Filesystem::getExecutableDir().wstring();
 
 			PyConfig_SetString( &config, &config.exec_prefix, p_pythonHomePath.c_str() );
-			std::wstring execPath = ( VTX::Util::Filesystem::getExecutableDir() / "vtx_app_test" ).wstring();
-			PyConfig_SetString( &config, &config.executable, execPath.c_str() );
-			PyConfig_SetString( &config, &config.base_executable, execPath.c_str() );
-
-			// PyConfig_SetString( &config, &config.executable, pythonExecutable.c_str() );
+			// std::wstring execPath = VTX::Util::Filesystem::getExecutable().wstring();
+			// PyConfig_SetString( &config, &config.executable, execPath.c_str() );
 			// PyConfig_SetString( &config, &config.base_executable, pythonExecutable.c_str() );
 
 			VTX::FilePath python39Path = VTX::FilePath( p_pythonHomePath ) / "python39.zip";
@@ -90,35 +93,40 @@ namespace VTX::PythonBinding
 			std::string execDirPath_string = VTX::Util::Filesystem::getExecutableDir().string();
 			VTX_INFO( "PY - StringList Appending execDirPath : <{}>.", execDirPath_string );
 
-			// Add the build directory to module search paths so Python can find python39.zip
-			// The build directory is the parent of external/python where python39.zip is located
-			try
-			{
-				PyWideStringList_Append( &config.module_search_paths, L"" );
-			}
-			catch ( std::exception & e )
-			{
-				VTX_ERROR( "Exception on PyWideStringList_Append : {}", e.what() );
-			}
-
+			PyWideStringList_Append( &config.module_search_paths, pyScriptDir.c_str() );
 			PyWideStringList_Append( &config.module_search_paths, python39Str.c_str() );
-			PyWideStringList_Append( &config.module_search_paths, execDirPath.c_str() );
-			PyWideStringList_Append( &config.module_search_paths, platlibdir.c_str() );
 #ifndef _WIN32
 			std::wstring dynloadDir = ( VTX::FilePath( pyScriptDir ) / "lib-dynload" ).wstring();
 			PyWideStringList_Append( &config.module_search_paths, dynloadDir.c_str() );
 #endif // !_WIN32
+			PyWideStringList_Append( &config.module_search_paths, platlibdir.c_str() );
+			PyWideStringList_Append( &config.module_search_paths, execDirPath.c_str() );
 
-			PyWideStringList_Append( &config.module_search_paths, pyScriptDir.c_str() );
 			// PyWideStringList_Append( &config.module_search_paths, platlibdir.c_str() );
 			VTX_INFO( "PY - StringList Append done." );
+
+			auto pythonExecutable_string = std::filesystem::path( pythonExecutable ).string();
+			if ( std::filesystem::exists( std::filesystem::path( pythonExecutable ) ) )
+				VTX_INFO( "Python executable <{}> exists.", pythonExecutable_string );
+			else
+				VTX_INFO( "Python executable <{}> doesn't exists !!", pythonExecutable_string );
 
 			// Py_SetPythonHome( p_pythonHomePath.data() );
 			std::optional<pybind11::scoped_interpreter> interpetor;
 			try
 			{
+				VTX_INFO( "PY - Config home: {}", ( config.home ? print_wchart( config.home ) : "NULL" ) );
+				VTX_INFO( "PY - Config prefix: {}", ( config.prefix ? print_wchart( config.prefix ) : "NULL" ) );
+				VTX_INFO( "PY - Config module_search_paths length: {}", config.module_search_paths.length );
+
 				VTX_INFO( "PY - About to instanciate interpretor ..." );
-				interpetor.emplace( &config );
+
+				// Create pybind11 interpreter WITHOUT passing config (Python is already initialized)
+				interpetor.emplace();
+				VTX_INFO( "PY - Instantiation done." );
+
+				// interpetor.emplace( &config );
+				VTX_INFO( "PY - Instantiation done." );
 			}
 			catch ( std::exception & e )
 			{

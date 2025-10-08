@@ -53,7 +53,7 @@ class VTXAppRecipe(ConanFile):
         versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
         tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
         tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor
-        tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch        
+        tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch
         tc.generate()
 
     def build(self):

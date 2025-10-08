@@ -1,9 +1,24 @@
 message("vtx_python_binding")
 cmake_minimum_required(VERSION 3.23)
-set(PYBIND11_FINDPYTHON ON)
 
 project(vtx_python_binding)
 
+
+set (PYBIND11_PYTHON_VERSION "3.9.19")
+find_package(Python3 "3.9.19" EXACT REQUIRED COMPONENTS Interpreter Development NO_SYSTEM_ENVIRONMENT_PATH)
+message("VTX - Found Python3: ${Python3_EXECUTABLE}")
+message("VTX - Python3 version: ${Python3_VERSION}")
+message("VTX - Python3 library: ${Python3_LIBRARIES}")
+message("VTX - Python3 include: ${Python3_INCLUDE_DIRS}")
+
+# Disable pybind11's own Python finding since we already have it from Conan
+set(PYBIND11_FINDPYTHON OFF)
+set(PYBIND11_PYTHON_VERSION ${Python3_VERSION})
+
+# Set pybind11 to use our already-found Python
+set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
+set(PYTHON_INCLUDE_DIR ${Python3_INCLUDE_DIRS})
+set(PYTHON_LIBRARY ${Python3_LIBRARIES})
 
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
