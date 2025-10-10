@@ -25,19 +25,22 @@ namespace VTX::Util::Math
 	using ::glm::degrees;
 	using ::glm::distance;
 	using ::glm::eulerAngles;
+	using ::glm::inverse;
 	using ::glm::length;
 	using ::glm::length2;
-	using ::glm::lookAt;
 	using ::glm::mat;
-	using ::glm::mat3_cast;
 	using ::glm::max;
 	using ::glm::min;
 	using ::glm::normalize;
 	using ::glm::quat;
+	using ::glm::quatLookAt;
 	using ::glm::radians;
 	using ::glm::rotate;
 	using ::glm::scale;
+	using ::glm::toMat3;
+	using ::glm::toMat4;
 	using ::glm::translate;
+	using ::glm::transpose;
 	using ::glm::vec;
 
 #ifdef _DEBUG

@@ -6,9 +6,14 @@
 
 namespace VTX::Util::Math
 {
+	/**
+	 * @brief Defines a 3D transformation (position, rotation, scale).
+	 */
 	class Transform
 	{
 	  public:
+		Transform() = default;
+
 		Transform( const Vec3f & p_position, const Quatf & p_rotation, const Vec3f & p_scale ) :
 			_position( p_position ), _rotation( p_rotation ), _scale( p_scale ), _isDirty( true )
 		{
@@ -27,9 +32,9 @@ namespace VTX::Util::Math
 		inline const Quatf & getRotation() const { return _rotation; };
 		inline const Vec3f & getScale() const { return _scale; };
 
-		inline Vec3f getFront() const { return Math::mat3_cast( _rotation ) * FRONT_AXIS; }
-		inline Vec3f getRight() const { return Math::mat3_cast( _rotation ) * RIGHT_AXIS; }
-		inline Vec3f getUp() const { return Math::mat3_cast( _rotation ) * UP_AXIS; }
+		inline Vec3f getFront() const { return Math::toMat3( _rotation ) * FRONT_AXIS; }
+		inline Vec3f getRight() const { return Math::toMat3( _rotation ) * RIGHT_AXIS; }
+		inline Vec3f getUp() const { return Math::toMat3( _rotation ) * UP_AXIS; }
 
 		inline const Vec3f & getEulerAngles() const
 		{
@@ -69,19 +74,19 @@ namespace VTX::Util::Math
 
 		inline void rotate( const Quatf & p_rotation )
 		{
-			_rotation *= p_rotation;
-			_isDirty = true;
+			_rotation = Math::normalize( _rotation * p_rotation );
+			_isDirty  = true;
 		}
 
 		inline void rotate( const Vec3f & p_eulerAngles )
 		{
-			_rotation *= Quatf( p_eulerAngles );
-			_isDirty = true;
+			_rotation = Math::normalize( _rotation * Quatf( p_eulerAngles ) );
+			_isDirty  = true;
 		}
 
 		inline void rotate( const float p_angle, const Vec3f & p_axis )
 		{
-			_rotation = Math::rotate( _rotation, p_angle, p_axis );
+			_rotation = Math::normalize( Math::rotate( _rotation, p_angle, p_axis ) );
 			_isDirty  = true;
 		}
 
@@ -94,19 +99,21 @@ namespace VTX::Util::Math
 
 		inline void setRotation( const float p_pitch, const float p_yaw, const float p_roll )
 		{
-			_rotation = Quatf( Vec3f( Math::radians( p_pitch ), Math::radians( p_yaw ), Math::radians( p_roll ) ) );
-			_isDirty  = true;
+			_rotation = Math::normalize(
+				Quatf( Vec3f( Math::radians( p_pitch ), Math::radians( p_yaw ), Math::radians( p_roll ) ) )
+			);
+			_isDirty = true;
 		}
 
 		inline void setRotation( const Vec3f & p_vec )
 		{
-			_rotation = Quatf( p_vec );
+			_rotation = Math::normalize( Quatf( p_vec ) );
 			_isDirty  = true;
 		}
 
 		inline void setRotation( const Quatf & p_rotation )
 		{
-			_rotation = p_rotation;
+			_rotation = Math::normalize( p_rotation );
 			_isDirty  = true;
 		}
 
@@ -114,12 +121,6 @@ namespace VTX::Util::Math
 		{
 			_rotation = Math::normalize( p_rotation );
 			_position = _rotation * Vec3f( 0.f, 0.f, p_distance ) + p_target;
-			_isDirty  = true;
-		}
-
-		inline void setRotation( const Mat4f & p_mat )
-		{
-			_rotation = p_mat;
 			_isDirty  = true;
 		}
 
@@ -143,8 +144,9 @@ namespace VTX::Util::Math
 
 		inline void lookAt( const Vec3f & p_target, const Vec3f & p_up )
 		{
-			_rotation = Math::lookAt( _position, p_target, p_up );
-			_isDirty  = true;
+			const Vec3f dir = Math::normalize( p_target - _position );
+			_rotation		= Math::quatLookAt( dir, Math::normalize( p_up ) );
+			_isDirty		= true;
 		}
 
 	  private:
@@ -166,10 +168,9 @@ namespace VTX::Util::Math
 		Vec3f _scale	= Vec3f( 1.f );
 
 		/**
-		 * @brief Cache vars.
+		 * @brief Cache var.
 		 */
-		mutable bool  _isDirty			  = true;
-		mutable Vec3f _internalEulerCache = VEC3F_ZERO;
+		mutable bool _isDirty = true;
 
 		/**
 		 * @brief Updates the internal transformation matrix by combining translation, rotation, and scale.
@@ -177,7 +178,7 @@ namespace VTX::Util::Math
 		inline void _update() const
 		{
 			const Mat4f T = Math::translate( MAT4F_ID, _position );
-			const Mat4f R = Mat4f( _rotation );
+			const Mat4f R = Math::toMat4( _rotation );
 			const Mat4f S = Math::scale( MAT4F_ID, _scale );
 			_transform	  = T * R * S;
 			_eulerAngles  = Math::degrees( Math::eulerAngles( _rotation ) );
