@@ -6,19 +6,15 @@ namespace VTX::App::Animation
 {
 	Orient::Orient( const App::Component::Render::Camera & p_camera, const Util::Math::AABB & p_aabb ) :
 		_animation(
-			App::ECS_REGISTRY().getComponent<App::Component::Scene::Transform>( p_camera ).getTransform(),
+			App::ECS_REGISTRY().getComponent<Util::Math::Transform>( p_camera ).getTransform(),
 			Orient::computeCameraOrientPosition(
 				p_camera.getTransform().getFront(),
 				p_camera.getFov(),
 				p_aabb,
 				ORIENT_ZOOM_FACTOR
 			),
-			Util::Math::toQuat(
-				App::ECS_REGISTRY()
-					.getComponent<App::Component::Scene::Transform>( p_camera )
-					.getTransform()
-					.getRotation()
-			),
+
+			App::ECS_REGISTRY().getComponent<Util::Math::Transform>( p_camera ).getTransform().getRotation(),
 			p_aabb.centroid()
 		)
 	{

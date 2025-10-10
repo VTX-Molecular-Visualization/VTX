@@ -9,167 +9,180 @@ namespace VTX::Util::Math
 	class Transform
 	{
 	  public:
-		Transform() = default;
-		Transform( const Mat4f & p_transformationMatrix )
+		Transform( const Vec3f & p_position, const Quatf & p_rotation, const Vec3f & p_scale ) :
+			_position( p_position ), _rotation( p_rotation ), _scale( p_scale ), _isDirty( true )
 		{
-			_translation[ 3 ][ 0 ] = p_transformationMatrix[ 3 ][ 0 ];
-			_translation[ 3 ][ 1 ] = p_transformationMatrix[ 3 ][ 1 ];
-			_translation[ 3 ][ 2 ] = p_transformationMatrix[ 3 ][ 2 ];
-
-			_rotation[ 0 ][ 0 ] = p_transformationMatrix[ 0 ][ 0 ];
-			_rotation[ 0 ][ 1 ] = p_transformationMatrix[ 0 ][ 1 ];
-			_rotation[ 0 ][ 2 ] = p_transformationMatrix[ 0 ][ 2 ];
-			_rotation[ 1 ][ 0 ] = p_transformationMatrix[ 1 ][ 0 ];
-			_rotation[ 1 ][ 1 ] = p_transformationMatrix[ 1 ][ 1 ];
-			_rotation[ 1 ][ 2 ] = p_transformationMatrix[ 1 ][ 2 ];
-			_rotation[ 2 ][ 0 ] = p_transformationMatrix[ 2 ][ 0 ];
-			_rotation[ 2 ][ 1 ] = p_transformationMatrix[ 2 ][ 1 ];
-			_rotation[ 2 ][ 2 ] = p_transformationMatrix[ 2 ][ 2 ];
-
-			_internalEulerCache.x = std::nanf( "" );
-
-			//_scale[ 0 ][ 0 ] = 1.f;
-			//_scale[ 1 ][ 1 ] = 1.f;
-			//_scale[ 2 ][ 2 ] = 1.f;
-
-			//_transform = p_transformationMatrix;
-
-			update();
 		}
 
-		Transform( const Vec3f & p_position, const Quatf & p_rotation, const Vec3f & p_scale )
+		inline const Mat4f & get() const
 		{
-			setTranslation( p_position );
-			setRotation( p_rotation );
-			setScale( p_scale );
-
-			update();
+			if ( _isDirty )
+			{
+				_update();
+			}
+			return _transform;
 		}
 
-		~Transform() = default;
+		inline const Vec3f & getPosition() const { return _position; };
+		inline const Quatf & getRotation() const { return _rotation; };
+		inline const Vec3f & getScale() const { return _scale; };
 
-		inline const Mat4f & get() const { return _transform; }
-		inline const Mat4f & getTranslation() const { return _translation; };
-		inline const Mat4f & getRotation() const { return _rotation; };
-		inline const Mat4f & getScale() const { return _scale; };
+		inline Vec3f getFront() const { return Math::mat3_cast( _rotation ) * FRONT_AXIS; }
+		inline Vec3f getRight() const { return Math::mat3_cast( _rotation ) * RIGHT_AXIS; }
+		inline Vec3f getUp() const { return Math::mat3_cast( _rotation ) * UP_AXIS; }
 
-		inline Vec3f getTranslationVector() const
+		inline const Vec3f & getEulerAngles() const
 		{
-			return Vec3f( _translation[ 3 ][ 0 ], _translation[ 3 ][ 1 ], _translation[ 3 ][ 2 ] );
+			if ( _isDirty )
+			{
+				_update();
+			}
+			return _eulerAngles;
 		};
-
-		inline Vec3f getEulerAngles() const
-		{
-			if ( std::isnan( _internalEulerCache.x ) )
-				_internalEulerCache = Util::Math::rotationMatrixToEuler( _rotation );
-			return _internalEulerCache;
-		};
-
-		inline Vec3f getScaleVector() const { return Vec3f( _scale[ 0 ][ 0 ], _scale[ 1 ][ 1 ], _scale[ 2 ][ 2 ] ); }
 
 		inline void reset()
 		{
-			_transform	 = MAT4F_ID;
-			_translation = MAT4F_ID;
-			_rotation	 = MAT4F_ID;
-			_scale		 = MAT4F_ID;
-
-			_internalEulerCache = VEC3F_ZERO;
+			_transform = MAT4F_ID;
+			_position  = VEC3F_ZERO;
+			_rotation  = QUATF_ID;
+			_scale	   = Vec3f( 1.f );
+			_isDirty   = true;
 		}
 
 		inline void translate( const Vec3f & p_vec )
 		{
-			_translation = Util::Math::translate( _translation, p_vec );
-			update();
+			_position += p_vec;
+			_isDirty = true;
 		}
 
-		inline void setTranslation( const float p_x, const float p_y, const float p_z )
+		inline void setPosition( const float p_x, const float p_y, const float p_z )
 		{
-			_translation[ 3 ][ 0 ] = p_x;
-			_translation[ 3 ][ 1 ] = p_y;
-			_translation[ 3 ][ 2 ] = p_z;
-			update();
+			_position = Vec3f( p_x, p_y, p_z );
+			_isDirty  = true;
 		}
 
-		inline void setTranslation( const Vec3f & p_vec )
+		inline void setPosition( const Vec3f & p_vec )
 		{
-			setTranslation( p_vec.x, p_vec.y, p_vec.z );
-			update();
+			_position = p_vec;
+			_isDirty  = true;
 		}
 
-		inline void setTranslation( const Mat4f & p_mat )
+		inline void rotate( const Quatf & p_rotation )
 		{
-			_translation = p_mat;
-			update();
+			_rotation *= p_rotation;
+			_isDirty = true;
+		}
+
+		inline void rotate( const Vec3f & p_eulerAngles )
+		{
+			_rotation *= Quatf( p_eulerAngles );
+			_isDirty = true;
 		}
 
 		inline void rotate( const float p_angle, const Vec3f & p_axis )
 		{
-			_rotation			  = Util::Math::rotate( _rotation, p_angle, p_axis );
-			_internalEulerCache.x = std::nanf( "" );
-			update();
+			_rotation = Math::rotate( _rotation, p_angle, p_axis );
+			_isDirty  = true;
+		}
+
+		inline void rotateAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance )
+		{
+			_rotation = Math::normalize( _rotation * p_rotation );
+			_position = _rotation * Vec3f( 0.f, 0.f, p_distance ) + p_target;
+			_isDirty  = true;
 		}
 
 		inline void setRotation( const float p_pitch, const float p_yaw, const float p_roll )
 		{
-			_rotation = Util::Math::getRotation(
-				Util::Math::radians( p_pitch ), Util::Math::radians( p_yaw ), Util::Math::radians( p_roll ) );
-			_internalEulerCache = Vec3f( p_pitch, p_yaw, p_roll );
-
-			update();
+			_rotation = Quatf( Vec3f( Math::radians( p_pitch ), Math::radians( p_yaw ), Math::radians( p_roll ) ) );
+			_isDirty  = true;
 		}
 
-		inline void setRotation( const Vec3f & p_vec ) { setRotation( p_vec.x, p_vec.y, p_vec.z ); }
-
-		inline void setRotation( const Quatf & p_quaternion )
+		inline void setRotation( const Vec3f & p_vec )
 		{
-			setRotation( Util::Math::getRotation( p_quaternion ) );
+			_rotation = Quatf( p_vec );
+			_isDirty  = true;
+		}
+
+		inline void setRotation( const Quatf & p_rotation )
+		{
+			_rotation = p_rotation;
+			_isDirty  = true;
+		}
+
+		inline void setRotationAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance )
+		{
+			_rotation = Math::normalize( p_rotation );
+			_position = _rotation * Vec3f( 0.f, 0.f, p_distance ) + p_target;
+			_isDirty  = true;
 		}
 
 		inline void setRotation( const Mat4f & p_mat )
 		{
-			_rotation			  = p_mat;
-			_internalEulerCache.x = std::nanf( "" );
-			update();
+			_rotation = p_mat;
+			_isDirty  = true;
 		}
 
 		inline void scale( const Vec3f & p_vec )
 		{
-			_scale = Util::Math::scale( _scale, p_vec );
-			update();
+			_scale	 = _scale * p_vec;
+			_isDirty = true;
 		}
 
 		inline void setScale( const Vec3f & p_scale )
 		{
-			_scale[ 0 ][ 0 ] = p_scale.x;
-			_scale[ 1 ][ 1 ] = p_scale.y;
-			_scale[ 2 ][ 2 ] = p_scale.z;
-			update();
+			_scale	 = p_scale;
+			_isDirty = true;
 		}
 
 		inline void setScale( const float p_scale )
 		{
-			_scale[ 0 ][ 0 ] = p_scale;
-			_scale[ 1 ][ 1 ] = p_scale;
-			_scale[ 2 ][ 2 ] = p_scale;
-			update();
+			_scale	 = Vec3f( p_scale );
+			_isDirty = true;
 		}
 
-		inline void setScale( const Mat4f & p_mat )
+		inline void lookAt( const Vec3f & p_target, const Vec3f & p_up )
 		{
-			_scale = p_mat;
-			update();
+			_rotation = Math::lookAt( _position, p_target, p_up );
+			_isDirty  = true;
 		}
 
 	  private:
-		inline void update() { _transform = _translation * _rotation * _scale; }
+		/**
+		 * @brief Computed transform.
+		 */
+		mutable Mat4f _transform = MAT4F_ID;
 
-		Mat4f _transform   = MAT4F_ID;
-		Mat4f _translation = MAT4F_ID;
-		Mat4f _rotation	   = MAT4F_ID;
-		Mat4f _scale	   = MAT4F_ID;
+		/**
+		 * @brief Computed euler angles (in degrees).
+		 */
+		mutable Vec3f _eulerAngles = VEC3F_ZERO;
 
+		/**
+		 * @brief Local translation, rotation and scale matrices.
+		 */
+		Vec3f _position = VEC3F_ZERO;
+		Quatf _rotation = QUATF_ID;
+		Vec3f _scale	= Vec3f( 1.f );
+
+		/**
+		 * @brief Cache vars.
+		 */
+		mutable bool  _isDirty			  = true;
 		mutable Vec3f _internalEulerCache = VEC3F_ZERO;
+
+		/**
+		 * @brief Updates the internal transformation matrix by combining translation, rotation, and scale.
+		 */
+		inline void _update() const
+		{
+			const Mat4f T = Math::translate( MAT4F_ID, _position );
+			const Mat4f R = Mat4f( _rotation );
+			const Mat4f S = Math::scale( MAT4F_ID, _scale );
+			_transform	  = T * R * S;
+			_eulerAngles  = Math::degrees( Math::eulerAngles( _rotation ) );
+			_isDirty	  = false;
+		}
 	};
 } // namespace VTX::Util::Math
 

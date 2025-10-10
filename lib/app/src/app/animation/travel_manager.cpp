@@ -14,7 +14,7 @@ namespace VTX::App::Animation
 		_finalPosition( p_finalPosition ), _finalRotation( p_finalRotation ), _target( p_target ),
 		_duration( p_duration )
 	{
-		_startPosition = p_source.getTranslationVector();
+		_startPosition = p_source.getPosition();
 		_startRotation = p_source.getRotation();
 	}
 
