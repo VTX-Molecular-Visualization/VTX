@@ -1,9 +1,9 @@
 #ifndef __VTX_APP_COMPONENT_RENDER_CAMERA__
 #define __VTX_APP_COMPONENT_RENDER_CAMERA__
 
-#include "app/component/scene/transform_component.hpp"
 #include <renderer/proxy/camera.hpp>
 #include <util/callback.hpp>
+#include <util/math/transform.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Render
@@ -29,8 +29,8 @@ namespace VTX::App::Component::Render
 
 		void setupProxy() override;
 
-		inline const Component::Scene::Transform & getTransform() const { return *_transform; }
-		inline Component::Scene::Transform &	   getTransform() { return *_transform; }
+		inline const Util::Math::Transform & getTransform() const { return *_transform; }
+		inline Util::Math::Transform &		 getTransform() { return *_transform; }
 
 		inline const Mat4f & getViewMatrix() const { return _viewMatrix; }
 		inline const Mat4f & getProjectionMatrix() const { return _projectionMatrix; }
@@ -79,7 +79,7 @@ namespace VTX::App::Component::Render
 		float  _far			 = 1e4f;
 		float  _fov			 = 60.f;
 
-		Component::Scene::Transform * _transform = nullptr;
+		Util::Math::Transform * _transform = nullptr;
 
 		Vec3f _target		 = VEC3F_ZERO;
 		bool  _targetIsLocal = false;
