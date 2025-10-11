@@ -37,6 +37,7 @@ namespace VTX::PythonBinding
 
 			VTX_INFO( "PY - Pythonhome = <{}>", std::filesystem::path( p_pythonHomePath ).string() );
 
+			/*
 			VTX_INFO( "PY - preInit python config" );
 			PyPreConfig preConfig;
 			PyPreConfig_InitIsolatedConfig( &preConfig );
@@ -45,6 +46,7 @@ namespace VTX::PythonBinding
 			preConfig.use_environment = 0;
 			Py_PreInitialize( &preConfig );
 			VTX_INFO( "PY - preInit python config done." );
+			*/
 
 			PyConfig config;
 			VTX_INFO( "PY - Init python config" );
@@ -81,9 +83,6 @@ namespace VTX::PythonBinding
 			std::wstring execDirPath = VTX::Util::Filesystem::getExecutableDir().wstring();
 
 			PyConfig_SetString( &config, &config.exec_prefix, p_pythonHomePath.c_str() );
-			// std::wstring execPath = VTX::Util::Filesystem::getExecutable().wstring();
-			// PyConfig_SetString( &config, &config.executable, execPath.c_str() );
-			// PyConfig_SetString( &config, &config.base_executable, pythonExecutable.c_str() );
 
 			VTX::FilePath python39Path = VTX::FilePath( p_pythonHomePath ) / "python39.zip";
 			std::wstring  python39Str( python39Path.wstring() );
@@ -104,7 +103,6 @@ namespace VTX::PythonBinding
 			PyWideStringList_Append( &config.module_search_paths, platlibdir.c_str() );
 			PyWideStringList_Append( &config.module_search_paths, execDirPath.c_str() );
 
-			// PyWideStringList_Append( &config.module_search_paths, platlibdir.c_str() );
 			VTX_INFO( "PY - StringList Append done." );
 
 			auto pythonExecutable_string = std::filesystem::path( pythonExecutable ).string();
@@ -113,7 +111,6 @@ namespace VTX::PythonBinding
 			else
 				VTX_INFO( "Python executable <{}> doesn't exists !!", pythonExecutable_string );
 
-			// Py_SetPythonHome( p_pythonHomePath.data() );
 			std::optional<pybind11::scoped_interpreter> interpetor;
 			try
 			{
@@ -125,9 +122,6 @@ namespace VTX::PythonBinding
 
 				// Create pybind11 interpreter WITHOUT passing config (Python is already initialized)
 				interpetor.emplace( &config );
-				VTX_INFO( "PY - Instantiation done." );
-
-				// interpetor.emplace( &config );
 				VTX_INFO( "PY - Instantiation done." );
 			}
 			catch ( std::exception & e )

@@ -40,8 +40,6 @@ else()
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
 endif()
 
-# Don't use pybind11::embed as it may link system Python
-# Instead, use pybind11::module (header-only) and manually link our Python
 target_link_libraries(vtx_python_binding PUBLIC pybind11::embed)
 
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding)
