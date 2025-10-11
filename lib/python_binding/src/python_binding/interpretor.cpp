@@ -35,6 +35,8 @@ namespace VTX::PythonBinding
 		{
 			VTX_INFO( "PY - Creating interpretor ..." );
 
+			VTX_INFO( "PY - Pythonhome = <{}>", std::filesystem::path( p_pythonHomePath ).string() );
+
 			VTX_INFO( "PY - preInit python config" );
 			PyPreConfig preConfig;
 			PyPreConfig_InitIsolatedConfig( &preConfig );
@@ -122,7 +124,7 @@ namespace VTX::PythonBinding
 				VTX_INFO( "PY - About to instanciate interpretor ..." );
 
 				// Create pybind11 interpreter WITHOUT passing config (Python is already initialized)
-				interpetor.emplace();
+				interpetor.emplace( &config );
 				VTX_INFO( "PY - Instantiation done." );
 
 				// interpetor.emplace( &config );
