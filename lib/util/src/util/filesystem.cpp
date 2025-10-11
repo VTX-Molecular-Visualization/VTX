@@ -6,6 +6,9 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#elif defined(__linux__)
+#include <unistd.h>
+#include <limits.h>
 #endif
 
 #include <iostream>
@@ -36,6 +39,19 @@ namespace VTX::Util::Filesystem
 		GetModuleFileNameW( NULL, szPath, MAX_PATH );
 
 		return std::filesystem::path { szPath }.parent_path() / ""; // to finish the folder path with (back)slash
+#elif defined(__linux__)
+		// Linux specific
+		char szPath[ PATH_MAX ];
+		ssize_t len = readlink( "/proc/self/exe", szPath, sizeof( szPath ) - 1 );
+		if ( len != -1 )
+		{
+			szPath[ len ] = '\0';
+			return std::filesystem::path { szPath }.parent_path() / "";
+		}
+		else
+		{
+			return std::filesystem::current_path();
+		}
 #else
 		return std::filesystem::current_path();
 #endif
@@ -63,6 +79,19 @@ namespace VTX::Util::Filesystem
 		GetModuleFileNameW( NULL, szPath, MAX_PATH );
 
 		return std::filesystem::path { szPath }; // to finish the folder path with (back)slash
+#elif defined(__linux__)
+		// Linux specific
+		char szPath[ PATH_MAX ];
+		ssize_t len = readlink( "/proc/self/exe", szPath, sizeof( szPath ) - 1 );
+		if ( len != -1 )
+		{
+			szPath[ len ] = '\0';
+			return std::filesystem::path { szPath };
+		}
+		else
+		{
+			return std::filesystem::current_path();
+		}
 #else
 		return std::filesystem::current_path();
 #endif
