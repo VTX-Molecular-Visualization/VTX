@@ -31,14 +31,12 @@ namespace VTX::PythonBinding
 	{
 		pybind11::scoped_interpreter createInterpretor( const std::wstring & p_pythonHomePath )
 		{
-			VTX_INFO( "PY - preInit python config" );
 			PyPreConfig preConfig;
 			PyPreConfig_InitIsolatedConfig( &preConfig );
 			preConfig.allocator		  = 1;
 			preConfig.isolated		  = 1;
 			preConfig.use_environment = 0;
 			Py_PreInitialize( &preConfig );
-			VTX_INFO( "PY - preInit python config done." );
 
 			PyConfig config;
 			PyConfig_InitPythonConfig( &config );
