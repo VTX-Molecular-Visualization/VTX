@@ -6,82 +6,32 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#elif defined(__linux__)
-#include <unistd.h>
+#elif defined( __linux__ )
 #include <limits.h>
+#include <unistd.h>
 #endif
 
 #include <iostream>
 
 namespace VTX::Util::Filesystem
 {
-	// Partly copied from https://stackoverflow.com/questions/50889647/best-way-to-get-exe-folder-path
 	FilePath getExecutableDir()
 	{
-		/*
-		std::cout << "Config: " << sago::getConfigHome() << "\n";
-		std::cout << "Data: " << sago::getDataHome() << "\n";
-		std::cout << "State: " << sago::getStateDir() << "\n";
-		std::cout << "Cache: " << sago::getCacheDir() << "\n";
-		std::cout << "Documents: " << sago::getDocumentsFolder() << "\n";
-		std::cout << "Desktop: " << sago::getDesktopFolder() << "\n";
-		std::cout << "Pictures: " << sago::getPicturesFolder() << "\n";
-		std::cout << "Music: " << sago::getMusicFolder() << "\n";
-		std::cout << "Video: " << sago::getVideoFolder() << "\n";
-		std::cout << "Download: " << sago::getDownloadFolder() << "\n";
-		std::cout << "Save Games 1: " << sago::getSaveGamesFolder1() << "\n";
-		std::cout << "Save Games 2: " << sago::getSaveGamesFolder2() << "\n";
-		*/
-
-#ifdef _WIN32
-		// Windows specific
-		wchar_t szPath[ MAX_PATH ];
-		GetModuleFileNameW( NULL, szPath, MAX_PATH );
-
-		return std::filesystem::path { szPath }.parent_path() / ""; // to finish the folder path with (back)slash
-#elif defined(__linux__)
-		// Linux specific
-		char szPath[ PATH_MAX ];
-		ssize_t len = readlink( "/proc/self/exe", szPath, sizeof( szPath ) - 1 );
-		if ( len != -1 )
-		{
-			szPath[ len ] = '\0';
-			return std::filesystem::path { szPath }.parent_path() / "";
-		}
-		else
-		{
-			return std::filesystem::current_path();
-		}
-#else
-		return std::filesystem::current_path();
-#endif
+		return getExecutable().parent_path()
+			   / ""; // We want to finish the path with a [back]slash, for *some* reason ? context wanted
 	}
 	FilePath getExecutable()
 	{
-		/*
-		std::cout << "Config: " << sago::getConfigHome() << "\n";
-		std::cout << "Data: " << sago::getDataHome() << "\n";
-		std::cout << "State: " << sago::getStateDir() << "\n";
-		std::cout << "Cache: " << sago::getCacheDir() << "\n";
-		std::cout << "Documents: " << sago::getDocumentsFolder() << "\n";
-		std::cout << "Desktop: " << sago::getDesktopFolder() << "\n";
-		std::cout << "Pictures: " << sago::getPicturesFolder() << "\n";
-		std::cout << "Music: " << sago::getMusicFolder() << "\n";
-		std::cout << "Video: " << sago::getVideoFolder() << "\n";
-		std::cout << "Download: " << sago::getDownloadFolder() << "\n";
-		std::cout << "Save Games 1: " << sago::getSaveGamesFolder1() << "\n";
-		std::cout << "Save Games 2: " << sago::getSaveGamesFolder2() << "\n";
-		*/
-
 #ifdef _WIN32
 		// Windows specific
+		// Partly copied from https://stackoverflow.com/questions/50889647/best-way-to-get-exe-folder-path
 		wchar_t szPath[ MAX_PATH ];
 		GetModuleFileNameW( NULL, szPath, MAX_PATH );
 
 		return std::filesystem::path { szPath }; // to finish the folder path with (back)slash
-#elif defined(__linux__)
+#elif defined( __linux__ )
 		// Linux specific
-		char szPath[ PATH_MAX ];
+		char	szPath[ PATH_MAX ];
 		ssize_t len = readlink( "/proc/self/exe", szPath, sizeof( szPath ) - 1 );
 		if ( len != -1 )
 		{
