@@ -29,15 +29,8 @@ namespace VTX::PythonBinding
 {
 	namespace
 	{
-		std::string print_wchart( const std::wstring & txt ) { return std::filesystem::path( txt ).string(); }
-
 		pybind11::scoped_interpreter createInterpretor( const std::wstring & p_pythonHomePath )
 		{
-			VTX_INFO( "PY - Creating interpretor ..." );
-
-			VTX_INFO( "PY - Pythonhome = <{}>", std::filesystem::path( p_pythonHomePath ).string() );
-
-			/*
 			VTX_INFO( "PY - preInit python config" );
 			PyPreConfig preConfig;
 			PyPreConfig_InitIsolatedConfig( &preConfig );
@@ -46,12 +39,9 @@ namespace VTX::PythonBinding
 			preConfig.use_environment = 0;
 			Py_PreInitialize( &preConfig );
 			VTX_INFO( "PY - preInit python config done." );
-			*/
 
 			PyConfig config;
-			VTX_INFO( "PY - Init python config" );
 			PyConfig_InitPythonConfig( &config );
-			VTX_INFO( "PY - Init python config done." );
 			config.isolated				   = 1;
 			config.use_environment		   = 0;
 			config.module_search_paths_set = 1;
@@ -76,7 +66,6 @@ namespace VTX::PythonBinding
 			std::wstring pythonExecDir	  = ( VTX::FilePath( p_pythonHomePath ) / "bin" ).wstring();
 
 #endif
-			VTX_INFO( "PY - SetString." );
 			PyConfig_SetString( &config, &config.platlibdir, platlibdir.c_str() );
 			PyConfig_SetString( &config, &config.home, p_pythonHomePath.c_str() );
 			PyConfig_SetString( &config, &config.prefix, p_pythonHomePath.c_str() );
@@ -86,13 +75,8 @@ namespace VTX::PythonBinding
 
 			VTX::FilePath python39Path = VTX::FilePath( p_pythonHomePath ) / "python39.zip";
 			std::wstring  python39Str( python39Path.wstring() );
-			if ( std::filesystem::exists( python39Path ) )
-				VTX_INFO( "PY - zip file : <{}> does exist.", python39Path.string() );
-			else
-				VTX_ERROR( "PY - zip file : <{}> does not exist !", python39Path.string() );
 
 			std::string execDirPath_string = VTX::Util::Filesystem::getExecutableDir().string();
-			VTX_INFO( "PY - StringList Appending execDirPath : <{}>.", execDirPath_string );
 
 			PyWideStringList_Append( &config.module_search_paths, pyScriptDir.c_str() );
 			PyWideStringList_Append( &config.module_search_paths, python39Str.c_str() );
@@ -103,26 +87,12 @@ namespace VTX::PythonBinding
 			PyWideStringList_Append( &config.module_search_paths, platlibdir.c_str() );
 			PyWideStringList_Append( &config.module_search_paths, execDirPath.c_str() );
 
-			VTX_INFO( "PY - StringList Append done." );
-
 			auto pythonExecutable_string = std::filesystem::path( pythonExecutable ).string();
-			if ( std::filesystem::exists( std::filesystem::path( pythonExecutable ) ) )
-				VTX_INFO( "Python executable <{}> exists.", pythonExecutable_string );
-			else
-				VTX_INFO( "Python executable <{}> doesn't exists !!", pythonExecutable_string );
 
 			std::optional<pybind11::scoped_interpreter> interpetor;
 			try
 			{
-				VTX_INFO( "PY - Config home: {}", ( config.home ? print_wchart( config.home ) : "NULL" ) );
-				VTX_INFO( "PY - Config prefix: {}", ( config.prefix ? print_wchart( config.prefix ) : "NULL" ) );
-				VTX_INFO( "PY - Config module_search_paths length: {}", config.module_search_paths.length );
-
-				VTX_INFO( "PY - About to instanciate interpretor ..." );
-
-				// Create pybind11 interpreter WITHOUT passing config (Python is already initialized)
 				interpetor.emplace( &config );
-				VTX_INFO( "PY - Instantiation done." );
 			}
 			catch ( std::exception & e )
 			{
