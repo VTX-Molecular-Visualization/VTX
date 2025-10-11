@@ -42,21 +42,10 @@ endif()
 
 # Don't use pybind11::embed as it may link system Python
 # Instead, use pybind11::module (header-only) and manually link our Python
-target_link_libraries(vtx_python_binding PUBLIC pybind11::module)
-# Link our specific Python 3.9 from Conan
-target_link_libraries(vtx_python_binding PUBLIC Python3::Python Python3::Module)
-
-# For test executable, ensure we link our Python first before the library
-target_link_libraries(vtx_python_binding_test PRIVATE Python3::Python)
+target_link_libraries(vtx_python_binding PUBLIC pybind11::embed)
 
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding)
 target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
-
-# Debug: Print the actual link libraries to verify
-get_target_property(VTX_PY_LINK_LIBS vtx_python_binding LINK_LIBRARIES)
-message("VTX - vtx_python_binding links: ${VTX_PY_LINK_LIBS}")
-get_target_property(VTX_PY_TEST_LINK_LIBS vtx_python_binding_test LINK_LIBRARIES)
-message("VTX - vtx_python_binding_test links: ${VTX_PY_TEST_LINK_LIBS}")
 
 include ("${CMAKE_CURRENT_LIST_DIR}/vtx_python_binding_copy_files.cmake")# All other find_package call
 vtx_copy_registered_data(vtx_python_binding)
