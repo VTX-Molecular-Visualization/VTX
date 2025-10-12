@@ -24,6 +24,8 @@ find_package(SDL3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(stb CONFIG CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
+set (PYBIND11_PYTHON_VERSION "3.9.19")
+find_package(Python3 "3.9.19" EXACT REQUIRED COMPONENTS Interpreter Development NO_SYSTEM_ENVIRONMENT_PATH)
 find_package(pybind11 CONFIG REQUIRED)
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Gui REQUIRED)
@@ -34,7 +36,6 @@ find_package(re2 CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED) # Needed for multiprocessing on pdb database test
 find_package(LibArchive REQUIRED) # Needed for pdb100 archive reading
 find_package(platform_folders REQUIRED)
-find_package(Python3 REQUIRED)
 
 
 # Util.
