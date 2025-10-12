@@ -108,7 +108,6 @@ namespace VTX::IO::Reader
 
 		std::unique_ptr<Chemfiles> chemfilesReader = std::make_unique<Chemfiles>( p_path );
 
-		chrono.stop();
 		// VTX_INFO( "readFile : {}", Util::String::durationToStr( chrono.elapsedTime() ) );
 
 		return chemfilesReader;
@@ -123,7 +122,6 @@ namespace VTX::IO::Reader
 
 		std::unique_ptr<Chemfiles> chemfilesReader = std::make_unique<Chemfiles>( p_buffer, p_path );
 
-		chrono.stop();
 		VTX_INFO( "readBuffer : {}", Util::String::durationToStr( chrono.elapsedTime() ) );
 
 		return chemfilesReader;
@@ -154,18 +152,18 @@ namespace VTX::IO::Reader
 
 		chrono.start();
 		_preRead();
-		chrono.stop();
+
 		// VTX_INFO( "_preRead: {}", Util::String::durationToStr( chrono.elapsedTime() ) );
 
 		chrono.start();
 		chemfiles::Frame frame;
 		_read();
-		chrono.stop();
+
 		// VTX_INFO( "Trajectory read in: {}", Util::String::durationToStr( chrono.elapsedTime() ) );
 
 		chrono.start();
 		_postRead();
-		chrono.stop();
+
 		// VTX_INFO( "_postRead: {}", Util::String::durationToStr( chrono.elapsedTime() ) );
 	}
 

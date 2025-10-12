@@ -74,28 +74,28 @@ namespace VTX::Bench
 
 			bool updated = false;
 
-			if constexpr ( std::is_same<T, bool>::value )
+			if constexpr ( std::is_same_v<T, bool> )
 			{
 				if ( ImGui::Checkbox( p_uniform.name.c_str(), &value ) )
 				{
 					updated = true;
 				}
 			}
-			else if constexpr ( is_vec2i<T>::value )
+			else if constexpr ( is_vec2i_v<T> )
 			{
 				if ( ImGui::InputInt2( p_uniform.name.c_str(), (int *)&value ) )
 				{
 					updated = true;
 				}
 			}
-			else if constexpr ( is_vec2f<T>::value )
+			else if constexpr ( is_vec2f_v<T> )
 			{
 				if ( ImGui::InputFloat2( p_uniform.name.c_str(), (float *)&value ) )
 				{
 					updated = true;
 				}
 			}
-			else if constexpr ( is_color4<T>::value )
+			else if constexpr ( is_color4_v<T> )
 			{
 				if ( ImGui::ColorEdit4( p_uniform.name.c_str(), (float *)( &value ) ) )
 				{

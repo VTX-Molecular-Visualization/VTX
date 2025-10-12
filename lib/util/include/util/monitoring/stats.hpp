@@ -4,21 +4,42 @@
 #include "frame_info.hpp"
 #include <list>
 #include <util/callback.hpp>
-#include <util/chrono.hpp>
 #include <util/hashing.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Util::Monitoring
 {
+	/**
+	 * @brief Maximum number of stored frames.
+	 */
+	constexpr uint ACTIVE_FRAME_COUNT = 1000;
+
+	/**
+	 * @brief Store frames to compute duration statistics.
+	 */
 	class Stats
 	{
 	  public:
+		/**
+		 * @brief Creates and returns a reference to a new FrameInfo object.
+		 */
 		FrameInfo & newFrame();
 
-		inline FrameInfo & getCurrentFrame() { return _frames.back(); }
+		/**
+		 * @brief Returns a reference to the current (most recent) frame.
+		 */
+		inline FrameInfo & currentFrame() { return _frames.back(); }
 
+		/**
+		 * @brief Calculates the average elapsed time between recorded frames.
+		 */
+		float average() const;
+
+		/**
+		 * @brief Calculates the average value for the given hash.
+		 */
 		template<typename T>
-		T getAverage( const Hash & p_hashedKey ) const
+		T average( const Hash & p_hashedKey ) const
 		{
 			if ( _frames.size() == 0 )
 			{
@@ -26,7 +47,6 @@ namespace VTX::Util::Monitoring
 			}
 
 			T res = 0;
-
 			for ( const FrameInfo & frameInfo : _frames )
 			{
 				if ( frameInfo.has( p_hashedKey ) )
@@ -39,9 +59,10 @@ namespace VTX::Util::Monitoring
 		}
 
 	  private:
-		static const uint ACTIVE_FRAME_COUNT = 1000;
-
-		std::list<FrameInfo> _frames = std::list<FrameInfo>();
+		/**
+		 * @brief Frame storage.
+		 */
+		std::list<FrameInfo> _frames;
 	};
 } // namespace VTX::Util::Monitoring
 #endif

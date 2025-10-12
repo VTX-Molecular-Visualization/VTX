@@ -100,7 +100,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Create a new project";
 			icon	 = "sprite/file/new.png";
 			shortcut = "Ctrl+N";
-			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Application::NewScene>(); };
+			trigger	 = []() { App::ACTION().execute<App::Action::Application::NewScene>(); };
 		}
 
 		Download::Download()
@@ -160,7 +160,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Quit";
 			tip		 = "Exit software";
-			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Application::Quit>(); };
+			trigger	 = []() { App::ACTION().execute<App::Action::Application::Quit>(); };
 			shortcut = "Esc";
 		}
 
@@ -177,7 +177,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Change camera projection mode";
 			icon	 = "sprite/camera/orthographic.png";
 			shortcut = "Alt+O";
-			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Camera::ToggleCameraProjection>(); };
+			trigger	 = []() { App::ACTION().execute<App::Action::Camera::ToggleCameraProjection>(); };
 		}
 
 		void Orthographic::connect() const
@@ -208,7 +208,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Change camera projection mode";
 			icon	 = "sprite/camera/perspective.png";
 			shortcut = "Alt+P";
-			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Camera::ToggleCameraProjection>(); };
+			trigger	 = []() { App::ACTION().execute<App::Action::Camera::ToggleCameraProjection>(); };
 		}
 
 		void Perspective::connect() const
@@ -239,7 +239,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Use Trackball controller";
 			icon	 = "sprite/camera/trackball.png";
 			shortcut = "Alt+T";
-			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Controller::ToggleCameraController>(); };
+			trigger	 = []() { App::ACTION().execute<App::Action::Controller::ToggleCameraController>(); };
 		}
 
 		void Trackball::connect() const
@@ -269,7 +269,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Use Freefly controller";
 			icon	 = "sprite/camera/freefly.png";
 			shortcut = "Alt+F";
-			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Controller::ToggleCameraController>(); };
+			trigger	 = []() { App::ACTION().execute<App::Action::Controller::ToggleCameraController>(); };
 		}
 
 		void Freefly::connect() const
@@ -297,7 +297,7 @@ namespace VTX::UI::QT::Action
 			name	= "Orient";
 			tip		= "Orient camera on selection";
 			icon	= "sprite/camera/orient.png";
-			trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Camera::Orient>(); };
+			trigger = []() { App::ACTION().execute<App::Action::Camera::Orient>(); };
 		}
 
 		Reset::Reset()
@@ -305,7 +305,7 @@ namespace VTX::UI::QT::Action
 			name	= "Reset";
 			tip		= "Reset camera";
 			icon	= "sprite/camera/reset.png";
-			trigger = []() { App::ACTION_SYSTEM().execute<App::Action::Camera::Reset>(); };
+			trigger = []() { App::ACTION().execute<App::Action::Camera::Reset>(); };
 		}
 
 	} // namespace Camera
@@ -318,7 +318,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Save current image";
 			icon	 = "sprite/snapshot/snapshot.png";
 			shortcut = "F2";
-			trigger	 = []() { App::ACTION_SYSTEM().execute<App::Action::Io::Snapshot>(); };
+			trigger	 = []() { App::ACTION().execute<App::Action::Io::Snapshot>(); };
 		}
 
 		Export::Export()
@@ -345,7 +345,7 @@ namespace VTX::UI::QT::Action
 			// icon = "sprite/selection/granularity.png";
 			//  shortcut = "G";
 			//   trigger	 = []() {
-			//   App::ACTION_SYSTEM().execute<App::Action::Application::ChangeSelectionGranularity>();
+			//   App::ACTION().execute<App::Action::Application::ChangeSelectionGranularity>();
 			//   };
 		}
 
@@ -357,7 +357,7 @@ namespace VTX::UI::QT::Action
 			// icon = "sprite/selection/granularity.png";
 			//  shortcut = "G";
 			//   trigger	 = []() {
-			//   App::ACTION_SYSTEM().execute<App::Action::Application::ChangeSelectionGranularity>();
+			//   App::ACTION().execute<App::Action::Application::ChangeSelectionGranularity>();
 			//   };
 		}
 
@@ -369,7 +369,7 @@ namespace VTX::UI::QT::Action
 			// icon = "sprite/selection/granularity.png";
 			//  shortcut = "G";
 			//   trigger	 = []() {
-			//   App::ACTION_SYSTEM().execute<App::Action::Application::ChangeSelectionGranularity>();
+			//   App::ACTION().execute<App::Action::Application::ChangeSelectionGranularity>();
 			//   };
 		}
 
@@ -381,7 +381,7 @@ namespace VTX::UI::QT::Action
 			// icon = "sprite/selection/granularity.png";
 			//  shortcut = "G";
 			//   trigger	 = []() {
-			//   App::ACTION_SYSTEM().execute<App::Action::Application::ChangeSelectionGranularity>();
+			//   App::ACTION().execute<App::Action::Application::ChangeSelectionGranularity>();
 			//   };
 		}
 	} // namespace Selection

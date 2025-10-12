@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_LIBRARY_PRESET_REPRESENTATION__
 #define __VTX_APP_LIBRARY_PRESET_REPRESENTATION__
 
-#include "app/core/library/library.hpp"
+#include "app/library/base_preset.hpp"
 #include <core/struct/representation.hpp>
 #include <util/math.hpp>
 
@@ -32,7 +32,7 @@ namespace VTX::App::Library::Preset
 	constexpr float SES_PROBE_RADIUS_MIN	 = 0.2f;
 	constexpr float SES_PROBE_RADIUS_MAX	 = 3.f;
 
-	class Representation : public Core::Library::Preset<VTX::Core::Struct::Representation>
+	class Representation : public BasePreset<VTX::Core::Struct::Representation>
 	{
 	  public:
 		Representation();

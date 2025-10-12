@@ -1,18 +1,18 @@
 #ifndef __VTX_APP_ACTION_MODE__
 #define __VTX_APP_ACTION_MODE__
 
-#include "app/core/mode/concepts.hpp"
-#include <app/application/scene.hpp>
-#include <app/component/mode.hpp>
-#include <app/core/action/base_action.hpp>
+#include "app/action/base_action.hpp"
+#include "app/application/scene.hpp"
+#include "app/component/mode.hpp"
+#include "app/mode/concepts.hpp"
 #include <util/collection.hpp>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX::App::Action::Mode
 {
-	template<Core::Mode::ConceptMode M>
-	class SetMode final : public Core::Action::BaseAction
+	template<App::Mode::ConceptMode M>
+	class SetMode final : public BaseAction
 	{
 	  public:
 		SetMode() {}

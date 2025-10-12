@@ -10,14 +10,14 @@
 #include "app/component/scene/transform_component.hpp"
 #include "app/component/scene/uid_component.hpp"
 // #include "app/component/scene/updatable.hpp"
-#include "app/core/player/circular_buffer.hpp"
-#include "app/core/player/loop.hpp"
-#include "app/core/renderer/renderer_system.hpp"
-#include "app/core/settings/settings_system.hpp"
+#include "app/settings/settings_manager.hpp"
 #include "app/entity/system.hpp"
+#include "app/player/circular_buffer.hpp"
+#include "app/player/loop.hpp"
 #include "app/selection/system_data.hpp"
 #include "app/selection/system_granularity.hpp"
-#include "app/settings.hpp"
+#include "app/services.hpp"
+#include "app/settings/settings.hpp"
 #include <io/reader/system.hpp>
 #include <renderer/proxy/system.hpp>
 #include <util/logger.hpp>
@@ -98,20 +98,20 @@ namespace VTX::App::Entity
 			auto & trajectory = ECS_REGISTRY().addComponent<Component::Chemistry::Trajectory>( *this, &system, _path );
 
 			if ( trajectory.getSystemPtr()->getTrajectory().isOptimized() )
-				trajectory.setPlayer<Core::Player::CircularBuffer>();
+				trajectory.setPlayer<Player::CircularBuffer>();
 			else
-				trajectory.setPlayer<Core::Player::Loop>();
+				trajectory.setPlayer<Player::Loop>();
 		}
 
 		// Proxy.
-		proxy.setup( App::RENDERER_SYSTEM() );
+		proxy.setup( RENDERER() );
 
 		// Picking.
 		pickable.setPickingFunction(
 			[ & ]( const Selection::PickingInfo & p_pickingInfo )
 			{
 				const auto granularity
-					= SETTINGS_SYSTEM().get<Selection::Granularity>( Settings::Selection::MOLECULE_GRANULARITY_KEY );
+					= SETTINGS().get<Selection::Granularity>( Settings::Selection::MOLECULE_GRANULARITY_KEY );
 
 				std::unique_ptr<Selection::SelectionData> res = std::make_unique<Selection::SystemData>( selectable );
 				auto &									  molData = dynamic_cast<Selection::SystemData &>( *res );

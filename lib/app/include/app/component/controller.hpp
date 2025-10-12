@@ -1,13 +1,13 @@
 #ifndef __VTX_APP_COMPONENT_CONTROLLER__
 #define __VTX_APP_COMPONENT_CONTROLLER__
 
+#include "app/animation/concepts.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/scene/transform_component.hpp"
 #include "app/component/scene/updatable.hpp"
+#include "app/controller/base_controller.hpp"
 #include "app/controller/camera/animation.hpp"
-#include "app/core/animation/concepts.hpp"
-#include "app/core/controller/base_controller.hpp"
-#include "app/core/controller/concepts.hpp"
+#include "app/controller/concepts.hpp"
 #include "app/core/ecs/ecs_system.hpp"
 #include <util/callback.hpp>
 #include <util/collection.hpp>
@@ -22,7 +22,7 @@ namespace VTX::App::Component
 		Controller()					 = default;
 		Controller( const Controller & ) = delete;
 
-		template<Core::Controller::ConceptController C, typename... Args>
+		template<App::Controller::ConceptController C, typename... Args>
 		C * const enableController( Args &&... p_args )
 		{
 			Hash hash = Util::hash<C>();
@@ -34,8 +34,9 @@ namespace VTX::App::Component
 			controller->setCamera( &SCENE().getCamera() );
 
 			// Register update callback.
-			Util::CallbackId id = addUpdateFunction( [ controller ]( const float p_delta, const float p_elapsed )
-													 { controller->update( p_delta, p_elapsed ); } );
+			Util::EventHub::ScopedConnection * id
+				= addUpdateFunction( [ controller ]( const Events::Update & p_e )
+									 { controller->update( p_e.delta, p_e.elapsed ); } );
 
 			// Save callback id.
 			_activeCallbacks.emplace( hash, id );
@@ -47,7 +48,7 @@ namespace VTX::App::Component
 		}
 
 		void disableController( Hash );
-		template<Core::Controller::ConceptController C>
+		template<App::Controller::ConceptController C>
 		void disableController()
 		{
 			const Hash hash = Util::hash<C>();
@@ -70,7 +71,7 @@ namespace VTX::App::Component
 		void launchAnimation( App::Controller::Camera::GenericAnimation p_animation );
 
 		inline bool isControllerEnabled( Hash p_hash ) const { return _activeCallbacks.contains( p_hash ); }
-		template<Core::Controller::ConceptController C>
+		template<App::Controller::ConceptController C>
 		bool isControllerEnabled() const
 		{
 			return _activeCallbacks.contains( Util::hash<C>() );
@@ -83,9 +84,9 @@ namespace VTX::App::Component
 			App::Controller::Camera::GenericAnimation p_animation
 		);
 
-		Util::Collection<std::unique_ptr<Core::Controller::BaseController>> _controllers;
+		Util::Collection<std::unique_ptr<App::Controller::BaseController>> _controllers;
 		//    TODO: improve collection to handle basic types.
-		std::unordered_map<Hash, Util::CallbackId> _activeCallbacks;
+		std::unordered_map<Hash, Util::EventHub::ScopedConnection *> _activeCallbacks;
 	};
 } // namespace VTX::App::Component
 

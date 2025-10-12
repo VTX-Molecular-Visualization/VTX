@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_LIBRARY_PRESET_RENDER_SETTINGS__
 #define __VTX_APP_LIBRARY_PRESET_RENDER_SETTINGS__
 
-#include "app/core/library/library.hpp"
+#include "app/library/base_preset.hpp"
 #include <renderer/settings.hpp>
 #include <util/constants.hpp>
 #include <util/math.hpp>
@@ -9,7 +9,7 @@
 namespace VTX::App::Library::Preset
 {
 
-	class RenderSettings : public Core::Library::Preset<Renderer::RenderSettings>
+	class RenderSettings : public BasePreset<Renderer::RenderSettings>
 	{
 	  public:
 		RenderSettings();

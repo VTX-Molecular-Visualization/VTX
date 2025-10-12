@@ -1,6 +1,7 @@
 #include "app/controller/camera/trackball.hpp"
 #include "app/application/scene.hpp"
-#include "app/core/input/input_manager.hpp"
+#include "app/input/input_manager.hpp"
+#include "app/services.hpp"
 #include <util/fmt/glm.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
@@ -12,20 +13,22 @@ namespace VTX::App::Controller::Camera
 	{
 		using namespace App::Core;
 
-		_mapping = Input::KeyMapping( {
-			{ int( Keys::MOVE_FRONT ),
-			  { Input::Key::Key_Up, Input::InputManager::getKeyFromQwerty( Input::Key::Key_W ) } },
-			{ int( Keys::MOVE_BACK ),
-			  { Input::Key::Key_Down, Input::InputManager::getKeyFromQwerty( Input::Key::Key_S ) } },
-			{ int( Keys::ROTATE_LEFT ),
-			  { Input::Key::Key_Left, Input::InputManager::getKeyFromQwerty( Input::Key::Key_A ) } },
-			{ int( Keys::ROTATE_RIGHT ),
-			  { Input::Key::Key_Right, Input::InputManager::getKeyFromQwerty( Input::Key::Key_D ) } },
-			{ int( Keys::ROTATE_UP ), { Input::InputManager::getKeyFromQwerty( Input::Key::Key_R ) } },
-			{ int( Keys::ROTATE_DOWN ), { Input::InputManager::getKeyFromQwerty( Input::Key::Key_F ) } },
-			{ int( Keys::ROLL_LEFT ), { Input::InputManager::getKeyFromQwerty( Input::Key::Key_Q ) } },
-			{ int( Keys::ROLL_RIGHT ), { Input::InputManager::getKeyFromQwerty( Input::Key::Key_E ) } },
-		} );
+		_mapping = Input::KeyMapping(
+			{
+				{ int( Keys::MOVE_FRONT ),
+				  { Input::Key::Key_Up, Input::InputManager::getKeyFromQwerty( Input::Key::Key_W ) } },
+				{ int( Keys::MOVE_BACK ),
+				  { Input::Key::Key_Down, Input::InputManager::getKeyFromQwerty( Input::Key::Key_S ) } },
+				{ int( Keys::ROTATE_LEFT ),
+				  { Input::Key::Key_Left, Input::InputManager::getKeyFromQwerty( Input::Key::Key_A ) } },
+				{ int( Keys::ROTATE_RIGHT ),
+				  { Input::Key::Key_Right, Input::InputManager::getKeyFromQwerty( Input::Key::Key_D ) } },
+				{ int( Keys::ROTATE_UP ), { Input::InputManager::getKeyFromQwerty( Input::Key::Key_R ) } },
+				{ int( Keys::ROTATE_DOWN ), { Input::InputManager::getKeyFromQwerty( Input::Key::Key_F ) } },
+				{ int( Keys::ROLL_LEFT ), { Input::InputManager::getKeyFromQwerty( Input::Key::Key_Q ) } },
+				{ int( Keys::ROLL_RIGHT ), { Input::InputManager::getKeyFromQwerty( Input::Key::Key_E ) } },
+			}
+		);
 	}
 
 	/*
@@ -46,29 +49,29 @@ namespace VTX::App::Controller::Camera
 
 		// Wheel.
 		float deltaDistance = 0.f;
-		if ( INPUT_MANAGER().getDeltaMouseWheel() != 0 )
+		if ( INPUT().getDeltaMouseWheel() != 0 )
 		{
-			deltaDistance = INPUT_MANAGER().getDeltaMouseWheel() * 0.00001f
+			deltaDistance = INPUT().getDeltaMouseWheel() * 0.00001f
 							* VTX::Util::Math::distance( _camera->getTransform().getPosition(), _camera->getTarget() );
 		}
 
 		// Mouse left.
 		Vec3f deltaVelocity = VEC3F_ZERO;
-		if ( INPUT_MANAGER().isMouseLeftPressed() )
+		if ( INPUT().isMouseLeftPressed() )
 		{
-			deltaVelocity.x = -INPUT_MANAGER().getDeltaMousePosition().x * 15.f;
-			deltaVelocity.y = -INPUT_MANAGER().getDeltaMousePosition().y * 15.f;
+			deltaVelocity.x = -INPUT().getDeltaMousePosition().x * 15.f;
+			deltaVelocity.y = -INPUT().getDeltaMousePosition().y * 15.f;
 		}
 		// Mouse right.
-		else if ( INPUT_MANAGER().isMouseRightPressed() )
+		else if ( INPUT().isMouseRightPressed() )
 		{
-			deltaVelocity.z = INPUT_MANAGER().getDeltaMousePosition().x * 15.f;
+			deltaVelocity.z = INPUT().getDeltaMousePosition().x * 15.f;
 		}
 		// Pan target with wheel button.
-		else if ( INPUT_MANAGER().isMouseMiddlePressed() )
+		else if ( INPUT().isMouseMiddlePressed() )
 		{
-			float deltaX = -INPUT_MANAGER().getDeltaMousePosition().x * 0.1f;
-			float deltaY = INPUT_MANAGER().getDeltaMousePosition().y * 0.1f;
+			float deltaX = -INPUT().getDeltaMousePosition().x * 0.1f;
+			float deltaY = INPUT().getDeltaMousePosition().y * 0.1f;
 
 			const Vec3f newTarget = _camera->getTarget()
 									+ _camera->getTransform().getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
@@ -79,35 +82,35 @@ namespace VTX::App::Controller::Camera
 		}
 
 		// Keyboard.
-		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::MOVE_FRONT ) ] ) )
+		if ( INPUT().isAnyKeyPressed( _mapping[ int( Keys::MOVE_FRONT ) ] ) )
 		{
 			deltaDistance = 1.5f * deltaTime;
 		}
-		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::MOVE_BACK ) ] ) )
+		if ( INPUT().isAnyKeyPressed( _mapping[ int( Keys::MOVE_BACK ) ] ) )
 		{
 			deltaDistance = -1.5f * deltaTime;
 		}
-		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::ROTATE_RIGHT ) ] ) )
+		if ( INPUT().isAnyKeyPressed( _mapping[ int( Keys::ROTATE_RIGHT ) ] ) )
 		{
 			deltaVelocity.x = 1e4f * deltaTime;
 		}
-		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::ROTATE_LEFT ) ] ) )
+		if ( INPUT().isAnyKeyPressed( _mapping[ int( Keys::ROTATE_LEFT ) ] ) )
 		{
 			deltaVelocity.x = -1e4f * deltaTime;
 		}
-		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::ROTATE_UP ) ] ) )
+		if ( INPUT().isAnyKeyPressed( _mapping[ int( Keys::ROTATE_UP ) ] ) )
 		{
 			deltaVelocity.y = 1e4f * deltaTime;
 		}
-		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::ROTATE_DOWN ) ] ) )
+		if ( INPUT().isAnyKeyPressed( _mapping[ int( Keys::ROTATE_DOWN ) ] ) )
 		{
 			deltaVelocity.y = -1e4f * deltaTime;
 		}
-		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::ROLL_RIGHT ) ] ) )
+		if ( INPUT().isAnyKeyPressed( _mapping[ int( Keys::ROLL_RIGHT ) ] ) )
 		{
 			deltaVelocity.z = 1e4f * deltaTime;
 		}
-		if ( INPUT_MANAGER().isAnyKeyPressed( _mapping[ int( Keys::ROLL_LEFT ) ] ) )
+		if ( INPUT().isAnyKeyPressed( _mapping[ int( Keys::ROLL_LEFT ) ] ) )
 		{
 			deltaVelocity.z = -1e4f * deltaTime;
 		}
@@ -117,11 +120,11 @@ namespace VTX::App::Controller::Camera
 		{
 			deltaDistance *= translationSpeed;
 
-			if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Shift ) )
+			if ( INPUT().isModifierExclusive( Input::Modifier::Shift ) )
 			{
 				deltaDistance *= accelerationFactor;
 			}
-			if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Alt ) )
+			if ( INPUT().isModifierExclusive( Input::Modifier::Alt ) )
 			{
 				deltaDistance /= decelerationFactor;
 			}
@@ -131,11 +134,11 @@ namespace VTX::App::Controller::Camera
 
 		if ( deltaVelocity != VEC3F_ZERO )
 		{
-			if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Shift ) )
+			if ( INPUT().isModifierExclusive( Input::Modifier::Shift ) )
 			{
 				deltaVelocity *= accelerationFactor;
 			}
-			if ( INPUT_MANAGER().isModifierExclusive( Input::ModifierEnum::Alt ) )
+			if ( INPUT().isModifierExclusive( Input::Modifier::Alt ) )
 			{
 				deltaVelocity /= decelerationFactor;
 			}
@@ -184,7 +187,7 @@ namespace VTX::App::Controller::Camera
 				VTX::Util::Math::abs( _velocity ), Vec3f( _CONTROLLER_ELASTICITY_THRESHOLD )
 			);
 
-			if ( not INPUT_MANAGER().isMouseLeftPressed() && res.x && res.y && res.z )
+			if ( not INPUT().isMouseLeftPressed() && res.x && res.y && res.z )
 			{
 				_velocity = VEC3F_ZERO;
 			}

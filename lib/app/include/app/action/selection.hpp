@@ -2,7 +2,7 @@
 #define __VTX_APP_ACTION_SELECTION__
 
 #include "app/component/scene/selectable.hpp"
-#include "app/core/action/base_action.hpp"
+#include "app/action/base_action.hpp"
 #include "app/selection/selection.hpp"
 #include "app/selection/selection_data.hpp"
 #include <set>
@@ -10,7 +10,7 @@
 
 namespace VTX::App::Action::Selection
 {
-	class Select final : public App::Core::Action::BaseAction
+	class Select final : public BaseAction
 	{
 	  public:
 		Select(
@@ -42,7 +42,7 @@ namespace VTX::App::Action::Selection
 		App::Selection::AssignmentType _assignment = App::Selection::AssignmentType::SET;
 	};
 
-	class Unselect final : public App::Core::Action::BaseAction
+	class Unselect final : public BaseAction
 	{
 	  public:
 		Unselect( const App::Selection::SelectionData & p_selectionData )

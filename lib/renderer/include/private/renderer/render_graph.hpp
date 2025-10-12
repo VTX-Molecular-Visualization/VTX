@@ -5,7 +5,6 @@
 #include "scheduler/concept_scheduler.hpp"
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
-#include <util/variant.hpp>
 
 namespace VTX::Renderer
 {

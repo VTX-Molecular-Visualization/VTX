@@ -4,7 +4,7 @@
 #include <app/component/chemistry/trajectory.hpp>
 #include <app/component/render/proxy_system.hpp>
 #include <app/core/ecs/registry.hpp>
-#include <app/core/player/circular_buffer.hpp>
+#include <app/player/circular_buffer.hpp>
 
 namespace VTX::App::Action::Trajectory
 {
@@ -18,9 +18,9 @@ namespace VTX::App::Action::Trajectory
 		traj.getPlayer().play();
 
 		//////////////////////////////////////////////////
-		/* Core::Threading::ThreadingSystem & threader = App::THREADING_SYSTEM();
-		auto							   funcWrite = std::function<uint( App::Core::Threading::BaseThread & )> {};
-		funcWrite									 = []( App::Core::Threading::BaseThread & baseThread )
+		/* Threading::ThreadManager & threader = App::THREAD();
+		auto							   funcWrite = std::function<uint( App::Threading::BaseThread & )> {};
+		funcWrite									 = []( App::Threading::BaseThread & baseThread )
 		{
 			VTX_INFO( "writethread start" );
 			auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>(
@@ -43,8 +43,8 @@ namespace VTX::App::Action::Trajectory
 			VTX_INFO( "writethread end" );
 			return 1;
 		};
-		auto funcRead = std::function<uint( App::Core::Threading::BaseThread & )> {};
-		funcRead	  = []( App::Core::Threading::BaseThread & baseThread )
+		auto funcRead = std::function<uint( App::Threading::BaseThread & )> {};
+		funcRead	  = []( App::Threading::BaseThread & baseThread )
 		{
 			VTX_INFO( "readthreadfromlocalmolecule start" );
 			auto & molecule = App::ECS_REGISTRY().getComponent<App::Component::Chemistry::Molecule>(

@@ -42,7 +42,7 @@ TEST_CASE( "VTX_APP - Views", "[integration]" )
 	App::Core::ECS::ViewIterator findFailIt = SCENE().getAllSceneItems().find( App::Core::ECS::BaseEntity( 666 ) );
 	REQUIRE( findFailIt == SCENE().getAllSceneItems().end() );
 
-	APP::update( 0.015f, 0.f );
+	app.get()->update( 0.015f, 0.f );
 };
 
 TEST_CASE( "VTX_APP - Full sequence", "[integration]" )

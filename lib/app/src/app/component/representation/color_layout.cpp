@@ -1,5 +1,6 @@
 #include "app/component/representation/color_layout.hpp"
-#include "app/core/renderer/renderer_system.hpp"
+#include "app/services.hpp"
+#include <renderer/facade.hpp>
 
 namespace VTX::App::Component::Representation
 {
@@ -12,7 +13,7 @@ namespace VTX::App::Component::Representation
 		_preset.onChange += [ this ]( const Index p_index ) { _proxy->onChange( p_index ); };
 		_preset.onChangeAll += [ this ]() { _proxy->onChangeAll(); };
 
-		RENDERER_SYSTEM().onReady( [ this ]() { RENDERER_SYSTEM().setProxyColorLayout( *_proxy ); } );
+		RENDERER().onReady( [ this ]() { RENDERER().setProxyColorLayout( *_proxy ); } );
 	}
 
 } // namespace VTX::App::Component::Representation

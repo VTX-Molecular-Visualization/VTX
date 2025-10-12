@@ -1,12 +1,12 @@
 #ifndef __VTX_APP_LIBRARY_PRESET_COLOR_LAYOUT__
 #define __VTX_APP_LIBRARY_PRESET_COLOR_LAYOUT__
 
-#include "app/core/library/library.hpp"
+#include "app/library/base_preset.hpp"
 #include <core/struct/color_layout.hpp>
 
 namespace VTX::App::Library::Preset
 {
-	class ColorLayout : public Core::Library::Preset<VTX::Core::Struct::ColorLayout>
+	class ColorLayout : public BasePreset<VTX::Core::Struct::ColorLayout>
 	{
 	  public:
 		ColorLayout();

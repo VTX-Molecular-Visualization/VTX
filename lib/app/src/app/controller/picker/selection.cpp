@@ -1,19 +1,19 @@
 #include "app/controller/picker/selection.hpp"
-#include "app/core/input/input_manager.hpp"
-#include <app/application/scene_utility.hpp>
-#include <app/component/scene/pickable.hpp>
-#include <app/core/action/action_system.hpp>
-#include <app/core/ecs/registry.hpp>
-#include <app/core/renderer/renderer_system.hpp>
-#include <app/selection/selection.hpp>
-#include <app/selection/selection_manager.hpp>
+#include "app/application/scene_utility.hpp"
+#include "app/component/scene/pickable.hpp"
+#include "app/core/ecs/registry.hpp"
+#include "app/input/input_manager.hpp"
+#include "app/selection/selection.hpp"
+#include "app/selection/selection_manager.hpp"
+#include "app/services.hpp"
 #include <optional>
+#include <renderer/facade.hpp>
 #include <util/logger.hpp>
 
 namespace
 {
 	std::optional<const VTX::App::Component::Scene::Pickable> _tryGetPickableFromUid(
-		const VTX::App::Core::UID::uid p_uid
+		const VTX::App::Uid::uid p_uid
 	)
 	{
 		const VTX::App::Core::ECS::BaseEntity entity = VTX::App::Application::SceneUtility::findItemByUID( p_uid );
@@ -34,27 +34,26 @@ namespace VTX::App::Controller::Picker
 		// Connect/disconnect mouse events.
 		if ( p_active )
 		{
-			_mouseLeftClickCallbackID = INPUT_MANAGER().onMouseLeftClicked +=
+			_mouseLeftClickCallbackID = INPUT().onMouseLeftClicked +=
 				[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftClick( p_mousePosition ); };
 
-			_mouseLeftDoubleClickCallbackID = INPUT_MANAGER().onMouseLeftDoubleClicked +=
+			_mouseLeftDoubleClickCallbackID = INPUT().onMouseLeftDoubleClicked +=
 				[ this ]( const Vec2i & p_mousePosition ) { _onMouseLeftDoubleClick( p_mousePosition ); };
 
-			_mouseRightClickCallbackID = INPUT_MANAGER().onMouseRightClicked +=
+			_mouseRightClickCallbackID = INPUT().onMouseRightClicked +=
 				[ this ]( const Vec2i & p_mousePosition ) { _onMouseRightClick( p_mousePosition ); };
 		}
 		else
 		{
-			INPUT_MANAGER().onMouseLeftClicked -= _mouseLeftClickCallbackID;
-			INPUT_MANAGER().onMouseLeftDoubleClicked -= _mouseLeftDoubleClickCallbackID;
-			INPUT_MANAGER().onMouseRightClicked -= _mouseRightClickCallbackID;
+			INPUT().onMouseLeftClicked -= _mouseLeftClickCallbackID;
+			INPUT().onMouseLeftDoubleClicked -= _mouseLeftDoubleClickCallbackID;
+			INPUT().onMouseRightClicked -= _mouseRightClickCallbackID;
 		}
 	}
 
 	void Selection::_onMouseLeftClick( const Vec2i & p_mousePos )
 	{
-		const PickingInfo pickingInfo
-			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+		const PickingInfo pickingInfo = PickingInfo( App::RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
 		VTX_DEBUG( "PickingInfo : {}, {}.", pickingInfo.getFirst(), pickingInfo.getSecond() );
 
@@ -64,8 +63,7 @@ namespace VTX::App::Controller::Picker
 
 	void Selection::_onMouseRightClick( const Vec2i & p_mousePos )
 	{
-		const PickingInfo pickingInfo
-			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+		const PickingInfo pickingInfo = PickingInfo( App::RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
 		if ( !_isTargetSelected( pickingInfo ) )
 		{
@@ -90,15 +88,14 @@ namespace VTX::App::Controller::Picker
 
 	void Selection::_onMouseLeftDoubleClick( const Vec2i & p_mousePos )
 	{
-		const PickingInfo pickingInfo
-			= PickingInfo( App::RENDERER_SYSTEM().getPickedIds( p_mousePos.x, p_mousePos.y ) );
+		const PickingInfo pickingInfo = PickingInfo( App::RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y ) );
 
 		if ( not pickingInfo.hasValue() || pickingInfo != _lastPickingInfo )
 		{
 			return;
 		}
 
-		if ( INPUT_MANAGER().isModifierExclusive( Core::Input::ModifierEnum::None ) )
+		if ( INPUT().isModifierExclusive( Input::Modifier::None ) )
 		{
 			// App::VTX_ACTION().execute<QT::Action::Selection::Orient>( App::CURRENT_SELECTION() );
 		}
@@ -109,9 +106,8 @@ namespace VTX::App::Controller::Picker
 		// Append to selection if CTRL modifier pressed.
 		// TODO: move to action? Is input manager still needed?
 		const App::Component::Scene::Pickable::PickType pickType
-			= INPUT_MANAGER().isModifierExclusive( Core::Input::ModifierEnum::Ctrl )
-				  ? App::Component::Scene::Pickable::PickType::TOGGLE
-				  : App::Component::Scene::Pickable::PickType::SET;
+			= INPUT().isModifierExclusive( Input::Modifier::Ctrl ) ? App::Component::Scene::Pickable::PickType::TOGGLE
+																   : App::Component::Scene::Pickable::PickType::SET;
 
 		if ( not p_pickingInfo.hasValue() )
 		{

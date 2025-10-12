@@ -1,15 +1,15 @@
 #ifndef __VTX_APP_ACTION_CONTROLLER__
 #define __VTX_APP_ACTION_CONTROLLER__
 
-#include "app/core/controller/concepts.hpp"
-#include <app/application/scene.hpp>
-#include <app/component/controller.hpp>
-#include <app/core/action/base_action.hpp>
+#include "app/action/base_action.hpp"
+#include "app/application/scene.hpp"
+#include "app/component/controller.hpp"
+#include "app/controller/concepts.hpp"
 
 namespace VTX::App::Action::Controller
 {
-	template<Core::Controller::ConceptController C>
-	class EnableController final : public Core::Action::BaseAction
+	template<App::Controller::ConceptController C>
+	class EnableController final : public BaseAction
 	{
 	  public:
 		EnableController() {}
@@ -21,8 +21,8 @@ namespace VTX::App::Action::Controller
 		}
 	};
 
-	template<Core::Controller::ConceptController C>
-	class DisableController final : public Core::Action::BaseAction
+	template<App::Controller::ConceptController C>
+	class DisableController final : public BaseAction
 	{
 	  public:
 		DisableController() {}
@@ -34,7 +34,7 @@ namespace VTX::App::Action::Controller
 		}
 	};
 
-	class ToggleCameraController final : public Core::Action::BaseAction
+	class ToggleCameraController final : public BaseAction
 	{
 	  public:
 		ToggleCameraController() {}

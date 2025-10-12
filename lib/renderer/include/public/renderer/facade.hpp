@@ -26,8 +26,7 @@ namespace VTX::Renderer
 	class Facade
 	{
 	  public:
-		Facade() = delete;
-		Facade( const size_t p_width, const size_t p_height );
+		Facade( const size_t p_width = 1, const size_t p_height = 1 );
 		~Facade();
 
 		bool hasContext() const;

@@ -39,7 +39,7 @@ namespace VTX::Renderer::Context
 
 		inline void fillInfos( StructInfos & ) const {}
 
-		inline float measureTaskDuration( const Util::Chrono::Task & ) const { return 0.f; }
+		inline float measureTaskDuration( const std::function<void()> & ) const { return 0.f; }
 
 		inline void compileShaders() const {}
 

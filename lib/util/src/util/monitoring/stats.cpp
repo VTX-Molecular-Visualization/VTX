@@ -1,4 +1,5 @@
 #include "util/monitoring/stats.hpp"
+#include <util/chrono.hpp>
 
 namespace VTX::Util::Monitoring
 {
@@ -16,12 +17,15 @@ namespace VTX::Util::Monitoring
 		return _frames.back();
 	}
 
-	// const FrameInfo & Stats::getLastFrame() const { return *( ++_activeFrames.rbegin() ); }
+	float Stats::average() const
+	{
+		if ( _frames.size() < 2 )
+		{
+			return 0;
+		}
 
-	// void Stats::clearArchive() { _archivedFrames.clear(); }
-	// void Stats::clear()
-	//{
-	//	clearArchive();
-	//	_activeFrames.clear();
-	//}
+		float res = Util::Chrono::elapsedTime( _frames.front().getTimepoint(), _frames.back().getTimepoint() );
+
+		return res / float( _frames.size() - 1 );
+	}
 } // namespace VTX::Util::Monitoring

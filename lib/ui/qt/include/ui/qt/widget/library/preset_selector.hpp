@@ -11,7 +11,7 @@
 #include <QPointer>
 #include <QPushButton>
 #include <app/action/library.hpp>
-#include <app/core/library/library_system.hpp>
+#include <app/library/library_manager.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
@@ -33,12 +33,12 @@ namespace VTX::UI::QT::Widget::Library
 	/**
 	 * @brief Class responsible for displaying a combo box to select a preset, add and remove.
 	 */
-	template<App::Core::Library::ConceptPreset P>
+	template<App::Library::ConceptPreset P>
 	class PresetSelector : public BasePresetSelector
 	{
 	  public:
 		PresetSelector( QWidget * p_parent ) :
-			BasePresetSelector( p_parent ), _library( App::LIBRARY_SYSTEM().getLibrary<P>() )
+			BasePresetSelector( p_parent ), _library( App::LIBRARY().getLibrary<P>() )
 		{
 			// auto * groupBox = new QGroupBox( "Presets" );
 			// auto * layout	= new QVBoxLayout( groupBox );
@@ -83,7 +83,7 @@ namespace VTX::UI::QT::Widget::Library
 				&QPushButton::clicked,
 				[ this ]()
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Library::DuplicatePreset<P>>(
+					App::ACTION().execute<App::Action::Library::DuplicatePreset<P>>(
 						_comboBox->currentText().toStdString()
 					);
 				}
@@ -93,7 +93,7 @@ namespace VTX::UI::QT::Widget::Library
 				&QPushButton::clicked,
 				[ this ]()
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Library::DeletePreset<P>>(
+					App::ACTION().execute<App::Action::Library::DeletePreset<P>>(
 						_comboBox->currentText().toStdString()
 					);
 				}
@@ -103,7 +103,7 @@ namespace VTX::UI::QT::Widget::Library
 				&QLineEdit::editingFinished,
 				[ this, lineRename ]()
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Library::RenamePreset<P>>(
+					App::ACTION().execute<App::Action::Library::RenamePreset<P>>(
 						_comboBox->currentText().toStdString(), lineRename->text().toStdString()
 					);
 				}
@@ -134,8 +134,8 @@ namespace VTX::UI::QT::Widget::Library
 		inline std::string getCurrentPresetStr() const { return _comboBox->currentText().toStdString(); }
 
 	  private:
-		App::Core::Library::Library<P> * const _library;
-		QPointer<QComboBox>					   _comboBox;
+		App::Library::BaseLibrary<P> * const _library;
+		QPointer<QComboBox>					 _comboBox;
 
 		void _refreshComboBox()
 		{

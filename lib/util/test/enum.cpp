@@ -1,6 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
 #include <util/enum.hpp>
-#include <util/enum_flag.hpp>
 
 // enum.hpp
 enum struct E_EXAMPLE_1
@@ -28,8 +27,15 @@ TEST_CASE( "Util::Enum", "[unit]" )
 
 namespace VTX
 {
+
+} // namespace VTX
+
+TEST_CASE( "Util::Generic::EnumFlag", "[unit]" )
+{
 	enum class E_FLAG_TEST_ENUM : int
 	{
+		VTX_ENUM_ENABLE_BITMASK,
+
 		BIT_0 = 1 << 0,
 		BIT_1 = 1 << 1,
 		BIT_2 = 1 << 2,
@@ -42,28 +48,23 @@ namespace VTX
 
 		NONE = 0,
 		ALL	 = 0xFFFF
+
 	};
 
-	VTX_FLAG( E_FLAG_TEST_FLAG, E_FLAG_TEST_ENUM );
-} // namespace VTX
+	using namespace VTX::Util::Enum;
 
-TEST_CASE( "Util::Generic::EnumFlag", "[unit]" )
-{
-	using namespace VTX;
-	using namespace VTX::Util;
-
-	E_FLAG_TEST_FLAG testFlag = E_FLAG_TEST_ENUM::NONE;
+	E_FLAG_TEST_ENUM testFlag = E_FLAG_TEST_ENUM::NONE;
 	testFlag				  = testFlag | E_FLAG_TEST_ENUM::BIT_0;
 	CHECK( testFlag == E_FLAG_TEST_ENUM::BIT_0 );
 
-	testFlag = testFlag | E_FLAG_TEST_FLAG::ENUM::BIT_2;
+	testFlag = testFlag | E_FLAG_TEST_ENUM::BIT_2;
 	CHECK( testFlag == ( E_FLAG_TEST_ENUM::BIT_0 | E_FLAG_TEST_ENUM::BIT_2 ) );
-	CHECK( testFlag & E_FLAG_TEST_ENUM::BIT_0 );
+	CHECK( hasBits( testFlag, E_FLAG_TEST_ENUM::BIT_0 ) );
 	CHECK( !( testFlag & E_FLAG_TEST_ENUM::BIT_1 ) );
-	CHECK( testFlag & E_FLAG_TEST_ENUM::BIT_2 );
+	CHECK( ( testFlag & E_FLAG_TEST_ENUM::BIT_2 ) );
 
 	testFlag &= ( E_FLAG_TEST_ENUM::BIT_0 | E_FLAG_TEST_ENUM::BIT_1 );
-	CHECK( testFlag == E_FLAG_TEST_ENUM::BIT_0 );
-	CHECK( testFlag & E_FLAG_TEST_ENUM::BIT_0 );
+	CHECK( hasBits( testFlag, E_FLAG_TEST_ENUM::BIT_0 ) );
+	CHECK( ( testFlag & E_FLAG_TEST_ENUM::BIT_0 ) );
 	CHECK( !( testFlag & E_FLAG_TEST_ENUM::BIT_2 ) );
 }

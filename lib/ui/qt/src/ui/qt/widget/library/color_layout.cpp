@@ -46,7 +46,7 @@ namespace VTX::UI::QT::Widget::Library
 		connect(
 			buttonRandomize,
 			&QPushButton::clicked,
-			[ this ]() { App::ACTION_SYSTEM().execute<App::Action::ColorLayout::Randomize>( _preset ); }
+			[ this ]() { App::ACTION().execute<App::Action::ColorLayout::Randomize>( _preset ); }
 		);
 		addWidget( buttonRandomize );
 	}
@@ -79,7 +79,7 @@ namespace VTX::UI::QT::Widget::Library
 	{
 		assert( _preset != nullptr );
 
-		App::ACTION_SYSTEM().execute<App::Action::ColorLayout::SetCurrent>( _preset );
+		App::ACTION().execute<App::Action::ColorLayout::SetCurrent>( _preset );
 
 		for ( size_t i = 0; i < VTX::Core::Struct::COLOR_LAYOUT_SIZE; ++i )
 		{
@@ -143,7 +143,7 @@ namespace VTX::UI::QT::Widget::Library
 
 	void ColorLayout::_changeColor( const size_t p_index, const QColor & p_color )
 	{
-		App::ACTION_SYSTEM().execute<App::Action::ColorLayout::Change>(
+		App::ACTION().execute<App::Action::ColorLayout::Change>(
 			_preset, Index( p_index ), Helper::fromQColor( p_color )
 		);
 	}

@@ -1,16 +1,16 @@
 #ifndef __VTX_APP_CONTROLLER_CAMERA_ANIMATION__
 #define __VTX_APP_CONTROLLER_CAMERA_ANIMATION__
 
-#include "app/core/animation/concepts.hpp"
-#include "app/core/controller/base_controller.hpp"
-#include "app/core/input/key_mapping.hpp"
-#include "app/settings.hpp"
+#include "app/animation/concepts.hpp"
+#include "app/controller/base_controller.hpp"
+#include "app/input/key_mapping.hpp"
+#include "app/settings/settings.hpp"
 #include <util/hashing.hpp>
 
 namespace VTX::App::Controller::Camera
 {
-	template<Core::Animation::ConceptAnimation A>
-	class Animation : public Core::Controller::BaseController
+	template<App::Animation::ConceptAnimation A>
+	class Animation : public BaseController
 	{
 	  public:
 		template<typename... Args>
@@ -35,7 +35,7 @@ namespace VTX::App::Controller::Camera
 	/**
 	 * @brief Class responsible allowing animation manipulation to consumers
 	 */
-	class GenericAnimation : public Core::Controller::BaseController
+	class GenericAnimation : public BaseController
 	{
 	  public:
 		GenericAnimation() = default;
@@ -64,12 +64,12 @@ namespace VTX::App::Controller::Camera
 		/**
 		 * @brief Add a callback that will be called at each step of the animation
 		 */
-		inline void subscribe( Core::Animation::ProgressCallback p_ ) { _ptr->subscribe( std::move( p_ ) ); }
+		inline void subscribe( App::Animation::ProgressCallback p_ ) { _ptr->subscribe( std::move( p_ ) ); }
 
 		/**
 		 * @brief Add a callback that will be called at the end of the animation
 		 */
-		inline void subscribe( Core::Animation::EndCallback p_ ) { _ptr->subscribe( std::move( p_ ) ); }
+		inline void subscribe( App::Animation::EndCallback p_ ) { _ptr->subscribe( std::move( p_ ) ); }
 
 		/**
 		 * @brief Return wether the animation is still active or not.
@@ -86,8 +86,8 @@ namespace VTX::App::Controller::Camera
 			virtual Hash hash() const						= 0;
 			virtual bool isActive() const					= 0;
 
-			virtual void subscribe( Core::Animation::ProgressCallback ) = 0;
-			virtual void subscribe( Core::Animation::EndCallback )		= 0;
+			virtual void subscribe( App::Animation::ProgressCallback ) = 0;
+			virtual void subscribe( App::Animation::EndCallback )	   = 0;
 		};
 		struct _void // Small trick that allow GenericAnimation to be default constructible (requirement for being
 					 // stored in some standard collections for instance)
@@ -113,12 +113,12 @@ namespace VTX::App::Controller::Camera
 			}
 			virtual Hash hash() const override { return Util::hash<T>(); }
 
-			virtual void subscribe( Core::Animation::EndCallback p_ ) override
+			virtual void subscribe( App::Animation::EndCallback p_ ) override
 			{
 				if constexpr ( not std::same_as<T, _void> )
 					_obj.subscribe( std::move( p_ ) );
 			}
-			virtual void subscribe( Core::Animation::ProgressCallback p_ ) override
+			virtual void subscribe( App::Animation::ProgressCallback p_ ) override
 			{
 				if constexpr ( not std::same_as<T, _void> )
 					_obj.subscribe( std::move( p_ ) );

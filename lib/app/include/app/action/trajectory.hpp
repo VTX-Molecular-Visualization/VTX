@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_ACTION_TRAJECTORY__
 #define __VTX_UI_ACTION_TRAJECTORY__
 
-#include "app/core/action/base_action.hpp"
-#include "app/core/player/concepts.hpp"
+#include "app/action/base_action.hpp"
+#include "app/player/concepts.hpp"
 #include <app/component/chemistry/system.hpp>
 #include <app/component/chemistry/trajectory.hpp>
 #include <app/component/scene/uid_component.hpp>
@@ -11,7 +11,7 @@
 
 namespace VTX::App::Action::Trajectory
 {
-	class SetPlayTrajectory final : public App::Core::Action::BaseAction
+	class SetPlayTrajectory final : public BaseAction
 	{
 	  public:
 		SetPlayTrajectory( const App::Component::Chemistry::System * p_system ) : _system( p_system ) {}
@@ -21,7 +21,7 @@ namespace VTX::App::Action::Trajectory
 		const App::Component::Chemistry::System * _system;
 	};
 
-	class SetPauseTrajectory final : public App::Core::Action::BaseAction
+	class SetPauseTrajectory final : public BaseAction
 	{
 	  public:
 		SetPauseTrajectory( const App::Component::Chemistry::System * p_system ) : _system( p_system ) {}
@@ -31,7 +31,7 @@ namespace VTX::App::Action::Trajectory
 		const App::Component::Chemistry::System * _system;
 	};
 
-	class SetStopTrajectory final : public App::Core::Action::BaseAction
+	class SetStopTrajectory final : public BaseAction
 	{
 	  public:
 		SetStopTrajectory( const App::Component::Chemistry::System * p_system ) : _system( p_system ) {}
@@ -41,7 +41,7 @@ namespace VTX::App::Action::Trajectory
 		const App::Component::Chemistry::System * _system;
 	};
 
-	class DecreaseFrameRate final : public App::Core::Action::BaseAction
+	class DecreaseFrameRate final : public BaseAction
 	{
 	  public:
 		DecreaseFrameRate( const App::Component::Chemistry::System * p_system ) : _system( p_system ) {}
@@ -51,7 +51,7 @@ namespace VTX::App::Action::Trajectory
 		const App::Component::Chemistry::System * _system;
 	};
 
-	class IncreaseFrameRate final : public App::Core::Action::BaseAction
+	class IncreaseFrameRate final : public BaseAction
 	{
 	  public:
 		IncreaseFrameRate( const App::Component::Chemistry::System * p_system ) : _system( p_system ) {}
@@ -61,7 +61,7 @@ namespace VTX::App::Action::Trajectory
 		const App::Component::Chemistry::System * _system;
 	};
 
-	class SetTrajectoryCurrentFrame final : public App::Core::Action::BaseAction
+	class SetTrajectoryCurrentFrame final : public BaseAction
 	{
 	  public:
 		SetTrajectoryCurrentFrame( const App::Component::Chemistry::System * p_system, const size_t p_value ) :
@@ -75,8 +75,8 @@ namespace VTX::App::Action::Trajectory
 		const size_t							  _value;
 	};
 
-	template<Core::Player::ConceptPlayer P>
-	class SetLegacyPlayerType final : public App::Core::Action::BaseAction
+	template<Player::ConceptPlayer P>
+	class SetLegacyPlayerType final : public BaseAction
 	{
 	  public:
 		SetLegacyPlayerType( const App::Component::Chemistry::System * p_system ) : _system( p_system ) {}

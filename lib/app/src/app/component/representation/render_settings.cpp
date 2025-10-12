@@ -1,9 +1,13 @@
 #include "app/component/representation/render_settings.hpp"
-#include "app/core/renderer/renderer_system.hpp"
+#include "app/services.hpp"
+#include <renderer/facade.hpp>
 
 namespace VTX::App::Component::Representation
 {
-	RenderSettings::RenderSettings( Library::Preset::RenderSettings & p_preset ) : BaseComponentProxyPreset( p_preset )
+	RenderSettings::RenderSettings( Library::Preset::RenderSettings & p_preset ) :
+		Core::ECS::BaseComponentProxyPreset<Renderer::Proxy::RenderSettings, App::Library::Preset::RenderSettings>(
+			p_preset
+		)
 	{
 	}
 
@@ -58,7 +62,7 @@ namespace VTX::App::Component::Representation
 			[ this ]( const Util::Color::Rgba p_value )
 		{ _proxy->getCallback<E_RENDER_SETTINGS::COLOR_SELECTION>()(); };
 
-		RENDERER_SYSTEM().onReady( [ this ]() { RENDERER_SYSTEM().setProxyRenderSettings( *_proxy ); } );
+		RENDERER().onReady( [ this ]() { RENDERER().setProxyRenderSettings( *_proxy ); } );
 	}
 
 } // namespace VTX::App::Component::Representation

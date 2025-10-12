@@ -1,11 +1,11 @@
-#ifndef __VTX_UI_QT_MODE_VISUALIZATION__
-#define __VTX_UI_QT_MODE_VISUALIZATION__
+#ifndef __VTX_APP_MODE_VISUALIZATION__
+#define __VTX_APP_MODE_VISUALIZATION__
 
-#include "app/core/mode/base_mode.hpp"
+#include "app/mode/base_mode.hpp"
 
 namespace VTX::App::Mode
 {
-	class Visualization : public Core::Mode::BaseMode
+	class Visualization : public BaseMode
 	{
 	  public:
 		void enter() override;

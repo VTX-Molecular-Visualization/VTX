@@ -3,7 +3,8 @@
 
 #include "ui/qt/helper.hpp"
 #include <QWindow>
-#include <app/core/input/input_manager.hpp>
+#include <app/input/input_manager.hpp>
+#include <app/services.hpp>
 
 namespace VTX::UI::QT::Window
 {
@@ -16,37 +17,37 @@ namespace VTX::UI::QT::Window
 	  public:
 		inline void keyPressEvent( QKeyEvent * const p_event ) override
 		{
-			App::INPUT_MANAGER().handleKeyboardEvent( Helper::qKeyEventToKeyEvent( *p_event ) );
+			App::INPUT().handleKeyboardEvent( Helper::qKeyEventToKeyEvent( *p_event ) );
 		}
 
 		inline void keyReleaseEvent( QKeyEvent * const p_event ) override
 		{
-			App::INPUT_MANAGER().handleKeyboardEvent( Helper::qKeyEventToKeyEvent( *p_event ) );
+			App::INPUT().handleKeyboardEvent( Helper::qKeyEventToKeyEvent( *p_event ) );
 		}
 
 		inline void mousePressEvent( QMouseEvent * const p_event ) override
 		{
-			App::INPUT_MANAGER().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
+			App::INPUT().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
 		}
 
 		inline void mouseReleaseEvent( QMouseEvent * const p_event ) override
 		{
-			App::INPUT_MANAGER().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
+			App::INPUT().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
 		}
 
 		inline void mouseDoubleClickEvent( QMouseEvent * const p_event ) override
 		{
-			App::INPUT_MANAGER().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
+			App::INPUT().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
 		}
 
 		inline void mouseMoveEvent( QMouseEvent * const p_event ) override
 		{
-			App::INPUT_MANAGER().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
+			App::INPUT().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
 		}
 
 		inline void wheelEvent( QWheelEvent * const p_event ) override
 		{
-			App::INPUT_MANAGER().handleMouseWheelEvent( Helper::qWheelEventToWheelEvent( *p_event ) );
+			App::INPUT().handleMouseWheelEvent( Helper::qWheelEventToWheelEvent( *p_event ) );
 		}
 	};
 

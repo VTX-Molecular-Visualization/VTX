@@ -1,12 +1,13 @@
 #include "app/action/io.hpp"
+#include "app/action/action_manager.hpp"
 #include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/core/action/action_system.hpp"
-#include "app/core/network/network_system.hpp"
-#include "app/core/renderer/renderer_system.hpp"
-#include "app/core/settings/settings_system.hpp"
+#include "app/settings/settings_manager.hpp"
 #include "app/filesystem.hpp"
+#include "app/network/network_manager.hpp"
+#include "app/services.hpp"
+#include <renderer/facade.hpp>
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
@@ -60,11 +61,11 @@ namespace VTX::App::Action::Io
 	void DownloadSystem::execute()
 	{
 		FilePath filepath = _filename;
-		NETWORK_SYSTEM().downloadFile(
+		NETWORK().downloadFile(
 			_url.str.data(),
 			_filename.string(),
 			[ filepath ]( const std::string & p_text )
-			{ App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( filepath, &p_text ); }
+			{ App::ACTION().execute<App::Action::Scene::LoadSystem>( filepath, &p_text ); }
 		);
 	}
 
@@ -73,7 +74,7 @@ namespace VTX::App::Action::Io
 	SaveSettings::SaveSettings() : _path( VTX::App::Filesystem::getSettingJsonFile() ) {}
 	void SaveSettings::execute() {}
 	void ReloadSettings::execute() {}
-	void ResetSettings::execute() { SETTINGS_SYSTEM().reset(); }
+	void ResetSettings::execute() { SETTINGS().reset(); }
 	void SaveScene::execute() {}
 
 	void OpenScene::execute() {}
@@ -105,7 +106,7 @@ namespace VTX::App::Action::Io
 			const auto & camera = SCENE().getCamera();
 
 			std::vector<uchar> image;
-			RENDERER_SYSTEM().snapshot( image, _width, _height, camera.getFov(), camera.getNear(), camera.getFar() );
+			RENDERER().snapshot( image, _width, _height, camera.getFov(), camera.getNear(), camera.getFar() );
 
 			FilePath path = Util::Image::write( _path, _format, _width, _height, image.data() );
 

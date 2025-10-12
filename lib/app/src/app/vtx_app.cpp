@@ -1,50 +1,69 @@
 #include "app/vtx_app.hpp"
-#include "app/action/application.hpp"
+#include "app/action/action_manager.hpp"
 #include "app/action/mode.hpp"
-#include "app/action/scene.hpp"
 #include "app/application/scene.hpp"
-#include "app/component/io/scene_file_info.hpp"
-#include "app/component/render/camera.hpp"
-#include "app/component/render/proxy_system.hpp"
-#include "app/controller/camera/trackball.hpp"
-#include "app/core/action/action_system.hpp"
 #include "app/core/ecs/registry.hpp"
-#include "app/core/library/library_system.hpp"
-#include "app/core/renderer/renderer_system.hpp"
-#include "app/core/threading/base_thread.hpp"
-#include "app/core/threading/threading_system.hpp"
 #include "app/entity/scene.hpp"
+#include "app/events.hpp"
 #include "app/filesystem.hpp"
+#include "app/input/input_manager.hpp"
+#include "app/library/library_manager.hpp"
 #include "app/library/preset/color_layout.hpp"
 #include "app/library/preset/render_settings.hpp"
 #include "app/library/preset/representation.hpp"
 #include "app/mode/visualization.hpp"
-#include "app/monitoring/constants.hpp"
+#include "app/network/network_manager.hpp"
+#include "app/python_binding/interpretor.hpp"
 #include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
-#include "app/selection/selection_manager.hpp"
-#include "app/settings.hpp"
-#include "app/updater.hpp"
-#include <core/struct/representation.hpp>
+#include "app/services.hpp"
+#include "app/settings/settings.hpp"
+#include "app/settings/settings_manager.hpp"
+#include "app/threading/thread_manager.hpp"
+#include "app/uid/uid_manager.hpp"
+#include "renderer/facade.hpp"
 #include <exception>
-#include <io/internal/filesystem.hpp>
 #include <python_binding/interpretor.hpp>
-#include <util/chrono.hpp>
-#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/monitoring/stats.hpp>
-//
-#include "app/python_binding/interpretor.hpp"
 
 namespace VTX::App
 {
+
+	VTXApp::VTXApp( const Args & p_args )
+	{
+		// Set global registry.
+		ECS::setRegistry( _registry );
+		// Store args.
+		ECS::setCtx<Args>( p_args );
+		// Store main event bus.
+		ECS::setCtx<Util::EventHub>();
+		// Store statistics.
+		ECS::setCtx<Util::Monitoring::Stats>();
+		// Store renderer.
+		ECS::setCtx<Renderer::Facade>();
+		// Store action manager.
+		ECS::setCtx<Action::ActionManager>();
+		// Store input manager.
+		ECS::setCtx<Input::InputManager>();
+		// Store library manager.
+		ECS::setCtx<Library::LibraryManager>();
+		// Store network manager.
+		ECS::setCtx<Network::NetworkManager>();
+		// Store settings manager.
+		ECS::setCtx<Settings::SettingsManager>();
+		// Store thread manager.
+		ECS::setCtx<Threading::ThreadManager>();
+		// Store uid manager.
+		ECS::setCtx<Uid::UIDManager>();
+	}
 
 	void VTXApp::init()
 	{
 		VTX_INFO( "Init application" );
 
 		// Load preset libraries.
-		auto * lib	  = LIBRARY_SYSTEM().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
+		auto * lib	  = LIBRARY().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
 		auto * preset = lib->createPreset( "Sticks" );
 		preset->setData( App::Library::Preset::Representations::STICKS );
 		preset = lib->createPreset( "Balls and sticks" );
@@ -56,8 +75,8 @@ namespace VTX::App
 		preset = lib->createPreset( "SES" );
 		preset->setData( App::Library::Preset::Representations::SES );
 
-		LIBRARY_SYSTEM().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
-		LIBRARY_SYSTEM().load<Library::Preset::RenderSettings>( Filesystem::getEffectsDir() );
+		LIBRARY().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
+		LIBRARY().load<Library::Preset::RenderSettings>( Filesystem::getEffectsDir() );
 
 		// TODO: move to start to handle gui dialog?
 		Settings::initSettings();
@@ -73,7 +92,7 @@ namespace VTX::App
 		}
 
 		// Register loop events.
-		onPostUpdate += []( const float p_elapsedTime ) { THREADING_SYSTEM().lateUpdate(); };
+		// onPostUpdate += []( const float p_elapsedTime ) { THREAD().lateUpdate(); };
 
 		VTX_INFO( "App initializing interpretor." );
 		// Initialize python interpretor.
@@ -88,12 +107,12 @@ namespace VTX::App
 
 	void VTXApp::start()
 	{
-		VTX_INFO( "Starting application: {}", _args.toString() );
+		VTX_INFO( "Starting application: {}", ECS::getCtx<Args>().toString() );
 
 		// Build the renderer (graphic api backend context ready).
-		auto & renderer = RENDERER_SYSTEM();
+		auto & renderer = RENDERER();
 
-		if ( _args.has( ARG_NO_GRAPHICS ) )
+		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) )
 		{
 			VTX_WARNING( "No graphics" );
 			renderer.setDefault();
@@ -112,93 +131,30 @@ namespace VTX::App
 			}
 		}
 
+		// Connect render event.
+		HUB().connect<Events::Render>( []( const Events::Render & p_e )
+									   { RENDERER().render( p_e.delta, p_e.elapsed ); } );
+
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
 
-		ACTION_SYSTEM().execute<Action::Mode::SetMode<Mode::Visualization>>();
+		ACTION().execute<Action::Mode::SetMode<Mode::Visualization>>();
+		HUB().trigger<Events::ApplicationStarted>();
 
-		onStart();
 		for ( Tool::BaseTool * const tool : _tools )
 		{
 			tool->onAppStart();
 		}
 
 		// Updater.
-		UPDATER().onUpdateAvailable += []( const uint, const uint, const uint ) { UPDATER().downloadUpdate(); };
+		// UPDATER().onUpdateAvailable += []( const uint, const uint, const uint ) { UPDATER().downloadUpdate(); };
 
-		if ( not _args.has( ARG_NO_UPDATE ) )
+		if ( not ECS::getCtx<Args>().has( ARG_NO_UPDATE ) )
 		{
 			// UPDATER().checkForUpdate();
 		}
 
-		_handleArgs( _args );
-	}
-
-	void VTXApp::update( const float p_deltaTime, const float p_elapsedTime )
-	{
-		Util::Monitoring::FrameInfo & frameInfo = STATS().newFrame();
-		frameInfo.set(
-			Monitoring::TICK_RATE_KEY,
-			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]() { _update( p_deltaTime, p_elapsedTime ); } )
-		);
-	}
-
-	void VTXApp::_update( const float p_deltaTime, const float p_elapsedTime )
-	{
-		Util::Monitoring::FrameInfo & frameInfo = STATS().getCurrentFrame();
-
-		/*
-		frameInfo.set(
-			Monitoring::PRE_UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreUpdate( p_elapsedTime ); } )
-		);
-		*/
-
-		frameInfo.set(
-			Monitoring::UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]() { onUpdate( p_deltaTime, p_elapsedTime ); } )
-		);
-
-		/*
-		frameInfo.set(
-			Monitoring::LATE_UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onLateUpdate( p_elapsedTime ); } )
-		);
-		*/
-
-		frameInfo.set(
-			Monitoring::POST_UPDATE_DURATION_KEY,
-			Util::CHRONO_CPU( [ p_elapsedTime ]() { onPostUpdate( p_elapsedTime ); } )
-		);
-
-		/*
-		frameInfo.set(
-			Monitoring::PRE_RENDER_DURATION_KEY,
-			Util::CHRONO_CPU( [ this, p_elapsedTime ]() { onPreRender( p_elapsedTime ); } )
-		);
-		*/
-
-		frameInfo.set(
-			Monitoring::RENDER_DURATION_KEY,
-			Util::CHRONO_CPU( [ p_deltaTime, p_elapsedTime ]()
-							  { RENDERER_SYSTEM().render( p_deltaTime, p_elapsedTime ); } )
-		);
-
-		frameInfo.set(
-			Monitoring::POST_RENDER_DURATION_KEY,
-			Util::CHRONO_CPU( [ p_elapsedTime ]() { onPostRender( p_elapsedTime ); } )
-		);
-
-		frameInfo.set(
-			Monitoring::END_OF_FRAME_ONE_SHOT_DURATION_KEY,
-			Util::CHRONO_CPU(
-				[ p_elapsedTime ]()
-				{
-					onEndOfFrameOneShot();
-					onEndOfFrameOneShot.clear();
-				}
-			)
-		);
+		//_handleArgs( _args );
 	}
 
 	void VTXApp::stop()
@@ -206,7 +162,7 @@ namespace VTX::App
 		VTX_INFO( "Stopping application" );
 
 		SCENE().reset();
-		RENDERER_SYSTEM().clean();
+		RENDERER().clean();
 
 		//// Prevent events throw for nothing when quitting app
 		// Old::Manager::EventManager::get().freezeEvent( true );
@@ -223,7 +179,7 @@ namespace VTX::App
 		{
 			tool->onAppStop();
 		}
-		onStop();
+		HUB().trigger<Events::ApplicationStopped>();
 	}
 
 	void VTXApp::_handleArgs( const Args & args )
@@ -246,11 +202,11 @@ namespace VTX::App
 					{
 					case FILE_TYPE_ENUM::MOLECULE:
 					case FILE_TYPE_ENUM::TRAJECTORY:
-						App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( arg );
+						App::ACTION().execute<App::Action::Scene::LoadSystem>( arg );
 						break;
 
 					case FILE_TYPE_ENUM::SCENE:
-						App::ACTION_SYSTEM().execute<App::Action::Application::OpenScene>( arg );
+						App::ACTION().execute<App::Action::Application::OpenScene>( arg );
 						break;
 
 					case FILE_TYPE_ENUM::SCRIPT:
@@ -269,7 +225,7 @@ namespace VTX::App
 				// Check only letter and number.
 				if ( std::all_of( arg.begin(), arg.end(), []( const char c ) { return std::isalnum( c ); } ) )
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Scene::DownloadSystem>(
+					App::ACTION().execute<App::Action::Scene::DownloadSystem>(
 						arg, std::string( arg ) + ".pdb"
 					);
 				}
@@ -299,8 +255,6 @@ namespace VTX::App
 	//	}
 
 	// TODO.
-	Application::Scene &	  SCENE() { return APP::getScene(); }
-	Util::Monitoring::Stats & STATS() { return Util::Singleton<Util::Monitoring::Stats>::get(); }
-	Updater &				  UPDATER() { return Util::Singleton<Updater>::get(); }
+	Application::Scene & SCENE() { return APP::getScene(); }
 
 } // namespace VTX::App

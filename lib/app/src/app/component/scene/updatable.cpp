@@ -1,29 +1,32 @@
 #include "app/component/scene/updatable.hpp"
+#include "app/services.hpp"
 #include "app/vtx_app.hpp"
+#include <util/event_hub.hpp>
 
 namespace VTX::App::Component::Scene
 {
-	Updatable::~Updatable()
+	Updatable::~Updatable() {}
+
+	Util::EventHub::ScopedConnection * Updatable::addUpdateFunction( UpdateFunction && p_callback )
 	{
-		for ( const Util::CallbackId id : _callbackIds )
+		_connections.emplace_back(
+			std::make_unique<Util::EventHub::ScopedConnection>(
+				HUB().connect<Events::Update>( std::move( p_callback ) )
+			)
+		);
+		return _connections.back().get();
+	}
+
+	void Updatable::removeUpdateFunction( const Util::EventHub::ScopedConnection * const p_c )
+	{
+		auto it = std::find_if(
+			_connections.begin(), _connections.end(), [ p_c ]( auto const & uptr ) { return uptr.get() == p_c; }
+		);
+
+		if ( it != _connections.end() )
 		{
-			APP::onUpdate -= id;
+			_connections.erase( it );
 		}
-	}
-
-	Util::CallbackId Updatable::addUpdateFunction( const UpdateFunction & p_callback )
-	{
-		Util::CallbackId id = APP::onUpdate += p_callback;
-		_callbackIds.emplace_back( id );
-		return id;
-	}
-
-	void Updatable::removeUpdateFunction( const Util::CallbackId p_id )
-	{
-		assert( std::ranges::find( _callbackIds, p_id ) != _callbackIds.end() );
-
-		APP::onUpdate -= p_id;
-		std::erase( _callbackIds, p_id );
 	}
 
 } // namespace VTX::App::Component::Scene

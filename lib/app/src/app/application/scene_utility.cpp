@@ -5,7 +5,7 @@
 
 namespace VTX::App::Application::SceneUtility
 {
-	Core::ECS::BaseEntity findItemByUID( const Core::UID::uid & p_uid )
+	Core::ECS::BaseEntity findItemByUID( const Uid::uid & p_uid )
 	{
 		// TODO: UIDComponent not found.
 		return SCENE().findItem(

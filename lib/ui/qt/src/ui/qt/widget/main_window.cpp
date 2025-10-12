@@ -1,4 +1,5 @@
 #include "ui/qt/widget/main_window.hpp"
+#include "app/services.hpp"
 #include "ui/qt/dialog/progress.hpp"
 #include "ui/qt/dock_widget/color_layouts.hpp"
 #include "ui/qt/dock_widget/console.hpp"
@@ -21,6 +22,7 @@
 #include <QMimeData>
 #include <app/action/application.hpp>
 #include <app/action/scene.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -116,25 +118,10 @@ namespace VTX::UI::QT::Widget
 		_defaultGeometry = saveGeometry();
 		_defaultState	 = saveState();
 
-		// Connect progress dialog.
-		APP::onStartBlockingOperation += [ this ]( const std::string_view p_text )
-		{
-			// TODO:: don't delete and recreate.
-			_progressDialog = new Dialog::Progress( p_text );
-			_progressDialog->show();
-			// Why?
-			QCoreApplication::processEvents();
-		};
-		APP::onUpdateBlockingOperation += [ this ]( const float p_value ) { _progressDialog->setValue( p_value ); };
-		APP::onEndBlockingOperation += [ this ]()
-		{
-			if ( _progressDialog )
-			{
-				_progressDialog->close();
-				delete _progressDialog;
-				_progressDialog = nullptr;
-			}
-		};
+		// Connect events.
+		App::HUB().connect<App::Events::BlockingOperationStarted, &MainWindow::_onBlockingOperationStarted>( this );
+		App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>( this );
+		App::HUB().connect<App::Events::BlockingOperationEnded, &MainWindow::_onBlockingOperationEnded>( this );
 	}
 
 	void MainWindow::addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action )
@@ -182,7 +169,7 @@ namespace VTX::UI::QT::Widget
 	{
 		VTX_TRACE( "Qt main window close event" );
 
-		App::ACTION_SYSTEM().execute<App::Action::Application::Quit>();
+		App::ACTION().execute<App::Action::Application::Quit>();
 		p_event->ignore();
 	}
 
@@ -192,7 +179,7 @@ namespace VTX::UI::QT::Widget
 	{
 		for ( const auto & url : p_event->mimeData()->urls() )
 		{
-			App::ACTION_SYSTEM().execute<App::Action::Scene::LoadSystem>( url.toLocalFile().toStdString() );
+			App::ACTION().execute<App::Action::Scene::LoadSystem>( url.toLocalFile().toStdString() );
 		}
 
 		p_event->acceptProposedAction();
@@ -208,6 +195,29 @@ namespace VTX::UI::QT::Widget
 	{
 		restoreGeometry( SETTINGS.value( "geometry" ).toByteArray() );
 		restoreState( SETTINGS.value( "windowState" ).toByteArray() );
+	}
+
+	void MainWindow::_onBlockingOperationStarted( const App::Events::BlockingOperationStarted & p_e )
+	{
+		_progressDialog = new Dialog::Progress( p_e.message );
+		_progressDialog->show();
+		// Need to process events to display the dialog immediately, because main thread is busy.
+		QCoreApplication::processEvents( QEventLoop::ExcludeUserInputEvents );
+	}
+
+	void MainWindow::_onBlockingOperationProgress( const App::Events::BlockingOperationProgress & p_e )
+	{
+		_progressDialog->setValue( p_e.progress );
+	}
+
+	void MainWindow::_onBlockingOperationEnded( const App::Events::BlockingOperationEnded & )
+	{
+		if ( _progressDialog )
+		{
+			_progressDialog->close();
+			delete _progressDialog;
+			_progressDialog = nullptr;
+		}
 	}
 
 } // namespace VTX::UI::QT::Widget

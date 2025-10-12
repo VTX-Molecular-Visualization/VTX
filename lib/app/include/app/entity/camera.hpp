@@ -3,7 +3,6 @@
 
 #include "app/component/render/_fwd.hpp"
 #include "app/core/ecs/base_entity.hpp"
-#include <util/variant.hpp>
 
 namespace VTX::App::Entity
 {

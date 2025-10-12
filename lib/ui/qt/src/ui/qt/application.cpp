@@ -1,4 +1,5 @@
 #include "ui/qt/application.hpp"
+#include "app/services.hpp"
 #include "ui/qt/macros.hpp"
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/resources.hpp"
@@ -7,6 +8,7 @@
 #include <QIcon>
 #include <QStyle>
 #include <app/infos.hpp>
+#include <util/event_hub.hpp>
 
 VTX_INIT_RESOURCES( vtx_qt_resources_ui )
 
@@ -81,14 +83,7 @@ namespace VTX::UI::QT
 		_mainWindow->show();
 
 		// On quit.
-		onStop += [ this ]
-		{
-			VTX_TRACE( "Qt stop callback" );
-
-			SETTINGS.save();
-			_mainWindow.reset();
-			QApplication::quit();
-		};
+		App::HUB().connect<App::Events::ApplicationStopped, &Application::_stop>( this );
 
 		// Connect quit action.
 		connect(
@@ -112,12 +107,10 @@ namespace VTX::UI::QT
 		connect(
 			&_timer,
 			&QTimer::timeout,
-			[ this ] { VTXApp::update( _deltaTimer.intervalTime(), _elapsedTimer.elapsedTime() ); }
+			[ this ] { VTXApp::update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); }
 		);
 		_timer.start( 0 );
-		//_timer.setTimerType( Qt::PreciseTimer );
-		_elapsedTimer.start();
-		_deltaTimer.start();
+		_durationTimer.start();
 
 		// Then block to run Qt events loop.
 		exec();
@@ -167,6 +160,15 @@ namespace VTX::UI::QT
 		QPalette lightPalette = QApplication::style()->standardPalette();
 
 		setPalette( p );
+	}
+
+	void Application::_stop()
+	{
+		VTX_TRACE( "Qt stop callback" );
+
+		SETTINGS.save();
+		_mainWindow.reset();
+		QApplication::quit();
 	}
 
 } // namespace VTX::UI::QT

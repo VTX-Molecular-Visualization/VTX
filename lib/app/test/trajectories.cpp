@@ -2,13 +2,13 @@
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/system.hpp>
 #include <app/component/chemistry/trajectory.hpp>
-#include <app/core/player/base_player.hpp>
-#include <app/core/player/loop.hpp>
-#include <app/core/player/once.hpp>
-#include <app/core/player/ping_pong.hpp>
-#include <app/core/player/revert_loop.hpp>
-#include <app/core/player/revert_once.hpp>
-#include <app/core/player/stop.hpp>
+#include <app/player/base_player.hpp>
+#include <app/player/loop.hpp>
+#include <app/player/once.hpp>
+#include <app/player/ping_pong.hpp>
+#include <app/player/revert_loop.hpp>
+#include <app/player/revert_once.hpp>
+#include <app/player/stop.hpp>
 #include <app/fixture.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -21,6 +21,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration][trajectories]" )
 	// TODO : Make it work
 	return;
 
+	/*
 	App::Fixture app;
 	Test::Util::App::loadTestTrajectorySystem();
 
@@ -35,7 +36,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration][trajectories]" )
 
 	SECTION( "Stop playmode" )
 	{
-		trajectoryComponent.setPlayer<App::Core::Player::Stop>();
+		trajectoryComponent.setPlayer<App::Player::Stop>();
 		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
@@ -50,7 +51,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration][trajectories]" )
 
 	SECTION( "Once playmode" )
 	{
-		trajectoryComponent.setPlayer<App::Core::Player::Once>();
+		trajectoryComponent.setPlayer<App::Player::Once>();
 		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
@@ -66,7 +67,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration][trajectories]" )
 
 	SECTION( "Revert once playmode" )
 	{
-		trajectoryComponent.setPlayer<App::Core::Player::RevertOnce>();
+		trajectoryComponent.setPlayer<App::Player::RevertOnce>();
 		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
@@ -82,7 +83,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration][trajectories]" )
 
 	SECTION( "Loop playmode" )
 	{
-		trajectoryComponent.setPlayer<App::Core::Player::Loop>();
+		trajectoryComponent.setPlayer<App::Player::Loop>();
 		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
@@ -98,7 +99,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration][trajectories]" )
 
 	SECTION( "Revert loop playmode" )
 	{
-		trajectoryComponent.setPlayer<App::Core::Player::RevertLoop>();
+		trajectoryComponent.setPlayer<App::Player::RevertLoop>();
 		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
@@ -114,7 +115,7 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration][trajectories]" )
 
 	SECTION( "Ping Pong playmode" )
 	{
-		trajectoryComponent.setPlayer<App::Core::Player::PingPong>();
+		trajectoryComponent.setPlayer<App::Player::PingPong>();
 		trajectoryComponent.getPlayer().reset();
 		trajectoryComponent.getPlayer().setFPS( 1 );
 
@@ -137,4 +138,5 @@ TEST_CASE( "VTX_APP - Trajectory", "[integration][trajectories]" )
 		REQUIRE( trajectoryComponent.getCurrentFrame() == 19 );
 		REQUIRE( trajectoryComponent.getPlayer().isPlaying() == true );
 	}
+	*/
 };

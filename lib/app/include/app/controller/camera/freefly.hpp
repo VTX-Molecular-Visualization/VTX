@@ -1,15 +1,15 @@
 #ifndef __VTX_APP_CONTROLLER_CAMERA_FREEFLY__
 #define __VTX_APP_CONTROLLER_CAMERA_FREEFLY__
 
-#include "app/core/controller/base_controller.hpp"
-#include "app/core/input/key_mapping.hpp"
-#include "app/settings.hpp"
+#include "app/controller/base_controller.hpp"
+#include "app/input/key_mapping.hpp"
+#include "app/settings/settings.hpp"
 #include <util/hashing.hpp>
 
 namespace VTX::App::Controller::Camera
 {
 
-	class Freefly : public Core::Controller::BaseController
+	class Freefly : public BaseController
 	{
 	  public:
 		Freefly();

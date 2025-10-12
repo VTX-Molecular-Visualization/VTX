@@ -133,14 +133,14 @@ namespace VTX::UI::QT::Widget
 					{
 						setStopPlayer();
 
-						App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPauseTrajectory>( _system );
+						App::ACTION().execute<App::Action::Trajectory::SetPauseTrajectory>( _system );
 					}
 					else
 					{
 						_isPlaying = true;
 						_playPauseElt->setIcon( QIcon( ":/sprite/trajectory_pause_icon.png" ) );
 
-						App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetPlayTrajectory>( _system );
+						App::ACTION().execute<App::Action::Trajectory::SetPlayTrajectory>( _system );
 					}
 				}
 			);
@@ -153,7 +153,7 @@ namespace VTX::UI::QT::Widget
 				{
 					setStopPlayer();
 
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetStopTrajectory>( _system );
+					App::ACTION().execute<App::Action::Trajectory::SetStopTrajectory>( _system );
 				}
 			);
 
@@ -166,7 +166,7 @@ namespace VTX::UI::QT::Widget
 					if ( !_isPlaying )
 						return;
 
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::DecreaseFrameRate>( _system );
+					App::ACTION().execute<App::Action::Trajectory::DecreaseFrameRate>( _system );
 				}
 			);
 
@@ -179,7 +179,7 @@ namespace VTX::UI::QT::Widget
 					if ( !_isPlaying )
 						return;
 
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::IncreaseFrameRate>( _system );
+					App::ACTION().execute<App::Action::Trajectory::IncreaseFrameRate>( _system );
 				}
 			);
 
@@ -189,7 +189,7 @@ namespace VTX::UI::QT::Widget
 				this,
 				[ & ]( const int p_value )
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>(
+					App::ACTION().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>(
 						_system, p_value
 					);
 				}
@@ -201,7 +201,7 @@ namespace VTX::UI::QT::Widget
 				this,
 				[ & ]()
 				{
-					App::ACTION_SYSTEM().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>(
+					App::ACTION().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>(
 						_system, _frameSelectorElt->text().toInt()
 					);
 				}

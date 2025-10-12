@@ -1,7 +1,7 @@
 #include "ui/qt/widget/status_bar.hpp"
-#include "app/monitoring/constants.hpp"
-#include <app/core/renderer/renderer_system.hpp>
+#include "app/services.hpp"
 #include <app/vtx_app.hpp>
+#include <renderer/facade.hpp>
 #include <util/monitoring/stats.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -23,11 +23,11 @@ namespace VTX::UI::QT::Widget
 		addPermanentWidget( vendorLabel );
 
 		// Update vendor when renderer is available.
-		App::RENDERER_SYSTEM().onReady(
+		App::RENDERER().onReady(
 			[ vendorLabel ]()
 			{
 				//
-				vendorLabel->setText( QString::fromStdString( App::RENDERER_SYSTEM().getInfos().renderer ) );
+				vendorLabel->setText( QString::fromStdString( App::RENDERER().getInfos().renderer ) );
 			}
 		);
 
@@ -39,8 +39,7 @@ namespace VTX::UI::QT::Widget
 			this,
 			[ this, fpsLabel ]()
 			{
-				const double tickrate = App::STATS().getAverage<double>( App::Monitoring::TICK_RATE_KEY );
-
+				const float tickrate = App::ECS::getCtx<Util::Monitoring::Stats>().average();
 				fpsLabel->setText( QString( "%1 FPS" ).arg( uint( 1000.0 / tickrate ) ) );
 			}
 		);

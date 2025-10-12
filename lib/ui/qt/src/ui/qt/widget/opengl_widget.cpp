@@ -1,7 +1,10 @@
 #include "ui/qt/widget/opengl_widget.hpp"
-#include "app/core/renderer/renderer_system.hpp"
+#include "app/services.hpp"
 #include "ui/qt/application.hpp"
 #include <app/action/application.hpp>
+#include <app/events.hpp>
+#include <renderer/facade.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -44,11 +47,11 @@ namespace VTX::UI::QT::Widget
 		_context->makeCurrent( _window );
 
 		// Set output.
-		App::RENDERER_SYSTEM().onReady( [ this ]()
-										{ App::RENDERER_SYSTEM().setOutput( _context->defaultFramebufferObject() ); } );
+		App::RENDERER().onReady( [ this ]() { App::RENDERER().setOutput( _context->defaultFramebufferObject() ); } );
 
 		// Connect signals.
-		APP::onPostRender += [ this ]( const float ) { render(); };
+		// APP::onPostRender += [ this ]( const float ) { render(); };
+		App::HUB().connect<App::Events::PostRender, &OpenGLWidget::render>( this );
 	}
 
 	OpenGLWidget::~OpenGLWidget()
@@ -75,7 +78,7 @@ namespace VTX::UI::QT::Widget
 
 		QSize scaledSize = p_event->size() * devicePixelRatioF();
 
-		App::ACTION_SYSTEM().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
+		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
 	}
 
 	void OpenGLWidget::setVSync( const bool p_vsync )

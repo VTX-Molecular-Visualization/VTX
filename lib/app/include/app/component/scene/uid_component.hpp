@@ -3,7 +3,7 @@
 
 #include "app/core/ecs/ecs_system.hpp"
 #include "app/core/ecs/base_component.hpp"
-#include "app/core/uid/uid.hpp"
+#include "app/uid/uid.hpp"
 #include <util/math/range_list.hpp>
 
 namespace VTX::App::Component::Scene
@@ -12,19 +12,19 @@ namespace VTX::App::Component::Scene
 	{
 	  public:
 		UIDComponent() = default;
-		UIDComponent( const App::Core::UID::uid & p_uid );
-		UIDComponent( const Core::UID::UIDRange & p_range );
+		UIDComponent( const App::Uid::uid & p_uid );
+		UIDComponent( const Uid::UIDRange & p_range );
 
 		~UIDComponent() = default;
 
-		void referenceUID( const App::Core::UID::uid & p_uid );
-		void referenceUID( const Core::UID::UIDRange & p_range );
+		void referenceUID( const App::Uid::uid & p_uid );
+		void referenceUID( const Uid::UIDRange & p_range );
 
-		bool contains( const App::Core::UID::uid & p_uid ) const;
-		bool contains( const App::Core::UID::UIDRange & p_uidRange ) const;
+		bool contains( const App::Uid::uid & p_uid ) const;
+		bool contains( const App::Uid::UIDRange & p_uidRange ) const;
 
 	  private:
-		Util::Math::RangeList<App::Core::UID::uid> _uids = Util::Math::RangeList<App::Core::UID::uid>();
+		Util::Math::RangeList<App::Uid::uid> _uids = Util::Math::RangeList<App::Uid::uid>();
 	};
 } // namespace VTX::App::Component::Scene
 #endif

@@ -4,11 +4,14 @@
 #include "_fwd.hpp"
 #include "app/component/chemistry/system.hpp"
 #include "app/core/ecs/ecs_system.hpp"
-#include "app/core/player/base_player.hpp"
-#include "app/core/player/concepts.hpp"
+#include "app/events.hpp"
+#include "app/player/base_player.hpp"
+#include "app/player/concepts.hpp"
+#include "app/services.hpp"
 #include "app/vtx_app.hpp"
 #include "enum_trajectory.hpp"
 #include <util/callback.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
@@ -26,22 +29,24 @@ namespace VTX::App::Component::Chemistry
 
 		size_t getFrameCount() const;
 
-		App::Core::Player::BasePlayer & getPlayer() const { return *_player; }
+		App::Player::BasePlayer & getPlayer() const { return *_player; }
 
-		template<Core::Player::ConceptPlayer P>
+		template<Player::ConceptPlayer P>
 		void setPlayer()
 		{
 			// Delete old player.
 			if ( _player )
 			{
 				_player.reset();
-				APP::onUpdate -= _currentUpdateCallback;
+				_currentUpdateCallback.release();
 			}
 
 			// Create and connect new player.
 			_player				   = std::make_unique<P>();
-			_currentUpdateCallback = APP::onUpdate += [ this ]( const float p_deltaTime, const float p_elapsedTime )
-			{ static_cast<P *>( _player.get() )->update( p_deltaTime, p_elapsedTime ); };
+			_currentUpdateCallback = HUB().connect<Events::Update>(
+				[ this ]( const Events::Update & p_e )
+				{ static_cast<P *>( _player.get() )->update( p_e.delta, p_e.elapsed ); }
+			);
 
 			_player->setCount( _systemPtr->getTrajectory().getFrameCount() );
 
@@ -58,9 +63,9 @@ namespace VTX::App::Component::Chemistry
 	  private:
 		void _referenceUpdateFunction();
 
-		System *								  _systemPtr = nullptr;
-		std::unique_ptr<Core::Player::BasePlayer> _player;
-		Util::CallbackId						  _currentUpdateCallback;
+		System *							_systemPtr = nullptr;
+		std::unique_ptr<Player::BasePlayer> _player;
+		Util::EventHub::Connection			_currentUpdateCallback;
 
 		const FilePath _path;
 	};

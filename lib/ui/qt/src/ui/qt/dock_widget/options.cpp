@@ -6,8 +6,8 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QPushButton>
-#include <app/core/network/network_system.hpp>
 #include <app/filesystem.hpp>
+#include <app/network/network_manager.hpp>
 #include <util/string.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -89,7 +89,7 @@ namespace VTX::UI::QT::DockWidget
 
 		_refreshCacheInfos();
 
-		App::NETWORK_SYSTEM().onFileCached += [ this ]() { _refreshCacheInfos(); };
+		App::NETWORK().onFileCached += [ this ]() { _refreshCacheInfos(); };
 	}
 
 	void Options::_refreshCacheInfos()
@@ -105,7 +105,8 @@ namespace VTX::UI::QT::DockWidget
 		}
 
 		_labelCacheCount->setText( _TEXT_CACHE_COUNT.arg( fileCount ) );
-		_labelCacheSize->setText( _TEXT_CACHE_SIZE.arg( QString::fromStdString( Util::String::memSizeToStr( size ) ) )
+		_labelCacheSize->setText(
+			_TEXT_CACHE_SIZE.arg( QString::fromStdString( Util::String::memSizeToStr( size ) ) )
 		);
 	}
 

@@ -1,16 +1,15 @@
 #ifndef __VTX_UI_INTERNAL_CONTROLLER_PICKER_SELECTION_PICKER__
 #define __VTX_UI_INTERNAL_CONTROLLER_PICKER_SELECTION_PICKER__
 
-#include "app/core/controller/concepts.hpp"
+#include "app/controller/base_controller.hpp"
 #include <app/selection/picking_info.hpp>
 #include <util/callback.hpp>
-#include <util/hashing.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Controller::Picker
 {
 
-	class Selection : public Core::Controller::BaseController
+	class Selection : public BaseController
 	{
 	  public:
 		using PickingInfo = App::Selection::PickingInfo;

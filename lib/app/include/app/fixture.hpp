@@ -9,7 +9,7 @@ namespace VTX::App
 	class Fixture
 	{
 	  public:
-		inline Fixture()
+		Fixture()
 		{
 			VTX::VTX_INFO( "Constructing fixture" );
 			if ( not _app )
@@ -17,8 +17,7 @@ namespace VTX::App
 				VTX::VTX_INFO( "Fixture constructing app" );
 				Args args( { ARG_NO_GRAPHICS, ARG_NO_UPDATE } );
 				_app = std::make_unique<APP>( args );
-				VTX::VTX_INFO( "Fixture initializing app" );
-				APP::init();
+				_app->init();
 			}
 			else
 				VTX::VTX_INFO( "App already constructed." );
@@ -27,7 +26,9 @@ namespace VTX::App
 			_app->start();
 		}
 
-		inline ~Fixture() { _app->stop(); }
+		~Fixture() { _app->stop(); }
+
+		inline APP * const get() { return _app.get(); }
 
 	  private:
 		inline static std::unique_ptr<APP> _app;

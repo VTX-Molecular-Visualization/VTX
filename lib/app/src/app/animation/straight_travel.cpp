@@ -20,10 +20,8 @@ namespace VTX::App::Animation
 			p_duration
 		)
 	{
-		VTX::App::Core::Animation::TravelManager::InterpolationPositionFunc posFunc
-			= &Util::Math::linearInterpolation<Vec3f, float>;
-		VTX::App::Core::Animation::TravelManager::InterpolationRotationFunc rotFunc
-			= &Util::Math::linearInterpolation<Quatf, float>;
+		TravelManager::InterpolationPositionFunc posFunc = &Util::Math::linearInterpolation<Vec3f, float>;
+		TravelManager::InterpolationRotationFunc rotFunc = &Util::Math::linearInterpolation<Quatf, float>;
 		switch ( p_rythm )
 		{
 		case TravelRythm::easeInOut:

@@ -26,7 +26,7 @@ namespace VTX::App::Component::Scene
 		~Pickable();
 
 		void pick( const Selection::PickingInfo & p_ids, const PickType p_pickType ) const;
-		bool isSelected( const Core::UID::uid & p_uid ) const;
+		bool isSelected( const Uid::uid & p_uid ) const;
 
 		void setPickingFunction( PickableFunc p_pickableFunc ) { _pickableFunc = p_pickableFunc; };
 

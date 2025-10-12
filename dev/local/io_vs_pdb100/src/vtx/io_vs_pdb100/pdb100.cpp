@@ -381,7 +381,6 @@ int main( int argc, char * argv[] )
 	Logger l( contextData );
 	testFiles( contextData );
 
-	chrono.stop();
 	VTX::VTX_INFO( "Job duration : {}", VTX::Util::String::durationToStr( chrono.elapsedTime() ) );
 	return 0;
 }

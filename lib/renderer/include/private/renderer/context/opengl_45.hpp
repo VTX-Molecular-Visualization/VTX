@@ -147,7 +147,10 @@ namespace VTX::Renderer::Context
 
 		void fillInfos( StructInfos & p_infos ) const;
 
-		inline float measureTaskDuration( const Util::Chrono::Task & p_task ) const { return GL::CHRONO_GPU( p_task ); }
+		inline float measureTaskDuration( const std::function<void()> & p_task ) const
+		{
+			return GL::CHRONO_GPU( p_task );
+		}
 
 		inline void compileShaders() const { _programManager->compileShaders(); }
 

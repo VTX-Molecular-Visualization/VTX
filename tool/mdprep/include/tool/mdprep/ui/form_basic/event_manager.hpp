@@ -73,13 +73,13 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void _connectSettingsNvt() noexcept;
 		void _connectSettingsNpt() noexcept;
 		void _connectSettingsProd() noexcept;
-		void _connectSettingsSystem() noexcept;
+		void _connectSettingsManager() noexcept;
 		void _connectInputCheck() noexcept;
 		void _openSettingsMinimization() noexcept;
 		void _openSettingsNvt() noexcept;
 		void _openSettingsNpt() noexcept;
 		void _openSettingsProd() noexcept;
-		void _openSettingsSystem() noexcept;
+		void _openSettingsManager() noexcept;
 		void _startInputCheck() noexcept;
 
 		void _systemSettingsApplied() noexcept;

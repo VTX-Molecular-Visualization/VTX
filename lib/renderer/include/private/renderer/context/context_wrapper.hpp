@@ -22,7 +22,7 @@ namespace VTX::Renderer::Context
 	using FunctionSetSub			  = std::function<void( const Key &, const void * const, size_t, size_t )>;
 	using FunctionGet				  = std::function<void( const Key &, void * const, size_t )>;
 	using FunctionFillInfos			  = std::function<void( StructInfos & )>;
-	using FunctionMeasureTaskDuration = std::function<float( const Util::Chrono::Task & )>;
+	using FunctionMeasureTaskDuration = std::function<float( const std::function<void()> & )>;
 	using FunctionCompileShaders	  = std::function<void()>;
 	using FunctionSnapshot
 		= std::function<void( std::vector<uchar> &, const RenderQueue &, const Instructions &, size_t, size_t )>;
