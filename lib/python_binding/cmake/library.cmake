@@ -40,11 +40,13 @@ else()
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
 endif()
 
-target_link_libraries(vtx_python_binding PUBLIC pybind11::embed)
+target_link_libraries(vtx_python_binding_test PRIVATE Python3::Python)
+target_link_libraries(vtx_python_binding PUBLIC pybind11::module)
 
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding)
 target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
-
+message("VTX - vtx_python_binding links: ${VTX_PY_LINK_LIBS}")
+message("VTX - vtx_python_binding_test links: ${VTX_PY_TEST_LINK_LIBS}")
 include ("${CMAKE_CURRENT_LIST_DIR}/vtx_python_binding_copy_files.cmake")# All other find_package call
 vtx_copy_registered_data(vtx_python_binding)
 vtx_clear_registered_copies()
