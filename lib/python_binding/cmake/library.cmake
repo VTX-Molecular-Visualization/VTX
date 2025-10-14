@@ -40,9 +40,10 @@ else()
 	target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
 endif()
 
-target_link_libraries(vtx_python_binding_test PRIVATE Python3::Python)
+target_link_libraries(vtx_python_binding PRIVATE Python3::Python Python3::Module)
 target_link_libraries(vtx_python_binding PUBLIC pybind11::module)
 
+target_link_libraries(vtx_python_binding_test PRIVATE Python3::Python Python3::Module)
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding)
 target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
 message("VTX - vtx_python_binding links: ${VTX_PY_LINK_LIBS}")
