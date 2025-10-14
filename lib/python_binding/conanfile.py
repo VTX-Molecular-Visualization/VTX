@@ -160,7 +160,7 @@ class VTXPythonBindingRecipe(ConanFile):
         cmake.build()
 
         if self.options.test == True:
-            self._print_dir_content(executable_folder(self))
+            # self._print_dir_content(executable_folder(self))
             cmake.ctest(["--output-on-failure"])
 
     def package(self):
