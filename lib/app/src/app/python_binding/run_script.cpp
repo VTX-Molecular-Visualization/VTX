@@ -1,5 +1,6 @@
 #include "app/python_binding/run_script.hpp"
 #include "app/python_binding/interpretor.hpp"
+#include "app/services.hpp"
 #include <pybind11/pybind11.h>
 #include <python_binding/interpretor.hpp>
 #include <util/logger.hpp>

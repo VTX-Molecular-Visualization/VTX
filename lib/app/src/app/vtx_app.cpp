@@ -56,6 +56,8 @@ namespace VTX::App
 		ECS::setCtx<Threading::ThreadManager>();
 		// Store uid manager.
 		ECS::setCtx<Uid::UIDManager>();
+		// Store Python interpretor
+		ECS::setCtx<VTX::App::PythonBinding::Interpretor>();
 	}
 
 	void VTXApp::init()

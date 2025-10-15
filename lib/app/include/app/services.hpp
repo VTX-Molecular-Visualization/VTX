@@ -49,6 +49,10 @@ namespace VTX::App
 	{
 		class UIDManager;
 	}
+	namespace PythonBinding
+	{
+		class Interpretor;
+	}
 } // namespace VTX::App
 namespace VTX::App
 {
@@ -96,6 +100,14 @@ namespace VTX::App
 	 * @brief UID manager.
 	 */
 	inline Uid::UIDManager & UID() { return ECS::getCtx<Uid::UIDManager>(); }
+	/**
+	 * @brief Python Interpretor
+	 * @return
+	 */
+	inline VTX::App::PythonBinding::Interpretor & INTERPRETOR()
+	{
+		return ECS::getCtx<VTX::App::PythonBinding::Interpretor>();
+	}
 } // namespace VTX::App
 
 #endif

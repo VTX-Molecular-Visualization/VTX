@@ -84,12 +84,4 @@ namespace VTX::App::PythonBinding
 	};
 } // namespace VTX::App::PythonBinding
 
-namespace VTX
-{
-	inline VTX::App::PythonBinding::Interpretor & INTERPRETOR()
-	{
-		return Util::Singleton<VTX::App::PythonBinding::Interpretor>::get();
-	}
-} // namespace VTX
-
 #endif
