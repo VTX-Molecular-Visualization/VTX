@@ -26,7 +26,12 @@ namespace VTX::App
 			_app->start();
 		}
 
-		~Fixture() { _app->stop(); }
+		~Fixture()
+		{
+			VTX_INFO( "Fixture deconstructor begin." );
+			_app->stop();
+			VTX_INFO( "Fixture deconstructor end." );
+		}
 
 		inline APP * const get() { return _app.get(); }
 
