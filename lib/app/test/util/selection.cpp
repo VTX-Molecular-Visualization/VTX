@@ -4,6 +4,7 @@
 #include <app/core/ecs/registry.hpp>
 #include <app/python_binding/interpretor.hpp>
 #include <app/selection/selection_manager.hpp>
+#include <app/services.hpp>
 #include <app/vtx_app.hpp>
 #include <sstream>
 #include <util/logger.hpp>

@@ -5,8 +5,10 @@
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
 #include <app/fixture.hpp>
+#include <app/python_binding/interpretor.hpp>
 #include <app/selection/selection_manager.hpp>
 #include <app/selection/system_data.hpp>
+#include <app/services.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -48,7 +50,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 		VTX::App::PythonBinding::Interpretor::AsyncJobResult rslt;
 		try
 		{
-			INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", promise );
+			VTX::App::INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", promise );
 		}
 		catch ( CommandException & e )
 		{
@@ -90,12 +92,13 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	 * PythonBinding::API)
 	 */
 	using namespace VTX;
+	using namespace VTX::App;
 	using SelectionUtil = App::Test::Util::Selection;
 	App::Fixture app;
 
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
 	std::future<AsyncJobResult>					  _future = promise->get_future();
-	Test::loadSystem( "1AGA.mmtf" );
+	::Test::loadSystem( "1AGA.mmtf" );
 	try
 	{
 		INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", promise );
@@ -113,7 +116,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	{
 		VTX_ERROR(
 			"Unknown exception raised in python command and catched in the UT at {}",
-			Test::string( std::source_location() )
+			::Test::string( std::source_location() )
 		);
 		CHECK( false );
 	}
@@ -137,7 +140,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	{
 		VTX_ERROR(
 			"Unknown exception raised in python command and catched in the UT at {}",
-			Test::string( std::source_location() )
+			::Test::string( std::source_location() )
 		);
 		CHECK( false );
 	}
@@ -161,7 +164,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	{
 		VTX_ERROR(
 			"Unknown exception raised in python command and catched in the UT at {}",
-			Test::string( std::source_location() )
+			::Test::string( std::source_location() )
 		);
 		CHECK( false );
 	}
@@ -185,7 +188,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	{
 		VTX_ERROR(
 			"Unknown exception raised in python command and catched in the UT at {}",
-			Test::string( std::source_location() )
+			::Test::string( std::source_location() )
 		);
 		CHECK( false );
 	}
@@ -196,10 +199,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Collection crash", "[app][python][integ
 	 * @brief We test collection behavior
 	 */
 	using namespace VTX;
+	using namespace VTX::App;
 	using SelectionUtil = App::Test::Util::Selection;
 	App::Fixture app;
 
-	Test::loadSystem( "1AGA.mmtf" );
+	::Test::loadSystem( "1AGA.mmtf" );
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
 	std::future<AsyncJobResult>					  _future = promise->get_future();
 
@@ -238,12 +242,13 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	 * @brief We Check that the selection work as intended
 	 */
 	using namespace VTX;
+	using namespace VTX::App;
 	using SelectionUtil = App::Test::Util::Selection;
 	App::Fixture app;
 
-	Test::loadSystem( "1AGA.mmtf" );
-	Test::loadSystem( "4HHB.pdb" );
-	Test::loadSystem( "8QHQ.pdb" );
+	::Test::loadSystem( "1AGA.mmtf" );
+	::Test::loadSystem( "4HHB.pdb" );
+	::Test::loadSystem( "8QHQ.pdb" );
 
 	App::Component::Chemistry::System & mol4hhb
 		= App::SCENE().getComponentByName<App::Component::Chemistry::System>( "4HHB" );
@@ -451,6 +456,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	 * @brief We make sure calling with an existing method works but calling a non-existing one doesn't
 	 */
 	using namespace VTX;
+	using namespace VTX::App;
 	App::Fixture app;
 
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
@@ -482,6 +488,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][nothin
 	 * @brief We test one of the most basic python (i.e. assigning an int to a named var) command to make sure it works
 	 */
 	using namespace VTX;
+	using namespace VTX::App;
 	App::Fixture								  app;
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
 	std::future<AsyncJobResult>					  _future = promise->get_future();
@@ -495,6 +502,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][bindin
 	 * non-existing element.
 	 */
 	using namespace VTX;
+	using namespace VTX::App;
 	App::Fixture app;
 
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
