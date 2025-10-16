@@ -32,7 +32,7 @@ namespace VTX::App
 		/**
 		 * @brief Virtual destructor.
 		 */
-		virtual ~VTXApp() = default;
+		virtual ~VTXApp(); // TODO : do we still need to be virtual ?
 
 		/**
 		 * @brief Initialize the application.

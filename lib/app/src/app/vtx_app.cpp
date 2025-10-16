@@ -32,6 +32,8 @@ namespace VTX::App
 
 	VTXApp::VTXApp( const Args & p_args )
 	{
+		Util::Logger::init();
+
 		// Set global registry.
 		ECS::setRegistry( _registry );
 		// Store args.
@@ -59,7 +61,12 @@ namespace VTX::App
 		// Store Python interpretor
 		ECS::setCtx<VTX::App::PythonBinding::Interpretor>();
 	}
-
+	VTXApp::~VTXApp()
+	{
+		// Util::Logger::stop();
+		ECS::eraseCtx<VTX::App::PythonBinding::Interpretor>(); // Python interpretor relies on the thread manager, so we
+															   // explicitly destroy it before.
+	}
 	void VTXApp::init()
 	{
 		VTX_INFO( "Init application" );

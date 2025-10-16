@@ -131,12 +131,6 @@ namespace VTX::PythonBinding
 				throw VTX::IOException( "Required file {} not found.", initCommandsFile.string() );
 			pybind11::eval_file( initCommandsFile.string() );
 		}
-		~Impl()
-		{
-			VTX_INFO( "Shutting down python interpretor ..." );
-			_interpretor.reset();
-			VTX_INFO( "Interpretor shut down." );
-		}
 
 		void add( Binder p_binder )
 		{
@@ -160,9 +154,9 @@ namespace VTX::PythonBinding
 	  private:
 		const std::wstring _pythonBinDir { ( Util::Filesystem::getExecutableDir() / "external" / "python" ).wstring() };
 		LogRedirection	   _logger;
-		std::optional<pybind11::scoped_interpreter> _interpretor { createInterpretor( _pythonBinDir ) };
-		pybind11::module_							_vtxModule { pybind11::module_::import( vtx_module_name() ) };
-		std::unique_ptr<PyTXModule>					_pyTXModule
+		pybind11::scoped_interpreter _interpretor { createInterpretor( _pythonBinDir ) };
+		pybind11::module_			 _vtxModule { pybind11::module_::import( vtx_module_name() ) };
+		std::unique_ptr<PyTXModule>	 _pyTXModule
 			= std::make_unique<PyTXModule>( Wrapper::Module( _vtxModule, vtx_module_name() ) );
 
 		std::vector<Binder> _binders;
