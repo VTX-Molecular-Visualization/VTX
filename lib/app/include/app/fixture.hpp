@@ -11,6 +11,7 @@ namespace VTX::App
 	  public:
 		Fixture()
 		{
+			VTX::Util::Logger::init();
 			VTX::VTX_INFO( "Constructing fixture" );
 			if ( not _app )
 			{
@@ -31,6 +32,7 @@ namespace VTX::App
 			VTX_INFO( "Fixture deconstructor begin." );
 			_app->stop();
 			VTX_INFO( "Fixture deconstructor end." );
+			VTX::Util::Logger::stop();
 		}
 
 		inline APP * const get() { return _app.get(); }

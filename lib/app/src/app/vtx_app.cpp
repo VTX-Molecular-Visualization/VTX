@@ -32,8 +32,6 @@ namespace VTX::App
 
 	VTXApp::VTXApp( const Args & p_args )
 	{
-		Util::Logger::init();
-
 		// Set global registry.
 		ECS::setRegistry( _registry );
 		// Store args.
@@ -63,9 +61,9 @@ namespace VTX::App
 	}
 	VTXApp::~VTXApp()
 	{
-		// Util::Logger::stop();
 		ECS::eraseCtx<VTX::App::PythonBinding::Interpretor>(); // Python interpretor relies on the thread manager, so we
-															   // explicitly destroy it before.
+															   // explicitly destroy it before. I'm not sure this is the
+															   // best way to do it
 	}
 	void VTXApp::init()
 	{
