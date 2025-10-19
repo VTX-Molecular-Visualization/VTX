@@ -24,6 +24,6 @@ namespace VTX::App::Settings
 		settings.referenceSetting( Controller::ELASTICITY_FACTOR_KEY, Controller::ELASTICITY_FACTOR_DEFAULT );
 
 		// Selection.
-		settings.referenceSetting( Selection::MOLECULE_GRANULARITY_KEY, Selection::MOLECULE_GRANULARITY_DEFAULT );
+		// settings.referenceSetting( Selection::MOLECULE_GRANULARITY_KEY, Selection::MOLECULE_GRANULARITY_DEFAULT );
 	}
 } // namespace VTX::App::Settings

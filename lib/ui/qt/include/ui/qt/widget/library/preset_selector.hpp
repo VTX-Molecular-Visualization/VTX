@@ -10,8 +10,12 @@
 #include <QLineEdit>
 #include <QPointer>
 #include <QPushButton>
-#include <app/action/library.hpp>
+#include <app/library/base_preset.hpp>
+// #include <app/action/library.hpp>
+// #include <app/library/library_manager.hpp>
+#include <app/library/base_library.hpp>
 #include <app/library/library_manager.hpp>
+#include <app/services.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
@@ -67,6 +71,7 @@ namespace VTX::UI::QT::Widget::Library
 			layout->addWidget( lineRename, 2, 0, 1, 3 );
 			lineRename->setText( _comboBox->currentText() );
 
+			/*
 			connect(
 				_comboBox,
 				&QComboBox::currentTextChanged,
@@ -108,6 +113,7 @@ namespace VTX::UI::QT::Widget::Library
 					);
 				}
 			);
+			*/
 
 			// Callbacks.
 			_library->onPresetAdded += [ this ]( const std::string_view p_name )

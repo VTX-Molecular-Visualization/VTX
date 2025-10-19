@@ -1,7 +1,7 @@
 #include "ui/qt/widget/library/color_layout.hpp"
 #include "ui/qt/core/layout/flow_layout.hpp"
 #include "ui/qt/helper.hpp"
-#include <app/action/color_layout.hpp>
+// #include <app/action/color_layout.hpp>
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/chain.hpp>
 #include <core/chemdb/color_layout.hpp>
@@ -42,6 +42,7 @@ namespace VTX::UI::QT::Widget::Library
 		_createGroupBox( "Custom", LAYOUT_OFFSET_CUSTOM, LAYOUT_COUNT_CUSTOM );
 
 		// Randomize.
+		/*
 		auto * const buttonRandomize = new QPushButton( "Randomize", this );
 		connect(
 			buttonRandomize,
@@ -49,6 +50,7 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]() { App::ACTION().execute<App::Action::ColorLayout::Randomize>( _preset ); }
 		);
 		addWidget( buttonRandomize );
+		*/
 	}
 
 	void ColorLayout::_onPresetAdded( const std::string_view p_name )
@@ -79,7 +81,7 @@ namespace VTX::UI::QT::Widget::Library
 	{
 		assert( _preset != nullptr );
 
-		App::ACTION().execute<App::Action::ColorLayout::SetCurrent>( _preset );
+		// App::ACTION().execute<App::Action::ColorLayout::SetCurrent>( _preset );
 
 		for ( size_t i = 0; i < VTX::Core::Struct::COLOR_LAYOUT_SIZE; ++i )
 		{
@@ -143,9 +145,11 @@ namespace VTX::UI::QT::Widget::Library
 
 	void ColorLayout::_changeColor( const size_t p_index, const QColor & p_color )
 	{
+		/*
 		App::ACTION().execute<App::Action::ColorLayout::Change>(
 			_preset, Index( p_index ), Helper::fromQColor( p_color )
 		);
+		*/
 	}
 
 	void ColorLayout::_setColor( const size_t p_index, const Util::Color::Rgba & p_color )

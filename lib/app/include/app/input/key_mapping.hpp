@@ -15,7 +15,7 @@ namespace VTX::App::Input
 		KeyMapping() {};
 		KeyMapping( const std::map<action_index_t, std::set<Key>> & p_map ) : _map( p_map ) {};
 
-		const std::set<Key> & operator[]( const action_index_t p_keyEnum ) const { return _map.at( p_keyEnum ); }
+		const std::set<Key> & operator[]( const action_index_t p_keyEnum ) { return _map[ p_keyEnum ]; }
 
 	  private:
 		std::map<action_index_t, std::set<Key>> _map = std::map<action_index_t, std::set<Key>>();

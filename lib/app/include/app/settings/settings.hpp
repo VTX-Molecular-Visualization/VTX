@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_SETTINGS__
 #define __VTX_APP_SETTINGS__
 
-#include "app/component/render/camera.hpp"
-#include "app/selection/system_granularity.hpp"
+#include "app/scene/camera.hpp"
+// #include "app/selection/system_granularity.hpp"
 #include <string>
 
 namespace VTX::App::Settings
@@ -22,8 +22,7 @@ namespace VTX::App::Settings
 		const float									FOV_MIN		   = 10.f;
 		const float									FOV_MAX		   = 90.f;
 		const std::string							PROJECTION_KEY = "CAMERA_PROJECTION";
-		const Component::Render::Camera::PROJECTION PROJECTION_DEFAULT
-			= Component::Render::Camera::PROJECTION::PERSPECTIVE;
+		const Scene::Camera::PROJECTION				PROJECTION_DEFAULT = Scene::Camera::PROJECTION::PERSPECTIVE;
 	} // namespace Camera
 
 	namespace Controller
@@ -61,8 +60,8 @@ namespace VTX::App::Settings
 
 	namespace Selection
 	{
-		const std::string				  MOLECULE_GRANULARITY_KEY	   = "MOLECULE_GRANULARITY";
-		const App::Selection::Granularity MOLECULE_GRANULARITY_DEFAULT = App::Selection::Granularity::RESIDUE;
+		const std::string MOLECULE_GRANULARITY_KEY = "MOLECULE_GRANULARITY";
+		// const App::Selection::Granularity MOLECULE_GRANULARITY_DEFAULT = App::Selection::Granularity::RESIDUE;
 	} // namespace Selection
 
 	namespace Network

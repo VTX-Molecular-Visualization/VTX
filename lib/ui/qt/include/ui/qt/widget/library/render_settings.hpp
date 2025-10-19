@@ -6,7 +6,7 @@
 #include "ui/qt/core/widget/editable_slider.hpp"
 #include "ui/qt/core/widget/hideable_goupe_box.hpp"
 #include <QLabel>
-#include <app/action/render_settings.hpp>
+// #include <app/action/render_settings.hpp>
 #include <app/library/preset/render_settings.hpp>
 
 namespace VTX::UI::QT::Widget::Library
@@ -58,7 +58,7 @@ namespace VTX::UI::QT::Widget::Library
 		template<VTX::Renderer::E_RENDER_SETTINGS S, typename T>
 		void _changeValue( const T p_value )
 		{
-			App::ACTION().execute<App::Action::RenderSettings::Change<S, T>>( _preset, p_value );
+			// App::ACTION().execute<App::Action::RenderSettings::Change<S, T>>( _preset, p_value );
 		}
 
 		void _applyLogic();

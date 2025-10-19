@@ -3,6 +3,7 @@
 #include "ui/qt/dialog/export_image.hpp"
 #include "ui/qt/dialog/open.hpp"
 #include <QApplication>
+/*
 #include <app/action/application.hpp>
 #include <app/action/camera.hpp>
 #include <app/action/controller.hpp>
@@ -11,6 +12,7 @@
 #include <app/component/controller.hpp>
 #include <app/controller/camera/freefly.hpp>
 #include <app/controller/camera/trackball.hpp>
+*/
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Action
@@ -100,7 +102,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Create a new project";
 			icon	 = "sprite/file/new.png";
 			shortcut = "Ctrl+N";
-			trigger	 = []() { App::ACTION().execute<App::Action::Application::NewScene>(); };
+			// trigger	 = []() { App::ACTION().execute<App::Action::Application::NewScene>(); };
 		}
 
 		Download::Download()
@@ -158,9 +160,9 @@ namespace VTX::UI::QT::Action
 
 		Quit::Quit()
 		{
-			name	 = "Quit";
-			tip		 = "Exit software";
-			trigger	 = []() { App::ACTION().execute<App::Action::Application::Quit>(); };
+			name = "Quit";
+			tip	 = "Exit software";
+			// trigger	 = []() { App::ACTION().execute<App::Action::Application::Quit>(); };
 			shortcut = "Esc";
 		}
 
@@ -177,11 +179,12 @@ namespace VTX::UI::QT::Action
 			tip		 = "Change camera projection mode";
 			icon	 = "sprite/camera/orthographic.png";
 			shortcut = "Alt+O";
-			trigger	 = []() { App::ACTION().execute<App::Action::Camera::ToggleCameraProjection>(); };
+			// trigger	 = []() { App::ACTION().execute<App::Action::Camera::ToggleCameraProjection>(); };
 		}
 
 		void Orthographic::connect() const
 		{
+			/*
 			using namespace App::Component;
 
 			QAction * const	 qAction = Factory::get<Orthographic>();
@@ -199,6 +202,7 @@ namespace VTX::UI::QT::Action
 					qAction->setChecked( true );
 				}
 			};
+			*/
 		}
 
 		Perspective::Perspective()
@@ -208,11 +212,12 @@ namespace VTX::UI::QT::Action
 			tip		 = "Change camera projection mode";
 			icon	 = "sprite/camera/perspective.png";
 			shortcut = "Alt+P";
-			trigger	 = []() { App::ACTION().execute<App::Action::Camera::ToggleCameraProjection>(); };
+			// trigger	 = []() { App::ACTION().execute<App::Action::Camera::ToggleCameraProjection>(); };
 		}
 
 		void Perspective::connect() const
 		{
+			/*
 			using namespace App::Component;
 
 			QAction * const	 qAction = Factory::get<Perspective>();
@@ -230,6 +235,7 @@ namespace VTX::UI::QT::Action
 					qAction->setChecked( true );
 				}
 			};
+			*/
 		}
 
 		Trackball::Trackball()
@@ -239,11 +245,12 @@ namespace VTX::UI::QT::Action
 			tip		 = "Use Trackball controller";
 			icon	 = "sprite/camera/trackball.png";
 			shortcut = "Alt+T";
-			trigger	 = []() { App::ACTION().execute<App::Action::Controller::ToggleCameraController>(); };
+			// trigger	 = []() { App::ACTION().execute<App::Action::Controller::ToggleCameraController>(); };
 		}
 
 		void Trackball::connect() const
 		{
+			/*
 			QAction * const				 qAction = Factory::get<Trackball>();
 			App::Component::Controller & component
 				= App::ECS_REGISTRY().getComponent<App::Component::Controller>( App::SCENE().getCamera() );
@@ -260,6 +267,7 @@ namespace VTX::UI::QT::Action
 					qAction->setChecked( true );
 				}
 			};
+			*/
 		}
 
 		Freefly::Freefly()
@@ -269,11 +277,12 @@ namespace VTX::UI::QT::Action
 			tip		 = "Use Freefly controller";
 			icon	 = "sprite/camera/freefly.png";
 			shortcut = "Alt+F";
-			trigger	 = []() { App::ACTION().execute<App::Action::Controller::ToggleCameraController>(); };
+			// trigger	 = []() { App::ACTION().execute<App::Action::Controller::ToggleCameraController>(); };
 		}
 
 		void Freefly::connect() const
 		{
+			/*
 			QAction * const				 qAction = Factory::get<Freefly>();
 			App::Component::Controller & component
 				= App::ECS_REGISTRY().getComponent<App::Component::Controller>( App::SCENE().getCamera() );
@@ -290,22 +299,23 @@ namespace VTX::UI::QT::Action
 					qAction->setChecked( true );
 				}
 			};
+			*/
 		}
 
 		Orient::Orient()
 		{
-			name	= "Orient";
-			tip		= "Orient camera on selection";
-			icon	= "sprite/camera/orient.png";
-			trigger = []() { App::ACTION().execute<App::Action::Camera::Orient>(); };
+			name = "Orient";
+			tip	 = "Orient camera on selection";
+			icon = "sprite/camera/orient.png";
+			// trigger = []() { App::ACTION().execute<App::Action::Camera::Orient>(); };
 		}
 
 		Reset::Reset()
 		{
-			name	= "Reset";
-			tip		= "Reset camera";
-			icon	= "sprite/camera/reset.png";
-			trigger = []() { App::ACTION().execute<App::Action::Camera::Reset>(); };
+			name = "Reset";
+			tip	 = "Reset camera";
+			icon = "sprite/camera/reset.png";
+			// trigger = []() { App::ACTION().execute<App::Action::Camera::Reset>(); };
 		}
 
 	} // namespace Camera
@@ -318,7 +328,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Save current image";
 			icon	 = "sprite/snapshot/snapshot.png";
 			shortcut = "F2";
-			trigger	 = []() { App::ACTION().execute<App::Action::Io::Snapshot>(); };
+			// trigger	 = []() { App::ACTION().execute<App::Action::Io::Snapshot>(); };
 		}
 
 		Export::Export()

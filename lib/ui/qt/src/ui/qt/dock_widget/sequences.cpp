@@ -1,8 +1,10 @@
 #include "ui/qt/dock_widget/sequences.hpp"
 #include "ui/qt/widget/sequence.hpp"
+/*
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/system.hpp>
 #include <app/component/scene/scene_item_component.hpp>
+*/
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -10,6 +12,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 
+		/*
 		App::SCENE().onSceneItemAdded += [ this ]( const App::Component::Scene::SceneItemComponent & p_system )
 		{
 			if ( App::ECS_REGISTRY().hasComponent<App::Component::Chemistry::System>( p_system ) )
@@ -20,6 +23,7 @@ namespace VTX::UI::QT::DockWidget
 				_layout->addWidget( sequenceWidget );
 			}
 		};
+		*/
 	}
 
 } // namespace VTX::UI::QT::DockWidget

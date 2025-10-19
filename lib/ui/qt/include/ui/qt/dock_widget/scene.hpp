@@ -5,7 +5,7 @@
 #include "ui/qt/widget/tree.hpp"
 #include <QPointer>
 #include <QTreeWidget>
-#include <app/component/chemistry/system.hpp>
+#include <core/struct/system.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -17,7 +17,7 @@ namespace VTX::UI::QT::DockWidget
 	class Scene : public Core::BaseDockWidget<Scene>
 	{
 	  public:
-		Scene( QWidget * );
+		Scene( QWidget * ) {}
 
 	  private:
 		enum struct E_DEPTH
@@ -55,45 +55,6 @@ namespace VTX::UI::QT::DockWidget
 		};
 
 		QPointer<QTreeWidget> _tree;
-
-		/**
-		 * @brief Map top level items to data loading functions (to request App).
-		 */
-		std::map<const QTreeWidgetItem * const, LoadFunc> _loadFuncs;
-
-		/**
-		 * @brief Map top level items to system components.
-		 */
-		std::map<const QTreeWidgetItem * const, App::Component::Chemistry::System * const> _systemComponents;
-
-		/**
-		 * @brief Add a tree item.
-		 * @param the TreeItemData to add.
-		 * @param the parent item.
-		 * @param the optional loading function.
-		 * @param the optional system component.
-		 */
-		void _addTreeItem(
-			const TreeItemData &,
-			QTreeWidgetItem * const							   = nullptr,
-			std::optional<const LoadFunc>					   = std::nullopt,
-			std::optional<App::Component::Chemistry::System *> = std::nullopt
-		);
-
-		/**
-		 * @brief Get the depth of the item.
-		 * @param p_item the widget item.
-		 * @return [E_DEPTH, QTreeWidgetItem * const] the depth and the top level item.
-		 */
-		std::pair<E_DEPTH, QTreeWidgetItem * const> _getDepth( QTreeWidgetItem * const p_item ) const;
-
-		/**
-		 * @brief Reset the item tree (unload content on collapse).
-		 * @param the item to reset.
-		 */
-		void _resetTreeItem( QTreeWidgetItem * const );
-
-		void _applyVisibility( const E_VISIBILITY, QTreeWidgetItem * const );
 	};
 
 } // namespace VTX::UI::QT::DockWidget

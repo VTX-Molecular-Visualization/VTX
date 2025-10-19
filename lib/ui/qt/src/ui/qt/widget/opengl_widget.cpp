@@ -1,7 +1,7 @@
 #include "ui/qt/widget/opengl_widget.hpp"
 #include "app/services.hpp"
 #include "ui/qt/application.hpp"
-#include <app/action/application.hpp>
+// #include <app/action/application.hpp>
 #include <app/events.hpp>
 #include <renderer/facade.hpp>
 #include <util/event_hub.hpp>
@@ -78,7 +78,7 @@ namespace VTX::UI::QT::Widget
 
 		QSize scaledSize = p_event->size() * devicePixelRatioF();
 
-		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
+		// App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
 	}
 
 	void OpenGLWidget::setVSync( const bool p_vsync )

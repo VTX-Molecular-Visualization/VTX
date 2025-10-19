@@ -6,25 +6,13 @@
 /**
  * @brief Forward declarations of services stored in the ECS context.
  */
-namespace VTX::Renderer
-{
-	class Facade;
-}
-namespace VTX::Util
-{
-	namespace Monitoring
-	{
-		class Stats;
-	}
-	class EventHub;
-} // namespace VTX::Util
 namespace VTX::App
 {
 	class Args;
 	class PassManager;
 	namespace Action
 	{
-		class ActionManager;
+		// class ActionManager;
 	}
 	namespace Input
 	{
@@ -51,6 +39,19 @@ namespace VTX::App
 		class UIDManager;
 	}
 } // namespace VTX::App
+namespace VTX::Renderer
+{
+	class Facade;
+}
+namespace VTX::Util
+{
+	namespace Monitoring
+	{
+		class Stats;
+	}
+	class EventHub;
+} // namespace VTX::Util
+
 namespace VTX::App
 {
 	/**
@@ -72,7 +73,7 @@ namespace VTX::App
 	/**
 	 * @brief Action manager.
 	 */
-	inline Action::ActionManager & ACTION() { return ECS::getCtx<Action::ActionManager>(); }
+	// inline Action::ActionManager & ACTION() { return ECS::getCtx<Action::ActionManager>(); }
 	/**
 	 * @brief Input manager.
 	 */

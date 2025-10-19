@@ -4,9 +4,7 @@
 #include "selection.hpp"
 #include <QAbstractItemModel>
 #include <QString>
-#include <app/component/chemistry/atom.hpp>
-#include <app/component/chemistry/chain.hpp>
-#include <app/component/chemistry/residue.hpp>
+#include <core/struct/system.hpp>
 #include <vector>
 
 namespace VTX::UI::QT
@@ -16,8 +14,8 @@ namespace VTX::UI::QT
 	{
 		Q_OBJECT
 	  public:
-		Model( const App::Component::Chemistry::System & p_system, QObject * parent = nullptr ) :
-			QAbstractItemModel( parent ), _system( p_system )
+		Model( const VTX::Core::Struct::System & p_system, QObject * parent = nullptr ) :
+			QAbstractItemModel( parent ) //, _system( p_system )
 		{
 		}
 
@@ -34,7 +32,7 @@ namespace VTX::UI::QT
 		QModelIndex parent( const QModelIndex & p_index ) const override {}
 
 	  private:
-		const App::Component::Chemistry::System & _system;
+		// const Core::Struct::SystemCore::Struct::System & _system;
 	};
 
 } // namespace VTX::UI::QT

@@ -1,9 +1,4 @@
 #include "app/vtx_app.hpp"
-#include "app/action/action_manager.hpp"
-#include "app/action/mode.hpp"
-#include "app/application/scene.hpp"
-#include "app/core/ecs/registry.hpp"
-#include "app/entity/scene.hpp"
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
 #include "app/input/input_manager.hpp"
@@ -11,12 +6,8 @@
 #include "app/library/preset/color_layout.hpp"
 #include "app/library/preset/render_settings.hpp"
 #include "app/library/preset/representation.hpp"
-#include "app/mode/visualization.hpp"
 #include "app/network/network_manager.hpp"
 #include "app/new/pass_manager.hpp"
-#include "app/python_binding/interpretor.hpp"
-#include "app/python_binding/python_binding.hpp"
-#include "app/python_binding/run_script.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
@@ -24,7 +15,6 @@
 #include "app/uid/uid_manager.hpp"
 #include "renderer/facade.hpp"
 #include <exception>
-#include <python_binding/interpretor.hpp>
 #include <util/logger.hpp>
 #include <util/monitoring/stats.hpp>
 
@@ -45,7 +35,7 @@ namespace VTX::App
 		// Store renderer.
 		ECS::setCtx<Renderer::Facade>();
 		// Store action manager.
-		ECS::setCtx<Action::ActionManager>();
+		// ECS::setCtx<Action::ActionManager>();
 		// Store input manager.
 		ECS::setCtx<Input::InputManager>();
 		// Store library manager.
@@ -90,8 +80,10 @@ namespace VTX::App
 		Settings::initSettings();
 
 		// Create scene.
+		/*
 		auto sceneEntity = ECS_REGISTRY().createEntity<Entity::Scene>();
 		_scene			 = &ECS_REGISTRY().getComponent<Application::Scene>( sceneEntity );
+		*/
 
 		// Init tools.
 		for ( Tool::BaseTool * const tool : _tools )
@@ -103,6 +95,7 @@ namespace VTX::App
 		// onPostUpdate += []( const float p_elapsedTime ) { THREAD().lateUpdate(); };
 
 		// Initialize python interpretor.
+		/*
 		INTERPRETOR().subscribe(
 			[]( VTX::PythonBinding::Interpretor & p_interpretor )
 			{
@@ -110,6 +103,7 @@ namespace VTX::App
 				p_interpretor.add( VTX::App::PythonBinding::RunScript() );
 			}
 		);
+		*/
 	}
 
 	void VTXApp::start()
@@ -141,7 +135,7 @@ namespace VTX::App
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
 
-		ACTION().execute<Action::Mode::SetMode<Mode::Visualization>>();
+		// ACTION().execute<Action::Mode::SetMode<Mode::Visualization>>();
 		HUB().trigger<Events::ApplicationStarted>();
 
 		for ( Tool::BaseTool * const tool : _tools )
@@ -164,7 +158,7 @@ namespace VTX::App
 	{
 		VTX_INFO( "Stopping application" );
 
-		SCENE().reset();
+		// SCENE().reset();
 		RENDERER().clean();
 
 		//// Prevent events throw for nothing when quitting app
@@ -256,8 +250,5 @@ namespace VTX::App
 	//		return hasSavePath && sceneHasChanged;
 	// #endif
 	//	}
-
-	// TODO.
-	Application::Scene & SCENE() { return APP::getScene(); }
 
 } // namespace VTX::App

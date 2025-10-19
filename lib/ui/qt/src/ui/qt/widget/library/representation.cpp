@@ -241,7 +241,7 @@ namespace VTX::UI::QT::Widget::Library
 	{
 		assert( _preset != nullptr );
 
-		App::ACTION().execute<App::Action::Representation::SetCurrent>( _preset );
+		//		App::ACTION().execute<App::Action::Representation::SetCurrent>( _preset );
 
 		const QSignalBlocker blocker0( _groupboxSphere );
 		const QSignalBlocker blocker1( _comboBoxSphereRadiusType );

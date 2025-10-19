@@ -1,7 +1,6 @@
 #ifndef __VTX_APP_VTX_APP__
 #define __VTX_APP_VTX_APP__
 
-#include "app/application/_fwd.hpp" // TODO: remove
 #include "app/ecs.hpp"
 #include "app/pipeline.hpp"
 #include "app/tool/base_tool.hpp"
@@ -62,9 +61,6 @@ namespace VTX::App
 		 */
 		inline void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }
 
-		//  TODO: remove.
-		inline static Application::Scene & getScene() { return *_scene; }
-
 	  protected:
 		/**
 		 * @brief External tools.
@@ -82,14 +78,9 @@ namespace VTX::App
 		 */
 		Pipeline _pipeline;
 
-		// TODO: remove.
-		inline static Application::Scene * _scene;
-
 		// TODO: redo.
 		void _handleArgs( const Args & p_args );
 	};
-
-	Application::Scene & SCENE();
 
 } // namespace VTX::App
 

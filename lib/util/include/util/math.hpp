@@ -24,19 +24,24 @@ namespace VTX::Util::Math
 	using ::glm::cross;
 	using ::glm::degrees;
 	using ::glm::distance;
+	using ::glm::dot;
 	using ::glm::eulerAngles;
 	using ::glm::inverse;
 	using ::glm::length;
 	using ::glm::length2;
+	using ::glm::lookAt;
 	using ::glm::mat;
 	using ::glm::max;
 	using ::glm::min;
 	using ::glm::normalize;
+	using ::glm::ortho;
+	using ::glm::perspective;
 	using ::glm::quat;
 	using ::glm::quatLookAt;
 	using ::glm::radians;
 	using ::glm::rotate;
 	using ::glm::scale;
+	using ::glm::to_string;
 	using ::glm::toMat3;
 	using ::glm::toMat4;
 	using ::glm::translate;
@@ -58,31 +63,6 @@ namespace VTX::Util::Math
 	{
 		assert( length( p_value ) != 0.f );
 		p_value = normalize( p_value );
-	}
-
-	template<typename T>
-	inline T normalize( const T & p_value )
-	{
-		assert( length( p_value ) != 0.f );
-		return normalize( p_value );
-	}
-
-	template<typename T>
-	inline std::string to_string_fmt( const T & p_value )
-	{
-		std::string glmString = to_string( p_value );
-		for ( int i = 0; i < glmString.size(); i++ )
-		{
-			const char & currentChar = glmString[ i ];
-
-			if ( currentChar == '{' || currentChar == '}' )
-			{
-				glmString.insert( i, 1, currentChar );
-				i++;
-			}
-		}
-
-		return glmString;
 	}
 
 	template<int L, typename T>

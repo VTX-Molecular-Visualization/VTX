@@ -3,9 +3,7 @@
 
 #include "ui/qt/core/base_widget.hpp"
 #include <QAbstractScrollArea>
-#include <app/component/chemistry/chain.hpp>
-#include <app/component/chemistry/residue.hpp>
-#include <app/component/chemistry/system.hpp>
+#include <core/struct/system.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -15,7 +13,7 @@ namespace VTX::UI::QT::Widget
 	class Sequence : public QAbstractScrollArea
 	{
 	  public:
-		Sequence( const App::Component::Chemistry::System &, QWidget * );
+		Sequence( const VTX::Core::Struct::System &, QWidget * );
 
 	  protected:
 		void paintEvent( QPaintEvent * ) override;
@@ -23,7 +21,7 @@ namespace VTX::UI::QT::Widget
 		void resizeEvent( QResizeEvent * ) override;
 
 	  private:
-		const App::Component::Chemistry::System & _system;
+		const VTX::Core::Struct::System & _system;
 
 		void updateScrollBars();
 	};

@@ -20,8 +20,6 @@
 #include "ui/qt/tool_bar/snapshot.hpp"
 #include <QApplication>
 #include <QMimeData>
-#include <app/action/application.hpp>
-#include <app/action/scene.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -169,7 +167,7 @@ namespace VTX::UI::QT::Widget
 	{
 		VTX_TRACE( "Qt main window close event" );
 
-		App::ACTION().execute<App::Action::Application::Quit>();
+		// App::ACTION().execute<App::Action::Application::Quit>();
 		p_event->ignore();
 	}
 
@@ -179,7 +177,7 @@ namespace VTX::UI::QT::Widget
 	{
 		for ( const auto & url : p_event->mimeData()->urls() )
 		{
-			App::ACTION().execute<App::Action::Scene::LoadSystem>( url.toLocalFile().toStdString() );
+			// App::ACTION().execute<App::Action::Scene::LoadSystem>( url.toLocalFile().toStdString() );
 		}
 
 		p_event->acceptProposedAction();

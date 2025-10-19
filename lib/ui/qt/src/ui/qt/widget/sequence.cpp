@@ -3,8 +3,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
-#include <app/application/scene.hpp>
-#include <app/component/representation/color_layout.hpp>
+#include <core/struct/system.hpp>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -13,7 +12,7 @@ namespace VTX::UI::QT::Widget
 	constexpr uint SEQ_CHAR_HEIGHT = 18;
 	constexpr uint SEQ_RULE_STEP   = 5;
 
-	Sequence::Sequence( const App::Component::Chemistry::System & p_system, QWidget * p_parent ) :
+	Sequence::Sequence( const VTX::Core::Struct::System & p_system, QWidget * p_parent ) :
 
 		QAbstractScrollArea( p_parent ), _system( p_system )
 	{
@@ -26,16 +25,18 @@ namespace VTX::UI::QT::Widget
 		QPainter painter( viewport() );
 		painter.setFont( font() );
 
+		/*
 		const auto & scene		 = App::SCENE();
 		const auto & colorlayout = App::ECS_REGISTRY().getComponent<App::Component::Representation::ColorLayout>(
 			App::ECS_REGISTRY().getEntity( scene )
 		);
 
+
 		const int	xOffset	   = horizontalScrollBar()->value();
 		const Index startIndex = xOffset / SEQ_CHAR_WIDTH;
-		Index		endIndex   = Util::Math::min(
-			startIndex + ( viewport()->width() / SEQ_CHAR_WIDTH ) + 2, Index( _system.getResidues().size() )
-		);
+
+		Index endIndex
+			= Util::Math::min( startIndex + ( viewport()->width() / SEQ_CHAR_WIDTH ) + 2, p_system.getResidueCount() );
 
 		if ( endIndex <= startIndex )
 		{
@@ -93,6 +94,7 @@ namespace VTX::UI::QT::Widget
 
 			x += SEQ_CHAR_WIDTH;
 		}
+		*/
 	}
 
 	void Sequence::mousePressEvent( QMouseEvent * p_event )
@@ -104,20 +106,24 @@ namespace VTX::UI::QT::Widget
 		const size_t index	   = clickX / SEQ_CHAR_WIDTH;
 		const int	 topMargin = contentsMargins().top();
 
+		/*
 		if ( ( clickY > ( topMargin + int( SEQ_CHAR_HEIGHT ) ) )
 			 && ( clickY < ( topMargin + int( SEQ_CHAR_HEIGHT ) * 2 ) ) && ( index >= 0 )
 			 && ( index < _system.getResidues().size() ) )
 		{
 			qDebug() << "Residue clicked:" << index;
 		}
+		*/
 	}
 
 	void Sequence::resizeEvent( QResizeEvent * p_event ) { updateScrollBars(); }
 
 	void Sequence::updateScrollBars()
 	{
+		/*
 		const uint contentWidth = uint( _system.getResidues().size() ) * SEQ_CHAR_WIDTH;
 		horizontalScrollBar()->setRange( 0, contentWidth - viewport()->width() );
 		horizontalScrollBar()->setPageStep( viewport()->width() );
+		*/
 	}
 } // namespace VTX::UI::QT::Widget
