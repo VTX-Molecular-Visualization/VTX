@@ -56,6 +56,7 @@ namespace VTX::App
 		// TODO: add AABB component, and update it on item add/remove.
 	}
 
+	// TODO: move to constructor?
 	void VTXApp::init()
 	{
 		VTX_DEBUG( "Init application" );
@@ -154,6 +155,7 @@ namespace VTX::App
 		//_handleArgs( _args );
 	}
 
+	// TODO: move to destructor?
 	void VTXApp::stop()
 	{
 		VTX_INFO( "Stopping application" );
