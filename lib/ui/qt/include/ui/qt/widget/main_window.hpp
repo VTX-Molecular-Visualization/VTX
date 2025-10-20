@@ -64,8 +64,7 @@ namespace VTX::UI::QT::Widget
 				}
 			}
 
-			DW * const dockWidget = nullptr;
-			new DW( this );
+			DW * const dockWidget = new DW( this );
 			addDockWidget( p_area, dockWidget );
 
 			// Tabify.

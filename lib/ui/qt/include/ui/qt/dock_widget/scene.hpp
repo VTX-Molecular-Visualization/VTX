@@ -17,7 +17,7 @@ namespace VTX::UI::QT::DockWidget
 	class Scene : public Core::BaseDockWidget<Scene>
 	{
 	  public:
-		Scene( QWidget * ) {}
+		Scene( QWidget * p_parent ) : Core::BaseDockWidget<Scene>( "Scene", p_parent ) {}
 
 	  private:
 		enum struct E_DEPTH

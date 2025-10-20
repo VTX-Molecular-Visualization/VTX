@@ -1,9 +1,7 @@
 #ifndef __VTX_UI_QT_DOCK_WIDGET_SEQUENCES__
 #define __VTX_UI_QT_DOCK_WIDGET_SEQUENCES__
 
-#include "ui/qt/dock_widget/scene.hpp"
-#include <QDockWidget>
-#include <QTableWidget>
+#include "ui/qt/core/base_dock_widget.hpp"
 
 namespace VTX::UI::QT::DockWidget
 {
