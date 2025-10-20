@@ -21,10 +21,6 @@ namespace VTX::App::Tool
 		 */
 		virtual ~BaseTool() {}
 		/**
-		 * @brief Called during app initialization, renderer not available.
-		 */
-		virtual void init() = 0;
-		/**
 		 * @brief Called after main window creation, renderer available.
 		 */
 		virtual void createUI() {}

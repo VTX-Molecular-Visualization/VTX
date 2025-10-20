@@ -127,7 +127,6 @@ namespace VTX::Tool::Mdprep
 		}
 	};
 
-	void MdPrep::init() {}
 	void MdPrep::onAppStart() {}
 	void MdPrep::createUI()
 	{

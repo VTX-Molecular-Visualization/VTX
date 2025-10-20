@@ -18,8 +18,6 @@ namespace VTX::UI::QT
 		Application( const App::Args & );
 		~Application();
 
-		static void configure();
-
 		// bool event( QEvent * ) override;
 		//  Check exception in Qt events.
 		bool notify( QObject * const, QEvent * const ) override;

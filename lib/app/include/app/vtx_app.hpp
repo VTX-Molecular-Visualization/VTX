@@ -34,11 +34,6 @@ namespace VTX::App
 		virtual ~VTXApp() = default;
 
 		/**
-		 * @brief Initialize the application.
-		 */
-		void init();
-
-		/**
 		 * @brief Start the application, can be overidden by gui.
 		 */
 		virtual void start();

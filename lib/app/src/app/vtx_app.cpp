@@ -54,11 +54,7 @@ namespace VTX::App
 		// Create scene.
 		ECS::Entity scene = REG().create();
 		// TODO: add AABB component, and update it on item add/remove.
-	}
 
-	// TODO: move to constructor?
-	void VTXApp::init()
-	{
 		VTX_DEBUG( "Init application" );
 
 		// Load preset libraries.
@@ -85,12 +81,6 @@ namespace VTX::App
 		auto sceneEntity = ECS_REGISTRY().createEntity<Entity::Scene>();
 		_scene			 = &ECS_REGISTRY().getComponent<Application::Scene>( sceneEntity );
 		*/
-
-		// Init tools.
-		for ( Tool::BaseTool * const tool : _tools )
-		{
-			tool->init();
-		}
 
 		// Register loop events.
 		// onPostUpdate += []( const float p_elapsedTime ) { THREAD().lateUpdate(); };

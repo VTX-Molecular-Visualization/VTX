@@ -14,12 +14,6 @@ VTX_INIT_RESOURCES( vtx_qt_resources_ui )
 
 namespace VTX::UI::QT
 {
-	// Need to be called before QApplication constructor.
-	void Application::configure()
-	{
-		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
-		QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
-	}
 
 	// Create QApplication with zero argc and nullptr argv.
 	int zero = 0;

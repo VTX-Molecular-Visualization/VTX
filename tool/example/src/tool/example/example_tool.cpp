@@ -17,8 +17,6 @@ namespace VTX::Tool::Example
 
 	ExampleTool::~ExampleTool() {}
 
-	void ExampleTool::init() {}
-
 	void ExampleTool::onAppStart() {}
 
 	void ExampleTool::createUI()
