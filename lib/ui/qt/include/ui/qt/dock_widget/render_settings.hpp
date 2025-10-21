@@ -1,11 +1,11 @@
 #ifndef __VTX_UI_QT_DOCK_WIDGET_RENDER_SETTINGS__
 #define __VTX_UI_QT_DOCK_WIDGET_RENDER_SETTINGS__
 
-#include "ui/qt/core/base_dock_widget.hpp"
+#include "ui/qt/dock_widget/base_dock_widget.hpp"
 
 namespace VTX::UI::QT::DockWidget
 {
-	class RenderSettings : public Core::BaseDockWidget<RenderSettings>
+	class RenderSettings : public BaseDockWidget<RenderSettings>
 	{
 	  public:
 		RenderSettings( QWidget * );

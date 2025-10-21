@@ -3,7 +3,7 @@
 
 #include "opengl_widget.hpp"
 #include "status_bar.hpp"
-#include "ui/qt/core/base_widget.hpp"
+#include "ui/qt/widget/base_widget.hpp"
 #include "ui/qt/settings.hpp"
 #include <QDockWidget>
 #include <QMainWindow>
@@ -24,7 +24,7 @@ namespace VTX::UI::QT::Widget
 	/**
 	 * @brief The application main window.
 	 */
-	class MainWindow : public Core::BaseWidget<MainWindow, QMainWindow>, public ISavable
+	class MainWindow : public Widget::BaseWidget<MainWindow, QMainWindow>, public ISavable
 	{
 	  public:
 		/**

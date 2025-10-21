@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_DIALOG_DOWNLOAD__
 #define __VTX_UI_QT_DIALOG_DOWNLOAD__
 
-#include "ui/qt/core/base_dialog.hpp"
+#include "ui/qt/dialog/base_dialog.hpp"
 #include "ui/qt/settings.hpp"
 #include <QComboBox>
 #include <QPointer>
@@ -11,7 +11,7 @@
 
 namespace VTX::UI::QT::Dialog
 {
-	class Download : public Core::BaseDialog<Download>, public ISavable
+	class Download : public BaseDialog<Download>, public ISavable
 	{
 	  public:
 		Download();

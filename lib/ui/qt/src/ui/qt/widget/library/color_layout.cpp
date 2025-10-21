@@ -1,6 +1,6 @@
 #include "ui/qt/widget/library/color_layout.hpp"
-#include "ui/qt/core/layout/flow_layout.hpp"
 #include "ui/qt/helper.hpp"
+#include "ui/qt/layout/flow_layout.hpp"
 // #include <app/action/color_layout.hpp>
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/chain.hpp>
@@ -14,7 +14,6 @@ namespace VTX::UI::QT::Widget::Library
 	{
 		using namespace VTX::Core::Struct;
 		using namespace App::Library::Preset;
-		using namespace Core::Widget;
 		using namespace VTX::Core::ChemDB;
 		using namespace VTX::Core::ChemDB::ColorLayout;
 
@@ -107,7 +106,7 @@ namespace VTX::UI::QT::Widget::Library
 	)
 	{
 		auto * groupBox = new QGroupBox( QString::fromStdString( p_title.data() ) );
-		auto * layout	= new Core::Layout::FlowLayout( groupBox );
+		auto * layout	= new Layout::FlowLayout( groupBox );
 
 		// Create buttons.
 		size_t offset = 0;
@@ -115,7 +114,7 @@ namespace VTX::UI::QT::Widget::Library
 		{
 			// QString text = p_text ? QString::fromStdString( p_text[ offset ].data() ) : QString::number( i );
 
-			_buttons[ i ] = new Core::Widget::ColorPicker( groupBox );
+			_buttons[ i ] = new ColorPicker( groupBox );
 			_buttons[ i ]->setFixedSize( _BUTTON_SIZE, _BUTTON_SIZE );
 
 			if ( p_text )
@@ -172,7 +171,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		auto * groupBox = static_cast<QGroupBox *>( _buttons[ p_start ]->parentWidget() );
 		delete groupBox->layout();
-		auto * layout = new Core::Layout::FlowLayout( groupBox );
+		auto * layout = new Layout::FlowLayout( groupBox );
 
 		size_t count = 0;
 		for ( size_t i = p_start; i < p_start + p_count; ++i )

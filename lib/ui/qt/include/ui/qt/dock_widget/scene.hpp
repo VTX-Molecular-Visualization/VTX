@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_DOCK_WIDGET_SCENE__
 #define __VTX_UI_QT_DOCK_WIDGET_SCENE__
 
-#include "ui/qt/core/base_dock_widget.hpp"
+#include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/widget/tree.hpp"
 #include <QPointer>
 #include <QTreeWidget>
@@ -14,10 +14,10 @@ namespace VTX::UI::QT::DockWidget
 	 * @brief Display a tree widget with loaded systems.
 	 * Load only minimal data on expand/collapse.
 	 */
-	class Scene : public Core::BaseDockWidget<Scene>
+	class Scene : public BaseDockWidget<Scene>
 	{
 	  public:
-		Scene( QWidget * p_parent ) : Core::BaseDockWidget<Scene>( "Scene", p_parent ) {}
+		Scene( QWidget * p_parent ) : BaseDockWidget<Scene>( "Scene", p_parent ) {}
 
 	  private:
 		enum struct E_DEPTH

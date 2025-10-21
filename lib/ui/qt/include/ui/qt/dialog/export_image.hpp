@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_DIALOG_EXPORT_IMAGE__
 #define __VTX_UI_QT_DIALOG_EXPORT_IMAGE__
 
-#include "ui/qt/core/base_dialog.hpp"
+#include "ui/qt/dialog/base_dialog.hpp"
 #include "ui/qt/settings.hpp"
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -15,7 +15,7 @@
 namespace VTX::UI::QT::Dialog
 {
 
-	class ExportImage : public Core::BaseDialog<ExportImage>, public ISavable
+	class ExportImage : public BaseDialog<ExportImage>, public ISavable
 	{
 	  public:
 		ExportImage();

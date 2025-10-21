@@ -1,14 +1,14 @@
-#ifndef __VTX_UI_QT_CORE_BASE_DOCK_WIDGET__
-#define __VTX_UI_QT_CORE_BASE_DOCK_WIDGET__
+#ifndef __VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET__
+#define __VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET__
 
-#include "ui/qt/core/base_widget.hpp"
+#include "ui/qt/widget/base_widget.hpp"
 #include <QBoxLayout>
 #include <QDockWidget>
 #include <QPointer>
 #include <QScrollArea>
 #include <concepts>
 
-namespace VTX::UI::QT::Core
+namespace VTX::UI::QT::DockWidget
 {
 	template<typename L>
 	concept ConceptLayout = std::is_base_of_v<QLayout, L>;
@@ -21,11 +21,11 @@ namespace VTX::UI::QT::Core
 	 * @tparam L is the layout type.
 	 */
 	template<typename T, bool VSA = 1, bool HSA = 0, ConceptLayout L = QVBoxLayout>
-	class BaseDockWidget : public BaseWidget<T, QDockWidget>
+	class BaseDockWidget : public Widget::BaseWidget<T, QDockWidget>
 	{
 	  public:
 		template<typename... Args>
-		BaseDockWidget( Args &&... p_args ) : BaseWidget<T, QDockWidget>( std::forward<Args>( p_args )... )
+		BaseDockWidget( Args &&... p_args ) : Widget::BaseWidget<T, QDockWidget>( std::forward<Args>( p_args )... )
 		{
 			// Scroll area.
 			if constexpr ( VSA or HSA )
@@ -75,6 +75,6 @@ namespace VTX::UI::QT::Core
 		QPointer<QWidget>	  _root;
 		QPointer<L>			  _layout;
 	};
-} // namespace VTX::UI::QT::Core
+} // namespace VTX::UI::QT::DockWidget
 
 #endif

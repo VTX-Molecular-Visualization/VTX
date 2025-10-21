@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_DOCK_WIDGET_OPTIONS__
 #define __VTX_UI_QT_DOCK_WIDGET_OPTIONS__
 
-#include "ui/qt/core/base_dock_widget.hpp"
+#include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/settings.hpp"
 #include <QCheckBox>
 #include <QDockWidget>
@@ -14,7 +14,7 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	class Options : public Core::BaseDockWidget<Options>, public ISavable
+	class Options : public BaseDockWidget<Options>, public ISavable
 	{
 	  public:
 		Options( QWidget * p_parent );

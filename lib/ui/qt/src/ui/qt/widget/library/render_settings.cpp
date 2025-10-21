@@ -5,7 +5,6 @@ namespace VTX::UI::QT::Widget::Library
 {
 	RenderSettings::RenderSettings( QWidget * p_parent ) : BasePresetWidget( p_parent )
 	{
-		using namespace Core::Widget;
 		using namespace Renderer;
 		using namespace Renderer::Settings;
 

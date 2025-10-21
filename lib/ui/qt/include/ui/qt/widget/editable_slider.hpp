@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_CORE_WIDGET_EDITABLE_SLIDER__
-#define __VTX_UI_QT_CORE_WIDGET_EDITABLE_SLIDER__
+#ifndef __VTX_UI_QT_WIDGET_EDITABLE_SLIDER__
+#define __VTX_UI_QT_WIDGET_EDITABLE_SLIDER__
 
 #include <QDoubleSpinBox>
 #include <QHBoxLayout>
@@ -8,7 +8,7 @@
 #include <util/logger.hpp>
 #include <util/math.hpp>
 
-namespace VTX::UI::QT::Core::Widget
+namespace VTX::UI::QT::Widget
 {
 	/**
 	 * @brief QSlider with editable area.
@@ -89,5 +89,5 @@ namespace VTX::UI::QT::Core::Widget
 		QPointer<QSlider>		 _slider;
 		QPointer<QDoubleSpinBox> _spinbox;
 	};
-} // namespace VTX::UI::QT::Core::Widget
+} // namespace VTX::UI::QT::Widget
 #endif

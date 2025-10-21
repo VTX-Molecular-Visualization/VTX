@@ -8,7 +8,6 @@ namespace VTX::UI::QT::Widget::Library
 	{
 		using namespace VTX::Core::Struct;
 		using namespace App::Library::Preset;
-		using namespace Core::Widget;
 
 		setTitle( "Edit representation" );
 

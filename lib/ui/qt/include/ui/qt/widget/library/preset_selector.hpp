@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_WIDGET_PRESET_SELECTOR__
 
 #include "ui/qt/actions.hpp"
-#include "ui/qt/core/widget/actionable_push_button.hpp"
+#include "ui/qt/widget/actionable_push_button.hpp"
 #include <QApplication>
 #include <QComboBox>
 #include <QGridLayout>
@@ -56,7 +56,6 @@ namespace VTX::UI::QT::Widget::Library
 			_comboBox->setCurrentIndex( 0 );
 			layout->addWidget( _comboBox, 0, 0, 1, 3 );
 
-			using namespace Core::Widget;
 			using namespace Action;
 
 			auto * btnNew		 = new ActionablePushButton( Factory::get<Preset::Add<P>>(), this );

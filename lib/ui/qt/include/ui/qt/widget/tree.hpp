@@ -7,7 +7,7 @@
 namespace VTX::UI::QT::Widget
 {
 
-	class Tree : public Core::BaseWidget<Tree, QTreeView>
+	class Tree : public Widget::BaseWidget<Tree, QTreeView>
 	{
 	  public:
 		Tree( QWidget * const p_parent = nullptr ) : BaseWidget<Tree, QTreeView>( p_parent )

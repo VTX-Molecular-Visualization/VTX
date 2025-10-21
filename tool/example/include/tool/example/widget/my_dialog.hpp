@@ -4,12 +4,12 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <ui/qt/core/base_dialog.hpp>
+#include <ui/qt/dialog/base_dialog.hpp>
 
 namespace VTX::Tool::Example::Widget
 {
 
-	class MyDialog : public UI::QT::Core::BaseDialog<MyDialog>
+	class MyDialog : public UI::QT::Dialog::BaseDialog<MyDialog>
 	{
 	  public:
 		MyDialog()

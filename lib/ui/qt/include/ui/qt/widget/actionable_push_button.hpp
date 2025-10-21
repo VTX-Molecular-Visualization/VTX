@@ -1,9 +1,9 @@
-#ifndef __VTX_UI_QT_CORE_WIDGET_ACTIONABLE_PUSH_BUTTON__
-#define __VTX_UI_QT_CORE_WIDGET_ACTIONABLE_PUSH_BUTTON__
+#ifndef __VTX_UI_QT_WIDGET_ACTIONABLE_PUSH_BUTTON__
+#define __VTX_UI_QT_WIDGET_ACTIONABLE_PUSH_BUTTON__
 
 #include <QPushButton>
 
-namespace VTX::UI::QT::Core::Widget
+namespace VTX::UI::QT::Widget
 {
 	/**
 	 * @brief QPushButton that handle QAction.
@@ -27,5 +27,5 @@ namespace VTX::UI::QT::Core::Widget
 			// connect( _action, &QAction::changed, this, &ActionablePushButton::updateFromAction );
 		}
 	};
-} // namespace VTX::UI::QT::Core::Widget
+} // namespace VTX::UI::QT::Widget
 #endif

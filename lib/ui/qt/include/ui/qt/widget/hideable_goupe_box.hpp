@@ -1,12 +1,12 @@
-#ifndef __VTX_UI_QT_CORE_WIDGET_HIDEABLE_GROUP_BOX__
-#define __VTX_UI_QT_CORE_WIDGET_HIDEABLE_GROUP_BOX__
+#ifndef __VTX_UI_QT_WIDGET_HIDEABLE_GROUP_BOX__
+#define __VTX_UI_QT_WIDGET_HIDEABLE_GROUP_BOX__
 
 #include <QGroupBox>
 #include <QPointer>
 #include <QToolButton>
 #include <QVBoxLayout>
 
-namespace VTX::UI::QT::Core::Widget
+namespace VTX::UI::QT::Widget
 {
 
 	/**
@@ -66,5 +66,5 @@ namespace VTX::UI::QT::Core::Widget
 		QPointer<QToolButton> _toggleButton;
 		QPointer<QGroupBox>	  _groupbox;
 	};
-} // namespace VTX::UI::QT::Core::Widget
+} // namespace VTX::UI::QT::Widget
 #endif

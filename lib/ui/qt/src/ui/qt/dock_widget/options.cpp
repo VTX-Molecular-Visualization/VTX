@@ -1,8 +1,8 @@
 #include "ui/qt/dock_widget/options.hpp"
 #include "ui/qt/actions.hpp"
 #include "ui/qt/application.hpp"
-#include "ui/qt/core/widget/actionable_push_button.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/widget/actionable_push_button.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include "ui/qt/widget/opengl_widget.hpp"
 #include <QDesktopServices>
@@ -15,7 +15,7 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	Options::Options( QWidget * p_parent ) : Core::BaseDockWidget<Options>( "Options", p_parent )
+	Options::Options( QWidget * p_parent ) : BaseDockWidget<Options>( "Options", p_parent )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
@@ -46,7 +46,7 @@ namespace VTX::UI::QT::DockWidget
 
 		auto * layoutCacheButton = new QHBoxLayout();
 
-		using namespace Core::Widget;
+		using namespace Widget;
 		using namespace Action;
 
 		auto * buttonOpenCache	  = new ActionablePushButton( Factory::get<Option::Cache::Open>(), this );

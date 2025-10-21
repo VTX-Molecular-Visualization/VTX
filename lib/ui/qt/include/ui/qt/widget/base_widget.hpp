@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_BASE_WIDGET__
-#define __VTX_UI_QT_BASE_WIDGET__
+#ifndef __VTX_UI_QT_WIDGET_BASE_WIDGET__
+#define __VTX_UI_QT_WIDGET_BASE_WIDGET__
 
 #include "ui/qt/actions.hpp"
 #include "ui/qt/model.hpp"
@@ -9,7 +9,7 @@
 #include <QWidget>
 #include <util/logger.hpp>
 
-namespace VTX::UI::QT::Core
+namespace VTX::UI::QT::Widget
 {
 	/**
 	 * @brief A widget must inherit from a QWidget.
@@ -62,6 +62,6 @@ namespace VTX::UI::QT::Core
 		}
 	};
 
-} // namespace VTX::UI::QT::Core
+} // namespace VTX::UI::QT::Widget
 
 #endif

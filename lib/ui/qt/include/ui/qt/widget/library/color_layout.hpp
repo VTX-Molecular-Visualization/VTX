@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_WIDGET_LIBRARY_COLOR_LAYOUT__
 
 #include "base_preset_widget.hpp"
-#include "ui/qt/core/widget/color_picker.hpp"
+#include "ui/qt/widget/color_picker.hpp"
 #include <app/library/preset/color_layout.hpp>
 
 namespace VTX::UI::QT::Widget::Library
@@ -25,7 +25,7 @@ namespace VTX::UI::QT::Widget::Library
 	  private:
 		inline static const int _BUTTON_SIZE = 32;
 
-		std::vector<QPointer<Core::Widget::ColorPicker>> _buttons;
+		std::vector<QPointer<ColorPicker>> _buttons;
 
 		void _createGroupBox(
 			const std::string_view		   p_title,
