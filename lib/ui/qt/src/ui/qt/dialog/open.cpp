@@ -6,8 +6,6 @@ namespace VTX::UI::QT::Dialog
 
 	Open::Open()
 	{
-		restore();
-
 		// Set options.
 		setDirectory( _lastOpenFolder );
 		setFileMode( QFileDialog::FileMode::ExistingFiles );
@@ -21,7 +19,6 @@ namespace VTX::UI::QT::Dialog
 			[ this ]( const QStringList & p_paths )
 			{
 				_lastOpenFolder = directory().absolutePath();
-				save();
 				close();
 
 				// Open files.
@@ -33,13 +30,13 @@ namespace VTX::UI::QT::Dialog
 		);
 	}
 
-	void Open::save() { SETTINGS.setValue( _SETTING_KEY_FOLDER, _lastOpenFolder ); }
+	void Open::save( Settings & p_settings ) { p_settings.setValue( _SETTING_KEY_FOLDER, _lastOpenFolder ); }
 
-	void Open::restore()
+	void Open::restore( const Settings & p_settings )
 	{
-		if ( SETTINGS.contains( _SETTING_KEY_FOLDER ) )
+		if ( p_settings.contains( _SETTING_KEY_FOLDER ) )
 		{
-			_lastOpenFolder = SETTINGS.value( _SETTING_KEY_FOLDER ).toString();
+			_lastOpenFolder = p_settings.value( _SETTING_KEY_FOLDER ).toString();
 		}
 	}
 } // namespace VTX::UI::QT::Dialog

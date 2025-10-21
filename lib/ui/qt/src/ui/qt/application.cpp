@@ -3,6 +3,7 @@
 #include "ui/qt/macros.hpp"
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/resources.hpp"
+#include "ui/qt/services.hpp"
 #include <QApplication>
 #include <QFile>
 #include <QIcon>
@@ -39,6 +40,9 @@ namespace VTX::UI::QT
 		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME.data() ) );
 		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN.data() ) );
 
+		// Settings.
+		App::ECS::setCtx<Settings>();
+
 		// Create main window.
 		_mainWindow = new Widget::MainWindow();
 		// Store in context.
@@ -48,7 +52,7 @@ namespace VTX::UI::QT
 		try
 		{
 			_loadTheme();
-			SETTINGS.restore();
+			SETTINGS().restore();
 		}
 		catch ( const std::exception & e )
 		{
@@ -70,7 +74,7 @@ namespace VTX::UI::QT
 				VTX_TRACE( "QCoreApplication::aboutToQuit" );
 				try
 				{
-					SETTINGS.save();
+					SETTINGS().save();
 				}
 				catch ( const std::exception & e )
 				{

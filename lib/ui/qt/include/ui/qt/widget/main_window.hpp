@@ -3,8 +3,8 @@
 
 #include "opengl_widget.hpp"
 #include "status_bar.hpp"
-#include "ui/qt/widget/base_widget.hpp"
 #include "ui/qt/settings.hpp"
+#include "ui/qt/widget/base_widget.hpp"
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QMenuBar>
@@ -104,8 +104,8 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief ISavable implementation.
 		 */
-		void save() override;
-		void restore() override;
+		void save( Settings & ) override;
+		void restore( const Settings & ) override;
 
 		inline OpenGLWidget * const getOpenGLWidget() const { return _openGLWidget; }
 

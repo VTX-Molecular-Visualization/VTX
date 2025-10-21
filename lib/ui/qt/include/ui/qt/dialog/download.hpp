@@ -16,8 +16,8 @@ namespace VTX::UI::QT::Dialog
 	  public:
 		Download();
 
-		void save() override;
-		void restore() override;
+		void save( Settings & ) override;
+		void restore( const Settings & ) override;
 
 	  private:
 		// TODO: check if file exists in cache.
@@ -38,8 +38,8 @@ namespace VTX::UI::QT::Dialog
 		QString				   _url;
 		QString				   _pdb;
 
-		void _loadHistory( const QString & p_key, QComboBox * const p_comboBox );
-		void _saveHistory( const QString & p_key, const QString & p_value );
+		void _saveHistory( Settings &, const QString & p_key, const QString & p_value );
+		void _loadHistory( const Settings &, const QString & p_key, QComboBox * const p_comboBox );
 	};
 
 } // namespace VTX::UI::QT::Dialog

@@ -29,7 +29,13 @@ namespace VTX::UI::QT::DockWidget
 		);
 	}
 
-	void ColorLayouts::save() { SETTINGS.setValue( _SETTING_KEY_HIDE, _checkBoxHide->isChecked() ); }
+	void ColorLayouts::save( Settings & p_settings )
+	{
+		p_settings.setValue( _SETTING_KEY_HIDE, _checkBoxHide->isChecked() );
+	}
 
-	void ColorLayouts::restore() { _checkBoxHide->setChecked( SETTINGS.value( _SETTING_KEY_HIDE, true ).toBool() ); }
+	void ColorLayouts::restore( const Settings & p_settings )
+	{
+		_checkBoxHide->setChecked( p_settings.value( _SETTING_KEY_HIDE, true ).toBool() );
+	}
 } // namespace VTX::UI::QT::DockWidget

@@ -12,8 +12,8 @@ namespace VTX::UI::QT::Dialog
 	  public:
 		Open();
 
-		void save() override;
-		void restore() override;
+		void save( Settings & ) override;
+		void restore( const Settings & ) override;
 
 	  private:
 		inline static const std::string _SETTING_KEY_FOLDER = "dialogOpenLastOpenFolder";

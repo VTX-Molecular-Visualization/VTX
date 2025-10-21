@@ -19,8 +19,8 @@ namespace VTX::UI::QT::DockWidget
 	  public:
 		Options( QWidget * p_parent );
 
-		void save() override;
-		void restore() override;
+		void save( Settings & ) override;
+		void restore( const Settings & ) override;
 
 	  private:
 		inline static const QString _SETTING_KEY_VSYNC = "options/vsync";

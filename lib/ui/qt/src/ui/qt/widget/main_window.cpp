@@ -167,16 +167,16 @@ namespace VTX::UI::QT::Widget
 		p_event->acceptProposedAction();
 	}
 
-	void MainWindow::save()
+	void MainWindow::save( Settings & p_settings )
 	{
-		SETTINGS.setValue( "geometry", saveGeometry() );
-		SETTINGS.setValue( "windowState", saveState() );
+		p_settings.setValue( "geometry", saveGeometry() );
+		p_settings.setValue( "windowState", saveState() );
 	}
 
-	void MainWindow::restore()
+	void MainWindow::restore( const Settings & p_settings )
 	{
-		restoreGeometry( SETTINGS.value( "geometry" ).toByteArray() );
-		restoreState( SETTINGS.value( "windowState" ).toByteArray() );
+		restoreGeometry( p_settings.value( "geometry" ).toByteArray() );
+		restoreState( p_settings.value( "windowState" ).toByteArray() );
 	}
 
 	void MainWindow::_onBlockingOperationStarted( const App::Events::BlockingOperationStarted & p_e )

@@ -6,12 +6,15 @@
 
 namespace VTX::UI::QT
 {
+	class Settings;
+
 	namespace Widget
 	{
 		class MainWindow;
 	}
 
 	inline QPointer<Widget::MainWindow> MAIN_WINDOW() { return App::ECS::getCtx<QPointer<Widget::MainWindow>>(); }
+	inline Settings &					SETTINGS() { return App::ECS::getCtx<Settings>(); }
 } // namespace VTX::UI::QT
 
 #endif

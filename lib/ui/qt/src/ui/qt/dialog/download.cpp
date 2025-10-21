@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QVBoxLayout>
+#include <app/filesystem.hpp>
 #include <app/network/network_manager.hpp>
 
 namespace VTX::UI::QT::Dialog
@@ -135,7 +136,6 @@ namespace VTX::UI::QT::Dialog
 					}
 				}
 
-				save();
 				close();
 			}
 		);
@@ -147,9 +147,6 @@ namespace VTX::UI::QT::Dialog
 			[ this ]() { close(); }
 		);
 
-		// Load histories manually because dialog is destroyed when closed.
-		restore();
-
 		// FIXME: Avoid losing default url if not in history.
 		if ( _comboBoxURL->findText( _DEFAULT_URL ) == -1 )
 		{
@@ -157,15 +154,21 @@ namespace VTX::UI::QT::Dialog
 		}
 	}
 
-	void Download::_loadHistory( const QString & p_key, QComboBox * const p_comboBox )
+	void Download::save( Settings & p_settings )
 	{
-		QStringList history = SETTINGS.value( p_key ).toStringList();
-		p_comboBox->addItems( history );
+		_saveHistory( p_settings, _SETTING_KEY_URL, _url );
+		_saveHistory( p_settings, _SETTING_KEY_PDB, _pdb );
 	}
 
-	void Download::_saveHistory( const QString & p_key, const QString & p_value )
+	void Download::restore( const Settings & p_settings )
 	{
-		QStringList history = SETTINGS.value( p_key ).toStringList();
+		_loadHistory( p_settings, _SETTING_KEY_URL, _comboBoxURL );
+		_loadHistory( p_settings, _SETTING_KEY_PDB, _comboBoxPDB );
+	}
+
+	void Download::_saveHistory( VTX::UI::QT::Settings & p_settings, const QString & p_key, const QString & p_value )
+	{
+		QStringList history = p_settings.value( p_key ).toStringList();
 		// Remove duplicates.
 		if ( history.contains( p_value ) )
 		{
@@ -178,19 +181,12 @@ namespace VTX::UI::QT::Dialog
 		{
 			history.removeLast();
 		}
-		SETTINGS.setValue( p_key, history );
+		p_settings.setValue( p_key, history );
 	}
 
-	void Download::save()
+	void Download::_loadHistory( const Settings & p_settings, const QString & p_key, QComboBox * const p_comboBox )
 	{
-		_saveHistory( _SETTING_KEY_URL, _url );
-		_saveHistory( _SETTING_KEY_PDB, _pdb );
+		QStringList history = p_settings.value( p_key ).toStringList();
+		p_comboBox->addItems( history );
 	}
-
-	void Download::restore()
-	{
-		_loadHistory( _SETTING_KEY_URL, _comboBoxURL );
-		_loadHistory( _SETTING_KEY_PDB, _comboBoxPDB );
-	}
-
 } // namespace VTX::UI::QT::Dialog

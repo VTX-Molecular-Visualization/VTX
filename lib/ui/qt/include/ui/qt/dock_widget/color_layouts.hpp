@@ -13,8 +13,8 @@ namespace VTX::UI::QT::DockWidget
 	  public:
 		ColorLayouts( QWidget * );
 
-		void save() override;
-		void restore() override;
+		void save( Settings & ) override;
+		void restore( const Settings & ) override;
 
 	  private:
 		inline static const QString _SETTING_KEY_HIDE = "colors/hide_non_common";

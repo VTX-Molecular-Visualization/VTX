@@ -21,7 +21,7 @@ namespace VTX::UI::QT::Widget
 	 * @brief Abstract class that describes a widget behaviour.
 	 */
 	template<typename T, ConceptWidget W>
-	class BaseWidget : public W //, public WIDGET_COLLECTION::GlobalStorage<T>
+	class BaseWidget : public W
 	{
 	  public:
 		template<typename... Args>

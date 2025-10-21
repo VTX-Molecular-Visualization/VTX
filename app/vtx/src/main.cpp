@@ -68,7 +68,6 @@ int main( int p_argc, char * p_argv[] )
 		}
 #else
 		app = std::make_unique<App::VTXApp>();
-		// TODO: how to create opengl context?
 #endif
 
 		assert( app != nullptr );

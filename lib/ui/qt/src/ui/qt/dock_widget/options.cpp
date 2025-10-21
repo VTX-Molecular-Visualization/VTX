@@ -110,8 +110,14 @@ namespace VTX::UI::QT::DockWidget
 		);
 	}
 
-	void Options::save() { SETTINGS.setValue( _SETTING_KEY_VSYNC, _checkBoxVSync->isChecked() ); }
+	void Options::save( Settings & p_settings )
+	{
+		p_settings.setValue( _SETTING_KEY_VSYNC, _checkBoxVSync->isChecked() );
+	}
 
-	void Options::restore() { _checkBoxVSync->setChecked( SETTINGS.value( _SETTING_KEY_VSYNC, true ).toBool() ); }
+	void Options::restore( const Settings & p_settings )
+	{
+		_checkBoxVSync->setChecked( p_settings.value( _SETTING_KEY_VSYNC, true ).toBool() );
+	}
 
 } // namespace VTX::UI::QT::DockWidget
