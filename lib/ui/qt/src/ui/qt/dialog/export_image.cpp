@@ -227,7 +227,7 @@ namespace VTX::UI::QT::Dialog
 
 		_updatePreview();
 
-		APP_QT::processEvents();
+		QCoreApplication::processEvents();
 
 	} // namespace VTX::UI::QT::Dialog
 

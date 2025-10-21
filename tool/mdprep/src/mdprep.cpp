@@ -98,8 +98,9 @@ namespace VTX::Tool::Mdprep
 			p_out = g_win;
 			return;
 		}
-		g_win = APP_QT::getMainWindow()->createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
-		p_out = g_win;
+		auto * const mainWindow = UI::QT::Core::WIDGETS::get().get<UI::QT::Widget::MainWindow>();
+		g_win					= mainWindow->createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
+		p_out					= g_win;
 	}
 
 	struct OpenMdPrep : public App::UI::DescAction
@@ -131,8 +132,10 @@ namespace VTX::Tool::Mdprep
 	void MdPrep::createUI()
 	{
 		OpenMdPrep action;
-		APP_QT::addMenuAction( "Tool", action );
-		APP_QT::addToolBarAction( "Tool", action );
+
+		auto * const mainWindow = UI::QT::Core::WIDGETS::get().get<UI::QT::Widget::MainWindow>();
+		mainWindow->addMenuAction( "Tool", action );
+		mainWindow->addToolBarAction( "Tool", action );
 	}
 	void MdPrep::onAppStop() {}
 } // namespace VTX::Tool::Mdprep

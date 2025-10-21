@@ -36,9 +36,4 @@ namespace VTX::UI::QT
 	};
 } // namespace VTX::UI::QT
 
-namespace VTX
-{
-	using APP_QT = UI::QT::Application;
-} // namespace VTX
-
 #endif

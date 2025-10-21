@@ -2,6 +2,7 @@
 #include "app/services.hpp"
 #include "ui/qt/application.hpp"
 // #include <app/action/application.hpp>
+#include "ui/qt/widget/main_window.hpp"
 #include <app/events.hpp>
 #include <renderer/facade.hpp>
 #include <util/event_hub.hpp>
@@ -111,12 +112,12 @@ namespace VTX::UI::QT::Widget
 			auto * e = p_event->clone();
 			if ( p_event->type() == QEvent::DragEnter )
 			{
-				QCoreApplication::sendEvent( APP_QT::getMainWindow(), e );
+				QCoreApplication::sendEvent( Core::WIDGETS::get().get<MainWindow>(), e );
 				return true;
 			}
 			else if ( p_event->type() == QEvent::Drop )
 			{
-				QCoreApplication::sendEvent( APP_QT::getMainWindow(), e );
+				QCoreApplication::sendEvent( Core::WIDGETS::get().get<MainWindow>(), e );
 				return true;
 			}
 		}

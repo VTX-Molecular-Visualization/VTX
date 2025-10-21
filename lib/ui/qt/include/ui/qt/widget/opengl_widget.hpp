@@ -4,12 +4,7 @@
 #include "ui/qt/core/base_widget.hpp"
 #include "ui/qt/window/event_catch_window.hpp"
 #include <QOpenGLContext>
-#include <QOpenGLPaintDevice>
-#include <QPainter>
 #include <QPointer>
-#include <QResizeEvent>
-#include <QWindow>
-#include <util/callback.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -27,7 +22,8 @@ namespace VTX::UI::QT::Widget
 		void resizeEvent( QResizeEvent * ) override;
 
 		void setVSync( const bool );
-		bool isVSync() const { return _context->format().swapInterval() == 1; }
+
+		inline bool isVSync() const { return _context->format().swapInterval() == 1; }
 
 	  protected:
 		bool eventFilter( QObject *, QEvent * ) override;
