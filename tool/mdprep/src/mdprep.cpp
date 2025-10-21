@@ -128,8 +128,7 @@ namespace VTX::Tool::Mdprep
 		}
 	};
 
-	void MdPrep::onAppStart() {}
-	void MdPrep::createUI()
+	MdPrep::MdPrep()
 	{
 		OpenMdPrep action;
 
@@ -137,5 +136,5 @@ namespace VTX::Tool::Mdprep
 		mainWindow->addMenuAction( "Tool", action );
 		mainWindow->addToolBarAction( "Tool", action );
 	}
-	void MdPrep::onAppStop() {}
+
 } // namespace VTX::Tool::Mdprep

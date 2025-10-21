@@ -129,11 +129,6 @@ namespace VTX::App
 		// ACTION().execute<Action::Mode::SetMode<Mode::Visualization>>();
 		HUB().trigger<Events::ApplicationStarted>();
 
-		for ( Tool::BaseTool * const tool : _tools )
-		{
-			tool->onAppStart();
-		}
-
 		// Updater.
 		// UPDATER().onUpdateAvailable += []( const uint, const uint, const uint ) { UPDATER().downloadUpdate(); };
 
@@ -164,10 +159,6 @@ namespace VTX::App
 
 		// Old::Selection::SelectionManager::get().deleteModel();
 
-		for ( Tool::BaseTool * const tool : _tools )
-		{
-			tool->onAppStop();
-		}
 		HUB().trigger<Events::ApplicationStopped>();
 	}
 

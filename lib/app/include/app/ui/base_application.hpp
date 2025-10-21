@@ -13,24 +13,18 @@ namespace VTX::App::UI
 	class BaseApplication : public App::VTXApp
 	{
 	  public:
-		BaseApplication( const App::Args & p_args ) : VTXApp( p_args ) {}
+		BaseApplication( const App::Args & p_args ) : VTXApp( p_args )
+		{
+			// Create all the UI.
+			_mainWindow = std::make_unique<MW>();
+			_mainWindow->build();
+			_mainWindow->prepare();
+		}
 
 		virtual ~BaseApplication() { _mainWindow.reset(); }
 
 		void start() override
 		{
-			// Create all the UI.
-			_mainWindow = std::make_unique<MW>();
-			_mainWindow->build();
-			for ( Tool::BaseTool * const tool : _tools )
-			{
-				tool->createUI();
-			}
-
-			onUICreated();
-
-			_mainWindow->prepare();
-
 			// Start the main app.
 			VTXApp::start();
 
@@ -39,9 +33,6 @@ namespace VTX::App::UI
 		}
 
 		inline MW * const getMainWindow() { return _mainWindow.get(); }
-
-		// Callbacks.
-		Util::Callback<> onUICreated;
 
 	  protected:
 		std::unique_ptr<MW> _mainWindow;

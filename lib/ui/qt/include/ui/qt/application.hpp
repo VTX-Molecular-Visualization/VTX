@@ -12,7 +12,7 @@
 
 namespace VTX::UI::QT
 {
-	class Application final : public App::UI::BaseApplication<Widget::MainWindow>, public QApplication
+	class Application final : public QApplication, public App::UI::BaseApplication<Widget::MainWindow>
 	{
 	  public:
 		Application( const App::Args & );

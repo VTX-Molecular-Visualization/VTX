@@ -13,15 +13,8 @@ VTX_INIT_RESOURCES( vtx_qt_resources_tool_example )
 
 namespace VTX::Tool::Example
 {
-	ExampleTool::ExampleTool() {}
-
-	ExampleTool::~ExampleTool() {}
-
-	void ExampleTool::onAppStart() {}
-
-	void ExampleTool::createUI()
-	{
-		//////////////////////////
+	ExampleTool::ExampleTool()
+	{ //////////////////////////
 		// Method 1:
 		// Easy way to add a menu/toobar action.
 		App::UI::DescAction action;
@@ -55,5 +48,4 @@ namespace VTX::Tool::Example
 		return stylesheetFile.readAll().toStdString();
 	}
 
-	void ExampleTool::onAppStop() {}
 } // namespace VTX::Tool::Example
