@@ -160,8 +160,7 @@ namespace VTX::UI::QT::Widget
 	void MainWindow::closeEvent( QCloseEvent * p_event )
 	{
 		VTX_TRACE( "Qt main window close event" );
-
-		// App::ACTION().execute<App::Action::Application::Quit>();
+		QCoreApplication::quit();
 		p_event->ignore();
 	}
 

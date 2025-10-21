@@ -17,6 +17,9 @@ namespace VTX::UI::QT
 		Application( const App::Args & );
 		~Application();
 
+		void start() override;
+		void stop();
+
 		// bool event( QEvent * ) override;
 		//  Check exception in Qt events.
 		bool notify( QObject * const, QEvent * const ) override;
@@ -27,7 +30,6 @@ namespace VTX::UI::QT
 		VTX::Util::Chrono			 _durationTimer;
 
 		void _loadTheme();
-		void _stop();
 	};
 } // namespace VTX::UI::QT
 

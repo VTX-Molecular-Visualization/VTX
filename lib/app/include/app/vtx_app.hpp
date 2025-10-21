@@ -31,7 +31,7 @@ namespace VTX::App
 		/**
 		 * @brief Virtual destructor.
 		 */
-		virtual ~VTXApp() = default;
+		virtual ~VTXApp();
 
 		/**
 		 * @brief Start the application, can be overidden by gui.

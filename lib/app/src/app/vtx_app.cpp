@@ -97,6 +97,27 @@ namespace VTX::App
 		*/
 	}
 
+	VTXApp::~VTXApp()
+	{
+		VTX_INFO( "Stopping application" );
+
+		// SCENE().reset();
+		RENDERER().clean();
+
+		//// Prevent events throw for nothing when quitting app
+		// Old::Manager::EventManager::get().freezeEvent( true );
+		//  Manager::WorkerManager::get().stopAll();
+
+		//_setting.backup();
+
+		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
+		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
+
+		// Old::Selection::SelectionManager::get().deleteModel();
+
+		HUB().trigger<Events::ApplicationStopped>();
+	}
+
 	void VTXApp::start()
 	{
 		VTX_INFO( "Starting application: {}", ECS::getCtx<Args>().toString() );
@@ -138,28 +159,6 @@ namespace VTX::App
 		}
 
 		//_handleArgs( _args );
-	}
-
-	// TODO: move to destructor?
-	void VTXApp::stop()
-	{
-		VTX_INFO( "Stopping application" );
-
-		// SCENE().reset();
-		RENDERER().clean();
-
-		//// Prevent events throw for nothing when quitting app
-		// Old::Manager::EventManager::get().freezeEvent( true );
-		//  Manager::WorkerManager::get().stopAll();
-
-		//_setting.backup();
-
-		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
-		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
-
-		// Old::Selection::SelectionManager::get().deleteModel();
-
-		HUB().trigger<Events::ApplicationStopped>();
 	}
 
 	void VTXApp::_handleArgs( const Args & args )

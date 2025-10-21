@@ -160,9 +160,9 @@ namespace VTX::UI::QT::Action
 
 		Quit::Quit()
 		{
-			name = "Quit";
-			tip	 = "Exit software";
-			// trigger	 = []() { App::ACTION().execute<App::Action::Application::Quit>(); };
+			name	 = "Quit";
+			tip		 = "Exit software";
+			trigger	 = []() { QCoreApplication::quit(); };
 			shortcut = "Esc";
 		}
 

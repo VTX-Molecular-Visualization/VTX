@@ -60,7 +60,7 @@ namespace VTX::UI::QT
 		_mainWindow->show();
 
 		// On quit.
-		App::HUB().connect<App::Events::ApplicationStopped, &Application::_stop>( this );
+		App::HUB().connect<App::Events::ApplicationStopped, &Application::stop>( this );
 
 		// Connect quit action.
 		connect(
@@ -69,9 +69,9 @@ namespace VTX::UI::QT
 			[ this ]
 			{
 				VTX_TRACE( "QCoreApplication::aboutToQuit" );
-
 				try
 				{
+					SETTINGS.save();
 				}
 				catch ( const std::exception & e )
 				{
@@ -88,14 +88,16 @@ namespace VTX::UI::QT
 		);
 		_timer.start( 0 );
 		_durationTimer.start();
-
-		// Then block to run Qt events loop.
-		exec();
-		VTX_TRACE( "Qt loop exited" );
-		_timer.stop();
 	}
 
 	Application::~Application() { _mainWindow.clear(); }
+
+	void Application::start()
+	{
+		exec();
+		VTX_TRACE( "Application::start(): Qt loop exited" );
+		_timer.stop();
+	}
 
 	bool Application::notify( QObject * const p_receiver, QEvent * const p_event )
 	{
@@ -154,13 +156,10 @@ namespace VTX::UI::QT
 		setPalette( p );
 	}
 
-	void Application::_stop()
+	void Application::stop()
 	{
-		VTX_TRACE( "Qt stop callback" );
-
-		SETTINGS.save();
-		_mainWindow.clear();
-		QApplication::quit();
+		VTX_TRACE( "Application::stop()" );
+		QCoreApplication::quit();
 	}
 
 } // namespace VTX::UI::QT
