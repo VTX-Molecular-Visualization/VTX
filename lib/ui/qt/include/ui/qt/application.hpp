@@ -5,14 +5,13 @@
 #include "widget/main_window.hpp"
 #include <QApplication>
 #include <QPointer>
-#include <QSplashScreen>
 #include <QTimer>
-#include <app/ui/base_application.hpp>
+#include <app/vtx_app.hpp>
 #include <util/chrono.hpp>
 
 namespace VTX::UI::QT
 {
-	class Application final : public QApplication, public App::UI::BaseApplication<Widget::MainWindow>
+	class Application final : public QApplication, public App::VTXApp
 	{
 	  public:
 		Application( const App::Args & );
@@ -22,14 +21,10 @@ namespace VTX::UI::QT
 		//  Check exception in Qt events.
 		bool notify( QObject * const, QEvent * const ) override;
 
-	  protected:
-		// Override BaseApplication.
-		void _start() override;
-
 	  private:
-		QTimer					_timer;
-		VTX::Util::Chrono		_durationTimer;
-		QPointer<QSplashScreen> _qSplashScreen;
+		QPointer<Widget::MainWindow> _mainWindow;
+		QTimer						 _timer;
+		VTX::Util::Chrono			 _durationTimer;
 
 		void _loadTheme();
 		void _stop();

@@ -79,10 +79,4 @@ namespace VTX::App
 
 } // namespace VTX::App
 
-namespace VTX
-{
-	// TODO: remove.
-	using APP = App::VTXApp;
-} // namespace VTX
-
 #endif

@@ -27,8 +27,6 @@ namespace VTX::UI::QT::Widget
 	  public:
 		MainWindow();
 
-		void prepare();
-		void build();
 		void addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action );
 		void addToolBarAction( const App::UI::WidgetId & p_toolbar, const App::UI::DescAction & p_action );
 		void resetLayout();

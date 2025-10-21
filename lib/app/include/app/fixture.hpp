@@ -13,7 +13,7 @@ namespace VTX::App
 			if ( not _app )
 			{
 				Args args( { ARG_NO_GRAPHICS, ARG_NO_UPDATE } );
-				_app = std::make_unique<APP>( args );
+				_app = std::make_unique<VTXApp>( args );
 			}
 
 			_app->start();
@@ -21,10 +21,10 @@ namespace VTX::App
 
 		~Fixture() { _app->stop(); }
 
-		inline APP * const get() { return _app.get(); }
+		inline VTXApp * const get() { return _app.get(); }
 
 	  private:
-		inline static std::unique_ptr<APP> _app;
+		inline static std::unique_ptr<VTXApp> _app;
 	};
 } // namespace VTX::App
 

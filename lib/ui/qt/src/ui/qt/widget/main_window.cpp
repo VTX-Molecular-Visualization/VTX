@@ -47,10 +47,7 @@ namespace VTX::UI::QT::Widget
 		// setCorner( Qt::TopRightCorner, Qt::RightDockWidgetArea );
 		setCorner( Qt::BottomLeftCorner, Qt::LeftDockWidgetArea );
 		setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
-	}
 
-	void MainWindow::build()
-	{
 		VTX_DEBUG( "Build main window" );
 
 		// Main menu.
@@ -101,10 +98,7 @@ namespace VTX::UI::QT::Widget
 		// Status bar.
 		_statusBar = new StatusBar( this );
 		setStatusBar( _statusBar );
-	}
 
-	void MainWindow::prepare()
-	{
 		// Select default tabs.
 		Core::WIDGETS::get().get<DockWidget::Scene>()->raise();
 		Core::WIDGETS::get().get<DockWidget::Inspector>()->raise();

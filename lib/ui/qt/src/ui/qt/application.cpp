@@ -17,8 +17,7 @@ namespace VTX::UI::QT
 
 	// Create QApplication with zero argc and nullptr argv.
 	int zero = 0;
-	Application::Application( const App::Args & p_args ) :
-		App::UI::BaseApplication<Widget::MainWindow>( p_args ), QApplication( zero, nullptr )
+	Application::Application( const App::Args & p_args ) : App::VTXApp( p_args ), QApplication( zero, nullptr )
 
 	{
 		using namespace Resources;
@@ -42,25 +41,10 @@ namespace VTX::UI::QT
 		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME.data() ) );
 		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN.data() ) );
 		// setQuitOnLastWindowClosed( false );
-	}
 
-	Application::~Application() {}
+		_mainWindow = new Widget::MainWindow();
 
-	bool Application::notify( QObject * const p_receiver, QEvent * const p_event )
-	{
-		try
-		{
-			return QApplication::notify( p_receiver, p_event );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "{}", p_e.what() );
-			return true;
-		}
-	}
-
-	void Application::_start()
-	{
+		// START.
 		try
 		{
 			_loadTheme();
@@ -73,7 +57,6 @@ namespace VTX::UI::QT
 		}
 
 		// Show.
-		//_qSplashScreen->finish( _mainWindow.get() );
 		_mainWindow->show();
 
 		// On quit.
@@ -110,6 +93,21 @@ namespace VTX::UI::QT
 		exec();
 		VTX_TRACE( "Qt loop exited" );
 		_timer.stop();
+	}
+
+	Application::~Application() { _mainWindow.clear(); }
+
+	bool Application::notify( QObject * const p_receiver, QEvent * const p_event )
+	{
+		try
+		{
+			return QApplication::notify( p_receiver, p_event );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "{}", p_e.what() );
+			return true;
+		}
 	}
 
 	void Application::_loadTheme()
@@ -161,7 +159,7 @@ namespace VTX::UI::QT
 		VTX_TRACE( "Qt stop callback" );
 
 		SETTINGS.save();
-		_mainWindow.reset();
+		_mainWindow.clear();
 		QApplication::quit();
 	}
 
