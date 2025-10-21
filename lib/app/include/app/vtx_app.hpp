@@ -47,11 +47,6 @@ namespace VTX::App
 		}
 
 		/**
-		 * @brief Stop the application.
-		 */
-		void stop();
-
-		/**
 		 * @brief Register a tool from another Conan package.
 		 */
 		inline void addTool( Tool::BaseTool * const p_tool ) { _tools.push_back( p_tool ); }

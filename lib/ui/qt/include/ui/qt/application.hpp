@@ -11,24 +11,56 @@
 
 namespace VTX::UI::QT
 {
+	/**
+	 * @brief UI application class inheriting from QApplication and VTXApp.
+	 */
 	class Application final : public QApplication, public App::VTXApp
 	{
 	  public:
+		/**
+		 * @brief Construct the application with given arguments.
+		 */
 		Application( const App::Args & );
+
+		/**
+		 * @brief Destructor.
+		 */
 		~Application();
 
+		/**
+		 * @brief Run the main loop.
+		 */
 		void start() override;
+
+		/**
+		 * @brief Exit the main loop.
+		 */
 		void stop();
 
-		// bool event( QEvent * ) override;
-		//  Check exception in Qt events.
+		/**
+		 * @brief Handles exceptions in Qt event loop.
+		 */
 		bool notify( QObject * const, QEvent * const ) override;
 
 	  private:
+		/**
+		 * @brief The main window.
+		 */
 		QPointer<Widget::MainWindow> _mainWindow;
-		QTimer						 _timer;
-		VTX::Util::Chrono			 _durationTimer;
 
+		/**
+		 * @brief Handles the main loop timing.
+		 */
+		QTimer _timer;
+
+		/**
+		 * @brief Computes elapsed time and interval time between frames.
+		 */
+		VTX::Util::Chrono _durationTimer;
+
+		/**
+		 * @brief Load the graphical theme.
+		 */
 		void _loadTheme();
 	};
 } // namespace VTX::UI::QT

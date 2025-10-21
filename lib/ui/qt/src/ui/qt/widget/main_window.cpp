@@ -103,8 +103,7 @@ namespace VTX::UI::QT::Widget
 		Core::WIDGETS::get().get<DockWidget::Scene>()->raise();
 		Core::WIDGETS::get().get<DockWidget::Inspector>()->raise();
 
-		// TODO: Set openGL widget as focus.
-		// centralWidget()->setFocus();
+		centralWidget()->setFocus();
 
 		// Backup default geometry and state.
 		_defaultGeometry = saveGeometry();
@@ -154,8 +153,6 @@ namespace VTX::UI::QT::Widget
 		restoreState( _defaultState );
 		center();
 	}
-
-	void MainWindow::changeEvent( QEvent * const p_event ) {}
 
 	void MainWindow::closeEvent( QCloseEvent * p_event )
 	{

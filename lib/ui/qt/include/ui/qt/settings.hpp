@@ -7,7 +7,7 @@
 
 namespace VTX::UI::QT
 {
-	class Savable;
+	class ISavable;
 
 	// TODO: set accessible for tools.
 	class Settings : public QSettings
@@ -15,23 +15,24 @@ namespace VTX::UI::QT
 	  public:
 		Settings();
 
-		inline void add( Savable * const p_savable ) { _savables.push_back( p_savable ); }
-		inline void remove( Savable * const p_savable ) { std::erase( _savables, p_savable ); }
+		inline void add( ISavable * const p_savable ) { _savables.push_back( p_savable ); }
+		inline void remove( ISavable * const p_savable ) { std::erase( _savables, p_savable ); }
 
 		void save();
 		void restore() const;
 
 	  private:
-		std::vector<Savable *> _savables;
+		std::vector<ISavable *> _savables;
 	};
 
+	// TODO: move to context.
 	inline Settings SETTINGS;
 
-	class Savable
+	class ISavable
 	{
 	  public:
-		Savable() { SETTINGS.add( this ); }
-		~Savable() { SETTINGS.remove( this ); }
+		ISavable() { SETTINGS.add( this ); }
+		~ISavable() { SETTINGS.remove( this ); }
 
 		virtual void save()	   = 0;
 		virtual void restore() = 0;

@@ -21,19 +21,40 @@ namespace VTX::UI::QT::Dialog
 
 namespace VTX::UI::QT::Widget
 {
-
-	class MainWindow : public Core::BaseWidget<MainWindow, QMainWindow>, public Savable
+	/**
+	 * @brief The application main window.
+	 */
+	class MainWindow : public Core::BaseWidget<MainWindow, QMainWindow>, public ISavable
 	{
 	  public:
+		/**
+		 * @brief Build widgets.
+		 */
 		MainWindow();
 
+		/**
+		 * @brief Hook an action to the given menu.
+		 */
 		void addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action );
+
+		/**
+		 * @brief Hook an action to the given toolbar.
+		 */
 		void addToolBarAction( const App::UI::WidgetId & p_toolbar, const App::UI::DescAction & p_action );
+
+		/**
+		 * @brief Reset layout to default state.
+		 */
 		void resetLayout();
 
-		void changeEvent( QEvent * ) override;
+		/**
+		 * @brief Catch close event to quit application.
+		 */
 		void closeEvent( QCloseEvent * ) override;
 
+		/**
+		 * @brief Create a menu from type.
+		 */
 		template<typename M>
 		M * const createMenu()
 		{
@@ -42,6 +63,9 @@ namespace VTX::UI::QT::Widget
 			return menu;
 		}
 
+		/**
+		 * @brief Create a toolbar from type.
+		 */
 		template<typename TB>
 		TB * const createToolBar()
 		{
@@ -50,6 +74,9 @@ namespace VTX::UI::QT::Widget
 			return toolBar;
 		}
 
+		/**
+		 * @brief Create a dock widget from type in the given area.
+		 */
 		template<typename DW>
 		DW * const createDockWidget( const Qt::DockWidgetArea p_area )
 		{
@@ -74,22 +101,48 @@ namespace VTX::UI::QT::Widget
 			return dockWidget;
 		}
 
+		/**
+		 * @brief ISavable implementation.
+		 */
 		void save() override;
 		void restore() override;
 
 	  protected:
+		/**
+		 * @brief Drag and drop events.
+		 */
 		void dragEnterEvent( QDragEnterEvent * );
 		void dropEvent( QDropEvent * );
 
 	  private:
-		QPointer<OpenGLWidget>	   _openGLWidget;
-		QPointer<StatusBar>		   _statusBar;
+		/**
+		 * @brief The OpenGL rendering central widget.
+		 */
+		QPointer<OpenGLWidget> _openGLWidget;
+
+		/**
+		 * @brief The bottom status bar.
+		 */
+		QPointer<StatusBar> _statusBar;
+
+		/**
+		 * @brief The progress dialog shown during blocking operations.
+		 */
 		QPointer<Dialog::Progress> _progressDialog;
 
-		// TODO: keep like that or re-tabify?
+		/**
+		 * @brief Default geometry for layout reset.
+		 */
 		QByteArray _defaultGeometry;
+
+		/**
+		 * @brief Default state for layout reset.
+		 */
 		QByteArray _defaultState;
 
+		/**
+		 * @brief Event handlers for blocking operations.
+		 */
 		void _onBlockingOperationStarted( const App::Events::BlockingOperationStarted & );
 		void _onBlockingOperationProgress( const App::Events::BlockingOperationProgress & );
 		void _onBlockingOperationEnded( const App::Events::BlockingOperationEnded & );

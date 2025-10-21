@@ -7,7 +7,7 @@
 namespace VTX::UI::QT::Dialog
 {
 
-	class Open : public Core::BaseDialog<Open, QFileDialog>, public Savable
+	class Open : public Core::BaseDialog<Open, QFileDialog>, public ISavable
 	{
 	  public:
 		Open();

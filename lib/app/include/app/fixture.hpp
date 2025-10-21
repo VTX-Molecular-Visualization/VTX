@@ -19,7 +19,7 @@ namespace VTX::App
 			_app->start();
 		}
 
-		~Fixture() { _app->stop(); }
+		~Fixture() = default;
 
 		inline VTXApp * const get() { return _app.get(); }
 

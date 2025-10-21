@@ -15,7 +15,7 @@
 namespace VTX::UI::QT::Dialog
 {
 
-	class ExportImage : public Core::BaseDialog<ExportImage>, public Savable
+	class ExportImage : public Core::BaseDialog<ExportImage>, public ISavable
 	{
 	  public:
 		ExportImage();

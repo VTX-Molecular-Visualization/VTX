@@ -15,17 +15,14 @@ VTX_INIT_RESOURCES( vtx_qt_resources_ui )
 namespace VTX::UI::QT
 {
 
-	// Create QApplication with zero argc and nullptr argv.
 	int zero = 0;
 	Application::Application( const App::Args & p_args ) : App::VTXApp( p_args ), QApplication( zero, nullptr )
 
 	{
 		using namespace Resources;
 		using namespace VTX::App;
-		//_qSplashScreen = new QSplashScreen( QPixmap( SPRITE_SPLASH ) );
-		//_qSplashScreen->show();
-		//_qSplashScreen->showMessage( "Loading..." );
 
+		// Application info.
 		const std::string version = std::to_string( VERSION_MAJOR ) + "." + std::to_string( VERSION_MINOR ) + "."
 									+ std::to_string( VERSION_PATCH );
 		std::string displayName = APPLICATION_DISPLAY_NAME.data() + std::string( " - v" ) + version;
@@ -40,15 +37,14 @@ namespace VTX::UI::QT
 		setApplicationVersion( QString::fromStdString( version ) );
 		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME.data() ) );
 		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN.data() ) );
-		// setQuitOnLastWindowClosed( false );
 
+		// Create main window.
 		_mainWindow = new Widget::MainWindow();
 
-		// START.
+		// Load theme and restore settings.
 		try
 		{
 			_loadTheme();
-			// Restore settings after main window is built.
 			SETTINGS.restore();
 		}
 		catch ( const std::exception & e )
@@ -59,10 +55,10 @@ namespace VTX::UI::QT
 		// Show.
 		_mainWindow->show();
 
-		// On quit.
+		// Connect quit event that can come from VTXApp.
 		App::HUB().connect<App::Events::ApplicationStopped, &Application::stop>( this );
 
-		// Connect quit action.
+		// Save settings just before quitting (after QCoreApplication::quit).
 		connect(
 			this,
 			&QCoreApplication::aboutToQuit,
@@ -80,7 +76,7 @@ namespace VTX::UI::QT
 			}
 		);
 
-		// Run main loop.
+		// Run the main loop.
 		connect(
 			&_timer,
 			&QTimer::timeout,
@@ -94,6 +90,7 @@ namespace VTX::UI::QT
 
 	void Application::start()
 	{
+		// Run Qt main loop.
 		exec();
 		VTX_TRACE( "Application::start(): Qt loop exited" );
 		_timer.stop();
@@ -159,7 +156,8 @@ namespace VTX::UI::QT
 	void Application::stop()
 	{
 		VTX_TRACE( "Application::stop()" );
-		QCoreApplication::quit();
+		// Safely quit Qt main loop.
+		QTimer::singleShot( 0, this, &QCoreApplication::quit );
 	}
 
 } // namespace VTX::UI::QT

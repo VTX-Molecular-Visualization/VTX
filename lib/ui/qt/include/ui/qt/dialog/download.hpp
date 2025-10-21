@@ -11,7 +11,7 @@
 
 namespace VTX::UI::QT::Dialog
 {
-	class Download : public Core::BaseDialog<Download>, public Savable
+	class Download : public Core::BaseDialog<Download>, public ISavable
 	{
 	  public:
 		Download();
