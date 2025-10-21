@@ -26,6 +26,7 @@
 #include <app/tool/base_tool.hpp>
 #include <ui/qt/application.hpp>
 #include <ui/qt/core/base_dock_widget.hpp>
+#include <ui/qt/services.hpp>
 #include <ui/qt/util.hpp>
 #include <util/logger.hpp>
 //
@@ -98,9 +99,9 @@ namespace VTX::Tool::Mdprep
 			p_out = g_win;
 			return;
 		}
-		auto * const mainWindow = UI::QT::Core::WIDGETS::get().get<UI::QT::Widget::MainWindow>();
-		g_win					= mainWindow->createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
-		p_out					= g_win;
+		auto mainWindow = UI::QT::MAIN_WINDOW();
+		g_win			= mainWindow->createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
+		p_out			= g_win;
 	}
 
 	struct OpenMdPrep : public App::UI::DescAction
@@ -132,7 +133,7 @@ namespace VTX::Tool::Mdprep
 	{
 		OpenMdPrep action;
 
-		auto * const mainWindow = UI::QT::Core::WIDGETS::get().get<UI::QT::Widget::MainWindow>();
+		auto mainWindow = UI::QT::MAIN_WINDOW();
 		mainWindow->addMenuAction( "Tool", action );
 		mainWindow->addToolBarAction( "Tool", action );
 	}

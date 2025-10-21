@@ -1,4 +1,5 @@
 #include "ui/qt/menu/theme.hpp"
+#include "ui/qt/services.hpp"
 #include "ui/qt/widget/main_window.hpp"
 
 namespace VTX::UI::QT::Menu
@@ -6,7 +7,7 @@ namespace VTX::UI::QT::Menu
 
 	void Theme::_resetLayout()
 	{
-		Core::WIDGETS::get().get<Widget::MainWindow>()->resetLayout();
+		MAIN_WINDOW()->resetLayout();
 		VTX_INFO( "Layout reseted" );
 	}
 

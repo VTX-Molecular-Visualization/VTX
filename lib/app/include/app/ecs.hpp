@@ -45,6 +45,15 @@ namespace VTX::App::ECS
 		return registry().ctx().contains<T>();
 	}
 
+	/**
+	 * @brief Remove a global service from the registry context.
+	 */
+	template<class T>
+	void removeCtx()
+	{
+		registry().ctx().erase<T>();
+	}
+
 } // namespace VTX::App::ECS
 
 namespace VTX::App

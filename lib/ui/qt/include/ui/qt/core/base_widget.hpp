@@ -18,21 +18,7 @@ namespace VTX::UI::QT::Core
 	concept ConceptWidget = std::is_base_of_v<QWidget, W>;
 
 	/**
-	 * @brief Abstract collection of QWidget pointers.
-	 */
-	using WIDGET_COLLECTION = VTX::Util::Collection<QWidget *>;
-
-	/**
-	 * @brief An accessor to the singleton that store all widgets.
-	 */
-	using WIDGETS	= VTX::Util::Singleton<WIDGET_COLLECTION>;
-	using MODEL		= VTX::Util::Singleton<Model>;
-	using SELECTION = VTX::Util::Singleton<Selection>;
-
-	/**
 	 * @brief Abstract class that describes a widget behaviour.
-	 * @tparam T is the derived class type.
-	 * @tparam W is the QWidget type.
 	 */
 	template<typename T, ConceptWidget W>
 	class BaseWidget : public W //, public WIDGET_COLLECTION::GlobalStorage<T>
@@ -44,21 +30,12 @@ namespace VTX::UI::QT::Core
 			const auto name = VTX::Util::typeName<T>();
 			W::setObjectName( name );
 			VTX_TRACE( "BaseWidget: {}", name );
-
-			// Ensure that only one instance of the widget is created.
-			assert( not WIDGETS::get().has<T>() );
-
-			WIDGETS::get().set<T>( static_cast<T *>( this ) );
 		} // namespace VTX::UI::QT
 
 		virtual ~BaseWidget()
 		{
 			const auto name = VTX::Util::typeName<T>();
 			VTX_TRACE( "~BaseWidget: {}", name );
-
-			assert( WIDGETS::get().has<T>() );
-
-			WIDGETS::get().remove<T>();
 		}
 
 		/**

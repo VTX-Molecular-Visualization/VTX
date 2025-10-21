@@ -107,6 +107,8 @@ namespace VTX::UI::QT::Widget
 		void save() override;
 		void restore() override;
 
+		inline OpenGLWidget * const getOpenGLWidget() const { return _openGLWidget; }
+
 	  protected:
 		/**
 		 * @brief Drag and drop events.

@@ -2,9 +2,8 @@
 #include "tool/example/widget/my_dock_widget.hpp"
 #include "tool/example/widget/my_menu.hpp"
 #include "tool/example/widget/my_tool_bar.hpp"
+#include "ui/qt/services.hpp"
 #include <QFile>
-#include <ui/qt/application.hpp>
-#include <ui/qt/dock_widget/inspector.hpp>
 #include <ui/qt/macros.hpp>
 #include <util/logger.hpp>
 
@@ -14,7 +13,8 @@ VTX_INIT_RESOURCES( vtx_qt_resources_tool_example )
 namespace VTX::Tool::Example
 {
 	ExampleTool::ExampleTool()
-	{ //////////////////////////
+	{
+		//////////////////////////
 		// Method 1:
 		// Easy way to add a menu/toobar action.
 		App::UI::DescAction action;
@@ -25,11 +25,10 @@ namespace VTX::Tool::Example
 		{
 			VTX_DEBUG( "Action triggered" );
 			// Implement logic.
-			//
 		};
 
 		// Add to named button group.
-		auto * const mainWindow = UI::QT::Core::WIDGETS::get().get<UI::QT::Widget::MainWindow>();
+		auto mainWindow = UI::QT::MAIN_WINDOW();
 		mainWindow->addMenuAction( "Tool", action );
 		mainWindow->addToolBarAction( "Tool", action );
 

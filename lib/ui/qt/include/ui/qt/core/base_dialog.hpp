@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_CORE_BASE_DIALOG__
 #define __VTX_UI_QT_CORE_BASE_DIALOG__
 
+#include "ui/qt/services.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include <QDialog>
 #include <concepts>
@@ -21,8 +22,7 @@ namespace VTX::UI::QT::Core
 	{
 	  public:
 		template<typename... Args>
-		BaseDialog( Args &&... p_args ) :
-			BaseWidget<T, D>( WIDGETS::get().get<Widget::MainWindow>(), std::forward<Args>( p_args )... )
+		BaseDialog( Args &&... p_args ) : BaseWidget<T, D>( MAIN_WINDOW(), std::forward<Args>( p_args )... )
 		{
 		}
 

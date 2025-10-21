@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QIcon>
 #include <QStyle>
+#include <app/ecs.hpp>
 #include <app/infos.hpp>
 #include <util/event_hub.hpp>
 
@@ -40,6 +41,8 @@ namespace VTX::UI::QT
 
 		// Create main window.
 		_mainWindow = new Widget::MainWindow();
+		// Store in context.
+		App::ECS::setCtx<QPointer<Widget::MainWindow>>( _mainWindow );
 
 		// Load theme and restore settings.
 		try
@@ -86,7 +89,11 @@ namespace VTX::UI::QT
 		_durationTimer.start();
 	}
 
-	Application::~Application() { _mainWindow.clear(); }
+	Application::~Application()
+	{
+		App::ECS::removeCtx<QPointer<Widget::MainWindow>>();
+		_mainWindow.clear();
+	}
 
 	void Application::start()
 	{

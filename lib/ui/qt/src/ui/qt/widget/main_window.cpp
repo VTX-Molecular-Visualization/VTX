@@ -81,27 +81,21 @@ namespace VTX::UI::QT::Widget
 		// Dock widgets.
 		createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );
 
-		createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
+		auto * const dwScene = createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
 		createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea );
 		createDockWidget<DockWidget::ColorLayouts>( Qt::LeftDockWidgetArea );
+		dwScene->raise();
 
-		// dwScene->raise();
-
-		createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
+		auto * const dwInspector = createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
 		createDockWidget<DockWidget::RenderSettings>( Qt::RightDockWidgetArea );
 		createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
-
-		// dwInspector->raise();
+		dwInspector->raise();
 
 		createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
 
 		// Status bar.
 		_statusBar = new StatusBar( this );
 		setStatusBar( _statusBar );
-
-		// Select default tabs.
-		Core::WIDGETS::get().get<DockWidget::Scene>()->raise();
-		Core::WIDGETS::get().get<DockWidget::Inspector>()->raise();
 
 		centralWidget()->setFocus();
 

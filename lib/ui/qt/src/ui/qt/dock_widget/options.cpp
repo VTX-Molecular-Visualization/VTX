@@ -2,6 +2,8 @@
 #include "ui/qt/actions.hpp"
 #include "ui/qt/application.hpp"
 #include "ui/qt/core/widget/actionable_push_button.hpp"
+#include "ui/qt/services.hpp"
+#include "ui/qt/widget/main_window.hpp"
 #include "ui/qt/widget/opengl_widget.hpp"
 #include <QDesktopServices>
 #include <QFileDialog>
@@ -33,11 +35,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			_checkBoxVSync,
 			&QCheckBox::checkStateChanged,
-			[ this ]( const int p_state )
-			{
-				// TODO: use action? available in script?
-				Core::WIDGETS::get().get<Widget::OpenGLWidget>()->setVSync( p_state == Qt::Checked );
-			}
+			[ this ]( const int p_state ) { MAIN_WINDOW()->getOpenGLWidget()->setVSync( p_state == Qt::Checked ); }
 		);
 
 		layoutGraphics->addWidget( _checkBoxVSync );
