@@ -25,7 +25,7 @@
 namespace VTX::UI::QT::Widget
 {
 
-	MainWindow::MainWindow() : BaseWidget<MainWindow, QMainWindow>( nullptr )
+	MainWindow::MainWindow() : BaseWidget( nullptr )
 	{
 		// Size.
 		resize( 1920, 1080 );

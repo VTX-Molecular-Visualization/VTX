@@ -7,10 +7,10 @@
 namespace VTX::UI::QT::Widget
 {
 
-	class Tree : public Widget::BaseWidget<Tree, QTreeView>
+	class Tree : public Widget::BaseWidget<QTreeView>
 	{
 	  public:
-		Tree( QWidget * const p_parent = nullptr ) : BaseWidget<Tree, QTreeView>( p_parent )
+		Tree( QWidget * const p_parent = nullptr ) : BaseWidget( p_parent )
 		{
 			setHeaderHidden( true );
 			setRootIsDecorated( false );

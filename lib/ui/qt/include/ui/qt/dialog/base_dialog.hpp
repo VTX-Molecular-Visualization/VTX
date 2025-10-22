@@ -18,12 +18,12 @@ namespace VTX::UI::QT::Dialog
 	 * @tparam T is the derived class type.
 	 * @tparam D is the dialog type.
 	 */
-	template<typename T, ConceptDialog D = QDialog>
-	class BaseDialog : public Widget::BaseWidget<T, D>
+	template<ConceptDialog D = QDialog>
+	class BaseDialog : public Widget::BaseWidget<D>
 	{
 	  public:
 		template<typename... Args>
-		BaseDialog( Args &&... p_args ) : Widget::BaseWidget<T, D>( MAIN_WINDOW(), std::forward<Args>( p_args )... )
+		BaseDialog( Args &&... p_args ) : Widget::BaseWidget<D>( MAIN_WINDOW(), std::forward<Args>( p_args )... )
 		{
 		}
 

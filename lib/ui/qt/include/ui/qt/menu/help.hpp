@@ -1,17 +1,17 @@
 #ifndef __VTX_UI_QT_MENU_HELP__
 #define __VTX_UI_QT_MENU_HELP__
 
-#include "ui/qt/widget/base_widget.hpp"
 #include "ui/qt/helper.hpp"
+#include "ui/qt/widget/base_widget.hpp"
 #include <QMenu>
 
 namespace VTX::UI::QT::Menu
 {
 
-	class Help : public Widget::BaseWidget<Help, QMenu>
+	class Help : public Widget::BaseWidget<QMenu>
 	{
 	  public:
-		Help( QWidget * p_parent ) : BaseWidget<Help, QMenu>( "Help", p_parent )
+		Help( QWidget * p_parent ) : BaseWidget( "Help", p_parent )
 		{
 			addAction<Action::Help::Documentation>();
 			addAction<Action::Help::Report>();

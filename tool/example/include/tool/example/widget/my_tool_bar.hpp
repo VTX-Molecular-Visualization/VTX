@@ -9,10 +9,10 @@
 namespace VTX::Tool::Example::Widget
 {
 
-	class MyToolBar : public UI::QT::Widget::BaseWidget<MyToolBar, QToolBar>
+	class MyToolBar : public UI::QT::Widget::BaseWidget<QToolBar>
 	{
 	  public:
-		MyToolBar( QWidget * p_parent ) : BaseWidget<MyToolBar, QToolBar>( "My toolbar", p_parent )
+		MyToolBar( QWidget * p_parent ) : BaseWidget( "My toolbar", p_parent )
 		{
 			addAction<Action::MyAction1>();
 			addAction<Action::MyAction2>();

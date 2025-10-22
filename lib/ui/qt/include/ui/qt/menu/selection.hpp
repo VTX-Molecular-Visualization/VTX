@@ -6,10 +6,10 @@
 
 namespace VTX::UI::QT::Menu
 {
-	class Selection : public Widget::BaseWidget<Selection, QMenu>
+	class Selection : public Widget::BaseWidget<QMenu>
 	{
 	  public:
-		Selection( QWidget * p_parent ) : BaseWidget<Selection, QMenu>( "Selection", p_parent )
+		Selection( QWidget * p_parent ) : BaseWidget( "Selection", p_parent )
 		{
 			addAction<Action::Selection::SetGranularitySystem>();
 			addAction<Action::Selection::SetGranularityChain>();

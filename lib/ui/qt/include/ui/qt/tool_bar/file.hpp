@@ -7,10 +7,10 @@
 namespace VTX::UI::QT::ToolBar
 {
 
-	class File : public Widget::BaseWidget<File, QToolBar>
+	class File : public Widget::BaseWidget<QToolBar>
 	{
 	  public:
-		File( QWidget * p_parent ) : BaseWidget<File, QToolBar>( "File", p_parent )
+		File( QWidget * p_parent ) : BaseWidget( "File", p_parent )
 		{
 			addAction<Action::System::New>();
 			addAction<Action::System::Download>();

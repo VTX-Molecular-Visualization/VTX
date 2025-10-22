@@ -24,7 +24,7 @@ namespace VTX::UI::QT::Widget
 	/**
 	 * @brief The application main window.
 	 */
-	class MainWindow : public Widget::BaseWidget<MainWindow, QMainWindow>, public ISavable
+	class MainWindow : public Widget::BaseWidget<QMainWindow>
 	{
 	  public:
 		/**

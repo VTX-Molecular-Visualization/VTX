@@ -5,7 +5,7 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	ColorLayouts::ColorLayouts( QWidget * p_parent ) : BaseDockWidget<ColorLayouts>( "Colors", p_parent )
+	ColorLayouts::ColorLayouts( QWidget * p_parent ) : BaseDockWidget( "Colors", p_parent )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 

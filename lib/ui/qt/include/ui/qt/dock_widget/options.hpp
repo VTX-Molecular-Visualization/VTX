@@ -14,7 +14,7 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	class Options : public BaseDockWidget<Options>, public ISavable
+	class Options : public BaseDockWidget<>
 	{
 	  public:
 		Options( QWidget * p_parent );

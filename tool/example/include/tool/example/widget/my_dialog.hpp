@@ -9,10 +9,10 @@
 namespace VTX::Tool::Example::Widget
 {
 
-	class MyDialog : public UI::QT::Dialog::BaseDialog<MyDialog>
+	class MyDialog : public UI::QT::Dialog::BaseDialog<>
 	{
 	  public:
-		MyDialog()
+		MyDialog() : BaseDialog()
 		{
 			setWindowTitle( "Example tool dialog" );
 			setMinimumSize( 300, 100 );

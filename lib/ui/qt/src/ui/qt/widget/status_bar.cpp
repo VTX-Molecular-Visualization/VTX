@@ -7,7 +7,7 @@
 namespace VTX::UI::QT::Widget
 {
 
-	StatusBar::StatusBar( QWidget * p_parent ) : BaseWidget<StatusBar, QStatusBar>( p_parent )
+	StatusBar::StatusBar( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
 		auto * fpsLabel = new QLabel( this );
 		fpsLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );

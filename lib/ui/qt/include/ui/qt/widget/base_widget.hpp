@@ -2,8 +2,7 @@
 #define __VTX_UI_QT_WIDGET_BASE_WIDGET__
 
 #include "ui/qt/actions.hpp"
-#include "ui/qt/model.hpp"
-#include "ui/qt/selection.hpp"
+#include "ui/qt/services.hpp"
 #include <QGuiApplication>
 #include <QScreen>
 #include <QWidget>
@@ -20,22 +19,24 @@ namespace VTX::UI::QT::Widget
 	/**
 	 * @brief Abstract class that describes a widget behaviour.
 	 */
-	template<typename T, ConceptWidget W>
+	template<ConceptWidget W>
 	class BaseWidget : public W
 	{
 	  public:
 		template<typename... Args>
 		BaseWidget( Args &&... p_args ) : W( std::forward<Args>( p_args )... )
 		{
-			const auto name = VTX::Util::typeName<T>();
+			using This		= std::remove_cvref_t<decltype( *this )>;
+			const auto name = VTX::Util::typeName<This>();
 			W::setObjectName( name );
-			VTX_TRACE( "BaseWidget: {}", name );
-		} // namespace VTX::UI::QT
+			VTX_TRACE( "Widget created: {}", name );
+		}
 
 		virtual ~BaseWidget()
 		{
-			const auto name = VTX::Util::typeName<T>();
-			VTX_TRACE( "~BaseWidget: {}", name );
+			using This		= std::remove_cvref_t<decltype( *this )>;
+			const auto name = VTX::Util::typeName<This>();
+			VTX_TRACE( "Widget deleted: {}", name );
 		}
 
 		/**
@@ -60,6 +61,23 @@ namespace VTX::UI::QT::Widget
 			const int y = ( geometry.height() - this->height() ) / 2;
 			this->move( x, y );
 		}
+
+		void showEvent( QShowEvent * p_e ) override
+		{
+			VTX_WARNING( "BaseWidget::showEvent" );
+			restore( SETTINGS() );
+			W::showEvent( p_e );
+		}
+
+		void hideEvent( QHideEvent * p_e ) override
+		{
+			VTX_WARNING( "BaseWidget::hideEvent" );
+			save( SETTINGS() );
+			W::hideEvent( p_e );
+		}
+
+		virtual void save( Settings & ) {}
+		virtual void restore( const Settings & ) {}
 	};
 
 } // namespace VTX::UI::QT::Widget

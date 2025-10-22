@@ -13,7 +13,7 @@ namespace VTX::UI::QT::Widget
 	 * @brief Class responsible for displaying a textbox and executing its content when enter is pressed.
 	 * Executing means that we send the line to the python interpreter.
 	 */
-	class CommandLauncher : public Widget::BaseWidget<CommandLauncher, QLineEdit>
+	class CommandLauncher : public Widget::BaseWidget<QLineEdit>
 	{
 	  public:
 		CommandLauncher( QWidget * p_parent );

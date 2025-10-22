@@ -6,7 +6,7 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	class Representations : public BaseDockWidget<Representations>
+	class Representations : public BaseDockWidget<>
 	{
 	  public:
 		Representations( QWidget * );

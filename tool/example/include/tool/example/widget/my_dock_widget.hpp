@@ -2,15 +2,15 @@
 #define __VTX_TOOL_EXAMPLE_WIDGET_MY_DOCK_WIDGET__
 
 #include <QDockWidget>
-#include <ui/qt/widget/base_widget.hpp>
+#include <ui/qt/dock_widget/base_dock_widget.hpp>
 
 namespace VTX::Tool::Example::Widget
 {
 
-	class MyDockWidget : public UI::QT::Widget::BaseWidget<MyDockWidget, QDockWidget>
+	class MyDockWidget : public UI::QT::DockWidget::BaseDockWidget<>
 	{
 	  public:
-		MyDockWidget( QWidget * p_parent ) : BaseWidget<MyDockWidget, QDockWidget>( "My dock panel", p_parent )
+		MyDockWidget( QWidget * p_parent ) : BaseDockWidget( "My dock panel", p_parent )
 		{
 			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		}

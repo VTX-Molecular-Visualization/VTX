@@ -6,10 +6,10 @@
 
 namespace VTX::UI::QT::Menu
 {
-	class Camera : public Widget::BaseWidget<Camera, QMenu>
+	class Camera : public Widget::BaseWidget<QMenu>
 	{
 	  public:
-		Camera( QWidget * p_parent ) : BaseWidget<Camera, QMenu>( "Camera", p_parent )
+		Camera( QWidget * p_parent ) : BaseWidget( "Camera", p_parent )
 		{
 			addAction<Action::Camera::Perspective>();
 			addAction<Action::Camera::Orthographic>();

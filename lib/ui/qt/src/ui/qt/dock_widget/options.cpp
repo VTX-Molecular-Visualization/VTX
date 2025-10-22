@@ -15,7 +15,7 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	Options::Options( QWidget * p_parent ) : BaseDockWidget<Options>( "Options", p_parent )
+	Options::Options( QWidget * p_parent ) : BaseDockWidget( "Options", p_parent )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 

@@ -41,23 +41,22 @@ namespace VTX::UI::QT
 		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN.data() ) );
 
 		// Settings.
-		App::ECS::setCtx<Settings>();
+		try
+		{
+			App::ECS::setCtx<Settings>();
+		}
+		catch ( const std::exception & e )
+		{
+			VTX_ERROR( "Failed to restore settings: {}", e.what() );
+		}
 
 		// Create main window.
 		_mainWindow = new Widget::MainWindow();
 		// Store in context.
 		App::ECS::setCtx<QPointer<Widget::MainWindow>>( _mainWindow );
 
-		// Load theme and restore settings.
-		try
-		{
-			_loadTheme();
-			SETTINGS().restore();
-		}
-		catch ( const std::exception & e )
-		{
-			VTX_ERROR( "Failed to restore settings: {}", e.what() );
-		}
+		// Load theme.
+		_loadTheme();
 
 		// Show.
 		_mainWindow->show();
@@ -72,14 +71,7 @@ namespace VTX::UI::QT
 			[ this ]
 			{
 				VTX_TRACE( "QCoreApplication::aboutToQuit" );
-				try
-				{
-					SETTINGS().save();
-				}
-				catch ( const std::exception & e )
-				{
-					VTX_ERROR( "Failed to save settings: {}", e.what() );
-				}
+				_mainWindow->hide();
 			}
 		);
 
@@ -95,8 +87,19 @@ namespace VTX::UI::QT
 
 	Application::~Application()
 	{
+		// Delete main window and all its widgets.
 		App::ECS::removeCtx<QPointer<Widget::MainWindow>>();
 		_mainWindow.clear();
+
+		// Save settings.
+		try
+		{
+			SETTINGS().save();
+		}
+		catch ( const std::exception & e )
+		{
+			VTX_ERROR( "Failed to save settings: {}", e.what() );
+		}
 	}
 
 	void Application::start()
@@ -105,6 +108,13 @@ namespace VTX::UI::QT
 		exec();
 		VTX_TRACE( "Application::start(): Qt loop exited" );
 		_timer.stop();
+	}
+
+	void Application::stop()
+	{
+		VTX_TRACE( "Application::stop()" );
+		// Safely quit Qt main loop.
+		QTimer::singleShot( 0, this, &QCoreApplication::quit );
 	}
 
 	bool Application::notify( QObject * const p_receiver, QEvent * const p_event )
@@ -162,13 +172,6 @@ namespace VTX::UI::QT
 		QPalette lightPalette = QApplication::style()->standardPalette();
 
 		setPalette( p );
-	}
-
-	void Application::stop()
-	{
-		VTX_TRACE( "Application::stop()" );
-		// Safely quit Qt main loop.
-		QTimer::singleShot( 0, this, &QCoreApplication::quit );
 	}
 
 } // namespace VTX::UI::QT

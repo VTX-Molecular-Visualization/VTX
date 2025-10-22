@@ -10,7 +10,7 @@
 namespace VTX::UI::QT::Widget
 {
 
-	class StatusBar : public Widget::BaseWidget<StatusBar, QStatusBar>
+	class StatusBar : public Widget::BaseWidget<QStatusBar>
 	{
 	  public:
 		StatusBar( QWidget * p_parent );

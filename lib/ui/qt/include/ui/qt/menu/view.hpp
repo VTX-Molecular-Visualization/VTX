@@ -1,17 +1,17 @@
 #ifndef __VTX_UI_QT_MENU_VIEW__
 #define __VTX_UI_QT_MENU_VIEW__
 
-#include "ui/qt/widget/base_widget.hpp"
 #include "ui/qt/helper.hpp"
+#include "ui/qt/widget/base_widget.hpp"
 #include <QMenu>
 
 namespace VTX::UI::QT::Menu
 {
 
-	class View : public Widget::BaseWidget<View, QMenu>
+	class View : public Widget::BaseWidget<QMenu>
 	{
 	  public:
-		View( QWidget * p_parent ) : BaseWidget<View, QMenu>( "View", p_parent )
+		View( QWidget * p_parent ) : BaseWidget( "View", p_parent )
 		{
 			/*
 			addQAction( this, { "Console", "Show/hide console window" } );
