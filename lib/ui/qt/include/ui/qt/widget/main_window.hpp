@@ -145,9 +145,9 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Event handlers for blocking operations.
 		 */
-		void _onBlockingOperationStarted( const App::Events::BlockingOperationStarted & );
+		void _onBlockingOperationStart( const App::Events::BlockingOperationStart & );
 		void _onBlockingOperationProgress( const App::Events::BlockingOperationProgress & );
-		void _onBlockingOperationEnded( const App::Events::BlockingOperationEnded & );
+		void _onBlockingOperationEnd( const App::Events::BlockingOperationEnd & );
 	};
 
 } // namespace VTX::UI::QT::Widget

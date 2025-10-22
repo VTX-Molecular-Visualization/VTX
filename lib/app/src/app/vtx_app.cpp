@@ -114,8 +114,6 @@ namespace VTX::App
 		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 
 		// Old::Selection::SelectionManager::get().deleteModel();
-
-		HUB().trigger<Events::ApplicationStopped>();
 	}
 
 	void VTXApp::start()
@@ -148,7 +146,7 @@ namespace VTX::App
 		// Internal::initSettings( App::SETTINGS() );
 
 		// ACTION().execute<Action::Mode::SetMode<Mode::Visualization>>();
-		HUB().trigger<Events::ApplicationStarted>();
+		HUB().trigger<Events::ApplicationStart>();
 
 		// Updater.
 		// UPDATER().onUpdateAvailable += []( const uint, const uint, const uint ) { UPDATER().downloadUpdate(); };

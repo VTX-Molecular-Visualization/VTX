@@ -42,7 +42,7 @@ namespace VTX::UI::QT::Dialog
 
 		// Radio buttons.
 		auto * buttonGroup		= new QButtonGroup( this );
-		auto * layoutCacheRadio = new QHBoxLayout( this );
+		auto * layoutCacheRadio = new QHBoxLayout();
 		_radioButtonOpen		= new QRadioButton( "Open from cache" );
 		_radioButtonDownload	= new QRadioButton( "Download" );
 		buttonGroup->addButton( _radioButtonOpen );

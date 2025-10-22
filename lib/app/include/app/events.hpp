@@ -3,11 +3,11 @@
 
 namespace VTX::App::Events
 {
-	struct ApplicationStarted
+	struct ApplicationStart
 	{
 	};
 
-	struct ApplicationStopped
+	struct ApplicationStop
 	{
 	};
 
@@ -29,12 +29,12 @@ namespace VTX::App::Events
 		float elapsed;
 	};
 
-	struct BlockingOperationStarted
+	struct BlockingOperationStart
 	{
 		std::string message;
 	};
 
-	struct BlockingOperationEnded
+	struct BlockingOperationEnd
 	{
 	};
 

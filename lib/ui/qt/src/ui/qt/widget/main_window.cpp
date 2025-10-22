@@ -104,9 +104,9 @@ namespace VTX::UI::QT::Widget
 		_defaultState	 = saveState();
 
 		// Connect events.
-		App::HUB().connect<App::Events::BlockingOperationStarted, &MainWindow::_onBlockingOperationStarted>( this );
+		App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
 		App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>( this );
-		App::HUB().connect<App::Events::BlockingOperationEnded, &MainWindow::_onBlockingOperationEnded>( this );
+		App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
 	}
 
 	void MainWindow::addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action )
@@ -150,7 +150,7 @@ namespace VTX::UI::QT::Widget
 
 	void MainWindow::closeEvent( QCloseEvent * p_event )
 	{
-		VTX_TRACE( "Qt main window close event" );
+		VTX_TRACE( "MainWindow::closeEvent: Qt main window close event" );
 		QCoreApplication::quit();
 		p_event->ignore();
 	}
@@ -179,7 +179,7 @@ namespace VTX::UI::QT::Widget
 		restoreState( p_settings.value( "windowState" ).toByteArray() );
 	}
 
-	void MainWindow::_onBlockingOperationStarted( const App::Events::BlockingOperationStarted & p_e )
+	void MainWindow::_onBlockingOperationStart( const App::Events::BlockingOperationStart & p_e )
 	{
 		_progressDialog = new Dialog::Progress( p_e.message );
 		_progressDialog->show();
@@ -192,7 +192,7 @@ namespace VTX::UI::QT::Widget
 		_progressDialog->setValue( p_e.progress );
 	}
 
-	void MainWindow::_onBlockingOperationEnded( const App::Events::BlockingOperationEnded & )
+	void MainWindow::_onBlockingOperationEnd( const App::Events::BlockingOperationEnd & )
 	{
 		if ( _progressDialog )
 		{

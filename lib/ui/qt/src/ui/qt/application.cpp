@@ -62,7 +62,7 @@ namespace VTX::UI::QT
 		_mainWindow->show();
 
 		// Connect quit event that can come from VTXApp.
-		App::HUB().connect<App::Events::ApplicationStopped, &Application::stop>( this );
+		App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
 
 		// Save settings just before quitting (after QCoreApplication::quit).
 		connect(
@@ -104,6 +104,7 @@ namespace VTX::UI::QT
 
 	void Application::start()
 	{
+		VTXApp::start();
 		// Run Qt main loop.
 		exec();
 		VTX_TRACE( "Application::start(): Qt loop exited" );

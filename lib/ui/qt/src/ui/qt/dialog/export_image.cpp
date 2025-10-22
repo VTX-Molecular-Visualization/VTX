@@ -21,9 +21,9 @@ namespace VTX::UI::QT::Dialog
 
 		// Resolution.
 		auto * groupResolution		 = new QGroupBox( "Resolution" );
-		auto * layoutGroupResolution = new QVBoxLayout( this );
+		auto * layoutGroupResolution = new QVBoxLayout();
 		groupResolution->setLayout( layoutGroupResolution );
-		auto * layoutPresetSize = new QHBoxLayout( this );
+		auto * layoutPresetSize = new QHBoxLayout();
 
 		layoutPresetSize->setAlignment( Qt::AlignmentFlag::AlignLeft );
 

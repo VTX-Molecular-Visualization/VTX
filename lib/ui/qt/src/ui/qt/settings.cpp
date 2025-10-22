@@ -10,11 +10,6 @@ namespace VTX::UI::QT
 		QSettings( QString::fromStdString( App::Filesystem::getConfigIniFile().string() ), QSettings::IniFormat )
 	{
 		VTX_DEBUG( "Loading settings: {}", fileName().toStdString() );
-
-		if ( status() != QSettings::NoError )
-		{
-			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( status() ) ) );
-		}
 	}
 
 	void Settings::save()
@@ -27,11 +22,6 @@ namespace VTX::UI::QT
 		}
 
 		sync();
-
-		if ( status() != QSettings::NoError )
-		{
-			throw std::runtime_error( fmt::format( "{}", Util::Enum::enumName( status() ) ) );
-		}
 	}
 
 } // namespace VTX::UI::QT

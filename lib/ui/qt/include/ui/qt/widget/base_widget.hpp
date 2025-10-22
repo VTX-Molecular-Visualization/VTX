@@ -5,6 +5,7 @@
 #include "ui/qt/services.hpp"
 #include <QGuiApplication>
 #include <QScreen>
+#include <QTimer>
 #include <QWidget>
 #include <util/logger.hpp>
 
@@ -23,20 +24,44 @@ namespace VTX::UI::QT::Widget
 	class BaseWidget : public W
 	{
 	  public:
+		/**
+		 * @brief Construct widget and set its object name from its type.
+		 */
 		template<typename... Args>
 		BaseWidget( Args &&... p_args ) : W( std::forward<Args>( p_args )... )
 		{
+			// Set object name.
 			const auto name = VTX::Util::typeName<T>();
 			W::setObjectName( name );
 			VTX_TRACE( "Widget created: {}", name );
+
+			// Restore settings.
+			QTimer::singleShot(
+				0,
+				this,
+				[ this ]()
+				{
+					VTX_WARNING( "BaseWidget::singleShot restore: {}", QObject::objectName().toStdString() );
+					restore( SETTINGS() );
+				}
+			);
+
+			// Connect save settings on destruction.
+			W::connect(
+				this,
+				&QObject::destroyed,
+				[ this ]()
+				{
+					VTX_WARNING( "QWidget::destroyed: {}", QObject::objectName().toStdString() );
+					// save( SETTINGS() );
+				}
+			);
 		}
 
 		virtual ~BaseWidget() { VTX_TRACE( "Widget deleted: {}", W::objectName().toStdString() ); }
 
 		/**
 		 * @brief Hide QWidget::addAction().
-		 * @tparam A is the action type.
-		 * @return the created QAction.
 		 */
 		template<ConceptAction A>
 		QAction * const addAction()
@@ -46,6 +71,9 @@ namespace VTX::UI::QT::Widget
 			return action;
 		}
 
+		/**
+		 * @brief Center the widget on the given widget or on the screen if not specified.
+		 */
 		void center( const QWidget * const p_w = nullptr )
 		{
 			// Get geometry of the widget, or screen if not specified.
@@ -56,40 +84,9 @@ namespace VTX::UI::QT::Widget
 			this->move( x, y );
 		}
 
-		/*
-		bool event( QEvent * p_e ) override
-		{
-			if ( p_e->type() == QEvent::Polish )
-			{
-				auto name = W::metaObject()->className();
-				W::setObjectName( name );
-				VTX_TRACE( "Widget polished: {}", name );
-				return false;
-			}
-			return QWidget::event( p_e );
-		}
-		*/
-
-		/*
-		void showEvent( QShowEvent * p_e ) override
-		{
-			VTX_WARNING( "BaseWidget::showEvent: {}", QObject::objectName().toStdString() );
-			restore( SETTINGS() );
-			W::showEvent( p_e );
-		}
-		*/
-
-		/*
-		void hideEvent( QHideEvent * p_e ) override
-		{
-			VTX_WARNING( "BaseWidget::hideEvent: {}", QObject::objectName().toStdString() );
-			save( SETTINGS() );
-			W::hideEvent( p_e );
-		}
-		*/
-
-		// void polishEvent( QPolishEvent * p _e ) override {}
-
+		/**
+		 * @brief Save and restore widget settings.
+		 */
 		virtual void save( Settings & ) {}
 		virtual void restore( const Settings & ) {}
 	};
