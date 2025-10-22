@@ -47,7 +47,7 @@ namespace VTX::Tool::Mdprep
 
 	// Class responsible for managing the mdprep main window by coordinating the common form and the md engine
 	// specifics.
-	class MainWindow : public UI::QT::DockWidget::BaseDockWidget<>
+	class MainWindow : public UI::QT::DockWidget::BaseDockWidget<MainWindow>
 	{
 	  public:
 		inline static const QSize PREFERRED_SIZE { 500, 720 };
@@ -69,7 +69,7 @@ namespace VTX::Tool::Mdprep
 		}
 
 	  public:
-		MainWindow( QWidget * const p_parent ) : UI::QT::DockWidget::BaseDockWidget<>( p_parent )
+		MainWindow( QWidget * const p_parent ) : BaseDockWidget( p_parent )
 		{
 			this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
 			this->setWindowTitle( "Molecular Dynamics Preparation" );

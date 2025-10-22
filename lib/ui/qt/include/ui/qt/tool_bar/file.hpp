@@ -7,7 +7,7 @@
 namespace VTX::UI::QT::ToolBar
 {
 
-	class File : public Widget::BaseWidget<QToolBar>
+	class File : public Widget::BaseWidget<File, QToolBar>
 	{
 	  public:
 		File( QWidget * p_parent ) : BaseWidget( "File", p_parent )

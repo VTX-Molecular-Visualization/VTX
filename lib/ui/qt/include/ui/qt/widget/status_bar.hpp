@@ -1,7 +1,6 @@
 #ifndef __VTX_UI_QT_WIDGET_STATUS_BAR__
 #define __VTX_UI_QT_WIDGET_STATUS_BAR__
 
-#include "ui/qt/widget/base_widget.hpp"
 #include <QLabel>
 #include <QPointer>
 #include <QStatusBar>
@@ -10,7 +9,7 @@
 namespace VTX::UI::QT::Widget
 {
 
-	class StatusBar : public Widget::BaseWidget<QStatusBar>
+	class StatusBar : public QStatusBar
 	{
 	  public:
 		StatusBar( QWidget * p_parent );

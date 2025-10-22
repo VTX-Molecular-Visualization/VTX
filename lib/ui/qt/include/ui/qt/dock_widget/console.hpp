@@ -21,7 +21,7 @@ namespace VTX::UI::QT::DockWidget
 	 * @brief Class responsible for docking a console and its prompt. The console will be catching logs and be
 	 * displaying some.
 	 */
-	class Console : public BaseDockWidget<0, 0>
+	class Console : public BaseDockWidget<Console, 0, 0>
 	{
 	  public:
 		Console( QWidget * p_parent );

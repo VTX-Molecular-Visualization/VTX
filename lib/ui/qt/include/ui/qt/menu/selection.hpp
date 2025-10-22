@@ -6,7 +6,7 @@
 
 namespace VTX::UI::QT::Menu
 {
-	class Selection : public Widget::BaseWidget<QMenu>
+	class Selection : public Widget::BaseWidget<Selection, QMenu>
 	{
 	  public:
 		Selection( QWidget * p_parent ) : BaseWidget( "Selection", p_parent )

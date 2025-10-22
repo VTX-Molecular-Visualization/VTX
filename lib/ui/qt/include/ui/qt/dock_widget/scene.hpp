@@ -14,7 +14,7 @@ namespace VTX::UI::QT::DockWidget
 	 * @brief Display a tree widget with loaded systems.
 	 * Load only minimal data on expand/collapse.
 	 */
-	class Scene : public BaseDockWidget<>
+	class Scene : public BaseDockWidget<Scene>
 	{
 	  public:
 		Scene( QWidget * p_parent ) : BaseDockWidget( "Scene", p_parent ) {}

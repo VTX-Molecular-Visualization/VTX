@@ -20,12 +20,12 @@ namespace VTX::UI::QT::DockWidget
 	 * @tparam VSA is the horizontal scroll area flag.
 	 * @tparam L is the layout type.
 	 */
-	template<bool VSA = 1, bool HSA = 0, ConceptLayout L = QVBoxLayout>
-	class BaseDockWidget : public Widget::BaseWidget<QDockWidget>
+	template<typename T, bool VSA = 1, bool HSA = 0, ConceptLayout L = QVBoxLayout>
+	class BaseDockWidget : public Widget::BaseWidget<T, QDockWidget>
 	{
 	  public:
 		template<typename... Args>
-		BaseDockWidget( Args &&... p_args ) : Widget::BaseWidget<QDockWidget>( std::forward<Args>( p_args )... )
+		BaseDockWidget( Args &&... p_args ) : Widget::BaseWidget<T, QDockWidget>( std::forward<Args>( p_args )... )
 		{
 			// Scroll area.
 			if constexpr ( VSA or HSA )
@@ -65,7 +65,8 @@ namespace VTX::UI::QT::DockWidget
 			//_layout->setSizeConstraint( QLayout::SetNoConstraint );
 
 			// Hide title bar.
-			QDockWidget::setTitleBarWidget( new QWidget() );
+			// This remove the possibility to undock the widget, but gain some space.
+			// QDockWidget::setTitleBarWidget( new QWidget() );
 		}
 
 		virtual ~BaseDockWidget() = default;

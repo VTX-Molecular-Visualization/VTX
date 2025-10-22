@@ -7,10 +7,10 @@
 namespace VTX::UI::QT::Menu
 {
 
-	class Theme : public Widget::BaseWidget<QMenu>
+	class Theme : public Widget::BaseWidget<Theme, QMenu>
 	{
 	  public:
-		Theme( QWidget * p_parent ) : BaseWidget<QMenu>( "Theme", p_parent )
+		Theme( QWidget * p_parent ) : BaseWidget( "Theme", p_parent )
 		{
 			addAction<Action::Theme::System>();
 			addSeparator();

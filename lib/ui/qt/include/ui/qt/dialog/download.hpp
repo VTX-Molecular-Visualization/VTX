@@ -11,7 +11,7 @@
 
 namespace VTX::UI::QT::Dialog
 {
-	class Download : public BaseDialog<>
+	class Download : public BaseDialog<Download>
 	{
 	  public:
 		Download();

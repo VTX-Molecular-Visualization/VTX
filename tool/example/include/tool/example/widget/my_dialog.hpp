@@ -9,7 +9,7 @@
 namespace VTX::Tool::Example::Widget
 {
 
-	class MyDialog : public UI::QT::Dialog::BaseDialog<>
+	class MyDialog : public UI::QT::Dialog::BaseDialog<MyDialog>
 	{
 	  public:
 		MyDialog() : BaseDialog()

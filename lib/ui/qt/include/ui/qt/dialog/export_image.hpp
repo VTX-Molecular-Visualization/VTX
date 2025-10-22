@@ -15,7 +15,7 @@
 namespace VTX::UI::QT::Dialog
 {
 
-	class ExportImage : public BaseDialog<>
+	class ExportImage : public BaseDialog<ExportImage>
 	{
 	  public:
 		ExportImage();

@@ -8,7 +8,7 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	class ColorLayouts : public BaseDockWidget<>
+	class ColorLayouts : public BaseDockWidget<ColorLayouts>
 	{
 	  public:
 		ColorLayouts( QWidget * );

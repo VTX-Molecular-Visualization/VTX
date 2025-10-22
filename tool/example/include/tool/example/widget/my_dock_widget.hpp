@@ -7,7 +7,7 @@
 namespace VTX::Tool::Example::Widget
 {
 
-	class MyDockWidget : public UI::QT::DockWidget::BaseDockWidget<>
+	class MyDockWidget : public UI::QT::DockWidget::BaseDockWidget<MyDockWidget>
 	{
 	  public:
 		MyDockWidget( QWidget * p_parent ) : BaseDockWidget( "My dock panel", p_parent )

@@ -7,7 +7,7 @@
 
 namespace VTX::UI::QT::Dialog
 {
-	class Progress : public BaseDialog<QProgressDialog>
+	class Progress : public BaseDialog<Progress, QProgressDialog>
 	{
 	  public:
 		Progress( const std::string_view p_text, std::optional<std::function<void( void )>> p_onCancel = std::nullopt );

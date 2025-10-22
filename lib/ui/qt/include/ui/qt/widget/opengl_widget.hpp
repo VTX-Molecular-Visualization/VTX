@@ -12,7 +12,7 @@ namespace VTX::UI::QT::Widget
 	 * @brief Reimplement a custom OpenGL widget to avoid the use of QOpenGLWidget.
 	 * This is necessary to avoid makeCurrent() and doneCurrent() by using custom context.
 	 */
-	class OpenGLWidget : public BaseWidget<QWidget>
+	class OpenGLWidget : public BaseWidget<OpenGLWidget, QWidget>
 	{
 	  public:
 		OpenGLWidget( QWidget * );

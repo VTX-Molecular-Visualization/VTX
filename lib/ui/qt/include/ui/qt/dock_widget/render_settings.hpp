@@ -5,7 +5,7 @@
 
 namespace VTX::UI::QT::DockWidget
 {
-	class RenderSettings : public BaseDockWidget<>
+	class RenderSettings : public BaseDockWidget<RenderSettings>
 	{
 	  public:
 		RenderSettings( QWidget * );

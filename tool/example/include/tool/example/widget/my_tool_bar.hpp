@@ -9,7 +9,7 @@
 namespace VTX::Tool::Example::Widget
 {
 
-	class MyToolBar : public UI::QT::Widget::BaseWidget<QToolBar>
+	class MyToolBar : public UI::QT::Widget::BaseWidget<MyToolBar, QToolBar>
 	{
 	  public:
 		MyToolBar( QWidget * p_parent ) : BaseWidget( "My toolbar", p_parent )

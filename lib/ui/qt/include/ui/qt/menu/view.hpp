@@ -8,7 +8,7 @@
 namespace VTX::UI::QT::Menu
 {
 
-	class View : public Widget::BaseWidget<QMenu>
+	class View : public Widget::BaseWidget<View, QMenu>
 	{
 	  public:
 		View( QWidget * p_parent ) : BaseWidget( "View", p_parent )

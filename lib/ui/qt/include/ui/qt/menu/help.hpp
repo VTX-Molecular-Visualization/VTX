@@ -8,7 +8,7 @@
 namespace VTX::UI::QT::Menu
 {
 
-	class Help : public Widget::BaseWidget<QMenu>
+	class Help : public Widget::BaseWidget<Help, QMenu>
 	{
 	  public:
 		Help( QWidget * p_parent ) : BaseWidget( "Help", p_parent )

@@ -19,25 +19,19 @@ namespace VTX::UI::QT::Widget
 	/**
 	 * @brief Abstract class that describes a widget behaviour.
 	 */
-	template<ConceptWidget W>
+	template<typename T, ConceptWidget W>
 	class BaseWidget : public W
 	{
 	  public:
 		template<typename... Args>
 		BaseWidget( Args &&... p_args ) : W( std::forward<Args>( p_args )... )
 		{
-			using This		= std::remove_cvref_t<decltype( *this )>;
-			const auto name = VTX::Util::typeName<This>();
+			const auto name = VTX::Util::typeName<T>();
 			W::setObjectName( name );
 			VTX_TRACE( "Widget created: {}", name );
 		}
 
-		virtual ~BaseWidget()
-		{
-			using This		= std::remove_cvref_t<decltype( *this )>;
-			const auto name = VTX::Util::typeName<This>();
-			VTX_TRACE( "Widget deleted: {}", name );
-		}
+		virtual ~BaseWidget() { VTX_TRACE( "Widget deleted: {}", W::objectName().toStdString() ); }
 
 		/**
 		 * @brief Hide QWidget::addAction().
@@ -62,19 +56,39 @@ namespace VTX::UI::QT::Widget
 			this->move( x, y );
 		}
 
+		/*
+		bool event( QEvent * p_e ) override
+		{
+			if ( p_e->type() == QEvent::Polish )
+			{
+				auto name = W::metaObject()->className();
+				W::setObjectName( name );
+				VTX_TRACE( "Widget polished: {}", name );
+				return false;
+			}
+			return QWidget::event( p_e );
+		}
+		*/
+
+		/*
 		void showEvent( QShowEvent * p_e ) override
 		{
-			VTX_WARNING( "BaseWidget::showEvent" );
+			VTX_WARNING( "BaseWidget::showEvent: {}", QObject::objectName().toStdString() );
 			restore( SETTINGS() );
 			W::showEvent( p_e );
 		}
+		*/
 
+		/*
 		void hideEvent( QHideEvent * p_e ) override
 		{
-			VTX_WARNING( "BaseWidget::hideEvent" );
+			VTX_WARNING( "BaseWidget::hideEvent: {}", QObject::objectName().toStdString() );
 			save( SETTINGS() );
 			W::hideEvent( p_e );
 		}
+		*/
+
+		// void polishEvent( QPolishEvent * p _e ) override {}
 
 		virtual void save( Settings & ) {}
 		virtual void restore( const Settings & ) {}

@@ -7,7 +7,7 @@
 namespace VTX::UI::QT::ToolBar
 {
 
-	class Camera : public Widget::BaseWidget<QToolBar>
+	class Camera : public Widget::BaseWidget<Camera, QToolBar>
 	{
 	  public:
 		Camera( QWidget * p_parent ) : BaseWidget( "Camera", p_parent )

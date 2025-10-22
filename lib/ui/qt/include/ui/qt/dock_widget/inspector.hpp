@@ -6,7 +6,7 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	class Inspector : public BaseDockWidget<>
+	class Inspector : public BaseDockWidget<Inspector>
 	{
 	  public:
 		Inspector( QWidget * p_parent ) : BaseDockWidget( "Selection", p_parent )
