@@ -64,15 +64,10 @@ namespace VTX::UI::QT
 		// Connect quit event that can come from VTXApp.
 		App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
 
-		// Save settings just before quitting (after QCoreApplication::quit).
+		// After quit, last loop.
 		connect(
-			this,
-			&QCoreApplication::aboutToQuit,
-			[ this ]
-			{
-				VTX_TRACE( "QCoreApplication::aboutToQuit" );
-				_mainWindow->hide();
-			}
+			this, &QCoreApplication::aboutToQuit, [ this ] { VTX_TRACE( "QCoreApplication::aboutToQuit" ); }
+
 		);
 
 		// Run the main loop.
@@ -91,7 +86,7 @@ namespace VTX::UI::QT
 		App::ECS::removeCtx<QPointer<Widget::MainWindow>>();
 		_mainWindow.clear();
 
-		// Save settings.
+		// Save settings on disk.
 		try
 		{
 			SETTINGS().save();

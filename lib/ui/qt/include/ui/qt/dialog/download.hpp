@@ -20,17 +20,6 @@ namespace VTX::UI::QT::Dialog
 		void restore( const Settings & ) override;
 
 	  private:
-		// TODO: check if file exists in cache.
-
-		// TODO: move to json.
-		inline static const QString _PDB_ID_TEMPLATE = VTX::Util::Url::systemReplacementToken();
-		inline static const QString _DEFAULT_URL
-			= QString( VTX::Util::Url::rcsbPdbDownloadBaseUrl() ) + _PDB_ID_TEMPLATE + ".pdb ";
-		inline static const QString _SETTING_KEY_URL = "dialog/download/history/url";
-		inline static const QString _SETTING_KEY_PDB = "dialog/download/history/pdb";
-		// TODO: move to settings.
-		inline static const uint _MAX_HISTORY_SIZE = 10;
-
 		QPointer<QComboBox>	   _comboBoxURL;
 		QPointer<QComboBox>	   _comboBoxPDB;
 		QPointer<QRadioButton> _radioButtonOpen;

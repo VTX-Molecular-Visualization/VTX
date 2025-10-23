@@ -9,6 +9,15 @@
 #include <app/filesystem.hpp>
 #include <app/network/network_manager.hpp>
 
+namespace
+{
+	const QString _PDB_ID_TEMPLATE	= VTX::Util::Url::systemReplacementToken();
+	const QString _DEFAULT_URL		= QString( VTX::Util::Url::rcsbPdbDownloadBaseUrl() ) + _PDB_ID_TEMPLATE + ".pdb";
+	const QString _SETTING_KEY_URL	= "dialog/download/history/url";
+	const QString _SETTING_KEY_PDB	= "dialog/download/history/pdb";
+	const uint	  _MAX_HISTORY_SIZE = 10;
+} // namespace
+
 namespace VTX::UI::QT::Dialog
 {
 	Download::Download()
@@ -144,7 +153,7 @@ namespace VTX::UI::QT::Dialog
 		connect(
 			buttonBox->button( QDialogButtonBox::StandardButton::Cancel ),
 			&QPushButton::clicked,
-			[ this ]() { close(); }
+			[ this ]() { reject(); }
 		);
 
 		// FIXME: Avoid losing default url if not in history.
@@ -170,10 +179,7 @@ namespace VTX::UI::QT::Dialog
 	{
 		QStringList history = p_settings.value( p_key ).toStringList();
 		// Remove duplicates.
-		if ( history.contains( p_value ) )
-		{
-			history.removeAll( p_value );
-		}
+		history.removeAll( p_value );
 		// Prepend the last one.
 		history.prepend( p_value );
 		// Limit to 10.

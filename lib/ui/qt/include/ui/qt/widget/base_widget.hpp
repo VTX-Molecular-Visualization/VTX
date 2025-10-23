@@ -18,10 +18,25 @@ namespace VTX::UI::QT::Widget
 	concept ConceptWidget = std::is_base_of_v<QWidget, W>;
 
 	/**
+	 * @brief Savable interface.
+	 */
+	class ISavable
+	{
+	  public:
+		virtual ~ISavable() = default;
+
+		/**
+		 * @brief Save and restore widget settings.
+		 */
+		virtual void save( Settings & ) {}
+		virtual void restore( const Settings & ) {}
+	};
+
+	/**
 	 * @brief Abstract class that describes a widget behaviour.
 	 */
 	template<typename T, ConceptWidget W>
-	class BaseWidget : public W
+	class BaseWidget : public W, public ISavable
 	{
 	  public:
 		/**
@@ -43,17 +58,6 @@ namespace VTX::UI::QT::Widget
 				{
 					VTX_WARNING( "BaseWidget::singleShot restore: {}", QObject::objectName().toStdString() );
 					restore( SETTINGS() );
-				}
-			);
-
-			// Connect save settings on destruction.
-			W::connect(
-				this,
-				&QObject::destroyed,
-				[ this ]()
-				{
-					VTX_WARNING( "QWidget::destroyed: {}", QObject::objectName().toStdString() );
-					// save( SETTINGS() );
 				}
 			);
 		}
@@ -84,11 +88,28 @@ namespace VTX::UI::QT::Widget
 			this->move( x, y );
 		}
 
+	  protected:
 		/**
-		 * @brief Save and restore widget settings.
+		 * @brief Override close event to save settings.
 		 */
-		virtual void save( Settings & ) {}
-		virtual void restore( const Settings & ) {}
+		void closeEvent( QCloseEvent * const p_e ) override
+		{
+			VTX_WARNING( "BaseWidget::closeEvent: {}", QObject::objectName().toStdString() );
+			W::closeEvent( p_e );
+
+			save( SETTINGS() );
+			VTX_ERROR( "SAVED: {}", W::objectName().toStdString() );
+
+			// Save all children settings.
+			for ( QWidget * const child : QWidget::findChildren<QWidget *>() )
+			{
+				if ( ISavable * const baseWidget = dynamic_cast<ISavable *>( child ) )
+				{
+					VTX_ERROR( "SAVED: {}", child->objectName().toStdString() );
+					baseWidget->save( SETTINGS() );
+				}
+			}
+		}
 	};
 
 } // namespace VTX::UI::QT::Widget

@@ -15,8 +15,6 @@ namespace VTX::UI::QT::Dialog
 
 	/**
 	 * @brief Abstract class that describes a dialog centered on the main window.
-	 * @tparam T is the derived class type.
-	 * @tparam D is the dialog type.
 	 */
 	template<typename T, ConceptDialog D = QDialog>
 	class BaseDialog : public Widget::BaseWidget<T, D>
