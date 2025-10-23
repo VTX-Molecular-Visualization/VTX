@@ -3,7 +3,6 @@
 
 #include "opengl_widget.hpp"
 #include "status_bar.hpp"
-#include "ui/qt/settings.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include <QDockWidget>
 #include <QMainWindow>
@@ -31,6 +30,11 @@ namespace VTX::UI::QT::Widget
 		 * @brief Build widgets.
 		 */
 		MainWindow();
+
+		/**
+		 * @brief Destructor.
+		 */
+		~MainWindow();
 
 		/**
 		 * @brief Hook an action to the given menu.
@@ -100,12 +104,6 @@ namespace VTX::UI::QT::Widget
 
 			return dockWidget;
 		}
-
-		/**
-		 * @brief ISavable implementation.
-		 */
-		void save( Settings & ) override;
-		void restore( const Settings & ) override;
 
 		inline OpenGLWidget * const getOpenGLWidget() const { return _openGLWidget; }
 

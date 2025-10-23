@@ -44,11 +44,6 @@ namespace VTX::UI::QT
 
 	  private:
 		/**
-		 * @brief The main window.
-		 */
-		QPointer<Widget::MainWindow> _mainWindow;
-
-		/**
 		 * @brief Handles the main loop timing.
 		 */
 		QTimer _timer;

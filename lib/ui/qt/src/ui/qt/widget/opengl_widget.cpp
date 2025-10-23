@@ -113,12 +113,12 @@ namespace VTX::UI::QT::Widget
 			auto * e = p_event->clone();
 			if ( p_event->type() == QEvent::DragEnter )
 			{
-				QCoreApplication::sendEvent( MAIN_WINDOW(), e );
+				QCoreApplication::sendEvent( &MAIN_WINDOW(), e );
 				return true;
 			}
 			else if ( p_event->type() == QEvent::Drop )
 			{
-				QCoreApplication::sendEvent( MAIN_WINDOW(), e );
+				QCoreApplication::sendEvent( &MAIN_WINDOW(), e );
 				return true;
 			}
 		}

@@ -2,15 +2,24 @@
 #include "ui/qt/actions.hpp"
 #include "ui/qt/application.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/settings.hpp"
 #include "ui/qt/widget/actionable_push_button.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include "ui/qt/widget/opengl_widget.hpp"
 #include <QDesktopServices>
 #include <QFileDialog>
+#include <QGroupBox>
 #include <QPushButton>
 #include <app/filesystem.hpp>
 #include <app/network/network_manager.hpp>
 #include <util/string.hpp>
+
+namespace
+{
+	const QString			   _TEXT_CACHE_COUNT  = "Files : %1";
+	const QString			   _TEXT_CACHE_SIZE	  = "Size : %1";
+	constexpr std::string_view _SETTING_KEY_VSYNC = "options/vsync";
+} // namespace
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -35,7 +44,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			_checkBoxVSync,
 			&QCheckBox::checkStateChanged,
-			[ this ]( const int p_state ) { MAIN_WINDOW()->getOpenGLWidget()->setVSync( p_state == Qt::Checked ); }
+			[ this ]( const int p_state ) { MAIN_WINDOW().getOpenGLWidget()->setVSync( p_state == Qt::Checked ); }
 		);
 
 		layoutGraphics->addWidget( _checkBoxVSync );
@@ -89,8 +98,17 @@ namespace VTX::UI::QT::DockWidget
 
 		_refreshCacheInfos();
 
+		QSignalBlocker blocker( _checkBoxVSync );
+		_checkBoxVSync->setChecked( SETTINGS().value( _SETTING_KEY_VSYNC, true ).toBool() );
+
+		QTimer::singleShot(
+			0, this, [ this ]() { MAIN_WINDOW().getOpenGLWidget()->setVSync( _checkBoxVSync->isChecked() ); }
+		);
+
 		App::NETWORK().onFileCached += [ this ]() { _refreshCacheInfos(); };
 	}
+
+	Options::~Options() { SETTINGS().setValue( _SETTING_KEY_VSYNC, _checkBoxVSync->isChecked() ); }
 
 	void Options::_refreshCacheInfos()
 	{
@@ -108,16 +126,6 @@ namespace VTX::UI::QT::DockWidget
 		_labelCacheSize->setText(
 			_TEXT_CACHE_SIZE.arg( QString::fromStdString( Util::String::memSizeToStr( size ) ) )
 		);
-	}
-
-	void Options::save( Settings & p_settings )
-	{
-		p_settings.setValue( _SETTING_KEY_VSYNC, _checkBoxVSync->isChecked() );
-	}
-
-	void Options::restore( const Settings & p_settings )
-	{
-		_checkBoxVSync->setChecked( p_settings.value( _SETTING_KEY_VSYNC, true ).toBool() );
 	}
 
 } // namespace VTX::UI::QT::DockWidget

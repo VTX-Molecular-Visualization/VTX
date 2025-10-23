@@ -2,7 +2,6 @@
 #define __VTX_UI_QT_WIDGET_BASE_WIDGET__
 
 #include "ui/qt/actions.hpp"
-#include "ui/qt/services.hpp"
 #include <QGuiApplication>
 #include <QScreen>
 #include <QTimer>
@@ -18,25 +17,10 @@ namespace VTX::UI::QT::Widget
 	concept ConceptWidget = std::is_base_of_v<QWidget, W>;
 
 	/**
-	 * @brief Savable interface.
-	 */
-	class ISavable
-	{
-	  public:
-		virtual ~ISavable() = default;
-
-		/**
-		 * @brief Save and restore widget settings.
-		 */
-		virtual void save( Settings & ) {}
-		virtual void restore( const Settings & ) {}
-	};
-
-	/**
 	 * @brief Abstract class that describes a widget behaviour.
 	 */
 	template<typename T, ConceptWidget W>
-	class BaseWidget : public W, public ISavable
+	class BaseWidget : public W
 	{
 	  public:
 		/**
@@ -49,17 +33,6 @@ namespace VTX::UI::QT::Widget
 			const auto name = VTX::Util::typeName<T>();
 			W::setObjectName( name );
 			VTX_TRACE( "Widget created: {}", name );
-
-			// Restore settings.
-			QTimer::singleShot(
-				0,
-				this,
-				[ this ]()
-				{
-					VTX_WARNING( "BaseWidget::singleShot restore: {}", QObject::objectName().toStdString() );
-					restore( SETTINGS() );
-				}
-			);
 		}
 
 		virtual ~BaseWidget() { VTX_TRACE( "Widget deleted: {}", W::objectName().toStdString() ); }
@@ -86,29 +59,6 @@ namespace VTX::UI::QT::Widget
 			const int x = ( geometry.width() - this->width() ) / 2;
 			const int y = ( geometry.height() - this->height() ) / 2;
 			this->move( x, y );
-		}
-
-	  protected:
-		/**
-		 * @brief Override close event to save settings.
-		 */
-		void closeEvent( QCloseEvent * const p_e ) override
-		{
-			VTX_WARNING( "BaseWidget::closeEvent: {}", QObject::objectName().toStdString() );
-			W::closeEvent( p_e );
-
-			save( SETTINGS() );
-			VTX_ERROR( "SAVED: {}", W::objectName().toStdString() );
-
-			// Save all children settings.
-			for ( QWidget * const child : QWidget::findChildren<QWidget *>() )
-			{
-				if ( ISavable * const baseWidget = dynamic_cast<ISavable *>( child ) )
-				{
-					VTX_ERROR( "SAVED: {}", child->objectName().toStdString() );
-					baseWidget->save( SETTINGS() );
-				}
-			}
 		}
 	};
 

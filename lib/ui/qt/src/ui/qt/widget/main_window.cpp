@@ -15,12 +15,19 @@
 #include "ui/qt/menu/selection.hpp"
 #include "ui/qt/menu/theme.hpp"
 #include "ui/qt/menu/view.hpp"
+#include "ui/qt/settings.hpp"
 #include "ui/qt/tool_bar/camera.hpp"
 #include "ui/qt/tool_bar/file.hpp"
 #include "ui/qt/tool_bar/snapshot.hpp"
 #include <QApplication>
 #include <QMimeData>
 #include <util/event_hub.hpp>
+
+namespace
+{
+	constexpr std::string_view _SETTING_KEY_GEOMETRY = "main/geometry";
+	constexpr std::string_view _SETTING_KEY_STATE	 = "main/state";
+} // namespace
 
 namespace VTX::UI::QT::Widget
 {
@@ -103,10 +110,20 @@ namespace VTX::UI::QT::Widget
 		_defaultGeometry = saveGeometry();
 		_defaultState	 = saveState();
 
+		// Restore geometry and state.
+		restoreGeometry( SETTINGS().value( _SETTING_KEY_GEOMETRY ).toByteArray() );
+		restoreState( SETTINGS().value( _SETTING_KEY_STATE ).toByteArray() );
+
 		// Connect events.
 		App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
 		App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>( this );
 		App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
+	}
+
+	MainWindow::~MainWindow()
+	{
+		SETTINGS().setValue( _SETTING_KEY_GEOMETRY, saveGeometry() );
+		SETTINGS().setValue( _SETTING_KEY_STATE, saveState() );
 	}
 
 	void MainWindow::addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action )
@@ -151,7 +168,6 @@ namespace VTX::UI::QT::Widget
 	void MainWindow::closeEvent( QCloseEvent * p_event )
 	{
 		VTX_TRACE( "MainWindow::closeEvent: Qt main window close event" );
-		BaseWidget::closeEvent( p_event );
 		QCoreApplication::quit();
 	}
 
@@ -165,18 +181,6 @@ namespace VTX::UI::QT::Widget
 		}
 
 		p_event->acceptProposedAction();
-	}
-
-	void MainWindow::save( Settings & p_settings )
-	{
-		p_settings.setValue( "geometry", saveGeometry() );
-		p_settings.setValue( "windowState", saveState() );
-	}
-
-	void MainWindow::restore( const Settings & p_settings )
-	{
-		restoreGeometry( p_settings.value( "geometry" ).toByteArray() );
-		restoreState( p_settings.value( "windowState" ).toByteArray() );
 	}
 
 	void MainWindow::_onBlockingOperationStart( const App::Events::BlockingOperationStart & p_e )

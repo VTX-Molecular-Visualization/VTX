@@ -142,10 +142,14 @@ namespace VTX::UI::QT::Dialog
 					else
 					{
 						VTX_ERROR( "URL does not contain {}", _PDB_ID_TEMPLATE.toStdString() );
+						return;
 					}
 				}
 
-				close();
+				_saveHistory( _SETTING_KEY_URL, _url );
+				_saveHistory( _SETTING_KEY_PDB, _pdb );
+
+				accept();
 			}
 		);
 
@@ -156,6 +160,10 @@ namespace VTX::UI::QT::Dialog
 			[ this ]() { reject(); }
 		);
 
+		// Load history.
+		_loadHistory( _SETTING_KEY_URL, _comboBoxURL );
+		_loadHistory( _SETTING_KEY_PDB, _comboBoxPDB );
+
 		// FIXME: Avoid losing default url if not in history.
 		if ( _comboBoxURL->findText( _DEFAULT_URL ) == -1 )
 		{
@@ -163,21 +171,9 @@ namespace VTX::UI::QT::Dialog
 		}
 	}
 
-	void Download::save( Settings & p_settings )
+	void Download::_saveHistory( const QString & p_key, const QString & p_value )
 	{
-		_saveHistory( p_settings, _SETTING_KEY_URL, _url );
-		_saveHistory( p_settings, _SETTING_KEY_PDB, _pdb );
-	}
-
-	void Download::restore( const Settings & p_settings )
-	{
-		_loadHistory( p_settings, _SETTING_KEY_URL, _comboBoxURL );
-		_loadHistory( p_settings, _SETTING_KEY_PDB, _comboBoxPDB );
-	}
-
-	void Download::_saveHistory( VTX::UI::QT::Settings & p_settings, const QString & p_key, const QString & p_value )
-	{
-		QStringList history = p_settings.value( p_key ).toStringList();
+		QStringList history = SETTINGS().value( p_key ).toStringList();
 		// Remove duplicates.
 		history.removeAll( p_value );
 		// Prepend the last one.
@@ -187,12 +183,12 @@ namespace VTX::UI::QT::Dialog
 		{
 			history.removeLast();
 		}
-		p_settings.setValue( p_key, history );
+		SETTINGS().setValue( p_key, history );
 	}
 
-	void Download::_loadHistory( const Settings & p_settings, const QString & p_key, QComboBox * const p_comboBox )
+	void Download::_loadHistory( const QString & p_key, QComboBox * const p_comboBox )
 	{
-		QStringList history = p_settings.value( p_key ).toStringList();
+		QStringList history = SETTINGS().value( p_key ).toStringList();
 		p_comboBox->addItems( history );
 	}
 } // namespace VTX::UI::QT::Dialog

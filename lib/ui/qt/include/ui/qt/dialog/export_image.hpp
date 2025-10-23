@@ -20,9 +20,6 @@ namespace VTX::UI::QT::Dialog
 	  public:
 		ExportImage();
 
-		void save( Settings & ) override;
-		void restore( const Settings & ) override;
-
 	  private:
 		struct _Resolution
 		{

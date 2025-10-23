@@ -51,15 +51,13 @@ namespace VTX::UI::QT
 		}
 
 		// Create main window.
-		_mainWindow = new Widget::MainWindow();
-		// Store in context.
-		App::ECS::setCtx<QPointer<Widget::MainWindow>>( _mainWindow );
+		App::ECS::setCtx<Widget::MainWindow>();
 
 		// Load theme.
 		_loadTheme();
 
 		// Show.
-		_mainWindow->show();
+		MAIN_WINDOW().show();
 
 		// Connect quit event that can come from VTXApp.
 		App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
@@ -83,8 +81,7 @@ namespace VTX::UI::QT
 	Application::~Application()
 	{
 		// Delete main window and all its widgets.
-		App::ECS::removeCtx<QPointer<Widget::MainWindow>>();
-		_mainWindow.clear();
+		App::ECS::removeCtx<Widget::MainWindow>();
 
 		// Save settings on disk.
 		try

@@ -318,6 +318,7 @@ namespace VTX::UI::QT::Dialog
 		_preview->setPixmap( QPixmap::fromImage( qImage ) );
 	}
 
+	/*
 	void ExportImage::save( Settings & p_settings )
 	{
 		p_settings.setValue( _SETTING_KEY_WIDTH, _spinBoxWidth->value() );
@@ -357,4 +358,5 @@ namespace VTX::UI::QT::Dialog
 			_lastExportFolder = p_settings.value( _SETTING_KEY_FOLDER ).toString();
 		}
 	}
+	*/
 } // namespace VTX::UI::QT::Dialog

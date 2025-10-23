@@ -21,7 +21,7 @@ namespace VTX::UI::QT::Dialog
 	{
 	  public:
 		template<typename... Args>
-		BaseDialog( Args &&... p_args ) : Widget::BaseWidget<T, D>( MAIN_WINDOW(), std::forward<Args>( p_args )... )
+		BaseDialog( Args &&... p_args ) : Widget::BaseWidget<T, D>( &MAIN_WINDOW(), std::forward<Args>( p_args )... )
 		{
 		}
 

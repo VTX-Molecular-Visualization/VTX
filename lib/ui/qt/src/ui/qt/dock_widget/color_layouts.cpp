@@ -1,6 +1,13 @@
 #include "ui/qt/dock_widget/color_layouts.hpp"
+#include "ui/qt/services.hpp"
+#include "ui/qt/settings.hpp"
 #include "ui/qt/widget/library/color_layout.hpp"
 #include <util/factories.hpp>
+
+namespace
+{
+	constexpr std::string_view _SETTING_KEY_HIDE = "colors/hide_non_common";
+}
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -27,15 +34,9 @@ namespace VTX::UI::QT::DockWidget
 				colorLayoutWidget->refreshVisibility( hide );
 			}
 		);
+
+		_checkBoxHide->setChecked( SETTINGS().value( _SETTING_KEY_HIDE, true ).toBool() );
 	}
 
-	void ColorLayouts::save( Settings & p_settings )
-	{
-		p_settings.setValue( _SETTING_KEY_HIDE, _checkBoxHide->isChecked() );
-	}
-
-	void ColorLayouts::restore( const Settings & p_settings )
-	{
-		_checkBoxHide->setChecked( p_settings.value( _SETTING_KEY_HIDE, true ).toBool() );
-	}
+	ColorLayouts::~ColorLayouts() { SETTINGS().setValue( _SETTING_KEY_HIDE, _checkBoxHide->isChecked() ); }
 } // namespace VTX::UI::QT::DockWidget

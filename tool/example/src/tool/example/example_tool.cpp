@@ -28,16 +28,16 @@ namespace VTX::Tool::Example
 		};
 
 		// Add to named button group.
-		auto mainWindow = UI::QT::MAIN_WINDOW();
-		mainWindow->addMenuAction( "Tool", action );
-		mainWindow->addToolBarAction( "Tool", action );
+		auto & mainWindow = UI::QT::MAIN_WINDOW();
+		mainWindow.addMenuAction( "Tool", action );
+		mainWindow.addToolBarAction( "Tool", action );
 
 		//////////////////////////
 		// Method 2:
 		// Add custom widgets.
-		mainWindow->createMenu<Widget::MyMenu>();
-		mainWindow->createToolBar<Widget::MyToolBar>();
-		mainWindow->createDockWidget<Widget::MyDockWidget>( Qt::RightDockWidgetArea );
+		mainWindow.createMenu<Widget::MyMenu>();
+		mainWindow.createToolBar<Widget::MyToolBar>();
+		mainWindow.createDockWidget<Widget::MyDockWidget>( Qt::RightDockWidgetArea );
 	}
 
 	std::optional<std::string> ExampleTool::getStyle() const
