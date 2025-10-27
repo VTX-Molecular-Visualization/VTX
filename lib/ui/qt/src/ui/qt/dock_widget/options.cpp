@@ -59,9 +59,9 @@ namespace VTX::UI::QT::DockWidget
 		using namespace Action;
 		using namespace Option;
 
-		auto * buttonOpenCache	  = new ActionablePushButton( MAIN_WINDOW().getAction<Option::Cache::Open>(), this );
-		auto * buttonClearCache	  = new ActionablePushButton( MAIN_WINDOW().getAction<Option::Cache::Clear>(), this );
-		auto * buttonRefreshCache = new ActionablePushButton( MAIN_WINDOW().getAction<Option::Cache::Refresh>(), this );
+		auto * buttonOpenCache	  = new ActionablePushButton( Application::getAction<Option::Cache::Open>(), this );
+		auto * buttonClearCache	  = new ActionablePushButton( Application::getAction<Option::Cache::Clear>(), this );
+		auto * buttonRefreshCache = new ActionablePushButton( Application::getAction<Option::Cache::Refresh>(), this );
 
 		const FilePath cachePath = App::Filesystem::getCacheDir();
 		connect(

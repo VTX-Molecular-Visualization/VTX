@@ -2,10 +2,10 @@
 #define __VTX_UI_QT_APPLICATION__
 
 #include "settings.hpp"
-#include "widget/main_window.hpp"
 #include <QApplication>
 #include <QPointer>
 #include <QTimer>
+#include <app/ui/concepts.hpp>
 #include <app/vtx_app.hpp>
 #include <util/chrono.hpp>
 
@@ -42,6 +42,23 @@ namespace VTX::UI::QT
 		 */
 		bool notify( QObject * const, QEvent * const ) override;
 
+		/**
+		 * @brief Get app action from description.
+		 */
+		static inline QAction * const getAction( const App::UI::DescAction & p_action )
+		{
+			return _getOrCreateAction( p_action );
+		}
+
+		/**
+		 * @brief Get app action from type.
+		 */
+		template<App::UI::ConceptAction A>
+		static inline QAction * getAction()
+		{
+			return _getOrCreateAction( A() );
+		}
+
 	  private:
 		/**
 		 * @brief Handles the main loop timing.
@@ -57,6 +74,11 @@ namespace VTX::UI::QT
 		 * @brief Load the graphical theme.
 		 */
 		void _loadTheme();
+
+		/**
+		 * @brief Get/create application action from description.
+		 */
+		static QAction * const _getOrCreateAction( const App::UI::DescAction & );
 
 		/**
 		 * @brief Get the QApplication instance.

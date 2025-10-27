@@ -1,9 +1,7 @@
 #ifndef __VTX_UI_QT_MENU_CAMERA__
 #define __VTX_UI_QT_MENU_CAMERA__
 
-#include "ui/qt/services.hpp"
 #include "ui/qt/widget/base_widget.hpp"
-#include "ui/qt/widget/main_window.hpp"
 #include <QMenu>
 
 namespace VTX::UI::QT::Menu
@@ -13,14 +11,14 @@ namespace VTX::UI::QT::Menu
 	  public:
 		Camera( QWidget * p_parent ) : BaseWidget( "Camera", p_parent )
 		{
-			addAction( MAIN_WINDOW().getAction<Action::Camera::Perspective>() );
-			addAction( MAIN_WINDOW().getAction<Action::Camera::Orthographic>() );
+			addAction<Action::Camera::Perspective>();
+			addAction<Action::Camera::Orthographic>();
 			addSeparator();
-			addAction( MAIN_WINDOW().getAction<Action::Camera::Trackball>() );
-			addAction( MAIN_WINDOW().getAction<Action::Camera::Freefly>() );
+			addAction<Action::Camera::Trackball>();
+			addAction<Action::Camera::Freefly>();
 			addSeparator();
-			addAction( MAIN_WINDOW().getAction<Action::Camera::Orient>() );
-			addAction( MAIN_WINDOW().getAction<Action::Camera::Reset>() );
+			addAction<Action::Camera::Orient>();
+			addAction<Action::Camera::Reset>();
 		}
 
 	  private:

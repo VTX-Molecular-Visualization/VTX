@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_WIDGET_BASE_WIDGET__
 
 #include "ui/qt/actions.hpp"
+#include "ui/qt/application.hpp"
 #include <QGuiApplication>
 #include <QScreen>
 #include <QTimer>
@@ -49,6 +50,17 @@ namespace VTX::UI::QT::Widget
 			const int x = ( geometry.width() - this->width() ) / 2;
 			const int y = ( geometry.height() - this->height() ) / 2;
 			this->move( x, y );
+		}
+
+		/**
+		 * @brief Hide QWidget::addAction(). Link typed action to this widget.
+		 */
+		template<App::UI::ConceptAction A>
+		QAction * const addAction()
+		{
+			QAction * const action = Application::getAction<A>();
+			QWidget::addAction( action );
+			return action;
 		}
 	};
 

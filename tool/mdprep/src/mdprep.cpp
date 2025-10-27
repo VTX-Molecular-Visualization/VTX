@@ -28,6 +28,7 @@
 #include <ui/qt/dock_widget/base_dock_widget.hpp>
 #include <ui/qt/services.hpp>
 #include <ui/qt/util.hpp>
+#include <ui/qt/widget/main_window.hpp>
 #include <util/logger.hpp>
 //
 #include "tool/mdprep/ui/form.hpp"

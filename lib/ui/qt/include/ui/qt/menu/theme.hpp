@@ -10,7 +10,16 @@ namespace VTX::UI::QT::Menu
 	class Theme : public Widget::BaseWidget<Theme, QMenu>
 	{
 	  public:
-		Theme( QWidget * );
+		Theme( QWidget * p_parent ) : BaseWidget( "Theme", p_parent )
+		{
+			addAction<Action::Theme::System>();
+			addSeparator();
+			addAction<Action::Theme::Light>();
+			addAction<Action::Theme::Dark>();
+			addSeparator();
+			auto * aReset = addAction<Action::Theme::ResetLayout>();
+			connect( aReset, &QAction::triggered, this, &Theme::_resetLayout );
+		}
 
 	  private:
 		void _resetLayout();

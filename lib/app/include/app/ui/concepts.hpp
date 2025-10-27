@@ -36,6 +36,9 @@ namespace VTX::App::UI
 		virtual void connect() const {}
 	};
 
+	template<typename A>
+	concept ConceptAction = std::is_base_of_v<DescAction, A>;
+
 } // namespace VTX::App::UI
 
 #endif

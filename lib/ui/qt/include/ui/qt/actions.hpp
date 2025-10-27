@@ -9,9 +9,6 @@
 
 namespace VTX::UI::QT
 {
-	template<typename A>
-	concept ConceptAction = std::is_base_of_v<App::UI::DescAction, A>;
-
 	namespace Action
 	{
 		// System.
