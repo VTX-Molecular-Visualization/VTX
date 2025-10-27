@@ -51,13 +51,13 @@ namespace VTX::UI::QT
 		}
 
 		// Create main window.
-		App::ECS::setCtx<Widget::MainWindow>();
+		auto & mw = App::ECS::setCtx<Widget::MainWindow>();
 
 		// Load theme.
 		_loadTheme();
 
 		// Show.
-		MAIN_WINDOW().show();
+		mw.show();
 
 		// Connect quit event that can come from VTXApp.
 		App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );

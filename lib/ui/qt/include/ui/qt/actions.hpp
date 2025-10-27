@@ -2,15 +2,10 @@
 #define __VTX_UI_QT_ACTIONS__
 
 #include "app/services.hpp"
-#include <QAction>
-#include <QActionGroup>
 #include <QStyle>
 // #include <app/action/action_manager.hpp>
 // #include <app/action/library.hpp>
 #include <app/ui/concepts.hpp>
-#include <app/vtx_app.hpp>
-#include <util/collection.hpp>
-#include <util/hashing.hpp>
 
 namespace VTX::UI::QT
 {
@@ -19,27 +14,6 @@ namespace VTX::UI::QT
 
 	namespace Action
 	{
-		class Factory
-		{
-		  public:
-			inline static QAction * const get( const App::UI::DescAction & p_action )
-			{
-				return _getOrCreate( Hash( &p_action ), p_action );
-			}
-
-			template<ConceptAction A>
-			inline static QAction * get()
-			{
-				return _getOrCreate( VTX::Util::Collection<QAction *>::hash<A>(), A() );
-			}
-
-		  private:
-			inline static VTX::Util::Collection<QAction *>		_ACTIONS;
-			inline static VTX::Util::Collection<QActionGroup *> _ACTION_GROUPS;
-
-			static QAction * const _getOrCreate( const Hash & p_hash, const App::UI::DescAction & p_action );
-		};
-
 		// System.
 		namespace System
 		{

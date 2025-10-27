@@ -13,6 +13,8 @@
 #include <app/library/base_preset.hpp>
 // #include <app/action/library.hpp>
 // #include <app/library/library_manager.hpp>
+#include "ui/qt/services.hpp"
+#include "ui/qt/widget/main_window.hpp"
 #include <app/library/base_library.hpp>
 #include <app/library/library_manager.hpp>
 #include <app/services.hpp>
@@ -58,9 +60,9 @@ namespace VTX::UI::QT::Widget::Library
 
 			using namespace Action;
 
-			auto * btnNew		 = new ActionablePushButton( Factory::get<Preset::Add<P>>(), this );
-			auto * btnDupplicate = new ActionablePushButton( Factory::get<Preset::Duplicate<P>>(), this );
-			auto * btnDelete	 = new ActionablePushButton( Factory::get<Preset::Delete<P>>(), this );
+			auto * btnNew		 = new ActionablePushButton( MAIN_WINDOW().getAction<Preset::Add<P>>(), this );
+			auto * btnDupplicate = new ActionablePushButton( MAIN_WINDOW().getAction<Preset::Duplicate<P>>(), this );
+			auto * btnDelete	 = new ActionablePushButton( MAIN_WINDOW().getAction<Preset::Delete<P>>(), this );
 
 			layout->addWidget( btnNew, 1, 0 );
 			layout->addWidget( btnDupplicate, 1, 1 );

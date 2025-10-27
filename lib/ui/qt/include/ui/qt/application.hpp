@@ -57,6 +57,11 @@ namespace VTX::UI::QT
 		 * @brief Load the graphical theme.
 		 */
 		void _loadTheme();
+
+		/**
+		 * @brief Get the QApplication instance.
+		 */
+		inline static QApplication * const Q_APP() { return qApp; }
 	};
 } // namespace VTX::UI::QT
 

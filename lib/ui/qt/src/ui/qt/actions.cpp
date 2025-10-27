@@ -2,7 +2,7 @@
 #include "ui/qt/dialog/download.hpp"
 #include "ui/qt/dialog/export_image.hpp"
 #include "ui/qt/dialog/open.hpp"
-#include <QApplication>
+
 /*
 #include <app/action/application.hpp>
 #include <app/action/camera.hpp>
@@ -13,83 +13,9 @@
 #include <app/controller/camera/freefly.hpp>
 #include <app/controller/camera/trackball.hpp>
 */
-#include <util/logger.hpp>
 
 namespace VTX::UI::QT::Action
 {
-	QAction * const Factory::_getOrCreate( const Hash & p_hash, const App::UI::DescAction & p_action )
-	{
-		if ( not _ACTIONS.has( p_hash ) )
-		{
-			QAction * qAction = _ACTIONS.createWithHash<QAction>( p_hash );
-
-			VTX_TRACE( "UI action created: {}", p_action.name );
-
-			// Name.
-			qAction->setText( p_action.name.c_str() );
-			// Group.
-			if ( p_action.group.has_value() )
-			{
-				const auto group = Util::hash( p_action.group.value() );
-				if ( not _ACTION_GROUPS.has( group ) )
-				{
-					_ACTION_GROUPS.set( group, new QActionGroup( nullptr ) );
-				}
-
-				qAction->setCheckable( true );
-				_ACTION_GROUPS.get<QActionGroup>( group )->addAction( qAction );
-			}
-			// Tip.
-			if ( p_action.tip.has_value() )
-			{
-				QString tip = p_action.tip.value().c_str();
-
-				if ( p_action.shortcut.has_value() )
-				{
-					tip.append( " (" + p_action.shortcut.value() + ")" );
-				}
-
-				qAction->setStatusTip( tip );
-				qAction->setToolTip( tip );
-				qAction->setWhatsThis( tip );
-			}
-			// Icon.
-			if ( p_action.icon.has_value() )
-			{
-				if ( std::holds_alternative<int>( p_action.icon.value() ) )
-				{
-					qAction->setIcon(
-						QApplication::style()->standardIcon(
-							static_cast<QStyle::StandardPixmap>( std::get<int>( p_action.icon.value() ) )
-						)
-					);
-				}
-				else if ( std::holds_alternative<std::string>( p_action.icon.value() ) )
-				{
-					qAction->setIcon( QIcon( ( ":/" + std::get<std::string>( p_action.icon.value() ) ).c_str() ) );
-				}
-				else
-				{
-					VTX_ERROR( "Invalid icon type for action: {}", p_action.name );
-				}
-			}
-			// Shortcut.
-			if ( p_action.shortcut.has_value() )
-			{
-				qAction->setShortcut( QKeySequence( p_action.shortcut.value().c_str() ) );
-			}
-			// Action.
-			if ( p_action.trigger.has_value() )
-			{
-				QObject::connect( qAction, &QAction::triggered, p_action.trigger.value() );
-			}
-			// Connect.
-			// TODO: maybe this is dirty (calling this function to get previously created qAction).
-			p_action.connect();
-		}
-
-		return _ACTIONS.get<QAction>( p_hash );
-	}
 
 	// TODO: move all action to ui?
 	// System.

@@ -1,7 +1,9 @@
 #ifndef __VTX_UI_QT_MENU_FILE__
 #define __VTX_UI_QT_MENU_FILE__
 
+#include "ui/qt/services.hpp"
 #include "ui/qt/widget/base_widget.hpp"
+#include "ui/qt/widget/main_window.hpp"
 #include <QMenu>
 
 namespace VTX::UI::QT::Menu
@@ -12,19 +14,19 @@ namespace VTX::UI::QT::Menu
 	  public:
 		File( QWidget * p_parent ) : BaseWidget( "File", p_parent )
 		{
-			addAction<Action::System::New>();
+			addAction( MAIN_WINDOW().getAction<Action::System::New>() );
 			addSeparator();
-			addAction<Action::System::Download>();
+			addAction( MAIN_WINDOW().getAction<Action::System::Download>() );
 			addSeparator();
-			addAction<Action::System::Open>();
-			addAction<Action::System::OpenRecent>();
-			addAction<Action::System::Save>();
-			addAction<Action::System::SaveAs>();
+			addAction( MAIN_WINDOW().getAction<Action::System::Open>() );
+			addAction( MAIN_WINDOW().getAction<Action::System::OpenRecent>() );
+			addAction( MAIN_WINDOW().getAction<Action::System::Save>() );
+			addAction( MAIN_WINDOW().getAction<Action::System::SaveAs>() );
 			addSeparator();
-			addAction<Action::System::Import>();
-			addAction<Action::System::Export>();
+			addAction( MAIN_WINDOW().getAction<Action::System::Import>() );
+			addAction( MAIN_WINDOW().getAction<Action::System::Export>() );
 			addSeparator();
-			addAction<Action::System::Quit>();
+			addAction( MAIN_WINDOW().getAction<Action::System::Quit>() );
 		}
 
 	  private:

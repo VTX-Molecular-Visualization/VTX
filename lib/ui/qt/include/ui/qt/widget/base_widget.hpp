@@ -6,6 +6,7 @@
 #include <QScreen>
 #include <QTimer>
 #include <QWidget>
+#include <util/hashing.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -36,17 +37,6 @@ namespace VTX::UI::QT::Widget
 		}
 
 		virtual ~BaseWidget() { VTX_TRACE( "Widget deleted: {}", W::objectName().toStdString() ); }
-
-		/**
-		 * @brief Hide QWidget::addAction().
-		 */
-		template<ConceptAction A>
-		QAction * const addAction()
-		{
-			QAction * const action = Action::Factory::get<A>();
-			QWidget::addAction( action );
-			return action;
-		}
 
 		/**
 		 * @brief Center the widget on the given widget or on the screen if not specified.

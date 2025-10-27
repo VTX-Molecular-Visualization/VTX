@@ -105,6 +105,20 @@ namespace VTX::UI::QT::Widget
 			return dockWidget;
 		}
 
+		inline QAction * const getAction( const App::UI::DescAction & p_action )
+		{
+			return _getOrCreateAction( p_action );
+		}
+
+		template<ConceptAction A>
+		inline QAction * getAction()
+		{
+			return _getOrCreateAction( A() );
+		}
+
+		/**
+		 * @brief Get the OpenGL rendering widget.
+		 */
 		inline OpenGLWidget * const getOpenGLWidget() const { return _openGLWidget; }
 
 	  protected:
@@ -139,6 +153,8 @@ namespace VTX::UI::QT::Widget
 		 * @brief Default state for layout reset.
 		 */
 		QByteArray _defaultState;
+
+		QAction * const _getOrCreateAction( const App::UI::DescAction & );
 
 		/**
 		 * @brief Event handlers for blocking operations.

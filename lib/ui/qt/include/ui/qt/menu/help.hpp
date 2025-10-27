@@ -2,7 +2,9 @@
 #define __VTX_UI_QT_MENU_HELP__
 
 #include "ui/qt/helper.hpp"
+#include "ui/qt/services.hpp"
 #include "ui/qt/widget/base_widget.hpp"
+#include "ui/qt/widget/main_window.hpp"
 #include <QMenu>
 
 namespace VTX::UI::QT::Menu
@@ -13,10 +15,10 @@ namespace VTX::UI::QT::Menu
 	  public:
 		Help( QWidget * p_parent ) : BaseWidget( "Help", p_parent )
 		{
-			addAction<Action::Help::Documentation>();
-			addAction<Action::Help::Report>();
-			addAction<Action::Help::CheckUpdates>();
-			addAction<Action::Help::About>();
+			addAction( MAIN_WINDOW().getAction<Action::Help::Documentation>() );
+			addAction( MAIN_WINDOW().getAction<Action::Help::Report>() );
+			addAction( MAIN_WINDOW().getAction<Action::Help::CheckUpdates>() );
+			addAction( MAIN_WINDOW().getAction<Action::Help::About>() );
 		}
 
 	  private:
