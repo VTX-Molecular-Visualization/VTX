@@ -7,7 +7,10 @@
 #include "app/library/preset/render_settings.hpp"
 #include "app/library/preset/representation.hpp"
 #include "app/network/network_manager.hpp"
-#include "app/new/pass_manager.hpp"
+#include "app/pass/camera_updater.hpp"
+#include "app/pass/controller/trackball.hpp"
+#include "app/pass/pass_manager.hpp"
+#include "app/scene/camera.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
@@ -16,6 +19,7 @@
 #include "renderer/facade.hpp"
 #include <exception>
 #include <util/logger.hpp>
+#include <util/math/transform.hpp>
 #include <util/monitoring/stats.hpp>
 
 namespace VTX::App
@@ -49,7 +53,7 @@ namespace VTX::App
 		// Store uid manager.
 		ECS::setCtx<Uid::UIDManager>();
 		// Store pass manager.
-		ECS::setCtx<PassManager>();
+		ECS::setCtx<Pass::PassManager>();
 
 		// Create scene.
 		ECS::Entity scene = REG().create();
@@ -95,6 +99,20 @@ namespace VTX::App
 			}
 		);
 		*/
+
+		// Scene.
+		ECS::Entity sceneEntity = REG().create();
+
+		// Camera.
+		ECS::Entity cameraEntity = REG().create();
+		REG().emplace<Util::Math::Transform>( cameraEntity );
+		REG().emplace<Scene::Camera>( cameraEntity );
+
+		// Camera updater pass.
+		PASS().addPass<Pass::CameraUpdater>( cameraEntity );
+
+		// Trackball.
+		PASS().addPass<Pass::Controller::Trackball>( cameraEntity );
 	}
 
 	VTXApp::~VTXApp()

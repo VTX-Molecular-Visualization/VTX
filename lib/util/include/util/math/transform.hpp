@@ -12,178 +12,111 @@ namespace VTX::Util::Math
 	class Transform
 	{
 	  public:
-		Transform() = default;
-
-		Transform( const Vec3f & p_position, const Quatf & p_rotation, const Vec3f & p_scale ) :
-			_position( p_position ), _rotation( p_rotation ), _scale( p_scale ), _isDirty( true )
-		{
-		}
-
-		inline const Mat4f & get() const
-		{
-			if ( _isDirty )
-			{
-				_update();
-			}
-			return _transform;
-		}
-
+		/**
+		 * @brief Accessors.
+		 */
 		inline const Vec3f & getPosition() const { return _position; };
 		inline const Quatf & getRotation() const { return _rotation; };
 		inline const Vec3f & getScale() const { return _scale; };
 
+		/**
+		 * @brief Get local axes.
+		 */
 		inline Vec3f getFront() const { return Math::toMat3( _rotation ) * FRONT_AXIS; }
 		inline Vec3f getRight() const { return Math::toMat3( _rotation ) * RIGHT_AXIS; }
 		inline Vec3f getUp() const { return Math::toMat3( _rotation ) * UP_AXIS; }
 
-		inline const Vec3f & getEulerAngles() const
-		{
-			if ( _isDirty )
-			{
-				_update();
-			}
-			return _eulerAngles;
-		};
-
+		/**
+		 * @brief Reset transformation to identity.
+		 */
 		inline void reset()
 		{
-			_transform = MAT4F_ID;
-			_position  = VEC3F_ZERO;
-			_rotation  = QUATF_ID;
-			_scale	   = Vec3f( 1.f );
-			_isDirty   = true;
+			_position = VEC3F_ZERO;
+			_rotation = QUATF_ID;
+			_scale	  = Vec3f( 1.f );
 		}
 
-		inline void translate( const Vec3f & p_vec )
-		{
-			_position += p_vec;
-			_isDirty = true;
-		}
-
+		/**
+		 * @brief Position.
+		 */
+		inline void translate( const Vec3f & p_vec ) { _position += p_vec; }
 		inline void setPosition( const float p_x, const float p_y, const float p_z )
 		{
 			_position = Vec3f( p_x, p_y, p_z );
-			_isDirty  = true;
 		}
+		inline void setPosition( const Vec3f & p_vec ) { _position = p_vec; }
 
-		inline void setPosition( const Vec3f & p_vec )
-		{
-			_position = p_vec;
-			_isDirty  = true;
-		}
-
-		inline void rotate( const Quatf & p_rotation )
-		{
-			_rotation = Math::normalize( _rotation * p_rotation );
-			_isDirty  = true;
-		}
-
+		/**
+		 * @brief Rotation.
+		 */
+		inline void rotate( const Quatf & p_rotation ) { _rotation = Math::normalize( _rotation * p_rotation ); }
 		inline void rotate( const Vec3f & p_eulerAngles )
 		{
 			_rotation = Math::normalize( _rotation * Quatf( p_eulerAngles ) );
-			_isDirty  = true;
 		}
-
 		inline void rotate( const float p_angle, const Vec3f & p_axis )
 		{
 			_rotation = Math::normalize( Math::rotate( _rotation, p_angle, p_axis ) );
-			_isDirty  = true;
 		}
-
 		inline void rotateAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance )
 		{
 			_rotation = Math::normalize( _rotation * p_rotation );
 			_position = _rotation * Vec3f( 0.f, 0.f, p_distance ) + p_target;
-			_isDirty  = true;
 		}
-
 		inline void setRotation( const float p_pitch, const float p_yaw, const float p_roll )
 		{
 			_rotation = Math::normalize(
 				Quatf( Vec3f( Math::radians( p_pitch ), Math::radians( p_yaw ), Math::radians( p_roll ) ) )
 			);
-			_isDirty = true;
 		}
-
-		inline void setRotation( const Vec3f & p_vec )
-		{
-			_rotation = Math::normalize( Quatf( p_vec ) );
-			_isDirty  = true;
-		}
-
-		inline void setRotation( const Quatf & p_rotation )
-		{
-			_rotation = Math::normalize( p_rotation );
-			_isDirty  = true;
-		}
-
+		inline void setRotation( const Vec3f & p_vec ) { _rotation = Math::normalize( Quatf( p_vec ) ); }
+		inline void setRotation( const Quatf & p_rotation ) { _rotation = Math::normalize( p_rotation ); }
 		inline void setRotationAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance )
 		{
 			_rotation = Math::normalize( p_rotation );
 			_position = _rotation * Vec3f( 0.f, 0.f, p_distance ) + p_target;
-			_isDirty  = true;
 		}
-
-		inline void scale( const Vec3f & p_vec )
-		{
-			_scale	 = _scale * p_vec;
-			_isDirty = true;
-		}
-
-		inline void setScale( const Vec3f & p_scale )
-		{
-			_scale	 = p_scale;
-			_isDirty = true;
-		}
-
-		inline void setScale( const float p_scale )
-		{
-			_scale	 = Vec3f( p_scale );
-			_isDirty = true;
-		}
-
 		inline void lookAt( const Vec3f & p_target, const Vec3f & p_up )
 		{
 			const Vec3f dir = Math::normalize( p_target - _position );
 			_rotation		= Math::quatLookAt( dir, Math::normalize( p_up ) );
-			_isDirty		= true;
 		}
+
+		/**
+		 * @brief Scale.
+		 */
+		inline void scale( const Vec3f & p_vec ) { _scale = _scale * p_vec; }
+		inline void setScale( const Vec3f & p_scale ) { _scale = p_scale; }
+		inline void setScale( const float p_scale ) { _scale = Vec3f( p_scale ); }
+
+		/**
+		 * @brief Compute transformation matrix.
+		 */
+		inline const Mat4f computeMatrix() const
+		{
+			return Math::translate( _position ) * Math::toMat4( _rotation ) * Math::scale( _scale );
+		}
+
+		/**
+		 * @brief Compute Euler angles in degrees.
+		 */
+		inline const Vec3f & computeEulerAngles() const { return Math::degrees( Math::eulerAngles( _rotation ) ); };
 
 	  private:
 		/**
-		 * @brief Computed transform.
-		 */
-		mutable Mat4f _transform = MAT4F_ID;
-
-		/**
-		 * @brief Computed euler angles (in degrees).
-		 */
-		mutable Vec3f _eulerAngles = VEC3F_ZERO;
-
-		/**
-		 * @brief Local translation, rotation and scale matrices.
+		 * @brief Local translation.
 		 */
 		Vec3f _position = VEC3F_ZERO;
+
+		/**
+		 * @brief Local rotation.
+		 */
 		Quatf _rotation = QUATF_ID;
-		Vec3f _scale	= Vec3f( 1.f );
 
 		/**
-		 * @brief Cache var.
+		 * @brief Local scale.
 		 */
-		mutable bool _isDirty = true;
-
-		/**
-		 * @brief Updates the internal transformation matrix by combining translation, rotation, and scale.
-		 */
-		inline void _update() const
-		{
-			const Mat4f T = Math::translate( MAT4F_ID, _position );
-			const Mat4f R = Math::toMat4( _rotation );
-			const Mat4f S = Math::scale( MAT4F_ID, _scale );
-			_transform	  = T * R * S;
-			_eulerAngles  = Math::degrees( Math::eulerAngles( _rotation ) );
-			_isDirty	  = false;
-		}
+		Vec3f _scale = Vec3f( 1.f );
 	};
 } // namespace VTX::Util::Math
 

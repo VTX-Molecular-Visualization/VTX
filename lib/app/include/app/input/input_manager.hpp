@@ -65,6 +65,9 @@ namespace VTX::App::Input
 		const Vec2i & getMouseRightClickPosition() const;
 		int			  getDeltaMouseWheel() const;
 
+		Vec2i consumeDeltaMousePosition();
+		int	  consumeDeltaMouseWheel();
+
 		Util::Callback<Vec2i> onMouseLeftClicked;
 		Util::Callback<Vec2i> onMouseRightClicked;
 		Util::Callback<Vec2i> onMouseLeftDoubleClicked;

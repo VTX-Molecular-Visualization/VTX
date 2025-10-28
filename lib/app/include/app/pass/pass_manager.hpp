@@ -5,7 +5,7 @@
 #include <util/collection.hpp>
 #include <util/event_hub.hpp>
 
-namespace VTX::App
+namespace VTX::App::Pass
 {
 	/**
 	 * @brief Defines the update function.
@@ -84,6 +84,6 @@ namespace VTX::App
 		Util::Collection<std::unique_ptr<IPass>> _passes;
 		std::vector<UpdateDelegate>				 _delegates;
 	};
-} // namespace VTX::App
+} // namespace VTX::App::Pass
 
 #endif

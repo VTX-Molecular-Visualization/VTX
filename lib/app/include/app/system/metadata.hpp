@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SYSTEM_METADATA__
-#define __VTX_APP_SYSTEM_METADATA__
+#ifndef __VTX_APP_COMPONENT_SYSTEM_METADATA__
+#define __VTX_APP_COMPONENT_SYSTEM_METADATA__
 
 #include <set>
 #include <util/types.hpp>

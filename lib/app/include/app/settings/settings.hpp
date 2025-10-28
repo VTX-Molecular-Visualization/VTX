@@ -1,28 +1,28 @@
 #ifndef __VTX_APP_SETTINGS__
 #define __VTX_APP_SETTINGS__
 
-#include "app/scene/camera.hpp"
-// #include "app/selection/system_granularity.hpp"
+// #include "app/scene/camera.hpp"
+//  #include "app/selection/system_granularity.hpp"
 #include <string>
 
 namespace VTX::App::Settings
 {
 	namespace Camera
 	{
-		const std::string							NEAR_CLIP_KEY  = "CAMERA_NEAR_CLIP";
-		const float									NEAR_DEFAULT   = 0.00f;
-		const float									NEAR_MIN	   = 0.00f;
-		const float									NEAR_MAX	   = 1e4f;
-		const std::string							FAR_CLIP_KEY   = "CAMERA_FAR_CLIP";
-		const float									FAR_DEFAULT	   = 1e4f;
-		const float									FAR_MIN		   = 0.01f;
-		const float									FAR_MAX		   = 1e4f;
-		const std::string							FOV_KEY		   = "CAMERA_FOV";
-		const float									FOV_DEFAULT	   = 45.f;
-		const float									FOV_MIN		   = 10.f;
-		const float									FOV_MAX		   = 90.f;
-		const std::string							PROJECTION_KEY = "CAMERA_PROJECTION";
-		const Scene::Camera::PROJECTION				PROJECTION_DEFAULT = Scene::Camera::PROJECTION::PERSPECTIVE;
+		const std::string NEAR_CLIP_KEY		 = "CAMERA_NEAR_CLIP";
+		const float		  NEAR_DEFAULT		 = 0.00f;
+		const float		  NEAR_MIN			 = 1e-1f;
+		const float		  NEAR_MAX			 = 1e4f;
+		const std::string FAR_CLIP_KEY		 = "CAMERA_FAR_CLIP";
+		const float		  FAR_DEFAULT		 = 1e4f;
+		const float		  FAR_MIN			 = 1e-1f;
+		const float		  FAR_MAX			 = 1e4f;
+		const std::string FOV_KEY			 = "CAMERA_FOV";
+		const float		  FOV_DEFAULT		 = 45.f;
+		const float		  FOV_MIN			 = 10.f;
+		const float		  FOV_MAX			 = 90.f;
+		const std::string PROJECTION_KEY	 = "CAMERA_PROJECTION";
+		const int		  PROJECTION_DEFAULT = 0;
 	} // namespace Camera
 
 	namespace Controller

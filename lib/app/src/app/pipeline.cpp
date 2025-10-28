@@ -1,6 +1,6 @@
 #include "app/pipeline.hpp"
 #include "app/events.hpp"
-#include "app/new/pass_manager.hpp"
+#include "app/pass/pass_manager.hpp"
 #include "app/services.hpp"
 #include <renderer/facade.hpp>
 #include <util/event_hub.hpp>

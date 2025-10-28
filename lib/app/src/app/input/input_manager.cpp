@@ -47,19 +47,7 @@ namespace VTX::App::Input
 		return res;
 	}
 
-	InputManager::InputManager()
-	{
-		// TODO: consume events, no auto clear.
-		App::HUB().connect<Events::PostUpdate>(
-			[ this ]( const Events::PostUpdate & )
-			{
-				_deltaMousePosition.x = 0;
-				_deltaMousePosition.y = 0;
-
-				_deltaMouseWheel = 0;
-			}
-		);
-	}
+	InputManager::InputManager() {}
 
 	InputManager::~InputManager() {}
 
@@ -148,6 +136,21 @@ namespace VTX::App::Input
 	const Vec2i & InputManager::getMouseLeftClickPosition() const { return _mouseLeftClickPosition; }
 	const Vec2i & InputManager::getMouseRightClickPosition() const { return _mouseRightClickPosition; }
 	int			  InputManager::getDeltaMouseWheel() const { return _deltaMouseWheel; }
+
+	Vec2i InputManager::consumeDeltaMousePosition()
+	{
+		const Vec2i delta	  = _deltaMousePosition;
+		_deltaMousePosition.x = 0;
+		_deltaMousePosition.y = 0;
+		return delta;
+	}
+
+	int InputManager::consumeDeltaMouseWheel()
+	{
+		const int delta	 = _deltaMouseWheel;
+		_deltaMouseWheel = 0;
+		return delta;
+	}
 
 	void InputManager::_handleMouseButtonDownEvent( const MouseEvent & p_event )
 	{

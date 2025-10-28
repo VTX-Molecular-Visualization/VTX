@@ -20,6 +20,7 @@
 
 namespace VTX::Util::Math
 {
+	using ::glm::abs;
 	using ::glm::clamp;
 	using ::glm::cross;
 	using ::glm::degrees;
@@ -29,6 +30,8 @@ namespace VTX::Util::Math
 	using ::glm::inverse;
 	using ::glm::length;
 	using ::glm::length2;
+	using ::glm::lerp;
+	using ::glm::lessThan;
 	using ::glm::lookAt;
 	using ::glm::mat;
 	using ::glm::max;

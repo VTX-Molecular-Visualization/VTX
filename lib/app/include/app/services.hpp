@@ -9,7 +9,7 @@
 namespace VTX::App
 {
 	class Args;
-	class PassManager;
+
 	namespace Action
 	{
 		// class ActionManager;
@@ -25,6 +25,10 @@ namespace VTX::App
 	namespace Network
 	{
 		class NetworkManager;
+	}
+	namespace Pass
+	{
+		class PassManager;
 	}
 	namespace Settings
 	{
@@ -101,7 +105,7 @@ namespace VTX::App
 	/**
 	 * @brief Pass manager.
 	 */
-	inline PassManager & PASS() { return ECS::getCtx<PassManager>(); }
+	inline Pass::PassManager & PASS() { return ECS::getCtx<Pass::PassManager>(); }
 } // namespace VTX::App
 
 #endif
