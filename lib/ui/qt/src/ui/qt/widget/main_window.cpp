@@ -21,6 +21,7 @@
 #include "ui/qt/tool_bar/file.hpp"
 #include "ui/qt/tool_bar/snapshot.hpp"
 #include <QApplication>
+#include <QMessageBox>
 #include <QMimeData>
 #include <util/event_hub.hpp>
 
@@ -116,6 +117,7 @@ namespace VTX::UI::QT::Widget
 		restoreState( SETTINGS().value( _SETTING_KEY_STATE ).toByteArray() );
 
 		// Connect events.
+		App::HUB().connect<App::Events::ApplicationError, &MainWindow::_onApplicationError>( this );
 		App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
 		App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>( this );
 		App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
@@ -182,6 +184,12 @@ namespace VTX::UI::QT::Widget
 		}
 
 		p_event->acceptProposedAction();
+	}
+
+	void MainWindow::_onApplicationError( const App::Events::ApplicationError & p_e )
+	{
+		VTX_ERROR( "{}", p_e.message );
+		QMessageBox::critical( this, "Error", p_e.message.c_str(), QMessageBox::StandardButton::Ok );
 	}
 
 	void MainWindow::_onBlockingOperationStart( const App::Events::BlockingOperationStart & p_e )

@@ -14,6 +14,8 @@ namespace VTX::UI::QT::Widget
 	 */
 	class OpenGLWidget : public BaseWidget<OpenGLWidget, QWidget>
 	{
+		Q_OBJECT
+
 	  public:
 		OpenGLWidget( QWidget * );
 		~OpenGLWidget();
@@ -28,10 +30,15 @@ namespace VTX::UI::QT::Widget
 	  protected:
 		bool eventFilter( QObject *, QEvent * ) override;
 
+	  private slots:
+		void onResizeFinished();
+
 	  private:
 		QPointer<QOpenGLContext>		   _context;
 		QPointer<Window::EventCatchWindow> _window;
 		QPointer<QWidget>				   _container;
+		// TODO: debounce resize events.
+		QTimer _resizeTimer;
 	};
 } // namespace VTX::UI::QT::Widget
 

@@ -10,7 +10,7 @@ namespace VTX::App::Settings
 	namespace Camera
 	{
 		const std::string NEAR_CLIP_KEY		 = "CAMERA_NEAR_CLIP";
-		const float		  NEAR_DEFAULT		 = 0.00f;
+		const float		  NEAR_DEFAULT		 = 1e-1f;
 		const float		  NEAR_MIN			 = 1e-1f;
 		const float		  NEAR_MAX			 = 1e4f;
 		const std::string FAR_CLIP_KEY		 = "CAMERA_FAR_CLIP";

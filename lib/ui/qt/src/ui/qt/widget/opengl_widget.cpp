@@ -1,9 +1,9 @@
 #include "ui/qt/widget/opengl_widget.hpp"
 #include "app/services.hpp"
-#include "ui/qt/application.hpp"
-// #include <app/action/application.hpp>
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/main_window.hpp"
+#include <app/action/action_manager.hpp>
+#include <app/action/application.hpp>
 #include <app/events.hpp>
 #include <renderer/facade.hpp>
 #include <util/event_hub.hpp>
@@ -54,6 +54,10 @@ namespace VTX::UI::QT::Widget
 		// Connect signals.
 		// APP::onPostRender += [ this ]( const float ) { render(); };
 		App::HUB().connect<App::Events::PostRender, &OpenGLWidget::render>( this );
+
+		// Setup resize timer.
+		_resizeTimer.setSingleShot( true );
+		connect( &_resizeTimer, &QTimer::timeout, this, &OpenGLWidget::onResizeFinished );
 	}
 
 	OpenGLWidget::~OpenGLWidget()
@@ -70,17 +74,23 @@ namespace VTX::UI::QT::Widget
 
 	void OpenGLWidget::resizeEvent( QResizeEvent * p_event )
 	{
+		QWidget::resizeEvent( p_event );
+
+		//_resizeTimer.start( 5000 );
+		onResizeFinished();
+	}
+
+	void OpenGLWidget::onResizeFinished()
+	{
 		assert( _window );
 		assert( _container );
 
-		QWidget::resizeEvent( p_event );
+		_window->resize( this->size() );
+		_container->resize( this->size() );
 
-		_window->resize( p_event->size() );
-		_container->resize( p_event->size() );
+		QSize scaledSize = this->size() * devicePixelRatioF();
 
-		QSize scaledSize = p_event->size() * devicePixelRatioF();
-
-		// App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
+		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
 	}
 
 	void OpenGLWidget::setVSync( const bool p_vsync )

@@ -58,6 +58,9 @@ namespace VTX::Util::Math
 		{
 			_rotation = Math::normalize( Math::rotate( _rotation, p_angle, p_axis ) );
 		}
+		inline void rotatePitch( const float p_angle ) { rotate( RIGHT_AXIS * p_angle ); }
+		inline void rotateYaw( const float p_angle ) { rotate( UP_AXIS * p_angle ); }
+		inline void rotateRoll( const float p_angle ) { rotate( FRONT_AXIS * p_angle ); }
 		inline void rotateAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance )
 		{
 			_rotation = Math::normalize( _rotation * p_rotation );

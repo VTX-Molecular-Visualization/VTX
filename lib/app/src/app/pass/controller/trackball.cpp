@@ -1,6 +1,6 @@
 #include "app/pass/controller/trackball.hpp"
 #include "app/input/input_manager.hpp"
-#include "app/input/key_MAPPING.hpp"
+#include "app/input/key_mapping.hpp"
 #include "app/services.hpp"
 #include <util/math.hpp>
 #include <util/math/transform.hpp>
@@ -45,7 +45,6 @@ namespace VTX::App::Pass::Controller
 		using namespace Util;
 		auto & input = INPUT();
 
-		// auto  v			= REG().view<Util::Math::Transform, Scene::Camera>();
 		auto & transform = REG().get<Math::Transform>( _cameraEntity );
 
 		float deltaTime = p_delta * 1e-3f;
@@ -54,26 +53,28 @@ namespace VTX::App::Pass::Controller
 		float deltaDistance = 0.f;
 		if ( input.getDeltaMouseWheel() != 0 )
 		{
-			deltaDistance = input.getDeltaMouseWheel() * 0.00001f * Math::distance( transform.getPosition(), _target );
+			deltaDistance
+				= input.consumeDeltaMouseWheel() * 0.00001f * Math::distance( transform.getPosition(), _target );
 		}
 
 		// Mouse left.
-		Vec3f deltaVelocity = VEC3F_ZERO;
+		Vec3f deltaVelocity		 = VEC3F_ZERO;
+		Vec2i deltaVelocityInput = input.consumeDeltaMousePosition();
 		if ( input.isMouseLeftPressed() )
 		{
-			deltaVelocity.x = -input.getDeltaMousePosition().x * 15.f;
-			deltaVelocity.y = -input.getDeltaMousePosition().y * 15.f;
+			deltaVelocity.x = -deltaVelocityInput.x * 15.f;
+			deltaVelocity.y = -deltaVelocityInput.y * 15.f;
 		}
 		// Mouse right.
 		else if ( input.isMouseRightPressed() )
 		{
-			deltaVelocity.z = input.getDeltaMousePosition().x * 15.f;
+			deltaVelocity.z = deltaVelocityInput.x * 15.f;
 		}
 		// Pan target with wheel button.
 		else if ( input.isMouseMiddlePressed() )
 		{
-			float deltaX = -input.getDeltaMousePosition().x * 0.1f;
-			float deltaY = input.getDeltaMousePosition().y * 0.1f;
+			float deltaX = -deltaVelocityInput.x * 0.1f;
+			float deltaY = deltaVelocityInput.y * 0.1f;
 			_target += transform.getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
 			_needUpdate = true;
 		}

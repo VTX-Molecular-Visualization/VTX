@@ -27,8 +27,8 @@ namespace VTX::App::Scene
 		/**
 		 * @brief Screen size.
 		 */
-		size_t screenWidth	= 1;
-		size_t screenHeight = 1;
+		size_t screenWidth;
+		size_t screenHeight;
 
 		/**
 		 * @brief Camera parameters.

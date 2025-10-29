@@ -12,7 +12,7 @@ namespace VTX::App
 
 	namespace Action
 	{
-		// class ActionManager;
+		class ActionManager;
 	}
 	namespace Input
 	{
@@ -77,7 +77,7 @@ namespace VTX::App
 	/**
 	 * @brief Action manager.
 	 */
-	// inline Action::ActionManager & ACTION() { return ECS::getCtx<Action::ActionManager>(); }
+	inline Action::ActionManager & ACTION() { return ECS::getCtx<Action::ActionManager>(); }
 	/**
 	 * @brief Input manager.
 	 */

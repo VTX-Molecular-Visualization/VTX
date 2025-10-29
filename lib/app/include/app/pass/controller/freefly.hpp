@@ -1,17 +1,14 @@
-#ifndef __VTX_APP_PASS_CONTROLLER_TRACKBALL__
-#define __VTX_APP_PASS_CONTROLLER_TRACKBALL__
+#ifndef __VTX_APP_PASS_CONTROLLER_FREEFLY__
+#define __VTX_APP_PASS_CONTROLLER_FREEFLY__
 
 #include "app/ecs.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/settings/settings.hpp"
-#include <util/constants.hpp>
 
 namespace VTX::App::Pass::Controller
 {
-	/**
-	 * @brief System that manages a trackball camera controller from inputs.
-	 */
-	class Trackball : public IPass
+
+	class Freefly : public IPass
 	{
 	  public:
 		float translationSpeed	 = Settings::Controller::TRANSLATION_SPEED_DEFAULT;
@@ -22,19 +19,12 @@ namespace VTX::App::Pass::Controller
 		bool  elasticityActive	 = Settings::Controller::ELASTICITY_ACTIVE_DEFAULT;
 		float elasticityFactor	 = Settings::Controller::ELASTICITY_FACTOR_DEFAULT;
 
-		Trackball( const ECS::Entity & p_ent ) : _cameraEntity( p_ent ) {}
+		Freefly( const ECS::Entity & p_ent ) : _cameraEntity( p_ent ) {}
 
 		void update( const float, const float );
 
 	  private:
 		const ECS::Entity _cameraEntity;
-		Vec3f			  _target	  = VEC3F_XYZ;
-		Vec3f			  _velocity	  = VEC3F_ZERO;
-		bool			  _needUpdate = true;
-
-		void _updateElasticity( const float & );
 	};
-
 } // namespace VTX::App::Pass::Controller
-
 #endif

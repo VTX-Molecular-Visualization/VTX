@@ -144,8 +144,9 @@ namespace VTX::UI::QT::Widget
 		QByteArray _defaultState;
 
 		/**
-		 * @brief Event handlers for blocking operations.
+		 * @brief Event handlers for app operations.
 		 */
+		void _onApplicationError( const App::Events::ApplicationError & );
 		void _onBlockingOperationStart( const App::Events::BlockingOperationStart & );
 		void _onBlockingOperationProgress( const App::Events::BlockingOperationProgress & );
 		void _onBlockingOperationEnd( const App::Events::BlockingOperationEnd & );

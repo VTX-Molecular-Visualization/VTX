@@ -11,6 +11,11 @@ namespace VTX::App::Events
 	{
 	};
 
+	struct ApplicationError
+	{
+		std::string message;
+	};
+
 	struct Update
 	{
 		float delta;

@@ -1,4 +1,5 @@
 #include "app/vtx_app.hpp"
+#include "app/action/action_manager.hpp"
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
 #include "app/input/input_manager.hpp"
@@ -8,6 +9,7 @@
 #include "app/library/preset/representation.hpp"
 #include "app/network/network_manager.hpp"
 #include "app/pass/camera_updater.hpp"
+#include "app/pass/controller/freefly.hpp"
 #include "app/pass/controller/trackball.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/scene/camera.hpp"
@@ -21,6 +23,16 @@
 #include <util/logger.hpp>
 #include <util/math/transform.hpp>
 #include <util/monitoring/stats.hpp>
+
+namespace
+{
+	/**
+	 * @brief Store local entities.
+	 */
+	using namespace VTX::App;
+	ECS::Entity _scene;
+	ECS::Entity _camera;
+} // namespace
 
 namespace VTX::App
 {
@@ -37,9 +49,9 @@ namespace VTX::App
 		// Store statistics.
 		ECS::setCtx<Util::Monitoring::Stats>();
 		// Store renderer.
-		ECS::setCtx<Renderer::Facade>();
+		ECS::setCtx<Renderer::Facade>().setDefault();
 		// Store action manager.
-		// ECS::setCtx<Action::ActionManager>();
+		ECS::setCtx<Action::ActionManager>();
 		// Store input manager.
 		ECS::setCtx<Input::InputManager>();
 		// Store library manager.
@@ -54,10 +66,6 @@ namespace VTX::App
 		ECS::setCtx<Uid::UIDManager>();
 		// Store pass manager.
 		ECS::setCtx<Pass::PassManager>();
-
-		// Create scene.
-		ECS::Entity scene = REG().create();
-		// TODO: add AABB component, and update it on item add/remove.
 
 		VTX_DEBUG( "Init application" );
 
@@ -80,12 +88,6 @@ namespace VTX::App
 		// TODO: move to start to handle gui dialog?
 		Settings::initSettings();
 
-		// Create scene.
-		/*
-		auto sceneEntity = ECS_REGISTRY().createEntity<Entity::Scene>();
-		_scene			 = &ECS_REGISTRY().getComponent<Application::Scene>( sceneEntity );
-		*/
-
 		// Register loop events.
 		// onPostUpdate += []( const float p_elapsedTime ) { THREAD().lateUpdate(); };
 
@@ -100,19 +102,15 @@ namespace VTX::App
 		);
 		*/
 
+		// Creates entites/components.
 		// Scene.
-		ECS::Entity sceneEntity = REG().create();
+		_scene = REG().create();
+		// TODO: add AABB component, and update it on item add/remove.
 
 		// Camera.
-		ECS::Entity cameraEntity = REG().create();
-		REG().emplace<Util::Math::Transform>( cameraEntity );
-		REG().emplace<Scene::Camera>( cameraEntity );
-
-		// Camera updater pass.
-		PASS().addPass<Pass::CameraUpdater>( cameraEntity );
-
-		// Trackball.
-		PASS().addPass<Pass::Controller::Trackball>( cameraEntity );
+		_camera = REG().create();
+		REG().emplace<Util::Math::Transform>( _camera );
+		REG().emplace<Scene::Camera>( _camera );
 	}
 
 	VTXApp::~VTXApp()
@@ -152,13 +150,23 @@ namespace VTX::App
 			{
 				renderer.setOpenGL45( Filesystem::getShadersDir() );
 			}
-			catch ( const std::exception & e )
+			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Failed to build renderer: {}", e.what() );
+				VTX_ERROR( "Failed to build renderer: {}", p_e.what() );
 				renderer.setDefault();
-				// TODO: exit?
+				HUB().trigger<Events::ApplicationError>(
+					"Unable to create OpenGL 4.5 context. Update your drivers and check your hardware compatibility."
+				);
 			}
 		}
+
+		// Add passes.
+		// Camera updater.
+		PASS().addPass<Pass::CameraUpdater>( _camera );
+		// Trackball controller.
+		PASS().addPass<Pass::Controller::Freefly>( _camera );
+
+		// TODO: store current controller in settings.
 
 		// ?
 		// Internal::initSettings( App::SETTINGS() );
@@ -177,7 +185,7 @@ namespace VTX::App
 		//_handleArgs( _args );
 	}
 
-	void VTXApp::_handleArgs( const Args & args )
+	void VTXApp::_handleArgs( const Args & p_args )
 	{
 		// TODO: load pdb automatically or python script.
 
