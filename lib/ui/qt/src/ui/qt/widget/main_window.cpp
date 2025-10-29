@@ -106,7 +106,7 @@ namespace VTX::UI::QT::Widget
 		_statusBar = new StatusBar( this );
 		setStatusBar( _statusBar );
 
-		centralWidget()->setFocus();
+		// centralWidget()->setFocus();
 
 		// Backup default geometry and state.
 		_defaultGeometry = saveGeometry();
@@ -121,6 +121,8 @@ namespace VTX::UI::QT::Widget
 		App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
 		App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>( this );
 		App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
+
+		QTimer::singleShot( 0, this, [ this ] { centralWidget()->setFocus(); } );
 	}
 
 	MainWindow::~MainWindow()

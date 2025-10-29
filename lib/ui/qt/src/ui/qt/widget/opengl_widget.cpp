@@ -48,6 +48,11 @@ namespace VTX::UI::QT::Widget
 		// Set context.
 		_context->makeCurrent( _window );
 
+		// Focus policy.
+		_container->setFocusPolicy( Qt::StrongFocus );
+		this->setFocusPolicy( Qt::NoFocus );
+		this->setFocusProxy( _container );
+
 		// Set output.
 		App::RENDERER().onReady( [ this ]() { App::RENDERER().setOutput( _context->defaultFramebufferObject() ); } );
 
