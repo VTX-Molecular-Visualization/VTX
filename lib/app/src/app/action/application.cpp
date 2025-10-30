@@ -14,22 +14,22 @@ namespace VTX::App::Action::Application
 		// APP::onEndOfFrameOneShot += []() { APP::stop(); };
 	}
 
-	void Resize::execute()
+	void Resize::execute( const size_t p_width, const size_t p_height )
 	{
 		auto view = REG().view<Scene::Camera>();
 		if ( not view.empty() )
 		{
 			REG().patch<Scene::Camera>(
 				*view.begin(),
-				[ this ]( Scene::Camera & p_camera )
+				[ this, p_width, p_height ]( Scene::Camera & p_camera )
 				{
-					p_camera.screenHeight = _height;
-					p_camera.screenWidth  = _width;
+					p_camera.screenHeight = p_height;
+					p_camera.screenWidth  = p_width;
 				}
 			);
 		}
 
-		App::RENDERER().resize( _width, _height );
+		App::RENDERER().resize( p_width, p_height );
 	}
 
 } // namespace VTX::App::Action::Application
