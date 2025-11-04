@@ -1,8 +1,13 @@
 #ifndef __VTX_APP_EVENTS__
 #define __VTX_APP_EVENTS__
 
+#include <string>
+
 namespace VTX::App::Events
 {
+	/**
+	 * @brief Application.
+	 */
 	struct ApplicationStart
 	{
 	};
@@ -46,6 +51,14 @@ namespace VTX::App::Events
 	struct BlockingOperationProgress
 	{
 		float progress;
+	};
+
+	/**
+	 * @brief Controllers.
+	 */
+	template<typename T>
+	struct CameraControllerChange
+	{
 	};
 } // namespace VTX::App::Events
 

@@ -3,7 +3,7 @@
 
 #include "app/services.hpp"
 #include <QStyle>
-// #include <app/action/action_manager.hpp>
+#include <app/action/action_manager.hpp>
 // #include <app/action/library.hpp>
 #include <app/ui/concepts.hpp>
 

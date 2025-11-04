@@ -13,6 +13,7 @@
 #include <app/controller/camera/freefly.hpp>
 #include <app/controller/camera/trackball.hpp>
 */
+#include "app/action/controller.hpp"
 
 namespace VTX::UI::QT::Action
 {
@@ -105,7 +106,9 @@ namespace VTX::UI::QT::Action
 			tip		 = "Change camera projection mode";
 			icon	 = "sprite/camera/orthographic.png";
 			shortcut = "Alt+O";
-			// trigger	 = []() { App::ACTION().execute<App::Action::Camera::ToggleCameraProjection>(); };
+			// trigger	 = []() {
+			// App::ACTION().execute<App::Action::Controller::SetCameraController<App::Pass::Controller::Trackball>>();
+			// };
 		}
 
 		void Orthographic::connect() const
@@ -171,29 +174,19 @@ namespace VTX::UI::QT::Action
 			tip		 = "Use Trackball controller";
 			icon	 = "sprite/camera/trackball.png";
 			shortcut = "Alt+T";
-			// trigger	 = []() { App::ACTION().execute<App::Action::Controller::ToggleCameraController>(); };
+			trigger	 = []()
+			{
+				App::ACTION().execute<App::Action::Controller::SetCameraController<App::Pass::Controller::Trackball>>();
+			};
 		}
 
 		void Trackball::connect() const
 		{
-			/*
-			QAction * const				 qAction = Factory::get<Trackball>();
-			App::Component::Controller & component
-				= App::ECS_REGISTRY().getComponent<App::Component::Controller>( App::SCENE().getCamera() );
-
-			if ( component.isControllerEnabled<App::Controller::Camera::Trackball>() )
-			{
-				qAction->setChecked( true );
-			}
-
-			component.onControllerEnabled += [ qAction ]( const Hash p_hash )
-			{
-				if ( p_hash == Util::hash<App::Controller::Camera::Trackball>() )
-				{
-					qAction->setChecked( true );
-				}
-			};
-			*/
+			QAction * const qAction = Application::getAction<Trackball>();
+			App::HUB().connect<App::Events::CameraControllerChange<App::Pass::Controller::Trackball>>(
+				[ qAction ]( const App::Events::CameraControllerChange<App::Pass::Controller::Trackball> & component )
+				{ qAction->setChecked( true ); }
+			);
 		}
 
 		Freefly::Freefly()
@@ -203,29 +196,17 @@ namespace VTX::UI::QT::Action
 			tip		 = "Use Freefly controller";
 			icon	 = "sprite/camera/freefly.png";
 			shortcut = "Alt+F";
-			// trigger	 = []() { App::ACTION().execute<App::Action::Controller::ToggleCameraController>(); };
+			trigger	 = []()
+			{ App::ACTION().execute<App::Action::Controller::SetCameraController<App::Pass::Controller::Freefly>>(); };
 		}
 
 		void Freefly::connect() const
 		{
-			/*
-			QAction * const				 qAction = Factory::get<Freefly>();
-			App::Component::Controller & component
-				= App::ECS_REGISTRY().getComponent<App::Component::Controller>( App::SCENE().getCamera() );
-
-			if ( component.isControllerEnabled<App::Controller::Camera::Freefly>() )
-			{
-				qAction->setChecked( true );
-			}
-
-			component.onControllerEnabled += [ qAction ]( const Hash p_hash )
-			{
-				if ( p_hash == Util::hash<App::Controller::Camera::Freefly>() )
-				{
-					qAction->setChecked( true );
-				}
-			};
-			*/
+			QAction * const qAction = Application::getAction<Freefly>();
+			App::HUB().connect<App::Events::CameraControllerChange<App::Pass::Controller::Freefly>>(
+				[ qAction ]( const App::Events::CameraControllerChange<App::Pass::Controller::Freefly> & component )
+				{ qAction->setChecked( true ); }
+			);
 		}
 
 		Orient::Orient()

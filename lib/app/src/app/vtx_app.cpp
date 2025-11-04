@@ -163,9 +163,9 @@ namespace VTX::App
 		// Camera updater.
 		PASS().addPass<Pass::CameraUpdater>( _camera );
 		// Trackball controller.
-		PASS().addPass<Pass::Controller::Trackball>( _camera );
-
-		// TODO: store current controller in settings.
+		// TODO: store current controller in settings?
+		// PASS().addPass<Pass::Controller::Trackball>( _camera );
+		ACTION().execute<Action::Controller::SetCameraController<Pass::Controller::Trackball>>();
 
 		// ?
 		// Internal::initSettings( App::SETTINGS() );

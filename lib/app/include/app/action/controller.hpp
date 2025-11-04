@@ -1,21 +1,40 @@
 #ifndef __VTX_APP_ACTION_CONTROLLER__
 #define __VTX_APP_ACTION_CONTROLLER__
 
+#include "app/events.hpp"
 #include "app/pass/controller/freefly.hpp"
 #include "app/pass/controller/trackball.hpp"
+#include "app/scene/camera.hpp"
+#include "app/services.hpp"
 
 namespace VTX::App::Action::Controller
 {
 
-	struct ToggleCameraController
-	{
-		void execute() {}
-	};
-
 	template<typename T>
 	struct SetCameraController
 	{
-		void execute() {}
+		void execute()
+		{
+			auto view = REG().view<Scene::Camera>();
+			if ( not view.empty() )
+			{
+				ECS::Entity camera = *view.begin();
+
+				// If the requested controller is already active, do nothing.
+				if ( PASS().hasPass<T>() )
+				{
+					return;
+				}
+
+				// Remove existing controller passes.
+				PASS().removePass<Pass::Controller::Freefly>();
+				PASS().removePass<Pass::Controller::Trackball>();
+
+				// Add controller pass.
+				PASS().addPass<T>( camera );
+				HUB().trigger<Events::CameraControllerChange<T>>();
+			}
+		}
 	};
 } // namespace VTX::App::Action::Controller
 
