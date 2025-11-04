@@ -59,14 +59,27 @@ namespace VTX::App::Pass
 		template<ConceptPass T>
 		void removePass()
 		{
-			assert( _passes.has<T>() );
+			if ( not _passes.has<T>() )
+			{
+				return;
+			}
 
 			// Remove update delegate.
 			std::erase_if(
-				_delegates, [ this ]( const UpdateDelegate & p_d ) { return p_d.target() == _passes.get<T>(); }
+				_delegates, [ this ]( const UpdateDelegate & p_d ) { return p_d.data() == _passes.get<T>(); }
 			);
+
 			// Delete pass.
 			_passes.remove<T>();
+		}
+
+		/**
+		 * @brief Checks if a pass exists.
+		 */
+		template<ConceptPass T>
+		bool hasPass() const
+		{
+			return _passes.has<T>();
 		}
 
 		/**
