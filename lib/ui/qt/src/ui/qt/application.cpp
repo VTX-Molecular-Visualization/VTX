@@ -187,7 +187,7 @@ namespace VTX::UI::QT
 			VTX_TRACE( "UI action created: {}", p_action.name );
 
 			// Name.
-			qAction->setText( p_action.name.c_str() );
+			qAction->setText( QString::fromStdString( p_action.name ) );
 			// Group.
 			if ( p_action.group.has_value() )
 			{
@@ -195,6 +195,7 @@ namespace VTX::UI::QT
 				if ( not qActionGroup )
 				{
 					qActionGroup = new QActionGroup( Q_APP() );
+					qActionGroup->setObjectName( p_action.group.value() );
 				}
 
 				qAction->setCheckable( true );
@@ -203,7 +204,7 @@ namespace VTX::UI::QT
 			// Tip.
 			if ( p_action.tip.has_value() )
 			{
-				QString tip = p_action.tip.value().c_str();
+				QString tip = QString::fromStdString( p_action.tip.value() );
 
 				if ( p_action.shortcut.has_value() )
 				{
@@ -227,7 +228,9 @@ namespace VTX::UI::QT
 				}
 				else if ( std::holds_alternative<std::string>( p_action.icon.value() ) )
 				{
-					qAction->setIcon( QIcon( ( ":/" + std::get<std::string>( p_action.icon.value() ) ).c_str() ) );
+					qAction->setIcon(
+						QIcon( QString::fromStdString( ( ":/" + std::get<std::string>( p_action.icon.value() ) ) ) )
+					);
 				}
 				else
 				{
@@ -237,7 +240,7 @@ namespace VTX::UI::QT
 			// Shortcut.
 			if ( p_action.shortcut.has_value() )
 			{
-				qAction->setShortcut( QKeySequence( p_action.shortcut.value().c_str() ) );
+				qAction->setShortcut( QKeySequence( QString::fromStdString( p_action.shortcut.value() ) ) );
 			}
 			// Action.
 			if ( p_action.trigger.has_value() )
