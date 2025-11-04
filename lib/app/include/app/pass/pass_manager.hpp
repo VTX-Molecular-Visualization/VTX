@@ -85,7 +85,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Updates all passes.
 		 */
-		void update( const float p_delta, const float p_elapsed )
+		inline void update( const float p_delta, const float p_elapsed )
 		{
 			for ( const auto & delegate : _delegates )
 			{

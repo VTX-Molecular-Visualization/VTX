@@ -184,8 +184,7 @@ namespace VTX::UI::QT::Action
 		{
 			QAction * const qAction = Application::getAction<Trackball>();
 			App::HUB().connect<App::Events::CameraControllerChange<App::Pass::Controller::Trackball>>(
-				[ qAction ]( const App::Events::CameraControllerChange<App::Pass::Controller::Trackball> & component )
-				{ qAction->setChecked( true ); }
+				[ qAction ]() { qAction->setChecked( true ); }
 			);
 		}
 
@@ -204,8 +203,7 @@ namespace VTX::UI::QT::Action
 		{
 			QAction * const qAction = Application::getAction<Freefly>();
 			App::HUB().connect<App::Events::CameraControllerChange<App::Pass::Controller::Freefly>>(
-				[ qAction ]( const App::Events::CameraControllerChange<App::Pass::Controller::Freefly> & component )
-				{ qAction->setChecked( true ); }
+				[ qAction ]() { qAction->setChecked( true ); }
 			);
 		}
 
