@@ -39,12 +39,12 @@ namespace VTX::App::Pass
 		 * @brief Instantiates a pass.
 		 */
 		template<ConceptPass T, typename... Args>
-		T * const addPass( Args &&... args )
+		T * const addPass( Args &&... p_args )
 		{
 			assert( not _passes.has<T>() );
 
 			// Create pass.
-			T * const p = _passes.create<T>( std::forward<Args>( args )... );
+			T * const p = _passes.create<T>( std::forward<Args>( p_args )... );
 			// Register update delegate.
 			UpdateDelegate d;
 			d.template connect<&T::update>( p );

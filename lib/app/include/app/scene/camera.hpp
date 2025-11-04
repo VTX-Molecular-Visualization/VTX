@@ -1,9 +1,7 @@
 #ifndef __VTX_APP_SCENE_CAMERA__
 #define __VTX_APP_SCENE_CAMERA__
 
-#include "app/services.hpp"
-#include "app/settings/settings.hpp"
-#include <util/constants.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Scene
 {
@@ -25,23 +23,29 @@ namespace VTX::App::Scene
 		};
 
 		/**
+		 * @brief Camera settings.
+		 */
+		const float *	   near;
+		const float *	   far;
+		const float *	   fov;
+		const PROJECTION * projection;
+
+		/**
 		 * @brief Screen size.
 		 */
 		size_t screenWidth;
 		size_t screenHeight;
 
 		/**
-		 * @brief Camera parameters.
+		 * @brief Constructor.
 		 */
-		float	   near		  = Settings::Camera::NEAR_DEFAULT;
-		float	   far		  = Settings::Camera::FAR_DEFAULT;
-		float	   fov		  = Settings::Camera::FOV_DEFAULT;
-		PROJECTION projection = PROJECTION( Settings::Camera::PROJECTION_DEFAULT );
+		Camera();
 
 		/**
 		 * @brief Compute projection matrix.
 		 */
 		Mat4f computeProjectionMatrix() const;
+
 	}; // namespace Camera
 } // namespace VTX::App::Scene
 #endif

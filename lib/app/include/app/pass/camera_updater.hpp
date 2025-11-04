@@ -37,9 +37,9 @@ namespace VTX::App::Pass
 				&_projectionMatrix,
 				transform.getPosition(),
 				Vec2i( 0, 0 ),
-				camera.near,
-				camera.far,
-				camera.projection == Scene::Camera::PROJECTION::PERSPECTIVE
+				*camera.near,
+				*camera.far,
+				*camera.projection == Scene::Camera::PROJECTION::PERSPECTIVE
 			);
 
 			RENDERER().setProxyCamera( *_cameraProxy );

@@ -1,5 +1,6 @@
 #include "app/vtx_app.hpp"
 #include "app/action/action_manager.hpp"
+#include "app/action/controller.hpp"
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
 #include "app/input/input_manager.hpp"
@@ -9,8 +10,6 @@
 #include "app/library/preset/representation.hpp"
 #include "app/network/network_manager.hpp"
 #include "app/pass/camera_updater.hpp"
-#include "app/pass/controller/freefly.hpp"
-#include "app/pass/controller/trackball.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/scene/camera.hpp"
 #include "app/services.hpp"
@@ -85,7 +84,7 @@ namespace VTX::App
 		LIBRARY().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
 		LIBRARY().load<Library::Preset::RenderSettings>( Filesystem::getEffectsDir() );
 
-		// TODO: move to start to handle gui dialog?
+		// Load settings.
 		Settings::initSettings();
 
 		// Register loop events.
@@ -164,7 +163,7 @@ namespace VTX::App
 		// Camera updater.
 		PASS().addPass<Pass::CameraUpdater>( _camera );
 		// Trackball controller.
-		PASS().addPass<Pass::Controller::Freefly>( _camera );
+		PASS().addPass<Pass::Controller::Trackball>( _camera );
 
 		// TODO: store current controller in settings.
 

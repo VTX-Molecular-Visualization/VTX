@@ -2,6 +2,8 @@
 #include "app/input/input_manager.hpp"
 #include "app/input/key_MAPPING.hpp"
 #include "app/services.hpp"
+#include "app/settings/settings.hpp"
+#include "app/settings/settings_manager.hpp"
 #include <util/constants.hpp>
 #include <util/math/transform.hpp>
 
@@ -34,6 +36,15 @@ namespace
 
 namespace VTX::App::Pass::Controller
 {
+	Freefly::Freefly( const ECS::Entity & p_ent ) : _cameraEntity( p_ent )
+	{
+		auto & settings		= SETTINGS();
+		_translationSpeed	= settings.getValuePtr<float>( Settings::Controller::TRANSLATION_SPEED_KEY );
+		_accelerationFactor = settings.getValuePtr<float>( Settings::Controller::ACCELERATION_FACTOR_KEY );
+		_decelerationFactor = settings.getValuePtr<float>( Settings::Controller::DECELERATION_FACTOR_KEY );
+		_rotationSpeed		= settings.getValuePtr<float>( Settings::Controller::ROTATION_SPEED_KEY );
+		_invertY			= settings.getValuePtr<bool>( Settings::Controller::INVERT_Y_KEY );
+	}
 
 	void Freefly::update( const float p_deltaTime, const float p_elapsedTime )
 	{
@@ -47,15 +58,15 @@ namespace VTX::App::Pass::Controller
 		if ( input.isMouseLeftPressed() )
 		{
 			localRotation = Vec3f(
-				-rotationSpeed * deltaVelocityInput.y * ( invertY ? -1.f : 1.f ),
-				-rotationSpeed * deltaVelocityInput.x,
+				-*_rotationSpeed * deltaVelocityInput.y * ( *_invertY ? -1.f : 1.f ),
+				-*_rotationSpeed * deltaVelocityInput.x,
 				0.f
 			);
 		}
 		float rollRotation = 0.f;
 		if ( input.isMouseRightPressed() )
 		{
-			rollRotation = -rotationSpeed * deltaVelocityInput.x;
+			rollRotation = -*_rotationSpeed * deltaVelocityInput.x;
 		}
 
 		// Translation.
@@ -87,16 +98,16 @@ namespace VTX::App::Pass::Controller
 
 		if ( translation != VEC3F_ZERO )
 		{
-			translation *= translationSpeed;
+			translation *= *_translationSpeed;
 			translation *= p_deltaTime * 1e-3f;
 
 			if ( input.isModifierExclusive( Input::Modifier::Shift ) )
 			{
-				translation *= accelerationFactor;
+				translation *= *_accelerationFactor;
 			}
 			if ( input.isModifierExclusive( Input::Modifier::Alt ) )
 			{
-				translation /= decelerationFactor;
+				translation /= *_decelerationFactor;
 			}
 		}
 

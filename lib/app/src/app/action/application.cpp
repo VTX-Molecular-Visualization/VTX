@@ -1,4 +1,5 @@
 #include "app/action/application.hpp"
+#include "app/ecs.hpp"
 #include "app/scene/camera.hpp"
 #include "app/services.hpp"
 #include <renderer/facade.hpp>
@@ -21,7 +22,7 @@ namespace VTX::App::Action::Application
 		{
 			REG().patch<Scene::Camera>(
 				*view.begin(),
-				[ this, p_width, p_height ]( Scene::Camera & p_camera )
+				[ p_width, p_height ]( Scene::Camera & p_camera )
 				{
 					p_camera.screenHeight = p_height;
 					p_camera.screenWidth  = p_width;
@@ -29,7 +30,7 @@ namespace VTX::App::Action::Application
 			);
 		}
 
-		App::RENDERER().resize( p_width, p_height );
+		RENDERER().resize( p_width, p_height );
 	}
 
 } // namespace VTX::App::Action::Application

@@ -14,15 +14,7 @@ namespace VTX::App::Pass::Controller
 	class Trackball : public IPass
 	{
 	  public:
-		float translationSpeed	 = Settings::Controller::TRANSLATION_SPEED_DEFAULT;
-		float accelerationFactor = Settings::Controller::ACCELERATION_FACTOR_DEFAULT;
-		float decelerationFactor = Settings::Controller::DECELERATION_FACTOR_DEFAULT;
-		float rotationSpeed		 = Settings::Controller::ROTATION_SPEED_DEFAULT;
-		bool  invertY			 = Settings::Controller::INVERT_Y_DEFAULT;
-		bool  elasticityActive	 = Settings::Controller::ELASTICITY_ACTIVE_DEFAULT;
-		float elasticityFactor	 = Settings::Controller::ELASTICITY_FACTOR_DEFAULT;
-
-		Trackball( const ECS::Entity & p_ent ) : _cameraEntity( p_ent ) {}
+		Trackball( const ECS::Entity & p_ent );
 
 		void update( const float, const float );
 
@@ -31,6 +23,14 @@ namespace VTX::App::Pass::Controller
 		Vec3f			  _target	  = VEC3F_XYZ;
 		Vec3f			  _velocity	  = VEC3F_ZERO;
 		bool			  _needUpdate = true;
+
+		const float * _translationSpeed;
+		const float * _accelerationFactor;
+		const float * _decelerationFactor;
+		const float * _rotationSpeed;
+		const bool *  _invertY;
+		const bool *  _elasticityActive;
+		const float * _elasticityFactor;
 
 		void _updateElasticity( const float & );
 	};

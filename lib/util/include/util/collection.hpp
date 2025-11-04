@@ -30,7 +30,7 @@ namespace VTX::Util
 		inline bool has( const Hash & p_hash ) const { return _map.contains( p_hash ); }
 
 		template<typename T>
-		inline T * const get()
+		inline T * const get() const
 		{
 			return get<T>( hash<T>() );
 		}
@@ -62,7 +62,7 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		inline T * const get( const Hash & p_hash )
+		inline T * const get( const Hash & p_hash ) const
 		{
 			assert( _map.contains( p_hash ) );
 
@@ -89,7 +89,7 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		inline T & getRef()
+		inline T & getRef() const
 		{
 			return *get<T>();
 		}
@@ -178,7 +178,7 @@ namespace VTX::Util
 		auto cend() const noexcept { return _map.cend(); }
 
 	  private:
-		std::unordered_map<Hash, C> _map;
+		mutable std::unordered_map<Hash, C> _map;
 
 		template<typename T, typename... Args>
 		inline T * const _create( const Hash & p_hash, Args &&... p_args )

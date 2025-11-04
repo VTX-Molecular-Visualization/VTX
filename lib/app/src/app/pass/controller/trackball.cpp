@@ -2,6 +2,8 @@
 #include "app/input/input_manager.hpp"
 #include "app/input/key_mapping.hpp"
 #include "app/services.hpp"
+#include "app/settings/settings.hpp"
+#include "app/settings/settings_manager.hpp"
 #include <util/math.hpp>
 #include <util/math/transform.hpp>
 
@@ -40,6 +42,18 @@ namespace
 
 namespace VTX::App::Pass::Controller
 {
+	Trackball::Trackball( const ECS::Entity & p_ent ) : _cameraEntity( p_ent )
+	{
+		auto & settings		= SETTINGS();
+		_translationSpeed	= settings.getValuePtr<float>( Settings::Controller::TRANSLATION_SPEED_KEY );
+		_accelerationFactor = settings.getValuePtr<float>( Settings::Controller::ACCELERATION_FACTOR_KEY );
+		_decelerationFactor = settings.getValuePtr<float>( Settings::Controller::DECELERATION_FACTOR_KEY );
+		_rotationSpeed		= settings.getValuePtr<float>( Settings::Controller::ROTATION_SPEED_KEY );
+		_invertY			= settings.getValuePtr<bool>( Settings::Controller::INVERT_Y_KEY );
+		_elasticityActive	= settings.getValuePtr<bool>( Settings::Controller::ELASTICITY_ACTIVE_KEY );
+		_elasticityFactor	= settings.getValuePtr<float>( Settings::Controller::ELASTICITY_FACTOR_KEY );
+	}
+
 	void Trackball::update( const float p_delta, const float p_elapsed )
 	{
 		using namespace Util;
@@ -116,15 +130,15 @@ namespace VTX::App::Pass::Controller
 		// Set values from settings.
 		if ( deltaDistance != 0.f )
 		{
-			deltaDistance *= translationSpeed;
+			deltaDistance *= *_translationSpeed;
 
 			if ( input.isModifierExclusive( Input::Modifier::Shift ) )
 			{
-				deltaDistance *= accelerationFactor;
+				deltaDistance *= *_accelerationFactor;
 			}
 			if ( input.isModifierExclusive( Input::Modifier::Alt ) )
 			{
-				deltaDistance /= decelerationFactor;
+				deltaDistance /= *_decelerationFactor;
 			}
 
 			_needUpdate = true;
@@ -134,16 +148,16 @@ namespace VTX::App::Pass::Controller
 		{
 			if ( input.isModifierExclusive( Input::Modifier::Shift ) )
 			{
-				deltaVelocity *= accelerationFactor;
+				deltaVelocity *= *_accelerationFactor;
 			}
 			if ( input.isModifierExclusive( Input::Modifier::Alt ) )
 			{
-				deltaVelocity /= decelerationFactor;
+				deltaVelocity /= *_decelerationFactor;
 			}
 
-			_velocity.x += rotationSpeed * deltaVelocity.x;
-			_velocity.y += rotationSpeed * deltaVelocity.y * ( invertY ? -1.f : 1.f );
-			_velocity.z += rotationSpeed * deltaVelocity.z;
+			_velocity.x += *_rotationSpeed * deltaVelocity.x;
+			_velocity.y += *_rotationSpeed * deltaVelocity.y * ( *_invertY ? -1.f : 1.f );
+			_velocity.z += *_rotationSpeed * deltaVelocity.z;
 		}
 
 		_needUpdate |= _velocity != VEC3F_ZERO;
@@ -155,7 +169,7 @@ namespace VTX::App::Pass::Controller
 			distance	   = Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 
 			const Quatf rotation
-				= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z ) * ( elasticityActive ? deltaTime : 0.2f ) );
+				= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z ) * ( *_elasticityActive ? deltaTime : 0.2f ) );
 
 			REG().patch<Math::Transform>(
 				_cameraEntity,
@@ -167,7 +181,7 @@ namespace VTX::App::Pass::Controller
 		}
 
 		// Handle elasticity.
-		if ( elasticityActive )
+		if ( *_elasticityActive )
 		{
 			_updateElasticity( deltaTime );
 		}
@@ -181,7 +195,7 @@ namespace VTX::App::Pass::Controller
 	{
 		if ( _velocity != VEC3F_ZERO )
 		{
-			_velocity = Util::Math::lerp( _velocity, VEC3F_ZERO, p_deltaTime * elasticityFactor );
+			_velocity = Util::Math::lerp( _velocity, VEC3F_ZERO, p_deltaTime * *_elasticityFactor );
 
 			Vec3f::bool_type res
 				= Util::Math::lessThan( Util::Math::abs( _velocity ), Vec3f( _CONTROLLER_ELASTICITY_THRESHOLD ) );
