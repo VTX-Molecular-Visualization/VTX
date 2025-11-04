@@ -146,7 +146,7 @@ namespace VTX::UI::QT::Widget::Library
 	void Representation::_onPresetAdded( const std::string_view p_name )
 	{
 		using namespace VTX::Core::Struct;
-		auto * const preset = _library->getPreset( p_name );
+		auto * const preset = &_library.getPreset( p_name );
 
 		// Connect app to widgets.
 		preset->getCallback<E_REPRESENTATION_VALUES::HAS_SPHERE, bool>() += [ this, preset ]( const bool p_value )

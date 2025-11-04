@@ -234,7 +234,7 @@ namespace VTX::UI::QT::Widget::Library
 	void RenderSettings::_onPresetAdded( const std::string_view p_name )
 	{
 		using namespace Renderer;
-		auto * const preset = _library->getPreset( p_name );
+		auto * const preset = &_library.getPreset( p_name );
 
 		// Connect app to widgets.
 		preset->getCallback<E_RENDER_SETTINGS::SHADING_MODE, E_SHADING>() += [ this, preset ]( const E_SHADING p_value )

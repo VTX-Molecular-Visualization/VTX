@@ -1,0 +1,56 @@
+#ifndef __VTX_APP_ACTION_IO__
+#define __VTX_APP_ACTION_IO__
+
+#include <util/image.hpp>
+#include <util/types.hpp>
+#include <util/url.hpp>
+
+namespace VTX::Util::Url
+{
+
+	class SystemId;
+	class UrlFull;
+} // namespace VTX::Util::Url
+
+namespace VTX::App::Action::IO
+{
+
+	struct Open
+	{
+		void execute( const FilePath & p_path );
+	};
+
+	struct DownloadSystem
+	{
+	  public:
+		DownloadSystem( VTX::Util::Url::SystemId );
+		DownloadSystem( VTX::Util::Url::SystemId, FilePath );
+		DownloadSystem( VTX::Util::Url::UrlFull, FilePath );
+		DownloadSystem( const char * p_systemId );
+
+		void execute();
+
+	  private:
+		const VTX::Util::Url::UrlFull _url;
+		const FilePath				  _filename;
+	};
+
+	/**
+	 * @brief Take a snapshot from actual camera view and save it to disk.
+	 */
+	class Snapshot
+	{
+	  public:
+		Snapshot();
+		Snapshot( const FilePath, const Util::Image::E_FORMAT, const size_t, const size_t );
+		void execute();
+
+	  private:
+		FilePath			  _path;
+		Util::Image::E_FORMAT _format;
+		size_t				  _width;
+		size_t				  _height;
+	};
+
+} // namespace VTX::App::Action::IO
+#endif

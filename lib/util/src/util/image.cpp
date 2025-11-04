@@ -19,6 +19,9 @@ namespace VTX::Util::Image
 		// Remove extension from path.
 		FilePath path = p_path.parent_path() / p_path.stem();
 
+		// Create directories if needed.
+		std::filesystem::create_directories( path.parent_path() );
+
 		stbi_flip_vertically_on_write( true );
 
 		// Watermark.

@@ -17,9 +17,10 @@
 #include "app/settings/settings_manager.hpp"
 #include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
-#include "renderer/facade.hpp"
 #include <exception>
+#include <renderer/facade.hpp>
 #include <util/logger.hpp>
+#include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
 #include <util/monitoring/stats.hpp>
 
@@ -69,20 +70,22 @@ namespace VTX::App
 		VTX_DEBUG( "Init application" );
 
 		// Load preset libraries.
-		auto * lib	  = LIBRARY().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
-		auto * preset = lib->createPreset( "Sticks" );
-		preset->setData( App::Library::Preset::Representations::STICKS );
-		preset = lib->createPreset( "Balls and sticks" );
-		preset->setData( App::Library::Preset::Representations::BALLS_AND_STICKS );
-		preset = lib->createPreset( "Van der Waals" );
-		preset->setData( App::Library::Preset::Representations::VAN_DER_WAALS );
-		preset = lib->createPreset( "Ribbons" );
-		preset->setData( App::Library::Preset::Representations::RIBBONS );
-		preset = lib->createPreset( "SES" );
-		preset->setData( App::Library::Preset::Representations::SES );
+		// TODO: move.
+		auto & libRepresentations
+			= LIBRARY().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
+		auto & preset = libRepresentations.createPreset( "Sticks" );
+		preset.setData( App::Library::Preset::Representations::STICKS );
+		preset = libRepresentations.createPreset( "Balls and sticks" );
+		preset.setData( App::Library::Preset::Representations::BALLS_AND_STICKS );
+		preset = libRepresentations.createPreset( "Van der Waals" );
+		preset.setData( App::Library::Preset::Representations::VAN_DER_WAALS );
+		preset = libRepresentations.createPreset( "Ribbons" );
+		preset.setData( App::Library::Preset::Representations::RIBBONS );
+		preset = libRepresentations.createPreset( "SES" );
+		preset.setData( App::Library::Preset::Representations::SES );
 
-		LIBRARY().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
-		LIBRARY().load<Library::Preset::RenderSettings>( Filesystem::getEffectsDir() );
+		auto & libColorLayouts	 = LIBRARY().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
+		auto & libRenderSettings = LIBRARY().load<Library::Preset::RenderSettings>( Filesystem::getEffectsDir() );
 
 		// Load settings.
 		Settings::initSettings();
@@ -103,8 +106,11 @@ namespace VTX::App
 
 		// Creates entites/components.
 		// Scene.
-		_scene = REG().create();
-		// TODO: add AABB component, and update it on item add/remove.
+		_scene		= REG().create();
+		auto & aabb = REG().emplace<Util::Math::AABB>( _scene ); // TODO: update from system aabbs.
+		REG().emplace<Library::Preset::ColorLayout>( _scene, libColorLayouts.getPreset( "Default" ) );
+		REG().emplace<Library::Preset::RenderSettings>( _scene, libRenderSettings.getPreset( "Default" ) );
+		REG().emplace<Library::Preset::Representation>( _scene, libRepresentations.getPreset( "Default" ) );
 
 		// Camera.
 		_camera = REG().create();

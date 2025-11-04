@@ -54,7 +54,7 @@ namespace VTX::UI::QT::Widget::Library
 
 	void ColorLayout::_onPresetAdded( const std::string_view p_name )
 	{
-		auto * const preset = _library->getPreset( p_name );
+		auto * const preset = &_library.getPreset( p_name );
 
 		preset->onChange += [ this, preset ]( const Index p_index )
 		{

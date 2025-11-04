@@ -6,12 +6,17 @@
 
 namespace VTX::App::Action::Application
 {
-
+	/**
+	 * @brief Exit the application.
+	 */
 	struct Quit
 	{
 		void execute();
 	};
 
+	/**
+	 * @brief Resize the renderer window.
+	 */
 	struct Resize
 	{
 		void execute( const size_t p_width, const size_t p_height );

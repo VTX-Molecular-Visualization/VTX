@@ -14,7 +14,7 @@ namespace VTX::App::Library
 		LibraryManager( LibraryManager && ) = default;
 
 		template<typename P>
-		BaseLibrary<P> * const load( const FilePath & p_path )
+		BaseLibrary<P> & load( const FilePath & p_path )
 		{
 			assert( not _libraries.has<BaseLibrary<P>>() );
 			_libraries.create<BaseLibrary<P>>( p_path );
@@ -22,10 +22,10 @@ namespace VTX::App::Library
 		}
 
 		template<typename P>
-		BaseLibrary<P> * const getLibrary()
+		BaseLibrary<P> & getLibrary()
 		{
 			assert( _libraries.has<BaseLibrary<P>>() );
-			return _libraries.get<BaseLibrary<P>>();
+			return *_libraries.get<BaseLibrary<P>>();
 		}
 
 	  private:

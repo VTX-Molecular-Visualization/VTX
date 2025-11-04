@@ -116,17 +116,17 @@ namespace VTX::UI::QT::Widget::Library
 			*/
 
 			// Callbacks.
-			_library->onPresetAdded += [ this ]( const std::string_view p_name )
+			_library.onPresetAdded += [ this ]( const std::string_view p_name )
 			{
 				_refreshComboBox();
 				_comboBox->setCurrentText( QString::fromStdString( std::string( p_name ) ) );
 			};
-			_library->onPresetRenamed += [ this ]( const std::string_view p_name )
+			_library.onPresetRenamed += [ this ]( const std::string_view p_name )
 			{
 				_refreshComboBox();
 				_comboBox->setCurrentText( QString::fromStdString( std::string( p_name ) ) );
 			};
-			_library->onPresetDeleted += [ this ]( const std::string_view p_name )
+			_library.onPresetDeleted += [ this ]( const std::string_view p_name )
 			{
 				_refreshComboBox();
 				assert( _comboBox->count() > 0 );
@@ -140,15 +140,15 @@ namespace VTX::UI::QT::Widget::Library
 		inline std::string getCurrentPresetStr() const { return _comboBox->currentText().toStdString(); }
 
 	  private:
-		App::Library::BaseLibrary<P> * const _library;
-		QPointer<QComboBox>					 _comboBox;
+		App::Library::BaseLibrary<P> & _library;
+		QPointer<QComboBox>			   _comboBox;
 
 		void _refreshComboBox()
 		{
 			const QSignalBlocker blocker( _comboBox );
 
 			_comboBox->clear();
-			for ( const auto & [ name, _ ] : _library->getPresets() )
+			for ( const auto & [ name, _ ] : _library.getPresets() )
 			{
 				_comboBox->addItem( QString::fromStdString( name ) );
 			}

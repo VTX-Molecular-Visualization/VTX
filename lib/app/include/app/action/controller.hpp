@@ -9,7 +9,9 @@
 
 namespace VTX::App::Action::Controller
 {
-
+	/**
+	 * @brief Set the camera controller to the requested type.
+	 */
 	template<typename T>
 	struct SetCameraController
 	{

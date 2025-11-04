@@ -6,8 +6,9 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QVBoxLayout>
+#include <app/action/io.hpp>
+#include <app/action/scene.hpp>
 #include <app/filesystem.hpp>
-#include <app/network/network_manager.hpp>
 
 namespace
 {
@@ -108,7 +109,7 @@ namespace VTX::UI::QT::Dialog
 				FilePath path = App::Filesystem::getCacheDir() / ( _pdb.toStdString() + ".pdb" );
 				if ( std::filesystem::exists( path ) and _radioButtonOpen->isChecked() )
 				{
-					// App::ACTION().execute<App::Action::Scene::LoadSystem>( path );
+					App::ACTION().execute<App::Action::Scene::LoadSystem>( path );
 				}
 				else
 				{
@@ -132,12 +133,11 @@ namespace VTX::UI::QT::Dialog
 					Util::Url::UrlTemplate urlReplaced { _url.toStdString().data() };
 					if ( urlReplaced.hasReplacementToken() )
 					{
-						/*
-						App::ACTION().execute<App::Action::Io::DownloadSystem>(
+						App::Action::IO::DownloadSystem action(
 							Util::Url::UrlFull( urlReplaced, Util::Url::SystemId( _pdb.toStdString().data() ) ),
 							_pdb.toStdString() + ".pdb"
 						);
-						*/
+						App::ACTION().execute( action );
 					}
 					else
 					{

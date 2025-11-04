@@ -27,13 +27,13 @@ namespace VTX::App::Library
 
 		const MapPresetsByName & getPresets() { return _presets; }
 
-		P * const getPreset( const std::string_view p_name )
+		P & getPreset( const std::string_view p_name )
 		{
 			assert( _presets.contains( p_name ) );
-			return _presets[ std::string { p_name } ].get();
+			return *_presets[ std::string { p_name } ];
 		}
 
-		P * const createPreset( const std::optional<std::string_view> & p_name )
+		P & createPreset( const std::optional<std::string_view> & p_name )
 		{
 			std::string name = std::string { p_name.has_value() ? p_name.value() : "New preset" };
 
@@ -42,10 +42,10 @@ namespace VTX::App::Library
 
 			onPresetAdded( name );
 
-			return _presets[ name ].get();
+			return *_presets[ name ];
 		}
 
-		P * const copyPreset( const std::string_view p_src, const std::optional<std::string_view> & p_dest )
+		P & copyPreset( const std::string_view p_src, const std::optional<std::string_view> & p_dest )
 		{
 			assert( _presets.contains( p_src ) );
 			std::string name = std::string { p_dest.has_value() ? p_dest.value() : p_src };
@@ -56,7 +56,7 @@ namespace VTX::App::Library
 
 			onPresetAdded( name );
 
-			return _presets[ name ].get();
+			return *_presets[ name ];
 		}
 
 		void removePreset( const std::string_view p_name )

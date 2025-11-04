@@ -31,13 +31,13 @@ namespace VTX::UI::QT::Widget::Library
 		{
 			connect( _presetSelector, &PresetSelector<P>::presetChanged, this, &BasePresetWidget::_presetChanged );
 
-			_library->onPresetAdded += [ this ]( const std::string_view p_name ) { _onPresetAdded( p_name ); };
-			for ( const auto & [ name, _ ] : _library->getPresets() )
+			_library.onPresetAdded += [ this ]( const std::string_view p_name ) { _onPresetAdded( p_name ); };
+			for ( const auto & [ name, _ ] : _library.getPresets() )
 			{
 				_onPresetAdded( name );
 			}
 
-			_preset = _library->getPreset( _presetSelector->getCurrentPreset().toStdString() );
+			_preset = &_library.getPreset( _presetSelector->getCurrentPreset().toStdString() );
 			_onPresetChanged();
 		}
 
@@ -51,7 +51,7 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<Widget::Library::PresetSelector<P>> _presetSelector;
 		QPointer<QGroupBox>							 _groupboxPreset;
 
-		App::Library::BaseLibrary<P> * const _library;
+		App::Library::BaseLibrary<P> & _library;
 		// TODO: const!
 		P * _preset;
 
@@ -70,7 +70,7 @@ namespace VTX::UI::QT::Widget::Library
 		void _presetChanged( const QString & p_name )
 		{
 			std::string name = p_name.toStdString();
-			_preset			 = App::LIBRARY().getLibrary<P>()->getPreset( name );
+			_preset			 = &App::LIBRARY().getLibrary<P>().getPreset( name );
 			_onPresetChanged();
 		}
 	};

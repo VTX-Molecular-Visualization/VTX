@@ -1,0 +1,53 @@
+#include "app/action/scene.hpp"
+#include "app/ecs.hpp"
+#include "app/system/metadata.hpp"
+#include "app/system/trajectory.hpp"
+#include <core/struct/system.hpp>
+#include <io/reader/system.hpp>
+#include <util/logger.hpp>
+#include <util/math/aabb.hpp>
+#include <util/math/transform.hpp>
+
+namespace VTX::App::Action::Scene
+{
+
+	void LoadSystem::execute( const FilePath & p_path, const std::string * const p_buffer )
+	{
+		// Create entity.
+		ECS::Entity system	   = REG().create();
+		auto &		data	   = REG().emplace<Core::Struct::System>( system );
+		auto &		metadata   = REG().emplace<System::Metadata>( system );
+		auto &		trajectory = REG().emplace<System::Trajectory>( system );
+		auto &		transform  = REG().emplace<Util::Math::Transform>( system );
+		auto &		aabb	   = REG().emplace<Util::Math::AABB>( system );
+
+		// Load system.
+		IO::Reader::System loader;
+		// systemStruct.trajectory.setOptimized();
+
+		if ( p_buffer ) // From buffer.
+		{
+			VTX_DEBUG( "Path: {}", p_path.string() );
+			loader.readBuffer( *p_buffer, p_path, data );
+		}
+		else // From disk.
+		{
+			loader.readFile( p_path, data );
+			metadata.path = p_path;
+		}
+
+		const VTX::IO::Reader::Chemfiles & chemfilesReader = loader.getChemfilesReader();
+		const std::string &				   pdbId		   = chemfilesReader.getPdbIdCode();
+		metadata.pdbIDCode								   = pdbId;
+		const std::string systemName					   = pdbId == "" ? p_path.stem().string() : pdbId;
+		data.name										   = systemName; // TODO: move to metadata?
+
+		// ACTION().execute<App::Action::Camera::Orient>( App::SCENE().getAABB() );
+	}
+
+	void Clear::execute()
+	{
+		REG().view<System::Metadata>().each( [ & ]( auto entity, auto & ) { REG().destroy( entity ); } );
+	}
+
+} // namespace VTX::App::Action::Scene

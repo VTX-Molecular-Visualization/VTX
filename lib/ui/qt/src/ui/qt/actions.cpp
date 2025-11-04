@@ -1,24 +1,14 @@
 #include "ui/qt/actions.hpp"
+#include "app/action/controller.hpp"
 #include "ui/qt/dialog/download.hpp"
 #include "ui/qt/dialog/export_image.hpp"
 #include "ui/qt/dialog/open.hpp"
-
-/*
-#include <app/action/application.hpp>
-#include <app/action/camera.hpp>
-#include <app/action/controller.hpp>
 #include <app/action/io.hpp>
-#include <app/application/scene.hpp>
-#include <app/component/controller.hpp>
-#include <app/controller/camera/freefly.hpp>
-#include <app/controller/camera/trackball.hpp>
-*/
-#include "app/action/controller.hpp"
+#include <app/action/scene.hpp>
 
 namespace VTX::UI::QT::Action
 {
 
-	// TODO: move all action to ui?
 	// System.
 	namespace System
 	{
@@ -29,7 +19,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Create a new project";
 			icon	 = "sprite/file/new.png";
 			shortcut = "Ctrl+N";
-			// trigger	 = []() { App::ACTION().execute<App::Action::Application::NewScene>(); };
+			trigger	 = []() { App::ACTION().execute<App::Action::Scene::Clear>(); };
 		}
 
 		Download::Download()
@@ -233,7 +223,11 @@ namespace VTX::UI::QT::Action
 			tip		 = "Save current image";
 			icon	 = "sprite/snapshot/snapshot.png";
 			shortcut = "F2";
-			// trigger	 = []() { App::ACTION().execute<App::Action::Io::Snapshot>(); };
+			trigger	 = []()
+			{
+				App::Action::IO::Snapshot action;
+				App::ACTION().execute( action );
+			};
 		}
 
 		Export::Export()
