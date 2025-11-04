@@ -30,7 +30,7 @@ namespace VTX::App::Pass
 			auto & transform = reg.get<Util::Math::Transform>( p_ent );
 			auto & camera	 = reg.get<Scene::Camera>( p_ent );
 
-			transform.translate( { 0, 0, 100 } );
+			transform.setPosition( { 0, 0, 100 } );
 
 			_cameraProxy = std::make_unique<Renderer::Proxy::Camera>(
 				&_viewMatrix,

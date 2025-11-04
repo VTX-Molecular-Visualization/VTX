@@ -39,7 +39,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Position.
 		 */
-		inline void translate( const Vec3f & p_vec ) { _position += p_vec; }
+		inline void translate( const Vec3f & p_vec ) { _position += _rotation * p_vec; }
 		inline void setPosition( const float p_x, const float p_y, const float p_z )
 		{
 			_position = Vec3f( p_x, p_y, p_z );
