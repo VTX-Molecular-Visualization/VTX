@@ -3,10 +3,10 @@
 #include "user_interface.hpp"
 #include "camera.hpp"
 #include "scene.hpp"
-#include <core/chemdb/color_layout.hpp>
 #include <imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <imnodes/imnodes.h>
+#include <renderer/color.hpp>
 #include <util/enum.hpp>
 #include <util/image.hpp>
 #include <util/logger.hpp>
@@ -171,11 +171,11 @@ namespace VTX::Bench
 			{
 				if ( ImGui::MenuItem( "JMol" ) )
 				{
-					p_scene->setColorLayout( VTX::Core::ChemDB::ColorLayout::COLOR_LAYOUT_JMOL );
+					// p_scene->setColorLayout( VTX::Core::ChemDB::ColorLayout::COLOR_LAYOUT_JMOL );
 				}
 				if ( ImGui::MenuItem( "Random" ) )
 				{
-					VTX::Core::Struct::ColorLayout colorLayout;
+					Renderer::Color::Layout colorLayout;
 					std::generate(
 						colorLayout.colors.begin(), colorLayout.colors.end(), [] { return Util::Color::Rgba::random(); }
 					);
@@ -183,7 +183,7 @@ namespace VTX::Bench
 				}
 				if ( ImGui::MenuItem( "Random pastel" ) )
 				{
-					VTX::Core::Struct::ColorLayout colorLayout;
+					Renderer::Color::Layout colorLayout;
 					std::generate(
 						colorLayout.colors.begin(),
 						colorLayout.colors.end(),

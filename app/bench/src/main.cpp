@@ -87,7 +87,7 @@ int main( int, char ** )
 				}
 				else if ( p_key == SDL_SCANCODE_F5 )
 				{
-					VTX::Core::Struct::ColorLayout colorLayout;
+					Renderer::Color::Layout colorLayout;
 					std::generate(
 						colorLayout.colors.begin(), colorLayout.colors.end(), [] { return Color::Rgba::random(); }
 					);

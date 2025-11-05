@@ -581,7 +581,6 @@ namespace VTX::Renderer
 	void Renderer::setProxyRepresentation( Proxy::Representation & p_proxy )
 	{
 		using namespace Proxy;
-		using namespace Core::Struct;
 
 		_proxyRepresentation = &p_proxy;
 

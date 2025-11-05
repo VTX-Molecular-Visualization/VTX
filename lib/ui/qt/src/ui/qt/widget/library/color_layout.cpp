@@ -4,18 +4,18 @@
 // #include <app/action/color_layout.hpp>
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/chain.hpp>
-#include <core/chemdb/color_layout.hpp>
 #include <core/chemdb/residue.hpp>
+#include <renderer/color.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
 
 	ColorLayout::ColorLayout( QWidget * p_parent ) : BasePresetWidget( p_parent )
 	{
-		using namespace VTX::Core::Struct;
+		using namespace Renderer;
 		using namespace App::Library::Preset;
-		using namespace VTX::Core::ChemDB;
-		using namespace VTX::Core::ChemDB::ColorLayout;
+		using namespace Core::ChemDB;
+		using namespace Color;
 
 		setTitle( "Edit color layout" );
 
@@ -24,7 +24,7 @@ namespace VTX::UI::QT::Widget::Library
 		searchBar->setPlaceholderText( "TODO" );
 		addWidget( searchBar );
 
-		_buttons.resize( VTX::Core::Struct::COLOR_LAYOUT_SIZE );
+		_buttons.resize( COLOR_LAYOUT_SIZE );
 
 		// Group boxes.
 		_createGroupBox( "Atom", LAYOUT_OFFSET_ATOMS, LAYOUT_COUNT_ATOMS, Atom::SYMBOL_STR, Atom::SYMBOL_NAME );
@@ -69,7 +69,7 @@ namespace VTX::UI::QT::Widget::Library
 			if ( _preset != preset )
 				return;
 
-			for ( size_t i = 0; i < VTX::Core::Struct::COLOR_LAYOUT_SIZE; ++i )
+			for ( size_t i = 0; i < Renderer::Color::COLOR_LAYOUT_SIZE; ++i )
 			{
 				_setColor( i, _preset->getData().colors[ i ] );
 			}
@@ -82,7 +82,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		// App::ACTION().execute<App::Action::ColorLayout::SetCurrent>( _preset );
 
-		for ( size_t i = 0; i < VTX::Core::Struct::COLOR_LAYOUT_SIZE; ++i )
+		for ( size_t i = 0; i < Renderer::Color::COLOR_LAYOUT_SIZE; ++i )
 		{
 			_setColor( i, _preset->getData().colors[ i ] );
 		}
@@ -90,8 +90,8 @@ namespace VTX::UI::QT::Widget::Library
 
 	void ColorLayout::refreshVisibility( const bool p_hide )
 	{
-		using namespace VTX::Core::ChemDB;
-		using namespace VTX::Core::ChemDB::ColorLayout;
+		using namespace Core::ChemDB;
+		using namespace Renderer::Color;
 
 		_refreshButtonVisibility( p_hide, LAYOUT_OFFSET_ATOMS, LAYOUT_COUNT_ATOMS, Atom::SYMBOL_IS_COMMON );
 		_refreshButtonVisibility( p_hide, LAYOUT_OFFSET_RESIDUES, LAYOUT_COUNT_RESIDUES, Residue::SYMBOL_IS_COMMON );

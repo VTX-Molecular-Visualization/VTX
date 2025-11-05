@@ -71,21 +71,24 @@ namespace VTX::App
 
 		// Load preset libraries.
 		// TODO: move.
-		auto & libRepresentations
-			= LIBRARY().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
-		auto & preset = libRepresentations.createPreset( "Sticks" );
-		preset.setData( App::Library::Preset::Representations::STICKS );
-		preset = libRepresentations.createPreset( "Balls and sticks" );
-		preset.setData( App::Library::Preset::Representations::BALLS_AND_STICKS );
-		preset = libRepresentations.createPreset( "Van der Waals" );
-		preset.setData( App::Library::Preset::Representations::VAN_DER_WAALS );
-		preset = libRepresentations.createPreset( "Ribbons" );
-		preset.setData( App::Library::Preset::Representations::RIBBONS );
-		preset = libRepresentations.createPreset( "SES" );
-		preset.setData( App::Library::Preset::Representations::SES );
+		auto & libRep	 = LIBRARY().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
+		auto & presetRep = libRep.createPreset( "Sticks" );
+		presetRep.setData( App::Library::Preset::Representations::STICKS );
+		presetRep = libRep.createPreset( "Balls and sticks" );
+		presetRep.setData( App::Library::Preset::Representations::BALLS_AND_STICKS );
+		presetRep = libRep.createPreset( "Van der Waals" );
+		presetRep.setData( App::Library::Preset::Representations::VAN_DER_WAALS );
+		presetRep = libRep.createPreset( "Ribbons" );
+		presetRep.setData( App::Library::Preset::Representations::RIBBONS );
+		presetRep = libRep.createPreset( "SES" );
+		presetRep.setData( App::Library::Preset::Representations::SES );
 
-		auto & libColorLayouts	 = LIBRARY().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
+		auto & libCol	 = LIBRARY().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
+		auto & presetCol = libCol.createPreset( "JMol" );
+		presetCol.setData( App::Library::Preset::ColorLayouts::JMOL );
+
 		auto & libRenderSettings = LIBRARY().load<Library::Preset::RenderSettings>( Filesystem::getEffectsDir() );
+		// TODO: default presets.
 
 		// Load settings.
 		Settings::initSettings();
@@ -108,9 +111,9 @@ namespace VTX::App
 		// Scene.
 		_scene		= REG().create();
 		auto & aabb = REG().emplace<Util::Math::AABB>( _scene ); // TODO: update from system aabbs.
-		REG().emplace<Library::Preset::ColorLayout>( _scene, libColorLayouts.getPreset( "Default" ) );
+		REG().emplace<Library::Preset::ColorLayout>( _scene, libCol.getPreset( "JMol" ) );
 		REG().emplace<Library::Preset::RenderSettings>( _scene, libRenderSettings.getPreset( "Default" ) );
-		REG().emplace<Library::Preset::Representation>( _scene, libRepresentations.getPreset( "Default" ) );
+		REG().emplace<Library::Preset::Representation>( _scene, libRep.getPreset( "Default" ) );
 
 		// Camera.
 		_camera = REG().create();

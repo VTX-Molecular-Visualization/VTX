@@ -1,8 +1,8 @@
 #include "scene.hpp"
 #include "util.hpp"
-#include <core/chemdb/color_layout.hpp>
 #include <io/util/secondary_structure.hpp>
 #include <numeric>
+#include <renderer/color.hpp>
 #include <renderer/facade.hpp>
 #include <util/math.hpp>
 
@@ -19,7 +19,10 @@ namespace VTX::Bench
 											_camera.getFar(),
 											_camera.isPerspective() }
 									  ),
-		_colorLayout( Core::ChemDB::ColorLayout::COLOR_LAYOUT_JMOL ), _proxyLayoutColor( _colorLayout )
+		_colorLayout(
+			// Renderer::Color::Layout::COLOR_LAYOUT_JMOL
+		),
+		_proxyLayoutColor( _colorLayout )
 	{
 		_camera.callbackMatrixView += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixView(); };
 		_camera.callbackMatrixProjection += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixProjection(); };
@@ -86,9 +89,7 @@ namespace VTX::Bench
 		std::vector<uchar> atomColors( sizeAtoms );
 		size_t			   i = 0;
 		std::generate(
-			atomColors.begin(),
-			atomColors.end(),
-			[ & ] { return Core::ChemDB::ColorLayout::getColorIndex( symbols[ i++ ] ); }
+			atomColors.begin(), atomColors.end(), [ & ] { return Renderer::Color::getColorIndex( symbols[ i++ ] ); }
 		);
 
 		auto atomRadii = std::vector<float>( sizeAtoms );
@@ -110,7 +111,7 @@ namespace VTX::Bench
 		std::generate(
 			residueColors.begin(),
 			residueColors.end(),
-			[ & ] { return Core::ChemDB::ColorLayout::getColorIndex( p_system.residueSecondaryStructureTypes[ i++ ] ); }
+			[ & ] { return Renderer::Color::getColorIndex( p_system.residueSecondaryStructureTypes[ i++ ] ); }
 		);
 
 		const std::vector<Index> & polymerChainIds
