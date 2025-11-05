@@ -55,14 +55,23 @@ namespace VTX::App::ECS
 	}
 
 	/**
+	 * @brief Get the first entity with component of type in the registry.
+	 */
+	template<typename T>
+	Entity getFirstEntityWithComponent()
+	{
+		auto view = registry().view<T>();
+		assert( not view.empty() );
+		return *view.begin();
+	}
+
+	/**
 	 * @brief Get the first component of type T in the registry.
 	 */
 	template<typename T>
 	T & getFirstComponent()
 	{
-		auto view = registry().view<T>();
-		assert( not view.empty() );
-		return registry().get<T>( *view.begin() );
+		return registry().get<T>( getFirstEntityWithComponent<T>() );
 	}
 
 } // namespace VTX::App::ECS

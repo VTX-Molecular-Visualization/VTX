@@ -10,6 +10,7 @@ namespace VTX::UI::QT::DockWidget
 		setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 
 		App::REG().on_construct<Core::Struct::System>().connect<&Sequences::_onConstructSystem>( this );
+		App::REG().on_destroy<Core::Struct::System>().connect<&Sequences::_onDestroySystem>( this );
 	}
 
 	void Sequences::_onConstructSystem( App::ECS::Registry & p_r, App::ECS::Entity p_e )
@@ -17,6 +18,11 @@ namespace VTX::UI::QT::DockWidget
 		auto & system		  = p_r.get<Core::Struct::System>( p_e );
 		auto * sequenceWidget = new Widget::Sequence( p_e, this );
 		_layout->addWidget( sequenceWidget );
+	}
+
+	void Sequences::_onDestroySystem( App::ECS::Registry & p_r, App::ECS::Entity p_e )
+	{
+		// TODO: map entity to widget to remove it properly?
 	}
 
 } // namespace VTX::UI::QT::DockWidget

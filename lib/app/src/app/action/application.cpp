@@ -17,18 +17,14 @@ namespace VTX::App::Action::Application
 
 	void Resize::execute( const size_t p_width, const size_t p_height )
 	{
-		auto view = REG().view<Scene::Camera>();
-		if ( not view.empty() )
-		{
-			REG().patch<Scene::Camera>(
-				*view.begin(),
-				[ p_width, p_height ]( Scene::Camera & p_camera )
-				{
-					p_camera.screenHeight = p_height;
-					p_camera.screenWidth  = p_width;
-				}
-			);
-		}
+		REG().patch<Scene::Camera>(
+			ECS::getFirstEntityWithComponent<Scene::Camera>(),
+			[ p_width, p_height ]( Scene::Camera & p_camera )
+			{
+				p_camera.screenHeight = p_height;
+				p_camera.screenWidth  = p_width;
+			}
+		);
 
 		RENDERER().resize( p_width, p_height );
 	}

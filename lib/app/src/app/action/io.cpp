@@ -67,17 +67,13 @@ namespace VTX::App::Action::IO
 	{
 		try
 		{
-			auto view = REG().view<App::Scene::Camera>();
-			if ( not view.empty() )
-			{
-				const auto &	   camera = view.get<App::Scene::Camera>( *view.begin() );
-				std::vector<uchar> image;
+			const auto &	   camera = ECS::getFirstComponent<App::Scene::Camera>();
+			std::vector<uchar> image;
 
-				RENDERER().snapshot( image, _width, _height, *camera.fov, *camera.near, *camera.far );
-				FilePath path = Util::Image::write( _path, _format, _width, _height, image.data() );
+			RENDERER().snapshot( image, _width, _height, *camera.fov, *camera.near, *camera.far );
+			FilePath path = Util::Image::write( _path, _format, _width, _height, image.data() );
 
-				VTX_INFO( "Image saved: {}", path.string() );
-			}
+			VTX_INFO( "Image saved: {}", path.string() );
 		}
 		catch ( const std::exception & p_e )
 		{

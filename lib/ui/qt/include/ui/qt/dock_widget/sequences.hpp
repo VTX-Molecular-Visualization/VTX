@@ -18,6 +18,7 @@ namespace VTX::UI::QT::DockWidget
 
 	  private:
 		void _onConstructSystem( App::ECS::Registry &, App::ECS::Entity );
+		void _onDestroySystem( App::ECS::Registry &, App::ECS::Entity );
 	};
 
 } // namespace VTX::UI::QT::DockWidget

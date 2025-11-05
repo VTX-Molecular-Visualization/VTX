@@ -17,25 +17,21 @@ namespace VTX::App::Action::Controller
 	{
 		void execute()
 		{
-			auto view = REG().view<Scene::Camera>();
-			if ( not view.empty() )
+			ECS::Entity camera = ECS::getFirstEntityWithComponent<Scene::Camera>();
+
+			// If the requested controller is already active, do nothing.
+			if ( PASS().hasPass<T>() )
 			{
-				ECS::Entity camera = *view.begin();
-
-				// If the requested controller is already active, do nothing.
-				if ( PASS().hasPass<T>() )
-				{
-					return;
-				}
-
-				// Remove existing controller passes.
-				PASS().removePass<Pass::Controller::Freefly>();
-				PASS().removePass<Pass::Controller::Trackball>();
-
-				// Add controller pass.
-				PASS().addPass<T>( camera );
-				HUB().trigger<Events::CameraControllerChange<T>>();
+				return;
 			}
+
+			// Remove existing controller passes.
+			PASS().removePass<Pass::Controller::Freefly>();
+			PASS().removePass<Pass::Controller::Trackball>();
+
+			// Add controller pass.
+			PASS().addPass<T>( camera );
+			HUB().trigger<Events::CameraControllerChange<T>>();
 		}
 	};
 } // namespace VTX::App::Action::Controller
