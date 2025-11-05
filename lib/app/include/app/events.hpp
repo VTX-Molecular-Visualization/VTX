@@ -60,6 +60,13 @@ namespace VTX::App::Events
 	struct CameraControllerChange
 	{
 	};
+
+	/**
+	 * @brief System.
+	 */
+	struct SystemLoad
+	{
+	};
 } // namespace VTX::App::Events
 
 #endif

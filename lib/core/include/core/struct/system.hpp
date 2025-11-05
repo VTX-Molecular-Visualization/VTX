@@ -46,6 +46,10 @@ namespace VTX::Core::Struct
 		 */
 		std::vector<ChemDB::Residue::SYMBOL> residueSymbols;
 		/**
+		 * @brief Residue names.
+		 */
+		std::vector<std::string> residueNames;
+		/**
 		 * @brief Index of the chain each residue belongs to.
 		 */
 		std::vector<Index> residueChainIndexes;
@@ -104,8 +108,6 @@ namespace VTX::Core::Struct
 		// TODO Manage Atom types and residue types with sparse_set
 		Util::Math::RangeList<Index> atomSolvents;
 		Util::Math::RangeList<Index> atomIons;
-		// TODO : migrate toward unordered_map
-		std::vector<std::string> residueUnknownNames;
 
 		/**
 		 * @brief Convenient methods to reserve data vectors.

@@ -54,6 +54,17 @@ namespace VTX::App::ECS
 		registry().ctx().erase<T>();
 	}
 
+	/**
+	 * @brief Get the first component of type T in the registry.
+	 */
+	template<typename T>
+	T & getFirstComponent()
+	{
+		auto view = registry().view<T>();
+		assert( not view.empty() );
+		return registry().get<T>( *view.begin() );
+	}
+
 } // namespace VTX::App::ECS
 
 namespace VTX::App

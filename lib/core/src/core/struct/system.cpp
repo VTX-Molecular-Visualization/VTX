@@ -28,7 +28,7 @@ namespace VTX::Core::Struct
 		residueBondCounts.resize( p_count, 0 );
 		residueOriginalIds.resize( p_count, 0 );
 		residueSecondaryStructureTypes.resize( p_count, ChemDB::SecondaryStructure::TYPE::UNKNOWN );
-		residueUnknownNames.resize( p_count );
+		residueNames.resize( p_count );
 	}
 
 	void System::initAtoms( const Index p_count )
@@ -65,7 +65,7 @@ namespace VTX::Core::Struct
 		out += sizeof( size_t ) * p_sys.residueBondCounts.size();
 		out += sizeof( size_t ) * p_sys.residueOriginalIds.size();
 		out += sizeof( ChemDB::SecondaryStructure::TYPE ) * p_sys.residueSecondaryStructureTypes.size();
-		out += sizeof( std::string ) * p_sys.residueUnknownNames.size();
+		out += sizeof( std::string ) * p_sys.residueNames.size();
 		out += sizeof( ChemDB::Atom::SYMBOL ) * p_sys.atomSymbols.size();
 		out += sizeof( size_t ) * p_sys.atomResidueIndexes.size();
 		out += sizeof( std::string ) * p_sys.atomNames.size();

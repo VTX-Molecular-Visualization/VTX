@@ -13,7 +13,7 @@ namespace VTX::UI::QT::Widget
 	class Sequence : public QAbstractScrollArea
 	{
 	  public:
-		Sequence( const VTX::Core::Struct::System &, QWidget * );
+		Sequence( const App::ECS::Entity, QWidget * );
 
 	  protected:
 		void paintEvent( QPaintEvent * ) override;
@@ -21,7 +21,7 @@ namespace VTX::UI::QT::Widget
 		void resizeEvent( QResizeEvent * ) override;
 
 	  private:
-		const VTX::Core::Struct::System & _system;
+		const App::ECS::Entity _system;
 
 		void updateScrollBars();
 	};

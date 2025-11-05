@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_DOCK_WIDGET_SEQUENCES__
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
+#include <app/ecs.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -14,6 +15,9 @@ namespace VTX::UI::QT::DockWidget
 	{
 	  public:
 		Sequences( QWidget * );
+
+	  private:
+		void _onConstructSystem( App::ECS::Registry &, App::ECS::Entity );
 	};
 
 } // namespace VTX::UI::QT::DockWidget

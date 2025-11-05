@@ -1,9 +1,12 @@
 #include "app/action/scene.hpp"
 #include "app/ecs.hpp"
+#include "app/events.hpp"
+#include "app/services.hpp"
 #include "app/system/metadata.hpp"
 #include "app/system/trajectory.hpp"
 #include <core/struct/system.hpp>
 #include <io/reader/system.hpp>
+#include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
@@ -43,11 +46,13 @@ namespace VTX::App::Action::Scene
 		data.name										   = systemName; // TODO: move to metadata?
 
 		// ACTION().execute<App::Action::Camera::Orient>( App::SCENE().getAABB() );
+
+		HUB().trigger<Events::SystemLoad>();
 	}
 
 	void Clear::execute()
 	{
-		REG().view<System::Metadata>().each( [ & ]( auto entity, auto & ) { REG().destroy( entity ); } );
+		REG().view<System::Metadata>().each( [ & ]( auto p_entity, auto & ) { REG().destroy( p_entity ); } );
 	}
 
 } // namespace VTX::App::Action::Scene

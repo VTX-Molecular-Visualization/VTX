@@ -102,10 +102,7 @@ namespace VTX::IO::Reader
 
 			const ChemDB::Residue::SYMBOL residueSymbol = VTX::Core::ChemDB::Residue::getSymbolFromName( residueName );
 			p_system.residueSymbols[ residueIdx ]		= residueSymbol;
-			if ( residueSymbol == ChemDB::Residue::SYMBOL::UNKNOWN )
-			{
-				p_system.residueUnknownNames[ residueIdx ] = residueName;
-			}
+			p_system.residueNames[ residueIdx ]			= residueName;
 
 			const std::string secondaryStructure
 				= p_chemfileStruct.getCurrentResidueStringProperty( "secondary_structure" ); // TODO : Around here
