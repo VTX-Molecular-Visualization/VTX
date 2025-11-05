@@ -43,7 +43,7 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<HideableGroupBox> _groupboxSes;
 		QPointer<EditableSlider>   _sliderSesProbeRadius;
 
-		template<VTX::Core::Struct::E_REPRESENTATION_VALUES S, typename T>
+		template<Renderer::E_REPRESENTATION_VALUES S, typename T>
 		void _changeValue( const T p_value )
 		{
 			// App::ACTION().execute<App::Action::Representation::Change<S, T>>( _preset, p_value );

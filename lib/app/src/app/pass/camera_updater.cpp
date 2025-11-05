@@ -52,7 +52,7 @@ namespace VTX::App::Pass
 
 	void CameraUpdater::_onUpdate( ECS::Registry & p_r, ECS::Entity p_e )
 	{
-		// TODO: find a workaround for this.
+		// TODO: find a workaround for this, use custom event?
 		if ( p_e != _cameraEntity )
 		{
 			return;

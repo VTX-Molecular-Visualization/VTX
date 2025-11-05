@@ -6,7 +6,7 @@ namespace VTX::UI::QT::Widget::Library
 
 	Representation::Representation( QWidget * p_parent ) : BasePresetWidget( p_parent )
 	{
-		using namespace VTX::Core::Struct;
+		using namespace Renderer;
 		using namespace App::Library::Preset;
 
 		setTitle( "Edit representation" );
@@ -145,7 +145,7 @@ namespace VTX::UI::QT::Widget::Library
 
 	void Representation::_onPresetAdded( const std::string_view p_name )
 	{
-		using namespace VTX::Core::Struct;
+		using namespace Renderer;
 		auto * const preset = &_library.getPreset( p_name );
 
 		// Connect app to widgets.

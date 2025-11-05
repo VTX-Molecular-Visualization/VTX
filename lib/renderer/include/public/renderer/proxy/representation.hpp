@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_PROXY_REPRESENTATION__
 #define __VTX_RENDERER_PROXY_REPRESENTATION__
 
-#include <core/struct/representation.hpp>
+#include <renderer/representation.hpp>
 #include <util/callback.hpp>
 #include <util/collection.hpp>
 
@@ -14,11 +14,11 @@ namespace VTX::Renderer::Proxy
 	class Representation
 	{
 	  public:
-		const Core::Struct::Representation & data;
+		const VTX::Renderer::Representation & data;
 
-		Representation( const Core::Struct::Representation & p_rep ) : data( p_rep ) {}
+		Representation( const VTX::Renderer::Representation & p_rep ) : data( p_rep ) {}
 
-		template<Core::Struct::E_REPRESENTATION_VALUES S>
+		template<E_REPRESENTATION_VALUES S>
 		Util::Callback<> & getCallback()
 		{
 			return *_callbacks.getOrCreateWithHash<Util::Callback<>>( int( S ) );

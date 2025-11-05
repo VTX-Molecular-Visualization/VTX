@@ -1,9 +1,9 @@
-#ifndef __VTX_CORE_STRUCT_REPRESENTATION__
-#define __VTX_CORE_STRUCT_REPRESENTATION__
+#ifndef __VTX_RENDERER_REPRESENTATION__
+#define __VTX_RENDERER_REPRESENTATION__
 
 #include <util/types.hpp>
 
-namespace VTX::Core::Struct
+namespace VTX::Renderer
 {
 	enum E_REPRESENTATION_VALUES // Not a class to avoid static_cast<int>.
 	{

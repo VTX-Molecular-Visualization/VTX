@@ -572,39 +572,41 @@ namespace VTX::Core::ChemDB::ColorLayout
 		COLOR_WHITE,
 		COLOR_WHITE } };
 
-	enum class COLOR_MODE : int
-	{
-		ATOM_CHAIN,
-		ATOM_PROTEIN,
-		ATOM_CUSTOM,
-		RESIDUE,
-		CHAIN,
-		PROTEIN,
-		CUSTOM,
-		INHERITED
-	};
-	static const std::vector<std::string> COLOR_MODE_STRING { "Atom-Chain", "Atom-Object", "Atom-Custom", "Residue",
-															  "Chain",		"System",	   "Custom",	  "Inherited" };
-	enum class COLOR_BLENDING_MODE : int
-	{
-		HARD,
-		SOFT
-	};
-	inline static const std::vector<std::string> COLOR_BLENDING_MODE_STRING { "Hard", "Soft" };
+	/*
+enum class COLOR_MODE : int
+{
+	ATOM_CHAIN,
+	ATOM_PROTEIN,
+	ATOM_CUSTOM,
+	RESIDUE,
+	CHAIN,
+	PROTEIN,
+	CUSTOM,
+	INHERITED
+};
+static const std::vector<std::string> COLOR_MODE_STRING { "Atom-Chain", "Atom-Object", "Atom-Custom", "Residue",
+														  "Chain",		"System",	   "Custom",	  "Inherited" };
+enum class COLOR_BLENDING_MODE : int
+{
+	HARD,
+	SOFT
+};
+inline static const std::vector<std::string> COLOR_BLENDING_MODE_STRING { "Hard", "Soft" };
 
-	enum class SECONDARY_STRUCTURE_COLOR_MODE : int
-	{
-		JMOL,
-		PROTEIN,
-		CHAIN,
-		RESIDUE,
-		CUSTOM
-	};
-	inline static const std::vector<std::string> SECONDARY_STRUCTURE_COLOR_MODE_STRING { "JMOL",
-																						 "System",
-																						 "Chain",
-																						 "Residue",
-																						 "Custom" };
+enum class SECONDARY_STRUCTURE_COLOR_MODE : int
+{
+	JMOL,
+	PROTEIN,
+	CHAIN,
+	RESIDUE,
+	CUSTOM
+};
+inline static const std::vector<std::string> SECONDARY_STRUCTURE_COLOR_MODE_STRING { "JMOL",
+																					 "System",
+																					 "Chain",
+																					 "Residue",
+																					 "Custom" };
+																					 */
 } // namespace VTX::Core::ChemDB::ColorLayout
 
 #endif
