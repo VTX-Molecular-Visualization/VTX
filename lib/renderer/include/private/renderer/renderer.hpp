@@ -14,7 +14,6 @@
 #include "renderer/context/opengl_45.hpp"
 #include "renderer/proxy/camera.hpp"
 #include "renderer/proxy/color_layout.hpp"
-#include "renderer/proxy/mesh.hpp"
 #include "renderer/proxy/render_settings.hpp"
 #include "renderer/proxy/representation.hpp"
 #include "renderer/proxy/system.hpp"

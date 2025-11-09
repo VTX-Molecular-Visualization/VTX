@@ -2,6 +2,7 @@
 #include "app/services.hpp"
 #include "ui/qt/macros.hpp"
 #include "ui/qt/menu/file.hpp"
+#include "ui/qt/model.hpp"
 #include "ui/qt/resources.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/main_window.hpp"
@@ -52,6 +53,9 @@ namespace VTX::UI::QT
 		{
 			VTX_ERROR( "Failed to restore settings: {}", e.what() );
 		}
+
+		// Create model.
+		App::ECS::setCtx<Model>();
 
 		// Create main window.
 		auto & mw = App::ECS::setCtx<Widget::MainWindow>();

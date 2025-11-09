@@ -5,6 +5,7 @@
 
 namespace VTX::UI::QT
 {
+	class Model;
 	class Settings;
 
 	namespace Widget
@@ -14,6 +15,7 @@ namespace VTX::UI::QT
 
 	inline Widget::MainWindow & MAIN_WINDOW() { return App::ECS::getCtx<Widget::MainWindow>(); }
 	inline Settings &			SETTINGS() { return App::ECS::getCtx<Settings>(); }
+	inline Model &				MODEL() { return App::ECS::getCtx<Model>(); }
 } // namespace VTX::UI::QT
 
 #endif

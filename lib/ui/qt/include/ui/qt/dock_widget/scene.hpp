@@ -4,57 +4,26 @@
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/widget/tree.hpp"
 #include <QPointer>
-#include <QTreeWidget>
-#include <core/struct/system.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
 
 	/**
 	 * @brief Display a tree widget with loaded systems.
-	 * Load only minimal data on expand/collapse.
+	 * // TODO: Load only minimal data on expand/collapse.
 	 */
 	class Scene : public BaseDockWidget<Scene>
 	{
 	  public:
-		Scene( QWidget * p_parent ) : BaseDockWidget( "Scene", p_parent ) {}
-
-	  private:
-		enum struct E_DEPTH
+		Scene( QWidget * p_parent ) : BaseDockWidget( "Scene", p_parent )
 		{
-			TREE = 0,
-			SYSTEM,
-			CHAIN,
-			RESIDUE,
-			ATOM
-		};
+			_tree = new Widget::Tree( this );
+			_tree->setModel( &MODEL() );
+			_layout->addWidget( _tree );
+		}
 
-		enum struct E_VISIBILITY
-		{
-			VISIBLE = 0,
-			HIDDEN,
-			PARTIAL
-		};
-
-		using WidgetData = Index;
-
-		/**
-		 * @brief Load data function.
-		 */
-		using LoadFunc = std::function<void( const E_DEPTH, QTreeWidgetItem * const )>;
-
-		/**
-		 * @brief Store data to create a tree item.
-		 */
-		struct TreeItemData
-		{
-			std::string_view name;
-			WidgetData		 data;
-			Index			 childrenCount;
-			E_VISIBILITY	 visibility;
-		};
-
-		QPointer<QTreeWidget> _tree;
+		QPointer<Widget::Tree> _tree;
+		// TODO: add searchbar with QSortFilterProxyModel.
 	};
 
 } // namespace VTX::UI::QT::DockWidget

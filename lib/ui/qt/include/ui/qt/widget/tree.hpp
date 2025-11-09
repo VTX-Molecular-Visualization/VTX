@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_WIDGET_TREE_VIEW__
 
 #include "ui/qt/model.hpp"
+#include "ui/qt/services.hpp"
 #include <QTreeView>
 
 namespace VTX::UI::QT::Widget
@@ -13,17 +14,16 @@ namespace VTX::UI::QT::Widget
 		Tree( QWidget * const p_parent = nullptr ) : BaseWidget( p_parent )
 		{
 			setHeaderHidden( true );
-			setRootIsDecorated( false );
-			setItemsExpandable( false );
+			setRootIsDecorated( true );
+			setItemsExpandable( true );
 			setAllColumnsShowFocus( true );
-			setSelectionMode( QAbstractItemView::SingleSelection );
-			setEditTriggers( QAbstractItemView::NoEditTriggers );
 			setUniformRowHeights( true );
-			setExpandsOnDoubleClick( false );
-			// Model
-			//_model = new Model::Tree( this );
-			// QTreeView::setModel( _model );
-			// connect( this, &QTreeView::clicked, this, &Tree::_onItemClicked );
+			setExpandsOnDoubleClick( true );
+
+			setEditTriggers( QAbstractItemView::NoEditTriggers );
+
+			setSelectionMode( QAbstractItemView::SingleSelection );
+			setSelectionBehavior( QAbstractItemView::SelectRows );
 		}
 	};
 

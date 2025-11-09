@@ -8,12 +8,13 @@
 
 namespace VTX::UI::QT
 {
+	/**
+	 * @brief Selection model representing selection in App.
+	 */
 	class Selection : QItemSelectionModel
 	{
 	  public:
-		Selection( QAbstractItemModel * p_model ) : QItemSelectionModel( p_model ) {
-		
-		}
+		Selection( QAbstractItemModel * p_model ) : QItemSelectionModel( p_model ) {}
 	};
 } // namespace VTX::UI::QT
 
