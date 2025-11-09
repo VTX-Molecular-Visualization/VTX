@@ -14,7 +14,7 @@ namespace VTX::UI::QT::Widget
 		Tree( QWidget * const p_parent = nullptr ) : BaseWidget( p_parent )
 		{
 			setHeaderHidden( true );
-			setRootIsDecorated( true );
+			// setRootIsDecorated( true );
 			setItemsExpandable( true );
 			setAllColumnsShowFocus( true );
 			setUniformRowHeights( true );
@@ -23,7 +23,7 @@ namespace VTX::UI::QT::Widget
 			setEditTriggers( QAbstractItemView::NoEditTriggers );
 
 			setSelectionMode( QAbstractItemView::SingleSelection );
-			setSelectionBehavior( QAbstractItemView::SelectRows );
+			// setSelectionBehavior( QAbstractItemView::SelectRows );
 		}
 	};
 
