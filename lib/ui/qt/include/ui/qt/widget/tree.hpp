@@ -18,12 +18,13 @@ namespace VTX::UI::QT::Widget
 			setItemsExpandable( true );
 			setAllColumnsShowFocus( true );
 			setUniformRowHeights( true );
-			setExpandsOnDoubleClick( true );
+
+			setExpandsOnDoubleClick( false );
 
 			setEditTriggers( QAbstractItemView::NoEditTriggers );
 
-			setSelectionMode( QAbstractItemView::SingleSelection );
-			// setSelectionBehavior( QAbstractItemView::SelectRows );
+			setSelectionMode( QAbstractItemView::ExtendedSelection );
+			setSelectionBehavior( QAbstractItemView::SelectRows );
 		}
 	};
 

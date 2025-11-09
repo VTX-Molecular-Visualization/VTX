@@ -9,10 +9,17 @@ namespace VTX::UI::QT
 	/**
 	 * @brief Selection model representing the application selection.
 	 */
-	class SelectionModel : QItemSelectionModel
+	class SelectionModel : public QItemSelectionModel
 	{
+		Q_OBJECT
+
 	  public:
-		SelectionModel( QAbstractItemModel * p_model ) : QItemSelectionModel( p_model ) {}
+		SelectionModel( QAbstractItemModel * p_model, QObject * p_parent = nullptr ) :
+			QItemSelectionModel( p_model, p_parent )
+		{
+			// TODO: connect to application selection changes.
+			// TODO: propagate selection changes to application selection.
+		}
 	};
 } // namespace VTX::UI::QT
 

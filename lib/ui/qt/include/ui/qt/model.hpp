@@ -1,7 +1,6 @@
 ﻿#ifndef __VTX_UI_QT_MODEL__
 #define __VTX_UI_QT_MODEL__
 
-#include "selection.hpp"
 #include <QAbstractItemModel>
 #include <QString>
 #include <app/ecs.hpp>

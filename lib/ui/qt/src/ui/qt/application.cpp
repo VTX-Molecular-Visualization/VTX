@@ -4,6 +4,7 @@
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/model.hpp"
 #include "ui/qt/resources.hpp"
+#include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include <QAction>
@@ -55,7 +56,8 @@ namespace VTX::UI::QT
 		}
 
 		// Create model.
-		App::ECS::setCtx<Model>();
+		auto & m  = App::ECS::setCtx<Model>();
+		auto & sm = App::ECS::setCtx<SelectionModel>( &m );
 
 		// Create main window.
 		auto & mw = App::ECS::setCtx<Widget::MainWindow>();

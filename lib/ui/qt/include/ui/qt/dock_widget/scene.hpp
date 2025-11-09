@@ -15,15 +15,14 @@ namespace VTX::UI::QT::DockWidget
 	class Scene : public BaseDockWidget<Scene>
 	{
 	  public:
-		Scene( QWidget * p_parent ) : BaseDockWidget( "Scene", p_parent )
-		{
-			_tree = new Widget::Tree( this );
-			_tree->setModel( &MODEL() );
-			_layout->addWidget( _tree );
-		}
+		Scene( QWidget * p_parent );
 
+		/**
+		 * @brief Scene tree.
+		 */
 		QPointer<Widget::Tree> _tree;
 		// TODO: add searchbar with QSortFilterProxyModel.
+		// TODO: add option to sync tree expand with selection model.
 	};
 
 } // namespace VTX::UI::QT::DockWidget
