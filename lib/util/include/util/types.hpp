@@ -11,10 +11,10 @@
 namespace VTX
 {
 	// Types.
-	using uchar	   = unsigned char;
-	using ushort   = unsigned short;
-	using uint	   = unsigned int;
-	using ulong	   = unsigned long;
+	using uchar	 = unsigned char;  // 8 bits.
+	using ushort = unsigned short; // 16 bits.
+	using uint	 = unsigned int;   // 32 bits.
+
 	using FilePath = std::filesystem::path;
 
 	using Vec2f = glm::vec2;
@@ -37,7 +37,8 @@ namespace VTX
 	using Quatf = glm::quat;
 	using Quatd = glm::dquat;
 
-	using Index = uint;
+	using Index		  = uint;
+	using SystemIndex = ushort;
 
 	using ByteNumber = size_t;
 

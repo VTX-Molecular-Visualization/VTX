@@ -33,8 +33,6 @@ namespace VTX::Core::Struct
 
 	void System::initAtoms( const Index p_count )
 	{
-		assert( p_count < INDEX_MAX );
-
 		atomSymbols.resize( p_count, ChemDB::Atom::SYMBOL::UNKNOWN );
 		atomResidueIndexes.resize( p_count, INVALID_INDEX );
 		atomNames.resize( p_count );

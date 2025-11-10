@@ -28,6 +28,9 @@ namespace VTX::UI::QT::DockWidget
 		}
 
 	  private:
+		/**
+		 * @brief Current selection text view.
+		 */
 		QPointer<QTextEdit> _view;
 
 		void _rebuild()

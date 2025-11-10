@@ -4,23 +4,26 @@ namespace
 {
 	using namespace VTX;
 	using namespace VTX::UI::QT;
+
 	/**
 	 * @brief Pack minimum information to identify an item in the model into a single uint64.
 	 */
-	quintptr pack( const Model::E_SYSTEM_LEVEL p_level, const uint p_system, const Index p_index )
+	quintptr pack( const Model::E_ITEM p_item, const Model::ItemIndex p_itemIndex, const Index p_index )
 	{
-		// [ L:2 | mol:30 | local:32 ]  <= 64 bits
-		return ( quintptr( p_index ) ) | ( quintptr( p_system ) << 32 ) | ( quintptr( p_level ) << 62 );
+		// [ p_item:8 | p_itemIndex:16 | p_index:32 ]  <= 56 bits
+		return ( quintptr( p_item ) << 48 ) |	   // bits 48..55
+			   ( quintptr( p_itemIndex ) << 32 ) | // bits 32..47
+			   ( quintptr( p_index ) );			   // bits  0..31
 	}
 
 	/**
 	 * @brief Unpack quintptr.
 	 */
-	void unpack( const quintptr p_v, Model::E_SYSTEM_LEVEL & p_level, uint & p_system, Index & p_index )
+	void unpack( const quintptr p_v, Model::E_ITEM & p_item, Model::ItemIndex & p_itemIndex, Index & p_index )
 	{
-		p_level	 = Model::E_SYSTEM_LEVEL( ( p_v >> 62 ) & 0x3 );
-		p_system = uint( ( p_v >> 32 ) & 0x3FFFFFFF );
-		p_index	 = Index( p_v & 0xFFFFFFFFu );
+		p_item		= Model::E_ITEM( ( p_v >> 48 ) & 0xFF );	  // 8 bits
+		p_itemIndex = Model::ItemIndex( ( p_v >> 32 ) & 0xFFFF ); // 16 bits
+		p_index		= Index( p_v & 0xFFFFFFFFu );				  // 32 bits
 	}
 } // namespace
 
@@ -41,19 +44,20 @@ namespace VTX::UI::QT
 			return int( _systems.size() );
 		}
 
-		E_SYSTEM_LEVEL level;
-		Index		   systemIndex, localIndex;
-		unpack( p_parent.internalId(), level, systemIndex, localIndex );
-		const Core::Struct::System & system = *( _systems[ systemIndex ] );
+		E_ITEM	  level;
+		ItemIndex itemIndex;
+		Index	  localIndex;
+		unpack( p_parent.internalId(), level, itemIndex, localIndex );
+		const Core::Struct::System & system = *( _systems[ itemIndex ] );
 
 		switch ( level )
 		{
-		case E_SYSTEM_LEVEL::SYSTEM: return system.getChainCount();
-		case E_SYSTEM_LEVEL::CHAIN:
+		case E_ITEM::SYSTEM: return system.getChainCount();
+		case E_ITEM::CHAIN:
 		{
 			return system.chainResidueCounts[ localIndex ];
 		}
-		case E_SYSTEM_LEVEL::RESIDUE:
+		case E_ITEM::RESIDUE:
 		{
 			return system.residueAtomCounts[ localIndex ];
 		}
@@ -69,10 +73,11 @@ namespace VTX::UI::QT
 			return {};
 		}
 
-		E_SYSTEM_LEVEL level;
-		Index		   systemIndex, localIndex;
-		unpack( p_index.internalId(), level, systemIndex, localIndex );
-		const Core::Struct::System & system = *( _systems[ systemIndex ] );
+		E_ITEM	  level;
+		ItemIndex itemIndex;
+		Index	  localIndex;
+		unpack( p_index.internalId(), level, itemIndex, localIndex );
+		const Core::Struct::System & system = *( _systems[ itemIndex ] );
 
 		switch ( p_role )
 		{
@@ -80,14 +85,14 @@ namespace VTX::UI::QT
 		case NameRole:
 			switch ( level )
 			{
-			case E_SYSTEM_LEVEL::SYSTEM: return QString( "Molecule %1" ).arg( systemIndex );
-			case E_SYSTEM_LEVEL::CHAIN: return QString::fromStdString( system.chainNames[ localIndex ] );
-			case E_SYSTEM_LEVEL::RESIDUE: return QString::fromStdString( system.residueNames[ localIndex ] );
-			case E_SYSTEM_LEVEL::ATOM: return QString::fromStdString( system.atomNames[ localIndex ] );
+			case E_ITEM::SYSTEM: return QString( "Molecule %1" ).arg( itemIndex );
+			case E_ITEM::CHAIN: return QString::fromStdString( system.chainNames[ localIndex ] );
+			case E_ITEM::RESIDUE: return QString::fromStdString( system.residueNames[ localIndex ] );
+			case E_ITEM::ATOM: return QString::fromStdString( system.atomNames[ localIndex ] );
 			}
 			return {};
 		case TypeRole: return int( level );
-		case SystemRole: return systemIndex;
+		case SystemRole: return itemIndex;
 		case LocalRole: return localIndex;
 		default: return {};
 		}
@@ -107,28 +112,29 @@ namespace VTX::UI::QT
 			{
 				return {};
 			}
-			return createIndex( p_row, p_column, pack( E_SYSTEM_LEVEL::SYSTEM, Index( p_row ), 0 ) );
+			return createIndex( p_row, p_column, pack( E_ITEM::SYSTEM, Index( p_row ), 0 ) );
 		}
 
-		E_SYSTEM_LEVEL level;
-		Index		   systemIndex, localIndex;
-		unpack( p_parent.internalId(), level, systemIndex, localIndex );
-		const Core::Struct::System & system = *( _systems[ systemIndex ] );
+		E_ITEM	  level;
+		ItemIndex itemIndex;
+		Index	  localIndex;
+		unpack( p_parent.internalId(), level, itemIndex, localIndex );
+		const Core::Struct::System & system = *( _systems[ itemIndex ] );
 
 		switch ( level )
 		{
 		// Chain.
-		case E_SYSTEM_LEVEL::SYSTEM:
+		case E_ITEM::SYSTEM:
 		{
 			if ( uint( p_row ) >= system.getChainCount() )
 			{
 				return {};
 			}
 
-			return createIndex( p_row, p_column, pack( E_SYSTEM_LEVEL::CHAIN, systemIndex, p_row ) );
+			return createIndex( p_row, p_column, pack( E_ITEM::CHAIN, itemIndex, p_row ) );
 		}
 		// Residue.
-		case E_SYSTEM_LEVEL::CHAIN:
+		case E_ITEM::CHAIN:
 		{
 			if ( uint( p_row ) >= system.chainResidueCounts[ localIndex ] )
 			{
@@ -136,13 +142,11 @@ namespace VTX::UI::QT
 			}
 
 			return createIndex(
-				p_row,
-				p_column,
-				pack( E_SYSTEM_LEVEL::RESIDUE, systemIndex, system.chainFirstResidues[ localIndex ] + p_row )
+				p_row, p_column, pack( E_ITEM::RESIDUE, itemIndex, system.chainFirstResidues[ localIndex ] + p_row )
 			);
 		}
 		// Atom.
-		case E_SYSTEM_LEVEL::RESIDUE:
+		case E_ITEM::RESIDUE:
 		{
 			if ( uint( p_row ) >= system.residueAtomCounts[ localIndex ] )
 			{
@@ -150,9 +154,7 @@ namespace VTX::UI::QT
 			}
 
 			return createIndex(
-				p_row,
-				p_column,
-				pack( E_SYSTEM_LEVEL::ATOM, systemIndex, system.residueFirstAtomIndexes[ localIndex ] + p_row )
+				p_row, p_column, pack( E_ITEM::ATOM, itemIndex, system.residueFirstAtomIndexes[ localIndex ] + p_row )
 			);
 		}
 		default: return {};
@@ -166,39 +168,40 @@ namespace VTX::UI::QT
 			return {};
 		}
 
-		E_SYSTEM_LEVEL level;
-		Index		   systemIndex, localIndex;
-		unpack( p_index.internalId(), level, systemIndex, localIndex );
+		E_ITEM	  level;
+		ItemIndex itemIndex;
+		Index	  localIndex;
+		unpack( p_index.internalId(), level, itemIndex, localIndex );
 
 		// Root.
-		if ( level == E_SYSTEM_LEVEL::SYSTEM )
+		if ( level == E_ITEM::SYSTEM )
 		{
 			return {};
 		}
 
-		Q_ASSERT( systemIndex >= 0 && systemIndex < Index( _systems.size() ) );
-		const Core::Struct::System & system = *( _systems[ systemIndex ] );
+		assert( itemIndex < ItemIndex( _systems.size() ) );
+		const Core::Struct::System & system = *( _systems[ itemIndex ] );
 
 		switch ( level )
 		{
-		case E_SYSTEM_LEVEL::CHAIN:
+		case E_ITEM::CHAIN:
 		{
-			return createIndex( systemIndex, 0, pack( E_SYSTEM_LEVEL::SYSTEM, systemIndex, 0 ) );
+			return createIndex( itemIndex, 0, pack( E_ITEM::SYSTEM, itemIndex, 0 ) );
 		}
-		case E_SYSTEM_LEVEL::RESIDUE:
+		case E_ITEM::RESIDUE:
 		{
-			Q_ASSERT( localIndex >= 0 && localIndex < Index( system.residueNames.size() ) );
+			assert( localIndex < Index( system.residueNames.size() ) );
 			const Index chain		= system.residueChainIndexes[ localIndex ];
 			const int	rowInSystem = int( chain );
-			return createIndex( rowInSystem, 0, pack( E_SYSTEM_LEVEL::CHAIN, systemIndex, chain ) );
+			return createIndex( rowInSystem, 0, pack( E_ITEM::CHAIN, itemIndex, chain ) );
 		}
-		case E_SYSTEM_LEVEL::ATOM:
+		case E_ITEM::ATOM:
 		{
-			Q_ASSERT( localIndex >= 0 && localIndex < Index( system.atomNames.size() ) );
+			assert( localIndex < Index( system.atomNames.size() ) );
 			const Index residue	   = system.atomResidueIndexes[ localIndex ];
 			const Index chain	   = system.residueChainIndexes[ residue ];
 			const int	rowInChain = int( residue - system.chainFirstResidues[ chain ] );
-			return createIndex( rowInChain, 0, pack( E_SYSTEM_LEVEL::RESIDUE, systemIndex, residue ) );
+			return createIndex( rowInChain, 0, pack( E_ITEM::RESIDUE, itemIndex, residue ) );
 		}
 		default: return {};
 		}
@@ -211,5 +214,18 @@ namespace VTX::UI::QT
 		beginInsertRows( QModelIndex(), row, row );
 		_systems.push_back( &system );
 		endInsertRows();
+	}
+
+	void Model::_onDestroySystem( App::ECS::Registry & p_r, App::ECS::Entity p_e )
+	{
+		const auto & system = p_r.get<Core::Struct::System>( p_e );
+		const auto	 it		= std::find( _systems.begin(), _systems.end(), &system );
+		if ( it != _systems.end() )
+		{
+			const int row = int( std::distance( _systems.begin(), it ) );
+			beginRemoveRows( QModelIndex(), row, row );
+			_systems.erase( it );
+			endRemoveRows();
+		}
 	}
 } // namespace VTX::UI::QT

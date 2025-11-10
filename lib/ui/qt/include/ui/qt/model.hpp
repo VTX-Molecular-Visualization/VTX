@@ -17,15 +17,20 @@ namespace VTX::UI::QT
 		Q_OBJECT
 
 	  public:
+		using ItemIndex = SystemIndex;
+
 		/**
-		 * @brief Levels of the system hierarchy.
+		 * @brief Scene items.
 		 */
-		enum struct E_SYSTEM_LEVEL : uint8_t
+		enum struct E_ITEM : uint8_t
 		{
 			SYSTEM,
+			CATEGORY,
 			CHAIN,
 			RESIDUE,
-			ATOM
+			ATOM,
+			PATH,
+			VIEWPOINT
 		};
 
 		/**
@@ -80,6 +85,11 @@ namespace VTX::UI::QT
 		 * @brief Callback on system construction to add it to the model.
 		 */
 		void _onConstructSystem( App::ECS::Registry & p_r, App::ECS::Entity p_e );
+
+		/**
+		 * @brief Callback on system destruction to remove it from the model.
+		 */
+		void _onDestroySystem( App::ECS::Registry &, App::ECS::Entity );
 	};
 
 } // namespace VTX::UI::QT

@@ -86,6 +86,15 @@ namespace VTX::UI::QT::Widget
 				painter.drawText( x, SEQ_CHAR_HEIGHT, QString::number( indexInChain ) );
 			}
 
+			// Selection.
+			const QRect cellRect( x, SEQ_CHAR_HEIGHT + 5, SEQ_CHAR_WIDTH, SEQ_CHAR_HEIGHT );
+			bool		selected = false;
+			// TODO
+			if ( selected )
+			{
+				painter.fillRect( cellRect, palette().highlight() );
+			}
+
 			// Residue symbol.
 			// Display residue standardized symbol or name if unknown.
 			const auto symbol = system.residueSymbols[ residue ];
