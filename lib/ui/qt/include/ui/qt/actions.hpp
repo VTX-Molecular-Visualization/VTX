@@ -34,6 +34,11 @@ namespace VTX::UI::QT
 				OpenRecent();
 			};
 
+			struct Delete : public App::UI::DescAction
+			{
+				Delete();
+			};
+
 			struct Save : public App::UI::DescAction
 			{
 				Save();

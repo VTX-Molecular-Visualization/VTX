@@ -1,5 +1,4 @@
 #include "app/action/scene.hpp"
-#include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/services.hpp"
 #include "app/system/metadata.hpp"
@@ -49,6 +48,8 @@ namespace VTX::App::Action::Scene
 
 		HUB().trigger<Events::SystemLoad>();
 	}
+
+	void DeleteSystem::execute( const ECS::Entity p_entity ) { REG().destroy( p_entity ); }
 
 	void Clear::execute()
 	{

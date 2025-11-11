@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_DOCK_WIDGET_SEQUENCES__
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
+#include "ui/qt/widget/sequence.hpp"
 #include <app/ecs.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -17,6 +18,8 @@ namespace VTX::UI::QT::DockWidget
 		Sequences( QWidget * );
 
 	  private:
+		std::unordered_map<App::ECS::Entity, Widget::Sequence *> _mapSequencesWidgets;
+
 		void _onConstructSystem( App::ECS::Registry &, App::ECS::Entity );
 		void _onDestroySystem( App::ECS::Registry &, App::ECS::Entity );
 	};

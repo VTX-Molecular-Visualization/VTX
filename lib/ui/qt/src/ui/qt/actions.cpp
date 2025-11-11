@@ -55,6 +55,13 @@ namespace VTX::UI::QT::Action
 			icon = "sprite/file/open_recent.png";
 		}
 
+		Delete::Delete()
+		{
+			name = "Delete";
+			tip	 = "Delete system";
+			// icon = "sprite/file/open_recent.png";
+		}
+
 		Save::Save()
 		{
 			name	 = "Save";

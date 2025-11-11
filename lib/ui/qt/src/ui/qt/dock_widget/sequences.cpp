@@ -1,7 +1,6 @@
 #include "ui/qt/dock_widget/sequences.hpp"
 #include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
-#include "ui/qt/widget/sequence.hpp"
 #include <app/events.hpp>
 #include <app/services.hpp>
 
@@ -20,8 +19,12 @@ namespace VTX::UI::QT::DockWidget
 		auto & system		  = p_r.get<Core::Struct::System>( p_e );
 		auto * sequenceWidget = new Widget::Sequence( p_e, this );
 
+		// Create Widget.
+		assert( not _mapSequencesWidgets.contains( p_e ) );
+		_mapSequencesWidgets.emplace( p_e, sequenceWidget );
 		_layout->addWidget( sequenceWidget );
 
+		// Refresh widget when selection changed.
 		auto & selectionModel = SELECTION();
 		connect(
 			&selectionModel, &QItemSelectionModel::selectionChanged, [ sequenceWidget ] { sequenceWidget->update(); }
@@ -30,7 +33,10 @@ namespace VTX::UI::QT::DockWidget
 
 	void Sequences::_onDestroySystem( App::ECS::Registry & p_r, App::ECS::Entity p_e )
 	{
-		// TODO: map entity to widget to remove it properly?
+		// Remove from map and delete widget.
+		assert( _mapSequencesWidgets.contains( p_e ) );
+		_mapSequencesWidgets[ p_e ]->deleteLater();
+		_mapSequencesWidgets.erase( p_e );
 	}
 
 } // namespace VTX::UI::QT::DockWidget

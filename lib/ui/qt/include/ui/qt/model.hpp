@@ -17,7 +17,10 @@ namespace VTX::UI::QT
 		Q_OBJECT
 
 	  public:
-		using ItemIndex = SystemIndex;
+		/**
+		 * @brief Use to identify globally an item in the model.
+		 */
+		using GlobalIndex = SystemIndex;
 
 		/**
 		 * @brief Scene items.
@@ -30,7 +33,9 @@ namespace VTX::UI::QT
 			RESIDUE,
 			ATOM,
 			PATH,
-			VIEWPOINT
+			VIEWPOINT,
+
+			COUNT
 		};
 
 		/**
@@ -74,11 +79,27 @@ namespace VTX::UI::QT
 		 */
 		QModelIndex parent( const QModelIndex & p_index ) const override;
 
+		/**
+		 * @brief Pack minimum information to identify an item in the model into a single uint64.
+		 */
+		static quintptr pack( const Model::E_ITEM, const Model::GlobalIndex, const Index );
+
+		/**
+		 * @brief Unpack quintptr.
+		 */
+		static void unpack( const quintptr, Model::E_ITEM &, Model::GlobalIndex &, Index & );
+
+		inline const std::unordered_map<App::ECS::Entity, const GlobalIndex> & getMapEntityToGlobalIndex() const
+		{
+			return _mapGlobalIndex;
+		}
+
 	  private:
 		/**
 		 * @brief The systems contained in the model.
 		 */
-		std::vector<const Core::Struct::System *> _systems;
+		mutable std::unordered_map<App::ECS::Entity, const GlobalIndex>		  _mapGlobalIndex;
+		mutable std::unordered_map<GlobalIndex, const Core::Struct::System *> _mapSystems;
 		// TODO: add viewpoints?
 
 		/**
