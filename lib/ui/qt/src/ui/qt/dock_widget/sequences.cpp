@@ -12,6 +12,20 @@ namespace VTX::UI::QT::DockWidget
 
 		App::REG().on_construct<Core::Struct::System>().connect<&Sequences::_onConstructSystem>( this );
 		App::REG().on_destroy<Core::Struct::System>().connect<&Sequences::_onDestroySystem>( this );
+
+		// Refresh widget when selection changed.
+		auto & selectionModel = SELECTION();
+		connect(
+			&selectionModel,
+			&QItemSelectionModel::selectionChanged,
+			[ this ]
+			{
+				for ( auto & [ _, widget ] : _mapSequencesWidgets )
+				{
+					widget->update();
+				}
+			}
+		);
 	}
 
 	void Sequences::_onConstructSystem( App::ECS::Registry & p_r, App::ECS::Entity p_e )
@@ -23,12 +37,6 @@ namespace VTX::UI::QT::DockWidget
 		assert( not _mapSequencesWidgets.contains( p_e ) );
 		_mapSequencesWidgets.emplace( p_e, sequenceWidget );
 		_layout->addWidget( sequenceWidget );
-
-		// Refresh widget when selection changed.
-		auto & selectionModel = SELECTION();
-		connect(
-			&selectionModel, &QItemSelectionModel::selectionChanged, [ sequenceWidget ] { sequenceWidget->update(); }
-		);
 	}
 
 	void Sequences::_onDestroySystem( App::ECS::Registry & p_r, App::ECS::Entity p_e )

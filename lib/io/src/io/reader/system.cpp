@@ -46,6 +46,7 @@ namespace VTX::IO::Reader
 		p_system.initAtoms( p_chemfileStruct.getAtomCount() );
 
 		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.getCurrentFrame();
+
 		modelFrame.resize( p_chemfileStruct.getAtomCount() );
 
 		for ( Index residueIdx = 0; residueIdx < p_chemfileStruct.getResidueCount(); ++residueIdx )

@@ -17,10 +17,7 @@ namespace VTX::UI::QT
 		Q_OBJECT
 
 	  public:
-		/**
-		 * @brief Use to identify globally an item in the model.
-		 */
-		using GlobalIndex = SystemIndex;
+		using GlobalIndex = ushort;
 
 		/**
 		 * @brief Scene items.
@@ -43,10 +40,22 @@ namespace VTX::UI::QT
 		 */
 		enum Roles
 		{
-			TypeRole = Qt::UserRole + 1,
-			SystemRole,
+			ItemRole = Qt::UserRole + 1,
+			GlobalRole,
 			LocalRole,
 			NameRole
+		};
+
+		/**
+		 * @brief Root row structure.
+		 */
+		struct Row
+		{
+			int										   position;
+			GlobalIndex								   index;
+			App::ECS::Entity						   entity;
+			E_ITEM									   item;
+			std::variant<const Core::Struct::System *> data;
 		};
 
 		/**
@@ -82,25 +91,28 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Pack minimum information to identify an item in the model into a single uint64.
 		 */
-		static quintptr pack( const Model::E_ITEM, const Model::GlobalIndex, const Index );
+		static quintptr pack( const E_ITEM, const GlobalIndex, const Index );
 
 		/**
 		 * @brief Unpack quintptr.
 		 */
-		static void unpack( const quintptr, Model::E_ITEM &, Model::GlobalIndex &, Index & );
+		static void unpack( const quintptr, E_ITEM &, GlobalIndex &, Index & );
 
-		inline const std::unordered_map<App::ECS::Entity, const GlobalIndex> & getMapEntityToGlobalIndex() const
-		{
-			return _mapGlobalIndex;
-		}
+		inline const std::unordered_map<GlobalIndex, const Row *> & getMapRows() const { return _mapGlobalIndexRow; }
 
 	  private:
+		static inline GlobalIndex _COUNTER = 0;
+
 		/**
-		 * @brief The systems contained in the model.
+		 * @brief Root rows of the model.
 		 */
-		mutable std::unordered_map<App::ECS::Entity, const GlobalIndex>		  _mapGlobalIndex;
-		mutable std::unordered_map<GlobalIndex, const Core::Struct::System *> _mapSystems;
-		// TODO: add viewpoints?
+		std::vector<std::unique_ptr<Row>> _rows;
+
+		/**
+		 * @brief Maps for quick access to rows.
+		 */
+		std::unordered_map<App::ECS::Entity, const Row *> _mapEntityRow;
+		std::unordered_map<GlobalIndex, const Row *>	  _mapGlobalIndexRow;
 
 		/**
 		 * @brief Callback on system construction to add it to the model.

@@ -1,4 +1,6 @@
 #include "ui/qt/model.hpp"
+#include <util/logger.hpp>
+#include <variant>
 
 namespace VTX::UI::QT
 {
@@ -15,24 +17,44 @@ namespace VTX::UI::QT
 	{
 		if ( not p_parent.isValid() )
 		{
-			return int( _mapSystems.size() );
+			return int( _rows.size() );
 		}
 
 		E_ITEM		item;
 		GlobalIndex globalIndex;
 		Index		localIndex;
 		unpack( p_parent.internalId(), item, globalIndex, localIndex );
-		const Core::Struct::System & system = *_mapSystems[ globalIndex ];
+
+		if ( not _mapGlobalIndexRow.contains( globalIndex ) )
+		{
+			return 0;
+		}
+
+		const Core::Struct::System & system
+			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( globalIndex )->data );
 
 		switch ( item )
 		{
-		case E_ITEM::SYSTEM: return system.getChainCount();
+		case E_ITEM::SYSTEM:
+		{
+			return system.getChainCount();
+		}
 		case E_ITEM::CHAIN:
 		{
+			if ( localIndex >= system.getChainCount() )
+			{
+				return 0;
+			}
+
 			return system.chainResidueCounts[ localIndex ];
 		}
 		case E_ITEM::RESIDUE:
 		{
+			if ( localIndex >= system.getResidueCount() )
+			{
+				return 0;
+			}
+
 			return system.residueAtomCounts[ localIndex ];
 		}
 		default: return 0;
@@ -51,7 +73,14 @@ namespace VTX::UI::QT
 		GlobalIndex globalIndex;
 		Index		localIndex;
 		unpack( p_index.internalId(), item, globalIndex, localIndex );
-		const Core::Struct::System & system = *_mapSystems[ globalIndex ];
+
+		if ( not _mapGlobalIndexRow.contains( globalIndex ) )
+		{
+			return {};
+		}
+
+		const Core::Struct::System & system
+			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( globalIndex )->data );
 
 		switch ( p_role )
 		{
@@ -59,14 +88,41 @@ namespace VTX::UI::QT
 		case NameRole:
 			switch ( item )
 			{
-			case E_ITEM::SYSTEM: return QString( "Molecule %1" ).arg( globalIndex );
-			case E_ITEM::CHAIN: return QString::fromStdString( system.chainNames[ localIndex ] );
-			case E_ITEM::RESIDUE: return QString::fromStdString( system.residueNames[ localIndex ] );
-			case E_ITEM::ATOM: return QString::fromStdString( system.atomNames[ localIndex ] );
+			case E_ITEM::SYSTEM:
+			{
+				return QString::fromStdString( system.name );
+			}
+			case E_ITEM::CHAIN:
+			{
+				if ( localIndex >= system.getChainCount() )
+				{
+					return {};
+				}
+
+				return QString::fromStdString( system.chainNames[ localIndex ] );
+			}
+			case E_ITEM::RESIDUE:
+			{
+				if ( localIndex >= system.getResidueCount() )
+				{
+					return {};
+				}
+
+				return QString::fromStdString( system.residueNames[ localIndex ] );
+			}
+			case E_ITEM::ATOM:
+			{
+				if ( localIndex >= system.getAtomCount() )
+				{
+					return {};
+				}
+
+				return QString::fromStdString( system.atomNames[ localIndex ] );
+			}
 			}
 			return {};
-		case TypeRole: return int( item );
-		case SystemRole: return globalIndex;
+		case ItemRole: return int( item );
+		case GlobalRole: return globalIndex;
 		case LocalRole: return localIndex;
 		default: return {};
 		}
@@ -82,18 +138,25 @@ namespace VTX::UI::QT
 		// System.
 		if ( not p_parent.isValid() )
 		{
-			if ( p_row >= int( _mapSystems.size() ) )
+			if ( p_row >= int( _rows.size() ) )
 			{
 				return {};
 			}
-			return createIndex( p_row, p_column, pack( E_ITEM::SYSTEM, Index( p_row ), 0 ) );
+			return createIndex( p_row, p_column, pack( E_ITEM::SYSTEM, _rows[ p_row ]->index, 0 ) );
 		}
 
 		E_ITEM		item;
 		GlobalIndex globalIndex;
 		Index		localIndex;
 		unpack( p_parent.internalId(), item, globalIndex, localIndex );
-		const Core::Struct::System & system = *_mapSystems[ globalIndex ];
+
+		if ( not _mapGlobalIndexRow.contains( globalIndex ) )
+		{
+			return {};
+		}
+
+		const Core::Struct::System & system
+			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( globalIndex )->data );
 
 		switch ( item )
 		{
@@ -110,6 +173,11 @@ namespace VTX::UI::QT
 		// Residue.
 		case E_ITEM::CHAIN:
 		{
+			if ( localIndex >= system.getChainCount() )
+			{
+				return {};
+			}
+
 			if ( uint( p_row ) >= system.chainResidueCounts[ localIndex ] )
 			{
 				return {};
@@ -122,6 +190,11 @@ namespace VTX::UI::QT
 		// Atom.
 		case E_ITEM::RESIDUE:
 		{
+			if ( localIndex >= system.getResidueCount() )
+			{
+				return {};
+			}
+
 			if ( uint( p_row ) >= system.residueAtomCounts[ localIndex ] )
 			{
 				return {};
@@ -153,25 +226,45 @@ namespace VTX::UI::QT
 			return {};
 		}
 
-		assert( globalIndex < _mapSystems.size() );
-		const Core::Struct::System & system = *_mapSystems[ globalIndex ];
+		if ( not _mapGlobalIndexRow.contains( globalIndex ) )
+		{
+			return {};
+		}
+
+		const Core::Struct::System & system
+			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( globalIndex )->data );
 
 		switch ( item )
 		{
 		case E_ITEM::CHAIN:
 		{
-			return createIndex( globalIndex, 0, pack( E_ITEM::SYSTEM, globalIndex, 0 ) );
+			if ( localIndex >= system.getChainCount() )
+			{
+				return {};
+			}
+
+			return createIndex(
+				_mapGlobalIndexRow.at( globalIndex )->position, 0, pack( E_ITEM::SYSTEM, globalIndex, 0 )
+			);
 		}
 		case E_ITEM::RESIDUE:
 		{
-			assert( localIndex < Index( system.residueNames.size() ) );
+			if ( localIndex >= system.getResidueCount() )
+			{
+				return {};
+			}
+
 			const Index chain		= system.residueChainIndexes[ localIndex ];
 			const int	rowInSystem = int( chain );
 			return createIndex( rowInSystem, 0, pack( E_ITEM::CHAIN, globalIndex, chain ) );
 		}
 		case E_ITEM::ATOM:
 		{
-			assert( localIndex < Index( system.atomNames.size() ) );
+			if ( localIndex >= system.getAtomCount() )
+			{
+				return {};
+			}
+
 			const Index residue	   = system.atomResidueIndexes[ localIndex ];
 			const Index chain	   = system.residueChainIndexes[ residue ];
 			const int	rowInChain = int( residue - system.chainFirstResidues[ chain ] );
@@ -183,27 +276,47 @@ namespace VTX::UI::QT
 
 	void Model::_onConstructSystem( App::ECS::Registry & p_r, App::ECS::Entity p_e )
 	{
-		const auto & system = p_r.get<Core::Struct::System>( p_e );
-		const int	 row	= int( _mapSystems.size() );
-		beginInsertRows( QModelIndex(), row, row );
-		_mapGlobalIndex.emplace( p_e, row );
-		_mapSystems.emplace( row, &system );
+		const auto & system	  = p_r.get<Core::Struct::System>( p_e );
+		const int	 position = int( _rows.size() );
+
+		beginInsertRows( QModelIndex(), position, position );
+
+		_rows.emplace_back(
+			std::make_unique<Row>(
+				position, _COUNTER++, p_e, E_ITEM::SYSTEM, std::variant<const Core::Struct::System *>( &system )
+			)
+		);
+
+		auto & row						 = _rows.back();
+		_mapEntityRow[ row->entity ]	 = row.get();
+		_mapGlobalIndexRow[ row->index ] = row.get();
+
 		endInsertRows();
 	}
 
 	void Model::_onDestroySystem( App::ECS::Registry & p_r, App::ECS::Entity p_e )
 	{
-		/*
-		const auto & system = p_r.get<Core::Struct::System>( p_e );
-		const auto	 it		= std::find( _systems.begin(), _systems.end(), &system );
-		if ( it != _systems.end() )
+		assert( _mapEntityRow.contains( p_e ) );
+
+		const Row * rowPtr	 = _mapEntityRow.at( p_e );
+		const int	position = rowPtr->position;
+
+		beginRemoveRows( QModelIndex(), position, position );
+
+		_mapGlobalIndexRow.erase( rowPtr->index );
+		_mapEntityRow.erase( p_e );
+
+		_rows.erase( _rows.begin() + position );
+
+		for ( int i = position; i < int( _rows.size() ); ++i )
 		{
-			const int row = int( std::distance( _systems.begin(), it ) );
-			beginRemoveRows( QModelIndex(), row, row );
-			_systems.erase( it );
-			endRemoveRows();
+			Row * r						   = _rows[ i ].get();
+			r->position					   = i;
+			_mapEntityRow[ r->entity ]	   = r;
+			_mapGlobalIndexRow[ r->index ] = r;
 		}
-		*/
+
+		endRemoveRows();
 	}
 
 	quintptr Model::pack( const E_ITEM p_item, const GlobalIndex p_globalIndex, const Index p_index )

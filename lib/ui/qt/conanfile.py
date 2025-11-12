@@ -129,7 +129,7 @@ class VTXUiQtRecipe(ConanFile):
         qtPluginsDir = os.path.join(self.dependencies["qt"].package_folder, "plugins")
         destDir = os.path.join(self.build_folder, self.cpp.build.libdirs[0])
 
-        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll" ]
+        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll", "Qt6Test*.dll" ]
         for file in binFiles:
             self.output.highlight(f"Copying {file} from Qt bin directory to {destDir}")
             copy(self, file, qtBinDir, destDir)

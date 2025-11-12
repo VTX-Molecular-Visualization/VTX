@@ -42,7 +42,7 @@ namespace VTX::Bench
 
 			for ( auto & system : _systems )
 			{
-				system->transform = Util::Math::rotate( system->transform, p_deltaTime, _directions[ i ] );
+				// system->transform = Util::Math::rotate( system->transform, p_deltaTime, _directions[ i ] );
 
 				//_proxySystems[ i ]->atomPositions
 				//	= &system->trajectory.frames[ currentFrame++ % system->trajectory.frames.size() ];

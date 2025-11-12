@@ -35,7 +35,8 @@ namespace VTX::UI::QT::Menu
 		rowsPerItem.fill( 0 );
 		std::vector<Model::GlobalIndex> systemGlobalIndexes;
 
-		const QModelIndexList rows = selectionModel.selectedRows();
+		const QModelIndex	  clickedRow = selectionModel.currentIndex(); // TODO: not valid in menubar context.
+		const QModelIndexList rows		 = selectionModel.selectedRows();
 		for ( const QModelIndex & index : rows )
 		{
 			if ( not index.isValid() )
@@ -73,14 +74,12 @@ namespace VTX::UI::QT::Menu
 				&QAction::triggered,
 				[ &model, systemGlobalIndexes ]()
 				{
-					auto & mapGlobalId = model.getMapEntityToGlobalIndex();
-					auto   it		   = std::ranges::find_if(
-						   mapGlobalId, [ & ]( const auto & p ) { return p.second == systemGlobalIndexes[ 0 ]; }
-					   );
-					if ( it != mapGlobalId.end() )
+					auto & mapGlobalId = model.getMapRows();
+					for ( const auto & systemGlobalIndex : systemGlobalIndexes )
 					{
-						App::ECS::Entity systemEntity = it->first;
-						App::ACTION().execute<App::Action::Scene::DeleteSystem>( systemEntity );
+						App::ACTION().execute<App::Action::Scene::DeleteSystem>(
+							mapGlobalId.at( systemGlobalIndex )->entity
+						);
 					}
 				}
 			);

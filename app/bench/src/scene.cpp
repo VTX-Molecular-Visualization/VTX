@@ -121,7 +121,8 @@ namespace VTX::Bench
 
 		const std::vector<Vec3f> * atomsPositions = &p_system.trajectory.getCurrentFrame();
 
-		return std::make_unique<Renderer::Proxy::System>( Renderer::Proxy::System {
+		return std::make_unique<Renderer::Proxy::System>(
+			/* Renderer::Proxy::System {
 			&p_system.transform,
 			atomsPositions,
 			&p_system.bondPairAtomIndexes,
@@ -138,7 +139,8 @@ namespace VTX::Bench
 			residueIds,
 			polymerChainIds,
 			carbohydrateChainIds,
-			0 } );
+			0 }*/
+		);
 	}
 
 } // namespace VTX::Bench

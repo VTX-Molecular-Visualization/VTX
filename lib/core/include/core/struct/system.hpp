@@ -25,6 +25,11 @@ namespace VTX::Core::Struct
 		Struct::Trajectory trajectory;
 
 		/**
+		 * @brief System name.
+		 */
+		std::string name;
+
+		/**
 		 * @brief Chains indexes by category.
 		 */
 		std::array<std::vector<Index>, uint( ChemDB::Category::TYPE::COUNT )> categories;
@@ -100,11 +105,6 @@ namespace VTX::Core::Struct
 		 */
 		std::vector<Index> bondPairAtomIndexes;
 
-		//////////////////////////////////////////
-		// TODO: move in metadata component.
-		std::string name = "unknown";
-		// Use transform component?
-		Mat4f transform = MAT4F_ID;
 		// TODO Manage Atom types and residue types with sparse_set
 		Util::Math::RangeList<Index> atomSolvents;
 		Util::Math::RangeList<Index> atomIons;
