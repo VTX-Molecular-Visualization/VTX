@@ -435,9 +435,15 @@ namespace VTX::Renderer
 				drawRangeRibbonsRL.removeRange( rangeRibbons );
 			}
 
-			drawRangeSpheresRL.toVectors<void *, uint>( drawRangeSpheres.offsets, drawRangeSpheres.counts );
-			drawRangeCylindersRL.toVectors<void *, uint>( drawRangeCylinders.offsets, drawRangeCylinders.counts );
-			drawRangeRibbonsRL.toVectors<void *, uint>( drawRangeRibbons.offsets, drawRangeRibbons.counts );
+			drawRangeSpheresRL.toStdVectorsFirstCount<void *, uint>(
+				drawRangeSpheres.offsets, drawRangeSpheres.counts
+			);
+			drawRangeCylindersRL.toStdVectorsFirstCount<void *, uint>(
+				drawRangeCylinders.offsets, drawRangeCylinders.counts
+			);
+			drawRangeRibbonsRL.toStdVectorsFirstCount<void *, uint>(
+				drawRangeRibbons.offsets, drawRangeRibbons.counts
+			);
 		};
 
 		// TODO: threshold to switch between multiple draw calls and single draw call.
@@ -941,8 +947,10 @@ namespace VTX::Renderer
 		drawRangeSpheresRL.addRange( Util::Math::Range<size_t> { 0, uint( totalAtoms ) } );
 		drawRangeCylindersRL.addRange( Util::Math::Range<size_t> { 0, uint( totalBonds ) } );
 
-		drawRangeSpheresRL.toVectors<void *, uint>( drawRangeSpheres.offsets, drawRangeSpheres.counts );
-		drawRangeCylindersRL.toVectors<void *, uint>( drawRangeCylinders.offsets, drawRangeCylinders.counts );
+		drawRangeSpheresRL.toStdVectorsFirstCount<void *, uint>( drawRangeSpheres.offsets, drawRangeSpheres.counts );
+		drawRangeCylindersRL.toStdVectorsFirstCount<void *, uint>(
+			drawRangeCylinders.offsets, drawRangeCylinders.counts
+		);
 	}
 
 	void Renderer::_refreshDataRibbons()
@@ -1313,7 +1321,7 @@ namespace VTX::Renderer
 		// Ranges.
 		drawRangeRibbonsRL.clear();
 		drawRangeRibbonsRL.addRange( Util::Math::Range<size_t> { 0, uint( offsetIndices ) } );
-		drawRangeRibbonsRL.toVectors<void *, uint>( drawRangeRibbons.offsets, drawRangeRibbons.counts );
+		drawRangeRibbonsRL.toStdVectorsFirstCount<void *, uint>( drawRangeRibbons.offsets, drawRangeRibbons.counts );
 	}
 
 	void Renderer::_refreshDataModels()

@@ -13,12 +13,12 @@ struct fmt::formatter<VTX::Util::Math::Range<T>> : fmt::formatter<T>
 	{
 		auto out = std::copy_n( "[ ", 2, p_ctx.out() );
 
-		out = formatter<T>::format( p_range.getFirst(), p_ctx );
+		out = formatter<T>::format( p_range.first, p_ctx );
 
 		out = std::copy_n( " - ", 3, out );
 		p_ctx.advance_to( out );
 
-		out = formatter<T>::format( p_range.getLast(), p_ctx );
+		out = formatter<T>::format( p_range.last, p_ctx );
 
 		return std::copy_n( " ]", 2, out );
 	}
