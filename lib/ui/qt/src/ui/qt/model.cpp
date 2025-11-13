@@ -20,9 +20,9 @@ namespace VTX::UI::QT
 			return int( _rows.size() );
 		}
 
-		E_ITEM		item;
-		GlobalIndex globalIndex;
-		Index		localIndex;
+		E_ITEM	  item;
+		RootIndex globalIndex;
+		Index	  localIndex;
 		unpack( p_parent.internalId(), item, globalIndex, localIndex );
 
 		if ( not _mapGlobalIndexRow.contains( globalIndex ) )
@@ -69,9 +69,9 @@ namespace VTX::UI::QT
 			return {};
 		}
 
-		E_ITEM		item;
-		GlobalIndex globalIndex;
-		Index		localIndex;
+		E_ITEM	  item;
+		RootIndex globalIndex;
+		Index	  localIndex;
 		unpack( p_index.internalId(), item, globalIndex, localIndex );
 
 		if ( not _mapGlobalIndexRow.contains( globalIndex ) )
@@ -145,9 +145,9 @@ namespace VTX::UI::QT
 			return createIndex( p_row, p_column, pack( E_ITEM::SYSTEM, _rows[ p_row ]->index, 0 ) );
 		}
 
-		E_ITEM		item;
-		GlobalIndex globalIndex;
-		Index		localIndex;
+		E_ITEM	  item;
+		RootIndex globalIndex;
+		Index	  localIndex;
 		unpack( p_parent.internalId(), item, globalIndex, localIndex );
 
 		if ( not _mapGlobalIndexRow.contains( globalIndex ) )
@@ -215,9 +215,9 @@ namespace VTX::UI::QT
 			return {};
 		}
 
-		E_ITEM		item;
-		GlobalIndex globalIndex;
-		Index		localIndex;
+		E_ITEM	  item;
+		RootIndex globalIndex;
+		Index	  localIndex;
 		unpack( p_index.internalId(), item, globalIndex, localIndex );
 
 		// Root.
@@ -319,7 +319,7 @@ namespace VTX::UI::QT
 		endRemoveRows();
 	}
 
-	quintptr Model::pack( const E_ITEM p_item, const GlobalIndex p_globalIndex, const Index p_index )
+	quintptr Model::pack( const E_ITEM p_item, const RootIndex p_globalIndex, const Index p_index )
 	{
 		// [ p_item:8 | p_globalIndex:16 | p_index:32 ]  <= 56 bits
 		return ( quintptr( p_item ) << 48 ) |		 // bits 48..55
@@ -327,10 +327,10 @@ namespace VTX::UI::QT
 			   ( quintptr( p_index ) );				 // bits  0..31
 	}
 
-	void Model::unpack( const quintptr p_v, E_ITEM & p_item, GlobalIndex & p_globalIndex, Index & p_index )
+	void Model::unpack( const quintptr p_v, E_ITEM & p_item, RootIndex & p_globalIndex, Index & p_index )
 	{
-		p_item		  = E_ITEM( ( p_v >> 48 ) & 0xFF );		   // 8 bits
-		p_globalIndex = GlobalIndex( ( p_v >> 32 ) & 0xFFFF ); // 16 bits
-		p_index		  = Index( p_v & 0xFFFFFFFFu );			   // 32 bits
+		p_item		  = E_ITEM( ( p_v >> 48 ) & 0xFF );		 // 8 bits
+		p_globalIndex = RootIndex( ( p_v >> 32 ) & 0xFFFF ); // 16 bits
+		p_index		  = Index( p_v & 0xFFFFFFFFu );			 // 32 bits
 	}
 } // namespace VTX::UI::QT

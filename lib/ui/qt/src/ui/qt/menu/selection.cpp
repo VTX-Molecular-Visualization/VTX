@@ -33,7 +33,7 @@ namespace VTX::UI::QT::Menu
 		const size_t			  count = size_t( Model::E_ITEM::COUNT );
 		std::array<size_t, count> rowsPerItem;
 		rowsPerItem.fill( 0 );
-		std::vector<Model::GlobalIndex> systemGlobalIndexes;
+		std::vector<RootIndex> systemGlobalIndexes;
 
 		const QModelIndex	  clickedRow = selectionModel.currentIndex(); // TODO: not valid in menubar context.
 		const QModelIndexList rows		 = selectionModel.selectedRows();
@@ -45,9 +45,9 @@ namespace VTX::UI::QT::Menu
 			}
 
 			// Decode index to get entity.
-			Model::E_ITEM	   item;
-			Model::GlobalIndex globalIndex;
-			Index			   localIndex;
+			Model::E_ITEM item;
+			RootIndex	  globalIndex;
+			Index		  localIndex;
 			Model::unpack( index.internalId(), item, globalIndex, localIndex );
 
 			rowsPerItem[ size_t( item ) ] += 1;

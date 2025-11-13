@@ -37,8 +37,8 @@ namespace VTX
 	using Quatf = glm::quat;
 	using Quatd = glm::dquat;
 
-	using Index		  = uint;
-	using SystemIndex = ushort;
+	using Index		= uint;
+	using RootIndex = ushort;
 
 	using ByteNumber = size_t;
 

@@ -14,12 +14,17 @@ namespace VTX::Util::Url
 
 namespace VTX::App::Action::IO
 {
-
+	/**
+	 * @brief Open a file or folder with the system default application.
+	 */
 	struct Open
 	{
 		void execute( const FilePath & p_path );
 	};
 
+	/**
+	 * @brief Download a molecular system from a remote source.
+	 */
 	struct DownloadSystem
 	{
 	  public:

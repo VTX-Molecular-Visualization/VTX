@@ -1,14 +1,13 @@
-#ifndef __VTX_APP_SYSTEM_SELECTION__
-#define __VTX_APP_SYSTEM_SELECTION
+#ifndef __VTX_APP_SYSTEM_UID__
+#define __VTX_APP_SYSTEM_UID__
 
 #include <util/math/range_list.hpp>
 
 namespace VTX::App::System
 {
-	struct Selection
+	struct UID
 	{
-		bool						 isFullSystemSelected = false;
-		Util::Math::RangeList<Index> chains;
+		RootIndex					 system;
 		Util::Math::RangeList<Index> residues;
 		Util::Math::RangeList<Index> atoms;
 	};

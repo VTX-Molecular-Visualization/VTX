@@ -6,6 +6,7 @@
 
 namespace VTX::UI::QT::Menu
 {
+
 	class Selection : public Widget::BaseWidget<Selection, QMenu>
 	{
 	  public:

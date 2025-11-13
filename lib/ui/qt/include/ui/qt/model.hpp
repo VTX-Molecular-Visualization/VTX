@@ -17,8 +17,6 @@ namespace VTX::UI::QT
 		Q_OBJECT
 
 	  public:
-		using GlobalIndex = ushort;
-
 		/**
 		 * @brief Scene items.
 		 */
@@ -52,7 +50,7 @@ namespace VTX::UI::QT
 		struct Row
 		{
 			int										   position;
-			GlobalIndex								   index;
+			RootIndex								   index;
 			App::ECS::Entity						   entity;
 			E_ITEM									   item;
 			std::variant<const Core::Struct::System *> data;
@@ -91,17 +89,18 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Pack minimum information to identify an item in the model into a single uint64.
 		 */
-		static quintptr pack( const E_ITEM, const GlobalIndex, const Index );
+		static quintptr pack( const E_ITEM, const RootIndex, const Index );
 
 		/**
 		 * @brief Unpack quintptr.
 		 */
-		static void unpack( const quintptr, E_ITEM &, GlobalIndex &, Index & );
+		static void unpack( const quintptr, E_ITEM &, RootIndex &, Index & );
 
-		inline const std::unordered_map<GlobalIndex, const Row *> & getMapRows() const { return _mapGlobalIndexRow; }
+		inline const std::unordered_map<RootIndex, const Row *> & getMapRows() const { return _mapGlobalIndexRow; }
 
 	  private:
-		static inline GlobalIndex _COUNTER = 0;
+		// TODO: move to component and use UID manager.
+		static inline RootIndex _COUNTER = 0;
 
 		/**
 		 * @brief Root rows of the model.
@@ -112,7 +111,7 @@ namespace VTX::UI::QT
 		 * @brief Maps for quick access to rows.
 		 */
 		std::unordered_map<App::ECS::Entity, const Row *> _mapEntityRow;
-		std::unordered_map<GlobalIndex, const Row *>	  _mapGlobalIndexRow;
+		std::unordered_map<RootIndex, const Row *>		  _mapGlobalIndexRow;
 
 		/**
 		 * @brief Callback on system construction to add it to the model.

@@ -2,7 +2,9 @@
 #include "app/events.hpp"
 #include "app/services.hpp"
 #include "app/system/metadata.hpp"
+#include "app/system/selection.hpp"
 #include "app/system/trajectory.hpp"
+#include "app/system/uid.hpp"
 #include <core/struct/system.hpp>
 #include <io/reader/system.hpp>
 #include <util/event_hub.hpp>
@@ -22,6 +24,8 @@ namespace VTX::App::Action::Scene
 		auto &		trajectory = REG().emplace<System::Trajectory>( system );
 		auto &		transform  = REG().emplace<Util::Math::Transform>( system );
 		auto &		aabb	   = REG().emplace<Util::Math::AABB>( system );
+		auto &		selection  = REG().emplace<System::Selection>( system );
+		auto &		uid		   = REG().emplace<System::UID>( system );
 
 		// Load system.
 		IO::Reader::System loader;
