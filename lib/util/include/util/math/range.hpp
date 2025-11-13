@@ -4,6 +4,7 @@
 #include "util/constants.hpp"
 #include <cassert>
 #include <concepts>
+#include <optional>
 
 namespace VTX::Util::Math
 {
