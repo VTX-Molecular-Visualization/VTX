@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_BINARY_BUFFER__
 #define __VTX_RENDERER_BINARY_BUFFER__
 
+#include <cstring>
 #include <vector>
 
 namespace VTX::Renderer
