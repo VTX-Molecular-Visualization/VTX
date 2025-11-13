@@ -6,13 +6,11 @@
 #include "ui/qt/resources.hpp"
 #include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/style.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include <QAction>
 #include <QActionGroup>
 #include <QApplication>
-#include <QFile>
-#include <QIcon>
-#include <QStyle>
 #include <app/ecs.hpp>
 #include <app/infos.hpp>
 #include <util/event_hub.hpp>
@@ -56,17 +54,14 @@ namespace VTX::UI::QT
 		}
 
 		// Create model.
-		auto & m  = App::ECS::setCtx<Model>();
-		auto & sm = App::ECS::setCtx<SelectionModel>( &m );
-
-		// Create main window.
-		auto & mw = App::ECS::setCtx<Widget::MainWindow>();
+		auto & model = App::ECS::setCtx<Model>();
+		App::ECS::setCtx<SelectionModel>( &model );
 
 		// Load theme.
-		_loadTheme();
+		App::ECS::setCtx<Style>().load( _tools );
 
-		// Show.
-		mw.show();
+		// Create and show main window.
+		App::ECS::setCtx<Widget::MainWindow>().show();
 
 		// Connect quit event that can come from VTXApp.
 		App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
@@ -132,54 +127,12 @@ namespace VTX::UI::QT
 		}
 	}
 
-	void Application::_loadTheme()
-	{
-		using namespace Resources;
-
-		// Load main stylesheet.
-		QFile stylesheetFile( FILE_STYLESHEET.data() );
-		stylesheetFile.open( QFile::ReadOnly );
-		QString stylesheet = stylesheetFile.readAll();
-
-		// Load os-specific stylesheet.
-#if _WIN32
-		QFile stylesheetOSFile( FILE_STYLESHEET_WINDOWS.data() );
-#elif __linux__
-		QFile stylesheetOSFile( FILE_STYLESHEET_LINUX.data() );
-#elif __APPLE__
-		QFile stylesheetOSFile( FILE_STYLESHEET_MACOS.data() );
-#else
-		QFile stylesheetOSFile();
-		assert( true );
-#endif
-
-		stylesheetOSFile.open( QFile::ReadOnly );
-		stylesheet += '\n' + stylesheetOSFile.readAll();
-
-		// TODO: move to super class?
-		for ( const App::Tool::BaseTool * const tool : _tools )
-		{
-			if ( tool->getStyle().has_value() )
-			{
-				stylesheet += '\n' + tool->getStyle().value();
-			}
-		}
-
-		// Set stylesheet to app.
-		setStyleSheet( stylesheet );
-		setStyle( "fusion" );
-
-		QPalette p = palette();
-
-		QPalette lightPalette = QApplication::style()->standardPalette();
-
-		setPalette( p );
-	}
-
 	QAction * const Application::_getOrCreateAction( const App::UI::DescAction & p_action )
 	{
+		const std::string_view key = p_action.key.empty() ? VTX::Util::typeName<App::UI::DescAction>() : p_action.key;
+
 		// Find existing action.
-		QAction * qAction = Q_APP()->findChild<QAction *>( p_action.name );
+		QAction * qAction = Q_APP()->findChild<QAction *>( key );
 
 		if ( qAction )
 		{
@@ -188,9 +141,9 @@ namespace VTX::UI::QT
 		else
 		{
 			qAction = new QAction( Q_APP() );
-			qAction->setObjectName( p_action.name );
+			qAction->setObjectName( key );
 
-			VTX_TRACE( "UI action created: {}", p_action.name );
+			VTX_TRACE( "UI action created: {}", key );
 
 			// Name.
 			qAction->setText( QString::fromStdString( p_action.name ) );
@@ -240,7 +193,7 @@ namespace VTX::UI::QT
 				}
 				else
 				{
-					VTX_ERROR( "Invalid icon type for action: {}", p_action.name );
+					VTX_ERROR( "Invalid icon type for action: {}", key );
 				}
 			}
 			// Shortcut.

@@ -5,7 +5,6 @@
 #include "ui/qt/widget/actionable_push_button.hpp"
 #include <QApplication>
 #include <QComboBox>
-#include <QGridLayout>
 #include <QGroupBox>
 #include <QLineEdit>
 #include <QPointer>
@@ -14,6 +13,8 @@
 // #include <app/action/library.hpp>
 // #include <app/library/library_manager.hpp>
 #include "ui/qt/application.hpp"
+#include <QToolBar>
+#include <QVBoxLayout>
 #include <app/library/base_library.hpp>
 #include <app/library/library_manager.hpp>
 #include <app/services.hpp>
@@ -45,31 +46,29 @@ namespace VTX::UI::QT::Widget::Library
 		PresetSelector( QWidget * p_parent ) :
 			BasePresetSelector( p_parent ), _library( App::LIBRARY().getLibrary<P>() )
 		{
-			// auto * groupBox = new QGroupBox( "Presets" );
-			// auto * layout	= new QVBoxLayout( groupBox );
+			auto * layout = new QVBoxLayout( this );
 			setTitle( "Presets" );
 
-			auto * layout = new QGridLayout( this );
 			// layout->setContentsMargins( 0, 0, 0, 0 );
 
 			_comboBox = new QComboBox( this );
 			_refreshComboBox();
 			_comboBox->setCurrentIndex( 0 );
-			layout->addWidget( _comboBox, 0, 0, 1, 3 );
+			layout->addWidget( _comboBox );
 
 			using namespace Action;
 
-			auto * btnNew		 = new ActionablePushButton( Application::getAction<Preset::Add<P>>(), this );
-			auto * btnDupplicate = new ActionablePushButton( Application::getAction<Preset::Duplicate<P>>(), this );
-			auto * btnDelete	 = new ActionablePushButton( Application::getAction<Preset::Delete<P>>(), this );
-
-			layout->addWidget( btnNew, 1, 0 );
-			layout->addWidget( btnDupplicate, 1, 1 );
-			layout->addWidget( btnDelete, 1, 2 );
+			auto * toolbar = new QToolBar( this );
+			toolbar->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
+			toolbar->setIconSize( QSize( 18, 18 ) );
+			toolbar->addAction( Application::getAction<Preset::Add<P>>() );
+			toolbar->addAction( Application::getAction<Preset::Duplicate<P>>() );
+			toolbar->addAction( Application::getAction<Preset::Delete<P>>() );
+			layout->addWidget( toolbar );
 
 			auto * lineRename = new QLineEdit( this );
-			layout->addWidget( lineRename, 2, 0, 1, 3 );
 			lineRename->setText( _comboBox->currentText() );
+			layout->addWidget( lineRename );
 
 			/*
 			connect(

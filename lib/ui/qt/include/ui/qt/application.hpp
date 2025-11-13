@@ -45,6 +45,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Get app action from description.
 		 */
+
 		static inline QAction * const getAction( const App::UI::DescAction & p_action )
 		{
 			return _getOrCreateAction( p_action );
@@ -56,7 +57,9 @@ namespace VTX::UI::QT
 		template<App::UI::ConceptAction A>
 		static inline QAction * getAction()
 		{
-			return _getOrCreateAction( A() );
+			A action;
+			action.key = VTX::Util::typeName<A>();
+			return _getOrCreateAction( action );
 		}
 
 	  private:
@@ -71,20 +74,15 @@ namespace VTX::UI::QT
 		VTX::Util::Chrono _durationTimer;
 
 		/**
-		 * @brief Load the graphical theme.
-		 */
-		void _loadTheme();
-
-		/**
 		 * @brief Get/create application action from description.
 		 */
 		static QAction * const _getOrCreateAction( const App::UI::DescAction & );
-
-		/**
-		 * @brief Get the QApplication instance.
-		 */
-		inline static QApplication * const Q_APP() { return qApp; }
 	};
+
+	/**
+	 * @brief Get the QApplication instance.
+	 */
+	inline static QApplication * const Q_APP() { return qApp; }
 } // namespace VTX::UI::QT
 
 #endif

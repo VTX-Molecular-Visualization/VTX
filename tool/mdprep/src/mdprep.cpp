@@ -109,6 +109,7 @@ namespace VTX::Tool::Mdprep
 	{
 		OpenMdPrep()
 		{
+			key		 = "tool.mdprep.open";
 			name	 = "MdPrep";
 			tip		 = "Prepare Molecular Dynamic Simulation";
 			icon	 = "sprite/icon_tool_mdprep_mainButton.png";

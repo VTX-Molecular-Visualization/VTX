@@ -18,6 +18,7 @@ namespace VTX::Tool::Example
 		// Method 1:
 		// Easy way to add a menu/toobar action.
 		App::UI::DescAction action;
+		action.key	   = "example.tool.action";
 		action.name	   = "Example";
 		action.tip	   = "Example tool";
 		action.icon	   = "sprite/king.png";

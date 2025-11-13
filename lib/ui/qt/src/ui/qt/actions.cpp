@@ -1,8 +1,10 @@
 #include "ui/qt/actions.hpp"
 #include "app/action/controller.hpp"
+#include "ui/qt/application.hpp"
 #include "ui/qt/dialog/download.hpp"
 #include "ui/qt/dialog/export_image.hpp"
 #include "ui/qt/dialog/open.hpp"
+#include "ui/qt/style.hpp"
 #include <app/action/io.hpp>
 #include <app/action/scene.hpp>
 
@@ -253,6 +255,28 @@ namespace VTX::UI::QT::Action
 	} // namespace Snapshot
 	namespace Selection
 	{
+
+		Lock::Lock()
+		{
+			name = "Lock";
+			tip	 = "Lock the current selection";
+			// icon = static_cast<int>( QStyle::StandardPixmap::SP_TitleBarShadeButton );
+		}
+
+		Save::Save()
+		{
+			name = "Save";
+			tip	 = "Save the current selection";
+			// icon = static_cast<int>( QStyle::StandardPixmap::SP_DialogSaveButton );
+		}
+
+		Clear::Clear()
+		{
+			name = "Clear";
+			tip	 = "Clear selection";
+			// icon = static_cast<int>( QStyle::StandardPixmap::SP_TrashIcon );
+		}
+
 		SetGranularitySystem::SetGranularitySystem()
 		{
 			name  = "System";
@@ -306,23 +330,26 @@ namespace VTX::UI::QT::Action
 
 		System::System()
 		{
-			name  = "System";
-			group = "Theme";
-			tip	  = "Use system theme";
+			name	= "System";
+			group	= "Theme";
+			tip		= "Use system theme";
+			trigger = []() { STYLE().setTheme( Style::E_THEME::SYSTEM ); };
 		}
 
 		Light::Light()
 		{
-			name  = "Light";
-			group = "Theme";
-			tip	  = "Use light theme";
+			name	= "Light";
+			group	= "Theme";
+			tip		= "Use light theme";
+			trigger = []() { STYLE().setTheme( Style::E_THEME::LIGHT ); };
 		}
 
 		Dark::Dark()
 		{
-			name  = "Dark";
-			group = "Theme";
-			tip	  = "Use dark theme";
+			name	= "Dark";
+			group	= "Theme";
+			tip		= "Use dark theme";
+			trigger = []() { STYLE().setTheme( Style::E_THEME::DARK ); };
 		}
 
 		ResetLayout::ResetLayout() { name = "Reset layout"; }

@@ -161,6 +161,21 @@ namespace VTX::UI::QT
 		} // namespace Help
 		namespace Selection
 		{
+			struct Lock : public App::UI::DescAction
+			{
+				Lock();
+			};
+
+			struct Save : public App::UI::DescAction
+			{
+				Save();
+			};
+
+			struct Clear : public App::UI::DescAction
+			{
+				Clear();
+			};
+
 			struct SetGranularitySystem : public App::UI::DescAction
 			{
 				SetGranularitySystem();

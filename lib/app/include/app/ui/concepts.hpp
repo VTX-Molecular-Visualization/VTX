@@ -17,6 +17,7 @@ namespace VTX::App::UI
 		using Icon = std::variant<std::string, int>;
 
 	  public:
+		std::string				   key;
 		std::string				   name;
 		std::optional<std::string> group = std::nullopt;
 		std::optional<std::string> tip	 = std::nullopt;
