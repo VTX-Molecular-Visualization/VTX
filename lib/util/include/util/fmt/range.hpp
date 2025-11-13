@@ -3,6 +3,7 @@
 
 #include "util/math/range.hpp"
 #include <fmt/format.h>
+#include <optional>
 
 // This file contains implementations of fmt::formatter to allow logging of Util::Math::Range
 
