@@ -2,6 +2,7 @@
 #define __VTX_APP_SETTINGS_MANAGER__
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <util/collection.hpp>
 
