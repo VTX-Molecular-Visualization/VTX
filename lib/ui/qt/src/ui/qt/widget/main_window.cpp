@@ -23,6 +23,7 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QMimeData>
+#include <app/action/scene.hpp>
 #include <util/event_hub.hpp>
 
 namespace
@@ -181,7 +182,7 @@ namespace VTX::UI::QT::Widget
 	{
 		for ( const auto & url : p_event->mimeData()->urls() )
 		{
-			// App::ACTION().execute<App::Action::Scene::LoadSystem>( url.toLocalFile().toStdString() );
+			App::ACTION().execute<App::Action::Scene::LoadSystem>( url.toLocalFile().toStdString() );
 		}
 
 		p_event->acceptProposedAction();

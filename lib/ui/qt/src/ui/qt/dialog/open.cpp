@@ -1,6 +1,6 @@
 #include "ui/qt/dialog/open.hpp"
-// #include <app/action/scene.hpp>
 #include "ui/qt/settings.hpp"
+#include <app/action/scene.hpp>
 
 namespace
 {
@@ -27,12 +27,10 @@ namespace VTX::UI::QT::Dialog
 				// Save last opened folder.
 				SETTINGS().setValue( _SETTING_KEY_FOLDER, directory().absolutePath() );
 
-				accept();
-
 				// Open files.
 				for ( const auto & path : p_paths )
 				{
-					// App::ACTION().execute<App::Action::Scene::LoadSystem>( path.toStdString() );
+					App::ACTION().execute<App::Action::Scene::LoadSystem>( path.toStdString() );
 				}
 			}
 		);

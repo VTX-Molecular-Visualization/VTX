@@ -90,11 +90,10 @@ namespace VTX::UI::QT::Widget
 				painter.drawText( x, SEQ_CHAR_HEIGHT, QString::number( indexInChain ) );
 			}
 
+			// TODO
 			// Selection.
 			const QRect cellRect( x, SEQ_CHAR_HEIGHT + 5, SEQ_CHAR_WIDTH, SEQ_CHAR_HEIGHT );
-
-			bool selected = selection.isSelected( QModelIndex() );
-			// TODO
+			bool		selected = false;
 			if ( selected )
 			{
 				painter.fillRect( cellRect, palette().highlight() );
