@@ -263,7 +263,8 @@ namespace VTX::UI::QT::Action
 			name = "Lock";
 			tip	 = "Lock the current selection";
 			// icon = static_cast<int>( QStyle::StandardPixmap::SP_TitleBarShadeButton );
-			trigger = []()
+			checkable = true;
+			trigger	  = []()
 			{
 				MAIN_WINDOW()
 					.findChild<Widget::Tree *>( Util::typeName<Widget::Tree>() )

@@ -1,4 +1,5 @@
 #include "ui/qt/model.hpp"
+#include "app/system/uid.hpp"
 #include <util/logger.hpp>
 #include <variant>
 
@@ -277,13 +278,14 @@ namespace VTX::UI::QT
 	void Model::_onConstructSystem( App::ECS::Registry & p_r, App::ECS::Entity p_e )
 	{
 		const auto & system	  = p_r.get<Core::Struct::System>( p_e );
+		const auto & uid	  = p_r.get<App::System::UID>( p_e );
 		const int	 position = int( _rows.size() );
 
 		beginInsertRows( QModelIndex(), position, position );
 
 		_rows.emplace_back(
 			std::make_unique<Row>(
-				position, _COUNTER++, p_e, E_ITEM::SYSTEM, std::variant<const Core::Struct::System *>( &system )
+				position, uid.system, p_e, E_ITEM::SYSTEM, std::variant<const Core::Struct::System *>( &system )
 			)
 		);
 

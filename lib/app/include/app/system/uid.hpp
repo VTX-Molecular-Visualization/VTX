@@ -7,6 +7,8 @@ namespace VTX::App::System
 {
 	struct UID
 	{
+		static inline RootIndex COUNTER = 0;
+
 		RootIndex					 system;
 		Util::Math::RangeList<Index> residues;
 		Util::Math::RangeList<Index> atoms;

@@ -99,9 +99,6 @@ namespace VTX::UI::QT
 		inline const std::unordered_map<RootIndex, const Row *> & getMapRows() const { return _mapGlobalIndexRow; }
 
 	  private:
-		// TODO: move to component and use UID manager.
-		static inline RootIndex _COUNTER = 0;
-
 		/**
 		 * @brief Root rows of the model.
 		 */

@@ -18,14 +18,15 @@ namespace VTX::App::Action::Scene
 	void LoadSystem::execute( const FilePath & p_path, const std::string * const p_buffer )
 	{
 		// Create entity.
-		ECS::Entity system	   = REG().create();
-		auto &		data	   = REG().emplace<Core::Struct::System>( system );
-		auto &		metadata   = REG().emplace<System::Metadata>( system );
-		auto &		trajectory = REG().emplace<System::Trajectory>( system );
-		auto &		transform  = REG().emplace<Util::Math::Transform>( system );
-		auto &		aabb	   = REG().emplace<Util::Math::AABB>( system );
-		auto &		selection  = REG().emplace<System::Selection>( system );
-		auto &		uid		   = REG().emplace<System::UID>( system );
+		ECS::Entity system = REG().create();
+
+		auto & metadata	  = REG().emplace<System::Metadata>( system );
+		auto & trajectory = REG().emplace<System::Trajectory>( system );
+		auto & transform  = REG().emplace<Util::Math::Transform>( system );
+		auto & aabb		  = REG().emplace<Util::Math::AABB>( system );
+		auto & selection  = REG().emplace<System::Selection>( system );
+		auto & uid		  = REG().emplace<System::UID>( system );
+		auto & data		  = REG().emplace<Core::Struct::System>( system ); // Last component to emplace.
 
 		// Load system.
 		IO::Reader::System loader;
@@ -47,6 +48,9 @@ namespace VTX::App::Action::Scene
 		metadata.pdbIDCode								   = pdbId;
 		const std::string systemName					   = pdbId == "" ? p_path.stem().string() : pdbId;
 		data.name										   = systemName; // TODO: move to metadata?
+
+		// TODO
+		uid.system = System::UID::COUNTER++;
 
 		// ACTION().execute<App::Action::Camera::Orient>( App::SCENE().getAABB() );
 

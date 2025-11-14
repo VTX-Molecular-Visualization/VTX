@@ -16,7 +16,7 @@ namespace VTX::UI::QT::DockWidget
 		// Selection toolbar.
 		auto * toolbar = new QToolBar( this );
 		toolbar->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
-		toolbar->setIconSize( QSize( 18, 18 ) );
+		// toolbar->setIconSize( QSize( 18, 18 ) );
 		toolbar->addAction( Application::getAction<Action::Selection::Lock>() );
 		toolbar->addAction( Application::getAction<Action::Selection::Save>() );
 		toolbar->addAction( Application::getAction<Action::Selection::Clear>() );

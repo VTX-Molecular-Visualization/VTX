@@ -23,6 +23,7 @@ namespace VTX::App::UI
 		std::optional<std::string> tip	 = std::nullopt;
 		std::optional<Icon>		   icon	 = std::nullopt;
 		std::optional<std::string> shortcut;
+		std::optional<bool>		   checkable = std::nullopt;
 
 		/**
 		 * @brief Trigger function is called when button is clicked.

@@ -201,6 +201,11 @@ namespace VTX::UI::QT
 			{
 				qAction->setShortcut( QKeySequence( QString::fromStdString( p_action.shortcut.value() ) ) );
 			}
+			// Checkable.
+			if ( p_action.checkable.has_value() )
+			{
+				qAction->setCheckable( p_action.checkable.value() );
+			}
 			// Action.
 			if ( p_action.trigger.has_value() )
 			{

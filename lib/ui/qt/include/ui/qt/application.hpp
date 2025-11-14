@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_APPLICATION__
 
 #include "settings.hpp"
+#include <QAction>
 #include <QApplication>
 #include <QPointer>
 #include <QTimer>
