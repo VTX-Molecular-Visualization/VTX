@@ -263,13 +263,6 @@ namespace VTX::UI::QT::Action
 			name = "Lock";
 			tip	 = "Lock the current selection";
 			// icon = static_cast<int>( QStyle::StandardPixmap::SP_TitleBarShadeButton );
-			checkable = true;
-			trigger	  = []()
-			{
-				MAIN_WINDOW()
-					.findChild<Widget::Tree *>( Util::typeName<Widget::Tree>() )
-					->setSelectionMode( QAbstractItemView::NoSelection );
-			};
 		}
 
 		Save::Save()
