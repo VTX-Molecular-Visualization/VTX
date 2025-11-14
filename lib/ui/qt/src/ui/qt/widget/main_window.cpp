@@ -63,9 +63,9 @@ namespace VTX::UI::QT::Widget
 		createMenu<Menu::File>();
 		createMenu<Menu::Camera>();
 		createMenu<Menu::Selection>();
-		// createMenu<Menu::View>();
+		createMenu<Menu::View>()->setEnabled( false );
 		createMenu<Menu::Theme>();
-		createMenu<Menu::Help>();
+		createMenu<Menu::Help>()->setEnabled( false );
 
 		// Toolbars.
 		createToolBar<ToolBar::File>();

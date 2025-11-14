@@ -1,6 +1,6 @@
 #include "app/pass/controller/freefly.hpp"
 #include "app/input/input_manager.hpp"
-#include "app/input/key_MAPPING.hpp"
+#include "app/input/key_mapping.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"

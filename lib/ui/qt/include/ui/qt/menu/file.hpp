@@ -17,12 +17,12 @@ namespace VTX::UI::QT::Menu
 			addAction<Action::System::Download>();
 			addSeparator();
 			addAction<Action::System::Open>();
-			addAction<Action::System::OpenRecent>();
-			addAction<Action::System::Save>();
-			addAction<Action::System::SaveAs>();
+			addAction<Action::System::OpenRecent>()->setEnabled( false );
+			addAction<Action::System::Save>()->setEnabled( false );
+			addAction<Action::System::SaveAs>()->setEnabled( false );
 			addSeparator();
-			addAction<Action::System::Import>();
-			addAction<Action::System::Export>();
+			addAction<Action::System::Import>()->setEnabled( false );
+			addAction<Action::System::Export>()->setEnabled( false );
 			addSeparator();
 			addAction<Action::System::Quit>();
 		}

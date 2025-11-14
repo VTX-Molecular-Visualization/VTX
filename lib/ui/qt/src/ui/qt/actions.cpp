@@ -4,6 +4,7 @@
 #include "ui/qt/dialog/download.hpp"
 #include "ui/qt/dialog/export_image.hpp"
 #include "ui/qt/dialog/open.hpp"
+#include "ui/qt/selection_model.hpp"
 #include "ui/qt/style.hpp"
 #include <app/action/io.hpp>
 #include <app/action/scene.hpp>
@@ -275,6 +276,7 @@ namespace VTX::UI::QT::Action
 			name = "Clear";
 			tip	 = "Clear selection";
 			// icon = static_cast<int>( QStyle::StandardPixmap::SP_TrashIcon );
+			trigger = []() { SELECTION().clear(); };
 		}
 
 		SetGranularitySystem::SetGranularitySystem()
