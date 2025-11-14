@@ -10,8 +10,21 @@ namespace VTX::UI::QT::Menu
 {
 	Selection::Selection( QWidget * p_parent ) : BaseWidget( "Selection", p_parent )
 	{
+		auto & selection = SELECTION();
+
 		// Refresh menu when opened.
 		connect( this, &QMenu::aboutToShow, this, &Selection::_refresh );
+
+		// Renable/disable menu based on selection.
+		connect(
+			&selection,
+			&QItemSelectionModel::selectionChanged,
+			this,
+			[ this, &selection ]( const QItemSelection &, const QItemSelection & )
+			{ this->setEnabled( selection.hasSelection() ); }
+		);
+
+		setEnabled( selection.hasSelection() );
 	}
 
 	void Selection::_refresh()
