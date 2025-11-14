@@ -10,8 +10,10 @@ namespace VTX::UI::QT::Menu
 	class File : public Widget::BaseWidget<File, QMenu>
 	{
 	  public:
-		File( QWidget * p_parent ) : BaseWidget( "File", p_parent )
+		File( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
+			setTitle( "File" );
+
 			addAction<Action::System::New>();
 			addSeparator();
 			addAction<Action::System::Download>();

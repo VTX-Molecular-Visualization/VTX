@@ -5,8 +5,9 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	Representations::Representations( QWidget * p_parent ) : BaseDockWidget( "Representations", p_parent )
+	Representations::Representations( QWidget * p_parent ) : BaseDockWidget( p_parent )
 	{
+		setWindowTitle( "Representations" );
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
 		auto * const representationWidget = Util::Factories::newInit<Widget::Library::Representation>( this );

@@ -12,8 +12,9 @@ namespace
 namespace VTX::UI::QT::DockWidget
 {
 
-	ColorLayouts::ColorLayouts( QWidget * p_parent ) : BaseDockWidget( "Colors", p_parent )
+	ColorLayouts::ColorLayouts( QWidget * p_parent ) : BaseDockWidget( p_parent )
 	{
+		setWindowTitle( "Colors" );
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
 		// Checkbox to hide non usual items.

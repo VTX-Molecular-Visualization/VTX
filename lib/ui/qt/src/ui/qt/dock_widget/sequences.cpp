@@ -6,8 +6,9 @@
 
 namespace VTX::UI::QT::DockWidget
 {
-	Sequences::Sequences( QWidget * p_parent ) : BaseDockWidget( "Sequence", p_parent )
+	Sequences::Sequences( QWidget * p_parent ) : BaseDockWidget( p_parent )
 	{
+		setWindowTitle( "Sequence" );
 		setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 
 		App::REG().on_construct<Core::Struct::System>().connect<&Sequences::_onConstructSystem>( this );

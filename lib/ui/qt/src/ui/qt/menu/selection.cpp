@@ -8,8 +8,10 @@
 
 namespace VTX::UI::QT::Menu
 {
-	Selection::Selection( QWidget * p_parent ) : BaseWidget( "Selection", p_parent )
+	Selection::Selection( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
+		setTitle( "Selection" );
+
 		auto & selection = SELECTION();
 
 		// Refresh menu when opened.

@@ -10,8 +10,10 @@ namespace VTX::UI::QT::ToolBar
 	class Snapshot : public Widget::BaseWidget<Snapshot, QToolBar>
 	{
 	  public:
-		Snapshot( QWidget * p_parent ) : BaseWidget( "Snapshot", p_parent )
+		Snapshot( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
+			setWindowTitle( "Snapshot" );
+
 			addAction<Action::Snapshot::Snapshot>();
 			addAction<Action::Snapshot::Export>();
 		}

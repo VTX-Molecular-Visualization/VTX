@@ -5,8 +5,9 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	RenderSettings::RenderSettings( QWidget * p_parent ) : BaseDockWidget( "Render settings", p_parent )
+	RenderSettings::RenderSettings( QWidget * p_parent ) : BaseDockWidget( p_parent )
 	{
+		setWindowTitle( "Render settings" );
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
 		auto * const renderSettingsWidget = Util::Factories::newInit<Widget::Library::RenderSettings>( this );

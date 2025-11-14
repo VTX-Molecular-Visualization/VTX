@@ -6,8 +6,11 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	Scene::Scene( QWidget * p_parent ) : BaseDockWidget( "Scene", p_parent )
+	Scene::Scene( QWidget * p_parent ) : BaseDockWidget( p_parent )
 	{
+		setWindowTitle( "Scene" );
+		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+
 		_tree = new Widget::Tree( this );
 		_tree->setModel( &MODEL() );
 		_tree->setSelectionModel( &SELECTION() );

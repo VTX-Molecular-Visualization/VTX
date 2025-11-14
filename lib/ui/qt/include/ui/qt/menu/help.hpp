@@ -11,8 +11,10 @@ namespace VTX::UI::QT::Menu
 	class Help : public Widget::BaseWidget<Help, QMenu>
 	{
 	  public:
-		Help( QWidget * p_parent ) : BaseWidget( "Help", p_parent )
+		Help( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
+			setTitle( "Help" );
+
 			addAction<Action::Help::Documentation>();
 			addAction<Action::Help::Report>();
 			addAction<Action::Help::CheckUpdates>();

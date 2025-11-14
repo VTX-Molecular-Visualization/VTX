@@ -11,8 +11,10 @@ namespace VTX::UI::QT::Menu
 	class View : public Widget::BaseWidget<View, QMenu>
 	{
 	  public:
-		View( QWidget * p_parent ) : BaseWidget( "View", p_parent )
+		View( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
+			setTitle( "View" );
+
 			/*
 			addQAction( this, { "Console", "Show/hide console window" } );
 			addQAction( this, { "Inspector", "Show/hide inspector window" } );

@@ -24,8 +24,9 @@ namespace
 namespace VTX::UI::QT::DockWidget
 {
 
-	Options::Options( QWidget * p_parent ) : BaseDockWidget( "Options", p_parent )
+	Options::Options( QWidget * p_parent ) : BaseDockWidget( p_parent )
 	{
+		setWindowTitle( "Options" );
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
 		// Graphics.
@@ -44,7 +45,12 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			_checkBoxVSync,
 			&QCheckBox::checkStateChanged,
-			[ this ]( const int p_state ) { MAIN_WINDOW().getOpenGLWidget()->setVSync( p_state == Qt::Checked ); }
+			[ this ]( const int p_state )
+			{
+				MAIN_WINDOW()
+					.findChild<Widget::OpenGLWidget *>( Util::typeName<Widget::OpenGLWidget>() )
+					->setVSync( p_state == Qt::Checked );
+			}
 		);
 
 		layoutGraphics->addWidget( _checkBoxVSync );
@@ -103,7 +109,14 @@ namespace VTX::UI::QT::DockWidget
 		_checkBoxVSync->setChecked( SETTINGS().value( _SETTING_KEY_VSYNC, true ).toBool() );
 
 		QTimer::singleShot(
-			0, this, [ this ]() { MAIN_WINDOW().getOpenGLWidget()->setVSync( _checkBoxVSync->isChecked() ); }
+			0,
+			this,
+			[ this ]()
+			{
+				MAIN_WINDOW()
+					.findChild<Widget::OpenGLWidget *>( Util::typeName<Widget::OpenGLWidget>() )
+					->setVSync( _checkBoxVSync->isChecked() );
+			}
 		);
 
 		App::NETWORK().onFileCached += [ this ]() { _refreshCacheInfos(); };

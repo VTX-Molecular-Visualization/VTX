@@ -6,8 +6,9 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	Console::Console( QWidget * p_parent ) : BaseDockWidget( "Console", p_parent )
+	Console::Console( QWidget * p_parent ) : BaseDockWidget( p_parent )
 	{
+		setWindowTitle( "Console" );
 		setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
 		setMinimumHeight( 100 );
 

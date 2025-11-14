@@ -105,11 +105,6 @@ namespace VTX::UI::QT::Widget
 			return dockWidget;
 		}
 
-		/**
-		 * @brief Get the OpenGL rendering widget.
-		 */
-		inline OpenGLWidget * const getOpenGLWidget() const { return _openGLWidget; }
-
 	  protected:
 		/**
 		 * @brief Drag and drop events.
@@ -118,11 +113,6 @@ namespace VTX::UI::QT::Widget
 		void dropEvent( QDropEvent * );
 
 	  private:
-		/**
-		 * @brief The OpenGL rendering central widget.
-		 */
-		QPointer<OpenGLWidget> _openGLWidget;
-
 		/**
 		 * @brief The bottom status bar.
 		 */

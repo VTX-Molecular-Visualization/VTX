@@ -24,8 +24,7 @@ namespace VTX::UI::QT::DockWidget
 	class BaseDockWidget : public Widget::BaseWidget<T, QDockWidget>
 	{
 	  public:
-		template<typename... Args>
-		BaseDockWidget( Args &&... p_args ) : Widget::BaseWidget<T, QDockWidget>( std::forward<Args>( p_args )... )
+		BaseDockWidget( QWidget * p_parent ) : Widget::BaseWidget<T, QDockWidget>( p_parent )
 		{
 			// Scroll area.
 			if constexpr ( VSA or HSA )

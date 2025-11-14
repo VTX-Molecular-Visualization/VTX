@@ -6,6 +6,7 @@
 #include "ui/qt/dialog/open.hpp"
 #include "ui/qt/selection_model.hpp"
 #include "ui/qt/style.hpp"
+#include "ui/qt/widget/tree.hpp"
 #include <app/action/io.hpp>
 #include <app/action/scene.hpp>
 
@@ -262,6 +263,12 @@ namespace VTX::UI::QT::Action
 			name = "Lock";
 			tip	 = "Lock the current selection";
 			// icon = static_cast<int>( QStyle::StandardPixmap::SP_TitleBarShadeButton );
+			trigger = []()
+			{
+				MAIN_WINDOW()
+					.findChild<Widget::Tree *>( Util::typeName<Widget::Tree>() )
+					->setSelectionMode( QAbstractItemView::NoSelection );
+			};
 		}
 
 		Save::Save()

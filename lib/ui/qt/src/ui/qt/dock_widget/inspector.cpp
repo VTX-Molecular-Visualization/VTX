@@ -8,8 +8,9 @@
 
 namespace VTX::UI::QT::DockWidget
 {
-	Inspector::Inspector( QWidget * p_parent ) : BaseDockWidget( "Selection", p_parent )
+	Inspector::Inspector( QWidget * p_parent ) : BaseDockWidget( p_parent )
 	{
+		setWindowTitle( "Selection" );
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
 		// Selection toolbar.

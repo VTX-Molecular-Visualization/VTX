@@ -84,8 +84,7 @@ namespace VTX::UI::QT::Widget
 		*/
 
 		// Main area : opengl widget.
-		_openGLWidget = new OpenGLWidget( this );
-		setCentralWidget( _openGLWidget );
+		setCentralWidget( new OpenGLWidget( this ) );
 
 		// Dock widgets.
 		createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );

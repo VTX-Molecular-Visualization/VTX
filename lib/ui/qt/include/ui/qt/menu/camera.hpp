@@ -9,8 +9,10 @@ namespace VTX::UI::QT::Menu
 	class Camera : public Widget::BaseWidget<Camera, QMenu>
 	{
 	  public:
-		Camera( QWidget * p_parent ) : BaseWidget( "Camera", p_parent )
+		Camera( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
+			setTitle( "Camera" );
+
 			addAction<Action::Camera::Perspective>();
 			addAction<Action::Camera::Orthographic>();
 			addSeparator();

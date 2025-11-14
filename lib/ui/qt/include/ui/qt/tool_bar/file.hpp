@@ -10,8 +10,10 @@ namespace VTX::UI::QT::ToolBar
 	class File : public Widget::BaseWidget<File, QToolBar>
 	{
 	  public:
-		File( QWidget * p_parent ) : BaseWidget( "File", p_parent )
+		File( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
+			setWindowTitle( "File" );
+
 			addAction<Action::System::New>();
 			addAction<Action::System::Download>();
 			addAction<Action::System::Open>();

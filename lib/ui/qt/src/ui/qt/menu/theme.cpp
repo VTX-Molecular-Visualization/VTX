@@ -12,8 +12,10 @@ namespace
 
 namespace VTX::UI::QT::Menu
 {
-	Theme::Theme( QWidget * p_parent ) : BaseWidget( "Theme", p_parent )
+	Theme::Theme( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
+		setTitle( "Theme" );
+
 		auto * system = addAction<Action::Theme::System>();
 		auto * light  = addAction<Action::Theme::Light>();
 		auto * dark	  = addAction<Action::Theme::Dark>();

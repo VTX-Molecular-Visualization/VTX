@@ -11,9 +11,9 @@ namespace VTX::Tool::Example::Widget
 	class MyMenu : public UI::QT::Widget::BaseWidget<MyMenu, QMenu>
 	{
 	  public:
-		MyMenu( QWidget * p_parent ) : BaseWidget( "My menu", p_parent )
+		MyMenu( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
-			setObjectName( "ToolExampleMenu" );
+			setWindowTitle( "My Menu" );
 
 			addAction<Action::MyAction1>();
 			addSeparator();
