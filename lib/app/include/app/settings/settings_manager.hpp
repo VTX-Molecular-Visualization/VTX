@@ -103,7 +103,9 @@ namespace VTX::App::Settings
 		template<typename T>
 		void setValue( const std::string_view p_key, const T & p_value )
 		{
-			assert( _settings.has( Util::hash( p_key ) ) );
+			Hash hash = Util::hash( p_key );
+
+			assert( _settings.has( hash ) );
 
 			const Setting<T> & setting	= *get<T>( p_key );
 			const T			   oldValue = setting.value;
@@ -119,7 +121,7 @@ namespace VTX::App::Settings
 				value = std::min( value, setting.max.value() );
 			}
 
-			get<T>( p_key )->value = value;
+			_settings.get<Setting<T>>( hash )->value = value;
 			// TODO: notify change.
 		}
 

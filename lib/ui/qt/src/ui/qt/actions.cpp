@@ -7,6 +7,7 @@
 #include "ui/qt/selection_model.hpp"
 #include "ui/qt/style.hpp"
 #include "ui/qt/widget/tree.hpp"
+#include <app/action/camera.hpp>
 #include <app/action/io.hpp>
 #include <app/action/scene.hpp>
 
@@ -107,32 +108,32 @@ namespace VTX::UI::QT::Action
 			tip		 = "Change camera projection mode";
 			icon	 = "sprite/camera/orthographic.png";
 			shortcut = "Alt+O";
-			// trigger	 = []() {
-			// App::ACTION().execute<App::Action::Controller::SetCameraController<App::Pass::Controller::Trackball>>();
-			// };
+			trigger	 = []()
+			{
+				App::ACTION()
+					.execute<App::Action::Camera::SetProjectionMode<App::Scene::Camera::PROJECTION::ORTHOGRAPHIC>>();
+			};
 		}
 
 		void Orthographic::connect() const
 		{
-			/*
-			using namespace App::Component;
+			using namespace App;
 
-			QAction * const	 qAction = Factory::get<Orthographic>();
-			Render::Camera & camera	 = App::SCENE().getCamera();
+			QAction * const qAction = Application::getAction<Orthographic>();
+			HUB()
+				.connect<
+					App::Events::CameraProjectionChange<static_cast<int>( Scene::Camera::PROJECTION::ORTHOGRAPHIC )>>(
+					[ qAction ]() { qAction->setChecked( true ); }
+				);
 
-			if ( camera.getProjection() == Render::Camera::PROJECTION::ORTHOGRAPHIC )
+			// TODO: find a better way to do this.
+			auto &			reg	   = REG();
+			ECS::Entity		entity = ECS::getFirstEntityWithComponent<Scene::Camera>();
+			Scene::Camera & camera = reg.get<Scene::Camera>( entity );
+			if ( camera.projection && *camera.projection == Scene::Camera::PROJECTION::ORTHOGRAPHIC )
 			{
 				qAction->setChecked( true );
 			}
-
-			camera.onProjectionChange += [ qAction ]( const Render::Camera::PROJECTION p_projection )
-			{
-				if ( p_projection == Render::Camera::PROJECTION::ORTHOGRAPHIC )
-				{
-					qAction->setChecked( true );
-				}
-			};
-			*/
 		}
 
 		Perspective::Perspective()
@@ -142,30 +143,30 @@ namespace VTX::UI::QT::Action
 			tip		 = "Change camera projection mode";
 			icon	 = "sprite/camera/perspective.png";
 			shortcut = "Alt+P";
-			// trigger	 = []() { App::ACTION().execute<App::Action::Camera::ToggleCameraProjection>(); };
+			trigger	 = []()
+			{
+				App::ACTION()
+					.execute<App::Action::Camera::SetProjectionMode<App::Scene::Camera::PROJECTION::PERSPECTIVE>>();
+			};
 		}
 
 		void Perspective::connect() const
 		{
-			/*
-			using namespace App::Component;
+			using namespace App;
 
-			QAction * const	 qAction = Factory::get<Perspective>();
-			Render::Camera & camera	 = App::SCENE().getCamera();
+			QAction * const qAction = Application::getAction<Perspective>();
+			HUB().connect<Events::CameraProjectionChange<static_cast<int>( Scene::Camera::PROJECTION::PERSPECTIVE )>>(
+				[ qAction ]() { qAction->setChecked( true ); }
+			);
 
-			if ( camera.getProjection() == Render::Camera::PROJECTION::PERSPECTIVE )
+			// TODO: find a better way to do this.
+			auto &			reg	   = REG();
+			ECS::Entity		entity = ECS::getFirstEntityWithComponent<Scene::Camera>();
+			Scene::Camera & camera = reg.get<Scene::Camera>( entity );
+			if ( camera.projection && *camera.projection == Scene::Camera::PROJECTION::PERSPECTIVE )
 			{
 				qAction->setChecked( true );
 			}
-
-			camera.onProjectionChange += [ qAction ]( const Render::Camera::PROJECTION p_projection )
-			{
-				if ( p_projection == Render::Camera::PROJECTION::PERSPECTIVE )
-				{
-					qAction->setChecked( true );
-				}
-			};
-			*/
 		}
 
 		Trackball::Trackball()

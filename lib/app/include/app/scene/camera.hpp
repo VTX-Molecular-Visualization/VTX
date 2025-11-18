@@ -14,7 +14,7 @@ namespace VTX::App::Scene
 		/**
 		 * @brief Projection types.
 		 */
-		enum class PROJECTION : int
+		enum struct PROJECTION
 		{
 			PERSPECTIVE,
 			ORTHOGRAPHIC,

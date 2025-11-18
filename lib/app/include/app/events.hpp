@@ -55,10 +55,15 @@ namespace VTX::App::Events
 	};
 
 	/**
-	 * @brief Controllers.
+	 * @brief Camera / controllers.
 	 */
 	template<typename T>
 	struct CameraControllerChange
+	{
+	};
+
+	template<int T>
+	struct CameraProjectionChange
 	{
 	};
 
