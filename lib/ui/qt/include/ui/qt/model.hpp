@@ -4,6 +4,7 @@
 #include <QAbstractItemModel>
 #include <QString>
 #include <app/ecs.hpp>
+#include <app/events.hpp>
 #include <core/struct/system.hpp>
 #include <vector>
 
@@ -113,7 +114,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Callback on system construction to add it to the model.
 		 */
-		void _onConstructSystem( App::ECS::Registry & p_r, App::ECS::Entity p_e );
+		void _onSystemLoad( const App::Events::SystemLoad & p_e );
 
 		/**
 		 * @brief Callback on system destruction to remove it from the model.

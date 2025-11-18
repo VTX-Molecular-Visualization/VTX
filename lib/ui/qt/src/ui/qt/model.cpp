@@ -1,5 +1,7 @@
 #include "ui/qt/model.hpp"
 #include "app/system/uid.hpp"
+#include <app/services.hpp>
+#include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <variant>
 
@@ -8,7 +10,7 @@ namespace VTX::UI::QT
 	Model::Model( QObject * p_parent ) : QAbstractItemModel( p_parent )
 	{
 		// Connect system construction event.
-		App::REG().on_construct<Core::Struct::System>().connect<&Model::_onConstructSystem>( this );
+		App::HUB().connect<App::Events::SystemLoad, &Model::_onSystemLoad>( this );
 		App::REG().on_destroy<Core::Struct::System>().connect<&Model::_onDestroySystem>( this );
 	}
 
@@ -275,17 +277,19 @@ namespace VTX::UI::QT
 		}
 	}
 
-	void Model::_onConstructSystem( App::ECS::Registry & p_r, App::ECS::Entity p_e )
+	void Model::_onSystemLoad( const App::Events::SystemLoad & p_e )
 	{
-		const auto & system	  = p_r.get<Core::Struct::System>( p_e );
-		const auto & uid	  = p_r.get<App::System::UID>( p_e );
+		const auto & reg	  = App::REG();
+		const auto	 entity	  = p_e.system;
+		const auto & system	  = reg.get<Core::Struct::System>( entity );
+		const auto & uid	  = reg.get<App::System::UID>( entity );
 		const int	 position = int( _rows.size() );
 
 		beginInsertRows( QModelIndex(), position, position );
 
 		_rows.emplace_back(
 			std::make_unique<Row>(
-				position, uid.system, p_e, E_ITEM::SYSTEM, std::variant<const Core::Struct::System *>( &system )
+				position, uid.system, entity, E_ITEM::SYSTEM, std::variant<const Core::Struct::System *>( &system )
 			)
 		);
 

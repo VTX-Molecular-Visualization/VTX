@@ -3,6 +3,7 @@
 #include "ui/qt/services.hpp"
 #include <app/events.hpp>
 #include <app/services.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -11,7 +12,7 @@ namespace VTX::UI::QT::DockWidget
 		setWindowTitle( "Sequence" );
 		setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 
-		App::REG().on_construct<Core::Struct::System>().connect<&Sequences::_onConstructSystem>( this );
+		App::HUB().connect<App::Events::SystemLoad, &Sequences::_onSystemLoad>( this );
 		App::REG().on_destroy<Core::Struct::System>().connect<&Sequences::_onDestroySystem>( this );
 
 		// Refresh widget when selection changed.
@@ -29,14 +30,15 @@ namespace VTX::UI::QT::DockWidget
 		);
 	}
 
-	void Sequences::_onConstructSystem( App::ECS::Registry & p_r, App::ECS::Entity p_e )
+	void Sequences::_onSystemLoad( const App::Events::SystemLoad & p_e )
 	{
-		auto & system		  = p_r.get<Core::Struct::System>( p_e );
-		auto * sequenceWidget = new Widget::Sequence( p_e, this );
+		const auto	 entity			= p_e.system;
+		const auto & system			= App::REG().get<Core::Struct::System>( entity );
+		auto *		 sequenceWidget = new Widget::Sequence( entity, this );
 
 		// Create Widget.
-		assert( not _mapSequencesWidgets.contains( p_e ) );
-		_mapSequencesWidgets.emplace( p_e, sequenceWidget );
+		assert( not _mapSequencesWidgets.contains( entity ) );
+		_mapSequencesWidgets.emplace( entity, sequenceWidget );
 		_layout->addWidget( sequenceWidget );
 	}
 

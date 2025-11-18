@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_EVENTS__
 #define __VTX_APP_EVENTS__
 
+#include "app/ecs.hpp"
 #include <string>
 
 namespace VTX::App::Events
@@ -66,6 +67,7 @@ namespace VTX::App::Events
 	 */
 	struct SystemLoad
 	{
+		ECS::Entity system;
 	};
 } // namespace VTX::App::Events
 
