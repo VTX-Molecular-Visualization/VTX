@@ -1,10 +1,12 @@
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
 #include "app/services.hpp"
+#include "app/system/deleted.hpp"
 #include "app/system/metadata.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
+#include "app/system/visibility.hpp"
 #include <core/struct/system.hpp>
 #include <io/reader/system.hpp>
 #include <util/event_hub.hpp>
@@ -17,16 +19,21 @@ namespace VTX::App::Action::Scene
 
 	void LoadSystem::execute( const FilePath & p_path, const std::string * const p_buffer )
 	{
-		// Create entity.
-		ECS::Entity system = REG().create();
+		auto & reg = REG();
 
-		auto & data		  = REG().emplace<Core::Struct::System>( system );
-		auto & metadata	  = REG().emplace<System::Metadata>( system );
-		auto & trajectory = REG().emplace<System::Trajectory>( system );
-		auto & transform  = REG().emplace<Util::Math::Transform>( system );
-		auto & aabb		  = REG().emplace<Util::Math::AABB>( system );
-		auto & selection  = REG().emplace<System::Selection>( system );
-		auto & uid		  = REG().emplace<System::UID>( system );
+		// Create entity.
+		ECS::Entity entity = reg.create();
+
+		// Add components.
+		auto & data		  = reg.emplace<Core::Struct::System>( entity );
+		auto & metadata	  = reg.emplace<System::Metadata>( entity );
+		auto & trajectory = reg.emplace<System::Trajectory>( entity );
+		auto & transform  = reg.emplace<Util::Math::Transform>( entity );
+		auto & aabb		  = reg.emplace<Util::Math::AABB>( entity );
+		auto & selection  = reg.emplace<System::Selection>( entity );
+		auto & uid		  = reg.emplace<System::UID>( entity );
+		auto & visibility = reg.emplace<System::Visibility>( entity );
+		auto & deleted	  = reg.emplace<System::Deleted>( entity );
 
 		// Load system.
 		IO::Reader::System loader;
@@ -49,12 +56,16 @@ namespace VTX::App::Action::Scene
 		const std::string systemName					   = pdbId == "" ? p_path.stem().string() : pdbId;
 		data.name										   = systemName; // TODO: move to metadata?
 
-		// TODO
+		// TODO: use uid manager.
 		uid.system = System::UID::COUNTER++;
+
+		// AABB (trigger update function for scene aabb).
+		reg.patch<Util::Math::AABB>( entity, [ &loader ]( Util::Math::AABB & p_aabb ) { p_aabb = loader.getAABB(); } );
+		aabb.extend( loader.getAABB() );
 
 		// ACTION().execute<App::Action::Camera::Orient>( App::SCENE().getAABB() );
 
-		HUB().trigger<Events::SystemLoad>( { system } );
+		HUB().trigger<Events::SystemLoad>( { entity } );
 	}
 
 	void DeleteSystem::execute( const ECS::Entity p_entity ) { REG().destroy( p_entity ); }

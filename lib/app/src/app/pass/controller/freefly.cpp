@@ -118,11 +118,17 @@ namespace VTX::App::Pass::Controller
 				[ &localRotation, rollRotation, &translation ]( Math::Transform & p_transform )
 				{
 					if ( localRotation != VEC3F_ZERO )
+					{
 						p_transform.rotate( localRotation );
+					}
 					if ( rollRotation != 0.f )
+					{
 						p_transform.rotateRoll( rollRotation );
+					}
 					if ( translation != VEC3F_ZERO )
+					{
 						p_transform.translate( translation );
+					}
 				}
 			);
 		}

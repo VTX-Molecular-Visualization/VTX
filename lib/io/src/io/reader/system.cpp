@@ -142,6 +142,7 @@ namespace VTX::IO::Reader
 				}
 
 				modelFrame[ atomIndex ] = p_chemfileStruct.getCurrentAtomPosition();
+				_aabb.extend( modelFrame[ atomIndex ] );
 			}
 
 			// TODO: Useless?

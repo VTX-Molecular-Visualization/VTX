@@ -12,28 +12,67 @@ namespace VTX::Util::Math
 	{
 	}
 
-	void AABB::extend( const Vec3f & p_point )
+	void AABB::invalidate()
 	{
-		_min = Util::Math::min( p_point, _min );
-		_max = Util::Math::max( p_point, _max );
+		_min = VEC3F_MAX;
+		_max = VEC3F_LOWEST;
 	}
 
-	void AABB::extend( const AABB & p_aabb )
+	std::vector<Vec3f> AABB::getSummits() const
 	{
-		_min = Util::Math::min( _min, p_aabb._min );
-		_max = Util::Math::max( _max, p_aabb._max );
+		return { { _min.x, _min.y, _min.z }, { _min.x, _min.y, _max.z }, { _min.x, _max.y, _min.z },
+				 { _min.x, _max.y, _max.z }, { _max.x, _min.y, _min.z }, { _max.x, _min.y, _max.z },
+				 { _max.x, _max.y, _min.z }, { _max.x, _max.y, _max.z } };
 	}
 
-	void AABB::extend( const Vec3f & p_center, const float p_radius )
+	uint AABB::largestAxis() const
 	{
-		extend( p_center - p_radius );
-		extend( p_center + p_radius );
+		const Vec3f d = diagonal();
+		if ( d.x > d.y && d.x > d.z )
+		{
+			return 0;
+		}
+		else if ( d.y > d.z )
+		{
+			return 1;
+		}
+		else
+		{
+			return 2;
+		}
+	}
+	float AABB::area() const
+	{
+		const Vec3f d = diagonal();
+		return isValid() ? ( d.x * d.y + d.y * d.z + d.z * d.x ) * 2.f : 0.f;
 	}
 
-	void AABB::translate( const Vec3f & p_translation )
+	Vec3f AABB::offset( const Vec3f & p_pt ) const
 	{
-		_min += p_translation;
-		_max += p_translation;
+		Vec3f o = p_pt - _min;
+		if ( _max.x > _min.x )
+		{
+			o.x /= _max.x - _min.x;
+		}
+		if ( _max.y > _min.y )
+		{
+			o.y /= _max.y - _min.y;
+		}
+		if ( _max.z > _min.z )
+		{
+			o.z /= _max.z - _min.z;
+		}
+		return o;
+	}
+
+	float AABB::offset( const Vec3f & p_pt, const uint p_dim ) const
+	{
+		float o = p_pt[ p_dim ] - _min[ p_dim ];
+		if ( _max[ p_dim ] > _min[ p_dim ] )
+		{
+			o /= _max[ p_dim ] - _min[ p_dim ];
+		}
+		return o;
 	}
 
 	/*

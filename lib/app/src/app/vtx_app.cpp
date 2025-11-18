@@ -11,6 +11,7 @@
 #include "app/network/network_manager.hpp"
 #include "app/pass/camera_updater.hpp"
 #include "app/pass/pass_manager.hpp"
+#include "app/pass/scene_updater.hpp"
 #include "app/scene/camera.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
@@ -110,7 +111,7 @@ namespace VTX::App
 		// Creates entites/components.
 		// Scene.
 		_scene		= REG().create();
-		auto & aabb = REG().emplace<Util::Math::AABB>( _scene ); // TODO: update from system aabbs.
+		auto & aabb = REG().emplace<Util::Math::AABB>( _scene );
 		REG().emplace<Library::Preset::ColorLayout>( _scene, libCol.getPreset( "JMol" ) );
 		REG().emplace<Library::Preset::RenderSettings>( _scene, libRenderSettings.getPreset( "Default" ) );
 		REG().emplace<Library::Preset::Representation>( _scene, libRep.getPreset( "Default" ) );
@@ -169,8 +170,9 @@ namespace VTX::App
 		}
 
 		// Add passes.
-		// Camera updater.
+		PASS().addPass<Pass::SceneUpdater>( _camera );
 		PASS().addPass<Pass::CameraUpdater>( _camera );
+
 		// Trackball controller.
 		// TODO: store current controller in settings?
 		// PASS().addPass<Pass::Controller::Trackball>( _camera );

@@ -8,7 +8,7 @@
 
 namespace VTX::App::Pass
 {
-	CameraUpdater::CameraUpdater( const ECS::Entity & p_ent ) : _cameraEntity( p_ent )
+	CameraUpdater::CameraUpdater( const ECS::Entity & p_ent ) : _entity( p_ent )
 	{
 		auto & reg = REG();
 
@@ -53,7 +53,7 @@ namespace VTX::App::Pass
 	void CameraUpdater::_onUpdate( ECS::Registry & p_r, ECS::Entity p_e )
 	{
 		// TODO: find a workaround for this, use custom event?
-		if ( p_e != _cameraEntity )
+		if ( p_e != _entity )
 		{
 			return;
 		}

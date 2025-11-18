@@ -19,7 +19,7 @@ namespace VTX::App::Pass
 		inline void update( const float, const float ) {}
 
 	  private:
-		const ECS::Entity _cameraEntity;
+		const ECS::Entity _entity;
 
 		// Mat4f _transform		= MAT4F_ID;
 		Mat4f _viewMatrix		= MAT4F_ID;
