@@ -17,7 +17,7 @@ namespace VTX::App::Action::Controller
 	{
 		void execute()
 		{
-			ECS::Entity camera = ECS::getFirstEntityWithComponent<Scene::Camera>();
+			ECS::Entity entity = ECS::getFirstEntityOnlyWithComponents<Scene::Camera>();
 
 			// If the requested controller is already active, do nothing.
 			if ( PASS().hasPass<T>() )
@@ -30,7 +30,7 @@ namespace VTX::App::Action::Controller
 			PASS().removePass<Pass::Controller::Trackball>();
 
 			// Add controller pass.
-			PASS().addPass<T>( camera );
+			PASS().addPass<T>( entity );
 			HUB().trigger<Events::CameraControllerChange<T>>();
 		}
 	};

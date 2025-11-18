@@ -18,7 +18,7 @@ namespace VTX::App::Action::Application
 	void Resize::execute( const size_t p_width, const size_t p_height )
 	{
 		REG().patch<Scene::Camera>(
-			ECS::getFirstEntityWithComponent<Scene::Camera>(),
+			ECS::getFirstEntityOnlyWithComponents<Scene::Camera>(),
 			[ p_width, p_height ]( Scene::Camera & p_camera )
 			{
 				p_camera.screenHeight = p_height;

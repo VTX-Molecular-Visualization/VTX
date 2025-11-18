@@ -127,9 +127,8 @@ namespace VTX::UI::QT::Action
 				);
 
 			// TODO: find a better way to do this.
-			auto &			reg	   = REG();
-			ECS::Entity		entity = ECS::getFirstEntityWithComponent<Scene::Camera>();
-			Scene::Camera & camera = reg.get<Scene::Camera>( entity );
+			auto [ _, camera ] = ECS::getFirstEntityWithComponents<Scene::Camera>();
+
 			if ( camera.projection && *camera.projection == Scene::Camera::PROJECTION::ORTHOGRAPHIC )
 			{
 				qAction->setChecked( true );
@@ -160,9 +159,8 @@ namespace VTX::UI::QT::Action
 			);
 
 			// TODO: find a better way to do this.
-			auto &			reg	   = REG();
-			ECS::Entity		entity = ECS::getFirstEntityWithComponent<Scene::Camera>();
-			Scene::Camera & camera = reg.get<Scene::Camera>( entity );
+			auto [ _, camera ] = ECS::getFirstEntityWithComponents<Scene::Camera>();
+
 			if ( camera.projection && *camera.projection == Scene::Camera::PROJECTION::PERSPECTIVE )
 			{
 				qAction->setChecked( true );

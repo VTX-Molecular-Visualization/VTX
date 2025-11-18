@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_SELECTION__
-#define __VTX_APP_ACTION_SELECTION__
+#ifndef __VTX_APP_ACTION_CAMERA__
+#define __VTX_APP_ACTION_CAMERA__
 
 #include "app/ecs.hpp"
 #include "app/events.hpp"
@@ -11,6 +11,33 @@
 
 namespace VTX::App::Action::Camera
 {
+	/**
+	 * @brief Set camera position.
+	 */
+	struct SetPosition
+	{
+		void execute( const Vec3f & );
+	};
+
+	/**
+	 * @brief Set camera rotation (euler angles).
+	 */
+	struct SetRotation
+	{
+		void execute( const Vec3f & );
+	};
+
+	/**
+	 * @brief Set camera scale.
+	 */
+	struct SetScale
+	{
+		void execute( const float );
+	};
+
+	/**
+	 * @brief Set camera projection mode.
+	 */
 	template<App::Scene::Camera::PROJECTION P>
 	struct SetProjectionMode
 	{
@@ -18,8 +45,7 @@ namespace VTX::App::Action::Camera
 		{
 			auto & reg = REG();
 
-			ECS::Entity		entity = ECS::getFirstEntityWithComponent<Scene::Camera>();
-			Scene::Camera & camera = reg.get<Scene::Camera>( entity );
+			auto [ entity, camera ] = ECS::getFirstEntityWithComponents<Scene::Camera>();
 
 			reg.patch<Scene::Camera>(
 				entity,
