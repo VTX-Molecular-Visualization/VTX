@@ -56,7 +56,8 @@ namespace VTX::App::Action::Camera
 				}
 			);
 
-			HUB().trigger<App::Events::CameraProjectionChange<static_cast<int>( P )>>();
+			static constexpr int PROJ_INDEX = static_cast<int>( P );
+			HUB().trigger<App::Events::CameraProjectionChange<PROJ_INDEX>>();
 		}
 	};
 
