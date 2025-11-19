@@ -1,24 +1,99 @@
 #include "app/action/camera.hpp"
+#include "app/pass/controller/animation.hpp"
+#include "app/scene/root.hpp"
 #include <util/math/transform.hpp>
+
+namespace
+{
+	using namespace VTX;
+
+	constexpr float _ORIENT_ZOOM_FACTOR = 0.666f;
+
+	Vec3f _computeCameraOrientPosition(
+		const Vec3f				 p_forward,
+		const float				 p_fov,
+		const Util::Math::AABB & p_target,
+		const float				 p_zoomFactor = _ORIENT_ZOOM_FACTOR
+	)
+	{
+		const float orientTargetDistance = p_target.radius() / std::tan( Util::Math::radians( p_fov ) * p_zoomFactor );
+		return p_target.centroid() - ( p_forward * orientTargetDistance );
+	}
+} // namespace
 
 namespace VTX::App::Action::Camera
 {
-
 	void SetPosition::execute( const Vec3f & p_position )
 	{
-		auto [ _, cam, transform ] = ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
-		transform.setPosition( p_position );
+		auto [ ent, _, transform ] = ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+		REG().patch<Util::Math::Transform>(
+			ent, [ p_position ]( Util::Math::Transform & p_transform ) { p_transform.setPosition( p_position ); }
+		);
 	}
 
 	void SetRotation::execute( const Vec3f & p_eulerAngles )
 	{
-		auto [ _, cam, transform ] = ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
-		transform.setRotation( p_eulerAngles );
+		auto [ ent, _, transform ] = ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+		REG().patch<Util::Math::Transform>(
+			ent, [ p_eulerAngles ]( Util::Math::Transform & p_transform ) { p_transform.setRotation( p_eulerAngles ); }
+		);
 	}
 
 	void SetScale::execute( const float p_scale )
 	{
-		auto [ _, cam, transform ] = ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
-		transform.setScale( p_scale );
+		auto [ ent, _, transform ] = ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+		REG().patch<Util::Math::Transform>(
+			ent, [ p_scale ]( Util::Math::Transform & p_transform ) { p_transform.setScale( p_scale ); }
+		);
 	}
+
+	void Reset::execute()
+	{
+		auto [ _entScene, _root, aabb ] = ECS::getFirstEntityWithComponents<App::Scene::Root, Util::Math::AABB>();
+		auto [ entCamera, camera, transform ]
+			= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+		REG().patch<Util::Math::Transform>(
+			entCamera,
+			[ & ]( Util::Math::Transform & p_transform )
+			{
+				Vec3f position = _computeCameraOrientPosition( p_transform.getFront(), *camera.fov, aabb );
+
+				p_transform.setPosition( position );
+				p_transform.setRotation( QUATF_ID );
+				p_transform.lookAt( aabb.centroid() );
+			}
+		);
+	}
+
+	void Orient::execute()
+	{
+		auto [ entCamera, camera, transform ]
+			= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+
+		bool selection = false;
+		// TODO: compute aabb from selection.
+		if ( selection ) {}
+		// From scene.
+		else
+		{
+			auto [ _entScene, _root, aabb ] = ECS::getFirstEntityWithComponents<App::Scene::Root, Util::Math::AABB>();
+			execute( aabb );
+		}
+	}
+
+	void Orient::execute( const Util::Math::AABB & p_target )
+	{
+		using namespace Util;
+
+		auto [ entCamera, camera, transform ]
+			= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+
+		PASS().addPass<Pass::Controller::Animation>(
+			entCamera,
+			Pass::Controller::AnimationData { transform.getPosition(), Math::eulerAngles( transform.getRotation() ) },
+			Pass::Controller::AnimationData {
+				_computeCameraOrientPosition( transform.getFront(), *camera.fov, p_target ), transform.getRotation() }
+		);
+	}
+
 } // namespace VTX::App::Action::Camera

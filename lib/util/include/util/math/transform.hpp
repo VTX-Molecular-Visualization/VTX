@@ -79,7 +79,7 @@ namespace VTX::Util::Math
 			_rotation = Math::normalize( p_rotation );
 			_position = _rotation * Vec3f( 0.f, 0.f, p_distance ) + p_target;
 		}
-		inline void lookAt( const Vec3f & p_target, const Vec3f & p_up )
+		inline void lookAt( const Vec3f & p_target, const Vec3f & p_up = UP_AXIS )
 		{
 			const Vec3f dir = Math::normalize( p_target - _position );
 			_rotation		= Math::quatLookAt( dir, Math::normalize( p_up ) );

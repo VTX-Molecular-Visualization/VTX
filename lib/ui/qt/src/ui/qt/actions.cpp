@@ -209,18 +209,18 @@ namespace VTX::UI::QT::Action
 
 		Orient::Orient()
 		{
-			name = "Orient";
-			tip	 = "Orient camera on selection";
-			icon = "sprite/camera/orient.png";
-			// trigger = []() { App::ACTION().execute<App::Action::Camera::Orient>(); };
+			name	= "Orient";
+			tip		= "Orient camera on selection";
+			icon	= "sprite/camera/orient.png";
+			trigger = []() { App::ACTION().execute<App::Action::Camera::Orient>(); };
 		}
 
 		Reset::Reset()
 		{
-			name = "Reset";
-			tip	 = "Reset camera";
-			icon = "sprite/camera/reset.png";
-			// trigger = []() { App::ACTION().execute<App::Action::Camera::Reset>(); };
+			name	= "Reset";
+			tip		= "Reset camera";
+			icon	= "sprite/camera/reset.png";
+			trigger = []() { App::ACTION().execute<App::Action::Camera::Reset>(); };
 		}
 
 	} // namespace Camera

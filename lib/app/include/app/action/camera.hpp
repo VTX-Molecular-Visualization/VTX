@@ -7,7 +7,7 @@
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
-#include <util/event_hub.hpp>
+#include <util/math/aabb.hpp>
 
 namespace VTX::App::Action::Camera
 {
@@ -45,11 +45,11 @@ namespace VTX::App::Action::Camera
 		{
 			auto & reg = REG();
 
-			auto [ entity, camera ] = ECS::getFirstEntityWithComponents<Scene::Camera>();
+			auto [ entity, camera ] = ECS::getFirstEntityWithComponents<App::Scene::Camera>();
 
-			reg.patch<Scene::Camera>(
+			reg.patch<App::Scene::Camera>(
 				entity,
-				[]( Scene::Camera & c )
+				[]( App::Scene::Camera & c )
 				{
 					auto & settings = SETTINGS();
 					settings.setValue<int>( Settings::Camera::PROJECTION_KEY, int( P ) );
@@ -58,6 +58,29 @@ namespace VTX::App::Action::Camera
 
 			HUB().trigger<App::Events::CameraProjectionChange<static_cast<int>( P )>>();
 		}
+	};
+
+	/**
+	 * @brief Reset camera instantanly to fit the scene.
+	 */
+	struct Reset
+	{
+		void execute();
+	};
+
+	/**
+	 * @brief Launch animation to orient the camera to fit the target.
+	 */
+	struct Orient
+	{
+		/**
+		 * @brief Orient on current selection, or scene AABB if no selection.
+		 */
+		void execute();
+		/**
+		 * @brief Orient on given AABB.
+		 */
+		void execute( const Util::Math::AABB & p_target );
 	};
 
 } // namespace VTX::App::Action::Camera

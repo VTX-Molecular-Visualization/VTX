@@ -39,6 +39,7 @@ namespace VTX::Util::Math
 	using ::glm::normalize;
 	using ::glm::ortho;
 	using ::glm::perspective;
+	using ::glm::pow2;
 	using ::glm::quat;
 	using ::glm::quatLookAt;
 	using ::glm::radians;

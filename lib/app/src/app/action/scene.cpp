@@ -1,5 +1,8 @@
 #include "app/action/scene.hpp"
+#include "app/action/action_manager.hpp"
+#include "app/action/camera.hpp"
 #include "app/events.hpp"
+#include "app/scene/root.hpp"
 #include "app/services.hpp"
 #include "app/system/deleted.hpp"
 #include "app/system/metadata.hpp"
@@ -61,9 +64,11 @@ namespace VTX::App::Action::Scene
 
 		// AABB (trigger update function for scene aabb).
 		reg.patch<Util::Math::AABB>( entity, [ &loader ]( Util::Math::AABB & p_aabb ) { p_aabb = loader.getAABB(); } );
-		aabb.extend( loader.getAABB() );
 
-		// ACTION().execute<App::Action::Camera::Orient>( App::SCENE().getAABB() );
+		// Orient.
+		// auto [ _entScene, _root, sceneAABB ] = ECS::getFirstEntityWithComponents<App::Scene::Root,
+		// Util::Math::AABB>();
+		ACTION().execute<App::Action::Camera::Orient>( aabb );
 
 		HUB().trigger<Events::SystemLoad>( { entity } );
 	}
