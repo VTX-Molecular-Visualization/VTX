@@ -1,4 +1,5 @@
 #include "app/pass/camera_updater.hpp"
+#include "app/pass/controller/animation.hpp"
 #include "app/scene/camera.hpp"
 #include "app/services.hpp"
 #include <renderer/facade.hpp>
@@ -15,6 +16,8 @@ namespace VTX::App::Pass
 		// Update functions.
 		reg.on_update<Util::Math::Transform>().connect<&CameraUpdater::_onUpdate>( this );
 		reg.on_update<Scene::Camera>().connect<&CameraUpdater::_onUpdate>( this );
+
+		HUB().connect<Events::CameraAnimationEnd, &CameraUpdater::_onCameraAnimationEnded>( this );
 
 		auto & transform = reg.get<Util::Math::Transform>( p_ent );
 		auto & camera	 = reg.get<Scene::Camera>( p_ent );
@@ -69,5 +72,12 @@ namespace VTX::App::Pass
 
 		_cameraProxy->onMatrixView();
 		_cameraProxy->onMatrixProjection();
+	}
+
+	void CameraUpdater::_onCameraAnimationEnded( const Events::CameraAnimationEnd & )
+	{
+		assert( PASS().hasPass<Pass::Controller::Animation>() );
+
+		PASS().removePass<Pass::Controller::Animation>();
 	}
 } // namespace VTX::App::Pass

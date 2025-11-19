@@ -95,9 +95,14 @@ namespace VTX::App::Action::Camera
 	};
 
 	/**
-	 * @brief Launch animation to travel to destination with given interpolator.
+	 * @brief Default duration in milliseconds.
 	 */
 	constexpr float ANIMATION_DURATION_DEFAULT_MS = 500.f;
+
+	/**
+	 * @brief Minimum translation distance to trigger animation.
+	 */
+	constexpr float ANIMATION_TRANSLATION_THRESHOLD = 0.1f;
 
 	/**
 	 * @brief Available camera interpolators.
@@ -129,18 +134,27 @@ namespace VTX::App::Action::Camera
 		)
 		{
 			using namespace Util;
+			using namespace Pass::Controller;
 
 			auto [ entCamera, camera, transform ]
 				= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+
+			AnimationData	   start { transform.getPosition(), transform.getRotation() };
+			InterpPositionFunc interpPositionFunc = nullptr;
+			InterpRotationFunc interpRotationFunc = nullptr;
+
+			// Check if animation is needed.
+			if ( Math::distance( start.position, p_end.position ) < ANIMATION_TRANSLATION_THRESHOLD
+				 && start.rotation == p_end.rotation )
+			{
+				return;
+			}
 
 			// Check existing animation pass.
 			if ( PASS().hasPass<Pass::Controller::Animation>() )
 			{
 				PASS().removePass<Pass::Controller::Animation>();
 			}
-
-			Pass::Controller::InterpPositionFunc interpPositionFunc = nullptr;
-			Pass::Controller::InterpRotationFunc interpRotationFunc = nullptr;
 
 			// Select interpolation functions.
 			if constexpr ( I == E_CAMERA_INTERPOLATOR::LINEAR )
@@ -159,25 +173,7 @@ namespace VTX::App::Action::Camera
 			}
 
 			// Add pass.
-			PASS().addPass<Pass::Controller::Animation>(
-				entCamera,
-				Pass::Controller::AnimationData { transform.getPosition(), transform.getRotation() },
-				p_end,
-				p_duration,
-				interpPositionFunc,
-				interpRotationFunc
-			);
-
-			// Delete when done.
-			auto c = HUB().connect<Events::CameraAnimationEnd>(
-				[ entCamera ]()
-				{
-					// Remove pass.
-					PASS().removePass<Pass::Controller::Animation>();
-					// Disconnect.
-					// HUB().disconnect( c );
-				}
-			);
+			PASS().addPass<Animation>( entCamera, start, p_end, p_duration, interpPositionFunc, interpRotationFunc );
 		}
 	};
 

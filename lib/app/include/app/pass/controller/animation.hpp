@@ -15,13 +15,11 @@ namespace VTX::App::Pass::Controller
 		Quatf rotation;
 	};
 
+	/**
+	 * @brief Interpolation functors.
+	 */
 	using InterpPositionFunc = Vec3f ( * )( const Vec3f &, const Vec3f &, float );
 	using InterpRotationFunc = Quatf ( * )( const Quatf &, const Quatf &, float );
-
-	/**
-	 * @brief Default duration in milliseconds.
-	 */
-	constexpr float ANIMATION_TRANSLATION_THRESHOLD = 0.1f;
 
 	/**
 	 * @brief System that manages a camera animation to a target position and rotation.
@@ -69,15 +67,10 @@ namespace VTX::App::Pass::Controller
 		float _time = 0.f;
 
 		/**
-		 * @brief Animation finished, trigger callback.
-		 */
-		bool _finished = false;
-
-		/**
 		 * @brief Interpolation functions.
 		 */
-		InterpPositionFunc _interpPosition;
-		InterpRotationFunc _interpRotation;
+		const InterpPositionFunc _interpPosition;
+		const InterpRotationFunc _interpRotation;
 	};
 } // namespace VTX::App::Pass::Controller
 

@@ -2,6 +2,7 @@
 #define __VTX_APP_PASS_CAMERA_UPDATER__
 
 #include "app/ecs.hpp"
+#include "app/events.hpp"
 #include "app/pass/pass_manager.hpp"
 #include <renderer/proxy/camera.hpp>
 #include <util/constants.hpp>
@@ -28,7 +29,15 @@ namespace VTX::App::Pass
 		// TODO: set as component?
 		std::unique_ptr<Renderer::Proxy::Camera> _cameraProxy;
 
+		/**
+		 * @brief On update.
+		 */
 		void _onUpdate( ECS::Registry &, ECS::Entity );
+
+		/**
+		 * @brief On animation end event.
+		 */
+		void _onCameraAnimationEnded( const Events::CameraAnimationEnd & );
 	}; // namespace VTX::App::Pass
 } // namespace VTX::App::Pass
 

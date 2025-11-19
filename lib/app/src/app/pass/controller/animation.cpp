@@ -18,17 +18,6 @@ namespace VTX::App::Pass::Controller
 	{
 		using namespace Util;
 
-		const float translationDistance = Math::distance( _animationDataStart.position, _animationDataEnd.position );
-		const bool	skipAnimation		= translationDistance < ANIMATION_TRANSLATION_THRESHOLD
-								   && _animationDataStart.rotation == _animationDataEnd.rotation;
-
-		// Skip at first update.
-		if ( skipAnimation )
-		{
-			_finished = true;
-			return;
-		}
-
 		_time = 0.f;
 
 		// Set initial position and rotation.
@@ -49,12 +38,6 @@ namespace VTX::App::Pass::Controller
 	{
 		using namespace Util;
 
-		if ( _finished )
-		{
-			HUB().enqueue<Events::CameraAnimationEnd>();
-			return;
-		}
-
 		REG().patch<Math::Transform>(
 			_cameraEntity,
 			[ this, p_delta ]( Math::Transform & p_transform )
@@ -70,10 +53,10 @@ namespace VTX::App::Pass::Controller
 					_interpRotation( _animationDataStart.rotation, _animationDataEnd.rotation, t )
 				);
 
-				// Auto remove.
+				// Enqueue end event (processed after pass manager, can delete this pass safely).
 				if ( t >= 1.f )
 				{
-					_finished = true;
+					HUB().enqueue<Events::CameraAnimationEnd>();
 				}
 			}
 		);
