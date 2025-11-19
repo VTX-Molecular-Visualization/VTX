@@ -125,8 +125,6 @@ namespace VTX::App
 
 	VTXApp::~VTXApp()
 	{
-		VTX_INFO( "Stopping application" );
-
 		RENDERER().clean();
 		REG().clear();
 

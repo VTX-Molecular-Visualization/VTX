@@ -2,6 +2,7 @@
 #define __VTX_APP_FIXTURE__
 
 #include "vtx_app.hpp"
+#include <util/logger.hpp>
 
 namespace VTX::App
 {
@@ -12,11 +13,11 @@ namespace VTX::App
 		{
 			if ( not _app )
 			{
-				Args args( { ARG_NO_GRAPHICS, ARG_NO_UPDATE } );
+				Args args( { ARG_NO_GRAPHICS, ARG_NO_UPDATE, ARG_DEBUG } );
+				LOGGER::init( Util::Filesystem::getExecutableDir() / "logs_tests", true );
 				_app = std::make_unique<VTXApp>( args );
+				_app->start();
 			}
-
-			_app->start();
 		}
 
 		~Fixture() = default;
