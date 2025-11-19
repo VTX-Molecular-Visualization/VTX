@@ -26,8 +26,14 @@ namespace VTX::App::Action::Controller
 			}
 
 			// Remove existing controller passes.
-			PASS().removePass<Pass::Controller::Freefly>();
-			PASS().removePass<Pass::Controller::Trackball>();
+			if ( PASS().hasPass<Pass::Controller::Freefly>() )
+			{
+				PASS().removePass<Pass::Controller::Freefly>();
+			}
+			if ( PASS().hasPass<Pass::Controller::Trackball>() )
+			{
+				PASS().removePass<Pass::Controller::Trackball>();
+			}
 
 			// Add controller pass.
 			PASS().addPass<T>( entity );

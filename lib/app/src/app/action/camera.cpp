@@ -1,5 +1,5 @@
 #include "app/action/camera.hpp"
-#include "app/pass/controller/animation.hpp"
+#include "app/action/action_manager.hpp"
 #include "app/scene/root.hpp"
 #include <util/math/transform.hpp>
 
@@ -85,14 +85,21 @@ namespace VTX::App::Action::Camera
 	{
 		using namespace Util;
 
-		auto [ entCamera, camera, transform ]
-			= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+		auto [ _, camera, transform ] = ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
 
-		PASS().addPass<Pass::Controller::Animation>(
-			entCamera,
-			Pass::Controller::AnimationData { transform.getPosition(), Math::eulerAngles( transform.getRotation() ) },
-			Pass::Controller::AnimationData {
-				_computeCameraOrientPosition( transform.getFront(), *camera.fov, p_target ), transform.getRotation() }
+		ACTION().execute<Animate<Util::Math::Interpolators::EaseInOut>>(
+			_computeCameraOrientPosition( transform.getFront(), *camera.fov, p_target ), transform.getRotation()
+		);
+	}
+
+	void StraightTravel::execute(
+		const Vec3f & p_targetPosition,
+		const Quatf & p_targetRotation,
+		const float	  p_duration
+	)
+	{
+		ACTION().execute<Animate<Util::Math::Interpolators::EaseInOut>>(
+			p_targetPosition, p_targetRotation, p_duration
 		);
 	}
 

@@ -67,6 +67,10 @@ namespace VTX::App::Events
 	{
 	};
 
+	struct CameraAnimationEnd
+	{
+	};
+
 	/**
 	 * @brief System.
 	 */

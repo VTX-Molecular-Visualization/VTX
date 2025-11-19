@@ -3,6 +3,7 @@
 
 #include "app/ecs.hpp"
 #include "app/events.hpp"
+#include "app/pass/controller/animation.hpp"
 #include "app/scene/camera.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
@@ -82,6 +83,77 @@ namespace VTX::App::Action::Camera
 		 * @brief Orient on given AABB.
 		 */
 		void execute( const Util::Math::AABB & p_target );
+	};
+
+	/**
+	 * @brief Launch animation to travel in a straight line to the target position and rotation.
+	 */
+	struct StraightTravel
+	{
+		void execute( const Vec3f & p_position, const Quatf & p_rotation, const float p_duration );
+	};
+
+	/**
+	 * @brief Launch animation to travel to destination with given interpolator.
+	 */
+	constexpr float ANIMATION_DURATION_DEFAULT_MS = 500.f;
+	template<Pass::Controller::CameraInterpolator I = Util::Math::Interpolators::EaseInOut>
+	struct Animate
+	{
+		void execute(
+			const Vec3f & p_position,
+			const Quatf & p_rotation,
+			const float	  p_duration = ANIMATION_DURATION_DEFAULT_MS
+		)
+		{
+			execute( Pass::Controller::AnimationData { p_position, p_rotation }, p_duration );
+		}
+
+		void execute(
+			const Pass::Controller::AnimationData & p_end,
+			const float								p_duration = ANIMATION_DURATION_DEFAULT_MS
+		)
+		{
+			using namespace Util;
+
+			auto [ entCamera, camera, transform ]
+				= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+
+			// Check if this animation is running.
+			if ( REG().all_of<AnimationRunningTag>( entCamera ) )
+			{
+				return;
+			}
+			REG().emplace<AnimationRunningTag>( entCamera );
+
+			// Add pass.
+			PASS().addPass<Pass::Controller::Animation<I>>(
+				entCamera,
+				Pass::Controller::AnimationData { transform.getPosition(), transform.getRotation() },
+				p_end,
+				p_duration
+			);
+
+			// Delete when done.
+			auto c = HUB().connect<Events::CameraAnimationEnd>(
+				[ entCamera ]()
+				{
+					// Remove pass.
+					PASS().removePass<Pass::Controller::Animation<I>>();
+					// Remove tag.
+					REG().remove<AnimationRunningTag>( entCamera );
+					// Disconnect.
+					// HUB().disconnect( c );
+				}
+			);
+		}
+
+		/**
+		 * @brief Tag to know if an animation is running.
+		 */
+		struct AnimationRunningTag
+		{
+		};
 	};
 
 } // namespace VTX::App::Action::Camera
