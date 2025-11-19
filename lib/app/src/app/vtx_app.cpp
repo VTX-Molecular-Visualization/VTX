@@ -90,7 +90,6 @@ namespace VTX::App
 		presetCol.setData( App::Library::Preset::ColorLayouts::JMOL );
 
 		auto & libRenderSettings = LIBRARY().load<Library::Preset::RenderSettings>( Filesystem::getEffectsDir() );
-		// TODO: default presets.
 
 		// Load settings.
 		Settings::initSettings();
@@ -128,19 +127,10 @@ namespace VTX::App
 	{
 		VTX_INFO( "Stopping application" );
 
-		// SCENE().reset();
 		RENDERER().clean();
+		REG().clear();
 
-		//// Prevent events throw for nothing when quitting app
-		// Old::Manager::EventManager::get().freezeEvent( true );
-		//  Manager::WorkerManager::get().stopAll();
-
-		//_setting.backup();
-
-		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
-		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
-
-		// Old::Selection::SelectionManager::get().deleteModel();
+		// TODO: save settings.
 	}
 
 	void VTXApp::start()
@@ -179,9 +169,6 @@ namespace VTX::App
 		// TODO: store current controller in settings?
 		// PASS().addPass<Pass::Controller::Trackball>( _camera );
 		ACTION().execute<Action::Controller::SetCameraController<Pass::Controller::Trackball>>();
-
-		// ?
-		// Internal::initSettings( App::SETTINGS() );
 
 		// ACTION().execute<Action::Mode::SetMode<Mode::Visualization>>();
 		HUB().trigger<Events::ApplicationStart>();

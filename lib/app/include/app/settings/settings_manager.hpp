@@ -13,7 +13,8 @@ namespace VTX::App::Settings
 	 */
 	struct ISetting
 	{
-		virtual ~ISetting() = default;
+		virtual ~ISetting()	 = default;
+		virtual void reset() = 0;
 	};
 
 	/**
@@ -26,6 +27,7 @@ namespace VTX::App::Settings
 		T				 defaultValue;
 		std::optional<T> min;
 		std::optional<T> max;
+		void			 reset() override { value = defaultValue; }
 	};
 
 	/**
@@ -60,6 +62,33 @@ namespace VTX::App::Settings
 			setting->defaultValue = p_defaultValue;
 			setting->min		  = p_min;
 			setting->max		  = p_max;
+		}
+
+		/**
+		 * @brief Register a new setting from object.
+		 */
+		template<typename T>
+		void add( const std::string_view p_key, const Setting<T> & p_setting )
+		{
+			Hash hash = Util::hash( p_key );
+
+			assert( not _settings.has( hash ) );
+
+			auto * setting = _settings.createWithHash<Setting<T>>( hash );
+			*setting	   = p_setting;
+		}
+
+		/**
+		 * @brief Register a new setting with default value.
+		 */
+		template<typename T>
+		void add( const std::string_view p_key )
+		{
+			Hash hash = Util::hash( p_key );
+
+			assert( not _settings.has( hash ) );
+
+			_settings.createWithHash<Setting<T>>( hash );
 		}
 
 		/**
@@ -111,18 +140,46 @@ namespace VTX::App::Settings
 			const T			   oldValue = setting.value;
 			T				   value	= p_value;
 
-			if ( setting.min.has_value() )
+			// If type comparable, clamp value to min/max.
+			if constexpr ( std::totally_ordered<T> )
 			{
-				value = std::max( value, setting.min.value() );
-			}
+				if ( setting.min.has_value() )
+				{
+					value = std::max( value, setting.min.value() );
+				}
 
-			if ( setting.max.has_value() )
-			{
-				value = std::min( value, setting.max.value() );
+				if ( setting.max.has_value() )
+				{
+					value = std::min( value, setting.max.value() );
+				}
 			}
 
 			_settings.get<Setting<T>>( hash )->value = value;
 			// TODO: notify change.
+		}
+
+		/**
+		 * @brief Reset all settings to their default value.
+		 */
+		void reset()
+		{
+			for ( const auto & baseSetting : _settings )
+			{
+				baseSetting.second->reset();
+			}
+		}
+
+		/**
+		 * @brief Reset a setting to its default value.
+		 */
+		void reset( const std::string_view p_key )
+		{
+			Hash hash = Util::hash( p_key );
+
+			assert( _settings.has( hash ) );
+
+			auto * baseSetting = _settings.get<ISetting>( hash );
+			baseSetting->reset();
 		}
 
 	  private:
