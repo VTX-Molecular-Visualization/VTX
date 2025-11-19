@@ -37,11 +37,11 @@ namespace VTX::App::Pass
 		RENDERER().setProxyCamera( *_cameraProxy );
 
 		static std::vector<Vec3f> mins, maxs;
-		for ( float x = -100.f; x <= 100.f; x += 50.f )
+		for ( float x = -100.f; x < 100.f; x += 50.f )
 		{
-			for ( float y = -100.f; y <= 100.f; y += 50.f )
+			for ( float y = -100.f; y < 100.f; y += 50.f )
 			{
-				for ( float z = -100.f; z <= 100.f; z += 50.f )
+				for ( float z = -100.f; z < 100.f; z += 50.f )
 				{
 					mins.emplace_back( x, y, z );
 					maxs.emplace_back( x + 50.f, y + 50.f, z + 50.f );
@@ -76,8 +76,6 @@ namespace VTX::App::Pass
 
 	void CameraUpdater::_onCameraAnimationEnded( const Events::CameraAnimationEnd & )
 	{
-		assert( PASS().hasPass<Pass::Controller::Animation>() );
-
-		PASS().removePass<Pass::Controller::Animation>();
+		// TODO: logic with other controllers.
 	}
 } // namespace VTX::App::Pass

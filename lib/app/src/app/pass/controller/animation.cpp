@@ -53,10 +53,11 @@ namespace VTX::App::Pass::Controller
 					_interpRotation( _animationDataStart.rotation, _animationDataEnd.rotation, t )
 				);
 
-				// Enqueue end event (processed after pass manager, can delete this pass safely).
+				// Flag as deleted and trigger end event.
 				if ( t >= 1.f )
 				{
-					HUB().enqueue<Events::CameraAnimationEnd>();
+					deleted = true;
+					HUB().trigger<Events::CameraAnimationEnd>();
 				}
 			}
 		);

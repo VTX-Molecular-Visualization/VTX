@@ -21,6 +21,12 @@ namespace VTX::App::Pass
 	struct IPass
 	{
 		virtual ~IPass() = default;
+
+		/**
+		 * @brief Some useful flags.
+		 */
+		bool deleted = false;
+		bool paused	 = false;
 	};
 
 	/**
@@ -29,8 +35,7 @@ namespace VTX::App::Pass
 	class PassManager
 	{
 	  public:
-		using UpdateFunctionArgs = void( float, float );
-		using UpdateDelegate	 = Util::EventHub::Delegate<UpdateFunctionArgs>;
+		using UpdateDelegate = Util::EventHub::Delegate<void( float, float )>;
 
 		PassManager()				  = default;
 		PassManager( PassManager && ) = default;
@@ -60,12 +65,6 @@ namespace VTX::App::Pass
 		void removePass()
 		{
 			assert( _passes.has<T>() );
-			/**
-			if ( not _passes.has<T>() )
-			{
-				return;
-			}
-			*/
 
 			// Remove update delegate.
 			std::erase_if(
@@ -90,10 +89,35 @@ namespace VTX::App::Pass
 		 */
 		inline void update( const float p_delta, const float p_elapsed )
 		{
+			// Update delegates.
 			for ( const auto & delegate : _delegates )
 			{
+				// Check if pass is paused.
+				const IPass * pass = static_cast<const IPass *>( delegate.data() );
+				if ( pass->paused )
+				{
+					continue;
+				}
+
 				delegate( p_delta, p_elapsed );
 			}
+
+			// Remove passes flagged for deletion.
+			for ( auto it = _passes.begin(); it != _passes.end(); )
+			{
+				if ( it->second->deleted )
+				{
+					it = _passes.erase( it );
+				}
+				else
+				{
+					++it;
+				}
+			}
+
+			std::erase_if(
+				_delegates, []( const UpdateDelegate & d ) { return static_cast<const IPass *>( d.data() )->deleted; }
+			);
 		}
 
 	  private:

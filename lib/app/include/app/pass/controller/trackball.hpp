@@ -33,7 +33,7 @@ namespace VTX::App::Pass::Controller
 		/**
 		 * @brief Controller target to rotate around.
 		 */
-		Vec3f _target = VEC3F_XYZ;
+		Vec3f _target = VEC3F_ZERO;
 
 		/**
 		 * @brief Current velocity.

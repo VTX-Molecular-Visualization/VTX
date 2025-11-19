@@ -177,6 +177,10 @@ namespace VTX::Util
 		auto cbegin() const noexcept { return _map.cbegin(); }
 		auto cend() const noexcept { return _map.cend(); }
 
+		using iterator = typename std::unordered_map<Hash, C>::iterator;
+
+		inline auto erase( const iterator & p_it ) { return _map.erase( p_it ); }
+
 	  private:
 		mutable std::unordered_map<Hash, C> _map;
 
