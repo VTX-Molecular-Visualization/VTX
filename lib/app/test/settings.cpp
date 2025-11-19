@@ -74,6 +74,14 @@ TEST_CASE( "VTX_APP - Settings", "[integration]" )
 	settings.setValue<std::vector<std::string>>( "STRING_VECTOR_SETTING", { "Zero", "One", "Six", "Three" } );
 	CHECK( settings.getValue<std::vector<std::string>>( "STRING_VECTOR_SETTING" )[ 2 ] == "Six" );
 
+	// Min / Max
+	settings.add<int>( "INT_SETTING_CLAMPED", 5, 0, 10 );
+	CHECK( settings.getValue<int>( "INT_SETTING_CLAMPED" ) == 5 );
+	settings.setValue<int>( "INT_SETTING_CLAMPED", 15 );
+	CHECK( settings.getValue<int>( "INT_SETTING_CLAMPED" ) == 10 );
+	settings.setValue<int>( "INT_SETTING_CLAMPED", -5 );
+	CHECK( settings.getValue<int>( "INT_SETTING_CLAMPED" ) == 0 );
+
 	// Check default parameter
 	settings.add<int>( "INT_SETTING_2" );
 	CHECK( settings.getValue<int>( "INT_SETTING_2" ) == 0 );
