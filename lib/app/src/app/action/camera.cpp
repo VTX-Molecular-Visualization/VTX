@@ -87,7 +87,7 @@ namespace VTX::App::Action::Camera
 
 		auto [ _, camera, transform ] = ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
 
-		ACTION().execute<Animate<Util::Math::Interpolators::EaseInOut>>(
+		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(
 			_computeCameraOrientPosition( transform.getFront(), *camera.fov, p_target ), transform.getRotation()
 		);
 	}
@@ -98,9 +98,7 @@ namespace VTX::App::Action::Camera
 		const float	  p_duration
 	)
 	{
-		ACTION().execute<Animate<Util::Math::Interpolators::EaseInOut>>(
-			p_targetPosition, p_targetRotation, p_duration
-		);
+		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>( p_targetPosition, p_targetRotation, p_duration );
 	}
 
 } // namespace VTX::App::Action::Camera

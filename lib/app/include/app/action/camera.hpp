@@ -9,6 +9,7 @@
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
 #include <util/math/aabb.hpp>
+#include <util/math/transform.hpp>
 
 namespace VTX::App::Action::Camera
 {
@@ -97,7 +98,20 @@ namespace VTX::App::Action::Camera
 	 * @brief Launch animation to travel to destination with given interpolator.
 	 */
 	constexpr float ANIMATION_DURATION_DEFAULT_MS = 500.f;
-	template<Pass::Controller::CameraInterpolator I = Util::Math::Interpolators::EaseInOut>
+
+	/**
+	 * @brief Available camera interpolators.
+	 */
+	enum struct E_CAMERA_INTERPOLATOR
+	{
+		LINEAR,
+		EASE_IN_OUT
+	};
+
+	/**
+	 * @brief Animate camera to target position and rotation.
+	 */
+	template<E_CAMERA_INTERPOLATOR I = E_CAMERA_INTERPOLATOR::EASE_IN_OUT>
 	struct Animate
 	{
 		void execute(
@@ -119,19 +133,39 @@ namespace VTX::App::Action::Camera
 			auto [ entCamera, camera, transform ]
 				= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
 
-			// Check if this animation is running.
-			if ( REG().all_of<AnimationRunningTag>( entCamera ) )
+			// Check existing animation pass.
+			if ( PASS().hasPass<Pass::Controller::Animation>() )
 			{
-				return;
+				PASS().removePass<Pass::Controller::Animation>();
 			}
-			REG().emplace<AnimationRunningTag>( entCamera );
+
+			Pass::Controller::InterpPositionFunc interpPositionFunc = nullptr;
+			Pass::Controller::InterpRotationFunc interpRotationFunc = nullptr;
+
+			// Select interpolation functions.
+			if constexpr ( I == E_CAMERA_INTERPOLATOR::LINEAR )
+			{
+				interpPositionFunc = Math::lerp;
+				interpRotationFunc = Math::lerp;
+			}
+			else if constexpr ( I == E_CAMERA_INTERPOLATOR::EASE_IN_OUT )
+			{
+				interpPositionFunc = Math::easeInOutInterpolation;
+				interpRotationFunc = Math::easeInOutInterpolation;
+			}
+			else
+			{
+				static_assert( std::is_same_v<I, void>, "Unsupported camera interpolator." );
+			}
 
 			// Add pass.
-			PASS().addPass<Pass::Controller::Animation<I>>(
+			PASS().addPass<Pass::Controller::Animation>(
 				entCamera,
 				Pass::Controller::AnimationData { transform.getPosition(), transform.getRotation() },
 				p_end,
-				p_duration
+				p_duration,
+				interpPositionFunc,
+				interpRotationFunc
 			);
 
 			// Delete when done.
@@ -139,21 +173,12 @@ namespace VTX::App::Action::Camera
 				[ entCamera ]()
 				{
 					// Remove pass.
-					PASS().removePass<Pass::Controller::Animation<I>>();
-					// Remove tag.
-					REG().remove<AnimationRunningTag>( entCamera );
+					PASS().removePass<Pass::Controller::Animation>();
 					// Disconnect.
 					// HUB().disconnect( c );
 				}
 			);
 		}
-
-		/**
-		 * @brief Tag to know if an animation is running.
-		 */
-		struct AnimationRunningTag
-		{
-		};
 	};
 
 } // namespace VTX::App::Action::Camera
