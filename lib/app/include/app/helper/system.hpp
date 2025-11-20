@@ -22,7 +22,7 @@ namespace VTX::App::Helper::Visibility
 			return not visibility.atoms.isEmpty();
 		}
 
-		assert( p_index );
+		assert( p_index != INVALID_INDEX );
 
 		if constexpr ( ITEM == App::Scene::E_ITEM::CHAIN )
 		{
@@ -42,7 +42,9 @@ namespace VTX::App::Helper::Visibility
 		}
 	}
 
-	// TODO
+	/**
+	 * @brief Check if an item is fully visible.
+	 */
 	template<Scene::E_ITEM ITEM>
 	bool isFullyVisible( const ECS::Entity p_ent, const Index p_index = INVALID_INDEX )
 	{
@@ -51,10 +53,10 @@ namespace VTX::App::Helper::Visibility
 
 		if constexpr ( ITEM == App::Scene::E_ITEM::SYSTEM )
 		{
-			return not visibility.atoms.isEmpty();
+			return visibility.atoms.count() == system.getAtomCount();
 		}
 
-		assert( p_index );
+		assert( p_index != INVALID_INDEX );
 
 		if constexpr ( ITEM == App::Scene::E_ITEM::CHAIN )
 		{
