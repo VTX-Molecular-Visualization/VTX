@@ -6,6 +6,7 @@
 
 namespace VTX::App::Action::Application
 {
+
 	/**
 	 * @brief Exit the application.
 	 */

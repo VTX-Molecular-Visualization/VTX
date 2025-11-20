@@ -1,6 +1,7 @@
 #include "app/vtx_app.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/controller.hpp"
+#include "app/action/scene.hpp"
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
 #include "app/input/input_manager.hpp"
@@ -123,13 +124,7 @@ namespace VTX::App
 		REG().emplace<Scene::Camera>( _camera );
 	}
 
-	VTXApp::~VTXApp()
-	{
-		RENDERER().clean();
-		REG().clear();
-
-		// TODO: save settings.
-	}
+	VTXApp::~VTXApp() {}
 
 	void VTXApp::start()
 	{

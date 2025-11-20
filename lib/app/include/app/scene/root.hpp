@@ -1,14 +1,31 @@
 #ifndef __VTX_APP_SCENE_ROOT__
 #define __VTX_APP_SCENE_ROOT__
 
+#include <util/types.hpp>
+
 namespace VTX::App::Scene
 {
+	/**
+	 * @brief Scene items.
+	 */
+	enum struct E_ITEM : uint8_t
+	{
+		SYSTEM,
+		CATEGORY,
+		CHAIN,
+		RESIDUE,
+		ATOM,
+		PATH,
+		VIEWPOINT,
 
+		COUNT
+	};
+
+	/**
+	 * @brief Empty component to use as tag.
+	 */
 	class Root
 	{
-	  public:
-		// ENTT not persists empty struct.
-		int dummy = 0;
 	};
 } // namespace VTX::App::Scene
 

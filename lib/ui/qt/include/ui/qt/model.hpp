@@ -5,6 +5,7 @@
 #include <QString>
 #include <app/ecs.hpp>
 #include <app/events.hpp>
+#include <app/scene/root.hpp>
 #include <core/struct/system.hpp>
 #include <vector>
 
@@ -19,30 +20,15 @@ namespace VTX::UI::QT
 
 	  public:
 		/**
-		 * @brief Scene items.
-		 */
-		enum struct E_ITEM : uint8_t
-		{
-			SYSTEM,
-			CATEGORY,
-			CHAIN,
-			RESIDUE,
-			ATOM,
-			PATH,
-			VIEWPOINT,
-
-			COUNT
-		};
-
-		/**
 		 * @brief Roles for data retrieval.
 		 */
 		enum Roles
 		{
 			ItemRole = Qt::UserRole + 1,
-			GlobalRole,
+			RootRole,
 			LocalRole,
-			NameRole
+			NameRole,
+			VisibleRole
 		};
 
 		/**
@@ -51,9 +37,9 @@ namespace VTX::UI::QT
 		struct Row
 		{
 			int										   position;
-			RootIndex								   index;
+			RootUID									   index;
 			App::ECS::Entity						   entity;
-			E_ITEM									   item;
+			App::Scene::E_ITEM						   item;
 			std::variant<const Core::Struct::System *> data;
 		};
 
@@ -90,14 +76,14 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Pack minimum information to identify an item in the model into a single uint64.
 		 */
-		static quintptr pack( const E_ITEM, const RootIndex, const Index );
+		static quintptr pack( const App::Scene::E_ITEM, const RootUID, const Index );
 
 		/**
 		 * @brief Unpack quintptr.
 		 */
-		static void unpack( const quintptr, E_ITEM &, RootIndex &, Index & );
+		static void unpack( const quintptr, App::Scene::E_ITEM &, RootUID &, Index & );
 
-		inline const std::unordered_map<RootIndex, const Row *> & getMapRows() const { return _mapGlobalIndexRow; }
+		inline const std::unordered_map<RootUID, const Row *> & getMapRows() const { return _mapGlobalIndexRow; }
 
 	  private:
 		/**
@@ -109,7 +95,7 @@ namespace VTX::UI::QT
 		 * @brief Maps for quick access to rows.
 		 */
 		std::unordered_map<App::ECS::Entity, const Row *> _mapEntityRow;
-		std::unordered_map<RootIndex, const Row *>		  _mapGlobalIndexRow;
+		std::unordered_map<RootUID, const Row *>		  _mapGlobalIndexRow;
 
 		/**
 		 * @brief Callback on system construction to add it to the model.

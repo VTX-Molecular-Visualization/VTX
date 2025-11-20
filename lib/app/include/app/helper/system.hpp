@@ -1,0 +1,79 @@
+#ifndef __VTX_APP_HELPER_VISIBILITY__
+#define __VTX_APP_HELPER_VISIBILITY__
+
+#include "app/ecs.hpp"
+#include "app/scene/root.hpp"
+#include "app/system/visibility.hpp"
+#include <core/struct/system.hpp>
+
+namespace VTX::App::Helper::Visibility
+{
+	/**
+	 * @brief Check if an item is visible.
+	 */
+	template<Scene::E_ITEM ITEM>
+	bool isVisible( const ECS::Entity p_ent, const Index p_index = INVALID_INDEX )
+	{
+		const auto & system		= REG().get<Core::Struct::System>( p_ent );
+		auto &		 visibility = REG().get<System::Visibility>( p_ent );
+
+		if constexpr ( ITEM == App::Scene::E_ITEM::SYSTEM )
+		{
+			return not visibility.atoms.isEmpty();
+		}
+
+		assert( p_index );
+
+		if constexpr ( ITEM == App::Scene::E_ITEM::CHAIN )
+		{
+			return visibility.atoms.intersects( system.getChainAtomRange( p_index ) );
+		}
+		else if constexpr ( ITEM == App::Scene::E_ITEM::RESIDUE )
+		{
+			return visibility.atoms.intersects( system.getResidueAtomRange( p_index ) );
+		}
+		else if constexpr ( ITEM == App::Scene::E_ITEM::ATOM )
+		{
+			return visibility.atoms.contains( p_index );
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	// TODO
+	template<Scene::E_ITEM ITEM>
+	bool isFullyVisible( const ECS::Entity p_ent, const Index p_index = INVALID_INDEX )
+	{
+		const auto & system		= REG().get<Core::Struct::System>( p_ent );
+		auto &		 visibility = REG().get<System::Visibility>( p_ent );
+
+		if constexpr ( ITEM == App::Scene::E_ITEM::SYSTEM )
+		{
+			return not visibility.atoms.isEmpty();
+		}
+
+		assert( p_index );
+
+		if constexpr ( ITEM == App::Scene::E_ITEM::CHAIN )
+		{
+			return visibility.atoms.contains( system.getChainAtomRange( p_index ) );
+		}
+		else if constexpr ( ITEM == App::Scene::E_ITEM::RESIDUE )
+		{
+			return visibility.atoms.contains( system.getResidueAtomRange( p_index ) );
+		}
+		else if constexpr ( ITEM == App::Scene::E_ITEM::ATOM )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+} // namespace VTX::App::Helper::Visibility
+
+#endif

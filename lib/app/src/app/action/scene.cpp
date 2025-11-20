@@ -1,15 +1,19 @@
 #include "app/action/scene.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/camera.hpp"
+#include "app/action/visibility.hpp"
 #include "app/events.hpp"
 #include "app/scene/root.hpp"
 #include "app/services.hpp"
+#include "app/system/color_scheme.hpp"
 #include "app/system/deleted.hpp"
 #include "app/system/metadata.hpp"
+#include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
+#include "app/uid/uid_manager.hpp"
 #include <core/struct/system.hpp>
 #include <io/reader/system.hpp>
 #include <util/event_hub.hpp>
@@ -33,12 +37,16 @@ namespace VTX::App::Action::Scene
 		auto & trajectory = reg.emplace<System::Trajectory>( entity );
 		auto & transform  = reg.emplace<Util::Math::Transform>( entity );
 		auto & aabb		  = reg.emplace<Util::Math::AABB>( entity );
-		auto & selection  = reg.emplace<System::Selection>( entity );
 		auto & uid		  = reg.emplace<System::UID>( entity );
-		auto & visibility = reg.emplace<System::Visibility>( entity );
-		auto & deleted	  = reg.emplace<System::Deleted>( entity );
 
-		// Load system.
+		auto & visibility = reg.emplace<System::Visibility>( entity );
+
+		auto & selection	  = reg.emplace<System::Selection>( entity );
+		auto & representation = reg.emplace<System::Representation>( entity );
+		auto & colorScheme	  = reg.emplace<System::ColorScheme>( entity );
+		auto & deleted		  = reg.emplace<System::Deleted>( entity );
+
+		// Load system data and metadata.
 		IO::Reader::System loader;
 		// systemStruct.trajectory.setOptimized();
 
@@ -59,17 +67,30 @@ namespace VTX::App::Action::Scene
 		const std::string systemName					   = pdbId == "" ? p_path.stem().string() : pdbId;
 		data.name										   = systemName; // TODO: move to metadata?
 
-		// TODO: use uid manager.
-		uid.system = System::UID::COUNTER++;
-
 		// AABB (trigger update function for scene aabb).
 		reg.patch<Util::Math::AABB>( entity, [ &loader ]( Util::Math::AABB & p_aabb ) { p_aabb = loader.getAABB(); } );
 
+		// UIDs: get from UID manager.
+		auto & uidManager = UID();
+		uid.system		  = uidManager.getRootPool().registerValue();
+		uid.residues	  = uidManager.getPickingPool().registerRange( data.getResidueCount() );
+		uid.atoms		  = uidManager.getPickingPool().registerRange( data.getAtomCount() );
+
+		// Visibillity: set default all visible.
+		ACTION().execute<Visibility::SetVisible<App::Scene::E_ITEM::SYSTEM>>( entity );
+
+		// Selection : Nothing to do.
+
+		// Representation.
+
+		// Color scheme.
+
+		// Deleted: nothing to do.
+
 		// Orient.
-		// auto [ _entScene, _root, sceneAABB ] = ECS::getFirstEntityWithComponents<App::Scene::Root,
-		// Util::Math::AABB>();
 		ACTION().execute<App::Action::Camera::Orient>( aabb );
 
+		// Trigger system load.
 		HUB().trigger<Events::SystemLoad>( { entity } );
 	}
 

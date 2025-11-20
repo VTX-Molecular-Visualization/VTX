@@ -50,6 +50,8 @@ namespace VTX::Util::Math
 
 		explicit RangeList( const T p_values ) { addValue( p_values ); }
 
+		explicit RangeList( const RangeType & p_range ) { addRange( p_range ); }
+
 		/**
 		 * @brief Add a single value.
 		 */

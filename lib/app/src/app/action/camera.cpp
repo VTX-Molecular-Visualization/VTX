@@ -49,7 +49,8 @@ namespace VTX::App::Action::Camera
 
 	void Reset::execute()
 	{
-		auto [ _entScene, _root, aabb ] = ECS::getFirstEntityWithComponents<App::Scene::Root, Util::Math::AABB>();
+		auto   entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::Root, Util::Math::AABB>();
+		auto & aabb		= REG().get<Util::Math::AABB>( entScene );
 		auto [ entCamera, camera, transform ]
 			= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
 		REG().patch<Util::Math::Transform>(
@@ -76,7 +77,8 @@ namespace VTX::App::Action::Camera
 		// From scene.
 		else
 		{
-			auto [ _entScene, _root, aabb ] = ECS::getFirstEntityWithComponents<App::Scene::Root, Util::Math::AABB>();
+			auto   entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::Root, Util::Math::AABB>();
+			auto & aabb		= REG().get<Util::Math::AABB>( entScene );
 			execute( aabb );
 		}
 	}

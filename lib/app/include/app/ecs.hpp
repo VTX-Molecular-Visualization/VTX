@@ -72,7 +72,9 @@ namespace VTX::App::ECS
 	template<typename... T>
 	Entity getFirstEntityOnlyWithComponents()
 	{
-		return std::get<0>( getFirstEntityWithComponents<T...>() );
+		auto view = registry().view<T...>();
+		assert( view.begin() != view.end() );
+		return *view.begin();
 	}
 
 	/**

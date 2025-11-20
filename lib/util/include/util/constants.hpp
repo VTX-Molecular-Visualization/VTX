@@ -62,7 +62,7 @@ namespace VTX
 	const Util::Color::Rgba COLOR_CYAN	  = Util::Color::Rgba( 0.f, 1.f, 1.f, 1.f );
 
 	constexpr Index INVALID_INDEX = TypeMax<uint>;
-
+	constexpr int	INVALID_UID	  = 0;
 } // namespace VTX
 
 #endif

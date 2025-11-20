@@ -1,17 +1,23 @@
 #ifndef __VTX_APP_SYSTEM_VISIBILITY__
-#define __VTX_APP_SYSTEM_VISIBILITY
+#define __VTX_APP_SYSTEM_VISIBILITY__
 
+#include <core/struct/system.hpp>
 #include <util/math/range_list.hpp>
 
 namespace VTX::App::System
 {
+
+	/**
+	 * @brief Store visible elements.
+	 */
 	struct Visibility
 	{
-		bool						 isFullSystemVisible = true;
-		Util::Math::RangeList<Index> chains;
-		Util::Math::RangeList<Index> residues;
-		Util::Math::RangeList<Index> atoms;
+		/**
+		 * @brief Visible atoms.
+		 */
+		Core::Struct::IndexRangeList atoms;
 	};
+
 } // namespace VTX::App::System
 
 #endif

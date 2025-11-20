@@ -6,6 +6,9 @@
 
 namespace VTX::App::System
 {
+	/**
+	 * @brief Store metadata about the system.
+	 */
 	struct Metadata
 	{
 		FilePath	path;

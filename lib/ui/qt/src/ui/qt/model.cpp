@@ -18,23 +18,24 @@ namespace VTX::UI::QT
 
 	int Model::rowCount( const QModelIndex & p_parent ) const
 	{
+		using namespace App::Scene;
 		if ( not p_parent.isValid() )
 		{
 			return int( _rows.size() );
 		}
 
-		E_ITEM	  item;
-		RootIndex globalIndex;
-		Index	  localIndex;
-		unpack( p_parent.internalId(), item, globalIndex, localIndex );
+		E_ITEM	item;
+		RootUID rootIndex;
+		Index	localIndex;
+		unpack( p_parent.internalId(), item, rootIndex, localIndex );
 
-		if ( not _mapGlobalIndexRow.contains( globalIndex ) )
+		if ( not _mapGlobalIndexRow.contains( rootIndex ) )
 		{
 			return 0;
 		}
 
 		const Core::Struct::System & system
-			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( globalIndex )->data );
+			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( rootIndex )->data );
 
 		switch ( item )
 		{
@@ -65,25 +66,26 @@ namespace VTX::UI::QT
 	}
 
 	QVariant Model::data( const QModelIndex & p_index, int p_role ) const
-
 	{
+		using namespace App::Scene;
+
 		if ( not p_index.isValid() )
 		{
 			return {};
 		}
 
-		E_ITEM	  item;
-		RootIndex globalIndex;
-		Index	  localIndex;
-		unpack( p_index.internalId(), item, globalIndex, localIndex );
+		E_ITEM	item;
+		RootUID rootIndex;
+		Index	localIndex;
+		unpack( p_index.internalId(), item, rootIndex, localIndex );
 
-		if ( not _mapGlobalIndexRow.contains( globalIndex ) )
+		if ( not _mapGlobalIndexRow.contains( rootIndex ) )
 		{
 			return {};
 		}
 
 		const Core::Struct::System & system
-			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( globalIndex )->data );
+			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( rootIndex )->data );
 
 		switch ( p_role )
 		{
@@ -125,14 +127,18 @@ namespace VTX::UI::QT
 			}
 			return {};
 		case ItemRole: return int( item );
-		case GlobalRole: return globalIndex;
+		case RootRole: return rootIndex;
 		case LocalRole: return localIndex;
+		case VisibleRole: // TODO.
+			return true;
 		default: return {};
 		}
 	}
 
 	QModelIndex Model::index( int p_row, int p_column, const QModelIndex & p_parent ) const
 	{
+		using namespace App::Scene;
+
 		if ( p_column != 0 || p_row < 0 )
 		{
 			return {};
@@ -148,18 +154,18 @@ namespace VTX::UI::QT
 			return createIndex( p_row, p_column, pack( E_ITEM::SYSTEM, _rows[ p_row ]->index, 0 ) );
 		}
 
-		E_ITEM	  item;
-		RootIndex globalIndex;
-		Index	  localIndex;
-		unpack( p_parent.internalId(), item, globalIndex, localIndex );
+		E_ITEM	item;
+		RootUID rootIndex;
+		Index	localIndex;
+		unpack( p_parent.internalId(), item, rootIndex, localIndex );
 
-		if ( not _mapGlobalIndexRow.contains( globalIndex ) )
+		if ( not _mapGlobalIndexRow.contains( rootIndex ) )
 		{
 			return {};
 		}
 
 		const Core::Struct::System & system
-			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( globalIndex )->data );
+			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( rootIndex )->data );
 
 		switch ( item )
 		{
@@ -171,7 +177,7 @@ namespace VTX::UI::QT
 				return {};
 			}
 
-			return createIndex( p_row, p_column, pack( E_ITEM::CHAIN, globalIndex, p_row ) );
+			return createIndex( p_row, p_column, pack( E_ITEM::CHAIN, rootIndex, p_row ) );
 		}
 		// Residue.
 		case E_ITEM::CHAIN:
@@ -187,7 +193,7 @@ namespace VTX::UI::QT
 			}
 
 			return createIndex(
-				p_row, p_column, pack( E_ITEM::RESIDUE, globalIndex, system.chainFirstResidues[ localIndex ] + p_row )
+				p_row, p_column, pack( E_ITEM::RESIDUE, rootIndex, system.chainFirstResidues[ localIndex ] + p_row )
 			);
 		}
 		// Atom.
@@ -204,7 +210,7 @@ namespace VTX::UI::QT
 			}
 
 			return createIndex(
-				p_row, p_column, pack( E_ITEM::ATOM, globalIndex, system.residueFirstAtomIndexes[ localIndex ] + p_row )
+				p_row, p_column, pack( E_ITEM::ATOM, rootIndex, system.residueFirstAtomIndexes[ localIndex ] + p_row )
 			);
 		}
 		default: return {};
@@ -213,15 +219,17 @@ namespace VTX::UI::QT
 
 	QModelIndex Model::parent( const QModelIndex & p_index ) const
 	{
+		using namespace App::Scene;
+
 		if ( not p_index.isValid() )
 		{
 			return {};
 		}
 
-		E_ITEM	  item;
-		RootIndex globalIndex;
-		Index	  localIndex;
-		unpack( p_index.internalId(), item, globalIndex, localIndex );
+		E_ITEM	item;
+		RootUID rootIndex;
+		Index	localIndex;
+		unpack( p_index.internalId(), item, rootIndex, localIndex );
 
 		// Root.
 		if ( item == E_ITEM::SYSTEM )
@@ -229,13 +237,13 @@ namespace VTX::UI::QT
 			return {};
 		}
 
-		if ( not _mapGlobalIndexRow.contains( globalIndex ) )
+		if ( not _mapGlobalIndexRow.contains( rootIndex ) )
 		{
 			return {};
 		}
 
 		const Core::Struct::System & system
-			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( globalIndex )->data );
+			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( rootIndex )->data );
 
 		switch ( item )
 		{
@@ -246,9 +254,7 @@ namespace VTX::UI::QT
 				return {};
 			}
 
-			return createIndex(
-				_mapGlobalIndexRow.at( globalIndex )->position, 0, pack( E_ITEM::SYSTEM, globalIndex, 0 )
-			);
+			return createIndex( _mapGlobalIndexRow.at( rootIndex )->position, 0, pack( E_ITEM::SYSTEM, rootIndex, 0 ) );
 		}
 		case E_ITEM::RESIDUE:
 		{
@@ -259,7 +265,7 @@ namespace VTX::UI::QT
 
 			const Index chain		= system.residueChainIndexes[ localIndex ];
 			const int	rowInSystem = int( chain );
-			return createIndex( rowInSystem, 0, pack( E_ITEM::CHAIN, globalIndex, chain ) );
+			return createIndex( rowInSystem, 0, pack( E_ITEM::CHAIN, rootIndex, chain ) );
 		}
 		case E_ITEM::ATOM:
 		{
@@ -271,7 +277,7 @@ namespace VTX::UI::QT
 			const Index residue	   = system.atomResidueIndexes[ localIndex ];
 			const Index chain	   = system.residueChainIndexes[ residue ];
 			const int	rowInChain = int( residue - system.chainFirstResidues[ chain ] );
-			return createIndex( rowInChain, 0, pack( E_ITEM::RESIDUE, globalIndex, residue ) );
+			return createIndex( rowInChain, 0, pack( E_ITEM::RESIDUE, rootIndex, residue ) );
 		}
 		default: return {};
 		}
@@ -279,6 +285,8 @@ namespace VTX::UI::QT
 
 	void Model::_onSystemLoad( const App::Events::SystemLoad & p_e )
 	{
+		using namespace App::Scene;
+
 		const auto & reg	  = App::REG();
 		const auto	 entity	  = p_e.system;
 		const auto & system	  = reg.get<Core::Struct::System>( entity );
@@ -325,18 +333,18 @@ namespace VTX::UI::QT
 		endRemoveRows();
 	}
 
-	quintptr Model::pack( const E_ITEM p_item, const RootIndex p_globalIndex, const Index p_index )
+	quintptr Model::pack( const App::Scene::E_ITEM p_item, const RootUID p_rootIndex, const Index p_index )
 	{
-		// [ p_item:8 | p_globalIndex:16 | p_index:32 ]  <= 56 bits
-		return ( quintptr( p_item ) << 48 ) |		 // bits 48..55
-			   ( quintptr( p_globalIndex ) << 32 ) | // bits 32..47
-			   ( quintptr( p_index ) );				 // bits  0..31
+		// [ p_item:8 | p_rootIndex:16 | p_index:32 ]  <= 56 bits
+		return ( quintptr( p_item ) << 48 ) |	   // bits 48..55
+			   ( quintptr( p_rootIndex ) << 32 ) | // bits 32..47
+			   ( quintptr( p_index ) );			   // bits  0..31
 	}
 
-	void Model::unpack( const quintptr p_v, E_ITEM & p_item, RootIndex & p_globalIndex, Index & p_index )
+	void Model::unpack( const quintptr p_v, App::Scene::E_ITEM & p_item, RootUID & p_rootIndex, Index & p_index )
 	{
-		p_item		  = E_ITEM( ( p_v >> 48 ) & 0xFF );		 // 8 bits
-		p_globalIndex = RootIndex( ( p_v >> 32 ) & 0xFFFF ); // 16 bits
-		p_index		  = Index( p_v & 0xFFFFFFFFu );			 // 32 bits
+		p_item		= App::Scene::E_ITEM( ( p_v >> 48 ) & 0xFF ); // 8 bits
+		p_rootIndex = RootUID( ( p_v >> 32 ) & 0xFFFF );		  // 16 bits
+		p_index		= Index( p_v & 0xFFFFFFFFu );				  // 32 bits
 	}
 } // namespace VTX::UI::QT

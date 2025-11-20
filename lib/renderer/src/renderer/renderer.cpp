@@ -280,7 +280,7 @@ namespace VTX::Renderer
 		assert( p_proxy.idDefaultRepresentation == 0 );
 
 		// If size max reached, do not add.
-		if ( _proxiesSystems.size() >= TypeMax<RootIndex> )
+		if ( _proxiesSystems.size() >= TypeMax<RootUID> )
 		{
 			throw GraphicException( "Max system count reached" );
 		}

@@ -6,13 +6,10 @@
 
 namespace VTX::App::Action::Application
 {
-	/*
-	void NewScene::execute() { SCENE().reset(); }
-	*/
 
 	void Quit::execute()
 	{
-		// APP::onEndOfFrameOneShot += []() { APP::stop(); };
+		// TODO.
 	}
 
 	void Resize::execute( const size_t p_width, const size_t p_height )

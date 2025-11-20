@@ -14,6 +14,8 @@ namespace VTX::UI::QT::Widget
 
 	void Selection::refreshSelection()
 	{
+		using namespace App::Scene;
+
 		auto &				  model			 = MODEL();
 		auto &				  selectionModel = SELECTION();
 		const QModelIndexList rows			 = selectionModel.selectedRows();
@@ -31,9 +33,9 @@ namespace VTX::UI::QT::Widget
 			}
 
 			// Get data.
-			const Model::E_ITEM item		= index.data( Model::ItemRole ).value<Model::E_ITEM>();
-			const RootIndex		globalIndex = index.data( Model::GlobalRole ).value<RootIndex>();
-			const Index			localIndex	= index.data( Model::LocalRole ).value<Index>();
+			const E_ITEM  item		  = index.data( Model::ItemRole ).value<E_ITEM>();
+			const RootUID globalIndex = index.data( Model::RootRole ).value<RootUID>();
+			const Index	  localIndex  = index.data( Model::LocalRole ).value<Index>();
 
 			// Get components.
 			App::ECS::Entity ent	  = model.getMapRows().at( globalIndex )->entity;
@@ -51,13 +53,13 @@ namespace VTX::UI::QT::Widget
 
 			switch ( item )
 			{
-			case Model::E_ITEM::SYSTEM: break;
-			case Model::E_ITEM::CHAIN: chainName = QString::fromStdString( system.chainNames[ localIndex ] ); break;
-			case Model::E_ITEM::RESIDUE:
+			case E_ITEM::SYSTEM: break;
+			case E_ITEM::CHAIN: chainName = QString::fromStdString( system.chainNames[ localIndex ] ); break;
+			case E_ITEM::RESIDUE:
 				residueName = QString::fromStdString( system.residueNames[ localIndex ] );
 				chainName	= QString::fromStdString( system.chainNames[ system.residueChainIndexes[ localIndex ] ] );
 				break;
-			case Model::E_ITEM::ATOM:
+			case E_ITEM::ATOM:
 				atomName	= QString::fromStdString( system.atomNames[ localIndex ] );
 				residueName = QString::fromStdString( system.residueNames[ system.atomResidueIndexes[ localIndex ] ] );
 				chainName	= QString::fromStdString(

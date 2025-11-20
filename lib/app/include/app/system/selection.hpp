@@ -5,6 +5,9 @@
 
 namespace VTX::App::System
 {
+	/**
+	 * @brief Store selected elements.
+	 */
 	struct Selection
 	{
 		bool						 isFullSystemSelected = false;

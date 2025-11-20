@@ -17,6 +17,12 @@
 namespace VTX::Core::Struct
 {
 	/**
+	 * @brief Element index ranges.
+	 */
+	using IndexRange	 = Util::Math::Range<Index>;
+	using IndexRangeList = Util::Math::RangeList<Index>;
+
+	/**
 	 * @brief Raw data structure representing a molecular system.
 	 */
 	struct System
@@ -121,13 +127,176 @@ namespace VTX::Core::Struct
 		/**
 		 * @brief All needed getters.
 		 */
-		inline Index					  getChainCount() const { return Index( chainNames.size() ); }
-		inline Index					  getResidueCount() const { return Index( residueSymbols.size() ); }
-		inline Index					  getAtomCount() const { return Index( atomSymbols.size() ); }
-		inline Index					  getBondCount() const { return Index( bondOrders.size() ); }
+		inline Index getChainCount() const { return Index( chainNames.size() ); }
+
+		inline Index getResidueCount() const { return Index( residueSymbols.size() ); }
+
+		inline Index getAtomCount() const { return Index( atomSymbols.size() ); }
+
+		inline Index getBondCount() const { return Index( bondOrders.size() ); }
+
 		inline const std::vector<Index> & getChainIndexesFromCategory( const ChemDB::Category::TYPE p_category ) const
 		{
 			return categories[ uint( p_category ) ];
+		}
+
+		inline const std::string & getChainName( const Index p_chainIndex ) const { return chainNames[ p_chainIndex ]; }
+
+		inline Index getChainFirstResidue( const Index p_chainIndex ) const
+		{
+			return chainFirstResidues[ p_chainIndex ];
+		}
+
+		inline Index getChainResidueCount( const Index p_chainIndex ) const
+		{
+			return chainResidueCounts[ p_chainIndex ];
+		}
+
+		inline IndexRange getChainResidueRange( const Index p_chainIndex ) const
+		{
+			const Index first = getChainFirstResidue( p_chainIndex );
+			const Index count = getChainResidueCount( p_chainIndex );
+			return IndexRange::fromFirstCount( first, count );
+		}
+
+		inline Index getChainFirstAtom( const Index p_chainIndex ) const
+		{
+			const Index firstResidue = getChainFirstResidue( p_chainIndex );
+			return residueFirstAtomIndexes[ firstResidue ];
+		}
+
+		inline Index getChainAtomCount( const Index p_chainIndex ) const
+		{
+			const Index firstResidue = getChainFirstResidue( p_chainIndex );
+			const Index residueCount = getChainResidueCount( p_chainIndex );
+			Index		atomCount	 = 0;
+
+			for ( Index r = firstResidue; r < firstResidue + residueCount; ++r )
+			{
+				atomCount += residueAtomCounts[ r ];
+			}
+
+			return atomCount;
+		}
+
+		inline IndexRange getChainAtomRange( const Index p_chainIndex ) const
+		{
+			const Index firstAtom = getChainFirstAtom( p_chainIndex );
+			const Index count	  = getChainAtomCount( p_chainIndex );
+			return IndexRange::fromFirstCount( firstAtom, count );
+		}
+
+		inline Index getChainFirstBond( const Index p_chainIndex ) const
+		{
+			const Index firstResidue = getChainFirstResidue( p_chainIndex );
+			return residueFirstBondIndexes[ firstResidue ];
+		}
+
+		inline Index getChainBondCount( const Index p_chainIndex ) const
+		{
+			const Index firstResidue = getChainFirstResidue( p_chainIndex );
+			const Index residueCount = getChainResidueCount( p_chainIndex );
+			Index		bondCount	 = 0;
+
+			for ( Index r = firstResidue; r < firstResidue + residueCount; ++r )
+			{
+				bondCount += residueBondCounts[ r ];
+			}
+
+			return bondCount;
+		}
+
+		inline IndexRange getChainBondRange( const Index p_chainIndex ) const
+		{
+			const Index firstBond = getChainFirstBond( p_chainIndex );
+			const Index count	  = getChainBondCount( p_chainIndex );
+			return IndexRange::fromFirstCount( firstBond, count );
+		}
+
+		inline ChemDB::Residue::SYMBOL getResidueSymbol( const Index p_residueIndex ) const
+		{
+			return residueSymbols[ p_residueIndex ];
+		}
+
+		inline const std::string & getResidueName( const Index p_residueIndex ) const
+		{
+			return residueNames[ p_residueIndex ];
+		}
+
+		inline Index getResidueChainIndex( const Index p_residueIndex ) const
+		{
+			return residueChainIndexes[ p_residueIndex ];
+		}
+
+		inline Index getResidueOriginalId( const Index p_residueIndex ) const
+		{
+			return residueOriginalIds[ p_residueIndex ];
+		}
+
+		inline Index getResidueFirstAtom( const Index p_residueIndex ) const
+		{
+			return residueFirstAtomIndexes[ p_residueIndex ];
+		}
+
+		inline Index getResidueAtomCount( const Index p_residueIndex ) const
+		{
+			return residueAtomCounts[ p_residueIndex ];
+		}
+
+		inline IndexRange getResidueAtomRange( const Index p_residueIndex ) const
+		{
+			const Index first = getResidueFirstAtom( p_residueIndex );
+			const Index count = getResidueAtomCount( p_residueIndex );
+			return IndexRange::fromFirstCount( first, count );
+		}
+
+		inline Index getResidueFirstBond( const Index p_residueIndex ) const
+		{
+			return residueFirstBondIndexes[ p_residueIndex ];
+		}
+
+		inline Index getResidueBondCount( const Index p_residueIndex ) const
+		{
+			return residueBondCounts[ p_residueIndex ];
+		}
+
+		inline IndexRange getResidueBondRange( const Index p_residueIndex ) const
+		{
+			const Index first = getResidueFirstBond( p_residueIndex );
+			const Index count = getResidueBondCount( p_residueIndex );
+			return IndexRange::fromFirstCount( first, count );
+		}
+
+		inline ChemDB::SecondaryStructure::TYPE getResidueSecondaryStructureType( const Index p_residueIndex ) const
+		{
+			return residueSecondaryStructureTypes[ p_residueIndex ];
+		}
+
+		inline ChemDB::Atom::SYMBOL getAtomSymbol( const Index p_atomIndex ) const
+		{
+			return atomSymbols[ p_atomIndex ];
+		}
+
+		inline const std::string & getAtomName( const Index p_atomIndex ) const { return atomNames[ p_atomIndex ]; }
+
+		inline Index getAtomResidueIndex( const Index p_atomIndex ) const { return atomResidueIndexes[ p_atomIndex ]; }
+
+		inline Index getAtomChainIndex( const Index p_atomIndex ) const
+		{
+			const Index residueIndex = getAtomResidueIndex( p_atomIndex );
+			return getResidueChainIndex( residueIndex );
+		}
+
+		inline ChemDB::Bond::ORDER getBondOrder( const Index p_bondIndex ) const { return bondOrders[ p_bondIndex ]; }
+
+		inline Index getBondFirstAtom( const Index p_bondIndex ) const
+		{
+			return bondPairAtomIndexes[ p_bondIndex * 2 ];
+		}
+
+		inline Index getBondSecondAtom( const Index p_bondIndex ) const
+		{
+			return bondPairAtomIndexes[ p_bondIndex * 2 + 1 ];
 		}
 	};
 

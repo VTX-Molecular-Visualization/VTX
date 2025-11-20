@@ -31,6 +31,8 @@ namespace VTX::UI::QT::Menu
 
 	void Selection::_refresh()
 	{
+		using namespace App::Scene;
+
 		// Clear previous actions.
 		clear();
 
@@ -45,10 +47,10 @@ namespace VTX::UI::QT::Menu
 		auto & selectionModel = SELECTION();
 		auto & model		  = MODEL();
 
-		const size_t			  count = size_t( Model::E_ITEM::COUNT );
+		const size_t			  count = size_t( E_ITEM::COUNT );
 		std::array<size_t, count> rowsPerItem;
 		rowsPerItem.fill( 0 );
-		std::vector<RootIndex> systemGlobalIndexes;
+		std::vector<RootUID> systemGlobalIndexes;
 
 		const QModelIndex	  clickedRow = selectionModel.currentIndex(); // TODO: not valid in menubar context.
 		const QModelIndexList rows		 = selectionModel.selectedRows();
@@ -60,23 +62,23 @@ namespace VTX::UI::QT::Menu
 			}
 
 			// Decode index to get entity.
-			Model::E_ITEM item;
-			RootIndex	  globalIndex;
-			Index		  localIndex;
+			E_ITEM	item;
+			RootUID globalIndex;
+			Index	localIndex;
 			Model::unpack( index.internalId(), item, globalIndex, localIndex );
 
 			rowsPerItem[ size_t( item ) ] += 1;
 
-			if ( item == Model::E_ITEM::SYSTEM )
+			if ( item == E_ITEM::SYSTEM )
 			{
 				systemGlobalIndexes.push_back( globalIndex );
 			}
 		}
 
-		const size_t systemRows	 = rowsPerItem[ size_t( Model::E_ITEM::SYSTEM ) ];
-		const size_t chainRows	 = rowsPerItem[ size_t( Model::E_ITEM::CHAIN ) ];
-		const size_t residueRows = rowsPerItem[ size_t( Model::E_ITEM::RESIDUE ) ];
-		const size_t atomRows	 = rowsPerItem[ size_t( Model::E_ITEM::ATOM ) ];
+		const size_t systemRows	 = rowsPerItem[ size_t( E_ITEM::SYSTEM ) ];
+		const size_t chainRows	 = rowsPerItem[ size_t( E_ITEM::CHAIN ) ];
+		const size_t residueRows = rowsPerItem[ size_t( E_ITEM::RESIDUE ) ];
+		const size_t atomRows	 = rowsPerItem[ size_t( E_ITEM::ATOM ) ];
 
 		if ( systemRows > 0 )
 		{
