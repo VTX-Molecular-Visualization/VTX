@@ -1,7 +1,8 @@
-#include "ui/qt/selection_model.hpp"
+﻿#include "ui/qt/selection_model.hpp"
 #include "ui/qt/model.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/selection.hpp>
+#include <app/helper/system.hpp>
 #include <app/services.hpp>
 #include <app/system/uid.hpp>
 #include <core/struct/system.hpp>
@@ -129,17 +130,87 @@ namespace VTX::UI::QT
 		);
 	}
 
-	void SelectionModel::_onSelectionChange( const App::Events::SelectionChange & p_e )
+	void SelectionModel::_onSelectionChange( const App::Events::SelectionChange & )
 	{
 		using namespace App;
-		// Block recursive selection change.
+		using namespace App::Scene;
 
-		auto &		 reg	   = REG();
-		const auto	 entity	   = p_e.system;
-		const auto & selection = reg.get<System::Selection>( entity );
-		const auto & uid	   = reg.get<System::UID>( entity );
+		auto &													reg		 = REG();
+		const auto												entities = reg.view<App::System::Selection>();
+		const auto *											model	 = static_cast<const Model *>( this->model() );
+		const std::unordered_map<RootUID, const Model::Row *> & mapRootToRows = model->getMapRootToRows();
 
-		// QSignalBlocker blocker( this );
-		// clear();
+		QSignalBlocker blocker( this );
+		QItemSelection qSelection;
+
+		for ( auto entity : entities )
+		{
+			const auto &  system	= reg.get<Core::Struct::System>( entity );
+			const auto &  selection = reg.get<System::Selection>( entity );
+			const auto &  uid		= reg.get<System::UID>( entity );
+			const RootUID rootUID	= uid.system;
+
+			if ( Helper::System::isFullySelected<E_ITEM::SYSTEM>( entity ) )
+			{
+				const QModelIndex index
+					= model->makeIndex( mapRootToRows.at( rootUID )->position, E_ITEM::SYSTEM, rootUID, 0 );
+				qSelection.select( index, index );
+				continue;
+			}
+			else if ( Helper::System::isSelected<E_ITEM::SYSTEM>( entity ) == false )
+			{
+				continue;
+			}
+
+			// Chains.
+			for ( Index chain = 0; chain < system.getChainCount(); ++chain )
+			{
+				QString chainName = QString::fromStdString( system.getChainName( chain ) );
+				if ( Helper::System::isFullySelected<E_ITEM::CHAIN>( entity, chain ) )
+				{
+					const QModelIndex index = model->makeIndex( chain, E_ITEM::CHAIN, rootUID, chain );
+					qSelection.select( index, index );
+					continue;
+				}
+				else if ( Helper::System::isSelected<E_ITEM::CHAIN>( entity, chain ) == false )
+				{
+					continue;
+				}
+
+				// Residues.
+				for ( Index residue : system.getChainResidueRange( chain ) )
+				{
+					QString residueName = QString::fromStdString( system.getResidueName( residue ) );
+					if ( Helper::System::isFullySelected<E_ITEM::RESIDUE>( entity, residue ) )
+					{
+						const QModelIndex index = model->makeIndex(
+							residue - system.getChainFirstResidue( chain ), E_ITEM::RESIDUE, rootUID, residue
+						);
+						qSelection.select( index, index );
+						continue;
+					}
+					else if ( Helper::System::isSelected<E_ITEM::RESIDUE>( entity, residue ) == false )
+					{
+						continue;
+					}
+
+					// Atoms.
+					for ( Index atom : system.getResidueAtomRange( residue ) )
+					{
+						if ( Helper::System::isSelected<E_ITEM::ATOM>( entity, atom ) )
+						{
+							const QModelIndex index = model->makeIndex(
+								atom - system.getResidueFirstAtom( residue ), E_ITEM::ATOM, rootUID, atom
+							);
+							qSelection.select( index, index );
+						}
+					}
+				}
+			}
+		}
+
+		// Apply.
+		select( qSelection, QItemSelectionModel::ClearAndSelect );
 	}
+
 } // namespace VTX::UI::QT

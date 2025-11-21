@@ -74,6 +74,11 @@ namespace VTX::UI::QT
 		QModelIndex parent( const QModelIndex & p_index ) const override;
 
 		/**
+		 * @brief Public index creation.
+		 */
+		QModelIndex makeIndex( const int p_row, const App::Scene::E_ITEM, const RootUID, const Index ) const;
+
+		/**
 		 * @brief Pack minimum information to identify an item in the model into a single uint64.
 		 */
 		static quintptr pack( const App::Scene::E_ITEM, const RootUID, const Index );
@@ -83,11 +88,11 @@ namespace VTX::UI::QT
 		 */
 		static void unpack( const quintptr, App::Scene::E_ITEM &, RootUID &, Index & );
 
-		// inline const std::unordered_map<RootUID, const Row *> & getMapRows() const { return _mapGlobalIndexRow; }
+		inline const std::unordered_map<RootUID, const Row *> & getMapRootToRows() const { return _mapRootRow; }
 
 		inline const std::unordered_map<RootUID, App::ECS::Entity> & getMapRootToEntity() const
 		{
-			return _mapRootToEntity;
+			return _mapRootEntity;
 		}
 
 	  private:
@@ -101,9 +106,8 @@ namespace VTX::UI::QT
 		 */
 		// TODO: redo
 		std::unordered_map<App::ECS::Entity, const Row *> _mapEntityRow;
-		std::unordered_map<RootUID, const Row *>		  _mapGlobalIndexRow;
-
-		std::unordered_map<RootUID, App::ECS::Entity> _mapRootToEntity;
+		std::unordered_map<RootUID, const Row *>		  _mapRootRow;
+		std::unordered_map<RootUID, App::ECS::Entity>	  _mapRootEntity;
 
 		/**
 		 * @brief Callback on system construction to add it to the model.

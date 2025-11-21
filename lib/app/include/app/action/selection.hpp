@@ -123,10 +123,18 @@ namespace VTX::App::Action::Selection
 	};
 
 	/**
-	 * @brief Clear all.
+	 * @brief Clear selection.
 	 */
 	struct Clear
 	{
+		/**
+		 * @brief For all systems.
+		 */
+		void execute();
+
+		/**
+		 * @brief For a specific system.
+		 */
 		void execute( const ECS::Entity p_ent );
 	};
 } // namespace VTX::App::Action::Selection

@@ -29,13 +29,13 @@ namespace VTX::UI::QT
 		Index	localIndex;
 		unpack( p_parent.internalId(), item, rootIndex, localIndex );
 
-		if ( not _mapGlobalIndexRow.contains( rootIndex ) )
+		if ( not _mapRootRow.contains( rootIndex ) )
 		{
 			return 0;
 		}
 
 		const Core::Struct::System & system
-			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( rootIndex )->data );
+			= *std::get<const Core::Struct::System *>( _mapRootRow.at( rootIndex )->data );
 
 		switch ( item )
 		{
@@ -79,13 +79,13 @@ namespace VTX::UI::QT
 		Index	localIndex;
 		unpack( p_index.internalId(), item, rootIndex, localIndex );
 
-		if ( not _mapGlobalIndexRow.contains( rootIndex ) )
+		if ( not _mapRootRow.contains( rootIndex ) )
 		{
 			return {};
 		}
 
 		const Core::Struct::System & system
-			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( rootIndex )->data );
+			= *std::get<const Core::Struct::System *>( _mapRootRow.at( rootIndex )->data );
 
 		switch ( p_role )
 		{
@@ -159,13 +159,13 @@ namespace VTX::UI::QT
 		Index	localIndex;
 		unpack( p_parent.internalId(), item, rootIndex, localIndex );
 
-		if ( not _mapGlobalIndexRow.contains( rootIndex ) )
+		if ( not _mapRootRow.contains( rootIndex ) )
 		{
 			return {};
 		}
 
 		const Core::Struct::System & system
-			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( rootIndex )->data );
+			= *std::get<const Core::Struct::System *>( _mapRootRow.at( rootIndex )->data );
 
 		switch ( item )
 		{
@@ -237,13 +237,13 @@ namespace VTX::UI::QT
 			return {};
 		}
 
-		if ( not _mapGlobalIndexRow.contains( rootIndex ) )
+		if ( not _mapRootRow.contains( rootIndex ) )
 		{
 			return {};
 		}
 
 		const Core::Struct::System & system
-			= *std::get<const Core::Struct::System *>( _mapGlobalIndexRow.at( rootIndex )->data );
+			= *std::get<const Core::Struct::System *>( _mapRootRow.at( rootIndex )->data );
 
 		switch ( item )
 		{
@@ -254,7 +254,7 @@ namespace VTX::UI::QT
 				return {};
 			}
 
-			return createIndex( _mapGlobalIndexRow.at( rootIndex )->position, 0, pack( E_ITEM::SYSTEM, rootIndex, 0 ) );
+			return createIndex( _mapRootRow.at( rootIndex )->position, 0, pack( E_ITEM::SYSTEM, rootIndex, 0 ) );
 		}
 		case E_ITEM::RESIDUE:
 		{
@@ -283,6 +283,17 @@ namespace VTX::UI::QT
 		}
 	}
 
+	QModelIndex Model::makeIndex(
+		const int				 p_row,
+		const App::Scene::E_ITEM p_type,
+		const RootUID			 p_rootUID,
+		const Index				 p_index
+	) const
+	{
+		quintptr id = pack( p_type, p_rootUID, p_index );
+		return createIndex( p_row, 0, id );
+	}
+
 	void Model::_onSystemLoad( const App::Events::SystemLoad & p_e )
 	{
 		using namespace App::Scene;
@@ -301,10 +312,10 @@ namespace VTX::UI::QT
 			)
 		);
 
-		auto & row						 = _rows.back();
-		_mapEntityRow[ row->entity ]	 = row.get();
-		_mapGlobalIndexRow[ row->index ] = row.get();
-		_mapRootToEntity[ row->index ]	 = entity;
+		auto & row					 = _rows.back();
+		_mapEntityRow[ row->entity ] = row.get();
+		_mapRootRow[ row->index ]	 = row.get();
+		_mapRootEntity[ row->index ] = entity;
 
 		endInsertRows();
 	}
@@ -318,18 +329,18 @@ namespace VTX::UI::QT
 
 		beginRemoveRows( QModelIndex(), position, position );
 
-		_mapGlobalIndexRow.erase( rowPtr->index );
+		_mapRootRow.erase( rowPtr->index );
 		_mapEntityRow.erase( p_e );
-		_mapRootToEntity.erase( rowPtr->index );
+		_mapRootEntity.erase( rowPtr->index );
 
 		_rows.erase( _rows.begin() + position );
 
 		for ( int i = position; i < int( _rows.size() ); ++i )
 		{
-			Row * r						   = _rows[ i ].get();
-			r->position					   = i;
-			_mapEntityRow[ r->entity ]	   = r;
-			_mapGlobalIndexRow[ r->index ] = r;
+			Row * r					   = _rows[ i ].get();
+			r->position				   = i;
+			_mapEntityRow[ r->entity ] = r;
+			_mapRootRow[ r->index ]	   = r;
 		}
 
 		endRemoveRows();

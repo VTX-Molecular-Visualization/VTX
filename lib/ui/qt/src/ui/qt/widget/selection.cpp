@@ -7,6 +7,12 @@
 #include <core/struct/system.hpp>
 #include <util/event_hub.hpp>
 
+namespace
+{
+	// TODO: use and make configurable?
+	constexpr uint MAX_DISPLAYED = 50;
+} // namespace
+
 namespace VTX::UI::QT::Widget
 {
 	Selection::Selection( QWidget * const p_parent ) : BaseWidget( p_parent )
@@ -18,7 +24,7 @@ namespace VTX::UI::QT::Widget
 		App::HUB().connect<App::Events::SelectionChange, &Selection::_onSelectionChange>( this );
 	}
 
-	void Selection::_onSelectionChange( const App::Events::SelectionChange & p_e )
+	void Selection::_onSelectionChange( const App::Events::SelectionChange & )
 	{
 		using namespace App;
 		using namespace App::Scene;
