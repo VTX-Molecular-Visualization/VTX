@@ -19,6 +19,27 @@ namespace VTX::UI::QT::Widget
 		// Selection.
 		setSelectionMode( QAbstractItemView::ExtendedSelection );
 		setSelectionBehavior( QAbstractItemView::SelectRows );
+
+		// One expanded at a time.
+		connect(
+			this,
+			&QTreeView::expanded,
+			[ this ]( const QModelIndex & p_index )
+			{
+				QModelIndex parent	 = p_index.parent();
+				const int	rowCount = model()->rowCount( parent );
+
+				for ( int r = 0; r < rowCount; r++ )
+				{
+					QModelIndex sibling = model()->index( r, 0, parent );
+
+					if ( sibling != p_index && isExpanded( sibling ) )
+					{
+						collapse( sibling );
+					}
+				}
+			}
+		);
 	}
 
 	void Tree::contextMenuEvent( QContextMenuEvent * p_e )

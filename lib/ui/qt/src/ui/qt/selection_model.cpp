@@ -3,6 +3,7 @@
 #include <app/action/action_manager.hpp>
 #include <app/action/selection.hpp>
 #include <app/services.hpp>
+#include <app/system/uid.hpp>
 #include <core/struct/system.hpp>
 #include <util/chrono.hpp>
 
@@ -12,10 +13,11 @@ namespace VTX::UI::QT
 	SelectionModel::SelectionModel( QAbstractItemModel * p_model, QObject * p_parent ) :
 		QItemSelectionModel( p_model, p_parent )
 	{
-		// TODO: connect to application selection changes.
-		// TODO: propagate selection changes to application selection.
-
+		// QT -> App.
 		connect( this, &QItemSelectionModel::selectionChanged, this, &SelectionModel::_selectionChanged );
+
+		// App -> QT.
+		App::HUB().connect<App::Events::SelectionChange, &SelectionModel::_onSelectionChange>( this );
 	}
 
 	// TODO: optimize and factorize.
@@ -125,5 +127,19 @@ namespace VTX::UI::QT
 		VTX_DEBUG(
 			"SelectionModel::_selectionChanged - done ({})", Util::String::durationToStr( timer.elapsedTime() )
 		);
+	}
+
+	void SelectionModel::_onSelectionChange( const App::Events::SelectionChange & p_e )
+	{
+		using namespace App;
+		// Block recursive selection change.
+
+		auto &		 reg	   = REG();
+		const auto	 entity	   = p_e.system;
+		const auto & selection = reg.get<System::Selection>( entity );
+		const auto & uid	   = reg.get<System::UID>( entity );
+
+		// QSignalBlocker blocker( this );
+		// clear();
 	}
 } // namespace VTX::UI::QT

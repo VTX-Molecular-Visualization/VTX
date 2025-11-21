@@ -1,9 +1,11 @@
 #include "ui/qt/widget/selection.hpp"
-#include "ui/qt/model.hpp"
-#include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
-#include <app/helper/scene.hpp>
+#include <app/helper/system.hpp>
+#include <app/services.hpp>
 #include <app/system/metadata.hpp>
+#include <app/system/selection.hpp>
+#include <core/struct/system.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -11,81 +13,80 @@ namespace VTX::UI::QT::Widget
 	{
 		// Disable selection.
 		this->setSelectionMode( QAbstractItemView::NoSelection );
+
+		// Refresh widget when selection changed.
+		App::HUB().connect<App::Events::SelectionChange, &Selection::_onSelectionChange>( this );
 	}
 
-	void Selection::refreshSelection()
+	void Selection::_onSelectionChange( const App::Events::SelectionChange & p_e )
 	{
+		using namespace App;
 		using namespace App::Scene;
 
-		auto &				  model			 = MODEL();
-		auto &				  selectionModel = SELECTION();
-		const QModelIndexList rows			 = selectionModel.selectedRows();
+		auto &	   reg		= REG();
+		const auto entities = reg.view<App::System::Selection>();
 
 		// Delete all items.
 		this->clear();
 
 		// Add selected items.
-		for ( const QModelIndex & index : rows )
+		for ( auto entity : entities )
 		{
-			if ( not index.isValid() )
+			const auto & system	   = reg.get<Core::Struct::System>( entity );
+			const auto & selection = reg.get<App::System::Selection>( entity );
+
+			QString name = QString::fromStdString( system.name );
+			if ( Helper::System::isFullySelected<E_ITEM::SYSTEM>( entity ) )
 			{
-				this->addItem( "<invalid>" );
+				addItem( name );
+				continue;
+			}
+			else if ( Helper::System::isSelected<E_ITEM::SYSTEM>( entity ) == false )
+			{
 				continue;
 			}
 
-			// Get data.
-			const E_ITEM  item		  = index.data( Model::ItemRole ).value<E_ITEM>();
-			const RootUID globalIndex = index.data( Model::RootRole ).value<RootUID>();
-			const Index	  localIndex  = index.data( Model::LocalRole ).value<Index>();
-
-			// Get components.
-			// TODO: not efficient.
-			App::ECS::Entity ent	  = App::Helper::Scene::findSystemByRootUID( globalIndex ).value();
-			auto &			 system	  = App::REG().get<Core::Struct::System>( ent );
-			auto &			 metadata = App::REG().get<App::System::Metadata>( ent );
-
-			QString display;
-
-			// Add pdb id.
-			display += QString::fromStdString( metadata.pdbIDCode );
-
-			std::optional<QString> chainName;
-			std::optional<QString> residueName;
-			std::optional<QString> atomName;
-
-			switch ( item )
+			// Chains.
+			for ( Index chain = 0; chain < system.getChainCount(); ++chain )
 			{
-			case E_ITEM::SYSTEM: break;
-			case E_ITEM::CHAIN: chainName = QString::fromStdString( system.chainNames[ localIndex ] ); break;
-			case E_ITEM::RESIDUE:
-				residueName = QString::fromStdString( system.residueNames[ localIndex ] );
-				chainName	= QString::fromStdString( system.chainNames[ system.residueChainIndexes[ localIndex ] ] );
-				break;
-			case E_ITEM::ATOM:
-				atomName	= QString::fromStdString( system.atomNames[ localIndex ] );
-				residueName = QString::fromStdString( system.residueNames[ system.atomResidueIndexes[ localIndex ] ] );
-				chainName	= QString::fromStdString(
-					  system.chainNames[ system.residueChainIndexes[ system.atomResidueIndexes[ localIndex ] ] ]
-				  );
-				break;
-			default: break;
-			}
+				QString chainName = QString::fromStdString( system.getChainName( chain ) );
+				if ( Helper::System::isFullySelected<E_ITEM::CHAIN>( entity, chain ) )
+				{
+					addItem( name + "/" + chainName );
+					continue;
+				}
+				else if ( Helper::System::isSelected<E_ITEM::CHAIN>( entity, chain ) == false )
+				{
+					continue;
+				}
 
-			if ( chainName.has_value() )
-			{
-				display += "/" + chainName.value();
-			}
-			if ( residueName.has_value() )
-			{
-				display += "/" + residueName.value();
-			}
-			if ( atomName.has_value() )
-			{
-				display += "/" + atomName.value();
-			}
+				// Residues.
+				for ( Index residue : system.getChainResidueRange( chain ) )
+				{
+					QString residueName = QString::fromStdString( system.getResidueName( residue ) );
+					if ( Helper::System::isFullySelected<E_ITEM::RESIDUE>( entity, residue ) )
+					{
+						addItem( name + "/" + chainName + "/" + residueName );
+						continue;
+					}
+					else if ( Helper::System::isSelected<E_ITEM::RESIDUE>( entity, residue ) == false )
+					{
+						continue;
+					}
 
-			this->addItem( display );
+					// Atoms.
+					for ( Index atom : system.getResidueAtomRange( residue ) )
+					{
+						if ( Helper::System::isSelected<E_ITEM::ATOM>( entity, atom ) )
+						{
+							addItem(
+								name + "/" + chainName + "/" + residueName + "/"
+								+ QString::fromStdString( system.getAtomName( atom ) )
+							);
+						}
+					}
+				}
+			}
 		}
 	}
-
 } // namespace VTX::UI::QT::Widget

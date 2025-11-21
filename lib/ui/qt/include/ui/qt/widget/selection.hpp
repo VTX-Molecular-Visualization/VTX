@@ -3,6 +3,7 @@
 
 #include "ui/qt/widget/base_widget.hpp"
 #include <QListWidget>
+#include <app/events.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -17,7 +18,9 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Refresh the whole QListWidget content.
 		 */
-		void refreshSelection();
+
+	  private:
+		void _onSelectionChange( const App::Events::SelectionChange & );
 	};
 } // namespace VTX::UI::QT::Widget
 
