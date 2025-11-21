@@ -1,10 +1,11 @@
-#include "ui/qt/widget/sequence.hpp"
+﻿#include "ui/qt/widget/sequence.hpp"
 #include "ui/qt/helper.hpp"
 #include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
+#include <app/action/selection.hpp>
 #include <app/ecs.hpp>
 #include <app/helper/system.hpp>
 #include <app/library/preset/color_layout.hpp>
@@ -18,9 +19,9 @@
 
 namespace VTX::UI::QT::Widget
 {
-	constexpr uint SEQ_CHAR_WIDTH  = 12;
-	constexpr uint SEQ_CHAR_HEIGHT = 18;
-	constexpr uint SEQ_RULE_STEP   = 5;
+	constexpr int SEQ_CHAR_WIDTH  = 12;
+	constexpr int SEQ_CHAR_HEIGHT = 18;
+	constexpr int SEQ_RULE_STEP	  = 5;
 
 	Sequence::Sequence( const App::ECS::Entity p_system, QWidget * p_parent ) :
 		QAbstractScrollArea( p_parent ), _system( p_system )
@@ -54,7 +55,7 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		int x = -( xOffset % int( SEQ_CHAR_WIDTH ) );
+		int x = -( xOffset % SEQ_CHAR_WIDTH );
 
 		// Label with current chain.
 		const Index firstChain = system.residueChainIndexes[ startIndex ];
@@ -94,7 +95,7 @@ namespace VTX::UI::QT::Widget
 			}
 
 			// Selection.
-			const QRect cellRect( x, SEQ_CHAR_HEIGHT + 5, SEQ_CHAR_WIDTH, SEQ_CHAR_HEIGHT );
+			const QRect cellRect( x - 2, SEQ_CHAR_HEIGHT + 5, SEQ_CHAR_WIDTH, SEQ_CHAR_HEIGHT );
 			bool		selected = App::Helper::System::isSelected<Scene::E_ITEM::RESIDUE>( _system, residue );
 			if ( selected )
 			{
@@ -117,32 +118,161 @@ namespace VTX::UI::QT::Widget
 		}
 	}
 
-	void Sequence::mousePressEvent( QMouseEvent * p_event )
+	void Sequence::mousePressEvent( QMouseEvent * p_e )
 	{
-		const int	 xOffset   = horizontalScrollBar()->value();
-		const int	 yOffset   = verticalScrollBar()->value();
-		const int	 clickX	   = p_event->pos().x() + xOffset;
-		const int	 clickY	   = p_event->pos().y() + yOffset;
-		const size_t index	   = clickX / SEQ_CHAR_WIDTH;
-		const int	 topMargin = contentsMargins().top();
+		using namespace App;
+		using namespace App::Action;
 
-		/*
-		if ( ( clickY > ( topMargin + int( SEQ_CHAR_HEIGHT ) ) )
-			 && ( clickY < ( topMargin + int( SEQ_CHAR_HEIGHT ) * 2 ) ) && ( index >= 0 )
-			 && ( index < _system.getResidues().size() ) )
+		auto opt = _indexFromPos( p_e->pos() );
+		if ( not opt )
 		{
-			qDebug() << "Residue clicked:" << index;
+			return;
 		}
-		*/
+
+		Index index = *opt;
+
+		auto & reg		 = REG();
+		auto & selection = reg.get<System::Selection>( _system );
+
+		bool shift = p_e->modifiers() & Qt::ShiftModifier;
+		bool ctrl  = p_e->modifiers() & Qt::ControlModifier;
+
+		bool selected = App::Helper::System::isSelected<Scene::E_ITEM::RESIDUE>( _system, index );
+
+		if ( not shift && not ctrl )
+		{
+			// Normal.
+			ACTION().execute<Selection::Clear>( _system );
+			ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>( _system, index );
+
+			_anchor		 = index;
+			_lastClicked = index;
+		}
+		else if ( shift )
+		{
+			// SHIFT.
+			if ( _anchor == INVALID_INDEX )
+			{
+				_anchor = index;
+			}
+
+			Index a = Util::Math::min( _anchor, index );
+			Index b = Util::Math::max( _anchor, index );
+
+			ACTION().execute<Selection::Clear>( _system );
+			ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>(
+				_system, Core::Struct::IndexRange { a, b }
+			);
+
+			_lastClicked = index;
+		}
+		else if ( ctrl )
+		{
+			// CTRL
+			if ( selected )
+			{
+				ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>( _system, index, false );
+			}
+			else
+			{
+				ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>( _system, index );
+			}
+
+			_anchor		 = index;
+			_lastClicked = index;
+		}
+
+		_dragging		= true;
+		_dragStartIndex = index;
+		_dragAddMode	= not selected;
 	}
 
-	void Sequence::resizeEvent( QResizeEvent * p_event ) { updateScrollBars(); }
+	void Sequence::mouseMoveEvent( QMouseEvent * p_e )
+	{
+		using namespace App;
+		using namespace App::Action;
 
-	void Sequence::updateScrollBars()
+		if ( not _dragging )
+		{
+			return;
+		}
+
+		auto opt = _indexFromPos( p_e->pos() );
+		if ( not opt )
+		{
+			return;
+		}
+
+		Index index = *opt;
+
+		auto & reg		 = App::REG();
+		auto & selection = reg.get<System::Selection>( _system );
+
+		Index a = Util::Math::min( _dragStartIndex, index );
+		Index b = Util::Math::max( _dragStartIndex, index );
+
+		// Normal.
+		if ( not( p_e->modifiers() & Qt::ControlModifier ) )
+		{
+			ACTION().execute<Selection::Clear>( _system );
+			ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>(
+				_system, Core::Struct::IndexRange { a, b }
+			);
+		}
+		// CTRL.
+		else
+		{
+			if ( _dragAddMode )
+			{
+				ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>(
+					_system, Core::Struct::IndexRange { a, b }
+				);
+			}
+			else
+			{
+				ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>(
+					_system, Core::Struct::IndexRange { a, b }, false
+				);
+			}
+		}
+	}
+
+	void Sequence::mouseReleaseEvent( QMouseEvent * p_e )
+	{
+		_dragging		= false;
+		_dragStartIndex = INVALID_INDEX;
+	}
+
+	void Sequence::resizeEvent( QResizeEvent * p_event ) { _updateScrollBars(); }
+
+	void Sequence::_updateScrollBars()
 	{
 		auto &	   system		= App::REG().get<Core::Struct::System>( _system );
 		const uint contentWidth = uint( system.getResidueCount() ) * SEQ_CHAR_WIDTH;
 		horizontalScrollBar()->setRange( 0, contentWidth - viewport()->width() );
 		horizontalScrollBar()->setPageStep( viewport()->width() );
+	}
+
+	std::optional<Index> Sequence::_indexFromPos( const QPoint & p )
+	{
+		const int xOffset = horizontalScrollBar()->value();
+		const int clickX  = p.x() + xOffset;
+		auto &	  system  = App::REG().get<Core::Struct::System>( _system );
+
+		Index index = clickX / SEQ_CHAR_WIDTH;
+		if ( index >= system.getResidueCount() )
+		{
+			return std::nullopt;
+		}
+
+		// Y-range check
+		const int y			= p.y();
+		const int topMargin = contentsMargins().top();
+		if ( y <= topMargin + SEQ_CHAR_HEIGHT || y >= topMargin + SEQ_CHAR_HEIGHT * 2 )
+		{
+			return std::nullopt;
+		}
+
+		return index;
 	}
 } // namespace VTX::UI::QT::Widget

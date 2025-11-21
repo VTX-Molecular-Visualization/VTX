@@ -18,12 +18,31 @@ namespace VTX::UI::QT::Widget
 	  protected:
 		void paintEvent( QPaintEvent * ) override;
 		void mousePressEvent( QMouseEvent * ) override;
+		void mouseMoveEvent( QMouseEvent * e ) override;
+		void mouseReleaseEvent( QMouseEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
 
 	  private:
+		/**
+		 * @brief Entity of the system to display.
+		 */
 		const App::ECS::Entity _system;
 
-		void updateScrollBars();
+		/**
+		 * @brief UI controls.
+		 */
+		Index _anchor		  = INVALID_INDEX;
+		Index _lastClicked	  = INVALID_INDEX;
+		bool  _dragging		  = false;
+		bool  _dragAddMode	  = false;
+		Index _dragStartIndex = INVALID_INDEX;
+
+		void _updateScrollBars();
+
+		/**
+		 * @brief Get residue index from position in viewport.
+		 */
+		std::optional<Index> _indexFromPos( const QPoint & );
 	};
 
 } // namespace VTX::UI::QT::Widget
