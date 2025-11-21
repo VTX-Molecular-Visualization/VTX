@@ -29,8 +29,6 @@ namespace VTX::UI::QT::Widget
 
 	  protected:
 		bool eventFilter( QObject *, QEvent * ) override;
-
-	  private slots:
 		void onResizeFinished();
 
 	  private:

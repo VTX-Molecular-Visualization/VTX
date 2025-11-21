@@ -3,8 +3,10 @@
 
 #include "app/ecs.hpp"
 #include "app/scene/root.hpp"
+#include "app/services.hpp"
 #include "app/system/selection.hpp"
 #include <core/struct/system.hpp>
+#include <util/event_hub.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Action::Selection
@@ -31,7 +33,7 @@ namespace VTX::App::Action::Selection
 			{
 				if ( p_selected )
 				{
-					selection.atoms = IndexRangeList( IndexRange::fromFirstCount( 0, system.getAtomCount() ) );
+					selection.atoms = IndexRangeList( system.getAtomRange() );
 				}
 				else
 				{
@@ -89,6 +91,8 @@ namespace VTX::App::Action::Selection
 					}
 				}
 			}
+
+			HUB().trigger<Events::SelectionChange>( { p_ent } );
 		}
 
 		void execute( const ECS::Entity p_ent, const Core::Struct::IndexRange & p_range, const bool p_selected = true )

@@ -140,6 +140,8 @@ namespace VTX::Core::Struct
 			return categories[ uint( p_category ) ];
 		}
 
+		inline IndexRange getAtomRange() const { return IndexRange::fromFirstCount( 0, getAtomCount() ); }
+
 		inline const std::string & getChainName( const Index p_chainIndex ) const { return chainNames[ p_chainIndex ]; }
 
 		inline Index getChainFirstResidue( const Index p_chainIndex ) const

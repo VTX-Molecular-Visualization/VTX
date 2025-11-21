@@ -16,18 +16,7 @@ namespace VTX::UI::QT::DockWidget
 		App::REG().on_destroy<Core::Struct::System>().connect<&Sequences::_onDestroySystem>( this );
 
 		// Refresh widget when selection changed.
-		auto & selectionModel = SELECTION();
-		connect(
-			&selectionModel,
-			&QItemSelectionModel::selectionChanged,
-			[ this ]
-			{
-				for ( auto & [ _, widget ] : _mapSequencesWidgets )
-				{
-					widget->update();
-				}
-			}
-		);
+		App::HUB().connect<App::Events::SelectionChange, &Sequences::_onSelectionChange>( this );
 	}
 
 	void Sequences::_onSystemLoad( const App::Events::SystemLoad & p_e )
@@ -48,6 +37,13 @@ namespace VTX::UI::QT::DockWidget
 		assert( _mapSequencesWidgets.contains( p_e ) );
 		_mapSequencesWidgets[ p_e ]->deleteLater();
 		_mapSequencesWidgets.erase( p_e );
+	}
+
+	void Sequences::_onSelectionChange( const App::Events::SelectionChange & p_e )
+	{
+		const auto entity = p_e.system;
+		assert( _mapSequencesWidgets.contains( entity ) );
+		_mapSequencesWidgets[ entity ]->viewport()->update();
 	}
 
 } // namespace VTX::UI::QT::DockWidget

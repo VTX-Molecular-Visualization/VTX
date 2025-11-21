@@ -14,12 +14,10 @@ namespace VTX::UI::QT
 		Q_OBJECT
 
 	  public:
-		SelectionModel( QAbstractItemModel * p_model, QObject * p_parent = nullptr ) :
-			QItemSelectionModel( p_model, p_parent )
-		{
-			// TODO: connect to application selection changes.
-			// TODO: propagate selection changes to application selection.
-		}
+		SelectionModel( QAbstractItemModel * p_model, QObject * p_parent = nullptr );
+
+	  private:
+		void _selectionChanged( const QItemSelection &, const QItemSelection & );
 	};
 } // namespace VTX::UI::QT
 

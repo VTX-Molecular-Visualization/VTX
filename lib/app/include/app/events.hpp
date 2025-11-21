@@ -78,6 +78,12 @@ namespace VTX::App::Events
 	{
 		ECS::Entity system;
 	};
+
+	struct SelectionChange
+	{
+		ECS::Entity system;
+	};
+
 } // namespace VTX::App::Events
 
 #endif

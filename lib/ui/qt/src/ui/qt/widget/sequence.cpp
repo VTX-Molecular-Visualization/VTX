@@ -6,9 +6,12 @@
 #include <QPainter>
 #include <QScrollBar>
 #include <app/ecs.hpp>
+#include <app/helper/system.hpp>
 #include <app/library/preset/color_layout.hpp>
 #include <app/system/metadata.hpp>
+#include <app/system/selection.hpp>
 #include <app/system/uid.hpp>
+#include <app/system/visibility.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/struct/system.hpp>
 #include <util/math.hpp>
@@ -20,7 +23,6 @@ namespace VTX::UI::QT::Widget
 	constexpr uint SEQ_RULE_STEP   = 5;
 
 	Sequence::Sequence( const App::ECS::Entity p_system, QWidget * p_parent ) :
-
 		QAbstractScrollArea( p_parent ), _system( p_system )
 	{
 		setFont( QFont( "Courier", 10 ) );
@@ -34,11 +36,12 @@ namespace VTX::UI::QT::Widget
 
 		using namespace App;
 
-		auto & system	   = REG().get<Core::Struct::System>( _system );
-		auto & metadata	   = REG().get<System::Metadata>( _system );
-		auto & uid		   = REG().get<System::UID>( _system );
+		auto & reg		   = REG();
+		auto & system	   = reg.get<Core::Struct::System>( _system );
+		auto & metadata	   = reg.get<System::Metadata>( _system );
+		auto & uid		   = reg.get<System::UID>( _system );
 		auto & colorlayout = ECS::getFirstComponent<Library::Preset::ColorLayout>();
-		auto & selection   = QT::SELECTION();
+		auto & selection   = reg.get<System::Selection>( _system );
 
 		const int	xOffset	   = horizontalScrollBar()->value();
 		const Index startIndex = xOffset / SEQ_CHAR_WIDTH;
@@ -90,13 +93,16 @@ namespace VTX::UI::QT::Widget
 				painter.drawText( x, SEQ_CHAR_HEIGHT, QString::number( indexInChain ) );
 			}
 
-			// TODO
 			// Selection.
 			const QRect cellRect( x, SEQ_CHAR_HEIGHT + 5, SEQ_CHAR_WIDTH, SEQ_CHAR_HEIGHT );
-			bool		selected = false;
+			bool		selected = App::Helper::System::isSelected<Scene::E_ITEM::RESIDUE>( _system, residue );
 			if ( selected )
 			{
 				painter.fillRect( cellRect, palette().highlight() );
+			}
+			else
+			{
+				painter.fillRect( cellRect, palette().base() );
 			}
 
 			// Residue symbol.

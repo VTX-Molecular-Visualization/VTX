@@ -1,6 +1,5 @@
 #ifndef __VTX_APP_SYSTEM_SELECTION__
-#define __VTX_APP_SYSTEM_SELECTION
-
+#define __VTX_APP_SYSTEM_SELECTION__
 #include <core/struct/system.hpp>
 #include <util/math/range_list.hpp>
 

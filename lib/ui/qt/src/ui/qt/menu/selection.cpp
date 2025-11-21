@@ -91,13 +91,13 @@ namespace VTX::UI::QT::Menu
 				&QAction::triggered,
 				[ &model, systemGlobalIndexes ]()
 				{
-					auto & mapGlobalId = model.getMapRows();
-					for ( const auto & systemGlobalIndex : systemGlobalIndexes )
-					{
-						App::ACTION().execute<App::Action::Scene::DeleteSystem>(
-							mapGlobalId.at( systemGlobalIndex )->entity
-						);
-					}
+					//					auto & mapGlobalId = model.getMapRows();
+					//					for ( const auto & systemGlobalIndex : systemGlobalIndexes )
+					//					{
+					//						App::ACTION().execute<App::Action::Scene::DeleteSystem>(
+					//							mapGlobalId.at( systemGlobalIndex )->entity
+					//						);
+					//					}
 				}
 			);
 		}

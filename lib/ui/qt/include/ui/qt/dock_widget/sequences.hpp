@@ -15,14 +15,16 @@ namespace VTX::UI::QT::DockWidget
 	 */
 	class Sequences : public BaseDockWidget<Sequences, 1, 1>
 	{
+		Q_OBJECT
 	  public:
 		Sequences( QWidget * );
 
 	  private:
 		std::unordered_map<App::ECS::Entity, Widget::Sequence *> _mapSequencesWidgets;
 
-		void _onSystemLoad( const App::Events::SystemLoad & p_e );
+		void _onSystemLoad( const App::Events::SystemLoad & );
 		void _onDestroySystem( App::ECS::Registry &, App::ECS::Entity );
+		void _onSelectionChange( const App::Events::SelectionChange & );
 	};
 
 } // namespace VTX::UI::QT::DockWidget

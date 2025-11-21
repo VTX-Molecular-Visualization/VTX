@@ -2,6 +2,7 @@
 #include "ui/qt/model.hpp"
 #include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
+#include <app/helper/scene.hpp>
 #include <app/system/metadata.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -38,7 +39,8 @@ namespace VTX::UI::QT::Widget
 			const Index	  localIndex  = index.data( Model::LocalRole ).value<Index>();
 
 			// Get components.
-			App::ECS::Entity ent	  = model.getMapRows().at( globalIndex )->entity;
+			// TODO: not efficient.
+			App::ECS::Entity ent	  = App::Helper::Scene::findSystemByRootUID( globalIndex ).value();
 			auto &			 system	  = App::REG().get<Core::Struct::System>( ent );
 			auto &			 metadata = App::REG().get<App::System::Metadata>( ent );
 

@@ -11,7 +11,7 @@ namespace VTX::UI::QT
 	{
 		// Connect system construction event.
 		App::HUB().connect<App::Events::SystemLoad, &Model::_onSystemLoad>( this );
-		App::REG().on_destroy<Core::Struct::System>().connect<&Model::_onDestroySystem>( this );
+		App::REG().on_destroy<Core::Struct::System>().connect<&Model::_onSystemDestroy>( this );
 	}
 
 	int Model::columnCount( const QModelIndex & p_parent ) const { return 1; }
@@ -304,11 +304,12 @@ namespace VTX::UI::QT
 		auto & row						 = _rows.back();
 		_mapEntityRow[ row->entity ]	 = row.get();
 		_mapGlobalIndexRow[ row->index ] = row.get();
+		_mapRootToEntity[ row->index ]	 = entity;
 
 		endInsertRows();
 	}
 
-	void Model::_onDestroySystem( App::ECS::Registry & p_r, App::ECS::Entity p_e )
+	void Model::_onSystemDestroy( App::ECS::Registry & p_r, App::ECS::Entity p_e )
 	{
 		assert( _mapEntityRow.contains( p_e ) );
 
@@ -319,6 +320,7 @@ namespace VTX::UI::QT
 
 		_mapGlobalIndexRow.erase( rowPtr->index );
 		_mapEntityRow.erase( p_e );
+		_mapRootToEntity.erase( rowPtr->index );
 
 		_rows.erase( _rows.begin() + position );
 

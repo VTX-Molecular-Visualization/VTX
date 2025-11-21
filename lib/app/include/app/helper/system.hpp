@@ -7,7 +7,7 @@
 #include "app/system/visibility.hpp"
 #include <core/struct/system.hpp>
 
-namespace VTX::App::Helper::Visibility
+namespace VTX::App::Helper::System
 {
 	/**
 	 * @brief Check if an item is visible.
@@ -16,7 +16,7 @@ namespace VTX::App::Helper::Visibility
 	bool isVisible( const ECS::Entity p_ent, const Index p_index = INVALID_INDEX )
 	{
 		const auto & system		= REG().get<Core::Struct::System>( p_ent );
-		auto &		 visibility = REG().get<System::Visibility>( p_ent );
+		auto &		 visibility = REG().get<App::System::Visibility>( p_ent );
 
 		if constexpr ( ITEM == App::Scene::E_ITEM::SYSTEM )
 		{
@@ -50,7 +50,7 @@ namespace VTX::App::Helper::Visibility
 	bool isFullyVisible( const ECS::Entity p_ent, const Index p_index = INVALID_INDEX )
 	{
 		const auto & system		= REG().get<Core::Struct::System>( p_ent );
-		auto &		 visibility = REG().get<System::Visibility>( p_ent );
+		auto &		 visibility = REG().get<App::System::Visibility>( p_ent );
 
 		if constexpr ( ITEM == App::Scene::E_ITEM::SYSTEM )
 		{
@@ -84,7 +84,7 @@ namespace VTX::App::Helper::Visibility
 	bool isSelected( const ECS::Entity p_ent, const Index p_index = INVALID_INDEX )
 	{
 		const auto & system	   = REG().get<Core::Struct::System>( p_ent );
-		auto &		 selection = REG().get<System::Visibility>( p_ent );
+		auto &		 selection = REG().get<App::System::Selection>( p_ent );
 
 		if constexpr ( ITEM == App::Scene::E_ITEM::SYSTEM )
 		{
@@ -118,7 +118,7 @@ namespace VTX::App::Helper::Visibility
 	bool isFullySelected( const ECS::Entity p_ent, const Index p_index = INVALID_INDEX )
 	{
 		const auto & system	   = REG().get<Core::Struct::System>( p_ent );
-		auto &		 selection = REG().get<System::Visibility>( p_ent );
+		auto &		 selection = REG().get<App::System::Selection>( p_ent );
 
 		if constexpr ( ITEM == App::Scene::E_ITEM::SYSTEM )
 		{
@@ -145,6 +145,6 @@ namespace VTX::App::Helper::Visibility
 		}
 	}
 
-} // namespace VTX::App::Helper::Visibility
+} // namespace VTX::App::Helper::System
 
 #endif

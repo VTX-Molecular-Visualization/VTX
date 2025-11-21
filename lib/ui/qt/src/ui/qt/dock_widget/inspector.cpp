@@ -45,15 +45,6 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( _selectionListWidget );
 
 		//_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
-
-		// TODO: connect to App selection change, not QT selection model.
-		auto & selectionModel = SELECTION();
-		connect(
-			&selectionModel,
-			&QItemSelectionModel::selectionChanged,
-			_selectionListWidget,
-			&Widget::Selection::refreshSelection
-		);
 	}
 
 } // namespace VTX::UI::QT::DockWidget

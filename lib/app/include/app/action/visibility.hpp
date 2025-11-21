@@ -31,7 +31,7 @@ namespace VTX::App::Action::Visibility
 			{
 				if ( p_visible )
 				{
-					visibility.atoms = IndexRangeList( IndexRange::fromFirstCount( 0, system.getAtomCount() ) );
+					visibility.atoms = IndexRangeList( system.getAtomRange() );
 				}
 				else
 				{

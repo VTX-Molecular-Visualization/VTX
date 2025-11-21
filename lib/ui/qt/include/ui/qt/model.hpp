@@ -83,7 +83,12 @@ namespace VTX::UI::QT
 		 */
 		static void unpack( const quintptr, App::Scene::E_ITEM &, RootUID &, Index & );
 
-		inline const std::unordered_map<RootUID, const Row *> & getMapRows() const { return _mapGlobalIndexRow; }
+		// inline const std::unordered_map<RootUID, const Row *> & getMapRows() const { return _mapGlobalIndexRow; }
+
+		inline const std::unordered_map<RootUID, App::ECS::Entity> & getMapRootToEntity() const
+		{
+			return _mapRootToEntity;
+		}
 
 	  private:
 		/**
@@ -94,8 +99,11 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Maps for quick access to rows.
 		 */
+		// TODO: redo
 		std::unordered_map<App::ECS::Entity, const Row *> _mapEntityRow;
 		std::unordered_map<RootUID, const Row *>		  _mapGlobalIndexRow;
+
+		std::unordered_map<RootUID, App::ECS::Entity> _mapRootToEntity;
 
 		/**
 		 * @brief Callback on system construction to add it to the model.
@@ -105,7 +113,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Callback on system destruction to remove it from the model.
 		 */
-		void _onDestroySystem( App::ECS::Registry &, App::ECS::Entity );
+		void _onSystemDestroy( App::ECS::Registry &, App::ECS::Entity );
 	};
 
 } // namespace VTX::UI::QT
