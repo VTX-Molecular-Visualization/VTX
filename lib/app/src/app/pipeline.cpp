@@ -2,6 +2,7 @@
 #include "app/events.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/services.hpp"
+#include "app/threading/thread_manager.hpp"
 #include <renderer/facade.hpp>
 #include <util/event_hub.hpp>
 #include <util/monitoring/stats.hpp>
@@ -20,6 +21,8 @@ namespace
 	{
 		VTX::App::RENDERER().render( p_delta, p_elapsed );
 	}
+
+	inline void _threadLateUpdate() { VTX::App::THREAD().lateUpdate(); }
 
 } // namespace
 
@@ -42,5 +45,6 @@ namespace VTX::App
 		frame.set( POST_UPDATE, CHRONO_CPU( &_processStep<PostUpdate>, hub, p_delta, p_elapsed ) );
 		frame.set( RENDER, CHRONO_CPU( &_render, p_delta, p_elapsed ) );
 		frame.set( POST_RENDER, CHRONO_CPU( &_processStep<PostRender>, hub, p_delta, p_elapsed ) );
+		frame.set( LATE, CHRONO_CPU( &_threadLateUpdate ) );
 	}
 } // namespace VTX::App

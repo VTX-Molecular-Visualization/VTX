@@ -30,6 +30,10 @@ namespace VTX::App
 	{
 		class PassManager;
 	}
+	namespace PythonBinding
+	{
+		class Interpretor;
+	}
 	namespace Settings
 	{
 		class SettingsManager;
@@ -106,6 +110,10 @@ namespace VTX::App
 	 * @brief Pass manager.
 	 */
 	inline Pass::PassManager & PASS() { return ECS::getCtx<Pass::PassManager>(); }
+	/**
+	 * @brief Python interpretor.
+	 */
+	inline PythonBinding::Interpretor & INTERPRETOR() { return ECS::getCtx<PythonBinding::Interpretor>(); }
 } // namespace VTX::App
 
 #endif

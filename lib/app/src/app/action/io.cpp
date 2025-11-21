@@ -18,52 +18,45 @@ namespace VTX::App::Action::IO
 		ACTION().execute<Action::Scene::LoadSystem>( p_path );
 	}
 
-	DownloadSystem::DownloadSystem( VTX::Util::Url::SystemId p_id ) :
-		_url( std::move( p_id ) ), _filename( p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() )
+	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id )
 	{
+		execute( p_id, p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() );
 	}
 
-	DownloadSystem::DownloadSystem( const char * p_systemId ) : DownloadSystem( Util::Url::SystemId( p_systemId ) ) {}
+	void DownloadSystem::execute( const char * p_systemId ) { execute( Util::Url::SystemId( p_systemId ) ); }
 
-	DownloadSystem::DownloadSystem( VTX::Util::Url::SystemId p_id, FilePath p_path ) :
-		DownloadSystem( VTX::Util::Url::UrlFull( p_id ), p_path )
+	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id, FilePath p_path )
 	{
+		execute( VTX::Util::Url::UrlFull( p_id ), p_path );
 	}
 
-	DownloadSystem::DownloadSystem( VTX::Util::Url::UrlFull p_url, FilePath p_path ) :
-		_url( std::move( p_url ) ), _filename( p_path )
+	void DownloadSystem::execute( VTX::Util::Url::UrlFull p_url, FilePath p_path )
 	{
-	}
-
-	void DownloadSystem::execute()
-	{
-		FilePath filepath = _filename;
+		FilePath filepath = p_path;
 		NETWORK().downloadFile(
-			_url.str.data(),
-			_filename.string(),
+			p_url.str.data(),
+			filepath.string(),
 			[ filepath ]( const std::string & p_text )
 			{ ACTION().execute<Action::Scene::LoadSystem>( filepath, &p_text ); }
 		);
 	}
 
-	Snapshot::Snapshot(
+	void Snapshot::execute()
+	{
+		execute(
+			Filesystem::getSnapshotsDir() / std::to_string( Util::Chrono::getTimestamp() ),
+			Util::Image::E_FORMAT::PNG,
+			RENDERER().getWidth(),
+			RENDERER().getHeight()
+		);
+	}
+
+	void Snapshot::execute(
 		const FilePath				p_path,
 		const Util::Image::E_FORMAT p_format,
 		const size_t				p_width,
 		const size_t				p_height
-	) : _path( p_path ), _format( p_format ), _width( p_width ), _height( p_height )
-	{
-	}
-
-	Snapshot::Snapshot()
-	{
-		_path	= Filesystem::getSnapshotsDir() / std::to_string( Util::Chrono::getTimestamp() );
-		_format = Util::Image::E_FORMAT::PNG;
-		_width	= RENDERER().getWidth();
-		_height = RENDERER().getHeight();
-	}
-
-	void Snapshot::execute()
+	)
 	{
 		try
 		{

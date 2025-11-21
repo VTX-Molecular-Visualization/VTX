@@ -13,6 +13,9 @@
 #include "app/pass/camera_updater.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/pass/scene_updater.hpp"
+#include "app/python_binding/interpretor.hpp"
+#include "app/python_binding/python_binding.hpp"
+#include "app/python_binding/run_script.hpp"
 #include "app/scene/camera.hpp"
 #include "app/scene/root.hpp"
 #include "app/services.hpp"
@@ -21,6 +24,7 @@
 #include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
 #include <exception>
+#include <python_binding/interpretor.hpp>
 #include <renderer/facade.hpp>
 #include <util/logger.hpp>
 #include <util/math/aabb.hpp>
@@ -69,6 +73,8 @@ namespace VTX::App
 		ECS::setCtx<Uid::UIDManager>();
 		// Store pass manager.
 		ECS::setCtx<Pass::PassManager>();
+		// Store python interpretor.
+		ECS::setCtx<PythonBinding::Interpretor>();
 
 		VTX_DEBUG( "Init application" );
 
@@ -95,11 +101,7 @@ namespace VTX::App
 		// Load settings.
 		Settings::initSettings();
 
-		// Register loop events.
-		// onPostUpdate += []( const float p_elapsedTime ) { THREAD().lateUpdate(); };
-
 		// Initialize python interpretor.
-		/*
 		INTERPRETOR().subscribe(
 			[]( VTX::PythonBinding::Interpretor & p_interpretor )
 			{
@@ -107,7 +109,6 @@ namespace VTX::App
 				p_interpretor.add( VTX::App::PythonBinding::RunScript() );
 			}
 		);
-		*/
 
 		// Creates entites/components.
 		// Scene.
@@ -124,7 +125,7 @@ namespace VTX::App
 		REG().emplace<Scene::Camera>( _camera );
 	}
 
-	VTXApp::~VTXApp() {}
+	VTXApp::~VTXApp() { ECS::removeCtx<PythonBinding::Interpretor>(); }
 
 	void VTXApp::start()
 	{

@@ -20,6 +20,7 @@ namespace VTX::App
 		inline static const Hash POST_UPDATE   = Util::hash( "POST_UPDATE" );
 		inline static const Hash RENDER		   = Util::hash( "RENDER" );
 		inline static const Hash POST_RENDER   = Util::hash( "POST_RENDER" );
+		inline static const Hash LATE		   = Util::hash( "LATE" );
 
 		/**
 		 * @brief Process each step and log their duration.

@@ -28,16 +28,10 @@ namespace VTX::App::Action::IO
 	struct DownloadSystem
 	{
 	  public:
-		DownloadSystem( VTX::Util::Url::SystemId );
-		DownloadSystem( VTX::Util::Url::SystemId, FilePath );
-		DownloadSystem( VTX::Util::Url::UrlFull, FilePath );
-		DownloadSystem( const char * p_systemId );
-
-		void execute();
-
-	  private:
-		const VTX::Util::Url::UrlFull _url;
-		const FilePath				  _filename;
+		void execute( VTX::Util::Url::SystemId );
+		void execute( VTX::Util::Url::SystemId, FilePath );
+		void execute( VTX::Util::Url::UrlFull, FilePath );
+		void execute( const char * p_systemId );
 	};
 
 	/**
@@ -46,9 +40,8 @@ namespace VTX::App::Action::IO
 	class Snapshot
 	{
 	  public:
-		Snapshot();
-		Snapshot( const FilePath, const Util::Image::E_FORMAT, const size_t, const size_t );
 		void execute();
+		void execute( const FilePath, const Util::Image::E_FORMAT, const size_t, const size_t );
 
 	  private:
 		FilePath			  _path;

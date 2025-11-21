@@ -133,11 +133,10 @@ namespace VTX::UI::QT::Dialog
 					Util::Url::UrlTemplate urlReplaced { _url.toStdString().data() };
 					if ( urlReplaced.hasReplacementToken() )
 					{
-						App::Action::IO::DownloadSystem action(
+						App::ACTION().execute<App::Action::IO::DownloadSystem>(
 							Util::Url::UrlFull( urlReplaced, Util::Url::SystemId( _pdb.toStdString().data() ) ),
 							_pdb.toStdString() + ".pdb"
 						);
-						App::ACTION().execute( action );
 					}
 					else
 					{
