@@ -94,7 +94,7 @@ namespace VTX::IO::Reader
 		timeReadingFrames.start();
 		int startingFrame	= 1;
 		int validFrameCount = 0;
-		for ( uint frameIdx = 0; frameIdx < p_trajectory.nsteps() - p_trajectoryFrameStart; ++frameIdx )
+		for ( uint frameIdx = 0; frameIdx < p_trajectory.size() - p_trajectoryFrameStart; ++frameIdx )
 		{
 			const std::vector<Vec3f> atomPositions = readTrajectoryFrame( p_trajectory );
 
@@ -160,9 +160,9 @@ namespace VTX::IO::Reader
 										Model::Molecule &		p_molecule,
 										const bool				p_recomputeBonds ) const
 	{
-		_logInfo( std::to_string( p_trajectory.nsteps() ) + " frames found" );
+		_logInfo( std::to_string( p_trajectory.size() ) + " frames found" );
 
-		if ( p_trajectory.nsteps() == 0 )
+		if ( p_trajectory.size() == 0 )
 		{
 			throw Exception::IOException( "Trajectory is empty" );
 		}
@@ -288,7 +288,7 @@ namespace VTX::IO::Reader
 		// Create models.
 		p_molecule.getAtoms().resize( frame.size() );
 		p_molecule.getResidues().resize( topology.residues().size() );
-		p_molecule.resizeAtomPositionFrames( p_trajectory.nsteps() );
+		p_molecule.resizeAtomPositionFrames( p_trajectory.size() );
 
 		p_molecule.resizeBuffers();
 		Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
@@ -584,7 +584,7 @@ namespace VTX::IO::Reader
 			}
 		}
 
-		if ( p_trajectory.nsteps() > 1 )
+		if ( p_trajectory.size() > 1 )
 		{
 			// TODO: launch the filling of trajectory frames in another thread
 			// std::thread fillFrames(
@@ -731,7 +731,7 @@ namespace VTX::IO::Reader
 	bool LibChemfiles::_tryApplyingDynamicOnTargets( chemfiles::Trajectory &		  p_dynamicTrajectory,
 													 std::vector<Model::Molecule *> & p_potentialTargets ) const
 	{
-		if ( p_dynamicTrajectory.nsteps() <= 0 )
+		if ( p_dynamicTrajectory.size() <= 0 )
 			return false;
 
 		const std::vector<Vec3f> positions		= readTrajectoryFrame( p_dynamicTrajectory );
@@ -756,7 +756,7 @@ namespace VTX::IO::Reader
 					return false;
 
 				const uint indexFirstNewFrame = molecule->getFrameCount() == 1 ? 0 : molecule->getFrameCount();
-				molecule->resizeAtomPositionFrames( indexFirstNewFrame + p_dynamicTrajectory.nsteps() );
+				molecule->resizeAtomPositionFrames( indexFirstNewFrame + p_dynamicTrajectory.size() );
 
 				try
 				{
@@ -811,6 +811,7 @@ namespace VTX::IO::Reader
 	const std::string LibChemfiles::_getFormat( const IO::FilePath & p_path )
 	{
 		std::string extension = p_path.extension();
+		std::string filename  = p_path.filename();
 		std::transform( extension.begin(), extension.end(), extension.begin(), tolower );
 		if ( extension == "nc" )
 		{
@@ -891,6 +892,14 @@ namespace VTX::IO::Reader
 		else if ( extension == "xyz" )
 		{
 			return "XYZ";
+		}
+		else if ( extension == "bcif" )
+		{
+			return "BCIF";
+		}
+		else if ( filename.find( "bcif.gz" ) != std::string::npos )
+		{
+			return "";
 		}
 		else
 		{

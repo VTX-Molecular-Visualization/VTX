@@ -35,6 +35,7 @@ namespace VTX
 			inline FILE_TYPE_ENUM getFileTypeEnum( const IO::FilePath & p_path )
 			{
 				const std::string extension = p_path.extension();
+				const std::string filename	= p_path.filename();
 
 				if ( extension == ".vtx" )
 				{
@@ -47,7 +48,8 @@ namespace VTX
 				else if ( extension == "cif" || extension == "cml" || extension == "cssr" || extension == "gro"
 						  || extension == "mmcif" || extension == "mmtf" || extension == "mol2" || extension == "molden"
 						  || extension == "pdb" || extension == "sdf" || extension == "smi" || extension == "mmtf"
-						  || extension == "xyz" )
+						  || extension == "xyz" || extension == "bcif"
+						  || filename.find( "bcif.gz" ) != std::string::npos )
 				{
 					return FILE_TYPE_ENUM::MOLECULE;
 				}
@@ -156,6 +158,8 @@ namespace VTX
 				  "TRR (*.trr);;"
 				  "XTC (*.xtc);;"
 				  "XYZ (*.xyz);;"
+				  "BCIF (*.bcif);;"
+				  "BCIF (*.bcif.gz);;"
 				  "All (*)";
 
 			static const QString MOLECULE_EXTENSIONS_WRITE
@@ -174,7 +178,8 @@ namespace VTX
 				  "Tinker (*.arc *.psf *.prm);;"
 				  "TRR (*.trr);;"
 				  "XTC (*.xtc);;"
-				  "XYZ (*.xyz);;";
+				  "XYZ (*.xyz);;"
+				  "BCIF (*.bcif);;";
 
 			static const QString TRAJECTORY_EXTENSIONS_READ
 				= "Amber Net CDF (*.nc);;"
@@ -327,7 +332,7 @@ namespace VTX
 			inline bool isRelativePath( const IO::FilePath & p_path ) { return !isAbsolutePath( p_path ); }
 
 		} // namespace Filesystem
-	}	  // namespace Util
+	} // namespace Util
 } // namespace VTX
 
 #endif

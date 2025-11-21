@@ -37,10 +37,10 @@ namespace VTX::IO::Writer
 		Tool::Chrono timeReadingFrames;
 		timeReadingFrames.start();
 		int startingFrame = 1;
-		for ( uint frameIdx = 1; frameIdx < p_trajectory.nsteps(); ++frameIdx )
+		for ( uint frameIdx = 1; frameIdx < p_trajectory.size(); ++frameIdx )
 		{
 			Model::Molecule::AtomPositionsFrame &		 moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
-			chemfiles::Frame							 frame		   = p_trajectory.read_step( frameIdx );
+			chemfiles::Frame							 frame		   = p_trajectory.read_at( frameIdx );
 			const chemfiles::span<chemfiles::Vector3D> & positions	   = frame.positions();
 			for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
 			{
