@@ -1,7 +1,6 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <util/event_hub.hpp>
-#include <util/logger.hpp>
 
 int value = 0;
 
@@ -21,8 +20,6 @@ TEST_CASE( "VTX_UTIL - EVENT HUB", "[unit]" )
 {
 	using namespace VTX;
 	using namespace VTX::Util;
-
-	VTX_INFO( "VTX_APP - EVENT HUB" );
 
 	EventHub hub;
 

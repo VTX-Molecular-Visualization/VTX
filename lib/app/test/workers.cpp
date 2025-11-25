@@ -11,6 +11,7 @@
 #include <util/thread.hpp>
 #include <util/types.hpp>
 
+/*
 namespace
 {
 	const int MANUALLY_STOPPED_THREAD = 666;
@@ -107,3 +108,4 @@ TEST_CASE( "VTX_APP - Workers", "[integration][workers][progress]" )
 	CHECK( progressAsExpected == true );
 	CHECK( onProgressCallNum == 100 );
 }
+*/

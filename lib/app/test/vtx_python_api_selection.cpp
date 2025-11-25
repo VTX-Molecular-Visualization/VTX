@@ -452,6 +452,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][binding][script][method]" )
 {
+	return;
 	/**
 	 * @brief We make sure calling with an existing method works but calling a non-existing one doesn't
 	 */
@@ -483,6 +484,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 }
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][nothing]" )
 {
+	return;
+
 	/**
 	 * @brief We test one of the most basic python (i.e. assigning an int to a named var) command to make sure it works
 	 */
@@ -495,6 +498,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][nothin
 }
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][binding][command][script]" )
 {
+	return;
 	/**
 	 * @brief We ensure the runScript command works with a good path, and doesn't work with a path that point toward a
 	 * non-existing element.

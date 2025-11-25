@@ -137,7 +137,7 @@ namespace VTX::App
 		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) )
 		{
 			VTX_WARNING( "No graphics" );
-			renderer.setDefault();
+			// renderer.setDefault();
 		}
 		else
 		{
@@ -160,11 +160,9 @@ namespace VTX::App
 		PASS().addPass<Pass::CameraUpdater>( _camera );
 
 		// Trackball controller.
-		// TODO: store current controller in settings?
-		// PASS().addPass<Pass::Controller::Trackball>( _camera );
 		ACTION().execute<Action::Controller::SetCameraController<Pass::Controller::Trackball>>();
 
-		// ACTION().execute<Action::Mode::SetMode<Mode::Visualization>>();
+		// Trigger application start event.
 		HUB().trigger<Events::ApplicationStart>();
 
 		// Updater.

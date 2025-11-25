@@ -13,6 +13,8 @@ TEST_CASE( "Util::Fmt", "[unit]" )
 	using namespace VTX;
 	using namespace VTX::Util;
 
+	LOGGER::init( Util::Filesystem::getExecutableDir() / "logs_tests", true );
+
 	VTX::VTX_INFO( "info with Vec2: {0} / {1}", Vec2i( 0, 1 ), Vec2f( 0.1f, 10.4f ) );
 
 	VTX::VTX_INFO(

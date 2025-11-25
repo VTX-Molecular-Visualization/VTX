@@ -11,21 +11,22 @@ namespace VTX::App
 	  public:
 		Fixture()
 		{
-			if ( not _app )
-			{
-				Args args( { ARG_NO_GRAPHICS, ARG_NO_UPDATE, ARG_DEBUG } );
-				LOGGER::init( Util::Filesystem::getExecutableDir() / "logs_tests", true );
-				_app = std::make_unique<VTXApp>( args );
-				_app->start();
-			}
+			std::call_once(
+				_loggerOnce, []() { LOGGER::init( Util::Filesystem::getExecutableDir() / "logs_tests", true ); }
+			);
+
+			Args args( { ARG_NO_GRAPHICS, ARG_NO_UPDATE, ARG_DEBUG } );
+			_app = std::make_unique<VTXApp>( args );
+			_app->start();
 		}
 
-		~Fixture() = default;
+		~Fixture() { _app.release(); }
 
 		inline VTXApp * const get() { return _app.get(); }
 
 	  private:
-		inline static std::unique_ptr<VTXApp> _app;
+		inline static std::once_flag _loggerOnce;
+		std::unique_ptr<VTXApp>		 _app;
 	};
 } // namespace VTX::App
 
