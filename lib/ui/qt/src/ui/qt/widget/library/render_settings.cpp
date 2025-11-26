@@ -6,7 +6,7 @@ namespace VTX::UI::QT::Widget::Library
 	RenderSettings::RenderSettings( QWidget * p_parent ) : BasePresetWidget( p_parent )
 	{
 		using namespace Renderer;
-		using namespace Renderer::Settings;
+		using namespace VTX::Renderer::Settings;
 
 		setTitle( "Edit render settings" );
 

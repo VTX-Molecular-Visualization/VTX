@@ -1,7 +1,6 @@
 #ifndef __VTX_RENDERER_CONTEXT_OPENGL_45__
 #define __VTX_RENDERER_CONTEXT_OPENGL_45__
 
-#include "concept.hpp"
 #include "gl/buffer.hpp"
 #include "gl/chrono.hpp"
 #include "gl/framebuffer.hpp"
@@ -10,6 +9,7 @@
 #include "gl/struct_opengl_infos.hpp"
 #include "gl/texture_2d.hpp"
 #include "gl/vertex_array.hpp"
+#include "renderer/context/concept.hpp"
 #include <set>
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>

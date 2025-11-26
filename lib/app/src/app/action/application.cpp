@@ -2,7 +2,7 @@
 #include "app/ecs.hpp"
 #include "app/scene/camera.hpp"
 #include "app/services.hpp"
-#include <renderer/facade.hpp>
+#include <renderer/renderer.hpp>
 
 namespace VTX::App::Action::Application
 {

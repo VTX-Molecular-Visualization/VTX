@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_RENDERER__
 #define __VTX_RENDERER_RENDERER__
 
-// #undef VTX_CUDA_ENABLED
+#undef VTX_CUDA_ENABLED
 
 #ifdef VTX_CUDA_ENABLED
 #include "bcs/sesdf/sesdf.hpp"
@@ -10,8 +10,6 @@
 #include "context/context_wrapper.hpp"
 #include "passes.hpp"
 #include "render_graph.hpp"
-#include "renderer/context/default.hpp"
-#include "renderer/context/opengl_45.hpp"
 #include "renderer/proxy/camera.hpp"
 #include "renderer/proxy/color_layout.hpp"
 #include "renderer/proxy/render_settings.hpp"
@@ -31,7 +29,9 @@ namespace VTX::Renderer
 	class Renderer
 	{
 	  public:
-		Renderer( const size_t p_width, const size_t p_height );
+		Renderer( const size_t p_width = 0, const size_t p_height = 0 );
+		Renderer( const Renderer & )			 = delete;
+		Renderer & operator=( const Renderer & ) = delete;
 
 		inline size_t		 width() const { return _width; }
 		inline size_t		 height() const { return _height; }
@@ -65,21 +65,10 @@ namespace VTX::Renderer
 		inline void addGlobalData( const BufferData & p_globalData ) { _globalData.emplace_back( p_globalData ); }
 
 		/**
-		 * @brief Set the current graphic API context.
+		 * @brief Set graphic context.
 		 */
-		template<Context::ConceptContextImpl C, typename... Args>
-		void set( Args &&... p_args )
-		{
-			const bool isFirstBuild = not _context.hasContext<C>();
-			_context.set<C>( _width, _height, std::forward<Args>( p_args )... );
-
-			build();
-
-			if ( isFirstBuild )
-			{
-				onReady();
-			}
-		}
+		void setDefault();
+		void setOpenGL45( const std::filesystem::path & );
 
 		inline bool hasContext() const { return _context.hasContext(); }
 
@@ -218,19 +207,15 @@ namespace VTX::Renderer
 		GLuint						_sesSegmentVao = GL_INVALID_VALUE;
 		GLuint						_sesCircleVao  = GL_INVALID_VALUE;
 		GLuint						_sesConvexVao  = GL_INVALID_VALUE;
-#endif
+
 		Context::GL::ProgramManager _pm
 			= Context::GL::ProgramManager( VTX::Util::Filesystem::getExecutableDir() / "shaders" );
 		Context::GL::Program * _sesProgramConcave;
 		Context::GL::Program * _sesProgramSegment;
 		Context::GL::Program * _sesProgramCircle;
 		Context::GL::Program * _sesProgramConvex;
-		void				   _createSes( Proxy::System & p_proxy );
-
-		/**
-		 * @brief Callback triggered when the renderering context is ready and _graph built (first time only).
-		 */
-		Util::Callback<> onReady;
+#endif
+		void _createSes( Proxy::System & p_proxy );
 
 		/**
 		 * @brief Useful for benchmarker only.

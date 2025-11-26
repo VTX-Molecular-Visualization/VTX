@@ -1,40 +1,42 @@
 #include <catch2/catch_test_macros.hpp>
-#include <renderer/facade.hpp>
-#include <util/filesystem.hpp>
+#include <renderer/render_graph.hpp>
+#include <renderer/renderer.hpp>
+#include <renderer/scheduler/depth_first_search.hpp>
 
 TEST_CASE( "Renderer::RenderGraph", "[renderer]" )
 {
-	// TODO: redo with new architecture and fixed scheduler.
-
+	using namespace VTX;
 	using namespace VTX::Renderer;
 
-	// 	RenderGraph<Context::OpenGL45, Scheduler::DepthFirstSearch> _graph;
-	//
-	// 	// Passes.
-	// 	_graph.addPass( "Shading",
-	// 				   { Pass::Inputs { { E_CHANNEL::COLOR_0, { "G" } },
-	//
-	// 									{ E_CHANNEL::DEPTH, { "D" } } } } );
-	// 	_graph.addPass( "Geometric", {} );
-	// 	_graph.addPass( "FXAA", { Pass::Inputs { { E_CHANNEL::COLOR_0, { "S" } } } } );
-	//
-	// 	_graph.addPass( "Depth", { Pass::Inputs { { E_CHANNEL::COLOR_0, { "G" } }, { E_CHANNEL::COLOR_1, { "T" } } } } );
-	//
-	// 	// Links.
-	// 	_graph.addLink( "Geometric", "Depth", E_CHANNEL::COLOR_0 );
-	// 	_graph.addLink( "Geometric", "Shading", E_CHANNEL::COLOR_0 );
-	// 	_graph.addLink( "Depth", "Shading", E_CHANNEL::DEPTH );
-	// 	_graph.addLink( "Shading", "FXAA", E_CHANNEL::COLOR_0 );
-	//
-	// 	REQUIRE( _graph.setup() );
-	//
-	// 	// Connect channel already in used.
-	// 	REQUIRE_FALSE( _graph.addLink( "Geometric", "FXAA", E_CHANNEL::COLOR_0 ) );
-	//
-	// 	// Add cyclic link.
-	// 	_graph.addLink( "FXAA", "Depth", E_CHANNEL::COLOR_1 );
-	//
-	// 	REQUIRE_FALSE( _graph.setup() );
+	RenderGraph graph;
+
+	Pass A	 = { "A" };
+	A.inputs = {};
+	A.outputs.emplace( E_CHAN_OUT::COLOR_0, Output { "AO0", {} } );
+
+	Pass B = { "B" };
+	B.inputs.emplace( E_CHAN_IN::_0, Input { "BI0", {} } );
+	B.outputs.emplace( E_CHAN_OUT::COLOR_0, Output { "BO0", {} } );
+
+	Pass C = { "C" };
+	C.inputs.emplace( E_CHAN_IN::_0, Input { "CI0", {} } );
+	C.outputs.emplace( E_CHAN_OUT::COLOR_0, Output { "CO0", {} } );
+
+	Pass * passA = graph.addPass( A );
+	Pass * passB = graph.addPass( B );
+	Pass * passC = graph.addPass( C );
+	graph.addLink( passA, passB, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+	graph.addLink( passB, passC, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+
+	graph.setOutput( &passC->outputs.at( E_CHAN_OUT::COLOR_0 ) );
+
+	graph.build<Scheduler::DepthFirstSearch>();
+
+	const RenderQueue & queue = graph.getRenderQueue();
+	REQUIRE( queue.size() == 3 );
+	REQUIRE( queue[ 0 ]->name == "A" );
+	REQUIRE( queue[ 1 ]->name == "B" );
+	REQUIRE( queue[ 2 ]->name == "C" );
 }
 
 TEST_CASE( "Renderer::Context::Opengl45", "[renderer]" )
@@ -42,7 +44,7 @@ TEST_CASE( "Renderer::Context::Opengl45", "[renderer]" )
 	using namespace VTX::Renderer;
 	using namespace VTX::Util;
 
-	Facade renderer( 800, 600 );
+	VTX::Renderer::Renderer renderer( 800, 600 );
 
 	renderer.setDefault();
 

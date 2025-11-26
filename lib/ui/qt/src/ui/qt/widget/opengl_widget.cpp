@@ -5,7 +5,7 @@
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/events.hpp>
-#include <renderer/facade.hpp>
+#include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -54,7 +54,7 @@ namespace VTX::UI::QT::Widget
 		this->setFocusProxy( _container );
 
 		// Set output.
-		App::RENDERER().onReady( [ this ]() { App::RENDERER().setOutput( _context->defaultFramebufferObject() ); } );
+		App::RENDERER().setOutput( _context->defaultFramebufferObject() );
 
 		// Connect signals.
 		// APP::onPostRender += [ this ]( const float ) { render(); };

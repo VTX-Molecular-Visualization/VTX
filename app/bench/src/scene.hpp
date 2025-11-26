@@ -27,9 +27,6 @@ namespace VTX::Bench
 		Renderer::Proxy::System & addSystem( const std::string & p_name );
 		void					  removeSystem( const size_t p_index );
 
-		// TODO: remove renderer from here.
-		void removeAllSystems( Renderer::Facade * const p_renderer );
-
 		inline void update( const float p_deltaTime )
 		{
 			if ( not isUpdate )

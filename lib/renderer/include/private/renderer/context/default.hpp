@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_DEFAULT__
 #define __VTX_RENDERER_CONTEXT_DEFAULT__
 
-#include "concept.hpp"
+#include "renderer/context/concept.hpp"
 
 namespace VTX::Renderer::Context
 {

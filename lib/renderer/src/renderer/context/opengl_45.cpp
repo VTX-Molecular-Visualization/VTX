@@ -793,7 +793,7 @@ namespace VTX::Renderer::Context
 			return std::nullopt;
 		}
 
-		const Output & srcOutput = ( it->get()->src->outputs[ it->get()->channelSrc ] );
+		const Output & srcOutput = ( it->get()->src->outputs.at( it->get()->channelSrc ) );
 
 		const Pass * srcPass = nullptr;
 		for ( const auto & [ key, pass ] : _descPasses )

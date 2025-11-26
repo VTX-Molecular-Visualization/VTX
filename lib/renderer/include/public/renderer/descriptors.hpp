@@ -180,10 +180,10 @@ namespace VTX::Renderer
 
 	struct Link
 	{
-		Pass *	   src;
-		Pass *	   dest;
-		E_CHAN_OUT channelSrc  = E_CHAN_OUT::COLOR_0;
-		E_CHAN_IN  channelDest = E_CHAN_IN::_0;
+		const Pass * src;
+		const Pass * dest;
+		E_CHAN_OUT	 channelSrc	 = E_CHAN_OUT::COLOR_0;
+		E_CHAN_IN	 channelDest = E_CHAN_IN::_0;
 	};
 
 	using Passes = std::vector<std::unique_ptr<Pass>>;

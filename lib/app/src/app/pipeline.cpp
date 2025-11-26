@@ -3,7 +3,7 @@
 #include "app/pass/pass_manager.hpp"
 #include "app/services.hpp"
 #include "app/threading/thread_manager.hpp"
-#include <renderer/facade.hpp>
+#include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
 #include <util/monitoring/stats.hpp>
 

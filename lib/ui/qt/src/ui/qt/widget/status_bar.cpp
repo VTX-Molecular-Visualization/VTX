@@ -1,7 +1,7 @@
 #include "ui/qt/widget/status_bar.hpp"
 #include "app/services.hpp"
 #include <app/vtx_app.hpp>
-#include <renderer/facade.hpp>
+#include <renderer/renderer.hpp>
 #include <util/monitoring/stats.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -23,6 +23,7 @@ namespace VTX::UI::QT::Widget
 		addPermanentWidget( vendorLabel );
 
 		// Update vendor when renderer is available.
+		/*
 		App::RENDERER().onReady(
 			[ vendorLabel ]()
 			{
@@ -30,6 +31,7 @@ namespace VTX::UI::QT::Widget
 				vendorLabel->setText( QString::fromStdString( App::RENDERER().getInfos().renderer ) );
 			}
 		);
+		*/
 
 		// Update FPS each second.
 		auto * timer = new QTimer( this );

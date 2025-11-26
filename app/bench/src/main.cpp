@@ -2,9 +2,10 @@
 #include "scene.hpp"
 #include "user_interface.hpp"
 #include <iostream>
-#include <renderer/facade.hpp>
+#include <renderer/proxy/render_settings.hpp>
 #include <renderer/proxy/representation.hpp>
 #include <renderer/proxy/voxels.hpp>
+#include <renderer/renderer.hpp>
 #include <util/math/aabb.hpp>
 
 #ifdef _WIN32
@@ -37,8 +38,8 @@ int main( int, char ** )
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		Renderer::Facade renderer( WIDTH, HEIGHT );
-		renderer.setOpenGL45( Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
+		Renderer::Renderer renderer( WIDTH, HEIGHT );
+		// renderer.setOpenGL45( Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
 		renderer.setProxyCamera( scene.getProxyCamera() );
 
 		// Input manager.
@@ -143,7 +144,8 @@ int main( int, char ** )
 		float fZeroOne	= 0.1f;
 		float fZeroFive = 0.5f;
 
-		// Renderer::Proxy::Representation representation;
+		Renderer::Representation		representation;
+		Renderer::Proxy::Representation proxyRepresentation( representation );
 
 		/*
 		representation.set( 0, bTrue );
@@ -161,13 +163,37 @@ int main( int, char ** )
 		representation.set( 9, bFalse );
 		*/
 
-		// renderer.setProxyRepresentation( representation );
+		renderer.setProxyRepresentation( proxyRepresentation );
+
+		Renderer::RenderSettings settings;
+		settings.shadingMode		= Renderer::E_SHADING::TOON;
+		settings.colorLight			= COLOR_WHITE;
+		settings.colorBackground	= COLOR_BLACK;
+		settings.specularFactor		= 0.5f;
+		settings.shininess			= 32.f;
+		settings.toonSteps			= 4;
+		settings.activeSSAO			= true;
+		settings.ssaoIntensity		= 5.f;
+		settings.blurSize			= 4.f;
+		settings.activeOutline		= true;
+		settings.colorOutline		= COLOR_BLACK;
+		settings.outlineSensitivity = 0.5f;
+		settings.outlineThickness	= 2;
+		settings.activeFog			= false;
+		settings.colorFog			= COLOR_WHITE;
+		settings.fogNear			= 100.f;
+		settings.fogFar				= 1000.f;
+		settings.fogDensity			= 0.01f;
+		settings.activeSelection	= true;
+		settings.colorSelection		= COLOR_WHITE;
+
+		Renderer::Proxy::RenderSettings proxyRenderSettings( settings );
 
 		// Renderer::Proxy::RenderSettings renderSettings
 		//	= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
 		//		3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
 
-		// renderer.setProxyRenderSettings( renderSettings );
+		renderer.setProxyRenderSettings( proxyRenderSettings );
 
 		// Main loop.
 		while ( isRunning )

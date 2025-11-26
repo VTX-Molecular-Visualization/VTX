@@ -49,7 +49,7 @@ namespace VTX::App
 } // namespace VTX::App
 namespace VTX::Renderer
 {
-	class Facade;
+	class Renderer;
 }
 namespace VTX::Util
 {
@@ -77,7 +77,7 @@ namespace VTX::App
 	/**
 	 * @brief Renderer facade.
 	 */
-	inline Renderer::Facade & RENDERER() { return ECS::getCtx<Renderer::Facade>(); }
+	inline Renderer::Renderer & RENDERER() { return ECS::getCtx<Renderer::Renderer>(); }
 	/**
 	 * @brief Action manager.
 	 */

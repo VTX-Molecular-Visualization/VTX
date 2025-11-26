@@ -7,7 +7,7 @@
 #include <QPushButton>
 #include <QToolTip>
 #include <QVBoxLayout>
-#include <renderer/facade.hpp>
+#include <renderer/renderer.hpp>
 
 namespace VTX::UI::QT::Dialog
 {

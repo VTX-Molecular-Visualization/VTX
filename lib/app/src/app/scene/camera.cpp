@@ -2,7 +2,6 @@
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
-#include <renderer/facade.hpp>
 #include <util/constants.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>

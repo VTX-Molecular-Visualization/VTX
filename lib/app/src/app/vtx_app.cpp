@@ -25,7 +25,7 @@
 #include "app/uid/uid_manager.hpp"
 #include <exception>
 #include <python_binding/interpretor.hpp>
-#include <renderer/facade.hpp>
+#include <renderer/renderer.hpp>
 #include <util/logger.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
@@ -56,7 +56,7 @@ namespace VTX::App
 		// Store statistics.
 		ECS::setCtx<Util::Monitoring::Stats>();
 		// Store renderer.
-		ECS::setCtx<Renderer::Facade>().setDefault();
+		ECS::setCtx<Renderer::Renderer>().setDefault();
 		// Store action manager.
 		ECS::setCtx<Action::ActionManager>();
 		// Store input manager.

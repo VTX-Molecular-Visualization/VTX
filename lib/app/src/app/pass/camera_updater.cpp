@@ -2,8 +2,8 @@
 #include "app/pass/controller/animation.hpp"
 #include "app/scene/camera.hpp"
 #include "app/services.hpp"
-#include <renderer/facade.hpp>
 #include <renderer/proxy/voxels.hpp>
+#include <renderer/renderer.hpp>
 #include <util/math.hpp>
 #include <util/math/transform.hpp>
 

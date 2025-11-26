@@ -27,7 +27,7 @@ namespace VTX::Bench
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 5 );
-		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, int( Renderer::Facade::getBufferCount() == 2 ) );
+		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, int( Renderer::Renderer::BUFFER_COUNT == 2 ) );
 		// SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
 		// SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
 
@@ -96,7 +96,7 @@ namespace VTX::Bench
 		SDL_Quit();
 	}
 
-	void UserInterface::draw( Camera * const p_camera, Scene * const p_scene, Renderer::Facade * const p_renderer )
+	void UserInterface::draw( Camera * const p_camera, Scene * const p_scene, Renderer::Renderer * const p_renderer )
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL3_NewFrame();
@@ -130,9 +130,9 @@ namespace VTX::Bench
 	}
 
 	void UserInterface::_drawMenuBar(
-		Camera * const			 p_camera,
-		Renderer::Facade * const p_renderer,
-		Scene * const			 p_scene
+		Camera * const			   p_camera,
+		Renderer::Renderer * const p_renderer,
+		Scene * const			   p_scene
 	)
 	{
 		if ( ImGui::BeginMainMenuBar() )
@@ -243,9 +243,9 @@ namespace VTX::Bench
 				setVSync( _vsync );
 			}
 
-			ImGui::Checkbox( "Timers", p_renderer->logDurations );
+			ImGui::Checkbox( "Timers", &p_renderer->logDurations );
 
-			ImGui::Checkbox( "Force update", p_renderer->forceUpdate );
+			ImGui::Checkbox( "Force update", &p_renderer->forceUpdate );
 
 			ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
@@ -306,34 +306,34 @@ namespace VTX::Bench
 		ImGui::End();
 	}
 
-	void UserInterface::_drawRenderer( Renderer::Facade * const p_renderer )
+	void UserInterface::_drawRenderer( Renderer::Renderer * const p_renderer )
 	{
 		if ( ImGui::Begin( "Renderer" ) )
 		{
 			size_t sizeAtoms = 0, sizeBonds = 0, sizeRibbons = 0, sizeVoxels = 0;
-			for ( auto count : p_renderer->drawRangeSpheres->counts )
+			for ( auto count : p_renderer->drawRangeSpheres.counts )
 			{
 				sizeAtoms += count;
 			}
-			for ( auto count : p_renderer->drawRangeCylinders->counts )
+			for ( auto count : p_renderer->drawRangeCylinders.counts )
 			{
 				sizeBonds += count;
 			}
-			for ( auto count : p_renderer->drawRangeRibbons->counts )
+			for ( auto count : p_renderer->drawRangeRibbons.counts )
 			{
 				sizeRibbons += count;
 			}
-			for ( auto count : p_renderer->drawRangeVoxels->counts )
+			for ( auto count : p_renderer->drawRangeVoxels.counts )
 			{
 				sizeVoxels += count;
 			}
 
-			ImGui::Checkbox( fmt::format( "{} atoms", sizeAtoms ).c_str(), p_renderer->showAtoms );
-			ImGui::Checkbox( fmt::format( "{} bonds", sizeBonds ).c_str(), p_renderer->showBonds );
-			ImGui::Checkbox( fmt::format( "{} ribbons", sizeRibbons ).c_str(), p_renderer->showRibbons );
-			ImGui::Checkbox( fmt::format( "{} voxels", sizeVoxels ).c_str(), p_renderer->showVoxels );
+			ImGui::Checkbox( fmt::format( "{} atoms", sizeAtoms ).c_str(), &p_renderer->showAtoms );
+			ImGui::Checkbox( fmt::format( "{} bonds", sizeBonds ).c_str(), &p_renderer->showBonds );
+			ImGui::Checkbox( fmt::format( "{} ribbons", sizeRibbons ).c_str(), &p_renderer->showRibbons );
+			ImGui::Checkbox( fmt::format( "{} voxels", sizeVoxels ).c_str(), &p_renderer->showVoxels );
 
-			ImGui::Text( fmt::format( "{}x{}", p_renderer->getWidth(), p_renderer->getHeight() ).c_str() );
+			ImGui::Text( fmt::format( "{}x{}", p_renderer->width(), p_renderer->height() ).c_str() );
 			ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
 			const Renderer::StructInfos & infos = p_renderer->getInfos();
@@ -374,7 +374,7 @@ namespace VTX::Bench
 		ImGui::End();
 	}
 
-	void UserInterface::_drawDurations( Renderer::Facade * const p_renderer ) const
+	void UserInterface::_drawDurations( Renderer::Renderer * const p_renderer ) const
 	{
 		using namespace Renderer;
 
@@ -406,7 +406,7 @@ namespace VTX::Bench
 		}
 	}
 
-	void UserInterface::_drawScene( Scene * const p_scene, Renderer::Facade * const p_renderer )
+	void UserInterface::_drawScene( Scene * const p_scene, Renderer::Renderer * const p_renderer )
 	{
 		/*
 		static const uint64_t sdlFrequency	= SDL_GetPerformanceFrequency();
@@ -422,7 +422,7 @@ namespace VTX::Bench
 			ImGui::SameLine();
 			if ( ImGui::Button( "X all" ) )
 			{
-				p_scene->removeAllSystems( p_renderer );
+				// p_scene->removeAllSystems( p_renderer );
 			}
 
 			size_t idSystem = 0;
@@ -487,7 +487,7 @@ namespace VTX::Bench
 
 	void UserInterface::_drawUniforms() const {}
 
-	void UserInterface::_drawNodeEditor( Renderer::Facade * const p_renderer ) const
+	void UserInterface::_drawNodeEditor( Renderer::Renderer * const p_renderer ) const
 	{
 		using namespace Renderer;
 
@@ -501,7 +501,7 @@ namespace VTX::Bench
 				{
 					if ( ImGui::MenuItem( pass->name.c_str() ) )
 					{
-						p_renderer->addPass( *pass );
+						p_renderer->graph().addPass( *pass );
 					}
 				}
 
@@ -523,7 +523,7 @@ namespace VTX::Bench
 				p_renderer->clean();
 			}
 
-			const RenderQueue & renderQueue = p_renderer->getRenderQueue();
+			const RenderQueue & renderQueue = p_renderer->graph().getRenderQueue();
 			for ( const Pass * const pass : renderQueue )
 			{
 				if ( pass != nullptr )
@@ -558,7 +558,7 @@ namespace VTX::Bench
 			std::map<const uint, Link *>		   mapIdDescLink;
 			const Pass *						   passToDelete = nullptr;
 
-			for ( const std::unique_ptr<Pass> & pass : p_renderer->getPasses() )
+			for ( const std::unique_ptr<Pass> & pass : p_renderer->graph().getPasses() )
 			{
 				ImNodes::BeginNode( id++ );
 				ImNodes::BeginNodeTitleBar();
@@ -704,22 +704,22 @@ namespace VTX::Bench
 			ImNodes::PopColorStyle();
 
 			// Links.
-			for ( const std::unique_ptr<Link> & link : p_renderer->getLinks() )
+			for ( const std::unique_ptr<Link> & link : p_renderer->graph().getLinks() )
 			{
 				mapIdDescLink.emplace( id, link.get() );
 				ImNodes::Link(
 					id++,
-					mapIdOutput[ &( link->src->outputs[ link->channelSrc ] ) ],
-					mapIdInput[ &( link->dest->inputs[ link->channelDest ] ) ]
+					mapIdOutput[ &( link->src->outputs.at( link->channelSrc ) ) ],
+					mapIdInput[ &( link->dest->inputs.at( link->channelDest ) ) ]
 				);
 			}
 
 			// Output.
 			uint idFinalDescLink = -1;
-			if ( p_renderer->getOutput() )
+			if ( p_renderer->graph().getOutput() )
 			{
 				idFinalDescLink = id;
-				ImNodes::Link( id++, mapIdOutput[ p_renderer->getOutput() ], idFinalOuput );
+				ImNodes::Link( id++, mapIdOutput[ p_renderer->graph().getOutput() ], idFinalOuput );
 			}
 
 			ImNodes::MiniMap();
@@ -736,7 +736,7 @@ namespace VTX::Bench
 					{
 						if ( it.second == newLinkStartId )
 						{
-							p_renderer->setOutput( it.first );
+							p_renderer->graph().setOutput( it.first );
 						}
 					}
 				}
@@ -744,7 +744,7 @@ namespace VTX::Bench
 				// Add link.
 				else
 				{
-					p_renderer->addLink(
+					p_renderer->graph().addLink(
 						mapIdDescPass[ newLinkStartId ],
 						mapIdDescPass[ newLinkEndtId ],
 						mapIdChannelOutput[ newLinkStartId ],
@@ -760,20 +760,20 @@ namespace VTX::Bench
 				// Output.
 				if ( deletedDescLinkId == idFinalDescLink )
 				{
-					p_renderer->setOutput( nullptr );
+					p_renderer->graph().setOutput( nullptr );
 				}
 
 				// DescLink.
 				else
 				{
-					p_renderer->removeLink( mapIdDescLink[ deletedDescLinkId ] );
+					p_renderer->graph().removeLink( mapIdDescLink[ deletedDescLinkId ] );
 				}
 			}
 
 			// Check deleted node.
 			if ( passToDelete != nullptr )
 			{
-				p_renderer->removePass( passToDelete );
+				p_renderer->graph().removePass( passToDelete );
 				passToDelete = nullptr;
 			}
 		}

@@ -3,7 +3,6 @@
 #include <io/util/secondary_structure.hpp>
 #include <numeric>
 #include <renderer/color.hpp>
-#include <renderer/facade.hpp>
 #include <util/math.hpp>
 
 namespace VTX::Bench
@@ -62,22 +61,6 @@ namespace VTX::Bench
 		_systems.erase( _systems.begin() + p_index );
 		_proxySystems.erase( _proxySystems.begin() + p_index );
 		_directions.erase( _directions.begin() + p_index );
-	}
-
-	// TODO: remove renderer from here.
-	void Scene::removeAllSystems( Renderer::Facade * const p_renderer )
-	{
-		std::vector<Renderer::Proxy::System *> proxies;
-		for ( auto & proxy : _proxySystems )
-		{
-			proxies.push_back( proxy.get() );
-		}
-
-		p_renderer->removeProxySystems( proxies );
-
-		_systems.clear();
-		_proxySystems.clear();
-		_directions.clear();
 	}
 
 	std::unique_ptr<Renderer::Proxy::System> Scene::_proxify( const Core::Struct::System & p_system )

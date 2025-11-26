@@ -1,6 +1,7 @@
 #include "renderer/renderer.hpp"
 #include "renderer/binary_buffer.hpp"
-#include "renderer/renderer.hpp"
+#include "renderer/context/default.hpp"
+#include "renderer/context/opengl_45.hpp"
 #include "renderer/scheduler/depth_first_search.hpp"
 #include <execution>
 #include <util/math.hpp>
@@ -79,6 +80,18 @@ namespace VTX::Renderer
 		);
 	}
 
+	void Renderer::setDefault()
+	{
+		_context.set<Context::Default>( _width, _height );
+		build();
+	}
+
+	void Renderer::setOpenGL45( const std::filesystem::path & p_shaderIncludePath )
+	{
+		_context.set<Context::OpenGL45>( _width, _height, p_shaderIncludePath );
+		build();
+	}
+
 	void Renderer::build()
 	{
 		// Build renderer _graph.
@@ -86,7 +99,6 @@ namespace VTX::Renderer
 			[ this ]()
 			{
 				const RenderQueue & queue = _graph.build<Scheduler::DepthFirstSearch>();
-
 				_context.build( queue, _graph.getLinks(), _globalData, _instructions, _instructionsDurationRanges );
 			}
 		);
@@ -114,7 +126,7 @@ namespace VTX::Renderer
 		_context.clear();
 		_instructions.clear();
 		_instructionsDurationRanges.clear();
-		_graph.clean();
+		_graph.clear();
 		_needUpdate		 = false;
 		_framesRemaining = 0;
 
@@ -1405,218 +1417,85 @@ namespace VTX::Renderer
 	// TODO: not the best way to do it.
 	void Renderer::_refreshGraph()
 	{
-		using namespace Proxy;
-
-		static Pass * geo;
-		static Pass * depth;
-		static Pass * ssao;
-		static Pass * blurX;
-		static Pass * blurY;
-		static Pass * shading;
-		static Pass * outline;
-		static Pass * selection;
-		static Pass * fxaa;
-
-		// Geometric.
-		if ( not geo )
+		RenderGraph::PipelineConfig config;
+		if ( _proxyRenderSettings )
 		{
-			// TODO: refacto!
-			geo									   = _graph.addPass( descPassGeometric );
-			geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
-			geo->programs[ 0 ].draw.value().needRenderFunc
-				= [ this ]() { return showAtoms && drawRangeSpheres.counts.size() > 0; };
-			geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
-			geo->programs[ 1 ].draw.value().needRenderFunc
-				= [ this ]() { return showBonds && drawRangeCylinders.counts.size() > 0; };
-			geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
-			geo->programs[ 2 ].draw.value().needRenderFunc
-				= [ this ]() { return showRibbons && drawRangeRibbons.counts.size() > 0; };
-			geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
-			geo->programs[ 3 ].draw.value().needRenderFunc
-				= [ this ]() { return showVoxels && drawRangeVoxels.counts.size() > 0; };
-			// TODO: add SES range.
-			/*
-			geo->programs[ 4 ].draw.value().ranges = &drawRangeSESCircles;
-			geo->programs[ 4 ].draw.value().needRenderFunc
-				= [ this ]() { return showSESCircles && drawRangeSESCircles.counts.size() > 0; };
-			geo->programs[ 5 ].draw.value().ranges = &drawRangeSESConcaves;
-			geo->programs[ 5 ].draw.value().needRenderFunc
-				= [ this ]() { return showSESConcaves && drawRangeSESConcaves.counts.size() > 0; };
-			geo->programs[ 6 ].draw.value().ranges = &drawRangeSESConvexes;
-			geo->programs[ 6 ].draw.value().needRenderFunc
-				= [ this ]() { return showSESConvexes && drawRangeSESConvexes.counts.size() > 0; };
-			geo->programs[ 7 ].draw.value().ranges = &drawRangeSESSegments;
-			geo->programs[ 7 ].draw.value().needRenderFunc
-				= [ this ]() { return showSESSegments && drawRangeSESSegments.counts.size() > 0; };
-				*/
+			config.enableSSAO	   = _proxyRenderSettings->data.activeSSAO;
+			config.enableOutline   = _proxyRenderSettings->data.activeOutline;
+			config.enableSelection = _proxyRenderSettings->data.activeSelection;
+		}
+
+		RenderGraph::PipelinePasses passes = _graph.createDefaultPipeline( config );
+		Pass *						geo	   = passes.geo;
+		assert( geo );
+
+		geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
+		geo->programs[ 0 ].draw.value().needRenderFunc
+			= [ this ]() { return showAtoms && !drawRangeSpheres.counts.empty(); };
+
+		geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
+		geo->programs[ 1 ].draw.value().needRenderFunc
+			= [ this ]() { return showBonds && !drawRangeCylinders.counts.empty(); };
+
+		geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
+		geo->programs[ 2 ].draw.value().needRenderFunc
+			= [ this ]() { return showRibbons && !drawRangeRibbons.counts.empty(); };
+
+		geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
+		geo->programs[ 3 ].draw.value().needRenderFunc
+			= [ this ]() { return showVoxels && !drawRangeVoxels.counts.empty(); };
+
 #ifdef VTX_CUDA_ENABLED
-			geo->renderFunc = [ & ]()
+		geo->renderFunc = [ & ]()
+		{
+			constexpr auto bindBuffer = []( uint32_t bindingPoint, bcs::HandleSpan<GLuint> buffer )
 			{
-				constexpr auto bindBuffer = []( uint32_t bindingPoint, bcs::HandleSpan<GLuint> buffer )
-				{
-					if ( buffer.size > 0 )
-						glBindBufferRange(
-							GL_SHADER_STORAGE_BUFFER, bindingPoint, buffer.handle, buffer.offset, buffer.size
-						);
-				};
-
-				if ( _sesData )
-				{
-					bindBuffer( 1, _sesSurface.atoms );
-					bindBuffer( 2, _sesSurface.segmentPatches );
-					bindBuffer( 3, _sesSurface.concavePatchesPosition );
-					bindBuffer( 4, _sesSurface.concavePatchesId );
-					bindBuffer( 5, _sesSurface.concavePatchesNeighbors );
-					bindBuffer( 6, _sesSurface.sectors );
-
-					if ( _sesSurface.concavePatchNb > 0 )
-					{
-						_sesProgramConcave->use();
-						glBindVertexArray( _sesVao );
-						glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.concavePatchNb ) );
-					}
-
-					if ( _sesSurface.circlePatchNb )
-					{
-						_sesProgramCircle->use();
-						glBindVertexArray( _sesCircleVao );
-						glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.circlePatchNb ) );
-					}
-
-					if ( _sesSurface.convexPatchNb > 0 )
-					{
-						_sesProgramConvex->use();
-						glBindVertexArray( _sesConvexVao );
-						glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.convexPatchNb ) );
-					}
-
-					if ( _sesSurface.segmentPatchNb > 0 )
-					{
-						_sesProgramSegment->use();
-						glBindVertexArray( _sesSegmentVao );
-						glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.segmentPatchNb ) );
-					}
-
-					glBindVertexArray( 0 );
-				}
+				if ( buffer.size > 0 )
+					glBindBufferRange(
+						GL_SHADER_STORAGE_BUFFER, bindingPoint, buffer.handle, buffer.offset, buffer.size
+					);
 			};
+
+			if ( _sesData )
+			{
+				bindBuffer( 1, _sesSurface.atoms );
+				bindBuffer( 2, _sesSurface.segmentPatches );
+				bindBuffer( 3, _sesSurface.concavePatchesPosition );
+				bindBuffer( 4, _sesSurface.concavePatchesId );
+				bindBuffer( 5, _sesSurface.concavePatchesNeighbors );
+				bindBuffer( 6, _sesSurface.sectors );
+
+				if ( _sesSurface.concavePatchNb > 0 )
+				{
+					_sesProgramConcave->use();
+					glBindVertexArray( _sesVao );
+					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.concavePatchNb ) );
+				}
+
+				if ( _sesSurface.circlePatchNb )
+				{
+					_sesProgramCircle->use();
+					glBindVertexArray( _sesCircleVao );
+					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.circlePatchNb ) );
+				}
+
+				if ( _sesSurface.convexPatchNb > 0 )
+				{
+					_sesProgramConvex->use();
+					glBindVertexArray( _sesConvexVao );
+					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.convexPatchNb ) );
+				}
+
+				if ( _sesSurface.segmentPatchNb > 0 )
+				{
+					_sesProgramSegment->use();
+					glBindVertexArray( _sesSegmentVao );
+					glDrawArrays( GL_POINTS, 0, static_cast<GLsizei>( _sesSurface.segmentPatchNb ) );
+				}
+
+				glBindVertexArray( 0 );
+			}
+		};
 #endif
-		}
-
-		// Depth.
-		if ( not depth )
-		{
-			depth = _graph.addPass( descPassDepth );
-
-			_graph.addLink( geo, depth, E_CHAN_OUT::DEPTH, E_CHAN_IN::_0 );
-		}
-
-		// SSAO.
-		if ( not ssao )
-		{
-			if ( not _proxyRenderSettings or _proxyRenderSettings->data.activeSSAO )
-			{
-				ssao  = _graph.addPass( descPassSSAO );
-				blurX = _graph.addPass( descPassBlur );
-				blurY = _graph.addPass( descPassBlur );
-
-				blurX->name							 = "BlurX";
-				blurY->name							 = "BlurY";
-				blurY->programs[ 0 ].data[ 0 ].value = BufferValue<Vec2i> { Vec2i( 0, 1 ) };
-
-				_graph.addLink( geo, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				_graph.addLink( depth, ssao, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-				_graph.addLink( ssao, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				_graph.addLink( depth, blurX, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-				_graph.addLink( blurX, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				_graph.addLink( depth, blurY, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-			}
-		}
-		else if ( _proxyRenderSettings and not _proxyRenderSettings->data.activeSSAO )
-		{
-			_graph.removePass( ssao );
-			_graph.removePass( blurX );
-			_graph.removePass( blurY );
-			ssao  = nullptr;
-			blurX = nullptr;
-			blurY = nullptr;
-		}
-
-		// Shading.
-		if ( not shading )
-		{
-			shading = _graph.addPass( descPassShading );
-
-			_graph.addLink( geo, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-			_graph.addLink( geo, shading, E_CHAN_OUT::COLOR_1, E_CHAN_IN::_1 );
-		}
-		if ( ssao )
-		{
-			_graph.addLink( blurY, shading, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-		}
-
-		// Outline.
-		if ( not outline )
-		{
-			if ( not _proxyRenderSettings or _proxyRenderSettings->data.activeOutline )
-			{
-				outline = _graph.addPass( descPassOutline );
-
-				_graph.addLink( shading, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				_graph.addLink( depth, outline, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-			}
-		}
-		else if ( _proxyRenderSettings and not _proxyRenderSettings->data.activeOutline )
-		{
-			_graph.removePass( outline );
-			outline = nullptr;
-		}
-
-		// Selection.
-		if ( not selection )
-		{
-			if ( not _proxyRenderSettings or _proxyRenderSettings->data.activeSelection )
-			{
-				selection = _graph.addPass( descPassSelection );
-
-				_graph.addLink( geo, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-				_graph.addLink( depth, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_2 );
-			}
-		}
-		else if ( _proxyRenderSettings and not _proxyRenderSettings->data.activeSelection )
-		{
-			_graph.removePass( selection );
-			selection = nullptr;
-		}
-		if ( selection )
-		{
-			if ( outline )
-			{
-				_graph.addLink( outline, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-			}
-			else
-			{
-				_graph.addLink( shading, selection, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_1 );
-			}
-		}
-
-		// FXAA.
-		if ( not fxaa )
-		{
-			fxaa = _graph.addPass( desPassFXAA );
-			_graph.setOutput( &fxaa->outputs[ E_CHAN_OUT::COLOR_0 ] );
-		}
-		if ( selection )
-		{
-			_graph.addLink( selection, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		}
-		else if ( outline )
-		{
-			_graph.addLink( outline, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		}
-		else
-		{
-			_graph.addLink( shading, fxaa, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
-		}
 	}
 } // namespace VTX::Renderer

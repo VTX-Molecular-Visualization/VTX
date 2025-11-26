@@ -5,7 +5,7 @@
 #include "app/network/network_manager.hpp"
 #include "app/scene/camera.hpp"
 #include "app/services.hpp"
-#include <renderer/facade.hpp>
+#include <renderer/renderer.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 
@@ -46,8 +46,8 @@ namespace VTX::App::Action::IO
 		execute(
 			Filesystem::getSnapshotsDir() / std::to_string( Util::Chrono::getTimestamp() ),
 			Util::Image::E_FORMAT::PNG,
-			RENDERER().getWidth(),
-			RENDERER().getHeight()
+			RENDERER().width(),
+			RENDERER().height()
 		);
 	}
 
