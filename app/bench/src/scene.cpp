@@ -20,8 +20,7 @@ namespace VTX::Bench
 									  ),
 		_colorLayout(
 			// Renderer::Color::Layout::COLOR_LAYOUT_JMOL
-		),
-		_proxyLayoutColor( _colorLayout )
+		)
 	{
 		_camera.callbackMatrixView += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixView(); };
 		_camera.callbackMatrixProjection += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixProjection(); };

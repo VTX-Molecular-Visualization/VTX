@@ -10,12 +10,11 @@
 #include "context/context_wrapper.hpp"
 #include "passes.hpp"
 #include "render_graph.hpp"
+#include "renderer/color.hpp"
 #include "renderer/proxy/camera.hpp"
-#include "renderer/proxy/color_layout.hpp"
-#include "renderer/proxy/render_settings.hpp"
-#include "renderer/proxy/representation.hpp"
 #include "renderer/proxy/system.hpp"
 #include "renderer/proxy/voxels.hpp"
+#include "renderer/representation.hpp"
 #include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -96,16 +95,18 @@ namespace VTX::Renderer
 		/**
 		 * @brief Add data to the renderer.
 		 */
+		// OLD
 		void addProxySystem( Proxy::System & p_proxy );
 		void removeProxySystem( Proxy::System & p_proxy );
 		void addProxySystems( std::vector<Proxy::System *> & p_proxies );
 		void removeProxySystems( std::vector<Proxy::System *> & p_proxies );
-
 		void setProxyCamera( Proxy::Camera & p_proxy );
-		void setProxyColorLayout( Proxy::ColorLayout & p_proxy );
-		void setProxyRepresentation( Proxy::Representation & p_proxies );
-		void setProxyRenderSettings( Proxy::RenderSettings & p_proxy );
 		void setProxyVoxels( Proxy::Voxels & p_proxy );
+
+		// NEW
+		void setRenderSettings( const RenderSettings & );
+		void setColorLayout( const Color::Layout & );
+		void setRepresentation( const Representation & );
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
@@ -270,11 +271,8 @@ namespace VTX::Renderer
 		 * @brief All data proxies.
 		 */
 		std::vector<Proxy::System *> _proxiesSystems;
-		Proxy::Representation *		 _proxyRepresentation = nullptr;
-		Proxy::Camera *				 _proxyCamera		  = nullptr;
-		Proxy::ColorLayout *		 _proxyColorLayout	  = nullptr;
-		Proxy::RenderSettings *		 _proxyRenderSettings = nullptr;
-		Proxy::Voxels *				 _proxyVoxels		  = nullptr;
+		Proxy::Camera *				 _proxyCamera = nullptr;
+		Proxy::Voxels *				 _proxyVoxels = nullptr;
 
 		void _addProxySystem( Proxy::System & p_proxy );
 		void _removeProxySystem( Proxy::System & p_proxy );
@@ -298,7 +296,7 @@ namespace VTX::Renderer
 		std::map<const Proxy::System * const, Cache::Ribbon>		 _cacheRibbons;
 		// std::map<const Proxy::System * const, Cache::SES>			 _cacheSES;
 
-		void _refreshGraph();
+		void _refreshGraph( const RenderSettings & );
 
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
 		inline void _refreshDataSystems()
@@ -315,7 +313,7 @@ namespace VTX::Renderer
 		void _refreshDataModels();
 		void _refreshDataVoxels();
 
-		void _applyRepresentationLogic();
+		void _applyRepresentationLogic( const Representation & );
 
 		enum E_ELEMENT_FLAGS
 		{

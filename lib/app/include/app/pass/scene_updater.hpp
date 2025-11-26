@@ -14,9 +14,22 @@ namespace VTX::App::Pass
 		inline void update( const float, const float ) {}
 
 	  private:
+		/**
+		 * @brief Scene entity.
+		 */
 		const ECS::Entity _entity;
 
-		void _onUpdateAABB( ECS::Registry & p_r, ECS::Entity p_e );
+		/**
+		 * @brief Update the scene AABB when a system AABB is updated.
+		 */
+		void _onUpdateAABB( ECS::Registry &, ECS::Entity );
+
+		/**
+		 * @brief Update renderer when a preset is updated.
+		 */
+		void _onUpdateRenderSettings( ECS::Registry &, ECS::Entity );
+		void _onUpdateColorLayout( ECS::Registry &, ECS::Entity );
+		void _onUpdateRepresentations( ECS::Registry &, ECS::Entity );
 	};
 } // namespace VTX::App::Pass
 #endif

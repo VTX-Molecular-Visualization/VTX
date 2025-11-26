@@ -5,7 +5,6 @@
 #include <core/struct/system.hpp>
 #include <renderer/color.hpp>
 #include <renderer/proxy/camera.hpp>
-#include <renderer/proxy/color_layout.hpp>
 #include <renderer/proxy/system.hpp>
 
 namespace VTX::Renderer
@@ -55,12 +54,7 @@ namespace VTX::Bench
 			return _proxySystems;
 		}
 		inline const Renderer::Color::Layout & getColorLayout() const { return _colorLayout; }
-		inline void							   setColorLayout( const Renderer::Color::Layout & p_colorLayout )
-		{
-			_colorLayout = p_colorLayout;
-			_proxyLayoutColor.onChangeAll();
-		}
-		inline Renderer::Proxy::ColorLayout & getProxyColorLayout() { return _proxyLayoutColor; }
+		inline void setColorLayout( const Renderer::Color::Layout & p_colorLayout ) { _colorLayout = p_colorLayout; }
 
 		bool isUpdate = false;
 
@@ -72,8 +66,7 @@ namespace VTX::Bench
 		std::vector<std::unique_ptr<Renderer::Proxy::System>> _proxySystems;
 		std::vector<Vec3f>									  _directions;
 
-		Renderer::Color::Layout		 _colorLayout;
-		Renderer::Proxy::ColorLayout _proxyLayoutColor;
+		Renderer::Color::Layout _colorLayout;
 
 		std::unique_ptr<Renderer::Proxy::System> _proxify( const Core::Struct::System & p_system );
 	};

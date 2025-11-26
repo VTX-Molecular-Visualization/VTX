@@ -2,8 +2,6 @@
 #include "scene.hpp"
 #include "user_interface.hpp"
 #include <iostream>
-#include <renderer/proxy/render_settings.hpp>
-#include <renderer/proxy/representation.hpp>
 #include <renderer/proxy/voxels.hpp>
 #include <renderer/renderer.hpp>
 #include <util/math/aabb.hpp>
@@ -135,7 +133,7 @@ int main( int, char ** )
 		auto proxyVoxels = Renderer::Proxy::Voxels { &mins, &maxs };
 		renderer.setProxyVoxels( proxyVoxels );
 
-		renderer.setProxyColorLayout( scene.getProxyColorLayout() );
+		renderer.setColorLayout( scene.getColorLayout() );
 
 		// Quickfix.
 		bool  bTrue		= true;
@@ -144,8 +142,7 @@ int main( int, char ** )
 		float fZeroOne	= 0.1f;
 		float fZeroFive = 0.5f;
 
-		Renderer::Representation		representation;
-		Renderer::Proxy::Representation proxyRepresentation( representation );
+		Renderer::Representation representation;
 
 		/*
 		representation.set( 0, bTrue );
@@ -163,7 +160,7 @@ int main( int, char ** )
 		representation.set( 9, bFalse );
 		*/
 
-		renderer.setProxyRepresentation( proxyRepresentation );
+		renderer.setRepresentation( representation );
 
 		Renderer::RenderSettings settings;
 		settings.shadingMode		= Renderer::E_SHADING::TOON;
@@ -187,13 +184,11 @@ int main( int, char ** )
 		settings.activeSelection	= true;
 		settings.colorSelection		= COLOR_WHITE;
 
-		Renderer::Proxy::RenderSettings proxyRenderSettings( settings );
-
 		// Renderer::Proxy::RenderSettings renderSettings
 		//	= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
 		//		3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
 
-		renderer.setProxyRenderSettings( proxyRenderSettings );
+		renderer.setRenderSettings( settings );
 
 		// Main loop.
 		while ( isRunning )

@@ -15,7 +15,7 @@ namespace VTX::Renderer
 	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height )
 	{
 		// Passes.
-		_refreshGraph();
+		_refreshGraph( RenderSettings() );
 
 		// Shared data.
 		addGlobalData(
@@ -131,11 +131,8 @@ namespace VTX::Renderer
 		_framesRemaining = 0;
 
 		_proxiesSystems.clear();
-		_proxyCamera		 = nullptr;
-		_proxyColorLayout	 = nullptr;
-		_proxyRepresentation = nullptr;
-		_proxyRenderSettings = nullptr;
-		_proxyVoxels		 = nullptr;
+		_proxyCamera = nullptr;
+		_proxyVoxels = nullptr;
 
 		_cacheSpheresCylinders.clear();
 		_cacheRibbons.clear();
@@ -536,7 +533,7 @@ namespace VTX::Renderer
 
 #pragma region Proxy representations
 
-	void Renderer::_applyRepresentationLogic()
+	void Renderer::_applyRepresentationLogic( const Representation & p_representation )
 	{
 		using namespace Proxy;
 
@@ -562,10 +559,10 @@ namespace VTX::Renderer
 		}
 #endif
 
-		const bool	isSphereRadiusFixed = _proxyRepresentation->data.isRadiusSphereFixed;
-		const float cylinderRadius		= _proxyRepresentation->data.radiusCylinder;
-		const float sphereRadiusFixed	= _proxyRepresentation->data.radiusSphereFixed;
-		const float sphereRadiusAdd		= _proxyRepresentation->data.radiusSphereAdd;
+		const bool	isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
+		const float cylinderRadius		= p_representation.radiusCylinder;
+		const float sphereRadiusFixed	= p_representation.radiusSphereFixed;
+		const float sphereRadiusAdd		= p_representation.radiusSphereAdd;
 
 		// Hide ribbon if VdW radius.
 		if ( not isSphereRadiusFixed )
@@ -596,36 +593,33 @@ namespace VTX::Renderer
 		setNeedUpdate( true );
 	}
 
-	void Renderer::setProxyRepresentation( Proxy::Representation & p_proxy )
+	void Renderer::setRepresentation( const Representation & p_representation )
 	{
-		using namespace Proxy;
-
-		_proxyRepresentation = &p_proxy;
-
-		auto _setAllFun = [ this ]()
+		auto _setAllFun = [ this, p_representation ]()
 		{
 			BinaryBuffer buffer;
-			buffer.write( _proxyRepresentation->data.radiusSphereFixed );
-			buffer.write( _proxyRepresentation->data.radiusSphereAdd );
-			buffer.write( uint( _proxyRepresentation->data.isRadiusSphereFixed ) );
-			buffer.write( _proxyRepresentation->data.radiusCylinder );
-			buffer.write( uint( _proxyRepresentation->data.cylinderColorBlending ) );
-			buffer.write( uint( _proxyRepresentation->data.ribbonColorBlending ) );
-			buffer.write( _proxyRepresentation->data.sesProbeRadius );
+			buffer.write( p_representation.radiusSphereFixed );
+			buffer.write( p_representation.radiusSphereAdd );
+			buffer.write( uint( p_representation.isRadiusSphereFixed ) );
+			buffer.write( p_representation.radiusCylinder );
+			buffer.write( uint( p_representation.cylinderColorBlending ) );
+			buffer.write( uint( p_representation.ribbonColorBlending ) );
+			buffer.write( p_representation.sesProbeRadius );
 			buffer.close();
 
 			_context.set( buffer, "Representations" );
 
-			showAtoms	= _proxyRepresentation->data.hasSphere;
-			showBonds	= _proxyRepresentation->data.hasCylinder;
-			showRibbons = _proxyRepresentation->data.hasRibbon;
-			showSES		= _proxyRepresentation->data.hasSes;
-			_applyRepresentationLogic();
+			showAtoms	= p_representation.hasSphere;
+			showBonds	= p_representation.hasCylinder;
+			showRibbons = p_representation.hasRibbon;
+			showSES		= p_representation.hasSes;
+			_applyRepresentationLogic( p_representation );
 		};
 
 		_setAllFun();
 
 		// Callbacks.
+		/*
 		p_proxy.getCallback<E_REPRESENTATION_VALUES::HAS_SPHERE>() += [ _setAllFun ]() { _setAllFun(); };
 		p_proxy.getCallback<E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED>() += [ _setAllFun ]() { _setAllFun(); };
 		p_proxy.getCallback<E_REPRESENTATION_VALUES::RADIUS_SPHERE_FIXED>() += [ _setAllFun ]() { _setAllFun(); };
@@ -636,6 +630,7 @@ namespace VTX::Renderer
 		p_proxy.getCallback<E_REPRESENTATION_VALUES::HAS_RIBBON>() += [ _setAllFun ]() { _setAllFun(); };
 		p_proxy.getCallback<E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING>() += [ _setAllFun ]() { _setAllFun(); };
 		p_proxy.getCallback<E_REPRESENTATION_VALUES::HAS_SES>() += [ _setAllFun ]() { _setAllFun(); };
+		*/
 
 		// TODO: remove useless primitives with multi calls.
 		// TODO: compute ss if needed
@@ -705,12 +700,13 @@ namespace VTX::Renderer
 		{ setValue( uint( p_perspective ), "CameraIsPerspective" ); };
 	}
 
-	void Renderer::setProxyColorLayout( Proxy::ColorLayout & p_proxy )
+	void Renderer::setColorLayout( const Color::Layout & p_layout )
 	{
-		_proxyColorLayout = &p_proxy;
-		_context.set( p_proxy.layout.colors, "ColorLayout" );
+
+		_context.set( p_layout.colors, "ColorLayout" );
 		setNeedUpdate( true );
 
+		/*
 		p_proxy.onChangeAll += [ this, &p_proxy ]()
 		{
 			_context.set( p_proxy.layout.colors, "ColorLayout" );
@@ -723,128 +719,39 @@ namespace VTX::Renderer
 			);
 			setNeedUpdate( true );
 		};
+		*/
 	}
 
-	void Renderer::setProxyRenderSettings( Proxy::RenderSettings & p_proxy )
+	void Renderer::setRenderSettings( const RenderSettings & p_settings )
 	{
-		using namespace Proxy;
+		_refreshGraph( p_settings );
 
-		_proxyRenderSettings = &p_proxy;
-
-		_refreshGraph();
-		build();
-
-		// Default values.
-		// Shading.
-		setValue( uint( p_proxy.data.shadingMode ), "ShadingShadingMode" );
-		setValue( p_proxy.data.colorLight, "ShadingShadingLightColor" );
-		setValue( p_proxy.data.colorBackground, "ShadingShadingBackgroundColor" );
-		setValue( p_proxy.data.specularFactor, "ShadingShadingSpecularFactor" );
-		setValue( p_proxy.data.shininess, "ShadingShadingShininess" );
-		setValue( p_proxy.data.toonSteps, "ShadingShadingToonSteps" );
-		// SSAO.
-		if ( p_proxy.data.activeSSAO )
+		setValue( uint( p_settings.shadingMode ), "ShadingShadingMode" );
+		setValue( p_settings.colorLight, "ShadingShadingLightColor" );
+		setValue( p_settings.colorBackground, "ShadingShadingBackgroundColor" );
+		setValue( p_settings.specularFactor, "ShadingShadingSpecularFactor" );
+		setValue( p_settings.shininess, "ShadingShadingShininess" );
+		setValue( p_settings.toonSteps, "ShadingShadingToonSteps" );
+		if ( p_settings.activeSSAO )
 		{
-			setValue( p_proxy.data.ssaoIntensity, "SSAOSSAOIntensity" );
-			setValue( p_proxy.data.blurSize, "BlurXBlurSize" );
-			setValue( p_proxy.data.blurSize, "BlurYBlurSize" );
+			setValue( p_settings.ssaoIntensity, "SSAOSSAOIntensity" );
+			setValue( p_settings.blurSize, "BlurXBlurSize" );
+			setValue( p_settings.blurSize, "BlurYBlurSize" );
 		}
-		// Outline.
-		if ( p_proxy.data.activeOutline )
+		if ( p_settings.activeOutline )
 		{
-			setValue( p_proxy.data.colorOutline, "OutlineOutlineColor" );
-			setValue( p_proxy.data.outlineSensitivity, "OutlineOutlineSensitivity" );
-			setValue( p_proxy.data.outlineThickness, "OutlineOutlineThickness" );
+			setValue( p_settings.colorOutline, "OutlineOutlineColor" );
+			setValue( p_settings.outlineSensitivity, "OutlineOutlineSensitivity" );
+			setValue( p_settings.outlineThickness, "OutlineOutlineThickness" );
 		}
-		// Fog.
-		setValue( p_proxy.data.colorFog, "ShadingShadingFogColor" );
-		setValue( p_proxy.data.fogNear, "ShadingShadingFogNear" );
-		setValue( p_proxy.data.fogFar, "ShadingShadingFogFar" );
-		setValue( p_proxy.data.activeFog ? p_proxy.data.fogDensity : 0.f, "ShadingShadingFogDensity" );
-		// Selection.
-		if ( p_proxy.data.activeSelection )
+		setValue( p_settings.colorFog, "ShadingShadingFogColor" );
+		setValue( p_settings.fogNear, "ShadingShadingFogNear" );
+		setValue( p_settings.fogFar, "ShadingShadingFogFar" );
+		setValue( p_settings.activeFog ? p_settings.fogDensity : 0.f, "ShadingShadingFogDensity" );
+		if ( p_settings.activeSelection )
 		{
-			setValue( p_proxy.data.colorSelection, "SelectionSelectionColor" );
+			setValue( p_settings.colorSelection, "SelectionSelectionColor" );
 		}
-
-		// Callbacks.
-		// Shading.
-		p_proxy.getCallback<E_RENDER_SETTINGS::SHADING_MODE>() +=
-			[ this, &p_proxy ]() { setValue( uint( p_proxy.data.shadingMode ), "ShadingShadingMode" ); };
-
-		p_proxy.getCallback<E_RENDER_SETTINGS::COLOR_LIGHT>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.colorLight, "ShadingShadingLightColor" ); };
-		p_proxy.getCallback<E_RENDER_SETTINGS::COLOR_BACKGROUND>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.colorBackground, "ShadingShadingBackgroundColor" ); };
-		p_proxy.getCallback<E_RENDER_SETTINGS::SPECULAR_FACTOR>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.specularFactor, "ShadingShadingSpecularFactor" ); };
-		p_proxy.getCallback<E_RENDER_SETTINGS::SHININESS>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.shininess, "ShadingShadingShininess" ); };
-		p_proxy.getCallback<E_RENDER_SETTINGS::TOON_STEPS>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.toonSteps, "ShadingShadingToonSteps" ); };
-		// SSAO.
-		p_proxy.getCallback<E_RENDER_SETTINGS::SSAO_INTENSITY>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.ssaoIntensity, "SSAOSSAOIntensity" ); };
-		p_proxy.getCallback<E_RENDER_SETTINGS::BLUR_SIZE>() += [ this, &p_proxy ]()
-		{
-			setValue( p_proxy.data.blurSize, "BlurXBlurSize" );
-			setValue( p_proxy.data.blurSize, "BlurYBlurSize" );
-		};
-		// Outline.
-		p_proxy.getCallback<E_RENDER_SETTINGS::COLOR_OUTLINE>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.colorOutline, "OutlineOutlineColor" ); };
-		p_proxy.getCallback<E_RENDER_SETTINGS::OUTLINE_SENSITIVITY>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.outlineSensitivity, "OutlineOutlineSensitivity" ); };
-		p_proxy.getCallback<E_RENDER_SETTINGS::OUTLINE_THICKNESS>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.outlineThickness, "OutlineOutlineThickness" ); };
-		// Fog.
-		p_proxy.getCallback<E_RENDER_SETTINGS::COLOR_FOG>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.colorFog, "ShadingShadingFogColor" ); };
-		p_proxy.getCallback<E_RENDER_SETTINGS::FOG_NEAR>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.fogNear, "ShadingShadingFogNear" ); };
-		p_proxy.getCallback<E_RENDER_SETTINGS::FOG_FAR>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.fogFar, "ShadingShadingFogFar" ); };
-		p_proxy.getCallback<E_RENDER_SETTINGS::FOG_DENSITY>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.fogDensity, "ShadingShadingFogDensity" ); };
-		// Selection.
-		p_proxy.getCallback<E_RENDER_SETTINGS::COLOR_SELECTION>() +=
-			[ this, &p_proxy ]() { setValue( p_proxy.data.colorSelection, "SelectionSelectionColor" ); };
-
-		// Active.
-		p_proxy.getCallback<E_RENDER_SETTINGS::ACTIVE_FOG>() += [ this, &p_proxy ]()
-		{ setValue( p_proxy.data.activeFog ? p_proxy.data.fogDensity : 0.f, "ShadingShadingFogDensity" ); };
-
-		p_proxy.getCallback<E_RENDER_SETTINGS::ACTIVE_SSAO>() += [ this, &p_proxy ]()
-		{
-			_refreshGraph();
-			build();
-			if ( p_proxy.data.activeSSAO )
-			{
-				setValue( p_proxy.data.ssaoIntensity, "SSAOSSAOIntensity" );
-				setValue( p_proxy.data.blurSize, "BlurXBlurSize" );
-				setValue( p_proxy.data.blurSize, "BlurYBlurSize" );
-			}
-		};
-		p_proxy.getCallback<E_RENDER_SETTINGS::ACTIVE_OUTLINE>() += [ this, &p_proxy ]()
-		{
-			_refreshGraph();
-			build();
-			if ( p_proxy.data.activeOutline )
-			{
-				setValue( p_proxy.data.colorOutline, "OutlineOutlineColor" );
-				setValue( p_proxy.data.outlineSensitivity, "OutlineOutlineSensitivity" );
-				setValue( p_proxy.data.outlineThickness, "OutlineOutlineThickness" );
-			}
-		};
-		p_proxy.getCallback<E_RENDER_SETTINGS::ACTIVE_SELECTION>() += [ this, &p_proxy ]()
-		{
-			_refreshGraph();
-			build();
-			if ( p_proxy.data.activeSelection )
-			{
-				setValue( p_proxy.data.colorSelection, "SelectionSelectionColor" );
-			}
-		};
 
 		setNeedUpdate( true );
 	}
@@ -1415,15 +1322,13 @@ namespace VTX::Renderer
 	}
 
 	// TODO: not the best way to do it.
-	void Renderer::_refreshGraph()
+	void Renderer::_refreshGraph( const RenderSettings & p_settings )
 	{
 		RenderGraph::PipelineConfig config;
-		if ( _proxyRenderSettings )
-		{
-			config.enableSSAO	   = _proxyRenderSettings->data.activeSSAO;
-			config.enableOutline   = _proxyRenderSettings->data.activeOutline;
-			config.enableSelection = _proxyRenderSettings->data.activeSelection;
-		}
+
+		config.enableSSAO	   = p_settings.activeSSAO;
+		config.enableOutline   = p_settings.activeOutline;
+		config.enableSelection = p_settings.activeSelection;
 
 		RenderGraph::PipelinePasses passes = _graph.createDefaultPipeline( config );
 		Pass *						geo	   = passes.geo;
