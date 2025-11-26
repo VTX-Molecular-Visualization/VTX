@@ -10,28 +10,37 @@ namespace VTX::Renderer::Scheduler
 	{
 		RenderQueue rq;
 
-		// Map to track visited passes.
-		std::unordered_map<const Pass *, bool> visited;
+		enum struct E_STATE : uint8_t
+		{
+			NOT_VISITED,
+			VISITING,
+			VISITED
+		};
+
+		std::unordered_map<const Pass *, E_STATE> state;
+		state.reserve( p_passes.size() );
+
 		for ( const auto & passPtr : p_passes )
 		{
-			visited[ passPtr.get() ] = false;
+			state[ passPtr.get() ] = E_STATE::NOT_VISITED;
 		}
 
 		// Find last pass producing the output.
 		const Pass * lastPass = nullptr;
-		for ( const auto & linkPtr : p_links )
+		for ( const auto & passPtr : p_passes )
 		{
-			if ( linkPtr->dest == nullptr )
-			{
-				continue;
-			}
-			for ( const auto & [ _, output ] : linkPtr->dest->outputs )
+			const Pass * pass = passPtr.get();
+			for ( const auto & [ _, output ] : pass->outputs )
 			{
 				if ( &output == &p_output )
 				{
-					lastPass = linkPtr->src;
+					lastPass = pass;
 					break;
 				}
+			}
+			if ( lastPass != nullptr )
+			{
+				break;
 			}
 		}
 
@@ -43,11 +52,20 @@ namespace VTX::Renderer::Scheduler
 		// Depth-first search function.
 		std::function<void( const Pass * )> dfs = [ & ]( const Pass * pass )
 		{
-			if ( visited[ pass ] )
+			auto it = state.find( pass );
+			assert( it != state.end() );
+
+			switch ( it->second )
 			{
-				return;
+			case E_STATE::VISITED: return;
+
+			case E_STATE::VISITING: throw GraphicException( "Render graph contains a cycle." );
+
+			case E_STATE::NOT_VISITED: break;
 			}
-			visited[ pass ] = true;
+
+			it->second = E_STATE::VISITING;
+
 			// Visit all predecessor passes.
 			for ( const auto & linkPtr : p_links )
 			{
@@ -56,7 +74,9 @@ namespace VTX::Renderer::Scheduler
 					dfs( linkPtr->src );
 				}
 			}
+
 			// Add the current pass to the render queue.
+			it->second = E_STATE::VISITED;
 			rq.push_back( const_cast<Pass *>( pass ) );
 		};
 

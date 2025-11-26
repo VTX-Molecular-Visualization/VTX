@@ -10,8 +10,8 @@ TEST_CASE( "Renderer::RenderGraph", "[renderer]" )
 
 	RenderGraph graph;
 
-	Pass A	 = { "A" };
-	A.inputs = {};
+	Pass A = { "A" };
+	A.inputs.emplace( E_CHAN_IN::_0, Input { "AI0", {} } );
 	A.outputs.emplace( E_CHAN_OUT::COLOR_0, Output { "AO0", {} } );
 
 	Pass B = { "B" };
@@ -28,15 +28,57 @@ TEST_CASE( "Renderer::RenderGraph", "[renderer]" )
 	graph.addLink( passA, passB, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
 	graph.addLink( passB, passC, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
 
+	// No output exception.
+	REQUIRE_THROWS( graph.build<Scheduler::DepthFirstSearch>() );
+
 	graph.setOutput( &passC->outputs.at( E_CHAN_OUT::COLOR_0 ) );
 
-	graph.build<Scheduler::DepthFirstSearch>();
+	RenderQueue queue = graph.build<Scheduler::DepthFirstSearch>();
 
-	const RenderQueue & queue = graph.getRenderQueue();
+	// Expected order: A -> B -> C.
 	REQUIRE( queue.size() == 3 );
 	REQUIRE( queue[ 0 ]->name == "A" );
 	REQUIRE( queue[ 1 ]->name == "B" );
 	REQUIRE( queue[ 2 ]->name == "C" );
+
+	Pass D = { "D" };
+	D.inputs.emplace( E_CHAN_IN::_0, Input { "DI0", {} } );
+	D.outputs.emplace( E_CHAN_OUT::COLOR_0, Output { "DO0", {} } );
+	Pass * passD = graph.addPass( D );
+
+	queue = graph.build<Scheduler::DepthFirstSearch>();
+
+	// Expected order: A -> B -> C (D is not connected).
+	REQUIRE( queue.size() == 3 );
+	REQUIRE( queue[ 0 ]->name == "A" );
+	REQUIRE( queue[ 1 ]->name == "B" );
+	REQUIRE( queue[ 2 ]->name == "C" );
+
+	graph.addLink( passD, passA, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+	queue = graph.build<Scheduler::DepthFirstSearch>();
+
+	// Expected order: D -> A -> B -> C.
+	REQUIRE( queue.size() == 4 );
+	REQUIRE( queue[ 0 ]->name == "D" );
+	REQUIRE( queue[ 1 ]->name == "A" );
+	REQUIRE( queue[ 2 ]->name == "B" );
+	REQUIRE( queue[ 3 ]->name == "C" );
+
+	graph.removePass( passB );
+	graph.addLink( passA, passC, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+	queue = graph.build<Scheduler::DepthFirstSearch>();
+
+	// Expected order: D -> A -> C.
+	REQUIRE( queue.size() == 3 );
+	REQUIRE( queue[ 0 ]->name == "D" );
+	REQUIRE( queue[ 1 ]->name == "A" );
+	REQUIRE( queue[ 2 ]->name == "C" );
+
+	// Add loop.
+	graph.addLink( passA, passD, E_CHAN_OUT::COLOR_0, E_CHAN_IN::_0 );
+
+	// Cyclic graph exception.
+	REQUIRE_THROWS( graph.build<Scheduler::DepthFirstSearch>() );
 }
 
 TEST_CASE( "Renderer::Context::Opengl45", "[renderer]" )
