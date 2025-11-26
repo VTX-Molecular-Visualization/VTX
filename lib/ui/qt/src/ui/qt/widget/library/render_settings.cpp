@@ -236,6 +236,7 @@ namespace VTX::UI::QT::Widget::Library
 		using namespace Renderer;
 		auto * const preset = &_library.getPreset( p_name );
 
+		/*
 		// Connect app to widgets.
 		preset->getCallback<E_RENDER_SETTINGS::SHADING_MODE, E_SHADING>() += [ this, preset ]( const E_SHADING p_value )
 		{
@@ -383,6 +384,7 @@ namespace VTX::UI::QT::Widget::Library
 			const QSignalBlocker blocker( _colorPickerSelection );
 			_colorPickerSelection->setColor( Helper::toQColor( p_value ) );
 		};
+		*/
 	}
 
 	void RenderSettings::_onPresetChanged()

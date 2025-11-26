@@ -9,21 +9,11 @@ namespace VTX::App::Library
 	class IPreset
 	{
 	  public:
-		IPreset()		   = default;
 		virtual ~IPreset() = default;
-		IPreset( const IPreset & ) {}
-
-		IPreset & operator=( const IPreset & ) { return *this; }
-
-		template<int S, typename... Args>
-		Util::Callback<Args...> & getCallback()
-		{
-			return *_callbacks.getOrCreateWithHash<Util::Callback<Args...>>( S );
-		}
-
-	  private:
-		Util::Collection<std::unique_ptr<Util::ICallback>> _callbacks;
 	};
+
+	template<typename P>
+	concept ConceptPreset = std::is_base_of_v<IPreset, P>;
 
 	template<typename T>
 	class BasePreset : public IPreset
@@ -43,9 +33,6 @@ namespace VTX::App::Library
 	  protected:
 		T _data;
 	};
-
-	template<typename P>
-	concept ConceptPreset = std::is_base_of_v<IPreset, P>;
 
 } // namespace VTX::App::Library
 

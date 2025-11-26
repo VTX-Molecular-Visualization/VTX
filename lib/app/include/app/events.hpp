@@ -84,6 +84,25 @@ namespace VTX::App::Events
 		ECS::Entity system;
 	};
 
+	/**
+	 * @brief Libraries.
+	 */
+	struct LibraryPresetAdd
+	{
+		std::string name;
+	};
+
+	struct LibraryPresetDelete
+	{
+		std::string name;
+	};
+
+	struct LibraryPresetRename
+	{
+		std::string oldName;
+		std::string newName;
+	};
+
 } // namespace VTX::App::Events
 
 #endif

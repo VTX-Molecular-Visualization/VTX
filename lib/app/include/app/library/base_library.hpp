@@ -109,8 +109,6 @@ namespace VTX::App::Library
 			{
 				createPreset( "Default" );
 			}
-
-			// TODO: set default from settings.
 		}
 
 		void save()
@@ -122,13 +120,6 @@ namespace VTX::App::Library
 		Util::Callback<std::string_view> onPresetAdded;
 		Util::Callback<std::string_view> onPresetRenamed;
 		Util::Callback<std::string_view> onPresetDeleted;
-
-		template<int S, typename C>
-		Util::Callback<const C> & callback()
-		{
-			static Util::Callback<const C> callback;
-			return callback;
-		}
 
 	  private:
 		const FilePath	 _path;

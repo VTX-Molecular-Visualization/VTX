@@ -4,7 +4,7 @@
 #include "app/services.hpp"
 #include <QStyle>
 #include <app/action/action_manager.hpp>
-// #include <app/action/library.hpp>
+#include <app/action/library.hpp>
 #include <app/ui/concepts.hpp>
 
 namespace VTX::UI::QT
@@ -203,10 +203,10 @@ namespace VTX::UI::QT
 			{
 				Add()
 				{
-					name = "New";
-					tip	 = "Create a new empty preset";
-					icon = static_cast<int>( QStyle::StandardPixmap::SP_FileIcon );
-					// trigger = []() { App::ACTION().execute<App::Action::Library::AddPreset<P>>(); };
+					name	= "New";
+					tip		= "Create a new empty preset";
+					icon	= static_cast<int>( QStyle::StandardPixmap::SP_FileIcon );
+					trigger = []() { App::ACTION().execute<App::Action::Library::AddPreset<P>>(); };
 				}
 			};
 

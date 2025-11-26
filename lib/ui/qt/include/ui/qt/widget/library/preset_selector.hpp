@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_WIDGET_PRESET_SELECTOR__
 
 #include "ui/qt/actions.hpp"
+#include "ui/qt/application.hpp"
 #include "ui/qt/widget/actionable_push_button.hpp"
 #include <QApplication>
 #include <QComboBox>
@@ -9,13 +10,11 @@
 #include <QLineEdit>
 #include <QPointer>
 #include <QPushButton>
-#include <app/library/base_preset.hpp>
-// #include <app/action/library.hpp>
-// #include <app/library/library_manager.hpp>
-#include "ui/qt/application.hpp"
 #include <QToolBar>
 #include <QVBoxLayout>
+#include <app/action/library.hpp>
 #include <app/library/base_library.hpp>
+#include <app/library/base_preset.hpp>
 #include <app/library/library_manager.hpp>
 #include <app/services.hpp>
 
@@ -61,16 +60,18 @@ namespace VTX::UI::QT::Widget::Library
 			auto * toolbar = new QToolBar( this );
 			toolbar->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
 			toolbar->setIconSize( QSize( 18, 18 ) );
-			toolbar->addAction( Application::getAction<Preset::Add<P>>() );
-			toolbar->addAction( Application::getAction<Preset::Duplicate<P>>() );
-			toolbar->addAction( Application::getAction<Preset::Delete<P>>() );
+			auto * aNew		  = Application::getAction<Preset::Add<P>>();
+			auto * aDuplicate = Application::getAction<Preset::Duplicate<P>>();
+			auto * aDelete	  = Application::getAction<Preset::Delete<P>>();
+			toolbar->addAction( aNew );
+			toolbar->addAction( aDuplicate );
+			toolbar->addAction( aDelete );
 			layout->addWidget( toolbar );
 
 			auto * lineRename = new QLineEdit( this );
 			lineRename->setText( _comboBox->currentText() );
 			layout->addWidget( lineRename );
 
-			/*
 			connect(
 				_comboBox,
 				&QComboBox::currentTextChanged,
@@ -83,8 +84,8 @@ namespace VTX::UI::QT::Widget::Library
 			);
 
 			connect(
-				btnDupplicate,
-				&QPushButton::clicked,
+				aDuplicate,
+				&QAction::triggered,
 				[ this ]()
 				{
 					App::ACTION().execute<App::Action::Library::DuplicatePreset<P>>(
@@ -92,9 +93,10 @@ namespace VTX::UI::QT::Widget::Library
 					);
 				}
 			);
+
 			connect(
-				btnDelete,
-				&QPushButton::clicked,
+				aDelete,
+				&QAction::triggered,
 				[ this ]()
 				{
 					App::ACTION().execute<App::Action::Library::DeletePreset<P>>(
@@ -102,6 +104,7 @@ namespace VTX::UI::QT::Widget::Library
 					);
 				}
 			);
+
 			connect(
 				lineRename,
 				&QLineEdit::editingFinished,
@@ -112,7 +115,6 @@ namespace VTX::UI::QT::Widget::Library
 					);
 				}
 			);
-			*/
 
 			// Callbacks.
 			_library.onPresetAdded += [ this ]( const std::string_view p_name )

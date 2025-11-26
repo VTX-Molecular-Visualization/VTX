@@ -52,13 +52,8 @@ namespace VTX::UI::QT::Widget::Library
 			const bool * const p_isCommonValues
 		);
 
-		/*
-		void _refreshColors( const VTX::Core::Struct::ColorLayout & );
-		void _refreshColor( const VTX::Core::Struct::ColorLayout &, const size_t );
-
-
-
-		*/
+		void _refreshColors( const Renderer::Color::Layout & );
+		void _refreshColor( const Renderer::Color::Layout &, const size_t );
 	};
 } // namespace VTX::UI::QT::Widget::Library
 

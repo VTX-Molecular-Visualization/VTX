@@ -148,6 +148,7 @@ namespace VTX::UI::QT::Widget::Library
 		using namespace Renderer;
 		auto * const preset = &_library.getPreset( p_name );
 
+		/*
 		// Connect app to widgets.
 		preset->getCallback<E_REPRESENTATION_VALUES::HAS_SPHERE, bool>() += [ this, preset ]( const bool p_value )
 		{
@@ -234,6 +235,7 @@ namespace VTX::UI::QT::Widget::Library
 
 			_sliderSesProbeRadius->setValue( p_value );
 		};
+		*/
 	}
 
 	void Representation::_onPresetChanged()

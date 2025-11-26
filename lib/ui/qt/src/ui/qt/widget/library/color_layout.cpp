@@ -1,7 +1,7 @@
 #include "ui/qt/widget/library/color_layout.hpp"
 #include "ui/qt/helper.hpp"
 #include "ui/qt/layout/flow_layout.hpp"
-// #include <app/action/color_layout.hpp>
+#include <app/action/color_layout.hpp>
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/chain.hpp>
 #include <core/chemdb/residue.hpp>
@@ -41,15 +41,15 @@ namespace VTX::UI::QT::Widget::Library
 		_createGroupBox( "Custom", LAYOUT_OFFSET_CUSTOM, LAYOUT_COUNT_CUSTOM );
 
 		// Randomize.
-		/*
 		auto * const buttonRandomize = new QPushButton( "Randomize", this );
 		connect(
 			buttonRandomize,
 			&QPushButton::clicked,
-			[ this ]() { App::ACTION().execute<App::Action::ColorLayout::Randomize>( _preset ); }
+			[ this ]()
+			{ App::ACTION().execute<App::Action::ColorLayout::Randomize>( _presetSelector->getCurrentPresetStr() ); }
 		);
+
 		addWidget( buttonRandomize );
-		*/
 	}
 
 	void ColorLayout::_onPresetAdded( const std::string_view p_name )
