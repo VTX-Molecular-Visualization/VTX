@@ -6,19 +6,17 @@
 #include "ui/qt/widget/editable_slider.hpp"
 #include "ui/qt/widget/hideable_goupe_box.hpp"
 #include <QLabel>
-// #include <app/action/render_settings.hpp>
-#include <app/library/preset/render_settings.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
-	class RenderSettings final : public BasePresetWidget<App::Library::Preset::RenderSettings>
+	class RenderSettings final : public BasePresetWidget<Renderer::RenderSettings>
 	{
 	  public:
 		RenderSettings( QWidget * p_parent );
 
 	  protected:
-		void _onPresetAdded( const std::string_view ) override;
-		void _onPresetChanged() override;
+		// void _onPresetAdded( const std::string_view ) override;
+		// void _onPresetChanged() override;
 
 	  private:
 		// Shading.

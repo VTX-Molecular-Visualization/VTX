@@ -12,10 +12,9 @@
 #include <QPushButton>
 #include <QToolBar>
 #include <QVBoxLayout>
-#include <app/action/library.hpp>
-#include <app/library/base_library.hpp>
-#include <app/library/base_preset.hpp>
-#include <app/library/library_manager.hpp>
+#include <app/action/preset.hpp>
+#include <app/ecs.hpp>
+#include <app/preset/name.hpp>
 #include <app/services.hpp>
 
 namespace VTX::UI::QT::Widget::Library
@@ -32,18 +31,17 @@ namespace VTX::UI::QT::Widget::Library
 		virtual ~BasePresetSelector() = default;
 
 	  signals:
-		void presetChanged( const QString & p_name );
+		void presetChanged( const App::ECS::Entity );
 	};
 
 	/**
 	 * @brief Class responsible for displaying a combo box to select a preset, add and remove.
 	 */
-	template<App::Library::ConceptPreset P>
+	template<typename P>
 	class PresetSelector : public BasePresetSelector
 	{
 	  public:
-		PresetSelector( QWidget * p_parent ) :
-			BasePresetSelector( p_parent ), _library( App::LIBRARY().getLibrary<P>() )
+		PresetSelector( QWidget * p_parent ) : BasePresetSelector( p_parent )
 		{
 			auto * layout = new QVBoxLayout( this );
 			setTitle( "Presets" );
@@ -51,8 +49,6 @@ namespace VTX::UI::QT::Widget::Library
 			// layout->setContentsMargins( 0, 0, 0, 0 );
 
 			_comboBox = new QComboBox( this );
-			_refreshComboBox();
-			_comboBox->setCurrentIndex( 0 );
 			layout->addWidget( _comboBox );
 
 			using namespace Action;
@@ -79,30 +75,22 @@ namespace VTX::UI::QT::Widget::Library
 				[ this, lineRename ]()
 				{
 					lineRename->setText( _comboBox->currentText() );
-					emit presetChanged( _comboBox->currentText() );
+					emit presetChanged( getCurrentPreset() );
 				}
 			);
+
+			connect( aNew, &QAction::triggered, [ this ]() { App::ACTION().execute<App::Action::Preset::Add<P>>(); } );
 
 			connect(
 				aDuplicate,
 				&QAction::triggered,
-				[ this ]()
-				{
-					App::ACTION().execute<App::Action::Library::DuplicatePreset<P>>(
-						_comboBox->currentText().toStdString()
-					);
-				}
+				[ this ]() { App::ACTION().execute<App::Action::Preset::Duplicate<P>>( getCurrentPreset() ); }
 			);
 
 			connect(
 				aDelete,
 				&QAction::triggered,
-				[ this ]()
-				{
-					App::ACTION().execute<App::Action::Library::DeletePreset<P>>(
-						_comboBox->currentText().toStdString()
-					);
-				}
+				[ this ]() { App::ACTION().execute<App::Action::Preset::Delete<P>>( getCurrentPreset() ); }
 			);
 
 			connect(
@@ -110,13 +98,20 @@ namespace VTX::UI::QT::Widget::Library
 				&QLineEdit::editingFinished,
 				[ this, lineRename ]()
 				{
-					App::ACTION().execute<App::Action::Library::RenamePreset<P>>(
-						_comboBox->currentText().toStdString(), lineRename->text().toStdString()
+					App::ACTION().execute<App::Action::Preset::Rename<P>>(
+						getCurrentPreset(), lineRename->text().toStdString()
 					);
 				}
 			);
 
 			// Callbacks.
+			auto & reg = App::REG();
+
+			reg.on_construct<P>().connect<&PresetSelector::_refreshComboBox>( this );
+			reg.on_update<P>().connect<&PresetSelector::_refreshComboBox>( this );
+			reg.on_destroy<P>().connect<&PresetSelector::_refreshComboBox>( this );
+
+			/*
 			_library.onPresetAdded += [ this ]( const std::string_view p_name )
 			{
 				_refreshComboBox();
@@ -133,27 +128,38 @@ namespace VTX::UI::QT::Widget::Library
 				assert( _comboBox->count() > 0 );
 				_comboBox->setCurrentIndex( 0 );
 			};
+			**/
 
-			emit presetChanged( _comboBox->currentText() );
+			// emit presetChanged( _comboBox->currentData().value<App::ECS::Entity>() );
 		}
 
-		inline QString	   getCurrentPreset() const { return _comboBox->currentText(); }
-		inline std::string getCurrentPresetStr() const { return _comboBox->currentText().toStdString(); }
+		inline App::ECS::Entity getCurrentPreset() const
+		{
+			return _comboBox->currentData().value<App::ECS::Entity>();
+			;
+		}
 
 	  private:
-		App::Library::BaseLibrary<P> & _library;
-		QPointer<QComboBox>			   _comboBox;
+		QPointer<QComboBox> _comboBox;
 
-		void _refreshComboBox()
+		void _refreshComboBox( App::ECS::Registry & p_r, App::ECS::Entity p_e )
 		{
+			using namespace App;
 			const QSignalBlocker blocker( _comboBox );
 
+			int index = _comboBox->currentIndex();
+
 			_comboBox->clear();
-			for ( const auto & [ name, _ ] : _library.getPresets() )
+
+			auto view = REG().view<Preset::Name, P>();
+			for ( const ECS::Entity entity : view )
 			{
-				_comboBox->addItem( QString::fromStdString( name ) );
+				const auto & presetName = view.get<Preset::Name>( entity ).name;
+				_comboBox->addItem( QString::fromStdString( presetName ), QVariant::fromValue<ECS::Entity>( entity ) );
 			}
-			_comboBox->setCurrentIndex( -1 );
+
+			int newIndex = std::min( index, _comboBox->count() - 1 );
+			_comboBox->setCurrentIndex( newIndex );
 		}
 	};
 } // namespace VTX::UI::QT::Widget::Library

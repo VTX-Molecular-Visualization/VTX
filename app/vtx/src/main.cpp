@@ -60,6 +60,7 @@ int main( int p_argc, char * p_argv[] )
 			// To set before QApplication construction.
 			QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
 			QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
+			// qRegisterMetaType<App::ECS::Entity>( "VTX::App::ECS::Entity" );
 			app = std::make_unique<UI::QT::Application>( args );
 		}
 		else

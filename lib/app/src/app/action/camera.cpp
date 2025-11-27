@@ -1,6 +1,6 @@
 #include "app/action/camera.hpp"
 #include "app/action/action_manager.hpp"
-#include "app/scene/root.hpp"
+#include "app/scene/tag_root.hpp"
 #include <util/math/transform.hpp>
 
 namespace
@@ -49,7 +49,7 @@ namespace VTX::App::Action::Camera
 
 	void Reset::execute()
 	{
-		auto   entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::Root, Util::Math::AABB>();
+		auto   entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
 		auto & aabb		= REG().get<Util::Math::AABB>( entScene );
 		auto [ entCamera, camera, transform ]
 			= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
@@ -77,7 +77,7 @@ namespace VTX::App::Action::Camera
 		// From scene.
 		else
 		{
-			auto   entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::Root, Util::Math::AABB>();
+			auto   entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
 			auto & aabb		= REG().get<Util::Math::AABB>( entScene );
 			execute( aabb );
 		}

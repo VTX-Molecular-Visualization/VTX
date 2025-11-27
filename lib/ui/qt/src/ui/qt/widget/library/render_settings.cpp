@@ -231,12 +231,13 @@ namespace VTX::UI::QT::Widget::Library
 		{ _changeValue<E_RENDER_SETTINGS::COLOR_SELECTION, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
 	}
 
+	/*
 	void RenderSettings::_onPresetAdded( const std::string_view p_name )
 	{
 		using namespace Renderer;
 		auto * const preset = &_library.getPreset( p_name );
 
-		/*
+
 		// Connect app to widgets.
 		preset->getCallback<E_RENDER_SETTINGS::SHADING_MODE, E_SHADING>() += [ this, preset ]( const E_SHADING p_value )
 		{
@@ -384,7 +385,7 @@ namespace VTX::UI::QT::Widget::Library
 			const QSignalBlocker blocker( _colorPickerSelection );
 			_colorPickerSelection->setColor( Helper::toQColor( p_value ) );
 		};
-		*/
+
 	}
 
 	void RenderSettings::_onPresetChanged()
@@ -437,9 +438,11 @@ namespace VTX::UI::QT::Widget::Library
 
 		_applyLogic();
 	}
+	*/
 
 	void RenderSettings::_applyLogic()
 	{
+		/*
 		using namespace Renderer;
 
 		switch ( _preset->getData().shadingMode )
@@ -477,5 +480,6 @@ namespace VTX::UI::QT::Widget::Library
 			_sliderToonSteps->setEnabled( false );
 			break;
 		}
+		*/
 	}
 } // namespace VTX::UI::QT::Widget::Library

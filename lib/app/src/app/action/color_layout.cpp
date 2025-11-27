@@ -1,43 +1,51 @@
 #include "app/action/color_layout.hpp"
-
-namespace
-{
-	VTX::App::Library::Preset::ColorLayout & _getColorLayoutPreset( const std::string_view p_preset )
-	{
-		return VTX::App::LIBRARY().getLibrary<VTX::App::Library::Preset::ColorLayout>().getPreset( p_preset );
-	}
-} // namespace
+#include "app/preset/instance.hpp"
+#include "app/scene/tag_root.hpp"
 
 namespace VTX::App::Action::ColorLayout
 {
 
-	void SetCurrent::execute( const std::string_view p_preset )
+	void SetCurrent::execute( const ECS::Entity p_e )
 	{
-		// TODO: dangerous
-		/*
-		ECS_REGISTRY().removeComponent<Component::Representation::ColorLayout>( ECS_REGISTRY().getEntity( SCENE() ) );
-		auto & comp = ECS_REGISTRY().addComponent<Component::Representation::ColorLayout>(
-			ECS_REGISTRY().getEntity( SCENE() ), *_preset
+		auto & reg	 = REG();
+		auto   scene = ECS::getFirstEntityOnlyWithComponents<Scene::TagRoot>();
+
+		auto view = reg.view<Preset::Instance<Renderer::Color::Layout>>();
+
+		reg.remove<Preset::Instance<Renderer::Color::Layout>>( scene );
+		reg.emplace<Preset::Instance<Renderer::Color::Layout>>( scene, p_e );
+	}
+
+	void Change::execute( const ECS::Entity p_e, const Index p_index, const Util::Color::Rgba & p_color )
+	{
+		REG().patch<Renderer::Color::Layout>(
+			p_e,
+			[ p_index, p_color ]( Renderer::Color::Layout & p_layout )
+			{
+				assert( p_index >= 0 && p_index < Renderer::Color::COLOR_LAYOUT_SIZE );
+				p_layout.colors[ p_index ] = p_color;
+			}
 		);
-		comp.setupProxy();
-		*/
 	}
 
-	void Change::execute( const std::string_view p_preset, const Index p_index, const Util::Color::Rgba & p_color )
+	void ChangeAll::execute( const ECS::Entity p_e, const Renderer::Color::LayoutArray & p_colors )
 	{
-		_getColorLayoutPreset( p_preset ).setColor( p_index, p_color );
+		REG().patch<Renderer::Color::Layout>(
+			p_e, [ p_colors ]( Renderer::Color::Layout & p_layout ) { p_layout.colors = p_colors; }
+		);
 	}
 
-	void ChangeAll::execute( const std::string_view p_preset, const Renderer::Color::LayoutArray & p_colors )
+	void Randomize::execute( const ECS::Entity p_e )
 	{
-		_getColorLayoutPreset( p_preset ).setColors( p_colors );
-	}
-
-	void Randomize::execute( const std::string_view p_preset )
-	{
-		Renderer::Color::LayoutArray randomColors;
-		std::generate( randomColors.begin(), randomColors.end(), [] { return Util::Color::Rgba::random(); } );
-		_getColorLayoutPreset( p_preset ).setColors( randomColors );
+		REG().patch<Renderer::Color::Layout>(
+			p_e,
+			[]( Renderer::Color::Layout & p_layout )
+			{
+				std::generate(
+					p_layout.colors.begin(), p_layout.colors.end(), [] { return Util::Color::Rgba::random(); }
+				);
+			}
+		);
 	}
 
 } // namespace VTX::App::Action::ColorLayout

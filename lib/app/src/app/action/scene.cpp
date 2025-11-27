@@ -3,7 +3,7 @@
 #include "app/action/camera.hpp"
 #include "app/action/visibility.hpp"
 #include "app/events.hpp"
-#include "app/scene/root.hpp"
+#include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
 #include "app/system/color_scheme.hpp"
 #include "app/system/deleted.hpp"

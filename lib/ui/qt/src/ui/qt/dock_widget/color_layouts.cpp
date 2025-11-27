@@ -21,7 +21,7 @@ namespace VTX::UI::QT::DockWidget
 		_checkBoxHide = new QCheckBox( "Hide non usual", _root );
 		_layout->addWidget( _checkBoxHide );
 
-		auto * const colorLayoutWidget = Util::Factories::newInit<Widget::Library::ColorLayout>( this );
+		auto * const colorLayoutWidget = new Widget::Library::ColorLayout( this );
 		_layout->addWidget( colorLayoutWidget );
 
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );

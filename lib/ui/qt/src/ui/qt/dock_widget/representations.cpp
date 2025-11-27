@@ -10,7 +10,7 @@ namespace VTX::UI::QT::DockWidget
 		setWindowTitle( "Representations" );
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
-		auto * const representationWidget = Util::Factories::newInit<Widget::Library::Representation>( this );
+		auto * const representationWidget = new Widget::Library::Representation( this );
 		_layout->addWidget( representationWidget );
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 	}

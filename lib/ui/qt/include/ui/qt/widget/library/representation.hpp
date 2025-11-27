@@ -6,20 +6,18 @@
 #include "ui/qt/widget/hideable_goupe_box.hpp"
 #include <QCheckBox>
 #include <QLabel>
-// #include <app/action/representation.hpp>
-#include <app/library/preset/representation.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
 
-	class Representation final : public BasePresetWidget<App::Library::Preset::Representation>
+	class Representation final : public BasePresetWidget<Renderer::Representation>
 	{
 	  public:
 		Representation( QWidget * p_parent );
 
 	  protected:
-		void _onPresetAdded( const std::string_view ) override;
-		void _onPresetChanged() override;
+		// void _onPresetAdded( const std::string_view ) override;
+		// void _onPresetChanged() override;
 
 	  private:
 		// Sphere.

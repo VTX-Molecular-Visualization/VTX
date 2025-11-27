@@ -7,7 +7,6 @@ namespace VTX::UI::QT::Widget::Library
 	Representation::Representation( QWidget * p_parent ) : BasePresetWidget( p_parent )
 	{
 		using namespace Renderer;
-		using namespace App::Library::Preset;
 
 		setTitle( "Edit representation" );
 
@@ -143,12 +142,13 @@ namespace VTX::UI::QT::Widget::Library
 		);
 	}
 
+	/*
 	void Representation::_onPresetAdded( const std::string_view p_name )
 	{
 		using namespace Renderer;
 		auto * const preset = &_library.getPreset( p_name );
 
-		/*
+
 		// Connect app to widgets.
 		preset->getCallback<E_REPRESENTATION_VALUES::HAS_SPHERE, bool>() += [ this, preset ]( const bool p_value )
 		{
@@ -235,7 +235,7 @@ namespace VTX::UI::QT::Widget::Library
 
 			_sliderSesProbeRadius->setValue( p_value );
 		};
-		*/
+
 	}
 
 	void Representation::_onPresetChanged()
@@ -280,5 +280,6 @@ namespace VTX::UI::QT::Widget::Library
 		_labelSphereRadiusFixed->setVisible( isFixed );
 		_sliderSphereRadiusFixed->setVisible( isFixed );
 	}
+	*/
 
 } // namespace VTX::UI::QT::Widget::Library

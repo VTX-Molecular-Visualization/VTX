@@ -10,7 +10,7 @@ namespace VTX::UI::QT::DockWidget
 		setWindowTitle( "Render settings" );
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
-		auto * const renderSettingsWidget = Util::Factories::newInit<Widget::Library::RenderSettings>( this );
+		auto * const renderSettingsWidget = new Widget::Library::RenderSettings( this );
 		_layout->addWidget( renderSettingsWidget );
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 	}

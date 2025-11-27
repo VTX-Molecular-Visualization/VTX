@@ -1,23 +1,22 @@
 #include "app/vtx_app.hpp"
 #include "app/action/action_manager.hpp"
+#include "app/action/color_layout.hpp"
 #include "app/action/controller.hpp"
+#include "app/action/preset.hpp"
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
 #include "app/input/input_manager.hpp"
-#include "app/library/library_manager.hpp"
-#include "app/library/preset/color_layout.hpp"
-#include "app/library/preset/render_settings.hpp"
-#include "app/library/preset/representation.hpp"
 #include "app/network/network_manager.hpp"
 #include "app/pass/camera_updater.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/pass/scene_updater.hpp"
+#include "app/preset/instance.hpp"
 #include "app/python_binding/interpretor.hpp"
 #include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
 #include "app/scene/camera.hpp"
-#include "app/scene/root.hpp"
+#include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
@@ -61,8 +60,6 @@ namespace VTX::App
 		ECS::setCtx<Action::ActionManager>();
 		// Store input manager.
 		ECS::setCtx<Input::InputManager>();
-		// Store library manager.
-		ECS::setCtx<Library::LibraryManager>();
 		// Store network manager.
 		ECS::setCtx<Network::NetworkManager>();
 		// Store settings manager.
@@ -76,30 +73,18 @@ namespace VTX::App
 		// Store python interpretor.
 		ECS::setCtx<PythonBinding::Interpretor>();
 
-		VTX_DEBUG( "Init application" );
-
-		// Load preset libraries.
-		// TODO: move.
-		auto & libRep	 = LIBRARY().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
-		auto & presetRep = libRep.createPreset( "Sticks" );
-		presetRep.setData( App::Library::Preset::Representations::STICKS );
-		presetRep = libRep.createPreset( "Balls and sticks" );
-		presetRep.setData( App::Library::Preset::Representations::BALLS_AND_STICKS );
-		presetRep = libRep.createPreset( "Van der Waals" );
-		presetRep.setData( App::Library::Preset::Representations::VAN_DER_WAALS );
-		presetRep = libRep.createPreset( "Ribbons" );
-		presetRep.setData( App::Library::Preset::Representations::RIBBONS );
-		presetRep = libRep.createPreset( "SES" );
-		presetRep.setData( App::Library::Preset::Representations::SES );
-
-		auto & libCol	 = LIBRARY().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
-		auto & presetCol = libCol.createPreset( "JMol" );
-		presetCol.setData( App::Library::Preset::ColorLayouts::JMOL );
-
-		auto & libRenderSettings = LIBRARY().load<Library::Preset::RenderSettings>( Filesystem::getEffectsDir() );
-
 		// Load settings.
 		Settings::initSettings();
+
+		// Scene.
+		_scene = _registry.create();
+		_registry.emplace<Scene::TagRoot>( _scene );
+		_registry.emplace<Util::Math::AABB>( _scene );
+
+		// Camera.
+		_camera = _registry.create();
+		_registry.emplace<Util::Math::Transform>( _camera );
+		_registry.emplace<Scene::Camera>( _camera );
 
 		// Initialize python interpretor.
 		INTERPRETOR().subscribe(
@@ -109,20 +94,6 @@ namespace VTX::App
 				p_interpretor.add( VTX::App::PythonBinding::RunScript() );
 			}
 		);
-
-		// Creates entites/components.
-		// Scene.
-		_scene = REG().create();
-		REG().emplace<Scene::Root>( _scene );
-		REG().emplace<Util::Math::AABB>( _scene );
-		REG().emplace<Library::Preset::ColorLayout>( _scene, libCol.getPreset( "JMol" ) );
-		REG().emplace<Library::Preset::RenderSettings>( _scene, libRenderSettings.getPreset( "Default" ) );
-		REG().emplace<Library::Preset::Representation>( _scene, libRep.getPreset( "Default" ) );
-
-		// Camera.
-		_camera = REG().create();
-		REG().emplace<Util::Math::Transform>( _camera );
-		REG().emplace<Scene::Camera>( _camera );
 	}
 
 	VTXApp::~VTXApp() { ECS::removeCtx<PythonBinding::Interpretor>(); }
@@ -154,6 +125,16 @@ namespace VTX::App
 				);
 			}
 		}
+
+		// Create default presets.
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::RenderSettings>>();
+
+		// Link first preset to scene.
+		ACTION().execute<Action::ColorLayout::SetCurrent>(
+			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
+		);
 
 		// Add passes.
 		PASS().addPass<Pass::SceneUpdater>( _scene );

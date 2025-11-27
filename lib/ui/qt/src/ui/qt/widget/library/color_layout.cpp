@@ -13,7 +13,6 @@ namespace VTX::UI::QT::Widget::Library
 	ColorLayout::ColorLayout( QWidget * p_parent ) : BasePresetWidget( p_parent )
 	{
 		using namespace Renderer;
-		using namespace App::Library::Preset;
 		using namespace Core::ChemDB;
 		using namespace Color;
 
@@ -46,12 +45,15 @@ namespace VTX::UI::QT::Widget::Library
 			buttonRandomize,
 			&QPushButton::clicked,
 			[ this ]()
-			{ App::ACTION().execute<App::Action::ColorLayout::Randomize>( _presetSelector->getCurrentPresetStr() ); }
+			{
+				// App::ACTION().execute<App::Action::ColorLayout::Randomize>( getCurrentPreset() );
+			}
 		);
 
 		addWidget( buttonRandomize );
 	}
 
+	/*
 	void ColorLayout::_onPresetAdded( const std::string_view p_name )
 	{
 		auto * const preset = &_library.getPreset( p_name );
@@ -87,6 +89,7 @@ namespace VTX::UI::QT::Widget::Library
 			_setColor( i, _preset->getData().colors[ i ] );
 		}
 	}
+	*/
 
 	void ColorLayout::refreshVisibility( const bool p_hide )
 	{

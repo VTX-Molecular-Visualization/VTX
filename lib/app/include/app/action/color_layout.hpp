@@ -1,30 +1,42 @@
 #ifndef __VTX_UI_ACTION_COLOR_LAYOUT__
 #define __VTX_UI_ACTION_COLOR_LAYOUT__
 
-#include "app/action/library.hpp"
-#include "app/library/preset/color_layout.hpp"
+#include "app/ecs.hpp"
+#include <renderer/color.hpp>
 #include <util/color/rgba.hpp>
 
 namespace VTX::App::Action::ColorLayout
 {
+	/**
+	 * @brief Set instance in the scene.
+	 */
 	struct SetCurrent
 	{
-		void execute( const std::string_view );
+		void execute( const ECS::Entity );
 	};
 
+	/**
+	 * @brief Change a single color.
+	 */
 	struct Change
 	{
-		void execute( const std::string_view, const Index, const Util::Color::Rgba & );
+		void execute( const ECS::Entity, const Index, const Util::Color::Rgba & );
 	};
 
+	/**
+	 * @brief Change all colors.
+	 */
 	struct ChangeAll
 	{
-		void execute( const std::string_view, const Renderer::Color::LayoutArray & p_colors );
+		void execute( const ECS::Entity, const Renderer::Color::LayoutArray & );
 	};
 
+	/**
+	 * @brief Randomize all colors.
+	 */
 	struct Randomize
 	{
-		void execute( const std::string_view );
+		void execute( const ECS::Entity );
 	};
 
 } // namespace VTX::App::Action::ColorLayout

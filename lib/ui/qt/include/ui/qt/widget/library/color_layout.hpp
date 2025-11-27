@@ -3,12 +3,11 @@
 
 #include "base_preset_widget.hpp"
 #include "ui/qt/widget/color_picker.hpp"
-#include <app/library/preset/color_layout.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
 
-	class ColorLayout final : public BasePresetWidget<App::Library::Preset::ColorLayout>
+	class ColorLayout final : public BasePresetWidget<Renderer::Color::Layout>
 	{
 	  public:
 		ColorLayout( QWidget * p_parent );
@@ -19,8 +18,8 @@ namespace VTX::UI::QT::Widget::Library
 		void refreshVisibility( const bool p_hide );
 
 	  protected:
-		void _onPresetAdded( const std::string_view ) override;
-		void _onPresetChanged() override;
+		// void _onPresetAdded( const std::string_view ) override;
+		// void _onPresetChanged() override;
 
 	  private:
 		inline static const int _BUTTON_SIZE = 32;

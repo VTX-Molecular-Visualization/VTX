@@ -2,7 +2,7 @@
 #define __VTX_APP_ACTION_VISIBILITY__
 
 #include "app/ecs.hpp"
-#include "app/scene/root.hpp"
+#include "app/scene/tag_root.hpp"
 #include "app/system/visibility.hpp"
 #include <core/struct/system.hpp>
 #include <util/types.hpp>

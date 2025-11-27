@@ -18,10 +18,6 @@ namespace VTX::App
 	{
 		class InputManager;
 	}
-	namespace Library
-	{
-		class LibraryManager;
-	}
 	namespace Network
 	{
 		class NetworkManager;
@@ -86,10 +82,6 @@ namespace VTX::App
 	 * @brief Input manager.
 	 */
 	inline Input::InputManager & INPUT() { return ECS::getCtx<Input::InputManager>(); }
-	/**
-	 * @brief Library manager.
-	 */
-	inline Library::LibraryManager & LIBRARY() { return ECS::getCtx<Library::LibraryManager>(); }
 	/**
 	 * @brief Network manager.
 	 */

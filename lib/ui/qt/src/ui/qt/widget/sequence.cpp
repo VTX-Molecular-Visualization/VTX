@@ -1,4 +1,5 @@
 ﻿#include "ui/qt/widget/sequence.hpp"
+#include "app/preset/instance.hpp"
 #include "ui/qt/helper.hpp"
 #include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
@@ -8,13 +9,13 @@
 #include <app/action/selection.hpp>
 #include <app/ecs.hpp>
 #include <app/helper/system.hpp>
-#include <app/library/preset/color_layout.hpp>
 #include <app/system/metadata.hpp>
 #include <app/system/selection.hpp>
 #include <app/system/uid.hpp>
 #include <app/system/visibility.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/struct/system.hpp>
+#include <renderer/color.hpp>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -37,12 +38,13 @@ namespace VTX::UI::QT::Widget
 
 		using namespace App;
 
-		auto & reg		   = REG();
-		auto & system	   = reg.get<Core::Struct::System>( _system );
-		auto & metadata	   = reg.get<System::Metadata>( _system );
-		auto & uid		   = reg.get<System::UID>( _system );
-		auto & colorlayout = ECS::getFirstComponent<Library::Preset::ColorLayout>();
-		auto & selection   = reg.get<System::Selection>( _system );
+		auto & reg				  = REG();
+		auto & system			  = reg.get<Core::Struct::System>( _system );
+		auto & metadata			  = reg.get<System::Metadata>( _system );
+		auto & uid				  = reg.get<System::UID>( _system );
+		auto & colorLayoutIntance = ECS::getFirstComponent<Preset::Instance<Renderer::Color::Layout>>();
+		auto & colorlayout		  = reg.get<Renderer::Color::Layout>( colorLayoutIntance.entity );
+		auto & selection		  = reg.get<System::Selection>( _system );
 
 		const int	xOffset	   = horizontalScrollBar()->value();
 		const Index startIndex = xOffset / SEQ_CHAR_WIDTH;

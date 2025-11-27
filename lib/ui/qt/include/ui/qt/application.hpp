@@ -10,8 +10,11 @@
 #include <app/vtx_app.hpp>
 #include <util/chrono.hpp>
 
+// Q_DECLARE_METATYPE( VTX::App::ECS::Entity )
+
 namespace VTX::UI::QT
 {
+
 	/**
 	 * @brief UI application class inheriting from QApplication and VTXApp.
 	 */
