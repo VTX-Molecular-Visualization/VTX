@@ -80,6 +80,12 @@ namespace VTX::App::Events
 		ECS::Entity system;
 	};
 
+	struct PresetRename
+	{
+		ECS::Entity preset;
+		std::string name;
+	};
+
 } // namespace VTX::App::Events
 
 #endif

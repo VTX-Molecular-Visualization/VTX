@@ -25,31 +25,25 @@ namespace VTX::UI::QT::Widget::Library
 			_layout->addWidget( _presetSelector );
 			_layout->addWidget( _groupboxPreset );
 
-			connect( _presetSelector, &PresetSelector<P>::presetChanged, this, &BasePresetWidget::_onPresetChanged );
+			// Connect preset selector to update function.
+			connect( _presetSelector, &PresetSelector<P>::currentPresetUpdated, this, &BasePresetWidget::_update );
+			connect( _presetSelector, &PresetSelector<P>::presetChanged, this, &BasePresetWidget::_update );
 		}
 
-		inline App::ECS::Entity getCurrentPreset() const { return _presetSelector->getCurrentPreset(); }
+		inline App::ECS::Entity	 currentPreset() const { return _presetSelector->getCurrentPreset(); }
+		inline QGroupBox * const presetGroupBox() const { return _groupboxPreset; }
 		inline void addWidget( QWidget * const p_widget ) { _groupboxPreset->layout()->addWidget( p_widget ); }
 		inline void setTitle( const QString & p_title ) { _groupboxPreset->setTitle( p_title ); }
 
-	  protected:
+		/**
+		 * @brief Update the widget when the preset is updated.
+		 */
+		virtual void _update( App::ECS::Entity ) {}
+
+	  private:
 		QPointer<QVBoxLayout>						 _layout;
 		QPointer<Widget::Library::PresetSelector<P>> _presetSelector;
 		QPointer<QGroupBox>							 _groupboxPreset;
-
-		// TODO: const!
-		P * _preset = nullptr;
-
-	  private:
-		void _onPresetChanged( App::ECS::Entity p_ent )
-		{
-			VTX_INFO( "_onPresetChanged: {}", std::to_string( int( p_ent ) ) );
-			/*
-			std::string name = p_name.toStdString();
-			_preset			 = &App::LIBRARY().getLibrary<P>().getPreset( name );
-			_onPresetChanged();
-			*/
-		}
 	};
 
 } // namespace VTX::UI::QT::Widget::Library

@@ -44,49 +44,23 @@ namespace VTX::UI::QT::Widget::Library
 		connect(
 			buttonRandomize,
 			&QPushButton::clicked,
-			[ this ]() { App::ACTION().execute<App::Action::ColorLayout::Randomize>( getCurrentPreset() ); }
+			[ this ]() { App::ACTION().execute<App::Action::ColorLayout::Randomize>( currentPreset() ); }
 		);
 
 		addWidget( buttonRandomize );
 	}
 
-	/*
-	void ColorLayout::_onPresetAdded( const std::string_view p_name )
+	void ColorLayout::_update( App::ECS::Entity p_e )
 	{
-		auto * const preset = &_library.getPreset( p_name );
-
-		preset->onChange += [ this, preset ]( const Index p_index )
-		{
-			if ( _preset != preset )
-				return;
-
-			_setColor( p_index, _preset->getData().colors[ p_index ] );
-		};
-
-		preset->onChangeAll += [ this, preset ]()
-		{
-			if ( _preset != preset )
-				return;
-
-			for ( size_t i = 0; i < Renderer::Color::COLOR_LAYOUT_SIZE; ++i )
-			{
-				_setColor( i, _preset->getData().colors[ i ] );
-			}
-		};
-	}
-
-	void ColorLayout::_onPresetChanged()
-	{
-		assert( _preset != nullptr );
-
-		// App::ACTION().execute<App::Action::ColorLayout::SetCurrent>( _preset );
+		auto & colorLayout = App::REG().get<Renderer::Color::Layout>( p_e );
 
 		for ( size_t i = 0; i < Renderer::Color::COLOR_LAYOUT_SIZE; ++i )
 		{
-			_setColor( i, _preset->getData().colors[ i ] );
+			_updateColor( i, colorLayout.colors[ i ] );
 		}
+
+		App::ACTION().execute<App::Action::ColorLayout::SetCurrent>( p_e );
 	}
-	*/
 
 	void ColorLayout::refreshVisibility( const bool p_hide )
 	{
@@ -144,14 +118,12 @@ namespace VTX::UI::QT::Widget::Library
 
 	void ColorLayout::_changeColor( const size_t p_index, const QColor & p_color )
 	{
-		/*
 		App::ACTION().execute<App::Action::ColorLayout::Change>(
-			_preset, Index( p_index ), Helper::fromQColor( p_color )
+			currentPreset(), Index( p_index ), Helper::fromQColor( p_color )
 		);
-		*/
 	}
 
-	void ColorLayout::_setColor( const size_t p_index, const Util::Color::Rgba & p_color )
+	void ColorLayout::_updateColor( const size_t p_index, const Util::Color::Rgba & p_color )
 	{
 		if ( _buttons[ p_index ] )
 		{

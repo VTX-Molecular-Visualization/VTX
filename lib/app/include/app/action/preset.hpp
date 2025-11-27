@@ -2,6 +2,7 @@
 #define __VTX_APP_ACTION_PRESET__
 
 #include "app/action/action_manager.hpp"
+#include "app/events.hpp"
 #include "app/helper/preset.hpp"
 #include "app/preset/instance.hpp"
 #include "app/preset/name.hpp"
@@ -10,6 +11,8 @@
 #include <renderer/color.hpp>
 #include <renderer/representation.hpp>
 #include <renderer/settings.hpp>
+#include <util/event_hub.hpp>
+#include <util/exceptions.hpp>
 
 namespace VTX::App::Action::Preset
 {
@@ -67,7 +70,9 @@ namespace VTX::App::Action::Preset
 				name += " (2)";
 			}
 
-			REG().patch<App::Preset::Name>( p_e, [ &name ]( App::Preset::Name & p_name ) { p_name.name = name; } );
+			auto & nameComponent = REG().get<App::Preset::Name>( p_e );
+			nameComponent.name	 = name;
+			HUB().trigger<App::Events::PresetRename>( p_e, name );
 		}
 	};
 
@@ -107,8 +112,7 @@ namespace VTX::App::Action::Preset
 
 			if ( view.size_hint() == 1 )
 			{
-				VTX_ERROR( "Cannot delete the last preset." );
-				return;
+				throw VTXException( "Cannot delete the last preset." );
 			}
 
 			auto viewInstance = REG().view<App::Preset::Instance<T>>();
@@ -117,8 +121,7 @@ namespace VTX::App::Action::Preset
 				const auto & presetInstance = viewInstance.get<App::Preset::Instance<T>>( entity );
 				if ( presetInstance.entity == p_e )
 				{
-					VTX_ERROR( "Cannot delete a preset in use." );
-					return;
+					throw VTXException( "Cannot delete a preset in use." );
 				}
 			}
 

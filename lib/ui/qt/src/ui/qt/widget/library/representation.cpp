@@ -11,7 +11,7 @@ namespace VTX::UI::QT::Widget::Library
 		setTitle( "Edit representation" );
 
 		// Sphere.
-		_groupboxSphere = new HideableGroupBox( "Atoms", _groupboxPreset );
+		_groupboxSphere = new HideableGroupBox( "Atoms", presetGroupBox() );
 		addWidget( _groupboxSphere );
 
 		_comboBoxSphereRadiusType = new QComboBox( _groupboxSphere );
@@ -36,7 +36,7 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderSphereRadiusFixed->setSuffix( QStringLiteral( u"\u00C5" ) );
 
 		// Cylinder.
-		_groupboxCylinder = new HideableGroupBox( "Bonds", _groupboxPreset );
+		_groupboxCylinder = new HideableGroupBox( "Bonds", presetGroupBox() );
 		addWidget( _groupboxCylinder );
 
 		_sliderCylinderRadius = new EditableSlider( Qt::Orientation::Horizontal, _groupboxCylinder );
@@ -50,14 +50,14 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxCylinder->addWidget( _checkBoxCylinderColorBlending );
 
 		// Ribbon.
-		_groupboxRibbon = new HideableGroupBox( "Ribbons", _groupboxPreset );
+		_groupboxRibbon = new HideableGroupBox( "Ribbons", presetGroupBox() );
 		addWidget( _groupboxRibbon );
 
 		_checkBoxRibbonColorBlending = new QCheckBox( "Blend colors", _groupboxRibbon );
 		_groupboxRibbon->addWidget( _checkBoxRibbonColorBlending );
 
 		// SES.
-		_groupboxSes = new HideableGroupBox( "SES", _groupboxPreset );
+		_groupboxSes = new HideableGroupBox( "SES", presetGroupBox() );
 		addWidget( _groupboxSes );
 
 		_sliderSesProbeRadius = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSes );

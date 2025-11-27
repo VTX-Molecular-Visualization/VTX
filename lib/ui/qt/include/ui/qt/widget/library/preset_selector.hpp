@@ -31,7 +31,15 @@ namespace VTX::UI::QT::Widget::Library
 		virtual ~BasePresetSelector() = default;
 
 	  signals:
+		/**
+		 * @brief Signal emitted when the selected preset is changed from the widget.
+		 */
 		void presetChanged( const App::ECS::Entity );
+
+		/**
+		 * @brief Signal emitted when the current preset is updated from App.
+		 */
+		void currentPresetUpdated( const App::ECS::Entity );
 	};
 
 	/**
@@ -107,60 +115,91 @@ namespace VTX::UI::QT::Widget::Library
 			auto & reg = App::REG();
 
 			reg.on_construct<P>().connect<&PresetSelector::_refreshComboBox>( this );
-			reg.on_update<P>().connect<&PresetSelector::_refreshComboBox>( this );
 			reg.on_destroy<P>().connect<&PresetSelector::_refreshComboBox>( this );
-
-			/*
-			_library.onPresetAdded += [ this ]( const std::string_view p_name )
-			{
-				_refreshComboBox();
-				_comboBox->setCurrentText( QString::fromStdString( std::string( p_name ) ) );
-			};
-			_library.onPresetRenamed += [ this ]( const std::string_view p_name )
-			{
-				_refreshComboBox();
-				_comboBox->setCurrentText( QString::fromStdString( std::string( p_name ) ) );
-			};
-			_library.onPresetDeleted += [ this ]( const std::string_view p_name )
-			{
-				_refreshComboBox();
-				assert( _comboBox->count() > 0 );
-				_comboBox->setCurrentIndex( 0 );
-			};
-			**/
+			App::HUB().connect<App::Events::PresetRename, &PresetSelector::_onPresetRename>( this );
+			reg.on_update<P>().connect<&PresetSelector::_onUpdatePreset>( this );
 
 			// emit presetChanged( _comboBox->currentData().value<App::ECS::Entity>() );
 		}
 
-		inline App::ECS::Entity getCurrentPreset() const
-		{
-			return _comboBox->currentData().value<App::ECS::Entity>();
-			;
-		}
+		inline App::ECS::Entity getCurrentPreset() const { return _comboBox->currentData().value<App::ECS::Entity>(); }
 
 	  private:
+		/**
+		 * @brief Preset list.
+		 */
 		QPointer<QComboBox> _comboBox;
+
+		/**
+		 * @brief Line edit to rename the preset.
+		 */
 		QPointer<QLineEdit> _lineRename;
 
+		/**
+		 * @brief Refresh the combo box when presets are added or removed.
+		 */
 		void _refreshComboBox( App::ECS::Registry & p_r, App::ECS::Entity p_e )
 		{
 			using namespace App;
-			const QSignalBlocker blocker( _comboBox );
 
-			int index = _comboBox->currentIndex();
+			ECS::Entity toSelect = p_e;
 
+			_comboBox->blockSignals( true );
 			_comboBox->clear();
+			_comboBox->blockSignals( false );
 
-			auto view = REG().view<Preset::Name, P>();
+			int	 indexToSelect = -1;
+			int	 i			   = 0;
+			auto view		   = REG().view<Preset::Name, P>();
 			for ( const ECS::Entity entity : view )
 			{
 				const auto & presetName = view.get<Preset::Name>( entity ).name;
 				_comboBox->addItem( QString::fromStdString( presetName ), QVariant::fromValue<ECS::Entity>( entity ) );
+
+				if ( entity == toSelect )
+				{
+					indexToSelect = i;
+				}
+
+				++i;
 			}
 
-			int newIndex = std::max( 0, std::min( index, _comboBox->count() - 1 ) );
-			_comboBox->setCurrentIndex( newIndex );
+			if ( indexToSelect < 0 && _comboBox->count() > 0 )
+			{
+				indexToSelect = std::clamp( indexToSelect, 0, _comboBox->count() - 1 );
+			}
+
+			_comboBox->setCurrentIndex( indexToSelect );
 			_lineRename->setText( _comboBox->currentText() );
+		}
+
+		/**
+		 * @brief Update widget when a preset is renamed from App.
+		 */
+		void _onPresetRename( const App::Events::PresetRename & p_event )
+		{
+			const QSignalBlocker blocker( _comboBox );
+			const QString		 newName = QString::fromStdString( p_event.name );
+			int					 index = _comboBox->findData( QVariant::fromValue<App::ECS::Entity>( p_event.preset ) );
+			if ( index != -1 )
+			{
+				_comboBox->setItemText( index, newName );
+				if ( _comboBox->currentIndex() == index )
+				{
+					_lineRename->setText( newName );
+				}
+			}
+		}
+
+		/**
+		 * @brief Trigger signal when the current preset is updated from App.
+		 */
+		void _onUpdatePreset( App::ECS::Registry & p_r, App::ECS::Entity p_e )
+		{
+			if ( p_e == getCurrentPreset() )
+			{
+				emit currentPresetUpdated( p_e );
+			}
 		}
 	};
 } // namespace VTX::UI::QT::Widget::Library

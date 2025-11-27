@@ -42,7 +42,9 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Update widget from app.
 		 */
-		void _setColor( const size_t, const Util::Color::Rgba & );
+		void _updateColor( const size_t, const Util::Color::Rgba & );
+
+		void _update( App::ECS::Entity ) override;
 
 		void _refreshButtonVisibility(
 			const bool		   p_hide,
@@ -51,8 +53,7 @@ namespace VTX::UI::QT::Widget::Library
 			const bool * const p_isCommonValues
 		);
 
-		void _refreshColors( const Renderer::Color::Layout & );
-		void _refreshColor( const Renderer::Color::Layout &, const size_t );
+		// void _onCurrentPresetUpdated()
 	};
 } // namespace VTX::UI::QT::Widget::Library
 

@@ -11,7 +11,7 @@ namespace VTX::UI::QT::Widget::Library
 		setTitle( "Edit render settings" );
 
 		// Shading.
-		_groupboxShading = new HideableGroupBox( "Lighting", _groupboxPreset );
+		_groupboxShading = new HideableGroupBox( "Lighting", presetGroupBox() );
 		_groupboxShading->setChecked( true );
 		_groupboxShading->freeze( true );
 		addWidget( _groupboxShading );
@@ -55,7 +55,7 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderToonSteps->setDecimals( 0 );
 
 		// SSAO.
-		_groupboxSSAO = new HideableGroupBox( "Shadows", _groupboxPreset );
+		_groupboxSSAO = new HideableGroupBox( "Shadows", presetGroupBox() );
 		addWidget( _groupboxSSAO );
 
 		_sliderSSAOIntensity = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSSAO );
@@ -71,7 +71,7 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderBlurSize->setMaximum( BLUR_SIZE_MAX );
 
 		// Outline.
-		_groupboxOutline = new HideableGroupBox( "Outline", _groupboxPreset );
+		_groupboxOutline = new HideableGroupBox( "Outline", presetGroupBox() );
 		addWidget( _groupboxOutline );
 
 		_colorPickerOutline = new ColorPicker( _groupboxOutline );
@@ -92,7 +92,7 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderOutlineThickness->setDecimals( 0 );
 
 		// Fog.
-		_groupboxFog = new HideableGroupBox( "Fog", _groupboxPreset );
+		_groupboxFog = new HideableGroupBox( "Fog", presetGroupBox() );
 		addWidget( _groupboxFog );
 
 		_colorPickerFog = new ColorPicker( _groupboxFog );
@@ -117,7 +117,7 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderFogDensity->setMinimum( FOG_DENSITY_MAX );
 
 		// Selection.
-		_groupboxSelection = new HideableGroupBox( "Selection", _groupboxPreset );
+		_groupboxSelection = new HideableGroupBox( "Selection", presetGroupBox() );
 		addWidget( _groupboxSelection );
 
 		_colorPickerSelection = new ColorPicker( _groupboxSelection );

@@ -44,7 +44,7 @@ namespace VTX::App::Action
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Error with action of type {} : {}", actionName, p_e.what() );
+				VTX_ERROR( "{}", p_e.what() );
 				return;
 			}
 		}
