@@ -131,6 +131,7 @@ namespace VTX::UI::QT
 	}
 
 	// TODO: update only for incoming entity!
+	// (blocked by QItemSelectionModel::ClearAndSelect)
 	void SelectionModel::_onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e )
 	{
 		using namespace App;

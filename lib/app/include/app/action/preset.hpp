@@ -3,6 +3,7 @@
 
 #include "app/action/action_manager.hpp"
 #include "app/helper/preset.hpp"
+#include "app/preset/instance.hpp"
 #include "app/preset/name.hpp"
 #include "app/services.hpp"
 #include <optional>
@@ -110,7 +111,16 @@ namespace VTX::App::Action::Preset
 				return;
 			}
 
-			// TODO: check if preset is used.
+			auto viewInstance = REG().view<App::Preset::Instance<T>>();
+			for ( const ECS::Entity entity : viewInstance )
+			{
+				const auto & presetInstance = viewInstance.get<App::Preset::Instance<T>>( entity );
+				if ( presetInstance.entity == p_e )
+				{
+					VTX_ERROR( "Cannot delete a preset in use." );
+					return;
+				}
+			}
 
 			REG().destroy( p_e );
 		}
