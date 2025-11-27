@@ -51,7 +51,7 @@ namespace VTX
 	const std::string VTX_RELEASES_CLICKABLE_URL = "<a href=\"" + VTX_RELEASES_URL + "\">" + VTX_RELEASES_URL + "</a>";
 
 	// API.
-	const std::string API_URL_MMTF = "https://files.rcsb.org/download/";
+	const std::string API_URL_MMTF = "https://models.rcsb.org/";
 
 	// Constants.
 	constexpr float FLOAT_MIN = std::numeric_limits<float>::lowest();

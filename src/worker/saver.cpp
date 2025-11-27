@@ -164,7 +164,8 @@ namespace VTX::Worker
 			 || extension == "gro" || extension == "lammpstrj" || extension == "mmcif" || extension == "mmtf"
 			 || extension == "mol2" || extension == "molden" || extension == "pdb" || extension == "sdf"
 			 || extension == "smi" || extension == "arc" || extension == "trr" || extension == "mmtf"
-			 || extension == "xtc" || extension == "tng" || extension == "trj" || extension == "xyz" )
+			 || extension == "xtc" || extension == "tng" || extension == "trj" || extension == "xyz"
+			 || extension == "bcif" )
 		{
 			return MODE::MOLECULE;
 		}

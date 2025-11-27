@@ -27,7 +27,7 @@ set(PATH_QT_RESOURCE "asset/qt_resources")
 
 # Libs URL and tags.
 set(GIT_URL_CHEMFILES https://github.com/VTX-Molecular-Visualization/chemfiles.git)
-set(GIT_TAG_CHEMFILES 8624ab1fef9bc9a135a62f9e51dc63762945586d)
+set(GIT_TAG_CHEMFILES b08af5ec1097bc0f3f7b4a9a42ccccb3345bf41a)
 set(GIT_URL_GLM https://github.com/g-truc/glm.git)
 set(GIT_TAG_GLM bf71a83) #0.9.9.8
 set(GIT_URL_JSON https://github.com/nlohmann/json.git)

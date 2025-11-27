@@ -899,7 +899,7 @@ namespace VTX::IO::Reader
 		}
 		else if ( filename.find( "bcif.gz" ) != std::string::npos )
 		{
-			return "";
+			return "BCIF/GZ";
 		}
 		else
 		{
