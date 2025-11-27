@@ -44,10 +44,7 @@ namespace VTX::UI::QT::Widget::Library
 		connect(
 			buttonRandomize,
 			&QPushButton::clicked,
-			[ this ]()
-			{
-				// App::ACTION().execute<App::Action::ColorLayout::Randomize>( getCurrentPreset() );
-			}
+			[ this ]() { App::ACTION().execute<App::Action::ColorLayout::Randomize>( getCurrentPreset() ); }
 		);
 
 		addWidget( buttonRandomize );

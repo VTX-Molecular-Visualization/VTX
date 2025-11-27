@@ -3,6 +3,7 @@
 #include "ui/qt/services.hpp"
 #include <app/events.hpp>
 #include <app/services.hpp>
+#include <app/system/selection.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -16,7 +17,7 @@ namespace VTX::UI::QT::DockWidget
 		App::REG().on_destroy<Core::Struct::System>().connect<&Sequences::_onDestroySystem>( this );
 
 		// Refresh widget when selection changed.
-		App::HUB().connect<App::Events::SelectionChange, &Sequences::_onSelectionChange>( this );
+		App::REG().on_update<App::System::Selection>().connect<&Sequences::_onUpdateSelection>( this );
 	}
 
 	void Sequences::_onSystemLoad( const App::Events::SystemLoad & p_e )
@@ -39,11 +40,10 @@ namespace VTX::UI::QT::DockWidget
 		_mapSequencesWidgets.erase( p_e );
 	}
 
-	void Sequences::_onSelectionChange( const App::Events::SelectionChange & p_e )
+	void Sequences::_onUpdateSelection( App::ECS::Registry &, const App::ECS::Entity p_e )
 	{
-		const auto entity = p_e.system;
-		assert( _mapSequencesWidgets.contains( entity ) );
-		_mapSequencesWidgets[ entity ]->viewport()->update();
+		assert( _mapSequencesWidgets.contains( p_e ) );
+		_mapSequencesWidgets[ p_e ]->viewport()->update();
 	}
 
 } // namespace VTX::UI::QT::DockWidget

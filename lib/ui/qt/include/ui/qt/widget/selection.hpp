@@ -20,7 +20,7 @@ namespace VTX::UI::QT::Widget
 		 */
 
 	  private:
-		void _onSelectionChange( const App::Events::SelectionChange & );
+		void _onUpdateSelection( App::ECS::Registry &, App::ECS::Entity );
 	};
 } // namespace VTX::UI::QT::Widget
 

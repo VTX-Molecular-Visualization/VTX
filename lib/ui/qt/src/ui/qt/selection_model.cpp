@@ -18,7 +18,7 @@ namespace VTX::UI::QT
 		connect( this, &QItemSelectionModel::selectionChanged, this, &SelectionModel::_selectionChanged );
 
 		// App -> QT.
-		App::HUB().connect<App::Events::SelectionChange, &SelectionModel::_onSelectionChange>( this );
+		App::REG().on_update<App::System::Selection>().connect<&SelectionModel::_onUpdateSelection>( this );
 	}
 
 	// TODO: optimize and factorize.
@@ -130,7 +130,8 @@ namespace VTX::UI::QT
 		);
 	}
 
-	void SelectionModel::_onSelectionChange( const App::Events::SelectionChange & )
+	// TODO: update only for incoming entity!
+	void SelectionModel::_onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e )
 	{
 		using namespace App;
 		using namespace App::Scene;

@@ -22,9 +22,9 @@ namespace VTX::UI::QT
 		void _selectionChanged( const QItemSelection &, const QItemSelection & );
 
 		/**
-		 * @brief App
+		 * @brief Refresh from app.
 		 */
-		void _onSelectionChange( const App::Events::SelectionChange & );
+		void _onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e );
 	};
 } // namespace VTX::UI::QT
 

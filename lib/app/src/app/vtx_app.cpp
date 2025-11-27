@@ -1,5 +1,6 @@
 #include "app/vtx_app.hpp"
 #include "app/action/action_manager.hpp"
+#include "app/action/camera.hpp"
 #include "app/action/color_layout.hpp"
 #include "app/action/controller.hpp"
 #include "app/action/preset.hpp"
@@ -139,6 +140,18 @@ namespace VTX::App
 		// Add passes.
 		PASS().addPass<Pass::SceneUpdater>( _scene );
 		PASS().addPass<Pass::CameraUpdater>( _camera );
+
+		// TODO: at setting loading.
+		// Camera projection.
+		if ( SETTINGS().getValue<Scene::Camera::PROJECTION>( Settings::Camera::PROJECTION_KEY )
+			 == Scene::Camera::PROJECTION::PERSPECTIVE )
+		{
+			ACTION().execute<Action::Camera::SetProjectionMode<Scene::Camera::PROJECTION::PERSPECTIVE>>();
+		}
+		else
+		{
+			ACTION().execute<Action::Camera::SetProjectionMode<Scene::Camera::PROJECTION::ORTHOGRAPHIC>>();
+		}
 
 		// Trackball controller.
 		ACTION().execute<Action::Controller::SetCameraController<Pass::Controller::Trackball>>();

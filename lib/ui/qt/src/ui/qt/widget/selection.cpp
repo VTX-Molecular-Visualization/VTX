@@ -21,10 +21,11 @@ namespace VTX::UI::QT::Widget
 		this->setSelectionMode( QAbstractItemView::NoSelection );
 
 		// Refresh widget when selection changed.
-		App::HUB().connect<App::Events::SelectionChange, &Selection::_onSelectionChange>( this );
+		App::REG().on_update<App::System::Selection>().connect<&Selection::_onUpdateSelection>( this );
 	}
 
-	void Selection::_onSelectionChange( const App::Events::SelectionChange & )
+	// TODO: optimize and factorize.
+	void Selection::_onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e )
 	{
 		using namespace App;
 		using namespace App::Scene;

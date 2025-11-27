@@ -12,7 +12,7 @@ namespace VTX::UI::QT::ToolBar
 	  public:
 		Camera( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
-			setWindowTitle( "Cameraaaaaaaaaaa" );
+			setWindowTitle( "Camera" );
 
 			addAction<Action::Camera::Perspective>();
 			addAction<Action::Camera::Orthographic>();

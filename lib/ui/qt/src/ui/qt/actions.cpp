@@ -125,14 +125,6 @@ namespace VTX::UI::QT::Action
 					App::Events::CameraProjectionChange<static_cast<int>( Scene::Camera::PROJECTION::ORTHOGRAPHIC )>>(
 					[ qAction ]() { qAction->setChecked( true ); }
 				);
-
-			// TODO: find a better way to do this.
-			auto [ _, camera ] = ECS::getFirstEntityWithComponents<Scene::Camera>();
-
-			if ( camera.projection && *camera.projection == Scene::Camera::PROJECTION::ORTHOGRAPHIC )
-			{
-				qAction->setChecked( true );
-			}
 		}
 
 		Perspective::Perspective()
@@ -157,14 +149,6 @@ namespace VTX::UI::QT::Action
 			HUB().connect<Events::CameraProjectionChange<static_cast<int>( Scene::Camera::PROJECTION::PERSPECTIVE )>>(
 				[ qAction ]() { qAction->setChecked( true ); }
 			);
-
-			// TODO: find a better way to do this.
-			auto [ _, camera ] = ECS::getFirstEntityWithComponents<Scene::Camera>();
-
-			if ( camera.projection && *camera.projection == Scene::Camera::PROJECTION::PERSPECTIVE )
-			{
-				qAction->setChecked( true );
-			}
 		}
 
 		Trackball::Trackball()

@@ -73,34 +73,11 @@ namespace VTX::App::Events
 
 	/**
 	 * @brief System.
+	 * Used instead of on_construct to avoid component creation order problems.
 	 */
 	struct SystemLoad
 	{
 		ECS::Entity system;
-	};
-
-	struct SelectionChange
-	{
-		ECS::Entity system;
-	};
-
-	/**
-	 * @brief Libraries.
-	 */
-	struct LibraryPresetAdd
-	{
-		std::string name;
-	};
-
-	struct LibraryPresetDelete
-	{
-		std::string name;
-	};
-
-	struct LibraryPresetRename
-	{
-		std::string oldName;
-		std::string newName;
 	};
 
 } // namespace VTX::App::Events

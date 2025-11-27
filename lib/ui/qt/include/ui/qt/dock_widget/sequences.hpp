@@ -24,7 +24,7 @@ namespace VTX::UI::QT::DockWidget
 
 		void _onSystemLoad( const App::Events::SystemLoad & );
 		void _onDestroySystem( App::ECS::Registry &, App::ECS::Entity );
-		void _onSelectionChange( const App::Events::SelectionChange & );
+		void _onUpdateSelection( App::ECS::Registry &, App::ECS::Entity );
 	};
 
 } // namespace VTX::UI::QT::DockWidget

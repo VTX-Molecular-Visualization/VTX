@@ -64,17 +64,16 @@ namespace VTX::UI::QT::Widget::Library
 			toolbar->addAction( aDelete );
 			layout->addWidget( toolbar );
 
-			auto * lineRename = new QLineEdit( this );
-			lineRename->setText( _comboBox->currentText() );
-			layout->addWidget( lineRename );
+			_lineRename = new QLineEdit( this );
+			layout->addWidget( _lineRename );
 
 			connect(
 				_comboBox,
 				&QComboBox::currentTextChanged,
 				this,
-				[ this, lineRename ]()
+				[ this ]()
 				{
-					lineRename->setText( _comboBox->currentText() );
+					_lineRename->setText( _comboBox->currentText() );
 					emit presetChanged( getCurrentPreset() );
 				}
 			);
@@ -94,12 +93,12 @@ namespace VTX::UI::QT::Widget::Library
 			);
 
 			connect(
-				lineRename,
+				_lineRename,
 				&QLineEdit::editingFinished,
-				[ this, lineRename ]()
+				[ this ]()
 				{
 					App::ACTION().execute<App::Action::Preset::Rename<P>>(
-						getCurrentPreset(), lineRename->text().toStdString()
+						getCurrentPreset(), _lineRename->text().toStdString()
 					);
 				}
 			);
@@ -141,6 +140,7 @@ namespace VTX::UI::QT::Widget::Library
 
 	  private:
 		QPointer<QComboBox> _comboBox;
+		QPointer<QLineEdit> _lineRename;
 
 		void _refreshComboBox( App::ECS::Registry & p_r, App::ECS::Entity p_e )
 		{
@@ -158,8 +158,9 @@ namespace VTX::UI::QT::Widget::Library
 				_comboBox->addItem( QString::fromStdString( presetName ), QVariant::fromValue<ECS::Entity>( entity ) );
 			}
 
-			int newIndex = std::min( index, _comboBox->count() - 1 );
+			int newIndex = std::max( 0, std::min( index, _comboBox->count() - 1 ) );
 			_comboBox->setCurrentIndex( newIndex );
+			_lineRename->setText( _comboBox->currentText() );
 		}
 	};
 } // namespace VTX::UI::QT::Widget::Library

@@ -29,18 +29,21 @@ namespace VTX::App::Action::Selection
 			using namespace Util::Math;
 			using namespace Core::Struct;
 
-			const auto & system	   = REG().get<Core::Struct::System>( p_ent );
-			auto &		 selection = REG().get<System::Selection>( p_ent );
+			auto &		 reg	   = REG();
+			const auto & system	   = reg.get<Core::Struct::System>( p_ent );
+			const auto & selection = reg.get<System::Selection>( p_ent );
+
+			Core::Struct::IndexRangeList selectionAtoms = selection.atoms;
 
 			if constexpr ( ITEM == Scene::E_ITEM::SYSTEM )
 			{
 				if ( p_selected )
 				{
-					selection.atoms = IndexRangeList( system.getAtomRange() );
+					selectionAtoms = IndexRangeList( system.getAtomRange() );
 				}
 				else
 				{
-					selection.atoms.clear();
+					selectionAtoms.clear();
 				}
 			}
 			else if constexpr ( ITEM == Scene::E_ITEM::CHAIN )
@@ -49,14 +52,14 @@ namespace VTX::App::Action::Selection
 				{
 					for ( const auto & index : p_ranges )
 					{
-						selection.atoms.addRange( system.getChainAtomRange( index ) );
+						selectionAtoms.addRange( system.getChainAtomRange( index ) );
 					}
 				}
 				else
 				{
 					for ( const auto & index : p_ranges )
 					{
-						selection.atoms.removeRange( system.getChainAtomRange( index ) );
+						selectionAtoms.removeRange( system.getChainAtomRange( index ) );
 					}
 				}
 			}
@@ -66,14 +69,14 @@ namespace VTX::App::Action::Selection
 				{
 					for ( const auto & index : p_ranges )
 					{
-						selection.atoms.addRange( system.getResidueAtomRange( index ) );
+						selectionAtoms.addRange( system.getResidueAtomRange( index ) );
 					}
 				}
 				else
 				{
 					for ( const auto & index : p_ranges )
 					{
-						selection.atoms.removeRange( system.getResidueAtomRange( index ) );
+						selectionAtoms.removeRange( system.getResidueAtomRange( index ) );
 					}
 				}
 			}
@@ -83,19 +86,21 @@ namespace VTX::App::Action::Selection
 				{
 					for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
 					{
-						selection.atoms.addRange( *it );
+						selectionAtoms.addRange( *it );
 					}
 				}
 				else
 				{
 					for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
 					{
-						selection.atoms.removeRange( *it );
+						selectionAtoms.removeRange( *it );
 					}
 				}
 			}
 
-			HUB().trigger<Events::SelectionChange>( { p_ent } );
+			reg.patch<System::Selection>(
+				p_ent, [ selectionAtoms ]( System::Selection & p_selection ) { p_selection.atoms = selectionAtoms; }
+			);
 		}
 
 		inline void execute(

@@ -28,7 +28,6 @@ namespace VTX::UI::QT::Widget::Library
 			connect( _presetSelector, &PresetSelector<P>::presetChanged, this, &BasePresetWidget::_onPresetChanged );
 		}
 
-		// inline QPointer<Widget::Library::PresetSelector<P>> getPresetSelector() const { return _presetSelector; }
 		inline App::ECS::Entity getCurrentPreset() const { return _presetSelector->getCurrentPreset(); }
 		inline void addWidget( QWidget * const p_widget ) { _groupboxPreset->layout()->addWidget( p_widget ); }
 		inline void setTitle( const QString & p_title ) { _groupboxPreset->setTitle( p_title ); }
@@ -44,6 +43,7 @@ namespace VTX::UI::QT::Widget::Library
 	  private:
 		void _onPresetChanged( App::ECS::Entity p_ent )
 		{
+			VTX_INFO( "_onPresetChanged: {}", std::to_string( int( p_ent ) ) );
 			/*
 			std::string name = p_name.toStdString();
 			_preset			 = &App::LIBRARY().getLibrary<P>().getPreset( name );
