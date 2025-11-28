@@ -6,6 +6,7 @@
 #include "ui/qt/widget/editable_slider.hpp"
 #include "ui/qt/widget/hideable_goupe_box.hpp"
 #include <QLabel>
+#include <app/action/render_settings.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
@@ -15,8 +16,7 @@ namespace VTX::UI::QT::Widget::Library
 		RenderSettings( QWidget * p_parent );
 
 	  protected:
-		// void _onPresetAdded( const std::string_view ) override;
-		// void _onPresetChanged() override;
+		void _update( App::ECS::Entity ) override;
 
 	  private:
 		// Shading.
@@ -56,10 +56,10 @@ namespace VTX::UI::QT::Widget::Library
 		template<VTX::Renderer::E_RENDER_SETTINGS S, typename T>
 		void _changeValue( const T p_value )
 		{
-			// App::ACTION().execute<App::Action::RenderSettings::Change<S, T>>( _preset, p_value );
+			App::ACTION().execute<App::Action::RenderSettings::Change<S, T>>( currentPreset(), p_value );
 		}
 
-		void _applyLogic();
+		void _applyLogic( const Renderer::RenderSettings & );
 	};
 } // namespace VTX::UI::QT::Widget::Library
 

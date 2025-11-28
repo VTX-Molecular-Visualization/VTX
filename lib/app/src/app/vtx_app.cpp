@@ -4,6 +4,8 @@
 #include "app/action/color_layout.hpp"
 #include "app/action/controller.hpp"
 #include "app/action/preset.hpp"
+#include "app/action/render_settings.hpp"
+#include "app/action/representation.hpp"
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
@@ -132,14 +134,20 @@ namespace VTX::App
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::RenderSettings>>();
 
-		// Link first preset to scene.
-		ACTION().execute<Action::ColorLayout::SetCurrent>(
-			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
-		);
-
-		// Add passes.
+		// Launch passes.
 		PASS().addPass<Pass::SceneUpdater>( _scene );
 		PASS().addPass<Pass::CameraUpdater>( _camera );
+
+		// Set preset instances.
+		ACTION().execute<Action::Preset::SetCurrent<Renderer::Color::Layout>>(
+			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
+		);
+		ACTION().execute<Action::Preset::SetCurrent<Renderer::Representation>>(
+			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>()
+		);
+		ACTION().execute<Action::Preset::SetCurrent<Renderer::RenderSettings>>(
+			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::RenderSettings>()
+		);
 
 		// TODO: at setting loading.
 		// Camera projection.

@@ -6,6 +6,7 @@
 #include "app/helper/preset.hpp"
 #include "app/preset/instance.hpp"
 #include "app/preset/name.hpp"
+#include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
 #include <optional>
 #include <renderer/color.hpp>
@@ -17,6 +18,23 @@
 namespace VTX::App::Action::Preset
 {
 	/**
+	 * @brief Set instance in the scene.
+	 */
+	template<typename T>
+	struct SetCurrent
+	{
+	  public:
+		void execute( const ECS::Entity p_e )
+		{
+			auto & reg	 = REG();
+			auto   scene = ECS::getFirstEntityOnlyWithComponents<Scene::TagRoot>();
+			auto   view	 = reg.view<App::Preset::Instance<T>>();
+			reg.remove<App::Preset::Instance<T>>( scene );
+			reg.emplace<App::Preset::Instance<T>>( scene, p_e );
+		}
+	};
+
+	/**
 	 * @brief Add a new preset to a library.
 	 */
 	template<typename T>
@@ -24,8 +42,9 @@ namespace VTX::App::Action::Preset
 	{
 	  public:
 		void execute(
-			const std::optional<std::string_view> p_name = std::nullopt,
-			const std::optional<T> &			  p_data = std::nullopt
+			const std::optional<std::string_view> p_name   = std::nullopt,
+			const std::optional<T> &			  p_data   = std::nullopt,
+			const bool							  p_select = false
 		)
 		{
 			auto &		reg	 = REG();
@@ -45,6 +64,11 @@ namespace VTX::App::Action::Preset
 			else
 			{
 				reg.emplace<T>( e );
+			}
+
+			if ( p_select )
+			{
+				ACTION().execute<SetCurrent<T>>( e );
 			}
 		}
 	};
@@ -82,7 +106,11 @@ namespace VTX::App::Action::Preset
 	template<typename T>
 	struct Duplicate
 	{
-		void execute( const ECS::Entity p_e, const std::optional<std::string_view> p_dest = std::nullopt )
+		void execute(
+			const ECS::Entity					  p_e,
+			const std::optional<std::string_view> p_dest   = std::nullopt,
+			const bool							  p_select = false
+		)
 		{
 			auto & reg = REG();
 			auto & src = reg.get<App::Preset::Name>( p_e );
@@ -97,6 +125,11 @@ namespace VTX::App::Action::Preset
 			auto e = reg.create();
 			reg.emplace<App::Preset::Name>( e, name );
 			reg.emplace<T>( e, reg.get<T>( p_e ) );
+
+			if ( p_select )
+			{
+				ACTION().execute<SetCurrent<T>>( e );
+			}
 		}
 	};
 
@@ -152,15 +185,15 @@ namespace VTX::App::Action::Preset
 	{
 		void execute()
 		{
-			ACTION().execute<Add<Renderer::Representation>>( "Sticks", Renderer::Representations::STICKS );
-			ACTION().execute<Add<Renderer::Representation>>(
-				"Balls and sticks", Renderer::Representations::BALLS_AND_STICKS
-			);
+			ACTION().execute<Add<Renderer::Representation>>( "SES", Renderer::Representations::SES );
+			ACTION().execute<Add<Renderer::Representation>>( "Ribbons", Renderer::Representations::RIBBONS );
 			ACTION().execute<Add<Renderer::Representation>>(
 				"Van der Waals", Renderer::Representations::VAN_DER_WAALS
 			);
-			ACTION().execute<Add<Renderer::Representation>>( "Ribbons", Renderer::Representations::RIBBONS );
-			ACTION().execute<Add<Renderer::Representation>>( "SES", Renderer::Representations::SES );
+			ACTION().execute<Add<Renderer::Representation>>(
+				"Balls and sticks", Renderer::Representations::BALLS_AND_STICKS
+			);
+			ACTION().execute<Add<Renderer::Representation>>( "Sticks", Renderer::Representations::STICKS );
 		}
 	};
 

@@ -7,8 +7,6 @@ namespace VTX::App::ECS
 {
 	using Registry = entt::registry;
 	using Entity   = entt::entity;
-	using Null	   = entt::null_t;
-	constexpr Null NullEntity {};
 
 	/**
 	 * @brief Set the global registry.

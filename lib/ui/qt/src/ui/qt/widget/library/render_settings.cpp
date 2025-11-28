@@ -1,5 +1,6 @@
 #include "ui/qt/widget/library/render_settings.hpp"
 #include "ui/qt/helper.hpp"
+#include <app/action/render_settings.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
@@ -231,168 +232,9 @@ namespace VTX::UI::QT::Widget::Library
 		{ _changeValue<E_RENDER_SETTINGS::COLOR_SELECTION, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
 	}
 
-	/*
-	void RenderSettings::_onPresetAdded( const std::string_view p_name )
+	void RenderSettings::_update( App::ECS::Entity p_e )
 	{
-		using namespace Renderer;
-		auto * const preset = &_library.getPreset( p_name );
-
-
-		// Connect app to widgets.
-		preset->getCallback<E_RENDER_SETTINGS::SHADING_MODE, E_SHADING>() += [ this, preset ]( const E_SHADING p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _comboBoxShadingMode );
-			_comboBoxShadingMode->setCurrentIndex( int( p_value ) );
-			_applyLogic();
-		};
-		preset->getCallback<E_RENDER_SETTINGS::COLOR_BACKGROUND, Util::Color::Rgba>() +=
-			[ this, preset ]( const Util::Color::Rgba p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _colorPickerBackground );
-			_colorPickerBackground->setColor( Helper::toQColor( p_value ) );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::COLOR_LIGHT, Util::Color::Rgba>() +=
-			[ this, preset ]( const Util::Color::Rgba p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _colorPickerLight );
-			_colorPickerLight->setColor( Helper::toQColor( p_value ) );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::SPECULAR_FACTOR, float>() += [ this, preset ]( const float p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _sliderSpecularFactor );
-			_sliderSpecularFactor->setValue( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::SHININESS, float>() += [ this, preset ]( const float p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _sliderShininess );
-			_sliderShininess->setValue( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::TOON_STEPS, uint>() += [ this, preset ]( const uint p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _sliderToonSteps );
-			_sliderToonSteps->setValue( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::ACTIVE_SSAO, bool>() += [ this, preset ]( const bool p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _groupboxSSAO );
-			_groupboxSSAO->setChecked( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::SSAO_INTENSITY, float>() += [ this, preset ]( const float p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _sliderSSAOIntensity );
-			_sliderSSAOIntensity->setValue( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::BLUR_SIZE, float>() += [ this, preset ]( const float p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _sliderBlurSize );
-			_sliderBlurSize->setValue( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::ACTIVE_OUTLINE, bool>() += [ this, preset ]( const bool p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _groupboxOutline );
-			_groupboxOutline->setChecked( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::COLOR_OUTLINE, Util::Color::Rgba>() +=
-			[ this, preset ]( const Util::Color::Rgba p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _colorPickerOutline );
-			_colorPickerOutline->setColor( Helper::toQColor( p_value ) );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::OUTLINE_SENSITIVITY, float>() += [ this, preset ]( const float p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _sliderOutlineSensitivity );
-			_sliderOutlineSensitivity->setValue( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::OUTLINE_THICKNESS, uint>() += [ this, preset ]( const uint p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _sliderOutlineThickness );
-			_sliderOutlineThickness->setValue( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::ACTIVE_FOG, bool>() += [ this, preset ]( const bool p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _groupboxFog );
-			_groupboxFog->setChecked( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::COLOR_FOG, Util::Color::Rgba>() +=
-			[ this, preset ]( const Util::Color::Rgba p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _colorPickerFog );
-			_colorPickerFog->setColor( Helper::toQColor( p_value ) );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::FOG_NEAR, float>() += [ this, preset ]( const float p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _sliderFogNear );
-			_sliderFogNear->setValue( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::FOG_FAR, float>() += [ this, preset ]( const float p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _sliderFogFar );
-			_sliderFogFar->setValue( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::FOG_DENSITY, float>() += [ this, preset ]( const float p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _sliderFogDensity );
-			_sliderFogDensity->setValue( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::ACTIVE_SELECTION, bool>() += [ this, preset ]( const bool p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _groupboxSelection );
-			_groupboxSelection->setChecked( p_value );
-		};
-		preset->getCallback<E_RENDER_SETTINGS::COLOR_SELECTION, Util::Color::Rgba>() +=
-			[ this, preset ]( const Util::Color::Rgba p_value )
-		{
-			if ( _preset != preset )
-				return;
-			const QSignalBlocker blocker( _colorPickerSelection );
-			_colorPickerSelection->setColor( Helper::toQColor( p_value ) );
-		};
-
-	}
-
-	void RenderSettings::_onPresetChanged()
-	{
-		assert( _preset != nullptr );
-
-		//		App::ACTION().execute<App::Action::RenderSettings::SetCurrent>( _preset );
+		auto & preset = App::REG().get<Renderer::RenderSettings>( p_e );
 
 		const QSignalBlocker blocker0( _comboBoxShadingMode );
 		const QSignalBlocker blocker1( _colorPickerBackground );
@@ -415,37 +257,35 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker18( _groupboxSelection );
 		const QSignalBlocker blocker19( _colorPickerSelection );
 
-		_comboBoxShadingMode->setCurrentIndex( int( _preset->getData().shadingMode ) );
-		_colorPickerBackground->setColor( Helper::toQColor( _preset->getData().colorBackground ) );
-		_colorPickerLight->setColor( Helper::toQColor( _preset->getData().colorLight ) );
-		_sliderSpecularFactor->setValue( _preset->getData().specularFactor );
-		_sliderShininess->setValue( _preset->getData().shininess );
-		_sliderToonSteps->setValue( _preset->getData().toonSteps );
-		_groupboxSSAO->setChecked( _preset->getData().activeSSAO );
-		_sliderSSAOIntensity->setValue( _preset->getData().ssaoIntensity );
-		_sliderBlurSize->setValue( _preset->getData().blurSize );
-		_groupboxOutline->setChecked( _preset->getData().activeOutline );
-		_colorPickerOutline->setColor( Helper::toQColor( _preset->getData().colorOutline ) );
-		_sliderOutlineSensitivity->setValue( _preset->getData().outlineSensitivity );
-		_sliderOutlineThickness->setValue( _preset->getData().outlineThickness );
-		_groupboxFog->setChecked( _preset->getData().activeFog );
-		_colorPickerFog->setColor( Helper::toQColor( _preset->getData().colorFog ) );
-		_sliderFogNear->setValue( _preset->getData().fogNear );
-		_sliderFogFar->setValue( _preset->getData().fogFar );
-		_sliderFogDensity->setValue( _preset->getData().fogDensity );
-		_groupboxSelection->setChecked( _preset->getData().activeSelection );
-		_colorPickerSelection->setColor( Helper::toQColor( _preset->getData().colorSelection ) );
+		_comboBoxShadingMode->setCurrentIndex( int( preset.shadingMode ) );
+		_colorPickerBackground->setColor( Helper::toQColor( preset.colorBackground ) );
+		_colorPickerLight->setColor( Helper::toQColor( preset.colorLight ) );
+		_sliderSpecularFactor->setValue( preset.specularFactor );
+		_sliderShininess->setValue( preset.shininess );
+		_sliderToonSteps->setValue( preset.toonSteps );
+		_groupboxSSAO->setChecked( preset.activeSSAO );
+		_sliderSSAOIntensity->setValue( preset.ssaoIntensity );
+		_sliderBlurSize->setValue( preset.blurSize );
+		_groupboxOutline->setChecked( preset.activeOutline );
+		_colorPickerOutline->setColor( Helper::toQColor( preset.colorOutline ) );
+		_sliderOutlineSensitivity->setValue( preset.outlineSensitivity );
+		_sliderOutlineThickness->setValue( preset.outlineThickness );
+		_groupboxFog->setChecked( preset.activeFog );
+		_colorPickerFog->setColor( Helper::toQColor( preset.colorFog ) );
+		_sliderFogNear->setValue( preset.fogNear );
+		_sliderFogFar->setValue( preset.fogFar );
+		_sliderFogDensity->setValue( preset.fogDensity );
+		_groupboxSelection->setChecked( preset.activeSelection );
+		_colorPickerSelection->setColor( Helper::toQColor( preset.colorSelection ) );
 
-		_applyLogic();
+		_applyLogic( preset );
 	}
-	*/
 
-	void RenderSettings::_applyLogic()
+	void RenderSettings::_applyLogic( const Renderer::RenderSettings & p_preset )
 	{
-		/*
 		using namespace Renderer;
 
-		switch ( _preset->getData().shadingMode )
+		switch ( p_preset.shadingMode )
 		{
 		case E_SHADING::DIFFUSE:
 			_labelSpecularFactor->setVisible( false );
@@ -480,6 +320,5 @@ namespace VTX::UI::QT::Widget::Library
 			_sliderToonSteps->setEnabled( false );
 			break;
 		}
-		*/
 	}
 } // namespace VTX::UI::QT::Widget::Library

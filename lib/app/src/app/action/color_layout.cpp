@@ -5,17 +5,6 @@
 namespace VTX::App::Action::ColorLayout
 {
 
-	void SetCurrent::execute( const ECS::Entity p_e )
-	{
-		auto & reg	 = REG();
-		auto   scene = ECS::getFirstEntityOnlyWithComponents<Scene::TagRoot>();
-
-		auto view = reg.view<Preset::Instance<Renderer::Color::Layout>>();
-
-		reg.remove<Preset::Instance<Renderer::Color::Layout>>( scene );
-		reg.emplace<Preset::Instance<Renderer::Color::Layout>>( scene, p_e );
-	}
-
 	void Change::execute( const ECS::Entity p_e, const Index p_index, const Util::Color::Rgba & p_color )
 	{
 		REG().patch<Renderer::Color::Layout>(

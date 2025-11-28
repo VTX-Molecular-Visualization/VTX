@@ -86,12 +86,17 @@ namespace VTX::UI::QT::Widget::Library
 				}
 			);
 
-			connect( aNew, &QAction::triggered, [ this ]() { App::ACTION().execute<App::Action::Preset::Add<P>>(); } );
+			connect(
+				aNew,
+				&QAction::triggered,
+				[ this ]() { App::ACTION().execute<App::Action::Preset::Add<P>>( std::nullopt, std::nullopt, true ); }
+			);
 
 			connect(
 				aDuplicate,
 				&QAction::triggered,
-				[ this ]() { App::ACTION().execute<App::Action::Preset::Duplicate<P>>( getCurrentPreset() ); }
+				[ this ]()
+				{ App::ACTION().execute<App::Action::Preset::Duplicate<P>>( getCurrentPreset(), std::nullopt, true ); }
 			);
 
 			connect(
@@ -118,8 +123,7 @@ namespace VTX::UI::QT::Widget::Library
 			reg.on_destroy<P>().connect<&PresetSelector::_refreshComboBox>( this );
 			App::HUB().connect<App::Events::PresetRename, &PresetSelector::_onPresetRename>( this );
 			reg.on_update<P>().connect<&PresetSelector::_onUpdatePreset>( this );
-
-			// emit presetChanged( _comboBox->currentData().value<App::ECS::Entity>() );
+			reg.on_construct<App ::Preset::Instance<P>>().connect<&PresetSelector::_onSelectPreset>( this );
 		}
 
 		inline App::ECS::Entity getCurrentPreset() const { return _comboBox->currentData().value<App::ECS::Entity>(); }
@@ -136,18 +140,32 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<QLineEdit> _lineRename;
 
 		/**
+		 * @brief Select the preset in the combo box when a preset is set as current from App.
+		 */
+		void _onSelectPreset( const App::ECS::Entity p_e )
+		{
+			auto &			 preset = App::REG().get<App::Preset::Instance<P>>( p_e );
+			App::ECS::Entity ent	= preset.entity;
+			const int		 index	= _comboBox->findData( QVariant::fromValue<App::ECS::Entity>( ent ) );
+			if ( index != -1 )
+			{
+				_comboBox->setCurrentIndex( index );
+			}
+			emit presetChanged( ent );
+		}
+
+		/**
 		 * @brief Refresh the combo box when presets are added or removed.
 		 */
 		void _refreshComboBox( App::ECS::Registry & p_r, App::ECS::Entity p_e )
 		{
 			using namespace App;
+			QSignalBlocker blocker( _comboBox );
 
-			ECS::Entity toSelect = p_e;
-
-			_comboBox->blockSignals( true );
+			// Emit
 			_comboBox->clear();
-			_comboBox->blockSignals( false );
 
+			// TODO: store old entity, dont select the new one.
 			int	 indexToSelect = -1;
 			int	 i			   = 0;
 			auto view		   = REG().view<Preset::Name, P>();
@@ -156,7 +174,7 @@ namespace VTX::UI::QT::Widget::Library
 				const auto & presetName = view.get<Preset::Name>( entity ).name;
 				_comboBox->addItem( QString::fromStdString( presetName ), QVariant::fromValue<ECS::Entity>( entity ) );
 
-				if ( entity == toSelect )
+				if ( entity == p_e )
 				{
 					indexToSelect = i;
 				}
@@ -164,11 +182,7 @@ namespace VTX::UI::QT::Widget::Library
 				++i;
 			}
 
-			if ( indexToSelect < 0 && _comboBox->count() > 0 )
-			{
-				indexToSelect = std::clamp( indexToSelect, 0, _comboBox->count() - 1 );
-			}
-
+			indexToSelect = std::clamp( indexToSelect, 0, _comboBox->count() - 1 );
 			_comboBox->setCurrentIndex( indexToSelect );
 			_lineRename->setText( _comboBox->currentText() );
 		}

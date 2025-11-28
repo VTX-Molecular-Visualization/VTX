@@ -52,14 +52,12 @@ namespace VTX::UI::QT::Widget::Library
 
 	void ColorLayout::_update( App::ECS::Entity p_e )
 	{
-		auto & colorLayout = App::REG().get<Renderer::Color::Layout>( p_e );
+		auto & preset = App::REG().get<Renderer::Color::Layout>( p_e );
 
 		for ( size_t i = 0; i < Renderer::Color::COLOR_LAYOUT_SIZE; ++i )
 		{
-			_updateColor( i, colorLayout.colors[ i ] );
+			_updateColor( i, preset.colors[ i ] );
 		}
-
-		App::ACTION().execute<App::Action::ColorLayout::SetCurrent>( p_e );
 	}
 
 	void ColorLayout::refreshVisibility( const bool p_hide )

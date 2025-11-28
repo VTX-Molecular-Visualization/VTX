@@ -18,8 +18,10 @@ namespace VTX::UI::QT::Widget::Library
 		void refreshVisibility( const bool p_hide );
 
 	  protected:
-		// void _onPresetAdded( const std::string_view ) override;
-		// void _onPresetChanged() override;
+		/**
+		 * @brief Update the widget when the preset is updated from App.
+		 */
+		void _update( App::ECS::Entity ) override;
 
 	  private:
 		inline static const int _BUTTON_SIZE = 32;
@@ -43,8 +45,6 @@ namespace VTX::UI::QT::Widget::Library
 		 * @brief Update widget from app.
 		 */
 		void _updateColor( const size_t, const Util::Color::Rgba & );
-
-		void _update( App::ECS::Entity ) override;
 
 		void _refreshButtonVisibility(
 			const bool		   p_hide,

@@ -6,6 +6,7 @@
 #include "ui/qt/widget/hideable_goupe_box.hpp"
 #include <QCheckBox>
 #include <QLabel>
+#include <app/action/representation.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
@@ -16,8 +17,10 @@ namespace VTX::UI::QT::Widget::Library
 		Representation( QWidget * p_parent );
 
 	  protected:
-		// void _onPresetAdded( const std::string_view ) override;
-		// void _onPresetChanged() override;
+		/**
+		 * @brief Update the widget when the preset is updated from App.
+		 */
+		void _update( App::ECS::Entity ) override;
 
 	  private:
 		// Sphere.
@@ -44,10 +47,10 @@ namespace VTX::UI::QT::Widget::Library
 		template<Renderer::E_REPRESENTATION_VALUES S, typename T>
 		void _changeValue( const T p_value )
 		{
-			// App::ACTION().execute<App::Action::Representation::Change<S, T>>( _preset, p_value );
+			App::ACTION().execute<App::Action::Representation::Change<S, T>>( currentPreset(), p_value );
 		}
 
-		void _applyLogic();
+		void _applyLogic( const Renderer::Representation & );
 	};
 
 } // namespace VTX::UI::QT::Widget::Library

@@ -7,13 +7,6 @@
 
 namespace VTX::App::Action::ColorLayout
 {
-	/**
-	 * @brief Set instance in the scene.
-	 */
-	struct SetCurrent
-	{
-		void execute( const ECS::Entity );
-	};
 
 	/**
 	 * @brief Change a single color.

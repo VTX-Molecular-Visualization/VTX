@@ -38,7 +38,7 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Update the widget when the preset is updated.
 		 */
-		virtual void _update( App::ECS::Entity ) {}
+		virtual void _update( App::ECS::Entity ) = 0;
 
 	  private:
 		QPointer<QVBoxLayout>						 _layout;
