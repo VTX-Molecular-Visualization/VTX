@@ -9,7 +9,9 @@ namespace VTX::Bench
 {
 
 	Scene::Scene( const size_t p_width, const size_t p_height ) :
-		_camera( p_width, p_height ), _proxyCamera(
+		_camera( p_width, p_height )
+		/*,
+		_proxyCamera(
 										  { _camera.getMatrixViewPtr(),
 											_camera.getMatrixProjectionPtr(),
 											_camera.getPosition(),
@@ -17,11 +19,13 @@ namespace VTX::Bench
 											_camera.getNear(),
 											_camera.getFar(),
 											_camera.isPerspective() }
-									  ),
+									  )*/
+		,
 		_colorLayout(
 			// Renderer::Color::Layout::COLOR_LAYOUT_JMOL
 		)
 	{
+		/*
 		_camera.callbackMatrixView += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixView(); };
 		_camera.callbackMatrixProjection += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixProjection(); };
 		_camera.callbackTranslation +=
@@ -30,6 +34,7 @@ namespace VTX::Bench
 			[ & ]( const float p_near, const float p_far ) { _proxyCamera.onCameraNearFar( p_near, p_far ); };
 		_camera.callbackPerspective +=
 			[ & ]( const bool p_isPerspective ) { _proxyCamera.onPerspective( p_isPerspective ); };
+			*/
 	}
 
 	Renderer::Proxy::System & Scene::addSystem( const std::string & p_name )

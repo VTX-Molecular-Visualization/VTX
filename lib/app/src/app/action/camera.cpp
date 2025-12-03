@@ -25,7 +25,7 @@ namespace VTX::App::Action::Camera
 {
 	void SetPosition::execute( const Vec3f & p_position )
 	{
-		auto [ ent, _, transform ] = ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+		auto [ ent, _, transform ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 		REG().patch<Util::Math::Transform>(
 			ent, [ p_position ]( Util::Math::Transform & p_transform ) { p_transform.setPosition( p_position ); }
 		);
@@ -33,7 +33,7 @@ namespace VTX::App::Action::Camera
 
 	void SetRotation::execute( const Vec3f & p_eulerAngles )
 	{
-		auto [ ent, _, transform ] = ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+		auto [ ent, _, transform ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 		REG().patch<Util::Math::Transform>(
 			ent, [ p_eulerAngles ]( Util::Math::Transform & p_transform ) { p_transform.setRotation( p_eulerAngles ); }
 		);
@@ -41,7 +41,7 @@ namespace VTX::App::Action::Camera
 
 	void SetScale::execute( const float p_scale )
 	{
-		auto [ ent, _, transform ] = ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+		auto [ ent, _, transform ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 		REG().patch<Util::Math::Transform>(
 			ent, [ p_scale ]( Util::Math::Transform & p_transform ) { p_transform.setScale( p_scale ); }
 		);
@@ -52,7 +52,7 @@ namespace VTX::App::Action::Camera
 		auto   entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
 		auto & aabb		= REG().get<Util::Math::AABB>( entScene );
 		auto [ entCamera, camera, transform ]
-			= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 		REG().patch<Util::Math::Transform>(
 			entCamera,
 			[ & ]( Util::Math::Transform & p_transform )
@@ -69,7 +69,7 @@ namespace VTX::App::Action::Camera
 	void Orient::execute()
 	{
 		auto [ entCamera, camera, transform ]
-			= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
 		bool selection = false;
 		// TODO: compute aabb from selection.
@@ -87,7 +87,7 @@ namespace VTX::App::Action::Camera
 	{
 		using namespace Util;
 
-		auto [ _, camera, transform ] = ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+		auto [ _, camera, transform ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
 		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(
 			_computeCameraOrientPosition( transform.getFront(), *camera.fov, p_target ), transform.getRotation()

@@ -3,8 +3,8 @@
 #include "app/action/camera.hpp"
 #include "app/action/color_layout.hpp"
 #include "app/action/controller.hpp"
+#include "app/action/graphics_config.hpp"
 #include "app/action/preset.hpp"
-#include "app/action/render_settings.hpp"
 #include "app/action/representation.hpp"
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
@@ -18,7 +18,6 @@
 #include "app/python_binding/interpretor.hpp"
 #include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
-#include "app/scene/camera.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
@@ -87,7 +86,7 @@ namespace VTX::App
 		// Camera.
 		_camera = _registry.create();
 		_registry.emplace<Util::Math::Transform>( _camera );
-		_registry.emplace<Scene::Camera>( _camera );
+		_registry.emplace<Renderer::Camera>( _camera );
 
 		// Initialize python interpretor.
 		INTERPRETOR().subscribe(
@@ -132,7 +131,7 @@ namespace VTX::App
 		// Create default presets.
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::RenderSettings>>();
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::GraphicsConfig>>();
 
 		// Launch passes.
 		PASS().addPass<Pass::SceneUpdater>( _scene );
@@ -145,20 +144,20 @@ namespace VTX::App
 		ACTION().execute<Action::Preset::SetCurrent<Renderer::Representation>>(
 			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>()
 		);
-		ACTION().execute<Action::Preset::SetCurrent<Renderer::RenderSettings>>(
-			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::RenderSettings>()
+		ACTION().execute<Action::Preset::SetCurrent<Renderer::GraphicsConfig>>(
+			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>()
 		);
 
 		// TODO: at setting loading.
 		// Camera projection.
-		if ( SETTINGS().getValue<Scene::Camera::PROJECTION>( Settings::Camera::PROJECTION_KEY )
-			 == Scene::Camera::PROJECTION::PERSPECTIVE )
+		if ( SETTINGS().getValue<Renderer::PROJECTION>( Settings::Camera::PROJECTION_KEY )
+			 == Renderer::PROJECTION::PERSPECTIVE )
 		{
-			ACTION().execute<Action::Camera::SetProjectionMode<Scene::Camera::PROJECTION::PERSPECTIVE>>();
+			ACTION().execute<Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>();
 		}
 		else
 		{
-			ACTION().execute<Action::Camera::SetProjectionMode<Scene::Camera::PROJECTION::ORTHOGRAPHIC>>();
+			ACTION().execute<Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>();
 		}
 
 		// Trackball controller.

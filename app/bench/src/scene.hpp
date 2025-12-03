@@ -4,7 +4,6 @@
 #include "camera.hpp"
 #include <core/struct/system.hpp>
 #include <renderer/color.hpp>
-#include <renderer/proxy/camera.hpp>
 #include <renderer/proxy/system.hpp>
 
 namespace VTX::Renderer
@@ -20,8 +19,7 @@ namespace VTX::Bench
 		Scene() = delete;
 		Scene( const size_t p_width, const size_t p_height );
 
-		inline Camera &					 getCamera() { return _camera; }
-		inline Renderer::Proxy::Camera & getProxyCamera() { return _proxyCamera; }
+		inline Camera & getCamera() { return _camera; }
 
 		Renderer::Proxy::System & addSystem( const std::string & p_name );
 		void					  removeSystem( const size_t p_index );
@@ -59,8 +57,8 @@ namespace VTX::Bench
 		bool isUpdate = false;
 
 	  private:
-		Camera					_camera;
-		Renderer::Proxy::Camera _proxyCamera;
+		Camera _camera;
+		// Renderer::Proxy::Camera _proxyCamera;
 
 		std::vector<std::unique_ptr<Core::Struct::System>>	  _systems;
 		std::vector<std::unique_ptr<Renderer::Proxy::System>> _proxySystems;

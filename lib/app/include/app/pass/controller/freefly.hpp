@@ -3,10 +3,10 @@
 
 #include "app/ecs.hpp"
 #include "app/pass/pass_manager.hpp"
-#include "app/settings/settings.hpp"
 
 namespace VTX::App::Pass::Controller
 {
+
 	/**
 	 * @brief Freefly camera controller from inputs (free movement in 3D space).
 	 */
@@ -30,7 +30,7 @@ namespace VTX::App::Pass::Controller
 		const ECS::Entity _cameraEntity;
 
 		/**
-		 * @brief Controller setting pointers (from SETTINGS()).
+		 * @brief Controller settings.
 		 */
 		const float * _translationSpeed;
 		const float * _accelerationFactor;

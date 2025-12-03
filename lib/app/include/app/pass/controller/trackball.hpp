@@ -8,6 +8,7 @@
 
 namespace VTX::App::Pass::Controller
 {
+
 	/**
 	 * @brief System that manages a trackball camera controller from inputs (move around a specified target).
 	 */
@@ -46,7 +47,7 @@ namespace VTX::App::Pass::Controller
 		bool _needUpdate = true;
 
 		/**
-		 * @brief Controller setting pointers (from SETTINGS()).
+		 * @brief Controller settings.
 		 */
 		const float * _translationSpeed;
 		const float * _accelerationFactor;

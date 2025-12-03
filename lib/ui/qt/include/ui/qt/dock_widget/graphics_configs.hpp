@@ -5,10 +5,10 @@
 
 namespace VTX::UI::QT::DockWidget
 {
-	class RenderSettings : public BaseDockWidget<RenderSettings>
+	class GraphicsConfigs : public BaseDockWidget<GraphicsConfigs>
 	{
 	  public:
-		RenderSettings( QWidget * );
+		GraphicsConfigs( QWidget * );
 
 		/*
 	  private:

@@ -6,14 +6,14 @@
 #include "ui/qt/widget/editable_slider.hpp"
 #include "ui/qt/widget/hideable_goupe_box.hpp"
 #include <QLabel>
-#include <app/action/render_settings.hpp>
+#include <app/action/graphics_config.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
-	class RenderSettings final : public BasePresetWidget<Renderer::RenderSettings>
+	class GraphicsConfig final : public BasePresetWidget<Renderer::GraphicsConfig>
 	{
 	  public:
-		RenderSettings( QWidget * p_parent );
+		GraphicsConfig( QWidget * p_parent );
 
 	  protected:
 		void _update( App::ECS::Entity ) override;
@@ -53,13 +53,13 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<HideableGroupBox> _groupboxSelection;
 		QPointer<ColorPicker>	   _colorPickerSelection;
 
-		template<VTX::Renderer::E_RENDER_SETTINGS S, typename T>
+		template<VTX::Renderer::E_GRAPHICS_CONFIG_VALUES S, typename T>
 		void _changeValue( const T p_value )
 		{
-			App::ACTION().execute<App::Action::RenderSettings::Change<S, T>>( currentPreset(), p_value );
+			App::ACTION().execute<App::Action::GraphicsConfig::Change<S, T>>( currentPreset(), p_value );
 		}
 
-		void _applyLogic( const Renderer::RenderSettings & );
+		void _applyLogic( const Renderer::GraphicsConfig & );
 	};
 } // namespace VTX::UI::QT::Widget::Library
 

@@ -13,7 +13,7 @@ namespace VTX::App::Pass
 		// Update functions.
 		reg.on_update<Util::Math::AABB>().connect<&SceneUpdater::_onUpdateAABB>( this );
 		// TODO: Keep only construct and use custom event to update each value at once.
-		reg.on_construct<Preset::Instance<Renderer::RenderSettings>>().connect<&SceneUpdater::_onUpdateRenderSettings>(
+		reg.on_construct<Preset::Instance<Renderer::GraphicsConfig>>().connect<&SceneUpdater::_onUpdateGraphicsConfig>(
 			this
 		);
 		// reg.on_update<Library::Preset::RenderSettings>().connect<&SceneUpdater::_onUpdateRenderSettings>( this );
@@ -25,6 +25,8 @@ namespace VTX::App::Pass
 			this
 		);
 		// reg.on_update<Library::Preset::Representation>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
+
+		// HUB().connect < Events::RenderSettingChange, &SceneUpdater::? > ( this );
 	}
 
 	void SceneUpdater::_onUpdateAABB( ECS::Registry & p_r, ECS::Entity p_e )
@@ -41,28 +43,28 @@ namespace VTX::App::Pass
 		sceneAABB.extend( otherAABB );
 	}
 
-	void SceneUpdater::_onUpdateRenderSettings( ECS::Registry & p_r, ECS::Entity p_e )
+	void SceneUpdater::_onUpdateGraphicsConfig( ECS::Registry & p_r, ECS::Entity p_e )
 	{
-		auto &		 renderer			  = RENDERER();
-		const auto & instance			  = p_r.get<Preset::Instance<Renderer::RenderSettings>>( _entity );
-		const auto & renderSettingsPreset = p_r.get<Renderer::RenderSettings>( instance.entity );
-		renderer.setRenderSettings( renderSettingsPreset );
+		auto &		 renderer = RENDERER();
+		const auto & instance = p_r.get<Preset::Instance<Renderer::GraphicsConfig>>( _entity );
+		const auto & preset	  = p_r.get<Renderer::GraphicsConfig>( instance.entity );
+		renderer.setGraphicsConfig( preset );
 	}
 
 	void SceneUpdater::_onUpdateColorLayout( ECS::Registry & p_r, ECS::Entity )
 	{
-		auto &		 renderer		   = RENDERER();
-		const auto & instance		   = p_r.get<Preset::Instance<Renderer::Color::Layout>>( _entity );
-		const auto & colorLayoutPreset = p_r.get<Renderer::Color::Layout>( instance.entity );
-		renderer.setColorLayout( colorLayoutPreset );
+		auto &		 renderer = RENDERER();
+		const auto & instance = p_r.get<Preset::Instance<Renderer::Color::Layout>>( _entity );
+		const auto & preset	  = p_r.get<Renderer::Color::Layout>( instance.entity );
+		renderer.setColorLayout( preset );
 	}
 
 	void SceneUpdater::_onUpdateRepresentations( ECS::Registry & p_r, ECS::Entity )
 	{
 		// TODO: handle mutliple representations.
-		auto &		 renderer			  = RENDERER();
-		const auto & instance			  = p_r.get<Preset::Instance<Renderer::Representation>>( _entity );
-		const auto & representationPreset = p_r.get<Renderer::Representation>( instance.entity );
-		renderer.setRepresentation( representationPreset );
+		auto &		 renderer = RENDERER();
+		const auto & instance = p_r.get<Preset::Instance<Renderer::Representation>>( _entity );
+		const auto & preset	  = p_r.get<Renderer::Representation>( instance.entity );
+		renderer.setRepresentation( preset );
 	}
 } // namespace VTX::App::Pass

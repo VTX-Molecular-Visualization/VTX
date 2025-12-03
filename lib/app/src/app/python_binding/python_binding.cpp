@@ -61,10 +61,10 @@ namespace VTX::App::PythonBinding
 		*/
 		commands.bindAction<App::Action::Scene::Clear>( "clear", "Clear scene." );
 
-		commands.bindAction<App::Action::Camera::SetProjectionMode<App::Scene::Camera::PROJECTION::ORTHOGRAPHIC>>(
+		commands.bindAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>(
 			"setCameraProjectionOrthographic", "Set the render projection into Orthographic mode."
 		);
-		commands.bindAction<App::Action::Camera::SetProjectionMode<App::Scene::Camera::PROJECTION::PERSPECTIVE>>(
+		commands.bindAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>(
 			"setCameraProjectionPerspective", "Set the render projection into Perspective mode."
 		);
 		/*
@@ -106,7 +106,7 @@ namespace VTX::App::PythonBinding
 			[]()
 			{
 				auto [ ent, _, transform ]
-					= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+					= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 				return transform.getPosition();
 			},
 			"Return current camera position vector"
@@ -116,7 +116,7 @@ namespace VTX::App::PythonBinding
 			[]()
 			{
 				auto [ ent, _, transform ]
-					= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+					= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 				return transform.getRotation();
 			},
 			"Return current camera rotation vector"

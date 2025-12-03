@@ -38,7 +38,7 @@ int main( int, char ** )
 		// Renderer.
 		Renderer::Renderer renderer( WIDTH, HEIGHT );
 		// renderer.setOpenGL45( Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
-		renderer.setProxyCamera( scene.getProxyCamera() );
+		// renderer.setProxyCamera( scene.getProxyCamera() );
 
 		// Input manager.
 		InputManager inputManager;
@@ -61,8 +61,8 @@ int main( int, char ** )
 			// Vec2i ids = renderer.getPickedIds( p_x, p_y );
 			// VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
 		};
-		inputManager.onMouseMotion +=
-			[ & ]( const Vec2i & p_position ) { scene.getProxyCamera().onMousePosition( p_position ); };
+		// inputManager.onMouseMotion +=
+		//	[ & ]( const Vec2i & p_position ) { scene.getProxyCamera().onMousePosition( p_position ); };
 
 		inputManager.onKeyPressed += [ & ]( const SDL_Scancode p_key )
 		{
@@ -162,7 +162,7 @@ int main( int, char ** )
 
 		renderer.setRepresentation( representation );
 
-		Renderer::RenderSettings settings;
+		Renderer::GraphicsConfig settings;
 		settings.shadingMode		= Renderer::E_SHADING::TOON;
 		settings.colorLight			= COLOR_WHITE;
 		settings.colorBackground	= COLOR_BLACK;
@@ -188,7 +188,7 @@ int main( int, char ** )
 		//	= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
 		//		3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
 
-		renderer.setRenderSettings( settings );
+		renderer.setGraphicsConfig( settings );
 
 		// Main loop.
 		while ( isRunning )

@@ -27,7 +27,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Update renderer when a preset is updated.
 		 */
-		void _onUpdateRenderSettings( ECS::Registry &, ECS::Entity );
+		void _onUpdateGraphicsConfig( ECS::Registry &, ECS::Entity );
 		void _onUpdateColorLayout( ECS::Registry &, ECS::Entity );
 		void _onUpdateRepresentations( ECS::Registry &, ECS::Entity );
 	};

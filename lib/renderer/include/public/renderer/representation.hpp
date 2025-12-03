@@ -1,7 +1,6 @@
 #ifndef __VTX_RENDERER_REPRESENTATION__
 #define __VTX_RENDERER_REPRESENTATION__
 
-#include "renderer/settings.hpp"
 #include <util/types.hpp>
 
 namespace VTX::Renderer

@@ -4,7 +4,6 @@
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/pass/pass_manager.hpp"
-#include <renderer/proxy/camera.hpp>
 #include <util/constants.hpp>
 
 namespace VTX::App::Pass
@@ -25,9 +24,6 @@ namespace VTX::App::Pass
 		// Mat4f _transform		= MAT4F_ID;
 		Mat4f _viewMatrix		= MAT4F_ID;
 		Mat4f _projectionMatrix = MAT4F_ID;
-
-		// TODO: set as component?
-		std::unique_ptr<Renderer::Proxy::Camera> _cameraProxy;
 
 		/**
 		 * @brief On update.

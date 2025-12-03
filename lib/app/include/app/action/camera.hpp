@@ -4,10 +4,10 @@
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/pass/controller/animation.hpp"
-#include "app/scene/camera.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
+#include <renderer/camera.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
 
@@ -40,18 +40,18 @@ namespace VTX::App::Action::Camera
 	/**
 	 * @brief Set camera projection mode.
 	 */
-	template<App::Scene::Camera::PROJECTION P>
+	template<Renderer::PROJECTION P>
 	struct SetProjectionMode
 	{
 		void execute()
 		{
 			auto & reg = REG();
 
-			auto [ entity, camera ] = ECS::getFirstEntityWithComponents<App::Scene::Camera>();
+			auto [ entity, camera ] = ECS::getFirstEntityWithComponents<Renderer::Camera>();
 
-			reg.patch<App::Scene::Camera>(
+			reg.patch<Renderer::Camera>(
 				entity,
-				[]( App::Scene::Camera & c )
+				[]( Renderer::Camera & c )
 				{
 					auto & settings = SETTINGS();
 					settings.setValue<int>( Settings::Camera::PROJECTION_KEY, int( P ) );
@@ -137,7 +137,7 @@ namespace VTX::App::Action::Camera
 			using namespace Pass::Controller;
 
 			auto [ entCamera, camera, transform ]
-				= ECS::getFirstEntityWithComponents<App::Scene::Camera, Util::Math::Transform>();
+				= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
 			AnimationData	   start { transform.getPosition(), transform.getRotation() };
 			InterpPositionFunc interpPositionFunc = nullptr;

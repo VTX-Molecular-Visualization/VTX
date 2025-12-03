@@ -4,8 +4,8 @@
 #include "app/events.hpp"
 #include "app/pass/controller/freefly.hpp"
 #include "app/pass/controller/trackball.hpp"
-#include "app/scene/camera.hpp"
 #include "app/services.hpp"
+#include <renderer/camera.hpp>
 
 namespace VTX::App::Action::Controller
 {
@@ -17,7 +17,7 @@ namespace VTX::App::Action::Controller
 	{
 		void execute()
 		{
-			ECS::Entity entity = ECS::getFirstEntityOnlyWithComponents<Scene::Camera>();
+			ECS::Entity entity = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
 
 			// If the requested controller is already active, do nothing.
 			if ( PASS().hasPass<T>() )

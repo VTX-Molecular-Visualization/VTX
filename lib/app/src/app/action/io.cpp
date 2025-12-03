@@ -3,8 +3,8 @@
 #include "app/action/scene.hpp"
 #include "app/filesystem.hpp"
 #include "app/network/network_manager.hpp"
-#include "app/scene/camera.hpp"
 #include "app/services.hpp"
+#include <renderer/camera.hpp>
 #include <renderer/renderer.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -60,7 +60,7 @@ namespace VTX::App::Action::IO
 	{
 		try
 		{
-			const auto &	   camera = ECS::getFirstComponent<App::Scene::Camera>();
+			const auto &	   camera = ECS::getFirstComponent<Renderer::Camera>();
 			std::vector<uchar> image;
 
 			RENDERER().snapshot( image, _width, _height, *camera.fov, *camera.near, *camera.far );

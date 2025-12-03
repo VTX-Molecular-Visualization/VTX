@@ -15,7 +15,7 @@ namespace VTX::Renderer
 	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height )
 	{
 		// Passes.
-		_refreshGraph( RenderSettings() );
+		_refreshGraph( GraphicsConfig() );
 
 		// Shared data.
 		addGlobalData(
@@ -131,7 +131,6 @@ namespace VTX::Renderer
 		_framesRemaining = 0;
 
 		_proxiesSystems.clear();
-		_proxyCamera = nullptr;
 		_proxyVoxels = nullptr;
 
 		_cacheSpheresCylinders.clear();
@@ -300,6 +299,7 @@ namespace VTX::Renderer
 
 		// Set up callbacks.
 		// Transform.
+		/*
 		p_proxy.onTransform += [ this, &p_proxy ]()
 		{
 			const Mat4f matrixModelView	   = *_proxyCamera->matrixView * *p_proxy.transform;
@@ -314,6 +314,7 @@ namespace VTX::Renderer
 
 			_context.setSub( buffer, "Models", _getProxyId( &p_proxy ) );
 		};
+		*/
 
 		// Representation.
 		p_proxy.onRepresentation += [ this, &p_proxy ]( const uchar p_representation )
@@ -641,6 +642,7 @@ namespace VTX::Renderer
 
 #pragma endregion Proxy representations
 
+	/*
 	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
 	{
 		assert( p_proxy.matrixView );
@@ -699,10 +701,12 @@ namespace VTX::Renderer
 		p_proxy.onPerspective += [ this, &p_proxy ]( const bool p_perspective )
 		{ setValue( uint( p_perspective ), "CameraIsPerspective" ); };
 	}
+	*/
+
+	void Renderer::setCamera( const Camera & p_camera ) {}
 
 	void Renderer::setColorLayout( const Color::Layout & p_layout )
 	{
-
 		_context.set( p_layout.colors, "ColorLayout" );
 		setNeedUpdate( true );
 
@@ -722,35 +726,36 @@ namespace VTX::Renderer
 		*/
 	}
 
-	void Renderer::setRenderSettings( const RenderSettings & p_settings )
+	void Renderer::setGraphicsConfig( const GraphicsConfig & p_config )
 	{
-		_refreshGraph( p_settings );
+		_refreshGraph( p_config );
+		build();
 
-		setValue( uint( p_settings.shadingMode ), "ShadingShadingMode" );
-		setValue( p_settings.colorLight, "ShadingShadingLightColor" );
-		setValue( p_settings.colorBackground, "ShadingShadingBackgroundColor" );
-		setValue( p_settings.specularFactor, "ShadingShadingSpecularFactor" );
-		setValue( p_settings.shininess, "ShadingShadingShininess" );
-		setValue( p_settings.toonSteps, "ShadingShadingToonSteps" );
-		if ( p_settings.activeSSAO )
+		setValue( uint( p_config.shadingMode ), "ShadingShadingMode" );
+		setValue( p_config.colorLight, "ShadingShadingLightColor" );
+		setValue( p_config.colorBackground, "ShadingShadingBackgroundColor" );
+		setValue( p_config.specularFactor, "ShadingShadingSpecularFactor" );
+		setValue( p_config.shininess, "ShadingShadingShininess" );
+		setValue( p_config.toonSteps, "ShadingShadingToonSteps" );
+		if ( p_config.activeSSAO )
 		{
-			setValue( p_settings.ssaoIntensity, "SSAOSSAOIntensity" );
-			setValue( p_settings.blurSize, "BlurXBlurSize" );
-			setValue( p_settings.blurSize, "BlurYBlurSize" );
+			setValue( p_config.ssaoIntensity, "SSAOSSAOIntensity" );
+			setValue( p_config.blurSize, "BlurXBlurSize" );
+			setValue( p_config.blurSize, "BlurYBlurSize" );
 		}
-		if ( p_settings.activeOutline )
+		if ( p_config.activeOutline )
 		{
-			setValue( p_settings.colorOutline, "OutlineOutlineColor" );
-			setValue( p_settings.outlineSensitivity, "OutlineOutlineSensitivity" );
-			setValue( p_settings.outlineThickness, "OutlineOutlineThickness" );
+			setValue( p_config.colorOutline, "OutlineOutlineColor" );
+			setValue( p_config.outlineSensitivity, "OutlineOutlineSensitivity" );
+			setValue( p_config.outlineThickness, "OutlineOutlineThickness" );
 		}
-		setValue( p_settings.colorFog, "ShadingShadingFogColor" );
-		setValue( p_settings.fogNear, "ShadingShadingFogNear" );
-		setValue( p_settings.fogFar, "ShadingShadingFogFar" );
-		setValue( p_settings.activeFog ? p_settings.fogDensity : 0.f, "ShadingShadingFogDensity" );
-		if ( p_settings.activeSelection )
+		setValue( p_config.colorFog, "ShadingShadingFogColor" );
+		setValue( p_config.fogNear, "ShadingShadingFogNear" );
+		setValue( p_config.fogFar, "ShadingShadingFogFar" );
+		setValue( p_config.activeFog ? p_config.fogDensity : 0.f, "ShadingShadingFogDensity" );
+		if ( p_config.activeSelection )
 		{
-			setValue( p_settings.colorSelection, "SelectionSelectionColor" );
+			setValue( p_config.colorSelection, "SelectionSelectionColor" );
 		}
 
 		setNeedUpdate( true );
@@ -1245,6 +1250,7 @@ namespace VTX::Renderer
 
 	void Renderer::_refreshDataModels()
 	{
+		/*
 		BinaryBuffer buffer;
 
 		for ( const Proxy::System * const proxy : _proxiesSystems )
@@ -1264,6 +1270,7 @@ namespace VTX::Renderer
 		buffer.close();
 
 		_context.set( buffer, "Models" );
+		*/
 	}
 
 	void Renderer::snapshot(
@@ -1275,6 +1282,7 @@ namespace VTX::Renderer
 		const float			 p_far
 	)
 	{
+		/*
 		const Mat4f & matrixProjectionOld = *_proxyCamera->matrixProjection;
 		Mat4f		  matrixProjection	  = Util::Math::perspective(
 			   Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
@@ -1282,6 +1290,7 @@ namespace VTX::Renderer
 		setValue( matrixProjection, "CameraMatrixProjection" );
 		_context.snapshot( p_outImage, _graph.getRenderQueue(), _instructions, p_width, p_height );
 		setValue( matrixProjectionOld, "CameraMatrixProjection" );
+		*/
 	}
 
 	void Renderer::_renderLog( const float p_deltaTime, const float p_elapsedTime )
@@ -1322,13 +1331,13 @@ namespace VTX::Renderer
 	}
 
 	// TODO: not the best way to do it.
-	void Renderer::_refreshGraph( const RenderSettings & p_settings )
+	void Renderer::_refreshGraph( const GraphicsConfig & p_config )
 	{
 		RenderGraph::PipelineConfig config;
 
-		config.enableSSAO	   = p_settings.activeSSAO;
-		config.enableOutline   = p_settings.activeOutline;
-		config.enableSelection = p_settings.activeSelection;
+		config.enableSSAO	   = p_config.activeSSAO;
+		config.enableOutline   = p_config.activeOutline;
+		config.enableSelection = p_config.activeSelection;
 
 		RenderGraph::PipelinePasses passes = _graph.createDefaultPipeline( config );
 		Pass *						geo	   = passes.geo;

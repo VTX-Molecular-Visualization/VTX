@@ -5,6 +5,7 @@
 
 namespace VTX::App::Settings
 {
+
 	namespace Camera
 	{
 		constexpr std::string_view NEAR_CLIP_KEY  = "CAMERA_NEAR_CLIP";

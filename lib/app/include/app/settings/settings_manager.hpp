@@ -9,7 +9,7 @@
 namespace VTX::App::Settings
 {
 	/**
-	 * @brief Interface for  polymorphism.
+	 * @brief Interface for polymorphism.
 	 */
 	struct ISetting
 	{
@@ -29,6 +29,12 @@ namespace VTX::App::Settings
 		std::optional<T> max;
 		void			 reset() override { value = defaultValue; }
 	};
+
+	template<typename T>
+	using SettingRef = const T &;
+
+	template<typename T>
+	using SettingPtr = const T * const;
 
 	/**
 	 * @brief Manage all application settings (except UI).

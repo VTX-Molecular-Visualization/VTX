@@ -1,6 +1,5 @@
 #include "app/action/application.hpp"
 #include "app/ecs.hpp"
-#include "app/scene/camera.hpp"
 #include "app/services.hpp"
 #include <renderer/renderer.hpp>
 
@@ -14,9 +13,9 @@ namespace VTX::App::Action::Application
 
 	void Resize::execute( const size_t p_width, const size_t p_height )
 	{
-		REG().patch<Scene::Camera>(
-			ECS::getFirstEntityOnlyWithComponents<Scene::Camera>(),
-			[ p_width, p_height ]( Scene::Camera & p_camera )
+		REG().patch<Renderer::Camera>(
+			ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>(),
+			[ p_width, p_height ]( Renderer::Camera & p_camera )
 			{
 				p_camera.screenHeight = p_height;
 				p_camera.screenWidth  = p_width;

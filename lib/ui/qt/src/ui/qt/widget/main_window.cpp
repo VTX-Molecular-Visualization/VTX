@@ -4,9 +4,9 @@
 #include "ui/qt/dialog/progress.hpp"
 #include "ui/qt/dock_widget/color_layouts.hpp"
 #include "ui/qt/dock_widget/console.hpp"
+#include "ui/qt/dock_widget/graphics_configs.hpp"
 #include "ui/qt/dock_widget/inspector.hpp"
 #include "ui/qt/dock_widget/options.hpp"
-#include "ui/qt/dock_widget/render_settings.hpp"
 #include "ui/qt/dock_widget/representations.hpp"
 #include "ui/qt/dock_widget/scene.hpp"
 #include "ui/qt/dock_widget/sequences.hpp"
@@ -96,7 +96,7 @@ namespace VTX::UI::QT::Widget
 		dwScene->raise();
 
 		auto * const dwInspector = createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
-		createDockWidget<DockWidget::RenderSettings>( Qt::RightDockWidgetArea );
+		createDockWidget<DockWidget::GraphicsConfigs>( Qt::RightDockWidgetArea );
 		createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
 		dwInspector->raise();
 

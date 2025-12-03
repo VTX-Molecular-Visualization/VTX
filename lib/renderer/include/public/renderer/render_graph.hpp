@@ -2,7 +2,6 @@
 #define __VTX_RENDERER_RENDER_GRAPH__
 
 #include "context/concept.hpp"
-#include "renderer/settings.hpp"
 #include "scheduler/concept.hpp"
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>

@@ -7,14 +7,14 @@
 #include "bcs/sesdf/sesdf.hpp"
 #endif
 #include "caches.hpp"
+#include "camera.hpp"
+#include "color.hpp"
 #include "context/context_wrapper.hpp"
 #include "passes.hpp"
+#include "proxy/system.hpp"
+#include "proxy/voxels.hpp"
 #include "render_graph.hpp"
-#include "renderer/color.hpp"
-#include "renderer/proxy/camera.hpp"
-#include "renderer/proxy/system.hpp"
-#include "renderer/proxy/voxels.hpp"
-#include "renderer/representation.hpp"
+#include "representation.hpp"
 #include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -100,11 +100,11 @@ namespace VTX::Renderer
 		void removeProxySystem( Proxy::System & p_proxy );
 		void addProxySystems( std::vector<Proxy::System *> & p_proxies );
 		void removeProxySystems( std::vector<Proxy::System *> & p_proxies );
-		void setProxyCamera( Proxy::Camera & p_proxy );
 		void setProxyVoxels( Proxy::Voxels & p_proxy );
 
 		// NEW
-		void setRenderSettings( const RenderSettings & );
+		void setCamera( const Camera & );
+		void setGraphicsConfig( const GraphicsConfig & );
 		void setColorLayout( const Color::Layout & );
 		void setRepresentation( const Representation & );
 
@@ -271,7 +271,6 @@ namespace VTX::Renderer
 		 * @brief All data proxies.
 		 */
 		std::vector<Proxy::System *> _proxiesSystems;
-		Proxy::Camera *				 _proxyCamera = nullptr;
 		Proxy::Voxels *				 _proxyVoxels = nullptr;
 
 		void _addProxySystem( Proxy::System & p_proxy );
@@ -296,7 +295,7 @@ namespace VTX::Renderer
 		std::map<const Proxy::System * const, Cache::Ribbon>		 _cacheRibbons;
 		// std::map<const Proxy::System * const, Cache::SES>			 _cacheSES;
 
-		void _refreshGraph( const RenderSettings & );
+		void _refreshGraph( const GraphicsConfig & );
 
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
 		inline void _refreshDataSystems()

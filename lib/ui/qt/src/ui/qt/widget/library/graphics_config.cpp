@@ -1,13 +1,12 @@
-#include "ui/qt/widget/library/render_settings.hpp"
+#include "ui/qt/widget/library/graphics_config.hpp"
 #include "ui/qt/helper.hpp"
-#include <app/action/render_settings.hpp>
+#include <app/action/graphics_config.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
-	RenderSettings::RenderSettings( QWidget * p_parent ) : BasePresetWidget( p_parent )
+	GraphicsConfig::GraphicsConfig( QWidget * p_parent ) : BasePresetWidget( p_parent )
 	{
 		using namespace Renderer;
-		using namespace VTX::Renderer::Settings;
 
 		setTitle( "Edit render settings" );
 
@@ -125,116 +124,116 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxSelection->addWidget( _colorPickerSelection );
 
 		// Connect widget callbacks.
+		using namespace Renderer;
 		connect(
 			_comboBoxShadingMode,
 			QOverload<int>::of( &QComboBox::currentIndexChanged ),
-			[ this ]( const int p_index )
-			{ _changeValue<E_RENDER_SETTINGS::SHADING_MODE, E_SHADING>( E_SHADING( p_index ) ); }
+			[ this ]( const int p_index ) { _changeValue<SHADING_MODE, E_SHADING>( E_SHADING( p_index ) ); }
 		);
 
 		_colorPickerBackground->onColorChanged += [ this ]( const QColor & p_color )
-		{ _changeValue<E_RENDER_SETTINGS::COLOR_BACKGROUND, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
+		{ _changeValue<COLOR_BACKGROUND, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
 
 		_colorPickerLight->onColorChanged += [ this ]( const QColor & p_color )
-		{ _changeValue<E_RENDER_SETTINGS::COLOR_LIGHT, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
+		{ _changeValue<COLOR_LIGHT, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
 
 		connect(
 			_sliderSpecularFactor,
 			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { _changeValue<E_RENDER_SETTINGS::SPECULAR_FACTOR, float>( p_value ); }
+			[ this ]( const float p_value ) { _changeValue<SPECULAR_FACTOR, float>( p_value ); }
 		);
 
 		connect(
 			_sliderShininess,
 			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { _changeValue<E_RENDER_SETTINGS::SHININESS, float>( p_value ); }
+			[ this ]( const float p_value ) { _changeValue<SHININESS, float>( p_value ); }
 		);
 
 		connect(
 			_sliderToonSteps,
 			&EditableSlider::valueChanged,
-			[ this ]( const uint p_value ) { _changeValue<E_RENDER_SETTINGS::TOON_STEPS, uint>( p_value ); }
+			[ this ]( const uint p_value ) { _changeValue<TOON_STEPS, uint>( p_value ); }
 		);
 
 		connect(
 			_groupboxSSAO,
 			&HideableGroupBox::toggled,
-			[ this ]( const bool p_state ) { _changeValue<E_RENDER_SETTINGS::ACTIVE_SSAO, bool>( p_state ); }
+			[ this ]( const bool p_state ) { _changeValue<ACTIVE_SSAO, bool>( p_state ); }
 		);
 
 		connect(
 			_sliderSSAOIntensity,
 			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { _changeValue<E_RENDER_SETTINGS::SSAO_INTENSITY, float>( p_value ); }
+			[ this ]( const float p_value ) { _changeValue<SSAO_INTENSITY, float>( p_value ); }
 		);
 
 		connect(
 			_sliderBlurSize,
 			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { _changeValue<E_RENDER_SETTINGS::BLUR_SIZE, float>( p_value ); }
+			[ this ]( const float p_value ) { _changeValue<BLUR_SIZE, float>( p_value ); }
 		);
 
 		connect(
 			_groupboxOutline,
 			&HideableGroupBox::toggled,
-			[ this ]( const bool p_state ) { _changeValue<E_RENDER_SETTINGS::ACTIVE_OUTLINE, bool>( p_state ); }
+			[ this ]( const bool p_state ) { _changeValue<ACTIVE_OUTLINE, bool>( p_state ); }
 		);
 
 		_colorPickerOutline->onColorChanged += [ this ]( const QColor & p_color )
-		{ _changeValue<E_RENDER_SETTINGS::COLOR_OUTLINE, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
+		{ _changeValue<COLOR_OUTLINE, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
 
 		connect(
 			_sliderOutlineSensitivity,
 			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { _changeValue<E_RENDER_SETTINGS::OUTLINE_SENSITIVITY, float>( p_value ); }
+			[ this ]( const float p_value ) { _changeValue<OUTLINE_SENSITIVITY, float>( p_value ); }
 		);
 
 		connect(
 			_sliderOutlineThickness,
 			&EditableSlider::valueChanged,
-			[ this ]( const uint p_value ) { _changeValue<E_RENDER_SETTINGS::OUTLINE_THICKNESS, uint>( p_value ); }
+			[ this ]( const uint p_value ) { _changeValue<OUTLINE_THICKNESS, uint>( p_value ); }
 		);
 
 		connect(
 			_groupboxFog,
 			&HideableGroupBox::toggled,
-			[ this ]( const bool p_state ) { _changeValue<E_RENDER_SETTINGS::ACTIVE_FOG, bool>( p_state ); }
+			[ this ]( const bool p_state ) { _changeValue<ACTIVE_FOG, bool>( p_state ); }
 		);
 
 		_colorPickerFog->onColorChanged += [ this ]( const QColor & p_color )
-		{ _changeValue<E_RENDER_SETTINGS::COLOR_FOG, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
+		{ _changeValue<COLOR_FOG, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
 
 		connect(
 			_sliderFogNear,
 			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { _changeValue<E_RENDER_SETTINGS::FOG_NEAR, float>( p_value ); }
+			[ this ]( const float p_value ) { _changeValue<FOG_NEAR, float>( p_value ); }
 		);
 
 		connect(
 			_sliderFogFar,
 			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { _changeValue<E_RENDER_SETTINGS::FOG_FAR, float>( p_value ); }
+			[ this ]( const float p_value ) { _changeValue<FOG_FAR, float>( p_value ); }
 		);
 
 		connect(
 			_sliderFogDensity,
 			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { _changeValue<E_RENDER_SETTINGS::FOG_DENSITY, float>( p_value ); }
+			[ this ]( const float p_value ) { _changeValue<FOG_DENSITY, float>( p_value ); }
 		);
 
 		connect(
 			_groupboxSelection,
 			&HideableGroupBox::toggled,
-			[ this ]( const bool p_state ) { _changeValue<E_RENDER_SETTINGS::ACTIVE_SELECTION, bool>( p_state ); }
+			[ this ]( const bool p_state ) { _changeValue<ACTIVE_SELECTION, bool>( p_state ); }
 		);
 
 		_colorPickerSelection->onColorChanged += [ this ]( const QColor & p_color )
-		{ _changeValue<E_RENDER_SETTINGS::COLOR_SELECTION, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
+		{ _changeValue<COLOR_SELECTION, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
 	}
 
-	void RenderSettings::_update( App::ECS::Entity p_e )
+	void GraphicsConfig::_update( App::ECS::Entity p_e )
 	{
-		auto & preset = App::REG().get<Renderer::RenderSettings>( p_e );
+		auto & preset = App::REG().get<Renderer::GraphicsConfig>( p_e );
 
 		const QSignalBlocker blocker0( _comboBoxShadingMode );
 		const QSignalBlocker blocker1( _colorPickerBackground );
@@ -281,7 +280,7 @@ namespace VTX::UI::QT::Widget::Library
 		_applyLogic( preset );
 	}
 
-	void RenderSettings::_applyLogic( const Renderer::RenderSettings & p_preset )
+	void GraphicsConfig::_applyLogic( const Renderer::GraphicsConfig & p_preset )
 	{
 		using namespace Renderer;
 

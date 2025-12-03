@@ -1,7 +1,7 @@
 #include "app/pass/camera_updater.hpp"
 #include "app/pass/controller/animation.hpp"
-#include "app/scene/camera.hpp"
 #include "app/services.hpp"
+#include <renderer/camera.hpp>
 #include <renderer/proxy/voxels.hpp>
 #include <renderer/renderer.hpp>
 #include <util/math.hpp>
@@ -15,15 +15,16 @@ namespace VTX::App::Pass
 
 		// Update functions.
 		reg.on_update<Util::Math::Transform>().connect<&CameraUpdater::_onUpdate>( this );
-		reg.on_update<Scene::Camera>().connect<&CameraUpdater::_onUpdate>( this );
+		reg.on_update<Renderer::Camera>().connect<&CameraUpdater::_onUpdate>( this );
 
 		HUB().connect<Events::CameraAnimationEnd, &CameraUpdater::_onCameraAnimationEnded>( this );
 
 		auto & transform = reg.get<Util::Math::Transform>( p_ent );
-		auto & camera	 = reg.get<Scene::Camera>( p_ent );
+		auto & camera	 = reg.get<Renderer::Camera>( p_ent );
 
 		transform.setPosition( { 0, 0, 100 } );
 
+		/*
 		_cameraProxy = std::make_unique<Renderer::Proxy::Camera>(
 			&_viewMatrix,
 			&_projectionMatrix,
@@ -33,9 +34,11 @@ namespace VTX::App::Pass
 			*camera.far,
 			*camera.projection == Scene::Camera::PROJECTION::PERSPECTIVE
 		);
+		*/
 
-		RENDERER().setProxyCamera( *_cameraProxy );
+		// RENDERER().setProxyCamera( *_cameraProxy );
 
+		// TODO: remove after debug.
 		static std::vector<Vec3f> mins, maxs;
 		for ( float x = -100.f; x < 100.f; x += 50.f )
 		{
@@ -62,7 +65,7 @@ namespace VTX::App::Pass
 		}
 
 		auto & transform = p_r.get<Util::Math::Transform>( p_e );
-		auto & camera	 = p_r.get<Scene::Camera>( p_e );
+		auto & camera	 = p_r.get<Renderer::Camera>( p_e );
 
 		//_transform	= transform.computeMatrix();
 		_viewMatrix = Util::Math::lookAt(
@@ -70,8 +73,8 @@ namespace VTX::App::Pass
 		);
 		_projectionMatrix = camera.computeProjectionMatrix();
 
-		_cameraProxy->onMatrixView();
-		_cameraProxy->onMatrixProjection();
+		//_cameraProxy->onMatrixView();
+		//_cameraProxy->onMatrixProjection();
 	}
 
 	void CameraUpdater::_onCameraAnimationEnded( const Events::CameraAnimationEnd & )

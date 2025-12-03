@@ -10,8 +10,8 @@
 #include "app/services.hpp"
 #include <optional>
 #include <renderer/color.hpp>
+#include <renderer/graphics_config.hpp>
 #include <renderer/representation.hpp>
-#include <renderer/settings.hpp>
 #include <util/event_hub.hpp>
 #include <util/exceptions.hpp>
 
@@ -198,9 +198,12 @@ namespace VTX::App::Action::Preset
 	};
 
 	template<>
-	struct CreateDefault<Renderer::RenderSettings>
+	struct CreateDefault<Renderer::GraphicsConfig>
 	{
-		void execute() { ACTION().execute<Add<Renderer::RenderSettings>>( "Default" ); }
+		void execute()
+		{
+			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Default", Renderer::GraphicsConfigs::DEFAULT );
+		}
 	};
 } // namespace VTX::App::Action::Preset
 #endif

@@ -109,10 +109,7 @@ namespace VTX::UI::QT::Action
 			icon	 = "sprite/camera/orthographic.png";
 			shortcut = "Alt+O";
 			trigger	 = []()
-			{
-				App::ACTION()
-					.execute<App::Action::Camera::SetProjectionMode<App::Scene::Camera::PROJECTION::ORTHOGRAPHIC>>();
-			};
+			{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>(); };
 		}
 
 		void Orthographic::connect() const
@@ -120,11 +117,9 @@ namespace VTX::UI::QT::Action
 			using namespace App;
 
 			QAction * const qAction = Application::getAction<Orthographic>();
-			HUB()
-				.connect<
-					App::Events::CameraProjectionChange<static_cast<int>( Scene::Camera::PROJECTION::ORTHOGRAPHIC )>>(
-					[ qAction ]() { qAction->setChecked( true ); }
-				);
+			HUB().connect<App::Events::CameraProjectionChange<static_cast<int>( Renderer::PROJECTION::ORTHOGRAPHIC )>>(
+				[ qAction ]() { qAction->setChecked( true ); }
+			);
 		}
 
 		Perspective::Perspective()
@@ -135,10 +130,7 @@ namespace VTX::UI::QT::Action
 			icon	 = "sprite/camera/perspective.png";
 			shortcut = "Alt+P";
 			trigger	 = []()
-			{
-				App::ACTION()
-					.execute<App::Action::Camera::SetProjectionMode<App::Scene::Camera::PROJECTION::PERSPECTIVE>>();
-			};
+			{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>(); };
 		}
 
 		void Perspective::connect() const
@@ -146,7 +138,7 @@ namespace VTX::UI::QT::Action
 			using namespace App;
 
 			QAction * const qAction = Application::getAction<Perspective>();
-			HUB().connect<Events::CameraProjectionChange<static_cast<int>( Scene::Camera::PROJECTION::PERSPECTIVE )>>(
+			HUB().connect<Events::CameraProjectionChange<static_cast<int>( Renderer::PROJECTION::PERSPECTIVE )>>(
 				[ qAction ]() { qAction->setChecked( true ); }
 			);
 		}
