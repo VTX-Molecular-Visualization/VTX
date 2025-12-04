@@ -103,7 +103,8 @@ namespace VTX::Renderer
 		void setProxyVoxels( Proxy::Voxels & p_proxy );
 
 		// NEW
-		void setCamera( const Camera & );
+		void setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );
+
 		void setGraphicsConfig( const GraphicsConfig & );
 		void setColorLayout( const Color::Layout & );
 		void setRepresentation( const Representation & );

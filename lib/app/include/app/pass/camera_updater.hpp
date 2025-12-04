@@ -21,10 +21,6 @@ namespace VTX::App::Pass
 	  private:
 		const ECS::Entity _entity;
 
-		// Mat4f _transform		= MAT4F_ID;
-		Mat4f _viewMatrix		= MAT4F_ID;
-		Mat4f _projectionMatrix = MAT4F_ID;
-
 		/**
 		 * @brief On update.
 		 */

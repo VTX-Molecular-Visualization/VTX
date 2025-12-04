@@ -38,12 +38,13 @@ namespace VTX::App::Pass::Controller
 {
 	Freefly::Freefly( const ECS::Entity & p_ent ) : _cameraEntity( p_ent )
 	{
-		auto & settings		= SETTINGS();
-		_translationSpeed	= settings.getValuePtr<float>( Settings::Controller::TRANSLATION_SPEED_KEY );
-		_accelerationFactor = settings.getValuePtr<float>( Settings::Controller::ACCELERATION_FACTOR_KEY );
-		_decelerationFactor = settings.getValuePtr<float>( Settings::Controller::DECELERATION_FACTOR_KEY );
-		_rotationSpeed		= settings.getValuePtr<float>( Settings::Controller::ROTATION_SPEED_KEY );
-		_invertY			= settings.getValuePtr<bool>( Settings::Controller::INVERT_Y_KEY );
+		// TODO: use setting object?
+		auto & settings	   = SETTINGS();
+		translationSpeed   = settings.getValue<float>( Settings::Controller::TRANSLATION_SPEED_KEY );
+		accelerationFactor = settings.getValue<float>( Settings::Controller::ACCELERATION_FACTOR_KEY );
+		decelerationFactor = settings.getValue<float>( Settings::Controller::DECELERATION_FACTOR_KEY );
+		rotationSpeed	   = settings.getValue<float>( Settings::Controller::ROTATION_SPEED_KEY );
+		invertY			   = settings.getValue<bool>( Settings::Controller::INVERT_Y_KEY );
 	}
 
 	void Freefly::update( const float p_deltaTime, const float p_elapsedTime )
@@ -58,15 +59,15 @@ namespace VTX::App::Pass::Controller
 		if ( input.isMouseLeftPressed() )
 		{
 			localRotation = Vec3f(
-				-*_rotationSpeed * deltaVelocityInput.y * ( *_invertY ? -1.f : 1.f ),
-				-*_rotationSpeed * deltaVelocityInput.x,
+				-rotationSpeed * deltaVelocityInput.y * ( invertY ? -1.f : 1.f ),
+				-rotationSpeed * deltaVelocityInput.x,
 				0.f
 			);
 		}
 		float rollRotation = 0.f;
 		if ( input.isMouseRightPressed() )
 		{
-			rollRotation = -*_rotationSpeed * deltaVelocityInput.x;
+			rollRotation = -rotationSpeed * deltaVelocityInput.x;
 		}
 
 		// Translation.
@@ -98,16 +99,16 @@ namespace VTX::App::Pass::Controller
 
 		if ( translation != VEC3F_ZERO )
 		{
-			translation *= *_translationSpeed;
+			translation *= translationSpeed;
 			translation *= p_deltaTime * 1e-3f;
 
 			if ( input.isModifierExclusive( Input::Modifier::Shift ) )
 			{
-				translation *= *_accelerationFactor;
+				translation *= accelerationFactor;
 			}
 			if ( input.isModifierExclusive( Input::Modifier::Alt ) )
 			{
-				translation /= *_decelerationFactor;
+				translation /= decelerationFactor;
 			}
 		}
 

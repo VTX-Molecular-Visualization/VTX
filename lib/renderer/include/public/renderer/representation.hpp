@@ -5,7 +5,7 @@
 
 namespace VTX::Renderer
 {
-	enum E_REPRESENTATION_VALUES // Not a class to avoid static_cast<int>.
+	enum struct E_REPRESENTATION_VALUES // Not a class to avoid static_cast<int>.
 	{
 		HAS_SPHERE,
 		RADIUS_SPHERE_FIXED,

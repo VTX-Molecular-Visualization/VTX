@@ -63,7 +63,7 @@ namespace VTX::App::Action::IO
 			const auto &	   camera = ECS::getFirstComponent<Renderer::Camera>();
 			std::vector<uchar> image;
 
-			RENDERER().snapshot( image, _width, _height, *camera.fov, *camera.near, *camera.far );
+			RENDERER().snapshot( image, _width, _height, camera.fov, camera.near, camera.far );
 			FilePath path = Util::Image::write( _path, _format, _width, _height, image.data() );
 
 			VTX_INFO( "Image saved: {}", path.string() );

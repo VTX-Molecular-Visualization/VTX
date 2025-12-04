@@ -77,6 +77,7 @@ namespace VTX::App
 
 		// Load settings.
 		Settings::initSettings();
+		auto & settings = SETTINGS();
 
 		// Scene.
 		_scene = _registry.create();

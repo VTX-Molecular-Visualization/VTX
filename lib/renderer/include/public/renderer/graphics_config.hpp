@@ -6,7 +6,7 @@
 namespace VTX::Renderer
 {
 
-	enum E_GRAPHICS_CONFIG_VALUES // Not a class to avoid static_cast<int>.
+	enum struct E_GRAPHICS_CONFIG_VALUES // Not a class to avoid static_cast<int>.
 	{
 		ACTIVE_SSAO,
 		SSAO_INTENSITY,

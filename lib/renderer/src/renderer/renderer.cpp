@@ -684,26 +684,36 @@ namespace VTX::Renderer
 			_refreshDataModels();
 		};
 
-		p_proxy.onMatrixProjection +=
-			[ this, &p_proxy ]() { setValue( *p_proxy.matrixProjection, "CameraMatrixProjection" ); };
 
-		p_proxy.onCameraPosition +=
-			[ this, &p_proxy ]( const Vec3f & p_position ) { setValue( p_position, "CameraPosition" ); };
-
-		p_proxy.onCameraNearFar += [ this, &p_proxy ]( const float p_near, const float p_far )
-		{ setValue( Vec4f( p_near * p_far, p_far, p_far - p_near, p_near ), "CameraClipInfos" ); };
-
-		p_proxy.onMousePosition += [ this, &p_proxy ]( const Vec2i & p_position )
-		{
-			// setValue( Vec2i { p_position.x, height - p_position.y }, "Mouse position" );
-		};
-
-		p_proxy.onPerspective += [ this, &p_proxy ]( const bool p_perspective )
-		{ setValue( uint( p_perspective ), "CameraIsPerspective" ); };
 	}
 	*/
 
-	void Renderer::setCamera( const Camera & p_camera ) {}
+	void Renderer::setCamera(
+		const Camera & p_camera,
+		const Vec3f &  p_position,
+		const Mat4f &  p_matView,
+		const Mat4f &  p_matProj
+	)
+	{
+		const Mat4f matrixViewInv	   = Util::Math::inverse( p_matView );
+		const Mat4f matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
+
+		BinaryBuffer buffer;
+		buffer.write( p_matView );
+		buffer.write( p_matProj );
+		buffer.write( matrixViewInv );
+		buffer.write( matrixViewInvTrans );
+		buffer.write( p_position );
+		buffer.write(
+			Vec4f( p_camera.near * p_camera.far, p_camera.far, p_camera.far - p_camera.near, p_camera.near )
+		);
+		buffer.write( Vec2i( width(), height() ) );
+		buffer.write( Vec2i() );
+		buffer.write( uint( p_camera.projection == PROJECTION::PERSPECTIVE ) );
+		buffer.close();
+
+		_context.set( buffer, "Camera" );
+	}
 
 	void Renderer::setColorLayout( const Color::Layout & p_layout )
 	{

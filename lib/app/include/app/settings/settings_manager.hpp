@@ -30,12 +30,6 @@ namespace VTX::App::Settings
 		void			 reset() override { value = defaultValue; }
 	};
 
-	template<typename T>
-	using SettingRef = const T &;
-
-	template<typename T>
-	using SettingPtr = const T * const;
-
 	/**
 	 * @brief Manage all application settings (except UI).
 	 */

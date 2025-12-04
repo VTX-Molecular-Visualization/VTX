@@ -49,13 +49,13 @@ namespace VTX::App::Pass::Controller
 		/**
 		 * @brief Controller settings.
 		 */
-		const float * _translationSpeed;
-		const float * _accelerationFactor;
-		const float * _decelerationFactor;
-		const float * _rotationSpeed;
-		const bool *  _invertY;
-		const bool *  _elasticityActive;
-		const float * _elasticityFactor;
+		float translationSpeed;
+		float accelerationFactor;
+		float decelerationFactor;
+		float rotationSpeed;
+		bool  invertY;
+		bool  elasticityActive;
+		float elasticityFactor;
 
 		/**
 		 * @brief Update velocity from elasticity.

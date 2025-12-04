@@ -1,6 +1,8 @@
 #include "app/pass/camera_updater.hpp"
 #include "app/pass/controller/animation.hpp"
 #include "app/services.hpp"
+#include "app/settings/settings.hpp"
+#include "app/settings/settings_manager.hpp"
 #include <renderer/camera.hpp>
 #include <renderer/proxy/voxels.hpp>
 #include <renderer/renderer.hpp>
@@ -11,7 +13,8 @@ namespace VTX::App::Pass
 {
 	CameraUpdater::CameraUpdater( const ECS::Entity & p_ent ) : _entity( p_ent )
 	{
-		auto & reg = REG();
+		auto & reg		= REG();
+		auto & settings = SETTINGS();
 
 		// Update functions.
 		reg.on_update<Util::Math::Transform>().connect<&CameraUpdater::_onUpdate>( this );
@@ -22,21 +25,20 @@ namespace VTX::App::Pass
 		auto & transform = reg.get<Util::Math::Transform>( p_ent );
 		auto & camera	 = reg.get<Renderer::Camera>( p_ent );
 
+		// tmp.
 		transform.setPosition( { 0, 0, 100 } );
 
-		/*
-		_cameraProxy = std::make_unique<Renderer::Proxy::Camera>(
-			&_viewMatrix,
-			&_projectionMatrix,
-			transform.getPosition(),
-			Vec2i( 0, 0 ),
-			*camera.near,
-			*camera.far,
-			*camera.projection == Scene::Camera::PROJECTION::PERSPECTIVE
+		// Connect with settings.
+		reg.patch<Renderer::Camera>(
+			p_ent,
+			[ & ]( Renderer::Camera & p_camera )
+			{
+				p_camera.near		= settings.getValue<float>( Settings::Camera::NEAR_CLIP_KEY );
+				p_camera.fov		= settings.getValue<float>( Settings::Camera::FOV_KEY );
+				p_camera.projection = settings.getValue<Renderer::PROJECTION>( Settings::Camera::PROJECTION_KEY );
+				p_camera.far		= settings.getValue<float>( Settings::Camera::FAR_CLIP_KEY );
+			}
 		);
-		*/
-
-		// RENDERER().setProxyCamera( *_cameraProxy );
 
 		// TODO: remove after debug.
 		static std::vector<Vec3f> mins, maxs;
@@ -67,14 +69,12 @@ namespace VTX::App::Pass
 		auto & transform = p_r.get<Util::Math::Transform>( p_e );
 		auto & camera	 = p_r.get<Renderer::Camera>( p_e );
 
-		//_transform	= transform.computeMatrix();
-		_viewMatrix = Util::Math::lookAt(
+		const Mat4f viewMatrix = Util::Math::lookAt(
 			transform.getPosition(), transform.getPosition() + transform.getFront(), transform.getUp()
 		);
-		_projectionMatrix = camera.computeProjectionMatrix();
+		const Mat4f projectionMatrix = camera.computeProjectionMatrix();
 
-		//_cameraProxy->onMatrixView();
-		//_cameraProxy->onMatrixProjection();
+		RENDERER().setCamera( camera, transform.getPosition(), viewMatrix, projectionMatrix );
 	}
 
 	void CameraUpdater::_onCameraAnimationEnded( const Events::CameraAnimationEnd & )

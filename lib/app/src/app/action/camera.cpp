@@ -57,7 +57,7 @@ namespace VTX::App::Action::Camera
 			entCamera,
 			[ & ]( Util::Math::Transform & p_transform )
 			{
-				Vec3f position = _computeCameraOrientPosition( p_transform.getFront(), *camera.fov, aabb );
+				Vec3f position = _computeCameraOrientPosition( p_transform.getFront(), camera.fov, aabb );
 
 				p_transform.setPosition( position );
 				p_transform.setRotation( QUATF_ID );
@@ -90,7 +90,7 @@ namespace VTX::App::Action::Camera
 		auto [ _, camera, transform ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
 		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(
-			_computeCameraOrientPosition( transform.getFront(), *camera.fov, p_target ), transform.getRotation()
+			_computeCameraOrientPosition( transform.getFront(), camera.fov, p_target ), transform.getRotation()
 		);
 	}
 

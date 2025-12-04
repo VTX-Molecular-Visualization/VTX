@@ -37,6 +37,7 @@ namespace VTX::App::Action::Controller
 
 			// Add controller pass.
 			PASS().addPass<T>( entity );
+
 			HUB().trigger<Events::CameraControllerChange<T>>();
 		}
 	};

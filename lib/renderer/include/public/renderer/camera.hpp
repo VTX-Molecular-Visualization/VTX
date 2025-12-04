@@ -5,6 +5,9 @@
 
 namespace VTX::Renderer
 {
+	/**
+	 * @brief Projection types.
+	 */
 	enum struct PROJECTION
 	{
 		PERSPECTIVE,
@@ -13,7 +16,18 @@ namespace VTX::Renderer
 		COUNT
 
 	};
-	// Default values.
+
+	enum struct E_CAMERA_VALUES // Not a class to avoid static_cast<int>.
+	{
+		NEAR_CLIP,
+		FAR_CLIP,
+		FOV,
+		PROJECTION
+	};
+
+	/**
+	 * @brief Default values.
+	 */
 	constexpr float NEAR_CLIP_DEFAULT = 1e-1f;
 	constexpr float NEAR_CLIP_MIN	  = 1e-1f;
 	constexpr float NEAR_CLIP_MAX	  = 1e4f;
@@ -31,20 +45,16 @@ namespace VTX::Renderer
 	/**
 	 * @brief Defines a camera.
 	 */
-	class Camera
+	struct Camera
 	{
 	  public:
 		/**
-		 * @brief Projection types.
-		 */
-
-		/**
 		 * @brief Camera settings.
 		 */
-		const float *	   near;
-		const float *	   far;
-		const float *	   fov;
-		const PROJECTION * projection;
+		float	   near;
+		float	   far;
+		float	   fov;
+		PROJECTION projection;
 
 		/**
 		 * @brief Screen size.
@@ -59,12 +69,12 @@ namespace VTX::Renderer
 		{
 			using namespace Util;
 
-			switch ( *projection )
+			switch ( projection )
 			{
 			case PROJECTION::PERSPECTIVE:
 			{
 				return Math::perspective(
-					Math::radians( *fov ), float( screenWidth ) / float( screenHeight ), *near, *far
+					Math::radians( fov ), float( screenWidth ) / float( screenHeight ), near, far
 				);
 			}
 
@@ -72,7 +82,7 @@ namespace VTX::Renderer
 			{
 				const float halfHeight = screenHeight * 0.5f;
 				const float halfWidth  = screenWidth * 0.5f;
-				return Math::ortho( -halfWidth, halfWidth, -halfHeight, halfHeight, *near, *far );
+				return Math::ortho( -halfWidth, halfWidth, -halfHeight, halfHeight, near, far );
 			}
 
 			default:
