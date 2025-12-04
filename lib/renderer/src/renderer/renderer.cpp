@@ -713,27 +713,15 @@ namespace VTX::Renderer
 		buffer.close();
 
 		_context.set( buffer, "Camera" );
+
+		setNeedUpdate( true );
 	}
 
 	void Renderer::setColorLayout( const Color::Layout & p_layout )
 	{
 		_context.set( p_layout.colors, "ColorLayout" );
-		setNeedUpdate( true );
 
-		/*
-		p_proxy.onChangeAll += [ this, &p_proxy ]()
-		{
-			_context.set( p_proxy.layout.colors, "ColorLayout" );
-			setNeedUpdate( true );
-		};
-		p_proxy.onChange += [ this, &p_proxy ]( const size_t p_index )
-		{
-			_context.setSub(
-				std::vector<Util::Color::Rgba> { p_proxy.layout.colors[ p_index ] }, "ColorLayout", p_index
-			);
-			setNeedUpdate( true );
-		};
-		*/
+		setNeedUpdate( true );
 	}
 
 	void Renderer::setGraphicsConfig( const GraphicsConfig & p_config )
