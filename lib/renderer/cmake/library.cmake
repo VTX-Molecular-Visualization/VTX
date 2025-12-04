@@ -67,18 +67,17 @@ vtx_configure_target(vtx_renderer_test)
 
 if (NOT DEFINED _VTX_RENDERER_CONAN)
 	target_link_libraries(vtx_renderer PRIVATE vtx_util)
-	target_link_libraries(vtx_renderer PRIVATE vtx_core)
-	target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer)
+	target_link_libraries(vtx_renderer PRIVATE vtx_core)	
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_util)
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_core)
 else()
 	target_link_libraries(vtx_renderer PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_renderer PRIVATE vtx_core::vtx_core)
-	target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer::vtx_renderer)
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_core::vtx_core)
 endif()
 
+target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer)
 target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
 
 vtx_copy_registered_data(vtx_renderer) # allow declared files to be copied on build
