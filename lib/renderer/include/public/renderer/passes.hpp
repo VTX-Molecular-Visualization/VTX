@@ -12,13 +12,13 @@
 namespace VTX::Renderer
 {
 	// Attachments.
-	inline const Attachment imageRGBA32UI { E_FORMAT::RGBA32UI };
-	inline const Attachment imageRGBA16F { E_FORMAT::RGBA16F };
-	inline const Attachment imageRG32UI { E_FORMAT::RG32UI };
-	inline const Attachment imageD32F { E_FORMAT::DEPTH_COMPONENT32F };
-	inline const Attachment imageR32F { E_FORMAT::R32F };
-	inline const Attachment imageR16F { E_FORMAT::R16F };
-	inline const Attachment imageR8 { E_FORMAT::R8 };
+	constexpr Attachment imageRGBA32UI { E_FORMAT::RGBA32UI };
+	constexpr Attachment imageRGBA16F { E_FORMAT::RGBA16F };
+	constexpr Attachment imageRG32UI { E_FORMAT::RG32UI };
+	constexpr Attachment imageD32F { E_FORMAT::DEPTH_COMPONENT32F };
+	constexpr Attachment imageR32F { E_FORMAT::R32F };
+	constexpr Attachment imageR16F { E_FORMAT::R16F };
+	constexpr Attachment imageR8 { E_FORMAT::R8 };
 
 	// BufferDraw.
 	// TODO: compress all.

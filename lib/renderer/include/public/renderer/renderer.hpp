@@ -159,7 +159,7 @@ namespace VTX::Renderer
 
 		// TODO: facto geometries with RL, DR and cache?
 		// TODO: facto proxies in enumed collection?
-
+		// OLD REMOVE
 		bool showAtoms	 = true;
 		bool showBonds	 = true;
 		bool showRibbons = true;
@@ -179,6 +179,7 @@ namespace VTX::Renderer
 		 * @brief Current ranges to draw.
 		 */
 		// TODO: test render time with/without ranges/multidraw.
+		// OLD REMOVE, MOVE TO GEOMETRY.
 		using RangeList = Util::Math::RangeList<size_t>;
 		RangeList drawRangeSpheresRL;
 		RangeList drawRangeCylindersRL;

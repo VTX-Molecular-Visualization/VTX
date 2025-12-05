@@ -51,10 +51,11 @@ namespace VTX::App::Action::Camera
 
 			reg.patch<Renderer::Camera>(
 				entity,
-				[]( Renderer::Camera & c )
+				[]( Renderer::Camera & )
 				{
 					auto & settings = SETTINGS();
 					settings.setValue<int>( Settings::Camera::PROJECTION_KEY, int( P ) );
+					// TODO: trigger update from setting update.
 				}
 			);
 

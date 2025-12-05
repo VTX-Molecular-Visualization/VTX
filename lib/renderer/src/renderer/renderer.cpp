@@ -2,6 +2,10 @@
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/default.hpp"
 #include "renderer/context/opengl_45.hpp"
+#include "renderer/geometry/cylinder.hpp"
+#include "renderer/geometry/ribbon.hpp"
+#include "renderer/geometry/sphere.hpp"
+#include "renderer/geometry/voxel.hpp"
 #include "renderer/scheduler/depth_first_search.hpp"
 #include <execution>
 #include <util/math.hpp>
@@ -112,9 +116,6 @@ namespace VTX::Renderer
 
 		_width	= p_width;
 		_height = p_height;
-
-		Vec2i size = { p_width, p_height };
-		setValue( size, "CameraResolution" );
 
 		_context.resize( _graph.getRenderQueue(), p_width, p_height );
 
@@ -534,9 +535,27 @@ namespace VTX::Renderer
 
 #pragma region Proxy representations
 
-	void Renderer::_applyRepresentationLogic( const Representation & p_representation )
+	void Renderer::setRepresentation( const Representation & p_representation )
 	{
-		using namespace Proxy;
+		BinaryBuffer buffer;
+		buffer.write( p_representation.radiusSphereFixed );
+		buffer.write( p_representation.radiusSphereAdd );
+		buffer.write( uint( p_representation.isRadiusSphereFixed ) );
+		buffer.write( p_representation.radiusCylinder );
+		buffer.write( uint( p_representation.cylinderColorBlending ) );
+		buffer.write( uint( p_representation.ribbonColorBlending ) );
+		buffer.write( p_representation.sesProbeRadius );
+		buffer.close();
+
+		_context.set( buffer, "Representations" );
+
+		setNeedUpdate( true );
+
+		// Aply logic.
+		showAtoms	= p_representation.hasSphere;
+		showBonds	= p_representation.hasCylinder;
+		showRibbons = p_representation.hasRibbon;
+		showSES		= p_representation.hasSes;
 
 		// Asked SES, hide all others.
 		if ( showSES )
@@ -590,103 +609,9 @@ namespace VTX::Renderer
 			setValue( uint( true ), "RepresentationsIsSphereRadiusFixed" );
 			setValue( cylinderRadius, "RepresentationsSphereRadiusFixed" );
 		}
-
-		setNeedUpdate( true );
-	}
-
-	void Renderer::setRepresentation( const Representation & p_representation )
-	{
-		auto _setAllFun = [ this, p_representation ]()
-		{
-			BinaryBuffer buffer;
-			buffer.write( p_representation.radiusSphereFixed );
-			buffer.write( p_representation.radiusSphereAdd );
-			buffer.write( uint( p_representation.isRadiusSphereFixed ) );
-			buffer.write( p_representation.radiusCylinder );
-			buffer.write( uint( p_representation.cylinderColorBlending ) );
-			buffer.write( uint( p_representation.ribbonColorBlending ) );
-			buffer.write( p_representation.sesProbeRadius );
-			buffer.close();
-
-			_context.set( buffer, "Representations" );
-
-			showAtoms	= p_representation.hasSphere;
-			showBonds	= p_representation.hasCylinder;
-			showRibbons = p_representation.hasRibbon;
-			showSES		= p_representation.hasSes;
-			_applyRepresentationLogic( p_representation );
-		};
-
-		_setAllFun();
-
-		// Callbacks.
-		/*
-		p_proxy.getCallback<E_REPRESENTATION_VALUES::HAS_SPHERE>() += [ _setAllFun ]() { _setAllFun(); };
-		p_proxy.getCallback<E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED>() += [ _setAllFun ]() { _setAllFun(); };
-		p_proxy.getCallback<E_REPRESENTATION_VALUES::RADIUS_SPHERE_FIXED>() += [ _setAllFun ]() { _setAllFun(); };
-		p_proxy.getCallback<E_REPRESENTATION_VALUES::RADIUS_SPHERE_ADD>() += [ _setAllFun ]() { _setAllFun(); };
-		p_proxy.getCallback<E_REPRESENTATION_VALUES::HAS_CYLINDER>() += [ _setAllFun ]() { _setAllFun(); };
-		p_proxy.getCallback<E_REPRESENTATION_VALUES::RADIUS_CYLINDER>() += [ _setAllFun ]() { _setAllFun(); };
-		p_proxy.getCallback<E_REPRESENTATION_VALUES::CYLINDER_COLOR_BLENDING>() += [ _setAllFun ]() { _setAllFun(); };
-		p_proxy.getCallback<E_REPRESENTATION_VALUES::HAS_RIBBON>() += [ _setAllFun ]() { _setAllFun(); };
-		p_proxy.getCallback<E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING>() += [ _setAllFun ]() { _setAllFun(); };
-		p_proxy.getCallback<E_REPRESENTATION_VALUES::HAS_SES>() += [ _setAllFun ]() { _setAllFun(); };
-		*/
-
-		// TODO: remove useless primitives with multi calls.
-		// TODO: compute ss if needed
-		// TODO: delete others ss from cache?
-
-		setNeedUpdate( true );
 	}
 
 #pragma endregion Proxy representations
-
-	/*
-	void Renderer::setProxyCamera( Proxy::Camera & p_proxy )
-	{
-		assert( p_proxy.matrixView );
-		assert( p_proxy.matrixProjection );
-
-		_proxyCamera = &p_proxy;
-
-		const Mat4f matrixViewInv	   = Util::Math::inverse( *p_proxy.matrixView );
-		const Mat4f matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
-
-		BinaryBuffer buffer;
-		buffer.write( *p_proxy.matrixView );
-		buffer.write( *p_proxy.matrixProjection );
-		buffer.write( matrixViewInv );
-		buffer.write( matrixViewInvTrans );
-		buffer.write( p_proxy.cameraPosition );
-		buffer.write( Vec4f(
-			p_proxy.cameraNear * p_proxy.cameraFar,
-			p_proxy.cameraFar,
-			p_proxy.cameraFar - p_proxy.cameraNear,
-			p_proxy.cameraNear
-		) );
-		buffer.write( Vec2i( width(), height() ) );
-		buffer.write( p_proxy.mousePosition );
-		buffer.write( uint( p_proxy.isPerspective ) );
-		buffer.close();
-
-		_context.set( buffer, "Camera" );
-
-		p_proxy.onMatrixView += [ this, &p_proxy ]()
-		{
-			setValue( *p_proxy.matrixView, "CameraMatrixView" );
-
-			const Mat4f matrixViewInv = Util::Math::inverse( *p_proxy.matrixView );
-			setValue( matrixViewInv, "CameraMatrixViewInv" );
-			const Mat4f matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
-			setValue( matrixViewInvTrans, "CameraMatrixViewInvTrans" );
-
-			_refreshDataModels();
-		};
-
-
-	}
-	*/
 
 	void Renderer::setCamera(
 		const Camera & p_camera,
