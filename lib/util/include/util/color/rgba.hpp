@@ -2,6 +2,7 @@
 #define __VTX_UTIL_COLOR_RGBA__
 
 #include "util/types.hpp"
+#include <cassert>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -9,184 +10,218 @@
 
 namespace VTX::Util::Color
 {
-	class Rgba : public Vec4f
+	/**
+	 * @brief Color RGBA (glm::vec4 wrapper).
+	 */
+	class Rgba
 	{
 	  public:
-		Rgba() = default;
-		Rgba( const float p_r, const float p_g, const float p_b, const float p_a ) : Vec4f( p_r, p_g, p_b, p_a ) {}
-		Rgba( const float p_r, const float p_g, const float p_b ) : Vec4f( p_r, p_g, p_b, 1.f ) {}
-		Rgba( const int p_r, const int p_g, const int p_b, const int p_a ) :
-			Vec4f( p_r / 255.f, p_g / 255.f, p_b / 255.f, p_a / 255.f )
+		constexpr Rgba() = default;
+
+		constexpr Rgba( float p_r, float p_g, float p_b, float p_a ) : _v( p_r, p_g, p_b, p_a ) {}
+
+		constexpr Rgba( float p_r, float p_g, float p_b ) : _v( p_r, p_g, p_b, 1.f ) {}
+
+		constexpr Rgba( int p_r, int p_g, int p_b, int p_a ) : _v( p_r / 255.f, p_g / 255.f, p_b / 255.f, p_a / 255.f )
 		{
 		}
-		Rgba( const int p_r, const int p_g, const int p_b ) : Vec4f( p_r / 255.f, p_g / 255.f, p_b / 255.f, 1.f ) {}
-		Rgba( const Rgba & p_c ) : Vec4f( p_c.x, p_c.y, p_c.z, p_c.w ) {}
+
+		constexpr Rgba( int p_r, int p_g, int p_b ) : _v( p_r / 255.f, p_g / 255.f, p_b / 255.f, 1.f ) {}
+
+		constexpr Rgba( const Rgba & ) = default;
+
 		explicit Rgba( const std::vector<float> & p_c )
 		{
 			assert( p_c.size() == 4 );
-			x = p_c[ 0 ];
-			y = p_c[ 1 ];
-			z = p_c[ 2 ];
-			w = p_c[ 3 ];
+			_v.x = p_c[ 0 ];
+			_v.y = p_c[ 1 ];
+			_v.z = p_c[ 2 ];
+			_v.w = p_c[ 3 ];
 		}
 
-		inline std::vector<float> toStdVector() const { return { x, y, z }; }
-		inline std::string		  toHexaString() const
+		constexpr explicit Rgba( const Vec4f & p_v ) : _v( p_v ) {}
+
+		constexpr Vec4f &		vec() { return _v; }
+		constexpr const Vec4f & vec() const { return _v; }
+
+		constexpr operator Vec4f &() { return _v; }
+		constexpr operator const Vec4f &() const { return _v; }
+
+		inline std::vector<float> toStdVector() const { return { _v.x, _v.y, _v.z }; }
+
+		inline std::string toHexaString() const
 		{
-			std::stringstream stringstream;
+			std::stringstream ss;
+			ss << "#";
+			setSingleChannelHexaInStream( _v.x, ss );
+			setSingleChannelHexaInStream( _v.y, ss );
+			setSingleChannelHexaInStream( _v.z, ss );
+			return ss.str();
+		}
 
-			stringstream << "#";
-			setSingleChannelHexaInStream( x, stringstream );
-			setSingleChannelHexaInStream( y, stringstream );
-			setSingleChannelHexaInStream( z, stringstream );
-
-			return stringstream.str();
-		};
 		inline std::string toHexaStringAlpha() const
 		{
-			std::stringstream stringstream;
-
-			stringstream << "#";
-			setSingleChannelHexaInStream( x, stringstream );
-			setSingleChannelHexaInStream( y, stringstream );
-			setSingleChannelHexaInStream( z, stringstream );
-			setSingleChannelHexaInStream( w, stringstream );
-
-			return stringstream.str();
-		};
-
-		inline void setSingleChannelHexaInStream( const float p_channelValue, std::stringstream & p_stream ) const
-		{
-			p_stream << std::hex << std::setw( 2 ) << std::setfill( '0' ) << (int)( p_channelValue * 255 );
+			std::stringstream ss;
+			ss << "#";
+			setSingleChannelHexaInStream( _v.x, ss );
+			setSingleChannelHexaInStream( _v.y, ss );
+			setSingleChannelHexaInStream( _v.z, ss );
+			setSingleChannelHexaInStream( _v.w, ss );
+			return ss.str();
 		}
 
-		inline Rgba & operator=( const Rgba & p_c )
+		inline void setSingleChannelHexaInStream( float v, std::stringstream & ss ) const
 		{
-			x = p_c.x;
-			y = p_c.y;
-			z = p_c.z;
-			w = p_c.w;
-			return *this;
+			ss << std::hex << std::setw( 2 ) << std::setfill( '0' ) << (int)( v * 255 );
 		}
-		inline Rgba & operator+=( const Rgba & p_c )
+
+		constexpr Rgba & operator=( const Rgba & ) = default;
+
+		constexpr Rgba & operator+=( const Rgba & p )
 		{
-			x += p_c.x;
-			y += p_c.y;
-			z += p_c.z;
-			return *this;
-		}
-		inline Rgba & operator+=( const float & p_f )
-		{
-			x += p_f;
-			y += p_f;
-			z += p_f;
-			return *this;
-		}
-		inline Rgba & operator-=( const Rgba & p_c )
-		{
-			x -= p_c.x;
-			y -= p_c.y;
-			z -= p_c.z;
-			return *this;
-		}
-		inline Rgba & operator-=( const float & p_f )
-		{
-			x -= p_f;
-			y -= p_f;
-			z -= p_f;
-			return *this;
-		}
-		inline Rgba & operator*=( const Rgba & p_c )
-		{
-			x *= p_c.x;
-			y *= p_c.y;
-			z *= p_c.z;
-			return *this;
-		}
-		inline Rgba & operator*=( const float & p_f )
-		{
-			x *= p_f;
-			y *= p_f;
-			z *= p_f;
-			return *this;
-		}
-		inline Rgba & operator/=( const Rgba & p_c )
-		{
-			assert( p_c.x != 0.f && p_c.y != 0.f && p_c.z != 0.f );
-			x /= p_c.x;
-			y /= p_c.y;
-			z /= p_c.z;
-			return *this;
-		}
-		inline Rgba & operator/=( const float & p_f )
-		{
-			assert( p_f != 0.f );
-			x /= p_f;
-			y /= p_f;
-			z /= p_f;
+			_v.x += p._v.x;
+			_v.y += p._v.y;
+			_v.z += p._v.z;
 			return *this;
 		}
 
-		// TODO: check if better to reuse x= operators...
-		inline Rgba operator+( const Rgba & p_c ) const { return Rgba( x + p_c.x, y + p_c.y, z + p_c.z ); }
-		inline Rgba operator-( const Rgba & p_c ) const { return Rgba( x - p_c.x, y - p_c.y, z - p_c.z ); }
-		inline Rgba operator*( const Rgba & p_c ) const { return Rgba( x * p_c.x, y * p_c.y, z * p_c.z ); }
-		inline Rgba operator/( const Rgba & p_c ) const
+		constexpr Rgba & operator+=( float f )
 		{
-			assert( p_c.x != 0.f && p_c.y != 0.f && p_c.z != 0.f );
-			return Rgba( x / p_c.x, y / p_c.y, z / p_c.z );
+			_v.x += f;
+			_v.y += f;
+			_v.z += f;
+			return *this;
 		}
 
-		inline Rgba operator+( const float & p_f ) const { return Rgba( x + p_f, y + p_f, z + p_f ); }
-		inline Rgba operator-( const float & p_f ) const { return Rgba( x - p_f, y - p_f, z - p_f ); }
-		inline Rgba operator*( const float & p_f ) const { return Rgba( x * p_f, y * p_f, z * p_f ); }
-		inline Rgba operator/( const float & p_f ) const
+		constexpr Rgba & operator-=( const Rgba & p )
 		{
-			assert( p_f != 0.f );
-			return Rgba( x / p_f, y / p_f, z / p_f );
+			_v.x -= p._v.x;
+			_v.y -= p._v.y;
+			_v.z -= p._v.z;
+			return *this;
 		}
 
-		friend inline Rgba operator+( const float & p_f, const Rgba & p_c )
+		constexpr Rgba & operator-=( float f )
 		{
-			return Rgba( p_f + p_c.x, p_f + p_c.y, p_f + p_c.z );
-		}
-		friend inline Rgba operator-( const float & p_f, const Rgba & p_c )
-		{
-			return Rgba( p_f - p_c.x, p_f - p_c.y, p_f - p_c.z );
-		}
-		friend inline Rgba operator*( const float & p_f, const Rgba & p_c )
-		{
-			return Rgba( p_f * p_c.x, p_f * p_c.y, p_f * p_c.z );
-		}
-		friend inline Rgba operator/( const float & p_f, const Rgba & p_c )
-		{
-			assert( p_c.x != 0.f && p_c.y != 0.f && p_c.z != 0.f );
-			return Rgba( p_f / p_c.x, p_f / p_c.y, p_f / p_c.z );
+			_v.x -= f;
+			_v.y -= f;
+			_v.z -= f;
+			return *this;
 		}
 
-		inline bool operator==( const Rgba & p_c ) const { return x == p_c.x && y == p_c.y && z == p_c.z; }
-		inline bool operator!=( const Rgba & p_c ) const { return x != p_c.x || y != p_c.y || z != p_c.z; }
+		constexpr Rgba & operator*=( const Rgba & p )
+		{
+			_v.x *= p._v.x;
+			_v.y *= p._v.y;
+			_v.z *= p._v.z;
+			return *this;
+		}
 
-		inline float getR() const { return x; }
-		inline float getG() const { return y; }
-		inline float getB() const { return z; }
-		inline float getA() const { return w; }
-		inline void	 setR( const float p_r ) { x = p_r; }
-		inline void	 setG( const float p_g ) { y = p_g; }
-		inline void	 setB( const float p_b ) { z = p_b; }
-		inline void	 setA( const float p_a ) { w = p_a; }
+		constexpr Rgba & operator*=( float f )
+		{
+			_v.x *= f;
+			_v.y *= f;
+			_v.z *= f;
+			return *this;
+		}
 
-		inline const float brightness() const { return ( x * 0.299f ) + ( y * 0.587f ) + ( z * 0.114f ); }
+		constexpr Rgba & operator/=( const Rgba & p )
+		{
+			assert( p._v.x != 0 && p._v.y != 0 && p._v.z != 0 );
+			_v.x /= p._v.x;
+			_v.y /= p._v.y;
+			_v.z /= p._v.z;
+			return *this;
+		}
 
-		friend std::ostream & operator<<( std::ostream & p_os, const Rgba & p_c );
+		constexpr Rgba & operator/=( float f )
+		{
+			assert( f != 0 );
+			_v.x /= f;
+			_v.y /= f;
+			_v.z /= f;
+			return *this;
+		}
 
-		static inline Rgba randomPastel() { return random() * 0.5f + 0.5f; }
+		constexpr Rgba operator+( const Rgba & p ) const { return Rgba( _v.x + p._v.x, _v.y + p._v.y, _v.z + p._v.z ); }
+		constexpr Rgba operator-( const Rgba & p ) const { return Rgba( _v.x - p._v.x, _v.y - p._v.y, _v.z - p._v.z ); }
+		constexpr Rgba operator*( const Rgba & p ) const { return Rgba( _v.x * p._v.x, _v.y * p._v.y, _v.z * p._v.z ); }
 
+		constexpr Rgba operator/( const Rgba & p ) const
+		{
+			assert( p._v.x != 0 && p._v.y != 0 && p._v.z != 0 );
+			return Rgba( _v.x / p._v.x, _v.y / p._v.y, _v.z / p._v.z );
+		}
+
+		constexpr Rgba operator+( float f ) const { return Rgba( _v.x + f, _v.y + f, _v.z + f ); }
+		constexpr Rgba operator-( float f ) const { return Rgba( _v.x - f, _v.y - f, _v.z - f ); }
+		constexpr Rgba operator*( float f ) const { return Rgba( _v.x * f, _v.y * f, _v.z * f ); }
+
+		constexpr Rgba operator/( float f ) const
+		{
+			assert( f != 0 );
+			return Rgba( _v.x / f, _v.y / f, _v.z / f );
+		}
+
+		friend constexpr Rgba operator+( float f, const Rgba & p )
+		{
+			return Rgba( f + p._v.x, f + p._v.y, f + p._v.z );
+		}
+
+		friend constexpr Rgba operator-( float f, const Rgba & p )
+		{
+			return Rgba( f - p._v.x, f - p._v.y, f - p._v.z );
+		}
+
+		friend constexpr Rgba operator*( float f, const Rgba & p )
+		{
+			return Rgba( f * p._v.x, f * p._v.y, f * p._v.z );
+		}
+
+		friend constexpr Rgba operator/( float f, const Rgba & p )
+		{
+			assert( p._v.x != 0 && p._v.y != 0 && p._v.z != 0 );
+			return Rgba( f / p._v.x, f / p._v.y, f / p._v.z );
+		}
+
+		constexpr bool operator==( const Rgba & p ) const
+		{
+			return _v.x == p._v.x && _v.y == p._v.y && _v.z == p._v.z && _v.w == p._v.w;
+		}
+
+		constexpr bool operator!=( const Rgba & p ) const { return !( *this == p ); }
+
+		constexpr float & x() { return _v.x; }
+		constexpr float & y() { return _v.y; }
+		constexpr float & z() { return _v.z; }
+		constexpr float & w() { return _v.w; }
+
+		constexpr const float & x() const { return _v.x; }
+		constexpr const float & y() const { return _v.y; }
+		constexpr const float & z() const { return _v.z; }
+		constexpr const float & w() const { return _v.w; }
+
+		constexpr float & r() { return _v.x; }
+		constexpr float & g() { return _v.y; }
+		constexpr float & b() { return _v.z; }
+		constexpr float & a() { return _v.w; }
+
+		constexpr const float & r() const { return _v.x; }
+		constexpr const float & g() const { return _v.y; }
+		constexpr const float & b() const { return _v.z; }
+		constexpr const float & a() const { return _v.w; }
+
+		constexpr float brightness() const { return _v.x * 0.299f + _v.y * 0.587f + _v.z * 0.114f; }
+
+		static Rgba randomPastel() { return random() * 0.5f + 0.5f; }
 		static Rgba random();
 
 		void saturate();
-		void applyGamma( const float & pyamma );
+		void applyGamma( const float & gamma );
 		void oppose();
+
+	  private:
+		Vec4f _v {};
 	};
 } // namespace VTX::Util::Color
 
