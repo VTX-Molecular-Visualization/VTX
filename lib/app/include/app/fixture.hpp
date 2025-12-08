@@ -20,8 +20,6 @@ namespace VTX::App
 			_app->start();
 		}
 
-		~Fixture() { _app.release(); }
-
 		inline VTXApp * const get() { return _app.get(); }
 
 	  private:

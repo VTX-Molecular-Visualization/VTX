@@ -208,7 +208,8 @@ namespace VTX::Core::Struct
 			return bondCount;
 		}
 
-		inline IndexRange getChainBondRange( const Index p_chainIndex ) const
+		inline IndexRange
+			getChainBondRange( const Index p_chainIndex ) const
 		{
 			const Index firstBond = getChainFirstBond( p_chainIndex );
 			const Index count	  = getChainBondCount( p_chainIndex );

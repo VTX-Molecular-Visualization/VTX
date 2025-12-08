@@ -4,7 +4,6 @@
 #include "python_binding/binder.hpp"
 #include <memory>
 #include <string>
-#include <util/singleton.hpp>
 #include <util/types.hpp>
 
 namespace VTX::PythonBinding

@@ -12,7 +12,7 @@ namespace VTX::Renderer::Geometry
 		virtual ~BaseGeometry() = default;
 
 		Util::Math::RangeList<size_t> ranges;
-		Blocks						  blocks;
+//		Blocks						  blocks;
 	};
 
 } // namespace VTX::Renderer::Geometry
