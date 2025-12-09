@@ -69,6 +69,8 @@ namespace VTX::Renderer
 		{
 			using namespace Util;
 
+			assert( screenWidth > 0.f && screenHeight > 0.f );
+
 			switch ( projection )
 			{
 			case PROJECTION::PERSPECTIVE:

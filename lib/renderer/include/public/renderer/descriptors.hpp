@@ -1,19 +1,78 @@
 #ifndef __VTX_RENDERER_DESCRIPTORS__
 #define __VTX_RENDERER_DESCRIPTORS__
 
-#include "enums.hpp"
+#include <array>
 #include <functional>
 #include <memory>
 #include <optional>
 #include <string>
+#include <util/types.hpp>
 #include <variant>
 #include <vector>
 
 /**
  * @brief Describes all the meta-data used by the render graph.
  */
-namespace VTX::Renderer
+namespace VTX::Renderer::Descriptor
 {
+	/**
+	 * @brief All data types.
+	 */
+	enum struct E_TYPE : std::uint8_t
+	{
+		BOOL,
+		BYTE,
+		UBYTE,
+		SHORT,
+		USHORT,
+		INT,
+		UINT,
+		FLOAT,
+		VEC2I,
+		VEC2F,
+		VEC3F,
+		VEC4F,
+		MAT3F,
+		MAT4F,
+		COLOR4
+	};
+
+	/**
+	 * @brief Global resource types.
+	 */
+	enum struct E_RESOURCE_TYPE : std::uint8_t
+	{
+		TEXTURE,
+		VERTEX_STREAM,
+		UNIFORM_BUFFER
+	};
+
+	/**
+	 * @brief All data formats.
+	 */
+	enum struct E_FORMAT : std::uint8_t
+	{
+		RGB16F,
+		RGBA16F,
+		RGBA32UI,
+		RGBA32F,
+		RG32UI,
+		R8,
+		R16F,
+		R32F,
+		DEPTH_COMPONENT32F
+	};
+
+	/**
+	 * @brief All draw primitives.
+	 */
+	enum struct E_PRIMITIVE : std::uint8_t
+	{
+		POINTS,
+		LINES,
+		TRIANGLES,
+		PATCHES,
+	};
 
 	/**
 	 * @brief Aliases.
@@ -25,7 +84,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief Texture descriptor.
 	 */
-	struct TextureDesc
+	struct Texture
 	{
 		E_FORMAT format;
 	};
@@ -55,17 +114,17 @@ namespace VTX::Renderer
 	{
 		Key										 name;
 		E_TYPE									 type;
-		std::array<std::uint8_t, 64>			 data {}; // Raw data storage (up to 64 bytes).
+		std::array<std::uint8_t, 64>			 data;
 		std::optional<std::pair<double, double>> range;
 	};
 
 	/**
 	 * @brief Uniform buffer descriptor.
 	 */
-	struct UniformBufferDesc
+	struct UniformBuffer
 	{
 		Key						  name;
-		std::uint32_t			  binding = 0;
+		std::uint32_t			  binding;
 		std::vector<UniformValue> values;
 	};
 
@@ -74,15 +133,15 @@ namespace VTX::Renderer
 	 */
 	struct Resources
 	{
-		std::unordered_map<Key, TextureDesc>	   textures;
-		std::unordered_map<Key, VertexLayout>	   vertexStreams;
-		std::unordered_map<Key, UniformBufferDesc> uniformBuffers;
+		std::unordered_map<Key, Texture>	   textures;
+		std::unordered_map<Key, VertexLayout>  vertexStreams;
+		std::unordered_map<Key, UniformBuffer> uniformBuffers;
 	};
 
 	/**
 	 * @brief Draw call descriptor.
 	 */
-	struct DrawCallDesc
+	struct DrawCall
 	{
 		Key			vertexStream;
 		E_PRIMITIVE primitive  = E_PRIMITIVE::TRIANGLES;
@@ -92,12 +151,12 @@ namespace VTX::Renderer
 	/**
 	 * @brief Program descriptor.
 	 */
-	struct ProgramDesc
+	struct Program
 	{
-		Key							name;
-		Files						shaders;
-		std::vector<UniformValue>	uniforms;
-		std::optional<DrawCallDesc> drawCall;
+		Key						  name;
+		Files					  shaders;
+		std::vector<UniformValue> uniforms;
+		std::optional<DrawCall>	  drawCall;
 	};
 
 	/**
@@ -113,26 +172,15 @@ namespace VTX::Renderer
 		Key						  name;
 		Keys					  inputs;
 		Keys					  outputs;
-		std::vector<ProgramDesc>  programs;
+		std::vector<Program>	  programs;
 		std::optional<RenderFunc> customCallback;
-	};
-
-	/**
-	 * @brief Link descriptor.
-	 */
-	struct LinkDesc
-	{
-		Key				 resourceName;
-		const PassDesc * producer = nullptr;
-		const PassDesc * consumer = nullptr;
 	};
 
 	/**
 	 * @brief Aliases.
 	 */
 	using PassList = std::vector<std::unique_ptr<PassDesc>>;
-	using LinkList = std::vector<LinkDesc>;
 
-} // namespace VTX::Renderer
+} // namespace VTX::Renderer::Descriptor
 
 #endif
