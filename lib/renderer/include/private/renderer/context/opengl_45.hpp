@@ -41,7 +41,7 @@ namespace VTX::Renderer::Context
 			InstructionsDurationRanges &	p_outInstructionsDurationRanges
 		);
 
-		void resize( const RenderQueue & p_renderQueue, const size_t p_width, const size_t p_height );
+		void resize( const PassList & p_renderQueue, const size_t p_width, const size_t p_height );
 
 		inline void setOutput( const Handle p_output ) { _output = p_output; }
 
@@ -204,17 +204,17 @@ namespace VTX::Renderer::Context
 		/////////////////// TODO: use collection util class
 		//
 		// TODO: find a better solution (magic enum explodes compile time).
-		static std::map<const E_CHAN_OUT, const GLenum>	 _mapAttachments;
-		static std::map<const E_PRIMITIVE, const GLenum> _mapPrimitives;
-		static std::map<const E_FORMAT, const GLenum>	 _mapFormats;
-		static std::map<const GLenum, const GLsizei>	 _mapFormatSizes;
-		static std::map<const E_WRAPPING, const GLint>	 _mapWrappings;
-		static std::map<const E_FILTERING, const GLint>	 _mapFilterings;
-		static std::map<const E_TYPE, const GLenum>		 _mapTypes;
-		static std::map<const E_TYPE, const GLsizeiptr>	 _mapTypeSizes;
-		static std::map<const E_TYPE, const GLuint>		 _mapTypeAlignments;
-		static std::map<const E_FORMAT, const E_TYPE>	 _mapFormatTypes;
-		static std::map<const E_FORMAT, const GLenum>	 _mapFormatInternalTypes;
+		// static std::map<const E_CHAN_OUT, const GLenum>	 _mapAttachments;
+		// static std::map<const E_PRIMITIVE, const GLenum> _mapPrimitives;
+		// static std::map<const E_FORMAT, const GLenum>	 _mapFormats;
+		// static std::map<const GLenum, const GLsizei>	 _mapFormatSizes;
+		// static std::map<const E_WRAPPING, const GLint>	 _mapWrappings;
+		// static std::map<const E_FILTERING, const GLint>	 _mapFilterings;
+		// static std::map<const E_TYPE, const GLenum>		 _mapTypes;
+		// static std::map<const E_TYPE, const GLsizeiptr>	 _mapTypeSizes;
+		// static std::map<const E_TYPE, const GLuint>		 _mapTypeAlignments;
+		// static std::map<const E_FORMAT, const E_TYPE>	 _mapFormatTypes;
+		// static std::map<const E_FORMAT, const GLenum>	 _mapFormatInternalTypes;
 
 		const Key _KEY_QUAD_VAO	   = "VAO_QUAD";
 		const Key _KEY_QUAD_BUFFER = "BUFFER_QUAD";

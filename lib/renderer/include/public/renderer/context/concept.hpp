@@ -9,6 +9,20 @@
 
 namespace VTX::Renderer::Context
 {
+	// TODO: redo with command pool.
+	/**
+	 * @brief Render instructions.
+	 */
+	using Instruction  = std::function<void()>;
+	using Instructions = std::vector<Instruction>;
+	struct InstructionsDurationRange
+	{
+		Key	   name;
+		size_t first;
+		size_t last;
+		float  duration;
+	};
+	using InstructionsDurationRanges = std::vector<InstructionsDurationRange>;
 
 	/**
 	 * @brief Shared attributes for all render contexts.
@@ -49,9 +63,7 @@ namespace VTX::Renderer::Context
 			  StructInfos &						  p_infos,
 			  std::vector<uchar> &				  p_image,
 			  const std::string &				  p_pass,
-			  const E_CHAN_OUT					  p_channel,
-			  void * const						  p_textureData,
-			  const ComputePass &				  p_computePass
+			  void * const						  p_textureData
 		  ) {
 				 {
 					 p_context.build(

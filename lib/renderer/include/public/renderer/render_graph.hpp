@@ -88,7 +88,6 @@ namespace VTX::Renderer
 		/**
 		 * @brief Creates a render queue from current graph.
 		 */
-		template<Scheduler::Concept S>
 		const RenderQueue & build()
 		{
 			// Check ouptut.
@@ -129,11 +128,10 @@ namespace VTX::Renderer
 		 */
 		PipelinePasses createDefaultPipeline( const PipelineConfig & );
 
+		bool validate() const;
+
 	  private:
-		Passes		   _passes;
-		Links		   _links;
-		const Output * _output = nullptr;
-		RenderQueue	   _renderQueue;
+		Passes _passes;
 	};
 
 } // namespace VTX::Renderer

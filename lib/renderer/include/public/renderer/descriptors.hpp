@@ -13,7 +13,7 @@
 /**
  * @brief Describes all the meta-data used by the render graph.
  */
-namespace VTX::Renderer::Descriptor
+namespace VTX::Renderer
 {
 	/**
 	 * @brief All data types.
@@ -167,7 +167,7 @@ namespace VTX::Renderer::Descriptor
 	/**
 	 * @brief Pass descriptor.
 	 */
-	struct PassDesc
+	struct Pass
 	{
 		Key						  name;
 		Keys					  inputs;
@@ -179,8 +179,8 @@ namespace VTX::Renderer::Descriptor
 	/**
 	 * @brief Aliases.
 	 */
-	using PassList = std::vector<std::unique_ptr<PassDesc>>;
+	using PassList = std::vector<std::unique_ptr<Pass>>;
 
-} // namespace VTX::Renderer::Descriptor
+} // namespace VTX::Renderer
 
 #endif
