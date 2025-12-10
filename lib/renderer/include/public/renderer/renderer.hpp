@@ -9,7 +9,7 @@
 #include "caches.hpp"
 #include "camera.hpp"
 #include "color.hpp"
-#include "context/context_wrapper.hpp"
+// #include "context/context_wrapper.hpp"
 #include "passes.hpp"
 #include "proxy/system.hpp"
 #include "proxy/voxels.hpp"
@@ -66,8 +66,8 @@ namespace VTX::Renderer
 		/**
 		 * @brief Set graphic context.
 		 */
-		void setDefault();
-		void setOpenGL45( const std::filesystem::path & );
+		// void setDefault();
+		// void setOpenGL45( const std::filesystem::path & );
 
 		inline bool hasContext() const { return _context.hasContext(); }
 
@@ -240,7 +240,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Wrapper to handle the graphic APIs.
 		 */
-		Context::ContextWrapper _context;
+		// Context::ContextWrapper _context;
 
 		/**
 		 * @brief Size.

@@ -84,6 +84,7 @@ namespace VTX::Renderer
 		);
 	}
 
+	/*
 	void Renderer::setDefault()
 	{
 		_context.set<Context::Default>( _width, _height );
@@ -95,6 +96,7 @@ namespace VTX::Renderer
 		_context.set<Context::OpenGL45>( _width, _height, p_shaderIncludePath );
 		build();
 	}
+	*/
 
 	void Renderer::build()
 	{
