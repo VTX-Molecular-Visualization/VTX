@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_GRAPH_BUILDER__
 
 #include "descriptors.hpp"
+#include <cstring>
 #include <util/color/rgba.hpp>
 
 namespace VTX::Renderer
