@@ -17,7 +17,7 @@ namespace VTX::App::Helper::Preset
 		auto view = REG().view<App::Preset::Name, T>();
 		for ( const ECS::Entity entity : view )
 		{
-			const auto & presetName = view.get<App::Preset::Name>( entity ).name;
+			const auto & presetName = view.template get<App::Preset::Name>( entity ).name;
 			if ( presetName == p_name )
 			{
 				return true;
@@ -36,7 +36,7 @@ namespace VTX::App::Helper::Preset
 		auto view = REG().view<App::Preset::Name, T>();
 		for ( const ECS::Entity entity : view )
 		{
-			const auto & presetName = view.get<App::Preset::Name>( entity ).name;
+			const auto & presetName = view.template get<App::Preset::Name>( entity ).name;
 			if ( presetName == p_name )
 			{
 				return entity;
