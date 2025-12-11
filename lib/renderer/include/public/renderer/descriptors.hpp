@@ -79,14 +79,15 @@ namespace VTX::Renderer
 	 */
 	using Key	= std::string;
 	using Keys	= std::vector<Key>;
-	using Files = std::variant<FilePath, std::vector<FilePath>>;
+	using Files = std::vector<FilePath>;
 
 	/**
 	 * @brief Texture descriptor.
 	 */
 	struct Texture
 	{
-		E_FORMAT format;
+		E_FORMAT			 format;
+		std::vector<uint8_t> data;
 	};
 
 	/**
@@ -180,6 +181,7 @@ namespace VTX::Renderer
 	 * @brief Aliases.
 	 */
 	using PassList = std::vector<std::unique_ptr<Pass>>;
+	using Handle   = uint;
 
 } // namespace VTX::Renderer
 

@@ -2,6 +2,7 @@
 #include "scene.hpp"
 #include "user_interface.hpp"
 #include <iostream>
+#include <renderer/graphics_config.hpp>
 #include <renderer/proxy/voxels.hpp>
 #include <renderer/renderer.hpp>
 #include <util/math/aabb.hpp>

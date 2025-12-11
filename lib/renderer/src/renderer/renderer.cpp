@@ -1,12 +1,11 @@
 #include "renderer/renderer.hpp"
 #include "renderer/binary_buffer.hpp"
-#include "renderer/context/default.hpp"
-#include "renderer/context/opengl_45.hpp"
+// #include "renderer/context/default.hpp"
+// #include "renderer/context/opengl_45.hpp"
 #include "renderer/geometry/cylinder.hpp"
 #include "renderer/geometry/ribbon.hpp"
 #include "renderer/geometry/sphere.hpp"
 #include "renderer/geometry/voxel.hpp"
-#include "renderer/scheduler/depth_first_search.hpp"
 #include <execution>
 #include <util/math.hpp>
 #include <util/math/aabb.hpp>
@@ -20,68 +19,6 @@ namespace VTX::Renderer
 	{
 		// Passes.
 		_refreshGraph( GraphicsConfig() );
-
-		// Shared data.
-		addGlobalData(
-			{ "Camera",
-			  15,
-			  { { "MatrixView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-				{ "MatrixProjection", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-				{ "MatrixViewInv", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-				{ "MatrixViewInvTrans", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-				{ "Position", E_TYPE::VEC3F, BufferValue<Vec3f> { VEC3F_ZERO } },
-				{ "ClipInfos", // { _near * _far, _far, _far - _near, _near }
-				  E_TYPE::VEC4F,
-				  BufferValue<Vec4f> { VEC4F_ZERO } },
-				{ "Resolution", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { p_width, p_height } } },
-				{ "MousePosition", E_TYPE::VEC2I, BufferValue<Vec2i> { Vec2i { 0, 0 } } },
-				{ "IsPerspective", E_TYPE::UINT, BufferValue<uint> { 1 } } },
-			  0,
-			  nullptr,
-			  false,
-			  true }
-		);
-
-		addGlobalData(
-			{ "ColorLayout",
-			  14,
-			  { { "Colors", E_TYPE::COLOR4, BufferValue<Util::Color::Rgba> {} } },
-			  4096,
-			  nullptr,
-			  false,
-			  true }
-		);
-
-		addGlobalData(
-			{ "Models",
-			  13,
-			  {
-				  { "MatrixModelView", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-				  { "MatrixModelViewInv", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-				  { "MatrixNormal", E_TYPE::MAT4F, BufferValue<Mat4f> { MAT4F_ID } },
-			  },
-			  0,
-			  nullptr,
-			  true }
-		);
-
-		addGlobalData(
-			{ "Representations",
-			  12,
-			  {
-				  { "SphereRadiusFixed", E_TYPE::FLOAT, BufferValue<float> {} },
-				  { "SphereRadiusAdd", E_TYPE::FLOAT, BufferValue<float> {} },
-				  { "IsSphereRadiusFixed", E_TYPE::UINT, BufferValue<uint> {} },
-				  { "CylinderRadius", E_TYPE::FLOAT, BufferValue<float> {} },
-				  { "CylinderColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
-				  { "RibbonColorBlending", E_TYPE::UINT, BufferValue<uint> {} },
-				  { "SESProbeRadius", E_TYPE::FLOAT, BufferValue<float> {} },
-				  { "SESMaxProbeNeighborNb", E_TYPE::UINT, BufferValue<uint> {} },
-			  },
-			  0,
-			  nullptr,
-			  true }
-		);
 	}
 
 	/*
@@ -104,8 +41,8 @@ namespace VTX::Renderer
 		float buildTime = Util::CHRONO_CPU(
 			[ this ]()
 			{
-				const RenderQueue & queue = _graph.build<Scheduler::DepthFirstSearch>();
-				_context.build( queue, _graph.getLinks(), _globalData, _instructions, _instructionsDurationRanges );
+				const RenderQueue queue = _graph.build();
+				//_context.build( queue, _graph.getLinks(), _globalData, _instructions, _instructionsDurationRanges );
 			}
 		);
 
@@ -119,16 +56,16 @@ namespace VTX::Renderer
 		_width	= p_width;
 		_height = p_height;
 
-		_context.resize( _graph.getRenderQueue(), p_width, p_height );
+		//_context.resize( _graph.getRenderQueue(), p_width, p_height );
 
 		setNeedUpdate( true );
 	}
 
 	void Renderer::clean()
 	{
-		_context.clear();
-		_instructions.clear();
-		_instructionsDurationRanges.clear();
+		//_context.clear();
+		//_instructions.clear();
+		//_instructionsDurationRanges.clear();
 		_graph.clear();
 		_needUpdate		 = false;
 		_framesRemaining = 0;
@@ -139,12 +76,14 @@ namespace VTX::Renderer
 		_cacheSpheresCylinders.clear();
 		_cacheRibbons.clear();
 
+		/*
 		drawRangeSpheres.counts.clear();
 		drawRangeSpheres.offsets.clear();
 		drawRangeCylinders.counts.clear();
 		drawRangeCylinders.offsets.clear();
 		drawRangeRibbons.counts.clear();
 		drawRangeRibbons.offsets.clear();
+		*/
 
 #ifdef VTX_CUDA_ENABLED
 		_sesData.reset();
@@ -328,10 +267,12 @@ namespace VTX::Renderer
 			cacheSC.representations = std::vector<uchar>( cacheSC.rangeSpheres.getCount(), p_representation );
 			cacheR.representations	= std::vector<uchar>( cacheR.range.getCount(), p_representation );
 
+			/*
 			_context.setSub(
 				cacheSC.representations, "SpheresCylindersRepresentations", cacheSC.rangeSpheres.getFirst()
 			);
 			_context.setSub( cacheR.representations, "RibbonsRepresentations", cacheR.range.getFirst() );
+			*/
 		};
 
 		// Remove.
@@ -341,21 +282,21 @@ namespace VTX::Renderer
 		p_proxy.onAtomPositions += [ this, &p_proxy ]()
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			_context.setSub( *p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst() );
+			//_context.setSub( *p_proxy.atomPositions, "SpheresCylindersPositions", cacheSC.rangeSpheres.getFirst() );
 		};
 
 		// Colors.
 		p_proxy.onAtomColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
 		{
 			Cache::SphereCylinder & cacheSC = _cacheSpheresCylinders[ &p_proxy ];
-			_context.setSub( p_colors, "SpheresCylindersColors", cacheSC.rangeSpheres.getFirst() );
+			//_context.setSub( p_colors, "SpheresCylindersColors", cacheSC.rangeSpheres.getFirst() );
 		};
 
 		// Residue colors.
 		p_proxy.onResidueColors += [ this, &p_proxy ]( const std::vector<uchar> & p_colors )
 		{
 			Cache::Ribbon & cacheR = _cacheRibbons[ &p_proxy ];
-			_context.setSub( p_colors, "RibbonsColors", cacheR.range.getFirst() );
+			//_context.setSub( p_colors, "RibbonsColors", cacheR.range.getFirst() );
 		};
 
 		// Selection.
@@ -371,7 +312,7 @@ namespace VTX::Renderer
 				cacheSC.flags[ i ] &= ~mask;
 				cacheSC.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
 			}
-			_context.setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
+			//_context.setSub( cacheSC.flags, "SpheresCylindersFlags", cacheSC.rangeSpheres.getFirst() );
 
 			for ( size_t i = 0; i < cacheR.range.getCount(); ++i )
 			{
@@ -379,7 +320,7 @@ namespace VTX::Renderer
 				cacheR.flags[ i ] |= p_select << E_ELEMENT_FLAGS::SELECTION;
 			}
 
-			_context.setSub( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst(), cacheR.range.getCount() );
+			//_context.setSub( cacheR.flags, "RibbonsFlags", cacheR.range.getFirst(), cacheR.range.getCount() );
 		};
 
 		// TODO:
@@ -417,6 +358,7 @@ namespace VTX::Renderer
 
 			const size_t offset = cacheSC.rangeSpheres.getFirst();
 
+			/*
 			_context.setSub(
 				cacheSC.flags,
 				"SpheresCylindersFlags",
@@ -424,6 +366,7 @@ namespace VTX::Renderer
 				p_atomIds.getFirst(),
 				p_atomIds.getLast() - p_atomIds.getFirst() + 1
 			);
+			*/
 
 			// TODO: ribbons and SES.
 		};
@@ -448,6 +391,7 @@ namespace VTX::Renderer
 				drawRangeRibbonsRL.removeRange( rangeRibbons );
 			}
 
+			/*
 			drawRangeSpheresRL.toStdVectorsFirstCount<void *, uint>(
 				drawRangeSpheres.offsets, drawRangeSpheres.counts
 			);
@@ -457,6 +401,7 @@ namespace VTX::Renderer
 			drawRangeRibbonsRL.toStdVectorsFirstCount<void *, uint>(
 				drawRangeRibbons.offsets, drawRangeRibbons.counts
 			);
+			*/
 		};
 
 		// TODO: threshold to switch between multiple draw calls and single draw call.
@@ -484,6 +429,7 @@ namespace VTX::Renderer
 
 			const size_t offset = cacheSC.rangeSpheres.getFirst();
 
+			/*
 			_context.setSub(
 				cacheSC.flags,
 				"SpheresCylindersFlags",
@@ -491,6 +437,7 @@ namespace VTX::Renderer
 				p_atomIds.getFirst(),
 				p_atomIds.getLast() - p_atomIds.getFirst() + 1
 			);
+			*/
 
 			// TODO: ribbons.
 		};
@@ -549,7 +496,7 @@ namespace VTX::Renderer
 		buffer.write( p_representation.sesProbeRadius );
 		buffer.close();
 
-		_context.set( buffer, "Representations" );
+		//_context.set( buffer, "Representations" );
 
 		setNeedUpdate( true );
 
@@ -639,14 +586,14 @@ namespace VTX::Renderer
 		buffer.write( uint( p_camera.projection == PROJECTION::PERSPECTIVE ) );
 		buffer.close();
 
-		_context.set( buffer, "Camera" );
+		//_context.set( buffer, "Camera" );
 
 		setNeedUpdate( true );
 	}
 
 	void Renderer::setColorLayout( const Color::Layout & p_layout )
 	{
-		_context.set( p_layout.colors, "ColorLayout" );
+		//_context.set( p_layout.colors, "ColorLayout" );
 
 		setNeedUpdate( true );
 	}
@@ -694,11 +641,11 @@ namespace VTX::Renderer
 		assert( p_proxy.maxs );
 		assert( p_proxy.mins->size() == p_proxy.maxs->size() );
 
-		_context.set( *p_proxy.mins, "VoxelsMins" );
-		_context.set( *p_proxy.maxs, "VoxelsMaxs" );
+		//_context.set( *p_proxy.mins, "VoxelsMins" );
+		//_context.set( *p_proxy.maxs, "VoxelsMaxs" );
 
-		drawRangeVoxels.offsets = { 0 };
-		drawRangeVoxels.counts	= { uint( p_proxy.mins->size() ) };
+		// drawRangeVoxels.offsets = { 0 };
+		// drawRangeVoxels.counts	= { uint( p_proxy.mins->size() ) };
 
 		setNeedUpdate( true );
 	}
@@ -722,6 +669,7 @@ namespace VTX::Renderer
 		}
 
 		// Create buffers.
+		/*
 		_context.reserveData<Vec3f>( totalAtoms, "SpheresCylindersPositions" );
 		_context.reserveData<uchar>( totalAtoms, "SpheresCylindersColors" );
 		_context.reserveData<float>( totalAtoms, "SpheresCylindersRadii" );
@@ -730,6 +678,7 @@ namespace VTX::Renderer
 		_context.reserveData<ushort>( totalAtoms, "SpheresCylindersModels" );
 		_context.reserveData<uchar>( totalAtoms, "SpheresCylindersRepresentations" );
 		_context.reserveData<uint>( totalBonds, "SpheresCylindersIdx" );
+		*/
 
 		size_t offsetAtoms = 0;
 		size_t offsetBonds = 0;
@@ -742,10 +691,12 @@ namespace VTX::Renderer
 			const size_t bondCount = proxy->bonds->size();
 
 			// Fill buffers.
+			/*
 			_context.setSub( *proxy->atomPositions, "SpheresCylindersPositions", offsetAtoms );
 			_context.setSub( proxy->atomColors, "SpheresCylindersColors", offsetAtoms );
 			_context.setSub( proxy->atomRadii, "SpheresCylindersRadii", offsetAtoms );
 			_context.setSub( proxy->atomIds, "SpheresCylindersIds", offsetAtoms );
+			*/
 
 			// Flags if not cached.
 			if ( cache.flags.empty() )
@@ -767,9 +718,11 @@ namespace VTX::Renderer
 				cache.representations = std::vector<uchar>( atomCount, proxy->idDefaultRepresentation );
 			}
 
+			/*
 			_context.setSub( cache.flags, "SpheresCylindersFlags", offsetAtoms );
 			_context.setSub( std::vector<ushort>( atomCount, modelId ), "SpheresCylindersModels", offsetAtoms );
 			_context.setSub( cache.representations, "SpheresCylindersRepresentations", offsetAtoms );
+			*/
 
 			// Move bonds.
 			std::vector<uint> bonds( bondCount );
@@ -777,7 +730,7 @@ namespace VTX::Renderer
 			{
 				bonds[ i ] = uint( ( *proxy->bonds )[ i ] + offsetAtoms );
 			}
-			_context.setSub( bonds, "SpheresCylindersIdx", offsetBonds );
+			//_context.setSub( bonds, "SpheresCylindersIdx", offsetBonds );
 
 			// Offsets.
 			cache.rangeSpheres	 = Util::Math::Range<size_t> { offsetAtoms, atomCount };
@@ -796,10 +749,12 @@ namespace VTX::Renderer
 		drawRangeSpheresRL.addRange( Util::Math::Range<size_t> { 0, uint( totalAtoms ) } );
 		drawRangeCylindersRL.addRange( Util::Math::Range<size_t> { 0, uint( totalBonds ) } );
 
+		/*
 		drawRangeSpheresRL.toStdVectorsFirstCount<void *, uint>( drawRangeSpheres.offsets, drawRangeSpheres.counts );
 		drawRangeCylindersRL.toStdVectorsFirstCount<void *, uint>(
 			drawRangeCylinders.offsets, drawRangeCylinders.counts
 		);
+		*/
 	}
 
 	void Renderer::_refreshDataRibbons()
@@ -1112,6 +1067,7 @@ namespace VTX::Renderer
 			assert( totalIndices == 0 );
 		}
 
+		/*
 		_context.reserveData<Vec4f>( totalCaPositions, "RibbonsPositions" );
 		_context.reserveData<Vec3f>( totalCaPositions, "RibbonsDirections" );
 		_context.reserveData<uchar>( totalCaPositions, "RibbonsTypes" );
@@ -1121,6 +1077,7 @@ namespace VTX::Renderer
 		_context.reserveData<ushort>( totalCaPositions, "RibbonsModels" );
 		_context.reserveData<uchar>( totalCaPositions, "RibbonsRepresentations" );
 		_context.reserveData<uint>( totalIndices, "RibbonsIdx" );
+		*/
 
 		size_t offsetCaPositions = 0;
 		uchar  modelId			 = -1;
@@ -1149,6 +1106,7 @@ namespace VTX::Renderer
 				cache.representations = std::vector<uchar>( cache.positions.size(), 0 );
 			}
 
+			/*
 			_context.setSub( cache.positions, "RibbonsPositions", offsetCaPositions );
 			_context.setSub( cache.directions, "RibbonsDirections", offsetCaPositions );
 			_context.setSub( cache.ssTypes, "RibbonsTypes", offsetCaPositions );
@@ -1160,6 +1118,7 @@ namespace VTX::Renderer
 			);
 			_context.setSub( cache.representations, "RibbonsRepresentations", offsetCaPositions );
 			_context.setSub( indices, "RibbonsIdx", offsetIndices );
+			*/
 
 			// Offsets.
 			cache.range = Util::Math::Range<size_t> { offsetCaPositions, cache.positions.size() };
@@ -1168,9 +1127,11 @@ namespace VTX::Renderer
 		}
 
 		// Ranges.
+		/*
 		drawRangeRibbonsRL.clear();
 		drawRangeRibbonsRL.addRange( Util::Math::Range<size_t> { 0, uint( offsetIndices ) } );
 		drawRangeRibbonsRL.toStdVectorsFirstCount<void *, uint>( drawRangeRibbons.offsets, drawRangeRibbons.counts );
+	*/
 	}
 
 	void Renderer::_refreshDataModels()
@@ -1220,6 +1181,7 @@ namespace VTX::Renderer
 
 	void Renderer::_renderLog( const float p_deltaTime, const float p_elapsedTime )
 	{
+		/*
 		for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
 		{
 			instructionDurationRange.duration = _context.measureTaskDuration(
@@ -1233,8 +1195,10 @@ namespace VTX::Renderer
 				}
 			);
 		}
+		*/
 	}
 
+	/*
 	StructInfos Renderer::getInfos() const
 	{
 		StructInfos infos;
@@ -1254,8 +1218,8 @@ namespace VTX::Renderer
 
 		return infos;
 	}
+	*/
 
-	// TODO: not the best way to do it.
 	void Renderer::_refreshGraph( const GraphicsConfig & p_config )
 	{
 		RenderGraph::PipelineConfig config;
@@ -1264,6 +1228,9 @@ namespace VTX::Renderer
 		config.enableOutline   = p_config.activeOutline;
 		config.enableSelection = p_config.activeSelection;
 
+		_graph.createDefaultPipeline( config );
+
+		/*
 		RenderGraph::PipelinePasses passes = _graph.createDefaultPipeline( config );
 		Pass *						geo	   = passes.geo;
 		assert( geo );
@@ -1283,7 +1250,7 @@ namespace VTX::Renderer
 		geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
 		geo->programs[ 3 ].draw.value().needRenderFunc
 			= [ this ]() { return showVoxels && !drawRangeVoxels.counts.empty(); };
-
+			*/
 #ifdef VTX_CUDA_ENABLED
 		geo->renderFunc = [ & ]()
 		{

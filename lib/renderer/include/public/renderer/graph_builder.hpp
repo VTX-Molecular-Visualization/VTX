@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_GRAPH_BUILDER__
 
 #include "descriptors.hpp"
+#include <util/color/rgba.hpp>
 
 namespace VTX::Renderer
 {
@@ -67,9 +68,9 @@ namespace VTX::Renderer
 	 */
 	template<typename T>
 	UniformValue makeUniform(
-		const Key &								 p_name,
-		const T &								 p_value,
-		std::optional<std::pair<double, double>> p_range = std::nullopt
+		const Key &									   p_name,
+		const T &									   p_value,
+		const std::optional<std::pair<double, double>> p_range = std::nullopt
 	)
 	{
 		UniformValue u {};
@@ -104,16 +105,31 @@ namespace VTX::Renderer
 		/**
 		 * @brief texture().
 		 */
-		GraphBuilder & texture( const Key & p_name, E_FORMAT p_format )
+		GraphBuilder & texture( const Key & p_name, const E_FORMAT p_format )
 		{
-			resources.textures[ p_name ] = TextureDesc { p_format };
+			resources.textures[ p_name ] = Texture { p_format };
+			return *this;
+		}
+
+		/**
+		 * @brief texture().
+		 */
+		template<typename T>
+		GraphBuilder & texture( const Key & p_name, const E_FORMAT p_format, const std::vector<T> & p_data )
+		{
+			Texture tex;
+			tex.format = p_format;
+			tex.data.resize( p_data.size() * sizeof( T ) );
+			std::memcpy( tex.data.data(), p_data.data(), p_data.size() * sizeof( T ) );
+
+			resources.textures.emplace( p_name, std::move( tex ) );
 			return *this;
 		}
 
 		/**
 		 * @brief vertexStream().
 		 */
-		GraphBuilder & vertexStream( const Key & p_name, std::initializer_list<VertexAttribute> p_attributes )
+		GraphBuilder & vertexStream( const Key & p_name, const std::initializer_list<VertexAttribute> p_attributes )
 		{
 			VertexLayout layout;
 			layout.attributes.assign( p_attributes.begin(), p_attributes.end() );
@@ -125,15 +141,15 @@ namespace VTX::Renderer
 		 * @brief uniformBuffer().
 		 */
 		GraphBuilder & uniformBuffer(
-			const Key &							p_name,
-			std::uint32_t						p_binding,
-			std::initializer_list<UniformValue> p_values = {}
+			const Key &								  p_name,
+			const std::uint32_t						  p_binding,
+			const std::initializer_list<UniformValue> p_values = {}
 		)
 		{
-			UniformBufferDesc desc;
+			UniformBuffer desc;
 			desc.name	 = p_name;
 			desc.binding = p_binding;
-			desc.values.assign( p_values.begin(), values.end() );
+			desc.values.assign( p_values.begin(), p_values.end() );
 			resources.uniformBuffers[ p_name ] = std::move( desc );
 			return *this;
 		}
@@ -154,12 +170,12 @@ namespace VTX::Renderer
 		/**
 		 * @brief Program being built.
 		 */
-		ProgramDesc & program;
+		Program & program;
 
 		/**
 		 * @brief Constructor.
 		 */
-		ProgramBuilder( PassBuilder & p_p, ProgramDesc & p_prog ) : parent( p_p ), program( p_prog ) {}
+		ProgramBuilder( PassBuilder & p_p, Program & p_prog ) : parent( p_p ), program( p_prog ) {}
 
 		ProgramBuilder & shaders( std::initializer_list<FilePath> p_files )
 		{
@@ -170,9 +186,13 @@ namespace VTX::Renderer
 		/**
 		 * @brief draw().
 		 */
-		ProgramBuilder & draw( const Key & p_vertexStream, E_PRIMITIVE p_primitive, bool p_useIndices = false )
+		ProgramBuilder & draw(
+			const Key &		  p_vertexStream,
+			const E_PRIMITIVE p_primitive,
+			const bool		  p_useIndices = false
+		)
 		{
-			DrawCallDesc dc;
+			DrawCall dc;
 			dc.vertexStream	 = p_vertexStream;
 			dc.primitive	 = p_primitive;
 			dc.useIndices	 = p_useIndices;
@@ -194,9 +214,9 @@ namespace VTX::Renderer
 		 */
 		template<typename T>
 		ProgramBuilder & uniform(
-			const Key &								 p_name,
-			const T &								 p_value,
-			std::optional<std::pair<double, double>> p_range = std::nullopt
+			const Key &									   p_name,
+			const T &									   p_value,
+			const std::optional<std::pair<double, double>> p_range = std::nullopt
 		)
 		{
 			program.uniforms.push_back( makeUniform( p_name, p_value, p_range ) );
@@ -222,7 +242,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Pass being built.
 		 */
-		PassDesc pass;
+		Pass pass;
 
 		PassBuilder( GraphBuilder & p_g, const Key & p_name ) : graph( p_g ) { pass.name = p_name; }
 
@@ -250,15 +270,15 @@ namespace VTX::Renderer
 		ProgramBuilder program( const Key & p_name )
 		{
 			pass.programs.emplace_back();
-			ProgramDesc & prog = pass.programs.back();
-			prog.name		   = p_name;
+			Program & prog = pass.programs.back();
+			prog.name	   = p_name;
 			return ProgramBuilder( *this, prog );
 		}
 
 		/**
 		 * @brief callback().
 		 */
-		PassBuilder & callback( RenderFunc p_func )
+		PassBuilder & callback( const RenderFunc p_func )
 		{
 			pass.customCallback = std::move( p_func );
 			return *this;
@@ -269,7 +289,7 @@ namespace VTX::Renderer
 		 */
 		GraphBuilder & endPass()
 		{
-			graph.passes.emplace_back( std::make_unique<PassDesc>( std::move( pass ) ) );
+			graph.passes.emplace_back( std::make_unique<Pass>( std::move( pass ) ) );
 			return graph;
 		}
 	};

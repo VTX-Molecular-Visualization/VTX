@@ -55,6 +55,7 @@ namespace VTX::Bench
 		void _drawUniforms() const;
 		void _drawNodeEditor( Renderer::Renderer * const p_renderer ) const;
 
+		/*
 		template<typename T>
 		void _drawWidget(
 			Renderer::Renderer * const		  p_renderer,
@@ -144,6 +145,7 @@ namespace VTX::Bench
 				p_renderer->setValue( value, p_key );
 			}
 		}
+		*/
 
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench

@@ -57,7 +57,8 @@ namespace VTX::App
 		// Store statistics.
 		ECS::setCtx<Util::Monitoring::Stats>();
 		// Store renderer.
-		ECS::setCtx<Renderer::Renderer>().setDefault();
+		ECS::setCtx<Renderer::Renderer>();
+		//.setDefault();
 		// Store action manager.
 		ECS::setCtx<Action::ActionManager>();
 		// Store input manager.
@@ -117,12 +118,12 @@ namespace VTX::App
 		{
 			try
 			{
-				renderer.setOpenGL45( Filesystem::getShadersDir() );
+				// renderer.setOpenGL45( Filesystem::getShadersDir() );
 			}
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Failed to build renderer: {}", p_e.what() );
-				renderer.setDefault();
+				// renderer.setDefault();
 				HUB().trigger<Events::ApplicationError>(
 					"Unable to create OpenGL 4.5 context. Update your drivers and check your hardware compatibility."
 				);

@@ -141,7 +141,7 @@ namespace VTX::Bench
 			{
 				if ( ImGui::MenuItem( "Compile" ) )
 				{
-					p_renderer->compileShaders();
+					// p_renderer->compileShaders();
 				}
 
 				ImGui::EndMenu();
@@ -311,6 +311,7 @@ namespace VTX::Bench
 		if ( ImGui::Begin( "Renderer" ) )
 		{
 			size_t sizeAtoms = 0, sizeBonds = 0, sizeRibbons = 0, sizeVoxels = 0;
+			/*
 			for ( auto count : p_renderer->drawRangeSpheres.counts )
 			{
 				sizeAtoms += count;
@@ -327,6 +328,7 @@ namespace VTX::Bench
 			{
 				sizeVoxels += count;
 			}
+			*/
 
 			ImGui::Checkbox( fmt::format( "{} atoms", sizeAtoms ).c_str(), &p_renderer->showAtoms );
 			ImGui::Checkbox( fmt::format( "{} bonds", sizeBonds ).c_str(), &p_renderer->showBonds );
@@ -336,6 +338,7 @@ namespace VTX::Bench
 			ImGui::Text( fmt::format( "{}x{}", p_renderer->width(), p_renderer->height() ).c_str() );
 			ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
 
+			/*
 			const Renderer::StructInfos & infos = p_renderer->getInfos();
 			ImGui::ProgressBar(
 				float( ( infos.gpuMemoryInfoTotalAvailable - infos.gpuMemoryInfoCurrentAvailable ) )
@@ -370,6 +373,7 @@ namespace VTX::Bench
 			ImGui::Text(
 				fmt::format( "CPU cache: {}", Util::String::memSizeToStr( infos.currentSizeCPUCache ) ).c_str()
 			);
+			*/
 		}
 		ImGui::End();
 	}
@@ -378,6 +382,7 @@ namespace VTX::Bench
 	{
 		using namespace Renderer;
 
+		/*
 		if ( p_renderer->logDurations )
 		{
 			const InstructionsDurationRanges & durations = p_renderer->getInstructionsDurationRanges();
@@ -404,6 +409,7 @@ namespace VTX::Bench
 			}
 			ImGui::End();
 		}
+		*/
 	}
 
 	void UserInterface::_drawScene( Scene * const p_scene, Renderer::Renderer * const p_renderer )
@@ -497,6 +503,7 @@ namespace VTX::Bench
 			ImGui::BeginMenuBar();
 			if ( ImGui::BeginMenu( "Add" ) )
 			{
+				/*
 				for ( const Pass * const pass : p_renderer->getAvailablePasses() )
 				{
 					if ( ImGui::MenuItem( pass->name.c_str() ) )
@@ -504,6 +511,7 @@ namespace VTX::Bench
 						p_renderer->graph().addPass( *pass );
 					}
 				}
+				*/
 
 				ImGui::EndMenu();
 			}
@@ -523,6 +531,7 @@ namespace VTX::Bench
 				p_renderer->clean();
 			}
 
+			/*
 			const RenderQueue & renderQueue = p_renderer->graph().getRenderQueue();
 			for ( const Pass * const pass : renderQueue )
 			{
@@ -536,7 +545,7 @@ namespace VTX::Bench
 				}
 				ImGui::TextUnformatted( " -> " );
 			}
-			if ( renderQueue.empty() )
+						if ( renderQueue.empty() )
 			{
 				ImGui::TextUnformatted( "<not built>" );
 			}
@@ -544,11 +553,13 @@ namespace VTX::Bench
 			{
 				ImGui::TextUnformatted( "Output" );
 			}
+			*/
 			ImGui::EndMenuBar();
 
 			ImNodes::BeginNodeEditor();
 
 			// DescPass nodes.
+			/*
 			uint								   id = 0;
 			std::map<const Input * const, uint>	   mapIdInput;
 			std::map<const Output * const, uint>   mapIdOutput;
@@ -686,16 +697,17 @@ namespace VTX::Bench
 
 				ImNodes::EndNode();
 			}
+			*/
 
 			// Final output node.
 			ImNodes::PushColorStyle( ImNodesCol_TitleBar, IM_COL32( 133, 78, 27, 255 ) );
-			ImNodes::BeginNode( id++ );
+			// ImNodes::BeginNode( id++ );
 			ImNodes::BeginNodeTitleBar();
 			ImGui::TextUnformatted( "Ouput" );
 			ImNodes::EndNodeTitleBar();
 			ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
-			uint idFinalOuput = id;
-			ImNodes::BeginInputAttribute( id++ );
+			// uint idFinalOuput = id;
+			// ImNodes::BeginInputAttribute( id++ );
 			ImGui::Text( "out" );
 			ImNodes::EndInputAttribute();
 			ImNodes::PopAttributeFlag();
@@ -704,6 +716,7 @@ namespace VTX::Bench
 			ImNodes::PopColorStyle();
 
 			// Links.
+			/*
 			for ( const std::unique_ptr<Link> & link : p_renderer->graph().getLinks() )
 			{
 				mapIdDescLink.emplace( id, link.get() );
@@ -776,6 +789,7 @@ namespace VTX::Bench
 				p_renderer->graph().removePass( passToDelete );
 				passToDelete = nullptr;
 			}
+			*/
 		}
 		ImGui::End();
 	}
