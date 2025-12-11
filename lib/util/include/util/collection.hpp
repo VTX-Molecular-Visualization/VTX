@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <util/concepts.hpp>
 #include <util/hashing.hpp>
-#include <util/singleton.hpp>
 
 #define DEBUG_HASH 0
 

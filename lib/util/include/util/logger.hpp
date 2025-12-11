@@ -8,7 +8,6 @@
 #include <string>
 #include <string_view>
 #include <util/callback.hpp>
-#include <util/singleton.hpp>
 
 namespace VTX
 {

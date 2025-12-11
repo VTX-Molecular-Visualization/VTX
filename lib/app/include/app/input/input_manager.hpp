@@ -8,7 +8,6 @@
 #include <util/callback.hpp>
 #include <util/concepts.hpp>
 #include <util/enum.hpp>
-#include <util/singleton.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Input
