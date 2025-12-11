@@ -7,6 +7,7 @@
 
 namespace VTX::Renderer
 {
+
 	/**
 	 * @brief Type to enum.
 	 */
@@ -106,11 +107,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief texture().
 		 */
-		GraphBuilder & texture( const Key & p_name, const E_FORMAT p_format )
-		{
-			resources.textures[ p_name ] = Texture { p_format };
-			return *this;
-		}
+		GraphBuilder & texture( const Key &, const E_FORMAT );
 
 		/**
 		 * @brief texture().
@@ -130,32 +127,21 @@ namespace VTX::Renderer
 		/**
 		 * @brief vertexStream().
 		 */
-		GraphBuilder & vertexStream( const Key & p_name, const std::initializer_list<VertexAttribute> p_attributes )
-		{
-			VertexLayout layout;
-			layout.attributes.assign( p_attributes.begin(), p_attributes.end() );
-			resources.vertexStreams[ p_name ] = std::move( layout );
-			return *this;
-		}
+		GraphBuilder & vertexStream( const Key &, const std::initializer_list<VertexAttribute> );
 
 		/**
 		 * @brief uniformBuffer().
 		 */
 		GraphBuilder & uniformBuffer(
-			const Key &								  p_name,
-			const std::uint32_t						  p_binding,
-			const std::initializer_list<UniformValue> p_values = {}
-		)
-		{
-			UniformBuffer desc;
-			desc.name	 = p_name;
-			desc.binding = p_binding;
-			desc.values.assign( p_values.begin(), p_values.end() );
-			resources.uniformBuffers[ p_name ] = std::move( desc );
-			return *this;
-		}
+			const Key &,
+			const std::uint32_t,
+			const std::initializer_list<UniformValue> = {}
+		);
 
-		PassBuilder pass( const Key & p_name );
+		/**
+		 * @brief pass().
+		 */
+		PassBuilder pass( const Key & );
 	};
 
 	/**
@@ -176,39 +162,22 @@ namespace VTX::Renderer
 		/**
 		 * @brief Constructor.
 		 */
-		ProgramBuilder( PassBuilder & p_p, Program & p_prog ) : parent( p_p ), program( p_prog ) {}
+		ProgramBuilder( PassBuilder &, Program & );
 
-		ProgramBuilder & shaders( std::initializer_list<FilePath> p_files )
-		{
-			program.shaders.assign( p_files.begin(), p_files.end() );
-			return *this;
-		}
+		/**
+		 * @brief shaders().
+		 */
+		ProgramBuilder & shaders( std::initializer_list<FilePath> );
 
 		/**
 		 * @brief draw().
 		 */
-		ProgramBuilder & draw(
-			const Key &		  p_vertexStream,
-			const E_PRIMITIVE p_primitive,
-			const bool		  p_useIndices = false
-		)
-		{
-			DrawCall dc;
-			dc.vertexStream	 = p_vertexStream;
-			dc.primitive	 = p_primitive;
-			dc.useIndices	 = p_useIndices;
-			program.drawCall = dc;
-			return *this;
-		}
+		ProgramBuilder & draw( const Key &, const E_PRIMITIVE, const bool = false );
 
 		/**
 		 * @brief uniform().
 		 */
-		ProgramBuilder & uniform( const UniformValue & p_u )
-		{
-			program.uniforms.push_back( p_u );
-			return *this;
-		}
+		ProgramBuilder & uniform( const UniformValue & );
 
 		/**
 		 * @brief uniform().
@@ -245,61 +214,36 @@ namespace VTX::Renderer
 		 */
 		Pass pass;
 
-		PassBuilder( GraphBuilder & p_g, const Key & p_name ) : graph( p_g ) { pass.name = p_name; }
+		/**
+		 * @brief Constructor.
+		 */
+		PassBuilder( GraphBuilder &, const Key & );
 
 		/**
 		 * @brief in().
 		 */
-		PassBuilder & in( const Key & p_resourceName )
-		{
-			pass.inputs.push_back( p_resourceName );
-			return *this;
-		}
+		PassBuilder & in( const Key & );
 
 		/**
 		 * @brief out().
 		 */
-		PassBuilder & out( const Key & p_resourceName )
-		{
-			pass.outputs.push_back( p_resourceName );
-			return *this;
-		}
+		PassBuilder & out( const Key & );
 
 		/**
 		 * @brief program().
 		 */
-		ProgramBuilder program( const Key & p_name )
-		{
-			pass.programs.emplace_back();
-			Program & prog = pass.programs.back();
-			prog.name	   = p_name;
-			return ProgramBuilder( *this, prog );
-		}
+		ProgramBuilder program( const Key & );
 
 		/**
 		 * @brief callback().
 		 */
-		PassBuilder & callback( const RenderFunc p_func )
-		{
-			pass.customCallback = std::move( p_func );
-			return *this;
-		}
+		PassBuilder & callback( const RenderFunc );
 
 		/**
 		 * @brief endPass().
 		 */
-		GraphBuilder & endPass()
-		{
-			graph.passes.emplace_back( std::make_unique<Pass>( std::move( pass ) ) );
-			return graph;
-		}
+		GraphBuilder & endPass();
 	};
-
-	/**
-	 * @brief Forward declared implementations.
-	 */
-	inline PassBuilder	 GraphBuilder::pass( const Key & p_name ) { return PassBuilder( *this, p_name ); }
-	inline PassBuilder & ProgramBuilder::endProgram() { return parent; }
 
 } // namespace VTX::Renderer
 
