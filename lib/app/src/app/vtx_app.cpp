@@ -1,5 +1,6 @@
 #include "app/vtx_app.hpp"
 #include "app/action/action_manager.hpp"
+#include "app/action/application.hpp"
 #include "app/action/camera.hpp"
 #include "app/action/color_layout.hpp"
 #include "app/action/controller.hpp"
@@ -113,6 +114,8 @@ namespace VTX::App
 		{
 			VTX_WARNING( "No graphics" );
 			// renderer.setDefault();
+			// Resize to minimal size to avoid issues.
+			ACTION().execute<Action::Application::Resize>( 1, 1 );
 		}
 		else
 		{
