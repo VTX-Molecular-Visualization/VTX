@@ -151,7 +151,7 @@ namespace VTX::App::Action::Preset
 			auto viewInstance = REG().view<App::Preset::Instance<T>>();
 			for ( const ECS::Entity entity : viewInstance )
 			{
-				const auto & presetInstance = viewInstance.get<App::Preset::Instance<T>>( entity );
+				const auto & presetInstance = viewInstance.template get<App::Preset::Instance<T>>( entity );
 				if ( presetInstance.entity == p_e )
 				{
 					throw VTXException( "Cannot delete a preset in use." );
