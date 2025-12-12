@@ -61,6 +61,24 @@ namespace VTX::Renderer::Context
 		}
 
 		/**
+		 * @brief Execute the current command buffer.
+		 */
+		inline void execute()
+		{
+			std::visit(
+				[ & ]( auto & p_exec )
+				{
+					using T = std::decay_t<decltype( p_exec )>;
+					if constexpr ( not std::is_same_v<T, std::monostate> )
+					{
+						p_exec.execute( _commands );
+					}
+				},
+				_executor
+			);
+		}
+
+		/**
 		 * @brief Build the command buffer from the render queue and resources.
 		 */
 		inline void build( const RenderQueue & p_renderQueue, const Resources & p_resources )
@@ -77,24 +95,6 @@ namespace VTX::Renderer::Context
 					}
 				},
 				_backend
-			);
-		}
-
-		/**
-		 * @brief Execute the current command buffer.
-		 */
-		inline void execute()
-		{
-			std::visit(
-				[ & ]( auto & p_exec )
-				{
-					using T = std::decay_t<decltype( p_exec )>;
-					if constexpr ( not std::is_same_v<T, std::monostate> )
-					{
-						p_exec.execute( _commands );
-					}
-				},
-				_executor
 			);
 		}
 
