@@ -6,15 +6,15 @@
 #ifdef VTX_CUDA_ENABLED
 #include "bcs/sesdf/sesdf.hpp"
 #endif
-#include "caches.hpp"
-#include "camera.hpp"
-#include "color.hpp"
-// #include "context/context_wrapper.hpp"
-#include "graphics_config.hpp"
-#include "proxy/system.hpp"
-#include "proxy/voxels.hpp"
-#include "render_graph.hpp"
-#include "representation.hpp"
+#include "renderer/caches.hpp"
+#include "renderer/camera.hpp"
+#include "renderer/color.hpp"
+#include "renderer/context/context_wrapper.hpp"
+#include "renderer/graphics_config.hpp"
+#include "renderer/proxy/system.hpp"
+#include "renderer/proxy/voxels.hpp"
+#include "renderer/render_graph.hpp"
+#include "renderer/representation.hpp"
 #include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>

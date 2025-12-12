@@ -183,6 +183,11 @@ namespace VTX::Renderer
 	using PassList = std::vector<std::unique_ptr<Pass>>;
 	using Handle   = uint;
 
+	/**
+	 * @brief Ordered list of passes for execution.
+	 */
+	using RenderQueue = std::vector<const Pass *>;
+
 } // namespace VTX::Renderer
 
 #endif
