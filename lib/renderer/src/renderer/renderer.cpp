@@ -1,7 +1,5 @@
 #include "renderer/renderer.hpp"
 #include "renderer/binary_buffer.hpp"
-// #include "renderer/context/default.hpp"
-// #include "renderer/context/opengl_45.hpp"
 #include "renderer/geometry/cylinder.hpp"
 #include "renderer/geometry/ribbon.hpp"
 #include "renderer/geometry/sphere.hpp"
@@ -21,19 +19,17 @@ namespace VTX::Renderer
 		_refreshGraph( GraphicsConfig() );
 	}
 
-	/*
 	void Renderer::setDefault()
 	{
-		_context.set<Context::Default>( _width, _height );
+		_context.setNull();
 		build();
 	}
 
-	void Renderer::setOpenGL45( const std::filesystem::path & p_shaderIncludePath )
+	void Renderer::setOpenGL45( const FilePath & p_shaderIncludePath )
 	{
-		_context.set<Context::OpenGL45>( _width, _height, p_shaderIncludePath );
+		_context.setOpenGL45( _width, _height, p_shaderIncludePath );
 		build();
 	}
-	*/
 
 	void Renderer::build()
 	{

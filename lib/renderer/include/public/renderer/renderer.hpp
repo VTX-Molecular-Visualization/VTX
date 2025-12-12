@@ -61,8 +61,8 @@ namespace VTX::Renderer
 		/**
 		 * @brief Set graphic context.
 		 */
-		// void setDefault();
-		// void setOpenGL45( const std::filesystem::path & );
+		void setDefault();
+		void setOpenGL45( const FilePath & );
 
 		// inline bool hasContext() const { return _context.hasContext(); }
 
@@ -234,7 +234,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Wrapper to handle the graphic APIs.
 		 */
-		// Context::ContextWrapper _context;
+		Context::ContextWrapper _context;
 
 		/**
 		 * @brief Size.
