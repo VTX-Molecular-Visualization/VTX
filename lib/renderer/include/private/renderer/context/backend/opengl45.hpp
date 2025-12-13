@@ -30,6 +30,16 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		void build( const RenderQueue & p_renderQueue, const Resources & p_resources, CommandBuffer & p_commands );
 
+		/**
+		 * @brief Resize textures.
+		 */
+		void resize( const size_t p_width, const size_t p_height );
+
+		/**
+		 * @brief Set the output framebuffer handle.
+		 */
+		inline void setOutput( const Handle p_output ) { _output = p_output; }
+
 	  private:
 		/**
 		 * @brief Output framebuffer handle.
@@ -50,7 +60,7 @@ namespace VTX::Renderer::Context::Backend
 			const GLsizei  p_length,
 			const GLchar * p_msg,
 			const void *   p_data
-		);
+		) noexcept;
 	};
 } // namespace VTX::Renderer::Context::Backend
 

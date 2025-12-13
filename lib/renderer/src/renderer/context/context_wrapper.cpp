@@ -93,7 +93,7 @@ namespace VTX::Renderer::Context
 	/**
 	 * @brief Execute the current command buffer.
 	 */
-	void ContextWrapper::execute()
+	void ContextWrapper::execute() noexcept
 	{
 		std::visit(
 			[ & ]( auto & p_exec )

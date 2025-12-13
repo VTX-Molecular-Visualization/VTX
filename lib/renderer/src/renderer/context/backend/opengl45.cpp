@@ -74,6 +74,13 @@ namespace VTX::Renderer::Context::Backend
 	void OpenGL45::build( const RenderQueue & p_renderQueue, const Resources & p_resources, CommandBuffer & p_commands )
 	{
 	}
+
+	void OpenGL45::resize( const size_t p_width, const size_t p_height )
+	{
+		assert( p_width > 0 );
+		assert( p_height > 0 );
+	}
+
 	void OpenGL45::_getOpenglInfos()
 	{
 		_openglInfos.glVendor	 = std::string( (const char *)glGetString( GL_VENDOR ) );
@@ -121,7 +128,7 @@ namespace VTX::Renderer::Context::Backend
 		const GLsizei  p_length,
 		const GLchar * p_msg,
 		const void *   p_data
-	)
+	) noexcept
 	{
 		std::string source;
 		std::string type;
@@ -163,10 +170,7 @@ namespace VTX::Renderer::Context::Backend
 
 		switch ( p_severity )
 		{
-		case GL_DEBUG_SEVERITY_HIGH:
-			// VTX_ERROR( "{}", message );
-			throw GraphicException( message );
-			break;
+		case GL_DEBUG_SEVERITY_HIGH: VTX_ERROR( "{}", message ); break;
 		case GL_DEBUG_SEVERITY_MEDIUM:
 		case GL_DEBUG_SEVERITY_LOW: VTX_WARNING( "{}", message ); break;
 		default: break;

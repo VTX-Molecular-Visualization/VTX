@@ -82,6 +82,25 @@ namespace VTX::Renderer
 	using Files = std::vector<FilePath>;
 
 	/**
+	 * @brief Key with hash computed one time.
+	 */
+	struct KeyHash
+	{
+		Key	 name;
+		Hash hash;
+
+		bool operator==( const KeyHash & other ) const noexcept { return hash == other.hash && name == other.name; }
+	};
+
+	/**
+	 * @brief Key hasher for unordered maps.
+	 */
+	struct KeyHasher
+	{
+		Hash operator()( const KeyHash & p_k ) const noexcept { return p_k.hash; }
+	};
+
+	/**
 	 * @brief Texture descriptor.
 	 */
 	struct Texture
