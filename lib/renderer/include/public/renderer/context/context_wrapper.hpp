@@ -31,7 +31,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Execute the current command buffer.
 		 */
-		void execute() noexcept;
+		void execute() const noexcept;
 
 		/**
 		 * @brief Build the command buffer from the render queue and resources.

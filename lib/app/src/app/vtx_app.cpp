@@ -112,6 +112,7 @@ namespace VTX::App
 		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) )
 		{
 			VTX_WARNING( "No graphics" );
+			// Default state set in constructor.
 			// renderer.setDefault();
 			// Resize to minimal size to avoid issues.
 			ACTION().execute<Action::Application::Resize>( 1, 1 );
@@ -120,7 +121,7 @@ namespace VTX::App
 		{
 			try
 			{
-				// renderer.setOpenGL45( Filesystem::getShadersDir() );
+				renderer.setOpenGL45( Filesystem::getShadersDir() );
 			}
 			catch ( const std::exception & p_e )
 			{

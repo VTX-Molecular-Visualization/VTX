@@ -50,7 +50,7 @@ namespace VTX::Renderer::Context
 			{
 				if ( auto * executor = std::get_if<Executor::OpenGL45>( &p_executor ) )
 				{
-					*executor = Executor::OpenGL45( std::get<Backend::OpenGL45>( p_backend ) );
+					p_executor.emplace<Executor::OpenGL45>( std::get<Backend::OpenGL45>( p_backend ) );
 				}
 			}
 		}
@@ -93,12 +93,12 @@ namespace VTX::Renderer::Context
 	/**
 	 * @brief Execute the current command buffer.
 	 */
-	void ContextWrapper::execute() noexcept
+	void ContextWrapper::execute() const noexcept
 	{
 		std::visit(
-			[ & ]( auto & p_exec )
+			[ & ]( const auto & p_exec )
 			{
-				using T = std::decay_t<decltype( p_exec )>;
+				using T = std::remove_cvref_t<decltype( p_exec )>;
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
 					p_exec.execute( _impl->commands );
@@ -118,7 +118,7 @@ namespace VTX::Renderer::Context
 		std::visit(
 			[ & ]( auto & p_backend )
 			{
-				using T = std::decay_t<decltype( p_backend )>;
+				using T = std::remove_cvref_t<decltype( p_backend )>;
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
 					p_backend.build( p_renderQueue, p_resources, _impl->commands );
@@ -136,7 +136,7 @@ namespace VTX::Renderer::Context
 		std::visit(
 			[ & ]( auto & p_backend )
 			{
-				using T = std::decay_t<decltype( p_backend )>;
+				using T = std::remove_cvref_t<decltype( p_backend )>;
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
 					// p_backend.resize( p_width, p_height );

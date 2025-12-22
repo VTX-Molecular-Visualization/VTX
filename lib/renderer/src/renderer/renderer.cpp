@@ -38,7 +38,7 @@ namespace VTX::Renderer
 			[ this ]()
 			{
 				const RenderQueue queue = _graph.build();
-				//_context.build( queue, _graph.getLinks(), _globalData, _instructions, _instructionsDurationRanges );
+				_context.build( queue, _graph.getResources() );
 			}
 		);
 
