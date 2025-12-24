@@ -59,7 +59,7 @@ namespace VTX::Renderer::Context
 		 * @brief Set the command buffer executor.
 		 */
 		template<typename E>
-		void _setExecutor( BackendVariant & p_backend, ExecutorVariant & p_executor )
+		void _setExecutor( const BackendVariant & p_backend, ExecutorVariant & p_executor )
 		{
 			if constexpr ( std::is_same_v<E, Executor::OpenGL45> )
 			{

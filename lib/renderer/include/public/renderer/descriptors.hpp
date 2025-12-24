@@ -6,6 +6,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <util/types.hpp>
 #include <variant>
 #include <vector>
@@ -18,7 +19,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All data types.
 	 */
-	enum struct E_TYPE : std::uint8_t
+	enum struct E_TYPE : uint8_t
 	{
 		BOOL,
 		BYTE,
@@ -40,17 +41,17 @@ namespace VTX::Renderer
 	/**
 	 * @brief Global resource types.
 	 */
-	enum struct E_RESOURCE_TYPE : std::uint8_t
+	enum struct E_RESOURCE_TYPE : uint8_t
 	{
 		TEXTURE,
 		VERTEX_STREAM,
-		UNIFORM_BUFFER
+		BUFFER
 	};
 
 	/**
 	 * @brief All data formats.
 	 */
-	enum struct E_FORMAT : std::uint8_t
+	enum struct E_FORMAT : uint8_t
 	{
 		RGB16F,
 		RGBA16F,
@@ -66,7 +67,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All draw primitives.
 	 */
-	enum struct E_PRIMITIVE : std::uint8_t
+	enum struct E_PRIMITIVE : uint8_t
 	{
 		POINTS,
 		LINES,
@@ -75,30 +76,43 @@ namespace VTX::Renderer
 	};
 
 	/**
+	 * @brief All buffer roles.
+	 */
+	enum struct E_BUFFER_ROLE : uint8_t
+	{
+		UNIFORM,
+		STORAGE
+	};
+
+	enum class E_BUFFER_ACCESS : uint8_t
+	{
+		READ,
+		READ_WRITE
+	};
+
+	enum class E_BUFFER_CLASS : uint8_t
+	{
+		UNIFORM_LIKE,
+		STRUCTURED
+	};
+
+	/**
+	 * @brief All buffer update frequencies.
+	 */
+	enum class E_UPDATE_FREQUENCY : uint8_t
+	{
+		PER_FRAME,
+		PER_PASS,
+		PER_DRAW,
+		STATIC
+	};
+
+	/**
 	 * @brief Aliases.
 	 */
 	using Key	= std::string;
 	using Keys	= std::vector<Key>;
 	using Files = std::vector<FilePath>;
-
-	/**
-	 * @brief Key with hash computed one time.
-	 */
-	struct KeyHash
-	{
-		Key	 name;
-		Hash hash;
-
-		bool operator==( const KeyHash & other ) const noexcept { return hash == other.hash && name == other.name; }
-	};
-
-	/**
-	 * @brief Key hasher for unordered maps.
-	 */
-	struct KeyHasher
-	{
-		Hash operator()( const KeyHash & p_k ) const noexcept { return p_k.hash; }
-	};
 
 	/**
 	 * @brief Texture descriptor.
@@ -114,9 +128,9 @@ namespace VTX::Renderer
 	 */
 	struct VertexAttribute
 	{
-		Key			 name;
-		E_TYPE		 type;
-		std::uint8_t components;
+		Key		name;
+		E_TYPE	type;
+		uint8_t components;
 	};
 
 	/**
@@ -134,17 +148,21 @@ namespace VTX::Renderer
 	{
 		Key										 name;
 		E_TYPE									 type;
-		std::array<std::uint8_t, 64>			 data;
+		std::array<uint8_t, 64>					 data;
 		std::optional<std::pair<double, double>> range;
+		uint32_t								 arrayCount;
 	};
 
 	/**
 	 * @brief Uniform buffer descriptor.
 	 */
-	struct UniformBuffer
+	struct BufferLayout
 	{
 		Key						  name;
-		std::uint32_t			  binding;
+		E_BUFFER_CLASS			  dataClass;
+		E_BUFFER_ACCESS			  access;
+		E_UPDATE_FREQUENCY		  frequency;
+		std::uint32_t			  binding; // TODO: remove and use backend reflection.
 		std::vector<UniformValue> values;
 	};
 
@@ -153,9 +171,9 @@ namespace VTX::Renderer
 	 */
 	struct Resources
 	{
-		std::unordered_map<Key, Texture>	   textures;
-		std::unordered_map<Key, VertexLayout>  vertexStreams;
-		std::unordered_map<Key, UniformBuffer> uniformBuffers;
+		std::unordered_map<Key, Texture>	  textures;
+		std::unordered_map<Key, VertexLayout> vertexStreams;
+		std::unordered_map<Key, BufferLayout> buffers;
 	};
 
 	/**
@@ -200,7 +218,7 @@ namespace VTX::Renderer
 	 * @brief Aliases.
 	 */
 	using PassList = std::vector<std::unique_ptr<Pass>>;
-	using Handle   = uint;
+	using Handle   = uint32_t;
 
 	/**
 	 * @brief Ordered list of passes for execution.

@@ -42,6 +42,67 @@ namespace VTX::Renderer::Context::Backend
 
 	  private:
 		/**
+		 * @brief Binding types.
+		 */
+		enum class E_BINDING_TYPE : uint8_t
+		{
+			TEXTURE,
+			BUFFER_UNIFORM,
+			BUFFER_STORAGE
+		};
+
+		/**
+		 * @brief Buffer binding info.
+		 */
+		struct BufferBinding
+		{
+			Handle		   buffer;
+			uint32_t	   offsetBytes = 0;
+			uint32_t	   sizeBytes   = 0;
+			E_BINDING_TYPE type		   = E_BINDING_TYPE::BUFFER_UNIFORM;
+		};
+
+		/**
+		 * @brief Resource table (MVP).
+		 */
+		struct ResourceTable
+		{
+			std::vector<Handle>		   textures;	   // index = unit
+			std::vector<BufferBinding> uniformBuffers; // index = binding
+			std::vector<BufferBinding> storageBuffers; // index = binding
+		};
+
+		/**
+		 * @brief Cache entry.
+		 */
+		template<typename Desc>
+		struct CacheEntry
+		{
+			Hash   hash	  = 0;
+			Handle handle = 0;
+		};
+
+		/**
+		 * @brief Cache mapping.
+		 */
+		template<typename Desc>
+		struct Cache
+		{
+			std::unordered_map<Key, CacheEntry<Desc>> map;
+		};
+
+		/**
+		 * @brief Resource pools.
+		 */
+		std::vector<ResourceTable>			_resourceTables;
+		std::vector<GL::VertexArray>		_vertexArrays;
+		std::vector<GL::Buffer>				_buffers;
+		std::vector<GL::Framebuffer>		_framebuffers;
+		std::vector<GL::Texture2D>			_textures;
+		std::unique_ptr<GL::ProgramManager> _programManager;
+		std::vector<GL::Program>			_programs;
+
+		/**
 		 * @brief Output framebuffer handle.
 		 */
 		Handle _output;

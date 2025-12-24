@@ -20,17 +20,23 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	GraphBuilder & GraphBuilder::uniformBuffer(
+	GraphBuilder & GraphBuilder::buffer(
 		const Key &								  p_name,
-		const std::uint32_t						  p_binding,
+		const E_BUFFER_CLASS					  p_class,
+		const E_BUFFER_ACCESS					  p_access,
+		const E_UPDATE_FREQUENCY				  p_frequency,
+		const uint32_t							  p_binding,
 		const std::initializer_list<UniformValue> p_values
 	)
 	{
-		UniformBuffer desc;
-		desc.name	 = p_name;
-		desc.binding = p_binding;
+		BufferLayout desc;
+		desc.name	   = p_name;
+		desc.dataClass = p_class;
+		desc.access	   = p_access;
+		desc.frequency = p_frequency;
+		desc.binding   = p_binding;
 		desc.values.assign( p_values.begin(), p_values.end() );
-		resources.uniformBuffers[ p_name ] = std::move( desc );
+		resources.buffers[ p_name ] = std::move( desc );
 		return *this;
 	}
 

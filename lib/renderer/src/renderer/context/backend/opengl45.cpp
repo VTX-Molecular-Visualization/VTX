@@ -1,6 +1,41 @@
 #include "renderer/context/backend/opengl45.hpp"
 #include <util/exceptions.hpp>
 
+namespace
+{
+	using namespace VTX::Renderer;
+
+	/**
+	 * @brief Types mapping.
+	 */
+	/*
+	constexpr GLenum _toGL(const E_TYPE p_type) {
+
+	}
+	*/
+
+	/**
+	 * @brief Formats mapping.
+	 */
+
+	constexpr GLenum _toGL( const E_FORMAT p_format )
+	{
+		switch ( p_format )
+		{
+		case E_FORMAT::RGB16F: return GL_RGB16F;
+		case E_FORMAT::RGBA16F: return GL_RGBA16F;
+		case E_FORMAT::RGBA32UI: return GL_RGBA32UI;
+		case E_FORMAT::RGBA32F: return GL_RGBA32F;
+		case E_FORMAT::RG32UI: return GL_RG32UI;
+		case E_FORMAT::R8: return GL_R8;
+		case E_FORMAT::R16F: return GL_R16F;
+		case E_FORMAT::R32F: return GL_R32F;
+		case E_FORMAT::DEPTH_COMPONENT32F: return GL_DEPTH_COMPONENT32F;
+		default: assert( false );
+		}
+	}
+} // namespace
+
 namespace VTX::Renderer::Context::Backend
 {
 
@@ -37,7 +72,7 @@ namespace VTX::Renderer::Context::Backend
 		VTX_TRACE( "Default framebuffer: {}", _output );
 
 		// Program manager.
-		//_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
+		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
 
 		// Init quad vao/vbo for deferred shading.
 		std::vector<Vec2f> quad = { { -1.f, 1.f }, { -1.f, -1.f }, { 1.f, 1.f }, { 1.f, -1.f } };
@@ -69,10 +104,34 @@ namespace VTX::Renderer::Context::Backend
 		glDebugMessageCallback( _debugMessageCallback, nullptr );
 
 		glEnable( GL_CLIP_DISTANCE0 );
+
+		glClearColor( 0.5f, 0.5f, 0.5f, 1.0f );
 	}
 
 	void OpenGL45::build( const RenderQueue & p_renderQueue, const Resources & p_resources, CommandBuffer & p_commands )
 	{
+		// Clear all.
+		p_commands.push<E_COMMAND::CLEAR>();
+
+		// Foreach resource.
+		for ( const auto & [ key, texture ] : p_resources.textures )
+		{
+			//
+		}
+		for ( const auto & [ key, vertexStream ] : p_resources.vertexStreams )
+		{
+			//
+		}
+		for ( const auto & [ key, buffer ] : p_resources.buffers )
+		{
+			//
+		}
+
+		// Foreach pass.
+		for ( const Pass * const pass : p_renderQueue )
+		{
+			//
+		}
 	}
 
 	void OpenGL45::resize( const size_t p_width, const size_t p_height )

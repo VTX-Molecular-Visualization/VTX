@@ -18,7 +18,7 @@ namespace VTX::Renderer
 			{
 				return true;
 			}
-			if ( _resources.uniformBuffers.contains( name ) )
+			if ( _resources.buffers.contains( name ) )
 			{
 				return true;
 			}
@@ -90,9 +90,9 @@ namespace VTX::Renderer
 			auto [ it, inserted ] = _resources.vertexStreams.emplace( key, vertexStream );
 			assert( inserted );
 		}
-		for ( const auto & [ key, uniformBuffer ] : p_builder.resources.uniformBuffers )
+		for ( const auto & [ key, buffer ] : p_builder.resources.buffers )
 		{
-			auto [ it, inserted ] = _resources.uniformBuffers.emplace( key, uniformBuffer );
+			auto [ it, inserted ] = _resources.buffers.emplace( key, buffer );
 			assert( inserted );
 		}
 		// Passes.
@@ -116,8 +116,11 @@ namespace VTX::Renderer
 		GraphBuilder g;
 
 		// Uniforms.
-		g.uniformBuffer(
+		g.buffer(
 			"Camera",
+			E_BUFFER_CLASS::UNIFORM_LIKE,
+			E_BUFFER_ACCESS::READ,
+			E_UPDATE_FREQUENCY::PER_FRAME,
 			15,
 			{ makeUniform( "MatrixView", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixProjection", Mat4f( MAT4F_ID ) ),
@@ -130,18 +133,31 @@ namespace VTX::Renderer
 			  makeUniform( "IsPerspective", std::uint32_t( 1 ) ) }
 		);
 
-		g.uniformBuffer( "ColorLayout", 14, { makeUniform( "Colors", Util::Color::Rgba {} ) } );
+		g.buffer(
+			"ColorLayout",
+			E_BUFFER_CLASS::UNIFORM_LIKE,
+			E_BUFFER_ACCESS::READ,
+			E_UPDATE_FREQUENCY::STATIC,
+			14,
+			{ makeUniformArray( "Colors", Util::Color::Rgba {}, 256 ) }
+		);
 
-		g.uniformBuffer(
+		g.buffer(
 			"Models",
+			E_BUFFER_CLASS::STRUCTURED,
+			E_BUFFER_ACCESS::READ,
+			E_UPDATE_FREQUENCY::STATIC,
 			13,
 			{ makeUniform( "MatrixModelView", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixModelViewInv", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixNormal", Mat4f( MAT4F_ID ) ) }
 		);
 
-		g.uniformBuffer(
+		g.buffer(
 			"Representations",
+			E_BUFFER_CLASS::STRUCTURED,
+			E_BUFFER_ACCESS::READ,
+			E_UPDATE_FREQUENCY::STATIC,
 			12,
 			{ makeUniform( "SphereRadiusFixed", 0.0f ),
 			  makeUniform( "SphereRadiusAdd", 0.0f ),

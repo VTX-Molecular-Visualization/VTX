@@ -90,6 +90,19 @@ namespace VTX::Renderer
 		return u;
 	}
 
+	template<typename T>
+	UniformValue makeUniformArray(
+		const Key &									   p_name,
+		const T &									   p_value,
+		const std::uint32_t							   p_count,
+		const std::optional<std::pair<double, double>> p_range = std::nullopt
+	)
+	{
+		UniformValue u = makeUniform<T>( p_name, p_value, p_range );
+		u.arrayCount   = p_count;
+		return u;
+	}
+
 	/**
 	 * @brief Forward declarations.
 	 */
@@ -132,9 +145,12 @@ namespace VTX::Renderer
 		/**
 		 * @brief uniformBuffer().
 		 */
-		GraphBuilder & uniformBuffer(
+		GraphBuilder & buffer(
 			const Key &,
-			const std::uint32_t,
+			const E_BUFFER_CLASS,
+			const E_BUFFER_ACCESS,
+			const E_UPDATE_FREQUENCY,
+			const uint32_t,
 			const std::initializer_list<UniformValue> = {}
 		);
 
