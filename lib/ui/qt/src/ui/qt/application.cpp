@@ -15,8 +15,6 @@
 #include <app/infos.hpp>
 #include <util/event_hub.hpp>
 
-VTX_INIT_RESOURCES( vtx_qt_resources_ui )
-
 namespace VTX::UI::QT
 {
 
@@ -24,6 +22,8 @@ namespace VTX::UI::QT
 	Application::Application( const App::Args & p_args ) : App::VTXApp( p_args ), QApplication( zero, nullptr )
 
 	{
+		VTX_INIT_RESOURCES( vtx_qt_resources_ui );
+
 		using namespace Resources;
 		using namespace VTX::App;
 

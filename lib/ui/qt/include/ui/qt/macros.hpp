@@ -3,13 +3,6 @@
 
 #include <QtResource>
 
-#define VTX_INIT_RESOURCES( p_targetName )                         \
-	namespace                                                      \
-	{                                                              \
-		struct initializer                                         \
-		{                                                          \
-			initializer() { Q_INIT_RESOURCE( p_targetName ); }     \
-			~initializer() { Q_CLEANUP_RESOURCE( p_targetName ); } \
-		} dummy;                                                   \
-	}
+#define VTX_INIT_RESOURCES( p_targetName ) Q_INIT_RESOURCE( p_targetName )
+
 #endif
