@@ -77,34 +77,38 @@ namespace VTX::UI::QT
 
 		// Load main stylesheet.
 		QFile stylesheetFile( FILE_STYLESHEET.data() );
-		stylesheetFile.open( QFile::ReadOnly );
-		QString stylesheet = stylesheetFile.readAll();
+		if ( stylesheetFile.open( QFile::ReadOnly ) )
+		{
+			QString stylesheet = stylesheetFile.readAll();
 
-		// Load os-specific stylesheet.
+			// Load os-specific stylesheet.
 #if _WIN32
-		QFile stylesheetOSFile( FILE_STYLESHEET_WINDOWS.data() );
+			QFile stylesheetOSFile( FILE_STYLESHEET_WINDOWS.data() );
 #elif __linux__
-		QFile stylesheetOSFile( FILE_STYLESHEET_LINUX.data() );
+			QFile stylesheetOSFile( FILE_STYLESHEET_LINUX.data() );
 #elif __APPLE__
-		QFile stylesheetOSFile( FILE_STYLESHEET_MACOS.data() );
+			QFile stylesheetOSFile( FILE_STYLESHEET_MACOS.data() );
 #else
-		QFile stylesheetOSFile();
-		assert( true );
+			QFile stylesheetOSFile();
+			assert( true );
 #endif
 
-		stylesheetOSFile.open( QFile::ReadOnly );
-		stylesheet += '\n' + stylesheetOSFile.readAll();
-
-		for ( const App::Tool::BaseTool * const tool : p_tools )
-		{
-			if ( tool->getStyle().has_value() )
+			if ( stylesheetOSFile.open( QFile::ReadOnly ) )
 			{
-				stylesheet += '\n' + tool->getStyle().value();
+				stylesheet += '\n' + stylesheetOSFile.readAll();
 			}
-		}
 
-		// Set stylesheet to app.
-		Q_APP()->setStyleSheet( stylesheet );
+			for ( const App::Tool::BaseTool * const tool : p_tools )
+			{
+				if ( tool->getStyle().has_value() )
+				{
+					stylesheet += '\n' + tool->getStyle().value();
+				}
+			}
+
+			// Set stylesheet to app.
+			Q_APP()->setStyleSheet( stylesheet );
+		}
 
 		// Load icons font (broken until 6.9).
 		QFontDatabase::addApplicationFont( FONT_MATERIAL_SYMBOLS.data() );

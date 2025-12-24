@@ -25,7 +25,7 @@ class VTXRecipe(ConanFile):
         self.requires("stb/cci.20240531")
         self.requires("entt/3.15.0")
         self.requires("pybind11/2.13.6")
-        self.requires("qt/6.8.3")
+        self.requires("qt/6.10.1")
         self.requires("gromacs/2024.0")
         self.requires("re2/20240702")
         self.requires("libarchive/3.7.9")

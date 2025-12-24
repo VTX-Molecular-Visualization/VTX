@@ -44,8 +44,11 @@ namespace VTX::Tool::Example
 	std::optional<std::string> ExampleTool::getStyle() const
 	{
 		QFile stylesheetFile( ":/tool_example_style.css" );
-		stylesheetFile.open( QFile::ReadOnly );
-		return stylesheetFile.readAll().toStdString();
+		if ( stylesheetFile.open( QFile::ReadOnly ) )
+		{
+			return stylesheetFile.readAll().toStdString();
+		}
+		return std::nullopt;
 	}
 
 } // namespace VTX::Tool::Example
