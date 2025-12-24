@@ -41,8 +41,8 @@ namespace VTX::Renderer::Context
 	 */
 	enum struct E_PIPELINE_TYPE : std::uint8_t
 	{
-		Graphics,
-		Compute
+		GRAPHICS,
+		COMPUTE
 	};
 
 	/**
@@ -78,7 +78,7 @@ namespace VTX::Renderer::Context
 	/**
 	 * @brief No payload.
 	 */
-	static constexpr uint32_t NO_PAYLOAD = TypeMax<uint32_t>;
+	constexpr uint32_t NO_PAYLOAD = TypeMax<uint32_t>;
 
 	/**
 	 * @brief Payloads for each command type.

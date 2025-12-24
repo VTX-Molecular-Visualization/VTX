@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <util/constants.hpp>
 #include <util/types.hpp>
 #include <variant>
 #include <vector>
@@ -217,8 +218,9 @@ namespace VTX::Renderer
 	/**
 	 * @brief Aliases.
 	 */
-	using PassList = std::vector<std::unique_ptr<Pass>>;
-	using Handle   = uint32_t;
+	using PassList			   = std::vector<std::unique_ptr<Pass>>;
+	using Handle			   = uint32_t;
+	constexpr Handle NO_HANDLE = TypeMax<Handle>;
 
 	/**
 	 * @brief Ordered list of passes for execution.
