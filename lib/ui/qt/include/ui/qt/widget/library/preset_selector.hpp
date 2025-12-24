@@ -72,6 +72,9 @@ namespace VTX::UI::QT::Widget::Library
 			toolbar->addAction( aDelete );
 			layout->addWidget( toolbar );
 
+			aNew->setIcon( QIcon::fromTheme( "Search" ) );
+			aDuplicate->setIcon( QIcon::fromTheme( QIcon::ThemeIcon::DocumentNew ) );
+
 			_lineRename = new QLineEdit( this );
 			layout->addWidget( _lineRename );
 
@@ -171,7 +174,7 @@ namespace VTX::UI::QT::Widget::Library
 			auto view		   = REG().view<Preset::Name, P>();
 			for ( const ECS::Entity entity : view )
 			{
-				const auto & presetName = view.get<Preset::Name>( entity ).name;
+				const auto & presetName = view.template get<Preset::Name>( entity ).name;
 				_comboBox->addItem( QString::fromStdString( presetName ), QVariant::fromValue<ECS::Entity>( entity ) );
 
 				if ( entity == p_e )

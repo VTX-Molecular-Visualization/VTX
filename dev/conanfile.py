@@ -120,7 +120,13 @@ class VTXRecipe(ConanFile):
         self.options["qt"].qtgrpc = False
         self.options["qt"].qtquickeffectmaker = False
         self.options["qt"].qtgraphs = False
-
+        
+        if self.settings.os == "Linux":
+            self.options["qt"].qtwayland = True
+            self.options["qt"].with_x11 = True
+            self.options["qt"].with_egl = True
+            self.options["qt"].with_dbus = True
+        
     def generate(self):
         tc = CMakeToolchain(self)        
         tc.generate()

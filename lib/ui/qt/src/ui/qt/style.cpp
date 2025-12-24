@@ -6,15 +6,11 @@
 #include <QIcon>
 #include <QStyle>
 #include <QWidget>
+#include <util/logger.hpp>
 
 namespace
 {
 	using namespace VTX::UI::QT;
-
-	/**
-	 * @brief Store palettes for each theme.
-	 */
-	std::array<QPalette, Style::E_THEME::COUNT> _THEME_PALETTES;
 
 	QPalette _makeLightPalette()
 	{
@@ -114,10 +110,23 @@ namespace VTX::UI::QT
 		QFontDatabase::addApplicationFont( FONT_MATERIAL_SYMBOLS.data() );
 		QIcon::setThemeName( "Material Symbols Outlined" );
 
+		// List all available fonts.
+		const QStringList fontList = QFontDatabase::families();
+		for ( const QString & fontName : fontList )
+		{
+			VTX_INFO( "Available font: {}", fontName.toStdString() );
+		}
+
+		// Check material symbols font availability.
+		if ( !fontList.contains( "Material Symbols Outlined" ) )
+		{
+			VTX_WARNING( "Material Symbols Outlined font not found. Icons may not be displayed correctly." );
+		}
+
 		// Save system palette.
-		_THEME_PALETTES[ E_THEME::SYSTEM ] = Q_APP()->palette();
-		_THEME_PALETTES[ E_THEME::LIGHT ]  = _makeLightPalette();
-		_THEME_PALETTES[ E_THEME::DARK ]   = _makeDarkPalette();
+		_themePalettes[ E_THEME::SYSTEM ] = Q_APP()->palette();
+		_themePalettes[ E_THEME::LIGHT ]  = _makeLightPalette();
+		_themePalettes[ E_THEME::DARK ]	  = _makeDarkPalette();
 	}
 
 	void Style::setTheme( const E_THEME p_theme )
@@ -127,10 +136,10 @@ namespace VTX::UI::QT
 			return;
 		}
 
-		Q_APP()->setPalette( _THEME_PALETTES[ p_theme ] );
+		Q_APP()->setPalette( _themePalettes[ p_theme ] );
 		for ( QWidget * w : Q_APP()->allWidgets() )
 		{
-			w->setPalette( _THEME_PALETTES[ p_theme ] );
+			w->setPalette( _themePalettes[ p_theme ] );
 			w->update();
 		}
 		_currentTheme = p_theme;
