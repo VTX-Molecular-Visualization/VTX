@@ -106,21 +106,21 @@ namespace VTX::UI::QT
 			Q_APP()->setStyleSheet( stylesheet );
 		}
 
-		// Load icons font (broken until 6.9).
 		QFontDatabase::addApplicationFont( FONT_MATERIAL_SYMBOLS.data() );
-		QIcon::setThemeName( "Material Symbols Outlined" );
+		QFontDatabase::addApplicationFont( FONT_INTER.data() );
+
+		// Linux only?
+		// QIcon::setThemeName( "Material Symbols Outlined" );
+
+		// Set font.
+		QFont appFont( "Inter", 10 );
+		Q_APP()->setFont( appFont );
 
 		// List all available fonts.
 		const QStringList fontList = QFontDatabase::families();
 		for ( const QString & fontName : fontList )
 		{
-			VTX_INFO( "Available font: {}", fontName.toStdString() );
-		}
-
-		// Check material symbols font availability.
-		if ( !fontList.contains( "Material Symbols Outlined" ) )
-		{
-			VTX_WARNING( "Material Symbols Outlined font not found. Icons may not be displayed correctly." );
+			// VTX_TRACE( "Available font: {}", fontName.toStdString() );
 		}
 
 		// Save system palette.
