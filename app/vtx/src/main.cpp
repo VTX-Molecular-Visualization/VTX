@@ -60,6 +60,7 @@ int main( int p_argc, char * p_argv[] )
 			// To set before QApplication construction.
 			QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
 			QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
+			Q_INIT_RESOURCE( vtx_qt_resources_ui );
 			app = std::make_unique<UI::QT::Application>( args );
 		}
 		else
@@ -76,11 +77,17 @@ int main( int p_argc, char * p_argv[] )
 #if VTX_TOOL_EXAMPLE
 		auto exampleTool = std::make_unique<Tool::Example::ExampleTool>();
 		app->addTool( exampleTool.get() );
+#if VTX_UI_QT
+		Q_INIT_RESOURCE( vtx_qt_resources_tool_example );
+#endif
 #endif
 // Add tools.
 #if VTX_TOOL_MDPREP
 		auto mdprepTool = std::make_unique<Tool::Mdprep::MdPrep>();
 		app->addTool( mdprepTool.get() );
+#if VTX_UI_QT
+		Q_INIT_RESOURCE( vtx_qt_resources_tool_mdprep );
+#endif
 #endif
 
 		// const FilePath molPath = App::Filesystem::getInternalDataDir() / "1AGA.mmtf";

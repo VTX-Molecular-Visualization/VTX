@@ -1,6 +1,5 @@
 #include "ui/qt/application.hpp"
 #include "app/services.hpp"
-#include "ui/qt/macros.hpp"
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/model.hpp"
 #include "ui/qt/resources.hpp"
@@ -20,10 +19,7 @@ namespace VTX::UI::QT
 
 	int zero = 0;
 	Application::Application( const App::Args & p_args ) : App::VTXApp( p_args ), QApplication( zero, nullptr )
-
 	{
-		VTX_INIT_RESOURCES( vtx_qt_resources_ui );
-
 		using namespace Resources;
 		using namespace VTX::App;
 

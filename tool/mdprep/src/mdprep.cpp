@@ -39,7 +39,6 @@
 //
 #include "tool/mdprep/ui/form.hpp"
 //
-#include <ui/qt/macros.hpp>
 
 namespace VTX::Tool::Mdprep
 {
@@ -131,8 +130,6 @@ namespace VTX::Tool::Mdprep
 
 	MdPrep::MdPrep()
 	{
-		VTX_INIT_RESOURCES( vtx_qt_resources_tool_mdprep );
-
 		OpenMdPrep action;
 
 		auto & mainWindow = UI::QT::MAIN_WINDOW();
