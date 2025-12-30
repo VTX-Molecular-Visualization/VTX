@@ -6,18 +6,8 @@ namespace
 	using namespace VTX::Renderer;
 
 	/**
-	 * @brief Types mapping.
+	 * @brief All GL mapping.
 	 */
-	/*
-	constexpr GLenum _toGL(const E_TYPE p_type) {
-
-	}
-	*/
-
-	/**
-	 * @brief Formats mapping.
-	 */
-
 	constexpr GLenum _toGL( const E_FORMAT p_format )
 	{
 		switch ( p_format )
@@ -31,6 +21,33 @@ namespace
 		case E_FORMAT::R16F: return GL_R16F;
 		case E_FORMAT::R32F: return GL_R32F;
 		case E_FORMAT::DEPTH_COMPONENT32F: return GL_DEPTH_COMPONENT32F;
+		default: assert( false );
+		}
+	}
+
+	constexpr GLenum _toGL( const E_WRAPPING p_wrapping )
+	{
+		switch ( p_wrapping )
+		{
+		case E_WRAPPING::REPEAT: return GL_REPEAT;
+		case E_WRAPPING::MIRRORED_REPEAT: return GL_MIRRORED_REPEAT;
+		case E_WRAPPING::CLAMP_TO_EDGE: return GL_CLAMP_TO_EDGE;
+		case E_WRAPPING::CLAMP_TO_BORDER: return GL_CLAMP_TO_BORDER;
+		case E_WRAPPING::MIRROR_CLAMP_TO_EDGE: return GL_MIRROR_CLAMP_TO_EDGE;
+		default: assert( false );
+		}
+	}
+
+	constexpr GLenum _toGL( const E_FILTERING p_filtering )
+	{
+		switch ( p_filtering )
+		{
+		case E_FILTERING::NEAREST: return GL_NEAREST;
+		case E_FILTERING::LINEAR: return GL_LINEAR;
+		case E_FILTERING::NEAREST_MIPMAP_NEAREST: return GL_NEAREST_MIPMAP_NEAREST;
+		case E_FILTERING::LINEAR_MIPMAP_NEAREST: return GL_LINEAR_MIPMAP_NEAREST;
+		case E_FILTERING::NEAREST_MIPMAP_LINEAR: return GL_NEAREST_MIPMAP_LINEAR;
+		case E_FILTERING::LINEAR_MIPMAP_LINEAR: return GL_LINEAR_MIPMAP_LINEAR;
 		default: assert( false );
 		}
 	}

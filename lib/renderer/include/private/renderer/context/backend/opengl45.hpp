@@ -46,7 +46,6 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		enum class E_BINDING_TYPE : uint8_t
 		{
-			TEXTURE,
 			BUFFER_UNIFORM,
 			BUFFER_STORAGE
 		};

@@ -3,9 +3,29 @@
 namespace VTX::Renderer
 {
 
-	GraphBuilder & GraphBuilder::texture( const Key & p_name, const E_FORMAT p_format )
+	GraphBuilder::GraphBuilder()
 	{
-		resources.textures[ p_name ] = Texture { p_format };
+		// Create default sampler.
+		sampler(
+			"Default", E_WRAPPING::CLAMP_TO_EDGE, E_WRAPPING::CLAMP_TO_EDGE, E_FILTERING::NEAREST, E_FILTERING::NEAREST
+		);
+	}
+
+	GraphBuilder & GraphBuilder::texture( const Key & p_name, const E_FORMAT p_format, const Size2D & p_size )
+	{
+		resources.textures[ p_name ] = Texture { p_format, p_size };
+		return *this;
+	}
+
+	GraphBuilder & GraphBuilder::sampler(
+		const Key &		  p_name,
+		const E_WRAPPING  p_wrapS,
+		const E_WRAPPING  p_wrapT,
+		const E_FILTERING p_minFilter,
+		const E_FILTERING p_magFilter
+	)
+	{
+		resources.samplers[ p_name ] = Sampler { p_wrapS, p_wrapT, p_minFilter, p_magFilter };
 		return *this;
 	}
 
@@ -50,6 +70,12 @@ namespace VTX::Renderer
 		return *this;
 	}
 
+	ProgramBuilder & ProgramBuilder::uniform( const UniformValue & p_u )
+	{
+		program.uniforms.push_back( p_u );
+		return *this;
+	}
+
 	ProgramBuilder & ProgramBuilder::draw(
 		const Key &		  p_vertexStream,
 		const E_PRIMITIVE p_primitive,
@@ -64,37 +90,24 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	ProgramBuilder & ProgramBuilder::uniform( const UniformValue & p_u )
-	{
-		program.uniforms.push_back( p_u );
-		return *this;
-	}
-
 	PassBuilder & ProgramBuilder::endProgram() { return parent; }
 
 	PassBuilder::PassBuilder( GraphBuilder & p_g, const Key & p_name ) : graph( p_g ) { pass.name = p_name; }
 
-	/**
-	 * @brief in().
-	 */
-	PassBuilder & PassBuilder::in( const Key & p_resourceName )
+	PassBuilder & PassBuilder::in( const Key & p_primary, const std::optional<Key> p_secondary )
 	{
-		pass.inputs.push_back( p_resourceName );
+		// pass.inputs.push_back( p_binding );
+
+		pass.inputs.push_back( { p_primary, p_secondary } );
 		return *this;
 	}
 
-	/**
-	 * @brief out().
-	 */
-	PassBuilder & PassBuilder::out( const Key & p_resourceName )
+	PassBuilder & PassBuilder::out( const Key & p_primary, const std::optional<Key> p_secondary )
 	{
-		pass.outputs.push_back( p_resourceName );
+		pass.outputs.push_back( { p_primary, p_secondary } );
 		return *this;
 	}
 
-	/**
-	 * @brief program().
-	 */
 	ProgramBuilder PassBuilder::program( const Key & p_name )
 	{
 		pass.programs.emplace_back();
@@ -103,18 +116,12 @@ namespace VTX::Renderer
 		return ProgramBuilder( *this, prog );
 	}
 
-	/**
-	 * @brief callback().
-	 */
 	PassBuilder & PassBuilder::callback( const RenderFunc p_func )
 	{
 		pass.customCallback = std::move( p_func );
 		return *this;
 	}
 
-	/**
-	 * @brief endPass().
-	 */
 	GraphBuilder & PassBuilder::endPass()
 	{
 		graph.passes.emplace_back( std::make_unique<Pass>( std::move( pass ) ) );

@@ -118,24 +118,46 @@ namespace VTX::Renderer
 		PassList  passes;
 
 		/**
+		 * @brief Constructor.
+		 */
+		GraphBuilder();
+
+		/**
 		 * @brief texture().
 		 */
-		GraphBuilder & texture( const Key &, const E_FORMAT );
+		GraphBuilder & texture( const Key &, const E_FORMAT, const Size2D & = std::monostate {} );
 
 		/**
 		 * @brief texture().
 		 */
 		template<typename T>
-		GraphBuilder & texture( const Key & p_name, const E_FORMAT p_format, const std::vector<T> & p_data )
+		GraphBuilder & texture(
+			const Key &			   p_name,
+			const E_FORMAT		   p_format,
+			const std::vector<T> & p_data,
+			const Size2D &		   p_size = std::monostate {}
+		)
 		{
 			Texture tex;
 			tex.format = p_format;
+			tex.size   = p_size;
 			tex.data.resize( p_data.size() * sizeof( T ) );
 			std::memcpy( tex.data.data(), p_data.data(), p_data.size() * sizeof( T ) );
 
 			resources.textures.emplace( p_name, std::move( tex ) );
 			return *this;
 		}
+
+		/**
+		 * @brief sampler().
+		 */
+		GraphBuilder & sampler(
+			const Key & p_name,
+			const E_WRAPPING,
+			const E_WRAPPING,
+			const E_FILTERING,
+			const E_FILTERING
+		);
 
 		/**
 		 * @brief vertexStream().
@@ -186,14 +208,14 @@ namespace VTX::Renderer
 		ProgramBuilder & shaders( std::initializer_list<FilePath> );
 
 		/**
-		 * @brief draw().
-		 */
-		ProgramBuilder & draw( const Key &, const E_PRIMITIVE, const bool = false );
-
-		/**
 		 * @brief uniform().
 		 */
 		ProgramBuilder & uniform( const UniformValue & );
+
+		/**
+		 * @brief draw().
+		 */
+		ProgramBuilder & draw( const Key &, const E_PRIMITIVE, const bool = false );
 
 		/**
 		 * @brief uniform().
@@ -238,12 +260,12 @@ namespace VTX::Renderer
 		/**
 		 * @brief in().
 		 */
-		PassBuilder & in( const Key & );
+		PassBuilder & in( const Key &, const std::optional<Key> = std::nullopt );
 
 		/**
 		 * @brief out().
 		 */
-		PassBuilder & out( const Key & );
+		PassBuilder & out( const Key &, const std::optional<Key> = std::nullopt );
 
 		/**
 		 * @brief program().

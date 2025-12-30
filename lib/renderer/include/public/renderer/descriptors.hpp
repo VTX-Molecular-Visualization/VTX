@@ -6,6 +6,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <util/constants.hpp>
 #include <util/types.hpp>
@@ -85,12 +86,18 @@ namespace VTX::Renderer
 		STORAGE
 	};
 
+	/**
+	 * @brief All buffer access types.
+	 */
 	enum class E_BUFFER_ACCESS : uint8_t
 	{
 		READ,
 		READ_WRITE
 	};
 
+	/**
+	 * @brief All buffer data classes.
+	 */
 	enum class E_BUFFER_CLASS : uint8_t
 	{
 		UNIFORM_LIKE,
@@ -109,11 +116,68 @@ namespace VTX::Renderer
 	};
 
 	/**
+	 * @brief All sampler wrapping modes.
+	 */
+	enum struct E_WRAPPING : uint8_t
+	{
+		REPEAT,
+		MIRRORED_REPEAT,
+		CLAMP_TO_EDGE,
+		CLAMP_TO_BORDER,
+		MIRROR_CLAMP_TO_EDGE,
+	};
+
+	/**
+	 * @brief All sampler filtering modes.
+	 */
+	enum struct E_FILTERING : uint8_t
+	{
+		NEAREST,
+		LINEAR,
+		NEAREST_MIPMAP_NEAREST,
+		LINEAR_MIPMAP_NEAREST,
+		NEAREST_MIPMAP_LINEAR,
+		LINEAR_MIPMAP_LINEAR,
+	};
+
+	/**
 	 * @brief Aliases.
 	 */
-	using Key	= std::string;
-	using Keys	= std::vector<Key>;
+	using Key = std::string;
+
+	/**
+	 * @brief Binding slot.
+	 */
+	using Binding = uint32_t;
+
+	/**
+	 * @brief Files.
+	 */
 	using Files = std::vector<FilePath>;
+
+	/**
+	 * @brief 2D size absolute.
+	 */
+	struct Size2DAbsolute
+	{
+		uint32_t width	= 0;
+		uint32_t height = 0;
+	};
+
+	/**
+	 * @brief 2D size relative.
+	 */
+	struct Size2DRelative
+	{
+		float width	 = 0.f;
+		float height = 0.f;
+	};
+
+	/**
+	 * @brief 2D size variant.
+	 * monostate == auto
+	 */
+	using Size2D = std::variant<std::monostate, Size2DAbsolute, Size2DRelative>;
 
 	/**
 	 * @brief Texture descriptor.
@@ -121,7 +185,24 @@ namespace VTX::Renderer
 	struct Texture
 	{
 		E_FORMAT			 format;
+		Size2D				 size;
 		std::vector<uint8_t> data;
+	};
+
+	struct Sampler
+	{
+		E_WRAPPING	wrapS	  = E_WRAPPING::CLAMP_TO_EDGE;
+		E_WRAPPING	wrapT	  = E_WRAPPING::CLAMP_TO_EDGE;
+		E_FILTERING minFilter = E_FILTERING::NEAREST;
+		E_FILTERING magFilter = E_FILTERING::NEAREST;
+
+		/*
+		float lodBias = 0.f;
+		float minLod  = -1000.f;
+		float maxLod  = 1000.f;
+
+		float anisotropy = 1.f;
+		*/
 	};
 
 	/**
@@ -151,7 +232,7 @@ namespace VTX::Renderer
 		E_TYPE									 type;
 		std::array<uint8_t, 64>					 data;
 		std::optional<std::pair<double, double>> range;
-		uint32_t								 arrayCount;
+		std::optional<uint32_t>					 arrayCount = std::nullopt;
 	};
 
 	/**
@@ -163,8 +244,17 @@ namespace VTX::Renderer
 		E_BUFFER_CLASS			  dataClass;
 		E_BUFFER_ACCESS			  access;
 		E_UPDATE_FREQUENCY		  frequency;
-		std::uint32_t			  binding; // TODO: remove and use backend reflection.
+		Binding					  binding; // TODO: remove and use backend reflection.
 		std::vector<UniformValue> values;
+	};
+
+	/**
+	 * @brief Resource binding descriptor.
+	 */
+	struct ResourceBinding
+	{
+		Key				   primary;
+		std::optional<Key> secondary; // for textures
 	};
 
 	/**
@@ -173,6 +263,7 @@ namespace VTX::Renderer
 	struct Resources
 	{
 		std::unordered_map<Key, Texture>	  textures;
+		std::unordered_map<Key, Sampler>	  samplers;
 		std::unordered_map<Key, VertexLayout> vertexStreams;
 		std::unordered_map<Key, BufferLayout> buffers;
 	};
@@ -208,11 +299,11 @@ namespace VTX::Renderer
 	 */
 	struct Pass
 	{
-		Key						  name;
-		Keys					  inputs;
-		Keys					  outputs;
-		std::vector<Program>	  programs;
-		std::optional<RenderFunc> customCallback;
+		Key							 name;
+		std::vector<ResourceBinding> inputs;
+		std::vector<ResourceBinding> outputs;
+		std::vector<Program>		 programs;
+		std::optional<RenderFunc>	 customCallback;
 	};
 
 	/**

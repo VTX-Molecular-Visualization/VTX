@@ -120,7 +120,7 @@ namespace VTX::Bench
 			_drawScene( p_scene, p_renderer );
 
 			// Node editor.
-			_drawNodeEditor( p_renderer );
+			//_drawNodeEditor( p_renderer );
 		}
 
 		// Render.

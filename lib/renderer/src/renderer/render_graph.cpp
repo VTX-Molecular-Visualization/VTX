@@ -34,27 +34,50 @@ namespace VTX::Renderer
 			return false;
 		};
 
+		auto checkBinding = [ this ]( const ResourceBinding & res ) -> bool
+		{
+			if ( _resources.textures.contains( res.primary ) )
+			{
+				if ( res.secondary && not _resources.samplers.contains( *res.secondary ) )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		};
+
 		for ( const auto & passPtr : _passes )
 		{
 			const Pass & pass = *passPtr;
 
 			for ( const auto & input : pass.inputs )
 			{
-				const bool external		  = isExternalResource( input );
-				const bool producedBefore = produced.contains( input );
-				const bool hasData		  = hasInputData( input );
+				if ( not checkBinding( input ) )
+				{
+					throw GraphicException( "Texture '{}': incorrect binding", input.primary );
+				}
+
+				const bool external		  = isExternalResource( input.primary );
+				const bool producedBefore = produced.contains( input.primary );
+				const bool hasData		  = hasInputData( input.primary );
 
 				// If not external, not produced before and has no data.
 				if ( not external && not producedBefore && not hasData )
 				{
-					throw GraphicException( "Pass '{}' need not produced ressource '{}' ", pass.name, input );
+					throw GraphicException( "Pass '{}' need not produced ressource '{}' ", pass.name, input.primary );
 				}
 			}
 
 			// Set outputs as produced.
 			for ( const auto & output : pass.outputs )
 			{
-				produced.insert( output );
+				if ( not checkBinding( output ) )
+				{
+					throw GraphicException( "Texture '{}': incorrect binding", output.primary );
+				}
+
+				produced.insert( output.primary );
 			}
 		}
 
@@ -93,6 +116,11 @@ namespace VTX::Renderer
 		for ( const auto & [ key, buffer ] : p_builder.resources.buffers )
 		{
 			auto [ it, inserted ] = _resources.buffers.emplace( key, buffer );
+			assert( inserted );
+		}
+		for ( const auto & [ key, sampler ] : p_builder.resources.samplers )
+		{
+			auto [ it, inserted ] = _resources.samplers.emplace( key, sampler );
 			assert( inserted );
 		}
 		// Passes.
@@ -146,7 +174,7 @@ namespace VTX::Renderer
 			"Models",
 			E_BUFFER_CLASS::STRUCTURED,
 			E_BUFFER_ACCESS::READ,
-			E_UPDATE_FREQUENCY::STATIC,
+			E_UPDATE_FREQUENCY::PER_FRAME,
 			13,
 			{ makeUniform( "MatrixModelView", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixModelViewInv", Mat4f( MAT4F_ID ) ),
@@ -243,7 +271,8 @@ namespace VTX::Renderer
 					);
 				}
 			);
-			g.texture( "SSAO", E_FORMAT::R8 ).texture( "Noise", E_FORMAT::RGB16F, noiseData );
+			g.texture( "SSAO", E_FORMAT::R8 )
+				.texture( "Noise", E_FORMAT::RGB16F, noiseData, Size2DAbsolute { noiseTextureSize, noiseTextureSize } );
 		}
 
 		g.texture( "Shaded", E_FORMAT::RGBA16F );
@@ -259,6 +288,27 @@ namespace VTX::Renderer
 		}
 
 		g.texture( "FXAA", E_FORMAT::RGBA16F );
+
+		// Samplers.
+		g.sampler(
+			"NearestClamp",
+			E_WRAPPING::CLAMP_TO_EDGE,
+			E_WRAPPING::CLAMP_TO_EDGE,
+			E_FILTERING::NEAREST,
+			E_FILTERING::NEAREST
+		);
+
+		g.sampler(
+			"NearestRepeat", E_WRAPPING::REPEAT, E_WRAPPING::REPEAT, E_FILTERING::NEAREST, E_FILTERING::NEAREST
+		);
+
+		g.sampler(
+			"LinearClamp",
+			E_WRAPPING::CLAMP_TO_EDGE,
+			E_WRAPPING::CLAMP_TO_EDGE,
+			E_FILTERING::LINEAR,
+			E_FILTERING::LINEAR
+		);
 
 		// Passes.
 		// Geometric.
@@ -305,21 +355,32 @@ namespace VTX::Renderer
 				.in( "Geometry" )
 				.in( "Noise" )
 				.in( "Depth" )
-				.out( "SSAO" )
+				.out( "SSAO", "NearestRepeat" )
 				.program( "SSAO" )
 				.shaders( { FilePath( "default.vert" ), FilePath( "ssao.frag" ) } )
 				.uniform( "Intensity", SSAO_INTENSITY_DEFAULT, std::pair { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX } )
 				.endProgram()
 				.endPass();
 
-			// Blur.
-			g.pass( "Blur" )
-				.in( "Color" )
+			// BlurX.
+			g.pass( "BlurX" )
+				.in( "SSAO" )
 				.in( "Depth" )
-				.out( "Blur" )
+				.out( "BlurX", "NearestRepeat" )
 				.program( "Blur" )
 				.shaders( { FilePath( "default.vert" ), FilePath( "blur.frag" ) } )
 				.uniform( "Direction", Vec2i( 1, 0 ) )
+				.uniform( "Size", BLUR_SIZE_DEFAULT, std::pair { BLUR_SIZE_MIN, BLUR_SIZE_MAX } )
+				.endProgram()
+				.endPass();
+			// BlurX.
+			g.pass( "BlurY" )
+				.in( "BlurX" )
+				.in( "Depth" )
+				.out( "Blur", "NearestRepeat" )
+				.program( "Blur" )
+				.shaders( { FilePath( "default.vert" ), FilePath( "blur.frag" ) } )
+				.uniform( "Direction", Vec2i( 0, 1 ) )
 				.uniform( "Size", BLUR_SIZE_DEFAULT, std::pair { BLUR_SIZE_MIN, BLUR_SIZE_MAX } )
 				.endProgram()
 				.endPass();
@@ -329,7 +390,7 @@ namespace VTX::Renderer
 		g.pass( "Shading" )
 			.in( "Geometry" )
 			.in( "Color" )
-			.in( "Blur" )
+			.in( "Blur", "NearestRepeat" )
 			.out( "Shaded" )
 			.program( "Shading" )
 			.shaders( { FilePath( "default.vert" ), FilePath( "shading.frag" ) } )
