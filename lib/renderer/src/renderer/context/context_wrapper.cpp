@@ -139,7 +139,7 @@ namespace VTX::Renderer::Context
 				using T = std::remove_cvref_t<decltype( p_backend )>;
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
-					// p_backend.resize( p_width, p_height );
+					p_backend.resize( p_width, p_height );
 				}
 			},
 			_impl->backend

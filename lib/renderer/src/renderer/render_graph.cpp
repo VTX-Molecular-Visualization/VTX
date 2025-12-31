@@ -89,6 +89,19 @@ namespace VTX::Renderer
 			queue.push_back( p.get() );
 		}
 
+		// Check empty.
+		if ( queue.empty() )
+		{
+			throw GraphicException( "Render queue is empty" );
+		}
+
+		// Check last pass = 1 output.
+		if ( queue.back()->outputs.size() != 1 )
+		{
+			throw GraphicException( "Last pass '{}' must have exactly one output", queue.back()->name );
+		}
+
+		// Print.
 		std::string str = "Passes: ";
 		for ( const Pass * const pass : queue )
 		{
@@ -121,7 +134,6 @@ namespace VTX::Renderer
 		for ( const auto & [ key, sampler ] : p_builder.resources.samplers )
 		{
 			auto [ it, inserted ] = _resources.samplers.emplace( key, sampler );
-			assert( inserted );
 		}
 		// Passes.
 		for ( const auto & pass : p_builder.passes )
@@ -137,7 +149,12 @@ namespace VTX::Renderer
 		_passes	   = std::move( p_builder.passes );
 	}
 
-	void RenderGraph::clear() { _passes.clear(); }
+	void RenderGraph::clear()
+	{
+		// Clear resources?
+		//_resources = Resources {};
+		_passes.clear();
+	}
 
 	void RenderGraph::createDefaultPipeline( const PipelineConfig & p_config )
 	{

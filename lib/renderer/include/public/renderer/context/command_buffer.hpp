@@ -15,12 +15,11 @@ namespace VTX::Renderer::Context
 	 */
 	enum struct E_COMMAND : std::uint8_t
 	{
-		CLEAR,
+		BEGIN_FRAME,
+		END_FRAME,
 
 		BEGIN_PASS,
 		END_PASS,
-
-		SET_VIEWPORT,
 
 		BIND_PIPELINE,
 		BIND_RESOURCE_TABLE,
@@ -83,37 +82,29 @@ namespace VTX::Renderer::Context
 	/**
 	 * @brief Payloads for each command type.
 	 */
-	struct PayloadClear
+	struct PayloadBeginFrame
+	{
+		uint32_t clearFlags;
+	};
+
+	struct PayloadEndFrame
 	{
 	};
 
 	struct PayloadBeginPass
 	{
-		Handle	 renderTarget;
-		uint32_t clearFlags;
-		float	 clearColor[ 4 ];
-		float	 clearDepth;
-		int32_t	 clearStencil;
-		uint8_t	 enableDepthTest;
-		uint8_t	 _pad[ 3 ] {};
+		Handle renderTarget;
 	};
 
 	struct PayloadEndPass
 	{
-		uint8_t disableDepthTest;
-		uint8_t _pad[ 3 ] {};
-	};
-
-	struct PayloadViewport
-	{
-		int32_t x, y;
-		int32_t w, h;
+		Handle renderTarget;
 	};
 
 	struct PayloadBindPipeline
 	{
 		E_PIPELINE_TYPE type;
-		uint8_t			_pad[ 3 ] {};
+		uint8_t			pad[ 3 ] {};
 		Handle			pipeline;
 	};
 
@@ -190,9 +181,14 @@ namespace VTX::Renderer::Context
 	template<E_COMMAND>
 	struct CommandPayload;
 	template<>
-	struct CommandPayload<E_COMMAND::CLEAR>
+	struct CommandPayload<E_COMMAND::BEGIN_FRAME>
 	{
-		using type = PayloadClear;
+		using type = PayloadBeginFrame;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::END_FRAME>
+	{
+		using type = PayloadEndFrame;
 	};
 	template<>
 	struct CommandPayload<E_COMMAND::BEGIN_PASS>
@@ -203,11 +199,6 @@ namespace VTX::Renderer::Context
 	struct CommandPayload<E_COMMAND::END_PASS>
 	{
 		using type = PayloadEndPass;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::SET_VIEWPORT>
-	{
-		using type = PayloadViewport;
 	};
 	template<>
 	struct CommandPayload<E_COMMAND::BIND_PIPELINE>

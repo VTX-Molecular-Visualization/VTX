@@ -190,10 +190,10 @@ TEST_CASE( "CommandBuffer: push command without payload sets NO_PAYLOAD" )
 {
 	CommandBuffer cb;
 
-	cb.push<E_COMMAND::CLEAR>();
+	cb.push<E_COMMAND::END_FRAME>();
 
 	REQUIRE( cb.commands.size() == 1 );
-	REQUIRE( cb.commands[ 0 ].type == E_COMMAND::CLEAR );
+	REQUIRE( cb.commands[ 0 ].type == E_COMMAND::END_FRAME );
 	REQUIRE( cb.commands[ 0 ].payloadOffset == NO_PAYLOAD );
 	REQUIRE( cb.payload.empty() );
 }
@@ -202,24 +202,20 @@ TEST_CASE( "CommandBuffer: push command with payload stores bytes and is readabl
 {
 	CommandBuffer cb;
 
-	PayloadViewport vp {};
-	vp.x = 10;
-	vp.y = 20;
-	vp.w = 640;
-	vp.h = 480;
-
-	cb.push<E_COMMAND::SET_VIEWPORT>( vp );
+	PayloadBeginFrame bf {};
+	bf.clearFlags = 1;
+	cb.push<E_COMMAND::BEGIN_FRAME>( bf );
 
 	REQUIRE( cb.commands.size() == 1 );
-	REQUIRE( cb.commands[ 0 ].type == E_COMMAND::SET_VIEWPORT );
+	REQUIRE( cb.commands[ 0 ].type == E_COMMAND::BEGIN_FRAME );
 
 	const uint32_t off = cb.commands[ 0 ].payloadOffset;
 	REQUIRE( off != NO_PAYLOAD );
-	REQUIRE( ( off % alignof( PayloadViewport ) ) == 0 );
-	REQUIRE( off + sizeof( PayloadViewport ) <= cb.payload.size() );
+	REQUIRE( ( off % alignof( PayloadBeginFrame ) ) == 0 );
+	REQUIRE( off + sizeof( PayloadBeginFrame ) <= cb.payload.size() );
 
-	const auto & back = cb.getPayload<PayloadViewport>( off );
-	REQUIRE( bytesEqual( &back, &vp, sizeof( PayloadViewport ) ) );
+	const auto & back = cb.getPayload<PayloadBeginFrame>( off );
+	REQUIRE( bytesEqual( &back, &bf, sizeof( PayloadBeginFrame ) ) );
 }
 
 struct alignas( 16 ) A16
@@ -258,8 +254,8 @@ TEST_CASE( "CommandBuffer: pushPayload aligns and pads correctly" )
 TEST_CASE( "CommandBuffer: clear empties commands and payload" )
 {
 	CommandBuffer cb;
-	cb.push<E_COMMAND::CLEAR>();
-	cb.push<E_COMMAND::SET_VIEWPORT>( PayloadViewport { 1, 2, 3, 4 } );
+	cb.push<E_COMMAND::BEGIN_PASS>( PayloadBeginPass { 42 } );
+	cb.push<E_COMMAND::END_FRAME>();
 
 	REQUIRE( not cb.commands.empty() );
 	REQUIRE( not cb.payload.empty() );

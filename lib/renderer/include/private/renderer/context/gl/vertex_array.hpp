@@ -16,10 +16,11 @@ namespace VTX::Renderer::Context::GL
 			glCreateVertexArrays( 1, &_id );
 		}
 
-		~VertexArray()
+		~VertexArray() noexcept
 		{
 			if ( _id != GL_INVALID_INDEX )
 			{
+				assert( glIsVertexArray( _id ) );
 				glDeleteVertexArrays( 1, &_id );
 				_id = GL_INVALID_INDEX;
 			}
@@ -27,25 +28,25 @@ namespace VTX::Renderer::Context::GL
 
 		// int drawCalls = 0;
 
-		inline GLuint getId() const { return _id; }
+		inline GLuint getId() const noexcept { return _id; }
 
-		inline void bind() const
+		inline void bind() const noexcept
 		{
 			assert( glIsVertexArray( _id ) );
 
 			glBindVertexArray( _id );
 		}
 
-		inline void unbind() const { glBindVertexArray( 0 ); }
+		inline void unbind() const noexcept { glBindVertexArray( 0 ); }
 
-		inline void bindElementBuffer( const Buffer & p_elementBuffer ) const
+		inline void bindElementBuffer( const Buffer & p_elementBuffer ) const noexcept
 		{
 			assert( glIsVertexArray( _id ) );
 
 			glVertexArrayElementBuffer( _id, p_elementBuffer.getId() );
 		}
 
-		inline void unbindElementBuffer() const
+		inline void unbindElementBuffer() const noexcept
 		{
 			assert( glIsVertexArray( _id ) );
 
@@ -53,7 +54,7 @@ namespace VTX::Renderer::Context::GL
 			// glVertexArrayElementBuffer( _id, 0 );
 		}
 
-		inline void enableAttribute( const GLuint p_bindingIndex ) const
+		inline void enableAttribute( const GLuint p_bindingIndex ) const noexcept
 		{
 			assert( glIsVertexArray( _id ) );
 
@@ -65,7 +66,7 @@ namespace VTX::Renderer::Context::GL
 			const Buffer & p_vertexBuffer,
 			const GLsizei  p_stride,
 			const GLintptr p_offset = 0
-		) const
+		) const noexcept
 		{
 			assert( glIsVertexArray( _id ) );
 
@@ -78,11 +79,11 @@ namespace VTX::Renderer::Context::GL
 			const GLint		p_size,
 			const GLuint	p_relativeOffset = 0,
 			const GLboolean p_normalized	 = GL_FALSE
-		) const
+		) const noexcept
 		{
 			assert( glIsVertexArray( _id ) );
 
-			assert( false );
+			static_assert( sizeof( T ) == 0, "Unsupported attribute type for VertexArray::setAttributeFormat<T>." );
 		}
 
 		inline void setAttributeFormat(
@@ -91,7 +92,7 @@ namespace VTX::Renderer::Context::GL
 			const GLenum	p_type,
 			const GLuint	p_relativeOffset = 0,
 			const GLboolean p_normalized	 = GL_FALSE
-		) const
+		) const noexcept
 		{
 			assert( glIsVertexArray( _id ) );
 
@@ -102,7 +103,6 @@ namespace VTX::Renderer::Context::GL
 			case GL_FLOAT:
 				glVertexArrayAttribFormat( _id, p_attributeIndex, p_size, p_type, p_normalized, p_relativeOffset );
 				break;
-
 			case GL_BYTE:
 			case GL_SHORT:
 			case GL_INT:
@@ -119,14 +119,14 @@ namespace VTX::Renderer::Context::GL
 			}
 		}
 
-		inline void setAttributeBinding( const GLuint p_attributeIndex, const GLuint p_bindingIndex ) const
+		inline void setAttributeBinding( const GLuint p_attributeIndex, const GLuint p_bindingIndex ) const noexcept
 		{
 			assert( glIsVertexArray( _id ) );
 
 			glVertexArrayAttribBinding( _id, p_attributeIndex, p_bindingIndex );
 		}
 
-		inline void drawArray( const GLenum p_mode, const GLint p_first, const GLsizei p_count )
+		inline void drawArray( const GLenum p_mode, const GLint p_first, const GLsizei p_count ) const noexcept
 		{
 			glDrawArrays( p_mode, p_first, p_count );
 		}
@@ -136,7 +136,7 @@ namespace VTX::Renderer::Context::GL
 			const GLint * const	  p_first,
 			const GLsizei * const p_count,
 			const GLsizei		  p_primcount
-		)
+		) const noexcept
 		{
 			glMultiDrawArrays( p_mode, p_first, p_count, p_primcount );
 		}
@@ -146,7 +146,7 @@ namespace VTX::Renderer::Context::GL
 			const GLsizei		 p_count,
 			const GLenum		 p_type,
 			const GLvoid * const p_offset = 0
-		)
+		) const noexcept
 		{
 			glDrawElements( p_mode, p_count, p_type, p_offset );
 		}
@@ -157,7 +157,7 @@ namespace VTX::Renderer::Context::GL
 			const GLenum				 p_type,
 			const GLvoid * const * const p_offset,
 			const GLsizei				 p_primcount
-		)
+		) const noexcept
 		{
 			glMultiDrawElements( p_mode, p_count, p_type, p_offset, p_primcount );
 		}
@@ -172,7 +172,7 @@ namespace VTX::Renderer::Context::GL
 		const GLint		p_size,
 		const GLuint	p_relativeOffset,
 		const GLboolean p_normalized
-	) const
+	) const noexcept
 	{
 		assert( glIsVertexArray( _id ) );
 
@@ -185,7 +185,7 @@ namespace VTX::Renderer::Context::GL
 		const GLint		p_size,
 		const GLuint	p_relativeOffset,
 		const GLboolean p_normalized
-	) const
+	) const noexcept
 	{
 		assert( glIsVertexArray( _id ) );
 
@@ -198,7 +198,7 @@ namespace VTX::Renderer::Context::GL
 		const GLint		p_size,
 		const GLuint	p_relativeOffset,
 		const GLboolean p_normalized
-	) const
+	) const noexcept
 	{
 		assert( glIsVertexArray( _id ) );
 
@@ -211,7 +211,7 @@ namespace VTX::Renderer::Context::GL
 		const GLint		p_size,
 		const GLuint	p_relativeOffset,
 		const GLboolean p_normalized
-	) const
+	) const noexcept
 	{
 		assert( glIsVertexArray( _id ) );
 

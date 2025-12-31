@@ -50,15 +50,6 @@ namespace VTX::Renderer
 		}
 
 		/**
-		 * @brief Set the output to render on.
-		 */
-		inline void setOutput( const Handle p_output )
-		{
-			//_context.setOutput( p_output );
-			setNeedUpdate( true );
-		}
-
-		/**
 		 * @brief Set graphic context.
 		 */
 		void setDefault();
@@ -75,7 +66,7 @@ namespace VTX::Renderer
 		 * @brief Resize the renderer.
 		 * @param p_output the output id to render on (eg. the output framebuffer for OpenGL impl.).
 		 */
-		void resize( const size_t p_width, const size_t p_height );
+		void resize( const size_t, const size_t );
 
 		/**
 		 * @brief Clean all.
@@ -85,7 +76,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief The main render loop.
 		 */
-		void render( const float p_deltaTime, const float p_elapsedTime );
+		void render( const float, const float );
 
 		/**
 		 * @brief Add data to the renderer.

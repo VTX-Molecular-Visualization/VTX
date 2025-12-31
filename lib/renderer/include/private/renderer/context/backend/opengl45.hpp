@@ -7,6 +7,7 @@
 #include "renderer/context/gl/framebuffer.hpp"
 #include "renderer/context/gl/include_opengl.hpp"
 #include "renderer/context/gl/program_manager.hpp"
+#include "renderer/context/gl/sampler.hpp"
 #include "renderer/context/gl/struct_opengl_infos.hpp"
 #include "renderer/context/gl/texture_2d.hpp"
 #include "renderer/context/gl/vertex_array.hpp"
@@ -36,29 +37,46 @@ namespace VTX::Renderer::Context::Backend
 		void resize( const size_t p_width, const size_t p_height );
 
 		/**
-		 * @brief Set the output framebuffer handle.
+		 * @brief Bind a framebuffer.
 		 */
-		inline void setOutput( const Handle p_output ) { _output = p_output; }
+		inline void bindFramebuffer( const Handle p_framebuffer ) const noexcept
+		{
+			if ( p_framebuffer == NO_HANDLE )
+			{
+				GL::Framebuffer::bindDefault();
+			}
+			else
+			{
+				assert( p_framebuffer < _framebuffers.size() );
+				_framebuffers[ p_framebuffer ]->bind();
+			}
+		}
+
+		/**
+		 * @brief Unbind a framebuffer.
+		 */
+		inline void unbindFramebuffer( const Handle p_framebuffer ) const noexcept
+		{
+			if ( p_framebuffer == NO_HANDLE )
+			{
+				GL::Framebuffer::unbindDefault();
+			}
+			else
+			{
+				assert( p_framebuffer < _framebuffers.size() );
+				_framebuffers[ p_framebuffer ]->unbind();
+			}
+		}
 
 	  private:
-		/**
-		 * @brief Binding types.
-		 */
-		enum class E_BINDING_TYPE : uint8_t
-		{
-			BUFFER_UNIFORM,
-			BUFFER_STORAGE
-		};
-
 		/**
 		 * @brief Buffer binding info.
 		 */
 		struct BufferBinding
 		{
-			Handle		   buffer;
-			uint32_t	   offsetBytes = 0;
-			uint32_t	   sizeBytes   = 0;
-			E_BINDING_TYPE type		   = E_BINDING_TYPE::BUFFER_UNIFORM;
+			Handle	 buffer;
+			uint32_t offsetBytes = 0;
+			uint32_t sizeBytes	 = 0;
 		};
 
 		/**
@@ -72,55 +90,61 @@ namespace VTX::Renderer::Context::Backend
 		};
 
 		/**
-		 * @brief Cache entry.
-		 */
-		template<typename Desc>
-		struct CacheEntry
-		{
-			Hash   hash	  = 0;
-			Handle handle = 0;
-		};
-
-		/**
 		 * @brief Cache mapping.
 		 */
 		template<typename Desc>
-		struct Cache
-		{
-			std::unordered_map<Key, CacheEntry<Desc>> map;
-		};
+		using Cache = std::unordered_map<Key, Handle>;
+
+		/**
+		 * @brief Mappint Key -> Handle.
+		 */
+		Cache<Texture>		 _cacheTextures;
+		Cache<Sampler>		 _cacheSamplers;
+		Cache<BufferLayout>	 _cacheBuffers;
+		Cache<VertexLayout>	 _cacheVertexStreams;
+		Cache<Program>		 _cachePrograms;
+		Cache<ResourceTable> _cacheResourceTables;
+		Cache<Pass>			 _cacheFramebuffers;
 
 		/**
 		 * @brief Resource pools.
+		 * index = Handle
 		 */
-		std::vector<ResourceTable>			_resourceTables;
-		std::vector<GL::VertexArray>		_vertexArrays;
-		std::vector<GL::Buffer>				_buffers;
-		std::vector<GL::Framebuffer>		_framebuffers;
-		std::vector<GL::Texture2D>			_textures;
-		std::unique_ptr<GL::ProgramManager> _programManager;
-		std::vector<GL::Program>			_programs;
+		std::vector<std::unique_ptr<ResourceTable>>	  _resourceTables;
+		std::vector<std::unique_ptr<GL::VertexArray>> _vertexArrays;
+		std::vector<std::unique_ptr<GL::Buffer>>	  _buffers;
+		std::vector<std::unique_ptr<GL::Framebuffer>> _framebuffers;
+		std::vector<std::unique_ptr<GL::Texture2D>>	  _textures;
+		std::vector<std::unique_ptr<GL::Sampler>>	  _samplers;
+		std::unique_ptr<GL::ProgramManager>			  _programManager;
+		std::vector<GL::Program *>					  _programs;
 
 		/**
-		 * @brief Output framebuffer handle.
+		 * @brief Get or create resources.
 		 */
-		Handle _output;
+		Handle _getOrCreateFramebuffer( const Pass &, const Resources &, const bool = false );
+		Handle _getOrCreateResourceTable( const Pass &, const Resources & );
+
+		Handle _getOrCreateTexture( const Key &, const Texture & );
+		Handle _getOrCreateSampler( const Key &, const Sampler & );
+		Handle _getOrCreateBuffer( const Key &, const BufferLayout & );
+		Handle _getOrCreateVertexStream( const Key &, const VertexLayout & );
+		Handle _getOrCreateProgram( const Program & );
 
 		/**
 		 * @brief Specs.
 		 */
 		GL::StructOpenglInfos _openglInfos;
-
-		void				 _getOpenglInfos();
-		static void APIENTRY _debugMessageCallback(
-			const GLenum   p_source,
-			const GLenum   p_type,
-			const GLuint   p_id,
-			const GLenum   p_severity,
-			const GLsizei  p_length,
-			const GLchar * p_msg,
-			const void *   p_data
-		) noexcept;
+		void				  _getOpenglInfos();
+		static void APIENTRY  _debugMessageCallback(
+			 const GLenum	p_source,
+			 const GLenum	p_type,
+			 const GLuint	p_id,
+			 const GLenum	p_severity,
+			 const GLsizei	p_length,
+			 const GLchar * p_msg,
+			 const void *	p_data
+		 ) noexcept;
 	};
 } // namespace VTX::Renderer::Context::Backend
 

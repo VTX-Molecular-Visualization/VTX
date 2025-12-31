@@ -84,10 +84,6 @@ namespace VTX::Renderer::Context::Backend
 			_openglInfos.print();
 		}
 
-		// Default output.
-		glGetIntegerv( GL_FRAMEBUFFER_BINDING, reinterpret_cast<int *>( &_output ) );
-		VTX_TRACE( "Default framebuffer: {}", _output );
-
 		// Program manager.
 		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
 
@@ -120,41 +116,100 @@ namespace VTX::Renderer::Context::Backend
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
 		glDebugMessageCallback( _debugMessageCallback, nullptr );
 
+		// TODO: set from grpah.
 		glEnable( GL_CLIP_DISTANCE0 );
+		glEnable( GL_DEPTH_TEST );
+		glDepthFunc( GL_LESS );
 
-		glClearColor( 0.5f, 0.5f, 0.5f, 1.0f );
+		glClearColor( 0.5f, 0.5f, 0.f, 1.0f );
 	}
 
 	void OpenGL45::build( const RenderQueue & p_renderQueue, const Resources & p_resources, CommandBuffer & p_commands )
 	{
-		// Clear all.
-		p_commands.push<E_COMMAND::CLEAR>();
-
-		// Foreach resource.
-		for ( const auto & [ key, texture ] : p_resources.textures )
-		{
-			//
-		}
-		for ( const auto & [ key, vertexStream ] : p_resources.vertexStreams )
-		{
-			//
-		}
-		for ( const auto & [ key, buffer ] : p_resources.buffers )
-		{
-			//
-		}
+		// Begin frame.
+		// TODO: read from graph.
+		PayloadBeginFrame beginFrame { CLEAR_COLOR | CLEAR_DEPTH };
+		p_commands.push<E_COMMAND::BEGIN_FRAME>( beginFrame );
 
 		// Foreach pass.
-		for ( const Pass * const pass : p_renderQueue )
+		for ( const Pass * const passPtr : p_renderQueue )
 		{
-			//
+			const bool	 isLastPass = ( passPtr == p_renderQueue.back() );
+			const Pass & pass		= *passPtr;
+
+			// FBO.
+			const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
+			//			GL::Framebuffer & framebuffer = isLastPass ? GL::Framebuffer::bindDefault() : _framebuffers[
+			// hFramebuffer ];
+
+			// Resource table, clear each build.
+			const Handle	hResourceTable = _getOrCreateResourceTable( pass, p_resources );
+			ResourceTable & resourceTable  = *_resourceTables[ hResourceTable ];
+			// resourceTable				   = ResourceTable {};
+
+			PayloadBeginPass beginPass { hFramebuffer };
+			p_commands.push<E_COMMAND::BEGIN_PASS>( beginPass );
+
+			// TODO
+
+			// End pass.
+			PayloadEndPass endPass { hFramebuffer };
+			p_commands.push<E_COMMAND::END_PASS>( endPass );
 		}
+
+		p_commands.push<E_COMMAND::END_FRAME>();
 	}
 
 	void OpenGL45::resize( const size_t p_width, const size_t p_height )
 	{
 		assert( p_width > 0 );
 		assert( p_height > 0 );
+
+		assert( p_width <= static_cast<size_t>( TypeMax<GLsizei> ) );
+		assert( p_height <= static_cast<size_t>( TypeMax<GLsizei> ) );
+
+		glViewport( 0, 0, static_cast<GLsizei>( p_width ), static_cast<GLsizei>( p_height ) );
+
+		// TODO: resize textures.
+	}
+
+	Handle OpenGL45::_getOrCreateFramebuffer( const Pass & p_pass, const Resources & p_res, const bool p_isLastpass )
+	{
+		const Key & key = p_pass.name;
+
+		auto it = _cacheFramebuffers.find( key );
+		if ( it != _cacheFramebuffers.end() )
+		{
+			return it->second;
+		}
+
+		if ( p_isLastpass )
+		{
+			return NO_HANDLE;
+		}
+
+		const Handle handle = static_cast<Handle>( _framebuffers.size() );
+		_framebuffers.emplace_back( std::make_unique<GL::Framebuffer>() );
+		_cacheFramebuffers.emplace( key, handle );
+
+		return handle;
+	}
+
+	Handle OpenGL45::_getOrCreateResourceTable( const Pass & p_pass, const Resources & p_res )
+	{
+		const Key & key = p_pass.name;
+
+		auto it = _cacheResourceTables.find( key );
+		if ( it != _cacheResourceTables.end() )
+		{
+			return it->second;
+		}
+
+		const Handle handle = static_cast<Handle>( _resourceTables.size() );
+		_resourceTables.emplace_back( std::make_unique<ResourceTable>() );
+		_cacheResourceTables.emplace( key, handle );
+
+		return handle;
 	}
 
 	void OpenGL45::_getOpenglInfos()

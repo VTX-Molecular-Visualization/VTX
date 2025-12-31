@@ -1,0 +1,45 @@
+#ifndef __VTX_RENDERER_CONTEXT_GL_SAMPLER__
+#define __VTX_RENDERER_CONTEXT_GL_SAMPLER__
+
+#include "include_opengl.hpp"
+#include <cassert>
+
+namespace VTX::Renderer::Context::GL
+{
+	class Sampler
+	{
+	  public:
+		Sampler(
+			const GLint p_wrappingS,
+			const GLint p_wrappingT,
+			const GLint p_minFilter,
+			const GLint p_magFilter
+		) noexcept
+		{
+			glCreateSamplers( 1, &_id );
+			glSamplerParameteri( _id, GL_TEXTURE_WRAP_S, p_wrappingS );
+			glSamplerParameteri( _id, GL_TEXTURE_WRAP_T, p_wrappingT );
+			glSamplerParameteri( _id, GL_TEXTURE_MIN_FILTER, p_minFilter );
+			glSamplerParameteri( _id, GL_TEXTURE_MAG_FILTER, p_magFilter );
+		}
+		~Sampler() noexcept
+		{
+			if ( _id != GL_INVALID_INDEX )
+			{
+				assert( glIsSampler( _id ) );
+				glDeleteSamplers( 1, &_id );
+				_id = GL_INVALID_INDEX;
+			}
+		}
+		inline GLuint getId() const noexcept { return _id; }
+
+		void bindToUnit( const GLuint p_unit ) const noexcept { glBindSampler( p_unit, _id ); }
+
+		static void unbindFromUnit( const GLuint p_unit ) noexcept { glBindSampler( p_unit, 0 ); }
+
+	  private:
+		GLuint _id = GL_INVALID_INDEX;
+	};
+
+} // namespace VTX::Renderer::Context::GL
+#endif

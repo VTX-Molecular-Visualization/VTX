@@ -9,45 +9,35 @@ namespace VTX::Renderer::Context::GL
 	class Texture2D
 	{
 	  public:
-		Texture2D(
-			const GLsizei p_width,
-			const GLsizei p_height,
-			const GLenum  p_format,
-			const GLint	  p_wrappingS,
-			const GLint	  p_wrappingT,
-			const GLint	  p_minFilter,
-			const GLint	  p_magFilter
-		)
+		Texture2D( const GLsizei p_width, const GLsizei p_height, const GLenum p_format ) noexcept
 		{
 			assert( p_width > 0 && p_height > 0 );
 
-			_width	   = p_width;
-			_height	   = p_height;
-			_format	   = p_format;
-			_wrappingS = p_wrappingS;
-			_wrappingT = p_wrappingT;
-			_minFilter = p_minFilter;
-			_magFilter = p_magFilter;
+			_width	= p_width;
+			_height = p_height;
+			_format = p_format;
 
 			_create();
 		}
 
-		~Texture2D() { _destroy(); }
+		~Texture2D() noexcept { _destroy(); }
 
-		inline GLuint getId() const { return _id; }
+		inline GLuint getId() const noexcept { return _id; }
 
 		inline void clear(
 			const void * p_data,
 			const GLenum p_format,
 			const GLenum p_type,
 			const GLint	 p_level = 0
-		) const
+		) const noexcept
 		{
 			glClearTexImage( _id, p_level, p_format, p_type, p_data );
 		}
 
-		inline void resize( const GLsizei p_width, const GLsizei p_height )
+		inline void resize( const GLsizei p_width, const GLsizei p_height ) noexcept
 		{
+			assert( p_width > 0 && p_height > 0 );
+
 			_destroy();
 			_width	= p_width;
 			_height = p_height;
@@ -56,14 +46,14 @@ namespace VTX::Renderer::Context::GL
 
 		inline void fill(
 			const void *  p_pixels,
-			const GLenum  p_format	= GL_RGB,
-			const GLenum  p_type	= GL_FLOAT,
+			const GLenum  p_format,
+			const GLenum  p_type,
 			const GLint	  p_level	= 0,
 			const GLint	  p_offsetX = 0,
 			const GLint	  p_offsetY = 0,
 			const GLsizei p_width	= -1,
 			const GLsizei p_height	= -1
-		) const
+		) const noexcept
 		{
 			const GLsizei width	 = p_width == -1 ? _width : p_width;
 			const GLsizei height = p_height == -1 ? _height : p_height;
@@ -71,9 +61,9 @@ namespace VTX::Renderer::Context::GL
 			glTextureSubImage2D( _id, p_level, p_offsetX, p_offsetY, width, height, p_format, p_type, p_pixels );
 		}
 
-		inline void bind( const GLenum p_target )
+		inline void bind( const GLenum p_target ) const noexcept
 		{
-			assert( glIsBuffer( _id ) );
+			assert( glIsTexture( _id ) );
 			assert( _target == 0 );
 			assert( p_target != 0 );
 
@@ -81,9 +71,9 @@ namespace VTX::Renderer::Context::GL
 			glBindTexture( p_target, _id );
 		}
 
-		inline void bindToUnit( const GLuint p_index ) { glBindTextureUnit( p_index, _id ); }
+		inline void bindToUnit( const GLuint p_index ) const noexcept { glBindTextureUnit( p_index, _id ); }
 
-		inline void unbind()
+		inline void unbind() const noexcept
 		{
 			assert( _target != 0 );
 
@@ -91,7 +81,7 @@ namespace VTX::Renderer::Context::GL
 			_target = 0;
 		}
 
-		inline void unbindFromUnit( const GLuint p_index ) { glBindTextureUnit( p_index, 0 ); }
+		inline void unbindFromUnit( const GLuint p_index ) const noexcept { glBindTextureUnit( p_index, 0 ); }
 
 		inline void getImage(
 			const GLint	  p_level,
@@ -99,38 +89,40 @@ namespace VTX::Renderer::Context::GL
 			const GLenum  p_type,
 			const GLsizei p_bufSize,
 			void * const  p_pixels
-		) const
+		) const noexcept
 		{
 			glGetTextureImage( _id, p_level, p_format, p_type, p_bufSize, p_pixels );
 		}
 
-		inline GLsizei getWidth() const { return _width; }
-		inline GLsizei getHeight() const { return _height; }
-		inline GLenum  getFormat() const { return _format; }
+		inline GLsizei getWidth() const noexcept { return _width; }
+		inline GLsizei getHeight() const noexcept { return _height; }
+		inline GLenum  getFormat() const noexcept { return _format; }
 
 	  private:
-		GLuint _id	   = GL_INVALID_INDEX;
-		GLenum _target = 0;
+		GLuint		   _id	   = GL_INVALID_INDEX;
+		mutable GLenum _target = 0;
 
-		GLsizei _width	   = 0;
-		GLsizei _height	   = 0;
-		GLenum	_format	   = GL_RGBA32F;
-		GLint	_wrappingS = GL_REPEAT;
-		GLint	_wrappingT = GL_REPEAT;
-		GLint	_minFilter = GL_NEAREST_MIPMAP_LINEAR;
-		GLint	_magFilter = GL_LINEAR;
+		GLsizei _width	= 0;
+		GLsizei _height = 0;
+		GLenum	_format = GL_RGBA32F;
 
-		inline void _create()
+		inline void _create() noexcept
 		{
+			assert( _width > 0 && _height > 0 );
+
 			glCreateTextures( GL_TEXTURE_2D, 1, &_id );
-			glTextureParameteri( _id, GL_TEXTURE_WRAP_S, _wrappingS );
-			glTextureParameteri( _id, GL_TEXTURE_WRAP_T, _wrappingT );
-			glTextureParameteri( _id, GL_TEXTURE_MIN_FILTER, _minFilter );
-			glTextureParameteri( _id, GL_TEXTURE_MAG_FILTER, _magFilter );
 			glTextureStorage2D( _id, 1, _format, _width, _height );
 		}
 
-		inline void _destroy() { glDeleteTextures( 1, &_id ); }
+		inline void _destroy() noexcept
+		{
+			if ( _id != GL_INVALID_INDEX )
+			{
+				assert( glIsTexture( _id ) );
+				glDeleteTextures( 1, &_id );
+				_id = GL_INVALID_INDEX;
+			}
+		}
 	};
 } // namespace VTX::Renderer::Context::GL
 
