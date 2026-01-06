@@ -147,4 +147,11 @@ namespace VTX::Renderer::Context
 	}
 
 	const CommandBuffer & ContextWrapper::commands() const { return _impl->commands; }
+
+	void ContextWrapper::clear()
+	{
+		_impl->commands.clear();
+		_impl->backend = BackendVariant {};
+		//_impl->executor = ExecutorVariant {};
+	}
 } // namespace VTX::Renderer::Context

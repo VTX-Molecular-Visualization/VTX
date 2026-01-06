@@ -1,5 +1,4 @@
 #include "ui/qt/application.hpp"
-#include "app/services.hpp"
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/model.hpp"
 #include "ui/qt/resources.hpp"
@@ -12,6 +11,8 @@
 #include <QApplication>
 #include <app/ecs.hpp>
 #include <app/infos.hpp>
+#include <app/services.hpp>
+#include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT
@@ -64,7 +65,14 @@ namespace VTX::UI::QT
 
 		// After quit, last loop.
 		connect(
-			this, &QCoreApplication::aboutToQuit, [ this ] { VTX_TRACE( "QCoreApplication::aboutToQuit" ); }
+			this,
+			&QCoreApplication::aboutToQuit,
+			[ this ]
+			{
+				VTX_TRACE( "QCoreApplication::aboutToQuit" );
+				// Properly destroy graphics resources before Qt kill the context.
+				App::RENDERER().clear();
+			}
 
 		);
 

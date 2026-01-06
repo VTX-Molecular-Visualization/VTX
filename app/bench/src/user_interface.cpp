@@ -528,7 +528,7 @@ namespace VTX::Bench
 			}
 			if ( ImGui::Button( "X" ) )
 			{
-				p_renderer->clean();
+				p_renderer->clear();
 			}
 
 			/*

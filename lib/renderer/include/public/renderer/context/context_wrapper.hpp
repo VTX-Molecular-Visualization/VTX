@@ -44,6 +44,11 @@ namespace VTX::Renderer::Context
 		void resize( const std::size_t, const std::size_t );
 
 		/**
+		 * @brief Clean all.
+		 */
+		void clear();
+
+		/**
 		 * @brief Getters.
 		 */
 		const CommandBuffer & commands() const;

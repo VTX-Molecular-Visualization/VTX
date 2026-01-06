@@ -57,9 +57,9 @@ namespace VTX::Renderer
 		setNeedUpdate( true );
 	}
 
-	void Renderer::clean()
+	void Renderer::clear()
 	{
-		//_context.clear();
+		_context.clear();
 		//_instructions.clear();
 		//_instructionsDurationRanges.clear();
 		_graph.clear();

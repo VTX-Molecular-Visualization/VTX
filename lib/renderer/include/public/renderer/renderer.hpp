@@ -71,7 +71,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Clean all.
 		 */
-		void clean();
+		void clear();
 
 		/**
 		 * @brief The main render loop.
