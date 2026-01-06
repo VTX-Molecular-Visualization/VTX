@@ -184,9 +184,9 @@ namespace VTX::Renderer
 	 */
 	struct Texture
 	{
-		E_FORMAT			 format;
-		Size2D				 size;
-		std::vector<uint8_t> data;
+		E_FORMAT			   format;
+		Size2D				   size;
+		std::vector<std::byte> data;
 	};
 
 	struct Sampler

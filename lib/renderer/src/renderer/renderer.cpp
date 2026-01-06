@@ -482,7 +482,7 @@ namespace VTX::Renderer
 
 	void Renderer::setRepresentation( const Representation & p_representation )
 	{
-		BinaryBuffer buffer;
+		BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
 		buffer.write( p_representation.radiusSphereFixed );
 		buffer.write( p_representation.radiusSphereAdd );
 		buffer.write( uint( p_representation.isRadiusSphereFixed ) );
@@ -568,7 +568,7 @@ namespace VTX::Renderer
 		const Mat4f matrixViewInv	   = Util::Math::inverse( p_matView );
 		const Mat4f matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
 
-		BinaryBuffer buffer;
+		BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
 		buffer.write( p_matView );
 		buffer.write( p_matProj );
 		buffer.write( matrixViewInv );

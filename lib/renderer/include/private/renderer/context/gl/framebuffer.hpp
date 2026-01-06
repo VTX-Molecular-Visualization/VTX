@@ -36,8 +36,6 @@ namespace VTX::Renderer::Context::GL
 		inline void bind( const GLenum p_target = GL_FRAMEBUFFER ) const noexcept
 		{
 			assert( glIsFramebuffer( _id ) );
-			// TODO: move after configuration.
-			// assert( glCheckNamedFramebufferStatus( _id, GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE );
 			assert( _target == 0 );
 			assert( p_target != 0 );
 
@@ -91,6 +89,12 @@ namespace VTX::Renderer::Context::GL
 			assert( glIsFramebuffer( _id ) );
 
 			glNamedFramebufferReadBuffer( _id, p_readBuffer );
+		}
+
+		inline void checkStatus() const noexcept
+
+		{
+			assert( glCheckNamedFramebufferStatus( _id, GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE );
 		}
 
 	  private:

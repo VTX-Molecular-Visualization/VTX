@@ -24,14 +24,9 @@ namespace VTX::Renderer::Context::GL
 
 		inline GLuint getId() const noexcept { return _id; }
 
-		inline void clear(
-			const void * p_data,
-			const GLenum p_format,
-			const GLenum p_type,
-			const GLint	 p_level = 0
-		) const noexcept
+		inline void clear( const void * p_data, const GLenum p_type, const GLint p_level = 0 ) const noexcept
 		{
-			glClearTexImage( _id, p_level, p_format, p_type, p_data );
+			glClearTexImage( _id, p_level, _format, p_type, p_data );
 		}
 
 		inline void resize( const GLsizei p_width, const GLsizei p_height ) noexcept
@@ -45,20 +40,21 @@ namespace VTX::Renderer::Context::GL
 		}
 
 		inline void fill(
-			const void *  p_pixels,
-			const GLenum  p_format,
-			const GLenum  p_type,
-			const GLint	  p_level	= 0,
-			const GLint	  p_offsetX = 0,
-			const GLint	  p_offsetY = 0,
-			const GLsizei p_width	= -1,
-			const GLsizei p_height	= -1
+			const void *				 p_pixels,
+			const GLenum				 p_type	   = GL_FLOAT,
+			const std::optional<GLsizei> p_width   = std::nullopt,
+			const std::optional<GLsizei> p_height  = std::nullopt,
+			const GLint					 p_level   = 0,
+			const GLint					 p_offsetX = 0,
+			const GLint					 p_offsetY = 0
 		) const noexcept
 		{
-			const GLsizei width	 = p_width == -1 ? _width : p_width;
-			const GLsizei height = p_height == -1 ? _height : p_height;
+			assert( p_pixels != nullptr );
 
-			glTextureSubImage2D( _id, p_level, p_offsetX, p_offsetY, width, height, p_format, p_type, p_pixels );
+			const GLsizei width	 = p_width.has_value() ? *p_width : _width;
+			const GLsizei height = p_height.has_value() ? *p_height : _height;
+
+			glTextureSubImage2D( _id, p_level, p_offsetX, p_offsetY, width, height, _format, p_type, p_pixels );
 		}
 
 		inline void bind( const GLenum p_target ) const noexcept

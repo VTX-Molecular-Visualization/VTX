@@ -21,7 +21,7 @@ namespace
 		case E_FORMAT::R16F: return GL_R16F;
 		case E_FORMAT::R32F: return GL_R32F;
 		case E_FORMAT::DEPTH_COMPONENT32F: return GL_DEPTH_COMPONENT32F;
-		default: assert( false );
+		default: assert( false ); return GL_INVALID_INDEX;
 		}
 	}
 
@@ -34,7 +34,7 @@ namespace
 		case E_WRAPPING::CLAMP_TO_EDGE: return GL_CLAMP_TO_EDGE;
 		case E_WRAPPING::CLAMP_TO_BORDER: return GL_CLAMP_TO_BORDER;
 		case E_WRAPPING::MIRROR_CLAMP_TO_EDGE: return GL_MIRROR_CLAMP_TO_EDGE;
-		default: assert( false );
+		default: assert( false ); return GL_INVALID_INDEX;
 		}
 	}
 
@@ -48,7 +48,7 @@ namespace
 		case E_FILTERING::LINEAR_MIPMAP_NEAREST: return GL_LINEAR_MIPMAP_NEAREST;
 		case E_FILTERING::NEAREST_MIPMAP_LINEAR: return GL_NEAREST_MIPMAP_LINEAR;
 		case E_FILTERING::LINEAR_MIPMAP_LINEAR: return GL_LINEAR_MIPMAP_LINEAR;
-		default: assert( false );
+		default: assert( false ); return GL_INVALID_INDEX;
 		}
 	}
 } // namespace
@@ -60,6 +60,12 @@ namespace VTX::Renderer::Context::Backend
 	{
 		assert( p_width > 0 );
 		assert( p_height > 0 );
+
+		assert( p_width <= static_cast<size_t>( TypeMax<GLsizei> ) );
+		assert( p_height <= static_cast<size_t>( TypeMax<GLsizei> ) );
+
+		_width	= static_cast<uint32_t>( p_width );
+		_height = static_cast<uint32_t>( p_height );
 
 		// Load opengl 4.5.
 		// With external loader.
@@ -131,6 +137,16 @@ namespace VTX::Renderer::Context::Backend
 		PayloadBeginFrame beginFrame { CLEAR_COLOR | CLEAR_DEPTH };
 		p_commands.push<E_COMMAND::BEGIN_FRAME>( beginFrame );
 
+		// Foreach resources.
+		for ( const auto & [ key, texture ] : p_resources.textures )
+		{
+			_getOrCreateTexture( key, texture );
+		}
+		for ( const auto & [ key, sampler ] : p_resources.samplers )
+		{
+			_getOrCreateSampler( key, sampler );
+		}
+
 		// Foreach pass.
 		for ( const Pass * const passPtr : p_renderQueue )
 		{
@@ -145,10 +161,16 @@ namespace VTX::Renderer::Context::Backend
 			// Resource table, clear each build.
 			const Handle	hResourceTable = _getOrCreateResourceTable( pass, p_resources );
 			ResourceTable & resourceTable  = *_resourceTables[ hResourceTable ];
-			// resourceTable				   = ResourceTable {};
+			resourceTable				   = ResourceTable {};
 
 			PayloadBeginPass beginPass { hFramebuffer };
 			p_commands.push<E_COMMAND::BEGIN_PASS>( beginPass );
+
+			// Create programs.
+			for ( const Program & program : pass.programs )
+			{
+				//
+			}
 
 			// TODO
 
@@ -208,6 +230,64 @@ namespace VTX::Renderer::Context::Backend
 		const Handle handle = static_cast<Handle>( _resourceTables.size() );
 		_resourceTables.emplace_back( std::make_unique<ResourceTable>() );
 		_cacheResourceTables.emplace( key, handle );
+
+		return handle;
+	}
+
+	Handle OpenGL45::_getOrCreateTexture( const Key & p_key, const Texture & p_text )
+	{
+		auto it = _cacheTextures.find( p_key );
+		if ( it != _cacheTextures.end() )
+		{
+			return it->second;
+		}
+
+		const Handle handle = static_cast<Handle>( _textures.size() );
+
+		uint32_t width	= _width;
+		uint32_t height = _height;
+
+		if ( auto * sizePtr = std::get_if<Size2DAbsolute>( &p_text.size ) )
+		{
+			width  = sizePtr->width;
+			height = sizePtr->height;
+		}
+		else if ( auto * sizePtr = std::get_if<Size2DRelative>( &p_text.size ) )
+		{
+			width  = static_cast<uint32_t>( static_cast<float>( _width ) * sizePtr->width );
+			height = static_cast<uint32_t>( static_cast<float>( _height ) * sizePtr->height );
+			width  = std::max( 1u, width );
+			height = std::max( 1u, height );
+		}
+
+		_textures.emplace_back(
+			std::make_unique<GL::Texture2D>( GLsizei( width ), GLsizei( height ), _toGL( p_text.format ) )
+		);
+		_cacheTextures.emplace( p_key, handle );
+
+		if ( not p_text.data.empty() )
+		{
+			_textures[ handle ]->fill( p_text.data.data(), GL_FLOAT );
+		}
+
+		return handle;
+	}
+
+	Handle OpenGL45::_getOrCreateSampler( const Key & p_key, const Sampler & p_text )
+	{
+		auto it = _cacheSamplers.find( p_key );
+		if ( it != _cacheSamplers.end() )
+		{
+			return it->second;
+		}
+
+		const Handle handle = static_cast<Handle>( _samplers.size() );
+		_samplers.emplace_back(
+			std::make_unique<GL::Sampler>(
+				_toGL( p_text.wrapS ), _toGL( p_text.wrapT ), _toGL( p_text.minFilter ), _toGL( p_text.magFilter )
+			)
+		);
+		_cacheSamplers.emplace( p_key, handle );
 
 		return handle;
 	}

@@ -50,6 +50,7 @@ namespace VTX::Util::Math
 	using ::glm::toMat4;
 	using ::glm::translate;
 	using ::glm::transpose;
+	using ::glm::value_ptr;
 	using ::glm::vec;
 
 #ifdef _DEBUG

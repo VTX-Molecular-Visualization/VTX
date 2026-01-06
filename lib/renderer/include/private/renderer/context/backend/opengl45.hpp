@@ -70,6 +70,12 @@ namespace VTX::Renderer::Context::Backend
 
 	  private:
 		/**
+		 * @brief Current width and height.
+		 */
+		uint32_t _width;
+		uint32_t _height;
+
+		/**
 		 * @brief Buffer binding info.
 		 */
 		struct BufferBinding
@@ -127,6 +133,7 @@ namespace VTX::Renderer::Context::Backend
 
 		Handle _getOrCreateTexture( const Key &, const Texture & );
 		Handle _getOrCreateSampler( const Key &, const Sampler & );
+		//
 		Handle _getOrCreateBuffer( const Key &, const BufferLayout & );
 		Handle _getOrCreateVertexStream( const Key &, const VertexLayout & );
 		Handle _getOrCreateProgram( const Program & );
