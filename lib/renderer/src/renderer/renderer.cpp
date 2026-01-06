@@ -16,7 +16,7 @@ namespace VTX::Renderer
 	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height )
 	{
 		// Passes.
-		_refreshGraph( GraphicsConfig() );
+		_refreshGraph( GraphicsConfigs::DEFAULT );
 	}
 
 	void Renderer::setDefault()

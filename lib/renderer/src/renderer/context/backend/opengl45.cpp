@@ -5,23 +5,32 @@ namespace
 {
 	using namespace VTX::Renderer;
 
+	struct GLPixelFormat
+	{
+		GLenum internalFormat = 0; // glTextureStorage2D
+		GLenum uploadFormat	  = 0; // glTextureSubImage2D / glClearTexImage
+		GLenum uploadType	  = 0; // glTextureSubImage2D / glClearTexImage
+		bool   isInteger	  = false;
+		bool   isDepth		  = false;
+	};
+
 	/**
 	 * @brief All GL mapping.
 	 */
-	constexpr GLenum _toGL( const E_FORMAT p_format )
+	constexpr GLPixelFormat _toGL( const E_FORMAT p_format ) noexcept
 	{
 		switch ( p_format )
 		{
-		case E_FORMAT::RGB16F: return GL_RGB16F;
-		case E_FORMAT::RGBA16F: return GL_RGBA16F;
-		case E_FORMAT::RGBA32UI: return GL_RGBA32UI;
-		case E_FORMAT::RGBA32F: return GL_RGBA32F;
-		case E_FORMAT::RG32UI: return GL_RG32UI;
-		case E_FORMAT::R8: return GL_R8;
-		case E_FORMAT::R16F: return GL_R16F;
-		case E_FORMAT::R32F: return GL_R32F;
-		case E_FORMAT::DEPTH_COMPONENT32F: return GL_DEPTH_COMPONENT32F;
-		default: assert( false ); return GL_INVALID_INDEX;
+		case E_FORMAT::RGB16F: return { GL_RGB16F, GL_RGB, GL_HALF_FLOAT, false, false };
+		case E_FORMAT::RGBA16F: return { GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT, false, false };
+		case E_FORMAT::RGBA32F: return { GL_RGBA32F, GL_RGBA, GL_FLOAT, false, false };
+		case E_FORMAT::R16F: return { GL_R16F, GL_RED, GL_HALF_FLOAT, false, false };
+		case E_FORMAT::R32F: return { GL_R32F, GL_RED, GL_FLOAT, false, false };
+		case E_FORMAT::R8: return { GL_R8, GL_RED, GL_UNSIGNED_BYTE, false, false };
+		case E_FORMAT::RG32UI: return { GL_RG32UI, GL_RG_INTEGER, GL_UNSIGNED_INT, true, false };
+		case E_FORMAT::RGBA32UI: return { GL_RGBA32UI, GL_RGBA_INTEGER, GL_UNSIGNED_INT, true, false };
+		case E_FORMAT::DEPTH_COMPONENT32F: return { GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT, false, true };
+		default: assert( false ); return {};
 		}
 	}
 
@@ -260,14 +269,16 @@ namespace VTX::Renderer::Context::Backend
 			height = std::max( 1u, height );
 		}
 
+		GLPixelFormat glFormat = _toGL( p_text.format );
+
 		_textures.emplace_back(
-			std::make_unique<GL::Texture2D>( GLsizei( width ), GLsizei( height ), _toGL( p_text.format ) )
+			std::make_unique<GL::Texture2D>( GLsizei( width ), GLsizei( height ), glFormat.internalFormat )
 		);
 		_cacheTextures.emplace( p_key, handle );
 
 		if ( not p_text.data.empty() )
 		{
-			_textures[ handle ]->fill( p_text.data.data(), GL_FLOAT );
+			_textures[ handle ]->fill( p_text.data.data(), glFormat.uploadFormat, glFormat.uploadType );
 		}
 
 		return handle;
@@ -381,7 +392,10 @@ namespace VTX::Renderer::Context::Backend
 
 		switch ( p_severity )
 		{
-		case GL_DEBUG_SEVERITY_HIGH: VTX_ERROR( "{}", message ); break;
+		case GL_DEBUG_SEVERITY_HIGH:
+			VTX_ERROR( "{}", message );
+			assert( false );
+			break;
 		case GL_DEBUG_SEVERITY_MEDIUM:
 		case GL_DEBUG_SEVERITY_LOW: VTX_WARNING( "{}", message ); break;
 		default: break;
