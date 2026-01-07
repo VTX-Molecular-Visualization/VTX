@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.4.5] (beta) - 2024-07-09
+
+### Other
+
+- Adding bcif file format support.
+- Change download API back to bcif.
+
 ## [0.4.4] (beta) - 2024-07-09
 
 ### Other
