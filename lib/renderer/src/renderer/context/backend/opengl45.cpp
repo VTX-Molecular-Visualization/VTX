@@ -449,10 +449,10 @@ namespace VTX::Renderer::Context::Backend
 		{
 			const GLAttrib ga = toGLAttrib( a.type );
 
-			auto itBufKey = geom.attributeBuffers.find( a.name );
-			assert( itBufKey != geom.attributeBuffers.end() );
+			// auto itBufKey = geom.attributeBuffers.find( a.name );
+			// assert( itBufKey != geom.attributeBuffers.end() );
 
-			const Key & bufferKey = itBufKey->second;
+			// const Key & bufferKey = itBufKey->second;
 
 			const Handle hVbo = 0;
 			//_getOrCreateVertexBuffer( bufferKey );

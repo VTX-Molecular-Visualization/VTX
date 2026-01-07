@@ -165,12 +165,12 @@ namespace VTX::Renderer
 	{
 		GraphBuilder g;
 
-		// Uniforms.
+		// Buffers.
 		g.buffer(
 			"Camera",
-			E_BUFFER_CLASS::UNIFORM_LIKE,
+			E_BUFFER_ROLE::UNIFORM,
 			E_BUFFER_ACCESS::READ,
-			E_UPDATE_FREQUENCY::PER_FRAME,
+			E_UPDATE_FREQUENCY::DYNAMIC,
 			15,
 			{ makeUniform( "MatrixView", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixProjection", Mat4f( MAT4F_ID ) ),
@@ -185,7 +185,7 @@ namespace VTX::Renderer
 
 		g.buffer(
 			"ColorLayout",
-			E_BUFFER_CLASS::UNIFORM_LIKE,
+			E_BUFFER_ROLE::UNIFORM,
 			E_BUFFER_ACCESS::READ,
 			E_UPDATE_FREQUENCY::STATIC,
 			14,
@@ -194,9 +194,9 @@ namespace VTX::Renderer
 
 		g.buffer(
 			"Models",
-			E_BUFFER_CLASS::STRUCTURED,
+			E_BUFFER_ROLE::STORAGE,
 			E_BUFFER_ACCESS::READ,
-			E_UPDATE_FREQUENCY::PER_FRAME,
+			E_UPDATE_FREQUENCY::DYNAMIC,
 			13,
 			{ makeUniform( "MatrixModelView", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixModelViewInv", Mat4f( MAT4F_ID ) ),
@@ -205,7 +205,7 @@ namespace VTX::Renderer
 
 		g.buffer(
 			"Representations",
-			E_BUFFER_CLASS::STRUCTURED,
+			E_BUFFER_ROLE::STORAGE,
 			E_BUFFER_ACCESS::READ,
 			E_UPDATE_FREQUENCY::STATIC,
 			12,
@@ -219,7 +219,7 @@ namespace VTX::Renderer
 			  makeUniform( "SESMaxProbeNeighborNb", std::uint32_t( 0 ) ) }
 		);
 
-		// Vertex streams.
+		// Vertex streams and data buffers.
 		g.vertexStream(
 			"Atoms",
 			{
@@ -232,6 +232,15 @@ namespace VTX::Renderer
 				{ "Representations", E_TYPE::UBYTE },
 			}
 		);
+
+		g.dataBuffer( "Atoms.Positions" )
+			.dataBuffer( "Atoms.Colors" )
+			.dataBuffer( "Atoms.Radii" )
+			.dataBuffer( "Atoms.Ids" )
+			.dataBuffer( "Atoms.Flags" )
+			.dataBuffer( "Atoms.Models" )
+			.dataBuffer( "Atoms.Representations" )
+			.dataBuffer( "Bonds", E_DATA_BUFFER_KIND::INDEX );
 
 		g.vertexStream(
 			"Residues",
@@ -247,20 +256,14 @@ namespace VTX::Renderer
 			}
 		);
 
-		/*
-		g.vertexStream(
-			"Triangles",
-			{
-				{ "Positions", E_TYPE::VEC3F },
-				{ "Normales", E_TYPE::VEC3F },
-				{ "Colors", E_TYPE::UBYTE },
-				{ "Ids", E_TYPE::UINT },
-				{ "Flags", E_TYPE::UBYTE },
-				{ "Models", E_TYPE::USHORT },
-				{ "Representations", E_TYPE::UBYTE },
-			}
-		);
-		*/
+		g.dataBuffer( "Residues.Positions" )
+			.dataBuffer( "Residues.Directions" )
+			.dataBuffer( "Residues.Types" )
+			.dataBuffer( "Residues.Colors" )
+			.dataBuffer( "Residues.Ids" )
+			.dataBuffer( "Residues.Flags" )
+			.dataBuffer( "Residues.Models" )
+			.dataBuffer( "Residues.Representations" );
 
 		g.vertexStream(
 			"Voxels",
@@ -270,9 +273,13 @@ namespace VTX::Renderer
 			}
 		);
 
+		g.dataBuffer( "Voxels.Mins" ).dataBuffer( "Voxels.Maxs" );
+
 		// Geometries.
-		g.geometry( "Spheres", { { "Atoms", "Positions" } }, std::nullopt );
-		g.geometry( "Cylinders", { { "Atoms", "Positions" } }, "" );
+		g.geometry( "Spheres", "Atoms" );
+		g.geometry( "Cylinders", "Atoms", "Bonds" );
+		g.geometry( "Ribbons", "Residues" );
+		g.geometry( "Grid", "Voxels" );
 
 		// Textures.
 		g.texture( "Geometry", E_FORMAT::RGBA32UI )
@@ -352,19 +359,19 @@ namespace VTX::Renderer
 			.out( "DepthRaw" )
 			.program( "Sphere" )
 			.shaders( { FilePath( "sphere" ) } )
-			.draw( "Spheres", "Atoms", E_PRIMITIVE::POINTS )
+			.draw( "Spheres", E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "Cylinder" )
 			.shaders( { FilePath( "cylinder" ) } )
-			.draw( "Cylinders", "Atoms", E_PRIMITIVE::LINES, true )
+			.draw( "Cylinders", E_PRIMITIVE::LINES )
 			.endProgram()
 			.program( "Ribbon" )
 			.shaders( { FilePath( "ribbon" ) } )
-			.draw( "Ribbons", "Residues", E_PRIMITIVE::PATCHES, true )
+			.draw( "Ribbons", E_PRIMITIVE::PATCHES )
 			.endProgram()
 			.program( "Voxel" )
 			.shaders( { FilePath( "voxel" ) } )
-			.draw( "Grid", "Voxels", E_PRIMITIVE::POINTS )
+			.draw( "Grid", E_PRIMITIVE::POINTS )
 			.endProgram()
 			.endPass();
 

@@ -153,10 +153,10 @@ namespace VTX::Renderer
 		 */
 		GraphBuilder & sampler(
 			const Key & p_name,
-			const E_WRAPPING,
-			const E_WRAPPING,
-			const E_FILTERING,
-			const E_FILTERING
+			const E_WRAPPING  = E_WRAPPING::CLAMP_TO_EDGE,
+			const E_WRAPPING  = E_WRAPPING::CLAMP_TO_EDGE,
+			const E_FILTERING = E_FILTERING::NEAREST,
+			const E_FILTERING = E_FILTERING::NEAREST
 		);
 
 		/**
@@ -169,7 +169,7 @@ namespace VTX::Renderer
 		 */
 		GraphBuilder & buffer(
 			const Key &,
-			const E_BUFFER_CLASS,
+			const E_BUFFER_ROLE,
 			const E_BUFFER_ACCESS,
 			const E_UPDATE_FREQUENCY,
 			const uint32_t,
@@ -177,12 +177,22 @@ namespace VTX::Renderer
 		);
 
 		/**
+		 * @brief dataBuffer().
+		 */
+		GraphBuilder & dataBuffer(
+			const Key &				 p_name,
+			const E_DATA_BUFFER_KIND p_kind		 = E_DATA_BUFFER_KIND::VERTEX,
+			const E_UPDATE_FREQUENCY p_frequency = E_UPDATE_FREQUENCY::STATIC
+		);
+
+		/**
 		 * @brief geometry().
 		 */
 		GraphBuilder & geometry(
-			const Key &,
-			const std::unordered_map<Key, Key> &,
-			const std::optional<Key> = std::nullopt
+			const Key & p_name,
+			const Key & p_vertexStream,
+			// const std::unordered_map<Key, Key> & p_overrides = {},
+			const std::optional<Key> p_indexBuffer = std::nullopt
 		);
 
 		/**
@@ -224,7 +234,12 @@ namespace VTX::Renderer
 		/**
 		 * @brief draw().
 		 */
-		ProgramBuilder & draw( const Key &, const Key &, const E_PRIMITIVE, const bool = false );
+		ProgramBuilder & draw(
+			const Key &		  p_geometry,
+			const E_PRIMITIVE p_primitive	= E_PRIMITIVE::TRIANGLES,
+			const uint32_t	  p_vertexCount = 0,
+			const uint32_t	  p_indexCount	= 0
+		);
 
 		/**
 		 * @brief uniform().
@@ -269,12 +284,26 @@ namespace VTX::Renderer
 		/**
 		 * @brief in().
 		 */
-		PassBuilder & in( const Key &, const std::optional<Key> = std::nullopt );
+		// Generic binding.
+		PassBuilder & in( const E_RESOURCE_TYPE, const Key &, const std::optional<Key> = std::nullopt );
+
+		// Convenience overload: defaults to TEXTURE.
+		PassBuilder & in( const Key & p_primary, const std::optional<Key> p_secondary = std::nullopt )
+		{
+			return in( E_RESOURCE_TYPE::TEXTURE, p_primary, p_secondary );
+		}
 
 		/**
 		 * @brief out().
 		 */
-		PassBuilder & out( const Key &, const std::optional<Key> = std::nullopt );
+		// Generic binding.
+		PassBuilder & out( const E_RESOURCE_TYPE, const Key &, const std::optional<Key> = std::nullopt );
+
+		// Convenience overload: defaults to TEXTURE.
+		PassBuilder & out( const Key & p_primary, const std::optional<Key> p_secondary = std::nullopt )
+		{
+			return out( E_RESOURCE_TYPE::TEXTURE, p_primary, p_secondary );
+		}
 
 		/**
 		 * @brief program().

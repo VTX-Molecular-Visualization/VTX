@@ -95,22 +95,11 @@ namespace VTX::Renderer
 	};
 
 	/**
-	 * @brief All buffer data classes.
-	 */
-	enum struct E_BUFFER_CLASS : uint8_t
-	{
-		UNIFORM_LIKE,
-		STRUCTURED
-	};
-
-	/**
 	 * @brief All buffer update frequencies.
 	 */
 	enum struct E_UPDATE_FREQUENCY : uint8_t
 	{
-		PER_FRAME,
-		PER_PASS,
-		PER_DRAW,
+		DYNAMIC,
 		STATIC
 	};
 
@@ -120,8 +109,7 @@ namespace VTX::Renderer
 	enum struct E_DATA_BUFFER_KIND : uint8_t
 	{
 		VERTEX,
-		INDEX,
-		RAW
+		INDEX
 	};
 
 	/**
@@ -200,10 +188,10 @@ namespace VTX::Renderer
 
 	struct Sampler
 	{
-		E_WRAPPING	wrapS	  = E_WRAPPING::CLAMP_TO_EDGE;
-		E_WRAPPING	wrapT	  = E_WRAPPING::CLAMP_TO_EDGE;
-		E_FILTERING minFilter = E_FILTERING::NEAREST;
-		E_FILTERING magFilter = E_FILTERING::NEAREST;
+		E_WRAPPING	wrapS;
+		E_WRAPPING	wrapT;
+		E_FILTERING minFilter;
+		E_FILTERING magFilter;
 
 		/*
 		float lodBias = 0.f;
@@ -223,7 +211,7 @@ namespace VTX::Renderer
 		E_TYPE									 type;
 		std::array<uint8_t, 64>					 data;
 		std::optional<std::pair<double, double>> range;
-		std::optional<uint32_t>					 arrayCount = std::nullopt;
+		std::optional<uint32_t>					 arrayCount;
 	};
 
 	/**
@@ -232,7 +220,6 @@ namespace VTX::Renderer
 	struct BufferLayout
 	{
 		E_BUFFER_ROLE			  role;
-		E_BUFFER_CLASS			  dataClass;
 		E_BUFFER_ACCESS			  access;
 		E_UPDATE_FREQUENCY		  frequency;
 		Binding					  binding; // TODO: remove and use backend reflection.
@@ -244,9 +231,8 @@ namespace VTX::Renderer
 	 */
 	struct DataBuffer
 	{
-		E_DATA_BUFFER_KIND	   kind;
-		E_UPDATE_FREQUENCY	   frequency;
-		std::vector<std::byte> data;
+		E_DATA_BUFFER_KIND kind;
+		E_UPDATE_FREQUENCY frequency;
 	};
 
 	/**
@@ -289,7 +275,7 @@ namespace VTX::Renderer
 	struct DrawCall
 	{
 		Key			geometry;
-		E_PRIMITIVE primitive	= E_PRIMITIVE::TRIANGLES;
+		E_PRIMITIVE primitive;
 		uint32_t	vertexCount = 0;
 		uint32_t	indexCount	= 0;
 	};

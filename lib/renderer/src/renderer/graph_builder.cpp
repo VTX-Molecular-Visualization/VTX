@@ -42,7 +42,7 @@ namespace VTX::Renderer
 
 	GraphBuilder & GraphBuilder::buffer(
 		const Key &								  p_name,
-		const E_BUFFER_CLASS					  p_class,
+		const E_BUFFER_ROLE						  p_role,
 		const E_BUFFER_ACCESS					  p_access,
 		const E_UPDATE_FREQUENCY				  p_frequency,
 		const uint32_t							  p_binding,
@@ -50,7 +50,7 @@ namespace VTX::Renderer
 	)
 	{
 		BufferLayout desc;
-		desc.dataClass = p_class;
+		desc.role	   = p_role;
 		desc.access	   = p_access;
 		desc.frequency = p_frequency;
 		desc.binding   = p_binding;
@@ -59,18 +59,30 @@ namespace VTX::Renderer
 		return *this;
 	}
 
+	VTX::Renderer::GraphBuilder & VTX::Renderer::GraphBuilder::dataBuffer(
+		const Key &				 p_name,
+		const E_DATA_BUFFER_KIND p_kind,
+		const E_UPDATE_FREQUENCY p_frequency
+	)
+	{
+		DataBuffer db;
+		db.kind							= p_kind;
+		db.frequency					= p_frequency;
+		resources.dataBuffers[ p_name ] = std::move( db );
+		return *this;
+	}
+
 	GraphBuilder & GraphBuilder::geometry(
-		const Key &							 p_name,
-		const std::unordered_map<Key, Key> & p_attributeToBuffer,
-		const std::optional<Key>			 p_indexBuffer
+		const Key & p_name,
+		const Key & p_vertexStream,
+		// const std::unordered_map<Key, Key> & p_overrides,
+		const std::optional<Key> p_indexBuffer
 	)
 	{
 		Geometry geom;
-		for ( const VertexAttribute & attr : p_attributes )
-		{
-			geom.attributeBuffers[ attr.name ] = attr.name;
-		}
-		geom.indexBuffer			   = p_indexBuffer;
+		geom.vertexStream = p_vertexStream;
+		geom.indexBuffer  = p_indexBuffer;
+		// geom.overrides	 = p_overrides;
 		resources.geometries[ p_name ] = std::move( geom );
 		return *this;
 	}
@@ -93,16 +105,16 @@ namespace VTX::Renderer
 
 	ProgramBuilder & ProgramBuilder::draw(
 		const Key &		  p_geometry,
-		const Key &		  p_vertexStream,
 		const E_PRIMITIVE p_primitive,
-		const bool		  p_useIndices
+		const uint32_t	  p_vertexCount,
+		const uint32_t	  p_indexCount
 	)
 	{
 		DrawCall dc;
 		dc.geometry		 = p_geometry;
-		dc.vertexStream	 = p_vertexStream;
 		dc.primitive	 = p_primitive;
-		dc.useIndices	 = p_useIndices;
+		dc.vertexCount	 = p_vertexCount;
+		dc.indexCount	 = p_indexCount;
 		program.drawCall = dc;
 		return *this;
 	}
@@ -111,17 +123,23 @@ namespace VTX::Renderer
 
 	PassBuilder::PassBuilder( GraphBuilder & p_g, const Key & p_name ) : graph( p_g ) { pass.name = p_name; }
 
-	PassBuilder & PassBuilder::in( const Key & p_primary, const std::optional<Key> p_secondary )
+	PassBuilder & PassBuilder::in(
+		const E_RESOURCE_TYPE	 p_type,
+		const Key &				 p_primary,
+		const std::optional<Key> p_secondary
+	)
 	{
-		// pass.inputs.push_back( p_binding );
-
-		pass.inputs.push_back( { p_primary, p_secondary } );
+		pass.inputs.push_back( { p_type, p_primary, p_secondary } );
 		return *this;
 	}
 
-	PassBuilder & PassBuilder::out( const Key & p_primary, const std::optional<Key> p_secondary )
+	PassBuilder & PassBuilder::out(
+		const E_RESOURCE_TYPE	 p_type,
+		const Key &				 p_primary,
+		const std::optional<Key> p_secondary
+	)
 	{
-		pass.outputs.push_back( { p_primary, p_secondary } );
+		pass.outputs.push_back( { p_type, p_primary, p_secondary } );
 		return *this;
 	}
 
