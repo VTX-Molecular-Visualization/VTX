@@ -13,7 +13,7 @@ Name "VTX v0.4.5"
 VIProductVersion "0.4.5.0"
 VIAddVersionKey "ProductName" "VTX"
 VIAddVersionKey "CompanyName" "VTX Consortium"
-VIAddVersionKey "LegalCopyright" "Copyright (C) 2024"
+VIAddVersionKey "LegalCopyright" "Copyright (C) 2026"
 VIAddVersionKey "FileDescription" "High performance molecular visualization software"
 VIAddVersionKey "FileVersion" "0.4.5"
 
