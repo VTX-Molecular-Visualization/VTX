@@ -50,13 +50,28 @@ namespace VTX::Renderer
 	)
 	{
 		BufferLayout desc;
-		desc.name	   = p_name;
 		desc.dataClass = p_class;
 		desc.access	   = p_access;
 		desc.frequency = p_frequency;
 		desc.binding   = p_binding;
 		desc.values.assign( p_values.begin(), p_values.end() );
 		resources.buffers[ p_name ] = std::move( desc );
+		return *this;
+	}
+
+	GraphBuilder & GraphBuilder::geometry(
+		const Key &							 p_name,
+		const std::unordered_map<Key, Key> & p_attributeToBuffer,
+		const std::optional<Key>			 p_indexBuffer
+	)
+	{
+		Geometry geom;
+		for ( const VertexAttribute & attr : p_attributes )
+		{
+			geom.attributeBuffers[ attr.name ] = attr.name;
+		}
+		geom.indexBuffer			   = p_indexBuffer;
+		resources.geometries[ p_name ] = std::move( geom );
 		return *this;
 	}
 
@@ -77,12 +92,14 @@ namespace VTX::Renderer
 	}
 
 	ProgramBuilder & ProgramBuilder::draw(
+		const Key &		  p_geometry,
 		const Key &		  p_vertexStream,
 		const E_PRIMITIVE p_primitive,
 		const bool		  p_useIndices
 	)
 	{
 		DrawCall dc;
+		dc.geometry		 = p_geometry;
 		dc.vertexStream	 = p_vertexStream;
 		dc.primitive	 = p_primitive;
 		dc.useIndices	 = p_useIndices;

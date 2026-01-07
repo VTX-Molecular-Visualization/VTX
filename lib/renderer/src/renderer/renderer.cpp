@@ -1,9 +1,5 @@
 #include "renderer/renderer.hpp"
 #include "renderer/binary_buffer.hpp"
-#include "renderer/geometry/cylinder.hpp"
-#include "renderer/geometry/ribbon.hpp"
-#include "renderer/geometry/sphere.hpp"
-#include "renderer/geometry/voxel.hpp"
 #include <execution>
 #include <util/math.hpp>
 #include <util/math/aabb.hpp>

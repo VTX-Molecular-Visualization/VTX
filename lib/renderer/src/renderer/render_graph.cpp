@@ -14,7 +14,7 @@ namespace VTX::Renderer
 
 		auto isExternalResource = [ this ]( const Key & name ) -> bool
 		{
-			if ( _resources.vertexStreams.contains( name ) )
+			if ( _resources.geometries.contains( name ) )
 			{
 				return true;
 			}
@@ -135,6 +135,11 @@ namespace VTX::Renderer
 		{
 			auto [ it, inserted ] = _resources.samplers.emplace( key, sampler );
 		}
+		for ( const auto & [ key, geometry ] : p_builder.resources.geometries )
+		{
+			auto [ it, inserted ] = _resources.geometries.emplace( key, geometry );
+			assert( inserted );
+		}
 		// Passes.
 		for ( const auto & pass : p_builder.passes )
 		{
@@ -216,52 +221,58 @@ namespace VTX::Renderer
 
 		// Vertex streams.
 		g.vertexStream(
-			"SpheresCylinders",
+			"Atoms",
 			{
-				{ "Positions", E_TYPE::FLOAT, 3 },
-				{ "Colors", E_TYPE::UBYTE, 1 },
-				{ "Radii", E_TYPE::FLOAT, 1 },
-				{ "Ids", E_TYPE::UINT, 1 },
-				{ "Flags", E_TYPE::UBYTE, 1 },
-				{ "Models", E_TYPE::USHORT, 1 },
-				{ "Representations", E_TYPE::UBYTE, 1 },
+				{ "Positions", E_TYPE::VEC3F },
+				{ "Colors", E_TYPE::UBYTE },
+				{ "Radii", E_TYPE::FLOAT },
+				{ "Ids", E_TYPE::UINT },
+				{ "Flags", E_TYPE::UBYTE },
+				{ "Models", E_TYPE::USHORT },
+				{ "Representations", E_TYPE::UBYTE },
 			}
 		);
 
 		g.vertexStream(
-			"Ribbons",
+			"Residues",
 			{
-				{ "Positions", E_TYPE::FLOAT, 4 },
-				{ "Directions", E_TYPE::FLOAT, 3 },
-				{ "Types", E_TYPE::UBYTE, 1 },
-				{ "Colors", E_TYPE::UBYTE, 1 },
-				{ "Ids", E_TYPE::UINT, 1 },
-				{ "Flags", E_TYPE::UBYTE, 1 },
-				{ "Models", E_TYPE::USHORT, 1 },
-				{ "Representations", E_TYPE::UBYTE, 1 },
+				{ "Positions", E_TYPE::VEC4F },
+				{ "Directions", E_TYPE::VEC3F },
+				{ "Types", E_TYPE::UBYTE },
+				{ "Colors", E_TYPE::UBYTE },
+				{ "Ids", E_TYPE::UINT },
+				{ "Flags", E_TYPE::UBYTE },
+				{ "Models", E_TYPE::USHORT },
+				{ "Representations", E_TYPE::UBYTE },
 			}
 		);
 
+		/*
 		g.vertexStream(
 			"Triangles",
 			{
-				{ "Positions", E_TYPE::FLOAT, 3 },
-				{ "Normales", E_TYPE::FLOAT, 3 },
-				{ "Colors", E_TYPE::UBYTE, 1 },
-				{ "Ids", E_TYPE::UINT, 1 },
-				{ "Flags", E_TYPE::UBYTE, 1 },
-				{ "Models", E_TYPE::USHORT, 1 },
-				{ "Representations", E_TYPE::UBYTE, 1 },
+				{ "Positions", E_TYPE::VEC3F },
+				{ "Normales", E_TYPE::VEC3F },
+				{ "Colors", E_TYPE::UBYTE },
+				{ "Ids", E_TYPE::UINT },
+				{ "Flags", E_TYPE::UBYTE },
+				{ "Models", E_TYPE::USHORT },
+				{ "Representations", E_TYPE::UBYTE },
 			}
 		);
+		*/
 
 		g.vertexStream(
 			"Voxels",
 			{
-				{ "Mins", E_TYPE::FLOAT, 3 },
-				{ "Maxs", E_TYPE::FLOAT, 3 },
+				{ "Mins", E_TYPE::VEC3F },
+				{ "Maxs", E_TYPE::VEC3F },
 			}
 		);
+
+		// Geometries.
+		g.geometry( "Spheres", { { "Atoms", "Positions" } }, std::nullopt );
+		g.geometry( "Cylinders", { { "Atoms", "Positions" } }, "" );
 
 		// Textures.
 		g.texture( "Geometry", E_FORMAT::RGBA32UI )
@@ -331,29 +342,29 @@ namespace VTX::Renderer
 		// Passes.
 		// Geometric.
 		g.pass( "Geometric" )
-			.in( "SpheresCylinders" )
+			.in( "Spheres" )
+			.in( "Cylinders" )
 			.in( "Ribbons" )
-			.in( "Triangles" )
-			.in( "Voxels" )
+			.in( "Grid" )
 			.out( "Geometry" )
 			.out( "Color" )
 			.out( "Picking" )
 			.out( "DepthRaw" )
 			.program( "Sphere" )
 			.shaders( { FilePath( "sphere" ) } )
-			.draw( "SpheresCylinders", E_PRIMITIVE::POINTS )
+			.draw( "Spheres", "Atoms", E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "Cylinder" )
 			.shaders( { FilePath( "cylinder" ) } )
-			.draw( "SpheresCylinders", E_PRIMITIVE::LINES, true )
+			.draw( "Cylinders", "Atoms", E_PRIMITIVE::LINES, true )
 			.endProgram()
 			.program( "Ribbon" )
 			.shaders( { FilePath( "ribbon" ) } )
-			.draw( "Ribbons", E_PRIMITIVE::PATCHES, true )
+			.draw( "Ribbons", "Residues", E_PRIMITIVE::PATCHES, true )
 			.endProgram()
 			.program( "Voxel" )
 			.shaders( { FilePath( "voxel" ) } )
-			.draw( "Voxels", E_PRIMITIVE::POINTS )
+			.draw( "Grid", "Voxels", E_PRIMITIVE::POINTS )
 			.endProgram()
 			.endPass();
 

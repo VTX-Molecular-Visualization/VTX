@@ -62,7 +62,7 @@ namespace VTX::Renderer
 	template<>
 	constexpr E_TYPE uniformTypeOf<Util::Color::Rgba>()
 	{
-		return E_TYPE::COLOR4;
+		return E_TYPE::VEC4F;
 	}
 
 	/**
@@ -177,6 +177,15 @@ namespace VTX::Renderer
 		);
 
 		/**
+		 * @brief geometry().
+		 */
+		GraphBuilder & geometry(
+			const Key &,
+			const std::unordered_map<Key, Key> &,
+			const std::optional<Key> = std::nullopt
+		);
+
+		/**
 		 * @brief pass().
 		 */
 		PassBuilder pass( const Key & );
@@ -215,7 +224,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief draw().
 		 */
-		ProgramBuilder & draw( const Key &, const E_PRIMITIVE, const bool = false );
+		ProgramBuilder & draw( const Key &, const Key &, const E_PRIMITIVE, const bool = false );
 
 		/**
 		 * @brief uniform().

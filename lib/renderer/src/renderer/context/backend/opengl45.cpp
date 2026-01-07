@@ -34,7 +34,7 @@ namespace
 		}
 	}
 
-	constexpr GLenum _toGL( const E_WRAPPING p_wrapping )
+	constexpr GLenum _toGL( const E_WRAPPING p_wrapping ) noexcept
 	{
 		switch ( p_wrapping )
 		{
@@ -47,7 +47,7 @@ namespace
 		}
 	}
 
-	constexpr GLenum _toGL( const E_FILTERING p_filtering )
+	constexpr GLenum _toGL( const E_FILTERING p_filtering ) noexcept
 	{
 		switch ( p_filtering )
 		{
@@ -60,6 +60,62 @@ namespace
 		default: assert( false ); return GL_INVALID_INDEX;
 		}
 	}
+
+	/*
+	constexpr GLenum _toGL( const E_TYPE p_type ) noexcept
+	{
+		switch ( p_type )
+		{
+		case E_TYPE::BOOL: return GL_BOOL;
+		case E_TYPE::BYTE: return GL_BYTE;
+		case E_TYPE::UBYTE: return GL_UNSIGNED_BYTE;
+		case E_TYPE::SHORT: return GL_SHORT;
+		case E_TYPE::USHORT: return GL_UNSIGNED_SHORT;
+		case E_TYPE::INT: return GL_INT;
+		case E_TYPE::UINT: return GL_UNSIGNED_INT;
+		case E_TYPE::FLOAT: return GL_FLOAT;
+		case E_TYPE::VEC2I: return GL_INT_VEC2;
+		case E_TYPE::VEC2F: return GL_FLOAT_VEC2;
+		case E_TYPE::VEC3F: return GL_FLOAT_VEC3;
+		case E_TYPE::VEC4F: return GL_FLOAT_VEC4;
+		case E_TYPE::MAT3F: return GL_FLOAT_MAT3;
+		case E_TYPE::MAT4F: return GL_FLOAT_MAT4;
+		default: assert( false ); return GL_INVALID_INDEX;
+		}
+	}
+	*/
+
+	struct GLAttrib
+	{
+		GLenum	 baseType	  = 0;
+		uint8_t	 components	  = 0;
+		bool	 normalized	  = false;
+		uint32_t bytesPerComp = 0;
+		uint8_t	 columns	  = 1;
+	};
+
+	constexpr GLAttrib toGLAttrib( E_TYPE p_type ) noexcept
+	{
+		switch ( p_type )
+		{
+		case E_TYPE::FLOAT: return { GL_FLOAT, 1, false, 4, 1 };
+		case E_TYPE::INT: return { GL_INT, 1, false, 4, 1 };
+		case E_TYPE::UINT: return { GL_UNSIGNED_INT, 1, false, 4, 1 };
+		case E_TYPE::BYTE: return { GL_BYTE, 1, false, 1, 1 };
+		case E_TYPE::UBYTE: return { GL_UNSIGNED_BYTE, 1, false, 1, 1 };
+		case E_TYPE::SHORT: return { GL_SHORT, 1, false, 2, 1 };
+		case E_TYPE::USHORT: return { GL_UNSIGNED_SHORT, 1, false, 2, 1 };
+		case E_TYPE::BOOL: return { GL_UNSIGNED_BYTE, 1, false, 1, 1 };
+		case E_TYPE::VEC2F: return { GL_FLOAT, 2, false, 4, 1 };
+		case E_TYPE::VEC3F: return { GL_FLOAT, 3, false, 4, 1 };
+		case E_TYPE::VEC4F: return { GL_FLOAT, 4, false, 4, 1 };
+		case E_TYPE::VEC2I: return { GL_INT, 2, false, 4, 1 };
+		case E_TYPE::MAT3F: return { GL_FLOAT, 3, false, 4, 3 };
+		case E_TYPE::MAT4F: return { GL_FLOAT, 4, false, 4, 4 };
+		default: assert( false ); return {};
+		}
+	}
+
 } // namespace
 
 namespace VTX::Renderer::Context::Backend
@@ -155,6 +211,14 @@ namespace VTX::Renderer::Context::Backend
 		{
 			_getOrCreateSampler( key, sampler );
 		}
+		for ( const auto & [ key, vertexStream ] : p_resources.vertexStreams )
+		{
+			_getOrCreateVertexStream( key, vertexStream );
+		}
+		for ( const auto & [ key, buffer ] : p_resources.buffers )
+		{
+			_getOrCreateBuffer( key, buffer );
+		}
 
 		// Foreach pass.
 		for ( const Pass * const passPtr : p_renderQueue )
@@ -178,7 +242,7 @@ namespace VTX::Renderer::Context::Backend
 			// Create programs.
 			for ( const Program & program : pass.programs )
 			{
-				//
+				const Handle hProgram = _getOrCreateProgram( program );
 			}
 
 			// TODO
@@ -301,6 +365,122 @@ namespace VTX::Renderer::Context::Backend
 		_cacheSamplers.emplace( p_key, handle );
 
 		return handle;
+	}
+
+	Handle OpenGL45::_getOrCreateVertexStream( const Key & p_key, const VertexLayout & p_vertexStream )
+	{
+		auto it = _cacheVertexStreams.find( p_key );
+		if ( it != _cacheVertexStreams.end() )
+		{
+			return it->second;
+		}
+		const Handle handle = static_cast<Handle>( _vertexArrays.size() );
+		_vertexArrays.emplace_back( std::make_unique<GL::VertexArray>() );
+		_cacheVertexStreams.emplace( p_key, handle );
+
+		const auto & vao = *_vertexArrays[ handle ];
+		vao.bind();
+		GLuint location = 0;
+		for ( const auto & a : p_vertexStream.attributes )
+		{
+			const GLAttrib ga = toGLAttrib( a.type );
+
+			for ( uint8_t col = 0; col < ga.columns; ++col )
+			{
+				const GLuint attribIndex  = location;
+				const GLuint bindingIndex = location; // planar : 1 binding par attribut (ou colonne)
+				const GLuint relOffset	  = GLuint( col * ga.components * ga.bytesPerComp );
+
+				vao.enableAttribute( attribIndex );
+				vao.setAttributeFormat(
+					attribIndex, ga.components, ga.baseType, relOffset, ga.normalized ? GL_TRUE : GL_FALSE
+				);
+				vao.setAttributeBinding( attribIndex, bindingIndex );
+
+				++location;
+			}
+		}
+		vao.unbind();
+
+		return handle;
+	}
+
+	Handle OpenGL45::_getOrCreateBuffer( const Key & p_key, const BufferLayout & p_buffer )
+	{
+		auto it = _cacheBuffers.find( p_key );
+		if ( it != _cacheBuffers.end() )
+		{
+			return it->second;
+		}
+
+		const Handle handle = static_cast<Handle>( _buffers.size() );
+
+		return handle;
+	}
+
+	Handle OpenGL45::_getOrCreateProgram( const Program & p_program )
+	{
+		const Key key = p_program.name;
+		auto	  it  = _cachePrograms.find( key );
+		if ( it != _cachePrograms.end() )
+		{
+			return it->second;
+		}
+		const Handle handle = static_cast<Handle>( _programs.size() );
+
+		// TODO: bind geometry to vao if draw call
+
+		return handle;
+	}
+
+	void OpenGL45::_bindGeometryToVao(
+		const Handle		 hVao,
+		const VertexLayout & layout,
+		const Geometry &	 geom,
+		const bool			 useIndices
+	)
+	{
+		auto & vao = *_vertexArrays[ hVao ];
+		vao.bind();
+
+		GLuint location = 0;
+
+		for ( const auto & a : layout.attributes )
+		{
+			const GLAttrib ga = toGLAttrib( a.type );
+
+			auto itBufKey = geom.attributeBuffers.find( a.name );
+			assert( itBufKey != geom.attributeBuffers.end() );
+
+			const Key & bufferKey = itBufKey->second;
+
+			const Handle hVbo = 0;
+			//_getOrCreateVertexBuffer( bufferKey );
+			auto & vbo = *_vertexBuffers[ hVbo ];
+
+			const GLsizei strideOneColumn = GLsizei( ga.components * ga.bytesPerComp );
+
+			for ( uint8_t col = 0; col < ga.columns; ++col )
+			{
+				const GLuint   bindingIndex = location;
+				const GLintptr offset		= GLintptr( col * strideOneColumn );
+
+				vao.setVertexBuffer( bindingIndex, vbo, strideOneColumn, offset );
+
+				++location;
+			}
+		}
+
+		if ( useIndices )
+		{
+			assert( geom.indexBuffer.has_value() );
+
+			const Handle hEbo = 0;
+			//_getOrCreateIndexBuffer( *geom.indexBuffer );
+			vao.bindElementBuffer( *_indexBuffers[ hEbo ] );
+		}
+
+		vao.unbind();
 	}
 
 	void OpenGL45::_getOpenglInfos()

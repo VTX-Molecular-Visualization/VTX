@@ -98,19 +98,20 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Cache mapping.
 		 */
-		template<typename Desc>
 		using Cache = std::unordered_map<Key, Handle>;
 
 		/**
 		 * @brief Mappint Key -> Handle.
 		 */
-		Cache<Texture>		 _cacheTextures;
-		Cache<Sampler>		 _cacheSamplers;
-		Cache<BufferLayout>	 _cacheBuffers;
-		Cache<VertexLayout>	 _cacheVertexStreams;
-		Cache<Program>		 _cachePrograms;
-		Cache<ResourceTable> _cacheResourceTables;
-		Cache<Pass>			 _cacheFramebuffers;
+		Cache _cacheTextures;
+		Cache _cacheSamplers;
+		Cache _cacheBuffers;
+		Cache _cacheVertexBuffers;
+		Cache _cacheIndexBuffers;
+		Cache _cacheVertexStreams;
+		Cache _cachePrograms;
+		Cache _cacheResourceTables;
+		Cache _cacheFramebuffers;
 
 		/**
 		 * @brief Resource pools.
@@ -119,6 +120,8 @@ namespace VTX::Renderer::Context::Backend
 		std::vector<std::unique_ptr<ResourceTable>>	  _resourceTables;
 		std::vector<std::unique_ptr<GL::VertexArray>> _vertexArrays;
 		std::vector<std::unique_ptr<GL::Buffer>>	  _buffers;
+		std::vector<std::unique_ptr<GL::Buffer>>	  _vertexBuffers;
+		std::vector<std::unique_ptr<GL::Buffer>>	  _indexBuffers;
 		std::vector<std::unique_ptr<GL::Framebuffer>> _framebuffers;
 		std::vector<std::unique_ptr<GL::Texture2D>>	  _textures;
 		std::vector<std::unique_ptr<GL::Sampler>>	  _samplers;
@@ -130,13 +133,13 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		Handle _getOrCreateFramebuffer( const Pass &, const Resources &, const bool = false );
 		Handle _getOrCreateResourceTable( const Pass &, const Resources & );
-
 		Handle _getOrCreateTexture( const Key &, const Texture & );
 		Handle _getOrCreateSampler( const Key &, const Sampler & );
-		//
-		Handle _getOrCreateBuffer( const Key &, const BufferLayout & );
 		Handle _getOrCreateVertexStream( const Key &, const VertexLayout & );
+		Handle _getOrCreateBuffer( const Key &, const BufferLayout & );
 		Handle _getOrCreateProgram( const Program & );
+
+		void _bindGeometryToVao( const Handle, const VertexLayout &, const Geometry &, const bool );
 
 		/**
 		 * @brief Specs.

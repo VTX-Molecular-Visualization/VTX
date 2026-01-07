@@ -36,8 +36,7 @@ namespace VTX::Renderer
 		VEC3F,
 		VEC4F,
 		MAT3F,
-		MAT4F,
-		COLOR4
+		MAT4F
 	};
 
 	/**
@@ -89,7 +88,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All buffer access types.
 	 */
-	enum class E_BUFFER_ACCESS : uint8_t
+	enum struct E_BUFFER_ACCESS : uint8_t
 	{
 		READ,
 		READ_WRITE
@@ -98,7 +97,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All buffer data classes.
 	 */
-	enum class E_BUFFER_CLASS : uint8_t
+	enum struct E_BUFFER_CLASS : uint8_t
 	{
 		UNIFORM_LIKE,
 		STRUCTURED
@@ -107,12 +106,22 @@ namespace VTX::Renderer
 	/**
 	 * @brief All buffer update frequencies.
 	 */
-	enum class E_UPDATE_FREQUENCY : uint8_t
+	enum struct E_UPDATE_FREQUENCY : uint8_t
 	{
 		PER_FRAME,
 		PER_PASS,
 		PER_DRAW,
 		STATIC
+	};
+
+	/**
+	 * @brief All data buffer kinds.
+	 */
+	enum struct E_DATA_BUFFER_KIND : uint8_t
+	{
+		VERTEX,
+		INDEX,
+		RAW
 	};
 
 	/**
@@ -206,24 +215,6 @@ namespace VTX::Renderer
 	};
 
 	/**
-	 * @brief Vertex attribute descriptor.
-	 */
-	struct VertexAttribute
-	{
-		Key		name;
-		E_TYPE	type;
-		uint8_t components;
-	};
-
-	/**
-	 * @brief Vertex layout descriptor.
-	 */
-	struct VertexLayout
-	{
-		std::vector<VertexAttribute> attributes;
-	};
-
-	/**
 	 * @brief Uniform value descriptor.
 	 */
 	struct UniformValue
@@ -240,7 +231,7 @@ namespace VTX::Renderer
 	 */
 	struct BufferLayout
 	{
-		Key						  name;
+		E_BUFFER_ROLE			  role;
 		E_BUFFER_CLASS			  dataClass;
 		E_BUFFER_ACCESS			  access;
 		E_UPDATE_FREQUENCY		  frequency;
@@ -249,23 +240,47 @@ namespace VTX::Renderer
 	};
 
 	/**
+	 * @brief Data buffer descriptor.
+	 */
+	struct DataBuffer
+	{
+		E_DATA_BUFFER_KIND	   kind;
+		E_UPDATE_FREQUENCY	   frequency;
+		std::vector<std::byte> data;
+	};
+
+	/**
 	 * @brief Resource binding descriptor.
 	 */
 	struct ResourceBinding
 	{
+		E_RESOURCE_TYPE	   type;
 		Key				   primary;
-		std::optional<Key> secondary; // for textures
+		std::optional<Key> secondary;
 	};
 
 	/**
-	 * @brief All resources.
+	 * @brief Vertex attribute descriptor.
 	 */
-	struct Resources
+	struct VertexAttribute
 	{
-		std::unordered_map<Key, Texture>	  textures;
-		std::unordered_map<Key, Sampler>	  samplers;
-		std::unordered_map<Key, VertexLayout> vertexStreams;
-		std::unordered_map<Key, BufferLayout> buffers;
+		Key	   name;
+		E_TYPE type;
+	};
+
+	/**
+	 * @brief Vertex layout descriptor.
+	 */
+	struct VertexLayout
+	{
+		std::vector<VertexAttribute> attributes;
+	};
+
+	struct Geometry
+	{
+		Key				   vertexStream;
+		std::optional<Key> indexBuffer;
+		// std::unordered_map<Key, Key> overrides; // attributeName -> bufferKey
 	};
 
 	/**
@@ -273,9 +288,10 @@ namespace VTX::Renderer
 	 */
 	struct DrawCall
 	{
-		Key			vertexStream;
-		E_PRIMITIVE primitive  = E_PRIMITIVE::TRIANGLES;
-		bool		useIndices = false;
+		Key			geometry;
+		E_PRIMITIVE primitive	= E_PRIMITIVE::TRIANGLES;
+		uint32_t	vertexCount = 0;
+		uint32_t	indexCount	= 0;
 	};
 
 	/**
@@ -304,6 +320,19 @@ namespace VTX::Renderer
 		std::vector<ResourceBinding> outputs;
 		std::vector<Program>		 programs;
 		std::optional<RenderFunc>	 customCallback;
+	};
+
+	/**
+	 * @brief All resources.
+	 */
+	struct Resources
+	{
+		std::unordered_map<Key, Texture>	  textures;
+		std::unordered_map<Key, Sampler>	  samplers;
+		std::unordered_map<Key, VertexLayout> vertexStreams;
+		std::unordered_map<Key, BufferLayout> buffers;
+		std::unordered_map<Key, DataBuffer>	  dataBuffers;
+		std::unordered_map<Key, Geometry>	  geometries;
 	};
 
 	/**
