@@ -45,8 +45,8 @@ jobs:
 
     - name: Add custom remote
       run: |
-        conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
-        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
+        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}
@@ -59,8 +59,8 @@ jobs:
 
     - name: Upload dependencies
       run: |
-        conan upload sdl -r=cano7782
-        conan upload imgui -r=cano7782
+        conan upload sdl -r=vtx
+        conan upload imgui -r=vtx
 
     - name: Read package path from output.json
       id: read_package_path
