@@ -1,13 +1,11 @@
 #ifndef __VTX_RENDERER_DESCRIPTORS__
 #define __VTX_RENDERER_DESCRIPTORS__
 
-#include "enums.hpp"
 #include <array>
 #include <functional>
-#include <map>
+#include <memory>
 #include <optional>
-#include <unordered_map>
-#include <util/color/rgba.hpp>
+#include <string>
 #include <util/types.hpp>
 #include <variant>
 #include <vector>
@@ -17,212 +15,173 @@
  */
 namespace VTX::Renderer
 {
-
-	using Key  = std::string;
-	using Keys = std::vector<Key>;
-
-	using Size = std::optional<std::variant<size_t, float>>;
-	struct Attachment
+	/**
+	 * @brief All data types.
+	 */
+	enum struct E_TYPE : std::uint8_t
 	{
-		E_FORMAT	format		 = E_FORMAT::RGBA16F;
-		E_WRAPPING	wrappingS	 = E_WRAPPING::CLAMP_TO_EDGE;
-		E_WRAPPING	wrappingT	 = E_WRAPPING::CLAMP_TO_EDGE;
-		E_FILTERING filteringMin = E_FILTERING::NEAREST;
-		E_FILTERING filteringMag = E_FILTERING::NEAREST;
-		Size		width		 = std::nullopt;
-		Size		height		 = std::nullopt;
-		void *		data		 = nullptr;
+		BOOL,
+		BYTE,
+		UBYTE,
+		SHORT,
+		USHORT,
+		INT,
+		UINT,
+		FLOAT,
+		VEC2I,
+		VEC2F,
+		VEC3F,
+		VEC4F,
+		MAT3F,
+		MAT4F,
+		COLOR4
 	};
 
-	struct BufferDraw
+	/**
+	 * @brief Global resource types.
+	 */
+	enum struct E_RESOURCE_TYPE : std::uint8_t
 	{
-		struct Entry
-		{
-			Key	   name;
-			E_TYPE nativeType;
-			size_t components;
-		};
-		std::vector<Entry> entries;
+		TEXTURE,
+		VERTEX_STREAM,
+		UNIFORM_BUFFER
 	};
 
-	template<typename T>
-	struct BufferValue
+	/**
+	 * @brief All data formats.
+	 */
+	enum struct E_FORMAT : std::uint8_t
 	{
-		T value;
-
-		// TODO: test anonymous struct.
-		struct MinMax
-		{
-			T min;
-			T max;
-		};
-		std::optional<MinMax> minMax;
+		RGB16F,
+		RGBA16F,
+		RGBA32UI,
+		RGBA32F,
+		RG32UI,
+		R8,
+		R16F,
+		R32F,
+		DEPTH_COMPONENT32F
 	};
 
-	using BufferDataValueVariant = std::variant<
-		BufferValue<bool>,
-		BufferValue<char>,
-		BufferValue<uchar>,
-		BufferValue<short>,
-		BufferValue<ushort>,
-		BufferValue<int>,
-		BufferValue<uint>,
-		BufferValue<float>,
-		BufferValue<Vec2i>,
-		BufferValue<Vec2f>,
-		BufferValue<Vec3f>,
-		BufferValue<Vec4f>,
-		BufferValue<Mat3f>,
-		BufferValue<Mat4f>,
-		BufferValue<Util::Color::Rgba>>;
-
-	struct BufferDataValue
+	/**
+	 * @brief All draw primitives.
+	 */
+	enum struct E_PRIMITIVE : std::uint8_t
 	{
-		Key					   name;
-		E_TYPE				   type;
-		BufferDataValueVariant value;
+		POINTS,
+		LINES,
+		TRIANGLES,
+		PATCHES,
 	};
 
-	using BufferDataValues = std::vector<BufferDataValue>;
+	/**
+	 * @brief Aliases.
+	 */
+	using Key	= std::string;
+	using Keys	= std::vector<Key>;
+	using Files = std::vector<FilePath>;
 
-	struct BufferData
+	/**
+	 * @brief Texture descriptor.
+	 */
+	struct Texture
 	{
-		Key				 name;
-		char			 binding;
-		BufferDataValues values;
-		size_t			 size		 = 0;
-		void * const	 data		 = nullptr;
-		bool			 isLarge	 = false; // If max size >64 Ko
-		bool			 isSizeFixed = false; // TODO: use variant of flags enums.
-
-		/*
-		struct BufferDraw
-		{
-			size_t size;
-			void * data;
-		};
-		*/
+		E_FORMAT			 format;
+		std::vector<uint8_t> data;
 	};
 
-	using Handle = uint;
-	using IO	 = std::variant<Attachment, BufferData, BufferDraw>;
-
-	struct Input
+	/**
+	 * @brief Vertex attribute descriptor.
+	 */
+	struct VertexAttribute
 	{
-		Key name;
-		IO	desc;
+		Key			 name;
+		E_TYPE		 type;
+		std::uint8_t components;
 	};
 
-	struct Output : public Input
+	/**
+	 * @brief Vertex layout descriptor.
+	 */
+	struct VertexLayout
 	{
+		std::vector<VertexAttribute> attributes;
 	};
 
-	using NeedRenderFunc = std::function<bool()>;
-
-	struct Draw
+	/**
+	 * @brief Uniform value descriptor.
+	 */
+	struct UniformValue
 	{
-		Key			name;
-		E_PRIMITIVE primitive;
+		Key										 name;
+		E_TYPE									 type;
+		std::array<std::uint8_t, 64>			 data;
+		std::optional<std::pair<double, double>> range;
+	};
+
+	/**
+	 * @brief Uniform buffer descriptor.
+	 */
+	struct UniformBuffer
+	{
+		Key						  name;
+		std::uint32_t			  binding;
+		std::vector<UniformValue> values;
+	};
+
+	/**
+	 * @brief All resources.
+	 */
+	struct Resources
+	{
+		std::unordered_map<Key, Texture>	   textures;
+		std::unordered_map<Key, VertexLayout>  vertexStreams;
+		std::unordered_map<Key, UniformBuffer> uniformBuffers;
+	};
+
+	/**
+	 * @brief Draw call descriptor.
+	 */
+	struct DrawCall
+	{
+		Key			vertexStream;
+		E_PRIMITIVE primitive  = E_PRIMITIVE::TRIANGLES;
 		bool		useIndices = false;
-
-		struct Range
-		{
-			std::vector<void *> offsets;
-			std::vector<uint>	counts;
-		};
-		Range * ranges = nullptr;
-
-		NeedRenderFunc needRenderFunc;
 	};
 
-	using Files = std::variant<FilePath, std::vector<FilePath>>;
-
-	using BufferDataList = std::vector<BufferData>;
-
+	/**
+	 * @brief Program descriptor.
+	 */
 	struct Program
 	{
-		Key					name;
-		Files				shaders;
-		BufferDataValues	data;
-		std::optional<Draw> draw;
-		Key					toInject;
-		Key					suffix;
+		Key						  name;
+		Files					  shaders;
+		std::vector<UniformValue> uniforms;
+		std::optional<DrawCall>	  drawCall;
 	};
 
-	using Inputs   = std::unordered_map<E_CHAN_IN, Input>;
-	using Outputs  = std::unordered_map<E_CHAN_OUT, Output>;
-	using Programs = std::vector<Program>;
-
+	/**
+	 * @brief Render function descriptor.
+	 */
 	using RenderFunc = std::function<void()>;
 
+	/**
+	 * @brief Pass descriptor.
+	 */
 	struct Pass
 	{
 		Key						  name;
-		Inputs					  inputs;
-		Outputs					  outputs;
-		Programs				  programs;
-		std::vector<E_SETTING>	  settings;
-		std::optional<RenderFunc> renderFunc;
+		Keys					  inputs;
+		Keys					  outputs;
+		std::vector<Program>	  programs;
+		std::optional<RenderFunc> customCallback;
 	};
 
-	constexpr int LOCAL_SIZE_X = 256;
-	constexpr int LOCAL_SIZE_Y = 1;
-	constexpr int LOCAL_SIZE_Z = 1;
-
-	struct ComputePass
-	{
-		Key		name;
-		Program program;
-
-		std::vector<BufferData>		data;
-		std::variant<Vec3i, size_t> size;
-	};
-
-	struct Link
-	{
-		Pass *	   src;
-		Pass *	   dest;
-		E_CHAN_OUT channelSrc  = E_CHAN_OUT::COLOR_0;
-		E_CHAN_IN  channelDest = E_CHAN_IN::_0;
-	};
-
-	using Passes = std::vector<std::unique_ptr<Pass>>;
-	using Links	 = std::vector<std::unique_ptr<Link>>;
-
-	using RenderQueue = std::vector<Pass *>;
-
-	using Instruction  = std::function<void()>;
-	using Instructions = std::vector<Instruction>;
-
-	struct InstructionsDurationRange
-	{
-		Key	   name;
-		size_t first;
-		size_t last;
-		float  duration;
-	};
-
-	using InstructionsDurationRanges = std::vector<InstructionsDurationRange>;
-
-	struct StructCompareVisitorDesc
-	{
-		bool operator()( const Attachment & p_left, const Attachment & p_right ) const
-		{
-			// return p_left.format == p_right.format;
-			// TODO: check compatibility.
-			return true;
-		}
-
-		bool operator()( const BufferDraw & p_left, const BufferDraw & p_right ) const { return false; }
-
-		bool operator()( const BufferData & p_left, const BufferData & p_right ) const { return false; }
-
-		template<typename T, typename U>
-		bool operator()( const T & p_left, const U & p_right ) const
-		{
-			return false;
-		}
-	};
+	/**
+	 * @brief Aliases.
+	 */
+	using PassList = std::vector<std::unique_ptr<Pass>>;
+	using Handle   = uint;
 
 } // namespace VTX::Renderer
 

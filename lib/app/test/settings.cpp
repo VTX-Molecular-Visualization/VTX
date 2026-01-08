@@ -1,14 +1,15 @@
-#include "util/app.hpp"
 #include <app/settings/settings_manager.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <util/color/rgba.hpp>
+#include <util/constants.hpp>
 
 TEST_CASE( "VTX_APP - Settings", "[integration]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;
+	using namespace VTX::App::Settings;
 
 	enum class TEST_ENUM : int
 	{
@@ -17,77 +18,85 @@ TEST_CASE( "VTX_APP - Settings", "[integration]" )
 		THREE
 	};
 
-	App::Settings::SettingsManager settings;
+	SettingsManager settings;
 
 	// Bool
-	settings.referenceSetting( "BOOL_SETTING", true );
-	CHECK( settings.get<bool>( "BOOL_SETTING" ) == true );
-	settings.set( "BOOL_SETTING", false );
-	CHECK( settings.get<bool>( "BOOL_SETTING" ) == false );
+	settings.add( "BOOL_SETTING", true );
+	CHECK( settings.getValue<bool>( "BOOL_SETTING" ) == true );
+	settings.setValue( "BOOL_SETTING", false );
+	CHECK( settings.getValue<bool>( "BOOL_SETTING" ) == false );
 
 	// Int
-	settings.referenceSetting( "INT_SETTING", 4 );
-	CHECK( settings.get<int>( "INT_SETTING" ) == 4 );
-	settings.set( "INT_SETTING", 8 );
-	CHECK( settings.get<int>( "INT_SETTING" ) == 8 );
+	settings.add( "INT_SETTING", 4 );
+	CHECK( settings.getValue<int>( "INT_SETTING" ) == 4 );
+	settings.setValue( "INT_SETTING", 8 );
+	CHECK( settings.getValue<int>( "INT_SETTING" ) == 8 );
 
 	// UInt
-	settings.referenceSetting<uint>( "UINT_SETTING", uint( 4 ) );
-	CHECK( settings.get<uint>( "UINT_SETTING" ) == 4 );
-	settings.set( "UINT_SETTING", uint( 8 ) );
-	CHECK( settings.get<uint>( "UINT_SETTING" ) == 8 );
+	settings.add<uint>( "UINT_SETTING", uint( 4 ) );
+	CHECK( settings.getValue<uint>( "UINT_SETTING" ) == 4 );
+	settings.setValue( "UINT_SETTING", uint( 8 ) );
+	CHECK( settings.getValue<uint>( "UINT_SETTING" ) == 8 );
 
 	// Float
-	settings.referenceSetting( "FLOAT_SETTING", 10.f );
-	CHECK( settings.get<float>( "FLOAT_SETTING" ) == 10.f );
-	settings.set( "FLOAT_SETTING", 42.f );
-	CHECK( settings.get<float>( "FLOAT_SETTING" ) == 42.f );
+	settings.add( "FLOAT_SETTING", 10.f );
+	CHECK( settings.getValue<float>( "FLOAT_SETTING" ) == 10.f );
+	settings.setValue( "FLOAT_SETTING", 42.f );
+	CHECK( settings.getValue<float>( "FLOAT_SETTING" ) == 42.f );
 
 	// String
-	settings.referenceSetting( "STRING_SETTING", std::string( "Zouzou" ) );
-	CHECK( settings.get<std::string>( "STRING_SETTING" ) == "Zouzou" );
-	settings.set( "STRING_SETTING", std::string( "Zaza" ) );
-	CHECK( settings.get<std::string>( "STRING_SETTING" ) == "Zaza" );
+	settings.add( "STRING_SETTING", std::string( "Zouzou" ) );
+	CHECK( settings.getValue<std::string>( "STRING_SETTING" ) == "Zouzou" );
+	settings.setValue( "STRING_SETTING", std::string( "Zaza" ) );
+	CHECK( settings.getValue<std::string>( "STRING_SETTING" ) == "Zaza" );
 
 	// Enum
-	settings.referenceSetting( "ENUM_SETTING", TEST_ENUM::TWO );
-	CHECK( settings.get<TEST_ENUM>( "ENUM_SETTING" ) == TEST_ENUM::TWO );
-	settings.set( "ENUM_SETTING", TEST_ENUM::THREE );
-	CHECK( settings.get<TEST_ENUM>( "ENUM_SETTING" ) == TEST_ENUM::THREE );
+	settings.add( "ENUM_SETTING", TEST_ENUM::TWO );
+	CHECK( settings.getValue<TEST_ENUM>( "ENUM_SETTING" ) == TEST_ENUM::TWO );
+	settings.setValue( "ENUM_SETTING", TEST_ENUM::THREE );
+	CHECK( settings.getValue<TEST_ENUM>( "ENUM_SETTING" ) == TEST_ENUM::THREE );
 
 	// Vec3f
-	settings.referenceSetting( "VEC3F_SETTING", VEC3F_ZERO );
-	CHECK( settings.get<Vec3f>( "VEC3F_SETTING" ) == VEC3F_ZERO );
-	settings.set( "VEC3F_SETTING", VEC3F_XYZ );
-	CHECK( settings.get<Vec3f>( "VEC3F_SETTING" ) == VEC3F_XYZ );
+	settings.add( "VEC3F_SETTING", VEC3F_ZERO );
+	CHECK( settings.getValue<Vec3f>( "VEC3F_SETTING" ) == VEC3F_ZERO );
+	settings.setValue( "VEC3F_SETTING", VEC3F_XYZ );
+	CHECK( settings.getValue<Vec3f>( "VEC3F_SETTING" ) == VEC3F_XYZ );
 
 	//// Color
-	settings.referenceSetting( "COLOR_SETTING", COLOR_BLUE );
-	CHECK( settings.get<Util::Color::Rgba>( "COLOR_SETTING" ) == COLOR_BLUE );
-	settings.set( "COLOR_SETTING", COLOR_GREEN );
-	CHECK( settings.get<Util::Color::Rgba>( "COLOR_SETTING" ) == COLOR_GREEN );
+	settings.add( "COLOR_SETTING", COLOR_BLUE );
+	CHECK( settings.getValue<Util::Color::Rgba>( "COLOR_SETTING" ) == COLOR_BLUE );
+	settings.setValue( "COLOR_SETTING", COLOR_GREEN );
+	CHECK( settings.getValue<Util::Color::Rgba>( "COLOR_SETTING" ) == COLOR_GREEN );
 
 	// std::vector<std::string>
-	settings.referenceSetting<std::vector<std::string>>( "STRING_VECTOR_SETTING", { "Zero", "One", "Two", "Three" } );
-	CHECK( settings.get<std::vector<std::string>>( "STRING_VECTOR_SETTING" )[ 2 ] == "Two" );
-	settings.set<std::vector<std::string>>( "STRING_VECTOR_SETTING", { "Zero", "One", "Six", "Three" } );
-	CHECK( settings.get<std::vector<std::string>>( "STRING_VECTOR_SETTING" )[ 2 ] == "Six" );
+	settings.add<std::vector<std::string>>( "STRING_VECTOR_SETTING", { "Zero", "One", "Two", "Three" } );
+	CHECK( settings.getValue<std::vector<std::string>>( "STRING_VECTOR_SETTING" )[ 2 ] == "Two" );
+	settings.setValue<std::vector<std::string>>( "STRING_VECTOR_SETTING", { "Zero", "One", "Six", "Three" } );
+	CHECK( settings.getValue<std::vector<std::string>>( "STRING_VECTOR_SETTING" )[ 2 ] == "Six" );
+
+	// Min / Max
+	settings.add<int>( "INT_SETTING_CLAMPED", 5, 0, 10 );
+	CHECK( settings.getValue<int>( "INT_SETTING_CLAMPED" ) == 5 );
+	settings.setValue<int>( "INT_SETTING_CLAMPED", 15 );
+	CHECK( settings.getValue<int>( "INT_SETTING_CLAMPED" ) == 10 );
+	settings.setValue<int>( "INT_SETTING_CLAMPED", -5 );
+	CHECK( settings.getValue<int>( "INT_SETTING_CLAMPED" ) == 0 );
 
 	// Check default parameter
-	settings.referenceSetting<int>( "INT_SETTING_2" );
-	CHECK( settings.get<int>( "INT_SETTING_2" ) == 0 );
+	settings.add<int>( "INT_SETTING_2" );
+	CHECK( settings.getValue<int>( "INT_SETTING_2" ) == 0 );
 
 	// Reset
 	settings.reset();
-	CHECK( settings.get<int>( "INT_SETTING" ) == 4 );
-	CHECK( settings.get<float>( "FLOAT_SETTING" ) == 10.f );
-	CHECK( settings.get<TEST_ENUM>( "ENUM_SETTING" ) == TEST_ENUM::TWO );
-	CHECK( settings.get<Vec3f>( "VEC3F_SETTING" ) == VEC3F_ZERO );
-	CHECK( settings.get<Util::Color::Rgba>( "COLOR_SETTING" ) == COLOR_BLUE );
-	CHECK( settings.get<std::vector<std::string>>( "STRING_VECTOR_SETTING" )[ 2 ] == "Two" );
+	CHECK( settings.getValue<int>( "INT_SETTING" ) == 4 );
+	CHECK( settings.getValue<float>( "FLOAT_SETTING" ) == 10.f );
+	CHECK( settings.getValue<TEST_ENUM>( "ENUM_SETTING" ) == TEST_ENUM::TWO );
+	CHECK( settings.getValue<Vec3f>( "VEC3F_SETTING" ) == VEC3F_ZERO );
+	CHECK( settings.getValue<Util::Color::Rgba>( "COLOR_SETTING" ) == COLOR_BLUE );
+	CHECK( settings.getValue<std::vector<std::string>>( "STRING_VECTOR_SETTING" )[ 2 ] == "Two" );
 
 	// Ensure that reset modify value and not ptr
-	settings.set( "COLOR_SETTING", COLOR_GREEN );
+	settings.setValue( "COLOR_SETTING", COLOR_GREEN );
 	settings.reset();
-	CHECK( settings.get<Util::Color::Rgba>( "COLOR_SETTING" ) == COLOR_BLUE );
+	CHECK( settings.getValue<Util::Color::Rgba>( "COLOR_SETTING" ) == COLOR_BLUE );
 };

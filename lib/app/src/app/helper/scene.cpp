@@ -1,0 +1,40 @@
+#include "app/helper/scene.hpp"
+#include "app/system/uid.hpp"
+
+namespace VTX::App::Helper::Scene
+{
+	std::vector<ECS::Entity> getAllSystems()
+	{
+		auto view = REG().view<System::UID>();
+		return { view.begin(), view.end() };
+	}
+
+	std::unordered_map<RootUID, ECS::Entity> getAllSystemsMap()
+	{
+		std::unordered_map<RootUID, ECS::Entity> systemsMap;
+		auto									 view = REG().view<System::UID>();
+
+		for ( auto [ entity, uid ] : view.each() )
+		{
+			systemsMap[ uid.system ] = entity;
+		}
+
+		return systemsMap;
+	}
+
+	std::optional<ECS::Entity> findSystemByRootUID( const RootUID p_uid )
+	{
+		auto view = REG().view<System::UID>();
+
+		for ( auto [ entity, uid ] : view.each() )
+		{
+			if ( uid.system == p_uid )
+			{
+				return entity;
+			}
+		}
+
+		return std::nullopt;
+	}
+
+} // namespace VTX::App::Helper::Scene

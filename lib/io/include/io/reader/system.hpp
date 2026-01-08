@@ -10,6 +10,7 @@
 #include <core/struct/system.hpp>
 #include <map>
 #include <string>
+#include <util/math/aabb.hpp>
 #include <util/types.hpp>
 
 namespace VTX::IO::Reader
@@ -29,7 +30,8 @@ namespace VTX::IO::Reader
 			_configuration = &p_configuration;
 		}
 
-		const Reader::Chemfiles & getChemfilesReader() { return *_chemfilesReader; }
+		const Reader::Chemfiles &	  getChemfilesReader() { return *_chemfilesReader; }
+		const VTX::Util::Math::AABB & getAABB() const { return _aabb; }
 
 	  private:
 		void _fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::System & p_system );
@@ -51,6 +53,7 @@ namespace VTX::IO::Reader
 
 		std::unique_ptr<Reader::Chemfiles>	_chemfilesReader = nullptr;
 		const Struct::SystemConfiguration * _configuration	 = nullptr;
+		VTX::Util::Math::AABB				_aabb;
 	};
 } // namespace VTX::IO::Reader
 #endif

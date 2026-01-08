@@ -1,31 +1,47 @@
 #include "app/vtx_app.hpp"
 #include "app/action/action_manager.hpp"
-#include "app/action/mode.hpp"
-#include "app/application/scene.hpp"
-#include "app/core/ecs/registry.hpp"
-#include "app/entity/scene.hpp"
+#include "app/action/application.hpp"
+#include "app/action/camera.hpp"
+#include "app/action/color_layout.hpp"
+#include "app/action/controller.hpp"
+#include "app/action/graphics_config.hpp"
+#include "app/action/preset.hpp"
+#include "app/action/representation.hpp"
+#include "app/action/scene.hpp"
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
 #include "app/input/input_manager.hpp"
-#include "app/library/library_manager.hpp"
-#include "app/library/preset/color_layout.hpp"
-#include "app/library/preset/render_settings.hpp"
-#include "app/library/preset/representation.hpp"
-#include "app/mode/visualization.hpp"
 #include "app/network/network_manager.hpp"
+#include "app/pass/camera_updater.hpp"
+#include "app/pass/pass_manager.hpp"
+#include "app/pass/scene_updater.hpp"
+#include "app/preset/instance.hpp"
 #include "app/python_binding/interpretor.hpp"
 #include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
+#include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
 #include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
-#include "renderer/facade.hpp"
 #include <exception>
 #include <python_binding/interpretor.hpp>
+#include <renderer/renderer.hpp>
 #include <util/logger.hpp>
+#include <util/math/aabb.hpp>
+#include <util/math/transform.hpp>
 #include <util/monitoring/stats.hpp>
+
+namespace
+{
+	/**
+	 * @brief Store local entities.
+	 */
+	using namespace VTX::App;
+	ECS::Entity _scene;
+	ECS::Entity _camera;
+} // namespace
 
 namespace VTX::App
 {
@@ -34,6 +50,7 @@ namespace VTX::App
 	{
 		// Set global registry.
 		ECS::setRegistry( _registry );
+
 		// Store args.
 		ECS::setCtx<Args>( p_args );
 		// Store main event bus.
@@ -41,13 +58,12 @@ namespace VTX::App
 		// Store statistics.
 		ECS::setCtx<Util::Monitoring::Stats>();
 		// Store renderer.
-		ECS::setCtx<Renderer::Facade>();
+		ECS::setCtx<Renderer::Renderer>();
+		//.setDefault();
 		// Store action manager.
 		ECS::setCtx<Action::ActionManager>();
 		// Store input manager.
 		ECS::setCtx<Input::InputManager>();
-		// Store library manager.
-		ECS::setCtx<Library::LibraryManager>();
 		// Store network manager.
 		ECS::setCtx<Network::NetworkManager>();
 		// Store settings manager.
@@ -56,50 +72,28 @@ namespace VTX::App
 		ECS::setCtx<Threading::ThreadManager>();
 		// Store uid manager.
 		ECS::setCtx<Uid::UIDManager>();
-		// Store Python interpretor
-		ECS::setCtx<VTX::App::PythonBinding::Interpretor>();
-	}
-	VTXApp::~VTXApp()
+		// Store pass manager.
+		ECS::setCtx<Pass::PassManager>();
+		// Store python interpretor.
+		ECS::setCtx<PythonBinding::Interpretor>();
 	{
 		ECS::eraseCtx<VTX::App::PythonBinding::Interpretor>(); // Python interpretor relies on the thread manager, so we
 															   // explicitly destroy it before. I'm not sure this is the
 															   // best way to do it
-	}
-	void VTXApp::init()
-	{
-		VTX_INFO( "Init application" );
 
-		// Load preset libraries.
-		auto * lib	  = LIBRARY().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
-		auto * preset = lib->createPreset( "Sticks" );
-		preset->setData( App::Library::Preset::Representations::STICKS );
-		preset = lib->createPreset( "Balls and sticks" );
-		preset->setData( App::Library::Preset::Representations::BALLS_AND_STICKS );
-		preset = lib->createPreset( "Van der Waals" );
-		preset->setData( App::Library::Preset::Representations::VAN_DER_WAALS );
-		preset = lib->createPreset( "Ribbons" );
-		preset->setData( App::Library::Preset::Representations::RIBBONS );
-		preset = lib->createPreset( "SES" );
-		preset->setData( App::Library::Preset::Representations::SES );
-
-		LIBRARY().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
-		LIBRARY().load<Library::Preset::RenderSettings>( Filesystem::getEffectsDir() );
-
-		// TODO: move to start to handle gui dialog?
+		// Load settings.
 		Settings::initSettings();
+		auto & settings = SETTINGS();
 
-		// Create scene.
-		auto sceneEntity = ECS_REGISTRY().createEntity<Entity::Scene>();
-		_scene			 = &ECS_REGISTRY().getComponent<Application::Scene>( sceneEntity );
+		// Scene.
+		_scene = _registry.create();
+		_registry.emplace<Scene::TagRoot>( _scene );
+		_registry.emplace<Util::Math::AABB>( _scene );
 
-		// Init tools.
-		for ( Tool::BaseTool * const tool : _tools )
-		{
-			tool->init();
-		}
-
-		// Register loop events.
-		// onPostUpdate += []( const float p_elapsedTime ) { THREAD().lateUpdate(); };
+		// Camera.
+		_camera = _registry.create();
+		_registry.emplace<Util::Math::Transform>( _camera );
+		_registry.emplace<Renderer::Camera>( _camera );
 
 		VTX_INFO( "App initializing interpretor." );
 		// Initialize python interpretor.
@@ -112,6 +106,8 @@ namespace VTX::App
 		);
 	}
 
+	VTXApp::~VTXApp() { ECS::removeCtx<PythonBinding::Interpretor>(); }
+
 	void VTXApp::start()
 	{
 		VTX_INFO( "Starting application: {}", ECS::getCtx<Args>().toString() );
@@ -122,36 +118,63 @@ namespace VTX::App
 		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) )
 		{
 			VTX_WARNING( "No graphics" );
-			renderer.setDefault();
+			// renderer.setDefault();
+			// Resize to minimal size to avoid issues.
+			ACTION().execute<Action::Application::Resize>( 1, 1 );
 		}
 		else
 		{
 			try
 			{
-				renderer.setOpenGL45( Filesystem::getShadersDir() );
+				// renderer.setOpenGL45( Filesystem::getShadersDir() );
 			}
-			catch ( const std::exception & e )
+			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Failed to build renderer: {}", e.what() );
-				renderer.setDefault();
-				// TODO: exit?
+				VTX_ERROR( "Failed to build renderer: {}", p_e.what() );
+				// renderer.setDefault();
+				HUB().trigger<Events::ApplicationError>(
+					"Unable to create OpenGL 4.5 context. Update your drivers and check your hardware compatibility."
+				);
 			}
 		}
 
-		// Connect render event.
-		HUB().connect<Events::Render>( []( const Events::Render & p_e )
-									   { RENDERER().render( p_e.delta, p_e.elapsed ); } );
+		// Create default presets.
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::GraphicsConfig>>();
 
-		// ?
-		// Internal::initSettings( App::SETTINGS() );
+		// Launch passes.
+		PASS().addPass<Pass::SceneUpdater>( _scene );
+		PASS().addPass<Pass::CameraUpdater>( _camera );
 
-		ACTION().execute<Action::Mode::SetMode<Mode::Visualization>>();
-		HUB().trigger<Events::ApplicationStarted>();
+		// Set preset instances.
+		ACTION().execute<Action::Preset::SetCurrent<Renderer::Color::Layout>>(
+			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
+		);
+		ACTION().execute<Action::Preset::SetCurrent<Renderer::Representation>>(
+			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>()
+		);
+		ACTION().execute<Action::Preset::SetCurrent<Renderer::GraphicsConfig>>(
+			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>()
+		);
 
-		for ( Tool::BaseTool * const tool : _tools )
+		// TODO: at setting loading.
+		// Camera projection.
+		if ( SETTINGS().getValue<Renderer::PROJECTION>( Settings::Camera::PROJECTION_KEY )
+			 == Renderer::PROJECTION::PERSPECTIVE )
 		{
-			tool->onAppStart();
+			ACTION().execute<Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>();
 		}
+		else
+		{
+			ACTION().execute<Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>();
+		}
+
+		// Trackball controller.
+		ACTION().execute<Action::Controller::SetCameraController<Pass::Controller::Trackball>>();
+
+		// Trigger application start event.
+		HUB().trigger<Events::ApplicationStart>();
 
 		// Updater.
 		// UPDATER().onUpdateAvailable += []( const uint, const uint, const uint ) { UPDATER().downloadUpdate(); };
@@ -164,32 +187,7 @@ namespace VTX::App
 		//_handleArgs( _args );
 	}
 
-	void VTXApp::stop()
-	{
-		VTX_INFO( "Stopping application" );
-
-		SCENE().reset();
-		RENDERER().clean();
-
-		//// Prevent events throw for nothing when quitting app
-		// Old::Manager::EventManager::get().freezeEvent( true );
-		//  Manager::WorkerManager::get().stopAll();
-
-		//_setting.backup();
-
-		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
-		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
-
-		// Old::Selection::SelectionManager::get().deleteModel();
-
-		for ( Tool::BaseTool * const tool : _tools )
-		{
-			tool->onAppStop();
-		}
-		HUB().trigger<Events::ApplicationStopped>();
-	}
-
-	void VTXApp::_handleArgs( const Args & args )
+	void VTXApp::_handleArgs( const Args & p_args )
 	{
 		// TODO: load pdb automatically or python script.
 
@@ -260,8 +258,5 @@ namespace VTX::App
 	//		return hasSavePath && sceneHasChanged;
 	// #endif
 	//	}
-
-	// TODO.
-	Application::Scene & SCENE() { return APP::getScene(); }
 
 } // namespace VTX::App

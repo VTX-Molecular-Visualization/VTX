@@ -4,7 +4,6 @@
 #include "app/threading/base_thread.hpp"
 #include <list>
 #include <memory>
-#include <util/singleton.hpp>
 
 namespace VTX::App::Threading
 {

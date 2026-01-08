@@ -1,0 +1,25 @@
+#ifndef __VTX_UI_QT_DOCK_WIDGET_RENDER_SETTINGS__
+#define __VTX_UI_QT_DOCK_WIDGET_RENDER_SETTINGS__
+
+#include "ui/qt/dock_widget/base_dock_widget.hpp"
+
+namespace VTX::UI::QT::DockWidget
+{
+	class GraphicsConfigs : public BaseDockWidget<GraphicsConfigs>
+	{
+	  public:
+		GraphicsConfigs( QWidget * );
+
+		/*
+	  private:
+		void _createGroupBoxShading( App::Component::Representation::RenderSettings * const );
+		void _createGroupBoxSSAO( App::Component::Representation::RenderSettings * const );
+		void _createGroupBoxOutline( App::Component::Representation::RenderSettings * const );
+		void _createGroupBoxFog( App::Component::Representation::RenderSettings * const );
+		void _createGroupBoxSelection( App::Component::Representation::RenderSettings * const );
+		*/
+	};
+
+} // namespace VTX::UI::QT::DockWidget
+
+#endif

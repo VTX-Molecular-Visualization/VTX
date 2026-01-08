@@ -1,28 +1,21 @@
 #ifndef __VTX_UI_QT_MENU_THEME__
 #define __VTX_UI_QT_MENU_THEME__
 
-#include "ui/qt/core/base_widget.hpp"
+#include "ui/qt/widget/base_widget.hpp"
 #include <QMenu>
 
 namespace VTX::UI::QT::Menu
 {
 
-	class Theme : public Core::BaseWidget<Theme, QMenu>
+	class Theme : public Widget::BaseWidget<Theme, QMenu>
 	{
 	  public:
-		Theme( QWidget * p_parent ) : BaseWidget<Theme, QMenu>( "Theme", p_parent )
-		{
-			addAction<Action::Theme::System>();
-			addSeparator();
-			addAction<Action::Theme::Light>();
-			addAction<Action::Theme::Dark>();
-			addSeparator();
-			auto * aReset = addAction<Action::Theme::ResetLayout>();
-			connect( aReset, &QAction::triggered, this, &Theme::_resetLayout );
-		}
+		Theme( QWidget * );
+		~Theme();
 
 	  private:
-		void _resetLayout();
+		QPointer<QActionGroup> _actionGroup;
+		void				   _resetLayout();
 	};
 
 } // namespace VTX::UI::QT::Menu

@@ -109,7 +109,7 @@ namespace VTX::UI::QT::Util
 
 	static QColor RgbToQColor( const VTX::Util::Color::Rgba & p_rgb )
 	{
-		return QColor( p_rgb.r * 255, p_rgb.g * 255, p_rgb.b * 255 );
+		return QColor( p_rgb.r() * 255, p_rgb.g() * 255, p_rgb.b() * 255 );
 	}
 
 	static QBitmap generateAlphaMask( const QString & p_filepath )
@@ -131,7 +131,7 @@ namespace VTX::UI::QT::Util
 		LabelWithHelper( const char * p_label, const char * p_helper, const E_QUESTIONMARK_POSITION & p_postion );
 		QPointer<QWidget> container = nullptr;
 		QLabel *		  label		= nullptr;
-		operator QWidget *();
+						  operator QWidget *();
 	};
 
 	// Create a standardized separator with a slightly larger label on its left. Aim to split form sections.

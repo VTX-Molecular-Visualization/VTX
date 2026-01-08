@@ -71,15 +71,19 @@ namespace VTX::IO::Writer
 				= VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>( p_mol.residueSymbols[ p_residueIdx ] ) ];
 			std::string residueSymbol
 				= p_mol.residueSymbols[ p_residueIdx ] == VTX::Core::ChemDB::Residue::SYMBOL::UNKNOWN
-					  ? p_mol.residueUnknownNames[ p_residueIdx ]
+					  ? p_mol.residueNames[ p_residueIdx ]
 					  : std::string( constSymbol.begin(), constSymbol.end() );
 			w_residue.setSymbol( residueSymbol );
-			w_residue.set( Property { .key	 = "secondary_structure",
-									  .value = VTX::Core::ChemDB::SecondaryStructure::enumToPdbFormatted(
-										  p_mol.residueSecondaryStructureTypes[ p_residueIdx ]
-									  ) } );
-			w_residue.set( Property { .key	 = "is_standard_pdb",
-									  .value = VTX::Core::ChemDB::Residue::checkIfStandardFromName( residueSymbol ) } );
+			w_residue.set(
+				Property { .key	  = "secondary_structure",
+						   .value = VTX::Core::ChemDB::SecondaryStructure::enumToPdbFormatted(
+							   p_mol.residueSecondaryStructureTypes[ p_residueIdx ]
+						   ) }
+			);
+			w_residue.set(
+				Property { .key	  = "is_standard_pdb",
+						   .value = VTX::Core::ChemDB::Residue::checkIfStandardFromName( residueSymbol ) }
+			);
 			for ( size_t atomIdx = p_mol.residueFirstAtomIndexes[ p_residueIdx ];
 				  isAtomOfResidue( atomIdx, p_residueIdx, p_mol );
 				  atomIdx++ )

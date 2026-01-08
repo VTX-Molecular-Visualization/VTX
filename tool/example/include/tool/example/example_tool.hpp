@@ -13,12 +13,8 @@ namespace VTX::Tool::Example
 	{
 	  public:
 		ExampleTool();
-		~ExampleTool();
-		void					   init() override;
-		void					   onAppStart() override;
-		void					   createUI() override;
+
 		std::optional<std::string> getStyle() const override;
-		void					   onAppStop() override;
 	};
 
 } // namespace VTX::Tool::Example

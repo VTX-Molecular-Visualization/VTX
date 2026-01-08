@@ -1,112 +1,183 @@
 #ifndef __VTX_APP_ACTION_CAMERA__
 #define __VTX_APP_ACTION_CAMERA__
 
-#include "app/action/base_action.hpp"
-#include "app/python_binding/viewpoint_manager.hpp"
+#include "app/ecs.hpp"
+#include "app/events.hpp"
+#include "app/pass/controller/animation.hpp"
+#include "app/services.hpp"
+#include "app/settings/settings.hpp"
+#include "app/settings/settings_manager.hpp"
+#include <renderer/camera.hpp>
 #include <util/math/aabb.hpp>
+#include <util/math/transform.hpp>
 
 namespace VTX::App::Action::Camera
 {
-
-	class SetCameraProjectionOrthographic final : public BaseAction
+	/**
+	 * @brief Set camera position.
+	 */
+	struct SetPosition
 	{
-	  public:
-		SetCameraProjectionOrthographic() {}
-		void execute() override;
-	};
-
-	class SetCameraProjectionPerspective final : public BaseAction
-	{
-	  public:
-		SetCameraProjectionPerspective() {}
-		void execute() override;
-	};
-
-	class ToggleCameraProjection final : public BaseAction
-	{
-	  public:
-		ToggleCameraProjection() {}
-		void execute() override;
-	};
-
-	class Reset final : public BaseAction
-	{
-	  public:
-		Reset() {}
-		void execute() override;
+		void execute( const Vec3f & );
 	};
 
 	/**
-	 * @brief Move the camera in a straight line from the current position to the one in arguments
+	 * @brief Set camera rotation (euler angles).
 	 */
-	class MoveCamera final : public BaseAction
+	struct SetRotation
 	{
-	  public:
-		inline MoveCamera(
-			float p_positionX,
-			float p_positionY,
-			float p_positionZ,
-			float p_rotationW,
-			float p_rotationX,
-			float p_rotationY,
-			float p_rotationZ,
-			float p_duration
-		) :
-			_position( std::move( p_positionX ), std::move( p_positionY ), std::move( p_positionZ ) ),
-			_rotation(
-				std::move( p_rotationW ),
-				{ std::move( p_rotationX ), std::move( p_rotationY ), std::move( p_rotationZ ) }
-			),
-			_duration( std::move( p_duration ) )
-		{
-		}
-		inline MoveCamera( Vec3f p_position, Quatf p_rotation, float p_duration ) :
-			_position( std::move( p_position ) ), _rotation( std::move( p_rotation ) ),
-			_duration( std::move( p_duration ) )
-		{
-		}
-		inline MoveCamera( VTX::App::PythonBinding::TravelViewpoint p_viewpoint ) :
-			_position( std::move( p_viewpoint.position ) ), _rotation( std::move( p_viewpoint.rotation ) ),
-			_duration( std::move( p_viewpoint.travelTime ) )
-		{
-		}
-		void execute() override;
-
-	  private:
-		Vec3f _position;
-		Quatf _rotation;
-		float _duration = 0.f;
+		void execute( const Vec3f & );
 	};
 
 	/**
-	 * @brief Set the camera position to the target location, effectively "teleporting" the point of view
+	 * @brief Set camera scale.
 	 */
-	class SetCameraPosition final : public BaseAction
+	struct SetScale
 	{
-	  public:
-		inline SetCameraPosition( float p_x, float p_y, float p_z ) :
-			_x( std::move( p_x ) ), _y( std::move( p_y ) ), _z( std::move( p_z ) )
+		void execute( const float );
+	};
+
+	/**
+	 * @brief Set camera projection mode.
+	 */
+	template<Renderer::PROJECTION P>
+	struct SetProjectionMode
+	{
+		void execute()
 		{
+			auto & reg = REG();
+
+			auto [ entity, camera ] = ECS::getFirstEntityWithComponents<Renderer::Camera>();
+
+			reg.patch<Renderer::Camera>(
+				entity,
+				[]( Renderer::Camera & )
+				{
+					auto & settings = SETTINGS();
+					settings.setValue<int>( Settings::Camera::PROJECTION_KEY, int( P ) );
+					// TODO: trigger update from setting update.
+				}
+			);
+
+			static constexpr int PROJ_INDEX = static_cast<int>( P );
+			HUB().trigger<App::Events::CameraProjectionChange<PROJ_INDEX>>();
 		}
-		void execute() override;
-
-	  private:
-		float _x = 0.f;
-		float _y = 0.f;
-		float _z = 0.f;
 	};
 
-	class Orient final : public BaseAction
+	/**
+	 * @brief Reset camera instantanly to fit the scene.
+	 */
+	struct Reset
 	{
-	  public:
-		inline Orient( const float & p_x, const float & p_y, const float & p_z ) : _target( Vec3f { p_x, p_y, p_z } ) {}
-		inline Orient( const VTX::Util::Math::AABB & p_target ) : _target( p_target ) {}
-		Orient();
-
-		void execute() override;
-
-	  private:
-		const Util::Math::AABB _target;
+		void execute();
 	};
+
+	/**
+	 * @brief Launch animation to orient the camera to fit the target.
+	 */
+	struct Orient
+	{
+		/**
+		 * @brief Orient on current selection, or scene AABB if no selection.
+		 */
+		void execute();
+		/**
+		 * @brief Orient on given AABB.
+		 */
+		void execute( const Util::Math::AABB & p_target );
+	};
+
+	/**
+	 * @brief Launch animation to travel in a straight line to the target position and rotation.
+	 */
+	struct StraightTravel
+	{
+		void execute( const Vec3f & p_position, const Quatf & p_rotation, const float p_duration );
+	};
+
+	/**
+	 * @brief Default duration in milliseconds.
+	 */
+	constexpr float ANIMATION_DURATION_DEFAULT_MS = 500.f;
+
+	/**
+	 * @brief Minimum translation distance to trigger animation.
+	 */
+	constexpr float ANIMATION_TRANSLATION_THRESHOLD = 0.1f;
+
+	/**
+	 * @brief Available camera interpolators.
+	 */
+	enum struct E_CAMERA_INTERPOLATOR
+	{
+		LINEAR,
+		EASE_IN_OUT
+	};
+
+	/**
+	 * @brief Animate camera to target position and rotation.
+	 */
+	template<E_CAMERA_INTERPOLATOR I = E_CAMERA_INTERPOLATOR::EASE_IN_OUT>
+	struct Animate
+	{
+		void execute(
+			const Vec3f & p_position,
+			const Quatf & p_rotation,
+			const float	  p_duration = ANIMATION_DURATION_DEFAULT_MS
+		)
+		{
+			execute( Pass::Controller::AnimationData { p_position, p_rotation }, p_duration );
+		}
+
+		void execute(
+			const Pass::Controller::AnimationData & p_end,
+			const float								p_duration = ANIMATION_DURATION_DEFAULT_MS
+		)
+		{
+			using namespace Util;
+			using namespace Pass::Controller;
+
+			auto [ entCamera, camera, transform ]
+				= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+
+			AnimationData	   start { transform.getPosition(), transform.getRotation() };
+			InterpPositionFunc interpPositionFunc = nullptr;
+			InterpRotationFunc interpRotationFunc = nullptr;
+
+			// Check if animation is needed.
+			if ( Math::distance( start.position, p_end.position ) < ANIMATION_TRANSLATION_THRESHOLD
+				 && start.rotation == p_end.rotation )
+			{
+				return;
+			}
+
+			// Check existing animation pass.
+			if ( PASS().hasPass<Pass::Controller::Animation>() )
+			{
+				PASS().removePass<Pass::Controller::Animation>();
+			}
+
+			// Select interpolation functions.
+			if constexpr ( I == E_CAMERA_INTERPOLATOR::LINEAR )
+			{
+				interpPositionFunc = Math::lerp;
+				interpRotationFunc = Math::lerp;
+			}
+			else if constexpr ( I == E_CAMERA_INTERPOLATOR::EASE_IN_OUT )
+			{
+				interpPositionFunc = Math::easeInOutInterpolation;
+				interpRotationFunc = Math::easeInOutInterpolation;
+			}
+			else
+			{
+				static_assert( std::is_same_v<I, void>, "Unsupported camera interpolator." );
+			}
+
+			// Add pass.
+			PASS().addPass<Animation>( entCamera, start, p_end, p_duration, interpPositionFunc, interpRotationFunc );
+		}
+	};
+
 } // namespace VTX::App::Action::Camera
+
 #endif

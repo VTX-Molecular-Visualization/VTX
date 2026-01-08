@@ -6,21 +6,10 @@
 /**
  * @brief Forward declarations of services stored in the ECS context.
  */
-namespace VTX::Renderer
-{
-	class Facade;
-}
-namespace VTX::Util
-{
-	namespace Monitoring
-	{
-		class Stats;
-	}
-	class EventHub;
-} // namespace VTX::Util
 namespace VTX::App
 {
 	class Args;
+
 	namespace Action
 	{
 		class ActionManager;
@@ -29,13 +18,17 @@ namespace VTX::App
 	{
 		class InputManager;
 	}
-	namespace Library
-	{
-		class LibraryManager;
-	}
 	namespace Network
 	{
 		class NetworkManager;
+	}
+	namespace Pass
+	{
+		class PassManager;
+	}
+	namespace PythonBinding
+	{
+		class Interpretor;
 	}
 	namespace Settings
 	{
@@ -54,6 +47,19 @@ namespace VTX::App
 		class Interpretor;
 	}
 } // namespace VTX::App
+namespace VTX::Renderer
+{
+	class Renderer;
+}
+namespace VTX::Util
+{
+	namespace Monitoring
+	{
+		class Stats;
+	}
+	class EventHub;
+} // namespace VTX::Util
+
 namespace VTX::App
 {
 	/**
@@ -71,7 +77,7 @@ namespace VTX::App
 	/**
 	 * @brief Renderer facade.
 	 */
-	inline Renderer::Facade & RENDERER() { return ECS::getCtx<Renderer::Facade>(); }
+	inline Renderer::Renderer & RENDERER() { return ECS::getCtx<Renderer::Renderer>(); }
 	/**
 	 * @brief Action manager.
 	 */
@@ -80,10 +86,6 @@ namespace VTX::App
 	 * @brief Input manager.
 	 */
 	inline Input::InputManager & INPUT() { return ECS::getCtx<Input::InputManager>(); }
-	/**
-	 * @brief Library manager.
-	 */
-	inline Library::LibraryManager & LIBRARY() { return ECS::getCtx<Library::LibraryManager>(); }
 	/**
 	 * @brief Network manager.
 	 */
@@ -101,13 +103,13 @@ namespace VTX::App
 	 */
 	inline Uid::UIDManager & UID() { return ECS::getCtx<Uid::UIDManager>(); }
 	/**
-	 * @brief Python Interpretor
-	 * @return
+	 * @brief Pass manager.
 	 */
-	inline VTX::App::PythonBinding::Interpretor & INTERPRETOR()
-	{
-		return ECS::getCtx<VTX::App::PythonBinding::Interpretor>();
-	}
+	inline Pass::PassManager & PASS() { return ECS::getCtx<Pass::PassManager>(); }
+	/**
+	 * @brief Python interpretor.
+	 */
+	inline PythonBinding::Interpretor & INTERPRETOR() { return ECS::getCtx<PythonBinding::Interpretor>(); }
 } // namespace VTX::App
 
 #endif

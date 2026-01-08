@@ -1,5 +1,4 @@
 #include "ui/qt/dialog/export_image.hpp"
-#include "app/application/scene.hpp"
 #include "app/services.hpp"
 #include "ui/qt/application.hpp"
 #include <QDialogButtonBox>
@@ -8,10 +7,7 @@
 #include <QPushButton>
 #include <QToolTip>
 #include <QVBoxLayout>
-#include <app/action/io.hpp>
-#include <app/application/scene.hpp>
-#include <app/component/render/camera.hpp>
-#include <renderer/facade.hpp>
+#include <renderer/renderer.hpp>
 
 namespace VTX::UI::QT::Dialog
 {
@@ -25,9 +21,9 @@ namespace VTX::UI::QT::Dialog
 
 		// Resolution.
 		auto * groupResolution		 = new QGroupBox( "Resolution" );
-		auto * layoutGroupResolution = new QVBoxLayout( this );
+		auto * layoutGroupResolution = new QVBoxLayout();
 		groupResolution->setLayout( layoutGroupResolution );
-		auto * layoutPresetSize = new QHBoxLayout( this );
+		auto * layoutPresetSize = new QHBoxLayout();
 
 		layoutPresetSize->setAlignment( Qt::AlignmentFlag::AlignLeft );
 
@@ -36,6 +32,8 @@ namespace VTX::UI::QT::Dialog
 		_comboBoxResolution->addItem( "-select-" );
 		_comboBoxResolution->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
 
+		return;
+		/*
 		auto & camera			 = App::SCENE().getCamera();
 		_RESOLUTIONS[ 0 ].width	 = camera.getScreenWidth();
 		_RESOLUTIONS[ 0 ].height = camera.getScreenHeight();
@@ -207,6 +205,7 @@ namespace VTX::UI::QT::Dialog
 		);
 
 		QTimer::singleShot( 0, this, &ExportImage::_updatePreview );
+		*/
 	}
 
 	void ExportImage::_onResolution( const int p_resolutionIndex )
@@ -228,7 +227,7 @@ namespace VTX::UI::QT::Dialog
 
 		_updatePreview();
 
-		APP_QT::processEvents();
+		QCoreApplication::processEvents();
 
 	} // namespace VTX::UI::QT::Dialog
 
@@ -308,9 +307,9 @@ namespace VTX::UI::QT::Dialog
 		VTX_ERROR( "UPDATE PREVIEW {} - {} x {}", counter++, width, height );
 
 		// Get preview image.
-		const auto &	   camera = App::SCENE().getCamera();
+		// const auto &	   camera = App::SCENE().getCamera();
 		std::vector<uchar> image;
-		App::RENDERER().snapshot( image, width, height, camera.getFov(), camera.getNear(), camera.getFar() );
+		// App::RENDERER().snapshot( image, width, height, camera.getFov(), camera.getNear(), camera.getFar() );
 
 		QImage qImage(
 			image.data(), width * devicePixelRatioF(), height * devicePixelRatioF(), QImage::Format::Format_RGBA8888
@@ -319,16 +318,17 @@ namespace VTX::UI::QT::Dialog
 		_preview->setPixmap( QPixmap::fromImage( qImage ) );
 	}
 
-	void ExportImage::save()
+	/*
+	void ExportImage::save( Settings & p_settings )
 	{
-		SETTINGS.setValue( _SETTING_KEY_WIDTH, _spinBoxWidth->value() );
-		SETTINGS.setValue( _SETTING_KEY_HEIGHT, _spinBoxHeight->value() );
-		SETTINGS.setValue( _SETTING_KEY_FORMAT, _comboBoxFormat->currentIndex() );
-		SETTINGS.setValue( _SETTING_KEY_OPACITY, _sliderBackgroundOpacity->value() );
-		SETTINGS.setValue( _SETTING_KEY_FOLDER, _lastExportFolder );
+		p_settings.setValue( _SETTING_KEY_WIDTH, _spinBoxWidth->value() );
+		p_settings.setValue( _SETTING_KEY_HEIGHT, _spinBoxHeight->value() );
+		p_settings.setValue( _SETTING_KEY_FORMAT, _comboBoxFormat->currentIndex() );
+		p_settings.setValue( _SETTING_KEY_OPACITY, _sliderBackgroundOpacity->value() );
+		p_settings.setValue( _SETTING_KEY_FOLDER, _lastExportFolder );
 	}
 
-	void ExportImage::restore()
+	void ExportImage::restore( const Settings & p_settings )
 	{
 		// Block signals.
 		QSignalBlocker b( _spinBoxWidth );
@@ -337,25 +337,26 @@ namespace VTX::UI::QT::Dialog
 		QSignalBlocker b4( _sliderBackgroundOpacity );
 		QSignalBlocker b5( _comboBoxResolution );
 
-		if ( SETTINGS.contains( _SETTING_KEY_WIDTH ) )
+		if ( p_settings.contains( _SETTING_KEY_WIDTH ) )
 		{
-			_spinBoxWidth->setValue( SETTINGS.value( _SETTING_KEY_WIDTH ).toInt() );
+			_spinBoxWidth->setValue( p_settings.value( _SETTING_KEY_WIDTH ).toInt() );
 		}
-		if ( SETTINGS.contains( _SETTING_KEY_HEIGHT ) )
+		if ( p_settings.contains( _SETTING_KEY_HEIGHT ) )
 		{
-			_spinBoxHeight->setValue( SETTINGS.value( _SETTING_KEY_HEIGHT ).toInt() );
+			_spinBoxHeight->setValue( p_settings.value( _SETTING_KEY_HEIGHT ).toInt() );
 		}
-		if ( SETTINGS.contains( _SETTING_KEY_FORMAT ) )
+		if ( p_settings.contains( _SETTING_KEY_FORMAT ) )
 		{
-			_comboBoxFormat->setCurrentIndex( SETTINGS.value( _SETTING_KEY_FORMAT ).toInt() );
+			_comboBoxFormat->setCurrentIndex( p_settings.value( _SETTING_KEY_FORMAT ).toInt() );
 		}
-		if ( SETTINGS.contains( _SETTING_KEY_OPACITY ) )
+		if ( p_settings.contains( _SETTING_KEY_OPACITY ) )
 		{
-			_sliderBackgroundOpacity->setValue( SETTINGS.value( _SETTING_KEY_OPACITY ).toInt() );
+			_sliderBackgroundOpacity->setValue( p_settings.value( _SETTING_KEY_OPACITY ).toInt() );
 		}
-		if ( SETTINGS.contains( _SETTING_KEY_FOLDER ) )
+		if ( p_settings.contains( _SETTING_KEY_FOLDER ) )
 		{
-			_lastExportFolder = SETTINGS.value( _SETTING_KEY_FOLDER ).toString();
+			_lastExportFolder = p_settings.value( _SETTING_KEY_FOLDER ).toString();
 		}
 	}
+	*/
 } // namespace VTX::UI::QT::Dialog

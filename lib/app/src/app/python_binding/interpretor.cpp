@@ -1,10 +1,9 @@
-#include <python_binding/interpretor.hpp>
-//
 #include "app/python_binding/interpretor.hpp"
 #include "app/services.hpp"
 #include "app/threading/thread_manager.hpp"
 #include <atomic>
 #include <optional>
+#include <python_binding/interpretor.hpp>
 #include <queue>
 #include <util/callback.hpp>
 #include <util/datalocker.hpp>

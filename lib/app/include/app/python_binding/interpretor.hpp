@@ -6,7 +6,6 @@
 #include <memory>
 #include <string>
 #include <util/filesystem.hpp>
-#include <util/singleton.hpp>
 
 namespace VTX::PythonBinding
 {

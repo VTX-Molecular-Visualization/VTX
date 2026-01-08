@@ -1,46 +1,32 @@
 #ifndef __VTX_APP_CORE_UID_UID_MANAGER__
 #define __VTX_APP_CORE_UID_UID_MANAGER__
 
-#include "app/uid/uid.hpp"
-#include <mutex>
-#include <util/math/range.hpp>
-#include <util/math/range_list.hpp>
+#include "app/uid/pool.hpp"
 
 namespace VTX::App::Uid
 {
+	/**
+	 * @brief Manager multiple UID pools.
+	 */
 	class UIDManager
 	{
-	  private:
-		inline static const Util::Math::RangeList<uid> DEFAULT_RANGE_LIST()
-		{
-			Util::Math::RangeList<uid> res
-				= Util::Math::RangeList<uid>( { UIDRange( 0, std::numeric_limits<uid>::max() ) } );
-			res.removeValue( INVALID_UID );
-
-			return res;
-		}
-
 	  public:
-		UIDManager() {};
-		~UIDManager() = default;
+		using PickingUIDRange = Util::Math::Range<PickingUID>;
+		using RootUIDRange	  = Util::Math::Range<RootUID>;
 
-		inline const uid	  registerValue() { return _reserveValue(); }
-		inline const UIDRange registerRange( const uid p_count ) { return _reserveRange( p_count ); }
-
-		inline void unregister( const uid p_uid ) { _freeValue( p_uid ); }
-		inline void unregister( const UIDRange & p_range ) { _freeRange( p_range ); }
-
-		void clear();
+		inline Pool<PickingUID> & getPickingPool() { return _pickingPool; }
+		inline Pool<RootUID> &	  getRootPool() { return _rootPool; }
 
 	  private:
-		Util::Math::RangeList<uid> _availableUIDs = DEFAULT_RANGE_LIST();
-		std::mutex				   _idMutex;
+		/**
+		 * @brief Pool for picking UIDs (atoms/residues).
+		 */
+		Pool<PickingUID> _pickingPool;
 
-		uid		 _reserveValue();
-		UIDRange _reserveRange( const uid p_count );
-
-		void _freeValue( const uint p_value );
-		void _freeRange( const UIDRange & p_range );
+		/**
+		 * @brief Pool for root UIDs (system).
+		 */
+		Pool<RootUID> _rootPool;
 	};
 } // namespace VTX::App::Uid
 

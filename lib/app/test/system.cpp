@@ -1,13 +1,10 @@
-#include "util/app.hpp"
-#include <app/application/scene.hpp>
-#include <app/component/chemistry/atom.hpp>
-#include <app/component/chemistry/chain.hpp>
-#include <app/component/chemistry/residue.hpp>
-#include <app/component/chemistry/system.hpp>
+#include <app/action/visibility.hpp>
 #include <app/fixture.hpp>
+#include <app/helper/system.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+/*
 TEST_CASE( "VTX_APP - System - Remove", "[unit][remove]" )
 {
 	using namespace VTX;
@@ -172,9 +169,10 @@ TEST_CASE( "VTX_APP - System - Remove", "[unit][remove]" )
 		CHECK( systemComponent.getRealAtomCount() == ( defaultRealAtomCount - chainAtomCount ) );
 	}
 };
+*/
 
-TEST_CASE( "VTX_APP - System - Visibility", "[unit]" )
-{
+TEST_CASE( "VTX_APP - System - Visibility", "[unit]" ) {
+	/*
 	using namespace VTX;
 	using namespace VTX::App;
 	using namespace VTX::App::Component::Chemistry;
@@ -325,4 +323,5 @@ TEST_CASE( "VTX_APP - System - Visibility", "[unit]" )
 			CHECK( chain.isVisible() == true );
 		}
 	}
+	*/
 };

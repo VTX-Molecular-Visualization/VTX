@@ -3,17 +3,17 @@
 
 #include "tool/example/actions.hpp"
 #include <QMenu>
-#include <ui/qt/core/base_widget.hpp>
+#include <ui/qt/widget/base_widget.hpp>
 
 namespace VTX::Tool::Example::Widget
 {
 
-	class MyMenu : public UI::QT::Core::BaseWidget<MyMenu, QMenu>
+	class MyMenu : public UI::QT::Widget::BaseWidget<MyMenu, QMenu>
 	{
 	  public:
-		MyMenu( QWidget * p_parent ) : BaseWidget<MyMenu, QMenu>( "My menu", p_parent )
+		MyMenu( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
-			setObjectName( "ToolExampleMenu" );
+			setWindowTitle( "My Menu" );
 
 			addAction<Action::MyAction1>();
 			addSeparator();

@@ -8,7 +8,6 @@
 #include <util/callback.hpp>
 #include <util/concepts.hpp>
 #include <util/enum.hpp>
-#include <util/singleton.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Input
@@ -64,6 +63,9 @@ namespace VTX::App::Input
 		const Vec2i & getMouseLeftClickPosition() const;
 		const Vec2i & getMouseRightClickPosition() const;
 		int			  getDeltaMouseWheel() const;
+
+		Vec2i consumeDeltaMousePosition();
+		int	  consumeDeltaMouseWheel();
 
 		Util::Callback<Vec2i> onMouseLeftClicked;
 		Util::Callback<Vec2i> onMouseRightClicked;

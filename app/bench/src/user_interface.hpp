@@ -4,7 +4,7 @@
 #include <SDL3/SDL.h>
 #include <imgui/imgui_impl_sdl3.h>
 #include <renderer/descriptors.hpp>
-#include <renderer/facade.hpp>
+#include <renderer/renderer.hpp>
 #include <util/type_traits.hpp>
 
 namespace VTX::Bench
@@ -27,7 +27,7 @@ namespace VTX::Bench
 			SDL_GL_SetSwapInterval( _vsync );
 		}
 
-		void draw( Camera * const p_camera, Scene * const p_scene, Renderer::Facade * const p_renderer );
+		void draw( Camera * const p_camera, Scene * const p_scene, Renderer::Renderer * const p_renderer );
 
 		inline bool getEvent( SDL_Event & p_event ) const
 		{
@@ -47,17 +47,18 @@ namespace VTX::Bench
 		bool		  _vsync	 = true;
 		bool		  _drawUi	 = true;
 
-		void _drawMenuBar( Camera * const p_camera, Renderer::Facade * const p_renderer, Scene * const p_scene );
+		void _drawMenuBar( Camera * const p_camera, Renderer::Renderer * const p_renderer, Scene * const p_scene );
 		void _drawCamera( Camera * const p_camera ) const;
-		void _drawRenderer( Renderer::Facade * const p_renderer );
-		void _drawDurations( Renderer::Facade * const p_renderer ) const;
-		void _drawScene( Scene * const p_scene, Renderer::Facade * const p_renderer );
+		void _drawRenderer( Renderer::Renderer * const p_renderer );
+		void _drawDurations( Renderer::Renderer * const p_renderer ) const;
+		void _drawScene( Scene * const p_scene, Renderer::Renderer * const p_renderer );
 		void _drawUniforms() const;
-		void _drawNodeEditor( Renderer::Facade * const p_renderer ) const;
+		void _drawNodeEditor( Renderer::Renderer * const p_renderer ) const;
 
+		/*
 		template<typename T>
 		void _drawWidget(
-			Renderer::Facade * const		  p_renderer,
+			Renderer::Renderer * const		  p_renderer,
 			const Renderer::BufferDataValue & p_uniform,
 			const Renderer::Key &			  p_key
 		) const
@@ -144,6 +145,7 @@ namespace VTX::Bench
 				p_renderer->setValue( value, p_key );
 			}
 		}
+		*/
 
 	}; // namespace VTX::Bench
 } // namespace VTX::Bench

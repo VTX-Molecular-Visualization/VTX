@@ -2,9 +2,9 @@
 #include "scene.hpp"
 #include "user_interface.hpp"
 #include <iostream>
-#include <renderer/facade.hpp>
-#include <renderer/proxy/representation.hpp>
+#include <renderer/graphics_config.hpp>
 #include <renderer/proxy/voxels.hpp>
+#include <renderer/renderer.hpp>
 #include <util/math/aabb.hpp>
 
 #ifdef _WIN32
@@ -37,9 +37,9 @@ int main( int, char ** )
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		Renderer::Facade renderer( WIDTH, HEIGHT );
-		renderer.setOpenGL45( Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
-		renderer.setProxyCamera( scene.getProxyCamera() );
+		Renderer::Renderer renderer( WIDTH, HEIGHT );
+		// renderer.setOpenGL45( Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
+		// renderer.setProxyCamera( scene.getProxyCamera() );
 
 		// Input manager.
 		InputManager inputManager;
@@ -62,8 +62,8 @@ int main( int, char ** )
 			// Vec2i ids = renderer.getPickedIds( p_x, p_y );
 			// VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
 		};
-		inputManager.onMouseMotion +=
-			[ & ]( const Vec2i & p_position ) { scene.getProxyCamera().onMousePosition( p_position ); };
+		// inputManager.onMouseMotion +=
+		//	[ & ]( const Vec2i & p_position ) { scene.getProxyCamera().onMousePosition( p_position ); };
 
 		inputManager.onKeyPressed += [ & ]( const SDL_Scancode p_key )
 		{
@@ -87,7 +87,7 @@ int main( int, char ** )
 				}
 				else if ( p_key == SDL_SCANCODE_F5 )
 				{
-					VTX::Core::Struct::ColorLayout colorLayout;
+					Renderer::Color::Layout colorLayout;
 					std::generate(
 						colorLayout.colors.begin(), colorLayout.colors.end(), [] { return Color::Rgba::random(); }
 					);
@@ -134,7 +134,7 @@ int main( int, char ** )
 		auto proxyVoxels = Renderer::Proxy::Voxels { &mins, &maxs };
 		renderer.setProxyVoxels( proxyVoxels );
 
-		renderer.setProxyColorLayout( scene.getProxyColorLayout() );
+		renderer.setColorLayout( scene.getColorLayout() );
 
 		// Quickfix.
 		bool  bTrue		= true;
@@ -143,7 +143,7 @@ int main( int, char ** )
 		float fZeroOne	= 0.1f;
 		float fZeroFive = 0.5f;
 
-		// Renderer::Proxy::Representation representation;
+		Renderer::Representation representation;
 
 		/*
 		representation.set( 0, bTrue );
@@ -161,13 +161,35 @@ int main( int, char ** )
 		representation.set( 9, bFalse );
 		*/
 
-		// renderer.setProxyRepresentation( representation );
+		renderer.setRepresentation( representation );
+
+		Renderer::GraphicsConfig settings;
+		settings.shadingMode		= Renderer::E_SHADING::TOON;
+		settings.colorLight			= COLOR_WHITE;
+		settings.colorBackground	= COLOR_BLACK;
+		settings.specularFactor		= 0.5f;
+		settings.shininess			= 32.f;
+		settings.toonSteps			= 4;
+		settings.activeSSAO			= true;
+		settings.ssaoIntensity		= 5.f;
+		settings.blurSize			= 4.f;
+		settings.activeOutline		= true;
+		settings.colorOutline		= COLOR_BLACK;
+		settings.outlineSensitivity = 0.5f;
+		settings.outlineThickness	= 2;
+		settings.activeFog			= false;
+		settings.colorFog			= COLOR_WHITE;
+		settings.fogNear			= 100.f;
+		settings.fogFar				= 1000.f;
+		settings.fogDensity			= 0.01f;
+		settings.activeSelection	= true;
+		settings.colorSelection		= COLOR_WHITE;
 
 		// Renderer::Proxy::RenderSettings renderSettings
 		//	= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
 		//		3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
 
-		// renderer.setProxyRenderSettings( renderSettings );
+		renderer.setGraphicsConfig( settings );
 
 		// Main loop.
 		while ( isRunning )

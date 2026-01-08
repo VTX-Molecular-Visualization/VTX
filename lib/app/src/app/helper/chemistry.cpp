@@ -1,42 +1,32 @@
 #include "app/helper/chemistry.hpp"
-#include "app/component/chemistry/atom.hpp"
-#include "app/component/chemistry/bond.hpp"
-#include "app/component/chemistry/chain.hpp"
-#include "app/component/chemistry/residue.hpp"
-#include "app/component/chemistry/system.hpp"
 #include <app/filesystem.hpp>
 #include <io/reader/residue_data_reader.hpp>
 
 namespace VTX::App::Helper::Chemistry
 {
-	std::vector<Component::Chemistry::Chain *> findChainsByName(
-		const Component::Chemistry::System & p_system,
-		const std::string &					 p_chainName
-	)
+	std::vector<Index> findChainsByName( const Core::Struct::System & p_system, const std::string & p_chainName )
 	{
-		std::vector<Component::Chemistry::Chain *> res = std::vector<Component::Chemistry::Chain *>();
+		std::vector<Index> res;
 
-		for ( const std::unique_ptr<Component::Chemistry::Chain> & chain : p_system.getChains() )
+		for ( Index i = 0; i < p_system.getChainCount(); ++i )
 		{
-			if ( chain != nullptr && chain->getName() == p_chainName )
-				res.emplace_back( chain.get() );
+			if ( p_system.chainNames[ i ] == p_chainName )
+			{
+				res.emplace_back( i );
+			}
 		}
 
 		return res;
 	}
 
-	std::vector<Component::Chemistry::Residue *> findResiduesByName(
-		const Component::Chemistry::Chain & p_chain,
-		const std::string &					p_residueName
-	)
+	std::vector<Index> findResiduesByName( const Core::Struct::System & p_system, const std::string & p_residueName )
 	{
 		using namespace VTX::Core;
 
-		std::vector<Component::Chemistry::Residue *> res	= std::vector<Component::Chemistry::Residue *>();
-		Component::Chemistry::System &				 system = *( p_chain.getSystemPtr() );
-
+		std::vector<Index>			  res;
 		const ChemDB::Residue::SYMBOL residueSymbol = ChemDB::Residue::getSymbolFromAnyName( p_residueName );
 
+		/*
 		if ( residueSymbol != ChemDB::Residue::SYMBOL::UNKNOWN )
 		{
 			for ( Index iRes = p_chain.getIndexFirstResidue(); iRes <= p_chain.getIndexLastResidue(); iRes++ )
@@ -63,6 +53,7 @@ namespace VTX::App::Helper::Chemistry
 				}
 			}
 		}
+		*/
 
 		return res;
 	}

@@ -16,7 +16,7 @@ class VTXCoreRecipe(ConanFile):
         
     def requirements(self):
         self.requires("vtx_util/1.0")
-        self.requires("catch2/3.8.1")
+        self.requires("catch2/3.11.0")
         
     def config_options(self):
         if self.settings.os == "Windows":

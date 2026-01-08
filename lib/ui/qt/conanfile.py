@@ -145,6 +145,7 @@ class VTXUiQtRecipe(ConanFile):
         tc = CMakeToolchain(self)
         tc.generate()
         generate_qt(self)
+        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll", "Qt6Test*.dll" ]
 
     def build(self):
         cmake = CMake(self)

@@ -1,11 +1,9 @@
 #ifndef __VTX_UI_QT_WIDGET_SEQUENCE__
 #define __VTX_UI_QT_WIDGET_SEQUENCE__
 
-#include "ui/qt/core/base_widget.hpp"
+#include "ui/qt/widget/base_widget.hpp"
 #include <QAbstractScrollArea>
-#include <app/component/chemistry/chain.hpp>
-#include <app/component/chemistry/residue.hpp>
-#include <app/component/chemistry/system.hpp>
+#include <core/struct/system.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -15,17 +13,36 @@ namespace VTX::UI::QT::Widget
 	class Sequence : public QAbstractScrollArea
 	{
 	  public:
-		Sequence( const App::Component::Chemistry::System &, QWidget * );
+		Sequence( const App::ECS::Entity, QWidget * );
 
 	  protected:
 		void paintEvent( QPaintEvent * ) override;
 		void mousePressEvent( QMouseEvent * ) override;
+		void mouseMoveEvent( QMouseEvent * e ) override;
+		void mouseReleaseEvent( QMouseEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
 
 	  private:
-		const App::Component::Chemistry::System & _system;
+		/**
+		 * @brief Entity of the system to display.
+		 */
+		const App::ECS::Entity _system;
 
-		void updateScrollBars();
+		/**
+		 * @brief UI controls.
+		 */
+		Index _anchor		  = INVALID_INDEX;
+		Index _lastClicked	  = INVALID_INDEX;
+		bool  _dragging		  = false;
+		bool  _dragAddMode	  = false;
+		Index _dragStartIndex = INVALID_INDEX;
+
+		void _updateScrollBars();
+
+		/**
+		 * @brief Get residue index from position in viewport.
+		 */
+		std::optional<Index> _indexFromPos( const QPoint & );
 	};
 
 } // namespace VTX::UI::QT::Widget

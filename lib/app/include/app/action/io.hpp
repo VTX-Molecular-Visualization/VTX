@@ -1,12 +1,9 @@
 #ifndef __VTX_APP_ACTION_IO__
 #define __VTX_APP_ACTION_IO__
 
-#include "app/action/base_action.hpp"
-#include <util/filesystem.hpp>
 #include <util/image.hpp>
 #include <util/types.hpp>
 #include <util/url.hpp>
-#include <vector>
 
 namespace VTX::Util::Url
 {
@@ -15,125 +12,36 @@ namespace VTX::Util::Url
 	class UrlFull;
 } // namespace VTX::Util::Url
 
-namespace VTX::App::Action::Io
+namespace VTX::App::Action::IO
 {
-
-	class Open final : public BaseAction
+	/**
+	 * @brief Open a file or folder with the system default application.
+	 */
+	struct Open
 	{
-	  public:
-		explicit Open( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
-		// explicit Open( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
-		// explicit Open( const std::map<FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
-		// explicit Open( const FilePath & p_trajectoryPath, Model::Chemistry::System & p_target )
-		//{
-		//	_trajectoryTargets.emplace_back( &p_target );
-		//	_paths.emplace_back( p_trajectoryPath );
-		// }
-		// explicit Open( const FilePath &									 p_trajectoryPath,
-		//			   const std::vector<Model::Chemistry::System *> & p_targets ) :
-		//	_trajectoryTargets( p_targets )
-		//{
-		//	_paths.emplace_back( p_trajectoryPath );
-		// }
-
-		void execute() override;
-
-	  private:
-		std::vector<FilePath> _paths = std::vector<FilePath>();
-		// std::map<FilePath, std::string *> _buffers = std::map<FilePath, std::string *>();
-
-		// std::vector<Component::Chemistry::System *> _trajectoryTargets
-		//	= std::vector<Component::Chemistry::System *>();
+		void execute( const FilePath & p_path );
 	};
 
-	class DownloadSystem final : public BaseAction
+	/**
+	 * @brief Download a molecular system from a remote source.
+	 */
+	struct DownloadSystem
 	{
 	  public:
-		DownloadSystem( VTX::Util::Url::SystemId );
-		DownloadSystem( VTX::Util::Url::SystemId, FilePath );
-		DownloadSystem( VTX::Util::Url::UrlFull, FilePath );
-
-		/**
-		 * @brief This ctor stands for python binding purpose and need the system ID as an input
-		 * @param p_systemId
-		 */
-		DownloadSystem( const char * p_systemId );
-
-		void execute() override;
-
-	  private:
-		const VTX::Util::Url::UrlFull _url;
-		const FilePath				  _filename;
+		void execute( VTX::Util::Url::SystemId );
+		void execute( VTX::Util::Url::SystemId, FilePath );
+		void execute( VTX::Util::Url::UrlFull, FilePath );
+		void execute( const char * p_systemId );
 	};
 
-	class SaveScene final : public BaseAction
+	/**
+	 * @brief Take a snapshot from actual camera view and save it to disk.
+	 */
+	class Snapshot
 	{
 	  public:
-		explicit SaveScene() : _path( "" ) /*, _callback( nullptr )*/ {}
-		explicit SaveScene( const FilePath & p_path ) : _path( p_path ) /*, _callback( nullptr )*/ {}
-		// explicit SaveScene( const FilePath & p_path, VTX::App::Old::Core::Worker::CallbackThread * const p_callback )
-		// : 	_path( p_path ), _callback( p_callback )
-		//{
-		// }
-
-		void execute() override;
-
-	  private:
-		const FilePath _path;
-		// VTX::App::Old::Core::Worker::CallbackThread * const _callback;
-	};
-
-	class LoadSettings final : public BaseAction
-	{
-	  public:
-		explicit LoadSettings();
-		explicit LoadSettings( const FilePath & p_path ) : _path( p_path ) {}
-
-		void execute() override;
-
-	  private:
-		const FilePath _path;
-	};
-	class SaveSettings final : public BaseAction
-	{
-	  public:
-		explicit SaveSettings();
-		explicit SaveSettings( const FilePath & p_path ) : _path( p_path ) {}
-
-		void execute() override;
-
-	  private:
-		const FilePath _path;
-	};
-	class ReloadSettings final : public BaseAction
-	{
-	  public:
-		explicit ReloadSettings() {}
-		void execute() override;
-	};
-	class ResetSettings final : public BaseAction
-	{
-	  public:
-		explicit ResetSettings() {}
-		void execute() override;
-	};
-
-	class OpenScene final : public BaseAction
-	{
-	  public:
-		explicit OpenScene( const FilePath & p_path ) : _path( p_path ) {}
-		void execute() override;
-
-	  private:
-		FilePath _path = FilePath();
-	};
-
-	class Snapshot final : public BaseAction
-	{
-	  public:
-		Snapshot( const FilePath, const Util::Image::E_FORMAT, const size_t, const size_t );
-		Snapshot();
-		void execute() override;
+		void execute();
+		void execute( const FilePath, const Util::Image::E_FORMAT, const size_t, const size_t );
 
 	  private:
 		FilePath			  _path;
@@ -142,5 +50,5 @@ namespace VTX::App::Action::Io
 		size_t				  _height;
 	};
 
-} // namespace VTX::App::Action::Io
+} // namespace VTX::App::Action::IO
 #endif

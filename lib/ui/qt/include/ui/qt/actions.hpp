@@ -2,44 +2,14 @@
 #define __VTX_UI_QT_ACTIONS__
 
 #include "app/services.hpp"
-#include <QAction>
-#include <QActionGroup>
 #include <QStyle>
 #include <app/action/action_manager.hpp>
-#include <app/action/library.hpp>
 #include <app/ui/concepts.hpp>
-#include <app/vtx_app.hpp>
-#include <util/collection.hpp>
-#include <util/hashing.hpp>
 
 namespace VTX::UI::QT
 {
-	template<typename A>
-	concept ConceptAction = std::is_base_of_v<App::UI::DescAction, A>;
-
 	namespace Action
 	{
-		class Factory
-		{
-		  public:
-			inline static QAction * const get( const App::UI::DescAction & p_action )
-			{
-				return _getOrCreate( Hash( &p_action ), p_action );
-			}
-
-			template<ConceptAction A>
-			inline static QAction * get()
-			{
-				return _getOrCreate( VTX::Util::Collection<QAction *>::hash<A>(), A() );
-			}
-
-		  private:
-			inline static VTX::Util::Collection<QAction *>		_ACTIONS;
-			inline static VTX::Util::Collection<QActionGroup *> _ACTION_GROUPS;
-
-			static QAction * const _getOrCreate( const Hash & p_hash, const App::UI::DescAction & p_action );
-		};
-
 		// System.
 		namespace System
 		{
@@ -61,6 +31,11 @@ namespace VTX::UI::QT
 			struct OpenRecent : public App::UI::DescAction
 			{
 				OpenRecent();
+			};
+
+			struct Delete : public App::UI::DescAction
+			{
+				Delete();
 			};
 
 			struct Save : public App::UI::DescAction
@@ -185,6 +160,21 @@ namespace VTX::UI::QT
 		} // namespace Help
 		namespace Selection
 		{
+			struct Lock : public App::UI::DescAction
+			{
+				Lock();
+			};
+
+			struct Save : public App::UI::DescAction
+			{
+				Save();
+			};
+
+			struct Clear : public App::UI::DescAction
+			{
+				Clear();
+			};
+
 			struct SetGranularitySystem : public App::UI::DescAction
 			{
 				SetGranularitySystem();
@@ -212,10 +202,9 @@ namespace VTX::UI::QT
 			{
 				Add()
 				{
-					name	= "New";
-					tip		= "Create a new empty preset";
-					icon	= static_cast<int>( QStyle::StandardPixmap::SP_FileIcon );
-					trigger = []() { App::ACTION().execute<App::Action::Library::AddPreset<P>>(); };
+					name = "New";
+					tip	 = "Create a new empty preset";
+					icon = static_cast<int>( QStyle::StandardPixmap::SP_FileIcon );
 				}
 			};
 

@@ -1,14 +1,25 @@
 #ifndef __VTX_APP_EVENTS__
 #define __VTX_APP_EVENTS__
 
+#include "app/ecs.hpp"
+#include <string>
+
 namespace VTX::App::Events
 {
-	struct ApplicationStarted
+	/**
+	 * @brief Application.
+	 */
+	struct ApplicationStart
 	{
 	};
 
-	struct ApplicationStopped
+	struct ApplicationStop
 	{
+	};
+
+	struct ApplicationError
+	{
+		std::string message;
 	};
 
 	struct Update
@@ -23,24 +34,18 @@ namespace VTX::App::Events
 		float elapsed;
 	};
 
-	struct Render
-	{
-		float delta;
-		float elapsed;
-	};
-
 	struct PostRender
 	{
 		float delta;
 		float elapsed;
 	};
 
-	struct BlockingOperationStarted
+	struct BlockingOperationStart
 	{
 		std::string message;
 	};
 
-	struct BlockingOperationEnded
+	struct BlockingOperationEnd
 	{
 	};
 
@@ -48,6 +53,39 @@ namespace VTX::App::Events
 	{
 		float progress;
 	};
+
+	/**
+	 * @brief Camera / controllers.
+	 */
+	template<typename T>
+	struct CameraControllerChange
+	{
+	};
+
+	template<int T>
+	struct CameraProjectionChange
+	{
+	};
+
+	struct CameraAnimationEnd
+	{
+	};
+
+	/**
+	 * @brief System.
+	 * Used instead of on_construct to avoid component creation order problems.
+	 */
+	struct SystemLoad
+	{
+		ECS::Entity system;
+	};
+
+	struct PresetRename
+	{
+		ECS::Entity preset;
+		std::string name;
+	};
+
 } // namespace VTX::App::Events
 
 #endif

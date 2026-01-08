@@ -78,7 +78,7 @@ namespace VTX::Bench
 		{
 			_rotation = _rotation * Quatf( p_delta * _velocityRotation );
 
-			const Mat3f rotation = Util::Math::castMat3( _rotation );
+			const Mat3f rotation = Util::Math::toMat3( _rotation );
 			_front				 = rotation * _CAMERA_FRONT_DEFAULT;
 			_right				 = rotation * _CAMERA_RIGHT_DEFAULT;
 			_up					 = rotation * _CAMERA_UP_DEFAULT;

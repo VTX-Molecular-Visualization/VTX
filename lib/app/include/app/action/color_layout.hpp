@@ -1,50 +1,35 @@
 #ifndef __VTX_UI_ACTION_COLOR_LAYOUT__
 #define __VTX_UI_ACTION_COLOR_LAYOUT__
 
-#include "app/action/library.hpp"
-#include "app/library/preset/color_layout.hpp"
+#include "app/ecs.hpp"
+#include <renderer/color.hpp>
 #include <util/color/rgba.hpp>
 
 namespace VTX::App::Action::ColorLayout
 {
-	class SetCurrent final : public App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>
+
+	/**
+	 * @brief Change a single color.
+	 */
+	struct Change
 	{
-	  public:
-		SetCurrent( App::Library::Preset::ColorLayout * const );
-		SetCurrent( const std::string_view );
-		void execute() override;
+		void execute( const ECS::Entity, const Index, const Util::Color::Rgba & );
 	};
 
-	class Change final : public App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>
+	/**
+	 * @brief Change all colors.
+	 */
+	struct ChangeAll
 	{
-	  public:
-		Change( App::Library::Preset::ColorLayout * const, const Index, const Util::Color::Rgba & );
-		Change( const std::string_view, const Index, const Util::Color::Rgba & );
-		void execute() override;
-
-	  private:
-		const Index				  _index;
-		const Util::Color::Rgba & _color;
+		void execute( const ECS::Entity, const Renderer::Color::LayoutArray & );
 	};
 
-	class ChangeAll final : public App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>
+	/**
+	 * @brief Randomize all colors.
+	 */
+	struct Randomize
 	{
-	  public:
-		ChangeAll( App::Library::Preset::ColorLayout * const, const VTX::Core::Struct::ColorLayoutArray & p_colors );
-		ChangeAll( const std::string_view, const VTX::Core::Struct::ColorLayoutArray & p_colors );
-		void execute() override;
-
-	  private:
-		const VTX::Core::Struct::ColorLayoutArray & _colors;
-	};
-
-	class Randomize final : public App::Action::Library::BaseActionPreset<App::Library::Preset::ColorLayout>
-	{
-	  public:
-		Randomize( App::Library::Preset::ColorLayout * const );
-		Randomize( const std::string_view );
-
-		void execute() override;
+		void execute( const ECS::Entity );
 	};
 
 } // namespace VTX::App::Action::ColorLayout

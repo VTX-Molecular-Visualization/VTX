@@ -1,70 +1,106 @@
 #include "app/action/camera.hpp"
-#include "app/animation/orient.hpp"
-#include "app/animation/straight_travel.hpp"
-#include "app/application/scene.hpp"
-#include "app/component/render/camera.hpp"
-#include <app/application/scene.hpp>
-#include <app/component/controller.hpp>
-#include <app/component/render/camera.hpp>
-#include <util/collection.hpp>
+#include "app/action/action_manager.hpp"
+#include "app/scene/tag_root.hpp"
+#include <util/math/transform.hpp>
+
+namespace
+{
+	using namespace VTX;
+
+	constexpr float _ORIENT_ZOOM_FACTOR = 0.666f;
+
+	Vec3f _computeCameraOrientPosition(
+		const Vec3f				 p_forward,
+		const float				 p_fov,
+		const Util::Math::AABB & p_target,
+		const float				 p_zoomFactor = _ORIENT_ZOOM_FACTOR
+	)
+	{
+		const float orientTargetDistance = p_target.radius() / std::tan( Util::Math::radians( p_fov ) * p_zoomFactor );
+		return p_target.centroid() - ( p_forward * orientTargetDistance );
+	}
+} // namespace
 
 namespace VTX::App::Action::Camera
 {
-
-	void SetCameraProjectionOrthographic::execute()
+	void SetPosition::execute( const Vec3f & p_position )
 	{
-		auto & camera = SCENE().getCamera();
-		camera.setCameraProjection( Component::Render::Camera::PROJECTION::ORTHOGRAPHIC );
+		auto [ ent, _, transform ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+		REG().patch<Util::Math::Transform>(
+			ent, [ p_position ]( Util::Math::Transform & p_transform ) { p_transform.setPosition( p_position ); }
+		);
 	}
 
-	void SetCameraProjectionPerspective::execute()
+	void SetRotation::execute( const Vec3f & p_eulerAngles )
 	{
-		auto & camera = SCENE().getCamera();
-		camera.setCameraProjection( Component::Render::Camera::PROJECTION::PERSPECTIVE );
+		auto [ ent, _, transform ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+		REG().patch<Util::Math::Transform>(
+			ent, [ p_eulerAngles ]( Util::Math::Transform & p_transform ) { p_transform.setRotation( p_eulerAngles ); }
+		);
 	}
 
-	void ToggleCameraProjection::execute()
+	void SetScale::execute( const float p_scale )
 	{
-		using namespace Component::Render;
-		auto & camera = SCENE().getCamera();
-		if ( camera.getProjection() == Component::Render::Camera::PROJECTION::ORTHOGRAPHIC )
-		{
-			camera.setCameraProjection( Component::Render::Camera::PROJECTION::PERSPECTIVE );
-		}
-		else
-		{
-			camera.setCameraProjection( Component::Render::Camera::PROJECTION::ORTHOGRAPHIC );
-		}
+		auto [ ent, _, transform ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+		REG().patch<Util::Math::Transform>(
+			ent, [ p_scale ]( Util::Math::Transform & p_transform ) { p_transform.setScale( p_scale ); }
+		);
 	}
 
 	void Reset::execute()
 	{
-		auto & camera = SCENE().getCamera();
+		auto   entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
+		auto & aabb		= REG().get<Util::Math::AABB>( entScene );
+		auto [ entCamera, camera, transform ]
+			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+		REG().patch<Util::Math::Transform>(
+			entCamera,
+			[ & ]( Util::Math::Transform & p_transform )
+			{
+				Vec3f position = _computeCameraOrientPosition( p_transform.getFront(), camera.fov, aabb );
 
-		Vec3f position = Animation::Orient::computeCameraOrientPosition(
-			camera.getTransform().getFront(),
-			camera.getFov(),
-			App::SCENE().getAABB(),
-			Animation::Orient::ORIENT_ZOOM_FACTOR
+				p_transform.setPosition( position );
+				p_transform.setRotation( QUATF_ID );
+				p_transform.lookAt( aabb.centroid() );
+			}
 		);
-
-		camera.getTransform().setPosition( position );
-		camera.getTransform().setRotation( QUATF_ID );
-		camera.setTargetWorld( App::SCENE().getAABB().centroid() );
 	}
+
 	void Orient::execute()
 	{
-		Component::Controller & component = ECS_REGISTRY().getComponent<Component::Controller>( SCENE().getCamera() );
-		component.launchAnimation( App::Animation::Orient( App::SCENE().getCamera(), _target ) );
-	}
-	Orient::Orient() : _target( App::SCENE().getAABB() ) {}
+		auto [ entCamera, camera, transform ]
+			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
-	void MoveCamera::execute()
+		bool selection = false;
+		// TODO: compute aabb from selection.
+		if ( selection ) {}
+		// From scene.
+		else
+		{
+			auto   entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
+			auto & aabb		= REG().get<Util::Math::AABB>( entScene );
+			execute( aabb );
+		}
+	}
+
+	void Orient::execute( const Util::Math::AABB & p_target )
 	{
-		Component::Controller & component = ECS_REGISTRY().getComponent<Component::Controller>( SCENE().getCamera() );
-		component.launchAnimation( Animation::StraightTravel( _position, _rotation, _duration ) );
+		using namespace Util;
+
+		auto [ _, camera, transform ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+
+		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(
+			_computeCameraOrientPosition( transform.getFront(), camera.fov, p_target ), transform.getRotation()
+		);
 	}
 
-	void SetCameraPosition::execute() {}
+	void StraightTravel::execute(
+		const Vec3f & p_targetPosition,
+		const Quatf & p_targetRotation,
+		const float	  p_duration
+	)
+	{
+		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>( p_targetPosition, p_targetRotation, p_duration );
+	}
 
 } // namespace VTX::App::Action::Camera

@@ -1,68 +1,113 @@
-#ifndef __VTX_APP_ACTION_VISIBILLITY__
-#define __VTX_APP_ACTION_VISIBILLITY__
+#ifndef __VTX_APP_ACTION_VISIBILITY__
+#define __VTX_APP_ACTION_VISIBILITY__
 
-#include "app/action/base_action.hpp"
+#include "app/ecs.hpp"
+#include "app/scene/tag_root.hpp"
+#include "app/system/visibility.hpp"
+#include <core/struct/system.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Action::Visibility
 {
-	enum struct E_ITEM_TYPE
+	/**
+	 * @brief Set item visibility.
+	 */
+	template<App::Scene::E_ITEM ITEM>
+	struct SetVisible
 	{
-		SYSTEM,
-		CATEGORY,
-		CHAIN,
-		RESIDUE,
-		ATOM
-	};
-
-	template<E_ITEM_TYPE T>
-	class SetVisible final : public BaseAction
-	{
-	  public:
-		explicit SetVisible(
-			App::Component::Chemistry::System * const p_system,
-			const bool								  p_visible,
-			const std::optional<Index>				  p_id
-		) : _system( p_system ), _visible( p_visible ), _id( p_id )
+		void execute(
+			const ECS::Entity					 p_ent,
+			const Core::Struct::IndexRangeList & p_ranges  = {},
+			const bool							 p_visible = true
+		)
 		{
+			using namespace Util::Math;
+			using namespace Core::Struct;
+
+			const auto & system		= REG().get<Core::Struct::System>( p_ent );
+			auto &		 visibility = REG().get<System::Visibility>( p_ent );
+
+			if constexpr ( ITEM == App::Scene::E_ITEM::SYSTEM )
+			{
+				if ( p_visible )
+				{
+					visibility.atoms = IndexRangeList( system.getAtomRange() );
+				}
+				else
+				{
+					visibility.atoms.clear();
+				}
+			}
+			else if constexpr ( ITEM == App::Scene::E_ITEM::CHAIN )
+			{
+				if ( p_visible )
+				{
+					for ( const auto & index : p_ranges )
+					{
+						visibility.atoms.addRange( system.getChainAtomRange( index ) );
+					}
+				}
+				else
+				{
+					for ( const auto & index : p_ranges )
+					{
+						visibility.atoms.removeRange( system.getChainAtomRange( index ) );
+					}
+				}
+			}
+			else if constexpr ( ITEM == App::Scene::E_ITEM::RESIDUE )
+			{
+				if ( p_visible )
+				{
+					for ( const auto & index : p_ranges )
+					{
+						visibility.atoms.addRange( system.getResidueAtomRange( index ) );
+					}
+				}
+				else
+				{
+					for ( const auto & index : p_ranges )
+					{
+						visibility.atoms.removeRange( system.getResidueAtomRange( index ) );
+					}
+				}
+			}
+			else if constexpr ( ITEM == App::Scene::E_ITEM::ATOM )
+			{
+				if ( p_visible )
+				{
+					for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
+					{
+						visibility.atoms.addRange( *it );
+					}
+				}
+				else
+				{
+					for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
+					{
+						visibility.atoms.removeRange( *it );
+					}
+				}
+			}
 		}
 
-		void execute() override
+		void execute( const ECS::Entity p_ent, const Core::Struct::IndexRange & p_range, const bool p_visible = true )
 		{
-			assert( _system );
-
-			if constexpr ( T == E_ITEM_TYPE::SYSTEM )
-			{
-				_system->setVisible( _visible );
-			}
-			else if constexpr ( T == E_ITEM_TYPE::CATEGORY ) {}
-			else if constexpr ( T == E_ITEM_TYPE::CHAIN )
-			{
-				assert( _id.has_value() );
-				auto * const chain = _system->getChain( _id.value() );
-				assert( chain );
-				chain->setVisible( _visible );
-			}
-			else if constexpr ( T == E_ITEM_TYPE::RESIDUE )
-			{
-				assert( _id.has_value() );
-				auto * const residue = _system->getResidue( _id.value() );
-				assert( residue );
-				residue->setVisible( _visible );
-			}
-			else if constexpr ( T == E_ITEM_TYPE::ATOM )
-			{
-				assert( _id.has_value() );
-				auto * const atom = _system->getAtom( Index( _id.value() ) );
-				assert( atom );
-				atom->setVisible( _visible );
-			}
+			execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_visible );
 		}
 
-	  private:
-		App::Component::Chemistry::System * const _system;
-		const bool								  _visible;
-		const std::optional<Index>				  _id;
+		void execute( const ECS::Entity p_ent, const std::vector<Index> & p_values, const bool p_visible = true )
+		{
+			execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_visible );
+		}
+
+		void execute( const ECS::Entity p_ent, const Index p_value, const bool p_visible = true )
+		{
+			execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_visible );
+		}
 	};
 
+	// TODO: other elements.
 } // namespace VTX::App::Action::Visibility
+
 #endif

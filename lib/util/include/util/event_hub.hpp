@@ -14,6 +14,8 @@ namespace VTX::Util
 		using Connection	   = entt::connection;
 		using ScopedConnection = entt::scoped_connection;
 		using Dispatcher	   = entt::dispatcher;
+		template<typename... Args>
+		using Delegate = entt::delegate<Args...>;
 
 		/**
 		 * @brief Connect a function to an event.

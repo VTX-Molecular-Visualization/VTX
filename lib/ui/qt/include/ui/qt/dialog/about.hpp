@@ -1,12 +1,12 @@
 #ifndef __VTX_UI_QT_DIALOG_ABOUT__
 #define __VTX_UI_QT_DIALOG_ABOUT__
 
-#include "ui/qt/core/base_dialog.hpp"
+#include "ui/qt/dialog/base_dialog.hpp"
 
 namespace VTX::UI::QT::Dialog
 {
 
-	class About : public Core::BaseDialog<About>
+	class About : public BaseDialog<About>
 	{
 	  public:
 		About()

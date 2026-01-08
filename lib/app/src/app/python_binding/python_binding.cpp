@@ -1,13 +1,8 @@
-
 #include "app/python_binding/python_binding.hpp"
 #include "app/action/application.hpp"
 #include "app/action/camera.hpp"
 #include "app/action/io.hpp"
 #include "app/action/scene.hpp"
-#include "app/application/scene.hpp"
-#include "app/component/render/camera.hpp"
-#include "app/python_binding/selection/binder.hpp"
-#include "app/python_binding/viewpoint_manager.hpp"
 #include <python_binding/binder.hpp>
 #include <python_binding/binding/helper.hpp>
 #include <python_binding/binding/vtx_module.hpp>
@@ -25,14 +20,14 @@ namespace VTX::App::PythonBinding
 		pybind11::module_ * apiModulePtr = nullptr;
 		p_vtxmodule.api().getPythonModule( &apiModulePtr );
 
-		commands.bindAction<App::Action::Application::NewScene>( "newScene", "Clear scene." );
+		commands.bindAction<App::Action::Scene::Clear>( "newScene", "Clear scene." );
 
 		pybind11::module_ * commandModulePtr = nullptr;
 		p_vtxmodule.commands().getPythonModule( &commandModulePtr );
-		Selection::bind_selection( *commandModulePtr );
+		// Selection::bind_selection( *commandModulePtr ); // ??
 		VTX::PythonBinding::Helper::declareEnum<Util::Image::E_FORMAT>( *commandModulePtr, "IMAGE_FORMAT" );
 		commands.bindAction<
-			App::Action::Io::Snapshot,
+			App::Action::IO::Snapshot,
 			const std::string &,
 			Util::Image::E_FORMAT,
 			const size_t &,
@@ -44,36 +39,43 @@ namespace VTX::App::PythonBinding
 			VTX::PythonBinding::Wrapper::Arg( "width" ),
 			VTX::PythonBinding::Wrapper::Arg( "height" )
 		);
-		commands.bindAction<App::Action::Io::Open, const std::string &>(
+
+		commands.bindAction<App::Action::IO::Open, const std::string &>(
 			"openFile", "Open files at given path.", VTX::PythonBinding::Wrapper::Arg( "path" )
 		);
-		commands.bindAction<App::Action::Io::OpenScene, const std::string &>(
+		/*
+		commands.bindAction<App::Action::IO::OpenScene, const std::string &>(
 			"openScene", "Open scene at given path.", VTX::PythonBinding::Wrapper::Arg( "path" )
 		);
-		commands.bindAction<App::Action::Io::DownloadSystem, const char *>(
+		*/
+		commands.bindAction<App::Action::IO::DownloadSystem, const char *>(
 			"download", "Retrieve a system from the RCSB PDB.", VTX::PythonBinding::Wrapper::Arg( "system_id" )
 		);
-		commands.bindAction<App::Action::Io::SaveScene, const std::string &>(
+		/*
+		commands.bindAction<App::Action::IO::SaveScene, const std::string &>(
 			"save", "Save scene.", VTX::PythonBinding::Wrapper::VArg<std::string>( "path", "" )
 		);
-		commands.bindAction<App::Action::Io::SaveSettings>( "saveSettings", "Save settings." );
-		commands.bindAction<App::Action::Io::ReloadSettings>( "reloadSettings", "Reload settings." );
-		commands.bindAction<App::Action::Io::ResetSettings>( "resetSettings", "Reset settings." );
+		commands.bindAction<App::Action::IO::SaveSettings>( "saveSettings", "Save settings." );
+		commands.bindAction<App::Action::IO::ReloadSettings>( "reloadSettings", "Reload settings." );
+		commands.bindAction<App::Action::IO::ResetSettings>( "resetSettings", "Reset settings." );
+		*/
+		commands.bindAction<App::Action::Scene::Clear>( "clear", "Clear scene." );
 
-		commands.bindAction<App::Action::Scene::ClearScene>( "clear", "Clear scene." );
-
-		commands.bindAction<App::Action::Camera::SetCameraProjectionOrthographic>(
+		commands.bindAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>(
 			"setCameraProjectionOrthographic", "Set the render projection into Orthographic mode."
 		);
-		commands.bindAction<App::Action::Camera::SetCameraProjectionPerspective>(
+		commands.bindAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>(
 			"setCameraProjectionPerspective", "Set the render projection into Perspective mode."
 		);
+		/*
 		commands.bindAction<App::Action::Camera::ToggleCameraProjection>(
 			"toggleCameraProjection", "Toggle the render projection between Perspective and Orthographic mode."
 		);
+		*/
 		commands.bindAction<App::Action::Camera::Reset>( "resetCamera", "Put the camera back in the initial space." );
 
 		// TODO : test the stuff below after threading
+		/*
 		commands.bindAction<App::Action::Camera::MoveCamera, TravelViewpoint>(
 			"travelTo",
 			"Travel to a point in space and rotate the camera within the travel time window.",
@@ -98,16 +100,28 @@ namespace VTX::App::PythonBinding
 			VTX::PythonBinding::Wrapper::Arg( "rotation_w" ),
 			VTX::PythonBinding::Wrapper::Arg( "travelTime" )
 		);
+		*/
 		commands.def(
 			"getCameraPosition",
-			[]() { return SCENE().getCamera().getTransform().getPosition(); },
+			[]()
+			{
+				auto [ ent, _, transform ]
+					= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+				return transform.getPosition();
+			},
 			"Return current camera position vector"
 		);
 		commands.def(
 			"getCameraRotation",
-			[]() { return SCENE().getCamera().getTransform().getRotation(); },
+			[]()
+			{
+				auto [ ent, _, transform ]
+					= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+				return transform.getRotation();
+			},
 			"Return current camera rotation vector"
 		);
+		/*
 		pybind11::class_<TravelViewpointManager>( *commandModulePtr, "TravelViewpointManager" )
 			.def( pybind11::init<>() )
 			.def<void ( TravelViewpointManager::* )()>( "registerCurrent", &TravelViewpointManager::registerCurrent )
@@ -138,10 +152,12 @@ namespace VTX::App::PythonBinding
 			.def_readwrite( "position", &TravelViewpoint::position )
 			.def_readwrite( "rotation", &TravelViewpoint::rotation )
 			.def_readwrite( "travelTime", &TravelViewpoint::travelTime );
+			*/
 	}
 
 	void VTXAppBinder::importHeaders()
 	{
+		/*
 		VTX::PythonBinding::importObject(
 			fmt::format( "{}.Command", VTX::PythonBinding::vtx_module_name() ), "select"
 		);
@@ -151,6 +167,7 @@ namespace VTX::App::PythonBinding
 		VTX::PythonBinding::importObject(
 			fmt::format( "{}.Command", VTX::PythonBinding::vtx_module_name() ), "exclusive"
 		);
+		*/
 	}
 
 } // namespace VTX::App::PythonBinding

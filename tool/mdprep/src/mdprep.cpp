@@ -25,8 +25,10 @@
 #include <QDockWidget>
 #include <app/tool/base_tool.hpp>
 #include <ui/qt/application.hpp>
-#include <ui/qt/core/base_dock_widget.hpp>
+#include <ui/qt/dock_widget/base_dock_widget.hpp>
+#include <ui/qt/services.hpp>
 #include <ui/qt/util.hpp>
+#include <ui/qt/widget/main_window.hpp>
 #include <util/logger.hpp>
 //
 #include "tool/mdprep/ui/form.hpp"
@@ -46,7 +48,7 @@ namespace VTX::Tool::Mdprep
 
 	// Class responsible for managing the mdprep main window by coordinating the common form and the md engine
 	// specifics.
-	class MainWindow : public UI::QT::Core::BaseDockWidget<MainWindow>
+	class MainWindow : public UI::QT::DockWidget::BaseDockWidget<MainWindow>
 	{
 	  public:
 		inline static const QSize PREFERRED_SIZE { 500, 720 };
@@ -68,7 +70,7 @@ namespace VTX::Tool::Mdprep
 		}
 
 	  public:
-		MainWindow( QWidget * const p_parent ) : UI::QT::Core::BaseDockWidget<MainWindow>( p_parent )
+		MainWindow( QWidget * const p_parent ) : BaseDockWidget( p_parent )
 		{
 			this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
 			this->setWindowTitle( "Molecular Dynamics Preparation" );
@@ -98,14 +100,16 @@ namespace VTX::Tool::Mdprep
 			p_out = g_win;
 			return;
 		}
-		g_win = APP_QT::getMainWindow()->createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
-		p_out = g_win;
+		auto & mainWindow = UI::QT::MAIN_WINDOW();
+		g_win			  = mainWindow.createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
+		p_out			  = g_win;
 	}
 
 	struct OpenMdPrep : public App::UI::DescAction
 	{
 		OpenMdPrep()
 		{
+			key		 = "tool.mdprep.open";
 			name	 = "MdPrep";
 			tip		 = "Prepare Molecular Dynamic Simulation";
 			icon	 = "sprite/icon_tool_mdprep_mainButton.png";
@@ -127,13 +131,13 @@ namespace VTX::Tool::Mdprep
 		}
 	};
 
-	void MdPrep::init() {}
-	void MdPrep::onAppStart() {}
-	void MdPrep::createUI()
+	MdPrep::MdPrep()
 	{
 		OpenMdPrep action;
-		APP_QT::addMenuAction( "Tool", action );
-		APP_QT::addToolBarAction( "Tool", action );
+
+		auto & mainWindow = UI::QT::MAIN_WINDOW();
+		mainWindow.addMenuAction( "Tool", action );
+		mainWindow.addToolBarAction( "Tool", action );
 	}
-	void MdPrep::onAppStop() {}
+
 } // namespace VTX::Tool::Mdprep

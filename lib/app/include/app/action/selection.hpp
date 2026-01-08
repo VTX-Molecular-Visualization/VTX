@@ -1,69 +1,147 @@
 #ifndef __VTX_APP_ACTION_SELECTION__
 #define __VTX_APP_ACTION_SELECTION__
 
-#include "app/component/scene/selectable.hpp"
-#include "app/action/base_action.hpp"
-#include "app/selection/selection.hpp"
-#include "app/selection/selection_data.hpp"
-#include <set>
-#include <util/concepts.hpp>
+#include "app/action/action_manager.hpp"
+#include "app/ecs.hpp"
+#include "app/events.hpp"
+#include "app/scene/tag_root.hpp"
+#include "app/services.hpp"
+#include "app/system/selection.hpp"
+#include <core/struct/system.hpp>
+#include <util/event_hub.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Action::Selection
 {
-	class Select final : public BaseAction
+
+	/**
+	 * @brief Set item selection.
+	 */
+	template<Scene::E_ITEM ITEM>
+	struct SetSelected
 	{
-	  public:
-		Select(
-			const App::Selection::SelectionData & p_selectionData,
-			const App::Selection::AssignmentType  p_assignment
+		void execute(
+			const ECS::Entity					 p_ent,
+			const Core::Struct::IndexRangeList & p_ranges	= {},
+			const bool							 p_selected = true
 		)
 		{
-			_selectionData.emplace( &p_selectionData );
-			_assignment = p_assignment;
-		}
+			using namespace Util::Math;
+			using namespace Core::Struct;
 
-		template<ContainerOfType<const App::Selection::SelectionData *> C1>
-		Select( C1 & p_selectionData, const App::Selection::AssignmentType p_assignment )
-		{
-			for ( App::Selection::SelectionData * selectionData : p_selectionData )
+			auto &		 reg	   = REG();
+			const auto & system	   = reg.get<Core::Struct::System>( p_ent );
+			const auto & selection = reg.get<System::Selection>( p_ent );
+
+			Core::Struct::IndexRangeList selectionAtoms = selection.atoms;
+
+			if constexpr ( ITEM == Scene::E_ITEM::SYSTEM )
 			{
-				_selectionData.emplace( selectionData );
+				if ( p_selected )
+				{
+					selectionAtoms = IndexRangeList( system.getAtomRange() );
+				}
+				else
+				{
+					selectionAtoms.clear();
+				}
+			}
+			else if constexpr ( ITEM == Scene::E_ITEM::CHAIN )
+			{
+				if ( p_selected )
+				{
+					for ( const auto & index : p_ranges )
+					{
+						selectionAtoms.addRange( system.getChainAtomRange( index ) );
+					}
+				}
+				else
+				{
+					for ( const auto & index : p_ranges )
+					{
+						selectionAtoms.removeRange( system.getChainAtomRange( index ) );
+					}
+				}
+			}
+			else if constexpr ( ITEM == Scene::E_ITEM::RESIDUE )
+			{
+				if ( p_selected )
+				{
+					for ( const auto & index : p_ranges )
+					{
+						selectionAtoms.addRange( system.getResidueAtomRange( index ) );
+					}
+				}
+				else
+				{
+					for ( const auto & index : p_ranges )
+					{
+						selectionAtoms.removeRange( system.getResidueAtomRange( index ) );
+					}
+				}
+			}
+			else if constexpr ( ITEM == Scene::E_ITEM::ATOM )
+			{
+				if ( p_selected )
+				{
+					for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
+					{
+						selectionAtoms.addRange( *it );
+					}
+				}
+				else
+				{
+					for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
+					{
+						selectionAtoms.removeRange( *it );
+					}
+				}
 			}
 
-			_assignment = p_assignment;
+			reg.patch<System::Selection>(
+				p_ent, [ selectionAtoms ]( System::Selection & p_selection ) { p_selection.atoms = selectionAtoms; }
+			);
 		}
 
-		void execute() override;
+		inline void execute(
+			const ECS::Entity				 p_ent,
+			const Core::Struct::IndexRange & p_range,
+			const bool						 p_selected = true
+		)
+		{
+			execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_selected );
+		}
 
-	  private:
-		std::set<const App::Selection::SelectionData *> _selectionData
-			= std::set<const App::Selection::SelectionData *>();
+		inline void execute(
+			const ECS::Entity		   p_ent,
+			const std::vector<Index> & p_values,
+			const bool				   p_selected = true
+		)
+		{
+			execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_selected );
+		}
 
-		App::Selection::AssignmentType _assignment = App::Selection::AssignmentType::SET;
+		inline void execute( const ECS::Entity p_ent, const Index p_value, const bool p_selected = true )
+		{
+			execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_selected );
+		}
 	};
 
-	class Unselect final : public BaseAction
+	/**
+	 * @brief Clear selection.
+	 */
+	struct Clear
 	{
-	  public:
-		Unselect( const App::Selection::SelectionData & p_selectionData )
-		{
-			_selectionData.emplace( &p_selectionData );
-		}
+		/**
+		 * @brief For all systems.
+		 */
+		void execute();
 
-		template<ContainerOfType<const App::Selection::SelectionData *> C1>
-		Unselect( C1 & p_selectionData )
-		{
-			for ( App::Selection::SelectionData * selectionData : p_selectionData )
-			{
-				_selectionData.emplace( selectionData );
-			}
-		}
-
-		void execute() override;
-
-	  private:
-		std::set<const App::Selection::SelectionData *> _selectionData
-			= std::set<const App::Selection::SelectionData *>();
+		/**
+		 * @brief For a specific system.
+		 */
+		void execute( const ECS::Entity p_ent );
 	};
 } // namespace VTX::App::Action::Selection
+
 #endif

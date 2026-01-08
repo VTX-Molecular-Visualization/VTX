@@ -1,25 +1,28 @@
 #include "app/action/application.hpp"
-#include "app/action/scene.hpp"
-#include "app/application/scene.hpp"
-#include "app/filesystem.hpp"
+#include "app/ecs.hpp"
 #include "app/services.hpp"
-#include "app/settings/settings_manager.hpp"
-#include <app/component/render/camera.hpp>
-#include <renderer/facade.hpp>
+#include <renderer/renderer.hpp>
 
 namespace VTX::App::Action::Application
 {
-	void NewScene::execute() { SCENE().reset(); }
 
 	void Quit::execute()
 	{
-		// APP::onEndOfFrameOneShot += []() { APP::stop(); };
+		// TODO.
 	}
 
-	void Resize::execute()
+	void Resize::execute( const size_t p_width, const size_t p_height )
 	{
-		App::SCENE().getCamera().setScreenSize( _width, _height );
-		App::RENDERER().resize( _width, _height );
+		REG().patch<Renderer::Camera>(
+			ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>(),
+			[ p_width, p_height ]( Renderer::Camera & p_camera )
+			{
+				p_camera.screenHeight = p_height;
+				p_camera.screenWidth  = p_width;
+			}
+		);
+
+		RENDERER().resize( p_width, p_height );
 	}
 
 } // namespace VTX::App::Action::Application

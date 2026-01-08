@@ -13,6 +13,8 @@ TEST_CASE( "Util::Fmt", "[unit]" )
 	using namespace VTX;
 	using namespace VTX::Util;
 
+	LOGGER::init( Util::Filesystem::getExecutableDir() / "logs_tests", true );
+
 	VTX::VTX_INFO( "info with Vec2: {0} / {1}", Vec2i( 0, 1 ), Vec2f( 0.1f, 10.4f ) );
 
 	VTX::VTX_INFO(
@@ -40,6 +42,6 @@ TEST_CASE( "Util::Fmt", "[unit]" )
 	VTX::VTX_INFO( "Quatf: {0}", Quatf( 0.f, 1.f, 1 / 3.f, 1 / 2.f ) );
 	VTX::VTX_INFO( "Quatd: {0}", Quatd( 0., 1., 1 / 3., 1 / 2. ) );
 
-	VTX::VTX_INFO( "Range: {0}", Math::Range<int>::createFirstLast( 8, 10 ) );
+	VTX::VTX_INFO( "Range: {0}", Math::Range<int>( 8, 10 ) );
 	VTX::VTX_INFO( "Color: {0}", Color::Rgba( 255, 128, 0, 255 ) );
 }

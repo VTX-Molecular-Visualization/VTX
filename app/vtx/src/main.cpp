@@ -57,7 +57,9 @@ int main( int p_argc, char * p_argv[] )
 #if VTX_UI_QT
 		if ( not args.has( App::ARG_NO_GUI ) )
 		{
-			UI::QT::Application::configure();
+			// To set before QApplication construction.
+			QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+			QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
 			app = std::make_unique<UI::QT::Application>( args );
 		}
 		else
@@ -66,7 +68,6 @@ int main( int p_argc, char * p_argv[] )
 		}
 #else
 		app = std::make_unique<App::VTXApp>();
-		// TODO: how to create opengl context?
 #endif
 
 		assert( app != nullptr );
@@ -81,8 +82,6 @@ int main( int p_argc, char * p_argv[] )
 		auto mdprepTool = std::make_unique<Tool::Mdprep::MdPrep>();
 		app->addTool( mdprepTool.get() );
 #endif
-
-		app->init();
 
 		// const FilePath molPath = App::Filesystem::getInternalDataDir() / "1AGA.mmtf";
 		// const FilePath molPath = "1AGA";

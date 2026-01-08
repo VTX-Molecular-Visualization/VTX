@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_HELPER_CHEMISTRY__
 #define __VTX_APP_HELPER_CHEMISTRY__
 
-#include "app/component/chemistry/_fwd.hpp"
+#include <core/struct/system.hpp>
 #include <io/struct/bond_data.hpp>
 #include <io/struct/residue_data.hpp>
 #include <map>
@@ -10,15 +10,8 @@
 
 namespace VTX::App::Helper::Chemistry
 {
-
-	std::vector<Component::Chemistry::Chain *> findChainsByName(
-		const Component::Chemistry::System & p_system,
-		const std::string &					   p_chainName
-	);
-	std::vector<Component::Chemistry::Residue *> findResiduesByName(
-		const Component::Chemistry::Chain & p_system,
-		const std::string &					p_residueName
-	);
+	std::vector<Index> findChainsByName( const Core::Struct::System & p_system, const std::string & p_chainName );
+	std::vector<Index> findResiduesByName( const Core::Struct::System & p_system, const std::string & p_residueName );
 
 	inline std::map<std::string, IO::Struct::ResidueData> mapLoadedResidueData
 		= { { "", IO::Struct::ResidueData::DEFAULT } };

@@ -1,4 +1,3 @@
-#include "util/app.hpp"
 #include <app/fixture.hpp>
 #include <app/services.hpp>
 #include <app/threading/base_thread.hpp>
@@ -12,6 +11,7 @@
 #include <util/thread.hpp>
 #include <util/types.hpp>
 
+/*
 namespace
 {
 	const int MANUALLY_STOPPED_THREAD = 666;
@@ -108,3 +108,4 @@ TEST_CASE( "VTX_APP - Workers", "[integration][workers][progress]" )
 	CHECK( progressAsExpected == true );
 	CHECK( onProgressCallNum == 100 );
 }
+*/

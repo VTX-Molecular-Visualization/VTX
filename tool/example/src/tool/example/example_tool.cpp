@@ -2,9 +2,8 @@
 #include "tool/example/widget/my_dock_widget.hpp"
 #include "tool/example/widget/my_menu.hpp"
 #include "tool/example/widget/my_tool_bar.hpp"
+#include "ui/qt/services.hpp"
 #include <QFile>
-#include <ui/qt/application.hpp>
-#include <ui/qt/dock_widget/inspector.hpp>
 #include <ui/qt/macros.hpp>
 #include <util/logger.hpp>
 
@@ -13,20 +12,13 @@ VTX_INIT_RESOURCES( vtx_qt_resources_tool_example )
 
 namespace VTX::Tool::Example
 {
-	ExampleTool::ExampleTool() {}
-
-	ExampleTool::~ExampleTool() {}
-
-	void ExampleTool::init() {}
-
-	void ExampleTool::onAppStart() {}
-
-	void ExampleTool::createUI()
+	ExampleTool::ExampleTool()
 	{
 		//////////////////////////
 		// Method 1:
 		// Easy way to add a menu/toobar action.
 		App::UI::DescAction action;
+		action.key	   = "example.tool.action";
 		action.name	   = "Example";
 		action.tip	   = "Example tool";
 		action.icon	   = "sprite/king.png";
@@ -34,19 +26,19 @@ namespace VTX::Tool::Example
 		{
 			VTX_DEBUG( "Action triggered" );
 			// Implement logic.
-			//
 		};
 
 		// Add to named button group.
-		APP_QT::addMenuAction( "Tool", action );
-		APP_QT::addToolBarAction( "Tool", action );
+		auto & mainWindow = UI::QT::MAIN_WINDOW();
+		mainWindow.addMenuAction( "Tool", action );
+		mainWindow.addToolBarAction( "Tool", action );
 
 		//////////////////////////
 		// Method 2:
 		// Add custom widgets.
-		APP_QT::getMainWindow()->createMenu<Widget::MyMenu>();
-		APP_QT::getMainWindow()->createToolBar<Widget::MyToolBar>();
-		APP_QT::getMainWindow()->createDockWidget<Widget::MyDockWidget>( Qt::RightDockWidgetArea );
+		mainWindow.createMenu<Widget::MyMenu>();
+		mainWindow.createToolBar<Widget::MyToolBar>();
+		mainWindow.createDockWidget<Widget::MyDockWidget>( Qt::RightDockWidgetArea );
 	}
 
 	std::optional<std::string> ExampleTool::getStyle() const
@@ -56,5 +48,4 @@ namespace VTX::Tool::Example
 		return stylesheetFile.readAll().toStdString();
 	}
 
-	void ExampleTool::onAppStop() {}
 } // namespace VTX::Tool::Example

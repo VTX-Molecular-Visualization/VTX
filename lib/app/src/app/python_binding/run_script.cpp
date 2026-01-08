@@ -12,20 +12,17 @@ namespace VTX::App::PythonBinding
 		class RunScriptAction
 		{
 		  public:
-			RunScriptAction( std::string p_path ) : _path( std::move( p_path ) ) {}
+			RunScriptAction() {}
 
-			void execute()
+			void execute( std::string p_path )
 			{
 				std::shared_ptr<std::promise<Interpretor::AsyncJobResult>> promise
 					= std::make_shared<std::promise<Interpretor::AsyncJobResult>>();
 				std::future<Interpretor::AsyncJobResult> _future = promise->get_future();
-				INTERPRETOR().runScript( _path, promise );
+				INTERPRETOR().runScript( p_path, promise );
 				if ( _future.get().success == false )
 					throw pybind11::value_error( _future.get().resultStr );
 			}
-
-		  private:
-			std::string _path;
 		};
 	} // namespace
 

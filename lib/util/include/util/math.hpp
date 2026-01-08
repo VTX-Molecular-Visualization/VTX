@@ -20,6 +20,37 @@
 
 namespace VTX::Util::Math
 {
+	using ::glm::abs;
+	using ::glm::clamp;
+	using ::glm::cross;
+	using ::glm::degrees;
+	using ::glm::distance;
+	using ::glm::dot;
+	using ::glm::eulerAngles;
+	using ::glm::inverse;
+	using ::glm::length;
+	using ::glm::length2;
+	using ::glm::lerp;
+	using ::glm::lessThan;
+	using ::glm::lookAt;
+	using ::glm::mat;
+	using ::glm::max;
+	using ::glm::min;
+	using ::glm::normalize;
+	using ::glm::ortho;
+	using ::glm::perspective;
+	using ::glm::pow2;
+	using ::glm::quat;
+	using ::glm::quatLookAt;
+	using ::glm::radians;
+	using ::glm::rotate;
+	using ::glm::scale;
+	using ::glm::to_string;
+	using ::glm::toMat3;
+	using ::glm::toMat4;
+	using ::glm::translate;
+	using ::glm::transpose;
+	using ::glm::vec;
 
 #ifdef _DEBUG
 	constexpr bool RANDOM = false;
@@ -32,368 +63,45 @@ namespace VTX::Util::Math
 	inline std::uniform_real_distribution<float> dis( 0.f, 1.f );
 
 	template<typename T>
-	inline T min( const T & p_lhs, const T & p_rhs )
-	{
-		return glm::min( p_lhs, p_rhs );
-	}
-
-	template<typename T>
-	inline T max( const T & p_lhs, const T & p_rhs )
-	{
-		return glm::max( p_lhs, p_rhs );
-	}
-
-	template<typename T>
-	inline T abs( const T & p_value )
-	{
-		return glm::abs( p_value );
-	}
-
-	template<typename T1>
-	inline T1 floor( const T1 & p_value )
-	{
-		return glm::floor( p_value );
-	}
-
-	template<typename T1>
-	inline T1 ceil( const T1 & p_value )
-	{
-		return glm::ceil( p_value );
-	}
-
-	template<typename T1, typename T2>
-	inline T1 clamp( const T1 & p_value, const T2 & p_min, const T2 & p_max )
-	{
-		return glm::clamp( p_value, p_min, p_max );
-	}
-
-	template<typename T1, typename T2>
-	inline T1 translate( const T1 & p_value, const T2 & p_translation )
-	{
-		return glm::translate( p_value, p_translation );
-	}
-
-	template<typename T1, typename T2>
-	inline T1 rotate( const T1 & p_value, const T2 & p_rotation, const Vec3f & p_axis )
-	{
-		return glm::rotate( p_value, p_rotation, p_axis );
-	}
-	template<typename T>
-	inline glm::mat<4, 4, T> getRotation( const T & p_pitch, const T & p_yaw, const T & p_roll )
-	{
-		const Vec3f eulerRad   = Vec3f( p_pitch, p_yaw, p_roll );
-		const Quatf quaternion = glm::quat( eulerRad );
-		return glm::mat4x4( quaternion );
-	}
-	template<typename T>
-	inline glm::mat<4, 4, T> getRotation( const glm::qua<T> & p_quaternion )
-	{
-		return glm::mat4_cast( p_quaternion );
-	}
-
-	template<typename T1, typename T2>
-	inline T1 scale( const T1 & p_value, const T2 & p_scale )
-	{
-		return glm::scale( p_value, p_scale );
-	}
-
-	inline uint factorial( const uint & p_value ) { return glm::factorial( p_value ); }
-
-	template<int L, typename T>
-	inline T distance( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
-	{
-		return glm::distance( p_lhs, p_rhs );
-	}
-
-	template<int L, typename T>
-	inline T length( const glm::vec<L, T> & p_value )
-	{
-		return glm::length( p_value );
-	}
-
-	template<int L, typename T>
-	inline T length2( const glm::vec<L, T> & p_value )
-	{
-		return glm::length2( p_value );
-	}
-
-	template<typename T>
 	inline void normalizeSelf( T & p_value )
 	{
-		assert( glm::length( p_value ) != 0.f );
-		p_value = glm::normalize( p_value );
-	}
-
-	template<typename T>
-	inline T normalize( const T & p_value )
-	{
-		assert( glm::length( p_value ) != 0.f );
-		return glm::normalize( p_value );
+		assert( length( p_value ) != 0.f );
+		p_value = normalize( p_value );
 	}
 
 	template<int L, typename T>
-	inline glm::vec<L, bool> lessThan( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
+	inline std::vector<T> toStdVector( const vec<L, T> & p_value )
 	{
-		return glm::lessThan( p_lhs, p_rhs );
+		return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L );
 	}
 
 	template<int L, typename T>
-	inline glm::vec<L, bool> greaterThan( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
+	inline std::vector<T> toStdVector( const mat<L, L, T> & p_value )
 	{
-		return glm::greaterThan( p_lhs, p_rhs );
-	}
-
-	template<int L, typename T>
-	inline T dot( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
-	{
-		return glm::dot( p_lhs, p_rhs );
-	}
-
-	template<typename T>
-	inline T cross( const T & p_lhs, const T & p_rhs )
-	{
-		return glm::cross( p_lhs, p_rhs );
-	}
-
-	template<int L, typename T>
-	inline T angle( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
-	{
-		return glm::angle( p_lhs, p_rhs );
-	}
-
-	template<typename T>
-	inline glm::mat<3, 3, T> castMat3( const glm::qua<T> & p_value )
-	{
-		return glm::mat3_cast( p_value );
-	}
-
-	template<typename T>
-	inline T degrees( const T & p_value )
-	{
-		return glm::degrees( p_value );
-	}
-
-	template<typename T>
-	inline T radians( const T & p_value )
-	{
-		return glm::radians( p_value );
-	}
-
-	template<typename T>
-	inline glm::tmat4x4<T> lookAt(
-		const glm::tvec3<T> & p_value,
-		const glm::tvec3<T> & p_target,
-		const glm::tvec3<T> & p_axis
-	)
-	{
-		return glm::lookAt( p_value, p_target, p_axis );
-	}
-
-	template<typename T>
-	inline glm::tmat4x4<T> perspective( const T & p_fov, const T & p_aspect, const T & p_near, const T & p_far )
-	{
-		return glm::perspective( p_fov, p_aspect, p_near, p_far );
-	}
-
-	template<typename T>
-	inline glm::tmat4x4<T> ortho(
-		const T & p_left,
-		const T & p_right,
-		const T & p_bottom,
-		const T & p_top,
-		const T & p_near,
-		const T & p_far
-	)
-	{
-		return glm::ortho( p_left, p_right, p_bottom, p_top, p_near, p_far );
-	}
-
-	template<typename T>
-	inline glm::tmat4x4<T> transpose( const glm::tmat4x4<T> & mat )
-	{
-		return glm::transpose( mat );
-	}
-
-	template<typename T>
-	inline glm::tmat4x4<T> inverse( const glm::tmat4x4<T> & mat )
-	{
-		return glm::inverse( mat );
-	}
-
-	template<typename T>
-	inline std::string to_string( const T & p_value )
-	{
-		return glm::to_string( p_value );
-	}
-
-	template<typename T>
-	inline std::string to_string_fmt( const T & p_value )
-	{
-		std::string glmString = glm::to_string( p_value );
-		for ( int i = 0; i < glmString.size(); i++ )
-		{
-			const char & currentChar = glmString[ i ];
-
-			if ( currentChar == '{' || currentChar == '}' )
-			{
-				glmString.insert( i, 1, currentChar );
-				i++;
-			}
-		}
-
-		return glmString;
-	}
-
-	template<int L, typename T>
-	inline T const * value_ptr( const glm::vec<L, T> & p_value )
-	{
-		return glm::value_ptr( p_value );
-	}
-
-	template<int L, typename T>
-	inline T const * value_ptr( const glm::mat<L, L, T> & p_value )
-	{
-		return glm::value_ptr( p_value );
-	}
-
-	template<int L, typename T>
-	inline std::vector<T> toStdVector( const glm::vec<L, T> & p_value )
-	{
-		return std::vector<T>( glm::value_ptr( p_value ), glm::value_ptr( p_value ) + L );
-	}
-
-	template<int L, typename T>
-	inline std::vector<T> toStdVector( const glm::mat<L, L, T> & p_value )
-	{
-		return std::vector<T>( glm::value_ptr( p_value ), glm::value_ptr( p_value ) + L * L );
-	}
-
-	template<typename T>
-	inline T reflect( const T & p_vi, const T & p_vn )
-	{
-		return glm::reflect( p_vi, p_vn );
-	}
-
-	template<int L, typename T>
-	inline glm::vec<L, T> refract( const glm::vec<L, T> & p_vi, const glm::vec<L, T> & p_vn, const T & p_eta )
-	{
-		return glm::refract( p_vi, p_vn, p_eta );
-	}
-
-	template<typename T>
-	inline T pow( const T & p_value, const T & p_exp )
-	{
-		return glm::pow( p_value, p_exp );
-	}
-
-	template<typename T>
-	inline T faceForward( const T & p_vec, const T & p_view )
-	{
-		return glm::faceforward( p_vec, p_view, p_vec );
+		return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L * L );
 	}
 
 	inline float randomFloat() { return dis( gen ); }
 
 	inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
 
-	inline Quatf toQuat( const Mat4f & p_matrix ) { return glm::toQuat( p_matrix ); }
-
-	inline Quatf eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
-
-	inline Quatf eulerToQuaternion( const float & p_pitch, const float & p_yaw, const float & p_roll )
-	{
-		// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
-		/*
-		float cy = cos( p_yaw * 0.5f );
-		float sy = sin( p_yaw * 0.5f );
-		float cp = cos( p_pitch * 0.5f );
-		float sp = sin( p_pitch * 0.5f );
-		float cr = cos( p_roll * 0.5f );
-		float sr = sin( p_roll * 0.5f );
-
-		Quatf q;
-		q.w = cy * cp * cr + sy * sp * sr;
-		q.x = cy * cp * sr - sy * sp * cr;
-		q.y = sy * cp * sr + cy * sp * cr;
-		q.z = sy * cp * cr - cy * sp * sr;
-
-		return q;
-		*/
-		// Same thing did by glm.
-		return eulerToQuaternion( Vec3f( p_pitch, p_yaw, p_roll ) );
-	}
-
-	inline Vec3f quaternionToEuler( const Quatf & p_quaternion )
-	{
-		// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
-		const Quatf & q = p_quaternion;
-		Vec3f		  angles;
-
-		// Roll (x-axis rotation).
-		const float sinr_cosp = 2.f * ( q.w * q.x + q.y * q.z );
-		const float cosr_cosp = 1.f - 2.f * ( q.x * q.x + q.y * q.y );
-		angles.z			  = std::atan2( sinr_cosp, cosr_cosp );
-
-		// Pitch (y-axis rotation).
-		const float sinp = 2.f * ( q.w * q.y - q.z * q.x );
-		if ( std::abs( sinp ) >= 1 )
-		{
-			// Use 90 degrees if out of range.
-			angles.x = std::copysign( PI_2f / 2, sinp );
-		}
-		else
-		{
-			angles.x = std::asin( sinp );
-		}
-
-		// Yaw (z-axis rotation).
-		const float siny_cosp = 2.f * ( q.w * q.z + q.x * q.y );
-		const float cosy_cosp = 1.f - 2.f * ( q.y * q.y + q.z * q.z );
-		angles.y			  = std::atan2( siny_cosp, cosy_cosp );
-
-		return angles;
-	}
-
-	inline Vec3f rotationMatrixToEuler( const Mat4f & p_matrix )
-	{
-		const Quatf quat = glm::toQuat( p_matrix );
-		return degrees( glm::eulerAngles( quat ) );
-	}
 	template<int L, typename T>
-	inline glm::vec<L, T> directionToEuler( glm::vec<L, T> & p_direction )
+	inline vec<L, T> directionToEuler( vec<L, T> & p_direction )
 	{
 		// https://stackoverflow.com/questions/1251828/calculate-rotations-to-look-at-a-3d-point
-		glm::vec<L, T> normalized = normalize( p_direction );
-		T			   rotx		  = atan2( p_direction.y, p_direction.z );
-		T			   roty		  = atan2( p_direction.x * cos( rotx ), p_direction.z );
-		T			   rotz		  = atan2( cos( rotx ), sin( rotx ) * sin( roty ) );
+		vec<L, T> normalized = normalize( p_direction );
+		T		  rotx		 = atan2( p_direction.y, p_direction.z );
+		T		  roty		 = atan2( p_direction.x * cos( rotx ), p_direction.z );
+		T		  rotz		 = atan2( cos( rotx ), sin( rotx ) * sin( roty ) );
 
-		return glm::vec<L, T>( rotx, roty, rotz );
-	}
-
-	template<typename T, typename Q>
-	inline T linearInterpolation( const T & p_lhs, const T & p_rhs, const Q p_value )
-	{
-		return glm::lerp( p_lhs, p_rhs, p_value );
-	}
-
-	template<typename T, typename Q>
-	inline T catmullRomInterpolation( const T & p_p0, const T & p_p1, const T & p_p2, const T & p_p3, const Q p_value )
-	{
-		return glm::catmullRom( p_p0, p_p1, p_p2, p_p3, p_value );
-	}
-
-	template<typename T, typename Q>
-	inline T cubicInterpolation( const T & p_p0, const T & p_p1, const T & p_p2, const T & p_p3, const Q p_value )
-	{
-		return glm::cubic( p_p0, p_p1, p_p2, p_p3, p_value );
+		return vec<L, T>( rotx, roty, rotz );
 	}
 
 	template<typename T, typename Q>
 	inline T easeInOutInterpolation( const T & p_lhs, const T & p_rhs, const Q p_value )
 	{
-		const Q value = glm::pow2( glm::sin( PI_2f * p_value ) );
-		return glm::lerp( p_lhs, p_rhs, value );
+		const Q value = pow2( sin( PI_2f * p_value ) );
+		return lerp( p_lhs, p_rhs, value );
 	}
 
 	// Morton utils.
@@ -443,10 +151,10 @@ namespace VTX::Util::Math
 		Vec3f q = cross( v12, v32 );
 		Vec3f p = cross( v12, v01 );
 
-		q = glm::normalize( q );
-		p = glm::normalize( p );
+		q = normalize( q );
+		p = normalize( p );
 
-		return glm::angle( p, q );
+		return angle( p, q );
 	}
 	template<typename T>
 	inline float torsionalAngle( const T & p_point0, const T & p_point1, const T & p_point2, const T & p_point3 )

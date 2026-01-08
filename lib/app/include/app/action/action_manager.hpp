@@ -1,17 +1,15 @@
-#ifndef __VTX_APP_ACTION_ACTION_SYSTEM__
-#define __VTX_APP_ACTION_ACTION_SYSTEM__
+#ifndef __VTX_APP_ACTION_ACTION_MANAGER__
+#define __VTX_APP_ACTION_ACTION_MANAGER__
 
-#include "app/action/base_action.hpp"
 #include <concepts>
 #include <memory>
+#include <util/chrono.hpp>
+#include <util/hashing.hpp>
+#include <util/logger.hpp>
+#include <util/string.hpp>
 
 namespace VTX::App::Action
 {
-	/**
-	 * @brief Concept to check if a type is derived from BaseAction.
-	 */
-	template<typename T>
-	concept ActionConcept = std::derived_from<T, BaseAction>;
 
 	/**
 	 * @brief Handle the execution of all actions.
@@ -22,17 +20,34 @@ namespace VTX::App::Action
 		/**
 		 * @brief Execute an action of type A with the given arguments.
 		 */
-		template<ActionConcept A, typename... Args>
-		void execute( const Args &... p_args ) const
+		template<typename A, typename... Args>
+		void execute( Args &&... p_args ) const
 		{
-			std::unique_ptr<BaseAction> a = std::make_unique<A>( p_args... );
-			execute( a.get() );
+			A a;
+			execute( a, std::forward<Args>( p_args )... );
 		}
 
 		/**
 		 * @brief Execute the given action.
 		 */
-		void execute( BaseAction * const ) const;
+		template<typename A, typename... Args>
+		void execute( A & p_action, Args &&... p_args ) const
+		{
+			const auto actionName = Util::typeName<A>();
+			VTX_DEBUG( "ActionSystem::execute( {} )", actionName );
+			try
+			{
+				auto duration = Util::CHRONO_CPU( [ & ]() { p_action.execute( std::forward<Args>( p_args )... ); } );
+				VTX_DEBUG(
+					"ActionSystem::execute( {} ) - done ({})", actionName, Util::String::durationToStr( duration )
+				);
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "{}", p_e.what() );
+				return;
+			}
+		}
 	};
 } // namespace VTX::App::Action
 

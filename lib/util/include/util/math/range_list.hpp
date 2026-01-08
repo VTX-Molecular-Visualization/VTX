@@ -1,8 +1,8 @@
-#ifndef __VTX_UTIL_MATH_RANGE_VECTOR__
-#define __VTX_UTIL_MATH_RANGE_VECTOR__
+#ifndef __VTX_UTIL_MATH_RANGE_LIST__
+#define __VTX_UTIL_MATH_RANGE_LIST__
 
-#include "util/concepts.hpp"
 #include "util/math/range.hpp"
+#include <algorithm>
 #include <concepts>
 #include <list>
 #include <type_traits>
@@ -11,432 +11,434 @@
 namespace VTX::Util::Math
 {
 	/**
-	 * @brief Class to describe a list of Range, managing merge and split when items are added / removed
-	 * @tparam T Listed integer type
+	 * @brief List of integral ranges [first, last)
 	 */
 	template<std::integral T>
 	class RangeList
 	{
 	  public:
-		using RangeIterator		 = typename std::list<Range<T>>::iterator;
-		using RangeConstIterator = typename std::list<Range<T>>::const_iterator;
+		using RangeType = Range<T>;
 
 		/**
-		 * @brief Iterator returns each value of all the ranges
+		 * @brief Constructors.
 		 */
-		struct Iterator
+		RangeList() = default;
+
+		RangeList( const std::initializer_list<RangeType> p_ranges )
 		{
-			using ListIt = typename std::list<Range<T>>::const_iterator;
-
-		  public:
-			Iterator( const ListIt & p_it ) : _listIterator( p_it ) {}
-
-			T operator*() const { return _getRangeIterator(); }
-
-			/**
-			 * @brief Prefix increment
-			 */
-			Iterator & operator++()
+			for ( const auto & r : p_ranges )
 			{
-				T & rangeIterator = _getRangeIterator();
-
-				if ( rangeIterator == _listIterator->getLast() )
-				{
-					++_listIterator;
-					_initialized = false;
-				}
-				else
-				{
-					++rangeIterator;
-				}
-
-				return *this;
+				addRange( r );
 			}
+		}
 
-			/**
-			 * @brief Postfix increment
-			 * @param  unused. Here for postfix convention.
-			 */
-			Iterator operator++( int )
+		explicit RangeList( const std::list<RangeType> & p_ranges )
+		{
+			for ( const auto & r : p_ranges )
 			{
-				Iterator tmp		   = *this;
-				T &		 rangeIterator = _getRangeIterator();
-
-				if ( rangeIterator == _listIterator.getLast() )
-				{
-					++_listIterator;
-				}
-				else
-				{
-					++rangeIterator;
-				}
-
-				return tmp;
+				addRange( r );
 			}
+		}
 
-			friend bool operator==( const Iterator & p_lhs, const Iterator & p_rhs )
+		RangeList( const std::initializer_list<T> p_values )
+		{
+			for ( const T v : p_values )
 			{
-				return p_lhs._listIterator == p_rhs._listIterator
-					   && ( ( !p_lhs._initialized && !p_rhs._initialized )
-							|| ( p_lhs._rangeIterator == p_rhs._rangeIterator ) );
-			};
-			friend bool operator!=( const Iterator & p_lhs, const Iterator & p_rhs )
-			{
-				return p_lhs._listIterator != p_rhs._listIterator || ( p_lhs._initialized ^ p_rhs._initialized )
-					   || ( p_lhs._initialized && p_rhs._initialized && p_lhs._rangeIterator != p_rhs._rangeIterator );
-			};
-
-		  private:
-			T & _getRangeIterator() const
-			{
-				if ( !_initialized )
-				{
-					_rangeIterator = _listIterator->getFirst();
-					_initialized   = true;
-				}
-
-				return _rangeIterator;
+				addValue( v );
 			}
+		}
 
-			ListIt _listIterator;
+		explicit RangeList( const T p_values ) { addValue( p_values ); }
 
-			mutable T	 _rangeIterator;
-			mutable bool _initialized = false;
-		};
+		explicit RangeList( const RangeType & p_range ) { addRange( p_range ); }
 
-	  public:
 		/**
-		 * @brief Generate RangeList from any container
-		 * @tparam ContainerType Collection of T. Should be deduced from the method variable input
-		 * @param p_container
-		 * @return
+		 * @brief Add a single value.
 		 */
-		template<ContainerOfType<T> ContainerType>
-		static RangeList<T> fromList( const ContainerType & p_container )
+		void addValue( const T p_v ) { addRange( RangeType { p_v, static_cast<T>( p_v + 1 ) } ); }
+
+		/**
+		 * @brief Add a single range.
+		 */
+		void addRange( const RangeType & p_r )
 		{
-			RangeList res = RangeList();
-
-			for ( T value : p_container )
-				res.addValue( value );
-
-			return res;
-		}
-
-	  public:
-		RangeList() {}
-		explicit RangeList( const std::initializer_list<Range<T>> & p_ranges )
-		{
-			for ( const Range<T> & range : p_ranges )
+			if ( p_r.isEmpty() )
 			{
-				addRange( range );
-			}
-		}
-		explicit RangeList( const std::list<Range<T>> & p_ranges )
-		{
-			for ( const Range<T> & range : p_ranges )
-			{
-				addRange( range );
-			}
-		}
-		RangeList( const std::initializer_list<T> & p_values )
-		{
-			for ( const T value : p_values )
-			{
-				addValue( value );
-			}
-		}
-		RangeList( const T & p_value ) { addValue( p_value ); }
-
-		friend bool operator==( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
-		{
-			if ( p_lhs._ranges.size() != p_rhs._ranges.size() )
-				return false;
-
-			auto itLhs = p_lhs._ranges.begin();
-			auto itRhs = p_rhs._ranges.begin();
-
-			while ( itLhs != p_lhs._ranges.end() )
-			{
-				if ( *itLhs != *itRhs )
-					return false;
-
-				++itLhs;
-				++itRhs;
+				return;
 			}
 
-			return true;
-		}
-		friend bool operator!=( const RangeList<T> & p_lhs, const RangeList<T> & p_rhs )
-		{
-			if ( p_lhs._ranges.size() != p_rhs._ranges.size() )
-				return true;
-
-			auto itLhs = p_lhs._ranges.begin();
-			auto itRhs = p_rhs._ranges.begin();
-
-			while ( itLhs != p_lhs._ranges.end() )
+			RangeType r	 = p_r;
+			auto	  it = _ranges.begin();
+			while ( it != _ranges.end() && it->last < r.first )
 			{
-				if ( *itLhs != *itRhs )
-					return true;
-
-				++itLhs;
-				++itRhs;
+				++it;
 			}
 
-			return false;
-		}
-
-		void addRange( const Range<T> & p_range )
-		{
-			// Enum to keep trace of current operation during add function
-			enum class ADD_STATE : int
+			while ( it != _ranges.end() && not( it->getFirst() > r.last || it->getLast() < r.first ) )
 			{
-				UNDONE,
-				STARTED,
-				DONE
-			};
-
-			auto	  it			  = _ranges.begin();
-			ADD_STATE addState		  = ADD_STATE::UNDONE;
-			auto	  modifiedRangeIt = _ranges.end();
-
-			while ( it != _ranges.end() )
-			{
-				if ( it->getFirst() > ( p_range.getLast() + T( 1 ) ) )
-				{
-					if ( addState == ADD_STATE::UNDONE )
-					{
-						_ranges.insert( it, p_range );
-					}
-					else
-					{
-						modifiedRangeIt->setLast( p_range.getLast() );
-					}
-
-					addState = ADD_STATE::DONE;
-					break;
-				}
-				else if ( ( it->getLast() + T( 1 ) ) < p_range.getFirst() )
-				{
-					it++;
-				}
-				else
-				{
-					switch ( addState )
-					{
-					case ADD_STATE::UNDONE:
-					{
-						addState = it->getLast() >= p_range.getLast() ? ADD_STATE::DONE : ADD_STATE::STARTED;
-
-						it->merge( p_range );
-						modifiedRangeIt = it;
-						it++;
-					}
-					break;
-
-					case ADD_STATE::STARTED:
-					{
-						if ( it->getLast() >= p_range.getLast() )
-						{
-							modifiedRangeIt->setLast( it->getLast() );
-							addState = ADD_STATE::DONE;
-						}
-
-						it = _ranges.erase( it );
-					}
-					break;
-
-					default: break;
-					}
-
-					if ( addState == ADD_STATE::DONE )
-						break;
-				}
+				r.first = std::min( r.first, it->getFirst() );
+				r.last	= std::max( r.last, it->getLast() );
+				it		= _ranges.erase( it );
 			}
 
-			if ( addState == ADD_STATE::UNDONE )
-			{
-				_ranges.insert( it, p_range );
-			}
+			_ranges.insert( it, r );
 		}
-		void removeRange( const Range<T> & p_range )
+
+		/**
+		 * @brief Remove a single value.
+		 */
+		void removeValue( const T p_v ) { removeRange( RangeType { p_v, static_cast<T>( p_v + 1 ) } ); }
+
+		/**
+		 * @brief Remove a single range.
+		 */
+		void removeRange( const RangeType & p_r )
 		{
+			if ( p_r.isEmpty() )
+			{
+				return;
+			}
+
 			auto it = _ranges.begin();
-
 			while ( it != _ranges.end() )
 			{
-				if ( it->getFirst() > p_range.getLast() )
+				if ( it->last <= p_r.first || it->first >= p_r.last )
 				{
-					break;
+					++it;
+					continue;
 				}
-				else if ( it->getLast() < p_range.getFirst() )
+
+				if ( p_r.first <= it->first && p_r.last >= it->last )
 				{
-					it++;
+					it = _ranges.erase( it );
+					continue;
 				}
-				else
+
+				if ( p_r.first <= it->first && p_r.last < it->last )
 				{
-					if ( it->getFirst() < p_range.getFirst() )
-					{
-						if ( it->getLast() > p_range.getLast() )
-						{
-							const T insertFirst = it->getFirst();
-							const T insertLast	= p_range.getFirst() - T( 1 );
-
-							const T newFirst = p_range.getLast() + T( 1 );
-
-							it->setFirst( newFirst );
-							it = _ranges.insert( it, Range<T>::createFirstLast( insertFirst, insertLast ) );
-
-							break;
-						}
-						else
-						{
-							it->setLast( p_range.getFirst() - T( 1 ) );
-							it++;
-						}
-					}
-					else if ( it->getLast() > p_range.getLast() )
-					{
-						it->setFirst( p_range.getLast() + T( 1 ) );
-						break;
-					}
-					else // p_range.getFirst() <=  it->getFirst() && p_range.getLast() >= it->getLast()
-					{
-						it = _ranges.erase( it );
-					}
+					it->first = p_r.last;
+					++it;
+					continue;
 				}
+
+				if ( p_r.first > it->first && p_r.last >= it->last )
+				{
+					it->last = p_r.first;
+					++it;
+					continue;
+				}
+
+				RangeType right { p_r.last, it->last };
+				it->last = p_r.first;
+				it		 = _ranges.insert( std::next( it ), right );
+				++it;
 			}
 		}
 
-		void addValue( const T p_value ) { addRange( Range<T>( p_value ) ); }
-		void removeValue( const T p_value ) { removeRange( Range<T>( p_value ) ); }
-
-		Iterator begin() const { return Iterator( _ranges.begin() ); }
-		Iterator end() const { return Iterator( _ranges.end() ); }
-
-		// Keep ability to iterate on Range
-		RangeIterator	   rangeBegin() { return _ranges.begin(); }
-		RangeIterator	   rangeEnd() { return _ranges.end(); }
-		RangeConstIterator rangeBegin() const { return _ranges.begin(); }
-		RangeConstIterator rangeEnd() const { return _ranges.end(); }
-
-		bool contains( const T p_value ) const
+		/**
+		 * @brief Check if a value is contained.
+		 */
+		bool contains( const T p_v ) const
 		{
-			for ( const Range<T> & range : _ranges )
+			for ( const auto & r : _ranges )
 			{
-				if ( range.contains( p_value ) )
+				if ( r.contains( p_v ) )
+				{
 					return true;
+				}
 			}
-
-			return false;
-		}
-		bool contains( const Range<T> & p_range ) const
-		{
-			for ( const Range<T> & range : _ranges )
-			{
-				if ( range.contains( p_range.getFirst() ) )
-					return range.contains( p_range.getLast() );
-			}
-
 			return false;
 		}
 
-		template<ContainerOfType<Range<T>> C>
-		bool contains( const C & p_ranges ) const
-		{
-			for ( const Range<T> & range : p_ranges )
-			{
-				if ( !contains( range ) )
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-		template<ContainerOfType<T> C>
-		bool contains( const C & p_values ) const
-		{
-			for ( const T & value : p_values )
-			{
-				if ( !contains( value ) )
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		bool contains( const RangeList & p_ranges ) const { return contains( p_ranges._ranges ); }
-		bool contains( const std::initializer_list<Range<T>> & p_ranges ) const
-		{
-			for ( const Range<T> & range : p_ranges )
-			{
-				if ( !contains( range ) )
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
+		/**
+		 * @brief Check if multiple values are contained.
+		 */
 		bool contains( const std::initializer_list<T> & p_values ) const
 		{
 			for ( const T & value : p_values )
 			{
-				if ( !contains( value ) )
+				if ( not contains( value ) )
 				{
 					return false;
 				}
 			}
-
 			return true;
 		}
 
-		bool intersectWith( const Range<T> & p_other ) const
+		/**
+		 * @brief Check if a range is contained.
+		 */
+		bool contains( const RangeType & p_r ) const
 		{
-			for ( const Range<T> & range : _ranges )
+			for ( const auto & r : _ranges )
 			{
-				if ( range.intersectWith( p_other ) )
+				if ( r.first <= p_r.first && r.last >= p_r.last )
+				{
 					return true;
+				}
 			}
-
 			return false;
 		}
 
 		/**
-		 * @brief Assumes the list is not empty
-		 * @return First range of the list
+		 * @brief Check if multiple ranges are contained.
 		 */
-		inline T getFirst() const { return _ranges.cbegin()->getFirst(); }
+		bool contains( const std::initializer_list<RangeType> & p_ranges ) const
+		{
+			for ( const RangeType & range : p_ranges )
+			{
+				if ( not contains( range ) )
+				{
+					return false;
+				}
+			}
+			return true;
+		}
 
 		/**
-		 * @brief Assumes the list is not empty
-		 * @return Last range of the list
+		 * @brief Check if a range intersects.
 		 */
-		inline T getLast() const { return _ranges.crbegin()->getLast(); }
+		bool intersects( const RangeType & p_other ) const
+		{
+			for ( const auto & r : _ranges )
+			{
+				if ( r.intersects( p_other ) )
+				{
+					return true;
+				}
+			}
+			return false;
+		}
 
+		/**
+		 * @brief Check emptiness.
+		 */
+		bool isEmpty() const { return _ranges.empty(); }
+
+		/**
+		 * @brief Clear all ranges.
+		 */
 		void clear() { _ranges.clear(); }
-		bool isEmpty() const { return _ranges.size() == 0; }
 
 		/**
-		 * @brief Return number of values held by this instance (use size to get Range count)
+		 * @brief Get range count.
+		 */
+		size_t rangeCount() const { return _ranges.size(); }
+
+		/**
+		 * @brief Get all range total count.
 		 */
 		T count() const
 		{
-			T res = 0;
+			T s = 0;
+			for ( const auto & r : _ranges )
+			{
+				s += static_cast<T>( r.getCount() );
+			}
+			return s;
+		}
 
-			for ( const Range<T> & range : _ranges )
-				res += range.getCount();
+		/**
+		 * @brief Get first value.
+		 */
+		T getFirst() const { return _ranges.cbegin()->first; }
 
+		/**
+		 * @brief Get last value (exclusive).
+		 */
+		T getLast() const { return _ranges.crbegin()->last; }
+
+		template<typename T1, typename T2>
+		void toStdVectorsFirstLast( std::vector<T1> & p_starts, std::vector<T2> & p_lasts ) const
+		{
+			p_starts.resize( _ranges.size() );
+			p_lasts.resize( _ranges.size() );
+
+			size_t i = 0;
+			for ( const auto & r : _ranges )
+			{
+				p_starts[ i ] = T1( r.first );
+				p_lasts[ i ]  = T2( r.last );
+				++i;
+			}
+		}
+
+		/**
+		 * @brief  Convert to vectors of starts and counts.
+		 */
+		template<typename T1, typename T2>
+		void toStdVectorsFirstCount( std::vector<T1> & p_firsts, std::vector<T2> & p_counts ) const
+		{
+			p_firsts.resize( _ranges.size() );
+			p_counts.resize( _ranges.size() );
+
+			size_t i = 0;
+			for ( const auto & r : _ranges )
+			{
+				p_firsts[ i ] = T1( r.getFirst() );
+				p_counts[ i ] = T2( r.getCount() );
+				++i;
+			}
+		}
+
+		/**
+		 * @brief Equality operators.
+		 */
+		friend bool operator==( const RangeList & a, const RangeList & b )
+		{
+			if ( a._ranges.size() != b._ranges.size() )
+			{
+				return false;
+			}
+			auto ia = a._ranges.begin();
+			auto ib = b._ranges.begin();
+			for ( ; ia != a._ranges.end(); ++ia, ++ib )
+			{
+				if ( *ia != *ib )
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		/**
+		 * @brief Inequality operator.
+		 */
+		friend bool operator!=( const RangeList & a, const RangeList & b ) { return not( a == b ); }
+
+		/**
+		 * @brief Merge two RangeLists.
+		 */
+		static RangeList merge( const RangeList & p_lhs, const RangeList & p_rhs )
+		{
+			RangeList res( p_lhs );
+			for ( auto it = p_rhs.rangeBegin(); it != p_rhs.rangeEnd(); ++it )
+			{
+				res.addRange( *it );
+			}
 			return res;
 		}
 
 		/**
-		 * @brief  Return number of range object currently used. (use size to get Range count)
+		 * @brief Merge another RangeList into this one.
 		 */
-		size_t rangeCount() const { return _ranges.size(); }
+		void mergeInPlace( const RangeList & p_rhs )
+		{
+			for ( auto it = p_rhs.rangeBegin(); it != p_rhs.rangeEnd(); ++it )
+			{
+				addRange( *it );
+			}
+		}
+
+		/**
+		 * @brief Substract two RangeLists.
+		 */
+		static RangeList substract( const RangeList & p_lhs, const RangeList & p_rhs )
+		{
+			RangeList res( p_lhs );
+			for ( auto it = p_rhs.rangeBegin(); it != p_rhs.rangeEnd(); ++it )
+			{
+				res.removeRange( *it );
+			}
+			return res;
+		}
+
+		/**
+		 * @brief Substract another RangeList from this one.
+		 */
+		void substractInPlace( const RangeList & p_rhs ) { *this = substract( *this, p_rhs ); }
+
+		/**
+		 * @brief Intersect two RangeLists.
+		 */
+		static RangeList intersect( const RangeList & p_lhs, const RangeList & p_rhs )
+		{
+			using R = Range<T>;
+			std::list<R> out;
+
+			auto a = p_lhs.rangeBegin();
+			auto b = p_rhs.rangeBegin();
+
+			while ( a != p_lhs.rangeEnd() && b != p_rhs.rangeEnd() )
+			{
+				if ( a->last <= b->first )
+				{
+					++a;
+					continue;
+				}
+				if ( b->last <= a->first )
+				{
+					++b;
+					continue;
+				}
+
+				const T f = std::max( a->first, b->first );
+				const T l = std::min( a->last, b->last );
+				if ( f < l )
+				{
+					out.emplace_back( f, l );
+				}
+
+				if ( a->last < b->last )
+				{
+					++a;
+				}
+				else if ( a->last > b->last )
+				{
+					++b;
+				}
+				else
+				{
+					++a;
+					++b;
+				}
+			}
+			return RangeList( out );
+		}
+
+		/**
+		 * @brief Intersect another RangeList with this one.
+		 */
+		void intersectInPlace( const RangeList & p_rhs ) { *this = intersect( *this, p_rhs ); }
+
+		/**
+		 * @brief Exclusive two RangeLists.
+		 */
+		static RangeList exclusive( const RangeList & p_lhs, const RangeList & p_rhs )
+		{
+			return merge( substract( p_lhs, p_rhs ), substract( p_rhs, p_lhs ) );
+		}
+
+		/**
+		 * @brief Exclusive another RangeList with this one.
+		 */
+		void exclusiveInPlace( const RangeList & p_rhs ) { *this = exclusive( *this, p_rhs ); }
+
+		/**
+		 * @brief Generate index range list from container and predicate.
+		 */
+		/*
+		template<class C, class Predicate>
+			requires requires( const C & c ) {
+				typename C::value_type;
+				{ c.size() } -> std::convertible_to<std::size_t>;
+				{ c[ std::size_t {} ] } -> std::same_as<const typename C::value_type &>;
+			} && std::predicate<Predicate, typename C::value_type>
+		static RangeList<typename C::size_type> generateIndexRangeList( const C & container, const Predicate & pred )
+		{
+			using Idx = typename C::size_type;
+			RangeList<Idx> res;
+			for ( Idx i = 0; i < container.size(); ++i )
+			{
+				if ( pred( container[ i ] ) )
+				{
+					res.addValue( i );
+				}
+			}
+			return res;
+		}
+		*/
 
 		/**
 		 * @brief Returns the size in bytes taken by this instance. Heap size and stack size are summed up.
@@ -449,23 +451,77 @@ namespace VTX::Util::Math
 			return totalSize;
 		}
 
-		template<typename T1, typename T2>
-		void toVectors( std::vector<T1> & p_starts, std::vector<T2> & p_counts ) const
-		{
-			p_starts.resize( _ranges.size() );
-			p_counts.resize( _ranges.size() );
+		/**
+		 * @brief Iterators.
+		 */
+		std::list<RangeType>::iterator		 rangeBegin() { return _ranges.begin(); }
+		std::list<RangeType>::iterator		 rangeEnd() { return _ranges.end(); }
+		std::list<RangeType>::const_iterator rangeBegin() const { return _ranges.begin(); }
+		std::list<RangeType>::const_iterator rangeEnd() const { return _ranges.end(); }
 
-			size_t i = 0;
-			for ( const Range<T> & range : _ranges )
+		/**
+		 * @brief Iterate over all values in all ranges.
+		 */
+		struct iterator
+		{
+			using ListIt = typename std::list<RangeType>::const_iterator;
+
+			ListIt it {};
+			ListIt end {};
+			T	   cur {};
+
+			struct sentinel
 			{
-				p_starts[ i ] = T1( range.getFirst() );
-				p_counts[ i ] = T2( range.getCount() );
-				i++;
+			};
+
+			void advanceToValid() noexcept
+			{
+				while ( it != end )
+				{
+					if ( it->first < it->last )
+					{
+						cur = it->first;
+						return;
+					}
+					++it;
+				}
 			}
-		}
+
+			explicit iterator( const std::list<RangeType> & p_ranges ) noexcept :
+				it( p_ranges.begin() ), end( p_ranges.end() ), cur {}
+			{
+				advanceToValid();
+			}
+
+			iterator & operator++() noexcept
+			{
+				if ( it == end )
+				{
+					return *this;
+				}
+				++cur;
+				if ( cur >= it->last )
+				{
+					++it;
+					advanceToValid();
+				}
+				return *this;
+			}
+
+			bool operator!=( sentinel ) const noexcept { return it != end; }
+			T	 operator*() const noexcept { return cur; }
+		};
+
+		iterator		   begin() noexcept { return iterator( _ranges ); }
+		iterator::sentinel end() noexcept { return {}; }
+		iterator		   begin() const noexcept { return iterator( _ranges ); }
+		iterator::sentinel end() const noexcept { return {}; }
 
 	  private:
-		std::list<Range<T>> _ranges;
+		/**
+		 * @brief All ranges.
+		 */
+		std::list<RangeType> _ranges;
 	};
 } // namespace VTX::Util::Math
 

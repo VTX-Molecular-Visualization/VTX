@@ -121,7 +121,7 @@ class VTXPythonBindingRecipe(ConanFile):
         self.requires("vtx_core/1.0")  
         self.requires("vtx_io/1.0")
         self.requires("pybind11/2.13.6", transitive_headers=True)
-        self.requires("catch2/3.8.1")
+        self.requires("catch2/3.11.0")
         self.requires("cpython/3.9.19") # v >= 3.10 not working with msvc compiler so far
         
     def config_options(self):

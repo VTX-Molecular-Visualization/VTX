@@ -1,16 +1,17 @@
 #include "scene.hpp"
 #include "util.hpp"
-#include <core/chemdb/color_layout.hpp>
 #include <io/util/secondary_structure.hpp>
 #include <numeric>
-#include <renderer/facade.hpp>
+#include <renderer/color.hpp>
 #include <util/math.hpp>
 
 namespace VTX::Bench
 {
 
 	Scene::Scene( const size_t p_width, const size_t p_height ) :
-		_camera( p_width, p_height ), _proxyCamera(
+		_camera( p_width, p_height )
+		/*,
+		_proxyCamera(
 										  { _camera.getMatrixViewPtr(),
 											_camera.getMatrixProjectionPtr(),
 											_camera.getPosition(),
@@ -18,9 +19,13 @@ namespace VTX::Bench
 											_camera.getNear(),
 											_camera.getFar(),
 											_camera.isPerspective() }
-									  ),
-		_colorLayout( Core::ChemDB::ColorLayout::COLOR_LAYOUT_JMOL ), _proxyLayoutColor( _colorLayout )
+									  )*/
+		,
+		_colorLayout(
+			// Renderer::Color::Layout::COLOR_LAYOUT_JMOL
+		)
 	{
+		/*
 		_camera.callbackMatrixView += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixView(); };
 		_camera.callbackMatrixProjection += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixProjection(); };
 		_camera.callbackTranslation +=
@@ -29,6 +34,7 @@ namespace VTX::Bench
 			[ & ]( const float p_near, const float p_far ) { _proxyCamera.onCameraNearFar( p_near, p_far ); };
 		_camera.callbackPerspective +=
 			[ & ]( const bool p_isPerspective ) { _proxyCamera.onPerspective( p_isPerspective ); };
+			*/
 	}
 
 	Renderer::Proxy::System & Scene::addSystem( const std::string & p_name )
@@ -61,22 +67,6 @@ namespace VTX::Bench
 		_directions.erase( _directions.begin() + p_index );
 	}
 
-	// TODO: remove renderer from here.
-	void Scene::removeAllSystems( Renderer::Facade * const p_renderer )
-	{
-		std::vector<Renderer::Proxy::System *> proxies;
-		for ( auto & proxy : _proxySystems )
-		{
-			proxies.push_back( proxy.get() );
-		}
-
-		p_renderer->removeProxySystems( proxies );
-
-		_systems.clear();
-		_proxySystems.clear();
-		_directions.clear();
-	}
-
 	std::unique_ptr<Renderer::Proxy::System> Scene::_proxify( const Core::Struct::System & p_system )
 	{
 		const size_t									sizeAtoms	= p_system.trajectory.getCurrentFrame().size();
@@ -86,9 +76,7 @@ namespace VTX::Bench
 		std::vector<uchar> atomColors( sizeAtoms );
 		size_t			   i = 0;
 		std::generate(
-			atomColors.begin(),
-			atomColors.end(),
-			[ & ] { return Core::ChemDB::ColorLayout::getColorIndex( symbols[ i++ ] ); }
+			atomColors.begin(), atomColors.end(), [ & ] { return Renderer::Color::getColorIndex( symbols[ i++ ] ); }
 		);
 
 		auto atomRadii = std::vector<float>( sizeAtoms );
@@ -110,19 +98,18 @@ namespace VTX::Bench
 		std::generate(
 			residueColors.begin(),
 			residueColors.end(),
-			[ & ] { return Core::ChemDB::ColorLayout::getColorIndex( p_system.residueSecondaryStructureTypes[ i++ ] ); }
+			[ & ] { return Renderer::Color::getColorIndex( p_system.residueSecondaryStructureTypes[ i++ ] ); }
 		);
 
-		const Core::Struct::Category & categoryPolymer = p_system.getCategory( Core::ChemDB::Category::TYPE::POLYMER );
-		const Core::Struct::Category & categoryCarbohydrate
-			= p_system.getCategory( Core::ChemDB::Category::TYPE::CARBOHYDRATE );
-
-		const std::vector<Index> & polymerChainIds		= categoryPolymer.getLinkedChains();
-		const std::vector<Index> & carbohydrateChainIds = categoryCarbohydrate.getLinkedChains();
+		const std::vector<Index> & polymerChainIds
+			= p_system.getChainIndexesFromCategory( Core::ChemDB::Category::TYPE::POLYMER );
+		const std::vector<Index> & carbohydrateChainIds
+			= p_system.getChainIndexesFromCategory( Core::ChemDB::Category::TYPE::CARBOHYDRATE );
 
 		const std::vector<Vec3f> * atomsPositions = &p_system.trajectory.getCurrentFrame();
 
-		return std::make_unique<Renderer::Proxy::System>( Renderer::Proxy::System {
+		return std::make_unique<Renderer::Proxy::System>(
+			/* Renderer::Proxy::System {
 			&p_system.transform,
 			atomsPositions,
 			&p_system.bondPairAtomIndexes,
@@ -139,7 +126,8 @@ namespace VTX::Bench
 			residueIds,
 			polymerChainIds,
 			carbohydrateChainIds,
-			0 } );
+			0 }*/
+		);
 	}
 
 } // namespace VTX::Bench

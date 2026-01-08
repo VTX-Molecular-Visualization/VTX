@@ -1,88 +1,459 @@
 #include "renderer/render_graph.hpp"
-#include "renderer/passes.hpp"
+#include "renderer/graphics_config.hpp"
+#include <unordered_set>
+#include <util/constants.hpp>
+#include <util/exceptions.hpp>
+#include <util/math.hpp>
 
 namespace VTX::Renderer
 {
-
-	Pass * const RenderGraph::addPass( const Pass & p_pass )
+	const RenderQueue RenderGraph::build()
 	{
-		_passes.emplace_back( std::make_unique<Pass>( p_pass ) );
-		return _passes.back().get();
-	}
+		// Check if all inputs are produced before use.
+		std::unordered_set<Key> produced;
 
-	void RenderGraph::removePass( const Pass * const p_pass )
-	{
-		// Don't remove geometry pass.
-		// TODO: use a flag to set mandatory passes?
-		if ( p_pass->name == descPassGeometric.name )
+		auto isExternalResource = [ this ]( const Key & name ) -> bool
 		{
-			VTX_ERROR( "Can not remove geometric pass" );
-			return;
-		}
-
-		std::erase_if(
-			_links,
-			[ &p_pass ]( const std::unique_ptr<Link> & p_e ) { return p_e->src == p_pass || p_e->dest == p_pass; }
-		);
-
-		if ( std::find_if(
-				 p_pass->outputs.begin(),
-				 p_pass->outputs.end(),
-				 [ this ]( const auto & p_element ) { return &p_element.second == _output; }
-			 )
-			 != p_pass->outputs.end() )
-		{
-			VTX_DEBUG( "{}", "REMOVE OUTPUT" );
-			_output = nullptr;
-		}
-
-		std::erase_if( _passes, [ &p_pass ]( const std::unique_ptr<Pass> & p_e ) { return p_e.get() == p_pass; } );
-		std::erase( _renderQueue, p_pass );
-	}
-
-	bool RenderGraph::addLink(
-		Pass * const	   p_passSrc,
-		Pass * const	   p_passDest,
-		const E_CHAN_OUT & p_channelSrc,
-		const E_CHAN_IN &  p_channelDest
-	)
-	{
-		// Check pass existence.
-		assert( p_passSrc );
-		assert( p_passDest );
-
-		//  Check I/O existence.
-		assert( p_passSrc->outputs.contains( p_channelSrc ) );
-		assert( p_passDest->inputs.contains( p_channelDest ) );
-
-		// Check descriptor compatibility.
-		StructCompareVisitorDesc visitor;
-
-		bool areCompatible
-			= std::visit( visitor, p_passSrc->outputs[ p_channelSrc ].desc, p_passDest->inputs[ p_channelDest ].desc );
-
-		if ( not areCompatible )
-		{
-			VTX_WARNING( "{}", "Descriptors are not compatible" );
+			if ( _resources.vertexStreams.contains( name ) )
+			{
+				return true;
+			}
+			if ( _resources.uniformBuffers.contains( name ) )
+			{
+				return true;
+			}
 			return false;
+		};
+
+		auto hasInputData = [ this ]( const Key & name ) -> bool
+		{
+			if ( _resources.textures.contains( name ) )
+			{
+				return not _resources.textures.at( name ).data.empty();
+			}
+			return false;
+		};
+
+		for ( const auto & passPtr : _passes )
+		{
+			const Pass & pass = *passPtr;
+
+			for ( const auto & input : pass.inputs )
+			{
+				const bool external		  = isExternalResource( input );
+				const bool producedBefore = produced.contains( input );
+				const bool hasData		  = hasInputData( input );
+
+				// If not external, not produced before and has no data.
+				if ( not external && not producedBefore && not hasData )
+				{
+					throw GraphicException( "Pass '{}' need not produced ressource '{}' ", pass.name, input );
+				}
+			}
+
+			// Set outputs as produced.
+			for ( const auto & output : pass.outputs )
+			{
+				produced.insert( output );
+			}
 		}
 
-		// Remove input if already used.
-		std::erase_if(
-			_links,
-			[ p_passDest, p_channelDest ]( const std::unique_ptr<Link> & p_element )
-			{ return p_element.get()->dest == p_passDest && p_element.get()->channelDest == p_channelDest; }
-		);
+		// Build.
+		// TODO: remove unused passes.
+		RenderQueue queue;
+		for ( auto & p : _passes )
+		{
+			queue.push_back( p.get() );
+		}
 
-		// Create link.
-		_links.emplace_back( std::make_unique<Link>( Link { p_passSrc, p_passDest, p_channelSrc, p_channelDest } ) );
+		std::string str = "Passes: ";
+		for ( const Pass * const pass : queue )
+		{
+			str += pass->name + " -> ";
+		}
+		str += "Output";
+		VTX_DEBUG( "{}", str );
 
-		return true;
+		return queue;
 	}
 
-	void RenderGraph::removeLink( const Link * const p_link )
+	void RenderGraph::add( const GraphBuilder & p_builder )
 	{
-		std::erase_if( _links, [ &p_link ]( const std::unique_ptr<Link> & p_e ) { return p_e.get() == p_link; } );
+		// Resources.
+		for ( const auto & [ key, texture ] : p_builder.resources.textures )
+		{
+			auto [ it, inserted ] = _resources.textures.emplace( key, texture );
+			assert( inserted );
+		}
+		for ( const auto & [ key, vertexStream ] : p_builder.resources.vertexStreams )
+		{
+			auto [ it, inserted ] = _resources.vertexStreams.emplace( key, vertexStream );
+			assert( inserted );
+		}
+		for ( const auto & [ key, uniformBuffer ] : p_builder.resources.uniformBuffers )
+		{
+			auto [ it, inserted ] = _resources.uniformBuffers.emplace( key, uniformBuffer );
+			assert( inserted );
+		}
+		// Passes.
+		for ( const auto & pass : p_builder.passes )
+		{
+			_passes.push_back( std::make_unique<Pass>( *pass ) );
+		}
+	}
+
+	void RenderGraph::set( GraphBuilder && p_builder )
+	{
+		clear();
+		_resources = std::move( p_builder.resources );
+		_passes	   = std::move( p_builder.passes );
+	}
+
+	void RenderGraph::clear() { _passes.clear(); }
+
+	void RenderGraph::createDefaultPipeline( const PipelineConfig & p_config )
+	{
+		GraphBuilder g;
+
+		// Uniforms.
+		g.uniformBuffer(
+			"Camera",
+			15,
+			{ makeUniform( "MatrixView", Mat4f( MAT4F_ID ) ),
+			  makeUniform( "MatrixProjection", Mat4f( MAT4F_ID ) ),
+			  makeUniform( "MatrixViewInv", Mat4f( MAT4F_ID ) ),
+			  makeUniform( "MatrixViewInvTrans", Mat4f( MAT4F_ID ) ),
+			  makeUniform( "Position", Vec3f( VEC3F_ZERO ) ),
+			  makeUniform( "ClipInfos", Vec4f( VEC4F_ZERO ) ),
+			  makeUniform( "Resolution", Vec2i { 0, 0 } ),
+			  makeUniform( "MousePosition", Vec2i { 0, 0 } ),
+			  makeUniform( "IsPerspective", std::uint32_t( 1 ) ) }
+		);
+
+		g.uniformBuffer( "ColorLayout", 14, { makeUniform( "Colors", Util::Color::Rgba {} ) } );
+
+		g.uniformBuffer(
+			"Models",
+			13,
+			{ makeUniform( "MatrixModelView", Mat4f( MAT4F_ID ) ),
+			  makeUniform( "MatrixModelViewInv", Mat4f( MAT4F_ID ) ),
+			  makeUniform( "MatrixNormal", Mat4f( MAT4F_ID ) ) }
+		);
+
+		g.uniformBuffer(
+			"Representations",
+			12,
+			{ makeUniform( "SphereRadiusFixed", 0.0f ),
+			  makeUniform( "SphereRadiusAdd", 0.0f ),
+			  makeUniform( "IsSphereRadiusFixed", std::uint32_t( 0 ) ),
+			  makeUniform( "CylinderRadius", 0.0f ),
+			  makeUniform( "CylinderColorBlending", std::uint32_t( 0 ) ),
+			  makeUniform( "RibbonColorBlending", std::uint32_t( 0 ) ),
+			  makeUniform( "SESProbeRadius", 0.0f ),
+			  makeUniform( "SESMaxProbeNeighborNb", std::uint32_t( 0 ) ) }
+		);
+
+		// Vertex streams.
+		g.vertexStream(
+			"SpheresCylinders",
+			{
+				{ "Positions", E_TYPE::FLOAT, 3 },
+				{ "Colors", E_TYPE::UBYTE, 1 },
+				{ "Radii", E_TYPE::FLOAT, 1 },
+				{ "Ids", E_TYPE::UINT, 1 },
+				{ "Flags", E_TYPE::UBYTE, 1 },
+				{ "Models", E_TYPE::USHORT, 1 },
+				{ "Representations", E_TYPE::UBYTE, 1 },
+			}
+		);
+
+		g.vertexStream(
+			"Ribbons",
+			{
+				{ "Positions", E_TYPE::FLOAT, 4 },
+				{ "Directions", E_TYPE::FLOAT, 3 },
+				{ "Types", E_TYPE::UBYTE, 1 },
+				{ "Colors", E_TYPE::UBYTE, 1 },
+				{ "Ids", E_TYPE::UINT, 1 },
+				{ "Flags", E_TYPE::UBYTE, 1 },
+				{ "Models", E_TYPE::USHORT, 1 },
+				{ "Representations", E_TYPE::UBYTE, 1 },
+			}
+		);
+
+		g.vertexStream(
+			"Triangles",
+			{
+				{ "Positions", E_TYPE::FLOAT, 3 },
+				{ "Normales", E_TYPE::FLOAT, 3 },
+				{ "Colors", E_TYPE::UBYTE, 1 },
+				{ "Ids", E_TYPE::UINT, 1 },
+				{ "Flags", E_TYPE::UBYTE, 1 },
+				{ "Models", E_TYPE::USHORT, 1 },
+				{ "Representations", E_TYPE::UBYTE, 1 },
+			}
+		);
+
+		g.vertexStream(
+			"Voxels",
+			{
+				{ "Mins", E_TYPE::FLOAT, 3 },
+				{ "Maxs", E_TYPE::FLOAT, 3 },
+			}
+		);
+
+		// Textures.
+		g.texture( "Geometry", E_FORMAT::RGBA32UI )
+			.texture( "Color", E_FORMAT::RGBA16F )
+			.texture( "Picking", E_FORMAT::RG32UI )
+			.texture( "DepthRaw", E_FORMAT::DEPTH_COMPONENT32F );
+
+		g.texture( "Depth", E_FORMAT::R32F );
+
+		if ( p_config.enableSSAO )
+		{
+			constexpr size_t   noiseTextureSize = 64;
+			std::vector<Vec3f> noiseData( noiseTextureSize * noiseTextureSize );
+			std::generate(
+				noiseData.begin(),
+				noiseData.end(),
+				[]
+				{
+					return Util::Math::normalize(
+						Vec3f( Util::Math::randomFloat() * 2.f - 1.f, Util::Math::randomFloat() * 2.f - 1.f, 0.f )
+					);
+				}
+			);
+			g.texture( "SSAO", E_FORMAT::R8 )
+				.texture( "Noise", E_FORMAT::RGB16F, noiseData )
+				.texture( "Blur", E_FORMAT::R16F );
+		}
+
+		g.texture( "Shaded", E_FORMAT::RGBA16F );
+
+		if ( p_config.enableOutline )
+		{
+			g.texture( "Outline", E_FORMAT::RGBA16F );
+		}
+
+		if ( p_config.enableSelection )
+		{
+			g.texture( "Selection", E_FORMAT::RGBA16F );
+		}
+
+		g.texture( "FXAA", E_FORMAT::RGBA16F );
+
+		// Passes.
+		// Geometric.
+		g.pass( "Geometric" )
+			.in( "SpheresCylinders" )
+			.in( "Ribbons" )
+			.in( "Triangles" )
+			.in( "Voxels" )
+			.out( "Geometry" )
+			.out( "Color" )
+			.out( "Picking" )
+			.out( "DepthRaw" )
+			.program( "Sphere" )
+			.shaders( { FilePath( "sphere" ) } )
+			.draw( "SpheresCylinders", E_PRIMITIVE::POINTS )
+			.endProgram()
+			.program( "Cylinder" )
+			.shaders( { FilePath( "cylinder" ) } )
+			.draw( "SpheresCylinders", E_PRIMITIVE::LINES, true )
+			.endProgram()
+			.program( "Ribbon" )
+			.shaders( { FilePath( "ribbon" ) } )
+			.draw( "Ribbons", E_PRIMITIVE::PATCHES, true )
+			.endProgram()
+			.program( "Voxel" )
+			.shaders( { FilePath( "voxel" ) } )
+			.draw( "Voxels", E_PRIMITIVE::POINTS )
+			.endProgram()
+			.endPass();
+
+		// Linearize depth.
+		g.pass( "LinearizeDepth" )
+			.in( "DepthRaw" )
+			.out( "Depth" )
+			.program( "LinearizeDepth" )
+			.shaders( { FilePath( "default.vert" ), FilePath( "linearize_depth.frag" ) } )
+			.endProgram()
+			.endPass();
+
+		if ( p_config.enableSSAO )
+		{
+			// SSAO.
+			g.pass( "SSAO" )
+				.in( "Geometry" )
+				.in( "Noise" )
+				.in( "Depth" )
+				.out( "SSAO" )
+				.program( "SSAO" )
+				.shaders( { FilePath( "default.vert" ), FilePath( "ssao.frag" ) } )
+				.uniform( "Intensity", SSAO_INTENSITY_DEFAULT, std::pair { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX } )
+				.endProgram()
+				.endPass();
+
+			// Blur.
+			g.pass( "Blur" )
+				.in( "Color" )
+				.in( "Depth" )
+				.out( "Blur" )
+				.program( "Blur" )
+				.shaders( { FilePath( "default.vert" ), FilePath( "blur.frag" ) } )
+				.uniform( "Direction", Vec2i( 1, 0 ) )
+				.uniform( "Size", BLUR_SIZE_DEFAULT, std::pair { BLUR_SIZE_MIN, BLUR_SIZE_MAX } )
+				.endProgram()
+				.endPass();
+		}
+
+		// Shading.
+		g.pass( "Shading" )
+			.in( "Geometry" )
+			.in( "Color" )
+			.in( "Blur" )
+			.out( "Shaded" )
+			.program( "Shading" )
+			.shaders( { FilePath( "default.vert" ), FilePath( "shading.frag" ) } )
+			.uniform( "BackgroundColor", COLOR_BACKGROUND_DEFAULT )
+			.uniform( "LightColor", COLOR_LIGHT_DEFAULT )
+			.uniform( "FogColor", COLOR_FOG_DEFAULT )
+			.uniform(
+				"Mode",
+				static_cast<uint>( SHADING_MODE_DEFAULT ),
+				std::pair { static_cast<uint>( E_SHADING::DIFFUSE ), static_cast<uint>( E_SHADING::COUNT ) - 1.0 }
+			)
+			.uniform(
+				"SpecularFactor", SPECULAR_FACTOR_DEFAULT, std::pair { SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX }
+			)
+			.uniform( "Shininess", SHININESS_DEFAULT, std::pair { SHININESS_MIN, SHININESS_MAX } )
+			.uniform( "ToonSteps", TOON_STEPS_DEFAULT, std::pair { TOON_STEPS_MIN, TOON_STEPS_MAX } )
+			.uniform( "FogNear", FOG_NEAR_DEFAULT, std::pair { FOG_NEAR_MIN, FOG_NEAR_MAX } )
+			.uniform( "FogFar", FOG_FAR_DEFAULT, std::pair { FOG_FAR_MIN, FOG_FAR_MAX } )
+			.uniform( "FogDensity", FOG_DENSITY_DEFAULT, std::pair { FOG_DENSITY_MIN, FOG_DENSITY_MAX } )
+			.endProgram()
+			.endPass();
+
+		// Outline.
+		if ( p_config.enableOutline )
+		{
+			g.pass( "Outline" )
+				.in( "Shaded" )
+				.in( "Depth" )
+				.out( "Outline" )
+				.program( "Outline" )
+				.shaders( { FilePath( "default.vert" ), FilePath( "outline.frag" ) } )
+				.uniform( "Color", COLOR_WHITE )
+				.uniform(
+					"Sensitivity",
+					OUTLINE_SENSITIVITY_DEFAULT,
+					std::pair { OUTLINE_SENSITIVITY_MIN, OUTLINE_SENSITIVITY_MAX }
+				)
+				.uniform(
+					"Thickness", OUTLINE_THICKNESS_DEFAULT, std::pair { OUTLINE_THICKNESS_MIN, OUTLINE_THICKNESS_MAX }
+				)
+				.endProgram()
+				.endPass();
+		}
+
+		// Selection.
+		if ( p_config.enableSelection )
+		{
+			g.pass( "Selection" )
+				.in( "Geometry" )
+				.in( "Shaded" )
+				.in( "Depth" )
+				.out( "Selection" )
+				.program( "Selection" )
+				.shaders( { FilePath( "default.vert" ), FilePath( "selection.frag" ) } )
+				.uniform( "Color", COLOR_SELECTION_DEFAULT )
+				.endProgram()
+				.endPass();
+		}
+
+		// FXAA.
+		g.pass( "FXAA" )
+			.in( "Shaded" )
+			.out( "FXAA" )
+			.program( "FXAA" )
+			.shaders( { FilePath( "default.vert" ), FilePath( "fxaa.frag" ) } )
+			.endProgram()
+			.endPass();
+
+		// Pixelize
+		/*
+		g.pass( "Pixelize" )
+			.in( "FXAA" )
+			.out( "Pixelize" )
+			.program( "Pixelize" )
+			.shaders( { FilePath( "default.vert" ), FilePath( "pixelize.frag" ) } )
+			.uniform( "Size", static_cast<std::uint32_t>( 5 ), std::pair { 1.0, 15.0 } )
+			.uniform( "Background", true )
+			.endProgram()
+			.endPass();
+			*/
+
+		// CRT
+		/*
+		g.pass( "CRT" )
+			.in( "Pixelize" )
+			.out( "CRT" )
+			.program( "CRT" )
+			.shaders( { FilePath( "default.vert" ), FilePath( "crt.frag" ) } )
+			.uniform( "Curvature", Vec2f( 3.f, 3.f ) )
+			.uniform( "Ratio", 0.25f, std::pair { 0.1, 1.0 } )
+			.uniform( "GraninessX", 0.5f, std::pair { 0.0, 5.0 } )
+			.uniform( "GraninessY", 0.5f, std::pair { 0.0, 5.0 } )
+			.uniform( "VignetteRoundness", 100.f, std::pair { 1.0, 1000.0 } )
+			.uniform( "VignetteIntensity", 0.5f, std::pair { 0.0, 5.0 } )
+			.uniform( "Brightness", 1.2f, std::pair { 1.0, 10.0 } )
+			.endProgram()
+			.endPass();
+			*/
+
+		// Chromatic aberration
+		/*
+		g.pass( "ChromaticAberration" )
+			.in( "CRT" )
+			.out( "ChromaticAberration" )
+			.program( "ChromaticAberration" )
+			.shaders( { FilePath( "default.vert" ), FilePath( "chromatic_aberration.frag" ) } )
+			.uniform( "Red", 0.009f, std::pair { -0.05, 0.05 } )
+			.uniform( "Green", 0.006f, std::pair { -0.05, 0.05 } )
+			.uniform( "Blue", -0.006f, std::pair { -0.05, 0.05 } )
+			.endProgram()
+			.endPass();
+			*/
+
+		// Colorize
+		/*
+		g.pass( "Colorize" )
+			.in( "ChromaticAberration" )
+			.out( "Colorize" )
+			.program( "Colorize" )
+			.shaders( { FilePath( "default.vert" ), FilePath( "colorize.frag" ) } )
+			.uniform( "Color", COLOR_YELLOW )
+			.endProgram()
+			.endPass();
+			*/
+
+		// Debug
+		/*
+		g.pass( "Debug" )
+			.in( "Colorize" )
+			.out( "Debug" )
+			.program( "Debug" )
+			.shaders( { FilePath( "default.vert" ), FilePath( "debug.frag" ) } )
+			.uniform( "Color", COLOR_YELLOW )
+			.uniform( "Color2", COLOR_BLUE )
+			.uniform( "Test", 5646.0f )
+			.uniform( "Factor", 5.0f, std::pair { 0.0, 10.0 } )
+			.endProgram()
+			.endPass();
+			*/
+
+		set( std::move( g ) );
 	}
 
 } // namespace VTX::Renderer

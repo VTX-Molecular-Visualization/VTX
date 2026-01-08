@@ -88,8 +88,8 @@ namespace VTX::PythonBinding
 			template<typename Action, typename... Args>
 			static void runAction( Args... p_args )
 			{
-				Action action = Action( p_args... );
-				action.execute();
+				Action action;
+				action.execute( p_args... );
 			}
 		};
 	} // namespace Wrapper

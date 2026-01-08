@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <util/concepts.hpp>
 #include <util/hashing.hpp>
-#include <util/singleton.hpp>
 
 #define DEBUG_HASH 0
 
@@ -30,7 +29,7 @@ namespace VTX::Util
 		inline bool has( const Hash & p_hash ) const { return _map.contains( p_hash ); }
 
 		template<typename T>
-		inline T * const get()
+		inline T * const get() const
 		{
 			return get<T>( hash<T>() );
 		}
@@ -62,7 +61,7 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		inline T * const get( const Hash & p_hash )
+		inline T * const get( const Hash & p_hash ) const
 		{
 			assert( _map.contains( p_hash ) );
 
@@ -89,7 +88,7 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		inline T & getRef()
+		inline T & getRef() const
 		{
 			return *get<T>();
 		}
@@ -168,8 +167,21 @@ namespace VTX::Util
 			return Util::hash<T>();
 		}
 
+		auto begin() noexcept { return _map.begin(); }
+		auto end() noexcept { return _map.end(); }
+
+		auto begin() const noexcept { return _map.begin(); }
+		auto end() const noexcept { return _map.end(); }
+
+		auto cbegin() const noexcept { return _map.cbegin(); }
+		auto cend() const noexcept { return _map.cend(); }
+
+		using iterator = typename std::unordered_map<Hash, C>::iterator;
+
+		inline auto erase( const iterator & p_it ) { return _map.erase( p_it ); }
+
 	  private:
-		std::unordered_map<Hash, C> _map;
+		mutable std::unordered_map<Hash, C> _map;
 
 		template<typename T, typename... Args>
 		inline T * const _create( const Hash & p_hash, Args &&... p_args )

@@ -1,45 +1,46 @@
 #ifndef __VTX_APP_ACTION_CONTROLLER__
 #define __VTX_APP_ACTION_CONTROLLER__
 
-#include "app/action/base_action.hpp"
-#include "app/application/scene.hpp"
-#include "app/component/controller.hpp"
-#include "app/controller/concepts.hpp"
+#include "app/events.hpp"
+#include "app/pass/controller/freefly.hpp"
+#include "app/pass/controller/trackball.hpp"
+#include "app/services.hpp"
+#include <renderer/camera.hpp>
 
 namespace VTX::App::Action::Controller
 {
-	template<App::Controller::ConceptController C>
-	class EnableController final : public BaseAction
+	/**
+	 * @brief Set the camera controller to the requested type.
+	 */
+	template<typename T>
+	struct SetCameraController
 	{
-	  public:
-		EnableController() {}
 		void execute()
 		{
-			Component::Controller & component
-				= ECS_REGISTRY().getComponent<Component::Controller>( SCENE().getCamera() );
-			component.enableController<C>();
+			ECS::Entity entity = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
+
+			// If the requested controller is already active, do nothing.
+			if ( PASS().hasPass<T>() )
+			{
+				return;
+			}
+
+			// Remove existing controller passes.
+			if ( PASS().hasPass<Pass::Controller::Freefly>() )
+			{
+				PASS().removePass<Pass::Controller::Freefly>();
+			}
+			if ( PASS().hasPass<Pass::Controller::Trackball>() )
+			{
+				PASS().removePass<Pass::Controller::Trackball>();
+			}
+
+			// Add controller pass.
+			PASS().addPass<T>( entity );
+
+			HUB().trigger<Events::CameraControllerChange<T>>();
 		}
 	};
-
-	template<App::Controller::ConceptController C>
-	class DisableController final : public BaseAction
-	{
-	  public:
-		DisableController() {}
-		void execute()
-		{
-			Component::Controller & component
-				= ECS_REGISTRY().getComponent<Component::Controller>( SCENE().getCamera() );
-			component.disableController<C>();
-		}
-	};
-
-	class ToggleCameraController final : public BaseAction
-	{
-	  public:
-		ToggleCameraController() {}
-		void execute() override;
-	};
-
 } // namespace VTX::App::Action::Controller
+
 #endif

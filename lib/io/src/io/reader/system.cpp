@@ -46,6 +46,7 @@ namespace VTX::IO::Reader
 		p_system.initAtoms( p_chemfileStruct.getAtomCount() );
 
 		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.getCurrentFrame();
+
 		modelFrame.resize( p_chemfileStruct.getAtomCount() );
 
 		for ( Index residueIdx = 0; residueIdx < p_chemfileStruct.getResidueCount(); ++residueIdx )
@@ -75,12 +76,11 @@ namespace VTX::IO::Reader
 				p_system.appendNewChain();
 				currentChainIndex++;
 
-				p_system.chainNames[ currentChainIndex ]		 = chainName;
+				p_system.chainNames[ currentChainIndex ] = chainName;
+				p_system.categories[ uint( categoryEnum ) ].push_back( currentChainIndex );
 				p_system.chainFirstResidues[ currentChainIndex ] = residueIdx;
 
 				currentChainResidueCount = 0;
-
-				p_system.getCategory( categoryEnum ).referenceChain( currentChainIndex );
 
 				if ( not seenChainNames.contains( chainName ) )
 					seenChainNames.emplace( chainName );
@@ -103,10 +103,7 @@ namespace VTX::IO::Reader
 
 			const ChemDB::Residue::SYMBOL residueSymbol = VTX::Core::ChemDB::Residue::getSymbolFromName( residueName );
 			p_system.residueSymbols[ residueIdx ]		= residueSymbol;
-			if ( residueSymbol == ChemDB::Residue::SYMBOL::UNKNOWN )
-			{
-				p_system.residueUnknownNames[ residueIdx ] = residueName;
-			}
+			p_system.residueNames[ residueIdx ]			= residueName;
 
 			const std::string secondaryStructure
 				= p_chemfileStruct.getCurrentResidueStringProperty( "secondary_structure" ); // TODO : Around here
@@ -145,6 +142,7 @@ namespace VTX::IO::Reader
 				}
 
 				modelFrame[ atomIndex ] = p_chemfileStruct.getCurrentAtomPosition();
+				_aabb.extend( modelFrame[ atomIndex ] );
 			}
 
 			// TODO: Useless?

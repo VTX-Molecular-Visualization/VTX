@@ -9,10 +9,7 @@ namespace VTX::Tool::Mdprep
 	class MdPrep : public App::Tool::BaseTool
 	{
 	  public:
-		virtual void init() override;
-		virtual void onAppStart() override;
-		virtual void createUI() override;
-		virtual void onAppStop() override;
+		MdPrep();
 	};
 
 } // namespace VTX::Tool::Mdprep

@@ -6,7 +6,6 @@
 #include "core/chemdb/category.hpp"
 #include "core/chemdb/residue.hpp"
 #include "core/chemdb/secondary_structure.hpp"
-#include "core/struct/category.hpp"
 #include "core/struct/trajectory.hpp"
 #include <array>
 #include <memory>
@@ -17,84 +16,291 @@
 
 namespace VTX::Core::Struct
 {
+	/**
+	 * @brief Element index ranges.
+	 */
+	using IndexRange	 = Util::Math::Range<Index>;
+	using IndexRangeList = Util::Math::RangeList<Index>;
+
+	/**
+	 * @brief Raw data structure representing a molecular system.
+	 */
 	struct System
 	{
-		static const int CATEGORY_COUNT = int( ChemDB::Category::TYPE::COUNT );
-
-		System();
-
-		std::string name	  = "unknown";
-		Mat4f		transform = MAT4F_ID;
-
-		// Trajectory
+		// TODO: merge here.
 		Struct::Trajectory trajectory;
 
-		// Categories
-		std::array<std::unique_ptr<Struct::Category>, CATEGORY_COUNT> categories;
+		/**
+		 * @brief System name.
+		 */
+		std::string name;
 
-		Struct::Category &		 getCategory( const ChemDB::Category::TYPE p_categoryType );
-		const Struct::Category & getCategory( const ChemDB::Category::TYPE p_categoryType ) const;
-
-		// Use range list for chain ? residue ?
-		// External wrapper ?
-
-		// Chain data - all indexes are in sync
+		/**
+		 * @brief Chains indexes by category.
+		 */
+		std::array<std::vector<Index>, uint( ChemDB::Category::TYPE::COUNT )> categories;
+		/**
+		 * @brief Chain names.
+		 */
 		std::vector<std::string> chainNames;
 		/**
-		 * @brief Indexes of the first of the residues that compose each chain. All residues with index between
-		 * vector[N] and vector[N+1] are considered part of the chain N
+		 * @brief Indexes of the first of the residues that compose each chain.
+		 * All residues with index between vector[N] and vector[N+1] are considered part of the chain N.
 		 */
 		std::vector<Index> chainFirstResidues;
-		std::vector<Index> chainResidueCounts;
-
-		void  initChains( const Index p_count );
-		void  appendNewChain();
-		Index getChainCount() const;
-
-		// Residue data - all indexes are in sync
-		std::vector<ChemDB::Residue::SYMBOL> residueSymbols;
-		std::vector<Index>					 residueChainIndexes;
-
 		/**
-		 * @brief Indexes of the first of the atoms that compose each residues. All atoms with index between vector[N]
-		 * and vector[N+1] are considered part of the residue N
+		 * @brief Number of residues in each chain.
+		 */
+		std::vector<Index> chainResidueCounts;
+		/**
+		 * @brief Residue symbols.
+		 */
+		std::vector<ChemDB::Residue::SYMBOL> residueSymbols;
+		/**
+		 * @brief Residue names.
+		 */
+		std::vector<std::string> residueNames;
+		/**
+		 * @brief Index of the chain each residue belongs to.
+		 */
+		std::vector<Index> residueChainIndexes;
+		/**
+		 * @brief Original residue IDs from the input file.
+		 */
+		std::vector<Index> residueOriginalIds;
+		/**
+		 * @brief Indexes of the first of the atoms that compose each residues.
+		 * All atoms with index between vector[N] and vector[N+1] are considered part of the residue N.
 		 */
 		std::vector<Index> residueFirstAtomIndexes;
+		/**
+		 * @brief Number of atoms in each residue.
+		 */
 		std::vector<Index> residueAtomCounts;
 		/**
 		 * @brief Indexes of the first of the bond that compose each residues. All bonds with index between vector[N]
 		 * and vector[N+1] are considered part of the residue N
 		 */
-		std::vector<Index>							  residueFirstBondIndexes;
-		std::vector<Index>							  residueBondCounts;
-		std::vector<Index>							  residueOriginalIds;
+		std::vector<Index> residueFirstBondIndexes;
+		/**
+		 * @brief Number of bonds in each residue.
+		 */
+		std::vector<Index> residueBondCounts;
+		/**
+		 * @brief Secondary structure types for residues.
+		 */
 		std::vector<ChemDB::SecondaryStructure::TYPE> residueSecondaryStructureTypes;
-		std::vector<std::string>					  residueUnknownNames; // TODO : migrate toward unordered_map
-
-		void  initResidues( const Index p_count );
-		Index getResidueCount() const;
-
-		// Atom data - all indexes are in sync
+		/**
+		 * @brief All atom symbols.
+		 */
 		std::vector<ChemDB::Atom::SYMBOL> atomSymbols;
-		std::vector<Index>				  atomResidueIndexes;
-		std::vector<std::string>		  atomNames;
-
-		void  initAtoms( const Index p_count );
-		Index getAtomCount() const;
-
-		// Bond data
+		/**
+		 * @brief A vector containing the residue indexes for each atom.
+		 */
+		std::vector<Index> atomResidueIndexes;
+		/**
+		 * @brief Atom names.
+		 */
+		std::vector<std::string> atomNames;
+		/**
+		 * @brief All bond orders.
+		 */
 		std::vector<ChemDB::Bond::ORDER> bondOrders;
 		/**
-		 * @brief This vector works by associating atomidx at vector[N] with vector[N+1] where N%2==0.
+		 * @brief Each bond is represented by two consecutive atom indexes.
 		 */
 		std::vector<Index> bondPairAtomIndexes;
-
-		void  initBonds( const Index p_count );
-		Index getBondCount() const;
 
 		// TODO Manage Atom types and residue types with sparse_set
 		Util::Math::RangeList<Index> atomSolvents;
 		Util::Math::RangeList<Index> atomIons;
+
+		/**
+		 * @brief Convenient methods to reserve data vectors.
+		 */
+		void appendNewChain();
+		void initChains( const Index p_count );
+		void initResidues( const Index p_count );
+		void initAtoms( const Index p_count );
+		void initBonds( const Index p_count );
+
+		/**
+		 * @brief All needed getters.
+		 */
+		inline Index getChainCount() const { return Index( chainNames.size() ); }
+
+		inline Index getResidueCount() const { return Index( residueSymbols.size() ); }
+
+		inline Index getAtomCount() const { return Index( atomSymbols.size() ); }
+
+		inline Index getBondCount() const { return Index( bondOrders.size() ); }
+
+		inline const std::vector<Index> & getChainIndexesFromCategory( const ChemDB::Category::TYPE p_category ) const
+		{
+			return categories[ uint( p_category ) ];
+		}
+
+		inline IndexRange getAtomRange() const { return IndexRange::fromFirstCount( 0, getAtomCount() ); }
+
+		inline const std::string & getChainName( const Index p_chainIndex ) const { return chainNames[ p_chainIndex ]; }
+
+		inline Index getChainFirstResidue( const Index p_chainIndex ) const
+		{
+			return chainFirstResidues[ p_chainIndex ];
+		}
+
+		inline Index getChainResidueCount( const Index p_chainIndex ) const
+		{
+			return chainResidueCounts[ p_chainIndex ];
+		}
+
+		inline IndexRange getChainResidueRange( const Index p_chainIndex ) const
+		{
+			const Index first = getChainFirstResidue( p_chainIndex );
+			const Index count = getChainResidueCount( p_chainIndex );
+			return IndexRange::fromFirstCount( first, count );
+		}
+
+		inline Index getChainFirstAtom( const Index p_chainIndex ) const
+		{
+			const Index firstResidue = getChainFirstResidue( p_chainIndex );
+			return residueFirstAtomIndexes[ firstResidue ];
+		}
+
+		inline Index getChainAtomCount( const Index p_chainIndex ) const
+		{
+			const Index firstResidue = getChainFirstResidue( p_chainIndex );
+			const Index residueCount = getChainResidueCount( p_chainIndex );
+			Index		atomCount	 = 0;
+
+			for ( Index r = firstResidue; r < firstResidue + residueCount; ++r )
+			{
+				atomCount += residueAtomCounts[ r ];
+			}
+
+			return atomCount;
+		}
+
+		inline IndexRange getChainAtomRange( const Index p_chainIndex ) const
+		{
+			const Index firstAtom = getChainFirstAtom( p_chainIndex );
+			const Index count	  = getChainAtomCount( p_chainIndex );
+			return IndexRange::fromFirstCount( firstAtom, count );
+		}
+
+		inline Index getChainFirstBond( const Index p_chainIndex ) const
+		{
+			const Index firstResidue = getChainFirstResidue( p_chainIndex );
+			return residueFirstBondIndexes[ firstResidue ];
+		}
+
+		inline Index getChainBondCount( const Index p_chainIndex ) const
+		{
+			const Index firstResidue = getChainFirstResidue( p_chainIndex );
+			const Index residueCount = getChainResidueCount( p_chainIndex );
+			Index		bondCount	 = 0;
+
+			for ( Index r = firstResidue; r < firstResidue + residueCount; ++r )
+			{
+				bondCount += residueBondCounts[ r ];
+			}
+
+			return bondCount;
+		}
+
+		inline IndexRange
+			getChainBondRange( const Index p_chainIndex ) const
+		{
+			const Index firstBond = getChainFirstBond( p_chainIndex );
+			const Index count	  = getChainBondCount( p_chainIndex );
+			return IndexRange::fromFirstCount( firstBond, count );
+		}
+
+		inline ChemDB::Residue::SYMBOL getResidueSymbol( const Index p_residueIndex ) const
+		{
+			return residueSymbols[ p_residueIndex ];
+		}
+
+		inline const std::string & getResidueName( const Index p_residueIndex ) const
+		{
+			return residueNames[ p_residueIndex ];
+		}
+
+		inline Index getResidueChainIndex( const Index p_residueIndex ) const
+		{
+			return residueChainIndexes[ p_residueIndex ];
+		}
+
+		inline Index getResidueOriginalId( const Index p_residueIndex ) const
+		{
+			return residueOriginalIds[ p_residueIndex ];
+		}
+
+		inline Index getResidueFirstAtom( const Index p_residueIndex ) const
+		{
+			return residueFirstAtomIndexes[ p_residueIndex ];
+		}
+
+		inline Index getResidueAtomCount( const Index p_residueIndex ) const
+		{
+			return residueAtomCounts[ p_residueIndex ];
+		}
+
+		inline IndexRange getResidueAtomRange( const Index p_residueIndex ) const
+		{
+			const Index first = getResidueFirstAtom( p_residueIndex );
+			const Index count = getResidueAtomCount( p_residueIndex );
+			return IndexRange::fromFirstCount( first, count );
+		}
+
+		inline Index getResidueFirstBond( const Index p_residueIndex ) const
+		{
+			return residueFirstBondIndexes[ p_residueIndex ];
+		}
+
+		inline Index getResidueBondCount( const Index p_residueIndex ) const
+		{
+			return residueBondCounts[ p_residueIndex ];
+		}
+
+		inline IndexRange getResidueBondRange( const Index p_residueIndex ) const
+		{
+			const Index first = getResidueFirstBond( p_residueIndex );
+			const Index count = getResidueBondCount( p_residueIndex );
+			return IndexRange::fromFirstCount( first, count );
+		}
+
+		inline ChemDB::SecondaryStructure::TYPE getResidueSecondaryStructureType( const Index p_residueIndex ) const
+		{
+			return residueSecondaryStructureTypes[ p_residueIndex ];
+		}
+
+		inline ChemDB::Atom::SYMBOL getAtomSymbol( const Index p_atomIndex ) const
+		{
+			return atomSymbols[ p_atomIndex ];
+		}
+
+		inline const std::string & getAtomName( const Index p_atomIndex ) const { return atomNames[ p_atomIndex ]; }
+
+		inline Index getAtomResidueIndex( const Index p_atomIndex ) const { return atomResidueIndexes[ p_atomIndex ]; }
+
+		inline Index getAtomChainIndex( const Index p_atomIndex ) const
+		{
+			const Index residueIndex = getAtomResidueIndex( p_atomIndex );
+			return getResidueChainIndex( residueIndex );
+		}
+
+		inline ChemDB::Bond::ORDER getBondOrder( const Index p_bondIndex ) const { return bondOrders[ p_bondIndex ]; }
+
+		inline Index getBondFirstAtom( const Index p_bondIndex ) const
+		{
+			return bondPairAtomIndexes[ p_bondIndex * 2 ];
+		}
+
+		inline Index getBondSecondAtom( const Index p_bondIndex ) const
+		{
+			return bondPairAtomIndexes[ p_bondIndex * 2 + 1 ];
+		}
 	};
 
 	ByteNumber dynamicMemoryUsage( const System & ) noexcept;

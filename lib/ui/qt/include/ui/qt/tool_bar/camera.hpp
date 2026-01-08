@@ -1,17 +1,19 @@
 #ifndef __VTX_UI_QT_TOOL_BAR_CAMERA__
 #define __VTX_UI_QT_TOOL_BAR_CAMERA__
 
-#include "ui/qt/core/base_widget.hpp"
+#include "ui/qt/widget/base_widget.hpp"
 #include <QToolBar>
 
 namespace VTX::UI::QT::ToolBar
 {
 
-	class Camera : public Core::BaseWidget<Camera, QToolBar>
+	class Camera : public Widget::BaseWidget<Camera, QToolBar>
 	{
 	  public:
-		Camera( QWidget * p_parent ) : BaseWidget<Camera, QToolBar>( "Camera", p_parent )
+		Camera( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
+			setWindowTitle( "Camera" );
+
 			addAction<Action::Camera::Perspective>();
 			addAction<Action::Camera::Orthographic>();
 			addSeparator();

@@ -1,24 +1,18 @@
 #include "app/action/selection.hpp"
-#include "app/selection/selection_manager.hpp"
-#include <util/logger.hpp>
+#include "app/action/action_manager.hpp"
 
 namespace VTX::App::Action::Selection
 {
-	void Select::execute() { CURRENT_SELECTION().selectAll( _selectionData, _assignment ); }
-
-	void Unselect::execute()
+	void Clear::execute()
 	{
-		for ( const App::Selection::SelectionData * const selectionData : _selectionData )
-		{
-			App::Selection::SelectionData & currentSelectionData
-				= CURRENT_SELECTION().getSelectionData( selectionData->getSelectionComponent() );
+		REG().view<System::Selection>().each(
+			[]( const ECS::Entity p_ent, System::Selection & )
+			{ ACTION().execute<SetSelected<Scene::E_ITEM::SYSTEM>>( p_ent, Core::Struct::IndexRangeList(), false ); }
+		);
+	}
 
-			currentSelectionData.remove( *selectionData );
-
-			if ( not currentSelectionData.isValid() )
-			{
-				CURRENT_SELECTION().unselect( selectionData->getSelectionComponent() );
-			}
-		}
+	void Clear::execute( const ECS::Entity p_ent )
+	{
+		ACTION().execute<SetSelected<Scene::E_ITEM::SYSTEM>>( p_ent, Core::Struct::IndexRangeList(), false );
 	}
 } // namespace VTX::App::Action::Selection

@@ -1,11 +1,12 @@
 #include "ui/qt/widget/main_window.hpp"
 #include "app/services.hpp"
+#include "ui/qt/application.hpp"
 #include "ui/qt/dialog/progress.hpp"
 #include "ui/qt/dock_widget/color_layouts.hpp"
 #include "ui/qt/dock_widget/console.hpp"
+#include "ui/qt/dock_widget/graphics_configs.hpp"
 #include "ui/qt/dock_widget/inspector.hpp"
 #include "ui/qt/dock_widget/options.hpp"
-#include "ui/qt/dock_widget/render_settings.hpp"
 #include "ui/qt/dock_widget/representations.hpp"
 #include "ui/qt/dock_widget/scene.hpp"
 #include "ui/qt/dock_widget/sequences.hpp"
@@ -15,19 +16,26 @@
 #include "ui/qt/menu/selection.hpp"
 #include "ui/qt/menu/theme.hpp"
 #include "ui/qt/menu/view.hpp"
+#include "ui/qt/settings.hpp"
 #include "ui/qt/tool_bar/camera.hpp"
 #include "ui/qt/tool_bar/file.hpp"
 #include "ui/qt/tool_bar/snapshot.hpp"
 #include <QApplication>
+#include <QMessageBox>
 #include <QMimeData>
-#include <app/action/application.hpp>
 #include <app/action/scene.hpp>
 #include <util/event_hub.hpp>
+
+namespace
+{
+	constexpr std::string_view _SETTING_KEY_GEOMETRY = "main/geometry";
+	constexpr std::string_view _SETTING_KEY_STATE	 = "main/state";
+} // namespace
 
 namespace VTX::UI::QT::Widget
 {
 
-	MainWindow::MainWindow() : BaseWidget<MainWindow, QMainWindow>( nullptr )
+	MainWindow::MainWindow() : BaseWidget( nullptr )
 	{
 		// Size.
 		resize( 1920, 1080 );
@@ -49,19 +57,16 @@ namespace VTX::UI::QT::Widget
 		// setCorner( Qt::TopRightCorner, Qt::RightDockWidgetArea );
 		setCorner( Qt::BottomLeftCorner, Qt::LeftDockWidgetArea );
 		setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
-	}
 
-	void MainWindow::build()
-	{
 		VTX_DEBUG( "Build main window" );
 
 		// Main menu.
 		createMenu<Menu::File>();
 		createMenu<Menu::Camera>();
 		createMenu<Menu::Selection>();
-		// createMenu<Menu::View>();
+		createMenu<Menu::View>()->setEnabled( false );
 		createMenu<Menu::Theme>();
-		createMenu<Menu::Help>();
+		createMenu<Menu::Help>()->setEnabled( false );
 
 		// Toolbars.
 		createToolBar<ToolBar::File>();
@@ -80,48 +85,50 @@ namespace VTX::UI::QT::Widget
 		*/
 
 		// Main area : opengl widget.
-		_openGLWidget = new OpenGLWidget( this );
-		setCentralWidget( _openGLWidget );
+		setCentralWidget( new OpenGLWidget( this ) );
 
 		// Dock widgets.
 		createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );
 
-		createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
+		auto * const dwScene = createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
 		createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea );
 		createDockWidget<DockWidget::ColorLayouts>( Qt::LeftDockWidgetArea );
+		dwScene->raise();
 
-		// dwScene->raise();
-
-		createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
-		createDockWidget<DockWidget::RenderSettings>( Qt::RightDockWidgetArea );
+		auto * const dwInspector = createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
+		createDockWidget<DockWidget::GraphicsConfigs>( Qt::RightDockWidgetArea );
 		createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
-
-		// dwInspector->raise();
+		dwInspector->raise();
 
 		createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
 
 		// Status bar.
 		_statusBar = new StatusBar( this );
 		setStatusBar( _statusBar );
-	}
 
-	void MainWindow::prepare()
-	{
-		// Select default tabs.
-		Core::WIDGETS::get().get<DockWidget::Scene>()->raise();
-		Core::WIDGETS::get().get<DockWidget::Inspector>()->raise();
-
-		// TODO: Set openGL widget as focus.
 		// centralWidget()->setFocus();
 
 		// Backup default geometry and state.
 		_defaultGeometry = saveGeometry();
 		_defaultState	 = saveState();
 
+		// Restore geometry and state.
+		restoreGeometry( SETTINGS().value( _SETTING_KEY_GEOMETRY ).toByteArray() );
+		restoreState( SETTINGS().value( _SETTING_KEY_STATE ).toByteArray() );
+
 		// Connect events.
-		App::HUB().connect<App::Events::BlockingOperationStarted, &MainWindow::_onBlockingOperationStarted>( this );
+		App::HUB().connect<App::Events::ApplicationError, &MainWindow::_onApplicationError>( this );
+		App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
 		App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>( this );
-		App::HUB().connect<App::Events::BlockingOperationEnded, &MainWindow::_onBlockingOperationEnded>( this );
+		App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
+
+		QTimer::singleShot( 0, this, [ this ] { centralWidget()->setFocus(); } );
+	}
+
+	MainWindow::~MainWindow()
+	{
+		SETTINGS().setValue( _SETTING_KEY_GEOMETRY, saveGeometry() );
+		SETTINGS().setValue( _SETTING_KEY_STATE, saveState() );
 	}
 
 	void MainWindow::addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action )
@@ -130,13 +137,13 @@ namespace VTX::UI::QT::Widget
 		{
 			if ( menu->title().toStdString() == p_menu )
 			{
-				menu->addAction( Action::Factory::get( p_action ) );
+				menu->addAction( Application::getAction( p_action ) );
 				return;
 			}
 		}
 
 		QMenu * const menu = menuBar()->addMenu( p_menu.c_str() );
-		menu->addAction( Action::Factory::get( p_action ) );
+		menu->addAction( Application::getAction( p_action ) );
 	}
 
 	void MainWindow::addToolBarAction( const App::UI::WidgetId & p_toolbar, const App::UI::DescAction & p_action )
@@ -145,14 +152,14 @@ namespace VTX::UI::QT::Widget
 		{
 			if ( toolbar->windowTitle().toStdString() == p_toolbar )
 			{
-				toolbar->addAction( Action::Factory::get( p_action ) );
+				toolbar->addAction( Application::getAction( p_action ) );
 				return;
 			}
 		}
 
 		QToolBar * const toolbar = new QToolBar( p_toolbar.c_str(), this );
 		addToolBar( toolbar );
-		toolbar->addAction( Action::Factory::get( p_action ) );
+		toolbar->addAction( Application::getAction( p_action ) );
 	}
 
 	void MainWindow::resetLayout()
@@ -163,14 +170,10 @@ namespace VTX::UI::QT::Widget
 		center();
 	}
 
-	void MainWindow::changeEvent( QEvent * const p_event ) {}
-
 	void MainWindow::closeEvent( QCloseEvent * p_event )
 	{
-		VTX_TRACE( "Qt main window close event" );
-
-		App::ACTION().execute<App::Action::Application::Quit>();
-		p_event->ignore();
+		VTX_TRACE( "MainWindow::closeEvent: Qt main window close event" );
+		QCoreApplication::quit();
 	}
 
 	void MainWindow::dragEnterEvent( QDragEnterEvent * p_event ) { p_event->acceptProposedAction(); }
@@ -185,19 +188,13 @@ namespace VTX::UI::QT::Widget
 		p_event->acceptProposedAction();
 	}
 
-	void MainWindow::save()
+	void MainWindow::_onApplicationError( const App::Events::ApplicationError & p_e )
 	{
-		SETTINGS.setValue( "geometry", saveGeometry() );
-		SETTINGS.setValue( "windowState", saveState() );
+		VTX_ERROR( "{}", p_e.message );
+		QMessageBox::critical( this, "Error", p_e.message.c_str(), QMessageBox::StandardButton::Ok );
 	}
 
-	void MainWindow::restore()
-	{
-		restoreGeometry( SETTINGS.value( "geometry" ).toByteArray() );
-		restoreState( SETTINGS.value( "windowState" ).toByteArray() );
-	}
-
-	void MainWindow::_onBlockingOperationStarted( const App::Events::BlockingOperationStarted & p_e )
+	void MainWindow::_onBlockingOperationStart( const App::Events::BlockingOperationStart & p_e )
 	{
 		_progressDialog = new Dialog::Progress( p_e.message );
 		_progressDialog->show();
@@ -210,7 +207,7 @@ namespace VTX::UI::QT::Widget
 		_progressDialog->setValue( p_e.progress );
 	}
 
-	void MainWindow::_onBlockingOperationEnded( const App::Events::BlockingOperationEnded & )
+	void MainWindow::_onBlockingOperationEnd( const App::Events::BlockingOperationEnd & )
 	{
 		if ( _progressDialog )
 		{

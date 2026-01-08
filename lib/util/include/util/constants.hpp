@@ -12,16 +12,12 @@
 
 namespace VTX
 {
-	constexpr float FLOAT_LOWEST = std::numeric_limits<float>::lowest();
-	constexpr float FLOAT_MIN	 = std::numeric_limits<float>::min();
-	constexpr float FLOAT_MAX	 = std::numeric_limits<float>::max();
-
-	constexpr uchar	 UNSIGNED_CHAR_MAX	= std::numeric_limits<uchar>::max();
-	constexpr ushort UNSIGNED_SHORT_MAX = std::numeric_limits<ushort>::max();
-	constexpr uint	 UNSIGNED_INT_MAX	= std::numeric_limits<uint>::max();
-
-	constexpr size_t SIZE_T_MIN = std::numeric_limits<size_t>::min();
-	constexpr size_t SIZE_T_MAX = std::numeric_limits<size_t>::max();
+	template<typename T>
+	constexpr T TypeMin = std::numeric_limits<T>::min();
+	template<typename T>
+	constexpr T TypeMax = std::numeric_limits<T>::max();
+	template<typename T>
+	constexpr T TypeLowest = std::numeric_limits<T>::lowest();
 
 	constexpr float EPSILON = 1e-4f;
 
@@ -32,8 +28,8 @@ namespace VTX
 	constexpr Vec3f VEC3F_Y		 = Vec3f( 0.f, 1.f, 0.f );
 	constexpr Vec3f VEC3F_Z		 = Vec3f( 0.f, 0.f, 1.f );
 	constexpr Vec3f VEC3F_XYZ	 = Vec3f( 1.f, 1.f, 1.f );
-	constexpr Vec3f VEC3F_LOWEST = Vec3f( FLOAT_LOWEST );
-	constexpr Vec3f VEC3F_MAX	 = Vec3f( FLOAT_MAX );
+	constexpr Vec3f VEC3F_LOWEST = Vec3f( TypeLowest<float> );
+	constexpr Vec3f VEC3F_MAX	 = Vec3f( TypeMax<float> );
 
 	constexpr Vec3f RIGHT_AXIS = VEC3F_X;
 	constexpr Vec3f UP_AXIS	   = VEC3F_Y;
@@ -55,18 +51,18 @@ namespace VTX
 	constexpr float INV_PIf	 = glm::one_over_pi<float>();
 	constexpr float INV_2PIf = glm::one_over_two_pi<float>();
 
-	const Util::Color::Rgba COLOR_BLACK	  = Util::Color::Rgba( 0.f, 0.f, 0.f, 1.f );
-	const Util::Color::Rgba COLOR_WHITE	  = Util::Color::Rgba( 1.f, 1.f, 1.f, 1.f );
-	const Util::Color::Rgba COLOR_GREY	  = Util::Color::Rgba( 0.5f, 0.5f, 0.5f, 1.f );
-	const Util::Color::Rgba COLOR_RED	  = Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f );
-	const Util::Color::Rgba COLOR_GREEN	  = Util::Color::Rgba( 0.f, 1.f, 0.f, 1.f );
-	const Util::Color::Rgba COLOR_BLUE	  = Util::Color::Rgba( 0.f, 0.f, 1.f, 1.f );
-	const Util::Color::Rgba COLOR_YELLOW  = Util::Color::Rgba( 1.f, 1.f, 0.f, 1.f );
-	const Util::Color::Rgba COLOR_MAGENTA = Util::Color::Rgba( 1.f, 0.f, 1.f, 1.f );
-	const Util::Color::Rgba COLOR_CYAN	  = Util::Color::Rgba( 0.f, 1.f, 1.f, 1.f );
+	constexpr Util::Color::Rgba COLOR_BLACK	  = Util::Color::Rgba( 0.f, 0.f, 0.f, 1.f );
+	constexpr Util::Color::Rgba COLOR_WHITE	  = Util::Color::Rgba( 1.f, 1.f, 1.f, 1.f );
+	constexpr Util::Color::Rgba COLOR_GREY	  = Util::Color::Rgba( 0.5f, 0.5f, 0.5f, 1.f );
+	constexpr Util::Color::Rgba COLOR_RED	  = Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f );
+	constexpr Util::Color::Rgba COLOR_GREEN	  = Util::Color::Rgba( 0.f, 1.f, 0.f, 1.f );
+	constexpr Util::Color::Rgba COLOR_BLUE	  = Util::Color::Rgba( 0.f, 0.f, 1.f, 1.f );
+	constexpr Util::Color::Rgba COLOR_YELLOW  = Util::Color::Rgba( 1.f, 1.f, 0.f, 1.f );
+	constexpr Util::Color::Rgba COLOR_MAGENTA = Util::Color::Rgba( 1.f, 0.f, 1.f, 1.f );
+	constexpr Util::Color::Rgba COLOR_CYAN	  = Util::Color::Rgba( 0.f, 1.f, 1.f, 1.f );
 
-	constexpr Index INVALID_INDEX = UNSIGNED_INT_MAX;
-
+	constexpr Index INVALID_INDEX = TypeMax<uint>;
+	constexpr int	INVALID_UID	  = 0;
 } // namespace VTX
 
 #endif

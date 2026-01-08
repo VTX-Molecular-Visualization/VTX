@@ -1,22 +1,20 @@
 #include "ui/qt/widget/library/color_layout.hpp"
-#include "ui/qt/core/layout/flow_layout.hpp"
 #include "ui/qt/helper.hpp"
+#include "ui/qt/layout/flow_layout.hpp"
 #include <app/action/color_layout.hpp>
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/chain.hpp>
-#include <core/chemdb/color_layout.hpp>
 #include <core/chemdb/residue.hpp>
+#include <renderer/color.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
 
 	ColorLayout::ColorLayout( QWidget * p_parent ) : BasePresetWidget( p_parent )
 	{
-		using namespace VTX::Core::Struct;
-		using namespace App::Library::Preset;
-		using namespace Core::Widget;
-		using namespace VTX::Core::ChemDB;
-		using namespace VTX::Core::ChemDB::ColorLayout;
+		using namespace Renderer;
+		using namespace Core::ChemDB;
+		using namespace Color;
 
 		setTitle( "Edit color layout" );
 
@@ -25,7 +23,7 @@ namespace VTX::UI::QT::Widget::Library
 		searchBar->setPlaceholderText( "TODO" );
 		addWidget( searchBar );
 
-		_buttons.resize( VTX::Core::Struct::COLOR_LAYOUT_SIZE );
+		_buttons.resize( COLOR_LAYOUT_SIZE );
 
 		// Group boxes.
 		_createGroupBox( "Atom", LAYOUT_OFFSET_ATOMS, LAYOUT_COUNT_ATOMS, Atom::SYMBOL_STR, Atom::SYMBOL_NAME );
@@ -46,51 +44,26 @@ namespace VTX::UI::QT::Widget::Library
 		connect(
 			buttonRandomize,
 			&QPushButton::clicked,
-			[ this ]() { App::ACTION().execute<App::Action::ColorLayout::Randomize>( _preset ); }
+			[ this ]() { App::ACTION().execute<App::Action::ColorLayout::Randomize>( currentPreset() ); }
 		);
+
 		addWidget( buttonRandomize );
 	}
 
-	void ColorLayout::_onPresetAdded( const std::string_view p_name )
+	void ColorLayout::_update( App::ECS::Entity p_e )
 	{
-		auto * const preset = _library->getPreset( p_name );
+		auto & preset = App::REG().get<Renderer::Color::Layout>( p_e );
 
-		preset->onChange += [ this, preset ]( const Index p_index )
+		for ( size_t i = 0; i < Renderer::Color::COLOR_LAYOUT_SIZE; ++i )
 		{
-			if ( _preset != preset )
-				return;
-
-			_setColor( p_index, _preset->getData().colors[ p_index ] );
-		};
-
-		preset->onChangeAll += [ this, preset ]()
-		{
-			if ( _preset != preset )
-				return;
-
-			for ( size_t i = 0; i < VTX::Core::Struct::COLOR_LAYOUT_SIZE; ++i )
-			{
-				_setColor( i, _preset->getData().colors[ i ] );
-			}
-		};
-	}
-
-	void ColorLayout::_onPresetChanged()
-	{
-		assert( _preset != nullptr );
-
-		App::ACTION().execute<App::Action::ColorLayout::SetCurrent>( _preset );
-
-		for ( size_t i = 0; i < VTX::Core::Struct::COLOR_LAYOUT_SIZE; ++i )
-		{
-			_setColor( i, _preset->getData().colors[ i ] );
+			_updateColor( i, preset.colors[ i ] );
 		}
 	}
 
 	void ColorLayout::refreshVisibility( const bool p_hide )
 	{
-		using namespace VTX::Core::ChemDB;
-		using namespace VTX::Core::ChemDB::ColorLayout;
+		using namespace Core::ChemDB;
+		using namespace Renderer::Color;
 
 		_refreshButtonVisibility( p_hide, LAYOUT_OFFSET_ATOMS, LAYOUT_COUNT_ATOMS, Atom::SYMBOL_IS_COMMON );
 		_refreshButtonVisibility( p_hide, LAYOUT_OFFSET_RESIDUES, LAYOUT_COUNT_RESIDUES, Residue::SYMBOL_IS_COMMON );
@@ -105,7 +78,7 @@ namespace VTX::UI::QT::Widget::Library
 	)
 	{
 		auto * groupBox = new QGroupBox( QString::fromStdString( p_title.data() ) );
-		auto * layout	= new Core::Layout::FlowLayout( groupBox );
+		auto * layout	= new Layout::FlowLayout( groupBox );
 
 		// Create buttons.
 		size_t offset = 0;
@@ -113,7 +86,7 @@ namespace VTX::UI::QT::Widget::Library
 		{
 			// QString text = p_text ? QString::fromStdString( p_text[ offset ].data() ) : QString::number( i );
 
-			_buttons[ i ] = new Core::Widget::ColorPicker( groupBox );
+			_buttons[ i ] = new ColorPicker( groupBox );
 			_buttons[ i ]->setFixedSize( _BUTTON_SIZE, _BUTTON_SIZE );
 
 			if ( p_text )
@@ -144,11 +117,11 @@ namespace VTX::UI::QT::Widget::Library
 	void ColorLayout::_changeColor( const size_t p_index, const QColor & p_color )
 	{
 		App::ACTION().execute<App::Action::ColorLayout::Change>(
-			_preset, Index( p_index ), Helper::fromQColor( p_color )
+			currentPreset(), Index( p_index ), Helper::fromQColor( p_color )
 		);
 	}
 
-	void ColorLayout::_setColor( const size_t p_index, const Util::Color::Rgba & p_color )
+	void ColorLayout::_updateColor( const size_t p_index, const Util::Color::Rgba & p_color )
 	{
 		if ( _buttons[ p_index ] )
 		{
@@ -168,7 +141,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		auto * groupBox = static_cast<QGroupBox *>( _buttons[ p_start ]->parentWidget() );
 		delete groupBox->layout();
-		auto * layout = new Core::Layout::FlowLayout( groupBox );
+		auto * layout = new Layout::FlowLayout( groupBox );
 
 		size_t count = 0;
 		for ( size_t i = p_start; i < p_start + p_count; ++i )

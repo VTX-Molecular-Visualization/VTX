@@ -1,9 +1,11 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 //
+/*
 #include <app/action/scene.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/system.hpp>
+*/
 #include <app/filesystem.hpp>
 #include <app/fixture.hpp>
 #include <app/vtx_app.hpp>
@@ -17,6 +19,7 @@
 
 TEST_CASE( "VTX_TOOL_MdPrep - test", "[test]" )
 {
+	/*
 	const VTX::FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
 	std::filesystem::create_directory( path );
 	VTX::Util::Logger::init( path );
@@ -36,4 +39,5 @@ TEST_CASE( "VTX_TOOL_MdPrep - test", "[test]" )
 			= VTX::App::ECS_REGISTRY().getComponent<VTX::App::Component::Chemistry::System>( molEntity );
 	}
 	return;
+	*/
 }

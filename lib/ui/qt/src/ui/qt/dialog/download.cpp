@@ -8,7 +8,16 @@
 #include <QVBoxLayout>
 #include <app/action/io.hpp>
 #include <app/action/scene.hpp>
-#include <app/network/network_manager.hpp>
+#include <app/filesystem.hpp>
+
+namespace
+{
+	const QString _PDB_ID_TEMPLATE	= VTX::Util::Url::systemReplacementToken();
+	const QString _DEFAULT_URL		= QString( VTX::Util::Url::rcsbPdbDownloadBaseUrl() ) + _PDB_ID_TEMPLATE + ".pdb";
+	const QString _SETTING_KEY_URL	= "dialog/download/history/url";
+	const QString _SETTING_KEY_PDB	= "dialog/download/history/pdb";
+	const uint	  _MAX_HISTORY_SIZE = 10;
+} // namespace
 
 namespace VTX::UI::QT::Dialog
 {
@@ -43,7 +52,7 @@ namespace VTX::UI::QT::Dialog
 
 		// Radio buttons.
 		auto * buttonGroup		= new QButtonGroup( this );
-		auto * layoutCacheRadio = new QHBoxLayout( this );
+		auto * layoutCacheRadio = new QHBoxLayout();
 		_radioButtonOpen		= new QRadioButton( "Open from cache" );
 		_radioButtonDownload	= new QRadioButton( "Download" );
 		buttonGroup->addButton( _radioButtonOpen );
@@ -124,7 +133,7 @@ namespace VTX::UI::QT::Dialog
 					Util::Url::UrlTemplate urlReplaced { _url.toStdString().data() };
 					if ( urlReplaced.hasReplacementToken() )
 					{
-						App::ACTION().execute<App::Action::Io::DownloadSystem>(
+						App::ACTION().execute<App::Action::IO::DownloadSystem>(
 							Util::Url::UrlFull( urlReplaced, Util::Url::SystemId( _pdb.toStdString().data() ) ),
 							_pdb.toStdString() + ".pdb"
 						);
@@ -132,11 +141,14 @@ namespace VTX::UI::QT::Dialog
 					else
 					{
 						VTX_ERROR( "URL does not contain {}", _PDB_ID_TEMPLATE.toStdString() );
+						return;
 					}
 				}
 
-				save();
-				close();
+				_saveHistory( _SETTING_KEY_URL, _url );
+				_saveHistory( _SETTING_KEY_PDB, _pdb );
+
+				accept();
 			}
 		);
 
@@ -144,11 +156,12 @@ namespace VTX::UI::QT::Dialog
 		connect(
 			buttonBox->button( QDialogButtonBox::StandardButton::Cancel ),
 			&QPushButton::clicked,
-			[ this ]() { close(); }
+			[ this ]() { reject(); }
 		);
 
-		// Load histories manually because dialog is destroyed when closed.
-		restore();
+		// Load history.
+		_loadHistory( _SETTING_KEY_URL, _comboBoxURL );
+		_loadHistory( _SETTING_KEY_PDB, _comboBoxPDB );
 
 		// FIXME: Avoid losing default url if not in history.
 		if ( _comboBoxURL->findText( _DEFAULT_URL ) == -1 )
@@ -157,20 +170,11 @@ namespace VTX::UI::QT::Dialog
 		}
 	}
 
-	void Download::_loadHistory( const QString & p_key, QComboBox * const p_comboBox )
-	{
-		QStringList history = SETTINGS.value( p_key ).toStringList();
-		p_comboBox->addItems( history );
-	}
-
 	void Download::_saveHistory( const QString & p_key, const QString & p_value )
 	{
-		QStringList history = SETTINGS.value( p_key ).toStringList();
+		QStringList history = SETTINGS().value( p_key ).toStringList();
 		// Remove duplicates.
-		if ( history.contains( p_value ) )
-		{
-			history.removeAll( p_value );
-		}
+		history.removeAll( p_value );
 		// Prepend the last one.
 		history.prepend( p_value );
 		// Limit to 10.
@@ -178,19 +182,12 @@ namespace VTX::UI::QT::Dialog
 		{
 			history.removeLast();
 		}
-		SETTINGS.setValue( p_key, history );
+		SETTINGS().setValue( p_key, history );
 	}
 
-	void Download::save()
+	void Download::_loadHistory( const QString & p_key, QComboBox * const p_comboBox )
 	{
-		_saveHistory( _SETTING_KEY_URL, _url );
-		_saveHistory( _SETTING_KEY_PDB, _pdb );
+		QStringList history = SETTINGS().value( p_key ).toStringList();
+		p_comboBox->addItems( history );
 	}
-
-	void Download::restore()
-	{
-		_loadHistory( _SETTING_KEY_URL, _comboBoxURL );
-		_loadHistory( _SETTING_KEY_PDB, _comboBoxPDB );
-	}
-
 } // namespace VTX::UI::QT::Dialog

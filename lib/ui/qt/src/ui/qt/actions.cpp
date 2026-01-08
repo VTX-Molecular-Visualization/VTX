@@ -1,95 +1,19 @@
 #include "ui/qt/actions.hpp"
+#include "app/action/controller.hpp"
+#include "app/action/selection.hpp"
+#include "ui/qt/application.hpp"
 #include "ui/qt/dialog/download.hpp"
 #include "ui/qt/dialog/export_image.hpp"
 #include "ui/qt/dialog/open.hpp"
-#include <QApplication>
-#include <app/action/application.hpp>
+#include "ui/qt/style.hpp"
+#include "ui/qt/widget/tree.hpp"
 #include <app/action/camera.hpp>
-#include <app/action/controller.hpp>
 #include <app/action/io.hpp>
-#include <app/application/scene.hpp>
-#include <app/component/controller.hpp>
-#include <app/controller/camera/freefly.hpp>
-#include <app/controller/camera/trackball.hpp>
-#include <util/logger.hpp>
+#include <app/action/scene.hpp>
 
 namespace VTX::UI::QT::Action
 {
-	QAction * const Factory::_getOrCreate( const Hash & p_hash, const App::UI::DescAction & p_action )
-	{
-		if ( not _ACTIONS.has( p_hash ) )
-		{
-			QAction * qAction = _ACTIONS.createWithHash<QAction>( p_hash );
 
-			VTX_TRACE( "UI action created: {}", p_action.name );
-
-			// Name.
-			qAction->setText( p_action.name.c_str() );
-			// Group.
-			if ( p_action.group.has_value() )
-			{
-				const auto group = Util::hash( p_action.group.value() );
-				if ( not _ACTION_GROUPS.has( group ) )
-				{
-					_ACTION_GROUPS.set( group, new QActionGroup( nullptr ) );
-				}
-
-				qAction->setCheckable( true );
-				_ACTION_GROUPS.get<QActionGroup>( group )->addAction( qAction );
-			}
-			// Tip.
-			if ( p_action.tip.has_value() )
-			{
-				QString tip = p_action.tip.value().c_str();
-
-				if ( p_action.shortcut.has_value() )
-				{
-					tip.append( " (" + p_action.shortcut.value() + ")" );
-				}
-
-				qAction->setStatusTip( tip );
-				qAction->setToolTip( tip );
-				qAction->setWhatsThis( tip );
-			}
-			// Icon.
-			if ( p_action.icon.has_value() )
-			{
-				if ( std::holds_alternative<int>( p_action.icon.value() ) )
-				{
-					qAction->setIcon(
-						QApplication::style()->standardIcon(
-							static_cast<QStyle::StandardPixmap>( std::get<int>( p_action.icon.value() ) )
-						)
-					);
-				}
-				else if ( std::holds_alternative<std::string>( p_action.icon.value() ) )
-				{
-					qAction->setIcon( QIcon( ( ":/" + std::get<std::string>( p_action.icon.value() ) ).c_str() ) );
-				}
-				else
-				{
-					VTX_ERROR( "Invalid icon type for action: {}", p_action.name );
-				}
-			}
-			// Shortcut.
-			if ( p_action.shortcut.has_value() )
-			{
-				qAction->setShortcut( QKeySequence( p_action.shortcut.value().c_str() ) );
-			}
-			// Action.
-			if ( p_action.trigger.has_value() )
-			{
-				QObject::connect( qAction, &QAction::triggered, p_action.trigger.value() );
-			}
-			// Connect.
-			// TODO: maybe this is dirty (calling this function to get previously created qAction).
-			p_action.connect();
-		}
-
-		return _ACTIONS.get<QAction>( p_hash );
-	}
-
-	// TODO: move all action to ui?
 	// System.
 	namespace System
 	{
@@ -100,7 +24,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Create a new project";
 			icon	 = "sprite/file/new.png";
 			shortcut = "Ctrl+N";
-			trigger	 = []() { App::ACTION().execute<App::Action::Application::NewScene>(); };
+			trigger	 = []() { App::ACTION().execute<App::Action::Scene::Clear>(); };
 		}
 
 		Download::Download()
@@ -136,6 +60,13 @@ namespace VTX::UI::QT::Action
 			icon = "sprite/file/open_recent.png";
 		}
 
+		Delete::Delete()
+		{
+			name = "Delete";
+			tip	 = "Delete system";
+			// icon = "sprite/file/open_recent.png";
+		}
+
 		Save::Save()
 		{
 			name	 = "Save";
@@ -160,7 +91,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Quit";
 			tip		 = "Exit software";
-			trigger	 = []() { App::ACTION().execute<App::Action::Application::Quit>(); };
+			trigger	 = []() { QCoreApplication::quit(); };
 			shortcut = "Esc";
 		}
 
@@ -177,28 +108,18 @@ namespace VTX::UI::QT::Action
 			tip		 = "Change camera projection mode";
 			icon	 = "sprite/camera/orthographic.png";
 			shortcut = "Alt+O";
-			trigger	 = []() { App::ACTION().execute<App::Action::Camera::ToggleCameraProjection>(); };
+			trigger	 = []()
+			{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>(); };
 		}
 
 		void Orthographic::connect() const
 		{
-			using namespace App::Component;
+			using namespace App;
 
-			QAction * const	 qAction = Factory::get<Orthographic>();
-			Render::Camera & camera	 = App::SCENE().getCamera();
-
-			if ( camera.getProjection() == Render::Camera::PROJECTION::ORTHOGRAPHIC )
-			{
-				qAction->setChecked( true );
-			}
-
-			camera.onProjectionChange += [ qAction ]( const Render::Camera::PROJECTION p_projection )
-			{
-				if ( p_projection == Render::Camera::PROJECTION::ORTHOGRAPHIC )
-				{
-					qAction->setChecked( true );
-				}
-			};
+			QAction * const qAction = Application::getAction<Orthographic>();
+			HUB().connect<App::Events::CameraProjectionChange<static_cast<int>( Renderer::PROJECTION::ORTHOGRAPHIC )>>(
+				[ qAction ]() { qAction->setChecked( true ); }
+			);
 		}
 
 		Perspective::Perspective()
@@ -208,28 +129,18 @@ namespace VTX::UI::QT::Action
 			tip		 = "Change camera projection mode";
 			icon	 = "sprite/camera/perspective.png";
 			shortcut = "Alt+P";
-			trigger	 = []() { App::ACTION().execute<App::Action::Camera::ToggleCameraProjection>(); };
+			trigger	 = []()
+			{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>(); };
 		}
 
 		void Perspective::connect() const
 		{
-			using namespace App::Component;
+			using namespace App;
 
-			QAction * const	 qAction = Factory::get<Perspective>();
-			Render::Camera & camera	 = App::SCENE().getCamera();
-
-			if ( camera.getProjection() == Render::Camera::PROJECTION::PERSPECTIVE )
-			{
-				qAction->setChecked( true );
-			}
-
-			camera.onProjectionChange += [ qAction ]( const Render::Camera::PROJECTION p_projection )
-			{
-				if ( p_projection == Render::Camera::PROJECTION::PERSPECTIVE )
-				{
-					qAction->setChecked( true );
-				}
-			};
+			QAction * const qAction = Application::getAction<Perspective>();
+			HUB().connect<Events::CameraProjectionChange<static_cast<int>( Renderer::PROJECTION::PERSPECTIVE )>>(
+				[ qAction ]() { qAction->setChecked( true ); }
+			);
 		}
 
 		Trackball::Trackball()
@@ -239,27 +150,18 @@ namespace VTX::UI::QT::Action
 			tip		 = "Use Trackball controller";
 			icon	 = "sprite/camera/trackball.png";
 			shortcut = "Alt+T";
-			trigger	 = []() { App::ACTION().execute<App::Action::Controller::ToggleCameraController>(); };
+			trigger	 = []()
+			{
+				App::ACTION().execute<App::Action::Controller::SetCameraController<App::Pass::Controller::Trackball>>();
+			};
 		}
 
 		void Trackball::connect() const
 		{
-			QAction * const				 qAction = Factory::get<Trackball>();
-			App::Component::Controller & component
-				= App::ECS_REGISTRY().getComponent<App::Component::Controller>( App::SCENE().getCamera() );
-
-			if ( component.isControllerEnabled<App::Controller::Camera::Trackball>() )
-			{
-				qAction->setChecked( true );
-			}
-
-			component.onControllerEnabled += [ qAction ]( const Hash p_hash )
-			{
-				if ( p_hash == Util::hash<App::Controller::Camera::Trackball>() )
-				{
-					qAction->setChecked( true );
-				}
-			};
+			QAction * const qAction = Application::getAction<Trackball>();
+			App::HUB().connect<App::Events::CameraControllerChange<App::Pass::Controller::Trackball>>(
+				[ qAction ]() { qAction->setChecked( true ); }
+			);
 		}
 
 		Freefly::Freefly()
@@ -269,27 +171,16 @@ namespace VTX::UI::QT::Action
 			tip		 = "Use Freefly controller";
 			icon	 = "sprite/camera/freefly.png";
 			shortcut = "Alt+F";
-			trigger	 = []() { App::ACTION().execute<App::Action::Controller::ToggleCameraController>(); };
+			trigger	 = []()
+			{ App::ACTION().execute<App::Action::Controller::SetCameraController<App::Pass::Controller::Freefly>>(); };
 		}
 
 		void Freefly::connect() const
 		{
-			QAction * const				 qAction = Factory::get<Freefly>();
-			App::Component::Controller & component
-				= App::ECS_REGISTRY().getComponent<App::Component::Controller>( App::SCENE().getCamera() );
-
-			if ( component.isControllerEnabled<App::Controller::Camera::Freefly>() )
-			{
-				qAction->setChecked( true );
-			}
-
-			component.onControllerEnabled += [ qAction ]( const Hash p_hash )
-			{
-				if ( p_hash == Util::hash<App::Controller::Camera::Freefly>() )
-				{
-					qAction->setChecked( true );
-				}
-			};
+			QAction * const qAction = Application::getAction<Freefly>();
+			App::HUB().connect<App::Events::CameraControllerChange<App::Pass::Controller::Freefly>>(
+				[ qAction ]() { qAction->setChecked( true ); }
+			);
 		}
 
 		Orient::Orient()
@@ -318,7 +209,11 @@ namespace VTX::UI::QT::Action
 			tip		 = "Save current image";
 			icon	 = "sprite/snapshot/snapshot.png";
 			shortcut = "F2";
-			trigger	 = []() { App::ACTION().execute<App::Action::Io::Snapshot>(); };
+			trigger	 = []()
+			{
+				App::Action::IO::Snapshot action;
+				App::ACTION().execute( action );
+			};
 		}
 
 		Export::Export()
@@ -337,6 +232,29 @@ namespace VTX::UI::QT::Action
 	} // namespace Snapshot
 	namespace Selection
 	{
+
+		Lock::Lock()
+		{
+			name = "Lock";
+			tip	 = "Lock the current selection";
+			// icon = static_cast<int>( QStyle::StandardPixmap::SP_TitleBarShadeButton );
+		}
+
+		Save::Save()
+		{
+			name = "Save";
+			tip	 = "Save the current selection";
+			// icon = static_cast<int>( QStyle::StandardPixmap::SP_DialogSaveButton );
+		}
+
+		Clear::Clear()
+		{
+			name = "Clear";
+			tip	 = "Clear selection";
+			// icon = static_cast<int>( QStyle::StandardPixmap::SP_TrashIcon );
+			trigger = []() { App::ACTION().execute<App::Action::Selection::Clear>(); };
+		}
+
 		SetGranularitySystem::SetGranularitySystem()
 		{
 			name  = "System";
@@ -390,23 +308,26 @@ namespace VTX::UI::QT::Action
 
 		System::System()
 		{
-			name  = "System";
-			group = "Theme";
-			tip	  = "Use system theme";
+			name	= "System";
+			group	= "Theme";
+			tip		= "Use system theme";
+			trigger = []() { STYLE().setTheme( Style::E_THEME::SYSTEM ); };
 		}
 
 		Light::Light()
 		{
-			name  = "Light";
-			group = "Theme";
-			tip	  = "Use light theme";
+			name	= "Light";
+			group	= "Theme";
+			tip		= "Use light theme";
+			trigger = []() { STYLE().setTheme( Style::E_THEME::LIGHT ); };
 		}
 
 		Dark::Dark()
 		{
-			name  = "Dark";
-			group = "Theme";
-			tip	  = "Use dark theme";
+			name	= "Dark";
+			group	= "Theme";
+			tip		= "Use dark theme";
+			trigger = []() { STYLE().setTheme( Style::E_THEME::DARK ); };
 		}
 
 		ResetLayout::ResetLayout() { name = "Reset layout"; }
