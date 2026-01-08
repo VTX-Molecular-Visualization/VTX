@@ -35,11 +35,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 	VTX::App::Test::Util::PythonFixture f;
 
 	pybind11::module_ * mod = nullptr;
-	VTX::INTERPRETOR().getModule().commands().getPythonModule( &mod );
+	f.interpretor.getModule().commands().getPythonModule( &mod );
 
 	Test::TestStruct test;
 
-	VTX::INTERPRETOR().getModule().commands().def(
+	f.interpretor.getModule().commands().def(
 		"test_kwargs",
 		[ & ]( const pybind11::kwargs & p_kwargs )
 		{

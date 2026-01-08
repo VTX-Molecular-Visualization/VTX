@@ -72,12 +72,45 @@ namespace VTX::App
 		ECS::setCtx<Threading::ThreadManager>();
 		// Store uid manager.
 		ECS::setCtx<Uid::UIDManager>();
+<<<<<<< HEAD
+		// Store Python interpretor
+		ECS::setCtx<VTX::App::PythonBinding::Interpretor>();
+	}
+	VTXApp::~VTXApp()
+	{
+		ECS::eraseCtx<VTX::App::PythonBinding::Interpretor>(); // Python interpretor relies on the thread manager, so we
+															   // explicitly destroy it before. I'm not sure this is the
+															   // best way to do it
+	}
+	void VTXApp::init()
+	{
+		VTX_INFO( "Init application" );
+
+		// Load preset libraries.
+		auto * lib	  = LIBRARY().load<Library::Preset::Representation>( Filesystem::getRepresentationsDir() );
+		auto * preset = lib->createPreset( "Sticks" );
+		preset->setData( App::Library::Preset::Representations::STICKS );
+		preset = lib->createPreset( "Balls and sticks" );
+		preset->setData( App::Library::Preset::Representations::BALLS_AND_STICKS );
+		preset = lib->createPreset( "Van der Waals" );
+		preset->setData( App::Library::Preset::Representations::VAN_DER_WAALS );
+		preset = lib->createPreset( "Ribbons" );
+		preset->setData( App::Library::Preset::Representations::RIBBONS );
+		preset = lib->createPreset( "SES" );
+		preset->setData( App::Library::Preset::Representations::SES );
+
+		LIBRARY().load<Library::Preset::ColorLayout>( Filesystem::getColorLayoutsDir() );
+		LIBRARY().load<Library::Preset::RenderSettings>( Filesystem::getEffectsDir() );
+
+		// TODO: move to start to handle gui dialog?
+=======
 		// Store pass manager.
 		ECS::setCtx<Pass::PassManager>();
 		// Store python interpretor.
 		ECS::setCtx<PythonBinding::Interpretor>();
 
 		// Load settings.
+>>>>>>> 0f188738c7a693ac314431228236794162689c5d
 		Settings::initSettings();
 		auto & settings = SETTINGS();
 
@@ -129,8 +162,7 @@ namespace VTX::App
 				VTX_ERROR( "Failed to build renderer: {}", p_e.what() );
 				// renderer.setDefault();
 				HUB().trigger<Events::ApplicationError>(
-					"Unable to create OpenGL 4.5 context. Update your drivers and check your hardware "
-					"compatibility."
+					"Unable to create OpenGL 4.5 context. Update your drivers and check your hardware compatibility."
 				);
 			}
 		}

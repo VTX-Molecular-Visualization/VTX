@@ -1,0 +1,59 @@
+#ifndef __VTX_APP_FIXTURE__
+#define __VTX_APP_FIXTURE__
+
+#include "vtx_app.hpp"
+#include <util/logger.hpp>
+
+namespace VTX::App
+{
+	class Fixture
+	{
+	  public:
+		Fixture()
+		{
+<<<<<<< HEAD
+			VTX::Util::Logger::init();
+			VTX::VTX_INFO( "Constructing fixture" );
+			if ( not _app )
+			{
+				VTX::VTX_INFO( "Fixture constructing app" );
+				Args args( { ARG_NO_GRAPHICS, ARG_NO_UPDATE } );
+				_app = std::make_unique<APP>( args );
+				_app->init();
+			}
+			else
+				VTX::VTX_INFO( "App already constructed." );
+
+			VTX::VTX_INFO( "Fixture starting app" );
+			_app->start();
+		}
+
+		~Fixture()
+		{
+			VTX_INFO( "Fixture deconstructor begin." );
+			_app->stop();
+			VTX_INFO( "Fixture deconstructor end." );
+			VTX::Util::Logger::stop();
+		}
+
+		inline APP * const get() { return _app.get(); }
+=======
+			std::call_once(
+				_loggerOnce, []() { LOGGER::init( Util::Filesystem::getExecutableDir() / "logs_tests", true ); }
+			);
+
+			Args args( { ARG_NO_GRAPHICS, ARG_NO_UPDATE, ARG_DEBUG } );
+			_app = std::make_unique<VTXApp>( args );
+			_app->start();
+		}
+
+		inline VTXApp * const get() { return _app.get(); }
+>>>>>>> 0f188738c7a693ac314431228236794162689c5d
+
+	  private:
+		inline static std::once_flag _loggerOnce;
+		std::unique_ptr<VTXApp>		 _app;
+	};
+} // namespace VTX::App
+
+#endif

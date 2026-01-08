@@ -9,30 +9,30 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor runCommand test", "[python][binding
 {
 	VTX::App::Test::Util::PythonFixture f;
 
-	CHECK( VTX::INTERPRETOR().runCommand( "l = (1,2,3)" ).empty() );
-	CHECK( VTX::INTERPRETOR().runCommand( "l" ) == "(1, 2, 3)" );
+	CHECK( f.interpretor.runCommand( "l = (1,2,3)" ).empty() );
+	CHECK( f.interpretor.runCommand( "l" ) == "(1, 2, 3)" );
 
 	// Here we test that the command is executed only once despite the execption shenanigan
-	VTX::INTERPRETOR().runCommand( "incr = 1" );
-	VTX::INTERPRETOR().runCommand( "incr += 1" );
-	CHECK( VTX::INTERPRETOR().runCommand( "incr" ) == "2" );
-	CHECK( VTX::INTERPRETOR().runCommand( "l = [1,2,3]" ).empty() );
-	CHECK( VTX::INTERPRETOR().runCommand( "l.append(4)" ).empty() );
-	CHECK( VTX::INTERPRETOR().runCommand( "l" ) == "[1, 2, 3, 4]" );
+	f.interpretor.runCommand( "incr = 1" );
+	f.interpretor.runCommand( "incr += 1" );
+	CHECK( f.interpretor.runCommand( "incr" ) == "2" );
+	CHECK( f.interpretor.runCommand( "l = [1,2,3]" ).empty() );
+	CHECK( f.interpretor.runCommand( "l.append(4)" ).empty() );
+	CHECK( f.interpretor.runCommand( "l" ) == "[1, 2, 3, 4]" );
 }
 
 TEST_CASE( "VTX_PYTHON_BINDING - Python version", "[python][binding][version]" )
 {
 	VTX::App::Test::Util::PythonFixture f;
 
-	CHECK( VTX::INTERPRETOR().runCommand( "import sys" ).empty() );
-	std::string v = VTX::INTERPRETOR().runCommand( "sys.version" );
+	CHECK( f.interpretor.runCommand( "import sys" ).empty() );
+	std::string v = f.interpretor.runCommand( "sys.version" );
 
 	bool rightVersion = v.find( "3.9.19" ) != std::string::npos;
 	if ( not rightVersion )
 	{
 		VTX::VTX_INFO( "Python version used : <{}>", v );
-		VTX::VTX_INFO( "Python Executable used : <{}>", VTX::INTERPRETOR().runCommand( "sys.executable" ) );
+		VTX::VTX_INFO( "Python Executable used : <{}>", f.interpretor.runCommand( "sys.executable" ) );
 	}
 
 	CHECK( rightVersion );

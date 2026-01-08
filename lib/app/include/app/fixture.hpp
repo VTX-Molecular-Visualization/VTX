@@ -2,21 +2,21 @@
 #define __VTX_APP_FIXTURE__
 
 #include "vtx_app.hpp"
+#include <mutex>
 #include <util/logger.hpp>
 
 namespace VTX::App
 {
 	class Fixture
 	{
+		inline static std::once_flag _loggerOnce;
+
 	  public:
-		Fixture()
+		inline Fixture()
 		{
 			std::call_once(
 				_loggerOnce, []() { LOGGER::init( Util::Filesystem::getExecutableDir() / "logs_tests", true ); }
 			);
-				VTX::VTX_INFO( "Fixture constructing app" );
-			else
-				VTX::VTX_INFO( "App already constructed." );
 
 			Args args( { ARG_NO_GRAPHICS, ARG_NO_UPDATE, ARG_DEBUG } );
 			_app = std::make_unique<VTXApp>( args );
@@ -24,16 +24,14 @@ namespace VTX::App
 		}
 
 		inline VTXApp * const get() { return _app.get(); }
+		inline ~Fixture()
 		{
-			VTX_INFO( "Fixture deconstructor begin." );
-			_app->stop();
-			VTX_INFO( "Fixture deconstructor end." );
+			_app.reset();
 			VTX::Util::Logger::stop();
 		}
 
 	  private:
-		inline static std::once_flag _loggerOnce;
-		std::unique_ptr<VTXApp>		 _app;
+		std::unique_ptr<VTXApp> _app;
 	};
 } // namespace VTX::App
 

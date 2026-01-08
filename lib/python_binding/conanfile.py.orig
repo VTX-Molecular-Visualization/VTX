@@ -46,9 +46,6 @@ def _doPythonCopies(p_conanFile: ConanFile, dest):
             ,  os.path.join(dest, "external","python")
         ))
         
-        DLLs_path = Path(p_conanFile.dependencies["cpython"].package_folder,"bin", "DLLs")
-        if not DLLs_path.exists():
-            p_conanFile.output.info("Directory <{}> necessary but not found".format(str(DLLs_path)))
         for subdir in ("DLLs","Lib"):
             copy(p_conanFile, "*", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin", subdir), os.path.join(dest, "external","python",subdir))  
         copy(p_conanFile, "*.exe", os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin"), os.path.join(dest, "external","python"))  
@@ -74,7 +71,6 @@ def generate_cmake_copy_instructions(p_conanFile):
         .format(Path(p_conanFile.dependencies["cpython"].package_folder,"bin", "DLLs").as_posix(),
             Path(p_conanFile.dependencies["cpython"].package_folder,"bin", "Lib").as_posix()
         )
-            
         for element in (Path(p_conanFile.dependencies["cpython"].package_folder) / "bin").iterdir():
             if element.suffix in (".exe",".dll"):
                 out += """vtx_register_build_file_copy("{}" "external/python")\n""".format(element.as_posix())
@@ -125,8 +121,12 @@ class VTXPythonBindingRecipe(ConanFile):
         self.requires("vtx_core/1.0")  
         self.requires("vtx_io/1.0")
         self.requires("pybind11/2.13.6", transitive_headers=True)
-        self.requires("catch2/3.11.0")
+<<<<<<< HEAD
+        self.requires("catch2/3.8.1")
         self.requires("cpython/3.9.19") # v >= 3.10 not working with msvc compiler so far
+=======
+        self.requires("catch2/3.11.0")
+>>>>>>> 0f188738c7a693ac314431228236794162689c5d
         
     def config_options(self):
         if self.settings.os == "Windows":
