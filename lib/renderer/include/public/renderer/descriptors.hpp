@@ -45,7 +45,7 @@ namespace VTX::Renderer
 	enum struct E_RESOURCE_TYPE : uint8_t
 	{
 		TEXTURE,
-		VERTEX_STREAM,
+		GEOMETRY,
 		BUFFER
 	};
 

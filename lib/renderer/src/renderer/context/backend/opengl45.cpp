@@ -192,7 +192,7 @@ namespace VTX::Renderer::Context::Backend
 		glEnable( GL_DEPTH_TEST );
 		glDepthFunc( GL_LESS );
 
-		glClearColor( 0.5f, 0.5f, 0.f, 1.0f );
+		glClearColor( 1.f, 0.5f, 1.f, 1.0f );
 	}
 
 	void OpenGL45::build( const RenderQueue & p_renderQueue, const Resources & p_resources, CommandBuffer & p_commands )

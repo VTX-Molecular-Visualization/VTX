@@ -157,7 +157,7 @@ namespace VTX::Renderer
 	void RenderGraph::clear()
 	{
 		// Clear resources?
-		//_resources = Resources {};
+		_resources = Resources {};
 		_passes.clear();
 	}
 
@@ -349,10 +349,10 @@ namespace VTX::Renderer
 		// Passes.
 		// Geometric.
 		g.pass( "Geometric" )
-			.in( "Spheres" )
-			.in( "Cylinders" )
-			.in( "Ribbons" )
-			.in( "Grid" )
+			.in( E_RESOURCE_TYPE::GEOMETRY, "Spheres" )
+			.in( E_RESOURCE_TYPE::GEOMETRY, "Cylinders" )
+			.in( E_RESOURCE_TYPE::GEOMETRY, "Ribbons" )
+			.in( E_RESOURCE_TYPE::GEOMETRY, "Grid" )
 			.out( "Geometry" )
 			.out( "Color" )
 			.out( "Picking" )
