@@ -4,9 +4,12 @@ vtx_configure_target(vtx_app)
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
+file(GLOB_RECURSE HEADERS_VENDORS "${CMAKE_CURRENT_LIST_DIR}/../vendor/*hpp" "${CMAKE_CURRENT_LIST_DIR}/../vendor/*h")
 target_sources(vtx_app
 	PRIVATE ${SOURCES}
-	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
+	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS}
+	PRIVATE FILE_SET vendors_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../vendor" FILES ${HEADERS_VENDORS}
+)
 
 # Tests.
 file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
@@ -40,6 +43,14 @@ endif()
 
 target_link_libraries(vtx_app_test PRIVATE vtx_app)
 target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
+
+# Vendor libs.
+if(WIN32)
+	set(VELOPACK_LIB "${CMAKE_CURRENT_LIST_DIR}/../vendor/velopack/lib-static/velopack_libc_win_x64_msvc.lib")
+else()
+	set(VELOPACK_LIB "${CMAKE_CURRENT_LIST_DIR}/../vendor/velopack/lib-static/velopack_libc_linux_x64_gnu.a")
+endif()
+target_link_libraries(vtx_app PUBLIC ${VELOPACK_LIB} ntdll)
 
 # Declare preprocessor definitions.
 if (NOT DEFINED VTX_VERSION_MAJOR)
