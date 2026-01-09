@@ -52,7 +52,10 @@ class VTXAppRecipe(ConanFile):
     def package_info(self):
         self.cpp_info.libs = ["vtx_app"]        
         self.cpp_info.libdirs.append("vendor/velopack/lib-static")
-        self.cpp_info.libs.append("velopack_libc_win_x64_msvc")
         if self.settings.os == "Windows":
+            self.cpp_info.libs.append("velopack_libc_win_x64_msvc")
             self.cpp_info.system_libs.append("ntdll")
+        else:
+            self.cpp_info.libs.append("velopack_libc_linux_x64_gnu")
+           
 
