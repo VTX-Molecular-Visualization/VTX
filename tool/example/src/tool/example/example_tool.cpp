@@ -4,11 +4,7 @@
 #include "tool/example/widget/my_tool_bar.hpp"
 #include "ui/qt/services.hpp"
 #include <QFile>
-#include <ui/qt/macros.hpp>
 #include <util/logger.hpp>
-
-// Use the same target name as in the CMake file when using add_resources().
-VTX_INIT_RESOURCES( vtx_qt_resources_tool_example )
 
 namespace VTX::Tool::Example
 {
@@ -44,8 +40,11 @@ namespace VTX::Tool::Example
 	std::optional<std::string> ExampleTool::getStyle() const
 	{
 		QFile stylesheetFile( ":/tool_example_style.css" );
-		stylesheetFile.open( QFile::ReadOnly );
-		return stylesheetFile.readAll().toStdString();
+		if ( stylesheetFile.open( QFile::ReadOnly ) )
+		{
+			return stylesheetFile.readAll().toStdString();
+		}
+		return std::nullopt;
 	}
 
 } // namespace VTX::Tool::Example

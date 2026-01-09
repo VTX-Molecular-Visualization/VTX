@@ -6,15 +6,11 @@
 #include <QIcon>
 #include <QStyle>
 #include <QWidget>
+#include <util/logger.hpp>
 
 namespace
 {
 	using namespace VTX::UI::QT;
-
-	/**
-	 * @brief Store palettes for each theme.
-	 */
-	std::array<QPalette, Style::E_THEME::COUNT> _THEME_PALETTES;
 
 	QPalette _makeLightPalette()
 	{
@@ -77,43 +73,60 @@ namespace VTX::UI::QT
 
 		// Load main stylesheet.
 		QFile stylesheetFile( FILE_STYLESHEET.data() );
-		stylesheetFile.open( QFile::ReadOnly );
-		QString stylesheet = stylesheetFile.readAll();
+		if ( stylesheetFile.open( QFile::ReadOnly ) )
+		{
+			QString stylesheet = stylesheetFile.readAll();
 
-		// Load os-specific stylesheet.
+			// Load os-specific stylesheet.
 #if _WIN32
-		QFile stylesheetOSFile( FILE_STYLESHEET_WINDOWS.data() );
+			QFile stylesheetOSFile( FILE_STYLESHEET_WINDOWS.data() );
 #elif __linux__
-		QFile stylesheetOSFile( FILE_STYLESHEET_LINUX.data() );
+			QFile stylesheetOSFile( FILE_STYLESHEET_LINUX.data() );
 #elif __APPLE__
-		QFile stylesheetOSFile( FILE_STYLESHEET_MACOS.data() );
+			QFile stylesheetOSFile( FILE_STYLESHEET_MACOS.data() );
 #else
-		QFile stylesheetOSFile();
-		assert( true );
+			QFile stylesheetOSFile();
+			assert( true );
 #endif
 
-		stylesheetOSFile.open( QFile::ReadOnly );
-		stylesheet += '\n' + stylesheetOSFile.readAll();
-
-		for ( const App::Tool::BaseTool * const tool : p_tools )
-		{
-			if ( tool->getStyle().has_value() )
+			if ( stylesheetOSFile.open( QFile::ReadOnly ) )
 			{
-				stylesheet += '\n' + tool->getStyle().value();
+				stylesheet += '\n' + stylesheetOSFile.readAll();
 			}
+
+			for ( const App::Tool::BaseTool * const tool : p_tools )
+			{
+				if ( tool->getStyle().has_value() )
+				{
+					stylesheet += '\n' + tool->getStyle().value();
+				}
+			}
+
+			// Set stylesheet to app.
+			Q_APP()->setStyleSheet( stylesheet );
 		}
 
-		// Set stylesheet to app.
-		Q_APP()->setStyleSheet( stylesheet );
-
-		// Load icons font (broken until 6.9).
 		QFontDatabase::addApplicationFont( FONT_MATERIAL_SYMBOLS.data() );
-		QIcon::setThemeName( "Material Symbols Outlined" );
+		QFontDatabase::addApplicationFont( FONT_INTER.data() );
+
+		// Linux only?
+		// QIcon::setThemeName( "Material Symbols Outlined" );
+
+		// Set font.
+		QFont appFont( "Inter", 10 );
+		Q_APP()->setFont( appFont );
+
+		// List all available fonts.
+		const QStringList fontList = QFontDatabase::families();
+		for ( const QString & fontName : fontList )
+		{
+			// VTX_TRACE( "Available font: {}", fontName.toStdString() );
+		}
 
 		// Save system palette.
-		_THEME_PALETTES[ E_THEME::SYSTEM ] = Q_APP()->palette();
-		_THEME_PALETTES[ E_THEME::LIGHT ]  = _makeLightPalette();
-		_THEME_PALETTES[ E_THEME::DARK ]   = _makeDarkPalette();
+		_themePalettes[ E_THEME::SYSTEM ] = Q_APP()->palette();
+		_themePalettes[ E_THEME::LIGHT ]  = _makeLightPalette();
+		_themePalettes[ E_THEME::DARK ]	  = _makeDarkPalette();
 	}
 
 	void Style::setTheme( const E_THEME p_theme )
@@ -123,10 +136,10 @@ namespace VTX::UI::QT
 			return;
 		}
 
-		Q_APP()->setPalette( _THEME_PALETTES[ p_theme ] );
+		Q_APP()->setPalette( _themePalettes[ p_theme ] );
 		for ( QWidget * w : Q_APP()->allWidgets() )
 		{
-			w->setPalette( _THEME_PALETTES[ p_theme ] );
+			w->setPalette( _themePalettes[ p_theme ] );
 			w->update();
 		}
 		_currentTheme = p_theme;

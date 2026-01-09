@@ -72,6 +72,9 @@ namespace VTX::UI::QT::Widget::Library
 			toolbar->addAction( aDelete );
 			layout->addWidget( toolbar );
 
+			aNew->setIcon( QIcon::fromTheme( "Search" ) );
+			aDuplicate->setIcon( QIcon::fromTheme( QIcon::ThemeIcon::DocumentNew ) );
+
 			_lineRename = new QLineEdit( this );
 			layout->addWidget( _lineRename );
 
@@ -119,11 +122,11 @@ namespace VTX::UI::QT::Widget::Library
 			// Callbacks.
 			auto & reg = App::REG();
 
-			reg.on_construct<P>().connect<&PresetSelector::_refreshComboBox>( this );
-			reg.on_destroy<P>().connect<&PresetSelector::_refreshComboBox>( this );
+			reg.on_construct<P>().template connect<&PresetSelector::_refreshComboBox>( this );
+			reg.on_destroy<P>().template connect<&PresetSelector::_refreshComboBox>( this );
 			App::HUB().connect<App::Events::PresetRename, &PresetSelector::_onPresetRename>( this );
-			reg.on_update<P>().connect<&PresetSelector::_onUpdatePreset>( this );
-			reg.on_construct<App ::Preset::Instance<P>>().connect<&PresetSelector::_onSelectPreset>( this );
+			reg.on_update<P>().template connect<&PresetSelector::_onUpdatePreset>( this );
+			reg.on_construct<App ::Preset::Instance<P>>().template connect<&PresetSelector::_onSelectPreset>( this );
 		}
 
 		inline App::ECS::Entity getCurrentPreset() const { return _comboBox->currentData().value<App::ECS::Entity>(); }
@@ -171,7 +174,7 @@ namespace VTX::UI::QT::Widget::Library
 			auto view		   = REG().view<Preset::Name, P>();
 			for ( const ECS::Entity entity : view )
 			{
-				const auto & presetName = view.get<Preset::Name>( entity ).name;
+				const auto & presetName = view.template get<Preset::Name>( entity ).name;
 				_comboBox->addItem( QString::fromStdString( presetName ), QVariant::fromValue<ECS::Entity>( entity ) );
 
 				if ( entity == p_e )

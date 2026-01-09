@@ -314,7 +314,7 @@ namespace VTX::UI::QT::Dialog
 		QImage qImage(
 			image.data(), width * devicePixelRatioF(), height * devicePixelRatioF(), QImage::Format::Format_RGBA8888
 		);
-		qImage = qImage.mirrored( false, true );
+		// qImage.mirror( false, true );
 		_preview->setPixmap( QPixmap::fromImage( qImage ) );
 	}
 

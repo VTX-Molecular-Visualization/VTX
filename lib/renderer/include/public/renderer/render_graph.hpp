@@ -9,10 +9,6 @@
 
 namespace VTX::Renderer
 {
-	/**
-	 * @brief Ordered list of passes for execution.
-	 */
-	using RenderQueue = std::vector<const Pass *>;
 
 	/**
 	 * @brief A graph with nodes (passes) and links.

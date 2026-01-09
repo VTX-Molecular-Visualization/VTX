@@ -58,8 +58,7 @@ namespace VTX::App
 		// Store statistics.
 		ECS::setCtx<Util::Monitoring::Stats>();
 		// Store renderer.
-		ECS::setCtx<Renderer::Renderer>();
-		//.setDefault();
+		ECS::setCtx<Renderer::Renderer>().setDefault();
 		// Store action manager.
 		ECS::setCtx<Action::ActionManager>();
 		// Store input manager.
@@ -114,6 +113,7 @@ namespace VTX::App
 		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) )
 		{
 			VTX_WARNING( "No graphics" );
+			// Default state set in constructor.
 			// renderer.setDefault();
 			// Resize to minimal size to avoid issues.
 			ACTION().execute<Action::Application::Resize>( 1, 1 );
@@ -122,12 +122,12 @@ namespace VTX::App
 		{
 			try
 			{
-				// renderer.setOpenGL45( Filesystem::getShadersDir() );
+				renderer.setOpenGL45( Filesystem::getShadersDir() );
 			}
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Failed to build renderer: {}", p_e.what() );
-				// renderer.setDefault();
+				renderer.setDefault();
 				HUB().trigger<Events::ApplicationError>(
 					"Unable to create OpenGL 4.5 context. Update your drivers and check your hardware "
 					"compatibility."

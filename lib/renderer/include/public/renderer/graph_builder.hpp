@@ -7,6 +7,7 @@
 
 namespace VTX::Renderer
 {
+
 	/**
 	 * @brief Type to enum.
 	 */
@@ -61,7 +62,7 @@ namespace VTX::Renderer
 	template<>
 	constexpr E_TYPE uniformTypeOf<Util::Color::Rgba>()
 	{
-		return E_TYPE::COLOR4;
+		return E_TYPE::VEC4F;
 	}
 
 	/**
@@ -89,6 +90,19 @@ namespace VTX::Renderer
 		return u;
 	}
 
+	template<typename T>
+	UniformValue makeUniformArray(
+		const Key &									   p_name,
+		const T &									   p_value,
+		const std::uint32_t							   p_count,
+		const std::optional<std::pair<double, double>> p_range = std::nullopt
+	)
+	{
+		UniformValue u = makeUniform<T>( p_name, p_value, p_range );
+		u.arrayCount   = p_count;
+		return u;
+	}
+
 	/**
 	 * @brief Forward declarations.
 	 */
@@ -104,22 +118,29 @@ namespace VTX::Renderer
 		PassList  passes;
 
 		/**
+		 * @brief Constructor.
+		 */
+		GraphBuilder();
+
+		/**
 		 * @brief texture().
 		 */
-		GraphBuilder & texture( const Key & p_name, const E_FORMAT p_format )
-		{
-			resources.textures[ p_name ] = Texture { p_format };
-			return *this;
-		}
+		GraphBuilder & texture( const Key &, const E_FORMAT, const Size2D & = std::monostate {} );
 
 		/**
 		 * @brief texture().
 		 */
 		template<typename T>
-		GraphBuilder & texture( const Key & p_name, const E_FORMAT p_format, const std::vector<T> & p_data )
+		GraphBuilder & texture(
+			const Key &			   p_name,
+			const E_FORMAT		   p_format,
+			const std::vector<T> & p_data,
+			const Size2D &		   p_size = std::monostate {}
+		)
 		{
 			Texture tex;
 			tex.format = p_format;
+			tex.size   = p_size;
 			tex.data.resize( p_data.size() * sizeof( T ) );
 			std::memcpy( tex.data.data(), p_data.data(), p_data.size() * sizeof( T ) );
 
@@ -128,34 +149,56 @@ namespace VTX::Renderer
 		}
 
 		/**
+		 * @brief sampler().
+		 */
+		GraphBuilder & sampler(
+			const Key & p_name,
+			const E_WRAPPING  = E_WRAPPING::CLAMP_TO_EDGE,
+			const E_WRAPPING  = E_WRAPPING::CLAMP_TO_EDGE,
+			const E_FILTERING = E_FILTERING::NEAREST,
+			const E_FILTERING = E_FILTERING::NEAREST
+		);
+
+		/**
 		 * @brief vertexStream().
 		 */
-		GraphBuilder & vertexStream( const Key & p_name, const std::initializer_list<VertexAttribute> p_attributes )
-		{
-			VertexLayout layout;
-			layout.attributes.assign( p_attributes.begin(), p_attributes.end() );
-			resources.vertexStreams[ p_name ] = std::move( layout );
-			return *this;
-		}
+		GraphBuilder & vertexStream( const Key &, const std::initializer_list<VertexAttribute> );
 
 		/**
 		 * @brief uniformBuffer().
 		 */
-		GraphBuilder & uniformBuffer(
-			const Key &								  p_name,
-			const std::uint32_t						  p_binding,
-			const std::initializer_list<UniformValue> p_values = {}
-		)
-		{
-			UniformBuffer desc;
-			desc.name	 = p_name;
-			desc.binding = p_binding;
-			desc.values.assign( p_values.begin(), p_values.end() );
-			resources.uniformBuffers[ p_name ] = std::move( desc );
-			return *this;
-		}
+		GraphBuilder & buffer(
+			const Key &,
+			const E_BUFFER_ROLE,
+			const E_BUFFER_ACCESS,
+			const E_UPDATE_FREQUENCY,
+			const uint32_t,
+			const std::initializer_list<UniformValue> = {}
+		);
 
-		PassBuilder pass( const Key & p_name );
+		/**
+		 * @brief dataBuffer().
+		 */
+		GraphBuilder & dataBuffer(
+			const Key &				 p_name,
+			const E_DATA_BUFFER_KIND p_kind		 = E_DATA_BUFFER_KIND::VERTEX,
+			const E_UPDATE_FREQUENCY p_frequency = E_UPDATE_FREQUENCY::STATIC
+		);
+
+		/**
+		 * @brief geometry().
+		 */
+		GraphBuilder & geometry(
+			const Key & p_name,
+			const Key & p_vertexStream,
+			// const std::unordered_map<Key, Key> & p_overrides = {},
+			const std::optional<Key> p_indexBuffer = std::nullopt
+		);
+
+		/**
+		 * @brief pass().
+		 */
+		PassBuilder pass( const Key & );
 	};
 
 	/**
@@ -176,39 +219,27 @@ namespace VTX::Renderer
 		/**
 		 * @brief Constructor.
 		 */
-		ProgramBuilder( PassBuilder & p_p, Program & p_prog ) : parent( p_p ), program( p_prog ) {}
+		ProgramBuilder( PassBuilder &, Program & );
 
-		ProgramBuilder & shaders( std::initializer_list<FilePath> p_files )
-		{
-			program.shaders.assign( p_files.begin(), p_files.end() );
-			return *this;
-		}
+		/**
+		 * @brief shaders().
+		 */
+		ProgramBuilder & shaders( std::initializer_list<FilePath> );
+
+		/**
+		 * @brief uniform().
+		 */
+		ProgramBuilder & uniform( const UniformValue & );
 
 		/**
 		 * @brief draw().
 		 */
 		ProgramBuilder & draw(
-			const Key &		  p_vertexStream,
-			const E_PRIMITIVE p_primitive,
-			const bool		  p_useIndices = false
-		)
-		{
-			DrawCall dc;
-			dc.vertexStream	 = p_vertexStream;
-			dc.primitive	 = p_primitive;
-			dc.useIndices	 = p_useIndices;
-			program.drawCall = dc;
-			return *this;
-		}
-
-		/**
-		 * @brief uniform().
-		 */
-		ProgramBuilder & uniform( const UniformValue & p_u )
-		{
-			program.uniforms.push_back( p_u );
-			return *this;
-		}
+			const Key &		  p_geometry,
+			const E_PRIMITIVE p_primitive	= E_PRIMITIVE::TRIANGLES,
+			const uint32_t	  p_vertexCount = 0,
+			const uint32_t	  p_indexCount	= 0
+		);
 
 		/**
 		 * @brief uniform().
@@ -245,61 +276,50 @@ namespace VTX::Renderer
 		 */
 		Pass pass;
 
-		PassBuilder( GraphBuilder & p_g, const Key & p_name ) : graph( p_g ) { pass.name = p_name; }
+		/**
+		 * @brief Constructor.
+		 */
+		PassBuilder( GraphBuilder &, const Key & );
 
 		/**
 		 * @brief in().
 		 */
-		PassBuilder & in( const Key & p_resourceName )
+		// Generic binding.
+		PassBuilder & in( const E_RESOURCE_TYPE, const Key &, const std::optional<Key> = std::nullopt );
+
+		// Convenience overload: defaults to TEXTURE.
+		PassBuilder & in( const Key & p_primary, const std::optional<Key> p_secondary = std::nullopt )
 		{
-			pass.inputs.push_back( p_resourceName );
-			return *this;
+			return in( E_RESOURCE_TYPE::TEXTURE, p_primary, p_secondary );
 		}
 
 		/**
 		 * @brief out().
 		 */
-		PassBuilder & out( const Key & p_resourceName )
+		// Generic binding.
+		PassBuilder & out( const E_RESOURCE_TYPE, const Key &, const std::optional<Key> = std::nullopt );
+
+		// Convenience overload: defaults to TEXTURE.
+		PassBuilder & out( const Key & p_primary, const std::optional<Key> p_secondary = std::nullopt )
 		{
-			pass.outputs.push_back( p_resourceName );
-			return *this;
+			return out( E_RESOURCE_TYPE::TEXTURE, p_primary, p_secondary );
 		}
 
 		/**
 		 * @brief program().
 		 */
-		ProgramBuilder program( const Key & p_name )
-		{
-			pass.programs.emplace_back();
-			Program & prog = pass.programs.back();
-			prog.name	   = p_name;
-			return ProgramBuilder( *this, prog );
-		}
+		ProgramBuilder program( const Key & );
 
 		/**
 		 * @brief callback().
 		 */
-		PassBuilder & callback( const RenderFunc p_func )
-		{
-			pass.customCallback = std::move( p_func );
-			return *this;
-		}
+		PassBuilder & callback( const RenderFunc );
 
 		/**
 		 * @brief endPass().
 		 */
-		GraphBuilder & endPass()
-		{
-			graph.passes.emplace_back( std::make_unique<Pass>( std::move( pass ) ) );
-			return graph;
-		}
+		GraphBuilder & endPass();
 	};
-
-	/**
-	 * @brief Forward declared implementations.
-	 */
-	inline PassBuilder	 GraphBuilder::pass( const Key & p_name ) { return PassBuilder( *this, p_name ); }
-	inline PassBuilder & ProgramBuilder::endProgram() { return parent; }
 
 } // namespace VTX::Renderer
 

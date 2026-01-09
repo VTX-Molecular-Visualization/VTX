@@ -6,15 +6,15 @@
 #ifdef VTX_CUDA_ENABLED
 #include "bcs/sesdf/sesdf.hpp"
 #endif
-#include "caches.hpp"
-#include "camera.hpp"
-#include "color.hpp"
-// #include "context/context_wrapper.hpp"
-#include "graphics_config.hpp"
-#include "proxy/system.hpp"
-#include "proxy/voxels.hpp"
-#include "render_graph.hpp"
-#include "representation.hpp"
+#include "renderer/caches.hpp"
+#include "renderer/camera.hpp"
+#include "renderer/color.hpp"
+#include "renderer/context/context_wrapper.hpp"
+#include "renderer/graphics_config.hpp"
+#include "renderer/proxy/system.hpp"
+#include "renderer/proxy/voxels.hpp"
+#include "renderer/render_graph.hpp"
+#include "renderer/representation.hpp"
 #include <util/callback.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -50,19 +50,10 @@ namespace VTX::Renderer
 		}
 
 		/**
-		 * @brief Set the output to render on.
-		 */
-		inline void setOutput( const Handle p_output )
-		{
-			//_context.setOutput( p_output );
-			setNeedUpdate( true );
-		}
-
-		/**
 		 * @brief Set graphic context.
 		 */
-		// void setDefault();
-		// void setOpenGL45( const std::filesystem::path & );
+		void setDefault();
+		void setOpenGL45( const FilePath & );
 
 		// inline bool hasContext() const { return _context.hasContext(); }
 
@@ -75,17 +66,17 @@ namespace VTX::Renderer
 		 * @brief Resize the renderer.
 		 * @param p_output the output id to render on (eg. the output framebuffer for OpenGL impl.).
 		 */
-		void resize( const size_t p_width, const size_t p_height );
+		void resize( const size_t, const size_t );
 
 		/**
 		 * @brief Clean all.
 		 */
-		void clean();
+		void clear();
 
 		/**
 		 * @brief The main render loop.
 		 */
-		void render( const float p_deltaTime, const float p_elapsedTime );
+		void render( const float, const float );
 
 		/**
 		 * @brief Add data to the renderer.
@@ -234,7 +225,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Wrapper to handle the graphic APIs.
 		 */
-		// Context::ContextWrapper _context;
+		Context::ContextWrapper _context;
 
 		/**
 		 * @brief Size.
@@ -315,13 +306,7 @@ namespace VTX::Renderer
 		 * @brief The main render loop that call each generated instruction.
 		 * @param p_time the current time.
 		 */
-		inline void _render( const float p_deltaTime, const float p_elapsedTime ) const
-		{
-			// for ( const Instruction & instruction : _instructions )
-			//{
-			//	instruction();
-			// }
-		}
+		inline void _render( const float p_deltaTime, const float p_elapsedTime ) const { _context.execute(); }
 
 		/**
 		 * @brief The main render loop that call instructions with time logging.

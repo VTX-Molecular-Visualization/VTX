@@ -41,7 +41,7 @@ class VTXRecipe(ConanFile):
         self.requires("stb/cci.20240531")
         self.requires("entt/3.15.0")
         self.requires("pybind11/2.13.6")
-        self.requires("qt/6.8.3")
+        self.requires("qt/6.10.1")
         self.requires("gromacs/2024.0")
         self.requires("re2/20240702")
         self.requires("libarchive/3.7.9")
@@ -52,6 +52,12 @@ class VTXRecipe(ConanFile):
     def config_options(self):   
         qt_module.config_options_qt(self)
         python_binding_module.config_options_cpython(self)
+        
+        if self.settings.os == "Linux":
+            self.options["qt"].qtwayland = True
+            self.options["qt"].with_x11 = True
+            self.options["qt"].with_egl = True
+            self.options["qt"].with_dbus = True
         
     def generate(self):
         tc = CMakeToolchain(self)        

@@ -50,6 +50,7 @@ namespace VTX::Util::Math
 	using ::glm::toMat4;
 	using ::glm::translate;
 	using ::glm::transpose;
+	using ::glm::value_ptr;
 	using ::glm::vec;
 
 #ifdef _DEBUG
@@ -105,7 +106,7 @@ namespace VTX::Util::Math
 	}
 
 	// Morton utils.
-	inline uint leftShift3( uint p_x )
+	constexpr uint leftShift3( uint p_x ) noexcept
 	{
 		assert( p_x <= ( 1 << 10 ) );
 
@@ -120,7 +121,7 @@ namespace VTX::Util::Math
 		return p_x;
 	}
 
-	inline uint encodeMorton3( const Vec3f & p_v )
+	constexpr uint encodeMorton3( const Vec3f & p_v ) noexcept
 	{
 		assert( p_v.x >= 0 );
 		assert( p_v.y >= 0 );
@@ -195,17 +196,17 @@ namespace VTX::Util::Math
 		return angle;
 	}
 
-	inline Vec3f linearComb(
+	constexpr Vec3f linearComb(
 		const float	  p_scalar0,
 		const Vec3f & p_vector0,
 		const float	  p_scalar1,
 		const Vec3f & p_vector1
-	)
+	) noexcept
 	{
 		return p_scalar0 * p_vector0 + p_scalar1 * p_vector1;
 	}
 
-	inline uint nextPowerOfTwoValue( const uint p_baseNumber )
+	constexpr uint nextPowerOfTwoValue( const uint p_baseNumber ) noexcept
 	{
 		uint i = 1;
 		while ( p_baseNumber > i )
@@ -215,7 +216,7 @@ namespace VTX::Util::Math
 		return i;
 	}
 
-	inline uint nextPowerOfTwoExponent( const uint p_baseNumber )
+	constexpr uint nextPowerOfTwoExponent( const uint p_baseNumber ) noexcept
 	{
 		uint exponent	= 0;
 		uint baseNumber = p_baseNumber;
@@ -247,6 +248,15 @@ namespace VTX::Util::Math
 	}
 
 	inline float cosineWeightedHemispherePdf( const float p_cosTheta ) { return p_cosTheta * INV_PIf; }
+
+	// Compute alignment of p_v to p_a (must be power of two).
+	template<typename T>
+		requires std::is_unsigned_v<T>
+	constexpr T alignUp( const T p_v, const T p_a ) noexcept
+	{
+		assert( ( p_a & ( p_a - 1 ) ) == 0 );
+		return ( p_v + ( p_a - 1 ) ) & ~( p_a - 1 );
+	}
 
 	// TODO:  std::fabsf.
 	Vec3f orthogonalVector( const Vec3f & normal );

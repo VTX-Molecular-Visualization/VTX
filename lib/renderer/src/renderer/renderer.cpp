@@ -1,11 +1,5 @@
 #include "renderer/renderer.hpp"
 #include "renderer/binary_buffer.hpp"
-// #include "renderer/context/default.hpp"
-// #include "renderer/context/opengl_45.hpp"
-#include "renderer/geometry/cylinder.hpp"
-#include "renderer/geometry/ribbon.hpp"
-#include "renderer/geometry/sphere.hpp"
-#include "renderer/geometry/voxel.hpp"
 #include <execution>
 #include <util/math.hpp>
 #include <util/math/aabb.hpp>
@@ -18,22 +12,20 @@ namespace VTX::Renderer
 	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height )
 	{
 		// Passes.
-		_refreshGraph( GraphicsConfig() );
+		_refreshGraph( GraphicsConfigs::DEFAULT );
 	}
 
-	/*
 	void Renderer::setDefault()
 	{
-		_context.set<Context::Default>( _width, _height );
+		_context.setNull();
 		build();
 	}
 
-	void Renderer::setOpenGL45( const std::filesystem::path & p_shaderIncludePath )
+	void Renderer::setOpenGL45( const FilePath & p_shaderIncludePath )
 	{
-		_context.set<Context::OpenGL45>( _width, _height, p_shaderIncludePath );
+		_context.setOpenGL45( _width, _height, p_shaderIncludePath );
 		build();
 	}
-	*/
 
 	void Renderer::build()
 	{
@@ -42,7 +34,7 @@ namespace VTX::Renderer
 			[ this ]()
 			{
 				const RenderQueue queue = _graph.build();
-				//_context.build( queue, _graph.getLinks(), _globalData, _instructions, _instructionsDurationRanges );
+				_context.build( queue, _graph.getResources() );
 			}
 		);
 
@@ -61,9 +53,9 @@ namespace VTX::Renderer
 		setNeedUpdate( true );
 	}
 
-	void Renderer::clean()
+	void Renderer::clear()
 	{
-		//_context.clear();
+		_context.clear();
 		//_instructions.clear();
 		//_instructionsDurationRanges.clear();
 		_graph.clear();
@@ -486,7 +478,7 @@ namespace VTX::Renderer
 
 	void Renderer::setRepresentation( const Representation & p_representation )
 	{
-		BinaryBuffer buffer;
+		BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
 		buffer.write( p_representation.radiusSphereFixed );
 		buffer.write( p_representation.radiusSphereAdd );
 		buffer.write( uint( p_representation.isRadiusSphereFixed ) );
@@ -572,7 +564,7 @@ namespace VTX::Renderer
 		const Mat4f matrixViewInv	   = Util::Math::inverse( p_matView );
 		const Mat4f matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
 
-		BinaryBuffer buffer;
+		BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
 		buffer.write( p_matView );
 		buffer.write( p_matProj );
 		buffer.write( matrixViewInv );

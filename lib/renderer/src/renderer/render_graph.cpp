@@ -14,11 +14,11 @@ namespace VTX::Renderer
 
 		auto isExternalResource = [ this ]( const Key & name ) -> bool
 		{
-			if ( _resources.vertexStreams.contains( name ) )
+			if ( _resources.geometries.contains( name ) )
 			{
 				return true;
 			}
-			if ( _resources.uniformBuffers.contains( name ) )
+			if ( _resources.buffers.contains( name ) )
 			{
 				return true;
 			}
@@ -34,27 +34,50 @@ namespace VTX::Renderer
 			return false;
 		};
 
+		auto checkBinding = [ this ]( const ResourceBinding & res ) -> bool
+		{
+			if ( _resources.textures.contains( res.primary ) )
+			{
+				if ( res.secondary && not _resources.samplers.contains( *res.secondary ) )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		};
+
 		for ( const auto & passPtr : _passes )
 		{
 			const Pass & pass = *passPtr;
 
 			for ( const auto & input : pass.inputs )
 			{
-				const bool external		  = isExternalResource( input );
-				const bool producedBefore = produced.contains( input );
-				const bool hasData		  = hasInputData( input );
+				if ( not checkBinding( input ) )
+				{
+					throw GraphicException( "Texture '{}': incorrect binding", input.primary );
+				}
+
+				const bool external		  = isExternalResource( input.primary );
+				const bool producedBefore = produced.contains( input.primary );
+				const bool hasData		  = hasInputData( input.primary );
 
 				// If not external, not produced before and has no data.
 				if ( not external && not producedBefore && not hasData )
 				{
-					throw GraphicException( "Pass '{}' need not produced ressource '{}' ", pass.name, input );
+					throw GraphicException( "Pass '{}' need not produced ressource '{}' ", pass.name, input.primary );
 				}
 			}
 
 			// Set outputs as produced.
 			for ( const auto & output : pass.outputs )
 			{
-				produced.insert( output );
+				if ( not checkBinding( output ) )
+				{
+					throw GraphicException( "Texture '{}': incorrect binding", output.primary );
+				}
+
+				produced.insert( output.primary );
 			}
 		}
 
@@ -66,6 +89,19 @@ namespace VTX::Renderer
 			queue.push_back( p.get() );
 		}
 
+		// Check empty.
+		if ( queue.empty() )
+		{
+			throw GraphicException( "Render queue is empty" );
+		}
+
+		// Check last pass = 1 output.
+		if ( queue.back()->outputs.size() != 1 )
+		{
+			throw GraphicException( "Last pass '{}' must have exactly one output", queue.back()->name );
+		}
+
+		// Print.
 		std::string str = "Passes: ";
 		for ( const Pass * const pass : queue )
 		{
@@ -90,9 +126,18 @@ namespace VTX::Renderer
 			auto [ it, inserted ] = _resources.vertexStreams.emplace( key, vertexStream );
 			assert( inserted );
 		}
-		for ( const auto & [ key, uniformBuffer ] : p_builder.resources.uniformBuffers )
+		for ( const auto & [ key, buffer ] : p_builder.resources.buffers )
 		{
-			auto [ it, inserted ] = _resources.uniformBuffers.emplace( key, uniformBuffer );
+			auto [ it, inserted ] = _resources.buffers.emplace( key, buffer );
+			assert( inserted );
+		}
+		for ( const auto & [ key, sampler ] : p_builder.resources.samplers )
+		{
+			auto [ it, inserted ] = _resources.samplers.emplace( key, sampler );
+		}
+		for ( const auto & [ key, geometry ] : p_builder.resources.geometries )
+		{
+			auto [ it, inserted ] = _resources.geometries.emplace( key, geometry );
 			assert( inserted );
 		}
 		// Passes.
@@ -109,15 +154,23 @@ namespace VTX::Renderer
 		_passes	   = std::move( p_builder.passes );
 	}
 
-	void RenderGraph::clear() { _passes.clear(); }
+	void RenderGraph::clear()
+	{
+		// Clear resources?
+		_resources = Resources {};
+		_passes.clear();
+	}
 
 	void RenderGraph::createDefaultPipeline( const PipelineConfig & p_config )
 	{
 		GraphBuilder g;
 
-		// Uniforms.
-		g.uniformBuffer(
+		// Buffers.
+		g.buffer(
 			"Camera",
+			E_BUFFER_ROLE::UNIFORM,
+			E_BUFFER_ACCESS::READ,
+			E_UPDATE_FREQUENCY::DYNAMIC,
 			15,
 			{ makeUniform( "MatrixView", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixProjection", Mat4f( MAT4F_ID ) ),
@@ -130,18 +183,31 @@ namespace VTX::Renderer
 			  makeUniform( "IsPerspective", std::uint32_t( 1 ) ) }
 		);
 
-		g.uniformBuffer( "ColorLayout", 14, { makeUniform( "Colors", Util::Color::Rgba {} ) } );
+		g.buffer(
+			"ColorLayout",
+			E_BUFFER_ROLE::UNIFORM,
+			E_BUFFER_ACCESS::READ,
+			E_UPDATE_FREQUENCY::STATIC,
+			14,
+			{ makeUniformArray( "Colors", Util::Color::Rgba {}, 256 ) }
+		);
 
-		g.uniformBuffer(
+		g.buffer(
 			"Models",
+			E_BUFFER_ROLE::STORAGE,
+			E_BUFFER_ACCESS::READ,
+			E_UPDATE_FREQUENCY::DYNAMIC,
 			13,
 			{ makeUniform( "MatrixModelView", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixModelViewInv", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixNormal", Mat4f( MAT4F_ID ) ) }
 		);
 
-		g.uniformBuffer(
+		g.buffer(
 			"Representations",
+			E_BUFFER_ROLE::STORAGE,
+			E_BUFFER_ACCESS::READ,
+			E_UPDATE_FREQUENCY::STATIC,
 			12,
 			{ makeUniform( "SphereRadiusFixed", 0.0f ),
 			  makeUniform( "SphereRadiusAdd", 0.0f ),
@@ -153,54 +219,67 @@ namespace VTX::Renderer
 			  makeUniform( "SESMaxProbeNeighborNb", std::uint32_t( 0 ) ) }
 		);
 
-		// Vertex streams.
+		// Vertex streams and data buffers.
 		g.vertexStream(
-			"SpheresCylinders",
+			"Atoms",
 			{
-				{ "Positions", E_TYPE::FLOAT, 3 },
-				{ "Colors", E_TYPE::UBYTE, 1 },
-				{ "Radii", E_TYPE::FLOAT, 1 },
-				{ "Ids", E_TYPE::UINT, 1 },
-				{ "Flags", E_TYPE::UBYTE, 1 },
-				{ "Models", E_TYPE::USHORT, 1 },
-				{ "Representations", E_TYPE::UBYTE, 1 },
+				{ "Positions", E_TYPE::VEC3F },
+				{ "Colors", E_TYPE::UBYTE },
+				{ "Radii", E_TYPE::FLOAT },
+				{ "Ids", E_TYPE::UINT },
+				{ "Flags", E_TYPE::UBYTE },
+				{ "Models", E_TYPE::USHORT },
+				{ "Representations", E_TYPE::UBYTE },
 			}
 		);
 
+		g.dataBuffer( "Atoms.Positions" )
+			.dataBuffer( "Atoms.Colors" )
+			.dataBuffer( "Atoms.Radii" )
+			.dataBuffer( "Atoms.Ids" )
+			.dataBuffer( "Atoms.Flags" )
+			.dataBuffer( "Atoms.Models" )
+			.dataBuffer( "Atoms.Representations" )
+			.dataBuffer( "Bonds", E_DATA_BUFFER_KIND::INDEX );
+
 		g.vertexStream(
-			"Ribbons",
+			"Residues",
 			{
-				{ "Positions", E_TYPE::FLOAT, 4 },
-				{ "Directions", E_TYPE::FLOAT, 3 },
-				{ "Types", E_TYPE::UBYTE, 1 },
-				{ "Colors", E_TYPE::UBYTE, 1 },
-				{ "Ids", E_TYPE::UINT, 1 },
-				{ "Flags", E_TYPE::UBYTE, 1 },
-				{ "Models", E_TYPE::USHORT, 1 },
-				{ "Representations", E_TYPE::UBYTE, 1 },
+				{ "Positions", E_TYPE::VEC4F },
+				{ "Directions", E_TYPE::VEC3F },
+				{ "Types", E_TYPE::UBYTE },
+				{ "Colors", E_TYPE::UBYTE },
+				{ "Ids", E_TYPE::UINT },
+				{ "Flags", E_TYPE::UBYTE },
+				{ "Models", E_TYPE::USHORT },
+				{ "Representations", E_TYPE::UBYTE },
 			}
 		);
 
-		g.vertexStream(
-			"Triangles",
-			{
-				{ "Positions", E_TYPE::FLOAT, 3 },
-				{ "Normales", E_TYPE::FLOAT, 3 },
-				{ "Colors", E_TYPE::UBYTE, 1 },
-				{ "Ids", E_TYPE::UINT, 1 },
-				{ "Flags", E_TYPE::UBYTE, 1 },
-				{ "Models", E_TYPE::USHORT, 1 },
-				{ "Representations", E_TYPE::UBYTE, 1 },
-			}
-		);
+		g.dataBuffer( "Residues.Positions" )
+			.dataBuffer( "Residues.Directions" )
+			.dataBuffer( "Residues.Types" )
+			.dataBuffer( "Residues.Colors" )
+			.dataBuffer( "Residues.Ids" )
+			.dataBuffer( "Residues.Flags" )
+			.dataBuffer( "Residues.Models" )
+			.dataBuffer( "Residues.Representations" );
 
 		g.vertexStream(
 			"Voxels",
 			{
-				{ "Mins", E_TYPE::FLOAT, 3 },
-				{ "Maxs", E_TYPE::FLOAT, 3 },
+				{ "Mins", E_TYPE::VEC3F },
+				{ "Maxs", E_TYPE::VEC3F },
 			}
 		);
+
+		g.dataBuffer( "Voxels.Mins" ).dataBuffer( "Voxels.Maxs" );
+
+		// Geometries.
+		g.geometry( "Spheres", "Atoms" );
+		g.geometry( "Cylinders", "Atoms", "Bonds" );
+		g.geometry( "Ribbons", "Residues" );
+		g.geometry( "Grid", "Voxels" );
 
 		// Textures.
 		g.texture( "Geometry", E_FORMAT::RGBA32UI )
@@ -210,6 +289,10 @@ namespace VTX::Renderer
 
 		g.texture( "Depth", E_FORMAT::R32F );
 
+		// Used by shading pass even if SSAO disabled.
+		// std::vector<float> emptyData( 1, 1.f );
+		g.texture( "BlurX", E_FORMAT::R16F );
+		g.texture( "Blur", E_FORMAT::R16F /*, emptyData */ );
 		if ( p_config.enableSSAO )
 		{
 			constexpr size_t   noiseTextureSize = 64;
@@ -225,8 +308,7 @@ namespace VTX::Renderer
 				}
 			);
 			g.texture( "SSAO", E_FORMAT::R8 )
-				.texture( "Noise", E_FORMAT::RGB16F, noiseData )
-				.texture( "Blur", E_FORMAT::R16F );
+				.texture( "Noise", E_FORMAT::RGB16F, noiseData, Size2DAbsolute { noiseTextureSize, noiseTextureSize } );
 		}
 
 		g.texture( "Shaded", E_FORMAT::RGBA16F );
@@ -243,32 +325,53 @@ namespace VTX::Renderer
 
 		g.texture( "FXAA", E_FORMAT::RGBA16F );
 
+		// Samplers.
+		g.sampler(
+			"NearestClamp",
+			E_WRAPPING::CLAMP_TO_EDGE,
+			E_WRAPPING::CLAMP_TO_EDGE,
+			E_FILTERING::NEAREST,
+			E_FILTERING::NEAREST
+		);
+
+		g.sampler(
+			"NearestRepeat", E_WRAPPING::REPEAT, E_WRAPPING::REPEAT, E_FILTERING::NEAREST, E_FILTERING::NEAREST
+		);
+
+		g.sampler(
+			"LinearClamp",
+			E_WRAPPING::CLAMP_TO_EDGE,
+			E_WRAPPING::CLAMP_TO_EDGE,
+			E_FILTERING::LINEAR,
+			E_FILTERING::LINEAR
+		);
+
 		// Passes.
 		// Geometric.
 		g.pass( "Geometric" )
-			.in( "SpheresCylinders" )
-			.in( "Ribbons" )
-			.in( "Triangles" )
-			.in( "Voxels" )
+			.in( E_RESOURCE_TYPE::GEOMETRY, "Spheres" )
+			.in( E_RESOURCE_TYPE::GEOMETRY, "Cylinders" )
+			.in( E_RESOURCE_TYPE::GEOMETRY, "Ribbons" )
+			.in( E_RESOURCE_TYPE::GEOMETRY, "Grid" )
 			.out( "Geometry" )
 			.out( "Color" )
 			.out( "Picking" )
 			.out( "DepthRaw" )
 			.program( "Sphere" )
 			.shaders( { FilePath( "sphere" ) } )
-			.draw( "SpheresCylinders", E_PRIMITIVE::POINTS )
+			.draw( "Spheres", E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "Cylinder" )
 			.shaders( { FilePath( "cylinder" ) } )
-			.draw( "SpheresCylinders", E_PRIMITIVE::LINES, true )
+			.draw( "Cylinders", E_PRIMITIVE::LINES )
 			.endProgram()
 			.program( "Ribbon" )
 			.shaders( { FilePath( "ribbon" ) } )
-			.draw( "Ribbons", E_PRIMITIVE::PATCHES, true )
+			.draw( "Ribbons", E_PRIMITIVE::PATCHES )
 			.endProgram()
 			.program( "Voxel" )
 			.shaders( { FilePath( "voxel" ) } )
-			.draw( "Voxels", E_PRIMITIVE::POINTS )
+			.draw( "Grid", E_PRIMITIVE::POINTS )
 			.endProgram()
 			.endPass();
 
@@ -288,21 +391,32 @@ namespace VTX::Renderer
 				.in( "Geometry" )
 				.in( "Noise" )
 				.in( "Depth" )
-				.out( "SSAO" )
+				.out( "SSAO", "NearestRepeat" )
 				.program( "SSAO" )
 				.shaders( { FilePath( "default.vert" ), FilePath( "ssao.frag" ) } )
 				.uniform( "Intensity", SSAO_INTENSITY_DEFAULT, std::pair { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX } )
 				.endProgram()
 				.endPass();
 
-			// Blur.
-			g.pass( "Blur" )
-				.in( "Color" )
+			// BlurX.
+			g.pass( "BlurX" )
+				.in( "SSAO" )
 				.in( "Depth" )
-				.out( "Blur" )
+				.out( "BlurX", "NearestRepeat" )
 				.program( "Blur" )
 				.shaders( { FilePath( "default.vert" ), FilePath( "blur.frag" ) } )
 				.uniform( "Direction", Vec2i( 1, 0 ) )
+				.uniform( "Size", BLUR_SIZE_DEFAULT, std::pair { BLUR_SIZE_MIN, BLUR_SIZE_MAX } )
+				.endProgram()
+				.endPass();
+			// BlurY.
+			g.pass( "BlurY" )
+				.in( "BlurX" )
+				.in( "Depth" )
+				.out( "Blur", "NearestRepeat" )
+				.program( "Blur" )
+				.shaders( { FilePath( "default.vert" ), FilePath( "blur.frag" ) } )
+				.uniform( "Direction", Vec2i( 0, 1 ) )
 				.uniform( "Size", BLUR_SIZE_DEFAULT, std::pair { BLUR_SIZE_MIN, BLUR_SIZE_MAX } )
 				.endProgram()
 				.endPass();
@@ -312,7 +426,7 @@ namespace VTX::Renderer
 		g.pass( "Shading" )
 			.in( "Geometry" )
 			.in( "Color" )
-			.in( "Blur" )
+			.in( "Blur", "NearestRepeat" )
 			.out( "Shaded" )
 			.program( "Shading" )
 			.shaders( { FilePath( "default.vert" ), FilePath( "shading.frag" ) } )

@@ -53,9 +53,6 @@ namespace VTX::UI::QT::Widget
 		this->setFocusPolicy( Qt::NoFocus );
 		this->setFocusProxy( _container );
 
-		// Set output.
-		App::RENDERER().setOutput( _context->defaultFramebufferObject() );
-
 		// Connect signals.
 		// APP::onPostRender += [ this ]( const float ) { render(); };
 		App::HUB().connect<App::Events::PostRender, &OpenGLWidget::render>( this );

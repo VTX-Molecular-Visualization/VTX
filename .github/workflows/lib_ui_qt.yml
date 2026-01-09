@@ -45,8 +45,8 @@ jobs:
       
     - name: Add custom remote
       run: |
-        conan remote add --insecure cano7782 ${{ secrets.CONAN_SERVER_HOST }}
-        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} cano7782 ${{ secrets.CONAN_SERVER_USER }}
+        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
       
     # Error : /usr/bin/ld: cannot find -lnsl
     # Following command solved it locally but it conan tools.system.package_manager can't catch it, it is not appliable in CI.
@@ -73,4 +73,4 @@ jobs:
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}
       run: |
-        conan upload qt -r=cano7782
+        conan upload qt -r=vtx

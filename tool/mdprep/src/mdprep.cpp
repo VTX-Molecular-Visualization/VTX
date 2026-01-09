@@ -39,9 +39,6 @@
 //
 #include "tool/mdprep/ui/form.hpp"
 //
-#include <ui/qt/macros.hpp>
-
-VTX_INIT_RESOURCES( vtx_qt_resources_tool_mdprep )
 
 namespace VTX::Tool::Mdprep
 {
