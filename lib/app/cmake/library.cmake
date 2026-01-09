@@ -47,10 +47,11 @@ target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
 # Vendor libs.
 if(WIN32)
 	set(VELOPACK_LIB "${CMAKE_CURRENT_LIST_DIR}/../vendor/velopack/lib-static/velopack_libc_win_x64_msvc.lib")
+	target_link_libraries(vtx_app PRIVATE ntdll)
 else()
 	set(VELOPACK_LIB "${CMAKE_CURRENT_LIST_DIR}/../vendor/velopack/lib-static/velopack_libc_linux_x64_gnu.a")
 endif()
-target_link_libraries(vtx_app PUBLIC ${VELOPACK_LIB} ntdll)
+target_link_libraries(vtx_app PRIVATE ${VELOPACK_LIB})
 
 # Declare preprocessor definitions.
 if (NOT DEFINED VTX_VERSION_MAJOR)
