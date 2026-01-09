@@ -13,7 +13,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][bind
 	 * @brief This test is bound to fail in debug as numpy will look for files whom's name is declined in debug mode.
 	 * Consequently, the lookout will fail and so the test.
 	 * If "unicode" package is not found on windows, maybe the package fetched by conan did get the whole thing. The
-	 * DLLs folder is mandatory for it to work as it contains binaries needed for pip to work.
+	 * DLLs folder is mandatory for it to work as it contains binaries needed for pip to work and it already happened
+	 * that this folder wasn't in the package.
 	 */
 	INFO( "pip can't run in debug mode." );
 	return;

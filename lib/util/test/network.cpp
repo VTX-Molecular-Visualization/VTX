@@ -9,5 +9,6 @@ TEST_CASE( "Util::Network", "[unit]" )
 
 	std::string text;
 	httpRequestGet( "https://vtx.drugdesign.fr/vtx.json", text );
-	CHECK( text.size() == 96 );
+	CHECK( text.find( "MAJOR" ) != std::string::npos );
+	CHECK( text.find( "MINOR" ) != std::string::npos );
 }

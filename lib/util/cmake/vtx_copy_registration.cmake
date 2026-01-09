@@ -56,7 +56,7 @@ function(vtx_copy_registered_data target)
 		list(APPEND _already_registered_dest ${current_dest})
 		
 		message("VTX -- Registering ${_COPY_TARGET_NAME} as a post build event to copy directory <${src_it}> into <${current_dest}> ")
-		add_custom_target("${_COPY_TARGET_NAME}" ALL COMMAND ${CMAKE_COMMAND} -E copy_directory  ${src_it} $<TARGET_FILE_DIR:${target}>/${current_dest})
+		add_custom_target("${_COPY_TARGET_NAME}" ALL COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different  ${src_it} $<TARGET_FILE_DIR:${target}>/${current_dest})
 		
 		add_dependencies("${target}" "${_COPY_TARGET_NAME}")
 
