@@ -5,9 +5,8 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	GraphicsConfigs::GraphicsConfigs( QWidget * p_parent ) : BaseDockWidget( p_parent )
+	GraphicsConfigs::GraphicsConfigs( QWidget * p_parent ) : BaseDockWidget( p_parent, "Graphics" )
 	{
-		setWindowTitle( "Graphics" );
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
 		auto * const graphicsConfigWidget = new Widget::Library::GraphicsConfig( this );

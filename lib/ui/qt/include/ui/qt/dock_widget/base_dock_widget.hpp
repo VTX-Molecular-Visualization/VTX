@@ -4,8 +4,10 @@
 #include "ui/qt/widget/base_widget.hpp"
 #include <QBoxLayout>
 #include <QDockWidget>
+#include <QLabel>
 #include <QPointer>
 #include <QScrollArea>
+#include <QToolButton>
 #include <concepts>
 
 namespace VTX::UI::QT::DockWidget
@@ -24,8 +26,10 @@ namespace VTX::UI::QT::DockWidget
 	class BaseDockWidget : public Widget::BaseWidget<T, QDockWidget>
 	{
 	  public:
-		BaseDockWidget( QWidget * p_parent ) : Widget::BaseWidget<T, QDockWidget>( p_parent )
+		BaseDockWidget( QWidget * p_parent, QString && p_title ) : Widget::BaseWidget<T, QDockWidget>( p_parent )
 		{
+			QDockWidget::setWindowTitle( p_title );
+
 			// Scroll area.
 			if constexpr ( VSA or HSA )
 			{
@@ -63,9 +67,47 @@ namespace VTX::UI::QT::DockWidget
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 			//_layout->setSizeConstraint( QLayout::SetNoConstraint );
 
-			// Hide title bar.
-			// This remove the possibility to undock the widget, but gain some space.
-			// QDockWidget::setTitleBarWidget( new QWidget() );
+			// Custom title bar without title.
+			/*
+			auto * bar = new QWidget( this );
+			auto * lay = new QHBoxLayout( bar );
+			lay->setContentsMargins( 0, 0, 0, 0 );
+			lay->setSpacing( 0 );
+
+			auto * label = new QLabel( p_title, bar );
+			label->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
+			label->setAttribute( Qt::WA_TransparentForMouseEvents, true );
+			lay->addWidget( label );
+
+			auto * dragArea = new QWidget( bar );
+			dragArea->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
+			lay->addWidget( dragArea, 1 );
+
+			auto * bFloat = new QToolButton( bar );
+			bFloat->setAutoRaise( true );
+			bFloat->setIcon( bar->style()->standardIcon( QStyle::SP_TitleBarNormalButton ) );
+			QObject::connect(
+				bFloat,
+				&QToolButton::clicked,
+				this,
+				[ this, label ]
+				{
+					QDockWidget::setFloating( not QDockWidget::isFloating() );
+					label->setVisible( QDockWidget::isFloating() );
+				}
+			);
+			lay->addWidget( bFloat );
+
+			label->setVisible( QDockWidget::isFloating() );
+
+			auto * bClose = new QToolButton( bar );
+			bClose->setAutoRaise( true );
+			bClose->setIcon( bar->style()->standardIcon( QStyle::SP_TitleBarCloseButton ) );
+			QObject::connect( bClose, &QToolButton::clicked, this, &QDockWidget::close );
+			lay->addWidget( bClose );
+
+			QDockWidget::setTitleBarWidget( bar );
+			*/
 		}
 
 		virtual ~BaseDockWidget() = default;

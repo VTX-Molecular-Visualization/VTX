@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_STYLE__
 #define __VTX_UI_QT_STYLE__
 
+#include "ui/qt/application.hpp"
 #include <QFontDatabase>
 #include <QPalette>
 #include <app/tool/base_tool.hpp>
@@ -9,6 +10,26 @@
 
 namespace VTX::UI::QT
 {
+
+	/**
+	 * @brief Available themes.
+	 */
+	enum struct E_THEME : uint8_t
+	{
+
+		SYSTEM,
+		LIGHT,
+		DARK,
+
+		COUNT
+	};
+
+	/**
+	 * @brief Default values.
+	 */
+	constexpr int	  DEFAULT_FONT_SIZE	  = 10;
+	constexpr E_THEME DEFAULT_THEME		  = E_THEME::SYSTEM;
+	const QString	  DEFAULT_FONT_FAMILY = "Consolas";
 
 	/**
 	 * @brief Class managing application style (themes, stylesheets, etc.).
@@ -20,27 +41,9 @@ namespace VTX::UI::QT
 		~Style();
 
 		/**
-		 * @brief Available themes.
-		 */
-		enum struct E_THEME : uint8_t
-		{
-
-			SYSTEM,
-			LIGHT,
-			DARK,
-
-			COUNT
-		};
-
-		/**
 		 * @brief Apply all design elements.
 		 */
 		void load( const std::vector<App::Tool::BaseTool *> & );
-
-		/**
-		 * @brief Switch application theme.
-		 */
-		void setTheme( const E_THEME p_theme );
 
 		/**
 		 * @brief Get current theme.
@@ -48,11 +51,28 @@ namespace VTX::UI::QT
 		inline E_THEME getCurrentTheme() const { return _currentTheme; }
 
 		/**
+		 * @brief Get current font family.
+		 */
+		inline QString getCurrentFontFamily() const { return Q_APP()->font().family(); }
+
+		/**
 		 * @brief Get the available fonts.
 		 */
-		inline QStringList getAvailableFonts() const { return QFontDatabase::families(); }
+		inline static QStringList getAvailableFonts() { return QFontDatabase::families(); }
+
+		/**
+		 * @brief Switch application theme.
+		 */
+		void setTheme( const E_THEME p_theme );
+
+		/**
+		 * @brief Set font.
+		 */
+		void setFontFamily( const QString & );
 
 	  private:
+		QString _stylesheet;
+
 		/**
 		 * @brief Current theme.
 		 */

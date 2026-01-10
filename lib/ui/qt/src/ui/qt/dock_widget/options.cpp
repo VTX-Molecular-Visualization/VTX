@@ -3,6 +3,7 @@
 #include "ui/qt/application.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
+#include "ui/qt/style.hpp"
 #include "ui/qt/widget/actionable_push_button.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include "ui/qt/widget/opengl_widget.hpp"
@@ -25,15 +26,20 @@ namespace
 namespace VTX::UI::QT::DockWidget
 {
 
-	Options::Options( QWidget * p_parent ) : BaseDockWidget( p_parent )
+	Options::Options( QWidget * p_parent ) : BaseDockWidget( p_parent, "Options" )
 	{
-		setWindowTitle( "Options" );
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
+		using namespace Widget;
+		using namespace Action;
+		using namespace Option;
+
 		// Display.
+		// Theme.
 		auto * groupBoxDisplay = new QGroupBox( "Display" );
 		auto * layoutDisplay   = new QVBoxLayout( groupBoxDisplay );
 
+		// TODO: refacto.
 		auto * system = addAction<Action::Theme::System>();
 		auto * light  = addAction<Action::Theme::Light>();
 		auto * dark	  = addAction<Action::Theme::Dark>();
@@ -42,6 +48,16 @@ namespace VTX::UI::QT::DockWidget
 		_comboBoxTheme->addItem( "System", QVariant::fromValue( system ) );
 		_comboBoxTheme->addItem( "Light", QVariant::fromValue( light ) );
 		_comboBoxTheme->addItem( "Dark", QVariant::fromValue( dark ) );
+
+		// Set default value.
+		QSignalBlocker blocker0( _comboBoxTheme );
+		switch ( STYLE().getCurrentTheme() )
+		{
+		case E_THEME::SYSTEM: _comboBoxTheme->setCurrentText( "System" ); break;
+		case E_THEME::LIGHT: _comboBoxTheme->setCurrentText( "Light" ); break;
+		case E_THEME::DARK: _comboBoxTheme->setCurrentText( "Dark" ); break;
+		default: break;
+		}
 
 		connect(
 			_comboBoxTheme,
@@ -66,7 +82,7 @@ namespace VTX::UI::QT::DockWidget
 				const int index = _comboBoxTheme->findData( QVariant::fromValue( p_action ) );
 				if ( index != -1 )
 				{
-					QSignalBlocker blocker( _comboBoxTheme );
+					QSignalBlocker blocker1( _comboBoxTheme );
 					_comboBoxTheme->setCurrentIndex( index );
 				}
 			}
@@ -74,11 +90,36 @@ namespace VTX::UI::QT::DockWidget
 
 		layoutDisplay->addWidget( _comboBoxTheme );
 
+		// Font.
+		_comboBoxFont = new QComboBox( this );
+		uint i		  = 0;
+		for ( const QString & fontName : STYLE().getAvailableFonts() )
+		{
+			_comboBoxFont->addItem( fontName );
+			_comboBoxFont->setItemData( i++, QFont( fontName, DEFAULT_FONT_SIZE ), Qt::FontRole );
+		}
+
+		QSignalBlocker blocker( _comboBoxFont );
+		_comboBoxFont->setCurrentText( STYLE().getCurrentFontFamily() );
+
+		connect(
+			_comboBoxFont,
+			&QComboBox::currentTextChanged,
+			[ this ]( const QString & p_fontName ) { STYLE().setFontFamily( p_fontName ); }
+		);
+
+		layoutDisplay->addWidget( _comboBoxFont );
+
+		// Reset layout.
+		auto * buttonResetLayout = new ActionablePushButton( Application::getAction<Theme::ResetLayout>(), this );
+		layoutDisplay->addWidget( buttonResetLayout );
+
 		// Graphics.
 		auto * groupBoxGraphics = new QGroupBox( "Graphics" );
 		auto * layoutGraphics	= new QVBoxLayout( groupBoxGraphics );
 		_checkBoxVSync			= new QCheckBox( "Vertical synchronization", this );
 
+		// TODO
 		/*
 		APP_QT::onUICreated += [ this ]()
 		{
@@ -105,10 +146,6 @@ namespace VTX::UI::QT::DockWidget
 		auto * layoutCache	 = new QVBoxLayout( groupBoxCache );
 
 		auto * layoutCacheButton = new QHBoxLayout();
-
-		using namespace Widget;
-		using namespace Action;
-		using namespace Option;
 
 		auto * buttonOpenCache	  = new ActionablePushButton( Application::getAction<Option::Cache::Open>(), this );
 		auto * buttonClearCache	  = new ActionablePushButton( Application::getAction<Option::Cache::Clear>(), this );
@@ -151,7 +188,7 @@ namespace VTX::UI::QT::DockWidget
 
 		_refreshCacheInfos();
 
-		QSignalBlocker blocker( _checkBoxVSync );
+		QSignalBlocker blocker1( _checkBoxVSync );
 		_checkBoxVSync->setChecked( SETTINGS().value( _SETTING_KEY_VSYNC, true ).toBool() );
 
 		QTimer::singleShot(

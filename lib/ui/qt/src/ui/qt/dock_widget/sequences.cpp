@@ -8,9 +8,8 @@
 
 namespace VTX::UI::QT::DockWidget
 {
-	Sequences::Sequences( QWidget * p_parent ) : BaseDockWidget( p_parent )
+	Sequences::Sequences( QWidget * p_parent ) : BaseDockWidget( p_parent, "Sequence" )
 	{
-		setWindowTitle( "Sequence" );
 		setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 
 		App::HUB().connect<App::Events::SystemLoad, &Sequences::_onSystemLoad>( this );

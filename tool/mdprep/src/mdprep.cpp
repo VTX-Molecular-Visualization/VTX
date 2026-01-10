@@ -67,10 +67,9 @@ namespace VTX::Tool::Mdprep
 		}
 
 	  public:
-		MainWindow( QWidget * const p_parent ) : BaseDockWidget( p_parent )
+		MainWindow( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Molecular Dynamics Preparation" )
 		{
 			this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
-			this->setWindowTitle( "Molecular Dynamics Preparation" );
 
 			_layout->addWidget( new QToolBar );
 

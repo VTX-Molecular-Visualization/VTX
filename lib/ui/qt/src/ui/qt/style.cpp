@@ -3,6 +3,7 @@
 #include "ui/qt/application.hpp"
 #include "ui/qt/resources.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/widget/main_window.hpp"
 #include <QFile>
 #include <QIcon>
 #include <QStyle>
@@ -14,6 +15,7 @@ namespace
 {
 	using namespace VTX::UI::QT;
 	constexpr std::string_view _SETTING_KEY_THEME = "theme/current";
+	constexpr std::string_view _SETTING_KEY_FONT  = "font/current";
 
 	QPalette _makeLightPalette()
 	{
@@ -67,27 +69,13 @@ namespace
 namespace VTX::UI::QT
 {
 
-	Style::Style()
-	{
-		// Load settings.
-		QString themeName = SETTINGS().value( _SETTING_KEY_THEME, "SYSTEM" ).toString();
-		try
-		{
-			const Style::E_THEME theme = Util::Enum::enumCast<Style::E_THEME>( themeName.toStdString() );
-			// Wait for the end of the event loop to set the theme.
-			QTimer::singleShot( 0, [ theme ]() { STYLE().setTheme( theme ); } );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "Failed to restore theme from settings: {}", p_e.what() );
-			setTheme( Style::E_THEME::SYSTEM );
-		}
-	}
+	Style::Style() {}
 
 	Style::~Style()
 	{
 		const QString themeName = Util::Enum::enumName( _currentTheme ).data();
 		SETTINGS().setValue( _SETTING_KEY_THEME, themeName );
+		SETTINGS().setValue( _SETTING_KEY_FONT, getCurrentFontFamily() );
 	}
 
 	void Style::load( const std::vector<App::Tool::BaseTool *> & p_tools )
@@ -97,11 +85,48 @@ namespace VTX::UI::QT
 		// Set Desktop style.
 		Q_APP()->setStyle( "Fusion" );
 
+		QFontDatabase::addApplicationFont( FONT_MATERIAL_SYMBOLS.data() );
+		QFontDatabase::addApplicationFont( FONT_INTER.data() );
+		QFontDatabase::addApplicationFont( FONT_OPEN_DYSLEXIC.data() );
+
+		// Linux only?
+		// QIcon::setThemeName( "Material Symbols Outlined" );
+
+		// List all available fonts.
+		const QStringList fontList = QFontDatabase::families();
+		for ( const QString & fontName : fontList )
+		{
+			// VTX_TRACE( "Available font: {}", fontName.toStdString() );
+		}
+
+		// Save system palette.
+		_themePalettes[ toUnderlying( E_THEME::SYSTEM ) ] = Q_APP()->palette();
+		_themePalettes[ toUnderlying( E_THEME::LIGHT ) ]  = _makeLightPalette();
+		_themePalettes[ toUnderlying( E_THEME::DARK ) ]	  = _makeDarkPalette();
+
+		// Load theme from settings.
+		try
+		{
+			QString		  themeName = SETTINGS().value( _SETTING_KEY_THEME, "SYSTEM" ).toString();
+			const E_THEME theme		= Util::Enum::enumCast<E_THEME>( themeName.toStdString() );
+			QString		  fontName	= SETTINGS().value( _SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
+			QFont		  appFont( fontName, 10 );
+
+			setTheme( theme );
+			setFontFamily( fontName );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Failed to restore style from settings: {}", p_e.what() );
+			setFontFamily( DEFAULT_FONT_FAMILY );
+			setTheme( DEFAULT_THEME );
+		}
+
 		// Load main stylesheet.
 		QFile stylesheetFile( FILE_STYLESHEET.data() );
 		if ( stylesheetFile.open( QFile::ReadOnly ) )
 		{
-			QString stylesheet = stylesheetFile.readAll();
+			_stylesheet = stylesheetFile.readAll();
 
 			// Load os-specific stylesheet.
 #if _WIN32
@@ -117,42 +142,20 @@ namespace VTX::UI::QT
 
 			if ( stylesheetOSFile.open( QFile::ReadOnly ) )
 			{
-				stylesheet += '\n' + stylesheetOSFile.readAll();
+				_stylesheet += '\n' + stylesheetOSFile.readAll();
 			}
 
 			for ( const App::Tool::BaseTool * const tool : p_tools )
 			{
 				if ( tool->getStyle().has_value() )
 				{
-					stylesheet += '\n' + tool->getStyle().value();
+					_stylesheet += '\n' + tool->getStyle().value();
 				}
 			}
 
 			// Set stylesheet to app.
-			Q_APP()->setStyleSheet( stylesheet );
+			// Q_APP()->setStyleSheet( _stylesheet );
 		}
-
-		QFontDatabase::addApplicationFont( FONT_MATERIAL_SYMBOLS.data() );
-		QFontDatabase::addApplicationFont( FONT_INTER.data() );
-
-		// Linux only?
-		// QIcon::setThemeName( "Material Symbols Outlined" );
-
-		// Set font.
-		QFont appFont( "Inter", 10 );
-		Q_APP()->setFont( appFont );
-
-		// List all available fonts.
-		const QStringList fontList = QFontDatabase::families();
-		for ( const QString & fontName : fontList )
-		{
-			// VTX_TRACE( "Available font: {}", fontName.toStdString() );
-		}
-
-		// Save system palette.
-		_themePalettes[ toUnderlying( E_THEME::SYSTEM ) ] = Q_APP()->palette();
-		_themePalettes[ toUnderlying( E_THEME::LIGHT ) ]  = _makeLightPalette();
-		_themePalettes[ toUnderlying( E_THEME::DARK ) ]	  = _makeDarkPalette();
 	}
 
 	void Style::setTheme( const E_THEME p_theme )
@@ -164,11 +167,6 @@ namespace VTX::UI::QT
 		}
 
 		Q_APP()->setPalette( _themePalettes[ toUnderlying( p_theme ) ] );
-		for ( QWidget * w : Q_APP()->allWidgets() )
-		{
-			w->setPalette( _themePalettes[ toUnderlying( p_theme ) ] );
-			w->update();
-		}
 		_currentTheme = p_theme;
 
 		// Trigger action group to update checked action.
@@ -176,12 +174,18 @@ namespace VTX::UI::QT
 
 		switch ( _currentTheme )
 		{
-		case VTX::UI::QT::Style::E_THEME::SYSTEM: Application::getAction<Action::Theme::System>()->trigger(); break;
-		case VTX::UI::QT::Style::E_THEME::LIGHT: Application::getAction<Action::Theme::Light>()->trigger(); break;
-		case VTX::UI::QT::Style::E_THEME::DARK: Application::getAction<Action::Theme::Dark>()->trigger(); break;
-		case VTX::UI::QT::Style::E_THEME::COUNT:;
+		case VTX::UI::QT::E_THEME::SYSTEM: Application::getAction<Action::Theme::System>()->trigger(); break;
+		case VTX::UI::QT::E_THEME::LIGHT: Application::getAction<Action::Theme::Light>()->trigger(); break;
+		case VTX::UI::QT::E_THEME::DARK: Application::getAction<Action::Theme::Dark>()->trigger(); break;
+		case VTX::UI::QT::E_THEME::COUNT:;
 		default: break;
 		}
+	}
+
+	void Style::setFontFamily( const QString & p_fontName )
+	{
+		QFont appFont( p_fontName, DEFAULT_FONT_SIZE );
+		Q_APP()->setFont( appFont );
 	}
 
 } // namespace VTX::UI::QT
