@@ -6,6 +6,7 @@
 #include "ui/qt/widget/actionable_push_button.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include "ui/qt/widget/opengl_widget.hpp"
+#include <QActionGroup>
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QGroupBox>
@@ -28,6 +29,50 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setWindowTitle( "Options" );
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+
+		// Display.
+		auto * groupBoxDisplay = new QGroupBox( "Display" );
+		auto * layoutDisplay   = new QVBoxLayout( groupBoxDisplay );
+
+		auto * system = addAction<Action::Theme::System>();
+		auto * light  = addAction<Action::Theme::Light>();
+		auto * dark	  = addAction<Action::Theme::Dark>();
+
+		_comboBoxTheme = new QComboBox( this );
+		_comboBoxTheme->addItem( "System", QVariant::fromValue( system ) );
+		_comboBoxTheme->addItem( "Light", QVariant::fromValue( light ) );
+		_comboBoxTheme->addItem( "Dark", QVariant::fromValue( dark ) );
+
+		connect(
+			_comboBoxTheme,
+			&QComboBox::currentTextChanged,
+			[ this ]( const QString & p_text )
+			{
+				QAction * const action = _comboBoxTheme->currentData().value<QAction *>();
+				if ( action )
+				{
+					action->trigger();
+				}
+			}
+		);
+
+		// TODO: move in Action factory?
+		system->actionGroup();
+		connect(
+			system->actionGroup(),
+			&QActionGroup::triggered,
+			[ this ]( QAction * p_action )
+			{
+				const int index = _comboBoxTheme->findData( QVariant::fromValue( p_action ) );
+				if ( index != -1 )
+				{
+					QSignalBlocker blocker( _comboBoxTheme );
+					_comboBoxTheme->setCurrentIndex( index );
+				}
+			}
+		);
+
+		layoutDisplay->addWidget( _comboBoxTheme );
 
 		// Graphics.
 		auto * groupBoxGraphics = new QGroupBox( "Graphics" );
@@ -99,6 +144,7 @@ namespace VTX::UI::QT::DockWidget
 		layoutCacheButton->addWidget( buttonRefreshCache );
 		layoutCache->addLayout( layoutCacheButton );
 
+		_layout->addWidget( groupBoxDisplay );
 		_layout->addWidget( groupBoxGraphics );
 		_layout->addWidget( groupBoxCache );
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );

@@ -134,6 +134,11 @@ namespace VTX::UI::QT
 			{
 				ResetLayout();
 			};
+
+			struct SetFont : public App::UI::DescAction
+			{
+				SetFont();
+			};
 		} // namespace Theme
 		namespace Help
 		{

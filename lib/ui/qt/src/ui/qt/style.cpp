@@ -1,16 +1,19 @@
 #include "ui/qt/style.hpp"
+#include "ui/qt/actions.hpp"
 #include "ui/qt/application.hpp"
 #include "ui/qt/resources.hpp"
+#include "ui/qt/services.hpp"
 #include <QFile>
-#include <QFontDatabase>
 #include <QIcon>
 #include <QStyle>
 #include <QWidget>
+#include <util/enum.hpp>
 #include <util/logger.hpp>
 
 namespace
 {
 	using namespace VTX::UI::QT;
+	constexpr std::string_view _SETTING_KEY_THEME = "theme/current";
 
 	QPalette _makeLightPalette()
 	{
@@ -63,6 +66,29 @@ namespace
 
 namespace VTX::UI::QT
 {
+
+	Style::Style()
+	{
+		// Load settings.
+		QString themeName = SETTINGS().value( _SETTING_KEY_THEME, "SYSTEM" ).toString();
+		try
+		{
+			const Style::E_THEME theme = Util::Enum::enumCast<Style::E_THEME>( themeName.toStdString() );
+			// Wait for the end of the event loop to set the theme.
+			QTimer::singleShot( 0, [ theme ]() { STYLE().setTheme( theme ); } );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Failed to restore theme from settings: {}", p_e.what() );
+			setTheme( Style::E_THEME::SYSTEM );
+		}
+	}
+
+	Style::~Style()
+	{
+		const QString themeName = Util::Enum::enumName( _currentTheme ).data();
+		SETTINGS().setValue( _SETTING_KEY_THEME, themeName );
+	}
 
 	void Style::load( const std::vector<App::Tool::BaseTool *> & p_tools )
 	{
@@ -124,25 +150,38 @@ namespace VTX::UI::QT
 		}
 
 		// Save system palette.
-		_themePalettes[ E_THEME::SYSTEM ] = Q_APP()->palette();
-		_themePalettes[ E_THEME::LIGHT ]  = _makeLightPalette();
-		_themePalettes[ E_THEME::DARK ]	  = _makeDarkPalette();
+		_themePalettes[ toUnderlying( E_THEME::SYSTEM ) ] = Q_APP()->palette();
+		_themePalettes[ toUnderlying( E_THEME::LIGHT ) ]  = _makeLightPalette();
+		_themePalettes[ toUnderlying( E_THEME::DARK ) ]	  = _makeDarkPalette();
 	}
 
 	void Style::setTheme( const E_THEME p_theme )
 	{
+		// TODO: fix looping events.
 		if ( p_theme == _currentTheme )
 		{
 			return;
 		}
 
-		Q_APP()->setPalette( _themePalettes[ p_theme ] );
+		Q_APP()->setPalette( _themePalettes[ toUnderlying( p_theme ) ] );
 		for ( QWidget * w : Q_APP()->allWidgets() )
 		{
-			w->setPalette( _themePalettes[ p_theme ] );
+			w->setPalette( _themePalettes[ toUnderlying( p_theme ) ] );
 			w->update();
 		}
 		_currentTheme = p_theme;
+
+		// Trigger action group to update checked action.
+		auto * QActionGroup = Application::getAction<Action::Theme::System>()->actionGroup();
+
+		switch ( _currentTheme )
+		{
+		case VTX::UI::QT::Style::E_THEME::SYSTEM: Application::getAction<Action::Theme::System>()->trigger(); break;
+		case VTX::UI::QT::Style::E_THEME::LIGHT: Application::getAction<Action::Theme::Light>()->trigger(); break;
+		case VTX::UI::QT::Style::E_THEME::DARK: Application::getAction<Action::Theme::Dark>()->trigger(); break;
+		case VTX::UI::QT::Style::E_THEME::COUNT:;
+		default: break;
+		}
 	}
 
 } // namespace VTX::UI::QT

@@ -45,9 +45,9 @@ namespace VTX::UI::QT
 		{
 			App::ECS::setCtx<Settings>();
 		}
-		catch ( const std::exception & e )
+		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( "Failed to restore settings: {}", e.what() );
+			VTX_ERROR( "Failed to restore settings: {}", p_e.what() );
 		}
 
 		// Create model.
@@ -105,6 +105,7 @@ namespace VTX::UI::QT
 	void Application::start()
 	{
 		VTXApp::start();
+
 		// Run Qt main loop.
 		exec();
 		VTX_TRACE( "Application::start(): Qt loop exited" );
