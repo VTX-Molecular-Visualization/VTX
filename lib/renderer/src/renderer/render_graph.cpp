@@ -166,7 +166,7 @@ namespace VTX::Renderer
 		GraphBuilder g;
 
 		// Buffers.
-		g.buffer(
+		g.bufferLayout(
 			"Camera",
 			E_BUFFER_ROLE::UNIFORM,
 			E_BUFFER_ACCESS::READ,
@@ -183,7 +183,7 @@ namespace VTX::Renderer
 			  makeUniform( "IsPerspective", std::uint32_t( 1 ) ) }
 		);
 
-		g.buffer(
+		g.bufferLayout(
 			"ColorLayout",
 			E_BUFFER_ROLE::UNIFORM,
 			E_BUFFER_ACCESS::READ,
@@ -192,7 +192,7 @@ namespace VTX::Renderer
 			{ makeUniformArray( "Colors", Util::Color::Rgba {}, 256 ) }
 		);
 
-		g.buffer(
+		g.bufferLayout(
 			"Models",
 			E_BUFFER_ROLE::STORAGE,
 			E_BUFFER_ACCESS::READ,
@@ -203,7 +203,7 @@ namespace VTX::Renderer
 			  makeUniform( "MatrixNormal", Mat4f( MAT4F_ID ) ) }
 		);
 
-		g.buffer(
+		g.bufferLayout(
 			"Representations",
 			E_BUFFER_ROLE::STORAGE,
 			E_BUFFER_ACCESS::READ,
@@ -220,7 +220,7 @@ namespace VTX::Renderer
 		);
 
 		// Vertex streams and data buffers.
-		g.vertexStream(
+		g.vertexLayout(
 			"Atoms",
 			{
 				{ "Positions", E_TYPE::VEC3F },
@@ -233,16 +233,16 @@ namespace VTX::Renderer
 			}
 		);
 
-		g.dataBuffer( "Atoms.Positions" )
-			.dataBuffer( "Atoms.Colors" )
-			.dataBuffer( "Atoms.Radii" )
-			.dataBuffer( "Atoms.Ids" )
-			.dataBuffer( "Atoms.Flags" )
-			.dataBuffer( "Atoms.Models" )
-			.dataBuffer( "Atoms.Representations" )
-			.dataBuffer( "Bonds", E_DATA_BUFFER_KIND::INDEX );
+		g.bufferData( "Atoms.Positions" )
+			.bufferData( "Atoms.Colors" )
+			.bufferData( "Atoms.Radii" )
+			.bufferData( "Atoms.Ids" )
+			.bufferData( "Atoms.Flags" )
+			.bufferData( "Atoms.Models" )
+			.bufferData( "Atoms.Representations" )
+			.bufferData( "Bonds", E_DATA_BUFFER_KIND::INDEX );
 
-		g.vertexStream(
+		g.vertexLayout(
 			"Residues",
 			{
 				{ "Positions", E_TYPE::VEC4F },
@@ -256,16 +256,16 @@ namespace VTX::Renderer
 			}
 		);
 
-		g.dataBuffer( "Residues.Positions" )
-			.dataBuffer( "Residues.Directions" )
-			.dataBuffer( "Residues.Types" )
-			.dataBuffer( "Residues.Colors" )
-			.dataBuffer( "Residues.Ids" )
-			.dataBuffer( "Residues.Flags" )
-			.dataBuffer( "Residues.Models" )
-			.dataBuffer( "Residues.Representations" );
+		g.bufferData( "Residues.Positions" )
+			.bufferData( "Residues.Directions" )
+			.bufferData( "Residues.Types" )
+			.bufferData( "Residues.Colors" )
+			.bufferData( "Residues.Ids" )
+			.bufferData( "Residues.Flags" )
+			.bufferData( "Residues.Models" )
+			.bufferData( "Residues.Representations" );
 
-		g.vertexStream(
+		g.vertexLayout(
 			"Voxels",
 			{
 				{ "Mins", E_TYPE::VEC3F },
@@ -273,7 +273,7 @@ namespace VTX::Renderer
 			}
 		);
 
-		g.dataBuffer( "Voxels.Mins" ).dataBuffer( "Voxels.Maxs" );
+		g.bufferData( "Voxels.Mins" ).bufferData( "Voxels.Maxs" );
 
 		// Geometries.
 		g.geometry( "Spheres", "Atoms" );

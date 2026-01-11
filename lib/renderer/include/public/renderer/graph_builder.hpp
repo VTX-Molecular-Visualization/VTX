@@ -162,12 +162,12 @@ namespace VTX::Renderer
 		/**
 		 * @brief vertexStream().
 		 */
-		GraphBuilder & vertexStream( const Key &, const std::initializer_list<VertexAttribute> );
+		GraphBuilder & vertexLayout( const Key &, const std::initializer_list<VertexAttribute> );
 
 		/**
 		 * @brief uniformBuffer().
 		 */
-		GraphBuilder & buffer(
+		GraphBuilder & bufferLayout(
 			const Key &,
 			const E_BUFFER_ROLE,
 			const E_BUFFER_ACCESS,
@@ -179,7 +179,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief dataBuffer().
 		 */
-		GraphBuilder & dataBuffer(
+		GraphBuilder & bufferData(
 			const Key &				 p_name,
 			const E_DATA_BUFFER_KIND p_kind		 = E_DATA_BUFFER_KIND::VERTEX,
 			const E_UPDATE_FREQUENCY p_frequency = E_UPDATE_FREQUENCY::STATIC

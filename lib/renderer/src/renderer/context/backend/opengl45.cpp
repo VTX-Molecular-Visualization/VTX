@@ -213,11 +213,11 @@ namespace VTX::Renderer::Context::Backend
 		}
 		for ( const auto & [ key, vertexStream ] : p_resources.vertexStreams )
 		{
-			_getOrCreateVertexStream( key, vertexStream );
+			_getOrCreateVertexLayout( key, vertexStream );
 		}
 		for ( const auto & [ key, buffer ] : p_resources.buffers )
 		{
-			_getOrCreateBuffer( key, buffer );
+			_getOrCreateBufferLayout( key, buffer );
 		}
 
 		// Foreach pass.
@@ -367,16 +367,16 @@ namespace VTX::Renderer::Context::Backend
 		return handle;
 	}
 
-	Handle OpenGL45::_getOrCreateVertexStream( const Key & p_key, const VertexLayout & p_vertexStream )
+	Handle OpenGL45::_getOrCreateVertexLayout( const Key & p_key, const VertexLayout & p_vertexStream )
 	{
-		auto it = _cacheVertexStreams.find( p_key );
-		if ( it != _cacheVertexStreams.end() )
+		auto it = _cacheVertexLayouts.find( p_key );
+		if ( it != _cacheVertexLayouts.end() )
 		{
 			return it->second;
 		}
 		const Handle handle = static_cast<Handle>( _vertexArrays.size() );
 		_vertexArrays.emplace_back( std::make_unique<GL::VertexArray>() );
-		_cacheVertexStreams.emplace( p_key, handle );
+		_cacheVertexLayouts.emplace( p_key, handle );
 
 		const auto & vao = *_vertexArrays[ handle ];
 		vao.bind();
@@ -405,30 +405,47 @@ namespace VTX::Renderer::Context::Backend
 		return handle;
 	}
 
-	Handle OpenGL45::_getOrCreateBuffer( const Key & p_key, const BufferLayout & p_buffer )
+	Handle OpenGL45::_getOrCreateBufferLayout( const Key & p_key, const BufferLayout & p_buffer )
 	{
-		auto it = _cacheBuffers.find( p_key );
-		if ( it != _cacheBuffers.end() )
+		auto it = _cacheBufferLayouts.find( p_key );
+		if ( it != _cacheBufferLayouts.end() )
 		{
 			return it->second;
 		}
 
 		const Handle handle = static_cast<Handle>( _buffers.size() );
+		_buffers.emplace_back( std::make_unique<GL::Buffer>() );
+
+		return handle;
+	}
+
+	Handle OpenGL45::_getOrCreateBufferData( const Key & p_key, const BufferData & p_buffer )
+	{
+		auto it = _cacheBufferData.find( p_key );
+		if ( it != _cacheBufferData.end() )
+		{
+			return it->second;
+		}
+
+		const Handle handle = static_cast<Handle>( _buffers.size() );
+		_vertexBuffers.emplace_back( std::make_unique<GL::Buffer>() );
 
 		return handle;
 	}
 
 	Handle OpenGL45::_getOrCreateProgram( const Program & p_program )
 	{
-		const Key key = p_program.name;
-		auto	  it  = _cachePrograms.find( key );
+		const Key & key = p_program.name;
+		auto		it	= _cachePrograms.find( key );
 		if ( it != _cachePrograms.end() )
 		{
 			return it->second;
 		}
 		const Handle handle = static_cast<Handle>( _programs.size() );
 
-		// TODO: bind geometry to vao if draw call
+		GL::Program * const program = _programManager->createProgram( p_program.name, p_program.shaders );
+		_programs.emplace_back( program );
+		_cachePrograms.emplace( key, handle );
 
 		return handle;
 	}
@@ -482,6 +499,8 @@ namespace VTX::Renderer::Context::Backend
 
 		vao.unbind();
 	}
+
+	// ResourceTable OpenGL45::_buildResourceTableForPass( const Pass & p_pass ) {}
 
 	void OpenGL45::_getOpenglInfos()
 	{

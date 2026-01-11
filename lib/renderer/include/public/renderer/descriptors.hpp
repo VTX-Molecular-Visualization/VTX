@@ -229,7 +229,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief Data buffer descriptor.
 	 */
-	struct DataBuffer
+	struct BufferData
 	{
 		E_DATA_BUFFER_KIND kind;
 		E_UPDATE_FREQUENCY frequency;
@@ -264,7 +264,7 @@ namespace VTX::Renderer
 
 	struct Geometry
 	{
-		Key				   vertexStream;
+		Key				   vertexLayout;
 		std::optional<Key> indexBuffer;
 		// std::unordered_map<Key, Key> overrides; // attributeName -> bufferKey
 	};
@@ -317,7 +317,7 @@ namespace VTX::Renderer
 		std::unordered_map<Key, Sampler>	  samplers;
 		std::unordered_map<Key, VertexLayout> vertexStreams;
 		std::unordered_map<Key, BufferLayout> buffers;
-		std::unordered_map<Key, DataBuffer>	  dataBuffers;
+		std::unordered_map<Key, BufferData>	  dataBuffers;
 		std::unordered_map<Key, Geometry>	  geometries;
 	};
 

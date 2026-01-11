@@ -29,7 +29,7 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	GraphBuilder & GraphBuilder::vertexStream(
+	GraphBuilder & GraphBuilder::vertexLayout(
 		const Key &									 p_name,
 		const std::initializer_list<VertexAttribute> p_attributes
 	)
@@ -40,7 +40,7 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	GraphBuilder & GraphBuilder::buffer(
+	GraphBuilder & GraphBuilder::bufferLayout(
 		const Key &								  p_name,
 		const E_BUFFER_ROLE						  p_role,
 		const E_BUFFER_ACCESS					  p_access,
@@ -59,13 +59,13 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	VTX::Renderer::GraphBuilder & VTX::Renderer::GraphBuilder::dataBuffer(
+	VTX::Renderer::GraphBuilder & VTX::Renderer::GraphBuilder::bufferData(
 		const Key &				 p_name,
 		const E_DATA_BUFFER_KIND p_kind,
 		const E_UPDATE_FREQUENCY p_frequency
 	)
 	{
-		DataBuffer db;
+		BufferData db;
 		db.kind							= p_kind;
 		db.frequency					= p_frequency;
 		resources.dataBuffers[ p_name ] = std::move( db );
@@ -74,13 +74,13 @@ namespace VTX::Renderer
 
 	GraphBuilder & GraphBuilder::geometry(
 		const Key & p_name,
-		const Key & p_vertexStream,
+		const Key & p_vertexLayout,
 		// const std::unordered_map<Key, Key> & p_overrides,
 		const std::optional<Key> p_indexBuffer
 	)
 	{
 		Geometry geom;
-		geom.vertexStream = p_vertexStream;
+		geom.vertexLayout = p_vertexLayout;
 		geom.indexBuffer  = p_indexBuffer;
 		// geom.overrides	 = p_overrides;
 		resources.geometries[ p_name ] = std::move( geom );

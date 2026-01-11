@@ -105,10 +105,11 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		Cache _cacheTextures;
 		Cache _cacheSamplers;
-		Cache _cacheBuffers;
+		Cache _cacheBufferLayouts;
+		Cache _cacheBufferData;
 		Cache _cacheVertexBuffers;
 		Cache _cacheIndexBuffers;
-		Cache _cacheVertexStreams;
+		Cache _cacheVertexLayouts;
 		Cache _cachePrograms;
 		Cache _cacheResourceTables;
 		Cache _cacheFramebuffers;
@@ -135,11 +136,14 @@ namespace VTX::Renderer::Context::Backend
 		Handle _getOrCreateResourceTable( const Pass &, const Resources & );
 		Handle _getOrCreateTexture( const Key &, const Texture & );
 		Handle _getOrCreateSampler( const Key &, const Sampler & );
-		Handle _getOrCreateVertexStream( const Key &, const VertexLayout & );
-		Handle _getOrCreateBuffer( const Key &, const BufferLayout & );
+		Handle _getOrCreateVertexLayout( const Key &, const VertexLayout & );
+		Handle _getOrCreateBufferLayout( const Key &, const BufferLayout & );
+		Handle _getOrCreateBufferData( const Key &, const BufferData & );
 		Handle _getOrCreateProgram( const Program & );
 
 		void _bindGeometryToVao( const Handle, const VertexLayout &, const Geometry &, const bool );
+
+		ResourceTable _buildResourceTableForPass( const Pass & );
 
 		/**
 		 * @brief Specs.
