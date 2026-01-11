@@ -451,18 +451,18 @@ namespace VTX::Renderer::Context::Backend
 	}
 
 	void OpenGL45::_bindGeometryToVao(
-		const Handle		 hVao,
-		const VertexLayout & layout,
-		const Geometry &	 geom,
-		const bool			 useIndices
+		const Handle		 p_hVao,
+		const VertexLayout & p_layout,
+		const Geometry &	 p_geom,
+		const bool			 p_useIndices
 	)
 	{
-		auto & vao = *_vertexArrays[ hVao ];
+		auto & vao = *_vertexArrays[ p_hVao ];
 		vao.bind();
 
 		GLuint location = 0;
 
-		for ( const auto & a : layout.attributes )
+		for ( const auto & a : p_layout.attributes )
 		{
 			const GLAttrib ga = toGLAttrib( a.type );
 
@@ -488,9 +488,9 @@ namespace VTX::Renderer::Context::Backend
 			}
 		}
 
-		if ( useIndices )
+		if ( p_useIndices )
 		{
-			assert( geom.indexBuffer.has_value() );
+			assert( p_geom.indexBuffer.has_value() );
 
 			const Handle hEbo = 0;
 			//_getOrCreateIndexBuffer( *geom.indexBuffer );

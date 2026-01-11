@@ -93,7 +93,13 @@ namespace VTX::Renderer
 
 	ProgramBuilder & ProgramBuilder::shaders( std::initializer_list<FilePath> p_files )
 	{
-		program.shaders.assign( p_files.begin(), p_files.end() );
+		program.shaders.emplace<std::vector<FilePath>>( p_files.begin(), p_files.end() );
+		return *this;
+	}
+
+	ProgramBuilder & ProgramBuilder::shadersDir( const FilePath & p_dir )
+	{
+		program.shaders.emplace<FilePath>( p_dir );
 		return *this;
 	}
 

@@ -225,6 +225,7 @@ namespace VTX::Renderer
 		 * @brief shaders().
 		 */
 		ProgramBuilder & shaders( std::initializer_list<FilePath> );
+		ProgramBuilder & shadersDir( const FilePath & );
 
 		/**
 		 * @brief uniform().

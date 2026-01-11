@@ -150,7 +150,8 @@ namespace VTX::Renderer
 	/**
 	 * @brief Files.
 	 */
-	using Files = std::vector<FilePath>;
+	using Files		 = std::vector<FilePath>;
+	using DirOrFiles = std::variant<FilePath, Files>;
 
 	/**
 	 * @brief 2D size absolute.
@@ -286,7 +287,7 @@ namespace VTX::Renderer
 	struct Program
 	{
 		Key						  name;
-		Files					  shaders;
+		DirOrFiles				  shaders;
 		std::vector<UniformValue> uniforms;
 		std::optional<DrawCall>	  drawCall;
 	};
