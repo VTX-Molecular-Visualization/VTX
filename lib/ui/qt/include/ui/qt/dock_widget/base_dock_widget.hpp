@@ -30,6 +30,10 @@ namespace VTX::UI::QT::DockWidget
 		{
 			QDockWidget::setWindowTitle( p_title );
 
+			QDockWidget::setFeatures(
+				QDockWidget::features() | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable
+			);
+
 			// Scroll area.
 			if constexpr ( VSA or HSA )
 			{
@@ -90,15 +94,9 @@ namespace VTX::UI::QT::DockWidget
 				bFloat,
 				&QToolButton::clicked,
 				this,
-				[ this, label ]
-				{
-					QDockWidget::setFloating( not QDockWidget::isFloating() );
-					label->setVisible( QDockWidget::isFloating() );
-				}
+				[ this, label ] { QDockWidget::setFloating( not QDockWidget::isFloating() ); }
 			);
 			lay->addWidget( bFloat );
-
-			label->setVisible( QDockWidget::isFloating() );
 
 			auto * bClose = new QToolButton( bar );
 			bClose->setAutoRaise( true );
@@ -106,8 +104,8 @@ namespace VTX::UI::QT::DockWidget
 			QObject::connect( bClose, &QToolButton::clicked, this, &QDockWidget::close );
 			lay->addWidget( bClose );
 
-			QDockWidget::setTitleBarWidget( bar );
-			*/
+			 QDockWidget::setTitleBarWidget( bar );
+			 */
 		}
 
 		virtual ~BaseDockWidget() = default;

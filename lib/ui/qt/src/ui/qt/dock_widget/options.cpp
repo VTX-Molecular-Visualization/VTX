@@ -119,15 +119,6 @@ namespace VTX::UI::QT::DockWidget
 		auto * layoutGraphics	= new QVBoxLayout( groupBoxGraphics );
 		_checkBoxVSync			= new QCheckBox( "Vertical synchronization", this );
 
-		// TODO
-		/*
-		APP_QT::onUICreated += [ this ]()
-		{
-			auto * glWidget = Core::WIDGETS::get().get<Widget::OpenGLWidget>();
-			_checkBoxVSync->setChecked( glWidget->isVSync() );
-		};
-		*/
-
 		connect(
 			_checkBoxVSync,
 			&QCheckBox::checkStateChanged,
