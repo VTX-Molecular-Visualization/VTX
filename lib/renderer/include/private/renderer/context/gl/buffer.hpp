@@ -94,9 +94,15 @@ namespace VTX::Renderer::Context::GL
 			assert( glIsBuffer( _id ) );
 			assert( p_size > 0 );
 
-			_size = p_size;
-
-			glNamedBufferData( _id, _size, p_data, p_usage );
+			if ( p_size == _size )
+			{
+				setSub( p_data, p_size, 0 );
+			}
+			else
+			{
+				_size = p_size;
+				glNamedBufferData( _id, _size, p_data, p_usage );
+			}
 		}
 
 		inline void setStorage( const void * const p_data, const GLsizei p_size, const GLbitfield p_storageFlags = 0 )

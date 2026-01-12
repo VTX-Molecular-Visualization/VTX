@@ -247,6 +247,8 @@ namespace VTX::Renderer::Context::Backend
 
 	void OpenGL45::build( const RenderQueue & p_renderQueue, const Resources & p_resources, CommandBuffer & p_commands )
 	{
+		_resources = p_resources;
+
 		// Begin frame.
 		// TODO: read from graph.
 		PayloadBeginFrame beginFrame { CLEAR_COLOR | CLEAR_DEPTH };
@@ -268,6 +270,15 @@ namespace VTX::Renderer::Context::Backend
 		for ( const auto & [ key, buffer ] : p_resources.shaderBuffers )
 		{
 			_getOrCreateShaderBuffer( key, buffer );
+		}
+		for ( const auto & [ key, buffer ] : p_resources.pipelineBuffers )
+		{
+			switch ( buffer.kind )
+			{
+			case E_PIPELINE_BUFFER_KIND::VERTEX: _getOrCreateVertexBuffer( key );
+			case E_PIPELINE_BUFFER_KIND::INDEX: _getOrCreateIndexBuffer( key );
+			default: break;
+			}
 		}
 
 		// Foreach pass.
@@ -508,6 +519,40 @@ namespace VTX::Renderer::Context::Backend
 		return handle;
 	}
 
+	Handle OpenGL45::_getOrCreateVertexBuffer( const Key & p_key )
+	{
+		auto it = _cacheVertexBuffers.find( p_key );
+		if ( it != _cacheVertexBuffers.end() )
+		{
+			return it->second;
+		}
+
+		auto glBuffer = std::make_unique<GL::Buffer>(); // pas de storage ici
+
+		const Handle h = static_cast<Handle>( _vertexBuffers.size() );
+		_vertexBuffers.emplace_back( std::move( glBuffer ) );
+		_cacheVertexBuffers.emplace( p_key, h );
+
+		return h;
+	}
+
+	Handle OpenGL45::_getOrCreateIndexBuffer( const Key & p_key )
+	{
+		auto it = _cacheIndexBuffers.find( p_key );
+		if ( it != _cacheIndexBuffers.end() )
+		{
+			return it->second;
+		}
+
+		auto glBuffer = std::make_unique<GL::Buffer>(); // pas de storage ici
+
+		const Handle h = static_cast<Handle>( _indexBuffers.size() );
+		_indexBuffers.emplace_back( std::move( glBuffer ) );
+		_cacheIndexBuffers.emplace( p_key, h );
+
+		return h;
+	}
+
 	Handle OpenGL45::_getOrCreateProgram( const Program & p_program )
 	{
 		const Key & key = p_program.name;
@@ -541,8 +586,8 @@ namespace VTX::Renderer::Context::Backend
 		{
 			const GLAttrib ga = toGLAttrib( a.type );
 
-			// auto itBufKey = geom.attributeBuffers.find( a.name );
-			// assert( itBufKey != geom.attributeBuffers.end() );
+			// auto itBufKey = p_geom.attributeBuffers.find( a.name );
+			// assert( itBufKey != p_geom.attributeBuffers.end() );
 
 			// const Key & bufferKey = itBufKey->second;
 
@@ -573,6 +618,22 @@ namespace VTX::Renderer::Context::Backend
 		}
 
 		vao.unbind();
+	}
+
+	void OpenGL45::setPipelineBufferData( const Key & p_key, SpanBytes p_bytes )
+	{
+		const BufferPipeline & desc = _resources.pipelineBuffers.at( p_key );
+
+		if ( desc.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
+		{
+			const Handle h = _getOrCreateVertexBuffer( p_key );
+			_vertexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( desc.frequency ) );
+		}
+		else
+		{
+			const Handle h = _getOrCreateIndexBuffer( p_key );
+			_indexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( desc.frequency ) );
+		}
 	}
 
 	// ResourceTable OpenGL45::_buildResourceTableForPass( const Pass & p_pass ) {}

@@ -76,6 +76,9 @@ namespace VTX::Renderer::Context::Backend
 		uint32_t _width;
 		uint32_t _height;
 
+		// Store descriptors.
+		Resources _resources;
+
 		/**
 		 * @brief Buffer binding info.
 		 */
@@ -107,7 +110,6 @@ namespace VTX::Renderer::Context::Backend
 		Cache _cacheTextures;
 		Cache _cacheSamplers;
 		Cache _cacheShaderBuffers;
-		Cache _cachePipelineBuffers;
 		Cache _cacheVertexBuffers;
 		Cache _cacheIndexBuffers;
 		Cache _cacheVertexLayouts;
@@ -122,7 +124,6 @@ namespace VTX::Renderer::Context::Backend
 		std::vector<std::unique_ptr<ResourceTable>>	  _resourceTables;
 		std::vector<std::unique_ptr<GL::VertexArray>> _vertexArrays;
 		std::vector<std::unique_ptr<GL::Buffer>>	  _shaderBuffers;
-		std::vector<std::unique_ptr<GL::Buffer>>	  _pipelineBuffers;
 		std::vector<std::unique_ptr<GL::Buffer>>	  _vertexBuffers;
 		std::vector<std::unique_ptr<GL::Buffer>>	  _indexBuffers;
 		std::vector<std::unique_ptr<GL::Framebuffer>> _framebuffers;
@@ -141,11 +142,12 @@ namespace VTX::Renderer::Context::Backend
 		Handle _getOrCreateVertexLayout( const Key &, const VertexLayout & );
 		Handle _getOrCreateShaderBuffer( const Key &, const BufferShader & );
 		Handle _getOrCreatePipelineBuffer( const Key &, const BufferPipeline & );
-		Handle _getOrCreateVertexBuffer( const Key &, SpanBytes );
-		Handle _getOrCreateIndexBuffer( const Key &, SpanBytes );
+		Handle _getOrCreateVertexBuffer( const Key & );
+		Handle _getOrCreateIndexBuffer( const Key & );
 		Handle _getOrCreateProgram( const Program & );
 
 		void _bindGeometryToVao( const Handle, const VertexLayout &, const Geometry &, const bool );
+		void setPipelineBufferData( const Key & p_key, SpanBytes p_bytes );
 
 		ResourceTable _buildResourceTableForPass( const Pass & );
 
