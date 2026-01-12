@@ -1,6 +1,7 @@
 #include "renderer/context/backend/opengl45.hpp"
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/gl/debug.hpp"
+#include <numeric>
 #include <util/exceptions.hpp>
 
 namespace
@@ -167,6 +168,35 @@ namespace
 		}
 	}
 
+	constexpr GLbitfield _toGLClearMask( const std::vector<E_SETTINGS> & p_settings )
+	{
+		GLenum mask = 0;
+		for ( const E_SETTINGS setting : p_settings )
+		{
+			switch ( setting )
+			{
+			case E_SETTINGS::CLEAR_COLOR: mask |= GL_COLOR_BUFFER_BIT; break;
+			case E_SETTINGS::CLEAR_DEPTH: mask |= GL_DEPTH_BUFFER_BIT; break;
+			default: break;
+			}
+		}
+		return mask;
+	}
+
+	constexpr GLbitfield _toGLEnableMask( const std::vector<E_SETTINGS> & p_settings )
+	{
+		GLenum enable = 0;
+		for ( const E_SETTINGS setting : p_settings )
+		{
+			switch ( setting )
+			{
+			case E_SETTINGS::ENABLE_DEPTH: enable |= GL_DEPTH_TEST; break;
+			default: break;
+			}
+		}
+		return enable;
+	}
+
 } // namespace
 
 namespace VTX::Renderer::Context::Backend
@@ -238,9 +268,8 @@ namespace VTX::Renderer::Context::Backend
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
 		glDebugMessageCallback( GL::Debug::_debugMessageCallback, nullptr );
 
-		// TODO: set from grpah.
+		// TODO: set from graph.
 		glEnable( GL_CLIP_DISTANCE0 );
-		glEnable( GL_DEPTH_TEST );
 		glDepthFunc( GL_LESS );
 
 		glClearColor( 0.f, 0.f, 0.f, 1.0f );
@@ -282,23 +311,25 @@ namespace VTX::Renderer::Context::Backend
 
 		// Push BEGIN_FRAME.
 		// TODO: read from graph.
-		PayloadBeginFrame beginFrame { GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT };
-		p_commands.push<E_COMMAND::BEGIN_FRAME>( beginFrame );
+		p_commands.push<E_COMMAND::BEGIN_FRAME>();
 
 		// Foreach pass.
 		for ( const Pass * const passPtr : p_renderQueue )
 		{
-			const bool	 isLastPass = ( passPtr == p_renderQueue.back() );
 			const Pass & pass		= *passPtr;
-
-			// FBO.
-			const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
-			// TODO: attach textures to FBO.
+			const bool	 isLastPass = ( passPtr == p_renderQueue.back() );
 
 			// Resource table, clear each build.
 			const Handle	hResourceTable = _getOrCreateResourceTable( pass, p_resources );
 			ResourceTable & resourceTable  = _resourceTables[ hResourceTable ];
 			resourceTable				   = _buildResourceTableForPass( pass, p_resources );
+
+			// FBO.
+			const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
+			if ( not isLastPass )
+			{
+				_attachTexturesToFramebuffer( pass, p_resources );
+			}
 
 			// Create programs.
 			for ( const Program & program : pass.programs )
@@ -306,19 +337,19 @@ namespace VTX::Renderer::Context::Backend
 				const Handle hProgram = _getOrCreateProgram( program );
 			}
 
-			// Push BEGIN_PASS.
-			PayloadBeginPass beginPass {};
-			p_commands.push<E_COMMAND::BEGIN_PASS>();
-
 			// Push BIND_FRAMEBUFFER.
-			PayloadBindFramebuffer bindFBO { 0 };
-			VTX_DEBUG( "Binding FBO handle: {}", bindFBO.framebuffer );
-
+			PayloadBindFramebuffer bindFBO { hFramebuffer };
 			p_commands.push<E_COMMAND::BIND_FRAMEBUFFER>( bindFBO );
 
+			// Push BEGIN_PASS.
+			uint32_t		 clearFlags	 = static_cast<uint32_t>( _toGLClearMask( pass.settings ) );
+			uint32_t		 enableFlags = static_cast<uint32_t>( _toGLEnableMask( pass.settings ) );
+			PayloadBeginPass beginPass { clearFlags, enableFlags };
+			p_commands.push<E_COMMAND::BEGIN_PASS>( beginPass );
+
 			// Push END_PASS.
-			PayloadEndPass endPass {};
-			p_commands.push<E_COMMAND::END_PASS>();
+			PayloadEndPass endPass { enableFlags };
+			p_commands.push<E_COMMAND::END_PASS>( endPass );
 		}
 
 		// Push END_FRAME.
@@ -667,6 +698,54 @@ namespace VTX::Renderer::Context::Backend
 		}
 
 		return rt;
+	}
+
+	void OpenGL45::_attachTexturesToFramebuffer( const Pass & p_pass, const Resources & p_resources )
+	{
+		const Key &				key			 = p_pass.name;
+		const Handle			hFramebuffer = _cacheFramebuffers.at( key );
+		const GL::Framebuffer & fbo			 = *_framebuffers[ hFramebuffer ];
+
+		// Attach.
+		uint colorAttach = 0;
+		for ( auto & output : p_pass.outputs )
+		{
+			if ( output.type != E_RESOURCE_TYPE::TEXTURE )
+			{
+				continue;
+			}
+
+			const Handle		  hTex	  = _cacheTextures.at( output.primary );
+			const GL::Texture2D & texture = *_textures[ hTex ];
+
+			const E_FORMAT format  = p_resources.textures.at( output.primary ).format;
+			const bool	   isDepth = _toGL( format ).isDepth;
+
+			if ( isDepth )
+			{
+				fbo.attachTexture( texture, GL_DEPTH_ATTACHMENT );
+			}
+			else
+			{
+				fbo.attachTexture( texture, GL_COLOR_ATTACHMENT0 + colorAttach++ );
+			}
+		}
+
+		// Set draw buffers.
+		fbo.setReadBuffer( GL_NONE );
+		if ( colorAttach )
+		{
+			std::vector<uint32_t> drawBuffers( colorAttach );
+			std::iota( drawBuffers.begin(), drawBuffers.end(), GL_COLOR_ATTACHMENT0 );
+			fbo.setDrawBuffers( drawBuffers );
+		}
+		else
+		{
+			fbo.setDrawBuffers( { GL_NONE } );
+		}
+
+		// Check FBO complete.
+		assert( fbo.checkStatus() );
 	}
 
 	void OpenGL45::_bindGeometryToVao(

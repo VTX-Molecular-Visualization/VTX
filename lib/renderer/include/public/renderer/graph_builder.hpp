@@ -308,10 +308,7 @@ namespace VTX::Renderer
 		PassBuilder & in( const E_RESOURCE_TYPE, const Key &, const std::optional<Key> = std::nullopt );
 
 		// Convenience overload: defaults to TEXTURE.
-		PassBuilder & in( const Key & p_texture, const std::optional<Key> & p_sampler = std::nullopt )
-		{
-			return in( E_RESOURCE_TYPE::TEXTURE, p_texture, p_sampler ? *p_sampler : DEFAULT_SAMPLER_NAME );
-		}
+		PassBuilder & in( const Key &, const std::optional<Key> & = std::nullopt );
 
 		/**
 		 * @brief out().
@@ -320,10 +317,12 @@ namespace VTX::Renderer
 		PassBuilder & out( const E_RESOURCE_TYPE, const Key &, const std::optional<Key> = std::nullopt );
 
 		// Convenience overload: defaults to TEXTURE.
-		PassBuilder & out( const Key & p_texture, const std::optional<Key> p_sampler = std::nullopt )
-		{
-			return out( E_RESOURCE_TYPE::TEXTURE, p_texture, p_sampler ? *p_sampler : DEFAULT_SAMPLER_NAME );
-		}
+		PassBuilder & out( const Key & );
+
+		/**
+		 * @brief settings().
+		 */
+		PassBuilder & settings( const std::initializer_list<E_SETTINGS> );
 
 		/**
 		 * @brief program().

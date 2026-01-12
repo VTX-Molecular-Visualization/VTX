@@ -150,6 +150,25 @@ namespace VTX::Renderer
 	};
 
 	/**
+	 * @brief Various settings.
+	 */
+	enum struct E_SETTINGS : uint8_t
+	{
+		CLEAR_COLOR,
+		CLEAR_DEPTH,
+		ENABLE_DEPTH,
+	};
+
+	/**
+	 * @brief Texture channels.
+	 */
+	enum struct E_CHANNEL : uint8_t
+	{
+		COLOR,
+		DEPTH,
+	};
+
+	/**
 	 * @brief Aliases.
 	 */
 	using Key = std::string;
@@ -278,6 +297,9 @@ namespace VTX::Renderer
 		std::vector<VertexAttribute> attributes;
 	};
 
+	/**
+	 * @brief Geometry descriptor.
+	 */
 	struct Geometry
 	{
 		Key				   vertexLayout;
@@ -321,6 +343,7 @@ namespace VTX::Renderer
 		std::vector<ResourceBinding> inputs;
 		std::vector<ResourceBinding> outputs;
 		std::vector<Program>		 programs;
+		std::vector<E_SETTINGS>		 settings;
 		std::optional<RenderFunc>	 customCallback;
 	};
 

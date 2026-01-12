@@ -16,6 +16,7 @@ namespace VTX::Renderer::Context::GL
 			assert( _id == GL_INVALID_INDEX );
 
 			glCreateFramebuffers( 1, &_id );
+			// VTX_ERROR( "Framebuffer created: {}", _id );
 
 			assert( glIsFramebuffer( _id ) );
 		}
@@ -69,10 +70,10 @@ namespace VTX::Renderer::Context::GL
 			glNamedFramebufferReadBuffer( _id, p_readBuffer );
 		}
 
-		inline void checkStatus() const noexcept
+		inline bool checkStatus() const noexcept
 
 		{
-			assert( glCheckNamedFramebufferStatus( _id, GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE );
+			return glCheckNamedFramebufferStatus( _id, GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE;
 		}
 
 	  private:

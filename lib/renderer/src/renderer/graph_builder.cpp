@@ -143,6 +143,11 @@ namespace VTX::Renderer
 		return *this;
 	}
 
+	PassBuilder & PassBuilder::in( const Key & p_texture, const std::optional<Key> & p_sampler )
+	{
+		return in( E_RESOURCE_TYPE::TEXTURE, p_texture, p_sampler ? *p_sampler : DEFAULT_SAMPLER_NAME );
+	}
+
 	PassBuilder & PassBuilder::out(
 		const E_RESOURCE_TYPE	 p_type,
 		const Key &				 p_primary,
@@ -150,6 +155,14 @@ namespace VTX::Renderer
 	)
 	{
 		pass.outputs.push_back( { p_type, p_primary, p_secondary } );
+		return *this;
+	}
+
+	PassBuilder & PassBuilder::out( const Key & p_texture ) { return out( E_RESOURCE_TYPE::TEXTURE, p_texture ); }
+
+	PassBuilder & PassBuilder::settings( const std::initializer_list<E_SETTINGS> p_settings )
+	{
+		pass.settings.insert( pass.settings.end(), p_settings.begin(), p_settings.end() );
 		return *this;
 	}
 

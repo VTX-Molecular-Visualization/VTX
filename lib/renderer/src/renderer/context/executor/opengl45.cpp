@@ -11,11 +11,6 @@ namespace VTX::Renderer::Context::Executor
 			{
 			case E_COMMAND::BEGIN_FRAME:
 			{
-				const auto & p = p_commandBuffer.getPayload<PayloadBeginFrame>( command.payloadOffset );
-
-				// Clear buffers.
-				glClear( p.clearFlags );
-
 				break;
 			}
 			case E_COMMAND::END_FRAME:
@@ -25,16 +20,46 @@ namespace VTX::Renderer::Context::Executor
 
 			case E_COMMAND::BEGIN_PASS:
 			{
+				const auto & p = p_commandBuffer.getPayload<PayloadBeginPass>( command.payloadOffset );
+
+				// Clear buffers.
+				if ( p.clearFlags )
+				{
+					// glClear( p.clearFlags );
+				}
+
+				// Enable states.
+				if ( p.enableFlags )
+				{
+					glEnable( p.enableFlags );
+				}
+
 				break;
 			}
 			case E_COMMAND::END_PASS:
 			{
+				const auto & p = p_commandBuffer.getPayload<PayloadEndPass>( command.payloadOffset );
+
+				// Disable states.
+				if ( p.disableFlags )
+				{
+					glDisable( p.disableFlags );
+				}
+
 				break;
 			}
 			case E_COMMAND::BIND_FRAMEBUFFER:
 			{
-				const auto & p = p_commandBuffer.getPayload<PayloadBindFramebuffer>( command.payloadOffset );
-				_backend.framebuffer( p.framebuffer ).bind();
+				const auto &   p = p_commandBuffer.getPayload<PayloadBindFramebuffer>( command.payloadOffset );
+				const Handle & h = p.framebuffer;
+				if ( h == NO_HANDLE )
+				{
+					GL::Framebuffer::bindDefault();
+				}
+				else
+				{
+					_backend.framebuffer( h ).bind();
+				}
 				break;
 			}
 			case E_COMMAND::BIND_PIPELINE:

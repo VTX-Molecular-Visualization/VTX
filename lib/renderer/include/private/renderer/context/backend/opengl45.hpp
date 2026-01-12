@@ -114,7 +114,7 @@ namespace VTX::Renderer::Context::Backend
 		Cache _cacheFramebuffers;
 
 		/**
-		 * @brief MVP : global shader buffers and resource tables.
+		 * @brief Global shader buffers and resource tables.
 		 */
 		GlobalShaderBuffers		   _globalShaderBuffers;
 		std::vector<ResourceTable> _resourceTables;
@@ -148,11 +148,15 @@ namespace VTX::Renderer::Context::Backend
 		Handle _getOrCreateProgram( const Program & );
 
 		/**
-		 * @brief Build MVP resources.
+		 * @brief Build resources.
 		 */
 		GlobalShaderBuffers _buildGlobalShaderBuffers( const Resources & );
 		ResourceTable		_buildResourceTableForPass( const Pass &, const Resources & );
 
+		/**
+		 * @brief Bind resources.
+		 */
+		void _attachTexturesToFramebuffer( const Pass &, const Resources & );
 		void _bindGeometryToVao( const Handle, const VertexLayout &, const Geometry &, const bool );
 
 		/**

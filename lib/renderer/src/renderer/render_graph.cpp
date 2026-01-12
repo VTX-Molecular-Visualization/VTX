@@ -360,6 +360,7 @@ namespace VTX::Renderer
 		// Passes.
 		// Geometric.
 		g.pass( "Geometric" )
+			.settings( { E_SETTINGS::CLEAR_COLOR, E_SETTINGS::CLEAR_DEPTH, E_SETTINGS::ENABLE_DEPTH } )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Spheres" )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Cylinders" )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Ribbons" )
@@ -402,7 +403,7 @@ namespace VTX::Renderer
 				.in( "Geometry" )
 				.in( "Noise" )
 				.in( "Depth" )
-				.out( "SSAO", "NearestRepeat" )
+				.out( "SSAO" )
 				.program( "SSAO" )
 				.shaders( { "default.vert", "ssao.frag" } )
 				.uniform( "Intensity", SSAO_INTENSITY_DEFAULT, std::pair { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX } )
@@ -411,9 +412,9 @@ namespace VTX::Renderer
 
 			// BlurX.
 			g.pass( "BlurX" )
-				.in( "SSAO" )
+				.in( "SSAO", "NearestRepeat" )
 				.in( "Depth" )
-				.out( "BlurX", "NearestRepeat" )
+				.out( "BlurX" )
 				.program( "Blur" )
 				.shaders( { "default.vert", "blur.frag" } )
 				.uniform( "Direction", Vec2i( 1, 0 ) )
@@ -422,9 +423,9 @@ namespace VTX::Renderer
 				.endPass();
 			// BlurY.
 			g.pass( "BlurY" )
-				.in( "BlurX" )
+				.in( "BlurX", "NearestRepeat" )
 				.in( "Depth" )
-				.out( "Blur", "NearestRepeat" )
+				.out( "Blur" )
 				.program( "Blur" )
 				.shaders( { "default.vert", "blur.frag" } )
 				.uniform( "Direction", Vec2i( 0, 1 ) )

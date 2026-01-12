@@ -89,7 +89,6 @@ namespace VTX::Renderer::Context
 	 */
 	struct PayloadBeginFrame
 	{
-		uint32_t clearFlags;
 	};
 
 	struct PayloadEndFrame
@@ -98,10 +97,13 @@ namespace VTX::Renderer::Context
 
 	struct PayloadBeginPass
 	{
+		uint32_t clearFlags	 = 0;
+		uint32_t enableFlags = 0;
 	};
 
 	struct PayloadEndPass
 	{
+		uint32_t disableFlags = 0;
 	};
 
 	struct PayloadBindFramebuffer

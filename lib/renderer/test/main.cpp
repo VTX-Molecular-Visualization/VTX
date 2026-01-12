@@ -202,20 +202,20 @@ TEST_CASE( "CommandBuffer: push command with payload stores bytes and is readabl
 {
 	CommandBuffer cb;
 
-	PayloadBeginFrame bf {};
-	bf.clearFlags = 1;
-	cb.push<E_COMMAND::BEGIN_FRAME>( bf );
+	PayloadBeginPass bp {};
+	bp.clearFlags = 1;
+	cb.push<E_COMMAND::BEGIN_PASS>( bp );
 
 	REQUIRE( cb.commands.size() == 1 );
-	REQUIRE( cb.commands[ 0 ].type == E_COMMAND::BEGIN_FRAME );
+	REQUIRE( cb.commands[ 0 ].type == E_COMMAND::BEGIN_PASS );
 
 	const uint32_t off = cb.commands[ 0 ].payloadOffset;
 	REQUIRE( off != NO_PAYLOAD );
-	REQUIRE( ( off % alignof( PayloadBeginFrame ) ) == 0 );
-	REQUIRE( off + sizeof( PayloadBeginFrame ) <= cb.payload.size() );
+	REQUIRE( ( off % alignof( PayloadBeginPass ) ) == 0 );
+	REQUIRE( off + sizeof( PayloadBeginPass ) <= cb.payload.size() );
 
-	const auto & back = cb.getPayload<PayloadBeginFrame>( off );
-	REQUIRE( bytesEqual( &back, &bf, sizeof( PayloadBeginFrame ) ) );
+	const auto & back = cb.getPayload<PayloadBeginPass>( off );
+	REQUIRE( bytesEqual( &back, &bp, sizeof( PayloadBeginPass ) ) );
 }
 
 struct alignas( 16 ) A16
@@ -254,8 +254,8 @@ TEST_CASE( "CommandBuffer: pushPayload aligns and pads correctly" )
 TEST_CASE( "CommandBuffer: clear empties commands and payload" )
 {
 	CommandBuffer cb;
-	cb.push<E_COMMAND::BEGIN_FRAME>( PayloadBeginFrame { 4 } );
-	cb.push<E_COMMAND::END_FRAME>();
+	cb.push<E_COMMAND::BEGIN_PASS>( PayloadBeginPass { 4 } );
+	cb.push<E_COMMAND::END_PASS>( PayloadEndPass {} );
 
 	REQUIRE( not cb.commands.empty() );
 	REQUIRE( not cb.payload.empty() );
