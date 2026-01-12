@@ -100,11 +100,6 @@ namespace VTX::Renderer::Context::Backend
 		};
 
 		/**
-		 * @brief Cache mapping.
-		 */
-		using Cache = std::unordered_map<Key, Handle>;
-
-		/**
 		 * @brief Cache : mapping Key -> Handle.
 		 */
 		using Cache = std::unordered_map<Key, Handle>;
