@@ -47,18 +47,11 @@ jobs:
       run: |
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
-      
-    # Error : /usr/bin/ld: cannot find -lnsl
-    # Following command solved it locally but it conan tools.system.package_manager can't catch it, it is not appliable in CI.
-    # sudo apt-get install libnsl-dev
-    # Missing libnsl2-devel on ubuntu-lastest the 2025-09-29. Not found in apt-get. If issue persists after a month, investigate.
-    #- name: Add missing lib
-    #  run: |
-    #    if [ "$RUNNER_OS" == "Linux" ]; then
-    #      sudo apt-get install libnsl2-devel
-    #    fi
-    #  shell : bash
-      
+
+    - name: Install libnsl on Ubuntu
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y libnsl-dev
+
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
       run: |
