@@ -13,8 +13,6 @@ namespace VTX::Tool::Example
 	{
 	  public:
 		ExampleTool();
-
-		std::optional<std::string> getStyle() const override;
 	};
 
 } // namespace VTX::Tool::Example

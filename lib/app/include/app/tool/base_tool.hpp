@@ -16,20 +16,11 @@ namespace VTX::App::Tool
 		 * @brief Constructed after the app.
 		 */
 		BaseTool() {}
+
 		/**
 		 * @brief Destroyed with the app.
 		 */
 		virtual ~BaseTool() {}
-		/**
-		 * @brief Get the style (loaded from resource or raw string).
-		 * @return the stylesheet to apply.
-		 */
-		virtual std::optional<std::string> getStyle() const { return std::nullopt; }
-
-		virtual void loadSettings() {}
-		virtual void saveSettings() {}
-
-		// TODO: encapsulate tool settings?
 
 	  protected:
 		// Useful?

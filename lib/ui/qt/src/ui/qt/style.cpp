@@ -121,41 +121,6 @@ namespace VTX::UI::QT
 			setFontFamily( DEFAULT_FONT_FAMILY );
 			setTheme( DEFAULT_THEME );
 		}
-
-		// Load main stylesheet.
-		QFile stylesheetFile( FILE_STYLESHEET.data() );
-		if ( stylesheetFile.open( QFile::ReadOnly ) )
-		{
-			_stylesheet = stylesheetFile.readAll();
-
-			// Load os-specific stylesheet.
-#if _WIN32
-			QFile stylesheetOSFile( FILE_STYLESHEET_WINDOWS.data() );
-#elif __linux__
-			QFile stylesheetOSFile( FILE_STYLESHEET_LINUX.data() );
-#elif __APPLE__
-			QFile stylesheetOSFile( FILE_STYLESHEET_MACOS.data() );
-#else
-			QFile stylesheetOSFile();
-			assert( true );
-#endif
-
-			if ( stylesheetOSFile.open( QFile::ReadOnly ) )
-			{
-				_stylesheet += '\n' + stylesheetOSFile.readAll();
-			}
-
-			for ( const App::Tool::BaseTool * const tool : p_tools )
-			{
-				if ( tool->getStyle().has_value() )
-				{
-					_stylesheet += '\n' + tool->getStyle().value();
-				}
-			}
-
-			// Set stylesheet to app.
-			// Q_APP()->setStyleSheet( _stylesheet );
-		}
 	}
 
 	void Style::setTheme( const E_THEME p_theme )
