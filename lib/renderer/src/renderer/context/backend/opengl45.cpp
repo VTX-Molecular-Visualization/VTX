@@ -168,7 +168,7 @@ namespace
 		}
 	}
 
-	constexpr GLbitfield _toGLClearMask( const std::vector<E_SETTINGS> & p_settings )
+	GLbitfield _toGLClearMask( const std::vector<E_SETTINGS> & p_settings )
 	{
 		GLenum mask = 0;
 		for ( const E_SETTINGS setting : p_settings )
@@ -183,7 +183,7 @@ namespace
 		return mask;
 	}
 
-	constexpr GLbitfield _toGLEnableMask( const std::vector<E_SETTINGS> & p_settings )
+	GLbitfield _toGLEnableMask( const std::vector<E_SETTINGS> & p_settings )
 	{
 		GLenum enable = 0;
 		for ( const E_SETTINGS setting : p_settings )
