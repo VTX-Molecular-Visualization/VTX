@@ -246,14 +246,11 @@ namespace VTX::Renderer::Context::Backend
 		glClearColor( 0.f, 0.f, 0.f, 1.0f );
 	}
 
+	// Create resources, configure, and push commands.
+	// No OpenGL objects in this function, only Handles.
 	void OpenGL45::build( const RenderQueue & p_renderQueue, const Resources & p_resources, CommandBuffer & p_commands )
 	{
-		// Begin frame.
-		// TODO: read from graph.
-		PayloadBeginFrame beginFrame { GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT };
-		p_commands.push<E_COMMAND::BEGIN_FRAME>( beginFrame );
-
-		// Foreach resources.
+		// Create all resources.
 		for ( const auto & [ key, texture ] : p_resources.textures )
 		{
 			_getOrCreateTexture( key, texture );
@@ -283,6 +280,11 @@ namespace VTX::Renderer::Context::Backend
 		// Global resource table.
 		_globalShaderBuffers = _buildGlobalShaderBuffers( p_resources );
 
+		// Push BEGIN_FRAME.
+		// TODO: read from graph.
+		PayloadBeginFrame beginFrame { GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT };
+		p_commands.push<E_COMMAND::BEGIN_FRAME>( beginFrame );
+
 		// Foreach pass.
 		for ( const Pass * const passPtr : p_renderQueue )
 		{
@@ -291,16 +293,12 @@ namespace VTX::Renderer::Context::Backend
 
 			// FBO.
 			const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
-			//			GL::Framebuffer & framebuffer = isLastPass ? GL::Framebuffer::bindDefault() : _framebuffers[
-			// hFramebuffer ];
+			// TODO: attach textures to FBO.
 
 			// Resource table, clear each build.
 			const Handle	hResourceTable = _getOrCreateResourceTable( pass, p_resources );
 			ResourceTable & resourceTable  = _resourceTables[ hResourceTable ];
 			resourceTable				   = _buildResourceTableForPass( pass, p_resources );
-
-			PayloadBeginPass beginPass { hFramebuffer };
-			p_commands.push<E_COMMAND::BEGIN_PASS>( beginPass );
 
 			// Create programs.
 			for ( const Program & program : pass.programs )
@@ -308,13 +306,22 @@ namespace VTX::Renderer::Context::Backend
 				const Handle hProgram = _getOrCreateProgram( program );
 			}
 
-			// TODO
+			// Push BEGIN_PASS.
+			PayloadBeginPass beginPass {};
+			p_commands.push<E_COMMAND::BEGIN_PASS>();
 
-			// End pass.
-			PayloadEndPass endPass { hFramebuffer };
-			p_commands.push<E_COMMAND::END_PASS>( endPass );
+			// Push BIND_FRAMEBUFFER.
+			PayloadBindFramebuffer bindFBO { 0 };
+			VTX_DEBUG( "Binding FBO handle: {}", bindFBO.framebuffer );
+
+			p_commands.push<E_COMMAND::BIND_FRAMEBUFFER>( bindFBO );
+
+			// Push END_PASS.
+			PayloadEndPass endPass {};
+			p_commands.push<E_COMMAND::END_PASS>();
 		}
 
+		// Push END_FRAME.
 		p_commands.push<E_COMMAND::END_FRAME>();
 	}
 

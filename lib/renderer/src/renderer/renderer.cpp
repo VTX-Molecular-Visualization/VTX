@@ -52,6 +52,7 @@ namespace VTX::Renderer
 			{
 				const RenderQueue queue = _graph.build();
 				_context.build( queue, _graph.getResources() );
+				std::cout << _context.commands() << std::endl;
 			}
 		);
 

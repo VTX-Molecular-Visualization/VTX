@@ -25,20 +25,16 @@ namespace VTX::Renderer::Context::Executor
 
 			case E_COMMAND::BEGIN_PASS:
 			{
-				const auto & p = p_commandBuffer.getPayload<PayloadBeginPass>( command.payloadOffset );
-
 				break;
 			}
 			case E_COMMAND::END_PASS:
 			{
-				const auto & p = p_commandBuffer.getPayload<PayloadEndPass>( command.payloadOffset );
-
 				break;
 			}
 			case E_COMMAND::BIND_FRAMEBUFFER:
 			{
 				const auto & p = p_commandBuffer.getPayload<PayloadBindFramebuffer>( command.payloadOffset );
-				_backend.framebuffer( p.framebuffer ).bind();
+				//_backend.framebuffer( p.framebuffer ).bind();
 				break;
 			}
 			case E_COMMAND::BIND_PIPELINE:
