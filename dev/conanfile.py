@@ -42,7 +42,7 @@ class VTXRecipe(ConanFile):
         self.requires("entt/3.15.0")
         self.requires("pybind11/2.13.6")
         self.requires("qt/6.10.1")
-        self.requires("gromacs/2024.0")
+        self.requires("gromacs/2026.0")
         self.requires("re2/20240702")
         self.requires("libarchive/3.7.9")
         self.requires("boost/1.87.0") # 1.88 version break process package on windows

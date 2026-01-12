@@ -32,7 +32,7 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_io/1.0")
         self.requires("re2/20240702")
-        self.requires("gromacs/2024.0")
+        self.requires("gromacs/2026.0")
         self.requires("catch2/3.11.0") 
 
     def generate(self):
