@@ -75,6 +75,7 @@ class VTXAppRecipe(ConanFile):
         if self.settings.os == "Windows":
             self.cpp_info.libs.append("velopack_libc_win_x64_msvc")
             self.cpp_info.system_libs.append("ntdll")
+            self.cpp_info.system_libs.append("nsl")
         else:
             self.cpp_info.libs.append("velopack_libc_linux_x64_gnu")
            
