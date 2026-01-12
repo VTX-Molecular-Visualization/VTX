@@ -18,7 +18,7 @@ namespace VTX::Renderer
 			{
 				return true;
 			}
-			if ( _resources.buffers.contains( name ) )
+			if ( _resources.shaderBuffers.contains( name ) )
 			{
 				return true;
 			}
@@ -126,9 +126,14 @@ namespace VTX::Renderer
 			auto [ it, inserted ] = _resources.vertexStreams.emplace( key, vertexStream );
 			assert( inserted );
 		}
-		for ( const auto & [ key, buffer ] : p_builder.resources.buffers )
+		for ( const auto & [ key, buffer ] : p_builder.resources.shaderBuffers )
 		{
-			auto [ it, inserted ] = _resources.buffers.emplace( key, buffer );
+			auto [ it, inserted ] = _resources.shaderBuffers.emplace( key, buffer );
+			assert( inserted );
+		}
+		for ( const auto & [ key, buffer ] : p_builder.resources.pipelineBuffers )
+		{
+			auto [ it, inserted ] = _resources.pipelineBuffers.emplace( key, buffer );
 			assert( inserted );
 		}
 		for ( const auto & [ key, sampler ] : p_builder.resources.samplers )
@@ -166,11 +171,12 @@ namespace VTX::Renderer
 		GraphBuilder g;
 
 		// Buffers.
-		g.buffer(
+		g.shaderBuffer(
 			"Camera",
-			E_BUFFER_ROLE::UNIFORM,
+			E_SHADER_BUFFER_KIND::PARAMETERS,
+			E_BUFFER_MUTABILITY::IMMUTABLE,
 			E_BUFFER_ACCESS::READ,
-			E_UPDATE_FREQUENCY::DYNAMIC,
+			E_UPDATE_FREQUENCY::STREAM,
 			15,
 			{ makeUniform( "MatrixView", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixProjection", Mat4f( MAT4F_ID ) ),
@@ -183,31 +189,34 @@ namespace VTX::Renderer
 			  makeUniform( "IsPerspective", std::uint32_t( 1 ) ) }
 		);
 
-		g.buffer(
+		g.shaderBuffer(
 			"ColorLayout",
-			E_BUFFER_ROLE::UNIFORM,
+			E_SHADER_BUFFER_KIND::STRUCTURED,
+			E_BUFFER_MUTABILITY::IMMUTABLE,
 			E_BUFFER_ACCESS::READ,
-			E_UPDATE_FREQUENCY::STATIC,
+			E_UPDATE_FREQUENCY::DYNAMIC,
 			14,
 			{ makeUniformArray( "Colors", Util::Color::Rgba {}, 256 ) }
 		);
 
-		g.buffer(
+		g.shaderBuffer(
 			"Models",
-			E_BUFFER_ROLE::STORAGE,
+			E_SHADER_BUFFER_KIND::STRUCTURED,
+			E_BUFFER_MUTABILITY::MUTABLE,
 			E_BUFFER_ACCESS::READ,
-			E_UPDATE_FREQUENCY::DYNAMIC,
+			E_UPDATE_FREQUENCY::STREAM,
 			13,
 			{ makeUniform( "MatrixModelView", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixModelViewInv", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixNormal", Mat4f( MAT4F_ID ) ) }
 		);
 
-		g.buffer(
+		g.shaderBuffer(
 			"Representations",
-			E_BUFFER_ROLE::STORAGE,
+			E_SHADER_BUFFER_KIND::STRUCTURED,
+			E_BUFFER_MUTABILITY::MUTABLE,
 			E_BUFFER_ACCESS::READ,
-			E_UPDATE_FREQUENCY::STATIC,
+			E_UPDATE_FREQUENCY::DYNAMIC,
 			12,
 			{ makeUniform( "SphereRadiusFixed", 0.0f ),
 			  makeUniform( "SphereRadiusAdd", 0.0f ),
@@ -220,7 +229,7 @@ namespace VTX::Renderer
 		);
 
 		// Vertex streams and data buffers.
-		g.vertexStream(
+		g.vertexLayout(
 			"Atoms",
 			{
 				{ "Positions", E_TYPE::VEC3F },
@@ -233,16 +242,16 @@ namespace VTX::Renderer
 			}
 		);
 
-		g.dataBuffer( "Atoms.Positions" )
-			.dataBuffer( "Atoms.Colors" )
-			.dataBuffer( "Atoms.Radii" )
-			.dataBuffer( "Atoms.Ids" )
-			.dataBuffer( "Atoms.Flags" )
-			.dataBuffer( "Atoms.Models" )
-			.dataBuffer( "Atoms.Representations" )
-			.dataBuffer( "Bonds", E_DATA_BUFFER_KIND::INDEX );
+		g.pipelineBuffer( "Atoms.Positions" )
+			.pipelineBuffer( "Atoms.Colors" )
+			.pipelineBuffer( "Atoms.Radii" )
+			.pipelineBuffer( "Atoms.Ids" )
+			.pipelineBuffer( "Atoms.Flags" )
+			.pipelineBuffer( "Atoms.Models" )
+			.pipelineBuffer( "Atoms.Representations" )
+			.pipelineBuffer( "Bonds", E_PIPELINE_BUFFER_KIND::INDEX );
 
-		g.vertexStream(
+		g.vertexLayout(
 			"Residues",
 			{
 				{ "Positions", E_TYPE::VEC4F },
@@ -256,16 +265,16 @@ namespace VTX::Renderer
 			}
 		);
 
-		g.dataBuffer( "Residues.Positions" )
-			.dataBuffer( "Residues.Directions" )
-			.dataBuffer( "Residues.Types" )
-			.dataBuffer( "Residues.Colors" )
-			.dataBuffer( "Residues.Ids" )
-			.dataBuffer( "Residues.Flags" )
-			.dataBuffer( "Residues.Models" )
-			.dataBuffer( "Residues.Representations" );
+		g.pipelineBuffer( "Residues.Positions" )
+			.pipelineBuffer( "Residues.Directions" )
+			.pipelineBuffer( "Residues.Types" )
+			.pipelineBuffer( "Residues.Colors" )
+			.pipelineBuffer( "Residues.Ids" )
+			.pipelineBuffer( "Residues.Flags" )
+			.pipelineBuffer( "Residues.Models" )
+			.pipelineBuffer( "Residues.Representations" );
 
-		g.vertexStream(
+		g.vertexLayout(
 			"Voxels",
 			{
 				{ "Mins", E_TYPE::VEC3F },
@@ -273,7 +282,7 @@ namespace VTX::Renderer
 			}
 		);
 
-		g.dataBuffer( "Voxels.Mins" ).dataBuffer( "Voxels.Maxs" );
+		g.pipelineBuffer( "Voxels.Mins" ).pipelineBuffer( "Voxels.Maxs" );
 
 		// Geometries.
 		g.geometry( "Spheres", "Atoms" );
@@ -326,6 +335,8 @@ namespace VTX::Renderer
 		g.texture( "FXAA", E_FORMAT::RGBA16F );
 
 		// Samplers.
+		g.defaultSampler();
+
 		g.sampler(
 			"NearestClamp",
 			E_WRAPPING::CLAMP_TO_EDGE,
@@ -358,19 +369,19 @@ namespace VTX::Renderer
 			.out( "Picking" )
 			.out( "DepthRaw" )
 			.program( "Sphere" )
-			.shaders( { FilePath( "sphere" ) } )
+			.shadersDir( "sphere" )
 			.draw( "Spheres", E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "Cylinder" )
-			.shaders( { FilePath( "cylinder" ) } )
+			.shadersDir( "cylinder" )
 			.draw( "Cylinders", E_PRIMITIVE::LINES )
 			.endProgram()
 			.program( "Ribbon" )
-			.shaders( { FilePath( "ribbon" ) } )
+			.shadersDir( "ribbon" )
 			.draw( "Ribbons", E_PRIMITIVE::PATCHES )
 			.endProgram()
 			.program( "Voxel" )
-			.shaders( { FilePath( "voxel" ) } )
+			.shadersDir( "voxel" )
 			.draw( "Grid", E_PRIMITIVE::POINTS )
 			.endProgram()
 			.endPass();
@@ -380,7 +391,7 @@ namespace VTX::Renderer
 			.in( "DepthRaw" )
 			.out( "Depth" )
 			.program( "LinearizeDepth" )
-			.shaders( { FilePath( "default.vert" ), FilePath( "linearize_depth.frag" ) } )
+			.shaders( { "default.vert", "linearize_depth.frag" } )
 			.endProgram()
 			.endPass();
 
@@ -393,7 +404,7 @@ namespace VTX::Renderer
 				.in( "Depth" )
 				.out( "SSAO", "NearestRepeat" )
 				.program( "SSAO" )
-				.shaders( { FilePath( "default.vert" ), FilePath( "ssao.frag" ) } )
+				.shaders( { "default.vert", "ssao.frag" } )
 				.uniform( "Intensity", SSAO_INTENSITY_DEFAULT, std::pair { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX } )
 				.endProgram()
 				.endPass();
@@ -404,7 +415,7 @@ namespace VTX::Renderer
 				.in( "Depth" )
 				.out( "BlurX", "NearestRepeat" )
 				.program( "Blur" )
-				.shaders( { FilePath( "default.vert" ), FilePath( "blur.frag" ) } )
+				.shaders( { "default.vert", "blur.frag" } )
 				.uniform( "Direction", Vec2i( 1, 0 ) )
 				.uniform( "Size", BLUR_SIZE_DEFAULT, std::pair { BLUR_SIZE_MIN, BLUR_SIZE_MAX } )
 				.endProgram()
@@ -415,7 +426,7 @@ namespace VTX::Renderer
 				.in( "Depth" )
 				.out( "Blur", "NearestRepeat" )
 				.program( "Blur" )
-				.shaders( { FilePath( "default.vert" ), FilePath( "blur.frag" ) } )
+				.shaders( { "default.vert", "blur.frag" } )
 				.uniform( "Direction", Vec2i( 0, 1 ) )
 				.uniform( "Size", BLUR_SIZE_DEFAULT, std::pair { BLUR_SIZE_MIN, BLUR_SIZE_MAX } )
 				.endProgram()
@@ -429,7 +440,7 @@ namespace VTX::Renderer
 			.in( "Blur", "NearestRepeat" )
 			.out( "Shaded" )
 			.program( "Shading" )
-			.shaders( { FilePath( "default.vert" ), FilePath( "shading.frag" ) } )
+			.shaders( { "default.vert", "shading.frag" } )
 			.uniform( "BackgroundColor", COLOR_BACKGROUND_DEFAULT )
 			.uniform( "LightColor", COLOR_LIGHT_DEFAULT )
 			.uniform( "FogColor", COLOR_FOG_DEFAULT )
@@ -457,7 +468,7 @@ namespace VTX::Renderer
 				.in( "Depth" )
 				.out( "Outline" )
 				.program( "Outline" )
-				.shaders( { FilePath( "default.vert" ), FilePath( "outline.frag" ) } )
+				.shaders( { "default.vert", "outline.frag" } )
 				.uniform( "Color", COLOR_WHITE )
 				.uniform(
 					"Sensitivity",
@@ -480,7 +491,7 @@ namespace VTX::Renderer
 				.in( "Depth" )
 				.out( "Selection" )
 				.program( "Selection" )
-				.shaders( { FilePath( "default.vert" ), FilePath( "selection.frag" ) } )
+				.shaders( { "default.vert", "selection.frag" } )
 				.uniform( "Color", COLOR_SELECTION_DEFAULT )
 				.endProgram()
 				.endPass();
@@ -491,7 +502,7 @@ namespace VTX::Renderer
 			.in( "Shaded" )
 			.out( "FXAA" )
 			.program( "FXAA" )
-			.shaders( { FilePath( "default.vert" ), FilePath( "fxaa.frag" ) } )
+			.shaders( { "default.vert", "fxaa.frag" } )
 			.endProgram()
 			.endPass();
 
@@ -501,7 +512,7 @@ namespace VTX::Renderer
 			.in( "FXAA" )
 			.out( "Pixelize" )
 			.program( "Pixelize" )
-			.shaders( { FilePath( "default.vert" ), FilePath( "pixelize.frag" ) } )
+			.shaders( {  "default.vert" ,  "pixelize.frag"  } )
 			.uniform( "Size", static_cast<std::uint32_t>( 5 ), std::pair { 1.0, 15.0 } )
 			.uniform( "Background", true )
 			.endProgram()
@@ -514,7 +525,7 @@ namespace VTX::Renderer
 			.in( "Pixelize" )
 			.out( "CRT" )
 			.program( "CRT" )
-			.shaders( { FilePath( "default.vert" ), FilePath( "crt.frag" ) } )
+			.shaders( {  "default.vert" ,  "crt.frag"  } )
 			.uniform( "Curvature", Vec2f( 3.f, 3.f ) )
 			.uniform( "Ratio", 0.25f, std::pair { 0.1, 1.0 } )
 			.uniform( "GraninessX", 0.5f, std::pair { 0.0, 5.0 } )
@@ -532,7 +543,7 @@ namespace VTX::Renderer
 			.in( "CRT" )
 			.out( "ChromaticAberration" )
 			.program( "ChromaticAberration" )
-			.shaders( { FilePath( "default.vert" ), FilePath( "chromatic_aberration.frag" ) } )
+			.shaders( {  "default.vert" ,  "chromatic_aberration.frag"  } )
 			.uniform( "Red", 0.009f, std::pair { -0.05, 0.05 } )
 			.uniform( "Green", 0.006f, std::pair { -0.05, 0.05 } )
 			.uniform( "Blue", -0.006f, std::pair { -0.05, 0.05 } )
@@ -546,7 +557,7 @@ namespace VTX::Renderer
 			.in( "ChromaticAberration" )
 			.out( "Colorize" )
 			.program( "Colorize" )
-			.shaders( { FilePath( "default.vert" ), FilePath( "colorize.frag" ) } )
+			.shaders( {  "default.vert" ,  "colorize.frag"  } )
 			.uniform( "Color", COLOR_YELLOW )
 			.endProgram()
 			.endPass();
@@ -558,7 +569,7 @@ namespace VTX::Renderer
 			.in( "Colorize" )
 			.out( "Debug" )
 			.program( "Debug" )
-			.shaders( { FilePath( "default.vert" ), FilePath( "debug.frag" ) } )
+			.shaders( {  "default.vert" ,  "debug.frag"  } )
 			.uniform( "Color", COLOR_YELLOW )
 			.uniform( "Color2", COLOR_BLUE )
 			.uniform( "Test", 5646.0f )

@@ -18,13 +18,30 @@ namespace VTX::Renderer
 	void Renderer::setDefault()
 	{
 		_context.setNull();
-		build();
+		try
+		{
+			build();
+		}
+		catch ( const GraphicException & p_e )
+		{
+			VTX_ERROR( "{}", p_e.what() );
+			VTX_ERROR( "Can not build default backend" );
+		}
 	}
 
 	void Renderer::setOpenGL45( const FilePath & p_shaderIncludePath )
 	{
 		_context.setOpenGL45( _width, _height, p_shaderIncludePath );
-		build();
+		try
+		{
+			build();
+		}
+		catch ( const GraphicException & p_e )
+		{
+			VTX_ERROR( "{}", p_e.what() );
+			VTX_ERROR( "Can not build openGL 4.5 backend" );
+			setDefault();
+		}
 	}
 
 	void Renderer::build()
@@ -35,6 +52,7 @@ namespace VTX::Renderer
 			{
 				const RenderQueue queue = _graph.build();
 				_context.build( queue, _graph.getResources() );
+				std::cout << _context.commands() << std::endl;
 			}
 		);
 

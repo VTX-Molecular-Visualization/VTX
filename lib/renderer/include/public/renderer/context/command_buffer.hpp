@@ -3,7 +3,9 @@
 
 #include "renderer/descriptors.hpp"
 #include <cstdint>
+#include <iostream>
 #include <util/constants.hpp>
+#include <util/enum.hpp>
 #include <util/math.hpp>
 #include <vector>
 
@@ -20,6 +22,9 @@ namespace VTX::Renderer::Context
 
 		BEGIN_PASS,
 		END_PASS,
+
+		BIND_FRAMEBUFFER,
+		BIND_BUFFER,
 
 		BIND_PIPELINE,
 		BIND_RESOURCE_TABLE,
@@ -93,12 +98,20 @@ namespace VTX::Renderer::Context
 
 	struct PayloadBeginPass
 	{
-		Handle renderTarget;
 	};
 
 	struct PayloadEndPass
 	{
-		Handle renderTarget;
+	};
+
+	struct PayloadBindFramebuffer
+	{
+		Handle framebuffer;
+	};
+
+	struct PayloadBindBuffer
+	{
+		// Empty for now.
 	};
 
 	struct PayloadBindPipeline
@@ -199,6 +212,16 @@ namespace VTX::Renderer::Context
 	struct CommandPayload<E_COMMAND::END_PASS>
 	{
 		using type = PayloadEndPass;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::BIND_FRAMEBUFFER>
+	{
+		using type = PayloadBindFramebuffer;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::BIND_BUFFER>
+	{
+		using type = PayloadBindBuffer;
 	};
 	template<>
 	struct CommandPayload<E_COMMAND::BIND_PIPELINE>
@@ -361,6 +384,22 @@ namespace VTX::Renderer::Context
 			payload.insert( payload.end(), src, src + sizeof( T ) );
 
 			return offset;
+		}
+
+		/**
+		 * @brief Debug output operator.
+		 */
+		friend std::ostream & operator<<( std::ostream &, const CommandBuffer & p_cb )
+		{
+			std::ostream & os = std::cout;
+			os << "CommandBuffer: " << std::endl;
+			for ( const Command & cmd : p_cb.commands )
+			{
+				os << "  Command Type: " << Util::Enum::enumName( cmd.type )
+				   << ", Payload Offset: " << cmd.payloadOffset << std::endl;
+			}
+
+			return os;
 		}
 	};
 } // namespace VTX::Renderer::Context

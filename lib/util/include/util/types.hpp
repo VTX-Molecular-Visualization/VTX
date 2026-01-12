@@ -68,6 +68,16 @@ namespace VTX
 	 */
 	using ByteNumber = size_t;
 
+	/**
+	 * @brief Convert enum to its underlying type.
+	 */
+	template<typename E>
+		requires std::is_enum_v<E>
+	constexpr std::underlying_type_t<E> toUnderlying( const E p_e ) noexcept
+	{
+		return static_cast<std::underlying_type_t<E>>( p_e );
+	}
+
 } // namespace VTX
 
 #endif

@@ -311,7 +311,7 @@ namespace VTX::UI::QT::Action
 			name	= "System";
 			group	= "Theme";
 			tip		= "Use system theme";
-			trigger = []() { STYLE().setTheme( Style::E_THEME::SYSTEM ); };
+			trigger = []() { STYLE().setTheme( E_THEME::SYSTEM ); };
 		}
 
 		Light::Light()
@@ -319,7 +319,7 @@ namespace VTX::UI::QT::Action
 			name	= "Light";
 			group	= "Theme";
 			tip		= "Use light theme";
-			trigger = []() { STYLE().setTheme( Style::E_THEME::LIGHT ); };
+			trigger = []() { STYLE().setTheme( E_THEME::LIGHT ); };
 		}
 
 		Dark::Dark()
@@ -327,7 +327,7 @@ namespace VTX::UI::QT::Action
 			name	= "Dark";
 			group	= "Theme";
 			tip		= "Use dark theme";
-			trigger = []() { STYLE().setTheme( Style::E_THEME::DARK ); };
+			trigger = []() { STYLE().setTheme( E_THEME::DARK ); };
 		}
 
 		ResetLayout::ResetLayout() { name = "Reset layout"; }

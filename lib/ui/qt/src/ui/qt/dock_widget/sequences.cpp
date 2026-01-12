@@ -1,16 +1,17 @@
 #include "ui/qt/dock_widget/sequences.hpp"
+#include "app/preset/instance.hpp"
 #include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
 #include <app/events.hpp>
 #include <app/services.hpp>
 #include <app/system/selection.hpp>
+#include <renderer/color.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
-	Sequences::Sequences( QWidget * p_parent ) : BaseDockWidget( p_parent )
+	Sequences::Sequences( QWidget * p_parent ) : BaseDockWidget( p_parent, "Sequence" )
 	{
-		setWindowTitle( "Sequence" );
 		setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 
 		App::HUB().connect<App::Events::SystemLoad, &Sequences::_onSystemLoad>( this );
@@ -18,6 +19,11 @@ namespace VTX::UI::QT::DockWidget
 
 		// Refresh widget when selection changed.
 		App::REG().on_update<App::System::Selection>().connect<&Sequences::_onUpdateSelection>( this );
+
+		// Refresh widget when colors changed.
+		App::REG().on_construct<App::Preset::Instance<Renderer::Color::Layout>>().connect<&Sequences::_onColorsChanged>(
+			this
+		);
 	}
 
 	void Sequences::_onSystemLoad( const App::Events::SystemLoad & p_e )
@@ -44,6 +50,14 @@ namespace VTX::UI::QT::DockWidget
 	{
 		assert( _mapSequencesWidgets.contains( p_e ) );
 		_mapSequencesWidgets[ p_e ]->viewport()->update();
+	}
+
+	void Sequences::_onColorsChanged( App::ECS::Registry &, const App::ECS::Entity p_e )
+	{
+		for ( auto & [ _, w ] : _mapSequencesWidgets )
+		{
+			w->viewport()->update();
+		}
 	}
 
 } // namespace VTX::UI::QT::DockWidget

@@ -11,7 +11,6 @@ namespace VTX::UI::QT::Menu
 	{
 	  public:
 		Theme( QWidget * );
-		~Theme();
 
 	  private:
 		QPointer<QActionGroup> _actionGroup;

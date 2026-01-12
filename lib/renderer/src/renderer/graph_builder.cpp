@@ -29,7 +29,7 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	GraphBuilder & GraphBuilder::vertexStream(
+	GraphBuilder & GraphBuilder::vertexLayout(
 		const Key &									 p_name,
 		const std::initializer_list<VertexAttribute> p_attributes
 	)
@@ -40,47 +40,51 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	GraphBuilder & GraphBuilder::buffer(
+	GraphBuilder & GraphBuilder::shaderBuffer(
 		const Key &								  p_name,
-		const E_BUFFER_ROLE						  p_role,
+		const E_SHADER_BUFFER_KIND				  p_role,
+		const E_BUFFER_MUTABILITY				  p_mutability,
 		const E_BUFFER_ACCESS					  p_access,
 		const E_UPDATE_FREQUENCY				  p_frequency,
-		const uint32_t							  p_binding,
+		const uint32_t							  p_binding, // will be removed later
 		const std::initializer_list<UniformValue> p_values
 	)
 	{
-		BufferLayout desc;
-		desc.role	   = p_role;
-		desc.access	   = p_access;
-		desc.frequency = p_frequency;
-		desc.binding   = p_binding;
+		BufferShader desc;
+		desc.name		= p_name;
+		desc.role		= p_role;
+		desc.mutability = p_mutability;
+		desc.access		= p_access;
+		desc.frequency	= p_frequency;
+		desc.binding	= p_binding;
 		desc.values.assign( p_values.begin(), p_values.end() );
-		resources.buffers[ p_name ] = std::move( desc );
+		resources.shaderBuffers[ p_name ] = std::move( desc );
 		return *this;
 	}
 
-	VTX::Renderer::GraphBuilder & VTX::Renderer::GraphBuilder::dataBuffer(
-		const Key &				 p_name,
-		const E_DATA_BUFFER_KIND p_kind,
-		const E_UPDATE_FREQUENCY p_frequency
+	VTX::Renderer::GraphBuilder & VTX::Renderer::GraphBuilder::pipelineBuffer(
+		const Key &					 p_name,
+		const E_PIPELINE_BUFFER_KIND p_kind,
+		const E_UPDATE_FREQUENCY	 p_frequency
 	)
 	{
-		DataBuffer db;
-		db.kind							= p_kind;
-		db.frequency					= p_frequency;
-		resources.dataBuffers[ p_name ] = std::move( db );
+		BufferPipeline db;
+		db.name								= p_name;
+		db.kind								= p_kind;
+		db.frequency						= p_frequency;
+		resources.pipelineBuffers[ p_name ] = std::move( db );
 		return *this;
 	}
 
 	GraphBuilder & GraphBuilder::geometry(
 		const Key & p_name,
-		const Key & p_vertexStream,
+		const Key & p_vertexLayout,
 		// const std::unordered_map<Key, Key> & p_overrides,
 		const std::optional<Key> p_indexBuffer
 	)
 	{
 		Geometry geom;
-		geom.vertexStream = p_vertexStream;
+		geom.vertexLayout = p_vertexLayout;
 		geom.indexBuffer  = p_indexBuffer;
 		// geom.overrides	 = p_overrides;
 		resources.geometries[ p_name ] = std::move( geom );
@@ -93,7 +97,13 @@ namespace VTX::Renderer
 
 	ProgramBuilder & ProgramBuilder::shaders( std::initializer_list<FilePath> p_files )
 	{
-		program.shaders.assign( p_files.begin(), p_files.end() );
+		program.shaders.emplace<std::vector<FilePath>>( p_files.begin(), p_files.end() );
+		return *this;
+	}
+
+	ProgramBuilder & ProgramBuilder::shadersDir( const FilePath & p_dir )
+	{
+		program.shaders.emplace<FilePath>( p_dir );
 		return *this;
 	}
 

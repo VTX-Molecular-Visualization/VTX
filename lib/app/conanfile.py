@@ -1,3 +1,4 @@
+import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 
@@ -13,7 +14,7 @@ class VTXAppRecipe(ConanFile):
     
     generators = "CMakeDeps"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "test/*", "data/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "vendor/*", "test/*", "data/*"
 
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -29,6 +30,7 @@ class VTXAppRecipe(ConanFile):
 
     def layout(self):
         cmake_layout(self)
+        self.cpp.source.libdirs.append(os.path.join("vendor", "velopack", "lib-static"))
         
         
     def _print_dir_content(self, p_dir):
@@ -68,4 +70,11 @@ class VTXAppRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["vtx_app"]
+        self.cpp_info.libs = ["vtx_app"]        
+        self.cpp_info.libdirs.append(os.path.join("vendor", "velopack", "lib-static"))
+        if self.settings.os == "Windows":
+            self.cpp_info.libs.append("velopack_libc_win_x64_msvc")
+            self.cpp_info.system_libs.append("ntdll")
+        else:
+            self.cpp_info.libs.append("velopack_libc_linux_x64_gnu")
+           

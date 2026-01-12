@@ -16,3 +16,4 @@ set(_VTX_APP_CONAN " ") # So the right target name can be linked
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 install(TARGETS vtx_app FILE_SET public_headers)
+install(DIRECTORY vendor/velopack/lib-static DESTINATION vendor/velopack/)

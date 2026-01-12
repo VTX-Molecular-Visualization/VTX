@@ -120,7 +120,6 @@ namespace VTX::Renderer::Context::GL
 		{
 			if ( _id != GL_INVALID_INDEX )
 			{
-				assert( glIsTexture( _id ) );
 				glDeleteTextures( 1, &_id );
 				_id = GL_INVALID_INDEX;
 			}

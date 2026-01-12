@@ -13,17 +13,13 @@ namespace VTX::Renderer::Context::GL
 	class Buffer
 	{
 	  public:
-		Buffer() { _create(); }
-
-		explicit Buffer(
-			const void * const p_data,
-			const GLsizei	   p_size,
-			const GLboolean	   p_immutable = GL_FALSE,
-			const GLbitfield   p_flags	   = 0
-		) noexcept
+		Buffer()
 		{
-			_create();
-			set( p_data, p_size, p_immutable, p_flags );
+			assert( _id == GL_INVALID_INDEX );
+
+			glCreateBuffers( 1, &_id );
+
+			assert( glIsBuffer( _id ) );
 		}
 
 		~Buffer() noexcept { destroy(); }
@@ -93,26 +89,30 @@ namespace VTX::Renderer::Context::GL
 			_target = 0;
 		}
 
-		inline void set(
-			const void * const p_data,
-			const GLsizei	   p_size,
-			const GLboolean	   p_immutable = GL_FALSE,
-			const GLbitfield   p_flags	   = 0
-		)
+		inline void setData( const void * const p_data, const GLsizei p_size, const GLenum p_usage = GL_DYNAMIC_DRAW )
 		{
 			assert( glIsBuffer( _id ) );
 			assert( p_size > 0 );
-			assert( _size != p_size );
 
-			_size = p_size;
-			if ( p_immutable )
+			if ( p_size == _size )
 			{
-				glNamedBufferStorage( _id, _size, p_data, p_flags );
+				setSub( p_data, p_size, 0 );
 			}
 			else
 			{
-				glNamedBufferData( _id, _size, p_data, p_flags );
+				_size = p_size;
+				glNamedBufferData( _id, _size, p_data, p_usage );
 			}
+		}
+
+		inline void setStorage( const void * const p_data, const GLsizei p_size, const GLbitfield p_storageFlags = 0 )
+		{
+			assert( glIsBuffer( _id ) );
+			assert( p_size > 0 );
+
+			_size = p_size;
+
+			glNamedBufferStorage( _id, _size, p_data, p_storageFlags );
 		}
 
 		inline void setSub(
@@ -168,15 +168,6 @@ namespace VTX::Renderer::Context::GL
 		GLuint		   _id	   = GL_INVALID_INDEX;
 		mutable GLenum _target = 0;
 		GLsizei		   _size   = 0;
-
-		inline void _create()
-		{
-			assert( _id == GL_INVALID_INDEX );
-
-			glCreateBuffers( 1, &_id );
-
-			assert( glIsBuffer( _id ) );
-		}
 	};
 } // namespace VTX::Renderer::Context::GL
 

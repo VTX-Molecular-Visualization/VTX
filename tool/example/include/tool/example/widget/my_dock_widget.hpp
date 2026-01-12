@@ -10,9 +10,8 @@ namespace VTX::Tool::Example::Widget
 	class MyDockWidget : public UI::QT::DockWidget::BaseDockWidget<MyDockWidget>
 	{
 	  public:
-		MyDockWidget( QWidget * p_parent ) : BaseDockWidget( p_parent )
+		MyDockWidget( QWidget * p_parent ) : BaseDockWidget( p_parent, "My Dock Panel" )
 		{
-			setWindowTitle( "My Dock Panel" );
 			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		}
 

@@ -26,7 +26,6 @@ namespace VTX::Renderer::Context::GL
 		{
 			if ( _id != GL_INVALID_INDEX )
 			{
-				assert( glIsSampler( _id ) );
 				glDeleteSamplers( 1, &_id );
 				_id = GL_INVALID_INDEX;
 			}

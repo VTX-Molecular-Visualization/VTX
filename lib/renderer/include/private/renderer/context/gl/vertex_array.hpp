@@ -20,7 +20,6 @@ namespace VTX::Renderer::Context::GL
 		{
 			if ( _id != GL_INVALID_INDEX )
 			{
-				assert( glIsVertexArray( _id ) );
 				glDeleteVertexArrays( 1, &_id );
 				_id = GL_INVALID_INDEX;
 			}

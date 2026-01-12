@@ -47,7 +47,7 @@ namespace VTX::App::Action::Camera
 		{
 			auto & reg = REG();
 
-			auto [ entity, camera ] = ECS::getFirstEntityWithComponents<Renderer::Camera>();
+			const auto & [ entity, _ ] = ECS::getFirstEntityWithComponents<Renderer::Camera>();
 
 			reg.patch<Renderer::Camera>(
 				entity,
@@ -137,7 +137,7 @@ namespace VTX::App::Action::Camera
 			using namespace Util;
 			using namespace Pass::Controller;
 
-			auto [ entCamera, camera, transform ]
+			const auto & [ entCamera, _, transform ]
 				= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
 			AnimationData	   start { transform.getPosition(), transform.getRotation() };

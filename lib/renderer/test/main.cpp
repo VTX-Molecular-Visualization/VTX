@@ -254,7 +254,7 @@ TEST_CASE( "CommandBuffer: pushPayload aligns and pads correctly" )
 TEST_CASE( "CommandBuffer: clear empties commands and payload" )
 {
 	CommandBuffer cb;
-	cb.push<E_COMMAND::BEGIN_PASS>( PayloadBeginPass { 42 } );
+	cb.push<E_COMMAND::BEGIN_FRAME>( PayloadBeginFrame { 4 } );
 	cb.push<E_COMMAND::END_FRAME>();
 
 	REQUIRE( not cb.commands.empty() );

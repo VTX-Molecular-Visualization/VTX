@@ -3,6 +3,7 @@
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include <QCheckBox>
+#include <QComboBox>
 #include <QLabel>
 #include <QPointer>
 
@@ -16,6 +17,8 @@ namespace VTX::UI::QT::DockWidget
 		~Options();
 
 	  private:
+		QPointer<QComboBox> _comboBoxTheme;
+		QPointer<QComboBox> _comboBoxFont;
 		QPointer<QCheckBox> _checkBoxVSync;
 		QPointer<QLabel>	_labelCacheCount;
 		QPointer<QLabel>	_labelCacheSize;

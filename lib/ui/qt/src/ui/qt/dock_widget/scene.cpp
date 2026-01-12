@@ -7,9 +7,8 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	Scene::Scene( QWidget * p_parent ) : BaseDockWidget( p_parent )
+	Scene::Scene( QWidget * p_parent ) : BaseDockWidget( p_parent, "Scene" )
 	{
-		setWindowTitle( "Scene" );
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
 		auto * layout = new QVBoxLayout( this );

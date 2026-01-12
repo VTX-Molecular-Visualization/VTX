@@ -1,28 +1,44 @@
 #ifndef __VTX_UI_QT_STYLE__
 #define __VTX_UI_QT_STYLE__
 
+#include "ui/qt/application.hpp"
+#include <QFontDatabase>
 #include <QPalette>
 #include <app/tool/base_tool.hpp>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX::UI::QT
 {
+
+	/**
+	 * @brief Available themes.
+	 */
+	enum struct E_THEME : uint8_t
+	{
+
+		SYSTEM,
+		LIGHT,
+		DARK,
+
+		COUNT
+	};
+
+	/**
+	 * @brief Default values.
+	 */
+	constexpr int	  DEFAULT_FONT_SIZE	  = 10;
+	constexpr E_THEME DEFAULT_THEME		  = E_THEME::SYSTEM;
+	const QString	  DEFAULT_FONT_FAMILY = "Consolas";
+
 	/**
 	 * @brief Class managing application style (themes, stylesheets, etc.).
 	 */
 	class Style
 	{
 	  public:
-		/**
-		 * @brief Available themes.
-		 */
-		enum E_THEME
-		{
-			SYSTEM,
-			LIGHT,
-			DARK,
-			COUNT
-		};
+		Style();
+		~Style();
 
 		/**
 		 * @brief Apply all design elements.
@@ -30,25 +46,42 @@ namespace VTX::UI::QT
 		void load( const std::vector<App::Tool::BaseTool *> & );
 
 		/**
+		 * @brief Get current theme.
+		 */
+		inline E_THEME getCurrentTheme() const { return _currentTheme; }
+
+		/**
+		 * @brief Get current font family.
+		 */
+		inline QString getCurrentFontFamily() const { return Q_APP()->font().family(); }
+
+		/**
+		 * @brief Get the available fonts.
+		 */
+		inline static QStringList getAvailableFonts() { return QFontDatabase::families(); }
+
+		/**
 		 * @brief Switch application theme.
 		 */
 		void setTheme( const E_THEME p_theme );
 
 		/**
-		 * @brief Get current theme.
+		 * @brief Set font.
 		 */
-		inline E_THEME getCurrentTheme() const { return _currentTheme; }
+		void setFontFamily( const QString & );
 
 	  private:
+		QString _stylesheet;
+
 		/**
 		 * @brief Current theme.
 		 */
-		E_THEME _currentTheme = E_THEME::SYSTEM;
+		E_THEME _currentTheme;
 
 		/**
 		 * @brief Store palettes for each theme.
 		 */
-		std::array<QPalette, Style::E_THEME::COUNT> _themePalettes;
+		std::array<QPalette, toUnderlying( E_THEME::COUNT )> _themePalettes;
 	};
 } // namespace VTX::UI::QT
 

@@ -18,6 +18,7 @@ namespace VTX::UI::QT::Resources
 	// Fonts.
 	constexpr std::string_view FONT_MATERIAL_SYMBOLS = ":/font/MaterialSymbolsOutlined.ttf";
 	constexpr std::string_view FONT_INTER			 = ":/font/Inter-VariableFont_opsz,wght.ttf";
+	constexpr std::string_view FONT_OPEN_DYSLEXIC	 = ":/font/OpenDyslexic-Regular.otf";
 } // namespace VTX::UI::QT::Resources
 
 #endif

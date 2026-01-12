@@ -1,8 +1,11 @@
 #include "renderer/context/backend/opengl45.hpp"
+#include "renderer/binary_buffer.hpp"
+#include "renderer/context/gl/debug.hpp"
 #include <util/exceptions.hpp>
 
 namespace
 {
+	using namespace VTX;
 	using namespace VTX::Renderer;
 
 	struct GLPixelFormat
@@ -61,30 +64,78 @@ namespace
 		}
 	}
 
-	/*
-	constexpr GLenum _toGL( const E_TYPE p_type ) noexcept
+	constexpr GLenum _toGL( const E_SHADER_BUFFER_KIND p_bufferRole ) noexcept
 	{
-		switch ( p_type )
+		switch ( p_bufferRole )
 		{
-		case E_TYPE::BOOL: return GL_BOOL;
-		case E_TYPE::BYTE: return GL_BYTE;
-		case E_TYPE::UBYTE: return GL_UNSIGNED_BYTE;
-		case E_TYPE::SHORT: return GL_SHORT;
-		case E_TYPE::USHORT: return GL_UNSIGNED_SHORT;
-		case E_TYPE::INT: return GL_INT;
-		case E_TYPE::UINT: return GL_UNSIGNED_INT;
-		case E_TYPE::FLOAT: return GL_FLOAT;
-		case E_TYPE::VEC2I: return GL_INT_VEC2;
-		case E_TYPE::VEC2F: return GL_FLOAT_VEC2;
-		case E_TYPE::VEC3F: return GL_FLOAT_VEC3;
-		case E_TYPE::VEC4F: return GL_FLOAT_VEC4;
-		case E_TYPE::MAT3F: return GL_FLOAT_MAT3;
-		case E_TYPE::MAT4F: return GL_FLOAT_MAT4;
+		case E_SHADER_BUFFER_KIND::PARAMETERS: return GL_UNIFORM_BUFFER;
+		case E_SHADER_BUFFER_KIND::STRUCTURED: return GL_SHADER_STORAGE_BUFFER;
 		default: assert( false ); return GL_INVALID_INDEX;
 		}
 	}
-	*/
 
+	constexpr GLbitfield _toGLStorageFlags( const E_BUFFER_ACCESS p_access, const E_UPDATE_FREQUENCY p_freq )
+	{
+		GLbitfield flags = 0;
+
+		switch ( p_access )
+		{
+		case E_BUFFER_ACCESS::NONE: break;
+		case E_BUFFER_ACCESS::READ: flags |= GL_MAP_READ_BIT; break;
+		case E_BUFFER_ACCESS::WRITE: flags |= GL_MAP_WRITE_BIT; break;
+		case E_BUFFER_ACCESS::READ_WRITE:
+		{
+			flags |= GL_MAP_READ_BIT;
+			flags |= GL_MAP_WRITE_BIT;
+			break;
+		}
+		default: assert( false ); return 0;
+		}
+
+		switch ( p_freq )
+		{
+		case E_UPDATE_FREQUENCY::STATIC: break;
+		case E_UPDATE_FREQUENCY::DYNAMIC:
+		case E_UPDATE_FREQUENCY::STREAM: flags |= GL_DYNAMIC_STORAGE_BIT; break;
+		default: assert( false ); return 0;
+		}
+
+		return flags;
+	}
+
+	constexpr GLbitfield toGLMapFlags( const E_BUFFER_ACCESS p_access )
+	{
+		GLbitfield flags = 0;
+
+		switch ( p_access )
+		{
+		case E_BUFFER_ACCESS::READ: flags |= GL_MAP_READ_BIT; break;
+		case E_BUFFER_ACCESS::WRITE: flags |= GL_MAP_WRITE_BIT; break;
+		case E_BUFFER_ACCESS::READ_WRITE:
+			flags |= GL_MAP_READ_BIT;
+			flags |= GL_MAP_WRITE_BIT;
+			break;
+
+		default: assert( false ); return 0;
+		}
+
+		return flags;
+	}
+
+	constexpr GLenum _toGL( const E_UPDATE_FREQUENCY p_freq ) noexcept
+	{
+		switch ( p_freq )
+		{
+		case E_UPDATE_FREQUENCY::STATIC: return GL_STATIC_DRAW;
+		case E_UPDATE_FREQUENCY::DYNAMIC: return GL_DYNAMIC_DRAW;
+		case E_UPDATE_FREQUENCY::STREAM: return GL_STREAM_DRAW;
+		default: assert( false ); return GL_INVALID_INDEX;
+		}
+	}
+
+	/**
+	 * @brief GL attribute description.
+	 */
 	struct GLAttrib
 	{
 		GLenum	 baseType	  = 0;
@@ -185,24 +236,21 @@ namespace VTX::Renderer::Context::Backend
 
 		glEnable( GL_DEBUG_OUTPUT );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
-		glDebugMessageCallback( _debugMessageCallback, nullptr );
+		glDebugMessageCallback( GL::Debug::_debugMessageCallback, nullptr );
 
 		// TODO: set from grpah.
 		glEnable( GL_CLIP_DISTANCE0 );
 		glEnable( GL_DEPTH_TEST );
 		glDepthFunc( GL_LESS );
 
-		glClearColor( 1.f, 0.5f, 1.f, 1.0f );
+		glClearColor( 0.f, 0.f, 0.f, 1.0f );
 	}
 
+	// Create resources, configure, and push commands.
+	// No OpenGL objects in this function, only Handles.
 	void OpenGL45::build( const RenderQueue & p_renderQueue, const Resources & p_resources, CommandBuffer & p_commands )
 	{
-		// Begin frame.
-		// TODO: read from graph.
-		PayloadBeginFrame beginFrame { CLEAR_COLOR | CLEAR_DEPTH };
-		p_commands.push<E_COMMAND::BEGIN_FRAME>( beginFrame );
-
-		// Foreach resources.
+		// Create all resources.
 		for ( const auto & [ key, texture ] : p_resources.textures )
 		{
 			_getOrCreateTexture( key, texture );
@@ -213,12 +261,29 @@ namespace VTX::Renderer::Context::Backend
 		}
 		for ( const auto & [ key, vertexStream ] : p_resources.vertexStreams )
 		{
-			_getOrCreateVertexStream( key, vertexStream );
+			_getOrCreateVertexLayout( key, vertexStream );
 		}
-		for ( const auto & [ key, buffer ] : p_resources.buffers )
+		for ( const auto & [ key, buffer ] : p_resources.shaderBuffers )
 		{
-			_getOrCreateBuffer( key, buffer );
+			_getOrCreateShaderBuffer( buffer );
 		}
+		for ( const auto & [ key, buffer ] : p_resources.pipelineBuffers )
+		{
+			switch ( buffer.kind )
+			{
+			case E_PIPELINE_BUFFER_KIND::VERTEX: _getOrCreateVertexBuffer( key );
+			case E_PIPELINE_BUFFER_KIND::INDEX: _getOrCreateIndexBuffer( key );
+			default: break;
+			}
+		}
+
+		// Global resource table.
+		_globalShaderBuffers = _buildGlobalShaderBuffers( p_resources );
+
+		// Push BEGIN_FRAME.
+		// TODO: read from graph.
+		PayloadBeginFrame beginFrame { GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT };
+		p_commands.push<E_COMMAND::BEGIN_FRAME>( beginFrame );
 
 		// Foreach pass.
 		for ( const Pass * const passPtr : p_renderQueue )
@@ -228,16 +293,12 @@ namespace VTX::Renderer::Context::Backend
 
 			// FBO.
 			const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
-			//			GL::Framebuffer & framebuffer = isLastPass ? GL::Framebuffer::bindDefault() : _framebuffers[
-			// hFramebuffer ];
+			// TODO: attach textures to FBO.
 
 			// Resource table, clear each build.
 			const Handle	hResourceTable = _getOrCreateResourceTable( pass, p_resources );
-			ResourceTable & resourceTable  = *_resourceTables[ hResourceTable ];
-			resourceTable				   = ResourceTable {};
-
-			PayloadBeginPass beginPass { hFramebuffer };
-			p_commands.push<E_COMMAND::BEGIN_PASS>( beginPass );
+			ResourceTable & resourceTable  = _resourceTables[ hResourceTable ];
+			resourceTable				   = _buildResourceTableForPass( pass, p_resources );
 
 			// Create programs.
 			for ( const Program & program : pass.programs )
@@ -245,13 +306,22 @@ namespace VTX::Renderer::Context::Backend
 				const Handle hProgram = _getOrCreateProgram( program );
 			}
 
-			// TODO
+			// Push BEGIN_PASS.
+			PayloadBeginPass beginPass {};
+			p_commands.push<E_COMMAND::BEGIN_PASS>();
 
-			// End pass.
-			PayloadEndPass endPass { hFramebuffer };
-			p_commands.push<E_COMMAND::END_PASS>( endPass );
+			// Push BIND_FRAMEBUFFER.
+			PayloadBindFramebuffer bindFBO { 0 };
+			VTX_DEBUG( "Binding FBO handle: {}", bindFBO.framebuffer );
+
+			p_commands.push<E_COMMAND::BIND_FRAMEBUFFER>( bindFBO );
+
+			// Push END_PASS.
+			PayloadEndPass endPass {};
+			p_commands.push<E_COMMAND::END_PASS>();
 		}
 
+		// Push END_FRAME.
 		p_commands.push<E_COMMAND::END_FRAME>();
 	}
 
@@ -283,11 +353,11 @@ namespace VTX::Renderer::Context::Backend
 			return NO_HANDLE;
 		}
 
-		const Handle handle = static_cast<Handle>( _framebuffers.size() );
+		const Handle h = static_cast<Handle>( _framebuffers.size() );
 		_framebuffers.emplace_back( std::make_unique<GL::Framebuffer>() );
-		_cacheFramebuffers.emplace( key, handle );
+		_cacheFramebuffers.emplace( key, h );
 
-		return handle;
+		return h;
 	}
 
 	Handle OpenGL45::_getOrCreateResourceTable( const Pass & p_pass, const Resources & p_res )
@@ -300,11 +370,11 @@ namespace VTX::Renderer::Context::Backend
 			return it->second;
 		}
 
-		const Handle handle = static_cast<Handle>( _resourceTables.size() );
-		_resourceTables.emplace_back( std::make_unique<ResourceTable>() );
-		_cacheResourceTables.emplace( key, handle );
+		const Handle h = static_cast<Handle>( _resourceTables.size() );
+		_resourceTables.emplace_back();
+		_cacheResourceTables.emplace( key, h );
 
-		return handle;
+		return h;
 	}
 
 	Handle OpenGL45::_getOrCreateTexture( const Key & p_key, const Texture & p_text )
@@ -315,7 +385,7 @@ namespace VTX::Renderer::Context::Backend
 			return it->second;
 		}
 
-		const Handle handle = static_cast<Handle>( _textures.size() );
+		const Handle h = static_cast<Handle>( _textures.size() );
 
 		uint32_t width	= _width;
 		uint32_t height = _height;
@@ -338,14 +408,14 @@ namespace VTX::Renderer::Context::Backend
 		_textures.emplace_back(
 			std::make_unique<GL::Texture2D>( GLsizei( width ), GLsizei( height ), glFormat.internalFormat )
 		);
-		_cacheTextures.emplace( p_key, handle );
+		_cacheTextures.emplace( p_key, h );
 
 		if ( not p_text.data.empty() )
 		{
-			_textures[ handle ]->fill( p_text.data.data(), glFormat.uploadFormat, glFormat.uploadType );
+			_textures[ h ]->fill( p_text.data.data(), glFormat.uploadFormat, glFormat.uploadType );
 		}
 
-		return handle;
+		return h;
 	}
 
 	Handle OpenGL45::_getOrCreateSampler( const Key & p_key, const Sampler & p_text )
@@ -356,29 +426,29 @@ namespace VTX::Renderer::Context::Backend
 			return it->second;
 		}
 
-		const Handle handle = static_cast<Handle>( _samplers.size() );
+		const Handle h = static_cast<Handle>( _samplers.size() );
 		_samplers.emplace_back(
 			std::make_unique<GL::Sampler>(
 				_toGL( p_text.wrapS ), _toGL( p_text.wrapT ), _toGL( p_text.minFilter ), _toGL( p_text.magFilter )
 			)
 		);
-		_cacheSamplers.emplace( p_key, handle );
+		_cacheSamplers.emplace( p_key, h );
 
-		return handle;
+		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateVertexStream( const Key & p_key, const VertexLayout & p_vertexStream )
+	Handle OpenGL45::_getOrCreateVertexLayout( const Key & p_key, const VertexLayout & p_vertexStream )
 	{
-		auto it = _cacheVertexStreams.find( p_key );
-		if ( it != _cacheVertexStreams.end() )
+		auto it = _cacheVertexLayouts.find( p_key );
+		if ( it != _cacheVertexLayouts.end() )
 		{
 			return it->second;
 		}
-		const Handle handle = static_cast<Handle>( _vertexArrays.size() );
+		const Handle h = static_cast<Handle>( _vertexArrays.size() );
 		_vertexArrays.emplace_back( std::make_unique<GL::VertexArray>() );
-		_cacheVertexStreams.emplace( p_key, handle );
+		_cacheVertexLayouts.emplace( p_key, h );
 
-		const auto & vao = *_vertexArrays[ handle ];
+		const auto & vao = *_vertexArrays[ h ];
 		vao.bind();
 		GLuint location = 0;
 		for ( const auto & a : p_vertexStream.attributes )
@@ -388,7 +458,7 @@ namespace VTX::Renderer::Context::Backend
 			for ( uint8_t col = 0; col < ga.columns; ++col )
 			{
 				const GLuint attribIndex  = location;
-				const GLuint bindingIndex = location; // planar : 1 binding par attribut (ou colonne)
+				const GLuint bindingIndex = location; // planar : 1 binding per attribute
 				const GLuint relOffset	  = GLuint( col * ga.components * ga.bytesPerComp );
 
 				vao.enableAttribute( attribIndex );
@@ -402,55 +472,221 @@ namespace VTX::Renderer::Context::Backend
 		}
 		vao.unbind();
 
-		return handle;
+		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateBuffer( const Key & p_key, const BufferLayout & p_buffer )
+	Handle OpenGL45::_getOrCreateShaderBuffer( const BufferShader & p_buffer )
 	{
-		auto it = _cacheBuffers.find( p_key );
-		if ( it != _cacheBuffers.end() )
+		const Key key = p_buffer.name;
+
+		auto it = _cacheShaderBuffers.find( key );
+		if ( it != _cacheShaderBuffers.end() )
 		{
 			return it->second;
 		}
 
-		const Handle handle = static_cast<Handle>( _buffers.size() );
+		BinaryBuffer<E_LAYOUT_TYPE::Std140> cpuBuffer;
 
-		return handle;
+		for ( const UniformValue & value : p_buffer.values )
+		{
+			const uint32_t count = value.arrayCount ? *value.arrayCount : 1u;
+			const size_t   elem	 = BinaryBuffer<E_LAYOUT_TYPE::Std140>::rawElementSizeBytes( value.type );
+
+			const SpanBytes bytes { reinterpret_cast<const std::byte *>( value.data.data() ), elem * count };
+
+			cpuBuffer.write( value.type, bytes );
+		}
+
+		cpuBuffer.close();
+
+		const uint32_t bufferSize = static_cast<uint32_t>( cpuBuffer.size() );
+		assert( bufferSize > 0 );
+
+		auto glBuffer = std::make_unique<GL::Buffer>();
+
+		switch ( p_buffer.mutability )
+		{
+		case E_BUFFER_MUTABILITY::MUTABLE:
+		{
+			glBuffer->setData( cpuBuffer.data(), static_cast<GLsizei>( bufferSize ), _toGL( p_buffer.frequency ) );
+			break;
+		}
+		case E_BUFFER_MUTABILITY::IMMUTABLE:
+		{
+			glBuffer->setStorage(
+				cpuBuffer.data(),
+				static_cast<GLsizei>( bufferSize ),
+				_toGLStorageFlags( p_buffer.access, p_buffer.frequency )
+			);
+			break;
+		}
+		default: break;
+		}
+
+		const Handle h = static_cast<Handle>( _shaderBuffers.size() );
+		_shaderBuffers.emplace_back( std::move( glBuffer ) );
+		_cacheShaderBuffers.emplace( key, h );
+
+		return h;
+	}
+
+	Handle OpenGL45::_getOrCreateVertexBuffer( const Key & p_key )
+	{
+		auto it = _cacheVertexBuffers.find( p_key );
+		if ( it != _cacheVertexBuffers.end() )
+		{
+			return it->second;
+		}
+
+		auto glBuffer = std::make_unique<GL::Buffer>(); // pas de storage ici
+
+		const Handle h = static_cast<Handle>( _vertexBuffers.size() );
+		_vertexBuffers.emplace_back( std::move( glBuffer ) );
+		_cacheVertexBuffers.emplace( p_key, h );
+
+		return h;
+	}
+
+	Handle OpenGL45::_getOrCreateIndexBuffer( const Key & p_key )
+	{
+		auto it = _cacheIndexBuffers.find( p_key );
+		if ( it != _cacheIndexBuffers.end() )
+		{
+			return it->second;
+		}
+
+		auto glBuffer = std::make_unique<GL::Buffer>(); // pas de storage ici
+
+		const Handle h = static_cast<Handle>( _indexBuffers.size() );
+		_indexBuffers.emplace_back( std::move( glBuffer ) );
+		_cacheIndexBuffers.emplace( p_key, h );
+
+		return h;
 	}
 
 	Handle OpenGL45::_getOrCreateProgram( const Program & p_program )
 	{
-		const Key key = p_program.name;
-		auto	  it  = _cachePrograms.find( key );
+		const Key & key = p_program.name;
+		auto		it	= _cachePrograms.find( key );
 		if ( it != _cachePrograms.end() )
 		{
 			return it->second;
 		}
-		const Handle handle = static_cast<Handle>( _programs.size() );
+		const Handle h = static_cast<Handle>( _programs.size() );
 
-		// TODO: bind geometry to vao if draw call
+		GL::Program * const program = _programManager->createProgram( p_program.name, p_program.shaders );
+		_programs.emplace_back( program );
+		_cachePrograms.emplace( key, h );
 
-		return handle;
+		// Create shader buffer if uniforms.
+		if ( not p_program.uniforms.empty() )
+		{
+			BufferShader buffer;
+			buffer.name		  = p_program.name;
+			buffer.role		  = E_SHADER_BUFFER_KIND::PARAMETERS;
+			buffer.mutability = E_BUFFER_MUTABILITY::IMMUTABLE;
+			buffer.access	  = E_BUFFER_ACCESS::NONE;
+			buffer.frequency  = E_UPDATE_FREQUENCY::DYNAMIC;
+			buffer.values	  = p_program.uniforms;
+			_getOrCreateShaderBuffer( buffer );
+		}
+
+		return h;
+	}
+
+	OpenGL45::GlobalShaderBuffers OpenGL45::_buildGlobalShaderBuffers( const Resources & p_resources )
+	{
+		OpenGL45::GlobalShaderBuffers gsb;
+
+		for ( const auto & [ key, buffer ] : p_resources.shaderBuffers )
+		{
+			assert( buffer.binding );
+			const Handle hBuf = _cacheShaderBuffers.at( key );
+			gsb.emplace_back( hBuf, *buffer.binding );
+		}
+
+		return gsb;
+	}
+
+	OpenGL45::ResourceTable OpenGL45::_buildResourceTableForPass( const Pass & p_pass, const Resources & p_resources )
+	{
+		OpenGL45::ResourceTable rt;
+
+		// It's better to not use the same binding/unit several times in different contexts.
+		Binding b = 0;
+
+		// For each input.
+		for ( auto & input : p_pass.inputs )
+		{
+			switch ( input.type )
+			{
+			case E_RESOURCE_TYPE::TEXTURE:
+			{
+				assert( input.secondary );
+				const Handle hTex  = _cacheTextures.at( input.primary );
+				const Handle hSamp = _cacheSamplers.at( *input.secondary );
+				rt.textures.emplace_back( hTex, hSamp, b++ );
+				break;
+			}
+			case E_RESOURCE_TYPE::BUFFER:
+			{
+				const Handle hBuf = _cacheShaderBuffers.at( input.primary );
+				rt.shaderBuffers.emplace_back( hBuf, b++ );
+				break;
+			}
+			default: break;
+			}
+		}
+
+		// For each program check if shader buffer exists.
+		for ( auto & program : p_pass.programs )
+		{
+			const Key & key = program.name;
+			if ( _cacheShaderBuffers.contains( key ) )
+			{
+				const Handle hBuf = _cacheShaderBuffers.at( key );
+				rt.shaderBuffers.emplace_back( hBuf, b++ );
+			}
+		}
+
+		b = 0;
+		// For each output.
+		for ( auto & output : p_pass.outputs )
+		{
+			switch ( output.type )
+			{
+			case E_RESOURCE_TYPE::BUFFER:
+			{
+				const Handle hBuf = _cacheShaderBuffers.at( output.primary );
+				rt.shaderBuffers.emplace_back( hBuf, b++ );
+
+				break;
+			}
+			default: break;
+			}
+		}
+
+		return rt;
 	}
 
 	void OpenGL45::_bindGeometryToVao(
-		const Handle		 hVao,
-		const VertexLayout & layout,
-		const Geometry &	 geom,
-		const bool			 useIndices
+		const Handle		 p_hVao,
+		const VertexLayout & p_layout,
+		const Geometry &	 p_geom,
+		const bool			 p_useIndices
 	)
 	{
-		auto & vao = *_vertexArrays[ hVao ];
+		auto & vao = *_vertexArrays[ p_hVao ];
 		vao.bind();
 
 		GLuint location = 0;
 
-		for ( const auto & a : layout.attributes )
+		for ( const auto & a : p_layout.attributes )
 		{
 			const GLAttrib ga = toGLAttrib( a.type );
 
-			// auto itBufKey = geom.attributeBuffers.find( a.name );
-			// assert( itBufKey != geom.attributeBuffers.end() );
+			// auto itBufKey = p_geom.attributeBuffers.find( a.name );
+			// assert( itBufKey != p_geom.attributeBuffers.end() );
 
 			// const Key & bufferKey = itBufKey->second;
 
@@ -471,9 +707,9 @@ namespace VTX::Renderer::Context::Backend
 			}
 		}
 
-		if ( useIndices )
+		if ( p_useIndices )
 		{
-			assert( geom.indexBuffer.has_value() );
+			assert( p_geom.indexBuffer.has_value() );
 
 			const Handle hEbo = 0;
 			//_getOrCreateIndexBuffer( *geom.indexBuffer );
@@ -481,6 +717,36 @@ namespace VTX::Renderer::Context::Backend
 		}
 
 		vao.unbind();
+	}
+
+	void OpenGL45::setShaderBufferData( const BufferShader & p_desc, SpanBytes p_bytes )
+	{
+		const Handle h	 = _getOrCreateShaderBuffer( p_desc );
+		GL::Buffer & buf = *_shaderBuffers[ h ];
+
+		if ( p_desc.mutability == E_BUFFER_MUTABILITY::MUTABLE )
+		{
+			buf.setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( p_desc.frequency ) );
+		}
+		else
+		{
+			assert( p_bytes.size() <= buf.size() );
+			buf.setSub( p_bytes.data(), static_cast<GLsizeiptr>( p_bytes.size() ), 0 );
+		}
+	}
+
+	void OpenGL45::setPipelineBufferData( const BufferPipeline & p_desc, SpanBytes p_bytes )
+	{
+		if ( p_desc.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
+		{
+			const Handle h = _getOrCreateVertexBuffer( p_desc.name );
+			_vertexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( p_desc.frequency ) );
+		}
+		else
+		{
+			const Handle h = _getOrCreateIndexBuffer( p_desc.name );
+			_indexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( p_desc.frequency ) );
+		}
 	}
 
 	void OpenGL45::_getOpenglInfos()
@@ -519,66 +785,6 @@ namespace VTX::Renderer::Context::Backend
 			{
 				_openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::ATI_meminfo ] = true;
 			}
-		}
-	}
-
-	void APIENTRY OpenGL45::_debugMessageCallback(
-		const GLenum   p_source,
-		const GLenum   p_type,
-		const GLuint   p_id,
-		const GLenum   p_severity,
-		const GLsizei  p_length,
-		const GLchar * p_msg,
-		const void *   p_data
-	) noexcept
-	{
-		std::string source;
-		std::string type;
-		std::string severity;
-
-		switch ( p_source )
-		{
-		case GL_DEBUG_SOURCE_API: source = "API"; break;
-		case GL_DEBUG_SOURCE_WINDOW_SYSTEM: source = "WINDOW SYSTEM"; break;
-		case GL_DEBUG_SOURCE_SHADER_COMPILER: source = "SHADER COMPILER"; break;
-		case GL_DEBUG_SOURCE_THIRD_PARTY: source = "THIRD PARTY"; break;
-		case GL_DEBUG_SOURCE_APPLICATION: source = "APPLICATION"; break;
-		case GL_DEBUG_SOURCE_OTHER: source = "UNKNOWN"; break;
-		default: source = "UNKNOWN"; break;
-		}
-
-		switch ( p_type )
-		{
-		case GL_DEBUG_TYPE_ERROR: type = "ERROR"; break;
-		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: type = "DEPRECATED BEHAVIOR"; break;
-		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: type = "UDEFINED BEHAVIOR"; break;
-		case GL_DEBUG_TYPE_PORTABILITY: type = "PORTABILITY"; break;
-		case GL_DEBUG_TYPE_PERFORMANCE: type = "PERFORMANCE"; break;
-		case GL_DEBUG_TYPE_OTHER: type = "OTHER"; break;
-		case GL_DEBUG_TYPE_MARKER: type = "MARKER"; break;
-		default: type = "UNKNOWN"; break;
-		}
-
-		switch ( p_severity )
-		{
-		case GL_DEBUG_SEVERITY_HIGH: severity = "HIGH"; break;
-		case GL_DEBUG_SEVERITY_MEDIUM: severity = "MEDIUM"; break;
-		case GL_DEBUG_SEVERITY_LOW: severity = "LOW"; break;
-		case GL_DEBUG_SEVERITY_NOTIFICATION: severity = "NOTIFICATION"; break;
-		default: severity = "UNKNOWN"; break;
-		}
-
-		std::string message( "[" + severity + "] [" + type + "] " + source + ": " + p_msg );
-
-		switch ( p_severity )
-		{
-		case GL_DEBUG_SEVERITY_HIGH:
-			VTX_ERROR( "{}", message );
-			assert( false );
-			break;
-		case GL_DEBUG_SEVERITY_MEDIUM:
-		case GL_DEBUG_SEVERITY_LOW: VTX_WARNING( "{}", message ); break;
-		default: break;
 		}
 	}
 

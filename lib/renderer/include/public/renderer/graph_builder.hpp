@@ -104,6 +104,11 @@ namespace VTX::Renderer
 	}
 
 	/**
+	 * @brief Name of the default sampler used to avoid repetition.
+	 */
+	const Key DEFAULT_SAMPLER_NAME = "Default";
+
+	/**
 	 * @brief Forward declarations.
 	 */
 	struct ProgramBuilder;
@@ -160,16 +165,30 @@ namespace VTX::Renderer
 		);
 
 		/**
+		 * @brief sampler().
+		 */
+		inline GraphBuilder & defaultSampler(
+			const E_WRAPPING  p_wrapS	  = E_WRAPPING::CLAMP_TO_EDGE,
+			const E_WRAPPING  p_wrapT	  = E_WRAPPING::CLAMP_TO_EDGE,
+			const E_FILTERING p_minFilter = E_FILTERING::NEAREST,
+			const E_FILTERING p_magFilter = E_FILTERING::NEAREST
+		)
+		{
+			return sampler( DEFAULT_SAMPLER_NAME, p_wrapS, p_wrapT, p_minFilter, p_magFilter );
+		}
+
+		/**
 		 * @brief vertexStream().
 		 */
-		GraphBuilder & vertexStream( const Key &, const std::initializer_list<VertexAttribute> );
+		GraphBuilder & vertexLayout( const Key &, const std::initializer_list<VertexAttribute> );
 
 		/**
 		 * @brief uniformBuffer().
 		 */
-		GraphBuilder & buffer(
+		GraphBuilder & shaderBuffer(
 			const Key &,
-			const E_BUFFER_ROLE,
+			const E_SHADER_BUFFER_KIND,
+			const E_BUFFER_MUTABILITY,
 			const E_BUFFER_ACCESS,
 			const E_UPDATE_FREQUENCY,
 			const uint32_t,
@@ -179,10 +198,10 @@ namespace VTX::Renderer
 		/**
 		 * @brief dataBuffer().
 		 */
-		GraphBuilder & dataBuffer(
-			const Key &				 p_name,
-			const E_DATA_BUFFER_KIND p_kind		 = E_DATA_BUFFER_KIND::VERTEX,
-			const E_UPDATE_FREQUENCY p_frequency = E_UPDATE_FREQUENCY::STATIC
+		GraphBuilder & pipelineBuffer(
+			const Key &					 p_name,
+			const E_PIPELINE_BUFFER_KIND p_kind		 = E_PIPELINE_BUFFER_KIND::VERTEX,
+			const E_UPDATE_FREQUENCY	 p_frequency = E_UPDATE_FREQUENCY::STATIC
 		);
 
 		/**
@@ -225,6 +244,7 @@ namespace VTX::Renderer
 		 * @brief shaders().
 		 */
 		ProgramBuilder & shaders( std::initializer_list<FilePath> );
+		ProgramBuilder & shadersDir( const FilePath & );
 
 		/**
 		 * @brief uniform().
@@ -288,9 +308,9 @@ namespace VTX::Renderer
 		PassBuilder & in( const E_RESOURCE_TYPE, const Key &, const std::optional<Key> = std::nullopt );
 
 		// Convenience overload: defaults to TEXTURE.
-		PassBuilder & in( const Key & p_primary, const std::optional<Key> p_secondary = std::nullopt )
+		PassBuilder & in( const Key & p_texture, const std::optional<Key> & p_sampler = std::nullopt )
 		{
-			return in( E_RESOURCE_TYPE::TEXTURE, p_primary, p_secondary );
+			return in( E_RESOURCE_TYPE::TEXTURE, p_texture, p_sampler ? *p_sampler : DEFAULT_SAMPLER_NAME );
 		}
 
 		/**
@@ -300,9 +320,9 @@ namespace VTX::Renderer
 		PassBuilder & out( const E_RESOURCE_TYPE, const Key &, const std::optional<Key> = std::nullopt );
 
 		// Convenience overload: defaults to TEXTURE.
-		PassBuilder & out( const Key & p_primary, const std::optional<Key> p_secondary = std::nullopt )
+		PassBuilder & out( const Key & p_texture, const std::optional<Key> p_sampler = std::nullopt )
 		{
-			return out( E_RESOURCE_TYPE::TEXTURE, p_primary, p_secondary );
+			return out( E_RESOURCE_TYPE::TEXTURE, p_texture, p_sampler ? *p_sampler : DEFAULT_SAMPLER_NAME );
 		}
 
 		/**
