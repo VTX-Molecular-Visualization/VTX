@@ -40,7 +40,7 @@ namespace VTX::Renderer
 	};
 
 	/**
-	 * @brief Global resource types.
+	 * @brief Pass resource types.
 	 */
 	enum struct E_RESOURCE_TYPE : uint8_t
 	{
@@ -232,11 +232,12 @@ namespace VTX::Renderer
 	 */
 	struct BufferShader
 	{
+		Key						  name;
 		E_SHADER_BUFFER_KIND	  role;
 		E_BUFFER_MUTABILITY		  mutability;
 		E_BUFFER_ACCESS			  access;
 		E_UPDATE_FREQUENCY		  frequency;
-		Binding					  binding; // TODO: remove and use backend reflection.
+		std::optional<Binding>	  binding; // TODO: remove and use backend reflection.
 		std::vector<UniformValue> values;
 	};
 
@@ -245,6 +246,7 @@ namespace VTX::Renderer
 	 */
 	struct BufferPipeline
 	{
+		Key					   name;
 		E_PIPELINE_BUFFER_KIND kind;
 		E_UPDATE_FREQUENCY	   frequency;
 	};

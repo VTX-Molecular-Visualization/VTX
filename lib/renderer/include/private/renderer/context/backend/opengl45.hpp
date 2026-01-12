@@ -25,48 +25,35 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Default constructor.
 		 */
-		OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc = nullptr );
+		OpenGL45( const size_t, const size_t, const FilePath &, void * = nullptr );
 
 		/**
 		 * @brief Build the command buffer from the render queue and resources.
 		 */
-		void build( const RenderQueue & p_renderQueue, const Resources & p_resources, CommandBuffer & p_commands );
+		void build( const RenderQueue &, const Resources &, CommandBuffer & );
 
 		/**
 		 * @brief Resize textures.
 		 */
-		void resize( const size_t p_width, const size_t p_height );
+		void resize( const size_t, const size_t );
 
 		/**
-		 * @brief Bind a framebuffer.
+		 * @brief Set data to a shader buffer.
 		 */
-		inline void bindFramebuffer( const Handle p_framebuffer ) const noexcept
-		{
-			if ( p_framebuffer == NO_HANDLE )
-			{
-				GL::Framebuffer::bindDefault();
-			}
-			else
-			{
-				assert( p_framebuffer < _framebuffers.size() );
-				_framebuffers[ p_framebuffer ]->bind();
-			}
-		}
+		void setShaderBufferData( const BufferShader &, SpanBytes );
 
 		/**
-		 * @brief Unbind a framebuffer.
+		 * @brief Set data to a pipeline buffer.
 		 */
-		inline void unbindFramebuffer( const Handle p_framebuffer ) const noexcept
+		void setPipelineBufferData( const BufferPipeline &, SpanBytes );
+
+		/**
+		 * @brief GL object accessors.
+		 */
+		inline const GL::Framebuffer & framebuffer( const Handle p_handle ) const noexcept
 		{
-			if ( p_framebuffer == NO_HANDLE )
-			{
-				GL::Framebuffer::unbindDefault();
-			}
-			else
-			{
-				assert( p_framebuffer < _framebuffers.size() );
-				_framebuffers[ p_framebuffer ]->unbind();
-			}
+			assert( p_handle < _framebuffers.size() );
+			return *_framebuffers[ p_handle ];
 		}
 
 	  private:
@@ -76,8 +63,15 @@ namespace VTX::Renderer::Context::Backend
 		uint32_t _width;
 		uint32_t _height;
 
-		// Store descriptors.
-		Resources _resources;
+		/**
+		 * @brief Texture binding info.
+		 */
+		struct TextureBinding
+		{
+			Handle	texture;
+			Handle	sampler;
+			Binding unit;
+		};
 
 		/**
 		 * @brief Buffer binding info.
@@ -85,18 +79,24 @@ namespace VTX::Renderer::Context::Backend
 		struct BufferBinding
 		{
 			Handle	 buffer;
+			Binding	 binding;
 			uint32_t offsetBytes = 0;
 			uint32_t sizeBytes	 = 0;
 		};
 
 		/**
-		 * @brief Resource table (MVP).
+		 * @brief Global shader buffers.
+		 */
+		using GlobalShaderBuffers = std::vector<BufferBinding>;
+
+		/**
+		 * @brief Resource table per pass.
 		 */
 		struct ResourceTable
 		{
-			std::vector<Handle>		   textures;		// index = unit
-			std::vector<BufferBinding> shaderBuffers;	// index = binding
-			std::vector<BufferBinding> pipelineBuffers; // index = binding
+			std::vector<TextureBinding> textures;
+			std::vector<BufferBinding>	shaderBuffers;
+			std::vector<BufferBinding>	pipelineBuffers;
 		};
 
 		/**
@@ -105,8 +105,9 @@ namespace VTX::Renderer::Context::Backend
 		using Cache = std::unordered_map<Key, Handle>;
 
 		/**
-		 * @brief Mappint Key -> Handle.
+		 * @brief Cache : mapping Key -> Handle.
 		 */
+		using Cache = std::unordered_map<Key, Handle>;
 		Cache _cacheTextures;
 		Cache _cacheSamplers;
 		Cache _cacheShaderBuffers;
@@ -118,19 +119,25 @@ namespace VTX::Renderer::Context::Backend
 		Cache _cacheFramebuffers;
 
 		/**
-		 * @brief Resource pools.
-		 * index = Handle
+		 * @brief MVP : global shader buffers and resource tables.
 		 */
-		std::vector<std::unique_ptr<ResourceTable>>	  _resourceTables;
-		std::vector<std::unique_ptr<GL::VertexArray>> _vertexArrays;
-		std::vector<std::unique_ptr<GL::Buffer>>	  _shaderBuffers;
-		std::vector<std::unique_ptr<GL::Buffer>>	  _vertexBuffers;
-		std::vector<std::unique_ptr<GL::Buffer>>	  _indexBuffers;
-		std::vector<std::unique_ptr<GL::Framebuffer>> _framebuffers;
-		std::vector<std::unique_ptr<GL::Texture2D>>	  _textures;
-		std::vector<std::unique_ptr<GL::Sampler>>	  _samplers;
-		std::unique_ptr<GL::ProgramManager>			  _programManager;
-		std::vector<GL::Program *>					  _programs;
+		GlobalShaderBuffers		   _globalShaderBuffers;
+		std::vector<ResourceTable> _resourceTables;
+
+		/**
+		 * @brief GL resource pools : index = Handle.
+		 */
+		template<typename T>
+		using GLObject = std::vector<std::unique_ptr<T>>;
+		GLObject<GL::VertexArray>			_vertexArrays;
+		GLObject<GL::Buffer>				_shaderBuffers;
+		GLObject<GL::Buffer>				_vertexBuffers;
+		GLObject<GL::Buffer>				_indexBuffers;
+		GLObject<GL::Framebuffer>			_framebuffers;
+		GLObject<GL::Texture2D>				_textures;
+		GLObject<GL::Sampler>				_samplers;
+		std::unique_ptr<GL::ProgramManager> _programManager;
+		std::vector<GL::Program *>			_programs;
 
 		/**
 		 * @brief Get or create resources.
@@ -140,31 +147,24 @@ namespace VTX::Renderer::Context::Backend
 		Handle _getOrCreateTexture( const Key &, const Texture & );
 		Handle _getOrCreateSampler( const Key &, const Sampler & );
 		Handle _getOrCreateVertexLayout( const Key &, const VertexLayout & );
-		Handle _getOrCreateShaderBuffer( const Key &, const BufferShader & );
-		Handle _getOrCreatePipelineBuffer( const Key &, const BufferPipeline & );
+		Handle _getOrCreateShaderBuffer( const BufferShader & );
 		Handle _getOrCreateVertexBuffer( const Key & );
 		Handle _getOrCreateIndexBuffer( const Key & );
 		Handle _getOrCreateProgram( const Program & );
 
-		void _bindGeometryToVao( const Handle, const VertexLayout &, const Geometry &, const bool );
-		void setPipelineBufferData( const Key & p_key, SpanBytes p_bytes );
+		/**
+		 * @brief Build MVP resources.
+		 */
+		GlobalShaderBuffers _buildGlobalShaderBuffers( const Resources & );
+		ResourceTable		_buildResourceTableForPass( const Pass &, const Resources & );
 
-		ResourceTable _buildResourceTableForPass( const Pass & );
+		void _bindGeometryToVao( const Handle, const VertexLayout &, const Geometry &, const bool );
 
 		/**
 		 * @brief Specs.
 		 */
 		GL::StructOpenglInfos _openglInfos;
 		void				  _getOpenglInfos();
-		static void APIENTRY  _debugMessageCallback(
-			 const GLenum	p_source,
-			 const GLenum	p_type,
-			 const GLuint	p_id,
-			 const GLenum	p_severity,
-			 const GLsizei	p_length,
-			 const GLchar * p_msg,
-			 const void *	p_data
-		 ) noexcept;
 	};
 } // namespace VTX::Renderer::Context::Backend
 

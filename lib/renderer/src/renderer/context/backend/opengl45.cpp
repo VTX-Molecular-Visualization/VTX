@@ -1,5 +1,6 @@
 #include "renderer/context/backend/opengl45.hpp"
 #include "renderer/binary_buffer.hpp"
+#include "renderer/context/gl/debug.hpp"
 #include <util/exceptions.hpp>
 
 namespace
@@ -235,7 +236,7 @@ namespace VTX::Renderer::Context::Backend
 
 		glEnable( GL_DEBUG_OUTPUT );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
-		glDebugMessageCallback( _debugMessageCallback, nullptr );
+		glDebugMessageCallback( GL::Debug::_debugMessageCallback, nullptr );
 
 		// TODO: set from grpah.
 		glEnable( GL_CLIP_DISTANCE0 );
@@ -247,11 +248,9 @@ namespace VTX::Renderer::Context::Backend
 
 	void OpenGL45::build( const RenderQueue & p_renderQueue, const Resources & p_resources, CommandBuffer & p_commands )
 	{
-		_resources = p_resources;
-
 		// Begin frame.
 		// TODO: read from graph.
-		PayloadBeginFrame beginFrame { CLEAR_COLOR | CLEAR_DEPTH };
+		PayloadBeginFrame beginFrame { GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT };
 		p_commands.push<E_COMMAND::BEGIN_FRAME>( beginFrame );
 
 		// Foreach resources.
@@ -269,7 +268,7 @@ namespace VTX::Renderer::Context::Backend
 		}
 		for ( const auto & [ key, buffer ] : p_resources.shaderBuffers )
 		{
-			_getOrCreateShaderBuffer( key, buffer );
+			_getOrCreateShaderBuffer( buffer );
 		}
 		for ( const auto & [ key, buffer ] : p_resources.pipelineBuffers )
 		{
@@ -280,6 +279,9 @@ namespace VTX::Renderer::Context::Backend
 			default: break;
 			}
 		}
+
+		// Global resource table.
+		_globalShaderBuffers = _buildGlobalShaderBuffers( p_resources );
 
 		// Foreach pass.
 		for ( const Pass * const passPtr : p_renderQueue )
@@ -294,8 +296,8 @@ namespace VTX::Renderer::Context::Backend
 
 			// Resource table, clear each build.
 			const Handle	hResourceTable = _getOrCreateResourceTable( pass, p_resources );
-			ResourceTable & resourceTable  = *_resourceTables[ hResourceTable ];
-			resourceTable				   = ResourceTable {};
+			ResourceTable & resourceTable  = _resourceTables[ hResourceTable ];
+			resourceTable				   = _buildResourceTableForPass( pass, p_resources );
 
 			PayloadBeginPass beginPass { hFramebuffer };
 			p_commands.push<E_COMMAND::BEGIN_PASS>( beginPass );
@@ -344,11 +346,11 @@ namespace VTX::Renderer::Context::Backend
 			return NO_HANDLE;
 		}
 
-		const Handle handle = static_cast<Handle>( _framebuffers.size() );
+		const Handle h = static_cast<Handle>( _framebuffers.size() );
 		_framebuffers.emplace_back( std::make_unique<GL::Framebuffer>() );
-		_cacheFramebuffers.emplace( key, handle );
+		_cacheFramebuffers.emplace( key, h );
 
-		return handle;
+		return h;
 	}
 
 	Handle OpenGL45::_getOrCreateResourceTable( const Pass & p_pass, const Resources & p_res )
@@ -361,11 +363,11 @@ namespace VTX::Renderer::Context::Backend
 			return it->second;
 		}
 
-		const Handle handle = static_cast<Handle>( _resourceTables.size() );
-		_resourceTables.emplace_back( std::make_unique<ResourceTable>() );
-		_cacheResourceTables.emplace( key, handle );
+		const Handle h = static_cast<Handle>( _resourceTables.size() );
+		_resourceTables.emplace_back();
+		_cacheResourceTables.emplace( key, h );
 
-		return handle;
+		return h;
 	}
 
 	Handle OpenGL45::_getOrCreateTexture( const Key & p_key, const Texture & p_text )
@@ -376,7 +378,7 @@ namespace VTX::Renderer::Context::Backend
 			return it->second;
 		}
 
-		const Handle handle = static_cast<Handle>( _textures.size() );
+		const Handle h = static_cast<Handle>( _textures.size() );
 
 		uint32_t width	= _width;
 		uint32_t height = _height;
@@ -399,14 +401,14 @@ namespace VTX::Renderer::Context::Backend
 		_textures.emplace_back(
 			std::make_unique<GL::Texture2D>( GLsizei( width ), GLsizei( height ), glFormat.internalFormat )
 		);
-		_cacheTextures.emplace( p_key, handle );
+		_cacheTextures.emplace( p_key, h );
 
 		if ( not p_text.data.empty() )
 		{
-			_textures[ handle ]->fill( p_text.data.data(), glFormat.uploadFormat, glFormat.uploadType );
+			_textures[ h ]->fill( p_text.data.data(), glFormat.uploadFormat, glFormat.uploadType );
 		}
 
-		return handle;
+		return h;
 	}
 
 	Handle OpenGL45::_getOrCreateSampler( const Key & p_key, const Sampler & p_text )
@@ -417,15 +419,15 @@ namespace VTX::Renderer::Context::Backend
 			return it->second;
 		}
 
-		const Handle handle = static_cast<Handle>( _samplers.size() );
+		const Handle h = static_cast<Handle>( _samplers.size() );
 		_samplers.emplace_back(
 			std::make_unique<GL::Sampler>(
 				_toGL( p_text.wrapS ), _toGL( p_text.wrapT ), _toGL( p_text.minFilter ), _toGL( p_text.magFilter )
 			)
 		);
-		_cacheSamplers.emplace( p_key, handle );
+		_cacheSamplers.emplace( p_key, h );
 
-		return handle;
+		return h;
 	}
 
 	Handle OpenGL45::_getOrCreateVertexLayout( const Key & p_key, const VertexLayout & p_vertexStream )
@@ -435,11 +437,11 @@ namespace VTX::Renderer::Context::Backend
 		{
 			return it->second;
 		}
-		const Handle handle = static_cast<Handle>( _vertexArrays.size() );
+		const Handle h = static_cast<Handle>( _vertexArrays.size() );
 		_vertexArrays.emplace_back( std::make_unique<GL::VertexArray>() );
-		_cacheVertexLayouts.emplace( p_key, handle );
+		_cacheVertexLayouts.emplace( p_key, h );
 
-		const auto & vao = *_vertexArrays[ handle ];
+		const auto & vao = *_vertexArrays[ h ];
 		vao.bind();
 		GLuint location = 0;
 		for ( const auto & a : p_vertexStream.attributes )
@@ -449,7 +451,7 @@ namespace VTX::Renderer::Context::Backend
 			for ( uint8_t col = 0; col < ga.columns; ++col )
 			{
 				const GLuint attribIndex  = location;
-				const GLuint bindingIndex = location; // planar : 1 binding par attribut (ou colonne)
+				const GLuint bindingIndex = location; // planar : 1 binding per attribute
 				const GLuint relOffset	  = GLuint( col * ga.components * ga.bytesPerComp );
 
 				vao.enableAttribute( attribIndex );
@@ -463,12 +465,14 @@ namespace VTX::Renderer::Context::Backend
 		}
 		vao.unbind();
 
-		return handle;
+		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateShaderBuffer( const Key & p_key, const BufferShader & p_buffer )
+	Handle OpenGL45::_getOrCreateShaderBuffer( const BufferShader & p_buffer )
 	{
-		auto it = _cacheShaderBuffers.find( p_key );
+		const Key key = p_buffer.name;
+
+		auto it = _cacheShaderBuffers.find( key );
 		if ( it != _cacheShaderBuffers.end() )
 		{
 			return it->second;
@@ -512,11 +516,11 @@ namespace VTX::Renderer::Context::Backend
 		default: break;
 		}
 
-		const Handle handle = static_cast<Handle>( _shaderBuffers.size() );
+		const Handle h = static_cast<Handle>( _shaderBuffers.size() );
 		_shaderBuffers.emplace_back( std::move( glBuffer ) );
-		_cacheShaderBuffers.emplace( p_key, handle );
+		_cacheShaderBuffers.emplace( key, h );
 
-		return handle;
+		return h;
 	}
 
 	Handle OpenGL45::_getOrCreateVertexBuffer( const Key & p_key )
@@ -561,13 +565,101 @@ namespace VTX::Renderer::Context::Backend
 		{
 			return it->second;
 		}
-		const Handle handle = static_cast<Handle>( _programs.size() );
+		const Handle h = static_cast<Handle>( _programs.size() );
 
 		GL::Program * const program = _programManager->createProgram( p_program.name, p_program.shaders );
 		_programs.emplace_back( program );
-		_cachePrograms.emplace( key, handle );
+		_cachePrograms.emplace( key, h );
 
-		return handle;
+		// Create shader buffer if uniforms.
+		if ( not p_program.uniforms.empty() )
+		{
+			BufferShader buffer;
+			buffer.name		  = p_program.name;
+			buffer.role		  = E_SHADER_BUFFER_KIND::PARAMETERS;
+			buffer.mutability = E_BUFFER_MUTABILITY::IMMUTABLE;
+			buffer.access	  = E_BUFFER_ACCESS::NONE;
+			buffer.frequency  = E_UPDATE_FREQUENCY::DYNAMIC;
+			buffer.values	  = p_program.uniforms;
+			_getOrCreateShaderBuffer( buffer );
+		}
+
+		return h;
+	}
+
+	OpenGL45::GlobalShaderBuffers OpenGL45::_buildGlobalShaderBuffers( const Resources & p_resources )
+	{
+		OpenGL45::GlobalShaderBuffers gsb;
+
+		for ( const auto & [ key, buffer ] : p_resources.shaderBuffers )
+		{
+			assert( buffer.binding );
+			const Handle hBuf = _cacheShaderBuffers.at( key );
+			gsb.emplace_back( hBuf, *buffer.binding );
+		}
+
+		return gsb;
+	}
+
+	OpenGL45::ResourceTable OpenGL45::_buildResourceTableForPass( const Pass & p_pass, const Resources & p_resources )
+	{
+		OpenGL45::ResourceTable rt;
+
+		// It's better to not use the same binding/unit several times in different contexts.
+		Binding b = 0;
+
+		// For each input.
+		for ( auto & input : p_pass.inputs )
+		{
+			switch ( input.type )
+			{
+			case E_RESOURCE_TYPE::TEXTURE:
+			{
+				assert( input.secondary );
+				const Handle hTex  = _cacheTextures.at( input.primary );
+				const Handle hSamp = _cacheSamplers.at( *input.secondary );
+				rt.textures.emplace_back( hTex, hSamp, b++ );
+				break;
+			}
+			case E_RESOURCE_TYPE::BUFFER:
+			{
+				const Handle hBuf = _cacheShaderBuffers.at( input.primary );
+				rt.shaderBuffers.emplace_back( hBuf, b++ );
+				break;
+			}
+			default: break;
+			}
+		}
+
+		// For each program check if shader buffer exists.
+		for ( auto & program : p_pass.programs )
+		{
+			const Key & key = program.name;
+			if ( _cacheShaderBuffers.contains( key ) )
+			{
+				const Handle hBuf = _cacheShaderBuffers.at( key );
+				rt.shaderBuffers.emplace_back( hBuf, b++ );
+			}
+		}
+
+		b = 0;
+		// For each output.
+		for ( auto & output : p_pass.outputs )
+		{
+			switch ( output.type )
+			{
+			case E_RESOURCE_TYPE::BUFFER:
+			{
+				const Handle hBuf = _cacheShaderBuffers.at( output.primary );
+				rt.shaderBuffers.emplace_back( hBuf, b++ );
+
+				break;
+			}
+			default: break;
+			}
+		}
+
+		return rt;
 	}
 
 	void OpenGL45::_bindGeometryToVao(
@@ -620,23 +712,35 @@ namespace VTX::Renderer::Context::Backend
 		vao.unbind();
 	}
 
-	void OpenGL45::setPipelineBufferData( const Key & p_key, SpanBytes p_bytes )
+	void OpenGL45::setShaderBufferData( const BufferShader & p_desc, SpanBytes p_bytes )
 	{
-		const BufferPipeline & desc = _resources.pipelineBuffers.at( p_key );
+		const Handle h	 = _getOrCreateShaderBuffer( p_desc );
+		GL::Buffer & buf = *_shaderBuffers[ h ];
 
-		if ( desc.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
+		if ( p_desc.mutability == E_BUFFER_MUTABILITY::MUTABLE )
 		{
-			const Handle h = _getOrCreateVertexBuffer( p_key );
-			_vertexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( desc.frequency ) );
+			buf.setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( p_desc.frequency ) );
 		}
 		else
 		{
-			const Handle h = _getOrCreateIndexBuffer( p_key );
-			_indexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( desc.frequency ) );
+			assert( p_bytes.size() <= buf.size() );
+			buf.setSub( p_bytes.data(), static_cast<GLsizeiptr>( p_bytes.size() ), 0 );
 		}
 	}
 
-	// ResourceTable OpenGL45::_buildResourceTableForPass( const Pass & p_pass ) {}
+	void OpenGL45::setPipelineBufferData( const BufferPipeline & p_desc, SpanBytes p_bytes )
+	{
+		if ( p_desc.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
+		{
+			const Handle h = _getOrCreateVertexBuffer( p_desc.name );
+			_vertexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( p_desc.frequency ) );
+		}
+		else
+		{
+			const Handle h = _getOrCreateIndexBuffer( p_desc.name );
+			_indexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( p_desc.frequency ) );
+		}
+	}
 
 	void OpenGL45::_getOpenglInfos()
 	{
@@ -674,66 +778,6 @@ namespace VTX::Renderer::Context::Backend
 			{
 				_openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::ATI_meminfo ] = true;
 			}
-		}
-	}
-
-	void APIENTRY OpenGL45::_debugMessageCallback(
-		const GLenum   p_source,
-		const GLenum   p_type,
-		const GLuint   p_id,
-		const GLenum   p_severity,
-		const GLsizei  p_length,
-		const GLchar * p_msg,
-		const void *   p_data
-	) noexcept
-	{
-		std::string source;
-		std::string type;
-		std::string severity;
-
-		switch ( p_source )
-		{
-		case GL_DEBUG_SOURCE_API: source = "API"; break;
-		case GL_DEBUG_SOURCE_WINDOW_SYSTEM: source = "WINDOW SYSTEM"; break;
-		case GL_DEBUG_SOURCE_SHADER_COMPILER: source = "SHADER COMPILER"; break;
-		case GL_DEBUG_SOURCE_THIRD_PARTY: source = "THIRD PARTY"; break;
-		case GL_DEBUG_SOURCE_APPLICATION: source = "APPLICATION"; break;
-		case GL_DEBUG_SOURCE_OTHER: source = "UNKNOWN"; break;
-		default: source = "UNKNOWN"; break;
-		}
-
-		switch ( p_type )
-		{
-		case GL_DEBUG_TYPE_ERROR: type = "ERROR"; break;
-		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: type = "DEPRECATED BEHAVIOR"; break;
-		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: type = "UDEFINED BEHAVIOR"; break;
-		case GL_DEBUG_TYPE_PORTABILITY: type = "PORTABILITY"; break;
-		case GL_DEBUG_TYPE_PERFORMANCE: type = "PERFORMANCE"; break;
-		case GL_DEBUG_TYPE_OTHER: type = "OTHER"; break;
-		case GL_DEBUG_TYPE_MARKER: type = "MARKER"; break;
-		default: type = "UNKNOWN"; break;
-		}
-
-		switch ( p_severity )
-		{
-		case GL_DEBUG_SEVERITY_HIGH: severity = "HIGH"; break;
-		case GL_DEBUG_SEVERITY_MEDIUM: severity = "MEDIUM"; break;
-		case GL_DEBUG_SEVERITY_LOW: severity = "LOW"; break;
-		case GL_DEBUG_SEVERITY_NOTIFICATION: severity = "NOTIFICATION"; break;
-		default: severity = "UNKNOWN"; break;
-		}
-
-		std::string message( "[" + severity + "] [" + type + "] " + source + ": " + p_msg );
-
-		switch ( p_severity )
-		{
-		case GL_DEBUG_SEVERITY_HIGH:
-			VTX_ERROR( "{}", message );
-			assert( false );
-			break;
-		case GL_DEBUG_SEVERITY_MEDIUM:
-		case GL_DEBUG_SEVERITY_LOW: VTX_WARNING( "{}", message ); break;
-		default: break;
 		}
 	}
 

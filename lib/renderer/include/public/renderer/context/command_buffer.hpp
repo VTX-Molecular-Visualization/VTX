@@ -21,6 +21,9 @@ namespace VTX::Renderer::Context
 		BEGIN_PASS,
 		END_PASS,
 
+		BIND_FRAMEBUFFER,
+		BIND_BUFFER,
+
 		BIND_PIPELINE,
 		BIND_RESOURCE_TABLE,
 		PUSH_CONSTANTS,
@@ -99,6 +102,11 @@ namespace VTX::Renderer::Context
 	struct PayloadEndPass
 	{
 		Handle renderTarget;
+	};
+
+	struct PayloadBindFramebuffer
+	{
+		Handle framebuffer;
 	};
 
 	struct PayloadBindPipeline

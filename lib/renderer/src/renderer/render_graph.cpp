@@ -335,6 +335,8 @@ namespace VTX::Renderer
 		g.texture( "FXAA", E_FORMAT::RGBA16F );
 
 		// Samplers.
+		g.defaultSampler();
+
 		g.sampler(
 			"NearestClamp",
 			E_WRAPPING::CLAMP_TO_EDGE,

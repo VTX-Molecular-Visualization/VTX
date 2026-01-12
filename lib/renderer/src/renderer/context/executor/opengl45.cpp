@@ -11,37 +11,34 @@ namespace VTX::Renderer::Context::Executor
 			{
 			case E_COMMAND::BEGIN_FRAME:
 			{
-				const auto & p	  = p_commandBuffer.getPayload<PayloadBeginFrame>( command.payloadOffset );
-				GLbitfield	 mask = 0;
-				if ( p.clearFlags & CLEAR_COLOR )
-				{
-					mask |= GL_COLOR_BUFFER_BIT;
-				}
-				if ( p.clearFlags & CLEAR_DEPTH )
-				{
-					mask |= GL_DEPTH_BUFFER_BIT;
-				}
-				if ( p.clearFlags & CLEAR_STENCIL )
-				{
-					mask |= GL_STENCIL_BUFFER_BIT;
-				}
-				glClear( mask );
+				const auto & p = p_commandBuffer.getPayload<PayloadBeginFrame>( command.payloadOffset );
+
+				// Clear buffers.
+				glClear( p.clearFlags );
+
 				break;
 			}
 			case E_COMMAND::END_FRAME:
 			{
 				break;
 			}
+
 			case E_COMMAND::BEGIN_PASS:
 			{
 				const auto & p = p_commandBuffer.getPayload<PayloadBeginPass>( command.payloadOffset );
-				_backend.bindFramebuffer( p.renderTarget );
+
 				break;
 			}
 			case E_COMMAND::END_PASS:
 			{
 				const auto & p = p_commandBuffer.getPayload<PayloadEndPass>( command.payloadOffset );
-				_backend.unbindFramebuffer( p.renderTarget );
+
+				break;
+			}
+			case E_COMMAND::BIND_FRAMEBUFFER:
+			{
+				const auto & p = p_commandBuffer.getPayload<PayloadBindFramebuffer>( command.payloadOffset );
+				_backend.framebuffer( p.framebuffer ).bind();
 				break;
 			}
 			case E_COMMAND::BIND_PIPELINE:

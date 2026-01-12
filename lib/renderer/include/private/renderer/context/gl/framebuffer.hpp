@@ -22,8 +22,6 @@ namespace VTX::Renderer::Context::GL
 
 		~Framebuffer() noexcept
 		{
-			assert( _target == 0 );
-
 			if ( _id != GL_INVALID_INDEX )
 			{
 				glDeleteFramebuffers( 1, &_id );
@@ -36,32 +34,12 @@ namespace VTX::Renderer::Context::GL
 		inline void bind( const GLenum p_target = GL_FRAMEBUFFER ) const noexcept
 		{
 			assert( glIsFramebuffer( _id ) );
-			assert( _target == 0 );
-			assert( p_target != 0 );
-
-			_target = p_target;
-			glBindFramebuffer( _target, _id );
+			glBindFramebuffer( p_target, _id );
 		}
 
 		inline static void bindDefault( const GLenum p_target = GL_FRAMEBUFFER ) noexcept
 		{
 			assert( p_target != 0 );
-
-			glBindFramebuffer( p_target, 0 );
-		}
-
-		inline void unbind() const noexcept
-		{
-			assert( _target != 0 );
-
-			glBindFramebuffer( _target, 0 );
-			_target = 0;
-		}
-
-		inline static void unbindDefault( const GLenum p_target = GL_FRAMEBUFFER ) noexcept
-		{
-			assert( p_target != 0 );
-
 			glBindFramebuffer( p_target, 0 );
 		}
 
@@ -98,8 +76,7 @@ namespace VTX::Renderer::Context::GL
 		}
 
 	  private:
-		GLuint		   _id	   = GL_INVALID_INDEX;
-		mutable GLenum _target = 0;
+		GLuint _id = GL_INVALID_INDEX;
 	};
 } // namespace VTX::Renderer::Context::GL
 

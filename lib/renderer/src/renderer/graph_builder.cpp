@@ -46,11 +46,12 @@ namespace VTX::Renderer
 		const E_BUFFER_MUTABILITY				  p_mutability,
 		const E_BUFFER_ACCESS					  p_access,
 		const E_UPDATE_FREQUENCY				  p_frequency,
-		const uint32_t							  p_binding,
+		const uint32_t							  p_binding, // will be removed later
 		const std::initializer_list<UniformValue> p_values
 	)
 	{
 		BufferShader desc;
+		desc.name		= p_name;
 		desc.role		= p_role;
 		desc.mutability = p_mutability;
 		desc.access		= p_access;
@@ -68,6 +69,7 @@ namespace VTX::Renderer
 	)
 	{
 		BufferPipeline db;
+		db.name								= p_name;
 		db.kind								= p_kind;
 		db.frequency						= p_frequency;
 		resources.pipelineBuffers[ p_name ] = std::move( db );
