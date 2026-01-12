@@ -79,10 +79,19 @@ namespace VTX::Renderer
 	/**
 	 * @brief All buffer roles.
 	 */
-	enum struct E_BUFFER_ROLE : uint8_t
+	enum struct E_SHADER_BUFFER_KIND : uint8_t
 	{
-		UNIFORM,
-		STORAGE
+		PARAMETERS,
+		STRUCTURED
+	};
+
+	/**
+	 * @brief All buffer mutability types.
+	 */
+	enum struct E_BUFFER_MUTABILITY : uint8_t
+	{
+		MUTABLE,
+		IMMUTABLE
 	};
 
 	/**
@@ -90,7 +99,9 @@ namespace VTX::Renderer
 	 */
 	enum struct E_BUFFER_ACCESS : uint8_t
 	{
+		NONE,
 		READ,
+		WRITE,
 		READ_WRITE
 	};
 
@@ -99,14 +110,15 @@ namespace VTX::Renderer
 	 */
 	enum struct E_UPDATE_FREQUENCY : uint8_t
 	{
+		STATIC,
 		DYNAMIC,
-		STATIC
+		STREAM
 	};
 
 	/**
 	 * @brief All data buffer kinds.
 	 */
-	enum struct E_DATA_BUFFER_KIND : uint8_t
+	enum struct E_PIPELINE_BUFFER_KIND : uint8_t
 	{
 		VERTEX,
 		INDEX
@@ -218,9 +230,10 @@ namespace VTX::Renderer
 	/**
 	 * @brief Uniform buffer descriptor.
 	 */
-	struct BufferLayout
+	struct BufferShader
 	{
-		E_BUFFER_ROLE			  role;
+		E_SHADER_BUFFER_KIND	  role;
+		E_BUFFER_MUTABILITY		  mutability;
 		E_BUFFER_ACCESS			  access;
 		E_UPDATE_FREQUENCY		  frequency;
 		Binding					  binding; // TODO: remove and use backend reflection.
@@ -230,10 +243,10 @@ namespace VTX::Renderer
 	/**
 	 * @brief Data buffer descriptor.
 	 */
-	struct BufferData
+	struct BufferPipeline
 	{
-		E_DATA_BUFFER_KIND kind;
-		E_UPDATE_FREQUENCY frequency;
+		E_PIPELINE_BUFFER_KIND kind;
+		E_UPDATE_FREQUENCY	   frequency;
 	};
 
 	/**
@@ -314,12 +327,12 @@ namespace VTX::Renderer
 	 */
 	struct Resources
 	{
-		std::unordered_map<Key, Texture>	  textures;
-		std::unordered_map<Key, Sampler>	  samplers;
-		std::unordered_map<Key, VertexLayout> vertexStreams;
-		std::unordered_map<Key, BufferLayout> buffers;
-		std::unordered_map<Key, BufferData>	  dataBuffers;
-		std::unordered_map<Key, Geometry>	  geometries;
+		std::unordered_map<Key, Texture>		textures;
+		std::unordered_map<Key, Sampler>		samplers;
+		std::unordered_map<Key, VertexLayout>	vertexStreams;
+		std::unordered_map<Key, BufferShader>	shaderBuffers;
+		std::unordered_map<Key, BufferPipeline> pipelineBuffers;
+		std::unordered_map<Key, Geometry>		geometries;
 	};
 
 	/**

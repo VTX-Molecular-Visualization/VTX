@@ -40,35 +40,37 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	GraphBuilder & GraphBuilder::bufferLayout(
+	GraphBuilder & GraphBuilder::shaderBuffer(
 		const Key &								  p_name,
-		const E_BUFFER_ROLE						  p_role,
+		const E_SHADER_BUFFER_KIND				  p_role,
+		const E_BUFFER_MUTABILITY				  p_mutability,
 		const E_BUFFER_ACCESS					  p_access,
 		const E_UPDATE_FREQUENCY				  p_frequency,
 		const uint32_t							  p_binding,
 		const std::initializer_list<UniformValue> p_values
 	)
 	{
-		BufferLayout desc;
-		desc.role	   = p_role;
-		desc.access	   = p_access;
-		desc.frequency = p_frequency;
-		desc.binding   = p_binding;
+		BufferShader desc;
+		desc.role		= p_role;
+		desc.mutability = p_mutability;
+		desc.access		= p_access;
+		desc.frequency	= p_frequency;
+		desc.binding	= p_binding;
 		desc.values.assign( p_values.begin(), p_values.end() );
-		resources.buffers[ p_name ] = std::move( desc );
+		resources.shaderBuffers[ p_name ] = std::move( desc );
 		return *this;
 	}
 
-	VTX::Renderer::GraphBuilder & VTX::Renderer::GraphBuilder::bufferData(
-		const Key &				 p_name,
-		const E_DATA_BUFFER_KIND p_kind,
-		const E_UPDATE_FREQUENCY p_frequency
+	VTX::Renderer::GraphBuilder & VTX::Renderer::GraphBuilder::pipelineBuffer(
+		const Key &					 p_name,
+		const E_PIPELINE_BUFFER_KIND p_kind,
+		const E_UPDATE_FREQUENCY	 p_frequency
 	)
 	{
-		BufferData db;
-		db.kind							= p_kind;
-		db.frequency					= p_frequency;
-		resources.dataBuffers[ p_name ] = std::move( db );
+		BufferPipeline db;
+		db.kind								= p_kind;
+		db.frequency						= p_frequency;
+		resources.pipelineBuffers[ p_name ] = std::move( db );
 		return *this;
 	}
 

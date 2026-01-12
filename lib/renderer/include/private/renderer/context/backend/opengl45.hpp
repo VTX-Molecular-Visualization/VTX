@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_BACKEND_OPENGL45__
 #define __VTX_RENDERER_CONTEXT_BACKEND_OPENGL45__
 
+#include "renderer/binary_buffer.hpp"
 #include "renderer/context/command_buffer.hpp"
 #include "renderer/context/gl/buffer.hpp"
 #include "renderer/context/gl/chrono.hpp"
@@ -90,9 +91,9 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		struct ResourceTable
 		{
-			std::vector<Handle>		   textures;	   // index = unit
-			std::vector<BufferBinding> uniformBuffers; // index = binding
-			std::vector<BufferBinding> storageBuffers; // index = binding
+			std::vector<Handle>		   textures;		// index = unit
+			std::vector<BufferBinding> shaderBuffers;	// index = binding
+			std::vector<BufferBinding> pipelineBuffers; // index = binding
 		};
 
 		/**
@@ -105,8 +106,8 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		Cache _cacheTextures;
 		Cache _cacheSamplers;
-		Cache _cacheBufferLayouts;
-		Cache _cacheBufferData;
+		Cache _cacheShaderBuffers;
+		Cache _cachePipelineBuffers;
 		Cache _cacheVertexBuffers;
 		Cache _cacheIndexBuffers;
 		Cache _cacheVertexLayouts;
@@ -120,7 +121,8 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		std::vector<std::unique_ptr<ResourceTable>>	  _resourceTables;
 		std::vector<std::unique_ptr<GL::VertexArray>> _vertexArrays;
-		std::vector<std::unique_ptr<GL::Buffer>>	  _buffers;
+		std::vector<std::unique_ptr<GL::Buffer>>	  _shaderBuffers;
+		std::vector<std::unique_ptr<GL::Buffer>>	  _pipelineBuffers;
 		std::vector<std::unique_ptr<GL::Buffer>>	  _vertexBuffers;
 		std::vector<std::unique_ptr<GL::Buffer>>	  _indexBuffers;
 		std::vector<std::unique_ptr<GL::Framebuffer>> _framebuffers;
@@ -137,8 +139,10 @@ namespace VTX::Renderer::Context::Backend
 		Handle _getOrCreateTexture( const Key &, const Texture & );
 		Handle _getOrCreateSampler( const Key &, const Sampler & );
 		Handle _getOrCreateVertexLayout( const Key &, const VertexLayout & );
-		Handle _getOrCreateBufferLayout( const Key &, const BufferLayout & );
-		Handle _getOrCreateBufferData( const Key &, const BufferData & );
+		Handle _getOrCreateShaderBuffer( const Key &, const BufferShader & );
+		Handle _getOrCreatePipelineBuffer( const Key &, const BufferPipeline & );
+		Handle _getOrCreateVertexBuffer( const Key &, SpanBytes );
+		Handle _getOrCreateIndexBuffer( const Key &, SpanBytes );
 		Handle _getOrCreateProgram( const Program & );
 
 		void _bindGeometryToVao( const Handle, const VertexLayout &, const Geometry &, const bool );

@@ -167,9 +167,10 @@ namespace VTX::Renderer
 		/**
 		 * @brief uniformBuffer().
 		 */
-		GraphBuilder & bufferLayout(
+		GraphBuilder & shaderBuffer(
 			const Key &,
-			const E_BUFFER_ROLE,
+			const E_SHADER_BUFFER_KIND,
+			const E_BUFFER_MUTABILITY,
 			const E_BUFFER_ACCESS,
 			const E_UPDATE_FREQUENCY,
 			const uint32_t,
@@ -179,10 +180,10 @@ namespace VTX::Renderer
 		/**
 		 * @brief dataBuffer().
 		 */
-		GraphBuilder & bufferData(
-			const Key &				 p_name,
-			const E_DATA_BUFFER_KIND p_kind		 = E_DATA_BUFFER_KIND::VERTEX,
-			const E_UPDATE_FREQUENCY p_frequency = E_UPDATE_FREQUENCY::STATIC
+		GraphBuilder & pipelineBuffer(
+			const Key &					 p_name,
+			const E_PIPELINE_BUFFER_KIND p_kind		 = E_PIPELINE_BUFFER_KIND::VERTEX,
+			const E_UPDATE_FREQUENCY	 p_frequency = E_UPDATE_FREQUENCY::STATIC
 		);
 
 		/**

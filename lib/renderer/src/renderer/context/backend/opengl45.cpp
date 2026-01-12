@@ -1,8 +1,10 @@
 #include "renderer/context/backend/opengl45.hpp"
+#include "renderer/binary_buffer.hpp"
 #include <util/exceptions.hpp>
 
 namespace
 {
+	using namespace VTX;
 	using namespace VTX::Renderer;
 
 	struct GLPixelFormat
@@ -61,30 +63,78 @@ namespace
 		}
 	}
 
-	/*
-	constexpr GLenum _toGL( const E_TYPE p_type ) noexcept
+	constexpr GLenum _toGL( const E_SHADER_BUFFER_KIND p_bufferRole ) noexcept
 	{
-		switch ( p_type )
+		switch ( p_bufferRole )
 		{
-		case E_TYPE::BOOL: return GL_BOOL;
-		case E_TYPE::BYTE: return GL_BYTE;
-		case E_TYPE::UBYTE: return GL_UNSIGNED_BYTE;
-		case E_TYPE::SHORT: return GL_SHORT;
-		case E_TYPE::USHORT: return GL_UNSIGNED_SHORT;
-		case E_TYPE::INT: return GL_INT;
-		case E_TYPE::UINT: return GL_UNSIGNED_INT;
-		case E_TYPE::FLOAT: return GL_FLOAT;
-		case E_TYPE::VEC2I: return GL_INT_VEC2;
-		case E_TYPE::VEC2F: return GL_FLOAT_VEC2;
-		case E_TYPE::VEC3F: return GL_FLOAT_VEC3;
-		case E_TYPE::VEC4F: return GL_FLOAT_VEC4;
-		case E_TYPE::MAT3F: return GL_FLOAT_MAT3;
-		case E_TYPE::MAT4F: return GL_FLOAT_MAT4;
+		case E_SHADER_BUFFER_KIND::PARAMETERS: return GL_UNIFORM_BUFFER;
+		case E_SHADER_BUFFER_KIND::STRUCTURED: return GL_SHADER_STORAGE_BUFFER;
 		default: assert( false ); return GL_INVALID_INDEX;
 		}
 	}
-	*/
 
+	constexpr GLbitfield _toGLStorageFlags( const E_BUFFER_ACCESS p_access, const E_UPDATE_FREQUENCY p_freq )
+	{
+		GLbitfield flags = 0;
+
+		switch ( p_access )
+		{
+		case E_BUFFER_ACCESS::NONE: break;
+		case E_BUFFER_ACCESS::READ: flags |= GL_MAP_READ_BIT; break;
+		case E_BUFFER_ACCESS::WRITE: flags |= GL_MAP_WRITE_BIT; break;
+		case E_BUFFER_ACCESS::READ_WRITE:
+		{
+			flags |= GL_MAP_READ_BIT;
+			flags |= GL_MAP_WRITE_BIT;
+			break;
+		}
+		default: assert( false ); return 0;
+		}
+
+		switch ( p_freq )
+		{
+		case E_UPDATE_FREQUENCY::STATIC: break;
+		case E_UPDATE_FREQUENCY::DYNAMIC:
+		case E_UPDATE_FREQUENCY::STREAM: flags |= GL_DYNAMIC_STORAGE_BIT; break;
+		default: assert( false ); return 0;
+		}
+
+		return flags;
+	}
+
+	constexpr GLbitfield toGLMapFlags( const E_BUFFER_ACCESS p_access )
+	{
+		GLbitfield flags = 0;
+
+		switch ( p_access )
+		{
+		case E_BUFFER_ACCESS::READ: flags |= GL_MAP_READ_BIT; break;
+		case E_BUFFER_ACCESS::WRITE: flags |= GL_MAP_WRITE_BIT; break;
+		case E_BUFFER_ACCESS::READ_WRITE:
+			flags |= GL_MAP_READ_BIT;
+			flags |= GL_MAP_WRITE_BIT;
+			break;
+
+		default: assert( false ); return 0;
+		}
+
+		return flags;
+	}
+
+	constexpr GLenum _toGL( const E_UPDATE_FREQUENCY p_freq ) noexcept
+	{
+		switch ( p_freq )
+		{
+		case E_UPDATE_FREQUENCY::STATIC: return GL_STATIC_DRAW;
+		case E_UPDATE_FREQUENCY::DYNAMIC: return GL_DYNAMIC_DRAW;
+		case E_UPDATE_FREQUENCY::STREAM: return GL_STREAM_DRAW;
+		default: assert( false ); return GL_INVALID_INDEX;
+		}
+	}
+
+	/**
+	 * @brief GL attribute description.
+	 */
 	struct GLAttrib
 	{
 		GLenum	 baseType	  = 0;
@@ -215,9 +265,9 @@ namespace VTX::Renderer::Context::Backend
 		{
 			_getOrCreateVertexLayout( key, vertexStream );
 		}
-		for ( const auto & [ key, buffer ] : p_resources.buffers )
+		for ( const auto & [ key, buffer ] : p_resources.shaderBuffers )
 		{
-			_getOrCreateBufferLayout( key, buffer );
+			_getOrCreateShaderBuffer( key, buffer );
 		}
 
 		// Foreach pass.
@@ -405,30 +455,55 @@ namespace VTX::Renderer::Context::Backend
 		return handle;
 	}
 
-	Handle OpenGL45::_getOrCreateBufferLayout( const Key & p_key, const BufferLayout & p_buffer )
+	Handle OpenGL45::_getOrCreateShaderBuffer( const Key & p_key, const BufferShader & p_buffer )
 	{
-		auto it = _cacheBufferLayouts.find( p_key );
-		if ( it != _cacheBufferLayouts.end() )
+		auto it = _cacheShaderBuffers.find( p_key );
+		if ( it != _cacheShaderBuffers.end() )
 		{
 			return it->second;
 		}
 
-		const Handle handle = static_cast<Handle>( _buffers.size() );
-		_buffers.emplace_back( std::make_unique<GL::Buffer>() );
+		BinaryBuffer<E_LAYOUT_TYPE::Std140> cpuBuffer;
 
-		return handle;
-	}
-
-	Handle OpenGL45::_getOrCreateBufferData( const Key & p_key, const BufferData & p_buffer )
-	{
-		auto it = _cacheBufferData.find( p_key );
-		if ( it != _cacheBufferData.end() )
+		for ( const UniformValue & value : p_buffer.values )
 		{
-			return it->second;
+			const uint32_t count = value.arrayCount ? *value.arrayCount : 1u;
+			const size_t   elem	 = BinaryBuffer<E_LAYOUT_TYPE::Std140>::rawElementSizeBytes( value.type );
+
+			const SpanBytes bytes { reinterpret_cast<const std::byte *>( value.data.data() ), elem * count };
+
+			cpuBuffer.write( value.type, bytes );
 		}
 
-		const Handle handle = static_cast<Handle>( _buffers.size() );
-		_vertexBuffers.emplace_back( std::make_unique<GL::Buffer>() );
+		cpuBuffer.close();
+
+		const uint32_t bufferSize = static_cast<uint32_t>( cpuBuffer.size() );
+		assert( bufferSize > 0 );
+
+		auto glBuffer = std::make_unique<GL::Buffer>();
+
+		switch ( p_buffer.mutability )
+		{
+		case E_BUFFER_MUTABILITY::MUTABLE:
+		{
+			glBuffer->setData( cpuBuffer.data(), static_cast<GLsizei>( bufferSize ), _toGL( p_buffer.frequency ) );
+			break;
+		}
+		case E_BUFFER_MUTABILITY::IMMUTABLE:
+		{
+			glBuffer->setStorage(
+				cpuBuffer.data(),
+				static_cast<GLsizei>( bufferSize ),
+				_toGLStorageFlags( p_buffer.access, p_buffer.frequency )
+			);
+			break;
+		}
+		default: break;
+		}
+
+		const Handle handle = static_cast<Handle>( _shaderBuffers.size() );
+		_shaderBuffers.emplace_back( std::move( glBuffer ) );
+		_cacheShaderBuffers.emplace( p_key, handle );
 
 		return handle;
 	}

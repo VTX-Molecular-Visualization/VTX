@@ -18,7 +18,7 @@ namespace VTX::Renderer
 			{
 				return true;
 			}
-			if ( _resources.buffers.contains( name ) )
+			if ( _resources.shaderBuffers.contains( name ) )
 			{
 				return true;
 			}
@@ -126,9 +126,14 @@ namespace VTX::Renderer
 			auto [ it, inserted ] = _resources.vertexStreams.emplace( key, vertexStream );
 			assert( inserted );
 		}
-		for ( const auto & [ key, buffer ] : p_builder.resources.buffers )
+		for ( const auto & [ key, buffer ] : p_builder.resources.shaderBuffers )
 		{
-			auto [ it, inserted ] = _resources.buffers.emplace( key, buffer );
+			auto [ it, inserted ] = _resources.shaderBuffers.emplace( key, buffer );
+			assert( inserted );
+		}
+		for ( const auto & [ key, buffer ] : p_builder.resources.pipelineBuffers )
+		{
+			auto [ it, inserted ] = _resources.pipelineBuffers.emplace( key, buffer );
 			assert( inserted );
 		}
 		for ( const auto & [ key, sampler ] : p_builder.resources.samplers )
@@ -166,11 +171,12 @@ namespace VTX::Renderer
 		GraphBuilder g;
 
 		// Buffers.
-		g.bufferLayout(
+		g.shaderBuffer(
 			"Camera",
-			E_BUFFER_ROLE::UNIFORM,
+			E_SHADER_BUFFER_KIND::PARAMETERS,
+			E_BUFFER_MUTABILITY::IMMUTABLE,
 			E_BUFFER_ACCESS::READ,
-			E_UPDATE_FREQUENCY::DYNAMIC,
+			E_UPDATE_FREQUENCY::STREAM,
 			15,
 			{ makeUniform( "MatrixView", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixProjection", Mat4f( MAT4F_ID ) ),
@@ -183,31 +189,34 @@ namespace VTX::Renderer
 			  makeUniform( "IsPerspective", std::uint32_t( 1 ) ) }
 		);
 
-		g.bufferLayout(
+		g.shaderBuffer(
 			"ColorLayout",
-			E_BUFFER_ROLE::UNIFORM,
+			E_SHADER_BUFFER_KIND::STRUCTURED,
+			E_BUFFER_MUTABILITY::IMMUTABLE,
 			E_BUFFER_ACCESS::READ,
-			E_UPDATE_FREQUENCY::STATIC,
+			E_UPDATE_FREQUENCY::DYNAMIC,
 			14,
 			{ makeUniformArray( "Colors", Util::Color::Rgba {}, 256 ) }
 		);
 
-		g.bufferLayout(
+		g.shaderBuffer(
 			"Models",
-			E_BUFFER_ROLE::STORAGE,
+			E_SHADER_BUFFER_KIND::STRUCTURED,
+			E_BUFFER_MUTABILITY::MUTABLE,
 			E_BUFFER_ACCESS::READ,
-			E_UPDATE_FREQUENCY::DYNAMIC,
+			E_UPDATE_FREQUENCY::STREAM,
 			13,
 			{ makeUniform( "MatrixModelView", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixModelViewInv", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixNormal", Mat4f( MAT4F_ID ) ) }
 		);
 
-		g.bufferLayout(
+		g.shaderBuffer(
 			"Representations",
-			E_BUFFER_ROLE::STORAGE,
+			E_SHADER_BUFFER_KIND::STRUCTURED,
+			E_BUFFER_MUTABILITY::MUTABLE,
 			E_BUFFER_ACCESS::READ,
-			E_UPDATE_FREQUENCY::STATIC,
+			E_UPDATE_FREQUENCY::DYNAMIC,
 			12,
 			{ makeUniform( "SphereRadiusFixed", 0.0f ),
 			  makeUniform( "SphereRadiusAdd", 0.0f ),
@@ -233,14 +242,14 @@ namespace VTX::Renderer
 			}
 		);
 
-		g.bufferData( "Atoms.Positions" )
-			.bufferData( "Atoms.Colors" )
-			.bufferData( "Atoms.Radii" )
-			.bufferData( "Atoms.Ids" )
-			.bufferData( "Atoms.Flags" )
-			.bufferData( "Atoms.Models" )
-			.bufferData( "Atoms.Representations" )
-			.bufferData( "Bonds", E_DATA_BUFFER_KIND::INDEX );
+		g.pipelineBuffer( "Atoms.Positions" )
+			.pipelineBuffer( "Atoms.Colors" )
+			.pipelineBuffer( "Atoms.Radii" )
+			.pipelineBuffer( "Atoms.Ids" )
+			.pipelineBuffer( "Atoms.Flags" )
+			.pipelineBuffer( "Atoms.Models" )
+			.pipelineBuffer( "Atoms.Representations" )
+			.pipelineBuffer( "Bonds", E_PIPELINE_BUFFER_KIND::INDEX );
 
 		g.vertexLayout(
 			"Residues",
@@ -256,14 +265,14 @@ namespace VTX::Renderer
 			}
 		);
 
-		g.bufferData( "Residues.Positions" )
-			.bufferData( "Residues.Directions" )
-			.bufferData( "Residues.Types" )
-			.bufferData( "Residues.Colors" )
-			.bufferData( "Residues.Ids" )
-			.bufferData( "Residues.Flags" )
-			.bufferData( "Residues.Models" )
-			.bufferData( "Residues.Representations" );
+		g.pipelineBuffer( "Residues.Positions" )
+			.pipelineBuffer( "Residues.Directions" )
+			.pipelineBuffer( "Residues.Types" )
+			.pipelineBuffer( "Residues.Colors" )
+			.pipelineBuffer( "Residues.Ids" )
+			.pipelineBuffer( "Residues.Flags" )
+			.pipelineBuffer( "Residues.Models" )
+			.pipelineBuffer( "Residues.Representations" );
 
 		g.vertexLayout(
 			"Voxels",
@@ -273,7 +282,7 @@ namespace VTX::Renderer
 			}
 		);
 
-		g.bufferData( "Voxels.Mins" ).bufferData( "Voxels.Maxs" );
+		g.pipelineBuffer( "Voxels.Mins" ).pipelineBuffer( "Voxels.Maxs" );
 
 		// Geometries.
 		g.geometry( "Spheres", "Atoms" );
