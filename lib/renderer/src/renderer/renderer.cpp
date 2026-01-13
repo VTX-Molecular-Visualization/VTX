@@ -22,7 +22,7 @@ namespace VTX::Renderer
 		{
 			build();
 		}
-		catch ( const GraphicException & p_e )
+		catch ( const std::exception & p_e )
 		{
 			VTX_ERROR( "{}", p_e.what() );
 			VTX_ERROR( "Can not build default backend" );
@@ -38,7 +38,7 @@ namespace VTX::Renderer
 			_context.fillInfos( _infos );
 			onReady();
 		}
-		catch ( const GraphicException & p_e )
+		catch ( const std::exception & p_e )
 		{
 			VTX_ERROR( "{}", p_e.what() );
 			VTX_ERROR( "Can not build openGL 4.5 backend" );

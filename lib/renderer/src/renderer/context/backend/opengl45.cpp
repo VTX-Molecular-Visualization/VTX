@@ -293,6 +293,7 @@ namespace VTX::Renderer::Context::Backend
 		// Foreach pass.
 		for ( const Pass * const passPtr : p_renderQueue )
 		{
+			// CONFIGURATION.
 			const Pass & pass		= *passPtr;
 			const bool	 isLastPass = ( passPtr == p_renderQueue.back() );
 
@@ -314,6 +315,7 @@ namespace VTX::Renderer::Context::Backend
 				const Handle hProgram = _getOrCreateProgram( program );
 			}
 
+			// COMMANDS.
 			// Push BEGIN_PASS.
 			uint32_t		 flags = _toSettingFlags( pass.settings );
 			PayloadBeginPass pBeginPass { hFramebuffer, flags };
@@ -326,6 +328,12 @@ namespace VTX::Renderer::Context::Backend
 			// Push END_PASS.
 			PayloadEndPass pEndPass { flags };
 			p_commands.push<E_COMMAND::END_PASS>( pEndPass );
+		}
+
+		// GLOBAL BINDINGS: done once at startup.
+		for ( auto & bufferBinding : _globalShaderBuffers )
+		{
+			_shaderBuffers.at( bufferBinding.buffer )->bind( _toGL( bufferBinding.kind ), bufferBinding.binding );
 		}
 	}
 
@@ -606,7 +614,7 @@ namespace VTX::Renderer::Context::Backend
 		{
 			assert( buffer.binding );
 			const Handle hBuf = _cacheShaderBuffers.at( key );
-			gsb.emplace_back( hBuf, *buffer.binding );
+			gsb.emplace_back( hBuf, buffer.role, *buffer.binding );
 		}
 
 		return gsb;
@@ -634,8 +642,9 @@ namespace VTX::Renderer::Context::Backend
 			}
 			case E_RESOURCE_TYPE::BUFFER:
 			{
-				const Handle hBuf = _cacheShaderBuffers.at( input.primary );
-				rt.shaderBuffers.emplace_back( hBuf, b++ );
+				const Handle		 hBuf	= _cacheShaderBuffers.at( input.primary );
+				const BufferShader & buffer = p_resources.shaderBuffers.at( input.primary );
+				rt.shaderBuffers.emplace_back( hBuf, buffer.role, b++ );
 				break;
 			}
 			default: break;
@@ -649,7 +658,7 @@ namespace VTX::Renderer::Context::Backend
 			if ( _cacheShaderBuffers.contains( key ) )
 			{
 				const Handle hBuf = _cacheShaderBuffers.at( key );
-				rt.shaderBuffers.emplace_back( hBuf, b++ );
+				rt.shaderBuffers.emplace_back( hBuf, E_SHADER_BUFFER_KIND::PARAMETERS, b++ );
 			}
 		}
 
@@ -661,8 +670,9 @@ namespace VTX::Renderer::Context::Backend
 			{
 			case E_RESOURCE_TYPE::BUFFER:
 			{
-				const Handle hBuf = _cacheShaderBuffers.at( output.primary );
-				rt.shaderBuffers.emplace_back( hBuf, b++ );
+				const Handle		 hBuf	= _cacheShaderBuffers.at( output.primary );
+				const BufferShader & buffer = p_resources.shaderBuffers.at( output.primary );
+				rt.shaderBuffers.emplace_back( hBuf, buffer.role, b++ );
 
 				break;
 			}

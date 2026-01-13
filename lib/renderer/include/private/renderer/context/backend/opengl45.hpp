@@ -84,10 +84,11 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		struct BufferBinding
 		{
-			Handle	 buffer;
-			Binding	 binding;
-			uint32_t offsetBytes = 0;
-			uint32_t sizeBytes	 = 0;
+			Handle				 buffer;
+			E_SHADER_BUFFER_KIND kind;
+			Binding				 binding;
+			uint32_t			 offsetBytes = 0;
+			uint32_t			 sizeBytes	 = 0;
 		};
 
 		/**
