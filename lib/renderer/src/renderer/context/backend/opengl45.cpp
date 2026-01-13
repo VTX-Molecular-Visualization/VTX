@@ -828,6 +828,36 @@ namespace VTX::Renderer::Context::Backend
 		}
 	}
 
+	void OpenGL45::fillInfos( StructInfos & p_infos ) const
+	{
+		p_infos.renderer = _openglInfos.glRenderer;
+
+// NVX_gpu_memory_info
+#if ( GL_NVX_gpu_memory_info == 1 )
+		if ( _openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::NVX_gpu_memory_info ] )
+		{
+			int gpuMemoryInfoDedicated, gpuMemoryInfoTotalAvailable, gpuMemoryInfoCurrentAvailable;
+
+			glGetIntegerv( GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &gpuMemoryInfoDedicated );
+			glGetIntegerv( GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &gpuMemoryInfoTotalAvailable );
+			glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &gpuMemoryInfoCurrentAvailable );
+
+			p_infos.gpuMemoryInfoDedicated		  = gpuMemoryInfoDedicated * 1000ll;
+			p_infos.gpuMemoryInfoTotalAvailable	  = gpuMemoryInfoTotalAvailable * 1000ll;
+			p_infos.gpuMemoryInfoCurrentAvailable = gpuMemoryInfoCurrentAvailable * 1000ll;
+		}
+#endif
+#if ( GL_ATI_meminfo == 1 )
+		if ( _openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::ATI_meminfo ] )
+		{
+			// TODO?
+			// VBO_FREE_MEMORY_ATI 0x87FB
+			// TEXTURE_FREE_MEMORY_ATI 0x87FC
+			// RENDERBUFFER_FREE_MEMORY_ATI 0x87FD
+		}
+#endif
+	}
+
 	void OpenGL45::_getOpenglInfos()
 	{
 		_openglInfos.glVendor	 = std::string( (const char *)glGetString( GL_VENDOR ) );

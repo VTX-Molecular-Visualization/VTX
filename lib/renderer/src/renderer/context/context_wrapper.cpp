@@ -146,6 +146,24 @@ namespace VTX::Renderer::Context
 		);
 	}
 
+	/**
+	 * @brief Fill renderer infos.
+	 */
+	void ContextWrapper::fillInfos( StructInfos & p_infos ) const
+	{
+		std::visit(
+			[ & ]( auto & p_backend )
+			{
+				using T = std::remove_cvref_t<decltype( p_backend )>;
+				if constexpr ( not std::is_same_v<T, std::monostate> )
+				{
+					p_backend.fillInfos( p_infos );
+				}
+			},
+			_impl->backend
+		);
+	}
+
 	const CommandBuffer & ContextWrapper::commands() const { return _impl->commands; }
 
 	void ContextWrapper::clear()

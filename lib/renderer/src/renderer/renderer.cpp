@@ -35,6 +35,8 @@ namespace VTX::Renderer
 		try
 		{
 			build();
+			_context.fillInfos( _infos );
+			onReady();
 		}
 		catch ( const GraphicException & p_e )
 		{
@@ -1208,11 +1210,14 @@ namespace VTX::Renderer
 		*/
 	}
 
-	/*
-	StructInfos Renderer::getInfos() const
+	const StructInfos & Renderer::getInfos( const bool p_refresh )
 	{
-		StructInfos infos;
-		_context.fillInfos( infos );
+		if ( not p_refresh )
+		{
+			return _infos;
+		}
+
+		_context.fillInfos( _infos );
 
 		// Compute size of cached data.
 		size_t sizeCache = 0;
@@ -1224,11 +1229,10 @@ namespace VTX::Renderer
 		{
 			sizeCache += cache.currentSize();
 		}
-		infos.currentSizeCPUCache = sizeCache;
+		_infos.currentSizeCPUCache = sizeCache;
 
-		return infos;
+		return _infos;
 	}
-	*/
 
 	void Renderer::_refreshGraph( const GraphicsConfig & p_config )
 	{

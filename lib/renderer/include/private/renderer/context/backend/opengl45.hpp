@@ -13,6 +13,7 @@
 #include "renderer/context/gl/texture_2d.hpp"
 #include "renderer/context/gl/vertex_array.hpp"
 #include "renderer/descriptors.hpp"
+#include "renderer/struct_infos.hpp"
 
 namespace VTX::Renderer::Context::Backend
 {
@@ -46,6 +47,11 @@ namespace VTX::Renderer::Context::Backend
 		 * @brief Set data to a pipeline buffer.
 		 */
 		void setPipelineBufferData( const BufferPipeline &, SpanBytes );
+
+		/**
+		 * @brief Fill backend infos.
+		 */
+		void fillInfos( StructInfos & p_infos ) const;
 
 		/**
 		 * @brief GL object accessors.
@@ -157,6 +163,7 @@ namespace VTX::Renderer::Context::Backend
 		 * @brief Bind resources.
 		 */
 		void _attachTexturesToFramebuffer( const Pass &, const Resources & );
+		void _bindResourceTable( const ResourceTable & );
 		void _bindGeometryToVao( const Handle, const VertexLayout &, const Geometry &, const bool );
 
 		/**

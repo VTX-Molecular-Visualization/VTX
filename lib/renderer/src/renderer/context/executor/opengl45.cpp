@@ -25,7 +25,7 @@ namespace VTX::Renderer::Context::Executor
 				// Clear buffers.
 				if ( p.clearFlags )
 				{
-					// glClear( p.clearFlags );
+					glClear( p.clearFlags );
 				}
 
 				// Enable states.
@@ -52,6 +52,7 @@ namespace VTX::Renderer::Context::Executor
 			{
 				const auto &   p = p_commandBuffer.getPayload<PayloadBindFramebuffer>( command.payloadOffset );
 				const Handle & h = p.framebuffer;
+
 				if ( h == NO_HANDLE )
 				{
 					GL::Framebuffer::bindDefault();
@@ -60,45 +61,14 @@ namespace VTX::Renderer::Context::Executor
 				{
 					_backend.framebuffer( h ).bind();
 				}
+
 				break;
 			}
-			case E_COMMAND::BIND_PIPELINE:
+			case E_COMMAND::BIND_TEXTURE:
 			{
 				break;
 			}
-			case E_COMMAND::BIND_RESOURCE_TABLE:
-			{
-				break;
-			}
-			case E_COMMAND::PUSH_CONSTANTS:
-			{
-				break;
-			}
-			case E_COMMAND::BIND_GEOMETRY:
-			{
-				break;
-			}
-			case E_COMMAND::DRAW:
-			{
-				break;
-			}
-			case E_COMMAND::DRAW_INDEXED:
-			{
-				break;
-			}
-			case E_COMMAND::DRAW_INDIRECT:
-			{
-				break;
-			}
-			case E_COMMAND::DRAW_INDEXED_INDIRECT:
-			{
-				break;
-			}
-			case E_COMMAND::DISPATCH:
-			{
-				break;
-			}
-			case E_COMMAND::BARRIER:
+			case E_COMMAND::BIND_BUFFER:
 			{
 				break;
 			}
