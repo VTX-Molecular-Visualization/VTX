@@ -168,33 +168,14 @@ namespace
 		}
 	}
 
-	GLbitfield _toGLClearMask( const std::vector<E_SETTINGS> & p_settings )
+	uint32_t _toSettingFlags( const std::vector<Setting> & p_settings )
 	{
-		GLenum mask = 0;
-		for ( const E_SETTINGS setting : p_settings )
+		uint32_t mask = 0;
+		for ( const Setting setting : p_settings )
 		{
-			switch ( setting )
-			{
-			case E_SETTINGS::CLEAR_COLOR: mask |= GL_COLOR_BUFFER_BIT; break;
-			case E_SETTINGS::CLEAR_DEPTH: mask |= GL_DEPTH_BUFFER_BIT; break;
-			default: break;
-			}
+			mask |= setting;
 		}
 		return mask;
-	}
-
-	GLbitfield _toGLEnableMask( const std::vector<E_SETTINGS> & p_settings )
-	{
-		GLenum enable = 0;
-		for ( const E_SETTINGS setting : p_settings )
-		{
-			switch ( setting )
-			{
-			case E_SETTINGS::ENABLE_DEPTH: enable |= GL_DEPTH_TEST; break;
-			default: break;
-			}
-		}
-		return enable;
 	}
 
 } // namespace
@@ -309,10 +290,6 @@ namespace VTX::Renderer::Context::Backend
 		// Global resource table.
 		_globalShaderBuffers = _buildGlobalShaderBuffers( p_resources );
 
-		// Push BEGIN_FRAME.
-		// TODO: read from graph.
-		p_commands.push<E_COMMAND::BEGIN_FRAME>();
-
 		// Foreach pass.
 		for ( const Pass * const passPtr : p_renderQueue )
 		{
@@ -337,23 +314,19 @@ namespace VTX::Renderer::Context::Backend
 				const Handle hProgram = _getOrCreateProgram( program );
 			}
 
-			// Push BIND_FRAMEBUFFER.
-			PayloadBindFramebuffer bindFBO { hFramebuffer };
-			p_commands.push<E_COMMAND::BIND_FRAMEBUFFER>( bindFBO );
-
 			// Push BEGIN_PASS.
-			uint32_t		 clearFlags	 = static_cast<uint32_t>( _toGLClearMask( pass.settings ) );
-			uint32_t		 enableFlags = static_cast<uint32_t>( _toGLEnableMask( pass.settings ) );
-			PayloadBeginPass beginPass { clearFlags, enableFlags };
-			p_commands.push<E_COMMAND::BEGIN_PASS>( beginPass );
+			uint32_t		 flags = _toSettingFlags( pass.settings );
+			PayloadBeginPass pBeginPass { hFramebuffer, flags };
+			p_commands.push<E_COMMAND::BEGIN_PASS>( pBeginPass );
+
+			// Push BIND_RESOURCES.
+			PayloadBindResources pBindResources { hResourceTable };
+			p_commands.push<E_COMMAND::BIND_RESOURCES>( pBindResources );
 
 			// Push END_PASS.
-			PayloadEndPass endPass { enableFlags };
-			p_commands.push<E_COMMAND::END_PASS>( endPass );
+			PayloadEndPass pEndPass { flags };
+			p_commands.push<E_COMMAND::END_PASS>( pEndPass );
 		}
-
-		// Push END_FRAME.
-		p_commands.push<E_COMMAND::END_FRAME>();
 	}
 
 	void OpenGL45::resize( const size_t p_width, const size_t p_height )

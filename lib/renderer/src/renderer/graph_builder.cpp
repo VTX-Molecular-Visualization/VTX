@@ -160,7 +160,7 @@ namespace VTX::Renderer
 
 	PassBuilder & PassBuilder::out( const Key & p_texture ) { return out( E_RESOURCE_TYPE::TEXTURE, p_texture ); }
 
-	PassBuilder & PassBuilder::settings( const std::initializer_list<E_SETTINGS> p_settings )
+	PassBuilder & PassBuilder::settings( const std::initializer_list<Setting> p_settings )
 	{
 		pass.settings.insert( pass.settings.end(), p_settings.begin(), p_settings.end() );
 		return *this;

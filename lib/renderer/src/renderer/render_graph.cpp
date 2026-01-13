@@ -360,7 +360,7 @@ namespace VTX::Renderer
 		// Passes.
 		// Geometric.
 		g.pass( "Geometric" )
-			.settings( { E_SETTINGS::CLEAR_COLOR, E_SETTINGS::CLEAR_DEPTH, E_SETTINGS::ENABLE_DEPTH } )
+			.settings( { CLEAR_COLOR, CLEAR_DEPTH, ENABLE_DEPTH } )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Spheres" )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Cylinders" )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Ribbons" )

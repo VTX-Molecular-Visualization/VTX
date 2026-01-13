@@ -17,15 +17,11 @@ namespace VTX::Renderer::Context
 	 */
 	enum struct E_COMMAND : std::uint8_t
 	{
-		BEGIN_FRAME,
-		END_FRAME,
 
 		BEGIN_PASS,
+		BIND_RESOURCES,
 		END_PASS,
 
-		BIND_FRAMEBUFFER,
-		BIND_TEXTURE,
-		BIND_BUFFER
 	};
 
 	/**
@@ -36,36 +32,20 @@ namespace VTX::Renderer::Context
 	/**
 	 * @brief Payloads for each command type.
 	 */
-	struct PayloadBeginFrame
-	{
-	};
-
-	struct PayloadEndFrame
-	{
-	};
-
 	struct PayloadBeginPass
 	{
-		uint32_t clearFlags	 = 0;
-		uint32_t enableFlags = 0;
+		Handle	 framebuffer;
+		uint32_t flags = 0;
 	};
 
 	struct PayloadEndPass
 	{
-		uint32_t disableFlags = 0;
+		uint32_t flags = 0;
 	};
 
-	struct PayloadBindFramebuffer
+	struct PayloadBindResources
 	{
-		Handle framebuffer;
-	};
-
-	struct PayloadBindTexture
-	{
-	};
-
-	struct PayloadBindBuffer
-	{
+		Handle resourceTable;
 	};
 
 	/**
@@ -74,39 +54,19 @@ namespace VTX::Renderer::Context
 	template<E_COMMAND>
 	struct CommandPayload;
 	template<>
-	struct CommandPayload<E_COMMAND::BEGIN_FRAME>
-	{
-		using type = PayloadBeginFrame;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::END_FRAME>
-	{
-		using type = PayloadEndFrame;
-	};
-	template<>
 	struct CommandPayload<E_COMMAND::BEGIN_PASS>
 	{
 		using type = PayloadBeginPass;
 	};
 	template<>
+	struct CommandPayload<E_COMMAND::BIND_RESOURCES>
+	{
+		using type = PayloadBindResources;
+	};
+	template<>
 	struct CommandPayload<E_COMMAND::END_PASS>
 	{
 		using type = PayloadEndPass;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::BIND_FRAMEBUFFER>
-	{
-		using type = PayloadBindFramebuffer;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::BIND_TEXTURE>
-	{
-		using type = PayloadBindTexture;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::BIND_BUFFER>
-	{
-		using type = PayloadBindBuffer;
 	};
 	template<E_COMMAND C>
 	using PayloadT = typename CommandPayload<C>::type;

@@ -149,23 +149,17 @@ namespace VTX::Renderer
 		LINEAR_MIPMAP_LINEAR,
 	};
 
+	using Setting = uint32_t;
+
 	/**
 	 * @brief Various settings.
 	 */
-	enum struct E_SETTINGS : uint8_t
+	using Setting = uint32_t;
+	enum : Setting
 	{
-		CLEAR_COLOR,
-		CLEAR_DEPTH,
-		ENABLE_DEPTH,
-	};
-
-	/**
-	 * @brief Texture channels.
-	 */
-	enum struct E_CHANNEL : uint8_t
-	{
-		COLOR,
-		DEPTH,
+		CLEAR_COLOR	 = 1u << 0,
+		CLEAR_DEPTH	 = 1u << 1,
+		ENABLE_DEPTH = 1u << 2,
 	};
 
 	/**
@@ -343,7 +337,7 @@ namespace VTX::Renderer
 		std::vector<ResourceBinding> inputs;
 		std::vector<ResourceBinding> outputs;
 		std::vector<Program>		 programs;
-		std::vector<E_SETTINGS>		 settings;
+		std::vector<Setting>		 settings;
 		std::optional<RenderFunc>	 customCallback;
 	};
 
