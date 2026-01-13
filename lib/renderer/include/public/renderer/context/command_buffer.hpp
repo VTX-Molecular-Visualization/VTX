@@ -15,11 +15,12 @@ namespace VTX::Renderer::Context
 	/**
 	 * @brief All command types.
 	 */
-	enum struct E_COMMAND : std::uint8_t
+	enum struct E_COMMAND : uint32_t
 	{
 
 		BEGIN_PASS,
 		BIND_RESOURCES,
+		DRAW,
 		END_PASS,
 
 	};
@@ -34,18 +35,32 @@ namespace VTX::Renderer::Context
 	 */
 	struct PayloadBeginPass
 	{
-		Handle	 framebuffer;
-		uint32_t flags = 0;
-	};
-
-	struct PayloadEndPass
-	{
-		uint32_t flags = 0;
+		Handle	framebuffer;
+		Setting flags = 0;
 	};
 
 	struct PayloadBindResources
 	{
 		Handle resourceTable;
+	};
+
+	struct PayloadBindPipeline
+	{
+		Handle pipeline;
+	};
+
+	struct PayloadDraw
+	{
+		Handle		program;
+		Handle		pipeline;
+		E_PRIMITIVE primitive;
+		uint32_t	vertexCount = 0;
+		uint32_t	indexCount	= 0;
+	};
+
+	struct PayloadEndPass
+	{
+		Setting flags = 0;
 	};
 
 	/**
@@ -62,6 +77,11 @@ namespace VTX::Renderer::Context
 	struct CommandPayload<E_COMMAND::BIND_RESOURCES>
 	{
 		using type = PayloadBindResources;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::DRAW>
+	{
+		using type = PayloadDraw;
 	};
 	template<>
 	struct CommandPayload<E_COMMAND::END_PASS>

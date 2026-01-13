@@ -54,8 +54,60 @@ namespace VTX::Renderer::Context::Executor
 
 				break;
 			}
+			case E_COMMAND::BIND_RESOURCES:
+			{
+				const auto & p = p_commandBuffer.getPayload<PayloadBindResources>( command.payloadOffset );
+
+				const Handle							 hResourceTable = p.resourceTable;
+				const Backend::OpenGL45::ResourceTable & rt				= _backend.resourceTable( hResourceTable );
+
+				// Textures / samplers.
+				for ( const auto & textureBinding : rt.textures )
+				{
+					const GL::Texture2D & texture = _backend.texture( textureBinding.texture );
+					const GL::Sampler &	  sampler = _backend.sampler( textureBinding.sampler );
+					const Binding		  unit	  = textureBinding.unit;
+
+					texture.bindToUnit( unit );
+					sampler.bindToUnit( unit );
+				}
+
+				// Shader buffers.
+				for ( const auto & bufferBinding : rt.shaderBuffers )
+				{
+					const GL::Buffer & buffer = _backend.shaderBuffer( bufferBinding.buffer );
+					buffer.bind(
+						bufferBinding.kind == E_SHADER_BUFFER_KIND::PARAMETERS ? GL_UNIFORM_BUFFER
+																			   : GL_SHADER_STORAGE_BUFFER,
+						bufferBinding.binding
+					);
+				}
+
+				break;
+			}
+			case E_COMMAND::DRAW:
+			{
+				const auto & p = p_commandBuffer.getPayload<PayloadDraw>( command.payloadOffset );
+
+				_backend.vertexArray( p.pipeline ).bind();
+				_backend.program( p.program ).use();
+				switch ( p.primitive )
+				{
+				case E_PRIMITIVE::POINTS:
+					_backend.vertexArray( p.pipeline ).drawArray( GL_POINTS, 0, p.vertexCount );
+					break;
+				case E_PRIMITIVE::LINES:
+					_backend.vertexArray( p.pipeline ).drawArray( GL_LINES, 0, p.vertexCount );
+					break;
+
+				case E_PRIMITIVE::TRIANGLES:
+					_backend.vertexArray( p.pipeline ).drawArray( GL_TRIANGLES, 0, p.vertexCount );
+					break;
+
+				default: break;
+				}
+			}
 			}
 		}
 	}
-
 } // namespace VTX::Renderer::Context::Executor

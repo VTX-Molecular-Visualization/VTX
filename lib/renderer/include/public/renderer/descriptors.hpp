@@ -21,7 +21,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All data types.
 	 */
-	enum struct E_TYPE : uint8_t
+	enum struct E_TYPE : uint32_t
 	{
 		BOOL,
 		BYTE,
@@ -42,7 +42,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief Pass resource types.
 	 */
-	enum struct E_RESOURCE_TYPE : uint8_t
+	enum struct E_RESOURCE_TYPE : uint32_t
 	{
 		TEXTURE,
 		GEOMETRY,
@@ -52,7 +52,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All data formats.
 	 */
-	enum struct E_FORMAT : uint8_t
+	enum struct E_FORMAT : uint32_t
 	{
 		RGB16F,
 		RGBA16F,
@@ -68,7 +68,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All draw primitives.
 	 */
-	enum struct E_PRIMITIVE : uint8_t
+	enum struct E_PRIMITIVE : uint32_t
 	{
 		POINTS,
 		LINES,
@@ -79,7 +79,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All buffer roles.
 	 */
-	enum struct E_SHADER_BUFFER_KIND : uint8_t
+	enum struct E_SHADER_BUFFER_KIND : uint32_t
 	{
 		PARAMETERS,
 		STRUCTURED
@@ -88,7 +88,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All buffer mutability types.
 	 */
-	enum struct E_BUFFER_MUTABILITY : uint8_t
+	enum struct E_BUFFER_MUTABILITY : uint32_t
 	{
 		MUTABLE,
 		IMMUTABLE
@@ -97,7 +97,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All buffer access types.
 	 */
-	enum struct E_BUFFER_ACCESS : uint8_t
+	enum struct E_BUFFER_ACCESS : uint32_t
 	{
 		NONE,
 		READ,
@@ -108,7 +108,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All buffer update frequencies.
 	 */
-	enum struct E_UPDATE_FREQUENCY : uint8_t
+	enum struct E_UPDATE_FREQUENCY : uint32_t
 	{
 		STATIC,
 		DYNAMIC,
@@ -118,7 +118,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All data buffer kinds.
 	 */
-	enum struct E_PIPELINE_BUFFER_KIND : uint8_t
+	enum struct E_PIPELINE_BUFFER_KIND : uint32_t
 	{
 		VERTEX,
 		INDEX
@@ -127,7 +127,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All sampler wrapping modes.
 	 */
-	enum struct E_WRAPPING : uint8_t
+	enum struct E_WRAPPING : uint32_t
 	{
 		REPEAT,
 		MIRRORED_REPEAT,
@@ -139,7 +139,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All sampler filtering modes.
 	 */
-	enum struct E_FILTERING : uint8_t
+	enum struct E_FILTERING : uint32_t
 	{
 		NEAREST,
 		LINEAR,

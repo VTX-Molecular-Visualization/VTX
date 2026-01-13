@@ -24,6 +24,38 @@ namespace VTX::Renderer::Context::Backend
 	{
 	  public:
 		/**
+		 * @brief Texture binding info.
+		 */
+		struct TextureBinding
+		{
+			Handle	texture;
+			Handle	sampler;
+			Binding unit;
+		};
+
+		/**
+		 * @brief Buffer binding info.
+		 */
+		struct BufferBinding
+		{
+			Handle				 buffer;
+			E_SHADER_BUFFER_KIND kind;
+			Binding				 binding;
+			uint32_t			 offsetBytes = 0;
+			uint32_t			 sizeBytes	 = 0;
+		};
+
+		/**
+		 * @brief Resource table per pass.
+		 */
+		struct ResourceTable
+		{
+			std::vector<TextureBinding> textures;
+			std::vector<BufferBinding>	shaderBuffers;
+			// std::vector<BufferBinding>	pipelineBuffers;
+		};
+
+		/**
 		 * @brief Default constructor.
 		 */
 		OpenGL45( const size_t, const size_t, const FilePath &, void * = nullptr );
@@ -54,12 +86,63 @@ namespace VTX::Renderer::Context::Backend
 		void fillInfos( StructInfos & p_infos ) const;
 
 		/**
+		 * @brief Resource table accessors.
+		 */
+		inline const OpenGL45::ResourceTable & resourceTable( const Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _resourceTables.size() );
+			return _resourceTables[ p_handle ];
+		}
+
+		/**
 		 * @brief GL object accessors.
 		 */
 		inline const GL::Framebuffer & framebuffer( const Handle p_handle ) const noexcept
 		{
 			assert( p_handle < _framebuffers.size() );
 			return *_framebuffers[ p_handle ];
+		}
+
+		inline const GL::Texture2D & texture( const Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _textures.size() );
+			return *_textures[ p_handle ];
+		}
+
+		inline const GL::Sampler & sampler( const Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _samplers.size() );
+			return *_samplers[ p_handle ];
+		}
+
+		inline const GL::Program & program( const Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _programs.size() );
+			return *_programs[ p_handle ];
+		}
+
+		inline const GL::Buffer & shaderBuffer( const Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _shaderBuffers.size() );
+			return *_shaderBuffers[ p_handle ];
+		}
+
+		inline const GL::Buffer & vertexBuffer( const Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _vertexBuffers.size() );
+			return *_vertexBuffers[ p_handle ];
+		}
+
+		inline const GL::Buffer & indexBuffer( const Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _indexBuffers.size() );
+			return *_indexBuffers[ p_handle ];
+		}
+
+		inline const GL::VertexArray & vertexArray( const Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _vertexArrays.size() );
+			return *_vertexArrays[ p_handle ];
 		}
 
 	  private:
@@ -70,41 +153,9 @@ namespace VTX::Renderer::Context::Backend
 		uint32_t _height;
 
 		/**
-		 * @brief Texture binding info.
-		 */
-		struct TextureBinding
-		{
-			Handle	texture;
-			Handle	sampler;
-			Binding unit;
-		};
-
-		/**
-		 * @brief Buffer binding info.
-		 */
-		struct BufferBinding
-		{
-			Handle				 buffer;
-			E_SHADER_BUFFER_KIND kind;
-			Binding				 binding;
-			uint32_t			 offsetBytes = 0;
-			uint32_t			 sizeBytes	 = 0;
-		};
-
-		/**
 		 * @brief Global shader buffers.
 		 */
 		using GlobalShaderBuffers = std::vector<BufferBinding>;
-
-		/**
-		 * @brief Resource table per pass.
-		 */
-		struct ResourceTable
-		{
-			std::vector<TextureBinding> textures;
-			std::vector<BufferBinding>	shaderBuffers;
-			std::vector<BufferBinding>	pipelineBuffers;
-		};
 
 		/**
 		 * @brief Cache : mapping Key -> Handle.
@@ -164,8 +215,13 @@ namespace VTX::Renderer::Context::Backend
 		 * @brief Bind resources.
 		 */
 		void _attachTexturesToFramebuffer( const Pass &, const Resources & );
-		void _bindResourceTable( const ResourceTable & );
-		void _bindGeometryToVao( const Handle, const VertexLayout &, const Geometry &, const bool );
+		void _bindGeometryToVao( const Key &, const Geometry &, const Resources & );
+
+		/**
+		 * @brief Create the screen quad.
+		 */
+		inline static const Key _QUAD = "Quad";
+		void					_createQuad();
 
 		/**
 		 * @brief Specs.

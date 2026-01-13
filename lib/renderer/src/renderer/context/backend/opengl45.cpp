@@ -211,33 +211,15 @@ namespace VTX::Renderer::Context::Backend
 		{
 			throw GraphicException( "OpenGL 4.5 or higher is required" );
 		}
-		else
-		{
-			_getOpenglInfos();
-			_openglInfos.print();
-		}
+
+		_getOpenglInfos();
+		_openglInfos.print();
 
 		// Program manager.
 		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
 
-		// Init quad vao/vbo for deferred shading.
-		std::vector<Vec2f> quad = { { -1.f, 1.f }, { -1.f, -1.f }, { 1.f, 1.f }, { 1.f, -1.f } };
-
-		// const Hash hashQuadVao	  = Util::hash( _KEY_QUAD_VAO );
-		// const Hash hashQuadBuffer = Util::hash( _KEY_QUAD_BUFFER );
-
-		//_vertexArrays.emplace( hashQuadVao, std::make_unique<GL::VertexArray>() );
-		//_buffers.emplace( hashQuadBuffer, std::make_unique<GL::Buffer>() );
-		// auto & vao = _vertexArrays[ hashQuadVao ];
-		// auto & vbo = _buffers[ hashQuadBuffer ];
-
-		// vao->bind();
-		// vao->enableAttribute( 0 );
-		// vao->setVertexBuffer( 0, *vbo, int32_t( _mapTypeSizes[ E_TYPE::FLOAT ] * 2 ) );
-		// vao->setAttributeFormat( 0, 2, _mapTypes[ E_TYPE::FLOAT ] );
-		// vao->setAttributeBinding( 0, 0 );
-		// vbo->set( quad.data(), int32_t( quad.size() * sizeof( Vec2f ) ), 0, GL_STATIC_DRAW );
-		// vao->unbind();
+		// Quad.
+		_createQuad();
 
 		glViewport( 0, 0, int32_t( p_width ), int32_t( p_height ) );
 
@@ -281,10 +263,16 @@ namespace VTX::Renderer::Context::Backend
 		{
 			switch ( buffer.kind )
 			{
-			case E_PIPELINE_BUFFER_KIND::VERTEX: _getOrCreateVertexBuffer( key );
-			case E_PIPELINE_BUFFER_KIND::INDEX: _getOrCreateIndexBuffer( key );
+			case E_PIPELINE_BUFFER_KIND::VERTEX: _getOrCreateVertexBuffer( key ); break;
+			case E_PIPELINE_BUFFER_KIND::INDEX: _getOrCreateIndexBuffer( key ); break;
 			default: break;
 			}
+		}
+
+		// Bind geometries to VAOs.
+		for ( const auto & [ key, geometry ] : p_resources.geometries )
+		{
+			_bindGeometryToVao( key, geometry, p_resources );
 		}
 
 		// Global resource table.
@@ -324,6 +312,54 @@ namespace VTX::Renderer::Context::Backend
 			// Push BIND_RESOURCES.
 			PayloadBindResources pBindResources { hResourceTable };
 			p_commands.push<E_COMMAND::BIND_RESOURCES>( pBindResources );
+
+			// Foreach program.
+			for ( const Program & program : pass.programs )
+			{
+				const bool hasDrawCall = program.drawCall.has_value();
+				Handle	   hVao;
+
+				if ( hasDrawCall )
+				{
+					const Geometry g = p_resources.geometries.at( program.drawCall.value().geometry );
+					hVao			 = _cacheVertexLayouts.at( g.vertexLayout );
+				}
+				else
+				{
+					hVao = _cacheVertexLayouts.at( _QUAD );
+				}
+
+				// Push DRAW.
+				const Handle hProgram = _cachePrograms.at( program.name );
+				PayloadDraw	 pDraw { hProgram, hVao };
+				if ( hasDrawCall )
+				{
+					/*
+					const Key &	 geometryKey = program.geometry.value();
+					const auto & geometry	 = p_resources.geometries.at( geometryKey );
+					pDraw.vertexCount		 = static_cast<uint32_t>( geometry.vertexCount );
+					pDraw.instanceCount		 = 1;
+					pDraw.firstVertex		 = 0;
+					pDraw.firstInstance		 = 0;
+					if ( geometry.indexBuffer.has_value() )
+					{
+						pDraw.isIndexed	 = true;
+						pDraw.indexCount = static_cast<uint32_t>( geometry.indexCount );
+						pDraw.indexType
+							= _mapTypes[ p_resources.pipelineBuffers.at( geometry.indexBuffer.value() ).type ];
+						pDraw.indexOffset = 0;
+					}
+					*/
+				}
+				else
+				{
+					// Fullscreen quad draw.
+					pDraw.primitive	  = E_PRIMITIVE::TRIANGLES;
+					pDraw.vertexCount = 4;
+					pDraw.indexCount  = 0;
+					p_commands.push<E_COMMAND::DRAW>( pDraw );
+				}
+			}
 
 			// Push END_PASS.
 			PayloadEndPass pEndPass { flags };
@@ -731,54 +767,69 @@ namespace VTX::Renderer::Context::Backend
 		assert( fbo.checkStatus() );
 	}
 
-	void OpenGL45::_bindGeometryToVao(
-		const Handle		 p_hVao,
-		const VertexLayout & p_layout,
-		const Geometry &	 p_geom,
-		const bool			 p_useIndices
-	)
+	void OpenGL45::_bindGeometryToVao( const Key & p_key, const Geometry & p_geo, const Resources & p_resources )
 	{
-		auto & vao = *_vertexArrays[ p_hVao ];
+		const Key &			 kVao	= p_geo.vertexLayout;
+		const VertexLayout & layout = p_resources.vertexStreams.at( kVao );
+		const auto &		 vao	= *_vertexArrays.at( _cacheVertexLayouts.at( kVao ) );
+
 		vao.bind();
 
 		GLuint location = 0;
 
-		for ( const auto & a : p_layout.attributes )
+		for ( const auto & a : layout.attributes )
 		{
-			const GLAttrib ga = toGLAttrib( a.type );
+			const GLAttrib	   ga		 = toGLAttrib( a.type );
+			const Key		   bufferKey = p_geo.vertexLayout + "." + a.name;
+			const Handle	   hVbo		 = _cacheVertexBuffers.at( bufferKey );
+			const GL::Buffer & vbo		 = *_vertexBuffers[ hVbo ];
 
-			// auto itBufKey = p_geom.attributeBuffers.find( a.name );
-			// assert( itBufKey != p_geom.attributeBuffers.end() );
-
-			// const Key & bufferKey = itBufKey->second;
-
-			const Handle hVbo = 0;
-			//_getOrCreateVertexBuffer( bufferKey );
-			auto & vbo = *_vertexBuffers[ hVbo ];
-
-			const GLsizei strideOneColumn = GLsizei( ga.components * ga.bytesPerComp );
-
+			const GLsizei stride = GLsizei( ga.columns * ga.components * ga.bytesPerComp );
 			for ( uint8_t col = 0; col < ga.columns; ++col )
 			{
-				const GLuint   bindingIndex = location;
-				const GLintptr offset		= GLintptr( col * strideOneColumn );
-
-				vao.setVertexBuffer( bindingIndex, vbo, strideOneColumn, offset );
-
+				const GLuint bindingIndex = location;
+				vao.setVertexBuffer( bindingIndex, vbo, 0, stride );
 				++location;
 			}
 		}
 
-		if ( p_useIndices )
+		if ( p_geo.indexBuffer )
 		{
-			assert( p_geom.indexBuffer.has_value() );
-
-			const Handle hEbo = 0;
-			//_getOrCreateIndexBuffer( *geom.indexBuffer );
-			vao.bindElementBuffer( *_indexBuffers[ hEbo ] );
+			const Handle	   hIbo = _cacheIndexBuffers.at( *p_geo.indexBuffer );
+			const GL::Buffer & ibo	= *_indexBuffers[ hIbo ];
+			vao.bindElementBuffer( ibo );
 		}
 
 		vao.unbind();
+	}
+
+	void OpenGL45::_createQuad()
+	{
+		const std::array<Vec2f, 4> quad
+			= { Vec2f { -1.f, 1.f }, Vec2f { -1.f, -1.f }, Vec2f { 1.f, 1.f }, Vec2f { 1.f, -1.f } };
+
+		const Key quadLayoutKey = _QUAD;
+
+		VertexLayout quadLayout;
+		quadLayout.attributes = { VertexAttribute { "Position", E_TYPE::VEC2F } };
+
+		Geometry quadGeo;
+		quadGeo.vertexLayout = quadLayoutKey;
+		quadGeo.indexBuffer	 = std::nullopt;
+
+		_getOrCreateVertexLayout( quadLayoutKey, quadLayout );
+
+		const Key quadVboKey = quadLayoutKey + ".Position";
+		_getOrCreateVertexBuffer( quadVboKey );
+
+		Resources fakeRes;
+		fakeRes.vertexStreams.emplace( quadLayoutKey, quadLayout );
+		fakeRes.geometries.emplace( quadLayoutKey, quadGeo );
+
+		_bindGeometryToVao( quadLayoutKey, quadGeo, fakeRes );
+
+		const Handle hVbo = _cacheVertexBuffers.at( quadVboKey );
+		_vertexBuffers[ hVbo ]->setData( quad.data(), GLsizei( sizeof( quad ) ), GL_STATIC_DRAW );
 	}
 
 	void OpenGL45::setShaderBufferData( const BufferShader & p_desc, SpanBytes p_bytes )
