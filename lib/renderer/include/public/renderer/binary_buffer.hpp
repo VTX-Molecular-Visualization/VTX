@@ -67,6 +67,16 @@ namespace VTX::Renderer
 		static constexpr size_t align = 16, size = 64;
 	};
 
+	// Rgba = Vec4f.
+	static_assert( std::is_trivially_copyable_v<VTX::Util::Color::Rgba> );
+	static_assert( std::is_standard_layout_v<VTX::Util::Color::Rgba> );
+	static_assert( sizeof( VTX::Util::Color::Rgba ) == sizeof( Vec4f ) );
+	static_assert( alignof( VTX::Util::Color::Rgba ) == alignof( Vec4f ) );
+	template<>
+	struct LayoutTraitsBase<VTX::Util::Color::Rgba> : LayoutTraitsBase<Vec4f>
+	{
+	};
+
 	// Std140.
 	template<typename T>
 	struct LayoutTraits<E_LAYOUT_TYPE::Std140, T> : LayoutTraitsBase<T>

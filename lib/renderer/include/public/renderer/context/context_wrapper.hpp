@@ -43,13 +43,13 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Resize backend resources.
 		 */
-		void resize( const std::size_t, const std::size_t, const PassList &, const std::unordered_map<Key, Texture> & );
+		void resize( const uint32_t, const uint32_t, const PassList &, const std::unordered_map<Key, Texture> & );
 
 		/**
 		 * @brief Convert a span of T to a span of bytes.
 		 */
 		template<class T>
-		SpanBytes asBytes( std::span<const T> p_s ) noexcept
+		static SpanBytes asBytes( std::span<const T> p_s ) noexcept
 		{
 			static_assert( std::is_trivially_copyable_v<T>, "asWritableBytes(span<T>): T must be trivially copyable." );
 
@@ -59,15 +59,22 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Set shader buffer data.
 		 */
-		void setShaderBuffer( const Key & p_key, SpanBytes );
-		// void setShaderBuffer( const BinaryBuffer<E_LAYOUT_TYPE::Std140> & );
-		// void setShaderBuffer( const BinaryBuffer<E_LAYOUT_TYPE::Std430> & );
-
 		template<class T>
 		void setShaderBuffer( const Key & p_key, std::span<const T> p_data )
 		{
 			setShaderBuffer( p_key, asBytes( p_data ) );
 		}
+		void setShaderBuffer( const Key & p_key, SpanBytes );
+
+		/**
+		 * @brief Set pipeline buffer data.
+		 */
+		template<class T>
+		void setPipelineBuffer( const Key & p_key, std::span<const T> p_data )
+		{
+			setPipelineBuffer( p_key, asBytes( p_data ) );
+		}
+		void setPipelineBuffer( const Key & p_key, SpanBytes );
 
 		/**
 		 * @brief Fill renderer infos.

@@ -123,8 +123,8 @@ namespace VTX::Renderer::Context
 	}
 
 	void ContextWrapper::resize(
-		const std::size_t						 p_width,
-		const std::size_t						 p_height,
+		const uint32_t							 p_width,
+		const uint32_t							 p_height,
 		const PassList &						 p_passes,
 		const std::unordered_map<Key, Texture> & p_textures
 	)
@@ -151,6 +151,21 @@ namespace VTX::Renderer::Context
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
 					p_backend.setShaderBufferData( p_key, p_bytes );
+				}
+			},
+			_impl->backend
+		);
+	}
+
+	void ContextWrapper::setPipelineBuffer( const Key & p_key, SpanBytes p_bytes )
+	{
+		std::visit(
+			[ & ]( auto & p_backend )
+			{
+				using T = std::remove_cvref_t<decltype( p_backend )>;
+				if constexpr ( not std::is_same_v<T, std::monostate> )
+				{
+					p_backend.setPipelineBufferData( p_key, p_bytes );
 				}
 			},
 			_impl->backend

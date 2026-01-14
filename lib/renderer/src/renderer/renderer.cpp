@@ -68,7 +68,12 @@ namespace VTX::Renderer
 		_width	= p_width;
 		_height = p_height;
 
-		_context.resize( p_width, p_height, _graph.getPasses(), _graph.getResources().textures );
+		_context.resize(
+			static_cast<uint32_t>( p_width ),
+			static_cast<uint32_t>( p_height ),
+			_graph.getPasses(),
+			_graph.getResources().textures
+		);
 
 		setNeedUpdate( true );
 	}
@@ -102,7 +107,7 @@ namespace VTX::Renderer
 #endif
 	}
 
-	void Renderer::render( const float p_deltaTime, const float p_elapsedTime )
+	void Renderer::render( const float p_deltaTime, const float p_elapsedTime ) noexcept
 	{
 		if ( _needUpdate || forceUpdate || _framesRemaining > 0 )
 		{
@@ -508,7 +513,7 @@ namespace VTX::Renderer
 		buffer.write( p_representation.sesProbeRadius );
 		buffer.close();
 
-		//_context.set( buffer, "Representations" );
+		_context.setShaderBuffer( "Representations", buffer );
 
 		setNeedUpdate( true );
 
@@ -615,31 +620,48 @@ namespace VTX::Renderer
 		_refreshGraph( p_config );
 		build();
 
-		setValue( uint( p_config.shadingMode ), "ShadingShadingMode" );
-		setValue( p_config.colorLight, "ShadingShadingLightColor" );
-		setValue( p_config.colorBackground, "ShadingShadingBackgroundColor" );
-		setValue( p_config.specularFactor, "ShadingShadingSpecularFactor" );
-		setValue( p_config.shininess, "ShadingShadingShininess" );
-		setValue( p_config.toonSteps, "ShadingShadingToonSteps" );
+		BinaryBuffer140 bufferShading;
+		bufferShading.write( p_config.colorBackground );
+		bufferShading.write( p_config.colorLight );
+		bufferShading.write( p_config.colorFog );
+		bufferShading.write( uint32_t( p_config.shadingMode ) );
+		bufferShading.write( p_config.specularFactor );
+		bufferShading.write( p_config.shininess );
+		bufferShading.write( p_config.toonSteps );
+		bufferShading.write( p_config.fogNear );
+		bufferShading.write( p_config.fogFar );
+		bufferShading.write( p_config.activeFog ? p_config.fogDensity : 0.f );
+		bufferShading.close();
+		_context.setShaderBuffer( "Shading", bufferShading );
+
 		if ( p_config.activeSSAO )
 		{
-			setValue( p_config.ssaoIntensity, "SSAOSSAOIntensity" );
-			setValue( p_config.blurSize, "BlurXBlurSize" );
-			setValue( p_config.blurSize, "BlurYBlurSize" );
+			BinaryBuffer140 bufferSSAO;
+			bufferSSAO.write( p_config.ssaoIntensity );
+			bufferSSAO.close();
+			_context.setShaderBuffer( "SSAO", bufferSSAO );
+
+			BinaryBuffer140 bufferBlur;
+			bufferBlur.write( p_config.blurSize );
+			bufferBlur.close();
+			//_context.setShaderBuffer( "Blur", bufferBlur );
+			//_context.setShaderBuffer( "BlurY", bufferBlur );
 		}
 		if ( p_config.activeOutline )
 		{
-			setValue( p_config.colorOutline, "OutlineOutlineColor" );
-			setValue( p_config.outlineSensitivity, "OutlineOutlineSensitivity" );
-			setValue( p_config.outlineThickness, "OutlineOutlineThickness" );
+			BinaryBuffer140 bufferOutline;
+			bufferOutline.write( p_config.colorOutline );
+			bufferOutline.write( p_config.outlineSensitivity );
+			bufferOutline.write( p_config.outlineThickness );
+			bufferOutline.close();
+			_context.setShaderBuffer( "Outline", bufferOutline );
 		}
-		setValue( p_config.colorFog, "ShadingShadingFogColor" );
-		setValue( p_config.fogNear, "ShadingShadingFogNear" );
-		setValue( p_config.fogFar, "ShadingShadingFogFar" );
-		setValue( p_config.activeFog ? p_config.fogDensity : 0.f, "ShadingShadingFogDensity" );
 		if ( p_config.activeSelection )
 		{
-			setValue( p_config.colorSelection, "SelectionSelectionColor" );
+			BinaryBuffer140 bufferSelection;
+			bufferSelection.write( p_config.colorSelection );
+			bufferSelection.close();
+			_context.setShaderBuffer( "Selection", bufferSelection );
 		}
 
 		setNeedUpdate( true );

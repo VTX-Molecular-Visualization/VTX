@@ -20,8 +20,7 @@ namespace VTX::Renderer::Context
 		BEGIN_PASS,
 		BIND_RESOURCES,
 		DRAW,
-		END_PASS,
-
+		END_PASS
 	};
 
 	/**
@@ -49,6 +48,15 @@ namespace VTX::Renderer::Context
 	};
 
 	struct PayloadDraw
+	{
+		uint32_t program;
+		uint32_t pipeline;
+		uint32_t primitive;
+		uint32_t vertexCount = 0;
+		uint32_t indexCount	 = 0;
+	};
+
+	struct PayloadDrawMulti
 	{
 		uint32_t program;
 		uint32_t pipeline;

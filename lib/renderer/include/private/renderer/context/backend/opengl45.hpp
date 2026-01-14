@@ -68,7 +68,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Resize textures.
 		 */
-		void resize( const size_t, const size_t, const PassList &, const ResourceMap<Texture> & );
+		void resize( const uint32_t, const uint32_t, const PassList &, const ResourceMap<Texture> & );
 
 		/**
 		 * @brief Set data to a shader buffer.
@@ -191,6 +191,26 @@ namespace VTX::Renderer::Context::Backend
 		GLObject<GL::Sampler>				_samplers;
 		std::unique_ptr<GL::ProgramManager> _programManager;
 		std::vector<GL::Program *>			_programs;
+
+		/**
+		 * @brief Save buffer properties.
+		 */
+		struct _ShaderBufferCacheEntry
+		{
+			E_SHADER_BUFFER_KIND role;
+			E_BUFFER_MUTABILITY	 mutability;
+			E_BUFFER_ACCESS		 access;
+			E_UPDATE_FREQUENCY	 frequency;
+		};
+
+		struct _PipelineBufferCacheEntry
+		{
+			E_PIPELINE_BUFFER_KIND kind;
+			E_UPDATE_FREQUENCY	   frequency;
+		};
+
+		std::unordered_map<Key, _ShaderBufferCacheEntry>   _shaderBufferProperties;
+		std::unordered_map<Key, _PipelineBufferCacheEntry> _pipelineBufferProperties;
 
 		/**
 		 * @brief Get or create resources.

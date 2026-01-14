@@ -77,7 +77,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief The main render loop.
 		 */
-		void render( const float, const float );
+		void render( const float, const float ) noexcept;
 
 		/**
 		 * @brief Add data to the renderer.
@@ -310,7 +310,7 @@ namespace VTX::Renderer
 		 * @brief The main render loop that call each generated instruction.
 		 * @param p_time the current time.
 		 */
-		inline void _render( const float p_deltaTime, const float p_elapsedTime ) const { _context.execute(); }
+		inline void _render( const float p_deltaTime, const float p_elapsedTime ) const noexcept { _context.execute(); }
 
 		/**
 		 * @brief The main render loop that call instructions with time logging.

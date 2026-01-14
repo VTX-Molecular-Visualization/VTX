@@ -140,7 +140,7 @@ namespace
 		{
 		case E_PRIMITIVE::POINTS: return GL_POINTS;
 		case E_PRIMITIVE::LINES: return GL_LINES;
-		case E_PRIMITIVE::TRIANGLES: return GL_TRIANGLES;
+		case E_PRIMITIVE::TRIANGLES: return GL_TRIANGLE_STRIP;
 		case E_PRIMITIVE::PATCHES: return GL_PATCHES;
 		default: assert( false ); return GL_INVALID_INDEX;
 		}
@@ -273,11 +273,13 @@ namespace VTX::Renderer::Context::Backend
 		}
 		for ( const auto & [ key, buffer ] : p_resources.pipelineBuffers )
 		{
+			_pipelineBufferProperties.emplace( key, _PipelineBufferCacheEntry { buffer.kind, buffer.frequency } );
+
 			switch ( buffer.kind )
 			{
 			case E_PIPELINE_BUFFER_KIND::VERTEX: _getOrCreateVertexBuffer( key ); break;
 			case E_PIPELINE_BUFFER_KIND::INDEX: _getOrCreateIndexBuffer( key ); break;
-			default: break;
+			default: assert( false ); break;
 			}
 		}
 
@@ -375,8 +377,8 @@ namespace VTX::Renderer::Context::Backend
 	}
 
 	void OpenGL45::resize(
-		const size_t				 p_width,
-		const size_t				 p_height,
+		const uint32_t				 p_width,
+		const uint32_t				 p_height,
 		const PassList &			 p_passes,
 		const ResourceMap<Texture> & p_textures
 	)
@@ -610,6 +612,9 @@ namespace VTX::Renderer::Context::Backend
 		const Handle h = static_cast<Handle>( _shaderBuffers.size() );
 		_shaderBuffers.emplace_back( std::move( glBuffer ) );
 		_cacheShaderBuffers.emplace( key, h );
+		_shaderBufferProperties.emplace(
+			key, _ShaderBufferCacheEntry { p_buffer.role, p_buffer.mutability, p_buffer.access, p_buffer.frequency }
+		);
 
 		return h;
 	}
@@ -870,24 +875,25 @@ namespace VTX::Renderer::Context::Backend
 
 	void OpenGL45::setShaderBufferData( const Key & p_key, SpanBytes p_bytes )
 	{
-		const Handle h = _cacheShaderBuffers.at( p_key );
-		_shaderBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), GL_DYNAMIC_DRAW );
+		const auto & bufferDesc = _shaderBufferProperties.at( p_key );
+		const Handle h			= _cacheShaderBuffers.at( p_key );
+		_shaderBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( bufferDesc.frequency ) );
 	}
 
-	void OpenGL45::setPipelineBufferData( const Key & p_desc, SpanBytes p_bytes )
+	void OpenGL45::setPipelineBufferData( const Key & p_key, SpanBytes p_bytes )
 	{
-		/*
-		if ( p_desc.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
+		const auto & bufferDesc = _pipelineBufferProperties.at( p_key );
+		GLenum		 freq		= _toGL( bufferDesc.frequency );
+		if ( bufferDesc.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
 		{
-			const Handle h = _getOrCreateVertexBuffer( p_desc.name );
-			_vertexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( p_desc.frequency ) );
+			const Handle h = _getOrCreateVertexBuffer( p_key );
+			_vertexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), freq );
 		}
 		else
 		{
-			const Handle h = _getOrCreateIndexBuffer( p_desc.name );
-			_indexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( p_desc.frequency ) );
+			const Handle h = _getOrCreateIndexBuffer( p_key );
+			_indexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), freq );
 		}
-		*/
 	}
 
 	void OpenGL45::fillInfos( StructInfos & p_infos ) const
