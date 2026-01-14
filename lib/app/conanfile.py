@@ -2,7 +2,6 @@ import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 
-
 class VTXAppRecipe(ConanFile):
     name = "vtx_app"
     version = "1.0"

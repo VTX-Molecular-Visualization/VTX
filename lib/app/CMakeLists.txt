@@ -2,7 +2,6 @@ message("vtx_app")
 cmake_minimum_required(VERSION 3.23)
 project(vtx_app)
 
-# set (PYBIND11_PYTHON_VERSION "3.9.19") # This line make it work regarding the python segfault on ubuntu
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_renderer CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
