@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_CONTEXT_WRAPPER__
 #define __VTX_RENDERER_CONTEXT_CONTEXT_WRAPPER__
 
+#include "renderer/binary_buffer.hpp"
 #include "renderer/context/command_buffer.hpp"
 #include "renderer/descriptors.hpp"
 #include "renderer/struct_infos.hpp"
@@ -43,6 +44,13 @@ namespace VTX::Renderer::Context
 		 * @brief Resize backend resources.
 		 */
 		void resize( const std::size_t, const std::size_t );
+
+		/**
+		 * @brief Set shader buffer data.
+		 */
+		void setShaderBuffer( const Key & p_key, SpanBytes ) {}
+		// void setShaderBuffer( const BinaryBuffer<E_LAYOUT_TYPE::Std140> & );
+		// void setShaderBuffer( const BinaryBuffer<E_LAYOUT_TYPE::Std430> & );
 
 		/**
 		 * @brief Fill renderer infos.

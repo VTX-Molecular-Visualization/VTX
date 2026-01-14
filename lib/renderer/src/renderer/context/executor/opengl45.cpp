@@ -31,6 +31,12 @@ namespace VTX::Renderer::Context::Executor
 					continue;
 				}
 
+				// Enable states.
+				if ( flags & ENABLE_DEPTH )
+				{
+					glEnable( GL_DEPTH_TEST );
+				}
+
 				// Clear buffers.
 				GLbitfield clearMask = 0;
 				if ( flags & CLEAR_COLOR )
@@ -91,23 +97,24 @@ namespace VTX::Renderer::Context::Executor
 
 				_backend.vertexArray( p.pipeline ).bind();
 				_backend.program( p.program ).use();
-				switch ( p.primitive )
+
+				if ( p.vertexCount )
 				{
-				case E_PRIMITIVE::POINTS:
-					_backend.vertexArray( p.pipeline ).drawArray( GL_POINTS, 0, p.vertexCount );
-					break;
-				case E_PRIMITIVE::LINES:
-					_backend.vertexArray( p.pipeline ).drawArray( GL_LINES, 0, p.vertexCount );
-					break;
-
-				case E_PRIMITIVE::TRIANGLES:
-					_backend.vertexArray( p.pipeline ).drawArray( GL_TRIANGLES, 0, p.vertexCount );
-					break;
-
-				default: break;
+					if ( p.indexCount )
+					{
+						_backend.vertexArray( p.pipeline ).drawElement( p.primitive, p.indexCount, GL_UNSIGNED_INT, 0 );
+					}
+					else
+					{
+						_backend.vertexArray( p.pipeline ).drawArray( p.primitive, 0, p.vertexCount );
+					}
 				}
+
+				break;
 			}
+			default: break;
 			}
 		}
 	}
+
 } // namespace VTX::Renderer::Context::Executor

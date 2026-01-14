@@ -1,7 +1,6 @@
 #ifndef __VTX_RENDERER_CONTEXT_COMMAND_BUFFER__
 #define __VTX_RENDERER_CONTEXT_COMMAND_BUFFER__
 
-#include "renderer/descriptors.hpp"
 #include <cstdint>
 #include <iostream>
 #include <util/constants.hpp>
@@ -35,32 +34,32 @@ namespace VTX::Renderer::Context
 	 */
 	struct PayloadBeginPass
 	{
-		Handle	framebuffer;
-		Setting flags = 0;
+		uint32_t framebuffer;
+		uint32_t flags = 0;
 	};
 
 	struct PayloadBindResources
 	{
-		Handle resourceTable;
+		uint32_t resourceTable;
 	};
 
 	struct PayloadBindPipeline
 	{
-		Handle pipeline;
+		uint32_t pipeline;
 	};
 
 	struct PayloadDraw
 	{
-		Handle		program;
-		Handle		pipeline;
-		E_PRIMITIVE primitive;
-		uint32_t	vertexCount = 0;
-		uint32_t	indexCount	= 0;
+		uint32_t program;
+		uint32_t pipeline;
+		uint32_t primitive;
+		uint32_t vertexCount = 0;
+		uint32_t indexCount	 = 0;
 	};
 
 	struct PayloadEndPass
 	{
-		Setting flags = 0;
+		uint32_t flags = 0;
 	};
 
 	/**

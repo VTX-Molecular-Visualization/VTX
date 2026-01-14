@@ -73,12 +73,12 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Set data to a shader buffer.
 		 */
-		void setShaderBufferData( const BufferShader &, SpanBytes );
+		void setShaderBufferData( const Key &, SpanBytes );
 
 		/**
 		 * @brief Set data to a pipeline buffer.
 		 */
-		void setPipelineBufferData( const BufferPipeline &, SpanBytes );
+		void setPipelineBufferData( const Key &, SpanBytes );
 
 		/**
 		 * @brief Fill backend infos.

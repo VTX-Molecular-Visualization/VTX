@@ -91,7 +91,6 @@ namespace VTX::Renderer
 
 		// NEW
 		void setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );
-
 		void setGraphicsConfig( const GraphicsConfig & );
 		void setColorLayout( const Color::Layout & );
 		void setRepresentation( const Representation & );

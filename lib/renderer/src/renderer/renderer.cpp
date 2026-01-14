@@ -584,7 +584,7 @@ namespace VTX::Renderer
 		const Mat4f matrixViewInv	   = Util::Math::inverse( p_matView );
 		const Mat4f matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
 
-		BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
+		BinaryBuffer140 buffer;
 		buffer.write( p_matView );
 		buffer.write( p_matProj );
 		buffer.write( matrixViewInv );
@@ -598,7 +598,7 @@ namespace VTX::Renderer
 		buffer.write( uint( p_camera.projection == PROJECTION::PERSPECTIVE ) );
 		buffer.close();
 
-		//_context.set( buffer, "Camera" );
+		_context.setShaderBuffer( "Camera", buffer );
 
 		setNeedUpdate( true );
 	}

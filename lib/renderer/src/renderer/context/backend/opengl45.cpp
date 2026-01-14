@@ -134,6 +134,18 @@ namespace
 		}
 	}
 
+	constexpr GLenum _toGL( const E_PRIMITIVE p_primitive ) noexcept
+	{
+		switch ( p_primitive )
+		{
+		case E_PRIMITIVE::POINTS: return GL_POINTS;
+		case E_PRIMITIVE::LINES: return GL_LINES;
+		case E_PRIMITIVE::TRIANGLES: return GL_TRIANGLES;
+		case E_PRIMITIVE::PATCHES: return GL_PATCHES;
+		default: assert( false ); return GL_INVALID_INDEX;
+		}
+	}
+
 	/**
 	 * @brief GL attribute description.
 	 */
@@ -222,20 +234,20 @@ namespace VTX::Renderer::Context::Backend
 		_createQuad();
 
 		glViewport( 0, 0, int32_t( p_width ), int32_t( p_height ) );
-
 		glPatchParameteri( GL_PATCH_VERTICES, 4 );
-		glEnable( GL_LINE_SMOOTH );
-		glLineWidth( 1.f );
 
+		// TODO: set from graph.
+		// glEnable( GL_CLIP_DISTANCE0 );
+		glEnable( GL_LINE_SMOOTH );
+		glLineWidth( 2.f );
+		glDepthFunc( GL_LESS );
+		glClearColor( 0.f, 0.f, 0.f, 1.0f );
+
+#if _DEBUG
 		glEnable( GL_DEBUG_OUTPUT );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
 		glDebugMessageCallback( GL::Debug::_debugMessageCallback, nullptr );
-
-		// TODO: set from graph.
-		glEnable( GL_CLIP_DISTANCE0 );
-		glDepthFunc( GL_LESS );
-
-		glClearColor( 0.f, 0.f, 0.f, 1.0f );
+#endif
 	}
 
 	// Create resources, configure, and push commands.
@@ -334,31 +346,20 @@ namespace VTX::Renderer::Context::Backend
 				PayloadDraw	 pDraw { hProgram, hVao };
 				if ( hasDrawCall )
 				{
-					/*
-					const Key &	 geometryKey = program.geometry.value();
-					const auto & geometry	 = p_resources.geometries.at( geometryKey );
-					pDraw.vertexCount		 = static_cast<uint32_t>( geometry.vertexCount );
-					pDraw.instanceCount		 = 1;
-					pDraw.firstVertex		 = 0;
-					pDraw.firstInstance		 = 0;
-					if ( geometry.indexBuffer.has_value() )
-					{
-						pDraw.isIndexed	 = true;
-						pDraw.indexCount = static_cast<uint32_t>( geometry.indexCount );
-						pDraw.indexType
-							= _mapTypes[ p_resources.pipelineBuffers.at( geometry.indexBuffer.value() ).type ];
-						pDraw.indexOffset = 0;
-					}
-					*/
+					const DrawCall & drawCall = program.drawCall.value();
+					const Geometry & geometry = p_resources.geometries.at( drawCall.geometry );
+					pDraw.primitive			  = toUnderlying( drawCall.primitive );
+					pDraw.vertexCount		  = drawCall.vertexCount;
+					pDraw.indexCount		  = drawCall.indexCount;
 				}
 				else
 				{
 					// Fullscreen quad draw.
-					pDraw.primitive	  = E_PRIMITIVE::TRIANGLES;
+					pDraw.primitive	  = static_cast<uint32_t>( _toGL( E_PRIMITIVE::TRIANGLES ) );
 					pDraw.vertexCount = 4;
 					pDraw.indexCount  = 0;
-					p_commands.push<E_COMMAND::DRAW>( pDraw );
 				}
+				p_commands.push<E_COMMAND::DRAW>( pDraw );
 			}
 
 			// Push END_PASS.
@@ -832,8 +833,9 @@ namespace VTX::Renderer::Context::Backend
 		_vertexBuffers[ hVbo ]->setData( quad.data(), GLsizei( sizeof( quad ) ), GL_STATIC_DRAW );
 	}
 
-	void OpenGL45::setShaderBufferData( const BufferShader & p_desc, SpanBytes p_bytes )
+	void OpenGL45::setShaderBufferData( const Key & p_key, SpanBytes p_bytes )
 	{
+		/*
 		const Handle h	 = _getOrCreateShaderBuffer( p_desc );
 		GL::Buffer & buf = *_shaderBuffers[ h ];
 
@@ -846,10 +848,12 @@ namespace VTX::Renderer::Context::Backend
 			assert( p_bytes.size() <= buf.size() );
 			buf.setSub( p_bytes.data(), static_cast<GLsizeiptr>( p_bytes.size() ), 0 );
 		}
+		*/
 	}
 
-	void OpenGL45::setPipelineBufferData( const BufferPipeline & p_desc, SpanBytes p_bytes )
+	void OpenGL45::setPipelineBufferData( const Key & p_desc, SpanBytes p_bytes )
 	{
+		/*
 		if ( p_desc.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
 		{
 			const Handle h = _getOrCreateVertexBuffer( p_desc.name );
@@ -860,6 +864,7 @@ namespace VTX::Renderer::Context::Backend
 			const Handle h = _getOrCreateIndexBuffer( p_desc.name );
 			_indexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( p_desc.frequency ) );
 		}
+		*/
 	}
 
 	void OpenGL45::fillInfos( StructInfos & p_infos ) const

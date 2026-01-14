@@ -356,6 +356,11 @@ namespace VTX::Renderer
 		value_type *	   end() noexcept { return _data.data() + _data.size(); }
 		*/
 
+		/**
+		 * @brief Conversion to span of bytes.
+		 */
+		operator std::span<const std::byte>() const noexcept { return { _data.data(), _data.size() }; }
+
 	  private:
 		/**
 		 * @brief Data.
@@ -386,6 +391,12 @@ namespace VTX::Renderer
 			return out;
 		}
 	};
+
+	/**
+	 * @brief Shortcuts.
+	 */
+	using BinaryBuffer140 = BinaryBuffer<E_LAYOUT_TYPE::Std140>;
+	using BinaryBuffer430 = BinaryBuffer<E_LAYOUT_TYPE::Std430>;
 
 } // namespace VTX::Renderer
 
