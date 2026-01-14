@@ -68,7 +68,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Resize textures.
 		 */
-		void resize( const size_t, const size_t );
+		void resize( const size_t, const size_t, const PassList &, const ResourceMap<Texture> & );
 
 		/**
 		 * @brief Set data to a shader buffer.
@@ -214,7 +214,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Bind resources.
 		 */
-		void _attachTexturesToFramebuffer( const Pass &, const Resources & );
+		void _attachTexturesToFramebuffer( const Pass &, const ResourceMap<Texture> & );
 		void _bindGeometryToVao( const Key &, const Geometry &, const Resources & );
 
 		/**

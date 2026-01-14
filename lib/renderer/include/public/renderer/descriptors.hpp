@@ -344,14 +344,16 @@ namespace VTX::Renderer
 	/**
 	 * @brief All resources.
 	 */
+	template<typename T>
+	using ResourceMap = std::unordered_map<Key, T>;
 	struct Resources
 	{
-		std::unordered_map<Key, Texture>		textures;
-		std::unordered_map<Key, Sampler>		samplers;
-		std::unordered_map<Key, VertexLayout>	vertexStreams;
-		std::unordered_map<Key, BufferShader>	shaderBuffers;
-		std::unordered_map<Key, BufferPipeline> pipelineBuffers;
-		std::unordered_map<Key, Geometry>		geometries;
+		ResourceMap<Texture>		textures;
+		ResourceMap<Sampler>		samplers;
+		ResourceMap<VertexLayout>	vertexStreams;
+		ResourceMap<BufferShader>	shaderBuffers;
+		ResourceMap<BufferPipeline> pipelineBuffers;
+		ResourceMap<Geometry>		geometries;
 	};
 
 	/**

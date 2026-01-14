@@ -43,14 +43,31 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Resize backend resources.
 		 */
-		void resize( const std::size_t, const std::size_t );
+		void resize( const std::size_t, const std::size_t, const PassList &, const std::unordered_map<Key, Texture> & );
+
+		/**
+		 * @brief Convert a span of T to a span of bytes.
+		 */
+		template<class T>
+		SpanBytes asBytes( std::span<const T> p_s ) noexcept
+		{
+			static_assert( std::is_trivially_copyable_v<T>, "asWritableBytes(span<T>): T must be trivially copyable." );
+
+			return std::as_bytes( p_s );
+		}
 
 		/**
 		 * @brief Set shader buffer data.
 		 */
-		void setShaderBuffer( const Key & p_key, SpanBytes ) {}
+		void setShaderBuffer( const Key & p_key, SpanBytes );
 		// void setShaderBuffer( const BinaryBuffer<E_LAYOUT_TYPE::Std140> & );
 		// void setShaderBuffer( const BinaryBuffer<E_LAYOUT_TYPE::Std430> & );
+
+		template<class T>
+		void setShaderBuffer( const Key & p_key, std::span<const T> p_data )
+		{
+			setShaderBuffer( p_key, asBytes( p_data ) );
+		}
 
 		/**
 		 * @brief Fill renderer infos.

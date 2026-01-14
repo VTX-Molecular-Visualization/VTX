@@ -68,7 +68,7 @@ namespace VTX::Renderer
 		_width	= p_width;
 		_height = p_height;
 
-		//_context.resize( _graph.getRenderQueue(), p_width, p_height );
+		_context.resize( p_width, p_height, _graph.getPasses(), _graph.getResources().textures );
 
 		setNeedUpdate( true );
 	}
@@ -605,7 +605,7 @@ namespace VTX::Renderer
 
 	void Renderer::setColorLayout( const Color::Layout & p_layout )
 	{
-		//_context.set( p_layout.colors, "ColorLayout" );
+		_context.setShaderBuffer<Util::Color::Rgba>( "ColorLayout", p_layout.colors );
 
 		setNeedUpdate( true );
 	}

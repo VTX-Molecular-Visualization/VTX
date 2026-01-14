@@ -306,7 +306,7 @@ namespace VTX::Renderer::Context::Backend
 			const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
 			if ( not isLastPass )
 			{
-				_attachTexturesToFramebuffer( pass, p_resources );
+				_attachTexturesToFramebuffer( pass, p_resources.textures );
 			}
 
 			// Create programs.
@@ -374,7 +374,12 @@ namespace VTX::Renderer::Context::Backend
 		}
 	}
 
-	void OpenGL45::resize( const size_t p_width, const size_t p_height )
+	void OpenGL45::resize(
+		const size_t				 p_width,
+		const size_t				 p_height,
+		const PassList &			 p_passes,
+		const ResourceMap<Texture> & p_textures
+	)
 	{
 		assert( p_width > 0 );
 		assert( p_height > 0 );
@@ -384,7 +389,37 @@ namespace VTX::Renderer::Context::Backend
 
 		glViewport( 0, 0, static_cast<GLsizei>( p_width ), static_cast<GLsizei>( p_height ) );
 
-		// TODO: resize textures.
+		uint32_t width	= _width;
+		uint32_t height = _height;
+
+		for ( const auto & [ key, tex ] : p_textures )
+		{
+			const Size2D & size = tex.size;
+
+			// Do not resize absolute sized textures.
+			if ( not std::get_if<Size2DAbsolute>( &size ) )
+			{
+				continue;
+			}
+
+			if ( auto * sizePtr = std::get_if<Size2DRelative>( &tex.size ) )
+			{
+				width  = static_cast<uint32_t>( static_cast<float>( _width ) * sizePtr->width );
+				height = static_cast<uint32_t>( static_cast<float>( _height ) * sizePtr->height );
+				width  = std::max( 1u, width );
+				height = std::max( 1u, height );
+			}
+
+			_textures.at( _cacheTextures.at( key ) )->resize( width, height );
+		}
+
+		for ( const auto & pass : p_passes )
+		{
+			if ( _cacheFramebuffers.contains( pass->name ) ) // Avoid the last pass.
+			{
+				_attachTexturesToFramebuffer( *pass, p_textures );
+			}
+		}
 	}
 
 	Handle OpenGL45::_getOrCreateFramebuffer( const Pass & p_pass, const Resources & p_res, const bool p_isLastpass )
@@ -720,7 +755,7 @@ namespace VTX::Renderer::Context::Backend
 		return rt;
 	}
 
-	void OpenGL45::_attachTexturesToFramebuffer( const Pass & p_pass, const Resources & p_resources )
+	void OpenGL45::_attachTexturesToFramebuffer( const Pass & p_pass, const ResourceMap<Texture> & p_textures )
 	{
 		const Key &				key			 = p_pass.name;
 		const Handle			hFramebuffer = _cacheFramebuffers.at( key );
@@ -738,7 +773,7 @@ namespace VTX::Renderer::Context::Backend
 			const Handle		  hTex	  = _cacheTextures.at( output.primary );
 			const GL::Texture2D & texture = *_textures[ hTex ];
 
-			const E_FORMAT format  = p_resources.textures.at( output.primary ).format;
+			const E_FORMAT format  = p_textures.at( output.primary ).format;
 			const bool	   isDepth = _toGL( format ).isDepth;
 
 			if ( isDepth )
@@ -835,20 +870,8 @@ namespace VTX::Renderer::Context::Backend
 
 	void OpenGL45::setShaderBufferData( const Key & p_key, SpanBytes p_bytes )
 	{
-		/*
-		const Handle h	 = _getOrCreateShaderBuffer( p_desc );
-		GL::Buffer & buf = *_shaderBuffers[ h ];
-
-		if ( p_desc.mutability == E_BUFFER_MUTABILITY::MUTABLE )
-		{
-			buf.setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( p_desc.frequency ) );
-		}
-		else
-		{
-			assert( p_bytes.size() <= buf.size() );
-			buf.setSub( p_bytes.data(), static_cast<GLsizeiptr>( p_bytes.size() ), 0 );
-		}
-		*/
+		const Handle h = _cacheShaderBuffers.at( p_key );
+		_shaderBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), GL_DYNAMIC_DRAW );
 	}
 
 	void OpenGL45::setPipelineBufferData( const Key & p_desc, SpanBytes p_bytes )
