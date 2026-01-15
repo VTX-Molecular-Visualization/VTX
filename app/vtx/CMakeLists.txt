@@ -32,6 +32,7 @@ install(TARGETS vtx DESTINATION .)
 # Data from other libs.
 install(DIRECTORY $<TARGET_FILE_DIR:vtx>/shaders DESTINATION .)
 install(DIRECTORY $<TARGET_FILE_DIR:vtx>/python_script DESTINATION .)
+install(DIRECTORY $<TARGET_FILE_DIR:vtx>/external DESTINATION .)
 # Data from VTX.
 install(DIRECTORY data DESTINATION .)
 install(FILES README.md DESTINATION .)
