@@ -4,7 +4,6 @@
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
 #include <renderer/camera.hpp>
-#include <renderer/proxy/voxels.hpp>
 #include <renderer/renderer.hpp>
 #include <util/math.hpp>
 #include <util/math/transform.hpp>
@@ -54,8 +53,7 @@ namespace VTX::App::Pass
 			}
 		}
 
-		static Renderer::Proxy::Voxels voxels { &mins, &maxs };
-		RENDERER().setProxyVoxels( voxels );
+		RENDERER().setVoxels( mins, maxs );
 	}
 
 	void CameraUpdater::_onUpdate( ECS::Registry & p_r, ECS::Entity p_e )

@@ -88,7 +88,6 @@ namespace VTX::Renderer
 		_framesRemaining = 0;
 
 		_proxiesSystems.clear();
-		_proxyVoxels = nullptr;
 
 		_cacheSpheresCylinders.clear();
 		_cacheRibbons.clear();
@@ -667,19 +666,15 @@ namespace VTX::Renderer
 		setNeedUpdate( true );
 	}
 
-	void Renderer::setProxyVoxels( Proxy::Voxels & p_proxy )
+	void Renderer::setVoxels( const std::vector<Vec3f> & p_mins, const std::vector<Vec3f> & p_maxs )
 	{
-		_proxyVoxels = &p_proxy;
+		assert( p_mins.size() == p_maxs.size() );
 
-		assert( p_proxy.mins );
-		assert( p_proxy.maxs );
-		assert( p_proxy.mins->size() == p_proxy.maxs->size() );
-
-		_context.setPipelineBuffer<Vec3f>( "Voxels.Mins", *p_proxy.mins );
-		_context.setPipelineBuffer<Vec3f>( "Voxels.Maxs", *p_proxy.maxs );
+		_context.setPipelineBuffer<Vec3f>( "Voxels.Mins", p_mins );
+		_context.setPipelineBuffer<Vec3f>( "Voxels.Maxs", p_maxs );
 
 		_geometries.drawRangeVoxels.firsts = { 0 };
-		_geometries.drawRangeVoxels.counts = { uint( p_proxy.mins->size() ) };
+		_geometries.drawRangeVoxels.counts = { uint( p_mins.size() ) };
 
 		setNeedUpdate( true );
 	}

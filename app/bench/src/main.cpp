@@ -3,7 +3,6 @@
 #include "user_interface.hpp"
 #include <iostream>
 #include <renderer/graphics_config.hpp>
-#include <renderer/proxy/voxels.hpp>
 #include <renderer/renderer.hpp>
 #include <util/math/aabb.hpp>
 
@@ -131,8 +130,7 @@ int main( int, char ** )
 			}
 		}
 
-		auto proxyVoxels = Renderer::Proxy::Voxels { &mins, &maxs };
-		renderer.setProxyVoxels( proxyVoxels );
+		renderer.setVoxels( mins, maxs );
 
 		renderer.setColorLayout( scene.getColorLayout() );
 

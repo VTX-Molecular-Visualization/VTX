@@ -12,7 +12,6 @@
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graphics_config.hpp"
 #include "renderer/proxy/system.hpp"
-#include "renderer/proxy/voxels.hpp"
 #include "renderer/render_graph.hpp"
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
@@ -87,13 +86,13 @@ namespace VTX::Renderer
 		void removeProxySystem( Proxy::System & p_proxy );
 		void addProxySystems( std::vector<Proxy::System *> & p_proxies );
 		void removeProxySystems( std::vector<Proxy::System *> & p_proxies );
-		void setProxyVoxels( Proxy::Voxels & p_proxy );
 
 		// NEW
 		void setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );
 		void setGraphicsConfig( const GraphicsConfig & );
 		void setColorLayout( const Color::Layout & );
 		void setRepresentation( const Representation & );
+		void setVoxels( const std::vector<Vec3f> &, const std::vector<Vec3f> & );
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
@@ -258,7 +257,6 @@ namespace VTX::Renderer
 		 * @brief All data proxies.
 		 */
 		std::vector<Proxy::System *> _proxiesSystems;
-		Proxy::Voxels *				 _proxyVoxels = nullptr;
 
 		void _addProxySystem( Proxy::System & p_proxy );
 		void _removeProxySystem( Proxy::System & p_proxy );
