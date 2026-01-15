@@ -255,10 +255,10 @@ namespace VTX::Renderer
 		 * @brief draw().
 		 */
 		ProgramBuilder & draw(
-			const Key &		  p_geometry,
-			const E_PRIMITIVE p_primitive	= E_PRIMITIVE::TRIANGLES,
-			const uint32_t	  p_vertexCount = 0,
-			const uint32_t	  p_indexCount	= 0
+			const Key &,
+			const E_PRIMITIVE				= E_PRIMITIVE::TRIANGLES,
+			const DrawCall::RangeArrays *	= nullptr,
+			const DrawCall::RangeElements * = nullptr
 		);
 
 		/**

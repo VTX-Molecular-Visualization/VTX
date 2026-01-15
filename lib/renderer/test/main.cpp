@@ -158,7 +158,7 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	cfg.enableSelection = true;
 
 	RenderGraph graph;
-	graph.createDefaultPipeline( cfg );
+	graph.createDefaultPipeline( cfg, Geometries {} );
 
 	RenderQueue queue;
 	REQUIRE_NOTHROW( queue = graph.build() );

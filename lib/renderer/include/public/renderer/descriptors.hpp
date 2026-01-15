@@ -149,8 +149,6 @@ namespace VTX::Renderer
 		LINEAR_MIPMAP_LINEAR,
 	};
 
-	using Setting = uint32_t;
-
 	/**
 	 * @brief Various settings.
 	 */
@@ -308,8 +306,21 @@ namespace VTX::Renderer
 	{
 		Key			geometry;
 		E_PRIMITIVE primitive;
-		uint32_t	vertexCount = 0;
-		uint32_t	indexCount	= 0;
+		// TODO: variant?
+		uint32_t vertexCount = 0;
+		uint32_t indexCount	 = 0;
+		struct RangeArrays
+		{
+			std::vector<int32_t>  firsts;
+			std::vector<uint32_t> counts;
+		};
+		struct RangeElements
+		{
+			std::vector<const void *> offsets;
+			std::vector<uint32_t>	  counts;
+		};
+		const RangeArrays *	  vertexRanges = nullptr;
+		const RangeElements * indexRanges  = nullptr;
 	};
 
 	/**
@@ -368,6 +379,14 @@ namespace VTX::Renderer
 	 */
 	using RenderQueue = std::vector<const Pass *>;
 
+	// TODO: not there.
+	struct Geometries
+	{
+		DrawCall::RangeArrays	drawRangeSpheres;
+		DrawCall::RangeElements drawRangeCylinders;
+		DrawCall::RangeArrays	drawRangeRibbons;
+		DrawCall::RangeArrays	drawRangeVoxels;
+	};
 } // namespace VTX::Renderer
 
 #endif

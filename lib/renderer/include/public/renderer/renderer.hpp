@@ -180,10 +180,6 @@ namespace VTX::Renderer
 		RangeList drawRangeSESSegmentsRL;
 		*/
 
-		// Draw::Range drawRangeSpheres;
-		// Draw::Range drawRangeCylinders;
-		// Draw::Range drawRangeRibbons;
-		// Draw::Range drawRangeVoxels;
 		/*
 		Draw::Range drawRangeSESCircles;
 		Draw::Range drawRangeSESConcaves;
@@ -223,6 +219,11 @@ namespace VTX::Renderer
 		 * @brief Render _graph to handle the rendering pipeline.
 		 */
 		RenderGraph _graph;
+
+		/**
+		 * @brief Geometries ranges.
+		 */
+		Geometries _geometries;
 
 		/**
 		 * @brief Wrapper to handle the graphic APIs.

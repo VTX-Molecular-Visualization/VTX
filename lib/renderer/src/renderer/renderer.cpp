@@ -675,11 +675,11 @@ namespace VTX::Renderer
 		assert( p_proxy.maxs );
 		assert( p_proxy.mins->size() == p_proxy.maxs->size() );
 
-		//_context.set( *p_proxy.mins, "VoxelsMins" );
-		//_context.set( *p_proxy.maxs, "VoxelsMaxs" );
+		_context.setPipelineBuffer<Vec3f>( "Voxels.Mins", *p_proxy.mins );
+		_context.setPipelineBuffer<Vec3f>( "Voxels.Maxs", *p_proxy.maxs );
 
-		// drawRangeVoxels.offsets = { 0 };
-		// drawRangeVoxels.counts	= { uint( p_proxy.mins->size() ) };
+		_geometries.drawRangeVoxels.firsts = { 0 };
+		_geometries.drawRangeVoxels.counts = { uint( p_proxy.mins->size() ) };
 
 		setNeedUpdate( true );
 	}
@@ -1264,7 +1264,7 @@ namespace VTX::Renderer
 		config.enableOutline   = p_config.activeOutline;
 		config.enableSelection = p_config.activeSelection;
 
-		_graph.createDefaultPipeline( config );
+		_graph.createDefaultPipeline( config, _geometries );
 
 		/*
 		RenderGraph::PipelinePasses passes = _graph.createDefaultPipeline( config );

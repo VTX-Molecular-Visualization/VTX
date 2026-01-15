@@ -114,17 +114,17 @@ namespace VTX::Renderer
 	}
 
 	ProgramBuilder & ProgramBuilder::draw(
-		const Key &		  p_geometry,
-		const E_PRIMITIVE p_primitive,
-		const uint32_t	  p_vertexCount,
-		const uint32_t	  p_indexCount
+		const Key &						p_geometry,
+		const E_PRIMITIVE				p_primitive,
+		const DrawCall::RangeArrays *	p_vertexRanges,
+		const DrawCall::RangeElements * p_indexRanges
 	)
 	{
 		DrawCall dc;
 		dc.geometry		 = p_geometry;
 		dc.primitive	 = p_primitive;
-		dc.vertexCount	 = p_vertexCount;
-		dc.indexCount	 = p_indexCount;
+		dc.vertexRanges	 = p_vertexRanges;
+		dc.indexRanges	 = p_indexRanges;
 		program.drawCall = dc;
 		return *this;
 	}

@@ -345,23 +345,52 @@ namespace VTX::Renderer::Context::Backend
 
 				// Push DRAW.
 				const Handle hProgram = _cachePrograms.at( program.name );
-				PayloadDraw	 pDraw { hProgram, hVao };
 				if ( hasDrawCall )
 				{
 					const DrawCall & drawCall = program.drawCall.value();
 					const Geometry & geometry = p_resources.geometries.at( drawCall.geometry );
-					pDraw.primitive			  = toUnderlying( drawCall.primitive );
-					pDraw.vertexCount		  = drawCall.vertexCount;
-					pDraw.indexCount		  = drawCall.indexCount;
+
+					if ( geometry.indexBuffer )
+					{
+						PayloadDrawElement pDraw { hProgram, hVao };
+						pDraw.primitive	 = toUnderlying( drawCall.primitive );
+						pDraw.indexCount = drawCall.indexCount;
+						p_commands.push<E_COMMAND::DRAW_ELEMENT>( pDraw );
+					}
+					else if ( drawCall.indexCount )
+					{
+						PayloadDrawArray pDraw { hProgram, hVao };
+						pDraw.primitive	  = toUnderlying( drawCall.primitive );
+						pDraw.vertexCount = drawCall.vertexCount;
+						p_commands.push<E_COMMAND::DRAW_ARRAY>( pDraw );
+					}
+					else if ( drawCall.vertexRanges )
+					{
+						PayloadDrawArrays pDraw { hProgram, hVao };
+						pDraw.primitive	   = toUnderlying( drawCall.primitive );
+						pDraw.vertexRanges = reinterpret_cast<uintptr_t>( drawCall.vertexRanges );
+						p_commands.push<E_COMMAND::DRAW_ARRAYS>( pDraw );
+					}
+					else if ( drawCall.indexRanges )
+					{
+						PayloadDrawElements pDraw { hProgram, hVao };
+						pDraw.primitive	  = toUnderlying( drawCall.primitive );
+						pDraw.indexRanges = reinterpret_cast<uintptr_t>( drawCall.indexRanges );
+						p_commands.push<E_COMMAND::DRAW_ELEMENTS>( pDraw );
+					}
+					else
+					{
+						assert( false && "DrawCall has no valid draw parameters." );
+					}
 				}
 				else
 				{
 					// Fullscreen quad draw.
+					PayloadDrawArray pDraw { hProgram, hVao };
 					pDraw.primitive	  = static_cast<uint32_t>( _toGL( E_PRIMITIVE::TRIANGLES ) );
 					pDraw.vertexCount = 4;
-					pDraw.indexCount  = 0;
+					p_commands.push<E_COMMAND::DRAW_ARRAY>( pDraw );
 				}
-				p_commands.push<E_COMMAND::DRAW>( pDraw );
 			}
 
 			// Push END_PASS.
@@ -627,7 +656,7 @@ namespace VTX::Renderer::Context::Backend
 			return it->second;
 		}
 
-		auto glBuffer = std::make_unique<GL::Buffer>(); // pas de storage ici
+		auto glBuffer = std::make_unique<GL::Buffer>();
 
 		const Handle h = static_cast<Handle>( _vertexBuffers.size() );
 		_vertexBuffers.emplace_back( std::move( glBuffer ) );
@@ -644,7 +673,7 @@ namespace VTX::Renderer::Context::Backend
 			return it->second;
 		}
 
-		auto glBuffer = std::make_unique<GL::Buffer>(); // pas de storage ici
+		auto glBuffer = std::make_unique<GL::Buffer>();
 
 		const Handle h = static_cast<Handle>( _indexBuffers.size() );
 		_indexBuffers.emplace_back( std::move( glBuffer ) );
@@ -829,7 +858,7 @@ namespace VTX::Renderer::Context::Backend
 			for ( uint8_t col = 0; col < ga.columns; ++col )
 			{
 				const GLuint bindingIndex = location;
-				vao.setVertexBuffer( bindingIndex, vbo, 0, stride );
+				vao.setVertexBuffer( bindingIndex, vbo, stride, 0 );
 				++location;
 			}
 		}

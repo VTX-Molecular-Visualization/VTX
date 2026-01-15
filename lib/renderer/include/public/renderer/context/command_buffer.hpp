@@ -19,7 +19,10 @@ namespace VTX::Renderer::Context
 
 		BEGIN_PASS,
 		BIND_RESOURCES,
-		DRAW,
+		DRAW_ARRAY,
+		DRAW_ARRAYS,
+		DRAW_ELEMENT,
+		DRAW_ELEMENTS,
 		END_PASS
 	};
 
@@ -52,17 +55,30 @@ namespace VTX::Renderer::Context
 		uint32_t program;
 		uint32_t pipeline;
 		uint32_t primitive;
-		uint32_t vertexCount = 0;
-		uint32_t indexCount	 = 0;
 	};
 
-	struct PayloadDrawMulti
+	struct PayloadDrawArray : PayloadDraw
 	{
-		uint32_t program;
-		uint32_t pipeline;
-		uint32_t primitive;
 		uint32_t vertexCount = 0;
-		uint32_t indexCount	 = 0;
+		uint32_t firstVertex = 0;
+	};
+
+	struct PayloadDrawElement : PayloadDraw
+	{
+		uint32_t indexCount = 0;
+		uint32_t firstIndex = 0;
+		// int32_t	 baseVertex = 0;
+	};
+
+	struct PayloadDrawArrays : PayloadDraw
+	{
+		uintptr_t vertexRanges;
+	};
+
+	struct PayloadDrawElements : PayloadDraw
+	{
+		uintptr_t indexRanges;
+		// uintptr_t pBaseVertex;
 	};
 
 	struct PayloadEndPass
@@ -86,9 +102,24 @@ namespace VTX::Renderer::Context
 		using type = PayloadBindResources;
 	};
 	template<>
-	struct CommandPayload<E_COMMAND::DRAW>
+	struct CommandPayload<E_COMMAND::DRAW_ARRAY>
 	{
-		using type = PayloadDraw;
+		using type = PayloadDrawArray;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::DRAW_ARRAYS>
+	{
+		using type = PayloadDrawArrays;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::DRAW_ELEMENT>
+	{
+		using type = PayloadDrawElement;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::DRAW_ELEMENTS>
+	{
+		using type = PayloadDrawElements;
 	};
 	template<>
 	struct CommandPayload<E_COMMAND::END_PASS>

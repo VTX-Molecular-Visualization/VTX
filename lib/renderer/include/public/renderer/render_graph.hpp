@@ -56,7 +56,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Create a default pipeline from config.
 		 */
-		void createDefaultPipeline( const PipelineConfig & );
+		void createDefaultPipeline( const PipelineConfig &, const Geometries & );
 
 	  private:
 		Resources _resources;
