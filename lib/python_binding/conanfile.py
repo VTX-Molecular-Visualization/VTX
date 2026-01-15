@@ -16,9 +16,9 @@ def executable_folder(p_conanFile: ConanFile):
         return p_conanFile.build_folder
 
 
-def create_python39_zip(p_conanFile: ConanFile, python_lib_path, zip_destination):
-    """Create python39.zip from the Python standard library"""
-    p_conanFile.output.info(f"Creating python39.zip from {python_lib_path} to {zip_destination}")
+def create_python312_zip(p_conanFile: ConanFile, python_lib_path, zip_destination):
+    """Create python312.zip from the Python standard library"""
+    p_conanFile.output.info(f"Creating python312.zip from {python_lib_path} to {zip_destination}")
 
     with zipfile.ZipFile(zip_destination, 'w', zipfile.ZIP_DEFLATED) as zipf:
         lib_path = Path(python_lib_path)
@@ -33,9 +33,9 @@ def create_python39_zip(p_conanFile: ConanFile, python_lib_path, zip_destination
                 arcname = file_path.relative_to(lib_path)
                 zipf.write(file_path, arcname)
 
-            p_conanFile.output.info(f"Successfully created python39.zip with {len(zipf.namelist())} files")
+            p_conanFile.output.info(f"Successfully created python312.zip with {len(zipf.namelist())} files")
         else:
-            p_conanFile.output.warning(f"Python lib path {python_lib_path} does not exist, skipping python39.zip creation")
+            p_conanFile.output.warning(f"Python lib path {python_lib_path} does not exist, skipping python312.zip creation")
 
 
 def _doPythonCopies(p_conanFile: ConanFile, dest):
@@ -58,13 +58,13 @@ def _doPythonCopies(p_conanFile: ConanFile, dest):
         for subdir in ("bin","lib"):
             copy(p_conanFile, "*", os.path.join(p_conanFile.dependencies["cpython"].package_folder, subdir), os.path.join(dest, "external","python",subdir))  
     
-    # Create python39.zip from the Python standard library
+    # Create python312.zip from the Python standard library
     if p_conanFile.settings.os == "Windows":
         python_lib_path = os.path.join(p_conanFile.dependencies["cpython"].package_folder,"bin", "lib")
     else:
         python_lib_path = os.path.join(p_conanFile.dependencies["cpython"].package_folder, "lib")
-    zip_destination = os.path.join(dest, "external", "python", "python39.zip")
-    create_python39_zip(p_conanFile, python_lib_path, zip_destination)
+    zip_destination = os.path.join(dest, "external", "python", "python312.zip")
+    create_python312_zip(p_conanFile, python_lib_path, zip_destination)
 
 def generate_cmake_copy_instructions(p_conanFile):
     out = ""
@@ -81,7 +81,7 @@ def generate_cmake_copy_instructions(p_conanFile):
             if element.suffix == ".dll":
                 out += """vtx_register_build_file_copy("{}" ".")\n""".format(element.as_posix())
         out += """vtx_register_build_file_copy("{}" "external/python")\n""".format(
-            Path(p_conanFile.package_folder, "external", "python", "python39.zip").as_posix()
+            Path(p_conanFile.package_folder, "external", "python", "python312.zip").as_posix()
         )
     else:
         out = """vtx_register_build_directory_copy("{}" "external/python")""".format(

@@ -71,13 +71,13 @@ namespace VTX::PythonBinding
 
 			PyConfig_SetString( &config, &config.exec_prefix, p_pythonHomePath.c_str() );
 
-			VTX::FilePath python39Path = VTX::FilePath( p_pythonHomePath ) / "python39.zip";
-			std::wstring  python39Str( python39Path.wstring() );
+			VTX::FilePath python312Path = VTX::FilePath( p_pythonHomePath ) / "python312.zip";
+			std::wstring  python312Str( python312Path.wstring() );
 
 			std::string execDirPath_string = VTX::Util::Filesystem::getExecutableDir().string();
 
 			PyWideStringList_Append( &config.module_search_paths, pyScriptDir.c_str() );
-			PyWideStringList_Append( &config.module_search_paths, python39Str.c_str() );
+			PyWideStringList_Append( &config.module_search_paths, python312Str.c_str() );
 #ifndef _WIN32
 			std::wstring dynloadDir = ( VTX::FilePath( pyScriptDir ) / "lib-dynload" ).wstring();
 			PyWideStringList_Append( &config.module_search_paths, dynloadDir.c_str() );
