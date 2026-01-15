@@ -59,4 +59,7 @@ class VTXAppRecipe(ConanFile):
         else:
             self.cpp_info.libs.append("velopack_libc_linux_x64_gnu")
             self.cpp_info.system_libs.append("lnsl")
+            self.cpp_info.system_libs.append("nsl")
+            self.cpp_info.system_libs.append("libnsl")
+            self.cpp_info.system_libs.append("libnsl-dev")
            
