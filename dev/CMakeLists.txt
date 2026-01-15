@@ -24,6 +24,8 @@ find_package(SDL3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(stb CONFIG CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
+set (PYBIND11_PYTHON_VERSION "3.9.19")
+find_package(Python3 "3.9.19" EXACT REQUIRED COMPONENTS Interpreter Development NO_SYSTEM_ENVIRONMENT_PATH)
 find_package(pybind11 CONFIG REQUIRED)
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Gui REQUIRED)
@@ -63,10 +65,6 @@ include("${DIR_LIBS}/python_binding/cmake/library.cmake")
 include("${DIR_LIBS}/app/cmake/library.cmake")
 vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
-# Python binding test.
-#include("${DIR_LIBS}/python_binding/test/cmake/library.cmake")
-vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
-
 # UI Qt.
 include("${DIR_LIBS}/ui/qt/cmake/library.cmake")
 vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
@@ -90,4 +88,4 @@ vtx_clear_registered_copies() # Prevent data from previous package to be copied 
 # PDB100
 set(PDB100_DIRECTORY_PATH "C:/Users/Valen/data/pdb/pdb100") # Needed for pdb100 related projects
 include("${CMAKE_CURRENT_LIST_DIR}/secondary_structure.cmake") # Project for secondary structure algorithm benchmark
-include("${CMAKE_CURRENT_LIST_DIR}/io_vs_pdb100.cmake") # Project for secondary structure algorithm benchmark
+include("${CMAKE_CURRENT_LIST_DIR}/io_vs_pdb100.cmake") # Project for file reading benchmark

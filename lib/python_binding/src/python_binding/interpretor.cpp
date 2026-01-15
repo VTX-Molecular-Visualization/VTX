@@ -6,6 +6,7 @@
 #include "python_binding/log_redirection.hpp"
 #include "python_binding/vtx_python_module.hpp"
 #include "python_binding/wrapper/module.hpp"
+#include <algorithm>
 #include <io/internal/filesystem.hpp>
 #include <pybind11/embed.h>
 #include <pybind11/eval.h>
@@ -26,14 +27,92 @@ PYBIND11_EMBEDDED_MODULE( vtx_python_api, m )
 
 namespace VTX::PythonBinding
 {
+	namespace
+	{
+		pybind11::scoped_interpreter createInterpretor( const std::wstring & p_pythonHomePath )
+		{
+			PyPreConfig preConfig;
+			PyPreConfig_InitIsolatedConfig( &preConfig );
+			preConfig.allocator		  = 1;
+			preConfig.isolated		  = 1;
+			preConfig.use_environment = 0;
+			Py_PreInitialize( &preConfig );
 
+			PyConfig config;
+			PyConfig_InitPythonConfig( &config );
+			config.isolated				   = 1;
+			config.use_environment		   = 0;
+			config.module_search_paths_set = 1;
+
+			// If module_search_paths are not initialized manually like so, calling PyWideStringList_Append result in a
+			// segfault on ubuntu
+			config.module_search_paths.length = 0;
+			config.module_search_paths.items  = nullptr;
+#ifdef _WIN32
+			std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
+			std::wstring platlibdir	 = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
+			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "python"
+#ifdef _DEBUG
+			"_d"
+#endif // _DEBUG
+				".exe" ).wstring();
+			std::wstring pythonExecDir = p_pythonHomePath;
+#else
+			std::wstring pyScriptDir	  = ( VTX::FilePath( p_pythonHomePath ) / "lib" / "python3.9" ).wstring();
+			std::wstring platlibdir		  = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
+			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin" / "python3.9" ).wstring();
+			std::wstring pythonExecDir	  = ( VTX::FilePath( p_pythonHomePath ) / "bin" ).wstring();
+
+#endif
+			PyConfig_SetString( &config, &config.platlibdir, platlibdir.c_str() );
+			PyConfig_SetString( &config, &config.home, p_pythonHomePath.c_str() );
+			PyConfig_SetString( &config, &config.prefix, p_pythonHomePath.c_str() );
+			std::wstring execDirPath = VTX::Util::Filesystem::getExecutableDir().wstring();
+
+			PyConfig_SetString( &config, &config.exec_prefix, p_pythonHomePath.c_str() );
+
+			VTX::FilePath python39Path = VTX::FilePath( p_pythonHomePath ) / "python39.zip";
+			std::wstring  python39Str( python39Path.wstring() );
+
+			std::string execDirPath_string = VTX::Util::Filesystem::getExecutableDir().string();
+
+			PyWideStringList_Append( &config.module_search_paths, pyScriptDir.c_str() );
+			PyWideStringList_Append( &config.module_search_paths, python39Str.c_str() );
+#ifndef _WIN32
+			std::wstring dynloadDir = ( VTX::FilePath( pyScriptDir ) / "lib-dynload" ).wstring();
+			PyWideStringList_Append( &config.module_search_paths, dynloadDir.c_str() );
+#endif // !_WIN32
+			PyWideStringList_Append( &config.module_search_paths, platlibdir.c_str() );
+			PyWideStringList_Append( &config.module_search_paths, execDirPath.c_str() );
+
+			auto pythonExecutable_string = std::filesystem::path( pythonExecutable ).string();
+
+			std::optional<pybind11::scoped_interpreter> interpetor;
+			try
+			{
+				interpetor.emplace( &config );
+			}
+			catch ( std::exception & e )
+			{
+				VTX_ERROR( "Interpetor failed to initialize with message : <{}>", e.what() );
+				throw VTX::LibException( "Error in python lib : <{}>", e.what() );
+			}
+			catch ( ... )
+			{
+				VTX_ERROR( "Interpetor failed to initialize with unknown exception type" );
+				throw;
+			}
+			PyConfig_Clear( &config );
+			VTX_INFO( "PY - Interpretor Created." );
+			return std::move( interpetor.value() );
+		}
+	} // namespace
 	struct Interpretor::Impl
 	{
 	  public:
 		Impl()
 		{
 			VTX::VTX_INFO( "Importing python module <{}>", vtx_module_name() );
-
 			// Allow the python "print" function to be funneled into our log system
 			_vtxModule.import( "sys" ).attr( "stdout" ) = _vtxModule.attr( "LogRedirection" );
 
@@ -73,11 +152,11 @@ namespace VTX::PythonBinding
 		void getPythonModule( pybind11::module_ ** p_modulePtr ) { *p_modulePtr = &_vtxModule; }
 
 	  private:
-		LogRedirection				 _logger;
-		pybind11::scoped_interpreter _interpretor {};
+		const std::wstring _pythonBinDir { ( Util::Filesystem::getExecutableDir() / "external" / "python" ).wstring() };
+		LogRedirection	   _logger;
+		pybind11::scoped_interpreter _interpretor { createInterpretor( _pythonBinDir ) };
 		pybind11::module_			 _vtxModule { pybind11::module_::import( vtx_module_name() ) };
-
-		std::unique_ptr<PyTXModule> _pyTXModule
+		std::unique_ptr<PyTXModule>	 _pyTXModule
 			= std::make_unique<PyTXModule>( Wrapper::Module( _vtxModule, vtx_module_name() ) );
 
 		std::vector<Binder> _binders;

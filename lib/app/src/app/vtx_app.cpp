@@ -96,6 +96,7 @@ namespace VTX::App
 		_registry.emplace<Util::Math::Transform>( _camera );
 		_registry.emplace<Renderer::Camera>( _camera );
 
+		VTX_INFO( "App initializing interpretor." );
 		// Initialize python interpretor.
 		INTERPRETOR().subscribe(
 			[]( VTX::PythonBinding::Interpretor & p_interpretor )
@@ -134,7 +135,8 @@ namespace VTX::App
 				VTX_ERROR( "Failed to build renderer: {}", p_e.what() );
 				renderer.setDefault();
 				HUB().trigger<Events::ApplicationError>(
-					"Unable to create OpenGL 4.5 context. Update your drivers and check your hardware compatibility."
+					"Unable to create OpenGL 4.5 context. Update your drivers and check your hardware "
+					"compatibility."
 				);
 			}
 		}

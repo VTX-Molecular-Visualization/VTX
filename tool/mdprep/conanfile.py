@@ -7,6 +7,10 @@ from conan.tools.files import copy
 from conan.tools.cmake import CMakeToolchain
 from pathlib import Path
 
+def copy_gromacs_stuff(p_conanFile: ConanFile):
+    copy(p_conanFile, "*", os.path.join(p_conanFile.dependencies["gromacs"].package_folder, "external"), os.path.join(p_conanFile.build_folder, "external"))        
+    copy(p_conanFile, "*", os.path.join(p_conanFile.dependencies["gromacs"].package_folder, "data", "tools","mdprep","gromacs","top"), os.path.join(p_conanFile.build_folder, "data", "tools", "mdprep", "gromacs", "top" ))   
+
 class VTXToolMdprepRecipe(ConanFile):
     name = "vtx_tool_mdprep"
     version = "1.0"
@@ -28,7 +32,7 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_io/1.0")
         self.requires("re2/20240702")
-        self.requires("gromacs/2024.0")
+        self.requires("gromacs/2026.0")
         self.requires("catch2/3.11.0") 
 
     def generate(self):

@@ -6,14 +6,6 @@
 #include <python_binding/interpretor.hpp>
 #include <string>
 
-namespace VTX
-{
-	inline static VTX::PythonBinding::Interpretor & INTERPRETOR()
-	{
-		static VTX::PythonBinding::Interpretor instance;
-		return instance;
-	}
-} // namespace VTX
 namespace VTX::App::Test::Util
 {
 
@@ -29,7 +21,8 @@ namespace VTX::App::Test::Util
 		PythonFixture();
 		~PythonFixture();
 
-		void resetInterpretor();
+		void							resetInterpretor();
+		VTX::PythonBinding::Interpretor interpretor;
 	};
 } // namespace VTX::App::Test::Util
 #endif

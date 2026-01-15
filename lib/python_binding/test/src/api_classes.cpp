@@ -287,7 +287,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Atom", "[python][binding][a
 	using namespace VTX;
 	App::Test::Util::PythonFixture f;
 
-	PythonBinding::Interpretor & interpretor = INTERPRETOR();
+	PythonBinding::Interpretor & interpretor = f.interpretor;
 
 	Test::MockAtom mockedAtom {};
 	mockedAtom.symbol	= VTX::Core::ChemDB::Atom::SYMBOL::A_HE;
@@ -353,7 +353,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Residue", "[python][binding
 	using namespace VTX;
 	App::Test::Util::PythonFixture f;
 
-	PythonBinding::Interpretor & interpretor = INTERPRETOR();
+	PythonBinding::Interpretor & interpretor = f.interpretor;
 
 	pybind11::module_ * vtxModule = nullptr;
 	interpretor.getPythonModule( &vtxModule );
@@ -402,7 +402,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Residue", "[python][binding
 	CHECK(
 		tester.testMethod_get( "getIndexInOriginalChain", mockedResidue, &Test::MockResidue::getIndexInOriginalChain )
 	);
-	CHECK( tester.testMethod_set( "setIndexInOriginalChain", mockedResidue, &Test::MockResidue::indexInOriginalChain )
+	CHECK(
+		tester.testMethod_set( "setIndexInOriginalChain", mockedResidue, &Test::MockResidue::indexInOriginalChain )
 	);
 
 	// Visibility
@@ -421,7 +422,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Chain", "[python][binding][
 	using namespace VTX;
 	App::Test::Util::PythonFixture f;
 
-	PythonBinding::Interpretor & interpretor = INTERPRETOR();
+	PythonBinding::Interpretor & interpretor = f.interpretor;
 
 	pybind11::module_ * vtxModule = nullptr;
 	interpretor.getPythonModule( &vtxModule );
@@ -474,7 +475,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - System", "[python][binding]
 	using namespace VTX;
 	App::Test::Util::PythonFixture f;
 
-	PythonBinding::Interpretor & interpretor = INTERPRETOR();
+	PythonBinding::Interpretor & interpretor = f.interpretor;
 
 	pybind11::module_ * vtxModule = nullptr;
 	interpretor.getPythonModule( &vtxModule );
@@ -543,7 +544,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - System", "[python][binding]
 
 	// Residue
 	CHECK( tester.testMethod_get( "getResidue(1).getIndex", mockedSystem, &Test::MockSystem::getResidueIndex ) );
-	CHECK( tester.testMethod_get( "getResidues()[0].getIndex", mockedSystem, &Test::MockSystem::getFirstResidueIndex )
+	CHECK(
+		tester.testMethod_get( "getResidues()[0].getIndex", mockedSystem, &Test::MockSystem::getFirstResidueIndex )
 	);
 	CHECK( tester.testMethod_get( "getRealResidueCount", mockedSystem, &Test::MockSystem::getRealResidueCount ) );
 	CHECK( tester.testMethod_set( "initResidues", mockedSystem, &Test::MockSystem::initializedResidueCount ) );

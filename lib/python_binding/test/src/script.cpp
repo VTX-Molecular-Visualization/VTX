@@ -24,7 +24,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][action
 	using namespace VTX;
 	App::Test::Util::PythonFixture f;
 
-	PythonBinding::Interpretor & interpretor = INTERPRETOR();
+	PythonBinding::Interpretor & interpretor = f.interpretor;
 
 	Test::ExternalTool::Action::ToolAction::reset();
 	interpretor.add( VTX::PythonBinding::Binder( VTX::Test::ExternalTool::Binder() ) );
@@ -41,7 +41,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )
 
 	App::Test::Util::PythonFixture f;
 
-	PythonBinding::Interpretor & interpretor = INTERPRETOR();
+	PythonBinding::Interpretor & interpretor = f.interpretor;
 
 	const FilePath scriptPath
 		= VTX::Util::Filesystem::getExecutableDir()

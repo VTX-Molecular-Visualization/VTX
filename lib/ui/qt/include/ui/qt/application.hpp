@@ -32,7 +32,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Run the main loop.
 		 */
-		void start() override;
+		void start();
 
 		/**
 		 * @brief Exit the main loop.

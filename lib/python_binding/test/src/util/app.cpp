@@ -23,7 +23,7 @@ namespace VTX::App::Test::Util
 			// multiple UT are running from the same process, the frist will be able to appl the binding, and the
 			// following will throw harmlessly
 			pybind11::module_ * modul = nullptr;
-			INTERPRETOR().getPythonModule( &modul );
+			interpretor.getPythonModule( &modul );
 
 			VTX::PythonBinding::Binding::applyVtxApiBinding( *modul );
 		}
@@ -40,7 +40,7 @@ namespace VTX::App::Test::Util
 	}
 	void PythonFixture::resetInterpretor()
 	{
-		INTERPRETOR().clearBinders();
+		interpretor.clearBinders();
 		// INTERPRETOR().addBinder<VTX::PythonBinding::Binding::VTXAppBinder>();
 	}
 

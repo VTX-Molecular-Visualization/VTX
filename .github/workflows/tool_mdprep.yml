@@ -32,11 +32,6 @@ jobs:
       run: |
         git config --global core.autocrlf true
         git config --global core.eol crlf
-
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.11
         
     - uses: actions/checkout@v4
       with:
@@ -52,6 +47,10 @@ jobs:
       run: |
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
+
+    - name: Install libnsl on Ubuntu
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y libnsl-dev
 
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}

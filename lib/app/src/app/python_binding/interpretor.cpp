@@ -35,6 +35,7 @@ namespace VTX::App::PythonBinding
 			while ( not _threadedLoopStarted )
 				std::this_thread::sleep_for( _inactivitySleepTime.load() );
 			_thread->stop();
+			_thread->wait();
 			while ( not _threadedLoopFinished )
 				std::this_thread::sleep_for( _inactivitySleepTime.load() );
 		}

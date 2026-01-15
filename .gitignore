@@ -2,6 +2,7 @@
 **/build/
 **/.vs/
 **/.vscode/
+**/.claude/
 **/Testing/
 /external_project/
 /RELEASE/

@@ -6,6 +6,8 @@ find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_renderer CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
+set (PYBIND11_PYTHON_VERSION "3.9.19")
+find_package(Python3 "3.9.19" EXACT REQUIRED COMPONENTS Interpreter Development NO_SYSTEM_ENVIRONMENT_PATH)
 find_package(vtx_python_binding CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 

@@ -42,6 +42,10 @@ namespace VTX::App
 	{
 		class UIDManager;
 	}
+	namespace PythonBinding
+	{
+		class Interpretor;
+	}
 } // namespace VTX::App
 namespace VTX::Renderer
 {

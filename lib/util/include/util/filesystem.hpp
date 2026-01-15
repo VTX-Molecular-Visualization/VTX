@@ -9,6 +9,9 @@ namespace VTX::Util::Filesystem
 	// Return path to executable
 	FilePath getExecutableDir();
 
+	// Return path to the executable
+	FilePath getExecutable();
+
 	// Return path to user data directory
 	FilePath getUserDataDir();
 

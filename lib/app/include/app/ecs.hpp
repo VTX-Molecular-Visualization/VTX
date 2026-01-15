@@ -28,6 +28,15 @@ namespace VTX::App::ECS
 	}
 
 	/**
+	 * @brief Add a global service to the registry context.
+	 */
+	template<class T>
+	bool eraseCtx()
+	{
+		return registry().ctx().erase<T>();
+	}
+
+	/**
 	 * @brief Get a global service from the registry context.
 	 */
 	template<class T>
