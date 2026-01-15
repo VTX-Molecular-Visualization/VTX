@@ -188,8 +188,10 @@ namespace VTX::Renderer
 			}
 		}
 
-		size_t write( const E_TYPE p_type, SpanBytes p_src )
+		size_t write( const Desc::E_TYPE p_type, SpanBytes p_src )
 		{
+			using namespace Desc;
+
 			assert( _opened );
 
 			const size_t elemRaw = rawElementSizeBytes( p_type );
@@ -291,8 +293,10 @@ namespace VTX::Renderer
 		/**
 		 * @brief Get the raw size in bytes of an element of type E_TYPE.
 		 */
-		static constexpr size_t rawElementSizeBytes( const E_TYPE p_type )
+		static constexpr size_t rawElementSizeBytes( const Desc::E_TYPE p_type )
 		{
+			using namespace Desc;
+
 			switch ( p_type )
 			{
 			case E_TYPE::BOOL: return sizeof( uint32_t );

@@ -29,14 +29,14 @@ namespace VTX::Renderer
 		/**
 		 * @brief Accessors.
 		 */
-		inline const Resources & getResources() const { return _resources; }
-		inline const PassList &	 getPasses() const { return _passes; }
+		inline const Desc::Resources & getResources() const { return _resources; }
+		inline const Desc::PassList &  getPasses() const { return _passes; }
 
 		/**
 		 * @brief Validate graph and build render queue.
 		 * @return
 		 */
-		const RenderQueue build();
+		const Desc::RenderQueue build();
 
 		/**
 		 * @brief Add data from builder.
@@ -56,11 +56,11 @@ namespace VTX::Renderer
 		/**
 		 * @brief Create a default pipeline from config.
 		 */
-		void createDefaultPipeline( const PipelineConfig &, const Geometries & );
+		void createDefaultPipeline( const PipelineConfig &, const Desc::Geometries & );
 
 	  private:
-		Resources _resources;
-		PassList  _passes;
+		Desc::Resources _resources;
+		Desc::PassList	_passes;
 	};
 
 } // namespace VTX::Renderer

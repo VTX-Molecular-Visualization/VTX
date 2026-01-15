@@ -6,6 +6,7 @@
 #include <util/math.hpp>
 
 using namespace VTX::Renderer;
+using namespace VTX::Renderer::Desc;
 using namespace VTX::Renderer::Context;
 
 namespace

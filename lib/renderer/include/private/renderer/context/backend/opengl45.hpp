@@ -28,9 +28,9 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		struct TextureBinding
 		{
-			Handle	texture;
-			Handle	sampler;
-			Binding unit;
+			Desc::Handle  texture;
+			Desc::Handle  sampler;
+			Desc::Binding unit;
 		};
 
 		/**
@@ -38,11 +38,11 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		struct BufferBinding
 		{
-			Handle				 buffer;
-			E_SHADER_BUFFER_KIND kind;
-			Binding				 binding;
-			uint32_t			 offsetBytes = 0;
-			uint32_t			 sizeBytes	 = 0;
+			Desc::Handle			   buffer;
+			Desc::E_SHADER_BUFFER_KIND kind;
+			Desc::Binding			   binding;
+			uint32_t				   offsetBytes = 0;
+			uint32_t				   sizeBytes   = 0;
 		};
 
 		/**
@@ -63,22 +63,22 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Build the command buffer from the render queue and resources.
 		 */
-		void build( const RenderQueue &, const Resources &, CommandBuffer & );
+		void build( const Desc::RenderQueue &, const Desc::Resources &, CommandBuffer & );
 
 		/**
 		 * @brief Resize textures.
 		 */
-		void resize( const uint32_t, const uint32_t, const PassList &, const ResourceMap<Texture> & );
+		void resize( const uint32_t, const uint32_t, const Desc::PassList &, const Desc::ResourceMap<Desc::Texture> & );
 
 		/**
 		 * @brief Set data to a shader buffer.
 		 */
-		void setShaderBufferData( const Key &, SpanBytes );
+		void setShaderBufferData( const Desc::Key &, SpanBytes );
 
 		/**
 		 * @brief Set data to a pipeline buffer.
 		 */
-		void setPipelineBufferData( const Key &, SpanBytes );
+		void setPipelineBufferData( const Desc::Key &, SpanBytes );
 
 		/**
 		 * @brief Fill backend infos.
@@ -88,7 +88,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Resource table accessors.
 		 */
-		inline const OpenGL45::ResourceTable & resourceTable( const Handle p_handle ) const noexcept
+		inline const OpenGL45::ResourceTable & resourceTable( const Desc::Handle p_handle ) const noexcept
 		{
 			assert( p_handle < _resourceTables.size() );
 			return _resourceTables[ p_handle ];
@@ -97,49 +97,49 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief GL object accessors.
 		 */
-		inline const GL::Framebuffer & framebuffer( const Handle p_handle ) const noexcept
+		inline const GL::Framebuffer & framebuffer( const Desc::Handle p_handle ) const noexcept
 		{
 			assert( p_handle < _framebuffers.size() );
 			return *_framebuffers[ p_handle ];
 		}
 
-		inline const GL::Texture2D & texture( const Handle p_handle ) const noexcept
+		inline const GL::Texture2D & texture( const Desc::Handle p_handle ) const noexcept
 		{
 			assert( p_handle < _textures.size() );
 			return *_textures[ p_handle ];
 		}
 
-		inline const GL::Sampler & sampler( const Handle p_handle ) const noexcept
+		inline const GL::Sampler & sampler( const Desc::Handle p_handle ) const noexcept
 		{
 			assert( p_handle < _samplers.size() );
 			return *_samplers[ p_handle ];
 		}
 
-		inline const GL::Program & program( const Handle p_handle ) const noexcept
+		inline const GL::Program & program( const Desc::Handle p_handle ) const noexcept
 		{
 			assert( p_handle < _programs.size() );
 			return *_programs[ p_handle ];
 		}
 
-		inline const GL::Buffer & shaderBuffer( const Handle p_handle ) const noexcept
+		inline const GL::Buffer & shaderBuffer( const Desc::Handle p_handle ) const noexcept
 		{
 			assert( p_handle < _shaderBuffers.size() );
 			return *_shaderBuffers[ p_handle ];
 		}
 
-		inline const GL::Buffer & vertexBuffer( const Handle p_handle ) const noexcept
+		inline const GL::Buffer & vertexBuffer( const Desc::Handle p_handle ) const noexcept
 		{
 			assert( p_handle < _vertexBuffers.size() );
 			return *_vertexBuffers[ p_handle ];
 		}
 
-		inline const GL::Buffer & indexBuffer( const Handle p_handle ) const noexcept
+		inline const GL::Buffer & indexBuffer( const Desc::Handle p_handle ) const noexcept
 		{
 			assert( p_handle < _indexBuffers.size() );
 			return *_indexBuffers[ p_handle ];
 		}
 
-		inline const GL::VertexArray & vertexArray( const Handle p_handle ) const noexcept
+		inline const GL::VertexArray & vertexArray( const Desc::Handle p_handle ) const noexcept
 		{
 			assert( p_handle < _vertexArrays.size() );
 			return *_vertexArrays[ p_handle ];
@@ -160,7 +160,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Cache : mapping Key -> Handle.
 		 */
-		using Cache = std::unordered_map<Key, Handle>;
+		using Cache = std::unordered_map<Desc::Key, Desc::Handle>;
 		Cache _cacheTextures;
 		Cache _cacheSamplers;
 		Cache _cacheShaderBuffers;
@@ -197,51 +197,51 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		struct _ShaderBufferCacheEntry
 		{
-			E_SHADER_BUFFER_KIND role;
-			E_BUFFER_MUTABILITY	 mutability;
-			E_BUFFER_ACCESS		 access;
-			E_UPDATE_FREQUENCY	 frequency;
+			Desc::E_SHADER_BUFFER_KIND role;
+			Desc::E_BUFFER_MUTABILITY  mutability;
+			Desc::E_BUFFER_ACCESS	   access;
+			Desc::E_UPDATE_FREQUENCY   frequency;
 		};
 
 		struct _PipelineBufferCacheEntry
 		{
-			E_PIPELINE_BUFFER_KIND kind;
-			E_UPDATE_FREQUENCY	   frequency;
+			Desc::E_PIPELINE_BUFFER_KIND kind;
+			Desc::E_UPDATE_FREQUENCY	 frequency;
 		};
 
-		std::unordered_map<Key, _ShaderBufferCacheEntry>   _shaderBufferProperties;
-		std::unordered_map<Key, _PipelineBufferCacheEntry> _pipelineBufferProperties;
+		std::unordered_map<Desc::Key, _ShaderBufferCacheEntry>	 _shaderBufferProperties;
+		std::unordered_map<Desc::Key, _PipelineBufferCacheEntry> _pipelineBufferProperties;
 
 		/**
 		 * @brief Get or create resources.
 		 */
-		Handle _getOrCreateFramebuffer( const Pass &, const Resources &, const bool = false );
-		Handle _getOrCreateResourceTable( const Pass &, const Resources & );
-		Handle _getOrCreateTexture( const Key &, const Texture & );
-		Handle _getOrCreateSampler( const Key &, const Sampler & );
-		Handle _getOrCreateVertexLayout( const Key &, const VertexLayout & );
-		Handle _getOrCreateShaderBuffer( const BufferShader & );
-		Handle _getOrCreateVertexBuffer( const Key & );
-		Handle _getOrCreateIndexBuffer( const Key & );
-		Handle _getOrCreateProgram( const Program & );
+		Desc::Handle _getOrCreateFramebuffer( const Desc::Pass &, const Desc::Resources &, const bool = false );
+		Desc::Handle _getOrCreateResourceTable( const Desc::Pass &, const Desc::Resources & );
+		Desc::Handle _getOrCreateTexture( const Desc::Key &, const Desc::Texture & );
+		Desc::Handle _getOrCreateSampler( const Desc::Key &, const Desc::Sampler & );
+		Desc::Handle _getOrCreateVertexLayout( const Desc::Key &, const Desc::VertexLayout & );
+		Desc::Handle _getOrCreateShaderBuffer( const Desc::BufferShader & );
+		Desc::Handle _getOrCreateVertexBuffer( const Desc::Key & );
+		Desc::Handle _getOrCreateIndexBuffer( const Desc::Key & );
+		Desc::Handle _getOrCreateProgram( const Desc::Program & );
 
 		/**
 		 * @brief Build resources.
 		 */
-		GlobalShaderBuffers _buildGlobalShaderBuffers( const Resources & );
-		ResourceTable		_buildResourceTableForPass( const Pass &, const Resources & );
+		GlobalShaderBuffers _buildGlobalShaderBuffers( const Desc::Resources & );
+		ResourceTable		_buildResourceTableForPass( const Desc::Pass &, const Desc::Resources & );
 
 		/**
 		 * @brief Bind resources.
 		 */
-		void _attachTexturesToFramebuffer( const Pass &, const ResourceMap<Texture> & );
-		void _bindGeometryToVao( const Key &, const Geometry &, const Resources & );
+		void _attachTexturesToFramebuffer( const Desc::Pass &, const Desc::ResourceMap<Desc::Texture> & );
+		void _bindGeometryToVao( const Desc::Key &, const Desc::Geometry &, const Desc::Resources & );
 
 		/**
 		 * @brief Create the screen quad.
 		 */
-		inline static const Key _QUAD = "Quad";
-		void					_createQuad();
+		inline static const Desc::Key _QUAD = "Quad";
+		void						  _createQuad();
 
 		/**
 		 * @brief Specs.

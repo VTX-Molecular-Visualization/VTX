@@ -52,7 +52,7 @@ namespace VTX::Renderer
 		float buildTime = Util::CHRONO_CPU(
 			[ this ]()
 			{
-				const RenderQueue queue = _graph.build();
+				const Desc::RenderQueue queue = _graph.build();
 				_context.build( queue, _graph.getResources() );
 				std::cout << _context.commands() << std::endl;
 			}

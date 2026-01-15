@@ -7,8 +7,10 @@
 
 namespace VTX::Renderer
 {
-	const RenderQueue RenderGraph::build()
+	const Desc::RenderQueue RenderGraph::build()
 	{
+		using namespace Desc;
+
 		// Check if all inputs are produced before use.
 		std::unordered_set<Key> produced;
 
@@ -148,7 +150,7 @@ namespace VTX::Renderer
 		// Passes.
 		for ( const auto & pass : p_builder.passes )
 		{
-			_passes.push_back( std::make_unique<Pass>( *pass ) );
+			_passes.push_back( std::make_unique<Desc::Pass>( *pass ) );
 		}
 	}
 
@@ -162,12 +164,14 @@ namespace VTX::Renderer
 	void RenderGraph::clear()
 	{
 		// Clear resources?
-		_resources = Resources {};
+		_resources = Desc::Resources {};
 		_passes.clear();
 	}
 
-	void RenderGraph::createDefaultPipeline( const PipelineConfig & p_config, const Geometries & p_geometries )
+	void RenderGraph::createDefaultPipeline( const PipelineConfig & p_config, const Desc::Geometries & p_geometries )
 	{
+		using namespace Desc;
+
 		GraphBuilder g;
 
 		// Buffers.

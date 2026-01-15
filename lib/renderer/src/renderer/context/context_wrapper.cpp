@@ -105,7 +105,7 @@ namespace VTX::Renderer::Context
 		);
 	}
 
-	void ContextWrapper::build( const RenderQueue & p_renderQueue, const Resources & p_resources )
+	void ContextWrapper::build( const Desc::RenderQueue & p_renderQueue, const Desc::Resources & p_resources )
 	{
 		_impl->commands.clear();
 
@@ -123,10 +123,10 @@ namespace VTX::Renderer::Context
 	}
 
 	void ContextWrapper::resize(
-		const uint32_t							 p_width,
-		const uint32_t							 p_height,
-		const PassList &						 p_passes,
-		const std::unordered_map<Key, Texture> & p_textures
+		const uint32_t										 p_width,
+		const uint32_t										 p_height,
+		const Desc::PassList &								 p_passes,
+		const std::unordered_map<Desc::Key, Desc::Texture> & p_textures
 	)
 	{
 		std::visit(
@@ -142,7 +142,7 @@ namespace VTX::Renderer::Context
 		);
 	}
 
-	void ContextWrapper::setShaderBuffer( const Key & p_key, SpanBytes p_bytes )
+	void ContextWrapper::setShaderBuffer( const Desc::Key & p_key, SpanBytes p_bytes )
 	{
 		std::visit(
 			[ & ]( auto & p_backend )
@@ -157,7 +157,7 @@ namespace VTX::Renderer::Context
 		);
 	}
 
-	void ContextWrapper::setPipelineBuffer( const Key & p_key, SpanBytes p_bytes )
+	void ContextWrapper::setPipelineBuffer( const Desc::Key & p_key, SpanBytes p_bytes )
 	{
 		std::visit(
 			[ & ]( auto & p_backend )

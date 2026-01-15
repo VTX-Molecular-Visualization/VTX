@@ -131,7 +131,6 @@ int main( int, char ** )
 		}
 
 		renderer.setVoxels( mins, maxs );
-
 		renderer.setColorLayout( scene.getColorLayout() );
 
 		// Quickfix.

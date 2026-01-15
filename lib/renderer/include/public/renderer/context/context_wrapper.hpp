@@ -38,12 +38,17 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Build the command buffer from the render queue and resources.
 		 */
-		void build( const RenderQueue &, const Resources & );
+		void build( const Desc::RenderQueue &, const Desc::Resources & );
 
 		/**
 		 * @brief Resize backend resources.
 		 */
-		void resize( const uint32_t, const uint32_t, const PassList &, const std::unordered_map<Key, Texture> & );
+		void resize(
+			const uint32_t,
+			const uint32_t,
+			const Desc::PassList &,
+			const std::unordered_map<Desc::Key, Desc::Texture> &
+		);
 
 		/**
 		 * @brief Convert a span of T to a span of bytes.
@@ -60,21 +65,21 @@ namespace VTX::Renderer::Context
 		 * @brief Set shader buffer data.
 		 */
 		template<class T>
-		void setShaderBuffer( const Key & p_key, std::span<const T> p_data )
+		void setShaderBuffer( const Desc::Key & p_key, std::span<const T> p_data )
 		{
 			setShaderBuffer( p_key, asBytes( p_data ) );
 		}
-		void setShaderBuffer( const Key & p_key, SpanBytes );
+		void setShaderBuffer( const Desc::Key & p_key, SpanBytes );
 
 		/**
 		 * @brief Set pipeline buffer data.
 		 */
 		template<class T>
-		void setPipelineBuffer( const Key & p_key, std::span<const T> p_data )
+		void setPipelineBuffer( const Desc::Key & p_key, std::span<const T> p_data )
 		{
 			setPipelineBuffer( p_key, asBytes( p_data ) );
 		}
-		void setPipelineBuffer( const Key & p_key, SpanBytes );
+		void setPipelineBuffer( const Desc::Key & p_key, SpanBytes );
 
 		/**
 		 * @brief Fill renderer infos.

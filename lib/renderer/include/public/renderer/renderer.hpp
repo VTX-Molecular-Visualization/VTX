@@ -10,6 +10,10 @@
 #include "renderer/camera.hpp"
 #include "renderer/color.hpp"
 #include "renderer/context/context_wrapper.hpp"
+#include "renderer/geometry/cylinder.hpp"
+#include "renderer/geometry/ribbon.hpp"
+#include "renderer/geometry/sphere.hpp"
+#include "renderer/geometry/voxel.hpp"
 #include "renderer/graphics_config.hpp"
 #include "renderer/proxy/system.hpp"
 #include "renderer/render_graph.hpp"
@@ -43,7 +47,7 @@ namespace VTX::Renderer
 		 * @param p_index is the index of the data to set if we need to update only one value in an array.
 		 */
 		template<typename T>
-		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index = 0 )
+		inline void setValue( const T & p_value, const Desc::Key & p_key, const size_t p_index = 0 )
 		{
 			//_context.setValue<T>( p_value, p_key, p_index );
 			setNeedUpdate( true );
@@ -222,7 +226,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Geometries ranges.
 		 */
-		Geometries _geometries;
+		Desc::Geometries _geometries;
 
 		/**
 		 * @brief Wrapper to handle the graphic APIs.

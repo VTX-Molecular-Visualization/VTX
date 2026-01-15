@@ -16,7 +16,7 @@
 /**
  * @brief Describes all the meta-data used by the render graph.
  */
-namespace VTX::Renderer
+namespace VTX::Renderer::Desc
 {
 	/**
 	 * @brief All data types.
@@ -387,6 +387,6 @@ namespace VTX::Renderer
 		DrawCall::RangeArrays	drawRangeRibbons;
 		DrawCall::RangeArrays	drawRangeVoxels;
 	};
-} // namespace VTX::Renderer
+} // namespace VTX::Renderer::Desc
 
 #endif

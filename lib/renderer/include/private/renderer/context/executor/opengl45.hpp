@@ -22,6 +22,8 @@ namespace VTX::Renderer::Context::Executor
 		 */
 		inline void execute( const CommandBuffer & p_commandBuffer ) const noexcept
 		{
+			using namespace Desc;
+
 			for ( const Command & command : p_commandBuffer.commands )
 			{
 				switch ( command.type )

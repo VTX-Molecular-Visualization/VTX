@@ -21,8 +21,10 @@ namespace
 	/**
 	 * @brief All GL mapping.
 	 */
-	constexpr GLPixelFormat _toGL( const E_FORMAT p_format ) noexcept
+	constexpr GLPixelFormat _toGL( const Desc::E_FORMAT p_format ) noexcept
 	{
+		using namespace Desc;
+
 		switch ( p_format )
 		{
 		case E_FORMAT::RGB16F: return { GL_RGB16F, GL_RGB, GL_HALF_FLOAT, false, false };
@@ -38,8 +40,10 @@ namespace
 		}
 	}
 
-	constexpr GLenum _toGL( const E_WRAPPING p_wrapping ) noexcept
+	constexpr GLenum _toGL( const Desc::E_WRAPPING p_wrapping ) noexcept
 	{
+		using namespace Desc;
+
 		switch ( p_wrapping )
 		{
 		case E_WRAPPING::REPEAT: return GL_REPEAT;
@@ -51,8 +55,10 @@ namespace
 		}
 	}
 
-	constexpr GLenum _toGL( const E_FILTERING p_filtering ) noexcept
+	constexpr GLenum _toGL( const Desc::E_FILTERING p_filtering ) noexcept
 	{
+		using namespace Desc;
+
 		switch ( p_filtering )
 		{
 		case E_FILTERING::NEAREST: return GL_NEAREST;
@@ -65,8 +71,10 @@ namespace
 		}
 	}
 
-	constexpr GLenum _toGL( const E_SHADER_BUFFER_KIND p_bufferRole ) noexcept
+	constexpr GLenum _toGL( const Desc::E_SHADER_BUFFER_KIND p_bufferRole ) noexcept
 	{
+		using namespace Desc;
+
 		switch ( p_bufferRole )
 		{
 		case E_SHADER_BUFFER_KIND::PARAMETERS: return GL_UNIFORM_BUFFER;
@@ -75,8 +83,13 @@ namespace
 		}
 	}
 
-	constexpr GLbitfield _toGLStorageFlags( const E_BUFFER_ACCESS p_access, const E_UPDATE_FREQUENCY p_freq )
+	constexpr GLbitfield _toGLStorageFlags(
+		const Desc::E_BUFFER_ACCESS	   p_access,
+		const Desc::E_UPDATE_FREQUENCY p_freq
+	)
 	{
+		using namespace Desc;
+
 		GLbitfield flags = 0;
 
 		switch ( p_access )
@@ -104,8 +117,10 @@ namespace
 		return flags;
 	}
 
-	constexpr GLbitfield toGLMapFlags( const E_BUFFER_ACCESS p_access )
+	constexpr GLbitfield toGLMapFlags( const Desc::E_BUFFER_ACCESS p_access )
 	{
+		using namespace Desc;
+
 		GLbitfield flags = 0;
 
 		switch ( p_access )
@@ -123,8 +138,10 @@ namespace
 		return flags;
 	}
 
-	constexpr GLenum _toGL( const E_UPDATE_FREQUENCY p_freq ) noexcept
+	constexpr GLenum _toGL( const Desc::E_UPDATE_FREQUENCY p_freq ) noexcept
 	{
+		using namespace Desc;
+
 		switch ( p_freq )
 		{
 		case E_UPDATE_FREQUENCY::STATIC: return GL_STATIC_DRAW;
@@ -134,8 +151,10 @@ namespace
 		}
 	}
 
-	constexpr GLenum _toGL( const E_PRIMITIVE p_primitive ) noexcept
+	constexpr GLenum _toGL( const Desc::E_PRIMITIVE p_primitive ) noexcept
 	{
+		using namespace Desc;
+
 		switch ( p_primitive )
 		{
 		case E_PRIMITIVE::POINTS: return GL_POINTS;
@@ -158,8 +177,10 @@ namespace
 		uint8_t	 columns	  = 1;
 	};
 
-	constexpr GLAttrib toGLAttrib( E_TYPE p_type ) noexcept
+	constexpr GLAttrib toGLAttrib( Desc::E_TYPE p_type ) noexcept
 	{
+		using namespace Desc;
+
 		switch ( p_type )
 		{
 		case E_TYPE::FLOAT: return { GL_FLOAT, 1, false, 4, 1 };
@@ -180,10 +201,10 @@ namespace
 		}
 	}
 
-	uint32_t _toSettingFlags( const std::vector<Setting> & p_settings )
+	uint32_t _toSettingFlags( const std::vector<Desc::Setting> & p_settings )
 	{
 		uint32_t mask = 0;
-		for ( const Setting setting : p_settings )
+		for ( const Desc::Setting setting : p_settings )
 		{
 			mask |= setting;
 		}
@@ -252,8 +273,14 @@ namespace VTX::Renderer::Context::Backend
 
 	// Create resources, configure, and push commands.
 	// No OpenGL objects in this function, only Handles.
-	void OpenGL45::build( const RenderQueue & p_renderQueue, const Resources & p_resources, CommandBuffer & p_commands )
+	void OpenGL45::build(
+		const Desc::RenderQueue & p_renderQueue,
+		const Desc::Resources &	  p_resources,
+		CommandBuffer &			  p_commands
+	)
 	{
+		using namespace Desc;
+
 		// Create all resources.
 		for ( const auto & [ key, texture ] : p_resources.textures )
 		{
@@ -406,12 +433,14 @@ namespace VTX::Renderer::Context::Backend
 	}
 
 	void OpenGL45::resize(
-		const uint32_t				 p_width,
-		const uint32_t				 p_height,
-		const PassList &			 p_passes,
-		const ResourceMap<Texture> & p_textures
+		const uint32_t							 p_width,
+		const uint32_t							 p_height,
+		const Desc::PassList &					 p_passes,
+		const Desc::ResourceMap<Desc::Texture> & p_textures
 	)
 	{
+		using namespace Desc;
+
 		assert( p_width > 0 );
 		assert( p_height > 0 );
 
@@ -453,8 +482,14 @@ namespace VTX::Renderer::Context::Backend
 		}
 	}
 
-	Handle OpenGL45::_getOrCreateFramebuffer( const Pass & p_pass, const Resources & p_res, const bool p_isLastpass )
+	Desc::Handle OpenGL45::_getOrCreateFramebuffer(
+		const Desc::Pass &		p_pass,
+		const Desc::Resources & p_res,
+		const bool				p_isLastpass
+	)
 	{
+		using namespace Desc;
+
 		const Key & key = p_pass.name;
 
 		auto it = _cacheFramebuffers.find( key );
@@ -475,8 +510,10 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateResourceTable( const Pass & p_pass, const Resources & p_res )
+	Desc::Handle OpenGL45::_getOrCreateResourceTable( const Desc::Pass & p_pass, const Desc::Resources & p_res )
 	{
+		using namespace Desc;
+
 		const Key & key = p_pass.name;
 
 		auto it = _cacheResourceTables.find( key );
@@ -492,8 +529,10 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateTexture( const Key & p_key, const Texture & p_text )
+	Desc::Handle OpenGL45::_getOrCreateTexture( const Desc::Key & p_key, const Desc::Texture & p_text )
 	{
+		using namespace Desc;
+
 		auto it = _cacheTextures.find( p_key );
 		if ( it != _cacheTextures.end() )
 		{
@@ -533,8 +572,10 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateSampler( const Key & p_key, const Sampler & p_text )
+	Desc::Handle OpenGL45::_getOrCreateSampler( const Desc::Key & p_key, const Desc::Sampler & p_text )
 	{
+		using namespace Desc;
+
 		auto it = _cacheSamplers.find( p_key );
 		if ( it != _cacheSamplers.end() )
 		{
@@ -552,8 +593,13 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateVertexLayout( const Key & p_key, const VertexLayout & p_vertexStream )
+	Desc::Handle OpenGL45::_getOrCreateVertexLayout(
+		const Desc::Key &		   p_key,
+		const Desc::VertexLayout & p_vertexStream
+	)
 	{
+		using namespace Desc;
+
 		auto it = _cacheVertexLayouts.find( p_key );
 		if ( it != _cacheVertexLayouts.end() )
 		{
@@ -590,8 +636,10 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateShaderBuffer( const BufferShader & p_buffer )
+	Desc::Handle OpenGL45::_getOrCreateShaderBuffer( const Desc::BufferShader & p_buffer )
 	{
+		using namespace Desc;
+
 		const Key key = p_buffer.name;
 
 		auto it = _cacheShaderBuffers.find( key );
@@ -648,8 +696,10 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateVertexBuffer( const Key & p_key )
+	Desc::Handle OpenGL45::_getOrCreateVertexBuffer( const Desc::Key & p_key )
 	{
+		using namespace Desc;
+
 		auto it = _cacheVertexBuffers.find( p_key );
 		if ( it != _cacheVertexBuffers.end() )
 		{
@@ -665,8 +715,10 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateIndexBuffer( const Key & p_key )
+	Desc::Handle OpenGL45::_getOrCreateIndexBuffer( const Desc::Key & p_key )
 	{
+		using namespace Desc;
+
 		auto it = _cacheIndexBuffers.find( p_key );
 		if ( it != _cacheIndexBuffers.end() )
 		{
@@ -682,8 +734,10 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateProgram( const Program & p_program )
+	Desc::Handle OpenGL45::_getOrCreateProgram( const Desc::Program & p_program )
 	{
+		using namespace Desc;
+
 		const Key & key = p_program.name;
 		auto		it	= _cachePrograms.find( key );
 		if ( it != _cachePrograms.end() )
@@ -712,8 +766,10 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	OpenGL45::GlobalShaderBuffers OpenGL45::_buildGlobalShaderBuffers( const Resources & p_resources )
+	OpenGL45::GlobalShaderBuffers OpenGL45::_buildGlobalShaderBuffers( const Desc::Resources & p_resources )
 	{
+		using namespace Desc;
+
 		OpenGL45::GlobalShaderBuffers gsb;
 
 		for ( const auto & [ key, buffer ] : p_resources.shaderBuffers )
@@ -726,8 +782,13 @@ namespace VTX::Renderer::Context::Backend
 		return gsb;
 	}
 
-	OpenGL45::ResourceTable OpenGL45::_buildResourceTableForPass( const Pass & p_pass, const Resources & p_resources )
+	OpenGL45::ResourceTable OpenGL45::_buildResourceTableForPass(
+		const Desc::Pass &		p_pass,
+		const Desc::Resources & p_resources
+	)
 	{
+		using namespace Desc;
+
 		OpenGL45::ResourceTable rt;
 
 		// It's better to not use the same binding/unit several times in different contexts.
@@ -789,8 +850,13 @@ namespace VTX::Renderer::Context::Backend
 		return rt;
 	}
 
-	void OpenGL45::_attachTexturesToFramebuffer( const Pass & p_pass, const ResourceMap<Texture> & p_textures )
+	void OpenGL45::_attachTexturesToFramebuffer(
+		const Desc::Pass &						 p_pass,
+		const Desc::ResourceMap<Desc::Texture> & p_textures
+	)
 	{
+		using namespace Desc;
+
 		const Key &				key			 = p_pass.name;
 		const Handle			hFramebuffer = _cacheFramebuffers.at( key );
 		const GL::Framebuffer & fbo			 = *_framebuffers[ hFramebuffer ];
@@ -837,8 +903,14 @@ namespace VTX::Renderer::Context::Backend
 		assert( fbo.checkStatus() );
 	}
 
-	void OpenGL45::_bindGeometryToVao( const Key & p_key, const Geometry & p_geo, const Resources & p_resources )
+	void OpenGL45::_bindGeometryToVao(
+		const Desc::Key &		p_key,
+		const Desc::Geometry &	p_geo,
+		const Desc::Resources & p_resources
+	)
 	{
+		using namespace Desc;
+
 		const Key &			 kVao	= p_geo.vertexLayout;
 		const VertexLayout & layout = p_resources.vertexStreams.at( kVao );
 		const auto &		 vao	= *_vertexArrays.at( _cacheVertexLayouts.at( kVao ) );
@@ -875,6 +947,8 @@ namespace VTX::Renderer::Context::Backend
 
 	void OpenGL45::_createQuad()
 	{
+		using namespace Desc;
+
 		const std::array<Vec2f, 4> quad
 			= { Vec2f { -1.f, 1.f }, Vec2f { -1.f, -1.f }, Vec2f { 1.f, 1.f }, Vec2f { 1.f, -1.f } };
 
@@ -902,15 +976,19 @@ namespace VTX::Renderer::Context::Backend
 		_vertexBuffers[ hVbo ]->setData( quad.data(), GLsizei( sizeof( quad ) ), GL_STATIC_DRAW );
 	}
 
-	void OpenGL45::setShaderBufferData( const Key & p_key, SpanBytes p_bytes )
+	void OpenGL45::setShaderBufferData( const Desc::Key & p_key, SpanBytes p_bytes )
 	{
+		using namespace Desc;
+
 		const auto & bufferDesc = _shaderBufferProperties.at( p_key );
 		const Handle h			= _cacheShaderBuffers.at( p_key );
 		_shaderBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( bufferDesc.frequency ) );
 	}
 
-	void OpenGL45::setPipelineBufferData( const Key & p_key, SpanBytes p_bytes )
+	void OpenGL45::setPipelineBufferData( const Desc::Key & p_key, SpanBytes p_bytes )
 	{
+		using namespace Desc;
+
 		const auto & bufferDesc = _pipelineBufferProperties.at( p_key );
 		GLenum		 freq		= _toGL( bufferDesc.frequency );
 		if ( bufferDesc.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
