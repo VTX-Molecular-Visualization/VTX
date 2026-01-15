@@ -31,12 +31,12 @@ namespace VTX::App
 		/**
 		 * @brief Virtual destructor.
 		 */
-		~VTXApp(); // TODO : do we still need to be virtual ?
+		virtual ~VTXApp();
 
 		/**
 		 * @brief Start the application, can be overidden by gui.
 		 */
-		void start();
+		virtual void start();
 
 		/**
 		 * @brief Main loop update function (called from gui thread).

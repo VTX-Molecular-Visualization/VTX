@@ -96,7 +96,7 @@ int main( int p_argc, char * p_argv[] )
 		const std::string	moleculeName	 = "2ama_1_npt";
 		const std::string	moleculePathname = moleculeName + ".trr";
 		const VTX::FilePath moleculePath	 = VTX::Util::Filesystem::getExecutableDir() / "data\\" / moleculePathname;
-		args.add( moleculePath.string() );
+		// args.add( moleculePath.string() );
 
 		// Starting main application loop.
 		app->start();

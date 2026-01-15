@@ -38,6 +38,7 @@ namespace
 {
 	/**
 	 * @brief Store local entities.
+	 * TODO : Why don't we use private/protected attributes from VTXApp ?
 	 */
 	using namespace VTX::App;
 	ECS::Entity _scene;

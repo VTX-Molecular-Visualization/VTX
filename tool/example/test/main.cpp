@@ -1,6 +1,4 @@
 #include <app/fixture.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE( "Tool::Example", "[tool.example]" )
-{
-}
+TEST_CASE( "Tool::Example", "[tool.example]" ) { CHECK( true ); }
