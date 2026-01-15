@@ -58,9 +58,9 @@ namespace VTX::PythonBinding
 				".exe" ).wstring();
 			std::wstring pythonExecDir = p_pythonHomePath;
 #else
-			std::wstring pyScriptDir	  = ( VTX::FilePath( p_pythonHomePath ) / "lib" / "python3.9" ).wstring();
+			std::wstring pyScriptDir	  = ( VTX::FilePath( p_pythonHomePath ) / "lib" / "python3.12" ).wstring();
 			std::wstring platlibdir		  = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
-			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin" / "python3.9" ).wstring();
+			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin" / "python3.12" ).wstring();
 			std::wstring pythonExecDir	  = ( VTX::FilePath( p_pythonHomePath ) / "bin" ).wstring();
 
 #endif
