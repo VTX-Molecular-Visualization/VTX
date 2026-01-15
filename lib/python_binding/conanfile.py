@@ -137,6 +137,16 @@ class VTXPythonBindingRecipe(ConanFile):
     def generate(self):
         tc = CMakeToolchain(self)
         tc.generate()
+        
+        dep_name = "cpython"
+        if str(self.settings.os) == "Linux" and dep_name in self.dependencies:
+            dep = self.dependencies[dep_name]
+            # Root cpp_info
+            dep.cpp_info.system_libs = [l for l in dep.cpp_info.system_libs if l != "nsl"]
+            # Components 
+            for comp in dep.cpp_info.components.values():
+                comp.system_libs = [l for l in comp.system_libs if l != "nsl"]
+                
         doPythonCopies(self) 
         
     def _print_dir_content(self, p_dir):
