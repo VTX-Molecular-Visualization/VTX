@@ -17,6 +17,7 @@ namespace VTX::Renderer::Geometry
 		DrawRangeArray drawRangeSESConvexes;
 		DrawRangeArray drawRangeSESSegments;
 	};
+
 } // namespace VTX::Renderer::Geometry
 
 #endif

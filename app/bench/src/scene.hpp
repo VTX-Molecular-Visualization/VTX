@@ -4,7 +4,6 @@
 #include "camera.hpp"
 #include <core/struct/system.hpp>
 #include <renderer/color.hpp>
-#include <renderer/proxy/system.hpp>
 
 namespace VTX::Renderer
 {
@@ -21,15 +20,15 @@ namespace VTX::Bench
 
 		inline Camera & getCamera() { return _camera; }
 
-		Renderer::Proxy::System & addSystem( const std::string & p_name );
-		void					  removeSystem( const size_t p_index );
+		void addSystem( const std::string & p_name );
+		void removeSystem( const size_t p_index );
 
 		inline void update( const float p_deltaTime )
 		{
-			if ( not isUpdate )
-			{
-				return;
-			}
+			// if ( not isUpdate )
+			//{
+			//	return;
+			// }
 
 			int i = 0;
 			// static uint currentFrame = 0;
@@ -42,15 +41,10 @@ namespace VTX::Bench
 				//	= &system->trajectory.frames[ currentFrame++ % system->trajectory.frames.size() ];
 				//_proxySystems[ i ]->onAtomPositions();
 
-				_proxySystems[ i++ ]->onTransform();
+				//_proxySystems[ i++ ]->onTransform();
 			}
 		}
 
-		inline const std::vector<std::unique_ptr<Core::Struct::System>> &	 getSystems() const { return _systems; }
-		inline const std::vector<std::unique_ptr<Renderer::Proxy::System>> & getProxiesSystems() const
-		{
-			return _proxySystems;
-		}
 		inline const Renderer::Color::Layout & getColorLayout() const { return _colorLayout; }
 		inline void setColorLayout( const Renderer::Color::Layout & p_colorLayout ) { _colorLayout = p_colorLayout; }
 
@@ -60,13 +54,12 @@ namespace VTX::Bench
 		Camera _camera;
 		// Renderer::Proxy::Camera _proxyCamera;
 
-		std::vector<std::unique_ptr<Core::Struct::System>>	  _systems;
-		std::vector<std::unique_ptr<Renderer::Proxy::System>> _proxySystems;
-		std::vector<Vec3f>									  _directions;
+		std::vector<std::unique_ptr<Core::Struct::System>> _systems;
+		std::vector<Vec3f>								   _directions;
 
 		Renderer::Color::Layout _colorLayout;
 
-		std::unique_ptr<Renderer::Proxy::System> _proxify( const Core::Struct::System & p_system );
+		// std::unique_ptr<Renderer::Proxy::System> _proxify( const Core::Struct::System & p_system );
 	};
 
 } // namespace VTX::Bench

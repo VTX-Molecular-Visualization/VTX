@@ -330,6 +330,7 @@ namespace VTX::Bench
 			}
 			*/
 
+			/*
 			ImGui::Checkbox( fmt::format( "{} atoms", sizeAtoms ).c_str(), &p_renderer->showAtoms );
 			ImGui::Checkbox( fmt::format( "{} bonds", sizeBonds ).c_str(), &p_renderer->showBonds );
 			ImGui::Checkbox( fmt::format( "{} ribbons", sizeRibbons ).c_str(), &p_renderer->showRibbons );
@@ -337,6 +338,7 @@ namespace VTX::Bench
 
 			ImGui::Text( fmt::format( "{}x{}", p_renderer->width(), p_renderer->height() ).c_str() );
 			ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
+			*/
 
 			/*
 			const Renderer::StructInfos & infos = p_renderer->getInfos();
@@ -434,6 +436,7 @@ namespace VTX::Bench
 			size_t idSystem = 0;
 			int	   toDelete = -1;
 
+			/*
 			for ( auto & proxySystem : p_scene->getProxiesSystems() )
 			{
 				// Display transform.
@@ -482,6 +485,7 @@ namespace VTX::Bench
 				}
 				idSystem++;
 			}
+			*/
 
 			if ( toDelete != -1 )
 			{

@@ -10,6 +10,7 @@ namespace VTX::Renderer::Geometry
 		RangeList	   rangeList;
 		DrawRangeArray drawRanges;
 	};
+
 } // namespace VTX::Renderer::Geometry
 
 #endif

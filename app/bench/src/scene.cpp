@@ -37,7 +37,7 @@ namespace VTX::Bench
 			*/
 	}
 
-	Renderer::Proxy::System & Scene::addSystem( const std::string & p_name )
+	void Scene::addSystem( const std::string & p_name )
 	{
 		using namespace Util;
 
@@ -53,20 +53,16 @@ namespace VTX::Bench
 		//_systems.back()->transform
 		//	= Math::translate( _systems.back()->transform, Math::randomVec3f() * 200.f - 100.f );
 		IO::Util::SecondaryStructure::computeStride( *_systems.back() );
-		_proxySystems.emplace_back( _proxify( *_systems.back() ) );
 		_directions.emplace_back( Math::randomVec3f() * 2.f - 1.f );
-
-		return *_proxySystems.back();
 	};
 
 	void Scene::removeSystem( const size_t p_index )
 	{
-		_proxySystems[ p_index ]->onRemove();
 		_systems.erase( _systems.begin() + p_index );
-		_proxySystems.erase( _proxySystems.begin() + p_index );
 		_directions.erase( _directions.begin() + p_index );
 	}
 
+	/*
 	std::unique_ptr<Renderer::Proxy::System> Scene::_proxify( const Core::Struct::System & p_system )
 	{
 		const size_t									sizeAtoms	= p_system.trajectory.getCurrentFrame().size();
@@ -109,7 +105,7 @@ namespace VTX::Bench
 		const std::vector<Vec3f> * atomsPositions = &p_system.trajectory.getCurrentFrame();
 
 		return std::make_unique<Renderer::Proxy::System>(
-			/* Renderer::Proxy::System {
+			 Renderer::Proxy::System {
 			&p_system.transform,
 			atomsPositions,
 			&p_system.bondPairAtomIndexes,
@@ -126,8 +122,9 @@ namespace VTX::Bench
 			residueIds,
 			polymerChainIds,
 			carbohydrateChainIds,
-			0 }*/
+			0 }
 		);
 	}
+	*/
 
 } // namespace VTX::Bench

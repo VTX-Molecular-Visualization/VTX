@@ -6,13 +6,11 @@
 #ifdef VTX_CUDA_ENABLED
 #include "bcs/sesdf/sesdf.hpp"
 #endif
-#include "renderer/caches.hpp"
 #include "renderer/camera.hpp"
 #include "renderer/color.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/geometry/geometries.hpp"
 #include "renderer/graphics_config.hpp"
-#include "renderer/proxy/system.hpp"
 #include "renderer/render_graph.hpp"
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
@@ -76,20 +74,19 @@ namespace VTX::Renderer
 		void render( const float, const float ) noexcept;
 
 		/**
-		 * @brief Add data to the renderer.
+		 * @brief Push data to the renderer.
 		 */
-		// OLD
-		void addProxySystem( Proxy::System & p_proxy );
-		void removeProxySystem( Proxy::System & p_proxy );
-		void addProxySystems( std::vector<Proxy::System *> & p_proxies );
-		void removeProxySystems( std::vector<Proxy::System *> & p_proxies );
-
-		// NEW
 		void setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );
 		void setGraphicsConfig( const GraphicsConfig & );
 		void setColorLayout( const Color::Layout & );
 		void setRepresentation( const Representation & );
 		void setVoxels( const std::vector<Vec3f> &, const std::vector<Vec3f> & );
+
+		/**
+		 * @brief Add / remove / update system.
+		 */
+		void addSystem();
+		void removeSystem();
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
@@ -135,23 +132,6 @@ namespace VTX::Renderer
 		static constexpr size_t BUFFER_COUNT = 2;
 
 		/**
-		 * @brief Primitives to show.
-		 */
-
-		// TODO: facto geometries with RL, DR and cache?
-		// TODO: facto proxies in enumed collection?
-		// OLD REMOVE
-		bool showAtoms	 = true;
-		bool showBonds	 = true;
-		bool showRibbons = true;
-		bool showSES	 = true;
-		bool showVoxels	 = true;
-		// bool showSESCircles	= true;
-		// bool showSESConcaves = true;
-		// bool showSESConvexes = true;
-		// bool showSESSegments = true;
-
-		/**
 		 * @brief Force update each frame.
 		 */
 		bool forceUpdate = true;
@@ -173,7 +153,7 @@ namespace VTX::Renderer
 		Context::GL::Program * _sesProgramCircle;
 		Context::GL::Program * _sesProgramConvex;
 #endif
-		void _createSes( Proxy::System & p_proxy );
+		// void _createSes( Proxy::System & p_proxy );
 
 	  private:
 		/**
@@ -209,48 +189,21 @@ namespace VTX::Renderer
 		StructInfos _infos;
 
 		/**
-		 * @brief All data proxies.
+		 * @brief Refresh the render graph according to the graphics config.
 		 */
-		std::vector<Proxy::System *> _proxiesSystems;
-
-		void _addProxySystem( Proxy::System & p_proxy );
-		void _removeProxySystem( Proxy::System & p_proxy );
-
-		// TODO: check complexity.
-		inline size_t _getProxyId( const Proxy::System * const p_proxy ) const
-		{
-			size_t id = std::distance(
-				_proxiesSystems.begin(), std::find( _proxiesSystems.begin(), _proxiesSystems.end(), p_proxy )
-			);
-
-			assert( id < _proxiesSystems.size() );
-
-			return id;
-		}
-
-		/**
-		 * @brief Cache some data to avoid recomputing.
-		 */
-		std::map<const Proxy::System * const, Cache::SphereCylinder> _cacheSpheresCylinders;
-		std::map<const Proxy::System * const, Cache::Ribbon>		 _cacheRibbons;
-		// std::map<const Proxy::System * const, Cache::SES>			 _cacheSES;
-
 		void _refreshGraph( const GraphicsConfig & );
 
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
 		inline void _refreshDataSystems()
 		{
-			_refreshDataSpheresCylinders();
-			_refreshDataRibbons();
+			//_refreshDataSpheresCylinders();
+			//_refreshDataRibbons();
 			_refreshDataModels();
 
 			setNeedUpdate( true );
 		}
 
-		void _refreshDataSpheresCylinders();
-		void _refreshDataRibbons();
 		void _refreshDataModels();
-		void _refreshDataVoxels();
 
 		void _applyRepresentationLogic( const Representation & );
 
