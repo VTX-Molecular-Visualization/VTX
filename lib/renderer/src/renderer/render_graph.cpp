@@ -168,7 +168,7 @@ namespace VTX::Renderer
 		_passes.clear();
 	}
 
-	void RenderGraph::createDefaultPipeline( const PipelineConfig & p_config, const Desc::Geometries & p_geometries )
+	void RenderGraph::createDefaultPipeline( const PipelineConfig & p_config, const Geometries & p_geometries )
 	{
 		using namespace Desc;
 
@@ -375,19 +375,19 @@ namespace VTX::Renderer
 			.out( "DepthRaw" )
 			.program( "Sphere" )
 			.shadersDir( "sphere" )
-			.draw( "Spheres", E_PRIMITIVE::POINTS, &p_geometries.drawRangeSpheres )
+			.draw( "Spheres", E_PRIMITIVE::POINTS, &p_geometries.spheres.drawRanges )
 			.endProgram()
 			.program( "Cylinder" )
 			.shadersDir( "cylinder" )
-			.draw( "Cylinders", E_PRIMITIVE::LINES, nullptr, &p_geometries.drawRangeCylinders )
+			.draw( "Cylinders", E_PRIMITIVE::LINES, nullptr, &p_geometries.cylinders.drawRanges )
 			.endProgram()
 			.program( "Ribbon" )
 			.shadersDir( "ribbon" )
-			.draw( "Ribbons", E_PRIMITIVE::PATCHES, &p_geometries.drawRangeRibbons )
+			.draw( "Ribbons", E_PRIMITIVE::PATCHES, &p_geometries.ribbons.drawRanges )
 			.endProgram()
 			.program( "Voxel" )
 			.shadersDir( "voxel" )
-			.draw( "Grid", E_PRIMITIVE::POINTS, &p_geometries.drawRangeVoxels )
+			.draw( "Grid", E_PRIMITIVE::POINTS, &p_geometries.voxels.drawRanges )
 			.endProgram()
 			.endPass();
 

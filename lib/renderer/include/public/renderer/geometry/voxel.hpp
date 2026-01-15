@@ -7,6 +7,7 @@ namespace VTX::Renderer::Geometry
 {
 	struct Voxel : BaseGeometry
 	{
+		DrawRangeArray drawRanges;
 	};
 } // namespace VTX::Renderer::Geometry
 

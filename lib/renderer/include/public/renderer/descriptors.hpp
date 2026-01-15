@@ -379,14 +379,6 @@ namespace VTX::Renderer::Desc
 	 */
 	using RenderQueue = std::vector<const Pass *>;
 
-	// TODO: not there.
-	struct Geometries
-	{
-		DrawCall::RangeArrays	drawRangeSpheres;
-		DrawCall::RangeElements drawRangeCylinders;
-		DrawCall::RangeArrays	drawRangeRibbons;
-		DrawCall::RangeArrays	drawRangeVoxels;
-	};
 } // namespace VTX::Renderer::Desc
 
 #endif

@@ -1,6 +1,7 @@
 #include "renderer/renderer.hpp"
 #include "renderer/binary_buffer.hpp"
 #include <execution>
+#include <util/chrono.hpp>
 #include <util/math.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/grid.hpp>
@@ -110,14 +111,7 @@ namespace VTX::Renderer
 	{
 		if ( _needUpdate || forceUpdate || _framesRemaining > 0 )
 		{
-			if ( logDurations )
-			{
-				_renderLog( p_deltaTime, p_elapsedTime );
-			}
-			else
-			{
-				_render( p_deltaTime, p_elapsedTime );
-			}
+			_render( p_deltaTime, p_elapsedTime );
 
 			if ( not forceUpdate )
 			{
@@ -388,6 +382,7 @@ namespace VTX::Renderer
 		};
 
 		// Visibility.
+		/*
 		p_proxy.onVisible += [ this, &p_proxy ]( const bool p_visible )
 		{
 			auto & rangeSpheres	  = _cacheSpheresCylinders[ &p_proxy ].rangeSpheres;
@@ -407,7 +402,7 @@ namespace VTX::Renderer
 				drawRangeRibbonsRL.removeRange( rangeRibbons );
 			}
 
-			/*
+
 			drawRangeSpheresRL.toStdVectorsFirstCount<void *, uint>(
 				drawRangeSpheres.offsets, drawRangeSpheres.counts
 			);
@@ -417,9 +412,9 @@ namespace VTX::Renderer
 			drawRangeRibbonsRL.toStdVectorsFirstCount<void *, uint>(
 				drawRangeRibbons.offsets, drawRangeRibbons.counts
 			);
-			*/
-		};
 
+		};
+		*/
 		// TODO: threshold to switch between multiple draw calls and single draw call.
 		p_proxy.onAtomVisibilities +=
 			[ this, &p_proxy ]( const Util::Math::RangeList<uint> & p_atomIds, const bool p_visible )
@@ -673,8 +668,8 @@ namespace VTX::Renderer
 		_context.setPipelineBuffer<Vec3f>( "Voxels.Mins", p_mins );
 		_context.setPipelineBuffer<Vec3f>( "Voxels.Maxs", p_maxs );
 
-		_geometries.drawRangeVoxels.firsts = { 0 };
-		_geometries.drawRangeVoxels.counts = { uint( p_mins.size() ) };
+		_geometries.voxels.drawRanges.firsts = { 0 };
+		_geometries.voxels.drawRanges.counts = { uint( p_mins.size() ) };
 
 		setNeedUpdate( true );
 	}
@@ -770,13 +765,13 @@ namespace VTX::Renderer
 		}
 
 		// Ranges.
-		drawRangeSpheresRL.clear();
-		drawRangeCylindersRL.clear();
+		// drawRangeSpheresRL.clear();
+		// drawRangeCylindersRL.clear();
 
 		// TODO: refresh with cache, with a threshold to switch between multi call and shader variable.
 
-		drawRangeSpheresRL.addRange( Util::Math::Range<size_t> { 0, uint( totalAtoms ) } );
-		drawRangeCylindersRL.addRange( Util::Math::Range<size_t> { 0, uint( totalBonds ) } );
+		// drawRangeSpheresRL.addRange( Util::Math::Range<size_t> { 0, uint( totalAtoms ) } );
+		// drawRangeCylindersRL.addRange( Util::Math::Range<size_t> { 0, uint( totalBonds ) } );
 
 		/*
 		drawRangeSpheresRL.toStdVectorsFirstCount<void *, uint>( drawRangeSpheres.offsets, drawRangeSpheres.counts );
@@ -1208,25 +1203,6 @@ namespace VTX::Renderer
 		*/
 	}
 
-	void Renderer::_renderLog( const float p_deltaTime, const float p_elapsedTime )
-	{
-		/*
-		for ( InstructionsDurationRange & instructionDurationRange : _instructionsDurationRanges )
-		{
-			instructionDurationRange.duration = _context.measureTaskDuration(
-
-				[ this, &instructionDurationRange ]()
-				{
-					for ( size_t i = instructionDurationRange.first; i <= instructionDurationRange.last; ++i )
-					{
-						_instructions[ i ]();
-					}
-				}
-			);
-		}
-		*/
-	}
-
 	const StructInfos & Renderer::getInfos( const bool p_refresh )
 	{
 		if ( not p_refresh )
@@ -1261,27 +1237,6 @@ namespace VTX::Renderer
 
 		_graph.createDefaultPipeline( config, _geometries );
 
-		/*
-		RenderGraph::PipelinePasses passes = _graph.createDefaultPipeline( config );
-		Pass *						geo	   = passes.geo;
-		assert( geo );
-
-		geo->programs[ 0 ].draw.value().ranges = &drawRangeSpheres;
-		geo->programs[ 0 ].draw.value().needRenderFunc
-			= [ this ]() { return showAtoms && !drawRangeSpheres.counts.empty(); };
-
-		geo->programs[ 1 ].draw.value().ranges = &drawRangeCylinders;
-		geo->programs[ 1 ].draw.value().needRenderFunc
-			= [ this ]() { return showBonds && !drawRangeCylinders.counts.empty(); };
-
-		geo->programs[ 2 ].draw.value().ranges = &drawRangeRibbons;
-		geo->programs[ 2 ].draw.value().needRenderFunc
-			= [ this ]() { return showRibbons && !drawRangeRibbons.counts.empty(); };
-
-		geo->programs[ 3 ].draw.value().ranges = &drawRangeVoxels;
-		geo->programs[ 3 ].draw.value().needRenderFunc
-			= [ this ]() { return showVoxels && !drawRangeVoxels.counts.empty(); };
-			*/
 #ifdef VTX_CUDA_ENABLED
 		geo->renderFunc = [ & ]()
 		{

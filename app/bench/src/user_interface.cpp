@@ -243,7 +243,7 @@ namespace VTX::Bench
 				setVSync( _vsync );
 			}
 
-			ImGui::Checkbox( "Timers", &p_renderer->logDurations );
+			// ImGui::Checkbox( "Timers", &p_renderer->logDurations );
 
 			ImGui::Checkbox( "Force update", &p_renderer->forceUpdate );
 

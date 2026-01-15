@@ -1,8 +1,8 @@
 #ifndef __VTX_RENDERER_RENDER_GRAPH__
 #define __VTX_RENDERER_RENDER_GRAPH__
 
-// #include "context/concept.hpp"
 #include "renderer/descriptors.hpp"
+#include "renderer/geometry/geometries.hpp"
 #include "renderer/graph_builder.hpp"
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
@@ -56,7 +56,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Create a default pipeline from config.
 		 */
-		void createDefaultPipeline( const PipelineConfig &, const Desc::Geometries & );
+		void createDefaultPipeline( const PipelineConfig &, const Geometries & );
 
 	  private:
 		Desc::Resources _resources;
