@@ -17,7 +17,7 @@ namespace
 
 	inline void _passes( const float p_delta, const float p_elapsed ) { VTX::App::PASS().update( p_delta, p_elapsed ); }
 
-	inline void _render( const float p_delta, const float p_elapsed )
+	inline void _render( const float p_delta, const float p_elapsed ) noexcept
 	{
 		VTX::App::RENDERER().render( p_delta, p_elapsed );
 	}
