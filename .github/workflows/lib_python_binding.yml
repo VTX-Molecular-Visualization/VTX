@@ -60,4 +60,4 @@ jobs:
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}
       run: |
-        conan upload pybind11 -r=vtx
+        conan upload pybind11 cpython -r=vtx
