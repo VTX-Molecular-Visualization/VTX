@@ -4,6 +4,7 @@
 #include "app/ecs.hpp"
 #include "app/pipeline.hpp"
 #include "app/tool/base_tool.hpp"
+#include "app/updater.hpp"
 #include "args.hpp"
 #include <vector>
 
@@ -67,6 +68,12 @@ namespace VTX::App
 		 * @brief Application pipeline (main loop).
 		 */
 		Pipeline _pipeline;
+
+		// TODO: move to service?
+		/**
+		 * @brief Check for/install updates.
+		 */
+		Updater _updater;
 
 		// TODO: redo.
 		void _handleArgs( const Args & p_args );

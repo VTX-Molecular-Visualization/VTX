@@ -2,7 +2,7 @@
 
 namespace VTX::App
 {
-	const int VERSION_MAJOR = VTX_VERSION_MAJOR;
-	const int VERSION_MINOR = VTX_VERSION_MINOR;
-	const int VERSION_PATCH = VTX_VERSION_PATCH;
+	const uint VERSION_MAJOR = static_cast<uint>( VTX_VERSION_MAJOR );
+	const uint VERSION_MINOR = static_cast<uint>( VTX_VERSION_MINOR );
+	const uint VERSION_PATCH = static_cast<uint>( VTX_VERSION_PATCH );
 } // namespace VTX::App

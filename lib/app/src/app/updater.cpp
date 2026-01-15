@@ -1,4 +1,8 @@
 #include "app/updater.hpp"
+#include "app/events.hpp"
+#include "app/infos.hpp"
+#include "app/services.hpp"
+#include <util/event_hub.hpp>
 #include <util/exceptions.hpp>
 #include <util/string.hpp>
 
@@ -13,35 +17,42 @@ namespace VTX::App
 			UPDATER_URL,
 			[ this ]( const std::string & p_text )
 			{
-				_document = Util::JSon::Document::createFromString( p_text );
-
-				if ( not _document.json().contains( "tag_name" ) )
-				{
-					throw VTXException( "Updater can not retrieve last version" );
-				}
-
-				std::string tagName = _document.json()[ "tag_name" ].getString();
-				VTX_INFO( "Last version found: {}", tagName );
-
-				std::vector<std::string> versionParts = Util::String::split( tagName, '.' );
-
-				if ( versionParts.size() < 3 )
-				{
-					throw VTXException( "Updater can not deduce last version" );
-				}
-
 				try
 				{
-					uint major = std::stoul( versionParts[ 0 ] );
-					uint minor = std::stoul( versionParts[ 1 ] );
-					uint patch = std::stoul( versionParts[ 2 ] );
+					_document = Util::JSon::Document::createFromString( p_text );
+
+					if ( not _document.json().contains( "tag_name" ) )
+					{
+						throw VTXException( "tag not found" );
+					}
+
+					const std::string			   tagName		= _document.json()[ "tag_name" ].getString();
+					const std::vector<std::string> versionParts = Util::String::split( tagName, '.' );
+
+					if ( versionParts.size() < 3 )
+					{
+						throw VTXException( "can not read version number" );
+					}
+
+					const uint major = std::stoul( versionParts[ 0 ] );
+					const uint minor = std::stoul( versionParts[ 1 ] );
+					const uint patch = std::stoul( versionParts[ 2 ] );
 
 					// Check if new version is available.
-					onUpdateAvailable( major, minor, patch );
+					if ( major > VERSION_MAJOR || ( major == VERSION_MAJOR && minor > VERSION_MINOR )
+						 || ( major == VERSION_MAJOR && minor == VERSION_MINOR && patch > VERSION_PATCH ) )
+					{
+						VTX_INFO( "New version found: {}", tagName );
+						HUB().trigger<Events::UpdateAvailable>( major, minor, patch );
+					}
+					else
+					{
+						VTX_INFO( "Up to date: {}", tagName );
+					}
 				}
-				catch ( const std::exception & )
+				catch ( const std::exception & p_e )
 				{
-					throw VTXException( "Updater can not deduce last version" );
+					VTX_ERROR( "Updater error: {}", p_e.what() );
 				}
 			}
 		);
@@ -54,7 +65,7 @@ namespace VTX::App
 			throw VTXException( "Updater can not retrieve assets" );
 		}
 
-		Util::JSon::Array assets = _document.json()[ "assets" ].getArray();
+		const Util::JSon::Array assets = _document.json()[ "assets" ].getArray();
 
 #ifdef _WIN32
 		const FilePath extension = ".exe";
@@ -74,7 +85,7 @@ namespace VTX::App
 			if ( filename.extension() == extension )
 			{
 				const std::string_view url = asset[ "browser_download_url" ].getString();
-				VTX_INFO( "New version found: {}", url );
+				VTX_DEBUG( "Update url: {}", url );
 
 				return;
 			}

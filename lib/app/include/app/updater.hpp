@@ -6,19 +6,27 @@
 
 namespace VTX::App
 {
-	// TODO: move to a dedicated file with other constants/API.
-	constexpr std::string_view UPDATER_URL
-		= "https://api.github.com/repos/VTX-Molecular-Visualization/VTX/releases/latest";
 
+	/**
+	 * @brief Application updater.
+	 */
 	class Updater
 	{
 	  public:
+		/**
+		 * @brief Check for application update.
+		 */
 		void checkForUpdate();
+
+		/**
+		 * @brief Download the latest update.
+		 */
 		void downloadUpdate();
 
-		Util::Callback<uint, uint, uint> onUpdateAvailable;
-
 	  private:
+		/**
+		 * @brief Distant JSON document containing release information.
+		 */
 		Util::JSon::Document _document;
 	};
 } // namespace VTX::App

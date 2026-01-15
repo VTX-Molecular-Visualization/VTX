@@ -3,6 +3,7 @@
 
 #include "app/ecs.hpp"
 #include <string>
+#include <util/types.hpp>
 
 namespace VTX::App::Events
 {
@@ -15,6 +16,13 @@ namespace VTX::App::Events
 
 	struct ApplicationStop
 	{
+	};
+
+	struct UpdateAvailable
+	{
+		uint major;
+		uint minor;
+		uint patch;
 	};
 
 	struct ApplicationError

@@ -50,13 +50,11 @@ namespace VTX::App
 
 	VTXApp::VTXApp( const Args & p_args )
 	{
-		if ( not p_args.has( ARG_NO_UPDATE ) )
-		{
-			Velopack::VelopackApp::Build().Run();
-		}
+		// Catch Velopack hooks.
+		Velopack::VelopackApp::Build().Run();
 
 		// Set global registry.
-		ECS::setRegistry( _registry );
+		ECS ::setRegistry( _registry );
 
 		// Store args.
 		ECS::setCtx<Args>( p_args );
@@ -185,10 +183,8 @@ namespace VTX::App
 
 		if ( not ECS::getCtx<Args>().has( ARG_NO_UPDATE ) )
 		{
-			// UPDATER().checkForUpdate();
+			_updater.checkForUpdate();
 		}
-
-		//_handleArgs( _args );
 	}
 
 	void VTXApp::_handleArgs( const Args & p_args )
