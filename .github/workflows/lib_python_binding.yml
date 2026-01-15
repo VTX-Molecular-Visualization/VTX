@@ -62,3 +62,5 @@ jobs:
       run: |
         conan upload pybind11 -r=vtx
         conan upload cpython -r=vtx
+        conan upload mpdecimal -r=vtx
+        conan upload sqlite -r=vtx
