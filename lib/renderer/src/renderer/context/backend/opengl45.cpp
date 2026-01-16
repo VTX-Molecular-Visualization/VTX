@@ -447,30 +447,32 @@ namespace VTX::Renderer::Context::Backend
 		assert( p_width <= static_cast<size_t>( TypeMax<GLsizei> ) );
 		assert( p_height <= static_cast<size_t>( TypeMax<GLsizei> ) );
 
-		glViewport( 0, 0, static_cast<GLsizei>( p_width ), static_cast<GLsizei>( p_height ) );
+		_width	= p_width;
+		_height = p_height;
 
-		uint32_t width	= _width;
-		uint32_t height = _height;
+		glViewport( 0, 0, static_cast<GLsizei>( _width ), static_cast<GLsizei>( _height ) );
+
+		uint32_t texWidth  = p_width;
+		uint32_t texHeight = p_height;
 
 		for ( const auto & [ key, tex ] : p_textures )
 		{
 			const Size2D & size = tex.size;
 
 			// Do not resize absolute sized textures.
-			if ( not std::get_if<Size2DAbsolute>( &size ) )
+			if ( std::get_if<Size2DAbsolute>( &size ) )
 			{
 				continue;
 			}
-
-			if ( auto * sizePtr = std::get_if<Size2DRelative>( &tex.size ) )
+			else if ( auto * sizePtr = std::get_if<Size2DRelative>( &tex.size ) )
 			{
-				width  = static_cast<uint32_t>( static_cast<float>( _width ) * sizePtr->width );
-				height = static_cast<uint32_t>( static_cast<float>( _height ) * sizePtr->height );
-				width  = std::max( 1u, width );
-				height = std::max( 1u, height );
+				texWidth  = static_cast<uint32_t>( static_cast<float>( _width ) * sizePtr->width );
+				texHeight = static_cast<uint32_t>( static_cast<float>( _height ) * sizePtr->height );
+				texWidth  = std::max( 1u, texWidth );
+				texHeight = std::max( 1u, texHeight );
 			}
 
-			_textures.at( _cacheTextures.at( key ) )->resize( width, height );
+			_textures.at( _cacheTextures.at( key ) )->resize( texWidth, texHeight );
 		}
 
 		for ( const auto & pass : p_passes )

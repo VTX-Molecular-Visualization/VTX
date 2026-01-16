@@ -35,8 +35,7 @@ namespace VTX::UI::QT::Widget
 		QPointer<QOpenGLContext>		   _context;
 		QPointer<Window::EventCatchWindow> _window;
 		QPointer<QWidget>				   _container;
-		// TODO: debounce resize events.
-		QTimer _resizeTimer;
+		QTimer							   _resizeTimer;
 	};
 } // namespace VTX::UI::QT::Widget
 

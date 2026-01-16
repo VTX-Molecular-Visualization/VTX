@@ -54,7 +54,6 @@ namespace VTX::UI::QT::Widget
 		this->setFocusProxy( _container );
 
 		// Connect signals.
-		// APP::onPostRender += [ this ]( const float ) { render(); };
 		App::HUB().connect<App::Events::PostRender, &OpenGLWidget::render>( this );
 
 		// Setup resize timer.
@@ -78,8 +77,13 @@ namespace VTX::UI::QT::Widget
 	{
 		QWidget::resizeEvent( p_event );
 
-		//_resizeTimer.start( 5000 );
-		onResizeFinished();
+		if ( not _resizeTimer.isActive() )
+		{
+			// Force first update to avoid 0, 0 at startup.
+			onResizeFinished();
+		}
+
+		_resizeTimer.start( 40 );
 	}
 
 	void OpenGLWidget::onResizeFinished()
@@ -87,10 +91,11 @@ namespace VTX::UI::QT::Widget
 		assert( _window );
 		assert( _container );
 
-		_window->resize( this->size() );
-		_container->resize( this->size() );
+		const QSize size = this->size();
+		_window->resize( size );
+		_container->resize( size );
 
-		QSize scaledSize = this->size() * devicePixelRatioF();
+		const QSize scaledSize = size * devicePixelRatioF();
 
 		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
 	}
