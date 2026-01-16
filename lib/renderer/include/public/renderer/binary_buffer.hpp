@@ -67,6 +67,16 @@ namespace VTX::Renderer
 		static constexpr size_t align = 16, size = 64;
 	};
 
+	// Rgba = Vec4f.
+	static_assert( std::is_trivially_copyable_v<VTX::Util::Color::Rgba> );
+	static_assert( std::is_standard_layout_v<VTX::Util::Color::Rgba> );
+	static_assert( sizeof( VTX::Util::Color::Rgba ) == sizeof( Vec4f ) );
+	static_assert( alignof( VTX::Util::Color::Rgba ) == alignof( Vec4f ) );
+	template<>
+	struct LayoutTraitsBase<VTX::Util::Color::Rgba> : LayoutTraitsBase<Vec4f>
+	{
+	};
+
 	// Std140.
 	template<typename T>
 	struct LayoutTraits<E_LAYOUT_TYPE::Std140, T> : LayoutTraitsBase<T>
@@ -178,8 +188,10 @@ namespace VTX::Renderer
 			}
 		}
 
-		size_t write( const E_TYPE p_type, SpanBytes p_src )
+		size_t write( const Desc::E_TYPE p_type, SpanBytes p_src )
 		{
+			using namespace Desc;
+
 			assert( _opened );
 
 			const size_t elemRaw = rawElementSizeBytes( p_type );
@@ -281,8 +293,10 @@ namespace VTX::Renderer
 		/**
 		 * @brief Get the raw size in bytes of an element of type E_TYPE.
 		 */
-		static constexpr size_t rawElementSizeBytes( const E_TYPE p_type )
+		static constexpr size_t rawElementSizeBytes( const Desc::E_TYPE p_type )
 		{
+			using namespace Desc;
+
 			switch ( p_type )
 			{
 			case E_TYPE::BOOL: return sizeof( uint32_t );
@@ -356,6 +370,11 @@ namespace VTX::Renderer
 		value_type *	   end() noexcept { return _data.data() + _data.size(); }
 		*/
 
+		/**
+		 * @brief Conversion to span of bytes.
+		 */
+		operator std::span<const std::byte>() const noexcept { return { _data.data(), _data.size() }; }
+
 	  private:
 		/**
 		 * @brief Data.
@@ -386,6 +405,12 @@ namespace VTX::Renderer
 			return out;
 		}
 	};
+
+	/**
+	 * @brief Shortcuts.
+	 */
+	using BinaryBuffer140 = BinaryBuffer<E_LAYOUT_TYPE::Std140>;
+	using BinaryBuffer430 = BinaryBuffer<E_LAYOUT_TYPE::Std430>;
 
 } // namespace VTX::Renderer
 

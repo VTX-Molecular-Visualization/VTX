@@ -13,6 +13,7 @@
 #include "renderer/context/gl/texture_2d.hpp"
 #include "renderer/context/gl/vertex_array.hpp"
 #include "renderer/descriptors.hpp"
+#include "renderer/struct_infos.hpp"
 
 namespace VTX::Renderer::Context::Backend
 {
@@ -23,6 +24,38 @@ namespace VTX::Renderer::Context::Backend
 	{
 	  public:
 		/**
+		 * @brief Texture binding info.
+		 */
+		struct TextureBinding
+		{
+			Desc::Handle  texture;
+			Desc::Handle  sampler;
+			Desc::Binding unit;
+		};
+
+		/**
+		 * @brief Buffer binding info.
+		 */
+		struct BufferBinding
+		{
+			Desc::Handle			   buffer;
+			Desc::E_SHADER_BUFFER_KIND kind;
+			Desc::Binding			   binding;
+			uint32_t				   offsetBytes = 0;
+			uint32_t				   sizeBytes   = 0;
+		};
+
+		/**
+		 * @brief Resource table per pass.
+		 */
+		struct ResourceTable
+		{
+			std::vector<TextureBinding> textures;
+			std::vector<BufferBinding>	shaderBuffers;
+			// std::vector<BufferBinding>	pipelineBuffers;
+		};
+
+		/**
 		 * @brief Default constructor.
 		 */
 		OpenGL45( const size_t, const size_t, const FilePath &, void * = nullptr );
@@ -30,30 +63,86 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Build the command buffer from the render queue and resources.
 		 */
-		void build( const RenderQueue &, const Resources &, CommandBuffer & );
+		void build( const Desc::RenderQueue &, const Desc::Resources &, CommandBuffer & );
 
 		/**
 		 * @brief Resize textures.
 		 */
-		void resize( const size_t, const size_t );
+		void resize( const uint32_t, const uint32_t, const Desc::PassList &, const Desc::ResourceMap<Desc::Texture> & );
 
 		/**
 		 * @brief Set data to a shader buffer.
 		 */
-		void setShaderBufferData( const BufferShader &, SpanBytes );
+		void setShaderBufferData( const Desc::Key &, SpanBytes );
 
 		/**
 		 * @brief Set data to a pipeline buffer.
 		 */
-		void setPipelineBufferData( const BufferPipeline &, SpanBytes );
+		void setPipelineBufferData( const Desc::Key &, SpanBytes );
+
+		/**
+		 * @brief Fill backend infos.
+		 */
+		void fillInfos( StructInfos & p_infos ) const;
+
+		/**
+		 * @brief Resource table accessors.
+		 */
+		inline const OpenGL45::ResourceTable & resourceTable( const Desc::Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _resourceTables.size() );
+			return _resourceTables[ p_handle ];
+		}
 
 		/**
 		 * @brief GL object accessors.
 		 */
-		inline const GL::Framebuffer & framebuffer( const Handle p_handle ) const noexcept
+		inline const GL::Framebuffer & framebuffer( const Desc::Handle p_handle ) const noexcept
 		{
 			assert( p_handle < _framebuffers.size() );
 			return *_framebuffers[ p_handle ];
+		}
+
+		inline const GL::Texture2D & texture( const Desc::Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _textures.size() );
+			return *_textures[ p_handle ];
+		}
+
+		inline const GL::Sampler & sampler( const Desc::Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _samplers.size() );
+			return *_samplers[ p_handle ];
+		}
+
+		inline const GL::Program & program( const Desc::Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _programs.size() );
+			return *_programs[ p_handle ];
+		}
+
+		inline const GL::Buffer & shaderBuffer( const Desc::Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _shaderBuffers.size() );
+			return *_shaderBuffers[ p_handle ];
+		}
+
+		inline const GL::Buffer & vertexBuffer( const Desc::Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _vertexBuffers.size() );
+			return *_vertexBuffers[ p_handle ];
+		}
+
+		inline const GL::Buffer & indexBuffer( const Desc::Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _indexBuffers.size() );
+			return *_indexBuffers[ p_handle ];
+		}
+
+		inline const GL::VertexArray & vertexArray( const Desc::Handle p_handle ) const noexcept
+		{
+			assert( p_handle < _vertexArrays.size() );
+			return *_vertexArrays[ p_handle ];
 		}
 
 	  private:
@@ -64,45 +153,14 @@ namespace VTX::Renderer::Context::Backend
 		uint32_t _height;
 
 		/**
-		 * @brief Texture binding info.
-		 */
-		struct TextureBinding
-		{
-			Handle	texture;
-			Handle	sampler;
-			Binding unit;
-		};
-
-		/**
-		 * @brief Buffer binding info.
-		 */
-		struct BufferBinding
-		{
-			Handle	 buffer;
-			Binding	 binding;
-			uint32_t offsetBytes = 0;
-			uint32_t sizeBytes	 = 0;
-		};
-
-		/**
 		 * @brief Global shader buffers.
 		 */
 		using GlobalShaderBuffers = std::vector<BufferBinding>;
 
 		/**
-		 * @brief Resource table per pass.
-		 */
-		struct ResourceTable
-		{
-			std::vector<TextureBinding> textures;
-			std::vector<BufferBinding>	shaderBuffers;
-			std::vector<BufferBinding>	pipelineBuffers;
-		};
-
-		/**
 		 * @brief Cache : mapping Key -> Handle.
 		 */
-		using Cache = std::unordered_map<Key, Handle>;
+		using Cache = std::unordered_map<Desc::Key, Desc::Handle>;
 		Cache _cacheTextures;
 		Cache _cacheSamplers;
 		Cache _cacheShaderBuffers;
@@ -114,7 +172,7 @@ namespace VTX::Renderer::Context::Backend
 		Cache _cacheFramebuffers;
 
 		/**
-		 * @brief MVP : global shader buffers and resource tables.
+		 * @brief Global shader buffers and resource tables.
 		 */
 		GlobalShaderBuffers		   _globalShaderBuffers;
 		std::vector<ResourceTable> _resourceTables;
@@ -135,25 +193,55 @@ namespace VTX::Renderer::Context::Backend
 		std::vector<GL::Program *>			_programs;
 
 		/**
-		 * @brief Get or create resources.
+		 * @brief Save buffer properties.
 		 */
-		Handle _getOrCreateFramebuffer( const Pass &, const Resources &, const bool = false );
-		Handle _getOrCreateResourceTable( const Pass &, const Resources & );
-		Handle _getOrCreateTexture( const Key &, const Texture & );
-		Handle _getOrCreateSampler( const Key &, const Sampler & );
-		Handle _getOrCreateVertexLayout( const Key &, const VertexLayout & );
-		Handle _getOrCreateShaderBuffer( const BufferShader & );
-		Handle _getOrCreateVertexBuffer( const Key & );
-		Handle _getOrCreateIndexBuffer( const Key & );
-		Handle _getOrCreateProgram( const Program & );
+		struct _ShaderBufferCacheEntry
+		{
+			Desc::E_SHADER_BUFFER_KIND role;
+			Desc::E_BUFFER_MUTABILITY  mutability;
+			Desc::E_BUFFER_ACCESS	   access;
+			Desc::E_UPDATE_FREQUENCY   frequency;
+		};
+
+		struct _PipelineBufferCacheEntry
+		{
+			Desc::E_PIPELINE_BUFFER_KIND kind;
+			Desc::E_UPDATE_FREQUENCY	 frequency;
+		};
+
+		std::unordered_map<Desc::Key, _ShaderBufferCacheEntry>	 _shaderBufferProperties;
+		std::unordered_map<Desc::Key, _PipelineBufferCacheEntry> _pipelineBufferProperties;
 
 		/**
-		 * @brief Build MVP resources.
+		 * @brief Get or create resources.
 		 */
-		GlobalShaderBuffers _buildGlobalShaderBuffers( const Resources & );
-		ResourceTable		_buildResourceTableForPass( const Pass &, const Resources & );
+		Desc::Handle _getOrCreateFramebuffer( const Desc::Pass &, const Desc::Resources &, const bool = false );
+		Desc::Handle _getOrCreateResourceTable( const Desc::Pass &, const Desc::Resources & );
+		Desc::Handle _getOrCreateTexture( const Desc::Key &, const Desc::Texture & );
+		Desc::Handle _getOrCreateSampler( const Desc::Key &, const Desc::Sampler & );
+		Desc::Handle _getOrCreateVertexLayout( const Desc::Key &, const Desc::VertexLayout & );
+		Desc::Handle _getOrCreateShaderBuffer( const Desc::BufferShader & );
+		Desc::Handle _getOrCreateVertexBuffer( const Desc::Key & );
+		Desc::Handle _getOrCreateIndexBuffer( const Desc::Key & );
+		Desc::Handle _getOrCreateProgram( const Desc::Program & );
 
-		void _bindGeometryToVao( const Handle, const VertexLayout &, const Geometry &, const bool );
+		/**
+		 * @brief Build resources.
+		 */
+		GlobalShaderBuffers _buildGlobalShaderBuffers( const Desc::Resources & );
+		ResourceTable		_buildResourceTableForPass( const Desc::Pass &, const Desc::Resources & );
+
+		/**
+		 * @brief Bind resources.
+		 */
+		void _attachTexturesToFramebuffer( const Desc::Pass &, const Desc::ResourceMap<Desc::Texture> & );
+		void _bindGeometryToVao( const Desc::Key &, const Desc::Geometry &, const Desc::Resources & );
+
+		/**
+		 * @brief Create the screen quad.
+		 */
+		inline static const Desc::Key _QUAD = "Quad";
+		void						  _createQuad();
 
 		/**
 		 * @brief Specs.

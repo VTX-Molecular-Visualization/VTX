@@ -63,25 +63,7 @@ namespace VTX::Renderer::Context::GL
 			glTextureSubImage2D( _id, p_level, p_offsetX, p_offsetY, width, height, p_format, p_type, p_pixels );
 		}
 
-		inline void bind( const GLenum p_target ) const noexcept
-		{
-			assert( glIsTexture( _id ) );
-			assert( _target == 0 );
-			assert( p_target != 0 );
-
-			_target = p_target;
-			glBindTexture( p_target, _id );
-		}
-
 		inline void bindToUnit( const GLuint p_index ) const noexcept { glBindTextureUnit( p_index, _id ); }
-
-		inline void unbind() const noexcept
-		{
-			assert( _target != 0 );
-
-			glBindTexture( _target, 0 );
-			_target = 0;
-		}
 
 		inline void unbindFromUnit( const GLuint p_index ) const noexcept { glBindTextureUnit( p_index, 0 ); }
 
@@ -101,9 +83,7 @@ namespace VTX::Renderer::Context::GL
 		inline GLenum  getFormat() const noexcept { return _format; }
 
 	  private:
-		GLuint		   _id	   = GL_INVALID_INDEX;
-		mutable GLenum _target = 0;
-
+		GLuint	_id		= GL_INVALID_INDEX;
 		GLsizei _width	= 0;
 		GLsizei _height = 0;
 		GLenum	_format = GL_RGBA32F;

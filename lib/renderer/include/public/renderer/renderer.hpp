@@ -6,18 +6,15 @@
 #ifdef VTX_CUDA_ENABLED
 #include "bcs/sesdf/sesdf.hpp"
 #endif
-#include "renderer/caches.hpp"
 #include "renderer/camera.hpp"
 #include "renderer/color.hpp"
 #include "renderer/context/context_wrapper.hpp"
+#include "renderer/geometry/geometries.hpp"
 #include "renderer/graphics_config.hpp"
-#include "renderer/proxy/system.hpp"
-#include "renderer/proxy/voxels.hpp"
 #include "renderer/render_graph.hpp"
 #include "renderer/representation.hpp"
+#include "renderer/struct_infos.hpp"
 #include <util/callback.hpp>
-#include <util/chrono.hpp>
-#include <util/logger.hpp>
 #include <util/math/range_list.hpp>
 
 namespace VTX::Renderer
@@ -28,22 +25,23 @@ namespace VTX::Renderer
 	class Renderer
 	{
 	  public:
+		/**
+		 * @brief Constructor.
+		 */
 		Renderer( const size_t p_width = 0, const size_t p_height = 0 );
 		Renderer( const Renderer & )			 = delete;
 		Renderer & operator=( const Renderer & ) = delete;
 
+		/**
+		 * @brief Accessors.
+		 */
 		inline size_t		 width() const { return _width; }
 		inline size_t		 height() const { return _height; }
 		inline RenderGraph & graph() { return _graph; }
 
-		/**
-		 * @brief Send data to GPU.
-		 * @param p_value the data to send.
-		 * @param p_key the buffer name to send on.
-		 * @param p_index is the index of the data to set if we need to update only one value in an array.
-		 */
+		// TODO: redo or remove.
 		template<typename T>
-		inline void setValue( const T & p_value, const Key & p_key, const size_t p_index = 0 )
+		inline void setValue( const T & p_value, const Desc::Key & p_key, const size_t p_index = 0 )
 		{
 			//_context.setValue<T>( p_value, p_key, p_index );
 			setNeedUpdate( true );
@@ -55,8 +53,6 @@ namespace VTX::Renderer
 		void setDefault();
 		void setOpenGL45( const FilePath & );
 
-		// inline bool hasContext() const { return _context.hasContext(); }
-
 		/**
 		 * @brief Build the renderer with the current _graph.
 		 */
@@ -64,7 +60,6 @@ namespace VTX::Renderer
 
 		/**
 		 * @brief Resize the renderer.
-		 * @param p_output the output id to render on (eg. the output framebuffer for OpenGL impl.).
 		 */
 		void resize( const size_t, const size_t );
 
@@ -76,28 +71,25 @@ namespace VTX::Renderer
 		/**
 		 * @brief The main render loop.
 		 */
-		void render( const float, const float );
+		void render( const float, const float ) noexcept;
 
 		/**
-		 * @brief Add data to the renderer.
+		 * @brief Push data to the renderer.
 		 */
-		// OLD
-		void addProxySystem( Proxy::System & p_proxy );
-		void removeProxySystem( Proxy::System & p_proxy );
-		void addProxySystems( std::vector<Proxy::System *> & p_proxies );
-		void removeProxySystems( std::vector<Proxy::System *> & p_proxies );
-		void setProxyVoxels( Proxy::Voxels & p_proxy );
-
-		// NEW
 		void setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );
-
 		void setGraphicsConfig( const GraphicsConfig & );
 		void setColorLayout( const Color::Layout & );
 		void setRepresentation( const Representation & );
+		void setVoxels( const std::vector<Vec3f> &, const std::vector<Vec3f> & );
+
+		/**
+		 * @brief Add / remove / update system.
+		 */
+		void addSystem();
+		void removeSystem();
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
-		 * @param p_outImage the output image data.
 		 */
 		void snapshot(
 			std::vector<uchar> & p_outImage,
@@ -132,7 +124,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Get the current renderer infos.
 		 */
-		// StructInfos getInfos() const;
+		const StructInfos & getInfos( const bool = false );
 
 		/**
 		 * @brief Buffer swapping count.
@@ -140,54 +132,11 @@ namespace VTX::Renderer
 		static constexpr size_t BUFFER_COUNT = 2;
 
 		/**
-		 * @brief Primitives to show.
-		 */
-
-		// TODO: facto geometries with RL, DR and cache?
-		// TODO: facto proxies in enumed collection?
-		// OLD REMOVE
-		bool showAtoms	 = true;
-		bool showBonds	 = true;
-		bool showRibbons = true;
-		bool showSES	 = true;
-		bool showVoxels	 = true;
-		// bool showSESCircles	= true;
-		// bool showSESConcaves = true;
-		// bool showSESConvexes = true;
-		// bool showSESSegments = true;
-
-		/**
 		 * @brief Force update each frame.
 		 */
 		bool forceUpdate = true;
 
-		/**
-		 * @brief Current ranges to draw.
-		 */
-		// TODO: test render time with/without ranges/multidraw.
-		// OLD REMOVE, MOVE TO GEOMETRY.
-		using RangeList = Util::Math::RangeList<size_t>;
-		RangeList drawRangeSpheresRL;
-		RangeList drawRangeCylindersRL;
-		RangeList drawRangeRibbonsRL;
-		// RangeList drawRangeVoxelsRL;
-		/*
-		RangeList drawRangeSESCirclesRL;
-		RangeList drawRangeSESConcavesRL;
-		RangeList drawRangeSESConvexesRL;
-		RangeList drawRangeSESSegmentsRL;
-		*/
-
-		// Draw::Range drawRangeSpheres;
-		// Draw::Range drawRangeCylinders;
-		// Draw::Range drawRangeRibbons;
-		// Draw::Range drawRangeVoxels;
-		/*
-		Draw::Range drawRangeSESCircles;
-		Draw::Range drawRangeSESConcaves;
-		Draw::Range drawRangeSESConvexes;
-		Draw::Range drawRangeSESSegments;
-		*/
+		Util::Callback<> onReady;
 
 #ifdef VTX_CUDA_ENABLED
 		std::unique_ptr<bcs::Sesdf> _sesData;
@@ -204,23 +153,18 @@ namespace VTX::Renderer
 		Context::GL::Program * _sesProgramCircle;
 		Context::GL::Program * _sesProgramConvex;
 #endif
-		void _createSes( Proxy::System & p_proxy );
-
-		/**
-		 * @brief Useful for benchmarker only.
-		 */
-		// inline void								  compileShaders() const { _context.compileShaders(); }
-		// inline const InstructionsDurationRanges & getInstructionsDurationRanges() const
-		//{
-		//	return _instructionsDurationRanges;
-		// }
-		bool logDurations = false;
+		// void _createSes( Proxy::System & p_proxy );
 
 	  private:
 		/**
 		 * @brief Render _graph to handle the rendering pipeline.
 		 */
 		RenderGraph _graph;
+
+		/**
+		 * @brief Geometries.
+		 */
+		Geometries _geometries;
 
 		/**
 		 * @brief Wrapper to handle the graphic APIs.
@@ -240,59 +184,26 @@ namespace VTX::Renderer
 		size_t _framesRemaining = BUFFER_COUNT;
 
 		/**
-		 * @brief Instructions to render, generated by context from the _graph.
+		 * @brief Renderer infos.
 		 */
-		// Instructions _instructions;
+		StructInfos _infos;
 
 		/**
-		 * @brief Instruction to render but with execution time logging.
+		 * @brief Refresh the render graph according to the graphics config.
 		 */
-		// InstructionsDurationRanges _instructionsDurationRanges;
-
-		/**
-		 * @brief All data proxies.
-		 */
-		std::vector<Proxy::System *> _proxiesSystems;
-		Proxy::Voxels *				 _proxyVoxels = nullptr;
-
-		void _addProxySystem( Proxy::System & p_proxy );
-		void _removeProxySystem( Proxy::System & p_proxy );
-
-		// TODO: check complexity.
-		inline size_t _getProxyId( const Proxy::System * const p_proxy ) const
-		{
-			size_t id = std::distance(
-				_proxiesSystems.begin(), std::find( _proxiesSystems.begin(), _proxiesSystems.end(), p_proxy )
-			);
-
-			assert( id < _proxiesSystems.size() );
-
-			return id;
-		}
-
-		/**
-		 * @brief Cache some data to avoid recomputing.
-		 */
-		std::map<const Proxy::System * const, Cache::SphereCylinder> _cacheSpheresCylinders;
-		std::map<const Proxy::System * const, Cache::Ribbon>		 _cacheRibbons;
-		// std::map<const Proxy::System * const, Cache::SES>			 _cacheSES;
-
 		void _refreshGraph( const GraphicsConfig & );
 
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
 		inline void _refreshDataSystems()
 		{
-			_refreshDataSpheresCylinders();
-			_refreshDataRibbons();
+			//_refreshDataSpheresCylinders();
+			//_refreshDataRibbons();
 			_refreshDataModels();
 
 			setNeedUpdate( true );
 		}
 
-		void _refreshDataSpheresCylinders();
-		void _refreshDataRibbons();
 		void _refreshDataModels();
-		void _refreshDataVoxels();
 
 		void _applyRepresentationLogic( const Representation & );
 
@@ -304,15 +215,8 @@ namespace VTX::Renderer
 
 		/**
 		 * @brief The main render loop that call each generated instruction.
-		 * @param p_time the current time.
 		 */
-		inline void _render( const float p_deltaTime, const float p_elapsedTime ) const { _context.execute(); }
-
-		/**
-		 * @brief The main render loop that call instructions with time logging.
-		 * @param p_time the current time.
-		 */
-		void _renderLog( const float p_deltaTime, const float p_elapsedTime );
+		inline void _render( const float p_deltaTime, const float p_elapsedTime ) const noexcept { _context.execute(); }
 	};
 } // namespace VTX::Renderer
 #endif

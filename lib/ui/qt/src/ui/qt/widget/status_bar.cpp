@@ -15,23 +15,16 @@ namespace VTX::UI::QT::Widget
 		auto * vendorLabel = new QLabel( this );
 		vendorLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 
-		// QWidget * spacer = new QWidget( this );
-		// spacer->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
+		QWidget * spacer = new QWidget( this );
+		spacer->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
 
-		// addPermanentWidget( spacer );
+		addPermanentWidget( spacer );
 		addPermanentWidget( fpsLabel );
 		addPermanentWidget( vendorLabel );
 
 		// Update vendor when renderer is available.
-		/*
-		App::RENDERER().onReady(
-			[ vendorLabel ]()
-			{
-				//
-				vendorLabel->setText( QString::fromStdString( App::RENDERER().getInfos().renderer ) );
-			}
-		);
-		*/
+		App::RENDERER().onReady += [ vendorLabel ]()
+		{ vendorLabel->setText( QString::fromStdString( App::RENDERER().getInfos( true ).renderer ) ); };
 
 		// Update FPS each second.
 		auto * timer = new QTimer( this );

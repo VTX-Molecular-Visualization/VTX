@@ -19,11 +19,11 @@ namespace VTX::Renderer
 		long long gpuMemoryInfoCurrentAvailable;
 		//
 
-		size_t currentCountBuffers;
-		size_t currentCountTextures;
+		// size_t currentCountBuffers;
+		// size_t currentCountTextures;
 
-		size_t currentSizeBuffers;
-		size_t currentSizeTextures;
+		// size_t currentSizeBuffers;
+		// size_t currentSizeTextures;
 		size_t currentSizeCPUCache;
 	};
 } // namespace VTX::Renderer

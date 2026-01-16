@@ -1,6 +1,7 @@
 #include "renderer/context/backend/opengl45.hpp"
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/gl/debug.hpp"
+#include <numeric>
 #include <util/exceptions.hpp>
 
 namespace
@@ -20,8 +21,10 @@ namespace
 	/**
 	 * @brief All GL mapping.
 	 */
-	constexpr GLPixelFormat _toGL( const E_FORMAT p_format ) noexcept
+	constexpr GLPixelFormat _toGL( const Desc::E_FORMAT p_format ) noexcept
 	{
+		using namespace Desc;
+
 		switch ( p_format )
 		{
 		case E_FORMAT::RGB16F: return { GL_RGB16F, GL_RGB, GL_HALF_FLOAT, false, false };
@@ -37,8 +40,10 @@ namespace
 		}
 	}
 
-	constexpr GLenum _toGL( const E_WRAPPING p_wrapping ) noexcept
+	constexpr GLenum _toGL( const Desc::E_WRAPPING p_wrapping ) noexcept
 	{
+		using namespace Desc;
+
 		switch ( p_wrapping )
 		{
 		case E_WRAPPING::REPEAT: return GL_REPEAT;
@@ -50,8 +55,10 @@ namespace
 		}
 	}
 
-	constexpr GLenum _toGL( const E_FILTERING p_filtering ) noexcept
+	constexpr GLenum _toGL( const Desc::E_FILTERING p_filtering ) noexcept
 	{
+		using namespace Desc;
+
 		switch ( p_filtering )
 		{
 		case E_FILTERING::NEAREST: return GL_NEAREST;
@@ -64,8 +71,10 @@ namespace
 		}
 	}
 
-	constexpr GLenum _toGL( const E_SHADER_BUFFER_KIND p_bufferRole ) noexcept
+	constexpr GLenum _toGL( const Desc::E_SHADER_BUFFER_KIND p_bufferRole ) noexcept
 	{
+		using namespace Desc;
+
 		switch ( p_bufferRole )
 		{
 		case E_SHADER_BUFFER_KIND::PARAMETERS: return GL_UNIFORM_BUFFER;
@@ -74,8 +83,13 @@ namespace
 		}
 	}
 
-	constexpr GLbitfield _toGLStorageFlags( const E_BUFFER_ACCESS p_access, const E_UPDATE_FREQUENCY p_freq )
+	constexpr GLbitfield _toGLStorageFlags(
+		const Desc::E_BUFFER_ACCESS	   p_access,
+		const Desc::E_UPDATE_FREQUENCY p_freq
+	)
 	{
+		using namespace Desc;
+
 		GLbitfield flags = 0;
 
 		switch ( p_access )
@@ -103,8 +117,10 @@ namespace
 		return flags;
 	}
 
-	constexpr GLbitfield toGLMapFlags( const E_BUFFER_ACCESS p_access )
+	constexpr GLbitfield toGLMapFlags( const Desc::E_BUFFER_ACCESS p_access )
 	{
+		using namespace Desc;
+
 		GLbitfield flags = 0;
 
 		switch ( p_access )
@@ -122,13 +138,29 @@ namespace
 		return flags;
 	}
 
-	constexpr GLenum _toGL( const E_UPDATE_FREQUENCY p_freq ) noexcept
+	constexpr GLenum _toGL( const Desc::E_UPDATE_FREQUENCY p_freq ) noexcept
 	{
+		using namespace Desc;
+
 		switch ( p_freq )
 		{
 		case E_UPDATE_FREQUENCY::STATIC: return GL_STATIC_DRAW;
 		case E_UPDATE_FREQUENCY::DYNAMIC: return GL_DYNAMIC_DRAW;
 		case E_UPDATE_FREQUENCY::STREAM: return GL_STREAM_DRAW;
+		default: assert( false ); return GL_INVALID_INDEX;
+		}
+	}
+
+	constexpr GLenum _toGL( const Desc::E_PRIMITIVE p_primitive ) noexcept
+	{
+		using namespace Desc;
+
+		switch ( p_primitive )
+		{
+		case E_PRIMITIVE::POINTS: return GL_POINTS;
+		case E_PRIMITIVE::LINES: return GL_LINES;
+		case E_PRIMITIVE::TRIANGLES: return GL_TRIANGLE_STRIP;
+		case E_PRIMITIVE::PATCHES: return GL_PATCHES;
 		default: assert( false ); return GL_INVALID_INDEX;
 		}
 	}
@@ -145,8 +177,10 @@ namespace
 		uint8_t	 columns	  = 1;
 	};
 
-	constexpr GLAttrib toGLAttrib( E_TYPE p_type ) noexcept
+	constexpr GLAttrib toGLAttrib( Desc::E_TYPE p_type ) noexcept
 	{
+		using namespace Desc;
+
 		switch ( p_type )
 		{
 		case E_TYPE::FLOAT: return { GL_FLOAT, 1, false, 4, 1 };
@@ -165,6 +199,16 @@ namespace
 		case E_TYPE::MAT4F: return { GL_FLOAT, 4, false, 4, 4 };
 		default: assert( false ); return {};
 		}
+	}
+
+	uint32_t _toSettingFlags( const std::vector<Desc::Setting> & p_settings )
+	{
+		uint32_t mask = 0;
+		for ( const Desc::Setting setting : p_settings )
+		{
+			mask |= setting;
+		}
+		return mask;
 	}
 
 } // namespace
@@ -200,56 +244,43 @@ namespace VTX::Renderer::Context::Backend
 		{
 			throw GraphicException( "OpenGL 4.5 or higher is required" );
 		}
-		else
-		{
-			_getOpenglInfos();
-			_openglInfos.print();
-		}
+
+		_getOpenglInfos();
+		_openglInfos.print();
 
 		// Program manager.
 		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
 
-		// Init quad vao/vbo for deferred shading.
-		std::vector<Vec2f> quad = { { -1.f, 1.f }, { -1.f, -1.f }, { 1.f, 1.f }, { 1.f, -1.f } };
-
-		// const Hash hashQuadVao	  = Util::hash( _KEY_QUAD_VAO );
-		// const Hash hashQuadBuffer = Util::hash( _KEY_QUAD_BUFFER );
-
-		//_vertexArrays.emplace( hashQuadVao, std::make_unique<GL::VertexArray>() );
-		//_buffers.emplace( hashQuadBuffer, std::make_unique<GL::Buffer>() );
-		// auto & vao = _vertexArrays[ hashQuadVao ];
-		// auto & vbo = _buffers[ hashQuadBuffer ];
-
-		// vao->bind();
-		// vao->enableAttribute( 0 );
-		// vao->setVertexBuffer( 0, *vbo, int32_t( _mapTypeSizes[ E_TYPE::FLOAT ] * 2 ) );
-		// vao->setAttributeFormat( 0, 2, _mapTypes[ E_TYPE::FLOAT ] );
-		// vao->setAttributeBinding( 0, 0 );
-		// vbo->set( quad.data(), int32_t( quad.size() * sizeof( Vec2f ) ), 0, GL_STATIC_DRAW );
-		// vao->unbind();
+		// Quad.
+		_createQuad();
 
 		glViewport( 0, 0, int32_t( p_width ), int32_t( p_height ) );
-
 		glPatchParameteri( GL_PATCH_VERTICES, 4 );
-		glEnable( GL_LINE_SMOOTH );
-		glLineWidth( 1.f );
 
+		// TODO: set from graph.
+		// glEnable( GL_CLIP_DISTANCE0 );
+		glEnable( GL_LINE_SMOOTH );
+		glLineWidth( 2.f );
+		glDepthFunc( GL_LESS );
+		glClearColor( 0.f, 0.f, 0.f, 1.0f );
+
+#if _DEBUG
 		glEnable( GL_DEBUG_OUTPUT );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
 		glDebugMessageCallback( GL::Debug::_debugMessageCallback, nullptr );
-
-		// TODO: set from grpah.
-		glEnable( GL_CLIP_DISTANCE0 );
-		glEnable( GL_DEPTH_TEST );
-		glDepthFunc( GL_LESS );
-
-		glClearColor( 0.f, 0.f, 0.f, 1.0f );
+#endif
 	}
 
 	// Create resources, configure, and push commands.
 	// No OpenGL objects in this function, only Handles.
-	void OpenGL45::build( const RenderQueue & p_renderQueue, const Resources & p_resources, CommandBuffer & p_commands )
+	void OpenGL45::build(
+		const Desc::RenderQueue & p_renderQueue,
+		const Desc::Resources &	  p_resources,
+		CommandBuffer &			  p_commands
+	)
 	{
+		using namespace Desc;
+
 		// Create all resources.
 		for ( const auto & [ key, texture ] : p_resources.textures )
 		{
@@ -269,36 +300,43 @@ namespace VTX::Renderer::Context::Backend
 		}
 		for ( const auto & [ key, buffer ] : p_resources.pipelineBuffers )
 		{
+			_pipelineBufferProperties.emplace( key, _PipelineBufferCacheEntry { buffer.kind, buffer.frequency } );
+
 			switch ( buffer.kind )
 			{
-			case E_PIPELINE_BUFFER_KIND::VERTEX: _getOrCreateVertexBuffer( key );
-			case E_PIPELINE_BUFFER_KIND::INDEX: _getOrCreateIndexBuffer( key );
-			default: break;
+			case E_PIPELINE_BUFFER_KIND::VERTEX: _getOrCreateVertexBuffer( key ); break;
+			case E_PIPELINE_BUFFER_KIND::INDEX: _getOrCreateIndexBuffer( key ); break;
+			default: assert( false ); break;
 			}
+		}
+
+		// Bind geometries to VAOs.
+		for ( const auto & [ key, geometry ] : p_resources.geometries )
+		{
+			_bindGeometryToVao( key, geometry, p_resources );
 		}
 
 		// Global resource table.
 		_globalShaderBuffers = _buildGlobalShaderBuffers( p_resources );
 
-		// Push BEGIN_FRAME.
-		// TODO: read from graph.
-		PayloadBeginFrame beginFrame { GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT };
-		p_commands.push<E_COMMAND::BEGIN_FRAME>( beginFrame );
-
 		// Foreach pass.
 		for ( const Pass * const passPtr : p_renderQueue )
 		{
-			const bool	 isLastPass = ( passPtr == p_renderQueue.back() );
+			// CONFIGURATION.
 			const Pass & pass		= *passPtr;
-
-			// FBO.
-			const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
-			// TODO: attach textures to FBO.
+			const bool	 isLastPass = ( passPtr == p_renderQueue.back() );
 
 			// Resource table, clear each build.
 			const Handle	hResourceTable = _getOrCreateResourceTable( pass, p_resources );
 			ResourceTable & resourceTable  = _resourceTables[ hResourceTable ];
 			resourceTable				   = _buildResourceTableForPass( pass, p_resources );
+
+			// FBO.
+			const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
+			if ( not isLastPass )
+			{
+				_attachTexturesToFramebuffer( pass, p_resources.textures );
+			}
 
 			// Create programs.
 			for ( const Program & program : pass.programs )
@@ -306,27 +344,103 @@ namespace VTX::Renderer::Context::Backend
 				const Handle hProgram = _getOrCreateProgram( program );
 			}
 
+			// COMMANDS.
 			// Push BEGIN_PASS.
-			PayloadBeginPass beginPass {};
-			p_commands.push<E_COMMAND::BEGIN_PASS>();
+			uint32_t		 flags = _toSettingFlags( pass.settings );
+			PayloadBeginPass pBeginPass { hFramebuffer, flags };
+			p_commands.push<E_COMMAND::BEGIN_PASS>( pBeginPass );
 
-			// Push BIND_FRAMEBUFFER.
-			PayloadBindFramebuffer bindFBO { 0 };
-			VTX_DEBUG( "Binding FBO handle: {}", bindFBO.framebuffer );
+			// Push BIND_RESOURCES.
+			PayloadBindResources pBindResources { hResourceTable };
+			p_commands.push<E_COMMAND::BIND_RESOURCES>( pBindResources );
 
-			p_commands.push<E_COMMAND::BIND_FRAMEBUFFER>( bindFBO );
+			// Foreach program.
+			for ( const Program & program : pass.programs )
+			{
+				const bool hasDrawCall = program.drawCall.has_value();
+				Handle	   hVao;
+
+				if ( hasDrawCall )
+				{
+					const Geometry g = p_resources.geometries.at( program.drawCall.value().geometry );
+					hVao			 = _cacheVertexLayouts.at( g.vertexLayout );
+				}
+				else
+				{
+					hVao = _cacheVertexLayouts.at( _QUAD );
+				}
+
+				// Push DRAW.
+				const Handle hProgram = _cachePrograms.at( program.name );
+				if ( hasDrawCall )
+				{
+					const DrawCall & drawCall = program.drawCall.value();
+					const Geometry & geometry = p_resources.geometries.at( drawCall.geometry );
+
+					if ( geometry.indexBuffer )
+					{
+						PayloadDrawElement pDraw { hProgram, hVao };
+						pDraw.primitive	 = toUnderlying( drawCall.primitive );
+						pDraw.indexCount = drawCall.indexCount;
+						p_commands.push<E_COMMAND::DRAW_ELEMENT>( pDraw );
+					}
+					else if ( drawCall.indexCount )
+					{
+						PayloadDrawArray pDraw { hProgram, hVao };
+						pDraw.primitive	  = toUnderlying( drawCall.primitive );
+						pDraw.vertexCount = drawCall.vertexCount;
+						p_commands.push<E_COMMAND::DRAW_ARRAY>( pDraw );
+					}
+					else if ( drawCall.vertexRanges )
+					{
+						PayloadDrawArrays pDraw { hProgram, hVao };
+						pDraw.primitive	   = toUnderlying( drawCall.primitive );
+						pDraw.vertexRanges = reinterpret_cast<uintptr_t>( drawCall.vertexRanges );
+						p_commands.push<E_COMMAND::DRAW_ARRAYS>( pDraw );
+					}
+					else if ( drawCall.indexRanges )
+					{
+						PayloadDrawElements pDraw { hProgram, hVao };
+						pDraw.primitive	  = toUnderlying( drawCall.primitive );
+						pDraw.indexRanges = reinterpret_cast<uintptr_t>( drawCall.indexRanges );
+						p_commands.push<E_COMMAND::DRAW_ELEMENTS>( pDraw );
+					}
+					else
+					{
+						assert( false && "DrawCall has no valid draw parameters." );
+					}
+				}
+				else
+				{
+					// Fullscreen quad draw.
+					PayloadDrawArray pDraw { hProgram, hVao };
+					pDraw.primitive	  = static_cast<uint32_t>( _toGL( E_PRIMITIVE::TRIANGLES ) );
+					pDraw.vertexCount = 4;
+					p_commands.push<E_COMMAND::DRAW_ARRAY>( pDraw );
+				}
+			}
 
 			// Push END_PASS.
-			PayloadEndPass endPass {};
-			p_commands.push<E_COMMAND::END_PASS>();
+			PayloadEndPass pEndPass { flags };
+			p_commands.push<E_COMMAND::END_PASS>( pEndPass );
 		}
 
-		// Push END_FRAME.
-		p_commands.push<E_COMMAND::END_FRAME>();
+		// GLOBAL BINDINGS: done once at startup.
+		for ( auto & bufferBinding : _globalShaderBuffers )
+		{
+			_shaderBuffers.at( bufferBinding.buffer )->bind( _toGL( bufferBinding.kind ), bufferBinding.binding );
+		}
 	}
 
-	void OpenGL45::resize( const size_t p_width, const size_t p_height )
+	void OpenGL45::resize(
+		const uint32_t							 p_width,
+		const uint32_t							 p_height,
+		const Desc::PassList &					 p_passes,
+		const Desc::ResourceMap<Desc::Texture> & p_textures
+	)
 	{
+		using namespace Desc;
+
 		assert( p_width > 0 );
 		assert( p_height > 0 );
 
@@ -335,11 +449,47 @@ namespace VTX::Renderer::Context::Backend
 
 		glViewport( 0, 0, static_cast<GLsizei>( p_width ), static_cast<GLsizei>( p_height ) );
 
-		// TODO: resize textures.
+		uint32_t width	= _width;
+		uint32_t height = _height;
+
+		for ( const auto & [ key, tex ] : p_textures )
+		{
+			const Size2D & size = tex.size;
+
+			// Do not resize absolute sized textures.
+			if ( not std::get_if<Size2DAbsolute>( &size ) )
+			{
+				continue;
+			}
+
+			if ( auto * sizePtr = std::get_if<Size2DRelative>( &tex.size ) )
+			{
+				width  = static_cast<uint32_t>( static_cast<float>( _width ) * sizePtr->width );
+				height = static_cast<uint32_t>( static_cast<float>( _height ) * sizePtr->height );
+				width  = std::max( 1u, width );
+				height = std::max( 1u, height );
+			}
+
+			_textures.at( _cacheTextures.at( key ) )->resize( width, height );
+		}
+
+		for ( const auto & pass : p_passes )
+		{
+			if ( _cacheFramebuffers.contains( pass->name ) ) // Avoid the last pass.
+			{
+				_attachTexturesToFramebuffer( *pass, p_textures );
+			}
+		}
 	}
 
-	Handle OpenGL45::_getOrCreateFramebuffer( const Pass & p_pass, const Resources & p_res, const bool p_isLastpass )
+	Desc::Handle OpenGL45::_getOrCreateFramebuffer(
+		const Desc::Pass &		p_pass,
+		const Desc::Resources & p_res,
+		const bool				p_isLastpass
+	)
 	{
+		using namespace Desc;
+
 		const Key & key = p_pass.name;
 
 		auto it = _cacheFramebuffers.find( key );
@@ -360,8 +510,10 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateResourceTable( const Pass & p_pass, const Resources & p_res )
+	Desc::Handle OpenGL45::_getOrCreateResourceTable( const Desc::Pass & p_pass, const Desc::Resources & p_res )
 	{
+		using namespace Desc;
+
 		const Key & key = p_pass.name;
 
 		auto it = _cacheResourceTables.find( key );
@@ -377,8 +529,10 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateTexture( const Key & p_key, const Texture & p_text )
+	Desc::Handle OpenGL45::_getOrCreateTexture( const Desc::Key & p_key, const Desc::Texture & p_text )
 	{
+		using namespace Desc;
+
 		auto it = _cacheTextures.find( p_key );
 		if ( it != _cacheTextures.end() )
 		{
@@ -418,8 +572,10 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateSampler( const Key & p_key, const Sampler & p_text )
+	Desc::Handle OpenGL45::_getOrCreateSampler( const Desc::Key & p_key, const Desc::Sampler & p_text )
 	{
+		using namespace Desc;
+
 		auto it = _cacheSamplers.find( p_key );
 		if ( it != _cacheSamplers.end() )
 		{
@@ -437,8 +593,13 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateVertexLayout( const Key & p_key, const VertexLayout & p_vertexStream )
+	Desc::Handle OpenGL45::_getOrCreateVertexLayout(
+		const Desc::Key &		   p_key,
+		const Desc::VertexLayout & p_vertexStream
+	)
 	{
+		using namespace Desc;
+
 		auto it = _cacheVertexLayouts.find( p_key );
 		if ( it != _cacheVertexLayouts.end() )
 		{
@@ -475,8 +636,10 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateShaderBuffer( const BufferShader & p_buffer )
+	Desc::Handle OpenGL45::_getOrCreateShaderBuffer( const Desc::BufferShader & p_buffer )
 	{
+		using namespace Desc;
+
 		const Key key = p_buffer.name;
 
 		auto it = _cacheShaderBuffers.find( key );
@@ -526,19 +689,24 @@ namespace VTX::Renderer::Context::Backend
 		const Handle h = static_cast<Handle>( _shaderBuffers.size() );
 		_shaderBuffers.emplace_back( std::move( glBuffer ) );
 		_cacheShaderBuffers.emplace( key, h );
+		_shaderBufferProperties.emplace(
+			key, _ShaderBufferCacheEntry { p_buffer.role, p_buffer.mutability, p_buffer.access, p_buffer.frequency }
+		);
 
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateVertexBuffer( const Key & p_key )
+	Desc::Handle OpenGL45::_getOrCreateVertexBuffer( const Desc::Key & p_key )
 	{
+		using namespace Desc;
+
 		auto it = _cacheVertexBuffers.find( p_key );
 		if ( it != _cacheVertexBuffers.end() )
 		{
 			return it->second;
 		}
 
-		auto glBuffer = std::make_unique<GL::Buffer>(); // pas de storage ici
+		auto glBuffer = std::make_unique<GL::Buffer>();
 
 		const Handle h = static_cast<Handle>( _vertexBuffers.size() );
 		_vertexBuffers.emplace_back( std::move( glBuffer ) );
@@ -547,15 +715,17 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateIndexBuffer( const Key & p_key )
+	Desc::Handle OpenGL45::_getOrCreateIndexBuffer( const Desc::Key & p_key )
 	{
+		using namespace Desc;
+
 		auto it = _cacheIndexBuffers.find( p_key );
 		if ( it != _cacheIndexBuffers.end() )
 		{
 			return it->second;
 		}
 
-		auto glBuffer = std::make_unique<GL::Buffer>(); // pas de storage ici
+		auto glBuffer = std::make_unique<GL::Buffer>();
 
 		const Handle h = static_cast<Handle>( _indexBuffers.size() );
 		_indexBuffers.emplace_back( std::move( glBuffer ) );
@@ -564,8 +734,10 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Handle OpenGL45::_getOrCreateProgram( const Program & p_program )
+	Desc::Handle OpenGL45::_getOrCreateProgram( const Desc::Program & p_program )
 	{
+		using namespace Desc;
+
 		const Key & key = p_program.name;
 		auto		it	= _cachePrograms.find( key );
 		if ( it != _cachePrograms.end() )
@@ -594,22 +766,29 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	OpenGL45::GlobalShaderBuffers OpenGL45::_buildGlobalShaderBuffers( const Resources & p_resources )
+	OpenGL45::GlobalShaderBuffers OpenGL45::_buildGlobalShaderBuffers( const Desc::Resources & p_resources )
 	{
+		using namespace Desc;
+
 		OpenGL45::GlobalShaderBuffers gsb;
 
 		for ( const auto & [ key, buffer ] : p_resources.shaderBuffers )
 		{
 			assert( buffer.binding );
 			const Handle hBuf = _cacheShaderBuffers.at( key );
-			gsb.emplace_back( hBuf, *buffer.binding );
+			gsb.emplace_back( hBuf, buffer.role, *buffer.binding );
 		}
 
 		return gsb;
 	}
 
-	OpenGL45::ResourceTable OpenGL45::_buildResourceTableForPass( const Pass & p_pass, const Resources & p_resources )
+	OpenGL45::ResourceTable OpenGL45::_buildResourceTableForPass(
+		const Desc::Pass &		p_pass,
+		const Desc::Resources & p_resources
+	)
 	{
+		using namespace Desc;
+
 		OpenGL45::ResourceTable rt;
 
 		// It's better to not use the same binding/unit several times in different contexts.
@@ -630,8 +809,9 @@ namespace VTX::Renderer::Context::Backend
 			}
 			case E_RESOURCE_TYPE::BUFFER:
 			{
-				const Handle hBuf = _cacheShaderBuffers.at( input.primary );
-				rt.shaderBuffers.emplace_back( hBuf, b++ );
+				const Handle		 hBuf	= _cacheShaderBuffers.at( input.primary );
+				const BufferShader & buffer = p_resources.shaderBuffers.at( input.primary );
+				rt.shaderBuffers.emplace_back( hBuf, buffer.role, b++ );
 				break;
 			}
 			default: break;
@@ -645,7 +825,7 @@ namespace VTX::Renderer::Context::Backend
 			if ( _cacheShaderBuffers.contains( key ) )
 			{
 				const Handle hBuf = _cacheShaderBuffers.at( key );
-				rt.shaderBuffers.emplace_back( hBuf, b++ );
+				rt.shaderBuffers.emplace_back( hBuf, E_SHADER_BUFFER_KIND::PARAMETERS, b++ );
 			}
 		}
 
@@ -657,8 +837,9 @@ namespace VTX::Renderer::Context::Backend
 			{
 			case E_RESOURCE_TYPE::BUFFER:
 			{
-				const Handle hBuf = _cacheShaderBuffers.at( output.primary );
-				rt.shaderBuffers.emplace_back( hBuf, b++ );
+				const Handle		 hBuf	= _cacheShaderBuffers.at( output.primary );
+				const BufferShader & buffer = p_resources.shaderBuffers.at( output.primary );
+				rt.shaderBuffers.emplace_back( hBuf, buffer.role, b++ );
 
 				break;
 			}
@@ -669,84 +850,187 @@ namespace VTX::Renderer::Context::Backend
 		return rt;
 	}
 
-	void OpenGL45::_bindGeometryToVao(
-		const Handle		 p_hVao,
-		const VertexLayout & p_layout,
-		const Geometry &	 p_geom,
-		const bool			 p_useIndices
+	void OpenGL45::_attachTexturesToFramebuffer(
+		const Desc::Pass &						 p_pass,
+		const Desc::ResourceMap<Desc::Texture> & p_textures
 	)
 	{
-		auto & vao = *_vertexArrays[ p_hVao ];
+		using namespace Desc;
+
+		const Key &				key			 = p_pass.name;
+		const Handle			hFramebuffer = _cacheFramebuffers.at( key );
+		const GL::Framebuffer & fbo			 = *_framebuffers[ hFramebuffer ];
+
+		// Attach.
+		uint colorAttach = 0;
+		for ( auto & output : p_pass.outputs )
+		{
+			if ( output.type != E_RESOURCE_TYPE::TEXTURE )
+			{
+				continue;
+			}
+
+			const Handle		  hTex	  = _cacheTextures.at( output.primary );
+			const GL::Texture2D & texture = *_textures[ hTex ];
+
+			const E_FORMAT format  = p_textures.at( output.primary ).format;
+			const bool	   isDepth = _toGL( format ).isDepth;
+
+			if ( isDepth )
+			{
+				fbo.attachTexture( texture, GL_DEPTH_ATTACHMENT );
+			}
+			else
+			{
+				fbo.attachTexture( texture, GL_COLOR_ATTACHMENT0 + colorAttach++ );
+			}
+		}
+
+		// Set draw buffers.
+		fbo.setReadBuffer( GL_NONE );
+		if ( colorAttach )
+		{
+			std::vector<uint32_t> drawBuffers( colorAttach );
+			std::iota( drawBuffers.begin(), drawBuffers.end(), GL_COLOR_ATTACHMENT0 );
+			fbo.setDrawBuffers( drawBuffers );
+		}
+		else
+		{
+			fbo.setDrawBuffers( { GL_NONE } );
+		}
+
+		// Check FBO complete.
+		assert( fbo.checkStatus() );
+	}
+
+	void OpenGL45::_bindGeometryToVao(
+		const Desc::Key &		p_key,
+		const Desc::Geometry &	p_geo,
+		const Desc::Resources & p_resources
+	)
+	{
+		using namespace Desc;
+
+		const Key &			 kVao	= p_geo.vertexLayout;
+		const VertexLayout & layout = p_resources.vertexStreams.at( kVao );
+		const auto &		 vao	= *_vertexArrays.at( _cacheVertexLayouts.at( kVao ) );
+
 		vao.bind();
 
 		GLuint location = 0;
 
-		for ( const auto & a : p_layout.attributes )
+		for ( const auto & a : layout.attributes )
 		{
-			const GLAttrib ga = toGLAttrib( a.type );
+			const GLAttrib	   ga		 = toGLAttrib( a.type );
+			const Key		   bufferKey = p_geo.vertexLayout + "." + a.name;
+			const Handle	   hVbo		 = _cacheVertexBuffers.at( bufferKey );
+			const GL::Buffer & vbo		 = *_vertexBuffers[ hVbo ];
 
-			// auto itBufKey = p_geom.attributeBuffers.find( a.name );
-			// assert( itBufKey != p_geom.attributeBuffers.end() );
-
-			// const Key & bufferKey = itBufKey->second;
-
-			const Handle hVbo = 0;
-			//_getOrCreateVertexBuffer( bufferKey );
-			auto & vbo = *_vertexBuffers[ hVbo ];
-
-			const GLsizei strideOneColumn = GLsizei( ga.components * ga.bytesPerComp );
-
+			const GLsizei stride = GLsizei( ga.columns * ga.components * ga.bytesPerComp );
 			for ( uint8_t col = 0; col < ga.columns; ++col )
 			{
-				const GLuint   bindingIndex = location;
-				const GLintptr offset		= GLintptr( col * strideOneColumn );
-
-				vao.setVertexBuffer( bindingIndex, vbo, strideOneColumn, offset );
-
+				const GLuint bindingIndex = location;
+				vao.setVertexBuffer( bindingIndex, vbo, stride, 0 );
 				++location;
 			}
 		}
 
-		if ( p_useIndices )
+		if ( p_geo.indexBuffer )
 		{
-			assert( p_geom.indexBuffer.has_value() );
-
-			const Handle hEbo = 0;
-			//_getOrCreateIndexBuffer( *geom.indexBuffer );
-			vao.bindElementBuffer( *_indexBuffers[ hEbo ] );
+			const Handle	   hIbo = _cacheIndexBuffers.at( *p_geo.indexBuffer );
+			const GL::Buffer & ibo	= *_indexBuffers[ hIbo ];
+			vao.bindElementBuffer( ibo );
 		}
 
 		vao.unbind();
 	}
 
-	void OpenGL45::setShaderBufferData( const BufferShader & p_desc, SpanBytes p_bytes )
+	void OpenGL45::_createQuad()
 	{
-		const Handle h	 = _getOrCreateShaderBuffer( p_desc );
-		GL::Buffer & buf = *_shaderBuffers[ h ];
+		using namespace Desc;
 
-		if ( p_desc.mutability == E_BUFFER_MUTABILITY::MUTABLE )
+		const std::array<Vec2f, 4> quad
+			= { Vec2f { -1.f, 1.f }, Vec2f { -1.f, -1.f }, Vec2f { 1.f, 1.f }, Vec2f { 1.f, -1.f } };
+
+		const Key quadLayoutKey = _QUAD;
+
+		VertexLayout quadLayout;
+		quadLayout.attributes = { VertexAttribute { "Position", E_TYPE::VEC2F } };
+
+		Geometry quadGeo;
+		quadGeo.vertexLayout = quadLayoutKey;
+		quadGeo.indexBuffer	 = std::nullopt;
+
+		_getOrCreateVertexLayout( quadLayoutKey, quadLayout );
+
+		const Key quadVboKey = quadLayoutKey + ".Position";
+		_getOrCreateVertexBuffer( quadVboKey );
+
+		Resources fakeRes;
+		fakeRes.vertexStreams.emplace( quadLayoutKey, quadLayout );
+		fakeRes.geometries.emplace( quadLayoutKey, quadGeo );
+
+		_bindGeometryToVao( quadLayoutKey, quadGeo, fakeRes );
+
+		const Handle hVbo = _cacheVertexBuffers.at( quadVboKey );
+		_vertexBuffers[ hVbo ]->setData( quad.data(), GLsizei( sizeof( quad ) ), GL_STATIC_DRAW );
+	}
+
+	void OpenGL45::setShaderBufferData( const Desc::Key & p_key, SpanBytes p_bytes )
+	{
+		using namespace Desc;
+
+		const auto & bufferDesc = _shaderBufferProperties.at( p_key );
+		const Handle h			= _cacheShaderBuffers.at( p_key );
+		_shaderBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( bufferDesc.frequency ) );
+	}
+
+	void OpenGL45::setPipelineBufferData( const Desc::Key & p_key, SpanBytes p_bytes )
+	{
+		using namespace Desc;
+
+		const auto & bufferDesc = _pipelineBufferProperties.at( p_key );
+		GLenum		 freq		= _toGL( bufferDesc.frequency );
+		if ( bufferDesc.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
 		{
-			buf.setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( p_desc.frequency ) );
+			const Handle h = _getOrCreateVertexBuffer( p_key );
+			_vertexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), freq );
 		}
 		else
 		{
-			assert( p_bytes.size() <= buf.size() );
-			buf.setSub( p_bytes.data(), static_cast<GLsizeiptr>( p_bytes.size() ), 0 );
+			const Handle h = _getOrCreateIndexBuffer( p_key );
+			_indexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), freq );
 		}
 	}
 
-	void OpenGL45::setPipelineBufferData( const BufferPipeline & p_desc, SpanBytes p_bytes )
+	void OpenGL45::fillInfos( StructInfos & p_infos ) const
 	{
-		if ( p_desc.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
+		p_infos.renderer = _openglInfos.glRenderer;
+
+// NVX_gpu_memory_info
+#if ( GL_NVX_gpu_memory_info == 1 )
+		if ( _openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::NVX_gpu_memory_info ] )
 		{
-			const Handle h = _getOrCreateVertexBuffer( p_desc.name );
-			_vertexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( p_desc.frequency ) );
+			int gpuMemoryInfoDedicated, gpuMemoryInfoTotalAvailable, gpuMemoryInfoCurrentAvailable;
+
+			glGetIntegerv( GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &gpuMemoryInfoDedicated );
+			glGetIntegerv( GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &gpuMemoryInfoTotalAvailable );
+			glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &gpuMemoryInfoCurrentAvailable );
+
+			p_infos.gpuMemoryInfoDedicated		  = gpuMemoryInfoDedicated * 1000ll;
+			p_infos.gpuMemoryInfoTotalAvailable	  = gpuMemoryInfoTotalAvailable * 1000ll;
+			p_infos.gpuMemoryInfoCurrentAvailable = gpuMemoryInfoCurrentAvailable * 1000ll;
 		}
-		else
+#endif
+#if ( GL_ATI_meminfo == 1 )
+		if ( _openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::ATI_meminfo ] )
 		{
-			const Handle h = _getOrCreateIndexBuffer( p_desc.name );
-			_indexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( p_desc.frequency ) );
+			// TODO?
+			// VBO_FREE_MEMORY_ATI 0x87FB
+			// TEXTURE_FREE_MEMORY_ATI 0x87FC
+			// RENDERBUFFER_FREE_MEMORY_ATI 0x87FD
 		}
+#endif
 	}
 
 	void OpenGL45::_getOpenglInfos()

@@ -181,5 +181,10 @@ class VTXPythonBindingRecipe(ConanFile):
             "cmake/vtx_python_binding_copy_files.cmake",
             "cmake/python_copy_instructions.cmake"
         ])
+        if self.settings.os == "Linux":
+            self.cpp_info.system_libs.append("lnsl")
+            self.cpp_info.system_libs.append("nsl")
+            self.cpp_info.system_libs.append("libnsl")
+            self.cpp_info.system_libs.append("libnsl-dev")
 
         

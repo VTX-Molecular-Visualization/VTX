@@ -1,8 +1,8 @@
 #ifndef __VTX_RENDERER_RENDER_GRAPH__
 #define __VTX_RENDERER_RENDER_GRAPH__
 
-// #include "context/concept.hpp"
 #include "renderer/descriptors.hpp"
+#include "renderer/geometry/geometries.hpp"
 #include "renderer/graph_builder.hpp"
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
@@ -29,14 +29,14 @@ namespace VTX::Renderer
 		/**
 		 * @brief Accessors.
 		 */
-		inline const Resources & getResources() const { return _resources; }
-		inline const PassList &	 getPasses() const { return _passes; }
+		inline const Desc::Resources & getResources() const { return _resources; }
+		inline const Desc::PassList &  getPasses() const { return _passes; }
 
 		/**
 		 * @brief Validate graph and build render queue.
 		 * @return
 		 */
-		const RenderQueue build();
+		const Desc::RenderQueue build();
 
 		/**
 		 * @brief Add data from builder.
@@ -56,11 +56,11 @@ namespace VTX::Renderer
 		/**
 		 * @brief Create a default pipeline from config.
 		 */
-		void createDefaultPipeline( const PipelineConfig & );
+		void createDefaultPipeline( const PipelineConfig &, const Geometries & );
 
 	  private:
-		Resources _resources;
-		PassList  _passes;
+		Desc::Resources _resources;
+		Desc::PassList	_passes;
 	};
 
 } // namespace VTX::Renderer

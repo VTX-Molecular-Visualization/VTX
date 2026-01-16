@@ -3,7 +3,6 @@
 #include "user_interface.hpp"
 #include <iostream>
 #include <renderer/graphics_config.hpp>
-#include <renderer/proxy/voxels.hpp>
 #include <renderer/renderer.hpp>
 #include <util/math/aabb.hpp>
 
@@ -71,19 +70,19 @@ int main( int, char ** )
 			{
 				if ( p_key == SDL_SCANCODE_F1 )
 				{
-					renderer.addProxySystem( scene.addSystem( "4hhb" ) );
+					// renderer.addProxySystem( scene.addSystem( "4hhb" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F2 )
 				{
-					renderer.addProxySystem( scene.addSystem( "1aga" ) );
+					// renderer.addProxySystem( scene.addSystem( "1aga" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F3 )
 				{
-					renderer.addProxySystem( scene.addSystem( "4v6x" ) );
+					// renderer.addProxySystem( scene.addSystem( "4v6x" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F4 )
 				{
-					renderer.addProxySystem( scene.addSystem( "3j3q.mmtf" ) );
+					// renderer.addProxySystem( scene.addSystem( "3j3q.mmtf" ) );
 				}
 				else if ( p_key == SDL_SCANCODE_F5 )
 				{
@@ -104,7 +103,7 @@ int main( int, char ** )
 		{
 			try
 			{
-				renderer.addProxySystem( scene.addSystem( p_filePath.string() ) );
+				// renderer.addProxySystem( scene.addSystem( p_filePath.string() ) );
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -131,9 +130,7 @@ int main( int, char ** )
 			}
 		}
 
-		auto proxyVoxels = Renderer::Proxy::Voxels { &mins, &maxs };
-		renderer.setProxyVoxels( proxyVoxels );
-
+		renderer.setVoxels( mins, maxs );
 		renderer.setColorLayout( scene.getColorLayout() );
 
 		// Quickfix.

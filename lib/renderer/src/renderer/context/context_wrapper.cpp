@@ -90,9 +90,6 @@ namespace VTX::Renderer::Context
 
 	void ContextWrapper::setNull() { _setExecutor<Executor::Null>( _impl->backend, _impl->executor ); }
 
-	/**
-	 * @brief Execute the current command buffer.
-	 */
 	void ContextWrapper::execute() const noexcept
 	{
 		std::visit(
@@ -108,10 +105,7 @@ namespace VTX::Renderer::Context
 		);
 	}
 
-	/**
-	 * @brief Build the command buffer from the render queue and resources.
-	 */
-	void ContextWrapper::build( const RenderQueue & p_renderQueue, const Resources & p_resources )
+	void ContextWrapper::build( const Desc::RenderQueue & p_renderQueue, const Desc::Resources & p_resources )
 	{
 		_impl->commands.clear();
 
@@ -128,10 +122,12 @@ namespace VTX::Renderer::Context
 		);
 	}
 
-	/**
-	 * @brief Resize backend resources.
-	 */
-	void ContextWrapper::resize( const std::size_t p_width, const std::size_t p_height )
+	void ContextWrapper::resize(
+		const uint32_t										 p_width,
+		const uint32_t										 p_height,
+		const Desc::PassList &								 p_passes,
+		const std::unordered_map<Desc::Key, Desc::Texture> & p_textures
+	)
 	{
 		std::visit(
 			[ & ]( auto & p_backend )
@@ -139,7 +135,52 @@ namespace VTX::Renderer::Context
 				using T = std::remove_cvref_t<decltype( p_backend )>;
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
-					p_backend.resize( p_width, p_height );
+					p_backend.resize( p_width, p_height, p_passes, p_textures );
+				}
+			},
+			_impl->backend
+		);
+	}
+
+	void ContextWrapper::setShaderBuffer( const Desc::Key & p_key, SpanBytes p_bytes )
+	{
+		std::visit(
+			[ & ]( auto & p_backend )
+			{
+				using T = std::remove_cvref_t<decltype( p_backend )>;
+				if constexpr ( not std::is_same_v<T, std::monostate> )
+				{
+					p_backend.setShaderBufferData( p_key, p_bytes );
+				}
+			},
+			_impl->backend
+		);
+	}
+
+	void ContextWrapper::setPipelineBuffer( const Desc::Key & p_key, SpanBytes p_bytes )
+	{
+		std::visit(
+			[ & ]( auto & p_backend )
+			{
+				using T = std::remove_cvref_t<decltype( p_backend )>;
+				if constexpr ( not std::is_same_v<T, std::monostate> )
+				{
+					p_backend.setPipelineBufferData( p_key, p_bytes );
+				}
+			},
+			_impl->backend
+		);
+	}
+
+	void ContextWrapper::fillInfos( StructInfos & p_infos ) const
+	{
+		std::visit(
+			[ & ]( auto & p_backend )
+			{
+				using T = std::remove_cvref_t<decltype( p_backend )>;
+				if constexpr ( not std::is_same_v<T, std::monostate> )
+				{
+					p_backend.fillInfos( p_infos );
 				}
 			},
 			_impl->backend

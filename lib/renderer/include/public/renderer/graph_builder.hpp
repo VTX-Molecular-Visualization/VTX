@@ -12,70 +12,70 @@ namespace VTX::Renderer
 	 * @brief Type to enum.
 	 */
 	template<typename T>
-	constexpr E_TYPE uniformTypeOf();
+	constexpr Desc::E_TYPE uniformTypeOf();
 
 	template<>
-	constexpr E_TYPE uniformTypeOf<bool>()
+	constexpr Desc::E_TYPE uniformTypeOf<bool>()
 	{
-		return E_TYPE::BOOL;
+		return Desc::E_TYPE::BOOL;
 	}
 	template<>
-	constexpr E_TYPE uniformTypeOf<float>()
+	constexpr Desc::E_TYPE uniformTypeOf<float>()
 	{
-		return E_TYPE::FLOAT;
+		return Desc::E_TYPE::FLOAT;
 	}
 	template<>
-	constexpr E_TYPE uniformTypeOf<unsigned int>()
+	constexpr Desc::E_TYPE uniformTypeOf<unsigned int>()
 	{
-		return E_TYPE::UINT;
+		return Desc::E_TYPE::UINT;
 	}
 	template<>
-	constexpr E_TYPE uniformTypeOf<Vec2i>()
+	constexpr Desc::E_TYPE uniformTypeOf<Vec2i>()
 	{
-		return E_TYPE::VEC2I;
+		return Desc::E_TYPE::VEC2I;
 	}
 	template<>
-	constexpr E_TYPE uniformTypeOf<Vec2f>()
+	constexpr Desc::E_TYPE uniformTypeOf<Vec2f>()
 	{
-		return E_TYPE::VEC2F;
+		return Desc::E_TYPE::VEC2F;
 	}
 	template<>
-	constexpr E_TYPE uniformTypeOf<Vec3f>()
+	constexpr Desc::E_TYPE uniformTypeOf<Vec3f>()
 	{
-		return E_TYPE::VEC3F;
+		return Desc::E_TYPE::VEC3F;
 	}
 	template<>
-	constexpr E_TYPE uniformTypeOf<Vec4f>()
+	constexpr Desc::E_TYPE uniformTypeOf<Vec4f>()
 	{
-		return E_TYPE::VEC4F;
+		return Desc::E_TYPE::VEC4F;
 	}
 	template<>
-	constexpr E_TYPE uniformTypeOf<Mat3f>()
+	constexpr Desc::E_TYPE uniformTypeOf<Mat3f>()
 	{
-		return E_TYPE::MAT3F;
+		return Desc::E_TYPE::MAT3F;
 	}
 	template<>
-	constexpr E_TYPE uniformTypeOf<Mat4f>()
+	constexpr Desc::E_TYPE uniformTypeOf<Mat4f>()
 	{
-		return E_TYPE::MAT4F;
+		return Desc::E_TYPE::MAT4F;
 	}
 	template<>
-	constexpr E_TYPE uniformTypeOf<Util::Color::Rgba>()
+	constexpr Desc::E_TYPE uniformTypeOf<Util::Color::Rgba>()
 	{
-		return E_TYPE::VEC4F;
+		return Desc::E_TYPE::VEC4F;
 	}
 
 	/**
 	 * @brief Create a uniform value.
 	 */
 	template<typename T>
-	UniformValue makeUniform(
-		const Key &									   p_name,
+	Desc::UniformValue makeUniform(
+		const Desc::Key &							   p_name,
 		const T &									   p_value,
 		const std::optional<std::pair<double, double>> p_range = std::nullopt
 	)
 	{
-		UniformValue u {};
+		Desc::UniformValue u {};
 		u.name = p_name;
 		u.type = uniformTypeOf<T>();
 
@@ -91,22 +91,22 @@ namespace VTX::Renderer
 	}
 
 	template<typename T>
-	UniformValue makeUniformArray(
-		const Key &									   p_name,
+	Desc::UniformValue makeUniformArray(
+		const Desc::Key &							   p_name,
 		const T &									   p_value,
 		const std::uint32_t							   p_count,
 		const std::optional<std::pair<double, double>> p_range = std::nullopt
 	)
 	{
-		UniformValue u = makeUniform<T>( p_name, p_value, p_range );
-		u.arrayCount   = p_count;
+		Desc::UniformValue u = makeUniform<T>( p_name, p_value, p_range );
+		u.arrayCount		 = p_count;
 		return u;
 	}
 
 	/**
 	 * @brief Name of the default sampler used to avoid repetition.
 	 */
-	const Key DEFAULT_SAMPLER_NAME = "Default";
+	const Desc::Key DEFAULT_SAMPLER_NAME = "Default";
 
 	/**
 	 * @brief Forward declarations.
@@ -119,8 +119,8 @@ namespace VTX::Renderer
 	 */
 	struct GraphBuilder
 	{
-		Resources resources;
-		PassList  passes;
+		Desc::Resources resources;
+		Desc::PassList	passes;
 
 		/**
 		 * @brief Constructor.
@@ -130,20 +130,20 @@ namespace VTX::Renderer
 		/**
 		 * @brief texture().
 		 */
-		GraphBuilder & texture( const Key &, const E_FORMAT, const Size2D & = std::monostate {} );
+		GraphBuilder & texture( const Desc::Key &, const Desc::E_FORMAT, const Desc::Size2D & = std::monostate {} );
 
 		/**
 		 * @brief texture().
 		 */
 		template<typename T>
 		GraphBuilder & texture(
-			const Key &			   p_name,
-			const E_FORMAT		   p_format,
+			const Desc::Key &	   p_name,
+			const Desc::E_FORMAT   p_format,
 			const std::vector<T> & p_data,
-			const Size2D &		   p_size = std::monostate {}
+			const Desc::Size2D &   p_size = std::monostate {}
 		)
 		{
-			Texture tex;
+			Desc::Texture tex;
 			tex.format = p_format;
 			tex.size   = p_size;
 			tex.data.resize( p_data.size() * sizeof( T ) );
@@ -157,21 +157,21 @@ namespace VTX::Renderer
 		 * @brief sampler().
 		 */
 		GraphBuilder & sampler(
-			const Key & p_name,
-			const E_WRAPPING  = E_WRAPPING::CLAMP_TO_EDGE,
-			const E_WRAPPING  = E_WRAPPING::CLAMP_TO_EDGE,
-			const E_FILTERING = E_FILTERING::NEAREST,
-			const E_FILTERING = E_FILTERING::NEAREST
+			const Desc::Key & p_name,
+			const Desc::E_WRAPPING	= Desc::E_WRAPPING::CLAMP_TO_EDGE,
+			const Desc::E_WRAPPING	= Desc::E_WRAPPING::CLAMP_TO_EDGE,
+			const Desc::E_FILTERING = Desc::E_FILTERING::NEAREST,
+			const Desc::E_FILTERING = Desc::E_FILTERING::NEAREST
 		);
 
 		/**
 		 * @brief sampler().
 		 */
 		inline GraphBuilder & defaultSampler(
-			const E_WRAPPING  p_wrapS	  = E_WRAPPING::CLAMP_TO_EDGE,
-			const E_WRAPPING  p_wrapT	  = E_WRAPPING::CLAMP_TO_EDGE,
-			const E_FILTERING p_minFilter = E_FILTERING::NEAREST,
-			const E_FILTERING p_magFilter = E_FILTERING::NEAREST
+			const Desc::E_WRAPPING	p_wrapS		= Desc::E_WRAPPING::CLAMP_TO_EDGE,
+			const Desc::E_WRAPPING	p_wrapT		= Desc::E_WRAPPING::CLAMP_TO_EDGE,
+			const Desc::E_FILTERING p_minFilter = Desc::E_FILTERING::NEAREST,
+			const Desc::E_FILTERING p_magFilter = Desc::E_FILTERING::NEAREST
 		)
 		{
 			return sampler( DEFAULT_SAMPLER_NAME, p_wrapS, p_wrapT, p_minFilter, p_magFilter );
@@ -180,44 +180,44 @@ namespace VTX::Renderer
 		/**
 		 * @brief vertexStream().
 		 */
-		GraphBuilder & vertexLayout( const Key &, const std::initializer_list<VertexAttribute> );
+		GraphBuilder & vertexLayout( const Desc::Key &, const std::initializer_list<Desc::VertexAttribute> );
 
 		/**
 		 * @brief uniformBuffer().
 		 */
 		GraphBuilder & shaderBuffer(
-			const Key &,
-			const E_SHADER_BUFFER_KIND,
-			const E_BUFFER_MUTABILITY,
-			const E_BUFFER_ACCESS,
-			const E_UPDATE_FREQUENCY,
+			const Desc::Key &,
+			const Desc::E_SHADER_BUFFER_KIND,
+			const Desc::E_BUFFER_MUTABILITY,
+			const Desc::E_BUFFER_ACCESS,
+			const Desc::E_UPDATE_FREQUENCY,
 			const uint32_t,
-			const std::initializer_list<UniformValue> = {}
+			const std::initializer_list<Desc::UniformValue> = {}
 		);
 
 		/**
 		 * @brief dataBuffer().
 		 */
 		GraphBuilder & pipelineBuffer(
-			const Key &					 p_name,
-			const E_PIPELINE_BUFFER_KIND p_kind		 = E_PIPELINE_BUFFER_KIND::VERTEX,
-			const E_UPDATE_FREQUENCY	 p_frequency = E_UPDATE_FREQUENCY::STATIC
+			const Desc::Key &				   p_name,
+			const Desc::E_PIPELINE_BUFFER_KIND p_kind	   = Desc::E_PIPELINE_BUFFER_KIND::VERTEX,
+			const Desc::E_UPDATE_FREQUENCY	   p_frequency = Desc::E_UPDATE_FREQUENCY::STATIC
 		);
 
 		/**
 		 * @brief geometry().
 		 */
 		GraphBuilder & geometry(
-			const Key & p_name,
-			const Key & p_vertexStream,
+			const Desc::Key & p_name,
+			const Desc::Key & p_vertexStream,
 			// const std::unordered_map<Key, Key> & p_overrides = {},
-			const std::optional<Key> p_indexBuffer = std::nullopt
+			const std::optional<Desc::Key> p_indexBuffer = std::nullopt
 		);
 
 		/**
 		 * @brief pass().
 		 */
-		PassBuilder pass( const Key & );
+		PassBuilder pass( const Desc::Key & );
 	};
 
 	/**
@@ -233,12 +233,12 @@ namespace VTX::Renderer
 		/**
 		 * @brief Program being built.
 		 */
-		Program & program;
+		Desc::Program & program;
 
 		/**
 		 * @brief Constructor.
 		 */
-		ProgramBuilder( PassBuilder &, Program & );
+		ProgramBuilder( PassBuilder &, Desc::Program & );
 
 		/**
 		 * @brief shaders().
@@ -249,16 +249,16 @@ namespace VTX::Renderer
 		/**
 		 * @brief uniform().
 		 */
-		ProgramBuilder & uniform( const UniformValue & );
+		ProgramBuilder & uniform( const Desc::UniformValue & );
 
 		/**
 		 * @brief draw().
 		 */
 		ProgramBuilder & draw(
-			const Key &		  p_geometry,
-			const E_PRIMITIVE p_primitive	= E_PRIMITIVE::TRIANGLES,
-			const uint32_t	  p_vertexCount = 0,
-			const uint32_t	  p_indexCount	= 0
+			const Desc::Key &,
+			const Desc::E_PRIMITIVE				  = Desc::E_PRIMITIVE::TRIANGLES,
+			const Desc::DrawCall::RangeArrays *	  = nullptr,
+			const Desc::DrawCall::RangeElements * = nullptr
 		);
 
 		/**
@@ -266,7 +266,7 @@ namespace VTX::Renderer
 		 */
 		template<typename T>
 		ProgramBuilder & uniform(
-			const Key &									   p_name,
+			const Desc::Key &							   p_name,
 			const T &									   p_value,
 			const std::optional<std::pair<double, double>> p_range = std::nullopt
 		)
@@ -294,46 +294,53 @@ namespace VTX::Renderer
 		/**
 		 * @brief Pass being built.
 		 */
-		Pass pass;
+		Desc::Pass pass;
 
 		/**
 		 * @brief Constructor.
 		 */
-		PassBuilder( GraphBuilder &, const Key & );
+		PassBuilder( GraphBuilder &, const Desc::Key & );
 
 		/**
 		 * @brief in().
 		 */
 		// Generic binding.
-		PassBuilder & in( const E_RESOURCE_TYPE, const Key &, const std::optional<Key> = std::nullopt );
+		PassBuilder & in(
+			const Desc::E_RESOURCE_TYPE,
+			const Desc::Key &,
+			const std::optional<Desc::Key> = std::nullopt
+		);
 
 		// Convenience overload: defaults to TEXTURE.
-		PassBuilder & in( const Key & p_texture, const std::optional<Key> & p_sampler = std::nullopt )
-		{
-			return in( E_RESOURCE_TYPE::TEXTURE, p_texture, p_sampler ? *p_sampler : DEFAULT_SAMPLER_NAME );
-		}
+		PassBuilder & in( const Desc::Key &, const std::optional<Desc::Key> & = std::nullopt );
 
 		/**
 		 * @brief out().
 		 */
 		// Generic binding.
-		PassBuilder & out( const E_RESOURCE_TYPE, const Key &, const std::optional<Key> = std::nullopt );
+		PassBuilder & out(
+			const Desc::E_RESOURCE_TYPE,
+			const Desc::Key &,
+			const std::optional<Desc::Key> = std::nullopt
+		);
 
 		// Convenience overload: defaults to TEXTURE.
-		PassBuilder & out( const Key & p_texture, const std::optional<Key> p_sampler = std::nullopt )
-		{
-			return out( E_RESOURCE_TYPE::TEXTURE, p_texture, p_sampler ? *p_sampler : DEFAULT_SAMPLER_NAME );
-		}
+		PassBuilder & out( const Desc::Key & );
+
+		/**
+		 * @brief settings().
+		 */
+		PassBuilder & settings( const std::initializer_list<Desc::Setting> );
 
 		/**
 		 * @brief program().
 		 */
-		ProgramBuilder program( const Key & );
+		ProgramBuilder program( const Desc::Key & );
 
 		/**
 		 * @brief callback().
 		 */
-		PassBuilder & callback( const RenderFunc );
+		PassBuilder & callback( const Desc::RenderFunc );
 
 		/**
 		 * @brief endPass().

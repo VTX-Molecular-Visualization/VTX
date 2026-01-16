@@ -16,12 +16,12 @@
 /**
  * @brief Describes all the meta-data used by the render graph.
  */
-namespace VTX::Renderer
+namespace VTX::Renderer::Desc
 {
 	/**
 	 * @brief All data types.
 	 */
-	enum struct E_TYPE : uint8_t
+	enum struct E_TYPE : uint32_t
 	{
 		BOOL,
 		BYTE,
@@ -42,7 +42,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief Pass resource types.
 	 */
-	enum struct E_RESOURCE_TYPE : uint8_t
+	enum struct E_RESOURCE_TYPE : uint32_t
 	{
 		TEXTURE,
 		GEOMETRY,
@@ -52,7 +52,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All data formats.
 	 */
-	enum struct E_FORMAT : uint8_t
+	enum struct E_FORMAT : uint32_t
 	{
 		RGB16F,
 		RGBA16F,
@@ -68,7 +68,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All draw primitives.
 	 */
-	enum struct E_PRIMITIVE : uint8_t
+	enum struct E_PRIMITIVE : uint32_t
 	{
 		POINTS,
 		LINES,
@@ -79,7 +79,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All buffer roles.
 	 */
-	enum struct E_SHADER_BUFFER_KIND : uint8_t
+	enum struct E_SHADER_BUFFER_KIND : uint32_t
 	{
 		PARAMETERS,
 		STRUCTURED
@@ -88,7 +88,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All buffer mutability types.
 	 */
-	enum struct E_BUFFER_MUTABILITY : uint8_t
+	enum struct E_BUFFER_MUTABILITY : uint32_t
 	{
 		MUTABLE,
 		IMMUTABLE
@@ -97,7 +97,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All buffer access types.
 	 */
-	enum struct E_BUFFER_ACCESS : uint8_t
+	enum struct E_BUFFER_ACCESS : uint32_t
 	{
 		NONE,
 		READ,
@@ -108,7 +108,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All buffer update frequencies.
 	 */
-	enum struct E_UPDATE_FREQUENCY : uint8_t
+	enum struct E_UPDATE_FREQUENCY : uint32_t
 	{
 		STATIC,
 		DYNAMIC,
@@ -118,7 +118,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All data buffer kinds.
 	 */
-	enum struct E_PIPELINE_BUFFER_KIND : uint8_t
+	enum struct E_PIPELINE_BUFFER_KIND : uint32_t
 	{
 		VERTEX,
 		INDEX
@@ -127,7 +127,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All sampler wrapping modes.
 	 */
-	enum struct E_WRAPPING : uint8_t
+	enum struct E_WRAPPING : uint32_t
 	{
 		REPEAT,
 		MIRRORED_REPEAT,
@@ -139,7 +139,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief All sampler filtering modes.
 	 */
-	enum struct E_FILTERING : uint8_t
+	enum struct E_FILTERING : uint32_t
 	{
 		NEAREST,
 		LINEAR,
@@ -147,6 +147,17 @@ namespace VTX::Renderer
 		LINEAR_MIPMAP_NEAREST,
 		NEAREST_MIPMAP_LINEAR,
 		LINEAR_MIPMAP_LINEAR,
+	};
+
+	/**
+	 * @brief Various settings.
+	 */
+	using Setting = uint32_t;
+	enum : Setting
+	{
+		CLEAR_COLOR	 = 1u << 0,
+		CLEAR_DEPTH	 = 1u << 1,
+		ENABLE_DEPTH = 1u << 2,
 	};
 
 	/**
@@ -278,6 +289,9 @@ namespace VTX::Renderer
 		std::vector<VertexAttribute> attributes;
 	};
 
+	/**
+	 * @brief Geometry descriptor.
+	 */
 	struct Geometry
 	{
 		Key				   vertexLayout;
@@ -292,8 +306,21 @@ namespace VTX::Renderer
 	{
 		Key			geometry;
 		E_PRIMITIVE primitive;
-		uint32_t	vertexCount = 0;
-		uint32_t	indexCount	= 0;
+		// TODO: variant?
+		uint32_t vertexCount = 0;
+		uint32_t indexCount	 = 0;
+		struct RangeArrays
+		{
+			std::vector<int32_t>  firsts;
+			std::vector<uint32_t> counts;
+		};
+		struct RangeElements
+		{
+			std::vector<const void *> offsets;
+			std::vector<uint32_t>	  counts;
+		};
+		const RangeArrays *	  vertexRanges = nullptr;
+		const RangeElements * indexRanges  = nullptr;
 	};
 
 	/**
@@ -321,20 +348,23 @@ namespace VTX::Renderer
 		std::vector<ResourceBinding> inputs;
 		std::vector<ResourceBinding> outputs;
 		std::vector<Program>		 programs;
+		std::vector<Setting>		 settings;
 		std::optional<RenderFunc>	 customCallback;
 	};
 
 	/**
 	 * @brief All resources.
 	 */
+	template<typename T>
+	using ResourceMap = std::unordered_map<Key, T>;
 	struct Resources
 	{
-		std::unordered_map<Key, Texture>		textures;
-		std::unordered_map<Key, Sampler>		samplers;
-		std::unordered_map<Key, VertexLayout>	vertexStreams;
-		std::unordered_map<Key, BufferShader>	shaderBuffers;
-		std::unordered_map<Key, BufferPipeline> pipelineBuffers;
-		std::unordered_map<Key, Geometry>		geometries;
+		ResourceMap<Texture>		textures;
+		ResourceMap<Sampler>		samplers;
+		ResourceMap<VertexLayout>	vertexStreams;
+		ResourceMap<BufferShader>	shaderBuffers;
+		ResourceMap<BufferPipeline> pipelineBuffers;
+		ResourceMap<Geometry>		geometries;
 	};
 
 	/**
@@ -349,6 +379,6 @@ namespace VTX::Renderer
 	 */
 	using RenderQueue = std::vector<const Pass *>;
 
-} // namespace VTX::Renderer
+} // namespace VTX::Renderer::Desc
 
 #endif

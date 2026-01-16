@@ -7,8 +7,10 @@
 
 namespace VTX::Renderer
 {
-	const RenderQueue RenderGraph::build()
+	const Desc::RenderQueue RenderGraph::build()
 	{
+		using namespace Desc;
+
 		// Check if all inputs are produced before use.
 		std::unordered_set<Key> produced;
 
@@ -148,7 +150,7 @@ namespace VTX::Renderer
 		// Passes.
 		for ( const auto & pass : p_builder.passes )
 		{
-			_passes.push_back( std::make_unique<Pass>( *pass ) );
+			_passes.push_back( std::make_unique<Desc::Pass>( *pass ) );
 		}
 	}
 
@@ -162,12 +164,14 @@ namespace VTX::Renderer
 	void RenderGraph::clear()
 	{
 		// Clear resources?
-		_resources = Resources {};
+		_resources = Desc::Resources {};
 		_passes.clear();
 	}
 
-	void RenderGraph::createDefaultPipeline( const PipelineConfig & p_config )
+	void RenderGraph::createDefaultPipeline( const PipelineConfig & p_config, const Geometries & p_geometries )
 	{
+		using namespace Desc;
+
 		GraphBuilder g;
 
 		// Buffers.
@@ -360,6 +364,7 @@ namespace VTX::Renderer
 		// Passes.
 		// Geometric.
 		g.pass( "Geometric" )
+			.settings( { CLEAR_COLOR, CLEAR_DEPTH, ENABLE_DEPTH } )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Spheres" )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Cylinders" )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Ribbons" )
@@ -370,19 +375,19 @@ namespace VTX::Renderer
 			.out( "DepthRaw" )
 			.program( "Sphere" )
 			.shadersDir( "sphere" )
-			.draw( "Spheres", E_PRIMITIVE::POINTS )
+			.draw( "Spheres", E_PRIMITIVE::POINTS, &p_geometries.spheres.drawRanges )
 			.endProgram()
 			.program( "Cylinder" )
 			.shadersDir( "cylinder" )
-			.draw( "Cylinders", E_PRIMITIVE::LINES )
+			.draw( "Cylinders", E_PRIMITIVE::LINES, nullptr, &p_geometries.cylinders.drawRanges )
 			.endProgram()
 			.program( "Ribbon" )
 			.shadersDir( "ribbon" )
-			.draw( "Ribbons", E_PRIMITIVE::PATCHES )
+			.draw( "Ribbons", E_PRIMITIVE::PATCHES, &p_geometries.ribbons.drawRanges )
 			.endProgram()
 			.program( "Voxel" )
 			.shadersDir( "voxel" )
-			.draw( "Grid", E_PRIMITIVE::POINTS )
+			.draw( "Grid", E_PRIMITIVE::POINTS, &p_geometries.voxels.drawRanges )
 			.endProgram()
 			.endPass();
 
@@ -402,7 +407,7 @@ namespace VTX::Renderer
 				.in( "Geometry" )
 				.in( "Noise" )
 				.in( "Depth" )
-				.out( "SSAO", "NearestRepeat" )
+				.out( "SSAO" )
 				.program( "SSAO" )
 				.shaders( { "default.vert", "ssao.frag" } )
 				.uniform( "Intensity", SSAO_INTENSITY_DEFAULT, std::pair { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX } )
@@ -411,9 +416,9 @@ namespace VTX::Renderer
 
 			// BlurX.
 			g.pass( "BlurX" )
-				.in( "SSAO" )
+				.in( "SSAO", "NearestRepeat" )
 				.in( "Depth" )
-				.out( "BlurX", "NearestRepeat" )
+				.out( "BlurX" )
 				.program( "Blur" )
 				.shaders( { "default.vert", "blur.frag" } )
 				.uniform( "Direction", Vec2i( 1, 0 ) )
@@ -422,9 +427,9 @@ namespace VTX::Renderer
 				.endPass();
 			// BlurY.
 			g.pass( "BlurY" )
-				.in( "BlurX" )
+				.in( "BlurX", "NearestRepeat" )
 				.in( "Depth" )
-				.out( "Blur", "NearestRepeat" )
+				.out( "Blur" )
 				.program( "Blur" )
 				.shaders( { "default.vert", "blur.frag" } )
 				.uniform( "Direction", Vec2i( 0, 1 ) )

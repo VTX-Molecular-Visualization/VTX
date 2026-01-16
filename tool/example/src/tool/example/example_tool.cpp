@@ -37,14 +37,4 @@ namespace VTX::Tool::Example
 		mainWindow.createDockWidget<Widget::MyDockWidget>( Qt::RightDockWidgetArea );
 	}
 
-	std::optional<std::string> ExampleTool::getStyle() const
-	{
-		QFile stylesheetFile( ":/tool_example_style.css" );
-		if ( stylesheetFile.open( QFile::ReadOnly ) )
-		{
-			return stylesheetFile.readAll().toStdString();
-		}
-		return std::nullopt;
-	}
-
 } // namespace VTX::Tool::Example

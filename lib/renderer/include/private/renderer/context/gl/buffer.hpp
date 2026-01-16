@@ -30,8 +30,6 @@ namespace VTX::Renderer::Context::GL
 		{
 			if ( glIsBuffer( _id ) )
 			{
-				assert( _target == 0 );
-
 				glDeleteBuffers( 1, &_id );
 				_id = GL_INVALID_INDEX;
 			}
@@ -40,21 +38,17 @@ namespace VTX::Renderer::Context::GL
 		inline void bind( const GLenum p_target ) const noexcept
 		{
 			assert( glIsBuffer( _id ) );
-			assert( _target == 0 );
 			assert( p_target != 0 );
 
-			_target = p_target;
 			glBindBuffer( p_target, _id );
 		}
 
 		inline void bind( const GLenum p_target, const GLuint p_index ) const noexcept
 		{
 			assert( glIsBuffer( _id ) );
-			assert( _target == 0 );
 			assert( p_target != 0 );
 
-			_target = p_target;
-			glBindBufferBase( _target, p_index, _id );
+			glBindBufferBase( p_target, p_index, _id );
 		}
 
 		inline void bind(
@@ -65,28 +59,22 @@ namespace VTX::Renderer::Context::GL
 		) const noexcept
 		{
 			assert( glIsBuffer( _id ) );
-			assert( _target == 0 );
 			assert( p_target != 0 );
 			assert( p_size > 0 );
 
-			_target = p_target;
-			glBindBufferRange( _target, p_index, _id, p_offset, p_size );
+			glBindBufferRange( p_target, p_index, _id, p_offset, p_size );
 		}
 
-		inline void unbind() const noexcept
-		{
-			assert( _target != 0 );
+		static inline void unbind( GLenum p_target ) noexcept { glBindBuffer( p_target, 0 ); }
 
-			glBindBuffer( _target, 0 );
-			_target = 0;
+		static inline void unbindBase( GLenum p_target, GLuint p_index ) noexcept
+		{
+			glBindBufferBase( p_target, p_index, 0 );
 		}
 
-		inline void unbind( const GLuint p_index ) const noexcept
+		static inline void unbindRange( GLenum p_target, GLuint p_index ) noexcept
 		{
-			assert( _target != 0 );
-
-			glBindBufferBase( _target, p_index, 0 );
-			_target = 0;
+			glBindBufferRange( p_target, p_index, 0, 0, 0 );
 		}
 
 		inline void setData( const void * const p_data, const GLsizei p_size, const GLenum p_usage = GL_DYNAMIC_DRAW )
@@ -165,9 +153,8 @@ namespace VTX::Renderer::Context::GL
 		inline GLsizei size() const noexcept { return _size; }
 
 	  private:
-		GLuint		   _id	   = GL_INVALID_INDEX;
-		mutable GLenum _target = 0;
-		GLsizei		   _size   = 0;
+		GLuint	_id	  = GL_INVALID_INDEX;
+		GLsizei _size = 0;
 	};
 } // namespace VTX::Renderer::Context::GL
 

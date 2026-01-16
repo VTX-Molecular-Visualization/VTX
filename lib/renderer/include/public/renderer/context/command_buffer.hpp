@@ -1,7 +1,6 @@
 #ifndef __VTX_RENDERER_CONTEXT_COMMAND_BUFFER__
 #define __VTX_RENDERER_CONTEXT_COMMAND_BUFFER__
 
-#include "renderer/descriptors.hpp"
 #include <cstdint>
 #include <iostream>
 #include <util/constants.hpp>
@@ -15,68 +14,16 @@ namespace VTX::Renderer::Context
 	/**
 	 * @brief All command types.
 	 */
-	enum struct E_COMMAND : std::uint8_t
+	enum struct E_COMMAND : uint32_t
 	{
-		BEGIN_FRAME,
-		END_FRAME,
 
 		BEGIN_PASS,
-		END_PASS,
-
-		BIND_FRAMEBUFFER,
-		BIND_BUFFER,
-
-		BIND_PIPELINE,
-		BIND_RESOURCE_TABLE,
-		PUSH_CONSTANTS,
-
-		BIND_GEOMETRY,
-		DRAW,
-		DRAW_INDEXED,
-		DRAW_INDIRECT,
-		DRAW_INDEXED_INDIRECT,
-		DISPATCH,
-
-		BARRIER
-	};
-
-	/**
-	 * @brief Pipeline types.
-	 */
-	enum struct E_PIPELINE_TYPE : std::uint8_t
-	{
-		GRAPHICS,
-		COMPUTE
-	};
-
-	/**
-	 * @brief Index types.
-	 */
-	enum struct E_INDEX_TYPE : std::uint8_t
-	{
-		U16,
-		U32
-	};
-
-	/**
-	 * @brief Clear mask bits.
-	 */
-	enum : std::uint32_t
-	{
-		CLEAR_COLOR	  = 1u << 0,
-		CLEAR_DEPTH	  = 1u << 1,
-		CLEAR_STENCIL = 1u << 2
-	};
-
-	/**
-	 * @brief Shader stages.
-	 */
-	enum : std::uint32_t
-	{
-		STAGE_VERTEX   = 1u << 0,
-		STAGE_FRAGMENT = 1u << 1,
-		STAGE_COMPUTE  = 1u << 2,
-		STAGE_ALL	   = 0xFFFF'FFFFu
+		BIND_RESOURCES,
+		DRAW_ARRAY,
+		DRAW_ARRAYS,
+		DRAW_ELEMENT,
+		DRAW_ELEMENTS,
+		END_PASS
 	};
 
 	/**
@@ -87,105 +34,56 @@ namespace VTX::Renderer::Context
 	/**
 	 * @brief Payloads for each command type.
 	 */
-	struct PayloadBeginFrame
-	{
-		uint32_t clearFlags;
-	};
-
-	struct PayloadEndFrame
-	{
-	};
-
 	struct PayloadBeginPass
 	{
+		uint32_t framebuffer;
+		uint32_t flags = 0;
 	};
 
-	struct PayloadEndPass
+	struct PayloadBindResources
 	{
-	};
-
-	struct PayloadBindFramebuffer
-	{
-		Handle framebuffer;
-	};
-
-	struct PayloadBindBuffer
-	{
-		// Empty for now.
+		uint32_t resourceTable;
 	};
 
 	struct PayloadBindPipeline
 	{
-		E_PIPELINE_TYPE type;
-		uint8_t			pad[ 3 ] {};
-		Handle			pipeline;
-	};
-
-	struct PayloadBindResourceTable
-	{
-		uint32_t set;
-		Handle	 table;
-	};
-
-	// ?
-	struct PayloadPushConstants
-	{
-		uint32_t stageMask;
-		uint32_t size;
-		uint32_t dataOffset;
-	};
-
-	struct PayloadBindGeometry
-	{
-		Handle geometry;
+		uint32_t pipeline;
 	};
 
 	struct PayloadDraw
 	{
-		uint32_t vertexCount;
-		uint32_t instanceCount;
-		uint32_t firstVertex;
-		uint32_t firstInstance;
+		uint32_t program;
+		uint32_t pipeline;
+		uint32_t primitive;
 	};
 
-	struct PayloadDrawIndexed
+	struct PayloadDrawArray : PayloadDraw
 	{
-		uint32_t	 indexCount;
-		uint32_t	 instanceCount;
-		uint32_t	 firstIndex;
-		int32_t		 vertexOffset;
-		uint32_t	 firstInstance;
-		E_INDEX_TYPE indexType;
-		uint8_t		 _pad[ 3 ] {};
-		uint32_t	 indexBufferOffsetBytes;
+		uint32_t vertexCount = 0;
+		uint32_t firstVertex = 0;
 	};
 
-	struct PayloadDrawIndirect
+	struct PayloadDrawElement : PayloadDraw
 	{
-		Handle	 indirectBuffer;
-		uint32_t offsetBytes;
-		uint32_t drawCount;
-		uint32_t strideBytes;
+		uint32_t indexCount = 0;
+		uint32_t firstIndex = 0;
+		// int32_t	 baseVertex = 0;
 	};
 
-	struct PayloadDrawIndexedIndirect
+	struct PayloadDrawArrays : PayloadDraw
 	{
-		Handle	 indirectBuffer;
-		uint32_t offsetBytes;
-		uint32_t drawCount;
-		uint32_t strideBytes;
+		uintptr_t vertexRanges;
 	};
 
-	struct PayloadDispatch
+	struct PayloadDrawElements : PayloadDraw
 	{
-		uint32_t x, y, z;
+		uintptr_t indexRanges;
+		// uintptr_t pBaseVertex;
 	};
 
-	struct PayloadBarrier
+	struct PayloadEndPass
 	{
-		uint32_t srcStageMask;
-		uint32_t dstStageMask;
-		uint32_t accessMask;
+		uint32_t flags = 0;
 	};
 
 	/**
@@ -194,84 +92,39 @@ namespace VTX::Renderer::Context
 	template<E_COMMAND>
 	struct CommandPayload;
 	template<>
-	struct CommandPayload<E_COMMAND::BEGIN_FRAME>
-	{
-		using type = PayloadBeginFrame;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::END_FRAME>
-	{
-		using type = PayloadEndFrame;
-	};
-	template<>
 	struct CommandPayload<E_COMMAND::BEGIN_PASS>
 	{
 		using type = PayloadBeginPass;
 	};
 	template<>
+	struct CommandPayload<E_COMMAND::BIND_RESOURCES>
+	{
+		using type = PayloadBindResources;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::DRAW_ARRAY>
+	{
+		using type = PayloadDrawArray;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::DRAW_ARRAYS>
+	{
+		using type = PayloadDrawArrays;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::DRAW_ELEMENT>
+	{
+		using type = PayloadDrawElement;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::DRAW_ELEMENTS>
+	{
+		using type = PayloadDrawElements;
+	};
+	template<>
 	struct CommandPayload<E_COMMAND::END_PASS>
 	{
 		using type = PayloadEndPass;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::BIND_FRAMEBUFFER>
-	{
-		using type = PayloadBindFramebuffer;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::BIND_BUFFER>
-	{
-		using type = PayloadBindBuffer;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::BIND_PIPELINE>
-	{
-		using type = PayloadBindPipeline;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::BIND_RESOURCE_TABLE>
-	{
-		using type = PayloadBindResourceTable;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::PUSH_CONSTANTS>
-	{
-		using type = PayloadPushConstants;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::BIND_GEOMETRY>
-	{
-		using type = PayloadBindGeometry;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::DRAW>
-	{
-		using type = PayloadDraw;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::DRAW_INDEXED>
-	{
-		using type = PayloadDrawIndexed;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::DRAW_INDIRECT>
-	{
-		using type = PayloadDrawIndirect;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::DRAW_INDEXED_INDIRECT>
-	{
-		using type = PayloadDrawIndexedIndirect;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::DISPATCH>
-	{
-		using type = PayloadDispatch;
-	};
-	template<>
-	struct CommandPayload<E_COMMAND::BARRIER>
-	{
-		using type = PayloadBarrier;
 	};
 	template<E_COMMAND C>
 	using PayloadT = typename CommandPayload<C>::type;
