@@ -1,6 +1,8 @@
 import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
+import importlib.util
+from pathlib import Path
 
 
 def import_module_from_file(file_path):
