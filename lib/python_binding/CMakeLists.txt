@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 3.23)
 project(vtx_python_binding)
 
 
-set (PYBIND11_PYTHON_VERSION "3.12.7")
-find_package(Python3 "3.12.7" EXACT REQUIRED COMPONENTS Interpreter Development NO_SYSTEM_ENVIRONMENT_PATH)
+set (PYBIND11_PYTHON_VERSION "${CPYTHON_VERSION_MAJOR}.${CPYTHON_VERSION_MINOR}.${CPYTHON_VERSION_PATCH}")
+find_package(Python3 "${CPYTHON_VERSION_MAJOR}.${CPYTHON_VERSION_MINOR}.${CPYTHON_VERSION_PATCH}" EXACT REQUIRED COMPONENTS Interpreter Development NO_SYSTEM_ENVIRONMENT_PATH)
 message("VTX - Found Python3: ${Python3_EXECUTABLE}")
 message("VTX - Python3 version: ${Python3_VERSION}")
 message("VTX - Python3 library: ${Python3_LIBRARIES}")

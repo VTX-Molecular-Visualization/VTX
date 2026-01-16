@@ -47,7 +47,7 @@ class VTXRecipe(ConanFile):
         self.requires("libarchive/3.7.9")
         self.requires("boost/1.87.0") # 1.88 version break process package on windows
         self.requires("platformfolders/4.3.0")
-        self.requires("cpython/3.12.7") # v >= 3.10 not working with msvc compiler so far
+        self.requires("cpython/{}".format(str(python_binding_module.pythonVersion()))) # v >= 3.10 not working with msvc compiler so far
 
     def config_options(self):   
         qt_module.config_options_qt(self)
@@ -60,7 +60,8 @@ class VTXRecipe(ConanFile):
             self.options["qt"].with_dbus = True
         
     def generate(self):
-        tc = CMakeToolchain(self)        
+        tc = CMakeToolchain(self)   
+        python_binding_module.configureToolChain(tc)
         tc.generate()
 
         copy(self, "*sdl3*", os.path.join(self.dependencies["imgui"].package_folder,

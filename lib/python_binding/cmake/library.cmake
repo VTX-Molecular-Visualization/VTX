@@ -47,6 +47,14 @@ target_link_libraries(vtx_python_binding PRIVATE Python3::Python Python3::Module
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding)
 target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
 
+target_compile_definitions(vtx_python_binding PRIVATE CPYTHON_VERSION_MAJOR="${CPYTHON_VERSION_MAJOR}")
+target_compile_definitions(vtx_python_binding PRIVATE CPYTHON_VERSION_MINOR="${CPYTHON_VERSION_MINOR}")
+target_compile_definitions(vtx_python_binding PRIVATE CPYTHON_VERSION_PATCH="${CPYTHON_VERSION_PATCH}")
+
+target_compile_definitions(vtx_python_binding_test PRIVATE CPYTHON_VERSION_MAJOR="${CPYTHON_VERSION_MAJOR}")
+target_compile_definitions(vtx_python_binding_test PRIVATE CPYTHON_VERSION_MINOR="${CPYTHON_VERSION_MINOR}")
+target_compile_definitions(vtx_python_binding_test PRIVATE CPYTHON_VERSION_PATCH="${CPYTHON_VERSION_PATCH}")
+
 get_target_property(VTX_PY_LINK_LIBS vtx_python_binding LINK_LIBRARIES)
 
 message("VTX - vtx_python_binding links: ${VTX_PY_LINK_LIBS}")
