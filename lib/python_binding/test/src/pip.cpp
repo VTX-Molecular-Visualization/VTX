@@ -38,11 +38,26 @@ TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][bind
 		pythonPath.replace( backslashPos, 1, "\\\\" );
 		backslashPos = pythonPath.find( "\\", backslashPos + 2 );
 	}
+
+	std::string pip_install_dir = ( pythonHome / "Lib" / "site-packages" ).string();
 #else
-	std::string pythonPath = ( pythonHome / "bin" / "python" ).string();
+	std::string pythonPath		= ( pythonHome / "bin" / "python" ).string();
+	std::string pip_install_dir = ( pythonHome / "lib" / "site-packages" ).string();
 #endif // _WIN32
+	CHECK_NOFAIL( std::filesystem::exists( pip_install_dir ) );
 
 	interpretor.runCommand( fmt::format( "subprocess.run('{} -m pip install numpy', shell=True)", pythonPath ) );
+	bool has_numpy = false;
+	std::ranges::for_each(
+		std::filesystem::directory_iterator( pip_install_dir ),
+		[ has_numpy = &has_numpy ]( const std::filesystem::path & dir_entry )
+		{
+			if ( dir_entry.string().find( "numpy" ) != std::string::npos )
+				*has_numpy = true;
+		}
+	);
+
+	CHECK( has_numpy );
 	// interpretor.runCommand( "import pip" );
 	// interpretor.runCommand( "pip.main(['install', 'numpy'])" );
 	interpretor.runCommand( "import numpy" );
