@@ -48,6 +48,10 @@ jobs:
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
+    - name: Install xvfb (Linux)
+      if: runner.os == 'Linux'
+        run: sudo apt-get install -y xvfb
+
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}
       run:  |
@@ -58,7 +62,7 @@ jobs:
         conan export lib/app
         conan export lib/python_binding
         conan export lib/ui/qt
-        conan create tool/example -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True -o vtx_tool_example/*:test=True
+        ${{ runner.os == 'Windows' && '' || 'xvfb-run ' }}conan create tool/example -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True -o vtx_tool_example/*:test=True
  
 #    - name: Upload dependencies
 #      working-directory: ${{env.ROOT_DIR}}
