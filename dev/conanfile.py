@@ -60,7 +60,7 @@ class VTXRecipe(ConanFile):
             self.options["qt"].with_dbus = True
         
     def generate(self):
-        tc = CMakeToolchain(self)   
+        tc = CMakeToolchain(self)
         python_binding_module.configureToolChain(tc)
         tc.generate()
 
