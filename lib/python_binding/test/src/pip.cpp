@@ -42,7 +42,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][bind
 	std::string pip_install_dir = ( pythonHome / "Lib" / "site-packages" ).string();
 #else
 	std::string pythonPath		= ( pythonHome / "bin" / "python" ).string();
-	std::string pip_install_dir = ( pythonHome / "lib" / "site-packages" ).string();
+	std::string pip_install_dir = ( pythonHome / "lib" / "python3.9" / "site-packages" ).string();
 #endif // _WIN32
 	CHECK_NOFAIL( std::filesystem::exists( pip_install_dir ) );
 
