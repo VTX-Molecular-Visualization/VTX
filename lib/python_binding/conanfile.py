@@ -11,9 +11,9 @@ from pathlib import Path
 
 def pythonVersion():
     class Version:
-        major = 3
-        minor = 12
-        patch = 7
+        major = "3"
+        minor = "12"
+        patch = "7"
         
         def __str__(self):
             return "{}.{}.{}".format(self.major, self.minor, self.patch)
@@ -203,3 +203,6 @@ class VTXPythonBindingRecipe(ConanFile):
             "cmake/vtx_python_binding_copy_files.cmake",
             "cmake/python_copy_instructions.cmake"
         ])
+        self.conf_info.define("user.python_binding:cpython_version_major", pythonVersion().major)
+        self.conf_info.define("user.python_binding:cpython_version_minor", pythonVersion().minor)
+        self.conf_info.define("user.python_binding:cpython_version_patch", pythonVersion().patch)
