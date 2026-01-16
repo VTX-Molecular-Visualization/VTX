@@ -71,8 +71,6 @@ namespace VTX::UI::QT
 		void setFontFamily( const QString & );
 
 	  private:
-		QString _stylesheet;
-
 		/**
 		 * @brief Current theme.
 		 */

@@ -14,8 +14,8 @@
 #include "renderer/render_graph.hpp"
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
+#include <core/struct/system.hpp>
 #include <util/callback.hpp>
-#include <util/math/range_list.hpp>
 
 namespace VTX::Renderer
 {
@@ -85,7 +85,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Add / remove / update system.
 		 */
-		void addSystem();
+		void addSystem( const RootUID, const Core::Struct::System & );
 		void removeSystem();
 
 		/**
@@ -204,8 +204,6 @@ namespace VTX::Renderer
 		}
 
 		void _refreshDataModels();
-
-		void _applyRepresentationLogic( const Representation & );
 
 		enum E_ELEMENT_FLAGS
 		{

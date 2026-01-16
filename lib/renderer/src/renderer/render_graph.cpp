@@ -305,7 +305,7 @@ namespace VTX::Renderer
 		// Used by shading pass even if SSAO disabled.
 		// std::vector<float> emptyData( 1, 1.f );
 		g.texture( "BlurX", E_FORMAT::R16F );
-		g.texture( "Blur", E_FORMAT::R16F /*, emptyData */ );
+		g.texture( "BlurY", E_FORMAT::R16F /*, emptyData */ );
 		if ( p_config.enableSSAO )
 		{
 			constexpr size_t   noiseTextureSize = 64;
@@ -419,7 +419,7 @@ namespace VTX::Renderer
 				.in( "SSAO", "NearestRepeat" )
 				.in( "Depth" )
 				.out( "BlurX" )
-				.program( "Blur" )
+				.program( "BlurX" )
 				.shaders( { "default.vert", "blur.frag" } )
 				.uniform( "Direction", Vec2i( 1, 0 ) )
 				.uniform( "Size", BLUR_SIZE_DEFAULT, std::pair { BLUR_SIZE_MIN, BLUR_SIZE_MAX } )
@@ -429,8 +429,8 @@ namespace VTX::Renderer
 			g.pass( "BlurY" )
 				.in( "BlurX", "NearestRepeat" )
 				.in( "Depth" )
-				.out( "Blur" )
-				.program( "Blur" )
+				.out( "BlurY" )
+				.program( "BlurY" )
 				.shaders( { "default.vert", "blur.frag" } )
 				.uniform( "Direction", Vec2i( 0, 1 ) )
 				.uniform( "Size", BLUR_SIZE_DEFAULT, std::pair { BLUR_SIZE_MIN, BLUR_SIZE_MAX } )
@@ -442,7 +442,7 @@ namespace VTX::Renderer
 		g.pass( "Shading" )
 			.in( "Geometry" )
 			.in( "Color" )
-			.in( "Blur", "NearestRepeat" )
+			.in( "BlurY", "NearestRepeat" )
 			.out( "Shaded" )
 			.program( "Shading" )
 			.shaders( { "default.vert", "shading.frag" } )

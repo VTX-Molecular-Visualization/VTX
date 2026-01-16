@@ -15,6 +15,8 @@ namespace VTX::Renderer
 		_refreshGraph( GraphicsConfigs::DEFAULT );
 	}
 
+#pragma region Contexts
+
 	void Renderer::setDefault()
 	{
 		_context.setNull();
@@ -45,6 +47,10 @@ namespace VTX::Renderer
 			setDefault();
 		}
 	}
+
+#pragma endregion
+
+#pragma region Build & render
 
 	void Renderer::build()
 	{
@@ -110,7 +116,97 @@ namespace VTX::Renderer
 		}
 	}
 
-#pragma region Proxy representations
+#pragma endregion
+
+#pragma region UBO
+
+	void Renderer::setCamera(
+		const Camera & p_camera,
+		const Vec3f &  p_position,
+		const Mat4f &  p_matView,
+		const Mat4f &  p_matProj
+	)
+	{
+		const Mat4f matrixViewInv	   = Util::Math::inverse( p_matView );
+		const Mat4f matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
+
+		BinaryBuffer140 buffer;
+		buffer.write( p_matView );
+		buffer.write( p_matProj );
+		buffer.write( matrixViewInv );
+		buffer.write( matrixViewInvTrans );
+		buffer.write( p_position );
+		buffer.write(
+			Vec4f( p_camera.near * p_camera.far, p_camera.far, p_camera.far - p_camera.near, p_camera.near )
+		);
+		buffer.write( Vec2i( width(), height() ) );
+		buffer.write( Vec2i() );
+		buffer.write( uint( p_camera.projection == PROJECTION::PERSPECTIVE ) );
+		buffer.close();
+
+		_context.setShaderBuffer( "Camera", buffer );
+
+		setNeedUpdate( true );
+	}
+
+	void Renderer::setGraphicsConfig( const GraphicsConfig & p_config )
+	{
+		_refreshGraph( p_config );
+		build();
+
+		BinaryBuffer140 bufferShading;
+		bufferShading.write( p_config.colorBackground );
+		bufferShading.write( p_config.colorLight );
+		bufferShading.write( p_config.colorFog );
+		bufferShading.write( uint32_t( p_config.shadingMode ) );
+		bufferShading.write( p_config.specularFactor );
+		bufferShading.write( p_config.shininess );
+		bufferShading.write( p_config.toonSteps );
+		bufferShading.write( p_config.fogNear );
+		bufferShading.write( p_config.fogFar );
+		bufferShading.write( p_config.activeFog ? p_config.fogDensity : 0.f );
+		bufferShading.close();
+		_context.setShaderBuffer( "Shading", bufferShading );
+
+		if ( p_config.activeSSAO )
+		{
+			BinaryBuffer140 bufferSSAO;
+			bufferSSAO.write( p_config.ssaoIntensity );
+			bufferSSAO.close();
+			_context.setShaderBuffer( "SSAO", bufferSSAO );
+
+			BinaryBuffer140 bufferBlur;
+			bufferBlur.write( p_config.blurSize );
+			bufferBlur.close();
+			_context.setShaderBuffer( "BlurX", bufferBlur );
+			_context.setShaderBuffer( "BlurY", bufferBlur );
+		}
+		if ( p_config.activeOutline )
+		{
+			BinaryBuffer140 bufferOutline;
+			bufferOutline.write( p_config.colorOutline );
+			bufferOutline.write( p_config.outlineSensitivity );
+			bufferOutline.write( p_config.outlineThickness );
+			bufferOutline.close();
+			_context.setShaderBuffer( "Outline", bufferOutline );
+		}
+		if ( p_config.activeSelection )
+		{
+			BinaryBuffer140 bufferSelection;
+			bufferSelection.write( p_config.colorSelection );
+			bufferSelection.close();
+			_context.setShaderBuffer( "Selection", bufferSelection );
+		}
+
+		setNeedUpdate( true );
+	}
+
+	void Renderer::setColorLayout( const Color::Layout & p_layout )
+	{
+		_context.setShaderBuffer<Util::Color::Rgba>( "ColorLayout", p_layout.colors );
+
+		setNeedUpdate( true );
+	}
 
 	void Renderer::setRepresentation( const Representation & p_representation )
 	{
@@ -188,95 +284,9 @@ namespace VTX::Renderer
 		}
 	}
 
-#pragma endregion Proxy representations
+#pragma endregion
 
-	void Renderer::setCamera(
-		const Camera & p_camera,
-		const Vec3f &  p_position,
-		const Mat4f &  p_matView,
-		const Mat4f &  p_matProj
-	)
-	{
-		const Mat4f matrixViewInv	   = Util::Math::inverse( p_matView );
-		const Mat4f matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
-
-		BinaryBuffer140 buffer;
-		buffer.write( p_matView );
-		buffer.write( p_matProj );
-		buffer.write( matrixViewInv );
-		buffer.write( matrixViewInvTrans );
-		buffer.write( p_position );
-		buffer.write(
-			Vec4f( p_camera.near * p_camera.far, p_camera.far, p_camera.far - p_camera.near, p_camera.near )
-		);
-		buffer.write( Vec2i( width(), height() ) );
-		buffer.write( Vec2i() );
-		buffer.write( uint( p_camera.projection == PROJECTION::PERSPECTIVE ) );
-		buffer.close();
-
-		_context.setShaderBuffer( "Camera", buffer );
-
-		setNeedUpdate( true );
-	}
-
-	void Renderer::setColorLayout( const Color::Layout & p_layout )
-	{
-		_context.setShaderBuffer<Util::Color::Rgba>( "ColorLayout", p_layout.colors );
-
-		setNeedUpdate( true );
-	}
-
-	void Renderer::setGraphicsConfig( const GraphicsConfig & p_config )
-	{
-		_refreshGraph( p_config );
-		build();
-
-		BinaryBuffer140 bufferShading;
-		bufferShading.write( p_config.colorBackground );
-		bufferShading.write( p_config.colorLight );
-		bufferShading.write( p_config.colorFog );
-		bufferShading.write( uint32_t( p_config.shadingMode ) );
-		bufferShading.write( p_config.specularFactor );
-		bufferShading.write( p_config.shininess );
-		bufferShading.write( p_config.toonSteps );
-		bufferShading.write( p_config.fogNear );
-		bufferShading.write( p_config.fogFar );
-		bufferShading.write( p_config.activeFog ? p_config.fogDensity : 0.f );
-		bufferShading.close();
-		_context.setShaderBuffer( "Shading", bufferShading );
-
-		if ( p_config.activeSSAO )
-		{
-			BinaryBuffer140 bufferSSAO;
-			bufferSSAO.write( p_config.ssaoIntensity );
-			bufferSSAO.close();
-			_context.setShaderBuffer( "SSAO", bufferSSAO );
-
-			BinaryBuffer140 bufferBlur;
-			bufferBlur.write( p_config.blurSize );
-			bufferBlur.close();
-			//_context.setShaderBuffer( "Blur", bufferBlur );
-			//_context.setShaderBuffer( "BlurY", bufferBlur );
-		}
-		if ( p_config.activeOutline )
-		{
-			BinaryBuffer140 bufferOutline;
-			bufferOutline.write( p_config.colorOutline );
-			bufferOutline.write( p_config.outlineSensitivity );
-			bufferOutline.write( p_config.outlineThickness );
-			bufferOutline.close();
-			_context.setShaderBuffer( "Outline", bufferOutline );
-		}
-		if ( p_config.activeSelection )
-		{
-			BinaryBuffer140 bufferSelection;
-			bufferSelection.write( p_config.colorSelection );
-			bufferSelection.close();
-			_context.setShaderBuffer( "Selection", bufferSelection );
-		}
-
-		setNeedUpdate( true );
-	}
+#pragma region Geometries
 
 	void Renderer::setVoxels( const std::vector<Vec3f> & p_mins, const std::vector<Vec3f> & p_maxs )
 	{
@@ -290,6 +300,8 @@ namespace VTX::Renderer
 
 		setNeedUpdate( true );
 	}
+
+#pragma endregion
 
 	void Renderer::_refreshDataModels()
 	{
