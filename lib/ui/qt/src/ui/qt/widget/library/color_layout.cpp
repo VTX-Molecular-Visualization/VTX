@@ -70,11 +70,11 @@ namespace VTX::UI::QT::Widget::Library
 	}
 
 	void ColorLayout::_createGroupBox(
-		const std::string_view		   p_title,
-		const size_t				   p_start,
-		const size_t				   p_count,
-		const std::string_view * const p_text,
-		const std::string_view * const p_tip
+		const std::string_view			  p_title,
+		const size_t					  p_start,
+		const size_t					  p_count,
+		std::span<const std::string_view> p_text,
+		std::span<const std::string_view> p_tip
 	)
 	{
 		auto * groupBox = new QGroupBox( QString::fromStdString( p_title.data() ) );
@@ -89,7 +89,7 @@ namespace VTX::UI::QT::Widget::Library
 			_buttons[ i ] = new ColorPicker( groupBox );
 			_buttons[ i ]->setFixedSize( _BUTTON_SIZE, _BUTTON_SIZE );
 
-			if ( p_text )
+			if ( not p_text.empty() )
 			{
 				// First letter in uppercase.
 				QString text = QString::fromStdString( p_text[ offset ].data() );
@@ -98,7 +98,7 @@ namespace VTX::UI::QT::Widget::Library
 				_buttons[ i ]->setText( text );
 			}
 
-			if ( p_tip )
+			if ( not p_tip.empty() )
 			{
 				_buttons[ i ]->setToolTip( QString::fromStdString( p_tip[ offset ].data() ) );
 				_buttons[ i ]->setStatusTip( QString::fromStdString( p_tip[ offset ].data() ) );
@@ -131,10 +131,10 @@ namespace VTX::UI::QT::Widget::Library
 	}
 
 	void ColorLayout::_refreshButtonVisibility(
-		const bool		   p_hide,
-		const size_t	   p_start,
-		const size_t	   p_count,
-		const bool * const p_isCommonValues
+		const bool			  p_hide,
+		const size_t		  p_start,
+		const size_t		  p_count,
+		std::span<const bool> p_isCommonValues
 	)
 	{
 		using namespace VTX::Core::ChemDB;

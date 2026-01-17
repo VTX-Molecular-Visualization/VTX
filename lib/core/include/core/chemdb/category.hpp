@@ -1,8 +1,8 @@
 #ifndef __VTX_CORE_CHEMDB_CATEGORY__
 #define __VTX_CORE_CHEMDB_CATEGORY__
 
+#include <array>
 #include <string>
-#include <vector>
 
 namespace VTX::Core::ChemDB::Category
 {
@@ -19,7 +19,7 @@ namespace VTX::Core::ChemDB::Category
 		COUNT,
 	};
 
-	inline const std::vector<std::string> TYPE_STR
+	constexpr std::array<std::string_view, size_t( TYPE::COUNT )> TYPE_STR
 		= { "Polymer", "Carbohydrate", "Ligand", "Ion", "Solvent", "Water", "Unknown" };
 
 } // namespace VTX::Core::ChemDB::Category

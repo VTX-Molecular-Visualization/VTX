@@ -5,6 +5,15 @@
 
 namespace VTX::App::System
 {
+	enum struct COLOR_SCHEME : uint
+	{
+		MOLECULE,
+		CHAIN,
+		RESIDUE,
+		ATOM,
+		AND_MORE
+	};
+
 	/**
 	 * @brief Store color scheme informations.
 	 */

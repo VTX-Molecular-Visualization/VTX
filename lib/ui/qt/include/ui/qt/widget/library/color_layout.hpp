@@ -3,6 +3,7 @@
 
 #include "base_preset_widget.hpp"
 #include "ui/qt/widget/color_picker.hpp"
+#include <span>
 
 namespace VTX::UI::QT::Widget::Library
 {
@@ -29,11 +30,11 @@ namespace VTX::UI::QT::Widget::Library
 		std::vector<QPointer<ColorPicker>> _buttons;
 
 		void _createGroupBox(
-			const std::string_view		   p_title,
-			const size_t				   p_start,
-			const size_t				   p_count,
-			const std::string_view * const p_text = nullptr,
-			const std::string_view * const p_tip  = nullptr
+			const std::string_view			  p_title,
+			const size_t					  p_start,
+			const size_t					  p_count,
+			std::span<const std::string_view> p_text = {},
+			std::span<const std::string_view> p_tip	 = {}
 		);
 
 		/**
@@ -47,10 +48,10 @@ namespace VTX::UI::QT::Widget::Library
 		void _updateColor( const size_t, const Util::Color::Rgba & );
 
 		void _refreshButtonVisibility(
-			const bool		   p_hide,
-			const size_t	   p_start,
-			const size_t	   p_count,
-			const bool * const p_isCommonValues
+			const bool			  p_hide,
+			const size_t		  p_start,
+			const size_t		  p_count,
+			std::span<const bool> p_isCommonValues
 		);
 
 		// void _onCurrentPresetUpdated()

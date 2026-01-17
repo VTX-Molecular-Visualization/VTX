@@ -118,7 +118,7 @@ namespace VTX::Renderer
 
 #pragma endregion
 
-#pragma region UBO
+#pragma region Buffers
 
 	void Renderer::setCamera(
 		const Camera & p_camera,

@@ -1,6 +1,7 @@
 #ifndef __VTX_CORE_CHEMDB_BOND__
 #define __VTX_CORE_CHEMDB_BOND__
 
+#include <array>
 #include <string>
 #include <util/color/rgba.hpp>
 
@@ -26,8 +27,8 @@ namespace VTX::Core::ChemDB::Bond
 		// AROMATIC = 255, ///< Aromatic bond (for example the ring bonds in benzene)
 	};
 
-	inline static const std::string TYPE_STR[ int( ORDER::COUNT ) ] { "Unknown", "Simple",	  "Double",
-																	  "Triple",	 "Quadruple", "Quintuple" };
+	constexpr std::array<std::string_view, size_t( ORDER::COUNT )> ORDER_STR
+		= { "Unknown", "Simple", "Double", "Triple", "Quadruple", "Quintuple", "Aromatique" };
 } // namespace VTX::Core::ChemDB::Bond
 
 #endif

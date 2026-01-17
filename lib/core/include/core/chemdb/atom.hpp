@@ -2,6 +2,8 @@
 #define __VTX_CORE_CHEMDB_ATOM__
 
 #include <algorithm>
+#include <array>
+#include <span>
 #include <string>
 
 namespace VTX::Core::ChemDB::Atom
@@ -150,7 +152,7 @@ namespace VTX::Core::ChemDB::Atom
 		COUNT
 	};
 
-	const std::string_view SYMBOL_STR[ int( SYMBOL::COUNT ) ] = {
+	constexpr std::array<std::string_view, size_t( SYMBOL::COUNT )> SYMBOL_STR = {
 		"-",   // UNKNOWN = 0,
 		"H",   // H			= 1,
 		"HE",  // HE		= 2,
@@ -272,7 +274,7 @@ namespace VTX::Core::ChemDB::Atom
 		"UUO"  // UUO		= 118,
 	};
 
-	const std::string_view SYMBOL_NAME[ (int)SYMBOL::COUNT ] = {
+	constexpr std::array<std::string_view, size_t( SYMBOL::COUNT )> SYMBOL_NAME = {
 		"Unknown",		 // UNKNOWN = 0,
 		"Hydrogen",		 // H		= 1,
 		"Helium",		 // HE		= 2,
@@ -394,7 +396,7 @@ namespace VTX::Core::ChemDB::Atom
 		"Ununoctium"	 // UUO		= 118,
 	};
 
-	const float SYMBOL_VDW_RADIUS[ (int)SYMBOL::COUNT ] = {
+	constexpr std::array<float, size_t( SYMBOL::COUNT )> SYMBOL_VDW_RADIUS = {
 		1.20f, // UNKNOWN	= 0,
 		1.20f, // H			= 1,
 		1.43f, // HE		= 2,
@@ -516,13 +518,26 @@ namespace VTX::Core::ChemDB::Atom
 		0.00f  // UUO		= 118,
 	};
 
-	const float VDW_RADIUS_MIN = *std::min_element(
-		std::begin( SYMBOL_VDW_RADIUS ),
-		std::end( SYMBOL_VDW_RADIUS ),
-		[]( float a, float b ) { return ( a != 0.f && ( b == 0.f || a < b ) ); }
-	);
+	constexpr float minNonZero( std::span<const float> p_r ) noexcept
+	{
+		float m = 0.f;
+		for ( float r : p_r )
+		{
+			if ( r == 0.f )
+			{
+				continue;
+			}
+			if ( m == 0.f || r < m )
+			{
+				m = r;
+			}
+		}
+		return m;
+	}
 
-	const bool SYMBOL_IS_COMMON[ int( SYMBOL::COUNT ) ] = {
+	constexpr float VDW_RADIUS_MIN = minNonZero( SYMBOL_VDW_RADIUS );
+
+	constexpr std::array<bool, size_t( SYMBOL::COUNT )> SYMBOL_IS_COMMON = {
 		true,  // UNKNOWN	= 0,
 		true,  // H			= 1,
 		false, // HE		= 2,

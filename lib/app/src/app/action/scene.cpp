@@ -50,15 +50,17 @@ namespace VTX::App::Action::Scene
 		IO::Reader::System loader;
 		// systemStruct.trajectory.setOptimized();
 
-		if ( p_buffer ) // From buffer.
+		// From buffer.
+		if ( p_buffer )
 		{
 			VTX_DEBUG( "Path: {}", p_path.string() );
 			loader.readBuffer( *p_buffer, p_path, data );
 		}
-		else // From disk.
+		// From disk.
+		else
 		{
-			loader.readFile( p_path, data );
 			metadata.path = p_path;
+			loader.readFile( p_path, data );
 		}
 
 		const VTX::IO::Reader::Chemfiles & chemfilesReader = loader.getChemfilesReader();
