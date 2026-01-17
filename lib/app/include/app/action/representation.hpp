@@ -3,6 +3,7 @@
 
 #include "app/ecs.hpp"
 #include <renderer/representation.hpp>
+#include <util/type_traits.hpp>
 
 namespace VTX::App::Action::Representation
 {
@@ -64,6 +65,7 @@ namespace VTX::App::Action::Representation
 					}
 					else
 					{
+						static_assert( always_false_v<S>, "Representation::Change: invalid representation value." );
 					}
 				}
 			);

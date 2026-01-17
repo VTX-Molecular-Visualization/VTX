@@ -1,11 +1,12 @@
 #include "app/action/scene.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/camera.hpp"
+#include "app/action/color_scheme.hpp"
 #include "app/action/visibility.hpp"
 #include "app/events.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
-#include "app/system/color_scheme.hpp"
+#include "app/system/color.hpp"
 #include "app/system/deleted.hpp"
 #include "app/system/metadata.hpp"
 #include "app/system/representation.hpp"
@@ -39,11 +40,10 @@ namespace VTX::App::Action::Scene
 		auto & aabb		  = reg.emplace<Util::Math::AABB>( entity );
 		auto & uid		  = reg.emplace<System::UID>( entity );
 
-		auto & visibility = reg.emplace<System::Visibility>( entity );
-
+		auto & visibility	  = reg.emplace<System::Visibility>( entity );
 		auto & selection	  = reg.emplace<System::Selection>( entity );
 		auto & representation = reg.emplace<System::Representation>( entity );
-		auto & colorScheme	  = reg.emplace<System::ColorScheme>( entity );
+		auto & color		  = reg.emplace<System::Color>( entity );
 		auto & deleted		  = reg.emplace<System::Deleted>( entity );
 
 		// Load system data and metadata.
@@ -78,14 +78,19 @@ namespace VTX::App::Action::Scene
 		uid.residues	  = uidManager.getPickingPool().registerRange( data.getResidueCount() );
 		uid.atoms		  = uidManager.getPickingPool().registerRange( data.getAtomCount() );
 
+		// Color: set size.
+		color.atoms.resize( data.getAtomCount() );
+
 		// Visibillity: set default all visible.
 		ACTION().execute<Visibility::SetVisible<App::Scene::E_ITEM::SYSTEM>>( entity );
 
 		// Selection : Nothing to do.
 
 		// Representation.
+		// TODO: apply default representation preset.
 
 		// Color scheme.
+		ACTION().execute<ColorScheme::Add<System::E_COLOR_SCHEME::ATOM>>( entity );
 
 		// Deleted: nothing to do.
 

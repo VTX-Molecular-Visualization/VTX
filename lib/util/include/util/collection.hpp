@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <util/concepts.hpp>
 #include <util/hashing.hpp>
+#include <util/type_traits.hpp>
 
 #define DEBUG_HASH 0
 
@@ -83,7 +84,7 @@ namespace VTX::Util
 			*/
 			else
 			{
-				static_assert( std::is_same_v<T, void>, "Util::Collection::create(): unrecognized type." );
+				static_assert( always_false_v<T>, "Util::Collection::create(): unrecognized type." );
 			}
 		}
 
@@ -137,7 +138,7 @@ namespace VTX::Util
 			*/
 			else
 			{
-				static_assert( std::is_same_v<T, void>, "Util::Collection::create(): unrecognized type." );
+				static_assert( always_false_v<T>, "Util::Collection::create(): unrecognized type." );
 			}
 		}
 
@@ -206,7 +207,7 @@ namespace VTX::Util
 			*/
 			else
 			{
-				static_assert( std::is_same_v<T, void>, "Util::Collection::create(): unrecognized type." );
+				static_assert( always_false_v<T>, "Util::Collection::create(): unrecognized type." );
 			}
 
 			return get<T>( p_hash );

@@ -1,25 +1,39 @@
 #ifndef __VTX_APP_SYSTEM_COLOR_SCHEME__
 #define __VTX_APP_SYSTEM_COLOR_SCHEME
 
+#include <core/struct/system.hpp>
 #include <util/math/range_list.hpp>
 
 namespace VTX::App::System
 {
-	enum struct COLOR_SCHEME : uint
+	/**
+	 * @brief Different color schemes to apply.
+	 */
+	enum struct E_COLOR_SCHEME : uint8_t
 	{
 		MOLECULE,
 		CHAIN,
 		RESIDUE,
 		ATOM,
-		AND_MORE
+		CUSTOM
 	};
+
+	constexpr E_COLOR_SCHEME COLOR_SCHEME_DEFAULT = E_COLOR_SCHEME::ATOM;
 
 	/**
 	 * @brief Store color scheme informations.
 	 */
 	struct ColorScheme
 	{
-		int dummy;
+		/**
+		 * @brief Scheme.
+		 */
+		E_COLOR_SCHEME scheme = COLOR_SCHEME_DEFAULT;
+
+		/**
+		 * @brief Residues concerned.
+		 */
+		Core::Struct::IndexRangeList residues;
 	};
 } // namespace VTX::App::System
 

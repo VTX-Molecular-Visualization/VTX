@@ -10,7 +10,12 @@ namespace VTX::App::System
 	 */
 	struct Representation
 	{
-		int dummy;
+		// TODO: id representation?
+
+		/**
+		 * @brief Atoms concerned.
+		 */
+		Core::Struct::IndexRangeList atoms;
 	};
 } // namespace VTX::App::System
 

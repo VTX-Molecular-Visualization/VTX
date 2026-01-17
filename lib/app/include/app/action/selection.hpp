@@ -9,6 +9,7 @@
 #include "app/system/selection.hpp"
 #include <core/struct/system.hpp>
 #include <util/event_hub.hpp>
+#include <util/type_traits.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Action::Selection
@@ -96,6 +97,10 @@ namespace VTX::App::Action::Selection
 						selectionAtoms.removeRange( *it );
 					}
 				}
+			}
+			else
+			{
+				static_assert( always_false_v<ITEM>, "Unsupported Scene::E_ITEM type in SetSelected action." );
 			}
 
 			reg.patch<System::Selection>(

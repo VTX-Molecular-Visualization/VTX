@@ -5,6 +5,7 @@
 #include "app/scene/tag_root.hpp"
 #include "app/system/visibility.hpp"
 #include <core/struct/system.hpp>
+#include <util/type_traits.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Action::Visibility
@@ -88,6 +89,10 @@ namespace VTX::App::Action::Visibility
 						visibility.atoms.removeRange( *it );
 					}
 				}
+			}
+			else
+			{
+				static_assert( always_false_v<ITEM>, "Unhandled E_ITEM type in SetVisible action." );
 			}
 		}
 
