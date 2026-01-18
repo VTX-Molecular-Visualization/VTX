@@ -64,23 +64,17 @@ namespace VTX::App::Action::Color
 					{
 						for ( Index atom : ranges )
 						{
-							const Index		 residue		   = system.atomResidueIndexes[ atom ];
-							const ColorIndex residueColorIndex = getColorIndex( system.getResidueSymbol( residue ) );
-							const IndexRange range			   = system.getResidueAtomRange( residue );
-							std::fill_n(
-								p_color.atoms.begin() + range.getFirst(), range.getCount(), residueColorIndex
-							);
+							const Index residue	  = system.atomResidueIndexes[ atom ];
+							p_color.atoms[ atom ] = getColorIndex( system.getAtomSymbol( residue ) );
 						}
 					}
 					else if constexpr ( S == System::E_COLOR_SCHEME::CHAIN )
 					{
 						for ( Index atom : ranges )
 						{
-							const Index		 residue		 = system.atomResidueIndexes[ atom ];
-							const Index		 chain			 = system.residueChainIndexes[ residue ];
-							const ColorIndex chainColorIndex = getColorIndex( system.getChainName( chain ) );
-							const IndexRange range			 = system.getChainAtomRange( chain );
-							std::fill_n( p_color.atoms.begin() + range.getFirst(), range.getCount(), chainColorIndex );
+							const Index residue	  = system.atomResidueIndexes[ atom ];
+							const Index chain	  = system.residueChainIndexes[ residue ];
+							p_color.atoms[ atom ] = getColorIndex( system.getChainName( chain ) );
 						}
 					}
 					// TODO: other schemes.
