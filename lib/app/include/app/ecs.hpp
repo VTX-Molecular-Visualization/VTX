@@ -2,6 +2,7 @@
 #define __VTX_APP_ECS__
 
 #include <entt/entt.hpp>
+#include <iostream>
 
 namespace VTX::App::ECS
 {
@@ -93,6 +94,25 @@ namespace VTX::App::ECS
 	T & getFirstComponent()
 	{
 		return registry().get<T>( getFirstEntityOnlyWithComponents<T>() );
+	}
+
+	/**
+	 * @brief Debug infos.
+	 */
+	inline void regToString()
+	{
+		for ( const entt::entity e : registry().view<entt::entity>() )
+		{
+			std::cout << "entity " << int( e ) << '\n';
+
+			for ( auto && [ id, storage ] : registry().storage() )
+			{
+				if ( storage.contains( e ) )
+				{
+					std::cout << " - component id: " << id << '\n';
+				}
+			}
+		}
 	}
 
 } // namespace VTX::App::ECS

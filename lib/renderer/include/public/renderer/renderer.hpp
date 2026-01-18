@@ -90,6 +90,7 @@ namespace VTX::Renderer
 
 		void setSystemPosition( const RootUID, std::span<const Vec3f> ) {}
 		void setSystemColors( const RootUID, std::span<const Color::ColorIndex> ) {}
+		void setSystemRepresentation( const RootUID, std::span<const RepresentationIndex> ) {}
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.

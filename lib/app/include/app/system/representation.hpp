@@ -1,25 +1,29 @@
 #ifndef __VTX_APP_SYSTEM_REPRESENTATION__
-#define __VTX_APP_SYSTEM_REPRESENTATION
+#define __VTX_APP_SYSTEM_REPRESENTATION__
 
-#include <util/math/range_list.hpp>
+#include <core/struct/system.hpp>
+#include <renderer/representation.hpp>
+#include <unordered_map>
 
 namespace VTX::App::System
 {
+
 	/**
-	 * @brief Store representation informations.
+	 * @brief Store atom representation index.
 	 */
 	struct Representation
 	{
 		/**
-		 * @brief Linked preset.
+		 * @brief Associates entities with lists of index ranges.
 		 */
-		ECS::Entity preset;
+		std::unordered_map<ECS::Entity, Core::Struct::IndexRangeList> presetAtoms;
 
 		/**
-		 * @brief Atoms concerned.
+		 * @brief Atom representation.
 		 */
-		Core::Struct::IndexRangeList atoms;
+		std::vector<Renderer::RepresentationIndex> atoms;
 	};
+
 } // namespace VTX::App::System
 
 #endif

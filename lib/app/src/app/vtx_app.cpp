@@ -181,6 +181,8 @@ namespace VTX::App
 		{
 			_updater.checkForUpdate();
 		}
+
+		
 	}
 
 	void VTXApp::_handleArgs( const Args & p_args )

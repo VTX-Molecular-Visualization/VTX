@@ -1,9 +1,11 @@
 #include "app/action/scene.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/camera.hpp"
-#include "app/action/color_scheme.hpp"
+#include "app/action/color.hpp"
+#include "app/action/representation.hpp"
 #include "app/action/visibility.hpp"
 #include "app/events.hpp"
+#include "app/preset/name.hpp"
 #include "app/scene/color_layout.hpp"
 #include "app/scene/graphics_config.hpp"
 #include "app/scene/tag_root.hpp"
@@ -19,6 +21,7 @@
 #include "app/uid/uid_manager.hpp"
 #include <core/struct/system.hpp>
 #include <io/reader/system.hpp>
+#include <renderer/representation.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <util/math/aabb.hpp>
@@ -80,20 +83,22 @@ namespace VTX::App::Action::Scene
 		uid.residues	  = uidManager.getPickingPool().registerRange( data.getResidueCount() );
 		uid.atoms		  = uidManager.getPickingPool().registerRange( data.getAtomCount() );
 
-		// Color: set size.
+		// Color/representation: set size.
 		color.atoms.resize( data.getAtomCount() );
+		representation.atoms.resize( data.getAtomCount() );
 
 		// Visibillity: set default all visible.
 		ACTION().execute<Visibility::SetVisible<App::Scene::E_ITEM::SYSTEM>>( entity );
 
-		// Selection : Nothing to do.
-
 		// Representation.
-		// TODO: apply default representation preset.
+		ACTION().execute<Action::Representation::AddToSystem>(
+			entity, ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>()
+		);
 
 		// Color scheme.
-		ACTION().execute<ColorScheme::Add<System::E_COLOR_SCHEME::RESIDUE>>( entity );
+		ACTION().execute<Color::Add<System::E_COLOR_SCHEME::RESIDUE>>( entity );
 
+		// Selection : nothing to do.
 		// Deleted: nothing to do.
 
 		// Orient.
