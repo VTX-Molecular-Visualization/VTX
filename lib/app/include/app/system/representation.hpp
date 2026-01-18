@@ -10,7 +10,10 @@ namespace VTX::App::System
 	 */
 	struct Representation
 	{
-		// TODO: id representation?
+		/**
+		 * @brief Linked preset.
+		 */
+		ECS::Entity preset;
 
 		/**
 		 * @brief Atoms concerned.

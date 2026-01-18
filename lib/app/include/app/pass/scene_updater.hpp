@@ -29,7 +29,6 @@ namespace VTX::App::Pass
 		 */
 		void _onUpdateGraphicsConfig( ECS::Registry &, ECS::Entity );
 		void _onUpdateColorLayout( ECS::Registry &, ECS::Entity );
-		void _onUpdateRepresentations( ECS::Registry &, ECS::Entity );
 	};
 } // namespace VTX::App::Pass
 #endif

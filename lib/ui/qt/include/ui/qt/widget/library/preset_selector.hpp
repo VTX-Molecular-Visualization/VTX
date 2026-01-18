@@ -92,14 +92,14 @@ namespace VTX::UI::QT::Widget::Library
 			connect(
 				aNew,
 				&QAction::triggered,
-				[ this ]() { App::ACTION().execute<App::Action::Preset::Add<P>>( std::nullopt, std::nullopt, true ); }
+				[ this ]() { App::ACTION().execute<App::Action::Preset::Add<P>>( std::nullopt, std::nullopt ); }
 			);
 
 			connect(
 				aDuplicate,
 				&QAction::triggered,
 				[ this ]()
-				{ App::ACTION().execute<App::Action::Preset::Duplicate<P>>( getCurrentPreset(), std::nullopt, true ); }
+				{ App::ACTION().execute<App::Action::Preset::Duplicate<P>>( getCurrentPreset(), std::nullopt ); }
 			);
 
 			connect(
@@ -126,7 +126,7 @@ namespace VTX::UI::QT::Widget::Library
 			reg.on_destroy<P>().template connect<&PresetSelector::_refreshComboBox>( this );
 			App::HUB().connect<App::Events::PresetRename, &PresetSelector::_onPresetRename>( this );
 			reg.on_update<P>().template connect<&PresetSelector::_onUpdatePreset>( this );
-			reg.on_construct<App ::Preset::Instance<P>>().template connect<&PresetSelector::_onSelectPreset>( this );
+			// reg.on_construct<App ::Preset::Instance<P>>().template connect<&PresetSelector::_onSelectPreset>( this );
 		}
 
 		inline App::ECS::Entity getCurrentPreset() const { return _comboBox->currentData().value<App::ECS::Entity>(); }
@@ -145,6 +145,7 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Select the preset in the combo box when a preset is set as current from App.
 		 */
+		/*
 		void _onSelectPreset( const App::ECS::Entity p_e )
 		{
 			auto &			 preset = App::REG().get<App::Preset::Instance<P>>( p_e );
@@ -156,6 +157,7 @@ namespace VTX::UI::QT::Widget::Library
 			}
 			emit presetChanged( ent );
 		}
+		*/
 
 		/**
 		 * @brief Refresh the combo box when presets are added or removed.

@@ -5,6 +5,8 @@
 
 namespace VTX::App::Preset
 {
+	// TODO: rename to metadata if more infos.
+
 	/**
 	 * @brief Preset name.
 	 */

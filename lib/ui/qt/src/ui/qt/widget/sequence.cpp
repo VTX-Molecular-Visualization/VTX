@@ -1,5 +1,4 @@
 ﻿#include "ui/qt/widget/sequence.hpp"
-#include "app/preset/instance.hpp"
 #include "ui/qt/helper.hpp"
 #include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
@@ -9,6 +8,7 @@
 #include <app/action/selection.hpp>
 #include <app/ecs.hpp>
 #include <app/helper/system.hpp>
+#include <app/scene/color_layout.hpp>
 #include <app/system/metadata.hpp>
 #include <app/system/selection.hpp>
 #include <app/system/uid.hpp>
@@ -42,8 +42,8 @@ namespace VTX::UI::QT::Widget
 		auto & system			  = reg.get<Core::Struct::System>( _system );
 		auto & metadata			  = reg.get<System::Metadata>( _system );
 		auto & uid				  = reg.get<System::UID>( _system );
-		auto & colorLayoutIntance = ECS::getFirstComponent<Preset::Instance<Renderer::Color::Layout>>();
-		auto & colorlayout		  = reg.get<Renderer::Color::Layout>( colorLayoutIntance.entity );
+		auto & colorLayoutIntance = ECS::getFirstComponent<Scene::ColorLayout>();
+		auto & colorlayout		  = reg.get<Renderer::Color::Layout>( colorLayoutIntance.preset );
 		auto & selection		  = reg.get<System::Selection>( _system );
 
 		const int	xOffset	   = horizontalScrollBar()->value();

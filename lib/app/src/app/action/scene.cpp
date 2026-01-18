@@ -4,6 +4,8 @@
 #include "app/action/color_scheme.hpp"
 #include "app/action/visibility.hpp"
 #include "app/events.hpp"
+#include "app/scene/color_layout.hpp"
+#include "app/scene/graphics_config.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
@@ -90,7 +92,7 @@ namespace VTX::App::Action::Scene
 		// TODO: apply default representation preset.
 
 		// Color scheme.
-		ACTION().execute<ColorScheme::Add<System::E_COLOR_SCHEME::ATOM>>( entity );
+		ACTION().execute<ColorScheme::Add<System::E_COLOR_SCHEME::RESIDUE>>( entity );
 
 		// Deleted: nothing to do.
 
@@ -101,11 +103,31 @@ namespace VTX::App::Action::Scene
 		HUB().trigger<Events::SystemLoad>( { entity } );
 	}
 
-	void DeleteSystem::execute( const ECS::Entity p_entity ) { REG().destroy( p_entity ); }
+	void DeleteSystem::execute( const ECS::Entity p_e ) { REG().destroy( p_e ); }
 
 	void Clear::execute()
 	{
-		REG().view<System::Metadata>().each( [ & ]( auto p_entity, auto & ) { REG().destroy( p_entity ); } );
+		REG().view<System::Metadata>().each( [ & ]( auto p_e, auto & ) { REG().destroy( p_e ); } );
+	}
+
+	void SetColorLayout::execute( const ECS::Entity p_e )
+	{
+		auto & reg	 = REG();
+		auto   scene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot>();
+		using CL	 = App::Scene::ColorLayout;
+		auto view	 = reg.view<CL>();
+		reg.remove<CL>( scene );
+		reg.emplace<CL>( scene, p_e );
+	}
+
+	void SetGraphicsConfig::execute( const ECS::Entity p_e )
+	{
+		auto & reg	 = REG();
+		auto   scene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot>();
+		using GC	 = App::Scene::GraphicsConfig;
+		auto view	 = reg.view<GC>();
+		reg.remove<GC>( scene );
+		reg.emplace<GC>( scene, p_e );
 	}
 
 } // namespace VTX::App::Action::Scene

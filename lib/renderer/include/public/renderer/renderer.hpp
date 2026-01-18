@@ -85,11 +85,11 @@ namespace VTX::Renderer
 		/**
 		 * @brief Add / remove / update system.
 		 */
-		void addSystem( const RootUID, const Core::Struct::System &, const Mat4f & );
+		void addSystem( const RootUID, const Core::Struct::System &, const Mat4f & ) {}
+		void removeSystem( const RootUID ) {}
 
-		void removeSystem( const RootUID );
-
-		void setSystemPosition( const RootUID, const std::span<Vec3f> );
+		void setSystemPosition( const RootUID, std::span<const Vec3f> ) {}
+		void setSystemColors( const RootUID, std::span<const Color::ColorIndex> ) {}
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
