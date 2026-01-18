@@ -1,14 +1,11 @@
 #ifndef __VTX_APP_ACTION_COLOR_SCHEME__
 #define __VTX_APP_ACTION_COLOR_SCHEME__
 
-#include "app/action/action_manager.hpp"
 #include "app/ecs.hpp"
-#include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/uid.hpp"
 #include <core/struct/system.hpp>
 #include <renderer/color.hpp>
-#include <renderer/renderer.hpp>
 #include <util/type_traits.hpp>
 
 namespace VTX::App::Action::Color
@@ -33,63 +30,68 @@ namespace VTX::App::Action::Color
 			IndexRangeList ranges
 				= p_ranges.isEmpty() ? Core::Struct::IndexRangeList( { { 0, system.getResidueCount() } } ) : p_ranges;
 
-			// Merge ranges.
-			if ( not color.colorSchemeAtoms.contains( S ) )
-			{
-				color.colorSchemeAtoms.emplace( S, Core::Struct::IndexRangeList() );
-			}
+			reg.patch<System::Color>(
+				p_ent,
+				[ & ]( System::Color & p_color )
+				{
+					// Merge ranges.
+					if ( not color.colorSchemeAtoms.contains( S ) )
+					{
+						p_color.colorSchemeAtoms.emplace( S, Core::Struct::IndexRangeList() );
+					}
 
-			for ( auto & [ scheme, rangeList ] : color.colorSchemeAtoms )
-			{
-				if ( scheme == S )
-				{
-					rangeList.mergeInPlace( ranges );
-				}
-				else
-				{
-					rangeList.substractInPlace( ranges );
-				}
-			}
+					for ( auto & [ scheme, rangeList ] : p_color.colorSchemeAtoms )
+					{
+						if ( scheme == S )
+						{
+							rangeList.mergeInPlace( ranges );
+						}
+						else
+						{
+							rangeList.substractInPlace( ranges );
+						}
+					}
 
-			// Apply color scheme.
-			if constexpr ( S == System::E_COLOR_SCHEME::ATOM )
-			{
-				for ( Index atom : ranges )
-				{
-					color.atoms[ atom ] = getColorIndex( system.getAtomSymbol( atom ) );
+					// Apply color scheme.
+					if constexpr ( S == System::E_COLOR_SCHEME::ATOM )
+					{
+						for ( Index atom : ranges )
+						{
+							p_color.atoms[ atom ] = getColorIndex( system.getAtomSymbol( atom ) );
+						}
+					}
+					else if constexpr ( S == System::E_COLOR_SCHEME::RESIDUE )
+					{
+						for ( Index atom : ranges )
+						{
+							const Index		 residue		   = system.atomResidueIndexes[ atom ];
+							const ColorIndex residueColorIndex = getColorIndex( system.getResidueSymbol( residue ) );
+							const IndexRange range			   = system.getResidueAtomRange( residue );
+							std::fill_n(
+								p_color.atoms.begin() + range.getFirst(), range.getCount(), residueColorIndex
+							);
+						}
+					}
+					else if constexpr ( S == System::E_COLOR_SCHEME::CHAIN )
+					{
+						for ( Index atom : ranges )
+						{
+							const Index		 residue		 = system.atomResidueIndexes[ atom ];
+							const Index		 chain			 = system.residueChainIndexes[ residue ];
+							const ColorIndex chainColorIndex = getColorIndex( system.getChainName( chain ) );
+							const IndexRange range			 = system.getChainAtomRange( chain );
+							std::fill_n( p_color.atoms.begin() + range.getFirst(), range.getCount(), chainColorIndex );
+						}
+					}
+					// TODO: other schemes.
+					else
+					{
+						static_assert(
+							always_false_v<S>, "Unsupported System::E_COLOR_SCHEME type in ColorScheme::Add action."
+						);
+					}
 				}
-			}
-			else if constexpr ( S == System::E_COLOR_SCHEME::RESIDUE )
-			{
-				for ( Index atom : ranges )
-				{
-					const Index		 residue		   = system.atomResidueIndexes[ atom ];
-					const ColorIndex residueColorIndex = getColorIndex( system.getResidueSymbol( residue ) );
-					const IndexRange range			   = system.getResidueAtomRange( residue );
-					std::fill_n( color.atoms.begin() + range.getFirst(), range.getCount(), residueColorIndex );
-				}
-			}
-			else if constexpr ( S == System::E_COLOR_SCHEME::CHAIN )
-			{
-				for ( Index atom : ranges )
-				{
-					const Index		 residue		 = system.atomResidueIndexes[ atom ];
-					const Index		 chain			 = system.residueChainIndexes[ residue ];
-					const ColorIndex chainColorIndex = getColorIndex( system.getChainName( chain ) );
-					const IndexRange range			 = system.getChainAtomRange( chain );
-					std::fill_n( color.atoms.begin() + range.getFirst(), range.getCount(), chainColorIndex );
-				}
-			}
-			// TODO: other schemes.
-			else
-			{
-				static_assert(
-					always_false_v<S>, "Unsupported System::E_COLOR_SCHEME type in ColorScheme::Add action."
-				);
-			}
-
-			// Push to renderer.
-			RENDERER().setSystemColors( uid.system, color.atoms );
+			);
 		}
 	};
 

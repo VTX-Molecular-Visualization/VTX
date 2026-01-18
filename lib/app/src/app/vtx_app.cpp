@@ -15,6 +15,7 @@
 #include "app/pass/camera_updater.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/pass/scene_updater.hpp"
+#include "app/pass/system_updater.hpp"
 #include "app/python_binding/interpretor.hpp"
 #include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
@@ -147,6 +148,7 @@ namespace VTX::App
 		// Launch passes.
 		PASS().addPass<Pass::SceneUpdater>( _scene );
 		PASS().addPass<Pass::CameraUpdater>( _camera );
+		PASS().addPass<Pass::SystemUpdater>();
 
 		// Set preset instances.
 		ACTION().execute<Action::Scene::SetColorLayout>(
@@ -181,8 +183,6 @@ namespace VTX::App
 		{
 			_updater.checkForUpdate();
 		}
-
-		
 	}
 
 	void VTXApp::_handleArgs( const Args & p_args )

@@ -6,6 +6,9 @@
 
 namespace VTX::App::Pass
 {
+	/**
+	 * @brief System that update scene (color layout, graphics config, aabb).
+	 */
 	class SceneUpdater : public IPass
 	{
 	  public:

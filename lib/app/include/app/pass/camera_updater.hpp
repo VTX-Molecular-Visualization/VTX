@@ -15,10 +15,12 @@ namespace VTX::App::Pass
 	{
 	  public:
 		CameraUpdater( const ECS::Entity & );
-
 		inline void update( const float, const float ) {}
 
 	  private:
+		/**
+		 * @brief Camera entity.
+		 */
 		const ECS::Entity _entity;
 
 		/**
