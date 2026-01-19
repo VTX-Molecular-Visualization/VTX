@@ -5,7 +5,7 @@
 
 namespace VTX::Renderer
 {
-	enum struct E_REPRESENTATION_VALUES // Not a class to avoid static_cast<int>.
+	enum struct E_REPRESENTATION_VALUES
 	{
 		HAS_SPHERE,
 		RADIUS_SPHERE_FIXED,
@@ -68,6 +68,8 @@ namespace VTX::Renderer
 		bool  hasSes;
 		float sesProbeRadius;
 	};
+
+	using RepresentationIndex = uchar;
 
 	namespace Representations
 	{

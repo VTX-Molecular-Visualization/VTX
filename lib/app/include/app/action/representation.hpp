@@ -2,7 +2,9 @@
 #define __VTX_APP_ACTION_REPRESENTATION__
 
 #include "app/ecs.hpp"
+#include <core/struct/system.hpp>
 #include <renderer/representation.hpp>
+#include <util/type_traits.hpp>
 
 namespace VTX::App::Action::Representation
 {
@@ -64,10 +66,23 @@ namespace VTX::App::Action::Representation
 					}
 					else
 					{
+						static_assert( always_false_v<S>, "Representation::Change: invalid representation value." );
 					}
 				}
 			);
 		}
+	};
+
+	/**
+	 * @brief Add a representation to a system.
+	 */
+	struct AddToSystem
+	{
+		void execute(
+			const ECS::Entity p_system,
+			const ECS::Entity p_preset,
+			const Core::Struct::IndexRangeList & = {}
+		);
 	};
 } // namespace VTX::App::Action::Representation
 #endif

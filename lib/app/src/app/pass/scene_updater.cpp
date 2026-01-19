@@ -1,5 +1,6 @@
 #include "app/pass/scene_updater.hpp"
-#include "app/preset/instance.hpp"
+#include "app/scene/color_layout.hpp"
+#include "app/scene/graphics_config.hpp"
 #include "app/services.hpp"
 #include <renderer/renderer.hpp>
 #include <util/math/aabb.hpp>
@@ -13,25 +14,31 @@ namespace VTX::App::Pass
 		// Update functions.
 		reg.on_update<Util::Math::AABB>().connect<&SceneUpdater::_onUpdateAABB>( this );
 		// TODO: Keep only construct and use custom event to update each value at once.
-		reg.on_construct<Preset::Instance<Renderer::GraphicsConfig>>().connect<&SceneUpdater::_onUpdateGraphicsConfig>(
-			this
-		);
-		// reg.on_update<Library::Preset::RenderSettings>().connect<&SceneUpdater::_onUpdateRenderSettings>( this );
-		reg.on_construct<Preset::Instance<Renderer::Representation>>().connect<&SceneUpdater::_onUpdateRepresentations>(
-			this
-		);
-		// reg.on_update<Library::Preset::ColorLayout>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
-		reg.on_construct<Preset::Instance<Renderer::Color::Layout>>().connect<&SceneUpdater::_onUpdateColorLayout>(
-			this
-		);
-		// reg.on_update<Library::Preset::Representation>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
+		reg.on_construct<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
+		reg.on_update<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
+		reg.on_construct<Scene::ColorLayout>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
+		reg.on_update<Scene::ColorLayout>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
 
-		// HUB().connect < Events::RenderSettingChange, &SceneUpdater::? > ( this );
+		// TODO: remove after debug.
+		static std::vector<Vec3f> mins, maxs;
+		for ( float x = -100.f; x < 100.f; x += 50.f )
+		{
+			for ( float y = -100.f; y < 100.f; y += 50.f )
+			{
+				for ( float z = -100.f; z < 100.f; z += 50.f )
+				{
+					mins.emplace_back( x, y, z );
+					maxs.emplace_back( x + 50.f, y + 50.f, z + 50.f );
+				}
+			}
+		}
+
+		RENDERER().setVoxels( mins, maxs );
 	}
 
 	void SceneUpdater::_onUpdateAABB( ECS::Registry & p_r, ECS::Entity p_e )
 	{
-		// Update only from others.
+		// TODO: use event instead of this.
 		if ( p_e == _entity )
 		{
 			return;
@@ -46,25 +53,17 @@ namespace VTX::App::Pass
 	void SceneUpdater::_onUpdateGraphicsConfig( ECS::Registry & p_r, ECS::Entity p_e )
 	{
 		auto &		 renderer = RENDERER();
-		const auto & instance = p_r.get<Preset::Instance<Renderer::GraphicsConfig>>( _entity );
-		const auto & preset	  = p_r.get<Renderer::GraphicsConfig>( instance.entity );
+		const auto & instance = p_r.get<Scene::GraphicsConfig>( _entity );
+		const auto & preset	  = p_r.get<Renderer::GraphicsConfig>( instance.preset );
 		renderer.setGraphicsConfig( preset );
 	}
 
 	void SceneUpdater::_onUpdateColorLayout( ECS::Registry & p_r, ECS::Entity )
 	{
 		auto &		 renderer = RENDERER();
-		const auto & instance = p_r.get<Preset::Instance<Renderer::Color::Layout>>( _entity );
-		const auto & preset	  = p_r.get<Renderer::Color::Layout>( instance.entity );
+		const auto & instance = p_r.get<Scene::ColorLayout>( _entity );
+		const auto & preset	  = p_r.get<Renderer::Color::Layout>( instance.preset );
 		renderer.setColorLayout( preset );
 	}
 
-	void SceneUpdater::_onUpdateRepresentations( ECS::Registry & p_r, ECS::Entity )
-	{
-		// TODO: handle mutliple representations.
-		auto &		 renderer = RENDERER();
-		const auto & instance = p_r.get<Preset::Instance<Renderer::Representation>>( _entity );
-		const auto & preset	  = p_r.get<Renderer::Representation>( instance.entity );
-		renderer.setRepresentation( preset );
-	}
 } // namespace VTX::App::Pass

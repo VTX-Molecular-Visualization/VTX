@@ -10,6 +10,7 @@
 #include <renderer/camera.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
+#include <util/type_traits.hpp>
 
 namespace VTX::App::Action::Camera
 {
@@ -170,7 +171,7 @@ namespace VTX::App::Action::Camera
 			}
 			else
 			{
-				static_assert( std::is_same_v<I, void>, "Unsupported camera interpolator." );
+				static_assert( always_false_v<I>, "Unsupported camera interpolator." );
 			}
 
 			// Add pass.

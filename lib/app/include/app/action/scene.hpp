@@ -30,5 +30,21 @@ namespace VTX::App::Action::Scene
 	{
 		void execute();
 	};
+
+	/**
+	 * @brief Set current color layout.
+	 */
+	struct SetColorLayout
+	{
+		void execute( const ECS::Entity p_e );
+	};
+
+	/**
+	 * @brief Set current graphics config.
+	 */
+	struct SetGraphicsConfig
+	{
+		void execute( const ECS::Entity p_e );
+	};
 } // namespace VTX::App::Action::Scene
 #endif

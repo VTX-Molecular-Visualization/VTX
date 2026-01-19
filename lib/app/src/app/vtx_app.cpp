@@ -15,7 +15,7 @@
 #include "app/pass/camera_updater.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/pass/scene_updater.hpp"
-#include "app/preset/instance.hpp"
+#include "app/pass/system_updater.hpp"
 #include "app/python_binding/interpretor.hpp"
 #include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
@@ -148,15 +148,13 @@ namespace VTX::App
 		// Launch passes.
 		PASS().addPass<Pass::SceneUpdater>( _scene );
 		PASS().addPass<Pass::CameraUpdater>( _camera );
+		PASS().addPass<Pass::SystemUpdater>();
 
 		// Set preset instances.
-		ACTION().execute<Action::Preset::SetCurrent<Renderer::Color::Layout>>(
+		ACTION().execute<Action::Scene::SetColorLayout>(
 			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
 		);
-		ACTION().execute<Action::Preset::SetCurrent<Renderer::Representation>>(
-			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>()
-		);
-		ACTION().execute<Action::Preset::SetCurrent<Renderer::GraphicsConfig>>(
+		ACTION().execute<Action::Scene::SetGraphicsConfig>(
 			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>()
 		);
 

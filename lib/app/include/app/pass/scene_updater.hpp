@@ -6,6 +6,9 @@
 
 namespace VTX::App::Pass
 {
+	/**
+	 * @brief System that update scene (color layout, graphics config, aabb).
+	 */
 	class SceneUpdater : public IPass
 	{
 	  public:
@@ -29,7 +32,6 @@ namespace VTX::App::Pass
 		 */
 		void _onUpdateGraphicsConfig( ECS::Registry &, ECS::Entity );
 		void _onUpdateColorLayout( ECS::Registry &, ECS::Entity );
-		void _onUpdateRepresentations( ECS::Registry &, ECS::Entity );
 	};
 } // namespace VTX::App::Pass
 #endif

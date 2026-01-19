@@ -1,5 +1,5 @@
 #include "ui/qt/dock_widget/sequences.hpp"
-#include "app/preset/instance.hpp"
+#include "app/scene/color_layout.hpp"
 #include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
 #include <app/events.hpp>
@@ -21,9 +21,7 @@ namespace VTX::UI::QT::DockWidget
 		App::REG().on_update<App::System::Selection>().connect<&Sequences::_onUpdateSelection>( this );
 
 		// Refresh widget when colors changed.
-		App::REG().on_construct<App::Preset::Instance<Renderer::Color::Layout>>().connect<&Sequences::_onColorsChanged>(
-			this
-		);
+		App::REG().on_construct<App::Scene::ColorLayout>().connect<&Sequences::_onColorsChanged>( this );
 	}
 
 	void Sequences::_onSystemLoad( const App::Events::SystemLoad & p_e )

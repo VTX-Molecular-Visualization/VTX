@@ -1,6 +1,7 @@
 #ifndef __VTX_CORE_CHEMDB_RESIDUE__
 #define __VTX_CORE_CHEMDB_RESIDUE__
 
+#include <array>
 #include <string>
 
 namespace VTX::Core::ChemDB::Residue
@@ -64,7 +65,7 @@ namespace VTX::Core::ChemDB::Residue
 		COUNT
 	};
 
-	const std::string_view SYMBOL_STR[ int( SYMBOL::COUNT ) ] = {
+	constexpr std::array<std::string_view, size_t( SYMBOL::COUNT )> SYMBOL_STR = {
 		"---", // UNKNOWN
 		"ALA", // ALA
 		"ARG", // ARG
@@ -107,7 +108,7 @@ namespace VTX::Core::ChemDB::Residue
 		"SOL", // SOL
 	};
 
-	const std::string_view SYMBOL_SHORT_STR[ int( SYMBOL::COUNT ) ] = {
+	constexpr std::array<std::string_view, size_t( SYMBOL::COUNT )> SYMBOL_SHORT_STR {
 		"-",  // UNKNOWN
 		"A",  // ALA
 		"R",  // ARG
@@ -150,7 +151,7 @@ namespace VTX::Core::ChemDB::Residue
 		"S",  // SOL
 	};
 
-	const std::string_view SYMBOL_NAME[ int( SYMBOL::COUNT ) ] = {
+	constexpr std::array<std::string_view, size_t( SYMBOL::COUNT )> SYMBOL_NAME = {
 		"Unknown",		  // UNKNOWN
 		"Alanine",		  // ALA
 		"Arginine",		  // ARG
@@ -193,7 +194,7 @@ namespace VTX::Core::ChemDB::Residue
 		"Solvent",		  // SOL
 	};
 
-	const bool SYMBOL_IS_COMMON[ int( SYMBOL::COUNT ) ] = {
+	constexpr std::array<bool, size_t( SYMBOL::COUNT )> SYMBOL_IS_COMMON = {
 		true,  // UNKNOWN
 		true,  // ALA
 		true,  // ARG

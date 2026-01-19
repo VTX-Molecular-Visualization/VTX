@@ -15,6 +15,7 @@ namespace VTX::Renderer::Color
 	 */
 	constexpr size_t COLOR_LAYOUT_SIZE = 256;
 	using LayoutArray				   = std::array<Util::Color::Rgba, COLOR_LAYOUT_SIZE>;
+	using ColorIndex				   = uchar;
 
 	/**
 	 * @brief Layout offsets and counts.
@@ -78,7 +79,7 @@ namespace VTX::Renderer::Color
 		}
 	};
 
-	enum class E_LAYOUT_COLOR_INDEX : uchar
+	enum class E_LAYOUT_COLOR_INDEX : ColorIndex
 	{
 		ATOM_UNKNOWN = LAYOUT_OFFSET_ATOMS,
 		ATOM_H,
@@ -334,17 +335,17 @@ namespace VTX::Renderer::Color
 		CUSTOM_27
 	};
 
-	inline uchar getColorIndex( const Core::ChemDB::Atom::SYMBOL p_symbol )
+	inline ColorIndex getColorIndex( const Core::ChemDB::Atom::SYMBOL p_symbol )
 	{
 		return int( p_symbol ) + LAYOUT_OFFSET_ATOMS;
 	}
 
-	inline uchar getColorIndex( const Core::ChemDB::Residue::SYMBOL p_symbol )
+	inline ColorIndex getColorIndex( const Core::ChemDB::Residue::SYMBOL p_symbol )
 	{
 		return int( p_symbol ) + LAYOUT_OFFSET_RESIDUES;
 	}
 
-	inline uchar getColorIndex(
+	inline ColorIndex getColorIndex(
 
 		const std::string & p_chainId,
 		const bool			p_isHetAtm = false
@@ -367,7 +368,7 @@ namespace VTX::Renderer::Color
 		return p_isHetAtm ? id + LAYOUT_OFFSET_CHAINS + 1 + 26 : id + LAYOUT_OFFSET_CHAINS + 1;
 	}
 
-	inline uchar getColorIndex( const Core::ChemDB::SecondaryStructure::TYPE p_type )
+	inline ColorIndex getColorIndex( const Core::ChemDB::SecondaryStructure::TYPE p_type )
 	{
 		return int( p_type ) + LAYOUT_OFFSET_RIBBONS;
 	}

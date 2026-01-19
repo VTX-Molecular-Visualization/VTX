@@ -4,7 +4,6 @@
 #include "app/action/action_manager.hpp"
 #include "app/events.hpp"
 #include "app/helper/preset.hpp"
-#include "app/preset/instance.hpp"
 #include "app/preset/name.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
@@ -20,6 +19,7 @@ namespace VTX::App::Action::Preset
 	/**
 	 * @brief Set instance in the scene.
 	 */
+	/*
 	template<typename T>
 	struct SetCurrent
 	{
@@ -33,6 +33,7 @@ namespace VTX::App::Action::Preset
 			reg.emplace<App::Preset::Instance<T>>( scene, p_e );
 		}
 	};
+	*/
 
 	/**
 	 * @brief Add a new preset to a library.
@@ -42,9 +43,8 @@ namespace VTX::App::Action::Preset
 	{
 	  public:
 		void execute(
-			const std::optional<std::string_view> p_name   = std::nullopt,
-			const std::optional<T> &			  p_data   = std::nullopt,
-			const bool							  p_select = false
+			const std::optional<std::string_view> p_name = std::nullopt,
+			const std::optional<T> &			  p_data = std::nullopt
 		)
 		{
 			auto &		reg	 = REG();
@@ -64,11 +64,6 @@ namespace VTX::App::Action::Preset
 			else
 			{
 				reg.emplace<T>( e );
-			}
-
-			if ( p_select )
-			{
-				ACTION().execute<SetCurrent<T>>( e );
 			}
 		}
 	};
@@ -106,11 +101,7 @@ namespace VTX::App::Action::Preset
 	template<typename T>
 	struct Duplicate
 	{
-		void execute(
-			const ECS::Entity					  p_e,
-			const std::optional<std::string_view> p_dest   = std::nullopt,
-			const bool							  p_select = false
-		)
+		void execute( const ECS::Entity p_e, const std::optional<std::string_view> p_dest = std::nullopt )
 		{
 			auto & reg = REG();
 			auto & src = reg.get<App::Preset::Name>( p_e );
@@ -125,11 +116,6 @@ namespace VTX::App::Action::Preset
 			auto e = reg.create();
 			reg.emplace<App::Preset::Name>( e, name );
 			reg.emplace<T>( e, reg.get<T>( p_e ) );
-
-			if ( p_select )
-			{
-				ACTION().execute<SetCurrent<T>>( e );
-			}
 		}
 	};
 
@@ -148,6 +134,8 @@ namespace VTX::App::Action::Preset
 				throw VTXException( "Cannot delete the last preset." );
 			}
 
+			// TODO: check if preset is used in an instance.
+			/*
 			auto viewInstance = REG().view<App::Preset::Instance<T>>();
 			for ( const ECS::Entity entity : viewInstance )
 			{
@@ -157,6 +145,7 @@ namespace VTX::App::Action::Preset
 					throw VTXException( "Cannot delete a preset in use." );
 				}
 			}
+			*/
 
 			REG().destroy( p_e );
 		}

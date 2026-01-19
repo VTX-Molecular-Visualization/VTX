@@ -1,6 +1,7 @@
 #ifndef __VTX_CORE_CHEMDB_SECONDARY_STRUCTURE__
 #define __VTX_CORE_CHEMDB_SECONDARY_STRUCTURE__
 
+#include <array>
 #include <util/constants.hpp>
 
 namespace VTX::Core::ChemDB::SecondaryStructure
@@ -19,15 +20,15 @@ namespace VTX::Core::ChemDB::SecondaryStructure
 		COUNT
 	};
 
-	const std::string_view SYMBOL_NAME[ (int)TYPE::COUNT ] = { "Alpha Helix Right",
-															   "Alpha Helix Left",
-															   "3-10 Helix Right",
-															   "3-10 Helix Left",
-															   "Pi Helix",
-															   "Strand",
-															   "Turn",
-															   "Coil",
-															   "Unknown" };
+	constexpr std::array<std::string_view, size_t( TYPE::COUNT )> SYMBOL_NAME = { "Alpha Helix Right",
+																				  "Alpha Helix Left",
+																				  "3-10 Helix Right",
+																				  "3-10 Helix Left",
+																				  "Pi Helix",
+																				  "Strand",
+																				  "Turn",
+																				  "Coil",
+																				  "Unknown" };
 
 	TYPE		pdbFormattedToEnum( const std::string & p_str );
 	std::string enumToPdbFormatted( const TYPE p_enum );

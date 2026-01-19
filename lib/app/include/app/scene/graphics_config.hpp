@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SCENE_COLOR_LAYOUT__
-#define __VTX_APP_SCENE_COLOR_LAYOUT__
+#ifndef __VTX_APP_SCENE_GRAPHICS_CONFIG__
+#define __VTX_APP_SCENE_GRAPHICS_CONFIG__
 
 #include "app/ecs.hpp"
 
@@ -7,9 +7,9 @@ namespace VTX::App::Scene
 {
 
 	/**
-	 * @brief Current color layout.
+	 * @brief Current graphics config.
 	 */
-	struct ColorLayout
+	struct GraphicsConfig
 	{
 		/**
 		 * @brief Linked preset.
