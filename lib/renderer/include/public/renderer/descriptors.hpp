@@ -152,8 +152,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief Various settings.
 	 */
-	using Setting = uint32_t;
-	enum : Setting
+	enum struct E_SETTING : uint32_t
 	{
 		CLEAR_COLOR	 = 1u << 0,
 		CLEAR_DEPTH	 = 1u << 1,
@@ -348,7 +347,7 @@ namespace VTX::Renderer::Desc
 		std::vector<ResourceBinding> inputs;
 		std::vector<ResourceBinding> outputs;
 		std::vector<Program>		 programs;
-		std::vector<Setting>		 settings;
+		std::vector<E_SETTING>		 settings;
 		std::optional<RenderFunc>	 customCallback;
 	};
 

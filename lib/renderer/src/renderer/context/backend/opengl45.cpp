@@ -151,20 +151,6 @@ namespace
 		}
 	}
 
-	constexpr GLenum _toGL( const Desc::E_PRIMITIVE p_primitive ) noexcept
-	{
-		using namespace Desc;
-
-		switch ( p_primitive )
-		{
-		case E_PRIMITIVE::POINTS: return GL_POINTS;
-		case E_PRIMITIVE::LINES: return GL_LINES;
-		case E_PRIMITIVE::TRIANGLES: return GL_TRIANGLE_STRIP;
-		case E_PRIMITIVE::PATCHES: return GL_PATCHES;
-		default: assert( false ); return GL_INVALID_INDEX;
-		}
-	}
-
 	/**
 	 * @brief GL attribute description.
 	 */
@@ -201,12 +187,12 @@ namespace
 		}
 	}
 
-	uint32_t _toSettingFlags( const std::vector<Desc::Setting> & p_settings )
+	uint32_t _toSettingFlags( const std::vector<Desc::E_SETTING> & p_settings )
 	{
 		uint32_t mask = 0;
-		for ( const Desc::Setting setting : p_settings )
+		for ( const Desc::E_SETTING setting : p_settings )
 		{
-			mask |= setting;
+			mask |= toUnderlying( setting );
 		}
 		return mask;
 	}
@@ -377,20 +363,21 @@ namespace VTX::Renderer::Context::Backend
 					const DrawCall & drawCall = program.drawCall.value();
 					const Geometry & geometry = p_resources.geometries.at( drawCall.geometry );
 
-					if ( geometry.indexBuffer )
-					{
-						PayloadDrawElement pDraw { hProgram, hVao };
-						pDraw.primitive	 = toUnderlying( drawCall.primitive );
-						pDraw.indexCount = drawCall.indexCount;
-						p_commands.push<E_COMMAND::DRAW_ELEMENT>( pDraw );
-					}
-					else if ( drawCall.indexCount )
+					if ( drawCall.vertexCount )
 					{
 						PayloadDrawArray pDraw { hProgram, hVao };
 						pDraw.primitive	  = toUnderlying( drawCall.primitive );
 						pDraw.vertexCount = drawCall.vertexCount;
 						p_commands.push<E_COMMAND::DRAW_ARRAY>( pDraw );
 					}
+					else if ( drawCall.indexCount )
+					{
+						PayloadDrawElement pDraw { hProgram, hVao };
+						pDraw.primitive	 = toUnderlying( drawCall.primitive );
+						pDraw.indexCount = drawCall.indexCount;
+						p_commands.push<E_COMMAND::DRAW_ELEMENT>( pDraw );
+					}
+
 					else if ( drawCall.vertexRanges )
 					{
 						PayloadDrawArrays pDraw { hProgram, hVao };
@@ -414,7 +401,7 @@ namespace VTX::Renderer::Context::Backend
 				{
 					// Fullscreen quad draw.
 					PayloadDrawArray pDraw { hProgram, hVao };
-					pDraw.primitive	  = static_cast<uint32_t>( _toGL( E_PRIMITIVE::TRIANGLES ) );
+					pDraw.primitive	  = static_cast<uint32_t>( toUnderlying( E_PRIMITIVE::TRIANGLES ) );
 					pDraw.vertexCount = 4;
 					p_commands.push<E_COMMAND::DRAW_ARRAY>( pDraw );
 				}
@@ -650,43 +637,55 @@ namespace VTX::Renderer::Context::Backend
 			return it->second;
 		}
 
-		BinaryBuffer<E_LAYOUT_TYPE::Std140> cpuBuffer;
+		using CpuBuffer = std::variant<BinaryBuffer<E_LAYOUT_TYPE::Std140>, BinaryBuffer<E_LAYOUT_TYPE::Std430>>;
 
-		for ( const UniformValue & value : p_buffer.values )
-		{
-			const uint32_t count = value.arrayCount ? *value.arrayCount : 1u;
-			const size_t   elem	 = BinaryBuffer<E_LAYOUT_TYPE::Std140>::rawElementSizeBytes( value.type );
+		CpuBuffer cpuBuffer = ( p_buffer.role == E_SHADER_BUFFER_KIND::PARAMETERS )
+								  ? CpuBuffer { BinaryBuffer<E_LAYOUT_TYPE::Std140> {} }
+								  : CpuBuffer { BinaryBuffer<E_LAYOUT_TYPE::Std430> {} };
 
-			const SpanBytes bytes { reinterpret_cast<const std::byte *>( value.data.data() ), elem * count };
+		auto glBuffer = std::visit(
+			[ & ]( auto & p_buf )
+			{
+				using BB = std::decay_t<decltype( p_buf )>;
 
-			cpuBuffer.write( value.type, bytes );
-		}
+				for ( const UniformValue & value : p_buffer.values )
+				{
+					const uint32_t	count = value.arrayCount ? *value.arrayCount : 1u;
+					const size_t	elem  = BB::rawElementSizeBytes( value.type );
+					const SpanBytes bytes { reinterpret_cast<const std::byte *>( value.data.data() ), elem * count };
+					p_buf.write( value.type, bytes );
+				}
 
-		cpuBuffer.close();
+				p_buf.close();
 
-		const uint32_t bufferSize = static_cast<uint32_t>( cpuBuffer.size() );
-		assert( bufferSize > 0 );
+				const uint32_t bufferSize = static_cast<uint32_t>( p_buf.size() );
+				assert( bufferSize > 0 );
 
-		auto glBuffer = std::make_unique<GL::Buffer>();
+				auto gl = std::make_unique<GL::Buffer>();
 
-		switch ( p_buffer.mutability )
-		{
-		case E_BUFFER_MUTABILITY::MUTABLE:
-		{
-			glBuffer->setData( cpuBuffer.data(), static_cast<GLsizei>( bufferSize ), _toGL( p_buffer.frequency ) );
-			break;
-		}
-		case E_BUFFER_MUTABILITY::IMMUTABLE:
-		{
-			glBuffer->setStorage(
-				cpuBuffer.data(),
-				static_cast<GLsizei>( bufferSize ),
-				_toGLStorageFlags( p_buffer.access, p_buffer.frequency )
-			);
-			break;
-		}
-		default: break;
-		}
+				switch ( p_buffer.mutability )
+				{
+				case E_BUFFER_MUTABILITY::MUTABLE:
+				{
+					gl->setData( p_buf.data(), static_cast<GLsizei>( bufferSize ), _toGL( p_buffer.frequency ) );
+					break;
+				}
+				case E_BUFFER_MUTABILITY::IMMUTABLE:
+				{
+					gl->setStorage(
+						p_buf.data(),
+						static_cast<GLsizei>( bufferSize ),
+						_toGLStorageFlags( p_buffer.access, p_buffer.frequency )
+					);
+					break;
+				}
+				default: break;
+				}
+
+				return gl;
+			},
+			cpuBuffer
+		);
 
 		const Handle h = static_cast<Handle>( _shaderBuffers.size() );
 		_shaderBuffers.emplace_back( std::move( glBuffer ) );

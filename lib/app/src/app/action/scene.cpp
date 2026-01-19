@@ -21,6 +21,7 @@
 #include "app/uid/uid_manager.hpp"
 #include <core/struct/system.hpp>
 #include <io/reader/system.hpp>
+#include <renderer/renderer.hpp>
 #include <renderer/representation.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
@@ -91,12 +92,15 @@ namespace VTX::App::Action::Scene
 		ACTION().execute<Visibility::SetVisible<App::Scene::E_ITEM::SYSTEM>>( entity );
 
 		// Representation.
-		ACTION().execute<Action::Representation::AddToSystem>(
-			entity, ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>()
-		);
+		auto entityRep = ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>();
+		ACTION().execute<Action::Representation::AddToSystem>( entity, entityRep );
+
+		// TODO: TMP.
+		const auto & defaultRepPreset = reg.get<Renderer::Representation>( entityRep );
+		RENDERER().setRepresentation( defaultRepPreset );
 
 		// Color scheme.
-		ACTION().execute<Color::Add<System::E_COLOR_SCHEME::RESIDUE>>( entity );
+		ACTION().execute<Color::Add<System::E_COLOR_SCHEME::ATOM>>( entity );
 
 		// Selection : nothing to do.
 		// Deleted: nothing to do.

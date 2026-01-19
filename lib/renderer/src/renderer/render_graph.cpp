@@ -195,7 +195,7 @@ namespace VTX::Renderer
 
 		g.shaderBuffer(
 			"ColorLayout",
-			E_SHADER_BUFFER_KIND::STRUCTURED,
+			E_SHADER_BUFFER_KIND::PARAMETERS,
 			E_BUFFER_MUTABILITY::IMMUTABLE,
 			E_BUFFER_ACCESS::READ,
 			E_UPDATE_FREQUENCY::DYNAMIC,
@@ -364,7 +364,7 @@ namespace VTX::Renderer
 		// Passes.
 		// Geometric.
 		g.pass( "Geometric" )
-			.settings( { CLEAR_COLOR, CLEAR_DEPTH, ENABLE_DEPTH } )
+			.settings( { E_SETTING::CLEAR_COLOR, E_SETTING::CLEAR_DEPTH, E_SETTING::ENABLE_DEPTH } )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Spheres" )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Cylinders" )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Ribbons" )

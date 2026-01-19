@@ -90,10 +90,6 @@ namespace VTX::Renderer
 		_graph.clear();
 		_needUpdate		 = false;
 		_framesRemaining = 0;
-
-#ifdef VTX_CUDA_ENABLED
-		_sesData.reset();
-#endif
 	}
 
 	void Renderer::render( const float p_deltaTime, const float p_elapsedTime ) noexcept
@@ -145,6 +141,9 @@ namespace VTX::Renderer
 		buffer.close();
 
 		_context.setShaderBuffer( "Camera", buffer );
+
+		_matrixView = p_matView;
+		_refreshDataModels();
 
 		setNeedUpdate( true );
 	}
@@ -233,24 +232,11 @@ namespace VTX::Renderer
 		// Asked SES, hide all others.
 		if ( _geometries.ses.show )
 		{
-#ifdef VTX_CUDA_ENABLED
-			if ( not _sesData and _proxiesSystems.size() > 0 )
-			{
-				_createSes( *_proxiesSystems[ 0 ] );
-			}
-#endif
-
 			_geometries.spheres.show   = false;
 			_geometries.cylinders.show = false;
 			_geometries.ribbons.show   = false;
 			return;
 		}
-#ifdef VTX_CUDA_ENABLED
-		else if ( _sesData )
-		{
-			_sesData.reset();
-		}
-#endif
 
 		const bool	isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
 		const float cylinderRadius		= p_representation.radiusCylinder;
@@ -301,31 +287,58 @@ namespace VTX::Renderer
 		setNeedUpdate( true );
 	}
 
+	void Renderer::addSystem(
+		const RootUID				 p_appId,
+		const Mat4f &				 p_transform,
+		const Core::Struct::System & p_data,
+		std::span<const PickingUID>	 p_uid
+	)
+	{
+		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_data.trajectory.getCurrentFrame() );
+
+		std::vector<float> radii;
+		radii.resize( p_data.atomNames.size(), 1.f );
+		_context.setPipelineBuffer<float>( "Atoms.Radii", radii );
+
+		_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", p_uid );
+
+		std::vector<uchar> flags;
+		flags.resize( p_data.atomNames.size(), 0 );
+		_context.setPipelineBuffer<uchar>( "Atoms.Flags", flags );
+
+		std::vector<ushort> models;
+		models.resize( p_data.atomNames.size(), 0 );
+		_context.setPipelineBuffer<ushort>( "Atoms.Models", models );
+
+		_context.setPipelineBuffer<Index>( "Bonds", p_data.bondPairAtomIndexes );
+
+		_transform = p_transform;
+
+		_refreshDataModels();
+
+		_geometries.spheres.drawRanges.firsts = { 0 };
+		_geometries.spheres.drawRanges.counts = { uint( p_data.atomNames.size() ) };
+
+		//_geometries.cylinders.drawRanges.offsets = { 0 };
+		//_geometries.cylinders.drawRanges.counts	 = { uint( p_data.bondPairAtomIndexes.size() ) };
+	}
+
 #pragma endregion
 
 	void Renderer::_refreshDataModels()
 	{
-		/*
-		BinaryBuffer buffer;
+		BinaryBuffer430 buffer;
 
-		for ( const Proxy::System * const proxy : _proxiesSystems )
-		{
-			assert( proxy->transform );
-			assert( _proxyCamera );
+		const Mat4f matrixModelView	   = _matrixView * _transform;
+		const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
+		const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
 
-			const Mat4f matrixModelView	   = *_proxyCamera->matrixView * *proxy->transform;
-			const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
-			const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
-
-			buffer.write( matrixModelView );
-			buffer.write( matrixModelViewInv );
-			buffer.write( matrixNormal );
-		}
-
+		buffer.write( matrixModelView );
+		buffer.write( matrixModelViewInv );
+		buffer.write( matrixNormal );
 		buffer.close();
 
-		_context.set( buffer, "Models" );
-		*/
+		_context.setShaderBuffer( "Models", buffer );
 	}
 
 	void Renderer::snapshot(
