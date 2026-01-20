@@ -296,18 +296,18 @@ namespace VTX::Renderer
 	{
 		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_data.trajectory.getCurrentFrame() );
 
-		std::vector<float> radii;
-		radii.resize( p_data.atomNames.size(), 1.f );
+		std::vector<float> radii( p_data.atomNames.size(), 1.f );
 		_context.setPipelineBuffer<float>( "Atoms.Radii", radii );
 
 		_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", p_uid );
 
-		std::vector<uchar> flags;
-		flags.resize( p_data.atomNames.size(), 0 );
+		uchar flag = 0;
+		flag |= 1 << E_ELEMENT_FLAGS::VISIBILITY;
+		flag |= 0 << E_ELEMENT_FLAGS::SELECTION;
+		std::vector<uchar> flags( p_data.atomNames.size(), flag );
 		_context.setPipelineBuffer<uchar>( "Atoms.Flags", flags );
 
-		std::vector<ushort> models;
-		models.resize( p_data.atomNames.size(), 0 );
+		std::vector<ushort> models( p_data.atomNames.size(), 0 );
 		_context.setPipelineBuffer<ushort>( "Atoms.Models", models );
 
 		_context.setPipelineBuffer<Index>( "Bonds", p_data.bondPairAtomIndexes );
