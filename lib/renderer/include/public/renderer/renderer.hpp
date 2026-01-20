@@ -1,11 +1,6 @@
 #ifndef __VTX_RENDERER_RENDERER__
 #define __VTX_RENDERER_RENDERER__
 
-#undef VTX_CUDA_ENABLED
-
-#ifdef VTX_CUDA_ENABLED
-#include "bcs/sesdf/sesdf.hpp"
-#endif
 #include "renderer/camera.hpp"
 #include "renderer/color.hpp"
 #include "renderer/context/context_wrapper.hpp"
@@ -76,21 +71,32 @@ namespace VTX::Renderer
 		/**
 		 * @brief Push data to the renderer.
 		 */
-		void setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );
-		void setGraphicsConfig( const GraphicsConfig & );
-		void setColorLayout( const Color::Layout & );
-		void setRepresentation( const Representation & );
-		void setVoxels( const std::vector<Vec3f> &, const std::vector<Vec3f> & );
+		void  setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );
+		Mat4f _matrixView;
+		void  setGraphicsConfig( const GraphicsConfig & );
+		void  setColorLayout( const Color::Layout & );
+		void  setRepresentation( const Representation & );
+		void  setVoxels( const std::vector<Vec3f> &, const std::vector<Vec3f> & );
 
 		/**
 		 * @brief Add / remove / update system.
 		 */
-		void addSystem( const RootUID, const Core::Struct::System &, const Mat4f & ) {}
-		void removeSystem( const RootUID ) {}
+		void  addSystem( const RootUID, const Mat4f &, const Core::Struct::System &, std::span<const PickingUID> );
+		Mat4f _transform;
+		void  removeSystem( const RootUID ) {}
 
+		void setSystemTransform( const RootUID, const Mat4f & ) {}
 		void setSystemPosition( const RootUID, std::span<const Vec3f> ) {}
-		void setSystemColors( const RootUID, std::span<const Color::ColorIndex> ) {}
-		void setSystemRepresentation( const RootUID, std::span<const RepresentationIndex> ) {}
+		void setSystemColors( const RootUID, std::span<const Color::ColorIndex> p_b )
+		{
+			_context.setPipelineBuffer<Color::ColorIndex>( "Atoms.Colors", p_b );
+		}
+		void setSystemRepresentation( const RootUID, std::span<const RepresentationIndex> p_b )
+		{
+			_context.setPipelineBuffer<RepresentationIndex>( "Atoms.Representations", p_b );
+		}
+		void setSystemSelection( const RootUID, std::span<const bool> ) {}
+		void setSystemVisibility( const RootUID, std::span<const bool> ) {}
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
@@ -141,23 +147,6 @@ namespace VTX::Renderer
 		bool forceUpdate = true;
 
 		Util::Callback<> onReady;
-
-#ifdef VTX_CUDA_ENABLED
-		std::unique_ptr<bcs::Sesdf> _sesData;
-		bcs::sesdf::SesdfGraphics	_sesSurface {};
-		GLuint						_sesVao		   = GL_INVALID_VALUE;
-		GLuint						_sesSegmentVao = GL_INVALID_VALUE;
-		GLuint						_sesCircleVao  = GL_INVALID_VALUE;
-		GLuint						_sesConvexVao  = GL_INVALID_VALUE;
-
-		Context::GL::ProgramManager _pm
-			= Context::GL::ProgramManager( VTX::Util::Filesystem::getExecutableDir() / "shaders" );
-		Context::GL::Program * _sesProgramConcave;
-		Context::GL::Program * _sesProgramSegment;
-		Context::GL::Program * _sesProgramCircle;
-		Context::GL::Program * _sesProgramConvex;
-#endif
-		// void _createSes( Proxy::System & p_proxy );
 
 	  private:
 		/**

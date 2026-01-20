@@ -330,7 +330,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief settings().
 		 */
-		PassBuilder & settings( const std::initializer_list<Desc::Setting> );
+		PassBuilder & settings( const std::initializer_list<Desc::E_SETTING> );
 
 		/**
 		 * @brief program().

@@ -19,7 +19,7 @@ namespace VTX::App::Action::Representation
 		const auto & uid	= REG().get<System::UID>( p_system );
 
 		IndexRangeList ranges
-			= p_ranges.isEmpty() ? Core::Struct::IndexRangeList( { { 0, system.getResidueCount() } } ) : p_ranges;
+			= p_ranges.isEmpty() ? Core::Struct::IndexRangeList( { { 0, system.getAtomCount() } } ) : p_ranges;
 
 		reg.patch<System::Representation>(
 			p_system,

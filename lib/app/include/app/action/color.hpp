@@ -28,7 +28,7 @@ namespace VTX::App::Action::Color
 			auto &		 color	= reg.get<System::Color>( p_ent );
 
 			IndexRangeList ranges
-				= p_ranges.isEmpty() ? Core::Struct::IndexRangeList( { { 0, system.getResidueCount() } } ) : p_ranges;
+				= p_ranges.isEmpty() ? Core::Struct::IndexRangeList( { { 0, system.getAtomCount() } } ) : p_ranges;
 
 			reg.patch<System::Color>(
 				p_ent,

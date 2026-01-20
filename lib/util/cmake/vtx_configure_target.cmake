@@ -17,6 +17,9 @@ function(vtx_configure_target p_target)
 			$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:CXX>>:/O2 /Ob2 /Ot /Oi>
 		)
 	endif()
+	
+	set_property(TARGET ${p_target} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	
 	# Force _DEBUG preprocessor on all plateforms.
 	if(DEFINED CMAKE_BUILD_TYPE)
 		if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")

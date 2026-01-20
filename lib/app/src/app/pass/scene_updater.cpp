@@ -33,7 +33,7 @@ namespace VTX::App::Pass
 			}
 		}
 
-		RENDERER().setVoxels( mins, maxs );
+		// RENDERER().setVoxels( mins, maxs );
 	}
 
 	void SceneUpdater::_onUpdateAABB( ECS::Registry & p_r, ECS::Entity p_e )

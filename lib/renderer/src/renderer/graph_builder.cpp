@@ -171,7 +171,7 @@ namespace VTX::Renderer
 		return out( Desc::E_RESOURCE_TYPE::TEXTURE, p_texture );
 	}
 
-	PassBuilder & PassBuilder::settings( const std::initializer_list<Desc::Setting> p_settings )
+	PassBuilder & PassBuilder::settings( const std::initializer_list<Desc::E_SETTING> p_settings )
 	{
 		pass.settings.insert( pass.settings.end(), p_settings.begin(), p_settings.end() );
 		return *this;

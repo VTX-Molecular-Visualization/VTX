@@ -5,7 +5,7 @@ struct Model
 	mat4 matrixNormal;
 };
 
-layout( std140, binding = 13 ) readonly buffer UniformsModel
+layout( std430, binding = 13 ) readonly buffer UniformsModel
 {
    Model uniformsModel[];
 };

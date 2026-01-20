@@ -393,6 +393,17 @@ namespace VTX::Util::Math
 			return p_a.last <=> p_b.last;
 		}
 
+		std::vector<T> toStdVector() const
+		{
+			std::vector<T> vec;
+			vec.reserve( static_cast<size_t>( getCount() ) );
+			for ( T v = first; v < last; ++v )
+			{
+				vec.push_back( v );
+			}
+			return vec;
+		}
+
 		/**
 		 * @brief Iterator over the range values.
 		 */

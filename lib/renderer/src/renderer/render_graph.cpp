@@ -195,7 +195,7 @@ namespace VTX::Renderer
 
 		g.shaderBuffer(
 			"ColorLayout",
-			E_SHADER_BUFFER_KIND::STRUCTURED,
+			E_SHADER_BUFFER_KIND::PARAMETERS,
 			E_BUFFER_MUTABILITY::IMMUTABLE,
 			E_BUFFER_ACCESS::READ,
 			E_UPDATE_FREQUENCY::DYNAMIC,
@@ -364,7 +364,7 @@ namespace VTX::Renderer
 		// Passes.
 		// Geometric.
 		g.pass( "Geometric" )
-			.settings( { CLEAR_COLOR, CLEAR_DEPTH, ENABLE_DEPTH } )
+			.settings( { E_SETTING::CLEAR_COLOR, E_SETTING::CLEAR_DEPTH, E_SETTING::ENABLE_DEPTH } )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Spheres" )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Cylinders" )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Ribbons" )
@@ -405,7 +405,7 @@ namespace VTX::Renderer
 			// SSAO.
 			g.pass( "SSAO" )
 				.in( "Geometry" )
-				.in( "Noise" )
+				.in( "Noise", "NearestRepeat" )
 				.in( "Depth" )
 				.out( "SSAO" )
 				.program( "SSAO" )
@@ -416,7 +416,7 @@ namespace VTX::Renderer
 
 			// BlurX.
 			g.pass( "BlurX" )
-				.in( "SSAO", "NearestRepeat" )
+				.in( "SSAO" )
 				.in( "Depth" )
 				.out( "BlurX" )
 				.program( "BlurX" )
@@ -427,7 +427,7 @@ namespace VTX::Renderer
 				.endPass();
 			// BlurY.
 			g.pass( "BlurY" )
-				.in( "BlurX", "NearestRepeat" )
+				.in( "BlurX" )
 				.in( "Depth" )
 				.out( "BlurY" )
 				.program( "BlurY" )
@@ -442,7 +442,7 @@ namespace VTX::Renderer
 		g.pass( "Shading" )
 			.in( "Geometry" )
 			.in( "Color" )
-			.in( "BlurY", "NearestRepeat" )
+			.in( "BlurY" )
 			.out( "Shaded" )
 			.program( "Shading" )
 			.shaders( { "default.vert", "shading.frag" } )

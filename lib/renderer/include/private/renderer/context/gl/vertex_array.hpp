@@ -40,6 +40,10 @@ namespace VTX::Renderer::Context::GL
 
 		inline void bindElementBuffer( const Buffer & p_elementBuffer ) const noexcept
 		{
+			const GLuint id = p_elementBuffer.getId();
+
+			assert( id != 0 );
+			assert( glIsBuffer( id ) );
 			assert( glIsVertexArray( _id ) );
 
 			glVertexArrayElementBuffer( _id, p_elementBuffer.getId() );
@@ -63,13 +67,19 @@ namespace VTX::Renderer::Context::GL
 		inline void setVertexBuffer(
 			const GLuint   p_bindingIndex,
 			const Buffer & p_vertexBuffer,
-			const GLsizei  p_stride,
-			const GLintptr p_offset = 0
+			const GLintptr p_offset,
+			const GLsizei  p_stride
 		) const noexcept
 		{
+			const GLuint bid = p_vertexBuffer.getId();
+
+			assert( glIsVertexArray( _id ) );
+			assert( bid != 0 );
+			assert( glIsBuffer( bid ) );
+			assert( p_stride > 0 );
 			assert( glIsVertexArray( _id ) );
 
-			glVertexArrayVertexBuffer( _id, p_bindingIndex, p_vertexBuffer.getId(), p_offset, p_stride );
+			glVertexArrayVertexBuffer( _id, p_bindingIndex, bid, p_offset, p_stride );
 		}
 
 		inline void setAttributeFormat(
@@ -146,6 +156,13 @@ namespace VTX::Renderer::Context::GL
 		) const noexcept
 		{
 			glMultiDrawElements( p_mode, p_count, p_type, p_offset, p_primcount );
+		}
+
+		inline bool hasEbo() const noexcept
+		{
+			GLint ebo = 0;
+			glGetVertexArrayiv( _id, GL_ELEMENT_ARRAY_BUFFER_BINDING, &ebo );
+			return ebo != 0;
 		}
 
 	  private:
