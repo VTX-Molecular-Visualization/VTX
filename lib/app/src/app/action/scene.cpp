@@ -84,14 +84,14 @@ namespace VTX::App::Action::Scene
 		uid.residues	  = uidManager.getPickingPool().registerRange( data.getResidueCount() );
 		uid.atoms		  = uidManager.getPickingPool().registerRange( data.getAtomCount() );
 
-		// Color/representation: set size.
-		color.atoms.resize( data.getAtomCount() );
-		representation.atoms.resize( data.getAtomCount() );
+		// Visibillity: all visible.
+		visibility.atoms = Core::Struct::IndexRangeList( data.getAtomRange() );
 
-		// Visibillity: set default all visible.
-		ACTION().execute<Visibility::SetVisible<App::Scene::E_ITEM::SYSTEM>>( entity );
+		// Selection: nothing selected.
+		selection.atoms = {};
 
 		// Representation.
+		representation.atoms.resize( data.getAtomCount() );
 		auto entityRep = ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>();
 		ACTION().execute<Action::Representation::AddToSystem>( entity, entityRep );
 
@@ -100,10 +100,11 @@ namespace VTX::App::Action::Scene
 		RENDERER().setRepresentation( defaultRepPreset );
 
 		// Color scheme.
+		color.atoms.resize( data.getAtomCount() );
 		ACTION().execute<Color::Add<System::E_COLOR_SCHEME::ATOM>>( entity );
 
-		// Selection : nothing to do.
-		// Deleted: nothing to do.
+		// Deleted: nothing deleted.
+		deleted.atoms = {};
 
 		// Orient.
 		ACTION().execute<App::Action::Camera::Orient>( aabb );

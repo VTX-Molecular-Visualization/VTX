@@ -306,14 +306,14 @@ namespace VTX::Renderer
 
 		_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", p_uid );
 
-		uchar flag = 0;
-		flag |= 1 << E_ELEMENT_FLAGS::VISIBILITY;
-		flag |= 0 << E_ELEMENT_FLAGS::SELECTION;
-		std::vector<uchar> flags( p_data.getAtomCount(), flag );
-		_context.setPipelineBuffer<uchar>( "Atoms.Flags", flags );
+		uint8_t flag = 0;
+		flag |= 1 << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
+		flag |= 0 << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
+		flags = std::vector<uint8_t>( p_data.getAtomCount(), flag );
+		_context.setPipelineBuffer<uint8_t>( "Atoms.Flags", flags );
 
-		std::vector<ushort> models( p_data.getAtomCount(), 0 );
-		_context.setPipelineBuffer<ushort>( "Atoms.Models", models );
+		std::vector<uint16_t> models( p_data.getAtomCount(), 0 );
+		_context.setPipelineBuffer<uint16_t>( "Atoms.Models", models );
 
 		_context.setPipelineBuffer<Index>( "Bonds", p_data.bondPairAtomIndexes );
 
@@ -322,10 +322,10 @@ namespace VTX::Renderer
 		_refreshDataModels();
 
 		_geometries.spheres.drawRanges.firsts = { 0 };
-		_geometries.spheres.drawRanges.counts = { uint( p_data.getAtomCount() ) };
+		_geometries.spheres.drawRanges.counts = { uint32_t( p_data.getAtomCount() ) };
 
 		_geometries.cylinders.drawRanges.offsets = { 0 };
-		_geometries.cylinders.drawRanges.counts	 = { uint( p_data.bondPairAtomIndexes.size() ) };
+		_geometries.cylinders.drawRanges.counts	 = { uint32_t( p_data.bondPairAtomIndexes.size() ) };
 	}
 
 #pragma endregion

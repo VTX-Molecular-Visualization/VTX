@@ -3,7 +3,9 @@
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
+#include "app/system/selection.hpp"
 #include "app/system/uid.hpp"
+#include "app/system/visibility.hpp"
 #include <renderer/renderer.hpp>
 #include <util/math/transform.hpp>
 
@@ -14,10 +16,38 @@ namespace VTX::App::Pass
 	{
 		auto & reg = REG();
 
+		reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateVisibility>( this );
+		reg.on_update<System::Selection>().connect<&SystemUpdater::_onUpdateSelection>( this );
 		reg.on_update<System::Representation>().connect<&SystemUpdater::_onUpdateRepresentation>( this );
 		reg.on_update<System::Color>().connect<&SystemUpdater::_onUpdateColor>( this );
 
 		HUB().connect<Events::SystemLoad, &SystemUpdater::_onSystemLoaded>( this );
+	}
+
+	void SystemUpdater::_onUpdateVisibility( ECS::Registry & p_r, ECS::Entity p_e )
+	{
+		const auto & [ visibility, uid, data ] = p_r.get<System::Visibility, System::UID, Core::Struct::System>( p_e );
+
+		std::vector<std::byte> atomVisibility( data.getAtomCount(), std::byte { 0 } );
+		for ( const Index i : visibility.atoms )
+		{
+			atomVisibility[ i ] = std::byte { 1 };
+		}
+
+		RENDERER().setSystemVisibility( uid.system, atomVisibility );
+	}
+
+	void SystemUpdater::_onUpdateSelection( ECS::Registry & p_r, ECS::Entity p_e )
+	{
+		const auto & [ selection, uid, data ] = p_r.get<System::Selection, System::UID, Core::Struct::System>( p_e );
+
+		std::vector<std::byte> atomSelection( data.getAtomCount(), std::byte { 0 } );
+		for ( const Index i : selection.atoms )
+		{
+			atomSelection[ i ] = std::byte { 1 };
+		}
+
+		RENDERER().setSystemSelection( uid.system, atomSelection );
 	}
 
 	void SystemUpdater::_onUpdateRepresentation( ECS::Registry & p_r, ECS::Entity p_e )

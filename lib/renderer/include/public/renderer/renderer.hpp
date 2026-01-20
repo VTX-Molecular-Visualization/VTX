@@ -90,13 +90,35 @@ namespace VTX::Renderer
 		void setSystemColors( const RootUID, std::span<const Color::ColorIndex> p_b )
 		{
 			_context.setPipelineBuffer<Color::ColorIndex>( "Atoms.Colors", p_b );
+			setNeedUpdate( true );
 		}
 		void setSystemRepresentation( const RootUID, std::span<const RepresentationIndex> p_b )
 		{
 			_context.setPipelineBuffer<RepresentationIndex>( "Atoms.Representations", p_b );
+			setNeedUpdate( true );
 		}
-		void setSystemSelection( const RootUID, std::span<const bool> ) {}
-		void setSystemVisibility( const RootUID, std::span<const bool> ) {}
+		void setSystemSelection( RootUID, std::span<const std::byte> p_selection )
+		{
+			assert( p_selection.size() == flags.size() );
+
+			const uint8_t shift = toUnderlying( E_ELEMENT_FLAGS::SELECTION );
+			const uint8_t mask	= uint8_t( 1u ) << shift;
+
+			for ( size_t i = 0; i < flags.size(); ++i )
+			{
+				const uint8_t bit = ( std::to_integer<uint8_t>( p_selection[ i ] ) & 1u ) << shift;
+				flags[ i ]		  = ( flags[ i ] & ~mask ) | bit;
+			}
+
+			_context.setPipelineBuffer<uint8_t>( "Atoms.Flags", flags );
+			setNeedUpdate( true );
+		}
+
+		void setSystemVisibility( const RootUID, std::span<const std::byte> p_visibility )
+		{
+			assert( p_visibility.size() == flags.size() );
+		}
+		std::vector<uchar> flags;
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
@@ -198,7 +220,7 @@ namespace VTX::Renderer
 
 		void _refreshDataModels();
 
-		enum E_ELEMENT_FLAGS
+		enum struct E_ELEMENT_FLAGS : uint8_t
 		{
 			VISIBILITY = 0,
 			SELECTION  = 1

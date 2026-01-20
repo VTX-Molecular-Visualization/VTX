@@ -25,6 +25,8 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Update renderer when data changed.
 		 */
+		void _onUpdateVisibility( ECS::Registry &, ECS::Entity );
+		void _onUpdateSelection( ECS::Registry &, ECS::Entity );
 		void _onUpdateRepresentation( ECS::Registry &, ECS::Entity );
 		void _onUpdateColor( ECS::Registry &, ECS::Entity );
 

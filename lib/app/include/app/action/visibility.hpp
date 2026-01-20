@@ -25,18 +25,21 @@ namespace VTX::App::Action::Visibility
 			using namespace Util::Math;
 			using namespace Core::Struct;
 
-			const auto & system		= REG().get<Core::Struct::System>( p_ent );
-			auto &		 visibility = REG().get<System::Visibility>( p_ent );
+			auto &		 reg		= REG();
+			const auto & system		= reg.get<Core::Struct::System>( p_ent );
+			auto &		 visibility = reg.get<System::Visibility>( p_ent );
+
+			Core::Struct::IndexRangeList visibleAtoms = visibility.atoms;
 
 			if constexpr ( ITEM == App::Scene::E_ITEM::SYSTEM )
 			{
 				if ( p_visible )
 				{
-					visibility.atoms = IndexRangeList( system.getAtomRange() );
+					visibleAtoms = IndexRangeList( system.getAtomRange() );
 				}
 				else
 				{
-					visibility.atoms.clear();
+					visibleAtoms.clear();
 				}
 			}
 			else if constexpr ( ITEM == App::Scene::E_ITEM::CHAIN )
@@ -45,14 +48,14 @@ namespace VTX::App::Action::Visibility
 				{
 					for ( const auto & index : p_ranges )
 					{
-						visibility.atoms.addRange( system.getChainAtomRange( index ) );
+						visibleAtoms.addRange( system.getChainAtomRange( index ) );
 					}
 				}
 				else
 				{
 					for ( const auto & index : p_ranges )
 					{
-						visibility.atoms.removeRange( system.getChainAtomRange( index ) );
+						visibleAtoms.removeRange( system.getChainAtomRange( index ) );
 					}
 				}
 			}
@@ -62,14 +65,14 @@ namespace VTX::App::Action::Visibility
 				{
 					for ( const auto & index : p_ranges )
 					{
-						visibility.atoms.addRange( system.getResidueAtomRange( index ) );
+						visibleAtoms.addRange( system.getResidueAtomRange( index ) );
 					}
 				}
 				else
 				{
 					for ( const auto & index : p_ranges )
 					{
-						visibility.atoms.removeRange( system.getResidueAtomRange( index ) );
+						visibleAtoms.removeRange( system.getResidueAtomRange( index ) );
 					}
 				}
 			}
@@ -79,14 +82,14 @@ namespace VTX::App::Action::Visibility
 				{
 					for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
 					{
-						visibility.atoms.addRange( *it );
+						visibleAtoms.addRange( *it );
 					}
 				}
 				else
 				{
 					for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
 					{
-						visibility.atoms.removeRange( *it );
+						visibleAtoms.removeRange( *it );
 					}
 				}
 			}
@@ -94,6 +97,10 @@ namespace VTX::App::Action::Visibility
 			{
 				static_assert( always_false_v<ITEM>, "Unhandled E_ITEM type in SetVisible action." );
 			}
+
+			reg.patch<System::Visibility>(
+				p_ent, [ visibleAtoms ]( System::Visibility & p_visibility ) { p_visibility.atoms = visibleAtoms; }
+			);
 		}
 
 		void execute( const ECS::Entity p_ent, const Core::Struct::IndexRange & p_range, const bool p_visible = true )
