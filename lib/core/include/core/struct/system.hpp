@@ -38,7 +38,7 @@ namespace VTX::Core::Struct
 		/**
 		 * @brief Chains indexes by category.
 		 */
-		std::array<std::vector<Index>, uint( ChemDB::Category::TYPE::COUNT )> categories;
+		std::array<std::vector<Index>, static_cast<uint>( ChemDB::Category::TYPE::COUNT )> categories;
 		/**
 		 * @brief Chain names.
 		 */
@@ -208,8 +208,7 @@ namespace VTX::Core::Struct
 			return bondCount;
 		}
 
-		inline IndexRange
-			getChainBondRange( const Index p_chainIndex ) const
+		inline IndexRange getChainBondRange( const Index p_chainIndex ) const
 		{
 			const Index firstBond = getChainFirstBond( p_chainIndex );
 			const Index count	  = getChainBondCount( p_chainIndex );
