@@ -316,11 +316,11 @@ namespace VTX::Renderer
 
 		_refreshDataModels();
 
-		//_geometries.spheres.drawRanges.firsts = { 0 };
-		//_geometries.spheres.drawRanges.counts = { uint( p_data.atomNames.size() ) };
+		_geometries.spheres.drawRanges.firsts = { 0 };
+		_geometries.spheres.drawRanges.counts = { uint( p_data.atomNames.size() ) };
 
-		//_geometries.cylinders.drawRanges.offsets = { 0 };
-		//_geometries.cylinders.drawRanges.counts	 = { uint( p_data.bondPairAtomIndexes.size() ) };
+		_geometries.cylinders.drawRanges.offsets = { 0 };
+		_geometries.cylinders.drawRanges.counts	 = { uint( p_data.bondPairAtomIndexes.size() ) };
 	}
 
 #pragma endregion

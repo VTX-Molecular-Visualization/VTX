@@ -5,7 +5,7 @@
 
 namespace VTX::Renderer::Context::GL::Debug
 {
-	void APIENTRY _debugMessageCallback(
+	inline void APIENTRY _debugMessageCallback(
 		const GLenum   p_source,
 		const GLenum   p_type,
 		const GLuint   p_id,
@@ -64,6 +64,16 @@ namespace VTX::Renderer::Context::GL::Debug
 		default: break;
 		}
 	}
+
+	inline void dumpGLError() noexcept
+	{
+		GLenum err;
+		while ( ( err = glGetError() ) != GL_NO_ERROR )
+		{
+			fprintf( stderr, "[GL ERROR] 0x%X\n", err );
+			assert( false );
+		}
+	};
 } // namespace VTX::Renderer::Context::GL::Debug
 
 #endif

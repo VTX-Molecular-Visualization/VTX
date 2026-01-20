@@ -238,6 +238,7 @@ namespace VTX::Renderer::Context::Backend
 		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
 
 		// Quad.
+
 		_createQuad();
 
 		glViewport( 0, 0, int32_t( p_width ), int32_t( p_height ) );
@@ -245,9 +246,11 @@ namespace VTX::Renderer::Context::Backend
 
 		// TODO: set from graph.
 		// glEnable( GL_CLIP_DISTANCE0 );
+
 		glEnable( GL_LINE_SMOOTH );
-		glLineWidth( 2.f );
+		glLineWidth( 1.f );
 		glDepthFunc( GL_LESS );
+
 		glClearColor( 0.f, 0.f, 0.f, 1.0f );
 
 #if _DEBUG
@@ -411,6 +414,8 @@ namespace VTX::Renderer::Context::Backend
 			PayloadEndPass pEndPass { flags };
 			p_commands.push<E_COMMAND::END_PASS>( pEndPass );
 		}
+
+		GL::Debug::dumpGLError();
 
 		// GLOBAL BINDINGS: done once at startup.
 		for ( auto & bufferBinding : _globalShaderBuffers )
@@ -934,7 +939,7 @@ namespace VTX::Renderer::Context::Backend
 			for ( uint8_t col = 0; col < ga.columns; ++col )
 			{
 				const GLuint bindingIndex = location;
-				vao.setVertexBuffer( bindingIndex, vbo, stride, 0 );
+				vao.setVertexBuffer( bindingIndex, vbo, 0, stride );
 				++location;
 			}
 		}
@@ -997,12 +1002,12 @@ namespace VTX::Renderer::Context::Backend
 		GLenum		 freq		= _toGL( bufferDesc.frequency );
 		if ( bufferDesc.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
 		{
-			const Handle h = _getOrCreateVertexBuffer( p_key );
+			const Handle h = _cacheVertexBuffers.at( p_key );
 			_vertexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), freq );
 		}
 		else
 		{
-			const Handle h = _getOrCreateIndexBuffer( p_key );
+			const Handle h = _cacheIndexBuffers.at( p_key );
 			_indexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), freq );
 		}
 	}

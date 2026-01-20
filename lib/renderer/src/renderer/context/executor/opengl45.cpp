@@ -1,4 +1,5 @@
 #include "renderer/context/executor/opengl45.hpp"
+#include "renderer/context/gl/debug.hpp"
 
 namespace
 {
@@ -34,6 +35,8 @@ namespace VTX::Renderer::Context::Executor
 
 		for ( const Command & command : p_commandBuffer.commands )
 		{
+			GL::Debug::dumpGLError();
+
 			switch ( command.type )
 			{
 			case E_COMMAND::BEGIN_PASS:
@@ -160,6 +163,8 @@ namespace VTX::Renderer::Context::Executor
 				{
 					assert( ranges->counts.size() == ranges->firsts.size() );
 
+					const GLuint vaoId = _backend.vertexArray( p.pipeline ).getId();
+
 					_backend.vertexArray( p.pipeline )
 						.multiDrawArray(
 							_toGL( p.primitive ),
@@ -183,6 +188,7 @@ namespace VTX::Renderer::Context::Executor
 				if ( ranges && ranges->counts.size() > 0 )
 				{
 					assert( ranges->counts.size() == ranges->offsets.size() );
+					assert( _backend.vertexArray( p.pipeline ).hasEbo() );
 
 					_backend.vertexArray( p.pipeline )
 						.multiDrawElement(
