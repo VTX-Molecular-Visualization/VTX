@@ -21,6 +21,7 @@ class VTXToolExampleRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_app/1.0")
         self.requires("vtx_ui_qt/1.0")
+        self.requires("vtx_python_binding/1.0")
         self.requires("catch2/3.11.0")
         
     def config_options(self):
@@ -32,6 +33,9 @@ class VTXToolExampleRecipe(ConanFile):
          
     def generate(self):
         tc = CMakeToolchain(self)
+        tc.cache_variables["CPYTHON_VERSION_MAJOR"] = self.dependencies["vtx_python_binding"].conf_info.get("user.python_binding:cpython_version_major")
+        tc.cache_variables["CPYTHON_VERSION_MINOR"] = self.dependencies["vtx_python_binding"].conf_info.get("user.python_binding:cpython_version_minor")
+        tc.cache_variables["CPYTHON_VERSION_PATCH"] = self.dependencies["vtx_python_binding"].conf_info.get("user.python_binding:cpython_version_patch")
         tc.generate()
 
     def build(self):

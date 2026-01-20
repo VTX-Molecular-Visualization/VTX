@@ -20,7 +20,7 @@ class VTXToolMdprepRecipe(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
     
-    generators = "CMakeDeps", "CMakeToolchain"
+    generators = "CMakeDeps"
     
     exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "test/*", "data/*", "asset/*"
 
@@ -31,11 +31,17 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_io/1.0")
+        self.requires("vtx_python_binding/1.0")
         self.requires("re2/20240702")
         self.requires("gromacs/2026.0")
         self.requires("catch2/3.11.0") 
 
     def generate(self):
+        tc = CMakeToolchain(self)
+        tc.cache_variables["CPYTHON_VERSION_MAJOR"] = self.dependencies["vtx_python_binding"].conf_info.get("user.python_binding:cpython_version_major")
+        tc.cache_variables["CPYTHON_VERSION_MINOR"] = self.dependencies["vtx_python_binding"].conf_info.get("user.python_binding:cpython_version_minor")
+        tc.cache_variables["CPYTHON_VERSION_PATCH"] = self.dependencies["vtx_python_binding"].conf_info.get("user.python_binding:cpython_version_patch")
+        tc.generate()
         copy(self, "*.dll", self.dependencies["vtx_ui_qt"].cpp_info.bindir, os.path.join(self.build_folder, self.cpp.build.libdirs[0]))
         
     def config_options(self):

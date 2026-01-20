@@ -58,10 +58,14 @@ namespace VTX::PythonBinding
 				".exe" ).wstring();
 			std::wstring pythonExecDir = p_pythonHomePath;
 #else
-			std::wstring pyScriptDir	  = ( VTX::FilePath( p_pythonHomePath ) / "lib" / "python3.12" ).wstring();
+			std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "lib"
+										 / "python" CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR )
+										   .wstring();
 			std::wstring platlibdir		  = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
-			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin" / "python3.12" ).wstring();
-			std::wstring pythonExecDir	  = ( VTX::FilePath( p_pythonHomePath ) / "bin" ).wstring();
+			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin"
+											  / "python" CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR )
+												.wstring();
+			std::wstring pythonExecDir = ( VTX::FilePath( p_pythonHomePath ) / "bin" ).wstring();
 
 #endif
 			PyConfig_SetString( &config, &config.platlibdir, platlibdir.c_str() );
@@ -71,13 +75,14 @@ namespace VTX::PythonBinding
 
 			PyConfig_SetString( &config, &config.exec_prefix, p_pythonHomePath.c_str() );
 
-			VTX::FilePath python312Path = VTX::FilePath( p_pythonHomePath ) / "python312.zip";
-			std::wstring  python312Str( python312Path.wstring() );
+			VTX::FilePath pythonArchivePath
+				= VTX::FilePath( p_pythonHomePath ) / "python" CPYTHON_VERSION_MAJOR CPYTHON_VERSION_MINOR ".zip";
+			std::wstring pythonArchivePathStr( pythonArchivePath.wstring() );
 
 			std::string execDirPath_string = VTX::Util::Filesystem::getExecutableDir().string();
 
 			PyWideStringList_Append( &config.module_search_paths, pyScriptDir.c_str() );
-			PyWideStringList_Append( &config.module_search_paths, python312Str.c_str() );
+			PyWideStringList_Append( &config.module_search_paths, pythonArchivePathStr.c_str() );
 #ifndef _WIN32
 			std::wstring dynloadDir = ( VTX::FilePath( pyScriptDir ) / "lib-dynload" ).wstring();
 			PyWideStringList_Append( &config.module_search_paths, dynloadDir.c_str() );

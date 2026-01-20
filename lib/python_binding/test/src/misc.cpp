@@ -28,7 +28,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - Python version", "[python][binding][version]" )
 	CHECK( f.interpretor.runCommand( "import sys" ).empty() );
 	std::string v = f.interpretor.runCommand( "sys.version" );
 
-	bool rightVersion = v.find( "3.12.7" ) != std::string::npos;
+	bool rightVersion
+		= v.find( CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR "." CPYTHON_VERSION_PATCH ) != std::string::npos;
 	if ( not rightVersion )
 	{
 		VTX::VTX_INFO( "Python version used : <{}>", v );

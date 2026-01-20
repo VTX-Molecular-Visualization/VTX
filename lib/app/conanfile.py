@@ -1,6 +1,8 @@
 import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
+from pathlib import Path
+
 
 class VTXAppRecipe(ConanFile):
     name = "vtx_app"
@@ -33,6 +35,9 @@ class VTXAppRecipe(ConanFile):
          
     def generate(self):
         tc = CMakeToolchain(self)
+        tc.cache_variables["CPYTHON_VERSION_MAJOR"] = self.dependencies["vtx_python_binding"].conf_info.get("user.python_binding:cpython_version_major")
+        tc.cache_variables["CPYTHON_VERSION_MINOR"] = self.dependencies["vtx_python_binding"].conf_info.get("user.python_binding:cpython_version_minor")
+        tc.cache_variables["CPYTHON_VERSION_PATCH"] = self.dependencies["vtx_python_binding"].conf_info.get("user.python_binding:cpython_version_patch")
         versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
         tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
         tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor
