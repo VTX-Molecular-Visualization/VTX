@@ -405,7 +405,7 @@ namespace VTX::Renderer
 			// SSAO.
 			g.pass( "SSAO" )
 				.in( "Geometry" )
-				.in( "Noise" )
+				.in( "Noise", "NearestRepeat" )
 				.in( "Depth" )
 				.out( "SSAO" )
 				.program( "SSAO" )
@@ -416,7 +416,7 @@ namespace VTX::Renderer
 
 			// BlurX.
 			g.pass( "BlurX" )
-				.in( "SSAO", "NearestRepeat" )
+				.in( "SSAO" )
 				.in( "Depth" )
 				.out( "BlurX" )
 				.program( "BlurX" )
@@ -427,7 +427,7 @@ namespace VTX::Renderer
 				.endPass();
 			// BlurY.
 			g.pass( "BlurY" )
-				.in( "BlurX", "NearestRepeat" )
+				.in( "BlurX" )
 				.in( "Depth" )
 				.out( "BlurY" )
 				.program( "BlurY" )
@@ -442,7 +442,7 @@ namespace VTX::Renderer
 		g.pass( "Shading" )
 			.in( "Geometry" )
 			.in( "Color" )
-			.in( "BlurY", "NearestRepeat" )
+			.in( "BlurY" )
 			.out( "Shaded" )
 			.program( "Shading" )
 			.shaders( { "default.vert", "shading.frag" } )

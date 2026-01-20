@@ -174,11 +174,16 @@ namespace VTX::Renderer
 			bufferSSAO.close();
 			_context.setShaderBuffer( "SSAO", bufferSSAO );
 
-			BinaryBuffer140 bufferBlur;
-			bufferBlur.write( p_config.blurSize );
-			bufferBlur.close();
-			_context.setShaderBuffer( "BlurX", bufferBlur );
-			_context.setShaderBuffer( "BlurY", bufferBlur );
+			BinaryBuffer140 bufferBlurX;
+			bufferBlurX.write( Vec2i( 1, 0 ) );
+			bufferBlurX.write( p_config.blurSize );
+			bufferBlurX.close();
+			_context.setShaderBuffer( "BlurX", bufferBlurX );
+			BinaryBuffer140 bufferBlurY;
+			bufferBlurY.write( Vec2i( 0, 1 ) );
+			bufferBlurY.write( p_config.blurSize );
+			bufferBlurY.close();
+			_context.setShaderBuffer( "BlurY", bufferBlurY );
 		}
 		if ( p_config.activeOutline )
 		{
