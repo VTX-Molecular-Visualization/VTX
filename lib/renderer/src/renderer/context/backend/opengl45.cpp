@@ -652,8 +652,11 @@ namespace VTX::Renderer::Context::Backend
 				{
 					const uint32_t	count = value.arrayCount ? *value.arrayCount : 1u;
 					const size_t	elem  = BB::rawElementSizeBytes( value.type );
-					const SpanBytes bytes { reinterpret_cast<const std::byte *>( value.data.data() ), elem * count };
-					p_buf.write( value.type, bytes );
+					const SpanBytes bytes { reinterpret_cast<const std::byte *>( value.data.data() ), elem };
+					for ( uint32_t i = 0; i < count; ++i )
+					{
+						p_buf.write( value.type, bytes );
+					}
 				}
 
 				p_buf.close();
