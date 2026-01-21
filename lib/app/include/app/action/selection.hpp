@@ -22,7 +22,8 @@ namespace VTX::App::Action::Selection
 	struct SetSelected
 	{
 		void execute(
-			const ECS::Entity					 p_ent,
+			const ECS::Entity p_ent,
+
 			const Core::Struct::IndexRangeList & p_ranges	= {},
 			const bool							 p_selected = true
 		)
@@ -161,7 +162,7 @@ namespace VTX::App::Action::Selection
 			SYSTEM
 		};
 
-		void execute( const Vec2i & p_mousePos );
+		void execute( const Vec2i &, const E_GRANULARITY = E_GRANULARITY::ATOM, const bool = false );
 	};
 } // namespace VTX::App::Action::Selection
 

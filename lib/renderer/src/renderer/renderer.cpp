@@ -366,6 +366,18 @@ namespace VTX::Renderer
 		*/
 	}
 
+	Vec2i Renderer::getPickedIds( const size_t p_x, const size_t p_y ) const
+	{
+		std::vector<std::byte> data = _context.getTextureData( "Picking", p_x, _height - p_y );
+
+		assert( data.size() == sizeof( Vec2i ) );
+
+		Vec2i v;
+		std::memcpy( &v, data.data(), sizeof( Vec2i ) );
+
+		return v;
+	}
+
 	const StructInfos & Renderer::getInfos( const bool p_refresh )
 	{
 		if ( not p_refresh )

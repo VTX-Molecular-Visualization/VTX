@@ -136,18 +136,7 @@ namespace VTX::Renderer
 		 * @brief Get the id of the the data stored in the given pixel.
 		 * @return ( AtomId, 0 ) for an atom, ( AtomId1, AtomId2 ) for a bond.
 		 */
-		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
-		{
-			std::vector<std::byte> data = _context.getTextureData( "Picking", p_x, _height - p_y );
-
-			// To Vec2i.
-			assert( data.size() == sizeof( Vec2i ) );
-
-			Vec2i v;
-			std::memcpy( &v, data.data(), sizeof( Vec2i ) );
-
-			return v;
-		}
+		Vec2i getPickedIds( const size_t, const size_t ) const;
 
 		/**
 		 * @brief Ask for a render update.

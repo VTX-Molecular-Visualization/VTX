@@ -26,8 +26,19 @@ namespace VTX::UI::QT::Window
 		void dragged( const Qt::MouseButton );
 
 	  protected:
+		inline void keyPressEvent( QKeyEvent * const p_event ) override
+		{
+			App::INPUT().handleKeyboardEvent( Helper::qKeyEventToKeyEvent( *p_event ) );
+		}
+
+		inline void keyReleaseEvent( QKeyEvent * const p_event ) override
+		{
+			App::INPUT().handleKeyboardEvent( Helper::qKeyEventToKeyEvent( *p_event ) );
+		}
+
 		void mousePressEvent( QMouseEvent * p_event ) override
 		{
+			App::INPUT().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
 			_pressedButton = p_event->button();
 			_pressPos	   = p_event->position();
 			_dragging	   = false;
@@ -35,6 +46,7 @@ namespace VTX::UI::QT::Window
 
 		void mouseMoveEvent( QMouseEvent * p_event ) override
 		{
+			App::INPUT().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
 			if ( _pressedButton == Qt::NoButton )
 			{
 				return;
@@ -50,8 +62,11 @@ namespace VTX::UI::QT::Window
 
 		void mouseReleaseEvent( QMouseEvent * p_event ) override
 		{
+			App::INPUT().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
 			if ( p_event->button() != _pressedButton )
+			{
 				return;
+			}
 
 			if ( not _dragging )
 			{
@@ -60,6 +75,16 @@ namespace VTX::UI::QT::Window
 
 			_pressedButton = Qt::NoButton;
 			_dragging	   = false;
+		}
+
+		inline void mouseDoubleClickEvent( QMouseEvent * const p_event ) override
+		{
+			App::INPUT().handleMouseEvent( Helper::qMouseEventToMouseEvent( *p_event ) );
+		}
+
+		inline void wheelEvent( QWheelEvent * const p_event ) override
+		{
+			App::INPUT().handleMouseWheelEvent( Helper::qWheelEventToWheelEvent( *p_event ) );
 		}
 
 	  private:

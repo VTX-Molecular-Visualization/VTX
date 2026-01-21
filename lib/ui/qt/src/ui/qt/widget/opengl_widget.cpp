@@ -59,10 +59,7 @@ namespace VTX::UI::QT::Widget
 			_window,
 			&Window::Renderer::clicked,
 			[]( const Qt::MouseButton, const QPoint p_pos )
-			{
-				VTX_DEBUG( "OpenGLWidget picked at: {} {}", p_pos.x(), p_pos.y() );
-				App::ACTION().execute<App::Action::Selection::Pick>( Vec2i( p_pos.x(), p_pos.y() ) );
-			}
+			{ App::ACTION().execute<App::Action::Selection::Pick>( Vec2i( p_pos.x(), p_pos.y() ) ); }
 		);
 
 		// Connect signals.

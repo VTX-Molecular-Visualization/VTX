@@ -37,4 +37,32 @@ namespace VTX::App::Helper::Scene
 		return std::nullopt;
 	}
 
+	std::optional<ECS::Entity> findSystemByAtomUID( const PickingUID p_uid )
+	{
+		auto view = REG().view<System::UID>();
+
+		for ( auto [ entity, uid ] : view.each() )
+		{
+			if ( uid.containsAtomUID( p_uid ) )
+			{
+				return entity;
+			}
+		}
+
+		return std::nullopt;
+	}
+
+	std::optional<ECS::Entity> findSystemByResidueUID( const PickingUID p_uid )
+	{
+		auto view = REG().view<System::UID>();
+		for ( auto [ entity, uid ] : view.each() )
+		{
+			if ( uid.containsResidueUID( p_uid ) )
+			{
+				return entity;
+			}
+		}
+		return std::nullopt;
+	}
+
 } // namespace VTX::App::Helper::Scene
