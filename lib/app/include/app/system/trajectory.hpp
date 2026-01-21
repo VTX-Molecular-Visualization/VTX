@@ -39,8 +39,9 @@ namespace VTX::App::System
 	{
 		struct _interface
 		{
-			virtual ~_interface()																		 = default;
-			virtual void fillFrameIfAvailable( const uint & p_index, std::span<Vec3f> & p_out ) noexcept = 0;
+			virtual ~_interface()																   = default;
+			virtual void fillFrameIfAvailable( const uint &, std::span<Vec3f> &, bool & ) noexcept = 0;
+			virtual void set( const TrajectoryPlayMode & p_mode ) noexcept						   = 0;
 		};
 		struct _dummy
 		{
@@ -52,11 +53,22 @@ namespace VTX::App::System
 
 		  public:
 			_wrapper( T && p_arg ) : _obj( std::forward( p_arg ) ) {}
-			virtual void fillFrameIfAvailable( const uint & p_index, std::span<Vec3f> & p_out ) noexcept override
+			virtual void fillFrameIfAvailable(
+				const uint &	   p_requestedIndex,
+				std::span<Vec3f> & p_out,
+				bool &			   p_filled
+			) noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
 				{
-					_obj.fillFrameIfAvailable( p_index, p_out );
+					_obj.fillFrameIfAvailable( p_requestedIndex, p_out, p_filled );
+				}
+			}
+			virtual void set( const TrajectoryPlayMode & p_mode ) noexcept
+			{
+				if constexpr ( not std::same_as<T, _dummy> )
+				{
+					_obj.set( p_mode );
 				}
 			}
 		};
@@ -71,7 +83,16 @@ namespace VTX::App::System
 		{
 		}
 
-		void fillFrameIfAvailable( const uint & p_index, std::span<Vec3f> & p_out ) noexcept {}
+		inline void set( const TrajectoryPlayMode & p_mode ) noexcept { _ptr->set( p_mode ); }
+
+		inline void fillFrameIfAvailable(
+			const uint &	   p_requestedIndex,
+			std::span<Vec3f> & p_out,
+			bool &			   p_filled
+		) noexcept
+		{
+			_ptr->fillFrameIfAvailable( p_requestedIndex, p_out, p_filled );
+		}
 	};
 
 	/**
