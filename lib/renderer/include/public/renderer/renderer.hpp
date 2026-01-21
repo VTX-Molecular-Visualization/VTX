@@ -138,7 +138,15 @@ namespace VTX::Renderer
 		 */
 		inline Vec2i getPickedIds( const size_t p_x, const size_t p_y ) const
 		{
-			// return _context.getTextureData<Vec2i>( "Geometric", p_x, _height - p_y, E_CHAN_OUT::COLOR_2 );
+			std::vector<std::byte> data = _context.getTextureData( "Geometric", p_x, _height - p_y );
+
+			// To Vec2i.
+			assert( data.size() == sizeof( Vec2i ) );
+
+			Vec2i v;
+			std::memcpy( &v, data.data(), sizeof( Vec2i ) );
+
+			return v;
 		}
 
 		/**

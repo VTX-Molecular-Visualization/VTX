@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_WIDGET_OPENGL_WIDGET__
 
 #include "ui/qt/widget/base_widget.hpp"
-#include "ui/qt/window/event_catch_window.hpp"
+#include "ui/qt/window/renderer.hpp"
 #include <QOpenGLContext>
 #include <QPointer>
 
@@ -32,10 +32,10 @@ namespace VTX::UI::QT::Widget
 		void onResizeFinished();
 
 	  private:
-		QPointer<QOpenGLContext>		   _context;
-		QPointer<Window::EventCatchWindow> _window;
-		QPointer<QWidget>				   _container;
-		QTimer							   _resizeTimer;
+		QPointer<QOpenGLContext>   _context;
+		QPointer<Window::Renderer> _window;
+		QPointer<QWidget>		   _container;
+		QTimer					   _resizeTimer;
 	};
 } // namespace VTX::UI::QT::Widget
 

@@ -35,7 +35,7 @@ namespace VTX::UI::QT::Widget
 		}
 
 		// Create window.
-		_window = new Window::EventCatchWindow();
+		_window = new Window::Renderer();
 		_window->setFormat( format );
 		_window->setSurfaceType( QSurface::OpenGLSurface );
 		_window->setFlags( Qt::FramelessWindowHint );
@@ -52,6 +52,14 @@ namespace VTX::UI::QT::Widget
 		_container->setFocusPolicy( Qt::StrongFocus );
 		this->setFocusPolicy( Qt::NoFocus );
 		this->setFocusProxy( _container );
+
+		// Connect window signals.
+		connect(
+			_window,
+			&Window::Renderer::clicked,
+			[]( const Qt::MouseButton, const QPoint p_pos )
+			{ VTX_DEBUG( "OpenGLWidget picked at: {} {}", p_pos.x(), p_pos.y() ); }
+		);
 
 		// Connect signals.
 		App::HUB().connect<App::Events::PostRender, &OpenGLWidget::render>( this );
