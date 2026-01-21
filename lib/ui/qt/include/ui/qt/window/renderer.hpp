@@ -22,8 +22,8 @@ namespace VTX::UI::QT::Window
 		using QWindow::QWindow;
 
 	  signals:
-		void clicked( Qt::MouseButton, QPoint );
-		void dragged( Qt::MouseButton );
+		void clicked( const Qt::MouseButton, const QPoint );
+		void dragged( const Qt::MouseButton );
 
 	  protected:
 		void mousePressEvent( QMouseEvent * p_event ) override

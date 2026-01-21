@@ -22,6 +22,6 @@ namespace VTX::App::Action::Selection
 	{
 		// Get renderer picking info at mouse position.
 		Vec2i picked = RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y );
-		VTX_DEBUG( "Picked: {} {}", picked.x, picked.y );
+		VTX_DEBUG( "Renderer picked: {} {}", picked.x, picked.y );
 	}
 } // namespace VTX::App::Action::Selection

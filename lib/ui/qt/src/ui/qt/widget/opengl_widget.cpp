@@ -4,6 +4,7 @@
 #include "ui/qt/widget/main_window.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
+#include <app/action/selection.hpp>
 #include <app/events.hpp>
 #include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
@@ -58,7 +59,10 @@ namespace VTX::UI::QT::Widget
 			_window,
 			&Window::Renderer::clicked,
 			[]( const Qt::MouseButton, const QPoint p_pos )
-			{ VTX_DEBUG( "OpenGLWidget picked at: {} {}", p_pos.x(), p_pos.y() ); }
+			{
+				VTX_DEBUG( "OpenGLWidget picked at: {} {}", p_pos.x(), p_pos.y() );
+				App::ACTION().execute<App::Action::Selection::Pick>( Vec2i( p_pos.x(), p_pos.y() ) );
+			}
 		);
 
 		// Connect signals.

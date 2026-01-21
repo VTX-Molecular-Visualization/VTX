@@ -1030,7 +1030,7 @@ namespace VTX::Renderer::Context::Backend
 		texture.getSubImage(
 			0,
 			GLint( p_x ),
-			_height - GLint( p_y ) - 1,
+			GLint( p_y ),
 			1,
 			1,
 			glFormat.uploadFormat,
