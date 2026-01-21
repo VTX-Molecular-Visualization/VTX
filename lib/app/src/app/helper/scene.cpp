@@ -5,7 +5,7 @@ namespace VTX::App::Helper::Scene
 {
 	std::vector<ECS::Entity> getAllSystems()
 	{
-		auto view = REG().view<System::UID>();
+		const auto view = REG().view<System::UID>();
 		return { view.begin(), view.end() };
 	}
 
@@ -14,7 +14,7 @@ namespace VTX::App::Helper::Scene
 		std::unordered_map<RootUID, ECS::Entity> systemsMap;
 		auto									 view = REG().view<System::UID>();
 
-		for ( auto [ entity, uid ] : view.each() )
+		for ( const auto & [ entity, uid ] : view.each() )
 		{
 			systemsMap[ uid.system ] = entity;
 		}
@@ -24,9 +24,8 @@ namespace VTX::App::Helper::Scene
 
 	std::optional<ECS::Entity> findSystemByRootUID( const RootUID p_uid )
 	{
-		auto view = REG().view<System::UID>();
-
-		for ( auto [ entity, uid ] : view.each() )
+		const auto view = REG().view<System::UID>();
+		for ( const auto & [ entity, uid ] : view.each() )
 		{
 			if ( uid.system == p_uid )
 			{
@@ -39,9 +38,8 @@ namespace VTX::App::Helper::Scene
 
 	std::optional<ECS::Entity> findSystemByAtomUID( const PickingUID p_uid )
 	{
-		auto view = REG().view<System::UID>();
-
-		for ( auto [ entity, uid ] : view.each() )
+		const auto view = REG().view<System::UID>();
+		for ( const auto & [ entity, uid ] : view.each() )
 		{
 			if ( uid.containsAtomUID( p_uid ) )
 			{
@@ -54,8 +52,8 @@ namespace VTX::App::Helper::Scene
 
 	std::optional<ECS::Entity> findSystemByResidueUID( const PickingUID p_uid )
 	{
-		auto view = REG().view<System::UID>();
-		for ( auto [ entity, uid ] : view.each() )
+		const auto view = REG().view<System::UID>();
+		for ( const auto & [ entity, uid ] : view.each() )
 		{
 			if ( uid.containsResidueUID( p_uid ) )
 			{
