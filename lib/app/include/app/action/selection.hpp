@@ -149,20 +149,20 @@ namespace VTX::App::Action::Selection
 		void execute( const ECS::Entity p_ent );
 	};
 
+	enum struct E_GRANULARITY : uint
+	{
+		ATOM,
+		RESIDUE,
+		CHAIN,
+		SYSTEM
+	};
+
 	/**
 	 * @brief Pick item at mouse position.
 	 */
 	struct Pick
 	{
-		enum class E_GRANULARITY
-		{
-			ATOM,
-			RESIDUE,
-			CHAIN,
-			SYSTEM
-		};
-
-		void execute( const Vec2i &, const E_GRANULARITY = E_GRANULARITY::ATOM, const bool = false );
+		void execute( const Vec2i &, const E_GRANULARITY = E_GRANULARITY::RESIDUE, const bool = false );
 	};
 } // namespace VTX::App::Action::Selection
 

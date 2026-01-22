@@ -5,6 +5,7 @@
 
 namespace VTX::UI::QT
 {
+	constexpr std::string_view _SETTING_KEY_GRANULARITY = "inspector/picking_granularity";
 
 	/**
 	 * @brief Settings manager inheriting from QSettings.

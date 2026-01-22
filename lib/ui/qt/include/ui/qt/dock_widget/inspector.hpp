@@ -3,6 +3,7 @@
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/widget/selection.hpp"
+#include <QComboBox>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -16,6 +17,7 @@ namespace VTX::UI::QT::DockWidget
 
 	  private:
 		QPointer<Widget::Selection> _selectionListWidget;
+		QPointer<QComboBox>			_cbPickingGranularity;
 	};
 
 } // namespace VTX::UI::QT::DockWidget

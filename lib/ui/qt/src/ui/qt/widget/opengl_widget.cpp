@@ -1,6 +1,7 @@
 #include "ui/qt/widget/opengl_widget.hpp"
 #include "app/services.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/settings.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
@@ -54,12 +55,20 @@ namespace VTX::UI::QT::Widget
 		this->setFocusPolicy( Qt::NoFocus );
 		this->setFocusProxy( _container );
 
-		// Connect window signals.
+		// Connect picking.
 		connect(
 			_window,
 			&Window::Renderer::clicked,
 			[]( const Qt::MouseButton, const QPoint p_pos )
-			{ App::ACTION().execute<App::Action::Selection::Pick>( Vec2i( p_pos.x(), p_pos.y() ) ); }
+			{
+				App::ACTION().execute<App::Action::Selection::Pick>(
+					Vec2i( p_pos.x(), p_pos.y() ),
+					static_cast<App::Action::Selection::E_GRANULARITY>(
+						SETTINGS().value( _SETTING_KEY_GRANULARITY, 0 ).toInt()
+					),
+					QGuiApplication::keyboardModifiers() & Qt::ControlModifier
+				);
+			}
 		);
 
 		// Connect signals.

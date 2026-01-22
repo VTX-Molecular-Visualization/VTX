@@ -101,7 +101,7 @@ namespace VTX::App::Action::Scene
 
 		// Color scheme.
 		color.atoms.resize( data.getAtomCount() );
-		ACTION().execute<Color::Add<System::E_COLOR_SCHEME::ATOM>>( entity );
+		ACTION().execute<Color::Add<System::E_COLOR_SCHEME::CHAIN>>( entity );
 
 		// Deleted: nothing deleted.
 		deleted.atoms = {};

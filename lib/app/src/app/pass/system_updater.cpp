@@ -76,7 +76,5 @@ namespace VTX::App::Pass
 		const auto & representation = reg.get<System::Representation>( system );
 
 		RENDERER().addSystem( uid.system, transform.computeMatrix(), data, uid.atoms.toStdVector() );
-		// RENDERER().setSystemRepresentation( uid.system, representation.atoms );
-		// RENDERER().setSystemColors( uid.system, color.atoms );
 	}
 } // namespace VTX::App::Pass
