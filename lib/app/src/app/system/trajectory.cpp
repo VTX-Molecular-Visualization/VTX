@@ -1,7 +1,12 @@
 #include "app/threading/base_thread.hpp"
 #include <util/types.hpp>
 //
+#include "app/ecs.hpp"
+#include "app/services.hpp"
 #include "app/system/trajectory.hpp"
+#include "app/system/uid.hpp"
+#include "app/uid/uid_manager.hpp"
+#include <renderer/renderer.hpp>
 
 namespace VTX::App::System
 {
@@ -17,9 +22,33 @@ namespace VTX::App::System
 	};
 
 	TrajectoryFullBufferReader::TrajectoryFullBufferReader( ECS::Entity entity, IO::Reader::System && loader ) :
-		p_ptr( std::shared_ptr<_Data>( new _Data { std::move( entity ), std::move( loader ) }, Deleter() ) )
+		_ptr( std::shared_ptr<_Data>( new _Data { std::move( entity ), std::move( loader ) }, Deleter() ) )
 	{
 	}
-	uint TrajectoryFullBufferReader::operator()( VTX::Util::StopToken p_stopToken, Threading::BaseThread & ) noexcept {}
+	uint TrajectoryFullBufferReader::operator()( VTX::Util::StopToken p_stopToken, Threading::BaseThread & ) noexcept
+	{
+		auto &		 reader		= _ptr->loader.getChemfilesReader();
+		const size_t frameCount = reader.getFrameCount();
+		RootUID		 systemUid	= REG().get<System::UID>( _ptr->entity ).system;
+
+		for ( size_t it_currentFrameIndex = 0; it_currentFrameIndex < frameCount; it_currentFrameIndex++ )
+		{
+			std::vector<Vec3f> new_frame = reader.getCurrentFrameAtomPosition();
+			_ptr->loader.readNextFrame();
+			REG().patch<TrajectoryFullBuffer>(
+				_ptr->entity,
+				[ & ]( TrajectoryFullBuffer & data )
+				{
+					data.frameCollection.emplace_back( std::move( new_frame ) );
+					data.lastFrameAvailable = it_currentFrameIndex;
+					if ( it_currentFrameIndex == 0 )
+						RENDERER().setSystemPosition( systemUid, data.frameCollection[ 0 ] );
+				}
+			);
+			if ( p_stopToken.stop_requested() )
+				break;
+		}
+		return 0;
+	}
 
 } // namespace VTX::App::System

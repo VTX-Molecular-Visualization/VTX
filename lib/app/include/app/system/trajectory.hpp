@@ -6,11 +6,8 @@
 #include <memory>
 #include <span>
 #include <util/thread.hpp>
+#include <util/types.hpp>
 
-namespace VTX
-{
-	struct Vec3f;
-}
 namespace VTX::App::Threading
 {
 	class BaseThread;
@@ -66,7 +63,7 @@ namespace VTX::App::System
 		struct _Data;
 
 	  private:
-		std::shared_ptr<_Data> p_ptr
+		std::shared_ptr<_Data> _ptr
 			= nullptr; // The shared ptr aims to allow the copy without actually copying the IO resource
 	};
 

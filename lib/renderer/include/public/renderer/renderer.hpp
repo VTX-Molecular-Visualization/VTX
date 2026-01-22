@@ -86,7 +86,7 @@ namespace VTX::Renderer
 		void  removeSystem( const RootUID ) {}
 
 		void setSystemTransform( const RootUID, const Mat4f & ) {}
-		void setSystemPosition( const RootUID, std::span<const Vec3f> ) {}
+		void setSystemPosition( const RootUID, std::span<const Vec3f> );
 		void setSystemColors( const RootUID, std::span<const Color::ColorIndex> p_b )
 		{
 			_context.setPipelineBuffer<Color::ColorIndex>( "Atoms.Colors", p_b );

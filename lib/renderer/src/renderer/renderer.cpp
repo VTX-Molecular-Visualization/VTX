@@ -299,7 +299,7 @@ namespace VTX::Renderer
 		std::span<const PickingUID>	 p_uid
 	)
 	{
-		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_data.trajectory.getCurrentFrame() );
+		//_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_data.trajectory.getCurrentFrame() );
 
 		std::vector<float> radii( p_data.getAtomCount(), 1.f );
 		_context.setPipelineBuffer<float>( "Atoms.Radii", radii );
@@ -326,6 +326,10 @@ namespace VTX::Renderer
 
 		_geometries.cylinders.drawRanges.offsets = { 0 };
 		_geometries.cylinders.drawRanges.counts	 = { uint32_t( p_data.bondPairAtomIndexes.size() ) };
+	}
+	void Renderer::setSystemPosition( const RootUID p_appId, std::span<const Vec3f> p_positions )
+	{
+		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions );
 	}
 
 #pragma endregion

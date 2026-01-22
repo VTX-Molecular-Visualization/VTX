@@ -82,6 +82,12 @@ namespace VTX::App::Action::Scene
 				entity, [ &loader ]( Util::Math::AABB & p_aabb ) { p_aabb = loader.getAABB(); }
 			);
 
+			// UIDs: get from UID manager.
+			auto & uidManager = UID();
+			uid.system		  = uidManager.getRootPool().registerValue();
+			uid.residues	  = uidManager.getPickingPool().registerRange( data.getResidueCount() );
+			uid.atoms		  = uidManager.getPickingPool().registerRange( data.getAtomCount() );
+
 			if ( chemfilesReader.getFrameCount() > 1 )
 			{
 				auto & trajectory = reg.emplace<System::TrajectoryFullBuffer>(
@@ -94,15 +100,10 @@ namespace VTX::App::Action::Scene
 			{
 				auto & trajectory		 = reg.emplace<System::TrajectorySingleFrame>( entity );
 				trajectory.atomPositions = chemfilesReader.getCurrentFrameAtomPosition();
+				RENDERER().setSystemPosition( uid.system, trajectory.atomPositions );
 			}
 
 		} // We don't need the loader anymore
-
-		// UIDs: get from UID manager.
-		auto & uidManager = UID();
-		uid.system		  = uidManager.getRootPool().registerValue();
-		uid.residues	  = uidManager.getPickingPool().registerRange( data.getResidueCount() );
-		uid.atoms		  = uidManager.getPickingPool().registerRange( data.getAtomCount() );
 
 		// Visibillity: all visible.
 		visibility.atoms = Core::Struct::IndexRangeList( data.getAtomRange() );

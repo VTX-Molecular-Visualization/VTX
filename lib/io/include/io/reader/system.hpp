@@ -30,7 +30,10 @@ namespace VTX::IO::Reader
 			_configuration = &p_configuration;
 		}
 
-		const Reader::Chemfiles &	  getChemfilesReader() { return *_chemfilesReader; }
+		const Reader::Chemfiles & getChemfilesReader() { return *_chemfilesReader; }
+
+		void readNextFrame() { _chemfilesReader->readNextFrame(); } // TODO : not a huge fan on this
+
 		const VTX::Util::Math::AABB & getAABB() const { return _aabb; }
 
 	  private:
