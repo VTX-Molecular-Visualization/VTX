@@ -18,6 +18,8 @@
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
+#include "app/threading/base_thread.hpp"
+#include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
 #include <core/struct/system.hpp>
 #include <io/reader/system.hpp>
@@ -39,12 +41,11 @@ namespace VTX::App::Action::Scene
 		ECS::Entity entity = reg.create();
 
 		// Add components.
-		auto & data		  = reg.emplace<Core::Struct::System>( entity );
-		auto & metadata	  = reg.emplace<System::Metadata>( entity );
-		auto & trajectory = reg.emplace<System::Trajectory>( entity );
-		auto & transform  = reg.emplace<Util::Math::Transform>( entity );
-		auto & aabb		  = reg.emplace<Util::Math::AABB>( entity );
-		auto & uid		  = reg.emplace<System::UID>( entity );
+		auto & data		 = reg.emplace<Core::Struct::System>( entity );
+		auto & metadata	 = reg.emplace<System::Metadata>( entity );
+		auto & transform = reg.emplace<Util::Math::Transform>( entity );
+		auto & aabb		 = reg.emplace<Util::Math::AABB>( entity );
+		auto & uid		 = reg.emplace<System::UID>( entity );
 
 		auto & visibility	  = reg.emplace<System::Visibility>( entity );
 		auto & selection	  = reg.emplace<System::Selection>( entity );
@@ -52,31 +53,50 @@ namespace VTX::App::Action::Scene
 		auto & color		  = reg.emplace<System::Color>( entity );
 		auto & deleted		  = reg.emplace<System::Deleted>( entity );
 
-		// Load system data and metadata.
-		IO::Reader::System loader;
-		// systemStruct.trajectory.setOptimized();
-
-		// From buffer.
-		if ( p_buffer )
 		{
-			VTX_DEBUG( "Path: {}", p_path.string() );
-			loader.readBuffer( *p_buffer, p_path, data );
-		}
-		// From disk.
-		else
-		{
-			metadata.path = p_path;
-			loader.readFile( p_path, data );
-		}
+			// Load system data and metadata.
+			IO::Reader::System loader;
+			// systemStruct.trajectory.setOptimized();
 
-		const VTX::IO::Reader::Chemfiles & chemfilesReader = loader.getChemfilesReader();
-		const std::string &				   pdbId		   = chemfilesReader.getPdbIdCode();
-		metadata.pdbIDCode								   = pdbId;
-		const std::string systemName					   = pdbId == "" ? p_path.stem().string() : pdbId;
-		data.name										   = systemName; // TODO: move to metadata?
+			// From buffer.
+			if ( p_buffer )
+			{
+				VTX_DEBUG( "Path: {}", p_path.string() );
+				loader.readBuffer( *p_buffer, p_path, data );
+			}
+			// From disk.
+			else
+			{
+				metadata.path = p_path;
+				loader.readFile( p_path, data );
+			}
 
-		// AABB (trigger update function for scene aabb).
-		reg.patch<Util::Math::AABB>( entity, [ &loader ]( Util::Math::AABB & p_aabb ) { p_aabb = loader.getAABB(); } );
+			const VTX::IO::Reader::Chemfiles & chemfilesReader = loader.getChemfilesReader();
+			const std::string &				   pdbId		   = chemfilesReader.getPdbIdCode();
+			metadata.pdbIDCode								   = pdbId;
+			const std::string systemName					   = pdbId == "" ? p_path.stem().string() : pdbId;
+			data.name										   = systemName; // TODO: move to metadata?
+
+			// AABB (trigger update function for scene aabb).
+			reg.patch<Util::Math::AABB>(
+				entity, [ &loader ]( Util::Math::AABB & p_aabb ) { p_aabb = loader.getAABB(); }
+			);
+
+			if ( chemfilesReader.getFrameCount() > 1 )
+			{
+				auto & trajectory = reg.emplace<System::TrajectoryFullBuffer>(
+					entity
+				); // TODO Implement circular buffer with an automatic decision (maybe based on atomCount * frameCount
+				   // value threshold) and with a setting based on a value the user can alter
+				THREAD().createThread( System::TrajectoryFullBufferReader( entity, std::move( loader ) ) );
+			}
+			else
+			{
+				auto & trajectory		 = reg.emplace<System::TrajectorySingleFrame>( entity );
+				trajectory.atomPositions = chemfilesReader.getCurrentFrameAtomPosition();
+			}
+
+		} // We don't need the loader anymore
 
 		// UIDs: get from UID manager.
 		auto & uidManager = UID();
