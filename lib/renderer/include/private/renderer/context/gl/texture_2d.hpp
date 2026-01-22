@@ -78,6 +78,27 @@ namespace VTX::Renderer::Context::GL
 			glGetTextureImage( _id, p_level, p_format, p_type, p_bufSize, p_pixels );
 		}
 
+		inline void getSubImage(
+			const GLint	  p_level,
+			const GLint	  p_xOffset,
+			const GLint	  p_yOffset,
+			const GLsizei p_width,
+			const GLsizei p_height,
+			const GLenum  p_format,
+			const GLenum  p_type,
+			const GLsizei p_bufSize,
+			void * const  p_pixels
+		) const noexcept
+		{
+			GLint prev;
+			glGetIntegerv( GL_PACK_ALIGNMENT, &prev );
+			glPixelStorei( GL_PACK_ALIGNMENT, 1 );
+			glGetTextureSubImage(
+				_id, p_level, p_xOffset, p_yOffset, 0, p_width, p_height, 1, p_format, p_type, p_bufSize, p_pixels
+			);
+			glPixelStorei( GL_PACK_ALIGNMENT, prev );
+		}
+
 		inline GLsizei getWidth() const noexcept { return _width; }
 		inline GLsizei getHeight() const noexcept { return _height; }
 		inline GLenum  getFormat() const noexcept { return _format; }

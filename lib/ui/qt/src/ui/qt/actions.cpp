@@ -255,53 +255,6 @@ namespace VTX::UI::QT::Action
 			trigger = []() { App::ACTION().execute<App::Action::Selection::Clear>(); };
 		}
 
-		SetGranularitySystem::SetGranularitySystem()
-		{
-			name  = "System";
-			group = "SelectionGranularity";
-			tip	  = "Change selection granularity to system";
-			// icon = "sprite/selection/granularity.png";
-			//  shortcut = "G";
-			//   trigger	 = []() {
-			//   App::ACTION().execute<App::Action::Application::ChangeSelectionGranularity>();
-			//   };
-		}
-
-		SetGranularityChain::SetGranularityChain()
-		{
-			name  = "Chain";
-			group = "SelectionGranularity";
-			tip	  = "Change selection granularity to chain";
-			// icon = "sprite/selection/granularity.png";
-			//  shortcut = "G";
-			//   trigger	 = []() {
-			//   App::ACTION().execute<App::Action::Application::ChangeSelectionGranularity>();
-			//   };
-		}
-
-		SetGranularityResidue::SetGranularityResidue()
-		{
-			name  = "Residue";
-			group = "SelectionGranularity";
-			tip	  = "Change selection granularity to residue";
-			// icon = "sprite/selection/granularity.png";
-			//  shortcut = "G";
-			//   trigger	 = []() {
-			//   App::ACTION().execute<App::Action::Application::ChangeSelectionGranularity>();
-			//   };
-		}
-
-		SetGranularityAtom::SetGranularityAtom()
-		{
-			name  = "Atom";
-			group = "SelectionGranularity";
-			tip	  = "Change selection granularity to atom";
-			// icon = "sprite/selection/granularity.png";
-			//  shortcut = "G";
-			//   trigger	 = []() {
-			//   App::ACTION().execute<App::Action::Application::ChangeSelectionGranularity>();
-			//   };
-		}
 	} // namespace Selection
 	namespace Theme
 	{

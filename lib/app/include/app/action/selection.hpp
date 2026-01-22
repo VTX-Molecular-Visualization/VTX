@@ -22,7 +22,8 @@ namespace VTX::App::Action::Selection
 	struct SetSelected
 	{
 		void execute(
-			const ECS::Entity					 p_ent,
+			const ECS::Entity p_ent,
+
 			const Core::Struct::IndexRangeList & p_ranges	= {},
 			const bool							 p_selected = true
 		)
@@ -146,6 +147,22 @@ namespace VTX::App::Action::Selection
 		 * @brief For a specific system.
 		 */
 		void execute( const ECS::Entity p_ent );
+	};
+
+	enum struct E_GRANULARITY : uint
+	{
+		ATOM,
+		RESIDUE,
+		CHAIN,
+		SYSTEM
+	};
+
+	/**
+	 * @brief Pick item at mouse position.
+	 */
+	struct Pick
+	{
+		void execute( const Vec2i &, const E_GRANULARITY = E_GRANULARITY::RESIDUE, const bool = false );
 	};
 } // namespace VTX::App::Action::Selection
 

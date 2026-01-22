@@ -11,11 +11,12 @@ namespace
 
 	struct GLPixelFormat
 	{
-		GLenum internalFormat = 0; // glTextureStorage2D
-		GLenum uploadFormat	  = 0; // glTextureSubImage2D / glClearTexImage
-		GLenum uploadType	  = 0; // glTextureSubImage2D / glClearTexImage
-		bool   isInteger	  = false;
-		bool   isDepth		  = false;
+		GLenum	internalFormat = 0; // glTextureStorage2D
+		GLenum	uploadFormat   = 0; // glTextureSubImage2D / glClearTexImage
+		GLenum	uploadType	   = 0; // glTextureSubImage2D / glClearTexImage
+		uint8_t bytesPerPixel  = 0;
+		bool	isInteger	   = false;
+		bool	isDepth		   = false;
 	};
 
 	/**
@@ -27,15 +28,16 @@ namespace
 
 		switch ( p_format )
 		{
-		case E_FORMAT::RGB16F: return { GL_RGB16F, GL_RGB, GL_HALF_FLOAT, false, false };
-		case E_FORMAT::RGBA16F: return { GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT, false, false };
-		case E_FORMAT::RGBA32F: return { GL_RGBA32F, GL_RGBA, GL_FLOAT, false, false };
-		case E_FORMAT::R16F: return { GL_R16F, GL_RED, GL_HALF_FLOAT, false, false };
-		case E_FORMAT::R32F: return { GL_R32F, GL_RED, GL_FLOAT, false, false };
-		case E_FORMAT::R8: return { GL_R8, GL_RED, GL_UNSIGNED_BYTE, false, false };
-		case E_FORMAT::RG32UI: return { GL_RG32UI, GL_RG_INTEGER, GL_UNSIGNED_INT, true, false };
-		case E_FORMAT::RGBA32UI: return { GL_RGBA32UI, GL_RGBA_INTEGER, GL_UNSIGNED_INT, true, false };
-		case E_FORMAT::DEPTH_COMPONENT32F: return { GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT, false, true };
+		case E_FORMAT::RGB16F: return { GL_RGB16F, GL_RGB, GL_HALF_FLOAT, 6, false, false };
+		case E_FORMAT::RGBA16F: return { GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT, 8, false, false };
+		case E_FORMAT::RGBA32F: return { GL_RGBA32F, GL_RGBA, GL_FLOAT, 16, false, false };
+		case E_FORMAT::R16F: return { GL_R16F, GL_RED, GL_HALF_FLOAT, 2, false, false };
+		case E_FORMAT::R32F: return { GL_R32F, GL_RED, GL_FLOAT, 4, false, false };
+		case E_FORMAT::R8: return { GL_R8, GL_RED, GL_UNSIGNED_BYTE, 1, false, false };
+		case E_FORMAT::RG32UI: return { GL_RG32UI, GL_RG_INTEGER, GL_UNSIGNED_INT, 8, true, false };
+		case E_FORMAT::RGBA32UI: return { GL_RGBA32UI, GL_RGBA_INTEGER, GL_UNSIGNED_INT, 16, true, false };
+		case E_FORMAT::DEPTH_COMPONENT32F:
+			return { GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT, 4, false, true };
 		default: assert( false ); return {};
 		}
 	}
@@ -238,7 +240,6 @@ namespace VTX::Renderer::Context::Backend
 		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
 
 		// Quad.
-
 		_createQuad();
 
 		glViewport( 0, 0, int32_t( p_width ), int32_t( p_height ) );
@@ -289,14 +290,15 @@ namespace VTX::Renderer::Context::Backend
 		}
 		for ( const auto & [ key, buffer ] : p_resources.pipelineBuffers )
 		{
-			_pipelineBufferProperties.emplace( key, _PipelineBufferCacheEntry { buffer.kind, buffer.frequency } );
-
+			Handle h;
 			switch ( buffer.kind )
 			{
-			case E_PIPELINE_BUFFER_KIND::VERTEX: _getOrCreateVertexBuffer( key ); break;
-			case E_PIPELINE_BUFFER_KIND::INDEX: _getOrCreateIndexBuffer( key ); break;
+			case E_PIPELINE_BUFFER_KIND::VERTEX: h = _getOrCreateVertexBuffer( key ); break;
+			case E_PIPELINE_BUFFER_KIND::INDEX: h = _getOrCreateIndexBuffer( key ); break;
 			default: assert( false ); break;
 			}
+
+			_pipelineBufferProperties.emplace( h, _PipelineBufferProperties { buffer.kind, buffer.frequency } );
 		}
 
 		// Bind geometries to VAOs.
@@ -557,6 +559,7 @@ namespace VTX::Renderer::Context::Backend
 			std::make_unique<GL::Texture2D>( GLsizei( width ), GLsizei( height ), glFormat.internalFormat )
 		);
 		_cacheTextures.emplace( p_key, h );
+		_textureProperties.emplace( h, _TextureProperties { p_text.format, p_text.size } );
 
 		if ( not p_text.data.empty() )
 		{
@@ -699,7 +702,7 @@ namespace VTX::Renderer::Context::Backend
 		_shaderBuffers.emplace_back( std::move( glBuffer ) );
 		_cacheShaderBuffers.emplace( key, h );
 		_shaderBufferProperties.emplace(
-			key, _ShaderBufferCacheEntry { p_buffer.role, p_buffer.mutability, p_buffer.access, p_buffer.frequency }
+			h, _ShaderBufferProperties { p_buffer.role, p_buffer.mutability, p_buffer.access, p_buffer.frequency }
 		);
 
 		return h;
@@ -989,27 +992,54 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		const auto & bufferDesc = _shaderBufferProperties.at( p_key );
 		const Handle h			= _cacheShaderBuffers.at( p_key );
-		_shaderBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( bufferDesc.frequency ) );
+		const auto & bufferProp = _shaderBufferProperties.at( h );
+		_shaderBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( bufferProp.frequency ) );
 	}
 
 	void OpenGL45::setPipelineBufferData( const Desc::Key & p_key, SpanBytes p_bytes )
 	{
 		using namespace Desc;
 
-		const auto & bufferDesc = _pipelineBufferProperties.at( p_key );
-		GLenum		 freq		= _toGL( bufferDesc.frequency );
-		if ( bufferDesc.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
+		const Handle h
+			= _cacheVertexBuffers.contains( p_key ) ? _cacheVertexBuffers.at( p_key ) : _cacheIndexBuffers.at( p_key );
+		const auto & bufferProp = _pipelineBufferProperties.at( h );
+		GLenum		 freq		= _toGL( bufferProp.frequency );
+		if ( bufferProp.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
 		{
-			const Handle h = _cacheVertexBuffers.at( p_key );
 			_vertexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), freq );
 		}
 		else
 		{
-			const Handle h = _cacheIndexBuffers.at( p_key );
 			_indexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), freq );
 		}
+	}
+
+	std::vector<std::byte> OpenGL45::getTextureData( const Desc::Key & p_key, const size_t p_x, const size_t p_y ) const
+	{
+		using namespace Desc;
+
+		std::vector<std::byte> data;
+		const Handle		   h		   = _cacheTextures.at( p_key );
+		const auto &		   textureProp = _textureProperties.at( h );
+		const GLPixelFormat	   glFormat	   = _toGL( textureProp.format );
+		const auto &		   texture	   = *_textures.at( h );
+
+		data.resize( glFormat.bytesPerPixel );
+
+		texture.getSubImage(
+			0,
+			GLint( p_x ),
+			GLint( p_y ),
+			1,
+			1,
+			glFormat.uploadFormat,
+			glFormat.uploadType,
+			glFormat.bytesPerPixel,
+			data.data()
+		);
+
+		return data;
 	}
 
 	void OpenGL45::fillInfos( StructInfos & p_infos ) const

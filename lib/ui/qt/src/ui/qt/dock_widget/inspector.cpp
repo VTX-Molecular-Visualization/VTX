@@ -1,12 +1,14 @@
 ﻿#include "ui/qt/dock_widget/inspector.hpp"
 #include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/settings.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include "ui/qt/widget/tree.hpp"
 #include <QFontDatabase>
 #include <QLabel>
 #include <QToolBar>
 #include <QToolButton>
+#include <app/action/selection.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -25,6 +27,23 @@ namespace VTX::UI::QT::DockWidget
 		toolbar->addAction( Application::getAction<Action::Selection::Clear>() );
 		_layout->addWidget( toolbar );
 
+		// Picking granularity combobox.
+		_cbPickingGranularity = new QComboBox( this );
+		_cbPickingGranularity->addItem(
+			"Atom", QVariant( toUnderlying( App::Action::Selection::E_GRANULARITY::ATOM ) )
+		);
+		_cbPickingGranularity->addItem(
+			"Residue", QVariant( toUnderlying( App::Action::Selection::E_GRANULARITY::RESIDUE ) )
+		);
+		_cbPickingGranularity->addItem(
+			"Chain", QVariant( toUnderlying( App::Action::Selection::E_GRANULARITY::CHAIN ) )
+		);
+		_cbPickingGranularity->addItem(
+			"System", QVariant( toUnderlying( App::Action::Selection::E_GRANULARITY::SYSTEM ) )
+		);
+		_layout->addWidget( _cbPickingGranularity );
+
+		// Connect.
 		connect(
 			lockAction,
 			&QAction::toggled,
@@ -44,6 +63,20 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( _selectionListWidget );
 
 		//_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+
+		const int index = _cbPickingGranularity->findData( SETTINGS().value( _SETTING_KEY_GRANULARITY, 0 ).toInt() );
+		if ( index != -1 )
+		{
+			_cbPickingGranularity->setCurrentIndex( index );
+		}
+
+		connect(
+			_cbPickingGranularity,
+			&QComboBox::currentIndexChanged,
+			this,
+			[ & ]( const int )
+			{ SETTINGS().setValue( _SETTING_KEY_GRANULARITY, _cbPickingGranularity->currentData() ); }
+		);
 	}
 
 } // namespace VTX::UI::QT::DockWidget

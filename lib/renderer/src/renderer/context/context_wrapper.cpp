@@ -172,6 +172,26 @@ namespace VTX::Renderer::Context
 		);
 	}
 
+	std::vector<std::byte> ContextWrapper::getTextureData(
+		const Desc::Key & p_key,
+		const size_t	  p_x,
+		const size_t	  p_y
+	) const
+	{
+		return std::visit(
+			[ & ]( auto & p_backend )
+			{
+				using T = std::remove_cvref_t<decltype( p_backend )>;
+				if constexpr ( not std::is_same_v<T, std::monostate> )
+				{
+					return p_backend.getTextureData( p_key, p_x, p_y );
+				}
+				return std::vector<std::byte> {};
+			},
+			_impl->backend
+		);
+	}
+
 	void ContextWrapper::fillInfos( StructInfos & p_infos ) const
 	{
 		std::visit(

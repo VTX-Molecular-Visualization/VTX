@@ -52,7 +52,6 @@ namespace VTX::Renderer::Context::Backend
 		{
 			std::vector<TextureBinding> textures;
 			std::vector<BufferBinding>	shaderBuffers;
-			// std::vector<BufferBinding>	pipelineBuffers;
 		};
 
 		/**
@@ -79,6 +78,11 @@ namespace VTX::Renderer::Context::Backend
 		 * @brief Set data to a pipeline buffer.
 		 */
 		void setPipelineBufferData( const Desc::Key &, SpanBytes );
+
+		/**
+		 * @brief Get texture data at a given pixel.
+		 */
+		std::vector<std::byte> getTextureData( const Desc::Key &, const size_t, const size_t ) const;
 
 		/**
 		 * @brief Fill backend infos.
@@ -193,9 +197,15 @@ namespace VTX::Renderer::Context::Backend
 		std::vector<GL::Program *>			_programs;
 
 		/**
-		 * @brief Save buffer properties.
+		 * @brief Save buffer and texture properties.
 		 */
-		struct _ShaderBufferCacheEntry
+		struct _TextureProperties
+		{
+			Desc::E_FORMAT format;
+			Desc::Size2D   size;
+		};
+
+		struct _ShaderBufferProperties
 		{
 			Desc::E_SHADER_BUFFER_KIND role;
 			Desc::E_BUFFER_MUTABILITY  mutability;
@@ -203,14 +213,17 @@ namespace VTX::Renderer::Context::Backend
 			Desc::E_UPDATE_FREQUENCY   frequency;
 		};
 
-		struct _PipelineBufferCacheEntry
+		struct _PipelineBufferProperties
 		{
 			Desc::E_PIPELINE_BUFFER_KIND kind;
 			Desc::E_UPDATE_FREQUENCY	 frequency;
 		};
 
-		std::unordered_map<Desc::Key, _ShaderBufferCacheEntry>	 _shaderBufferProperties;
-		std::unordered_map<Desc::Key, _PipelineBufferCacheEntry> _pipelineBufferProperties;
+		template<typename T>
+		using Properties = std::unordered_map<Desc::Handle, T>;
+		Properties<_TextureProperties>		  _textureProperties;
+		Properties<_ShaderBufferProperties>	  _shaderBufferProperties;
+		Properties<_PipelineBufferProperties> _pipelineBufferProperties;
 
 		/**
 		 * @brief Get or create resources.

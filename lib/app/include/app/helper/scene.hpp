@@ -18,9 +18,11 @@ namespace VTX::App::Helper::Scene
 	std::unordered_map<RootUID, ECS::Entity> getAllSystemsMap();
 
 	/**
-	 * @brief Find system entity by its root UID.
+	 * @brief Find system entity by UID.
 	 */
 	std::optional<ECS::Entity> findSystemByRootUID( const RootUID );
+	std::optional<ECS::Entity> findSystemByAtomUID( const PickingUID );
+	std::optional<ECS::Entity> findSystemByResidueUID( const PickingUID );
 
 } // namespace VTX::App::Helper::Scene
 

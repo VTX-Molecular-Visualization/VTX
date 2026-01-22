@@ -1,9 +1,11 @@
 #include "ui/qt/widget/opengl_widget.hpp"
 #include "app/services.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/settings.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
+#include <app/action/selection.hpp>
 #include <app/events.hpp>
 #include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
@@ -35,7 +37,7 @@ namespace VTX::UI::QT::Widget
 		}
 
 		// Create window.
-		_window = new Window::EventCatchWindow();
+		_window = new Window::Renderer();
 		_window->setFormat( format );
 		_window->setSurfaceType( QSurface::OpenGLSurface );
 		_window->setFlags( Qt::FramelessWindowHint );
@@ -52,6 +54,22 @@ namespace VTX::UI::QT::Widget
 		_container->setFocusPolicy( Qt::StrongFocus );
 		this->setFocusPolicy( Qt::NoFocus );
 		this->setFocusProxy( _container );
+
+		// Connect picking.
+		connect(
+			_window,
+			&Window::Renderer::clicked,
+			[]( const Qt::MouseButton, const QPoint p_pos )
+			{
+				App::ACTION().execute<App::Action::Selection::Pick>(
+					Vec2i( p_pos.x(), p_pos.y() ),
+					static_cast<App::Action::Selection::E_GRANULARITY>(
+						SETTINGS().value( _SETTING_KEY_GRANULARITY, 0 ).toInt()
+					),
+					QGuiApplication::keyboardModifiers() & Qt::ControlModifier
+				);
+			}
+		);
 
 		// Connect signals.
 		App::HUB().connect<App::Events::PostRender, &OpenGLWidget::render>( this );

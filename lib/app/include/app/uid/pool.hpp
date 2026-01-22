@@ -85,7 +85,7 @@ namespace VTX::App::Uid
 		void clear()
 		{
 			std::lock_guard<std::mutex> guard( _mutex );
-			_available = UIDRangeList( { Util::Math::Range<UID>( UID( 0 ), std::numeric_limits<UID>::max() ) } );
+			_available = UIDRangeList( { Util::Math::Range<UID>( UID( 1 ), std::numeric_limits<UID>::max() ) } );
 			_available.removeValue( UID( INVALID_UID ) );
 		}
 

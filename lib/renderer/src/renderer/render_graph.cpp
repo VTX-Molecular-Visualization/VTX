@@ -190,7 +190,7 @@ namespace VTX::Renderer
 			  makeUniform( "ClipInfos", Vec4f( VEC4F_ZERO ) ),
 			  makeUniform( "Resolution", Vec2i { 0, 0 } ),
 			  makeUniform( "MousePosition", Vec2i { 0, 0 } ),
-			  makeUniform( "IsPerspective", std::uint32_t( 1 ) ) }
+			  makeUniform( "IsPerspective", uint32_t( 1 ) ) }
 		);
 
 		g.shaderBuffer(
@@ -224,12 +224,12 @@ namespace VTX::Renderer
 			12,
 			{ makeUniform( "SphereRadiusFixed", 0.0f ),
 			  makeUniform( "SphereRadiusAdd", 0.0f ),
-			  makeUniform( "IsSphereRadiusFixed", std::uint32_t( 0 ) ),
+			  makeUniform( "IsSphereRadiusFixed", uint32_t( 0 ) ),
 			  makeUniform( "CylinderRadius", 0.0f ),
-			  makeUniform( "CylinderColorBlending", std::uint32_t( 0 ) ),
-			  makeUniform( "RibbonColorBlending", std::uint32_t( 0 ) ),
+			  makeUniform( "CylinderColorBlending", uint32_t( 0 ) ),
+			  makeUniform( "RibbonColorBlending", uint32_t( 0 ) ),
 			  makeUniform( "SESProbeRadius", 0.0f ),
-			  makeUniform( "SESMaxProbeNeighborNb", std::uint32_t( 0 ) ) }
+			  makeUniform( "SESMaxProbeNeighborNb", uint32_t( 0 ) ) }
 		);
 
 		// Vertex streams and data buffers.
@@ -504,7 +504,7 @@ namespace VTX::Renderer
 
 		// FXAA.
 		g.pass( "FXAA" )
-			.in( "Shaded" )
+			.in( p_config.enableSelection ? "Selection" : "Shaded" )
 			.out( "FXAA" )
 			.program( "FXAA" )
 			.shaders( { "default.vert", "fxaa.frag" } )

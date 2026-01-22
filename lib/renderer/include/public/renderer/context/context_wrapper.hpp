@@ -53,7 +53,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Convert a span of T to a span of bytes.
 		 */
-		template<class T>
+		template<typename T>
 		static SpanBytes asBytes( std::span<const T> p_s ) noexcept
 		{
 			static_assert( std::is_trivially_copyable_v<T>, "asWritableBytes(span<T>): T must be trivially copyable." );
@@ -64,7 +64,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Set shader buffer data.
 		 */
-		template<class T>
+		template<typename T>
 		void setShaderBuffer( const Desc::Key & p_key, std::span<const T> p_data )
 		{
 			setShaderBuffer( p_key, asBytes( p_data ) );
@@ -74,12 +74,17 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Set pipeline buffer data.
 		 */
-		template<class T>
+		template<typename T>
 		void setPipelineBuffer( const Desc::Key & p_key, std::span<const T> p_data )
 		{
 			setPipelineBuffer( p_key, asBytes( p_data ) );
 		}
 		void setPipelineBuffer( const Desc::Key & p_key, SpanBytes );
+
+		/**
+		 * @brief Get texture data at a given pixel.
+		 */
+		std::vector<std::byte> getTextureData( const Desc::Key & p_key, const size_t p_x, const size_t p_y ) const;
 
 		/**
 		 * @brief Fill renderer infos.

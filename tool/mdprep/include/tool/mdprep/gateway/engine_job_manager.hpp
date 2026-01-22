@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <util/concepts.hpp>
+
 namespace VTX::Tool::Mdprep::Gateway
 {
 	struct MdParameters;
