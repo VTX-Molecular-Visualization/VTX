@@ -91,8 +91,9 @@ namespace VTX::Util
 		ReservedData() = delete;
 
 		friend DataLocker<ReservedDataType>;
-		friend DataLocker<typename RemoveConst<ReservedDataType>::type>; // Very nice trick to befriend a datalocker
-																		 // while being a const data
+		friend DataLocker<typename std::remove_cvref_t<ReservedDataType>>; // Very nice trick to befriend a
+																		   // datalocker
+																		   // while being a const data
 
 	  public:
 		ReservedDataType *		 operator->() { return _dataPtr; }

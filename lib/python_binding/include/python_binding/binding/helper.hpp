@@ -1,5 +1,4 @@
 #include <pybind11/pybind11.h>
-#include <util/concepts.hpp>
 #include <util/enum.hpp>
 
 namespace VTX::PythonBinding
@@ -7,7 +6,8 @@ namespace VTX::PythonBinding
 	class Helper
 	{
 	  public:
-		template<EnumConcept EnumType, typename... Args>
+		template<typename EnumType, typename... Args>
+			requires std::is_enum_v<EnumType>
 		static void declareEnum( const pybind11::module_ & p_module, const std::string & p_enumName, Args &&... args )
 		{
 			pybind11::enum_<EnumType> pyEnum
@@ -15,7 +15,7 @@ namespace VTX::PythonBinding
 
 			for ( const EnumType enumValue : magic_enum::enum_values<EnumType>() )
 			{
-				pyEnum.value( magic_enum::enum_name<EnumType>( enumValue ).data(), enumValue );
+				pyEnum.value( Util::Enum::enumName<EnumType>( enumValue ).data(), enumValue );
 			}
 
 			pyEnum.export_values();

@@ -6,7 +6,6 @@
 #include <queue>
 #include <set>
 #include <util/callback.hpp>
-#include <util/concepts.hpp>
 #include <util/enum.hpp>
 #include <util/types.hpp>
 
@@ -34,13 +33,12 @@ namespace VTX::App::Input
 		void handleKeyboardEvent( const KeyEvent & p_event );
 		bool isKeyPressed( const Key & p_key ) const;
 
-		template<ContainerOfType<Key> C>
-		bool isAnyKeyPressed( const C & p_keys ) const
+		template<typename C>
+		bool isAnyKeyPressed( const C & keys ) const
 		{
-			for ( const Key & key : p_keys )
+			for ( const auto & key : keys )
 				if ( isKeyPressed( key ) )
 					return true;
-
 			return false;
 		}
 
