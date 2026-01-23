@@ -11,9 +11,6 @@ namespace VTX::App::Pass
 	  public:
 		TrajectoryUpdater();
 		void update( const float, const float );
-
-	  private:
-		void _onUpdateFullBuffer( ECS::Registry &, ECS::Entity );
 	};
 } // namespace VTX::App::Pass
 #endif

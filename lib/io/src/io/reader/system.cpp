@@ -41,13 +41,13 @@ namespace VTX::IO::Reader
 
 		VTX::Core::ChemDB::Category::TYPE lastCategoryEnum = VTX::Core::ChemDB::Category::TYPE::UNKNOWN;
 
-		p_system.trajectory.setTotalElements( p_chemfileStruct.getFrameCount() );
+		// p_system.trajectory.setTotalElements( p_chemfileStruct.getFrameCount() );
 		p_system.initResidues( p_chemfileStruct.getResidueCount() );
 		p_system.initAtoms( p_chemfileStruct.getAtomCount() );
 
-		VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.getCurrentFrame();
+		// VTX::Core::Struct::Frame & modelFrame = p_system.trajectory.getCurrentFrame();
 
-		modelFrame.resize( p_chemfileStruct.getAtomCount() );
+		// modelFrame.resize( p_chemfileStruct.getAtomCount() );
 
 		for ( Index residueIdx = 0; residueIdx < p_chemfileStruct.getResidueCount(); ++residueIdx )
 		{
@@ -141,8 +141,8 @@ namespace VTX::IO::Reader
 				default: break;
 				}
 
-				modelFrame[ atomIndex ] = p_chemfileStruct.getCurrentAtomPosition();
-				_aabb.extend( modelFrame[ atomIndex ] );
+				// modelFrame[ atomIndex ] = p_chemfileStruct.getCurrentAtomPosition();
+				//_aabb.extend( modelFrame[ atomIndex ] );
 			}
 
 			// TODO: Useless?
@@ -171,8 +171,8 @@ namespace VTX::IO::Reader
 			// std::thread fillFrames(
 			//	&SystemLoader::fillTrajectoryFrames, this, std::ref( trajectory ), std::ref( p_system ) );
 			// fillFrames.detach();
-			std::pair<VTX::Core::Struct::System *, Index> pairSystemFirstFrame = { &p_system, 1 };
-			_readTrajectoryFrames( p_chemfileStruct, { pairSystemFirstFrame }, 1 );
+			// std::pair<VTX::Core::Struct::System *, Index> pairSystemFirstFrame = { &p_system, 1 };
+			//_readTrajectoryFrames( p_chemfileStruct, { pairSystemFirstFrame }, 1 );
 		}
 
 		// Bonds.
@@ -257,63 +257,63 @@ namespace VTX::IO::Reader
 		assert( counter == counterOld );
 	}
 
-	void System::_readTrajectoryFrames(
-		IO::Reader::Chemfiles &											   p_chemfileStruct,
-		const std::vector<std::pair<VTX::Core::Struct::System *, Index>> & p_targets,
-		const Index														   p_trajectoryFrameStart
-	)
-	{
-		// Fill other frames.
-		Util::Chrono timeReadingFrames;
-		timeReadingFrames.start();
+	//	void System::_readTrajectoryFrames(
+	//		IO::Reader::Chemfiles &											   p_chemfileStruct,
+	//		const std::vector<std::pair<VTX::Core::Struct::System *, Index>> & p_targets,
+	//		const Index														   p_trajectoryFrameStart
+	//	)
+	//	{
+	//		// Fill other frames.
+	//		Util::Chrono timeReadingFrames;
+	//		timeReadingFrames.start();
+	//
+	// #ifdef _DEBUG
+	//		// Frame count for debug
+	//		Index startingFrame = 1;
+	// #endif
+	//
+	//		Index validFrameCount = 0;
+	//		for ( Index frameIdx = 0; frameIdx < p_chemfileStruct.getFrameCount() - p_trajectoryFrameStart; ++frameIdx )
+	//		{
+	//			p_chemfileStruct.readNextFrame();
+	//			const std::vector<Vec3f> atomPositions = p_chemfileStruct.getCurrentFrameAtomPosition();
+	//
+	//			if ( atomPositions.size() <= 0 )
+	//				continue;
+	//
+	//			for ( const std::pair<VTX::Core::Struct::System *, Index> & pairSystemStartFrame : p_targets )
+	//			{
+	//				VTX::Core::Struct::System & system	   = *pairSystemStartFrame.first;
+	//				const Index					frameIndex = pairSystemStartFrame.second + validFrameCount;
+	//				system.trajectory.fillFrame( frameIndex, atomPositions );
+	//
+	//				validFrameCount++;
+	//			}
+	//
+	// #ifdef _DEBUG
+	//			if ( frameIdx > 1 && frameIdx % 100 == 0 )
+	//			{
+	//				// VTX_DEBUG(
+	//				//	"Frames from {} to {} read in: {}s.", startingFrame, frameIdx, timeReadingFrames.intervalTime()
+	//				//);
+	//				startingFrame = frameIdx;
+	//			}
+	// #endif // DEBUG
+	//		}
 
-#ifdef _DEBUG
-		// Frame count for debug
-		Index startingFrame = 1;
-#endif
+	// VTX_INFO( "Frames read in: {}s", timeReadingFrames.elapsedTime() );
 
-		Index validFrameCount = 0;
-		for ( Index frameIdx = 0; frameIdx < p_chemfileStruct.getFrameCount() - p_trajectoryFrameStart; ++frameIdx )
-		{
-			p_chemfileStruct.readNextFrame();
-			const std::vector<Vec3f> atomPositions = p_chemfileStruct.getCurrentFrameAtomPosition();
+	//// Erase supernumeraries frames
+	//// do we need to erase potential empty frames at the end of the circular buffer?
+	//// for now eraseEmptyFrames targets only plain vector buffers
+	// for ( const std::pair<VTX::Core::Struct::System *, Index> & pairSystemFirstFrame : p_targets )
+	//{
+	//	VTX::Core::Struct::System &		system	   = *( pairSystemFirstFrame.first );
+	//	VTX::Core::Struct::Trajectory & trajectory = system.trajectory;
 
-			if ( atomPositions.size() <= 0 )
-				continue;
-
-			for ( const std::pair<VTX::Core::Struct::System *, Index> & pairSystemStartFrame : p_targets )
-			{
-				VTX::Core::Struct::System & system	   = *pairSystemStartFrame.first;
-				const Index					frameIndex = pairSystemStartFrame.second + validFrameCount;
-				system.trajectory.fillFrame( frameIndex, atomPositions );
-
-				validFrameCount++;
-			}
-
-#ifdef _DEBUG
-			if ( frameIdx > 1 && frameIdx % 100 == 0 )
-			{
-				// VTX_DEBUG(
-				//	"Frames from {} to {} read in: {}s.", startingFrame, frameIdx, timeReadingFrames.intervalTime()
-				//);
-				startingFrame = frameIdx;
-			}
-#endif // DEBUG
-		}
-
-		// VTX_INFO( "Frames read in: {}s", timeReadingFrames.elapsedTime() );
-
-		// Erase supernumeraries frames
-		// do we need to erase potential empty frames at the end of the circular buffer?
-		// for now eraseEmptyFrames targets only plain vector buffers
-		for ( const std::pair<VTX::Core::Struct::System *, Index> & pairSystemFirstFrame : p_targets )
-		{
-			VTX::Core::Struct::System &		system	   = *( pairSystemFirstFrame.first );
-			VTX::Core::Struct::Trajectory & trajectory = system.trajectory;
-
-			trajectory.eraseEmptyFrames();
-		}
-	}
+	//	trajectory.eraseEmptyFrames();
+	//}
+	//}
 
 	VTX::Core::ChemDB::Category::TYPE System::_findCategoryType(
 		const std::string & p_fileExtension,

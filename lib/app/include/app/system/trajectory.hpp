@@ -32,7 +32,9 @@ namespace VTX::App::System
 	struct GenericTrajectory
 	{
 		TrajectoryPlayMode playMode = TrajectoryPlayMode::none; // Help the trajectory reader to schedule frame reading.
-		uint			   requestedFrameIndex = 0;				// Here lies the Frame index that is requested.
+		float			   playingSpeed		   = 35;			// Time in millisecon	ds between each frame update
+		float			   lastFrameUpdateTime = 0; // last elapsed time where the trajectory has been changed
+		uint			   requestedFrameIndex = 0; // Here lies the Frame index that is requested.
 		uint currentFrameIndex = std::numeric_limits<uint>::max(); // Here is the actual index related to the positions.
 		size_t trajectorySize  = std::numeric_limits<size_t>::max();
 	};

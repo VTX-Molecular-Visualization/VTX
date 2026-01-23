@@ -15,6 +15,7 @@ namespace VTX::IO::Util::SecondaryStructure
 
 	void computeStride( Core::Struct::System & p_system )
 	{
+#ifdef AnAlgorithmShoudntBeHere
 		using namespace VTX::Util;
 
 		const Core::Struct::Frame & positions = p_system.trajectory.getCurrentFrame();
@@ -218,6 +219,7 @@ namespace VTX::IO::Util::SecondaryStructure
 				}
 			}
 		}
+#endif
 	}
 
 } // namespace VTX::IO::Util::SecondaryStructure

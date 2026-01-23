@@ -30,19 +30,19 @@ namespace VTX::App::System
 		auto &		 reader		= _ptr->loader.getChemfilesReader();
 		const size_t frameCount = reader.getFrameCount();
 		RootUID		 systemUid	= REG().get<System::UID>( _ptr->entity ).system;
+		_ptr->loader.readNextFrame(); // First frame has already been added
 
-		for ( size_t it_currentFrameIndex = 0; it_currentFrameIndex < frameCount; it_currentFrameIndex++ )
+		for ( size_t it_currentFrameIndex = 1; it_currentFrameIndex < frameCount; it_currentFrameIndex++ )
 		{
 			std::vector<Vec3f> new_frame = reader.getCurrentFrameAtomPosition();
 			_ptr->loader.readNextFrame();
 			REG().patch<TrajectoryFullBuffer>(
 				_ptr->entity,
-				[ & ]( TrajectoryFullBuffer & data )
+				[ &new_frame, &systemUid, &it_currentFrameIndex ]( TrajectoryFullBuffer & data )
 				{
 					data.frameCollection.emplace_back( std::move( new_frame ) );
 					data.lastFrameAvailable = it_currentFrameIndex;
-					if ( it_currentFrameIndex == 0 )
-						RENDERER().setSystemPosition( systemUid, data.frameCollection[ 0 ] );
+					RENDERER().setSystemPosition( systemUid, data.frameCollection[ 0 ] );
 				}
 			);
 			if ( p_stopToken.stop_requested() )

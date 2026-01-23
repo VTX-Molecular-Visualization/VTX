@@ -49,7 +49,7 @@ namespace VTX::Core::Struct
 		ByteNumber out = 0;
 		out += p_sys.name.capacity();
 		// Mat4f should have dynamic allocation, right ?
-		out += dynamicMemoryUsage( p_sys.trajectory );
+		//out += dynamicMemoryUsage( p_sys.trajectory );
 		for ( auto & it_str : p_sys.chainNames )
 			out += it_str.capacity();
 		out += p_sys.chainNames.size() * sizeof( std::string );

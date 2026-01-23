@@ -77,31 +77,43 @@ namespace VTX::App::Action::Scene
 			const std::string systemName					   = pdbId == "" ? p_path.stem().string() : pdbId;
 			data.name										   = systemName; // TODO: move to metadata?
 
-			// AABB (trigger update function for scene aabb).
-			reg.patch<Util::Math::AABB>(
-				entity, [ &loader ]( Util::Math::AABB & p_aabb ) { p_aabb = loader.getAABB(); }
-			);
-
 			// UIDs: get from UID manager.
 			auto & uidManager = UID();
 			uid.system		  = uidManager.getRootPool().registerValue();
 			uid.residues	  = uidManager.getPickingPool().registerRange( data.getResidueCount() );
 			uid.atoms		  = uidManager.getPickingPool().registerRange( data.getAtomCount() );
 
+			std::span<const Vec3f> firstFrame;
 			if ( chemfilesReader.getFrameCount() > 1 )
 			{
 				auto & trajectory = reg.emplace<System::TrajectoryFullBuffer>(
 					entity
 				); // TODO Implement circular buffer with an automatic decision (maybe based on atomCount * frameCount
 				   // value threshold) and with a setting based on a value the user can alter
+				trajectory.genericData.trajectorySize = chemfilesReader.getFrameCount();
+				trajectory.frameCollection.emplace_back( chemfilesReader.getCurrentFrameAtomPosition() );
+				firstFrame					  = trajectory.frameCollection[ 0 ];
+				trajectory.lastFrameAvailable = 0;
+
 				THREAD().createThread( System::TrajectoryFullBufferReader( entity, std::move( loader ) ) );
 			}
 			else
 			{
 				auto & trajectory		 = reg.emplace<System::TrajectorySingleFrame>( entity );
 				trajectory.atomPositions = chemfilesReader.getCurrentFrameAtomPosition();
+				firstFrame				 = trajectory.atomPositions;
 				RENDERER().setSystemPosition( uid.system, trajectory.atomPositions );
 			}
+
+			// AABB (trigger update function for scene aabb).
+			reg.patch<Util::Math::AABB>(
+				entity,
+				[ &firstFrame ]( Util::Math::AABB & p_aabb )
+				{
+					for ( auto & it_atomPos : firstFrame )
+						p_aabb.extend( it_atomPos );
+				}
+			);
 
 		} // We don't need the loader anymore
 

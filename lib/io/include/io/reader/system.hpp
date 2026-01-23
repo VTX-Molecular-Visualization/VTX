@@ -34,7 +34,7 @@ namespace VTX::IO::Reader
 
 		void readNextFrame() { _chemfilesReader->readNextFrame(); } // TODO : not a huge fan on this
 
-		const VTX::Util::Math::AABB & getAABB() const { return _aabb; }
+		// const VTX::Util::Math::AABB & getAABB() const { return _aabb; }
 
 	  private:
 		void _fillStructure( IO::Reader::Chemfiles & p_chemfileStruct, VTX::Core::Struct::System & p_system );
@@ -46,17 +46,17 @@ namespace VTX::IO::Reader
 		);
 
 		// TODO do this function here or in IO::Reader::ChemfilesTrajectory ?
-		void _readTrajectoryFrames(
-			IO::Reader::Chemfiles &											   p_chemfileStruct,
-			const std::vector<std::pair<VTX::Core::Struct::System *, Index>> & p_targets,
-			const Index														   p_trajectoryFrameStart
-		);
+		// void _readTrajectoryFrames(
+		//	IO::Reader::Chemfiles &											   p_chemfileStruct,
+		//	const std::vector<std::pair<VTX::Core::Struct::System *, Index>> & p_targets,
+		//	const Index														   p_trajectoryFrameStart
+		//);
 
 		ChemDB::Atom::TYPE _getTypeInConfiguration( const IO::Reader::Chemfiles & p_chemfileStruct ) const;
 
 		std::unique_ptr<Reader::Chemfiles>	_chemfilesReader = nullptr;
 		const Struct::SystemConfiguration * _configuration	 = nullptr;
-		VTX::Util::Math::AABB				_aabb;
+		// VTX::Util::Math::AABB				_aabb;
 	};
 } // namespace VTX::IO::Reader
 #endif
