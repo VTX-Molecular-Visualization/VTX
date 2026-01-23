@@ -8,7 +8,7 @@
 #include <type_traits>
 
 /**
- * @brief Enable bitmask operators for enum class (o add in the enum!).
+ * @brief Enable bitmask operators for enum class (to add in the enum!).
  */
 #define VTX_ENUM_ENABLE_BITMASK _entt_enum_as_bitmask
 

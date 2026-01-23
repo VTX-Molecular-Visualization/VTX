@@ -190,6 +190,7 @@ namespace VTX::UI::QT::Widget::Library
 			indexToSelect = std::clamp( indexToSelect, 0, _comboBox->count() - 1 );
 			_comboBox->setCurrentIndex( indexToSelect );
 			_lineRename->setText( _comboBox->currentText() );
+			emit presetChanged( p_e );
 		}
 
 		/**
