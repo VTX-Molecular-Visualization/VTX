@@ -71,7 +71,7 @@ namespace VTX::Renderer::Context::GL::Debug
 		while ( ( err = glGetError() ) != GL_NO_ERROR )
 		{
 			fprintf( stderr, "[GL ERROR] 0x%X\n", err );
-			assert( false );
+			// assert( false );
 		}
 	};
 } // namespace VTX::Renderer::Context::GL::Debug

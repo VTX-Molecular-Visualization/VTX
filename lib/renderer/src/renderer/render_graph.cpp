@@ -85,7 +85,7 @@ namespace VTX::Renderer
 
 		// Build.
 		// TODO: remove unused passes.
-		RenderQueue queue;
+		Desc::RenderQueue queue;
 		for ( auto & p : _passes )
 		{
 			queue.push_back( p.get() );
@@ -94,7 +94,7 @@ namespace VTX::Renderer
 		// Check empty.
 		if ( queue.empty() )
 		{
-			throw GraphicException( "Render queue is empty" );
+			return queue;
 		}
 
 		// Check last pass = 1 output.
@@ -172,6 +172,8 @@ namespace VTX::Renderer
 	{
 		using namespace Desc;
 
+		_config = p_config;
+
 		GraphBuilder g;
 
 		// Buffers.
@@ -179,7 +181,7 @@ namespace VTX::Renderer
 			"Camera",
 			E_SHADER_BUFFER_KIND::PARAMETERS,
 			E_BUFFER_MUTABILITY::IMMUTABLE,
-			E_BUFFER_ACCESS::READ,
+			E_BUFFER_ACCESS::NONE,
 			E_UPDATE_FREQUENCY::STREAM,
 			15,
 			{ makeUniform( "MatrixView", Mat4f( MAT4F_ID ) ),
@@ -197,7 +199,7 @@ namespace VTX::Renderer
 			"ColorLayout",
 			E_SHADER_BUFFER_KIND::PARAMETERS,
 			E_BUFFER_MUTABILITY::IMMUTABLE,
-			E_BUFFER_ACCESS::READ,
+			E_BUFFER_ACCESS::NONE,
 			E_UPDATE_FREQUENCY::DYNAMIC,
 			14,
 			{ makeUniformArray( "Colors", Util::Color::Rgba {}, 256 ) }
@@ -207,7 +209,7 @@ namespace VTX::Renderer
 			"Models",
 			E_SHADER_BUFFER_KIND::STRUCTURED,
 			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::READ,
+			E_BUFFER_ACCESS::NONE,
 			E_UPDATE_FREQUENCY::STREAM,
 			13,
 			{ makeUniform( "MatrixModelView", Mat4f( MAT4F_ID ) ),
@@ -219,7 +221,7 @@ namespace VTX::Renderer
 			"Representations",
 			E_SHADER_BUFFER_KIND::STRUCTURED,
 			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::READ,
+			E_BUFFER_ACCESS::NONE,
 			E_UPDATE_FREQUENCY::DYNAMIC,
 			12,
 			{ makeUniform( "SphereRadiusFixed", 0.0f ),
@@ -492,7 +494,7 @@ namespace VTX::Renderer
 		{
 			g.pass( "Selection" )
 				.in( "Geometry" )
-				.in( "Shaded" )
+				.in( p_config.enableOutline ? "Outline" : "Shaded" )
 				.in( "Depth" )
 				.out( "Selection" )
 				.program( "Selection" )
@@ -504,7 +506,9 @@ namespace VTX::Renderer
 
 		// FXAA.
 		g.pass( "FXAA" )
-			.in( p_config.enableSelection ? "Selection" : "Shaded" )
+			.in( p_config.enableSelection ? "Selection"
+				 : p_config.enableOutline ? "Outline"
+										  : "Shaded" )
 			.out( "FXAA" )
 			.program( "FXAA" )
 			.shaders( { "default.vert", "fxaa.frag" } )

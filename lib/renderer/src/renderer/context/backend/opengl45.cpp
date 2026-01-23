@@ -119,27 +119,6 @@ namespace
 		return flags;
 	}
 
-	constexpr GLbitfield toGLMapFlags( const Desc::E_BUFFER_ACCESS p_access )
-	{
-		using namespace Desc;
-
-		GLbitfield flags = 0;
-
-		switch ( p_access )
-		{
-		case E_BUFFER_ACCESS::READ: flags |= GL_MAP_READ_BIT; break;
-		case E_BUFFER_ACCESS::WRITE: flags |= GL_MAP_WRITE_BIT; break;
-		case E_BUFFER_ACCESS::READ_WRITE:
-			flags |= GL_MAP_READ_BIT;
-			flags |= GL_MAP_WRITE_BIT;
-			break;
-
-		default: assert( false ); return 0;
-		}
-
-		return flags;
-	}
-
 	constexpr GLenum _toGL( const Desc::E_UPDATE_FREQUENCY p_freq ) noexcept
 	{
 		using namespace Desc;
@@ -317,11 +296,6 @@ namespace VTX::Renderer::Context::Backend
 			const Pass & pass		= *passPtr;
 			const bool	 isLastPass = ( passPtr == p_renderQueue.back() );
 
-			// Resource table, clear each build.
-			const Handle	hResourceTable = _getOrCreateResourceTable( pass, p_resources );
-			ResourceTable & resourceTable  = _resourceTables[ hResourceTable ];
-			resourceTable				   = _buildResourceTableForPass( pass, p_resources );
-
 			// FBO.
 			const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
 			if ( not isLastPass )
@@ -334,6 +308,11 @@ namespace VTX::Renderer::Context::Backend
 			{
 				const Handle hProgram = _getOrCreateProgram( program );
 			}
+
+			// Resource table, clear each build.
+			const Handle	hResourceTable = _getOrCreateResourceTable( pass, p_resources );
+			ResourceTable & resourceTable  = _resourceTables[ hResourceTable ];
+			resourceTable				   = _buildResourceTableForPass( pass, p_resources );
 
 			// COMMANDS.
 			// Push BEGIN_PASS.
@@ -859,6 +838,43 @@ namespace VTX::Renderer::Context::Backend
 			}
 		}
 
+		/*
+		std::cout << "\n=== ResourceTable for pass [" << p_pass.name << "] ===\n";
+
+		// ---- TEXTURES ----
+		for ( const TextureBinding & t : rt.textures )
+		{
+			std::cout << "Texture  | unit=" << t.unit << " | texHandle=" << t.texture
+					  << " | samplerHandle=" << t.sampler << '\n';
+		}
+
+		// ---- BUFFERS ----
+		std::unordered_map<Desc::Binding, size_t> bindingCount;
+
+		for ( const BufferBinding & bnd : rt.shaderBuffers )
+		{
+			++bindingCount[ bnd.binding ];
+
+			const char * kindStr = ( bnd.kind == Desc::E_SHADER_BUFFER_KIND::PARAMETERS )	? "PARAMETERS"
+								   : ( bnd.kind == Desc::E_SHADER_BUFFER_KIND::STRUCTURED ) ? "STRUCTURED"
+																							: "UNKNOWN";
+
+			std::cout << "Buffer   | binding=" << bnd.binding << " | bufHandle=" << bnd.buffer << " | kind=" << kindStr
+					  << " | offset=" << bnd.offsetBytes << " | size=" << bnd.sizeBytes << '\n';
+		}
+
+		// ---- COLLISION CHECK ----
+		for ( const auto & [ binding, count ] : bindingCount )
+		{
+			if ( count > 1 )
+			{
+				std::cout << "WARNING: buffer binding " << binding << " is used " << count << " times in this pass\n";
+			}
+		}
+
+		std::cout << "=== End ResourceTable ===\n";
+		*/
+
 		return rt;
 	}
 
@@ -985,7 +1001,7 @@ namespace VTX::Renderer::Context::Backend
 		_bindGeometryToVao( quadLayoutKey, quadGeo, fakeRes );
 
 		const Handle hVbo = _cacheVertexBuffers.at( quadVboKey );
-		_vertexBuffers[ hVbo ]->setData( quad.data(), GLsizei( sizeof( quad ) ), GL_STATIC_DRAW );
+		_vertexBuffers[ hVbo ]->setStorage( quad.data(), GLsizei( sizeof( quad ) ) );
 	}
 
 	void OpenGL45::setShaderBufferData( const Desc::Key & p_key, SpanBytes p_bytes )
@@ -994,9 +1010,25 @@ namespace VTX::Renderer::Context::Backend
 
 		const Handle h			= _cacheShaderBuffers.at( p_key );
 		const auto & bufferProp = _shaderBufferProperties.at( h );
-		_shaderBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( bufferProp.frequency ) );
+
+		switch ( bufferProp.mutability )
+		{
+		case E_BUFFER_MUTABILITY::MUTABLE:
+		{
+			_shaderBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( bufferProp.frequency ) );
+			break;
+		}
+		case E_BUFFER_MUTABILITY::IMMUTABLE:
+		{
+			assert( p_bytes.size() == _shaderBuffers[ h ]->size() );
+			_shaderBuffers[ h ]->setSub( p_bytes.data(), GLsizei( p_bytes.size() ), 0 );
+			break;
+		}
+		default: break;
+		}
 	}
 
+	// Pipeline buffers are default immutables.
 	void OpenGL45::setPipelineBufferData( const Desc::Key & p_key, SpanBytes p_bytes )
 	{
 		using namespace Desc;
@@ -1004,7 +1036,7 @@ namespace VTX::Renderer::Context::Backend
 		const Handle h
 			= _cacheVertexBuffers.contains( p_key ) ? _cacheVertexBuffers.at( p_key ) : _cacheIndexBuffers.at( p_key );
 		const auto & bufferProp = _pipelineBufferProperties.at( h );
-		GLenum		 freq		= _toGL( bufferProp.frequency );
+		const GLenum freq		= _toGL( bufferProp.frequency );
 		if ( bufferProp.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
 		{
 			_vertexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), freq );

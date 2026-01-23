@@ -24,6 +24,8 @@ namespace VTX::Renderer
 			bool enableSSAO		 = false;
 			bool enableOutline	 = false;
 			bool enableSelection = false;
+
+			bool operator==( const PipelineConfig & ) const = default;
 		};
 
 		/**
@@ -58,9 +60,16 @@ namespace VTX::Renderer
 		 */
 		void createDefaultPipeline( const PipelineConfig &, const Geometries & );
 
+		/**
+		 * @brief Get pipeline config.
+		 */
+		const std::optional<PipelineConfig> & getPipelineConfig() const { return _config; }
+
 	  private:
 		Desc::Resources _resources;
 		Desc::PassList	_passes;
+
+		std::optional<PipelineConfig> _config;
 	};
 
 } // namespace VTX::Renderer
