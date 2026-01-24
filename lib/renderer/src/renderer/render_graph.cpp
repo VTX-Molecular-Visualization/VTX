@@ -305,9 +305,9 @@ namespace VTX::Renderer
 		g.texture( "Depth", E_FORMAT::R32F );
 
 		// Used by shading pass even if SSAO disabled.
-		// std::vector<float> emptyData( 1, 1.f );
+		std::vector<float> emptyData( 1, 1.f );
 		g.texture( "BlurX", E_FORMAT::R16F );
-		g.texture( "BlurY", E_FORMAT::R16F /*, emptyData */ );
+		g.texture( "BlurY", E_FORMAT::R16F, emptyData, Size2DAbsolute { 1, 1 } );
 		if ( p_config.enableSSAO )
 		{
 			constexpr size_t   noiseTextureSize = 64;

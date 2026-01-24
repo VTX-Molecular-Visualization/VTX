@@ -12,6 +12,7 @@
 #include "renderer/context/gl/struct_opengl_infos.hpp"
 #include "renderer/context/gl/texture_2d.hpp"
 #include "renderer/context/gl/vertex_array.hpp"
+#include "renderer/context/resource_handler.hpp"
 #include "renderer/descriptors.hpp"
 #include "renderer/struct_infos.hpp"
 
@@ -103,50 +104,42 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		inline const GL::Framebuffer & framebuffer( const Desc::Handle p_handle ) const noexcept
 		{
-			assert( p_handle < _framebuffers.size() );
-			return *_framebuffers[ p_handle ];
+			return _framebuffers.get( p_handle );
 		}
 
 		inline const GL::Texture2D & texture( const Desc::Handle p_handle ) const noexcept
 		{
-			assert( p_handle < _textures.size() );
-			return *_textures[ p_handle ];
+			return _textures.get( p_handle );
 		}
 
 		inline const GL::Sampler & sampler( const Desc::Handle p_handle ) const noexcept
 		{
-			assert( p_handle < _samplers.size() );
-			return *_samplers[ p_handle ];
+			return _samplers.get( p_handle );
 		}
 
 		inline const GL::Program & program( const Desc::Handle p_handle ) const noexcept
 		{
-			assert( p_handle < _programs.size() );
-			return *_programs[ p_handle ];
+			return _programs.get( p_handle );
 		}
 
 		inline const GL::Buffer & shaderBuffer( const Desc::Handle p_handle ) const noexcept
 		{
-			assert( p_handle < _shaderBuffers.size() );
-			return *_shaderBuffers[ p_handle ];
+			return _shaderBuffers.get( p_handle );
 		}
 
 		inline const GL::Buffer & vertexBuffer( const Desc::Handle p_handle ) const noexcept
 		{
-			assert( p_handle < _vertexBuffers.size() );
-			return *_vertexBuffers[ p_handle ];
+			return _vertexBuffers.get( p_handle );
 		}
 
 		inline const GL::Buffer & indexBuffer( const Desc::Handle p_handle ) const noexcept
 		{
-			assert( p_handle < _indexBuffers.size() );
-			return *_indexBuffers[ p_handle ];
+			return _indexBuffers.get( p_handle );
 		}
 
 		inline const GL::VertexArray & vertexArray( const Desc::Handle p_handle ) const noexcept
 		{
-			assert( p_handle < _vertexArrays.size() );
-			return *_vertexArrays[ p_handle ];
+			return _vertexArrays.get( p_handle );
 		}
 
 	  private:
@@ -157,44 +150,24 @@ namespace VTX::Renderer::Context::Backend
 		uint32_t _height;
 
 		/**
-		 * @brief Global shader buffers.
-		 */
-		using GlobalShaderBuffers = std::vector<BufferBinding>;
-
-		/**
-		 * @brief Cache : mapping Key -> Handle.
-		 */
-		using Cache = std::unordered_map<Desc::Key, Desc::Handle>;
-		Cache _cacheTextures;
-		Cache _cacheSamplers;
-		Cache _cacheShaderBuffers;
-		Cache _cacheVertexBuffers;
-		Cache _cacheIndexBuffers;
-		Cache _cacheVertexLayouts;
-		Cache _cachePrograms;
-		Cache _cacheResourceTables;
-		Cache _cacheFramebuffers;
-
-		/**
 		 * @brief Global shader buffers and resource tables.
 		 */
+		using GlobalShaderBuffers = std::vector<BufferBinding>;
 		GlobalShaderBuffers		   _globalShaderBuffers;
 		std::vector<ResourceTable> _resourceTables;
 
 		/**
-		 * @brief GL resource pools : index = Handle.
+		 * @brief GL resource pools.
 		 */
-		template<typename T>
-		using GLObject = std::vector<std::unique_ptr<T>>;
-		GLObject<GL::VertexArray>			_vertexArrays;
-		GLObject<GL::Buffer>				_shaderBuffers;
-		GLObject<GL::Buffer>				_vertexBuffers;
-		GLObject<GL::Buffer>				_indexBuffers;
-		GLObject<GL::Framebuffer>			_framebuffers;
-		GLObject<GL::Texture2D>				_textures;
-		GLObject<GL::Sampler>				_samplers;
+		ResourceHandler<GL::VertexArray>	_vertexArrays;
+		ResourceHandler<GL::Buffer>			_shaderBuffers;
+		ResourceHandler<GL::Buffer>			_vertexBuffers;
+		ResourceHandler<GL::Buffer>			_indexBuffers;
+		ResourceHandler<GL::Framebuffer>	_framebuffers;
+		ResourceHandler<GL::Texture2D>		_textures;
+		ResourceHandler<GL::Sampler>		_samplers;
+		ResourceHandler<GL::Program>		_programs;
 		std::unique_ptr<GL::ProgramManager> _programManager;
-		std::vector<GL::Program *>			_programs;
 
 		/**
 		 * @brief Save buffer and texture properties.
