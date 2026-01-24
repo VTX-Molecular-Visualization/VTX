@@ -212,7 +212,7 @@ namespace VTX::Renderer::Context
 	void ContextWrapper::clear()
 	{
 		_impl->commands.clear();
-		_impl->backend = BackendVariant {};
-		//_impl->executor = ExecutorVariant {};
+		_impl->backend.emplace<std::monostate>();
+		_impl->executor.emplace<std::monostate>();
 	}
 } // namespace VTX::Renderer::Context
