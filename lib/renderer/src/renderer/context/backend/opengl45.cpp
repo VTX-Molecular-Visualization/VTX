@@ -204,7 +204,8 @@ namespace
 namespace VTX::Renderer::Context::Backend
 {
 
-	OpenGL45::OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc )
+	OpenGL45::OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc ) :
+		_shaderPath( p_shaderPath )
 	{
 		assert( p_width > 0 );
 		assert( p_height > 0 );
@@ -235,9 +236,6 @@ namespace VTX::Renderer::Context::Backend
 
 		_getOpenglInfos();
 		_openglInfos.print();
-
-		// Program manager.
-		_programManager = std::make_unique<GL::ProgramManager>( p_shaderPath );
 
 		// Quad.
 		_createQuad();
@@ -758,8 +756,8 @@ namespace VTX::Renderer::Context::Backend
 		}
 		const Handle h = static_cast<Handle>( _programs.size() );
 
-		GL::Program * const program = _programManager->createProgram( p_program.name, p_program.shaders );
-		_programs.emplace_back( program );
+		auto glProgram = std::make_unique<GL::Program>( p_program.name, _shaderPath, p_program.shaders );
+		_programs.emplace_back( std::move( glProgram ) );
 		_cachePrograms.emplace( key, h );
 
 		// Create shader buffer if uniforms.

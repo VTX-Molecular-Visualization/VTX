@@ -7,7 +7,7 @@
 #include "renderer/context/gl/chrono.hpp"
 #include "renderer/context/gl/framebuffer.hpp"
 #include "renderer/context/gl/include_opengl.hpp"
-#include "renderer/context/gl/program_manager.hpp"
+#include "renderer/context/gl/program.hpp"
 #include "renderer/context/gl/sampler.hpp"
 #include "renderer/context/gl/struct_opengl_infos.hpp"
 #include "renderer/context/gl/texture_2d.hpp"
@@ -157,6 +157,11 @@ namespace VTX::Renderer::Context::Backend
 		uint32_t _height;
 
 		/**
+		 * @brief Shader path.
+		 */
+		const FilePath _shaderPath;
+
+		/**
 		 * @brief Global shader buffers.
 		 */
 		using GlobalShaderBuffers = std::vector<BufferBinding>;
@@ -186,15 +191,14 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		template<typename T>
 		using GLObject = std::vector<std::unique_ptr<T>>;
-		GLObject<GL::VertexArray>			_vertexArrays;
-		GLObject<GL::Buffer>				_shaderBuffers;
-		GLObject<GL::Buffer>				_vertexBuffers;
-		GLObject<GL::Buffer>				_indexBuffers;
-		GLObject<GL::Framebuffer>			_framebuffers;
-		GLObject<GL::Texture2D>				_textures;
-		GLObject<GL::Sampler>				_samplers;
-		std::unique_ptr<GL::ProgramManager> _programManager;
-		std::vector<GL::Program *>			_programs;
+		GLObject<GL::VertexArray> _vertexArrays;
+		GLObject<GL::Buffer>	  _shaderBuffers;
+		GLObject<GL::Buffer>	  _vertexBuffers;
+		GLObject<GL::Buffer>	  _indexBuffers;
+		GLObject<GL::Framebuffer> _framebuffers;
+		GLObject<GL::Texture2D>	  _textures;
+		GLObject<GL::Sampler>	  _samplers;
+		GLObject<GL::Program>	  _programs;
 
 		/**
 		 * @brief Save buffer and texture properties.
