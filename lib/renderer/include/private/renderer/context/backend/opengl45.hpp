@@ -91,17 +91,13 @@ namespace VTX::Renderer::Context::Backend
 		void fillInfos( StructInfos & p_infos ) const;
 
 		/**
-		 * @brief Resource table accessors.
+		 * @brief Resources accessors.
 		 */
 		inline const OpenGL45::ResourceTable & resourceTable( const Desc::Handle p_handle ) const noexcept
 		{
-			assert( p_handle < _resourceTables.size() );
-			return _resourceTables[ p_handle ];
+			return _resourceTables.get( p_handle );
 		}
 
-		/**
-		 * @brief GL object accessors.
-		 */
 		inline const GL::Framebuffer & framebuffer( const Desc::Handle p_handle ) const noexcept
 		{
 			return _framebuffers.get( p_handle );
@@ -158,22 +154,20 @@ namespace VTX::Renderer::Context::Backend
 		 * @brief Global shader buffers and resource tables.
 		 */
 		using GlobalShaderBuffers = std::vector<BufferBinding>;
-		GlobalShaderBuffers		   _globalShaderBuffers;
-		std::vector<ResourceTable> _resourceTables;
+		GlobalShaderBuffers _globalShaderBuffers;
 
 		/**
-		 * @brief GL resource pools.
+		 * @brief Resource pools.
 		 */
-		template<typename T>
-		using GLObject = std::vector<std::unique_ptr<T>>;
-		GLObject<GL::VertexArray> _vertexArrays;
-		GLObject<GL::Buffer>	  _shaderBuffers;
-		GLObject<GL::Buffer>	  _vertexBuffers;
-		GLObject<GL::Buffer>	  _indexBuffers;
-		GLObject<GL::Framebuffer> _framebuffers;
-		GLObject<GL::Texture2D>	  _textures;
-		GLObject<GL::Sampler>	  _samplers;
-		GLObject<GL::Program>	  _programs;
+		ResourceHandler<ResourceTable>	 _resourceTables;
+		ResourceHandler<GL::VertexArray> _vertexArrays;
+		ResourceHandler<GL::Buffer>		 _shaderBuffers;
+		ResourceHandler<GL::Buffer>		 _vertexBuffers;
+		ResourceHandler<GL::Buffer>		 _indexBuffers;
+		ResourceHandler<GL::Framebuffer> _framebuffers;
+		ResourceHandler<GL::Texture2D>	 _textures;
+		ResourceHandler<GL::Sampler>	 _samplers;
+		ResourceHandler<GL::Program>	 _programs;
 
 		/**
 		 * @brief Save buffer and texture properties.

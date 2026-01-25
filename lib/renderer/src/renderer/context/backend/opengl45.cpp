@@ -309,7 +309,7 @@ namespace VTX::Renderer::Context::Backend
 
 			// Resource table, clear each build.
 			const Handle	hResourceTable = _getOrCreateResourceTable( pass, p_resources );
-			ResourceTable & resourceTable  = _resourceTables[ hResourceTable ];
+			ResourceTable & resourceTable  = _resourceTables.get( hResourceTable );
 			resourceTable				   = _buildResourceTableForPass( pass, p_resources );
 
 			// COMMANDS.
@@ -331,15 +331,15 @@ namespace VTX::Renderer::Context::Backend
 				if ( hasDrawCall )
 				{
 					const Geometry g = p_resources.geometries.at( program.drawCall.value().geometry );
-					hVao			 = _cacheVertexLayouts.at( g.vertexLayout );
+					hVao			 = _vertexArrays.at( g.vertexLayout );
 				}
 				else
 				{
-					hVao = _cacheVertexLayouts.at( _QUAD );
+					hVao = _vertexArrays.at( _QUAD );
 				}
 
 				// Push DRAW.
-				const Handle hProgram = _cachePrograms.at( program.name );
+				const Handle hProgram = _programs.at( program.name );
 				if ( hasDrawCall )
 				{
 					const DrawCall & drawCall = program.drawCall.value();
@@ -399,7 +399,7 @@ namespace VTX::Renderer::Context::Backend
 		// GLOBAL BINDINGS: done once at startup.
 		for ( auto & bufferBinding : _globalShaderBuffers )
 		{
-			_shaderBuffers.at( bufferBinding.buffer )->bind( _toGL( bufferBinding.kind ), bufferBinding.binding );
+			_shaderBuffers.get( bufferBinding.buffer ).bind( _toGL( bufferBinding.kind ), bufferBinding.binding );
 		}
 	}
 
@@ -443,12 +443,12 @@ namespace VTX::Renderer::Context::Backend
 				texHeight = std::max( 1u, texHeight );
 			}
 
-			_textures.at( _cacheTextures.at( key ) )->resize( texWidth, texHeight );
+			_textures.get( key ).resize( texWidth, texHeight );
 		}
 
 		for ( const auto & pass : p_passes )
 		{
-			if ( _cacheFramebuffers.contains( pass->name ) ) // Avoid the last pass.
+			if ( _framebuffers.contains( pass->name ) ) // Avoid the last pass.
 			{
 				_attachTexturesToFramebuffer( *pass, p_textures );
 			}
@@ -465,10 +465,9 @@ namespace VTX::Renderer::Context::Backend
 
 		const Key & key = p_pass.name;
 
-		auto it = _cacheFramebuffers.find( key );
-		if ( it != _cacheFramebuffers.end() )
+		if ( _framebuffers.contains( key ) )
 		{
-			return it->second;
+			return _framebuffers.at( key );
 		}
 
 		if ( p_isLastpass )
@@ -476,9 +475,7 @@ namespace VTX::Renderer::Context::Backend
 			return NO_HANDLE;
 		}
 
-		const Handle h = static_cast<Handle>( _framebuffers.size() );
-		_framebuffers.emplace_back( std::make_unique<GL::Framebuffer>() );
-		_cacheFramebuffers.emplace( key, h );
+		const Handle h = _framebuffers.emplace( key );
 
 		return h;
 	}
@@ -489,15 +486,12 @@ namespace VTX::Renderer::Context::Backend
 
 		const Key & key = p_pass.name;
 
-		auto it = _cacheResourceTables.find( key );
-		if ( it != _cacheResourceTables.end() )
+		if ( _resourceTables.contains( key ) )
 		{
-			return it->second;
+			return _resourceTables.at( key );
 		}
 
-		const Handle h = static_cast<Handle>( _resourceTables.size() );
-		_resourceTables.emplace_back();
-		_cacheResourceTables.emplace( key, h );
+		const Handle h = _resourceTables.emplace( key );
 
 		return h;
 	}
@@ -506,13 +500,10 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		auto it = _cacheTextures.find( p_key );
-		if ( it != _cacheTextures.end() )
+		if ( _textures.contains( p_key ) )
 		{
-			return it->second;
+			return _textures.at( p_key );
 		}
-
-		const Handle h = static_cast<Handle>( _textures.size() );
 
 		uint32_t width	= _width;
 		uint32_t height = _height;
@@ -532,15 +523,13 @@ namespace VTX::Renderer::Context::Backend
 
 		GLPixelFormat glFormat = _toGL( p_text.format );
 
-		_textures.emplace_back(
-			std::make_unique<GL::Texture2D>( GLsizei( width ), GLsizei( height ), glFormat.internalFormat )
-		);
-		_cacheTextures.emplace( p_key, h );
+		const Handle h = _textures.emplace( p_key, GLsizei( width ), GLsizei( height ), glFormat.internalFormat );
+
 		_textureProperties.emplace( h, _TextureProperties { p_text.format, p_text.size } );
 
 		if ( not p_text.data.empty() )
 		{
-			_textures[ h ]->fill( p_text.data.data(), glFormat.uploadFormat, glFormat.uploadType );
+			_textures.get( h ).fill( p_text.data.data(), glFormat.uploadFormat, glFormat.uploadType );
 		}
 
 		return h;
@@ -550,19 +539,15 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		auto it = _cacheSamplers.find( p_key );
-		if ( it != _cacheSamplers.end() )
+		if ( _samplers.contains( p_key ) )
 		{
-			return it->second;
+			return _samplers.at( p_key );
 		}
 
-		const Handle h = static_cast<Handle>( _samplers.size() );
-		_samplers.emplace_back(
-			std::make_unique<GL::Sampler>(
-				_toGL( p_text.wrapS ), _toGL( p_text.wrapT ), _toGL( p_text.minFilter ), _toGL( p_text.magFilter )
-			)
+		const Handle h = _samplers.emplace(
+			p_key, _toGL( p_text.wrapS ), _toGL( p_text.wrapT ), _toGL( p_text.minFilter ), _toGL( p_text.magFilter )
+
 		);
-		_cacheSamplers.emplace( p_key, h );
 
 		return h;
 	}
@@ -574,16 +559,14 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		auto it = _cacheVertexLayouts.find( p_key );
-		if ( it != _cacheVertexLayouts.end() )
+		if ( _vertexArrays.contains( p_key ) )
 		{
-			return it->second;
+			return _vertexArrays.at( p_key );
 		}
-		const Handle h = static_cast<Handle>( _vertexArrays.size() );
-		_vertexArrays.emplace_back( std::make_unique<GL::VertexArray>() );
-		_cacheVertexLayouts.emplace( p_key, h );
 
-		const auto & vao = *_vertexArrays[ h ];
+		const Handle h = _vertexArrays.emplace( p_key );
+
+		const auto & vao = _vertexArrays.get( h );
 		vao.bind();
 		GLuint location = 0;
 		for ( const auto & a : p_vertexStream.attributes )
@@ -616,10 +599,9 @@ namespace VTX::Renderer::Context::Backend
 
 		const Key key = p_buffer.name;
 
-		auto it = _cacheShaderBuffers.find( key );
-		if ( it != _cacheShaderBuffers.end() )
+		if ( _shaderBuffers.contains( key ) )
 		{
-			return it->second;
+			return _shaderBuffers.at( key );
 		}
 
 		using CpuBuffer = std::variant<BinaryBuffer<E_LAYOUT_TYPE::Std140>, BinaryBuffer<E_LAYOUT_TYPE::Std430>>;
@@ -628,7 +610,7 @@ namespace VTX::Renderer::Context::Backend
 								  ? CpuBuffer { BinaryBuffer<E_LAYOUT_TYPE::Std140> {} }
 								  : CpuBuffer { BinaryBuffer<E_LAYOUT_TYPE::Std430> {} };
 
-		auto glBuffer = std::visit(
+		const Handle h = std::visit(
 			[ & ]( auto & p_buf )
 			{
 				using BB = std::decay_t<decltype( p_buf )>;
@@ -649,18 +631,19 @@ namespace VTX::Renderer::Context::Backend
 				const uint32_t bufferSize = static_cast<uint32_t>( p_buf.size() );
 				assert( bufferSize > 0 );
 
-				auto gl = std::make_unique<GL::Buffer>();
+				const auto hBuffer = _shaderBuffers.emplace( key );
+				auto &	   gl	   = _shaderBuffers.get( hBuffer );
 
 				switch ( p_buffer.mutability )
 				{
 				case E_BUFFER_MUTABILITY::MUTABLE:
 				{
-					gl->setData( p_buf.data(), static_cast<GLsizei>( bufferSize ), _toGL( p_buffer.frequency ) );
+					gl.setData( p_buf.data(), static_cast<GLsizei>( bufferSize ), _toGL( p_buffer.frequency ) );
 					break;
 				}
 				case E_BUFFER_MUTABILITY::IMMUTABLE:
 				{
-					gl->setStorage(
+					gl.setStorage(
 						p_buf.data(),
 						static_cast<GLsizei>( bufferSize ),
 						_toGLStorageFlags( p_buffer.access, p_buffer.frequency )
@@ -670,14 +653,11 @@ namespace VTX::Renderer::Context::Backend
 				default: break;
 				}
 
-				return gl;
+				return hBuffer;
 			},
 			cpuBuffer
 		);
 
-		const Handle h = static_cast<Handle>( _shaderBuffers.size() );
-		_shaderBuffers.emplace_back( std::move( glBuffer ) );
-		_cacheShaderBuffers.emplace( key, h );
 		_shaderBufferProperties.emplace(
 			h, _ShaderBufferProperties { p_buffer.role, p_buffer.mutability, p_buffer.access, p_buffer.frequency }
 		);
@@ -689,17 +669,12 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		auto it = _cacheVertexBuffers.find( p_key );
-		if ( it != _cacheVertexBuffers.end() )
+		if ( _vertexBuffers.contains( p_key ) )
 		{
-			return it->second;
+			return _vertexBuffers.at( p_key );
 		}
 
-		auto glBuffer = std::make_unique<GL::Buffer>();
-
-		const Handle h = static_cast<Handle>( _vertexBuffers.size() );
-		_vertexBuffers.emplace_back( std::move( glBuffer ) );
-		_cacheVertexBuffers.emplace( p_key, h );
+		const Handle h = _vertexBuffers.emplace( p_key );
 
 		return h;
 	}
@@ -708,17 +683,12 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		auto it = _cacheIndexBuffers.find( p_key );
-		if ( it != _cacheIndexBuffers.end() )
+		if ( _indexBuffers.contains( p_key ) )
 		{
-			return it->second;
+			return _indexBuffers.at( p_key );
 		}
 
-		auto glBuffer = std::make_unique<GL::Buffer>();
-
-		const Handle h = static_cast<Handle>( _indexBuffers.size() );
-		_indexBuffers.emplace_back( std::move( glBuffer ) );
-		_cacheIndexBuffers.emplace( p_key, h );
+		const Handle h = _indexBuffers.emplace( p_key );
 
 		return h;
 	}
@@ -728,16 +698,11 @@ namespace VTX::Renderer::Context::Backend
 		using namespace Desc;
 
 		const Key & key = p_program.name;
-		auto		it	= _cachePrograms.find( key );
-		if ( it != _cachePrograms.end() )
+		if ( _programs.contains( key ) )
 		{
-			return it->second;
+			return _programs.at( key );
 		}
-		const Handle h = static_cast<Handle>( _programs.size() );
-
-		auto glProgram = std::make_unique<GL::Program>( p_program.name, _shaderPath, p_program.shaders );
-		_programs.emplace_back( std::move( glProgram ) );
-		_cachePrograms.emplace( key, h );
+		const Handle h = _programs.emplace( key, p_program.name, _shaderPath, p_program.shaders );
 
 		// Create shader buffer if uniforms.
 		if ( not p_program.uniforms.empty() )
@@ -764,7 +729,7 @@ namespace VTX::Renderer::Context::Backend
 		for ( const auto & [ key, buffer ] : p_resources.shaderBuffers )
 		{
 			assert( buffer.binding );
-			const Handle hBuf = _cacheShaderBuffers.at( key );
+			const Handle hBuf = _shaderBuffers.at( key );
 			gsb.emplace_back( hBuf, buffer.role, *buffer.binding );
 		}
 
@@ -791,14 +756,14 @@ namespace VTX::Renderer::Context::Backend
 			case E_RESOURCE_TYPE::TEXTURE:
 			{
 				assert( input.secondary );
-				const Handle hTex  = _cacheTextures.at( input.primary );
-				const Handle hSamp = _cacheSamplers.at( *input.secondary );
+				const Handle hTex  = _textures.at( input.primary );
+				const Handle hSamp = _samplers.at( *input.secondary );
 				rt.textures.emplace_back( hTex, hSamp, b++ );
 				break;
 			}
 			case E_RESOURCE_TYPE::BUFFER:
 			{
-				const Handle		 hBuf	= _cacheShaderBuffers.at( input.primary );
+				const Handle		 hBuf	= _shaderBuffers.at( input.primary );
 				const BufferShader & buffer = p_resources.shaderBuffers.at( input.primary );
 				rt.shaderBuffers.emplace_back( hBuf, buffer.role, b++ );
 				break;
@@ -811,9 +776,9 @@ namespace VTX::Renderer::Context::Backend
 		for ( auto & program : p_pass.programs )
 		{
 			const Key & key = program.name;
-			if ( _cacheShaderBuffers.contains( key ) )
+			if ( _shaderBuffers.contains( key ) )
 			{
-				const Handle hBuf = _cacheShaderBuffers.at( key );
+				const Handle hBuf = _shaderBuffers.at( key );
 				rt.shaderBuffers.emplace_back( hBuf, E_SHADER_BUFFER_KIND::PARAMETERS, b++ );
 			}
 		}
@@ -826,7 +791,7 @@ namespace VTX::Renderer::Context::Backend
 			{
 			case E_RESOURCE_TYPE::BUFFER:
 			{
-				const Handle		 hBuf	= _cacheShaderBuffers.at( output.primary );
+				const Handle		 hBuf	= _shaderBuffers.at( output.primary );
 				const BufferShader & buffer = p_resources.shaderBuffers.at( output.primary );
 				rt.shaderBuffers.emplace_back( hBuf, buffer.role, b++ );
 
@@ -835,43 +800,6 @@ namespace VTX::Renderer::Context::Backend
 			default: break;
 			}
 		}
-
-		/*
-		std::cout << "\n=== ResourceTable for pass [" << p_pass.name << "] ===\n";
-
-		// ---- TEXTURES ----
-		for ( const TextureBinding & t : rt.textures )
-		{
-			std::cout << "Texture  | unit=" << t.unit << " | texHandle=" << t.texture
-					  << " | samplerHandle=" << t.sampler << '\n';
-		}
-
-		// ---- BUFFERS ----
-		std::unordered_map<Desc::Binding, size_t> bindingCount;
-
-		for ( const BufferBinding & bnd : rt.shaderBuffers )
-		{
-			++bindingCount[ bnd.binding ];
-
-			const char * kindStr = ( bnd.kind == Desc::E_SHADER_BUFFER_KIND::PARAMETERS )	? "PARAMETERS"
-								   : ( bnd.kind == Desc::E_SHADER_BUFFER_KIND::STRUCTURED ) ? "STRUCTURED"
-																							: "UNKNOWN";
-
-			std::cout << "Buffer   | binding=" << bnd.binding << " | bufHandle=" << bnd.buffer << " | kind=" << kindStr
-					  << " | offset=" << bnd.offsetBytes << " | size=" << bnd.sizeBytes << '\n';
-		}
-
-		// ---- COLLISION CHECK ----
-		for ( const auto & [ binding, count ] : bindingCount )
-		{
-			if ( count > 1 )
-			{
-				std::cout << "WARNING: buffer binding " << binding << " is used " << count << " times in this pass\n";
-			}
-		}
-
-		std::cout << "=== End ResourceTable ===\n";
-		*/
 
 		return rt;
 	}
@@ -883,9 +811,8 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		const Key &				key			 = p_pass.name;
-		const Handle			hFramebuffer = _cacheFramebuffers.at( key );
-		const GL::Framebuffer & fbo			 = *_framebuffers[ hFramebuffer ];
+		const Key &				key = p_pass.name;
+		const GL::Framebuffer & fbo = _framebuffers.get( key );
 
 		// Attach.
 		uint colorAttach = 0;
@@ -896,8 +823,7 @@ namespace VTX::Renderer::Context::Backend
 				continue;
 			}
 
-			const Handle		  hTex	  = _cacheTextures.at( output.primary );
-			const GL::Texture2D & texture = *_textures[ hTex ];
+			const GL::Texture2D & texture = _textures.get( output.primary );
 
 			const E_FORMAT format  = p_textures.at( output.primary ).format;
 			const bool	   isDepth = _toGL( format ).isDepth;
@@ -939,7 +865,7 @@ namespace VTX::Renderer::Context::Backend
 
 		const Key &			 kVao	= p_geo.vertexLayout;
 		const VertexLayout & layout = p_resources.vertexStreams.at( kVao );
-		const auto &		 vao	= *_vertexArrays.at( _cacheVertexLayouts.at( kVao ) );
+		const auto &		 vao	= _vertexArrays.get( kVao );
 
 		vao.bind();
 
@@ -949,8 +875,7 @@ namespace VTX::Renderer::Context::Backend
 		{
 			const GLAttrib	   ga		 = toGLAttrib( a.type );
 			const Key		   bufferKey = p_geo.vertexLayout + "." + a.name;
-			const Handle	   hVbo		 = _cacheVertexBuffers.at( bufferKey );
-			const GL::Buffer & vbo		 = *_vertexBuffers[ hVbo ];
+			const GL::Buffer & vbo		 = _vertexBuffers.get( bufferKey );
 
 			const GLsizei stride = GLsizei( ga.columns * ga.components * ga.bytesPerComp );
 			for ( uint8_t col = 0; col < ga.columns; ++col )
@@ -963,8 +888,7 @@ namespace VTX::Renderer::Context::Backend
 
 		if ( p_geo.indexBuffer )
 		{
-			const Handle	   hIbo = _cacheIndexBuffers.at( *p_geo.indexBuffer );
-			const GL::Buffer & ibo	= *_indexBuffers[ hIbo ];
+			const GL::Buffer & ibo = _indexBuffers.get( *p_geo.indexBuffer );
 			vao.bindElementBuffer( ibo );
 		}
 
@@ -998,28 +922,27 @@ namespace VTX::Renderer::Context::Backend
 
 		_bindGeometryToVao( quadLayoutKey, quadGeo, fakeRes );
 
-		const Handle hVbo = _cacheVertexBuffers.at( quadVboKey );
-		_vertexBuffers[ hVbo ]->setStorage( quad.data(), GLsizei( sizeof( quad ) ) );
+		_vertexBuffers.get( quadVboKey ).setStorage( quad.data(), GLsizei( sizeof( quad ) ) );
 	}
 
 	void OpenGL45::setShaderBufferData( const Desc::Key & p_key, SpanBytes p_bytes )
 	{
 		using namespace Desc;
 
-		const Handle h			= _cacheShaderBuffers.at( p_key );
+		const Handle h			= _shaderBuffers.at( p_key );
 		const auto & bufferProp = _shaderBufferProperties.at( h );
 
 		switch ( bufferProp.mutability )
 		{
 		case E_BUFFER_MUTABILITY::MUTABLE:
 		{
-			_shaderBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( bufferProp.frequency ) );
+			_shaderBuffers.get( h ).setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( bufferProp.frequency ) );
 			break;
 		}
 		case E_BUFFER_MUTABILITY::IMMUTABLE:
 		{
-			assert( p_bytes.size() == _shaderBuffers[ h ]->size() );
-			_shaderBuffers[ h ]->setSub( p_bytes.data(), GLsizei( p_bytes.size() ), 0 );
+			assert( p_bytes.size() == _shaderBuffers.get( h ).size() );
+			_shaderBuffers.get( h ).setSub( p_bytes.data(), GLsizei( p_bytes.size() ), 0 );
 			break;
 		}
 		default: break;
@@ -1031,17 +954,16 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		const Handle h
-			= _cacheVertexBuffers.contains( p_key ) ? _cacheVertexBuffers.at( p_key ) : _cacheIndexBuffers.at( p_key );
+		const Handle h = _vertexBuffers.contains( p_key ) ? _vertexBuffers.at( p_key ) : _indexBuffers.at( p_key );
 		const auto & bufferProp = _pipelineBufferProperties.at( h );
 		const GLenum freq		= _toGL( bufferProp.frequency );
 		if ( bufferProp.kind == E_PIPELINE_BUFFER_KIND::VERTEX )
 		{
-			_vertexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), freq );
+			_vertexBuffers.get( h ).setData( p_bytes.data(), GLsizei( p_bytes.size() ), freq );
 		}
 		else
 		{
-			_indexBuffers[ h ]->setData( p_bytes.data(), GLsizei( p_bytes.size() ), freq );
+			_indexBuffers.get( h ).setData( p_bytes.data(), GLsizei( p_bytes.size() ), freq );
 		}
 	}
 
@@ -1050,10 +972,10 @@ namespace VTX::Renderer::Context::Backend
 		using namespace Desc;
 
 		std::vector<std::byte> data;
-		const Handle		   h		   = _cacheTextures.at( p_key );
+		const Handle		   h		   = _textures.at( p_key );
 		const auto &		   textureProp = _textureProperties.at( h );
 		const GLPixelFormat	   glFormat	   = _toGL( textureProp.format );
-		const auto &		   texture	   = *_textures.at( h );
+		const auto &		   texture	   = _textures.get( h );
 
 		data.resize( glFormat.bytesPerPixel );
 
