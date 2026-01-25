@@ -6,6 +6,7 @@
 
 #include "constants.hpp"
 #include "types.hpp"
+#include <algorithm>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
