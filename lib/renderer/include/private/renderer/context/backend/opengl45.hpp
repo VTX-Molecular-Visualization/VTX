@@ -86,6 +86,11 @@ namespace VTX::Renderer::Context::Backend
 		std::vector<std::byte> getTextureData( const Desc::Key &, const size_t, const size_t ) const;
 
 		/**
+		 * @brief Set texture data.
+		 */
+		void setTextureData( const Desc::Key & p_key, SpanBytes );
+
+		/**
 		 * @brief Fill backend infos.
 		 */
 		void fillInfos( StructInfos & p_infos ) const;
@@ -159,56 +164,28 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Resource pools.
 		 */
-		ResourceHandler<ResourceTable>	 _resourceTables;
-		ResourceHandler<GL::VertexArray> _vertexArrays;
-		ResourceHandler<GL::Buffer>		 _shaderBuffers;
-		ResourceHandler<GL::Buffer>		 _vertexBuffers;
-		ResourceHandler<GL::Buffer>		 _indexBuffers;
-		ResourceHandler<GL::Framebuffer> _framebuffers;
-		ResourceHandler<GL::Texture2D>	 _textures;
-		ResourceHandler<GL::Sampler>	 _samplers;
-		ResourceHandler<GL::Program>	 _programs;
-
-		/**
-		 * @brief Save buffer and texture properties.
-		 */
-		struct _TextureProperties
-		{
-			Desc::E_FORMAT format;
-			Desc::Size2D   size;
-		};
-
-		struct _ShaderBufferProperties
-		{
-			Desc::E_SHADER_BUFFER_KIND role;
-			Desc::E_BUFFER_MUTABILITY  mutability;
-			Desc::E_BUFFER_ACCESS	   access;
-			Desc::E_UPDATE_FREQUENCY   frequency;
-		};
-
-		struct _PipelineBufferProperties
-		{
-			Desc::E_PIPELINE_BUFFER_KIND kind;
-			Desc::E_UPDATE_FREQUENCY	 frequency;
-		};
-
-		template<typename T>
-		using Properties = std::unordered_map<Desc::Handle, T>;
-		Properties<_TextureProperties>		  _textureProperties;
-		Properties<_ShaderBufferProperties>	  _shaderBufferProperties;
-		Properties<_PipelineBufferProperties> _pipelineBufferProperties;
+		ResourceHandler<ResourceTable, Desc::Pass>			 _resourceTables;
+		ResourceHandler<GL::VertexArray, Desc::VertexLayout> _vertexArrays;
+		ResourceHandler<GL::Buffer, Desc::BufferShader>		 _shaderBuffers;
+		ResourceHandler<GL::Buffer, Desc::BufferPipeline>	 _vertexBuffers;
+		ResourceHandler<GL::Buffer, Desc::BufferPipeline>	 _indexBuffers;
+		ResourceHandler<GL::Framebuffer, Desc::Pass>		 _framebuffers;
+		ResourceHandler<GL::Texture2D, Desc::Texture>		 _textures;
+		ResourceHandler<GL::Sampler, Desc::Sampler>			 _samplers;
+		ResourceHandler<GL::Program, Desc::Program>			 _programs;
 
 		/**
 		 * @brief Get or create resources.
 		 */
+		Desc::Handle _getOrCreateQuad();
 		Desc::Handle _getOrCreateFramebuffer( const Desc::Pass &, const Desc::Resources &, const bool = false );
 		Desc::Handle _getOrCreateResourceTable( const Desc::Pass &, const Desc::Resources & );
 		Desc::Handle _getOrCreateTexture( const Desc::Key &, const Desc::Texture & );
 		Desc::Handle _getOrCreateSampler( const Desc::Key &, const Desc::Sampler & );
 		Desc::Handle _getOrCreateVertexLayout( const Desc::Key &, const Desc::VertexLayout & );
 		Desc::Handle _getOrCreateShaderBuffer( const Desc::BufferShader & );
-		Desc::Handle _getOrCreateVertexBuffer( const Desc::Key & );
-		Desc::Handle _getOrCreateIndexBuffer( const Desc::Key & );
+		Desc::Handle _getOrCreateVertexBuffer( const Desc::Key &, const Desc::BufferPipeline & );
+		Desc::Handle _getOrCreateIndexBuffer( const Desc::Key &, const Desc::BufferPipeline & );
 		Desc::Handle _getOrCreateProgram( const Desc::Program & );
 
 		/**
@@ -228,7 +205,6 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		inline static const Desc::Key _QUAD		= "Quad";
 		inline static const Desc::Key _QUAD_VBO = _QUAD + ".Position";
-		void						  _createQuad();
 
 		/**
 		 * @brief Specs.

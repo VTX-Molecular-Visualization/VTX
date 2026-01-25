@@ -307,17 +307,8 @@ namespace VTX::Renderer
 		if ( p_config.enableSSAO )
 		{
 			constexpr size_t   noiseTextureSize = 64;
-			std::vector<Vec3f> noiseData( noiseTextureSize * noiseTextureSize );
-			std::generate(
-				noiseData.begin(),
-				noiseData.end(),
-				[]
-				{
-					return Util::Math::normalize(
-						Vec3f( Util::Math::randomFloat() * 2.f - 1.f, Util::Math::randomFloat() * 2.f - 1.f, 0.f )
-					);
-				}
-			);
+			std::vector<Vec3f> noiseData		= Util::Math::randomUniVectors( noiseTextureSize * noiseTextureSize );
+
 			g.texture( "SSAO", E_FORMAT::R8 )
 				.texture( "Noise", E_FORMAT::RGB16F, noiseData, Size2DAbsolute { noiseTextureSize, noiseTextureSize } );
 			g.texture( "BlurX", E_FORMAT::R16F );

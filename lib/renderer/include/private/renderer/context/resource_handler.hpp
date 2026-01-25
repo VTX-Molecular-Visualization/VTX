@@ -11,7 +11,7 @@ namespace VTX::Renderer::Context
 	 * @brief Generic resource handler.
 	 * Store resources and provide access through handles.
 	 */
-	template<typename T>
+	template<typename T, typename D = Desc::Dummy>
 	class ResourceHandler
 	{
 	  public:
@@ -20,7 +20,7 @@ namespace VTX::Renderer::Context
 		 * Reuse available handles if any.
 		 */
 		template<typename... Args>
-		Desc::Handle emplace( const Desc::Key p_key, Args &&... p_args )
+		Desc::Handle emplace( const Desc::Key p_key, const D p_desc, Args &&... p_args )
 		{
 			Desc::Handle handle;
 			// Reuse available handle if any.
@@ -36,7 +36,7 @@ namespace VTX::Renderer::Context
 				handle = static_cast<Desc::Handle>( _resources.size() );
 				_resources.emplace_back( std::make_unique<T>( std::forward<Args>( p_args )... ) );
 			}
-			_keyHandles.insert_or_assign( p_key, handle );
+			_cache.insert_or_assign( p_key, _Entry { handle, p_desc } );
 
 			// Remove from invalids if present.
 			auto it = std::find( _invalids.begin(), _invalids.end(), handle );
@@ -53,12 +53,12 @@ namespace VTX::Renderer::Context
 		 */
 		void erase( const Desc::Key p_key )
 		{
-			if ( not _keyHandles.contains( p_key ) )
+			if ( not _cache.contains( p_key ) )
 			{
 				return;
 			}
 
-			erase( at( p_key ) );
+			erase( handle( p_key ) );
 		}
 
 		/**
@@ -76,11 +76,11 @@ namespace VTX::Renderer::Context
 			}
 
 			auto it = std::find_if(
-				_keyHandles.begin(), _keyHandles.end(), [ & ]( const auto & pair ) { return pair.second == p_handle; }
+				_cache.begin(), _cache.end(), [ & ]( const auto & pair ) { return pair.second.handle == p_handle; }
 			);
-			if ( it != _keyHandles.end() )
+			if ( it != _cache.end() )
 			{
-				_keyHandles.erase( it );
+				_cache.erase( it );
 			}
 
 			_resources[ p_handle ].reset();
@@ -93,7 +93,7 @@ namespace VTX::Renderer::Context
 		void clear()
 		{
 			_resources.clear();
-			_keyHandles.clear();
+			_cache.clear();
 			_availables.clear();
 		}
 
@@ -102,12 +102,12 @@ namespace VTX::Renderer::Context
 		 */
 		inline bool contains( const Desc::Key p_key ) const
 		{
-			if ( not _keyHandles.contains( p_key ) )
+			if ( not _cache.contains( p_key ) )
 			{
 				return false;
 			}
 
-			return contains( at( p_key ) );
+			return contains( handle( p_key ) );
 		}
 
 		inline bool contains( const Desc::Handle p_handle ) const noexcept
@@ -118,34 +118,45 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Check if a resource exists from key and remove from invalids if present.
 		 */
-		inline bool validate( const Desc::Key p_key )
+		inline bool validate( const Desc::Key p_key, const D p_desc )
 		{
-			if ( not _keyHandles.contains( p_key ) )
+			if ( not _cache.contains( p_key ) )
 			{
 				return false;
 			}
 
-			const Desc::Handle handle = at( p_key );
+			if ( Desc::hashDesc( p_desc ) != Desc::hashDesc( descriptor( p_key ) ) )
+			{
+				return false;
+			}
 
-			return validate( handle );
+			const Desc::Handle h = handle( p_key );
+
+			return validate( h );
 		}
 
 		inline bool validate( const Desc::Handle p_handle ) noexcept
 		{
 			std::erase( _invalids, p_handle );
+
 			return contains( p_handle );
 		}
 
 		/**
 		 * @brief Access handle by key.
 		 */
-		inline Desc::Handle at( const Desc::Key p_key ) const { return _keyHandles.at( p_key ); }
+		inline Desc::Handle handle( const Desc::Key p_key ) const { return _cache.at( p_key ).handle; }
+
+		/**
+		 * @brief Access descriptor by key.
+		 */
+		inline const D & descriptor( const Desc::Key p_key ) const { return _cache.at( p_key ).descriptor; }
 
 		/**
 		 * @brief Access resource by key.
 		 */
-		inline const T & get( const Desc::Key p_key ) const { return get( at( p_key ) ); }
-		inline T &		 get( const Desc::Key p_key ) { return get( at( p_key ) ); }
+		inline const T & get( const Desc::Key p_key ) const { return get( handle( p_key ) ); }
+		inline T &		 get( const Desc::Key p_key ) { return get( handle( p_key ) ); }
 
 		/**
 		 * @brief Access resource by handle.
@@ -201,9 +212,14 @@ namespace VTX::Renderer::Context
 		std::vector<std::unique_ptr<T>> _resources;
 
 		/**
-		 * @brief Cache : mapping Key -> Handle.
+		 * @brief Cache : mapping Key -> { Handle, Desc }.
 		 */
-		std::unordered_map<Desc::Key, Desc::Handle> _keyHandles;
+		struct _Entry
+		{
+			Desc::Handle handle;
+			D			 descriptor;
+		};
+		std::unordered_map<Desc::Key, _Entry> _cache;
 
 		/**
 		 * @brief Available handles for reuse.

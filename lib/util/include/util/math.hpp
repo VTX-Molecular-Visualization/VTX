@@ -258,6 +258,23 @@ namespace VTX::Util::Math
 		return ( p_v + ( p_a - 1 ) ) & ~( p_a - 1 );
 	}
 
+	std::vector<Vec3f> inline randomUniVectors( const size_t p_size )
+	{
+		std::vector<Vec3f> noiseData( p_size );
+		std::generate(
+			noiseData.begin(),
+			noiseData.end(),
+			[]
+			{
+				return Util::Math::normalize(
+					Vec3f( Util::Math::randomFloat() * 2.f - 1.f, Util::Math::randomFloat() * 2.f - 1.f, 0.f )
+				);
+			}
+		);
+
+		return noiseData;
+	}
+
 	// TODO:  std::fabsf.
 	Vec3f orthogonalVector( const Vec3f & normal );
 
