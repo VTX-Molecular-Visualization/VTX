@@ -226,7 +226,8 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Create the screen quad.
 		 */
-		inline static const Desc::Key _QUAD = "Quad";
+		inline static const Desc::Key _QUAD		= "Quad";
+		inline static const Desc::Key _QUAD_VBO = _QUAD + ".Position";
 		void						  _createQuad();
 
 		/**

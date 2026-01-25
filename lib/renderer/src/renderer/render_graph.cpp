@@ -327,7 +327,7 @@ namespace VTX::Renderer
 		{
 			// Used by shading pass even if SSAO disabled.
 			std::vector<float> emptyData( 1, 1.f );
-			g.texture( "BlurY", E_FORMAT::R16F, emptyData );
+			g.texture( "BlurY", E_FORMAT::R16F, emptyData, Size2DAbsolute { 1, 1 } );
 		}
 
 		g.texture( "Shaded", E_FORMAT::RGBA16F );
@@ -448,7 +448,7 @@ namespace VTX::Renderer
 		g.pass( "Shading" )
 			.in( "Geometry" )
 			.in( "Color" )
-			.in( "BlurY" )
+			.in( "BlurY", p_config.enableSSAO ? "Default" : "NearestRepeat" ) // Repeat empty texture 1x1 if not SSAO.
 			.out( "Shaded" )
 			.program( "Shading" )
 			.shaders( { "default.vert", "shading.frag" } )

@@ -248,6 +248,20 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
+		// Mark all resources as invalid.
+		_resourceTables.invalidate();
+		_framebuffers.invalidate();
+		_textures.invalidate();
+		_samplers.invalidate();
+		_programs.invalidate();
+		_shaderBuffers.invalidate();
+		_vertexBuffers.invalidate();
+		_indexBuffers.invalidate();
+		_vertexArrays.invalidate();
+
+		assert( _vertexArrays.validate( _QUAD ) );
+		assert( _vertexBuffers.validate( _QUAD_VBO ) );
+
 		// Create all resources.
 		for ( const auto & [ key, texture ] : p_resources.textures )
 		{
@@ -394,6 +408,18 @@ namespace VTX::Renderer::Context::Backend
 			p_commands.push<E_COMMAND::END_PASS>( pEndPass );
 		}
 
+		// Purge invalid resources.
+		_resourceTables.purge();
+		_framebuffers.purge();
+		_textures.purge();
+		_samplers.purge();
+		_programs.purge();
+		_shaderBuffers.purge();
+		_vertexBuffers.purge();
+		_indexBuffers.purge();
+		_vertexArrays.purge();
+
+		// Dump errors.
 		GL::Debug::dumpGLError();
 
 		// GLOBAL BINDINGS: done once at startup.
@@ -465,7 +491,7 @@ namespace VTX::Renderer::Context::Backend
 
 		const Key & key = p_pass.name;
 
-		if ( _framebuffers.contains( key ) )
+		if ( _framebuffers.validate( key ) )
 		{
 			return _framebuffers.at( key );
 		}
@@ -486,7 +512,7 @@ namespace VTX::Renderer::Context::Backend
 
 		const Key & key = p_pass.name;
 
-		if ( _resourceTables.contains( key ) )
+		if ( _resourceTables.validate( key ) )
 		{
 			return _resourceTables.at( key );
 		}
@@ -500,7 +526,7 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		if ( _textures.contains( p_key ) )
+		if ( _textures.validate( p_key ) )
 		{
 			return _textures.at( p_key );
 		}
@@ -539,7 +565,7 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		if ( _samplers.contains( p_key ) )
+		if ( _samplers.validate( p_key ) )
 		{
 			return _samplers.at( p_key );
 		}
@@ -559,7 +585,7 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		if ( _vertexArrays.contains( p_key ) )
+		if ( _vertexArrays.validate( p_key ) )
 		{
 			return _vertexArrays.at( p_key );
 		}
@@ -599,7 +625,7 @@ namespace VTX::Renderer::Context::Backend
 
 		const Key key = p_buffer.name;
 
-		if ( _shaderBuffers.contains( key ) )
+		if ( _shaderBuffers.validate( key ) )
 		{
 			return _shaderBuffers.at( key );
 		}
@@ -669,7 +695,7 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		if ( _vertexBuffers.contains( p_key ) )
+		if ( _vertexBuffers.validate( p_key ) )
 		{
 			return _vertexBuffers.at( p_key );
 		}
@@ -683,7 +709,7 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		if ( _indexBuffers.contains( p_key ) )
+		if ( _indexBuffers.validate( p_key ) )
 		{
 			return _indexBuffers.at( p_key );
 		}
@@ -698,7 +724,7 @@ namespace VTX::Renderer::Context::Backend
 		using namespace Desc;
 
 		const Key & key = p_program.name;
-		if ( _programs.contains( key ) )
+		if ( _programs.validate( key ) )
 		{
 			return _programs.at( key );
 		}
@@ -776,7 +802,7 @@ namespace VTX::Renderer::Context::Backend
 		for ( auto & program : p_pass.programs )
 		{
 			const Key & key = program.name;
-			if ( _shaderBuffers.contains( key ) )
+			if ( _shaderBuffers.validate( key ) )
 			{
 				const Handle hBuf = _shaderBuffers.at( key );
 				rt.shaderBuffers.emplace_back( hBuf, E_SHADER_BUFFER_KIND::PARAMETERS, b++ );
@@ -913,7 +939,7 @@ namespace VTX::Renderer::Context::Backend
 
 		_getOrCreateVertexLayout( quadLayoutKey, quadLayout );
 
-		const Key quadVboKey = quadLayoutKey + ".Position";
+		const Key quadVboKey = _QUAD_VBO;
 		_getOrCreateVertexBuffer( quadVboKey );
 
 		Resources fakeRes;
