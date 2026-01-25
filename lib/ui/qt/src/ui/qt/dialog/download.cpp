@@ -14,8 +14,6 @@ namespace
 {
 	const QString _PDB_ID_TEMPLATE	= VTX::Util::Url::systemReplacementToken();
 	const QString _DEFAULT_URL		= QString( VTX::Util::Url::rcsbPdbDownloadBaseUrl() ) + _PDB_ID_TEMPLATE + ".pdb";
-	const QString _SETTING_KEY_URL	= "dialog/download/history/url";
-	const QString _SETTING_KEY_PDB	= "dialog/download/history/pdb";
 	const uint	  _MAX_HISTORY_SIZE = 10;
 } // namespace
 
@@ -145,8 +143,8 @@ namespace VTX::UI::QT::Dialog
 					}
 				}
 
-				_saveHistory( _SETTING_KEY_URL, _url );
-				_saveHistory( _SETTING_KEY_PDB, _pdb );
+				_saveHistory( SETTING_KEY_URL, _url );
+				_saveHistory( SETTING_KEY_PDB, _pdb );
 
 				accept();
 			}
@@ -160,8 +158,8 @@ namespace VTX::UI::QT::Dialog
 		);
 
 		// Load history.
-		_loadHistory( _SETTING_KEY_URL, _comboBoxURL );
-		_loadHistory( _SETTING_KEY_PDB, _comboBoxPDB );
+		_loadHistory( SETTING_KEY_URL, _comboBoxURL );
+		_loadHistory( SETTING_KEY_PDB, _comboBoxPDB );
 
 		// FIXME: Avoid losing default url if not in history.
 		if ( _comboBoxURL->findText( _DEFAULT_URL ) == -1 )

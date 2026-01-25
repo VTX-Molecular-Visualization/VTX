@@ -6,7 +6,7 @@
 
 namespace
 {
-	constexpr std::string_view _SETTING_KEY_HIDE = "colors/hide_non_common";
+	constexpr std::string_view SETTING_KEY_HIDE = "colors/hide_non_common";
 }
 
 namespace VTX::UI::QT::DockWidget
@@ -35,8 +35,8 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
-		_checkBoxHide->setChecked( SETTINGS().value( _SETTING_KEY_HIDE, true ).toBool() );
+		_checkBoxHide->setChecked( SETTINGS().value( SETTING_KEY_HIDE, true ).toBool() );
 	}
 
-	ColorLayouts::~ColorLayouts() { SETTINGS().setValue( _SETTING_KEY_HIDE, _checkBoxHide->isChecked() ); }
+	ColorLayouts::~ColorLayouts() { SETTINGS().setValue( SETTING_KEY_HIDE, _checkBoxHide->isChecked() ); }
 } // namespace VTX::UI::QT::DockWidget

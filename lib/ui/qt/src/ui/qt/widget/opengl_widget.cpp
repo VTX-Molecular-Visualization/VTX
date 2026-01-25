@@ -61,13 +61,16 @@ namespace VTX::UI::QT::Widget
 			&Window::Renderer::clicked,
 			[]( const Qt::MouseButton, const QPoint p_pos )
 			{
-				App::ACTION().execute<App::Action::Selection::Pick>(
-					Vec2i( p_pos.x(), p_pos.y() ),
-					static_cast<App::Action::Selection::E_GRANULARITY>(
-						SETTINGS().value( _SETTING_KEY_GRANULARITY, 0 ).toInt()
-					),
-					QGuiApplication::keyboardModifiers() & Qt::ControlModifier
-				);
+				if ( not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
+				{
+					App::ACTION().execute<App::Action::Selection::Pick>(
+						Vec2i( p_pos.x(), p_pos.y() ),
+						static_cast<App::Action::Selection::E_GRANULARITY>(
+							SETTINGS().value( SETTING_KEY_GRANULARITY, 0 ).toInt()
+						),
+						QGuiApplication::keyboardModifiers() & Qt::ControlModifier
+					);
+				}
 			}
 		);
 

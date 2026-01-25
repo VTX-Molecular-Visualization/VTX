@@ -17,7 +17,6 @@ namespace VTX::UI::QT::DockWidget
 
 	  private:
 		QPointer<Widget::Selection> _selectionListWidget;
-		QPointer<QComboBox>			_cbPickingGranularity;
 	};
 
 } // namespace VTX::UI::QT::DockWidget
