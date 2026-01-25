@@ -28,10 +28,10 @@ namespace
 
 		switch ( p_format )
 		{
-		case E_FORMAT::RGB16F: return { GL_RGB16F, GL_RGB, GL_HALF_FLOAT, 6, false, false };
-		case E_FORMAT::RGBA16F: return { GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT, 8, false, false };
+		case E_FORMAT::RGB16F: return { GL_RGB16F, GL_RGB, GL_FLOAT, 6, false, false };
+		case E_FORMAT::RGBA16F: return { GL_RGBA16F, GL_RGBA, GL_FLOAT, 8, false, false };
 		case E_FORMAT::RGBA32F: return { GL_RGBA32F, GL_RGBA, GL_FLOAT, 16, false, false };
-		case E_FORMAT::R16F: return { GL_R16F, GL_RED, GL_HALF_FLOAT, 2, false, false };
+		case E_FORMAT::R16F: return { GL_R16F, GL_RED, GL_FLOAT, 2, false, false };
 		case E_FORMAT::R32F: return { GL_R32F, GL_RED, GL_FLOAT, 4, false, false };
 		case E_FORMAT::R8: return { GL_R8, GL_RED, GL_UNSIGNED_BYTE, 1, false, false };
 		case E_FORMAT::RG32UI: return { GL_RG32UI, GL_RG_INTEGER, GL_UNSIGNED_INT, 8, true, false };
@@ -244,6 +244,16 @@ namespace VTX::Renderer::Context::Backend
 	)
 	{
 		using namespace Desc;
+
+		VTX_TRACE( "Resource tables:\n{}", _resourceTables.toString() );
+		VTX_TRACE( "Framebuffers:\n{}", _framebuffers.toString() );
+		VTX_TRACE( "Textures:\n{}", _textures.toString() );
+		VTX_TRACE( "Samplers:\n{}", _samplers.toString() );
+		VTX_TRACE( "Programs:\n{}", _programs.toString() );
+		VTX_TRACE( "Shader Buffers:\n{}", _shaderBuffers.toString() );
+		VTX_TRACE( "Vertex Buffers:\n{}", _vertexBuffers.toString() );
+		VTX_TRACE( "Index Buffers:\n{}", _indexBuffers.toString() );
+		VTX_TRACE( "Vertex Arrays:\n{}", _vertexArrays.toString() );
 
 		// Mark all resources as invalid.
 		_resourceTables.invalidate();

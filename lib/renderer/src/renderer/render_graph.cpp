@@ -309,8 +309,8 @@ namespace VTX::Renderer
 			constexpr size_t   noiseTextureSize = 64;
 			std::vector<Vec3f> noiseData		= Util::Math::randomUniVectors( noiseTextureSize * noiseTextureSize );
 
-			g.texture( "SSAO", E_FORMAT::R8 )
-				.texture( "Noise", E_FORMAT::RGB16F, noiseData, Size2DAbsolute { noiseTextureSize, noiseTextureSize } );
+			g.texture( "SSAO", E_FORMAT::R8 );
+			g.texture( "Noise", E_FORMAT::RGB16F, noiseData, Size2DAbsolute { noiseTextureSize, noiseTextureSize } );
 			g.texture( "BlurX", E_FORMAT::R16F );
 			g.texture( "BlurY", E_FORMAT::R16F );
 		}

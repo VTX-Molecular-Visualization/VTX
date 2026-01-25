@@ -23,8 +23,14 @@ namespace VTX::Renderer::Context
 		Desc::Handle emplace( const Desc::Key p_key, const D p_desc, Args &&... p_args )
 		{
 			Desc::Handle handle;
+			// Existing resource, update it.
+			if ( _cache.contains( p_key ) )
+			{
+				handle				 = _cache.at( p_key ).handle;
+				_resources[ handle ] = std::make_unique<T>( std::forward<Args>( p_args )... );
+			}
 			// Reuse available handle if any.
-			if ( not _availables.empty() )
+			else if ( not _availables.empty() )
 			{
 				handle = _availables.back();
 				_availables.pop_back();
@@ -36,6 +42,8 @@ namespace VTX::Renderer::Context
 				handle = static_cast<Desc::Handle>( _resources.size() );
 				_resources.emplace_back( std::make_unique<T>( std::forward<Args>( p_args )... ) );
 			}
+
+			// Update cache.
 			_cache.insert_or_assign( p_key, _Entry { handle, p_desc } );
 
 			// Remove from invalids if present.
@@ -203,6 +211,15 @@ namespace VTX::Renderer::Context
 				VTX_TRACE( "Purging resource handle {}", handle );
 			}
 			_invalids.clear();
+		}
+
+		std::string toString()
+		{
+			std::string result = "ResourceHandler:\n";
+			result += "  Total resources: " + std::to_string( _resources.size() ) + "\n";
+			result += "  Available handles: " + std::to_string( _availables.size() ) + "\n";
+			result += "  Invalid handles: " + std::to_string( _invalids.size() ) + "\n";
+			return result;
 		}
 
 	  private:
