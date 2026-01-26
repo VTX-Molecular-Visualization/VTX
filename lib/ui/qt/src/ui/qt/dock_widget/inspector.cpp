@@ -1,4 +1,5 @@
 ﻿#include "ui/qt/dock_widget/inspector.hpp"
+#include "ui/qt/events.hpp"
 #include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
@@ -28,35 +29,20 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( toolbar );
 
 		// Picking granularity combobox.
-		_cbPickingGranularity = new QComboBox( this );
-		_cbPickingGranularity->addItem(
+		auto * cbPickingGranularity = new QComboBox( this );
+		cbPickingGranularity->addItem(
 			"Atom", QVariant( toUnderlying( App::Action::Selection::E_GRANULARITY::ATOM ) )
 		);
-		_cbPickingGranularity->addItem(
+		cbPickingGranularity->addItem(
 			"Residue", QVariant( toUnderlying( App::Action::Selection::E_GRANULARITY::RESIDUE ) )
 		);
-		_cbPickingGranularity->addItem(
+		cbPickingGranularity->addItem(
 			"Chain", QVariant( toUnderlying( App::Action::Selection::E_GRANULARITY::CHAIN ) )
 		);
-		_cbPickingGranularity->addItem(
+		cbPickingGranularity->addItem(
 			"System", QVariant( toUnderlying( App::Action::Selection::E_GRANULARITY::SYSTEM ) )
 		);
-		_layout->addWidget( _cbPickingGranularity );
-
-		// Connect.
-		connect(
-			lockAction,
-			&QAction::toggled,
-			this,
-			[]( const bool p_locked )
-			{
-				MAIN_WINDOW()
-					.findChild<Widget::Tree *>( Util::typeName<Widget::Tree>() )
-					->setSelectionMode(
-						p_locked ? QAbstractItemView::NoSelection : QAbstractItemView::ExtendedSelection
-					);
-			}
-		);
+		_layout->addWidget( cbPickingGranularity );
 
 		// Selection list widget.
 		_selectionListWidget = new Widget::Selection( this );
@@ -64,18 +50,31 @@ namespace VTX::UI::QT::DockWidget
 
 		//_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 
-		const int index = _cbPickingGranularity->findData( SETTINGS().value( _SETTING_KEY_GRANULARITY, 0 ).toInt() );
+		lockAction->setChecked( SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() );
+
+		connect(
+			lockAction,
+			&QAction::toggled,
+			this,
+			[]( const bool p_locked )
+			{
+				SETTINGS().setValue( SETTING_KEY_LOCK_SELECTION, p_locked );
+				App::HUB().trigger<Events::SelectionLocked>( p_locked );
+			}
+		);
+
+		const int index = cbPickingGranularity->findData( SETTINGS().value( SETTING_KEY_GRANULARITY, 0 ).toInt() );
 		if ( index != -1 )
 		{
-			_cbPickingGranularity->setCurrentIndex( index );
+			cbPickingGranularity->setCurrentIndex( index );
 		}
 
 		connect(
-			_cbPickingGranularity,
+			cbPickingGranularity,
 			&QComboBox::currentIndexChanged,
 			this,
-			[ & ]( const int )
-			{ SETTINGS().setValue( _SETTING_KEY_GRANULARITY, _cbPickingGranularity->currentData() ); }
+			[ cbPickingGranularity ]( const int )
+			{ SETTINGS().setValue( SETTING_KEY_GRANULARITY, cbPickingGranularity->currentData() ); }
 		);
 	}
 

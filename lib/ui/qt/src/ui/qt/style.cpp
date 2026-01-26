@@ -14,8 +14,7 @@
 namespace
 {
 	using namespace VTX::UI::QT;
-	constexpr std::string_view _SETTING_KEY_THEME = "theme/current";
-	constexpr std::string_view _SETTING_KEY_FONT  = "font/current";
+	
 
 	QPalette _makeLightPalette()
 	{
@@ -74,8 +73,8 @@ namespace VTX::UI::QT
 	Style::~Style()
 	{
 		const QString themeName = Util::Enum::enumName( _currentTheme ).data();
-		SETTINGS().setValue( _SETTING_KEY_THEME, themeName );
-		SETTINGS().setValue( _SETTING_KEY_FONT, getCurrentFontFamily() );
+		SETTINGS().setValue( SETTING_KEY_THEME, themeName );
+		SETTINGS().setValue( SETTING_KEY_FONT, getCurrentFontFamily() );
 	}
 
 	void Style::load( const std::vector<App::Tool::BaseTool *> & p_tools )
@@ -107,9 +106,9 @@ namespace VTX::UI::QT
 		// Load theme from settings.
 		try
 		{
-			QString		  themeName = SETTINGS().value( _SETTING_KEY_THEME, "SYSTEM" ).toString();
+			QString		  themeName = SETTINGS().value( SETTING_KEY_THEME, "SYSTEM" ).toString();
 			const E_THEME theme		= Util::Enum::enumCast<E_THEME>( themeName.toStdString() );
-			QString		  fontName	= SETTINGS().value( _SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
+			QString		  fontName	= SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
 			QFont		  appFont( fontName, 10 );
 
 			setTheme( theme );

@@ -1,7 +1,9 @@
 #include <catch2/catch_test_macros.hpp>
 #include <renderer/context/command_buffer.hpp>
+#include <renderer/context/resource_handler.hpp>
 #include <renderer/graph_builder.hpp>
 #include <renderer/render_graph.hpp>
+#include <renderer/representation.hpp>
 #include <util/exceptions.hpp>
 #include <util/math.hpp>
 
@@ -16,6 +18,8 @@ namespace
 	GraphBuilder makeLinearGraphABC()
 	{
 		GraphBuilder g;
+
+		g.defaultSampler();
 
 		g.texture( "A_out", E_FORMAT::RGBA16F );
 		g.texture( "B_out", E_FORMAT::RGBA16F );
@@ -269,4 +273,187 @@ TEST_CASE( "CommandBuffer: clear empties commands and payload" )
 
 	REQUIRE( cb.commands.empty() );
 	REQUIRE( cb.payload.empty() );
+}
+
+struct TestRes
+{
+	int value = 0;
+	explicit TestRes( int v ) : value( v ) {}
+};
+
+struct FakeDesc
+{
+	int a = 0;
+	int b = 0;
+};
+
+namespace VTX::Renderer::Desc
+{
+	template<>
+	inline Hash hashDesc<FakeDesc>( const FakeDesc & p_text )
+	{
+		return Util::hash( p_text.a ) + Util::hash( p_text.b );
+	}
+} // namespace VTX::Renderer::Desc
+
+TEST_CASE( "ResourceHandler: emplace creates new handles sequentially", "[ResourceHandler]" )
+{
+	ResourceHandler<TestRes, FakeDesc> h;
+
+	const Key	   k1 = "1", k2 = "2", k3 = "3";
+	const FakeDesc d { 1, 2 };
+
+	const Handle h1 = h.emplace( k1, d, 10 );
+	const Handle h2 = h.emplace( k2, d, 20 );
+	const Handle h3 = h.emplace( k3, d, 30 );
+
+	REQUIRE( h1 == 0 );
+	REQUIRE( h2 == 1 );
+	REQUIRE( h3 == 2 );
+
+	REQUIRE( h.contains( k1 ) );
+	REQUIRE( h.contains( k2 ) );
+	REQUIRE( h.contains( k3 ) );
+
+	REQUIRE( h.get( k1 ).value == 10 );
+	REQUIRE( h.get( k2 ).value == 20 );
+	REQUIRE( h.get( k3 ).value == 30 );
+}
+
+TEST_CASE( "ResourceHandler: emplace with existing key updates resource and keeps same handle", "[ResourceHandler]" )
+{
+	ResourceHandler<TestRes, FakeDesc> h;
+
+	const Key	   k = "42";
+	const FakeDesc d1 { 1, 2 };
+	const FakeDesc d2 { 9, 9 };
+
+	const Handle h1 = h.emplace( k, d1, 111 );
+	REQUIRE( h1 == 0 );
+	REQUIRE( h.get( k ).value == 111 );
+	REQUIRE( h.descriptor( k ).a == 1 );
+
+	const Handle h2 = h.emplace( k, d2, 222 );
+	REQUIRE( h2 == h1 );				 // handle stable
+	REQUIRE( h.get( k ).value == 222 );	 // resource replaced
+	REQUIRE( h.descriptor( k ).a == 9 ); // descriptor updated
+}
+
+TEST_CASE( "ResourceHandler: erase(key) removes and makes handle reusable", "[ResourceHandler]" )
+{
+	ResourceHandler<TestRes, FakeDesc> h;
+	const FakeDesc					   d { 1, 2 };
+
+	const Key k1 = "1", k2 = "2", k3 = "3";
+
+	const Handle h1 = h.emplace( k1, d, 10 ); // 0
+	const Handle h2 = h.emplace( k2, d, 20 ); // 1
+	(void)h2;
+
+	REQUIRE( h1 == 0 );
+
+	h.erase( k1 );
+
+	REQUIRE_FALSE( h.contains( k1 ) );
+	REQUIRE( h.contains( k2 ) );
+
+	// Next emplace should reuse the freed handle (LIFO from _availables)
+	const Handle h3 = h.emplace( k3, d, 30 );
+	REQUIRE( h3 == h1 );
+	REQUIRE( h.get( k3 ).value == 30 );
+}
+
+TEST_CASE( "ResourceHandler: erase(handle) is safe for out-of-range and null slots", "[ResourceHandler]" )
+{
+	ResourceHandler<TestRes, FakeDesc> h;
+	const FakeDesc					   d { 1, 2 };
+
+	const Key	 k		= "1";
+	const Handle handle = h.emplace( k, d, 123 );
+
+	// Out of range: no crash, no change
+	h.erase( handle + 1000 );
+	REQUIRE( h.contains( k ) );
+
+	// Erase valid
+	h.erase( handle );
+	REQUIRE_FALSE( h.contains( k ) );
+
+	// Erase again (slot already null): no crash
+	h.erase( handle );
+	REQUIRE_FALSE( h.contains( handle ) );
+}
+
+TEST_CASE( "ResourceHandler: validate(key, desc) matches by hash and clears invalid state", "[ResourceHandler]" )
+{
+	ResourceHandler<TestRes, FakeDesc> h;
+
+	const Key	   k1 = "1", k2 = "2";
+	const FakeDesc d_ok { 1, 2 };
+	const FakeDesc d_bad { 1, 999 };
+
+	const Handle h1 = h.emplace( k1, d_ok, 10 );
+	const Handle h2 = h.emplace( k2, d_ok, 20 );
+	(void)h1;
+	(void)h2;
+
+	// Invalidate all existing resources
+	h.invalidate();
+
+	// Wrong desc => validate should fail and not "fix" it
+	REQUIRE_FALSE( h.validate( k1, d_bad ) );
+
+	// Correct desc => validate true and removes from invalid list
+	REQUIRE( h.validate( k1, d_ok ) );
+
+	// Purge should remove only those still invalid (k2)
+	h.purge();
+
+	REQUIRE( h.contains( k1 ) );
+	REQUIRE_FALSE( h.contains( k2 ) ); // purged
+	REQUIRE( h.get( k1 ).value == 10 );
+}
+
+TEST_CASE( "ResourceHandler: invalidate ignores available handles (already erased)", "[ResourceHandler]" )
+{
+	ResourceHandler<TestRes, FakeDesc> h;
+	const FakeDesc					   d { 1, 2 };
+
+	const Key k1 = "1", k2 = "2";
+
+	const Handle h1 = h.emplace( k1, d, 10 );
+	const Handle h2 = h.emplace( k2, d, 20 );
+
+	h.erase( h1 ); // make h1 available (null slot)
+
+	// Invalidate should mark only existing resources (h2), not the available slot (h1)
+	h.invalidate();
+	h.purge();
+
+	REQUIRE_FALSE( h.contains( h1 ) ); // stays empty
+	REQUIRE_FALSE( h.contains( k1 ) );
+	REQUIRE_FALSE( h.contains( k2 ) ); // purged
+}
+
+TEST_CASE( "ResourceHandler: clear removes everything and resets handle numbering", "[ResourceHandler]" )
+{
+	ResourceHandler<TestRes, FakeDesc> h;
+	const FakeDesc					   d { 1, 2 };
+
+	const Key k1 = "1", k2 = "2";
+
+	const Handle h1 = h.emplace( k1, d, 10 );
+	const Handle h2 = h.emplace( k2, d, 20 );
+	(void)h1;
+	(void)h2;
+
+	h.clear();
+
+	REQUIRE_FALSE( h.contains( k1 ) );
+	REQUIRE_FALSE( h.contains( k2 ) );
+
+	// After clear(), new handle should start at 0 again
+	const Handle h3 = h.emplace( "999", d, 30 );
+	REQUIRE( h3 == 0 );
+	REQUIRE( h.get( "999" ).value == 30 );
 }

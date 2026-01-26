@@ -85,7 +85,7 @@ namespace VTX::Renderer
 
 		// Build.
 		// TODO: remove unused passes.
-		RenderQueue queue;
+		Desc::RenderQueue queue;
 		for ( auto & p : _passes )
 		{
 			queue.push_back( p.get() );
@@ -94,7 +94,7 @@ namespace VTX::Renderer
 		// Check empty.
 		if ( queue.empty() )
 		{
-			throw GraphicException( "Render queue is empty" );
+			return queue;
 		}
 
 		// Check last pass = 1 output.
@@ -172,6 +172,8 @@ namespace VTX::Renderer
 	{
 		using namespace Desc;
 
+		_config = p_config;
+
 		GraphBuilder g;
 
 		// Buffers.
@@ -179,7 +181,7 @@ namespace VTX::Renderer
 			"Camera",
 			E_SHADER_BUFFER_KIND::PARAMETERS,
 			E_BUFFER_MUTABILITY::IMMUTABLE,
-			E_BUFFER_ACCESS::READ,
+			E_BUFFER_ACCESS::NONE,
 			E_UPDATE_FREQUENCY::STREAM,
 			15,
 			{ makeUniform( "MatrixView", Mat4f( MAT4F_ID ) ),
@@ -197,7 +199,7 @@ namespace VTX::Renderer
 			"ColorLayout",
 			E_SHADER_BUFFER_KIND::PARAMETERS,
 			E_BUFFER_MUTABILITY::IMMUTABLE,
-			E_BUFFER_ACCESS::READ,
+			E_BUFFER_ACCESS::NONE,
 			E_UPDATE_FREQUENCY::DYNAMIC,
 			14,
 			{ makeUniformArray( "Colors", Util::Color::Rgba {}, 256 ) }
@@ -207,7 +209,7 @@ namespace VTX::Renderer
 			"Models",
 			E_SHADER_BUFFER_KIND::STRUCTURED,
 			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::READ,
+			E_BUFFER_ACCESS::NONE,
 			E_UPDATE_FREQUENCY::STREAM,
 			13,
 			{ makeUniform( "MatrixModelView", Mat4f( MAT4F_ID ) ),
@@ -219,7 +221,7 @@ namespace VTX::Renderer
 			"Representations",
 			E_SHADER_BUFFER_KIND::STRUCTURED,
 			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::READ,
+			E_BUFFER_ACCESS::NONE,
 			E_UPDATE_FREQUENCY::DYNAMIC,
 			12,
 			{ makeUniform( "SphereRadiusFixed", 0.0f ),
@@ -302,26 +304,21 @@ namespace VTX::Renderer
 
 		g.texture( "Depth", E_FORMAT::R32F );
 
-		// Used by shading pass even if SSAO disabled.
-		// std::vector<float> emptyData( 1, 1.f );
-		g.texture( "BlurX", E_FORMAT::R16F );
-		g.texture( "BlurY", E_FORMAT::R16F /*, emptyData */ );
 		if ( p_config.enableSSAO )
 		{
 			constexpr size_t   noiseTextureSize = 64;
-			std::vector<Vec3f> noiseData( noiseTextureSize * noiseTextureSize );
-			std::generate(
-				noiseData.begin(),
-				noiseData.end(),
-				[]
-				{
-					return Util::Math::normalize(
-						Vec3f( Util::Math::randomFloat() * 2.f - 1.f, Util::Math::randomFloat() * 2.f - 1.f, 0.f )
-					);
-				}
-			);
-			g.texture( "SSAO", E_FORMAT::R8 )
-				.texture( "Noise", E_FORMAT::RGB16F, noiseData, Size2DAbsolute { noiseTextureSize, noiseTextureSize } );
+			std::vector<Vec3f> noiseData		= Util::Math::randomUniVectors( noiseTextureSize * noiseTextureSize );
+
+			g.texture( "SSAO", E_FORMAT::R8 );
+			g.texture( "Noise", E_FORMAT::RGB16F, noiseData, Size2DAbsolute { noiseTextureSize, noiseTextureSize } );
+			g.texture( "BlurX", E_FORMAT::R16F );
+			g.texture( "BlurY", E_FORMAT::R16F );
+		}
+		else
+		{
+			// Used by shading pass even if SSAO disabled.
+			std::vector<float> emptyData( 1, 1.f );
+			g.texture( "BlurY", E_FORMAT::R16F, emptyData, Size2DAbsolute { 1, 1 } );
 		}
 
 		g.texture( "Shaded", E_FORMAT::RGBA16F );
@@ -442,7 +439,7 @@ namespace VTX::Renderer
 		g.pass( "Shading" )
 			.in( "Geometry" )
 			.in( "Color" )
-			.in( "BlurY" )
+			.in( "BlurY", p_config.enableSSAO ? "Default" : "NearestRepeat" ) // Repeat empty texture 1x1 if not SSAO.
 			.out( "Shaded" )
 			.program( "Shading" )
 			.shaders( { "default.vert", "shading.frag" } )
@@ -492,7 +489,7 @@ namespace VTX::Renderer
 		{
 			g.pass( "Selection" )
 				.in( "Geometry" )
-				.in( "Shaded" )
+				.in( p_config.enableOutline ? "Outline" : "Shaded" )
 				.in( "Depth" )
 				.out( "Selection" )
 				.program( "Selection" )
@@ -504,7 +501,9 @@ namespace VTX::Renderer
 
 		// FXAA.
 		g.pass( "FXAA" )
-			.in( p_config.enableSelection ? "Selection" : "Shaded" )
+			.in( p_config.enableSelection ? "Selection"
+				 : p_config.enableOutline ? "Outline"
+										  : "Shaded" )
 			.out( "FXAA" )
 			.program( "FXAA" )
 			.shaders( { "default.vert", "fxaa.frag" } )

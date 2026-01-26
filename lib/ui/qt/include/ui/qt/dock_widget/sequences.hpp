@@ -26,6 +26,7 @@ namespace VTX::UI::QT::DockWidget
 		void _onDestroySystem( App::ECS::Registry &, App::ECS::Entity );
 		void _onUpdateSelection( App::ECS::Registry &, App::ECS::Entity );
 		void _onColorsChanged( App::ECS::Registry &, App::ECS::Entity );
+		void _onColorsPresetChanged( App::ECS::Registry &, App::ECS::Entity );
 	};
 
 } // namespace VTX::UI::QT::DockWidget

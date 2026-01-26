@@ -10,10 +10,7 @@
 
 namespace VTX::Renderer
 {
-	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height )
-	{
-		_refreshGraph( GraphicsConfigs::DEFAULT );
-	}
+	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height ) {}
 
 #pragma region Contexts
 
@@ -22,7 +19,7 @@ namespace VTX::Renderer
 		_context.setNull();
 		try
 		{
-			build();
+			_context.build( _queue, _graph.getResources() );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -36,7 +33,8 @@ namespace VTX::Renderer
 		_context.setOpenGL45( _width, _height, p_shaderIncludePath );
 		try
 		{
-			build();
+			_context.build( _queue, _graph.getResources() );
+			std::cout << _context.commands() << std::endl;
 			_context.fillInfos( _infos );
 			onReady();
 		}
@@ -51,21 +49,6 @@ namespace VTX::Renderer
 #pragma endregion
 
 #pragma region Build & render
-
-	void Renderer::build()
-	{
-		// Build renderer _graph.
-		float buildTime = Util::CHRONO_CPU(
-			[ this ]()
-			{
-				const Desc::RenderQueue queue = _graph.build();
-				_context.build( queue, _graph.getResources() );
-				std::cout << _context.commands() << std::endl;
-			}
-		);
-
-		VTX_DEBUG( "Renderer graph setup total time: {}", Util::String::durationToStr( buildTime ) );
-	}
 
 	void Renderer::resize( const size_t p_width, const size_t p_height )
 	{
@@ -150,8 +133,12 @@ namespace VTX::Renderer
 
 	void Renderer::setGraphicsConfig( const GraphicsConfig & p_config )
 	{
-		_refreshGraph( p_config );
-		build();
+		// If graph changed from config, rebuild backend.
+		if ( _refreshGraph( p_config ) )
+		{
+			_context.build( _queue, _graph.getResources() );
+			std::cout << _context.commands() << std::endl;
+		}
 
 		BinaryBuffer140 bufferShading;
 		bufferShading.write( p_config.colorBackground );
@@ -394,7 +381,7 @@ namespace VTX::Renderer
 		return _infos;
 	}
 
-	void Renderer::_refreshGraph( const GraphicsConfig & p_config )
+	bool Renderer::_refreshGraph( const GraphicsConfig & p_config )
 	{
 		RenderGraph::PipelineConfig config;
 
@@ -402,6 +389,14 @@ namespace VTX::Renderer
 		config.enableOutline   = p_config.activeOutline;
 		config.enableSelection = p_config.activeSelection;
 
+		auto & configOpt = _graph.getPipelineConfig();
+		if ( configOpt && *configOpt == config )
+		{
+			return false;
+		}
+
 		_graph.createDefaultPipeline( config, _geometries );
+		_queue = _graph.build();
+		return true;
 	}
 } // namespace VTX::Renderer

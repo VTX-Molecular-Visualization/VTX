@@ -155,20 +155,28 @@ namespace VTX::App::Action::Scene
 
 	void SetColorLayout::execute( const ECS::Entity p_e )
 	{
+		using CL = App::Scene::ColorLayout;
+
 		auto & reg	 = REG();
 		auto   scene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot>();
-		using CL	 = App::Scene::ColorLayout;
-		auto view	 = reg.view<CL>();
+		auto   view	 = reg.view<CL>();
+
+		assert( view.size() <= 1 );
+
 		reg.remove<CL>( scene );
 		reg.emplace<CL>( scene, p_e );
 	}
 
 	void SetGraphicsConfig::execute( const ECS::Entity p_e )
 	{
+		using GC = App::Scene::GraphicsConfig;
+
 		auto & reg	 = REG();
 		auto   scene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot>();
-		using GC	 = App::Scene::GraphicsConfig;
-		auto view	 = reg.view<GC>();
+		auto   view	 = reg.view<GC>();
+
+		assert( view.size() <= 1 );
+
 		reg.remove<GC>( scene );
 		reg.emplace<GC>( scene, p_e );
 	}

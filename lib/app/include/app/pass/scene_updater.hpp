@@ -28,10 +28,16 @@ namespace VTX::App::Pass
 		void _onUpdateAABB( ECS::Registry &, ECS::Entity );
 
 		/**
-		 * @brief Update renderer when a preset is updated.
+		 * @brief Update renderer when a preset is instantiated.
 		 */
 		void _onUpdateGraphicsConfig( ECS::Registry &, ECS::Entity );
 		void _onUpdateColorLayout( ECS::Registry &, ECS::Entity );
+
+		/**
+		 * @brief Update renderer when a preset is updated.
+		 */
+		void _onUpdateGraphicsConfigPreset( ECS::Registry &, ECS::Entity );
+		void _onUpdateColorLayoutPreset( ECS::Registry &, ECS::Entity );
 	};
 } // namespace VTX::App::Pass
 #endif

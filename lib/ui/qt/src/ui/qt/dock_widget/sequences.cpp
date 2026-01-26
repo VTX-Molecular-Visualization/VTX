@@ -22,6 +22,8 @@ namespace VTX::UI::QT::DockWidget
 
 		// Refresh widget when colors changed.
 		App::REG().on_construct<App::Scene::ColorLayout>().connect<&Sequences::_onColorsChanged>( this );
+		App::REG().on_update<App::Scene::ColorLayout>().connect<&Sequences::_onColorsChanged>( this );
+		App::REG().on_update<Renderer::Color::Layout>().connect<&Sequences::_onColorsPresetChanged>( this );
 	}
 
 	void Sequences::_onSystemLoad( const App::Events::SystemLoad & p_e )
@@ -55,6 +57,19 @@ namespace VTX::UI::QT::DockWidget
 		for ( auto & [ _, w ] : _mapSequencesWidgets )
 		{
 			w->viewport()->update();
+		}
+	}
+
+	void Sequences::_onColorsPresetChanged( App::ECS::Registry & p_reg, const App::ECS::Entity p_e )
+	{
+		const auto & colorLayout = App::ECS::getFirstComponent<App::Scene::ColorLayout>();
+
+		if ( colorLayout.preset == p_e )
+		{
+			for ( auto & [ _, w ] : _mapSequencesWidgets )
+			{
+				w->viewport()->update();
+			}
 		}
 	}
 

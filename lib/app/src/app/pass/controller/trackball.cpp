@@ -42,7 +42,8 @@ namespace
 
 namespace VTX::App::Pass::Controller
 {
-	Trackball::Trackball( const ECS::Entity & p_ent ) : _cameraEntity( p_ent )
+	Trackball::Trackball( const ECS::Entity & p_ent, const Vec3f & p_target ) :
+		_cameraEntity( p_ent ), _target( p_target )
 	{
 		// TODO: use setting object?
 		auto & settings	   = SETTINGS();

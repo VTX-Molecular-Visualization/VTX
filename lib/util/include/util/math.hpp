@@ -6,6 +6,7 @@
 
 #include "constants.hpp"
 #include "types.hpp"
+#include <algorithm>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -256,6 +257,23 @@ namespace VTX::Util::Math
 	{
 		assert( ( p_a & ( p_a - 1 ) ) == 0 );
 		return ( p_v + ( p_a - 1 ) ) & ~( p_a - 1 );
+	}
+
+	std::vector<Vec3f> inline randomUniVectors( const size_t p_size )
+	{
+		std::vector<Vec3f> noiseData( p_size );
+		std::generate(
+			noiseData.begin(),
+			noiseData.end(),
+			[]
+			{
+				return Util::Math::normalize(
+					Vec3f( Util::Math::randomFloat() * 2.f - 1.f, Util::Math::randomFloat() * 2.f - 1.f, 0.f )
+				);
+			}
+		);
+
+		return noiseData;
 	}
 
 	// TODO:  std::fabsf.

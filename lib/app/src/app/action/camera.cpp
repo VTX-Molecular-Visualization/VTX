@@ -64,6 +64,12 @@ namespace VTX::App::Action::Camera
 				p_transform.lookAt( aabb.centroid() );
 			}
 		);
+
+		// Change controller target.
+		if ( PASS().hasPass<Pass::Controller::Trackball>() )
+		{
+			PASS().getPass<Pass::Controller::Trackball>()->setTarget( aabb.centroid() );
+		}
 	}
 
 	void Orient::execute()
@@ -90,6 +96,12 @@ namespace VTX::App::Action::Camera
 		const auto & [ _, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
+		// Change controller target.
+		if ( PASS().hasPass<Pass::Controller::Trackball>() )
+		{
+			PASS().getPass<Pass::Controller::Trackball>()->setTarget( p_target.centroid() );
+		}
+
 		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(
 			_computeCameraOrientPosition( transform.getFront(), camera.fov, p_target ), transform.getRotation()
 		);
@@ -101,6 +113,7 @@ namespace VTX::App::Action::Camera
 		const float	  p_duration
 	)
 	{
+		// TODO: controller target?
 		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>( p_targetPosition, p_targetRotation, p_duration );
 	}
 

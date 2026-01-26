@@ -85,6 +85,16 @@ namespace VTX::App::Pass
 		}
 
 		/**
+		 * @brief Gets a pass.
+		 */
+		template<ConceptPass T>
+		T * const getPass() const
+		{
+			assert( _passes.has<T>() );
+			return _passes.get<T>();
+		}
+
+		/**
 		 * @brief Updates all passes.
 		 */
 		inline void update( const float p_delta, const float p_elapsed )

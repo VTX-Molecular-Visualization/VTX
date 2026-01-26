@@ -7,6 +7,7 @@
 #include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
 #include <QToolBar>
+#include <app/services.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -30,8 +31,22 @@ namespace VTX::UI::QT::DockWidget
 		_tree->setItemDelegate( new Delegate::SceneItemDelegate( _tree ) );
 		_layout->addWidget( _tree );
 
+		const bool selectionLocked = SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool();
+		_tree->setSelectionMode(
+			selectionLocked ? QAbstractItemView::NoSelection : QAbstractItemView::ExtendedSelection
+		);
+
+		App::HUB().connect<Events::SelectionLocked, &Scene::_onSelectionLocked>( this );
+
 		connect( actionExpandAll, &QAction::triggered, this, [ this ] { _tree->expandAll(); } );
 		connect( actionCollapseAll, &QAction::triggered, this, [ this ] { _tree->collapseAll(); } );
+	}
+
+	void Scene::_onSelectionLocked( const Events::SelectionLocked & p_event )
+	{
+		_tree->setSelectionMode(
+			p_event.locked ? QAbstractItemView::NoSelection : QAbstractItemView::ExtendedSelection
+		);
 	}
 
 } // namespace VTX::UI::QT::DockWidget

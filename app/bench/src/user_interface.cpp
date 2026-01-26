@@ -523,7 +523,7 @@ namespace VTX::Bench
 			{
 				try
 				{
-					p_renderer->build();
+					// p_renderer->build();
 				}
 				catch ( const std::exception & e )
 				{

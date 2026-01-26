@@ -35,7 +35,9 @@ namespace VTX::Renderer::Context::Executor
 
 		for ( const Command & command : p_commandBuffer.commands )
 		{
+#ifdef _DEBUG
 			GL::Debug::dumpGLError();
+#endif
 
 			switch ( command.type )
 			{
@@ -205,6 +207,10 @@ namespace VTX::Renderer::Context::Executor
 			default: break;
 			}
 		}
+
+#ifdef _DEBUG
+		GL::Debug::dumpGLError();
+#endif
 	}
 
 } // namespace VTX::Renderer::Context::Executor

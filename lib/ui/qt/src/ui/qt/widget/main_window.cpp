@@ -26,12 +26,6 @@
 #include <app/action/scene.hpp>
 #include <util/event_hub.hpp>
 
-namespace
-{
-	constexpr std::string_view _SETTING_KEY_GEOMETRY = "main/geometry";
-	constexpr std::string_view _SETTING_KEY_STATE	 = "main/state";
-} // namespace
-
 namespace VTX::UI::QT::Widget
 {
 
@@ -113,8 +107,8 @@ namespace VTX::UI::QT::Widget
 		_defaultState	 = saveState();
 
 		// Restore geometry and state.
-		restoreGeometry( SETTINGS().value( _SETTING_KEY_GEOMETRY ).toByteArray() );
-		restoreState( SETTINGS().value( _SETTING_KEY_STATE ).toByteArray() );
+		restoreGeometry( SETTINGS().value( SETTING_KEY_GEOMETRY ).toByteArray() );
+		restoreState( SETTINGS().value( SETTING_KEY_STATE ).toByteArray() );
 
 		// Connect events.
 		App::HUB().connect<App::Events::ApplicationError, &MainWindow::_onApplicationError>( this );
@@ -127,8 +121,8 @@ namespace VTX::UI::QT::Widget
 
 	MainWindow::~MainWindow()
 	{
-		SETTINGS().setValue( _SETTING_KEY_GEOMETRY, saveGeometry() );
-		SETTINGS().setValue( _SETTING_KEY_STATE, saveState() );
+		SETTINGS().setValue( SETTING_KEY_GEOMETRY, saveGeometry() );
+		SETTINGS().setValue( SETTING_KEY_STATE, saveState() );
 	}
 
 	void MainWindow::addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action )

@@ -2,18 +2,13 @@
 #include "ui/qt/settings.hpp"
 #include <app/action/scene.hpp>
 
-namespace
-{
-	constexpr std::string_view _SETTING_KEY_FOLDER = "dialogOpenLastOpenFolder";
-}
-
 namespace VTX::UI::QT::Dialog
 {
 
 	Open::Open()
 	{
 		// Set options.
-		setDirectory( SETTINGS().value( _SETTING_KEY_FOLDER, "." ).toString() );
+		setDirectory( SETTINGS().value( SETTING_KEY_OPEN_FOLDER, "." ).toString() );
 		setFileMode( QFileDialog::FileMode::ExistingFiles );
 		setAcceptMode( QFileDialog::AcceptOpen );
 
@@ -25,7 +20,7 @@ namespace VTX::UI::QT::Dialog
 			[ this ]( const QStringList & p_paths )
 			{
 				// Save last opened folder.
-				SETTINGS().setValue( _SETTING_KEY_FOLDER, directory().absolutePath() );
+				SETTINGS().setValue( SETTING_KEY_OPEN_FOLDER, directory().absolutePath() );
 
 				// Open files.
 				for ( const auto & path : p_paths )

@@ -321,11 +321,11 @@ namespace VTX::UI::QT::Dialog
 	/*
 	void ExportImage::save( Settings & p_settings )
 	{
-		p_settings.setValue( _SETTING_KEY_WIDTH, _spinBoxWidth->value() );
-		p_settings.setValue( _SETTING_KEY_HEIGHT, _spinBoxHeight->value() );
-		p_settings.setValue( _SETTING_KEY_FORMAT, _comboBoxFormat->currentIndex() );
-		p_settings.setValue( _SETTING_KEY_OPACITY, _sliderBackgroundOpacity->value() );
-		p_settings.setValue( _SETTING_KEY_FOLDER, _lastExportFolder );
+		p_settings.setValue( SETTING_KEY_WIDTH, _spinBoxWidth->value() );
+		p_settings.setValue( SETTING_KEY_HEIGHT, _spinBoxHeight->value() );
+		p_settings.setValue( SETTING_KEY_FORMAT, _comboBoxFormat->currentIndex() );
+		p_settings.setValue( SETTING_KEY_OPACITY, _sliderBackgroundOpacity->value() );
+		p_settings.setValue( SETTING_KEY_FOLDER, _lastExportFolder );
 	}
 
 	void ExportImage::restore( const Settings & p_settings )
@@ -337,25 +337,25 @@ namespace VTX::UI::QT::Dialog
 		QSignalBlocker b4( _sliderBackgroundOpacity );
 		QSignalBlocker b5( _comboBoxResolution );
 
-		if ( p_settings.contains( _SETTING_KEY_WIDTH ) )
+		if ( p_settings.contains( SETTING_KEY_WIDTH ) )
 		{
-			_spinBoxWidth->setValue( p_settings.value( _SETTING_KEY_WIDTH ).toInt() );
+			_spinBoxWidth->setValue( p_settings.value( SETTING_KEY_WIDTH ).toInt() );
 		}
-		if ( p_settings.contains( _SETTING_KEY_HEIGHT ) )
+		if ( p_settings.contains( SETTING_KEY_HEIGHT ) )
 		{
-			_spinBoxHeight->setValue( p_settings.value( _SETTING_KEY_HEIGHT ).toInt() );
+			_spinBoxHeight->setValue( p_settings.value( SETTING_KEY_HEIGHT ).toInt() );
 		}
-		if ( p_settings.contains( _SETTING_KEY_FORMAT ) )
+		if ( p_settings.contains( SETTING_KEY_FORMAT ) )
 		{
-			_comboBoxFormat->setCurrentIndex( p_settings.value( _SETTING_KEY_FORMAT ).toInt() );
+			_comboBoxFormat->setCurrentIndex( p_settings.value( SETTING_KEY_FORMAT ).toInt() );
 		}
-		if ( p_settings.contains( _SETTING_KEY_OPACITY ) )
+		if ( p_settings.contains( SETTING_KEY_OPACITY ) )
 		{
-			_sliderBackgroundOpacity->setValue( p_settings.value( _SETTING_KEY_OPACITY ).toInt() );
+			_sliderBackgroundOpacity->setValue( p_settings.value( SETTING_KEY_OPACITY ).toInt() );
 		}
-		if ( p_settings.contains( _SETTING_KEY_FOLDER ) )
+		if ( p_settings.contains( SETTING_KEY_FOLDER ) )
 		{
-			_lastExportFolder = p_settings.value( _SETTING_KEY_FOLDER ).toString();
+			_lastExportFolder = p_settings.value( SETTING_KEY_FOLDER ).toString();
 		}
 	}
 	*/

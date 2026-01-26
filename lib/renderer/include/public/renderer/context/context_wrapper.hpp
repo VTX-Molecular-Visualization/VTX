@@ -87,6 +87,16 @@ namespace VTX::Renderer::Context
 		std::vector<std::byte> getTextureData( const Desc::Key & p_key, const size_t p_x, const size_t p_y ) const;
 
 		/**
+		 * @brief Set texture data.
+		 */
+		template<typename T>
+		void setTextureData( const Desc::Key & p_key, std::span<const T> p_data )
+		{
+			setTextureData( p_key, asBytes( p_data ) );
+		}
+		void setTextureData( const Desc::Key & p_key, SpanBytes p_data );
+
+		/**
 		 * @brief Fill renderer infos.
 		 */
 		void fillInfos( StructInfos & p_infos ) const;

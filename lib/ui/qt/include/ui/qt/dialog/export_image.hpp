@@ -29,11 +29,7 @@ namespace VTX::UI::QT::Dialog
 		};
 
 		// Constants.
-		inline static const std::string _SETTING_KEY_WIDTH	 = "dialogExportImageWidth";
-		inline static const std::string _SETTING_KEY_HEIGHT	 = "dialogExportImageHeight";
-		inline static const std::string _SETTING_KEY_FORMAT	 = "dialogExportImageFormat";
-		inline static const std::string _SETTING_KEY_OPACITY = "dialogExportImageBackgroundOpacity";
-		inline static const std::string _SETTING_KEY_FOLDER	 = "dialogExportImageLastExportFolder";
+		
 
 		// TODO: use openGL real max texture size.
 		inline static const size_t _MAX_TEXTURE_SIZE = 16384;

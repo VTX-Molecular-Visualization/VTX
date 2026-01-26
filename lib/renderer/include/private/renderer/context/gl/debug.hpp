@@ -74,6 +74,34 @@ namespace VTX::Renderer::Context::GL::Debug
 			assert( false );
 		}
 	};
+
+	inline std::string getProgramErrors( const GLuint p_id )
+	{
+		GLint length;
+		glGetProgramiv( p_id, GL_INFO_LOG_LENGTH, &length );
+		if ( length == 0 )
+		{
+			return "";
+		}
+		std::vector<char> log( length );
+		glGetProgramInfoLog( p_id, length, &length, &log[ 0 ] );
+
+		return std::string( log.begin(), log.end() );
+	}
+
+	inline std::string getShaderErrors( const GLuint p_id )
+	{
+		GLint length;
+		glGetShaderiv( p_id, GL_INFO_LOG_LENGTH, &length );
+		if ( length == 0 )
+		{
+			return "";
+		}
+		std::vector<char> log( length );
+		glGetShaderInfoLog( p_id, length, &length, &log[ 0 ] );
+
+		return std::string( log.begin(), log.end() );
+	}
 } // namespace VTX::Renderer::Context::GL::Debug
 
 #endif

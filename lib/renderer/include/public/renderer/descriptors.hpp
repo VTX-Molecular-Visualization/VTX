@@ -9,6 +9,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <util/constants.hpp>
+#include <util/hashing.hpp>
 #include <util/types.hpp>
 #include <variant>
 #include <vector>
@@ -377,6 +378,25 @@ namespace VTX::Renderer::Desc
 	 * @brief Ordered list of passes for execution.
 	 */
 	using RenderQueue = std::vector<const Pass *>;
+
+	struct Dummy
+	{
+	};
+
+	/**
+	 * @brief Descriptor hash functions.
+	 */
+	template<typename T>
+	Hash hashDesc( const T & )
+	{
+		return 0;
+	}
+
+	template<>
+	inline Hash hashDesc<Texture>( const Texture & p_text )
+	{
+		return Util::hash( toUnderlying( p_text.format ) ) + p_text.data.size();
+	}
 
 } // namespace VTX::Renderer::Desc
 

@@ -145,18 +145,21 @@ namespace VTX::App
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::GraphicsConfig>>();
 
-		// Launch passes.
+		// First pass to add, next action will trigger updates in this one.
 		PASS().addPass<Pass::SceneUpdater>( _scene );
-		PASS().addPass<Pass::CameraUpdater>( _camera );
-		PASS().addPass<Pass::SystemUpdater>();
 
 		// Set preset instances.
-		ACTION().execute<Action::Scene::SetColorLayout>(
-			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
-		);
+		// First graphics config to setup renderer properly.
 		ACTION().execute<Action::Scene::SetGraphicsConfig>(
 			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>()
 		);
+		ACTION().execute<Action::Scene::SetColorLayout>(
+			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
+		);
+
+		// Other passes.
+		PASS().addPass<Pass::CameraUpdater>( _camera );
+		PASS().addPass<Pass::SystemUpdater>();
 
 		// TODO: at setting loading.
 		// Camera projection.

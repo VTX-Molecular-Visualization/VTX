@@ -18,9 +18,9 @@
 
 namespace
 {
-	const QString			   _TEXT_CACHE_COUNT  = "Files : %1";
-	const QString			   _TEXT_CACHE_SIZE	  = "Size : %1";
-	constexpr std::string_view _SETTING_KEY_VSYNC = "options/vsync";
+	const QString _TEXT_CACHE_COUNT = "Files : %1";
+	const QString _TEXT_CACHE_SIZE	= "Size : %1";
+
 } // namespace
 
 namespace VTX::UI::QT::DockWidget
@@ -180,7 +180,7 @@ namespace VTX::UI::QT::DockWidget
 		_refreshCacheInfos();
 
 		QSignalBlocker blocker1( _checkBoxVSync );
-		_checkBoxVSync->setChecked( SETTINGS().value( _SETTING_KEY_VSYNC, true ).toBool() );
+		_checkBoxVSync->setChecked( SETTINGS().value( SETTING_KEY_VSYNC, true ).toBool() );
 
 		QTimer::singleShot(
 			0,
@@ -196,7 +196,7 @@ namespace VTX::UI::QT::DockWidget
 		App::NETWORK().onFileCached += [ this ]() { _refreshCacheInfos(); };
 	}
 
-	Options::~Options() { SETTINGS().setValue( _SETTING_KEY_VSYNC, _checkBoxVSync->isChecked() ); }
+	Options::~Options() { SETTINGS().setValue( SETTING_KEY_VSYNC, _checkBoxVSync->isChecked() ); }
 
 	void Options::_refreshCacheInfos()
 	{

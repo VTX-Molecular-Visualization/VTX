@@ -19,6 +19,9 @@ namespace VTX::App::Pass
 		reg.on_construct<Scene::ColorLayout>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
 		reg.on_update<Scene::ColorLayout>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
 
+		reg.on_update<Renderer::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfigPreset>( this );
+		reg.on_update<Renderer::Color::Layout>().connect<&SceneUpdater::_onUpdateColorLayoutPreset>( this );
+
 		// TODO: remove after debug.
 		static std::vector<Vec3f> mins, maxs;
 		for ( float x = -100.f; x < 100.f; x += 50.f )
@@ -50,7 +53,7 @@ namespace VTX::App::Pass
 		sceneAABB.extend( otherAABB );
 	}
 
-	void SceneUpdater::_onUpdateGraphicsConfig( ECS::Registry & p_r, ECS::Entity p_e )
+	void SceneUpdater::_onUpdateGraphicsConfig( ECS::Registry & p_r, ECS::Entity )
 	{
 		auto &		 renderer = RENDERER();
 		const auto & instance = p_r.get<Scene::GraphicsConfig>( _entity );
@@ -64,6 +67,24 @@ namespace VTX::App::Pass
 		const auto & instance = p_r.get<Scene::ColorLayout>( _entity );
 		const auto & preset	  = p_r.get<Renderer::Color::Layout>( instance.preset );
 		renderer.setColorLayout( preset );
+	}
+
+	void SceneUpdater::_onUpdateGraphicsConfigPreset( ECS::Registry & p_r, ECS::Entity p_e )
+	{
+		auto & instance = p_r.get<Scene::GraphicsConfig>( _entity );
+		if ( instance.preset == p_e )
+		{
+			_onUpdateGraphicsConfig( p_r, _entity );
+		}
+	}
+
+	void SceneUpdater::_onUpdateColorLayoutPreset( ECS::Registry & p_r, ECS::Entity p_e )
+	{
+		auto & instance = p_r.get<Scene::ColorLayout>( _entity );
+		if ( instance.preset == p_e )
+		{
+			_onUpdateColorLayout( p_r, _entity );
+		}
 	}
 
 } // namespace VTX::App::Pass

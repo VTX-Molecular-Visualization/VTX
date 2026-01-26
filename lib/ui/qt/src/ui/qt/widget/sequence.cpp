@@ -125,6 +125,11 @@ namespace VTX::UI::QT::Widget
 		using namespace App;
 		using namespace App::Action;
 
+		if ( SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
+		{
+			return;
+		}
+
 		auto opt = _indexFromPos( p_e->pos() );
 		if ( not opt )
 		{

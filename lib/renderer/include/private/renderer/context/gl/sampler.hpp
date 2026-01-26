@@ -41,4 +41,5 @@ namespace VTX::Renderer::Context::GL
 	};
 
 } // namespace VTX::Renderer::Context::GL
+
 #endif

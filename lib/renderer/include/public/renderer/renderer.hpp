@@ -49,11 +49,6 @@ namespace VTX::Renderer
 		void setOpenGL45( const FilePath & );
 
 		/**
-		 * @brief Build the renderer with the current _graph.
-		 */
-		void build();
-
-		/**
 		 * @brief Resize the renderer.
 		 */
 		void resize( const size_t, const size_t );
@@ -174,6 +169,11 @@ namespace VTX::Renderer
 		RenderGraph _graph;
 
 		/**
+		 * @brief Render queue built from the _graph.
+		 */
+		Desc::RenderQueue _queue;
+
+		/**
 		 * @brief Geometries.
 		 */
 		Geometries _geometries;
@@ -202,8 +202,9 @@ namespace VTX::Renderer
 
 		/**
 		 * @brief Refresh the render graph according to the graphics config.
+		 * @return true if the graph has changed.
 		 */
-		void _refreshGraph( const GraphicsConfig & );
+		bool _refreshGraph( const GraphicsConfig & );
 
 		// TODO: make "filler" functions for each type of data instead of _setDataX?
 		inline void _refreshDataSystems()
