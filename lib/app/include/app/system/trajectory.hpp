@@ -32,11 +32,12 @@ namespace VTX::App::System
 	struct GenericTrajectory
 	{
 		TrajectoryPlayMode playMode = TrajectoryPlayMode::none; // Help the trajectory reader to schedule frame reading.
-		float			   playingSpeed		   = 35;			// Time in millisecon	ds between each frame update
-		float			   lastFrameUpdateTime = 0; // last elapsed time where the trajectory has been changed
-		uint			   requestedFrameIndex = 0; // Here lies the Frame index that is requested.
+		bool			   paused	= false;
+		float			   playingSpeed		   = 35; // Time in millisecon	ds between each frame update
+		float			   lastFrameUpdateTime = 0;	 // last elapsed time where the trajectory has been changed
+		uint			   requestedFrameIndex = 0;	 // Here lies the Frame index that is requested.
 		uint currentFrameIndex = std::numeric_limits<uint>::max(); // Here is the actual index related to the positions.
-		size_t trajectorySize  = std::numeric_limits<size_t>::max();
+		uint trajectorySize	   = std::numeric_limits<uint>::max();
 	};
 
 	struct TrajectorySingleFrame
@@ -55,7 +56,13 @@ namespace VTX::App::System
 	bool hasMultiFrameTrajectory( const ECS::Entity & ) noexcept;
 	void get( const ECS::Entity &, GenericTrajectory *& ) noexcept;
 
-
+	/**
+	 * @brief Fill trajectory data structure up to the first frame, then start threaded frame loading.
+	 * @param p_entity
+	 * @param p_trajectory
+	 * @param p_loader
+	 */
+	void prepare( ECS::Entity p_entity, TrajectoryFullBuffer & p_trajectory, IO::Reader::System && p_loader ) noexcept;
 
 	/**
 	 * @brief Meant to be executed as another stoppable thread to fill a trajectory its frame asynchronously.

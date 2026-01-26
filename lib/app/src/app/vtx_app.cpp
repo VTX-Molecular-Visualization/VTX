@@ -16,6 +16,7 @@
 #include "app/pass/pass_manager.hpp"
 #include "app/pass/scene_updater.hpp"
 #include "app/pass/system_updater.hpp"
+#include "app/pass/trajectory_updater.hpp"
 #include "app/python_binding/interpretor.hpp"
 #include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
@@ -160,6 +161,7 @@ namespace VTX::App
 		// Other passes.
 		PASS().addPass<Pass::CameraUpdater>( _camera );
 		PASS().addPass<Pass::SystemUpdater>();
+		PASS().addPass<Pass::TrajectoryUpdater>();
 
 		// TODO: at setting loading.
 		// Camera projection.

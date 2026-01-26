@@ -43,12 +43,9 @@ namespace VTX::App::Action::IO
 			REG().remove<System::GenericTrajectory>( p_entity );
 			auto & trajectory = REG().emplace<System::TrajectoryFullBuffer>( p_entity );
 			auto & uid		  = REG().get<System::UID>( p_entity );
+			App::System::prepare( p_entity, trajectory, std::move( loader ) );
 
-			trajectory.genericData.trajectorySize = loader.getChemfilesReader().getFrameCount();
-			trajectory.frameCollection.emplace_back( loader.getChemfilesReader().getCurrentFrameAtomPosition() );
 			RENDERER().setSystemPosition( uid.system, trajectory.frameCollection[ 0 ] );
-			trajectory.lastFrameAvailable = 0;
-			THREAD().createThread( System::TrajectoryFullBufferReader( p_entity, std::move( loader ) ) );
 		}
 		else
 		{

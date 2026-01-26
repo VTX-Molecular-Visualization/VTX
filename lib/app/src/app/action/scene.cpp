@@ -90,12 +90,8 @@ namespace VTX::App::Action::Scene
 					entity
 				); // TODO Implement circular buffer with an automatic decision (maybe based on atomCount * frameCount
 				   // value threshold) and with a setting based on a value the user can alter
-				trajectory.genericData.trajectorySize = chemfilesReader.getFrameCount();
-				trajectory.frameCollection.emplace_back( chemfilesReader.getCurrentFrameAtomPosition() );
-				firstFrame					  = trajectory.frameCollection[ 0 ];
-				trajectory.lastFrameAvailable = 0;
-
-				THREAD().createThread( System::TrajectoryFullBufferReader( entity, std::move( loader ) ) );
+				prepare( entity, trajectory, std::move( loader ) );
+				firstFrame = trajectory.frameCollection[ 0 ];
 			}
 			else
 			{

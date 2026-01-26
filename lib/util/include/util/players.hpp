@@ -2,6 +2,7 @@
 #define __VTX_UTIL_PLAYERS__
 
 #include "util/types.hpp"
+#include <concepts>
 
 namespace VTX::Util
 {
@@ -9,7 +10,7 @@ namespace VTX::Util
 	{
 	  public:
 		/**
-		 * @brief Set a new current step
+		 * @brief Set a new current step. Jump to last step if input > num step.
 		 * @param p_step New current step
 		 */
 		inline void jumpTo( const uint & p_step ) noexcept { _ptr->jumpTo( p_step ); }
@@ -40,7 +41,7 @@ namespace VTX::Util
 			T _obj;
 
 		  public:
-			_wrapper( T && p_ ) : _obj( std::forward( p_ ) ) {}
+			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
 			virtual void jumpTo( const uint & p_step ) noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
@@ -63,13 +64,14 @@ namespace VTX::Util
 				}
 			}
 		};
-		std::unique_ptr<_interface> _ptr { std::make_unique<_wrapper<_dummy>>() };
+		std::unique_ptr<_interface> _ptr { std::make_unique<_wrapper<_dummy>>( _dummy() ) };
 
 	  public:
 		template<typename PlayerT>
-		Player( PlayerT && p_ ) : _ptr( new _wrapper<PlayerT>( std::forward( p_ ) ) )
+		Player( PlayerT && p_ ) : _ptr( new _wrapper<PlayerT>( std::forward<PlayerT>( p_ ) ) )
 		{
 		}
+		Player() = default;
 	};
 
 	namespace Players

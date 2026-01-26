@@ -5,6 +5,7 @@
 #include "app/services.hpp"
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
+#include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
 #include <renderer/renderer.hpp>
 
@@ -20,6 +21,17 @@ namespace VTX::App::System
 		p_trajPtr = nullptr;
 		if ( REG().all_of<TrajectoryFullBuffer>( p_entity ) )
 			p_trajPtr = &REG().get<TrajectoryFullBuffer>( p_entity ).genericData;
+	}
+	void prepare( ECS::Entity p_entity, TrajectoryFullBuffer & p_trajectory, IO::Reader::System && p_loader ) noexcept
+	{
+		p_trajectory.genericData.trajectorySize = p_loader.getChemfilesReader().getFrameCount();
+		p_trajectory.frameCollection.reserve( p_loader.getChemfilesReader().getFrameCount() );
+		p_trajectory.frameCollection.emplace_back( p_loader.getChemfilesReader().getCurrentFrameAtomPosition() );
+		p_trajectory.genericData.playMode		   = TrajectoryPlayMode::forward;
+		p_trajectory.genericData.currentFrameIndex = 0;
+		p_trajectory.lastFrameAvailable			   = 0;
+
+		THREAD().createThread( System::TrajectoryFullBufferReader( p_entity, std::move( p_loader ) ) );
 	}
 
 	struct TrajectoryFullBufferReader::_Data
@@ -44,7 +56,7 @@ namespace VTX::App::System
 		RootUID		 systemUid	= REG().get<System::UID>( _ptr->entity ).system;
 		_ptr->loader.readNextFrame(); // First frame has already been added
 
-		for ( size_t it_currentFrameIndex = 1; it_currentFrameIndex < frameCount; it_currentFrameIndex++ )
+		for ( size_t it_currentFrameIndex = 1; it_currentFrameIndex < frameCount - 1; it_currentFrameIndex++ )
 		{
 			std::vector<Vec3f> new_frame = reader.getCurrentFrameAtomPosition();
 			_ptr->loader.readNextFrame();
