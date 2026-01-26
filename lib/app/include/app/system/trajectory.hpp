@@ -52,6 +52,9 @@ namespace VTX::App::System
 																		// when no frame are available.
 	};
 
+	bool hasMultiFrameTrajectory( const ECS::Entity & ) noexcept;
+	void get( const ECS::Entity &, GenericTrajectory *& ) noexcept;
+
 	/**
 	 * @brief Meant to be executed as another stoppable thread to fill a trajectory its frame asynchronously.
 	 */

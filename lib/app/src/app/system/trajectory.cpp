@@ -10,6 +10,18 @@
 
 namespace VTX::App::System
 {
+
+	bool hasMultiFrameTrajectory( const ECS::Entity & p_entity ) noexcept
+	{
+		return REG().any_of<TrajectoryFullBuffer>( p_entity );
+	}
+	void get( const ECS::Entity & p_entity, GenericTrajectory *& p_trajPtr ) noexcept
+	{
+		p_trajPtr = nullptr;
+		if ( REG().all_of<TrajectoryFullBuffer>( p_entity ) )
+			p_trajPtr = &REG().get<TrajectoryFullBuffer>( p_entity ).genericData;
+	}
+
 	struct TrajectoryFullBufferReader::_Data
 	{
 		ECS::Entity		   entity;

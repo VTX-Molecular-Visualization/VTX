@@ -89,7 +89,7 @@ namespace VTX::UI::QT
 
 		switch ( p_role )
 		{
-		case Qt::DisplayRole:
+		case Qt::DisplayRole: // No break intended ?
 		case NameRole:
 			switch ( item )
 			{
