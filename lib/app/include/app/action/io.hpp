@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_ACTION_IO__
 #define __VTX_APP_ACTION_IO__
 
+#include "app/ecs.hpp"
 #include <util/image.hpp>
 #include <util/types.hpp>
 #include <util/url.hpp>
@@ -20,6 +21,10 @@ namespace VTX::App::Action::IO
 	struct Open
 	{
 		void execute( const FilePath & p_path );
+	};
+	struct AssociateTrajectory
+	{
+		void execute( const FilePath & p_path, const ECS::Entity & );
 	};
 
 	/**

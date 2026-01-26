@@ -1,4 +1,5 @@
 #include "ui/qt/application.hpp"
+#include "ui/qt/dialog/trajectory_association.hpp"
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/model.hpp"
 #include "ui/qt/resources.hpp"
@@ -62,6 +63,7 @@ namespace VTX::UI::QT
 
 		// Connect quit event that can come from VTXApp.
 		App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
+		App::HUB().connect<App::Events::TrajectoryFileAssociation, &Application::_trajectoryFileAssociation>( this );
 
 		// After quit, last loop.
 		connect(
@@ -217,6 +219,11 @@ namespace VTX::UI::QT
 		}
 
 		return qAction;
+	}
+	void Application::_trajectoryFileAssociation( const App::Events::TrajectoryFileAssociation & p_event ) noexcept
+	{
+		auto e = new Dialog::TrajectoryAssociation( p_event.path );
+		e->exec();
 	}
 
 } // namespace VTX::UI::QT

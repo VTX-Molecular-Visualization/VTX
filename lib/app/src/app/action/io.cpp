@@ -1,12 +1,20 @@
 #include "app/action/io.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/scene.hpp"
+#include "app/events.hpp"
 #include "app/filesystem.hpp"
 #include "app/network/network_manager.hpp"
 #include "app/services.hpp"
+#include "app/system/metadata.hpp"
+#include "app/system/trajectory.hpp"
+#include "app/system/uid.hpp"
+#include "app/threading/thread_manager.hpp"
+#include <io/reader/chemfiles.hpp>
+#include <io/reader/system.hpp>
 #include <renderer/camera.hpp>
 #include <renderer/renderer.hpp>
 #include <util/chrono.hpp>
+#include <util/event_hub.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Action::IO
@@ -15,7 +23,43 @@ namespace VTX::App::Action::IO
 	void Open::execute( const FilePath & p_path )
 	{
 		// TODO: check file format to redirect to the correct loader.
-		ACTION().execute<Action::Scene::LoadSystem>( p_path );
+		auto view = REG().view<System::TrajectorySingleFrame, System::Metadata>();
+		if ( std::distance( view.begin(), view.end() ) > 0
+			 && VTX::IO::Reader::Chemfiles::isTrajectoryFileFormat( p_path ) )
+			HUB().trigger<Events::TrajectoryFileAssociation>( Events::TrajectoryFileAssociation { p_path } );
+		else
+			ACTION().execute<Action::Scene::LoadSystem>( p_path );
+	}
+	void AssociateTrajectory::execute( const FilePath & p_path, const ECS::Entity & p_entity )
+	{
+		// TODO : Maybe there is some code to merge with the systemloading in scene.cpp
+		size_t					initialAtomcount = REG().get<Core::Struct::System>( p_entity ).getAtomCount();
+		VTX::IO::Reader::System loader;
+		Core::Struct::System	data;
+		loader.readFile( p_path, data );
+
+		if ( initialAtomcount == data.getAtomCount() )
+		{
+			REG().remove<System::GenericTrajectory>( p_entity );
+			auto & trajectory = REG().emplace<System::TrajectoryFullBuffer>( p_entity );
+			auto & uid		  = REG().get<System::UID>( p_entity );
+
+			trajectory.genericData.trajectorySize = loader.getChemfilesReader().getFrameCount();
+			trajectory.frameCollection.emplace_back( loader.getChemfilesReader().getCurrentFrameAtomPosition() );
+			RENDERER().setSystemPosition( uid.system, trajectory.frameCollection[ 0 ] );
+			trajectory.lastFrameAvailable = 0;
+			THREAD().createThread( System::TrajectoryFullBufferReader( p_entity, std::move( loader ) ) );
+		}
+		else
+		{
+			VTX::VTX_ERROR(
+				"File {} and system {} has different atom count. ({}/{})",
+				p_path.string(),
+				REG().get<System::Metadata>( p_entity ).pdbIDCode,
+				initialAtomcount,
+				data.getAtomCount()
+			);
+		}
 	}
 
 	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id )

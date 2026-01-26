@@ -72,9 +72,14 @@ namespace VTX::App::Action::Color
 					{
 						for ( Index atom : ranges )
 						{
-							const Index residue	  = system.atomResidueIndexes[ atom ];
-							const Index chain	  = system.residueChainIndexes[ residue ];
-							p_color.atoms[ atom ] = getColorIndex( system.getChainName( chain ) );
+							const Index residue
+								= system.atomResidueIndexes.size() > atom ? system.atomResidueIndexes[ atom ] : 0;
+							const Index chain	  = system.residueChainIndexes.size() > residue
+														? system.residueChainIndexes[ residue ]
+														: 0;
+							p_color.atoms[ atom ] = getColorIndex(
+								system.chainNames.size() > chain ? system.getChainName( chain ) : "X"
+							);
 						}
 					}
 					// TODO: other schemes.

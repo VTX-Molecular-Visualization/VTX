@@ -1,5 +1,6 @@
 #include "ui/qt/dialog/open.hpp"
 #include "ui/qt/settings.hpp"
+#include <app/action/io.hpp>
 #include <app/action/scene.hpp>
 
 namespace VTX::UI::QT::Dialog
@@ -25,7 +26,7 @@ namespace VTX::UI::QT::Dialog
 				// Open files.
 				for ( const auto & path : p_paths )
 				{
-					App::ACTION().execute<App::Action::Scene::LoadSystem>( path.toStdString() );
+					App::ACTION().execute<App::Action::IO::Open>( path.toStdString() );
 				}
 			}
 		);

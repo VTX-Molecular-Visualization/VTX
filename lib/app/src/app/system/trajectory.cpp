@@ -54,7 +54,6 @@ namespace VTX::App::System
 				{
 					data.frameCollection.emplace_back( std::move( new_frame ) );
 					data.lastFrameAvailable = it_currentFrameIndex;
-					RENDERER().setSystemPosition( systemUid, data.frameCollection[ 0 ] );
 				}
 			);
 			if ( p_stopToken.stop_requested() )

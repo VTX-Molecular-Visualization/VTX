@@ -20,6 +20,8 @@ namespace VTX::IO::Reader
 		static std::unique_ptr<Chemfiles> readFile( const FilePath & p_path );
 		static std::unique_ptr<Chemfiles> readBuffer( const std::string & p_buffer, const FilePath & p_path );
 
+		static bool isTrajectoryFileFormat( const FilePath & p_path ) noexcept;
+
 		struct ResidueIt
 		{
 		  private:

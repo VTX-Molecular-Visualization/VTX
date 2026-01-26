@@ -15,6 +15,7 @@
 
 namespace VTX::IO::Reader
 {
+
 	struct Chemfiles::ReadingData
 	{
 		explicit ReadingData( const FilePath & p_path, const std::string & p_format ) :
@@ -498,6 +499,18 @@ namespace VTX::IO::Reader
 			throw IOException( "Unknown file format: {}", extension );
 		}
 	}
+
+	bool Chemfiles::isTrajectoryFileFormat( const FilePath & p_path ) noexcept
+	{
+		std::string extension = p_path.extension().string();
+		std::transform( extension.begin(), extension.end(), extension.begin(), tolower );
+		const std::array<std::string_view, 4> _trajectoryFileFormatList { ".xtc", ".dcd", ".lammpstrj", ".trj" };
+		return std::any_of(
+			_trajectoryFileFormatList.begin(),
+			_trajectoryFileFormatList.end(),
+			[ &extension ]( const std::string_view & v ) { return v == extension; }
+		);
+	};
 
 	void Chemfiles::_warningCallback( const std::string & p_log ) {}
 
