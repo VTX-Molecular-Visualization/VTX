@@ -234,6 +234,17 @@ namespace VTX::UI::QT
 					icon = static_cast<int>( QStyle::StandardPixmap::SP_TrashIcon );
 				}
 			};
+
+			template<typename P>
+			struct Apply : public App::UI::DescAction
+			{
+				Apply()
+				{
+					name = "Apply";
+					tip	 = "Apply this preset";
+					icon = static_cast<int>( QStyle::StandardPixmap::SP_DialogOkButton );
+				}
+			};
 		} // namespace Preset
 		namespace Option
 		{

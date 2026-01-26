@@ -440,6 +440,18 @@ namespace VTX::Util::Math
 		}
 		*/
 
+		inline size_t sizeRange() const { return _ranges.size(); }
+
+		inline size_t size() const
+		{
+			size_t count = 0;
+			for ( const auto & r : _ranges )
+			{
+				count += r.getCount();
+			}
+			return count;
+		}
+
 		/**
 		 * @brief Returns the size in bytes taken by this instance. Heap size and stack size are summed up.
 		 */

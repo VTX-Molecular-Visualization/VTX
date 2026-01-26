@@ -62,14 +62,16 @@ namespace VTX::UI::QT::Widget::Library
 			using namespace Action;
 
 			auto * toolbar = new QToolBar( this );
-			toolbar->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
-			toolbar->setIconSize( QSize( 18, 18 ) );
+			toolbar->setToolButtonStyle( Qt::ToolButtonTextOnly );
+			toolbar->setIconSize( QSize( 12, 12 ) );
 			auto * aNew		  = Application::getAction<Preset::Add<P>>();
 			auto * aDuplicate = Application::getAction<Preset::Duplicate<P>>();
 			auto * aDelete	  = Application::getAction<Preset::Delete<P>>();
+			auto * aApply	  = Application::getAction<Preset::Apply<P>>();
 			toolbar->addAction( aNew );
 			toolbar->addAction( aDuplicate );
 			toolbar->addAction( aDelete );
+			toolbar->addAction( aApply );
 			layout->addWidget( toolbar );
 
 			aNew->setIcon( QIcon::fromTheme( "Search" ) );
@@ -106,6 +108,12 @@ namespace VTX::UI::QT::Widget::Library
 				aDelete,
 				&QAction::triggered,
 				[ this ]() { App::ACTION().execute<App::Action::Preset::Delete<P>>( getCurrentPreset() ); }
+			);
+
+			connect(
+				aApply,
+				&QAction::triggered,
+				[ this ]() { App::ACTION().execute<App::Action::Preset::Apply<P>>( getCurrentPreset() ); }
 			);
 
 			connect(

@@ -201,64 +201,85 @@ namespace VTX::Renderer
 
 	void Renderer::setRepresentation( const Representation & p_representation )
 	{
-		BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
-		buffer.write( p_representation.radiusSphereFixed );
-		buffer.write( p_representation.radiusSphereAdd );
-		buffer.write( uint( p_representation.isRadiusSphereFixed ) );
-		buffer.write( p_representation.radiusCylinder );
-		buffer.write( uint( p_representation.cylinderColorBlending ) );
-		buffer.write( uint( p_representation.ribbonColorBlending ) );
-		buffer.write( p_representation.sesProbeRadius );
-		buffer.close();
-
-		_context.setShaderBuffer( "Representations", buffer );
-
-		setNeedUpdate( true );
-
 		// Aply logic.
-		_geometries.spheres.show   = p_representation.hasSphere;
-		_geometries.cylinders.show = p_representation.hasCylinder;
-		_geometries.ribbons.show   = p_representation.hasRibbon;
-		_geometries.ses.show	   = p_representation.hasSes;
+		bool showSphere	  = p_representation.hasSphere;
+		bool showCylinder = p_representation.hasCylinder;
+		bool showRibbon	  = p_representation.hasRibbon;
+		bool showSes	  = p_representation.hasSes;
 
 		// Asked SES, hide all others.
-		if ( _geometries.ses.show )
+		if ( showSes )
 		{
-			_geometries.spheres.show   = false;
-			_geometries.cylinders.show = false;
-			_geometries.ribbons.show   = false;
-			return;
+			showSphere	 = false;
+			showCylinder = false;
+			showRibbon	 = false;
 		}
-
-		const bool	isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
-		const float cylinderRadius		= p_representation.radiusCylinder;
-		const float sphereRadiusFixed	= p_representation.radiusSphereFixed;
-		const float sphereRadiusAdd		= p_representation.radiusSphereAdd;
-
-		// Hide ribbon if VdW radius.
-		if ( not isSphereRadiusFixed )
+		else
 		{
-			_geometries.cylinders.show = false;
-			_geometries.ribbons.show   = false;
-			return;
-		}
+			bool		isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
+			const float cylinderRadius		= p_representation.radiusCylinder;
+			float		sphereRadiusFixed	= p_representation.radiusSphereFixed;
 
-		// If B&S.
-		if ( _geometries.spheres.show && _geometries.cylinders.show )
-		{
-			// Scale sphere radius to cylinder radius if not VdW.
-			if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
+			// Hide ribbon if VdW radius.
+			if ( not isSphereRadiusFixed )
 			{
-				setValue( cylinderRadius, "RepresentationsSphereRadiusFixed" );
+				showCylinder = false;
+				showRibbon	 = false;
 			}
+			else
+			{
+				// If B&S.
+				if ( showSphere && showCylinder )
+				{
+					// Scale sphere radius to cylinder radius if not VdW.
+					if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
+					{
+						sphereRadiusFixed = cylinderRadius;
+					}
+				}
+
+				// If sticks only, force sphere at cylinder radius.
+				else if ( not showSphere && showCylinder )
+				{
+					showSphere			= true;
+					isSphereRadiusFixed = true;
+					sphereRadiusFixed	= cylinderRadius;
+				}
+			}
+
+			BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
+			buffer.write( sphereRadiusFixed );
+			buffer.write( p_representation.radiusSphereAdd );
+			buffer.write( uint( isSphereRadiusFixed ) );
+			buffer.write( p_representation.radiusCylinder );
+			buffer.write( uint( p_representation.cylinderColorBlending ) );
+			buffer.write( uint( p_representation.ribbonColorBlending ) );
+			buffer.write( p_representation.sesProbeRadius );
+			buffer.close();
+
+			_context.setShaderBuffer( "Representations", buffer );
+
+			setNeedUpdate( true );
 		}
 
-		// If sticks only, force sphere at cylinder radius.
-		else if ( not _geometries.spheres.show && _geometries.cylinders.show )
+		if ( showSphere && _geometries.spheres.rangeList.sizeRange() )
 		{
-			_geometries.spheres.show = true;
-			setValue( uint( true ), "RepresentationsIsSphereRadiusFixed" );
-			setValue( cylinderRadius, "RepresentationsSphereRadiusFixed" );
+			_geometries.spheres.drawRanges.firsts = { 0 };
+			_geometries.spheres.drawRanges.counts = { uint32_t( _geometries.spheres.rangeList.getLast() ) };
+		}
+		else
+		{
+			_geometries.spheres.drawRanges = {};
+		}
+
+		if ( showCylinder && _geometries.cylinders.rangeList.sizeRange() )
+		{
+			_geometries.cylinders.drawRanges.offsets = { 0 };
+			_geometries.cylinders.drawRanges.counts	 = { uint32_t( _geometries.cylinders.rangeList.getLast() ) };
+		}
+		else
+		{
+			_geometries.cylinders.drawRanges = {};
 		}
 	}
 
@@ -308,9 +329,11 @@ namespace VTX::Renderer
 
 		_refreshDataModels();
 
+		_geometries.spheres.rangeList		  = Geometry::RangeList { 0, p_data.getAtomCount() };
 		_geometries.spheres.drawRanges.firsts = { 0 };
 		_geometries.spheres.drawRanges.counts = { uint32_t( p_data.getAtomCount() ) };
 
+		_geometries.cylinders.rangeList			 = Geometry::RangeList { 0, p_data.bondPairAtomIndexes.size() };
 		_geometries.cylinders.drawRanges.offsets = { 0 };
 		_geometries.cylinders.drawRanges.counts	 = { uint32_t( p_data.bondPairAtomIndexes.size() ) };
 	}
