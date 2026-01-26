@@ -4,6 +4,7 @@
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/events.hpp"
 #include "ui/qt/widget/tree.hpp"
+#include <QComboBox>
 #include <QPointer>
 
 namespace VTX::UI::QT::DockWidget
@@ -18,6 +19,11 @@ namespace VTX::UI::QT::DockWidget
 	  public:
 		Scene( QWidget * p_parent );
 
+	  private:
+		// TODO: separate reusable widgets.
+		// QPointer<QComboBox> _cbColorLayout;
+		// QPointer<QComboBox> _cbGraphicsConfig;
+
 		/**
 		 * @brief Scene tree.
 		 */
@@ -25,7 +31,6 @@ namespace VTX::UI::QT::DockWidget
 		// TODO: add searchbar with QSortFilterProxyModel.
 		// TODO: add option to sync tree expand with selection model.
 
-	  private:
 		void _onSelectionLocked( const Events::SelectionLocked & );
 	};
 

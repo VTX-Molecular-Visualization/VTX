@@ -2,6 +2,7 @@
 #define __VTX_APP_ACTION_PRESET__
 
 #include "app/action/action_manager.hpp"
+#include "app/action/scene.hpp"
 #include "app/events.hpp"
 #include "app/helper/preset.hpp"
 #include "app/preset/name.hpp"
@@ -10,9 +11,11 @@
 #include <optional>
 #include <renderer/color.hpp>
 #include <renderer/graphics_config.hpp>
+#include <renderer/renderer.hpp>
 #include <renderer/representation.hpp>
 #include <util/event_hub.hpp>
 #include <util/exceptions.hpp>
+#include <util/type_traits.hpp>
 
 namespace VTX::App::Action::Preset
 {
@@ -134,6 +137,8 @@ namespace VTX::App::Action::Preset
 				throw VTXException( "Cannot delete the last preset." );
 			}
 
+			return;
+
 			// TODO: check if preset is used in an instance.
 			/*
 			auto viewInstance = REG().view<App::Preset::Instance<T>>();
@@ -148,6 +153,32 @@ namespace VTX::App::Action::Preset
 			*/
 
 			REG().destroy( p_e );
+		}
+	};
+
+	template<typename T>
+	struct Apply
+	{
+		void execute( const ECS::Entity p_e )
+		{
+			if constexpr ( std::is_same_v<T, Renderer::Color::Layout> )
+			{
+				ACTION().execute<Scene::SetColorLayout>( p_e );
+			}
+			else if constexpr ( std::is_same_v<T, Renderer::GraphicsConfig> )
+			{
+				ACTION().execute<Scene::SetGraphicsConfig>( p_e );
+			}
+			else if constexpr ( std::is_same_v<T, Renderer::Representation> )
+			{
+				// TODO: TMP.
+				const auto & rep = REG().get<Renderer::Representation>( p_e );
+				RENDERER().setRepresentation( rep );
+			}
+			else
+			{
+				static_assert( always_false_v<T>, "Unsupported preset type." );
+			}
 		}
 	};
 

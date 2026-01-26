@@ -22,21 +22,8 @@ namespace VTX::App::Pass
 		reg.on_update<Renderer::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfigPreset>( this );
 		reg.on_update<Renderer::Color::Layout>().connect<&SceneUpdater::_onUpdateColorLayoutPreset>( this );
 
-		// TODO: remove after debug.
-		static std::vector<Vec3f> mins, maxs;
-		for ( float x = -100.f; x < 100.f; x += 50.f )
-		{
-			for ( float y = -100.f; y < 100.f; y += 50.f )
-			{
-				for ( float z = -100.f; z < 100.f; z += 50.f )
-				{
-					mins.emplace_back( x, y, z );
-					maxs.emplace_back( x + 50.f, y + 50.f, z + 50.f );
-				}
-			}
-		}
-
-		// RENDERER().setVoxels( mins, maxs );
+		// TODO: TMP.
+		reg.on_update<Renderer::Representation>().connect<&SceneUpdater::_onUpdateRepresentationPreset>( this );
 	}
 
 	void SceneUpdater::_onUpdateAABB( ECS::Registry & p_r, ECS::Entity p_e )
@@ -85,6 +72,14 @@ namespace VTX::App::Pass
 		{
 			_onUpdateColorLayout( p_r, _entity );
 		}
+	}
+
+	//
+	void SceneUpdater::_onUpdateRepresentationPreset( ECS::Registry & p_r, ECS::Entity p_e )
+	{
+		auto &		 renderer = RENDERER();
+		const auto & preset	  = p_r.get<Renderer::Representation>( p_e );
+		renderer.setRepresentation( preset );
 	}
 
 } // namespace VTX::App::Pass

@@ -12,7 +12,6 @@ namespace VTX::Renderer::Geometry
 
 	struct BaseGeometry
 	{
-		bool show = true;
 	};
 } // namespace VTX::Renderer::Geometry
 

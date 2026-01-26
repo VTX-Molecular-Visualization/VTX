@@ -21,6 +21,7 @@ namespace VTX::UI::QT::Widget
 		void mouseMoveEvent( QMouseEvent * e ) override;
 		void mouseReleaseEvent( QMouseEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
+		void mouseDoubleClickEvent( QMouseEvent * ) override;
 
 	  private:
 		/**
