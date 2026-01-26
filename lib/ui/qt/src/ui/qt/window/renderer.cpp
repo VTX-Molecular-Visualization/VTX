@@ -66,6 +66,9 @@ namespace VTX::UI::QT::Window
 
 	void Renderer::mouseDoubleClickEvent( QMouseEvent * const p_event )
 	{
+		_pressedButton = Qt::NoButton;
+		_dragging	   = false;
+
 		App::ACTION().execute<App::Action::Camera::Orient>();
 	}
 

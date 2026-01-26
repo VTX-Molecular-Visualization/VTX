@@ -104,7 +104,9 @@ namespace VTX::App::Action::Camera
 					{
 						for ( auto atomIndex : p_selection.atoms )
 						{
-							aabb.extend( p_data.trajectory.getCurrentFrame()[ atomIndex ] );
+							aabb.extend(
+								p_data.trajectory.getCurrentFrame()[ atomIndex ], Core::ChemDB::Atom::VDW_RADIUS_MIN
+							);
 						}
 					}
 				}
