@@ -99,6 +99,16 @@ namespace VTX::Util
 		};
 		class PingPong
 		{
+		  public:
+			PingPong( uint p_stepNum, uint p_startingStep = 0 );
+			void jumpTo( const uint & p_step ) noexcept;
+			void next( uint & p_out ) const noexcept;
+			void increment() noexcept;
+
+		  private:
+			uint _lastIndex	  = 0;
+			uint _currentStep = 0;
+			bool _forward	  = true;
 		};
 	} // namespace Players
 

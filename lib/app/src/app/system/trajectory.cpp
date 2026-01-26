@@ -27,11 +27,23 @@ namespace VTX::App::System
 		p_trajectory.genericData.trajectorySize = p_loader.getChemfilesReader().getFrameCount();
 		p_trajectory.frameCollection.reserve( p_loader.getChemfilesReader().getFrameCount() );
 		p_trajectory.frameCollection.emplace_back( p_loader.getChemfilesReader().getCurrentFrameAtomPosition() );
-		p_trajectory.genericData.playMode		   = TrajectoryPlayMode::forward;
+		p_trajectory.genericData.playMode		   = TrajectoryPlayMode::pingpong;
 		p_trajectory.genericData.currentFrameIndex = 0;
 		p_trajectory.lastFrameAvailable			   = 0;
 
 		THREAD().createThread( System::TrajectoryFullBufferReader( p_entity, std::move( p_loader ) ) );
+	}
+	std::span<const Vec3f> getCurrentAtomPositions( const ECS::Entity & p_entity ) noexcept
+	{
+		if ( auto traj = REG().try_get<TrajectorySingleFrame>( p_entity ) )
+		{
+			return traj->atomPositions;
+		}
+		if ( auto traj = REG().try_get<TrajectoryFullBuffer>( p_entity ) )
+		{
+			return traj->frameCollection[ traj->genericData.currentFrameIndex ];
+		}
+		return {};
 	}
 
 	struct TrajectoryFullBufferReader::_Data

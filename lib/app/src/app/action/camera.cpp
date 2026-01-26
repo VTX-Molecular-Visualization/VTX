@@ -3,6 +3,7 @@
 #include "app/helper/system.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/system/selection.hpp"
+#include "app/system/trajectory.hpp"
 #include <core/struct/system.hpp>
 #include <util/math/transform.hpp>
 
@@ -102,11 +103,11 @@ namespace VTX::App::Action::Camera
 					// TODO: not recompute each time: cache values?
 					else
 					{
+						std::span<const Vec3f> atomPositions = System::getCurrentAtomPositions( p_e );
+
 						for ( auto atomIndex : p_selection.atoms )
 						{
-							aabb.extend(
-								p_data.trajectory.getCurrentFrame()[ atomIndex ], Core::ChemDB::Atom::VDW_RADIUS_MIN
-							);
+							aabb.extend( atomPositions[ atomIndex ], Core::ChemDB::Atom::VDW_RADIUS_MIN );
 						}
 					}
 				}

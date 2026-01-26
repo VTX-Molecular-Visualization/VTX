@@ -53,8 +53,9 @@ namespace VTX::App::System
 																		// when no frame are available.
 	};
 
-	bool hasMultiFrameTrajectory( const ECS::Entity & ) noexcept;
-	void get( const ECS::Entity &, GenericTrajectory *& ) noexcept;
+	std::span<const Vec3f> getCurrentAtomPositions( const ECS::Entity & ) noexcept;
+	bool				   hasMultiFrameTrajectory( const ECS::Entity & ) noexcept;
+	void				   get( const ECS::Entity &, GenericTrajectory *& ) noexcept;
 
 	/**
 	 * @brief Fill trajectory data structure up to the first frame, then start threaded frame loading.

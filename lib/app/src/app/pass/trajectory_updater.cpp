@@ -33,6 +33,10 @@ namespace VTX::App::Pass
 					localPlayerStruct.currentPlayer
 						= Players::Forward( trajPtr->trajectorySize, trajPtr->currentFrameIndex );
 					break;
+				case System::TrajectoryPlayMode::pingpong:
+					localPlayerStruct.currentPlayer
+						= Players::PingPong( trajPtr->trajectorySize, trajPtr->currentFrameIndex );
+					break;
 				default:
 					localPlayerStruct.currentPlayer
 						= Players::Forward( trajPtr->trajectorySize, trajPtr->currentFrameIndex );
