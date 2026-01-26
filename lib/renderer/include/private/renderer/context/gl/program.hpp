@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_PROGRAM__
 #define __VTX_RENDERER_CONTEXT_GL_PROGRAM__
 
+#include "renderer/context/gl/debug.hpp"
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/types.hpp>
@@ -61,11 +62,11 @@ namespace VTX::Renderer::Context::GL
 				}
 			}
 
-			assert( glIsProgram( getId() ) );
+			assert( glIsProgram( _id ) );
 
 			link();
 
-			VTX_TRACE( "Program {} created: {}", getId(), p_name );
+			VTX_TRACE( "Program {} created: {}", _id, p_name );
 		}
 
 		~Program()
@@ -77,22 +78,7 @@ namespace VTX::Renderer::Context::GL
 			}
 		}
 
-		inline GLuint			   getId() const { return _id; }
-		inline void				   setId( const GLuint p_id ) { _id = p_id; }
-		inline const std::string & getToInject() const { return _toInject; }
-
 		inline void use() const noexcept { glUseProgram( _id ); }
-
-		ENUM_SHADER_TYPE getShaderType( const FilePath & p_name )
-		{
-			std::string extension = p_name.extension().string();
-			if ( _EXTENSIONS.find( extension ) != _EXTENSIONS.end() )
-			{
-				return _EXTENSIONS.at( extension );
-			}
-
-			return ENUM_SHADER_TYPE::INVALID;
-		}
 
 		void create( const std::string & p_name )
 		{
@@ -123,7 +109,7 @@ namespace VTX::Renderer::Context::GL
 				std::string error = "Error linking program: ";
 				error += _name;
 				error += "\n";
-				error += _getProgramErrors();
+				error += Debug::getProgramErrors( _id );
 				glDeleteProgram( _id );
 				throw GraphicException( error );
 			}
@@ -154,6 +140,17 @@ namespace VTX::Renderer::Context::GL
 			{
 				glDeleteShader( shader );
 			}
+		}
+
+		static ENUM_SHADER_TYPE getShaderType( const FilePath & p_name )
+		{
+			std::string extension = p_name.extension().string();
+			if ( _EXTENSIONS.find( extension ) != _EXTENSIONS.end() )
+			{
+				return _EXTENSIONS.at( extension );
+			}
+
+			return ENUM_SHADER_TYPE::INVALID;
 		}
 
 	  private:
@@ -206,7 +203,7 @@ namespace VTX::Renderer::Context::GL
 				std::string error = "Error compiling shader: ";
 				error += name;
 				error += "\n";
-				error += _getShaderErrors( shaderId );
+				error += Debug::getShaderErrors( shaderId );
 				glDeleteShader( shaderId );
 				throw GraphicException( error );
 			}
@@ -246,32 +243,6 @@ namespace VTX::Renderer::Context::GL
 				p_src.replace( startPosInclude, endPosInclude - startPosInclude, srcInclude );
 				included.push_back( includeRelativePath );
 			}
-		}
-
-		std::string _getProgramErrors()
-		{
-			GLint length;
-			glGetProgramiv( _id, GL_INFO_LOG_LENGTH, &length );
-			if ( length == 0 )
-			{
-				return "";
-			}
-			std::vector<char> log( length );
-			glGetProgramInfoLog( _id, length, &length, &log[ 0 ] );
-			return std::string( log.begin(), log.end() );
-		}
-
-		std::string _getShaderErrors( const GLuint p_shader )
-		{
-			GLint length;
-			glGetShaderiv( p_shader, GL_INFO_LOG_LENGTH, &length );
-			if ( length == 0 )
-			{
-				return "";
-			}
-			std::vector<char> log( length );
-			glGetShaderInfoLog( p_shader, length, &length, &log[ 0 ] );
-			return std::string( log.begin(), log.end() );
 		}
 	};
 } // namespace VTX::Renderer::Context::GL

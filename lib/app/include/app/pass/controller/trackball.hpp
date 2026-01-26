@@ -18,12 +18,17 @@ namespace VTX::App::Pass::Controller
 		/**
 		 * @brief Constructor.
 		 */
-		Trackball( const ECS::Entity & p_ent );
+		Trackball( const ECS::Entity &, const Vec3f & = VEC3F_ZERO );
 
 		/**
 		 * @brief Called each frame.
 		 */
 		void update( const float, const float );
+
+		/**
+		 * @brief Set the controller target.
+		 */
+		inline void setTarget( const Vec3f & p_target ) { _target = p_target; }
 
 	  private:
 		/**

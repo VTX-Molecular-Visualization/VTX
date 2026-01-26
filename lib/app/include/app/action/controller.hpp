@@ -4,8 +4,10 @@
 #include "app/events.hpp"
 #include "app/pass/controller/freefly.hpp"
 #include "app/pass/controller/trackball.hpp"
+#include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
 #include <renderer/camera.hpp>
+#include <util/math/aabb.hpp>
 
 namespace VTX::App::Action::Controller
 {
@@ -35,8 +37,22 @@ namespace VTX::App::Action::Controller
 				PASS().removePass<Pass::Controller::Trackball>();
 			}
 
+			const auto	 entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
+			const auto & aabb	  = REG().get<Util::Math::AABB>( entScene );
+
 			// Add controller pass.
-			PASS().addPass<T>( entity );
+			if constexpr ( std::same_as<T, Pass::Controller::Trackball> )
+			{
+				PASS().addPass<T>( entity, aabb.centroid() );
+			}
+			else if constexpr ( std::same_as<T, Pass::Controller::Freefly> )
+			{
+				PASS().addPass<T>( entity );
+			}
+			else
+			{
+				static_assert( always_false_v<T>, "Unsupported controller type." );
+			}
 
 			HUB().trigger<Events::CameraControllerChange<T>>();
 		}

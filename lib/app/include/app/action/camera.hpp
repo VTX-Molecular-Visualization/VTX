@@ -4,6 +4,7 @@
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/pass/controller/animation.hpp"
+#include "app/pass/controller/trackball.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
