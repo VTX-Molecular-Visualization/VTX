@@ -2,6 +2,7 @@
 #include "ui/qt/menu/selection.hpp"
 #include "ui/qt/model.hpp"
 #include "ui/qt/services.hpp"
+#include <app/action/camera.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -38,6 +39,13 @@ namespace VTX::UI::QT::Widget
 					}
 				}
 			}
+		);
+
+		// Double click.
+		connect(
+			this,
+			&QTreeView::doubleClicked,
+			[ this ]( const QModelIndex & p_index ) { App::ACTION().execute<App::Action::Camera::Orient>(); }
 		);
 	}
 

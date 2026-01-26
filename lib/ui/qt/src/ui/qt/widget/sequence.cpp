@@ -5,6 +5,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
+#include <app/action/camera.hpp>
 #include <app/action/selection.hpp>
 #include <app/ecs.hpp>
 #include <app/helper/system.hpp>
@@ -251,6 +252,17 @@ namespace VTX::UI::QT::Widget
 	}
 
 	void Sequence::resizeEvent( QResizeEvent * p_event ) { _updateScrollBars(); }
+
+	void Sequence::mouseDoubleClickEvent( QMouseEvent * p_e )
+	{
+		auto opt = _indexFromPos( p_e->pos() );
+		if ( not opt )
+		{
+			return;
+		}
+
+		App::ACTION().execute<App::Action::Camera::Orient>();
+	}
 
 	void Sequence::_updateScrollBars()
 	{

@@ -1,6 +1,9 @@
 #include "app/action/camera.hpp"
 #include "app/action/action_manager.hpp"
+#include "app/helper/system.hpp"
 #include "app/scene/tag_root.hpp"
+#include "app/system/selection.hpp"
+#include <core/struct/system.hpp>
 #include <util/math/transform.hpp>
 
 namespace
@@ -77,16 +80,45 @@ namespace VTX::App::Action::Camera
 		const auto & [ entCamera, _, __ ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
-		bool selection = false;
-		// TODO: compute aabb from selection.
-		if ( selection ) {}
-		// From scene.
-		else
+		Util::Math::AABB aabb;
+
+		// From selection.
+		auto view = ECS::registry().view<Core::Struct::System, Util::Math::AABB, System::Selection>();
+
+		if ( view.size_hint() )
 		{
-			auto   entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
-			auto & aabb		= REG().get<Util::Math::AABB>( entScene );
-			execute( aabb );
+			view.each(
+				[ & ](
+					const ECS::Entity &			 p_e,
+					const Core::Struct::System & p_data,
+					const Util::Math::AABB &	 p_aabb,
+					const System::Selection &	 p_selection
+				)
+				{
+					if ( Helper::System::isFullySelected<Scene::E_ITEM::SYSTEM>( p_e ) )
+					{
+						aabb.extend( p_aabb );
+					}
+					// TODO: not recompute each time: cache values?
+					else
+					{
+						for ( auto atomIndex : p_selection.atoms )
+						{
+							aabb.extend( p_data.trajectory.getCurrentFrame()[ atomIndex ] );
+						}
+					}
+				}
+			);
 		}
+
+		// From scene.
+		if ( not aabb.isValid() )
+		{
+			auto entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
+			aabb		  = REG().get<Util::Math::AABB>( entScene );
+		}
+
+		execute( aabb );
 	}
 
 	void Orient::execute( const Util::Math::AABB & p_target )
