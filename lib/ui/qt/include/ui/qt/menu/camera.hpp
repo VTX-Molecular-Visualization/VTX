@@ -3,6 +3,13 @@
 
 #include "ui/qt/widget/base_widget.hpp"
 #include <QMenu>
+#include <app/action/controller.hpp>
+#include <app/events.hpp>
+#include <app/pass/controller/freefly.hpp>
+#include <app/pass/controller/trackball.hpp>
+#include <renderer/camera.hpp>
+#include <util/event_hub.hpp>
+#include <util/type_traits.hpp>
 
 namespace VTX::UI::QT::Menu
 {
@@ -12,18 +19,54 @@ namespace VTX::UI::QT::Menu
 		Camera( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
 			setTitle( "Camera" );
-
-			addAction<Action::Camera::Perspective>();
-			addAction<Action::Camera::Orthographic>();
+			_aPerspective = addAction<Action::Camera::Perspective>();
+			_aOrtho		  = addAction<Action::Camera::Orthographic>();
 			addSeparator();
-			addAction<Action::Camera::Trackball>();
-			addAction<Action::Camera::Freefly>();
+			_aTrackball = addAction<Action::Camera::Trackball>();
+			_aFreefly	= addAction<Action::Camera::Freefly>();
 			addSeparator();
 			addAction<Action::Camera::Orient>();
 			addAction<Action::Camera::Reset>();
+
+			// Connect.
+			App::REG().on_update<Renderer::Camera>().connect<&Camera::_onProjectionChanged>( this );
+			App::HUB().connect<App::Events::CameraControllerChange, &Camera::_onControllerChanged>( this );
+			App::HUB().connect<App::Events::CameraControllerChange, &Camera::_onControllerChanged>( this );
 		}
 
 	  private:
+		QPointer<QAction> _aPerspective;
+		QPointer<QAction> _aOrtho;
+		QPointer<QAction> _aTrackball;
+		QPointer<QAction> _aFreefly;
+
+		void _onProjectionChanged( App::ECS::Registry &, const App::ECS::Entity p_e )
+		{
+			const auto & camera = App::REG().get<Renderer::Camera>( p_e );
+
+			if ( camera.projection == Renderer::PROJECTION::PERSPECTIVE )
+			{
+				_aPerspective->setChecked( true );
+			}
+			else if ( camera.projection == Renderer::PROJECTION::ORTHOGRAPHIC )
+			{
+				_aOrtho->setChecked( true );
+			}
+		}
+
+		void _onControllerChanged( const App::Events::CameraControllerChange & p_e )
+		{
+			using namespace App::Action::Controller;
+
+			E_CONTROLLER type = static_cast<E_CONTROLLER>( p_e.type );
+
+			switch ( type )
+			{
+			case E_CONTROLLER::FREEFLY: _aFreefly->setChecked( true ); break;
+			case E_CONTROLLER::TRACKBALL: _aTrackball->setChecked( true ); break;
+			default: break;
+			}
+		}
 	};
 
 } // namespace VTX::UI::QT::Menu

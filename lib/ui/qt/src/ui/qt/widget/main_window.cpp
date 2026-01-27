@@ -23,6 +23,7 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QMimeData>
+#include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <util/event_hub.hpp>
 

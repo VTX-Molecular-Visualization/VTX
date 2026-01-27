@@ -2,6 +2,7 @@
 #include "ui/qt/menu/selection.hpp"
 #include "ui/qt/model.hpp"
 #include "ui/qt/services.hpp"
+#include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 
 namespace VTX::UI::QT::Widget

@@ -25,13 +25,6 @@ namespace VTX::App::Settings
 		constexpr std::string_view ELASTICITY_FACTOR_KEY   = "ELASTICITY_FACTOR";
 	} // namespace Controller
 
-	namespace Selection
-	{
-		// inline const std::string MOLECULE_GRANULARITY_KEY = "MOLECULE_GRANULARITY";
-		//  inline const App::Selection::Granularity MOLECULE_GRANULARITY_DEFAULT =
-		//  App::Selection::Granularity::RESIDUE;
-	} // namespace Selection
-
 	namespace Network
 	{
 		constexpr std::string_view URL_API_KEY	   = "URL_API";

@@ -41,7 +41,6 @@ namespace VTX::Renderer::Color
 		inline const Util::Color::Rgba & getChainColor( const Index p_index ) const
 		{
 			assert( p_index >= 0 );
-			assert( p_index < LAYOUT_COUNT_CHAINS );
 
 			const Index index = p_index % LAYOUT_COUNT_CHAINS;
 

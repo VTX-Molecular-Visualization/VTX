@@ -126,6 +126,8 @@ namespace VTX::Renderer
 		_context.setShaderBuffer( "Camera", buffer );
 
 		_matrixView = p_matView;
+		_matrixProj = p_matProj;
+
 		_refreshDataModels();
 
 		setNeedUpdate( true );

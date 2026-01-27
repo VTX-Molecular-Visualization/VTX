@@ -7,6 +7,7 @@
 #include "ui/qt/dialog/open.hpp"
 #include "ui/qt/style.hpp"
 #include "ui/qt/widget/tree.hpp"
+#include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/action/io.hpp>
 #include <app/action/scene.hpp>
@@ -112,16 +113,6 @@ namespace VTX::UI::QT::Action
 			{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>(); };
 		}
 
-		void Orthographic::connect() const
-		{
-			using namespace App;
-
-			QAction * const qAction = Application::getAction<Orthographic>();
-			HUB().connect<App::Events::CameraProjectionChange<static_cast<int>( Renderer::PROJECTION::ORTHOGRAPHIC )>>(
-				[ qAction ]() { qAction->setChecked( true ); }
-			);
-		}
-
 		Perspective::Perspective()
 		{
 			name	 = "Perspective";
@@ -133,16 +124,6 @@ namespace VTX::UI::QT::Action
 			{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>(); };
 		}
 
-		void Perspective::connect() const
-		{
-			using namespace App;
-
-			QAction * const qAction = Application::getAction<Perspective>();
-			HUB().connect<Events::CameraProjectionChange<static_cast<int>( Renderer::PROJECTION::PERSPECTIVE )>>(
-				[ qAction ]() { qAction->setChecked( true ); }
-			);
-		}
-
 		Trackball::Trackball()
 		{
 			name	 = "Trackball";
@@ -152,16 +133,10 @@ namespace VTX::UI::QT::Action
 			shortcut = "Alt+T";
 			trigger	 = []()
 			{
-				App::ACTION().execute<App::Action::Controller::SetCameraController<App::Pass::Controller::Trackball>>();
+				App::ACTION()
+					.execute<App::Action::Controller::SetCameraController<
+						App::Action::Controller::E_CONTROLLER::TRACKBALL>>();
 			};
-		}
-
-		void Trackball::connect() const
-		{
-			QAction * const qAction = Application::getAction<Trackball>();
-			App::HUB().connect<App::Events::CameraControllerChange<App::Pass::Controller::Trackball>>(
-				[ qAction ]() { qAction->setChecked( true ); }
-			);
 		}
 
 		Freefly::Freefly()
@@ -172,15 +147,11 @@ namespace VTX::UI::QT::Action
 			icon	 = "sprite/camera/freefly.png";
 			shortcut = "Alt+F";
 			trigger	 = []()
-			{ App::ACTION().execute<App::Action::Controller::SetCameraController<App::Pass::Controller::Freefly>>(); };
-		}
-
-		void Freefly::connect() const
-		{
-			QAction * const qAction = Application::getAction<Freefly>();
-			App::HUB().connect<App::Events::CameraControllerChange<App::Pass::Controller::Freefly>>(
-				[ qAction ]() { qAction->setChecked( true ); }
-			);
+			{
+				App::ACTION()
+					.execute<
+						App::Action::Controller::SetCameraController<App::Action::Controller::E_CONTROLLER::FREEFLY>>();
+			};
 		}
 
 		Orient::Orient()

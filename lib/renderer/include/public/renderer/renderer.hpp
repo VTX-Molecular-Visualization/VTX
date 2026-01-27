@@ -68,6 +68,7 @@ namespace VTX::Renderer
 		 */
 		void  setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );
 		Mat4f _matrixView;
+		Mat3f _matrixProj;
 		void  setGraphicsConfig( const GraphicsConfig & );
 		void  setColorLayout( const Color::Layout & );
 		void  setRepresentation( const Representation & );

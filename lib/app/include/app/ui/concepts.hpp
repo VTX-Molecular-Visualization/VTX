@@ -14,7 +14,11 @@ namespace VTX::App::UI
 	 */
 	struct DescAction
 	{
-		using Icon = std::variant<std::string, int>;
+		/**
+		 * @brief Icon can be a sprite path (string) or an integer (icon).
+		 */
+		using Icon	   = std::variant<std::string, int>;
+		using Callable = std::function<void()>;
 
 	  public:
 		std::string				   key;
@@ -27,14 +31,7 @@ namespace VTX::App::UI
 		/**
 		 * @brief Trigger function is called when button is clicked.
 		 */
-		using Callable					= std::function<void()>;
 		std::optional<Callable> trigger = std::nullopt;
-
-		/**
-		 * @brief Override this function to connect the action to the application callbacks.
-		 * Used to update the UI when the application state changes, or set default values.
-		 */
-		virtual void connect() const {}
 	};
 
 	template<typename A>

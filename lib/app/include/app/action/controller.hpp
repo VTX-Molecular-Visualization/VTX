@@ -11,29 +11,37 @@
 
 namespace VTX::App::Action::Controller
 {
+	enum struct E_CONTROLLER : uint
+	{
+		TRACKBALL,
+		FREEFLY
+	};
+
 	/**
 	 * @brief Set the camera controller to the requested type.
 	 */
-	template<typename T>
+	template<E_CONTROLLER C>
 	struct SetCameraController
 	{
 		void execute()
 		{
 			ECS::Entity entity = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
 
-			// If the requested controller is already active, do nothing.
-			if ( PASS().hasPass<T>() )
-			{
-				return;
-			}
-
 			// Remove existing controller passes.
 			if ( PASS().hasPass<Pass::Controller::Freefly>() )
 			{
+				if ( C == E_CONTROLLER::FREEFLY )
+				{
+					return;
+				}
 				PASS().removePass<Pass::Controller::Freefly>();
 			}
 			if ( PASS().hasPass<Pass::Controller::Trackball>() )
 			{
+				if ( C == E_CONTROLLER::TRACKBALL )
+				{
+					return;
+				}
 				PASS().removePass<Pass::Controller::Trackball>();
 			}
 
@@ -41,20 +49,20 @@ namespace VTX::App::Action::Controller
 			const auto & aabb	  = REG().get<Util::Math::AABB>( entScene );
 
 			// Add controller pass.
-			if constexpr ( std::same_as<T, Pass::Controller::Trackball> )
+			if constexpr ( C == E_CONTROLLER::TRACKBALL )
 			{
-				PASS().addPass<T>( entity, aabb.centroid() );
+				PASS().addPass<Pass::Controller::Trackball>( entity, aabb.centroid() );
 			}
-			else if constexpr ( std::same_as<T, Pass::Controller::Freefly> )
+			else if constexpr ( C == E_CONTROLLER::FREEFLY )
 			{
-				PASS().addPass<T>( entity );
+				PASS().addPass<Pass::Controller::Freefly>( entity );
 			}
 			else
 			{
-				static_assert( always_false_v<T>, "Unsupported controller type." );
+				static_assert( always_false_v<C>, "Unsupported controller type." );
 			}
 
-			HUB().trigger<Events::CameraControllerChange<T>>();
+			HUB().trigger<Events::CameraControllerChange>( toUnderlying( C ) );
 		}
 	};
 } // namespace VTX::App::Action::Controller
