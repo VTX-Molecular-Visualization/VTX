@@ -6,6 +6,9 @@
 
 namespace VTX::Util
 {
+	/**
+	 * @brief Generic class for player
+	 */
 	class Player
 	{
 	  public:
