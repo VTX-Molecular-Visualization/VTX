@@ -52,3 +52,77 @@ TEST_CASE( "Util::Players", "[players][forward]" )
 		CHECK( step == 9 );
 	}
 }
+
+TEST_CASE( "Util::Players", "[players][pingpong]" )
+{
+	using namespace VTX;
+	using namespace VTX::Util;
+
+	SECTION( "a 1 sized player" )
+	{
+		Player p( Players::PingPong( 1 ) );
+
+		uint step = 0;
+		p.next( step );
+		CHECK( step == 0 );
+		p.increment();
+		p.next( step );
+		CHECK( step == 0 );
+		p.increment();
+		p.next( step );
+		CHECK( step == 0 );
+	}
+
+	SECTION( "a 3 sized player" )
+	{
+		Player p( Players::PingPong( 3 ) );
+
+		uint step = 0;
+		p.next( step );
+		CHECK( step == 1 );
+		p.next( step );
+		CHECK( step == 1 );
+		p.increment();
+		p.next( step );
+		CHECK( step == 2 );
+		p.increment();
+		p.next( step );
+		CHECK( step == 1 );
+		p.increment();
+		p.next( step );
+		CHECK( step == 0 );
+		p.increment();
+		p.next( step );
+		CHECK( step == 1 );
+		p.increment();
+		p.next( step );
+		CHECK( step == 2 );
+		p.increment();
+		p.next( step );
+		CHECK( step == 1 );
+		p.increment();
+		p.next( step );
+		CHECK( step == 0 );
+		p.increment();
+		p.next( step );
+		CHECK( step == 1 );
+		p.increment();
+		p.next( step );
+		CHECK( step == 2 );
+	}
+
+	SECTION( "jumping" )
+	{
+		Player p( Players::PingPong( 10 ) );
+
+		uint step = 0;
+		p.next( step );
+		CHECK( step == 1 );
+		p.jumpTo( 5 );
+		p.next( step );
+		CHECK( step == 6 );
+		p.jumpTo( 10000 );
+		p.next( step );
+		CHECK( step == 8 );
+	}
+}
