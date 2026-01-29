@@ -12,10 +12,7 @@
 namespace VTX::UI::QT::Delegate
 {
 
-	SceneItemDelegate::SceneItemDelegate( App::ECS::Entity p_entity, QObject * p_parent ) :
-		_entity( std::move( p_entity ) ), QStyledItemDelegate( p_parent )
-	{
-	}
+	SceneItemDelegate::SceneItemDelegate( QObject * p_parent ) : QStyledItemDelegate( p_parent ) {}
 
 	void SceneItemDelegate::paint(
 		QPainter *					 p_painter,
@@ -113,21 +110,17 @@ namespace VTX::UI::QT::Delegate
 						return true;
 					}
 
-					[[maybe_unused]] App::ECS::Entity entity = entityMap.at( rootUID );
+					App::ECS::Entity entity = entityMap.at( rootUID );
 
 					switch ( zone )
 					{
 					case HitZone::PlayPause:
-						App::ACTION().execute < App::Action::Trajectory::ToggleStartPause()
-							// TODO: App::ACTION().execute<App::Action::Trajectory::SetPlayTrajectory>(entity);
-							// or App::ACTION().execute<App::Action::Trajectory::SetPauseTrajectory>(entity);
-							break;
-					case HitZone::Stop:
-						// TODO: App::ACTION().execute<App::Action::Trajectory::SetStopTrajectory>(entity);
+						App::ACTION().execute<App::Action::Trajectory::ToggleStartPause>( entity );
 						break;
+					case HitZone::Stop: App::ACTION().execute<App::Action::Trajectory::Stop>( entity ); break;
 					case HitZone::Slider:
-						// TODO: App::ACTION().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>(entity,
-						// frame);
+						// App::ACTION().execute<App::Action::Trajectory::JumpTo>( entity, step );
+						//  frame);
 						break;
 					case HitZone::FrameSelector:
 						// Could open an edit widget for frame input
@@ -204,7 +197,7 @@ namespace VTX::UI::QT::Delegate
 		QRect playRect( x, y + ( h - BUTTON_SIZE ) / 2, BUTTON_SIZE, BUTTON_SIZE );
 		p_painter->drawRect( playRect );
 		// Draw play triangle or pause bars
-		bool isPlaying = trajPtr && trajPtr->playMode != App::System::TrajectoryPlayMode::none;
+		bool isPlaying = trajPtr && not trajPtr->paused;
 		if ( isPlaying )
 		{
 			// Pause bars

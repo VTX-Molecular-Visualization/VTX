@@ -2,7 +2,6 @@
 #define __VTX_UI_QT_DELEGATE_SCENE_ITEM_DELEGATE__
 
 #include <QStyledItemDelegate>
-#include <app/ecs.hpp>
 
 namespace VTX::UI::QT::Delegate
 {
@@ -16,7 +15,7 @@ namespace VTX::UI::QT::Delegate
 		Q_OBJECT
 
 	  public:
-		explicit SceneItemDelegate( App::ECS::Entity, QObject * p_parent = nullptr );
+		explicit SceneItemDelegate( QObject * p_parent = nullptr );
 
 		void paint(
 			QPainter *					 p_painter,
@@ -32,7 +31,6 @@ namespace VTX::UI::QT::Delegate
 		 ) override;
 
 	  private:
-		App::ECS::Entity _entity;
 		/**
 		 * @brief Check if the given index represents a system with a multi-frame trajectory.
 		 */

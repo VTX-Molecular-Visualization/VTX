@@ -8,6 +8,19 @@ namespace VTX::App::Action::Trajectory
 	{
 		System::patchGenericTrajectories( p_entity, []( System::GenericTrajectory & traj ) { traj.paused ^= 1; } );
 	}
+	void Stop::execute( ECS::Entity p_entity ) noexcept
+	{
+		System::patchGenericTrajectories(
+			p_entity,
+			[]( System::GenericTrajectory & traj )
+			{
+				traj.player.jumpTo( 0 );
+				traj.currentFrameIndex = 0;
+				traj.paused			   = true;
+			}
+		);
+	}
+
 	void execute( ECS::Entity p_entity, uint p_step ) noexcept
 	{
 		System::patchGenericTrajectories(

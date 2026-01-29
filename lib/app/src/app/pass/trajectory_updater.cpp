@@ -72,8 +72,6 @@ namespace VTX::App::Pass
 
 				uint nextStep = 0;
 				player.next( nextStep );
-				if ( genericTrajPtr->currentFrameIndex == nextStep )
-					continue;
 				if ( genericTrajPtr->lastFrameUpdateTime + genericTrajPtr->playingSpeed > p_elapsedTime )
 					continue;
 

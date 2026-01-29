@@ -11,6 +11,11 @@ namespace VTX::App::Action::Trajectory
 	  public:
 		void execute( ECS::Entity ) noexcept;
 	};
+	struct Stop
+	{
+	  public:
+		void execute( ECS::Entity ) noexcept;
+	};
 	struct JumpTo
 	{
 	  public:
