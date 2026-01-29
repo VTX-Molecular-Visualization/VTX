@@ -21,7 +21,7 @@ namespace VTX::App::Action::Trajectory
 		);
 	}
 
-	void execute( ECS::Entity p_entity, uint p_step ) noexcept
+	void JumpTo::execute( ECS::Entity p_entity, uint p_step ) noexcept
 	{
 		System::patchGenericTrajectories(
 			p_entity,

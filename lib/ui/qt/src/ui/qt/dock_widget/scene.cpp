@@ -40,6 +40,21 @@ namespace VTX::UI::QT::DockWidget
 
 		connect( actionExpandAll, &QAction::triggered, this, [ this ] { _tree->expandAll(); } );
 		connect( actionCollapseAll, &QAction::triggered, this, [ this ] { _tree->collapseAll(); } );
+
+		// Force layout recalculation when items are expanded/collapsed
+		// This ensures children are properly positioned below trajectory player items
+		connect( _tree, &QTreeView::expanded, this, [ this ]( const QModelIndex & ) {
+			_tree->requestLayoutUpdate();
+		} );
+		connect( _tree, &QTreeView::collapsed, this, [ this ]( const QModelIndex & ) {
+			_tree->requestLayoutUpdate();
+		} );
+
+		// Timer for updating trajectory player display
+		_updateTimer = new QTimer( this );
+		_updateTimer->setInterval( 33 ); // ~30 FPS
+		connect( _updateTimer, &QTimer::timeout, this, &Scene::_onUpdateTimer );
+		_updateTimer->start();
 	}
 
 	void Scene::_onSelectionLocked( const Events::SelectionLocked & p_event )
@@ -47,6 +62,15 @@ namespace VTX::UI::QT::DockWidget
 		_tree->setSelectionMode(
 			p_event.locked ? QAbstractItemView::NoSelection : QAbstractItemView::ExtendedSelection
 		);
+	}
+
+	void Scene::_onUpdateTimer()
+	{
+		// Update visible items that might have trajectory players
+		if ( _tree && _tree->viewport() )
+		{
+			_tree->viewport()->update();
+		}
 	}
 
 } // namespace VTX::UI::QT::DockWidget

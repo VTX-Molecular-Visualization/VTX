@@ -43,9 +43,8 @@ namespace VTX::UI::QT::Delegate
 			p_painter->fillRect( opt.rect, opt.palette.midlight() );
 		}
 
-		// Calculate text rect (top portion)
-		QRect textRect = opt.rect;
-		textRect.setHeight( opt.rect.height() - PLAYER_HEIGHT );
+		// Text rect is the top portion with fixed height
+		QRect textRect( opt.rect.left() + SPACING, opt.rect.top(), opt.rect.width() - SPACING, TEXT_ROW_HEIGHT );
 
 		// Draw the system name text
 		const QString text		 = p_index.data( Qt::DisplayRole ).toString();
@@ -53,8 +52,10 @@ namespace VTX::UI::QT::Delegate
 		p_painter->setPen( isSelected ? opt.palette.highlightedText().color() : opt.palette.text().color() );
 		p_painter->drawText( textRect, Qt::AlignVCenter | Qt::AlignLeft, text );
 
-		// Draw player controls below the text
-		QRect controlsRect = _getControlsRect( p_option );
+		// Player controls rect is below the text
+		QRect controlsRect(
+			opt.rect.left() + SPACING, opt.rect.top() + TEXT_ROW_HEIGHT, opt.rect.width() - 2 * SPACING, PLAYER_HEIGHT
+		);
 		_paintPlayerControls( p_painter, controlsRect, p_index, isSelected );
 
 		p_painter->restore();
@@ -66,8 +67,8 @@ namespace VTX::UI::QT::Delegate
 
 		if ( _hasTrajectory( p_index ) )
 		{
-			// Add height for player controls
-			baseSize.setHeight( baseSize.height() + PLAYER_HEIGHT );
+			// Use fixed height: text row + player controls
+			baseSize.setHeight( TEXT_ROW_HEIGHT + PLAYER_HEIGHT );
 		}
 
 		return baseSize;
@@ -119,9 +120,26 @@ namespace VTX::UI::QT::Delegate
 						break;
 					case HitZone::Stop: App::ACTION().execute<App::Action::Trajectory::Stop>( entity ); break;
 					case HitZone::Slider:
-						// App::ACTION().execute<App::Action::Trajectory::JumpTo>( entity, step );
-						//  frame);
+					{
+						// Calculate which frame was clicked
+						App::System::GenericTrajectory * trajPtr = nullptr;
+						App::System::get( entity, trajPtr );
+						if ( trajPtr && trajPtr->trajectorySize > 0 )
+						{
+							int sliderLeft = controlsRect.left() + 2 * ( BUTTON_SIZE + SPACING );
+							int sliderRight = controlsRect.right() - FRAME_WIDTH - SPACING;
+							int sliderWidth = sliderRight - sliderLeft;
+
+							if ( sliderWidth > 0 )
+							{
+								float ratio = float( mouseEvent->pos().x() - sliderLeft ) / float( sliderWidth );
+								ratio = std::clamp( ratio, 0.0f, 1.0f );
+								uint frame = uint( ratio * float( trajPtr->trajectorySize - 1 ) );
+								App::ACTION().execute<App::Action::Trajectory::JumpTo>( entity, frame );
+							}
+						}
 						break;
+					}
 					case HitZone::FrameSelector:
 						// Could open an edit widget for frame input
 						break;
@@ -305,9 +323,13 @@ namespace VTX::UI::QT::Delegate
 
 	QRect SceneItemDelegate::_getControlsRect( const QStyleOptionViewItem & p_option ) const
 	{
-		QRect rect = p_option.rect;
-		rect.setTop( rect.bottom() - PLAYER_HEIGHT );
-		return rect;
+		// Controls rect is below the text row (using fixed TEXT_ROW_HEIGHT)
+		return QRect(
+			p_option.rect.left() + SPACING,
+			p_option.rect.top() + TEXT_ROW_HEIGHT,
+			p_option.rect.width() - 2 * SPACING,
+			PLAYER_HEIGHT
+		);
 	}
 
 } // namespace VTX::UI::QT::Delegate

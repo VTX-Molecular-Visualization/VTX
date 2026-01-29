@@ -18,6 +18,12 @@ namespace VTX::UI::QT::Widget
 		Tree( QWidget * );
 
 		void contextMenuEvent( QContextMenuEvent * p_e ) override;
+
+		/**
+		 * @brief Request a delayed layout recalculation.
+		 * Useful when item sizes have changed (e.g., trajectory player visibility).
+		 */
+		void requestLayoutUpdate() { scheduleDelayedItemsLayout(); }
 	};
 
 } // namespace VTX::UI::QT::Widget

@@ -71,10 +71,11 @@ namespace VTX::UI::QT::Delegate
 		/**
 		 * @brief Layout constants.
 		 */
-		static constexpr int PLAYER_HEIGHT = 24;
-		static constexpr int BUTTON_SIZE   = 20;
-		static constexpr int SPACING	   = 4;
-		static constexpr int FRAME_WIDTH   = 40;
+		static constexpr int TEXT_ROW_HEIGHT = 20; // Height for the system name row
+		static constexpr int PLAYER_HEIGHT	 = 24;
+		static constexpr int BUTTON_SIZE	 = 20;
+		static constexpr int SPACING		 = 4;
+		static constexpr int FRAME_WIDTH	 = 40;
 	};
 
 } // namespace VTX::UI::QT::Delegate

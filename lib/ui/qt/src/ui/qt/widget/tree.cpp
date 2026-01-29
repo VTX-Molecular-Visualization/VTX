@@ -13,9 +13,10 @@ namespace VTX::UI::QT::Widget
 		setHeaderHidden( true );
 		setItemsExpandable( true );
 		setAllColumnsShowFocus( true );
-		setUniformRowHeights( true );
+		setUniformRowHeights( false ); // Allow different heights for trajectory items
 		setExpandsOnDoubleClick( false );
 		setEditTriggers( QAbstractItemView::NoEditTriggers );
+		setMouseTracking( true ); // Enable hover effects
 
 		// Selection.
 		setSelectionBehavior( QAbstractItemView::SelectRows );
