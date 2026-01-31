@@ -144,6 +144,11 @@ namespace VTX::Renderer::Context
 
 	void ContextWrapper::setShaderBuffer( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
 	{
+		if ( p_bytes.size() == 0 )
+		{
+			return;
+		}
+
 		std::visit(
 			[ & ]( auto & p_backend )
 			{
@@ -159,6 +164,11 @@ namespace VTX::Renderer::Context
 
 	void ContextWrapper::setPipelineBuffer( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
 	{
+		if ( p_bytes.size() == 0 )
+		{
+			return;
+		}
+
 		std::visit(
 			[ & ]( auto & p_backend )
 			{

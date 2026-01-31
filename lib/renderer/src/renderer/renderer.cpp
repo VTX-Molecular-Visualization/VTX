@@ -328,7 +328,6 @@ namespace VTX::Renderer
 
 		// Check.
 		assert( totalAtoms > 0 );
-		assert( totalBonds > 0 );
 
 		if ( totalAtoms > TypeMax<Index> )
 		{
