@@ -413,11 +413,48 @@ namespace VTX::Renderer
 		_geometries.spheres.buildDrawRanges();
 		_geometries.cylinders.buildDrawRanges();
 
+		setNeedUpdate( true );
 		VTX_INFO( "Systems GPU upload: {} ms", timer.elapsedTime() );
 	}
-	void Renderer::setSystemPosition( const RootUID p_appId, std::span<const Vec3f> p_positions )
+
+	void Renderer::setSystemPosition( const RootUID p_uid, std::span<const Vec3f> p_positions )
 	{
-		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions );
+		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.ranges[ p_uid ].first );
+	}
+
+	void Renderer::setSystemSelection(
+		const RootUID			   p_uid,
+		std::span<const std::byte> p_selection,
+		std::span<const std::byte> p_visibility
+	)
+	{
+		const size_t offsetAtoms = _geometries.spheres.ranges[ p_uid ].first;
+		const size_t countAtoms	 = p_selection.size();
+
+		assert( p_selection.size() == countAtoms );
+		assert( p_visibility.size() == countAtoms );
+
+		std::vector<Flag> flags( countAtoms );
+		for ( size_t i = 0; i < countAtoms; ++i )
+		{
+			Flag flag = 0;
+			flag |= _toFlag( p_visibility[ i ] ) << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
+			flag |= _toFlag( p_selection[ i ] ) << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
+			flags[ i ] = flag;
+		}
+
+		_context.setPipelineBuffer<Flag>( "Atoms.Flags", flags, offsetAtoms );
+
+		setNeedUpdate( true );
+	}
+
+	void Renderer::setSystemVisibility(
+		const RootUID			   p_uid,
+		std::span<const std::byte> p_visibility,
+		std::span<const std::byte> p_selection
+	)
+	{
+		setSystemSelection( p_uid, p_selection, p_visibility );
 	}
 
 #pragma endregion

@@ -137,14 +137,24 @@ namespace VTX::App::Pass
 
 	void SystemUpdater::_onUpdateVisibility( ECS::Registry & p_r, ECS::Entity p_e )
 	{
-		const auto & [ visibility, uid, data ] = p_r.get<System::Visibility, System::UID, Core::Struct::System>( p_e );
-		RENDERER().setSystemVisibility( uid.system, _toByteVector( visibility.atoms, data.getAtomCount() ) );
+		const auto & [ visibility, selection, uid, data ]
+			= p_r.get<System::Visibility, System::Selection, System::UID, Core::Struct::System>( p_e );
+		RENDERER().setSystemVisibility(
+			uid.system,
+			_toByteVector( visibility.atoms, data.getAtomCount() ),
+			_toByteVector( selection.atoms, data.getAtomCount() )
+		);
 	}
 
 	void SystemUpdater::_onUpdateSelection( ECS::Registry & p_r, ECS::Entity p_e )
 	{
-		const auto & [ selection, uid, data ] = p_r.get<System::Selection, System::UID, Core::Struct::System>( p_e );
-		RENDERER().setSystemSelection( uid.system, _toByteVector( selection.atoms, data.getAtomCount() ) );
+		const auto & [ selection, visibility, uid, data ]
+			= p_r.get<System::Selection, System::Visibility, System::UID, Core::Struct::System>( p_e );
+		RENDERER().setSystemSelection(
+			uid.system,
+			_toByteVector( selection.atoms, data.getAtomCount() ),
+			_toByteVector( visibility.atoms, data.getAtomCount() )
+		);
 	}
 
 	void SystemUpdater::_onUpdateRepresentation( ECS::Registry & p_r, ECS::Entity p_e )
