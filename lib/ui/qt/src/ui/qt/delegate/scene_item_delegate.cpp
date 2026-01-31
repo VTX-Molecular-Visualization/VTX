@@ -2,17 +2,38 @@
 #include "app/system/trajectory.hpp"
 #include "ui/qt/model.hpp"
 #include "ui/qt/services.hpp"
+#include <QAbstractItemView>
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
 #include <app/action/action_manager.hpp>
 #include <app/action/trajectory.hpp>
+#include <app/events.hpp>
 #include <app/services.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Delegate
 {
 
-	SceneItemDelegate::SceneItemDelegate( QObject * p_parent ) : QStyledItemDelegate( p_parent ) {}
+	SceneItemDelegate::SceneItemDelegate( QObject * p_parent ) : QStyledItemDelegate( p_parent )
+	{
+		App::REG().on_update<App::System::TrajectoryFullBuffer>().connect<&SceneItemDelegate::_updateSliderBar>( this );
+	}
+	void SceneItemDelegate::_updateSliderBar( App::ECS::Entity p_entity )
+	{
+		// Check if this entity has a trajectory
+		App::System::GenericTrajectory * trajPtr = nullptr;
+		App::System::get( p_entity, trajPtr );
+		if ( trajPtr == nullptr )
+			return;
+
+		// Trigger a repaint of the tree view to update the slider position
+		// The delegate's parent is the tree view (set in scene.cpp)
+		if ( auto * view = qobject_cast<QAbstractItemView *>( parent() ) )
+		{
+			view->viewport()->update();
+		}
+	}
 
 	void SceneItemDelegate::paint(
 		QPainter *					 p_painter,
@@ -126,15 +147,15 @@ namespace VTX::UI::QT::Delegate
 						App::System::get( entity, trajPtr );
 						if ( trajPtr && trajPtr->trajectorySize > 0 )
 						{
-							int sliderLeft = controlsRect.left() + 2 * ( BUTTON_SIZE + SPACING );
+							int sliderLeft	= controlsRect.left() + 2 * ( BUTTON_SIZE + SPACING );
 							int sliderRight = controlsRect.right() - FRAME_WIDTH - SPACING;
 							int sliderWidth = sliderRight - sliderLeft;
 
 							if ( sliderWidth > 0 )
 							{
 								float ratio = float( mouseEvent->pos().x() - sliderLeft ) / float( sliderWidth );
-								ratio = std::clamp( ratio, 0.0f, 1.0f );
-								uint frame = uint( ratio * float( trajPtr->trajectorySize - 1 ) );
+								ratio		= std::clamp( ratio, 0.0f, 1.0f );
+								uint frame	= uint( ratio * float( trajPtr->trajectorySize - 1 ) );
 								App::ACTION().execute<App::Action::Trajectory::JumpTo>( entity, frame );
 							}
 						}

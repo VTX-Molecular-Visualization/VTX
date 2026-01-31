@@ -58,8 +58,8 @@ namespace VTX::App::System
 		p_trajectory.genericData.trajectorySize = p_loader.getChemfilesReader().getFrameCount();
 		p_trajectory.frameCollection.reserve( p_loader.getChemfilesReader().getFrameCount() );
 		p_trajectory.frameCollection.emplace_back( p_loader.getChemfilesReader().getCurrentFrameAtomPosition() );
-		p_trajectory.genericData.playMode		   = TrajectoryPlayMode::pingpong;
-		p_trajectory.genericData.player			   = Util::Players::PingPong( p_trajectory.genericData.trajectorySize );
+		p_trajectory.genericData.playMode = TrajectoryPlayMode::pingpong;
+		p_trajectory.genericData.player	  = Util::Players::PingPong( p_trajectory.genericData.trajectorySize - 1 );
 		p_trajectory.genericData.currentFrameIndex = 0;
 		p_trajectory.lastFrameAvailable			   = 0;
 

@@ -22,10 +22,15 @@ namespace VTX::Util
 		 * @param p_out
 		 */
 		inline void next( uint & p_out ) const noexcept { _ptr->next( p_out ); }
+		inline void current( uint & p_out ) const noexcept { _ptr->current( p_out ); }
 		/**
 		 * @brief Move to the next step.
 		 */
 		inline void increment() noexcept { _ptr->increment(); }
+		/**
+		 * @brief Skip N steps.
+		 */
+		inline void increment( const uint & p_N ) noexcept { _ptr->increment( p_N ); }
 
 	  private:
 		struct _interface
@@ -33,7 +38,9 @@ namespace VTX::Util
 			virtual ~_interface()								= default;
 			virtual void jumpTo( const uint & p_step ) noexcept = 0;
 			virtual void next( uint & ) const noexcept			= 0;
+			virtual void current( uint & ) const noexcept		= 0;
 			virtual void increment() noexcept					= 0;
+			virtual void increment( const uint & p_N ) noexcept = 0;
 		};
 		struct _dummy
 		{
@@ -59,11 +66,25 @@ namespace VTX::Util
 					_obj.next( p_out );
 				}
 			}
+			virtual void current( uint & p_out ) const noexcept override
+			{
+				if constexpr ( not std::same_as<T, _dummy> )
+				{
+					_obj.current( p_out );
+				}
+			}
 			virtual void increment() noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
 				{
 					_obj.increment();
+				}
+			}
+			virtual void increment( const uint & p_N ) noexcept override
+			{
+				if constexpr ( not std::same_as<T, _dummy> )
+				{
+					_obj.increment( p_N );
 				}
 			}
 		};
@@ -85,7 +106,9 @@ namespace VTX::Util
 			Forward( uint p_stepNum, uint p_startingStep = 0 );
 			void jumpTo( const uint & p_step ) noexcept;
 			void next( uint & p_out ) const noexcept;
+			void current( uint & p_out ) const noexcept;
 			void increment() noexcept;
+			void increment( const uint & ) noexcept;
 
 		  private:
 			uint _lastIndex	  = 0;
@@ -106,7 +129,9 @@ namespace VTX::Util
 			PingPong( uint p_stepNum, uint p_startingStep = 0 );
 			void jumpTo( const uint & p_step ) noexcept;
 			void next( uint & p_out ) const noexcept;
+			void current( uint & p_out ) const noexcept;
 			void increment() noexcept;
+			void increment( const uint & ) noexcept;
 
 		  private:
 			uint _lastIndex	  = 0;

@@ -111,6 +111,44 @@ TEST_CASE( "Util::Players", "[players][pingpong]" )
 		CHECK( step == 2 );
 	}
 
+	SECTION( "increment N" )
+	{
+		{
+			Player p( Players::PingPong( 10 ) );
+			uint   step = 0;
+			p.increment( 3 );
+			p.current( step );
+			CHECK( step == 3 );
+			p.increment( 11 );
+			p.current( step );
+			CHECK( step == 4 );
+			p.increment( 3 );
+			p.current( step );
+			CHECK( step == 1 );
+			p.increment( 3 );
+			p.current( step );
+			CHECK( step == 2 );
+			p.jumpTo( 5 );
+			p.increment( 30 );
+			p.current( step );
+			CHECK( step == 1 );
+			p.increment( 18 );
+			p.current( step );
+			CHECK( step == 1 );
+		}
+		{
+			Player p( Players::PingPong( 10 ) );
+			uint   step = 0;
+			p.increment( 2 );
+			p.increment( 18 );
+			p.current( step );
+			CHECK( step == 2 );
+			p.increment( 1 );
+			p.current( step );
+			CHECK( step == 3 );
+		}
+	}
+
 	SECTION( "jumping" )
 	{
 		Player p( Players::PingPong( 10 ) );

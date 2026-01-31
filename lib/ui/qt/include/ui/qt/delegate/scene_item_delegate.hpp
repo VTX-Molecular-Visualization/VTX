@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_DELEGATE_SCENE_ITEM_DELEGATE__
 
 #include <QStyledItemDelegate>
+#include <app/ecs.hpp>
 
 namespace VTX::UI::QT::Delegate
 {
@@ -67,6 +68,8 @@ namespace VTX::UI::QT::Delegate
 		 * @brief Get the rectangle for the player controls area.
 		 */
 		QRect _getControlsRect( const QStyleOptionViewItem & p_option ) const;
+
+		void _updateSliderBar( App::ECS::Entity );
 
 		/**
 		 * @brief Layout constants.

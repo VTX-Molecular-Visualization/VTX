@@ -23,6 +23,12 @@ namespace VTX::App::Pass
 	}
 	namespace
 	{
+		/**
+		 * @brief Returns whether the new positions has been set to the requestedFrameIndex
+		 * @param entity
+		 * @param p_traj
+		 * @return
+		 */
 		bool tryUpdateFrame( const ECS::Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept
 		{
 			if ( p_traj.lastFrameAvailable < p_traj.genericData.requestedFrameIndex )
@@ -33,6 +39,10 @@ namespace VTX::App::Pass
 				p_traj.frameCollection[ p_traj.genericData.requestedFrameIndex ]
 			);
 			return true;
+		}
+		uint autoplayNextFrameTrigger( System::GenericTrajectory & p_traj, const float p_elapsedTime ) noexcept
+		{
+			return static_cast<uint>( ( p_elapsedTime - p_traj.lastFrameUpdateTime ) / p_traj.playingSpeed );
 		}
 		/**
 		 * @brief Return true if the frame should be updated.
@@ -67,24 +77,35 @@ namespace VTX::App::Pass
 					continue;
 				auto & player = genericTrajPtr->player;
 
-				if ( genericTrajPtr->paused )
+				if ( genericTrajPtr->paused ) // Can't be done that way. The jumpTo even should update positions even if
+											  // the traj is paused
 					continue;
 
-				uint nextStep = 0;
-				player.next( nextStep );
-				if ( genericTrajPtr->lastFrameUpdateTime + genericTrajPtr->playingSpeed > p_elapsedTime )
+				uint nextStep		= genericTrajPtr->requestedFrameIndex;
+				uint autoplayUpdate = 0;
+				if ( nextStep == genericTrajPtr->currentFrameIndex ) // If there is no outside demand on setting the
+																	 // current frame, we use the autoplay
+				{
+					autoplayUpdate = autoplayNextFrameTrigger( *genericTrajPtr, p_elapsedTime );
+					if ( autoplayNextFrameTrigger( *genericTrajPtr, p_elapsedTime ) )
+					{
+						player.next( nextStep );
+					}
+				}
+				if ( nextStep == genericTrajPtr->currentFrameIndex )
 					continue;
 
 				REG().patch<TrajectoryT>(
 					it_entity,
-					[ &nextStep, &it_entity, &p_elapsedTime ]( TrajectoryT & traj )
+					[ &nextStep, &it_entity, &p_elapsedTime, &autoplayUpdate ]( TrajectoryT & traj )
 					{
 						System::GenericTrajectory & trajGenericData = genericData( traj );
 						trajGenericData.requestedFrameIndex			= nextStep;
-						trajGenericData.player.increment();
+						if ( autoplayUpdate )
+							trajGenericData.player.increment();
 						if ( tryUpdateFrame( it_entity, traj ) )
 						{
-							trajGenericData.requestedFrameIndex;
+							trajGenericData.currentFrameIndex	= trajGenericData.requestedFrameIndex;
 							trajGenericData.lastFrameUpdateTime = p_elapsedTime;
 						}
 					}
@@ -95,6 +116,27 @@ namespace VTX::App::Pass
 
 	void TrajectoryUpdater::update( const float p_delta, const float p_elapsedTime )
 	{
+		/*
+		There is multiple ways to implement trajectory frame update. Each comes with pros and cons.
+		The way currently implemented will be referred as "exhaustive".
+		It governs how the autoplay will decide what the nextframe is :
+			We check if
+
+				elapsedTime > lastUpdateTime + playingSpeed
+
+			If it is : the next frame
+			is called. What it means is that if the delta between updates is multiple time bigger than the playing
+		speed, this algorithm won't try to catch up but will display every single frame.
+
+		Another implementation would be "predictive" where we skip N frames for
+
+			lastUpdateTime + (N - 1) * playingSpeed < elapsedTime < lastUpdateTime + N * playingSpeed
+
+		The predictive algorithm would enforce trajectory synchronisation if applicable, while the exhaustive algorithm
+		maukes sure every step is displayed.
+
+		*/
+
 		updateTrajectoresPosition<System::TrajectoryFullBuffer>( p_elapsedTime );
 	}
 
