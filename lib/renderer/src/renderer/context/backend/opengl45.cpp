@@ -495,7 +495,7 @@ namespace VTX::Renderer::Context::Backend
 
 		const Key & key = p_pass.name;
 
-		if ( _framebuffers.validate( key, p_pass ) )
+		if ( _framebuffers.validate( key ) )
 		{
 			return _framebuffers.handle( key );
 		}
@@ -505,7 +505,7 @@ namespace VTX::Renderer::Context::Backend
 			return NO_HANDLE;
 		}
 
-		const Handle h = _framebuffers.emplace( key, p_pass );
+		const Handle h = _framebuffers.emplace( key );
 
 		return h;
 	}
@@ -516,12 +516,12 @@ namespace VTX::Renderer::Context::Backend
 
 		const Key & key = p_pass.name;
 
-		if ( _resourceTables.validate( key, p_pass ) )
+		if ( _resourceTables.validate( key ) )
 		{
 			return _resourceTables.handle( key );
 		}
 
-		const Handle h = _resourceTables.emplace( key, p_pass );
+		const Handle h = _resourceTables.emplace( key );
 
 		return h;
 	}
@@ -672,7 +672,7 @@ namespace VTX::Renderer::Context::Backend
 				{
 				case E_BUFFER_MUTABILITY::MUTABLE:
 				{
-					gl.setData( p_buf.data(), static_cast<GLsizei>( bufferSize ), _toGL( p_buffer.frequency ) );
+					gl.setData( p_buf.data(), static_cast<GLsizei>( bufferSize ), 0, _toGL( p_buffer.frequency ) );
 					break;
 				}
 				case E_BUFFER_MUTABILITY::IMMUTABLE:
@@ -963,7 +963,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	void OpenGL45::setShaderBufferData( const Desc::Key & p_key, SpanBytes p_bytes )
+	void OpenGL45::setShaderBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
 	{
 		using namespace Desc;
 
@@ -974,13 +974,14 @@ namespace VTX::Renderer::Context::Backend
 		{
 		case E_BUFFER_MUTABILITY::MUTABLE:
 		{
-			_shaderBuffers.get( h ).setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( bufferProp.frequency ) );
+			_shaderBuffers.get( h ).setData(
+				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( bufferProp.frequency )
+			);
 			break;
 		}
 		case E_BUFFER_MUTABILITY::IMMUTABLE:
 		{
-			assert( p_bytes.size() == _shaderBuffers.get( h ).size() );
-			_shaderBuffers.get( h ).setSub( p_bytes.data(), GLsizei( p_bytes.size() ), 0 );
+			_shaderBuffers.get( h ).setSub( p_bytes.data(), GLsizei( p_bytes.size() ), p_offset );
 			break;
 		}
 		default: break;
@@ -988,7 +989,7 @@ namespace VTX::Renderer::Context::Backend
 	}
 
 	// Pipeline buffers are default immutables.
-	void OpenGL45::setPipelineBufferData( const Desc::Key & p_key, SpanBytes p_bytes )
+	void OpenGL45::setPipelineBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
 	{
 		using namespace Desc;
 
@@ -1004,11 +1005,15 @@ namespace VTX::Renderer::Context::Backend
 
 		if ( kind == E_PIPELINE_BUFFER_KIND::VERTEX )
 		{
-			_vertexBuffers.get( h ).setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( buffer.frequency ) );
+			_vertexBuffers.get( h ).setData(
+				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( buffer.frequency )
+			);
 		}
 		else
 		{
-			_indexBuffers.get( h ).setData( p_bytes.data(), GLsizei( p_bytes.size() ), _toGL( buffer.frequency ) );
+			_indexBuffers.get( h ).setData(
+				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( buffer.frequency )
+			);
 		}
 	}
 

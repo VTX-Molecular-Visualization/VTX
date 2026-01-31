@@ -77,17 +77,23 @@ namespace VTX::Renderer::Context::GL
 			glBindBufferRange( p_target, p_index, 0, 0, 0 );
 		}
 
-		inline void setData( const void * const p_data, const GLsizei p_size, const GLenum p_usage = GL_DYNAMIC_DRAW )
+		inline void setData(
+			const void * const p_data,
+			const GLsizei	   p_size,
+			const GLintptr	   p_offset = 0,
+			const GLenum	   p_usage	= GL_DYNAMIC_DRAW
+		)
 		{
 			assert( glIsBuffer( _id ) );
 			assert( p_size > 0 );
 
-			if ( p_size == _size )
+			if ( p_offset + p_size <= _size )
 			{
-				setSub( p_data, p_size, 0 );
+				setSub( p_data, p_size, p_offset );
 			}
 			else
 			{
+				assert( p_offset == 0 );
 				_size = p_size;
 				glNamedBufferData( _id, _size, p_data, p_usage );
 			}

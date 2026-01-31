@@ -1,12 +1,15 @@
 #ifndef __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 #define __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 
-#include "renderer/descriptors.hpp"
+#include <map>
 #include <util/math/range_list.hpp>
+#include <util/types.hpp>
 
 namespace VTX::Renderer::Geometry
 {
-	using RangeList			= Util::Math::RangeList<size_t>;
+	using IndexRange		= Util::Math::Range<Index>;
+	using IndexRangeList	= Util::Math::RangeList<Index>;
+	using MapUIDRange		= std::map<RootUID, IndexRange>;
 	using DrawRangeArray	= Desc::DrawCall::RangeArrays;
 	using DrawRangeElements = Desc::DrawCall::RangeElements;
 

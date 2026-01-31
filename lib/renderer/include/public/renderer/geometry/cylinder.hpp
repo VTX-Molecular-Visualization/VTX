@@ -5,9 +5,26 @@
 
 namespace VTX::Renderer::Geometry
 {
+
 	struct Cylinder : BaseGeometry
 	{
-		RangeList		  rangeList;
+		MapUIDRange ranges;
+
+		void buildDrawRanges()
+		{
+			drawRanges.offsets.clear();
+			drawRanges.counts.clear();
+
+			IndexRangeList allRanges;
+			for ( const auto & [ _, range ] : ranges )
+			{
+				allRanges.addRange( range );
+			}
+
+			allRanges.toStdVectorsFirstCount( drawRanges.offsets, drawRanges.counts );
+		}
+
+		// Compiled draw ranges.
 		DrawRangeElements drawRanges;
 	};
 } // namespace VTX::Renderer::Geometry

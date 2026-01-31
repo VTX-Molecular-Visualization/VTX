@@ -17,6 +17,7 @@ namespace VTX::Renderer
 
 	};
 
+	/*
 	enum struct E_CAMERA_VALUES
 	{
 		NEAR_CLIP,
@@ -24,6 +25,7 @@ namespace VTX::Renderer
 		FOV,
 		PROJECTION
 	};
+	*/
 
 	/**
 	 * @brief Default values.

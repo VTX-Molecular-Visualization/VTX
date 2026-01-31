@@ -7,6 +7,7 @@ namespace VTX::Renderer::Geometry
 {
 	struct SES : BaseGeometry
 	{
+		/*
 		RangeList rangeListSESCircles;
 		RangeList rangeListSESConcaves;
 		RangeList rangeListSESConvexes;
@@ -16,6 +17,7 @@ namespace VTX::Renderer::Geometry
 		DrawRangeArray drawRangeSESConcaves;
 		DrawRangeArray drawRangeSESConvexes;
 		DrawRangeArray drawRangeSESSegments;
+		*/
 	};
 
 } // namespace VTX::Renderer::Geometry

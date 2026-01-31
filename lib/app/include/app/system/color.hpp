@@ -30,11 +30,6 @@ namespace VTX::App::System
 		 * @brief Associates color schemes with lists of index ranges.
 		 */
 		std::unordered_map<E_COLOR_SCHEME, Core::Struct::IndexRangeList> colorSchemeAtoms;
-
-		/**
-		 * @brief Atom colors.
-		 */
-		std::vector<Renderer::Color::ColorIndex> atoms;
 	};
 
 } // namespace VTX::App::System

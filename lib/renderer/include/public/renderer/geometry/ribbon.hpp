@@ -5,9 +5,12 @@
 
 namespace VTX::Renderer::Geometry
 {
+
 	struct Ribbon : BaseGeometry
 	{
-		RangeList	   rangeList;
+		MapUIDRange ranges;
+
+		// Compiled draw ranges.
 		DrawRangeArray drawRanges;
 	};
 

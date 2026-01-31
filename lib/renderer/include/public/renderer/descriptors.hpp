@@ -316,8 +316,8 @@ namespace VTX::Renderer::Desc
 		};
 		struct RangeElements
 		{
-			std::vector<const void *> offsets;
-			std::vector<uint32_t>	  counts;
+			std::vector<uintptr_t> offsets;
+			std::vector<uint32_t>  counts;
 		};
 		const RangeArrays *	  vertexRanges = nullptr;
 		const RangeElements * indexRanges  = nullptr;
@@ -378,10 +378,6 @@ namespace VTX::Renderer::Desc
 	 * @brief Ordered list of passes for execution.
 	 */
 	using RenderQueue = std::vector<const Pass *>;
-
-	struct Dummy
-	{
-	};
 
 	/**
 	 * @brief Descriptor hash functions.

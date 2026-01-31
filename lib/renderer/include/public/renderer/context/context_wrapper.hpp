@@ -54,32 +54,44 @@ namespace VTX::Renderer::Context
 		 * @brief Convert a span of T to a span of bytes.
 		 */
 		template<typename T>
-		static SpanBytes asBytes( std::span<const T> p_s ) noexcept
+		static SpanBytes asBytes( std::span<const T> p_span ) noexcept
 		{
 			static_assert( std::is_trivially_copyable_v<T>, "asWritableBytes(span<T>): T must be trivially copyable." );
 
-			return std::as_bytes( p_s );
+			return std::as_bytes( p_span );
 		}
 
 		/**
 		 * @brief Set shader buffer data.
 		 */
 		template<typename T>
-		void setShaderBuffer( const Desc::Key & p_key, std::span<const T> p_data )
+		inline void setShaderBuffer( const Desc::Key & p_key, std::span<const T> p_data, const size_t p_offset = 0 )
 		{
-			setShaderBuffer( p_key, asBytes( p_data ) );
+			setShaderBuffer( p_key, asBytes( p_data ), p_offset * sizeof( T ) );
 		}
-		void setShaderBuffer( const Desc::Key & p_key, SpanBytes );
+		template<typename T>
+		inline void setShaderBuffer( const Desc::Key & p_key, const size_t p_size )
+		{
+			auto span = SpanBytes { static_cast<std::byte *>( nullptr ), p_size * sizeof( T ) };
+			setPipelineBuffer( p_key, span, 0 );
+		}
+		void setShaderBuffer( const Desc::Key & p_key, SpanBytes, const size_t p_offset = 0 );
 
 		/**
 		 * @brief Set pipeline buffer data.
 		 */
 		template<typename T>
-		void setPipelineBuffer( const Desc::Key & p_key, std::span<const T> p_data )
+		inline void setPipelineBuffer( const Desc::Key & p_key, std::span<const T> p_data, const size_t p_offset = 0 )
 		{
-			setPipelineBuffer( p_key, asBytes( p_data ) );
+			setPipelineBuffer( p_key, asBytes( p_data ), p_offset * sizeof( T ) );
 		}
-		void setPipelineBuffer( const Desc::Key & p_key, SpanBytes );
+		template<typename T>
+		inline void setPipelineBuffer( const Desc::Key & p_key, const size_t p_size )
+		{
+			auto span = SpanBytes { static_cast<std::byte *>( nullptr ), p_size * sizeof( T ) };
+			setPipelineBuffer( p_key, span, 0 );
+		}
+		void setPipelineBuffer( const Desc::Key & p_key, SpanBytes, const size_t p_offset = 0 );
 
 		/**
 		 * @brief Get texture data at a given pixel.
