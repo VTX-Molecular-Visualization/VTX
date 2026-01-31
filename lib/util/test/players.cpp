@@ -146,6 +146,12 @@ TEST_CASE( "Util::Players", "[players][pingpong]" )
 			p.increment( 1 );
 			p.current( step );
 			CHECK( step == 3 );
+			p.increment( 0 );
+			p.current( step );
+			CHECK( step == 3 );
+			p.increment( 1 );
+			p.current( step );
+			CHECK( step == 4 );
 		}
 	}
 

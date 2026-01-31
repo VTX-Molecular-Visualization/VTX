@@ -101,8 +101,10 @@ namespace VTX::App::Pass
 					{
 						System::GenericTrajectory & trajGenericData = genericData( traj );
 						trajGenericData.requestedFrameIndex			= nextStep;
-						if ( autoplayUpdate )
-							trajGenericData.player.increment();
+						trajGenericData.player.increment(
+							std::min( 1u, autoplayUpdate )
+						); // std::min is for the exhaustive algorithm. It means that if it is 0, no increment is made.
+						   // If >=1, only one increment is made. A predictive algorithm would be not using std::min
 						if ( tryUpdateFrame( it_entity, traj ) )
 						{
 							trajGenericData.currentFrameIndex	= trajGenericData.requestedFrameIndex;
