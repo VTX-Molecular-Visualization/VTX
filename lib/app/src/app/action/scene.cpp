@@ -21,6 +21,7 @@
 #include "app/threading/base_thread.hpp"
 #include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
+#include <core/chemdb/atom.hpp>
 #include <core/struct/system.hpp>
 #include <io/reader/system.hpp>
 #include <renderer/renderer.hpp>
@@ -107,7 +108,9 @@ namespace VTX::App::Action::Scene
 				[ &firstFrame ]( Util::Math::AABB & p_aabb )
 				{
 					for ( auto & it_atomPos : firstFrame )
-						p_aabb.extend( it_atomPos );
+					{
+						p_aabb.extend( it_atomPos, Core::ChemDB::Atom::VDW_RADIUS_MIN );
+					}
 				}
 			);
 
