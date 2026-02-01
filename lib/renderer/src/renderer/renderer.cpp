@@ -357,7 +357,7 @@ namespace VTX::Renderer
 		{
 			const size_t  countAtoms = systemData.frame.size();
 			const size_t  countBonds = systemData.data.bondPairAtomIndexes.size();
-			const RootUID uid		 = systemData.uid;
+			const SystemUID uid		 = systemData.uid;
 
 			// Move bonds.
 			auto bonds = systemData.data.bondPairAtomIndexes;
@@ -416,13 +416,13 @@ namespace VTX::Renderer
 		VTX_INFO( "Systems GPU upload: {} ms", timer.elapsedTime() );
 	}
 
-	void Renderer::setSystemPosition( const RootUID p_uid, std::span<const Vec3f> p_positions )
+	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
 	{
 		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.ranges[ p_uid ].first );
 	}
 
 	void Renderer::setSystemSelection(
-		const RootUID			   p_uid,
+		const SystemUID			   p_uid,
 		std::span<const std::byte> p_selection,
 		std::span<const std::byte> p_visibility
 	)
@@ -448,7 +448,7 @@ namespace VTX::Renderer
 	}
 
 	void Renderer::setSystemVisibility(
-		const RootUID			   p_uid,
+		const SystemUID			   p_uid,
 		std::span<const std::byte> p_visibility,
 		std::span<const std::byte> p_selection
 	)

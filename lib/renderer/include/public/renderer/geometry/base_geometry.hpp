@@ -9,7 +9,7 @@ namespace VTX::Renderer::Geometry
 {
 	using IndexRange		= Util::Math::Range<Index>;
 	using IndexRangeList	= Util::Math::RangeList<Index>;
-	using MapUIDRange		= std::map<RootUID, IndexRange>;
+	using MapUIDRange		= std::map<SystemUID, IndexRange>;
 	using DrawRangeArray	= Desc::DrawCall::RangeArrays;
 	using DrawRangeElements = Desc::DrawCall::RangeElements;
 

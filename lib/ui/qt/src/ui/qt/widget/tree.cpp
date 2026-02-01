@@ -18,7 +18,7 @@ namespace VTX::UI::QT::Widget
 		setExpandsOnDoubleClick( false );
 		setEditTriggers( QAbstractItemView::NoEditTriggers );
 
-		// Selection.
+		// Selection.B
 		setSelectionBehavior( QAbstractItemView::SelectRows );
 
 		// One expanded at a time.

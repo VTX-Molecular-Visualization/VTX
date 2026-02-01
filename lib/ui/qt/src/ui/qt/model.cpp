@@ -9,23 +9,30 @@ namespace VTX::UI::QT
 {
 	Model::Model( QObject * p_parent ) : QAbstractItemModel( p_parent )
 	{
+		auto & reg = App::REG();
+		// Camera.
+		reg.on_construct<Renderer::Camera>().connect<&Model::_onCamera>( this );
 		// Connect system construction event.
 		App::HUB().connect<App::Events::SystemLoad, &Model::_onSystemLoad>( this );
-		App::REG().on_destroy<Core::Struct::System>().connect<&Model::_onSystemDestroy>( this );
+		reg.on_destroy<Core::Struct::System>().connect<&Model::_onSystemDestroy>( this );
+
+		_onCamera();
 	}
 
 	int Model::columnCount( const QModelIndex & p_parent ) const { return 1; }
 
 	int Model::rowCount( const QModelIndex & p_parent ) const
 	{
+		using namespace App;
 		using namespace App::Scene;
+
 		if ( not p_parent.isValid() )
 		{
 			return int( _rows.size() );
 		}
 
 		E_ITEM	item;
-		RootUID rootIndex;
+		SystemUID rootIndex;
 		Index	localIndex;
 		unpack( p_parent.internalId(), item, rootIndex, localIndex );
 
@@ -34,17 +41,21 @@ namespace VTX::UI::QT
 			return 0;
 		}
 
-		const Core::Struct::System & system
-			= *std::get<const Core::Struct::System *>( _mapRootRow.at( rootIndex )->data );
-
 		switch ( item )
 		{
+		case E_ITEM::CAMERA:
+		{
+			// TODO: get viewpoints count.
+			return 0;
+		}
 		case E_ITEM::SYSTEM:
 		{
+			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
 			return system.getChainCount();
 		}
 		case E_ITEM::CHAIN:
 		{
+			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
 			if ( localIndex >= system.getChainCount() )
 			{
 				return 0;
@@ -54,6 +65,7 @@ namespace VTX::UI::QT
 		}
 		case E_ITEM::RESIDUE:
 		{
+			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
 			if ( localIndex >= system.getResidueCount() )
 			{
 				return 0;
@@ -67,6 +79,7 @@ namespace VTX::UI::QT
 
 	QVariant Model::data( const QModelIndex & p_index, int p_role ) const
 	{
+		using namespace App;
 		using namespace App::Scene;
 
 		if ( not p_index.isValid() )
@@ -75,7 +88,7 @@ namespace VTX::UI::QT
 		}
 
 		E_ITEM	item;
-		RootUID rootIndex;
+		SystemUID rootIndex;
 		Index	localIndex;
 		unpack( p_index.internalId(), item, rootIndex, localIndex );
 
@@ -84,21 +97,24 @@ namespace VTX::UI::QT
 			return {};
 		}
 
-		const Core::Struct::System & system
-			= *std::get<const Core::Struct::System *>( _mapRootRow.at( rootIndex )->data );
-
 		switch ( p_role )
 		{
 		case Qt::DisplayRole: // No break intended ?
 		case NameRole:
 			switch ( item )
 			{
+			case E_ITEM::CAMERA:
+			{
+				return "Camera";
+			}
 			case E_ITEM::SYSTEM:
 			{
+				const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
 				return QString::fromStdString( system.name );
 			}
 			case E_ITEM::CHAIN:
 			{
+				const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
 				if ( localIndex >= system.getChainCount() )
 				{
 					return {};
@@ -108,6 +124,7 @@ namespace VTX::UI::QT
 			}
 			case E_ITEM::RESIDUE:
 			{
+				const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
 				if ( localIndex >= system.getResidueCount() )
 				{
 					return {};
@@ -117,6 +134,7 @@ namespace VTX::UI::QT
 			}
 			case E_ITEM::ATOM:
 			{
+				const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
 				if ( localIndex >= system.getAtomCount() )
 				{
 					return {};
@@ -137,6 +155,7 @@ namespace VTX::UI::QT
 
 	QModelIndex Model::index( int p_row, int p_column, const QModelIndex & p_parent ) const
 	{
+		using namespace App;
 		using namespace App::Scene;
 
 		if ( p_column != 0 || p_row < 0 )
@@ -147,6 +166,10 @@ namespace VTX::UI::QT
 		// System.
 		if ( not p_parent.isValid() )
 		{
+			if ( p_row == 0 )
+			{
+				return createIndex( p_row, p_column, pack( E_ITEM::CAMERA, 0, 0 ) );
+			}
 			if ( p_row >= int( _rows.size() ) )
 			{
 				return {};
@@ -155,7 +178,7 @@ namespace VTX::UI::QT
 		}
 
 		E_ITEM	item;
-		RootUID rootIndex;
+		SystemUID rootIndex;
 		Index	localIndex;
 		unpack( p_parent.internalId(), item, rootIndex, localIndex );
 
@@ -164,14 +187,12 @@ namespace VTX::UI::QT
 			return {};
 		}
 
-		const Core::Struct::System & system
-			= *std::get<const Core::Struct::System *>( _mapRootRow.at( rootIndex )->data );
-
 		switch ( item )
 		{
 		// Chain.
 		case E_ITEM::SYSTEM:
 		{
+			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
 			if ( uint( p_row ) >= system.getChainCount() )
 			{
 				return {};
@@ -182,6 +203,7 @@ namespace VTX::UI::QT
 		// Residue.
 		case E_ITEM::CHAIN:
 		{
+			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
 			if ( localIndex >= system.getChainCount() )
 			{
 				return {};
@@ -199,6 +221,7 @@ namespace VTX::UI::QT
 		// Atom.
 		case E_ITEM::RESIDUE:
 		{
+			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
 			if ( localIndex >= system.getResidueCount() )
 			{
 				return {};
@@ -219,6 +242,7 @@ namespace VTX::UI::QT
 
 	QModelIndex Model::parent( const QModelIndex & p_index ) const
 	{
+		using namespace App;
 		using namespace App::Scene;
 
 		if ( not p_index.isValid() )
@@ -227,11 +251,16 @@ namespace VTX::UI::QT
 		}
 
 		E_ITEM	item;
-		RootUID rootIndex;
+		SystemUID rootIndex;
 		Index	localIndex;
 		unpack( p_index.internalId(), item, rootIndex, localIndex );
 
 		// Root.
+		if ( item == E_ITEM::CAMERA )
+		{
+			return {};
+		}
+
 		if ( item == E_ITEM::SYSTEM )
 		{
 			return {};
@@ -242,13 +271,11 @@ namespace VTX::UI::QT
 			return {};
 		}
 
-		const Core::Struct::System & system
-			= *std::get<const Core::Struct::System *>( _mapRootRow.at( rootIndex )->data );
-
 		switch ( item )
 		{
 		case E_ITEM::CHAIN:
 		{
+			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
 			if ( localIndex >= system.getChainCount() )
 			{
 				return {};
@@ -258,6 +285,7 @@ namespace VTX::UI::QT
 		}
 		case E_ITEM::RESIDUE:
 		{
+			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
 			if ( localIndex >= system.getResidueCount() )
 			{
 				return {};
@@ -269,6 +297,7 @@ namespace VTX::UI::QT
 		}
 		case E_ITEM::ATOM:
 		{
+			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
 			if ( localIndex >= system.getAtomCount() )
 			{
 				return {};
@@ -286,12 +315,33 @@ namespace VTX::UI::QT
 	QModelIndex Model::makeIndex(
 		const int				 p_row,
 		const App::Scene::E_ITEM p_type,
-		const RootUID			 p_rootUID,
+		const SystemUID			 p_rootUID,
 		const Index				 p_index
 	) const
 	{
 		quintptr id = pack( p_type, p_rootUID, p_index );
 		return createIndex( p_row, 0, id );
+	}
+
+	void Model::_onCamera()
+	{
+		using namespace App::Scene;
+
+		auto   entity = App::ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
+		auto & camera = App::REG().get<Renderer::Camera>( entity );
+
+		const int position = int( _rows.size() );
+
+		beginInsertRows( QModelIndex(), position, position );
+
+		_rows.emplace_back( std::make_unique<Row>( position, INVALID_UID, entity, E_ITEM::CAMERA ) );
+
+		auto & row					 = _rows.back();
+		_mapEntityRow[ row->entity ] = row.get();
+		_mapRootRow[ row->index ]	 = row.get();
+		_mapRootEntity[ row->index ] = entity;
+
+		endInsertRows();
 	}
 
 	void Model::_onSystemLoad( const App::Events::SystemLoad & p_e )
@@ -300,17 +350,12 @@ namespace VTX::UI::QT
 
 		const auto & reg	  = App::REG();
 		const auto	 entity	  = p_e.system;
-		const auto & system	  = reg.get<Core::Struct::System>( entity );
 		const auto & uid	  = reg.get<App::System::UID>( entity );
 		const int	 position = int( _rows.size() );
 
 		beginInsertRows( QModelIndex(), position, position );
 
-		_rows.emplace_back(
-			std::make_unique<Row>(
-				position, uid.system, entity, E_ITEM::SYSTEM, std::variant<const Core::Struct::System *>( &system )
-			)
-		);
+		_rows.emplace_back( std::make_unique<Row>( position, uid.system, entity, E_ITEM::SYSTEM ) );
 
 		auto & row					 = _rows.back();
 		_mapEntityRow[ row->entity ] = row.get();
@@ -346,7 +391,7 @@ namespace VTX::UI::QT
 		endRemoveRows();
 	}
 
-	quintptr Model::pack( const App::Scene::E_ITEM p_item, const RootUID p_rootIndex, const Index p_index )
+	quintptr Model::pack( const App::Scene::E_ITEM p_item, const SystemUID p_rootIndex, const Index p_index )
 	{
 		// [ p_item:8 | p_rootIndex:16 | p_index:32 ]  <= 56 bits
 		return ( quintptr( p_item ) << 48 ) |	   // bits 48..55
@@ -354,10 +399,10 @@ namespace VTX::UI::QT
 			   ( quintptr( p_index ) );			   // bits  0..31
 	}
 
-	void Model::unpack( const quintptr p_v, App::Scene::E_ITEM & p_item, RootUID & p_rootIndex, Index & p_index )
+	void Model::unpack( const quintptr p_v, App::Scene::E_ITEM & p_item, SystemUID & p_rootIndex, Index & p_index )
 	{
 		p_item		= App::Scene::E_ITEM( ( p_v >> 48 ) & 0xFF ); // 8 bits
-		p_rootIndex = RootUID( ( p_v >> 32 ) & 0xFFFF );		  // 16 bits
+		p_rootIndex = SystemUID( ( p_v >> 32 ) & 0xFFFF );		  // 16 bits
 		p_index		= Index( p_v & 0xFFFFFFFFu );				  // 32 bits
 	}
 } // namespace VTX::UI::QT

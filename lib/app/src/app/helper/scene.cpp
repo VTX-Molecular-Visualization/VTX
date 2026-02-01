@@ -9,9 +9,9 @@ namespace VTX::App::Helper::Scene
 		return { view.begin(), view.end() };
 	}
 
-	std::unordered_map<RootUID, ECS::Entity> getAllSystemsMap()
+	std::unordered_map<SystemUID, ECS::Entity> getAllSystemsMap()
 	{
-		std::unordered_map<RootUID, ECS::Entity> systemsMap;
+		std::unordered_map<SystemUID, ECS::Entity> systemsMap;
 		auto									 view = REG().view<System::UID>();
 
 		for ( const auto & [ entity, uid ] : view.each() )
@@ -22,7 +22,7 @@ namespace VTX::App::Helper::Scene
 		return systemsMap;
 	}
 
-	std::optional<ECS::Entity> findSystemByRootUID( const RootUID p_uid )
+	std::optional<ECS::Entity> findSystemByRootUID( const SystemUID p_uid )
 	{
 		const auto view = REG().view<System::UID>();
 		for ( const auto & [ entity, uid ] : view.each() )

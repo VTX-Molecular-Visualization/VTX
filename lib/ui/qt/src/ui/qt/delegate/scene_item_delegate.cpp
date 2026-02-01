@@ -97,7 +97,7 @@ namespace VTX::UI::QT::Delegate
 					// Get the entity for this system
 					using namespace App::Scene;
 					E_ITEM	item;
-					RootUID rootUID;
+					SystemUID rootUID;
 					Index	localIndex;
 					Model::unpack( p_index.internalId(), item, rootUID, localIndex );
 
@@ -145,7 +145,7 @@ namespace VTX::UI::QT::Delegate
 		}
 
 		E_ITEM	item;
-		RootUID rootUID;
+		SystemUID rootUID;
 		Index	localIndex;
 		Model::unpack( p_index.internalId(), item, rootUID, localIndex );
 
@@ -174,7 +174,7 @@ namespace VTX::UI::QT::Delegate
 		// Get trajectory info for frame display
 		using namespace App::Scene;
 		E_ITEM	item;
-		RootUID rootUID;
+		SystemUID rootUID;
 		Index	localIndex;
 		Model::unpack( p_index.internalId(), item, rootUID, localIndex );
 

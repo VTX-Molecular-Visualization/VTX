@@ -65,7 +65,7 @@ namespace VTX::App::System
 	{
 		auto &		 reader		= _ptr->loader.getChemfilesReader();
 		const size_t frameCount = reader.getFrameCount();
-		RootUID		 systemUid	= REG().get<System::UID>( _ptr->entity ).system;
+		SystemUID		 systemUid	= REG().get<System::UID>( _ptr->entity ).system;
 		_ptr->loader.readNextFrame(); // First frame has already been added
 
 		for ( size_t it_currentFrameIndex = 1; it_currentFrameIndex < frameCount - 1; it_currentFrameIndex++ )

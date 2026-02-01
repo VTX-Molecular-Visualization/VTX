@@ -11,7 +11,7 @@ namespace VTX::App::System
 		/**
 		 * @brief Root UID identifying the system.
 		 */
-		RootUID system;
+		SystemUID system;
 
 		/**
 		 * @brief List of picking UIDs identifying the elements in the system (residues and atoms).

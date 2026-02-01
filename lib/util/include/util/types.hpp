@@ -61,7 +61,7 @@ namespace VTX
 	/**
 	 * @brief UID type used for scene root objects (systems).
 	 */
-	using RootUID = uint16_t;
+	using SystemUID = uint16_t;
 
 	/**
 	 * @brief Byte size type.

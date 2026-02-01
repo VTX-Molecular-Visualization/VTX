@@ -7,6 +7,7 @@
 #include <app/events.hpp>
 #include <app/scene/tag_root.hpp>
 #include <core/struct/system.hpp>
+#include <renderer/camera.hpp>
 #include <vector>
 
 namespace VTX::UI::QT
@@ -36,11 +37,11 @@ namespace VTX::UI::QT
 		 */
 		struct Row
 		{
-			int										   position;
-			RootUID									   index;
-			App::ECS::Entity						   entity;
-			App::Scene::E_ITEM						   item;
-			std::variant<const Core::Struct::System *> data;
+			int				   position;
+			SystemUID			   index;
+			App::ECS::Entity   entity;
+			App::Scene::E_ITEM item;
+			// std::variant<const Core::Struct::System *, const Renderer::Camera *> data;
 		};
 
 		/**
@@ -76,21 +77,21 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Public index creation.
 		 */
-		QModelIndex makeIndex( const int p_row, const App::Scene::E_ITEM, const RootUID, const Index ) const;
+		QModelIndex makeIndex( const int p_row, const App::Scene::E_ITEM, const SystemUID, const Index ) const;
 
 		/**
 		 * @brief Pack minimum information to identify an item in the model into a single uint64.
 		 */
-		static quintptr pack( const App::Scene::E_ITEM, const RootUID, const Index );
+		static quintptr pack( const App::Scene::E_ITEM, const SystemUID, const Index );
 
 		/**
 		 * @brief Unpack quintptr.
 		 */
-		static void unpack( const quintptr, App::Scene::E_ITEM &, RootUID &, Index & );
+		static void unpack( const quintptr, App::Scene::E_ITEM &, SystemUID &, Index & );
 
-		inline const std::unordered_map<RootUID, const Row *> & getMapRootToRows() const { return _mapRootRow; }
+		inline const std::unordered_map<SystemUID, const Row *> & getMapRootToRows() const { return _mapRootRow; }
 
-		inline const std::unordered_map<RootUID, App::ECS::Entity> & getMapRootToEntity() const
+		inline const std::unordered_map<SystemUID, App::ECS::Entity> & getMapRootToEntity() const
 		{
 			return _mapRootEntity;
 		}
@@ -106,8 +107,13 @@ namespace VTX::UI::QT
 		 */
 		// TODO: redo
 		std::unordered_map<App::ECS::Entity, const Row *> _mapEntityRow;
-		std::unordered_map<RootUID, const Row *>		  _mapRootRow;
-		std::unordered_map<RootUID, App::ECS::Entity>	  _mapRootEntity;
+		std::unordered_map<SystemUID, const Row *>		  _mapRootRow;
+		std::unordered_map<SystemUID, App::ECS::Entity>	  _mapRootEntity;
+
+		/**
+		 * @brief Callback on camera creation.
+		 */
+		void _onCamera();
 
 		/**
 		 * @brief Callback on system construction to add it to the model.
