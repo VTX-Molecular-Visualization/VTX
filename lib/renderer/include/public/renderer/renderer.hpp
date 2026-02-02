@@ -19,16 +19,16 @@ namespace VTX::Renderer
 
 	struct SystemData
 	{
-		const SystemUID						   uid;
-		const Mat4f &						   transform;
-		const Core::Struct::System			   data;
-		const Core::Struct::Frame &			   frame;
-		const std::vector<float>			   radii;
-		const std::vector<PickingUID>		   atomUids;
-		const std::vector<ColorIndex>		   colorIndexes;
-		const std::vector<RepresentationIndex> representationIndexes;
-		const std::vector<std::byte>		   visibleAtoms;
-		const std::vector<std::byte>		   selectedAtoms;
+		const SystemUID																uid;
+		const Mat4f &																transform;
+		const Core::Struct::System													data;
+		const Core::Struct::Frame &													frame;
+		const std::vector<float>													radii;
+		const std::vector<PickingUID>												atomUids;
+		const std::vector<ColorIndex>												colorIndexes;
+		const std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> representationRanges;
+		const std::vector<std::byte>												visibleAtoms;
+		const std::vector<std::byte>												selectedAtoms;
 	};
 
 	/**
@@ -87,7 +87,7 @@ namespace VTX::Renderer
 
 		void setGraphicsConfig( const GraphicsConfig & );
 		void setColorLayout( const Color::Layout & );
-		void setRepresentation( const Representation & );
+		void setRepresentations( const std::vector<const Representation *> & );
 		void setVoxels( const std::vector<Vec3f> &, const std::vector<Vec3f> & );
 
 		/**
@@ -103,11 +103,15 @@ namespace VTX::Renderer
 			_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", p_b );
 			setNeedUpdate( true );
 		}
+
+		/*
 		void setSystemRepresentation( const SystemUID, std::span<const RepresentationIndex> p_b )
 		{
 			_context.setPipelineBuffer<RepresentationIndex>( "Atoms.Representations", p_b );
 			setNeedUpdate( true );
 		}
+		*/
+
 		void setSystemSelection( const SystemUID, std::span<const std::byte>, std::span<const std::byte> );
 
 		void setSystemVisibility( const SystemUID, std::span<const std::byte>, std::span<const std::byte> );
@@ -200,7 +204,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Cached data to update.
 		 */
-		Caches::Camera					  _cacheCamera;
+		Caches::Camera						_cacheCamera;
 		std::map<SystemUID, Caches::System> _cacheSystems;
 
 		/**

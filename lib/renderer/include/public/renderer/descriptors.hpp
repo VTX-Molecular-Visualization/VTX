@@ -316,7 +316,7 @@ namespace VTX::Renderer::Desc
 		};
 		struct RangeElements
 		{
-			std::vector<uintptr_t> offsets;
+			std::vector<uintptr_t> firsts;
 			std::vector<uint32_t>  counts;
 		};
 		const RangeArrays *	  vertexRanges = nullptr;

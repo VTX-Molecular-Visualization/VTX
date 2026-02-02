@@ -6,8 +6,32 @@ namespace
 {
 	using namespace VTX;
 	using namespace VTX::Renderer;
+	using namespace VTX::Core;
 
 	constexpr Flag _toFlag( std::byte p_b ) { return static_cast<Flag>( std::to_integer<uint8_t>( p_b ) & 1u ); }
+
+	std::vector<RepresentationIndex> _toVector(
+		const std::unordered_map<RepresentationIndex, Struct::IndexRangeList> p_ranges,
+		const size_t														  p_size
+	)
+	{
+		std::vector<RepresentationIndex> atoms( p_size );
+		size_t							 count = 0;
+
+		for ( const auto & [ index, ranges ] : p_ranges )
+		{
+			for ( auto it = ranges.rangeBegin(); it != ranges.rangeEnd(); ++it )
+			{
+				std::fill_n( atoms.begin() + it->getFirst(), it->getCount(), index );
+			}
+			count += ranges.count();
+		}
+
+		assert( count == p_size );
+
+		return atoms;
+	}
+
 } // namespace
 
 namespace VTX::Renderer
@@ -202,8 +226,9 @@ namespace VTX::Renderer
 		setNeedUpdate( true );
 	}
 
-	void Renderer::setRepresentation( const Representation & p_representation )
+	void Renderer::setRepresentations( const std::vector<const Representation *> & p_representations )
 	{
+		/*
 		// Aply logic.
 		bool showSphere	  = p_representation.hasSphere;
 		bool showCylinder = p_representation.hasCylinder;
@@ -265,7 +290,7 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
-		/*
+
 		if ( showSphere && _geometries.spheres.rangeList.sizeRange() )
 		{
 			_geometries.spheres.drawRanges.firsts = { 0 };
@@ -319,7 +344,7 @@ namespace VTX::Renderer
 			assert( systemData.atomUids.size() == countAtoms );
 			assert( systemData.radii.size() == countAtoms );
 			assert( systemData.colorIndexes.size() == countAtoms );
-			assert( systemData.representationIndexes.size() == countAtoms );
+			assert( systemData.representationRanges.size() > 0 );
 			assert( systemData.visibleAtoms.size() == countAtoms );
 			assert( systemData.selectedAtoms.size() == countAtoms );
 			totalAtoms += countAtoms;
@@ -355,9 +380,9 @@ namespace VTX::Renderer
 		size_t	   offsetBonds = 0;
 		for ( const auto & systemData : p_systems )
 		{
-			const size_t  countAtoms = systemData.frame.size();
-			const size_t  countBonds = systemData.data.bondPairAtomIndexes.size();
-			const SystemUID uid		 = systemData.uid;
+			const size_t	countAtoms = systemData.frame.size();
+			const size_t	countBonds = systemData.data.bondPairAtomIndexes.size();
+			const SystemUID uid		   = systemData.uid;
 
 			// Move bonds.
 			auto bonds = systemData.data.bondPairAtomIndexes;
@@ -373,7 +398,7 @@ namespace VTX::Renderer
 			_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", systemData.atomUids, offsetAtoms );
 			_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", systemData.colorIndexes, offsetAtoms );
 			_context.setPipelineBuffer<RepresentationIndex>(
-				"Atoms.Representations", systemData.representationIndexes, offsetAtoms
+				"Atoms.Representations", _toVector( systemData.representationRanges, countAtoms ), offsetAtoms
 			);
 			_context.setPipelineBuffer<ModelIndex>(
 				"Atoms.Models", std::vector<ModelIndex>( countAtoms, modelIndex ), offsetAtoms
@@ -390,7 +415,7 @@ namespace VTX::Renderer
 			_context.setPipelineBuffer<Flag>( "Atoms.Flags", flags, offsetAtoms );
 
 			// Cache.
-			_cacheSystems[ uid ] = Caches::System { systemData.transform, modelIndex };
+			_cacheSystems[ uid ] = Caches::System { systemData.transform, modelIndex, systemData.representationRanges };
 
 			// Geometry ranges.
 			_geometries.spheres.ranges[ uid ] = Geometry::IndexRange::fromFirstCount(

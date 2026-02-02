@@ -126,10 +126,6 @@ namespace VTX::App::Action::Scene
 		auto entityRep = ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>();
 		ACTION().execute<Action::Representation::AddToSystem>( entity, entityRep );
 
-		// TODO: TMP.
-		const auto & defaultRepPreset = reg.get<Renderer::Representation>( entityRep );
-		RENDERER().setRepresentation( defaultRepPreset );
-
 		// Color scheme.
 		ACTION().execute<Color::Add<System::COLOR_SCHEME_DEFAULT>>( entity );
 
