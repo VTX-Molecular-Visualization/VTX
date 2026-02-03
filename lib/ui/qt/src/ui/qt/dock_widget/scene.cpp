@@ -24,8 +24,8 @@ namespace VTX::UI::QT::DockWidget
 		_treeCamera = new Widget::Tree::Camera( this );
 
 		_tree = new Widget::Tree::System( this );
-		_tree->setModel( &MODEL() );
-		_tree->setSelectionModel( &SELECTION() );
+		//_tree->setModel( &MODEL() );
+		//_tree->setSelectionModel( &SELECTION() );
 		_tree->setItemDelegate( new Delegate::SceneItemDelegate( _tree ) );
 
 		_layout->addWidget( _treeCamera );

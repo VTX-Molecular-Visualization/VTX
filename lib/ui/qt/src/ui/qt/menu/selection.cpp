@@ -12,6 +12,7 @@ namespace VTX::UI::QT::Menu
 	{
 		setTitle( "Selection" );
 
+		/*
 		auto & selection = SELECTION();
 
 		// Refresh menu when opened.
@@ -27,21 +28,17 @@ namespace VTX::UI::QT::Menu
 		);
 
 		setEnabled( selection.hasSelection() );
+		*/
 	}
 
 	void Selection::_refresh()
 	{
+		/*
 		using namespace App::Scene;
 
 		// Clear previous actions.
 		clear();
 
-		/*
-		addAction<Action::Selection::SetGranularitySystem>();
-		addAction<Action::Selection::SetGranularityChain>();
-		addAction<Action::Selection::SetGranularityResidue>();
-		addAction<Action::Selection::SetGranularityAtom>();
-		*/
 
 		// TODO: parameters?
 
@@ -119,5 +116,6 @@ namespace VTX::UI::QT::Menu
 		{
 			addSection( QString( "%1 atom%2" ).arg( QString::number( atomRows ) ).arg( atomRows > 1 ? "s" : "" ) );
 		}
+		*/
 	}
 } // namespace VTX::UI::QT::Menu

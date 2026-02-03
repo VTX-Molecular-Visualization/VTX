@@ -12,9 +12,9 @@ namespace VTX::UI::QT::Delegate
 	SceneItemDelegate::SceneItemDelegate( QObject * p_parent ) : QStyledItemDelegate( p_parent ) {}
 
 	void SceneItemDelegate::paint(
-		QPainter *				   p_painter,
+		QPainter *					 p_painter,
 		const QStyleOptionViewItem & p_option,
-		const QModelIndex &		   p_index
+		const QModelIndex &			 p_index
 	) const
 	{
 		// Let the base class handle painting for non-trajectory items
@@ -45,7 +45,7 @@ namespace VTX::UI::QT::Delegate
 		textRect.setHeight( opt.rect.height() - PLAYER_HEIGHT );
 
 		// Draw the system name text
-		const QString text = p_index.data( Qt::DisplayRole ).toString();
+		const QString text		 = p_index.data( Qt::DisplayRole ).toString();
 		const bool	  isSelected = opt.state & QStyle::State_Selected;
 		p_painter->setPen( isSelected ? opt.palette.highlightedText().color() : opt.palette.text().color() );
 		p_painter->drawText( textRect, Qt::AlignVCenter | Qt::AlignLeft, text );
@@ -71,10 +71,10 @@ namespace VTX::UI::QT::Delegate
 	}
 
 	bool SceneItemDelegate::editorEvent(
-		QEvent *				   p_event,
-		QAbstractItemModel *	   p_model,
+		QEvent *					 p_event,
+		QAbstractItemModel *		 p_model,
 		const QStyleOptionViewItem & p_option,
-		const QModelIndex &		   p_index
+		const QModelIndex &			 p_index
 	)
 	{
 		if ( !_hasTrajectory( p_index ) )
@@ -84,7 +84,7 @@ namespace VTX::UI::QT::Delegate
 
 		if ( p_event->type() == QEvent::MouseButtonPress || p_event->type() == QEvent::MouseButtonRelease )
 		{
-			QMouseEvent * mouseEvent  = static_cast<QMouseEvent *>( p_event );
+			QMouseEvent * mouseEvent   = static_cast<QMouseEvent *>( p_event );
 			QRect		  controlsRect = _getControlsRect( p_option );
 
 			// Only handle clicks in the controls area
@@ -96,12 +96,12 @@ namespace VTX::UI::QT::Delegate
 
 					// Get the entity for this system
 					using namespace App::Scene;
-					E_ITEM	item;
+					E_ITEM	  item;
 					SystemUID rootUID;
-					Index	localIndex;
+					Index	  localIndex;
 					Model::unpack( p_index.internalId(), item, rootUID, localIndex );
 
-					const auto & entityMap = MODEL().getMapRootToEntity();
+					const auto & entityMap = static_cast<const Model *>( p_index.model() )->getMapRootToEntity();
 					if ( !entityMap.contains( rootUID ) )
 					{
 						return true;
@@ -144,9 +144,9 @@ namespace VTX::UI::QT::Delegate
 			return false;
 		}
 
-		E_ITEM	item;
+		E_ITEM	  item;
 		SystemUID rootUID;
-		Index	localIndex;
+		Index	  localIndex;
 		Model::unpack( p_index.internalId(), item, rootUID, localIndex );
 
 		// Only system items can have trajectories
@@ -155,7 +155,7 @@ namespace VTX::UI::QT::Delegate
 			return false;
 		}
 
-		const auto & entityMap = MODEL().getMapRootToEntity();
+		const auto & entityMap = static_cast<const Model *>( p_index.model() )->getMapRootToEntity();
 		if ( !entityMap.contains( rootUID ) )
 		{
 			return false;
@@ -165,21 +165,21 @@ namespace VTX::UI::QT::Delegate
 	}
 
 	void SceneItemDelegate::_paintPlayerControls(
-		QPainter *		   p_painter,
-		const QRect &	   p_rect,
+		QPainter *			p_painter,
+		const QRect &		p_rect,
 		const QModelIndex & p_index,
-		bool			   p_isSelected
+		bool				p_isSelected
 	) const
 	{
 		// Get trajectory info for frame display
 		using namespace App::Scene;
-		E_ITEM	item;
+		E_ITEM	  item;
 		SystemUID rootUID;
-		Index	localIndex;
+		Index	  localIndex;
 		Model::unpack( p_index.internalId(), item, rootUID, localIndex );
 
-		const auto &				entityMap = MODEL().getMapRootToEntity();
-		App::System::GenericTrajectory * trajPtr   = nullptr;
+		const auto & entityMap					 = static_cast<const Model *>( p_index.model() )->getMapRootToEntity();
+		App::System::GenericTrajectory * trajPtr = nullptr;
 		if ( entityMap.contains( rootUID ) )
 		{
 			App::System::get( entityMap.at( rootUID ), trajPtr );
@@ -230,7 +230,7 @@ namespace VTX::UI::QT::Delegate
 		x += BUTTON_SIZE + SPACING;
 
 		// Frame display (at the end)
-		int	  frameX	= p_rect.right() - FRAME_WIDTH;
+		int	  frameX = p_rect.right() - FRAME_WIDTH;
 		QRect frameRect( frameX, y, FRAME_WIDTH, h );
 		uint  currentFrame = trajPtr ? trajPtr->currentFrameIndex : 0;
 		uint  totalFrames  = trajPtr ? uint( trajPtr->trajectorySize ) : 0;
@@ -253,8 +253,8 @@ namespace VTX::UI::QT::Delegate
 		// Draw slider position
 		if ( totalFrames > 0 )
 		{
-			float ratio	   = float( currentFrame ) / float( totalFrames );
-			int	  knobX	   = sliderRect.left() + int( ratio * ( sliderRect.width() - 8 ) );
+			float ratio = float( currentFrame ) / float( totalFrames );
+			int	  knobX = sliderRect.left() + int( ratio * ( sliderRect.width() - 8 ) );
 			QRect knobRect( knobX, sliderRect.top() - 2, 8, 10 );
 			p_painter->fillRect( knobRect, textPen.color() );
 		}
@@ -285,7 +285,7 @@ namespace VTX::UI::QT::Delegate
 		x += BUTTON_SIZE + SPACING;
 
 		// Frame display
-		int	  frameX	= p_controlsRect.right() - FRAME_WIDTH;
+		int	  frameX = p_controlsRect.right() - FRAME_WIDTH;
 		QRect frameRect( frameX, y, FRAME_WIDTH, h );
 		if ( frameRect.contains( p_pos ) )
 		{
