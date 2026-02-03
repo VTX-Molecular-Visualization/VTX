@@ -19,7 +19,7 @@ namespace VTX::UI::QT::Widget::Tree
 			W::setExpandsOnDoubleClick( true );
 			W::setEditTriggers( QAbstractItemView::NoEditTriggers );
 			W::setFrameStyle( QFrame::NoFrame );
-			W::setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Maximum );
+			W::setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Minimum );
 			W::setMinimumHeight( 0 );
 			W::setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 			W::setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
