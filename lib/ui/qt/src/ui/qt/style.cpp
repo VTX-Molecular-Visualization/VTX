@@ -14,7 +14,6 @@
 namespace
 {
 	using namespace VTX::UI::QT;
-	
 
 	QPalette _makeLightPalette()
 	{
@@ -111,8 +110,19 @@ namespace VTX::UI::QT
 			QString		  fontName	= SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
 			QFont		  appFont( fontName, 10 );
 
-			setTheme( theme );
 			setFontFamily( fontName );
+
+			// Trigger action group to update checked action.
+			auto * QActionGroup = Application::getAction<Action::Theme::System>()->actionGroup();
+
+			switch ( theme )
+			{
+			case VTX::UI::QT::E_THEME::SYSTEM: Application::getAction<Action::Theme::System>()->trigger(); break;
+			case VTX::UI::QT::E_THEME::LIGHT: Application::getAction<Action::Theme::Light>()->trigger(); break;
+			case VTX::UI::QT::E_THEME::DARK: Application::getAction<Action::Theme::Dark>()->trigger(); break;
+			case VTX::UI::QT::E_THEME::COUNT:;
+			default: break;
+			}
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -124,26 +134,13 @@ namespace VTX::UI::QT
 
 	void Style::setTheme( const E_THEME p_theme )
 	{
-		// TODO: fix looping events.
-		if ( p_theme == _currentTheme )
-		{
-			return;
-		}
+		auto & pal = _themePalettes[ toUnderlying( p_theme ) ];
 
-		Q_APP()->setPalette( _themePalettes[ toUnderlying( p_theme ) ] );
+		// Ensure inactive highlight color is the same as active.
+		pal.setColor( QPalette::Inactive, QPalette::Highlight, pal.color( QPalette::Active, QPalette::Highlight ) );
+
+		Q_APP()->setPalette( pal );
 		_currentTheme = p_theme;
-
-		// Trigger action group to update checked action.
-		auto * QActionGroup = Application::getAction<Action::Theme::System>()->actionGroup();
-
-		switch ( _currentTheme )
-		{
-		case VTX::UI::QT::E_THEME::SYSTEM: Application::getAction<Action::Theme::System>()->trigger(); break;
-		case VTX::UI::QT::E_THEME::LIGHT: Application::getAction<Action::Theme::Light>()->trigger(); break;
-		case VTX::UI::QT::E_THEME::DARK: Application::getAction<Action::Theme::Dark>()->trigger(); break;
-		case VTX::UI::QT::E_THEME::COUNT:;
-		default: break;
-		}
 	}
 
 	void Style::setFontFamily( const QString & p_fontName )

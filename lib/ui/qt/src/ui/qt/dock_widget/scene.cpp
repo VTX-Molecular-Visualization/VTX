@@ -53,6 +53,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		assert( _mapTreeWidgets.contains( p_e ) );
 		_mapTreeWidgets[ p_e ]->getSystemSelectionModel().refresh();
+		_mapTreeWidgets[ p_e ]->viewport()->update();
 	}
 
 	void Scene::_onSelectionLocked( const Events::SelectionLocked & p_event )
