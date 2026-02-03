@@ -120,7 +120,7 @@ namespace VTX::App::Action::Scene
 		selection.atoms = {};
 
 		// Representation.
-		representation.atoms.resize( data.getAtomCount() );
+		// representation.atoms.resize( data.getAtomCount() );
 		auto entityRep = ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>();
 		ACTION().execute<Action::Representation::AddToSystem>( entity, entityRep );
 
@@ -129,7 +129,7 @@ namespace VTX::App::Action::Scene
 		RENDERER().setRepresentation( defaultRepPreset );
 
 		// Color scheme.
-		color.atoms.resize( data.getAtomCount() );
+		// color.atoms.resize( data.getAtomCount() );
 		ACTION().execute<Color::Add<System::COLOR_SCHEME_DEFAULT>>( entity );
 
 		// Deleted: nothing deleted.

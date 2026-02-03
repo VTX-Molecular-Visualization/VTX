@@ -5,8 +5,6 @@
 #include "app/system/color.hpp"
 #include "app/system/uid.hpp"
 #include <core/struct/system.hpp>
-#include <renderer/color.hpp>
-#include <util/type_traits.hpp>
 
 namespace VTX::App::Action::Color
 {
@@ -50,44 +48,6 @@ namespace VTX::App::Action::Color
 						{
 							rangeList.substractInPlace( ranges );
 						}
-					}
-
-					// Apply color scheme.
-					if constexpr ( S == System::E_COLOR_SCHEME::ATOM )
-					{
-						for ( Index atom : ranges )
-						{
-							p_color.atoms[ atom ] = getColorIndex( system.getAtomSymbol( atom ) );
-						}
-					}
-					else if constexpr ( S == System::E_COLOR_SCHEME::RESIDUE )
-					{
-						for ( Index atom : ranges )
-						{
-							const Index residue	  = system.atomResidueIndexes[ atom ];
-							p_color.atoms[ atom ] = getColorIndex( system.getAtomSymbol( residue ) );
-						}
-					}
-					else if constexpr ( S == System::E_COLOR_SCHEME::CHAIN )
-					{
-						for ( Index atom : ranges )
-						{
-							const Index residue
-								= system.atomResidueIndexes.size() > atom ? system.atomResidueIndexes[ atom ] : 0;
-							const Index chain	  = system.residueChainIndexes.size() > residue
-														? system.residueChainIndexes[ residue ]
-														: 0;
-							p_color.atoms[ atom ] = getColorIndex(
-								system.chainNames.size() > chain ? system.getChainName( chain ) : "X"
-							);
-						}
-					}
-					// TODO: other schemes.
-					else
-					{
-						static_assert(
-							always_false_v<S>, "Unsupported System::E_COLOR_SCHEME type in ColorScheme::Add action."
-						);
 					}
 				}
 			);

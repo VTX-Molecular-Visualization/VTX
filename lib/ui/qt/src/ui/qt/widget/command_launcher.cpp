@@ -1,4 +1,4 @@
-// #include "app/python_binding/interpretor.hpp"
+#include "app/python_binding/interpretor.hpp"
 #include "app/services.hpp"
 //  pybind MUST be included before any QT because of macro shenanigans
 #include "ui/qt/widget/command_launcher.hpp"
@@ -71,7 +71,7 @@ namespace VTX::UI::QT::Widget
 	{
 		_history.resetBrowsing();
 
-		// INTERPRETOR().runCommand( _history.last() );
+		App::INTERPRETOR().runCommand( _history.last() );
 	}
 
 	void CommandLauncher::_setupCompleter()

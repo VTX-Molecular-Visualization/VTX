@@ -69,8 +69,6 @@ namespace VTX::Renderer
 		float sesProbeRadius;
 	};
 
-	using RepresentationIndex = uchar;
-
 	namespace Representations
 	{
 		inline const Representation STICKS { // Sphere.

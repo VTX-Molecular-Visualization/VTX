@@ -5,6 +5,7 @@
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
+#include <renderer/types.hpp>
 #include <util/color/rgba.hpp>
 #include <util/constants.hpp>
 
@@ -13,9 +14,8 @@ namespace VTX::Renderer::Color
 	/**
 	 * @brief Color layout used for atoms, residues, chains, ribbons and custom elements.
 	 */
-	constexpr size_t COLOR_LAYOUT_SIZE = 256;
+	constexpr size_t COLOR_LAYOUT_SIZE = TypeCount<ColorIndex>;
 	using LayoutArray				   = std::array<Util::Color::Rgba, COLOR_LAYOUT_SIZE>;
-	using ColorIndex				   = uchar;
 
 	/**
 	 * @brief Layout offsets and counts.
@@ -41,7 +41,6 @@ namespace VTX::Renderer::Color
 		inline const Util::Color::Rgba & getChainColor( const Index p_index ) const
 		{
 			assert( p_index >= 0 );
-			assert( p_index < LAYOUT_COUNT_CHAINS );
 
 			const Index index = p_index % LAYOUT_COUNT_CHAINS;
 

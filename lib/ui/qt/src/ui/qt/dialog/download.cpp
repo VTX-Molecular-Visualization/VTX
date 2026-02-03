@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QVBoxLayout>
+#include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <app/action/scene.hpp>
 #include <app/filesystem.hpp>

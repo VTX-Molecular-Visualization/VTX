@@ -17,11 +17,6 @@ namespace VTX::App::System
 		 * @brief Associates entities with lists of index ranges.
 		 */
 		std::unordered_map<ECS::Entity, Core::Struct::IndexRangeList> presetAtoms;
-
-		/**
-		 * @brief Atom representation.
-		 */
-		std::vector<Renderer::RepresentationIndex> atoms;
 	};
 
 } // namespace VTX::App::System

@@ -53,13 +53,6 @@ namespace VTX::App::Action::Representation
 						}
 					}
 				}
-
-				// Set index.
-				for ( auto it = ranges.rangeBegin(); it != ranges.rangeEnd(); ++it )
-				{
-					// TODO: use handle for representation presets.
-					std::fill_n( p_representation.atoms.begin() + it->getFirst(), it->getCount(), 0 );
-				}
 			}
 		);
 	}

@@ -5,9 +5,26 @@
 
 namespace VTX::Renderer::Geometry
 {
+
 	struct Sphere : BaseGeometry
 	{
-		RangeList	   rangeList;
+		MapUIDRange ranges;
+
+		void buildDrawRanges()
+		{
+			drawRanges.firsts.clear();
+			drawRanges.counts.clear();
+
+			IndexRangeList allRanges;
+			for ( const auto & [ _, range ] : ranges )
+			{
+				allRanges.addRange( range );
+			}
+
+			allRanges.toStdVectorsFirstCount( drawRanges.firsts, drawRanges.counts );
+		}
+
+		// Compiled draw ranges.
 		DrawRangeArray drawRanges;
 	};
 

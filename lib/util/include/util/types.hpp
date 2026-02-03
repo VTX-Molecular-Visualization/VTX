@@ -51,22 +51,22 @@ namespace VTX
 	/**
 	 * @brief Index type used for local indexing (e.g. atoms in residue, etc...).
 	 */
-	using Index = uint;
+	using Index = uint32_t;
 
 	/**
 	 * @brief UID type used for picking operations.
 	 */
-	using PickingUID = uint;
+	using PickingUID = uint32_t;
 
 	/**
 	 * @brief UID type used for scene root objects (systems).
 	 */
-	using RootUID = ushort;
+	using RootUID = uint16_t;
 
 	/**
 	 * @brief Byte size type.
 	 */
-	using ByteNumber = size_t;
+	using ByteNumber = uint64_t;
 
 	/**
 	 * @brief Convert enum to its underlying type.

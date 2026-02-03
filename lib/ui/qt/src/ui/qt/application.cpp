@@ -213,9 +213,6 @@ namespace VTX::UI::QT
 			{
 				QObject::connect( qAction, &QAction::triggered, p_action.trigger.value() );
 			}
-			// Connect.
-			// TODO: maybe this is dirty (calling this function to get previously created qAction).
-			p_action.connect();
 		}
 
 		return qAction;

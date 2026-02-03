@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_RENDERER__
 #define __VTX_RENDERER_RENDERER__
 
+#include "renderer/caches.hpp"
 #include "renderer/camera.hpp"
 #include "renderer/color.hpp"
 #include "renderer/context/context_wrapper.hpp"
@@ -10,10 +11,26 @@
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
 #include <core/struct/system.hpp>
+#include <renderer/types.hpp>
 #include <util/callback.hpp>
 
 namespace VTX::Renderer
 {
+
+	struct SystemData
+	{
+		const RootUID						   uid;
+		const Mat4f &						   transform;
+		const Core::Struct::System			   data;
+		const Core::Struct::Frame &			   frame;
+		const std::vector<float>			   radii;
+		const std::vector<PickingUID>		   atomUids;
+		const std::vector<ColorIndex>		   colorIndexes;
+		const std::vector<RepresentationIndex> representationIndexes;
+		const std::vector<std::byte>		   visibleAtoms;
+		const std::vector<std::byte>		   selectedAtoms;
+	};
+
 	/**
 	 * @brief The renderer, only accessed from the facade.
 	 */
@@ -66,25 +83,24 @@ namespace VTX::Renderer
 		/**
 		 * @brief Push data to the renderer.
 		 */
-		void  setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );
-		Mat4f _matrixView;
-		void  setGraphicsConfig( const GraphicsConfig & );
-		void  setColorLayout( const Color::Layout & );
-		void  setRepresentation( const Representation & );
-		void  setVoxels( const std::vector<Vec3f> &, const std::vector<Vec3f> & );
+		void setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );
+
+		void setGraphicsConfig( const GraphicsConfig & );
+		void setColorLayout( const Color::Layout & );
+		void setRepresentation( const Representation & );
+		void setVoxels( const std::vector<Vec3f> &, const std::vector<Vec3f> & );
 
 		/**
-		 * @brief Add / remove / update system.
+		 * @brief Push systems.
 		 */
-		void  addSystem( const RootUID, const Mat4f &, const Core::Struct::System &, std::span<const PickingUID> );
-		Mat4f _transform;
-		void  removeSystem( const RootUID ) {}
 
-		void setSystemTransform( const RootUID, const Mat4f & ) {}
+		void setSystems( const std::vector<SystemData> & );
+
+		void setSystemTransform( const RootUID, const Mat4f & );
 		void setSystemPosition( const RootUID, std::span<const Vec3f> );
-		void setSystemColors( const RootUID, std::span<const Color::ColorIndex> p_b )
+		void setSystemColors( const RootUID, std::span<const ColorIndex> p_b )
 		{
-			_context.setPipelineBuffer<Color::ColorIndex>( "Atoms.Colors", p_b );
+			_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", p_b );
 			setNeedUpdate( true );
 		}
 		void setSystemRepresentation( const RootUID, std::span<const RepresentationIndex> p_b )
@@ -92,28 +108,9 @@ namespace VTX::Renderer
 			_context.setPipelineBuffer<RepresentationIndex>( "Atoms.Representations", p_b );
 			setNeedUpdate( true );
 		}
-		void setSystemSelection( RootUID, std::span<const std::byte> p_selection )
-		{
-			assert( p_selection.size() == flags.size() );
+		void setSystemSelection( const RootUID, std::span<const std::byte>, std::span<const std::byte> );
 
-			const uint8_t shift = toUnderlying( E_ELEMENT_FLAGS::SELECTION );
-			const uint8_t mask	= uint8_t( 1u ) << shift;
-
-			for ( size_t i = 0; i < flags.size(); ++i )
-			{
-				const uint8_t bit = ( std::to_integer<uint8_t>( p_selection[ i ] ) & 1u ) << shift;
-				flags[ i ]		  = ( flags[ i ] & ~mask ) | bit;
-			}
-
-			_context.setPipelineBuffer<uint8_t>( "Atoms.Flags", flags );
-			setNeedUpdate( true );
-		}
-
-		void setSystemVisibility( const RootUID, std::span<const std::byte> p_visibility )
-		{
-			assert( p_visibility.size() == flags.size() );
-		}
-		std::vector<uchar> flags;
+		void setSystemVisibility( const RootUID, std::span<const std::byte>, std::span<const std::byte> );
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
@@ -201,20 +198,16 @@ namespace VTX::Renderer
 		StructInfos _infos;
 
 		/**
+		 * @brief Cached data to update.
+		 */
+		Caches::Camera					  _cacheCamera;
+		std::map<RootUID, Caches::System> _cacheSystems;
+
+		/**
 		 * @brief Refresh the render graph according to the graphics config.
 		 * @return true if the graph has changed.
 		 */
 		bool _refreshGraph( const GraphicsConfig & );
-
-		// TODO: make "filler" functions for each type of data instead of _setDataX?
-		inline void _refreshDataSystems()
-		{
-			//_refreshDataSpheresCylinders();
-			//_refreshDataRibbons();
-			_refreshDataModels();
-
-			setNeedUpdate( true );
-		}
 
 		void _refreshDataModels();
 

@@ -5,6 +5,7 @@
 
 namespace VTX::App::System
 {
+
 	struct UID
 	{
 		/**

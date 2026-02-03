@@ -17,13 +17,15 @@ namespace VTX::Renderer
 
 	};
 
-	enum struct E_CAMERA_VALUES // Not a class to avoid static_cast<int>.
+	/*
+	enum struct E_CAMERA_VALUES
 	{
 		NEAR_CLIP,
 		FAR_CLIP,
 		FOV,
 		PROJECTION
 	};
+	*/
 
 	/**
 	 * @brief Default values.

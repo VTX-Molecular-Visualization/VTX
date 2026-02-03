@@ -5,13 +5,17 @@
 #include <algorithm>
 #include <vector>
 
-namespace VTX::Renderer::Context
+namespace VTX::Renderer
 {
 	/**
 	 * @brief Generic resource handler.
 	 * Store resources and provide access through handles.
 	 */
-	template<typename T, typename D = Desc::Dummy>
+	struct Dummy
+	{
+	};
+
+	template<typename T, typename D = Dummy, typename K = Desc::Key>
 	class ResourceHandler
 	{
 	  public:
@@ -20,7 +24,7 @@ namespace VTX::Renderer::Context
 		 * Reuse available handles if any.
 		 */
 		template<typename... Args>
-		Desc::Handle emplace( const Desc::Key p_key, const D p_desc, Args &&... p_args )
+		Desc::Handle emplace( const K & p_key, const D & p_desc = {}, Args &&... p_args )
 		{
 			Desc::Handle handle;
 			// Existing resource, update it.
@@ -59,7 +63,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Erase a resource from key.
 		 */
-		void erase( const Desc::Key p_key )
+		void erase( const K & p_key )
 		{
 			if ( not _cache.contains( p_key ) )
 			{
@@ -108,7 +112,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Check if a resource exists from key.
 		 */
-		inline bool contains( const Desc::Key p_key ) const
+		inline bool contains( const K & p_key ) const
 		{
 			if ( not _cache.contains( p_key ) )
 			{
@@ -126,7 +130,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Check if a resource exists from key and remove from invalids if present.
 		 */
-		inline bool validate( const Desc::Key p_key, const D p_desc )
+		inline bool validate( const K p_key, const D p_desc = {} )
 		{
 			if ( not _cache.contains( p_key ) )
 			{
@@ -153,18 +157,18 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Access handle by key.
 		 */
-		inline Desc::Handle handle( const Desc::Key p_key ) const { return _cache.at( p_key ).handle; }
+		inline Desc::Handle handle( const K & p_key ) const { return _cache.at( p_key ).handle; }
 
 		/**
 		 * @brief Access descriptor by key.
 		 */
-		inline const D & descriptor( const Desc::Key p_key ) const { return _cache.at( p_key ).descriptor; }
+		inline const D & descriptor( const K & p_key ) const { return _cache.at( p_key ).descriptor; }
 
 		/**
 		 * @brief Access resource by key.
 		 */
-		inline const T & get( const Desc::Key p_key ) const { return get( handle( p_key ) ); }
-		inline T &		 get( const Desc::Key p_key ) { return get( handle( p_key ) ); }
+		inline const T & get( const K & p_key ) const { return get( handle( p_key ) ); }
+		inline T &		 get( const K & p_key ) { return get( handle( p_key ) ); }
 
 		/**
 		 * @brief Access resource by handle.
@@ -236,7 +240,7 @@ namespace VTX::Renderer::Context
 			Desc::Handle handle;
 			D			 descriptor;
 		};
-		std::unordered_map<Desc::Key, _Entry> _cache;
+		std::unordered_map<K, _Entry> _cache;
 
 		/**
 		 * @brief Available handles for reuse.
@@ -249,6 +253,6 @@ namespace VTX::Renderer::Context
 		std::vector<Desc::Handle> _invalids;
 	};
 
-} // namespace VTX::Renderer::Context
+} // namespace VTX::Renderer
 
 #endif

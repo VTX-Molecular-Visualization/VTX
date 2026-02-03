@@ -24,9 +24,6 @@ namespace VTX::App::Pass
 		auto & transform = reg.get<Util::Math::Transform>( p_ent );
 		auto & camera	 = reg.get<Renderer::Camera>( p_ent );
 
-		// tmp.
-		transform.setPosition( { 0, 0, 100 } );
-
 		// Connect with settings.
 		reg.patch<Renderer::Camera>(
 			p_ent,

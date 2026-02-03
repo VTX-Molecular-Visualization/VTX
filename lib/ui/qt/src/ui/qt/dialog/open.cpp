@@ -1,5 +1,6 @@
 #include "ui/qt/dialog/open.hpp"
 #include "ui/qt/settings.hpp"
+#include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <app/action/scene.hpp>
 

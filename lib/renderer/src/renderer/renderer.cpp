@@ -1,12 +1,14 @@
 #include "renderer/renderer.hpp"
 #include "renderer/binary_buffer.hpp"
-#include <execution>
 #include <util/chrono.hpp>
-#include <util/math.hpp>
-#include <util/math/aabb.hpp>
-#include <util/math/grid.hpp>
-#include <util/math/range.hpp>
-#include <util/string.hpp>
+
+namespace
+{
+	using namespace VTX;
+	using namespace VTX::Renderer;
+
+	constexpr Flag _toFlag( std::byte p_b ) { return static_cast<Flag>( std::to_integer<uint8_t>( p_b ) & 1u ); }
+} // namespace
 
 namespace VTX::Renderer
 {
@@ -125,7 +127,8 @@ namespace VTX::Renderer
 
 		_context.setShaderBuffer( "Camera", buffer );
 
-		_matrixView = p_matView;
+		_cacheCamera = { p_camera, p_position, p_matView, p_matProj };
+
 		_refreshDataModels();
 
 		setNeedUpdate( true );
@@ -262,6 +265,7 @@ namespace VTX::Renderer
 			setNeedUpdate( true );
 		}
 
+		/*
 		if ( showSphere && _geometries.spheres.rangeList.sizeRange() )
 		{
 			_geometries.spheres.drawRanges.firsts = { 0 };
@@ -281,6 +285,7 @@ namespace VTX::Renderer
 		{
 			_geometries.cylinders.drawRanges = {};
 		}
+		*/
 	}
 
 #pragma endregion
@@ -300,61 +305,187 @@ namespace VTX::Renderer
 		setNeedUpdate( true );
 	}
 
-	void Renderer::addSystem(
-		const RootUID				 p_appId,
-		const Mat4f &				 p_transform,
-		const Core::Struct::System & p_data,
-		std::span<const PickingUID>	 p_uid
-	)
+	void Renderer::setSystems( const std::vector<SystemData> & p_systems )
 	{
-		//_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_data.trajectory.getCurrentFrame() );
+		Util::Chrono timer;
+		timer.start();
 
-		std::vector<float> radii( p_data.getAtomCount(), 1.f );
-		_context.setPipelineBuffer<float>( "Atoms.Radii", radii );
+		// Compute total size and check integrity.
+		size_t totalAtoms = 0;
+		size_t totalBonds = 0;
+		for ( const auto & systemData : p_systems )
+		{
+			const size_t countAtoms = systemData.frame.size();
+			assert( systemData.atomUids.size() == countAtoms );
+			assert( systemData.radii.size() == countAtoms );
+			assert( systemData.colorIndexes.size() == countAtoms );
+			assert( systemData.representationIndexes.size() == countAtoms );
+			assert( systemData.visibleAtoms.size() == countAtoms );
+			assert( systemData.selectedAtoms.size() == countAtoms );
+			totalAtoms += countAtoms;
+			totalBonds += systemData.data.bondPairAtomIndexes.size();
+		}
 
-		_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", p_uid );
+		// Check.
+		assert( totalAtoms > 0 );
+		assert( totalBonds > 0 );
 
-		uint8_t flag = 0;
-		flag |= 1 << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
-		flag |= 0 << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
-		flags = std::vector<uint8_t>( p_data.getAtomCount(), flag );
-		_context.setPipelineBuffer<uint8_t>( "Atoms.Flags", flags );
+		if ( totalAtoms > TypeMax<Index> )
+		{
+			throw GraphicException( "Total atom count exceeds maximum supported value." );
+		}
+		if ( totalBonds > TypeMax<Index> )
+		{
+			throw GraphicException( "Total bond count exceeds maximum supported value." );
+		}
 
-		std::vector<uint16_t> models( p_data.getAtomCount(), 0 );
-		_context.setPipelineBuffer<uint16_t>( "Atoms.Models", models );
+		// Reserve data.
+		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", totalAtoms );
+		_context.setPipelineBuffer<Index>( "Bonds", totalBonds );
+		_context.setPipelineBuffer<float>( "Atoms.Radii", totalAtoms );
+		_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", totalAtoms );
+		_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", totalAtoms );
+		_context.setPipelineBuffer<RepresentationIndex>( "Atoms.Representations", totalAtoms );
+		_context.setPipelineBuffer<ModelIndex>( "Atoms.Models", totalAtoms );
+		_context.setPipelineBuffer<Flag>( "Atoms.Flags", totalAtoms );
 
-		_context.setPipelineBuffer<Index>( "Bonds", p_data.bondPairAtomIndexes );
+		_cacheSystems.clear();
 
-		_transform = p_transform;
+		ModelIndex modelIndex  = 0;
+		size_t	   offsetAtoms = 0;
+		size_t	   offsetBonds = 0;
+		for ( const auto & systemData : p_systems )
+		{
+			const size_t  countAtoms = systemData.frame.size();
+			const size_t  countBonds = systemData.data.bondPairAtomIndexes.size();
+			const RootUID uid		 = systemData.uid;
 
+			// Move bonds.
+			auto bonds = systemData.data.bondPairAtomIndexes;
+			for ( auto & bondIndex : bonds )
+			{
+				bondIndex += static_cast<Index>( offsetAtoms );
+			}
+
+			// Upload data.
+			_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", systemData.frame, offsetAtoms );
+			_context.setPipelineBuffer<Index>( "Bonds", bonds, offsetBonds );
+			_context.setPipelineBuffer<float>( "Atoms.Radii", systemData.radii, offsetAtoms );
+			_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", systemData.atomUids, offsetAtoms );
+			_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", systemData.colorIndexes, offsetAtoms );
+			_context.setPipelineBuffer<RepresentationIndex>(
+				"Atoms.Representations", systemData.representationIndexes, offsetAtoms
+			);
+			_context.setPipelineBuffer<ModelIndex>(
+				"Atoms.Models", std::vector<ModelIndex>( countAtoms, modelIndex ), offsetAtoms
+			);
+
+			std::vector<Flag> flags( countAtoms );
+			for ( size_t i = 0; i < countAtoms; ++i )
+			{
+				Flag flag = 0;
+				flag |= _toFlag( systemData.visibleAtoms[ i ] ) << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
+				flag |= _toFlag( systemData.selectedAtoms[ i ] ) << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
+				flags[ i ] = flag;
+			}
+			_context.setPipelineBuffer<Flag>( "Atoms.Flags", flags, offsetAtoms );
+
+			// Cache.
+			_cacheSystems[ uid ] = Caches::System { systemData.transform, modelIndex };
+
+			// Geometry ranges.
+			_geometries.spheres.ranges[ uid ] = Geometry::IndexRange::fromFirstCount(
+				static_cast<Index>( offsetAtoms ), static_cast<Index>( countAtoms )
+			);
+			_geometries.cylinders.ranges[ uid ] = Geometry::IndexRange::fromFirstCount(
+				static_cast<Index>( offsetBonds ), static_cast<Index>( countBonds )
+			);
+
+			offsetAtoms += countAtoms;
+			offsetBonds += countBonds;
+			modelIndex++;
+		}
+
+		// Set models.
 		_refreshDataModels();
 
-		_geometries.spheres.rangeList		  = Geometry::RangeList { 0, p_data.getAtomCount() };
-		_geometries.spheres.drawRanges.firsts = { 0 };
-		_geometries.spheres.drawRanges.counts = { uint32_t( p_data.getAtomCount() ) };
+		// Build draw ranges.
+		_geometries.spheres.buildDrawRanges();
+		_geometries.cylinders.buildDrawRanges();
 
-		_geometries.cylinders.rangeList			 = Geometry::RangeList { 0, p_data.bondPairAtomIndexes.size() };
-		_geometries.cylinders.drawRanges.offsets = { 0 };
-		_geometries.cylinders.drawRanges.counts	 = { uint32_t( p_data.bondPairAtomIndexes.size() ) };
+		setNeedUpdate( true );
+		VTX_INFO( "Systems GPU upload: {} ms", timer.elapsedTime() );
 	}
-	void Renderer::setSystemPosition( const RootUID p_appId, std::span<const Vec3f> p_positions )
+
+	void Renderer::setSystemPosition( const RootUID p_uid, std::span<const Vec3f> p_positions )
 	{
-		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions );
+		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.ranges[ p_uid ].first );
+	}
+
+	void Renderer::setSystemSelection(
+		const RootUID			   p_uid,
+		std::span<const std::byte> p_selection,
+		std::span<const std::byte> p_visibility
+	)
+	{
+		const size_t offsetAtoms = _geometries.spheres.ranges[ p_uid ].first;
+		const size_t countAtoms	 = p_selection.size();
+
+		assert( p_selection.size() == countAtoms );
+		assert( p_visibility.size() == countAtoms );
+
+		std::vector<Flag> flags( countAtoms );
+		for ( size_t i = 0; i < countAtoms; ++i )
+		{
+			Flag flag = 0;
+			flag |= _toFlag( p_visibility[ i ] ) << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
+			flag |= _toFlag( p_selection[ i ] ) << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
+			flags[ i ] = flag;
+		}
+
+		_context.setPipelineBuffer<Flag>( "Atoms.Flags", flags, offsetAtoms );
+
+		setNeedUpdate( true );
+	}
+
+	void Renderer::setSystemVisibility(
+		const RootUID			   p_uid,
+		std::span<const std::byte> p_visibility,
+		std::span<const std::byte> p_selection
+	)
+	{
+		setSystemSelection( p_uid, p_selection, p_visibility );
 	}
 
 #pragma endregion
 
 	void Renderer::_refreshDataModels()
 	{
+		if ( _cacheSystems.empty() )
+		{
+			return;
+		}
+
 		BinaryBuffer430 buffer;
 
-		const Mat4f matrixModelView	   = _matrixView * _transform;
-		const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
-		const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
+		// Sort.
+		std::vector<Mat4f> transforms( _cacheSystems.size() );
+		for ( const auto & [ _, cacheSystem ] : _cacheSystems )
+		{
+			transforms[ cacheSystem.modelIndex ] = cacheSystem.transform;
+		}
 
-		buffer.write( matrixModelView );
-		buffer.write( matrixModelViewInv );
-		buffer.write( matrixNormal );
+		for ( const auto & transform : transforms )
+		{
+			const Mat4f matrixModelView	   = _cacheCamera.matView * transform;
+			const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
+			const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
+
+			buffer.write( matrixModelView );
+			buffer.write( matrixModelViewInv );
+			buffer.write( matrixNormal );
+		}
+
 		buffer.close();
 
 		_context.setShaderBuffer( "Models", buffer );

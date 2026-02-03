@@ -176,7 +176,7 @@ namespace VTX::App
 		}
 
 		// Trackball controller.
-		ACTION().execute<Action::Controller::SetCameraController<Pass::Controller::Trackball>>();
+		ACTION().execute<Action::Controller::SetCameraController<Action::Controller::E_CONTROLLER::TRACKBALL>>();
 
 		// Trigger application start event.
 		HUB().trigger<Events::ApplicationStart>();

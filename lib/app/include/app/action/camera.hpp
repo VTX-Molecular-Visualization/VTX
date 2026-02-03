@@ -47,22 +47,10 @@ namespace VTX::App::Action::Camera
 	{
 		void execute()
 		{
-			auto & reg = REG();
-
+			auto & reg				   = REG();
 			const auto & [ entity, _ ] = ECS::getFirstEntityWithComponents<Renderer::Camera>();
 
-			reg.patch<Renderer::Camera>(
-				entity,
-				[]( Renderer::Camera & )
-				{
-					auto & settings = SETTINGS();
-					settings.setValue<int>( Settings::Camera::PROJECTION_KEY, int( P ) );
-					// TODO: trigger update from setting update.
-				}
-			);
-
-			static constexpr int PROJ_INDEX = static_cast<int>( P );
-			HUB().trigger<App::Events::CameraProjectionChange<PROJ_INDEX>>();
+			reg.patch<Renderer::Camera>( entity, []( Renderer::Camera & p_cam ) { p_cam.projection = P; } );
 		}
 	};
 

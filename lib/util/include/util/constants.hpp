@@ -18,6 +18,8 @@ namespace VTX
 	constexpr T TypeMax = std::numeric_limits<T>::max();
 	template<typename T>
 	constexpr T TypeLowest = std::numeric_limits<T>::lowest();
+	template<typename T>
+	constexpr size_t TypeCount = size_t { 1 } << std::numeric_limits<T>::digits;
 
 	constexpr float EPSILON = 1e-4f;
 
@@ -61,7 +63,7 @@ namespace VTX
 	constexpr Util::Color::Rgba COLOR_MAGENTA = Util::Color::Rgba( 1.f, 0.f, 1.f, 1.f );
 	constexpr Util::Color::Rgba COLOR_CYAN	  = Util::Color::Rgba( 0.f, 1.f, 1.f, 1.f );
 
-	constexpr Index INVALID_INDEX = TypeMax<uint>;
+	constexpr Index INVALID_INDEX = TypeMax<Index>;
 	constexpr int	INVALID_UID	  = 0;
 } // namespace VTX
 

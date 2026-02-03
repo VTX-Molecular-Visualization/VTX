@@ -1,9 +1,9 @@
 #include <catch2/catch_test_macros.hpp>
 #include <renderer/context/command_buffer.hpp>
-#include <renderer/context/resource_handler.hpp>
 #include <renderer/graph_builder.hpp>
 #include <renderer/render_graph.hpp>
 #include <renderer/representation.hpp>
+#include <renderer/resource_handler.hpp>
 #include <util/exceptions.hpp>
 #include <util/math.hpp>
 

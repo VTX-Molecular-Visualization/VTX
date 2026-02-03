@@ -257,8 +257,8 @@ namespace VTX::Util::Math
 			size_t i = 0;
 			for ( const auto & r : _ranges )
 			{
-				p_starts[ i ] = T1( r.first );
-				p_lasts[ i ]  = T2( r.last );
+				p_starts[ i ] = static_cast<T1>( r.first );
+				p_lasts[ i ]  = static_cast<T2>( r.last );
 				++i;
 			}
 		}
@@ -275,8 +275,8 @@ namespace VTX::Util::Math
 			size_t i = 0;
 			for ( const auto & r : _ranges )
 			{
-				p_firsts[ i ] = T1( r.getFirst() );
-				p_counts[ i ] = T2( r.getCount() );
+				p_firsts[ i ] = static_cast<T1>( r.getFirst() );
+				p_counts[ i ] = static_cast<T2>( r.getCount() );
 				++i;
 			}
 		}
