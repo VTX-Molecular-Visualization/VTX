@@ -10,13 +10,9 @@ namespace VTX::UI::QT
 	Model::Model( QObject * p_parent ) : QAbstractItemModel( p_parent )
 	{
 		auto & reg = App::REG();
-		// Camera.
-		reg.on_construct<Renderer::Camera>().connect<&Model::_onCamera>( this );
 		// Connect system construction event.
 		App::HUB().connect<App::Events::SystemLoad, &Model::_onSystemLoad>( this );
 		reg.on_destroy<Core::Struct::System>().connect<&Model::_onSystemDestroy>( this );
-
-		_onCamera();
 	}
 
 	int Model::columnCount( const QModelIndex & p_parent ) const { return 1; }
@@ -31,9 +27,9 @@ namespace VTX::UI::QT
 			return int( _rows.size() );
 		}
 
-		E_ITEM	item;
+		E_ITEM	  item;
 		SystemUID rootIndex;
-		Index	localIndex;
+		Index	  localIndex;
 		unpack( p_parent.internalId(), item, rootIndex, localIndex );
 
 		if ( not _mapRootRow.contains( rootIndex ) )
@@ -43,11 +39,6 @@ namespace VTX::UI::QT
 
 		switch ( item )
 		{
-		case E_ITEM::CAMERA:
-		{
-			// TODO: get viewpoints count.
-			return 0;
-		}
 		case E_ITEM::SYSTEM:
 		{
 			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
@@ -87,9 +78,9 @@ namespace VTX::UI::QT
 			return {};
 		}
 
-		E_ITEM	item;
+		E_ITEM	  item;
 		SystemUID rootIndex;
-		Index	localIndex;
+		Index	  localIndex;
 		unpack( p_index.internalId(), item, rootIndex, localIndex );
 
 		if ( not _mapRootRow.contains( rootIndex ) )
@@ -103,10 +94,6 @@ namespace VTX::UI::QT
 		case NameRole:
 			switch ( item )
 			{
-			case E_ITEM::CAMERA:
-			{
-				return "Camera";
-			}
 			case E_ITEM::SYSTEM:
 			{
 				const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
@@ -166,10 +153,6 @@ namespace VTX::UI::QT
 		// System.
 		if ( not p_parent.isValid() )
 		{
-			if ( p_row == 0 )
-			{
-				return createIndex( p_row, p_column, pack( E_ITEM::CAMERA, 0, 0 ) );
-			}
 			if ( p_row >= int( _rows.size() ) )
 			{
 				return {};
@@ -177,9 +160,9 @@ namespace VTX::UI::QT
 			return createIndex( p_row, p_column, pack( E_ITEM::SYSTEM, _rows[ p_row ]->index, 0 ) );
 		}
 
-		E_ITEM	item;
+		E_ITEM	  item;
 		SystemUID rootIndex;
-		Index	localIndex;
+		Index	  localIndex;
 		unpack( p_parent.internalId(), item, rootIndex, localIndex );
 
 		if ( not _mapRootRow.contains( rootIndex ) )
@@ -250,16 +233,12 @@ namespace VTX::UI::QT
 			return {};
 		}
 
-		E_ITEM	item;
+		E_ITEM	  item;
 		SystemUID rootIndex;
-		Index	localIndex;
+		Index	  localIndex;
 		unpack( p_index.internalId(), item, rootIndex, localIndex );
 
 		// Root.
-		if ( item == E_ITEM::CAMERA )
-		{
-			return {};
-		}
 
 		if ( item == E_ITEM::SYSTEM )
 		{
@@ -321,27 +300,6 @@ namespace VTX::UI::QT
 	{
 		quintptr id = pack( p_type, p_rootUID, p_index );
 		return createIndex( p_row, 0, id );
-	}
-
-	void Model::_onCamera()
-	{
-		using namespace App::Scene;
-
-		auto   entity = App::ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
-		auto & camera = App::REG().get<Renderer::Camera>( entity );
-
-		const int position = int( _rows.size() );
-
-		beginInsertRows( QModelIndex(), position, position );
-
-		_rows.emplace_back( std::make_unique<Row>( position, INVALID_UID, entity, E_ITEM::CAMERA ) );
-
-		auto & row					 = _rows.back();
-		_mapEntityRow[ row->entity ] = row.get();
-		_mapRootRow[ row->index ]	 = row.get();
-		_mapRootEntity[ row->index ] = entity;
-
-		endInsertRows();
 	}
 
 	void Model::_onSystemLoad( const App::Events::SystemLoad & p_e )

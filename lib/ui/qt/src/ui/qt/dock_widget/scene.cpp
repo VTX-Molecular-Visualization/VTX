@@ -17,19 +17,20 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
-		auto * layout = new QVBoxLayout( this );
-		layout->setContentsMargins( 0, 0, 0, 0 );
-		auto * toolbar = new QToolBar( this );
-		// toolbar->setIconSize( QSize( 18, 18 ) );
-		auto * actionExpandAll	 = toolbar->addAction( tr( "Expand" ) );
-		auto * actionCollapseAll = toolbar->addAction( tr( "Reduce" ) );
-		_layout->addWidget( toolbar );
+		// auto * layout = new QVBoxLayout( this );
+		// layout->setContentsMargins( 0, 0, 0, 0 );
+		// layout->setSpacing( 0 );
 
-		_tree = new Widget::Tree( this );
+		_treeCamera = new Widget::Tree::Camera( this );
+
+		_tree = new Widget::Tree::System( this );
 		_tree->setModel( &MODEL() );
 		_tree->setSelectionModel( &SELECTION() );
 		_tree->setItemDelegate( new Delegate::SceneItemDelegate( _tree ) );
+
+		_layout->addWidget( _treeCamera );
 		_layout->addWidget( _tree );
+		_layout->addStretch( 1 );
 
 		const bool selectionLocked = SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool();
 		_tree->setSelectionMode(
@@ -37,9 +38,6 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		App::HUB().connect<Events::SelectionLocked, &Scene::_onSelectionLocked>( this );
-
-		connect( actionExpandAll, &QAction::triggered, this, [ this ] { _tree->expandAll(); } );
-		connect( actionCollapseAll, &QAction::triggered, this, [ this ] { _tree->collapseAll(); } );
 	}
 
 	void Scene::_onSelectionLocked( const Events::SelectionLocked & p_event )

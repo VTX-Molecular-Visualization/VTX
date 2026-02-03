@@ -44,6 +44,7 @@ namespace VTX::UI::QT::Menu
 		*/
 
 		// TODO: parameters?
+
 		auto & selectionModel = SELECTION();
 		auto & model		  = MODEL();
 
@@ -62,9 +63,9 @@ namespace VTX::UI::QT::Menu
 			}
 
 			// Decode index to get entity.
-			E_ITEM	item;
+			E_ITEM	  item;
 			SystemUID globalIndex;
-			Index	localIndex;
+			Index	  localIndex;
 			Model::unpack( index.internalId(), item, globalIndex, localIndex );
 
 			rowsPerItem[ size_t( item ) ] += 1;

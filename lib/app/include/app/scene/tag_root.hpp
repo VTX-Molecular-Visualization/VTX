@@ -15,7 +15,6 @@ namespace VTX::App::Scene
 		CHAIN,
 		RESIDUE,
 		ATOM,
-		CAMERA,
 		VIEWPOINT,
 
 		COUNT

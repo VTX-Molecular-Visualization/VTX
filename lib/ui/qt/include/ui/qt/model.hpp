@@ -38,7 +38,7 @@ namespace VTX::UI::QT
 		struct Row
 		{
 			int				   position;
-			SystemUID			   index;
+			SystemUID		   index;
 			App::ECS::Entity   entity;
 			App::Scene::E_ITEM item;
 			// std::variant<const Core::Struct::System *, const Renderer::Camera *> data;
@@ -109,11 +109,6 @@ namespace VTX::UI::QT
 		std::unordered_map<App::ECS::Entity, const Row *> _mapEntityRow;
 		std::unordered_map<SystemUID, const Row *>		  _mapRootRow;
 		std::unordered_map<SystemUID, App::ECS::Entity>	  _mapRootEntity;
-
-		/**
-		 * @brief Callback on camera creation.
-		 */
-		void _onCamera();
 
 		/**
 		 * @brief Callback on system construction to add it to the model.
