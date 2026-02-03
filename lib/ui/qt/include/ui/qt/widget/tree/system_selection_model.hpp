@@ -3,7 +3,7 @@
 
 #include <QAbstractItemModel>
 #include <QItemSelectionModel>
-#include <app/events.hpp>
+#include <app/ecs.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -13,18 +13,26 @@ namespace VTX::UI::QT::Widget::Tree
 	class SystemSelectionModel : public QItemSelectionModel
 	{
 	  public:
-		SystemSelectionModel( QAbstractItemModel * p_model, QObject * p_parent = nullptr );
-
-	  private:
 		/**
-		 * @brief QSelectionModel handler.
+		 * @brief Constructor.
 		 */
-		void _selectionChanged( const QItemSelection &, const QItemSelection & );
+		SystemSelectionModel( const App::ECS::Entity, QAbstractItemModel *, QObject * = nullptr );
 
 		/**
 		 * @brief Refresh from app.
 		 */
-		void _onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e );
+		void refresh();
+
+	  private:
+		/**
+		 * @brief Entity of fetch data from.
+		 */
+		const App::ECS::Entity _system;
+
+		/**
+		 * @brief QSelectionModel handler.
+		 */
+		void _selectionChanged( const QItemSelection &, const QItemSelection & );
 	};
 } // namespace VTX::UI::QT::Widget::Tree
 

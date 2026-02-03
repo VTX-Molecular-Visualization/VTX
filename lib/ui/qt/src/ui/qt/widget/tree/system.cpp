@@ -1,16 +1,26 @@
 #include "ui/qt/widget/tree/system.hpp"
+#include "ui/qt/delegate/scene_item_delegate.hpp"
 #include "ui/qt/menu/selection.hpp"
-#include "ui/qt/services.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
 
-	System::System( QWidget * const p_parent ) : Widget::Tree::BaseTree<System, QTreeView>( p_parent )
+	System::System( const App::ECS::Entity p_system, QWidget * p_parent ) :
+		_system( p_system ), Widget::Tree::BaseTree<System, QTreeView>( p_parent )
 	{
+		setExpandsOnDoubleClick( false );
+
+		// Model.
+		setModel( new SystemModel( p_system, this ) );
+
 		// Selection.
+		setSelectionModel( new SystemSelectionModel( p_system, model(), this ) );
 		setSelectionBehavior( QAbstractItemView::SelectRows );
+
+		// Delegate.
+		setItemDelegate( new Delegate::SceneItemDelegate( p_system, this ) );
 
 		// One expanded at a time.
 		connect(

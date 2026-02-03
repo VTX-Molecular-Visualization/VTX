@@ -13,11 +13,15 @@ namespace VTX::UI::QT::DockWidget
 
 	/**
 	 * @brief Display a tree widget with loaded systems.
-	 * // TODO: Load only minimal data on expand/collapse.
+	 * TODO: add searchbar with QSortFilterProxyModel.
+	 * TODO: add option to sync tree expand with selection model.
 	 */
 	class Scene : public BaseDockWidget<Scene>
 	{
 	  public:
+		/**
+		 * @brief Constructor.
+		 */
 		Scene( QWidget * p_parent );
 
 	  private:
@@ -27,13 +31,33 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<Widget::Tree::Camera> _treeCamera;
 
 		/**
-		 * @brief Scene tree.
+		 * @brief System trees.
 		 */
-		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::System>> _map;
-		QPointer<Widget::Tree::System>										 _tree;
-		// TODO: add searchbar with QSortFilterProxyModel.
-		// TODO: add option to sync tree expand with selection model.
+		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::System>> _mapTreeWidgets;
 
+		/**
+		 * @brief Custom spacer to fill empty space.
+		 */
+		QPointer<QWidget> _filler;
+
+		/**
+		 * @brief Add tree when system is loaded.
+		 */
+		void _onSystemLoad( const App::Events::SystemLoad & );
+
+		/**
+		 * @brief Remove tree when system is removed.
+		 */
+		void _onSystemDestroy( App::ECS::Registry &, App::ECS::Entity );
+
+		/**
+		 * @brief Update selection.
+		 */
+		void _onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e );
+
+		/**
+		 * @brief Lock or unlock selection.
+		 */
 		void _onSelectionLocked( const Events::SelectionLocked & );
 	};
 

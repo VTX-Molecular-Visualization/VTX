@@ -14,7 +14,7 @@ namespace VTX::UI::QT::DockWidget
 		setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 
 		App::HUB().connect<App::Events::SystemLoad, &Sequences::_onSystemLoad>( this );
-		App::REG().on_destroy<Core::Struct::System>().connect<&Sequences::_onDestroySystem>( this );
+		App::REG().on_destroy<Core::Struct::System>().connect<&Sequences::_onSystemDestroy>( this );
 
 		// Refresh widget when selection changed.
 		App::REG().on_update<App::System::Selection>().connect<&Sequences::_onUpdateSelection>( this );
@@ -28,7 +28,6 @@ namespace VTX::UI::QT::DockWidget
 	void Sequences::_onSystemLoad( const App::Events::SystemLoad & p_e )
 	{
 		const auto	 entity			= p_e.system;
-		const auto & system			= App::REG().get<Core::Struct::System>( entity );
 		auto *		 sequenceWidget = new Widget::Sequence( entity, this );
 
 		// Create Widget.
@@ -37,7 +36,7 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( sequenceWidget );
 	}
 
-	void Sequences::_onDestroySystem( App::ECS::Registry & p_r, App::ECS::Entity p_e )
+	void Sequences::_onSystemDestroy( App::ECS::Registry & p_r, App::ECS::Entity p_e )
 	{
 		// Remove from map and delete widget.
 		assert( _mapSequenceWidgets.contains( p_e ) );

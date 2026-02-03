@@ -9,7 +9,10 @@
 namespace VTX::UI::QT::Delegate
 {
 
-	SceneItemDelegate::SceneItemDelegate( QObject * p_parent ) : QStyledItemDelegate( p_parent ) {}
+	SceneItemDelegate::SceneItemDelegate( const App::ECS::Entity p_system, QObject * p_parent ) :
+		_system( p_system ), QStyledItemDelegate( p_parent )
+	{
+	}
 
 	void SceneItemDelegate::paint(
 		QPainter *					 p_painter,
@@ -78,6 +81,8 @@ namespace VTX::UI::QT::Delegate
 	)
 	{
 		using namespace Widget::Tree;
+		using namespace Core::Struct;
+
 		if ( !_hasTrajectory( p_index ) )
 		{
 			return QStyledItemDelegate::editorEvent( p_event, p_model, p_option, p_index );
@@ -96,19 +101,9 @@ namespace VTX::UI::QT::Delegate
 					HitZone zone = _hitTest( mouseEvent->pos(), controlsRect );
 
 					// Get the entity for this system
-					using namespace App::Scene;
-					E_ITEM	  item;
-					SystemUID rootUID;
-					Index	  localIndex;
-					SystemModel::unpack( p_index.internalId(), item, rootUID, localIndex );
-
-					const auto & entityMap = static_cast<const SystemModel *>( p_index.model() )->getMapRootToEntity();
-					if ( !entityMap.contains( rootUID ) )
-					{
-						return true;
-					}
-
-					[[maybe_unused]] App::ECS::Entity entity = entityMap.at( rootUID );
+					E_SYSTEM_ITEM item;
+					Index		  index;
+					SystemModel::unpack( p_index.internalId(), item, index );
 
 					switch ( zone )
 					{
@@ -138,7 +133,7 @@ namespace VTX::UI::QT::Delegate
 
 	bool SceneItemDelegate::_hasTrajectory( const QModelIndex & p_index ) const
 	{
-		using namespace App::Scene;
+		using namespace Core::Struct;
 		using namespace Widget::Tree;
 
 		if ( !p_index.isValid() )
@@ -146,24 +141,17 @@ namespace VTX::UI::QT::Delegate
 			return false;
 		}
 
-		E_ITEM	  item;
-		SystemUID rootUID;
-		Index	  localIndex;
-		SystemModel::unpack( p_index.internalId(), item, rootUID, localIndex );
+		E_SYSTEM_ITEM item;
+		Index		  index;
+		SystemModel::unpack( p_index.internalId(), item, index );
 
 		// Only system items can have trajectories
-		if ( item != E_ITEM::SYSTEM )
+		if ( item != E_SYSTEM_ITEM::SYSTEM )
 		{
 			return false;
 		}
 
-		const auto & entityMap = static_cast<const SystemModel *>( p_index.model() )->getMapRootToEntity();
-		if ( !entityMap.contains( rootUID ) )
-		{
-			return false;
-		}
-
-		return App::System::hasMultiFrameTrajectory( entityMap.at( rootUID ) );
+		return App::System::hasMultiFrameTrajectory( _system );
 	}
 
 	void SceneItemDelegate::_paintPlayerControls(
@@ -173,21 +161,16 @@ namespace VTX::UI::QT::Delegate
 		bool				p_isSelected
 	) const
 	{
+		using namespace Core::Struct;
 		using namespace Widget::Tree;
 
-		// Get trajectory info for frame display
-		using namespace App::Scene;
-		E_ITEM	  item;
-		SystemUID rootUID;
-		Index	  localIndex;
-		SystemModel::unpack( p_index.internalId(), item, rootUID, localIndex );
+		E_SYSTEM_ITEM item;
+		Index		  index;
+		SystemModel::unpack( p_index.internalId(), item, index );
 
-		const auto & entityMap = static_cast<const SystemModel *>( p_index.model() )->getMapRootToEntity();
 		App::System::GenericTrajectory * trajPtr = nullptr;
-		if ( entityMap.contains( rootUID ) )
-		{
-			App::System::get( entityMap.at( rootUID ), trajPtr );
-		}
+
+		App::System::get( _system, trajPtr );
 
 		// Layout: [Play/Pause] [Stop] [====slider====] [frame#]
 		int x = p_rect.left();

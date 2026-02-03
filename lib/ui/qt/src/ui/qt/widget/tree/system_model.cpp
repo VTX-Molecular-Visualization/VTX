@@ -7,62 +7,50 @@
 
 namespace VTX::UI::QT::Widget::Tree
 {
-	SystemModel::SystemModel( QObject * p_parent ) : QAbstractItemModel( p_parent )
+	SystemModel::SystemModel( const App::ECS::Entity p_system, QObject * p_parent ) :
+		_system( p_system ), _data( App::REG().get<Core::Struct::System>( p_system ) ), QAbstractItemModel( p_parent )
 	{
-		auto & reg = App::REG();
-		// Connect system construction event.
-		App::HUB().connect<App::Events::SystemLoad, &SystemModel::_onSystemLoad>( this );
-		reg.on_destroy<Core::Struct::System>().connect<&SystemModel::_onSystemDestroy>( this );
 	}
 
 	int SystemModel::columnCount( const QModelIndex & p_parent ) const { return 1; }
 
 	int SystemModel::rowCount( const QModelIndex & p_parent ) const
 	{
-		using namespace App;
-		using namespace App::Scene;
+		using namespace Core::Struct;
 
+		// Top level.
 		if ( not p_parent.isValid() )
 		{
-			return int( _rows.size() );
+			return 1;
 		}
 
-		E_ITEM	  item;
-		SystemUID rootIndex;
-		Index	  localIndex;
-		unpack( p_parent.internalId(), item, rootIndex, localIndex );
-
-		if ( not _mapRootRow.contains( rootIndex ) )
-		{
-			return 0;
-		}
+		E_SYSTEM_ITEM item;
+		Index		  index;
+		unpack( p_parent.internalId(), item, index );
 
 		switch ( item )
 		{
-		case E_ITEM::SYSTEM:
+		case E_SYSTEM_ITEM::SYSTEM:
 		{
-			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
-			return system.getChainCount();
+			return _data.get().getChainCount();
 		}
-		case E_ITEM::CHAIN:
+		case E_SYSTEM_ITEM::CHAIN:
 		{
-			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
-			if ( localIndex >= system.getChainCount() )
+			if ( index >= _data.get().getChainCount() )
 			{
 				return 0;
 			}
 
-			return system.chainResidueCounts[ localIndex ];
+			return _data.get().chainResidueCounts[ index ];
 		}
-		case E_ITEM::RESIDUE:
+		case E_SYSTEM_ITEM::RESIDUE:
 		{
-			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
-			if ( localIndex >= system.getResidueCount() )
+			if ( index >= _data.get().getResidueCount() )
 			{
 				return 0;
 			}
 
-			return system.residueAtomCounts[ localIndex ];
+			return _data.get().residueAtomCounts[ index ];
 		}
 		default: return 0;
 		}
@@ -70,70 +58,45 @@ namespace VTX::UI::QT::Widget::Tree
 
 	QVariant SystemModel::data( const QModelIndex & p_index, int p_role ) const
 	{
-		using namespace App;
-		using namespace App::Scene;
+		using namespace Core::Struct;
 
 		if ( not p_index.isValid() )
 		{
 			return {};
 		}
 
-		E_ITEM	  item;
-		SystemUID rootIndex;
-		Index	  localIndex;
-		unpack( p_index.internalId(), item, rootIndex, localIndex );
-
-		if ( not _mapRootRow.contains( rootIndex ) )
-		{
-			return {};
-		}
+		E_SYSTEM_ITEM item;
+		Index		  index;
+		unpack( p_index.internalId(), item, index );
 
 		switch ( p_role )
 		{
-		case Qt::DisplayRole: // No break intended ?
-		case NameRole:
+		case Qt::DisplayRole:
+
 			switch ( item )
 			{
-			case E_ITEM::SYSTEM:
+			case E_SYSTEM_ITEM::SYSTEM:
 			{
-				const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
-				return QString::fromStdString( system.name );
+				return QString::fromStdString( _data.get().name );
 			}
-			case E_ITEM::CHAIN:
+			case E_SYSTEM_ITEM::CHAIN:
 			{
-				const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
-				if ( localIndex >= system.getChainCount() )
-				{
-					return {};
-				}
-
-				return QString::fromStdString( system.chainNames[ localIndex ] );
+				assert( index < _data.get().getChainCount() );
+				return QString::fromStdString( _data.get().chainNames[ index ] );
 			}
-			case E_ITEM::RESIDUE:
+			case E_SYSTEM_ITEM::RESIDUE:
 			{
-				const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
-				if ( localIndex >= system.getResidueCount() )
-				{
-					return {};
-				}
-
-				return QString::fromStdString( system.residueNames[ localIndex ] );
+				assert( index < _data.get().getResidueCount() );
+				return QString::fromStdString( _data.get().residueNames[ index ] );
 			}
-			case E_ITEM::ATOM:
+			case E_SYSTEM_ITEM::ATOM:
 			{
-				const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
-				if ( localIndex >= system.getAtomCount() )
-				{
-					return {};
-				}
-
-				return QString::fromStdString( system.atomNames[ localIndex ] );
+				assert( index < _data.get().getAtomCount() );
+				return QString::fromStdString( _data.get().atomNames[ index ] );
 			}
 			}
 			return {};
 		case ItemRole: return int( item );
-		case RootRole: return rootIndex;
-		case LocalRole: return localIndex;
 		case VisibleRole: // TODO.
 			return true;
 		default: return {};
@@ -142,81 +105,45 @@ namespace VTX::UI::QT::Widget::Tree
 
 	QModelIndex SystemModel::index( int p_row, int p_column, const QModelIndex & p_parent ) const
 	{
-		using namespace App;
-		using namespace App::Scene;
+		using namespace Core::Struct;
 
-		if ( p_column != 0 || p_row < 0 )
-		{
-			return {};
-		}
+		assert( p_column == 0 && p_row >= 0 );
 
 		// System.
 		if ( not p_parent.isValid() )
 		{
-			if ( p_row >= int( _rows.size() ) )
-			{
-				return {};
-			}
-			return createIndex( p_row, p_column, pack( E_ITEM::SYSTEM, _rows[ p_row ]->index, 0 ) );
+			assert( p_row == 0 );
+			return createIndex( p_row, p_column, pack( E_SYSTEM_ITEM::SYSTEM, 0 ) );
 		}
 
-		E_ITEM	  item;
-		SystemUID rootIndex;
-		Index	  localIndex;
-		unpack( p_parent.internalId(), item, rootIndex, localIndex );
-
-		if ( not _mapRootRow.contains( rootIndex ) )
-		{
-			return {};
-		}
+		E_SYSTEM_ITEM item;
+		Index		  index;
+		unpack( p_parent.internalId(), item, index );
 
 		switch ( item )
 		{
 		// Chain.
-		case E_ITEM::SYSTEM:
+		case E_SYSTEM_ITEM::SYSTEM:
 		{
-			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
-			if ( uint( p_row ) >= system.getChainCount() )
-			{
-				return {};
-			}
-
-			return createIndex( p_row, p_column, pack( E_ITEM::CHAIN, rootIndex, p_row ) );
+			assert( p_row < static_cast<int>( _data.get().getChainCount() ) );
+			return createIndex( p_row, p_column, pack( E_SYSTEM_ITEM::CHAIN, p_row ) );
 		}
 		// Residue.
-		case E_ITEM::CHAIN:
+		case E_SYSTEM_ITEM::CHAIN:
 		{
-			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
-			if ( localIndex >= system.getChainCount() )
-			{
-				return {};
-			}
-
-			if ( uint( p_row ) >= system.chainResidueCounts[ localIndex ] )
-			{
-				return {};
-			}
-
+			assert( index < _data.get().getChainCount() );
+			assert( p_row < static_cast<int>( _data.get().chainResidueCounts[ index ] ) );
 			return createIndex(
-				p_row, p_column, pack( E_ITEM::RESIDUE, rootIndex, system.chainFirstResidues[ localIndex ] + p_row )
+				p_row, p_column, pack( E_SYSTEM_ITEM::RESIDUE, _data.get().chainFirstResidues[ index ] + p_row )
 			);
 		}
 		// Atom.
-		case E_ITEM::RESIDUE:
+		case E_SYSTEM_ITEM::RESIDUE:
 		{
-			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
-			if ( localIndex >= system.getResidueCount() )
-			{
-				return {};
-			}
-
-			if ( uint( p_row ) >= system.residueAtomCounts[ localIndex ] )
-			{
-				return {};
-			}
-
+			assert( index < _data.get().getResidueCount() );
+			assert( p_row < static_cast<int>( _data.get().residueAtomCounts[ index ] ) );
 			return createIndex(
-				p_row, p_column, pack( E_ITEM::ATOM, rootIndex, system.residueFirstAtomIndexes[ localIndex ] + p_row )
+				p_row, p_column, pack( E_SYSTEM_ITEM::ATOM, _data.get().residueFirstAtomIndexes[ index ] + p_row )
 			);
 		}
 		default: return {};
@@ -225,147 +152,71 @@ namespace VTX::UI::QT::Widget::Tree
 
 	QModelIndex SystemModel::parent( const QModelIndex & p_index ) const
 	{
-		using namespace App;
-		using namespace App::Scene;
+		using namespace Core::Struct;
 
 		if ( not p_index.isValid() )
 		{
 			return {};
 		}
 
-		E_ITEM	  item;
-		SystemUID rootIndex;
-		Index	  localIndex;
-		unpack( p_index.internalId(), item, rootIndex, localIndex );
+		E_SYSTEM_ITEM item;
+		Index		  index;
+		unpack( p_index.internalId(), item, index );
 
 		// Root.
-
-		if ( item == E_ITEM::SYSTEM )
-		{
-			return {};
-		}
-
-		if ( not _mapRootRow.contains( rootIndex ) )
+		if ( item == E_SYSTEM_ITEM::SYSTEM )
 		{
 			return {};
 		}
 
 		switch ( item )
 		{
-		case E_ITEM::CHAIN:
+		case E_SYSTEM_ITEM::CHAIN:
 		{
-			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
-			if ( localIndex >= system.getChainCount() )
-			{
-				return {};
-			}
-
-			return createIndex( _mapRootRow.at( rootIndex )->position, 0, pack( E_ITEM::SYSTEM, rootIndex, 0 ) );
+			assert( index < _data.get().getChainCount() );
+			return createIndex( 0, 0, pack( E_SYSTEM_ITEM::SYSTEM, 0 ) );
 		}
-		case E_ITEM::RESIDUE:
+		case E_SYSTEM_ITEM::RESIDUE:
 		{
-			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
-			if ( localIndex >= system.getResidueCount() )
-			{
-				return {};
-			}
-
-			const Index chain		= system.residueChainIndexes[ localIndex ];
+			assert( index < _data.get().getResidueCount() );
+			const Index chain		= _data.get().residueChainIndexes[ index ];
 			const int	rowInSystem = int( chain );
-			return createIndex( rowInSystem, 0, pack( E_ITEM::CHAIN, rootIndex, chain ) );
+			return createIndex( rowInSystem, 0, pack( E_SYSTEM_ITEM::CHAIN, chain ) );
 		}
-		case E_ITEM::ATOM:
+		case E_SYSTEM_ITEM::ATOM:
 		{
-			const auto & system = REG().get<Core::Struct::System>( _mapRootRow.at( rootIndex )->entity );
-			if ( localIndex >= system.getAtomCount() )
-			{
-				return {};
-			}
-
-			const Index residue	   = system.atomResidueIndexes[ localIndex ];
-			const Index chain	   = system.residueChainIndexes[ residue ];
-			const int	rowInChain = int( residue - system.chainFirstResidues[ chain ] );
-			return createIndex( rowInChain, 0, pack( E_ITEM::RESIDUE, rootIndex, residue ) );
+			assert( index < _data.get().getAtomCount() );
+			const Index residue	   = _data.get().atomResidueIndexes[ index ];
+			const Index chain	   = _data.get().residueChainIndexes[ residue ];
+			const int	rowInChain = int( residue - _data.get().chainFirstResidues[ chain ] );
+			return createIndex( rowInChain, 0, pack( E_SYSTEM_ITEM::RESIDUE, residue ) );
 		}
 		default: return {};
 		}
 	}
 
 	QModelIndex SystemModel::makeIndex(
-		const int				 p_row,
-		const App::Scene::E_ITEM p_type,
-		const SystemUID			 p_rootUID,
-		const Index				 p_index
+		const int						  p_row,
+		const Core::Struct::E_SYSTEM_ITEM p_type,
+		const Index						  p_index
 	) const
 	{
-		quintptr id = pack( p_type, p_rootUID, p_index );
+		quintptr id = pack( p_type, p_index );
 		return createIndex( p_row, 0, id );
 	}
 
-	void SystemModel::_onSystemLoad( const App::Events::SystemLoad & p_e )
+	quintptr SystemModel::pack( const Core::Struct::E_SYSTEM_ITEM p_item, const Index p_index )
 	{
-		using namespace App::Scene;
+		static_assert( sizeof( quintptr ) >= 8, "pack/unpack requires 64-bit (quintptr >= 8 bytes)" );
 
-		const auto & reg	  = App::REG();
-		const auto	 entity	  = p_e.system;
-		const auto & uid	  = reg.get<App::System::UID>( entity );
-		const int	 position = int( _rows.size() );
-
-		beginInsertRows( QModelIndex(), position, position );
-
-		_rows.emplace_back( std::make_unique<Row>( position, uid.system, entity, E_ITEM::SYSTEM ) );
-
-		auto & row					 = _rows.back();
-		_mapEntityRow[ row->entity ] = row.get();
-		_mapRootRow[ row->index ]	 = row.get();
-		_mapRootEntity[ row->index ] = entity;
-
-		endInsertRows();
+		// [ p_item:8 |  p_index:32 ]  <= 40 bits
+		return ( quintptr( p_item ) << 32 ) | // bits 32..39
+			   ( quintptr( p_index ) );		  // bits  0..31
 	}
 
-	void SystemModel::_onSystemDestroy( App::ECS::Registry & p_r, App::ECS::Entity p_e )
+	void SystemModel::unpack( const quintptr p_v, Core::Struct::E_SYSTEM_ITEM & p_item, Index & p_index )
 	{
-		assert( _mapEntityRow.contains( p_e ) );
-
-		const Row * rowPtr	 = _mapEntityRow.at( p_e );
-		const int	position = rowPtr->position;
-
-		beginRemoveRows( QModelIndex(), position, position );
-
-		_mapRootRow.erase( rowPtr->index );
-		_mapEntityRow.erase( p_e );
-		_mapRootEntity.erase( rowPtr->index );
-
-		_rows.erase( _rows.begin() + position );
-
-		for ( int i = position; i < int( _rows.size() ); ++i )
-		{
-			Row * r					   = _rows[ i ].get();
-			r->position				   = i;
-			_mapEntityRow[ r->entity ] = r;
-			_mapRootRow[ r->index ]	   = r;
-		}
-
-		endRemoveRows();
-	}
-
-	quintptr SystemModel::pack( const App::Scene::E_ITEM p_item, const SystemUID p_rootIndex, const Index p_index )
-	{
-		// [ p_item:8 | p_rootIndex:16 | p_index:32 ]  <= 56 bits
-		return ( quintptr( p_item ) << 48 ) |	   // bits 48..55
-			   ( quintptr( p_rootIndex ) << 32 ) | // bits 32..47
-			   ( quintptr( p_index ) );			   // bits  0..31
-	}
-
-	void SystemModel::unpack(
-		const quintptr		 p_v,
-		App::Scene::E_ITEM & p_item,
-		SystemUID &			 p_rootIndex,
-		Index &				 p_index
-	)
-	{
-		p_item		= App::Scene::E_ITEM( ( p_v >> 48 ) & 0xFF ); // 8 bits
-		p_rootIndex = SystemUID( ( p_v >> 32 ) & 0xFFFF );		  // 16 bits
-		p_index		= Index( p_v & 0xFFFFFFFFu );				  // 32 bits
+		p_item	= Core::Struct::E_SYSTEM_ITEM( ( p_v >> 32 ) & 0xFFu ); // 8 bits
+		p_index = Index( p_v & 0xFFFFFFFFu );							// 32 bits
 	}
 } // namespace VTX::UI::QT::Widget::Tree

@@ -17,6 +17,19 @@
 namespace VTX::Core::Struct
 {
 	/**
+	 * @brief Items.
+	 */
+	enum struct E_SYSTEM_ITEM : uint8_t
+	{
+		SYSTEM,
+		// TODO
+		// CATEGORY,
+		CHAIN,
+		RESIDUE,
+		ATOM,
+
+	};
+	/**
 	 * @brief Element index ranges.
 	 */
 	using IndexRange	 = Util::Math::Range<Index>;

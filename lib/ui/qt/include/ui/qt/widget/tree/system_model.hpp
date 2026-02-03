@@ -5,7 +5,6 @@
 #include <QString>
 #include <app/ecs.hpp>
 #include <app/events.hpp>
-#include <app/scene/tag_root.hpp>
 #include <core/struct/system.hpp>
 #include <vector>
 
@@ -16,8 +15,6 @@ namespace VTX::UI::QT::Widget::Tree
 	 */
 	class SystemModel : public QAbstractItemModel
 	{
-		Q_OBJECT
-
 	  public:
 		/**
 		 * @brief Roles for data retrieval.
@@ -25,28 +22,14 @@ namespace VTX::UI::QT::Widget::Tree
 		enum Roles
 		{
 			ItemRole = Qt::UserRole + 1,
-			RootRole,
-			LocalRole,
-			NameRole,
+			// TODO:
 			VisibleRole
-		};
-
-		/**
-		 * @brief Root row structure.
-		 */
-		struct Row
-		{
-			int				   position;
-			SystemUID		   index;
-			App::ECS::Entity   entity;
-			App::Scene::E_ITEM item;
-			// std::variant<const Core::Struct::System *, const Renderer::Camera *> data;
 		};
 
 		/**
 		 * @brief Constructor.
 		 */
-		SystemModel( QObject * p_parent = nullptr );
+		SystemModel( const App::ECS::Entity, QObject * = nullptr );
 
 		/**
 		 * @brief Number of columns is always 1.
@@ -76,48 +59,28 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Public index creation.
 		 */
-		QModelIndex makeIndex( const int p_row, const App::Scene::E_ITEM, const SystemUID, const Index ) const;
+		QModelIndex makeIndex( const int p_row, const Core::Struct::E_SYSTEM_ITEM, const Index ) const;
 
 		/**
 		 * @brief Pack minimum information to identify an item in the model into a single uint64.
 		 */
-		static quintptr pack( const App::Scene::E_ITEM, const SystemUID, const Index );
+		static quintptr pack( const Core::Struct::E_SYSTEM_ITEM, const Index );
 
 		/**
 		 * @brief Unpack quintptr.
 		 */
-		static void unpack( const quintptr, App::Scene::E_ITEM &, SystemUID &, Index & );
-
-		inline const std::unordered_map<SystemUID, const Row *> & getMapRootToRows() const { return _mapRootRow; }
-
-		inline const std::unordered_map<SystemUID, App::ECS::Entity> & getMapRootToEntity() const
-		{
-			return _mapRootEntity;
-		}
+		static void unpack( const quintptr, Core::Struct::E_SYSTEM_ITEM &, Index & );
 
 	  private:
 		/**
-		 * @brief Root rows of the model.
+		 * @brief Entity of fetch data from.
 		 */
-		std::vector<std::unique_ptr<Row>> _rows;
+		const App::ECS::Entity _system;
 
 		/**
-		 * @brief Maps for quick access to rows.
+		 * @brief Reference to the system data.
 		 */
-		// TODO: redo
-		std::unordered_map<App::ECS::Entity, const Row *> _mapEntityRow;
-		std::unordered_map<SystemUID, const Row *>		  _mapRootRow;
-		std::unordered_map<SystemUID, App::ECS::Entity>	  _mapRootEntity;
-
-		/**
-		 * @brief Callback on system construction to add it to the model.
-		 */
-		void _onSystemLoad( const App::Events::SystemLoad & p_e );
-
-		/**
-		 * @brief Callback on system destruction to remove it from the model.
-		 */
-		void _onSystemDestroy( App::ECS::Registry &, App::ECS::Entity );
+		std::reference_wrapper<const Core::Struct::System> _data;
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

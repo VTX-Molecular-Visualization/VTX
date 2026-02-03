@@ -16,7 +16,7 @@ namespace VTX::UI::QT::Widget::Tree
 			W::setItemsExpandable( true );
 			W::setAllColumnsShowFocus( true );
 			W::setUniformRowHeights( true );
-
+			W::setExpandsOnDoubleClick( true );
 			W::setEditTriggers( QAbstractItemView::NoEditTriggers );
 			W::setFrameStyle( QFrame::NoFrame );
 			W::setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Maximum );

@@ -13,7 +13,7 @@ namespace VTX::App::Action::Visibility
 	/**
 	 * @brief Set item visibility.
 	 */
-	template<App::Scene::E_ITEM ITEM>
+	template<Core::Struct::E_SYSTEM_ITEM ITEM>
 	struct SetVisible
 	{
 		void execute(
@@ -31,7 +31,7 @@ namespace VTX::App::Action::Visibility
 
 			Core::Struct::IndexRangeList visibleAtoms = visibility.atoms;
 
-			if constexpr ( ITEM == App::Scene::E_ITEM::SYSTEM )
+			if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
 			{
 				if ( p_visible )
 				{
@@ -42,7 +42,7 @@ namespace VTX::App::Action::Visibility
 					visibleAtoms.clear();
 				}
 			}
-			else if constexpr ( ITEM == App::Scene::E_ITEM::CHAIN )
+			else if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
 			{
 				if ( p_visible )
 				{
@@ -59,7 +59,7 @@ namespace VTX::App::Action::Visibility
 					}
 				}
 			}
-			else if constexpr ( ITEM == App::Scene::E_ITEM::RESIDUE )
+			else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
 			{
 				if ( p_visible )
 				{
@@ -76,7 +76,7 @@ namespace VTX::App::Action::Visibility
 					}
 				}
 			}
-			else if constexpr ( ITEM == App::Scene::E_ITEM::ATOM )
+			else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
 			{
 				if ( p_visible )
 				{

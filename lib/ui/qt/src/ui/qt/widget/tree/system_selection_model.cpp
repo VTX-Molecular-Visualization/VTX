@@ -6,22 +6,19 @@
 #include <app/services.hpp>
 #include <app/system/uid.hpp>
 #include <core/struct/system.hpp>
-#include <util/chrono.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
 
-	SystemSelectionModel::SystemSelectionModel( QAbstractItemModel * p_model, QObject * p_parent ) :
-		QItemSelectionModel( p_model, p_parent )
+	SystemSelectionModel::SystemSelectionModel(
+		const App::ECS::Entity p_system,
+		QAbstractItemModel *   p_model,
+		QObject *			   p_parent
+	) : _system( p_system ), QItemSelectionModel( p_model, p_parent )
 	{
-		// QT -> App.
 		connect( this, &QItemSelectionModel::selectionChanged, this, &SystemSelectionModel::_selectionChanged );
-
-		// App -> QT.
-		App::REG().on_update<App::System::Selection>().connect<&SystemSelectionModel::_onUpdateSelection>( this );
 	}
 
-	// TODO: optimize and factorize.
 	void SystemSelectionModel::_selectionChanged(
 		const QItemSelection & p_selected,
 		const QItemSelection & p_deselected
@@ -30,158 +27,98 @@ namespace VTX::UI::QT::Widget::Tree
 		VTX_DEBUG( "SelectionModel::_selectionChanged" );
 
 		using namespace App;
+		using namespace Core::Struct;
 
-		Util::Chrono timer;
-		timer.start();
-
-		const SystemModel * model = static_cast<const SystemModel *>( this->model() );
-		const std::unordered_map<SystemUID, App::ECS::Entity> & mapRootToEntity = model->getMapRootToEntity();
-
-		// Create range lists per entity.
-		using MapUIDRangeList = std::unordered_map<SystemUID, Core::Struct::IndexRangeList>;
-		MapUIDRangeList												deselected;
-		MapUIDRangeList												selected;
-		std::unordered_map<SystemUID, const Core::Struct::System *> systems;
-
-		for ( auto & [ uid, _ ] : mapRootToEntity )
-		{
-			deselected[ uid ] = {};
-			selected[ uid ]	  = {};
-			//
-			if ( const auto * system = REG().try_get<Core::Struct::System>( mapRootToEntity.at( uid ) ) )
-			{
-				systems[ uid ] = system;
-			}
-		}
+		const SystemModel & model  = *static_cast<const SystemModel *>( this->model() );
+		const auto &		system = REG().get<Core::Struct::System>( _system );
 
 		// Deselected items.
+		Core::Struct::IndexRangeList deselected;
 		if ( not p_deselected.isEmpty() )
 		{
 			for ( const QItemSelectionRange & range : p_deselected )
 			{
 				for ( int row = range.top(); row <= range.bottom(); ++row )
 				{
-					QModelIndex		   index = range.model()->index( row, 0, range.parent() );
-					App::Scene::E_ITEM item;
-					SystemUID		   rootIndex;
-					Index			   localIndex;
-					SystemModel::unpack( index.internalId(), item, rootIndex, localIndex );
-
-					auto & system = *systems[ rootIndex ];
-					auto & rl	  = deselected[ rootIndex ];
+					QModelIndex	  modelIndex = range.model()->index( row, 0, range.parent() );
+					E_SYSTEM_ITEM item;
+					Index		  index;
+					SystemModel::unpack( modelIndex.internalId(), item, index );
 
 					switch ( item )
 					{
-					case App::Scene::E_ITEM::SYSTEM: rl.addRange( system.getAtomRange() ); break;
-					case App::Scene::E_ITEM::CHAIN: rl.addRange( system.getChainAtomRange( localIndex ) ); break;
-					case App::Scene::E_ITEM::RESIDUE: rl.addRange( system.getResidueAtomRange( localIndex ) ); break;
-					case App::Scene::E_ITEM::ATOM: rl.addValue( localIndex ); break;
+					case E_SYSTEM_ITEM::SYSTEM: deselected.addRange( system.getAtomRange() ); break;
+					case E_SYSTEM_ITEM::CHAIN: deselected.addRange( system.getChainAtomRange( index ) ); break;
+					case E_SYSTEM_ITEM::RESIDUE: deselected.addRange( system.getResidueAtomRange( index ) ); break;
+					case E_SYSTEM_ITEM::ATOM: deselected.addValue( index ); break;
 					default: break;
 					}
 				}
 			}
 
-			for ( const auto & [ uid, rl ] : deselected )
-			{
-				if ( rl.count() == 0 )
-				{
-					continue;
-				}
-
-				const ECS::Entity ent = mapRootToEntity.at( uid );
-				ACTION().execute<Action::Selection::SetSelected<Scene::E_ITEM::ATOM>>( ent, rl, false );
-			}
+			ACTION().execute<Action::Selection::SetSelected<E_SYSTEM_ITEM::ATOM>>( _system, deselected, false );
 		}
 
 		// Selected items.
+		Core::Struct::IndexRangeList selected;
 		if ( not p_selected.isEmpty() )
 		{
 			for ( const QItemSelectionRange & range : p_selected )
 			{
 				for ( int row = range.top(); row <= range.bottom(); ++row )
 				{
-					QModelIndex		   index = range.model()->index( row, 0, range.parent() );
-					App::Scene::E_ITEM item;
-					SystemUID		   rootIndex;
-					Index			   localIndex;
-					SystemModel::unpack( index.internalId(), item, rootIndex, localIndex );
-
-					auto & system = *systems[ rootIndex ];
-					auto & rl	  = selected[ rootIndex ];
+					QModelIndex	  modelIndex = range.model()->index( row, 0, range.parent() );
+					E_SYSTEM_ITEM item;
+					Index		  index;
+					SystemModel::unpack( modelIndex.internalId(), item, index );
 
 					switch ( item )
 					{
-					case App::Scene::E_ITEM::SYSTEM: rl.addRange( system.getAtomRange() ); break;
-					case App::Scene::E_ITEM::CHAIN: rl.addRange( system.getChainAtomRange( localIndex ) ); break;
-					case App::Scene::E_ITEM::RESIDUE: rl.addRange( system.getResidueAtomRange( localIndex ) ); break;
-					case App::Scene::E_ITEM::ATOM: rl.addValue( localIndex ); break;
+					case E_SYSTEM_ITEM::SYSTEM: selected.addRange( system.getAtomRange() ); break;
+					case E_SYSTEM_ITEM::CHAIN: selected.addRange( system.getChainAtomRange( index ) ); break;
+					case E_SYSTEM_ITEM::RESIDUE: selected.addRange( system.getResidueAtomRange( index ) ); break;
+					case E_SYSTEM_ITEM::ATOM: selected.addValue( index ); break;
 					default: break;
 					}
 				}
 			}
 
-			for ( const auto & [ uid, rl ] : selected )
-			{
-				if ( rl.count() == 0 )
-				{
-					continue;
-				}
-
-				const ECS::Entity ent = mapRootToEntity.at( uid );
-				ACTION().execute<Action::Selection::SetSelected<Scene::E_ITEM::ATOM>>( ent, rl, true );
-			}
+			ACTION().execute<Action::Selection::SetSelected<E_SYSTEM_ITEM::ATOM>>( _system, selected, true );
 		}
-
-		VTX_DEBUG(
-			"SelectionModel::_selectionChanged - done ({})", Util::String::durationToStr( timer.elapsedTime() )
-		);
 	}
 
-	// TODO: update only for incoming entity!
-	// (blocked by QItemSelectionModel::ClearAndSelect)
-	void SystemSelectionModel::_onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e )
+	void SystemSelectionModel::refresh()
 	{
 		using namespace App;
-		using namespace App::Scene;
+		using namespace Core::Struct;
 
-		auto &		 reg	  = REG();
-		const auto	 entities = reg.view<App::System::Selection>();
-		const auto * model	  = static_cast<const SystemModel *>( this->model() );
-		const std::unordered_map<SystemUID, const SystemModel::Row *> & mapRootToRows = model->getMapRootToRows();
+		auto &		 reg	   = REG();
+		const auto & system	   = reg.get<Core::Struct::System>( _system );
+		const auto & selection = reg.get<App::System::Selection>( _system );
+		const auto & uid	   = reg.get<App::System::UID>( _system );
+		const auto & model	   = *static_cast<const SystemModel *>( this->model() );
 
 		QSignalBlocker blocker( this );
 		QItemSelection qSelection;
 
-		for ( auto entity : entities )
+		if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::SYSTEM>( _system ) )
 		{
-			const auto &	system	  = reg.get<Core::Struct::System>( entity );
-			const auto &	selection = reg.get<System::Selection>( entity );
-			const auto &	uid		  = reg.get<System::UID>( entity );
-			const SystemUID rootUID	  = uid.system;
-
-			if ( Helper::System::isFullySelected<E_ITEM::SYSTEM>( entity ) )
-			{
-				const QModelIndex index
-					= model->makeIndex( mapRootToRows.at( rootUID )->position, E_ITEM::SYSTEM, rootUID, 0 );
-				qSelection.select( index, index );
-				continue;
-			}
-			else if ( Helper::System::isSelected<E_ITEM::SYSTEM>( entity ) == false )
-			{
-				continue;
-			}
-
+			const QModelIndex index = model.makeIndex( 0, E_SYSTEM_ITEM::SYSTEM, 0 );
+			qSelection.select( index, index );
+		}
+		else if ( Helper::System::isSelected<E_SYSTEM_ITEM::SYSTEM>( _system ) )
+		{
 			// Chains.
 			for ( Index chain = 0; chain < system.getChainCount(); ++chain )
 			{
 				QString chainName = QString::fromStdString( system.getChainName( chain ) );
-				if ( Helper::System::isFullySelected<E_ITEM::CHAIN>( entity, chain ) )
+				if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::CHAIN>( _system, chain ) )
 				{
-					const QModelIndex index = model->makeIndex( chain, E_ITEM::CHAIN, rootUID, chain );
+					const QModelIndex index = model.makeIndex( chain, E_SYSTEM_ITEM::CHAIN, chain );
 					qSelection.select( index, index );
 					continue;
 				}
-				else if ( Helper::System::isSelected<E_ITEM::CHAIN>( entity, chain ) == false )
+				else if ( Helper::System::isSelected<E_SYSTEM_ITEM::CHAIN>( _system, chain ) == false )
 				{
 					continue;
 				}
@@ -190,15 +127,15 @@ namespace VTX::UI::QT::Widget::Tree
 				for ( Index residue : system.getChainResidueRange( chain ) )
 				{
 					QString residueName = QString::fromStdString( system.getResidueName( residue ) );
-					if ( Helper::System::isFullySelected<E_ITEM::RESIDUE>( entity, residue ) )
+					if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::RESIDUE>( _system, residue ) )
 					{
-						const QModelIndex index = model->makeIndex(
-							residue - system.getChainFirstResidue( chain ), E_ITEM::RESIDUE, rootUID, residue
+						const QModelIndex index = model.makeIndex(
+							residue - system.getChainFirstResidue( chain ), E_SYSTEM_ITEM::RESIDUE, residue
 						);
 						qSelection.select( index, index );
 						continue;
 					}
-					else if ( Helper::System::isSelected<E_ITEM::RESIDUE>( entity, residue ) == false )
+					else if ( Helper::System::isSelected<E_SYSTEM_ITEM::RESIDUE>( _system, residue ) == false )
 					{
 						continue;
 					}
@@ -206,10 +143,10 @@ namespace VTX::UI::QT::Widget::Tree
 					// Atoms.
 					for ( Index atom : system.getResidueAtomRange( residue ) )
 					{
-						if ( Helper::System::isSelected<E_ITEM::ATOM>( entity, atom ) )
+						if ( Helper::System::isSelected<E_SYSTEM_ITEM::ATOM>( _system, atom ) )
 						{
-							const QModelIndex index = model->makeIndex(
-								atom - system.getResidueFirstAtom( residue ), E_ITEM::ATOM, rootUID, atom
+							const QModelIndex index = model.makeIndex(
+								atom - system.getResidueFirstAtom( residue ), E_SYSTEM_ITEM::ATOM, atom
 							);
 							qSelection.select( index, index );
 						}
