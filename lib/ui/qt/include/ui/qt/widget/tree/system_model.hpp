@@ -7,15 +7,14 @@
 #include <app/events.hpp>
 #include <app/scene/tag_root.hpp>
 #include <core/struct/system.hpp>
-#include <renderer/camera.hpp>
 #include <vector>
 
-namespace VTX::UI::QT
+namespace VTX::UI::QT::Widget::Tree
 {
 	/**
 	 * @brief Model representing all data in App.
 	 */
-	class Model : public QAbstractItemModel
+	class SystemModel : public QAbstractItemModel
 	{
 		Q_OBJECT
 
@@ -47,7 +46,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Constructor.
 		 */
-		Model( QObject * p_parent = nullptr );
+		SystemModel( QObject * p_parent = nullptr );
 
 		/**
 		 * @brief Number of columns is always 1.
@@ -121,5 +120,5 @@ namespace VTX::UI::QT
 		void _onSystemDestroy( App::ECS::Registry &, App::ECS::Entity );
 	};
 
-} // namespace VTX::UI::QT
+} // namespace VTX::UI::QT::Widget::Tree
 #endif

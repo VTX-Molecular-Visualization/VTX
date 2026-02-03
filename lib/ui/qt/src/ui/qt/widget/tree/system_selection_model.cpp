@@ -1,5 +1,5 @@
-﻿#include "ui/qt/selection_model.hpp"
-#include "ui/qt/model.hpp"
+﻿#include "ui/qt/widget/tree/system_selection_model.hpp"
+#include "ui/qt/widget/tree/system_model.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/selection.hpp>
 #include <app/helper/system.hpp>
@@ -8,21 +8,24 @@
 #include <core/struct/system.hpp>
 #include <util/chrono.hpp>
 
-namespace VTX::UI::QT
+namespace VTX::UI::QT::Widget::Tree
 {
 
-	SelectionModel::SelectionModel( QAbstractItemModel * p_model, QObject * p_parent ) :
+	SystemSelectionModel::SystemSelectionModel( QAbstractItemModel * p_model, QObject * p_parent ) :
 		QItemSelectionModel( p_model, p_parent )
 	{
 		// QT -> App.
-		connect( this, &QItemSelectionModel::selectionChanged, this, &SelectionModel::_selectionChanged );
+		connect( this, &QItemSelectionModel::selectionChanged, this, &SystemSelectionModel::_selectionChanged );
 
 		// App -> QT.
-		App::REG().on_update<App::System::Selection>().connect<&SelectionModel::_onUpdateSelection>( this );
+		App::REG().on_update<App::System::Selection>().connect<&SystemSelectionModel::_onUpdateSelection>( this );
 	}
 
 	// TODO: optimize and factorize.
-	void SelectionModel::_selectionChanged( const QItemSelection & p_selected, const QItemSelection & p_deselected )
+	void SystemSelectionModel::_selectionChanged(
+		const QItemSelection & p_selected,
+		const QItemSelection & p_deselected
+	)
 	{
 		VTX_DEBUG( "SelectionModel::_selectionChanged" );
 
@@ -31,13 +34,13 @@ namespace VTX::UI::QT
 		Util::Chrono timer;
 		timer.start();
 
-		const Model *										  model = static_cast<const Model *>( this->model() );
+		const SystemModel * model = static_cast<const SystemModel *>( this->model() );
 		const std::unordered_map<SystemUID, App::ECS::Entity> & mapRootToEntity = model->getMapRootToEntity();
 
 		// Create range lists per entity.
 		using MapUIDRangeList = std::unordered_map<SystemUID, Core::Struct::IndexRangeList>;
-		MapUIDRangeList											  deselected;
-		MapUIDRangeList											  selected;
+		MapUIDRangeList												deselected;
+		MapUIDRangeList												selected;
 		std::unordered_map<SystemUID, const Core::Struct::System *> systems;
 
 		for ( auto & [ uid, _ ] : mapRootToEntity )
@@ -60,9 +63,9 @@ namespace VTX::UI::QT
 				{
 					QModelIndex		   index = range.model()->index( row, 0, range.parent() );
 					App::Scene::E_ITEM item;
-					SystemUID			   rootIndex;
+					SystemUID		   rootIndex;
 					Index			   localIndex;
-					Model::unpack( index.internalId(), item, rootIndex, localIndex );
+					SystemModel::unpack( index.internalId(), item, rootIndex, localIndex );
 
 					auto & system = *systems[ rootIndex ];
 					auto & rl	  = deselected[ rootIndex ];
@@ -99,9 +102,9 @@ namespace VTX::UI::QT
 				{
 					QModelIndex		   index = range.model()->index( row, 0, range.parent() );
 					App::Scene::E_ITEM item;
-					SystemUID			   rootIndex;
+					SystemUID		   rootIndex;
 					Index			   localIndex;
-					Model::unpack( index.internalId(), item, rootIndex, localIndex );
+					SystemModel::unpack( index.internalId(), item, rootIndex, localIndex );
 
 					auto & system = *systems[ rootIndex ];
 					auto & rl	  = selected[ rootIndex ];
@@ -136,25 +139,25 @@ namespace VTX::UI::QT
 
 	// TODO: update only for incoming entity!
 	// (blocked by QItemSelectionModel::ClearAndSelect)
-	void SelectionModel::_onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e )
+	void SystemSelectionModel::_onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e )
 	{
 		using namespace App;
 		using namespace App::Scene;
 
-		auto &													reg		 = REG();
-		const auto												entities = reg.view<App::System::Selection>();
-		const auto *											model	 = static_cast<const Model *>( this->model() );
-		const std::unordered_map<SystemUID, const Model::Row *> & mapRootToRows = model->getMapRootToRows();
+		auto &		 reg	  = REG();
+		const auto	 entities = reg.view<App::System::Selection>();
+		const auto * model	  = static_cast<const SystemModel *>( this->model() );
+		const std::unordered_map<SystemUID, const SystemModel::Row *> & mapRootToRows = model->getMapRootToRows();
 
 		QSignalBlocker blocker( this );
 		QItemSelection qSelection;
 
 		for ( auto entity : entities )
 		{
-			const auto &  system	= reg.get<Core::Struct::System>( entity );
-			const auto &  selection = reg.get<System::Selection>( entity );
-			const auto &  uid		= reg.get<System::UID>( entity );
-			const SystemUID rootUID	= uid.system;
+			const auto &	system	  = reg.get<Core::Struct::System>( entity );
+			const auto &	selection = reg.get<System::Selection>( entity );
+			const auto &	uid		  = reg.get<System::UID>( entity );
+			const SystemUID rootUID	  = uid.system;
 
 			if ( Helper::System::isFullySelected<E_ITEM::SYSTEM>( entity ) )
 			{
@@ -219,4 +222,4 @@ namespace VTX::UI::QT
 		select( qSelection, QItemSelectionModel::ClearAndSelect );
 	}
 
-} // namespace VTX::UI::QT
+} // namespace VTX::UI::QT::Widget::Tree

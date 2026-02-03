@@ -1,6 +1,4 @@
 #include "ui/qt/menu/selection.hpp"
-#include "ui/qt/model.hpp"
-#include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
 #include <QModelIndexList>
 #include <app/action/scene.hpp>

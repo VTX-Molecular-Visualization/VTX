@@ -3,9 +3,9 @@
 #include "app/events.hpp"
 #include "app/system/trajectory.hpp"
 #include "ui/qt/delegate/scene_item_delegate.hpp"
-#include "ui/qt/model.hpp"
-#include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/widget/tree/system_model.hpp"
+#include "ui/qt/widget/tree/system_selection_model.hpp"
 #include <QToolBar>
 #include <app/services.hpp>
 #include <util/event_hub.hpp>

@@ -1,7 +1,7 @@
 #include "ui/qt/delegate/scene_item_delegate.hpp"
 #include "app/system/trajectory.hpp"
-#include "ui/qt/model.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/widget/tree/system_model.hpp"
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
@@ -77,6 +77,7 @@ namespace VTX::UI::QT::Delegate
 		const QModelIndex &			 p_index
 	)
 	{
+		using namespace Widget::Tree;
 		if ( !_hasTrajectory( p_index ) )
 		{
 			return QStyledItemDelegate::editorEvent( p_event, p_model, p_option, p_index );
@@ -99,9 +100,9 @@ namespace VTX::UI::QT::Delegate
 					E_ITEM	  item;
 					SystemUID rootUID;
 					Index	  localIndex;
-					Model::unpack( p_index.internalId(), item, rootUID, localIndex );
+					SystemModel::unpack( p_index.internalId(), item, rootUID, localIndex );
 
-					const auto & entityMap = static_cast<const Model *>( p_index.model() )->getMapRootToEntity();
+					const auto & entityMap = static_cast<const SystemModel *>( p_index.model() )->getMapRootToEntity();
 					if ( !entityMap.contains( rootUID ) )
 					{
 						return true;
@@ -138,6 +139,7 @@ namespace VTX::UI::QT::Delegate
 	bool SceneItemDelegate::_hasTrajectory( const QModelIndex & p_index ) const
 	{
 		using namespace App::Scene;
+		using namespace Widget::Tree;
 
 		if ( !p_index.isValid() )
 		{
@@ -147,7 +149,7 @@ namespace VTX::UI::QT::Delegate
 		E_ITEM	  item;
 		SystemUID rootUID;
 		Index	  localIndex;
-		Model::unpack( p_index.internalId(), item, rootUID, localIndex );
+		SystemModel::unpack( p_index.internalId(), item, rootUID, localIndex );
 
 		// Only system items can have trajectories
 		if ( item != E_ITEM::SYSTEM )
@@ -155,7 +157,7 @@ namespace VTX::UI::QT::Delegate
 			return false;
 		}
 
-		const auto & entityMap = static_cast<const Model *>( p_index.model() )->getMapRootToEntity();
+		const auto & entityMap = static_cast<const SystemModel *>( p_index.model() )->getMapRootToEntity();
 		if ( !entityMap.contains( rootUID ) )
 		{
 			return false;
@@ -171,14 +173,16 @@ namespace VTX::UI::QT::Delegate
 		bool				p_isSelected
 	) const
 	{
+		using namespace Widget::Tree;
+
 		// Get trajectory info for frame display
 		using namespace App::Scene;
 		E_ITEM	  item;
 		SystemUID rootUID;
 		Index	  localIndex;
-		Model::unpack( p_index.internalId(), item, rootUID, localIndex );
+		SystemModel::unpack( p_index.internalId(), item, rootUID, localIndex );
 
-		const auto & entityMap					 = static_cast<const Model *>( p_index.model() )->getMapRootToEntity();
+		const auto & entityMap = static_cast<const SystemModel *>( p_index.model() )->getMapRootToEntity();
 		App::System::GenericTrajectory * trajPtr = nullptr;
 		if ( entityMap.contains( rootUID ) )
 		{

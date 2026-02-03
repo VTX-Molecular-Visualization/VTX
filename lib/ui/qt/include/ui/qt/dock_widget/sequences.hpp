@@ -20,7 +20,7 @@ namespace VTX::UI::QT::DockWidget
 		Sequences( QWidget * );
 
 	  private:
-		std::unordered_map<App::ECS::Entity, Widget::Sequence *> _mapSequencesWidgets;
+		std::unordered_map<App::ECS::Entity, QPointer<Widget::Sequence>> _mapSequenceWidgets;
 
 		void _onSystemLoad( const App::Events::SystemLoad & );
 		void _onDestroySystem( App::ECS::Registry &, App::ECS::Entity );

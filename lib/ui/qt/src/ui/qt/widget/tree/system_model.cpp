@@ -1,23 +1,23 @@
-#include "ui/qt/model.hpp"
+#include "ui/qt/widget/tree/system_model.hpp"
 #include "app/system/uid.hpp"
 #include <app/services.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <variant>
 
-namespace VTX::UI::QT
+namespace VTX::UI::QT::Widget::Tree
 {
-	Model::Model( QObject * p_parent ) : QAbstractItemModel( p_parent )
+	SystemModel::SystemModel( QObject * p_parent ) : QAbstractItemModel( p_parent )
 	{
 		auto & reg = App::REG();
 		// Connect system construction event.
-		App::HUB().connect<App::Events::SystemLoad, &Model::_onSystemLoad>( this );
-		reg.on_destroy<Core::Struct::System>().connect<&Model::_onSystemDestroy>( this );
+		App::HUB().connect<App::Events::SystemLoad, &SystemModel::_onSystemLoad>( this );
+		reg.on_destroy<Core::Struct::System>().connect<&SystemModel::_onSystemDestroy>( this );
 	}
 
-	int Model::columnCount( const QModelIndex & p_parent ) const { return 1; }
+	int SystemModel::columnCount( const QModelIndex & p_parent ) const { return 1; }
 
-	int Model::rowCount( const QModelIndex & p_parent ) const
+	int SystemModel::rowCount( const QModelIndex & p_parent ) const
 	{
 		using namespace App;
 		using namespace App::Scene;
@@ -68,7 +68,7 @@ namespace VTX::UI::QT
 		}
 	}
 
-	QVariant Model::data( const QModelIndex & p_index, int p_role ) const
+	QVariant SystemModel::data( const QModelIndex & p_index, int p_role ) const
 	{
 		using namespace App;
 		using namespace App::Scene;
@@ -140,7 +140,7 @@ namespace VTX::UI::QT
 		}
 	}
 
-	QModelIndex Model::index( int p_row, int p_column, const QModelIndex & p_parent ) const
+	QModelIndex SystemModel::index( int p_row, int p_column, const QModelIndex & p_parent ) const
 	{
 		using namespace App;
 		using namespace App::Scene;
@@ -223,7 +223,7 @@ namespace VTX::UI::QT
 		}
 	}
 
-	QModelIndex Model::parent( const QModelIndex & p_index ) const
+	QModelIndex SystemModel::parent( const QModelIndex & p_index ) const
 	{
 		using namespace App;
 		using namespace App::Scene;
@@ -291,7 +291,7 @@ namespace VTX::UI::QT
 		}
 	}
 
-	QModelIndex Model::makeIndex(
+	QModelIndex SystemModel::makeIndex(
 		const int				 p_row,
 		const App::Scene::E_ITEM p_type,
 		const SystemUID			 p_rootUID,
@@ -302,7 +302,7 @@ namespace VTX::UI::QT
 		return createIndex( p_row, 0, id );
 	}
 
-	void Model::_onSystemLoad( const App::Events::SystemLoad & p_e )
+	void SystemModel::_onSystemLoad( const App::Events::SystemLoad & p_e )
 	{
 		using namespace App::Scene;
 
@@ -323,7 +323,7 @@ namespace VTX::UI::QT
 		endInsertRows();
 	}
 
-	void Model::_onSystemDestroy( App::ECS::Registry & p_r, App::ECS::Entity p_e )
+	void SystemModel::_onSystemDestroy( App::ECS::Registry & p_r, App::ECS::Entity p_e )
 	{
 		assert( _mapEntityRow.contains( p_e ) );
 
@@ -349,7 +349,7 @@ namespace VTX::UI::QT
 		endRemoveRows();
 	}
 
-	quintptr Model::pack( const App::Scene::E_ITEM p_item, const SystemUID p_rootIndex, const Index p_index )
+	quintptr SystemModel::pack( const App::Scene::E_ITEM p_item, const SystemUID p_rootIndex, const Index p_index )
 	{
 		// [ p_item:8 | p_rootIndex:16 | p_index:32 ]  <= 56 bits
 		return ( quintptr( p_item ) << 48 ) |	   // bits 48..55
@@ -357,10 +357,15 @@ namespace VTX::UI::QT
 			   ( quintptr( p_index ) );			   // bits  0..31
 	}
 
-	void Model::unpack( const quintptr p_v, App::Scene::E_ITEM & p_item, SystemUID & p_rootIndex, Index & p_index )
+	void SystemModel::unpack(
+		const quintptr		 p_v,
+		App::Scene::E_ITEM & p_item,
+		SystemUID &			 p_rootIndex,
+		Index &				 p_index
+	)
 	{
 		p_item		= App::Scene::E_ITEM( ( p_v >> 48 ) & 0xFF ); // 8 bits
 		p_rootIndex = SystemUID( ( p_v >> 32 ) & 0xFFFF );		  // 16 bits
 		p_index		= Index( p_v & 0xFFFFFFFFu );				  // 32 bits
 	}
-} // namespace VTX::UI::QT
+} // namespace VTX::UI::QT::Widget::Tree

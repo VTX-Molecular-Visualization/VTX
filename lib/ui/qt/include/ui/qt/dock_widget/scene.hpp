@@ -29,7 +29,8 @@ namespace VTX::UI::QT::DockWidget
 		/**
 		 * @brief Scene tree.
 		 */
-		QPointer<Widget::Tree::System> _tree;
+		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::System>> _map;
+		QPointer<Widget::Tree::System>										 _tree;
 		// TODO: add searchbar with QSortFilterProxyModel.
 		// TODO: add option to sync tree expand with selection model.
 

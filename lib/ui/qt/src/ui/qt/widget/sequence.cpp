@@ -1,6 +1,5 @@
 ﻿#include "ui/qt/widget/sequence.hpp"
 #include "ui/qt/helper.hpp"
-#include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
 #include <QMouseEvent>
 #include <QPainter>

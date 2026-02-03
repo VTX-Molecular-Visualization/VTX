@@ -5,15 +5,15 @@
 #include <QItemSelectionModel>
 #include <app/events.hpp>
 
-namespace VTX::UI::QT
+namespace VTX::UI::QT::Widget::Tree
 {
 	/**
 	 * @brief Selection model representing the application selection.
 	 */
-	class SelectionModel : public QItemSelectionModel
+	class SystemSelectionModel : public QItemSelectionModel
 	{
 	  public:
-		SelectionModel( QAbstractItemModel * p_model, QObject * p_parent = nullptr );
+		SystemSelectionModel( QAbstractItemModel * p_model, QObject * p_parent = nullptr );
 
 	  private:
 		/**
@@ -26,6 +26,6 @@ namespace VTX::UI::QT
 		 */
 		void _onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e );
 	};
-} // namespace VTX::UI::QT
+} // namespace VTX::UI::QT::Widget::Tree
 
 #endif
