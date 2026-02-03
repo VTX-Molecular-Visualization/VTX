@@ -77,14 +77,11 @@ namespace VTX::App::Pass
 					continue;
 				auto & player = genericTrajPtr->player;
 
-				if ( genericTrajPtr->paused ) // Can't be done that way. The jumpTo even should update positions even if
-											  // the traj is paused
-					continue;
-
 				uint nextStep		= genericTrajPtr->requestedFrameIndex;
 				uint autoplayUpdate = 0;
-				if ( nextStep == genericTrajPtr->currentFrameIndex ) // If there is no outside demand on setting the
-																	 // current frame, we use the autoplay
+				if ( nextStep == genericTrajPtr->currentFrameIndex
+					 && not genericTrajPtr->paused ) // If there is no outside demand on setting the
+													 // current frame, we use the autoplay
 				{
 					autoplayUpdate = autoplayNextFrameTrigger( *genericTrajPtr, p_elapsedTime );
 					if ( autoplayNextFrameTrigger( *genericTrajPtr, p_elapsedTime ) )
