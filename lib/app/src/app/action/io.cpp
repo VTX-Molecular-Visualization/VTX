@@ -19,6 +19,7 @@
 
 namespace VTX::App::Action::IO
 {
+	void Open::execute( const std::string & p_path ) { execute( FilePath( p_path ) ); }
 
 	void Open::execute( const FilePath & p_path )
 	{

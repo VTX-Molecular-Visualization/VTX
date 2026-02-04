@@ -21,6 +21,7 @@ namespace VTX::App::Action::IO
 	struct Open
 	{
 		void execute( const FilePath & p_path );
+		void execute( const std::string & p_path );
 	};
 	struct AssociateTrajectory
 	{

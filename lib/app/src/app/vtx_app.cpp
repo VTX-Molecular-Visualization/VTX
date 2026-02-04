@@ -12,6 +12,7 @@
 #include "app/filesystem.hpp"
 #include "app/input/input_manager.hpp"
 #include "app/network/network_manager.hpp"
+#include "app/pass/action_executer.hpp"
 #include "app/pass/camera_updater.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/pass/scene_updater.hpp"
@@ -162,6 +163,7 @@ namespace VTX::App
 		PASS().addPass<Pass::CameraUpdater>( _camera );
 		PASS().addPass<Pass::SystemUpdater>();
 		PASS().addPass<Pass::TrajectoryUpdater>();
+		PASS().addPass<Pass::ActionExecuter>();
 
 		// TODO: at setting loading.
 		// Camera projection.

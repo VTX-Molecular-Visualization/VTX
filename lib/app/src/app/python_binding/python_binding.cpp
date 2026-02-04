@@ -3,10 +3,12 @@
 #include "app/action/camera.hpp"
 #include "app/action/io.hpp"
 #include "app/action/scene.hpp"
+#include "app/pass/action_executer.hpp"
 #include <python_binding/binder.hpp>
 #include <python_binding/binding/helper.hpp>
 #include <python_binding/binding/vtx_module.hpp>
 #include <python_binding/wrapper/arg.hpp>
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::PythonBinding
@@ -40,7 +42,7 @@ namespace VTX::App::PythonBinding
 			VTX::PythonBinding::Wrapper::Arg( "height" )
 		);
 
-		commands.bindAction<App::Action::IO::Open, const std::string &>(
+		commands.bindAction<Pass::QueueAction<App::Action::IO::Open>, const std::string &>(
 			"openFile", "Open files at given path.", VTX::PythonBinding::Wrapper::Arg( "path" )
 		);
 		/*
