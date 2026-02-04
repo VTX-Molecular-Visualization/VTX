@@ -14,22 +14,9 @@
 namespace VTX::UI::QT::Delegate
 {
 
-	SceneItemDelegate::SceneItemDelegate( QObject * p_parent ) : QStyledItemDelegate( p_parent ) {}
-	}
-	void SceneItemDelegate::_updateSliderBar( App::ECS::Entity p_entity )
+	SceneItemDelegate::SceneItemDelegate( const App::ECS::Entity p_system, QObject * p_parent ) :
+		_system( p_system ), QStyledItemDelegate( p_parent )
 	{
-		// Check if this entity has a trajectory
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( p_entity, trajPtr );
-		if ( trajPtr == nullptr )
-			return;
-
-		// Trigger a repaint of the tree view to update the slider position
-		// The delegate's parent is the tree view (set in scene.cpp)
-		if ( auto * view = qobject_cast<QAbstractItemView *>( parent() ) )
-		{
-			view->viewport()->update();
-		}
 	}
 
 	void SceneItemDelegate::paint(
@@ -127,14 +114,14 @@ namespace VTX::UI::QT::Delegate
 					switch ( zone )
 					{
 					case HitZone::PlayPause:
-						App::ACTION().execute<App::Action::Trajectory::ToggleStartPause>( entity );
+						App::ACTION().execute<App::Action::Trajectory::ToggleStartPause>( _system );
 						break;
-					case HitZone::Stop: App::ACTION().execute<App::Action::Trajectory::Stop>( entity ); break;
+					case HitZone::Stop: App::ACTION().execute<App::Action::Trajectory::Stop>( _system ); break;
 					case HitZone::Slider:
 					{
 						// Calculate which frame was clicked
 						App::System::GenericTrajectory * trajPtr = nullptr;
-						App::System::get( entity, trajPtr );
+						App::System::get( _system, trajPtr );
 						if ( trajPtr && trajPtr->trajectorySize > 0 )
 						{
 							int sliderLeft	= controlsRect.left() + 2 * ( BUTTON_SIZE + SPACING );
@@ -146,7 +133,7 @@ namespace VTX::UI::QT::Delegate
 								float ratio = float( mouseEvent->pos().x() - sliderLeft ) / float( sliderWidth );
 								ratio		= std::clamp( ratio, 0.0f, 1.0f );
 								uint frame	= uint( ratio * float( trajPtr->trajectorySize - 1 ) );
-								App::ACTION().execute<App::Action::Trajectory::JumpTo>( entity, frame );
+								App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, frame );
 							}
 						}
 						break;

@@ -35,7 +35,7 @@ namespace VTX::UI::QT::Delegate
 		/**
 		 * @brief Entity to display.
 		 */
-		const App::ECS::Entity _system;
+		App::ECS::Entity _system;
 
 		/**
 		 * @brief Check if the given index represents a system with a multi-frame trajectory.

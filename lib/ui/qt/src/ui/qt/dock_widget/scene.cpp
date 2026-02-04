@@ -54,11 +54,6 @@ namespace VTX::UI::QT::DockWidget
 		assert( _mapTreeWidgets.contains( p_e ) );
 		_mapTreeWidgets[ p_e ]->getSystemSelectionModel().refresh();
 		_mapTreeWidgets[ p_e ]->viewport()->update();
-		// Timer for updating trajectory player display
-		_updateTimer = new QTimer( this );
-		_updateTimer->setInterval( 33 ); // ~30 FPS
-		connect( _updateTimer, &QTimer::timeout, this, &Scene::_onUpdateTimer );
-		_updateTimer->start();
 	}
 
 	void Scene::_onSelectionLocked( const Events::SelectionLocked & p_event )
@@ -68,14 +63,6 @@ namespace VTX::UI::QT::DockWidget
 			w->setSelectionMode(
 				p_event.locked ? QAbstractItemView::NoSelection : QAbstractItemView::ExtendedSelection
 			);
-		}
-
-	void Scene::_onUpdateTimer()
-	{
-		// Update visible items that might have trajectory players
-		if ( _tree && _tree->viewport() )
-		{
-			_tree->viewport()->update();
 		}
 	}
 
