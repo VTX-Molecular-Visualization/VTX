@@ -18,7 +18,7 @@ namespace VTX::App::Action::Selection
 	/**
 	 * @brief Set item selection.
 	 */
-	template<Scene::E_ITEM ITEM>
+	template<Core::Struct::E_SYSTEM_ITEM ITEM>
 	struct SetSelected
 	{
 		void execute(
@@ -37,7 +37,7 @@ namespace VTX::App::Action::Selection
 
 			Core::Struct::IndexRangeList selectionAtoms = selection.atoms;
 
-			if constexpr ( ITEM == Scene::E_ITEM::SYSTEM )
+			if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
 			{
 				if ( p_selected )
 				{
@@ -48,7 +48,7 @@ namespace VTX::App::Action::Selection
 					selectionAtoms.clear();
 				}
 			}
-			else if constexpr ( ITEM == Scene::E_ITEM::CHAIN )
+			else if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
 			{
 				if ( p_selected )
 				{
@@ -65,7 +65,7 @@ namespace VTX::App::Action::Selection
 					}
 				}
 			}
-			else if constexpr ( ITEM == Scene::E_ITEM::RESIDUE )
+			else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
 			{
 				if ( p_selected )
 				{
@@ -82,7 +82,7 @@ namespace VTX::App::Action::Selection
 					}
 				}
 			}
-			else if constexpr ( ITEM == Scene::E_ITEM::ATOM )
+			else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
 			{
 				if ( p_selected )
 				{

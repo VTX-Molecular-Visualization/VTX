@@ -98,6 +98,7 @@ namespace VTX::UI::QT::Widget
 	{
 		QWidget::resizeEvent( p_event );
 
+		_container->setVisible( false );
 		if ( not _resizeTimer.isActive() )
 		{
 			// Force first update to avoid 0, 0 at startup.
@@ -111,6 +112,8 @@ namespace VTX::UI::QT::Widget
 	{
 		assert( _window );
 		assert( _container );
+
+		_container->setVisible( true );
 
 		const QSize size = this->size();
 		_window->resize( size );

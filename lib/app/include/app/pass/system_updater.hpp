@@ -4,6 +4,8 @@
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/pass/pass_manager.hpp"
+#include <renderer/types.hpp>
+#include <unordered_map>
 
 namespace VTX::App::Pass
 {
@@ -13,14 +15,24 @@ namespace VTX::App::Pass
 	class SystemUpdater : public IPass
 	{
 	  public:
+		/**
+		 * @brief Map representation entity to its current index.
+		 */
+		using RepresentationMap = std::unordered_map<ECS::Entity, Renderer::RepresentationIndex>;
+
 		SystemUpdater();
 		inline void update( const float, const float ) {}
 
 	  private:
 		/**
-		 * @brief System entities.
+		 * @brief All system entities.
 		 */
 		std::vector<ECS::Entity> _entities;
+
+		/**
+		 * @brief Current used representations.
+		 */
+		RepresentationMap _representations;
 
 		/**
 		 * @brief Update renderer when data changed.
@@ -30,10 +42,14 @@ namespace VTX::App::Pass
 		void _onUpdateRepresentation( ECS::Registry &, ECS::Entity );
 		void _onUpdateColor( ECS::Registry &, ECS::Entity );
 
+		void _onUpdateRepresentationPreset( ECS::Registry &, ECS::Entity );
+
 		/**
 		 * @brief On system loaded event.
 		 */
 		void _onSystemLoaded( const Events::SystemLoad & );
+
+		void _setRepresentation();
 	};
 } // namespace VTX::App::Pass
 

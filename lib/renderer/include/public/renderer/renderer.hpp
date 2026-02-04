@@ -19,16 +19,16 @@ namespace VTX::Renderer
 
 	struct SystemData
 	{
-		const RootUID						   uid;
-		const Mat4f &						   transform;
-		const Core::Struct::System			   data;
-		const Core::Struct::Frame &			   frame;
-		const std::vector<float>			   radii;
-		const std::vector<PickingUID>		   atomUids;
-		const std::vector<ColorIndex>		   colorIndexes;
-		const std::vector<RepresentationIndex> representationIndexes;
-		const std::vector<std::byte>		   visibleAtoms;
-		const std::vector<std::byte>		   selectedAtoms;
+		const SystemUID																uid;
+		const Mat4f &																transform;
+		const Core::Struct::System													data;
+		const Core::Struct::Frame &													frame;
+		const std::vector<float>													radii;
+		const std::vector<PickingUID>												atomUids;
+		const std::vector<ColorIndex>												colorIndexes;
+		const std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> representationRanges;
+		const std::vector<std::byte>												visibleAtoms;
+		const std::vector<std::byte>												selectedAtoms;
 	};
 
 	/**
@@ -87,7 +87,7 @@ namespace VTX::Renderer
 
 		void setGraphicsConfig( const GraphicsConfig & );
 		void setColorLayout( const Color::Layout & );
-		void setRepresentation( const Representation & );
+		void setRepresentations( const std::vector<const Representation *> & );
 		void setVoxels( const std::vector<Vec3f> &, const std::vector<Vec3f> & );
 
 		/**
@@ -96,21 +96,25 @@ namespace VTX::Renderer
 
 		void setSystems( const std::vector<SystemData> & );
 
-		void setSystemTransform( const RootUID, const Mat4f & );
-		void setSystemPosition( const RootUID, std::span<const Vec3f> );
-		void setSystemColors( const RootUID, std::span<const ColorIndex> p_b )
+		void setSystemTransform( const SystemUID, const Mat4f & );
+		void setSystemPosition( const SystemUID, std::span<const Vec3f> );
+		void setSystemColors( const SystemUID, std::span<const ColorIndex> p_b )
 		{
 			_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", p_b );
 			setNeedUpdate( true );
 		}
-		void setSystemRepresentation( const RootUID, std::span<const RepresentationIndex> p_b )
+
+		/*
+		void setSystemRepresentation( const SystemUID, std::span<const RepresentationIndex> p_b )
 		{
 			_context.setPipelineBuffer<RepresentationIndex>( "Atoms.Representations", p_b );
 			setNeedUpdate( true );
 		}
-		void setSystemSelection( const RootUID, std::span<const std::byte>, std::span<const std::byte> );
+		*/
 
-		void setSystemVisibility( const RootUID, std::span<const std::byte>, std::span<const std::byte> );
+		void setSystemSelection( const SystemUID, std::span<const std::byte>, std::span<const std::byte> );
+
+		void setSystemVisibility( const SystemUID, std::span<const std::byte>, std::span<const std::byte> );
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
@@ -200,8 +204,8 @@ namespace VTX::Renderer
 		/**
 		 * @brief Cached data to update.
 		 */
-		Caches::Camera					  _cacheCamera;
-		std::map<RootUID, Caches::System> _cacheSystems;
+		Caches::Camera						_cacheCamera;
+		std::map<SystemUID, Caches::System> _cacheSystems;
 
 		/**
 		 * @brief Refresh the render graph according to the graphics config.

@@ -12,10 +12,10 @@ namespace VTX::App::Uid
 	{
 	  public:
 		using PickingUIDRange = Util::Math::Range<PickingUID>;
-		using RootUIDRange	  = Util::Math::Range<RootUID>;
+		using RootUIDRange	  = Util::Math::Range<SystemUID>;
 
 		inline Pool<PickingUID> & getPickingPool() { return _pickingPool; }
-		inline Pool<RootUID> &	  getRootPool() { return _rootPool; }
+		inline Pool<SystemUID> &	  getRootPool() { return _rootPool; }
 
 	  private:
 		/**
@@ -26,7 +26,7 @@ namespace VTX::App::Uid
 		/**
 		 * @brief Pool for root UIDs (system).
 		 */
-		Pool<RootUID> _rootPool;
+		Pool<SystemUID> _rootPool;
 	};
 } // namespace VTX::App::Uid
 

@@ -1,6 +1,4 @@
 #include "ui/qt/menu/selection.hpp"
-#include "ui/qt/model.hpp"
-#include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
 #include <QModelIndexList>
 #include <app/action/scene.hpp>
@@ -12,6 +10,7 @@ namespace VTX::UI::QT::Menu
 	{
 		setTitle( "Selection" );
 
+		/*
 		auto & selection = SELECTION();
 
 		// Refresh menu when opened.
@@ -27,30 +26,27 @@ namespace VTX::UI::QT::Menu
 		);
 
 		setEnabled( selection.hasSelection() );
+		*/
 	}
 
 	void Selection::_refresh()
 	{
+		/*
 		using namespace App::Scene;
 
 		// Clear previous actions.
 		clear();
 
-		/*
-		addAction<Action::Selection::SetGranularitySystem>();
-		addAction<Action::Selection::SetGranularityChain>();
-		addAction<Action::Selection::SetGranularityResidue>();
-		addAction<Action::Selection::SetGranularityAtom>();
-		*/
 
 		// TODO: parameters?
+
 		auto & selectionModel = SELECTION();
 		auto & model		  = MODEL();
 
 		const size_t			  count = size_t( E_ITEM::COUNT );
 		std::array<size_t, count> rowsPerItem;
 		rowsPerItem.fill( 0 );
-		std::vector<RootUID> systemGlobalIndexes;
+		std::vector<SystemUID> systemGlobalIndexes;
 
 		const QModelIndex	  clickedRow = selectionModel.currentIndex(); // TODO: not valid in menubar context.
 		const QModelIndexList rows		 = selectionModel.selectedRows();
@@ -62,9 +58,9 @@ namespace VTX::UI::QT::Menu
 			}
 
 			// Decode index to get entity.
-			E_ITEM	item;
-			RootUID globalIndex;
-			Index	localIndex;
+			E_ITEM	  item;
+			SystemUID globalIndex;
+			Index	  localIndex;
 			Model::unpack( index.internalId(), item, globalIndex, localIndex );
 
 			rowsPerItem[ size_t( item ) ] += 1;
@@ -118,5 +114,6 @@ namespace VTX::UI::QT::Menu
 		{
 			addSection( QString( "%1 atom%2" ).arg( QString::number( atomRows ) ).arg( atomRows > 1 ? "s" : "" ) );
 		}
+		*/
 	}
 } // namespace VTX::UI::QT::Menu

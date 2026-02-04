@@ -3,6 +3,8 @@
 
 #include "renderer/camera.hpp"
 #include "renderer/types.hpp"
+#include <core/struct/system.hpp>
+#include <unordered_map>
 #include <util/types.hpp>
 
 namespace VTX::Renderer::Caches
@@ -17,8 +19,9 @@ namespace VTX::Renderer::Caches
 
 	struct System
 	{
-		Mat4f	   transform;
-		ModelIndex modelIndex;
+		Mat4f																  transform;
+		ModelIndex															  modelIndex;
+		std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> representationRanges;
 	};
 } // namespace VTX::Renderer::Caches
 

@@ -48,26 +48,24 @@ namespace
 		return atoms;
 	}
 
-	std::vector<RepresentationIndex> _toVector(
+	std::unordered_map<RepresentationIndex, Struct::IndexRangeList> _toRepresentationIndexMap(
 		const std::unordered_map<ECS::Entity, Struct::IndexRangeList> p_ranges,
-		const size_t												  p_size
+		Pass::SystemUpdater::RepresentationMap &					  p_outRepresentationMap
 	)
 	{
-		std::vector<RepresentationIndex> atoms( p_size );
-		size_t							 count = 0;
+		std::unordered_map<RepresentationIndex, Struct::IndexRangeList> map;
+		size_t															count = 0;
 
 		for ( const auto & [ entity, ranges ] : p_ranges )
 		{
-			for ( auto it = ranges.rangeBegin(); it != ranges.rangeEnd(); ++it )
+			if ( not p_outRepresentationMap.contains( entity ) )
 			{
-				std::fill_n( atoms.begin() + it->getFirst(), it->getCount(), 0 );
+				p_outRepresentationMap[ entity ] = static_cast<RepresentationIndex>( p_outRepresentationMap.size() );
 			}
-			count += ranges.count();
+			map.emplace( p_outRepresentationMap[ entity ], ranges );
 		}
 
-		assert( count == p_size );
-
-		return atoms;
+		return map;
 	}
 
 	std::vector<ColorIndex> _toVector(
@@ -132,6 +130,8 @@ namespace VTX::App::Pass
 		reg.on_update<System::Representation>().connect<&SystemUpdater::_onUpdateRepresentation>( this );
 		reg.on_update<System::Color>().connect<&SystemUpdater::_onUpdateColor>( this );
 
+		reg.on_update<Renderer::Representation>().connect<&SystemUpdater::_onUpdateRepresentationPreset>( this );
+
 		HUB().connect<Events::SystemLoad, &SystemUpdater::_onSystemLoaded>( this );
 	}
 
@@ -161,7 +161,10 @@ namespace VTX::App::Pass
 	{
 		const auto & [ representation, uid, data ]
 			= p_r.get<System::Representation, System::UID, Core::Struct::System>( p_e );
-		RENDERER().setSystemRepresentation( uid.system, _toVector( representation.presetAtoms, data.getAtomCount() ) );
+		// RENDERER().setSystemRepresentation(
+		//	uid.system, _toRepresentationIndexMap( representation.presetAtoms, data.getAtomCount(), _representations )
+		//);
+		_setRepresentation();
 	}
 
 	void SystemUpdater::_onUpdateColor( ECS::Registry & p_r, ECS::Entity p_e )
@@ -182,6 +185,8 @@ namespace VTX::App::Pass
 		_entities.push_back( p_event.system );
 
 		std::vector<Renderer::SystemData> systemsData;
+		_representations.clear();
+
 		for ( const ECS::Entity system : _entities )
 		{
 			const auto & data			= reg.get<Core::Struct::System>( system );
@@ -210,6 +215,7 @@ namespace VTX::App::Pass
 			std::vector<float> radii;
 			for ( Index i = 0; i < atomCount; ++i )
 			{
+				// TODO: use glsl constants.
 				radii.push_back( 1.0f );
 			}
 
@@ -221,13 +227,44 @@ namespace VTX::App::Pass
 									   radii,
 									   _toVector( uid.atoms, atomCount ),
 									   _toVector( color.colorSchemeAtoms, data ),
-									   _toVector( representation.presetAtoms, atomCount ),
+									   _toRepresentationIndexMap( representation.presetAtoms, _representations ),
 									   _toByteVector( visibility.atoms, atomCount ),
 									   _toByteVector( selection.atoms, atomCount ) }
 			);
 		}
 
 		VTX_INFO( "Systems GPU upload preparation: {} ms", timer.elapsedTime() );
+
 		RENDERER().setSystems( systemsData );
+		_setRepresentation();
+	}
+
+	void SystemUpdater::_onUpdateRepresentationPreset( ECS::Registry & p_r, ECS::Entity p_e )
+	{
+		// Check if entity used.
+		const auto it = std::find_if(
+			_representations.begin(), _representations.end(), [ p_e ]( const auto & pair ) { return pair.first == p_e; }
+		);
+
+		if ( it != _representations.end() )
+		{
+			_setRepresentation();
+		}
+	}
+
+	void SystemUpdater::_setRepresentation()
+	{
+		std::vector<const Renderer::Representation *> representations( _representations.size() );
+
+		for ( auto & [ ent, index ] : _representations )
+		{
+			const auto * const rep = REG().try_get<Renderer::Representation>( ent );
+
+			assert( rep );
+
+			representations[ index ] = rep;
+		}
+
+		RENDERER().setRepresentations( representations );
 	}
 } // namespace VTX::App::Pass

@@ -5,7 +5,7 @@
 
 namespace VTX::Renderer::Geometry
 {
-	struct SES : BaseGeometry
+	struct SES : BaseGeometry<DrawRangeArray>
 	{
 		/*
 		RangeList rangeListSESCircles;

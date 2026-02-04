@@ -1,10 +1,8 @@
 ﻿#include "ui/qt/dock_widget/inspector.hpp"
 #include "ui/qt/events.hpp"
-#include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/widget/main_window.hpp"
-#include "ui/qt/widget/tree.hpp"
 #include <QFontDatabase>
 #include <QLabel>
 #include <QToolBar>

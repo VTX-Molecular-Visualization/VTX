@@ -16,7 +16,7 @@ namespace VTX::UI::QT::Delegate
 		Q_OBJECT
 
 	  public:
-		explicit SceneItemDelegate( QObject * p_parent = nullptr );
+		explicit SceneItemDelegate( const App::ECS::Entity, QObject * p_parent = nullptr );
 
 		void paint(
 			QPainter *					 p_painter,
@@ -32,6 +32,11 @@ namespace VTX::UI::QT::Delegate
 		 ) override;
 
 	  private:
+		/**
+		 * @brief Entity to display.
+		 */
+		const App::ECS::Entity _system;
+
 		/**
 		 * @brief Check if the given index represents a system with a multi-frame trajectory.
 		 */

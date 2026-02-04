@@ -189,7 +189,7 @@ namespace VTX::Renderer::Context::Executor
 
 				if ( ranges && ranges->counts.size() > 0 )
 				{
-					assert( ranges->counts.size() == ranges->offsets.size() );
+					assert( ranges->counts.size() == ranges->firsts.size() );
 					assert( _backend.vertexArray( p.pipeline ).hasEbo() );
 
 					_backend.vertexArray( p.pipeline )
@@ -197,7 +197,7 @@ namespace VTX::Renderer::Context::Executor
 							_toGL( p.primitive ),
 							reinterpret_cast<const GLsizei *>( ranges->counts.data() ),
 							GL_UNSIGNED_INT,
-							reinterpret_cast<const GLvoid * const *>( ranges->offsets.data() ),
+							reinterpret_cast<const GLvoid * const *>( ranges->firsts.data() ),
 							static_cast<GLsizei>( ranges->counts.size() )
 						);
 				}

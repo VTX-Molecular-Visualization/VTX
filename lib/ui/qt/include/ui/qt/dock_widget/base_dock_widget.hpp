@@ -69,6 +69,7 @@ namespace VTX::UI::QT::DockWidget
 			// Root widget and layout.
 			_layout = new L( _root );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
+			_layout->setSpacing( 0 );
 			//_layout->setSizeConstraint( QLayout::SetNoConstraint );
 
 			// Custom title bar without title.

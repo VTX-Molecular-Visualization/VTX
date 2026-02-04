@@ -15,12 +15,12 @@ namespace VTX::App::Helper::Scene
 	/**
 	 * @brief Get a map of all systems with their root UIDs as keys.
 	 */
-	std::unordered_map<RootUID, ECS::Entity> getAllSystemsMap();
+	std::unordered_map<SystemUID, ECS::Entity> getAllSystemsMap();
 
 	/**
 	 * @brief Find system entity by UID.
 	 */
-	std::optional<ECS::Entity> findSystemByRootUID( const RootUID );
+	std::optional<ECS::Entity> findSystemByRootUID( const SystemUID );
 	std::optional<ECS::Entity> findSystemByAtomUID( const PickingUID );
 	std::optional<ECS::Entity> findSystemByResidueUID( const PickingUID );
 

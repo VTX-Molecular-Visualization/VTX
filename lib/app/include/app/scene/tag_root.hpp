@@ -5,21 +5,6 @@
 
 namespace VTX::App::Scene
 {
-	/**
-	 * @brief Scene items.
-	 */
-	enum struct E_ITEM : uint8_t
-	{
-		SYSTEM,
-		CATEGORY,
-		CHAIN,
-		RESIDUE,
-		ATOM,
-		PATH,
-		VIEWPOINT,
-
-		COUNT
-	};
 
 	/**
 	 * @brief Empty component to use as tag.

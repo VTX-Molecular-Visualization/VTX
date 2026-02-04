@@ -3,7 +3,8 @@
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/events.hpp"
-#include "ui/qt/widget/tree.hpp"
+#include "ui/qt/widget/tree/camera.hpp"
+#include "ui/qt/widget/tree/system.hpp"
 #include <QComboBox>
 #include <QPointer>
 #include <QTimer>
@@ -13,31 +14,57 @@ namespace VTX::UI::QT::DockWidget
 
 	/**
 	 * @brief Display a tree widget with loaded systems.
-	 * // TODO: Load only minimal data on expand/collapse.
+	 * TODO: add searchbar with QSortFilterProxyModel.
+	 * TODO: add option to sync tree expand with selection model.
 	 */
 	class Scene : public BaseDockWidget<Scene>
 	{
 	  public:
+		/**
+		 * @brief Constructor.
+		 */
 		Scene( QWidget * p_parent );
 
 	  private:
-		// TODO: separate reusable widgets.
-		// QPointer<QComboBox> _cbColorLayout;
-		// QPointer<QComboBox> _cbGraphicsConfig;
+		/**
+		 * @brief Camera tree.
+		 */
+		QPointer<Widget::Tree::Camera> _treeCamera;
 
 		/**
-		 * @brief Scene tree.
+		 * @brief System trees.
 		 */
-		QPointer<Widget::Tree> _tree;
+		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::System>> _mapTreeWidgets;
 
 		/**
 		 * @brief Timer for updating trajectory player display.
 		 */
 		QTimer * _updateTimer = nullptr;
 
-		// TODO: add searchbar with QSortFilterProxyModel.
-		// TODO: add option to sync tree expand with selection model.
 
+		/**
+		 * @brief Custom spacer to fill empty space.
+		 */
+		QPointer<QWidget> _filler;
+
+		/**
+		 * @brief Add tree when system is loaded.
+		 */
+		void _onSystemLoad( const App::Events::SystemLoad & );
+
+		/**
+		 * @brief Remove tree when system is removed.
+		 */
+		void _onSystemDestroy( App::ECS::Registry &, App::ECS::Entity );
+
+		/**
+		 * @brief Update selection.
+		 */
+		void _onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e );
+
+		/**
+		 * @brief Lock or unlock selection.
+		 */
 		void _onSelectionLocked( const Events::SelectionLocked & );
 		void _onUpdateTimer();
 	};

@@ -1,6 +1,5 @@
 ﻿#include "ui/qt/widget/sequence.hpp"
 #include "ui/qt/helper.hpp"
-#include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
 #include <QMouseEvent>
 #include <QPainter>
@@ -38,14 +37,15 @@ namespace VTX::UI::QT::Widget
 		painter.setFont( font() );
 
 		using namespace App;
+		using namespace Core::Struct;
 
 		auto & reg				  = REG();
 		auto & system			  = reg.get<Core::Struct::System>( _system );
-		auto & metadata			  = reg.get<System::Metadata>( _system );
-		auto & uid				  = reg.get<System::UID>( _system );
+		auto & metadata			  = reg.get<App::System::Metadata>( _system );
+		auto & uid				  = reg.get<App::System::UID>( _system );
 		auto & colorLayoutIntance = ECS::getFirstComponent<Scene::ColorLayout>();
 		auto & colorlayout		  = reg.get<Renderer::Color::Layout>( colorLayoutIntance.preset );
-		auto & selection		  = reg.get<System::Selection>( _system );
+		auto & selection		  = reg.get<App::System::Selection>( _system );
 
 		const int	xOffset	   = horizontalScrollBar()->value();
 		const Index startIndex = xOffset / SEQ_CHAR_WIDTH;
@@ -99,7 +99,7 @@ namespace VTX::UI::QT::Widget
 
 			// Selection.
 			const QRect cellRect( x - 2, SEQ_CHAR_HEIGHT + 5, SEQ_CHAR_WIDTH, SEQ_CHAR_HEIGHT );
-			bool		selected = App::Helper::System::isSelected<Scene::E_ITEM::RESIDUE>( _system, residue );
+			bool		selected = App::Helper::System::isSelected<E_SYSTEM_ITEM::RESIDUE>( _system, residue );
 			if ( selected )
 			{
 				painter.fillRect( cellRect, palette().highlight() );
@@ -125,6 +125,7 @@ namespace VTX::UI::QT::Widget
 	{
 		using namespace App;
 		using namespace App::Action;
+		using namespace Core::Struct;
 
 		if ( SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
 		{
@@ -140,18 +141,18 @@ namespace VTX::UI::QT::Widget
 		Index index = *opt;
 
 		auto & reg		 = REG();
-		auto & selection = reg.get<System::Selection>( _system );
+		auto & selection = reg.get<App::System::Selection>( _system );
 
 		bool shift = p_e->modifiers() & Qt::ShiftModifier;
 		bool ctrl  = p_e->modifiers() & Qt::ControlModifier;
 
-		bool selected = App::Helper::System::isSelected<Scene::E_ITEM::RESIDUE>( _system, index );
+		bool selected = App::Helper::System::isSelected<E_SYSTEM_ITEM::RESIDUE>( _system, index );
 
 		if ( not shift && not ctrl )
 		{
 			// Normal.
 			ACTION().execute<Selection::Clear>( _system );
-			ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>( _system, index );
+			ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>( _system, index );
 
 			_anchor		 = index;
 			_lastClicked = index;
@@ -168,7 +169,7 @@ namespace VTX::UI::QT::Widget
 			Index b = Util::Math::max( _anchor, index );
 
 			ACTION().execute<Selection::Clear>( _system );
-			ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>(
+			ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>(
 				_system, Core::Struct::IndexRange { a, b }
 			);
 
@@ -179,11 +180,11 @@ namespace VTX::UI::QT::Widget
 			// CTRL
 			if ( selected )
 			{
-				ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>( _system, index, false );
+				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>( _system, index, false );
 			}
 			else
 			{
-				ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>( _system, index );
+				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>( _system, index );
 			}
 
 			_anchor		 = index;
@@ -199,6 +200,7 @@ namespace VTX::UI::QT::Widget
 	{
 		using namespace App;
 		using namespace App::Action;
+		using namespace Core::Struct;
 
 		if ( not _dragging )
 		{
@@ -214,7 +216,7 @@ namespace VTX::UI::QT::Widget
 		Index index = *opt;
 
 		auto & reg		 = App::REG();
-		auto & selection = reg.get<System::Selection>( _system );
+		auto & selection = reg.get<App::System::Selection>( _system );
 
 		Index a = Util::Math::min( _dragStartIndex, index );
 		Index b = Util::Math::max( _dragStartIndex, index );
@@ -223,7 +225,7 @@ namespace VTX::UI::QT::Widget
 		if ( not( p_e->modifiers() & Qt::ControlModifier ) )
 		{
 			ACTION().execute<Selection::Clear>( _system );
-			ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>(
+			ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>(
 				_system, Core::Struct::IndexRange { a, b }
 			);
 		}
@@ -232,13 +234,13 @@ namespace VTX::UI::QT::Widget
 		{
 			if ( _dragAddMode )
 			{
-				ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>(
+				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>(
 					_system, Core::Struct::IndexRange { a, b }
 				);
 			}
 			else
 			{
-				ACTION().execute<Selection::SetSelected<Scene::E_ITEM::RESIDUE>>(
+				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>(
 					_system, Core::Struct::IndexRange { a, b }, false
 				);
 			}

@@ -28,7 +28,7 @@ namespace VTX::UI::QT::Widget
 	void Selection::_onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e )
 	{
 		using namespace App;
-		using namespace App::Scene;
+		using namespace Core::Struct;
 
 		auto &	   reg		= REG();
 		const auto entities = reg.view<App::System::Selection>();
@@ -43,12 +43,12 @@ namespace VTX::UI::QT::Widget
 			const auto & selection = reg.get<App::System::Selection>( entity );
 
 			QString name = QString::fromStdString( system.name );
-			if ( Helper::System::isFullySelected<E_ITEM::SYSTEM>( entity ) )
+			if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::SYSTEM>( entity ) )
 			{
 				addItem( name );
 				continue;
 			}
-			else if ( Helper::System::isSelected<E_ITEM::SYSTEM>( entity ) == false )
+			else if ( Helper::System::isSelected<E_SYSTEM_ITEM::SYSTEM>( entity ) == false )
 			{
 				continue;
 			}
@@ -57,12 +57,12 @@ namespace VTX::UI::QT::Widget
 			for ( Index chain = 0; chain < system.getChainCount(); ++chain )
 			{
 				QString chainName = QString::fromStdString( system.getChainName( chain ) );
-				if ( Helper::System::isFullySelected<E_ITEM::CHAIN>( entity, chain ) )
+				if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::CHAIN>( entity, chain ) )
 				{
 					addItem( name + "/" + chainName );
 					continue;
 				}
-				else if ( Helper::System::isSelected<E_ITEM::CHAIN>( entity, chain ) == false )
+				else if ( Helper::System::isSelected<E_SYSTEM_ITEM::CHAIN>( entity, chain ) == false )
 				{
 					continue;
 				}
@@ -71,12 +71,12 @@ namespace VTX::UI::QT::Widget
 				for ( Index residue : system.getChainResidueRange( chain ) )
 				{
 					QString residueName = QString::fromStdString( system.getResidueName( residue ) );
-					if ( Helper::System::isFullySelected<E_ITEM::RESIDUE>( entity, residue ) )
+					if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::RESIDUE>( entity, residue ) )
 					{
 						addItem( name + "/" + chainName + "/" + residueName );
 						continue;
 					}
-					else if ( Helper::System::isSelected<E_ITEM::RESIDUE>( entity, residue ) == false )
+					else if ( Helper::System::isSelected<E_SYSTEM_ITEM::RESIDUE>( entity, residue ) == false )
 					{
 						continue;
 					}
@@ -84,7 +84,7 @@ namespace VTX::UI::QT::Widget
 					// Atoms.
 					for ( Index atom : system.getResidueAtomRange( residue ) )
 					{
-						if ( Helper::System::isSelected<E_ITEM::ATOM>( entity, atom ) )
+						if ( Helper::System::isSelected<E_SYSTEM_ITEM::ATOM>( entity, atom ) )
 						{
 							addItem(
 								name + "/" + chainName + "/" + residueName + "/"

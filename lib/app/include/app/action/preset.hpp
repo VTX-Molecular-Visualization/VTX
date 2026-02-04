@@ -19,24 +19,6 @@
 
 namespace VTX::App::Action::Preset
 {
-	/**
-	 * @brief Set instance in the scene.
-	 */
-	/*
-	template<typename T>
-	struct SetCurrent
-	{
-	  public:
-		void execute( const ECS::Entity p_e )
-		{
-			auto & reg	 = REG();
-			auto   scene = ECS::getFirstEntityOnlyWithComponents<Scene::TagRoot>();
-			auto   view	 = reg.view<App::Preset::Instance<T>>();
-			reg.remove<App::Preset::Instance<T>>( scene );
-			reg.emplace<App::Preset::Instance<T>>( scene, p_e );
-		}
-	};
-	*/
 
 	/**
 	 * @brief Add a new preset to a library.
@@ -169,12 +151,7 @@ namespace VTX::App::Action::Preset
 			{
 				ACTION().execute<Scene::SetGraphicsConfig>( p_e );
 			}
-			else if constexpr ( std::is_same_v<T, Renderer::Representation> )
-			{
-				// TODO: TMP.
-				const auto & rep = REG().get<Renderer::Representation>( p_e );
-				RENDERER().setRepresentation( rep );
-			}
+			else if constexpr ( std::is_same_v<T, Renderer::Representation> ) {}
 			else
 			{
 				static_assert( always_false_v<T>, "Unsupported preset type." );

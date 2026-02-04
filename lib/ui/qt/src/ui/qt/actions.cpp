@@ -6,7 +6,6 @@
 #include "ui/qt/dialog/export_image.hpp"
 #include "ui/qt/dialog/open.hpp"
 #include "ui/qt/style.hpp"
-#include "ui/qt/widget/tree.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/action/io.hpp>

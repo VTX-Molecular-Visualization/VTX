@@ -1,9 +1,7 @@
 #include "ui/qt/application.hpp"
 #include "ui/qt/dialog/trajectory_association.hpp"
 #include "ui/qt/menu/file.hpp"
-#include "ui/qt/model.hpp"
 #include "ui/qt/resources.hpp"
-#include "ui/qt/selection_model.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style.hpp"
 #include "ui/qt/widget/main_window.hpp"
@@ -50,10 +48,6 @@ namespace VTX::UI::QT
 		{
 			VTX_ERROR( "Failed to restore settings: {}", p_e.what() );
 		}
-
-		// Create model.
-		auto & model = App::ECS::setCtx<Model>();
-		App::ECS::setCtx<SelectionModel>( &model );
 
 		// Load theme.
 		App::ECS::setCtx<Style>().load( _tools );

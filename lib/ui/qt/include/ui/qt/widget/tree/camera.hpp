@@ -1,0 +1,38 @@
+#ifndef __VTX_UI_QT_WIDGET_TREE_CAMERA__
+#define __VTX_UI_QT_WIDGET_TREE_CAMERA__
+
+#include "ui/qt/widget/tree/base_tree.hpp"
+#include <QTreeWidget>
+
+namespace VTX::UI::QT::Widget::Tree
+{
+	/**
+	 * @brief Scene tree.
+	 */
+	class Camera : public Widget::Tree::BaseTree<Camera>
+	{
+	  public:
+		Camera( QWidget * p_parent ) : BaseTree( p_parent )
+		{
+			setExpandsOnDoubleClick( true );
+
+			// Main item.
+			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Camera" ) );
+			// Add fake cameras for the example.
+			for ( int i = 0; i < 3; i++ )
+			{
+				QTreeWidgetItem * const cameraItem
+					= new QTreeWidgetItem( QStringList() << QString( "Viewpoint %1" ).arg( i + 1 ) );
+				topLevelItem( 0 )->addChild( cameraItem );
+			}
+
+			connect( this, &QTreeWidget::itemExpanded, this, [ this ] { updateGeometry(); } );
+			connect( this, &QTreeWidget::itemCollapsed, this, [ this ] { updateGeometry(); } );
+		}
+
+		
+	};
+
+} // namespace VTX::UI::QT::Widget::Tree
+
+#endif

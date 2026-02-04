@@ -21,9 +21,6 @@ namespace VTX::App::Pass
 
 		reg.on_update<Renderer::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfigPreset>( this );
 		reg.on_update<Renderer::Color::Layout>().connect<&SceneUpdater::_onUpdateColorLayoutPreset>( this );
-
-		// TODO: TMP.
-		reg.on_update<Renderer::Representation>().connect<&SceneUpdater::_onUpdateRepresentationPreset>( this );
 	}
 
 	void SceneUpdater::_onUpdateAABB( ECS::Registry & p_r, ECS::Entity p_e )
@@ -72,14 +69,6 @@ namespace VTX::App::Pass
 		{
 			_onUpdateColorLayout( p_r, _entity );
 		}
-	}
-
-	//
-	void SceneUpdater::_onUpdateRepresentationPreset( ECS::Registry & p_r, ECS::Entity p_e )
-	{
-		auto &		 renderer = RENDERER();
-		const auto & preset	  = p_r.get<Renderer::Representation>( p_e );
-		renderer.setRepresentation( preset );
 	}
 
 } // namespace VTX::App::Pass

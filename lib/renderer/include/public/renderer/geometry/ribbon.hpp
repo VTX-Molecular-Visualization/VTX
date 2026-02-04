@@ -6,12 +6,8 @@
 namespace VTX::Renderer::Geometry
 {
 
-	struct Ribbon : BaseGeometry
+	struct Ribbon : BaseGeometry<DrawRangeArray>
 	{
-		MapUIDRange ranges;
-
-		// Compiled draw ranges.
-		DrawRangeArray drawRanges;
 	};
 
 } // namespace VTX::Renderer::Geometry

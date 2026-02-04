@@ -21,6 +21,7 @@
 #include "app/threading/base_thread.hpp"
 #include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
+#include <core/chemdb/atom.hpp>
 #include <core/struct/system.hpp>
 #include <io/reader/system.hpp>
 #include <renderer/renderer.hpp>
@@ -107,7 +108,9 @@ namespace VTX::App::Action::Scene
 				[ &firstFrame ]( Util::Math::AABB & p_aabb )
 				{
 					for ( auto & it_atomPos : firstFrame )
-						p_aabb.extend( it_atomPos );
+					{
+						p_aabb.extend( it_atomPos, Core::ChemDB::Atom::VDW_RADIUS_MIN );
+					}
 				}
 			);
 
@@ -120,16 +123,10 @@ namespace VTX::App::Action::Scene
 		selection.atoms = {};
 
 		// Representation.
-		// representation.atoms.resize( data.getAtomCount() );
 		auto entityRep = ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>();
 		ACTION().execute<Action::Representation::AddToSystem>( entity, entityRep );
 
-		// TODO: TMP.
-		const auto & defaultRepPreset = reg.get<Renderer::Representation>( entityRep );
-		RENDERER().setRepresentation( defaultRepPreset );
-
 		// Color scheme.
-		// color.atoms.resize( data.getAtomCount() );
 		ACTION().execute<Color::Add<System::COLOR_SCHEME_DEFAULT>>( entity );
 
 		// Deleted: nothing deleted.

@@ -377,6 +377,17 @@ namespace VTX::Util::Math
 		constexpr void shrinkLast( const Count p_n ) noexcept { shrink( p_n, E_EDGE::LAST ); }
 
 		/**
+		 * @brief Shift the range by n.
+		 */
+		constexpr void shift( const Count p_n ) noexcept
+		{
+			assert( first <= TypeMax<T> - static_cast<T>( p_n ) );
+			assert( last <= TypeMax<T> - static_cast<T>( p_n ) );
+			first = static_cast<T>( first + static_cast<T>( p_n ) );
+			last  = static_cast<T>( last + static_cast<T>( p_n ) );
+		}
+
+		/**
 		 * @brief Equality operator.
 		 */
 		friend constexpr bool operator==( const Range &, const Range & ) = default;
