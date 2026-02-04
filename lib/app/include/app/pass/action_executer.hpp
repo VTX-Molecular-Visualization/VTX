@@ -87,7 +87,7 @@ namespace VTX::App::Pass
 				}
 			}
 		};
-		std::unique_ptr<_interface> _ptr = std::make_unique<_wrapper<_dummy>>();
+		std::unique_ptr<_interface> _ptr = std::make_unique<_wrapper<_dummy>>( _dummy() );
 
 	  public:
 		template<typename SomeAction, typename... Args>
