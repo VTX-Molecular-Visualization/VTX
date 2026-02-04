@@ -50,7 +50,7 @@ namespace VTX::App::PythonBinding
 			"openScene", "Open scene at given path.", VTX::PythonBinding::Wrapper::Arg( "path" )
 		);
 		*/
-		commands.bindAction<App::Action::IO::DownloadSystem, const char *>(
+		commands.bindAction<Pass::QueueAction<App::Action::IO::DownloadSystem>, const std::string &>(
 			"download", "Retrieve a system from the RCSB PDB.", VTX::PythonBinding::Wrapper::Arg( "system_id" )
 		);
 		/*
@@ -61,20 +61,24 @@ namespace VTX::App::PythonBinding
 		commands.bindAction<App::Action::IO::ReloadSettings>( "reloadSettings", "Reload settings." );
 		commands.bindAction<App::Action::IO::ResetSettings>( "resetSettings", "Reset settings." );
 		*/
-		commands.bindAction<App::Action::Scene::Clear>( "clear", "Clear scene." );
+		commands.bindAction<Pass::QueueAction<App::Action::Scene::Clear>>( "clear", "Clear scene." );
 
-		commands.bindAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>(
-			"setCameraProjectionOrthographic", "Set the render projection into Orthographic mode."
-		);
-		commands.bindAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>(
-			"setCameraProjectionPerspective", "Set the render projection into Perspective mode."
-		);
+		commands
+			.bindAction<Pass::QueueAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>>(
+				"setCameraProjectionOrthographic", "Set the render projection into Orthographic mode."
+			);
+		commands
+			.bindAction<Pass::QueueAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>>(
+				"setCameraProjectionPerspective", "Set the render projection into Perspective mode."
+			);
 		/*
 		commands.bindAction<App::Action::Camera::ToggleCameraProjection>(
 			"toggleCameraProjection", "Toggle the render projection between Perspective and Orthographic mode."
 		);
 		*/
-		commands.bindAction<App::Action::Camera::Reset>( "resetCamera", "Put the camera back in the initial space." );
+		commands.bindAction<Pass::QueueAction<App::Action::Camera::Reset>>(
+			"resetCamera", "Put the camera back in the initial space."
+		);
 
 		// TODO : test the stuff below after threading
 		/*

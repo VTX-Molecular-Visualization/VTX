@@ -37,7 +37,7 @@ namespace VTX::App::Action::IO
 		void execute( VTX::Util::Url::SystemId );
 		void execute( VTX::Util::Url::SystemId, FilePath );
 		void execute( VTX::Util::Url::UrlFull, FilePath );
-		void execute( const char * p_systemId );
+		void execute( const std::string& p_systemId );
 	};
 
 	/**

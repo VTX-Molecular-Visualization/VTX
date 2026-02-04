@@ -9,8 +9,16 @@ namespace VTX::App::Pass
 {
 	class QueuedAction;
 
+	/**
+	 * @brief Subscribe an action to be executed later on the main loop. Meant to be used only through QueueAction
+	 * @param
+	 */
 	void subscribe( QueuedAction ) noexcept;
 
+	/**
+	 * @brief Delays an action until a future pass update, in the main loop.
+	 * @tparam SomeAction Action to be delayed
+	 */
 	template<typename SomeAction>
 	class QueueAction
 	{
@@ -22,6 +30,10 @@ namespace VTX::App::Pass
 		}
 	};
 
+	/**
+	 * @brief Pass that execute actions in queue. Currently not triggering action every update for performances reason
+	 * but maybe in the future we will need to change that idk
+	 */
 	class ActionExecuter : public IPass
 	{
 	  public:
@@ -34,6 +46,9 @@ namespace VTX::App::Pass
 		float		_skipTime	 = 0.f;
 	};
 
+	/**
+	 * @brief Meant to be used to subscribe an action to the next main loop update by the QueueAction class object
+	 */
 	class QueuedAction
 	{
 	  public:
