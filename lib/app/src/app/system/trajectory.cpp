@@ -11,6 +11,26 @@
 
 namespace VTX::App::System
 {
+	namespace
+	{
+
+		/**
+		 * @brief Meant to be executed as another stoppable thread to fill a trajectory its frame asynchronously.
+		 */
+		class TrajectoryFullBufferReader
+		{
+		  public:
+			TrajectoryFullBufferReader( ECS::Entity entity, IO::Reader::System && loader );
+
+			uint operator()( VTX::Util::StopToken, Threading::BaseThread & ) noexcept;
+
+			struct _Data;
+
+		  private:
+			std::shared_ptr<_Data> _ptr
+				= nullptr; // The shared ptr aims to allow the copy without actually copying the IO resource
+		};
+	} // namespace
 
 	bool hasMultiFrameTrajectory( const ECS::Entity & p_entity ) noexcept
 	{
@@ -22,12 +42,24 @@ namespace VTX::App::System
 		if ( REG().all_of<TrajectoryFullBuffer>( p_entity ) )
 			p_trajPtr = &REG().get<TrajectoryFullBuffer>( p_entity ).genericData;
 	}
+
+	void patchGenericTrajectories( ECS::Entity p_entity, std::function<void( GenericTrajectory & )> p_lambda ) noexcept
+	{
+		if ( REG().all_of<TrajectoryFullBuffer>( p_entity ) )
+		{
+			REG().patch<TrajectoryFullBuffer>(
+				p_entity, [ &p_lambda ]( TrajectoryFullBuffer & p_ ) { p_lambda( p_.genericData ); }
+			);
+		}
+	}
+
 	void prepare( ECS::Entity p_entity, TrajectoryFullBuffer & p_trajectory, IO::Reader::System && p_loader ) noexcept
 	{
 		p_trajectory.genericData.trajectorySize = p_loader.getChemfilesReader().getFrameCount();
 		p_trajectory.frameCollection.reserve( p_loader.getChemfilesReader().getFrameCount() );
 		p_trajectory.frameCollection.emplace_back( p_loader.getChemfilesReader().getCurrentFrameAtomPosition() );
-		p_trajectory.genericData.playMode		   = TrajectoryPlayMode::pingpong;
+		p_trajectory.genericData.playMode = TrajectoryPlayMode::pingpong;
+		p_trajectory.genericData.player	  = Util::Players::PingPong( p_trajectory.genericData.trajectorySize - 1 );
 		p_trajectory.genericData.currentFrameIndex = 0;
 		p_trajectory.lastFrameAvailable			   = 0;
 

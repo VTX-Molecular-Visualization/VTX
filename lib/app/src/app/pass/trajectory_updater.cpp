@@ -6,50 +6,7 @@
 
 namespace VTX::App::Pass
 {
-	TrajectoryUpdater::TrajectoryUpdater()
-	{
-		REG().on_update<System::TrajectoryFullBuffer>().connect<&TrajectoryUpdater::_onTrajectoryFullBufferCreation>(
-			this
-		);
-		REG().on_destroy<System::TrajectoryFullBuffer>().connect<&TrajectoryUpdater::_onTrajectoryDestruction>( this );
-	}
-
-	void TrajectoryUpdater::_onTrajectoryFullBufferCreation( ECS::Entity p_entity )
-	{
-		if ( not _players.contains( p_entity ) )
-			_players.emplace( p_entity, _Player() );
-		auto &						localPlayerStruct = _players[ p_entity ];
-		System::GenericTrajectory * trajPtr			  = nullptr;
-		System::get( p_entity, trajPtr );
-		if ( trajPtr )
-		{
-			if ( trajPtr->playMode != localPlayerStruct.currentPlayMode )
-			{
-				localPlayerStruct.currentPlayMode = trajPtr->playMode;
-				switch ( localPlayerStruct.currentPlayMode )
-				{
-					using namespace VTX::Util;
-				case System::TrajectoryPlayMode::forward:
-					localPlayerStruct.currentPlayer
-						= Players::Forward( trajPtr->trajectorySize, trajPtr->currentFrameIndex );
-					break;
-				case System::TrajectoryPlayMode::pingpong:
-					localPlayerStruct.currentPlayer
-						= Players::PingPong( trajPtr->trajectorySize, trajPtr->currentFrameIndex );
-					break;
-				default:
-					localPlayerStruct.currentPlayer
-						= Players::Forward( trajPtr->trajectorySize, trajPtr->currentFrameIndex );
-					break;
-				}
-			}
-		}
-	}
-	void TrajectoryUpdater::_onTrajectoryDestruction( ECS::Entity p_entity )
-	{
-		if ( _players.contains( p_entity ) )
-			_players.erase( p_entity );
-	}
+	TrajectoryUpdater::TrajectoryUpdater() {}
 
 	bool TrajectoryUpdater::_tryUpdateFrame(
 		const ECS::Entity &			   entity,
@@ -66,6 +23,12 @@ namespace VTX::App::Pass
 	}
 	namespace
 	{
+		/**
+		 * @brief Returns whether the new positions has been set to the requestedFrameIndex
+		 * @param entity
+		 * @param p_traj
+		 * @return
+		 */
 		bool tryUpdateFrame( const ECS::Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept
 		{
 			if ( p_traj.lastFrameAvailable < p_traj.genericData.requestedFrameIndex )
@@ -76,6 +39,10 @@ namespace VTX::App::Pass
 				p_traj.frameCollection[ p_traj.genericData.requestedFrameIndex ]
 			);
 			return true;
+		}
+		uint autoplayNextFrameTrigger( System::GenericTrajectory & p_traj, const float p_elapsedTime ) noexcept
+		{
+			return static_cast<uint>( ( p_elapsedTime - p_traj.lastFrameUpdateTime ) / p_traj.playingSpeed );
 		}
 		/**
 		 * @brief Return true if the frame should be updated.
@@ -99,10 +66,7 @@ namespace VTX::App::Pass
 		 * @param p_elapsedTime Time since program start
 		 */
 		template<typename TrajectoryT>
-		void updateTrajectoresPosition(
-			std::unordered_map<ECS::Entity, TrajectoryUpdater::_Player> & players,
-			const float													  p_elapsedTime
-		)
+		void updateTrajectoresPosition( const float p_elapsedTime )
 		{
 			for ( ECS::Entity it_entity : REG().view<TrajectoryT>() )
 			{
@@ -111,31 +75,36 @@ namespace VTX::App::Pass
 				System::get( it_entity, genericTrajPtr );
 				if ( genericTrajPtr == nullptr )
 					continue;
-				if ( not players.contains( it_entity ) )
-					continue;
-				auto & player = players[ it_entity ].currentPlayer;
+				auto & player = genericTrajPtr->player;
 
-				if ( genericTrajPtr->paused )
+				uint nextStep		= genericTrajPtr->requestedFrameIndex;
+				uint autoplayUpdate = 0;
+				if ( nextStep == genericTrajPtr->currentFrameIndex
+					 && not genericTrajPtr->paused ) // If there is no outside demand on setting the
+													 // current frame, we use the autoplay
+				{
+					autoplayUpdate = autoplayNextFrameTrigger( *genericTrajPtr, p_elapsedTime );
+					if ( autoplayNextFrameTrigger( *genericTrajPtr, p_elapsedTime ) )
+					{
+						player.next( nextStep );
+					}
+				}
+				if ( nextStep == genericTrajPtr->currentFrameIndex )
 					continue;
-
-				uint nextStep = 0;
-				player.next( nextStep );
-				if ( genericTrajPtr->currentFrameIndex == nextStep )
-					continue;
-				if ( genericTrajPtr->lastFrameUpdateTime + genericTrajPtr->playingSpeed > p_elapsedTime )
-					continue;
-
-				player.increment();
 
 				REG().patch<TrajectoryT>(
 					it_entity,
-					[ &nextStep, &it_entity, &p_elapsedTime ]( TrajectoryT & traj )
+					[ &nextStep, &it_entity, &p_elapsedTime, &autoplayUpdate ]( TrajectoryT & traj )
 					{
 						System::GenericTrajectory & trajGenericData = genericData( traj );
 						trajGenericData.requestedFrameIndex			= nextStep;
+						trajGenericData.player.increment(
+							std::min( 1u, autoplayUpdate )
+						); // std::min is for the exhaustive algorithm. It means that if it is 0, no increment is made.
+						   // If >=1, only one increment is made. A predictive algorithm would be not using std::min
 						if ( tryUpdateFrame( it_entity, traj ) )
 						{
-							trajGenericData.requestedFrameIndex;
+							trajGenericData.currentFrameIndex	= trajGenericData.requestedFrameIndex;
 							trajGenericData.lastFrameUpdateTime = p_elapsedTime;
 						}
 					}
@@ -146,7 +115,28 @@ namespace VTX::App::Pass
 
 	void TrajectoryUpdater::update( const float p_delta, const float p_elapsedTime )
 	{
-		updateTrajectoresPosition<System::TrajectoryFullBuffer>( _players, p_elapsedTime );
+		/*
+		There is multiple ways to implement trajectory frame update. Each comes with pros and cons.
+		The way currently implemented will be referred as "exhaustive".
+		It governs how the autoplay will decide what the nextframe is :
+			We check if
+
+				elapsedTime > lastUpdateTime + playingSpeed
+
+			If it is : the next frame
+			is called. What it means is that if the delta between updates is multiple time bigger than the playing
+		speed, this algorithm won't try to catch up but will display every single frame.
+
+		Another implementation would be "predictive" where we skip N frames for
+
+			lastUpdateTime + (N - 1) * playingSpeed < elapsedTime < lastUpdateTime + N * playingSpeed
+
+		The predictive algorithm would enforce trajectory synchronisation if applicable, while the exhaustive algorithm
+		maukes sure every step is displayed.
+
+		*/
+
+		updateTrajectoresPosition<System::TrajectoryFullBuffer>( p_elapsedTime );
 	}
 
 } // namespace VTX::App::Pass

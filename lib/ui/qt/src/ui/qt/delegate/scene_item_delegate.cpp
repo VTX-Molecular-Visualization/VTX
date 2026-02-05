@@ -5,6 +5,11 @@
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
+#include <app/action/action_manager.hpp>
+#include <app/action/trajectory.hpp>
+#include <app/events.hpp>
+#include <app/services.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Delegate
 {
@@ -43,9 +48,8 @@ namespace VTX::UI::QT::Delegate
 			p_painter->fillRect( opt.rect, opt.palette.midlight() );
 		}
 
-		// Calculate text rect (top portion)
-		QRect textRect = opt.rect;
-		textRect.setHeight( opt.rect.height() - PLAYER_HEIGHT );
+		// Text rect is the top portion with fixed height
+		QRect textRect( opt.rect.left() + SPACING, opt.rect.top(), opt.rect.width() - SPACING, TEXT_ROW_HEIGHT );
 
 		// Draw the system name text
 		const QString text		 = p_index.data( Qt::DisplayRole ).toString();
@@ -53,8 +57,10 @@ namespace VTX::UI::QT::Delegate
 		p_painter->setPen( isSelected ? opt.palette.highlightedText().color() : opt.palette.text().color() );
 		p_painter->drawText( textRect, Qt::AlignVCenter | Qt::AlignLeft, text );
 
-		// Draw player controls below the text
-		QRect controlsRect = _getControlsRect( p_option );
+		// Player controls rect is below the text
+		QRect controlsRect(
+			opt.rect.left() + SPACING, opt.rect.top() + TEXT_ROW_HEIGHT, opt.rect.width() - 2 * SPACING, PLAYER_HEIGHT
+		);
 		_paintPlayerControls( p_painter, controlsRect, p_index, isSelected );
 
 		p_painter->restore();
@@ -66,8 +72,8 @@ namespace VTX::UI::QT::Delegate
 
 		if ( _hasTrajectory( p_index ) )
 		{
-			// Add height for player controls
-			baseSize.setHeight( baseSize.height() + PLAYER_HEIGHT );
+			// Use fixed height: text row + player controls
+			baseSize.setHeight( TEXT_ROW_HEIGHT + PLAYER_HEIGHT );
 		}
 
 		return baseSize;
@@ -108,16 +114,30 @@ namespace VTX::UI::QT::Delegate
 					switch ( zone )
 					{
 					case HitZone::PlayPause:
-						// TODO: App::ACTION().execute<App::Action::Trajectory::SetPlayTrajectory>(entity);
-						// or App::ACTION().execute<App::Action::Trajectory::SetPauseTrajectory>(entity);
+						App::ACTION().execute<App::Action::Trajectory::ToggleStartPause>( _system );
 						break;
-					case HitZone::Stop:
-						// TODO: App::ACTION().execute<App::Action::Trajectory::SetStopTrajectory>(entity);
-						break;
+					case HitZone::Stop: App::ACTION().execute<App::Action::Trajectory::Stop>( _system ); break;
 					case HitZone::Slider:
-						// TODO: App::ACTION().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>(entity,
-						// frame);
+					{
+						// Calculate which frame was clicked
+						App::System::GenericTrajectory * trajPtr = nullptr;
+						App::System::get( _system, trajPtr );
+						if ( trajPtr && trajPtr->trajectorySize > 0 )
+						{
+							int sliderLeft	= controlsRect.left() + 2 * ( BUTTON_SIZE + SPACING );
+							int sliderRight = controlsRect.right() - FRAME_WIDTH - SPACING;
+							int sliderWidth = sliderRight - sliderLeft;
+
+							if ( sliderWidth > 0 )
+							{
+								float ratio = float( mouseEvent->pos().x() - sliderLeft ) / float( sliderWidth );
+								ratio		= std::clamp( ratio, 0.0f, 1.0f );
+								uint frame	= uint( ratio * float( trajPtr->trajectorySize - 1 ) );
+								App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, frame );
+							}
+						}
 						break;
+					}
 					case HitZone::FrameSelector:
 						// Could open an edit widget for frame input
 						break;
@@ -184,7 +204,7 @@ namespace VTX::UI::QT::Delegate
 		QRect playRect( x, y + ( h - BUTTON_SIZE ) / 2, BUTTON_SIZE, BUTTON_SIZE );
 		p_painter->drawRect( playRect );
 		// Draw play triangle or pause bars
-		bool isPlaying = trajPtr && trajPtr->playMode != App::System::TrajectoryPlayMode::none;
+		bool isPlaying = trajPtr && not trajPtr->paused;
 		if ( isPlaying )
 		{
 			// Pause bars
@@ -292,9 +312,13 @@ namespace VTX::UI::QT::Delegate
 
 	QRect SceneItemDelegate::_getControlsRect( const QStyleOptionViewItem & p_option ) const
 	{
-		QRect rect = p_option.rect;
-		rect.setTop( rect.bottom() - PLAYER_HEIGHT );
-		return rect;
+		// Controls rect is below the text row (using fixed TEXT_ROW_HEIGHT)
+		return QRect(
+			p_option.rect.left() + SPACING,
+			p_option.rect.top() + TEXT_ROW_HEIGHT,
+			p_option.rect.width() - 2 * SPACING,
+			PLAYER_HEIGHT
+		);
 	}
 
 } // namespace VTX::UI::QT::Delegate

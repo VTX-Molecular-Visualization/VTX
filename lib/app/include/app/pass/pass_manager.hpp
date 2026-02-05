@@ -2,6 +2,7 @@
 #define __VTX_APP_PASS_MANAGER__
 
 #include <concepts>
+#include <forward_list>
 #include <util/collection.hpp>
 #include <util/event_hub.hpp>
 
@@ -53,7 +54,7 @@ namespace VTX::App::Pass
 			// Register update delegate.
 			UpdateDelegate d;
 			d.template connect<&T::update>( p );
-			_delegates.push_back( std::move( d ) );
+			_delegates.push_front( std::move( d ) );
 
 			return p;
 		}
@@ -132,7 +133,9 @@ namespace VTX::App::Pass
 
 	  private:
 		Util::Collection<std::unique_ptr<IPass>> _passes;
-		std::vector<UpdateDelegate>				 _delegates;
+		std::forward_list<UpdateDelegate>
+			_delegates; // delegates collection needs to be a forward list so insertion/removal of element from it
+						// doesn't invalidate pointers.
 	};
 } // namespace VTX::App::Pass
 

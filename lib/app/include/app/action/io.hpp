@@ -21,6 +21,7 @@ namespace VTX::App::Action::IO
 	struct Open
 	{
 		void execute( const FilePath & p_path );
+		void execute( const std::string & p_path );
 	};
 	struct AssociateTrajectory
 	{
@@ -36,7 +37,7 @@ namespace VTX::App::Action::IO
 		void execute( VTX::Util::Url::SystemId );
 		void execute( VTX::Util::Url::SystemId, FilePath );
 		void execute( VTX::Util::Url::UrlFull, FilePath );
-		void execute( const char * p_systemId );
+		void execute( const std::string& p_systemId );
 	};
 
 	/**

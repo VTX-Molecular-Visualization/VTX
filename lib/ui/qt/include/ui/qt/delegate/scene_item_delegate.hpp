@@ -35,7 +35,7 @@ namespace VTX::UI::QT::Delegate
 		/**
 		 * @brief Entity to display.
 		 */
-		const App::ECS::Entity _system;
+		App::ECS::Entity _system;
 
 		/**
 		 * @brief Check if the given index represents a system with a multi-frame trajectory.
@@ -74,13 +74,16 @@ namespace VTX::UI::QT::Delegate
 		 */
 		QRect _getControlsRect( const QStyleOptionViewItem & p_option ) const;
 
+		void _updateSliderBar( App::ECS::Entity );
+
 		/**
 		 * @brief Layout constants.
 		 */
-		static constexpr int PLAYER_HEIGHT = 24;
-		static constexpr int BUTTON_SIZE   = 20;
-		static constexpr int SPACING	   = 4;
-		static constexpr int FRAME_WIDTH   = 40;
+		static constexpr int TEXT_ROW_HEIGHT = 20; // Height for the system name row
+		static constexpr int PLAYER_HEIGHT	 = 24;
+		static constexpr int BUTTON_SIZE	 = 20;
+		static constexpr int SPACING		 = 4;
+		static constexpr int FRAME_WIDTH	 = 40;
 	};
 
 } // namespace VTX::UI::QT::Delegate

@@ -19,6 +19,7 @@
 
 namespace VTX::App::Action::IO
 {
+	void Open::execute( const std::string & p_path ) { execute( FilePath( p_path ) ); }
 
 	void Open::execute( const FilePath & p_path )
 	{
@@ -64,7 +65,10 @@ namespace VTX::App::Action::IO
 		execute( p_id, p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() );
 	}
 
-	void DownloadSystem::execute( const char * p_systemId ) { execute( Util::Url::SystemId( p_systemId ) ); }
+	void DownloadSystem::execute( const std::string & p_systemId )
+	{
+		execute( Util::Url::SystemId( p_systemId.data() ) );
+	}
 
 	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id, FilePath p_path )
 	{

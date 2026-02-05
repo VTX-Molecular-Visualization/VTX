@@ -7,6 +7,7 @@
 #include "ui/qt/widget/tree/system.hpp"
 #include <QComboBox>
 #include <QPointer>
+#include <QTimer>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -29,6 +30,12 @@ namespace VTX::UI::QT::DockWidget
 		 * @brief System trees.
 		 */
 		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::System>> _mapTreeWidgets;
+
+		/**
+		 * @brief Timer for updating trajectory player display.
+		 */
+		QTimer * _updateTimer = nullptr;
+
 
 		/**
 		 * @brief Custom spacer to fill empty space.
@@ -54,6 +61,7 @@ namespace VTX::UI::QT::DockWidget
 		 * @brief Lock or unlock selection.
 		 */
 		void _onSelectionLocked( const Events::SelectionLocked & );
+		void _onUpdateTimer();
 	};
 
 } // namespace VTX::UI::QT::DockWidget

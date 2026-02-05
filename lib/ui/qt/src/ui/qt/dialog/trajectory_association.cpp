@@ -59,6 +59,7 @@ namespace VTX::UI::QT::Dialog
 					App::ACTION().execute<App::Action::Scene::LoadSystem>( _path );
 				else
 					App::ACTION().execute<App::Action::IO::AssociateTrajectory>( _path, entity );
+				accept();
 			}
 		);
 
