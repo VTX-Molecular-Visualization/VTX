@@ -106,7 +106,7 @@ namespace VTX::UI::QT::Action
 			name	 = "Orthographic";
 			group	 = "CameraProjection";
 			tip		 = "Change camera projection mode";
-			icon	 = "sprite/camera/orthographic.png";
+			icon	 = 0xeb36;
 			shortcut = "Alt+O";
 			trigger	 = []()
 			{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>(); };
@@ -117,7 +117,7 @@ namespace VTX::UI::QT::Action
 			name	 = "Perspective";
 			group	 = "CameraProjection";
 			tip		 = "Change camera projection mode";
-			icon	 = "sprite/camera/perspective.png";
+			icon	 = 0xf720;
 			shortcut = "Alt+P";
 			trigger	 = []()
 			{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>(); };
