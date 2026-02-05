@@ -12,7 +12,7 @@ namespace VTX::UI::QT::Widget::Tree
 	class Camera : public Widget::Tree::BaseTree<Camera>
 	{
 	  public:
-		Camera( QWidget * p_parent ) : BaseTree( p_parent )
+		Camera( const App::ECS::Entity p_entity, QWidget * p_parent ) : BaseTree( p_parent ), _entity( p_entity )
 		{
 			setExpandsOnDoubleClick( true );
 
@@ -27,6 +27,9 @@ namespace VTX::UI::QT::Widget::Tree
 				topLevelItem( 0 )->addChild( cameraItem );
 			}
 		}
+
+	  private:
+		const App::ECS::Entity _entity;
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

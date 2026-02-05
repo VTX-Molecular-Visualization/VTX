@@ -7,6 +7,7 @@
 #include <app/events.hpp>
 #include <app/services.hpp>
 #include <app/system/selection.hpp>
+#include <renderer/camera.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -19,17 +20,23 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( new Widget::Tree::GraphicsConfigPresets( this ) );
 		_layout->addWidget( new Widget::Tree::ColorLayoutPresets( this ) );
 		_layout->addWidget( new Widget::Tree::RepresentationPresets( this ) );
-		_layout->addWidget( new Widget::Tree::Camera( this ) );
 
 		_filler = new QWidget( this );
 		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
 		_layout->addWidget( _filler );
+
+		App::REG().on_construct<Renderer::Camera>().connect<&Scene::_onCameraConstruct>( this );
 
 		App::HUB().connect<App::Events::SystemLoad, &Scene::_onSystemLoad>( this );
 		App::REG().on_destroy<Core::Struct::System>().connect<&Scene::_onSystemDestroy>( this );
 		App::REG().on_update<App::System::Selection>().connect<&Scene::_onUpdateSelection>( this );
 
 		App::HUB().connect<Events::SelectionLocked, &Scene::_onSelectionLocked>( this );
+	}
+
+	void Scene::_onCameraConstruct( App::ECS::Registry &, App::ECS::Entity p_e )
+	{
+		_layout->insertWidget( _layout->indexOf( _filler ), new Widget::Tree::Camera( p_e, this ) );
 	}
 
 	void Scene::_onSystemLoad( const App::Events::SystemLoad & p_e )

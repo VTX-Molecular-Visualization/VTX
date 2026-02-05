@@ -99,8 +99,6 @@ namespace VTX::App
 	{
 		VTX_INFO( "Starting application: {}", ECS::getCtx<Args>().toString() );
 
-		auto & renderer = RENDERER();
-
 		// Scene.
 		ECS::Entity sceneEnt = _registry.create();
 		_registry.emplace<Scene::TagRoot>( sceneEnt );
@@ -113,6 +111,7 @@ namespace VTX::App
 		ACTION().execute<App::Action::Application::Resize>( WIDTH_DEFAULT, HEIGHT_DEFAULT );
 
 		// Build the renderer (graphic api backend context ready).
+		auto & renderer = RENDERER();
 		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) )
 		{
 			VTX_WARNING( "No graphics" );

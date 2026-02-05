@@ -99,13 +99,6 @@ namespace VTX::UI::QT::Widget
 		QWidget::resizeEvent( p_event );
 
 		_container->setVisible( false );
-		if ( not _resizeTimer.isActive() )
-		{
-			// Force first update to avoid 0, 0 at startup.
-			// Wait for next frame to ensure camera is created.
-			QTimer::singleShot( 0, [ this ] { onResizeFinished(); } );
-		}
-
 		_resizeTimer.start( 40 );
 	}
 

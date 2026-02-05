@@ -36,11 +36,15 @@ namespace VTX::UI::QT::DockWidget
 		 */
 		QTimer * _updateTimer = nullptr;
 
-
 		/**
 		 * @brief Custom spacer to fill empty space.
 		 */
 		QPointer<QWidget> _filler;
+
+		/**
+		 * @brief Remove tree when system is removed.
+		 */
+		void _onCameraConstruct( App::ECS::Registry &, App::ECS::Entity );
 
 		/**
 		 * @brief Add tree when system is loaded.
