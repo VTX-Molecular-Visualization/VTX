@@ -143,30 +143,24 @@ namespace VTX::UI::QT
 	QIcon Style::iconFromGlyph( const uint32_t p_codepoint, const int p_px, const QColor & p_color )
 	{
 		QFont f( "Material Symbols Outlined" );
-
 		f.setPixelSize( p_px );
 		f.setHintingPreference( QFont::PreferNoHinting );
 		f.setStyleStrategy( QFont::NoFontMerging );
 
-		const char32_t cp  = static_cast<char32_t>( p_codepoint );
-		const QString  s   = QString::fromUcs4( &cp, 1 );
-		QRawFont	   raw = QRawFont::fromFont( f );
-
+		const char32_t		   cp	  = static_cast<char32_t>( p_codepoint );
+		const QString		   s	  = QString::fromUcs4( &cp, 1 );
+		const QRawFont		   raw	  = QRawFont::fromFont( f );
 		const QVector<quint32> glyphs = raw.glyphIndexesForString( s );
-
-		QPainterPath path = raw.pathForGlyph( glyphs[ 0 ] );
-		QRectF		 br	  = path.boundingRect();
-
-		const int side = std::max( p_px, int( std::ceil( std::max( br.width(), br.height() ) ) ) ) + 4;
+		const QPainterPath	   path	  = raw.pathForGlyph( glyphs[ 0 ] );
+		const QRectF		   br	  = path.boundingRect();
+		const int			   side	  = std::max( p_px, int( std::ceil( std::max( br.width(), br.height() ) ) ) ) + 4;
 
 		QPixmap pm( side, side );
 		pm.fill( Qt::transparent );
 
 		QPainter p( &pm );
 		p.setRenderHint( QPainter::Antialiasing, true );
-
 		p.translate( ( side - br.width() ) * 0.5 - br.left(), ( side - br.height() ) * 0.5 - br.top() );
-
 		p.setPen( Qt::NoPen );
 		p.setBrush( p_color );
 		p.drawPath( path );

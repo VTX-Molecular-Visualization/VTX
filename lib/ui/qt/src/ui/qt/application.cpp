@@ -149,26 +149,26 @@ namespace VTX::UI::QT
 			// Name.
 			qAction->setText( QString::fromStdString( p_action.name ) );
 			// Group.
-			if ( p_action.group.has_value() )
+			if ( p_action.group )
 			{
-				auto * qActionGroup = Q_APP()->findChild<QActionGroup *>( p_action.group.value() );
+				auto * qActionGroup = Q_APP()->findChild<QActionGroup *>( *p_action.group );
 				if ( not qActionGroup )
 				{
 					qActionGroup = new QActionGroup( Q_APP() );
-					qActionGroup->setObjectName( p_action.group.value() );
+					qActionGroup->setObjectName( *p_action.group );
 				}
 
 				qAction->setCheckable( true );
 				qActionGroup->addAction( qAction );
 			}
 			// Tip.
-			if ( p_action.tip.has_value() )
+			if ( p_action.tip )
 			{
-				QString tip = QString::fromStdString( p_action.tip.value() );
+				QString tip = QString::fromStdString( *p_action.tip );
 
-				if ( p_action.shortcut.has_value() )
+				if ( p_action.shortcut )
 				{
-					tip.append( " (" + p_action.shortcut.value() + ")" );
+					tip.append( " (" + *p_action.shortcut + ")" );
 				}
 
 				qAction->setStatusTip( tip );
@@ -176,20 +176,17 @@ namespace VTX::UI::QT
 				qAction->setWhatsThis( tip );
 			}
 			// Icon.
-			if ( p_action.icon.has_value() )
+			if ( p_action.icon )
 			{
-				if ( std::holds_alternative<int>( p_action.icon.value() ) )
+				if ( std::holds_alternative<int>( *p_action.icon ) )
 				{
-					qAction->setIcon(
-						QApplication::style()->standardIcon(
-							static_cast<QStyle::StandardPixmap>( std::get<int>( p_action.icon.value() ) )
-						)
-					);
+					QIcon icon = Style::iconFromGlyph( std::get<int>( *p_action.icon ), 48, palette().text().color() );
+					qAction->setIcon( icon );
 				}
-				else if ( std::holds_alternative<std::string>( p_action.icon.value() ) )
+				else if ( std::holds_alternative<std::string>( *p_action.icon ) )
 				{
 					qAction->setIcon(
-						QIcon( QString::fromStdString( ( ":/" + std::get<std::string>( p_action.icon.value() ) ) ) )
+						QIcon( QString::fromStdString( ( ":/" + std::get<std::string>( *p_action.icon ) ) ) )
 					);
 				}
 				else
@@ -198,14 +195,14 @@ namespace VTX::UI::QT
 				}
 			}
 			// Shortcut.
-			if ( p_action.shortcut.has_value() )
+			if ( p_action.shortcut )
 			{
-				qAction->setShortcut( QKeySequence( QString::fromStdString( p_action.shortcut.value() ) ) );
+				qAction->setShortcut( QKeySequence( QString::fromStdString( *p_action.shortcut ) ) );
 			}
 			// Action.
-			if ( p_action.trigger.has_value() )
+			if ( p_action.trigger )
 			{
-				QObject::connect( qAction, &QAction::triggered, p_action.trigger.value() );
+				QObject::connect( qAction, &QAction::triggered, *p_action.trigger );
 			}
 		}
 

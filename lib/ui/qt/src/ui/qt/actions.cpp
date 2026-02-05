@@ -22,7 +22,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "New";
 			tip		 = "Create a new project";
-			icon	 = "sprite/file/new.png";
+			icon	 = 0xf710;
 			shortcut = "Ctrl+N";
 			trigger	 = []() { App::ACTION().execute<App::Action::Scene::Clear>(); };
 		}
@@ -31,7 +31,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Download";
 			tip		 = "Download structure from PDB id";
-			icon	 = "sprite/file/download.png";
+			icon	 = 0xf090;
 			shortcut = "Ctrl+D";
 			trigger	 = []()
 			{
@@ -44,7 +44,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Open";
 			tip		 = "Open a project or a molecular file";
-			icon	 = "sprite/file/open.png";
+			icon	 = 0xe2c8;
 			shortcut = "Ctrl+O";
 			trigger	 = []()
 			{
@@ -64,14 +64,14 @@ namespace VTX::UI::QT::Action
 		{
 			name = "Delete";
 			tip	 = "Delete system";
-			// icon = "sprite/file/open_recent.png";
+			icon = 0xe872;
 		}
 
 		Save::Save()
 		{
 			name	 = "Save";
 			tip		 = "Save project";
-			icon	 = "sprite/file/save.png";
+			icon	 = 0xe161;
 			shortcut = "Ctrl+S";
 		}
 
@@ -79,7 +79,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Save as...";
 			tip		 = "Copy project in a new save";
-			icon	 = "sprite/file/save_as.png";
+			icon	 = 0xeb60;
 			shortcut = "Ctrl+Shift+S";
 		}
 
@@ -128,7 +128,7 @@ namespace VTX::UI::QT::Action
 			name	 = "Trackball";
 			group	 = "CameraController";
 			tip		 = "Use Trackball controller";
-			icon	 = "sprite/camera/trackball.png";
+			icon	 = 0xe577;
 			shortcut = "Alt+T";
 			trigger	 = []()
 			{
@@ -143,7 +143,7 @@ namespace VTX::UI::QT::Action
 			name	 = "Freefly";
 			group	 = "CameraController";
 			tip		 = "Use Freefly controller";
-			icon	 = "sprite/camera/freefly.png";
+			icon	 = 0xf71e;
 			shortcut = "Alt+F";
 			trigger	 = []()
 			{
@@ -157,7 +157,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	= "Orient";
 			tip		= "Orient camera on selection";
-			icon	= "sprite/camera/orient.png";
+			icon	= 0xe3dc;
 			trigger = []() { App::ACTION().execute<App::Action::Camera::Orient>(); };
 		}
 
@@ -165,7 +165,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	= "Reset";
 			tip		= "Reset camera";
-			icon	= "sprite/camera/reset.png";
+			icon	= 0xf481;
 			trigger = []() { App::ACTION().execute<App::Action::Camera::Reset>(); };
 		}
 
@@ -177,7 +177,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Snapshot";
 			tip		 = "Save current image";
-			icon	 = "sprite/snapshot/snapshot.png";
+			icon	 = 0xe412;
 			shortcut = "F2";
 			trigger	 = []()
 			{
@@ -190,7 +190,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Export";
 			tip		 = "Open dialog to export image";
-			icon	 = "sprite/snapshot/export.png";
+			icon	 = 0xe439;
 			shortcut = "F3";
 			trigger	 = []()
 			{

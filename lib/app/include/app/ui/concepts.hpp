@@ -15,7 +15,7 @@ namespace VTX::App::UI
 	struct DescAction
 	{
 		/**
-		 * @brief Icon can be a sprite path (string) or an integer (icon).
+		 * @brief Icon can be a sprite path (string), uint (codepoint).
 		 */
 		using Icon	   = std::variant<std::string, int>;
 		using Callable = std::function<void()>;
