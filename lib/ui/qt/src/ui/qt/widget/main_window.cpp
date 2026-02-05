@@ -1,7 +1,9 @@
 #include "ui/qt/widget/main_window.hpp"
+#include "app/helper/io.hpp"
 #include "app/services.hpp"
 #include "ui/qt/application.hpp"
 #include "ui/qt/dialog/progress.hpp"
+#include "ui/qt/dialog/trajectory_association.hpp"
 #include "ui/qt/dock_widget/color_layouts.hpp"
 #include "ui/qt/dock_widget/console.hpp"
 #include "ui/qt/dock_widget/graphics_configs.hpp"
@@ -177,7 +179,17 @@ namespace VTX::UI::QT::Widget
 	{
 		for ( const auto & url : p_event->mimeData()->urls() )
 		{
-			App::ACTION().execute<App::Action::IO::Open>( url.toLocalFile().toStdString() );
+			switch ( App::Helper::IO::whatToDoWithThisFile( url.toLocalFile().toStdString() ) )
+			{
+			case App::Helper::IO::FileDropHandling::actionOpen:
+				App::ACTION().execute<App::Action::IO::Open>( url.toLocalFile().toStdString() );
+				break;
+			case App::Helper::IO::FileDropHandling::associateTrajectory:
+				_trajAssocDialog = new Dialog::TrajectoryAssociation( url.toLocalFile().toStdString() );
+				_trajAssocDialog->exec();
+				break;
+			default: App::ACTION().execute<App::Action::IO::Open>( url.toLocalFile().toStdString() );
+			}
 		}
 
 		p_event->acceptProposedAction();

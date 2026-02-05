@@ -15,8 +15,9 @@
 
 namespace VTX::UI::QT::Dialog
 {
+	class TrajectoryAssociation;
 	class Progress;
-}
+} // namespace VTX::UI::QT::Dialog
 
 namespace VTX::UI::QT::Widget
 {
@@ -122,6 +123,11 @@ namespace VTX::UI::QT::Widget
 		 * @brief The progress dialog shown during blocking operations.
 		 */
 		QPointer<Dialog::Progress> _progressDialog;
+
+		/**
+		 * @brief The dialog window that opens when a trajectory file needs to be associated with a topology
+		 */
+		QPointer<Dialog::TrajectoryAssociation> _trajAssocDialog;
 
 		/**
 		 * @brief Default geometry for layout reset.

@@ -15,6 +15,8 @@ namespace VTX::Util::Url
 
 namespace VTX::App::Action::IO
 {
+	
+
 	/**
 	 * @brief Open a file or folder with the system default application.
 	 */
