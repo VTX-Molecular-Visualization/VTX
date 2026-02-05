@@ -3,11 +3,9 @@
 #include "ui/qt/application.hpp"
 #include "ui/qt/resources.hpp"
 #include "ui/qt/services.hpp"
-#include "ui/qt/widget/main_window.hpp"
-#include <QFile>
-#include <QIcon>
-#include <QStyle>
-#include <QWidget>
+#include <QPainter>
+#include <QPainterPath>
+#include <QRawFont>
 #include <util/enum.hpp>
 #include <util/logger.hpp>
 
@@ -90,13 +88,6 @@ namespace VTX::UI::QT
 		// Linux only?
 		// QIcon::setThemeName( "Material Symbols Outlined" );
 
-		// List all available fonts.
-		const QStringList fontList = QFontDatabase::families();
-		for ( const QString & fontName : fontList )
-		{
-			// VTX_TRACE( "Available font: {}", fontName.toStdString() );
-		}
-
 		// Save system palette.
 		_themePalettes[ toUnderlying( E_THEME::SYSTEM ) ] = Q_APP()->palette();
 		_themePalettes[ toUnderlying( E_THEME::LIGHT ) ]  = _makeLightPalette();
@@ -147,6 +138,40 @@ namespace VTX::UI::QT
 	{
 		QFont appFont( p_fontName, DEFAULT_FONT_SIZE );
 		Q_APP()->setFont( appFont );
+	}
+
+	QIcon Style::iconFromGlyph( const uint32_t p_codepoint, const int p_px, const QColor & p_color )
+	{
+		QFont f( "Material Symbols Outlined" );
+
+		f.setPixelSize( p_px );
+		f.setHintingPreference( QFont::PreferNoHinting );
+		f.setStyleStrategy( QFont::NoFontMerging );
+
+		const char32_t cp  = static_cast<char32_t>( p_codepoint );
+		const QString  s   = QString::fromUcs4( &cp, 1 );
+		QRawFont	   raw = QRawFont::fromFont( f );
+
+		const QVector<quint32> glyphs = raw.glyphIndexesForString( s );
+
+		QPainterPath path = raw.pathForGlyph( glyphs[ 0 ] );
+		QRectF		 br	  = path.boundingRect();
+
+		const int side = std::max( p_px, int( std::ceil( std::max( br.width(), br.height() ) ) ) ) + 4;
+
+		QPixmap pm( side, side );
+		pm.fill( Qt::transparent );
+
+		QPainter p( &pm );
+		p.setRenderHint( QPainter::Antialiasing, true );
+
+		p.translate( ( side - br.width() ) * 0.5 - br.left(), ( side - br.height() ) * 0.5 - br.top() );
+
+		p.setPen( Qt::NoPen );
+		p.setBrush( p_color );
+		p.drawPath( path );
+
+		return QIcon( pm );
 	}
 
 } // namespace VTX::UI::QT

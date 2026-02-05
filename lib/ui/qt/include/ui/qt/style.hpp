@@ -3,6 +3,7 @@
 
 #include "ui/qt/application.hpp"
 #include <QFontDatabase>
+#include <QIcon>
 #include <QPalette>
 #include <app/tool/base_tool.hpp>
 #include <util/types.hpp>
@@ -56,11 +57,6 @@ namespace VTX::UI::QT
 		inline QString getCurrentFontFamily() const { return Q_APP()->font().family(); }
 
 		/**
-		 * @brief Get the available fonts.
-		 */
-		inline static QStringList getAvailableFonts() { return QFontDatabase::families(); }
-
-		/**
 		 * @brief Switch application theme.
 		 */
 		void setTheme( const E_THEME p_theme );
@@ -69,6 +65,16 @@ namespace VTX::UI::QT
 		 * @brief Set font.
 		 */
 		void setFontFamily( const QString & );
+
+		/**
+		 * @brief Get the available fonts.
+		 */
+		inline static QStringList getAvailableFonts() { return QFontDatabase::families(); }
+
+		/**
+		 * @brief Get an icon from a font.
+		 */
+		static QIcon iconFromGlyph( const uint32_t, const int, const QColor & color );
 
 	  private:
 		/**

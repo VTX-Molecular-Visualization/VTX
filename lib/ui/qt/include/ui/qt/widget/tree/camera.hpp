@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_WIDGET_TREE_CAMERA__
 #define __VTX_UI_QT_WIDGET_TREE_CAMERA__
 
+#include "ui/qt/style.hpp"
 #include "ui/qt/widget/tree/base_tree.hpp"
 #include <QTreeWidget>
 
@@ -26,6 +27,9 @@ namespace VTX::UI::QT::Widget::Tree
 					= new QTreeWidgetItem( QStringList() << QString( "Viewpoint %1" ).arg( i + 1 ) );
 				topLevelItem( 0 )->addChild( cameraItem );
 			}
+
+			auto ico = Style::iconFromGlyph( 0xe8fc, iconSize().width(), palette().text().color() );
+			topLevelItem( 0 )->setIcon( 0, ico );
 		}
 
 	  private:

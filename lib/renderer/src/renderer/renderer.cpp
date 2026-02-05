@@ -163,7 +163,6 @@ namespace VTX::Renderer
 		if ( _refreshGraph( p_config ) )
 		{
 			_context.build( _queue, _graph.getResources() );
-			std::cout << _context.commands() << std::endl;
 		}
 
 		BinaryBuffer140 bufferShading;

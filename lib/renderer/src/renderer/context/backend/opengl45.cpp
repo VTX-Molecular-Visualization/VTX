@@ -245,16 +245,6 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		VTX_TRACE( "Resource tables:\n{}", _resourceTables.toString() );
-		VTX_TRACE( "Framebuffers:\n{}", _framebuffers.toString() );
-		VTX_TRACE( "Textures:\n{}", _textures.toString() );
-		VTX_TRACE( "Samplers:\n{}", _samplers.toString() );
-		VTX_TRACE( "Programs:\n{}", _programs.toString() );
-		VTX_TRACE( "Shader Buffers:\n{}", _shaderBuffers.toString() );
-		VTX_TRACE( "Vertex Buffers:\n{}", _vertexBuffers.toString() );
-		VTX_TRACE( "Index Buffers:\n{}", _indexBuffers.toString() );
-		VTX_TRACE( "Vertex Arrays:\n{}", _vertexArrays.toString() );
-
 		// Mark all resources as invalid.
 		_resourceTables.invalidate();
 		_framebuffers.invalidate();
