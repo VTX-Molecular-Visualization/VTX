@@ -6,10 +6,16 @@
 
 namespace VTX::UI::QT::Widget::Tree
 {
+	/**
+	 * @brief Base class for tree widgets that auto adjust their height to their content (only one top level item).
+	 */
 	template<typename T, ConceptWidget W = QTreeWidget>
 	class BaseTree : public Widget::BaseWidget<T, W>
 	{
 	  public:
+		/**
+		 * @brief Default UI settings.
+		 */
 		BaseTree( QWidget * p_parent ) : Widget::BaseWidget<T, W>( p_parent )
 		{
 			W::setHeaderHidden( true );
@@ -28,6 +34,11 @@ namespace VTX::UI::QT::Widget::Tree
 			W::connect( this, &QTreeView::collapsed, this, [ this ]( const QModelIndex & ) { W::updateGeometry(); } );
 		}
 
+		virtual ~BaseTree() = default;
+
+		/**
+		 * @brief Calculate the content height of the tree.
+		 */
 		int _contentHeight() const
 		{
 			const int rowHeight = this->sizeHintForRow( 0 );
@@ -71,8 +82,11 @@ namespace VTX::UI::QT::Widget::Tree
 			return rows * rowHeight + 2 * this->frameWidth();
 		}
 
-		inline QSize minimumSizeHint() const { return QSize( 0, 0 ); }
-		inline QSize sizeHint() const { return QSize( QWidget::sizeHint().width(), _contentHeight() ); }
+		/**
+		 * @brief Override size hints to adapt height to content.
+		 */
+		inline QSize minimumSizeHint() const override { return QSize( 0, 0 ); }
+		inline QSize sizeHint() const override { return QSize( QWidget::sizeHint().width(), _contentHeight() ); }
 	};
 } // namespace VTX::UI::QT::Widget::Tree
 

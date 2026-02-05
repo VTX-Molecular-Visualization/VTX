@@ -3,6 +3,7 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/widget/main_window.hpp"
+#include "ui/qt/widget/transform.hpp"
 #include <QFontDatabase>
 #include <QLabel>
 #include <QToolBar>
@@ -14,6 +15,10 @@ namespace VTX::UI::QT::DockWidget
 	Inspector::Inspector( QWidget * p_parent ) : BaseDockWidget( p_parent, "Selection" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+
+		///////////////
+		_layout->addWidget( new Widget::Transform( this ) );
+		///////////////
 
 		// Selection toolbar.
 		auto * toolbar = new QToolBar( this );

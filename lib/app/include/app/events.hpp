@@ -91,6 +91,7 @@ namespace VTX::App::Events
 		FilePath path;
 	};
 
+	template<typename P>
 	struct PresetRename
 	{
 		ECS::Entity preset;

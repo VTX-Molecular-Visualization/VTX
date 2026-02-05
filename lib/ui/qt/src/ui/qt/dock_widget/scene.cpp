@@ -1,5 +1,8 @@
 #include "ui/qt/dock_widget/scene.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/widget/tree/color_layout_presets.hpp"
+#include "ui/qt/widget/tree/graphics_config_presets.hpp"
+#include "ui/qt/widget/tree/representation_presets.hpp"
 #include <app/ecs.hpp >
 #include <app/events.hpp>
 #include <app/services.hpp>
@@ -13,8 +16,10 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 
-		_treeCamera = new Widget::Tree::Camera( this );
-		_layout->addWidget( _treeCamera );
+		_layout->addWidget( new Widget::Tree::GraphicsConfigPresets( this ) );
+		_layout->addWidget( new Widget::Tree::ColorLayoutPresets( this ) );
+		_layout->addWidget( new Widget::Tree::RepresentationPresets( this ) );
+		_layout->addWidget( new Widget::Tree::Camera( this ) );
 
 		_filler = new QWidget( this );
 		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );

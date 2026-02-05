@@ -26,11 +26,6 @@ namespace VTX::UI::QT::DockWidget
 
 	  private:
 		/**
-		 * @brief Camera tree.
-		 */
-		QPointer<Widget::Tree::Camera> _treeCamera;
-
-		/**
 		 * @brief System trees.
 		 */
 		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::System>> _mapTreeWidgets;

@@ -7,7 +7,7 @@
 namespace VTX::UI::QT::Widget::Tree
 {
 	/**
-	 * @brief Scene tree.
+	 * @brief Camera tree: list of saved viewpoints.
 	 */
 	class Camera : public Widget::Tree::BaseTree<Camera>
 	{
@@ -16,8 +16,9 @@ namespace VTX::UI::QT::Widget::Tree
 		{
 			setExpandsOnDoubleClick( true );
 
-			// Main item.
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Camera" ) );
+			topLevelItem( 0 )->setExpanded( true );
+
 			// Add fake cameras for the example.
 			for ( int i = 0; i < 3; i++ )
 			{
@@ -25,12 +26,7 @@ namespace VTX::UI::QT::Widget::Tree
 					= new QTreeWidgetItem( QStringList() << QString( "Viewpoint %1" ).arg( i + 1 ) );
 				topLevelItem( 0 )->addChild( cameraItem );
 			}
-
-			connect( this, &QTreeWidget::itemExpanded, this, [ this ] { updateGeometry(); } );
-			connect( this, &QTreeWidget::itemCollapsed, this, [ this ] { updateGeometry(); } );
 		}
-
-		
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree
