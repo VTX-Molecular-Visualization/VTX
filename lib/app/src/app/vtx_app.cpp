@@ -37,13 +37,8 @@
 
 namespace
 {
-	/**
-	 * @brief Store local entities.
-	 * TODO : Why don't we use private/protected attributes from VTXApp ?
-	 */
-	using namespace VTX::App;
-	ECS::Entity _scene;
-	ECS::Entity _camera;
+	constexpr size_t WIDTH_DEFAULT	= 1280;
+	constexpr size_t HEIGHT_DEFAULT = 720;
 } // namespace
 
 namespace VTX::App
@@ -64,7 +59,7 @@ namespace VTX::App
 		// Store statistics.
 		ECS::setCtx<Util::Monitoring::Stats>();
 		// Store renderer.
-		ECS::setCtx<Renderer::Renderer>().setDefault();
+		ECS::setCtx<Renderer::Renderer>();
 		// Store action manager.
 		ECS::setCtx<Action::ActionManager>();
 		// Store input manager.
@@ -86,16 +81,6 @@ namespace VTX::App
 		Settings::initSettings();
 		auto & settings = SETTINGS();
 
-		// Scene.
-		_scene = _registry.create();
-		_registry.emplace<Scene::TagRoot>( _scene );
-		_registry.emplace<Util::Math::AABB>( _scene );
-
-		// Camera.
-		_camera = _registry.create();
-		_registry.emplace<Util::Math::Transform>( _camera );
-		_registry.emplace<Renderer::Camera>( _camera );
-
 		VTX_INFO( "App initializing interpretor." );
 		// Initialize python interpretor.
 		INTERPRETOR().subscribe(
@@ -113,16 +98,24 @@ namespace VTX::App
 	{
 		VTX_INFO( "Starting application: {}", ECS::getCtx<Args>().toString() );
 
-		// Build the renderer (graphic api backend context ready).
 		auto & renderer = RENDERER();
 
+		// Scene.
+		ECS::Entity sceneEnt = _registry.create();
+		_registry.emplace<Scene::TagRoot>( sceneEnt );
+		_registry.emplace<Util::Math::AABB>( sceneEnt );
+
+		// Camera.
+		ECS::Entity cameraEnt = _registry.create();
+		_registry.emplace<Util::Math::Transform>( cameraEnt );
+		_registry.emplace<Renderer::Camera>( cameraEnt );
+		ACTION().execute<App::Action::Application::Resize>( WIDTH_DEFAULT, HEIGHT_DEFAULT );
+
+		// Build the renderer (graphic api backend context ready).
 		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) )
 		{
 			VTX_WARNING( "No graphics" );
-			// Default state set in constructor.
-			// renderer.setDefault();
-			// Resize to minimal size to avoid issues.
-			ACTION().execute<Action::Application::Resize>( 1, 1 );
+			renderer.setDefault();
 		}
 		else
 		{
@@ -147,7 +140,7 @@ namespace VTX::App
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::GraphicsConfig>>();
 
 		// First pass to add, next action will trigger updates in this one.
-		PASS().addPass<Pass::SceneUpdater>( _scene );
+		PASS().addPass<Pass::SceneUpdater>( sceneEnt );
 
 		// Set preset instances.
 		// First graphics config to setup renderer properly.
@@ -159,7 +152,7 @@ namespace VTX::App
 		);
 
 		// Other passes.
-		PASS().addPass<Pass::CameraUpdater>( _camera );
+		PASS().addPass<Pass::CameraUpdater>( cameraEnt );
 		PASS().addPass<Pass::SystemUpdater>();
 		PASS().addPass<Pass::TrajectoryUpdater>();
 

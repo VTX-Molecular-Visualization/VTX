@@ -60,7 +60,6 @@ namespace VTX::Renderer
 		try
 		{
 			_context.build( _queue, _graph.getResources() );
-			std::cout << _context.commands() << std::endl;
 			_context.fillInfos( _infos );
 			onReady();
 		}
