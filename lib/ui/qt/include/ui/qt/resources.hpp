@@ -17,3 +17,4 @@ namespace VTX::UI::QT::Resources
 } // namespace VTX::UI::QT::Resources
 
 #endif
+ 

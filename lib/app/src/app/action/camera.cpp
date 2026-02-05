@@ -61,7 +61,7 @@ namespace VTX::App::Action::Camera
 			entCamera,
 			[ & ]( Util::Math::Transform & p_transform )
 			{
-				Vec3f position = _computeCameraOrientPosition( p_transform.getFront(), camera.fov, aabb );
+				Vec3f position = _computeCameraOrientPosition( FRONT_AXIS, camera.fov, aabb );
 
 				p_transform.setPosition( position );
 				p_transform.setRotation( QUATF_ID );
