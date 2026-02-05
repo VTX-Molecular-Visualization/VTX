@@ -3,7 +3,6 @@
 
 #include <app/ecs.hpp>
 #include <functional>
-#include <io/reader/system.hpp>
 #include <memory>
 #include <span>
 #include <util/constants.hpp>
@@ -45,6 +44,13 @@ namespace VTX::App::System
 		uint			   currentFrameIndex   = TypeMax<uint>; // Here is the actual index related to the positions.
 		uint			   trajectorySize	   = TypeMax<uint>;
 	};
+
+	/**
+	 * @brief Apply a patch on a generic trajectory, regardless of the specific higher level multiframe trajectory that
+	 * the entity has.
+	 * @param entity
+	 * @param patching callable
+	 */
 	void patchGenericTrajectories( ECS::Entity, std::function<void( GenericTrajectory & )> ) noexcept;
 
 	struct TrajectorySingleFrame
@@ -60,17 +66,15 @@ namespace VTX::App::System
 													 // when no frame are available.
 	};
 
+	/**
+	 * @brief Obtains the atom position of a system. Be it single frame or multiframe trajectory
+	 * @param
+	 * @return
+	 */
 	std::span<const Vec3f> getCurrentAtomPositions( const ECS::Entity & ) noexcept;
 	bool				   hasMultiFrameTrajectory( const ECS::Entity & ) noexcept;
 	void				   get( const ECS::Entity &, GenericTrajectory *& ) noexcept;
 
-	/**
-	 * @brief Fill trajectory data structure up to the first frame, then start threaded frame loading.
-	 * @param p_entity
-	 * @param p_trajectory
-	 * @param p_loader
-	 */
-	void prepare( ECS::Entity p_entity, TrajectoryFullBuffer & p_trajectory, IO::Reader::System && p_loader ) noexcept;
 
 } // namespace VTX::App::System
 

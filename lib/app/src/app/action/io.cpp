@@ -6,7 +6,7 @@
 #include "app/network/network_manager.hpp"
 #include "app/services.hpp"
 #include "app/system/metadata.hpp"
-#include "app/system/trajectory.hpp"
+#include "app/system/trajectory_preparation.hpp"
 #include "app/system/uid.hpp"
 #include "app/threading/thread_manager.hpp"
 #include <io/reader/chemfiles.hpp>
