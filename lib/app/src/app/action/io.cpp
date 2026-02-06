@@ -6,7 +6,7 @@
 #include "app/network/network_manager.hpp"
 #include "app/services.hpp"
 #include "app/system/metadata.hpp"
-#include "app/system/trajectory.hpp"
+#include "app/system/trajectory_preparation.hpp"
 #include "app/system/uid.hpp"
 #include "app/threading/thread_manager.hpp"
 #include <io/reader/chemfiles.hpp>
@@ -24,12 +24,7 @@ namespace VTX::App::Action::IO
 	void Open::execute( const FilePath & p_path )
 	{
 		// TODO: check file format to redirect to the correct loader.
-		auto view = REG().view<System::TrajectorySingleFrame, System::Metadata>();
-		if ( std::distance( view.begin(), view.end() ) > 0
-			 && VTX::IO::Reader::Chemfiles::isTrajectoryFileFormat( p_path ) )
-			HUB().trigger<Events::TrajectoryFileAssociation>( Events::TrajectoryFileAssociation { p_path } );
-		else
-			ACTION().execute<Action::Scene::LoadSystem>( p_path );
+		ACTION().execute<Action::Scene::LoadSystem>( p_path );
 	}
 	void AssociateTrajectory::execute( const FilePath & p_path, const ECS::Entity & p_entity )
 	{

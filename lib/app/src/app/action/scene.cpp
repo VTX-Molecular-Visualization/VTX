@@ -15,7 +15,7 @@
 #include "app/system/metadata.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
-#include "app/system/trajectory.hpp"
+#include "app/system/trajectory_preparation.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
 #include "app/threading/base_thread.hpp"

@@ -4,6 +4,8 @@
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/action/visibility.hpp>
+#include <app/services.hpp>
+#include <app/system/trajectory.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -16,67 +18,101 @@ namespace VTX::UI::QT::Widget::Tree
 		setExpandsOnDoubleClick( false );
 		setMouseTracking( true );
 		//  viewport()->setAttribute( Qt::WA_Hover );
+		QWidget( p_parent ), _system( p_system )
+		{
+			_layout = new QVBoxLayout( this );
+			_layout->setContentsMargins( 0, 0, 0, 0 );
+			_layout->setSpacing( 0 );
 
-		// Model.
-		setModel( new SystemModel( p_system, this ) );
-
-		// Selection.
-		setSelectionModel( new SystemSelectionModel( p_system, model(), this ) );
-		setSelectionBehavior( QAbstractItemView::SelectRows );
-
-		// Delegate.
-		auto * const delegate = new Delegate::SystemDelegate( p_system, this );
-		setItemDelegate( delegate );
-
-		// One expanded at a time.
-		// TODO: keep or remove?
-		connect(
-			this,
-			&QTreeView::expanded,
-			[ this ]( const QModelIndex & p_index )
+			// Create trajectory player if system already has multi-frame trajectory
+			if ( App::System::hasMultiFrameTrajectory( p_system ) )
 			{
-				QModelIndex parent	 = p_index.parent();
-				const int	rowCount = model()->rowCount( parent );
+				_trajectoryPlayer = new TrajectoryPlayer( p_system, this );
+				_layout->addWidget( _trajectoryPlayer );
+			}
 
-				for ( int r = 0; r < rowCount; r++ )
+			// Listen for trajectory creation to add player dynamically
+			App::REG().on_construct<App::System::TrajectoryFullBuffer>().connect<&System::_onTrajectoryCreated>( this );
+
+			// Create inner tree
+			_tree = new InnerTree( this );
+			_tree->setExpandsOnDoubleClick( false );
+			setMouseTracking( true );
+
+			// Model.
+			_tree->setModel( new SystemModel( p_system, this ) );
+
+			// Selection.
+			_tree->setSelectionModel( new SystemSelectionModel( p_system, _tree->model(), this ) );
+			_tree->setSelectionBehavior( QAbstractItemView::SelectRows );
+
+			// Delegate.
+			auto * const delegate = new Delegate::SystemDelegate( p_system, this );
+			setItemDelegate( delegate );
+			_layout->addWidget( _tree );
+
+			// One expanded at a time.
+			// TODO: keep or remove?
+			connect(
+				_tree,
+				&QTreeView::expanded,
+				[ this ]( const QModelIndex & p_index )
 				{
-					QModelIndex sibling = model()->index( r, 0, parent );
+					QModelIndex parent	 = p_index.parent();
+					const int	rowCount = _tree->model()->rowCount( parent );
 
-					if ( sibling != p_index && isExpanded( sibling ) )
+					for ( int r = 0; r < rowCount; r++ )
 					{
-						collapse( sibling );
+						QModelIndex sibling = _tree->model()->index( r, 0, parent );
+
+						if ( sibling != p_index && _tree->isExpanded( sibling ) )
+						{
+							_tree->collapse( sibling );
+						}
 					}
 				}
-			}
-		);
+			);
 
-		// Double click.
-		connect(
-			this,
-			&QTreeView::doubleClicked,
-			[ this ]( const QModelIndex & p_index ) { App::ACTION().execute<App::Action::Camera::Orient>(); }
-		);
+			// Double click.
+			connect(
+				_tree,
+				&QTreeView::doubleClicked,
+				[ this ]( const QModelIndex & p_index ) { App::ACTION().execute<App::Action::Camera::Orient>(); }
+			);
 
-		// Visibility.
-		connect(
-			delegate,
-			&Delegate::SystemDelegate::visibilityClicked,
-			[ this ]( const QModelIndex & p_index, const bool p_visible )
+			// Visibility.
+			connect(
+				delegate,
+				&Delegate::SystemDelegate::visibilityClicked,
+				[ this ]( const QModelIndex & p_index, const bool p_visible )
+				{
+					const auto &  model = getSystemModel();
+					E_SYSTEM_ITEM item;
+					Index		  index;
+					SystemModel::unpack( p_index.internalId(), item, index );
+
+					App::ACTION().execute<App::Action::Visibility::SetVisibleItem>( _system, item, index, p_visible );
+				}
+			);
+		}
+
+		void System::InnerTree::contextMenuEvent( QContextMenuEvent * p_e )
+		{
+			Menu::Selection menu( this );
+			menu.exec( p_e->globalPos() );
+		}
+
+		void System::_onTrajectoryCreated( App::ECS::Registry &, App::ECS::Entity p_entity )
+		{
+			// Only handle if this is our system and we don't already have a player
+			if ( p_entity != _system || _trajectoryPlayer != nullptr )
 			{
-				const auto &  model = getSystemModel();
-				E_SYSTEM_ITEM item;
-				Index		  index;
-				SystemModel::unpack( p_index.internalId(), item, index );
-
-				App::ACTION().execute<App::Action::Visibility::SetVisibleItem>( _system, item, index, p_visible );
+				return;
 			}
-		);
-	}
 
-	void System::contextMenuEvent( QContextMenuEvent * p_e )
-	{
-		Menu::Selection menu( this );
-		menu.exec( p_e->globalPos() );
-	}
+			// Create the trajectory player and insert it at the top
+			_trajectoryPlayer = new TrajectoryPlayer( _system, this );
+			_layout->insertWidget( 0, _trajectoryPlayer );
+		}
 
-} // namespace VTX::UI::QT::Widget::Tree
+	} // namespace VTX::UI::QT::Widget::Tree

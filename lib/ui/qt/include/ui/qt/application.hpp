@@ -80,8 +80,6 @@ namespace VTX::UI::QT
 		 * @brief Get/create application action from description.
 		 */
 		static QAction * const _getOrCreateAction( const App::UI::DescAction & );
-
-		void _trajectoryFileAssociation( const App::Events::TrajectoryFileAssociation & ) noexcept;
 	};
 
 	/**

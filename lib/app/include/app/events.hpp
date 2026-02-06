@@ -83,14 +83,6 @@ namespace VTX::App::Events
 		ECS::Entity system;
 	};
 
-	/**
-	 * @brief Event triggered when a trajectory file is submitted to vtx while at least one system is already loaded.
-	 */
-	struct TrajectoryFileAssociation
-	{
-		FilePath path;
-	};
-
 	template<typename P>
 	struct PresetRename
 	{
