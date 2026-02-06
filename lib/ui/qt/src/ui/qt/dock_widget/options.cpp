@@ -29,6 +29,7 @@ namespace VTX::UI::QT::DockWidget
 	Options::Options( QWidget * p_parent ) : BaseDockWidget( p_parent, "Options" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+		setWindowIcon( STYLE().iconFromCodepoint( 0xe8b8 ) );
 
 		using namespace Widget;
 		using namespace Action;

@@ -13,6 +13,7 @@ namespace VTX::UI::QT::Widget::Tree
 		RepresentationPresets( QWidget * p_parent ) : BaseTreePreset( p_parent )
 		{
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Representations" ) );
+			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( 0xe429 ) );
 		}
 	};
 

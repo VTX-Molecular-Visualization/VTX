@@ -158,7 +158,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	= "Orient";
 			tip		= "Orient camera on selection";
-			icon	= 0xe3dc;
+			icon	= 0xe9fe;
 			trigger = []() { App::ACTION().execute<App::Action::Camera::Orient>(); };
 		}
 
@@ -178,7 +178,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Snapshot";
 			tip		 = "Save current image";
-			icon	 = 0xe412;
+			icon	 = 0xe3f4;
 			shortcut = "F2";
 			trigger	 = []()
 			{
@@ -191,7 +191,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Export";
 			tip		 = "Open dialog to export image";
-			icon	 = 0xe439;
+			icon	 = 0xf317;
 			shortcut = "F3";
 			trigger	 = []()
 			{
@@ -208,7 +208,7 @@ namespace VTX::UI::QT::Action
 		{
 			name = "Lock";
 			tip	 = "Lock the current selection";
-			// icon = static_cast<int>( QStyle::StandardPixmap::SP_TitleBarShadeButton );
+			icon = 0xe897;
 		}
 
 		Save::Save()

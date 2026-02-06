@@ -27,8 +27,8 @@ namespace VTX::UI::QT::DockWidget
 
 	void Sequences::_onSystemLoad( const App::Events::SystemLoad & p_e )
 	{
-		const auto	 entity			= p_e.system;
-		auto *		 sequenceWidget = new Widget::Sequence( entity, this );
+		const auto entity		  = p_e.system;
+		auto *	   sequenceWidget = new Widget::Sequence( entity, this );
 
 		// Create Widget.
 		assert( not _mapSequenceWidgets.contains( entity ) );

@@ -1,5 +1,7 @@
 #include "ui/qt/widget/tree/system_model.hpp"
 #include "app/system/uid.hpp"
+#include "ui/qt/services.hpp"
+#include "ui/qt/style.hpp"
 #include <app/services.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
@@ -97,6 +99,26 @@ namespace VTX::UI::QT::Widget::Tree
 			}
 			return {};
 		case ItemRole: return int( item );
+		case Qt::DecorationRole:
+			switch ( item )
+			{
+			case E_SYSTEM_ITEM::SYSTEM:
+			{
+				return STYLE().iconFromCodepoint( 0xe9f4 );
+			}
+			case E_SYSTEM_ITEM::CHAIN:
+			{
+				return STYLE().iconFromCodepoint( 0xe922 );
+			}
+			case E_SYSTEM_ITEM::RESIDUE:
+			{
+				return STYLE().iconFromCodepoint( 0xebc7 );
+			}
+			case E_SYSTEM_ITEM::ATOM:
+			{
+				return {};
+			}
+			}
 		case VisibleRole: // TODO.
 			return true;
 		default: return {};
