@@ -1,17 +1,15 @@
-#ifndef __VTX_UI_QT_STYLE__
-#define __VTX_UI_QT_STYLE__
+#ifndef __VTX_UI_QT_STYLE_STYLE_MANAGER__
+#define __VTX_UI_QT_STYLE_STYLE_MANAGER__
 
 #include "ui/qt/application.hpp"
+#include "ui/qt/style/codepoint_icon_engine.hpp"
 #include <QFontDatabase>
-#include <QIcon>
-#include <QIconEngine>
-#include <QPainter>
 #include <QPalette>
 #include <app/tool/base_tool.hpp>
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::UI::QT
+namespace VTX::UI::QT::Style
 {
 
 	/**
@@ -30,20 +28,19 @@ namespace VTX::UI::QT
 	/**
 	 * @brief Default values.
 	 */
-	constexpr int	  DEFAULT_FONT_SIZE			= 10;
-	constexpr E_THEME DEFAULT_THEME				= E_THEME::SYSTEM;
-	const QString	  DEFAULT_FONT_FAMILY		= "Consolas";
-	const QString	  DEFAULT_FONT_FAMILY_ICONS = "Material Symbols Outlined";
-	constexpr int	  DEFAULT_ICON_SIZE			= 64;
+	constexpr int	  DEFAULT_FONT_SIZE	  = 10;
+	constexpr E_THEME DEFAULT_THEME		  = E_THEME::SYSTEM;
+	const QString	  DEFAULT_FONT_FAMILY = "Consolas";
+	constexpr int	  DEFAULT_ICON_SIZE	  = 64;
 
 	/**
 	 * @brief Class managing application style (themes, stylesheets, etc.).
 	 */
-	class Style
+	class StyleManager
 	{
 	  public:
-		Style();
-		~Style();
+		StyleManager();
+		~StyleManager();
 
 		/**
 		 * @brief Apply all design elements.
@@ -73,27 +70,12 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Get an icon from a font.
 		 */
-		QIcon iconFromCodepoint( const int );
+		QIcon iconFromCodepoint( const Codepoint );
 
 		/**
 		 * @brief Get the available fonts.
 		 */
 		inline static QStringList getAvailableFonts() { return QFontDatabase::families(); }
-
-		/**
-		 * @brief Custom QIconEngine to repaint icons with the current theme color.
-		 */
-		class CodepointIconEngine final : public QIconEngine
-		{
-		  public:
-			CodepointIconEngine( const int p_codepoint ) : _codepoint( p_codepoint ) {}
-			inline QIconEngine * clone() const override { return new CodepointIconEngine( _codepoint ); }
-			void paint( QPainter * p_painter, const QRect & p_rect, QIcon::Mode p_mode, QIcon::State p_state ) override;
-			QPixmap pixmap( const QSize &, QIcon::Mode, QIcon::State ) override;
-
-		  private:
-			const int _codepoint;
-		};
 
 	  private:
 		/**
@@ -106,6 +88,6 @@ namespace VTX::UI::QT
 		 */
 		std::array<QPalette, toUnderlying( E_THEME::COUNT )> _themePalettes;
 	};
-} // namespace VTX::UI::QT
+} // namespace VTX::UI::QT::Style
 
 #endif

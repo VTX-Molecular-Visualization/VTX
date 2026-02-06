@@ -13,7 +13,7 @@ namespace VTX::UI::QT::Widget::Tree
 		ColorLayoutPresets( QWidget * p_parent ) : BaseTreePreset( p_parent )
 		{
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Color layouts" ) );
-			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( 0xe40a ) );
+			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::PALETTE ) );
 		}
 	};
 

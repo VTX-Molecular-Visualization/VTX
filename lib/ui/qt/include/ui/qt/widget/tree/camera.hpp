@@ -2,7 +2,8 @@
 #define __VTX_UI_QT_WIDGET_TREE_CAMERA__
 
 #include "ui/qt/services.hpp"
-#include "ui/qt/style.hpp"
+#include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/tree/base_tree.hpp"
 #include <QTreeWidget>
 
@@ -19,7 +20,7 @@ namespace VTX::UI::QT::Widget::Tree
 			setExpandsOnDoubleClick( true );
 
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Camera" ) );
-			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( 0xe8fc ) );
+			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::PHOTO_CAMERA ) );
 
 			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Front" ) );
 			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Back" ) );

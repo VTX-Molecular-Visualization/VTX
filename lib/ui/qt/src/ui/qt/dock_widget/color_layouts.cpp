@@ -1,10 +1,10 @@
 #include "ui/qt/dock_widget/color_layouts.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
-#include "ui/qt/style.hpp"
+#include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/library/color_layout.hpp"
 #include <util/factories.hpp>
-
 namespace
 {
 	constexpr std::string_view SETTING_KEY_HIDE = "colors/hide_non_common";
@@ -16,7 +16,7 @@ namespace VTX::UI::QT::DockWidget
 	ColorLayouts::ColorLayouts( QWidget * p_parent ) : BaseDockWidget( p_parent, "Colors" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		setWindowIcon( STYLE().iconFromCodepoint( 0xe40a ) );
+		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::PALETTE ) );
 
 		// Checkbox to hide non usual items.
 		_checkBoxHide = new QCheckBox( "Hide non usual", _root );

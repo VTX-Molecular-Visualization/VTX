@@ -2,7 +2,8 @@
 #include "ui/qt/events.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
-#include "ui/qt/style.hpp"
+#include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include "ui/qt/widget/transform.hpp"
 #include <QFontDatabase>
@@ -17,7 +18,7 @@ namespace VTX::UI::QT::DockWidget
 	Inspector::Inspector( QWidget * p_parent ) : BaseDockWidget( p_parent, "Selection" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		setWindowIcon( STYLE().iconFromCodepoint( 0xf772 ) );
+		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::FRAME_INSPECT ) );
 
 		///////////////
 		_layout->addWidget( new Widget::Transform( this ) );

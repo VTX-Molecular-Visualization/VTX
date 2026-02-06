@@ -1,5 +1,6 @@
 #include "ui/qt/dock_widget/scene.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/style/icons.hpp"
 #include "ui/qt/widget/tree/color_layout_presets.hpp"
 #include "ui/qt/widget/tree/graphics_config_presets.hpp"
 #include "ui/qt/widget/tree/representation_presets.hpp"
@@ -16,7 +17,7 @@ namespace VTX::UI::QT::DockWidget
 	Scene::Scene( QWidget * p_parent ) : BaseDockWidget( p_parent, "Scene" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		setWindowIcon( STYLE().iconFromCodepoint( 0xe4fd ) );
+		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SCHEMA ) );
 
 		_layout->addWidget( new Widget::Tree::GraphicsConfigPresets( this ) );
 		_layout->addWidget( new Widget::Tree::ColorLayoutPresets( this ) );

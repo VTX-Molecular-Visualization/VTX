@@ -1,6 +1,6 @@
 #include "ui/qt/menu/theme.hpp"
 #include "ui/qt/services.hpp"
-#include "ui/qt/style.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include <QActionGroup>
 

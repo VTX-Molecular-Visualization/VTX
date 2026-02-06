@@ -3,7 +3,8 @@
 #include "ui/qt/application.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
-#include "ui/qt/style.hpp"
+#include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/actionable_push_button.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include "ui/qt/widget/opengl_widget.hpp"
@@ -29,7 +30,7 @@ namespace VTX::UI::QT::DockWidget
 	Options::Options( QWidget * p_parent ) : BaseDockWidget( p_parent, "Options" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		setWindowIcon( STYLE().iconFromCodepoint( 0xe8b8 ) );
+		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SETTINGS ) );
 
 		using namespace Widget;
 		using namespace Action;
@@ -54,9 +55,9 @@ namespace VTX::UI::QT::DockWidget
 		QSignalBlocker blocker0( _comboBoxTheme );
 		switch ( STYLE().getCurrentTheme() )
 		{
-		case E_THEME::SYSTEM: _comboBoxTheme->setCurrentText( "System" ); break;
-		case E_THEME::LIGHT: _comboBoxTheme->setCurrentText( "Light" ); break;
-		case E_THEME::DARK: _comboBoxTheme->setCurrentText( "Dark" ); break;
+		case Style::E_THEME::SYSTEM: _comboBoxTheme->setCurrentText( "System" ); break;
+		case Style::E_THEME::LIGHT: _comboBoxTheme->setCurrentText( "Light" ); break;
+		case Style::E_THEME::DARK: _comboBoxTheme->setCurrentText( "Dark" ); break;
 		default: break;
 		}
 
@@ -97,7 +98,7 @@ namespace VTX::UI::QT::DockWidget
 		for ( const QString & fontName : STYLE().getAvailableFonts() )
 		{
 			_comboBoxFont->addItem( fontName );
-			_comboBoxFont->setItemData( i++, QFont( fontName, DEFAULT_FONT_SIZE ), Qt::FontRole );
+			_comboBoxFont->setItemData( i++, QFont( fontName, Style::DEFAULT_FONT_SIZE ), Qt::FontRole );
 		}
 
 		QSignalBlocker blocker( _comboBoxFont );

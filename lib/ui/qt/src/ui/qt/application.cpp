@@ -3,7 +3,7 @@
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/resources.hpp"
 #include "ui/qt/services.hpp"
-#include "ui/qt/style.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include <QAction>
 #include <QActionGroup>
@@ -50,7 +50,7 @@ namespace VTX::UI::QT
 		}
 
 		// Load theme.
-		App::ECS::setCtx<Style>().load( _tools );
+		App::ECS::setCtx<Style::StyleManager>().load( _tools );
 
 		// Create and show main window.
 		App::ECS::setCtx<Widget::MainWindow>().show();
