@@ -3,8 +3,10 @@
 #include "app/action/camera.hpp"
 #include "app/action/io.hpp"
 #include "app/action/scene.hpp"
+#include "app/helper/system.hpp"
 #include "app/pass/action_executer.hpp"
 #include <python_binding/binder.hpp>
+#include <python_binding/binding/entity_caster.hpp>
 #include <python_binding/binding/helper.hpp>
 #include <python_binding/binding/vtx_module.hpp>
 #include <python_binding/wrapper/arg.hpp>
@@ -45,11 +47,27 @@ namespace VTX::App::PythonBinding
 		commands.bindAction<Pass::QueueAction<App::Action::IO::Open>, const std::string &>(
 			"openFile", "Open files at given path.", VTX::PythonBinding::Wrapper::Arg( "path" )
 		);
+
+		commands.bindAction<
+			Pass::QueueAction<App::Action::IO::AssociateTrajectory>,
+			const std::string &,
+			const ECS::Entity &>(
+			"associateTrajectory",
+			"Associate input file trajectory to a system.",
+			VTX::PythonBinding::Wrapper::Arg( "path" ),
+			VTX::PythonBinding::Wrapper::Arg( "systemId" )
+		);
+
 		/*
 		commands.bindAction<App::Action::IO::OpenScene, const std::string &>(
 			"openScene", "Open scene at given path.", VTX::PythonBinding::Wrapper::Arg( "path" )
 		);
 		*/
+		commands.def(
+			"getSystemIdByName",
+			Pass::wrapDelayedFunction( &Helper::System::getSystemByName ),
+			"Return a system ID that matches given name (case sensitive)."
+		);
 		commands.bindAction<Pass::QueueAction<App::Action::IO::DownloadSystem>, const std::string &>(
 			"download", "Retrieve a system from the RCSB PDB.", VTX::PythonBinding::Wrapper::Arg( "system_id" )
 		);

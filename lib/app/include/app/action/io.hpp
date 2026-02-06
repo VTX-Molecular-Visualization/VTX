@@ -15,7 +15,6 @@ namespace VTX::Util::Url
 
 namespace VTX::App::Action::IO
 {
-	
 
 	/**
 	 * @brief Open a file or folder with the system default application.
@@ -25,9 +24,20 @@ namespace VTX::App::Action::IO
 		void execute( const FilePath & p_path );
 		void execute( const std::string & p_path );
 	};
+
+	/**
+	 * @brief Associate a trajectory file with an existing system, conserving the topology but discarding current
+	 * positions.
+	 */
 	struct AssociateTrajectory
 	{
 		void execute( const FilePath & p_path, const ECS::Entity & );
+		void execute( const std::string & p_path, const ECS::Entity & );
+	};
+
+	struct RunPythonScript
+	{
+		void execute( const FilePath & );
 	};
 
 	/**
@@ -39,7 +49,7 @@ namespace VTX::App::Action::IO
 		void execute( VTX::Util::Url::SystemId );
 		void execute( VTX::Util::Url::SystemId, FilePath );
 		void execute( VTX::Util::Url::UrlFull, FilePath );
-		void execute( const std::string& p_systemId );
+		void execute( const std::string & p_systemId );
 	};
 
 	/**

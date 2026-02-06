@@ -4,6 +4,7 @@
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
 #include "app/network/network_manager.hpp"
+#include "app/python_binding/interpretor.hpp"
 #include "app/services.hpp"
 #include "app/system/metadata.hpp"
 #include "app/system/trajectory_preparation.hpp"
@@ -24,10 +25,20 @@ namespace VTX::App::Action::IO
 	void Open::execute( const FilePath & p_path )
 	{
 		// TODO: check file format to redirect to the correct loader.
-		ACTION().execute<Action::Scene::LoadSystem>( p_path );
+		std::string extension = p_path.extension().string();
+		if ( extension == ".py" || extension == ".vtx" )
+			ACTION().execute<RunPythonScript>( p_path );
+		else
+			ACTION().execute<Action::Scene::LoadSystem>( p_path );
 	}
 	void AssociateTrajectory::execute( const FilePath & p_path, const ECS::Entity & p_entity )
 	{
+		if ( p_entity == entt::null )
+		{
+			VTX_ERROR( "System entity null." );
+			return;
+		}
+
 		// TODO : Maybe there is some code to merge with the systemloading in scene.cpp
 		size_t					initialAtomcount = REG().get<Core::Struct::System>( p_entity ).getAtomCount();
 		VTX::IO::Reader::System loader;
@@ -54,6 +65,12 @@ namespace VTX::App::Action::IO
 			);
 		}
 	}
+	void AssociateTrajectory::execute( const std::string & p_path, const ECS::Entity & p_e )
+	{
+		execute( FilePath( p_path ), p_e );
+	}
+
+	void RunPythonScript::execute( const FilePath & p_path ) { INTERPRETOR().runScript( p_path ); }
 
 	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id )
 	{
