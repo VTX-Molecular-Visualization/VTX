@@ -180,7 +180,7 @@ namespace VTX::UI::QT
 			{
 				if ( std::holds_alternative<int>( *p_action.icon ) )
 				{
-					QIcon icon = Style::iconFromGlyph( std::get<int>( *p_action.icon ), 48, palette().text().color() );
+					QIcon icon = STYLE().iconFromCodepoint( std::get<int>( *p_action.icon ) );
 					qAction->setIcon( icon );
 				}
 				else if ( std::holds_alternative<std::string>( *p_action.icon ) )

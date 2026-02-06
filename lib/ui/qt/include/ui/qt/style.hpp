@@ -4,6 +4,8 @@
 #include "ui/qt/application.hpp"
 #include <QFontDatabase>
 #include <QIcon>
+#include <QIconEngine>
+#include <QPainter>
 #include <QPalette>
 #include <app/tool/base_tool.hpp>
 #include <util/types.hpp>
@@ -28,9 +30,11 @@ namespace VTX::UI::QT
 	/**
 	 * @brief Default values.
 	 */
-	constexpr int	  DEFAULT_FONT_SIZE	  = 10;
-	constexpr E_THEME DEFAULT_THEME		  = E_THEME::SYSTEM;
-	const QString	  DEFAULT_FONT_FAMILY = "Consolas";
+	constexpr int	  DEFAULT_FONT_SIZE			= 10;
+	constexpr E_THEME DEFAULT_THEME				= E_THEME::SYSTEM;
+	const QString	  DEFAULT_FONT_FAMILY		= "Consolas";
+	const QString	  DEFAULT_FONT_FAMILY_ICONS = "Material Symbols Outlined";
+	constexpr int	  DEFAULT_ICON_SIZE			= 64;
 
 	/**
 	 * @brief Class managing application style (themes, stylesheets, etc.).
@@ -67,14 +71,29 @@ namespace VTX::UI::QT
 		void setFontFamily( const QString & );
 
 		/**
+		 * @brief Get an icon from a font.
+		 */
+		QIcon iconFromCodepoint( const int );
+
+		/**
 		 * @brief Get the available fonts.
 		 */
 		inline static QStringList getAvailableFonts() { return QFontDatabase::families(); }
 
 		/**
-		 * @brief Get an icon from a font.
+		 * @brief Custom QIconEngine to repaint icons with the current theme color.
 		 */
-		static QIcon iconFromGlyph( const uint32_t, const int, const QColor & color );
+		class CodepointIconEngine final : public QIconEngine
+		{
+		  public:
+			CodepointIconEngine( const int p_codepoint ) : _codepoint( p_codepoint ) {}
+			inline QIconEngine * clone() const override { return new CodepointIconEngine( _codepoint ); }
+			void paint( QPainter * p_painter, const QRect & p_rect, QIcon::Mode p_mode, QIcon::State p_state ) override;
+			QPixmap pixmap( const QSize &, QIcon::Mode, QIcon::State ) override;
+
+		  private:
+			const int _codepoint;
+		};
 
 	  private:
 		/**

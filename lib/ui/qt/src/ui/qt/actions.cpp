@@ -91,6 +91,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Quit";
 			tip		 = "Exit software";
+			icon	 = 0xe879;
 			trigger	 = []() { QCoreApplication::quit(); };
 			shortcut = "Esc";
 		}
