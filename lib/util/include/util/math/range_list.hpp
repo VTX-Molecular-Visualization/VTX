@@ -25,7 +25,7 @@ namespace VTX::Util::Math
 		 */
 		RangeList() = default;
 
-		explicit RangeList( const std::initializer_list<RangeType> p_ranges )
+		RangeList( const std::initializer_list<RangeType> p_ranges )
 		{
 			for ( const auto & r : p_ranges )
 			{
