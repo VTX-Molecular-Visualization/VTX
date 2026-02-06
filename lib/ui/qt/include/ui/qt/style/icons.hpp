@@ -13,6 +13,7 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint _360		   = 0xe577;
 	constexpr Codepoint _3D			   = 0xed38;
 	constexpr Codepoint ATR			   = 0xebc7;
+	constexpr Codepoint COLORS		   = 0xe997;
 	constexpr Codepoint DELETE		   = 0xe872;
 	constexpr Codepoint DEPLOYED_CODE  = 0xf720;
 	constexpr Codepoint DOWNLOAD	   = 0xf090;
@@ -36,6 +37,8 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint TIMELINE	   = 0xe922;
 	constexpr Codepoint TUNE		   = 0xe429;
 	constexpr Codepoint VIEW_IN_AR	   = 0xe9fe;
+	constexpr Codepoint VISIBILITY	   = 0xe8f4;
+	constexpr Codepoint VISIBILITY_OFF = 0xe8f5;
 } // namespace VTX::UI::QT::Style::Icons
 
 #endif

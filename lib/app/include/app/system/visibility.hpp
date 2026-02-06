@@ -6,6 +6,15 @@
 
 namespace VTX::App::System
 {
+	/**
+	 * @brief Visibility state of an item.
+	 */
+	enum struct E_VISIBLE_STATE : uint8_t
+	{
+		VISIBLE,
+		HIDDEN,
+		PARTIAL
+	};
 
 	/**
 	 * @brief Store visible elements.

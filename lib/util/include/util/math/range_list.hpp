@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <concepts>
 #include <list>
+#include <span>
 #include <type_traits>
 #include <vector>
 
@@ -40,11 +41,19 @@ namespace VTX::Util::Math
 			}
 		}
 
-		RangeList( const std::initializer_list<T> p_values )
+		explicit RangeList( const std::initializer_list<T> p_values )
 		{
 			for ( const T v : p_values )
 			{
 				addValue( v );
+			}
+		}
+
+		explicit RangeList( std::span<const T> p_values )
+		{
+			for ( const T v : p_values )
+			{
+				addRange( v );
 			}
 		}
 

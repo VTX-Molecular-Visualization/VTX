@@ -1,15 +1,16 @@
 #include "ui/qt/widget/tree/system.hpp"
+#include "ui/qt/delegate/system_delegate.hpp"
 #include "ui/qt/menu/selection.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
+#include <app/action/visibility.hpp>
 #include <app/services.hpp>
 #include <app/system/trajectory.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
 
-	System::System( const App::ECS::Entity p_system, QWidget * p_parent ) :
-		QWidget( p_parent ), _system( p_system )
+	System::System( const App::ECS::Entity p_system, QWidget * p_parent ) : QWidget( p_parent ), _system( p_system )
 	{
 		_layout = new QVBoxLayout( this );
 		_layout->setContentsMargins( 0, 0, 0, 0 );
@@ -28,6 +29,7 @@ namespace VTX::UI::QT::Widget::Tree
 		// Create inner tree
 		_tree = new InnerTree( this );
 		_tree->setExpandsOnDoubleClick( false );
+		_tree->setMouseTracking( true );
 
 		// Model.
 		_tree->setModel( new SystemModel( p_system, this ) );
@@ -36,9 +38,14 @@ namespace VTX::UI::QT::Widget::Tree
 		_tree->setSelectionModel( new SystemSelectionModel( p_system, _tree->model(), this ) );
 		_tree->setSelectionBehavior( QAbstractItemView::SelectRows );
 
+		// Delegate.
+		auto * const delegate = new Delegate::SystemDelegate( p_system, this );
+		_tree->setItemDelegate( delegate );
+
 		_layout->addWidget( _tree );
 
 		// One expanded at a time.
+		// TODO: keep or remove?
 		connect(
 			_tree,
 			&QTreeView::expanded,
@@ -64,6 +71,21 @@ namespace VTX::UI::QT::Widget::Tree
 			_tree,
 			&QTreeView::doubleClicked,
 			[ this ]( const QModelIndex & p_index ) { App::ACTION().execute<App::Action::Camera::Orient>(); }
+		);
+
+		// Visibility.
+		connect(
+			delegate,
+			&Delegate::SystemDelegate::visibilityClicked,
+			[ this ]( const QModelIndex & p_index, const bool p_visible )
+			{
+				const auto &				model = getSystemModel();
+				Core::Struct::E_SYSTEM_ITEM item;
+				Index						index;
+				SystemModel::unpack( p_index.internalId(), item, index );
+
+				App::ACTION().execute<App::Action::Visibility::SetVisibleItem>( _system, item, index, p_visible );
+			}
 		);
 	}
 
