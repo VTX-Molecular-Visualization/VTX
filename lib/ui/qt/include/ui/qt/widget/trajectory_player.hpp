@@ -29,13 +29,11 @@ namespace VTX::UI::QT::Widget
 		QSlider *	  _slider;
 		QLabel *	  _frameLabel;
 
-		bool _isUpdatingSlider = false; // Prevent feedback loops
+		bool _isRefreshing = false; // Prevent feedback loops between _refresh() and valueChanged
 
 		void _onPlayPauseClicked();
 		void _onStopClicked();
-		void _onSliderPressed();
-		void _onSliderReleased();
-		void _onSliderMoved( int p_value );
+		void _onSliderValueChanged( int p_value );
 		void _onTrajectoryUpdated( App::ECS::Registry &, App::ECS::Entity p_entity );
 
 		void _refresh();

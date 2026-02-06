@@ -45,14 +45,12 @@ namespace VTX::UI::QT::Widget
 		// Connect signals
 		connect( _btnPlayPause, &QPushButton::clicked, this, &TrajectoryPlayer::_onPlayPauseClicked );
 		connect( _btnStop, &QPushButton::clicked, this, &TrajectoryPlayer::_onStopClicked );
-		connect( _slider, &QSlider::sliderPressed, this, &TrajectoryPlayer::_onSliderPressed );
-		connect( _slider, &QSlider::sliderReleased, this, &TrajectoryPlayer::_onSliderReleased );
-		connect( _slider, &QSlider::sliderMoved, this, &TrajectoryPlayer::_onSliderMoved );
+		connect( _slider, &QSlider::valueChanged, this, &TrajectoryPlayer::_onSliderValueChanged );
 
 		// Connect to trajectory updates
-		// App::REG().on_update<App::System::TrajectoryFullBuffer>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>(
-		//	this
-		//);
+		App::REG().on_update<App::System::TrajectoryFullBuffer>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>(
+			this
+		);
 
 		// Initial state
 		_refresh();
@@ -70,33 +68,21 @@ namespace VTX::UI::QT::Widget
 		_refresh();
 	}
 
-	void TrajectoryPlayer::_onSliderPressed() { _isUpdatingSlider = true; }
-
-	void TrajectoryPlayer::_onSliderReleased()
+	void TrajectoryPlayer::_onSliderValueChanged( int p_value )
 	{
+		// Ignore changes triggered by _refresh() to prevent feedback loops
+		if ( _isRefreshing )
+		{
+			return;
+		}
+
 		App::System::GenericTrajectory * trajPtr = nullptr;
 		App::System::get( _system, trajPtr );
 
 		if ( trajPtr && trajPtr->trajectorySize > 0 )
 		{
-			uint frame = uint( _slider->value() );
-			App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, frame );
+			App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, uint( p_value ) );
 		}
-		_refresh();
-		_isUpdatingSlider = false;
-	}
-
-	void TrajectoryPlayer::_onSliderMoved( int p_value )
-	{
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( _system, trajPtr );
-
-		if ( trajPtr && trajPtr->trajectorySize > 0 )
-		{
-			_frameLabel->setText( QString( "%1/%2" ).arg( p_value ).arg( trajPtr->trajectorySize - 1 ) );
-			App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, p_value );
-		}
-		_refresh();
 	}
 
 	void TrajectoryPlayer::_onTrajectoryUpdated( App::ECS::Registry &, App::ECS::Entity p_entity )
@@ -133,12 +119,11 @@ namespace VTX::UI::QT::Widget
 			currentFrame = 0;
 		}
 
-		// Update slider (only if not being dragged)
-		if ( !_isUpdatingSlider )
-		{
-			_slider->setMaximum( totalFrames > 0 ? int( totalFrames - 1 ) : 0 );
-			_slider->setValue( int( currentFrame ) );
-		}
+		// Guard to prevent valueChanged from triggering JumpTo during programmatic updates
+		_isRefreshing = true;
+		_slider->setMaximum( totalFrames > 0 ? int( totalFrames - 1 ) : 0 );
+		_slider->setValue( int( currentFrame ) );
+		_isRefreshing = false;
 
 		// Update frame label
 		_frameLabel->setText( QString( "%1/%2" ).arg( currentFrame ).arg( totalFrames > 0 ? totalFrames - 1 : 0 ) );

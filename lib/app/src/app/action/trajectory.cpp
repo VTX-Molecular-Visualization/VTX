@@ -15,8 +15,8 @@ namespace VTX::App::Action::Trajectory
 			[]( System::GenericTrajectory & traj )
 			{
 				traj.player.jumpTo( 0 );
-				traj.currentFrameIndex = 0;
-				traj.paused			   = true;
+				traj.requestedFrameIndex = 0;
+				traj.paused				 = true;
 			}
 		);
 	}
@@ -28,7 +28,7 @@ namespace VTX::App::Action::Trajectory
 			[ &p_step ]( System::GenericTrajectory & traj )
 			{
 				traj.player.jumpTo( p_step );
-				traj.currentFrameIndex = p_step;
+				traj.requestedFrameIndex = p_step;
 			}
 		);
 	}
