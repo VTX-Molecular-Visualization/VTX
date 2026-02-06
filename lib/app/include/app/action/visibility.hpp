@@ -119,6 +119,64 @@ namespace VTX::App::Action::Visibility
 		}
 	};
 
+	struct SetVisibleItem
+	{
+		void execute(
+			const ECS::Entity					 p_ent,
+			const Core::Struct::E_SYSTEM_ITEM	 p_item,
+			const Core::Struct::IndexRangeList & p_ranges  = {},
+			const bool							 p_visible = true
+		)
+		{
+			switch ( p_item )
+			{
+			case Core::Struct::E_SYSTEM_ITEM::SYSTEM:
+				SetVisible<Core::Struct::E_SYSTEM_ITEM::SYSTEM>().execute( p_ent, p_ranges, p_visible );
+				break;
+			case Core::Struct::E_SYSTEM_ITEM::CHAIN:
+				SetVisible<Core::Struct::E_SYSTEM_ITEM::CHAIN>().execute( p_ent, p_ranges, p_visible );
+				break;
+			case Core::Struct::E_SYSTEM_ITEM::RESIDUE:
+				SetVisible<Core::Struct::E_SYSTEM_ITEM::RESIDUE>().execute( p_ent, p_ranges, p_visible );
+				break;
+			case Core::Struct::E_SYSTEM_ITEM::ATOM:
+				SetVisible<Core::Struct::E_SYSTEM_ITEM::ATOM>().execute( p_ent, p_ranges, p_visible );
+				break;
+			default: assert( false && "Unhandled E_SYSTEM_ITEM type in SetVisibleItem action." ); break;
+			}
+		}
+
+		void execute(
+			const ECS::Entity				  p_ent,
+			const Core::Struct::E_SYSTEM_ITEM p_item,
+			const Core::Struct::IndexRange &  p_range,
+			const bool						  p_visible = true
+		)
+		{
+			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_visible );
+		}
+
+		void execute(
+			const ECS::Entity				  p_ent,
+			const Core::Struct::E_SYSTEM_ITEM p_item,
+			const std::vector<Index> &		  p_values,
+			const bool						  p_visible = true
+		)
+		{
+			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_visible );
+		}
+
+		void execute(
+			const ECS::Entity				  p_ent,
+			const Core::Struct::E_SYSTEM_ITEM p_item,
+			const Index						  p_value,
+			const bool						  p_visible = true
+		)
+		{
+			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_visible );
+		}
+	};
+
 	// TODO: other elements.
 } // namespace VTX::App::Action::Visibility
 

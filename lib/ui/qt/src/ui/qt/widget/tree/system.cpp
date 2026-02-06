@@ -3,6 +3,7 @@
 #include "ui/qt/menu/selection.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
+#include <app/action/visibility.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -10,7 +11,11 @@ namespace VTX::UI::QT::Widget::Tree
 	System::System( const App::ECS::Entity p_system, QWidget * p_parent ) :
 		_system( p_system ), Widget::Tree::BaseTree<System, QTreeView>( p_parent )
 	{
+		using namespace Core::Struct;
+
 		setExpandsOnDoubleClick( false );
+		setMouseTracking( true );
+		//  viewport()->setAttribute( Qt::WA_Hover );
 
 		// Model.
 		setModel( new SystemModel( p_system, this ) );
@@ -20,9 +25,11 @@ namespace VTX::UI::QT::Widget::Tree
 		setSelectionBehavior( QAbstractItemView::SelectRows );
 
 		// Delegate.
-		setItemDelegate( new Delegate::SystemDelegate( p_system, this ) );
+		auto * const delegate = new Delegate::SystemDelegate( p_system, this );
+		setItemDelegate( delegate );
 
 		// One expanded at a time.
+		// TODO: keep or remove?
 		connect(
 			this,
 			&QTreeView::expanded,
@@ -48,6 +55,21 @@ namespace VTX::UI::QT::Widget::Tree
 			this,
 			&QTreeView::doubleClicked,
 			[ this ]( const QModelIndex & p_index ) { App::ACTION().execute<App::Action::Camera::Orient>(); }
+		);
+
+		// Visibility.
+		connect(
+			delegate,
+			&Delegate::SystemDelegate::visibilityClicked,
+			[ this ]( const QModelIndex & p_index )
+			{
+				const auto &  model = getSystemModel();
+				E_SYSTEM_ITEM item;
+				Index		  index;
+				SystemModel::unpack( p_index.internalId(), item, index );
+
+				App::ACTION().execute<App::Action::Visibility::SetVisibleItem>( _system, item, index, false );
+			}
 		);
 	}
 
