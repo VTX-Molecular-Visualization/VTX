@@ -99,12 +99,6 @@ namespace VTX::UI::QT::Widget
 		QWidget::resizeEvent( p_event );
 
 		_container->setVisible( false );
-		if ( not _resizeTimer.isActive() )
-		{
-			// Force first update to avoid 0, 0 at startup.
-			onResizeFinished();
-		}
-
 		_resizeTimer.start( 40 );
 	}
 

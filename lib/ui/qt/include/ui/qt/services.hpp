@@ -8,16 +8,18 @@ namespace VTX::UI::QT
 	class Model;
 	class SelectionModel;
 	class Settings;
-	class Style;
-
+	namespace Style
+	{
+		class StyleManager;
+	}
 	namespace Widget
 	{
 		class MainWindow;
 	}
 
-	inline Settings &			SETTINGS() { return App::ECS::getCtx<Settings>(); }
-	inline Style &				STYLE() { return App::ECS::getCtx<Style>(); }
-	inline Widget::MainWindow & MAIN_WINDOW() { return App::ECS::getCtx<Widget::MainWindow>(); }
+	inline Settings &			 SETTINGS() { return App::ECS::getCtx<Settings>(); }
+	inline Style::StyleManager & STYLE() { return App::ECS::getCtx<Style::StyleManager>(); }
+	inline Widget::MainWindow &	 MAIN_WINDOW() { return App::ECS::getCtx<Widget::MainWindow>(); }
 
 } // namespace VTX::UI::QT
 

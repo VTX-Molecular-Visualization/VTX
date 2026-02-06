@@ -132,7 +132,7 @@ namespace VTX::UI::QT::Widget::Library
 
 			reg.on_construct<P>().template connect<&PresetSelector::_refreshComboBox>( this );
 			reg.on_destroy<P>().template connect<&PresetSelector::_refreshComboBox>( this );
-			App::HUB().connect<App::Events::PresetRename, &PresetSelector::_onPresetRename>( this );
+			// App::HUB().connect<App::Events::PresetRename, &PresetSelector::_onPresetRename>( this );
 			reg.on_update<P>().template connect<&PresetSelector::_onUpdatePreset>( this );
 			// reg.on_construct<App ::Preset::Instance<P>>().template connect<&PresetSelector::_onSelectPreset>( this );
 		}
@@ -204,6 +204,7 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Update widget when a preset is renamed from App.
 		 */
+		/*
 		void _onPresetRename( const App::Events::PresetRename & p_event )
 		{
 			const QSignalBlocker blocker( _comboBox );
@@ -218,6 +219,7 @@ namespace VTX::UI::QT::Widget::Library
 				}
 			}
 		}
+		*/
 
 		/**
 		 * @brief Trigger signal when the current preset is updated from App.

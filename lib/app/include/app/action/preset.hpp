@@ -76,7 +76,7 @@ namespace VTX::App::Action::Preset
 
 			auto & nameComponent = REG().get<App::Preset::Name>( p_e );
 			nameComponent.name	 = name;
-			HUB().trigger<App::Events::PresetRename>( p_e, name );
+			HUB().trigger<App::Events::PresetRename<T>>( p_e, name );
 		}
 	};
 

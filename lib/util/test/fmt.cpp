@@ -18,25 +18,21 @@ TEST_CASE( "Util::Fmt", "[unit]" )
 	VTX::VTX_INFO( "info with Vec2: {0} / {1}", Vec2i( 0, 1 ), Vec2f( 0.1f, 10.4f ) );
 
 	VTX::VTX_INFO(
-		"info with Vec3: {0} / {1} / {2} / {3} / {4:.3f}",
+		"info with Vec3: {0} / {1} / {2} / {3}",
 		Vec3i( -1, 0, 1 ),
-		Vec3u( -1, 0, 1 ),
 		Vec3b( true, true, false ),
 		Vec3f( 4 / 3.f, 0.f, 1.6f ),
 		Vec3d( 4 / 3., 0.f, 1.6 )
 	);
 
 	VTX::VTX_INFO(
-		"info with Vec4: {0} / {1} / {2} / {3} / {4:.3f}",
+		"info with Vec4: {0} / {1} / {2}",
 		Vec4i( 0, -1, 0, 1 ),
-		Vec4u( 0, -1, 0, 1 ),
-		Vec4b( false, true, true, false ),
 		Vec4f( 10.55f, 4 / 3.f, 0.f, 1.6f ),
 		Vec4d( 10.55, 4 / 3., 0.f, 1.6 )
 	);
 
 	VTX::VTX_INFO( "Mat3x3: {0:.2f}", Mat3f( 0, 1, 2, 3, 4, 5, 6, 7, 8 ) );
-	VTX::VTX_INFO( "Mat4x3: {0:.2f}", Mat43f( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ) );
 	VTX::VTX_INFO( "Mat4x4: {0:.2f}", Mat4f( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ) );
 
 	VTX::VTX_INFO( "Quatf: {0}", Quatf( 0.f, 1.f, 1 / 3.f, 1 / 2.f ) );

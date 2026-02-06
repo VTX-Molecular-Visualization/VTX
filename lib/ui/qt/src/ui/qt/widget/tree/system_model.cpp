@@ -1,5 +1,8 @@
 #include "ui/qt/widget/tree/system_model.hpp"
 #include "app/system/uid.hpp"
+#include "ui/qt/services.hpp"
+#include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include <app/services.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
@@ -59,6 +62,7 @@ namespace VTX::UI::QT::Widget::Tree
 	QVariant SystemModel::data( const QModelIndex & p_index, int p_role ) const
 	{
 		using namespace Core::Struct;
+		using namespace Style;
 
 		if ( not p_index.isValid() )
 		{
@@ -97,6 +101,26 @@ namespace VTX::UI::QT::Widget::Tree
 			}
 			return {};
 		case ItemRole: return int( item );
+		case Qt::DecorationRole:
+			switch ( item )
+			{
+			case E_SYSTEM_ITEM::SYSTEM:
+			{
+				return STYLE().iconFromCodepoint( Icons::HUB );
+			}
+			case E_SYSTEM_ITEM::CHAIN:
+			{
+				return STYLE().iconFromCodepoint( Icons::TIMELINE );
+			}
+			case E_SYSTEM_ITEM::RESIDUE:
+			{
+				return STYLE().iconFromCodepoint( Icons::ATR );
+			}
+			case E_SYSTEM_ITEM::ATOM:
+			{
+				return {};
+			}
+			}
 		case VisibleRole: // TODO.
 			return true;
 		default: return {};

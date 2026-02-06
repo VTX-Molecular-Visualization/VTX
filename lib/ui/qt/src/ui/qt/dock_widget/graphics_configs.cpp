@@ -1,4 +1,7 @@
 #include "ui/qt/dock_widget/graphics_configs.hpp"
+#include "ui/qt/services.hpp"
+#include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/library/graphics_config.hpp"
 #include <util/factories.hpp>
 
@@ -8,6 +11,7 @@ namespace VTX::UI::QT::DockWidget
 	GraphicsConfigs::GraphicsConfigs( QWidget * p_parent ) : BaseDockWidget( p_parent, "Graphics" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::_3D ) );
 
 		auto * const graphicsConfigWidget = new Widget::Library::GraphicsConfig( this );
 		_layout->addWidget( graphicsConfigWidget );

@@ -1,36 +1,37 @@
 #ifndef __VTX_UI_QT_WIDGET_TREE_CAMERA__
 #define __VTX_UI_QT_WIDGET_TREE_CAMERA__
 
+#include "ui/qt/services.hpp"
+#include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/tree/base_tree.hpp"
 #include <QTreeWidget>
 
 namespace VTX::UI::QT::Widget::Tree
 {
 	/**
-	 * @brief Scene tree.
+	 * @brief Camera tree: list of saved viewpoints.
 	 */
 	class Camera : public Widget::Tree::BaseTree<Camera>
 	{
 	  public:
-		Camera( QWidget * p_parent ) : BaseTree( p_parent )
+		Camera( const App::ECS::Entity p_entity, QWidget * p_parent ) : BaseTree( p_parent ), _entity( p_entity )
 		{
 			setExpandsOnDoubleClick( true );
 
-			// Main item.
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Camera" ) );
-			// Add fake cameras for the example.
-			for ( int i = 0; i < 3; i++ )
-			{
-				QTreeWidgetItem * const cameraItem
-					= new QTreeWidgetItem( QStringList() << QString( "Viewpoint %1" ).arg( i + 1 ) );
-				topLevelItem( 0 )->addChild( cameraItem );
-			}
+			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::PHOTO_CAMERA ) );
 
-			connect( this, &QTreeWidget::itemExpanded, this, [ this ] { updateGeometry(); } );
-			connect( this, &QTreeWidget::itemCollapsed, this, [ this ] { updateGeometry(); } );
+			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Front" ) );
+			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Back" ) );
+			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Left" ) );
+			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Right" ) );
+			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Top" ) );
+			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Bottom" ) );
 		}
 
-		
+	  private:
+		const App::ECS::Entity _entity;
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

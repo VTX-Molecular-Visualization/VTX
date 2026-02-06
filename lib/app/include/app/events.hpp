@@ -83,6 +83,7 @@ namespace VTX::App::Events
 		ECS::Entity system;
 	};
 
+	template<typename P>
 	struct PresetRename
 	{
 		ECS::Entity preset;
