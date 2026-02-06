@@ -19,17 +19,14 @@ namespace VTX::UI::QT::Widget::Tree
 			setExpandsOnDoubleClick( true );
 
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Camera" ) );
-			topLevelItem( 0 )->setExpanded( true );
-
-			// Add fake cameras for the example.
-			for ( int i = 0; i < 3; i++ )
-			{
-				QTreeWidgetItem * const cameraItem
-					= new QTreeWidgetItem( QStringList() << QString( "Viewpoint %1" ).arg( i + 1 ) );
-				topLevelItem( 0 )->addChild( cameraItem );
-			}
-
 			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( 0xe8fc ) );
+
+			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Front" ) );
+			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Back" ) );
+			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Left" ) );
+			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Right" ) );
+			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Top" ) );
+			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Bottom" ) );
 		}
 
 	  private:
