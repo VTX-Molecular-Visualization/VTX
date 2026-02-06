@@ -1,5 +1,5 @@
 #include "ui/qt/widget/tree/system.hpp"
-#include "ui/qt/delegate/scene_item_delegate.hpp"
+#include "ui/qt/delegate/system_delegate.hpp"
 #include "ui/qt/menu/selection.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
@@ -20,7 +20,7 @@ namespace VTX::UI::QT::Widget::Tree
 		setSelectionBehavior( QAbstractItemView::SelectRows );
 
 		// Delegate.
-		setItemDelegate( new Delegate::SceneItemDelegate( p_system, this ) );
+		setItemDelegate( new Delegate::SystemDelegate( p_system, this ) );
 
 		// One expanded at a time.
 		connect(
