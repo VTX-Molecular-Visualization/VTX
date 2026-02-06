@@ -82,6 +82,15 @@ namespace VTX::App::Helper::System
 	}
 
 	/**
+	 * @brief Get the visibility state of an item.
+	 */
+	App::System::E_VISIBLE_STATE getVisibleState(
+		const ECS::Entity,
+		const Core::Struct::E_SYSTEM_ITEM,
+		const Index = INVALID_INDEX
+	);
+
+	/**
 	 * @brief Check if an item is selected.
 	 */
 	template<Core::Struct::E_SYSTEM_ITEM ITEM>

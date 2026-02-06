@@ -59,6 +59,11 @@ namespace VTX::UI::QT::DockWidget
 		/**
 		 * @brief Update selection.
 		 */
+		void _onUpdateVisibility( App::ECS::Registry &, App::ECS::Entity p_e );
+
+		/**
+		 * @brief Update selection.
+		 */
 		void _onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e );
 
 		/**

@@ -61,7 +61,7 @@ namespace VTX::UI::QT::Delegate
 		/**
 		 * @brief Button clicked.
 		 */
-		void visibilityClicked( const QModelIndex &, const QPointF & );
+		void visibilityClicked( const QModelIndex &, const bool );
 		void colorSchemeClicked( const QModelIndex &, const QPointF & );
 		void representationClicked( const QModelIndex &, const QPointF & );
 

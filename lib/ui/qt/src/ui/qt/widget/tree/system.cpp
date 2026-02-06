@@ -61,14 +61,14 @@ namespace VTX::UI::QT::Widget::Tree
 		connect(
 			delegate,
 			&Delegate::SystemDelegate::visibilityClicked,
-			[ this ]( const QModelIndex & p_index )
+			[ this ]( const QModelIndex & p_index, const bool p_visible )
 			{
 				const auto &  model = getSystemModel();
 				E_SYSTEM_ITEM item;
 				Index		  index;
 				SystemModel::unpack( p_index.internalId(), item, index );
 
-				App::ACTION().execute<App::Action::Visibility::SetVisibleItem>( _system, item, index, false );
+				App::ACTION().execute<App::Action::Visibility::SetVisibleItem>( _system, item, index, p_visible );
 			}
 		);
 	}

@@ -3,6 +3,7 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
+#include <app/helper/system.hpp>
 #include <app/services.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
@@ -121,8 +122,7 @@ namespace VTX::UI::QT::Widget::Tree
 				return {};
 			}
 			}
-		case VisibleRole: // TODO.
-			return true;
+		case VisibleRole: return toUnderlying( App::Helper::System::getVisibleState( _system, item, index ) );
 		default: return {};
 		}
 	}

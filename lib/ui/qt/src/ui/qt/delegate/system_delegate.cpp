@@ -2,9 +2,11 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
+#include "ui/qt/widget/tree/system_model.hpp"
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
+#include <app/system/visibility.hpp>
 
 namespace VTX::UI::QT::Delegate
 {
@@ -25,17 +27,32 @@ namespace VTX::UI::QT::Delegate
 	{
 		QStyledItemDelegate::paint( p_painter, p_option, p_index );
 
-		if ( not( p_option.state & QStyle::State_MouseOver ) )
-		{
-			return;
-		}
-
 		p_painter->save();
 
-		for ( int i = 0; i < _icons.size(); ++i )
+		// Visibility.
+		const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(
+			p_index.data( Widget::Tree::SystemModel::Roles::VisibleRole ).toInt()
+		);
+
+		bool showVisibility = true;
+		if ( visible == App::System::E_VISIBLE_STATE::HIDDEN )
 		{
-			const QRect r = _buttonRect( p_option, i );
-			_icons[ i ].paint( p_painter, r, Qt::AlignCenter, QIcon::Normal );
+			const QRect r = _buttonRect( p_option, 0 );
+			_icons[ 0 ].paint( p_painter, r, Qt::AlignCenter, QIcon::Normal );
+			showVisibility = false;
+		}
+
+		if ( p_option.state & QStyle::State_MouseOver )
+		{
+			for ( int i = 0; i < _icons.size(); ++i )
+			{
+				if ( i == 0 && not showVisibility )
+				{
+					continue;
+				}
+				const QRect r = _buttonRect( p_option, i );
+				_icons[ i ].paint( p_painter, r, Qt::AlignCenter, QIcon::Normal );
+			}
 		}
 
 		p_painter->restore();
@@ -65,7 +82,14 @@ namespace VTX::UI::QT::Delegate
 
 			switch ( static_cast<ACTION>( hit ) )
 			{
-			case ACTION::VISIBILITY: emit visibilityClicked( p_index, e->globalPosition() ); break;
+			case ACTION::VISIBILITY:
+			{
+				const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(
+					p_index.data( Widget::Tree::SystemModel::Roles::VisibleRole ).toInt()
+				);
+				emit visibilityClicked( p_index, visible == App::System::E_VISIBLE_STATE::VISIBLE ? false : true );
+				break;
+			}
 			case ACTION::COLOR_SCHEME: emit colorSchemeClicked( p_index, e->globalPosition() ); break;
 			case ACTION::REPRESENTATION: emit representationClicked( p_index, e->globalPosition() ); break;
 

@@ -8,6 +8,7 @@
 #include <app/events.hpp>
 #include <app/services.hpp>
 #include <app/system/selection.hpp>
+#include <app/system/visibility.hpp>
 #include <renderer/camera.hpp>
 #include <util/event_hub.hpp>
 
@@ -31,6 +32,7 @@ namespace VTX::UI::QT::DockWidget
 
 		App::HUB().connect<App::Events::SystemLoad, &Scene::_onSystemLoad>( this );
 		App::REG().on_destroy<Core::Struct::System>().connect<&Scene::_onSystemDestroy>( this );
+		App::REG().on_update<App::System::Visibility>().connect<&Scene::_onUpdateVisibility>( this );
 		App::REG().on_update<App::System::Selection>().connect<&Scene::_onUpdateSelection>( this );
 
 		App::HUB().connect<Events::SelectionLocked, &Scene::_onSelectionLocked>( this );
@@ -61,6 +63,12 @@ namespace VTX::UI::QT::DockWidget
 		assert( _mapTreeWidgets.contains( p_e ) );
 		_mapTreeWidgets[ p_e ]->deleteLater();
 		_mapTreeWidgets.erase( p_e );
+	}
+
+	void Scene::_onUpdateVisibility( App::ECS::Registry &, App::ECS::Entity p_e )
+	{
+		assert( _mapTreeWidgets.contains( p_e ) );
+		_mapTreeWidgets[ p_e ]->viewport()->update();
 	}
 
 	void Scene::_onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e )
