@@ -90,19 +90,15 @@ namespace
 				for ( Index atom : ranges )
 				{
 					const Index residue = p_data.atomResidueIndexes[ atom ];
-					atoms[ atom ]		= Color::getColorIndex( p_data.getAtomSymbol( residue ) );
+					atoms[ atom ]		= Color::getColorIndex( p_data.getResidueSymbol( residue ) );
 				}
 			}
 			else if ( scheme == System::E_COLOR_SCHEME::CHAIN )
 			{
 				for ( Index atom : ranges )
 				{
-					const Index residue
-						= p_data.atomResidueIndexes.size() > atom ? p_data.atomResidueIndexes[ atom ] : 0;
-					const Index chain
-						= p_data.residueChainIndexes.size() > residue ? p_data.residueChainIndexes[ residue ] : 0;
-					atoms[ atom ]
-						= Color::getColorIndex( p_data.chainNames.size() > chain ? p_data.getChainName( chain ) : "X" );
+					const Index chain = p_data.getAtomChainIndex( atom );
+					atoms[ atom ]	  = Color::getColorIndex( p_data.getChainName( chain ) );
 				}
 			}
 			else

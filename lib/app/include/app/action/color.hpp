@@ -12,10 +12,14 @@ namespace VTX::App::Action::Color
 	/**
 	 * @brief Set item selection.
 	 */
-	template<System::E_COLOR_SCHEME S>
+	template<Core::Struct::E_SYSTEM_ITEM ITEM>
 	struct Add
 	{
-		void execute( const ECS::Entity p_ent, const Core::Struct::IndexRangeList & p_ranges = {} )
+		void execute(
+			const ECS::Entity					 p_ent,
+			const System::E_COLOR_SCHEME		 p_scheme,
+			const Core::Struct::IndexRangeList & p_ranges = {}
+		)
 		{
 			using namespace Core::Struct;
 			using namespace Renderer::Color;
@@ -25,32 +29,143 @@ namespace VTX::App::Action::Color
 			const auto & uid	= REG().get<System::UID>( p_ent );
 			auto &		 color	= reg.get<System::Color>( p_ent );
 
-			IndexRangeList ranges
-				= p_ranges.isEmpty() ? Core::Struct::IndexRangeList( { { 0, system.getAtomCount() } } ) : p_ranges;
+			Core::Struct::IndexRangeList atoms;
+
+			if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
+			{
+				atoms = IndexRangeList( system.getAtomRange() );
+			}
+			else if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
+			{
+				for ( const auto & index : p_ranges )
+				{
+					atoms.addRange( system.getChainAtomRange( index ) );
+				}
+			}
+			else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
+			{
+				for ( const auto & index : p_ranges )
+				{
+					atoms.addRange( system.getResidueAtomRange( index ) );
+				}
+			}
+			else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
+			{
+				for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
+				{
+					atoms.addRange( *it );
+				}
+			}
+			else
+			{
+				static_assert( always_false_v<ITEM>, "Unhandled E_ITEM type in SetVisible action." );
+			}
 
 			reg.patch<System::Color>(
 				p_ent,
 				[ & ]( System::Color & p_color )
 				{
 					// Merge ranges.
-					if ( not color.colorSchemeAtoms.contains( S ) )
+					if ( not color.colorSchemeAtoms.contains( p_scheme ) )
 					{
-						p_color.colorSchemeAtoms.emplace( S, Core::Struct::IndexRangeList() );
+						p_color.colorSchemeAtoms.emplace( p_scheme, Core::Struct::IndexRangeList() );
 					}
 
+					size_t count = 0;
 					for ( auto & [ scheme, rangeList ] : p_color.colorSchemeAtoms )
 					{
-						if ( scheme == S )
+						if ( scheme == p_scheme )
 						{
-							rangeList.mergeInPlace( ranges );
+							rangeList.mergeInPlace( atoms );
 						}
 						else
 						{
-							rangeList.substractInPlace( ranges );
+							rangeList.substractInPlace( atoms );
 						}
+
+						count += rangeList.count();
 					}
+
+					assert( count == system.getAtomCount() );
 				}
 			);
+		}
+
+		void execute(
+			const ECS::Entity				 p_ent,
+			const System::E_COLOR_SCHEME	 p_scheme,
+			const Core::Struct::IndexRange & p_range
+		)
+		{
+			execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_range ) );
+		}
+
+		void execute( const ECS::Entity p_ent, System::E_COLOR_SCHEME p_scheme, const std::vector<Index> & p_values )
+		{
+			execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_values ) );
+		}
+
+		void execute( const ECS::Entity p_ent, System::E_COLOR_SCHEME p_scheme, const Index p_value )
+		{
+			execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_value ) );
+		}
+	};
+
+	struct AddItem
+	{
+		void execute(
+			const ECS::Entity					 p_ent,
+			const Core::Struct::E_SYSTEM_ITEM	 p_item,
+			const System::E_COLOR_SCHEME		 p_scheme,
+			const Core::Struct::IndexRangeList & p_ranges = {}
+		)
+		{
+			switch ( p_item )
+			{
+			case Core::Struct::E_SYSTEM_ITEM::SYSTEM:
+				Add<Core::Struct::E_SYSTEM_ITEM::SYSTEM>().execute( p_ent, p_scheme, p_ranges );
+				break;
+			case Core::Struct::E_SYSTEM_ITEM::CHAIN:
+				Add<Core::Struct::E_SYSTEM_ITEM::CHAIN>().execute( p_ent, p_scheme, p_ranges );
+				break;
+			case Core::Struct::E_SYSTEM_ITEM::RESIDUE:
+				Add<Core::Struct::E_SYSTEM_ITEM::RESIDUE>().execute( p_ent, p_scheme, p_ranges );
+				break;
+			case Core::Struct::E_SYSTEM_ITEM::ATOM:
+				Add<Core::Struct::E_SYSTEM_ITEM::ATOM>().execute( p_ent, p_scheme, p_ranges );
+				break;
+			default: assert( false && "Unhandled E_SYSTEM_ITEM type in AddItem action." ); break;
+			}
+		}
+
+		void execute(
+			const ECS::Entity				  p_ent,
+			const Core::Struct::E_SYSTEM_ITEM p_item,
+			const System::E_COLOR_SCHEME	  p_scheme,
+			const Core::Struct::IndexRange &  p_range
+		)
+		{
+			execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_range ) );
+		}
+
+		void execute(
+			const ECS::Entity				  p_ent,
+			const Core::Struct::E_SYSTEM_ITEM p_item,
+			const System::E_COLOR_SCHEME	  p_scheme,
+			const std::vector<Index> &		  p_values
+		)
+		{
+			execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_values ) );
+		}
+
+		void execute(
+			const ECS::Entity				  p_ent,
+			const Core::Struct::E_SYSTEM_ITEM p_item,
+			const System::E_COLOR_SCHEME	  p_scheme,
+			const Index						  p_value
+		)
+		{
+			execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_value ) );
 		}
 	};
 

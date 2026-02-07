@@ -127,7 +127,7 @@ namespace VTX::App::Action::Scene
 		ACTION().execute<Action::Representation::AddToSystem>( entity, entityRep );
 
 		// Color scheme.
-		ACTION().execute<Color::Add<System::COLOR_SCHEME_DEFAULT>>( entity );
+		ACTION().execute<Color::Add<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>( entity, System::COLOR_SCHEME_DEFAULT );
 
 		// Deleted: nothing deleted.
 		deleted.atoms = {};

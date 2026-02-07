@@ -4,6 +4,7 @@
 #include "ui/qt/menu/selection.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
+#include <app/action/color.hpp>
 #include <app/action/visibility.hpp>
 #include <app/services.hpp>
 #include <app/system/trajectory.hpp>
@@ -106,13 +107,15 @@ namespace VTX::UI::QT::Widget::Tree
 				Index						index;
 				SystemModel::unpack( p_index.internalId(), item, index );
 
-				const App::System::E_COLOR_SCHEME colorScheme = static_cast<App::System::E_COLOR_SCHEME>(
-					p_index.data( Widget::Tree::SystemModel::Roles::ColorSchemeRootRole ).toInt()
-				);
-
+				// TODO: select actual color.
 				Menu::ColorScheme menu( this );
-				auto *			  res = menu.exec( QCursor::pos() );
-				if ( res != nullptr ) {}
+				if ( const auto * res = menu.exec( QCursor::pos() ) )
+				{
+					// Get menu selection.
+					const Menu::ColorScheme::Selected selected = res->data().value<Menu::ColorScheme::Selected>();
+					// TODO: handle index for plain color.
+					App::ACTION().execute<App::Action::Color::AddItem>( _system, item, selected.scheme, index );
+				}
 			}
 		);
 	}
