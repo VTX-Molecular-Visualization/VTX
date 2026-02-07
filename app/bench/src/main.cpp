@@ -158,7 +158,7 @@ int main( int, char ** )
 		representation.set( 9, bFalse );
 		*/
 
-		renderer.setRepresentation( representation );
+		// renderer.setRepresentation( representation );
 
 		Renderer::GraphicsConfig settings;
 		settings.shadingMode		= Renderer::E_SHADING::TOON;
