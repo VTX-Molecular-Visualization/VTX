@@ -36,6 +36,8 @@ namespace VTX::App::Action::Scene
 
 	void LoadSystem::execute( const FilePath & p_path, const std::string * const p_buffer )
 	{
+		using namespace Core::Struct;
+
 		auto & reg = REG();
 
 		// Create entity.
@@ -117,23 +119,23 @@ namespace VTX::App::Action::Scene
 		} // We don't need the loader anymore
 
 		// Visibillity: all visible.
-		visibility.atoms = Core::Struct::IndexRangeList( data.getAtomRange() );
+		visibility.atoms = IndexRangeList( data.getAtomRange() );
 
 		// Selection: nothing selected.
 		selection.atoms = {};
 
 		// Representation.
 		auto entityRep = ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>();
-		ACTION().execute<Action::Representation::AddToSystem>( entity, entityRep );
+		ACTION().execute<Representation::Add<E_SYSTEM_ITEM::SYSTEM>>( entity, entityRep );
 
 		// Color scheme.
-		ACTION().execute<Color::Add<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>( entity, System::COLOR_SCHEME_DEFAULT );
+		ACTION().execute<Color::Add<E_SYSTEM_ITEM::SYSTEM>>( entity, System::COLOR_SCHEME_DEFAULT );
 
 		// Deleted: nothing deleted.
 		deleted.atoms = {};
 
 		// Orient.
-		ACTION().execute<App::Action::Camera::Orient>( aabb );
+		ACTION().execute<Camera::Orient>( aabb );
 
 		// Trigger system load.
 		HUB().trigger<Events::SystemLoad>( { entity } );

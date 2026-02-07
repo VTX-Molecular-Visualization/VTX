@@ -2,7 +2,7 @@
 #define __VTX_APP_ACTION_VISIBILITY__
 
 #include "app/ecs.hpp"
-#include "app/scene/tag_root.hpp"
+#include "app/helper/system.hpp"
 #include "app/system/visibility.hpp"
 #include <core/struct/system.hpp>
 #include <util/type_traits.hpp>
@@ -22,84 +22,22 @@ namespace VTX::App::Action::Visibility
 			const bool							 p_visible = true
 		)
 		{
-			using namespace Util::Math;
-			using namespace Core::Struct;
-
-			auto &		 reg		= REG();
-			const auto & system		= reg.get<Core::Struct::System>( p_ent );
-			auto &		 visibility = reg.get<System::Visibility>( p_ent );
-
-			Core::Struct::IndexRangeList visibleAtoms = visibility.atoms;
-
-			if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
-			{
-				if ( p_visible )
-				{
-					visibleAtoms = IndexRangeList( system.getAtomRange() );
-				}
-				else
-				{
-					visibleAtoms.clear();
-				}
-			}
-			else if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
-			{
-				if ( p_visible )
-				{
-					for ( const auto & index : p_ranges )
-					{
-						visibleAtoms.addRange( system.getChainAtomRange( index ) );
-					}
-				}
-				else
-				{
-					for ( const auto & index : p_ranges )
-					{
-						visibleAtoms.removeRange( system.getChainAtomRange( index ) );
-					}
-				}
-			}
-			else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
-			{
-				if ( p_visible )
-				{
-					for ( const auto & index : p_ranges )
-					{
-						visibleAtoms.addRange( system.getResidueAtomRange( index ) );
-					}
-				}
-				else
-				{
-					for ( const auto & index : p_ranges )
-					{
-						visibleAtoms.removeRange( system.getResidueAtomRange( index ) );
-					}
-				}
-			}
-			else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
-			{
-				if ( p_visible )
-				{
-					for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
-					{
-						visibleAtoms.addRange( *it );
-					}
-				}
-				else
-				{
-					for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
-					{
-						visibleAtoms.removeRange( *it );
-					}
-				}
-			}
-			else
-			{
-				static_assert( always_false_v<ITEM>, "Unhandled E_ITEM type in SetVisible action." );
-			}
+			auto &						 reg   = REG();
+			Core::Struct::IndexRangeList atoms = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 
 			reg.patch<System::Visibility>(
-				p_ent, [ visibleAtoms ]( System::Visibility & p_visibility ) { p_visibility.atoms = visibleAtoms; }
+				p_ent,
+				[ &atoms, p_visible ]( System::Visibility & p_visibility )
+				{
+					if ( p_visible )
+					{
+						p_visibility.atoms.mergeInPlace( atoms );
+					}
+					else
+					{
+						p_visibility.atoms.substractInPlace( atoms );
+					}
+				}
 			);
 		}
 

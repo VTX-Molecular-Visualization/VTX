@@ -7,12 +7,95 @@
 #include "app/system/selection.hpp"
 #include "app/system/visibility.hpp"
 #include <core/struct/system.hpp>
+#include <util/type_traits.hpp>
 
 /**
  * @brief Request data from entity, READ-ONLY.
  */
 namespace VTX::App::Helper::System
 {
+	/**
+	 * @brief Get the atom range of an item.
+	 */
+	template<Core::Struct::E_SYSTEM_ITEM ITEM>
+	Core::Struct::IndexRange getAtomRange( const ECS::Entity p_ent, const std::optional<Index> p_index = std::nullopt )
+	{
+		using namespace Core::Struct;
+
+		const auto & system = REG().get<Core::Struct::System>( p_ent );
+
+		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
+		{
+			return system.getAtomRange();
+		}
+
+		assert( p_index );
+
+		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
+		{
+			return system.getChainAtomRange( *p_index );
+		}
+		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
+		{
+			return system.getResidueAtomRange( *p_index );
+		}
+		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
+		{
+			return IndexRange { *p_index };
+		}
+		else
+		{
+			static_assert( always_false_v<ITEM>, "Unhandled E_ITEM type in getItemAtomRange()." );
+		}
+	}
+
+	/**
+	 * @brief Get the atom range list of an item.
+	 */
+	template<Core::Struct::E_SYSTEM_ITEM ITEM>
+	Core::Struct::IndexRangeList getAtomRangeList(
+		const ECS::Entity					 p_ent,
+		const Core::Struct::IndexRangeList & p_ranges = {}
+	)
+	{
+		using namespace Core::Struct;
+
+		const auto &   system = REG().get<Core::Struct::System>( p_ent );
+		IndexRangeList atoms;
+
+		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
+		{
+			return IndexRangeList( system.getAtomRange() );
+		}
+		else if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
+		{
+			for ( const auto & index : p_ranges )
+			{
+				atoms.addRange( system.getChainAtomRange( index ) );
+			}
+		}
+		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
+		{
+			for ( const auto & index : p_ranges )
+			{
+				atoms.addRange( system.getResidueAtomRange( index ) );
+			}
+		}
+		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
+		{
+			for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
+			{
+				atoms.addRange( *it );
+			}
+		}
+		else
+		{
+			static_assert( always_false_v<ITEM>, "Unhandled E_ITEM type in getAtomRangeList()." );
+		}
+
+		return atoms;
+	}
+
 	/**
 	 * @brief Check if an item is visible.
 	 */

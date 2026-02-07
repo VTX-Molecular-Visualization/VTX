@@ -27,6 +27,8 @@ namespace VTX::UI::QT::Widget::Tree
 			VisibleRole,
 			// true/false.
 			ColorSchemeRootRole,
+			// true/false.
+			RepresentationRootRole
 		};
 
 		/**

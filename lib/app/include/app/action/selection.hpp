@@ -1,14 +1,10 @@
 #ifndef __VTX_APP_ACTION_SELECTION__
 #define __VTX_APP_ACTION_SELECTION__
 
-#include "app/action/action_manager.hpp"
 #include "app/ecs.hpp"
-#include "app/events.hpp"
-#include "app/scene/tag_root.hpp"
-#include "app/services.hpp"
+#include "app/helper/system.hpp"
 #include "app/system/selection.hpp"
 #include <core/struct/system.hpp>
-#include <util/event_hub.hpp>
 #include <util/type_traits.hpp>
 #include <util/types.hpp>
 
@@ -22,90 +18,27 @@ namespace VTX::App::Action::Selection
 	struct SetSelected
 	{
 		void execute(
-			const ECS::Entity p_ent,
-
+			const ECS::Entity					 p_ent,
 			const Core::Struct::IndexRangeList & p_ranges	= {},
 			const bool							 p_selected = true
 		)
 		{
-			using namespace Util::Math;
-			using namespace Core::Struct;
-
-			auto &		 reg	   = REG();
-			const auto & system	   = reg.get<Core::Struct::System>( p_ent );
-			const auto & selection = reg.get<System::Selection>( p_ent );
-
-			Core::Struct::IndexRangeList selectionAtoms = selection.atoms;
-
-			if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
-			{
-				if ( p_selected )
-				{
-					selectionAtoms = IndexRangeList( system.getAtomRange() );
-				}
-				else
-				{
-					selectionAtoms.clear();
-				}
-			}
-			else if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
-			{
-				if ( p_selected )
-				{
-					for ( const auto & index : p_ranges )
-					{
-						selectionAtoms.addRange( system.getChainAtomRange( index ) );
-					}
-				}
-				else
-				{
-					for ( const auto & index : p_ranges )
-					{
-						selectionAtoms.removeRange( system.getChainAtomRange( index ) );
-					}
-				}
-			}
-			else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
-			{
-				if ( p_selected )
-				{
-					for ( const auto & index : p_ranges )
-					{
-						selectionAtoms.addRange( system.getResidueAtomRange( index ) );
-					}
-				}
-				else
-				{
-					for ( const auto & index : p_ranges )
-					{
-						selectionAtoms.removeRange( system.getResidueAtomRange( index ) );
-					}
-				}
-			}
-			else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
-			{
-				if ( p_selected )
-				{
-					for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
-					{
-						selectionAtoms.addRange( *it );
-					}
-				}
-				else
-				{
-					for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
-					{
-						selectionAtoms.removeRange( *it );
-					}
-				}
-			}
-			else
-			{
-				static_assert( always_false_v<ITEM>, "Unsupported Scene::E_ITEM type in SetSelected action." );
-			}
+			auto &						 reg   = REG();
+			Core::Struct::IndexRangeList atoms = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 
 			reg.patch<System::Selection>(
-				p_ent, [ selectionAtoms ]( System::Selection & p_selection ) { p_selection.atoms = selectionAtoms; }
+				p_ent,
+				[ &atoms, p_selected ]( System::Selection & p_selection )
+				{
+					if ( p_selected )
+					{
+						p_selection.atoms.mergeInPlace( atoms );
+					}
+					else
+					{
+						p_selection.atoms.substractInPlace( atoms );
+					}
+				}
 			);
 		}
 

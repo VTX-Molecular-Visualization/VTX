@@ -41,6 +41,11 @@ namespace VTX::UI::QT::Delegate
 		const bool isColorSchemeRoot = p_index.data( Widget::Tree::SystemModel::Roles::ColorSchemeRootRole ).toBool();
 		pinButtons[ toUnderlying( ACTION::COLOR_SCHEME ) ] = isColorSchemeRoot;
 
+		// Representation.
+		const bool isRepresentationRoot
+			= p_index.data( Widget::Tree::SystemModel::Roles::RepresentationRootRole ).toBool();
+		pinButtons[ toUnderlying( ACTION::REPRESENTATION ) ] = isRepresentationRoot;
+
 		// Paint buttons.
 		for ( int i = 0; i < _icons.size(); ++i )
 		{

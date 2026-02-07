@@ -12,6 +12,7 @@
 #include <QToolButton>
 #include <app/action/selection.hpp>
 #include <app/services.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {

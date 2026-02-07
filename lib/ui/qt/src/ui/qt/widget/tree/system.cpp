@@ -1,10 +1,12 @@
 #include "ui/qt/widget/tree/system.hpp"
 #include "ui/qt/delegate/system_delegate.hpp"
 #include "ui/qt/menu/color_scheme.hpp"
+#include "ui/qt/menu/representation.hpp"
 #include "ui/qt/menu/selection.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/action/color.hpp>
+#include <app/action/representation.hpp>
 #include <app/action/visibility.hpp>
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
@@ -116,9 +118,34 @@ namespace VTX::UI::QT::Widget::Tree
 				if ( const auto * res = menu.exec( QCursor::pos() ) )
 				{
 					// Get menu selection.
-					const Menu::ColorScheme::Selected selected = res->data().value<Menu::ColorScheme::Selected>();
+					const auto selected = res->data().value<Menu::ColorScheme::Selected>();
 					// TODO: handle index for plain color.
 					App::ACTION().execute<App::Action::Color::AddItem>( _system, item, selected.scheme, index );
+				}
+			}
+		);
+
+		// Click on representation icon.
+		connect(
+			delegate,
+			&Delegate::SystemDelegate::representationClicked,
+			[ this ]( const QModelIndex & p_index )
+			{
+				const auto &				model = getSystemModel();
+				Core::Struct::E_SYSTEM_ITEM item;
+				Index						index;
+				SystemModel::unpack( p_index.internalId(), item, index );
+
+				// Get current representation.
+				std::optional<App::ECS::Entity> representation
+					= App::Helper::System::getRepresentation( { _system, item, index } );
+
+				Menu::Representation menu( this, representation );
+				if ( const auto * res = menu.exec( QCursor::pos() ) )
+				{
+					// Get menu selection.
+					const auto selected = res->data().value<App::ECS::Entity>();
+					App::ACTION().execute<App::Action::Representation::AddItem>( _system, item, selected, index );
 				}
 			}
 		);

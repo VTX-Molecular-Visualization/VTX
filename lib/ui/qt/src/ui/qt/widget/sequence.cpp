@@ -4,6 +4,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
+#include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/action/selection.hpp>
 #include <app/ecs.hpp>

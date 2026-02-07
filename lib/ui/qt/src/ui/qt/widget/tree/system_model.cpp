@@ -124,6 +124,7 @@ namespace VTX::UI::QT::Widget::Tree
 			}
 		case VisibleRole: return toUnderlying( App::Helper::System::getVisibleState( { _system, item, index } ) );
 		case ColorSchemeRootRole: return App::Helper::System::isColorSchemeRoot( { _system, item, index } );
+		case RepresentationRootRole: return App::Helper::System::isRepresentationRoot( { _system, item, index } );
 		default: return {};
 		}
 	}

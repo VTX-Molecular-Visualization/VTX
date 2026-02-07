@@ -2,6 +2,7 @@
 #define __VTX_APP_ACTION_COLOR_SCHEME__
 
 #include "app/ecs.hpp"
+#include "app/helper/system.hpp"
 #include "app/system/color.hpp"
 #include "app/system/uid.hpp"
 #include <core/struct/system.hpp>
@@ -21,52 +22,16 @@ namespace VTX::App::Action::Color
 			const Core::Struct::IndexRangeList & p_ranges = {}
 		)
 		{
-			using namespace Core::Struct;
-			using namespace Renderer::Color;
-
-			auto &		 reg	= REG();
-			const auto & system = reg.get<Core::Struct::System>( p_ent );
-			const auto & uid	= REG().get<System::UID>( p_ent );
-			auto &		 color	= reg.get<System::Color>( p_ent );
-
-			Core::Struct::IndexRangeList atoms;
-
-			if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
-			{
-				atoms = IndexRangeList( system.getAtomRange() );
-			}
-			else if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
-			{
-				for ( const auto & index : p_ranges )
-				{
-					atoms.addRange( system.getChainAtomRange( index ) );
-				}
-			}
-			else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
-			{
-				for ( const auto & index : p_ranges )
-				{
-					atoms.addRange( system.getResidueAtomRange( index ) );
-				}
-			}
-			else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
-			{
-				for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
-				{
-					atoms.addRange( *it );
-				}
-			}
-			else
-			{
-				static_assert( always_false_v<ITEM>, "Unhandled E_ITEM type in SetVisible action." );
-			}
+			auto &						 reg	= REG();
+			const auto &				 system = reg.get<Core::Struct::System>( p_ent );
+			Core::Struct::IndexRangeList atoms	= Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 
 			reg.patch<System::Color>(
 				p_ent,
-				[ & ]( System::Color & p_color )
+				[ &atoms, &system, p_scheme ]( System::Color & p_color )
 				{
 					// Merge ranges.
-					if ( not color.colorSchemeAtoms.contains( p_scheme ) )
+					if ( not p_color.colorSchemeAtoms.contains( p_scheme ) )
 					{
 						p_color.colorSchemeAtoms.emplace( p_scheme, Core::Struct::IndexRangeList() );
 					}
