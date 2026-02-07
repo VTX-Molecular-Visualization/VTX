@@ -3,6 +3,8 @@
 
 #include "app/ecs.hpp"
 #include "app/pass/pass_manager.hpp"
+#include <functional>
+#include <latch>
 #include <tuple>
 
 namespace VTX::App::Pass
@@ -29,6 +31,30 @@ namespace VTX::App::Pass
 			subscribe( QueuedAction( SomeAction(), std::forward<Args>( args )... ) );
 		}
 	};
+
+	/**
+	 * @brief Get a ticket to wait until every Queued Actions are executed.
+	 * @return
+	 */
+	std::shared_ptr<std::latch> getWaitTicket();
+
+	/**
+	 * @brief Wrap a function pointer to wait for every Queued Action before invoking the function.
+	 * @tparam T
+	 * @tparam ...Args
+	 * @param p_funcPtr
+	 * @return
+	 */
+	template<typename T, typename... Args>
+	std::function<T( Args... )> wrapDelayedFunction( T ( *p_funcPtr )( Args... ) )
+	{
+		return [ func = p_funcPtr ]( Args... p_args )
+		{
+			auto waitForIt = getWaitTicket();
+			waitForIt->wait();
+			return ( *func )( p_args... );
+		};
+	}
 
 	/**
 	 * @brief Pass that execute actions in queue. Currently not triggering action every update for performances reason
@@ -74,8 +100,7 @@ namespace VTX::App::Pass
 		  public:
 			_wrapper() = delete;
 			_wrapper( SomeAction && p_action, Args &&... args ) :
-				_obj( std::forward<SomeAction>( p_action ) ),
-				_args( std::make_tuple<Args>( std::forward<Args>( args ) )... )
+				_obj( std::forward<SomeAction>( p_action ) ), _args( std::forward<Args>( args )... )
 			{
 			}
 			void execute() override

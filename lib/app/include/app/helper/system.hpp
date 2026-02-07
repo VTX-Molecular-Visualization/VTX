@@ -192,6 +192,13 @@ namespace VTX::App::Helper::System
 	 */
 	bool isRepresentationRoot( const SystemItemView & );
 
+	/**
+	 * @brief Retrieve a system with the corresponding name. Initially meant to be used for scripting purposes.
+	 * @param
+	 * @return
+	 */
+	ECS::Entity getSystemByName( const std::string ) noexcept;
+
 } // namespace VTX::App::Helper::System
 
 #endif

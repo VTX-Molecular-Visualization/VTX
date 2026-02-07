@@ -6,13 +6,20 @@
 #include <queue>
 namespace VTX::App::Pass
 {
-
-	struct ActionQueue
+	namespace
 	{
-		std::queue<QueuedAction> actions;
-		std::mutex				 mutex;
-	};
 
+		struct ActionQueue
+		{
+			std::queue<QueuedAction> actions;
+			std::mutex				 mutex;
+		};
+		struct DelayFunctionsQueue
+		{
+			std::shared_ptr<std::latch> latch;
+		};
+
+	} // namespace
 	void subscribe( QueuedAction p_action ) noexcept
 	{
 		for ( auto entity : REG().view<ActionQueue>() )
@@ -27,11 +34,30 @@ namespace VTX::App::Pass
 			);
 		}
 	}
+	std::shared_ptr<std::latch> getWaitTicket()
+	{
+		for ( auto entity : REG().view<DelayFunctionsQueue>() )
+		{
+			std::shared_ptr<std::latch> out;
+			REG().patch<DelayFunctionsQueue>(
+				entity,
+				[ &out ]( DelayFunctionsQueue & p )
+				{
+					if ( p.latch == nullptr )
+						p.latch = std::make_shared<std::latch>( 1 );
+					out = p.latch;
+				}
+			);
+			return out;
+		}
+		return std::shared_ptr<std::latch>( new std::latch( 1 ) );
+	}
 
 	ActionExecuter::ActionExecuter() : _queueEntity( REG().create() )
 	{
 		//
 		REG().emplace<ActionQueue>( _queueEntity );
+		REG().emplace<DelayFunctionsQueue>( _queueEntity );
 		//
 	}
 	void ActionExecuter::update( const float p_delta, const float p_elapsedTime )
@@ -51,9 +77,23 @@ namespace VTX::App::Pass
 				if ( p_queueObj.actions.empty() )
 					return;
 
-				QueuedAction & action = p_queueObj.actions.front();
-				action.execute();
-				p_queueObj.actions.pop();
+				while ( not p_queueObj.actions.empty() )
+				{
+					QueuedAction & action = p_queueObj.actions.front();
+					action.execute();
+					p_queueObj.actions.pop();
+				}
+			}
+		);
+		REG().patch<DelayFunctionsQueue>(
+			_queueEntity,
+			[]( DelayFunctionsQueue & p )
+			{
+				if (p.latch)
+				{
+					p.latch->count_down();
+					p.latch = nullptr;
+				}
 			}
 		);
 	}
