@@ -8,6 +8,9 @@
 #include "app/system/visibility.hpp"
 #include <core/struct/system.hpp>
 
+/**
+ * @brief Request data from entity, READ-ONLY.
+ */
 namespace VTX::App::Helper::System
 {
 	/**
@@ -19,7 +22,7 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 
 		const auto & system		= REG().get<Core::Struct::System>( p_ent );
-		auto &		 visibility = REG().get<App::System::Visibility>( p_ent );
+		const auto & visibility = REG().get<App::System::Visibility>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
 		{
@@ -55,7 +58,7 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 
 		const auto & system		= REG().get<Core::Struct::System>( p_ent );
-		auto &		 visibility = REG().get<App::System::Visibility>( p_ent );
+		const auto & visibility = REG().get<App::System::Visibility>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
 		{
@@ -91,7 +94,7 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 
 		const auto & system	   = REG().get<Core::Struct::System>( p_ent );
-		auto &		 selection = REG().get<App::System::Selection>( p_ent );
+		const auto & selection = REG().get<App::System::Selection>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
 		{
@@ -127,7 +130,7 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 
 		const auto & system	   = REG().get<Core::Struct::System>( p_ent );
-		auto &		 selection = REG().get<App::System::Selection>( p_ent );
+		const auto & selection = REG().get<App::System::Selection>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
 		{

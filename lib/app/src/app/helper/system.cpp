@@ -44,7 +44,39 @@ namespace VTX::App::Helper::System
 
 	std::optional<App::System::E_COLOR_SCHEME> getColorScheme( const SystemItemView & p_system )
 	{
-		//
+		using namespace Core::Struct;
+
+		const auto & reg	= REG();
+		const auto & system = reg.get<Core::Struct::System>( p_system.entity );
+		const auto & color	= reg.get<App::System::Color>( p_system.entity );
+		IndexRange	 atoms;
+
+		switch ( p_system.item )
+		{
+		case E_SYSTEM_ITEM::SYSTEM: atoms = system.getAtomRange(); break;
+		case E_SYSTEM_ITEM::CHAIN:
+			assert( p_system.index );
+			atoms = system.getChainAtomRange( *p_system.index );
+			break;
+		case E_SYSTEM_ITEM::RESIDUE:
+			assert( p_system.index );
+			atoms = system.getResidueAtomRange( *p_system.index );
+			break;
+		case E_SYSTEM_ITEM::ATOM:
+			assert( p_system.index );
+			atoms = IndexRange( *p_system.index );
+			break;
+		default: break;
+		}
+
+		for ( const auto & [ scheme, rangeList ] : color.colorSchemeAtoms )
+		{
+			if ( rangeList.contains( atoms ) )
+			{
+				return scheme;
+			}
+		}
+
 		return std::nullopt;
 	}
 
@@ -53,13 +85,14 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 		using namespace App::System;
 
-		const ECS::Entity ent = p_system.entity;
-
-		auto & system		= REG().get<Core::Struct::System>( ent );
-		auto & colorSchemes = REG().get<Color>( ent );
+		const ECS::Entity ent		   = p_system.entity;
+		const auto &	  reg		   = REG();
+		const auto &	  system	   = reg.get<Core::Struct::System>( ent );
+		const auto &	  colorSchemes = reg.get<Color>( ent );
 
 		for ( const auto & [ _, ranges ] : colorSchemes.colorSchemeAtoms )
 		{
+			// Check if indexes contained but not parent.
 			switch ( p_system.item )
 			{
 			case E_SYSTEM_ITEM::SYSTEM:
@@ -69,26 +102,39 @@ namespace VTX::App::Helper::System
 				}
 				break;
 			case E_SYSTEM_ITEM::CHAIN:
+			{
 				assert( p_system.index );
-				if ( ranges.equals( system.getChainAtomRange( *p_system.index ) ) )
+				const IndexRange systemRange = system.getAtomRange();
+				if ( ranges.contains( system.getChainAtomRange( *p_system.index ) )
+					 && not ranges.contains( systemRange ) )
 				{
 					return true;
 				}
-				break;
+			}
+			break;
 			case E_SYSTEM_ITEM::RESIDUE:
+			{
 				assert( p_system.index );
-				if ( ranges.equals( system.getResidueAtomRange( *p_system.index ) ) )
+				const IndexRange chainRange
+					= system.getChainAtomRange( system.getResidueChainIndex( *p_system.index ) );
+				if ( ranges.contains( system.getResidueAtomRange( *p_system.index ) )
+					 && not ranges.contains( chainRange ) )
 				{
 					return true;
 				}
-				break;
+			}
+			break;
 			case E_SYSTEM_ITEM::ATOM:
+			{
 				assert( p_system.index );
-				if ( ranges.contains( *p_system.index ) )
+				const IndexRange residueRange
+					= system.getResidueAtomRange( system.getAtomResidueIndex( *p_system.index ) );
+				if ( ranges.contains( *p_system.index ) && not ranges.contains( residueRange ) )
 				{
 					return true;
 				}
 				break;
+			}
 			default: break;
 			}
 		}

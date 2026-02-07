@@ -19,24 +19,28 @@ namespace VTX::UI::QT::Menu
 			std::optional<Renderer::ColorIndex> index = std::nullopt;
 		};
 
-		ColorScheme( QWidget * p_parent, const std::optional<Selected> p_selected = std::nullopt ) :
+		ColorScheme( QWidget * p_parent, const std::optional<App::System::E_COLOR_SCHEME> p_scheme = std::nullopt ) :
 			BaseWidget( p_parent )
 		{
 			using namespace App::System;
 
 			setTitle( "Color scheme" );
 
-			auto addItem = [ this ]( const QString & p_label, const Selected & p_data )
+			auto addItem = [ this ](
+							   const QString &									p_label,
+							   const Selected &									p_data,
+							   const std::optional<App::System::E_COLOR_SCHEME> p_currentScheme
+						   )
 			{
 				QAction * a = QWidget::addAction( p_label );
 				a->setCheckable( true );
-				// a->setChecked( checked );
+				a->setChecked( p_currentScheme && *p_currentScheme == p_data.scheme );
 				a->setData( QVariant::fromValue( p_data ) );
 			};
 
-			addItem( "Atoms", { E_COLOR_SCHEME::ATOM } );
-			addItem( "Residues", { E_COLOR_SCHEME::RESIDUE } );
-			addItem( "Chains", { E_COLOR_SCHEME::CHAIN } );
+			addItem( "Atoms", { E_COLOR_SCHEME::ATOM }, p_scheme );
+			addItem( "Residues", { E_COLOR_SCHEME::RESIDUE }, p_scheme );
+			addItem( "Chains", { E_COLOR_SCHEME::CHAIN }, p_scheme );
 			// addItem( "Plain" );
 		}
 

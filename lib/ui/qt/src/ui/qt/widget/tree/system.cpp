@@ -6,6 +6,7 @@
 #include <app/action/camera.hpp>
 #include <app/action/color.hpp>
 #include <app/action/visibility.hpp>
+#include <app/helper/system.hpp>
 #include <app/services.hpp>
 #include <app/system/trajectory.hpp>
 
@@ -107,8 +108,11 @@ namespace VTX::UI::QT::Widget::Tree
 				Index						index;
 				SystemModel::unpack( p_index.internalId(), item, index );
 
-				// TODO: select actual color.
-				Menu::ColorScheme menu( this );
+				// Get current scheme.
+				std::optional<App::System::E_COLOR_SCHEME> scheme
+					= App::Helper::System::getColorScheme( { _system, item, index } );
+
+				Menu::ColorScheme menu( this, scheme );
 				if ( const auto * res = menu.exec( QCursor::pos() ) )
 				{
 					// Get menu selection.
