@@ -48,7 +48,7 @@ namespace VTX::UI::QT::Delegate
 		 * For now, we will not provide any editor, but this can be extended in the future.
 		 */
 		QWidget * createEditor( QWidget *, const QStyleOptionViewItem &, const QModelIndex & ) const override;
-
+		
 		/**
 		 * @brief Override: set data from the model into the editor widget (if any).
 		 */

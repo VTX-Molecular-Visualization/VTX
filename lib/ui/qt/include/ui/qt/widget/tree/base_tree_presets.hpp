@@ -3,6 +3,7 @@
 
 #include "ui/qt/widget/tree/base_tree.hpp"
 #include <QTreeWidget>
+#include <app/action/preset.hpp>
 #include <app/preset/name.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
@@ -21,6 +22,23 @@ namespace VTX::UI::QT::Widget::Tree
 			reg.on_construct<P>().template connect<&BaseTreePreset::_addPreset>( this );
 			reg.on_destroy<P>().template connect<&BaseTreePreset::_removePreset>( this );
 			App::HUB().connect<App::Events::PresetRename<P>, &BaseTreePreset::_onPresetRename>( this );
+
+			// Connect double click to apply the preset.
+			W::connect(
+				this,
+				&QTreeWidget::itemDoubleClicked,
+				this,
+				[ this ]( QTreeWidgetItem * item, int column )
+				{
+					if ( item == nullptr || column != 0 )
+					{
+						return;
+					}
+
+					App::ECS::Entity entity = item->data( 0, Qt::UserRole ).value<App::ECS::Entity>();
+					App::ACTION().execute<App::Action::Preset::Apply<P>>( entity );
+				}
+			);
 		}
 
 		virtual ~BaseTreePreset() = default;
@@ -41,6 +59,7 @@ namespace VTX::UI::QT::Widget::Tree
 			const auto &			name = p_r.get<App::Preset::Name>( p_e );
 			QTreeWidgetItem * const presetItem
 				= new QTreeWidgetItem( QStringList() << QString::fromStdString( name.name ) );
+			presetItem->setData( 0, Qt::UserRole, QVariant::fromValue( p_e ) );
 			W::topLevelItem( 0 )->addChild( presetItem );
 			_entityToItemMap.emplace( p_e, presetItem );
 		}
