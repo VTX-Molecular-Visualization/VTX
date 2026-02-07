@@ -12,7 +12,6 @@ namespace VTX::App::System
 	 */
 	enum struct E_COLOR_SCHEME : uint8_t
 	{
-		MOLECULE,
 		CHAIN,
 		RESIDUE,
 		ATOM,

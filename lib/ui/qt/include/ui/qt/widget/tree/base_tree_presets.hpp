@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_WIDGET_TREE_BASE_TREE_PRESETS__
 
 #include "ui/qt/widget/tree/base_tree.hpp"
+#include <QThread>
 #include <QTreeWidget>
 #include <app/action/preset.hpp>
 #include <app/preset/name.hpp>
@@ -62,6 +63,7 @@ namespace VTX::UI::QT::Widget::Tree
 			presetItem->setData( 0, Qt::UserRole, QVariant::fromValue( p_e ) );
 			W::topLevelItem( 0 )->addChild( presetItem );
 			_entityToItemMap.emplace( p_e, presetItem );
+			W::updateGeometry();
 		}
 
 		/**
@@ -74,6 +76,7 @@ namespace VTX::UI::QT::Widget::Tree
 			QTreeWidgetItem * const presetItem = _entityToItemMap.at( p_e );
 			delete presetItem;
 			_entityToItemMap.erase( p_e );
+			W::updateGeometry();
 		}
 
 		/**

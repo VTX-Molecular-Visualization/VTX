@@ -48,7 +48,7 @@ namespace VTX::UI::QT::Delegate
 		 * For now, we will not provide any editor, but this can be extended in the future.
 		 */
 		QWidget * createEditor( QWidget *, const QStyleOptionViewItem &, const QModelIndex & ) const override;
-		
+
 		/**
 		 * @brief Override: set data from the model into the editor widget (if any).
 		 */
@@ -73,7 +73,7 @@ namespace VTX::UI::QT::Delegate
 		 */
 		App::ECS::Entity _system;
 
-		static constexpr int ICON_SIZE = 14;
+		static constexpr int ICON_SIZE = 15;
 		static constexpr int SPACING   = 4;
 		static constexpr int MARGIN_R  = 6;
 
