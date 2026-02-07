@@ -1,5 +1,6 @@
 #include "ui/qt/widget/tree/system.hpp"
 #include "ui/qt/delegate/system_delegate.hpp"
+#include "ui/qt/menu/color_scheme.hpp"
 #include "ui/qt/menu/selection.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
@@ -66,25 +67,52 @@ namespace VTX::UI::QT::Widget::Tree
 			}
 		);
 
-		// Double click.
+		// Double click: orient.
 		connect(
 			_tree,
 			&QTreeView::doubleClicked,
 			[ this ]( const QModelIndex & p_index ) { App::ACTION().execute<App::Action::Camera::Orient>(); }
 		);
 
-		// Visibility.
+		// Click on visibility icon.
 		connect(
 			delegate,
 			&Delegate::SystemDelegate::visibilityClicked,
-			[ this ]( const QModelIndex & p_index, const bool p_visible )
+			[ this ]( const QModelIndex & p_index )
 			{
 				const auto &				model = getSystemModel();
 				Core::Struct::E_SYSTEM_ITEM item;
 				Index						index;
 				SystemModel::unpack( p_index.internalId(), item, index );
 
-				App::ACTION().execute<App::Action::Visibility::SetVisibleItem>( _system, item, index, p_visible );
+				const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(
+					p_index.data( Widget::Tree::SystemModel::Roles::VisibleRole ).toInt()
+				);
+
+				App::ACTION().execute<App::Action::Visibility::SetVisibleItem>(
+					_system, item, index, visible == App::System::E_VISIBLE_STATE::HIDDEN ? true : false
+				);
+			}
+		);
+
+		// Click on color scheme icon.
+		connect(
+			delegate,
+			&Delegate::SystemDelegate::colorSchemeClicked,
+			[ this ]( const QModelIndex & p_index )
+			{
+				const auto &				model = getSystemModel();
+				Core::Struct::E_SYSTEM_ITEM item;
+				Index						index;
+				SystemModel::unpack( p_index.internalId(), item, index );
+
+				const App::System::E_COLOR_SCHEME colorScheme = static_cast<App::System::E_COLOR_SCHEME>(
+					p_index.data( Widget::Tree::SystemModel::Roles::ColorSchemeRootRole ).toInt()
+				);
+
+				Menu::ColorScheme menu( this );
+				auto *			  res = menu.exec( QCursor::pos() );
+				if ( res != nullptr ) {}
 			}
 		);
 	}

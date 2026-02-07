@@ -317,6 +317,14 @@ namespace VTX::Util::Math
 		friend bool operator!=( const RangeList & a, const RangeList & b ) { return not( a == b ); }
 
 		/**
+		 * @brief Check if a RangeList is equal to a single range.
+		 */
+		bool equals( const RangeType & p_r ) const
+		{
+			return sizeRange() == 1 && rangeBegin()->first == p_r.first && rangeBegin()->last == p_r.last;
+		}
+
+		/**
 		 * @brief Merge two RangeLists.
 		 */
 		static RangeList merge( const RangeList & p_lhs, const RangeList & p_rhs )

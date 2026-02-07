@@ -3,6 +3,7 @@
 
 #include <QStyledItemDelegate>
 #include <app/ecs.hpp>
+#include <util/types.hpp>
 
 namespace VTX::UI::QT::Delegate
 {
@@ -16,9 +17,10 @@ namespace VTX::UI::QT::Delegate
 	  public:
 		enum struct ACTION : int
 		{
-			VISIBILITY,
+			VISIBILITY = 0,
 			COLOR_SCHEME,
-			REPRESENTATION
+			REPRESENTATION,
+			COUNT
 		};
 
 		/**
@@ -61,9 +63,9 @@ namespace VTX::UI::QT::Delegate
 		/**
 		 * @brief Button clicked.
 		 */
-		void visibilityClicked( const QModelIndex &, const bool );
-		void colorSchemeClicked( const QModelIndex &, const QPointF & );
-		void representationClicked( const QModelIndex &, const QPointF & );
+		void visibilityClicked( const QModelIndex & );
+		void colorSchemeClicked( const QModelIndex & );
+		void representationClicked( const QModelIndex & );
 
 	  private:
 		/**
@@ -79,7 +81,7 @@ namespace VTX::UI::QT::Delegate
 		QRect _buttonRect( const QStyleOptionViewItem &, const int ) const;
 		int	  _hitTestButton( const QStyleOptionViewItem &, const QPoint & ) const;
 
-		std::array<QIcon, 3> _icons;
+		std::array<QIcon, toUnderlying( ACTION::COUNT )> _icons;
 	};
 
 } // namespace VTX::UI::QT::Delegate

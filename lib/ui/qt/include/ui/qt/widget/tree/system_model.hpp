@@ -21,9 +21,12 @@ namespace VTX::UI::QT::Widget::Tree
 		 */
 		enum Roles
 		{
+			// SYSTEM, CHAIN, RESIDUE, ATOM.
 			ItemRole = Qt::UserRole + 1,
-			// TODO:
-			VisibleRole
+			// VISIBLE, PARTIAL, HIDDEN.
+			VisibleRole,
+			// true/false.
+			ColorSchemeRootRole,
 		};
 
 		/**

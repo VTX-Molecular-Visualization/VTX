@@ -101,7 +101,7 @@ namespace VTX::UI::QT::Widget::Tree
 			}
 			}
 			return {};
-		case ItemRole: return int( item );
+		case ItemRole: return toUnderlying( item );
 		case Qt::DecorationRole:
 			switch ( item )
 			{
@@ -122,7 +122,8 @@ namespace VTX::UI::QT::Widget::Tree
 				return {};
 			}
 			}
-		case VisibleRole: return toUnderlying( App::Helper::System::getVisibleState( _system, item, index ) );
+		case VisibleRole: return toUnderlying( App::Helper::System::getVisibleState( { _system, item, index } ) );
+		case ColorSchemeRootRole: return App::Helper::System::isColorSchemeRoot( { _system, item, index } );
 		default: return {};
 		}
 	}

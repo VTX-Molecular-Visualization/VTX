@@ -29,27 +29,23 @@ namespace VTX::UI::QT::Delegate
 
 		p_painter->save();
 
+		std::array<bool, toUnderlying( ACTION::COUNT )> pinButtons { false, false, false };
+
 		// Visibility.
 		const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(
 			p_index.data( Widget::Tree::SystemModel::Roles::VisibleRole ).toInt()
 		);
+		pinButtons[ toUnderlying( ACTION::VISIBILITY ) ] = visible == App::System::E_VISIBLE_STATE::HIDDEN;
 
-		bool showVisibility = true;
-		if ( visible == App::System::E_VISIBLE_STATE::HIDDEN )
-		{
-			const QRect r = _buttonRect( p_option, 0 );
-			_icons[ 0 ].paint( p_painter, r, Qt::AlignCenter, QIcon::Normal );
-			showVisibility = false;
-		}
+		// Color scheme.
+		const bool isColorSchemeRoot = p_index.data( Widget::Tree::SystemModel::Roles::ColorSchemeRootRole ).toBool();
+		pinButtons[ toUnderlying( ACTION::COLOR_SCHEME ) ] = isColorSchemeRoot;
 
-		if ( p_option.state & QStyle::State_MouseOver )
+		// Paint buttons.
+		for ( int i = 0; i < _icons.size(); ++i )
 		{
-			for ( int i = 0; i < _icons.size(); ++i )
+			if ( pinButtons[ i ] || p_option.state & QStyle::State_MouseOver )
 			{
-				if ( i == 0 && not showVisibility )
-				{
-					continue;
-				}
 				const QRect r = _buttonRect( p_option, i );
 				_icons[ i ].paint( p_painter, r, Qt::AlignCenter, QIcon::Normal );
 			}
@@ -84,14 +80,11 @@ namespace VTX::UI::QT::Delegate
 			{
 			case ACTION::VISIBILITY:
 			{
-				const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(
-					p_index.data( Widget::Tree::SystemModel::Roles::VisibleRole ).toInt()
-				);
-				emit visibilityClicked( p_index, visible == App::System::E_VISIBLE_STATE::VISIBLE ? false : true );
+				emit visibilityClicked( p_index );
 				break;
 			}
-			case ACTION::COLOR_SCHEME: emit colorSchemeClicked( p_index, e->globalPosition() ); break;
-			case ACTION::REPRESENTATION: emit representationClicked( p_index, e->globalPosition() ); break;
+			case ACTION::COLOR_SCHEME: emit colorSchemeClicked( p_index ); break;
+			case ACTION::REPRESENTATION: emit representationClicked( p_index ); break;
 
 			default: break;
 			}
