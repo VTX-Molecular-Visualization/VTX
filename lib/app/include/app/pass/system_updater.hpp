@@ -21,7 +21,7 @@ namespace VTX::App::Pass
 		using RepresentationMap = std::map<ECS::Entity, Renderer::RepresentationIndex>;
 
 		SystemUpdater();
-		inline void update( const float, const float ) {}
+		void update( const float, const float );
 
 	  private:
 		/**
@@ -43,6 +43,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Update renderer when data changed.
 		 */
+		void _onUpdateTransform( ECS::Registry &, ECS::Entity );
 		void _onUpdateFlags( ECS::Registry &, ECS::Entity );
 		void _onUpdateRepresentation( ECS::Registry &, ECS::Entity );
 		void _onUpdateColor( ECS::Registry &, ECS::Entity );

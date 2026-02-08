@@ -18,6 +18,7 @@ namespace VTX::App::Pass
 	{
 		auto & reg = REG();
 
+		reg.on_update<Util::Math::Transform>().connect<&SystemUpdater::_onUpdateTransform>( this );
 		reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateFlags>( this );
 		reg.on_update<System::Selection>().connect<&SystemUpdater::_onUpdateFlags>( this );
 		reg.on_update<System::Representation>().connect<&SystemUpdater::_onUpdateRepresentation>( this );
@@ -26,6 +27,26 @@ namespace VTX::App::Pass
 		reg.on_update<Renderer::Representation>().connect<&SystemUpdater::_onUpdateRepresentationPreset>( this );
 
 		HUB().connect<Events::SystemLoad, &SystemUpdater::_onSystemLoaded>( this );
+	}
+
+	void SystemUpdater::update( const float p_delta, const float p_total )
+	{
+		for ( auto & entity : _entities )
+		{
+			REG().patch<Util::Math::Transform>(
+				entity,
+				[ p_delta ]( Util::Math::Transform & p_transform ) { p_transform.rotateYaw( p_delta * 0.001f ); }
+			);
+		}
+	}
+
+	void SystemUpdater::_onUpdateTransform( ECS::Registry & p_r, ECS::Entity p_e )
+	{
+		if ( std::find( _entities.begin(), _entities.end(), p_e ) != _entities.end() )
+		{
+			const auto & [ transform, uid ] = p_r.get<Util::Math::Transform, System::UID>( p_e );
+			RENDERER().setSystemTransform( uid.system, transform.computeMatrix() );
+		}
 	}
 
 	void SystemUpdater::_onSystemLoaded( const Events::SystemLoad & p_event )
@@ -97,9 +118,12 @@ namespace VTX::App::Pass
 		RENDERER().setSystems( systemsData );
 
 		// Push data.
-		_onUpdateFlags( reg, system );
-		_onUpdateColor( reg, system );
-		_onUpdateRepresentation( reg, system );
+		for ( const ECS::Entity e : _entities )
+		{
+			_onUpdateFlags( reg, e );
+			_onUpdateColor( reg, e );
+			_onUpdateRepresentation( reg, e );
+		}
 
 		// Push representations.
 		_setRepresentation();

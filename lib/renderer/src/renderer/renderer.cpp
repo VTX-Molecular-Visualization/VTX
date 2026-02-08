@@ -389,6 +389,15 @@ namespace VTX::Renderer
 		VTX_INFO( "Systems GPU upload: {} ms", timer.elapsedTime() );
 	}
 
+	void Renderer::setSystemTransform( const SystemUID p_uid, const Mat4f & p_transform )
+	{
+		assert( _cacheSystems.contains( p_uid ) );
+		_cacheSystems[ p_uid ].transform = p_transform;
+
+		// TODO: refresh only needed!
+		_refreshDataModels();
+	}
+
 	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
 	{
 		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.ranges[ p_uid ].first );
