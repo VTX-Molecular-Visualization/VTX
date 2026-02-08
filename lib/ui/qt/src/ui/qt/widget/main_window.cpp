@@ -85,11 +85,17 @@ namespace VTX::UI::QT::Widget
 
 		auto * dwInspector = createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
 		createDockWidget<DockWidget::GraphicsConfigs>( Qt::RightDockWidgetArea );
-		createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
+		auto * dwOptions = createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
 		dwInspector->raise();
 
 		auto * console = createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
 
+		// Resize.
+		resizeDocks(
+			{ dwScene, dwInspector, dwOptions },
+			{ Style::DEFAULT_LATERAL_DOCK_WIDTH, Style::DEFAULT_LATERAL_DOCK_WIDTH, Style::DEFAULT_LATERAL_DOCK_WIDTH },
+			Qt::Horizontal
+		);
 		resizeDocks( { console }, { Style::DEFAULT_CONSOLE_HEIGHT }, Qt::Vertical );
 
 		// Status bar.
