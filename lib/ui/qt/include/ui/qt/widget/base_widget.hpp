@@ -44,7 +44,7 @@ namespace VTX::UI::QT::Widget
 		void center( const QWidget * const p_w = nullptr )
 		{
 			// Get geometry of the widget, or screen if not specified.
-			QRect geometry = p_w ? p_w->geometry() : QGuiApplication::primaryScreen()->geometry();
+			QRect geometry = p_w ? p_w->geometry() : QGuiApplication::primaryScreen()->availableGeometry();
 
 			const int x = ( geometry.width() - this->width() ) / 2;
 			const int y = ( geometry.height() - this->height() ) / 2;
