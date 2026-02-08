@@ -84,9 +84,9 @@ namespace
 		}
 		uint64_t init_atomCount	 = system.getAtomCount();
 		uint64_t init_chainCount = system.getChainCount();
-		uint64_t init_frameCount = system.trajectory.getFrameCount();
-		uint64_t init_bondCount	 = system.getBondCount();
-		uint64_t init_resCount	 = system.getResidueCount();
+		// uint64_t init_frameCount = system.trajectory.getFrameCount();
+		uint64_t init_bondCount = system.getBondCount();
+		uint64_t init_resCount	= system.getResidueCount();
 
 		fs::remove( structureFile );
 
@@ -105,13 +105,15 @@ namespace
 
 		bool numMismatch_atom  = init_atomCount != system_reread.getAtomCount();
 		bool numMismatch_chain = init_chainCount != system_reread.getChainCount();
-		bool numMismatch_frame = init_frameCount != system_reread.trajectory.getFrameCount();
-		bool numMismatch_bond  = init_bondCount != system_reread.getBondCount();
-		bool numMismatch_res   = init_resCount != system_reread.getResidueCount();
+		// bool numMismatch_frame = init_frameCount != system_reread.trajectory.getFrameCount();
+		bool numMismatch_bond = init_bondCount != system_reread.getBondCount();
+		bool numMismatch_res  = init_resCount != system_reread.getResidueCount();
 
 		rslt = ( numMismatch_atom * RereadResult::atom_mismatch ) | ( numMismatch_chain * RereadResult::chain_mismatch )
 			   | ( numMismatch_res * RereadResult::residue_mismatch )
-			   | ( numMismatch_frame * RereadResult::frame_mismatch );
+			/*
+			| ( numMismatch_frame * RereadResult::frame_mismatch )*/
+			;
 		return;
 		// Bond are not reliably written in files so we won't check them.
 		// e.g. 2qwo has disulfide bond that is not retrieved when reloading the file

@@ -140,7 +140,7 @@ int main( int, char ** )
 		float fZeroOne	= 0.1f;
 		float fZeroFive = 0.5f;
 
-		Renderer::Representation representation;
+		//Renderer::Representation representation;
 
 		/*
 		representation.set( 0, bTrue );
