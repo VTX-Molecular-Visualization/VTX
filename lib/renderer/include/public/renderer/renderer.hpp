@@ -200,8 +200,9 @@ namespace VTX::Renderer
 		/**
 		 * @brief Cached data to update.
 		 */
-		Cache::Camera					   _cacheCamera;
-		std::map<SystemUID, Cache::System> _cacheSystems;
+		Cache::Camera										 _cacheCamera;
+		std::map<SystemUID, Cache::System>					 _cacheSystems;
+		std::map<RepresentationIndex, Cache::Representation> _cacheRepresentations;
 
 		/**
 		 * @brief Refresh the render graph according to the graphics config.
@@ -209,7 +210,15 @@ namespace VTX::Renderer
 		 */
 		bool _refreshGraph( const GraphicsConfig & );
 
+		/**
+		 * @brief Refresh transform when camera or system changed.
+		 */
 		void _refreshDataModels();
+
+		/**
+		 * @brief Refresh draw ranges when system or representation changed.
+		 */
+		void _refreshDataRepresentations();
 
 		/**
 		 * @brief Flags to push boolean values into one byte.

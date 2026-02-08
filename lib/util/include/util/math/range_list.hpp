@@ -433,6 +433,26 @@ namespace VTX::Util::Math
 		void exclusiveInPlace( const RangeList & p_rhs ) { *this = exclusive( *this, p_rhs ); }
 
 		/**
+		 * @brief Invert a RangeList in its domain.
+		 */
+		RangeList invert() const
+		{
+			if ( isEmpty() )
+			{
+				return RangeList {};
+			}
+
+			const RangeType domain { getFirst(), getLast() };
+			RangeList		full( domain );
+			return substract( full, *this );
+		}
+
+		/**
+		 * @brief Invert in place.
+		 */
+		void invertInPlace() { *this = invert(); }
+
+		/**
 		 * @brief Generate index range list from container and predicate.
 		 */
 		/*

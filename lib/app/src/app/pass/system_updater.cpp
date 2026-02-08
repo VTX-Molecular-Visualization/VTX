@@ -31,6 +31,7 @@ namespace VTX::App::Pass
 
 	void SystemUpdater::update( const float p_delta, const float p_total )
 	{
+		return;
 		for ( auto & entity : _entities )
 		{
 			REG().patch<Util::Math::Transform>(
@@ -107,12 +108,7 @@ namespace VTX::App::Pass
 			);
 		}
 
-		VTX_INFO( "Systems GPU upload preparation: {} ms", timer.elapsedTime() );
-
-		// This order is mandatory.
-		// - resources reserved
-		// - resources updated/indexed
-		// - external data updated
+		VTX_DEBUG( "Systems GPU upload preparation: {} ms", timer.elapsedTime() );
 
 		// Push systems.
 		RENDERER().setSystems( systemsData );
@@ -124,9 +120,6 @@ namespace VTX::App::Pass
 			_onUpdateColor( reg, e );
 			_onUpdateRepresentation( reg, e );
 		}
-
-		// Push representations.
-		_setRepresentation();
 	}
 
 	void SystemUpdater::_onUpdateFlags( ECS::Registry & p_r, ECS::Entity p_e )
@@ -145,17 +138,23 @@ namespace VTX::App::Pass
 
 		std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> map;
 
+		bool newRepresentation = false;
 		for ( const auto & [ entity, ranges ] : representation.presetAtoms )
 		{
 			if ( not _representations.contains( entity ) )
 			{
 				_representations[ entity ] = static_cast<RepresentationIndex>( _representations.size() );
+				newRepresentation		   = true;
 			}
 			map.emplace( _representations[ entity ], ranges );
 		}
 
 		RENDERER().setSystemRepresentation( uid.system, map );
-		_setRepresentation();
+
+		if ( newRepresentation )
+		{
+			_setRepresentation();
+		}
 	}
 
 	void SystemUpdater::_onUpdateColor( ECS::Registry & p_r, ECS::Entity p_e )

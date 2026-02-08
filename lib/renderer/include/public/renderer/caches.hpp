@@ -23,6 +23,14 @@ namespace VTX::Renderer::Cache
 		ModelIndex															  modelIndex;
 		std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> representationRanges;
 	};
+
+	struct Representation
+	{
+		bool showSphere;
+		bool showCylinder;
+		bool showRibbon = false;
+		bool showSes	= false;
+	};
 } // namespace VTX::Renderer::Cache
 
 #endif

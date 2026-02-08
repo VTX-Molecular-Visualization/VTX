@@ -16,6 +16,15 @@ namespace VTX::Renderer
 		Geometry::Ribbon   ribbons;
 		Geometry::Voxel	   voxels;
 		Geometry::SES	   ses;
+
+		void buildDrawRanges()
+		{
+			spheres.buildDrawRanges();
+			cylinders.buildDrawRanges();
+			ribbons.buildDrawRanges();
+			voxels.buildDrawRanges();
+			ses.buildDrawRanges();
+		}
 	};
 } // namespace VTX::Renderer
 

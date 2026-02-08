@@ -194,89 +194,78 @@ namespace VTX::Renderer
 
 	void Renderer::setRepresentations( const std::vector<const Representation *> & p_representations )
 	{
-		/*
-		// Aply logic.
-		bool showSphere	  = p_representation.hasSphere;
-		bool showCylinder = p_representation.hasCylinder;
-		bool showRibbon	  = p_representation.hasRibbon;
-		bool showSes	  = p_representation.hasSes;
+		BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
+		RepresentationIndex					index = 0;
 
-		// Asked SES, hide all others.
-		if ( showSes )
+		for ( const auto * representation : p_representations )
 		{
-			showSphere	 = false;
-			showCylinder = false;
-			showRibbon	 = false;
-		}
-		else
-		{
-			bool		isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
-			const float cylinderRadius		= p_representation.radiusCylinder;
-			float		sphereRadiusFixed	= p_representation.radiusSphereFixed;
+			// Aply logic.
+			bool showSphere	  = representation->hasSphere;
+			bool showCylinder = representation->hasCylinder;
+			bool showRibbon	  = representation->hasRibbon;
+			bool showSes	  = representation->hasSes;
 
-			// Hide ribbon if VdW radius.
-			if ( not isSphereRadiusFixed )
+			bool		isSphereRadiusFixed = representation->isRadiusSphereFixed;
+			const float cylinderRadius		= representation->radiusCylinder;
+			float		sphereRadiusFixed	= representation->radiusSphereFixed;
+
+			// Asked SES, hide all others.
+			if ( showSes )
 			{
+				showSphere	 = false;
 				showCylinder = false;
 				showRibbon	 = false;
 			}
 			else
 			{
-				// If B&S.
-				if ( showSphere && showCylinder )
+				// Hide ribbon if VdW radius.
+				if ( not isSphereRadiusFixed )
 				{
-					// Scale sphere radius to cylinder radius if not VdW.
-					if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
-					{
-						sphereRadiusFixed = cylinderRadius;
-					}
+					showCylinder = false;
+					showRibbon	 = false;
 				}
-
-				// If sticks only, force sphere at cylinder radius.
-				else if ( not showSphere && showCylinder )
+				else
 				{
-					showSphere			= true;
-					isSphereRadiusFixed = true;
-					sphereRadiusFixed	= cylinderRadius;
+					// If B&S.
+					if ( showSphere && showCylinder )
+					{
+						// Scale sphere radius to cylinder radius if not VdW.
+						if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
+						{
+							sphereRadiusFixed = cylinderRadius;
+						}
+					}
+
+					// If sticks only, force sphere at cylinder radius.
+					else if ( not showSphere && showCylinder )
+					{
+						showSphere			= true;
+						isSphereRadiusFixed = true;
+						sphereRadiusFixed	= cylinderRadius;
+					}
 				}
 			}
 
-			BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
+			// Write buffer.
 			buffer.write( sphereRadiusFixed );
-			buffer.write( p_representation.radiusSphereAdd );
+			buffer.write( representation->radiusSphereAdd );
 			buffer.write( uint( isSphereRadiusFixed ) );
-			buffer.write( p_representation.radiusCylinder );
-			buffer.write( uint( p_representation.cylinderColorBlending ) );
-			buffer.write( uint( p_representation.ribbonColorBlending ) );
-			buffer.write( p_representation.sesProbeRadius );
-			buffer.close();
+			buffer.write( representation->radiusCylinder );
+			buffer.write( uint( representation->cylinderColorBlending ) );
+			buffer.write( uint( representation->ribbonColorBlending ) );
+			buffer.write( representation->sesProbeRadius );
 
-			_context.setShaderBuffer( "Representations", buffer );
-
-			setNeedUpdate( true );
+			// Cache.
+			_cacheRepresentations[ index ] = Cache::Representation { showSphere, showCylinder, showRibbon, showSes };
 		}
 
+		buffer.close();
 
-		if ( showSphere && _geometries.spheres.rangeList.sizeRange() )
-		{
-			_geometries.spheres.drawRanges.firsts = { 0 };
-			_geometries.spheres.drawRanges.counts = { uint32_t( _geometries.spheres.rangeList.getLast() ) };
-		}
-		else
-		{
-			_geometries.spheres.drawRanges = {};
-		}
+		_context.setShaderBuffer( "Representations", buffer );
 
-		if ( showCylinder && _geometries.cylinders.rangeList.sizeRange() )
-		{
-			_geometries.cylinders.drawRanges.offsets = { 0 };
-			_geometries.cylinders.drawRanges.counts	 = { uint32_t( _geometries.cylinders.rangeList.getLast() ) };
-		}
-		else
-		{
-			_geometries.cylinders.drawRanges = {};
-		}
-		*/
+		_refreshDataRepresentations();
+
+		setNeedUpdate( true );
 	}
 
 #pragma endregion
@@ -382,11 +371,10 @@ namespace VTX::Renderer
 		_refreshDataModels();
 
 		// Build draw ranges.
-		_geometries.spheres.buildDrawRanges();
-		_geometries.cylinders.buildDrawRanges();
+		_geometries.buildDrawRanges();
 
 		setNeedUpdate( true );
-		VTX_INFO( "Systems GPU upload: {} ms", timer.elapsedTime() );
+		VTX_DEBUG( "Systems GPU upload: {} ms", timer.elapsedTime() );
 	}
 
 	void Renderer::setSystemTransform( const SystemUID p_uid, const Mat4f & p_transform )
@@ -435,6 +423,9 @@ namespace VTX::Renderer
 		_context.setPipelineBuffer<RepresentationIndex>(
 			"Atoms.Representations", atoms, _geometries.spheres.ranges[ p_uid ].first
 		);
+
+		_refreshDataRepresentations();
+
 		setNeedUpdate( true );
 	}
 
@@ -454,9 +445,9 @@ namespace VTX::Renderer
 		static constexpr Flag VIS = 1 << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
 		static constexpr Flag SEL = 1 << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
 
-		std::vector<Flag> flags( countAtoms, 0 );
+		std::vector<Flag> flags( countAtoms, 0xF );
 
-		auto applyOr = [ &flags, countAtoms ]( const Core::Struct::IndexRangeList & p_ranges, const Flag p_mask )
+		auto applyOr = [ & ]( const Core::Struct::IndexRangeList & p_ranges, const Flag p_mask )
 		{
 			for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); ++it )
 			{
@@ -467,7 +458,7 @@ namespace VTX::Renderer
 
 				for ( size_t i = begin; i < end; ++i )
 				{
-					flags[ i ] |= p_mask;
+					// flags[ i ] |= p_mask;
 				}
 			}
 		};
@@ -475,7 +466,22 @@ namespace VTX::Renderer
 		applyOr( p_visibility, VIS );
 		applyOr( p_selection, SEL );
 
+		Core::Struct::IndexRangeList invertedVisibility = p_visibility.invert();
+		_geometries.spheres.visibilityMask[ p_uid ].clear();
+		for ( auto it = invertedVisibility.rangeBegin(); it != invertedVisibility.rangeEnd(); ++it )
+		{
+			// If range > theshold, substract range from geometry draw calls.
+			if ( it->getCount() >= Geometry::VISIBILITY_CHUNK_THRESHOLD )
+			{
+				_geometries.spheres.visibilityMask[ p_uid ].addRange( *it );
+			}
+		}
+
 		_context.setPipelineBuffer<Flag>( "Atoms.Flags", flags, offsetAtoms );
+
+		// Build draw ranges.
+		// TODO rebuild only needed ranges.
+		_geometries.buildDrawRanges();
 
 		setNeedUpdate( true );
 	}
@@ -512,6 +518,31 @@ namespace VTX::Renderer
 		buffer.close();
 
 		_context.setShaderBuffer( "Models", buffer );
+	}
+
+	void Renderer::_refreshDataRepresentations()
+	{
+		_geometries.spheres.representationMask.clear();
+		_geometries.cylinders.representationMask.clear();
+
+		for ( const auto & [ systemUid, cacheSystem ] : _cacheSystems )
+		{
+			const auto & representationRanges = cacheSystem.representationRanges;
+			for ( const auto & [ representationIndex, ranges ] : representationRanges )
+			{
+				const auto & cacheRepresentation = _cacheRepresentations[ representationIndex ];
+				if ( not cacheRepresentation.showSphere )
+				{
+					//_geometries.spheres.representationMask[ systemUid ] = ranges;
+				}
+				if ( not cacheRepresentation.showCylinder )
+				{
+					//_geometries.cylinders.representationMask[ systemUid ] = ranges;
+				}
+			}
+		}
+
+		_geometries.buildDrawRanges();
 	}
 
 	void Renderer::snapshot(
