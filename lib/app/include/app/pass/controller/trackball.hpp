@@ -30,6 +30,11 @@ namespace VTX::App::Pass::Controller
 		 */
 		inline void setTarget( const Vec3f & p_target ) { _target = p_target; }
 
+		/**
+		 * @brief Stop camera movement.
+		 */
+		inline void stop() { _velocity = VEC3F_ZERO; }
+
 	  private:
 		/**
 		 * @brief Controlled camera entity.

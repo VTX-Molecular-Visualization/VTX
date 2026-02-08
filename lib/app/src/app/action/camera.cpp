@@ -68,6 +68,7 @@ namespace VTX::App::Action::Camera
 		if ( PASS().hasPass<Pass::Controller::Trackball>() )
 		{
 			PASS().getPass<Pass::Controller::Trackball>()->setTarget( aabb.centroid() );
+			PASS().getPass<Pass::Controller::Trackball>()->stop();
 		}
 	}
 
@@ -130,6 +131,7 @@ namespace VTX::App::Action::Camera
 		if ( PASS().hasPass<Pass::Controller::Trackball>() )
 		{
 			PASS().getPass<Pass::Controller::Trackball>()->setTarget( p_target.centroid() );
+			PASS().getPass<Pass::Controller::Trackball>()->stop();
 		}
 
 		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(
