@@ -1,4 +1,5 @@
 #include "app/pass/controller/freefly.hpp"
+#include "app/events.hpp"
 #include "app/input/input_manager.hpp"
 #include "app/input/key_mapping.hpp"
 #include "app/services.hpp"
@@ -114,26 +115,23 @@ namespace VTX::App::Pass::Controller
 
 		if ( localRotation != VEC3F_ZERO || rollRotation != 0.f || translation != VEC3F_ZERO )
 		{
-			REG().patch<Math::Transform>(
-				_cameraEntity,
-				[ &localRotation, rollRotation, &translation ]( Math::Transform & p_transform )
-				{
-					if ( localRotation != VEC3F_ZERO )
-					{
-						p_transform.rotate( localRotation );
-					}
-					if ( rollRotation != 0.f )
-					{
-						p_transform.rotateRoll( rollRotation );
-					}
-					if ( translation != VEC3F_ZERO )
-					{
-						p_transform.translate( translation );
-					}
-				}
-			);
+			auto & transform = REG().get<Util::Math::Transform>( _cameraEntity );
+
+			if ( localRotation != VEC3F_ZERO )
+			{
+				transform.rotate( localRotation );
+			}
+			if ( rollRotation != 0.f )
+			{
+				transform.rotateRoll( rollRotation );
+			}
+			if ( translation != VEC3F_ZERO )
+			{
+				transform.translate( translation );
+			}
+
+			HUB().trigger<Events::CameraTransformChange>();
 		}
-		//_camera->getTransform().localMove( translation );
 	}
 
 } // namespace VTX::App::Pass::Controller

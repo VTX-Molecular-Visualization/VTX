@@ -38,28 +38,21 @@ namespace VTX::App::Pass::Controller
 	{
 		using namespace Util;
 
-		REG().patch<Math::Transform>(
-			_cameraEntity,
-			[ this, p_delta ]( Math::Transform & p_transform )
-			{
-				_time += p_delta;
+		auto & transform = REG().get<Math::Transform>( _cameraEntity );
 
-				// Lerp.
-				const float t = Math::clamp( _time / _duration, 0.f, 1.f );
-				p_transform.setPosition(
-					_interpPosition( _animationDataStart.position, _animationDataEnd.position, t )
-				);
-				p_transform.setRotation(
-					_interpRotation( _animationDataStart.rotation, _animationDataEnd.rotation, t )
-				);
+		_time += p_delta;
 
-				// Flag as deleted and trigger end event.
-				if ( t >= 1.f )
-				{
-					deleted = true;
-					HUB().trigger<Events::CameraAnimationEnd>();
-				}
-			}
-		);
+		// Lerp.
+		const float t = Math::clamp( _time / _duration, 0.f, 1.f );
+		transform.setPosition( _interpPosition( _animationDataStart.position, _animationDataEnd.position, t ) );
+		transform.setRotation( _interpRotation( _animationDataStart.rotation, _animationDataEnd.rotation, t ) );
+		HUB().trigger<Events::CameraTransformChange>();
+
+		// Flag as deleted and trigger end event.
+		if ( t >= 1.f )
+		{
+			deleted = true;
+			HUB().trigger<Events::CameraAnimationEnd>();
+		}
 	}
 } // namespace VTX::App::Pass::Controller

@@ -26,7 +26,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief On update.
 		 */
-		void _onUpdate( ECS::Registry &, ECS::Entity );
+		void _onUpdate();
 
 		/**
 		 * @brief On animation end event.

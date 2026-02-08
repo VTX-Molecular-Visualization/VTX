@@ -29,45 +29,40 @@ namespace VTX::App::Action::Camera
 {
 	void SetPosition::execute( const Vec3f & p_position )
 	{
-		const auto & [ ent, _, __ ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
-		REG().patch<Util::Math::Transform>(
-			ent, [ p_position ]( Util::Math::Transform & p_transform ) { p_transform.setPosition( p_position ); }
-		);
+		const auto & [ ent, camera, transform ]
+			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+		transform.setPosition( p_position );
+		HUB().trigger<Events::CameraTransformChange>();
 	}
 
 	void SetRotation::execute( const Vec3f & p_eulerAngles )
 	{
-		const auto & [ ent, _, __ ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
-		REG().patch<Util::Math::Transform>(
-			ent, [ p_eulerAngles ]( Util::Math::Transform & p_transform ) { p_transform.setRotation( p_eulerAngles ); }
-		);
+		const auto & [ ent, camera, transform ]
+			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+		transform.setRotation( p_eulerAngles );
+		HUB().trigger<Events::CameraTransformChange>();
 	}
 
 	void SetScale::execute( const float p_scale )
 	{
-		const auto & [ ent, _, __ ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
-		REG().patch<Util::Math::Transform>(
-			ent, [ p_scale ]( Util::Math::Transform & p_transform ) { p_transform.setScale( p_scale ); }
-		);
+		const auto & [ ent, camera, transform ]
+			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+		transform.setScale( p_scale );
+		HUB().trigger<Events::CameraTransformChange>();
 	}
 
 	void Reset::execute()
 	{
 		const auto	 entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
 		const auto & aabb	  = REG().get<Util::Math::AABB>( entScene );
-		const auto & [ entCamera, camera, _ ]
+		const auto & [ entCamera, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
-		REG().patch<Util::Math::Transform>(
-			entCamera,
-			[ & ]( Util::Math::Transform & p_transform )
-			{
-				Vec3f position = _computeCameraOrientPosition( FRONT_AXIS, camera.fov, aabb );
 
-				p_transform.setPosition( position );
-				p_transform.setRotation( QUATF_ID );
-				p_transform.lookAt( aabb.centroid() );
-			}
-		);
+		Vec3f position = _computeCameraOrientPosition( FRONT_AXIS, camera.fov, aabb );
+		transform.setPosition( position );
+		transform.setRotation( QUATF_ID );
+		transform.lookAt( aabb.centroid() );
+		HUB().trigger<Events::CameraTransformChange>();
 
 		// Change controller target.
 		if ( PASS().hasPass<Pass::Controller::Trackball>() )

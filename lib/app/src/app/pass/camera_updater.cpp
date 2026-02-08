@@ -16,9 +16,9 @@ namespace VTX::App::Pass
 		auto & settings = SETTINGS();
 
 		// Update functions.
-		reg.on_update<Util::Math::Transform>().connect<&CameraUpdater::_onUpdate>( this );
 		reg.on_update<Renderer::Camera>().connect<&CameraUpdater::_onUpdate>( this );
 
+		HUB().connect<Events::CameraTransformChange, &CameraUpdater::_onUpdate>( this );
 		HUB().connect<Events::CameraAnimationEnd, &CameraUpdater::_onCameraAnimationEnded>( this );
 
 		auto & transform = reg.get<Util::Math::Transform>( p_ent );
@@ -37,16 +37,10 @@ namespace VTX::App::Pass
 		);
 	}
 
-	void CameraUpdater::_onUpdate( ECS::Registry & p_r, ECS::Entity p_e )
+	void CameraUpdater::_onUpdate()
 	{
-		// TODO: find a workaround for this, use custom event?
-		if ( p_e != _entity )
-		{
-			return;
-		}
-
-		auto & transform = p_r.get<Util::Math::Transform>( p_e );
-		auto & camera	 = p_r.get<Renderer::Camera>( p_e );
+		auto & transform = REG().get<Util::Math::Transform>( _entity );
+		auto & camera	 = REG().get<Renderer::Camera>( _entity );
 
 		const Mat4f viewMatrix = Util::Math::lookAt(
 			transform.getPosition(), transform.getPosition() + transform.getFront(), transform.getUp()

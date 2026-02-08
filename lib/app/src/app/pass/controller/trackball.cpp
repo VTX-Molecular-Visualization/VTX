@@ -1,4 +1,5 @@
 #include "app/pass/controller/trackball.hpp"
+#include "app/events.hpp"
 #include "app/input/input_manager.hpp"
 #include "app/input/key_mapping.hpp"
 #include "app/services.hpp"
@@ -173,11 +174,9 @@ namespace VTX::App::Pass::Controller
 			const Quatf rotation
 				= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z ) * ( elasticityActive ? deltaTime : 0.2f ) );
 
-			REG().patch<Math::Transform>(
-				_cameraEntity,
-				[ &rotation, &distance, this ]( Math::Transform & p_transform )
-				{ p_transform.rotateAround( rotation, _target, distance ); }
-			);
+			auto & transform = REG().get<Math::Transform>( _cameraEntity );
+			transform.rotateAround( rotation, _target, distance );
+			HUB().trigger<Events::CameraTransformChange>();
 
 			_needUpdate = false;
 		}

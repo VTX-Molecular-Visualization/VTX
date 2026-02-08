@@ -65,6 +65,10 @@ namespace VTX::App::Events
 	/**
 	 * @brief Camera / controllers.
 	 */
+	struct CameraTransformChange
+	{
+	};
+
 	struct CameraControllerChange
 	{
 		uint type;
