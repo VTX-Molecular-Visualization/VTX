@@ -19,6 +19,7 @@
 #include "ui/qt/menu/theme.hpp"
 #include "ui/qt/menu/view.hpp"
 #include "ui/qt/settings.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/tool_bar/camera.hpp"
 #include "ui/qt/tool_bar/file.hpp"
 #include "ui/qt/tool_bar/snapshot.hpp"
@@ -77,17 +78,19 @@ namespace VTX::UI::QT::Widget
 		// Dock widgets.
 		createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );
 
-		auto * const dwScene = createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
+		auto * dwScene = createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
 		createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea );
 		createDockWidget<DockWidget::ColorLayouts>( Qt::LeftDockWidgetArea );
 		dwScene->raise();
 
-		auto * const dwInspector = createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
+		auto * dwInspector = createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
 		createDockWidget<DockWidget::GraphicsConfigs>( Qt::RightDockWidgetArea );
 		createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
 		dwInspector->raise();
 
-		createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
+		auto * console = createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
+
+		resizeDocks( { console }, { Style::DEFAULT_CONSOLE_HEIGHT }, Qt::Vertical );
 
 		// Status bar.
 		_statusBar = new StatusBar( this );

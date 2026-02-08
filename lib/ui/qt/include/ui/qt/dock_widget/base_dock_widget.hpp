@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET__
 #define __VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET__
 
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include <QBoxLayout>
 #include <QDockWidget>
@@ -29,6 +30,7 @@ namespace VTX::UI::QT::DockWidget
 		BaseDockWidget( QWidget * p_parent, QString && p_title ) : Widget::BaseWidget<T, QDockWidget>( p_parent )
 		{
 			QDockWidget::setWindowTitle( p_title );
+			QDockWidget::setMinimumSize( Style::MINIMUM_DOCK_PANEL_WIDTH, Style::MINIMUM_DOCK_PANEL_HEIGHT );
 
 			QDockWidget::setFeatures(
 				QDockWidget::features() | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable
@@ -40,6 +42,7 @@ namespace VTX::UI::QT::DockWidget
 				_scrollArea = new QScrollArea( this );
 				QDockWidget::setWidget( _scrollArea );
 				_scrollArea->setWidgetResizable( true );
+
 				if constexpr ( VSA )
 				{
 					_scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
@@ -66,10 +69,13 @@ namespace VTX::UI::QT::DockWidget
 				QDockWidget::setWidget( _root );
 			}
 
+			_root->setMinimumSize( Style::MINIMUM_DOCK_PANEL_WIDTH, Style::MINIMUM_DOCK_PANEL_HEIGHT );
+
 			// Root widget and layout.
 			_layout = new L( _root );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 			_layout->setSpacing( 0 );
+
 			//_layout->setSizeConstraint( QLayout::SetNoConstraint );
 
 			// Custom title bar without title.
