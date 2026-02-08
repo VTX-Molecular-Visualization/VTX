@@ -22,7 +22,7 @@ namespace VTX::Renderer::Geometry
 	 * @brief If more than this number of consecutive items are not visible, split draw calls.
 	 * Otherwise, use bool mask to skip them in shader.
 	 */
-	constexpr size_t VISIBILITY_CHUNK_THRESHOLD = 10;
+	constexpr size_t RANGE_CHUNK_SIZE = 10;
 
 	/**
 	 * @brief Base geometry struct to handle and build draw ranges.
@@ -31,12 +31,12 @@ namespace VTX::Renderer::Geometry
 	struct BaseGeometry
 	{
 		/**
-		 * @brief Range to draw per system.
+		 * @brief Range to draw per system (global indexes).
 		 */
 		MapUIDRange ranges;
 
 		/**
-		 * @brief Mask of ranges to not draw per system (local index).
+		 * @brief Mask of ranges to not draw per system (local indexes).
 		 */
 		MapUIDRangeList visibilityMask;
 		MapUIDRangeList representationMask;
@@ -60,18 +60,26 @@ namespace VTX::Renderer::Geometry
 				// Range as list.
 				IndexRangeList rangeList( range );
 
-				// Remove masked ranges.
+				IndexRangeList visibillityToRemove	  = visibilityMask[ uid ];
+				IndexRangeList representationToRemove = representationMask[ uid ];
+
 				const Index first = ranges[ uid ].first;
-				for ( IndexRange m : visibilityMask[ uid ] )
+
+				// Remove masked ranges.
+				for ( auto it = visibillityToRemove.rangeBegin(); it != visibillityToRemove.rangeEnd(); ++it )
 				{
-					// Shift to global index.
-					m.shift( first );
-					rangeList.removeRange( m );
+					// If > threshold.
+					if ( it->getCount() >= RANGE_CHUNK_SIZE )
+					{
+						// Shift to global index.
+						it->shiftInPlace( first );
+						rangeList.removeRange( *it );
+					}
 				}
-				for ( IndexRange m : representationMask[ uid ] )
+				for ( auto it = representationToRemove.rangeBegin(); it != representationToRemove.rangeEnd(); ++it )
 				{
-					m.shift( first );
-					rangeList.removeRange( m );
+					it->shiftInPlace( first );
+					rangeList.removeRange( *it );
 				}
 
 				allRanges.mergeInPlace( rangeList );

@@ -187,6 +187,11 @@ namespace VTX::Renderer
 		size_t _height;
 
 		/**
+		 * @brief Flag to rebuild draw ranges when system or representation changed.
+		 */
+		bool _needBuildDrawRanges = false;
+
+		/**
 		 * @brief Update next frame.
 		 */
 		bool   _needUpdate		= false;

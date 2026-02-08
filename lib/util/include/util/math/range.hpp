@@ -379,7 +379,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Shift the range by n.
 		 */
-		constexpr void shift( const Count p_n ) noexcept
+		constexpr void shiftInPlace( const Count p_n ) noexcept
 		{
 			assert( first <= TypeMax<T> - static_cast<T>( p_n ) );
 			assert( last <= TypeMax<T> - static_cast<T>( p_n ) );

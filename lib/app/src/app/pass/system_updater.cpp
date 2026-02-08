@@ -149,12 +149,12 @@ namespace VTX::App::Pass
 			map.emplace( _representations[ entity ], ranges );
 		}
 
-		RENDERER().setSystemRepresentation( uid.system, map );
-
 		if ( newRepresentation )
 		{
 			_setRepresentation();
 		}
+
+		RENDERER().setSystemRepresentation( uid.system, map );
 	}
 
 	void SystemUpdater::_onUpdateColor( ECS::Registry & p_r, ECS::Entity p_e )

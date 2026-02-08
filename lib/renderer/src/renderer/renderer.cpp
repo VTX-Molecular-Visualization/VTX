@@ -70,6 +70,13 @@ namespace VTX::Renderer
 
 	void Renderer::render( const float p_deltaTime, const float p_elapsedTime ) noexcept
 	{
+		if ( _needBuildDrawRanges )
+		{
+			_refreshDataRepresentations();
+			_geometries.buildDrawRanges();
+			_needBuildDrawRanges = false;
+		}
+
 		if ( _needUpdate || forceUpdate || _framesRemaining > 0 )
 		{
 			_render( p_deltaTime, p_elapsedTime );
@@ -257,13 +264,15 @@ namespace VTX::Renderer
 
 			// Cache.
 			_cacheRepresentations[ index ] = Cache::Representation { showSphere, showCylinder, showRibbon, showSes };
+
+			index++;
 		}
 
 		buffer.close();
 
 		_context.setShaderBuffer( "Representations", buffer );
 
-		_refreshDataRepresentations();
+		_needBuildDrawRanges = true;
 
 		setNeedUpdate( true );
 	}
@@ -371,7 +380,7 @@ namespace VTX::Renderer
 		_refreshDataModels();
 
 		// Build draw ranges.
-		_geometries.buildDrawRanges();
+		_needBuildDrawRanges = true;
 
 		setNeedUpdate( true );
 		VTX_DEBUG( "Systems GPU upload: {} ms", timer.elapsedTime() );
@@ -424,8 +433,7 @@ namespace VTX::Renderer
 			"Atoms.Representations", atoms, _geometries.spheres.ranges[ p_uid ].first
 		);
 
-		_refreshDataRepresentations();
-
+		_needBuildDrawRanges = true;
 		setNeedUpdate( true );
 	}
 
@@ -445,7 +453,7 @@ namespace VTX::Renderer
 		static constexpr Flag VIS = 1 << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
 		static constexpr Flag SEL = 1 << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
 
-		std::vector<Flag> flags( countAtoms, 0xF );
+		std::vector<Flag> flags( countAtoms, 1 );
 
 		auto applyOr = [ & ]( const Core::Struct::IndexRangeList & p_ranges, const Flag p_mask )
 		{
@@ -466,23 +474,14 @@ namespace VTX::Renderer
 		applyOr( p_visibility, VIS );
 		applyOr( p_selection, SEL );
 
-		Core::Struct::IndexRangeList invertedVisibility = p_visibility.invert();
-		_geometries.spheres.visibilityMask[ p_uid ].clear();
-		for ( auto it = invertedVisibility.rangeBegin(); it != invertedVisibility.rangeEnd(); ++it )
-		{
-			// If range > theshold, substract range from geometry draw calls.
-			if ( it->getCount() >= Geometry::VISIBILITY_CHUNK_THRESHOLD )
-			{
-				_geometries.spheres.visibilityMask[ p_uid ].addRange( *it );
-			}
-		}
-
 		_context.setPipelineBuffer<Flag>( "Atoms.Flags", flags, offsetAtoms );
 
 		// Build draw ranges.
-		// TODO rebuild only needed ranges.
-		_geometries.buildDrawRanges();
+		Geometry::IndexRange range					= { 0, static_cast<Index>( countAtoms ) };
+		_geometries.spheres.visibilityMask[ p_uid ] = { range };
+		_geometries.spheres.visibilityMask[ p_uid ].substractInPlace( p_visibility );
 
+		_needBuildDrawRanges = true;
 		setNeedUpdate( true );
 	}
 
@@ -523,17 +522,18 @@ namespace VTX::Renderer
 	void Renderer::_refreshDataRepresentations()
 	{
 		_geometries.spheres.representationMask.clear();
-		_geometries.cylinders.representationMask.clear();
+		//_geometries.cylinders.representationMask.clear();
 
 		for ( const auto & [ systemUid, cacheSystem ] : _cacheSystems )
 		{
 			const auto & representationRanges = cacheSystem.representationRanges;
 			for ( const auto & [ representationIndex, ranges ] : representationRanges )
 			{
+				assert( _cacheRepresentations.contains( representationIndex ) );
 				const auto & cacheRepresentation = _cacheRepresentations[ representationIndex ];
 				if ( not cacheRepresentation.showSphere )
 				{
-					//_geometries.spheres.representationMask[ systemUid ] = ranges;
+					_geometries.spheres.representationMask[ systemUid ].mergeInPlace( ranges );
 				}
 				if ( not cacheRepresentation.showCylinder )
 				{
@@ -541,8 +541,6 @@ namespace VTX::Renderer
 				}
 			}
 		}
-
-		_geometries.buildDrawRanges();
 	}
 
 	void Renderer::snapshot(

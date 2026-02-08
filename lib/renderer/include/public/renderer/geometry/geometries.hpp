@@ -21,9 +21,9 @@ namespace VTX::Renderer
 		{
 			spheres.buildDrawRanges();
 			cylinders.buildDrawRanges();
-			ribbons.buildDrawRanges();
-			voxels.buildDrawRanges();
-			ses.buildDrawRanges();
+			// ribbons.buildDrawRanges();
+			// voxels.buildDrawRanges();
+			// ses.buildDrawRanges();
 		}
 	};
 } // namespace VTX::Renderer
