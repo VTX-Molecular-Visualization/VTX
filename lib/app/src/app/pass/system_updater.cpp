@@ -11,109 +11,6 @@
 #include <util/chrono.hpp>
 #include <util/math/transform.hpp>
 
-namespace
-{
-	using namespace VTX;
-	using namespace VTX::App;
-	using namespace VTX::Renderer;
-	using namespace VTX::Core;
-
-	/**
-	 * @brief Generate vectors from IndexRangeList.
-	 */
-	std::vector<std::byte> _toByteVector( const Struct::IndexRangeList & p_ranges, const size_t p_size )
-	{
-		std::vector<std::byte> atoms( p_size, std::byte { 0 } );
-
-		for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); ++it )
-		{
-			std::fill_n( atoms.begin() + it->getFirst(), it->getCount(), std::byte { 1 } );
-		}
-
-		return atoms;
-	}
-
-	std::vector<PickingUID> _toVector( const Util::Math::Range<PickingUID> & p_range, const size_t p_size )
-	{
-		std::vector<Index> atoms( p_size );
-
-		assert( p_range.getCount() == p_size );
-
-		size_t i = 0;
-		for ( const PickingUID index : p_range )
-		{
-			atoms[ i++ ] = index;
-		}
-
-		return atoms;
-	}
-
-	std::unordered_map<RepresentationIndex, Struct::IndexRangeList> _toRepresentationIndexMap(
-		const std::unordered_map<ECS::Entity, Struct::IndexRangeList> p_ranges,
-		Pass::SystemUpdater::RepresentationMap &					  p_outRepresentationMap
-	)
-	{
-		std::unordered_map<RepresentationIndex, Struct::IndexRangeList> map;
-		size_t															count = 0;
-
-		for ( const auto & [ entity, ranges ] : p_ranges )
-		{
-			if ( not p_outRepresentationMap.contains( entity ) )
-			{
-				p_outRepresentationMap[ entity ] = static_cast<RepresentationIndex>( p_outRepresentationMap.size() );
-			}
-			map.emplace( p_outRepresentationMap[ entity ], ranges );
-		}
-
-		return map;
-	}
-
-	std::vector<ColorIndex> _toVector(
-		const std::unordered_map<System::E_COLOR_SCHEME, Struct::IndexRangeList> p_ranges,
-		const Core::Struct::System &											 p_data
-	)
-	{
-		std::vector<ColorIndex> atoms( p_data.getAtomCount() );
-		size_t					count = 0;
-
-		for ( const auto & [ scheme, ranges ] : p_ranges )
-		{
-			if ( scheme == System::E_COLOR_SCHEME::ATOM )
-			{
-				for ( Index atom : ranges )
-				{
-					atoms[ atom ] = Color::getColorIndex( p_data.getAtomSymbol( atom ) );
-				}
-			}
-			else if ( scheme == System::E_COLOR_SCHEME::RESIDUE )
-			{
-				for ( Index atom : ranges )
-				{
-					const Index residue = p_data.atomResidueIndexes[ atom ];
-					atoms[ atom ]		= Color::getColorIndex( p_data.getResidueSymbol( residue ) );
-				}
-			}
-			else if ( scheme == System::E_COLOR_SCHEME::CHAIN )
-			{
-				for ( Index atom : ranges )
-				{
-					const Index chain = p_data.getAtomChainIndex( atom );
-					atoms[ atom ]	  = Color::getColorIndex( p_data.getChainName( chain ) );
-				}
-			}
-			else
-			{
-				assert( false && "Unsupported System::E_COLOR_SCHEME type in ColorScheme::Add action." );
-			}
-			count += ranges.count();
-		}
-
-		assert( count == p_data.getAtomCount() );
-
-		return atoms;
-	}
-} // namespace
-
 namespace VTX::App::Pass
 {
 
@@ -121,8 +18,8 @@ namespace VTX::App::Pass
 	{
 		auto & reg = REG();
 
-		reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateVisibility>( this );
-		reg.on_update<System::Selection>().connect<&SystemUpdater::_onUpdateSelection>( this );
+		reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateFlags>( this );
+		reg.on_update<System::Selection>().connect<&SystemUpdater::_onUpdateFlags>( this );
 		reg.on_update<System::Representation>().connect<&SystemUpdater::_onUpdateRepresentation>( this );
 		reg.on_update<System::Color>().connect<&SystemUpdater::_onUpdateColor>( this );
 
@@ -131,54 +28,17 @@ namespace VTX::App::Pass
 		HUB().connect<Events::SystemLoad, &SystemUpdater::_onSystemLoaded>( this );
 	}
 
-	void SystemUpdater::_onUpdateVisibility( ECS::Registry & p_r, ECS::Entity p_e )
-	{
-		const auto & [ visibility, selection, uid, data ]
-			= p_r.get<System::Visibility, System::Selection, System::UID, Core::Struct::System>( p_e );
-		RENDERER().setSystemVisibility(
-			uid.system,
-			_toByteVector( visibility.atoms, data.getAtomCount() ),
-			_toByteVector( selection.atoms, data.getAtomCount() )
-		);
-	}
-
-	void SystemUpdater::_onUpdateSelection( ECS::Registry & p_r, ECS::Entity p_e )
-	{
-		const auto & [ selection, visibility, uid, data ]
-			= p_r.get<System::Selection, System::Visibility, System::UID, Core::Struct::System>( p_e );
-		RENDERER().setSystemSelection(
-			uid.system,
-			_toByteVector( selection.atoms, data.getAtomCount() ),
-			_toByteVector( visibility.atoms, data.getAtomCount() )
-		);
-	}
-
-	void SystemUpdater::_onUpdateRepresentation( ECS::Registry & p_r, ECS::Entity p_e )
-	{
-		const auto & [ representation, uid, data ]
-			= p_r.get<System::Representation, System::UID, Core::Struct::System>( p_e );
-		// RENDERER().setSystemRepresentation(
-		//	uid.system, _toRepresentationIndexMap( representation.presetAtoms, data.getAtomCount(), _representations )
-		//);
-		_setRepresentation();
-	}
-
-	void SystemUpdater::_onUpdateColor( ECS::Registry & p_r, ECS::Entity p_e )
-	{
-		const auto & [ color, uid, data ] = p_r.get<System::Color, System::UID, Core::Struct::System>( p_e );
-		RENDERER().setSystemColors( uid.system, _toVector( color.colorSchemeAtoms, data ) );
-	}
-
 	void SystemUpdater::_onSystemLoaded( const Events::SystemLoad & p_event )
 	{
-		Util::Chrono timer;
-		auto &		 reg = REG();
+		Util::Chrono	  timer;
+		auto &			  reg	 = REG();
+		const ECS::Entity system = p_event.system;
 
 		timer.start();
 
-		assert( std::find( _entities.begin(), _entities.end(), p_event.system ) == _entities.end() );
+		assert( std::find( _entities.begin(), _entities.end(), system ) == _entities.end() );
 
-		_entities.push_back( p_event.system );
+		_entities.push_back( system );
 
 		std::vector<Renderer::SystemData> systemsData;
 		_representations.clear();
@@ -208,31 +68,114 @@ namespace VTX::App::Pass
 			assert( atomCount > 0 );
 			assert( atomCount == frame->size() );
 
-			std::vector<float> radii;
+			std::vector<float>		radii( atomCount );
+			std::vector<PickingUID> uids( atomCount );
 			for ( Index i = 0; i < atomCount; ++i )
 			{
-				// TODO: use glsl constants.
-				radii.push_back( 1.0f );
+				radii[ i ] = 1.0f; // TODO: use glsl constants.
+			}
+
+			size_t i = 0;
+			for ( const PickingUID index : uid.atoms )
+			{
+				uids[ i++ ] = index;
 			}
 
 			systemsData.push_back(
-				Renderer::SystemData { uid.system,
-									   transform.computeMatrix(),
-									   data,
-									   *frame,
-									   radii,
-									   _toVector( uid.atoms, atomCount ),
-									   _toVector( color.colorSchemeAtoms, data ),
-									   _toRepresentationIndexMap( representation.presetAtoms, _representations ),
-									   _toByteVector( visibility.atoms, atomCount ),
-									   _toByteVector( selection.atoms, atomCount ) }
+				Renderer::SystemData { uid.system, transform.computeMatrix(), data, *frame, radii, uids }
 			);
 		}
 
 		VTX_INFO( "Systems GPU upload preparation: {} ms", timer.elapsedTime() );
 
+		// This order is mandatory.
+		// - resources reserved
+		// - resources updated/indexed
+		// - external data updated
+
+		// Push systems.
 		RENDERER().setSystems( systemsData );
+
+		// Push data.
+		_onUpdateFlags( reg, system );
+		_onUpdateColor( reg, system );
+		_onUpdateRepresentation( reg, system );
+
+		// Push representations.
 		_setRepresentation();
+	}
+
+	void SystemUpdater::_onUpdateFlags( ECS::Registry & p_r, ECS::Entity p_e )
+	{
+		const auto & [ visibility, selection, uid ]
+			= p_r.get<System::Visibility, System::Selection, System::UID>( p_e );
+		RENDERER().setSystemFlags( uid.system, visibility.atoms, selection.atoms );
+	}
+
+	void SystemUpdater::_onUpdateRepresentation( ECS::Registry & p_r, ECS::Entity p_e )
+	{
+		using namespace Renderer;
+
+		const auto & [ representation, uid, data ]
+			= p_r.get<System::Representation, System::UID, Core::Struct::System>( p_e );
+
+		std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> map;
+
+		for ( const auto & [ entity, ranges ] : representation.presetAtoms )
+		{
+			if ( not _representations.contains( entity ) )
+			{
+				_representations[ entity ] = static_cast<RepresentationIndex>( _representations.size() );
+			}
+			map.emplace( _representations[ entity ], ranges );
+		}
+
+		RENDERER().setSystemRepresentation( uid.system, map );
+		_setRepresentation();
+	}
+
+	void SystemUpdater::_onUpdateColor( ECS::Registry & p_r, ECS::Entity p_e )
+	{
+		const auto & [ color, uid, data ] = p_r.get<System::Color, System::UID, Core::Struct::System>( p_e );
+
+		std::vector<Renderer::ColorIndex> atoms( data.getAtomCount() );
+		size_t							  count = 0;
+
+		for ( const auto & [ scheme, ranges ] : color.colorSchemeAtoms )
+		{
+			if ( scheme == System::E_COLOR_SCHEME::ATOM )
+			{
+				for ( Index atom : ranges )
+				{
+					atoms[ atom ] = Renderer::Color::getColorIndex( data.getAtomSymbol( atom ) );
+				}
+			}
+			else if ( scheme == System::E_COLOR_SCHEME::RESIDUE )
+			{
+				for ( Index atom : ranges )
+				{
+					const Index residue = data.atomResidueIndexes[ atom ];
+					atoms[ atom ]		= Renderer::Color::getColorIndex( data.getResidueSymbol( residue ) );
+				}
+			}
+			else if ( scheme == System::E_COLOR_SCHEME::CHAIN )
+			{
+				for ( Index atom : ranges )
+				{
+					const Index chain = data.getAtomChainIndex( atom );
+					atoms[ atom ]	  = Renderer::Color::getColorIndex( data.getChainName( chain ) );
+				}
+			}
+			else
+			{
+				assert( false && "Unsupported System::E_COLOR_SCHEME type in ColorScheme::Add action." );
+			}
+			count += ranges.count();
+		}
+
+		assert( count == data.getAtomCount() );
+
+		RENDERER().setSystemColors( uid.system, atoms );
 	}
 
 	void SystemUpdater::_onUpdateRepresentationPreset( ECS::Registry & p_r, ECS::Entity p_e )

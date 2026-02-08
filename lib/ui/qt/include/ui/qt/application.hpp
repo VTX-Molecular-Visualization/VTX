@@ -5,6 +5,7 @@
 #include <QAction>
 #include <QApplication>
 #include <QPointer>
+#include <QSplashScreen>
 #include <QTimer>
 #include <app/events.hpp>
 #include <app/ui/concepts.hpp>
@@ -66,6 +67,8 @@ namespace VTX::UI::QT
 		}
 
 	  private:
+		QPointer<QSplashScreen> _splashScreen;
+
 		/**
 		 * @brief Handles the main loop timing.
 		 */

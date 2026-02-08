@@ -124,21 +124,22 @@ namespace VTX::App::Action::Scene
 		// Selection: nothing selected.
 		selection.atoms = {};
 
-		// Representation.
-		auto entityRep = ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>();
-		ACTION().execute<Representation::Add<E_SYSTEM_ITEM::SYSTEM>>( entity, entityRep );
-
-		// Color scheme.
-		ACTION().execute<Color::Add<E_SYSTEM_ITEM::SYSTEM>>( entity, System::COLOR_SCHEME_DEFAULT );
-
 		// Deleted: nothing deleted.
 		deleted.atoms = {};
 
-		// Orient.
-		ACTION().execute<Camera::Orient>( aabb );
+		// Color: set default color scheme.
+		color.colorSchemeAtoms[ System::E_COLOR_SCHEME::ATOM ] = IndexRangeList( data.getAtomRange() );
+
+		// Representation: set default representation.
+		// TODO: configure default representation in settings?
+		representation.presetAtoms[ ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>() ]
+			= IndexRangeList( data.getAtomRange() );
 
 		// Trigger system load.
 		HUB().trigger<Events::SystemLoad>( { entity } );
+
+		// Orient.
+		ACTION().execute<Camera::Orient>( aabb );
 	}
 
 	void DeleteSystem::execute( const ECS::Entity p_e ) { REG().destroy( p_e ); }

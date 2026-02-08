@@ -19,16 +19,16 @@ namespace VTX::Renderer
 
 	struct SystemData
 	{
-		const SystemUID																uid;
-		const Mat4f &																transform;
-		const Core::Struct::System													data;
-		const Core::Struct::Frame &													frame;
-		const std::vector<float>													radii;
-		const std::vector<PickingUID>												atomUids;
-		const std::vector<ColorIndex>												colorIndexes;
-		const std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> representationRanges;
-		const std::vector<std::byte>												visibleAtoms;
-		const std::vector<std::byte>												selectedAtoms;
+		const SystemUID				  uid;
+		const Mat4f &				  transform;
+		const Core::Struct::System	  data;
+		const Core::Struct::Frame &	  frame;
+		const std::vector<float>	  radii;
+		const std::vector<PickingUID> atomUids;
+		// const std::vector<ColorIndex>												colorIndexes;
+		// const std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> representationRanges;
+		// const std::vector<std::byte>												visibleAtoms;
+		// const std::vector<std::byte>												selectedAtoms;
 	};
 
 	/**
@@ -96,25 +96,21 @@ namespace VTX::Renderer
 
 		void setSystems( const std::vector<SystemData> & );
 
+		/**
+		 * @brief Push system data.
+		 */
 		void setSystemTransform( const SystemUID, const Mat4f & );
 		void setSystemPosition( const SystemUID, std::span<const Vec3f> );
-		void setSystemColors( const SystemUID, std::span<const ColorIndex> p_b )
-		{
-			_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", p_b );
-			setNeedUpdate( true );
-		}
-
-		/*
-		void setSystemRepresentation( const SystemUID, std::span<const RepresentationIndex> p_b )
-		{
-			_context.setPipelineBuffer<RepresentationIndex>( "Atoms.Representations", p_b );
-			setNeedUpdate( true );
-		}
-		*/
-
-		void setSystemSelection( const SystemUID, std::span<const std::byte>, std::span<const std::byte> );
-
-		void setSystemVisibility( const SystemUID, std::span<const std::byte>, std::span<const std::byte> );
+		void setSystemColors( const SystemUID, std::span<const ColorIndex> );
+		void setSystemRepresentation(
+			const SystemUID,
+			const std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> &
+		);
+		void setSystemFlags(
+			const SystemUID,
+			const Core::Struct::IndexRangeList &,
+			const Core::Struct::IndexRangeList &
+		);
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
@@ -204,8 +200,8 @@ namespace VTX::Renderer
 		/**
 		 * @brief Cached data to update.
 		 */
-		Caches::Camera						_cacheCamera;
-		std::map<SystemUID, Caches::System> _cacheSystems;
+		Cache::Camera					   _cacheCamera;
+		std::map<SystemUID, Cache::System> _cacheSystems;
 
 		/**
 		 * @brief Refresh the render graph according to the graphics config.
@@ -215,6 +211,9 @@ namespace VTX::Renderer
 
 		void _refreshDataModels();
 
+		/**
+		 * @brief Flags to push boolean values into one byte.
+		 */
 		enum struct E_ELEMENT_FLAGS : uint8_t
 		{
 			VISIBILITY = 0,

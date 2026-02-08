@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <util/types.hpp>
 
-namespace VTX::Renderer::Caches
+namespace VTX::Renderer::Cache
 {
 	struct Camera
 	{
@@ -23,6 +23,6 @@ namespace VTX::Renderer::Caches
 		ModelIndex															  modelIndex;
 		std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> representationRanges;
 	};
-} // namespace VTX::Renderer::Caches
+} // namespace VTX::Renderer::Cache
 
 #endif

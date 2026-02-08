@@ -28,6 +28,7 @@ namespace VTX::UI::QT::Style
 	/**
 	 * @brief Default values.
 	 */
+	constexpr float	  DEFAULT_SIZE_SCALE  = 0.85f;
 	constexpr int	  DEFAULT_FONT_SIZE	  = 10;
 	constexpr E_THEME DEFAULT_THEME		  = E_THEME::SYSTEM;
 	const QString	  DEFAULT_FONT_FAMILY = "Consolas";

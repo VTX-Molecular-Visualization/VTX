@@ -2,38 +2,6 @@
 #include "renderer/binary_buffer.hpp"
 #include <util/chrono.hpp>
 
-namespace
-{
-	using namespace VTX;
-	using namespace VTX::Renderer;
-	using namespace VTX::Core;
-
-	constexpr Flag _toFlag( std::byte p_b ) { return static_cast<Flag>( std::to_integer<uint8_t>( p_b ) & 1u ); }
-
-	std::vector<RepresentationIndex> _toVector(
-		const std::unordered_map<RepresentationIndex, Struct::IndexRangeList> p_ranges,
-		const size_t														  p_size
-	)
-	{
-		std::vector<RepresentationIndex> atoms( p_size );
-		size_t							 count = 0;
-
-		for ( const auto & [ index, ranges ] : p_ranges )
-		{
-			for ( auto it = ranges.rangeBegin(); it != ranges.rangeEnd(); ++it )
-			{
-				std::fill_n( atoms.begin() + it->getFirst(), it->getCount(), index );
-			}
-			count += ranges.count();
-		}
-
-		assert( count == p_size );
-
-		return atoms;
-	}
-
-} // namespace
-
 namespace VTX::Renderer
 {
 	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height ) {}
@@ -341,10 +309,6 @@ namespace VTX::Renderer
 			const size_t countAtoms = systemData.frame.size();
 			assert( systemData.atomUids.size() == countAtoms );
 			assert( systemData.radii.size() == countAtoms );
-			assert( systemData.colorIndexes.size() == countAtoms );
-			assert( systemData.representationRanges.size() > 0 );
-			assert( systemData.visibleAtoms.size() == countAtoms );
-			assert( systemData.selectedAtoms.size() == countAtoms );
 			totalAtoms += countAtoms;
 			totalBonds += systemData.data.bondPairAtomIndexes.size();
 		}
@@ -394,26 +358,12 @@ namespace VTX::Renderer
 			_context.setPipelineBuffer<Index>( "Bonds", bonds, offsetBonds );
 			_context.setPipelineBuffer<float>( "Atoms.Radii", systemData.radii, offsetAtoms );
 			_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", systemData.atomUids, offsetAtoms );
-			_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", systemData.colorIndexes, offsetAtoms );
-			_context.setPipelineBuffer<RepresentationIndex>(
-				"Atoms.Representations", _toVector( systemData.representationRanges, countAtoms ), offsetAtoms
-			);
 			_context.setPipelineBuffer<ModelIndex>(
 				"Atoms.Models", std::vector<ModelIndex>( countAtoms, modelIndex ), offsetAtoms
 			);
 
-			std::vector<Flag> flags( countAtoms );
-			for ( size_t i = 0; i < countAtoms; ++i )
-			{
-				Flag flag = 0;
-				flag |= _toFlag( systemData.visibleAtoms[ i ] ) << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
-				flag |= _toFlag( systemData.selectedAtoms[ i ] ) << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
-				flags[ i ] = flag;
-			}
-			_context.setPipelineBuffer<Flag>( "Atoms.Flags", flags, offsetAtoms );
-
 			// Cache.
-			_cacheSystems[ uid ] = Caches::System { systemData.transform, modelIndex, systemData.representationRanges };
+			_cacheSystems[ uid ] = Cache::System { systemData.transform, modelIndex };
 
 			// Geometry ranges.
 			_geometries.spheres.ranges[ uid ] = Geometry::IndexRange::fromFirstCount(
@@ -442,41 +392,83 @@ namespace VTX::Renderer
 	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
 	{
 		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.ranges[ p_uid ].first );
+		setNeedUpdate( true );
 	}
 
-	void Renderer::setSystemSelection(
-		const SystemUID			   p_uid,
-		std::span<const std::byte> p_selection,
-		std::span<const std::byte> p_visibility
+	void Renderer::setSystemColors( const SystemUID p_uid, std::span<const ColorIndex> p_colors )
+	{
+		_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", p_colors, _geometries.spheres.ranges[ p_uid ].first );
+		setNeedUpdate( true );
+	}
+
+	void Renderer::setSystemRepresentation(
+		const SystemUID																  p_uid,
+		const std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> & p_representations
+	)
+	{
+		_cacheSystems[ p_uid ].representationRanges = p_representations;
+
+		size_t							 countAtoms = _geometries.spheres.ranges[ p_uid ].getCount();
+		std::vector<RepresentationIndex> atoms( countAtoms );
+		size_t							 count = 0;
+
+		for ( const auto & [ index, ranges ] : p_representations )
+		{
+			for ( auto it = ranges.rangeBegin(); it != ranges.rangeEnd(); ++it )
+			{
+				std::fill_n( atoms.begin() + it->getFirst(), it->getCount(), index );
+			}
+			count += ranges.count();
+		}
+
+		assert( count == countAtoms );
+
+		_context.setPipelineBuffer<RepresentationIndex>(
+			"Atoms.Representations", atoms, _geometries.spheres.ranges[ p_uid ].first
+		);
+		setNeedUpdate( true );
+	}
+
+	void Renderer::setSystemFlags(
+		const SystemUID						 p_uid,
+		const Core::Struct::IndexRangeList & p_visibility,
+		const Core::Struct::IndexRangeList & p_selection
+
 	)
 	{
 		const size_t offsetAtoms = _geometries.spheres.ranges[ p_uid ].first;
-		const size_t countAtoms	 = p_selection.size();
+		const size_t countAtoms	 = _geometries.spheres.ranges[ p_uid ].getCount();
 
-		assert( p_selection.size() == countAtoms );
-		assert( p_visibility.size() == countAtoms );
+		assert( p_selection.size() <= countAtoms );
+		assert( p_visibility.size() <= countAtoms );
 
-		std::vector<Flag> flags( countAtoms );
-		for ( size_t i = 0; i < countAtoms; ++i )
+		static constexpr Flag VIS = 1 << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
+		static constexpr Flag SEL = 1 << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
+
+		std::vector<Flag> flags( countAtoms, 0 );
+
+		auto applyOr = [ &flags, countAtoms ]( const Core::Struct::IndexRangeList & p_ranges, const Flag p_mask )
 		{
-			Flag flag = 0;
-			flag |= _toFlag( p_visibility[ i ] ) << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
-			flag |= _toFlag( p_selection[ i ] ) << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
-			flags[ i ] = flag;
-		}
+			for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); ++it )
+			{
+				const Index begin = it->first;
+				const Index end	  = it->last;
+
+				assert( end <= countAtoms );
+
+				for ( size_t i = begin; i < end; ++i )
+				{
+					flags[ i ] |= p_mask;
+				}
+			}
+		};
+
+		applyOr( p_visibility, VIS );
+		applyOr( p_selection, SEL );
 
 		_context.setPipelineBuffer<Flag>( "Atoms.Flags", flags, offsetAtoms );
 
 		setNeedUpdate( true );
-	}
-
-	void Renderer::setSystemVisibility(
-		const SystemUID			   p_uid,
-		std::span<const std::byte> p_visibility,
-		std::span<const std::byte> p_selection
-	)
-	{
-		setSystemSelection( p_uid, p_selection, p_visibility );
 	}
 
 #pragma endregion

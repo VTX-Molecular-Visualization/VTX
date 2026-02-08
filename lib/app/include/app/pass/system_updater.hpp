@@ -18,7 +18,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Map representation entity to its current index.
 		 */
-		using RepresentationMap = std::unordered_map<ECS::Entity, Renderer::RepresentationIndex>;
+		using RepresentationMap = std::map<ECS::Entity, Renderer::RepresentationIndex>;
 
 		SystemUpdater();
 		inline void update( const float, const float ) {}
@@ -32,22 +32,22 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Current used representations.
 		 */
+		// TODO: use resource manager to purge unused.
 		RepresentationMap _representations;
-
-		/**
-		 * @brief Update renderer when data changed.
-		 */
-		void _onUpdateVisibility( ECS::Registry &, ECS::Entity );
-		void _onUpdateSelection( ECS::Registry &, ECS::Entity );
-		void _onUpdateRepresentation( ECS::Registry &, ECS::Entity );
-		void _onUpdateColor( ECS::Registry &, ECS::Entity );
-
-		void _onUpdateRepresentationPreset( ECS::Registry &, ECS::Entity );
 
 		/**
 		 * @brief On system loaded event.
 		 */
 		void _onSystemLoaded( const Events::SystemLoad & );
+
+		/**
+		 * @brief Update renderer when data changed.
+		 */
+		void _onUpdateFlags( ECS::Registry &, ECS::Entity );
+		void _onUpdateRepresentation( ECS::Registry &, ECS::Entity );
+		void _onUpdateColor( ECS::Registry &, ECS::Entity );
+
+		void _onUpdateRepresentationPreset( ECS::Registry &, ECS::Entity );
 
 		void _setRepresentation();
 	};

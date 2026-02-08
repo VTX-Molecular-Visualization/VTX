@@ -35,7 +35,9 @@ namespace VTX::UI::QT::Widget
 	MainWindow::MainWindow() : BaseWidget( nullptr )
 	{
 		// Size.
-		resize( 1920, 1080 );
+		QSize size = screen()->availableGeometry().size();
+		size *= Style::DEFAULT_SIZE_SCALE;
+		resize( size );
 
 		// Set all settings.
 		setDockNestingEnabled( false );
@@ -50,8 +52,7 @@ namespace VTX::UI::QT::Widget
 		//  Features.
 		setTabShape( QTabWidget::Rounded );
 
-		// setCorner( Qt::TopLeftCorner, Qt::LeftDockWidgetArea );
-		// setCorner( Qt::TopRightCorner, Qt::RightDockWidgetArea );
+		// Dock layout.
 		setCorner( Qt::BottomLeftCorner, Qt::LeftDockWidgetArea );
 		setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
 
@@ -69,17 +70,6 @@ namespace VTX::UI::QT::Widget
 		createToolBar<ToolBar::File>();
 		createToolBar<ToolBar::Camera>();
 		createToolBar<ToolBar::Snapshot>();
-
-		// Add combobox in toobar.
-		/*
-		QComboBox * comboBox = new QComboBox( this );
-		comboBox->addItem( "Item 1" );
-		comboBox->addItem( "Item 2" );
-		comboBox->addItem( "Item 3" );
-		comboBox->addItem( "Item 4" );
-		comboBox->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
-		// toolBarArea( Qt::TopToolBarArea ).addWidget( comboBox );
-		*/
 
 		// Main area : opengl widget.
 		setCentralWidget( new OpenGLWidget( this ) );
@@ -102,8 +92,6 @@ namespace VTX::UI::QT::Widget
 		// Status bar.
 		_statusBar = new StatusBar( this );
 		setStatusBar( _statusBar );
-
-		// centralWidget()->setFocus();
 
 		// Backup default geometry and state.
 		_defaultGeometry = saveGeometry();

@@ -23,6 +23,10 @@ namespace VTX::UI::QT
 		using namespace Resources;
 		using namespace VTX::App;
 
+		// Splash screen.
+		_splashScreen = new QSplashScreen( QPixmap( SPRITE_SPLASH.data() ) );
+		_splashScreen->show();
+
 		// Application info.
 		const std::string version = std::to_string( VERSION_MAJOR ) + "." + std::to_string( VERSION_MINOR ) + "."
 									+ std::to_string( VERSION_PATCH );
@@ -53,7 +57,7 @@ namespace VTX::UI::QT
 		App::ECS::setCtx<Style::StyleManager>().load( _tools );
 
 		// Create and show main window.
-		App::ECS::setCtx<Widget::MainWindow>().show();
+		App::ECS::setCtx<Widget::MainWindow>();
 
 		// Connect quit event that can come from VTXApp.
 		App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
@@ -99,7 +103,15 @@ namespace VTX::UI::QT
 
 	void Application::start()
 	{
-		VTXApp::start();
+		QTimer::singleShot(
+			0,
+			[ & ]()
+			{
+				VTXApp::start();
+				MAIN_WINDOW().show();
+				_splashScreen->finish( &MAIN_WINDOW() );
+			}
+		);
 
 		// Run Qt main loop.
 		exec();
