@@ -69,50 +69,10 @@ namespace VTX::UI::QT::DockWidget
 				QDockWidget::setWidget( _root );
 			}
 
-			_root->setMinimumSize( Style::MINIMUM_DOCK_PANEL_WIDTH, Style::MINIMUM_DOCK_PANEL_HEIGHT );
-
 			// Root widget and layout.
 			_layout = new L( _root );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 			_layout->setSpacing( 0 );
-
-			//_layout->setSizeConstraint( QLayout::SetNoConstraint );
-
-			// Custom title bar without title.
-			/*
-			auto * bar = new QWidget( this );
-			auto * lay = new QHBoxLayout( bar );
-			lay->setContentsMargins( 0, 0, 0, 0 );
-			lay->setSpacing( 0 );
-
-			auto * label = new QLabel( p_title, bar );
-			label->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
-			label->setAttribute( Qt::WA_TransparentForMouseEvents, true );
-			lay->addWidget( label );
-
-			auto * dragArea = new QWidget( bar );
-			dragArea->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
-			lay->addWidget( dragArea, 1 );
-
-			auto * bFloat = new QToolButton( bar );
-			bFloat->setAutoRaise( true );
-			bFloat->setIcon( bar->style()->standardIcon( QStyle::SP_TitleBarNormalButton ) );
-			QObject::connect(
-				bFloat,
-				&QToolButton::clicked,
-				this,
-				[ this, label ] { QDockWidget::setFloating( not QDockWidget::isFloating() ); }
-			);
-			lay->addWidget( bFloat );
-
-			auto * bClose = new QToolButton( bar );
-			bClose->setAutoRaise( true );
-			bClose->setIcon( bar->style()->standardIcon( QStyle::SP_TitleBarCloseButton ) );
-			QObject::connect( bClose, &QToolButton::clicked, this, &QDockWidget::close );
-			lay->addWidget( bClose );
-
-			 QDockWidget::setTitleBarWidget( bar );
-			 */
 		}
 
 		virtual ~BaseDockWidget() = default;

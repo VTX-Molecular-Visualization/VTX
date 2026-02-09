@@ -16,7 +16,7 @@ namespace VTX::UI::QT::DockWidget
 	ColorLayouts::ColorLayouts( QWidget * p_parent ) : BaseDockWidget( p_parent, "Colors" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::PALETTE ) );
+		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::COLORS ) );
 
 		// Checkbox to hide non usual items.
 		_checkBoxHide = new QCheckBox( "Hide non usual", _root );

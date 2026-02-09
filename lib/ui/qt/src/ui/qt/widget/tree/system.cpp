@@ -19,7 +19,9 @@ namespace VTX::UI::QT::Widget::Tree
 		Widget::Tree::BaseTree<System, QTreeView>( p_parent ), _system( p_system )
 	{
 		setExpandsOnDoubleClick( false );
+		setMouseTracking( true );
 		setModel( new SystemModel( p_system, this ) );
+
 		// Delegate.
 		const auto delegate = new Delegate::SystemDelegate( p_system, this );
 		setItemDelegate( delegate );
