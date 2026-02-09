@@ -12,6 +12,12 @@ namespace VTX::UI::QT::DockWidget
 
 	class Options : public BaseDockWidget<Options>
 	{
+		/**
+		 * @brief Default values.
+		 */
+		static constexpr bool VSYNC_DEFAULT		 = true;
+		static constexpr bool SAVE_POWER_DEFAULT = true;
+
 	  public:
 		Options( QWidget * p_parent );
 		~Options();
@@ -20,6 +26,7 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<QComboBox> _comboBoxTheme;
 		QPointer<QComboBox> _comboBoxFont;
 		QPointer<QCheckBox> _checkBoxVSync;
+		QPointer<QCheckBox> _checkBoxSavePower;
 		QPointer<QLabel>	_labelCacheCount;
 		QPointer<QLabel>	_labelCacheSize;
 

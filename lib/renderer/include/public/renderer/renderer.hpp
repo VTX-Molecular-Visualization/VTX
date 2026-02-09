@@ -79,13 +79,12 @@ namespace VTX::Renderer
 		 * @brief The main render loop.
 		 * @return true if rendered, false if nothing updated.
 		 */
-		[[nodiscard]] bool render( const float, const float ) noexcept;
+		bool render( const float, const float ) noexcept;
 
 		/**
 		 * @brief Push data to the renderer.
 		 */
 		void setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );
-
 		void setGraphicsConfig( const GraphicsConfig & );
 		void setColorLayout( const Color::Layout & );
 		void setRepresentations( const std::vector<const Representation *> & );
@@ -94,7 +93,6 @@ namespace VTX::Renderer
 		/**
 		 * @brief Push systems.
 		 */
-
 		void setSystems( const std::vector<SystemData> & );
 
 		/**
@@ -137,6 +135,11 @@ namespace VTX::Renderer
 		inline void setNeedUpdate( const bool p_value ) { _needUpdate = p_value; }
 
 		/**
+		 * @brief Force update each frame.
+		 */
+		inline void setForceUpdate( const bool p_value ) { _forceUpdate = p_value; }
+
+		/**
 		 * @brief Get the current renderer infos.
 		 */
 		const StructInfos & getInfos( const bool = false );
@@ -177,7 +180,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Force update each frame.
 		 */
-		bool _forceUpdate = false;
+		bool _forceUpdate = true;
 
 		/**
 		 * @brief Update next frame.

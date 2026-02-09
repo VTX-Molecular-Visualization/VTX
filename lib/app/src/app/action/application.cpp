@@ -25,4 +25,6 @@ namespace VTX::App::Action::Application
 		RENDERER().resize( p_width, p_height );
 	}
 
+	void SetSavePower::execute( const bool p_enable ) { RENDERER().setForceUpdate( not p_enable ); }
+
 } // namespace VTX::App::Action::Application

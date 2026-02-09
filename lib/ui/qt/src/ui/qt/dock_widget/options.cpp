@@ -13,8 +13,11 @@
 #include <QFileDialog>
 #include <QGroupBox>
 #include <QPushButton>
+#include <app/action/action_manager.hpp>
+#include <app/action/application.hpp>
 #include <app/filesystem.hpp>
 #include <app/network/network_manager.hpp>
+#include <app/services.hpp>
 #include <util/string.hpp>
 
 namespace
@@ -120,6 +123,8 @@ namespace VTX::UI::QT::DockWidget
 		auto * groupBoxGraphics = new QGroupBox( "Graphics" );
 		auto * layoutGraphics	= new QVBoxLayout( groupBoxGraphics );
 		_checkBoxVSync			= new QCheckBox( "Vertical synchronization", this );
+		_checkBoxVSync->setToolTip( "Synchronize the frame rate with the screen refresh rate" );
+		_checkBoxVSync->setWhatsThis( "Synchronize the frame rate with the screen refresh rate" );
 
 		connect(
 			_checkBoxVSync,
@@ -133,6 +138,19 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		layoutGraphics->addWidget( _checkBoxVSync );
+
+		_checkBoxSavePower = new QCheckBox( "Save GPU power", this );
+		_checkBoxSavePower->setToolTip( "Render frame only on update" );
+		_checkBoxSavePower->setWhatsThis( "Render frame only on update" );
+
+		connect(
+			_checkBoxSavePower,
+			&QCheckBox::checkStateChanged,
+			[ this ]( const int p_state )
+			{ App::ACTION().execute<App::Action::Application::SetSavePower>( p_state == Qt::Checked ); }
+		);
+
+		layoutGraphics->addWidget( _checkBoxSavePower );
 
 		// Cache.
 		auto * groupBoxCache = new QGroupBox( "Data cache" );
@@ -181,8 +199,10 @@ namespace VTX::UI::QT::DockWidget
 
 		_refreshCacheInfos();
 
-		QSignalBlocker blocker1( _checkBoxVSync );
-		_checkBoxVSync->setChecked( SETTINGS().value( SETTING_KEY_VSYNC, true ).toBool() );
+		// Settings.
+		QSignalBlocker b( _checkBoxVSync ); // Do not emit, opengl widget already knows.
+		_checkBoxVSync->setChecked( SETTINGS().value( SETTING_KEY_VSYNC, VSYNC_DEFAULT ).toBool() );
+		_checkBoxSavePower->setChecked( SETTINGS().value( SETTING_KEY_SAVE_POWER, SAVE_POWER_DEFAULT ).toBool() );
 
 		QTimer::singleShot(
 			0,
@@ -198,7 +218,11 @@ namespace VTX::UI::QT::DockWidget
 		App::NETWORK().onFileCached += [ this ]() { _refreshCacheInfos(); };
 	}
 
-	Options::~Options() { SETTINGS().setValue( SETTING_KEY_VSYNC, _checkBoxVSync->isChecked() ); }
+	Options::~Options()
+	{
+		SETTINGS().setValue( SETTING_KEY_VSYNC, _checkBoxVSync->isChecked() );
+		SETTINGS().setValue( SETTING_KEY_SAVE_POWER, _checkBoxSavePower->isChecked() );
+	}
 
 	void Options::_refreshCacheInfos()
 	{

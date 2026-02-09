@@ -12,7 +12,7 @@ namespace VTX::Util::Monitoring
 	/**
 	 * @brief Maximum number of stored frames.
 	 */
-	constexpr uint ACTIVE_FRAME_COUNT = 1000;
+	constexpr uint ACTIVE_FRAME_COUNT = 10;
 
 	/**
 	 * @brief Store frames to compute duration statistics.

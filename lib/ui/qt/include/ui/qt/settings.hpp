@@ -18,6 +18,7 @@ namespace VTX::UI::QT
 	const QString SETTING_KEY_EXPORT_FOLDER	 = "dialog/export_image/folder";
 	const QString SETTING_KEY_OPEN_FOLDER	 = "dialog/open/last_folder";
 	const QString SETTING_KEY_VSYNC			 = "option/vsync";
+	const QString SETTING_KEY_SAVE_POWER	 = "option/save_power";
 	const QString SETTING_KEY_THEME			 = "style/theme";
 	const QString SETTING_KEY_FONT			 = "style/font";
 

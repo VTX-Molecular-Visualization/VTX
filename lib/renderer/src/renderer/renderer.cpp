@@ -29,7 +29,7 @@ namespace VTX::Renderer
 		{
 			_context.build( _queue, _graph.getResources() );
 			_context.fillInfos( _infos );
-			// onReady();
+			onReady();
 		}
 		catch ( const std::exception & p_e )
 		{

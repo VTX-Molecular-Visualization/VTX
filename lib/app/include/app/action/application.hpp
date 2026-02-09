@@ -23,5 +23,13 @@ namespace VTX::App::Action::Application
 		void execute( const size_t p_width, const size_t p_height );
 	};
 
+	/**
+	 * @brief Disable force renderer update.
+	 */
+	struct SetSavePower
+	{
+		void execute( const bool p_enable );
+	};
+
 } // namespace VTX::App::Action::Application
 #endif
