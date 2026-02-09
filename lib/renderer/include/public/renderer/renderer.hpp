@@ -77,8 +77,9 @@ namespace VTX::Renderer
 
 		/**
 		 * @brief The main render loop.
+		 * @return true if rendered, false if nothing updated.
 		 */
-		void render( const float, const float ) noexcept;
+		[[nodiscard]] bool render( const float, const float ) noexcept;
 
 		/**
 		 * @brief Push data to the renderer.
@@ -133,14 +134,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Ask for a render update.
 		 */
-		inline void setNeedUpdate( const bool p_value )
-		{
-			_needUpdate = p_value;
-			if ( not p_value )
-			{
-				_framesRemaining = BUFFER_COUNT;
-			}
-		}
+		inline void setNeedUpdate( const bool p_value ) { _needUpdate = p_value; }
 
 		/**
 		 * @brief Get the current renderer infos.
@@ -148,15 +142,9 @@ namespace VTX::Renderer
 		const StructInfos & getInfos( const bool = false );
 
 		/**
-		 * @brief Buffer swapping count.
+		 * @brief Callback when ready.
+		 * TODO: use event hub?
 		 */
-		static constexpr size_t BUFFER_COUNT = 2;
-
-		/**
-		 * @brief Force update each frame.
-		 */
-		bool forceUpdate = true;
-
 		Util::Callback<> onReady;
 
 	  private:
@@ -187,15 +175,19 @@ namespace VTX::Renderer
 		size_t _height;
 
 		/**
-		 * @brief Flag to rebuild draw ranges when system or representation changed.
+		 * @brief Force update each frame.
 		 */
-		bool _needBuildDrawRanges = false;
+		bool _forceUpdate = false;
 
 		/**
 		 * @brief Update next frame.
 		 */
-		bool   _needUpdate		= false;
-		size_t _framesRemaining = BUFFER_COUNT;
+		bool _needUpdate = false;
+
+		/**
+		 * @brief Rebuild draw ranges next frame.
+		 */
+		bool _needBuildDrawRanges = false;
 
 		/**
 		 * @brief Renderer infos.

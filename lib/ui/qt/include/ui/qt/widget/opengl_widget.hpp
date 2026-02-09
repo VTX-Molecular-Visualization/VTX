@@ -20,7 +20,7 @@ namespace VTX::UI::QT::Widget
 		OpenGLWidget( QWidget * );
 		~OpenGLWidget();
 
-		void render();
+		void render( const App::Events::PostRender & );
 		void resizeEvent( QResizeEvent * ) override;
 
 		void setVSync( const bool );

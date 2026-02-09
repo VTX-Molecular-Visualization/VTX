@@ -88,10 +88,13 @@ namespace VTX::UI::QT::Widget
 		_container->removeEventFilter( this );
 	}
 
-	void OpenGLWidget::render()
+	void OpenGLWidget::render( const App::Events::PostRender & p_e )
 	{
-		_context->swapBuffers( _window );
-		_context->makeCurrent( _window );
+		if ( p_e.rendered )
+		{
+			_context->swapBuffers( _window );
+			_context->makeCurrent( _window );
+		}
 	}
 
 	void OpenGLWidget::resizeEvent( QResizeEvent * p_event )

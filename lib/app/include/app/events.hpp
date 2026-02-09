@@ -46,6 +46,7 @@ namespace VTX::App::Events
 	{
 		float delta;
 		float elapsed;
+		bool  rendered;
 	};
 
 	struct BlockingOperationStart

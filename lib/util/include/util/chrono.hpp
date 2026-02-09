@@ -69,7 +69,7 @@ namespace VTX::Util
 	 * @brief Utility function to measure the execution time of a callable.
 	 */
 	template<class F, class... Args>
-		requires( std::is_void_v<std::invoke_result_t<F, Args...>> )
+	// requires std::invocable<F, Args...> && std::same_as<std::invoke_result_t<F, Args...>, void>
 	inline float CHRONO_CPU( F && p_f, Args &&... p_args )
 	{
 		Chrono c;

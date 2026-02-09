@@ -29,7 +29,7 @@ namespace VTX::Renderer
 		{
 			_context.build( _queue, _graph.getResources() );
 			_context.fillInfos( _infos );
-			onReady();
+			// onReady();
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -64,11 +64,10 @@ namespace VTX::Renderer
 	{
 		_context.clear();
 		_graph.clear();
-		_needUpdate		 = false;
-		_framesRemaining = 0;
+		_needUpdate = false;
 	}
 
-	void Renderer::render( const float p_deltaTime, const float p_elapsedTime ) noexcept
+	bool Renderer::render( const float p_deltaTime, const float p_elapsedTime ) noexcept
 	{
 		if ( _needBuildDrawRanges )
 		{
@@ -77,22 +76,14 @@ namespace VTX::Renderer
 			_needBuildDrawRanges = false;
 		}
 
-		if ( _needUpdate || forceUpdate || _framesRemaining > 0 )
+		if ( _needUpdate || _forceUpdate )
 		{
 			_render( p_deltaTime, p_elapsedTime );
-
-			if ( not forceUpdate )
-			{
-				if ( _needUpdate )
-				{
-					setNeedUpdate( false );
-				}
-				else
-				{
-					_framesRemaining--;
-				}
-			}
+			setNeedUpdate( false );
+			return true;
 		}
+
+		return false;
 	}
 
 #pragma endregion
