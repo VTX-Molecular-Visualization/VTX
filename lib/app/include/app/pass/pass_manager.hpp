@@ -95,6 +95,12 @@ namespace VTX::App::Pass
 			return _passes.get<T>();
 		}
 
+		template<ConceptPass T>
+		T * const tryGetPass() const
+		{
+			return _passes.tryGet<T>();
+		}
+
 		/**
 		 * @brief Updates all passes.
 		 */

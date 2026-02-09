@@ -1,5 +1,7 @@
 #include "app/pass/camera_updater.hpp"
 #include "app/pass/controller/animation.hpp"
+#include "app/pass/controller/freefly.hpp"
+#include "app/pass/controller/trackball.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
@@ -52,6 +54,13 @@ namespace VTX::App::Pass
 
 	void CameraUpdater::_onCameraAnimationEnded( const Events::CameraAnimationEnd & )
 	{
-		// TODO: logic with other controllers.
+		if ( auto * p = PASS().tryGetPass<Pass::Controller::Trackball>() )
+		{
+			p->paused = false;
+		}
+		else if ( auto * p = PASS().tryGetPass<Pass::Controller::Freefly>() )
+		{
+			p->paused = false;
+		}
 	}
 } // namespace VTX::App::Pass

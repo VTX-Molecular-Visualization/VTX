@@ -1,6 +1,7 @@
 #include "app/action/camera.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/helper/system.hpp"
+#include "app/pass/controller/freefly.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/trajectory.hpp"
@@ -65,10 +66,15 @@ namespace VTX::App::Action::Camera
 		HUB().trigger<Events::CameraTransformChange>();
 
 		// Change controller target.
-		if ( PASS().hasPass<Pass::Controller::Trackball>() )
+		if ( auto * p = PASS().tryGetPass<Pass::Controller::Trackball>() )
 		{
-			PASS().getPass<Pass::Controller::Trackball>()->setTarget( aabb.centroid() );
-			PASS().getPass<Pass::Controller::Trackball>()->stop();
+			p->stop();
+			p->setTarget( aabb.centroid() );
+			p->paused = true;
+		}
+		else if ( auto * p = PASS().tryGetPass<Pass::Controller::Freefly>() )
+		{
+			p->paused = true;
 		}
 	}
 
@@ -128,10 +134,15 @@ namespace VTX::App::Action::Camera
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
 		// Change controller target.
-		if ( PASS().hasPass<Pass::Controller::Trackball>() )
+		if ( auto * p = PASS().tryGetPass<Pass::Controller::Trackball>() )
 		{
-			PASS().getPass<Pass::Controller::Trackball>()->setTarget( p_target.centroid() );
-			PASS().getPass<Pass::Controller::Trackball>()->stop();
+			p->stop();
+			p->setTarget( p_target.centroid() );
+			p->paused = true;
+		}
+		else if ( auto * p = PASS().tryGetPass<Pass::Controller::Freefly>() )
+		{
+			p->paused = true;
 		}
 
 		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(

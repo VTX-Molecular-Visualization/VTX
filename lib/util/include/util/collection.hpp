@@ -36,6 +36,19 @@ namespace VTX::Util
 		}
 
 		template<typename T>
+		inline T * const tryGet() const
+		{
+			if ( has<T>() )
+			{
+				return get<T>( hash<T>() );
+			}
+			else
+			{
+				return nullptr;
+			}
+		}
+
+		template<typename T>
 		inline T * const getOrCreate()
 		{
 			if ( has<T>() )
