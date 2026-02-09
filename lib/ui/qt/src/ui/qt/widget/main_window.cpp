@@ -17,6 +17,7 @@
 #include "ui/qt/menu/help.hpp"
 #include "ui/qt/menu/selection.hpp"
 #include "ui/qt/menu/theme.hpp"
+#include "ui/qt/menu/tool.hpp"
 #include "ui/qt/menu/view.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/style/style_manager.hpp"
@@ -61,11 +62,12 @@ namespace VTX::UI::QT::Widget
 
 		// Main menu.
 		createMenu<Menu::File>();
-		createMenu<Menu::Camera>();
 		createMenu<Menu::Selection>();
-		createMenu<Menu::View>()->setEnabled( false );
+		createMenu<Menu::Camera>();
+		createMenu<Menu::Tool>();
+		// createMenu<Menu::View>()->setEnabled( false );
 		createMenu<Menu::Theme>();
-		createMenu<Menu::Help>()->setEnabled( false );
+		// createMenu<Menu::Help>()->setEnabled( false );
 
 		// Toolbars.
 		createToolBar<ToolBar::File>();
