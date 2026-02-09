@@ -20,7 +20,13 @@ namespace VTX::UI::QT::Widget::Tree
 	{
 		setExpandsOnDoubleClick( false );
 		setMouseTracking( true );
+
+		// Model.
 		setModel( new SystemModel( p_system, this ) );
+
+		// Selection model.
+		setSelectionModel( new SystemSelectionModel( p_system, model(), this ) );
+		setSelectionBehavior( QAbstractItemView::SelectRows );
 
 		// Delegate.
 		const auto delegate = new Delegate::SystemDelegate( p_system, this );
