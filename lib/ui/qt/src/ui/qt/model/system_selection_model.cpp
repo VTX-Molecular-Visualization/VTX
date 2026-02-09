@@ -1,5 +1,5 @@
-﻿#include "ui/qt/widget/tree/system_selection_model.hpp"
-#include "ui/qt/widget/tree/system_model.hpp"
+﻿#include "ui/qt/model/system_selection_model.hpp"
+#include "ui/qt/model/system_model.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/selection.hpp>
 #include <app/helper/system.hpp>
@@ -7,7 +7,7 @@
 #include <app/system/uid.hpp>
 #include <core/struct/system.hpp>
 
-namespace VTX::UI::QT::Widget::Tree
+namespace VTX::UI::QT::Model
 {
 
 	SystemSelectionModel::SystemSelectionModel(
@@ -159,4 +159,4 @@ namespace VTX::UI::QT::Widget::Tree
 		select( qSelection, QItemSelectionModel::ClearAndSelect );
 	}
 
-} // namespace VTX::UI::QT::Widget::Tree
+} // namespace VTX::UI::QT::Model

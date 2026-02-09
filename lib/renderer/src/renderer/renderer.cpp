@@ -384,6 +384,7 @@ namespace VTX::Renderer
 
 		// TODO: refresh only needed!
 		_refreshDataModels();
+		setNeedUpdate( true );
 	}
 
 	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
@@ -399,13 +400,14 @@ namespace VTX::Renderer
 	}
 
 	void Renderer::setSystemRepresentation(
-		const SystemUID																  p_uid,
-		const std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> & p_representations
+		const SystemUID					p_uid,
+		const MapRepresentationRanges & p_representations,
+		const std::vector<Index> &		p_bonds
 	)
 	{
-		_cacheSystems[ p_uid ].representationRanges = p_representations;
+		_cacheSystems[ p_uid ].representationAtomRanges = p_representations;
 
-		size_t							 countAtoms = _geometries.spheres.ranges[ p_uid ].getCount();
+		const size_t					 countAtoms = _geometries.spheres.ranges[ p_uid ].getCount();
 		std::vector<RepresentationIndex> atoms( countAtoms );
 		size_t							 count = 0;
 
@@ -424,14 +426,19 @@ namespace VTX::Renderer
 			"Atoms.Representations", atoms, _geometries.spheres.ranges[ p_uid ].first
 		);
 
+		const size_t			countBonds = _geometries.cylinders.ranges[ p_uid ].getCount();
+		MapRepresentationRanges bondsRepresentations;
+		// TODO
+
 		_needBuildDrawRanges = true;
 		setNeedUpdate( true );
 	}
 
 	void Renderer::setSystemFlags(
 		const SystemUID						 p_uid,
-		const Core::Struct::IndexRangeList & p_visibility,
-		const Core::Struct::IndexRangeList & p_selection
+		const Core::Struct::IndexRangeList & p_visible,
+		const Core::Struct::IndexRangeList & p_selection,
+		const std::vector<Index> &			 p_bonds
 
 	)
 	{
@@ -439,12 +446,12 @@ namespace VTX::Renderer
 		const size_t countAtoms	 = _geometries.spheres.ranges[ p_uid ].getCount();
 
 		assert( p_selection.size() <= countAtoms );
-		assert( p_visibility.size() <= countAtoms );
+		assert( p_visible.size() <= countAtoms );
 
 		static constexpr Flag VIS = 1 << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
 		static constexpr Flag SEL = 1 << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
 
-		std::vector<Flag> flags( countAtoms, 1 );
+		std::vector<Flag> flags( countAtoms, 0 );
 
 		auto applyOr = [ & ]( const Core::Struct::IndexRangeList & p_ranges, const Flag p_mask )
 		{
@@ -457,20 +464,36 @@ namespace VTX::Renderer
 
 				for ( size_t i = begin; i < end; ++i )
 				{
-					// flags[ i ] |= p_mask;
+					flags[ i ] |= p_mask;
 				}
 			}
 		};
 
-		applyOr( p_visibility, VIS );
+		applyOr( p_visible, VIS );
 		applyOr( p_selection, SEL );
 
 		_context.setPipelineBuffer<Flag>( "Atoms.Flags", flags, offsetAtoms );
 
 		// Build draw ranges.
-		Geometry::IndexRange range					= { 0, static_cast<Index>( countAtoms ) };
-		_geometries.spheres.visibilityMask[ p_uid ] = { range };
-		_geometries.spheres.visibilityMask[ p_uid ].substractInPlace( p_visibility );
+		Geometry::IndexRange rangeAtoms				= { 0, static_cast<Index>( countAtoms ) };
+		_geometries.spheres.visibilityMask[ p_uid ] = { rangeAtoms };
+		_geometries.spheres.visibilityMask[ p_uid ].substractInPlace( p_visible );
+
+		const size_t		 offsetBonds = _geometries.cylinders.ranges[ p_uid ].first;
+		const size_t		 countBonds	 = _geometries.cylinders.ranges[ p_uid ].getCount();
+		Geometry::IndexRange rangeBonds	 = { 0, static_cast<Index>( countBonds ) };
+
+		Core::Struct::IndexRangeList bondsVisible;
+		for ( Index i = 0; i < p_bonds.size(); i += 2 )
+		{
+			if ( p_visible.contains( p_bonds[ i ] ) && p_visible.contains( p_bonds[ i + 1 ] ) )
+			{
+				bondsVisible.addValue( i );
+				bondsVisible.addValue( i + 1 );
+			}
+		}
+		//_geometries.cylinders.visibilityMask[ p_uid ] = { rangeBonds };
+		//_geometries.cylinders.visibilityMask[ p_uid ].substractInPlace( bondsVisible );
 
 		_needBuildDrawRanges = true;
 		setNeedUpdate( true );
@@ -513,22 +536,31 @@ namespace VTX::Renderer
 	void Renderer::_refreshDataRepresentations()
 	{
 		_geometries.spheres.representationMask.clear();
-		//_geometries.cylinders.representationMask.clear();
+		_geometries.cylinders.representationMask.clear();
 
 		for ( const auto & [ systemUid, cacheSystem ] : _cacheSystems )
 		{
-			const auto & representationRanges = cacheSystem.representationRanges;
-			for ( const auto & [ representationIndex, ranges ] : representationRanges )
+			// Sphere.
+			for ( const auto & [ representationIndex, ranges ] : cacheSystem.representationAtomRanges )
 			{
 				assert( _cacheRepresentations.contains( representationIndex ) );
+
 				const auto & cacheRepresentation = _cacheRepresentations[ representationIndex ];
 				if ( not cacheRepresentation.showSphere )
 				{
 					_geometries.spheres.representationMask[ systemUid ].mergeInPlace( ranges );
 				}
+			}
+
+			// Cylinder.
+			for ( const auto & [ representationIndex, ranges ] : cacheSystem.representationBondsRanges )
+			{
+				assert( _cacheRepresentations.contains( representationIndex ) );
+
+				const auto & cacheRepresentation = _cacheRepresentations[ representationIndex ];
 				if ( not cacheRepresentation.showCylinder )
 				{
-					//_geometries.cylinders.representationMask[ systemUid ] = ranges;
+					_geometries.cylinders.representationMask[ systemUid ].mergeInPlace( ranges );
 				}
 			}
 		}

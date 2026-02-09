@@ -1,4 +1,4 @@
-#include "ui/qt/widget/tree/system_model.hpp"
+#include "ui/qt/model/system_model.hpp"
 #include "app/system/uid.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
@@ -9,7 +9,7 @@
 #include <util/logger.hpp>
 #include <variant>
 
-namespace VTX::UI::QT::Widget::Tree
+namespace VTX::UI::QT::Model
 {
 	SystemModel::SystemModel( const App::ECS::Entity p_system, QObject * p_parent ) :
 		_system( p_system ), _data( App::REG().get<Core::Struct::System>( p_system ) ), QAbstractItemModel( p_parent )
@@ -245,4 +245,4 @@ namespace VTX::UI::QT::Widget::Tree
 		p_item	= Core::Struct::E_SYSTEM_ITEM( ( p_v >> 32 ) & 0xFFu ); // 8 bits
 		p_index = Index( p_v & 0xFFFFFFFFu );							// 32 bits
 	}
-} // namespace VTX::UI::QT::Widget::Tree
+} // namespace VTX::UI::QT::Model

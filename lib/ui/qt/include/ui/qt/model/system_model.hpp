@@ -8,7 +8,7 @@
 #include <core/struct/system.hpp>
 #include <vector>
 
-namespace VTX::UI::QT::Widget::Tree
+namespace VTX::UI::QT::Model
 {
 	/**
 	 * @brief Model representing all data in App.
@@ -88,5 +88,5 @@ namespace VTX::UI::QT::Widget::Tree
 		std::reference_wrapper<const Core::Struct::System> _data;
 	};
 
-} // namespace VTX::UI::QT::Widget::Tree
+} // namespace VTX::UI::QT::Model
 #endif

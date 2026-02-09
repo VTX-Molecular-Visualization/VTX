@@ -124,9 +124,23 @@ namespace VTX::App::Pass
 
 	void SystemUpdater::_onUpdateFlags( ECS::Registry & p_r, ECS::Entity p_e )
 	{
-		const auto & [ visibility, selection, uid ]
-			= p_r.get<System::Visibility, System::Selection, System::UID>( p_e );
-		RENDERER().setSystemFlags( uid.system, visibility.atoms, selection.atoms );
+		const auto & [ visibility, selection, uid, system ]
+			= p_r.get<System::Visibility, System::Selection, System::UID, Core::Struct::System>( p_e );
+
+		// Naive version.
+		/*
+		Core::Struct::IndexRangeList visibleBonds;
+		auto & bonds = system.bondPairAtomIndexes;
+		for ( Index i = 0; i < bonds.size(); i += 2 )
+		{
+			if ( visibility.atoms.contains( bonds[ i ] ) && visibility.atoms.contains( bonds[ i + 1 ] ) )
+			{
+				visibleBonds.addValue( i / 2 );
+			}
+		}
+		*/
+
+		RENDERER().setSystemFlags( uid.system, visibility.atoms, selection.atoms, system.bondPairAtomIndexes );
 	}
 
 	void SystemUpdater::_onUpdateRepresentation( ECS::Registry & p_r, ECS::Entity p_e )
@@ -136,7 +150,7 @@ namespace VTX::App::Pass
 		const auto & [ representation, uid, data ]
 			= p_r.get<System::Representation, System::UID, Core::Struct::System>( p_e );
 
-		std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> map;
+		MapRepresentationRanges mapAtoms;
 
 		bool newRepresentation = false;
 		for ( const auto & [ entity, ranges ] : representation.presetAtoms )
@@ -146,7 +160,7 @@ namespace VTX::App::Pass
 				_representations[ entity ] = static_cast<RepresentationIndex>( _representations.size() );
 				newRepresentation		   = true;
 			}
-			map.emplace( _representations[ entity ], ranges );
+			mapAtoms.emplace( _representations[ entity ], ranges );
 		}
 
 		if ( newRepresentation )
@@ -154,7 +168,7 @@ namespace VTX::App::Pass
 			_setRepresentation();
 		}
 
-		RENDERER().setSystemRepresentation( uid.system, map );
+		RENDERER().setSystemRepresentation( uid.system, mapAtoms, data.bondPairAtomIndexes );
 	}
 
 	void SystemUpdater::_onUpdateColor( ECS::Registry & p_r, ECS::Entity p_e )

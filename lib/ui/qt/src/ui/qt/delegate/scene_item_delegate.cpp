@@ -1,7 +1,7 @@
 #include "ui/qt/delegate/scene_item_delegate.hpp"
 #include "app/system/trajectory.hpp"
+#include "ui/qt/model/system_model.hpp"
 #include "ui/qt/services.hpp"
-#include "ui/qt/widget/tree/system_model.hpp"
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
@@ -86,7 +86,7 @@ namespace VTX::UI::QT::Delegate
 		const QModelIndex &			 p_index
 	)
 	{
-		using namespace Widget::Tree;
+		using namespace Model;
 		using namespace Core::Struct;
 
 		if ( !_hasTrajectory( p_index ) )
@@ -154,7 +154,7 @@ namespace VTX::UI::QT::Delegate
 	bool SceneItemDelegate::_hasTrajectory( const QModelIndex & p_index ) const
 	{
 		using namespace Core::Struct;
-		using namespace Widget::Tree;
+		using namespace Model;
 
 		if ( !p_index.isValid() )
 		{
@@ -182,7 +182,7 @@ namespace VTX::UI::QT::Delegate
 	) const
 	{
 		using namespace Core::Struct;
-		using namespace Widget::Tree;
+		using namespace Model;
 
 		E_SYSTEM_ITEM item;
 		Index		  index;

@@ -101,14 +101,12 @@ namespace VTX::Renderer
 		void setSystemTransform( const SystemUID, const Mat4f & );
 		void setSystemPosition( const SystemUID, std::span<const Vec3f> );
 		void setSystemColors( const SystemUID, std::span<const ColorIndex> );
-		void setSystemRepresentation(
-			const SystemUID,
-			const std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> &
-		);
+		void setSystemRepresentation( const SystemUID, const MapRepresentationRanges &, const std::vector<Index> & );
 		void setSystemFlags(
 			const SystemUID,
 			const Core::Struct::IndexRangeList &,
-			const Core::Struct::IndexRangeList &
+			const Core::Struct::IndexRangeList &,
+			const std::vector<Index> &
 		);
 
 		/**

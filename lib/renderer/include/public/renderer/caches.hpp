@@ -7,6 +7,11 @@
 #include <unordered_map>
 #include <util/types.hpp>
 
+namespace VTX::Renderer
+{
+	using MapRepresentationRanges = std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList>;
+}
+
 namespace VTX::Renderer::Cache
 {
 	struct Camera
@@ -19,9 +24,10 @@ namespace VTX::Renderer::Cache
 
 	struct System
 	{
-		Mat4f																  transform;
-		ModelIndex															  modelIndex;
-		std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> representationRanges;
+		Mat4f					transform;
+		ModelIndex				modelIndex;
+		MapRepresentationRanges representationAtomRanges;
+		MapRepresentationRanges representationBondsRanges;
 	};
 
 	struct Representation

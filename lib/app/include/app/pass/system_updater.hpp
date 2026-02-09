@@ -18,7 +18,8 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Map representation entity to its current index.
 		 */
-		using RepresentationMap = std::map<ECS::Entity, Renderer::RepresentationIndex>;
+		using MapRepresentationIndex = std::map<ECS::Entity, Renderer::RepresentationIndex>;
+		using MapRepresentationBonds = std::map<ECS::Entity, Renderer::RepresentationIndex>;
 
 		SystemUpdater();
 		void update( const float, const float );
@@ -33,7 +34,7 @@ namespace VTX::App::Pass
 		 * @brief Current used representations.
 		 */
 		// TODO: use resource manager to purge unused.
-		RepresentationMap _representations;
+		std::map<ECS::Entity, Renderer::RepresentationIndex> _representations;
 
 		/**
 		 * @brief On system loaded event.

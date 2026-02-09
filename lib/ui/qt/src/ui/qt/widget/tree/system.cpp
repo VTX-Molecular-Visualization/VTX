@@ -22,10 +22,10 @@ namespace VTX::UI::QT::Widget::Tree
 		setMouseTracking( true );
 
 		// Model.
-		setModel( new SystemModel( p_system, this ) );
+		setModel( new Model::SystemModel( p_system, this ) );
 
 		// Selection model.
-		setSelectionModel( new SystemSelectionModel( p_system, model(), this ) );
+		setSelectionModel( new Model::SystemSelectionModel( p_system, model(), this ) );
 		setSelectionBehavior( QAbstractItemView::SelectRows );
 
 		// Delegate.
@@ -70,10 +70,10 @@ namespace VTX::UI::QT::Widget::Tree
 				const auto &				model = getSystemModel();
 				Core::Struct::E_SYSTEM_ITEM item;
 				Index						index;
-				SystemModel::unpack( p_index.internalId(), item, index );
+				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
 				const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(
-					p_index.data( Widget::Tree::SystemModel::Roles::VisibleRole ).toInt()
+					p_index.data( Model::SystemModel::Roles::VisibleRole ).toInt()
 				);
 
 				App::ACTION().execute<App::Action::Visibility::SetVisibleItem>(
@@ -91,7 +91,7 @@ namespace VTX::UI::QT::Widget::Tree
 				const auto &				model = getSystemModel();
 				Core::Struct::E_SYSTEM_ITEM item;
 				Index						index;
-				SystemModel::unpack( p_index.internalId(), item, index );
+				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
 				// Get current scheme.
 				std::optional<App::System::E_COLOR_SCHEME> scheme
@@ -117,7 +117,7 @@ namespace VTX::UI::QT::Widget::Tree
 				const auto &				model = getSystemModel();
 				Core::Struct::E_SYSTEM_ITEM item;
 				Index						index;
-				SystemModel::unpack( p_index.internalId(), item, index );
+				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
 				// Get current representation.
 				std::optional<App::ECS::Entity> representation

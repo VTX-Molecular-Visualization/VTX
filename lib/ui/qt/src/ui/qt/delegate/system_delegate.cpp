@@ -1,8 +1,8 @@
 #include "ui/qt/delegate/system_delegate.hpp"
+#include "ui/qt/model/system_model.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
-#include "ui/qt/widget/tree/system_model.hpp"
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
@@ -33,17 +33,16 @@ namespace VTX::UI::QT::Delegate
 
 		// Visibility.
 		const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(
-			p_index.data( Widget::Tree::SystemModel::Roles::VisibleRole ).toInt()
+			p_index.data( Model::SystemModel::Roles::VisibleRole ).toInt()
 		);
 		pinButtons[ toUnderlying( ACTION::VISIBILITY ) ] = visible == App::System::E_VISIBLE_STATE::HIDDEN;
 
 		// Color scheme.
-		const bool isColorSchemeRoot = p_index.data( Widget::Tree::SystemModel::Roles::ColorSchemeRootRole ).toBool();
+		const bool isColorSchemeRoot = p_index.data( Model::SystemModel::Roles::ColorSchemeRootRole ).toBool();
 		pinButtons[ toUnderlying( ACTION::COLOR_SCHEME ) ] = isColorSchemeRoot;
 
 		// Representation.
-		const bool isRepresentationRoot
-			= p_index.data( Widget::Tree::SystemModel::Roles::RepresentationRootRole ).toBool();
+		const bool isRepresentationRoot = p_index.data( Model::SystemModel::Roles::RepresentationRootRole ).toBool();
 		pinButtons[ toUnderlying( ACTION::REPRESENTATION ) ] = isRepresentationRoot;
 
 		// Paint buttons.

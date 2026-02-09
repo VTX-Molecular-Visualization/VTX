@@ -5,8 +5,11 @@
 
 namespace VTX::UI::QT
 {
-	class Model;
-	class SelectionModel;
+	namespace Model
+	{
+		class SystemModel;
+		class SystemSelectionModel;
+	} // namespace Model
 	class Settings;
 	namespace Style
 	{

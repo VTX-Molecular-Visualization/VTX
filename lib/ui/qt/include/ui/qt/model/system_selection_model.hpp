@@ -5,7 +5,7 @@
 #include <QItemSelectionModel>
 #include <app/ecs.hpp>
 
-namespace VTX::UI::QT::Widget::Tree
+namespace VTX::UI::QT::Model
 {
 	/**
 	 * @brief Selection model representing the application selection.
@@ -34,6 +34,6 @@ namespace VTX::UI::QT::Widget::Tree
 		 */
 		void _selectionChanged( const QItemSelection &, const QItemSelection & );
 	};
-} // namespace VTX::UI::QT::Widget::Tree
+} // namespace VTX::UI::QT::Model
 
 #endif
