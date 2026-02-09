@@ -1,11 +1,11 @@
-#include "ui/qt/widget/trajectory_player.hpp"
+#include "ui/qt/widget/tree/trajectory_player.hpp"
 #include <QHBoxLayout>
 #include <app/action/action_manager.hpp>
 #include <app/action/trajectory.hpp>
 #include <app/services.hpp>
 #include <app/system/trajectory.hpp>
 
-namespace VTX::UI::QT::Widget
+namespace VTX::UI::QT::Widget::Tree
 {
 
 	TrajectoryPlayer::TrajectoryPlayer( App::ECS::Entity p_system, QWidget * p_parent ) :
@@ -144,4 +144,4 @@ namespace VTX::UI::QT::Widget
 		_btnStop->setText( QString::fromUtf8( "\u23F9" ) );
 	}
 
-} // namespace VTX::UI::QT::Widget
+} // namespace VTX::UI::QT::Widget::Tree

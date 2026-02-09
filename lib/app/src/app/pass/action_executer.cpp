@@ -55,10 +55,8 @@ namespace VTX::App::Pass
 
 	ActionExecuter::ActionExecuter() : _queueEntity( REG().create() )
 	{
-		//
 		REG().emplace<ActionQueue>( _queueEntity );
 		REG().emplace<DelayFunctionsQueue>( _queueEntity );
-		//
 	}
 	void ActionExecuter::update( const float p_delta, const float p_elapsedTime )
 	{

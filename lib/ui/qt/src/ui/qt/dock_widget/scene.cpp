@@ -8,6 +8,7 @@
 #include <app/events.hpp>
 #include <app/services.hpp>
 #include <app/system/selection.hpp>
+#include <app/system/trajectory.hpp>
 #include <app/system/visibility.hpp>
 #include <renderer/camera.hpp>
 #include <util/event_hub.hpp>
@@ -34,6 +35,7 @@ namespace VTX::UI::QT::DockWidget
 		App::REG().on_destroy<Core::Struct::System>().connect<&Scene::_onSystemDestroy>( this );
 		App::REG().on_update<App::System::Visibility>().connect<&Scene::_onUpdateVisibility>( this );
 		App::REG().on_update<App::System::Selection>().connect<&Scene::_onUpdateSelection>( this );
+		App::REG().on_construct<App::System::TrajectoryFullBuffer>().connect<&Scene::_onTrajectoryCreated>( this );
 
 		App::HUB().connect<Events::SelectionLocked, &Scene::_onSelectionLocked>( this );
 	}
@@ -53,39 +55,55 @@ namespace VTX::UI::QT::DockWidget
 			selectionLocked ? QAbstractItemView::NoSelection : QAbstractItemView::ExtendedSelection
 		);
 
-		assert( not _mapTreeWidgets.contains( entity ) );
-		_mapTreeWidgets.emplace( entity, tree );
+		assert( not _mapSystemTreeWidgets.contains( entity ) );
+		_mapSystemTreeWidgets.emplace( entity, tree );
 		_layout->insertWidget( _layout->indexOf( _filler ), tree );
 	}
 
 	void Scene::_onSystemDestroy( App::ECS::Registry &, App::ECS::Entity p_e )
 	{
-		assert( _mapTreeWidgets.contains( p_e ) );
-		_mapTreeWidgets[ p_e ]->deleteLater();
-		_mapTreeWidgets.erase( p_e );
+		assert( _mapSystemTreeWidgets.contains( p_e ) );
+		_mapSystemTreeWidgets[ p_e ]->deleteLater();
+		_mapSystemTreeWidgets.erase( p_e );
+
+		if ( _mapTrajTreeWidgets.contains( p_e ) )
+		{
+			_mapTrajTreeWidgets[ p_e ]->deleteLater();
+			_mapTrajTreeWidgets.erase( p_e );
+		}
 	}
 
 	void Scene::_onUpdateVisibility( App::ECS::Registry &, App::ECS::Entity p_e )
 	{
-		assert( _mapTreeWidgets.contains( p_e ) );
-		_mapTreeWidgets[ p_e ]->viewport()->update();
+		assert( _mapSystemTreeWidgets.contains( p_e ) );
+		_mapSystemTreeWidgets[ p_e ]->viewport()->update();
 	}
 
 	void Scene::_onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e )
 	{
-		assert( _mapTreeWidgets.contains( p_e ) );
-		_mapTreeWidgets[ p_e ]->getSystemSelectionModel().refresh();
-		_mapTreeWidgets[ p_e ]->viewport()->update();
+		assert( _mapSystemTreeWidgets.contains( p_e ) );
+		_mapSystemTreeWidgets[ p_e ]->getSystemSelectionModel().refresh();
+		_mapSystemTreeWidgets[ p_e ]->viewport()->update();
 	}
 
 	void Scene::_onSelectionLocked( const Events::SelectionLocked & p_event )
 	{
-		for ( const auto & [ _, w ] : _mapTreeWidgets )
+		for ( const auto & [ _, w ] : _mapSystemTreeWidgets )
 		{
 			w->setSelectionMode(
 				p_event.locked ? QAbstractItemView::NoSelection : QAbstractItemView::ExtendedSelection
 			);
 		}
+	}
+	void Scene::_onTrajectoryCreated( App::ECS::Registry &, App::ECS::Entity p_entity )
+	{
+		assert( _mapSystemTreeWidgets.contains( p_entity ) );
+
+		if ( _mapTrajTreeWidgets.contains( p_entity ) )
+			_mapTrajTreeWidgets.erase( p_entity );
+		auto * player = new Widget::Tree::TrajectoryPlayer( p_entity, this );
+		_mapTrajTreeWidgets.emplace( p_entity, player );
+		_layout->insertWidget( _layout->indexOf( _mapSystemTreeWidgets[ p_entity ] ), player );
 	}
 
 } // namespace VTX::UI::QT::DockWidget

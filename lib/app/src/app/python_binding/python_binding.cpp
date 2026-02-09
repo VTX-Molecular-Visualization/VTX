@@ -57,12 +57,6 @@ namespace VTX::App::PythonBinding
 			VTX::PythonBinding::Wrapper::Arg( "path" ),
 			VTX::PythonBinding::Wrapper::Arg( "systemId" )
 		);
-
-		/*
-		commands.bindAction<App::Action::IO::OpenScene, const std::string &>(
-			"openScene", "Open scene at given path.", VTX::PythonBinding::Wrapper::Arg( "path" )
-		);
-		*/
 		commands.def(
 			"getSystemIdByName",
 			Pass::wrapDelayedFunction( &Helper::System::getSystemByName ),

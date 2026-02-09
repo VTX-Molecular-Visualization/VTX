@@ -7,7 +7,7 @@
 #include <QWidget>
 #include <app/ecs.hpp>
 
-namespace VTX::UI::QT::Widget
+namespace VTX::UI::QT::Widget::Tree
 {
 
 	/**
@@ -40,6 +40,6 @@ namespace VTX::UI::QT::Widget
 		void _updatePlayPauseIcon();
 	};
 
-} // namespace VTX::UI::QT::Widget
+} // namespace VTX::UI::QT::Widget::Tree
 
 #endif
