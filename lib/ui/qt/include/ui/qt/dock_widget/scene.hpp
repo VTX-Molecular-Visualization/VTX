@@ -5,6 +5,7 @@
 #include "ui/qt/events.hpp"
 #include "ui/qt/widget/tree/camera.hpp"
 #include "ui/qt/widget/tree/system.hpp"
+#include "ui/qt/widget/tree/trajectory_player.hpp"
 #include <QComboBox>
 #include <QPointer>
 #include <QTimer>
@@ -27,9 +28,13 @@ namespace VTX::UI::QT::DockWidget
 
 	  private:
 		/**
+		 * @brief Trajoectory players trees.
+		 */
+		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::TrajectoryPlayer>> _mapTrajTreeWidgets;
+		/**
 		 * @brief System trees.
 		 */
-		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::System>> _mapTreeWidgets;
+		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::System>> _mapSystemTreeWidgets;
 
 		/**
 		 * @brief Timer for updating trajectory player display.
@@ -71,6 +76,11 @@ namespace VTX::UI::QT::DockWidget
 		 */
 		void _onSelectionLocked( const Events::SelectionLocked & );
 		void _onUpdateTimer();
+
+		/**
+		 * @brief Called when a trajectory is added to any system.
+		 */
+		void _onTrajectoryCreated( App::ECS::Registry &, App::ECS::Entity p_entity );
 	};
 
 } // namespace VTX::UI::QT::DockWidget

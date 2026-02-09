@@ -7,6 +7,22 @@
 #include <latch>
 #include <tuple>
 
+/*
+This header introduces 2 concepts : Queued actions and Delayed Callable.
+Queued actions are not executed right away but rather saved for execution by the pass, on the main update phase.
+Dalayed Callable are run direclty when called but they will wait for the action executer to update before the actual
+callable is executed.
+
+This is meant to be a sync mechanisme for threaded execution. To illustrate, lets consider a sequence of python commands
+:
+
+Open("3j3q.bcif")
+AssociateTrajectory("3j3q.xtc", getSystemId("3j3q"))
+
+
+
+*/
+
 namespace VTX::App::Pass
 {
 	class QueuedAction;
@@ -57,8 +73,8 @@ namespace VTX::App::Pass
 	}
 
 	/**
-	 * @brief Pass that execute actions in queue. Currently not triggering action every update for performances reason
-	 * but maybe in the future we will need to change that idk
+	 * @brief Pass that execute actions in queue and execute delayed actions afterward. Currently not triggering action
+	 * every update for performances reason but maybe in the future we will need to change that idk
 	 */
 	class ActionExecuter : public IPass
 	{
