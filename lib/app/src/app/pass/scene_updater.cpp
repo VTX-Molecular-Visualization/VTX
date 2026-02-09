@@ -1,3 +1,5 @@
+#include "app/system/load.hpp"
+// Header declarations
 #include "app/pass/scene_updater.hpp"
 #include "app/scene/color_layout.hpp"
 #include "app/scene/graphics_config.hpp"
@@ -21,6 +23,39 @@ namespace VTX::App::Pass
 
 		reg.on_update<Renderer::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfigPreset>( this );
 		reg.on_update<Renderer::Color::Layout>().connect<&SceneUpdater::_onUpdateColorLayoutPreset>( this );
+	}
+
+	void SceneUpdater::update( const float, const float ) noexcept
+	{
+		for ( auto it_entity : REG().view<System::PendingSystem>() )
+		{
+			auto & pendingSystem = REG().get<System::PendingSystem>( it_entity );
+			if ( not pendingSystem.topologyReady )
+				continue;
+			if ( not pendingSystem.decisionMade )
+			{
+				_pendingSystemTopologyReady( pendingSystem );
+				continue;
+			}
+			if ( pendingSystem.topologyReady )
+			{
+				System::create( it_entity, pendingSystem );
+				continue;
+			}
+		}
+	}
+	void SceneUpdater::_pendingSystemTopologyReady( System::PendingSystem & p_sys ) noexcept
+	{
+		if ( p_sys.loader->getChemfilesReader().getFrameCount() > 1 )
+		{
+			p_sys.trajectoryData.emplace<System::TrajectoryFullBuffer>();
+		}
+		else
+		{
+			p_sys.trajectoryData.emplace<System::TrajectorySingleFrame>();
+		}
+
+		p_sys.decisionMade = true;
 	}
 
 	void SceneUpdater::_onUpdateAABB( ECS::Registry & p_r, ECS::Entity p_e )

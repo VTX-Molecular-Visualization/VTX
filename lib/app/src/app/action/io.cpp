@@ -43,14 +43,14 @@ namespace VTX::App::Action::IO
 		size_t					initialAtomcount = REG().get<Core::Struct::System>( p_entity ).getAtomCount();
 		VTX::IO::Reader::System loader;
 		Core::Struct::System	data;
-		loader.readFile( p_path, data );
+		loader.readFile( p_path, data ); // TODO : Thread this
 
 		if ( initialAtomcount == data.getAtomCount() )
 		{
 			REG().remove<System::GenericTrajectory>( p_entity );
 			auto & trajectory = REG().emplace<System::TrajectoryFullBuffer>( p_entity );
 			auto & uid		  = REG().get<System::UID>( p_entity );
-			App::System::prepare( p_entity, trajectory, std::move( loader ) );
+			App::System::prepare( trajectory, std::move( loader ) );
 
 			RENDERER().setSystemPosition( uid.system, trajectory.frameCollection[ 0 ] );
 		}
@@ -89,13 +89,14 @@ namespace VTX::App::Action::IO
 
 	void DownloadSystem::execute( VTX::Util::Url::UrlFull p_url, FilePath p_path )
 	{
-		FilePath filepath = p_path;
-		NETWORK().downloadFile(
-			p_url.str.data(),
-			filepath.string(),
-			[ filepath ]( const std::string & p_text )
-			{ ACTION().execute<Action::Scene::LoadSystem>( filepath, &p_text ); }
-		);
+		// TODO : The buffer shall be transfered in ownership
+		// FilePath filepath = p_path;
+		// NETWORK().downloadFile(
+		//	p_url.str.data(),
+		//	filepath.string(),
+		//	[ filepath ]( const std::string & p_text )
+		//	{ ACTION().execute<Action::Scene::LoadSystem>( filepath, &p_text ); }
+		//);
 	}
 
 	void Snapshot::execute()

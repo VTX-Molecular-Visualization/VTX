@@ -13,6 +13,7 @@ namespace VTX::App::System
 	 * @param p_trajectory
 	 * @param p_loader
 	 */
-	void prepare( ECS::Entity p_entity, TrajectoryFullBuffer & p_trajectory, IO::Reader::System && p_loader ) noexcept;
+	void prepare( TrajectoryFullBuffer & p_trajectory, IO::Reader::System && p_loader ) noexcept;
+	void prepare( TrajectorySingleFrame & p_trajectory, IO::Reader::System && p_loader ) noexcept;
 } // namespace VTX::App::System
 #endif
