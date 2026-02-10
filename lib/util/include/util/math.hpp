@@ -22,6 +22,8 @@
 namespace VTX::Util::Math
 {
 	using ::glm::abs;
+	using ::glm::all;
+	using ::glm::any;
 	using ::glm::clamp;
 	using ::glm::cross;
 	using ::glm::degrees;

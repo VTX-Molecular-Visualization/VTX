@@ -1,130 +1,106 @@
 #ifndef __VTX_APP_INPUT_INPUT_MANAGER__
 #define __VTX_APP_INPUT_INPUT_MANAGER__
 
-#include "events.hpp"
-#include <map>
-#include <queue>
-#include <set>
-#include <util/callback.hpp>
-#include <util/enum.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Input
 {
 	class InputManager
 	{
-	  private:
-		inline static const int CLICK_MAX_DISTANCE = 3;
-
 	  public:
-		static KeyboardLayout getKeyboardLayout();
-		static Key			  getKeyFromQwerty( const Key p_key );
+		/**
+		 * @brief Constructor.
+		 */
+		InputManager() { consume(); }
 
-	  private:
-		static Modifier _getModifierFromKey( const Key & p_key );
+		/**
+		 * @brief Accessors and mutators.
+		 */
+		inline bool moveFront() const { return _moveFront; }
+		inline bool moveBack() const { return _moveBack; }
+		inline bool moveLeft() const { return _moveLeft; }
+		inline bool moveRight() const { return _moveRight; }
+		inline bool moveUp() const { return _moveUp; }
+		inline bool moveDown() const { return _moveDown; }
+		inline bool rotateLeft() const { return _rotateLeft; }
+		inline bool rotateRight() const { return _rotateRight; }
+		inline bool accelerate() const { return _accelerate; }
+		inline bool decelerate() const { return _decelerate; }
 
-	  public:
-		InputManager();
-		InputManager( const InputManager & )			 = delete;
-		InputManager & operator=( const InputManager & ) = delete;
-		~InputManager();
+		inline const Vec2i & rotate() const { return _rotate; }
+		inline const Vec2i & rotateAlt() const { return _rotateAlt; }
+		inline const Vec2i & pan() const { return _pan; }
+		inline int			 zoom() const { return _zoom; }
 
-		// Keyboard
-		void handleKeyboardEvent( const KeyEvent & p_event );
-		bool isKeyPressed( const Key & p_key ) const;
+		/**
+		 * @brief Mutators.
+		 */
+		inline void setMoveFront( const bool p_value ) { _moveFront = p_value; }
+		inline void setMoveBack( const bool p_value ) { _moveBack = p_value; }
+		inline void setMoveLeft( const bool p_value ) { _moveLeft = p_value; }
+		inline void setMoveRight( const bool p_value ) { _moveRight = p_value; }
+		inline void setMoveUp( const bool p_value ) { _moveUp = p_value; }
+		inline void setMoveDown( const bool p_value ) { _moveDown = p_value; }
+		inline void setRotateLeft( const bool p_value ) { _rotateLeft = p_value; }
+		inline void setRotateRight( const bool p_value ) { _rotateRight = p_value; }
+		inline void setAccelerate( const bool p_value ) { _accelerate = p_value; }
+		inline void setDecelerate( const bool p_value ) { _decelerate = p_value; }
 
-		template<typename C>
-		bool isAnyKeyPressed( const C & keys ) const
+		inline void rotateBy( const Vec2i & p_delta ) { _rotate += p_delta; }
+		inline void rotateAltBy( const Vec2i & p_delta ) { _rotateAlt += p_delta; }
+		inline void panBy( const Vec2i & p_delta ) { _pan += p_delta; }
+		inline void zoomBy( const int p_delta ) { _zoom += p_delta; }
+
+		/**
+		 * @brief Consume data (reset to zero).
+		 */
+		void consume()
 		{
-			for ( const auto & key : keys )
-				if ( isKeyPressed( key ) )
-					return true;
-			return false;
+			_rotate	   = Vec2i( 0 );
+			_rotateAlt = Vec2i( 0 );
+			_pan	   = Vec2i( 0 );
+			_zoom	   = 0;
 		}
 
-		inline const Modifier & getCurrentModifiers() const { return _modifiers; }
-		bool					isModifier( const Modifier & p_modifier ) const;
-		bool					isModifierExclusive( const Modifier & p_modifier ) const;
-		void					clearKeyboardBuffer();
-
-		Util::Callback<Key> onKeyPressed;
-		Util::Callback<Key> onKeyReleased;
-
-		// Mouse
-		void		  handleMouseEvent( const MouseEvent & p_event );
-		void		  handleMouseWheelEvent( const WheelEvent & p_event );
-		bool		  isMouseLeftPressed() const;
-		bool		  isMouseRightPressed() const;
-		bool		  isMouseMiddlePressed() const;
-		const Vec2i & getCurrentMousePosition() const;
-		const Vec2i & getDeltaMousePosition() const;
-		const Vec2i & getMouseLeftClickPosition() const;
-		const Vec2i & getMouseRightClickPosition() const;
-		int			  getDeltaMouseWheel() const;
-
-		Vec2i consumeDeltaMousePosition();
-		int	  consumeDeltaMouseWheel();
-
-		Util::Callback<Vec2i> onMouseLeftClicked;
-		Util::Callback<Vec2i> onMouseRightClicked;
-		Util::Callback<Vec2i> onMouseLeftDoubleClicked;
-
-		// void registerEventReceiverKeyboard( VTX::Event::BaseEventReceiverKeyboard * const );
-		// void unregisterEventReceiverKeyboard( VTX::Event::BaseEventReceiverKeyboard * const );
-		// void registerEventReceiverMouse( VTX::Event::BaseEventReceiverMouse * const );
-		// void unregisterEventReceiverMouse( VTX::Event::BaseEventReceiverMouse * const );
-		// void registerEventReceiverWheel( VTX::Event::BaseEventReceiverWheel * const );
-		// void unregisterEventReceiverWheel( VTX::Event::BaseEventReceiverWheel * const );
-
-		// void clearKeyboardInputEvents() const;
-		// void clearKeyboardInputEvent( const Qt::Key & p_key ) const;
-
-		void freezeEvent( const bool p_freeze );
-
 	  private:
-		// Mouse
-		void _handleMouseButtonDownEvent( const MouseEvent & p_event );
-		void _handleMouseButtonUpEvent( const MouseEvent & p_event );
-		void _handleMouseDoubleClickEvent( const MouseEvent & p_event );
-		void _handleMouseMotionEvent( const MouseEvent & p_event );
-		void _handleMouseWheelEvent( const WheelEvent & p_event );
+		/**
+		 * @brief Keys.
+		 */
+		bool _moveFront	  = false;
+		bool _moveBack	  = false;
+		bool _moveLeft	  = false;
+		bool _moveRight	  = false;
+		bool _moveUp	  = false;
+		bool _moveDown	  = false;
+		bool _rotateLeft  = false;
+		bool _rotateRight = false;
 
-		// void fireEventKeyboard( QKeyEvent * const, const App::Old::VTX_ID & );
-		// void fireEventMouse( QMouseEvent * const, const App::Old::VTX_ID & );
-		// void fireEventWheel( QWheelEvent * const, const App::Old::VTX_ID & );
+		/**
+		 * @brief Modifiers.
+		 */
+		bool _accelerate = false;
+		bool _decelerate = false;
 
-	  private:
-		// Input events.
-		// std::set<VTX::Event::BaseEventReceiverKeyboard *> _receiversKeyboard
-		//	= std::set<VTX::Event::BaseEventReceiverKeyboard *>();
-		// std::set<VTX::Event::BaseEventReceiverMouse *> _receiversMouse
-		//	= std::set<VTX::Event::BaseEventReceiverMouse *>();
-		// std::set<VTX::Event::BaseEventReceiverWheel *> _receiversWheel
-		//	= std::set<VTX::Event::BaseEventReceiverWheel *>();
+		/**
+		 * @brief Mouse left drag action.
+		 */
+		Vec2i _rotate;
 
-		// Keyboard
-		std::set<Key> _pressedKeys = std::set<Key>();
-		Modifier	  _modifiers   = Modifier::None;
+		/**
+		 * @brief Mouse right drag action.
+		 */
+		Vec2i _rotateAlt;
 
-		// Mouse
-		bool  _mouseLeftPressed		   = false;
-		Vec2i _mouseLeftClickPosition  = Vec2i();
-		bool  _mouseRightPressed	   = false;
-		Vec2i _mouseRightClickPosition = Vec2i();
-		bool  _mouseMiddlePressed	   = false;
+		/**
+		 * @brief Mouse middle drag action.
+		 */
+		Vec2i _pan;
 
-		Vec2i _mousePosition	  = Vec2i();
-		Vec2i _deltaMousePosition = Vec2i();
-		int	  _deltaMouseWheel	  = 0;
-
-		bool _isLeftClickCanceled  = false;
-		bool _isRightClickCanceled = false;
-
-		bool _freeze = false;
-
-		// void _flushEventKeyboard( QKeyEvent * const, const App::Old::VTX_ID & );
-		// void _flushEventMouse( QMouseEvent * const, const App::Old::VTX_ID & );
-		// void _flushEventWheel( QWheelEvent * const, const App::Old::VTX_ID & );
+		/**
+		 * @brief Wheel action.
+		 *
+		 */
+		int _zoom;
 	};
 } // namespace VTX::App::Input
 

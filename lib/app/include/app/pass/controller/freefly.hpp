@@ -32,11 +32,11 @@ namespace VTX::App::Pass::Controller
 		/**
 		 * @brief Controller settings.
 		 */
-		float translationSpeed;
-		float accelerationFactor;
-		float decelerationFactor;
-		float rotationSpeed;
-		bool  invertY;
+		float _translationSpeed;
+		float _accelerationFactor;
+		float _decelerationFactor;
+		float _rotationSpeed;
+		bool  _invertY;
 	};
 } // namespace VTX::App::Pass::Controller
 #endif

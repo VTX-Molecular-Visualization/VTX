@@ -60,6 +60,8 @@ int main( int p_argc, char * p_argv[] )
 			// To set before QApplication construction.
 			QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
 			QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
+			QCoreApplication::setAttribute( Qt::AA_CompressHighFrequencyEvents );
+
 			Q_INIT_RESOURCE( vtx_qt_resources_ui );
 			app = std::make_unique<UI::QT::Application>( args );
 		}

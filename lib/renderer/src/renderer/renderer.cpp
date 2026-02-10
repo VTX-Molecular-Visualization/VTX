@@ -451,7 +451,7 @@ namespace VTX::Renderer
 		static constexpr Flag VIS = 1 << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
 		static constexpr Flag SEL = 1 << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
 
-		std::vector<Flag> flags( countAtoms, 0 );
+		std::vector<Flag> flags( countAtoms, 1 );
 
 		auto applyOr = [ & ]( const Core::Struct::IndexRangeList & p_ranges, const Flag p_mask )
 		{
@@ -464,7 +464,7 @@ namespace VTX::Renderer
 
 				for ( size_t i = begin; i < end; ++i )
 				{
-					flags[ i ] |= p_mask;
+					// flags[ i ] |= p_mask;
 				}
 			}
 		};
@@ -488,12 +488,13 @@ namespace VTX::Renderer
 		{
 			if ( p_visible.contains( p_bonds[ i ] ) && p_visible.contains( p_bonds[ i + 1 ] ) )
 			{
-				bondsVisible.addValue( i );
-				bondsVisible.addValue( i + 1 );
+				bondsVisible.addRange( { i, i + 2 } );
+				// bondsVisible.addValue( i );
+				// bondsVisible.addValue( i + 1 );
 			}
 		}
-		//_geometries.cylinders.visibilityMask[ p_uid ] = { rangeBonds };
-		//_geometries.cylinders.visibilityMask[ p_uid ].substractInPlace( bondsVisible );
+		_geometries.cylinders.visibilityMask[ p_uid ] = { rangeBonds };
+		_geometries.cylinders.visibilityMask[ p_uid ].substractInPlace( bondsVisible );
 
 		_needBuildDrawRanges = true;
 		setNeedUpdate( true );

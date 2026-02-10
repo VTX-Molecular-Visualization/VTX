@@ -8,6 +8,7 @@
 
 namespace VTX::App::Pass
 {
+
 	/**
 	 * @brief System that updates camera view and projection matrices when camera or transform components are updated.
 	 */

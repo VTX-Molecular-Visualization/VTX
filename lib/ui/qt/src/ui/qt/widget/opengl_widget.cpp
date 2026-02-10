@@ -24,6 +24,9 @@ namespace VTX::UI::QT::Widget
 		format.setRenderableType( QSurfaceFormat::OpenGL );
 		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
 		format.setSwapInterval( 1 );
+		format.setDepthBufferSize( 24 );
+		format.setStencilBufferSize( 8 );
+		format.setSamples( 0 );
 
 		// Create context.
 		_context = new QOpenGLContext();

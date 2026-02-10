@@ -1,7 +1,6 @@
 #include "app/pass/controller/trackball.hpp"
 #include "app/events.hpp"
 #include "app/input/input_manager.hpp"
-#include "app/input/key_mapping.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
@@ -10,34 +9,6 @@
 
 namespace
 {
-	using namespace VTX::App;
-
-	enum Keys
-	{
-		MOVE_FRONT,
-		MOVE_BACK,
-		ROTATE_LEFT,
-		ROTATE_RIGHT,
-		ROTATE_UP,
-		ROTATE_DOWN,
-		ROLL_LEFT,
-		ROLL_RIGHT,
-	};
-
-	auto _MAPPING = Input::KeyMapping(
-		{
-			{ Keys::MOVE_FRONT, { Input::Key::Key_Up, Input::InputManager::getKeyFromQwerty( Input::Key::Key_W ) } },
-			{ Keys::MOVE_BACK, { Input::Key::Key_Down, Input::InputManager::getKeyFromQwerty( Input::Key::Key_S ) } },
-			{ Keys::ROTATE_LEFT, { Input::Key::Key_Left, Input::InputManager::getKeyFromQwerty( Input::Key::Key_A ) } },
-			{ Keys::ROTATE_RIGHT,
-			  { Input::Key::Key_Right, Input::InputManager::getKeyFromQwerty( Input::Key::Key_D ) } },
-			{ Keys::ROTATE_UP, { Input::InputManager::getKeyFromQwerty( Input::Key::Key_R ) } },
-			{ Keys::ROTATE_DOWN, { Input::InputManager::getKeyFromQwerty( Input::Key::Key_F ) } },
-			{ Keys::ROLL_LEFT, { Input::InputManager::getKeyFromQwerty( Input::Key::Key_Q ) } },
-			{ Keys::ROLL_RIGHT, { Input::InputManager::getKeyFromQwerty( Input::Key::Key_E ) } },
-		}
-	);
-
 	constexpr float _CONTROLLER_ELASTICITY_THRESHOLD = 1e-4f;
 } // namespace
 
@@ -68,64 +39,59 @@ namespace VTX::App::Pass::Controller
 
 		// Wheel.
 		float deltaDistance = 0.f;
-		if ( input.getDeltaMouseWheel() != 0 )
+		if ( input.zoom() != 0 )
 		{
-			deltaDistance
-				= input.consumeDeltaMouseWheel() * 0.00001f * Math::distance( transform.getPosition(), _target );
+			deltaDistance = input.zoom() * 0.00001f * Math::distance( transform.getPosition(), _target );
 		}
 
 		// Mouse left.
-		Vec3f deltaVelocity		 = VEC3F_ZERO;
-		Vec2i deltaVelocityInput = input.consumeDeltaMousePosition();
-		if ( input.isMouseLeftPressed() )
-		{
-			deltaVelocity.x = -deltaVelocityInput.x * 15.f;
-			deltaVelocity.y = -deltaVelocityInput.y * 15.f;
-		}
+		Vec3f deltaVelocity = VEC3F_ZERO;
+
+		Vec2i deltaRotate = input.rotate();
+		deltaVelocity.x	  = -deltaRotate.x * 15.f;
+		deltaVelocity.y	  = -deltaRotate.y * 15.f;
+
 		// Mouse right.
-		else if ( input.isMouseRightPressed() )
-		{
-			deltaVelocity.z = deltaVelocityInput.x * 15.f;
-		}
+		Vec2i deltaRotateAlt = input.rotateAlt();
+		deltaVelocity.z		 = deltaRotateAlt.x * 15.f;
+
 		// Pan target with wheel button.
-		else if ( input.isMouseMiddlePressed() )
-		{
-			float deltaX = -deltaVelocityInput.x * 0.1f;
-			float deltaY = deltaVelocityInput.y * 0.1f;
-			_target += transform.getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
-			_needUpdate = true;
-		}
+		Vec2i deltaPan = input.pan();
+		float deltaX   = -deltaPan.x * 0.1f;
+		float deltaY   = deltaPan.y * 0.1f;
+		_target += transform.getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
+		_needUpdate = true;
 
 		// Keyboard.
-		if ( input.isAnyKeyPressed( _MAPPING[ Keys::MOVE_FRONT ] ) )
+		if ( input.moveFront() )
 		{
 			deltaDistance = 1.5f * deltaTime;
 		}
-		if ( input.isAnyKeyPressed( _MAPPING[ Keys::MOVE_BACK ] ) )
+		if ( input.moveBack() )
 		{
 			deltaDistance = -1.5f * deltaTime;
 		}
-		if ( input.isAnyKeyPressed( _MAPPING[ Keys::ROTATE_RIGHT ] ) )
+		if ( input.moveRight() )
 		{
 			deltaVelocity.x = 1e4f * deltaTime;
 		}
-		if ( input.isAnyKeyPressed( _MAPPING[ Keys::ROTATE_LEFT ] ) )
+		if ( input.moveLeft() )
 		{
 			deltaVelocity.x = -1e4f * deltaTime;
 		}
-		if ( input.isAnyKeyPressed( _MAPPING[ Keys::ROTATE_UP ] ) )
+		if ( input.moveUp() )
 		{
 			deltaVelocity.y = 1e4f * deltaTime;
 		}
-		if ( input.isAnyKeyPressed( _MAPPING[ Keys::ROTATE_DOWN ] ) )
+		if ( input.moveDown() )
 		{
 			deltaVelocity.y = -1e4f * deltaTime;
 		}
-		if ( input.isAnyKeyPressed( _MAPPING[ Keys::ROLL_RIGHT ] ) )
+		if ( input.rotateRight() )
 		{
 			deltaVelocity.z = 1e4f * deltaTime;
 		}
-		if ( input.isAnyKeyPressed( _MAPPING[ Keys::ROLL_LEFT ] ) )
+		if ( input.rotateLeft() )
 		{
 			deltaVelocity.z = -1e4f * deltaTime;
 		}
@@ -135,11 +101,11 @@ namespace VTX::App::Pass::Controller
 		{
 			deltaDistance *= translationSpeed;
 
-			if ( input.isModifierExclusive( Input::Modifier::Shift ) )
+			if ( input.accelerate() )
 			{
 				deltaDistance *= accelerationFactor;
 			}
-			if ( input.isModifierExclusive( Input::Modifier::Alt ) )
+			if ( input.decelerate() )
 			{
 				deltaDistance /= decelerationFactor;
 			}
@@ -149,11 +115,11 @@ namespace VTX::App::Pass::Controller
 
 		if ( deltaVelocity != VEC3F_ZERO )
 		{
-			if ( input.isModifierExclusive( Input::Modifier::Shift ) )
+			if ( input.accelerate() )
 			{
 				deltaVelocity *= accelerationFactor;
 			}
-			if ( input.isModifierExclusive( Input::Modifier::Alt ) )
+			if ( input.decelerate() )
 			{
 				deltaVelocity /= decelerationFactor;
 			}
@@ -190,6 +156,8 @@ namespace VTX::App::Pass::Controller
 		{
 			_velocity = VEC3F_ZERO;
 		}
+
+		input.consume();
 	}
 
 	void Trackball::_updateElasticity( const float & p_deltaTime )
@@ -201,7 +169,7 @@ namespace VTX::App::Pass::Controller
 			Vec3f::bool_type res
 				= Util::Math::lessThan( Util::Math::abs( _velocity ), Vec3f( _CONTROLLER_ELASTICITY_THRESHOLD ) );
 
-			if ( not INPUT().isMouseLeftPressed() && res.x && res.y && res.z )
+			if ( Util::Math::all( res ) )
 			{
 				_velocity = VEC3F_ZERO;
 			}
