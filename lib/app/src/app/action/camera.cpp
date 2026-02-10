@@ -66,6 +66,7 @@ namespace VTX::App::Action::Camera
 		HUB().trigger<Events::CameraTransformChange>();
 
 		// Change controller target.
+		// TODO: find a better solution.
 		if ( auto * p = PASS().tryGetPass<Pass::Controller::Trackball>() )
 		{
 			p->stop();
@@ -134,6 +135,7 @@ namespace VTX::App::Action::Camera
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
 		// Change controller target.
+		// TODO: find a better solution.
 		if ( auto * p = PASS().tryGetPass<Pass::Controller::Trackball>() )
 		{
 			p->stop();

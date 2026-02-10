@@ -138,14 +138,12 @@ namespace VTX::App::Action::Camera
 			if ( Math::distance( start.position, p_end.position ) < ANIMATION_TRANSLATION_THRESHOLD
 				 && start.rotation == p_end.rotation )
 			{
+				HUB().trigger<Events::CameraAnimationEnd>();
 				return;
 			}
 
 			// Check existing animation pass.
-			if ( PASS().hasPass<Pass::Controller::Animation>() )
-			{
-				PASS().removePass<Pass::Controller::Animation>();
-			}
+			PASS().tryRemovePass<Pass::Controller::Animation>();
 
 			// Select interpolation functions.
 			if constexpr ( I == E_CAMERA_INTERPOLATOR::LINEAR )

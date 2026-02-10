@@ -76,6 +76,15 @@ namespace VTX::App::Pass
 			_passes.remove<T>();
 		}
 
+		template<ConceptPass T>
+		void tryRemovePass()
+		{
+			if ( _passes.has<T>() )
+			{
+				removePass<T>();
+			}
+		}
+
 		/**
 		 * @brief Checks if a pass exists.
 		 */
