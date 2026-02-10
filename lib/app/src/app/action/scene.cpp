@@ -34,10 +34,6 @@
 
 namespace VTX::App::Action::Scene
 {
-	namespace
-	{
-
-	}
 
 	void LoadSystem::execute( FilePath p_path /*, const std::string * const p_buffer*/ )
 	{
@@ -54,9 +50,9 @@ namespace VTX::App::Action::Scene
 			  path = std::move( p_path ),
 			  &pendingSystemData ]( VTX::Util::StopToken p_stopToken, Threading::BaseThread & ) -> uint
 			{
+				pendingSystemData.path = std::move( path );
 				pendingSystemData.loader.emplace();
 				pendingSystemData.loader->readFile( path, pendingSystemData.system );
-				pendingSystemData.path		= std::move( path );
 				pendingSystemData.pdbIdCode = pendingSystemData.loader->getChemfilesReader().getPdbIdCode();
 
 				if ( p_stopToken.stop_requested() )

@@ -4,10 +4,6 @@
 #include "app/ecs.hpp"
 #include "app/pass/pass_manager.hpp"
 
-namespace VTX::App::System
-{
-	struct PendingSystem;
-}
 namespace VTX::App::Pass
 {
 	/**
@@ -18,15 +14,13 @@ namespace VTX::App::Pass
 	  public:
 		SceneUpdater( const ECS::Entity & );
 
-		void update( const float, const float ) noexcept;
+		inline void update( const float, const float ) noexcept {}
 
 	  private:
 		/**
 		 * @brief Scene entity.
 		 */
 		const ECS::Entity _entity;
-
-		void _pendingSystemTopologyReady( System::PendingSystem & ) noexcept;
 
 		/**
 		 * @brief Update the scene AABB when a system AABB is updated.

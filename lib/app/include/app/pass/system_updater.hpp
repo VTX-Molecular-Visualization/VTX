@@ -7,6 +7,10 @@
 #include <renderer/types.hpp>
 #include <unordered_map>
 
+namespace VTX::App::System
+{
+	struct PendingSystem;
+}
 namespace VTX::App::Pass
 {
 	/**
@@ -29,6 +33,17 @@ namespace VTX::App::Pass
 		 * @brief All system entities.
 		 */
 		std::vector<ECS::Entity> _entities;
+
+		/**
+		 * @brief Called during the update loop to manage pending systems.
+		 */
+		void _pendingSystemUpdate() noexcept;
+
+		/**
+		 * @brief Look at a pending system to determine what kind of trajectory must be used.
+		 * @param
+		 */
+		void _pendingSystemTopologyReady( System::PendingSystem & ) noexcept;
 
 		/**
 		 * @brief Current used representations.

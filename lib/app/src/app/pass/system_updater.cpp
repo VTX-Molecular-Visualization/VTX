@@ -1,5 +1,7 @@
-#include "app/pass/system_updater.hpp"
+#include "app/system/load.hpp"
+// Forward decl
 #include "app/events.hpp"
+#include "app/pass/system_updater.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
@@ -31,6 +33,7 @@ namespace VTX::App::Pass
 
 	void SystemUpdater::update( const float p_delta, const float p_total )
 	{
+		_pendingSystemUpdate();
 		return;
 		for ( auto & entity : _entities )
 		{
@@ -39,6 +42,39 @@ namespace VTX::App::Pass
 				[ p_delta ]( Util::Math::Transform & p_transform ) { p_transform.rotateYaw( p_delta * 0.001f ); }
 			);
 		}
+	}
+	void SystemUpdater::_pendingSystemUpdate() noexcept
+	{
+		for ( auto it_entity : REG().view<System::PendingSystem>() )
+		{
+			auto & pendingSystem = REG().get<System::PendingSystem>( it_entity );
+			if ( not pendingSystem.topologyReady )
+				continue;
+			if ( not pendingSystem.decisionMade )
+			{
+				_pendingSystemTopologyReady( pendingSystem );
+				continue;
+			}
+			if ( pendingSystem.trajectoryReady )
+			{
+				System::create( it_entity, pendingSystem );
+				continue;
+			}
+		}
+	}
+
+	void SystemUpdater::_pendingSystemTopologyReady( System::PendingSystem & p_sys ) noexcept
+	{
+		if ( p_sys.loader->getChemfilesReader().getFrameCount() > 1 )
+		{
+			p_sys.trajectoryData.emplace<System::TrajectoryFullBuffer>();
+		}
+		else
+		{
+			p_sys.trajectoryData.emplace<System::TrajectorySingleFrame>();
+		}
+		p_sys.decisionMade = true;
+		p_sys.trajectoryDecision.count_down();
 	}
 
 	void SystemUpdater::_onUpdateTransform( ECS::Registry & p_r, ECS::Entity p_e )
