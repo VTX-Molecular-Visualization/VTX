@@ -59,8 +59,14 @@ namespace VTX::App::Action::Scene
 				pendingSystemData.path		= std::move( path );
 				pendingSystemData.pdbIdCode = pendingSystemData.loader->getChemfilesReader().getPdbIdCode();
 
+				if ( p_stopToken.stop_requested() )
+					return 0;
+
 				pendingSystemData.topologyReady = true;
 				pendingSystemData.trajectoryDecision.wait();
+
+				if ( p_stopToken.stop_requested() )
+					return 0;
 
 				auto visitor = [ loader = &pendingSystemData.loader.value() ]( auto && traj )
 				{ System::prepare( traj, std::move( *loader ) ); };

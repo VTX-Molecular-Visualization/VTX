@@ -34,22 +34,13 @@
 
 namespace VTX::App::System
 {
-	namespace
-	{
-
-		template<typename TrajectoryType>
-		void createTrajectory( const ECS::Entity & p_entity, TrajectoryType && p_traj )
-		{
-		}
-
-	} // namespace
 
 	void create( const ECS::Entity & p_entity, PendingSystem & p_data ) noexcept
 	{
 		auto & reg = REG();
 
 		// Add components.
-		auto & data		 = reg.emplace<Core::Struct::System>( p_entity );
+		auto & data		 = reg.emplace<Core::Struct::System>( p_entity, std::move( p_data.system ) );
 		auto & metadata	 = reg.emplace<System::Metadata>( p_entity );
 		auto & transform = reg.emplace<Util::Math::Transform>( p_entity );
 		auto & aabb		 = reg.emplace<Util::Math::AABB>( p_entity );

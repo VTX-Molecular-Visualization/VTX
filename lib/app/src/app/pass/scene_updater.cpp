@@ -37,7 +37,7 @@ namespace VTX::App::Pass
 				_pendingSystemTopologyReady( pendingSystem );
 				continue;
 			}
-			if ( pendingSystem.topologyReady )
+			if ( pendingSystem.trajectoryReady )
 			{
 				System::create( it_entity, pendingSystem );
 				continue;
@@ -54,8 +54,8 @@ namespace VTX::App::Pass
 		{
 			p_sys.trajectoryData.emplace<System::TrajectorySingleFrame>();
 		}
-
 		p_sys.decisionMade = true;
+		p_sys.trajectoryDecision.count_down();
 	}
 
 	void SceneUpdater::_onUpdateAABB( ECS::Registry & p_r, ECS::Entity p_e )
