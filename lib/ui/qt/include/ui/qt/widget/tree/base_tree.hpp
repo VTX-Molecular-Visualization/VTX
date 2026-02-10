@@ -37,6 +37,13 @@ namespace VTX::UI::QT::Widget::Tree
 		virtual ~BaseTree() = default;
 
 		/**
+		 * @brief Override size hints to adapt height to content.
+		 */
+		inline QSize minimumSizeHint() const override { return QSize( 0, 0 ); }
+		inline QSize sizeHint() const override { return QSize( QWidget::sizeHint().width(), _contentHeight() ); }
+
+	  private:
+		/**
 		 * @brief Calculate the content height of the tree.
 		 */
 		int _contentHeight() const
@@ -81,12 +88,6 @@ namespace VTX::UI::QT::Widget::Tree
 
 			return rows * rowHeight + 2 * this->frameWidth();
 		}
-
-		/**
-		 * @brief Override size hints to adapt height to content.
-		 */
-		inline QSize minimumSizeHint() const override { return QSize( 0, 0 ); }
-		inline QSize sizeHint() const override { return QSize( QWidget::sizeHint().width(), _contentHeight() ); }
 	};
 } // namespace VTX::UI::QT::Widget::Tree
 
