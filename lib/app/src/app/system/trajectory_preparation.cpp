@@ -80,7 +80,7 @@ namespace VTX::App::System
 	{
 		p_trajectory.atomPositions = p_loader.getChemfilesReader().getCurrentFrameAtomPosition();
 	}
-	void startAsyncWork( const ECS::Entity & p_entity, PendingSystem & p_pendingData ) noexcept
+	void startAsyncTrajectoryWork( const ECS::Entity & p_entity, PendingSystem & p_pendingData ) noexcept
 	{
 		if ( auto traj = REG().try_get<TrajectoryFullBuffer>( p_entity ) )
 		{

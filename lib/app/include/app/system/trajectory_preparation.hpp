@@ -17,6 +17,11 @@ namespace VTX::App::System
 	void prepare( TrajectoryFullBuffer & p_trajectory, IO::Reader::System && p_loader ) noexcept;
 	void prepare( TrajectorySingleFrame & p_trajectory, IO::Reader::System && p_loader ) noexcept;
 
-	void startAsyncWork( const ECS::Entity &, PendingSystem & ) noexcept;
+	/**
+	 * @brief Lauch asynchronous work related to the trajectory, if any.
+	 * @param
+	 * @param
+	 */
+	void startAsyncTrajectoryWork( const ECS::Entity &, PendingSystem & ) noexcept;
 } // namespace VTX::App::System
 #endif

@@ -19,8 +19,9 @@ namespace VTX::App::System
 	 */
 	struct PendingSystem
 	{
-		bool	 onlyTrajectory = false; // Set to true when the goal is only to set a new trajectory
-		FilePath path;
+		bool					   onlyTrajectory = false; // Set to true when the goal is only to set a new trajectory
+		FilePath				   path;
+		std::optional<std::string> buffer;
 		std::optional<IO::Reader::System> loader;
 		Core::Struct::System			  system;
 		std::string						  pdbIdCode;
@@ -41,7 +42,6 @@ namespace VTX::App::System
 	 */
 	std::function<uint( Util::StopToken, Threading::BaseThread & )> fillerCallable(
 		const ECS::Entity &,
-		FilePath,
 		PendingSystem &
 	) noexcept;
 

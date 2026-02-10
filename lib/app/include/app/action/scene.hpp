@@ -12,7 +12,8 @@ namespace VTX::App::Action::Scene
 	 */
 	struct LoadSystem
 	{
-		void execute( FilePath p_path /*, const std::string * const p_buffer = nullptr */ );
+		void execute( FilePath p_path );
+		void execute( FilePath p_path, std::string && p_buffer );
 	};
 
 	/**

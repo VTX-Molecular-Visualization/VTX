@@ -36,17 +36,18 @@ namespace VTX::App::System
 
 	std::function<uint( Util::StopToken, Threading::BaseThread & )> fillerCallable(
 		const ECS::Entity & p_entity,
-		FilePath			p_path,
 		PendingSystem &		p_pendingData
 	) noexcept
 	{
-		return [ p_entity,
-				 path = std::move( p_path ),
-				 &p_pendingData ]( VTX::Util::StopToken p_stopToken, Threading::BaseThread & ) -> uint
+		return [ p_entity, &p_pendingData ]( VTX::Util::StopToken p_stopToken, Threading::BaseThread & ) -> uint
 		{
-			p_pendingData.path = std::move( path );
 			p_pendingData.loader.emplace();
-			p_pendingData.loader->readFile( path, p_pendingData.system );
+			if ( p_pendingData.buffer )
+				p_pendingData.loader->readBuffer(
+					p_pendingData.buffer.value(), p_pendingData.path, p_pendingData.system
+				);
+			else
+				p_pendingData.loader->readFile( p_pendingData.path, p_pendingData.system );
 			p_pendingData.pdbIdCode = p_pendingData.loader->getChemfilesReader().getPdbIdCode();
 
 			if ( p_stopToken.stop_requested() )
@@ -77,7 +78,7 @@ namespace VTX::App::System
 			},
 			std::move( p_data.trajectoryData )
 		);
-		startAsyncWork( p_entity, p_data );
+		startAsyncTrajectoryWork( p_entity, p_data );
 		std::span<const Vec3f> firstFrame = getCurrentAtomPositions( p_entity );
 
 		if ( auto uid = REG().try_get<System::UID>( p_entity ) )

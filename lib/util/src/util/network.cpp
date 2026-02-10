@@ -43,7 +43,7 @@ namespace VTX::Util::Network
 			[ p_callback ]( cpr::Response p_response )
 			{
 				checkResponse( p_response );
-				p_callback( p_response.text );
+				p_callback( std::move( p_response.text ) );
 			},
 			cpr::Url { p_url },
 			progressCallback,

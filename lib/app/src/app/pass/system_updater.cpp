@@ -284,12 +284,14 @@ namespace VTX::App::Pass
 	void SystemUpdater::_onTrajectoryDestruction( ECS::Registry &, ECS::Entity p_entity )
 	{
 		if ( auto traj = REG().try_get<System::TrajectoryFullBuffer>( p_entity ) )
-		{
+		{ // If the trajectory worker is still doing stuff, stop it and join the thread before destroying the component.
 			Threading::BaseThread * thr = nullptr;
 			THREAD().get( traj->threadId, thr );
 			if ( thr )
+			{
 				thr->stop();
-			thr->wait();
+				thr->wait();
+			}
 		}
 	}
 

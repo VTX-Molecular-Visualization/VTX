@@ -42,7 +42,8 @@ namespace VTX::App::Action::IO
 
 		auto & pendingSystemData		 = REG().emplace<System::PendingSystem>( p_entity );
 		pendingSystemData.onlyTrajectory = true;
-		THREAD().createThread( System::fillerCallable( p_entity, p_path, pendingSystemData ) );
+		pendingSystemData.path			 = p_path;
+		THREAD().createThread( System::fillerCallable( p_entity, pendingSystemData ) );
 	}
 	void AssociateTrajectory::execute( const std::string & p_path, const ECS::Entity & p_e )
 	{
@@ -68,14 +69,13 @@ namespace VTX::App::Action::IO
 
 	void DownloadSystem::execute( VTX::Util::Url::UrlFull p_url, FilePath p_path )
 	{
-		// TODO : The buffer shall be transfered in ownership
-		// FilePath filepath = p_path;
-		// NETWORK().downloadFile(
-		//	p_url.str.data(),
-		//	filepath.string(),
-		//	[ filepath ]( const std::string & p_text )
-		//	{ ACTION().execute<Action::Scene::LoadSystem>( filepath, &p_text ); }
-		//);
+		FilePath filepath = p_path;
+		NETWORK().downloadFile(
+			p_url.str.data(),
+			filepath.string(),
+			[ filepath ]( std::string && p_text )
+			{ ACTION().execute<Action::Scene::LoadSystem>( filepath, std::move( p_text ) ); }
+		);
 	}
 
 	void Snapshot::execute()
