@@ -31,6 +31,11 @@ namespace VTX::App::System
 		if ( REG().all_of<TrajectoryFullBuffer>( p_entity ) )
 			p_trajPtr = &REG().get<TrajectoryFullBuffer>( p_entity ).genericData;
 	}
+	void eraseTrajectory( const ECS::Entity & p_entity ) noexcept
+	{
+		REG().remove<TrajectoryFullBuffer>( p_entity );
+		REG().remove<TrajectorySingleFrame>( p_entity );
+	}
 
 	void patchGenericTrajectories( ECS::Entity p_entity, std::function<void( GenericTrajectory & )> p_lambda ) noexcept
 	{

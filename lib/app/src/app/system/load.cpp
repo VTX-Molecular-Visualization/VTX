@@ -14,7 +14,6 @@
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/deleted.hpp"
-#include "app/system/load.hpp"
 #include "app/system/metadata.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
@@ -35,6 +34,67 @@
 namespace VTX::App::System
 {
 
+	std::function<uint( Util::StopToken, Threading::BaseThread & )> fillerCallable(
+		const ECS::Entity & p_entity,
+		FilePath			p_path,
+		PendingSystem &		p_pendingData
+	) noexcept
+	{
+		return [ p_entity,
+				 path = std::move( p_path ),
+				 &p_pendingData ]( VTX::Util::StopToken p_stopToken, Threading::BaseThread & ) -> uint
+		{
+			p_pendingData.path = std::move( path );
+			p_pendingData.loader.emplace();
+			p_pendingData.loader->readFile( path, p_pendingData.system );
+			p_pendingData.pdbIdCode = p_pendingData.loader->getChemfilesReader().getPdbIdCode();
+
+			if ( p_stopToken.stop_requested() )
+				return 0;
+
+			p_pendingData.topologyReady = true;
+			p_pendingData.trajectoryDecision.wait();
+
+			if ( p_stopToken.stop_requested() )
+				return 0;
+
+			auto visitor = [ loader = &p_pendingData.loader.value() ]( auto && traj )
+			{ System::prepare( traj, std::move( *loader ) ); };
+			std::visit( visitor, p_pendingData.trajectoryData );
+			p_pendingData.trajectoryReady = true;
+			return 0;
+		};
+	}
+
+	void addTrajectory( const ECS::Entity & p_entity, PendingSystem & p_data ) noexcept
+	{
+		std::visit(
+			[ &p_entity ]( auto && traj ) mutable
+			{
+				using TrajType = std::remove_cvref_t<decltype( traj )>;
+				TrajType & t   = REG().emplace<TrajType>( p_entity );
+				t			   = std::move( traj );
+			},
+			std::move( p_data.trajectoryData )
+		);
+		startAsyncWork( p_entity, p_data );
+		std::span<const Vec3f> firstFrame = getCurrentAtomPositions( p_entity );
+
+		if ( auto uid = REG().try_get<System::UID>( p_entity ) )
+			RENDERER().setSystemPosition( uid->system, firstFrame );
+
+		// AABB (trigger update function for scene aabb).
+		REG().patch<Util::Math::AABB>(
+			p_entity,
+			[ &firstFrame ]( Util::Math::AABB & p_aabb )
+			{
+				for ( auto & it_atomPos : firstFrame )
+				{
+					p_aabb.extend( it_atomPos, Core::ChemDB::Atom::VDW_RADIUS_MIN );
+				}
+			}
+		);
+	}
 	void create( const ECS::Entity & p_entity, PendingSystem & p_data ) noexcept
 	{
 		auto & reg = REG();
@@ -52,20 +112,11 @@ namespace VTX::App::System
 		auto & color		  = reg.emplace<System::Color>( p_entity );
 		auto & deleted		  = reg.emplace<System::Deleted>( p_entity );
 
-		std::visit(
-			[ &p_entity ]( auto && traj ) mutable
-			{
-				using TrajType = std::remove_cvref_t<decltype( traj )>;
-				TrajType & t   = REG().emplace<TrajType>( p_entity );
-				t			   = std::move( traj );
-			},
-			std::move( p_data.trajectoryData )
-		);
-
 		const std::string & pdbId	 = p_data.pdbIdCode;
 		metadata.pdbIDCode			 = pdbId;
 		const std::string systemName = pdbId == "" ? p_data.path.stem().string() : pdbId;
-		data.name					 = systemName; // TODO: move to metadata?
+		metadata.name				 = systemName;
+		data.name					 = systemName; // TODO: remove
 
 		// UIDs: get from UID manager.
 		auto & uidManager = App::UID();
@@ -73,20 +124,7 @@ namespace VTX::App::System
 		uid.residues	  = uidManager.getPickingPool().registerRange( data.getResidueCount() );
 		uid.atoms		  = uidManager.getPickingPool().registerRange( data.getAtomCount() );
 
-		std::span<const Vec3f> firstFrame = getCurrentAtomPositions( p_entity );
-		RENDERER().setSystemPosition( uid.system, firstFrame );
-
-		// AABB (trigger update function for scene aabb).
-		reg.patch<Util::Math::AABB>(
-			p_entity,
-			[ &firstFrame ]( Util::Math::AABB & p_aabb )
-			{
-				for ( auto & it_atomPos : firstFrame )
-				{
-					p_aabb.extend( it_atomPos, Core::ChemDB::Atom::VDW_RADIUS_MIN );
-				}
-			}
-		);
+		addTrajectory( p_entity, p_data );
 
 		// Visibillity: all visible.
 		visibility.atoms = Core::Struct::IndexRangeList( data.getAtomRange() );
@@ -110,8 +148,32 @@ namespace VTX::App::System
 
 		// Orient.
 		ACTION().execute<Action::Camera::Orient>( aabb );
+	}
 
-		reg.erase<PendingSystem>( p_entity );
+	void deliver( const ECS::Entity & p_entity, PendingSystem & p_data ) noexcept
+	{
+		auto system = REG().try_get<Core::Struct::System>( p_entity );
+		if ( p_data.onlyTrajectory && system )
+		{
+			if ( system->getAtomCount() == p_data.system.getAtomCount() )
+			{
+				addTrajectory( p_entity, p_data );
+			}
+			else
+			{
+				VTX::VTX_ERROR(
+					"File {} and system {} has different atom count. ({}/{})",
+					p_data.path.string(),
+					system->name,
+					system->getAtomCount(),
+					p_data.system.getAtomCount()
+				);
+			}
+		}
+		else
+			create( p_entity, p_data );
+
+		REG().erase<PendingSystem>( p_entity );
 	}
 
 } // namespace VTX::App::System

@@ -67,6 +67,8 @@ namespace VTX::App::Pass
 		void _onUpdateRepresentationPreset( ECS::Registry &, ECS::Entity );
 
 		void _setRepresentation();
+
+		void _onTrajectoryDestruction( ECS::Registry &, ECS::Entity );
 	};
 } // namespace VTX::App::Pass
 

@@ -31,12 +31,8 @@ namespace VTX::UI::QT::Dialog
 
 		for ( auto & it_entity : App::REG().view<App::System::Metadata>() )
 		{
-			if ( not App::REG().all_of<App::System::TrajectorySingleFrame>( it_entity ) )
-				continue;
 			auto &	metadata	  = App::REG().get<App::System::Metadata>( it_entity );
-			QString displayString = QString::fromStdString(
-				metadata.pdbIDCode.empty() ? metadata.path.filename().string() : metadata.pdbIDCode
-			);
+			QString displayString = QString::fromStdString( metadata.name );
 			_cbSystem->addItem( displayString, QVariant::fromValue( it_entity ) );
 		}
 		_cbSystem->addItem( "New structure", QVariant::fromValue( VTX::App::ECS::Entity( entt::null ) ) );

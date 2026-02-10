@@ -52,7 +52,8 @@ namespace VTX::App::System
 			const size_t frameCount = reader.getFrameCount();
 			_ptr->loader.readNextFrame(); // First frame has already been added
 
-			for ( size_t it_currentFrameIndex = 1; it_currentFrameIndex < frameCount - 1; it_currentFrameIndex++ )
+			for ( size_t it_currentFrameIndex = 1; it_currentFrameIndex < frameCount - 1 /*why -1 ?*/;
+				  it_currentFrameIndex++ )
 			{
 				std::vector<Vec3f> new_frame = reader.getCurrentFrameAtomPosition();
 				_ptr->loader.readNextFrame();
@@ -74,12 +75,22 @@ namespace VTX::App::System
 		p_trajectory.genericData.player	  = Util::Players::PingPong( p_trajectory.genericData.trajectorySize - 1 );
 		p_trajectory.genericData.currentFrameIndex = 0;
 		p_trajectory.lastFrameAvailable			   = 0;
-
-		THREAD().createThread( System::TrajectoryFullBufferReader( p_trajectory, std::move( p_loader ) ) );
 	}
 	void prepare( TrajectorySingleFrame & p_trajectory, IO::Reader::System && p_loader ) noexcept
 	{
 		p_trajectory.atomPositions = p_loader.getChemfilesReader().getCurrentFrameAtomPosition();
+	}
+	void startAsyncWork( const ECS::Entity & p_entity, PendingSystem & p_pendingData ) noexcept
+	{
+		if ( auto traj = REG().try_get<TrajectoryFullBuffer>( p_entity ) )
+		{
+			traj->threadId
+				= THREAD()
+					  .createThread(
+						  System::TrajectoryFullBufferReader( *traj, std::move( p_pendingData.loader.value() ) )
+					  )
+					  .getId();
+		}
 	}
 
 } // namespace VTX::App::System

@@ -9,6 +9,7 @@
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
+#include "app/threading/thread_manager.hpp"
 #include <renderer/renderer.hpp>
 #include <util/chrono.hpp>
 #include <util/math/transform.hpp>
@@ -27,6 +28,7 @@ namespace VTX::App::Pass
 		reg.on_update<System::Color>().connect<&SystemUpdater::_onUpdateColor>( this );
 
 		reg.on_update<Renderer::Representation>().connect<&SystemUpdater::_onUpdateRepresentationPreset>( this );
+		reg.on_destroy<System::TrajectoryFullBuffer>().connect<&SystemUpdater::_onTrajectoryDestruction>( this );
 
 		HUB().connect<Events::SystemLoad, &SystemUpdater::_onSystemLoaded>( this );
 	}
@@ -57,7 +59,7 @@ namespace VTX::App::Pass
 			}
 			if ( pendingSystem.trajectoryReady )
 			{
-				System::create( it_entity, pendingSystem );
+				System::deliver( it_entity, pendingSystem );
 				continue;
 			}
 		}
@@ -279,4 +281,16 @@ namespace VTX::App::Pass
 
 		RENDERER().setRepresentations( representations );
 	}
+	void SystemUpdater::_onTrajectoryDestruction( ECS::Registry &, ECS::Entity p_entity )
+	{
+		if ( auto traj = REG().try_get<System::TrajectoryFullBuffer>( p_entity ) )
+		{
+			Threading::BaseThread * thr = nullptr;
+			THREAD().get( traj->threadId, thr );
+			if ( thr )
+				thr->stop();
+			thr->wait();
+		}
+	}
+
 } // namespace VTX::App::Pass

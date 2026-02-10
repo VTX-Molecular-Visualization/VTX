@@ -13,6 +13,7 @@ namespace VTX::App::System
 	{
 		FilePath	path;
 		std::string pdbIDCode;
+		std::string name;
 		bool		structureHasChanged				   = false;
 		bool		isSecondaryStructureLoadedFromFile = false;
 

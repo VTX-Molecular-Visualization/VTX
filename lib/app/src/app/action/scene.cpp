@@ -45,34 +45,7 @@ namespace VTX::App::Action::Scene
 		ECS::Entity entity			  = reg.create();
 		auto &		pendingSystemData = reg.emplace<System::PendingSystem>( entity );
 
-		THREAD().createThread(
-			[ entity,
-			  path = std::move( p_path ),
-			  &pendingSystemData ]( VTX::Util::StopToken p_stopToken, Threading::BaseThread & ) -> uint
-			{
-				pendingSystemData.path = std::move( path );
-				pendingSystemData.loader.emplace();
-				pendingSystemData.loader->readFile( path, pendingSystemData.system );
-				pendingSystemData.pdbIdCode = pendingSystemData.loader->getChemfilesReader().getPdbIdCode();
-
-				if ( p_stopToken.stop_requested() )
-					return 0;
-
-				pendingSystemData.topologyReady = true;
-				pendingSystemData.trajectoryDecision.wait();
-
-				if ( p_stopToken.stop_requested() )
-					return 0;
-
-				auto visitor = [ loader = &pendingSystemData.loader.value() ]( auto && traj )
-				{ System::prepare( traj, std::move( *loader ) ); };
-				std::visit( visitor, pendingSystemData.trajectoryData );
-				pendingSystemData.trajectoryReady = true;
-				return 0;
-			}
-
-		);
-		return;
+		THREAD().createThread( System::fillerCallable( entity, std::move( p_path ), pendingSystemData ) );
 	}
 
 	void DeleteSystem::execute( const ECS::Entity p_e ) { REG().destroy( p_e ); }

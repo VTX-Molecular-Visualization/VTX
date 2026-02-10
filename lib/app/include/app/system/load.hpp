@@ -2,19 +2,25 @@
 #define __VTX_APP_SYSTEM_LOAD__
 
 #include "app/system/trajectory.hpp"
+#include "app/threading/base_thread.hpp"
 #include <atomic>
 #include <core/struct/system.hpp>
+#include <functional>
 #include <io/reader/system.hpp>
 #include <latch>
 #include <optional>
+#include <util/thread.hpp>
 #include <variant>
 
 namespace VTX::App::System
 {
-
+	/**
+	 * @brief Datastruct that will hold data while the system is being filled
+	 */
 	struct PendingSystem
 	{
-		FilePath						  path;
+		bool	 onlyTrajectory = false; // Set to true when the goal is only to set a new trajectory
+		FilePath path;
 		std::optional<IO::Reader::System> loader;
 		Core::Struct::System			  system;
 		std::string						  pdbIdCode;
@@ -29,6 +35,20 @@ namespace VTX::App::System
 
 		std::atomic_bool trajectoryReady { false };
 	};
-	void create( const ECS::Entity &, PendingSystem & ) noexcept;
+
+	/**
+	 * @brief Returns a callable that will read the file and fill the pendingSystem data.
+	 */
+	std::function<uint( Util::StopToken, Threading::BaseThread & )> fillerCallable(
+		const ECS::Entity &,
+		FilePath,
+		PendingSystem &
+	) noexcept;
+
+	/**
+	 * @brief If PendingSystem::onlyTrajectory is false, actually create a system, appending all necessary component to
+	 * the input entity from scratch, using data from the input PendingSystem. Else, only append the trajectory
+	 */
+	void deliver( const ECS::Entity &, PendingSystem & ) noexcept;
 } // namespace VTX::App::System
 #endif
