@@ -1,10 +1,10 @@
-#ifndef __VTX_APP_PASS_CONTROLLER_ANIMATION__
-#define __VTX_APP_PASS_CONTROLLER_ANIMATION__
+#ifndef __VTX_APP_CONTROLLER_ANIMATION__
+#define __VTX_APP_CONTROLLER_ANIMATION__
 
+#include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
-#include "app/pass/pass_manager.hpp"
 
-namespace VTX::App::Pass::Controller
+namespace VTX::App::Controller
 {
 	/**
 	 * @brief Final position and rotation.
@@ -22,16 +22,15 @@ namespace VTX::App::Pass::Controller
 	using InterpRotationFunc = Quatf ( * )( const Quatf &, const Quatf &, float );
 
 	/**
-	 * @brief System that manages a camera animation to a target position and rotation.
+	 * @brief Object that manages a camera animation to a target position and rotation.
 	 */
-	class Animation : public IPass
+	class Animation : public IController
 	{
 	  public:
 		/**
 		 * @brief Constructor.
 		 */
 		Animation(
-			const ECS::Entity &,
 			const AnimationData &,
 			const AnimationData &,
 			const float,
@@ -42,14 +41,9 @@ namespace VTX::App::Pass::Controller
 		/**
 		 * @brief Called each frame.
 		 */
-		void update( const float, const float );
+		void update( const float, Util::Math::Transform & );
 
 	  private:
-		/**
-		 * @brief Controlled camera entity.
-		 */
-		const ECS::Entity _cameraEntity;
-
 		/**
 		 * @brief Start and end animation data.
 		 */
@@ -72,6 +66,6 @@ namespace VTX::App::Pass::Controller
 		const InterpPositionFunc _interpPosition;
 		const InterpRotationFunc _interpRotation;
 	};
-} // namespace VTX::App::Pass::Controller
+} // namespace VTX::App::Controller
 
 #endif

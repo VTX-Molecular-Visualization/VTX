@@ -1,34 +1,29 @@
-#ifndef __VTX_APP_PASS_CONTROLLER_FREEFLY__
-#define __VTX_APP_PASS_CONTROLLER_FREEFLY__
+#ifndef __VTX_APP_CONTROLLER_FREEFLY__
+#define __VTX_APP_CONTROLLER_FREEFLY__
 
+#include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
-#include "app/pass/pass_manager.hpp"
 
-namespace VTX::App::Pass::Controller
+namespace VTX::App::Controller
 {
 
 	/**
 	 * @brief Freefly camera controller from inputs (free movement in 3D space).
 	 */
-	class Freefly : public IPass
+	class Freefly : public IController
 	{
 	  public:
 		/**
 		 * @brief Constructor.
 		 */
-		Freefly( const ECS::Entity & p_ent );
+		Freefly();
 
 		/**
 		 * @brief Called each frame.
 		 */
-		void update( const float, const float );
+		void update( const float, Util::Math::Transform & );
 
 	  private:
-		/**
-		 * @brief Controlled camera entity.
-		 */
-		const ECS::Entity _cameraEntity;
-
 		/**
 		 * @brief Controller settings.
 		 */
@@ -38,5 +33,5 @@ namespace VTX::App::Pass::Controller
 		float _rotationSpeed;
 		bool  _invertY;
 	};
-} // namespace VTX::App::Pass::Controller
+} // namespace VTX::App::Controller
 #endif

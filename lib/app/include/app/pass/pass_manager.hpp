@@ -2,9 +2,9 @@
 #define __VTX_APP_PASS_MANAGER__
 
 #include <concepts>
-#include <forward_list>
 #include <util/collection.hpp>
 #include <util/event_hub.hpp>
+#include <vector>
 
 namespace VTX::App::Pass
 {
@@ -21,13 +21,16 @@ namespace VTX::App::Pass
 	 */
 	struct IPass
 	{
+		friend class PassManager;
+
 		virtual ~IPass() = default;
 
-		/**
-		 * @brief Some useful flags.
-		 */
-		bool deleted = false;
-		bool paused	 = false;
+		inline void setPaused( const bool p_paused ) { _paused = p_paused; }
+		inline void setDeleteNextFrame( const bool p_deleted ) { _deleted = p_deleted; }
+
+	  protected:
+		bool _paused  = false;
+		bool _deleted = false;
 	};
 
 	/**
@@ -36,7 +39,7 @@ namespace VTX::App::Pass
 	class PassManager
 	{
 	  public:
-		using UpdateDelegate = Util::EventHub::Delegate<void( float, float )>;
+		using UpdateDelegate = Util::EventHub::Delegate<void( const float, const float )>;
 
 		PassManager()				  = default;
 		PassManager( PassManager && ) = default;
@@ -54,7 +57,7 @@ namespace VTX::App::Pass
 			// Register update delegate.
 			UpdateDelegate d;
 			d.template connect<&T::update>( p );
-			_delegates.push_front( std::move( d ) );
+			_delegates.push_back( std::move( d ) );
 
 			return p;
 		}
@@ -120,7 +123,7 @@ namespace VTX::App::Pass
 			{
 				// Check if pass is paused.
 				const IPass * pass = static_cast<const IPass *>( delegate.data() );
-				if ( pass->paused )
+				if ( pass->_paused )
 				{
 					continue;
 				}
@@ -129,9 +132,13 @@ namespace VTX::App::Pass
 			}
 
 			// Remove passes flagged for deletion.
+			std::erase_if(
+				_delegates, []( const UpdateDelegate & d ) { return static_cast<const IPass *>( d.data() )->_deleted; }
+			);
+
 			for ( auto it = _passes.begin(); it != _passes.end(); )
 			{
-				if ( it->second->deleted )
+				if ( it->second->_deleted )
 				{
 					it = _passes.erase( it );
 				}
@@ -140,17 +147,11 @@ namespace VTX::App::Pass
 					++it;
 				}
 			}
-
-			std::erase_if(
-				_delegates, []( const UpdateDelegate & d ) { return static_cast<const IPass *>( d.data() )->deleted; }
-			);
 		}
 
 	  private:
 		Util::Collection<std::unique_ptr<IPass>> _passes;
-		std::forward_list<UpdateDelegate>
-			_delegates; // delegates collection needs to be a forward list so insertion/removal of element from it
-						// doesn't invalidate pointers.
+		std::vector<UpdateDelegate>				 _delegates;
 	};
 } // namespace VTX::App::Pass
 

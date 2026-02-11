@@ -75,10 +75,6 @@ namespace VTX::App::Events
 		uint type;
 	};
 
-	struct CameraAnimationEnd
-	{
-	};
-
 	/**
 	 * @brief System.
 	 * Used instead of on_construct to avoid component creation order problems.

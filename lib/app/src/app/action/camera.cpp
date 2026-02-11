@@ -1,11 +1,11 @@
 #include "app/action/camera.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/helper/system.hpp"
-#include "app/pass/controller/freefly.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/trajectory.hpp"
 #include <core/struct/system.hpp>
+#include <util/event_hub.hpp>
 #include <util/math/transform.hpp>
 
 namespace
@@ -64,19 +64,6 @@ namespace VTX::App::Action::Camera
 		transform.setRotation( QUATF_ID );
 		transform.lookAt( aabb.centroid() );
 		HUB().trigger<Events::CameraTransformChange>();
-
-		// Change controller target.
-		// TODO: find a better solution.
-		if ( auto * p = PASS().tryGetPass<Pass::Controller::Trackball>() )
-		{
-			p->stop();
-			p->setTarget( aabb.centroid() );
-			p->paused = true;
-		}
-		else if ( auto * p = PASS().tryGetPass<Pass::Controller::Freefly>() )
-		{
-			p->paused = true;
-		}
 	}
 
 	void Orient::execute()
@@ -133,19 +120,6 @@ namespace VTX::App::Action::Camera
 
 		const auto & [ _, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
-
-		// Change controller target.
-		// TODO: find a better solution.
-		if ( auto * p = PASS().tryGetPass<Pass::Controller::Trackball>() )
-		{
-			p->stop();
-			p->setTarget( p_target.centroid() );
-			p->paused = true;
-		}
-		else if ( auto * p = PASS().tryGetPass<Pass::Controller::Freefly>() )
-		{
-			p->paused = true;
-		}
 
 		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(
 			_computeCameraOrientPosition( transform.getFront(), camera.fov, p_target ), transform.getRotation()

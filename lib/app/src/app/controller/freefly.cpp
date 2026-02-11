@@ -1,15 +1,16 @@
-#include "app/pass/controller/freefly.hpp"
+#include "app/controller/freefly.hpp"
 #include "app/events.hpp"
 #include "app/input/input_manager.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
 #include <util/constants.hpp>
+#include <util/event_hub.hpp>
 #include <util/math/transform.hpp>
 
-namespace VTX::App::Pass::Controller
+namespace VTX::App::Controller
 {
-	Freefly::Freefly( const ECS::Entity & p_ent ) : _cameraEntity( p_ent )
+	Freefly::Freefly()
 	{
 		auto & settings		= SETTINGS();
 		_translationSpeed	= settings.getValue<float>( Settings::Controller::TRANSLATION_SPEED_KEY );
@@ -19,7 +20,7 @@ namespace VTX::App::Pass::Controller
 		_invertY			= settings.getValue<bool>( Settings::Controller::INVERT_Y_KEY );
 	}
 
-	void Freefly::update( const float p_deltaTime, const float p_elapsedTime )
+	void Freefly::update( const float p_deltaTime, Util::Math::Transform & p_transform )
 	{
 		using namespace Util;
 		auto & input = INPUT();
@@ -84,19 +85,17 @@ namespace VTX::App::Pass::Controller
 
 		if ( localRotation != VEC3F_ZERO || rollRotation != 0.f || translation != VEC3F_ZERO )
 		{
-			auto & transform = REG().get<Util::Math::Transform>( _cameraEntity );
-
 			if ( localRotation != VEC3F_ZERO )
 			{
-				transform.rotate( localRotation );
+				p_transform.rotate( localRotation );
 			}
 			if ( rollRotation != 0.f )
 			{
-				transform.rotateRoll( rollRotation );
+				p_transform.rotateRoll( rollRotation );
 			}
 			if ( translation != VEC3F_ZERO )
 			{
-				transform.translate( translation );
+				p_transform.translate( translation );
 			}
 
 			HUB().trigger<Events::CameraTransformChange>();
@@ -105,4 +104,4 @@ namespace VTX::App::Pass::Controller
 		input.consume();
 	}
 
-} // namespace VTX::App::Pass::Controller
+} // namespace VTX::App::Controller

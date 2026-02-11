@@ -1,10 +1,12 @@
 #ifndef __VTX_APP_ACTION_CAMERA__
 #define __VTX_APP_ACTION_CAMERA__
 
+#include "app/controller/animation.hpp"
+#include "app/controller/freefly.hpp"
+#include "app/controller/trackball.hpp"
 #include "app/ecs.hpp"
 #include "app/events.hpp"
-#include "app/pass/controller/animation.hpp"
-#include "app/pass/controller/trackball.hpp"
+#include "app/pass/camera_updater.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
@@ -116,16 +118,16 @@ namespace VTX::App::Action::Camera
 			const float	  p_duration = ANIMATION_DURATION_DEFAULT_MS
 		)
 		{
-			execute( Pass::Controller::AnimationData { p_position, p_rotation }, p_duration );
+			execute( App::Controller::AnimationData { p_position, p_rotation }, p_duration );
 		}
 
 		void execute(
-			const Pass::Controller::AnimationData & p_end,
-			const float								p_duration = ANIMATION_DURATION_DEFAULT_MS
+			const App::Controller::AnimationData & p_end,
+			const float							   p_duration = ANIMATION_DURATION_DEFAULT_MS
 		)
 		{
 			using namespace Util;
-			using namespace Pass::Controller;
+			using namespace App::Controller;
 
 			const auto & [ entCamera, _, transform ]
 				= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
@@ -138,12 +140,9 @@ namespace VTX::App::Action::Camera
 			if ( Math::distance( start.position, p_end.position ) < ANIMATION_TRANSLATION_THRESHOLD
 				 && start.rotation == p_end.rotation )
 			{
-				HUB().trigger<Events::CameraAnimationEnd>();
+				// HUB().trigger<Events::CameraAnimationEnd>();
 				return;
 			}
-
-			// Check existing animation pass.
-			PASS().tryRemovePass<Pass::Controller::Animation>();
 
 			// Select interpolation functions.
 			if constexpr ( I == E_CAMERA_INTERPOLATOR::LINEAR )
@@ -162,7 +161,9 @@ namespace VTX::App::Action::Camera
 			}
 
 			// Add pass.
-			PASS().addPass<Animation>( entCamera, start, p_end, p_duration, interpPositionFunc, interpRotationFunc );
+			PASS().getPass<Pass::CameraUpdater>()->setController<Animation>(
+				start, p_end, p_duration, interpPositionFunc, interpRotationFunc
+			);
 		}
 	};
 
