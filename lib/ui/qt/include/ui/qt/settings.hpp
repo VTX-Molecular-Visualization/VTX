@@ -5,22 +5,27 @@
 
 namespace VTX::UI::QT
 {
-	const QString SETTING_KEY_GEOMETRY		 = "main/geometry";
-	const QString SETTING_KEY_STATE			 = "main/state";
+	const QString SETTING_KEY_GEOMETRY = "main/geometry";
+	const QString SETTING_KEY_STATE	   = "main/state";
+
 	const QString SETTING_KEY_GRANULARITY	 = "selection/granularity";
 	const QString SETTING_KEY_LOCK_SELECTION = "selection/lock";
-	const QString SETTING_KEY_URL			 = "dialog/download/history/url";
-	const QString SETTING_KEY_PDB			 = "dialog/download/history/pdb";
-	const QString SETTING_KEY_WIDTH			 = "dialog/export_image/width";
-	const QString SETTING_KEY_HEIGHT		 = "dialog/export_image/height";
-	const QString SETTING_KEY_FORMAT		 = "dialog/export_image/format";
-	const QString SETTING_KEY_OPACITY		 = "dialog/export_image/background_opacity";
-	const QString SETTING_KEY_EXPORT_FOLDER	 = "dialog/export_image/folder";
-	const QString SETTING_KEY_OPEN_FOLDER	 = "dialog/open/last_folder";
-	const QString SETTING_KEY_VSYNC			 = "option/vsync";
-	const QString SETTING_KEY_SAVE_POWER	 = "option/save_power";
-	const QString SETTING_KEY_THEME			 = "style/theme";
-	const QString SETTING_KEY_FONT			 = "style/font";
+
+	const QString SETTING_KEY_URL			= "dialog/download/history/url";
+	const QString SETTING_KEY_PDB			= "dialog/download/history/pdb";
+	const QString SETTING_KEY_WIDTH			= "dialog/export_image/width";
+	const QString SETTING_KEY_HEIGHT		= "dialog/export_image/height";
+	const QString SETTING_KEY_FORMAT		= "dialog/export_image/format";
+	const QString SETTING_KEY_OPACITY		= "dialog/export_image/background_opacity";
+	const QString SETTING_KEY_EXPORT_FOLDER = "dialog/export_image/folder";
+	const QString SETTING_KEY_OPEN_FOLDER	= "dialog/open/last_folder";
+
+	const QString SETTING_KEY_KEYBOARD_LAYOUT = "option/keyboard_layout";
+	const QString SETTING_KEY_SAVE_POWER	  = "option/save_power";
+	const QString SETTING_KEY_VSYNC			  = "option/vsync";
+
+	const QString SETTING_KEY_THEME = "style/theme";
+	const QString SETTING_KEY_FONT	= "style/font";
 
 	/**
 	 * @brief Settings manager inheriting from QSettings.

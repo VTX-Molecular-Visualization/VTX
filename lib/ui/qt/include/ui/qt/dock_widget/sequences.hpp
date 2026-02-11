@@ -15,7 +15,6 @@ namespace VTX::UI::QT::DockWidget
 	 */
 	class Sequences : public BaseDockWidget<Sequences, 1, 1>
 	{
-		Q_OBJECT
 	  public:
 		Sequences( QWidget * );
 

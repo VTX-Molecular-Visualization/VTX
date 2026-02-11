@@ -117,8 +117,6 @@ namespace VTX::UI::QT::Widget
 		App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
 		App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>( this );
 		App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
-
-		QTimer::singleShot( 0, this, [ this ] { centralWidget()->setFocus(); } );
 	}
 
 	MainWindow::~MainWindow()

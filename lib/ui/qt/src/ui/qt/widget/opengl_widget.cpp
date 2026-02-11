@@ -184,6 +184,10 @@ namespace VTX::UI::QT::Widget
 			{
 				onResizeFinished();
 			}
+			else if ( p_event->type() == QEvent::WindowActivate || p_event->type() == QEvent::Show )
+			{
+				_container->setFocus( Qt::ActiveWindowFocusReason );
+			}
 		}
 
 		return QWidget::eventFilter( p_watched, p_event );

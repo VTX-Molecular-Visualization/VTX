@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_WINDOW_RENDERER__
 #define __VTX_UI_QT_WINDOW_RENDERER__
 
+#include "ui/qt/events.hpp"
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -9,6 +10,16 @@
 
 namespace VTX::UI::QT::Window
 {
+
+	/**
+	 * @brief Layouts.
+	 */
+	enum struct KB_LAYOUT : uint8_t
+	{
+		QWERTY,
+		AZERTY,
+		COUNT
+	};
 
 	/**
 	 * @brief A window that catches events and forwards them to the application's input manager.
@@ -49,12 +60,22 @@ namespace VTX::UI::QT::Window
 		App::Input::InputManager & _inputManager;
 
 		/**
+		 * @brief Current keyboard layout.
+		 */
+		KB_LAYOUT _layout;
+
+		/**
 		 * @brief State for mouse dragging.
 		 */
 		Qt::MouseButton _pressedButton = Qt::NoButton;
 		QPointF			_pressPos	   = {};
 		QPointF			_lastPos	   = {};
 		bool			_dragging	   = false;
+
+		/**
+		 * @brief Handle keyboard events and forward them to the input manager.
+		 */
+		void _handleKeyboard( QKeyEvent * const, const bool p_enable );
 
 		/**
 		 * @brief Handle modifier keys (Shift, Ctrl, Alt).
@@ -65,6 +86,11 @@ namespace VTX::UI::QT::Window
 		 * @brief Convert a point from logical pixels to device pixels.
 		 */
 		QPoint _toDevicePixels( const QPointF & ) const;
+
+		/**
+		 * @brief Set the current keyboard.
+		 */
+		void _onKBLayoutChange( const Events::KeyboardLayoutChanged & );
 	};
 
 } // namespace VTX::UI::QT::Window

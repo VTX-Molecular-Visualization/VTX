@@ -4,6 +4,11 @@
 namespace VTX::UI::QT::Events
 {
 
+	struct KeyboardLayoutChanged
+	{
+		int layout;
+	};
+
 	struct SelectionLocked
 	{
 		bool locked;
