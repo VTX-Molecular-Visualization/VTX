@@ -15,7 +15,7 @@ namespace
 
 namespace VTX::App::Controller
 {
-	Trackball::Trackball( const Vec3f & p_target ) : _target( p_target )
+	Trackball::Trackball()
 	{
 		// TODO: use setting object?
 		auto & settings		= SETTINGS();
@@ -28,7 +28,7 @@ namespace VTX::App::Controller
 		_elasticityFactor	= settings.getValue<float>( Settings::Controller::ELASTICITY_FACTOR_KEY );
 	}
 
-	void Trackball::update( const float p_delta, Util::Math::Transform & p_transform )
+	bool Trackball::update( const float p_delta, Util::Math::Transform & p_transform, Vec3f & p_target )
 	{
 		using namespace Util;
 		auto & input = INPUT();
@@ -39,7 +39,7 @@ namespace VTX::App::Controller
 		float deltaDistance = 0.f;
 		if ( input.zoom() != 0 )
 		{
-			deltaDistance = input.zoom() * 0.00001f * Math::distance( p_transform.getPosition(), _target );
+			deltaDistance = input.zoom() * 0.00001f * Math::distance( p_transform.getPosition(), p_target );
 		}
 
 		// Mouse left.
@@ -57,7 +57,7 @@ namespace VTX::App::Controller
 		Vec2i deltaPan = input.pan();
 		float deltaX   = -deltaPan.x * 0.1f;
 		float deltaY   = deltaPan.y * 0.1f;
-		_target += p_transform.getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
+		p_target += p_transform.getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
 		_needUpdate = true;
 
 		// Keyboard.
@@ -132,13 +132,13 @@ namespace VTX::App::Controller
 		// Update if needed.
 		if ( _needUpdate )
 		{
-			float distance = Math::distance( p_transform.getPosition(), _target );
+			float distance = Math::distance( p_transform.getPosition(), p_target );
 			distance	   = Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 
 			const Quatf rotation
 				= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z ) * ( _elasticityActive ? deltaTime : 0.2f ) );
 
-			p_transform.rotateAround( rotation, _target, distance );
+			p_transform.rotateAround( rotation, p_target, distance );
 			HUB().trigger<Events::CameraTransformChange>();
 
 			_needUpdate = false;
@@ -154,7 +154,7 @@ namespace VTX::App::Controller
 			_velocity = VEC3F_ZERO;
 		}
 
-		input.consume();
+		return true;
 	}
 
 	void Trackball::_updateElasticity( const float & p_deltaTime )

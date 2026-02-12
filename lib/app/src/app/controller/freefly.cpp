@@ -20,7 +20,7 @@ namespace VTX::App::Controller
 		_invertY			= settings.getValue<bool>( Settings::Controller::INVERT_Y_KEY );
 	}
 
-	void Freefly::update( const float p_deltaTime, Util::Math::Transform & p_transform )
+	bool Freefly::update( const float p_deltaTime, Util::Math::Transform & p_transform, Vec3f & p_target )
 	{
 		using namespace Util;
 		auto & input = INPUT();
@@ -101,7 +101,7 @@ namespace VTX::App::Controller
 			HUB().trigger<Events::CameraTransformChange>();
 		}
 
-		input.consume();
+		return true;
 	}
 
 } // namespace VTX::App::Controller

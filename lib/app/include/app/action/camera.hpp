@@ -49,8 +49,8 @@ namespace VTX::App::Action::Camera
 	{
 		void execute()
 		{
-			auto & reg				   = REG();
-			const auto & [ entity, _ ] = ECS::getFirstEntityWithComponents<Renderer::Camera>();
+			auto &	   reg	  = REG();
+			const auto entity = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
 
 			reg.patch<Renderer::Camera>( entity, []( Renderer::Camera & p_cam ) { p_cam.projection = P; } );
 		}
@@ -129,7 +129,7 @@ namespace VTX::App::Action::Camera
 			using namespace Util;
 			using namespace App::Controller;
 
-			const auto & [ entCamera, _, transform ]
+			const auto [ entCamera, _, transform ]
 				= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
 			AnimationData	   start { transform.getPosition(), transform.getRotation() };
@@ -160,9 +160,14 @@ namespace VTX::App::Action::Camera
 				static_assert( always_false_v<I>, "Unsupported camera interpolator." );
 			}
 
-			// Add pass.
-			PASS().getPass<Pass::CameraUpdater>()->setController<Animation>(
-				start, p_end, p_duration, interpPositionFunc, interpRotationFunc
+			// Run animation.
+			PASS().getPass<Pass::CameraUpdater>()->addController<Animation>(
+				Pass::CameraUpdater::CTRL_INSERTION_MODE::FRONT,
+				start,
+				p_end,
+				p_duration,
+				interpPositionFunc,
+				interpRotationFunc
 			);
 		}
 	};

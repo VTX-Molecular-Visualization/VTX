@@ -21,7 +21,7 @@ namespace VTX::App::Controller
 	/**
 	 * @brief Called each frame.
 	 */
-	void Animation::update( const float p_delta, Util::Math::Transform & p_transform )
+	bool Animation::update( const float p_delta, Util::Math::Transform & p_transform, Vec3f & )
 	{
 		using namespace Util;
 
@@ -33,11 +33,6 @@ namespace VTX::App::Controller
 		p_transform.setRotation( _interpRotation( _animationDataStart.rotation, _animationDataEnd.rotation, t ) );
 		HUB().trigger<Events::CameraTransformChange>();
 
-		// Flag as deleted and trigger end event.
-		if ( t >= 1.f )
-		{
-			// deleted = true;
-			// HUB().trigger<Events::CameraAnimationEnd>();
-		}
+		return t < 1.f;
 	}
 } // namespace VTX::App::Controller

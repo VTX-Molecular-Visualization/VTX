@@ -4,13 +4,13 @@
 #include "app/settings/settings_manager.hpp"
 #include <renderer/camera.hpp>
 #include <renderer/renderer.hpp>
-#include <util/math.hpp>
 #include <util/math/transform.hpp>
 
 namespace VTX::App::Pass
 {
 	CameraUpdater::CameraUpdater( const ECS::Entity & p_ent ) :
-		_entity( p_ent ), _transform( REG().get<Util::Math::Transform>( p_ent ) )
+		_entity( p_ent ), _transform( REG().get<Util::Math::Transform>( p_ent ) ),
+		_target( REG().get<Renderer::Camera>( p_ent ).target )
 	{
 		auto & reg		= REG();
 		auto & settings = SETTINGS();

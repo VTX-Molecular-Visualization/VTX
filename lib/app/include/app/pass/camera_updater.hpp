@@ -4,7 +4,9 @@
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
 #include "app/events.hpp"
+#include "app/input/input_manager.hpp"
 #include "app/pass/pass_manager.hpp"
+#include "app/services.hpp"
 #include <util/constants.hpp>
 
 namespace VTX::App::Pass
@@ -16,7 +18,10 @@ namespace VTX::App::Pass
 	class CameraUpdater : public IPass
 	{
 	  public:
-		using UpdateDelegate = Util::EventHub::Delegate<void( const float, Util::Math::Transform & )>;
+		/**
+		 * @brief Controller update fonction (corresponds to ConceptController).
+		 */
+		using UpdateDelegate = Util::EventHub::Delegate<bool( const float, Util::Math::Transform &, Vec3f & )>;
 
 		/**
 		 * @brief Constructor.
@@ -28,21 +33,70 @@ namespace VTX::App::Pass
 		 */
 		inline void update( const float p_delta, const float )
 		{
-			if ( _controller )
+			if ( not _controllers.empty() )
 			{
-				_controllerUpdateDelegate( p_delta, _transform );
+				// If ended, go to next controller.
+				if ( not _controllers.front().update( p_delta, _transform.get(), _target.get() ) )
+				{
+					nextController();
+				}
+			}
+
+			INPUT().consume();
+		}
+
+		/**
+		 * @brief Controller insertion mode.
+		 */
+		enum struct CTRL_INSERTION_MODE
+		{
+			FRONT,
+			BACK
+		};
+
+		/**
+		 * @brief Add a controller to the queue.
+		 */
+		template<Controller::ConceptController C, typename... Args>
+		void addController( const CTRL_INSERTION_MODE p_mode, Args &&... p_args )
+		{
+			// Create.
+			auto controller = std::make_unique<C>( std::forward<Args>( p_args )... );
+
+			// Connect.
+			UpdateDelegate d;
+			d.template connect<&C::update>( controller.get() );
+
+			// Push.
+			if ( p_mode == CTRL_INSERTION_MODE::FRONT )
+			{
+				_controllers.emplace_front( Entry { std::move( controller ), std::move( d ) } );
+			}
+			else
+			{
+				_controllers.emplace_back( Entry { std::move( controller ), std::move( d ) } );
 			}
 		}
 
 		/**
-		 * @brief Create and set a controller.
+		 * @brief Set controller (erase queue).
 		 */
 		template<Controller::ConceptController C, typename... Args>
 		void setController( Args &&... p_args )
 		{
-			auto controller = std::make_unique<C>( std::forward<Args>( p_args )... );
-			_controllerUpdateDelegate.template connect<&C::update>( controller.get() );
-			_controller = std::move( controller );
+			_controllers.clear();
+			addController<C>( CTRL_INSERTION_MODE::BACK, std::forward<Args>( p_args )... );
+		}
+
+		/**
+		 * @brief Go to next controller.
+		 */
+		inline void nextController()
+		{
+			if ( not _controllers.empty() )
+			{
+				_controllers.pop_front();
+			}
 		}
 
 	  private:
@@ -52,19 +106,24 @@ namespace VTX::App::Pass
 		const ECS::Entity _entity;
 
 		/**
-		 * @brief Camera transform reference (avoid get component in update).
+		 * @brief Camera references (avoid get component in update).
 		 */
-		Util::Math::Transform & _transform;
+		std::reference_wrapper<Util::Math::Transform> _transform;
+		std::reference_wrapper<Vec3f>				  _target;
 
 		/**
-		 * @brief Current controller.
+		 * @brief Controller running definition.
 		 */
-		std::unique_ptr<Controller::IController> _controller;
+		struct Entry
+		{
+			std::unique_ptr<Controller::IController> ctrl;
+			UpdateDelegate							 update;
+		};
 
 		/**
-		 * @brief Update delegate.
+		 * @brief Controllers queue (front is current ).
 		 */
-		UpdateDelegate _controllerUpdateDelegate;
+		std::deque<Entry> _controllers;
 
 		/**
 		 * @brief On update.

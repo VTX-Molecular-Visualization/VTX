@@ -29,15 +29,16 @@ namespace VTX::App::Action::Controller
 	{
 		void execute()
 		{
-			ECS::Entity entity = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
+			auto [ entCamera, camera ] = ECS::getFirstEntityWithComponents<Renderer::Camera>();
+			auto [ entScene, aabb ]	   = ECS::getFirstEntityWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
 
-			const auto	 entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
-			const auto & aabb	  = REG().get<Util::Math::AABB>( entScene );
+			// Reset target to scene center.
+			camera.target = aabb.centroid();
 
 			// Set controller.
 			if constexpr ( C == E_CONTROLLER::TRACKBALL )
 			{
-				PASS().getPass<Pass::CameraUpdater>()->setController<App::Controller::Trackball>( aabb.centroid() );
+				PASS().getPass<Pass::CameraUpdater>()->setController<App::Controller::Trackball>();
 			}
 			else if constexpr ( C == E_CONTROLLER::FREEFLY )
 			{

@@ -10,9 +10,10 @@ namespace VTX::App::Controller
 	 * @brief Defines the update function.
 	 */
 	template<typename T>
-	concept ConceptController = requires( T & p_controller, const float p_delta, Util::Math::Transform & p_transform ) {
-		{ p_controller.update( p_delta, p_transform ) } -> std::same_as<void>;
-	};
+	concept ConceptController
+		= requires( T & p_controller, const float p_delta, Util::Math::Transform & p_transform, Vec3f & p_target ) {
+			  { p_controller.update( p_delta, p_transform, p_target ) } -> std::same_as<bool>;
+		  };
 
 	/**
 	 * @brief For static polymorphism.

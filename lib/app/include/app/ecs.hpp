@@ -6,8 +6,19 @@
 
 namespace VTX::App::ECS
 {
+	/**
+	 * @brief Aliases.
+	 */
 	using Registry = entt::registry;
 	using Entity   = entt::entity;
+
+	/**
+	 * @brief Helper type to check if a view get function returns void (i.e. tag component).
+	 */
+	template<typename View, typename T, typename Entity>
+	using view_get_t = decltype( std::declval<View &>().template get<T>( std::declval<Entity>() ) );
+	template<typename View, typename T, typename Entity>
+	inline constexpr bool view_get_is_void_v = std::is_void_v<view_get_t<View, T, Entity>>;
 
 	/**
 	 * @brief Set the global registry.
@@ -65,15 +76,31 @@ namespace VTX::App::ECS
 	}
 
 	/**
-	 * @brief Get the first entity with components of type in the registry.
+	 * @brief Get the first entity with components (references) of type in the registry.
 	 */
 	template<typename... T>
 	auto getFirstEntityWithComponents()
 	{
 		auto view = registry().view<T...>();
 		assert( view.begin() != view.end() );
+
 		Entity e = *view.begin();
-		return std::tuple<Entity, T &...> { e, view.template get<T>( e )... };
+
+		auto make = [ & ]<typename C>() -> decltype( auto )
+		{
+			if constexpr ( std::is_void_v<decltype( view.template get<C>( e ) )> )
+			{
+				// Tag.
+				return std::tuple<> {};
+			}
+			else
+			{
+				// Component.
+				return std::tuple<C &> { view.template get<C>( e ) };
+			}
+		};
+
+		return std::tuple_cat( std::tuple<Entity> { e }, make.template operator()<T>()... );
 	}
 
 	/**

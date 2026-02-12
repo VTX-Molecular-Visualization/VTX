@@ -30,7 +30,7 @@ namespace VTX::App::Action::Camera
 {
 	void SetPosition::execute( const Vec3f & p_position )
 	{
-		const auto & [ ent, camera, transform ]
+		const auto [ ent, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 		transform.setPosition( p_position );
 		HUB().trigger<Events::CameraTransformChange>();
@@ -38,7 +38,7 @@ namespace VTX::App::Action::Camera
 
 	void SetRotation::execute( const Vec3f & p_eulerAngles )
 	{
-		const auto & [ ent, camera, transform ]
+		const auto [ ent, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 		transform.setRotation( p_eulerAngles );
 		HUB().trigger<Events::CameraTransformChange>();
@@ -46,7 +46,7 @@ namespace VTX::App::Action::Camera
 
 	void SetScale::execute( const float p_scale )
 	{
-		const auto & [ ent, camera, transform ]
+		const auto [ ent, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 		transform.setScale( p_scale );
 		HUB().trigger<Events::CameraTransformChange>();
@@ -56,20 +56,20 @@ namespace VTX::App::Action::Camera
 	{
 		const auto	 entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
 		const auto & aabb	  = REG().get<Util::Math::AABB>( entScene );
-		const auto & [ entCamera, camera, transform ]
+		const auto [ entCamera, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
 		Vec3f position = _computeCameraOrientPosition( FRONT_AXIS, camera.fov, aabb );
 		transform.setPosition( position );
 		transform.setRotation( QUATF_ID );
 		transform.lookAt( aabb.centroid() );
+		camera.target = aabb.centroid();
 		HUB().trigger<Events::CameraTransformChange>();
 	}
 
 	void Orient::execute()
 	{
-		const auto & [ entCamera, _, __ ]
-			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+		const auto [ entCamera, _, __ ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
 		Util::Math::AABB aabb;
 
@@ -118,9 +118,9 @@ namespace VTX::App::Action::Camera
 	{
 		using namespace Util;
 
-		const auto & [ _, camera, transform ]
+		const auto [ _, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
-
+		camera.target = p_target.centroid();
 		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(
 			_computeCameraOrientPosition( transform.getFront(), camera.fov, p_target ), transform.getRotation()
 		);

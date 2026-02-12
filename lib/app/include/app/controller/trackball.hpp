@@ -18,17 +18,12 @@ namespace VTX::App::Controller
 		/**
 		 * @brief Constructor.
 		 */
-		Trackball( const Vec3f & = VEC3F_ZERO );
+		Trackball();
 
 		/**
 		 * @brief Called each frame.
 		 */
-		void update( const float, Util::Math::Transform & );
-
-		/**
-		 * @brief Set the controller target.
-		 */
-		inline void setTarget( const Vec3f & p_target ) { _target = p_target; }
+		bool update( const float, Util::Math::Transform &, Vec3f & );
 
 		/**
 		 * @brief Stop camera movement.
@@ -36,11 +31,6 @@ namespace VTX::App::Controller
 		inline void stop() { _velocity = VEC3F_ZERO; }
 
 	  private:
-		/**
-		 * @brief Controller target to rotate around.
-		 */
-		Vec3f _target = VEC3F_ZERO;
-
 		/**
 		 * @brief Current velocity.
 		 */

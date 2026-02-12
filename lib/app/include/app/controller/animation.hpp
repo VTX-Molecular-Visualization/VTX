@@ -41,7 +41,7 @@ namespace VTX::App::Controller
 		/**
 		 * @brief Called each frame.
 		 */
-		void update( const float, Util::Math::Transform & );
+		bool update( const float, Util::Math::Transform &, Vec3f & );
 
 	  private:
 		/**
