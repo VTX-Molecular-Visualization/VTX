@@ -70,13 +70,20 @@ namespace VTX::UI::QT::Delegate
 		const QModelIndex &			 p_index
 	)
 	{
-		if ( p_event->type() == QEvent::MouseButtonPress )
+		if ( p_event->type() == QEvent::MouseButtonPress || p_event->type() == QEvent::MouseButtonDblClick )
 		{
 			auto * e = static_cast<QMouseEvent *>( p_event );
 
 			const int hit = _hitTestButton( p_option, e->pos() );
 			if ( hit < 0 )
 			{
+				if ( p_event->type() == QEvent::MouseButtonDblClick )
+				{
+					emit doubleClicked( p_index );
+					p_event->accept();
+					return true;
+				}
+
 				return QStyledItemDelegate::editorEvent( p_event, p_model, p_option, p_index );
 			}
 

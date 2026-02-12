@@ -66,6 +66,7 @@ namespace VTX::UI::QT::Delegate
 		void visibilityClicked( const QModelIndex & );
 		void colorSchemeClicked( const QModelIndex & );
 		void representationClicked( const QModelIndex & );
+		void doubleClicked( const QModelIndex & );
 
 	  private:
 		/**
