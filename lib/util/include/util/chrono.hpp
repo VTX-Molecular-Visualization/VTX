@@ -1,6 +1,8 @@
 #ifndef __VTX_UTIL_CHRONO__
 #define __VTX_UTIL_CHRONO__
 
+#include "util/logger.hpp"
+#include "util/string.hpp"
 #include <chrono>
 #include <functional>
 #include <string>
@@ -69,7 +71,7 @@ namespace VTX::Util
 	 * @brief Utility function to measure the execution time of a callable.
 	 */
 	template<class F, class... Args>
-	// requires std::invocable<F, Args...> && std::same_as<std::invoke_result_t<F, Args...>, void>
+		requires std::invocable<F, Args...> && std::same_as<std::invoke_result_t<F, Args...>, void>
 	inline float CHRONO_CPU( F && p_f, Args &&... p_args )
 	{
 		Chrono c;
@@ -77,5 +79,26 @@ namespace VTX::Util
 		std::invoke( std::forward<F>( p_f ), std::forward<Args>( p_args )... );
 		return c.elapsedTime();
 	}
+
+	/**
+	 * @brief Run a chrono during its lifetime.
+	 */
+	class ScopedChrono : public Chrono
+	{
+	  public:
+		ScopedChrono( const std::string & p_name, const Util::LOG_LEVEL p_level = Util::LOG_LEVEL::LOG_INFO ) :
+			_name( p_name ), _level( p_level )
+		{
+			start();
+		}
+		~ScopedChrono()
+		{
+			VTX_LOG( _level, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() ) );
+		}
+
+	  private:
+		std::string		_name;
+		Util::LOG_LEVEL _level;
+	};
 } // namespace VTX::Util
 #endif

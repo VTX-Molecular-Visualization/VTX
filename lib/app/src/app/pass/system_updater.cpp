@@ -90,9 +90,9 @@ namespace VTX::App::Pass
 
 	void SystemUpdater::_onSystemLoaded( const Events::SystemLoad & p_event )
 	{
-		Util::Chrono	  timer;
-		auto &			  reg	 = REG();
-		const ECS::Entity system = p_event.system;
+		Util::ScopedChrono timer( "_onSystemLoaded" );
+		auto &			   reg	  = REG();
+		const ECS::Entity  system = p_event.system;
 
 		timer.start();
 
@@ -132,7 +132,8 @@ namespace VTX::App::Pass
 			std::vector<PickingUID> uids( atomCount );
 			for ( Index i = 0; i < atomCount; ++i )
 			{
-				radii[ i ] = 1.0f; // TODO: use glsl constants.
+				// TODO: use glsl constants.
+				radii[ i ] = Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ toUnderlying( data.getAtomSymbol( i ) ) ];
 			}
 
 			size_t i = 0;
@@ -145,8 +146,6 @@ namespace VTX::App::Pass
 				Renderer::SystemData { uid.system, transform.computeMatrix(), data, *frame, radii, uids }
 			);
 		}
-
-		VTX_DEBUG( "Systems GPU upload preparation: {} ms", timer.elapsedTime() );
 
 		// Push systems.
 		RENDERER().setSystems( systemsData );

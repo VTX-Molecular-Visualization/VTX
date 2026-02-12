@@ -287,8 +287,7 @@ namespace VTX::Renderer
 
 	void Renderer::setSystems( const std::vector<SystemData> & p_systems )
 	{
-		Util::Chrono timer;
-		timer.start();
+		Util::ScopedChrono timer( "setSystems" );
 
 		// Compute total size and check integrity.
 		size_t totalAtoms = 0;
@@ -374,7 +373,6 @@ namespace VTX::Renderer
 		_needBuildDrawRanges = true;
 
 		setNeedUpdate( true );
-		VTX_DEBUG( "Systems GPU upload: {} ms", timer.elapsedTime() );
 	}
 
 	void Renderer::setSystemTransform( const SystemUID p_uid, const Mat4f & p_transform )
