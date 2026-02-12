@@ -24,6 +24,9 @@ namespace VTX::UI::QT::Widget
 		format.setRenderableType( QSurfaceFormat::OpenGL );
 		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
 		format.setSwapInterval( 1 );
+		format.setDepthBufferSize( 24 );
+		format.setStencilBufferSize( 8 );
+		format.setSamples( 0 );
 
 		// Create context.
 		_context = new QOpenGLContext();
@@ -41,6 +44,7 @@ namespace VTX::UI::QT::Widget
 		_window->setFormat( format );
 		_window->setSurfaceType( QSurface::OpenGLSurface );
 		_window->setFlags( Qt::FramelessWindowHint );
+		_window->installEventFilter( this );
 		_window->create();
 
 		// Use a widget container to embed the window.
@@ -86,15 +90,27 @@ namespace VTX::UI::QT::Widget
 	{
 		_context->doneCurrent();
 		_container->removeEventFilter( this );
+		_window->removeEventFilter( this );
 	}
 
 	void OpenGLWidget::render( const App::Events::PostRender & p_e )
 	{
-		if ( p_e.rendered )
+		if ( not p_e.rendered )
 		{
-			_context->swapBuffers( _window );
-			_context->makeCurrent( _window );
+			return;
 		}
+
+		if ( not _window->isExposed() )
+		{
+			return;
+		}
+
+		if ( not _context->makeCurrent( _window ) )
+		{
+			return;
+		}
+
+		_context->swapBuffers( _window );
 	}
 
 	void OpenGLWidget::resizeEvent( QResizeEvent * p_event )
@@ -116,7 +132,7 @@ namespace VTX::UI::QT::Widget
 		_window->resize( size );
 		_container->resize( size );
 
-		const QSize scaledSize = size * devicePixelRatioF();
+		const QSize scaledSize = size * _window->devicePixelRatio();
 
 		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
 	}
@@ -152,14 +168,28 @@ namespace VTX::UI::QT::Widget
 			if ( p_event->type() == QEvent::DragEnter )
 			{
 				QCoreApplication::sendEvent( &MAIN_WINDOW(), e );
+				delete e;
 				return true;
 			}
 			else if ( p_event->type() == QEvent::Drop )
 			{
 				QCoreApplication::sendEvent( &MAIN_WINDOW(), e );
+				delete e;
 				return true;
 			}
 		}
+		else if ( p_watched == _window )
+		{
+			if ( p_event->type() == QEvent::Expose )
+			{
+				onResizeFinished();
+			}
+			else if ( p_event->type() == QEvent::WindowActivate || p_event->type() == QEvent::Show )
+			{
+				_container->setFocus( Qt::ActiveWindowFocusReason );
+			}
+		}
+
 		return QWidget::eventFilter( p_watched, p_event );
 	}
 

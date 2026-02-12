@@ -123,7 +123,7 @@ namespace VTX::App::PythonBinding
 			"getCameraPosition",
 			[]()
 			{
-				const auto & [ ent, _, transform ]
+				const auto [ ent, _, transform ]
 					= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 				return transform.getPosition();
 			},
@@ -133,7 +133,7 @@ namespace VTX::App::PythonBinding
 			"getCameraRotation",
 			[]()
 			{
-				const auto & [ ent, _, transform ]
+				const auto [ ent, _, transform ]
 					= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 				return transform.getRotation();
 			},

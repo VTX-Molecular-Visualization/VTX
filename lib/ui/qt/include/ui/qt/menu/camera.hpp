@@ -5,8 +5,6 @@
 #include <QMenu>
 #include <app/action/controller.hpp>
 #include <app/events.hpp>
-#include <app/pass/controller/freefly.hpp>
-#include <app/pass/controller/trackball.hpp>
 #include <renderer/camera.hpp>
 #include <util/event_hub.hpp>
 #include <util/type_traits.hpp>

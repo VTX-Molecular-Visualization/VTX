@@ -1,30 +1,23 @@
 #include "app/pass/camera_updater.hpp"
-#include "app/pass/controller/animation.hpp"
-#include "app/pass/controller/freefly.hpp"
-#include "app/pass/controller/trackball.hpp"
 #include "app/services.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
 #include <renderer/camera.hpp>
 #include <renderer/renderer.hpp>
-#include <util/math.hpp>
 #include <util/math/transform.hpp>
 
 namespace VTX::App::Pass
 {
-	CameraUpdater::CameraUpdater( const ECS::Entity & p_ent ) : _entity( p_ent )
+	CameraUpdater::CameraUpdater( const ECS::Entity & p_ent ) :
+		_entity( p_ent ), _transform( REG().get<Util::Math::Transform>( p_ent ) ),
+		_target( REG().get<Renderer::Camera>( p_ent ).target )
 	{
 		auto & reg		= REG();
 		auto & settings = SETTINGS();
 
 		// Update functions.
 		reg.on_update<Renderer::Camera>().connect<&CameraUpdater::_onUpdate>( this );
-
 		HUB().connect<Events::CameraTransformChange, &CameraUpdater::_onUpdate>( this );
-		HUB().connect<Events::CameraAnimationEnd, &CameraUpdater::_onCameraAnimationEnded>( this );
-
-		auto & transform = reg.get<Util::Math::Transform>( p_ent );
-		auto & camera	 = reg.get<Renderer::Camera>( p_ent );
 
 		// Connect with settings.
 		reg.patch<Renderer::Camera>(
@@ -52,15 +45,4 @@ namespace VTX::App::Pass
 		RENDERER().setCamera( camera, transform.getPosition(), viewMatrix, projectionMatrix );
 	}
 
-	void CameraUpdater::_onCameraAnimationEnded( const Events::CameraAnimationEnd & )
-	{
-		if ( auto * p = PASS().tryGetPass<Pass::Controller::Trackball>() )
-		{
-			p->paused = false;
-		}
-		else if ( auto * p = PASS().tryGetPass<Pass::Controller::Freefly>() )
-		{
-			p->paused = false;
-		}
-	}
 } // namespace VTX::App::Pass

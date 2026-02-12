@@ -1,6 +1,7 @@
 #include "ui/qt/dock_widget/options.hpp"
 #include "ui/qt/actions.hpp"
 #include "ui/qt/application.hpp"
+#include "ui/qt/events.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/style/icons.hpp"
@@ -18,7 +19,10 @@
 #include <app/filesystem.hpp>
 #include <app/network/network_manager.hpp>
 #include <app/services.hpp>
+#include <util/enum.hpp>
+#include <util/event_hub.hpp>
 #include <util/string.hpp>
+#include <util/type_traits.hpp>
 
 namespace
 {
@@ -50,6 +54,7 @@ namespace VTX::UI::QT::DockWidget
 		auto * dark	  = addAction<Action::Theme::Dark>();
 
 		_comboBoxTheme = new QComboBox( this );
+
 		_comboBoxTheme->addItem( "System", QVariant::fromValue( system ) );
 		_comboBoxTheme->addItem( "Light", QVariant::fromValue( light ) );
 		_comboBoxTheme->addItem( "Dark", QVariant::fromValue( dark ) );
@@ -97,7 +102,8 @@ namespace VTX::UI::QT::DockWidget
 
 		// Font.
 		_comboBoxFont = new QComboBox( this );
-		uint i		  = 0;
+
+		uint i = 0;
 		for ( const QString & fontName : STYLE().getAvailableFonts() )
 		{
 			_comboBoxFont->addItem( fontName );
@@ -118,6 +124,34 @@ namespace VTX::UI::QT::DockWidget
 		// Reset layout.
 		auto * buttonResetLayout = new ActionablePushButton( Application::getAction<Theme::ResetLayout>(), this );
 		layoutDisplay->addWidget( buttonResetLayout );
+
+		// Inputs.
+		auto * groupBoxInputs = new QGroupBox( "Inputs" );
+		auto * layoutInputs	  = new QVBoxLayout( groupBoxInputs );
+		_comboBoxKBLayout	  = new QComboBox( this );
+
+		const Window::KB_LAYOUT defaultLayout
+			= QLocale::system().language() == QLocale::French ? Window::KB_LAYOUT::AZERTY : Window::KB_LAYOUT::QWERTY;
+		const Window::KB_LAYOUT layout = static_cast<Window::KB_LAYOUT>(
+			SETTINGS().value( SETTING_KEY_KEYBOARD_LAYOUT, toUnderlying( defaultLayout ) ).toUInt()
+		);
+
+		for ( int l = 0; l < toUnderlying( Window::KB_LAYOUT::COUNT ); l++ )
+		{
+			const Window::KB_LAYOUT kbLayout   = static_cast<Window::KB_LAYOUT>( l );
+			QString					layoutName = QString::fromStdString( Util::Enum::enumName( kbLayout ).data() );
+			_comboBoxKBLayout->addItem( layoutName, QVariant::fromValue( kbLayout ) );
+		}
+
+		connect(
+			_comboBoxKBLayout,
+			&QComboBox::currentIndexChanged,
+			[ this ]( int p_layout ) { App::HUB().trigger<Events::KeyboardLayoutChanged>( p_layout ); }
+		);
+
+		_comboBoxKBLayout->setCurrentIndex( toUnderlying( layout ) );
+
+		layoutInputs->addWidget( _comboBoxKBLayout );
 
 		// Graphics.
 		auto * groupBoxGraphics = new QGroupBox( "Graphics" );
@@ -193,6 +227,7 @@ namespace VTX::UI::QT::DockWidget
 		layoutCache->addLayout( layoutCacheButton );
 
 		_layout->addWidget( groupBoxDisplay );
+		_layout->addWidget( groupBoxInputs );
 		_layout->addWidget( groupBoxGraphics );
 		_layout->addWidget( groupBoxCache );
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
@@ -220,6 +255,7 @@ namespace VTX::UI::QT::DockWidget
 
 	Options::~Options()
 	{
+		SETTINGS().setValue( SETTING_KEY_KEYBOARD_LAYOUT, _comboBoxKBLayout->currentIndex() );
 		SETTINGS().setValue( SETTING_KEY_VSYNC, _checkBoxVSync->isChecked() );
 		SETTINGS().setValue( SETTING_KEY_SAVE_POWER, _checkBoxSavePower->isChecked() );
 	}

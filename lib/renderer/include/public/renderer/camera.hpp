@@ -49,7 +49,6 @@ namespace VTX::Renderer
 	 */
 	struct Camera
 	{
-	  public:
 		/**
 		 * @brief Camera settings.
 		 */
@@ -63,6 +62,11 @@ namespace VTX::Renderer
 		 */
 		size_t screenWidth;
 		size_t screenHeight;
+
+		/**
+		 * @brief Target.
+		 */
+		Vec3f target;
 
 		/**
 		 * @brief Compute projection matrix.
