@@ -31,8 +31,16 @@ namespace VTX::App::Action::IO
 	 */
 	struct AssociateTrajectory
 	{
+		AssociateTrajectory();
 		void execute( const FilePath & p_path, const ECS::Entity & );
 		void execute( const std::string & p_path, const ECS::Entity & );
+		void wait() noexcept;
+		struct _Data;
+		struct Del
+		{
+			void operator()( _Data * ) noexcept;
+		};
+		std::unique_ptr<_Data, Del> _data = nullptr;
 	};
 
 	struct RunPythonScript

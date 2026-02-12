@@ -6,6 +6,7 @@
 #include <atomic>
 #include <core/struct/system.hpp>
 #include <functional>
+#include <future>
 #include <io/reader/system.hpp>
 #include <latch>
 #include <optional>
@@ -34,12 +35,20 @@ namespace VTX::App::System
 	};
 
 	/**
-	 * @brief Returns a callable that will read the file and fill the pendingSystem data.
+	 * @brief Responsible for extracting data from the IO reader to the PendingSystem datastruct.
 	 */
-	std::function<uint( Util::StopToken, Threading::BaseThread & )> fillerCallable(
-		const ECS::Entity &,
-		PendingSystem &
-	) noexcept;
+	class SystemExtractor
+	{
+	  public:
+		SystemExtractor() = delete;
+		SystemExtractor( ECS::Entity, PendingSystem & );
+		uint operator()( Util::StopToken, Threading::BaseThread & ) noexcept;
+		void wait() noexcept;
+
+	  private:
+		struct _Data;
+		std::shared_ptr<_Data> _attributesPtr;
+	};
 
 	/**
 	 * @brief If PendingSystem::onlyTrajectory is false, actually create a system, appending all necessary component to

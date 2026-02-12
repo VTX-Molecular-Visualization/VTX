@@ -30,44 +30,65 @@
 #include <util/math/aabb.hpp>
 #include <util/math/range_list.hpp>
 #include <util/math/transform.hpp>
-
 namespace VTX::App::System
 {
-
-	std::function<uint( Util::StopToken, Threading::BaseThread & )> fillerCallable(
-		const ECS::Entity & p_entity,
-		PendingSystem &		p_pendingData
-	) noexcept
+	struct SystemExtractor::_Data
 	{
-		return [ p_entity, &p_pendingData ]( VTX::Util::StopToken p_stopToken, Threading::BaseThread & ) -> uint
+		ECS::Entity								  entity;
+		std::reference_wrapper<PendingSystem>	  data;
+		std::latch								  synchronizer { 1 };
+		std::optional<Util::EventHub::Connection> finishEventConnection = std::nullopt;
+		_Data( ECS::Entity p_entity, PendingSystem & p_data ) : entity( std::move( p_entity ) ), data( p_data ) {}
+		~_Data() { HUB().disconnect( finishEventConnection.value() ); }
+		_Data( _Data && )				   = delete;
+		_Data( const _Data & )			   = delete;
+		_Data & operator=( _Data && )	   = delete;
+		_Data & operator=( const _Data & ) = delete;
+
+		void jobFinished( const Events::SystemLoad & p_ )
 		{
-			p_pendingData.loader.emplace();
-			if ( p_pendingData.buffer )
-				p_pendingData.loader->readBuffer(
-					p_pendingData.buffer.value(), p_pendingData.path, p_pendingData.system
-				);
-			else
-				p_pendingData.loader->readFile( p_pendingData.path, p_pendingData.system );
-			p_pendingData.pdbIdCode = p_pendingData.loader->getChemfilesReader().getPdbIdCode();
+			if ( p_.system != entity )
+				return;
+			synchronizer.count_down();
+		}
+	};
+	SystemExtractor::SystemExtractor( ECS::Entity p_entity, PendingSystem & p_d ) :
+		_attributesPtr( std::make_shared<_Data>( std::move( p_entity ), p_d ) )
+	{
+	}
+	void SystemExtractor::wait() noexcept { _attributesPtr->synchronizer.wait(); }
 
-			if ( p_stopToken.stop_requested() )
-				return 0;
+	uint SystemExtractor::operator()( Util::StopToken p_stopToken, Threading::BaseThread & ) noexcept
+	{
+		auto & entity	   = _attributesPtr->entity;
+		auto & pendingData = _attributesPtr->data.get();
+		_attributesPtr->finishEventConnection
+			= HUB().connect<Events::SystemLoad, &_Data::jobFinished>( _attributesPtr.get() );
 
-			if ( p_pendingData.loader->getChemfilesReader().getFrameCount() > 1 )
-			{
-				p_pendingData.trajectoryData.emplace<System::TrajectoryFullBuffer>();
-			}
-			else
-			{
-				p_pendingData.trajectoryData.emplace<System::TrajectorySingleFrame>();
-			}
+		pendingData.loader.emplace();
+		if ( pendingData.buffer )
+			pendingData.loader->readBuffer( pendingData.buffer.value(), pendingData.path, pendingData.system );
+		else
+			pendingData.loader->readFile( pendingData.path, pendingData.system );
+		pendingData.pdbIdCode = pendingData.loader->getChemfilesReader().getPdbIdCode();
 
-			auto visitor = [ loader = &p_pendingData.loader.value() ]( auto && traj )
-			{ System::prepare( traj, std::move( *loader ) ); };
-			std::visit( visitor, p_pendingData.trajectoryData );
-			p_pendingData.readyToDeliver = true;
+		if ( p_stopToken.stop_requested() )
 			return 0;
-		};
+
+		if ( pendingData.loader->getChemfilesReader().getFrameCount() > 1 )
+		{
+			pendingData.trajectoryData.emplace<System::TrajectoryFullBuffer>();
+		}
+		else
+		{
+			pendingData.trajectoryData.emplace<System::TrajectorySingleFrame>();
+		}
+
+		auto visitor = [ loader = &pendingData.loader.value() ]( auto && traj )
+		{ System::prepare( traj, std::move( *loader ) ); };
+		std::visit( visitor, pendingData.trajectoryData );
+		pendingData.readyToDeliver = true;
+		return 0;
 	}
 
 	void addTrajectory( const ECS::Entity & p_entity, PendingSystem & p_data ) noexcept

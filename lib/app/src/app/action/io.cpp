@@ -32,6 +32,15 @@ namespace VTX::App::Action::IO
 		else
 			ACTION().execute<Action::Scene::LoadSystem>( p_path );
 	}
+
+	struct AssociateTrajectory::_Data
+	{
+		std::latch							   extractorCreation { 1 };
+		std::optional<System::SystemExtractor> extractor;
+	};
+	void AssociateTrajectory::Del::operator()( AssociateTrajectory::_Data * p_ ) noexcept { delete p_; }
+
+	AssociateTrajectory::AssociateTrajectory() : _data( new _Data() ) {}
 	void AssociateTrajectory::execute( const FilePath & p_path, const ECS::Entity & p_entity )
 	{
 		if ( p_entity == entt::null )
@@ -43,11 +52,23 @@ namespace VTX::App::Action::IO
 		auto & pendingSystemData		 = REG().emplace<System::PendingSystem>( p_entity );
 		pendingSystemData.onlyTrajectory = true;
 		pendingSystemData.path			 = p_path;
-		THREAD().createThread( System::fillerCallable( p_entity, pendingSystemData ) );
+
+		_data->extractor = System::SystemExtractor( p_entity, pendingSystemData );
+		_data->extractorCreation.count_down();
+
+		THREAD().createThread( _data->extractor.value() );
 	}
 	void AssociateTrajectory::execute( const std::string & p_path, const ECS::Entity & p_e )
 	{
 		execute( FilePath( p_path ), p_e );
+	}
+	void AssociateTrajectory::wait() noexcept
+	{
+		if ( _data == nullptr )
+			return;
+		_data->extractorCreation.wait();
+		if ( _data->extractor )
+			_data->extractor->wait();
 	}
 
 	void RunPythonScript::execute( const FilePath & p_path ) { INTERPRETOR().runScript( p_path ); }

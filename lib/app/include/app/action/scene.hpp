@@ -12,8 +12,16 @@ namespace VTX::App::Action::Scene
 	 */
 	struct LoadSystem
 	{
+		LoadSystem();
 		void execute( FilePath p_path );
 		void execute( FilePath p_path, std::string && p_buffer );
+		void wait() noexcept;
+		struct _Data;
+		struct Del
+		{
+			void operator()( _Data * ) noexcept;
+		};
+		std::unique_ptr<_Data, Del> _data = nullptr;
 	};
 
 	/**

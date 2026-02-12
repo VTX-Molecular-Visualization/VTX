@@ -57,7 +57,7 @@ namespace VTX::App::Pass
 			// Register update delegate.
 			UpdateDelegate d;
 			d.template connect<&T::update>( p );
-			_delegates.emplace_front( std::move( d ) );
+			_delegates.push_back( std::move( d ) );
 
 			return p;
 		}
@@ -151,10 +151,7 @@ namespace VTX::App::Pass
 
 	  private:
 		Util::Collection<std::unique_ptr<IPass>> _passes;
-		// delegates collection needs to be a forward list so insertion/removal of element from it
-		// doesn't invalidate current iterators. It is necessary as adding a system causes a new pass to
-		// be added and is performed in the system_update pass
-		std::forward_list<UpdateDelegate> _delegates;
+		std::vector<UpdateDelegate>				 _delegates;
 	};
 } // namespace VTX::App::Pass
 
