@@ -53,16 +53,19 @@ namespace VTX::App::System
 			if ( p_stopToken.stop_requested() )
 				return 0;
 
-			p_pendingData.topologyReady = true;
-			p_pendingData.trajectoryDecision.wait();
-
-			if ( p_stopToken.stop_requested() )
-				return 0;
+			if ( p_pendingData.loader->getChemfilesReader().getFrameCount() > 1 )
+			{
+				p_pendingData.trajectoryData.emplace<System::TrajectoryFullBuffer>();
+			}
+			else
+			{
+				p_pendingData.trajectoryData.emplace<System::TrajectorySingleFrame>();
+			}
 
 			auto visitor = [ loader = &p_pendingData.loader.value() ]( auto && traj )
 			{ System::prepare( traj, std::move( *loader ) ); };
 			std::visit( visitor, p_pendingData.trajectoryData );
-			p_pendingData.trajectoryReady = true;
+			p_pendingData.readyToDeliver = true;
 			return 0;
 		};
 	}

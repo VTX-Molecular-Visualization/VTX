@@ -34,6 +34,12 @@ namespace VTX::App::Pass
 	void subscribe( QueuedAction ) noexcept;
 
 	/**
+	 * @brief Get a ticket to wait until every Queued Actions are executed.
+	 * @return
+	 */
+	std::shared_ptr<std::latch> getWaitTicket();
+
+	/**
 	 * @brief Delays an action until a future pass update, in the main loop.
 	 * @tparam SomeAction Action to be delayed
 	 */
@@ -47,12 +53,6 @@ namespace VTX::App::Pass
 			subscribe( QueuedAction( SomeAction(), std::forward<Args>( args )... ) );
 		}
 	};
-
-	/**
-	 * @brief Get a ticket to wait until every Queued Actions are executed.
-	 * @return
-	 */
-	std::shared_ptr<std::latch> getWaitTicket();
 
 	/**
 	 * @brief Wrap a function pointer to wait for every Queued Action before invoking the function.

@@ -141,7 +141,7 @@ namespace VTX::App::Pass
 		Util::Collection<std::unique_ptr<IPass>> _passes;
 		std::forward_list<UpdateDelegate>
 			_delegates; // delegates collection needs to be a forward list so insertion/removal of element from it
-						// doesn't invalidate pointers.
+						// doesn't invalidate current iterators.
 	};
 } // namespace VTX::App::Pass
 

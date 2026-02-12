@@ -50,33 +50,12 @@ namespace VTX::App::Pass
 		for ( auto it_entity : REG().view<System::PendingSystem>() )
 		{
 			auto & pendingSystem = REG().get<System::PendingSystem>( it_entity );
-			if ( not pendingSystem.topologyReady )
-				continue;
-			if ( not pendingSystem.decisionMade )
-			{
-				_pendingSystemTopologyReady( pendingSystem );
-				continue;
-			}
-			if ( pendingSystem.trajectoryReady )
+			if ( pendingSystem.readyToDeliver )
 			{
 				System::deliver( it_entity, pendingSystem );
 				continue;
 			}
 		}
-	}
-
-	void SystemUpdater::_pendingSystemTopologyReady( System::PendingSystem & p_sys ) noexcept
-	{
-		if ( p_sys.loader->getChemfilesReader().getFrameCount() > 1 )
-		{
-			p_sys.trajectoryData.emplace<System::TrajectoryFullBuffer>();
-		}
-		else
-		{
-			p_sys.trajectoryData.emplace<System::TrajectorySingleFrame>();
-		}
-		p_sys.decisionMade = true;
-		p_sys.trajectoryDecision.count_down();
 	}
 
 	void SystemUpdater::_onUpdateTransform( ECS::Registry & p_r, ECS::Entity p_e )

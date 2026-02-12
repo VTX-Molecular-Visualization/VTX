@@ -28,13 +28,9 @@ namespace VTX::App::System
 		// Two pass on the system : when the topology is ready, the decision of what kind of trajectory to have in made
 		// on the main loop. Then, the trajectory is red asynchronously. Then, when trajectory is ready, the main loop
 		// proceed with the system creation.
-		std::atomic_bool topologyReady { false };
-		std::atomic_bool decisionMade { false };
-		std::latch		 trajectoryDecision { 1 };
+		std::atomic_bool readyToDeliver { false };
 
 		std::variant<System::TrajectorySingleFrame, System::TrajectoryFullBuffer> trajectoryData;
-
-		std::atomic_bool trajectoryReady { false };
 	};
 
 	/**
