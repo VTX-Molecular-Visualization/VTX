@@ -29,12 +29,6 @@ namespace VTX::App::Action::Controller
 	{
 		void execute()
 		{
-			auto [ entCamera, camera ] = ECS::getFirstEntityWithComponents<Renderer::Camera>();
-			auto [ entScene, aabb ]	   = ECS::getFirstEntityWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
-
-			// Reset target to scene center.
-			camera.target = aabb.centroid();
-
 			// Set controller.
 			if constexpr ( C == E_CONTROLLER::TRACKBALL )
 			{

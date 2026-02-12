@@ -83,6 +83,7 @@ namespace VTX::App::Controller
 			}
 		}
 
+		// Apply.
 		if ( localRotation != VEC3F_ZERO || rollRotation != 0.f || translation != VEC3F_ZERO )
 		{
 			if ( localRotation != VEC3F_ZERO )
@@ -97,6 +98,11 @@ namespace VTX::App::Controller
 			{
 				p_transform.translate( translation );
 			}
+
+			// Keep target forward.
+			const float distance = Math::length( p_target - p_transform.getPosition() );
+			const Vec3f front	 = p_transform.getFront();
+			p_target			 = p_transform.getPosition() + front * distance;
 
 			HUB().trigger<Events::CameraTransformChange>();
 		}
