@@ -23,6 +23,11 @@ namespace VTX::App::Controller
 		 */
 		bool update( const float, Util::Math::Transform &, Vec3f & );
 
+		/**
+		 * @brief Stop movement.
+		 */
+		void stop() override {}
+
 	  private:
 		/**
 		 * @brief Controller settings.

@@ -26,9 +26,9 @@ namespace VTX::App::Controller
 		bool update( const float, Util::Math::Transform &, Vec3f & );
 
 		/**
-		 * @brief Stop camera movement.
+		 * @brief Stop movement.
 		 */
-		inline void stop() { _velocity = VEC3F_ZERO; }
+		void stop() override { _velocity = VEC3F_ZERO; }
 
 	  private:
 		/**

@@ -67,14 +67,26 @@ namespace VTX::App::Pass
 			UpdateDelegate d;
 			d.template connect<&C::update>( controller.get() );
 
+			// Remove previous instance of same type.
+			// TODO: make this facultative.
+			Hash hash = Util::hash<C>();
+			std::erase_if( _controllers, [ hash ]( const Entry & e ) { return e.hash == hash; } );
+
 			// Push.
+			Entry entry { std::move( controller ), std::move( d ), hash };
 			if ( p_mode == CTRL_INSERTION_MODE::FRONT )
 			{
-				_controllers.emplace_front( Entry { std::move( controller ), std::move( d ) } );
+				// Stop previous.
+				if ( not _controllers.empty() )
+				{
+					_controllers.front().ctrl->stop();
+				}
+
+				_controllers.emplace_front( std::move( entry ) );
 			}
 			else
 			{
-				_controllers.emplace_back( Entry { std::move( controller ), std::move( d ) } );
+				_controllers.emplace_back( std::move( entry ) );
 			}
 		}
 
@@ -118,6 +130,7 @@ namespace VTX::App::Pass
 		{
 			std::unique_ptr<Controller::IController> ctrl;
 			UpdateDelegate							 update;
+			Hash									 hash;
 		};
 
 		/**

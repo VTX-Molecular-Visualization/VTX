@@ -21,6 +21,7 @@ namespace VTX::App::Controller
 	struct IController
 	{
 		virtual ~IController() = default;
+		virtual void stop()	   = 0;
 	};
 
 } // namespace VTX::App::Controller

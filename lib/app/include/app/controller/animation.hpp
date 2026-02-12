@@ -43,6 +43,11 @@ namespace VTX::App::Controller
 		 */
 		bool update( const float, Util::Math::Transform &, Vec3f & );
 
+		/**
+		 * @brief Stop camera movement.
+		 */
+		void stop() override { _time = _duration; }
+
 	  private:
 		/**
 		 * @brief Start and end animation data.
