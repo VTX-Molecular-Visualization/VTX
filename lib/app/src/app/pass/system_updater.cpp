@@ -1,5 +1,7 @@
-#include "app/pass/system_updater.hpp"
+#include "app/system/load.hpp"
+// Forward decl
 #include "app/events.hpp"
+#include "app/pass/system_updater.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
@@ -7,6 +9,7 @@
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
+#include "app/threading/thread_manager.hpp"
 #include <renderer/renderer.hpp>
 #include <util/chrono.hpp>
 #include <util/math/transform.hpp>
@@ -25,12 +28,14 @@ namespace VTX::App::Pass
 		reg.on_update<System::Color>().connect<&SystemUpdater::_onUpdateColor>( this );
 
 		reg.on_update<Renderer::Representation>().connect<&SystemUpdater::_onUpdateRepresentationPreset>( this );
+		reg.on_destroy<System::TrajectoryFullBuffer>().connect<&SystemUpdater::_onTrajectoryDestruction>( this );
 
 		HUB().connect<Events::SystemLoad, &SystemUpdater::_onSystemLoaded>( this );
 	}
 
 	void SystemUpdater::update( const float p_delta, const float p_total )
 	{
+		_pendingSystemUpdate();
 		return;
 		for ( auto & entity : _entities )
 		{
@@ -39,6 +44,39 @@ namespace VTX::App::Pass
 				[ p_delta ]( Util::Math::Transform & p_transform ) { p_transform.rotateYaw( p_delta * 0.001f ); }
 			);
 		}
+	}
+	void SystemUpdater::_pendingSystemUpdate() noexcept
+	{
+		for ( auto it_entity : REG().view<System::PendingSystem>() )
+		{
+			auto & pendingSystem = REG().get<System::PendingSystem>( it_entity );
+			if ( not pendingSystem.topologyReady )
+				continue;
+			if ( not pendingSystem.decisionMade )
+			{
+				_pendingSystemTopologyReady( pendingSystem );
+				continue;
+			}
+			if ( pendingSystem.trajectoryReady )
+			{
+				System::deliver( it_entity, pendingSystem );
+				continue;
+			}
+		}
+	}
+
+	void SystemUpdater::_pendingSystemTopologyReady( System::PendingSystem & p_sys ) noexcept
+	{
+		if ( p_sys.loader->getChemfilesReader().getFrameCount() > 1 )
+		{
+			p_sys.trajectoryData.emplace<System::TrajectoryFullBuffer>();
+		}
+		else
+		{
+			p_sys.trajectoryData.emplace<System::TrajectorySingleFrame>();
+		}
+		p_sys.decisionMade = true;
+		p_sys.trajectoryDecision.count_down();
 	}
 
 	void SystemUpdater::_onUpdateTransform( ECS::Registry & p_r, ECS::Entity p_e )
@@ -243,4 +281,18 @@ namespace VTX::App::Pass
 
 		RENDERER().setRepresentations( representations );
 	}
+	void SystemUpdater::_onTrajectoryDestruction( ECS::Registry &, ECS::Entity p_entity )
+	{
+		if ( auto traj = REG().try_get<System::TrajectoryFullBuffer>( p_entity ) )
+		{ // If the trajectory worker is still doing stuff, stop it and join the thread before destroying the component.
+			Threading::BaseThread * thr = nullptr;
+			THREAD().get( traj->threadId, thr );
+			if ( thr )
+			{
+				thr->stop();
+				thr->wait();
+			}
+		}
+	}
+
 } // namespace VTX::App::Pass

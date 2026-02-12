@@ -6,6 +6,7 @@
 #include "app/network/network_manager.hpp"
 #include "app/python_binding/interpretor.hpp"
 #include "app/services.hpp"
+#include "app/system/load.hpp"
 #include "app/system/metadata.hpp"
 #include "app/system/trajectory_preparation.hpp"
 #include "app/system/uid.hpp"
@@ -39,31 +40,10 @@ namespace VTX::App::Action::IO
 			return;
 		}
 
-		// TODO : Maybe there is some code to merge with the systemloading in scene.cpp
-		size_t					initialAtomcount = REG().get<Core::Struct::System>( p_entity ).getAtomCount();
-		VTX::IO::Reader::System loader;
-		Core::Struct::System	data;
-		loader.readFile( p_path, data );
-
-		if ( initialAtomcount == data.getAtomCount() )
-		{
-			REG().remove<System::GenericTrajectory>( p_entity );
-			auto & trajectory = REG().emplace<System::TrajectoryFullBuffer>( p_entity );
-			auto & uid		  = REG().get<System::UID>( p_entity );
-			App::System::prepare( p_entity, trajectory, std::move( loader ) );
-
-			RENDERER().setSystemPosition( uid.system, trajectory.frameCollection[ 0 ] );
-		}
-		else
-		{
-			VTX::VTX_ERROR(
-				"File {} and system {} has different atom count. ({}/{})",
-				p_path.string(),
-				REG().get<System::Metadata>( p_entity ).pdbIDCode,
-				initialAtomcount,
-				data.getAtomCount()
-			);
-		}
+		auto & pendingSystemData		 = REG().emplace<System::PendingSystem>( p_entity );
+		pendingSystemData.onlyTrajectory = true;
+		pendingSystemData.path			 = p_path;
+		THREAD().createThread( System::fillerCallable( p_entity, pendingSystemData ) );
 	}
 	void AssociateTrajectory::execute( const std::string & p_path, const ECS::Entity & p_e )
 	{
@@ -93,8 +73,8 @@ namespace VTX::App::Action::IO
 		NETWORK().downloadFile(
 			p_url.str.data(),
 			filepath.string(),
-			[ filepath ]( const std::string & p_text )
-			{ ACTION().execute<Action::Scene::LoadSystem>( filepath, &p_text ); }
+			[ filepath ]( std::string && p_text )
+			{ ACTION().execute<Action::Scene::LoadSystem>( filepath, std::move( p_text ) ); }
 		);
 	}
 

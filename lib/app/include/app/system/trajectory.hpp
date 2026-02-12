@@ -1,13 +1,14 @@
 #ifndef __VTX_APP_SYSTEM_TRAJECTORY__
 #define __VTX_APP_SYSTEM_TRAJECTORY__
 
+#include "app/threading/base_thread.hpp"
 #include <app/ecs.hpp>
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <span>
 #include <util/constants.hpp>
 #include <util/players.hpp>
-#include <util/thread.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Threading
@@ -62,8 +63,9 @@ namespace VTX::App::System
 	{
 		GenericTrajectory				genericData;
 		std::vector<std::vector<Vec3f>> frameCollection;
-		size_t lastFrameAvailable = TypeMax<size_t>; // Updated by the filling thread. Value is MAX
-													 // when no frame are available.
+		size_t lastFrameAvailable { TypeMax<size_t> }; // Updated by the filling thread. Value is MAX
+													   // when no frame are available.
+		Threading::BaseThread::ID threadId;
 	};
 
 	/**
@@ -73,8 +75,8 @@ namespace VTX::App::System
 	 */
 	std::span<const Vec3f> getCurrentAtomPositions( const ECS::Entity & ) noexcept;
 	bool				   hasMultiFrameTrajectory( const ECS::Entity & ) noexcept;
+	void				   eraseTrajectory( const ECS::Entity & ) noexcept;
 	void				   get( const ECS::Entity &, GenericTrajectory *& ) noexcept;
-
 
 } // namespace VTX::App::System
 

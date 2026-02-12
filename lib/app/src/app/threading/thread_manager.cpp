@@ -16,7 +16,7 @@ namespace VTX::App::Threading
 	{
 		template<typename callable>
 		BaseThread & _createThread(
-			ThreadManager *						 p_system,
+			ThreadManager *							 p_system,
 			std::list<std::shared_ptr<BaseThread>> & p_threadCollection,
 			callable								 p_func
 		)
@@ -31,7 +31,7 @@ namespace VTX::App::Threading
 
 		template<typename callable>
 		BaseThread & _createThread(
-			ThreadManager *						 p_system,
+			ThreadManager *							 p_system,
 			std::list<std::shared_ptr<BaseThread>> & p_threadCollection,
 			callable								 p_asyncOp,
 			const BaseThread::EndCallback &			 p_callback
@@ -70,6 +70,23 @@ namespace VTX::App::Threading
 	}
 
 	void ThreadManager::lateUpdate() { _clearStoppedThreads(); }
+
+	void ThreadManager::get( const BaseThread::ID & p_id, BaseThread *& p_out ) noexcept
+	{
+		p_out = nullptr;
+		for ( auto & it_thrptr : _threads )
+			if ( it_thrptr->getId() == p_id )
+			{
+				p_out = it_thrptr.get();
+				return;
+			}
+		for ( auto & it_thrptr : _stoppingThreads )
+			if ( it_thrptr->getId() == p_id )
+			{
+				p_out = it_thrptr.get();
+				return;
+			}
+	}
 
 	void ThreadManager::_killThread( const BaseThread & p_thread )
 	{

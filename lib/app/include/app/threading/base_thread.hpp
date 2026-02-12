@@ -23,6 +23,7 @@ namespace VTX::App::Threading
 		using AsyncOp		   = std::function<uint( BaseThread & )>;
 		using StoppableAsyncOp = std::function<uint( Util::StopToken, BaseThread & )>;
 		using EndCallback	   = std::function<void( BaseThread &, uint )>;
+		using ID			   = std::jthread::id;
 
 	  public:
 		/**
@@ -49,8 +50,8 @@ namespace VTX::App::Threading
 		void wait();
 		void stop();
 
-		bool isFinished() const;
-		inline std::jthread::id getId() const { return _thread.get_id(); }
+		bool	  isFinished() const;
+		inline ID getId() const { return _thread.get_id(); }
 
 		inline float getProgress() const { return _progress; }
 		void		 setProgress( const float p_value );

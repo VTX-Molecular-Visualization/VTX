@@ -22,7 +22,7 @@ namespace VTX::App::Network
 		// Save to cache.
 		Util::Filesystem::writeFile( Filesystem::getCacheDir() / filepath, text );
 		onFileCached();
-		p_callback( text );
+		p_callback( std::move( text ) );
 	}
 
 } // namespace VTX::App::Network

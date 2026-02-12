@@ -1,5 +1,5 @@
 #ifndef __VTX_APP_SYSTEM_DELETED__
-#define __VTX_APP_SYSTEM_DELETED
+#define __VTX_APP_SYSTEM_DELETED__
 
 #include <util/math/range_list.hpp>
 

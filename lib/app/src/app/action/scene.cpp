@@ -12,6 +12,7 @@
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/deleted.hpp"
+#include "app/system/load.hpp"
 #include "app/system/metadata.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
@@ -34,112 +35,26 @@
 namespace VTX::App::Action::Scene
 {
 
-	void LoadSystem::execute( const FilePath & p_path, const std::string * const p_buffer )
+	void LoadSystem::execute( FilePath p_path /*, const std::string * const p_buffer*/ )
 	{
-		using namespace Core::Struct;
-
 		auto & reg = REG();
 
 		// Create entity.
-		ECS::Entity entity = reg.create();
+		ECS::Entity entity			  = reg.create();
+		auto &		pendingSystemData = reg.emplace<System::PendingSystem>( entity );
+		pendingSystemData.path		  = std::move( p_path );
+		THREAD().createThread( System::fillerCallable( entity, pendingSystemData ) );
+	}
+	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
+	{
+		auto & reg = REG();
 
-		// Add components.
-		auto & data		 = reg.emplace<Core::Struct::System>( entity );
-		auto & metadata	 = reg.emplace<System::Metadata>( entity );
-		auto & transform = reg.emplace<Util::Math::Transform>( entity );
-		auto & aabb		 = reg.emplace<Util::Math::AABB>( entity );
-		auto & uid		 = reg.emplace<System::UID>( entity );
-
-		auto & visibility	  = reg.emplace<System::Visibility>( entity );
-		auto & selection	  = reg.emplace<System::Selection>( entity );
-		auto & representation = reg.emplace<System::Representation>( entity );
-		auto & color		  = reg.emplace<System::Color>( entity );
-		auto & deleted		  = reg.emplace<System::Deleted>( entity );
-
-		{
-			// Load system data and metadata.
-			IO::Reader::System loader;
-			// systemStruct.trajectory.setOptimized();
-
-			// From buffer.
-			if ( p_buffer )
-			{
-				VTX_DEBUG( "Path: {}", p_path.string() );
-				loader.readBuffer( *p_buffer, p_path, data );
-			}
-			// From disk.
-			else
-			{
-				metadata.path = p_path;
-				loader.readFile( p_path, data );
-			}
-
-			const VTX::IO::Reader::Chemfiles & chemfilesReader = loader.getChemfilesReader();
-			const std::string &				   pdbId		   = chemfilesReader.getPdbIdCode();
-			metadata.pdbIDCode								   = pdbId;
-			const std::string systemName					   = pdbId == "" ? p_path.stem().string() : pdbId;
-			data.name										   = systemName; // TODO: move to metadata?
-
-			// UIDs: get from UID manager.
-			auto & uidManager = UID();
-			uid.system		  = uidManager.getRootPool().registerValue();
-			uid.residues	  = uidManager.getPickingPool().registerRange( data.getResidueCount() );
-			uid.atoms		  = uidManager.getPickingPool().registerRange( data.getAtomCount() );
-
-			std::span<const Vec3f> firstFrame;
-			if ( chemfilesReader.getFrameCount() > 1 )
-			{
-				auto & trajectory = reg.emplace<System::TrajectoryFullBuffer>(
-					entity
-				); // TODO Implement circular buffer with an automatic decision (maybe based on atomCount * frameCount
-				   // value threshold) and with a setting based on a value the user can alter
-				prepare( entity, trajectory, std::move( loader ) );
-				firstFrame = trajectory.frameCollection[ 0 ];
-			}
-			else
-			{
-				auto & trajectory		 = reg.emplace<System::TrajectorySingleFrame>( entity );
-				trajectory.atomPositions = chemfilesReader.getCurrentFrameAtomPosition();
-				firstFrame				 = trajectory.atomPositions;
-				RENDERER().setSystemPosition( uid.system, trajectory.atomPositions );
-			}
-
-			// AABB (trigger update function for scene aabb).
-			reg.patch<Util::Math::AABB>(
-				entity,
-				[ &firstFrame ]( Util::Math::AABB & p_aabb )
-				{
-					for ( auto & it_atomPos : firstFrame )
-					{
-						p_aabb.extend( it_atomPos, Core::ChemDB::Atom::VDW_RADIUS_MIN );
-					}
-				}
-			);
-
-		} // We don't need the loader anymore
-
-		// Visibillity: all visible.
-		visibility.atoms = IndexRangeList( data.getAtomRange() );
-
-		// Selection: nothing selected.
-		selection.atoms = {};
-
-		// Deleted: nothing deleted.
-		deleted.atoms = {};
-
-		// Color: set default color scheme.
-		color.colorSchemeAtoms[ System::E_COLOR_SCHEME::ATOM ] = IndexRangeList( data.getAtomRange() );
-
-		// Representation: set default representation.
-		// TODO: configure default representation in settings?
-		representation.presetAtoms[ ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>() ]
-			= IndexRangeList( data.getAtomRange() );
-
-		// Trigger system load.
-		HUB().trigger<Events::SystemLoad>( { entity } );
-
-		// Orient.
-		ACTION().execute<Camera::Orient>( aabb );
+		// Create entity.
+		ECS::Entity entity			  = reg.create();
+		auto &		pendingSystemData = reg.emplace<System::PendingSystem>( entity );
+		pendingSystemData.path		  = std::move( p_path );
+		pendingSystemData.buffer.emplace( std::move( p_buffer ) );
+		THREAD().createThread( System::fillerCallable( entity, pendingSystemData ) );
 	}
 
 	void DeleteSystem::execute( const ECS::Entity p_e ) { REG().destroy( p_e ); }
