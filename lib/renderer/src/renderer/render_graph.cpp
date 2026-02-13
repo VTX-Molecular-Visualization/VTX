@@ -317,7 +317,8 @@ namespace VTX::Renderer
 		else
 		{
 			// Used by shading pass even if SSAO disabled.
-			std::vector<float> emptyData( 1, 1.f );
+			// HALF_FLOAT value.
+			std::vector<std::byte> emptyData = { std::byte { 0x00 }, std::byte { 0x3C } };
 			g.texture( "BlurY", E_FORMAT::R16F, emptyData, Size2DAbsolute { 1, 1 } );
 		}
 
