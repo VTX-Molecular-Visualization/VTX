@@ -39,6 +39,9 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint VIEW_IN_AR	   = 0xe9fe;
 	constexpr Codepoint VISIBILITY	   = 0xe8f4;
 	constexpr Codepoint VISIBILITY_OFF = 0xe8f5;
+	constexpr Codepoint PLAY_SHALLOW		   = 0xe037;
+	constexpr Codepoint PAUSE_SHALLOW		   = 0xe034;
+	constexpr Codepoint STOP_SHALLOW   = 0xe047;
 } // namespace VTX::UI::QT::Style::Icons
 
 #endif

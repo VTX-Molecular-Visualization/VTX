@@ -1,4 +1,8 @@
+
 #include "ui/qt/widget/tree/trajectory_player.hpp"
+#include "ui/qt/services.hpp"
+#include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include <QHBoxLayout>
 #include <app/action/action_manager.hpp>
 #include <app/action/trajectory.hpp>
@@ -54,6 +58,18 @@ namespace VTX::UI::QT::Widget::Tree
 
 		// Initial state
 		_refresh();
+	}
+
+	std::array<QIcon, 4> TrajectoryPlayer::_getIcons()
+	{
+		return {
+			STYLE().iconFromCodepoint( Style::Icons::PLAY_SHALLOW ),
+			STYLE().iconFromCodepoint( Style::Icons::PAUSE_SHALLOW ),
+			STYLE().iconFromCodepoint( Style::Icons::STOP_SHALLOW ),
+			STYLE().iconFromCodepoint( Style::Icons::SETTINGS ),
+		}
+
+		;
 	}
 
 	void TrajectoryPlayer::_onPlayPauseClicked()
@@ -140,8 +156,8 @@ namespace VTX::UI::QT::Widget::Tree
 		bool isPlaying = trajPtr && !trajPtr->paused;
 
 		// Use unicode symbols for now (can be replaced with icons)
-		_btnPlayPause->setText( isPlaying ? QString::fromUtf8( "\u23F8" ) : QString::fromUtf8( "\u25B6" ) );
-		_btnStop->setText( QString::fromUtf8( "\u23F9" ) );
+		_btnPlayPause->setIcon( isPlaying ? _icons[ 1 ] : _icons[ 0 ] );
+		_btnStop->setIcon( _icons[ 2 ] );
 	}
 
 } // namespace VTX::UI::QT::Widget::Tree

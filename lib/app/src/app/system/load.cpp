@@ -32,6 +32,13 @@
 #include <util/math/transform.hpp>
 namespace VTX::App::System
 {
+	namespace
+	{
+		struct EntityDelivered
+		{
+			ECS::Entity entity;
+		};
+	} // namespace
 	struct SystemExtractor::_Data
 	{
 		ECS::Entity								  entity;
@@ -47,9 +54,9 @@ namespace VTX::App::System
 		_Data & operator=( _Data && )	   = delete;
 		_Data & operator=( const _Data & ) = delete;
 
-		void jobFinished( const Events::SystemLoad & p_ )
+		void jobFinished( const EntityDelivered & p_ )
 		{
-			if ( p_.system != entity )
+			if ( p_.entity != entity )
 				return;
 			synchronizer.count_down();
 		}
@@ -65,7 +72,7 @@ namespace VTX::App::System
 		auto & entity	   = _attributesPtr->entity;
 		auto & pendingData = _attributesPtr->data.get();
 		_attributesPtr->finishEventConnection
-			= HUB().connect<Events::SystemLoad, &_Data::jobFinished>( _attributesPtr.get() );
+			= HUB().connect<EntityDelivered, &_Data::jobFinished>( _attributesPtr.get() );
 
 		pendingData.loader.emplace();
 		if ( pendingData.buffer )
@@ -201,6 +208,7 @@ namespace VTX::App::System
 			create( p_entity, p_data );
 
 		REG().erase<PendingSystem>( p_entity );
+		HUB().trigger<EntityDelivered>( { p_entity } );
 	}
 
 } // namespace VTX::App::System

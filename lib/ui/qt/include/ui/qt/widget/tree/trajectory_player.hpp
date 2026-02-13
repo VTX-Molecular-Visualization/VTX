@@ -1,11 +1,13 @@
 #ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
 #define __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
 
+#include <QIcon>
 #include <QLabel>
 #include <QPushButton>
 #include <QSlider>
 #include <QWidget>
 #include <app/ecs.hpp>
+#include <array>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -22,12 +24,15 @@ namespace VTX::UI::QT::Widget::Tree
 		explicit TrajectoryPlayer( App::ECS::Entity p_system, QWidget * p_parent = nullptr );
 
 	  private:
+		static std::array<QIcon, 4> _getIcons();
+
 		App::ECS::Entity _system;
 
-		QPushButton * _btnPlayPause;
-		QPushButton * _btnStop;
-		QSlider *	  _slider;
-		QLabel *	  _frameLabel;
+		QPushButton *		 _btnPlayPause;
+		QPushButton *		 _btnStop;
+		QSlider *			 _slider;
+		QLabel *			 _frameLabel;
+		std::array<QIcon, 4> _icons { _getIcons() };
 
 		bool _isRefreshing = false; // Prevent feedback loops between _refresh() and valueChanged
 
