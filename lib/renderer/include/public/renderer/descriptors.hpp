@@ -55,6 +55,7 @@ namespace VTX::Renderer::Desc
 	 */
 	enum struct E_FORMAT : uint32_t
 	{
+		RGBA8,
 		RGB16F,
 		RGBA16F,
 		RGBA32UI,

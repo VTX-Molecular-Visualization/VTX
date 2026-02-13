@@ -30,7 +30,7 @@ namespace VTX::Util::Image
 		const E_FORMAT				  p_format,
 		const size_t				  p_width,
 		const size_t				  p_height,
-		const uchar * const			  p_data,
+		const std::byte * const		  p_data,
 		const std::optional<FilePath> p_watermark = std::nullopt
 	);
 

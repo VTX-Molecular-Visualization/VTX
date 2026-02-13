@@ -10,6 +10,8 @@ namespace VTX::Renderer
 
 	void Renderer::setDefault()
 	{
+		Util::ScopedChrono timer( "[RENDERER] setDefault" );
+
 		_context.setNull();
 		try
 		{
@@ -24,6 +26,8 @@ namespace VTX::Renderer
 
 	void Renderer::setOpenGL45( const FilePath & p_shaderIncludePath )
 	{
+		Util::ScopedChrono timer( "[RENDERER] setOpenGL45" );
+
 		_context.setOpenGL45( _width, _height, p_shaderIncludePath );
 		try
 		{
@@ -45,6 +49,8 @@ namespace VTX::Renderer
 
 	void Renderer::resize( const size_t p_width, const size_t p_height )
 	{
+		Util::ScopedChrono timer( "[RENDERER] resize" );
+
 		VTX_TRACE( "Resizing renderer to {}x{}", p_width, p_height );
 
 		_width	= p_width;
@@ -125,6 +131,8 @@ namespace VTX::Renderer
 
 	void Renderer::setGraphicsConfig( const GraphicsConfig & p_config )
 	{
+		Util::ScopedChrono timer( "[RENDERER] setGraphicsConfig" );
+
 		// If graph changed from config, rebuild backend.
 		if ( _refreshGraph( p_config ) )
 		{
@@ -185,6 +193,8 @@ namespace VTX::Renderer
 
 	void Renderer::setColorLayout( const Color::Layout & p_layout )
 	{
+		Util::ScopedChrono timer( "[RENDERER] setColorLayout" );
+
 		_context.setShaderBuffer<Util::Color::Rgba>( "ColorLayout", p_layout.colors );
 
 		setNeedUpdate( true );
@@ -192,6 +202,8 @@ namespace VTX::Renderer
 
 	void Renderer::setRepresentations( const std::vector<const Representation *> & p_representations )
 	{
+		Util::ScopedChrono timer( "[RENDERER] setRepresentations" );
+
 		BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
 		RepresentationIndex					index = 0;
 
@@ -287,7 +299,7 @@ namespace VTX::Renderer
 
 	void Renderer::setSystems( const std::vector<SystemData> & p_systems )
 	{
-		Util::ScopedChrono timer( "setSystems" );
+		Util::ScopedChrono timer( "[RENDERER] setSystems" );
 
 		// Compute total size and check integrity.
 		size_t totalAtoms = 0;
@@ -377,6 +389,8 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemTransform( const SystemUID p_uid, const Mat4f & p_transform )
 	{
+		Util::ScopedChrono timer( "[RENDERER] setSystemTransform" );
+
 		assert( _cacheSystems.contains( p_uid ) );
 		_cacheSystems[ p_uid ].transform = p_transform;
 
@@ -403,6 +417,8 @@ namespace VTX::Renderer
 		const std::vector<Index> &		p_bonds
 	)
 	{
+		Util::ScopedChrono timer( "[RENDERER] setSystemRepresentation" );
+
 		_cacheSystems[ p_uid ].representationAtomRanges = p_representations;
 
 		const size_t					 countAtoms = _geometries.spheres.ranges[ p_uid ].getCount();
@@ -439,7 +455,6 @@ namespace VTX::Renderer
 				}
 			}
 		}
-		for ( Index i = 0; i < p_bonds.size(); i += 2 ) {}
 
 		_needBuildDrawRanges = true;
 		setNeedUpdate( true );
@@ -453,6 +468,8 @@ namespace VTX::Renderer
 
 	)
 	{
+		Util::ScopedChrono timer( "[RENDERER] setSystemFlags" );
+
 		const size_t offsetAtoms = _geometries.spheres.ranges[ p_uid ].first;
 		const size_t countAtoms	 = _geometries.spheres.ranges[ p_uid ].getCount();
 
@@ -549,6 +566,8 @@ namespace VTX::Renderer
 
 	void Renderer::_refreshDataRepresentations()
 	{
+		Util::ScopedChrono timer( "[RENDERER] _refreshDataRepresentations" );
+
 		_geometries.spheres.representationMask.clear();
 		_geometries.cylinders.representationMask.clear();
 
@@ -580,29 +599,15 @@ namespace VTX::Renderer
 		}
 	}
 
-	void Renderer::snapshot(
-		std::vector<uchar> & p_outImage,
-		const size_t		 p_width,
-		const size_t		 p_height,
-		const float			 p_fov,
-		const float			 p_near,
-		const float			 p_far
-	)
+	std::vector<std::byte> Renderer::snapshot()
 	{
-		/*
-		const Mat4f & matrixProjectionOld = *_proxyCamera->matrixProjection;
-		Mat4f		  matrixProjection	  = Util::Math::perspective(
-			   Util::Math::radians( p_fov ), float( p_width ) / float( p_height ), p_near, p_far
-		   );
-		setValue( matrixProjection, "CameraMatrixProjection" );
-		_context.snapshot( p_outImage, _graph.getRenderQueue(), _instructions, p_width, p_height );
-		setValue( matrixProjectionOld, "CameraMatrixProjection" );
-		*/
+		Util::ScopedChrono timer( "[RENDERER] snapshot" );
+		return _context.snapshot();
 	}
 
 	Vec2i Renderer::getPickedIds( const size_t p_x, const size_t p_y ) const
 	{
-		std::vector<std::byte> data = _context.getTextureData( "Picking", p_x, _height - p_y );
+		std::vector<std::byte> data = _context.getTextureData( "Picking", {}, p_x, _height - p_y );
 
 		assert( data.size() == sizeof( Vec2i ) );
 
@@ -626,6 +631,8 @@ namespace VTX::Renderer
 
 	bool Renderer::_refreshGraph( const GraphicsConfig & p_config )
 	{
+		Util::ScopedChrono timer( "[RENDERER] _refreshGraph" );
+
 		RenderGraph::PipelineConfig config;
 
 		config.enableSSAO	   = p_config.activeSSAO;

@@ -97,10 +97,10 @@ namespace VTX::Renderer
 			return queue;
 		}
 
-		// Check last pass = 1 output.
-		if ( queue.back()->outputs.size() != 1 )
+		// Check last pass = no output (going to fbo).
+		if ( queue.back()->outputs.size() > 0 )
 		{
-			throw GraphicException( "Last pass '{}' must have exactly one output", queue.back()->name );
+			// throw GraphicException( "Last pass '{}' must have exactly one output", queue.back()->name );
 		}
 
 		// Print.

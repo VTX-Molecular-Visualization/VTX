@@ -183,9 +183,10 @@ namespace VTX::Renderer::Context
 	}
 
 	std::vector<std::byte> ContextWrapper::getTextureData(
-		const Desc::Key & p_key,
-		const size_t	  p_x,
-		const size_t	  p_y
+		const Desc::Key &			  p_key,
+		std::optional<Desc::E_FORMAT> p_format,
+		std::optional<size_t>		  p_x,
+		std::optional<size_t>		  p_y
 	) const
 	{
 		return std::visit(
@@ -194,7 +195,23 @@ namespace VTX::Renderer::Context
 				using T = std::remove_cvref_t<decltype( p_backend )>;
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
-					return p_backend.getTextureData( p_key, p_x, p_y );
+					return p_backend.getTextureData( p_key, p_format, p_x, p_y );
+				}
+				return std::vector<std::byte> {};
+			},
+			_impl->backend
+		);
+	}
+
+	std::vector<std::byte> ContextWrapper::snapshot() const
+	{
+		return std::visit(
+			[ & ]( auto & p_backend )
+			{
+				using T = std::remove_cvref_t<decltype( p_backend )>;
+				if constexpr ( not std::is_same_v<T, std::monostate> )
+				{
+					return p_backend.snapshot();
 				}
 				return std::vector<std::byte> {};
 			},

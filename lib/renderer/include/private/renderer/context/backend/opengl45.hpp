@@ -81,9 +81,20 @@ namespace VTX::Renderer::Context::Backend
 		void setPipelineBufferData( const Desc::Key &, SpanBytes, const size_t );
 
 		/**
-		 * @brief Get texture data at a given pixel.
+		 * @brief Get texture data at a given pixel, or full texture.
 		 */
-		std::vector<std::byte> getTextureData( const Desc::Key &, const size_t, const size_t ) const;
+		std::vector<std::byte> getTextureData(
+			const Desc::Key &,
+			std::optional<Desc::E_FORMAT>,
+			std::optional<size_t>,
+			std::optional<size_t>
+		) const;
+
+
+		/**
+		 * @brief Read data in default framebuffer.
+		 */
+		std::vector<std::byte> snapshot() const;
 
 		/**
 		 * @brief Set texture data.

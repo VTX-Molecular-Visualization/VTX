@@ -112,14 +112,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Exports the renderer to an array of pixels.
 		 */
-		void snapshot(
-			std::vector<uchar> & p_outImage,
-			const size_t		 p_width,
-			const size_t		 p_height,
-			const float			 p_fov,
-			const float			 p_near,
-			const float			 p_far
-		);
+		std::vector<std::byte> snapshot();
 
 		/**
 		 * @brief Get the id of the the data stored in the given pixel.

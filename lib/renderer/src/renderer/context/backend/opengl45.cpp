@@ -28,10 +28,11 @@ namespace
 
 		switch ( p_format )
 		{
-		case E_FORMAT::RGB16F: return { GL_RGB16F, GL_RGB, GL_FLOAT, 6, false, false };
-		case E_FORMAT::RGBA16F: return { GL_RGBA16F, GL_RGBA, GL_FLOAT, 8, false, false };
+		case E_FORMAT::RGBA8: return { GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, 4, false, false };
+		case E_FORMAT::RGB16F: return { GL_RGB16F, GL_RGB, GL_HALF_FLOAT, 6, false, false };
+		case E_FORMAT::RGBA16F: return { GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT, 8, false, false };
 		case E_FORMAT::RGBA32F: return { GL_RGBA32F, GL_RGBA, GL_FLOAT, 16, false, false };
-		case E_FORMAT::R16F: return { GL_R16F, GL_RED, GL_FLOAT, 2, false, false };
+		case E_FORMAT::R16F: return { GL_R16F, GL_RED, GL_HALF_FLOAT, 2, false, false };
 		case E_FORMAT::R32F: return { GL_R32F, GL_RED, GL_FLOAT, 4, false, false };
 		case E_FORMAT::R8: return { GL_R8, GL_RED, GL_UNSIGNED_BYTE, 1, false, false };
 		case E_FORMAT::RG32UI: return { GL_RG32UI, GL_RG_INTEGER, GL_UNSIGNED_INT, 8, true, false };
@@ -1007,27 +1008,35 @@ namespace VTX::Renderer::Context::Backend
 		}
 	}
 
-	std::vector<std::byte> OpenGL45::getTextureData( const Desc::Key & p_key, const size_t p_x, const size_t p_y ) const
+	std::vector<std::byte> OpenGL45::getTextureData(
+		const Desc::Key &			  p_key,
+		std::optional<Desc::E_FORMAT> p_format,
+		std::optional<size_t>		  p_x,
+		std::optional<size_t>		  p_y
+	) const
 	{
 		using namespace Desc;
 
-		std::vector<std::byte> data;
-		const Handle		   h		   = _textures.handle( p_key );
-		const auto &		   textureProp = _textures.descriptor( p_key );
-		const GLPixelFormat	   glFormat	   = _toGL( textureProp.format );
-		const auto &		   texture	   = _textures.get( h );
+		const Handle		handle		= _textures.handle( p_key );
+		const auto &		textureProp = _textures.descriptor( p_key );
+		const GLPixelFormat glFormat	= _toGL( p_format ? *p_format : textureProp.format );
+		const auto &		texture		= _textures.get( handle );
 
-		data.resize( glFormat.bytesPerPixel );
+		const bool	 single = p_x && p_y;
+		const size_t w		= single ? 1 : _width;
+		const size_t h		= single ? 1 : _height;
+
+		std::vector<std::byte> data( w * h * glFormat.bytesPerPixel );
 
 		texture.getSubImage(
 			0,
-			GLint( p_x ),
-			GLint( p_y ),
-			1,
-			1,
+			single ? GLint( *p_x ) : 0,
+			single ? GLint( *p_y ) : 0,
+			GLsizei( w ),
+			GLsizei( h ),
 			glFormat.uploadFormat,
 			glFormat.uploadType,
-			glFormat.bytesPerPixel,
+			GLsizei( data.size() ),
 			data.data()
 		);
 
@@ -1044,6 +1053,16 @@ namespace VTX::Renderer::Context::Backend
 		const auto &		texture		= _textures.get( h );
 
 		texture.fill( p_bytes.data(), glFormat.uploadFormat, glFormat.uploadType );
+	}
+
+	std::vector<std::byte> OpenGL45::snapshot() const
+	{
+		std::vector<std::byte> data( _width * _height * 4 );
+		glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
+		glReadBuffer( GL_FRONT );
+		glReadPixels( 0, 0, _width, _height, GL_RGBA, GL_UNSIGNED_BYTE, data.data() );
+
+		return data;
 	}
 
 	void OpenGL45::fillInfos( StructInfos & p_infos ) const

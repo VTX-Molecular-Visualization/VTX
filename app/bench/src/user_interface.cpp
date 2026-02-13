@@ -198,10 +198,7 @@ namespace VTX::Bench
 			{
 				auto snapshotFunc = [ & ]( const size_t p_width, const size_t p_height )
 				{
-					std::vector<uchar> image;
-					p_renderer->snapshot(
-						image, p_width, p_height, p_camera->getFov(), p_camera->getNear(), p_camera->getFar()
-					);
+					std::vector<std::byte> image = p_renderer->snapshot();
 
 					Util::Image::write( "snapshot", Util::Image::E_FORMAT::PNG, p_width, p_height, image.data() );
 				};
