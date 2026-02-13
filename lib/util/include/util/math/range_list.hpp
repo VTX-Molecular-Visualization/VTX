@@ -260,10 +260,10 @@ namespace VTX::Util::Math
 		/**
 		 * @brief  Convert to vectors of starts and counts.
 		 */
-		template<typename T>
+		template<typename O>
 		struct VectorParam
 		{
-			std::vector<T> & output;
+			std::vector<O> & output;
 			size_t			 factor = 1;
 		};
 
