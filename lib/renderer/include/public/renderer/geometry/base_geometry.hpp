@@ -106,7 +106,7 @@ namespace VTX::Renderer::Geometry
 				static_assert( always_false_v<DR>, "Unsupported draw range type" );
 			}
 
-			VTX_DEBUG( "Built draw ranges: {} ranges, {} items", drawRanges.firsts.size(), allRanges.rangeCount() );
+			VTX_DEBUG( "Built draw ranges: {}", allRanges.rangeCount() );
 		}
 	};
 } // namespace VTX::Renderer::Geometry

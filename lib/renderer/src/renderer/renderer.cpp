@@ -424,9 +424,22 @@ namespace VTX::Renderer
 			"Atoms.Representations", atoms, _geometries.spheres.ranges[ p_uid ].first
 		);
 
-		const size_t			countBonds = _geometries.cylinders.ranges[ p_uid ].getCount();
-		MapRepresentationRanges bondsRepresentations;
-		// TODO
+		const size_t countBonds = _geometries.cylinders.ranges[ p_uid ].getCount();
+		_cacheSystems[ p_uid ].representationBondsRanges.clear();
+
+		for ( const auto & [ index, ranges ] : p_representations )
+		{
+			for ( Index i = 0; i < p_bonds.size(); i += 2 )
+			{
+				if ( ranges.contains( p_bonds[ i ] ) && ranges.contains( p_bonds[ i + 1 ] ) )
+				{
+					_cacheSystems[ p_uid ].representationBondsRanges[ index ].addRange(
+						Geometry::IndexRange::fromFirstCount( i, 2 )
+					);
+				}
+			}
+		}
+		for ( Index i = 0; i < p_bonds.size(); i += 2 ) {}
 
 		_needBuildDrawRanges = true;
 		setNeedUpdate( true );
