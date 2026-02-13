@@ -34,50 +34,7 @@
 
 namespace VTX::App::Action::Scene
 {
-	struct LoadSystem::_Data
-	{
-		std::latch							   extractorCreation { 1 };
-		std::optional<System::SystemExtractor> extractor;
-	};
-	void LoadSystem::Del::operator()( LoadSystem::_Data * p_ ) noexcept { delete p_; }
-
-	LoadSystem::LoadSystem() : _data( new _Data() ) {}
-
-	void LoadSystem::execute( FilePath p_path )
-	{
-		auto & reg = REG();
-
-		// Create entity.
-		ECS::Entity entity			  = reg.create();
-		auto &		pendingSystemData = reg.emplace<System::PendingSystem>( entity );
-		pendingSystemData.path		  = std::move( p_path );
-		_data->extractor			  = System::SystemExtractor( std::move( entity ), pendingSystemData );
-		_data->extractorCreation.count_down();
-
-		THREAD().createThread( _data->extractor.value() );
-	}
-	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
-	{
-		auto & reg = REG();
-
-		// Create entity.
-		ECS::Entity				entity			  = reg.create();
-		System::PendingSystem & pendingSystemData = reg.emplace<System::PendingSystem>( entity );
-		pendingSystemData.path					  = std::move( p_path );
-		pendingSystemData.buffer.emplace( std::move( p_buffer ) );
-		_data->extractor = System::SystemExtractor( std::move( entity ), pendingSystemData );
-		_data->extractorCreation.count_down();
-
-		THREAD().createThread( _data->extractor.value() );
-	}
-	void LoadSystem::wait() noexcept
-	{
-		if ( _data == nullptr )
-			return;
-		_data->extractorCreation.wait();
-		if ( _data->extractor )
-			_data->extractor->wait();
-	}
+	
 
 	void DeleteSystem::execute( const ECS::Entity p_e ) { REG().destroy( p_e ); }
 

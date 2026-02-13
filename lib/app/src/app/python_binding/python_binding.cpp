@@ -44,7 +44,7 @@ namespace VTX::App::PythonBinding
 			VTX::PythonBinding::Wrapper::Arg( "height" )
 		);
 
-		commands.bindAction<Action::QueueAction<App::Action::Scene::LoadSystem>, const std::string &>(
+		commands.bindAction<Action::QueueAction<App::Action::IO::LoadSystem>, const std::string &>(
 			"openFile", "Open files at given path.", VTX::PythonBinding::Wrapper::Arg( "path" )
 		);
 

@@ -108,7 +108,7 @@ namespace VTX::UI::QT::Dialog
 				FilePath path = App::Filesystem::getCacheDir() / ( _pdb.toStdString() + ".pdb" );
 				if ( std::filesystem::exists( path ) and _radioButtonOpen->isChecked() )
 				{
-					App::ACTION().execute<App::Action::Scene::LoadSystem>( path );
+					App::ACTION().execute<App::Action::IO::LoadSystem>( path );
 				}
 				else
 				{

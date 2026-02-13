@@ -35,14 +35,23 @@ namespace VTX::App::System
 	};
 
 	/**
-	 * @brief Responsible for extracting data from the IO reader to the PendingSystem datastruct.
+	 * @brief Responsible for extracting data from the IO reader to the PendingSystem datastruct. Copies of this object
+	 * will actually copy a reference.
 	 */
 	class SystemExtractor
 	{
 	  public:
 		SystemExtractor() = delete;
 		SystemExtractor( ECS::Entity, PendingSystem & );
+
+		/**
+		 * @brief Meant to be used as a thread callable. Actually perform the extraction
+		 */
 		uint operator()( Util::StopToken, Threading::BaseThread & ) noexcept;
+
+		/**
+		 * @brief Stop current execution until the system is extracted.
+		 */
 		void wait() noexcept;
 
 	  private:

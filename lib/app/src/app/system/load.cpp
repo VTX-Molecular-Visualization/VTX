@@ -39,6 +39,8 @@ namespace VTX::App::System
 		std::latch								  synchronizer { 1 };
 		std::optional<Util::EventHub::Connection> finishEventConnection = std::nullopt;
 		_Data( ECS::Entity p_entity, PendingSystem & p_data ) : entity( std::move( p_entity ) ), data( p_data ) {}
+
+		// RO5
 		~_Data() { HUB().disconnect( finishEventConnection.value() ); }
 		_Data( _Data && )				   = delete;
 		_Data( const _Data & )			   = delete;

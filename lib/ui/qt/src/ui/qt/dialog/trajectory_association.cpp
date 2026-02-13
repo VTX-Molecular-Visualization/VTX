@@ -52,7 +52,7 @@ namespace VTX::UI::QT::Dialog
 				App::ECS::Entity entity = _cbSystem->currentData().value<App::ECS::Entity>();
 				if ( entity == entt::null )
 
-					App::ACTION().execute<App::Action::Scene::LoadSystem>( _path );
+					App::ACTION().execute<App::Action::IO::LoadSystem>( _path );
 				else
 					App::ACTION().execute<App::Action::IO::AssociateTrajectory>( _path, entity );
 				accept();
