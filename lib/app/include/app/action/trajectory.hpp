@@ -26,6 +26,11 @@ namespace VTX::App::Action::Trajectory
 	  public:
 		void execute( ECS::Entity, System::TrajectoryPlayMode ) noexcept;
 	};
+	struct ChangeSpeed
+	{
+	  public:
+		void execute( ECS::Entity, float ) noexcept;
+	};
 } // namespace VTX::App::Action::Trajectory
 
 #endif

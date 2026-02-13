@@ -27,8 +27,11 @@ namespace VTX::App::Action::Trajectory
 			p_entity,
 			[ &p_step ]( System::GenericTrajectory & traj )
 			{
-				traj.player.jumpTo( p_step );
-				traj.requestedFrameIndex = p_step;
+				if ( p_step < traj.trajectorySize )
+				{
+					traj.player.jumpTo( p_step );
+					traj.requestedFrameIndex = p_step;
+				}
 			}
 		);
 	}
@@ -50,6 +53,13 @@ namespace VTX::App::Action::Trajectory
 				default: traj.player = Util::Players::PingPong( traj.trajectorySize, traj.currentFrameIndex );
 				}
 			}
+		);
+	}
+
+	void ChangeSpeed::execute( ECS::Entity p_entity, float p_speed ) noexcept
+	{
+		System::patchGenericTrajectories(
+			p_entity, [ &p_speed ]( System::GenericTrajectory & traj ) { traj.playingSpeed = p_speed; }
 		);
 	}
 
