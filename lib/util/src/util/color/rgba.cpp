@@ -16,11 +16,11 @@ namespace VTX::Util::Color
 		_v.z = Util::Math::clamp( _v.z, 0.f, 1.f );
 	}
 
-	void Rgba::applyGamma( const float & pyamma )
+	void Rgba::applyGamma( const float & p_gamma )
 	{
-		_v.x = powf( _v.x, pyamma );
-		_v.y = powf( _v.y, pyamma );
-		_v.z = powf( _v.z, pyamma );
+		_v.x = powf( _v.x, p_gamma );
+		_v.y = powf( _v.y, p_gamma );
+		_v.z = powf( _v.z, p_gamma );
 	}
 
 	void Rgba::oppose()

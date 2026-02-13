@@ -83,6 +83,7 @@ namespace VTX::Renderer::Context
 
 	struct PayloadEndPass
 	{
+		uint32_t framebuffer;
 		uint32_t flags = 0;
 	};
 

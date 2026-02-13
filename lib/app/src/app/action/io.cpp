@@ -1,5 +1,6 @@
 #include "app/action/io.hpp"
 #include "app/action/action_manager.hpp"
+#include "app/action/application.hpp"
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
@@ -97,8 +98,16 @@ namespace VTX::App::Action::IO
 	{
 		try
 		{
+			const size_t currentWidth  = RENDERER().width();
+			const size_t currentHeight = RENDERER().height();
+
+			ACTION().execute<Application::Resize>( p_width, p_height );
+			RENDERER().render();
 			std::vector<std::byte> image = RENDERER().snapshot();
-			FilePath			   path	 = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
+			ACTION().execute<Application::Resize>( currentWidth, currentHeight );
+			RENDERER().render();
+
+			FilePath path = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
 
 			VTX_INFO( "Image saved: {}", path.string() );
 		}

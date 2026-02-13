@@ -97,7 +97,7 @@ TEST_CASE( "RenderGraph: external texture with data is accepted", "[renderer][gr
 	std::generate( noiseData.begin(), noiseData.end(), [] { return Vec3f( 0.5f, 0.25f, 0.0f ); } );
 	g.texture( "Noise", E_FORMAT::RGB16F, noiseData );
 
-	g.texture( "SSAO", E_FORMAT::R8 );
+	g.texture( "SSAO", E_FORMAT::R8UI );
 
 	g.pass( "SSAO" )
 		.in( "Noise" )

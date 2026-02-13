@@ -2,6 +2,24 @@
 #include "renderer/binary_buffer.hpp"
 #include <util/chrono.hpp>
 
+namespace
+{
+	auto linearizeColorFloat = []( float c ) -> float
+	{
+		return c;
+		if ( c <= 0.04045f )
+			return c / 12.92f;
+		return std::pow( ( c + 0.055f ) / 1.055f, 2.4f );
+	};
+
+	using namespace VTX;
+	auto linearizeColor = []( const Util::Color::Rgba & c ) -> Vec4f
+	{
+		return Vec4f( linearizeColorFloat( c.r() ), linearizeColorFloat( c.g() ), linearizeColorFloat( c.b() ), c.a() );
+	};
+
+} // namespace
+
 namespace VTX::Renderer
 {
 	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height ) {}
@@ -92,6 +110,18 @@ namespace VTX::Renderer
 		return false;
 	}
 
+	/*
+	void Renderer::renderOffscreen(
+		const size_t p_width,
+		const size_t p_height,
+		const float	 p_deltaTime,
+		const float	 p_elapsedTime
+	)
+	{
+		// TODDO
+	}
+	*/
+
 #pragma endregion
 
 #pragma region Buffers
@@ -103,6 +133,8 @@ namespace VTX::Renderer
 		const Mat4f &  p_matProj
 	)
 	{
+		// Util::ScopedChrono timer( "[RENDERER] setCamera" );
+
 		const Mat4f matrixViewInv	   = Util::Math::inverse( p_matView );
 		const Mat4f matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
 
@@ -140,9 +172,9 @@ namespace VTX::Renderer
 		}
 
 		BinaryBuffer140 bufferShading;
-		bufferShading.write( p_config.colorBackground );
-		bufferShading.write( p_config.colorLight );
-		bufferShading.write( p_config.colorFog );
+		bufferShading.write( linearizeColor( p_config.colorBackground ) );
+		bufferShading.write( linearizeColor( p_config.colorLight ) );
+		bufferShading.write( linearizeColor( p_config.colorFog ) );
 		bufferShading.write( uint32_t( p_config.shadingMode ) );
 		bufferShading.write( p_config.specularFactor );
 		bufferShading.write( p_config.shininess );
@@ -195,7 +227,14 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setColorLayout" );
 
-		_context.setShaderBuffer<Util::Color::Rgba>( "ColorLayout", p_layout.colors );
+		Color::Layout layout = p_layout;
+
+		for ( auto & color : layout.colors )
+		{
+			color = Util::Color::Rgba( linearizeColor( color ) );
+		}
+
+		_context.setShaderBuffer<Util::Color::Rgba>( "ColorLayout", layout.colors );
 
 		setNeedUpdate( true );
 	}
@@ -602,7 +641,9 @@ namespace VTX::Renderer
 	std::vector<std::byte> Renderer::snapshot()
 	{
 		Util::ScopedChrono timer( "[RENDERER] snapshot" );
-		return _context.snapshot();
+		// return _context.snapshot();
+
+		return _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
 	}
 
 	Vec2i Renderer::getPickedIds( const size_t p_x, const size_t p_y ) const

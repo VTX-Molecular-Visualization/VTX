@@ -31,6 +31,16 @@ const uint TOON = 2;
 const uint FLAT_COLOR = 3;
 const uint GGX = 4;
 
+vec3 linearToSrgb(vec3 c)
+{
+return c;
+    c = max(c, vec3(0.0));
+    bvec3 lo = lessThanEqual(c, vec3(0.0031308));
+    vec3  low  = 12.92 * c;
+    vec3  high = 1.055 * pow(c, vec3(1.0/2.4)) - 0.055;
+    return mix(high, low, vec3(lo));
+}
+
 void main()
 {
 	const ivec2 texCoord = ivec2( gl_FragCoord.xy );
@@ -42,11 +52,11 @@ void main()
 	{
 		if ( uniforms.fogDensity != 0.f )
 		{
-			outFragColor = vec4( mix( vec3( uniforms.colorBackground ),  vec3( uniforms.colorFog ), uniforms.fogDensity ) *  vec3( uniforms.colorLight ), uniforms.colorBackground.w );
+			outFragColor = vec4( linearToSrgb(mix( vec3( uniforms.colorBackground ),  vec3( uniforms.colorFog ), uniforms.fogDensity ) *  vec3( uniforms.colorLight )), uniforms.colorBackground.w );
 		}
 		else
 		{
-			outFragColor = uniforms.colorBackground;
+			outFragColor = vec4(linearToSrgb(uniforms.colorBackground.xyz), 1.f);
 		}
 		return;
 	}
@@ -108,5 +118,5 @@ void main()
 	const float fogFactor = smoothstep( uniforms.fogNear, uniforms.fogFar, -data.viewPosition.z ) * uniforms.fogDensity;
 	const vec3	color	  = texelFetch( inTextureColor, texCoord, 0 ).xyz * ambientOcclusion * lighting;
 
-	outFragColor = vec4( mix( color, vec3( uniforms.colorFog ), fogFactor ) * vec3( uniforms.colorLight ), 1.f );
+	outFragColor = vec4( linearToSrgb(mix( color, vec3( uniforms.colorFog ), fogFactor ) * vec3( uniforms.colorLight )), 1.f );
 }

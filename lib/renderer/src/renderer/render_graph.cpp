@@ -309,7 +309,7 @@ namespace VTX::Renderer
 			constexpr size_t   noiseTextureSize = 64;
 			std::vector<Vec3f> noiseData		= Util::Math::randomUniVectors( noiseTextureSize * noiseTextureSize );
 
-			g.texture( "SSAO", E_FORMAT::R8 );
+			g.texture( "SSAO", E_FORMAT::R8UI );
 			g.texture( "Noise", E_FORMAT::RGB16F, noiseData, Size2DAbsolute { noiseTextureSize, noiseTextureSize } );
 			g.texture( "BlurX", E_FORMAT::R16F );
 			g.texture( "BlurY", E_FORMAT::R16F );
@@ -333,7 +333,7 @@ namespace VTX::Renderer
 			g.texture( "Selection", E_FORMAT::RGBA16F );
 		}
 
-		g.texture( "FXAA", E_FORMAT::RGBA16F );
+		// g.texture( "FXAA", E_FORMAT::RGBA16F );
 
 		// Samplers.
 		g.defaultSampler();
@@ -504,7 +504,7 @@ namespace VTX::Renderer
 			.in( p_config.enableSelection ? "Selection"
 				 : p_config.enableOutline ? "Outline"
 										  : "Shaded" )
-			.out( "FXAA" )
+			//.out( "FXAA" )
 			.program( "FXAA" )
 			.shaders( { "default.vert", "fxaa.frag" } )
 			.endProgram()

@@ -79,7 +79,12 @@ namespace VTX::Renderer
 		 * @brief The main render loop.
 		 * @return true if rendered, false if nothing updated.
 		 */
-		bool render( const float, const float ) noexcept;
+		bool render( const float = 0, const float = 0 ) noexcept;
+
+		/**
+		 * @brief Render to the offscreen buffer.
+		 */
+		//void renderOffscreen( const size_t, const size_t, const float = 0, const float = 0 );
 
 		/**
 		 * @brief Push data to the renderer.

@@ -28,13 +28,13 @@ namespace
 
 		switch ( p_format )
 		{
-		case E_FORMAT::RGBA8: return { GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, 4, false, false };
+		case E_FORMAT::RGBA8UI: return { GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, 4, false, false };
 		case E_FORMAT::RGB16F: return { GL_RGB16F, GL_RGB, GL_HALF_FLOAT, 6, false, false };
 		case E_FORMAT::RGBA16F: return { GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT, 8, false, false };
 		case E_FORMAT::RGBA32F: return { GL_RGBA32F, GL_RGBA, GL_FLOAT, 16, false, false };
 		case E_FORMAT::R16F: return { GL_R16F, GL_RED, GL_HALF_FLOAT, 2, false, false };
 		case E_FORMAT::R32F: return { GL_R32F, GL_RED, GL_FLOAT, 4, false, false };
-		case E_FORMAT::R8: return { GL_R8, GL_RED, GL_UNSIGNED_BYTE, 1, false, false };
+		case E_FORMAT::R8UI: return { GL_R8, GL_RED, GL_UNSIGNED_BYTE, 1, false, false };
 		case E_FORMAT::RG32UI: return { GL_RG32UI, GL_RG_INTEGER, GL_UNSIGNED_INT, 8, true, false };
 		case E_FORMAT::RGBA32UI: return { GL_RGBA32UI, GL_RGBA_INTEGER, GL_UNSIGNED_INT, 16, true, false };
 		case E_FORMAT::DEPTH_COMPONENT32F:
@@ -399,7 +399,7 @@ namespace VTX::Renderer::Context::Backend
 			}
 
 			// Push END_PASS.
-			PayloadEndPass pEndPass { flags };
+			PayloadEndPass pEndPass { hFramebuffer, flags };
 			p_commands.push<E_COMMAND::END_PASS>( pEndPass );
 		}
 
@@ -1059,7 +1059,7 @@ namespace VTX::Renderer::Context::Backend
 	{
 		std::vector<std::byte> data( _width * _height * 4 );
 		glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
-		glReadBuffer( GL_FRONT );
+		glReadBuffer( GL_BACK );
 		glReadPixels( 0, 0, _width, _height, GL_RGBA, GL_UNSIGNED_BYTE, data.data() );
 
 		return data;

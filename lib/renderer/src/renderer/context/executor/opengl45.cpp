@@ -49,6 +49,7 @@ namespace VTX::Renderer::Context::Executor
 				const Handle & h = p.framebuffer;
 				if ( h == NO_HANDLE )
 				{
+					// glEnable( GL_FRAMEBUFFER_SRGB );
 					GL::Framebuffer::bindDefault();
 				}
 				else
@@ -83,6 +84,11 @@ namespace VTX::Renderer::Context::Executor
 			case E_COMMAND::END_PASS:
 			{
 				const auto & p = p_commandBuffer.getPayload<PayloadEndPass>( command.payloadOffset );
+
+				if ( p.framebuffer == NO_HANDLE )
+				{
+					// glDisable( GL_FRAMEBUFFER_SRGB );
+				}
 
 				// Disable states.
 				if ( p.flags & toUnderlying( E_SETTING::ENABLE_DEPTH ) )

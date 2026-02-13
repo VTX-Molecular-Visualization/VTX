@@ -217,7 +217,7 @@ namespace VTX::Util::Color
 		static Rgba random();
 
 		void saturate();
-		void applyGamma( const float & gamma );
+		void applyGamma( const float & );
 		void oppose();
 
 	  private:
