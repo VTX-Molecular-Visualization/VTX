@@ -178,7 +178,8 @@ namespace VTX::App::Action
 	};
 
 	/**
-	 * @brief Delays an action until a future pass update, in the main loop.
+	 * @brief Delays an action until a future main loop update. Be mindfull of the arguments used as they will be stored
+	 * until the action is executed.
 	 * @tparam SomeAction Action to be delayed
 	 */
 	template<typename SomeAction>
