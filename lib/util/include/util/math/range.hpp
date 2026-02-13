@@ -404,6 +404,9 @@ namespace VTX::Util::Math
 			return p_a.last <=> p_b.last;
 		}
 
+		/**
+		 * @brief To std vector.
+		 */
 		std::vector<T> toStdVector() const
 		{
 			std::vector<T> vec;
@@ -414,6 +417,8 @@ namespace VTX::Util::Math
 			}
 			return vec;
 		}
+
+		std::string toString() const { return "[" + std::to_string( first ) + ", " + std::to_string( last ) + ")"; }
 
 		/**
 		 * @brief Iterator over the range values.

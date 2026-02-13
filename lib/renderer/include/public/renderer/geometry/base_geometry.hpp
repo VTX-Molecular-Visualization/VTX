@@ -4,6 +4,7 @@
 #include <map>
 #include <util/logger.hpp>
 #include <util/math/range_list.hpp>
+#include <util/type_traits.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer::Geometry
@@ -85,7 +86,25 @@ namespace VTX::Renderer::Geometry
 				allRanges.mergeInPlace( rangeList );
 			}
 
-			allRanges.toStdVectorsFirstCount( drawRanges.firsts, drawRanges.counts );
+			// TODO: make this API-agnostic.
+			if constexpr ( std::is_same_v<DR, DrawRangeArray> )
+			{
+				allRanges.toStdVectorsFirstCount(
+					IndexRangeList::VectorParam<int32_t> { drawRanges.firsts },
+					IndexRangeList::VectorParam<uint32_t> { drawRanges.counts }
+				);
+			}
+			else if constexpr ( std::is_same_v<DR, DrawRangeElements> )
+			{
+				allRanges.toStdVectorsFirstCount(
+					IndexRangeList::VectorParam<uintptr_t> { drawRanges.firsts, sizeof( Index ) },
+					IndexRangeList::VectorParam<uint32_t> { drawRanges.counts }
+				);
+			}
+			else
+			{
+				static_assert( always_false_v<DR>, "Unsupported draw range type" );
+			}
 
 			VTX_DEBUG( "Built draw ranges: {} ranges, {} items", drawRanges.firsts.size(), allRanges.rangeCount() );
 		}

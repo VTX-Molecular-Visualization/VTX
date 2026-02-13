@@ -257,35 +257,27 @@ namespace VTX::Util::Math
 		 */
 		T getLast() const { return _ranges.crbegin()->last; }
 
-		template<typename T1, typename T2>
-		void toStdVectorsFirstLast( std::vector<T1> & p_starts, std::vector<T2> & p_lasts ) const
-		{
-			p_starts.resize( _ranges.size() );
-			p_lasts.resize( _ranges.size() );
-
-			size_t i = 0;
-			for ( const auto & r : _ranges )
-			{
-				p_starts[ i ] = static_cast<T1>( r.first );
-				p_lasts[ i ]  = static_cast<T2>( r.last );
-				++i;
-			}
-		}
-
 		/**
 		 * @brief  Convert to vectors of starts and counts.
 		 */
-		template<typename T1, typename T2>
-		void toStdVectorsFirstCount( std::vector<T1> & p_firsts, std::vector<T2> & p_counts ) const
+		template<typename T>
+		struct VectorParam
 		{
-			p_firsts.resize( _ranges.size() );
-			p_counts.resize( _ranges.size() );
+			std::vector<T> & output;
+			size_t			 factor = 1;
+		};
+
+		template<typename T1, typename T2>
+		void toStdVectorsFirstCount( VectorParam<T1> p_firsts, VectorParam<T2> p_counts ) const
+		{
+			p_firsts.output.resize( _ranges.size() );
+			p_counts.output.resize( _ranges.size() );
 
 			size_t i = 0;
 			for ( const auto & r : _ranges )
 			{
-				p_firsts[ i ] = static_cast<T1>( r.getFirst() );
-				p_counts[ i ] = static_cast<T2>( r.getCount() );
+				p_firsts.output[ i ] = static_cast<T1>( r.getFirst() * p_firsts.factor );
+				p_counts.output[ i ] = static_cast<T2>( r.getCount() * p_counts.factor );
 				++i;
 			}
 		}
@@ -498,6 +490,17 @@ namespace VTX::Util::Math
 			totalSize += _ranges.size() * sizeof( Range<T> );
 
 			return totalSize;
+		}
+
+		std::string toString() const
+		{
+			std::string res = "{ ";
+			for ( const auto & r : _ranges )
+			{
+				res += r.toString() + " ";
+			}
+			res += "}";
+			return res;
 		}
 
 		/**
