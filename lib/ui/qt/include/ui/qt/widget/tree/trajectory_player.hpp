@@ -3,6 +3,7 @@
 
 #include <QIcon>
 #include <QLabel>
+#include <QPointer>
 #include <QPushButton>
 #include <QSlider>
 #include <QWidget>
@@ -28,16 +29,18 @@ namespace VTX::UI::QT::Widget::Tree
 
 		App::ECS::Entity _system;
 
-		QPushButton *		 _btnPlayPause;
-		QPushButton *		 _btnStop;
-		QSlider *			 _slider;
-		QLabel *			 _frameLabel;
-		std::array<QIcon, 4> _icons { _getIcons() };
+		QPointer<QPushButton> _btnPlayPause;
+		QPointer<QPushButton> _btnStop;
+		QPointer<QPushButton> _btnSettings;
+		QPointer<QSlider>	  _slider;
+		QPointer<QLabel>	  _frameLabel;
+		std::array<QIcon, 4>  _icons { _getIcons() };
 
 		bool _isRefreshing = false; // Prevent feedback loops between _refresh() and valueChanged
 
 		void _onPlayPauseClicked();
 		void _onStopClicked();
+		void _onSettingsClicked();
 		void _onSliderValueChanged( int p_value );
 		void _onTrajectoryUpdated( App::ECS::Registry &, App::ECS::Entity p_entity );
 

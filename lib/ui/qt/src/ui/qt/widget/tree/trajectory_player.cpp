@@ -30,6 +30,7 @@ namespace VTX::UI::QT::Widget::Tree
 		_btnStop = new QPushButton( this );
 		_btnStop->setFixedSize( 24, 24 );
 		_btnStop->setToolTip( tr( "Stop" ) );
+		_btnStop->setIcon( _icons[ 2 ] );
 		layout->addWidget( _btnStop );
 
 		// Slider
@@ -46,10 +47,18 @@ namespace VTX::UI::QT::Widget::Tree
 		_frameLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 		layout->addWidget( _frameLabel );
 
+		// Settings Button
+		_btnSettings = new QPushButton( this );
+		_btnSettings->setIcon( _icons[ 3 ] );
+		_btnSettings->setFixedSize( 24, 24 );
+		_btnSettings->setToolTip( tr( "Settings" ) );
+		layout->addWidget( _btnSettings );
+
 		// Connect signals
 		connect( _btnPlayPause, &QPushButton::clicked, this, &TrajectoryPlayer::_onPlayPauseClicked );
 		connect( _btnStop, &QPushButton::clicked, this, &TrajectoryPlayer::_onStopClicked );
 		connect( _slider, &QSlider::valueChanged, this, &TrajectoryPlayer::_onSliderValueChanged );
+		connect( _btnSettings, &QPushButton::clicked, this, &TrajectoryPlayer::_onSettingsClicked );
 
 		// Connect to trajectory updates
 		App::REG().on_update<App::System::TrajectoryFullBuffer>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>(
@@ -157,7 +166,10 @@ namespace VTX::UI::QT::Widget::Tree
 
 		// Use unicode symbols for now (can be replaced with icons)
 		_btnPlayPause->setIcon( isPlaying ? _icons[ 1 ] : _icons[ 0 ] );
-		_btnStop->setIcon( _icons[ 2 ] );
+	}
+	void TrajectoryPlayer::_onSettingsClicked()
+	{
+		// TODO : settings menu
 	}
 
 } // namespace VTX::UI::QT::Widget::Tree

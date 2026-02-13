@@ -34,6 +34,9 @@ namespace VTX::App::System
 {
 	namespace
 	{
+		/**
+		 * @brief Event triggered with the end of the deliver free function.
+		 */
 		struct EntityDelivered
 		{
 			ECS::Entity entity;
