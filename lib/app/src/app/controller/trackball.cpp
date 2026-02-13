@@ -55,10 +55,13 @@ namespace VTX::App::Controller
 
 		// Pan target with wheel button.
 		Vec2i deltaPan = input.pan();
-		float deltaX   = -deltaPan.x * 0.1f;
-		float deltaY   = deltaPan.y * 0.1f;
-		p_target += p_transform.getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
-		_needUpdate = true;
+		if ( deltaPan != VEC2I_ZERO )
+		{
+			float deltaX = -deltaPan.x * 0.1f;
+			float deltaY = deltaPan.y * 0.1f;
+			p_target += p_transform.getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
+			_needUpdate = true;
+		}
 
 		// Keyboard.
 		if ( input.moveFront() )
