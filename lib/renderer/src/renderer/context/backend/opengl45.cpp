@@ -305,10 +305,7 @@ namespace VTX::Renderer::Context::Backend
 
 			// FBO.
 			const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
-			if ( not isLastPass )
-			{
-				_attachTexturesToFramebuffer( pass, p_resources.textures );
-			}
+			_attachTexturesToFramebuffer( pass, p_resources.textures );
 
 			// Create programs.
 			for ( const Program & program : pass.programs )
@@ -322,10 +319,18 @@ namespace VTX::Renderer::Context::Backend
 			resourceTable				   = _buildResourceTableForPass( pass, p_resources );
 
 			// COMMANDS.
-			// Push BEGIN_PASS.
-			uint32_t		 flags = _toSettingFlags( pass.settings );
-			PayloadBeginPass pBeginPass { hFramebuffer, flags };
-			p_commands.push<E_COMMAND::BEGIN_PASS>( pBeginPass );
+			// Push BEGIN_PASS/BIND_OUTPUT.
+			uint32_t flags = _toSettingFlags( pass.settings );
+			if ( not isLastPass )
+			{
+				PayloadBeginPass pBeginPass { hFramebuffer, flags };
+				p_commands.push<E_COMMAND::BEGIN_PASS>( pBeginPass );
+			}
+			else
+			{
+				PayloadBindOutput pBindOutput { reinterpret_cast<uintptr_t>( &_target ) };
+				p_commands.push<E_COMMAND::BIND_OUTPUT>( pBindOutput );
+			}
 
 			// Push BIND_RESOURCES.
 			PayloadBindResources pBindResources { hResourceTable };
@@ -403,6 +408,8 @@ namespace VTX::Renderer::Context::Backend
 			p_commands.push<E_COMMAND::END_PASS>( pEndPass );
 		}
 
+		setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
+
 		// Purge invalid resources.
 		_resourceTables.purge();
 		_framebuffers.purge();
@@ -469,17 +476,14 @@ namespace VTX::Renderer::Context::Backend
 
 		for ( const auto & pass : p_passes )
 		{
-			if ( _framebuffers.contains( pass->name ) ) // Avoid the last pass.
-			{
-				_attachTexturesToFramebuffer( *pass, p_textures );
-			}
+			_attachTexturesToFramebuffer( *pass, p_textures );
 		}
 	}
 
 	Desc::Handle OpenGL45::_getOrCreateFramebuffer(
 		const Desc::Pass &		p_pass,
 		const Desc::Resources & p_res,
-		const bool				p_isLastpass
+		const bool				p_isLast
 	)
 	{
 		using namespace Desc;
@@ -491,12 +495,19 @@ namespace VTX::Renderer::Context::Backend
 			return _framebuffers.handle( key );
 		}
 
-		if ( p_isLastpass )
-		{
-			return NO_HANDLE;
-		}
-
 		const Handle h = _framebuffers.emplace( key );
+
+		if ( p_isLast )
+		{
+			// Save as offscreen target.
+			_offscreen = h;
+
+			// Create a default fbo.
+			if ( not _framebuffers.validate( _DEFAULT_FBO ) )
+			{
+				_default = _framebuffers.emplace( _DEFAULT_FBO, {}, 0 );
+			}
+		}
 
 		return h;
 	}
@@ -1055,6 +1066,13 @@ namespace VTX::Renderer::Context::Backend
 		texture.fill( p_bytes.data(), glFormat.uploadFormat, glFormat.uploadType );
 	}
 
+	void OpenGL45::setRenderTarget( const Desc::E_RENDER_TARGET p_target )
+	{
+		_target = p_target == Desc::E_RENDER_TARGET::SCREEN ? _default : _offscreen;
+	}
+
+	// Old way: reading framebuffer. New way: read from texture directly.
+	/*
 	std::vector<std::byte> OpenGL45::snapshot() const
 	{
 		std::vector<std::byte> data( _width * _height * 4 );
@@ -1064,6 +1082,7 @@ namespace VTX::Renderer::Context::Backend
 
 		return data;
 	}
+	*/
 
 	void OpenGL45::fillInfos( StructInfos & p_infos ) const
 	{

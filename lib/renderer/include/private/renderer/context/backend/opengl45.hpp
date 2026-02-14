@@ -90,16 +90,15 @@ namespace VTX::Renderer::Context::Backend
 			std::optional<size_t>
 		) const;
 
-
-		/**
-		 * @brief Read data in default framebuffer.
-		 */
-		std::vector<std::byte> snapshot() const;
-
 		/**
 		 * @brief Set texture data.
 		 */
 		void setTextureData( const Desc::Key & p_key, SpanBytes );
+
+		/**
+		 * @brief Set render target.
+		 */
+		void setRenderTarget( const Desc::E_RENDER_TARGET );
 
 		/**
 		 * @brief Fill backend infos.
@@ -162,6 +161,13 @@ namespace VTX::Renderer::Context::Backend
 		uint32_t _height;
 
 		/**
+		 * @brief Render target (default framebuffer or offscreen).
+		 */
+		Desc::Handle _default;
+		Desc::Handle _offscreen;
+		Desc::Handle _target;
+
+		/**
 		 * @brief Shader path.
 		 */
 		const FilePath _shaderPath;
@@ -214,8 +220,9 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Create the screen quad.
 		 */
-		inline static const Desc::Key _QUAD		= "Quad";
-		inline static const Desc::Key _QUAD_VBO = _QUAD + ".Position";
+		inline static const Desc::Key _QUAD		   = "Quad";
+		inline static const Desc::Key _QUAD_VBO	   = _QUAD + ".Position";
+		inline static const Desc::Key _DEFAULT_FBO = "Default";
 
 		/**
 		 * @brief Specs.

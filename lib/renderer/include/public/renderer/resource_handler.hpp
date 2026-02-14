@@ -204,6 +204,8 @@ namespace VTX::Renderer
 			}
 		}
 
+		Desc::Handle getLastHandle() const { return static_cast<Desc::Handle>( _resources.size() - 1 ); }
+
 		/**
 		 * @brief Purge invalidated resources.
 		 */

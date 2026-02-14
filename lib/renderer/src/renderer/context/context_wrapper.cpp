@@ -203,22 +203,6 @@ namespace VTX::Renderer::Context
 		);
 	}
 
-	std::vector<std::byte> ContextWrapper::snapshot() const
-	{
-		return std::visit(
-			[ & ]( auto & p_backend )
-			{
-				using T = std::remove_cvref_t<decltype( p_backend )>;
-				if constexpr ( not std::is_same_v<T, std::monostate> )
-				{
-					return p_backend.snapshot();
-				}
-				return std::vector<std::byte> {};
-			},
-			_impl->backend
-		);
-	}
-
 	void ContextWrapper::setTextureData( const Desc::Key & p_key, SpanBytes p_bytes )
 	{
 		std::visit(
@@ -228,6 +212,21 @@ namespace VTX::Renderer::Context
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
 					p_backend.setTextureData( p_key, p_bytes );
+				}
+			},
+			_impl->backend
+		);
+	}
+
+	void ContextWrapper::setRenderTarget( const Desc::E_RENDER_TARGET p_target )
+	{
+		std::visit(
+			[ & ]( auto & p_backend )
+			{
+				using T = std::remove_cvref_t<decltype( p_backend )>;
+				if constexpr ( not std::is_same_v<T, std::monostate> )
+				{
+					p_backend.setRenderTarget( p_target );
 				}
 			},
 			_impl->backend

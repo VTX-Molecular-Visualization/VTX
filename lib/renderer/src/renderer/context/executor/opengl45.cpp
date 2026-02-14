@@ -46,16 +46,7 @@ namespace VTX::Renderer::Context::Executor
 				const auto & p = p_commandBuffer.getPayload<PayloadBeginPass>( command.payloadOffset );
 
 				// Bind framebuffer.
-				const Handle & h = p.framebuffer;
-				if ( h == NO_HANDLE )
-				{
-					// glEnable( GL_FRAMEBUFFER_SRGB );
-					GL::Framebuffer::bindDefault();
-				}
-				else
-				{
-					_backend.framebuffer( h ).bind();
-				}
+				_backend.framebuffer( p.framebuffer ).bind();
 
 				// Setting flags.
 				const uint32_t flags = p.flags;
@@ -84,11 +75,6 @@ namespace VTX::Renderer::Context::Executor
 			case E_COMMAND::END_PASS:
 			{
 				const auto & p = p_commandBuffer.getPayload<PayloadEndPass>( command.payloadOffset );
-
-				if ( p.framebuffer == NO_HANDLE )
-				{
-					// glDisable( GL_FRAMEBUFFER_SRGB );
-				}
 
 				// Disable states.
 				if ( p.flags & toUnderlying( E_SETTING::ENABLE_DEPTH ) )
@@ -210,6 +196,15 @@ namespace VTX::Renderer::Context::Executor
 
 				break;
 			}
+			case E_COMMAND::BIND_OUTPUT:
+			{
+				const auto & p = p_commandBuffer.getPayload<PayloadBindOutput>( command.payloadOffset );
+				// Bind output framebuffer.
+				const Handle hFramebuffer = *reinterpret_cast<Handle *>( p.framebuffer );
+				_backend.framebuffer( hFramebuffer ).bind();
+				break;
+			}
+
 			default: break;
 			}
 		}

@@ -23,6 +23,7 @@ namespace VTX::Renderer::Context
 		DRAW_ARRAYS,
 		DRAW_ELEMENT,
 		DRAW_ELEMENTS,
+		BIND_OUTPUT,
 		END_PASS
 	};
 
@@ -81,6 +82,11 @@ namespace VTX::Renderer::Context
 		// uintptr_t pBaseVertex;
 	};
 
+	struct PayloadBindOutput
+	{
+		uintptr_t framebuffer;
+	};
+
 	struct PayloadEndPass
 	{
 		uint32_t framebuffer;
@@ -121,6 +127,11 @@ namespace VTX::Renderer::Context
 	struct CommandPayload<E_COMMAND::DRAW_ELEMENTS>
 	{
 		using type = PayloadDrawElements;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::BIND_OUTPUT>
+	{
+		using type = PayloadBindOutput;
 	};
 	template<>
 	struct CommandPayload<E_COMMAND::END_PASS>

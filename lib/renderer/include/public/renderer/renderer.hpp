@@ -82,11 +82,6 @@ namespace VTX::Renderer
 		bool render( const float = 0, const float = 0 ) noexcept;
 
 		/**
-		 * @brief Render to the offscreen buffer.
-		 */
-		//void renderOffscreen( const size_t, const size_t, const float = 0, const float = 0 );
-
-		/**
 		 * @brief Push data to the renderer.
 		 */
 		void setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );

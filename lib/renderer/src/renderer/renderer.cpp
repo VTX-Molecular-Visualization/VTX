@@ -641,9 +641,16 @@ namespace VTX::Renderer
 	std::vector<std::byte> Renderer::snapshot()
 	{
 		Util::ScopedChrono timer( "[RENDERER] snapshot" );
-		// return _context.snapshot();
 
-		return _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
+		_context.setRenderTarget( Desc::E_RENDER_TARGET::OFFSCREEN );
+		_render( 0.f, 0.f );
+
+		std::vector<std::byte> data = _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
+
+		_context.setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
+		_render( 0.f, 0.f );
+
+		return data;
 	}
 
 	Vec2i Renderer::getPickedIds( const size_t p_x, const size_t p_y ) const

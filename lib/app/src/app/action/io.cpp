@@ -102,10 +102,8 @@ namespace VTX::App::Action::IO
 			const size_t currentHeight = RENDERER().height();
 
 			ACTION().execute<Application::Resize>( p_width, p_height );
-			RENDERER().render();
 			std::vector<std::byte> image = RENDERER().snapshot();
 			ACTION().execute<Application::Resize>( currentWidth, currentHeight );
-			RENDERER().render();
 
 			FilePath path = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
 

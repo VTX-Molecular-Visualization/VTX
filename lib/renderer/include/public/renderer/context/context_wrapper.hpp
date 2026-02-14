@@ -106,12 +106,6 @@ namespace VTX::Renderer::Context
 		) const;
 
 		/**
-		 * @brief Get current framebuffer data as an array of pixels.
-		 * @return
-		 */
-		std::vector<std::byte> snapshot() const;
-
-		/**
 		 * @brief Set texture data.
 		 */
 		template<typename T>
@@ -120,6 +114,11 @@ namespace VTX::Renderer::Context
 			setTextureData( p_key, asBytes( p_data ) );
 		}
 		void setTextureData( const Desc::Key & p_key, SpanBytes p_data );
+
+		/**
+		 * @brief Set the render target.
+		 */
+		void setRenderTarget( const Desc::E_RENDER_TARGET p_target );
 
 		/**
 		 * @brief Fill renderer infos.

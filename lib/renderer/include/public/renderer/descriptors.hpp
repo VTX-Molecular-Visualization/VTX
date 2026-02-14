@@ -162,6 +162,15 @@ namespace VTX::Renderer::Desc
 	};
 
 	/**
+	 * @brief All render target types.
+	 */
+	enum struct E_RENDER_TARGET : uint32_t
+	{
+		SCREEN,
+		OFFSCREEN
+	};
+
+	/**
 	 * @brief Aliases.
 	 */
 	using Key = std::string;

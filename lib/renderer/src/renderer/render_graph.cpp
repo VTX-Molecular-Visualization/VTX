@@ -334,7 +334,7 @@ namespace VTX::Renderer
 			g.texture( "Selection", E_FORMAT::RGBA16F );
 		}
 
-		// g.texture( "FXAA", E_FORMAT::RGBA16F );
+		g.texture( "FXAA", E_FORMAT::RGBA16F );
 
 		// Samplers.
 		g.defaultSampler();
@@ -505,7 +505,7 @@ namespace VTX::Renderer
 			.in( p_config.enableSelection ? "Selection"
 				 : p_config.enableOutline ? "Outline"
 										  : "Shaded" )
-			//.out( "FXAA" )
+			.out( "FXAA" )
 			.program( "FXAA" )
 			.shaders( { "default.vert", "fxaa.frag" } )
 			.endProgram()
