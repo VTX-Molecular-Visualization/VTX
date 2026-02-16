@@ -17,7 +17,11 @@ namespace VTX::Util::Players
 		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
 	{
 	}
-	void PingPong::jumpTo( const uint & p_step ) noexcept { _currentStep = std::min( p_step, _lastIndex ); }
+	void PingPong::jumpTo( const uint & p_step ) noexcept
+	{
+		_forward	 = p_step > _currentStep;
+		_currentStep = std::min( p_step, _lastIndex );
+	}
 	void PingPong::next( uint & p_out ) const noexcept
 	{
 		if ( _lastIndex == 0 )
