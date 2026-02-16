@@ -57,6 +57,7 @@ namespace VTX::UI::QT::Widget::Tree
 		_btnSettings = new QPushButton( this );
 		_btnSettings->setIcon( _icons[ 3 ] );
 		_btnSettings->setFixedSize( 24, 24 );
+		_btnSettings->setCheckable( true );
 		_btnSettings->setToolTip( tr( "Settings" ) );
 		controlBar->addWidget( _btnSettings );
 
@@ -89,9 +90,7 @@ namespace VTX::UI::QT::Widget::Tree
 			STYLE().iconFromCodepoint( Style::Icons::PAUSE_SHALLOW ),
 			STYLE().iconFromCodepoint( Style::Icons::STOP_SHALLOW ),
 			STYLE().iconFromCodepoint( Style::Icons::SETTINGS ),
-		}
-
-		;
+		};
 	}
 
 	void TrajectoryPlayer::_onPlayPauseClicked()
@@ -180,6 +179,6 @@ namespace VTX::UI::QT::Widget::Tree
 		// Use unicode symbols for now (can be replaced with icons)
 		_btnPlayPause->setIcon( isPlaying ? _icons[ 1 ] : _icons[ 0 ] );
 	}
-	void TrajectoryPlayer::_onSettingsClicked() { _settings->setVisible( !_settings->isVisible() ); }
+	void TrajectoryPlayer::_onSettingsClicked() { _settings->setVisible( _btnSettings->isChecked() ); }
 
 } // namespace VTX::UI::QT::Widget::Tree

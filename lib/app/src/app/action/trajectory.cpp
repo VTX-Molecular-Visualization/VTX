@@ -42,6 +42,7 @@ namespace VTX::App::Action::Trajectory
 			p_entity,
 			[ &p_playerType ]( System::GenericTrajectory & traj )
 			{
+				traj.playMode = p_playerType;
 				switch ( p_playerType )
 				{
 				case System::TrajectoryPlayMode::pingpong:
@@ -49,6 +50,15 @@ namespace VTX::App::Action::Trajectory
 					break;
 				case System::TrajectoryPlayMode::forward:
 					traj.player = Util::Players::Forward( traj.trajectorySize, traj.currentFrameIndex );
+					break;
+				case System::TrajectoryPlayMode::forwardLoop:
+					traj.player = Util::Players::ForwardLoop( traj.trajectorySize, traj.currentFrameIndex );
+					break;
+				case System::TrajectoryPlayMode::backward:
+					traj.player = Util::Players::Backward( traj.trajectorySize, traj.currentFrameIndex );
+					break;
+				case System::TrajectoryPlayMode::backwardLoop:
+					traj.player = Util::Players::BackwardLoop( traj.trajectorySize, traj.currentFrameIndex );
 					break;
 				default: traj.player = Util::Players::PingPong( traj.trajectorySize, traj.currentFrameIndex );
 				}

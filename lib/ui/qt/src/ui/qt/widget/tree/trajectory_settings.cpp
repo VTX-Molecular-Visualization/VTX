@@ -20,6 +20,9 @@ namespace VTX::UI::QT::Widget::Tree
 		// Player mode combobox
 		_playerModeCombo = new QComboBox( this );
 		_playerModeCombo->addItem( tr( "Forward" ), int( App::System::TrajectoryPlayMode::forward ) );
+		_playerModeCombo->addItem( tr( "Forward Loop" ), int( App::System::TrajectoryPlayMode::forwardLoop ) );
+		_playerModeCombo->addItem( tr( "Backward" ), int( App::System::TrajectoryPlayMode::backward ) );
+		_playerModeCombo->addItem( tr( "Backward Loop" ), int( App::System::TrajectoryPlayMode::backwardLoop ) );
 		_playerModeCombo->addItem( tr( "Ping Pong" ), int( App::System::TrajectoryPlayMode::pingpong ) );
 		formLayout->addRow( tr( "Mode" ), _playerModeCombo );
 
@@ -27,19 +30,9 @@ namespace VTX::UI::QT::Widget::Tree
 		auto * speedLayout = new QHBoxLayout();
 		speedLayout->setSpacing( 4 );
 
-		float currentTrajSpeed = 35;
-		{
-			App::System::GenericTrajectory * traj = nullptr;
-			App::System::get( p_system, traj );
-			if ( traj )
-			{
-				currentTrajSpeed = traj->playingSpeed;
-			}
-		}
 		_speedSlider = new QSlider( Qt::Horizontal, this );
 		_speedSlider->setMinimum( 1 );
 		_speedSlider->setMaximum( 200 );
-		_speedSlider->setValue( currentTrajSpeed );
 		_speedSlider->setToolTip( tr( "Playback speed (ms between frames)" ) );
 		speedLayout->addWidget( _speedSlider, 1 );
 
@@ -47,7 +40,6 @@ namespace VTX::UI::QT::Widget::Tree
 		_speedSpinBox->setMinimum( 1.0 );
 		_speedSpinBox->setMaximum( 200.0 );
 		_speedSpinBox->setSingleStep( 1.0 );
-		_speedSpinBox->setValue( currentTrajSpeed );
 		_speedSpinBox->setSuffix( " ms" );
 		_speedSpinBox->setFixedWidth( 80 );
 		speedLayout->addWidget( _speedSpinBox );
@@ -164,6 +156,8 @@ namespace VTX::UI::QT::Widget::Tree
 			totalFrames = 0;
 		if ( currentFrame == std::numeric_limits<uint>::max() )
 			currentFrame = 0;
+
+		_playerModeCombo->setCurrentIndex( _playerModeCombo->findData( int( trajPtr->playMode ) ) );
 
 		// Speed
 		_speedSlider->setValue( int( trajPtr->playingSpeed ) );
