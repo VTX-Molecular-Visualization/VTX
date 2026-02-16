@@ -2,11 +2,11 @@
 #define __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
 
 #include "ui/qt/widget/tree/trajectory_settings.hpp"
+#include "ui/qt/widget/tree/trajectory_slider.hpp"
 #include <QIcon>
 #include <QLabel>
 #include <QPointer>
 #include <QPushButton>
-#include <QSlider>
 #include <QWidget>
 #include <app/ecs.hpp>
 #include <array>
@@ -34,7 +34,7 @@ namespace VTX::UI::QT::Widget::Tree
 		QPointer<QPushButton>		_btnPlayPause;
 		QPointer<QPushButton>		_btnStop;
 		QPointer<QPushButton>		_btnSettings;
-		QPointer<QSlider>			_slider;
+		QPointer<TrajectorySlider>	_slider;
 		QPointer<QLabel>			_frameLabel;
 		QPointer<TrajectorySettings> _settings;
 		std::array<QIcon, 4>		_icons { _getIcons() };

@@ -36,7 +36,7 @@ namespace VTX::App::System
 		if ( auto traj = REG().try_get<TrajectoryFullBuffer>( p_entity ) )
 		{
 			p_out.lowerBoundIndex  = 0;
-			p_out.higherBoundIndex = traj->lastFrameAvailable;
+			p_out.higherBoundIndex = static_cast<uint>( traj->lastFrameAvailable );
 			return;
 		}
 	}

@@ -40,7 +40,7 @@ namespace VTX::UI::QT::Widget::Tree
 		controlBar->addWidget( _btnStop );
 
 		// Slider
-		_slider = new QSlider( Qt::Horizontal, this );
+		_slider = new TrajectorySlider( Qt::Horizontal, this );
 		_slider->setMinimum( 0 );
 		_slider->setMaximum( 100 );
 		_slider->setValue( 0 );
@@ -161,6 +161,11 @@ namespace VTX::UI::QT::Widget::Tree
 		_slider->setMaximum( totalFrames > 0 ? int( totalFrames - 1 ) : 0 );
 		_slider->setValue( int( currentFrame ) );
 		_isRefreshing = false;
+
+		// Update loaded range overlay
+		App::System::AvailableFrames availableFrames;
+		App::System::get( _system, availableFrames );
+		_slider->setLoadedRange( int( availableFrames.lowerBoundIndex ), int( availableFrames.higherBoundIndex ) );
 
 		// Update frame label
 		_frameLabel->setText( QString( "%1/%2" ).arg( currentFrame ).arg( totalFrames > 0 ? totalFrames - 1 : 0 ) );
