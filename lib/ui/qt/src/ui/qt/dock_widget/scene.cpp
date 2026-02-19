@@ -1,4 +1,5 @@
 #include "ui/qt/dock_widget/scene.hpp"
+#include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/widget/tree/color_layout_presets.hpp"
@@ -21,9 +22,18 @@ namespace VTX::UI::QT::DockWidget
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SCHEMA ) );
 
-		_layout->addWidget( new Widget::Tree::GraphicsConfigPresets( this ) );
-		_layout->addWidget( new Widget::Tree::ColorLayoutPresets( this ) );
-		_layout->addWidget( new Widget::Tree::RepresentationPresets( this ) );
+		auto * treeGraphicsConfigPresets = new Widget::Tree::GraphicsConfigPresets( this );
+		auto * treeColorLayoutPresets	 = new Widget::Tree::ColorLayoutPresets( this );
+		auto * treeRepresentationPresets = new Widget::Tree::RepresentationPresets( this );
+
+		_layout->addWidget( treeGraphicsConfigPresets );
+		_layout->addWidget( treeColorLayoutPresets );
+		_layout->addWidget( treeRepresentationPresets );
+
+		auto & selection = SELECTION();
+		selection.add( treeGraphicsConfigPresets->selectionModel(), E_SELECTION_GROUP::GRAPHICS_CONFIG );
+		selection.add( treeColorLayoutPresets->selectionModel(), E_SELECTION_GROUP::COLOR_LAYOUT );
+		selection.add( treeRepresentationPresets->selectionModel(), E_SELECTION_GROUP::REPRESENTATION );
 
 		_filler = new QWidget( this );
 		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
@@ -42,7 +52,9 @@ namespace VTX::UI::QT::DockWidget
 
 	void Scene::_onCameraConstruct( App::ECS::Registry &, App::ECS::Entity p_e )
 	{
-		_layout->insertWidget( _layout->indexOf( _filler ), new Widget::Tree::Camera( p_e, this ) );
+		auto * treeCamera = new Widget::Tree::Camera( p_e, this );
+		SELECTION().add( treeCamera->selectionModel(), E_SELECTION_GROUP::CAMERA );
+		_layout->insertWidget( _layout->indexOf( _filler ), treeCamera );
 	}
 
 	void Scene::_onSystemLoad( const App::Events::SystemLoad & p_e )
@@ -54,6 +66,7 @@ namespace VTX::UI::QT::DockWidget
 		tree->setSelectionMode(
 			selectionLocked ? QAbstractItemView::NoSelection : QAbstractItemView::ExtendedSelection
 		);
+		SELECTION().add( tree->selectionModel(), E_SELECTION_GROUP::SYSTEM );
 
 		assert( not _mapSystemTreeWidgets.contains( entity ) );
 		_mapSystemTreeWidgets.emplace( entity, tree );

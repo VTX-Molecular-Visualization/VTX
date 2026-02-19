@@ -2,6 +2,7 @@
 #include "ui/qt/dialog/trajectory_association.hpp"
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/resources.hpp"
+#include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/main_window.hpp"
@@ -56,6 +57,9 @@ namespace VTX::UI::QT
 		// Load theme.
 		App::ECS::setCtx<Style::StyleManager>().load( _tools );
 
+		// Selection manager.
+		App::ECS::setCtx<SelectionManager>( this );
+
 		// Create and show main window.
 		App::ECS::setCtx<Widget::MainWindow>();
 
@@ -87,8 +91,9 @@ namespace VTX::UI::QT
 
 	Application::~Application()
 	{
-		// Delete main window and all its widgets.
+		// Delete elements that need SETTING().
 		App::ECS::removeCtx<Widget::MainWindow>();
+		App::ECS::removeCtx<Style::StyleManager>();
 
 		// Save settings on disk.
 		try

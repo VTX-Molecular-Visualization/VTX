@@ -8,6 +8,7 @@
 
 namespace VTX::App::Action::Selection
 {
+
 	void Clear::execute()
 	{
 		REG().view<System::Selection>().each(
@@ -35,17 +36,12 @@ namespace VTX::App::Action::Selection
 		const PickingUID first	= picked.x;
 		const PickingUID second = picked.y;
 
-		// Clear selection if not appending.
-		if ( not p_append )
-		{
-			ACTION().execute<Clear>();
-		}
-
 		// None.
 		if ( first == INVALID_UID )
 		{
 			// Sanity check.
 			assert( second == INVALID_UID );
+			ACTION().execute<Clear>();
 			return;
 		}
 
@@ -70,13 +66,17 @@ namespace VTX::App::Action::Selection
 				{
 				case E_GRANULARITY::ATOM:
 					toSelect.addRange( firstAtomIndex );
-					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>( firstEnt, toSelect );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>(
+						firstEnt, toSelect, true, p_append
+					);
 					break;
 				case E_GRANULARITY::RESIDUE:
 				{
 					const Index resIndex = system.getAtomResidueIndex( firstAtomIndex );
 					toSelect.addRange( resIndex );
-					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::RESIDUE>>( firstEnt, toSelect );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::RESIDUE>>(
+						firstEnt, toSelect, true, p_append
+					);
 					break;
 				}
 				case E_GRANULARITY::CHAIN:
@@ -84,11 +84,15 @@ namespace VTX::App::Action::Selection
 					const Index resIndex   = system.getAtomResidueIndex( firstAtomIndex );
 					const Index chainIndex = system.getResidueChainIndex( resIndex );
 					toSelect.addRange( chainIndex );
-					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::CHAIN>>( firstEnt, toSelect );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::CHAIN>>(
+						firstEnt, toSelect, true, p_append
+					);
 					break;
 				}
 				case E_GRANULARITY::SYSTEM:
-					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>( firstEnt );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>(
+						firstEnt, toSelect, true, p_append
+					);
 					return;
 
 				default: assert( false ); break;
@@ -105,13 +109,17 @@ namespace VTX::App::Action::Selection
 				case E_GRANULARITY::ATOM:
 					toSelect.addRange( firstAtomIndex );
 					toSelect.addRange( secondAtomIndex );
-					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>( firstEnt, toSelect );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>(
+						firstEnt, toSelect, true, p_append
+					);
 					break;
 				case E_GRANULARITY::RESIDUE:
 				{
 					toSelect.addRange( system.getAtomResidueIndex( firstAtomIndex ) );
 					toSelect.addRange( system.getAtomResidueIndex( secondAtomIndex ) );
-					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::RESIDUE>>( firstEnt, toSelect );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::RESIDUE>>(
+						firstEnt, toSelect, true, p_append
+					);
 					break;
 				}
 				case E_GRANULARITY::CHAIN:
@@ -120,11 +128,15 @@ namespace VTX::App::Action::Selection
 					const Index secondResIndex = system.getAtomResidueIndex( secondAtomIndex );
 					toSelect.addRange( system.getResidueChainIndex( firstResIndex ) );
 					toSelect.addRange( system.getResidueChainIndex( secondResIndex ) );
-					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::CHAIN>>( firstEnt, toSelect );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::CHAIN>>(
+						firstEnt, toSelect, true, p_append
+					);
 					break;
 				}
 				case E_GRANULARITY::SYSTEM:
-					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>( firstEnt );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>(
+						firstEnt, toSelect, true, p_append
+					);
 					return;
 
 				default: assert( false ); break;
@@ -153,18 +165,22 @@ namespace VTX::App::Action::Selection
 			case E_GRANULARITY::RESIDUE:
 			{
 				toSelect.addRange( residueIndex );
-				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::RESIDUE>>( firstEnt, toSelect );
+				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::RESIDUE>>(
+					firstEnt, toSelect, true, p_append
+				);
 				break;
 			}
 			case E_GRANULARITY::CHAIN:
 			{
 				const Index chainIndex = system.getResidueChainIndex( residueIndex );
 				toSelect.addRange( chainIndex );
-				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::CHAIN>>( firstEnt, toSelect );
+				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::CHAIN>>( firstEnt, toSelect, true, p_append );
 				break;
 			}
 			case E_GRANULARITY::SYSTEM:
-				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>( firstEnt );
+				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>(
+					firstEnt, toSelect, true, p_append
+				);
 				return;
 
 			default: assert( false ); break;

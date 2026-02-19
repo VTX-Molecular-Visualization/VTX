@@ -56,7 +56,7 @@ namespace VTX::UI::QT::Model
 				}
 			}
 
-			ACTION().execute<Action::Selection::SetSelected<E_SYSTEM_ITEM::ATOM>>( _system, deselected, false );
+			ACTION().execute<Action::Selection::SetSelected<E_SYSTEM_ITEM::ATOM>>( _system, deselected, false, true );
 		}
 
 		// Selected items.
@@ -83,7 +83,7 @@ namespace VTX::UI::QT::Model
 				}
 			}
 
-			ACTION().execute<Action::Selection::SetSelected<E_SYSTEM_ITEM::ATOM>>( _system, selected, true );
+			ACTION().execute<Action::Selection::SetSelected<E_SYSTEM_ITEM::ATOM>>( _system, selected, true, true );
 		}
 	}
 

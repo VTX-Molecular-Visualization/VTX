@@ -40,6 +40,7 @@ namespace VTX::UI::QT::Widget
 		QSize size = screen()->availableGeometry().size();
 		size *= Style::DEFAULT_SIZE_SCALE;
 		resize( size );
+		center();
 
 		// Set all settings.
 		setDockNestingEnabled( false );
@@ -161,7 +162,6 @@ namespace VTX::UI::QT::Widget
 		// Restore geometry and state.
 		restoreGeometry( _defaultGeometry );
 		restoreState( _defaultState );
-		center();
 	}
 
 	void MainWindow::closeEvent( QCloseEvent * p_event )
