@@ -95,9 +95,18 @@ namespace VTX::App::Action::Selection
 		void execute();
 
 		/**
+		 * @brief Clear mode.
+		 */
+		enum struct E_MODE : uint
+		{
+			THIS,
+			BUT
+		};
+
+		/**
 		 * @brief For a specific system.
 		 */
-		void execute( const ECS::Entity p_ent );
+		void execute( const ECS::Entity, const E_MODE );
 	};
 
 	enum struct E_GRANULARITY : uint

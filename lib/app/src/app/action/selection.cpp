@@ -21,11 +21,28 @@ namespace VTX::App::Action::Selection
 		);
 	}
 
-	void Clear::execute( const ECS::Entity p_ent )
+	void Clear::execute( const ECS::Entity p_ent, const E_MODE p_mode )
 	{
-		ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>(
-			p_ent, Core::Struct::IndexRangeList(), false
-		);
+		if ( p_mode == E_MODE::THIS )
+		{
+			ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>(
+				p_ent, Core::Struct::IndexRangeList(), false
+			);
+		}
+		else
+		{
+			REG().view<System::Selection>().each(
+				[ p_ent ]( const ECS::Entity ent, System::Selection & )
+				{
+					if ( p_ent != ent )
+					{
+						ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>(
+							ent, Core::Struct::IndexRangeList(), false
+						);
+					}
+				}
+			);
+		}
 	}
 
 	void Pick::execute( const Vec2i & p_mousePos, const E_GRANULARITY p_granularity, const bool p_append )
@@ -41,7 +58,12 @@ namespace VTX::App::Action::Selection
 		{
 			// Sanity check.
 			assert( second == INVALID_UID );
-			ACTION().execute<Clear>();
+
+			if ( not p_append )
+			{
+				ACTION().execute<Clear>();
+			}
+
 			return;
 		}
 

@@ -5,7 +5,9 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
+#include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
+#include <app/action/selection.hpp>
 #include <app/ecs.hpp>
 #include <app/helper/system.hpp>
 #include <app/scene/color_layout.hpp>
@@ -132,6 +134,8 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
+		SELECTION().clearBut( E_SELECTION_GROUP::SYSTEM );
+
 		auto opt = _indexFromPos( p_e->pos() );
 		if ( not opt )
 		{
@@ -145,6 +149,11 @@ namespace VTX::UI::QT::Widget
 
 		bool shift = p_e->modifiers() & Qt::ShiftModifier;
 		bool ctrl  = p_e->modifiers() & Qt::ControlModifier;
+
+		if ( not ctrl )
+		{
+			ACTION().execute<Selection::Clear>( _system, Selection::Clear::E_MODE::BUT );
+		}
 
 		bool selected = App::Helper::System::isSelected<E_SYSTEM_ITEM::RESIDUE>( _system, index );
 

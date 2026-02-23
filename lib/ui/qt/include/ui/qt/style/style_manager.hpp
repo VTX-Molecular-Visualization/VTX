@@ -30,7 +30,7 @@ namespace VTX::UI::QT::Style
 	 */
 	constexpr float	  DEFAULT_SIZE_SCALE		 = 0.85f;
 	constexpr int	  DEFAULT_FONT_SIZE			 = 10;
-	constexpr E_THEME DEFAULT_THEME				 = E_THEME::SYSTEM;
+	constexpr E_THEME DEFAULT_THEME				 = E_THEME::DARK;
 	const QString	  DEFAULT_FONT_FAMILY		 = "Consolas";
 	constexpr int	  MINIMUM_DOCK_PANEL_WIDTH	 = 200;
 	constexpr int	  MINIMUM_DOCK_PANEL_HEIGHT	 = 50;

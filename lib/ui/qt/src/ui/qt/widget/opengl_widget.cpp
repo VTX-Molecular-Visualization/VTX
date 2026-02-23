@@ -1,5 +1,6 @@
 #include "ui/qt/widget/opengl_widget.hpp"
 #include "app/services.hpp"
+#include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/widget/main_window.hpp"
@@ -67,6 +68,8 @@ namespace VTX::UI::QT::Widget
 			{
 				if ( not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
 				{
+					SELECTION().clearBut( E_SELECTION_GROUP::SYSTEM );
+
 					App::ACTION().execute<App::Action::Selection::Pick>(
 						Vec2i( p_pos.x(), p_pos.y() ),
 						static_cast<App::Action::Selection::E_GRANULARITY>(

@@ -1,5 +1,6 @@
 ﻿#include "ui/qt/model/system_selection_model.hpp"
 #include "ui/qt/model/system_model.hpp"
+#include <QGuiApplication>
 #include <app/action/action_manager.hpp>
 #include <app/action/selection.hpp>
 #include <app/helper/system.hpp>
@@ -31,6 +32,15 @@ namespace VTX::UI::QT::Model
 
 		const SystemModel & model  = *static_cast<const SystemModel *>( this->model() );
 		const auto &		system = REG().get<Core::Struct::System>( _system );
+
+		// Unselect others.
+		const Qt::KeyboardModifiers modifiers = QGuiApplication::keyboardModifiers();
+
+		// Check Ctrl to clear others entities.
+		if ( modifiers.testFlag( Qt::ControlModifier ) == false )
+		{
+			ACTION().execute<Action::Selection::Clear>( _system, Action::Selection::Clear::E_MODE::BUT );
+		}
 
 		// Deselected items.
 		Core::Struct::IndexRangeList deselected;
