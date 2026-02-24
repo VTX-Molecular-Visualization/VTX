@@ -10,26 +10,12 @@
 #include "renderer/render_graph.hpp"
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
-#include <core/struct/system.hpp>
+#include "renderer/system_data.hpp"
 #include <renderer/types.hpp>
 #include <util/callback.hpp>
 
 namespace VTX::Renderer
 {
-
-	struct SystemData
-	{
-		const SystemUID				  uid;
-		const Mat4f &				  transform;
-		const Core::Struct::System	  data;
-		const Core::Struct::Frame &	  frame;
-		const std::vector<float>	  radii;
-		const std::vector<PickingUID> atomUids;
-		// const std::vector<ColorIndex>												colorIndexes;
-		// const std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> representationRanges;
-		// const std::vector<std::byte>												visibleAtoms;
-		// const std::vector<std::byte>												selectedAtoms;
-	};
 
 	/**
 	 * @brief The renderer, only accessed from the facade.

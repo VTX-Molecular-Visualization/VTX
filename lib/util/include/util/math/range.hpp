@@ -4,6 +4,7 @@
 #include "util/constants.hpp"
 #include <cassert>
 #include <concepts>
+#include <numeric>
 #include <optional>
 
 namespace VTX::Util::Math
@@ -409,12 +410,11 @@ namespace VTX::Util::Math
 		 */
 		std::vector<T> toStdVector() const
 		{
-			std::vector<T> vec;
-			vec.reserve( static_cast<size_t>( getCount() ) );
-			for ( T v = first; v < last; ++v )
-			{
-				vec.push_back( v );
-			}
+			const size_t   count = static_cast<size_t>( getCount() );
+			std::vector<T> vec( count );
+
+			std::iota( vec.begin(), vec.end(), first );
+
 			return vec;
 		}
 

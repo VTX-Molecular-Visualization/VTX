@@ -128,22 +128,21 @@ namespace VTX::App::Pass
 			assert( atomCount > 0 );
 			assert( atomCount == frame->size() );
 
-			std::vector<float>		radii( atomCount );
-			std::vector<PickingUID> uids( atomCount );
+			std::vector<float> radii( atomCount );
 			for ( Index i = 0; i < atomCount; ++i )
 			{
 				// TODO: use glsl constants.
 				radii[ i ] = Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ toUnderlying( data.getAtomSymbol( i ) ) ];
 			}
 
-			size_t i = 0;
-			for ( const PickingUID index : uid.atoms )
-			{
-				uids[ i++ ] = index;
-			}
-
 			systemsData.push_back(
-				Renderer::SystemData { uid.system, transform.computeMatrix(), data, *frame, radii, uids }
+				Renderer::SystemData { uid.system,
+									   transform.computeMatrix(),
+									   data,
+									   *frame,
+									   radii,
+									   uid.atoms.toStdVector(),
+									   uid.residues.toStdVector() }
 			);
 		}
 

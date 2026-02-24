@@ -376,6 +376,9 @@ namespace VTX::Renderer
 
 		_cacheSystems.clear();
 
+		// TODO:
+		// refacto geometry creations.
+
 		ModelIndex modelIndex  = 0;
 		size_t	   offsetAtoms = 0;
 		size_t	   offsetBonds = 0;
@@ -581,15 +584,15 @@ namespace VTX::Renderer
 		BinaryBuffer430 buffer;
 
 		// Sort.
-		std::vector<Mat4f> transforms( _cacheSystems.size() );
-		for ( const auto & [ _, cacheSystem ] : _cacheSystems )
+		std::vector<Cache::System *> sorted( _cacheSystems.size() );
+		for ( auto & [ _, cacheSystem ] : _cacheSystems )
 		{
-			transforms[ cacheSystem.modelIndex ] = cacheSystem.transform;
+			sorted[ cacheSystem.modelIndex ] = &cacheSystem;
 		}
 
-		for ( const auto & transform : transforms )
+		for ( const Cache::System * cacheSystem : sorted )
 		{
-			const Mat4f matrixModelView	   = _cacheCamera.matView * transform;
+			const Mat4f matrixModelView	   = _cacheCamera.matView * cacheSystem->transform;
 			const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
 			const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
 

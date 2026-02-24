@@ -6,7 +6,7 @@
 
 namespace VTX::Core::ChemDB::SecondaryStructure
 {
-	enum class TYPE : uchar
+	enum class TYPE : uint8_t
 	{
 		HELIX_ALPHA_RIGHT = 0,
 		HELIX_ALPHA_LEFT  = 1,
