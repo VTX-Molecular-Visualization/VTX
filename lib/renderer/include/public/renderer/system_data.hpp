@@ -10,8 +10,7 @@ namespace VTX::Renderer
 		const SystemUID				 uid;
 		const Mat4f &				 transform;
 		const Core::Struct::System & data;
-		const Core::Struct::Frame &	 frame;
-		// TODO: delete and use symbols in shader.
+		//  TODO: delete and use symbols in shader.
 		const std::vector<float> radii;
 		// TODO: delete and use ssbo with atom indexes in shader.
 		const std::vector<PickingUID> atomUids;

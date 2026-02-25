@@ -42,7 +42,7 @@ namespace VTX::Renderer::Geometry
 		{
 			assert( not _ranges.contains( p_data.uid ) );
 
-			assert( p_data.data.atomNames.size() == p_data.frame.size() );
+			// assert( p_data.data.atomNames.size() == p_data.frame.size() );
 			assert( p_data.residueUids.size() == p_data.data.residueSecondaryStructureTypes.size() );
 			assert( p_data.residueUids.size() == p_data.residueUids.size() );
 			assert( p_data.residueUids.size() == p_data.data.residueFirstAtomIndexes.size() );
@@ -149,7 +149,8 @@ namespace VTX::Renderer::Geometry
 				}
 			};
 
-			const std::vector<Vec3f> & positions = p_data.frame;
+			/////////////////////////
+			const std::vector<Vec3f> positions;
 
 			// Temporary vectors, merged with buffers if constructed.
 			std::vector<Vec4f> caPositions;
@@ -240,8 +241,8 @@ namespace VTX::Renderer::Geometry
 					/// TODO: For all these "what to do ?" I think we should render it with spheres or b&s...
 
 					// Compute direction between carbon alpha and oxygen.
-					const Vec3f & positionCA   = p_data.frame[ *CA ];
-					const Vec3f & positionO	   = p_data.frame[ *O ];
+					const Vec3f & positionCA   = positions[ *CA ];
+					const Vec3f & positionO	   = positions[ *O ];
 					const Vec3f	  directionCAO = Util::Math::normalize( positionO - positionCA );
 
 					// Store residue index for later.

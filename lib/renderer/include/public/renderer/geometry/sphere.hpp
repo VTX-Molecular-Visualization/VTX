@@ -13,7 +13,7 @@ namespace VTX::Renderer::Geometry
 		{
 			assert( not _ranges.contains( p_data.uid ) );
 
-			const Index count = static_cast<Index>( p_data.frame.size() );
+			const Index count = p_data.data.getAtomCount();
 
 			assert( count > 0 );
 			assert( p_data.atomUids.size() == count );

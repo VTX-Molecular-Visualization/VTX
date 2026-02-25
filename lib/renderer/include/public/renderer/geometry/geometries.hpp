@@ -21,7 +21,7 @@ namespace VTX::Renderer
 		{
 			spheres.construct( p_data );
 			cylinders.construct( p_data );
-			ribbons.construct( p_data );
+			// ribbons.construct( p_data );
 		}
 
 		void buildDrawRanges()

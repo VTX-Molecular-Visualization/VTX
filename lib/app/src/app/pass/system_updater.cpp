@@ -114,19 +114,7 @@ namespace VTX::App::Pass
 			const auto & selection		= reg.get<System::Selection>( system );
 			const size_t atomCount		= data.getAtomCount();
 
-			const std::vector<Vec3f> * frame = nullptr;
-			if ( const auto * const c = reg.try_get<System::TrajectorySingleFrame>( system ) )
-			{
-				frame = &c->atomPositions;
-			}
-			else if ( const auto * const c = reg.try_get<System::TrajectoryFullBuffer>( system ) )
-			{
-				frame = &c->frameCollection.front();
-			}
-
-			assert( frame != nullptr );
 			assert( atomCount > 0 );
-			assert( atomCount == frame->size() );
 
 			std::vector<float> radii( atomCount );
 			for ( Index i = 0; i < atomCount; ++i )
@@ -139,7 +127,6 @@ namespace VTX::App::Pass
 				Renderer::SystemData { uid.system,
 									   transform.computeMatrix(),
 									   data,
-									   *frame,
 									   radii,
 									   uid.atoms.toStdVector(),
 									   uid.residues.toStdVector() }

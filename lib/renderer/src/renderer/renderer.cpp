@@ -4,6 +4,7 @@
 
 namespace
 {
+	/*
 	auto linearizeColorFloat = []( float c ) -> float
 	{
 		return c;
@@ -17,6 +18,7 @@ namespace
 	{
 		return Vec4f( linearizeColorFloat( c.r() ), linearizeColorFloat( c.g() ), linearizeColorFloat( c.b() ), c.a() );
 	};
+	*/
 
 } // namespace
 
@@ -172,9 +174,9 @@ namespace VTX::Renderer
 		}
 
 		BinaryBuffer140 bufferShading;
-		bufferShading.write( linearizeColor( p_config.colorBackground ) );
-		bufferShading.write( linearizeColor( p_config.colorLight ) );
-		bufferShading.write( linearizeColor( p_config.colorFog ) );
+		bufferShading.write( p_config.colorBackground );
+		bufferShading.write( p_config.colorLight );
+		bufferShading.write( p_config.colorFog );
 		bufferShading.write( uint32_t( p_config.shadingMode ) );
 		bufferShading.write( p_config.specularFactor );
 		bufferShading.write( p_config.shininess );
@@ -227,14 +229,7 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setColorLayout" );
 
-		Color::Layout layout = p_layout;
-
-		for ( auto & color : layout.colors )
-		{
-			color = Util::Color::Rgba( linearizeColor( color ) );
-		}
-
-		_context.setShaderBuffer<Util::Color::Rgba>( "ColorLayout", layout.colors );
+		_context.setShaderBuffer<Util::Color::Rgba>( "ColorLayout", p_layout.colors );
 
 		setNeedUpdate( true );
 	}
@@ -378,8 +373,8 @@ namespace VTX::Renderer
 		size_t	   offsetBonds = 0;
 		for ( const auto & systemData : p_systems )
 		{
-			const size_t	countAtoms = systemData.frame.size();
-			const size_t	countBonds = systemData.data.bondPairAtomIndexes.size();
+			const size_t	countAtoms = systemData.data.getAtomCount();
+			const size_t	countBonds = systemData.data.getBondCount();
 			const SystemUID uid		   = systemData.uid;
 
 			// Move bonds.
@@ -390,7 +385,7 @@ namespace VTX::Renderer
 			}
 
 			// Upload data.
-			_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", systemData.frame, offsetAtoms );
+			//_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", systemData.frame, offsetAtoms );
 			_context.setPipelineBuffer<Index>( "Bonds", bonds, offsetBonds );
 			_context.setPipelineBuffer<float>( "Atoms.Radii", systemData.radii, offsetAtoms );
 			_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", systemData.atomUids, offsetAtoms );
@@ -429,7 +424,7 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
 	{
-		//_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.range( p_uid ).first );
+		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.range( p_uid ).first );
 		setNeedUpdate( true );
 	}
 

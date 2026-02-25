@@ -13,8 +13,7 @@ namespace VTX::Renderer::Geometry
 		{
 			assert( not _ranges.contains( p_data.uid ) );
 
-			const Index count = static_cast<Index>( p_data.data.bondPairAtomIndexes.size() );
-			addRange( p_data.uid, count );
+			addRange( p_data.uid, p_data.data.getBondCount() );
 		}
 	};
 } // namespace VTX::Renderer::Geometry
