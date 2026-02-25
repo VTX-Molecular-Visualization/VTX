@@ -1,7 +1,9 @@
 #ifndef __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 #define __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 
+#include "renderer/system_data.hpp"
 #include <map>
+#include <util/exceptions.hpp>
 #include <util/logger.hpp>
 #include <util/math/range_list.hpp>
 #include <util/type_traits.hpp>
@@ -32,9 +34,24 @@ namespace VTX::Renderer::Geometry
 	struct BaseGeometry
 	{
 		/**
-		 * @brief Range to draw per system (global indexes).
+		 * @brief Current size to draw (before applying anything).
 		 */
-		MapUIDRange ranges;
+		size_t size;
+
+		/**
+		 * @brief Push a range.
+		 */
+		void addRange( const SystemUID p_uid, const Index p_count )
+		{
+			size_t count = size + p_count;
+			if ( count > TypeMax<Index> )
+			{
+				throw GraphicException( "Total geometry count exceeds maximum supported value." );
+			}
+
+			ranges[ p_uid ] = IndexRange { static_cast<Index>( size ), static_cast<Index>( count ) };
+			size += p_count;
+		}
 
 		/**
 		 * @brief Mask of ranges to not draw per system (local indexes).
@@ -108,6 +125,19 @@ namespace VTX::Renderer::Geometry
 
 			VTX_DEBUG( "Built draw ranges: {}", allRanges.rangeCount() );
 		}
+
+		IndexRange range( const SystemUID p_uid ) const
+		{
+			assert( ranges.contains( p_uid ) );
+
+			return ranges[ p_uid ];
+		}
+
+	  protected:
+		/**
+		 * @brief Range to draw per system (global indexes).
+		 */
+		mutable MapUIDRange ranges;
 	};
 } // namespace VTX::Renderer::Geometry
 

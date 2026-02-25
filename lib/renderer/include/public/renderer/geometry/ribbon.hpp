@@ -30,7 +30,7 @@ namespace VTX::Renderer::Geometry
 
 		std::map<SystemUID, Construction> construction;
 
-		void buildGeometry( const SystemData & p_data )
+		void construct( const SystemData & p_data )
 		{
 			size_t totalCaPositions = 0;
 			size_t totalIndices		= 0;
@@ -274,8 +274,8 @@ namespace VTX::Renderer::Geometry
 					*/
 
 					// Generate number between 0 and 255.
-					// int color = ( ( residueIdx * 7 ) % 256 );
-					// colors.emplace_back( color );
+					int color = ( ( residueIdx * 7 ) % 256 );
+					colors.emplace_back( color );
 
 					// colors.emplace_back( p_data.residueColors[ residueIdx ] );
 					ids.emplace_back( p_data.residueUids[ residueIdx ] );

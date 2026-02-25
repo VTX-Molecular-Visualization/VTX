@@ -340,29 +340,14 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setSystems" );
 
-		// Compute total size and check integrity.
-		size_t totalAtoms = 0;
-		size_t totalBonds = 0;
+		// Compute geometries.
 		for ( const auto & systemData : p_systems )
 		{
-			const size_t countAtoms = systemData.frame.size();
-			assert( systemData.atomUids.size() == countAtoms );
-			assert( systemData.radii.size() == countAtoms );
-			totalAtoms += countAtoms;
-			totalBonds += systemData.data.bondPairAtomIndexes.size();
+			_geometries.construct( systemData );
 		}
 
-		// Check.
-		assert( totalAtoms > 0 );
-
-		if ( totalAtoms > TypeMax<Index> )
-		{
-			throw GraphicException( "Total atom count exceeds maximum supported value." );
-		}
-		if ( totalBonds > TypeMax<Index> )
-		{
-			throw GraphicException( "Total bond count exceeds maximum supported value." );
-		}
+		const size_t totalAtoms = _geometries.spheres.size;
+		const size_t totalBonds = _geometries.cylinders.size;
 
 		// Reserve data.
 		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", totalAtoms );
@@ -407,14 +392,6 @@ namespace VTX::Renderer
 			// Cache.
 			_cacheSystems[ uid ] = Cache::System { systemData.transform, modelIndex };
 
-			// Geometry ranges.
-			_geometries.spheres.ranges[ uid ] = Geometry::IndexRange::fromFirstCount(
-				static_cast<Index>( offsetAtoms ), static_cast<Index>( countAtoms )
-			);
-			_geometries.cylinders.ranges[ uid ] = Geometry::IndexRange::fromFirstCount(
-				static_cast<Index>( offsetBonds ), static_cast<Index>( countBonds )
-			);
-
 			offsetAtoms += countAtoms;
 			offsetBonds += countBonds;
 			modelIndex++;
@@ -443,13 +420,13 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
 	{
-		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.ranges[ p_uid ].first );
+		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.range( p_uid ).first );
 		setNeedUpdate( true );
 	}
 
 	void Renderer::setSystemColors( const SystemUID p_uid, std::span<const ColorIndex> p_colors )
 	{
-		_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", p_colors, _geometries.spheres.ranges[ p_uid ].first );
+		_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", p_colors, _geometries.spheres.range( p_uid ).first );
 		setNeedUpdate( true );
 	}
 
@@ -463,7 +440,7 @@ namespace VTX::Renderer
 
 		_cacheSystems[ p_uid ].representationAtomRanges = p_representations;
 
-		const size_t					 countAtoms = _geometries.spheres.ranges[ p_uid ].getCount();
+		const size_t					 countAtoms = _geometries.spheres.range( p_uid ).getCount();
 		std::vector<RepresentationIndex> atoms( countAtoms );
 		size_t							 count = 0;
 
@@ -479,10 +456,10 @@ namespace VTX::Renderer
 		assert( count == countAtoms );
 
 		_context.setPipelineBuffer<RepresentationIndex>(
-			"Atoms.Representations", atoms, _geometries.spheres.ranges[ p_uid ].first
+			"Atoms.Representations", atoms, _geometries.spheres.range( p_uid ).first
 		);
 
-		const size_t countBonds = _geometries.cylinders.ranges[ p_uid ].getCount();
+		const size_t countBonds = _geometries.cylinders.range( p_uid ).getCount();
 		_cacheSystems[ p_uid ].representationBondsRanges.clear();
 
 		for ( const auto & [ index, ranges ] : p_representations )
@@ -512,8 +489,8 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setSystemFlags" );
 
-		const size_t offsetAtoms = _geometries.spheres.ranges[ p_uid ].first;
-		const size_t countAtoms	 = _geometries.spheres.ranges[ p_uid ].getCount();
+		const size_t offsetAtoms = _geometries.spheres.range( p_uid ).first;
+		const size_t countAtoms	 = _geometries.spheres.range( p_uid ).getCount();
 
 		assert( p_selection.size() <= countAtoms );
 		assert( p_visible.size() <= countAtoms );
@@ -549,8 +526,8 @@ namespace VTX::Renderer
 		_geometries.spheres.visibilityMask[ p_uid ] = { rangeAtoms };
 		_geometries.spheres.visibilityMask[ p_uid ].substractInPlace( p_visible );
 
-		const size_t offsetBonds = _geometries.cylinders.ranges[ p_uid ].first;
-		const size_t countBonds	 = _geometries.cylinders.ranges[ p_uid ].getCount();
+		const size_t offsetBonds = _geometries.cylinders.range( p_uid ).first;
+		const size_t countBonds	 = _geometries.cylinders.range( p_uid ).getCount();
 
 		assert( p_bonds.size() == countBonds );
 

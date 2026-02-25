@@ -15,15 +15,20 @@ namespace VTX::Renderer
 		Geometry::Cylinder cylinders;
 		Geometry::Ribbon   ribbons;
 		Geometry::Voxel	   voxels;
-		Geometry::SES	   ses;
+		//  Geometry::SES	   ses;
+
+		void construct( const SystemData & p_data )
+		{
+			spheres.construct( p_data );
+			cylinders.construct( p_data );
+			ribbons.construct( p_data );
+		}
 
 		void buildDrawRanges()
 		{
 			spheres.buildDrawRanges();
 			cylinders.buildDrawRanges();
-			// ribbons.buildDrawRanges();
-			// voxels.buildDrawRanges();
-			// ses.buildDrawRanges();
+			ribbons.buildDrawRanges();
 		}
 	};
 } // namespace VTX::Renderer
