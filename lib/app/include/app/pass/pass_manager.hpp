@@ -57,7 +57,7 @@ namespace VTX::App::Pass
 			// Register update delegate.
 			UpdateDelegate d;
 			d.template connect<&T::update>( p );
-			_delegates.emplace_front( std::move( d ) );
+			_delegates.push_back( std::move( d ) );
 
 			return p;
 		}
@@ -151,8 +151,7 @@ namespace VTX::App::Pass
 
 	  private:
 		Util::Collection<std::unique_ptr<IPass>> _passes;
-		// We need to create a pass during an iteration.
-		std::forward_list<UpdateDelegate> _delegates;
+		std::vector<UpdateDelegate>				 _delegates;
 	};
 } // namespace VTX::App::Pass
 

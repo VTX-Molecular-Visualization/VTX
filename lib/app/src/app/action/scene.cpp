@@ -34,28 +34,7 @@
 
 namespace VTX::App::Action::Scene
 {
-
-	void LoadSystem::execute( FilePath p_path /*, const std::string * const p_buffer*/ )
-	{
-		auto & reg = REG();
-
-		// Create entity.
-		ECS::Entity entity			  = reg.create();
-		auto &		pendingSystemData = reg.emplace<System::PendingSystem>( entity );
-		pendingSystemData.path		  = std::move( p_path );
-		THREAD().createThread( System::fillerCallable( entity, pendingSystemData ) );
-	}
-	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
-	{
-		auto & reg = REG();
-
-		// Create entity.
-		ECS::Entity entity			  = reg.create();
-		auto &		pendingSystemData = reg.emplace<System::PendingSystem>( entity );
-		pendingSystemData.path		  = std::move( p_path );
-		pendingSystemData.buffer.emplace( std::move( p_buffer ) );
-		THREAD().createThread( System::fillerCallable( entity, pendingSystemData ) );
-	}
+	
 
 	void DeleteSystem::execute( const ECS::Entity p_e ) { REG().destroy( p_e ); }
 

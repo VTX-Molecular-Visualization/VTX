@@ -13,11 +13,58 @@ namespace VTX::Util::Players
 	void Forward::increment( const uint & p_N ) noexcept { _currentStep = std::min( _currentStep + p_N, _lastIndex ); }
 	void Forward::current( uint & p_out ) const noexcept { p_out = _currentStep; }
 
+	ForwardLoop::ForwardLoop( uint p_stepNum, uint p_startingStep ) :
+		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
+	{
+	}
+	void ForwardLoop::jumpTo( const uint & p_step ) noexcept { _currentStep = std::min( p_step, _lastIndex ); }
+	void ForwardLoop::next( uint & p_out ) const noexcept { p_out = ( _currentStep + 1 ) % ( _lastIndex + 1 ); }
+	void ForwardLoop::increment() noexcept { _currentStep = ( _currentStep + 1 ) % ( _lastIndex + 1 ); }
+	void ForwardLoop::increment( const uint & p_N ) noexcept
+	{
+		_currentStep = ( _currentStep + p_N ) % ( _lastIndex + 1 );
+	}
+	void ForwardLoop::current( uint & p_out ) const noexcept { p_out = _currentStep; }
+
+	Backward::Backward( uint p_stepNum, uint p_startingStep ) :
+		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
+	{
+	}
+	void Backward::jumpTo( const uint & p_step ) noexcept { _currentStep = std::min( p_step, _lastIndex ); }
+	void Backward::next( uint & p_out ) const noexcept { p_out = ( _currentStep > 1 ) * ( _currentStep - 1 ); }
+	void Backward::increment() noexcept { _currentStep = ( _currentStep > 1 ) * ( _currentStep - 1 ); }
+	void Backward::increment( const uint & p_N ) noexcept
+	{
+		_currentStep = ( _currentStep > p_N ) * ( _currentStep - p_N );
+	}
+	void Backward::current( uint & p_out ) const noexcept { p_out = _currentStep; }
+
+	BackwardLoop::BackwardLoop( uint p_stepNum, uint p_startingStep ) :
+		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
+	{
+	}
+	void BackwardLoop::jumpTo( const uint & p_step ) noexcept { _currentStep = std::min( p_step, _lastIndex ); }
+	void BackwardLoop::next( uint & p_out ) const noexcept
+	{
+		p_out = _currentStep == 0 ? _lastIndex : _currentStep - 1;
+	}
+	void BackwardLoop::increment() noexcept { _currentStep = _currentStep == 0 ? _lastIndex : _currentStep - 1; }
+	void BackwardLoop::increment( const uint & p_N ) noexcept
+	{
+		const uint modulatedIncrement = ( p_N % ( _lastIndex + 1 ) );
+		_currentStep				  = ( ( _currentStep + _lastIndex + 1 ) - modulatedIncrement ) % ( _lastIndex + 1 );
+	}
+	void BackwardLoop::current( uint & p_out ) const noexcept { p_out = _currentStep; }
+
 	PingPong::PingPong( uint p_stepNum, uint p_startingStep ) :
 		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
 	{
 	}
-	void PingPong::jumpTo( const uint & p_step ) noexcept { _currentStep = std::min( p_step, _lastIndex ); }
+	void PingPong::jumpTo( const uint & p_step ) noexcept
+	{
+		_forward	 = p_step > _currentStep;
+		_currentStep = std::min( p_step, _lastIndex );
+	}
 	void PingPong::next( uint & p_out ) const noexcept
 	{
 		if ( _lastIndex == 0 )

@@ -25,14 +25,40 @@ namespace VTX::App::Action::IO
 		void execute( const std::string & p_path );
 	};
 
+	struct _SystemIo;
+	struct _SystemIoDel
+	{
+		void operator()( _SystemIo * ) noexcept;
+	};
+	using _SystemIoPtr = std::unique_ptr<_SystemIo, _SystemIoDel>;
+
+	/**
+	 * @brief Load a molecular system from disk or buffer.
+	 */
+	struct LoadSystem
+	{
+		LoadSystem();
+		void execute( FilePath p_path );
+		void execute( FilePath p_path, std::string && p_buffer );
+		void wait() noexcept;
+
+	  private:
+		_SystemIoPtr _data;
+	};
+
 	/**
 	 * @brief Associate a trajectory file with an existing system, conserving the topology but discarding current
 	 * positions.
 	 */
 	struct AssociateTrajectory
 	{
+		AssociateTrajectory();
 		void execute( const FilePath & p_path, const ECS::Entity & );
 		void execute( const std::string & p_path, const ECS::Entity & );
+		void wait() noexcept;
+
+	  private:
+		_SystemIoPtr _data;
 	};
 
 	struct RunPythonScript

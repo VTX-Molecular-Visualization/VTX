@@ -69,6 +69,16 @@ namespace VTX::App::System
 	};
 
 	/**
+	 * @brief Used to communicate the frames data that are imediately available.
+	 */
+	struct AvailableFrames
+	{
+		uint lowerBoundIndex  = 0;
+		uint higherBoundIndex = 0;
+	};
+	void get( const ECS::Entity &, AvailableFrames & ) noexcept;
+
+	/**
 	 * @brief Obtains the atom position of a system. Be it single frame or multiframe trajectory
 	 * @param
 	 * @return

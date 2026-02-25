@@ -30,41 +30,77 @@
 #include <util/math/aabb.hpp>
 #include <util/math/range_list.hpp>
 #include <util/math/transform.hpp>
-
 namespace VTX::App::System
 {
-
-	std::function<uint( Util::StopToken, Threading::BaseThread & )> fillerCallable(
-		const ECS::Entity & p_entity,
-		PendingSystem &		p_pendingData
-	) noexcept
+	namespace
 	{
-		return [ p_entity, &p_pendingData ]( VTX::Util::StopToken p_stopToken, Threading::BaseThread & ) -> uint
+		/**
+		 * @brief Event triggered with the end of the deliver free function.
+		 */
+		struct EntityDelivered
 		{
-			p_pendingData.loader.emplace();
-			if ( p_pendingData.buffer )
-				p_pendingData.loader->readBuffer(
-					p_pendingData.buffer.value(), p_pendingData.path, p_pendingData.system
-				);
-			else
-				p_pendingData.loader->readFile( p_pendingData.path, p_pendingData.system );
-			p_pendingData.pdbIdCode = p_pendingData.loader->getChemfilesReader().getPdbIdCode();
-
-			if ( p_stopToken.stop_requested() )
-				return 0;
-
-			p_pendingData.topologyReady = true;
-			p_pendingData.trajectoryDecision.wait();
-
-			if ( p_stopToken.stop_requested() )
-				return 0;
-
-			auto visitor = [ loader = &p_pendingData.loader.value() ]( auto && traj )
-			{ System::prepare( traj, std::move( *loader ) ); };
-			std::visit( visitor, p_pendingData.trajectoryData );
-			p_pendingData.trajectoryReady = true;
-			return 0;
+			ECS::Entity entity;
 		};
+	} // namespace
+	struct SystemExtractor::_Data
+	{
+		ECS::Entity								  entity;
+		std::reference_wrapper<PendingSystem>	  data;
+		std::latch								  synchronizer { 1 };
+		std::optional<Util::EventHub::Connection> finishEventConnection = std::nullopt;
+		_Data( ECS::Entity p_entity, PendingSystem & p_data ) : entity( std::move( p_entity ) ), data( p_data ) {}
+
+		// RO5
+		~_Data() { HUB().disconnect( finishEventConnection.value() ); }
+		_Data( _Data && )				   = delete;
+		_Data( const _Data & )			   = delete;
+		_Data & operator=( _Data && )	   = delete;
+		_Data & operator=( const _Data & ) = delete;
+
+		void jobFinished( const EntityDelivered & p_ )
+		{
+			if ( p_.entity != entity )
+				return;
+			synchronizer.count_down();
+		}
+	};
+	SystemExtractor::SystemExtractor( ECS::Entity p_entity, PendingSystem & p_d ) :
+		_attributesPtr( std::make_shared<_Data>( std::move( p_entity ), p_d ) )
+	{
+	}
+	void SystemExtractor::wait() noexcept { _attributesPtr->synchronizer.wait(); }
+
+	uint SystemExtractor::operator()( Util::StopToken p_stopToken, Threading::BaseThread & ) noexcept
+	{
+		auto & entity	   = _attributesPtr->entity;
+		auto & pendingData = _attributesPtr->data.get();
+		_attributesPtr->finishEventConnection
+			= HUB().connect<EntityDelivered, &_Data::jobFinished>( _attributesPtr.get() );
+
+		pendingData.loader.emplace();
+		if ( pendingData.buffer )
+			pendingData.loader->readBuffer( pendingData.buffer.value(), pendingData.path, pendingData.system );
+		else
+			pendingData.loader->readFile( pendingData.path, pendingData.system );
+		pendingData.pdbIdCode = pendingData.loader->getChemfilesReader().getPdbIdCode();
+
+		if ( p_stopToken.stop_requested() )
+			return 0;
+
+		if ( pendingData.loader->getChemfilesReader().getFrameCount() > 1 )
+		{
+			pendingData.trajectoryData.emplace<System::TrajectoryFullBuffer>();
+		}
+		else
+		{
+			pendingData.trajectoryData.emplace<System::TrajectorySingleFrame>();
+		}
+
+		auto visitor = [ loader = &pendingData.loader.value() ]( auto && traj )
+		{ System::prepare( traj, std::move( *loader ) ); };
+		std::visit( visitor, pendingData.trajectoryData );
+		pendingData.readyToDeliver = true;
+		return 0;
 	}
 
 	void addTrajectory( const ECS::Entity & p_entity, PendingSystem & p_data ) noexcept
@@ -79,11 +115,8 @@ namespace VTX::App::System
 			std::move( p_data.trajectoryData )
 		);
 		startAsyncTrajectoryWork( p_entity, p_data );
+
 		std::span<const Vec3f> firstFrame = getCurrentAtomPositions( p_entity );
-
-		if ( auto uid = REG().try_get<System::UID>( p_entity ) )
-			RENDERER().setSystemPosition( uid->system, firstFrame );
-
 		// AABB (trigger update function for scene aabb).
 		REG().patch<Util::Math::AABB>(
 			p_entity,
@@ -174,7 +207,11 @@ namespace VTX::App::System
 		else
 			create( p_entity, p_data );
 
+		if ( auto uid = REG().try_get<System::UID>( p_entity ) )
+			RENDERER().setSystemPosition( uid->system, getCurrentAtomPositions( p_entity ) );
+
 		REG().erase<PendingSystem>( p_entity );
+		HUB().trigger<EntityDelivered>( { p_entity } );
 	}
 
 } // namespace VTX::App::System

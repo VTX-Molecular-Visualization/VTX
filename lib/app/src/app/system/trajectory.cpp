@@ -31,6 +31,16 @@ namespace VTX::App::System
 		if ( REG().all_of<TrajectoryFullBuffer>( p_entity ) )
 			p_trajPtr = &REG().get<TrajectoryFullBuffer>( p_entity ).genericData;
 	}
+	void get( const ECS::Entity & p_entity, AvailableFrames & p_out ) noexcept
+	{
+		if ( auto traj = REG().try_get<TrajectoryFullBuffer>( p_entity ) )
+		{
+			p_out.lowerBoundIndex  = 0;
+			p_out.higherBoundIndex = static_cast<uint>( traj->lastFrameAvailable );
+			return;
+		}
+	}
+
 	void eraseTrajectory( const ECS::Entity & p_entity ) noexcept
 	{
 		REG().remove<TrajectoryFullBuffer>( p_entity );

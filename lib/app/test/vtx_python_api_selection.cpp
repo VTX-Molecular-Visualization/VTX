@@ -1,10 +1,10 @@
 #include "app/services.hpp"
 #include "util/filesystem.hpp"
 #include "util/logger.hpp"
+#include <app/action/io.hpp>
 #include <app/action/scene.hpp>
 #include <app/fixture.hpp>
 #include <app/python_binding/interpretor.hpp>
-#include <app/services.hpp>
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -17,8 +17,8 @@ namespace Test
 	void loadSystem( const char * p_filename )
 	{
 		using namespace VTX;
-		const FilePath systemPath = VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename;
-		VTX::App::Action::Scene::LoadSystem openAction = VTX::App::Action::Scene::LoadSystem();
+		const FilePath					 systemPath = VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename;
+		VTX::App::Action::IO::LoadSystem openAction;
 		openAction.execute( systemPath );
 	}
 	std::string string( std::source_location p_ )

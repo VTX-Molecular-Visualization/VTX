@@ -1,10 +1,10 @@
 #include "app/python_binding/python_binding.hpp"
+#include "app/action/action_manager.hpp"
 #include "app/action/application.hpp"
 #include "app/action/camera.hpp"
 #include "app/action/io.hpp"
 #include "app/action/scene.hpp"
 #include "app/helper/system.hpp"
-#include "app/pass/action_executer.hpp"
 #include <python_binding/binder.hpp>
 #include <python_binding/binding/entity_caster.hpp>
 #include <python_binding/binding/helper.hpp>
@@ -44,12 +44,12 @@ namespace VTX::App::PythonBinding
 			VTX::PythonBinding::Wrapper::Arg( "height" )
 		);
 
-		commands.bindAction<Pass::QueueAction<App::Action::IO::Open>, const std::string &>(
+		commands.bindAction<Action::QueueAction<App::Action::IO::LoadSystem>, const std::string &>(
 			"openFile", "Open files at given path.", VTX::PythonBinding::Wrapper::Arg( "path" )
 		);
 
 		commands.bindAction<
-			Pass::QueueAction<App::Action::IO::AssociateTrajectory>,
+			Action::QueueAction<App::Action::IO::AssociateTrajectory>,
 			const std::string &,
 			const ECS::Entity &>(
 			"associateTrajectory",
@@ -59,10 +59,10 @@ namespace VTX::App::PythonBinding
 		);
 		commands.def(
 			"getSystemIdByName",
-			Pass::wrapDelayedFunction( &Helper::System::getSystemByName ),
+			&Helper::System::getSystemByName,
 			"Return a system ID that matches given name (case sensitive)."
 		);
-		commands.bindAction<Pass::QueueAction<App::Action::IO::DownloadSystem>, const std::string &>(
+		commands.bindAction<Action::QueueAction<App::Action::IO::DownloadSystem>, const std::string &>(
 			"download", "Retrieve a system from the RCSB PDB.", VTX::PythonBinding::Wrapper::Arg( "system_id" )
 		);
 		/*
@@ -73,14 +73,14 @@ namespace VTX::App::PythonBinding
 		commands.bindAction<App::Action::IO::ReloadSettings>( "reloadSettings", "Reload settings." );
 		commands.bindAction<App::Action::IO::ResetSettings>( "resetSettings", "Reset settings." );
 		*/
-		commands.bindAction<Pass::QueueAction<App::Action::Scene::Clear>>( "clear", "Clear scene." );
+		commands.bindAction<Action::QueueAction<App::Action::Scene::Clear>>( "clear", "Clear scene." );
 
+		commands.bindAction<
+			Action::QueueAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>>(
+			"setCameraProjectionOrthographic", "Set the render projection into Orthographic mode."
+		);
 		commands
-			.bindAction<Pass::QueueAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>>(
-				"setCameraProjectionOrthographic", "Set the render projection into Orthographic mode."
-			);
-		commands
-			.bindAction<Pass::QueueAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>>(
+			.bindAction<Action::QueueAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>>(
 				"setCameraProjectionPerspective", "Set the render projection into Perspective mode."
 			);
 		/*
@@ -88,7 +88,7 @@ namespace VTX::App::PythonBinding
 			"toggleCameraProjection", "Toggle the render projection between Perspective and Orthographic mode."
 		);
 		*/
-		commands.bindAction<Pass::QueueAction<App::Action::Camera::Reset>>(
+		commands.bindAction<Action::QueueAction<App::Action::Camera::Reset>>(
 			"resetCamera", "Put the camera back in the initial space."
 		);
 

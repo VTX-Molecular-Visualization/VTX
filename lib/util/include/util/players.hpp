@@ -116,12 +116,45 @@ namespace VTX::Util
 		};
 		class ForwardLoop
 		{
+		  public:
+			ForwardLoop( uint p_stepNum, uint p_startingStep = 0 );
+			void jumpTo( const uint & p_step ) noexcept;
+			void next( uint & p_out ) const noexcept;
+			void current( uint & p_out ) const noexcept;
+			void increment() noexcept;
+			void increment( const uint & ) noexcept;
+
+		  private:
+			uint _lastIndex	  = 0;
+			uint _currentStep = 0;
 		};
 		class Backward
 		{
+		  public:
+			Backward( uint p_stepNum, uint p_startingStep = 0 );
+			void jumpTo( const uint & p_step ) noexcept;
+			void next( uint & p_out ) const noexcept;
+			void current( uint & p_out ) const noexcept;
+			void increment() noexcept;
+			void increment( const uint & ) noexcept;
+
+		  private:
+			uint _lastIndex	  = 0;
+			uint _currentStep = 0;
 		};
 		class BackwardLoop
 		{
+		  public:
+			BackwardLoop( uint p_stepNum, uint p_startingStep = 0 );
+			void jumpTo( const uint & p_step ) noexcept;
+			void next( uint & p_out ) const noexcept;
+			void current( uint & p_out ) const noexcept;
+			void increment() noexcept;
+			void increment( const uint & ) noexcept;
+
+		  private:
+			uint _lastIndex	  = 0;
+			uint _currentStep = 0;
 		};
 		class PingPong
 		{

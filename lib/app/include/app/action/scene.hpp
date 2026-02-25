@@ -7,14 +7,6 @@
 namespace VTX::App::Action::Scene
 {
 
-	/**
-	 * @brief Load a molecular system from disk or buffer.
-	 */
-	struct LoadSystem
-	{
-		void execute( FilePath p_path );
-		void execute( FilePath p_path, std::string && p_buffer );
-	};
 
 	/**
 	 * @brief Load a molecular system from disk or buffer.

@@ -84,7 +84,7 @@ namespace VTX::App::Pass
 													 // current frame, we use the autoplay
 				{
 					autoplayUpdate = autoplayNextFrameTrigger( *genericTrajPtr, p_elapsedTime );
-					if ( autoplayNextFrameTrigger( *genericTrajPtr, p_elapsedTime ) )
+					if ( autoplayUpdate )
 					{
 						player.next( nextStep );
 					}

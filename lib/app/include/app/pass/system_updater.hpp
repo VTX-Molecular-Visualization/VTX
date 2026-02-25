@@ -40,12 +40,6 @@ namespace VTX::App::Pass
 		void _pendingSystemUpdate() noexcept;
 
 		/**
-		 * @brief Look at a pending system to determine what kind of trajectory must be used.
-		 * @param
-		 */
-		void _pendingSystemTopologyReady( System::PendingSystem & ) noexcept;
-
-		/**
 		 * @brief Current used representations.
 		 */
 		// TODO: use resource manager to purge unused.

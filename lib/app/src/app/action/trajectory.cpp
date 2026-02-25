@@ -27,8 +27,11 @@ namespace VTX::App::Action::Trajectory
 			p_entity,
 			[ &p_step ]( System::GenericTrajectory & traj )
 			{
-				traj.player.jumpTo( p_step );
-				traj.requestedFrameIndex = p_step;
+				if ( p_step < traj.trajectorySize )
+				{
+					traj.player.jumpTo( p_step );
+					traj.requestedFrameIndex = p_step;
+				}
 			}
 		);
 	}
@@ -39,6 +42,7 @@ namespace VTX::App::Action::Trajectory
 			p_entity,
 			[ &p_playerType ]( System::GenericTrajectory & traj )
 			{
+				traj.playMode = p_playerType;
 				switch ( p_playerType )
 				{
 				case System::TrajectoryPlayMode::pingpong:
@@ -47,9 +51,25 @@ namespace VTX::App::Action::Trajectory
 				case System::TrajectoryPlayMode::forward:
 					traj.player = Util::Players::Forward( traj.trajectorySize, traj.currentFrameIndex );
 					break;
+				case System::TrajectoryPlayMode::forwardLoop:
+					traj.player = Util::Players::ForwardLoop( traj.trajectorySize, traj.currentFrameIndex );
+					break;
+				case System::TrajectoryPlayMode::backward:
+					traj.player = Util::Players::Backward( traj.trajectorySize, traj.currentFrameIndex );
+					break;
+				case System::TrajectoryPlayMode::backwardLoop:
+					traj.player = Util::Players::BackwardLoop( traj.trajectorySize, traj.currentFrameIndex );
+					break;
 				default: traj.player = Util::Players::PingPong( traj.trajectorySize, traj.currentFrameIndex );
 				}
 			}
+		);
+	}
+
+	void ChangeSpeed::execute( ECS::Entity p_entity, float p_speed ) noexcept
+	{
+		System::patchGenericTrajectories(
+			p_entity, [ &p_speed ]( System::GenericTrajectory & traj ) { traj.playingSpeed = p_speed; }
 		);
 	}
 

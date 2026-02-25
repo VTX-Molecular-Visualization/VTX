@@ -1,4 +1,5 @@
 #include "app/pipeline.hpp"
+#include "app/action/action_manager.hpp"
 #include "app/events.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/services.hpp"
@@ -27,6 +28,8 @@ namespace VTX::App
 		// Process each step and record duration.
 		VTX::App::PASS().update( p_delta, p_elapsed );
 		frame.set( UPDATE_PASSES, c.elapsedTime() );
+
+		ACTION().update( p_delta, p_elapsed );
 
 		hub.trigger<Update>( p_delta, p_elapsed );
 		frame.set( UPDATE_EVENTS, c.elapsedTime() );
