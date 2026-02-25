@@ -99,9 +99,15 @@ TEST_CASE( "Util::Players", "[players][forwardloop]" )
 		CHECK( step == 1 );
 		p.next( step );
 		CHECK( step == 1 );
+		p.next( 1, step );
+		CHECK( step == 1 );
+		p.next( 2, step );
+		CHECK( step == 2 );
 		p.increment( 1 );
 		p.next( step );
 		CHECK( step == 2 );
+		p.next( 3, step );
+		CHECK( step == 4 );
 		p.increment( 2 );
 		p.next( step );
 		CHECK( step == 4 );
@@ -192,17 +198,21 @@ TEST_CASE( "Util::Players", "[players][backward]" )
 		CHECK( step == 8 );
 		p.next( step );
 		CHECK( step == 8 );
+		p.current( step );
+		CHECK( step == 9 );
 		p.increment( 1 );
-		p.next( step );
-		CHECK( step == 7 );
+		p.current( step );
+		CHECK( step == 8 );
 		p.increment( 2 );
-		p.next( step );
-		CHECK( step == 5 );
+		p.current( step );
+		CHECK( step == 6 );
+		p.next( 2, step );
+		CHECK( step == 4 );
 		p.increment( 10 );
-		p.next( step );
+		p.current( step );
 		CHECK( step == 0 );
 		p.increment( 11 );
-		p.next( step );
+		p.current( step );
 		CHECK( step == 0 );
 	}
 
@@ -399,6 +409,8 @@ TEST_CASE( "Util::Players", "[players][pingpong]" )
 			p.increment( 3 );
 			p.current( step );
 			CHECK( step == 3 );
+			p.next( 11, step );
+			CHECK( step == 4 );
 			p.increment( 11 );
 			p.current( step );
 			CHECK( step == 4 );
@@ -429,6 +441,8 @@ TEST_CASE( "Util::Players", "[players][pingpong]" )
 			p.increment( 0 );
 			p.current( step );
 			CHECK( step == 3 );
+			p.next( 2, step );
+			CHECK( step == 5 );
 			p.increment( 1 );
 			p.current( step );
 			CHECK( step == 4 );

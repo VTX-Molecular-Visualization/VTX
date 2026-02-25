@@ -22,6 +22,7 @@ namespace VTX::Util
 		 * @param p_out
 		 */
 		inline void next( uint & p_out ) const noexcept { _ptr->next( p_out ); }
+		inline void next( const uint & p_incr, uint & p_out ) const noexcept { _ptr->next( p_incr, p_out ); }
 		inline void current( uint & p_out ) const noexcept { _ptr->current( p_out ); }
 		/**
 		 * @brief Move to the next step.
@@ -35,12 +36,13 @@ namespace VTX::Util
 	  private:
 		struct _interface
 		{
-			virtual ~_interface()								= default;
-			virtual void jumpTo( const uint & p_step ) noexcept = 0;
-			virtual void next( uint & ) const noexcept			= 0;
-			virtual void current( uint & ) const noexcept		= 0;
-			virtual void increment() noexcept					= 0;
-			virtual void increment( const uint & p_N ) noexcept = 0;
+			virtual ~_interface()												  = default;
+			virtual void jumpTo( const uint & p_step ) noexcept					  = 0;
+			virtual void next( uint & ) const noexcept							  = 0;
+			virtual void next( const uint & p_incr, uint & p_out ) const noexcept = 0;
+			virtual void current( uint & ) const noexcept						  = 0;
+			virtual void increment() noexcept									  = 0;
+			virtual void increment( const uint & p_N ) noexcept					  = 0;
 		};
 		struct _dummy
 		{
@@ -64,6 +66,13 @@ namespace VTX::Util
 				if constexpr ( not std::same_as<T, _dummy> )
 				{
 					_obj.next( p_out );
+				}
+			}
+			virtual void next( const uint & p_incr, uint & p_out ) const noexcept override
+			{
+				if constexpr ( not std::same_as<T, _dummy> )
+				{
+					_obj.next( p_incr, p_out );
 				}
 			}
 			virtual void current( uint & p_out ) const noexcept override
@@ -106,6 +115,7 @@ namespace VTX::Util
 			Forward( uint p_stepNum, uint p_startingStep = 0 );
 			void jumpTo( const uint & p_step ) noexcept;
 			void next( uint & p_out ) const noexcept;
+			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void current( uint & p_out ) const noexcept;
 			void increment() noexcept;
 			void increment( const uint & ) noexcept;
@@ -119,6 +129,7 @@ namespace VTX::Util
 		  public:
 			ForwardLoop( uint p_stepNum, uint p_startingStep = 0 );
 			void jumpTo( const uint & p_step ) noexcept;
+			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void next( uint & p_out ) const noexcept;
 			void current( uint & p_out ) const noexcept;
 			void increment() noexcept;
@@ -133,6 +144,7 @@ namespace VTX::Util
 		  public:
 			Backward( uint p_stepNum, uint p_startingStep = 0 );
 			void jumpTo( const uint & p_step ) noexcept;
+			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void next( uint & p_out ) const noexcept;
 			void current( uint & p_out ) const noexcept;
 			void increment() noexcept;
@@ -147,6 +159,7 @@ namespace VTX::Util
 		  public:
 			BackwardLoop( uint p_stepNum, uint p_startingStep = 0 );
 			void jumpTo( const uint & p_step ) noexcept;
+			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void next( uint & p_out ) const noexcept;
 			void current( uint & p_out ) const noexcept;
 			void increment() noexcept;
@@ -161,6 +174,7 @@ namespace VTX::Util
 		  public:
 			PingPong( uint p_stepNum, uint p_startingStep = 0 );
 			void jumpTo( const uint & p_step ) noexcept;
+			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void next( uint & p_out ) const noexcept;
 			void current( uint & p_out ) const noexcept;
 			void increment() noexcept;
