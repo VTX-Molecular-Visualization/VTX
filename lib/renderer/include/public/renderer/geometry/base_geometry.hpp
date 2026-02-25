@@ -31,17 +31,19 @@ namespace VTX::Renderer::Geometry
 	 * @brief Base geometry struct to handle and build draw ranges.
 	 */
 	template<typename DR>
-	struct BaseGeometry
+	class BaseGeometry
 	{
+	  public:
 		/**
 		 * @brief Current size to draw (before applying anything).
 		 */
-		size_t size;
+		Index size;
 
 		/**
 		 * @brief Push a range.
 		 */
-		void addRange( const SystemUID p_uid, const Index p_count )
+		template<typename T>
+		void addRange( const SystemUID p_uid, const T p_count )
 		{
 			size_t count = size + p_count;
 			if ( count > TypeMax<Index> )
@@ -49,8 +51,9 @@ namespace VTX::Renderer::Geometry
 				throw GraphicException( "Total geometry count exceeds maximum supported value." );
 			}
 
-			ranges[ p_uid ] = IndexRange { static_cast<Index>( size ), static_cast<Index>( count ) };
-			size += p_count;
+			Index countIndex = static_cast<Index>( count );
+			_ranges[ p_uid ] = IndexRange { size, countIndex };
+			size			 = countIndex;
 		}
 
 		/**
@@ -73,7 +76,7 @@ namespace VTX::Renderer::Geometry
 			drawRanges.counts.clear();
 
 			IndexRangeList allRanges;
-			for ( const auto & [ uid, range ] : ranges )
+			for ( const auto & [ uid, range ] : _ranges )
 			{
 				// Range as list.
 				IndexRangeList rangeList( range );
@@ -81,7 +84,7 @@ namespace VTX::Renderer::Geometry
 				IndexRangeList visibillityToRemove	  = visibilityMask[ uid ];
 				IndexRangeList representationToRemove = representationMask[ uid ];
 
-				const Index first = ranges[ uid ].first;
+				const Index first = _ranges[ uid ].first;
 
 				// Remove masked ranges.
 				for ( auto it = visibillityToRemove.rangeBegin(); it != visibillityToRemove.rangeEnd(); ++it )
@@ -128,16 +131,16 @@ namespace VTX::Renderer::Geometry
 
 		IndexRange range( const SystemUID p_uid ) const
 		{
-			assert( ranges.contains( p_uid ) );
+			assert( _ranges.contains( p_uid ) );
 
-			return ranges[ p_uid ];
+			return _ranges[ p_uid ];
 		}
 
 	  protected:
 		/**
 		 * @brief Range to draw per system (global indexes).
 		 */
-		mutable MapUIDRange ranges;
+		mutable MapUIDRange _ranges;
 	};
 } // namespace VTX::Renderer::Geometry
 

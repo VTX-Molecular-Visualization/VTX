@@ -346,8 +346,10 @@ namespace VTX::Renderer
 			_geometries.construct( systemData );
 		}
 
-		const size_t totalAtoms = _geometries.spheres.size;
-		const size_t totalBonds = _geometries.cylinders.size;
+		const size_t totalAtoms			= _geometries.spheres.size;
+		const size_t totalBonds			= _geometries.cylinders.size;
+		const size_t totalRibbonItems	= _geometries.ribbons.sizeItems;
+		const size_t totalRibbonIndices = _geometries.ribbons.size;
 
 		// Reserve data.
 		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", totalAtoms );
@@ -359,10 +361,17 @@ namespace VTX::Renderer
 		_context.setPipelineBuffer<ModelIndex>( "Atoms.Models", totalAtoms );
 		_context.setPipelineBuffer<Flag>( "Atoms.Flags", totalAtoms );
 
-		_cacheSystems.clear();
+		_context.setPipelineBuffer<Vec4f>( "Residues.Positions", totalRibbonItems );
+		_context.setPipelineBuffer<Index>( "Ribbons", totalRibbonIndices );
+		_context.setPipelineBuffer<Vec3f>( "Residues.Directions", totalRibbonItems );
+		_context.setPipelineBuffer<uint8_t>( "Residues.Types", totalRibbonItems );
+		_context.setPipelineBuffer<ColorIndex>( "Residues.Colors", totalRibbonItems );
+		_context.setPipelineBuffer<PickingUID>( "Residues.Ids", totalRibbonItems );
+		_context.setPipelineBuffer<Flag>( "Residues.Flags", totalRibbonItems );
+		_context.setPipelineBuffer<ModelIndex>( "Residues.Models", totalRibbonItems );
+		_context.setPipelineBuffer<RepresentationIndex>( "Residues.Representations", totalRibbonItems );
 
-		// TODO:
-		// refacto geometry creations.
+		_cacheSystems.clear();
 
 		ModelIndex modelIndex  = 0;
 		size_t	   offsetAtoms = 0;
@@ -420,7 +429,7 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
 	{
-		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.range( p_uid ).first );
+		//_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.range( p_uid ).first );
 		setNeedUpdate( true );
 	}
 

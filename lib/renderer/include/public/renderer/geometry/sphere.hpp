@@ -6,11 +6,12 @@
 namespace VTX::Renderer::Geometry
 {
 
-	struct Sphere : BaseGeometry<DrawRangeArray>
+	class Sphere : public BaseGeometry<DrawRangeArray>
 	{
+	  public:
 		void construct( const SystemData & p_data )
 		{
-			assert( not ranges.contains( p_data.uid ) );
+			assert( not _ranges.contains( p_data.uid ) );
 
 			const Index count = static_cast<Index>( p_data.frame.size() );
 

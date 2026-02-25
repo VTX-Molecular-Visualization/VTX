@@ -10,8 +10,9 @@
 namespace VTX::Renderer::Geometry
 {
 
-	struct Ribbon : BaseGeometry<DrawRangeArray>
+	class Ribbon : public BaseGeometry<DrawRangeElements>
 	{
+	  public:
 		struct Construction
 		{
 			bool							  isEmpty = false;
@@ -28,12 +29,18 @@ namespace VTX::Renderer::Geometry
 			std::vector<uchar>				  representations;
 		};
 
-		std::map<SystemUID, Construction> construction;
+		Index sizeItems = 0;
+
+		const Construction & construction( const SystemUID p_uid ) const
+		{
+			assert( _construction.contains( p_uid ) );
+
+			return _construction[ p_uid ];
+		}
 
 		void construct( const SystemData & p_data )
 		{
-			size_t totalCaPositions = 0;
-			size_t totalIndices		= 0;
+			assert( not _ranges.contains( p_data.uid ) );
 
 			assert( p_data.data.atomNames.size() == p_data.frame.size() );
 			assert( p_data.residueUids.size() == p_data.data.residueSecondaryStructureTypes.size() );
@@ -43,12 +50,10 @@ namespace VTX::Renderer::Geometry
 			assert( p_data.data.chainFirstResidues.size() == p_data.data.chainResidueCounts.size() );
 
 			// Compute data if not cached.
-			Construction & cache = construction[ p_data.uid ];
-			if ( not cache.positions.empty() || cache.isEmpty )
+			Construction & cache = _construction[ p_data.uid ];
+
+			if ( cache.isEmpty )
 			{
-				// ??
-				totalCaPositions += cache.positions.size();
-				totalIndices += cache.indices.size();
 				return;
 			}
 
@@ -319,9 +324,12 @@ namespace VTX::Renderer::Geometry
 				return;
 			}
 
-			totalCaPositions += bufferCaPositions.size();
-			totalIndices += bufferIndices.size();
+			addRange( p_data.uid, bufferIndices.size() );
+			sizeItems += static_cast<Index>( bufferCaPositions.size() );
 		}
+
+	  protected:
+		mutable std::map<SystemUID, Construction> _construction;
 	};
 
 } // namespace VTX::Renderer::Geometry

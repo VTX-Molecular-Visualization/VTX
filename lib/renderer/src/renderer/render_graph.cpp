@@ -278,7 +278,8 @@ namespace VTX::Renderer
 			.pipelineBuffer( "Residues.Ids" )
 			.pipelineBuffer( "Residues.Flags" )
 			.pipelineBuffer( "Residues.Models" )
-			.pipelineBuffer( "Residues.Representations" );
+			.pipelineBuffer( "Residues.Representations" )
+			.pipelineBuffer( "Ribbons", E_PIPELINE_BUFFER_KIND::INDEX );
 
 		g.vertexLayout(
 			"Voxels",
@@ -381,7 +382,7 @@ namespace VTX::Renderer
 			.endProgram()
 			.program( "Ribbon" )
 			.shadersDir( "ribbon" )
-			.draw( "Ribbons", E_PRIMITIVE::PATCHES, &p_geometries.ribbons.drawRanges )
+			.draw( "Ribbons", E_PRIMITIVE::PATCHES, nullptr, &p_geometries.ribbons.drawRanges )
 			.endProgram()
 			.program( "Voxel" )
 			.shadersDir( "voxel" )
