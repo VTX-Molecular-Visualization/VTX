@@ -368,13 +368,15 @@ namespace VTX::Renderer
 
 		_cacheSystems.clear();
 
-		ModelIndex modelIndex  = 0;
-		size_t	   offsetAtoms = 0;
-		size_t	   offsetBonds = 0;
+		ModelIndex modelIndex		   = 0;
+		size_t	   offsetAtoms		   = 0;
+		size_t	   offsetBonds		   = 0;
+		size_t	   offsetRibbonItems   = 0;
+		size_t	   offsetRibbonIndices = 0;
 		for ( const auto & systemData : p_systems )
 		{
 			const size_t	countAtoms = systemData.data.getAtomCount();
-			const size_t	countBonds = systemData.data.getBondCount();
+			const size_t	countBonds = systemData.data.getBondCount() * 2;
 			const SystemUID uid		   = systemData.uid;
 
 			// Move bonds.
@@ -385,13 +387,27 @@ namespace VTX::Renderer
 			}
 
 			// Upload data.
-			//_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", systemData.frame, offsetAtoms );
 			_context.setPipelineBuffer<Index>( "Bonds", bonds, offsetBonds );
 			_context.setPipelineBuffer<float>( "Atoms.Radii", systemData.radii, offsetAtoms );
 			_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", systemData.atomUids, offsetAtoms );
 			_context.setPipelineBuffer<ModelIndex>(
 				"Atoms.Models", std::vector<ModelIndex>( countAtoms, modelIndex ), offsetAtoms
 			);
+
+			_context.setPipelineBuffer<Index>( "Ribbons", totalRibbonIndices );
+
+			_context.setPipelineBuffer<uint8_t>( "Residues.Types", totalRibbonItems );
+
+			_context.setPipelineBuffer<PickingUID>( "Residues.Ids", totalRibbonItems );
+
+			_context.setPipelineBuffer<ModelIndex>( "Residues.Models", totalRibbonItems );
+			_context.setPipelineBuffer<RepresentationIndex>( "Residues.Representations", totalRibbonItems );
+
+			//_context.setPipelineBuffer<Vec4f>( "Residues.Positions", totalRibbonItems );
+			//_context.setPipelineBuffer<Vec3f>( "Residues.Directions", totalRibbonItems );
+
+			//_context.setPipelineBuffer<Flag>( "Residues.Flags", totalRibbonItems );
+			//_context.setPipelineBuffer<ColorIndex>( "Residues.Colors", totalRibbonItems );
 
 			// Cache.
 			_cacheSystems[ uid ] = Cache::System { systemData.transform, modelIndex };
@@ -425,6 +441,9 @@ namespace VTX::Renderer
 	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
 	{
 		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.range( p_uid ).first );
+
+		// TODO: ribbon positions and directions.
+
 		setNeedUpdate( true );
 	}
 

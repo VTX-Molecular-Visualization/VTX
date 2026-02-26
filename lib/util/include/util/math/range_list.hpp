@@ -67,6 +67,25 @@ namespace VTX::Util::Math
 		void addValue( const T p_v ) { addRange( RangeType { p_v, static_cast<T>( p_v + 1 ) } ); }
 
 		/**
+		 * @brief Add multiple values.
+		 */
+		void addValues( const std::initializer_list<T> p_values )
+		{
+			for ( const T v : p_values )
+			{
+				addValue( v );
+			}
+		}
+
+		void addValues( std::span<const T> p_values )
+		{
+			for ( const T v : p_values )
+			{
+				addValue( v );
+			}
+		}
+
+		/**
 		 * @brief Add a single range.
 		 */
 		void addRange( const RangeType & p_r )

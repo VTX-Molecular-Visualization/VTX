@@ -13,7 +13,7 @@ namespace VTX::Renderer::Geometry
 		{
 			assert( not _ranges.contains( p_data.uid ) );
 
-			addRange( p_data.uid, p_data.data.getBondCount() );
+			addRange( p_data.uid, p_data.data.getBondCount() * 2 );
 		}
 	};
 } // namespace VTX::Renderer::Geometry
