@@ -115,83 +115,59 @@ namespace VTX::Renderer::Context::Executor
 
 				break;
 			}
-			case E_COMMAND::DRAW_ARRAY:
+			case E_COMMAND::DRAW:
 			{
-				const auto & p = p_commandBuffer.getPayload<PayloadDrawArray>( command.payloadOffset );
+				const auto & p = p_commandBuffer.getPayload<PayloadDraw>( command.payloadOffset );
+				assert( p.count > 0 );
 
 				_backend.vertexArray( p.pipeline ).bind();
 				_backend.program( p.program ).use();
+				_backend.vertexArray( p.pipeline )
+					.drawArrays( _toGL( p.primitive ), 0, static_cast<uint32_t>( p.count ) );
 
-				if ( p.vertexCount )
+				break;
+			}
+			case E_COMMAND::DRAW_INDEXED:
+			{
+				const auto & p = p_commandBuffer.getPayload<PayloadDrawIndexed>( command.payloadOffset );
+				assert( p.count > 0 );
+
+				_backend.vertexArray( p.pipeline ).bind();
+				_backend.program( p.program ).use();
+				_backend.vertexArray( p.pipeline )
+					.drawElements( _toGL( p.primitive ), static_cast<uint32_t>( p.count ), GL_UNSIGNED_INT, 0 );
+
+				break;
+			}
+			case E_COMMAND::DRAW_INDIRECT:
+			{
+				const auto &	 p	   = p_commandBuffer.getPayload<PayloadDrawIndirect>( command.payloadOffset );
+				const uint32_t * count = reinterpret_cast<uint32_t *>( p.count );
+
+				_backend.vertexArray( p.pipeline ).bind();
+				_backend.shaderBuffer( p.buffer ).bind( GL_DRAW_INDIRECT_BUFFER );
+				_backend.program( p.program ).use();
+
+				if ( *count )
 				{
-					_backend.vertexArray( p.pipeline ).drawArray( _toGL( p.primitive ), 0, p.vertexCount );
+					_backend.vertexArray( p.pipeline ).multiDrawArraysIndirect( _toGL( p.primitive ), nullptr, *count );
 				}
 
 				break;
 			}
-			case E_COMMAND::DRAW_ELEMENT:
+			case E_COMMAND::DRAW_INDEXED_INDIRECT:
 			{
-				const auto & p = p_commandBuffer.getPayload<PayloadDrawElement>( command.payloadOffset );
+				const auto &	 p = p_commandBuffer.getPayload<PayloadDrawIndexedIndirect>( command.payloadOffset );
+				const uint32_t * count = reinterpret_cast<uint32_t *>( p.count );
 
 				_backend.vertexArray( p.pipeline ).bind();
+				_backend.shaderBuffer( p.buffer ).bind( GL_DRAW_INDIRECT_BUFFER );
 				_backend.program( p.program ).use();
 
-				if ( p.indexCount )
+				if ( *count )
 				{
 					_backend.vertexArray( p.pipeline )
-						.drawElement( _toGL( p.primitive ), p.indexCount, GL_UNSIGNED_INT, 0 );
-				}
-
-				break;
-			}
-			case E_COMMAND::DRAW_ARRAYS:
-			{
-				const auto & p = p_commandBuffer.getPayload<PayloadDrawArrays>( command.payloadOffset );
-				assert( p.vertexRanges );
-				const auto * ranges = reinterpret_cast<DrawCall::RangeArrays *>( p.vertexRanges );
-
-				_backend.vertexArray( p.pipeline ).bind();
-				_backend.program( p.program ).use();
-
-				if ( ranges && ranges->counts.size() > 0 )
-				{
-					assert( ranges->counts.size() == ranges->firsts.size() );
-
-					const GLuint vaoId = _backend.vertexArray( p.pipeline ).getId();
-
-					_backend.vertexArray( p.pipeline )
-						.multiDrawArray(
-							_toGL( p.primitive ),
-							reinterpret_cast<const GLint *>( ranges->firsts.data() ),
-							reinterpret_cast<const GLsizei *>( ranges->counts.data() ),
-							static_cast<GLsizei>( ranges->counts.size() )
-						);
-				}
-
-				break;
-			}
-			case E_COMMAND::DRAW_ELEMENTS:
-			{
-				const auto & p = p_commandBuffer.getPayload<PayloadDrawElements>( command.payloadOffset );
-				assert( p.indexRanges );
-				const auto * ranges = reinterpret_cast<DrawCall::RangeElements *>( p.indexRanges );
-
-				_backend.vertexArray( p.pipeline ).bind();
-				_backend.program( p.program ).use();
-
-				if ( ranges && ranges->counts.size() > 0 )
-				{
-					assert( ranges->counts.size() == ranges->firsts.size() );
-					assert( _backend.vertexArray( p.pipeline ).hasEbo() );
-
-					_backend.vertexArray( p.pipeline )
-						.multiDrawElement(
-							_toGL( p.primitive ),
-							reinterpret_cast<const GLsizei *>( ranges->counts.data() ),
-							GL_UNSIGNED_INT,
-							reinterpret_cast<const GLvoid * const *>( ranges->firsts.data() ),
-							static_cast<GLsizei>( ranges->counts.size() )
-						);
+						.multiDrawElementsIndirect( _toGL( p.primitive ), GL_UNSIGNED_INT, nullptr, *count );
 				}
 
 				break;

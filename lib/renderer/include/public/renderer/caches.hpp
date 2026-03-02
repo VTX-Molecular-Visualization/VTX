@@ -26,8 +26,9 @@ namespace VTX::Renderer::Cache
 	{
 		Mat4f					transform;
 		ModelIndex				modelIndex;
-		MapRepresentationRanges representationAtomRanges;
+		MapRepresentationRanges representationAtomsRanges;
 		MapRepresentationRanges representationBondsRanges;
+		MapRepresentationRanges representationResiduesRanges;
 	};
 
 	struct Representation

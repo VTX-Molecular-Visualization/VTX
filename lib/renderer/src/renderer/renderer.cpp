@@ -112,18 +112,6 @@ namespace VTX::Renderer
 		return false;
 	}
 
-	/*
-	void Renderer::renderOffscreen(
-		const size_t p_width,
-		const size_t p_height,
-		const float	 p_deltaTime,
-		const float	 p_elapsedTime
-	)
-	{
-		// TODDO
-	}
-	*/
-
 #pragma endregion
 
 #pragma region Buffers
@@ -325,8 +313,8 @@ namespace VTX::Renderer
 		_context.setPipelineBuffer<Vec3f>( "Voxels.Mins", p_mins );
 		_context.setPipelineBuffer<Vec3f>( "Voxels.Maxs", p_maxs );
 
-		_geometries.voxels.drawRanges.firsts = { 0 };
-		_geometries.voxels.drawRanges.counts = { uint( p_mins.size() ) };
+		//_geometries.voxels.drawRanges.firsts = { 0 };
+		//_geometries.voxels.drawRanges.counts = { uint( p_mins.size() ) };
 
 		setNeedUpdate( true );
 	}
@@ -375,8 +363,8 @@ namespace VTX::Renderer
 		size_t	   offsetRibbonIndices = 0;
 		for ( const auto & systemData : p_systems )
 		{
-			const size_t	countAtoms = systemData.data.getAtomCount();
-			const size_t	countBonds = systemData.data.getBondCount() * 2;
+			const Index		countAtoms = systemData.data.getAtomCount();
+			const Index		countBonds = systemData.data.getBondCount() * 2;
 			const SystemUID uid		   = systemData.uid;
 
 			// Move bonds.
@@ -394,26 +382,40 @@ namespace VTX::Renderer
 				"Atoms.Models", std::vector<ModelIndex>( countAtoms, modelIndex ), offsetAtoms
 			);
 
-			_context.setPipelineBuffer<Index>( "Ribbons", totalRibbonIndices );
+			const auto & construction		= _geometries.ribbons.construction( uid );
+			const Index	 countRibbonItems	= static_cast<Index>( construction.residues.size() );
+			const Index	 countRibbonIndices = static_cast<Index>( construction.indices.size() );
 
-			_context.setPipelineBuffer<uint8_t>( "Residues.Types", totalRibbonItems );
+			// Move ribbon indices.
+			auto ribbonIndices = construction.indices;
+			for ( auto & ribbonIndex : ribbonIndices )
+			{
+				ribbonIndex += static_cast<Index>( offsetRibbonItems );
+			}
 
-			_context.setPipelineBuffer<PickingUID>( "Residues.Ids", totalRibbonItems );
+			std::vector<PickingUID> residueIds( countRibbonItems );
+			std::vector<uint8_t>	residueTypes( countRibbonItems );
+			for ( Index i = 0; i < countRibbonItems; ++i )
+			{
+				const Index residueIndex = _geometries.ribbons.construction( systemData.uid ).residues[ i ].index;
+				residueIds[ i ]			 = systemData.residueUids[ residueIndex ];
+				residueTypes[ i ] = toUnderlying( systemData.data.residueSecondaryStructureTypes[ residueIndex ] );
+			}
 
-			_context.setPipelineBuffer<ModelIndex>( "Residues.Models", totalRibbonItems );
-			_context.setPipelineBuffer<RepresentationIndex>( "Residues.Representations", totalRibbonItems );
-
-			//_context.setPipelineBuffer<Vec4f>( "Residues.Positions", totalRibbonItems );
-			//_context.setPipelineBuffer<Vec3f>( "Residues.Directions", totalRibbonItems );
-
-			//_context.setPipelineBuffer<Flag>( "Residues.Flags", totalRibbonItems );
-			//_context.setPipelineBuffer<ColorIndex>( "Residues.Colors", totalRibbonItems );
+			_context.setPipelineBuffer<Index>( "Ribbons", ribbonIndices, offsetRibbonIndices );
+			_context.setPipelineBuffer<PickingUID>( "Residues.Ids", residueIds, offsetRibbonItems );
+			_context.setPipelineBuffer<uint8_t>( "Residues.Types", residueTypes, offsetRibbonItems );
+			_context.setPipelineBuffer<ModelIndex>(
+				"Residues.Models", std::vector<ModelIndex>( countRibbonItems, modelIndex ), offsetRibbonItems
+			);
 
 			// Cache.
 			_cacheSystems[ uid ] = Cache::System { systemData.transform, modelIndex };
 
 			offsetAtoms += countAtoms;
 			offsetBonds += countBonds;
+			offsetRibbonItems += countRibbonItems;
+			offsetRibbonIndices += countRibbonIndices;
 			modelIndex++;
 		}
 
@@ -440,9 +442,49 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
 	{
+		// Push atom positions.
 		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.range( p_uid ).first );
 
-		// TODO: ribbon positions and directions.
+		// Compute ribbon positions and directions.
+		const auto & construction = _geometries.ribbons.construction( p_uid );
+		if ( construction.isEmpty )
+		{
+			return;
+		}
+
+		const Index		   countRibbonItems = static_cast<Index>( construction.residues.size() );
+		std::vector<Vec4f> ribbonPositions( countRibbonItems );
+		std::vector<Vec3f> ribbonDirections( countRibbonItems );
+
+		for ( Index i = 0; i < countRibbonItems; ++i )
+		{
+			// Compute direction between carbon alpha and oxygen.
+
+			const Vec3f & positionCA   = p_positions[ construction.residues[ i ].ca ];
+			const Vec3f & positionO	   = p_positions[ construction.residues[ i ].o ];
+			const Vec3f	  directionCAO = Util::Math::normalize( positionO - positionCA );
+
+			ribbonPositions[ i ]  = Vec4f( positionCA, 1.f );
+			ribbonDirections[ i ] = directionCAO;
+
+			// TODO: better on GPU ?
+			// CheckOrientationAndFlip.
+			// size_t i;
+			// for ( i = 1; i < p_caODirections.size(); ++i )
+			//{
+			//	if ( Util::Math::dot( p_caODirections[ i ], p_caODirections[ i - 1 ] ) < 0.f )
+			//	{
+			//		p_caODirections[ i ] = -p_caODirections[ i ];
+			//	}
+			// }
+		}
+
+		_context.setPipelineBuffer<Vec4f>(
+			"Residues.Positions", ribbonPositions, _geometries.ribbons.rangeItems( p_uid ).first
+		);
+		_context.setPipelineBuffer<Vec3f>(
+			"Residues.Directions", ribbonDirections, _geometries.ribbons.rangeItems( p_uid ).first
+		);
 
 		setNeedUpdate( true );
 	}
@@ -450,6 +492,18 @@ namespace VTX::Renderer
 	void Renderer::setSystemColors( const SystemUID p_uid, std::span<const ColorIndex> p_colors )
 	{
 		_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", p_colors, _geometries.spheres.range( p_uid ).first );
+
+		const auto &			construction	 = _geometries.ribbons.construction( p_uid );
+		const Index				countRibbonItems = static_cast<Index>( construction.residues.size() );
+		std::vector<ColorIndex> ribbonColors( countRibbonItems );
+		for ( Index i = 0; i < countRibbonItems; ++i )
+		{
+			ribbonColors[ i ] = p_colors[ construction.residues[ i ].ca ];
+		}
+		_context.setPipelineBuffer<ColorIndex>(
+			"Residues.Colors", ribbonColors, _geometries.ribbons.rangeItems( p_uid ).first
+		);
+
 		setNeedUpdate( true );
 	}
 
@@ -461,19 +515,47 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setSystemRepresentation" );
 
-		_cacheSystems[ p_uid ].representationAtomRanges = p_representations;
-
-		const size_t					 countAtoms = _geometries.spheres.range( p_uid ).getCount();
+		Cache::System & systemCache			  = _cacheSystems[ p_uid ];
+		systemCache.representationAtomsRanges = p_representations;
+		systemCache.representationBondsRanges.clear();
+		const Index						 countAtoms = _geometries.spheres.range( p_uid ).getCount();
 		std::vector<RepresentationIndex> atoms( countAtoms );
-		size_t							 count = 0;
+		Index							 count = 0;
 
 		for ( const auto & [ index, ranges ] : p_representations )
 		{
+			// Atoms.
 			for ( auto it = ranges.rangeBegin(); it != ranges.rangeEnd(); ++it )
 			{
 				std::fill_n( atoms.begin() + it->getFirst(), it->getCount(), index );
 			}
 			count += ranges.count();
+
+			// Bonds.
+			for ( Index i = 0; i < p_bonds.size(); i += 2 )
+			{
+				if ( ranges.contains( p_bonds[ i ] ) && ranges.contains( p_bonds[ i + 1 ] ) )
+				{
+					systemCache.representationBondsRanges[ index ].addRange(
+						Geometry::IndexRange::fromFirstCount( i, 2 )
+					);
+				}
+			}
+		}
+
+		// Residues.
+		const auto &					 construction	  = _geometries.ribbons.construction( p_uid );
+		const Index						 countRibbonItems = static_cast<Index>( construction.residues.size() );
+		std::vector<RepresentationIndex> ribbonItems( countRibbonItems );
+		systemCache.representationResiduesRanges.clear();
+
+		for ( Index i = 0; i < countRibbonItems; ++i )
+		{
+			const RepresentationIndex representationIndex = atoms[ construction.residues[ i ].ca ];
+			ribbonItems[ i ]							  = atoms[ representationIndex ];
+			systemCache.representationResiduesRanges[ representationIndex ].addRange(
+				Geometry::IndexRange::fromFirstCount( ribbonItems[ i ], 1 )
+			);
 		}
 
 		assert( count == countAtoms );
@@ -481,22 +563,9 @@ namespace VTX::Renderer
 		_context.setPipelineBuffer<RepresentationIndex>(
 			"Atoms.Representations", atoms, _geometries.spheres.range( p_uid ).first
 		);
-
-		const size_t countBonds = _geometries.cylinders.range( p_uid ).getCount();
-		_cacheSystems[ p_uid ].representationBondsRanges.clear();
-
-		for ( const auto & [ index, ranges ] : p_representations )
-		{
-			for ( Index i = 0; i < p_bonds.size(); i += 2 )
-			{
-				if ( ranges.contains( p_bonds[ i ] ) && ranges.contains( p_bonds[ i + 1 ] ) )
-				{
-					_cacheSystems[ p_uid ].representationBondsRanges[ index ].addRange(
-						Geometry::IndexRange::fromFirstCount( i, 2 )
-					);
-				}
-			}
-		}
+		_context.setPipelineBuffer<RepresentationIndex>(
+			"Residues.Representations", ribbonItems, _geometries.ribbons.rangeItems( p_uid ).first
+		);
 
 		_needBuildDrawRanges = true;
 		setNeedUpdate( true );
@@ -512,8 +581,8 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setSystemFlags" );
 
-		const size_t offsetAtoms = _geometries.spheres.range( p_uid ).first;
-		const size_t countAtoms	 = _geometries.spheres.range( p_uid ).getCount();
+		const Index offsetAtoms = _geometries.spheres.range( p_uid ).first;
+		const Index countAtoms	= _geometries.spheres.range( p_uid ).getCount();
 
 		assert( p_selection.size() <= countAtoms );
 		assert( p_visible.size() <= countAtoms );
@@ -521,9 +590,10 @@ namespace VTX::Renderer
 		static constexpr Flag VIS = 1 << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
 		static constexpr Flag SEL = 1 << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
 
-		std::vector<Flag> flags( countAtoms, 0 );
+		std::vector<Flag> atomFlags( countAtoms, 0 );
 
-		auto applyOr = [ & ]( const Core::Struct::IndexRangeList & p_ranges, const Flag p_mask )
+		auto applyOr
+			= [ & ]( std::vector<Flag> & p_flags, const Core::Struct::IndexRangeList & p_ranges, const Flag p_mask )
 		{
 			for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); ++it )
 			{
@@ -534,15 +604,15 @@ namespace VTX::Renderer
 
 				for ( size_t i = begin; i < end; ++i )
 				{
-					flags[ i ] |= p_mask;
+					p_flags[ i ] |= p_mask;
 				}
 			}
 		};
 
-		applyOr( p_visible, VIS );
-		applyOr( p_selection, SEL );
+		applyOr( atomFlags, p_visible, VIS );
+		applyOr( atomFlags, p_selection, SEL );
 
-		_context.setPipelineBuffer<Flag>( "Atoms.Flags", flags, offsetAtoms );
+		_context.setPipelineBuffer<Flag>( "Atoms.Flags", atomFlags, offsetAtoms );
 
 		// Build draw ranges.
 		Geometry::IndexRange rangeAtoms				= { 0, static_cast<Index>( countAtoms ) };
@@ -616,7 +686,7 @@ namespace VTX::Renderer
 		for ( const auto & [ systemUid, cacheSystem ] : _cacheSystems )
 		{
 			// Sphere.
-			for ( const auto & [ representationIndex, ranges ] : cacheSystem.representationAtomRanges )
+			for ( const auto & [ representationIndex, ranges ] : cacheSystem.representationAtomsRanges )
 			{
 				assert( _cacheRepresentations.contains( representationIndex ) );
 

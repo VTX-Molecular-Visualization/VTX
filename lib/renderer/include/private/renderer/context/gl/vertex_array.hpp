@@ -122,12 +122,12 @@ namespace VTX::Renderer::Context::GL
 			glVertexArrayAttribBinding( _id, p_attributeIndex, p_bindingIndex );
 		}
 
-		inline void drawArray( const GLenum p_mode, const GLint p_first, const GLsizei p_count ) const noexcept
+		inline void drawArrays( const GLenum p_mode, const GLint p_first, const GLsizei p_count ) const noexcept
 		{
 			glDrawArrays( p_mode, p_first, p_count );
 		}
 
-		inline void multiDrawArray(
+		inline void multiDrawArrays(
 			const GLenum		  p_mode,
 			const GLint * const	  p_first,
 			const GLsizei * const p_count,
@@ -137,7 +137,36 @@ namespace VTX::Renderer::Context::GL
 			glMultiDrawArrays( p_mode, p_first, p_count, p_primcount );
 		}
 
-		inline void drawElement(
+		struct DrawArraysIndirectCommand
+		{
+			GLuint count;
+			GLuint instanceCount;
+			GLuint first;
+			GLuint baseInstance;
+		};
+
+		inline void multiDrawArraysIndirect(
+			const GLenum		 p_mode,
+			const GLvoid * const p_indirect,
+			const GLsizei		 p_drawCount
+		) const noexcept
+		{
+			glMultiDrawArraysIndirect( p_mode, p_indirect, p_drawCount, sizeof( DrawArraysIndirectCommand ) );
+		}
+
+		inline void multiDrawArraysIndirectCount(
+			const GLenum		 p_mode,
+			const GLvoid * const p_indirect,
+			const GLintptr		 p_drawcountOffset,
+			const GLsizei		 p_maxdrawcount,
+			const GLsizei		 p_stride = 0
+		) const noexcept
+		{
+			// 4.6
+			// glMultiDrawArraysIndirectCount( p_mode, p_indirect, p_drawcountOffset, p_maxdrawcount, p_stride );
+		}
+
+		inline void drawElements(
 			const GLenum		 p_mode,
 			const GLsizei		 p_count,
 			const GLenum		 p_type,
@@ -147,7 +176,7 @@ namespace VTX::Renderer::Context::GL
 			glDrawElements( p_mode, p_count, p_type, p_offset );
 		}
 
-		inline void multiDrawElement(
+		inline void multiDrawElements(
 			const GLenum				 p_mode,
 			const GLsizei * const		 p_count,
 			const GLenum				 p_type,
@@ -156,6 +185,41 @@ namespace VTX::Renderer::Context::GL
 		) const noexcept
 		{
 			glMultiDrawElements( p_mode, p_count, p_type, p_offset, p_primcount );
+		}
+
+		struct DrawElementsIndirectCommand
+		{
+			GLuint count;
+			GLuint instanceCount;
+			GLuint firstIndex;
+			GLint  baseVertex;
+			GLuint baseInstance;
+		};
+
+		inline void multiDrawElementsIndirect(
+			const GLenum		 p_mode,
+			const GLenum		 p_type,
+			const GLvoid * const p_indirect,
+			const GLsizei		 p_drawCount
+		) const noexcept
+		{
+			glMultiDrawElementsIndirect(
+				p_mode, p_type, p_indirect, p_drawCount, sizeof( DrawElementsIndirectCommand )
+			);
+		}
+
+		inline void multiDrawElementsIndirectCount(
+			const GLenum		 p_mode,
+			const GLenum		 p_type,
+			const GLvoid * const p_indirect,
+			const GLintptr		 p_drawcountOffset,
+			const GLsizei		 p_maxdrawcount,
+			const GLsizei		 p_stride = 0
+		) const noexcept
+		{
+			// 4.6
+			// glMultiDrawElementsIndirectCount( p_mode, p_type, p_indirect, p_drawcountOffset, p_maxdrawcount, p_stride
+			// );
 		}
 
 		inline bool hasEbo() const noexcept

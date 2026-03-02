@@ -254,8 +254,7 @@ namespace VTX::Renderer
 			.pipelineBuffer( "Atoms.Ids" )
 			.pipelineBuffer( "Atoms.Flags" )
 			.pipelineBuffer( "Atoms.Models" )
-			.pipelineBuffer( "Atoms.Representations" )
-			.pipelineBuffer( "Bonds", E_PIPELINE_BUFFER_KIND::INDEX );
+			.pipelineBuffer( "Atoms.Representations" );
 
 		g.vertexLayout(
 			"Residues",
@@ -278,7 +277,10 @@ namespace VTX::Renderer
 			.pipelineBuffer( "Residues.Ids" )
 			.pipelineBuffer( "Residues.Flags" )
 			.pipelineBuffer( "Residues.Models" )
-			.pipelineBuffer( "Residues.Representations" )
+			.pipelineBuffer( "Residues.Representations" );
+
+		g.pipelineBuffer( "Atoms", E_PIPELINE_BUFFER_KIND::INDEX )
+			.pipelineBuffer( "Bonds", E_PIPELINE_BUFFER_KIND::INDEX )
 			.pipelineBuffer( "Ribbons", E_PIPELINE_BUFFER_KIND::INDEX );
 
 		g.vertexLayout(
@@ -294,7 +296,7 @@ namespace VTX::Renderer
 		// Geometries.
 		g.geometry( "Spheres", "Atoms" );
 		g.geometry( "Cylinders", "Atoms", "Bonds" );
-		g.geometry( "Ribbons", "Residues" );
+		g.geometry( "Ribbons", "Residues", "Ribbons" );
 		g.geometry( "Grid", "Voxels" );
 
 		// Textures.
@@ -374,19 +376,19 @@ namespace VTX::Renderer
 			.out( "DepthRaw" )
 			.program( "Sphere" )
 			.shadersDir( "sphere" )
-			.draw( "Spheres", E_PRIMITIVE::POINTS, &p_geometries.spheres.drawRanges )
+			.draw( "Spheres", E_PRIMITIVE::POINTS, std::ref( p_geometries.spheres.count ) )
 			.endProgram()
 			.program( "Cylinder" )
 			.shadersDir( "cylinder" )
-			.draw( "Cylinders", E_PRIMITIVE::LINES, nullptr, &p_geometries.cylinders.drawRanges )
+			.draw( "Cylinders", E_PRIMITIVE::LINES, std::ref( p_geometries.cylinders.count ) )
 			.endProgram()
 			.program( "Ribbon" )
 			.shadersDir( "ribbon" )
-			.draw( "Ribbons", E_PRIMITIVE::PATCHES, nullptr, &p_geometries.ribbons.drawRanges )
+			.draw( "Ribbons", E_PRIMITIVE::PATCHES, std::ref( p_geometries.ribbons.count ) )
 			.endProgram()
 			.program( "Voxel" )
 			.shadersDir( "voxel" )
-			.draw( "Grid", E_PRIMITIVE::POINTS, &p_geometries.voxels.drawRanges )
+			.draw( "Grid", E_PRIMITIVE::POINTS, std::ref( p_geometries.voxels.count ) )
 			.endProgram()
 			.endPass();
 

@@ -6,7 +6,7 @@
 namespace VTX::Renderer::Geometry
 {
 
-	struct Cylinder : public BaseGeometry<DrawRangeElements>
+	struct Cylinder : public BaseGeometry
 	{
 	  public:
 		void construct( const SystemData & p_data )

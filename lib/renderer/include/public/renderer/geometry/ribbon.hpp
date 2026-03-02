@@ -10,28 +10,35 @@
 namespace VTX::Renderer::Geometry
 {
 
-	class Ribbon : public BaseGeometry<DrawRangeElements>
+	class Ribbon : public BaseGeometry
 	{
 	  public:
 		struct Construction
 		{
 			bool isEmpty = false;
-			// std::vector<Vec4f>				  positions;
-			// std::vector<Vec3f>				  directions;
-			// std::vector<uchar>				  ssTypes;
-			// std::vector<uchar>				  colors;
-			// std::vector<uint>				  ids;
-			// std::vector<uchar>				  flags;
-			IndexRangeList		   residues;
-			std::vector<Index>	   indices;
-			std::map<Index, Index> residueToIndices;
-			std::map<Index, Index> residueToPositions;
+			struct Data
+			{
+				Index index;
+				Index ca; // Carbon alpha.
+				Index o;  // Oxygen.
+			};
+			std::vector<Data>				 residues;
+			std::vector<Index>				 indices;
+			std::unordered_map<Index, Index> residueToIndices;
+			std::unordered_map<Index, Index> residueToPositions;
 
 			// std::map<uint, std::vector<uint>> data; // Chain to residues.
 			//  std::vector<uchar>				  representations;
 		};
 
 		Index sizeItems = 0;
+
+		IndexRange rangeItems( const SystemUID p_uid ) const
+		{
+			assert( _ranges.contains( p_uid ) );
+
+			return _rangesItems[ p_uid ];
+		}
 
 		const Construction & construction( const SystemUID p_uid ) const
 		{
@@ -52,7 +59,8 @@ namespace VTX::Renderer::Geometry
 			assert( p_data.data.chainFirstResidues.size() == p_data.data.chainResidueCounts.size() );
 
 			// Compute data if not cached.
-			Construction & cache = _construction[ p_data.uid ];
+			const Index	   offsetItems = sizeItems;
+			Construction & cache	   = _construction[ p_data.uid ];
 
 			if ( cache.isEmpty )
 			{
@@ -67,10 +75,10 @@ namespace VTX::Renderer::Geometry
 			}
 
 			// Data to filL.
-			IndexRangeList &		 residues			= cache.residues;
-			std::vector<Index> &	 bufferIndices		= cache.indices;
-			std::map<Index, Index> & residueToIndices	= cache.residueToIndices;
-			std::map<Index, Index> & residueToPositions = cache.residueToPositions;
+			std::vector<Construction::Data> &  residues			  = cache.residues;
+			std::vector<Index> &			   bufferIndices	  = cache.indices;
+			std::unordered_map<Index, Index> & residueToIndices	  = cache.residueToIndices;
+			std::unordered_map<Index, Index> & residueToPositions = cache.residueToPositions;
 
 			for ( Index chainIdx : p_data.data.getChainRange() )
 			{
@@ -81,7 +89,7 @@ namespace VTX::Renderer::Geometry
 				}
 
 				// Store valid residues.
-				std::vector<Index> usedResidues;
+				std::vector<Construction::Data> usedResidues;
 
 				// Find CA and O atoms to validate residues.
 				for ( Index residueIdx : p_data.data.getChainResidueRange( chainIdx ) )
@@ -102,13 +110,8 @@ namespace VTX::Renderer::Geometry
 						continue;
 					}
 
-					// Compute direction between carbon alpha and oxygen.
-					// const Vec3f & positionCA   = positions[ *CA ];
-					// const Vec3f & positionO	   = positions[ *O ];
-					// const Vec3f	  directionCAO = Util::Math::normalize( positionO - positionCA );
-
 					// Store residue index for later.
-					usedResidues.emplace_back( residueIdx );
+					usedResidues.emplace_back( residueIdx, *optCA, *optO );
 				}
 
 				if ( usedResidues.size() < 4 )
@@ -117,8 +120,8 @@ namespace VTX::Renderer::Geometry
 				}
 
 				// Setup indices mapping.
-				residueToPositions.emplace( usedResidues[ 0 ], sizeItems );
-				residueToIndices.emplace( usedResidues[ 0 ], static_cast<uint>( bufferIndices.size() ) );
+				residueToPositions.emplace( usedResidues[ 0 ].index, sizeItems );
+				residueToIndices.emplace( usedResidues[ 0 ].index, static_cast<uint>( bufferIndices.size() ) );
 
 				const Index offset = sizeItems;
 				sizeItems++;
@@ -132,8 +135,8 @@ namespace VTX::Renderer::Geometry
 				// Add segments.
 				for ( uint i = 1; i < usedResidues.size() - 2; ++i )
 				{
-					residueToPositions.emplace( usedResidues[ i ], static_cast<uint>( sizeItems++ ) );
-					residueToIndices.emplace( usedResidues[ i ], static_cast<uint>( bufferIndices.size() ) );
+					residueToPositions.emplace( usedResidues[ i ].index, static_cast<uint>( sizeItems++ ) );
+					residueToIndices.emplace( usedResidues[ i ].index, static_cast<uint>( bufferIndices.size() ) );
 
 					bufferIndices.emplace_back( offset + i - 1 );
 					bufferIndices.emplace_back( offset + i );
@@ -153,7 +156,7 @@ namespace VTX::Renderer::Geometry
 				//}
 
 				// Store added residues.
-				residues.addValues( std::span<const Index>( usedResidues.data(), usedResidues.size() - 2 ) );
+				residues.insert( residues.end(), usedResidues.cbegin(), usedResidues.cend() - 2 );
 
 				// Merge buffers.
 				// auto it = data.find( p_chainIdx );
@@ -178,10 +181,12 @@ namespace VTX::Renderer::Geometry
 			}
 
 			addRange( p_data.uid, bufferIndices.size() );
+			_rangesItems[ p_data.uid ] = IndexRange { offsetItems, static_cast<Index>( residueToPositions.size() ) };
 		}
 
 	  protected:
 		mutable std::map<SystemUID, Construction> _construction;
+		mutable MapUIDRange						  _rangesItems;
 	};
 
 } // namespace VTX::Renderer::Geometry

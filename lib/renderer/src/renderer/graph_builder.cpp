@@ -124,15 +124,13 @@ namespace VTX::Renderer
 	ProgramBuilder & ProgramBuilder::draw(
 		const Desc::Key &					  p_geometry,
 		const Desc::E_PRIMITIVE				  p_primitive,
-		const Desc::DrawCall::RangeArrays *	  p_vertexRanges,
-		const Desc::DrawCall::RangeElements * p_indexRanges
+		const Desc::DrawCall::RangesVariant & p_ranges
 	)
 	{
 		Desc::DrawCall dc;
 		dc.geometry		 = p_geometry;
 		dc.primitive	 = p_primitive;
-		dc.vertexRanges	 = p_vertexRanges;
-		dc.indexRanges	 = p_indexRanges;
+		dc.ranges		 = p_ranges;
 		program.drawCall = dc;
 		return *this;
 	}

@@ -254,12 +254,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief draw().
 		 */
-		ProgramBuilder & draw(
-			const Desc::Key &,
-			const Desc::E_PRIMITIVE				  = Desc::E_PRIMITIVE::TRIANGLES,
-			const Desc::DrawCall::RangeArrays *	  = nullptr,
-			const Desc::DrawCall::RangeElements * = nullptr
-		);
+		ProgramBuilder & draw( const Desc::Key &, const Desc::E_PRIMITIVE, const Desc::DrawCall::RangesVariant & );
 
 		/**
 		 * @brief uniform().

@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <tuple>
 #include <unordered_map>
@@ -123,7 +124,8 @@ namespace VTX::Renderer::Desc
 	enum struct E_PIPELINE_BUFFER_KIND : uint32_t
 	{
 		VERTEX,
-		INDEX
+		INDEX,
+		INDIRECT_COMMAND
 	};
 
 	/**
@@ -310,27 +312,41 @@ namespace VTX::Renderer::Desc
 	};
 
 	/**
+	 * @brief Indirect draw command descriptors.
+	 */
+	struct DrawIndirectCommand
+	{
+		uint32_t vertexCount;
+		uint32_t instanceCout;
+		uint32_t firstVertex;
+		uint32_t baseInstance;
+	};
+
+	struct DrawIndexedIndirectCommand
+	{
+		uint32_t indexCount;
+		uint32_t instanceCount;
+		uint32_t firstIndex;
+		int32_t	 baseVertex;
+		uint32_t baseInstance;
+	};
+
+	/**
 	 * @brief Draw call descriptor.
 	 */
 	struct DrawCall
 	{
 		Key			geometry;
 		E_PRIMITIVE primitive;
-		// TODO: variant?
-		uint32_t vertexCount = 0;
-		uint32_t indexCount	 = 0;
-		struct RangeArrays
+
+		struct Range
 		{
-			std::vector<int32_t>  firsts;
-			std::vector<uint32_t> counts;
+			uint32_t first;
+			uint32_t count;
 		};
-		struct RangeElements
-		{
-			std::vector<uintptr_t> firsts;
-			std::vector<uint32_t>  counts;
-		};
-		const RangeArrays *	  vertexRanges = nullptr;
-		const RangeElements * indexRanges  = nullptr;
+		// Could be a single range, or reference to a count in a buffer for indirect draw.
+		using RangesVariant = std::variant<Range, std::reference_wrapper<const uint32_t>>;
+		RangesVariant ranges;
 	};
 
 	/**

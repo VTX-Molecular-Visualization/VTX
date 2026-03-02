@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 #define __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 
+#include "renderer/descriptors.hpp"
 #include "renderer/system_data.hpp"
 #include <map>
 #include <util/exceptions.hpp>
@@ -14,12 +15,10 @@ namespace VTX::Renderer::Geometry
 	/**
 	 * @brief Type aliases.
 	 */
-	using IndexRange		= Util::Math::Range<Index>;
-	using IndexRangeList	= Util::Math::RangeList<Index>;
-	using MapUIDRange		= std::map<SystemUID, IndexRange>;
-	using MapUIDRangeList	= std::map<SystemUID, IndexRangeList>;
-	using DrawRangeArray	= Desc::DrawCall::RangeArrays;
-	using DrawRangeElements = Desc::DrawCall::RangeElements;
+	using IndexRange	  = Util::Math::Range<Index>;
+	using IndexRangeList  = Util::Math::RangeList<Index>;
+	using MapUIDRange	  = std::map<SystemUID, IndexRange>;
+	using MapUIDRangeList = std::map<SystemUID, IndexRangeList>;
 
 	/**
 	 * @brief If more than this number of consecutive items are not visible, split draw calls.
@@ -30,14 +29,13 @@ namespace VTX::Renderer::Geometry
 	/**
 	 * @brief Base geometry struct to handle and build draw ranges.
 	 */
-	template<typename DR>
 	class BaseGeometry
 	{
 	  public:
 		/**
 		 * @brief Current size to draw (before applying anything).
 		 */
-		Index size;
+		Index size = 0;
 
 		/**
 		 * @brief Push a range.
@@ -65,15 +63,15 @@ namespace VTX::Renderer::Geometry
 		/**
 		 * @brief Compiled draw ranges for GPU calls.
 		 */
-		DR drawRanges;
+		// Desc::DrawCall::Ranges drawRanges;
+		uint32_t count;
 
 		/**
 		 * @brief Build GPU draw ranges.
 		 */
 		void buildDrawRanges()
 		{
-			drawRanges.firsts.clear();
-			drawRanges.counts.clear();
+			count = 0;
 
 			IndexRangeList allRanges;
 			for ( const auto & [ uid, range ] : _ranges )
@@ -106,25 +104,13 @@ namespace VTX::Renderer::Geometry
 				allRanges.mergeInPlace( rangeList );
 			}
 
-			// TODO: make this API-agnostic.
-			if constexpr ( std::is_same_v<DR, DrawRangeArray> )
-			{
-				allRanges.toStdVectorsFirstCount(
-					IndexRangeList::VectorParam<int32_t> { drawRanges.firsts },
+			// TODO: push to GPU.
+			/*
+			allRanges.toStdVectorsFirstCount(
+				IndexRangeList::VectorParam<uint32_t> { drawRanges.firsts, sizeof( Index ) },
 					IndexRangeList::VectorParam<uint32_t> { drawRanges.counts }
-				);
-			}
-			else if constexpr ( std::is_same_v<DR, DrawRangeElements> )
-			{
-				allRanges.toStdVectorsFirstCount(
-					IndexRangeList::VectorParam<uintptr_t> { drawRanges.firsts, sizeof( Index ) },
-					IndexRangeList::VectorParam<uint32_t> { drawRanges.counts }
-				);
-			}
-			else
-			{
-				static_assert( always_false_v<DR>, "Unsupported draw range type" );
-			}
+			);
+			*/
 
 			VTX_DEBUG( "Built draw ranges: {}", allRanges.rangeCount() );
 		}

@@ -6,7 +6,7 @@
 namespace VTX::Renderer::Geometry
 {
 
-	class Sphere : public BaseGeometry<DrawRangeArray>
+	class Sphere : public BaseGeometry
 	{
 	  public:
 		void construct( const SystemData & p_data )

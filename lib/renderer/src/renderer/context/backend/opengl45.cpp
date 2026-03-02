@@ -3,6 +3,7 @@
 #include "renderer/context/gl/debug.hpp"
 #include <numeric>
 #include <util/exceptions.hpp>
+#include <util/type_traits.hpp>
 
 namespace
 {
@@ -255,6 +256,7 @@ namespace VTX::Renderer::Context::Backend
 		_shaderBuffers.invalidate();
 		_vertexBuffers.invalidate();
 		_indexBuffers.invalidate();
+		_indirectBuffers.invalidate();
 		_vertexArrays.invalidate();
 
 		// Create all resources.
@@ -358,48 +360,55 @@ namespace VTX::Renderer::Context::Backend
 				{
 					const DrawCall & drawCall = program.drawCall.value();
 					const Geometry & geometry = p_resources.geometries.at( drawCall.geometry );
+					const bool		 indexed  = geometry.indexBuffer.has_value();
 
-					if ( drawCall.vertexCount )
+					if ( std::holds_alternative<DrawCall::Range>( drawCall.ranges ) )
 					{
-						PayloadDrawArray pDraw { hProgram, hVao };
-						pDraw.primitive	  = toUnderlying( drawCall.primitive );
-						pDraw.vertexCount = drawCall.vertexCount;
-						p_commands.push<E_COMMAND::DRAW_ARRAY>( pDraw );
+						const DrawCall::Range & range = std::get<DrawCall::Range>( drawCall.ranges );
+						if ( indexed )
+						{
+							PayloadDrawIndexed pDraw { hProgram, hVao };
+							pDraw.primitive = toUnderlying( drawCall.primitive );
+							pDraw.first		= range.first;
+							pDraw.count		= range.count;
+							p_commands.push<E_COMMAND::DRAW_INDEXED>( pDraw );
+						}
+						else
+						{
+							PayloadDraw pDraw { hProgram, hVao };
+							pDraw.primitive = toUnderlying( drawCall.primitive );
+							pDraw.first		= range.first;
+							pDraw.count		= range.count;
+							p_commands.push<E_COMMAND::DRAW>( pDraw );
+						}
 					}
-					else if ( drawCall.indexCount )
+					else if ( std::holds_alternative<std::reference_wrapper<const uint32_t>>( drawCall.ranges ) )
 					{
-						PayloadDrawElement pDraw { hProgram, hVao };
-						pDraw.primitive	 = toUnderlying( drawCall.primitive );
-						pDraw.indexCount = drawCall.indexCount;
-						p_commands.push<E_COMMAND::DRAW_ELEMENT>( pDraw );
-					}
-
-					else if ( drawCall.vertexRanges )
-					{
-						PayloadDrawArrays pDraw { hProgram, hVao };
-						pDraw.primitive	   = toUnderlying( drawCall.primitive );
-						pDraw.vertexRanges = reinterpret_cast<uintptr_t>( drawCall.vertexRanges );
-						p_commands.push<E_COMMAND::DRAW_ARRAYS>( pDraw );
-					}
-					else if ( drawCall.indexRanges )
-					{
-						PayloadDrawElements pDraw { hProgram, hVao };
-						pDraw.primitive	  = toUnderlying( drawCall.primitive );
-						pDraw.indexRanges = reinterpret_cast<uintptr_t>( drawCall.indexRanges );
-						p_commands.push<E_COMMAND::DRAW_ELEMENTS>( pDraw );
-					}
-					else
-					{
-						assert( false && "DrawCall has no valid draw parameters." );
+						auto drawCount = std::get<std::reference_wrapper<const uint32_t>>( drawCall.ranges );
+						if ( indexed )
+						{
+							PayloadDrawIndexedIndirect pDraw { hProgram, hVao };
+							pDraw.primitive = toUnderlying( drawCall.primitive );
+							// pDraw.buffer =
+							pDraw.count = reinterpret_cast<uintptr_t>( &drawCount );
+						}
+						else
+						{
+							PayloadDrawIndirect pDraw { hProgram, hVao };
+							pDraw.primitive = toUnderlying( drawCall.primitive );
+							// pDraw.buffer =
+							pDraw.count = reinterpret_cast<uintptr_t>( &drawCount );
+						}
 					}
 				}
 				else
 				{
 					// Fullscreen quad draw.
-					PayloadDrawArray pDraw { hProgram, hVao };
-					pDraw.primitive	  = static_cast<uint32_t>( toUnderlying( E_PRIMITIVE::TRIANGLES ) );
-					pDraw.vertexCount = 4;
-					p_commands.push<E_COMMAND::DRAW_ARRAY>( pDraw );
+					PayloadDraw pDraw { hProgram, hVao };
+					pDraw.primitive = static_cast<uint32_t>( toUnderlying( E_PRIMITIVE::TRIANGLES ) );
+					pDraw.first		= 0;
+					pDraw.count		= 4;
+					p_commands.push<E_COMMAND::DRAW>( pDraw );
 				}
 			}
 
@@ -419,6 +428,7 @@ namespace VTX::Renderer::Context::Backend
 		_shaderBuffers.purge();
 		_vertexBuffers.purge();
 		_indexBuffers.purge();
+		_indirectBuffers.purge();
 		_vertexArrays.purge();
 
 		// Dump errors.
@@ -725,6 +735,20 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
+	Desc::Handle OpenGL45::_getOrCreateIndirectBuffer( const Desc::Key & p_key, const Desc::BufferPipeline & p_buffer )
+	{
+		using namespace Desc;
+
+		if ( _indirectBuffers.validate( p_key, p_buffer ) )
+		{
+			return _indirectBuffers.handle( p_key );
+		}
+
+		const Handle h = _indirectBuffers.emplace( p_key, p_buffer );
+
+		return h;
+	}
+
 	Desc::Handle OpenGL45::_getOrCreateProgram( const Desc::Program & p_program )
 	{
 		using namespace Desc;
@@ -1011,11 +1035,15 @@ namespace VTX::Renderer::Context::Backend
 				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( buffer.frequency )
 			);
 		}
-		else
+		else if ( kind == E_PIPELINE_BUFFER_KIND::INDEX )
 		{
 			_indexBuffers.get( h ).setData(
 				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( buffer.frequency )
 			);
+		}
+		else
+		{
+			// Indirect.
 		}
 	}
 
