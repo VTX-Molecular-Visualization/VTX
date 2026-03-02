@@ -88,12 +88,14 @@ namespace VTX::Renderer
 		const Desc::Key & p_name,
 		const Desc::Key & p_vertexLayout,
 		// const std::unordered_map<Key, Key> & p_overrides,
-		const std::optional<Desc::Key> p_indexBuffer
+		const std::optional<Desc::Key> p_indexBuffer,
+		const std::optional<Desc::Key> p_indirectBuffer
 	)
 	{
 		Desc::Geometry geom;
-		geom.vertexLayout = p_vertexLayout;
-		geom.indexBuffer  = p_indexBuffer;
+		geom.vertexLayout	= p_vertexLayout;
+		geom.indexBuffer	= p_indexBuffer;
+		geom.indirectBuffer = p_indirectBuffer;
 		// geom.overrides	 = p_overrides;
 		resources.geometries[ p_name ] = std::move( geom );
 		return *this;

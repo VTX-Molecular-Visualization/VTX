@@ -138,19 +138,9 @@ namespace VTX::Renderer::Context::Backend
 			return _shaderBuffers.get( p_handle );
 		}
 
-		inline const GL::Buffer & vertexBuffer( const Desc::Handle p_handle ) const noexcept
+		inline const GL::Buffer & pipelineBuffer( const Desc::Handle p_handle ) const noexcept
 		{
-			return _vertexBuffers.get( p_handle );
-		}
-
-		inline const GL::Buffer & indexBuffer( const Desc::Handle p_handle ) const noexcept
-		{
-			return _indexBuffers.get( p_handle );
-		}
-
-		inline const GL::Buffer & indirectBuffer( const Desc::Handle p_handle ) const noexcept
-		{
-			return _indirectBuffers.get( p_handle );
+			return _pipelineBuffers.get( p_handle );
 		}
 
 		inline const GL::VertexArray & vertexArray( const Desc::Handle p_handle ) const noexcept
@@ -189,9 +179,7 @@ namespace VTX::Renderer::Context::Backend
 		ResourceHandler<GL::Framebuffer>					 _framebuffers;
 		ResourceHandler<ResourceTable>						 _resourceTables;
 		ResourceHandler<GL::VertexArray, Desc::VertexLayout> _vertexArrays;
-		ResourceHandler<GL::Buffer, Desc::BufferPipeline>	 _vertexBuffers;
-		ResourceHandler<GL::Buffer, Desc::BufferPipeline>	 _indexBuffers;
-		ResourceHandler<GL::Buffer, Desc::BufferPipeline>	 _indirectBuffers;
+		ResourceHandler<GL::Buffer, Desc::BufferPipeline>	 _pipelineBuffers;
 		ResourceHandler<GL::Buffer, Desc::BufferShader>		 _shaderBuffers;
 		ResourceHandler<GL::Texture2D, Desc::Texture>		 _textures;
 		ResourceHandler<GL::Sampler, Desc::Sampler>			 _samplers;
@@ -207,9 +195,7 @@ namespace VTX::Renderer::Context::Backend
 		Desc::Handle _getOrCreateSampler( const Desc::Key &, const Desc::Sampler & );
 		Desc::Handle _getOrCreateVertexLayout( const Desc::Key &, const Desc::VertexLayout & );
 		Desc::Handle _getOrCreateShaderBuffer( const Desc::BufferShader & );
-		Desc::Handle _getOrCreateVertexBuffer( const Desc::Key &, const Desc::BufferPipeline & );
-		Desc::Handle _getOrCreateIndexBuffer( const Desc::Key &, const Desc::BufferPipeline & );
-		Desc::Handle _getOrCreateIndirectBuffer( const Desc::Key &, const Desc::BufferPipeline & );
+		Desc::Handle _getOrCreatePipelineBuffer( const Desc::Key &, const Desc::BufferPipeline & );
 		Desc::Handle _getOrCreateProgram( const Desc::Program & );
 
 		/**

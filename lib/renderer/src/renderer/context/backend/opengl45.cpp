@@ -254,9 +254,7 @@ namespace VTX::Renderer::Context::Backend
 		_samplers.invalidate();
 		_programs.invalidate();
 		_shaderBuffers.invalidate();
-		_vertexBuffers.invalidate();
-		_indexBuffers.invalidate();
-		_indirectBuffers.invalidate();
+		_pipelineBuffers.invalidate();
 		_vertexArrays.invalidate();
 
 		// Create all resources.
@@ -280,13 +278,7 @@ namespace VTX::Renderer::Context::Backend
 		}
 		for ( const auto & [ key, buffer ] : p_resources.pipelineBuffers )
 		{
-			Handle h;
-			switch ( buffer.kind )
-			{
-			case E_PIPELINE_BUFFER_KIND::VERTEX: h = _getOrCreateVertexBuffer( key, buffer ); break;
-			case E_PIPELINE_BUFFER_KIND::INDEX: h = _getOrCreateIndexBuffer( key, buffer ); break;
-			default: assert( false ); break;
-			}
+			_getOrCreatePipelineBuffer( key, buffer );
 		}
 
 		// Bind geometries to VAOs.
@@ -384,20 +376,22 @@ namespace VTX::Renderer::Context::Backend
 					}
 					else if ( std::holds_alternative<std::reference_wrapper<const uint32_t>>( drawCall.ranges ) )
 					{
+						assert( geometry.indirectBuffer.has_value() );
+
 						auto drawCount = std::get<std::reference_wrapper<const uint32_t>>( drawCall.ranges );
 						if ( indexed )
 						{
 							PayloadDrawIndexedIndirect pDraw { hProgram, hVao };
 							pDraw.primitive = toUnderlying( drawCall.primitive );
-							// pDraw.buffer =
-							pDraw.count = reinterpret_cast<uintptr_t>( &drawCount );
+							pDraw.buffer	= _pipelineBuffers.handle( geometry.indirectBuffer.value() );
+							pDraw.count		= reinterpret_cast<uintptr_t>( &drawCount );
 						}
 						else
 						{
 							PayloadDrawIndirect pDraw { hProgram, hVao };
 							pDraw.primitive = toUnderlying( drawCall.primitive );
-							// pDraw.buffer =
-							pDraw.count = reinterpret_cast<uintptr_t>( &drawCount );
+							pDraw.buffer	= _pipelineBuffers.handle( geometry.indirectBuffer.value() );
+							pDraw.count		= reinterpret_cast<uintptr_t>( &drawCount );
 						}
 					}
 				}
@@ -426,9 +420,7 @@ namespace VTX::Renderer::Context::Backend
 		_samplers.purge();
 		_programs.purge();
 		_shaderBuffers.purge();
-		_vertexBuffers.purge();
-		_indexBuffers.purge();
-		_indirectBuffers.purge();
+		_pipelineBuffers.purge();
 		_vertexArrays.purge();
 
 		// Dump errors.
@@ -707,44 +699,16 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateVertexBuffer( const Desc::Key & p_key, const Desc::BufferPipeline & p_buffer )
+	Desc::Handle OpenGL45::_getOrCreatePipelineBuffer( const Desc::Key & p_key, const Desc::BufferPipeline & p_buffer )
 	{
 		using namespace Desc;
 
-		if ( _vertexBuffers.validate( p_key, p_buffer ) )
+		if ( _pipelineBuffers.validate( p_key, p_buffer ) )
 		{
-			return _vertexBuffers.handle( p_key );
+			return _pipelineBuffers.handle( p_key );
 		}
 
-		const Handle h = _vertexBuffers.emplace( p_key, p_buffer );
-
-		return h;
-	}
-
-	Desc::Handle OpenGL45::_getOrCreateIndexBuffer( const Desc::Key & p_key, const Desc::BufferPipeline & p_buffer )
-	{
-		using namespace Desc;
-
-		if ( _indexBuffers.validate( p_key, p_buffer ) )
-		{
-			return _indexBuffers.handle( p_key );
-		}
-
-		const Handle h = _indexBuffers.emplace( p_key, p_buffer );
-
-		return h;
-	}
-
-	Desc::Handle OpenGL45::_getOrCreateIndirectBuffer( const Desc::Key & p_key, const Desc::BufferPipeline & p_buffer )
-	{
-		using namespace Desc;
-
-		if ( _indirectBuffers.validate( p_key, p_buffer ) )
-		{
-			return _indirectBuffers.handle( p_key );
-		}
-
-		const Handle h = _indirectBuffers.emplace( p_key, p_buffer );
+		const Handle h = _pipelineBuffers.emplace( p_key, p_buffer );
 
 		return h;
 	}
@@ -932,7 +896,7 @@ namespace VTX::Renderer::Context::Backend
 		{
 			const GLAttrib	   ga		 = toGLAttrib( a.type );
 			const Key		   bufferKey = p_geo.vertexLayout + "." + a.name;
-			const GL::Buffer & vbo		 = _vertexBuffers.get( bufferKey );
+			const GL::Buffer & vbo		 = _pipelineBuffers.get( bufferKey );
 
 			const GLsizei stride = GLsizei( ga.columns * ga.components * ga.bytesPerComp );
 			for ( uint8_t col = 0; col < ga.columns; ++col )
@@ -945,7 +909,7 @@ namespace VTX::Renderer::Context::Backend
 
 		if ( p_geo.indexBuffer )
 		{
-			const GL::Buffer & ibo = _indexBuffers.get( *p_geo.indexBuffer );
+			const GL::Buffer & ibo = _pipelineBuffers.get( *p_geo.indexBuffer );
 			vao.bindElementBuffer( ibo );
 		}
 
@@ -963,7 +927,8 @@ namespace VTX::Renderer::Context::Backend
 		const Key	   quadVboKey = _QUAD_VBO;
 		BufferPipeline quadVboDesc { quadVboKey, E_PIPELINE_BUFFER_KIND::VERTEX, E_UPDATE_FREQUENCY::STATIC };
 
-		if ( _vertexArrays.validate( quadLayoutKey, quadLayout ) && _vertexBuffers.validate( quadVboKey, quadVboDesc ) )
+		if ( _vertexArrays.validate( quadLayoutKey, quadLayout )
+			 && _pipelineBuffers.validate( quadVboKey, quadVboDesc ) )
 		{
 			return _vertexArrays.handle( quadLayoutKey );
 		}
@@ -976,7 +941,7 @@ namespace VTX::Renderer::Context::Backend
 		quadGeo.indexBuffer	 = std::nullopt;
 
 		const Handle h = _getOrCreateVertexLayout( quadLayoutKey, quadLayout );
-		_getOrCreateVertexBuffer( quadVboKey, quadVboDesc );
+		_getOrCreatePipelineBuffer( quadVboKey, quadVboDesc );
 
 		Resources fakeRes;
 		fakeRes.vertexStreams.emplace( quadLayoutKey, quadLayout );
@@ -984,7 +949,7 @@ namespace VTX::Renderer::Context::Backend
 
 		_bindGeometryToVao( quadLayoutKey, quadGeo, fakeRes );
 
-		_vertexBuffers.get( quadVboKey ).setStorage( quad.data(), GLsizei( sizeof( quad ) ) );
+		_pipelineBuffers.get( quadVboKey ).setStorage( quad.data(), GLsizei( sizeof( quad ) ) );
 
 		return h;
 	}
@@ -993,15 +958,15 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		const Handle h			= _shaderBuffers.handle( p_key );
-		const auto & bufferProp = _shaderBuffers.descriptor( p_key );
+		const Handle h	  = _shaderBuffers.handle( p_key );
+		const auto & desc = _shaderBuffers.descriptor( p_key );
 
-		switch ( bufferProp.mutability )
+		switch ( desc.mutability )
 		{
 		case E_BUFFER_MUTABILITY::MUTABLE:
 		{
 			_shaderBuffers.get( h ).setData(
-				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( bufferProp.frequency )
+				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( desc.frequency )
 			);
 			break;
 		}
@@ -1019,32 +984,12 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		E_PIPELINE_BUFFER_KIND kind
-			= _vertexBuffers.contains( p_key ) ? E_PIPELINE_BUFFER_KIND::VERTEX : E_PIPELINE_BUFFER_KIND::INDEX;
+		const Handle h	  = _pipelineBuffers.handle( p_key );
+		const auto & desc = _pipelineBuffers.descriptor( p_key );
 
-		const Handle h
-			= kind == E_PIPELINE_BUFFER_KIND::VERTEX ? _vertexBuffers.handle( p_key ) : _indexBuffers.handle( p_key );
-		const auto & buffer = kind == E_PIPELINE_BUFFER_KIND::VERTEX ? _vertexBuffers.descriptor( p_key )
-																	 : _indexBuffers.descriptor( p_key );
-
-		assert( kind == buffer.kind );
-
-		if ( kind == E_PIPELINE_BUFFER_KIND::VERTEX )
-		{
-			_vertexBuffers.get( h ).setData(
-				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( buffer.frequency )
-			);
-		}
-		else if ( kind == E_PIPELINE_BUFFER_KIND::INDEX )
-		{
-			_indexBuffers.get( h ).setData(
-				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( buffer.frequency )
-			);
-		}
-		else
-		{
-			// Indirect.
-		}
+		_pipelineBuffers.get( h ).setData(
+			p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( desc.frequency )
+		);
 	}
 
 	std::vector<std::byte> OpenGL45::getTextureData(

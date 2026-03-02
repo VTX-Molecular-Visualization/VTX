@@ -211,7 +211,8 @@ namespace VTX::Renderer
 			const Desc::Key & p_name,
 			const Desc::Key & p_vertexStream,
 			// const std::unordered_map<Key, Key> & p_overrides = {},
-			const std::optional<Desc::Key> p_indexBuffer = std::nullopt
+			const std::optional<Desc::Key> = std::nullopt,
+			const std::optional<Desc::Key> = std::nullopt
 		);
 
 		/**

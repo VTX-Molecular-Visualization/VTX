@@ -308,6 +308,7 @@ namespace VTX::Renderer::Desc
 	{
 		Key				   vertexLayout;
 		std::optional<Key> indexBuffer;
+		std::optional<Key> indirectBuffer;
 		// std::unordered_map<Key, Key> overrides; // attributeName -> bufferKey
 	};
 

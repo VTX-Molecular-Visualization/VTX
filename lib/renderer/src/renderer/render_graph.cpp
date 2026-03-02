@@ -83,6 +83,25 @@ namespace VTX::Renderer
 			}
 		}
 
+		// Check geometry resources.
+		for ( const auto & [ key, geometry ] : _resources.geometries )
+		{
+			if ( not _resources.vertexStreams.contains( geometry.vertexLayout ) )
+			{
+				throw GraphicException( "Geometry '{}': vertex layout '{}' not found", key, geometry.vertexLayout );
+			}
+			if ( geometry.indexBuffer && not _resources.pipelineBuffers.contains( *geometry.indexBuffer ) )
+			{
+				throw GraphicException( "Geometry '{}': index buffer '{}' not found", key, *geometry.indexBuffer );
+			}
+			if ( geometry.indirectBuffer && not _resources.pipelineBuffers.contains( *geometry.indirectBuffer ) )
+			{
+				throw GraphicException(
+					"Geometry '{}': indirect buffer '{}' not found", key, *geometry.indirectBuffer
+				);
+			}
+		}
+
 		// Build.
 		// TODO: remove unused passes.
 		Desc::RenderQueue queue;
@@ -279,9 +298,14 @@ namespace VTX::Renderer
 			.pipelineBuffer( "Residues.Models" )
 			.pipelineBuffer( "Residues.Representations" );
 
-		g.pipelineBuffer( "Atoms", E_PIPELINE_BUFFER_KIND::INDEX )
-			.pipelineBuffer( "Bonds", E_PIPELINE_BUFFER_KIND::INDEX )
-			.pipelineBuffer( "Ribbons", E_PIPELINE_BUFFER_KIND::INDEX );
+		g.pipelineBuffer( "AtomsIndex", E_PIPELINE_BUFFER_KIND::INDEX )
+			.pipelineBuffer( "BondsIndex", E_PIPELINE_BUFFER_KIND::INDEX )
+			.pipelineBuffer( "RibbonsIndex", E_PIPELINE_BUFFER_KIND::INDEX );
+
+		g.pipelineBuffer( "SphereIndirect", E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND )
+			.pipelineBuffer( "CylinderIndirect", E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND )
+			.pipelineBuffer( "RibbonIndirect", E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND )
+			.pipelineBuffer( "GridIndirect", E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND );
 
 		g.vertexLayout(
 			"Voxels",
@@ -294,10 +318,10 @@ namespace VTX::Renderer
 		g.pipelineBuffer( "Voxels.Mins" ).pipelineBuffer( "Voxels.Maxs" );
 
 		// Geometries.
-		g.geometry( "Spheres", "Atoms" );
-		g.geometry( "Cylinders", "Atoms", "Bonds" );
-		g.geometry( "Ribbons", "Residues", "Ribbons" );
-		g.geometry( "Grid", "Voxels" );
+		g.geometry( "Spheres", "Atoms", "AtomsIndex", "SphereIndirect" );
+		g.geometry( "Cylinders", "Atoms", "BondsIndex", "CylinderIndirect" );
+		g.geometry( "Ribbons", "Residues", "RibbonsIndex", "RibbonIndirect" );
+		g.geometry( "Grid", "Voxels", std::nullopt, "GridIndirect" );
 
 		// Textures.
 		g.texture( "Geometry", E_FORMAT::RGBA32UI )

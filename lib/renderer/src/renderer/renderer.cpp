@@ -336,7 +336,7 @@ namespace VTX::Renderer
 
 		// Reserve data.
 		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", totalAtoms );
-		_context.setPipelineBuffer<Index>( "Bonds", totalBonds );
+		_context.setPipelineBuffer<Index>( "BondsIndex", totalBonds );
 		_context.setPipelineBuffer<float>( "Atoms.Radii", totalAtoms );
 		_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", totalAtoms );
 		_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", totalAtoms );
@@ -345,7 +345,7 @@ namespace VTX::Renderer
 		_context.setPipelineBuffer<Flag>( "Atoms.Flags", totalAtoms );
 
 		_context.setPipelineBuffer<Vec4f>( "Residues.Positions", totalRibbonItems );
-		_context.setPipelineBuffer<Index>( "Ribbons", totalRibbonIndices );
+		_context.setPipelineBuffer<Index>( "RibbonsIndex", totalRibbonIndices );
 		_context.setPipelineBuffer<Vec3f>( "Residues.Directions", totalRibbonItems );
 		_context.setPipelineBuffer<uint8_t>( "Residues.Types", totalRibbonItems );
 		_context.setPipelineBuffer<ColorIndex>( "Residues.Colors", totalRibbonItems );
@@ -375,7 +375,7 @@ namespace VTX::Renderer
 			}
 
 			// Upload data.
-			_context.setPipelineBuffer<Index>( "Bonds", bonds, offsetBonds );
+			_context.setPipelineBuffer<Index>( "BondsIndex", bonds, offsetBonds );
 			_context.setPipelineBuffer<float>( "Atoms.Radii", systemData.radii, offsetAtoms );
 			_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", systemData.atomUids, offsetAtoms );
 			_context.setPipelineBuffer<ModelIndex>(
@@ -402,7 +402,7 @@ namespace VTX::Renderer
 				residueTypes[ i ] = toUnderlying( systemData.data.residueSecondaryStructureTypes[ residueIndex ] );
 			}
 
-			_context.setPipelineBuffer<Index>( "Ribbons", ribbonIndices, offsetRibbonIndices );
+			_context.setPipelineBuffer<Index>( "RibbonsIndex", ribbonIndices, offsetRibbonIndices );
 			_context.setPipelineBuffer<PickingUID>( "Residues.Ids", residueIds, offsetRibbonItems );
 			_context.setPipelineBuffer<uint8_t>( "Residues.Types", residueTypes, offsetRibbonItems );
 			_context.setPipelineBuffer<ModelIndex>(
