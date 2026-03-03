@@ -11,7 +11,10 @@ namespace VTX::Renderer::Geometry
 	  public:
 		void construct( const SystemData & p_data )
 		{
-			// assert( not _ranges.contains( p_data.uid ) );
+			if ( _ranges.contains( p_data.uid ) )
+			{
+				return;
+			}
 
 			const Index count = p_data.data.getAtomCount();
 

@@ -35,10 +35,12 @@ namespace VTX::Renderer::Geometry
 
 		IndexRange rangeItems( const SystemUID p_uid ) const
 		{
-			assert( _ranges.contains( p_uid ) );
+			assert( _rangesItems.contains( p_uid ) );
 
 			return _rangesItems[ p_uid ];
 		}
+
+		bool empty( const SystemUID p_uid ) const { return _construction[ p_uid ].isEmpty; }
 
 		const Construction & construction( const SystemUID p_uid ) const
 		{
@@ -49,7 +51,10 @@ namespace VTX::Renderer::Geometry
 
 		void construct( const SystemData & p_data )
 		{
-			assert( not _ranges.contains( p_data.uid ) );
+			if ( _ranges.contains( p_data.uid ) )
+			{
+				return;
+			}
 
 			// assert( p_data.data.atomNames.size() == p_data.frame.size() );
 			assert( p_data.residueUids.size() == p_data.data.residueSecondaryStructureTypes.size() );
@@ -120,7 +125,7 @@ namespace VTX::Renderer::Geometry
 				}
 
 				// Setup indices mapping.
-				residueToPositions.emplace( usedResidues[ 0 ].index, sizeItems );
+				residueToPositions.emplace( usedResidues[ 0 ].index, offsetItems );
 				residueToIndices.emplace( usedResidues[ 0 ].index, static_cast<uint>( bufferIndices.size() ) );
 
 				const Index offset = sizeItems;
@@ -169,10 +174,9 @@ namespace VTX::Renderer::Geometry
 				//);
 			}
 
-			assert( sizeItems == residues.size() );
-			assert( sizeItems == bufferIndices.size() / 4 );
-			assert( sizeItems == residueToPositions.size() );
-			assert( sizeItems == residueToIndices.size() );
+			assert( residues.size() == bufferIndices.size() / 4 );
+			assert( residues.size() == residueToPositions.size() );
+			assert( residues.size() == residueToIndices.size() );
 
 			if ( sizeItems == 0 )
 			{

@@ -157,13 +157,13 @@ namespace VTX::Renderer::Context::GL
 		inline void multiDrawArraysIndirectCount(
 			const GLenum		 p_mode,
 			const GLvoid * const p_indirect,
-			const GLintptr		 p_drawcountOffset,
-			const GLsizei		 p_maxdrawcount,
-			const GLsizei		 p_stride = 0
+			const GLintptr		 p_drawCountOffset,
+			const GLsizei		 p_maxDrawCount
 		) const noexcept
 		{
-			// 4.6
-			// glMultiDrawArraysIndirectCount( p_mode, p_indirect, p_drawcountOffset, p_maxdrawcount, p_stride );
+			// glMultiDrawArraysIndirectCount(
+			//	p_mode, p_indirect, p_drawCountOffset, p_maxDrawCount, sizeof( DrawArraysIndirectCommand )
+			//);
 		}
 
 		inline void drawElements(
@@ -212,14 +212,12 @@ namespace VTX::Renderer::Context::GL
 			const GLenum		 p_mode,
 			const GLenum		 p_type,
 			const GLvoid * const p_indirect,
-			const GLintptr		 p_drawcountOffset,
-			const GLsizei		 p_maxdrawcount,
-			const GLsizei		 p_stride = 0
+			const GLintptr		 p_drawCountOffset,
+			const GLsizei		 p_maxDrawCount
 		) const noexcept
 		{
-			// 4.6
-			// glMultiDrawElementsIndirectCount( p_mode, p_type, p_indirect, p_drawcountOffset, p_maxdrawcount, p_stride
-			// );
+			// glMultiDrawElementsIndirectCount( p_mode, p_type, p_indirect, p_drawCountOffset, p_maxDrawCount, sizeof(
+			// DrawElementsIndirectCommand );
 		}
 
 		inline bool hasEbo() const noexcept

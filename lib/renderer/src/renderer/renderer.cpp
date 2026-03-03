@@ -383,40 +383,45 @@ namespace VTX::Renderer
 				"Atoms.Models", std::vector<ModelIndex>( countAtoms, modelIndex ), offsetAtoms
 			);
 
-			const auto & construction		= _geometries.ribbons.construction( uid );
-			const Index	 countRibbonItems	= static_cast<Index>( construction.residues.size() );
-			const Index	 countRibbonIndices = static_cast<Index>( construction.indices.size() );
+			offsetAtoms += countAtoms;
+			offsetBonds += countBonds;
 
-			// Move ribbon indices.
-			auto ribbonIndices = construction.indices;
-			for ( auto & ribbonIndex : ribbonIndices )
+			if ( not _geometries.ribbons.empty( uid ) )
 			{
-				ribbonIndex += static_cast<Index>( offsetRibbonItems );
-			}
+				const auto & construction		= _geometries.ribbons.construction( uid );
+				const Index	 countRibbonItems	= static_cast<Index>( construction.residues.size() );
+				const Index	 countRibbonIndices = static_cast<Index>( construction.indices.size() );
 
-			std::vector<PickingUID> residueIds( countRibbonItems );
-			std::vector<uint8_t>	residueTypes( countRibbonItems );
-			for ( Index i = 0; i < countRibbonItems; ++i )
-			{
-				const Index residueIndex = _geometries.ribbons.construction( systemData.uid ).residues[ i ].index;
-				residueIds[ i ]			 = systemData.residueUids[ residueIndex ];
-				residueTypes[ i ] = toUnderlying( systemData.data.residueSecondaryStructureTypes[ residueIndex ] );
-			}
+				// Move ribbon indices.
+				auto ribbonIndices = construction.indices;
+				for ( auto & ribbonIndex : ribbonIndices )
+				{
+					ribbonIndex += static_cast<Index>( offsetRibbonItems );
+				}
 
-			_context.setPipelineBuffer<Index>( "RibbonsIndex", ribbonIndices, offsetRibbonIndices );
-			_context.setPipelineBuffer<PickingUID>( "Residues.Ids", residueIds, offsetRibbonItems );
-			_context.setPipelineBuffer<uint8_t>( "Residues.Types", residueTypes, offsetRibbonItems );
-			_context.setPipelineBuffer<ModelIndex>(
-				"Residues.Models", std::vector<ModelIndex>( countRibbonItems, modelIndex ), offsetRibbonItems
-			);
+				std::vector<PickingUID> residueIds( countRibbonItems );
+				std::vector<uint8_t>	residueTypes( countRibbonItems );
+				for ( Index i = 0; i < countRibbonItems; ++i )
+				{
+					const Index residueIndex = _geometries.ribbons.construction( systemData.uid ).residues[ i ].index;
+					residueIds[ i ]			 = systemData.residueUids[ residueIndex ];
+					residueTypes[ i ] = toUnderlying( systemData.data.residueSecondaryStructureTypes[ residueIndex ] );
+				}
+
+				_context.setPipelineBuffer<Index>( "RibbonsIndex", ribbonIndices, offsetRibbonIndices );
+				_context.setPipelineBuffer<PickingUID>( "Residues.Ids", residueIds, offsetRibbonItems );
+				_context.setPipelineBuffer<uint8_t>( "Residues.Types", residueTypes, offsetRibbonItems );
+				_context.setPipelineBuffer<ModelIndex>(
+					"Residues.Models", std::vector<ModelIndex>( countRibbonItems, modelIndex ), offsetRibbonItems
+				);
+
+				offsetRibbonItems += countRibbonItems;
+				offsetRibbonIndices += countRibbonIndices;
+			}
 
 			// Cache.
 			_cacheSystems[ uid ] = Cache::System { systemData.transform, modelIndex };
 
-			offsetAtoms += countAtoms;
-			offsetBonds += countBonds;
-			offsetRibbonItems += countRibbonItems;
-			offsetRibbonIndices += countRibbonIndices;
 			modelIndex++;
 		}
 
@@ -494,16 +499,19 @@ namespace VTX::Renderer
 	{
 		_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", p_colors, _geometries.spheres.range( p_uid ).first );
 
-		const auto &			construction	 = _geometries.ribbons.construction( p_uid );
-		const Index				countRibbonItems = static_cast<Index>( construction.residues.size() );
-		std::vector<ColorIndex> ribbonColors( countRibbonItems );
-		for ( Index i = 0; i < countRibbonItems; ++i )
+		if ( not _geometries.ribbons.empty( p_uid ) )
 		{
-			ribbonColors[ i ] = p_colors[ construction.residues[ i ].ca ];
+			const auto &			construction	 = _geometries.ribbons.construction( p_uid );
+			const Index				countRibbonItems = static_cast<Index>( construction.residues.size() );
+			std::vector<ColorIndex> ribbonColors( countRibbonItems );
+			for ( Index i = 0; i < countRibbonItems; ++i )
+			{
+				ribbonColors[ i ] = p_colors[ construction.residues[ i ].ca ];
+			}
+			_context.setPipelineBuffer<ColorIndex>(
+				"Residues.Colors", ribbonColors, _geometries.ribbons.rangeItems( p_uid ).first
+			);
 		}
-		_context.setPipelineBuffer<ColorIndex>(
-			"Residues.Colors", ribbonColors, _geometries.ribbons.rangeItems( p_uid ).first
-		);
 
 		setNeedUpdate( true );
 	}
@@ -544,29 +552,33 @@ namespace VTX::Renderer
 			}
 		}
 
-		// Residues.
-		const auto &					 construction	  = _geometries.ribbons.construction( p_uid );
-		const Index						 countRibbonItems = static_cast<Index>( construction.residues.size() );
-		std::vector<RepresentationIndex> ribbonItems( countRibbonItems );
-		systemCache.representationResiduesRanges.clear();
-
-		for ( Index i = 0; i < countRibbonItems; ++i )
-		{
-			const RepresentationIndex representationIndex = atoms[ construction.residues[ i ].ca ];
-			ribbonItems[ i ]							  = atoms[ representationIndex ];
-			systemCache.representationResiduesRanges[ representationIndex ].addRange(
-				Geometry::IndexRange::fromFirstCount( ribbonItems[ i ], 1 )
-			);
-		}
-
-		assert( count == countAtoms );
-
 		_context.setPipelineBuffer<RepresentationIndex>(
 			"Atoms.Representations", atoms, _geometries.spheres.range( p_uid ).first
 		);
-		_context.setPipelineBuffer<RepresentationIndex>(
-			"Residues.Representations", ribbonItems, _geometries.ribbons.rangeItems( p_uid ).first
-		);
+
+		// Residues.
+		if ( not _geometries.ribbons.empty( p_uid ) )
+		{
+			const auto &					 construction	  = _geometries.ribbons.construction( p_uid );
+			const Index						 countRibbonItems = static_cast<Index>( construction.residues.size() );
+			std::vector<RepresentationIndex> ribbonItems( countRibbonItems );
+			systemCache.representationResiduesRanges.clear();
+
+			for ( Index i = 0; i < countRibbonItems; ++i )
+			{
+				const RepresentationIndex representationIndex = atoms[ construction.residues[ i ].ca ];
+				ribbonItems[ i ]							  = atoms[ representationIndex ];
+				systemCache.representationResiduesRanges[ representationIndex ].addRange(
+					Geometry::IndexRange::fromFirstCount( ribbonItems[ i ], 1 )
+				);
+			}
+
+			assert( count == countAtoms );
+
+			_context.setPipelineBuffer<RepresentationIndex>(
+				"Residues.Representations", ribbonItems, _geometries.ribbons.rangeItems( p_uid ).first
+			);
+		}
 
 		_needBuildDrawRanges = true;
 		setNeedUpdate( true );
