@@ -19,8 +19,8 @@ class VTXRendererBenchRecipe(ConanFile):
         self.requires("vtx_renderer/1.0")
         self.requires("vtx_core/1.0")
         self.requires("vtx_io/1.0")
-        self.requires("sdl/3.2.20")
-        self.requires("imgui/1.92.4")
+        self.requires("sdl/3.4.0")
+        self.requires("imgui/1.92.5")
     
     def generate(self):
         tc = CMakeToolchain(self)
