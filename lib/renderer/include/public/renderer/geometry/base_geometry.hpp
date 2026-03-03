@@ -66,13 +66,63 @@ namespace VTX::Renderer::Geometry
 		// Desc::DrawCall::Ranges drawRanges;
 		uint32_t count = 0;
 
+		[[nodiscard]] std::vector<Desc::DrawIndirectCommand> toDrawIndirectCommands()
+		{
+			IndexRangeList						   allRanges = _buildDrawRanges();
+			std::vector<Desc::DrawIndirectCommand> commands;
+
+			for ( auto it = allRanges.rangeBegin(); it != allRanges.rangeEnd(); ++it )
+			{
+				if ( it->isEmpty() )
+				{
+					assert( false );
+				}
+				commands.emplace_back( Desc::DrawIndirectCommand { it->getCount(), 1, it->getFirst(), 0 } );
+			}
+
+			count = static_cast<uint32_t>( commands.size() );
+
+			return commands;
+		}
+
+		[[nodiscard]] std::vector<Desc::DrawIndexedIndirectCommand> toDrawIndexedIndirectCommands()
+		{
+			IndexRangeList								  allRanges = _buildDrawRanges();
+			std::vector<Desc::DrawIndexedIndirectCommand> commands;
+
+			for ( auto it = allRanges.rangeBegin(); it != allRanges.rangeEnd(); ++it )
+			{
+				if ( it->isEmpty() )
+				{
+					assert( false );
+				}
+				commands.emplace_back( Desc::DrawIndexedIndirectCommand { it->getCount(), 1, it->getFirst(), 0, 0 } );
+			}
+
+			count = static_cast<uint32_t>( commands.size() );
+
+			return commands;
+		}
+
+		IndexRange range( const SystemUID p_uid ) const
+		{
+			assert( _ranges.contains( p_uid ) );
+
+			return _ranges[ p_uid ];
+		}
+
+	  protected:
+		/**
+		 * @brief Range to draw per system (global indexes).
+		 */
+		mutable MapUIDRange _ranges;
+
+	  private:
 		/**
 		 * @brief Build GPU draw ranges.
 		 */
-		void buildDrawRanges()
+		[[nodiscard]] IndexRangeList _buildDrawRanges()
 		{
-			count = 0;
-
 			IndexRangeList allRanges;
 			for ( const auto & [ uid, range ] : _ranges )
 			{
@@ -104,29 +154,10 @@ namespace VTX::Renderer::Geometry
 				allRanges.mergeInPlace( rangeList );
 			}
 
-			// TODO: push to GPU.
-			/*
-			allRanges.toStdVectorsFirstCount(
-				IndexRangeList::VectorParam<uint32_t> { drawRanges.firsts, sizeof( Index ) },
-					IndexRangeList::VectorParam<uint32_t> { drawRanges.counts }
-			);
-			*/
+			// VTX_DEBUG( "Built draw ranges: {}", allRanges.rangeCount() );
 
-			VTX_DEBUG( "Built draw ranges: {}", allRanges.rangeCount() );
+			return allRanges;
 		}
-
-		IndexRange range( const SystemUID p_uid ) const
-		{
-			assert( _ranges.contains( p_uid ) );
-
-			return _ranges[ p_uid ];
-		}
-
-	  protected:
-		/**
-		 * @brief Range to draw per system (global indexes).
-		 */
-		mutable MapUIDRange _ranges;
 	};
 } // namespace VTX::Renderer::Geometry
 

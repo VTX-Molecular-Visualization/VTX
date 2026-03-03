@@ -277,31 +277,6 @@ namespace VTX::Util::Math
 		T getLast() const { return _ranges.crbegin()->last; }
 
 		/**
-		 * @brief  Convert to vectors of starts and counts.
-		 */
-		template<typename O>
-		struct VectorParam
-		{
-			std::vector<O> & output;
-			size_t			 factor = 1;
-		};
-
-		template<typename T1, typename T2>
-		void toStdVectorsFirstCount( VectorParam<T1> p_firsts, VectorParam<T2> p_counts ) const
-		{
-			p_firsts.output.resize( _ranges.size() );
-			p_counts.output.resize( _ranges.size() );
-
-			size_t i = 0;
-			for ( const auto & r : _ranges )
-			{
-				p_firsts.output[ i ] = static_cast<T1>( r.getFirst() * p_firsts.factor );
-				p_counts.output[ i ] = static_cast<T2>( r.getCount() * p_counts.factor );
-				++i;
-			}
-		}
-
-		/**
 		 * @brief Equality operators.
 		 */
 		friend bool operator==( const RangeList & a, const RangeList & b )

@@ -98,7 +98,7 @@ namespace VTX::Renderer
 		if ( _needBuildDrawRanges )
 		{
 			_refreshDataRepresentations();
-			_geometries.buildDrawRanges();
+			_geometries.buildDrawRanges( _context );
 			_needBuildDrawRanges = false;
 		}
 

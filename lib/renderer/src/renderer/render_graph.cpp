@@ -318,7 +318,7 @@ namespace VTX::Renderer
 		g.pipelineBuffer( "Voxels.Mins" ).pipelineBuffer( "Voxels.Maxs" );
 
 		// Geometries.
-		g.geometry( "Spheres", "Atoms", "AtomsIndex", "SphereIndirect" );
+		g.geometry( "Spheres", "Atoms", std::nullopt, "SphereIndirect" );
 		g.geometry( "Cylinders", "Atoms", "BondsIndex", "CylinderIndirect" );
 		g.geometry( "Ribbons", "Residues", "RibbonsIndex", "RibbonIndirect" );
 		g.geometry( "Grid", "Voxels", std::nullopt, "GridIndirect" );

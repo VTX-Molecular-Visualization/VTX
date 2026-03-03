@@ -11,7 +11,7 @@ namespace VTX::Renderer::Geometry
 	  public:
 		void construct( const SystemData & p_data )
 		{
-			assert( not _ranges.contains( p_data.uid ) );
+			// assert( not _ranges.contains( p_data.uid ) );
 
 			addRange( p_data.uid, p_data.data.getBondCount() * 2 );
 		}
