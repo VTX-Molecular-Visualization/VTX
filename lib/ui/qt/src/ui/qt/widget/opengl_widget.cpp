@@ -20,7 +20,7 @@ namespace VTX::UI::QT::Widget
 
 		// Create surface.
 		QSurfaceFormat format;
-		format.setVersion( 4, 6 );
+		format.setVersion( 4, 5 );
 		format.setProfile( QSurfaceFormat::CoreProfile );
 		format.setRenderableType( QSurfaceFormat::OpenGL );
 		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );

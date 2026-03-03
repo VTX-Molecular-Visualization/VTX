@@ -65,7 +65,7 @@ namespace VTX::Renderer
 
 #pragma endregion
 
-#pragma region Build & render
+#pragma region Renderer
 
 	void Renderer::resize( const size_t p_width, const size_t p_height )
 	{
@@ -110,6 +110,45 @@ namespace VTX::Renderer
 		}
 
 		return false;
+	}
+
+	std::vector<std::byte> Renderer::snapshot()
+	{
+		Util::ScopedChrono timer( "[RENDERER] snapshot" );
+
+		_context.setRenderTarget( Desc::E_RENDER_TARGET::OFFSCREEN );
+		_render( 0.f, 0.f );
+
+		std::vector<std::byte> data = _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
+
+		_context.setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
+		_render( 0.f, 0.f );
+
+		return data;
+	}
+
+	Vec2i Renderer::getPickedIds( const size_t p_x, const size_t p_y ) const
+	{
+		std::vector<std::byte> data = _context.getTextureData( "Picking", {}, p_x, _height - p_y );
+
+		assert( data.size() == sizeof( Vec2i ) );
+
+		Vec2i v;
+		std::memcpy( &v, data.data(), sizeof( Vec2i ) );
+
+		return v;
+	}
+
+	const StructInfos & Renderer::getInfos( const bool p_refresh )
+	{
+		if ( not p_refresh )
+		{
+			return _infos;
+		}
+
+		_context.fillInfos( _infos );
+
+		return _infos;
 	}
 
 #pragma endregion
@@ -306,19 +345,6 @@ namespace VTX::Renderer
 
 #pragma region Geometries
 
-	void Renderer::setVoxels( const std::vector<Vec3f> & p_mins, const std::vector<Vec3f> & p_maxs )
-	{
-		assert( p_mins.size() == p_maxs.size() );
-
-		_context.setPipelineBuffer<Vec3f>( "Voxels.Mins", p_mins );
-		_context.setPipelineBuffer<Vec3f>( "Voxels.Maxs", p_maxs );
-
-		//_geometries.voxels.drawRanges.firsts = { 0 };
-		//_geometries.voxels.drawRanges.counts = { uint( p_mins.size() ) };
-
-		setNeedUpdate( true );
-	}
-
 	void Renderer::setSystems( const std::vector<SystemData> & p_systems )
 	{
 		Util::ScopedChrono timer( "[RENDERER] setSystems" );
@@ -368,15 +394,8 @@ namespace VTX::Renderer
 			const Index		countBonds = systemData.data.getBondCount() * 2;
 			const SystemUID uid		   = systemData.uid;
 
-			// Move bonds.
-			auto bonds = systemData.data.bondPairAtomIndexes;
-			for ( auto & bondIndex : bonds )
-			{
-				bondIndex += static_cast<Index>( offsetAtoms );
-			}
-
 			// Upload data.
-			_context.setPipelineBuffer<Index>( "BondsIndex", bonds, offsetBonds );
+			_context.setPipelineBuffer<Index>( "BondsIndex", systemData.data.bondPairAtomIndexes, offsetBonds );
 			_context.setPipelineBuffer<float>( "Atoms.Radii", systemData.radii, offsetAtoms );
 			_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", systemData.atomUids, offsetAtoms );
 			_context.setPipelineBuffer<ModelIndex>(
@@ -392,13 +411,6 @@ namespace VTX::Renderer
 				const Index	 countRibbonItems	= static_cast<Index>( construction.residues.size() );
 				const Index	 countRibbonIndices = static_cast<Index>( construction.indices.size() );
 
-				// Move ribbon indices.
-				auto ribbonIndices = construction.indices;
-				for ( auto & ribbonIndex : ribbonIndices )
-				{
-					ribbonIndex += static_cast<Index>( offsetRibbonItems );
-				}
-
 				std::vector<PickingUID> residueIds( countRibbonItems );
 				std::vector<uint8_t>	residueTypes( countRibbonItems );
 				for ( Index i = 0; i < countRibbonItems; ++i )
@@ -408,7 +420,7 @@ namespace VTX::Renderer
 					residueTypes[ i ] = toUnderlying( systemData.data.residueSecondaryStructureTypes[ residueIndex ] );
 				}
 
-				_context.setPipelineBuffer<Index>( "RibbonsIndex", ribbonIndices, offsetRibbonIndices );
+				_context.setPipelineBuffer<Index>( "RibbonsIndex", construction.indices, offsetRibbonIndices );
 				_context.setPipelineBuffer<PickingUID>( "Residues.Ids", residueIds, offsetRibbonItems );
 				_context.setPipelineBuffer<uint8_t>( "Residues.Types", residueTypes, offsetRibbonItems );
 				_context.setPipelineBuffer<ModelIndex>(
@@ -655,7 +667,22 @@ namespace VTX::Renderer
 		setNeedUpdate( true );
 	}
 
+	void Renderer::setVoxels( const std::vector<Vec3f> & p_mins, const std::vector<Vec3f> & p_maxs )
+	{
+		assert( p_mins.size() == p_maxs.size() );
+
+		_context.setPipelineBuffer<Vec3f>( "Voxels.Mins", p_mins );
+		_context.setPipelineBuffer<Vec3f>( "Voxels.Maxs", p_maxs );
+
+		//_geometries.voxels.drawRanges.firsts = { 0 };
+		//_geometries.voxels.drawRanges.counts = { uint( p_mins.size() ) };
+
+		setNeedUpdate( true );
+	}
+
 #pragma endregion
+
+#pragma region Internals
 
 	void Renderer::_refreshDataModels()
 	{
@@ -724,45 +751,6 @@ namespace VTX::Renderer
 		}
 	}
 
-	std::vector<std::byte> Renderer::snapshot()
-	{
-		Util::ScopedChrono timer( "[RENDERER] snapshot" );
-
-		_context.setRenderTarget( Desc::E_RENDER_TARGET::OFFSCREEN );
-		_render( 0.f, 0.f );
-
-		std::vector<std::byte> data = _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
-
-		_context.setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
-		_render( 0.f, 0.f );
-
-		return data;
-	}
-
-	Vec2i Renderer::getPickedIds( const size_t p_x, const size_t p_y ) const
-	{
-		std::vector<std::byte> data = _context.getTextureData( "Picking", {}, p_x, _height - p_y );
-
-		assert( data.size() == sizeof( Vec2i ) );
-
-		Vec2i v;
-		std::memcpy( &v, data.data(), sizeof( Vec2i ) );
-
-		return v;
-	}
-
-	const StructInfos & Renderer::getInfos( const bool p_refresh )
-	{
-		if ( not p_refresh )
-		{
-			return _infos;
-		}
-
-		_context.fillInfos( _infos );
-
-		return _infos;
-	}
-
 	bool Renderer::_refreshGraph( const GraphicsConfig & p_config )
 	{
 		Util::ScopedChrono timer( "[RENDERER] _refreshGraph" );
@@ -783,4 +771,6 @@ namespace VTX::Renderer
 		_queue = _graph.build();
 		return true;
 	}
+
+#pragma endregion
 } // namespace VTX::Renderer
