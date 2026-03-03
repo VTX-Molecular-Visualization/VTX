@@ -362,17 +362,16 @@ namespace VTX::Renderer
 
 		// Reserve data.
 		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", totalAtoms );
-		_context.setPipelineBuffer<Index>( "AtomsIndex", totalAtoms );
-		_context.setPipelineBuffer<Index>( "BondsIndex", totalBonds );
 		_context.setPipelineBuffer<float>( "Atoms.Radii", totalAtoms );
 		_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", totalAtoms );
 		_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", totalAtoms );
 		_context.setPipelineBuffer<RepresentationIndex>( "Atoms.Representations", totalAtoms );
 		_context.setPipelineBuffer<ModelIndex>( "Atoms.Models", totalAtoms );
 		_context.setPipelineBuffer<Flag>( "Atoms.Flags", totalAtoms );
+		//_context.setPipelineBuffer<Index>( "Index.Atoms", totalAtoms );
+		_context.setPipelineBuffer<Index>( "Index.Bonds", totalBonds );
 
 		_context.setPipelineBuffer<Vec4f>( "Residues.Positions", totalRibbonItems );
-		_context.setPipelineBuffer<Index>( "RibbonsIndex", totalRibbonIndices );
 		_context.setPipelineBuffer<Vec3f>( "Residues.Directions", totalRibbonItems );
 		_context.setPipelineBuffer<uint8_t>( "Residues.Types", totalRibbonItems );
 		_context.setPipelineBuffer<ColorIndex>( "Residues.Colors", totalRibbonItems );
@@ -380,6 +379,7 @@ namespace VTX::Renderer
 		_context.setPipelineBuffer<Flag>( "Residues.Flags", totalRibbonItems );
 		_context.setPipelineBuffer<ModelIndex>( "Residues.Models", totalRibbonItems );
 		_context.setPipelineBuffer<RepresentationIndex>( "Residues.Representations", totalRibbonItems );
+		_context.setPipelineBuffer<Index>( "Index.Ribbons", totalRibbonIndices );
 
 		_cacheSystems.clear();
 
@@ -395,7 +395,7 @@ namespace VTX::Renderer
 			const SystemUID uid		   = systemData.uid;
 
 			// Upload data.
-			_context.setPipelineBuffer<Index>( "BondsIndex", systemData.data.bondPairAtomIndexes, offsetBonds );
+			_context.setPipelineBuffer<Index>( "Index.Bonds", systemData.data.bondPairAtomIndexes, offsetBonds );
 			_context.setPipelineBuffer<float>( "Atoms.Radii", systemData.radii, offsetAtoms );
 			_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", systemData.atomUids, offsetAtoms );
 			_context.setPipelineBuffer<ModelIndex>(
@@ -420,7 +420,7 @@ namespace VTX::Renderer
 					residueTypes[ i ] = toUnderlying( systemData.data.residueSecondaryStructureTypes[ residueIndex ] );
 				}
 
-				_context.setPipelineBuffer<Index>( "RibbonsIndex", construction.indices, offsetRibbonIndices );
+				_context.setPipelineBuffer<Index>( "Index.Ribbons", construction.indices, offsetRibbonIndices );
 				_context.setPipelineBuffer<PickingUID>( "Residues.Ids", residueIds, offsetRibbonItems );
 				_context.setPipelineBuffer<uint8_t>( "Residues.Types", residueTypes, offsetRibbonItems );
 				_context.setPipelineBuffer<ModelIndex>(
@@ -767,7 +767,7 @@ namespace VTX::Renderer
 			return false;
 		}
 
-		_graph.createDefaultPipeline( config, _geometries );
+		_graph.createDefaultPipeline( config, _layouts, _geometries );
 		_queue = _graph.build();
 		return true;
 	}

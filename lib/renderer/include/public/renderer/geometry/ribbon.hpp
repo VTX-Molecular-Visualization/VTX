@@ -13,6 +13,13 @@ namespace VTX::Renderer::Geometry
 	class Ribbon : public BaseGeometry
 	{
 	  public:
+		Ribbon()
+		{
+			vertexLayout   = "Residues";
+			indexBuffer	   = "Index.Ribbons";
+			indirectBuffer = "Indirect.Ribbons";
+		}
+
 		struct Construction
 		{
 			bool isEmpty = false;

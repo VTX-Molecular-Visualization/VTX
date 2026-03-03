@@ -29,7 +29,7 @@ namespace VTX::Renderer::Geometry
 	/**
 	 * @brief Base geometry struct to handle and build draw ranges.
 	 */
-	class BaseGeometry
+	class BaseGeometry : public Desc::Geometry
 	{
 	  public:
 		/**
@@ -73,10 +73,6 @@ namespace VTX::Renderer::Geometry
 
 			for ( auto it = allRanges.rangeBegin(); it != allRanges.rangeEnd(); ++it )
 			{
-				if ( it->isEmpty() )
-				{
-					assert( false );
-				}
 				commands.emplace_back( Desc::DrawIndirectCommand { it->getCount(), 1, it->getFirst(), 0 } );
 			}
 
@@ -92,10 +88,6 @@ namespace VTX::Renderer::Geometry
 
 			for ( auto it = allRanges.rangeBegin(); it != allRanges.rangeEnd(); ++it )
 			{
-				if ( it->isEmpty() )
-				{
-					assert( false );
-				}
 				commands.emplace_back( Desc::DrawIndexedIndirectCommand { it->getCount(), 1, it->getFirst(), 0, 0 } );
 			}
 

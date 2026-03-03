@@ -896,7 +896,7 @@ namespace VTX::Renderer::Context::Backend
 		for ( const auto & a : layout.attributes )
 		{
 			const GLAttrib	   ga		 = toGLAttrib( a.type );
-			const Key		   bufferKey = p_geo.vertexLayout + "." + a.name;
+			const Key		   bufferKey = a.name;
 			const GL::Buffer & vbo		 = _pipelineBuffers.get( bufferKey );
 
 			const GLsizei stride = GLsizei( ga.columns * ga.components * ga.bytesPerComp );
@@ -923,7 +923,7 @@ namespace VTX::Renderer::Context::Backend
 
 		const Key	 quadLayoutKey = _QUAD;
 		VertexLayout quadLayout;
-		quadLayout.attributes = { VertexAttribute { "Position", E_TYPE::VEC2F } };
+		quadLayout.attributes = { VertexAttribute { _QUAD_VBO, E_TYPE::VEC2F } };
 
 		const Key	   quadVboKey = _QUAD_VBO;
 		BufferPipeline quadVboDesc { quadVboKey, E_PIPELINE_BUFFER_KIND::VERTEX, E_UPDATE_FREQUENCY::STATIC };

@@ -7,6 +7,7 @@
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/geometry/geometries.hpp"
 #include "renderer/graphics_config.hpp"
+#include "renderer/layout/layouts.hpp"
 #include "renderer/render_graph.hpp"
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
@@ -137,6 +138,11 @@ namespace VTX::Renderer
 		 * @brief Render queue built from the _graph.
 		 */
 		Desc::RenderQueue _queue;
+
+		/**
+		 * @brief Vertex layouts.
+		 */
+		Layouts _layouts;
 
 		/**
 		 * @brief Geometries.

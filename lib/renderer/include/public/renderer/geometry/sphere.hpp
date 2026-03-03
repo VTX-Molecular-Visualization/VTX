@@ -9,6 +9,12 @@ namespace VTX::Renderer::Geometry
 	class Sphere : public BaseGeometry
 	{
 	  public:
+		Sphere()
+		{
+			vertexLayout   = "Atoms";
+			indirectBuffer = "Indirect.Spheres";
+		}
+
 		void construct( const SystemData & p_data )
 		{
 			if ( _ranges.contains( p_data.uid ) )

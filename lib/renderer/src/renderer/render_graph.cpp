@@ -187,7 +187,11 @@ namespace VTX::Renderer
 		_passes.clear();
 	}
 
-	void RenderGraph::createDefaultPipeline( const PipelineConfig & p_config, const Geometries & p_geometries )
+	void RenderGraph::createDefaultPipeline(
+		const PipelineConfig & p_config,
+		const Layouts &		   p_layouts,
+		const Geometries &	   p_geometries
+	)
 	{
 		using namespace Desc;
 
@@ -253,75 +257,16 @@ namespace VTX::Renderer
 			  makeUniform( "SESMaxProbeNeighborNb", uint32_t( 0 ) ) }
 		);
 
-		// Vertex streams and data buffers.
-		g.vertexLayout(
-			"Atoms",
-			{
-				{ "Positions", E_TYPE::VEC3F },
-				{ "Colors", E_TYPE::UBYTE },
-				{ "Radii", E_TYPE::FLOAT },
-				{ "Ids", E_TYPE::UINT },
-				{ "Flags", E_TYPE::UBYTE },
-				{ "Models", E_TYPE::USHORT },
-				{ "Representations", E_TYPE::UBYTE },
-			}
-		);
-
-		g.pipelineBuffer( "Atoms.Positions" )
-			.pipelineBuffer( "Atoms.Colors" )
-			.pipelineBuffer( "Atoms.Radii" )
-			.pipelineBuffer( "Atoms.Ids" )
-			.pipelineBuffer( "Atoms.Flags" )
-			.pipelineBuffer( "Atoms.Models" )
-			.pipelineBuffer( "Atoms.Representations" );
-
-		g.vertexLayout(
-			"Residues",
-			{
-				{ "Positions", E_TYPE::VEC4F },
-				{ "Directions", E_TYPE::VEC3F },
-				{ "Types", E_TYPE::UBYTE },
-				{ "Colors", E_TYPE::UBYTE },
-				{ "Ids", E_TYPE::UINT },
-				{ "Flags", E_TYPE::UBYTE },
-				{ "Models", E_TYPE::USHORT },
-				{ "Representations", E_TYPE::UBYTE },
-			}
-		);
-
-		g.pipelineBuffer( "Residues.Positions" )
-			.pipelineBuffer( "Residues.Directions" )
-			.pipelineBuffer( "Residues.Types" )
-			.pipelineBuffer( "Residues.Colors" )
-			.pipelineBuffer( "Residues.Ids" )
-			.pipelineBuffer( "Residues.Flags" )
-			.pipelineBuffer( "Residues.Models" )
-			.pipelineBuffer( "Residues.Representations" );
-
-		g.pipelineBuffer( "AtomsIndex", E_PIPELINE_BUFFER_KIND::INDEX )
-			.pipelineBuffer( "BondsIndex", E_PIPELINE_BUFFER_KIND::INDEX )
-			.pipelineBuffer( "RibbonsIndex", E_PIPELINE_BUFFER_KIND::INDEX );
-
-		g.pipelineBuffer( "SphereIndirect", E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND )
-			.pipelineBuffer( "CylinderIndirect", E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND )
-			.pipelineBuffer( "RibbonIndirect", E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND )
-			.pipelineBuffer( "GridIndirect", E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND );
-
-		g.vertexLayout(
-			"Voxels",
-			{
-				{ "Mins", E_TYPE::VEC3F },
-				{ "Maxs", E_TYPE::VEC3F },
-			}
-		);
-
-		g.pipelineBuffer( "Voxels.Mins" ).pipelineBuffer( "Voxels.Maxs" );
+		// Vertex streams.
+		g.vertexLayout( "Atoms", p_layouts.atoms );
+		g.vertexLayout( "Residues", p_layouts.residues );
+		g.vertexLayout( "Voxels", p_layouts.voxels );
 
 		// Geometries.
-		g.geometry( "Spheres", "Atoms", std::nullopt, "SphereIndirect" );
-		g.geometry( "Cylinders", "Atoms", "BondsIndex", "CylinderIndirect" );
-		g.geometry( "Ribbons", "Residues", "RibbonsIndex", "RibbonIndirect" );
-		g.geometry( "Grid", "Voxels", std::nullopt, "GridIndirect" );
+		g.geometry( "Spheres", p_geometries.spheres );
+		g.geometry( "Cylinders", p_geometries.cylinders );
+		g.geometry( "Ribbons", p_geometries.ribbons );
+		g.geometry( "Grid", p_geometries.grid );
 
 		// Textures.
 		g.texture( "Geometry", E_FORMAT::RGBA32UI )
@@ -412,7 +357,7 @@ namespace VTX::Renderer
 			.endProgram()
 			.program( "Voxel" )
 			.shadersDir( "voxel" )
-			.draw( "Grid", E_PRIMITIVE::POINTS, reinterpret_cast<uintptr_t>( &p_geometries.voxels.count ) )
+			.draw( "Grid", E_PRIMITIVE::POINTS, reinterpret_cast<uintptr_t>( &p_geometries.grid.count ) )
 			.endProgram()
 			.endPass();
 

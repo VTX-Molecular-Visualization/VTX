@@ -4,19 +4,20 @@
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/geometry/cylinder.hpp"
+#include "renderer/geometry/grid.hpp"
 #include "renderer/geometry/ribbon.hpp"
 #include "renderer/geometry/ses.hpp"
 #include "renderer/geometry/sphere.hpp"
-#include "renderer/geometry/voxel.hpp"
 
 namespace VTX::Renderer
 {
-	struct Geometries
+	class Geometries
 	{
+	  public:
 		Geometry::Sphere   spheres;
 		Geometry::Cylinder cylinders;
 		Geometry::Ribbon   ribbons;
-		Geometry::Voxel	   voxels;
+		Geometry::Grid	   grid;
 		//  Geometry::SES	   ses;
 
 		void construct( const SystemData & p_data )
@@ -28,12 +29,13 @@ namespace VTX::Renderer
 
 		void buildDrawRanges( Context::ContextWrapper & p_context )
 		{
-			p_context.setPipelineBuffer( "SphereIndirect", push( spheres.toDrawIndirectCommands() ) );
-			p_context.setPipelineBuffer( "CylinderIndirect", push( cylinders.toDrawIndexedIndirectCommands() ) );
-			p_context.setPipelineBuffer( "RibbonIndirect", push( ribbons.toDrawIndirectCommands() ) );
+			p_context.setPipelineBuffer( "Indirect.Spheres", _toBuffer( spheres.toDrawIndirectCommands() ) );
+			p_context.setPipelineBuffer( "Indirect.Cylinders", _toBuffer( cylinders.toDrawIndexedIndirectCommands() ) );
+			// p_context.setPipelineBuffer( "Indirect.Ribbons", _toBuffer( ribbons.toDrawIndirectCommands() ) );
 		}
 
-		[[nodiscard]] BinaryBuffer430 push( const std::vector<Desc::DrawIndirectCommand> & p_draw )
+	  private:
+		[[nodiscard]] BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndirectCommand> & p_draw )
 		{
 			BinaryBuffer430 buffer;
 
@@ -49,7 +51,7 @@ namespace VTX::Renderer
 			return buffer;
 		}
 
-		[[nodiscard]] BinaryBuffer430 push( const std::vector<Desc::DrawIndexedIndirectCommand> & p_draw )
+		[[nodiscard]] BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndexedIndirectCommand> & p_draw )
 		{
 			BinaryBuffer430 buffer;
 

@@ -48,6 +48,20 @@ namespace VTX::Renderer
 		return *this;
 	}
 
+	GraphBuilder & GraphBuilder::vertexLayout( const Desc::Key & p_name, const Desc::VertexLayout & p_layout )
+	{
+		for ( auto & attr : p_layout.attributes )
+		{
+			if ( not resources.pipelineBuffers.contains( attr.name ) )
+			{
+				pipelineBuffer( attr.name, Desc::E_PIPELINE_BUFFER_KIND::VERTEX, Desc::E_UPDATE_FREQUENCY::STATIC );
+			}
+		}
+
+		resources.vertexStreams[ p_name ] = p_layout;
+		return *this;
+	}
+
 	GraphBuilder & GraphBuilder::shaderBuffer(
 		const Desc::Key &								p_name,
 		const Desc::E_SHADER_BUFFER_KIND				p_role,
@@ -85,19 +99,49 @@ namespace VTX::Renderer
 	}
 
 	GraphBuilder & GraphBuilder::geometry(
-		const Desc::Key & p_name,
-		const Desc::Key & p_vertexLayout,
-		// const std::unordered_map<Key, Key> & p_overrides,
+		const Desc::Key &			   p_name,
+		const Desc::Key &			   p_vertexLayout,
 		const std::optional<Desc::Key> p_indexBuffer,
 		const std::optional<Desc::Key> p_indirectBuffer
 	)
 	{
+		if ( p_indexBuffer && not resources.pipelineBuffers.contains( *p_indexBuffer ) )
+		{
+			pipelineBuffer( *p_indexBuffer, Desc::E_PIPELINE_BUFFER_KIND::INDEX, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
+		}
+		if ( p_indirectBuffer && not resources.pipelineBuffers.contains( *p_indirectBuffer ) )
+		{
+			pipelineBuffer(
+				*p_indirectBuffer, Desc::E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND, Desc::E_UPDATE_FREQUENCY::DYNAMIC
+			);
+		}
+
 		Desc::Geometry geom;
-		geom.vertexLayout	= p_vertexLayout;
-		geom.indexBuffer	= p_indexBuffer;
-		geom.indirectBuffer = p_indirectBuffer;
-		// geom.overrides	 = p_overrides;
+		geom.vertexLayout			   = p_vertexLayout;
+		geom.indexBuffer			   = p_indexBuffer;
+		geom.indirectBuffer			   = p_indirectBuffer;
 		resources.geometries[ p_name ] = std::move( geom );
+		return *this;
+	}
+
+	GraphBuilder & GraphBuilder::geometry( const Desc::Key & p_name, const Desc::Geometry & p_geometry )
+	{
+		if ( p_geometry.indexBuffer && not resources.pipelineBuffers.contains( *p_geometry.indexBuffer ) )
+		{
+			pipelineBuffer(
+				*p_geometry.indexBuffer, Desc::E_PIPELINE_BUFFER_KIND::INDEX, Desc::E_UPDATE_FREQUENCY::DYNAMIC
+			);
+		}
+		if ( p_geometry.indirectBuffer && not resources.pipelineBuffers.contains( *p_geometry.indirectBuffer ) )
+		{
+			pipelineBuffer(
+				*p_geometry.indirectBuffer,
+				Desc::E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND,
+				Desc::E_UPDATE_FREQUENCY::DYNAMIC
+			);
+		}
+
+		resources.geometries[ p_name ] = p_geometry;
 		return *this;
 	}
 

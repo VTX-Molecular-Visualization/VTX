@@ -6,9 +6,16 @@
 namespace VTX::Renderer::Geometry
 {
 
-	struct Cylinder : public BaseGeometry
+	class Cylinder : public BaseGeometry
 	{
 	  public:
+		Cylinder()
+		{
+			vertexLayout   = "Atoms";
+			indexBuffer	   = "Index.Bonds";
+			indirectBuffer = "Indirect.Cylinders";
+		}
+
 		void construct( const SystemData & p_data )
 		{
 			if ( _ranges.contains( p_data.uid ) )

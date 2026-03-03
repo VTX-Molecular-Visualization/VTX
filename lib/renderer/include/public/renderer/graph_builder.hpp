@@ -183,6 +183,11 @@ namespace VTX::Renderer
 		GraphBuilder & vertexLayout( const Desc::Key &, const std::initializer_list<Desc::VertexAttribute> );
 
 		/**
+		 * @brief vertexStream().
+		 */
+		GraphBuilder & vertexLayout( const Desc::Key &, const Desc::VertexLayout & );
+
+		/**
 		 * @brief uniformBuffer().
 		 */
 		GraphBuilder & shaderBuffer(
@@ -199,20 +204,24 @@ namespace VTX::Renderer
 		 * @brief dataBuffer().
 		 */
 		GraphBuilder & pipelineBuffer(
-			const Desc::Key &				   p_name,
-			const Desc::E_PIPELINE_BUFFER_KIND p_kind	   = Desc::E_PIPELINE_BUFFER_KIND::VERTEX,
-			const Desc::E_UPDATE_FREQUENCY	   p_frequency = Desc::E_UPDATE_FREQUENCY::STATIC
+			const Desc::Key &,
+			const Desc::E_PIPELINE_BUFFER_KIND = Desc::E_PIPELINE_BUFFER_KIND::VERTEX,
+			const Desc::E_UPDATE_FREQUENCY	   = Desc::E_UPDATE_FREQUENCY::STATIC
 		);
 
 		/**
 		 * @brief geometry().
 		 */
+		GraphBuilder & geometry( const Desc::Key &, const Desc::Geometry & );
+
+		/**
+		 * @brief geometry().
+		 */
 		GraphBuilder & geometry(
-			const Desc::Key & p_name,
-			const Desc::Key & p_vertexStream,
-			// const std::unordered_map<Key, Key> & p_overrides = {},
-			const std::optional<Desc::Key> = std::nullopt,
-			const std::optional<Desc::Key> = std::nullopt
+			const Desc::Key &,
+			const Desc::Key &,
+			const std::optional<Desc::Key> = {},
+			const std::optional<Desc::Key> = {}
 		);
 
 		/**

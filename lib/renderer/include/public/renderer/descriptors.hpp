@@ -120,6 +120,7 @@ namespace VTX::Renderer::Desc
 
 	/**
 	 * @brief All data buffer kinds.
+	 * // TODO: no more needed, keep for semantic?
 	 */
 	enum struct E_PIPELINE_BUFFER_KIND : uint32_t
 	{
@@ -307,9 +308,8 @@ namespace VTX::Renderer::Desc
 	struct Geometry
 	{
 		Key				   vertexLayout;
-		std::optional<Key> indexBuffer;
-		std::optional<Key> indirectBuffer;
-		// std::unordered_map<Key, Key> overrides; // attributeName -> bufferKey
+		std::optional<Key> indexBuffer	  = {};
+		std::optional<Key> indirectBuffer = {};
 	};
 
 	/**
