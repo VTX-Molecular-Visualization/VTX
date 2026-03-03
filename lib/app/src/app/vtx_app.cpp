@@ -120,14 +120,14 @@ namespace VTX::App
 		{
 			try
 			{
-				renderer.setOpenGL45( Filesystem::getShadersDir() );
+				renderer.setOpenGL( Filesystem::getShadersDir() );
 			}
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Failed to build renderer: {}", p_e.what() );
 				renderer.setDefault();
 				HUB().trigger<Events::ApplicationError>(
-					"Unable to create OpenGL 4.5 context. Update your drivers and check your hardware "
+					"Unable to create OpenGL 4.6 context. Update your drivers and check your hardware "
 					"compatibility."
 				);
 			}

@@ -44,11 +44,11 @@ namespace VTX::Renderer
 		}
 	}
 
-	void Renderer::setOpenGL45( const FilePath & p_shaderIncludePath )
+	void Renderer::setOpenGL( const FilePath & p_shaderIncludePath )
 	{
 		Util::ScopedChrono timer( "[RENDERER] setOpenGL45" );
 
-		_context.setOpenGL45( _width, _height, p_shaderIncludePath );
+		_context.setOpenGL( _width, _height, p_shaderIncludePath );
 		try
 		{
 			_context.build( _queue, _graph.getResources() );

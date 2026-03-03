@@ -1,5 +1,5 @@
-#include "renderer/context/executor/opengl45.hpp"
-#include "renderer/context/gl/debug.hpp"
+#include "renderer/context/executor/opengl.hpp"
+#include "renderer/context/backend/gl/debug.hpp"
 
 namespace
 {
@@ -27,9 +27,9 @@ namespace
 namespace VTX::Renderer::Context::Executor
 {
 
-	OpenGL45::OpenGL45( const Backend::OpenGL45 & p_backend ) : _backend( p_backend ) {}
+	OpenGL::OpenGL( const Backend::OpenGL & p_backend ) : _backend( p_backend ) {}
 
-	void OpenGL45::execute( const CommandBuffer & p_commandBuffer ) const noexcept
+	void OpenGL::execute( const CommandBuffer & p_commandBuffer ) const noexcept
 	{
 		using namespace Desc;
 
@@ -88,8 +88,8 @@ namespace VTX::Renderer::Context::Executor
 			{
 				const auto & p = p_commandBuffer.getPayload<PayloadBindResources>( command.payloadOffset );
 
-				const Handle							 hResourceTable = p.resourceTable;
-				const Backend::OpenGL45::ResourceTable & rt				= _backend.resourceTable( hResourceTable );
+				const Handle						   hResourceTable = p.resourceTable;
+				const Backend::OpenGL::ResourceTable & rt			  = _backend.resourceTable( hResourceTable );
 
 				// Textures / samplers.
 				for ( const auto & textureBinding : rt.textures )

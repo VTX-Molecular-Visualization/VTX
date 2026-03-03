@@ -154,7 +154,7 @@ namespace VTX::Renderer::Geometry
 				allRanges.mergeInPlace( rangeList );
 			}
 
-			// VTX_DEBUG( "Built draw ranges: {}", allRanges.rangeCount() );
+			VTX_DEBUG( "Built draw ranges: {}", allRanges.rangeCount() );
 
 			return allRanges;
 		}

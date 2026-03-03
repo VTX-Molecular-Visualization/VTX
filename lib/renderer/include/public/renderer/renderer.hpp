@@ -49,7 +49,7 @@ namespace VTX::Renderer
 		 * @brief Set graphic context.
 		 */
 		void setDefault();
-		void setOpenGL45( const FilePath & );
+		void setOpenGL( const FilePath & );
 
 		/**
 		 * @brief Resize the renderer.

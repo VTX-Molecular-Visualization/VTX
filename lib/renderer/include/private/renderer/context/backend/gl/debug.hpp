@@ -5,7 +5,7 @@
 
 namespace VTX::Renderer::Context::GL::Debug
 {
-	inline void APIENTRY _debugMessageCallback(
+	inline void _debugMessageCallback(
 		const GLenum   p_source,
 		const GLenum   p_type,
 		const GLuint   p_id,

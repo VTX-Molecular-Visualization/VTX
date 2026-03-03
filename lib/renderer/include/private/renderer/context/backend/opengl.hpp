@@ -1,17 +1,17 @@
-#ifndef __VTX_RENDERER_CONTEXT_BACKEND_OPENGL45__
-#define __VTX_RENDERER_CONTEXT_BACKEND_OPENGL45__
+#ifndef __VTX_RENDERER_CONTEXT_BACKEND_OPENGL__
+#define __VTX_RENDERER_CONTEXT_BACKEND_OPENGL__
 
 #include "renderer/binary_buffer.hpp"
+#include "renderer/context/backend/gl/buffer.hpp"
+#include "renderer/context/backend/gl/chrono.hpp"
+#include "renderer/context/backend/gl/framebuffer.hpp"
+#include "renderer/context/backend/gl/include_opengl.hpp"
+#include "renderer/context/backend/gl/program.hpp"
+#include "renderer/context/backend/gl/sampler.hpp"
+#include "renderer/context/backend/gl/struct_opengl_infos.hpp"
+#include "renderer/context/backend/gl/texture_2d.hpp"
+#include "renderer/context/backend/gl/vertex_array.hpp"
 #include "renderer/context/command_buffer.hpp"
-#include "renderer/context/gl/buffer.hpp"
-#include "renderer/context/gl/chrono.hpp"
-#include "renderer/context/gl/framebuffer.hpp"
-#include "renderer/context/gl/include_opengl.hpp"
-#include "renderer/context/gl/program.hpp"
-#include "renderer/context/gl/sampler.hpp"
-#include "renderer/context/gl/struct_opengl_infos.hpp"
-#include "renderer/context/gl/texture_2d.hpp"
-#include "renderer/context/gl/vertex_array.hpp"
 #include "renderer/descriptors.hpp"
 #include "renderer/resource_handler.hpp"
 #include "renderer/struct_infos.hpp"
@@ -19,9 +19,9 @@
 namespace VTX::Renderer::Context::Backend
 {
 	/**
-	 * @brief OpenGL 4.5 backend.
+	 * @brief OpenGL backend.
 	 */
-	class OpenGL45
+	class OpenGL
 	{
 	  public:
 		/**
@@ -58,7 +58,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Default constructor.
 		 */
-		OpenGL45( const size_t, const size_t, const FilePath &, void * = nullptr );
+		OpenGL( const size_t, const size_t, const FilePath &, void * = nullptr );
 
 		/**
 		 * @brief Build the command buffer from the render queue and resources.
@@ -108,7 +108,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Resources accessors.
 		 */
-		inline const OpenGL45::ResourceTable & resourceTable( const Desc::Handle p_handle ) const noexcept
+		inline const ResourceTable & resourceTable( const Desc::Handle p_handle ) const noexcept
 		{
 			return _resourceTables.get( p_handle );
 		}

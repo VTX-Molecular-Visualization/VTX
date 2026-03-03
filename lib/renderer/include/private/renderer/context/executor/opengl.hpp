@@ -1,21 +1,21 @@
 #ifndef __VTX_RENDERER_CONTEXT_EXECUTOR_OPENGL45__
 #define __VTX_RENDERER_CONTEXT_EXECUTOR_OPENGL45__
 
-#include "renderer/context/backend/opengl45.hpp"
+#include "renderer/context/backend/opengl.hpp"
 #include "renderer/context/command_buffer.hpp"
 
 namespace VTX::Renderer::Context::Executor
 {
 	/**
-	 * @brief OpenGL 4.5 executor.
+	 * @brief OpenGL executor.
 	 */
-	class OpenGL45
+	class OpenGL
 	{
 	  public:
 		/**
 		 * @brief Construct from backend.
 		 */
-		OpenGL45( const Backend::OpenGL45 & );
+		OpenGL( const Backend::OpenGL & );
 
 		/**
 		 * @brief Execute commands from the command buffer.
@@ -23,7 +23,7 @@ namespace VTX::Renderer::Context::Executor
 		void execute( const CommandBuffer & ) const noexcept;
 
 	  private:
-		const Backend::OpenGL45 & _backend;
+		const Backend::OpenGL & _backend;
 	};
 } // namespace VTX::Renderer::Context::Executor
 

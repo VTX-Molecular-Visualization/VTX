@@ -1,6 +1,6 @@
-#include "renderer/context/backend/opengl45.hpp"
+#include "renderer/context/backend/opengl.hpp"
 #include "renderer/binary_buffer.hpp"
-#include "renderer/context/gl/debug.hpp"
+#include "renderer/context/backend/gl/debug.hpp"
 #include <numeric>
 #include <util/exceptions.hpp>
 
@@ -184,7 +184,7 @@ namespace
 namespace VTX::Renderer::Context::Backend
 {
 
-	OpenGL45::OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc ) :
+	OpenGL::OpenGL( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc ) :
 		_shaderPath( p_shaderPath )
 	{
 		assert( p_width > 0 );
@@ -196,20 +196,20 @@ namespace VTX::Renderer::Context::Backend
 		_width	= static_cast<uint32_t>( p_width );
 		_height = static_cast<uint32_t>( p_height );
 
-		// Load opengl 4.5.
+		// Load opengl 4.6.
 		// With external loader.
-		if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
+		if ( p_proc && gladLoadGL( (GLADloadfunc)p_proc ) == 0 )
 		{
 			throw GraphicException( "Failed to load OpenGL" );
 		}
 		// With glad integrated loader.
-		else if ( gladLoadGL() == 0 )
+		else if ( gladLoaderLoadGL() == 0 )
 		{
 			throw GraphicException( "Failed to load OpenGL" );
 		}
 
 		// Check version.
-		if ( not GLAD_GL_VERSION_4_5 )
+		if ( not GLAD_GL_VERSION_4_6 )
 		{
 			throw GraphicException( "OpenGL 4.5 or higher is required" );
 		}
@@ -238,7 +238,7 @@ namespace VTX::Renderer::Context::Backend
 
 	// Create resources, configure, and push commands.
 	// No OpenGL objects in this function, only Handles.
-	void OpenGL45::build(
+	void OpenGL::build(
 		const Desc::RenderQueue & p_renderQueue,
 		const Desc::Resources &	  p_resources,
 		CommandBuffer &			  p_commands
@@ -437,7 +437,7 @@ namespace VTX::Renderer::Context::Backend
 		}
 	}
 
-	void OpenGL45::resize(
+	void OpenGL::resize(
 		const uint32_t							 p_width,
 		const uint32_t							 p_height,
 		const Desc::PassList &					 p_passes,
@@ -486,7 +486,7 @@ namespace VTX::Renderer::Context::Backend
 		}
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateFramebuffer(
+	Desc::Handle OpenGL::_getOrCreateFramebuffer(
 		const Desc::Pass &		p_pass,
 		const Desc::Resources & p_res,
 		const bool				p_isLast
@@ -518,7 +518,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateResourceTable( const Desc::Pass & p_pass, const Desc::Resources & p_res )
+	Desc::Handle OpenGL::_getOrCreateResourceTable( const Desc::Pass & p_pass, const Desc::Resources & p_res )
 	{
 		using namespace Desc;
 
@@ -534,7 +534,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateTexture( const Desc::Key & p_key, const Desc::Texture & p_text )
+	Desc::Handle OpenGL::_getOrCreateTexture( const Desc::Key & p_key, const Desc::Texture & p_text )
 	{
 		using namespace Desc;
 
@@ -572,7 +572,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateSampler( const Desc::Key & p_key, const Desc::Sampler & p_sampler )
+	Desc::Handle OpenGL::_getOrCreateSampler( const Desc::Key & p_key, const Desc::Sampler & p_sampler )
 	{
 		using namespace Desc;
 
@@ -594,10 +594,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateVertexLayout(
-		const Desc::Key &		   p_key,
-		const Desc::VertexLayout & p_vertexStream
-	)
+	Desc::Handle OpenGL::_getOrCreateVertexLayout( const Desc::Key & p_key, const Desc::VertexLayout & p_vertexStream )
 	{
 		using namespace Desc;
 
@@ -635,7 +632,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateShaderBuffer( const Desc::BufferShader & p_buffer )
+	Desc::Handle OpenGL::_getOrCreateShaderBuffer( const Desc::BufferShader & p_buffer )
 	{
 		using namespace Desc;
 
@@ -703,7 +700,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreatePipelineBuffer( const Desc::Key & p_key, const Desc::BufferPipeline & p_buffer )
+	Desc::Handle OpenGL::_getOrCreatePipelineBuffer( const Desc::Key & p_key, const Desc::BufferPipeline & p_buffer )
 	{
 		using namespace Desc;
 
@@ -717,7 +714,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateProgram( const Desc::Program & p_program )
+	Desc::Handle OpenGL::_getOrCreateProgram( const Desc::Program & p_program )
 	{
 		using namespace Desc;
 
@@ -745,11 +742,11 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	OpenGL45::GlobalShaderBuffers OpenGL45::_buildGlobalShaderBuffers( const Desc::Resources & p_resources )
+	OpenGL::GlobalShaderBuffers OpenGL::_buildGlobalShaderBuffers( const Desc::Resources & p_resources )
 	{
 		using namespace Desc;
 
-		OpenGL45::GlobalShaderBuffers gsb;
+		OpenGL::GlobalShaderBuffers gsb;
 
 		for ( const auto & [ key, buffer ] : p_resources.shaderBuffers )
 		{
@@ -761,14 +758,14 @@ namespace VTX::Renderer::Context::Backend
 		return gsb;
 	}
 
-	OpenGL45::ResourceTable OpenGL45::_buildResourceTableForPass(
+	OpenGL::ResourceTable OpenGL::_buildResourceTableForPass(
 		const Desc::Pass &		p_pass,
 		const Desc::Resources & p_resources
 	)
 	{
 		using namespace Desc;
 
-		OpenGL45::ResourceTable rt;
+		OpenGL::ResourceTable rt;
 
 		// It's better to not use the same binding/unit several times in different contexts.
 		Binding b = 0;
@@ -829,7 +826,7 @@ namespace VTX::Renderer::Context::Backend
 		return rt;
 	}
 
-	void OpenGL45::_attachTexturesToFramebuffer(
+	void OpenGL::_attachTexturesToFramebuffer(
 		const Desc::Pass &						 p_pass,
 		const Desc::ResourceMap<Desc::Texture> & p_textures
 	)
@@ -880,7 +877,7 @@ namespace VTX::Renderer::Context::Backend
 		assert( fbo.checkStatus() );
 	}
 
-	void OpenGL45::_bindGeometryToVao(
+	void OpenGL::_bindGeometryToVao(
 		const Desc::Key &		p_key,
 		const Desc::Geometry &	p_geo,
 		const Desc::Resources & p_resources
@@ -920,7 +917,7 @@ namespace VTX::Renderer::Context::Backend
 		vao.unbind();
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateQuad()
+	Desc::Handle OpenGL::_getOrCreateQuad()
 	{
 		using namespace Desc;
 
@@ -958,7 +955,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	void OpenGL45::setShaderBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
+	void OpenGL::setShaderBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
 	{
 		using namespace Desc;
 
@@ -984,7 +981,7 @@ namespace VTX::Renderer::Context::Backend
 	}
 
 	// Pipeline buffers are default immutables.
-	void OpenGL45::setPipelineBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
+	void OpenGL::setPipelineBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
 	{
 		using namespace Desc;
 
@@ -996,7 +993,7 @@ namespace VTX::Renderer::Context::Backend
 		);
 	}
 
-	std::vector<std::byte> OpenGL45::getTextureData(
+	std::vector<std::byte> OpenGL::getTextureData(
 		const Desc::Key &			  p_key,
 		std::optional<Desc::E_FORMAT> p_format,
 		std::optional<size_t>		  p_x,
@@ -1031,7 +1028,7 @@ namespace VTX::Renderer::Context::Backend
 		return data;
 	}
 
-	void OpenGL45::setTextureData( const Desc::Key & p_key, SpanBytes p_bytes )
+	void OpenGL::setTextureData( const Desc::Key & p_key, SpanBytes p_bytes )
 	{
 		using namespace Desc;
 
@@ -1043,14 +1040,14 @@ namespace VTX::Renderer::Context::Backend
 		texture.fill( p_bytes.data(), glFormat.uploadFormat, glFormat.uploadType );
 	}
 
-	void OpenGL45::setRenderTarget( const Desc::E_RENDER_TARGET p_target )
+	void OpenGL::setRenderTarget( const Desc::E_RENDER_TARGET p_target )
 	{
 		_target = p_target == Desc::E_RENDER_TARGET::SCREEN ? _default : _offscreen;
 	}
 
 	// Old way: reading framebuffer. New way: read from texture directly.
 	/*
-	std::vector<std::byte> OpenGL45::snapshot() const
+	std::vector<std::byte> OpenGL::snapshot() const
 	{
 		std::vector<std::byte> data( _width * _height * 4 );
 		glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
@@ -1061,7 +1058,7 @@ namespace VTX::Renderer::Context::Backend
 	}
 	*/
 
-	void OpenGL45::fillInfos( StructInfos & p_infos ) const
+	void OpenGL::fillInfos( StructInfos & p_infos ) const
 	{
 		p_infos.renderer = _openglInfos.glRenderer;
 
@@ -1091,7 +1088,7 @@ namespace VTX::Renderer::Context::Backend
 #endif
 	}
 
-	void OpenGL45::_getOpenglInfos()
+	void OpenGL::_getOpenglInfos()
 	{
 		_openglInfos.glVendor	 = std::string( (const char *)glGetString( GL_VENDOR ) );
 		_openglInfos.glRenderer	 = std::string( (const char *)glGetString( GL_RENDERER ) );

@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_PROGRAM__
 #define __VTX_RENDERER_CONTEXT_GL_PROGRAM__
 
-#include "renderer/context/gl/debug.hpp"
+#include "renderer/context/backend/gl/debug.hpp"
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/types.hpp>

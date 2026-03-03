@@ -30,7 +30,7 @@ namespace VTX::Renderer
 		{
 			p_context.setPipelineBuffer( "SphereIndirect", push( spheres.toDrawIndirectCommands() ) );
 			p_context.setPipelineBuffer( "CylinderIndirect", push( cylinders.toDrawIndexedIndirectCommands() ) );
-			// p_context.setPipelineBuffer( "RibbonIndirect", push( ribbons.toDrawIndirectCommands() ) );
+			p_context.setPipelineBuffer( "RibbonIndirect", push( ribbons.toDrawIndirectCommands() ) );
 		}
 
 		[[nodiscard]] BinaryBuffer430 push( const std::vector<Desc::DrawIndirectCommand> & p_draw )
