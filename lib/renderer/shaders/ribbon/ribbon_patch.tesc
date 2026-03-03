@@ -3,7 +3,7 @@
 // P. Hermosilla & V. Guallar & A. Vinacua & P.P. Vázquez
 // Eurographics Workshop on Visual Computing for Biology and Medicine (2015)
 
-#version 450 core
+#version 460 core
 
 #include "../layout_uniforms_camera.glsl"
 

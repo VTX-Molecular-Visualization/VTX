@@ -1,4 +1,4 @@
-#version 450 core
+#version 460 core
 
 #include "../constant.glsl"
 #include "../layout_uniforms_color.glsl"

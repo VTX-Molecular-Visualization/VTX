@@ -1,4 +1,4 @@
-#version 450 core
+#version 460 core
 
 // In.
 layout (location = 0) in vec3 inPosition;
