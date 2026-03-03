@@ -2,7 +2,7 @@
 #include <util/logger.hpp>
 #include <util/string.hpp>
 
-namespace VTX::Renderer::Context::GL
+namespace VTX::Renderer::Context::Backend::GL
 {
 	enum E_GL_EXTENSIONS
 	{

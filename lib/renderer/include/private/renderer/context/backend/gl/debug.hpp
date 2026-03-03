@@ -3,7 +3,7 @@
 
 #include <util/logger.hpp>
 
-namespace VTX::Renderer::Context::GL::Debug
+namespace VTX::Renderer::Context::Backend::GL::Debug
 {
 	inline void _debugMessageCallback(
 		const GLenum   p_source,
@@ -102,6 +102,6 @@ namespace VTX::Renderer::Context::GL::Debug
 
 		return std::string( log.begin(), log.end() );
 	}
-} // namespace VTX::Renderer::Context::GL::Debug
+} // namespace VTX::Renderer::Context::Backend::GL::Debug
 
 #endif

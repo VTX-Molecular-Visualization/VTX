@@ -8,7 +8,7 @@
 #include <util/logger.hpp>
 #include <vector>
 
-namespace VTX::Renderer::Context::GL
+namespace VTX::Renderer::Context::Backend::GL
 {
 	class Buffer
 	{

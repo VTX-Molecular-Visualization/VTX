@@ -4,7 +4,7 @@
 #include "include_opengl.hpp"
 #include <type_traits>
 
-namespace VTX::Renderer::Context::GL
+namespace VTX::Renderer::Context::Backend::GL
 {
 	class VertexArray
 	{
@@ -161,9 +161,9 @@ namespace VTX::Renderer::Context::GL
 			const GLsizei		 p_maxDrawCount
 		) const noexcept
 		{
-			// glMultiDrawArraysIndirectCount(
-			//	p_mode, p_indirect, p_drawCountOffset, p_maxDrawCount, sizeof( DrawArraysIndirectCommand )
-			//);
+			glMultiDrawArraysIndirectCount(
+				p_mode, p_indirect, p_drawCountOffset, p_maxDrawCount, sizeof( DrawArraysIndirectCommand )
+			);
 		}
 
 		inline void drawElements(
@@ -216,8 +216,9 @@ namespace VTX::Renderer::Context::GL
 			const GLsizei		 p_maxDrawCount
 		) const noexcept
 		{
-			// glMultiDrawElementsIndirectCount( p_mode, p_type, p_indirect, p_drawCountOffset, p_maxDrawCount, sizeof(
-			// DrawElementsIndirectCommand );
+			glMultiDrawElementsIndirectCount(
+				p_mode, p_type, p_indirect, p_drawCountOffset, p_maxDrawCount, sizeof( DrawElementsIndirectCommand )
+			);
 		}
 
 		inline bool hasEbo() const noexcept
@@ -230,6 +231,6 @@ namespace VTX::Renderer::Context::GL
 	  private:
 		GLuint _id = GL_INVALID_INDEX;
 	};
-} // namespace VTX::Renderer::Context::GL
+} // namespace VTX::Renderer::Context::Backend::GL
 
 #endif // __VTX_GL_VERETX_ARRAY__

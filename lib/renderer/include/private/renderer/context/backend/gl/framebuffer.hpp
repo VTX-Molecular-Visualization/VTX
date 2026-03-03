@@ -6,7 +6,7 @@
 #include <cassert>
 #include <vector>
 
-namespace VTX::Renderer::Context::GL
+namespace VTX::Renderer::Context::Backend::GL
 {
 	class Framebuffer
 	{

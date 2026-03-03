@@ -36,7 +36,7 @@ namespace VTX::Renderer::Context::Executor
 		for ( const Command & command : p_commandBuffer.commands )
 		{
 #ifdef _DEBUG
-			GL::Debug::dumpGLError();
+			Backend::GL::Debug::dumpGLError();
 #endif
 
 			switch ( command.type )
@@ -94,9 +94,9 @@ namespace VTX::Renderer::Context::Executor
 				// Textures / samplers.
 				for ( const auto & textureBinding : rt.textures )
 				{
-					const GL::Texture2D & texture = _backend.texture( textureBinding.texture );
-					const GL::Sampler &	  sampler = _backend.sampler( textureBinding.sampler );
-					const Binding		  unit	  = textureBinding.unit;
+					const Backend::GL::Texture2D & texture = _backend.texture( textureBinding.texture );
+					const Backend::GL::Sampler &   sampler = _backend.sampler( textureBinding.sampler );
+					const Binding				   unit	   = textureBinding.unit;
 
 					texture.bindToUnit( unit );
 					sampler.bindToUnit( unit );
@@ -105,7 +105,7 @@ namespace VTX::Renderer::Context::Executor
 				// Shader buffers.
 				for ( const auto & bufferBinding : rt.shaderBuffers )
 				{
-					const GL::Buffer & buffer = _backend.shaderBuffer( bufferBinding.buffer );
+					const Backend::GL::Buffer & buffer = _backend.shaderBuffer( bufferBinding.buffer );
 					buffer.bind(
 						bufferBinding.kind == E_SHADER_BUFFER_KIND::PARAMETERS ? GL_UNIFORM_BUFFER
 																			   : GL_SHADER_STORAGE_BUFFER,
@@ -180,7 +180,7 @@ namespace VTX::Renderer::Context::Executor
 		}
 
 #ifdef _DEBUG
-		GL::Debug::dumpGLError();
+		Backend::GL::Debug::dumpGLError();
 #endif
 	}
 

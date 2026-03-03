@@ -4,7 +4,7 @@
 #include "include_opengl.hpp"
 #include <cassert>
 
-namespace VTX::Renderer::Context::GL
+namespace VTX::Renderer::Context::Backend::GL
 {
 	class Sampler
 	{

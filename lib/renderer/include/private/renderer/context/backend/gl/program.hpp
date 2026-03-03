@@ -7,7 +7,7 @@
 #include <util/types.hpp>
 #include <variant>
 
-namespace VTX::Renderer::Context::GL
+namespace VTX::Renderer::Context::Backend::GL
 {
 	enum struct ENUM_SHADER_TYPE : GLenum
 	{
