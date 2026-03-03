@@ -145,13 +145,9 @@ namespace VTX::Renderer::Context::Executor
 				const uint32_t * count = reinterpret_cast<uint32_t *>( p.count );
 
 				_backend.vertexArray( p.pipeline ).bind();
-				_backend.shaderBuffer( p.buffer ).bind( GL_DRAW_INDIRECT_BUFFER );
+				_backend.pipelineBuffer( p.buffer ).bind( GL_DRAW_INDIRECT_BUFFER );
 				_backend.program( p.program ).use();
-
-				if ( *count )
-				{
-					_backend.vertexArray( p.pipeline ).multiDrawArraysIndirect( _toGL( p.primitive ), nullptr, *count );
-				}
+				_backend.vertexArray( p.pipeline ).multiDrawArraysIndirect( _toGL( p.primitive ), nullptr, *count );
 
 				break;
 			}
@@ -161,14 +157,10 @@ namespace VTX::Renderer::Context::Executor
 				const uint32_t * count = reinterpret_cast<uint32_t *>( p.count );
 
 				_backend.vertexArray( p.pipeline ).bind();
-				_backend.shaderBuffer( p.buffer ).bind( GL_DRAW_INDIRECT_BUFFER );
+				_backend.pipelineBuffer( p.buffer ).bind( GL_DRAW_INDIRECT_BUFFER );
 				_backend.program( p.program ).use();
-
-				if ( *count )
-				{
-					_backend.vertexArray( p.pipeline )
-						.multiDrawElementsIndirect( _toGL( p.primitive ), GL_UNSIGNED_INT, nullptr, *count );
-				}
+				_backend.vertexArray( p.pipeline )
+					.multiDrawElementsIndirect( _toGL( p.primitive ), GL_UNSIGNED_INT, nullptr, *count );
 
 				break;
 			}

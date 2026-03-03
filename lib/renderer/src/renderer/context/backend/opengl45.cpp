@@ -3,7 +3,6 @@
 #include "renderer/context/gl/debug.hpp"
 #include <numeric>
 #include <util/exceptions.hpp>
-#include <util/type_traits.hpp>
 
 namespace
 {
@@ -353,45 +352,50 @@ namespace VTX::Renderer::Context::Backend
 					const DrawCall & drawCall = program.drawCall.value();
 					const Geometry & geometry = p_resources.geometries.at( drawCall.geometry );
 					const bool		 indexed  = geometry.indexBuffer.has_value();
+					const bool		 indirect = geometry.indirectBuffer.has_value();
 
-					if ( std::holds_alternative<DrawCall::Range>( drawCall.ranges ) )
+					if ( not indirect )
 					{
-						const DrawCall::Range & range = std::get<DrawCall::Range>( drawCall.ranges );
+						const DrawCall::Range * rangePtr = std::get_if<DrawCall::Range>( &drawCall.ranges );
+						assert( rangePtr );
+
 						if ( indexed )
 						{
 							PayloadDrawIndexed pDraw { hProgram, hVao };
 							pDraw.primitive = toUnderlying( drawCall.primitive );
-							pDraw.first		= range.first;
-							pDraw.count		= range.count;
+							pDraw.first		= rangePtr->first;
+							pDraw.count		= rangePtr->count;
 							p_commands.push<E_COMMAND::DRAW_INDEXED>( pDraw );
 						}
 						else
 						{
 							PayloadDraw pDraw { hProgram, hVao };
 							pDraw.primitive = toUnderlying( drawCall.primitive );
-							pDraw.first		= range.first;
-							pDraw.count		= range.count;
+							pDraw.first		= rangePtr->first;
+							pDraw.count		= rangePtr->count;
 							p_commands.push<E_COMMAND::DRAW>( pDraw );
 						}
 					}
-					else if ( std::holds_alternative<std::reference_wrapper<const uint32_t>>( drawCall.ranges ) )
+					else
 					{
-						assert( geometry.indirectBuffer.has_value() );
+						const uintptr_t * ptr = std::get_if<uintptr_t>( &drawCall.ranges );
+						assert( ptr );
 
-						auto drawCount = std::get<std::reference_wrapper<const uint32_t>>( drawCall.ranges );
 						if ( indexed )
 						{
 							PayloadDrawIndexedIndirect pDraw { hProgram, hVao };
 							pDraw.primitive = toUnderlying( drawCall.primitive );
 							pDraw.buffer	= _pipelineBuffers.handle( geometry.indirectBuffer.value() );
-							pDraw.count		= reinterpret_cast<uintptr_t>( &drawCount );
+							pDraw.count		= *ptr;
+							p_commands.push<E_COMMAND::DRAW_INDEXED_INDIRECT>( pDraw );
 						}
 						else
 						{
 							PayloadDrawIndirect pDraw { hProgram, hVao };
 							pDraw.primitive = toUnderlying( drawCall.primitive );
 							pDraw.buffer	= _pipelineBuffers.handle( geometry.indirectBuffer.value() );
-							pDraw.count		= reinterpret_cast<uintptr_t>( &drawCount );
+							pDraw.count		= *ptr;
+							p_commands.push<E_COMMAND::DRAW_INDIRECT>( pDraw );
 						}
 					}
 				}

@@ -64,7 +64,7 @@ namespace VTX::Renderer::Geometry
 		 * @brief Compiled draw ranges for GPU calls.
 		 */
 		// Desc::DrawCall::Ranges drawRanges;
-		uint32_t count;
+		uint32_t count = 0;
 
 		/**
 		 * @brief Build GPU draw ranges.

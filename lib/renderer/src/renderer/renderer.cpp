@@ -336,6 +336,7 @@ namespace VTX::Renderer
 
 		// Reserve data.
 		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", totalAtoms );
+		_context.setPipelineBuffer<Index>( "AtomsIndex", totalAtoms );
 		_context.setPipelineBuffer<Index>( "BondsIndex", totalBonds );
 		_context.setPipelineBuffer<float>( "Atoms.Radii", totalAtoms );
 		_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", totalAtoms );
