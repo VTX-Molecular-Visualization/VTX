@@ -346,8 +346,8 @@ namespace VTX::Renderer::Desc
 			uint32_t count = 0;
 		};
 		// Could be a single range, or reference to a count in a buffer for indirect draw.
-		using RangesVariant = std::variant<Range, uintptr_t>;
-		RangesVariant ranges;
+		using RangesVariant	 = std::variant<Range, uintptr_t>;
+		RangesVariant ranges = Range { 0, 0 };
 	};
 
 	/**

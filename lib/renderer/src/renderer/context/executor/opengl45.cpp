@@ -123,7 +123,9 @@ namespace VTX::Renderer::Context::Executor
 				_backend.vertexArray( p.pipeline ).bind();
 				_backend.program( p.program ).use();
 				_backend.vertexArray( p.pipeline )
-					.drawArrays( _toGL( p.primitive ), 0, static_cast<uint32_t>( p.count ) );
+					.drawArrays(
+						_toGL( p.primitive ), static_cast<uint32_t>( p.first ), static_cast<uint32_t>( p.count )
+					);
 
 				break;
 			}
@@ -135,7 +137,7 @@ namespace VTX::Renderer::Context::Executor
 				_backend.vertexArray( p.pipeline ).bind();
 				_backend.program( p.program ).use();
 				_backend.vertexArray( p.pipeline )
-					.drawElements( _toGL( p.primitive ), static_cast<uint32_t>( p.count ), GL_UNSIGNED_INT, 0 );
+					.drawElements( _toGL( p.primitive ), static_cast<uint32_t>( p.count ), GL_UNSIGNED_INT, &p.first );
 
 				break;
 			}
