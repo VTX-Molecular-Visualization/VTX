@@ -18,8 +18,10 @@ namespace VTX::IO::Util
 		_checkBondOrders( p_frame, linkedAtomsVector, cycleStatePerAtom );
 	}
 
-	void BondOrderGuessing::_buildNeighbourStruct( const chemfiles::Frame &			  p_frame,
-												   std::vector<std::vector<size_t>> & p_linkedAtomsVector )
+	void BondOrderGuessing::_buildNeighbourStruct(
+		const chemfiles::Frame &		   p_frame,
+		std::vector<std::vector<size_t>> & p_linkedAtomsVector
+	)
 	{
 		std::vector<size_t> defaultBondVector = std::vector<size_t>();
 		defaultBondVector.reserve( 4 );
@@ -35,9 +37,11 @@ namespace VTX::IO::Util
 		}
 	}
 
-	void BondOrderGuessing::_tagCycles( const chemfiles::Frame &				 p_frame,
-										const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
-										std::vector<CycleState> &				 p_cycleStatePerAtoms )
+	void BondOrderGuessing::_tagCycles(
+		const chemfiles::Frame &				 p_frame,
+		const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
+		std::vector<CycleState> &				 p_cycleStatePerAtoms
+	)
 	{
 		std::vector<size_t> cycleIndexes = std::vector<size_t>();
 		cycleIndexes.resize( 6, -1 );
@@ -51,11 +55,13 @@ namespace VTX::IO::Util
 			_tagCyclesRecursive( p_frame, p_linkedAtomsVector, p_cycleStatePerAtoms, cycleIndexes, 1 );
 		}
 	}
-	void BondOrderGuessing::_tagCyclesRecursive( const chemfiles::Frame &				  p_frame,
-												 const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
-												 std::vector<CycleState> &				  p_cycleStatePerAtoms,
-												 std::vector<size_t> &					  p_cycleIndexes,
-												 short									  p_counter )
+	void BondOrderGuessing::_tagCyclesRecursive(
+		const chemfiles::Frame &				 p_frame,
+		const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
+		std::vector<CycleState> &				 p_cycleStatePerAtoms,
+		std::vector<size_t> &					 p_cycleIndexes,
+		short									 p_counter
+	)
 	{
 		const size_t & currentAtomIndex = p_cycleIndexes[ p_counter - 1 ];
 		for ( const size_t & nextAtomIndex : p_linkedAtomsVector[ currentAtomIndex ] )
@@ -88,14 +94,17 @@ namespace VTX::IO::Util
 			{
 				p_cycleIndexes[ p_counter ] = nextAtomIndex;
 				_tagCyclesRecursive(
-					p_frame, p_linkedAtomsVector, p_cycleStatePerAtoms, p_cycleIndexes, p_counter + 1 );
+					p_frame, p_linkedAtomsVector, p_cycleStatePerAtoms, p_cycleIndexes, p_counter + 1
+				);
 			}
 		}
 	}
 
-	void BondOrderGuessing::_checkBondOrders( chemfiles::Frame &					   p_frame,
-											  const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
-											  const std::vector<CycleState> &		   p_cycleStatePerAtom )
+	void BondOrderGuessing::_checkBondOrders(
+		chemfiles::Frame &						 p_frame,
+		const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
+		const std::vector<CycleState> &			 p_cycleStatePerAtom
+	)
 	{
 		const float planerCutoff = 0.96f;
 
@@ -149,7 +158,8 @@ namespace VTX::IO::Util
 									 && p_linkedAtomsVector[ firstOxygenIndex ].size() == 1 )
 								{
 									_setBondOrder(
-										p_frame, atomIndex, firstOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE );
+										p_frame, atomIndex, firstOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE
+									);
 								}
 							}
 							else if ( nitrogenCountInNeighbours >= 1 && oxygenCountInNeighbours >= 2 )
@@ -167,20 +177,24 @@ namespace VTX::IO::Util
 								{
 									// order = 4 in pymol
 									_setBondOrder(
-										p_frame, atomIndex, firstOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE );
+										p_frame, atomIndex, firstOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE
+									);
 									// order = 4 in pymol
 									_setBondOrder(
-										p_frame, atomIndex, secondOxygenIndex, chemfiles::Bond::BondOrder::SINGLE );
+										p_frame, atomIndex, secondOxygenIndex, chemfiles::Bond::BondOrder::SINGLE
+									);
 								}
 								else if ( firstOxygenIsValid )
 								{
 									_setBondOrder(
-										p_frame, atomIndex, firstOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE );
+										p_frame, atomIndex, firstOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE
+									);
 								}
 								else if ( secondOxygenIsValid )
 								{
 									_setBondOrder(
-										p_frame, atomIndex, secondOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE );
+										p_frame, atomIndex, secondOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE
+									);
 								}
 							}
 							else if ( nitrogenCountInNeighbours == 0 && oxygenCountInNeighbours == 1 )
@@ -192,7 +206,8 @@ namespace VTX::IO::Util
 									 && p_linkedAtomsVector[ firstOxygenIndex ].size() == 1 )
 								{
 									_setBondOrder(
-										p_frame, atomIndex, firstOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE );
+										p_frame, atomIndex, firstOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE
+									);
 								}
 							}
 							else if ( nitrogenCountInNeighbours == 0 && oxygenCountInNeighbours >= 2 )
@@ -211,21 +226,25 @@ namespace VTX::IO::Util
 									// ASP | GLU
 									// order = 4 in pymol
 									_setBondOrder(
-										p_frame, atomIndex, firstOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE );
+										p_frame, atomIndex, firstOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE
+									);
 									// order = 4 in pymol
 									_setBondOrder(
-										p_frame, atomIndex, secondOxygenIndex, chemfiles::Bond::BondOrder::SINGLE );
+										p_frame, atomIndex, secondOxygenIndex, chemfiles::Bond::BondOrder::SINGLE
+									);
 								}
 								else if ( firstOxygenIsValid )
 								{
 									// Esther
 									_setBondOrder(
-										p_frame, atomIndex, firstOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE );
+										p_frame, atomIndex, firstOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE
+									);
 								}
 								else if ( secondOxygenIsValid )
 								{
 									_setBondOrder(
-										p_frame, atomIndex, secondOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE );
+										p_frame, atomIndex, secondOxygenIndex, chemfiles::Bond::BondOrder::DOUBLE
+									);
 								}
 							}
 							else if ( nitrogenCountInNeighbours >= 3 )
@@ -247,29 +266,35 @@ namespace VTX::IO::Util
 									{
 										// order = 4 in pymol
 										_setBondOrder(
-											p_frame, atomIndex, n0Index, chemfiles::Bond::BondOrder::SINGLE );
+											p_frame, atomIndex, n0Index, chemfiles::Bond::BondOrder::SINGLE
+										);
 										// order = 4 in pymol
 										_setBondOrder(
-											p_frame, atomIndex, n1Index, chemfiles::Bond::BondOrder::SINGLE );
+											p_frame, atomIndex, n1Index, chemfiles::Bond::BondOrder::SINGLE
+										);
 									}
 									else if ( n0NeighbourCount == 1 && n1NeighbourCount >= 2 && n2NeighbourCount == 1 )
 									{
 										// order = 4 in pymol
 										_setBondOrder(
-											p_frame, atomIndex, n0Index, chemfiles::Bond::BondOrder::SINGLE );
+											p_frame, atomIndex, n0Index, chemfiles::Bond::BondOrder::SINGLE
+										);
 										// order = 4 in pymol
 										_setBondOrder(
-											p_frame, atomIndex, n2Index, chemfiles::Bond::BondOrder::SINGLE );
+											p_frame, atomIndex, n2Index, chemfiles::Bond::BondOrder::SINGLE
+										);
 									}
 									else if ( n0NeighbourCount >= 2 && n1NeighbourCount == 1 && n2NeighbourCount == 1 )
 									{
 										// ARG
 										// order = 4 in pymol
 										_setBondOrder(
-											p_frame, atomIndex, n1Index, chemfiles::Bond::BondOrder::SINGLE );
+											p_frame, atomIndex, n1Index, chemfiles::Bond::BondOrder::SINGLE
+										);
 										// order = 4 in pymol
 										_setBondOrder(
-											p_frame, atomIndex, n2Index, chemfiles::Bond::BondOrder::DOUBLE );
+											p_frame, atomIndex, n2Index, chemfiles::Bond::BondOrder::DOUBLE
+										);
 									}
 								}
 							}
@@ -289,10 +314,12 @@ namespace VTX::IO::Util
 									{
 										// order = 4 in pymol
 										_setBondOrder(
-											p_frame, atomIndex, n0Index, chemfiles::Bond::BondOrder::SINGLE );
+											p_frame, atomIndex, n0Index, chemfiles::Bond::BondOrder::SINGLE
+										);
 										// order = 4 in pymol
 										_setBondOrder(
-											p_frame, atomIndex, n1Index, chemfiles::Bond::BondOrder::SINGLE );
+											p_frame, atomIndex, n1Index, chemfiles::Bond::BondOrder::SINGLE
+										);
 									}
 								}
 							}
@@ -405,7 +432,8 @@ namespace VTX::IO::Util
 								{
 									// order = 4 in pymol
 									_setBondOrder(
-										p_frame, atomIndex, neighbourIndex, chemfiles::Bond::BondOrder::AROMATIC );
+										p_frame, atomIndex, neighbourIndex, chemfiles::Bond::BondOrder::AROMATIC
+									);
 								}
 							}
 						}
@@ -423,8 +451,10 @@ namespace VTX::IO::Util
 		p_vector[ 2 ] /= dist;
 	}
 
-	float BondOrderGuessing::_computeAverageCenterDotCross( const chemfiles::Frame &	p_frame,
-															const std::vector<size_t> & p_atoms )
+	float BondOrderGuessing::_computeAverageCenterDotCross(
+		const chemfiles::Frame &	p_frame,
+		const std::vector<size_t> & p_atoms
+	)
 	{
 		float		 result	   = 0.0F;
 		const size_t atomCount = p_atoms.size();
@@ -466,10 +496,12 @@ namespace VTX::IO::Util
 
 		return avg / ( atomCount - 1 );
 	}
-	float BondOrderGuessing::_computeAverageRingDotCross( const chemfiles::Frame &	  p_frame,
-														  const std::vector<size_t> & p_atoms,
-														  const size_t				  p_atomCount,
-														  chemfiles::Vector3D &		  dir )
+	float BondOrderGuessing::_computeAverageRingDotCross(
+		const chemfiles::Frame &	p_frame,
+		const std::vector<size_t> & p_atoms,
+		const size_t				p_atomCount,
+		chemfiles::Vector3D &		dir
+	)
 	{
 		float							 result	   = 0.f;
 		std::vector<chemfiles::Vector3D> positions = std::vector<chemfiles::Vector3D>();
@@ -512,12 +544,14 @@ namespace VTX::IO::Util
 
 		return result;
 	}
-	bool BondOrderGuessing::_verifyPlanarBonds( const chemfiles::Frame &				 p_frame,
-												const std::vector<size_t> &				 p_atoms,
-												const size_t							 p_atomCount,
-												const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
-												const chemfiles::Vector3D &				 dir,
-												const float								 cutoff )
+	bool BondOrderGuessing::_verifyPlanarBonds(
+		const chemfiles::Frame &				 p_frame,
+		const std::vector<size_t> &				 p_atoms,
+		const size_t							 p_atomCount,
+		const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
+		const chemfiles::Vector3D &				 dir,
+		const float								 cutoff
+	)
 	{
 		for ( size_t i = 0; i < p_atomCount; i++ )
 		{
@@ -549,17 +583,21 @@ namespace VTX::IO::Util
 
 		return true;
 	}
-	void BondOrderGuessing::_setBondOrder( chemfiles::Frame &				p_frame,
-										   const size_t						p_firstAtomIndex,
-										   const size_t						p_secondAtomIndex,
-										   const chemfiles::Bond::BondOrder p_bondOrder,
-										   const bool						p_force )
+	void BondOrderGuessing::_setBondOrder(
+		chemfiles::Frame &				 p_frame,
+		const size_t					 p_firstAtomIndex,
+		const size_t					 p_secondAtomIndex,
+		const chemfiles::Bond::BondOrder p_bondOrder,
+		const bool						 p_force
+	)
 	{
 		if ( p_force
 			 || p_frame.topology().bond_order( p_firstAtomIndex, p_secondAtomIndex )
 					== chemfiles::Bond::BondOrder::UNKNOWN )
 		{
-			p_frame.change_bond_order( p_firstAtomIndex, p_secondAtomIndex, p_bondOrder );
+			throw VTX::NotImplementedException();
+			// TODO : restore it
+			// p_frame.change_bond_order( p_firstAtomIndex, p_secondAtomIndex, p_bondOrder );
 		}
 	}
 
@@ -620,8 +658,11 @@ namespace VTX::IO::Util
 
 				if ( bondData.atom1 == firstAtomName && bondData.atom2 == secondAtomName )
 				{
-					p_frame.change_bond_order(
-						firstAtomIndex, secondAtomIndex, IO::Util::Chemfiles::convertBondOrder( bondData.bondOrder ) );
+					throw VTX::NotImplementedException();
+					// TODO : bring it back ?
+					// p_frame.change_bond_order(
+					// firstAtomIndex, secondAtomIndex, IO::Util::Chemfiles::convertBondOrder( bondData.bondOrder )
+					//);
 					break;
 				}
 			}

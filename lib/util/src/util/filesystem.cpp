@@ -74,7 +74,7 @@ namespace VTX::Util::Filesystem
 	void writeFile( const FilePath & p_filePath, const std::string & p_content )
 	{
 		std::filesystem::create_directories( p_filePath.parent_path() );
-		std::ofstream outputFile( p_filePath );
+		std::ofstream outputFile( p_filePath, std::ios::binary );
 
 		if ( outputFile.is_open() )
 		{
