@@ -5,10 +5,11 @@
 #include <array>
 #include <span>
 #include <string>
+#include <util/types.hpp>
 
 namespace VTX::Core::ChemDB::Atom
 {
-	enum class TYPE : int
+	enum class TYPE : uint8_t
 	{
 		NORMAL,
 		SOLVENT,

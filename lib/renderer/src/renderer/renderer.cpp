@@ -356,7 +356,11 @@ namespace VTX::Renderer
 
 			// Register ranges in layouts.
 			_layouts.atoms.add( systemData.uid, _geometries.spheres.range( systemData.uid ) );
-			_layouts.residues.add( systemData.uid, _geometries.ribbons.rangeItems( systemData.uid ) );
+
+			if ( not _geometries.ribbons.construction( systemData.uid ).isEmpty )
+			{
+				_layouts.residues.add( systemData.uid, _geometries.ribbons.rangeItems( systemData.uid ) );
+			}
 		}
 
 		// Reserve data.
