@@ -39,7 +39,7 @@ namespace VTX::Renderer::Layout
 		/**
 		 * @brief Range to draw per system (global indexes).
 		 */
-		mutable MapUIDRange _ranges;
+		MapUIDRange _ranges;
 
 		/**
 		 * @brief Current size.

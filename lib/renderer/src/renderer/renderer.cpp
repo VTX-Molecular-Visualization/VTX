@@ -355,34 +355,17 @@ namespace VTX::Renderer
 			_geometries.construct( systemData );
 
 			// Register ranges in layouts.
-			//_layouts.atoms.add( systemData.uid, _geometries.spheres.range( systemData.uid ) );
-			//_layouts.residues.add( systemData.uid, _geometries.ribbons.rangeItems( systemData.uid ) );
+			_layouts.atoms.add( systemData.uid, _geometries.spheres.range( systemData.uid ) );
+			_layouts.residues.add( systemData.uid, _geometries.ribbons.rangeItems( systemData.uid ) );
 		}
 
 		// Reserve data.
-		//_layouts.resize( _context );
+		_layouts.resize( _context );
 
 		const size_t totalAtoms			= _geometries.spheres.size;
 		const size_t totalBonds			= _geometries.cylinders.size;
 		const size_t totalRibbonItems	= _geometries.ribbons.sizeItems;
 		const size_t totalRibbonIndices = _geometries.ribbons.size;
-
-		// Reserve data.
-		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", totalAtoms );
-		_context.setPipelineBuffer<float>( "Atoms.Radii", totalAtoms );
-		_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", totalAtoms );
-		_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", totalAtoms );
-		_context.setPipelineBuffer<RepresentationIndex>( "Atoms.Representations", totalAtoms );
-		_context.setPipelineBuffer<ModelIndex>( "Atoms.Models", totalAtoms );
-		_context.setPipelineBuffer<Flag>( "Atoms.Flags", totalAtoms );
-		_context.setPipelineBuffer<Vec4f>( "Residues.Positions", totalRibbonItems );
-		_context.setPipelineBuffer<Vec3f>( "Residues.Directions", totalRibbonItems );
-		_context.setPipelineBuffer<uint8_t>( "Residues.Types", totalRibbonItems );
-		_context.setPipelineBuffer<ColorIndex>( "Residues.Colors", totalRibbonItems );
-		_context.setPipelineBuffer<PickingUID>( "Residues.Ids", totalRibbonItems );
-		_context.setPipelineBuffer<Flag>( "Residues.Flags", totalRibbonItems );
-		_context.setPipelineBuffer<ModelIndex>( "Residues.Models", totalRibbonItems );
-		_context.setPipelineBuffer<RepresentationIndex>( "Residues.Representations", totalRibbonItems );
 
 		//_context.setPipelineBuffer<Index>( "Index.Atoms", totalAtoms );
 		_context.setPipelineBuffer<Index>( "Index.Bonds", totalBonds );

@@ -22,12 +22,12 @@ namespace VTX::Renderer::Layout
 		Atoms()
 		{
 			attributes.push_back( { ATOMS_POSITIONS, Desc::E_TYPE::VEC3F } );
+			attributes.push_back( { ATOMS_COLORS, Desc::E_TYPE::UBYTE } );
 			attributes.push_back( { ATOMS_RADII, Desc::E_TYPE::FLOAT } );
 			attributes.push_back( { ATOMS_IDS, Desc::E_TYPE::UINT } );
-			attributes.push_back( { ATOMS_COLORS, Desc::E_TYPE::UBYTE } );
-			attributes.push_back( { ATOMS_REPRESENTATIONS, Desc::E_TYPE::UBYTE } );
-			attributes.push_back( { ATOMS_MODELS, Desc::E_TYPE::USHORT } );
 			attributes.push_back( { ATOMS_FLAGS, Desc::E_TYPE::UBYTE } );
+			attributes.push_back( { ATOMS_MODELS, Desc::E_TYPE::USHORT } );
+			attributes.push_back( { ATOMS_REPRESENTATIONS, Desc::E_TYPE::UBYTE } );
 		}
 
 		template<ATOM_ATTR A, typename T>
