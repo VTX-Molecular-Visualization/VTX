@@ -13,9 +13,10 @@
 
 namespace
 {
-	const QString _PDB_ID_TEMPLATE	= VTX::Util::Url::systemReplacementToken();
-	const QString _DEFAULT_URL		= QString( VTX::Util::Url::rcsbPdbDownloadBaseUrl() ) + _PDB_ID_TEMPLATE + ".pdb";
-	const uint	  _MAX_HISTORY_SIZE = 10;
+	const QString _PDB_ID_TEMPLATE = VTX::Util::Url::systemReplacementToken();
+	const QString _DEFAULT_URL	   = QString( VTX::Util::Url::rcsbPdbDownloadBaseUrl() ) + _PDB_ID_TEMPLATE
+								 + VTX::Util::Url::rcsbPdbDownloadFileExtension();
+	const uint _MAX_HISTORY_SIZE = 10;
 } // namespace
 
 namespace VTX::UI::QT::Dialog
@@ -78,7 +79,8 @@ namespace VTX::UI::QT::Dialog
 				Util::String::trim( pdb );
 				if ( pdb.length() == 4 )
 				{
-					FilePath path = App::Filesystem::getCacheDir() / ( pdb + ".pdb" );
+					FilePath path
+						= App::Filesystem::getCacheDir() / ( pdb + VTX::Util::Url::rcsbPdbDownloadFileExtension() );
 					if ( std::filesystem::exists( path ) )
 					{
 						// Show radio buttons.
@@ -105,7 +107,8 @@ namespace VTX::UI::QT::Dialog
 				_url = _comboBoxURL->currentText().trimmed();
 				_pdb = _comboBoxPDB->currentText().trimmed();
 
-				FilePath path = App::Filesystem::getCacheDir() / ( _pdb.toStdString() + ".pdb" );
+				FilePath path = App::Filesystem::getCacheDir()
+								/ ( _pdb.toStdString() + VTX::Util::Url::rcsbPdbDownloadFileExtension() );
 				if ( std::filesystem::exists( path ) and _radioButtonOpen->isChecked() )
 				{
 					App::ACTION().execute<App::Action::IO::LoadSystem>( path );
@@ -134,7 +137,7 @@ namespace VTX::UI::QT::Dialog
 					{
 						App::ACTION().execute<App::Action::IO::DownloadSystem>(
 							Util::Url::UrlFull( urlReplaced, Util::Url::SystemId( _pdb.toStdString().data() ) ),
-							_pdb.toStdString() + ".pdb"
+							_pdb.toStdString() + VTX::Util::Url::rcsbPdbDownloadFileExtension()
 						);
 					}
 					else

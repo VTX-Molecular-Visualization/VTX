@@ -18,16 +18,22 @@ namespace VTX::IO::Reader
 
 	struct Chemfiles::ReadingData
 	{
-		explicit ReadingData( const FilePath & p_path, const std::string & p_format ) :
-			_trajectory( chemfiles::Trajectory( p_path.string(), 'r', p_format ) )
+		explicit ReadingData( const FilePath & p_path ) :
+			_path( p_path.string() ), _trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
 		{
 		}
 
-		explicit ReadingData( const std::string & p_buffer, const FilePath & p_path, const std::string & p_format ) :
-			_trajectory( chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), p_format ) )
+		explicit ReadingData( const std::string & p_buffer, const FilePath & p_path ) :
+			_path( p_path.string() ), _trajectory(
+										  chemfiles::Trajectory::memory_reader(
+											  p_buffer.c_str(),
+											  p_buffer.size(),
+											  chemfiles::guess_format( _path )
+										  )
+									  )
 		{
 		}
-
+		std::string								_path;
 		chemfiles::Trajectory					_trajectory;
 		chemfiles::Frame						_currentFrame = chemfiles::Frame();
 		chemfiles::Topology						_topology	  = chemfiles::Topology();
@@ -48,7 +54,8 @@ namespace VTX::IO::Reader
 			_bonds		  = &( _topology.bonds() );
 		}
 
-		void readNextFrame() { _currentFrame = _trajectory.read(); }
+		void readNextFrame() {
+			_currentFrame = _trajectory.read(); }
 	};
 	struct Chemfiles::ResidueIt::InternalResidueIt
 	{
@@ -128,13 +135,12 @@ namespace VTX::IO::Reader
 		return chemfilesReader;
 	}
 
-	Chemfiles::Chemfiles( const FilePath & p_path ) :
-		_readingData( std::make_unique<ReadingData>( p_path, _getFormat( p_path ) ) )
+	Chemfiles::Chemfiles( const FilePath & p_path ) : _readingData( std::make_unique<ReadingData>( p_path ) )
 	{
 		_readTrajectory();
 	}
 	Chemfiles::Chemfiles( const std::string & p_buffer, const FilePath & p_path ) :
-		_path( p_path ), _readingData( std::make_unique<ReadingData>( p_buffer, p_path, _getFormat( p_path ) ) )
+		_path( p_path ), _readingData( std::make_unique<ReadingData>( p_buffer, p_path ) )
 	{
 		_readTrajectory();
 	}

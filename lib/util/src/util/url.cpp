@@ -7,8 +7,8 @@ namespace VTX::Util::Url
 	namespace
 	{
 		constexpr const char   g_systemReplacementToken[] = "[SYSTEM_ID]";
-		constexpr const char   g_systemExtension[]		  = ".pdb";
-		constexpr const char   g_rcsbUrl[]				  = "https://files.rcsb.org/download/";
+		constexpr const char   g_systemExtension[]		  = ".bcif.gz";
+		constexpr const char   g_rcsbUrl[]				  = "https://models.rcsb.org/";
 		constexpr const size_t g_urlSize
 			= sizeof( g_rcsbUrl ) - 1 + sizeof( g_systemReplacementToken ) - 1 + sizeof( g_systemExtension );
 
