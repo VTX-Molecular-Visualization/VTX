@@ -68,15 +68,15 @@ namespace VTX::Renderer::Layout
 		}
 
 	  protected:
-		void _resize( Context::ContextWrapper & p_context ) override
+		void _resize( Context::ContextWrapper & p_context, const Index p_size ) override
 		{
-			p_context.setPipelineBuffer<Vec3f>( ATOMS_POSITIONS, size() );
-			p_context.setPipelineBuffer<float>( ATOMS_RADII, size() );
-			p_context.setPipelineBuffer<PickingUID>( ATOMS_IDS, size() );
-			p_context.setPipelineBuffer<ColorIndex>( ATOMS_COLORS, size() );
-			p_context.setPipelineBuffer<RepresentationIndex>( ATOMS_REPRESENTATIONS, size() );
-			p_context.setPipelineBuffer<ModelIndex>( ATOMS_MODELS, size() );
-			p_context.setPipelineBuffer<Flag>( ATOMS_FLAGS, size() );
+			p_context.setPipelineBuffer<Vec3f>( ATOMS_POSITIONS, p_size );
+			p_context.setPipelineBuffer<float>( ATOMS_RADII, p_size );
+			p_context.setPipelineBuffer<PickingUID>( ATOMS_IDS, p_size );
+			p_context.setPipelineBuffer<ColorIndex>( ATOMS_COLORS, p_size );
+			p_context.setPipelineBuffer<RepresentationIndex>( ATOMS_REPRESENTATIONS, p_size );
+			p_context.setPipelineBuffer<ModelIndex>( ATOMS_MODELS, p_size );
+			p_context.setPipelineBuffer<Flag>( ATOMS_FLAGS, p_size );
 		}
 
 	  private:

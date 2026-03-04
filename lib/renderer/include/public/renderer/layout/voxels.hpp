@@ -38,10 +38,10 @@ namespace VTX::Renderer::Layout
 		}
 
 	  protected:
-		void _resize( Context::ContextWrapper & p_context ) override
+		void _resize( Context::ContextWrapper & p_context, const Index p_size ) override
 		{
-			p_context.setPipelineBuffer<Vec3f>( VOXELS_MINS, size() );
-			p_context.setPipelineBuffer<Vec3f>( VOXELS_MAXS, size() );
+			p_context.setPipelineBuffer<Vec3f>( VOXELS_MINS, p_size );
+			p_context.setPipelineBuffer<Vec3f>( VOXELS_MAXS, p_size );
 		}
 
 	  private:

@@ -14,29 +14,26 @@ namespace VTX::Renderer::Layout
 		/**
 		 * @brief Push a range.
 		 */
-		inline void add( const SystemUID p_uid, const IndexRange p_range ) { _ranges[ p_uid ] = p_range; }
+		inline void add( const SystemUID p_uid, const IndexRange & p_range ) { _ranges[ p_uid ] = p_range; }
 
 		/**
 		 * @brief Resize whole layout.
 		 */
 		inline void resize( Context::ContextWrapper & p_context )
 		{
-			_size = 0;
+			Index size = 0;
 			for ( const auto & [ uid, range ] : _ranges )
 			{
-				_size += range.getCount();
+				size += range.getCount();
 			}
 
-			if ( _size != 0 )
-			{
-				_resize( p_context );
-			}
+			_resize( p_context, size );
 		}
 
 		/**
 		 * @brief Accessors.
 		 */
-		inline Index size() const { return _size; }
+		// inline Index size() const { return _size; }
 
 	  protected:
 		/**
@@ -47,12 +44,12 @@ namespace VTX::Renderer::Layout
 		/**
 		 * @brief Current size.
 		 */
-		Index _size = 0;
+		// Index _size = 0;
 
 		/**
 		 * @brief Resize whole layout.
 		 */
-		virtual void _resize( Context::ContextWrapper & ) = 0;
+		virtual void _resize( Context::ContextWrapper &, const Index ) = 0;
 	};
 } // namespace VTX::Renderer::Layout
 

@@ -15,7 +15,6 @@ namespace VTX::Renderer
 	using IndexRangeList  = Util::Math::RangeList<Index>;
 	using MapUIDRange	  = std::map<SystemUID, IndexRange>;
 	using MapUIDRangeList = std::map<SystemUID, IndexRangeList>;
-	using MapUIDOffset	  = std::map<SystemUID, Index>;
 
 } // namespace VTX::Renderer
 

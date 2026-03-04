@@ -74,16 +74,16 @@ namespace VTX::Renderer::Layout
 		}
 
 	  protected:
-		void _resize( Context::ContextWrapper & p_context ) override
+		void _resize( Context::ContextWrapper & p_context, const Index p_size ) override
 		{
-			p_context.setPipelineBuffer<Vec4f>( RESIDUES_POSITIONS, size() );
-			p_context.setPipelineBuffer<Vec3f>( RESIDUES_DIRECTIONS, size() );
-			p_context.setPipelineBuffer<uint8_t>( RESIDUES_TYPES, size() );
-			p_context.setPipelineBuffer<ColorIndex>( RESIDUES_COLORS, size() );
-			p_context.setPipelineBuffer<PickingUID>( RESIDUES_IDS, size() );
-			p_context.setPipelineBuffer<Flag>( RESIDUES_FLAGS, size() );
-			p_context.setPipelineBuffer<ModelIndex>( RESIDUES_MODELS, size() );
-			p_context.setPipelineBuffer<RepresentationIndex>( RESIDUES_REPRESENTATIONS, size() );
+			p_context.setPipelineBuffer<Vec4f>( RESIDUES_POSITIONS, p_size );
+			p_context.setPipelineBuffer<Vec3f>( RESIDUES_DIRECTIONS, p_size );
+			p_context.setPipelineBuffer<uint8_t>( RESIDUES_TYPES, p_size );
+			p_context.setPipelineBuffer<ColorIndex>( RESIDUES_COLORS, p_size );
+			p_context.setPipelineBuffer<PickingUID>( RESIDUES_IDS, p_size );
+			p_context.setPipelineBuffer<Flag>( RESIDUES_FLAGS, p_size );
+			p_context.setPipelineBuffer<ModelIndex>( RESIDUES_MODELS, p_size );
+			p_context.setPipelineBuffer<RepresentationIndex>( RESIDUES_REPRESENTATIONS, p_size );
 		}
 
 	  private:
