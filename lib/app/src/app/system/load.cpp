@@ -192,6 +192,9 @@ namespace VTX::App::System
 			if ( system->getAtomCount() == p_data.system.getAtomCount() )
 			{
 				addTrajectory( p_entity, p_data );
+
+				if ( auto uid = REG().try_get<System::UID>( p_entity ) )
+					RENDERER().setSystemPosition( uid->system, getCurrentAtomPositions( p_entity ) );
 			}
 			else
 			{
@@ -206,9 +209,6 @@ namespace VTX::App::System
 		}
 		else
 			create( p_entity, p_data );
-
-		if ( auto uid = REG().try_get<System::UID>( p_entity ) )
-			RENDERER().setSystemPosition( uid->system, getCurrentAtomPositions( p_entity ) );
 
 		REG().erase<PendingSystem>( p_entity );
 		HUB().trigger<EntityDelivered>( { p_entity } );
