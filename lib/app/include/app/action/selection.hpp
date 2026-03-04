@@ -5,6 +5,7 @@
 #include "app/helper/system.hpp"
 #include "app/system/selection.hpp"
 #include <core/struct/system.hpp>
+#include <util/logger.hpp>
 #include <util/type_traits.hpp>
 #include <util/types.hpp>
 
@@ -20,55 +21,72 @@ namespace VTX::App::Action::Selection
 		void execute(
 			const ECS::Entity					 p_ent,
 			const Core::Struct::IndexRangeList & p_ranges	= {},
-			const bool							 p_selected = true
+			const bool							 p_selected = true,
+			const bool							 p_append	= false
 		)
 		{
-			auto &						 reg   = REG();
-			Core::Struct::IndexRangeList atoms = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
+			auto &						 reg	   = REG();
+			auto &						 selection = reg.get<System::Selection>( p_ent );
+			Core::Struct::IndexRangeList atoms	   = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
+			Core::Struct::IndexRangeList current   = selection.atoms;
 
-			reg.patch<System::Selection>(
-				p_ent,
-				[ &atoms, p_selected ]( System::Selection & p_selection )
-				{
-					if ( p_selected )
-					{
-						p_selection.atoms.mergeInPlace( atoms );
-					}
-					else
-					{
-						p_selection.atoms.substractInPlace( atoms );
-					}
-				}
-			);
+			if ( not p_append )
+			{
+				current.clear();
+			}
+			if ( p_selected )
+			{
+				current.mergeInPlace( atoms );
+			}
+			else
+			{
+				current.substractInPlace( atoms );
+			}
+
+			if ( selection.atoms != current )
+			{
+				// VTX_DEBUG( "{} {}", selection.atoms.toString(), current.toString() );
+				reg.patch<System::Selection>(
+					p_ent, [ &current ]( System::Selection & p_selection ) { p_selection.atoms = current; }
+				);
+			}
 		}
 
 		inline void execute(
 			const ECS::Entity				 p_ent,
 			const Core::Struct::IndexRange & p_range,
-			const bool						 p_selected = true
+			const bool						 p_selected = true,
+			const bool						 p_append	= false
 		)
 		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_selected );
+			execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_selected, p_append );
 		}
 
 		inline void execute(
 			const ECS::Entity		   p_ent,
 			const std::vector<Index> & p_values,
-			const bool				   p_selected = true
+			const bool				   p_selected = true,
+			const bool				   p_append	  = false
 		)
 		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_selected );
+			execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_selected, p_append );
 		}
 
-		inline void execute( const ECS::Entity p_ent, const Index p_value, const bool p_selected = true )
+		inline void execute(
+			const ECS::Entity p_ent,
+			const Index		  p_value,
+			const bool		  p_selected = true,
+			const bool		  p_append	 = false
+		)
 		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_selected );
+			execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_selected, p_append );
 		}
 	};
 
 	/**
 	 * @brief Clear selection.
 	 */
+
 	struct Clear
 	{
 		/**
@@ -77,9 +95,18 @@ namespace VTX::App::Action::Selection
 		void execute();
 
 		/**
+		 * @brief Clear mode.
+		 */
+		enum struct E_MODE : uint
+		{
+			THIS,
+			BUT
+		};
+
+		/**
 		 * @brief For a specific system.
 		 */
-		void execute( const ECS::Entity p_ent );
+		void execute( const ECS::Entity, const E_MODE );
 	};
 
 	enum struct E_GRANULARITY : uint

@@ -69,9 +69,9 @@ namespace VTX::App::Pass
 
 	void SystemUpdater::_onSystemLoaded( const Events::SystemLoad & p_event )
 	{
-		Util::Chrono	  timer;
-		auto &			  reg	 = REG();
-		const ECS::Entity system = p_event.system;
+		Util::ScopedChrono timer( "_onSystemLoaded" );
+		auto &			   reg	  = REG();
+		const ECS::Entity  system = p_event.system;
 
 		timer.start();
 
@@ -93,39 +93,24 @@ namespace VTX::App::Pass
 			const auto & selection		= reg.get<System::Selection>( system );
 			const size_t atomCount		= data.getAtomCount();
 
-			const std::vector<Vec3f> * frame = nullptr;
-			if ( const auto * const c = reg.try_get<System::TrajectorySingleFrame>( system ) )
-			{
-				frame = &c->atomPositions;
-			}
-			else if ( const auto * const c = reg.try_get<System::TrajectoryFullBuffer>( system ) )
-			{
-				frame = &c->frameCollection.front();
-			}
-
-			assert( frame != nullptr );
 			assert( atomCount > 0 );
-			assert( atomCount == frame->size() );
 
-			std::vector<float>		radii( atomCount );
-			std::vector<PickingUID> uids( atomCount );
+			std::vector<float> radii( atomCount );
 			for ( Index i = 0; i < atomCount; ++i )
 			{
-				radii[ i ] = 1.0f; // TODO: use glsl constants.
-			}
-
-			size_t i = 0;
-			for ( const PickingUID index : uid.atoms )
-			{
-				uids[ i++ ] = index;
+				// TODO: use glsl constants.
+				radii[ i ] = Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ toUnderlying( data.getAtomSymbol( i ) ) ];
 			}
 
 			systemsData.push_back(
-				Renderer::SystemData { uid.system, transform.computeMatrix(), data, *frame, radii, uids }
+				Renderer::SystemData { uid.system,
+									   transform.computeMatrix(),
+									   data,
+									   radii,
+									   uid.atoms.toStdVector(),
+									   uid.residues.toStdVector() }
 			);
 		}
-
-		VTX_DEBUG( "Systems GPU upload preparation: {} ms", timer.elapsedTime() );
 
 		// Push systems.
 		RENDERER().setSystems( systemsData );

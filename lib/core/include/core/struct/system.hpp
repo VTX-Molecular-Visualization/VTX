@@ -157,6 +157,8 @@ namespace VTX::Core::Struct
 
 		inline const std::string & getChainName( const Index p_chainIndex ) const { return chainNames[ p_chainIndex ]; }
 
+		inline IndexRange getChainRange() const { return IndexRange::fromFirstCount( 0, getChainCount() ); }
+
 		inline Index getChainFirstResidue( const Index p_chainIndex ) const
 		{
 			return chainFirstResidues[ p_chainIndex ];
@@ -312,6 +314,21 @@ namespace VTX::Core::Struct
 		inline Index getBondSecondAtom( const Index p_bondIndex ) const
 		{
 			return bondPairAtomIndexes[ p_bondIndex * 2 + 1 ];
+		}
+
+		inline std::optional<Index> findFirstAtomByName(
+			const Index			   p_residueIndex,
+			const std::string_view p_name
+		) const
+		{
+			for ( Index i : getResidueAtomRange( p_residueIndex ) )
+			{
+				if ( getAtomName( i ) == p_name )
+				{
+					return i;
+				}
+			}
+			return std::nullopt;
 		}
 	};
 

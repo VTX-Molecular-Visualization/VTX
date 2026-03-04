@@ -19,10 +19,11 @@ namespace VTX::Renderer::Context
 
 		BEGIN_PASS,
 		BIND_RESOURCES,
-		DRAW_ARRAY,
-		DRAW_ARRAYS,
-		DRAW_ELEMENT,
-		DRAW_ELEMENTS,
+		DRAW,
+		DRAW_INDEXED,
+		DRAW_INDIRECT,
+		DRAW_INDEXED_INDIRECT,
+		BIND_OUTPUT,
 		END_PASS
 	};
 
@@ -50,39 +51,45 @@ namespace VTX::Renderer::Context
 		uint32_t pipeline;
 	};
 
-	struct PayloadDraw
+	struct BasePayloadDraw
 	{
 		uint32_t program;
 		uint32_t pipeline;
 		uint32_t primitive;
 	};
 
-	struct PayloadDrawArray : PayloadDraw
+	struct PayloadDraw : BasePayloadDraw
 	{
-		uint32_t vertexCount = 0;
-		uint32_t firstVertex = 0;
+		uint64_t first;
+		uint64_t count;
 	};
 
-	struct PayloadDrawElement : PayloadDraw
+	struct PayloadDrawIndexed : BasePayloadDraw
 	{
-		uint32_t indexCount = 0;
-		uint32_t firstIndex = 0;
-		// int32_t	 baseVertex = 0;
+		uint64_t first;
+		uint64_t count;
 	};
 
-	struct PayloadDrawArrays : PayloadDraw
+	struct PayloadDrawIndirect : BasePayloadDraw
 	{
-		uintptr_t vertexRanges;
+		uint32_t  buffer;
+		uintptr_t count;
 	};
 
-	struct PayloadDrawElements : PayloadDraw
+	struct PayloadDrawIndexedIndirect : BasePayloadDraw
 	{
-		uintptr_t indexRanges;
-		// uintptr_t pBaseVertex;
+		uint32_t  buffer;
+		uintptr_t count;
+	};
+
+	struct PayloadBindOutput
+	{
+		uintptr_t framebuffer;
 	};
 
 	struct PayloadEndPass
 	{
+		uint32_t framebuffer;
 		uint32_t flags = 0;
 	};
 
@@ -102,24 +109,29 @@ namespace VTX::Renderer::Context
 		using type = PayloadBindResources;
 	};
 	template<>
-	struct CommandPayload<E_COMMAND::DRAW_ARRAY>
+	struct CommandPayload<E_COMMAND::DRAW>
 	{
-		using type = PayloadDrawArray;
+		using type = PayloadDraw;
 	};
 	template<>
-	struct CommandPayload<E_COMMAND::DRAW_ARRAYS>
+	struct CommandPayload<E_COMMAND::DRAW_INDEXED>
 	{
-		using type = PayloadDrawArrays;
+		using type = PayloadDrawIndexed;
 	};
 	template<>
-	struct CommandPayload<E_COMMAND::DRAW_ELEMENT>
+	struct CommandPayload<E_COMMAND::DRAW_INDIRECT>
 	{
-		using type = PayloadDrawElement;
+		using type = PayloadDrawIndirect;
 	};
 	template<>
-	struct CommandPayload<E_COMMAND::DRAW_ELEMENTS>
+	struct CommandPayload<E_COMMAND::DRAW_INDEXED_INDIRECT>
 	{
-		using type = PayloadDrawElements;
+		using type = PayloadDrawIndexedIndirect;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::BIND_OUTPUT>
+	{
+		using type = PayloadBindOutput;
 	};
 	template<>
 	struct CommandPayload<E_COMMAND::END_PASS>

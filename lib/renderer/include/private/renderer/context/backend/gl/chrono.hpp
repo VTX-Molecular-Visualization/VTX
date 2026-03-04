@@ -3,7 +3,7 @@
 
 #include <cassert>
 
-namespace VTX::Renderer::Context::GL
+namespace VTX::Renderer::Context::Backend::GL
 {
 	class Chrono
 	{

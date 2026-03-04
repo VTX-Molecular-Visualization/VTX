@@ -5,7 +5,7 @@
 
 namespace VTX::Renderer::Geometry
 {
-	struct Voxel : BaseGeometry<DrawRangeArray>
+	struct Voxel : BaseGeometry
 	{
 	};
 } // namespace VTX::Renderer::Geometry

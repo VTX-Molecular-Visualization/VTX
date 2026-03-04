@@ -6,8 +6,24 @@
 namespace VTX::Renderer::Geometry
 {
 
-	struct Sphere : BaseGeometry<DrawRangeArray>
+	class Sphere : public BaseGeometry
 	{
+	  public:
+		void construct( const SystemData & p_data )
+		{
+			if ( _ranges.contains( p_data.uid ) )
+			{
+				return;
+			}
+
+			const Index count = p_data.data.getAtomCount();
+
+			assert( count > 0 );
+			assert( p_data.atomUids.size() == count );
+			assert( p_data.radii.size() == count );
+
+			addRange( p_data.uid, count );
+		}
 	};
 
 } // namespace VTX::Renderer::Geometry

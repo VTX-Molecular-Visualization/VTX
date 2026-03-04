@@ -31,7 +31,7 @@ namespace VTX::UI::QT::Widget::Tree
 				this,
 				[ this ]( QTreeWidgetItem * item, int column )
 				{
-					if ( item == nullptr || column != 0 )
+					if ( item == nullptr || item->parent() == nullptr || column != 0 )
 					{
 						return;
 					}

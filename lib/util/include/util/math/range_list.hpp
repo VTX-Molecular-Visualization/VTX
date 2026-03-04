@@ -67,6 +67,25 @@ namespace VTX::Util::Math
 		void addValue( const T p_v ) { addRange( RangeType { p_v, static_cast<T>( p_v + 1 ) } ); }
 
 		/**
+		 * @brief Add multiple values.
+		 */
+		void addValues( const std::initializer_list<T> p_values )
+		{
+			for ( const T v : p_values )
+			{
+				addValue( v );
+			}
+		}
+
+		void addValues( std::span<const T> p_values )
+		{
+			for ( const T v : p_values )
+			{
+				addValue( v );
+			}
+		}
+
+		/**
 		 * @brief Add a single range.
 		 */
 		void addRange( const RangeType & p_r )
@@ -256,39 +275,6 @@ namespace VTX::Util::Math
 		 * @brief Get last value (exclusive).
 		 */
 		T getLast() const { return _ranges.crbegin()->last; }
-
-		template<typename T1, typename T2>
-		void toStdVectorsFirstLast( std::vector<T1> & p_starts, std::vector<T2> & p_lasts ) const
-		{
-			p_starts.resize( _ranges.size() );
-			p_lasts.resize( _ranges.size() );
-
-			size_t i = 0;
-			for ( const auto & r : _ranges )
-			{
-				p_starts[ i ] = static_cast<T1>( r.first );
-				p_lasts[ i ]  = static_cast<T2>( r.last );
-				++i;
-			}
-		}
-
-		/**
-		 * @brief  Convert to vectors of starts and counts.
-		 */
-		template<typename T1, typename T2>
-		void toStdVectorsFirstCount( std::vector<T1> & p_firsts, std::vector<T2> & p_counts ) const
-		{
-			p_firsts.resize( _ranges.size() );
-			p_counts.resize( _ranges.size() );
-
-			size_t i = 0;
-			for ( const auto & r : _ranges )
-			{
-				p_firsts[ i ] = static_cast<T1>( r.getFirst() );
-				p_counts[ i ] = static_cast<T2>( r.getCount() );
-				++i;
-			}
-		}
 
 		/**
 		 * @brief Equality operators.
@@ -498,6 +484,17 @@ namespace VTX::Util::Math
 			totalSize += _ranges.size() * sizeof( Range<T> );
 
 			return totalSize;
+		}
+
+		std::string toString() const
+		{
+			std::string res = "{ ";
+			for ( const auto & r : _ranges )
+			{
+				res += r.toString() + " ";
+			}
+			res += "}";
+			return res;
 		}
 
 		/**

@@ -1,5 +1,6 @@
 ﻿#include "ui/qt/widget/sequence.hpp"
 #include "ui/qt/helper.hpp"
+#include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include <QMouseEvent>
 #include <QPainter>
@@ -133,6 +134,8 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
+		SELECTION().clearBut( E_SELECTION_GROUP::SYSTEM );
+
 		auto opt = _indexFromPos( p_e->pos() );
 		if ( not opt )
 		{
@@ -147,12 +150,16 @@ namespace VTX::UI::QT::Widget
 		bool shift = p_e->modifiers() & Qt::ShiftModifier;
 		bool ctrl  = p_e->modifiers() & Qt::ControlModifier;
 
+		if ( not ctrl )
+		{
+			ACTION().execute<Selection::Clear>( _system, Selection::Clear::E_MODE::BUT );
+		}
+
 		bool selected = App::Helper::System::isSelected<E_SYSTEM_ITEM::RESIDUE>( _system, index );
 
 		if ( not shift && not ctrl )
 		{
 			// Normal.
-			ACTION().execute<Selection::Clear>( _system );
 			ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>( _system, index );
 
 			_anchor		 = index;
@@ -169,7 +176,6 @@ namespace VTX::UI::QT::Widget
 			Index a = Util::Math::min( _anchor, index );
 			Index b = Util::Math::max( _anchor, index );
 
-			ACTION().execute<Selection::Clear>( _system );
 			ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>(
 				_system, Core::Struct::IndexRange { a, b }
 			);
@@ -178,14 +184,14 @@ namespace VTX::UI::QT::Widget
 		}
 		else if ( ctrl )
 		{
-			// CTRL
+			// CTRL.
 			if ( selected )
 			{
-				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>( _system, index, false );
+				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>( _system, index, false, true );
 			}
 			else
 			{
-				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>( _system, index );
+				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>( _system, index, true, true );
 			}
 
 			_anchor		 = index;
@@ -225,7 +231,6 @@ namespace VTX::UI::QT::Widget
 		// Normal.
 		if ( not( p_e->modifiers() & Qt::ControlModifier ) )
 		{
-			ACTION().execute<Selection::Clear>( _system );
 			ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>(
 				_system, Core::Struct::IndexRange { a, b }
 			);
@@ -236,13 +241,13 @@ namespace VTX::UI::QT::Widget
 			if ( _dragAddMode )
 			{
 				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>(
-					_system, Core::Struct::IndexRange { a, b }
+					_system, Core::Struct::IndexRange { a, b }, true, true
 				);
 			}
 			else
 			{
 				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>(
-					_system, Core::Struct::IndexRange { a, b }, false
+					_system, Core::Struct::IndexRange { a, b }, false, true
 				);
 			}
 		}

@@ -56,8 +56,8 @@ namespace VTX::UI::QT::Widget::Tree
 
 		// Double click: orient.
 		connect(
-			this,
-			&QTreeView::doubleClicked,
+			delegate,
+			&Delegate::SystemDelegate::doubleClicked,
 			[ this ]( const QModelIndex & p_index ) { App::ACTION().execute<App::Action::Camera::Orient>(); }
 		);
 

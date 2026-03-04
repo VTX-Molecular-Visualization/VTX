@@ -40,7 +40,7 @@ namespace VTX::App::Pass
 			);
 			return true;
 		}
-		uint autoplayNextFrameTrigger( System::GenericTrajectory & p_traj, const float p_elapsedTime ) noexcept
+		uint autoplayNextFrameCount( const System::GenericTrajectory & p_traj, const float p_elapsedTime ) noexcept
 		{
 			return static_cast<uint>( ( p_elapsedTime - p_traj.lastFrameUpdateTime ) / p_traj.playingSpeed );
 		}
@@ -77,31 +77,29 @@ namespace VTX::App::Pass
 					continue;
 				auto & player = genericTrajPtr->player;
 
-				uint nextStep		= genericTrajPtr->requestedFrameIndex;
-				uint autoplayUpdate = 0;
+				uint nextStep				  = genericTrajPtr->requestedFrameIndex;
+				uint autoplayUpdateIncrNumber = 0;
 				if ( nextStep == genericTrajPtr->currentFrameIndex
 					 && not genericTrajPtr->paused ) // If there is no outside demand on setting the
 													 // current frame, we use the autoplay
 				{
-					autoplayUpdate = autoplayNextFrameTrigger( *genericTrajPtr, p_elapsedTime );
-					if ( autoplayUpdate )
-					{
-						player.next( nextStep );
-					}
+					autoplayUpdateIncrNumber = autoplayNextFrameCount( *genericTrajPtr, p_elapsedTime );
+					player.next( autoplayUpdateIncrNumber, nextStep );
 				}
 				if ( nextStep == genericTrajPtr->currentFrameIndex )
 					continue;
 
 				REG().patch<TrajectoryT>(
 					it_entity,
-					[ &nextStep, &it_entity, &p_elapsedTime, &autoplayUpdate ]( TrajectoryT & traj )
+					[ &nextStep, &it_entity, &p_elapsedTime, &autoplayUpdateIncrNumber ]( TrajectoryT & traj )
 					{
 						System::GenericTrajectory & trajGenericData = genericData( traj );
-						trajGenericData.requestedFrameIndex			= nextStep;
 						trajGenericData.player.increment(
-							std::min( 1u, autoplayUpdate )
+							autoplayUpdateIncrNumber
 						); // std::min is for the exhaustive algorithm. It means that if it is 0, no increment is made.
 						   // If >=1, only one increment is made. A predictive algorithm would be not using std::min
+
+						trajGenericData.requestedFrameIndex = nextStep;
 						if ( tryUpdateFrame( it_entity, traj ) )
 						{
 							trajGenericData.currentFrameIndex	= trajGenericData.requestedFrameIndex;
@@ -132,7 +130,7 @@ namespace VTX::App::Pass
 			lastUpdateTime + (N - 1) * playingSpeed < elapsedTime < lastUpdateTime + N * playingSpeed
 
 		The predictive algorithm would enforce trajectory synchronisation if applicable, while the exhaustive algorithm
-		maukes sure every step is displayed.
+		makes sure every step is displayed.
 
 		*/
 

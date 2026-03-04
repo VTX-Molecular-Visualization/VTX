@@ -6,7 +6,7 @@
 #include <cassert>
 #include <vector>
 
-namespace VTX::Renderer::Context::GL
+namespace VTX::Renderer::Context::Backend::GL
 {
 	class Framebuffer
 	{
@@ -16,9 +16,15 @@ namespace VTX::Renderer::Context::GL
 			assert( _id == GL_INVALID_INDEX );
 
 			glCreateFramebuffers( 1, &_id );
-			// VTX_ERROR( "Framebuffer created: {}", _id );
 
 			assert( glIsFramebuffer( _id ) );
+		}
+
+		Framebuffer( const GLuint p_id ) noexcept
+		{
+			assert( _id == GL_INVALID_INDEX );
+
+			_id = p_id;
 		}
 
 		~Framebuffer() noexcept
@@ -34,14 +40,13 @@ namespace VTX::Renderer::Context::GL
 
 		inline void bind( const GLenum p_target = GL_FRAMEBUFFER ) const noexcept
 		{
-			assert( glIsFramebuffer( _id ) );
+#ifdef _DEBUG
+			if ( _id != 0 )
+			{
+				assert( glIsFramebuffer( _id ) );
+			}
+#endif
 			glBindFramebuffer( p_target, _id );
-		}
-
-		inline static void bindDefault( const GLenum p_target = GL_FRAMEBUFFER ) noexcept
-		{
-			assert( p_target != 0 );
-			glBindFramebuffer( p_target, 0 );
 		}
 
 		inline void attachTexture(

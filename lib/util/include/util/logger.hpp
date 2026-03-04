@@ -60,6 +60,12 @@ namespace VTX
 	using LOGGER = Util::Logger;
 
 	template<typename... Args>
+	inline void VTX_LOG( const Util::LOG_LEVEL p_level, const fmt::format_string<Args...> p_fmt, Args &&... p_args )
+	{
+		LOGGER::log( p_level, p_fmt, std::forward<Args>( p_args )... );
+	}
+
+	template<typename... Args>
 	inline void VTX_TRACE( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_TRACE, p_fmt, std::forward<Args>( p_args )... );

@@ -10,26 +10,12 @@
 #include "renderer/render_graph.hpp"
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
-#include <core/struct/system.hpp>
+#include "renderer/system_data.hpp"
 #include <renderer/types.hpp>
 #include <util/callback.hpp>
 
 namespace VTX::Renderer
 {
-
-	struct SystemData
-	{
-		const SystemUID				  uid;
-		const Mat4f &				  transform;
-		const Core::Struct::System	  data;
-		const Core::Struct::Frame &	  frame;
-		const std::vector<float>	  radii;
-		const std::vector<PickingUID> atomUids;
-		// const std::vector<ColorIndex>												colorIndexes;
-		// const std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList> representationRanges;
-		// const std::vector<std::byte>												visibleAtoms;
-		// const std::vector<std::byte>												selectedAtoms;
-	};
 
 	/**
 	 * @brief The renderer, only accessed from the facade.
@@ -63,7 +49,7 @@ namespace VTX::Renderer
 		 * @brief Set graphic context.
 		 */
 		void setDefault();
-		void setOpenGL45( const FilePath & );
+		void setOpenGL( const FilePath & );
 
 		/**
 		 * @brief Resize the renderer.
@@ -79,7 +65,7 @@ namespace VTX::Renderer
 		 * @brief The main render loop.
 		 * @return true if rendered, false if nothing updated.
 		 */
-		bool render( const float, const float ) noexcept;
+		bool render( const float = 0, const float = 0 ) noexcept;
 
 		/**
 		 * @brief Push data to the renderer.
@@ -112,14 +98,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Exports the renderer to an array of pixels.
 		 */
-		void snapshot(
-			std::vector<uchar> & p_outImage,
-			const size_t		 p_width,
-			const size_t		 p_height,
-			const float			 p_fov,
-			const float			 p_near,
-			const float			 p_far
-		);
+		std::vector<std::byte> snapshot();
 
 		/**
 		 * @brief Get the id of the the data stored in the given pixel.

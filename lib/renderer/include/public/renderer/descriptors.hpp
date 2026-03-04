@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <tuple>
 #include <unordered_map>
@@ -55,12 +56,13 @@ namespace VTX::Renderer::Desc
 	 */
 	enum struct E_FORMAT : uint32_t
 	{
+		RGBA8UI,
 		RGB16F,
 		RGBA16F,
 		RGBA32UI,
 		RGBA32F,
 		RG32UI,
-		R8,
+		R8UI,
 		R16F,
 		R32F,
 		DEPTH_COMPONENT32F
@@ -122,7 +124,8 @@ namespace VTX::Renderer::Desc
 	enum struct E_PIPELINE_BUFFER_KIND : uint32_t
 	{
 		VERTEX,
-		INDEX
+		INDEX,
+		INDIRECT_COMMAND
 	};
 
 	/**
@@ -158,6 +161,15 @@ namespace VTX::Renderer::Desc
 		CLEAR_COLOR	 = 1u << 0,
 		CLEAR_DEPTH	 = 1u << 1,
 		ENABLE_DEPTH = 1u << 2,
+	};
+
+	/**
+	 * @brief All render target types.
+	 */
+	enum struct E_RENDER_TARGET : uint32_t
+	{
+		SCREEN,
+		OFFSCREEN
 	};
 
 	/**
@@ -296,7 +308,28 @@ namespace VTX::Renderer::Desc
 	{
 		Key				   vertexLayout;
 		std::optional<Key> indexBuffer;
+		std::optional<Key> indirectBuffer;
 		// std::unordered_map<Key, Key> overrides; // attributeName -> bufferKey
+	};
+
+	/**
+	 * @brief Indirect draw command descriptors.
+	 */
+	struct DrawIndirectCommand
+	{
+		uint32_t vertexCount;
+		uint32_t instanceCout;
+		uint32_t firstVertex;
+		uint32_t baseInstance;
+	};
+
+	struct DrawIndexedIndirectCommand
+	{
+		uint32_t indexCount;
+		uint32_t instanceCount;
+		uint32_t firstIndex;
+		int32_t	 baseVertex;
+		uint32_t baseInstance;
 	};
 
 	/**
@@ -306,21 +339,15 @@ namespace VTX::Renderer::Desc
 	{
 		Key			geometry;
 		E_PRIMITIVE primitive;
-		// TODO: variant?
-		uint32_t vertexCount = 0;
-		uint32_t indexCount	 = 0;
-		struct RangeArrays
+
+		struct Range
 		{
-			std::vector<int32_t>  firsts;
-			std::vector<uint32_t> counts;
+			uint32_t first = 0;
+			uint32_t count = 0;
 		};
-		struct RangeElements
-		{
-			std::vector<uintptr_t> firsts;
-			std::vector<uint32_t>  counts;
-		};
-		const RangeArrays *	  vertexRanges = nullptr;
-		const RangeElements * indexRanges  = nullptr;
+		// Could be a single range, or reference to a count in a buffer for indirect draw.
+		using RangesVariant	 = std::variant<Range, uintptr_t>;
+		RangesVariant ranges = Range { 0, 0 };
 	};
 
 	/**

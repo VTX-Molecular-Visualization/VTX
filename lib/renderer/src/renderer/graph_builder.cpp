@@ -88,12 +88,14 @@ namespace VTX::Renderer
 		const Desc::Key & p_name,
 		const Desc::Key & p_vertexLayout,
 		// const std::unordered_map<Key, Key> & p_overrides,
-		const std::optional<Desc::Key> p_indexBuffer
+		const std::optional<Desc::Key> p_indexBuffer,
+		const std::optional<Desc::Key> p_indirectBuffer
 	)
 	{
 		Desc::Geometry geom;
-		geom.vertexLayout = p_vertexLayout;
-		geom.indexBuffer  = p_indexBuffer;
+		geom.vertexLayout	= p_vertexLayout;
+		geom.indexBuffer	= p_indexBuffer;
+		geom.indirectBuffer = p_indirectBuffer;
 		// geom.overrides	 = p_overrides;
 		resources.geometries[ p_name ] = std::move( geom );
 		return *this;
@@ -124,15 +126,13 @@ namespace VTX::Renderer
 	ProgramBuilder & ProgramBuilder::draw(
 		const Desc::Key &					  p_geometry,
 		const Desc::E_PRIMITIVE				  p_primitive,
-		const Desc::DrawCall::RangeArrays *	  p_vertexRanges,
-		const Desc::DrawCall::RangeElements * p_indexRanges
+		const Desc::DrawCall::RangesVariant & p_ranges
 	)
 	{
 		Desc::DrawCall dc;
 		dc.geometry		 = p_geometry;
 		dc.primitive	 = p_primitive;
-		dc.vertexRanges	 = p_vertexRanges;
-		dc.indexRanges	 = p_indexRanges;
+		dc.ranges		 = p_ranges;
 		program.drawCall = dc;
 		return *this;
 	}

@@ -83,6 +83,25 @@ namespace VTX::Renderer
 			}
 		}
 
+		// Check geometry resources.
+		for ( const auto & [ key, geometry ] : _resources.geometries )
+		{
+			if ( not _resources.vertexStreams.contains( geometry.vertexLayout ) )
+			{
+				throw GraphicException( "Geometry '{}': vertex layout '{}' not found", key, geometry.vertexLayout );
+			}
+			if ( geometry.indexBuffer && not _resources.pipelineBuffers.contains( *geometry.indexBuffer ) )
+			{
+				throw GraphicException( "Geometry '{}': index buffer '{}' not found", key, *geometry.indexBuffer );
+			}
+			if ( geometry.indirectBuffer && not _resources.pipelineBuffers.contains( *geometry.indirectBuffer ) )
+			{
+				throw GraphicException(
+					"Geometry '{}': indirect buffer '{}' not found", key, *geometry.indirectBuffer
+				);
+			}
+		}
+
 		// Build.
 		// TODO: remove unused passes.
 		Desc::RenderQueue queue;
@@ -97,10 +116,10 @@ namespace VTX::Renderer
 			return queue;
 		}
 
-		// Check last pass = 1 output.
-		if ( queue.back()->outputs.size() != 1 )
+		// Check last pass = no output (going to fbo).
+		if ( queue.back()->outputs.size() > 0 )
 		{
-			throw GraphicException( "Last pass '{}' must have exactly one output", queue.back()->name );
+			// throw GraphicException( "Last pass '{}' must have exactly one output", queue.back()->name );
 		}
 
 		// Print.
@@ -254,8 +273,7 @@ namespace VTX::Renderer
 			.pipelineBuffer( "Atoms.Ids" )
 			.pipelineBuffer( "Atoms.Flags" )
 			.pipelineBuffer( "Atoms.Models" )
-			.pipelineBuffer( "Atoms.Representations" )
-			.pipelineBuffer( "Bonds", E_PIPELINE_BUFFER_KIND::INDEX );
+			.pipelineBuffer( "Atoms.Representations" );
 
 		g.vertexLayout(
 			"Residues",
@@ -280,6 +298,15 @@ namespace VTX::Renderer
 			.pipelineBuffer( "Residues.Models" )
 			.pipelineBuffer( "Residues.Representations" );
 
+		g.pipelineBuffer( "AtomsIndex", E_PIPELINE_BUFFER_KIND::INDEX )
+			.pipelineBuffer( "BondsIndex", E_PIPELINE_BUFFER_KIND::INDEX )
+			.pipelineBuffer( "RibbonsIndex", E_PIPELINE_BUFFER_KIND::INDEX );
+
+		g.pipelineBuffer( "SphereIndirect", E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND )
+			.pipelineBuffer( "CylinderIndirect", E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND )
+			.pipelineBuffer( "RibbonIndirect", E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND )
+			.pipelineBuffer( "GridIndirect", E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND );
+
 		g.vertexLayout(
 			"Voxels",
 			{
@@ -291,10 +318,10 @@ namespace VTX::Renderer
 		g.pipelineBuffer( "Voxels.Mins" ).pipelineBuffer( "Voxels.Maxs" );
 
 		// Geometries.
-		g.geometry( "Spheres", "Atoms" );
-		g.geometry( "Cylinders", "Atoms", "Bonds" );
-		g.geometry( "Ribbons", "Residues" );
-		g.geometry( "Grid", "Voxels" );
+		g.geometry( "Spheres", "Atoms", std::nullopt, "SphereIndirect" );
+		g.geometry( "Cylinders", "Atoms", "BondsIndex", "CylinderIndirect" );
+		g.geometry( "Ribbons", "Residues", "RibbonsIndex", "RibbonIndirect" );
+		g.geometry( "Grid", "Voxels", std::nullopt, "GridIndirect" );
 
 		// Textures.
 		g.texture( "Geometry", E_FORMAT::RGBA32UI )
@@ -309,7 +336,7 @@ namespace VTX::Renderer
 			constexpr size_t   noiseTextureSize = 64;
 			std::vector<Vec3f> noiseData		= Util::Math::randomUniVectors( noiseTextureSize * noiseTextureSize );
 
-			g.texture( "SSAO", E_FORMAT::R8 );
+			g.texture( "SSAO", E_FORMAT::R8UI );
 			g.texture( "Noise", E_FORMAT::RGB16F, noiseData, Size2DAbsolute { noiseTextureSize, noiseTextureSize } );
 			g.texture( "BlurX", E_FORMAT::R16F );
 			g.texture( "BlurY", E_FORMAT::R16F );
@@ -317,7 +344,8 @@ namespace VTX::Renderer
 		else
 		{
 			// Used by shading pass even if SSAO disabled.
-			std::vector<float> emptyData( 1, 1.f );
+			// HALF_FLOAT value.
+			std::vector<std::byte> emptyData = { std::byte { 0x00 }, std::byte { 0x3C } };
 			g.texture( "BlurY", E_FORMAT::R16F, emptyData, Size2DAbsolute { 1, 1 } );
 		}
 
@@ -372,19 +400,19 @@ namespace VTX::Renderer
 			.out( "DepthRaw" )
 			.program( "Sphere" )
 			.shadersDir( "sphere" )
-			.draw( "Spheres", E_PRIMITIVE::POINTS, &p_geometries.spheres.drawRanges )
+			.draw( "Spheres", E_PRIMITIVE::POINTS, reinterpret_cast<uintptr_t>( &p_geometries.spheres.count ) )
 			.endProgram()
 			.program( "Cylinder" )
 			.shadersDir( "cylinder" )
-			.draw( "Cylinders", E_PRIMITIVE::LINES, nullptr, &p_geometries.cylinders.drawRanges )
+			.draw( "Cylinders", E_PRIMITIVE::LINES, reinterpret_cast<uintptr_t>( &p_geometries.cylinders.count ) )
 			.endProgram()
 			.program( "Ribbon" )
 			.shadersDir( "ribbon" )
-			.draw( "Ribbons", E_PRIMITIVE::PATCHES, &p_geometries.ribbons.drawRanges )
+			.draw( "Ribbons", E_PRIMITIVE::PATCHES, reinterpret_cast<uintptr_t>( &p_geometries.ribbons.count ) )
 			.endProgram()
 			.program( "Voxel" )
 			.shadersDir( "voxel" )
-			.draw( "Grid", E_PRIMITIVE::POINTS, &p_geometries.voxels.drawRanges )
+			.draw( "Grid", E_PRIMITIVE::POINTS, reinterpret_cast<uintptr_t>( &p_geometries.voxels.count ) )
 			.endProgram()
 			.endPass();
 

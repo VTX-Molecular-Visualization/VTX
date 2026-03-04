@@ -211,7 +211,8 @@ namespace VTX::Renderer
 			const Desc::Key & p_name,
 			const Desc::Key & p_vertexStream,
 			// const std::unordered_map<Key, Key> & p_overrides = {},
-			const std::optional<Desc::Key> p_indexBuffer = std::nullopt
+			const std::optional<Desc::Key> = std::nullopt,
+			const std::optional<Desc::Key> = std::nullopt
 		);
 
 		/**
@@ -254,12 +255,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief draw().
 		 */
-		ProgramBuilder & draw(
-			const Desc::Key &,
-			const Desc::E_PRIMITIVE				  = Desc::E_PRIMITIVE::TRIANGLES,
-			const Desc::DrawCall::RangeArrays *	  = nullptr,
-			const Desc::DrawCall::RangeElements * = nullptr
-		);
+		ProgramBuilder & draw( const Desc::Key &, const Desc::E_PRIMITIVE, const Desc::DrawCall::RangesVariant & );
 
 		/**
 		 * @brief uniform().

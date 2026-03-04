@@ -26,7 +26,7 @@ namespace VTX::Bench
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, 0 );
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 5 );
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 6 );
 		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, true );
 		// SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
 		// SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
@@ -198,10 +198,7 @@ namespace VTX::Bench
 			{
 				auto snapshotFunc = [ & ]( const size_t p_width, const size_t p_height )
 				{
-					std::vector<uchar> image;
-					p_renderer->snapshot(
-						image, p_width, p_height, p_camera->getFov(), p_camera->getNear(), p_camera->getFar()
-					);
+					std::vector<std::byte> image = p_renderer->snapshot();
 
 					Util::Image::write( "snapshot", Util::Image::E_FORMAT::PNG, p_width, p_height, image.data() );
 				};

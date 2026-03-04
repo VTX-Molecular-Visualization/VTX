@@ -1,7 +1,7 @@
 #include "renderer/context/context_wrapper.hpp"
-#include "renderer/context/backend/opengl45.hpp"
+#include "renderer/context/backend/opengl.hpp"
 #include "renderer/context/executor/null.hpp"
-#include "renderer/context/executor/opengl45.hpp"
+#include "renderer/context/executor/opengl.hpp"
 #include <type_traits>
 #include <utility>
 #include <variant>
@@ -11,8 +11,8 @@ namespace VTX::Renderer::Context
 	/**
 	 * @brief Available backends and executors.
 	 */
-	using BackendVariant  = std::variant<std::monostate, Backend::OpenGL45>;
-	using ExecutorVariant = std::variant<std::monostate, Executor::Null, Executor::OpenGL45>;
+	using BackendVariant  = std::variant<std::monostate, Backend::OpenGL>;
+	using ExecutorVariant = std::variant<std::monostate, Executor::Null, Executor::OpenGL>;
 
 	/**
 	 * @brief Implementation struct.
@@ -46,11 +46,11 @@ namespace VTX::Renderer::Context
 			p_backend.emplace<B>( std::forward<Args>( p_args )... );
 
 			// Rebuild executor to match the new backend.
-			if constexpr ( std::is_same_v<B, Backend::OpenGL45> )
+			if constexpr ( std::is_same_v<B, Backend::OpenGL> )
 			{
-				if ( auto * executor = std::get_if<Executor::OpenGL45>( &p_executor ) )
+				if ( auto * executor = std::get_if<Executor::OpenGL>( &p_executor ) )
 				{
-					p_executor.emplace<Executor::OpenGL45>( std::get<Backend::OpenGL45>( p_backend ) );
+					p_executor.emplace<Executor::OpenGL>( std::get<Backend::OpenGL>( p_backend ) );
 				}
 			}
 		}
@@ -61,11 +61,11 @@ namespace VTX::Renderer::Context
 		template<typename E>
 		void _setExecutor( const BackendVariant & p_backend, ExecutorVariant & p_executor )
 		{
-			if constexpr ( std::is_same_v<E, Executor::OpenGL45> )
+			if constexpr ( std::is_same_v<E, Executor::OpenGL> )
 			{
-				if ( auto * backend = std::get_if<Backend::OpenGL45>( &p_backend ) )
+				if ( auto * backend = std::get_if<Backend::OpenGL>( &p_backend ) )
 				{
-					p_executor.emplace<Executor::OpenGL45>( *backend );
+					p_executor.emplace<Executor::OpenGL>( *backend );
 					return;
 				}
 			}
@@ -77,15 +77,15 @@ namespace VTX::Renderer::Context
 	ContextWrapper::ContextWrapper() : _impl( std::make_unique<Impl>() ) {}
 	ContextWrapper::~ContextWrapper() = default;
 
-	void ContextWrapper::setOpenGL45(
+	void ContextWrapper::setOpenGL(
 		const size_t	 p_width,
 		const size_t	 p_height,
 		const FilePath & p_shaderPath,
 		void *			 p_proc
 	)
 	{
-		_setBackend<Backend::OpenGL45>( _impl->backend, _impl->executor, p_width, p_height, p_shaderPath, p_proc );
-		_setExecutor<Executor::OpenGL45>( _impl->backend, _impl->executor );
+		_setBackend<Backend::OpenGL>( _impl->backend, _impl->executor, p_width, p_height, p_shaderPath, p_proc );
+		_setExecutor<Executor::OpenGL>( _impl->backend, _impl->executor );
 	}
 
 	void ContextWrapper::setNull() { _setExecutor<Executor::Null>( _impl->backend, _impl->executor ); }
@@ -183,9 +183,10 @@ namespace VTX::Renderer::Context
 	}
 
 	std::vector<std::byte> ContextWrapper::getTextureData(
-		const Desc::Key & p_key,
-		const size_t	  p_x,
-		const size_t	  p_y
+		const Desc::Key &			  p_key,
+		std::optional<Desc::E_FORMAT> p_format,
+		std::optional<size_t>		  p_x,
+		std::optional<size_t>		  p_y
 	) const
 	{
 		return std::visit(
@@ -194,7 +195,7 @@ namespace VTX::Renderer::Context
 				using T = std::remove_cvref_t<decltype( p_backend )>;
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
-					return p_backend.getTextureData( p_key, p_x, p_y );
+					return p_backend.getTextureData( p_key, p_format, p_x, p_y );
 				}
 				return std::vector<std::byte> {};
 			},
@@ -211,6 +212,21 @@ namespace VTX::Renderer::Context
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
 					p_backend.setTextureData( p_key, p_bytes );
+				}
+			},
+			_impl->backend
+		);
+	}
+
+	void ContextWrapper::setRenderTarget( const Desc::E_RENDER_TARGET p_target )
+	{
+		std::visit(
+			[ & ]( auto & p_backend )
+			{
+				using T = std::remove_cvref_t<decltype( p_backend )>;
+				if constexpr ( not std::is_same_v<T, std::monostate> )
+				{
+					p_backend.setRenderTarget( p_target );
 				}
 			},
 			_impl->backend

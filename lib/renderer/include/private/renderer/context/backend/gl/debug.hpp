@@ -3,9 +3,9 @@
 
 #include <util/logger.hpp>
 
-namespace VTX::Renderer::Context::GL::Debug
+namespace VTX::Renderer::Context::Backend::GL::Debug
 {
-	inline void APIENTRY _debugMessageCallback(
+	inline void _debugMessageCallback(
 		const GLenum   p_source,
 		const GLenum   p_type,
 		const GLuint   p_id,
@@ -102,6 +102,6 @@ namespace VTX::Renderer::Context::GL::Debug
 
 		return std::string( log.begin(), log.end() );
 	}
-} // namespace VTX::Renderer::Context::GL::Debug
+} // namespace VTX::Renderer::Context::Backend::GL::Debug
 
 #endif

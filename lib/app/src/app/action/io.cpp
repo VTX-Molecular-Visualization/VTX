@@ -1,5 +1,6 @@
 #include "app/action/io.hpp"
 #include "app/action/action_manager.hpp"
+#include "app/action/application.hpp"
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
 #include "app/filesystem.hpp"
@@ -147,11 +148,14 @@ namespace VTX::App::Action::IO
 	{
 		try
 		{
-			const auto &	   camera = ECS::getFirstComponent<Renderer::Camera>();
-			std::vector<uchar> image;
+			const size_t currentWidth  = RENDERER().width();
+			const size_t currentHeight = RENDERER().height();
 
-			RENDERER().snapshot( image, _width, _height, camera.fov, camera.near, camera.far );
-			FilePath path = Util::Image::write( _path, _format, _width, _height, image.data() );
+			ACTION().execute<Application::Resize>( p_width, p_height );
+			std::vector<std::byte> image = RENDERER().snapshot();
+			ACTION().execute<Application::Resize>( currentWidth, currentHeight );
+
+			FilePath path = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
 
 			VTX_INFO( "Image saved: {}", path.string() );
 		}

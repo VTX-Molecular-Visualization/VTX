@@ -1,6 +1,6 @@
-#include "renderer/context/backend/opengl45.hpp"
+#include "renderer/context/backend/opengl.hpp"
 #include "renderer/binary_buffer.hpp"
-#include "renderer/context/gl/debug.hpp"
+#include "renderer/context/backend/gl/debug.hpp"
 #include <numeric>
 #include <util/exceptions.hpp>
 
@@ -28,12 +28,13 @@ namespace
 
 		switch ( p_format )
 		{
-		case E_FORMAT::RGB16F: return { GL_RGB16F, GL_RGB, GL_FLOAT, 6, false, false };
-		case E_FORMAT::RGBA16F: return { GL_RGBA16F, GL_RGBA, GL_FLOAT, 8, false, false };
+		case E_FORMAT::RGBA8UI: return { GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, 4, false, false };
+		case E_FORMAT::RGB16F: return { GL_RGB16F, GL_RGB, GL_HALF_FLOAT, 6, false, false };
+		case E_FORMAT::RGBA16F: return { GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT, 8, false, false };
 		case E_FORMAT::RGBA32F: return { GL_RGBA32F, GL_RGBA, GL_FLOAT, 16, false, false };
-		case E_FORMAT::R16F: return { GL_R16F, GL_RED, GL_FLOAT, 2, false, false };
+		case E_FORMAT::R16F: return { GL_R16F, GL_RED, GL_HALF_FLOAT, 2, false, false };
 		case E_FORMAT::R32F: return { GL_R32F, GL_RED, GL_FLOAT, 4, false, false };
-		case E_FORMAT::R8: return { GL_R8, GL_RED, GL_UNSIGNED_BYTE, 1, false, false };
+		case E_FORMAT::R8UI: return { GL_R8, GL_RED, GL_UNSIGNED_BYTE, 1, false, false };
 		case E_FORMAT::RG32UI: return { GL_RG32UI, GL_RG_INTEGER, GL_UNSIGNED_INT, 8, true, false };
 		case E_FORMAT::RGBA32UI: return { GL_RGBA32UI, GL_RGBA_INTEGER, GL_UNSIGNED_INT, 16, true, false };
 		case E_FORMAT::DEPTH_COMPONENT32F:
@@ -183,7 +184,7 @@ namespace
 namespace VTX::Renderer::Context::Backend
 {
 
-	OpenGL45::OpenGL45( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc ) :
+	OpenGL::OpenGL( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc ) :
 		_shaderPath( p_shaderPath )
 	{
 		assert( p_width > 0 );
@@ -195,20 +196,20 @@ namespace VTX::Renderer::Context::Backend
 		_width	= static_cast<uint32_t>( p_width );
 		_height = static_cast<uint32_t>( p_height );
 
-		// Load opengl 4.5.
+		// Load opengl 4.6.
 		// With external loader.
-		if ( p_proc && gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
+		if ( p_proc && gladLoadGL( (GLADloadfunc)p_proc ) == 0 )
 		{
 			throw GraphicException( "Failed to load OpenGL" );
 		}
 		// With glad integrated loader.
-		else if ( gladLoadGL() == 0 )
+		else if ( gladLoaderLoadGL() == 0 )
 		{
 			throw GraphicException( "Failed to load OpenGL" );
 		}
 
 		// Check version.
-		if ( not GLAD_GL_VERSION_4_5 )
+		if ( not GLAD_GL_VERSION_4_6 )
 		{
 			throw GraphicException( "OpenGL 4.5 or higher is required" );
 		}
@@ -237,7 +238,7 @@ namespace VTX::Renderer::Context::Backend
 
 	// Create resources, configure, and push commands.
 	// No OpenGL objects in this function, only Handles.
-	void OpenGL45::build(
+	void OpenGL::build(
 		const Desc::RenderQueue & p_renderQueue,
 		const Desc::Resources &	  p_resources,
 		CommandBuffer &			  p_commands
@@ -252,8 +253,7 @@ namespace VTX::Renderer::Context::Backend
 		_samplers.invalidate();
 		_programs.invalidate();
 		_shaderBuffers.invalidate();
-		_vertexBuffers.invalidate();
-		_indexBuffers.invalidate();
+		_pipelineBuffers.invalidate();
 		_vertexArrays.invalidate();
 
 		// Create all resources.
@@ -277,13 +277,7 @@ namespace VTX::Renderer::Context::Backend
 		}
 		for ( const auto & [ key, buffer ] : p_resources.pipelineBuffers )
 		{
-			Handle h;
-			switch ( buffer.kind )
-			{
-			case E_PIPELINE_BUFFER_KIND::VERTEX: h = _getOrCreateVertexBuffer( key, buffer ); break;
-			case E_PIPELINE_BUFFER_KIND::INDEX: h = _getOrCreateIndexBuffer( key, buffer ); break;
-			default: assert( false ); break;
-			}
+			_getOrCreatePipelineBuffer( key, buffer );
 		}
 
 		// Bind geometries to VAOs.
@@ -304,10 +298,7 @@ namespace VTX::Renderer::Context::Backend
 
 			// FBO.
 			const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
-			if ( not isLastPass )
-			{
-				_attachTexturesToFramebuffer( pass, p_resources.textures );
-			}
+			_attachTexturesToFramebuffer( pass, p_resources.textures );
 
 			// Create programs.
 			for ( const Program & program : pass.programs )
@@ -321,10 +312,18 @@ namespace VTX::Renderer::Context::Backend
 			resourceTable				   = _buildResourceTableForPass( pass, p_resources );
 
 			// COMMANDS.
-			// Push BEGIN_PASS.
-			uint32_t		 flags = _toSettingFlags( pass.settings );
-			PayloadBeginPass pBeginPass { hFramebuffer, flags };
-			p_commands.push<E_COMMAND::BEGIN_PASS>( pBeginPass );
+			// Push BEGIN_PASS/BIND_OUTPUT.
+			uint32_t flags = _toSettingFlags( pass.settings );
+			if ( not isLastPass )
+			{
+				PayloadBeginPass pBeginPass { hFramebuffer, flags };
+				p_commands.push<E_COMMAND::BEGIN_PASS>( pBeginPass );
+			}
+			else
+			{
+				PayloadBindOutput pBindOutput { reinterpret_cast<uintptr_t>( &_target ) };
+				p_commands.push<E_COMMAND::BIND_OUTPUT>( pBindOutput );
+			}
 
 			// Push BIND_RESOURCES.
 			PayloadBindResources pBindResources { hResourceTable };
@@ -352,55 +351,71 @@ namespace VTX::Renderer::Context::Backend
 				{
 					const DrawCall & drawCall = program.drawCall.value();
 					const Geometry & geometry = p_resources.geometries.at( drawCall.geometry );
+					const bool		 indexed  = geometry.indexBuffer.has_value();
+					const bool		 indirect = geometry.indirectBuffer.has_value();
 
-					if ( drawCall.vertexCount )
+					if ( not indirect )
 					{
-						PayloadDrawArray pDraw { hProgram, hVao };
-						pDraw.primitive	  = toUnderlying( drawCall.primitive );
-						pDraw.vertexCount = drawCall.vertexCount;
-						p_commands.push<E_COMMAND::DRAW_ARRAY>( pDraw );
-					}
-					else if ( drawCall.indexCount )
-					{
-						PayloadDrawElement pDraw { hProgram, hVao };
-						pDraw.primitive	 = toUnderlying( drawCall.primitive );
-						pDraw.indexCount = drawCall.indexCount;
-						p_commands.push<E_COMMAND::DRAW_ELEMENT>( pDraw );
-					}
+						const DrawCall::Range * rangePtr = std::get_if<DrawCall::Range>( &drawCall.ranges );
+						assert( rangePtr );
 
-					else if ( drawCall.vertexRanges )
-					{
-						PayloadDrawArrays pDraw { hProgram, hVao };
-						pDraw.primitive	   = toUnderlying( drawCall.primitive );
-						pDraw.vertexRanges = reinterpret_cast<uintptr_t>( drawCall.vertexRanges );
-						p_commands.push<E_COMMAND::DRAW_ARRAYS>( pDraw );
-					}
-					else if ( drawCall.indexRanges )
-					{
-						PayloadDrawElements pDraw { hProgram, hVao };
-						pDraw.primitive	  = toUnderlying( drawCall.primitive );
-						pDraw.indexRanges = reinterpret_cast<uintptr_t>( drawCall.indexRanges );
-						p_commands.push<E_COMMAND::DRAW_ELEMENTS>( pDraw );
+						if ( indexed )
+						{
+							PayloadDrawIndexed pDraw { hProgram, hVao };
+							pDraw.primitive = toUnderlying( drawCall.primitive );
+							pDraw.first		= rangePtr->first;
+							pDraw.count		= rangePtr->count;
+							p_commands.push<E_COMMAND::DRAW_INDEXED>( pDraw );
+						}
+						else
+						{
+							PayloadDraw pDraw { hProgram, hVao };
+							pDraw.primitive = toUnderlying( drawCall.primitive );
+							pDraw.first		= rangePtr->first;
+							pDraw.count		= rangePtr->count;
+							p_commands.push<E_COMMAND::DRAW>( pDraw );
+						}
 					}
 					else
 					{
-						assert( false && "DrawCall has no valid draw parameters." );
+						const uintptr_t * ptr = std::get_if<uintptr_t>( &drawCall.ranges );
+						assert( ptr );
+
+						if ( indexed )
+						{
+							PayloadDrawIndexedIndirect pDraw { hProgram, hVao };
+							pDraw.primitive = toUnderlying( drawCall.primitive );
+							pDraw.buffer	= _pipelineBuffers.handle( geometry.indirectBuffer.value() );
+							pDraw.count		= *ptr;
+							p_commands.push<E_COMMAND::DRAW_INDEXED_INDIRECT>( pDraw );
+						}
+						else
+						{
+							PayloadDrawIndirect pDraw { hProgram, hVao };
+							pDraw.primitive = toUnderlying( drawCall.primitive );
+							pDraw.buffer	= _pipelineBuffers.handle( geometry.indirectBuffer.value() );
+							pDraw.count		= *ptr;
+							p_commands.push<E_COMMAND::DRAW_INDIRECT>( pDraw );
+						}
 					}
 				}
 				else
 				{
 					// Fullscreen quad draw.
-					PayloadDrawArray pDraw { hProgram, hVao };
-					pDraw.primitive	  = static_cast<uint32_t>( toUnderlying( E_PRIMITIVE::TRIANGLES ) );
-					pDraw.vertexCount = 4;
-					p_commands.push<E_COMMAND::DRAW_ARRAY>( pDraw );
+					PayloadDraw pDraw { hProgram, hVao };
+					pDraw.primitive = static_cast<uint32_t>( toUnderlying( E_PRIMITIVE::TRIANGLES ) );
+					pDraw.first		= 0;
+					pDraw.count		= 4;
+					p_commands.push<E_COMMAND::DRAW>( pDraw );
 				}
 			}
 
 			// Push END_PASS.
-			PayloadEndPass pEndPass { flags };
+			PayloadEndPass pEndPass { hFramebuffer, flags };
 			p_commands.push<E_COMMAND::END_PASS>( pEndPass );
 		}
+
+		setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
 
 		// Purge invalid resources.
 		_resourceTables.purge();
@@ -409,8 +424,7 @@ namespace VTX::Renderer::Context::Backend
 		_samplers.purge();
 		_programs.purge();
 		_shaderBuffers.purge();
-		_vertexBuffers.purge();
-		_indexBuffers.purge();
+		_pipelineBuffers.purge();
 		_vertexArrays.purge();
 
 		// Dump errors.
@@ -423,7 +437,7 @@ namespace VTX::Renderer::Context::Backend
 		}
 	}
 
-	void OpenGL45::resize(
+	void OpenGL::resize(
 		const uint32_t							 p_width,
 		const uint32_t							 p_height,
 		const Desc::PassList &					 p_passes,
@@ -468,17 +482,14 @@ namespace VTX::Renderer::Context::Backend
 
 		for ( const auto & pass : p_passes )
 		{
-			if ( _framebuffers.contains( pass->name ) ) // Avoid the last pass.
-			{
-				_attachTexturesToFramebuffer( *pass, p_textures );
-			}
+			_attachTexturesToFramebuffer( *pass, p_textures );
 		}
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateFramebuffer(
+	Desc::Handle OpenGL::_getOrCreateFramebuffer(
 		const Desc::Pass &		p_pass,
 		const Desc::Resources & p_res,
-		const bool				p_isLastpass
+		const bool				p_isLast
 	)
 	{
 		using namespace Desc;
@@ -490,17 +501,24 @@ namespace VTX::Renderer::Context::Backend
 			return _framebuffers.handle( key );
 		}
 
-		if ( p_isLastpass )
-		{
-			return NO_HANDLE;
-		}
-
 		const Handle h = _framebuffers.emplace( key );
+
+		if ( p_isLast )
+		{
+			// Save as offscreen target.
+			_offscreen = h;
+
+			// Create a default fbo.
+			if ( not _framebuffers.validate( _DEFAULT_FBO ) )
+			{
+				_default = _framebuffers.emplace( _DEFAULT_FBO, {}, 0 );
+			}
+		}
 
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateResourceTable( const Desc::Pass & p_pass, const Desc::Resources & p_res )
+	Desc::Handle OpenGL::_getOrCreateResourceTable( const Desc::Pass & p_pass, const Desc::Resources & p_res )
 	{
 		using namespace Desc;
 
@@ -516,7 +534,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateTexture( const Desc::Key & p_key, const Desc::Texture & p_text )
+	Desc::Handle OpenGL::_getOrCreateTexture( const Desc::Key & p_key, const Desc::Texture & p_text )
 	{
 		using namespace Desc;
 
@@ -554,7 +572,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateSampler( const Desc::Key & p_key, const Desc::Sampler & p_sampler )
+	Desc::Handle OpenGL::_getOrCreateSampler( const Desc::Key & p_key, const Desc::Sampler & p_sampler )
 	{
 		using namespace Desc;
 
@@ -576,10 +594,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateVertexLayout(
-		const Desc::Key &		   p_key,
-		const Desc::VertexLayout & p_vertexStream
-	)
+	Desc::Handle OpenGL::_getOrCreateVertexLayout( const Desc::Key & p_key, const Desc::VertexLayout & p_vertexStream )
 	{
 		using namespace Desc;
 
@@ -617,7 +632,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateShaderBuffer( const Desc::BufferShader & p_buffer )
+	Desc::Handle OpenGL::_getOrCreateShaderBuffer( const Desc::BufferShader & p_buffer )
 	{
 		using namespace Desc;
 
@@ -685,35 +700,21 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateVertexBuffer( const Desc::Key & p_key, const Desc::BufferPipeline & p_buffer )
+	Desc::Handle OpenGL::_getOrCreatePipelineBuffer( const Desc::Key & p_key, const Desc::BufferPipeline & p_buffer )
 	{
 		using namespace Desc;
 
-		if ( _vertexBuffers.validate( p_key, p_buffer ) )
+		if ( _pipelineBuffers.validate( p_key, p_buffer ) )
 		{
-			return _vertexBuffers.handle( p_key );
+			return _pipelineBuffers.handle( p_key );
 		}
 
-		const Handle h = _vertexBuffers.emplace( p_key, p_buffer );
+		const Handle h = _pipelineBuffers.emplace( p_key, p_buffer );
 
 		return h;
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateIndexBuffer( const Desc::Key & p_key, const Desc::BufferPipeline & p_buffer )
-	{
-		using namespace Desc;
-
-		if ( _indexBuffers.validate( p_key, p_buffer ) )
-		{
-			return _indexBuffers.handle( p_key );
-		}
-
-		const Handle h = _indexBuffers.emplace( p_key, p_buffer );
-
-		return h;
-	}
-
-	Desc::Handle OpenGL45::_getOrCreateProgram( const Desc::Program & p_program )
+	Desc::Handle OpenGL::_getOrCreateProgram( const Desc::Program & p_program )
 	{
 		using namespace Desc;
 
@@ -741,11 +742,11 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	OpenGL45::GlobalShaderBuffers OpenGL45::_buildGlobalShaderBuffers( const Desc::Resources & p_resources )
+	OpenGL::GlobalShaderBuffers OpenGL::_buildGlobalShaderBuffers( const Desc::Resources & p_resources )
 	{
 		using namespace Desc;
 
-		OpenGL45::GlobalShaderBuffers gsb;
+		OpenGL::GlobalShaderBuffers gsb;
 
 		for ( const auto & [ key, buffer ] : p_resources.shaderBuffers )
 		{
@@ -757,14 +758,14 @@ namespace VTX::Renderer::Context::Backend
 		return gsb;
 	}
 
-	OpenGL45::ResourceTable OpenGL45::_buildResourceTableForPass(
+	OpenGL::ResourceTable OpenGL::_buildResourceTableForPass(
 		const Desc::Pass &		p_pass,
 		const Desc::Resources & p_resources
 	)
 	{
 		using namespace Desc;
 
-		OpenGL45::ResourceTable rt;
+		OpenGL::ResourceTable rt;
 
 		// It's better to not use the same binding/unit several times in different contexts.
 		Binding b = 0;
@@ -825,7 +826,7 @@ namespace VTX::Renderer::Context::Backend
 		return rt;
 	}
 
-	void OpenGL45::_attachTexturesToFramebuffer(
+	void OpenGL::_attachTexturesToFramebuffer(
 		const Desc::Pass &						 p_pass,
 		const Desc::ResourceMap<Desc::Texture> & p_textures
 	)
@@ -876,7 +877,7 @@ namespace VTX::Renderer::Context::Backend
 		assert( fbo.checkStatus() );
 	}
 
-	void OpenGL45::_bindGeometryToVao(
+	void OpenGL::_bindGeometryToVao(
 		const Desc::Key &		p_key,
 		const Desc::Geometry &	p_geo,
 		const Desc::Resources & p_resources
@@ -896,7 +897,7 @@ namespace VTX::Renderer::Context::Backend
 		{
 			const GLAttrib	   ga		 = toGLAttrib( a.type );
 			const Key		   bufferKey = p_geo.vertexLayout + "." + a.name;
-			const GL::Buffer & vbo		 = _vertexBuffers.get( bufferKey );
+			const GL::Buffer & vbo		 = _pipelineBuffers.get( bufferKey );
 
 			const GLsizei stride = GLsizei( ga.columns * ga.components * ga.bytesPerComp );
 			for ( uint8_t col = 0; col < ga.columns; ++col )
@@ -909,14 +910,14 @@ namespace VTX::Renderer::Context::Backend
 
 		if ( p_geo.indexBuffer )
 		{
-			const GL::Buffer & ibo = _indexBuffers.get( *p_geo.indexBuffer );
+			const GL::Buffer & ibo = _pipelineBuffers.get( *p_geo.indexBuffer );
 			vao.bindElementBuffer( ibo );
 		}
 
 		vao.unbind();
 	}
 
-	Desc::Handle OpenGL45::_getOrCreateQuad()
+	Desc::Handle OpenGL::_getOrCreateQuad()
 	{
 		using namespace Desc;
 
@@ -927,7 +928,8 @@ namespace VTX::Renderer::Context::Backend
 		const Key	   quadVboKey = _QUAD_VBO;
 		BufferPipeline quadVboDesc { quadVboKey, E_PIPELINE_BUFFER_KIND::VERTEX, E_UPDATE_FREQUENCY::STATIC };
 
-		if ( _vertexArrays.validate( quadLayoutKey, quadLayout ) && _vertexBuffers.validate( quadVboKey, quadVboDesc ) )
+		if ( _vertexArrays.validate( quadLayoutKey, quadLayout )
+			 && _pipelineBuffers.validate( quadVboKey, quadVboDesc ) )
 		{
 			return _vertexArrays.handle( quadLayoutKey );
 		}
@@ -940,7 +942,7 @@ namespace VTX::Renderer::Context::Backend
 		quadGeo.indexBuffer	 = std::nullopt;
 
 		const Handle h = _getOrCreateVertexLayout( quadLayoutKey, quadLayout );
-		_getOrCreateVertexBuffer( quadVboKey, quadVboDesc );
+		_getOrCreatePipelineBuffer( quadVboKey, quadVboDesc );
 
 		Resources fakeRes;
 		fakeRes.vertexStreams.emplace( quadLayoutKey, quadLayout );
@@ -948,24 +950,24 @@ namespace VTX::Renderer::Context::Backend
 
 		_bindGeometryToVao( quadLayoutKey, quadGeo, fakeRes );
 
-		_vertexBuffers.get( quadVboKey ).setStorage( quad.data(), GLsizei( sizeof( quad ) ) );
+		_pipelineBuffers.get( quadVboKey ).setStorage( quad.data(), GLsizei( sizeof( quad ) ) );
 
 		return h;
 	}
 
-	void OpenGL45::setShaderBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
+	void OpenGL::setShaderBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
 	{
 		using namespace Desc;
 
-		const Handle h			= _shaderBuffers.handle( p_key );
-		const auto & bufferProp = _shaderBuffers.descriptor( p_key );
+		const Handle h	  = _shaderBuffers.handle( p_key );
+		const auto & desc = _shaderBuffers.descriptor( p_key );
 
-		switch ( bufferProp.mutability )
+		switch ( desc.mutability )
 		{
 		case E_BUFFER_MUTABILITY::MUTABLE:
 		{
 			_shaderBuffers.get( h ).setData(
-				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( bufferProp.frequency )
+				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( desc.frequency )
 			);
 			break;
 		}
@@ -979,62 +981,54 @@ namespace VTX::Renderer::Context::Backend
 	}
 
 	// Pipeline buffers are default immutables.
-	void OpenGL45::setPipelineBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
+	void OpenGL::setPipelineBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
 	{
 		using namespace Desc;
 
-		E_PIPELINE_BUFFER_KIND kind
-			= _vertexBuffers.contains( p_key ) ? E_PIPELINE_BUFFER_KIND::VERTEX : E_PIPELINE_BUFFER_KIND::INDEX;
+		const Handle h	  = _pipelineBuffers.handle( p_key );
+		const auto & desc = _pipelineBuffers.descriptor( p_key );
 
-		const Handle h
-			= kind == E_PIPELINE_BUFFER_KIND::VERTEX ? _vertexBuffers.handle( p_key ) : _indexBuffers.handle( p_key );
-		const auto & buffer = kind == E_PIPELINE_BUFFER_KIND::VERTEX ? _vertexBuffers.descriptor( p_key )
-																	 : _indexBuffers.descriptor( p_key );
-
-		assert( kind == buffer.kind );
-
-		if ( kind == E_PIPELINE_BUFFER_KIND::VERTEX )
-		{
-			_vertexBuffers.get( h ).setData(
-				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( buffer.frequency )
-			);
-		}
-		else
-		{
-			_indexBuffers.get( h ).setData(
-				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( buffer.frequency )
-			);
-		}
+		_pipelineBuffers.get( h ).setData(
+			p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( desc.frequency )
+		);
 	}
 
-	std::vector<std::byte> OpenGL45::getTextureData( const Desc::Key & p_key, const size_t p_x, const size_t p_y ) const
+	std::vector<std::byte> OpenGL::getTextureData(
+		const Desc::Key &			  p_key,
+		std::optional<Desc::E_FORMAT> p_format,
+		std::optional<size_t>		  p_x,
+		std::optional<size_t>		  p_y
+	) const
 	{
 		using namespace Desc;
 
-		std::vector<std::byte> data;
-		const Handle		   h		   = _textures.handle( p_key );
-		const auto &		   textureProp = _textures.descriptor( p_key );
-		const GLPixelFormat	   glFormat	   = _toGL( textureProp.format );
-		const auto &		   texture	   = _textures.get( h );
+		const Handle		handle		= _textures.handle( p_key );
+		const auto &		textureProp = _textures.descriptor( p_key );
+		const GLPixelFormat glFormat	= _toGL( p_format ? *p_format : textureProp.format );
+		const auto &		texture		= _textures.get( handle );
 
-		data.resize( glFormat.bytesPerPixel );
+		const bool	 single = p_x && p_y;
+		const size_t w		= single ? 1 : _width;
+		const size_t h		= single ? 1 : _height;
+
+		std::vector<std::byte> data( w * h * glFormat.bytesPerPixel );
 
 		texture.getSubImage(
 			0,
-			GLint( p_x ),
-			GLint( p_y ),
-			1,
-			1,
+			single ? GLint( *p_x ) : 0,
+			single ? GLint( *p_y ) : 0,
+			GLsizei( w ),
+			GLsizei( h ),
 			glFormat.uploadFormat,
 			glFormat.uploadType,
-			glFormat.bytesPerPixel,
+			GLsizei( data.size() ),
 			data.data()
 		);
 
 		return data;
 	}
 
-	void OpenGL45::setTextureData( const Desc::Key & p_key, SpanBytes p_bytes )
+	void OpenGL::setTextureData( const Desc::Key & p_key, SpanBytes p_bytes )
 	{
 		using namespace Desc;
 
@@ -1046,7 +1040,25 @@ namespace VTX::Renderer::Context::Backend
 		texture.fill( p_bytes.data(), glFormat.uploadFormat, glFormat.uploadType );
 	}
 
-	void OpenGL45::fillInfos( StructInfos & p_infos ) const
+	void OpenGL::setRenderTarget( const Desc::E_RENDER_TARGET p_target )
+	{
+		_target = p_target == Desc::E_RENDER_TARGET::SCREEN ? _default : _offscreen;
+	}
+
+	// Old way: reading framebuffer. New way: read from texture directly.
+	/*
+	std::vector<std::byte> OpenGL::snapshot() const
+	{
+		std::vector<std::byte> data( _width * _height * 4 );
+		glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
+		glReadBuffer( GL_BACK );
+		glReadPixels( 0, 0, _width, _height, GL_RGBA, GL_UNSIGNED_BYTE, data.data() );
+
+		return data;
+	}
+	*/
+
+	void OpenGL::fillInfos( StructInfos & p_infos ) const
 	{
 		p_infos.renderer = _openglInfos.glRenderer;
 
@@ -1076,7 +1088,7 @@ namespace VTX::Renderer::Context::Backend
 #endif
 	}
 
-	void OpenGL45::_getOpenglInfos()
+	void OpenGL::_getOpenglInfos()
 	{
 		_openglInfos.glVendor	 = std::string( (const char *)glGetString( GL_VENDOR ) );
 		_openglInfos.glRenderer	 = std::string( (const char *)glGetString( GL_RENDERER ) );

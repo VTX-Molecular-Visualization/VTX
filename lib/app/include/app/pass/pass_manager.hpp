@@ -2,9 +2,9 @@
 #define __VTX_APP_PASS_MANAGER__
 
 #include <concepts>
+#include <forward_list>
 #include <util/collection.hpp>
 #include <util/event_hub.hpp>
-#include <vector>
 
 namespace VTX::App::Pass
 {

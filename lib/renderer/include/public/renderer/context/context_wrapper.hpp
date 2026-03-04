@@ -23,7 +23,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Set OpenGL 4.5 graphic context backkend and executor.
 		 */
-		void setOpenGL45( const size_t, const size_t, const FilePath &, void * = nullptr );
+		void setOpenGL( const size_t, const size_t, const FilePath &, void * = nullptr );
 
 		/**
 		 * @brief Set null executor.
@@ -94,9 +94,16 @@ namespace VTX::Renderer::Context
 		void setPipelineBuffer( const Desc::Key & p_key, SpanBytes, const size_t p_offset = 0 );
 
 		/**
-		 * @brief Get texture data at a given pixel.
+		 * @brief Get texture data.
+		 * Can use a different read format (default is upload format).
+		 * Coordinates = single pixel, default = whole texture.
 		 */
-		std::vector<std::byte> getTextureData( const Desc::Key & p_key, const size_t p_x, const size_t p_y ) const;
+		std::vector<std::byte> getTextureData(
+			const Desc::Key & p_key,
+			std::optional<Desc::E_FORMAT> = {},
+			std::optional<size_t> p_x	  = {},
+			std::optional<size_t> p_y	  = {}
+		) const;
 
 		/**
 		 * @brief Set texture data.
@@ -107,6 +114,11 @@ namespace VTX::Renderer::Context
 			setTextureData( p_key, asBytes( p_data ) );
 		}
 		void setTextureData( const Desc::Key & p_key, SpanBytes p_data );
+
+		/**
+		 * @brief Set the render target.
+		 */
+		void setRenderTarget( const Desc::E_RENDER_TARGET p_target );
 
 		/**
 		 * @brief Fill renderer infos.

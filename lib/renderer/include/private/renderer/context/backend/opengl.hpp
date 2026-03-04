@@ -1,17 +1,17 @@
-#ifndef __VTX_RENDERER_CONTEXT_BACKEND_OPENGL45__
-#define __VTX_RENDERER_CONTEXT_BACKEND_OPENGL45__
+#ifndef __VTX_RENDERER_CONTEXT_BACKEND_OPENGL__
+#define __VTX_RENDERER_CONTEXT_BACKEND_OPENGL__
 
 #include "renderer/binary_buffer.hpp"
+#include "renderer/context/backend/gl/buffer.hpp"
+#include "renderer/context/backend/gl/chrono.hpp"
+#include "renderer/context/backend/gl/framebuffer.hpp"
+#include "renderer/context/backend/gl/include_opengl.hpp"
+#include "renderer/context/backend/gl/program.hpp"
+#include "renderer/context/backend/gl/sampler.hpp"
+#include "renderer/context/backend/gl/struct_opengl_infos.hpp"
+#include "renderer/context/backend/gl/texture_2d.hpp"
+#include "renderer/context/backend/gl/vertex_array.hpp"
 #include "renderer/context/command_buffer.hpp"
-#include "renderer/context/gl/buffer.hpp"
-#include "renderer/context/gl/chrono.hpp"
-#include "renderer/context/gl/framebuffer.hpp"
-#include "renderer/context/gl/include_opengl.hpp"
-#include "renderer/context/gl/program.hpp"
-#include "renderer/context/gl/sampler.hpp"
-#include "renderer/context/gl/struct_opengl_infos.hpp"
-#include "renderer/context/gl/texture_2d.hpp"
-#include "renderer/context/gl/vertex_array.hpp"
 #include "renderer/descriptors.hpp"
 #include "renderer/resource_handler.hpp"
 #include "renderer/struct_infos.hpp"
@@ -19,9 +19,9 @@
 namespace VTX::Renderer::Context::Backend
 {
 	/**
-	 * @brief OpenGL 4.5 backend.
+	 * @brief OpenGL backend.
 	 */
-	class OpenGL45
+	class OpenGL
 	{
 	  public:
 		/**
@@ -58,7 +58,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Default constructor.
 		 */
-		OpenGL45( const size_t, const size_t, const FilePath &, void * = nullptr );
+		OpenGL( const size_t, const size_t, const FilePath &, void * = nullptr );
 
 		/**
 		 * @brief Build the command buffer from the render queue and resources.
@@ -81,14 +81,24 @@ namespace VTX::Renderer::Context::Backend
 		void setPipelineBufferData( const Desc::Key &, SpanBytes, const size_t );
 
 		/**
-		 * @brief Get texture data at a given pixel.
+		 * @brief Get texture data at a given pixel, or full texture.
 		 */
-		std::vector<std::byte> getTextureData( const Desc::Key &, const size_t, const size_t ) const;
+		std::vector<std::byte> getTextureData(
+			const Desc::Key &,
+			std::optional<Desc::E_FORMAT>,
+			std::optional<size_t>,
+			std::optional<size_t>
+		) const;
 
 		/**
 		 * @brief Set texture data.
 		 */
 		void setTextureData( const Desc::Key & p_key, SpanBytes );
+
+		/**
+		 * @brief Set render target.
+		 */
+		void setRenderTarget( const Desc::E_RENDER_TARGET );
 
 		/**
 		 * @brief Fill backend infos.
@@ -98,7 +108,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Resources accessors.
 		 */
-		inline const OpenGL45::ResourceTable & resourceTable( const Desc::Handle p_handle ) const noexcept
+		inline const ResourceTable & resourceTable( const Desc::Handle p_handle ) const noexcept
 		{
 			return _resourceTables.get( p_handle );
 		}
@@ -128,14 +138,9 @@ namespace VTX::Renderer::Context::Backend
 			return _shaderBuffers.get( p_handle );
 		}
 
-		inline const GL::Buffer & vertexBuffer( const Desc::Handle p_handle ) const noexcept
+		inline const GL::Buffer & pipelineBuffer( const Desc::Handle p_handle ) const noexcept
 		{
-			return _vertexBuffers.get( p_handle );
-		}
-
-		inline const GL::Buffer & indexBuffer( const Desc::Handle p_handle ) const noexcept
-		{
-			return _indexBuffers.get( p_handle );
+			return _pipelineBuffers.get( p_handle );
 		}
 
 		inline const GL::VertexArray & vertexArray( const Desc::Handle p_handle ) const noexcept
@@ -149,6 +154,13 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		uint32_t _width;
 		uint32_t _height;
+
+		/**
+		 * @brief Render target (default framebuffer or offscreen).
+		 */
+		Desc::Handle _default;
+		Desc::Handle _offscreen;
+		Desc::Handle _target;
 
 		/**
 		 * @brief Shader path.
@@ -167,8 +179,7 @@ namespace VTX::Renderer::Context::Backend
 		ResourceHandler<GL::Framebuffer>					 _framebuffers;
 		ResourceHandler<ResourceTable>						 _resourceTables;
 		ResourceHandler<GL::VertexArray, Desc::VertexLayout> _vertexArrays;
-		ResourceHandler<GL::Buffer, Desc::BufferPipeline>	 _vertexBuffers;
-		ResourceHandler<GL::Buffer, Desc::BufferPipeline>	 _indexBuffers;
+		ResourceHandler<GL::Buffer, Desc::BufferPipeline>	 _pipelineBuffers;
 		ResourceHandler<GL::Buffer, Desc::BufferShader>		 _shaderBuffers;
 		ResourceHandler<GL::Texture2D, Desc::Texture>		 _textures;
 		ResourceHandler<GL::Sampler, Desc::Sampler>			 _samplers;
@@ -184,8 +195,7 @@ namespace VTX::Renderer::Context::Backend
 		Desc::Handle _getOrCreateSampler( const Desc::Key &, const Desc::Sampler & );
 		Desc::Handle _getOrCreateVertexLayout( const Desc::Key &, const Desc::VertexLayout & );
 		Desc::Handle _getOrCreateShaderBuffer( const Desc::BufferShader & );
-		Desc::Handle _getOrCreateVertexBuffer( const Desc::Key &, const Desc::BufferPipeline & );
-		Desc::Handle _getOrCreateIndexBuffer( const Desc::Key &, const Desc::BufferPipeline & );
+		Desc::Handle _getOrCreatePipelineBuffer( const Desc::Key &, const Desc::BufferPipeline & );
 		Desc::Handle _getOrCreateProgram( const Desc::Program & );
 
 		/**
@@ -203,8 +213,9 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Create the screen quad.
 		 */
-		inline static const Desc::Key _QUAD		= "Quad";
-		inline static const Desc::Key _QUAD_VBO = _QUAD + ".Position";
+		inline static const Desc::Key _QUAD		   = "Quad";
+		inline static const Desc::Key _QUAD_VBO	   = _QUAD + ".Position";
+		inline static const Desc::Key _DEFAULT_FBO = "Default";
 
 		/**
 		 * @brief Specs.

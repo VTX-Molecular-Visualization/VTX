@@ -115,11 +115,8 @@ namespace VTX::App::System
 			std::move( p_data.trajectoryData )
 		);
 		startAsyncTrajectoryWork( p_entity, p_data );
+
 		std::span<const Vec3f> firstFrame = getCurrentAtomPositions( p_entity );
-
-		if ( auto uid = REG().try_get<System::UID>( p_entity ) )
-			RENDERER().setSystemPosition( uid->system, firstFrame );
-
 		// AABB (trigger update function for scene aabb).
 		REG().patch<Util::Math::AABB>(
 			p_entity,
@@ -209,6 +206,9 @@ namespace VTX::App::System
 		}
 		else
 			create( p_entity, p_data );
+
+		if ( auto uid = REG().try_get<System::UID>( p_entity ) )
+			RENDERER().setSystemPosition( uid->system, getCurrentAtomPositions( p_entity ) );
 
 		REG().erase<PendingSystem>( p_entity );
 		HUB().trigger<EntityDelivered>( { p_entity } );

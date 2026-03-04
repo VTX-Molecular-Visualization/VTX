@@ -13,9 +13,9 @@ namespace VTX
 	/**
 	 * @brief Basic types.
 	 */
-	using uchar	 = unsigned char;  // 8 bits.
-	using ushort = unsigned short; // 16 bits.
-	using uint	 = unsigned int;   // 32 bits.
+	using uchar	 = uint8_t;
+	using ushort = uint16_t;
+	using uint	 = uint32_t;
 
 	/**
 	 * @brief Filesystem.

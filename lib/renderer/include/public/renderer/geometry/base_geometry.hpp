@@ -1,9 +1,13 @@
 #ifndef __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 #define __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 
+#include "renderer/descriptors.hpp"
+#include "renderer/system_data.hpp"
 #include <map>
+#include <util/exceptions.hpp>
 #include <util/logger.hpp>
 #include <util/math/range_list.hpp>
+#include <util/type_traits.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer::Geometry
@@ -11,12 +15,10 @@ namespace VTX::Renderer::Geometry
 	/**
 	 * @brief Type aliases.
 	 */
-	using IndexRange		= Util::Math::Range<Index>;
-	using IndexRangeList	= Util::Math::RangeList<Index>;
-	using MapUIDRange		= std::map<SystemUID, IndexRange>;
-	using MapUIDRangeList	= std::map<SystemUID, IndexRangeList>;
-	using DrawRangeArray	= Desc::DrawCall::RangeArrays;
-	using DrawRangeElements = Desc::DrawCall::RangeElements;
+	using IndexRange	  = Util::Math::Range<Index>;
+	using IndexRangeList  = Util::Math::RangeList<Index>;
+	using MapUIDRange	  = std::map<SystemUID, IndexRange>;
+	using MapUIDRangeList = std::map<SystemUID, IndexRangeList>;
 
 	/**
 	 * @brief If more than this number of consecutive items are not visible, split draw calls.
@@ -27,13 +29,30 @@ namespace VTX::Renderer::Geometry
 	/**
 	 * @brief Base geometry struct to handle and build draw ranges.
 	 */
-	template<typename DR>
-	struct BaseGeometry
+	class BaseGeometry
 	{
+	  public:
 		/**
-		 * @brief Range to draw per system (global indexes).
+		 * @brief Current size to draw (before applying anything).
 		 */
-		MapUIDRange ranges;
+		Index size = 0;
+
+		/**
+		 * @brief Push a range.
+		 */
+		template<typename T>
+		void addRange( const SystemUID p_uid, const T p_count )
+		{
+			size_t count = size + p_count;
+			if ( count > TypeMax<Index> )
+			{
+				throw GraphicException( "Total geometry count exceeds maximum supported value." );
+			}
+
+			Index countIndex = static_cast<Index>( count );
+			_ranges[ p_uid ] = IndexRange { size, countIndex };
+			size			 = countIndex;
+		}
 
 		/**
 		 * @brief Mask of ranges to not draw per system (local indexes).
@@ -44,18 +63,68 @@ namespace VTX::Renderer::Geometry
 		/**
 		 * @brief Compiled draw ranges for GPU calls.
 		 */
-		DR drawRanges;
+		// Desc::DrawCall::Ranges drawRanges;
+		uint32_t count = 0;
 
+		[[nodiscard]] std::vector<Desc::DrawIndirectCommand> toDrawIndirectCommands()
+		{
+			IndexRangeList						   allRanges = _buildDrawRanges();
+			std::vector<Desc::DrawIndirectCommand> commands;
+
+			for ( auto it = allRanges.rangeBegin(); it != allRanges.rangeEnd(); ++it )
+			{
+				if ( it->isEmpty() )
+				{
+					assert( false );
+				}
+				commands.emplace_back( Desc::DrawIndirectCommand { it->getCount(), 1, it->getFirst(), 0 } );
+			}
+
+			count = static_cast<uint32_t>( commands.size() );
+
+			return commands;
+		}
+
+		[[nodiscard]] std::vector<Desc::DrawIndexedIndirectCommand> toDrawIndexedIndirectCommands()
+		{
+			IndexRangeList								  allRanges = _buildDrawRanges();
+			std::vector<Desc::DrawIndexedIndirectCommand> commands;
+
+			for ( auto it = allRanges.rangeBegin(); it != allRanges.rangeEnd(); ++it )
+			{
+				if ( it->isEmpty() )
+				{
+					assert( false );
+				}
+				commands.emplace_back( Desc::DrawIndexedIndirectCommand { it->getCount(), 1, it->getFirst(), 0, 0 } );
+			}
+
+			count = static_cast<uint32_t>( commands.size() );
+
+			return commands;
+		}
+
+		IndexRange range( const SystemUID p_uid ) const
+		{
+			assert( _ranges.contains( p_uid ) );
+
+			return _ranges[ p_uid ];
+		}
+
+	  protected:
+		/**
+		 * @brief Range to draw per system (global indexes).
+		 */
+		mutable MapUIDRange _ranges;
+
+	  private:
 		/**
 		 * @brief Build GPU draw ranges.
 		 */
-		void buildDrawRanges()
+		[[nodiscard]] IndexRangeList _buildDrawRanges()
 		{
-			drawRanges.firsts.clear();
-			drawRanges.counts.clear();
-
 			IndexRangeList allRanges;
-			for ( const auto & [ uid, range ] : ranges )
+			for ( const auto & [ uid, range ] : _ranges )
 			{
 				// Range as list.
 				IndexRangeList rangeList( range );
@@ -63,7 +132,7 @@ namespace VTX::Renderer::Geometry
 				IndexRangeList visibillityToRemove	  = visibilityMask[ uid ];
 				IndexRangeList representationToRemove = representationMask[ uid ];
 
-				const Index first = ranges[ uid ].first;
+				const Index first = _ranges[ uid ].first;
 
 				// Remove masked ranges.
 				for ( auto it = visibillityToRemove.rangeBegin(); it != visibillityToRemove.rangeEnd(); ++it )
@@ -85,9 +154,9 @@ namespace VTX::Renderer::Geometry
 				allRanges.mergeInPlace( rangeList );
 			}
 
-			allRanges.toStdVectorsFirstCount( drawRanges.firsts, drawRanges.counts );
+			VTX_DEBUG( "Built draw ranges: {}", allRanges.rangeCount() );
 
-			VTX_DEBUG( "Built draw ranges: {} ranges, {} items", drawRanges.firsts.size(), allRanges.rangeCount() );
+			return allRanges;
 		}
 	};
 } // namespace VTX::Renderer::Geometry

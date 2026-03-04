@@ -6,8 +6,18 @@
 namespace VTX::Renderer::Geometry
 {
 
-	struct Cylinder : BaseGeometry<DrawRangeElements>
+	struct Cylinder : public BaseGeometry
 	{
+	  public:
+		void construct( const SystemData & p_data )
+		{
+			if ( _ranges.contains( p_data.uid ) )
+			{
+				return;
+			}
+
+			addRange( p_data.uid, p_data.data.getBondCount() * 2 );
+		}
 	};
 } // namespace VTX::Renderer::Geometry
 
