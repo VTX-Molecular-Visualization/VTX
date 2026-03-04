@@ -12,7 +12,7 @@
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
 #include "renderer/system_data.hpp"
-#include <renderer/types.hpp>
+#include "renderer/types.hpp"
 #include <util/callback.hpp>
 
 namespace VTX::Renderer

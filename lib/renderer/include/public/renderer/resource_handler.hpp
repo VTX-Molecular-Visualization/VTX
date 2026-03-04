@@ -8,14 +8,17 @@
 namespace VTX::Renderer
 {
 	/**
-	 * @brief Generic resource handler.
-	 * Store resources and provide access through handles.
+	 * @brief Empty descriptor.
 	 */
-	struct Dummy
+	struct DescDummy
 	{
 	};
 
-	template<typename T, typename D = Dummy, typename K = Desc::Key>
+	/**
+	 * @brief Generic resource handler.
+	 * Store resources and provide access through handles.
+	 */
+	template<typename T, typename D = DescDummy, typename K = Desc::Key>
 	class ResourceHandler
 	{
 	  public:

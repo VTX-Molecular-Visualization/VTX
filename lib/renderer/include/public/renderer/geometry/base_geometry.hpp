@@ -3,6 +3,7 @@
 
 #include "renderer/descriptors.hpp"
 #include "renderer/system_data.hpp"
+#include "renderer/types.hpp"
 #include <map>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
@@ -12,13 +13,6 @@
 
 namespace VTX::Renderer::Geometry
 {
-	/**
-	 * @brief Type aliases.
-	 */
-	using IndexRange	  = Util::Math::Range<Index>;
-	using IndexRangeList  = Util::Math::RangeList<Index>;
-	using MapUIDRange	  = std::map<SystemUID, IndexRange>;
-	using MapUIDRangeList = std::map<SystemUID, IndexRangeList>;
 
 	/**
 	 * @brief If more than this number of consecutive items are not visible, split draw calls.

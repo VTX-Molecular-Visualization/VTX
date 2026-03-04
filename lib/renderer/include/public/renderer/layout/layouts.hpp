@@ -7,11 +7,19 @@
 
 namespace VTX::Renderer
 {
-	struct Layouts
+	class Layouts
 	{
-		Layout::Atoms	   atoms;
-		Layout::Residues   residues;
-		Layout::Voxels	   voxels;
+	  public:
+		Layout::Atoms	 atoms;
+		Layout::Residues residues;
+		Layout::Voxels	 voxels;
+
+		void resize( Context::ContextWrapper & p_context )
+		{
+			atoms.resize( p_context );
+			residues.resize( p_context );
+			voxels.resize( p_context );
+		}
 	};
 } // namespace VTX::Renderer
 
