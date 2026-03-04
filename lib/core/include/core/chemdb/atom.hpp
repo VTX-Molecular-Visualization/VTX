@@ -28,7 +28,7 @@ namespace VTX::Core::ChemDB::Atom
 	*/
 
 	// Sorted by atomic number.
-	enum class SYMBOL : int
+	enum class SYMBOL : uint8_t
 	{
 		UNKNOWN = 0,
 		A_H		= 1,

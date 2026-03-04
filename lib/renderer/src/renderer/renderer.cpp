@@ -421,6 +421,8 @@ namespace VTX::Renderer
 				offsetRibbonIndices += countRibbonIndices;
 			}
 
+			setSystemPosition( uid, systemData.trajectory );
+
 			// Cache.
 			_cacheSystems[ uid ] = Cache::System { systemData.transform, modelIndex };
 

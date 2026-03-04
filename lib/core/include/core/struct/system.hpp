@@ -115,14 +115,28 @@ namespace VTX::Core::Struct
 		 * @brief Atom names.
 		 */
 		std::vector<std::string> atomNames;
+
 		/**
-		 * @brief All bond orders.
+		 * @brief Bond informations.
 		 */
+		struct BondInfo
+		{
+			Index				atom;
+			ChemDB::Bond::ORDER order;
+		};
+
+		/**
+		 * @brief List of adjacent atoms.
+		 */
+		std::vector<BondInfo> atomAdjacencyList;
+
+		/**
+		 * @brief For each atom, the range to read in the atomAdjacencyList.
+		 */
+		std::vector<IndexRange> atomBondRanges;
+
+		std::vector<Index>				 bondPairAtomIndexes;
 		std::vector<ChemDB::Bond::ORDER> bondOrders;
-		/**
-		 * @brief Each bond is represented by two consecutive atom indexes.
-		 */
-		std::vector<Index> bondPairAtomIndexes;
 
 		// TODO Manage Atom types and residue types with sparse_set
 		Util::Math::RangeList<Index> atomSolvents;

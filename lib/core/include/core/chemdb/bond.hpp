@@ -7,7 +7,7 @@
 
 namespace VTX::Core::ChemDB::Bond
 {
-	enum class ORDER : int
+	enum class ORDER : uint8_t
 	{
 		UNKNOWN	   = 0, ///< Bond order is unknown or unspecified
 		SINGLE	   = 1, ///< Single bond

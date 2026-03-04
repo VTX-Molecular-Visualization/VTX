@@ -102,10 +102,12 @@ namespace VTX::App::Pass
 				radii[ i ] = Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ toUnderlying( data.getAtomSymbol( i ) ) ];
 			}
 
+			std::span<const Vec3f> positions = System::getCurrentAtomPositions( system );
 			systemsData.push_back(
 				Renderer::SystemData { uid.system,
 									   transform.computeMatrix(),
 									   data,
+									   positions,
 									   radii,
 									   uid.atoms.toStdVector(),
 									   uid.residues.toStdVector() }
