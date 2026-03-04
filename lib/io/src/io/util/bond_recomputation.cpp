@@ -34,7 +34,8 @@ namespace VTX::IO::Util
 	{
 		return _neighbourList[ p_index ];
 	}
-	const std::vector<size_t> & BondRecomputation::CellList::getNeighbours( const chemfiles::Vector3D & p_position
+	const std::vector<size_t> & BondRecomputation::CellList::getNeighbours(
+		const chemfiles::Vector3D & p_position
 	) const
 	{
 		const size_t cellIndex = _getIndexFromPosition( p_position );
@@ -356,6 +357,7 @@ namespace VTX::IO::Util
 
 	double BondRecomputation::_sqrDistance( const chemfiles::Vector3D & p_lhs, const chemfiles::Vector3D & p_rhs )
 	{
-		return ( p_rhs - p_lhs ).sqrNorm();
+		const chemfiles::Vector3D vDiff = p_rhs - p_lhs;
+		return vDiff[ 0 ] * vDiff[ 0 ] + vDiff[ 1 ] * vDiff[ 1 ] + vDiff[ 2 ] * vDiff[ 2 ];
 	}
 } // namespace VTX::IO::Util

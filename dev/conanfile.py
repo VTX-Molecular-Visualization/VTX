@@ -35,7 +35,7 @@ class VTXRecipe(ConanFile):
         self.requires("nlohmann_json/3.12.0")
         self.requires("cpr/1.12.0")
         self.requires("catch2/3.11.0")
-        self.requires("chemfiles/0.10.4.2")
+        self.requires("chemfiles/2026.02.0")
         self.requires("sdl/3.2.20")
         self.requires("imgui/1.92.4")
         self.requires("stb/cci.20240531")

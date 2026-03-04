@@ -142,7 +142,7 @@ namespace VTX::IO::Reader
 
 	void Chemfiles::_readTrajectory()
 	{
-		if ( _readingData->_trajectory.nsteps() == 0 )
+		if ( _readingData->_trajectory.size() == 0 )
 		{
 			throw IOException( "Trajectory is empty" );
 		}
@@ -254,7 +254,7 @@ namespace VTX::IO::Reader
 	void Chemfiles::readNextFrame() { _readingData->readNextFrame(); }
 
 	// Trajectory //////////////////////////////////
-	Index Chemfiles::getFrameCount() const { return Index( _readingData->_trajectory.nsteps() ); }
+	Index Chemfiles::getFrameCount() const { return Index( _readingData->_trajectory.size() ); }
 	Index Chemfiles::getResidueCount() const { return Index( _readingData->_residues->size() ); }
 	Index Chemfiles::getAtomCount() const { return Index( _readingData->_currentFrame.size() ); }
 	Index Chemfiles::getBondCount() const { return Index( _readingData->_currentFrame.topology().bonds().size() ); }

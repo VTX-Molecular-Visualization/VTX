@@ -17,7 +17,7 @@ class VTXIORecipe(ConanFile):
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_core/1.0")
-        self.requires("chemfiles/0.10.4.2")
+        self.requires("chemfiles/2026.02.0")
         self.requires("catch2/3.11.0")
         
     def config_options(self):
