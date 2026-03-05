@@ -185,12 +185,10 @@ namespace VTX::Renderer::Geometry
 			}
 
 			_addRange( p_data.uid, bufferIndices.size() );
-			_rangesItems[ p_data.uid ] = IndexRange { offsetItems, static_cast<Index>( residueToPositions.size() ) };
 		}
 
 	  protected:
 		mutable std::map<SystemUID, Construction> _construction;
-		mutable MapUIDRange						  _rangesItems;
 	};
 
 } // namespace VTX::Renderer::Geometry
