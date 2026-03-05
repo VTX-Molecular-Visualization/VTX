@@ -85,8 +85,6 @@ namespace VTX::UI::QT
 			&QTimer::timeout,
 			[ this ] { VTXApp::update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); }
 		);
-		_timer.start( 0 );
-		_durationTimer.start();
 	}
 
 	Application::~Application()
@@ -115,6 +113,8 @@ namespace VTX::UI::QT
 				VTXApp::start();
 				MAIN_WINDOW().show();
 				_splashScreen->finish( &MAIN_WINDOW() );
+				_timer.start( 0 );
+				_durationTimer.start();
 			}
 		);
 
