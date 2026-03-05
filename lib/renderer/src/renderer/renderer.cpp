@@ -351,78 +351,60 @@ namespace VTX::Renderer
 
 		for ( const auto & systemData : p_systems )
 		{
+			const SystemUID uid = systemData.uid;
+
 			// Compute geometries.
 			_geometries.construct( systemData );
 
 			// Register ranges in layouts.
-			_layouts.atoms.add( systemData.uid, _geometries.spheres.range( systemData.uid ) );
-
-			if ( not _geometries.ribbons.construction( systemData.uid ).isEmpty )
-			{
-				_layouts.residues.add( systemData.uid, _geometries.ribbons.rangeItems( systemData.uid ) );
-			}
+			_layouts.atoms.add( uid, _geometries.spheres.size( uid ) );
+			_layouts.residues.add(
+				uid, static_cast<uint32_t>( _geometries.ribbons.construction( uid ).residues.size() )
+			);
 		}
 
 		// Reserve data.
 		_layouts.resize( _context );
+		_geometries.resize( _context );
 
-		const size_t totalAtoms			= _geometries.spheres.size;
-		const size_t totalBonds			= _geometries.cylinders.size;
-		const size_t totalRibbonItems	= _geometries.ribbons.sizeItems;
-		const size_t totalRibbonIndices = _geometries.ribbons.size;
-
-		//_context.setPipelineBuffer<Index>( "Index.Atoms", totalAtoms );
-		_context.setPipelineBuffer<Index>( "Index.Bonds", totalBonds );
-		_context.setPipelineBuffer<Index>( "Index.Ribbons", totalRibbonIndices );
-
+		// Clear cache.
 		_cacheSystems.clear();
 
-		ModelIndex modelIndex		   = 0;
-		size_t	   offsetAtoms		   = 0;
-		size_t	   offsetBonds		   = 0;
-		size_t	   offsetRibbonItems   = 0;
-		size_t	   offsetRibbonIndices = 0;
+		ModelIndex modelIndex = 0;
 		for ( const auto & systemData : p_systems )
 		{
-			const Index		countAtoms = systemData.data.getAtomCount();
-			const Index		countBonds = systemData.data.getBondCount() * 2;
-			const SystemUID uid		   = systemData.uid;
+			using namespace Layout;
 
-			// Upload data.
-			_context.setPipelineBuffer<Index>( "Index.Bonds", systemData.data.bondPairAtomIndexes, offsetBonds );
-			_context.setPipelineBuffer<float>( "Atoms.Radii", systemData.radii, offsetAtoms );
-			_context.setPipelineBuffer<PickingUID>( "Atoms.Ids", systemData.atomUids, offsetAtoms );
-			_context.setPipelineBuffer<ModelIndex>(
-				"Atoms.Models", std::vector<ModelIndex>( countAtoms, modelIndex ), offsetAtoms
+			const SystemUID uid = systemData.uid;
+
+			// Upload layouts and geometries data.
+			_layouts.atoms.upload<ATOM_ATTR::RADIUS, float>( _context, uid, systemData.radii );
+			_layouts.atoms.upload<ATOM_ATTR::ID, PickingUID>( _context, uid, systemData.atomUids );
+			const Index countAtoms = _geometries.spheres.size( uid );
+			_layouts.atoms.upload<ATOM_ATTR::MODEL, ModelIndex>(
+				_context, uid, std::vector<ModelIndex>( countAtoms, modelIndex )
 			);
-
-			offsetAtoms += countAtoms;
-			offsetBonds += countBonds;
+			_geometries.cylinders.uploadIndexes( _context, uid, systemData.data.bondPairAtomIndexes );
 
 			if ( not _geometries.ribbons.empty( uid ) )
 			{
-				const auto & construction		= _geometries.ribbons.construction( uid );
-				const Index	 countRibbonItems	= static_cast<Index>( construction.residues.size() );
-				const Index	 countRibbonIndices = static_cast<Index>( construction.indices.size() );
-
-				std::vector<PickingUID> residueIds( countRibbonItems );
-				std::vector<uint8_t>	residueTypes( countRibbonItems );
-				for ( Index i = 0; i < countRibbonItems; ++i )
+				const auto &			construction  = _geometries.ribbons.construction( uid );
+				const Index				countResidues = _layouts.residues.size( uid );
+				std::vector<PickingUID> residueIds( countResidues );
+				std::vector<uint8_t>	residueTypes( countResidues );
+				for ( Index i = 0; i < countResidues; ++i )
 				{
-					const Index residueIndex = _geometries.ribbons.construction( systemData.uid ).residues[ i ].index;
+					const Index residueIndex = construction.residues[ i ].index;
 					residueIds[ i ]			 = systemData.residueUids[ residueIndex ];
 					residueTypes[ i ] = toUnderlying( systemData.data.residueSecondaryStructureTypes[ residueIndex ] );
 				}
 
-				_context.setPipelineBuffer<Index>( "Index.Ribbons", construction.indices, offsetRibbonIndices );
-				_context.setPipelineBuffer<PickingUID>( "Residues.Ids", residueIds, offsetRibbonItems );
-				_context.setPipelineBuffer<uint8_t>( "Residues.Types", residueTypes, offsetRibbonItems );
-				_context.setPipelineBuffer<ModelIndex>(
-					"Residues.Models", std::vector<ModelIndex>( countRibbonItems, modelIndex ), offsetRibbonItems
+				_layouts.residues.upload<RESIDUE_ATTR::ID, PickingUID>( _context, uid, residueIds );
+				_layouts.residues.upload<RESIDUE_ATTR::TYPE, uint8_t>( _context, uid, residueTypes );
+				_layouts.residues.upload<RESIDUE_ATTR::MODEL, ModelIndex>(
+					_context, uid, std::vector<ModelIndex>( countResidues, modelIndex )
 				);
-
-				offsetRibbonItems += countRibbonItems;
-				offsetRibbonIndices += countRibbonIndices;
+				_geometries.ribbons.uploadIndexes( _context, uid, construction.indices );
 			}
 
 			setSystemPosition( uid, systemData.trajectory );
@@ -457,69 +439,59 @@ namespace VTX::Renderer
 	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
 	{
 		// Push atom positions.
-		_context.setPipelineBuffer<Vec3f>( "Atoms.Positions", p_positions, _geometries.spheres.range( p_uid ).first );
+		_layouts.atoms.upload<Layout::ATOM_ATTR::POSITION, Vec3f>( _context, p_uid, p_positions );
 
 		// Compute ribbon positions and directions.
 		const auto & construction = _geometries.ribbons.construction( p_uid );
-		if ( construction.isEmpty )
+		if ( not construction.isEmpty )
 		{
-			return;
+			const Index		   countResidues = _layouts.residues.size( p_uid );
+			std::vector<Vec4f> ribbonPositions( countResidues );
+			std::vector<Vec3f> ribbonDirections( countResidues );
+
+			for ( Index i = 0; i < countResidues; ++i )
+			{
+				// Compute direction between carbon alpha and oxygen.
+
+				const Vec3f & positionCA   = p_positions[ construction.residues[ i ].ca ];
+				const Vec3f & positionO	   = p_positions[ construction.residues[ i ].o ];
+				const Vec3f	  directionCAO = Util::Math::normalize( positionO - positionCA );
+
+				ribbonPositions[ i ]  = Vec4f( positionCA, 1.f );
+				ribbonDirections[ i ] = directionCAO;
+
+				// TODO: better on GPU ?
+				// CheckOrientationAndFlip.
+				// size_t i;
+				// for ( i = 1; i < p_caODirections.size(); ++i )
+				//{
+				//	if ( Util::Math::dot( p_caODirections[ i ], p_caODirections[ i - 1 ] ) < 0.f )
+				//	{
+				//		p_caODirections[ i ] = -p_caODirections[ i ];
+				//	}
+				// }
+			}
+
+			_layouts.residues.upload<Layout::RESIDUE_ATTR::POSITION, Vec4f>( _context, p_uid, ribbonPositions );
+			_layouts.residues.upload<Layout::RESIDUE_ATTR::DIRECTION, Vec3f>( _context, p_uid, ribbonDirections );
 		}
-
-		const Index		   countRibbonItems = static_cast<Index>( construction.residues.size() );
-		std::vector<Vec4f> ribbonPositions( countRibbonItems );
-		std::vector<Vec3f> ribbonDirections( countRibbonItems );
-
-		for ( Index i = 0; i < countRibbonItems; ++i )
-		{
-			// Compute direction between carbon alpha and oxygen.
-
-			const Vec3f & positionCA   = p_positions[ construction.residues[ i ].ca ];
-			const Vec3f & positionO	   = p_positions[ construction.residues[ i ].o ];
-			const Vec3f	  directionCAO = Util::Math::normalize( positionO - positionCA );
-
-			ribbonPositions[ i ]  = Vec4f( positionCA, 1.f );
-			ribbonDirections[ i ] = directionCAO;
-
-			// TODO: better on GPU ?
-			// CheckOrientationAndFlip.
-			// size_t i;
-			// for ( i = 1; i < p_caODirections.size(); ++i )
-			//{
-			//	if ( Util::Math::dot( p_caODirections[ i ], p_caODirections[ i - 1 ] ) < 0.f )
-			//	{
-			//		p_caODirections[ i ] = -p_caODirections[ i ];
-			//	}
-			// }
-		}
-
-		_context.setPipelineBuffer<Vec4f>(
-			"Residues.Positions", ribbonPositions, _geometries.ribbons.rangeItems( p_uid ).first
-		);
-		_context.setPipelineBuffer<Vec3f>(
-			"Residues.Directions", ribbonDirections, _geometries.ribbons.rangeItems( p_uid ).first
-		);
 
 		setNeedUpdate( true );
 	}
 
 	void Renderer::setSystemColors( const SystemUID p_uid, std::span<const ColorIndex> p_colors )
 	{
-		_context.setPipelineBuffer<ColorIndex>( "Atoms.Colors", p_colors, _geometries.spheres.range( p_uid ).first );
+		_layouts.atoms.upload<Layout::ATOM_ATTR::COLOR, ColorIndex>( _context, p_uid, p_colors );
 
-		if ( not _geometries.ribbons.empty( p_uid ) )
+		const auto &			construction  = _geometries.ribbons.construction( p_uid );
+		const Index				countResidues = _layouts.residues.size( p_uid );
+		std::vector<ColorIndex> ribbonColors( countResidues );
+		for ( Index i = 0; i < countResidues; ++i )
 		{
-			const auto &			construction	 = _geometries.ribbons.construction( p_uid );
-			const Index				countRibbonItems = static_cast<Index>( construction.residues.size() );
-			std::vector<ColorIndex> ribbonColors( countRibbonItems );
-			for ( Index i = 0; i < countRibbonItems; ++i )
-			{
-				ribbonColors[ i ] = p_colors[ construction.residues[ i ].ca ];
-			}
-			_context.setPipelineBuffer<ColorIndex>(
-				"Residues.Colors", ribbonColors, _geometries.ribbons.rangeItems( p_uid ).first
-			);
+			ribbonColors[ i ] = p_colors[ construction.residues[ i ].ca ];
 		}
+
+		_layouts.residues.upload<Layout::RESIDUE_ATTR::COLOR, ColorIndex>( _context, p_uid, ribbonColors );
 
 		setNeedUpdate( true );
 	}
@@ -535,7 +507,7 @@ namespace VTX::Renderer
 		Cache::System & systemCache			  = _cacheSystems[ p_uid ];
 		systemCache.representationAtomsRanges = p_representations;
 		systemCache.representationBondsRanges.clear();
-		const Index						 countAtoms = _geometries.spheres.range( p_uid ).getCount();
+		const Index						 countAtoms = _layouts.atoms.size( p_uid );
 		std::vector<RepresentationIndex> atoms( countAtoms );
 		Index							 count = 0;
 
@@ -558,33 +530,28 @@ namespace VTX::Renderer
 			}
 		}
 
-		_context.setPipelineBuffer<RepresentationIndex>(
-			"Atoms.Representations", atoms, _geometries.spheres.range( p_uid ).first
-		);
+		_layouts.atoms.upload<Layout::ATOM_ATTR::REPRESENTATION, RepresentationIndex>( _context, p_uid, atoms );
 
 		// Residues.
-		if ( not _geometries.ribbons.empty( p_uid ) )
+		const auto &					 construction  = _geometries.ribbons.construction( p_uid );
+		const Index						 countResidues = _layouts.residues.size( p_uid );
+		std::vector<RepresentationIndex> ribbonItems( countResidues );
+		systemCache.representationResiduesRanges.clear();
+
+		for ( Index i = 0; i < countResidues; ++i )
 		{
-			const auto &					 construction	  = _geometries.ribbons.construction( p_uid );
-			const Index						 countRibbonItems = static_cast<Index>( construction.residues.size() );
-			std::vector<RepresentationIndex> ribbonItems( countRibbonItems );
-			systemCache.representationResiduesRanges.clear();
-
-			for ( Index i = 0; i < countRibbonItems; ++i )
-			{
-				const RepresentationIndex representationIndex = atoms[ construction.residues[ i ].ca ];
-				ribbonItems[ i ]							  = atoms[ representationIndex ];
-				systemCache.representationResiduesRanges[ representationIndex ].addRange(
-					IndexRange::fromFirstCount( ribbonItems[ i ], 1 )
-				);
-			}
-
-			assert( count == countAtoms );
-
-			_context.setPipelineBuffer<RepresentationIndex>(
-				"Residues.Representations", ribbonItems, _geometries.ribbons.rangeItems( p_uid ).first
+			const RepresentationIndex representationIndex = atoms[ construction.residues[ i ].ca ];
+			ribbonItems[ i ]							  = atoms[ representationIndex ];
+			systemCache.representationResiduesRanges[ representationIndex ].addRange(
+				IndexRange::fromFirstCount( ribbonItems[ i ], 1 )
 			);
 		}
+
+		assert( count == countAtoms );
+
+		_layouts.residues.upload<Layout::RESIDUE_ATTR::REPRESENTATION, RepresentationIndex>(
+			_context, p_uid, ribbonItems
+		);
 
 		_needBuildDrawRanges = true;
 		setNeedUpdate( true );
@@ -600,8 +567,7 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setSystemFlags" );
 
-		const Index offsetAtoms = _geometries.spheres.range( p_uid ).first;
-		const Index countAtoms	= _geometries.spheres.range( p_uid ).getCount();
+		const Index countAtoms = _layouts.atoms.size( p_uid );
 
 		assert( p_selection.size() <= countAtoms );
 		assert( p_visible.size() <= countAtoms );
@@ -631,15 +597,14 @@ namespace VTX::Renderer
 		applyOr( atomFlags, p_visible, VIS );
 		applyOr( atomFlags, p_selection, SEL );
 
-		_context.setPipelineBuffer<Flag>( "Atoms.Flags", atomFlags, offsetAtoms );
+		_layouts.atoms.upload<Layout::ATOM_ATTR::FLAG, Flag>( _context, p_uid, atomFlags );
 
 		// Build draw ranges.
 		IndexRange rangeAtoms						= { 0, static_cast<Index>( countAtoms ) };
 		_geometries.spheres.visibilityMask[ p_uid ] = { rangeAtoms };
 		_geometries.spheres.visibilityMask[ p_uid ].substractInPlace( p_visible );
 
-		const size_t offsetBonds = _geometries.cylinders.range( p_uid ).first;
-		const size_t countBonds	 = _geometries.cylinders.range( p_uid ).getCount();
+		const size_t countBonds = _geometries.cylinders.size( p_uid );
 
 		assert( p_bonds.size() == countBonds );
 

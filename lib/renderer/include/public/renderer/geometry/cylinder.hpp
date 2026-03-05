@@ -23,7 +23,7 @@ namespace VTX::Renderer::Geometry
 				return;
 			}
 
-			addRange( p_data.uid, p_data.data.getBondCount() * 2 );
+			_addRange( p_data.uid, p_data.data.getBondCount() * 2 );
 		}
 	};
 } // namespace VTX::Renderer::Geometry

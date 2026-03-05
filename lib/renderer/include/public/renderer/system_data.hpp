@@ -10,7 +10,7 @@ namespace VTX::Renderer
 		const SystemUID				 uid;
 		const Mat4f &				 transform;
 		const Core::Struct::System & data;
-		std::span<const Vec3f> &	 trajectory;
+		std::span<const Vec3f>		 trajectory;
 
 		//  TODO: delete and use symbols in shader.
 		const std::vector<float> radii;

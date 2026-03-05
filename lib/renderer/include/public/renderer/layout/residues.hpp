@@ -33,39 +33,43 @@ namespace VTX::Renderer::Layout
 		}
 
 		template<RESIDUE_ATTR A, typename T>
-		void upload( Context::ContextWrapper & p_context, const SystemUID, std::span<const T> p_data )
+		void upload( Context::ContextWrapper & p_context, const SystemUID p_uid, std::span<const T> p_data )
 		{
+			assert( p_data.size() <= _ranges[ p_uid ].getCount() );
+
+			const Index offset = _ranges[ p_uid ].first;
+
 			if constexpr ( A == RESIDUE_ATTR::POSITION )
 			{
-				p_context.setPipelineBuffer<Vec4f>( RESIDUES_POSITIONS, p_data );
+				p_context.setPipelineBuffer<Vec4f>( RESIDUES_POSITIONS, p_data, offset );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::DIRECTION )
 			{
-				p_context.setPipelineBuffer<Vec3f>( RESIDUES_DIRECTIONS, p_data );
+				p_context.setPipelineBuffer<Vec3f>( RESIDUES_DIRECTIONS, p_data, offset );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::TYPE )
 			{
-				p_context.setPipelineBuffer<uint8_t>( RESIDUES_TYPES, p_data );
+				p_context.setPipelineBuffer<uint8_t>( RESIDUES_TYPES, p_data, offset );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::COLOR )
 			{
-				p_context.setPipelineBuffer<ColorIndex>( RESIDUES_COLORS, p_data );
+				p_context.setPipelineBuffer<ColorIndex>( RESIDUES_COLORS, p_data, offset );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::ID )
 			{
-				p_context.setPipelineBuffer<PickingUID>( RESIDUES_IDS, p_data );
+				p_context.setPipelineBuffer<PickingUID>( RESIDUES_IDS, p_data, offset );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::FLAG )
 			{
-				p_context.setPipelineBuffer<Flag>( RESIDUES_FLAGS, p_data );
+				p_context.setPipelineBuffer<Flag>( RESIDUES_FLAGS, p_data, offset );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::MODEL )
 			{
-				p_context.setPipelineBuffer<ModelIndex>( RESIDUES_MODELS, p_data );
+				p_context.setPipelineBuffer<ModelIndex>( RESIDUES_MODELS, p_data, offset );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::REPRESENTATION )
 			{
-				p_context.setPipelineBuffer<RepresentationIndex>( RESIDUES_REPRESENTATIONS, p_data );
+				p_context.setPipelineBuffer<RepresentationIndex>( RESIDUES_REPRESENTATIONS, p_data, offset );
 			}
 			else
 			{

@@ -28,7 +28,16 @@ namespace VTX::Renderer::Geometry
 			assert( p_data.atomUids.size() == count );
 			assert( p_data.radii.size() == count );
 
-			addRange( p_data.uid, count );
+			_addRange( p_data.uid, count );
+		}
+
+		void uploadIndexes(
+			Context::ContextWrapper & p_context,
+			const SystemUID,
+			std::span<const uint32_t> p_data
+		) override
+		{
+			throw GraphicException( "This geometry does not support index buffer upload." );
 		}
 	};
 

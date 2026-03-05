@@ -27,6 +27,13 @@ namespace VTX::Renderer
 			ribbons.construct( p_data );
 		}
 
+		void resize( Context::ContextWrapper & p_context )
+		{
+			spheres.resize( p_context );
+			cylinders.resize( p_context );
+			ribbons.resize( p_context );
+		}
+
 		void buildDrawRanges( Context::ContextWrapper & p_context )
 		{
 			p_context.setPipelineBuffer( "Indirect.Spheres", _toBuffer( spheres.toDrawIndirectCommands() ) );

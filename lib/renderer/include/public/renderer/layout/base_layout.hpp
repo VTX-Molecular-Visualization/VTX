@@ -14,37 +14,37 @@ namespace VTX::Renderer::Layout
 		/**
 		 * @brief Push a range.
 		 */
-		inline void add( const SystemUID p_uid, const IndexRange & p_range ) { _ranges[ p_uid ] = p_range; }
+		inline void add( const SystemUID p_uid, const Index & p_count )
+		{
+			if ( _ranges.contains( p_uid ) )
+			{
+				return;
+			}
+
+			Index	   last	 = _rangeList.isEmpty() ? 0 : _rangeList.getLast();
+			IndexRange r	 = IndexRange::fromFirstCount( last, p_count );
+			_ranges[ p_uid ] = r;
+			_rangeList.addRange( r );
+		}
 
 		/**
 		 * @brief Resize whole layout.
 		 */
-		inline void resize( Context::ContextWrapper & p_context )
+		inline void resize( Context::ContextWrapper & p_context ) { _resize( p_context, _rangeList.count() ); }
+
+		Index size( const SystemUID p_uid ) const
 		{
-			Index size = 0;
-			for ( const auto & [ uid, range ] : _ranges )
-			{
-				size += range.getCount();
-			}
+			assert( _ranges.contains( p_uid ) );
 
-			_resize( p_context, size );
+			return _ranges[ p_uid ].getCount();
 		}
-
-		/**
-		 * @brief Accessors.
-		 */
-		// inline Index size() const { return _size; }
 
 	  protected:
 		/**
 		 * @brief Range to draw per system (global indexes).
 		 */
-		MapUIDRange _ranges;
-
-		/**
-		 * @brief Current size.
-		 */
-		// Index _size = 0;
+		mutable MapUIDRange _ranges;
+		IndexRangeList		_rangeList;
 
 		/**
 		 * @brief Resize whole layout.

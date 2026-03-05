@@ -31,35 +31,40 @@ namespace VTX::Renderer::Layout
 		}
 
 		template<ATOM_ATTR A, typename T>
-		void upload( Context::ContextWrapper & p_context, const SystemUID, std::span<const T> p_data )
+		void upload( Context::ContextWrapper & p_context, const SystemUID p_uid, std::span<const T> p_data )
 		{
+			auto s = _ranges[ p_uid ].getCount();
+			assert( p_data.size() <= s );
+
+			const Index offset = _ranges[ p_uid ].first;
+
 			if constexpr ( A == ATOM_ATTR::POSITION )
 			{
-				p_context.setPipelineBuffer<Vec3f>( ATOMS_POSITIONS, p_data );
+				p_context.setPipelineBuffer<Vec3f>( ATOMS_POSITIONS, p_data, offset );
 			}
 			else if constexpr ( A == ATOM_ATTR::RADIUS )
 			{
-				p_context.setPipelineBuffer<float>( ATOMS_RADII, p_data );
+				p_context.setPipelineBuffer<float>( ATOMS_RADII, p_data, offset );
 			}
 			else if constexpr ( A == ATOM_ATTR::ID )
 			{
-				p_context.setPipelineBuffer<PickingUID>( ATOMS_IDS, p_data );
+				p_context.setPipelineBuffer<PickingUID>( ATOMS_IDS, p_data, offset );
 			}
 			else if constexpr ( A == ATOM_ATTR::COLOR )
 			{
-				p_context.setPipelineBuffer<ColorIndex>( ATOMS_COLORS, p_data );
+				p_context.setPipelineBuffer<ColorIndex>( ATOMS_COLORS, p_data, offset );
 			}
 			else if constexpr ( A == ATOM_ATTR::REPRESENTATION )
 			{
-				p_context.setPipelineBuffer<RepresentationIndex>( ATOMS_REPRESENTATIONS, p_data );
+				p_context.setPipelineBuffer<RepresentationIndex>( ATOMS_REPRESENTATIONS, p_data, offset );
 			}
 			else if constexpr ( A == ATOM_ATTR::MODEL )
 			{
-				p_context.setPipelineBuffer<ModelIndex>( ATOMS_MODELS, p_data );
+				p_context.setPipelineBuffer<ModelIndex>( ATOMS_MODELS, p_data, offset );
 			}
 			else if constexpr ( A == ATOM_ATTR::FLAG )
 			{
-				p_context.setPipelineBuffer<Flag>( ATOMS_FLAGS, p_data );
+				p_context.setPipelineBuffer<Flag>( ATOMS_FLAGS, p_data, offset );
 			}
 			else
 			{

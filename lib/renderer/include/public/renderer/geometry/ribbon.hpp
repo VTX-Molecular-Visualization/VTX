@@ -40,13 +40,6 @@ namespace VTX::Renderer::Geometry
 
 		Index sizeItems = 0;
 
-		IndexRange rangeItems( const SystemUID p_uid ) const
-		{
-			assert( _rangesItems.contains( p_uid ) );
-
-			return _rangesItems[ p_uid ];
-		}
-
 		bool empty( const SystemUID p_uid ) const { return _construction[ p_uid ].isEmpty; }
 
 		const Construction & construction( const SystemUID p_uid ) const
@@ -191,7 +184,7 @@ namespace VTX::Renderer::Geometry
 				return;
 			}
 
-			addRange( p_data.uid, bufferIndices.size() );
+			_addRange( p_data.uid, bufferIndices.size() );
 			_rangesItems[ p_data.uid ] = IndexRange { offsetItems, static_cast<Index>( residueToPositions.size() ) };
 		}
 

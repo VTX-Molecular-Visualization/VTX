@@ -31,7 +31,7 @@ namespace VTX::UI::QT
 		// Application info.
 		const std::string version = std::to_string( VERSION_MAJOR ) + "." + std::to_string( VERSION_MINOR ) + "."
 									+ std::to_string( VERSION_PATCH );
-		std::string displayName = APPLICATION_DISPLAY_NAME.data() + std::string( " - v" ) + version;
+		std::string displayName = APPLICATION_DISPLAY_NAME.data() + std::string( " v" ) + version;
 		if ( p_args.has( App::ARG_DEBUG ) )
 		{
 			displayName += " (Debug)";
