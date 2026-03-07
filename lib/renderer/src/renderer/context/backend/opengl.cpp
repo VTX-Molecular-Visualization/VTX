@@ -362,9 +362,10 @@ namespace VTX::Renderer::Context::Backend
 						if ( indexed )
 						{
 							PayloadDrawIndexed pDraw { hProgram, hVao };
-							pDraw.primitive = toUnderlying( drawCall.primitive );
-							pDraw.first		= rangePtr->first;
-							pDraw.count		= rangePtr->count;
+							pDraw.primitive	  = toUnderlying( drawCall.primitive );
+							pDraw.indexBuffer = _pipelineBuffers.handle( geometry.indexBuffer.value() );
+							pDraw.first		  = rangePtr->first;
+							pDraw.count		  = rangePtr->count;
 							p_commands.push<E_COMMAND::DRAW_INDEXED>( pDraw );
 						}
 						else
@@ -384,17 +385,18 @@ namespace VTX::Renderer::Context::Backend
 						if ( indexed )
 						{
 							PayloadDrawIndexedIndirect pDraw { hProgram, hVao };
-							pDraw.primitive = toUnderlying( drawCall.primitive );
-							pDraw.buffer	= _pipelineBuffers.handle( geometry.indirectBuffer.value() );
-							pDraw.count		= *ptr;
+							pDraw.primitive		 = toUnderlying( drawCall.primitive );
+							pDraw.indirectBuffer = _pipelineBuffers.handle( geometry.indirectBuffer.value() );
+							pDraw.indexBuffer	 = _pipelineBuffers.handle( geometry.indexBuffer.value() );
+							pDraw.count			 = *ptr;
 							p_commands.push<E_COMMAND::DRAW_INDEXED_INDIRECT>( pDraw );
 						}
 						else
 						{
 							PayloadDrawIndirect pDraw { hProgram, hVao };
-							pDraw.primitive = toUnderlying( drawCall.primitive );
-							pDraw.buffer	= _pipelineBuffers.handle( geometry.indirectBuffer.value() );
-							pDraw.count		= *ptr;
+							pDraw.primitive		 = toUnderlying( drawCall.primitive );
+							pDraw.indirectBuffer = _pipelineBuffers.handle( geometry.indirectBuffer.value() );
+							pDraw.count			 = *ptr;
 							p_commands.push<E_COMMAND::DRAW_INDIRECT>( pDraw );
 						}
 					}
@@ -906,12 +908,6 @@ namespace VTX::Renderer::Context::Backend
 				vao.setVertexBuffer( bindingIndex, vbo, 0, stride );
 				++location;
 			}
-		}
-
-		if ( p_geo.indexBuffer )
-		{
-			const GL::Buffer & ibo = _pipelineBuffers.get( *p_geo.indexBuffer );
-			vao.bindElementBuffer( ibo );
 		}
 
 		vao.unbind();

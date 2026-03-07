@@ -66,19 +66,21 @@ namespace VTX::Renderer::Context
 
 	struct PayloadDrawIndexed : BasePayloadDraw
 	{
+		uint32_t indexBuffer;
 		uint64_t first;
 		uint64_t count;
 	};
 
 	struct PayloadDrawIndirect : BasePayloadDraw
 	{
-		uint32_t  buffer;
+		uint32_t  indirectBuffer;
 		uintptr_t count;
 	};
 
 	struct PayloadDrawIndexedIndirect : BasePayloadDraw
 	{
-		uint32_t  buffer;
+		uint32_t  indirectBuffer;
+		uint32_t  indexBuffer;
 		uintptr_t count;
 	};
 

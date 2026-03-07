@@ -100,6 +100,7 @@ namespace VTX::Renderer
 			_refreshDataRepresentations();
 			_geometries.buildDrawRanges( _context );
 			_needBuildDrawRanges = false;
+			_needUpdate			 = true;
 		}
 
 		if ( _needUpdate || _forceUpdate )
@@ -384,6 +385,10 @@ namespace VTX::Renderer
 			_layouts.atoms.upload<ATOM_ATTR::MODEL, ModelIndex>(
 				_context, uid, std::vector<ModelIndex>( countAtoms, modelIndex )
 			);
+
+			std::vector<Index> indices( countAtoms );
+			std::iota( indices.begin(), indices.end(), 0 );
+			_geometries.spheres.uploadIndexes( _context, uid, indices );
 			_geometries.cylinders.uploadIndexes( _context, uid, systemData.data.bondPairAtomIndexes );
 
 			if ( not _geometries.ribbons.empty( uid ) )

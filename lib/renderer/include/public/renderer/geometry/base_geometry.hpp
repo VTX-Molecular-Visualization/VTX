@@ -57,7 +57,7 @@ namespace VTX::Renderer::Geometry
 		/**
 		 * @brief Upload index buffer data.
 		 */
-		virtual void uploadIndexes(
+		void uploadIndexes(
 			Context::ContextWrapper & p_context,
 			const SystemUID			  p_uid,
 			std::span<const uint32_t> p_indexes

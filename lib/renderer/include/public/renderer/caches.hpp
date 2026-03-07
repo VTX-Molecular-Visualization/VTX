@@ -27,6 +27,7 @@ namespace VTX::Renderer::Cache
 		Mat4f					transform;
 		ModelIndex				modelIndex;
 		MapRepresentationRanges representationAtomsRanges;
+		// TODO: remove.
 		MapRepresentationRanges representationBondsRanges;
 		MapRepresentationRanges representationResiduesRanges;
 	};

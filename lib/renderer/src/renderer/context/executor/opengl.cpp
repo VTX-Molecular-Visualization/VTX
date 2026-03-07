@@ -134,7 +134,9 @@ namespace VTX::Renderer::Context::Executor
 				const auto & p = p_commandBuffer.getPayload<PayloadDrawIndexed>( command.payloadOffset );
 				assert( p.count > 0 );
 
-				_backend.vertexArray( p.pipeline ).bind();
+				auto & vao = _backend.vertexArray( p.pipeline );
+				vao.bind();
+				vao.bindElementBuffer( _backend.pipelineBuffer( p.indexBuffer ) );
 				_backend.program( p.program ).use();
 				_backend.vertexArray( p.pipeline )
 					.drawElements( _toGL( p.primitive ), static_cast<uint32_t>( p.count ), GL_UNSIGNED_INT, &p.first );
@@ -147,7 +149,7 @@ namespace VTX::Renderer::Context::Executor
 				const uint32_t * count = reinterpret_cast<uint32_t *>( p.count );
 
 				_backend.vertexArray( p.pipeline ).bind();
-				_backend.pipelineBuffer( p.buffer ).bind( GL_DRAW_INDIRECT_BUFFER );
+				_backend.pipelineBuffer( p.indirectBuffer ).bind( GL_DRAW_INDIRECT_BUFFER );
 				_backend.program( p.program ).use();
 				_backend.vertexArray( p.pipeline ).multiDrawArraysIndirect( _toGL( p.primitive ), nullptr, *count );
 
@@ -158,8 +160,10 @@ namespace VTX::Renderer::Context::Executor
 				const auto &	 p = p_commandBuffer.getPayload<PayloadDrawIndexedIndirect>( command.payloadOffset );
 				const uint32_t * count = reinterpret_cast<uint32_t *>( p.count );
 
-				_backend.vertexArray( p.pipeline ).bind();
-				_backend.pipelineBuffer( p.buffer ).bind( GL_DRAW_INDIRECT_BUFFER );
+				auto & vao = _backend.vertexArray( p.pipeline );
+				vao.bind();
+				vao.bindElementBuffer( _backend.pipelineBuffer( p.indexBuffer ) );
+				_backend.pipelineBuffer( p.indirectBuffer ).bind( GL_DRAW_INDIRECT_BUFFER );
 				_backend.program( p.program ).use();
 				_backend.vertexArray( p.pipeline )
 					.multiDrawElementsIndirect( _toGL( p.primitive ), GL_UNSIGNED_INT, nullptr, *count );
