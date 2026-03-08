@@ -7,24 +7,18 @@
 #include "struct_cylinder.glsl"
 
 // In.
-layout( location = 0 ) in vec3  inVertexPosition;
-layout( location = 1 ) in uint  inVertexColor;
-layout( location = 3 ) in uint  inVertexId;
-layout( location = 4 ) in uint  inVertexFlag;
-layout( location = 5 ) in uint  inVertexRepresentation;
+#include "../layout/atom.glsl"
 
 // Out.
 flat out StructCylinder vsCylinder;
 
 void main()
 {
-	vsCylinder.color			= uniformsColor[ inVertexColor ];
-	//vsCylinder.color			 = vec4( 1.f, 1.f, 1.f, 1.f );
-	vsCylinder.isVisible		= int( inVertexFlag ) & ( 1 << FLAG_VISIBILITY );
-	vsCylinder.isSelected		= int( inVertexFlag ) & ( 1 << FLAG_SELECTION );
-	vsCylinder.id				= inVertexId;
-	vsCylinder.representation	= inVertexRepresentation;
+	vsCylinder.color			= uniformsColor[ inAtomColor ];
+	vsCylinder.isSelected		= int( inAtomFlag ) & ( 1 << FLAG_SELECTION );
+	vsCylinder.id				= inAtomId;
+	vsCylinder.representation	= inAtomRepresentation;
 
 	// Vertex position in view space.
-	gl_Position = uniformsModel[ gl_DrawID ].matrixModelView * vec4( inVertexPosition, 1.f );
+	gl_Position = uniformsModel[ gl_DrawID ].matrixModelView * vec4( inAtomPosition, 1.f );
 }

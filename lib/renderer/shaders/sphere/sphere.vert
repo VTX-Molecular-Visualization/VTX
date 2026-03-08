@@ -10,12 +10,7 @@
 #include "struct_vertex_shader.glsl"
 
 // In.
-layout( location = 0 ) in vec3 inSpherePos;
-layout( location = 1 ) in uint inSphereColor;
-layout( location = 2 ) in uint inSphereSymbol;
-layout( location = 3 ) in uint inSphereId;
-layout( location = 4 ) in uint inSphereFlag;
-layout( location = 5 ) in uint inSphereRepresentation;
+#include "../layout/atom.glsl"
 
 // Out.
 flat out StructVertexShader vsData;
@@ -23,14 +18,13 @@ flat out StructSphere vsSphere;
 
 void main()
 {
-	vsSphere.viewPos	 = vec3( uniformsModel[ gl_DrawID ].matrixModelView * vec4( inSpherePos, 1.f ) );
-	vsSphere.color		 = uniformsColor[ inSphereColor ];
+	vsSphere.viewPos	 = vec3( uniformsModel[ gl_DrawID ].matrixModelView * vec4( inAtomPosition, 1.f ) );
+	vsSphere.color		 = uniformsColor[ inAtomColor ];
 	//vsSphere.sphereColor		 = vec4( 1.f, 1.f, 1.f, 1.f );
-	Representation representation = uniformsRepresentation[ inSphereRepresentation ];
-	vsSphere.radius	 = bool( representation.isRadiusSphereFixed ) ? representation.radiusSphereFixed : getVdwRadius( inSphereSymbol ) + representation.radiusSphereAdd;
-	vsSphere.id		 = inSphereId;
-	vsSphere.isVisible	 = int( inSphereFlag ) & ( 1 << FLAG_VISIBILITY );
-	vsSphere.isSelected	 = int( inSphereFlag ) & ( 1 << FLAG_SELECTION );	
+	Representation representation = uniformsRepresentation[ inAtomRepresentation ];
+	vsSphere.radius	 = bool( representation.isRadiusSphereFixed ) ? representation.radiusSphereFixed : getVdwRadius( inAtomSymbol ) + representation.radiusSphereAdd;
+	vsSphere.id		 = inAtomId;
+	vsSphere.isSelected	 = int( inAtomFlag ) & ( 1 << FLAG_SELECTION );	
 
 	if ( uniformsCamera.isCameraPerspective == 1 )
 	{

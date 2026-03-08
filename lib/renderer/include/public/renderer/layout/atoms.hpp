@@ -22,7 +22,7 @@ namespace VTX::Renderer::Layout
 		{
 			attributes.push_back( { ATOMS_POSITIONS, Desc::E_TYPE::VEC3F } );
 			attributes.push_back( { ATOMS_COLORS, Desc::E_TYPE::UBYTE } );
-			attributes.push_back( { ATOMS_SYMBOL, Desc::E_TYPE::UBYTE } );
+			attributes.push_back( { ATOMS_SYMBOLS, Desc::E_TYPE::UBYTE } );
 			attributes.push_back( { ATOMS_IDS, Desc::E_TYPE::UINT } );
 			attributes.push_back( { ATOMS_FLAGS, Desc::E_TYPE::UBYTE } );
 			attributes.push_back( { ATOMS_REPRESENTATIONS, Desc::E_TYPE::UBYTE } );
@@ -42,7 +42,7 @@ namespace VTX::Renderer::Layout
 			}
 			else if constexpr ( A == ATOM_ATTR::SYMBOL )
 			{
-				p_context.setPipelineBuffer<Symbol>( ATOMS_SYMBOL, p_data, offset );
+				p_context.setPipelineBuffer<Symbol>( ATOMS_SYMBOLS, p_data, offset );
 			}
 			else if constexpr ( A == ATOM_ATTR::ID )
 			{
@@ -70,7 +70,7 @@ namespace VTX::Renderer::Layout
 		void _resize( Context::ContextWrapper & p_context, const Index p_size ) override
 		{
 			p_context.setPipelineBuffer<Vec3f>( ATOMS_POSITIONS, p_size );
-			p_context.setPipelineBuffer<Symbol>( ATOMS_SYMBOL, p_size );
+			p_context.setPipelineBuffer<Symbol>( ATOMS_SYMBOLS, p_size );
 			p_context.setPipelineBuffer<PickingUID>( ATOMS_IDS, p_size );
 			p_context.setPipelineBuffer<ColorIndex>( ATOMS_COLORS, p_size );
 			p_context.setPipelineBuffer<RepresentationIndex>( ATOMS_REPRESENTATIONS, p_size );
@@ -80,7 +80,7 @@ namespace VTX::Renderer::Layout
 	  private:
 		inline static const std::string ATOMS_POSITIONS		  = "Atoms.Positions";
 		inline static const std::string ATOMS_COLORS		  = "Atoms.Colors";
-		inline static const std::string ATOMS_SYMBOL		  = "Atoms.Symbol";
+		inline static const std::string ATOMS_SYMBOLS		  = "Atoms.Symbols";
 		inline static const std::string ATOMS_IDS			  = "Atoms.Ids";
 		inline static const std::string ATOMS_FLAGS			  = "Atoms.Flags";
 		inline static const std::string ATOMS_REPRESENTATIONS = "Atoms.Representations";

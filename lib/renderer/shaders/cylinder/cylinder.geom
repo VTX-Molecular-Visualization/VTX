@@ -39,12 +39,6 @@ void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 
 void main()
 {
-	// Do not emit primitive if cylinder is not visible.
-	if ( vsCylinder[ 0 ].isVisible == 0 || vsCylinder[ 1 ].isVisible == 0 )
-	{
-		return;
-	}
-
 	// Output data.
 	gsDataFlat[ 0 ].viewVertice = gl_in[ 0 ].gl_Position.xyz;
 	gsDataFlat[ 1 ].viewVertice = gl_in[ 1 ].gl_Position.xyz;

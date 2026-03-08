@@ -39,12 +39,6 @@ void emitQuad( const vec3 p_v1, const vec3 p_v2, const vec3 p_v3, const vec3 p_v
 
 void main()
 {
-	// Do not emit primitive if sphere is not visible.
-	if ( vsSphere[ 0 ].isVisible == 0 )
-	{
-		return;
-	}
-
 	// Output data.
 	gsSphere = vsSphere[ 0 ];
 
