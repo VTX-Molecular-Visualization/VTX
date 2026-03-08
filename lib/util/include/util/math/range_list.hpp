@@ -486,6 +486,31 @@ namespace VTX::Util::Math
 			return totalSize;
 		}
 
+		/**
+		 * @brief To vector of values.
+		 */
+		template<typename T>
+		std::vector<T> toVector() const
+		{
+			std::vector<T> res;
+
+			for ( auto it = rangeBegin(); it != rangeEnd(); ++it )
+			{
+				const T		 first = it->getFirst();
+				const size_t count = it->getCount();
+
+				const size_t oldSize = res.size();
+				res.resize( oldSize + count );
+
+				std::iota( res.begin() + oldSize, res.end(), first );
+			}
+
+			return res;
+		}
+
+		/**
+		 * @brief String representation.
+		 */
 		std::string toString() const
 		{
 			std::string res = "{ ";

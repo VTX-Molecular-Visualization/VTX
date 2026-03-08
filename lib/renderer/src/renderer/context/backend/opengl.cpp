@@ -351,7 +351,7 @@ namespace VTX::Renderer::Context::Backend
 				{
 					const DrawCall & drawCall = program.drawCall.value();
 					const Geometry & geometry = p_resources.geometries.at( drawCall.geometry );
-					const bool		 indexed  = geometry.indexBuffer.has_value();
+					const bool		 indexed  = geometry.indiceBuffer.has_value();
 					const bool		 indirect = geometry.indirectBuffer.has_value();
 
 					if ( not indirect )
@@ -363,7 +363,7 @@ namespace VTX::Renderer::Context::Backend
 						{
 							PayloadDrawIndexed pDraw { hProgram, hVao };
 							pDraw.primitive	  = toUnderlying( drawCall.primitive );
-							pDraw.indexBuffer = _pipelineBuffers.handle( geometry.indexBuffer.value() );
+							pDraw.indexBuffer = _pipelineBuffers.handle( geometry.indiceBuffer.value() );
 							pDraw.first		  = rangePtr->first;
 							pDraw.count		  = rangePtr->count;
 							p_commands.push<E_COMMAND::DRAW_INDEXED>( pDraw );
@@ -387,7 +387,7 @@ namespace VTX::Renderer::Context::Backend
 							PayloadDrawIndexedIndirect pDraw { hProgram, hVao };
 							pDraw.primitive		 = toUnderlying( drawCall.primitive );
 							pDraw.indirectBuffer = _pipelineBuffers.handle( geometry.indirectBuffer.value() );
-							pDraw.indexBuffer	 = _pipelineBuffers.handle( geometry.indexBuffer.value() );
+							pDraw.indiceBuffer	 = _pipelineBuffers.handle( geometry.indiceBuffer.value() );
 							pDraw.count			 = *ptr;
 							p_commands.push<E_COMMAND::DRAW_INDEXED_INDIRECT>( pDraw );
 						}
@@ -935,7 +935,7 @@ namespace VTX::Renderer::Context::Backend
 
 		Geometry quadGeo;
 		quadGeo.vertexLayout = quadLayoutKey;
-		quadGeo.indexBuffer	 = std::nullopt;
+		quadGeo.indiceBuffer = std::nullopt;
 
 		const Handle h = _getOrCreateVertexLayout( quadLayoutKey, quadLayout );
 		_getOrCreatePipelineBuffer( quadVboKey, quadVboDesc );

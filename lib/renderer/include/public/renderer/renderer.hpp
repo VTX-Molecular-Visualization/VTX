@@ -13,6 +13,7 @@
 #include "renderer/struct_infos.hpp"
 #include "renderer/system_data.hpp"
 #include "renderer/types.hpp"
+#include <unordered_set>
 #include <util/callback.hpp>
 
 namespace VTX::Renderer
@@ -89,8 +90,8 @@ namespace VTX::Renderer
 		void setSystemPosition( const SystemUID, std::span<const Vec3f> );
 		void setSystemColors( const SystemUID, std::span<const ColorIndex> );
 		void setSystemRepresentation( const SystemUID, const MapRepresentationRanges & );
-		void setSystemVisibility( const SystemUID, const Core::Struct::IndexRangeList &);
-		void setSystemSelection( const SystemUID, const Core::Struct::IndexRangeList &);
+		void setSystemVisibility( const SystemUID, const Core::Struct::IndexRangeList & );
+		void setSystemSelection( const SystemUID, const Core::Struct::IndexRangeList & );
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
@@ -169,7 +170,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Rebuild draw ranges next frame.
 		 */
-		bool _needBuildDrawRanges = false;
+		std::unordered_set<Desc::Handle> _systemToRefresh;
 
 		/**
 		 * @brief Renderer infos.
@@ -195,9 +196,9 @@ namespace VTX::Renderer
 		void _refreshDataModels();
 
 		/**
-		 * @brief Refresh draw ranges when system or representation changed.
+		 * @brief Refresh visibility from visibility and representation ranges.
 		 */
-		void _refreshDataRepresentations();
+		void _refreshSystemVisibility( const Desc::Handle );
 
 		/**
 		 * @brief Flags to push boolean values into one byte.

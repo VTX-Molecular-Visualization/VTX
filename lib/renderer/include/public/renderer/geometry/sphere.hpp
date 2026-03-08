@@ -12,7 +12,7 @@ namespace VTX::Renderer::Geometry
 		Sphere()
 		{
 			vertexLayout   = "Atoms";
-			indexBuffer	   = "Index.Atoms";
+			indiceBuffer   = "Index.Atoms";
 			indirectBuffer = "Indirect.Spheres";
 		}
 
@@ -25,6 +25,16 @@ namespace VTX::Renderer::Geometry
 			assert( p_data.radii.size() == count );
 
 			_addRange( p_handle, count, count );
+
+			auto & indiceBuffer = _indices( p_handle );
+			indiceBuffer.resize( count );
+			std::iota( indiceBuffer.begin(), indiceBuffer.end(), 0 );
+		}
+
+		void setVisibility( const Desc::Handle p_handle, const IndexRangeList & p_ranges )
+		{
+			auto & indiceBuffer = _indices( p_handle );
+			indiceBuffer		= p_ranges.toVector<Indice>();
 		}
 	};
 

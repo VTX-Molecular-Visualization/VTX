@@ -24,10 +24,10 @@ namespace VTX::Renderer::Cache
 
 	struct System
 	{
-		Mat4f						 transform;
-		Core::Struct::IndexRangeList visibility;
-		Core::Struct::IndexRangeList selection;
-		MapRepresentationRanges		 representations;
+		Mat4f					transform;
+		IndexRangeList			visibility;
+		IndexRangeList			selection;
+		MapRepresentationRanges representations;
 	};
 
 	struct Representation

@@ -16,7 +16,7 @@ namespace VTX::Renderer::Geometry
 		Ribbon()
 		{
 			vertexLayout   = "Residues";
-			indexBuffer	   = "Index.Ribbons";
+			indiceBuffer   = "Index.Ribbons";
 			indirectBuffer = "Indirect.Ribbons";
 		}
 
@@ -30,7 +30,6 @@ namespace VTX::Renderer::Geometry
 				Index o;  // Oxygen.
 			};
 			std::vector<Data>				 residues;
-			std::vector<Index>				 indices;
 			std::unordered_map<Index, Index> residueToIndices;
 			std::unordered_map<Index, Index> residueToPositions;
 
@@ -75,8 +74,8 @@ namespace VTX::Renderer::Geometry
 			}
 
 			// Data to filL.
-			std::vector<Construction::Data> &  residues			  = cache.residues;
-			std::vector<Index> &			   bufferIndices	  = cache.indices;
+			std::vector<Construction::Data> &  residues = cache.residues;
+			std::vector<Index>				   bufferIndices;
 			std::unordered_map<Index, Index> & residueToIndices	  = cache.residueToIndices;
 			std::unordered_map<Index, Index> & residueToPositions = cache.residueToPositions;
 
@@ -180,6 +179,9 @@ namespace VTX::Renderer::Geometry
 			}
 
 			_addRange( p_handle, static_cast<Index>( bufferIndices.size() ), static_cast<Index>( residues.size() ) );
+
+			auto & indiceBuffer = _indices( p_handle );
+			indiceBuffer		= std::move( bufferIndices );
 		}
 
 	  protected:

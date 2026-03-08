@@ -49,29 +49,22 @@ namespace VTX::Renderer::Geometry
 				size += data.range.getCount();
 			}
 
-			if ( indexBuffer )
+			if ( indiceBuffer )
 			{
-				p_context.setPipelineBuffer<uint32_t>( *indexBuffer, size );
+				p_context.setPipelineBuffer<Indice>( *indiceBuffer, size );
 			}
 		}
 
 		/**
 		 * @brief Upload index buffer data.
 		 */
-		void uploadIndexes(
-			Context::ContextWrapper & p_context,
-			const Desc::Handle		  p_handle,
-			std::span<const uint32_t> p_indexes
-		)
+		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
 		{
-			if ( indexBuffer )
-			{
-				p_context.setPipelineBuffer<uint32_t>( *indexBuffer, p_indexes, _resources[ p_handle ].range.first );
-			}
-			else
-			{
-				throw GraphicException( "This geometry does not support index buffer upload." );
-			}
+			assert( indiceBuffer );
+
+			p_context.setPipelineBuffer<Indice>(
+				*indiceBuffer, _resources[ p_handle ].indices, _resources[ p_handle ].range.first
+			);
 		}
 
 		/**
@@ -105,7 +98,8 @@ namespace VTX::Renderer::Geometry
 			for ( const auto & [ uid, data ] : _resources )
 			{
 				commands.emplace_back(
-					Desc::DrawIndexedIndirectCommand { data.range.getCount(), 1, data.range.getFirst(), baseVertex, 0 }
+					Desc::DrawIndexedIndirectCommand {
+						static_cast<uint32_t>( data.indices.size() ), 1, data.range.getFirst(), baseVertex, 0 }
 				);
 				baseVertex += data.vertexCount;
 			}
@@ -128,8 +122,9 @@ namespace VTX::Renderer::Geometry
 		 */
 		struct Data
 		{
-			IndexRange range;
-			Index	   vertexCount;
+			IndexRange			range;
+			Index				vertexCount;
+			std::vector<Indice> indices;
 		};
 
 		/**
@@ -146,6 +141,16 @@ namespace VTX::Renderer::Geometry
 			Index countIndex = static_cast<Index>( count );
 			_resources.emplace( p_handle, Data { IndexRange { _size, countIndex }, p_countVertex } );
 			_size = countIndex;
+		}
+
+		/**
+		 * @brief Access indices.
+		 */
+		std::vector<Indice> & _indices( const Desc::Handle p_handle )
+		{
+			assert( _resources.contains( p_handle ) );
+
+			return _resources[ p_handle ].indices;
 		}
 
 	  private:

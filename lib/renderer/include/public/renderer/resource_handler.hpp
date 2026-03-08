@@ -183,6 +183,34 @@ namespace VTX::Renderer
 		inline T &		 get( const K & p_key ) { return get( handle( p_key ) ); }
 
 		/**
+		 * @brief Get all keys.
+		 */
+		std::vector<K> keys() const
+		{
+			std::vector<K> result;
+			result.reserve( _cache.size() );
+			for ( const auto & [ key, entry ] : _cache )
+			{
+				result.push_back( key );
+			}
+			return result;
+		}
+
+		/**
+		 * @brief Get all handles.
+		 */
+		std::vector<Desc::Handle> handles() const
+		{
+			std::vector<Desc::Handle> result;
+			result.reserve( _cache.size() );
+			for ( const auto & [ key, entry ] : _cache )
+			{
+				result.push_back( entry.handle );
+			}
+			return result;
+		}
+
+		/**
 		 * @brief Get the number of valid resources.
 		 */
 		inline size_t size() const { return _resources.size() - _availables.size(); }

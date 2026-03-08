@@ -125,7 +125,7 @@ namespace VTX::Renderer::Desc
 	enum struct E_PIPELINE_BUFFER_KIND : uint32_t
 	{
 		VERTEX,
-		INDEX,
+		INDICE,
 		INDIRECT_COMMAND
 	};
 
@@ -308,7 +308,7 @@ namespace VTX::Renderer::Desc
 	struct Geometry
 	{
 		Key				   vertexLayout;
-		std::optional<Key> indexBuffer	  = {};
+		std::optional<Key> indiceBuffer	  = {};
 		std::optional<Key> indirectBuffer = {};
 	};
 

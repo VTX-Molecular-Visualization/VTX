@@ -101,13 +101,13 @@ namespace VTX::Renderer
 	GraphBuilder & GraphBuilder::geometry(
 		const Desc::Key &			   p_name,
 		const Desc::Key &			   p_vertexLayout,
-		const std::optional<Desc::Key> p_indexBuffer,
+		const std::optional<Desc::Key> p_indiceBuffer,
 		const std::optional<Desc::Key> p_indirectBuffer
 	)
 	{
-		if ( p_indexBuffer && not resources.pipelineBuffers.contains( *p_indexBuffer ) )
+		if ( p_indiceBuffer && not resources.pipelineBuffers.contains( *p_indiceBuffer ) )
 		{
-			pipelineBuffer( *p_indexBuffer, Desc::E_PIPELINE_BUFFER_KIND::INDEX, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
+			pipelineBuffer( *p_indiceBuffer, Desc::E_PIPELINE_BUFFER_KIND::INDICE, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
 		}
 		if ( p_indirectBuffer && not resources.pipelineBuffers.contains( *p_indirectBuffer ) )
 		{
@@ -118,7 +118,7 @@ namespace VTX::Renderer
 
 		Desc::Geometry geom;
 		geom.vertexLayout			   = p_vertexLayout;
-		geom.indexBuffer			   = p_indexBuffer;
+		geom.indiceBuffer			   = p_indiceBuffer;
 		geom.indirectBuffer			   = p_indirectBuffer;
 		resources.geometries[ p_name ] = std::move( geom );
 		return *this;
@@ -126,10 +126,10 @@ namespace VTX::Renderer
 
 	GraphBuilder & GraphBuilder::geometry( const Desc::Key & p_name, const Desc::Geometry & p_geometry )
 	{
-		if ( p_geometry.indexBuffer && not resources.pipelineBuffers.contains( *p_geometry.indexBuffer ) )
+		if ( p_geometry.indiceBuffer && not resources.pipelineBuffers.contains( *p_geometry.indiceBuffer ) )
 		{
 			pipelineBuffer(
-				*p_geometry.indexBuffer, Desc::E_PIPELINE_BUFFER_KIND::INDEX, Desc::E_UPDATE_FREQUENCY::DYNAMIC
+				*p_geometry.indiceBuffer, Desc::E_PIPELINE_BUFFER_KIND::INDICE, Desc::E_UPDATE_FREQUENCY::DYNAMIC
 			);
 		}
 		if ( p_geometry.indirectBuffer && not resources.pipelineBuffers.contains( *p_geometry.indirectBuffer ) )

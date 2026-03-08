@@ -80,7 +80,7 @@ namespace VTX::Renderer::Context
 	struct PayloadDrawIndexedIndirect : BasePayloadDraw
 	{
 		uint32_t  indirectBuffer;
-		uint32_t  indexBuffer;
+		uint32_t  indiceBuffer;
 		uintptr_t count;
 	};
 

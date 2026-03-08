@@ -90,9 +90,9 @@ namespace VTX::Renderer
 			{
 				throw GraphicException( "Geometry '{}': vertex layout '{}' not found", key, geometry.vertexLayout );
 			}
-			if ( geometry.indexBuffer && not _resources.pipelineBuffers.contains( *geometry.indexBuffer ) )
+			if ( geometry.indiceBuffer && not _resources.pipelineBuffers.contains( *geometry.indiceBuffer ) )
 			{
-				throw GraphicException( "Geometry '{}': index buffer '{}' not found", key, *geometry.indexBuffer );
+				throw GraphicException( "Geometry '{}': index buffer '{}' not found", key, *geometry.indiceBuffer );
 			}
 			if ( geometry.indirectBuffer && not _resources.pipelineBuffers.contains( *geometry.indirectBuffer ) )
 			{

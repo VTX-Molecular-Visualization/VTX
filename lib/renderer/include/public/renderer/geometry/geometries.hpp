@@ -27,6 +27,13 @@ namespace VTX::Renderer
 			ribbons.construct( p_handle, p_data );
 		}
 
+		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
+		{
+			spheres.uploadIndexes( p_context, p_handle );
+			cylinders.uploadIndexes( p_context, p_handle );
+			ribbons.uploadIndexes( p_context, p_handle );
+		}
+
 		void resize( Context::ContextWrapper & p_context )
 		{
 			spheres.resize( p_context );

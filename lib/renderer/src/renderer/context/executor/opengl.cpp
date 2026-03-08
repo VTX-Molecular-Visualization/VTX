@@ -162,7 +162,7 @@ namespace VTX::Renderer::Context::Executor
 
 				auto & vao = _backend.vertexArray( p.pipeline );
 				vao.bind();
-				vao.bindElementBuffer( _backend.pipelineBuffer( p.indexBuffer ) );
+				vao.bindElementBuffer( _backend.pipelineBuffer( p.indiceBuffer ) );
 				_backend.pipelineBuffer( p.indirectBuffer ).bind( GL_DRAW_INDIRECT_BUFFER );
 				_backend.program( p.program ).use();
 				_backend.vertexArray( p.pipeline )

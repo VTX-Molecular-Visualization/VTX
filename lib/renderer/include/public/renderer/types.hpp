@@ -12,6 +12,7 @@ namespace VTX::Renderer
 	using RepresentationIndex = uint8_t;
 	using Flag				  = uint8_t;
 
+	using Indice		 = uint32_t;
 	using IndexRange	 = Util::Math::Range<Index>;
 	using IndexRangeList = Util::Math::RangeList<Index>;
 
