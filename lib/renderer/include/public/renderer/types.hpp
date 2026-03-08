@@ -11,10 +11,11 @@ namespace VTX::Renderer
 	using ModelIndex		  = uint16_t;
 	using Flag				  = uint8_t;
 
-	using IndexRange	  = Util::Math::Range<Index>;
-	using IndexRangeList  = Util::Math::RangeList<Index>;
-	using MapUIDRange	  = std::map<SystemUID, IndexRange>;
-	using MapUIDRangeList = std::map<SystemUID, IndexRangeList>;
+	using IndexRange	   = Util::Math::Range<Index>;
+	using IndexRangeList   = Util::Math::RangeList<Index>;
+	using IndexRangeVector = std::vector<IndexRange>;
+	using MapUIDRange	   = std::map<SystemUID, IndexRange>;
+	using MapUIDRangeList  = std::map<SystemUID, IndexRangeList>;
 
 } // namespace VTX::Renderer
 

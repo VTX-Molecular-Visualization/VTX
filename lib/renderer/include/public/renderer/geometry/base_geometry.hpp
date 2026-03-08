@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 
 #include "renderer/descriptors.hpp"
+#include "renderer/resource_handler.hpp"
 #include "renderer/system_data.hpp"
 #include "renderer/types.hpp"
 #include <map>
@@ -43,9 +44,9 @@ namespace VTX::Renderer::Geometry
 		inline void resize( Context::ContextWrapper & p_context )
 		{
 			Index size = 0;
-			for ( const auto & [ uid, range ] : _ranges )
+			for ( const auto & [ uid, data ] : _resources )
 			{
-				size += range.getCount();
+				size += data.range.getCount();
 			}
 
 			if ( indexBuffer )
@@ -65,7 +66,7 @@ namespace VTX::Renderer::Geometry
 		{
 			if ( indexBuffer )
 			{
-				p_context.setPipelineBuffer<uint32_t>( *indexBuffer, p_indexes, _ranges[ p_uid ].first );
+				p_context.setPipelineBuffer<uint32_t>( *indexBuffer, p_indexes, _resources.get( p_uid ).range.first );
 			}
 			else
 			{
@@ -78,12 +79,14 @@ namespace VTX::Renderer::Geometry
 		 */
 		[[nodiscard]] std::vector<Desc::DrawIndirectCommand> toDrawIndirectCommands()
 		{
-			IndexRangeList						   allRanges = _buildDrawRanges();
+			// IndexRangeList						   allRanges = _buildDrawRanges();
 			std::vector<Desc::DrawIndirectCommand> commands;
 
-			for ( auto it = allRanges.rangeBegin(); it != allRanges.rangeEnd(); ++it )
+			for ( const auto & [ uid, data ] : _resources )
 			{
-				commands.emplace_back( Desc::DrawIndirectCommand { it->getCount(), 1, it->getFirst(), 0 } );
+				commands.emplace_back(
+					Desc::DrawIndirectCommand { data.range.getCount(), 1, data.range.getFirst(), 0 }
+				);
 			}
 
 			count = static_cast<uint32_t>( commands.size() );
@@ -96,12 +99,15 @@ namespace VTX::Renderer::Geometry
 		 */
 		[[nodiscard]] std::vector<Desc::DrawIndexedIndirectCommand> toDrawIndexedIndirectCommands()
 		{
-			IndexRangeList								  allRanges = _buildDrawRanges();
+			// IndexRangeList								  allRanges = _buildDrawRanges();
 			std::vector<Desc::DrawIndexedIndirectCommand> commands;
-
-			for ( auto it = allRanges.rangeBegin(); it != allRanges.rangeEnd(); ++it )
+			int											  baseVertex = 0;
+			for ( const auto & [ uid, data ] : _resources )
 			{
-				commands.emplace_back( Desc::DrawIndexedIndirectCommand { it->getCount(), 1, it->getFirst(), 0, 0 } );
+				commands.emplace_back(
+					Desc::DrawIndexedIndirectCommand { data.range.getCount(), 1, data.range.getFirst(), baseVertex, 0 }
+				);
+				baseVertex += data.vertexCount;
 			}
 
 			count = static_cast<uint32_t>( commands.size() );
@@ -111,16 +117,21 @@ namespace VTX::Renderer::Geometry
 
 		Index size( const SystemUID p_uid ) const
 		{
-			assert( _ranges.contains( p_uid ) );
+			assert( _resources.contains( p_uid ) );
 
-			return _ranges[ p_uid ].getCount();
+			return _resources.get( p_uid ).range.getCount();
 		}
 
 	  protected:
 		/**
-		 * @brief Range to draw per system (global indexes).
+		 * @brief Data per system.
 		 */
-		mutable MapUIDRange _ranges;
+		struct Data
+		{
+			IndexRange range;
+			Index	   vertexCount;
+		};
+		ResourceHandler<Data, DescDummy, SystemUID> _resources;
 
 		/**
 		 * @brief Current size to draw (before applying anything).
@@ -130,24 +141,24 @@ namespace VTX::Renderer::Geometry
 		/**
 		 * @brief Push a range.
 		 */
-		template<typename T>
-		void _addRange( const SystemUID p_uid, const T p_count )
+		void _addRange( const SystemUID p_uid, const Index p_countIndices, const Index p_countVertex )
 		{
-			size_t count = _size + p_count;
+			size_t count = _size + p_countIndices;
 			if ( count > TypeMax<Index> )
 			{
 				throw GraphicException( "Total geometry count exceeds maximum supported value." );
 			}
 
 			Index countIndex = static_cast<Index>( count );
-			_ranges[ p_uid ] = IndexRange { _size, countIndex };
-			_size			 = countIndex;
+			_resources.emplace( p_uid, {}, Data { IndexRange { _size, countIndex }, p_countVertex } );
+			_size = countIndex;
 		}
 
 	  private:
 		/**
 		 * @brief Build GPU draw ranges.
 		 */
+		/*
 		[[nodiscard]] IndexRangeList _buildDrawRanges()
 		{
 			IndexRangeList allRanges;
@@ -185,6 +196,7 @@ namespace VTX::Renderer::Geometry
 
 			return allRanges;
 		}
+		*/
 	};
 } // namespace VTX::Renderer::Geometry
 

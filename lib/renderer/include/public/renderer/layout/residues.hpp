@@ -13,7 +13,6 @@ namespace VTX::Renderer::Layout
 		COLOR,
 		ID,
 		FLAG,
-		MODEL,
 		REPRESENTATION
 	};
 
@@ -28,7 +27,6 @@ namespace VTX::Renderer::Layout
 			attributes.push_back( { RESIDUES_COLORS, Desc::E_TYPE::UBYTE } );
 			attributes.push_back( { RESIDUES_IDS, Desc::E_TYPE::UINT } );
 			attributes.push_back( { RESIDUES_FLAGS, Desc::E_TYPE::UBYTE } );
-			attributes.push_back( { RESIDUES_MODELS, Desc::E_TYPE::USHORT } );
 			attributes.push_back( { RESIDUES_REPRESENTATIONS, Desc::E_TYPE::UBYTE } );
 		}
 
@@ -63,10 +61,6 @@ namespace VTX::Renderer::Layout
 			{
 				p_context.setPipelineBuffer<Flag>( RESIDUES_FLAGS, p_data, offset );
 			}
-			else if constexpr ( A == RESIDUE_ATTR::MODEL )
-			{
-				p_context.setPipelineBuffer<ModelIndex>( RESIDUES_MODELS, p_data, offset );
-			}
 			else if constexpr ( A == RESIDUE_ATTR::REPRESENTATION )
 			{
 				p_context.setPipelineBuffer<RepresentationIndex>( RESIDUES_REPRESENTATIONS, p_data, offset );
@@ -86,7 +80,6 @@ namespace VTX::Renderer::Layout
 			p_context.setPipelineBuffer<ColorIndex>( RESIDUES_COLORS, p_size );
 			p_context.setPipelineBuffer<PickingUID>( RESIDUES_IDS, p_size );
 			p_context.setPipelineBuffer<Flag>( RESIDUES_FLAGS, p_size );
-			p_context.setPipelineBuffer<ModelIndex>( RESIDUES_MODELS, p_size );
 			p_context.setPipelineBuffer<RepresentationIndex>( RESIDUES_REPRESENTATIONS, p_size );
 		}
 
@@ -97,7 +90,6 @@ namespace VTX::Renderer::Layout
 		inline static const std::string RESIDUES_COLORS			 = "Residues.Colors";
 		inline static const std::string RESIDUES_IDS			 = "Residues.Ids";
 		inline static const std::string RESIDUES_FLAGS			 = "Residues.Flags";
-		inline static const std::string RESIDUES_MODELS			 = "Residues.Models";
 		inline static const std::string RESIDUES_REPRESENTATIONS = "Residues.Representations";
 	};
 } // namespace VTX::Renderer::Layout

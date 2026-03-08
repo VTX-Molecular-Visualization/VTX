@@ -18,7 +18,7 @@ namespace VTX::Renderer::Geometry
 
 		void construct( const SystemData & p_data )
 		{
-			if ( _ranges.contains( p_data.uid ) )
+			if ( _resources.contains( p_data.uid ) )
 			{
 				return;
 			}
@@ -29,7 +29,7 @@ namespace VTX::Renderer::Geometry
 			assert( p_data.atomUids.size() == count );
 			assert( p_data.radii.size() == count );
 
-			_addRange( p_data.uid, count );
+			_addRange( p_data.uid, count, count );
 		}
 	};
 

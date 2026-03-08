@@ -51,7 +51,7 @@ namespace VTX::Renderer::Geometry
 
 		void construct( const SystemData & p_data )
 		{
-			if ( _ranges.contains( p_data.uid ) )
+			if ( _resources.contains( p_data.uid ) )
 			{
 				return;
 			}
@@ -184,7 +184,7 @@ namespace VTX::Renderer::Geometry
 				return;
 			}
 
-			_addRange( p_data.uid, bufferIndices.size() );
+			_addRange( p_data.uid, static_cast<Index>( bufferIndices.size() ), static_cast<Index>( residues.size() ) );
 		}
 
 	  protected:

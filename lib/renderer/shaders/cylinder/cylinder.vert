@@ -12,8 +12,7 @@ layout( location = 1 ) in uint  inVertexColor;
 layout( location = 2 ) in float inVertexRad;
 layout( location = 3 ) in uint  inVertexId;
 layout( location = 4 ) in uint  inVertexFlag;
-layout( location = 5 ) in uint  inVertexModel;
-layout( location = 6 ) in uint  inVertexRepresentation;
+layout( location = 5 ) in uint  inVertexRepresentation;
 
 // Out.
 flat out StructCylinder vsCylinder;
@@ -28,5 +27,5 @@ void main()
 	vsCylinder.representation	= inVertexRepresentation;
 
 	// Vertex position in view space.
-	gl_Position = uniformsModel[ inVertexModel ].matrixModelView * vec4( inVertexPosition, 1.f );
+	gl_Position = uniformsModel[ gl_DrawID ].matrixModelView * vec4( inVertexPosition, 1.f );
 }

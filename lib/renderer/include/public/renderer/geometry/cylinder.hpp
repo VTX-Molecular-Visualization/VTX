@@ -18,12 +18,12 @@ namespace VTX::Renderer::Geometry
 
 		void construct( const SystemData & p_data )
 		{
-			if ( _ranges.contains( p_data.uid ) )
+			if ( _resources.contains( p_data.uid ) )
 			{
 				return;
 			}
 
-			_addRange( p_data.uid, p_data.data.getBondCount() * 2 );
+			_addRange( p_data.uid, p_data.data.getBondCount() * 2, p_data.data.getAtomCount() );
 		}
 	};
 } // namespace VTX::Renderer::Geometry

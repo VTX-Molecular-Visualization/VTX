@@ -382,9 +382,6 @@ namespace VTX::Renderer
 			_layouts.atoms.upload<ATOM_ATTR::RADIUS, float>( _context, uid, systemData.radii );
 			_layouts.atoms.upload<ATOM_ATTR::ID, PickingUID>( _context, uid, systemData.atomUids );
 			const Index countAtoms = _geometries.spheres.size( uid );
-			_layouts.atoms.upload<ATOM_ATTR::MODEL, ModelIndex>(
-				_context, uid, std::vector<ModelIndex>( countAtoms, modelIndex )
-			);
 
 			std::vector<Index> indices( countAtoms );
 			std::iota( indices.begin(), indices.end(), 0 );
@@ -406,9 +403,6 @@ namespace VTX::Renderer
 
 				_layouts.residues.upload<RESIDUE_ATTR::ID, PickingUID>( _context, uid, residueIds );
 				_layouts.residues.upload<RESIDUE_ATTR::TYPE, uint8_t>( _context, uid, residueTypes );
-				_layouts.residues.upload<RESIDUE_ATTR::MODEL, ModelIndex>(
-					_context, uid, std::vector<ModelIndex>( countResidues, modelIndex )
-				);
 				_geometries.ribbons.uploadIndexes( _context, uid, construction.indices );
 			}
 

@@ -12,8 +12,7 @@ namespace VTX::Renderer::Layout
 		ID,		// TODO: remove and use gl_DrawID/gl_VertexID?
 		COLOR,
 		REPRESENTATION,
-		MODEL, // TODO: remove and use gl_DrawID.
-		FLAG   // TODO: no more use this for visibility.
+		FLAG // TODO: no more use this for visibility.
 	};
 
 	class Atoms : public BaseLayout
@@ -26,7 +25,6 @@ namespace VTX::Renderer::Layout
 			attributes.push_back( { ATOMS_RADII, Desc::E_TYPE::FLOAT } );
 			attributes.push_back( { ATOMS_IDS, Desc::E_TYPE::UINT } );
 			attributes.push_back( { ATOMS_FLAGS, Desc::E_TYPE::UBYTE } );
-			attributes.push_back( { ATOMS_MODELS, Desc::E_TYPE::USHORT } );
 			attributes.push_back( { ATOMS_REPRESENTATIONS, Desc::E_TYPE::UBYTE } );
 		}
 
@@ -58,10 +56,6 @@ namespace VTX::Renderer::Layout
 			{
 				p_context.setPipelineBuffer<RepresentationIndex>( ATOMS_REPRESENTATIONS, p_data, offset );
 			}
-			else if constexpr ( A == ATOM_ATTR::MODEL )
-			{
-				p_context.setPipelineBuffer<ModelIndex>( ATOMS_MODELS, p_data, offset );
-			}
 			else if constexpr ( A == ATOM_ATTR::FLAG )
 			{
 				p_context.setPipelineBuffer<Flag>( ATOMS_FLAGS, p_data, offset );
@@ -80,7 +74,6 @@ namespace VTX::Renderer::Layout
 			p_context.setPipelineBuffer<PickingUID>( ATOMS_IDS, p_size );
 			p_context.setPipelineBuffer<ColorIndex>( ATOMS_COLORS, p_size );
 			p_context.setPipelineBuffer<RepresentationIndex>( ATOMS_REPRESENTATIONS, p_size );
-			p_context.setPipelineBuffer<ModelIndex>( ATOMS_MODELS, p_size );
 			p_context.setPipelineBuffer<Flag>( ATOMS_FLAGS, p_size );
 		}
 
@@ -90,7 +83,6 @@ namespace VTX::Renderer::Layout
 		inline static const std::string ATOMS_RADII			  = "Atoms.Radii";
 		inline static const std::string ATOMS_IDS			  = "Atoms.Ids";
 		inline static const std::string ATOMS_FLAGS			  = "Atoms.Flags";
-		inline static const std::string ATOMS_MODELS		  = "Atoms.Models";
 		inline static const std::string ATOMS_REPRESENTATIONS = "Atoms.Representations";
 	};
 } // namespace VTX::Renderer::Layout

@@ -23,6 +23,15 @@ namespace VTX::Renderer
 	{
 	  public:
 		/**
+		 * @brief Cache : mapping Key -> { Handle, Desc }.
+		 */
+		struct Entry
+		{
+			Desc::Handle handle;
+			D			 descriptor;
+		};
+
+		/**
 		 * @brief Emplace a new resource.
 		 * Reuse available handles if any.
 		 */
@@ -51,7 +60,7 @@ namespace VTX::Renderer
 			}
 
 			// Update cache.
-			_cache.insert_or_assign( p_key, _Entry { handle, p_desc } );
+			_cache.insert_or_assign( p_key, Entry { handle, p_desc } );
 
 			// Remove from invalids if present.
 			auto it = std::find( _invalids.begin(), _invalids.end(), handle );
@@ -222,6 +231,9 @@ namespace VTX::Renderer
 			_invalids.clear();
 		}
 
+		/**
+		 * @brief Debug string.
+		 */
 		std::string toString()
 		{
 			std::string result = "ResourceHandler:\n";
@@ -231,21 +243,43 @@ namespace VTX::Renderer
 			return result;
 		}
 
+		/**
+		 * @brief Iterator over key-value pairs.
+		 */
+		class iterator
+		{
+		  public:
+			using CacheIter = typename std::unordered_map<K, Entry>::iterator;
+
+			iterator( ResourceHandler * p_handler, CacheIter p_it ) : _handler( p_handler ), _it( p_it ) {}
+
+			iterator & operator++()
+			{
+				++_it;
+				return *this;
+			}
+
+			bool operator!=( const iterator & p_other ) const { return _it != p_other._it; }
+
+			auto operator*() const
+			{
+				return std::pair<const K &, T &>( _it->first, *_handler->_resources[ _it->second.handle ] );
+			}
+
+		  private:
+			ResourceHandler * _handler;
+			CacheIter		  _it;
+		};
+
+		iterator begin() { return iterator( this, _cache.begin() ); }
+		iterator end() { return iterator( this, _cache.end() ); }
+
 	  private:
 		/**
 		 * @brief Resource pool : Handle = index.
 		 */
 		std::vector<std::unique_ptr<T>> _resources;
-
-		/**
-		 * @brief Cache : mapping Key -> { Handle, Desc }.
-		 */
-		struct _Entry
-		{
-			Desc::Handle handle;
-			D			 descriptor;
-		};
-		std::unordered_map<K, _Entry> _cache;
+		std::unordered_map<K, Entry>	_cache;
 
 		/**
 		 * @brief Available handles for reuse.

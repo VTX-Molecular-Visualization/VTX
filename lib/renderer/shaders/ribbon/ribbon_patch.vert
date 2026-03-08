@@ -10,7 +10,6 @@ layout( location = 2 ) in uint inType;
 layout( location = 3 ) in uint inColor;
 layout( location = 4 ) in uint inResidueId;
 layout( location = 5 ) in uint inResidueFlag;
-layout( location = 6 ) in uint inResidueModel;
 layout( location = 6 ) in uint inResidueRepresentation;
 
 // Out.
@@ -27,6 +26,6 @@ void main()
 	dataOut.id				= inResidueId;
 	dataOut.visibility		= int( inResidueFlag ) & ( 1 << FLAG_VISIBILITY );
 	dataOut.selection		= int( inResidueFlag ) & ( 1 << FLAG_SELECTION );	
-	dataOut.model			= inResidueModel;
+	dataOut.model			= gl_DrawID;
 	dataOut.representation	= inResidueRepresentation;
 }

@@ -14,8 +14,7 @@ layout( location = 1 ) in uint  inSphereColor;
 layout( location = 2 ) in float inSphereRadius;
 layout( location = 3 ) in uint  inSphereId;
 layout( location = 4 ) in uint  inSphereFlag;
-layout( location = 5 ) in uint  inSphereModel;
-layout( location = 6 ) in uint  inSphereRepresentation;
+layout( location = 5 ) in uint  inSphereRepresentation;
 
 // Out.
 flat out StructVertexShader vsData;
@@ -23,7 +22,7 @@ flat out StructSphere vsSphere;
 
 void main()
 {
-	vsSphere.viewPos	 = vec3( uniformsModel[ inSphereModel ].matrixModelView * vec4( inSpherePos, 1.f ) );
+	vsSphere.viewPos	 = vec3( uniformsModel[ gl_DrawID ].matrixModelView * vec4( inSpherePos, 1.f ) );
 	vsSphere.color		 = uniformsColor[ inSphereColor ];
 	//vsSphere.sphereColor		 = vec4( 1.f, 1.f, 1.f, 1.f );
 	Representation representation = uniformsRepresentation[ inSphereRepresentation ];
