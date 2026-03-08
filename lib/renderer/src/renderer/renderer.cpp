@@ -379,7 +379,7 @@ namespace VTX::Renderer
 			const SystemUID uid = systemData.uid;
 
 			// Upload layouts and geometries data.
-			_layouts.atoms.upload<ATOM_ATTR::RADIUS, float>( _context, uid, systemData.radii );
+			_layouts.atoms.upload<ATOM_ATTR::SYMBOL, Symbol>( _context, uid, systemData.data.atomSymbols );
 			_layouts.atoms.upload<ATOM_ATTR::ID, PickingUID>( _context, uid, systemData.atomUids );
 			const Index countAtoms = _geometries.spheres.size( uid );
 

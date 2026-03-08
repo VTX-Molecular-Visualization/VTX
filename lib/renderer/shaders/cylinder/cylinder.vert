@@ -9,7 +9,6 @@
 // In.
 layout( location = 0 ) in vec3  inVertexPosition;
 layout( location = 1 ) in uint  inVertexColor;
-layout( location = 2 ) in float inVertexRad;
 layout( location = 3 ) in uint  inVertexId;
 layout( location = 4 ) in uint  inVertexFlag;
 layout( location = 5 ) in uint  inVertexRepresentation;
