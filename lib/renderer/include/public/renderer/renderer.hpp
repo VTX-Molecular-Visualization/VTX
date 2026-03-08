@@ -88,13 +88,9 @@ namespace VTX::Renderer
 		void setSystemTransform( const SystemUID, const Mat4f & );
 		void setSystemPosition( const SystemUID, std::span<const Vec3f> );
 		void setSystemColors( const SystemUID, std::span<const ColorIndex> );
-		void setSystemRepresentation( const SystemUID, const MapRepresentationRanges &, const std::vector<Index> & );
-		void setSystemFlags(
-			const SystemUID,
-			const Core::Struct::IndexRangeList &,
-			const Core::Struct::IndexRangeList &,
-			const std::vector<Index> &
-		);
+		void setSystemRepresentation( const SystemUID, const MapRepresentationRanges & );
+		void setSystemVisibility( const SystemUID, const Core::Struct::IndexRangeList &);
+		void setSystemSelection( const SystemUID, const Core::Struct::IndexRangeList &);
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
@@ -183,9 +179,9 @@ namespace VTX::Renderer
 		/**
 		 * @brief Cached data to update.
 		 */
-		Cache::Camera										 _cacheCamera;
-		std::map<SystemUID, Cache::System>					 _cacheSystems;
-		std::map<RepresentationIndex, Cache::Representation> _cacheRepresentations;
+		Cache::Camera												   _cacheCamera;
+		ResourceHandler<Cache::System, DescDummy, SystemUID>		   _systems;
+		std::unordered_map<RepresentationIndex, Cache::Representation> _cacheRepresentations;
 
 		/**
 		 * @brief Refresh the render graph according to the graphics config.

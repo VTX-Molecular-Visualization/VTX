@@ -16,20 +16,15 @@ namespace VTX::Renderer::Geometry
 			indirectBuffer = "Indirect.Spheres";
 		}
 
-		void construct( const SystemData & p_data )
+		void construct( const Desc::Handle p_handle, const SystemData & p_data )
 		{
-			if ( _resources.contains( p_data.uid ) )
-			{
-				return;
-			}
-
 			const Index count = p_data.data.getAtomCount();
 
 			assert( count > 0 );
 			assert( p_data.atomUids.size() == count );
 			assert( p_data.radii.size() == count );
 
-			_addRange( p_data.uid, count, count );
+			_addRange( p_handle, count, count );
 		}
 	};
 

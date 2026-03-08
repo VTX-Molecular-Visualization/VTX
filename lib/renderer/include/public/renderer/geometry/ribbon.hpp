@@ -42,20 +42,15 @@ namespace VTX::Renderer::Geometry
 
 		bool empty( const SystemUID p_uid ) const { return _construction[ p_uid ].isEmpty; }
 
-		const Construction & construction( const SystemUID p_uid ) const
+		const Construction & construction( const Desc::Handle p_handle ) const
 		{
-			assert( _construction.contains( p_uid ) );
+			assert( _construction.contains( p_handle ) );
 
-			return _construction[ p_uid ];
+			return _construction[ p_handle ];
 		}
 
-		void construct( const SystemData & p_data )
+		void construct( const Desc::Handle p_handle, const SystemData & p_data )
 		{
-			if ( _resources.contains( p_data.uid ) )
-			{
-				return;
-			}
-
 			// assert( p_data.data.atomNames.size() == p_data.frame.size() );
 			assert( p_data.residueUids.size() == p_data.data.residueSecondaryStructureTypes.size() );
 			assert( p_data.residueUids.size() == p_data.residueUids.size() );
@@ -65,7 +60,7 @@ namespace VTX::Renderer::Geometry
 
 			// Compute data if not cached.
 			const Index	   offsetItems = sizeItems;
-			Construction & cache	   = _construction[ p_data.uid ];
+			Construction & cache	   = _construction[ p_handle ];
 
 			if ( cache.isEmpty )
 			{
@@ -184,11 +179,11 @@ namespace VTX::Renderer::Geometry
 				return;
 			}
 
-			_addRange( p_data.uid, static_cast<Index>( bufferIndices.size() ), static_cast<Index>( residues.size() ) );
+			_addRange( p_handle, static_cast<Index>( bufferIndices.size() ), static_cast<Index>( residues.size() ) );
 		}
 
 	  protected:
-		mutable std::map<SystemUID, Construction> _construction;
+		mutable std::map<Desc::Handle, Construction> _construction;
 	};
 
 } // namespace VTX::Renderer::Geometry

@@ -21,7 +21,7 @@ namespace VTX::Renderer::Layout
 		}
 
 		template<VOXEL_ATTR A, typename T>
-		void upload( Context::ContextWrapper & p_context, const SystemUID, std::span<const T> p_data )
+		void upload( Context::ContextWrapper & p_context, const Desc::Handle, std::span<const T> p_data )
 		{
 			if constexpr ( A == VOXEL_ATTR::MINS )
 			{

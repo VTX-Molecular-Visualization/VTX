@@ -20,11 +20,11 @@ namespace VTX::Renderer
 		Geometry::Grid	   grid;
 		//  Geometry::SES	   ses;
 
-		void construct( const SystemData & p_data )
+		void construct( const Desc::Handle p_handle, const SystemData & p_data )
 		{
-			spheres.construct( p_data );
-			cylinders.construct( p_data );
-			ribbons.construct( p_data );
+			spheres.construct( p_handle, p_data );
+			cylinders.construct( p_handle, p_data );
+			ribbons.construct( p_handle, p_data );
 		}
 
 		void resize( Context::ContextWrapper & p_context )

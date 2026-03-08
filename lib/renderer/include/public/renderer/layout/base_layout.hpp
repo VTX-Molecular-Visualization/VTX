@@ -14,16 +14,16 @@ namespace VTX::Renderer::Layout
 		/**
 		 * @brief Push a range.
 		 */
-		inline void add( const SystemUID p_uid, const Index & p_count )
+		inline void add( const Desc::Handle p_handle, const Index & p_count )
 		{
-			if ( _ranges.contains( p_uid ) )
+			if ( _ranges.contains( p_handle ) )
 			{
 				return;
 			}
 
-			Index	   last	 = _rangeList.isEmpty() ? 0 : _rangeList.getLast();
-			IndexRange r	 = IndexRange::fromFirstCount( last, p_count );
-			_ranges[ p_uid ] = r;
+			Index	   last		= _rangeList.isEmpty() ? 0 : _rangeList.getLast();
+			IndexRange r		= IndexRange::fromFirstCount( last, p_count );
+			_ranges[ p_handle ] = r;
 			_rangeList.addRange( r );
 		}
 
@@ -32,24 +32,37 @@ namespace VTX::Renderer::Layout
 		 */
 		inline void resize( Context::ContextWrapper & p_context ) { _resize( p_context, _rangeList.count() ); }
 
-		Index size( const SystemUID p_uid ) const
+		/**
+		 * @brief Get offset.
+		 */
+		Index offset( const Desc::Handle p_handle ) const
 		{
-			assert( _ranges.contains( p_uid ) );
+			assert( _ranges.contains( p_handle ) );
 
-			return _ranges[ p_uid ].getCount();
+			return _ranges[ p_handle ].getFirst();
 		}
 
-	  protected:
 		/**
-		 * @brief Range to draw per system (global indexes).
+		 * @brief Get size.
 		 */
-		mutable MapUIDRange _ranges;
-		IndexRangeList		_rangeList;
+		Index size( const Desc::Handle p_handle ) const
+		{
+			assert( _ranges.contains( p_handle ) );
+
+			return _ranges[ p_handle ].getCount();
+		}
 
 		/**
 		 * @brief Resize whole layout.
 		 */
 		virtual void _resize( Context::ContextWrapper &, const Index ) = 0;
+
+	  private:
+		/**
+		 * @brief Range to draw per system (global indexes).
+		 */
+		mutable std::unordered_map<Desc::Handle, IndexRange> _ranges;
+		IndexRangeList										 _rangeList;
 	};
 } // namespace VTX::Renderer::Layout
 

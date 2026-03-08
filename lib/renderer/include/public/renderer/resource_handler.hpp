@@ -183,6 +183,12 @@ namespace VTX::Renderer
 		inline T &		 get( const K & p_key ) { return get( handle( p_key ) ); }
 
 		/**
+		 * @brief Get the number of valid resources.
+		 */
+		inline size_t size() const { return _resources.size() - _availables.size(); }
+		inline bool	  empty() const { return size() == 0; }
+
+		/**
 		 * @brief Access resource by handle.
 		 */
 		inline const T & get( const Desc::Handle p_handle ) const noexcept
@@ -249,30 +255,39 @@ namespace VTX::Renderer
 		class iterator
 		{
 		  public:
-			using CacheIter = typename std::unordered_map<K, Entry>::iterator;
+			using VecIter = typename std::vector<std::unique_ptr<T>>::iterator;
 
-			iterator( ResourceHandler * p_handler, CacheIter p_it ) : _handler( p_handler ), _it( p_it ) {}
+			iterator( ResourceHandler * p_handler, VecIter p_it ) : _handler( p_handler ), _it( p_it )
+			{
+				skipInvalid();
+			}
 
 			iterator & operator++()
 			{
 				++_it;
+				skipInvalid();
 				return *this;
 			}
 
 			bool operator!=( const iterator & p_other ) const { return _it != p_other._it; }
 
-			auto operator*() const
-			{
-				return std::pair<const K &, T &>( _it->first, *_handler->_resources[ _it->second.handle ] );
-			}
+			T & operator*() const { return **_it; }
 
 		  private:
+			void skipInvalid()
+			{
+				while ( _it != _handler->_resources.end() && *_it == nullptr )
+				{
+					++_it;
+				}
+			}
+
 			ResourceHandler * _handler;
-			CacheIter		  _it;
+			VecIter			  _it;
 		};
 
-		iterator begin() { return iterator( this, _cache.begin() ); }
-		iterator end() { return iterator( this, _cache.end() ); }
+		iterator begin() { return iterator( this, _resources.begin() ); }
+		iterator end() { return iterator( this, _resources.end() ); }
 
 	  private:
 		/**

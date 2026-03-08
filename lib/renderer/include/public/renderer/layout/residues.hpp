@@ -31,39 +31,39 @@ namespace VTX::Renderer::Layout
 		}
 
 		template<RESIDUE_ATTR A, typename T>
-		void upload( Context::ContextWrapper & p_context, const SystemUID p_uid, std::span<const T> p_data )
+		void upload( Context::ContextWrapper & p_context, const Desc::Handle p_handle, std::span<const T> p_data )
 		{
-			assert( p_data.size() <= _ranges[ p_uid ].getCount() );
+			assert( p_data.size() <= size( p_handle ) );
 
-			const Index offset = _ranges[ p_uid ].first;
+			const Index o = offset( p_handle );
 
 			if constexpr ( A == RESIDUE_ATTR::POSITION )
 			{
-				p_context.setPipelineBuffer<Vec4f>( RESIDUES_POSITIONS, p_data, offset );
+				p_context.setPipelineBuffer<Vec4f>( RESIDUES_POSITIONS, p_data, o );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::DIRECTION )
 			{
-				p_context.setPipelineBuffer<Vec3f>( RESIDUES_DIRECTIONS, p_data, offset );
+				p_context.setPipelineBuffer<Vec3f>( RESIDUES_DIRECTIONS, p_data, o );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::TYPE )
 			{
-				p_context.setPipelineBuffer<uint8_t>( RESIDUES_TYPES, p_data, offset );
+				p_context.setPipelineBuffer<uint8_t>( RESIDUES_TYPES, p_data, o );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::COLOR )
 			{
-				p_context.setPipelineBuffer<ColorIndex>( RESIDUES_COLORS, p_data, offset );
+				p_context.setPipelineBuffer<ColorIndex>( RESIDUES_COLORS, p_data, o );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::ID )
 			{
-				p_context.setPipelineBuffer<PickingUID>( RESIDUES_IDS, p_data, offset );
+				p_context.setPipelineBuffer<PickingUID>( RESIDUES_IDS, p_data, o );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::FLAG )
 			{
-				p_context.setPipelineBuffer<Flag>( RESIDUES_FLAGS, p_data, offset );
+				p_context.setPipelineBuffer<Flag>( RESIDUES_FLAGS, p_data, o );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::REPRESENTATION )
 			{
-				p_context.setPipelineBuffer<RepresentationIndex>( RESIDUES_REPRESENTATIONS, p_data, offset );
+				p_context.setPipelineBuffer<RepresentationIndex>( RESIDUES_REPRESENTATIONS, p_data, o );
 			}
 			else
 			{

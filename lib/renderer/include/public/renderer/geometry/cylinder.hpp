@@ -16,14 +16,9 @@ namespace VTX::Renderer::Geometry
 			indirectBuffer = "Indirect.Cylinders";
 		}
 
-		void construct( const SystemData & p_data )
+		void construct( const Desc::Handle p_handle, const SystemData & p_data )
 		{
-			if ( _resources.contains( p_data.uid ) )
-			{
-				return;
-			}
-
-			_addRange( p_data.uid, p_data.data.getBondCount() * 2, p_data.data.getAtomCount() );
+			_addRange( p_handle, p_data.data.getBondCount() * 2, p_data.data.getAtomCount() );
 		}
 	};
 } // namespace VTX::Renderer::Geometry

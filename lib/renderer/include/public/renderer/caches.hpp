@@ -24,12 +24,10 @@ namespace VTX::Renderer::Cache
 
 	struct System
 	{
-		Mat4f					transform;
-		ModelIndex				modelIndex;
-		MapRepresentationRanges representationAtomsRanges;
-		// TODO: remove.
-		MapRepresentationRanges representationBondsRanges;
-		MapRepresentationRanges representationResiduesRanges;
+		Mat4f						 transform;
+		Core::Struct::IndexRangeList visibility;
+		Core::Struct::IndexRangeList selection;
+		MapRepresentationRanges		 representations;
 	};
 
 	struct Representation

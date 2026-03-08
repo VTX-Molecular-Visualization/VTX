@@ -29,36 +29,35 @@ namespace VTX::Renderer::Layout
 		}
 
 		template<ATOM_ATTR A, typename T>
-		void upload( Context::ContextWrapper & p_context, const SystemUID p_uid, std::span<const T> p_data )
+		void upload( Context::ContextWrapper & p_context, const Desc::Handle p_handle, std::span<const T> p_data )
 		{
-			auto s = _ranges[ p_uid ].getCount();
-			assert( p_data.size() <= s );
+			assert( p_data.size() <= size( p_handle ) );
 
-			const Index offset = _ranges[ p_uid ].first;
+			const Index o = offset( p_handle );
 
 			if constexpr ( A == ATOM_ATTR::POSITION )
 			{
-				p_context.setPipelineBuffer<Vec3f>( ATOMS_POSITIONS, p_data, offset );
+				p_context.setPipelineBuffer<Vec3f>( ATOMS_POSITIONS, p_data, o );
 			}
 			else if constexpr ( A == ATOM_ATTR::SYMBOL )
 			{
-				p_context.setPipelineBuffer<Symbol>( ATOMS_SYMBOLS, p_data, offset );
+				p_context.setPipelineBuffer<Symbol>( ATOMS_SYMBOLS, p_data, o );
 			}
 			else if constexpr ( A == ATOM_ATTR::ID )
 			{
-				p_context.setPipelineBuffer<PickingUID>( ATOMS_IDS, p_data, offset );
+				p_context.setPipelineBuffer<PickingUID>( ATOMS_IDS, p_data, o );
 			}
 			else if constexpr ( A == ATOM_ATTR::COLOR )
 			{
-				p_context.setPipelineBuffer<ColorIndex>( ATOMS_COLORS, p_data, offset );
+				p_context.setPipelineBuffer<ColorIndex>( ATOMS_COLORS, p_data, o );
 			}
 			else if constexpr ( A == ATOM_ATTR::REPRESENTATION )
 			{
-				p_context.setPipelineBuffer<RepresentationIndex>( ATOMS_REPRESENTATIONS, p_data, offset );
+				p_context.setPipelineBuffer<RepresentationIndex>( ATOMS_REPRESENTATIONS, p_data, o );
 			}
 			else if constexpr ( A == ATOM_ATTR::FLAG )
 			{
-				p_context.setPipelineBuffer<Flag>( ATOMS_FLAGS, p_data, offset );
+				p_context.setPipelineBuffer<Flag>( ATOMS_FLAGS, p_data, o );
 			}
 			else
 			{

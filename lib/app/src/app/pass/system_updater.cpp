@@ -22,8 +22,8 @@ namespace VTX::App::Pass
 		auto & reg = REG();
 
 		reg.on_update<Util::Math::Transform>().connect<&SystemUpdater::_onUpdateTransform>( this );
-		reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateFlags>( this );
-		reg.on_update<System::Selection>().connect<&SystemUpdater::_onUpdateFlags>( this );
+		reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateVisibility>( this );
+		reg.on_update<System::Selection>().connect<&SystemUpdater::_onUpdateSelection>( this );
 		reg.on_update<System::Representation>().connect<&SystemUpdater::_onUpdateRepresentation>( this );
 		reg.on_update<System::Color>().connect<&SystemUpdater::_onUpdateColor>( this );
 
@@ -120,31 +120,25 @@ namespace VTX::App::Pass
 		// Push data.
 		for ( const ECS::Entity e : _entities )
 		{
-			_onUpdateFlags( reg, e );
+			_onUpdateVisibility( reg, e );
+			_onUpdateSelection( reg, e );
 			_onUpdateColor( reg, e );
 			_onUpdateRepresentation( reg, e );
 		}
 	}
 
-	void SystemUpdater::_onUpdateFlags( ECS::Registry & p_r, ECS::Entity p_e )
+	void SystemUpdater::_onUpdateVisibility( ECS::Registry & p_r, ECS::Entity p_e )
 	{
-		const auto & [ visibility, selection, uid, system ]
-			= p_r.get<System::Visibility, System::Selection, System::UID, Core::Struct::System>( p_e );
+		const auto & [ visibility, uid ] = p_r.get<System::Visibility, System::UID>( p_e );
 
-		// Naive version.
-		/*
-		Core::Struct::IndexRangeList visibleBonds;
-		auto & bonds = system.bondPairAtomIndexes;
-		for ( Index i = 0; i < bonds.size(); i += 2 )
-		{
-			if ( visibility.atoms.contains( bonds[ i ] ) && visibility.atoms.contains( bonds[ i + 1 ] ) )
-			{
-				visibleBonds.addValue( i / 2 );
-			}
-		}
-		*/
+		RENDERER().setSystemVisibility( uid.system, visibility.atoms );
+	}
 
-		RENDERER().setSystemFlags( uid.system, visibility.atoms, selection.atoms, system.bondPairAtomIndexes );
+	void SystemUpdater::_onUpdateSelection( ECS::Registry & p_r, ECS::Entity p_e )
+	{
+		const auto & [ selection, uid ] = p_r.get<System::Selection, System::UID>( p_e );
+
+		RENDERER().setSystemSelection( uid.system, selection.atoms );
 	}
 
 	void SystemUpdater::_onUpdateRepresentation( ECS::Registry & p_r, ECS::Entity p_e )
@@ -172,7 +166,7 @@ namespace VTX::App::Pass
 			_setRepresentation();
 		}
 
-		RENDERER().setSystemRepresentation( uid.system, mapAtoms, data.bondPairAtomIndexes );
+		RENDERER().setSystemRepresentation( uid.system, mapAtoms );
 	}
 
 	void SystemUpdater::_onUpdateColor( ECS::Registry & p_r, ECS::Entity p_e )

@@ -350,48 +350,49 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setSystems" );
 
+		// Register new systems.
 		for ( const auto & systemData : p_systems )
 		{
-			const SystemUID uid = systemData.uid;
+			if ( not _systems.contains( systemData.uid ) )
+			{
+				_systems.emplace( systemData.uid, {}, Cache::System { systemData.transform } );
+				const Desc::Handle h = _systems.handle( systemData.uid );
 
-			// Compute geometries.
-			_geometries.construct( systemData );
+				// Compute geometries.
+				_geometries.construct( h, systemData );
 
-			// Register ranges in layouts.
-			_layouts.atoms.add( uid, _geometries.spheres.size( uid ) );
-			_layouts.residues.add(
-				uid, static_cast<uint32_t>( _geometries.ribbons.construction( uid ).residues.size() )
-			);
+				// Register ranges in layouts.
+				_layouts.atoms.add( h, _geometries.spheres.size( h ) );
+				_layouts.residues.add(
+					h, static_cast<uint32_t>( _geometries.ribbons.construction( h ).residues.size() )
+				);
+			}
 		}
 
 		// Reserve data.
 		_layouts.resize( _context );
 		_geometries.resize( _context );
 
-		// Clear cache.
-		_cacheSystems.clear();
-
-		ModelIndex modelIndex = 0;
 		for ( const auto & systemData : p_systems )
 		{
 			using namespace Layout;
 
-			const SystemUID uid = systemData.uid;
+			const Desc::Handle h = _systems.handle( systemData.uid );
 
 			// Upload layouts and geometries data.
-			_layouts.atoms.upload<ATOM_ATTR::SYMBOL, Symbol>( _context, uid, systemData.data.atomSymbols );
-			_layouts.atoms.upload<ATOM_ATTR::ID, PickingUID>( _context, uid, systemData.atomUids );
-			const Index countAtoms = _geometries.spheres.size( uid );
+			_layouts.atoms.upload<ATOM_ATTR::SYMBOL, Symbol>( _context, h, systemData.data.atomSymbols );
+			_layouts.atoms.upload<ATOM_ATTR::ID, PickingUID>( _context, h, systemData.atomUids );
+			const Index countAtoms = _geometries.spheres.size( h );
 
 			std::vector<Index> indices( countAtoms );
 			std::iota( indices.begin(), indices.end(), 0 );
-			_geometries.spheres.uploadIndexes( _context, uid, indices );
-			_geometries.cylinders.uploadIndexes( _context, uid, systemData.data.bondPairAtomIndexes );
+			_geometries.spheres.uploadIndexes( _context, h, indices );
+			_geometries.cylinders.uploadIndexes( _context, h, systemData.data.bondPairAtomIndexes );
 
-			if ( not _geometries.ribbons.empty( uid ) )
+			if ( not _geometries.ribbons.empty( h ) )
 			{
-				const auto &			construction  = _geometries.ribbons.construction( uid );
-				const Index				countResidues = _layouts.residues.size( uid );
+				const auto &			construction  = _geometries.ribbons.construction( h );
+				const Index				countResidues = _layouts.residues.size( h );
 				std::vector<PickingUID> residueIds( countResidues );
 				std::vector<uint8_t>	residueTypes( countResidues );
 				for ( Index i = 0; i < countResidues; ++i )
@@ -401,17 +402,12 @@ namespace VTX::Renderer
 					residueTypes[ i ] = toUnderlying( systemData.data.residueSecondaryStructureTypes[ residueIndex ] );
 				}
 
-				_layouts.residues.upload<RESIDUE_ATTR::ID, PickingUID>( _context, uid, residueIds );
-				_layouts.residues.upload<RESIDUE_ATTR::TYPE, uint8_t>( _context, uid, residueTypes );
-				_geometries.ribbons.uploadIndexes( _context, uid, construction.indices );
+				_layouts.residues.upload<RESIDUE_ATTR::ID, PickingUID>( _context, h, residueIds );
+				_layouts.residues.upload<RESIDUE_ATTR::TYPE, uint8_t>( _context, h, residueTypes );
+				_geometries.ribbons.uploadIndexes( _context, h, construction.indices );
 			}
 
-			setSystemPosition( uid, systemData.trajectory );
-
-			// Cache.
-			_cacheSystems[ uid ] = Cache::System { systemData.transform, modelIndex };
-
-			modelIndex++;
+			setSystemPosition( systemData.uid, systemData.trajectory );
 		}
 
 		// Set models.
@@ -425,10 +421,13 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemTransform( const SystemUID p_uid, const Mat4f & p_transform )
 	{
+		assert( _systems.contains( p_uid ) );
+
 		Util::ScopedChrono timer( "[RENDERER] setSystemTransform" );
 
-		assert( _cacheSystems.contains( p_uid ) );
-		_cacheSystems[ p_uid ].transform = p_transform;
+		const Desc::Handle h = _systems.handle( p_uid );
+		assert( _systems.contains( h ) );
+		_systems.get( h ).transform = p_transform;
 
 		// TODO: refresh only needed!
 		_refreshDataModels();
@@ -437,14 +436,18 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
 	{
+		assert( _systems.contains( p_uid ) );
+
+		const Desc::Handle h = _systems.handle( p_uid );
+
 		// Push atom positions.
-		_layouts.atoms.upload<Layout::ATOM_ATTR::POSITION, Vec3f>( _context, p_uid, p_positions );
+		_layouts.atoms.upload<Layout::ATOM_ATTR::POSITION, Vec3f>( _context, h, p_positions );
 
 		// Compute ribbon positions and directions.
-		const auto & construction = _geometries.ribbons.construction( p_uid );
+		const auto & construction = _geometries.ribbons.construction( h );
 		if ( not construction.isEmpty )
 		{
-			const Index		   countResidues = _layouts.residues.size( p_uid );
+			const Index		   countResidues = _layouts.residues.size( h );
 			std::vector<Vec4f> ribbonPositions( countResidues );
 			std::vector<Vec3f> ribbonDirections( countResidues );
 
@@ -471,8 +474,8 @@ namespace VTX::Renderer
 				// }
 			}
 
-			_layouts.residues.upload<Layout::RESIDUE_ATTR::POSITION, Vec4f>( _context, p_uid, ribbonPositions );
-			_layouts.residues.upload<Layout::RESIDUE_ATTR::DIRECTION, Vec3f>( _context, p_uid, ribbonDirections );
+			_layouts.residues.upload<Layout::RESIDUE_ATTR::POSITION, Vec4f>( _context, h, ribbonPositions );
+			_layouts.residues.upload<Layout::RESIDUE_ATTR::DIRECTION, Vec3f>( _context, h, ribbonDirections );
 		}
 
 		setNeedUpdate( true );
@@ -480,33 +483,39 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemColors( const SystemUID p_uid, std::span<const ColorIndex> p_colors )
 	{
-		_layouts.atoms.upload<Layout::ATOM_ATTR::COLOR, ColorIndex>( _context, p_uid, p_colors );
+		assert( _systems.contains( p_uid ) );
 
-		const auto &			construction  = _geometries.ribbons.construction( p_uid );
-		const Index				countResidues = _layouts.residues.size( p_uid );
+		const Desc::Handle h = _systems.handle( p_uid );
+		_layouts.atoms.upload<Layout::ATOM_ATTR::COLOR, ColorIndex>( _context, h, p_colors );
+
+		const auto &			construction  = _geometries.ribbons.construction( h );
+		const Index				countResidues = _layouts.residues.size( h );
 		std::vector<ColorIndex> ribbonColors( countResidues );
 		for ( Index i = 0; i < countResidues; ++i )
 		{
 			ribbonColors[ i ] = p_colors[ construction.residues[ i ].ca ];
 		}
 
-		_layouts.residues.upload<Layout::RESIDUE_ATTR::COLOR, ColorIndex>( _context, p_uid, ribbonColors );
+		_layouts.residues.upload<Layout::RESIDUE_ATTR::COLOR, ColorIndex>( _context, h, ribbonColors );
 
 		setNeedUpdate( true );
 	}
 
-	void Renderer::setSystemRepresentation(
-		const SystemUID					p_uid,
-		const MapRepresentationRanges & p_representations,
-		const std::vector<Index> &		p_bonds
-	)
+	void Renderer::setSystemRepresentation( const SystemUID p_uid, const MapRepresentationRanges & p_representations )
 	{
+		assert( _systems.contains( p_uid ) );
+
 		Util::ScopedChrono timer( "[RENDERER] setSystemRepresentation" );
 
-		Cache::System & systemCache			  = _cacheSystems[ p_uid ];
+		const Desc::Handle h		   = _systems.handle( p_uid );
+		Cache::System &	   systemCache = _systems.get( p_uid );
+
+		systemCache.representations = p_representations;
+
+		/*
 		systemCache.representationAtomsRanges = p_representations;
 		systemCache.representationBondsRanges.clear();
-		const Index						 countAtoms = _layouts.atoms.size( p_uid );
+		const Index						 countAtoms = _layouts.atoms.size( h );
 		std::vector<RepresentationIndex> atoms( countAtoms );
 		Index							 count = 0;
 
@@ -529,11 +538,11 @@ namespace VTX::Renderer
 			}
 		}
 
-		_layouts.atoms.upload<Layout::ATOM_ATTR::REPRESENTATION, RepresentationIndex>( _context, p_uid, atoms );
+		_layouts.atoms.upload<Layout::ATOM_ATTR::REPRESENTATION, RepresentationIndex>( _context, h, atoms );
 
 		// Residues.
-		const auto &					 construction  = _geometries.ribbons.construction( p_uid );
-		const Index						 countResidues = _layouts.residues.size( p_uid );
+		const auto &					 construction  = _geometries.ribbons.construction( h );
+		const Index						 countResidues = _layouts.residues.size( h );
 		std::vector<RepresentationIndex> ribbonItems( countResidues );
 		systemCache.representationResiduesRanges.clear();
 
@@ -549,29 +558,48 @@ namespace VTX::Renderer
 		assert( count == countAtoms );
 
 		_layouts.residues.upload<Layout::RESIDUE_ATTR::REPRESENTATION, RepresentationIndex>(
-			_context, p_uid, ribbonItems
+			_context, h, ribbonItems
 		);
+		*/
 
 		_needBuildDrawRanges = true;
 		setNeedUpdate( true );
 	}
 
-	void Renderer::setSystemFlags(
+	void Renderer::setSystemVisibility(
 		const SystemUID						 p_uid,
-		const Core::Struct::IndexRangeList & p_visible,
-		const Core::Struct::IndexRangeList & p_selection,
-		const std::vector<Index> &			 p_bonds
+		const Core::Struct::IndexRangeList & p_visibility
 
 	)
 	{
-		Util::ScopedChrono timer( "[RENDERER] setSystemFlags" );
+		assert( _systems.contains( p_uid ) );
 
-		const Index countAtoms = _layouts.atoms.size( p_uid );
+		Util::ScopedChrono timer( "[RENDERER] setSystemVisibility" );
+
+		const Desc::Handle h		   = _systems.handle( p_uid );
+		Cache::System &	   systemCache = _systems.get( p_uid );
+
+		systemCache.visibility = p_visibility;
+	}
+
+	void Renderer::setSystemSelection(
+		const SystemUID						 p_uid,
+		const Core::Struct::IndexRangeList & p_selection
+
+	)
+	{
+		assert( _systems.contains( p_uid ) );
+
+		Util::ScopedChrono timer( "[RENDERER] setSystemSelection" );
+
+		const Desc::Handle h		   = _systems.handle( p_uid );
+		Cache::System &	   systemCache = _systems.get( p_uid );
+		const Index		   countAtoms  = _layouts.atoms.size( h );
 
 		assert( p_selection.size() <= countAtoms );
-		assert( p_visible.size() <= countAtoms );
 
-		static constexpr Flag VIS = 1 << toUnderlying( E_ELEMENT_FLAGS::VISIBILITY );
+		systemCache.selection = p_selection;
+
 		static constexpr Flag SEL = 1 << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
 
 		std::vector<Flag> atomFlags( countAtoms, 0 );
@@ -593,12 +621,12 @@ namespace VTX::Renderer
 			}
 		};
 
-		applyOr( atomFlags, p_visible, VIS );
 		applyOr( atomFlags, p_selection, SEL );
 
-		_layouts.atoms.upload<Layout::ATOM_ATTR::FLAG, Flag>( _context, p_uid, atomFlags );
+		_layouts.atoms.upload<Layout::ATOM_ATTR::FLAG, Flag>( _context, h, atomFlags );
 
 		// Build draw ranges.
+		/*
 		IndexRange rangeAtoms						= { 0, static_cast<Index>( countAtoms ) };
 		_geometries.spheres.visibilityMask[ p_uid ] = { rangeAtoms };
 		_geometries.spheres.visibilityMask[ p_uid ].substractInPlace( p_visible );
@@ -620,6 +648,7 @@ namespace VTX::Renderer
 
 		_geometries.cylinders.visibilityMask[ p_uid ] = { rangeBonds };
 		_geometries.cylinders.visibilityMask[ p_uid ].substractInPlace( bondsVisible );
+		*/
 
 		_needBuildDrawRanges = true;
 		setNeedUpdate( true );
@@ -644,23 +673,15 @@ namespace VTX::Renderer
 
 	void Renderer::_refreshDataModels()
 	{
-		if ( _cacheSystems.empty() )
+		if ( _systems.empty() )
 		{
 			return;
 		}
 
 		BinaryBuffer430 buffer;
-
-		// Sort.
-		std::vector<Cache::System *> sorted( _cacheSystems.size() );
-		for ( auto & [ _, cacheSystem ] : _cacheSystems )
+		for ( const auto & system : _systems )
 		{
-			sorted[ cacheSystem.modelIndex ] = &cacheSystem;
-		}
-
-		for ( const Cache::System * cacheSystem : sorted )
-		{
-			const Mat4f matrixModelView	   = _cacheCamera.matView * cacheSystem->transform;
+			const Mat4f matrixModelView	   = _cacheCamera.matView * system.transform;
 			const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
 			const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
 
@@ -678,6 +699,7 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] _refreshDataRepresentations" );
 
+		/*
 		_geometries.spheres.representationMask.clear();
 		_geometries.cylinders.representationMask.clear();
 
@@ -707,6 +729,7 @@ namespace VTX::Renderer
 				}
 			}
 		}
+		*/
 	}
 
 	bool Renderer::_refreshGraph( const GraphicsConfig & p_config )

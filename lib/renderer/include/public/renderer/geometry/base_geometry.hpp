@@ -30,8 +30,8 @@ namespace VTX::Renderer::Geometry
 		/**
 		 * @brief Mask of ranges to not draw per system (local indexes).
 		 */
-		MapUIDRangeList visibilityMask;
-		MapUIDRangeList representationMask;
+		// MapUIDRangeList visibilityMask;
+		// MapUIDRangeList representationMask;
 
 		/**
 		 * @brief Compiled draw ranges count for GPU calls.
@@ -60,13 +60,13 @@ namespace VTX::Renderer::Geometry
 		 */
 		void uploadIndexes(
 			Context::ContextWrapper & p_context,
-			const SystemUID			  p_uid,
+			const Desc::Handle		  p_handle,
 			std::span<const uint32_t> p_indexes
 		)
 		{
 			if ( indexBuffer )
 			{
-				p_context.setPipelineBuffer<uint32_t>( *indexBuffer, p_indexes, _resources.get( p_uid ).range.first );
+				p_context.setPipelineBuffer<uint32_t>( *indexBuffer, p_indexes, _resources[ p_handle ].range.first );
 			}
 			else
 			{
@@ -115,11 +115,11 @@ namespace VTX::Renderer::Geometry
 			return commands;
 		}
 
-		Index size( const SystemUID p_uid ) const
+		Index size( const Desc::Handle p_handle ) const
 		{
-			assert( _resources.contains( p_uid ) );
+			assert( _resources.contains( p_handle ) );
 
-			return _resources.get( p_uid ).range.getCount();
+			return _resources[ p_handle ].range.getCount();
 		}
 
 	  protected:
@@ -131,17 +131,11 @@ namespace VTX::Renderer::Geometry
 			IndexRange range;
 			Index	   vertexCount;
 		};
-		ResourceHandler<Data, DescDummy, SystemUID> _resources;
-
-		/**
-		 * @brief Current size to draw (before applying anything).
-		 */
-		Index _size = 0;
 
 		/**
 		 * @brief Push a range.
 		 */
-		void _addRange( const SystemUID p_uid, const Index p_countIndices, const Index p_countVertex )
+		void _addRange( const Desc::Handle p_handle, const Index p_countIndices, const Index p_countVertex )
 		{
 			size_t count = _size + p_countIndices;
 			if ( count > TypeMax<Index> )
@@ -150,11 +144,21 @@ namespace VTX::Renderer::Geometry
 			}
 
 			Index countIndex = static_cast<Index>( count );
-			_resources.emplace( p_uid, {}, Data { IndexRange { _size, countIndex }, p_countVertex } );
+			_resources.emplace( p_handle, Data { IndexRange { _size, countIndex }, p_countVertex } );
 			_size = countIndex;
 		}
 
 	  private:
+		/**
+		 * @brief Resources.
+		 */
+		mutable std::unordered_map<Desc::Handle, Data> _resources;
+
+		/**
+		 * @brief Current size to draw (before applying anything).
+		 */
+		Index _size = 0;
+
 		/**
 		 * @brief Build GPU draw ranges.
 		 */
