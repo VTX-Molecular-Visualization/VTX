@@ -489,14 +489,14 @@ namespace VTX::Util::Math
 		/**
 		 * @brief To vector of values.
 		 */
-		template<typename T>
-		std::vector<T> toVector() const
+		template<typename V>
+		std::vector<V> toVector() const
 		{
-			std::vector<T> res;
+			std::vector<V> res;
 
 			for ( auto it = rangeBegin(); it != rangeEnd(); ++it )
 			{
-				const T		 first = it->getFirst();
+				const V		 first = it->getFirst();
 				const size_t count = it->getCount();
 
 				const size_t oldSize = res.size();
