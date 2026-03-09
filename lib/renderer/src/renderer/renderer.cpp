@@ -396,15 +396,19 @@ namespace VTX::Renderer
 				const Index				countResidues = _layouts.residues.size( h );
 				std::vector<PickingUID> residueIds( countResidues );
 				std::vector<uint8_t>	residueTypes( countResidues );
+				std::vector<ColorIndex> residueColors( countResidues );
 				for ( Index i = 0; i < countResidues; ++i )
 				{
 					const Index residueIndex = construction.residues[ i ].index;
 					residueIds[ i ]			 = systemData.residueUids[ residueIndex ];
-					residueTypes[ i ] = toUnderlying( systemData.data.residueSecondaryStructureTypes[ residueIndex ] );
+					auto ss					 = systemData.data.residueSecondaryStructureTypes[ residueIndex ];
+					residueTypes[ i ]		 = toUnderlying( ss );
+					residueColors[ i ]		 = Color::getColorIndex( ss );
 				}
 
 				_layouts.residues.upload<RESIDUE_ATTR::ID, PickingUID>( _context, h, residueIds );
 				_layouts.residues.upload<RESIDUE_ATTR::TYPE, uint8_t>( _context, h, residueTypes );
+				_layouts.residues.upload<RESIDUE_ATTR::COLOR, ColorIndex>( _context, h, residueColors );
 				_geometries.ribbons.uploadIndexes( _context, h );
 			}
 
@@ -487,6 +491,7 @@ namespace VTX::Renderer
 		const Desc::Handle h = _systems.handle( p_uid );
 		_layouts.atoms.upload<Layout::ATOM_ATTR::COLOR, ColorIndex>( _context, h, p_colors );
 
+		/*
 		const auto &			construction  = _geometries.ribbons.construction( h );
 		const Index				countResidues = _layouts.residues.size( h );
 		std::vector<ColorIndex> ribbonColors( countResidues );
@@ -496,6 +501,7 @@ namespace VTX::Renderer
 		}
 
 		_layouts.residues.upload<Layout::RESIDUE_ATTR::COLOR, ColorIndex>( _context, h, ribbonColors );
+		*/
 
 		setNeedUpdate( true );
 	}
@@ -529,28 +535,20 @@ namespace VTX::Renderer
 
 		_layouts.atoms.upload<Layout::ATOM_ATTR::REPRESENTATION, RepresentationIndex>( _context, h, atoms );
 
-		/*
 		// Residues.
 		const auto &					 construction  = _geometries.ribbons.construction( h );
 		const Index						 countResidues = _layouts.residues.size( h );
-		std::vector<RepresentationIndex> ribbonItems( countResidues );
-		systemCache.representationResiduesRanges.clear();
+		std::vector<RepresentationIndex> residues( countResidues );
 
 		for ( Index i = 0; i < countResidues; ++i )
 		{
 			const RepresentationIndex representationIndex = atoms[ construction.residues[ i ].ca ];
-			ribbonItems[ i ]							  = atoms[ representationIndex ];
-			systemCache.representationResiduesRanges[ representationIndex ].addRange(
-				IndexRange::fromFirstCount( ribbonItems[ i ], 1 )
-			);
+			residues[ i ]								  = atoms[ representationIndex ];
 		}
 
 		assert( count == countAtoms );
 
-		_layouts.residues.upload<Layout::RESIDUE_ATTR::REPRESENTATION, RepresentationIndex>(
-			_context, h, ribbonItems
-		);
-		*/
+		_layouts.residues.upload<Layout::RESIDUE_ATTR::REPRESENTATION, RepresentationIndex>( _context, h, residues );
 
 		_systemToRefresh.insert( h );
 
@@ -620,30 +618,9 @@ namespace VTX::Renderer
 
 		_layouts.atoms.upload<Layout::ATOM_ATTR::FLAG, Flag>( _context, h, atomFlags );
 
-		// Build draw ranges.
-		/*
-		IndexRange rangeAtoms						= { 0, static_cast<Index>( countAtoms ) };
-		_geometries.spheres.visibilityMask[ p_uid ] = { rangeAtoms };
-		_geometries.spheres.visibilityMask[ p_uid ].substractInPlace( p_visible );
-
-		const size_t countBonds = _geometries.cylinders.size( p_uid );
-
-		assert( p_bonds.size() == countBonds );
-
-		IndexRange rangeBonds = { 0, static_cast<Index>( countBonds ) };
-
-		Core::Struct::IndexRangeList bondsVisible;
-		for ( Index i = 0; i < p_bonds.size(); i += 2 )
-		{
-			if ( p_visible.contains( p_bonds[ i ] ) && p_visible.contains( p_bonds[ i + 1 ] ) )
-			{
-				bondsVisible.addRange( IndexRange::fromFirstCount( i, 2 ) );
-			}
-		}
-
-		_geometries.cylinders.visibilityMask[ p_uid ] = { rangeBonds };
-		_geometries.cylinders.visibilityMask[ p_uid ].substractInPlace( bondsVisible );
-		*/
+		// TODO: residues.
+		const auto &	  construction = _geometries.ribbons.construction( h );
+		std::vector<Flag> residueFlags( _layouts.residues.size( h ), 0 );
 
 		_systemToRefresh.insert( h );
 
@@ -697,6 +674,7 @@ namespace VTX::Renderer
 
 		auto visibleSpheres	  = systemCache.visibility;
 		auto visibleCylinders = systemCache.visibility;
+		auto visibleRibbons	  = systemCache.visibility;
 
 		for ( const auto & [ representationIndex, ranges ] : systemCache.representations )
 		{
@@ -711,52 +689,18 @@ namespace VTX::Renderer
 			{
 				visibleCylinders.substractInPlace( ranges );
 			}
+			if ( not cacheRepresentation.showRibbon )
+			{
+				visibleRibbons.substractInPlace( ranges );
+			}
 		}
 
 		_geometries.spheres.setVisibility( p_handle, visibleSpheres );
 		_geometries.cylinders.setVisibility( p_handle, visibleCylinders );
+		_geometries.ribbons.setVisibility( p_handle, visibleRibbons );
 
 		_geometries.uploadIndexes( _context, p_handle );
 	}
-
-	/*
-	void Renderer::_refreshDataRepresentations()
-	{
-		Util::ScopedChrono timer( "[RENDERER] _refreshDataRepresentations" );
-
-
-		_geometries.spheres.representationMask.clear();
-		_geometries.cylinders.representationMask.clear();
-
-		for ( const auto & [ systemUid, cacheSystem ] : _cacheSystems )
-		{
-			// Sphere.
-			for ( const auto & [ representationIndex, ranges ] : cacheSystem.representationAtomsRanges )
-			{
-				assert( _cacheRepresentations.contains( representationIndex ) );
-
-				const auto & cacheRepresentation = _cacheRepresentations[ representationIndex ];
-				if ( not cacheRepresentation.showSphere )
-				{
-					_geometries.spheres.representationMask[ systemUid ].mergeInPlace( ranges );
-				}
-			}
-
-			// Cylinder.
-			for ( const auto & [ representationIndex, ranges ] : cacheSystem.representationBondsRanges )
-			{
-				assert( _cacheRepresentations.contains( representationIndex ) );
-
-				const auto & cacheRepresentation = _cacheRepresentations[ representationIndex ];
-				if ( not cacheRepresentation.showCylinder )
-				{
-					_geometries.cylinders.representationMask[ systemUid ].mergeInPlace( ranges );
-				}
-			}
-		}
-
-	}
-	*/
 
 	bool Renderer::_refreshGraph( const GraphicsConfig & p_config )
 	{

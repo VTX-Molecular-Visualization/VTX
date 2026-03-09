@@ -37,7 +37,8 @@ const float MAX_TESS_OTHER	= 12.f;
 const float MIN_TESS_OTHER	= 2.f;
 
 // Map with ss.
-const float[] MIN_TESS_SS = float[]( MIN_TESS_HELIX,  // HELIX_ALPHA_RIGHT
+const float[] MIN_TESS_SS = float[]( MIN_TESS_OTHER,  // UNKNOWN
+									 MIN_TESS_HELIX,  // HELIX_ALPHA_RIGHT
 									 MIN_TESS_HELIX,  // HELIX_ALPHA_LEFT
 									 MIN_TESS_HELIX,  // HELIX_3_10_RIGHT
 									 MIN_TESS_HELIX,  // HELIX_3_10_LEFT
@@ -47,7 +48,8 @@ const float[] MIN_TESS_SS = float[]( MIN_TESS_HELIX,  // HELIX_ALPHA_RIGHT
 									 MIN_TESS_OTHER	  // COIL
 );
 
-const float[] MAX_TESS_SS = float[]( MAX_TESS_HELIX,  // HELIX_ALPHA_RIGHT
+const float[] MAX_TESS_SS = float[]( MAX_TESS_OTHER,  // UNKNOWN
+	 								 MAX_TESS_HELIX,  // HELIX_ALPHA_RIGHT
 									 MAX_TESS_HELIX,  // HELIX_ALPHA_LEFT
 									 MAX_TESS_HELIX,  // HELIX_3_10_RIGHT
 									 MAX_TESS_HELIX,  // HELIX_3_10_LEFT

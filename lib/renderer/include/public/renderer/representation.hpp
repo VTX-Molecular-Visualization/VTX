@@ -81,7 +81,7 @@ namespace VTX::Renderer
 											 0.15f,
 											 false,
 											 // Ribbon.
-											 false,
+											 true,
 											 false,
 											 // SES.
 											 false,

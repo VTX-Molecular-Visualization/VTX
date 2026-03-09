@@ -34,6 +34,7 @@ namespace VTX::Renderer::Geometry
 			std::vector<Data>				 residues;
 			std::unordered_map<Index, Index> residueToIndices;
 			std::unordered_map<Index, Index> residueToPositions;
+			std::vector<Indice>				 indices;
 		};
 
 		bool empty( const SystemUID p_uid ) const { return _construction.at( p_uid ).isEmpty; }
@@ -64,12 +65,8 @@ namespace VTX::Renderer::Geometry
 				return;
 			}
 
-			cache.residues.clear();
-			cache.residueToIndices.clear();
-			cache.residueToPositions.clear();
-
-			std::vector<Construction::Data> &  residues = cache.residues;
-			std::vector<Index>				   bufferIndices;
+			std::vector<Construction::Data> &  residues			  = cache.residues;
+			std::vector<Indice> &			   bufferIndices	  = cache.indices;
 			std::unordered_map<Index, Index> & residueToIndices	  = cache.residueToIndices;
 			std::unordered_map<Index, Index> & residueToPositions = cache.residueToPositions;
 
@@ -107,8 +104,8 @@ namespace VTX::Renderer::Geometry
 
 				const Index offset = static_cast<Index>( residues.size() );
 
-				residueToPositions.emplace( usedResidues[ 0 ].index, offset );
 				residueToIndices.emplace( usedResidues[ 0 ].index, static_cast<Index>( bufferIndices.size() ) );
+				residueToPositions.emplace( usedResidues[ 0 ].index, offset );
 
 				bufferIndices.emplace_back( offset );
 				bufferIndices.emplace_back( offset );
@@ -117,8 +114,8 @@ namespace VTX::Renderer::Geometry
 
 				for ( Index i = 1; i < static_cast<Index>( usedResidues.size() ) - 2; ++i )
 				{
-					residueToPositions.emplace( usedResidues[ i ].index, offset + i );
 					residueToIndices.emplace( usedResidues[ i ].index, static_cast<Index>( bufferIndices.size() ) );
+					residueToPositions.emplace( usedResidues[ i ].index, offset + i );
 
 					bufferIndices.emplace_back( offset + i - 1 );
 					bufferIndices.emplace_back( offset + i );
@@ -133,8 +130,8 @@ namespace VTX::Renderer::Geometry
 
 			const Index segmentCount = static_cast<Index>( bufferIndices.size() / 4 );
 
-			assert( segmentCount == static_cast<Index>( residueToPositions.size() ) );
 			assert( segmentCount == static_cast<Index>( residueToIndices.size() ) );
+			assert( segmentCount == static_cast<Index>( residueToPositions.size() ) );
 			assert( static_cast<Index>( residues.size() ) >= segmentCount );
 
 			cache.isEmpty = residues.empty();
@@ -145,7 +142,51 @@ namespace VTX::Renderer::Geometry
 				);
 
 				auto & indiceBuffer = _indices( p_handle );
-				indiceBuffer		= std::move( bufferIndices );
+				indiceBuffer		= bufferIndices;
+			}
+		}
+
+		void setVisibility( const Desc::Handle p_handle, const IndexRangeList & p_ranges )
+		{
+			auto &				 indiceBuffer = _indices( p_handle );
+			const Construction & cache		  = _construction.at( p_handle );
+
+			indiceBuffer.clear();
+			if ( p_ranges.isEmpty() )
+			{
+				return;
+			}
+
+			std::vector<bool> visible( p_ranges.getLast() + 1, false );
+			for ( Index i : p_ranges )
+			{
+				visible[ i ] = true;
+			}
+
+			for ( const auto & data : cache.residues )
+			{
+				const Index ca = data.ca;
+				if ( ca >= visible.size() )
+				{
+					continue;
+				}
+
+				if ( not visible[ ca ] )
+				{
+					continue;
+				}
+
+				const auto it = cache.residueToIndices.find( data.index );
+				if ( it == cache.residueToIndices.end() )
+				{
+					continue;
+				}
+
+				const Index offset = it->second;
+				indiceBuffer.emplace_back( cache.indices[ offset ] );
+				indiceBuffer.emplace_back( cache.indices[ offset + 1 ] );
+				indiceBuffer.emplace_back( cache.indices[ offset + 2 ] );
+				indiceBuffer.emplace_back( cache.indices[ offset + 3 ] );
 			}
 		}
 

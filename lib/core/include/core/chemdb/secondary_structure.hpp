@@ -8,27 +8,27 @@ namespace VTX::Core::ChemDB::SecondaryStructure
 {
 	enum class TYPE : uint8_t
 	{
-		HELIX_ALPHA_RIGHT = 0,
-		HELIX_ALPHA_LEFT  = 1,
-		HELIX_3_10_RIGHT  = 2,
-		HELIX_3_10_LEFT	  = 3,
-		HELIX_PI		  = 4,
-		STRAND			  = 5,
-		TURN			  = 6,
-		COIL			  = 7,
 		UNKNOWN,
+		HELIX_ALPHA_RIGHT,
+		HELIX_ALPHA_LEFT,
+		HELIX_3_10_RIGHT,
+		HELIX_3_10_LEFT,
+		HELIX_PI,
+		STRAND,
+		TURN,
+		COIL,
 		COUNT
 	};
 
-	constexpr std::array<std::string_view, size_t( TYPE::COUNT )> SYMBOL_NAME = { "Alpha Helix Right",
+	constexpr std::array<std::string_view, size_t( TYPE::COUNT )> SYMBOL_NAME = { "Unknown",
+																				  "Alpha Helix Right",
 																				  "Alpha Helix Left",
 																				  "3-10 Helix Right",
 																				  "3-10 Helix Left",
 																				  "Pi Helix",
 																				  "Strand",
 																				  "Turn",
-																				  "Coil",
-																				  "Unknown" };
+																				  "Coil" };
 
 	TYPE		pdbFormattedToEnum( const std::string & p_str );
 	std::string enumToPdbFormatted( const TYPE p_enum );

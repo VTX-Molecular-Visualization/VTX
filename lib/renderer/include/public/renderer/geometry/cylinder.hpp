@@ -25,13 +25,13 @@ namespace VTX::Renderer::Geometry
 			auto & indiceBuffer = _indices( p_handle );
 			indiceBuffer		= p_data.data.bondPairAtomIndexes;
 
-			_data.emplace( p_handle, _Data { &p_data.data.bondPairAtomIndexes } );
+			_construction.emplace( p_handle, _Construction { &p_data.data.bondPairAtomIndexes } );
 		}
 
 		void setVisibility( const Desc::Handle p_handle, const IndexRangeList & p_ranges )
 		{
 			auto &					   indiceBuffer = _indices( p_handle );
-			const std::vector<Index> & bonds		= *_data[ p_handle ].bonds;
+			const std::vector<Index> & bonds		= *_construction[ p_handle ].bonds;
 
 			indiceBuffer.clear();
 			if ( p_ranges.isEmpty() )
@@ -61,11 +61,11 @@ namespace VTX::Renderer::Geometry
 		}
 
 	  private:
-		struct _Data
+		struct _Construction
 		{
 			const std::vector<Index> * bonds;
 		};
-		std::unordered_map<Desc::Handle, _Data> _data;
+		std::unordered_map<Desc::Handle, _Construction> _construction;
 	};
 } // namespace VTX::Renderer::Geometry
 

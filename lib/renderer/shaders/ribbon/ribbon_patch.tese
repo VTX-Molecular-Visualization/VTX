@@ -39,7 +39,8 @@ const mat4	BSPLINE_MAT = ( 1.f / 6.f ) * mat4( -1.f,  3.f, -3.f, 1.f,
 												 1.f,  4.f,  1.f, 0.f );
 // clang-format on
 
-const float DIRECTION_FACTOR[] = float[]( 2.f,	// HELIX_ALPHA_RIGHT
+const float DIRECTION_FACTOR[] = float[]( 2.f,	// UNKNOWN
+										  2.f,	// HELIX_ALPHA_RIGHT
 										  2.f,	// HELIX_ALPHA_LEFT
 										  2.f,	// HELIX_3_10_RIGHT
 										  2.f,	// HELIX_3_10_LEFT
@@ -104,7 +105,7 @@ void main()
 
 	float arrayOffset = 0.f;
 	// If last segment of a strand ().
-	if ( ( inData[ 1 ].ssType == 5 ) && ( inData[ 1 ].ssType != inData[ 2 ].ssType ) )
+	if ( ( inData[ 1 ].ssType == 6 ) && ( inData[ 1 ].ssType != inData[ 2 ].ssType ) )
 		arrayOffset = mix( ARROW_OFFSET, 0.f, gl_TessCoord.x );
 
 	// Move vertex along direction
