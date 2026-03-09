@@ -24,7 +24,6 @@ void main()
 	dataOut.color			= uniformsColor[ inColor ];
 	dataOut.ssType			= inType;
 	dataOut.id				= inResidueId;
-	dataOut.visibility		= int( inResidueFlag ) & ( 1 << FLAG_VISIBILITY );
 	dataOut.selection		= int( inResidueFlag ) & ( 1 << FLAG_SELECTION );	
 	dataOut.model			= gl_DrawID;
 	dataOut.representation	= inResidueRepresentation;

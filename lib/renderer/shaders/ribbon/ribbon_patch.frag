@@ -14,12 +14,6 @@ layout( location = 2 ) out uvec2 outId;
 
 void main()
 {
-	// TODO: redo it in tessellation shader.
-	if ( inData.visibility == 0 )
-	{
-		discard;
-	}
-
 	vec3 normal = inData.normal;
 	if ( dot( normal, inData.viewPosition ) > 0.f )
 	{

@@ -456,24 +456,21 @@ namespace VTX::Renderer
 			for ( Index i = 0; i < countResidues; ++i )
 			{
 				// Compute direction between carbon alpha and oxygen.
-
 				const Vec3f & positionCA   = p_positions[ construction.residues[ i ].ca ];
 				const Vec3f & positionO	   = p_positions[ construction.residues[ i ].o ];
 				const Vec3f	  directionCAO = Util::Math::normalize( positionO - positionCA );
 
-				ribbonPositions[ i ]  = Vec4f( positionCA, 1.f );
+				ribbonPositions[ i ]  = Vec4f( positionCA, i );
 				ribbonDirections[ i ] = directionCAO;
 
-				// TODO: better on GPU ?
-				// CheckOrientationAndFlip.
-				// size_t i;
-				// for ( i = 1; i < p_caODirections.size(); ++i )
-				//{
-				//	if ( Util::Math::dot( p_caODirections[ i ], p_caODirections[ i - 1 ] ) < 0.f )
-				//	{
-				//		p_caODirections[ i ] = -p_caODirections[ i ];
-				//	}
-				// }
+				if ( i > 0 )
+				{
+					const Vec3f & prevDirection = ribbonDirections[ i - 1 ];
+					if ( Util::Math::dot( directionCAO, prevDirection ) < 0.f )
+					{
+						ribbonDirections[ i ] = -directionCAO;
+					}
+				}
 			}
 
 			_layouts.residues.upload<Layout::RESIDUE_ATTR::POSITION, Vec4f>( _context, h, ribbonPositions );

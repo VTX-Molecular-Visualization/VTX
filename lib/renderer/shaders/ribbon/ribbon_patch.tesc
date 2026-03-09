@@ -1,6 +1,6 @@
 // Implementation of:
 // Instant visualization of secondary structures of molecular models
-// P. Hermosilla & V. Guallar & A. Vinacua & P.P. Vázquez
+// P. Hermosilla & V. Guallar & A. Vinacua & P.P. Vï¿½zquez
 // Eurographics Workshop on Visual Computing for Biology and Medicine (2015)
 
 #version 460 core
@@ -68,7 +68,6 @@ void main()
 	outData[ gl_InvocationID ].position			= inData[ gl_InvocationID ].position.xyz;
 	outData[ gl_InvocationID ].direction		= inData[ gl_InvocationID ].direction;
 	outData[ gl_InvocationID ].ssType			= inData[ gl_InvocationID ].ssType;
-	outData[ gl_InvocationID ].visibility		= inData[ gl_InvocationID ].visibility;
 	outData[ gl_InvocationID ].color			= inData[ gl_InvocationID ].color;
 	outData[ gl_InvocationID ].selection		= inData[ gl_InvocationID ].selection;
 	outData[ gl_InvocationID ].id				= inData[ gl_InvocationID ].id;
@@ -81,6 +80,7 @@ void main()
 		// dir = 1 in backbones direction and -1 in the reverse direction.
 		const float dir = inData[ gl_InvocationID + 1 ].position.w - inData[ gl_InvocationID ].position.w;
 		outData[ gl_InvocationID ].direction *= dir;
+		
 		const vec3 v02
 			= normalize( ( inData[ gl_InvocationID + 1 ].position.xyz - inData[ gl_InvocationID - 1 ].position.xyz ) );
 

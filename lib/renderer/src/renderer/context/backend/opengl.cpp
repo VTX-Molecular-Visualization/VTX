@@ -223,8 +223,8 @@ namespace VTX::Renderer::Context::Backend
 		// TODO: set from graph.
 		// glEnable( GL_CLIP_DISTANCE0 );
 
-		glEnable( GL_LINE_SMOOTH );
-		glLineWidth( 1.f );
+		// glEnable( GL_LINE_SMOOTH );
+		// glLineWidth( 1.f );
 		glDepthFunc( GL_LESS );
 
 		glClearColor( 0.f, 0.f, 0.f, 1.0f );
@@ -497,13 +497,16 @@ namespace VTX::Renderer::Context::Backend
 		using namespace Desc;
 
 		const Key & key = p_pass.name;
+		Handle		h;
 
 		if ( _framebuffers.validate( key ) )
 		{
-			return _framebuffers.handle( key );
+			h = _framebuffers.handle( key );
 		}
-
-		const Handle h = _framebuffers.emplace( key );
+		else
+		{
+			h = _framebuffers.emplace( key );
+		}
 
 		if ( p_isLast )
 		{

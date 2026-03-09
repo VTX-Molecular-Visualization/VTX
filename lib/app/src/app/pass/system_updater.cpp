@@ -95,20 +95,12 @@ namespace VTX::App::Pass
 
 			assert( atomCount > 0 );
 
-			std::vector<float> radii( atomCount );
-			for ( Index i = 0; i < atomCount; ++i )
-			{
-				// TODO: use glsl constants.
-				radii[ i ] = Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ toUnderlying( data.getAtomSymbol( i ) ) ];
-			}
-
 			std::span<const Vec3f> positions = System::getCurrentAtomPositions( system );
 			systemsData.push_back(
 				Renderer::SystemData { uid.system,
 									   transform.computeMatrix(),
 									   data,
 									   positions,
-									   radii,
 									   uid.atoms.toStdVector(),
 									   uid.residues.toStdVector() }
 			);

@@ -22,7 +22,6 @@ namespace VTX::Renderer::Geometry
 
 			assert( count > 0 );
 			assert( p_data.atomUids.size() == count );
-			assert( p_data.radii.size() == count );
 
 			_addRange( p_handle, count, count );
 

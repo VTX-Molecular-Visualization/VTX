@@ -125,7 +125,6 @@ void main()
 		outData.color = mix( inData[ 1 ].color, inData[ 2 ].color, gl_TessCoord.x );
 	}
 	outData.selection	 = inData[ 1 ].selection;
-	outData.visibility   = inData[ 1 ].visibility;
 	outData.id		     = inData[ 1 ].id;
 
 	gl_Position = uniformsCamera.matrixProjection * vec4( outData.viewPosition, 1.f );

@@ -113,7 +113,7 @@ namespace VTX::Renderer::Geometry
 		{
 			assert( _resources.contains( p_handle ) );
 
-			return _resources[ p_handle ].range.getCount();
+			return _resources.at( p_handle ).range.getCount();
 		}
 
 	  protected:
@@ -157,7 +157,7 @@ namespace VTX::Renderer::Geometry
 		/**
 		 * @brief Resources.
 		 */
-		mutable std::unordered_map<Desc::Handle, Data> _resources;
+		std::unordered_map<Desc::Handle, Data> _resources;
 
 		/**
 		 * @brief Current size to draw (before applying anything).
