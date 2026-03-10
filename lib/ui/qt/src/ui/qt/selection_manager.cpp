@@ -31,7 +31,7 @@ namespace VTX::UI::QT
 			p_view,
 			&QItemSelectionModel::selectionChanged,
 			this,
-			[ & ]( const QItemSelection &, const QItemSelection & )
+			[ this, p_group, p_view ]( const QItemSelection &, const QItemSelection & )
 			{
 				clearBut( p_group );
 

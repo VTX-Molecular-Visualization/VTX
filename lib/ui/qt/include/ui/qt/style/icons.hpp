@@ -22,6 +22,7 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint DELETE				 = 0xe872; // DELETE
 	constexpr Codepoint DOWNLOAD			 = 0xf090; // DOWNLOAD
 	constexpr Codepoint GRAPHICS_CONFIG		 = 0xed38; // 3D
+	constexpr Codepoint LOCK				 = 0xe897; // LOCK
 	constexpr Codepoint NEW					 = 0xf710; // NEW_WINDOW
 	constexpr Codepoint OPEN				 = 0xe2c8; // FOLDER_OPEN
 	constexpr Codepoint OPTIONS				 = 0xe8b8; // SETTINGS
@@ -34,7 +35,6 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint SAVE_AS				 = 0xeb60; // SAVE_AS
 	constexpr Codepoint SCENE				 = 0xe4fd; // SCHEMA
 	constexpr Codepoint SELECTION			 = 0xf772; // FRAME_INSPECT
-	constexpr Codepoint SELECTION_LOCK		 = 0xe897; // LOCK
 	constexpr Codepoint SNAPSHOT			 = 0xe3f4; // IMAGE
 	constexpr Codepoint SNAPSHOT_EXPORT		 = 0xf317; // IMAGE_ARROW_UP
 	constexpr Codepoint STOP				 = 0xe047; // STOP_SHALLOW

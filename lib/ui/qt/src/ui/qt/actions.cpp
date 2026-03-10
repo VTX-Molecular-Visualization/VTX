@@ -209,7 +209,7 @@ namespace VTX::UI::QT::Action
 		{
 			name = "Lock";
 			tip	 = "Lock the current selection";
-			icon = Style::Icons::SELECTION_LOCK;
+			icon = Style::Icons::LOCK;
 		}
 
 		Save::Save()
