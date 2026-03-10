@@ -30,7 +30,11 @@ namespace VTX::Renderer::Layout
 		/**
 		 * @brief Resize whole layout.
 		 */
-		inline void resize( Context::ContextWrapper & p_context ) { _resize( p_context, _rangeList.count() ); }
+		inline void resize( Context::ContextWrapper & p_context )
+		{
+			const Index size = _rangeList.count();
+			_resize( p_context, size == 0 ? 1 : size );
+		}
 
 		/**
 		 * @brief Get offset.

@@ -33,7 +33,7 @@ namespace VTX::UI::QT
 			this,
 			[ this, p_group, p_view ]( const QItemSelection &, const QItemSelection & )
 			{
-				clearBut( p_group );
+				// clearBut( p_group );
 
 				if ( p_group != E_SELECTION_GROUP::SYSTEM )
 				{
@@ -45,6 +45,7 @@ namespace VTX::UI::QT
 		);
 	}
 
+	/*
 	void SelectionManager::clear()
 	{
 		for ( auto & [ group, _ ] : _views )
@@ -75,4 +76,5 @@ namespace VTX::UI::QT
 			}
 		}
 	}
+	*/
 } // namespace VTX::UI::QT

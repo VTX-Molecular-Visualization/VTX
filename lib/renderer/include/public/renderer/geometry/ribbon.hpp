@@ -148,14 +148,15 @@ namespace VTX::Renderer::Geometry
 
 		void setVisibility( const Desc::Handle p_handle, const IndexRangeList & p_ranges )
 		{
-			auto &				 indiceBuffer = _indices( p_handle );
-			const Construction & cache		  = _construction.at( p_handle );
+			const Construction & cache = _construction.at( p_handle );
 
-			indiceBuffer.clear();
-			if ( p_ranges.isEmpty() )
+			if ( p_ranges.isEmpty() || cache.isEmpty )
 			{
 				return;
 			}
+
+			auto & indiceBuffer = _indices( p_handle );
+			indiceBuffer.clear();
 
 			std::vector<bool> visible( p_ranges.getLast() + 1, false );
 			for ( Index i : p_ranges )

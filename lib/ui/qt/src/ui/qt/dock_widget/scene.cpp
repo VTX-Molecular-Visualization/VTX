@@ -94,8 +94,6 @@ namespace VTX::UI::QT::DockWidget
 
 	void Scene::_onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e )
 	{
-		SELECTION().clearBut( E_SELECTION_GROUP::SYSTEM );
-
 		assert( _mapSystemTreeWidgets.contains( p_e ) );
 		_mapSystemTreeWidgets[ p_e ]->getSystemSelectionModel().refresh();
 		_mapSystemTreeWidgets[ p_e ]->viewport()->update();

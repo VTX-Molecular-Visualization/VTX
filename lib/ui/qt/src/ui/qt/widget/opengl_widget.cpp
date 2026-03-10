@@ -68,8 +68,6 @@ namespace VTX::UI::QT::Widget
 			{
 				if ( not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
 				{
-					SELECTION().clearBut( E_SELECTION_GROUP::SYSTEM );
-
 					App::ACTION().execute<App::Action::Selection::Pick>(
 						Vec2i( p_pos.x(), p_pos.y() ),
 						static_cast<App::Action::Selection::E_GRANULARITY>(

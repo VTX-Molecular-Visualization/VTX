@@ -51,7 +51,7 @@ namespace VTX::Renderer::Geometry
 
 			if ( indiceBuffer )
 			{
-				p_context.setPipelineBuffer<Indice>( *indiceBuffer, size );
+				p_context.setPipelineBuffer<Indice>( *indiceBuffer, size == 0 ? 1 : size );
 			}
 		}
 
@@ -72,7 +72,6 @@ namespace VTX::Renderer::Geometry
 		 */
 		[[nodiscard]] std::vector<Desc::DrawIndirectCommand> toDrawIndirectCommands()
 		{
-			// IndexRangeList						   allRanges = _buildDrawRanges();
 			std::vector<Desc::DrawIndirectCommand> commands;
 
 			for ( const auto & [ uid, data ] : _resources )
@@ -92,9 +91,9 @@ namespace VTX::Renderer::Geometry
 		 */
 		[[nodiscard]] std::vector<Desc::DrawIndexedIndirectCommand> toDrawIndexedIndirectCommands()
 		{
-			// IndexRangeList								  allRanges = _buildDrawRanges();
 			std::vector<Desc::DrawIndexedIndirectCommand> commands;
 			int											  baseVertex = 0;
+
 			for ( const auto & [ uid, data ] : _resources )
 			{
 				commands.emplace_back(
@@ -163,49 +162,6 @@ namespace VTX::Renderer::Geometry
 		 * @brief Current size to draw (before applying anything).
 		 */
 		Index _size = 0;
-
-		/**
-		 * @brief Build GPU draw ranges.
-		 */
-		/*
-		[[nodiscard]] IndexRangeList _buildDrawRanges()
-		{
-			IndexRangeList allRanges;
-			for ( const auto & [ uid, range ] : _ranges )
-			{
-				// Range as list.
-				IndexRangeList rangeList( range );
-
-				IndexRangeList visibillityToRemove	  = visibilityMask[ uid ];
-				IndexRangeList representationToRemove = representationMask[ uid ];
-
-				const Index first = _ranges[ uid ].first;
-
-				// Remove masked ranges.
-				for ( auto it = visibillityToRemove.rangeBegin(); it != visibillityToRemove.rangeEnd(); ++it )
-				{
-					// If > threshold.
-					if ( it->getCount() >= RANGE_CHUNK_SIZE )
-					{
-						// Shift to global index.
-						it->shiftInPlace( first );
-						rangeList.removeRange( *it );
-					}
-				}
-				for ( auto it = representationToRemove.rangeBegin(); it != representationToRemove.rangeEnd(); ++it )
-				{
-					it->shiftInPlace( first );
-					rangeList.removeRange( *it );
-				}
-
-				allRanges.mergeInPlace( rangeList );
-			}
-
-			VTX_DEBUG( "Built draw ranges: {}", allRanges.rangeCount() );
-
-			return allRanges;
-		}
-		*/
 	};
 } // namespace VTX::Renderer::Geometry
 

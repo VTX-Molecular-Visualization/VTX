@@ -134,8 +134,6 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		SELECTION().clearBut( E_SELECTION_GROUP::SYSTEM );
-
 		auto opt = _indexFromPos( p_e->pos() );
 		if ( not opt )
 		{

@@ -162,6 +162,6 @@ namespace VTX::Renderer::Context::Backend::GL
 		GLuint	_id	  = GL_INVALID_INDEX;
 		GLsizei _size = 0;
 	};
-} // namespace VTX::Renderer::Context::GL
+} // namespace VTX::Renderer::Context::Backend::GL
 
 #endif // __VTX_GL_UNIFORM_BUFFER__
