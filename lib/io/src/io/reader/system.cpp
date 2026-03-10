@@ -178,7 +178,8 @@ namespace VTX::IO::Reader
 		// Bonds.
 		// Sort by residus.
 		// Map with residue index to keep the order.
-		Index counter = 0;
+		Index		counter		 = 0;
+		const Index residueCount = p_chemfileStruct.getResidueCount();
 
 		for ( Index boundIdx = 0; boundIdx < p_chemfileStruct.getBondCount(); ++boundIdx )
 		{
@@ -189,6 +190,17 @@ namespace VTX::IO::Reader
 
 			const Index secondAtomIndex = p_chemfileStruct.getCurrentBondSecondAtomIndex();
 			const Index residueEnd		= p_system.atomResidueIndexes[ secondAtomIndex ];
+
+			if ( residueStart >= residueCount || residueEnd >= residueCount )
+			{
+				VTX_WARNING(
+					"Bond with index {} has an atom with invalid residue index ({} or {}). Skipping.",
+					boundIdx,
+					residueStart,
+					residueEnd
+				);
+				continue;
+			}
 
 			if ( residueStart == residueEnd )
 			{
@@ -210,7 +222,7 @@ namespace VTX::IO::Reader
 
 		const Index counterOld = counter;
 		counter				   = 0;
-		for ( Index residueIdx = 0; residueIdx < p_chemfileStruct.getResidueCount(); ++residueIdx )
+		for ( Index residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 		{
 			const std::vector<Index> & vectorBonds		= mapResidueBonds[ residueIdx ];
 			const std::vector<Index> & vectorExtraBonds = mapResidueExtraBonds[ residueIdx ];
