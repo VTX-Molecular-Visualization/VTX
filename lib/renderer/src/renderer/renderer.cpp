@@ -597,30 +597,34 @@ namespace VTX::Renderer
 
 		std::vector<Flag> atomFlags( countAtoms, 0 );
 
-		auto applyOr
-			= [ & ]( std::vector<Flag> & p_flags, const Core::Struct::IndexRangeList & p_ranges, const Flag p_mask )
+		for ( auto it = p_selection.rangeBegin(); it != p_selection.rangeEnd(); ++it )
 		{
-			for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); ++it )
+			const Index begin = it->first;
+			const Index end	  = it->last;
+
+			assert( end <= countAtoms );
+
+			for ( size_t i = begin; i < end; ++i )
 			{
-				const Index begin = it->first;
-				const Index end	  = it->last;
-
-				assert( end <= countAtoms );
-
-				for ( size_t i = begin; i < end; ++i )
-				{
-					p_flags[ i ] |= p_mask;
-				}
+				atomFlags[ i ] |= SEL;
 			}
-		};
-
-		applyOr( atomFlags, p_selection, SEL );
+		}
 
 		_layouts.atoms.upload<Layout::ATOM_ATTR::FLAG, Flag>( _context, h, atomFlags );
 
-		// TODO: residues.
 		const auto &	  construction = _geometries.ribbons.construction( h );
 		std::vector<Flag> residueFlags( _layouts.residues.size( h ), 0 );
+
+		for ( Index i = 0; i < residueFlags.size(); ++i )
+		{
+			const Index atomIndex = construction.residues[ i ].ca;
+			if ( atomFlags[ atomIndex ] & SEL )
+			{
+				residueFlags[ i ] |= SEL;
+			}
+		}
+
+		_layouts.residues.upload<Layout::RESIDUE_ATTR::FLAG, Flag>( _context, h, residueFlags );
 
 		_systemToRefresh.insert( h );
 

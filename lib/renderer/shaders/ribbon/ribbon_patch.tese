@@ -117,7 +117,7 @@ void main()
 	position += n * ( 2.f * gl_TessCoord.y - 1.f ); // TODO: Check when double sided
 
 	outData.viewPosition = vec3( uniformsModel[ inData[ 0 ].model ].matrixModelView * vec4( position, 1.f ) );
-	outData.normal = vec3( uniformsModel[ inData[ 0 ].model ].matrixNormal * vec4( normal, 1.f ) );
+	outData.normal = vec3( uniformsModel[ inData[ 0 ].model ].matrixNormal * vec4( normal, 0.f ) );
 	outData.color =  inData[ 1 ].color;
 
 	uint colorBlendingMode	= uniformsRepresentation[ inData[ 1 ].representation ].ribbonColorBlendingMode;
