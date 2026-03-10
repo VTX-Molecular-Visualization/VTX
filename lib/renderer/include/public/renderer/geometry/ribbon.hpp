@@ -150,13 +150,18 @@ namespace VTX::Renderer::Geometry
 		{
 			const Construction & cache = _construction.at( p_handle );
 
-			if ( p_ranges.isEmpty() || cache.isEmpty )
+			if ( cache.isEmpty )
 			{
 				return;
 			}
 
 			auto & indiceBuffer = _indices( p_handle );
 			indiceBuffer.clear();
+
+			if ( p_ranges.isEmpty() )
+			{
+				return;
+			}
 
 			std::vector<bool> visible( p_ranges.getLast() + 1, false );
 			for ( Index i : p_ranges )
