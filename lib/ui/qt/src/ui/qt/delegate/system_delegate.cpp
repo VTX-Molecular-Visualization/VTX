@@ -15,8 +15,8 @@ namespace VTX::UI::QT::Delegate
 		QStyledItemDelegate( p_parent ), _system( p_system )
 	{
 		_icons[ 0 ] = STYLE().iconFromCodepoint( Style::Icons::VISIBILITY_OFF );
-		_icons[ 1 ] = STYLE().iconFromCodepoint( Style::Icons::COLORS );
-		_icons[ 2 ] = STYLE().iconFromCodepoint( Style::Icons::TUNE );
+		_icons[ 1 ] = STYLE().iconFromCodepoint( Style::Icons::COLOR_LAYOUT );
+		_icons[ 2 ] = STYLE().iconFromCodepoint( Style::Icons::REPRESENTATION );
 	}
 
 	void SystemDelegate::paint(

@@ -23,7 +23,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "New";
 			tip		 = "Create a new project";
-			icon	 = Style::Icons::NEW_WINDOW;
+			icon	 = Style::Icons::NEW;
 			shortcut = "Ctrl+N";
 			trigger	 = []() { App::ACTION().execute<App::Action::Scene::Clear>(); };
 		}
@@ -45,7 +45,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Open";
 			tip		 = "Open a project or a molecular file";
-			icon	 = Style::Icons::FOLDER_OPEN;
+			icon	 = Style::Icons::OPEN;
 			shortcut = "Ctrl+O";
 			trigger	 = []()
 			{
@@ -92,7 +92,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Quit";
 			tip		 = "Exit software";
-			icon	 = Style::Icons::EXIT_TO_APP;
+			icon	 = Style::Icons::QUIT;
 			trigger	 = []() { QCoreApplication::quit(); };
 			shortcut = "Esc";
 		}
@@ -108,7 +108,7 @@ namespace VTX::UI::QT::Action
 			name	 = "Orthographic";
 			group	 = "CameraProjection";
 			tip		 = "Change camera projection mode";
-			icon	 = Style::Icons::SQUARE;
+			icon	 = Style::Icons::CAMERA_ORTHOGRAPHIC;
 			shortcut = "Alt+O";
 			trigger	 = []()
 			{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>(); };
@@ -119,7 +119,7 @@ namespace VTX::UI::QT::Action
 			name	 = "Perspective";
 			group	 = "CameraProjection";
 			tip		 = "Change camera projection mode";
-			icon	 = Style::Icons::DEPLOYED_CODE;
+			icon	 = Style::Icons::CAMERA_PERSPECTIVE;
 			shortcut = "Alt+P";
 			trigger	 = []()
 			{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>(); };
@@ -130,7 +130,7 @@ namespace VTX::UI::QT::Action
 			name	 = "Trackball";
 			group	 = "CameraController";
 			tip		 = "Use Trackball controller";
-			icon	 = Style::Icons::_360;
+			icon	 = Style::Icons::CONTROLLER_TRACKBALL;
 			shortcut = "Alt+T";
 			trigger	 = []()
 			{
@@ -145,7 +145,7 @@ namespace VTX::UI::QT::Action
 			name	 = "Freefly";
 			group	 = "CameraController";
 			tip		 = "Use Freefly controller";
-			icon	 = Style::Icons::DRAG_PAN;
+			icon	 = Style::Icons::CONTROLLER_FREEFLY;
 			shortcut = "Alt+F";
 			trigger	 = []()
 			{
@@ -159,7 +159,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	= "Orient";
 			tip		= "Orient camera on selection";
-			icon	= Style::Icons::VIEW_IN_AR;
+			icon	= Style::Icons::CAMERA_ORIENT;
 			trigger = []() { App::ACTION().execute<App::Action::Camera::Orient>(); };
 		}
 
@@ -167,7 +167,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	= "Reset";
 			tip		= "Reset camera";
-			icon	= Style::Icons::RESET_FOCUS;
+			icon	= Style::Icons::CAMERA_RESET;
 			trigger = []() { App::ACTION().execute<App::Action::Camera::Reset>(); };
 		}
 
@@ -179,7 +179,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Snapshot";
 			tip		 = "Save current image";
-			icon	 = Style::Icons::IMAGE;
+			icon	 = Style::Icons::SNAPSHOT;
 			shortcut = "F2";
 			trigger	 = []()
 			{
@@ -192,7 +192,7 @@ namespace VTX::UI::QT::Action
 		{
 			name	 = "Export";
 			tip		 = "Open dialog to export image";
-			icon	 = Style::Icons::IMAGE_ARROW_UP;
+			icon	 = Style::Icons::SNAPSHOT_EXPORT;
 			shortcut = "F3";
 			trigger	 = []()
 			{
@@ -209,7 +209,7 @@ namespace VTX::UI::QT::Action
 		{
 			name = "Lock";
 			tip	 = "Lock the current selection";
-			icon = Style::Icons::LOCK;
+			icon = Style::Icons::SELECTION_LOCK;
 		}
 
 		Save::Save()

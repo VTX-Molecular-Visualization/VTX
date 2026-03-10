@@ -31,7 +31,7 @@ namespace VTX::UI::QT
 			p_view,
 			&QItemSelectionModel::selectionChanged,
 			this,
-			[ this, p_group ]( const QItemSelection &, const QItemSelection & )
+			[ & ]( const QItemSelection &, const QItemSelection & )
 			{
 				clearBut( p_group );
 
@@ -39,18 +39,17 @@ namespace VTX::UI::QT
 				{
 					App::ACTION().execute<App::Action::Selection::Clear>();
 				}
+
+				emit selected( p_group, p_view->selection() );
 			}
 		);
 	}
 
 	void SelectionManager::clear()
 	{
-		for ( auto & [ group, views ] : _views )
+		for ( auto & [ group, _ ] : _views )
 		{
-			for ( QItemSelectionModel * v : views )
-			{
-				_clear( v );
-			}
+			clear( group );
 		}
 	}
 
@@ -60,21 +59,19 @@ namespace VTX::UI::QT
 		{
 			for ( QItemSelectionModel * v : _views[ p_group ] )
 			{
-				_clear( v );
+				if ( v->hasSelection() )
+					_clear( v );
 			}
 		}
 	}
 
 	void SelectionManager::clearBut( const E_SELECTION_GROUP p_group )
 	{
-		for ( auto & [ group, views ] : _views )
+		for ( auto & [ group, _ ] : _views )
 		{
 			if ( group != p_group )
 			{
-				for ( QItemSelectionModel * v : views )
-				{
-					_clear( v );
-				}
+				clear( group );
 			}
 		}
 	}

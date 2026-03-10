@@ -11,7 +11,7 @@ namespace VTX::UI::QT::DockWidget
 	GraphicsConfigs::GraphicsConfigs( QWidget * p_parent ) : BaseDockWidget( p_parent, "Graphics" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::_3D ) );
+		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::GRAPHICS_CONFIG ) );
 
 		auto * const graphicsConfigWidget = new Widget::Library::GraphicsConfig( this );
 		_layout->addWidget( graphicsConfigWidget );

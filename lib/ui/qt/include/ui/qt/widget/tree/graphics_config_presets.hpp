@@ -13,7 +13,7 @@ namespace VTX::UI::QT::Widget::Tree
 		GraphicsConfigPresets( QWidget * p_parent ) : BaseTreePreset( p_parent )
 		{
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Graphics" ) );
-			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::_3D ) );
+			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::GRAPHICS_CONFIG ) );
 		}
 	};
 

@@ -86,10 +86,10 @@ namespace VTX::UI::QT::Widget::Tree
 	std::array<QIcon, 4> TrajectoryPlayer::_getIcons()
 	{
 		return {
-			STYLE().iconFromCodepoint( Style::Icons::PLAY_SHALLOW ),
-			STYLE().iconFromCodepoint( Style::Icons::PAUSE_SHALLOW ),
-			STYLE().iconFromCodepoint( Style::Icons::STOP_SHALLOW ),
-			STYLE().iconFromCodepoint( Style::Icons::SETTINGS ),
+			STYLE().iconFromCodepoint( Style::Icons::PLAY ),
+			STYLE().iconFromCodepoint( Style::Icons::PAUSE ),
+			STYLE().iconFromCodepoint( Style::Icons::STOP ),
+			STYLE().iconFromCodepoint( Style::Icons::OPTIONS ),
 		};
 	}
 

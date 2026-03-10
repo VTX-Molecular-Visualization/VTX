@@ -19,7 +19,7 @@ namespace VTX::UI::QT::DockWidget
 	Inspector::Inspector( QWidget * p_parent ) : BaseDockWidget( p_parent, "Selection" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::FRAME_INSPECT ) );
+		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SELECTION ) );
 
 		///////////////
 		_layout->addWidget( new Widget::Transform( this ) );

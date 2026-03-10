@@ -53,8 +53,10 @@ namespace VTX::UI::QT
 		void clearBut( const E_SELECTION_GROUP );
 
 	  signals:
-		// void presetSelectionChanged( const QItemSelection & p_selection );
-		// void systemSelectionChanged( const QItemSelection & p_selection );
+		/**
+		 * @brief Selected signal.
+		 */
+		void selected( const E_SELECTION_GROUP, const QItemSelection & p_selection );
 
 	  private:
 		/**

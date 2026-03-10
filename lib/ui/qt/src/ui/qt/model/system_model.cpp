@@ -107,15 +107,15 @@ namespace VTX::UI::QT::Model
 			{
 			case E_SYSTEM_ITEM::SYSTEM:
 			{
-				return STYLE().iconFromCodepoint( Icons::HUB );
+				return STYLE().iconFromCodepoint( Icons::SYSTEM );
 			}
 			case E_SYSTEM_ITEM::CHAIN:
 			{
-				return STYLE().iconFromCodepoint( Icons::TIMELINE );
+				return STYLE().iconFromCodepoint( Icons::CHAIN );
 			}
 			case E_SYSTEM_ITEM::RESIDUE:
 			{
-				return STYLE().iconFromCodepoint( Icons::ATR );
+				return STYLE().iconFromCodepoint( Icons::RESIDUE );
 			}
 			case E_SYSTEM_ITEM::ATOM:
 			{

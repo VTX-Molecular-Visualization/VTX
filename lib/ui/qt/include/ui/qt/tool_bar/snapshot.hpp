@@ -26,7 +26,7 @@ namespace VTX::UI::QT::ToolBar
 			return;
 			auto * btn = new QToolButton;
 			btn->setText( "Snapshot" );
-			btn->setIcon( STYLE().iconFromCodepoint( Style::Icons::IMAGE ) );
+			btn->setIcon( STYLE().iconFromCodepoint( Style::Icons::SNAPSHOT ) );
 			btn->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
 			btn->setPopupMode( QToolButton::MenuButtonPopup );
 

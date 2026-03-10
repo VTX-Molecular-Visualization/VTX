@@ -20,7 +20,7 @@ namespace VTX::UI::QT::Widget::Tree
 			setExpandsOnDoubleClick( true );
 
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Camera" ) );
-			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::PHOTO_CAMERA ) );
+			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::CAMERA ) );
 
 			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Front" ) );
 			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Back" ) );

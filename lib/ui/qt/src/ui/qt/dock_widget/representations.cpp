@@ -11,7 +11,7 @@ namespace VTX::UI::QT::DockWidget
 	Representations::Representations( QWidget * p_parent ) : BaseDockWidget( p_parent, "Representations" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::TUNE ) );
+		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::REPRESENTATION ) );
 
 		auto * const representationWidget = new Widget::Library::Representation( this );
 		_layout->addWidget( representationWidget );

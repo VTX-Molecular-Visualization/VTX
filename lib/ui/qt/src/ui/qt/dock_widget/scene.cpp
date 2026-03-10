@@ -20,7 +20,7 @@ namespace VTX::UI::QT::DockWidget
 	Scene::Scene( QWidget * p_parent ) : BaseDockWidget( p_parent, "Scene" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SCHEMA ) );
+		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SCENE ) );
 
 		auto * treeGraphicsConfigPresets = new Widget::Tree::GraphicsConfigPresets( this );
 		auto * treeColorLayoutPresets	 = new Widget::Tree::ColorLayoutPresets( this );
