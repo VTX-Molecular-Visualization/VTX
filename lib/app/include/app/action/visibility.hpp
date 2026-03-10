@@ -22,6 +22,8 @@ namespace VTX::App::Action::Visibility
 			const bool							 p_visible = true
 		)
 		{
+			Util::ScopedChrono timer( "App::Action::SetVisible" );
+
 			auto &						 reg   = REG();
 			Core::Struct::IndexRangeList atoms = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 

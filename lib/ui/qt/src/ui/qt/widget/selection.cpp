@@ -27,6 +27,8 @@ namespace VTX::UI::QT::Widget
 	// TODO: optimize and factorize.
 	void Selection::_onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e )
 	{
+		Util::ScopedChrono timer( "QT::Widget::Selection::_onUpdateSelection" );
+
 		using namespace App;
 		using namespace Core::Struct;
 

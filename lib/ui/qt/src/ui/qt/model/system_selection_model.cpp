@@ -25,7 +25,7 @@ namespace VTX::UI::QT::Model
 		const QItemSelection & p_deselected
 	)
 	{
-		VTX_DEBUG( "SelectionModel::_selectionChanged" );
+		Util::ScopedChrono timer( "QT::Model::SystemSelectionModel::_selectionChanged" );
 
 		using namespace App;
 		using namespace Core::Struct;

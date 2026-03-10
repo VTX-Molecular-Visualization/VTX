@@ -626,8 +626,6 @@ namespace VTX::Renderer
 
 		_layouts.residues.upload<Layout::RESIDUE_ATTR::FLAG, Flag>( _context, h, residueFlags );
 
-		_systemToRefresh.insert( h );
-
 		setNeedUpdate( true );
 	}
 
@@ -674,6 +672,8 @@ namespace VTX::Renderer
 
 	void Renderer::_refreshSystemVisibility( const Desc::Handle p_handle )
 	{
+		Util::ScopedChrono timer( "[RENDERER] _refreshSystemVisibility" );
+
 		const Cache::System & systemCache = _systems.get( p_handle );
 
 		auto visibleSpheres	  = systemCache.visibility;

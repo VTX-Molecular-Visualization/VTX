@@ -5,6 +5,7 @@
 #include "app/helper/system.hpp"
 #include "app/system/selection.hpp"
 #include <core/struct/system.hpp>
+#include <util/chrono.hpp>
 #include <util/logger.hpp>
 #include <util/type_traits.hpp>
 #include <util/types.hpp>
@@ -25,6 +26,8 @@ namespace VTX::App::Action::Selection
 			const bool							 p_append	= false
 		)
 		{
+			Util::ScopedChrono timer( "App::Action::SetSelected" );
+
 			auto &						 reg	   = REG();
 			auto &						 selection = reg.get<System::Selection>( p_ent );
 			Core::Struct::IndexRangeList atoms	   = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
