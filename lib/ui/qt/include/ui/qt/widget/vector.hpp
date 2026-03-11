@@ -64,6 +64,8 @@ namespace VTX::UI::QT::Widget
 				sb->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Fixed );
 				sb->setButtonSymbols( QAbstractSpinBox::NoButtons );
 				sb->installEventFilter( this );
+
+				connect( sb, &QAbstractSpinBox::editingFinished, [ this ]() { emit valueEdited(); } );
 			}
 		}
 
@@ -71,13 +73,16 @@ namespace VTX::UI::QT::Widget
 		{
 			if ( auto * sb = qobject_cast<QAbstractSpinBox *>( p_obj ) )
 			{
-				if ( p_ev->type() == QEvent::Enter )
+				if ( sb->isEnabled() && not sb->isReadOnly() )
 				{
-					sb->setButtonSymbols( QAbstractSpinBox::UpDownArrows );
-				}
-				else if ( p_ev->type() == QEvent::Leave )
-				{
-					sb->setButtonSymbols( QAbstractSpinBox::NoButtons );
+					if ( p_ev->type() == QEvent::Enter )
+					{
+						sb->setButtonSymbols( QAbstractSpinBox::UpDownArrows );
+					}
+					else if ( p_ev->type() == QEvent::Leave )
+					{
+						sb->setButtonSymbols( QAbstractSpinBox::NoButtons );
+					}
 				}
 			}
 			return QWidget::eventFilter( p_obj, p_ev );
@@ -186,6 +191,22 @@ namespace VTX::UI::QT::Widget
 			for ( int i = 0; i < N; i++ )
 			{
 				_spinBoxes[ i ]->setAccelerated( p_enable );
+			}
+		}
+
+		void setEnabled( const bool p_enable )
+		{
+			for ( int i = 0; i < N; i++ )
+			{
+				_spinBoxes[ i ]->setEnabled( p_enable );
+			}
+		}
+
+		void setReadOnly( const bool p_readOnly )
+		{
+			for ( int i = 0; i < N; i++ )
+			{
+				_spinBoxes[ i ]->setReadOnly( p_readOnly );
 			}
 		}
 

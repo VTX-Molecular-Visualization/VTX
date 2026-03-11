@@ -21,13 +21,6 @@ namespace VTX::UI::QT::Widget::Tree
 
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Camera" ) );
 			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::CAMERA ) );
-
-			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Front" ) );
-			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Back" ) );
-			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Left" ) );
-			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Right" ) );
-			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Top" ) );
-			topLevelItem( 0 )->addChild( new QTreeWidgetItem( QStringList() << "Bottom" ) );
 		}
 
 	  private:

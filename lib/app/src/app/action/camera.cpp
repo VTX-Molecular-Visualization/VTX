@@ -30,7 +30,7 @@ namespace VTX::App::Action::Camera
 {
 	void SetPosition::execute( const Vec3f & p_position )
 	{
-		const auto [ ent, camera, transform ]
+		const auto [ _, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 		transform.setPosition( p_position );
 		HUB().trigger<Events::CameraTransformChange>();
@@ -38,25 +38,40 @@ namespace VTX::App::Action::Camera
 
 	void SetRotation::execute( const Vec3f & p_eulerAngles )
 	{
-		const auto [ ent, camera, transform ]
+		const auto [ _, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 		transform.setRotation( p_eulerAngles );
 		HUB().trigger<Events::CameraTransformChange>();
 	}
 
-	void SetScale::execute( const float p_scale )
+	void SetFov::execute( const float p_fov )
 	{
-		const auto [ ent, camera, transform ]
-			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
-		transform.setScale( p_scale );
-		HUB().trigger<Events::CameraTransformChange>();
+		const auto	entity	   = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
+		const float clampedFov = std::clamp( p_fov, Renderer::FOV_MIN, Renderer::FOV_MAX );
+		REG().patch<Renderer::Camera>( entity, [ clampedFov ]( Renderer::Camera & p_cam ) { p_cam.fov = clampedFov; } );
+	}
+
+	void SetNearClip::execute( const float p_near )
+	{
+		const auto	entity		= ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
+		const float clampedNear = std::clamp( p_near, Renderer::NEAR_CLIP_MIN, Renderer::NEAR_CLIP_MAX );
+		REG().patch<Renderer::Camera>(
+			entity, [ clampedNear ]( Renderer::Camera & p_cam ) { p_cam.near = clampedNear; }
+		);
+	}
+
+	void SetFarClip::execute( const float p_far )
+	{
+		const auto	entity	   = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
+		const float clampedFar = std::clamp( p_far, Renderer::FAR_CLIP_MIN, Renderer::FAR_CLIP_MAX );
+		REG().patch<Renderer::Camera>( entity, [ clampedFar ]( Renderer::Camera & p_cam ) { p_cam.far = clampedFar; } );
 	}
 
 	void Reset::execute()
 	{
 		const auto	 entScene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
 		const auto & aabb	  = REG().get<Util::Math::AABB>( entScene );
-		const auto [ entCamera, camera, transform ]
+		const auto [ _, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
 		Vec3f position = _computeCameraOrientPosition( FRONT_AXIS, camera.fov, aabb );
@@ -69,8 +84,6 @@ namespace VTX::App::Action::Camera
 
 	void Orient::execute()
 	{
-		const auto [ entCamera, _, __ ] = ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
-
 		Util::Math::AABB aabb;
 
 		// From selection.

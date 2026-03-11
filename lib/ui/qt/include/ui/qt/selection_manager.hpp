@@ -40,23 +40,28 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Clear all selection.
 		 */
-		// void clear();
+		void clear();
 
 		/**
 		 * @brief Clear selection of a group.
 		 */
-		// void clear( const E_SELECTION_GROUP );
+		void clear( const E_SELECTION_GROUP );
 
 		/**
 		 * @brief Clear selection of all group except the given one.
 		 */
-		// void clearBut( const E_SELECTION_GROUP );
+		void clearBut( const E_SELECTION_GROUP );
 
 	  signals:
 		/**
 		 * @brief Selected signal.
 		 */
 		void selected( const E_SELECTION_GROUP, const QItemSelection & p_selection );
+
+		/**
+		 * @brief Clear selection.
+		 */
+		void cleared( const E_SELECTION_GROUP );
 
 	  private:
 		/**

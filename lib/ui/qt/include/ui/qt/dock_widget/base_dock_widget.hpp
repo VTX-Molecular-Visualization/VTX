@@ -31,7 +31,6 @@ namespace VTX::UI::QT::DockWidget
 		{
 			QDockWidget::setWindowTitle( p_title );
 			QDockWidget::setMinimumSize( Style::MINIMUM_DOCK_PANEL_WIDTH, Style::MINIMUM_DOCK_PANEL_HEIGHT );
-
 			QDockWidget::setFeatures(
 				QDockWidget::features() | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable
 			);

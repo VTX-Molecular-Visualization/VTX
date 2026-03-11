@@ -23,7 +23,6 @@ namespace VTX::UI::QT::Widget
 		enum struct E_FLAG : uint8_t
 		{
 			VTX_ENUM_ENABLE_BITMASK,
-
 			NONE	 = 0,
 			POSITION = 1 << 0,
 			ROTATION = 1 << 1,
@@ -48,7 +47,6 @@ namespace VTX::UI::QT::Widget
 				connect(
 					_position,
 					&Widget::Vector<Vec3f>::valueEdited,
-					this,
 					[ this ]() { emit positionChanged( _position->value() ); }
 				);
 			}
@@ -64,7 +62,6 @@ namespace VTX::UI::QT::Widget
 				connect(
 					_rotation,
 					&Widget::Vector<Vec3i>::valueEdited,
-					this,
 					[ this ]() { emit rotationChanged( Quatf( _rotation->value() ) ); }
 				);
 			}
@@ -76,10 +73,7 @@ namespace VTX::UI::QT::Widget
 				layout->addWidget( new QLabel( "Scale", this ) );
 				layout->addWidget( _scale );
 				connect(
-					_scale,
-					&Widget::Vector<Vec3f>::valueEdited,
-					this,
-					[ this ]() { emit scaleChanged( _scale->value() ); }
+					_scale, &Widget::Vector<Vec3f>::valueEdited, [ this ]() { emit scaleChanged( _scale->value() ); }
 				);
 			}
 
@@ -92,26 +86,53 @@ namespace VTX::UI::QT::Widget
 		inline void setPosition( const Vec3f & p_position )
 		{
 			assert( _position );
+			QSignalBlocker blocker( _position );
 			_position->setValue( p_position );
 		}
 
 		inline void setRotation( const Quatd & p_rotation )
 		{
+			using namespace VTX::Util::Math;
 			assert( _rotation );
-			_rotation->setValue( VTX::Util::Math::eulerAngles( p_rotation ) );
+			QSignalBlocker blocker( _rotation );
+			_rotation->setValue( degrees( eulerAngles( p_rotation ) ) );
 		}
 
 		inline void setScale( const Vec3f & p_scale )
 		{
 			assert( _scale );
+			QSignalBlocker blocker( _scale );
 			_scale->setValue( p_scale );
 		}
 
 		inline void setTransform( const VTX::Util::Math::Transform & p_transform )
 		{
-			setPosition( p_transform.getPosition() );
-			setRotation( p_transform.getRotation() );
-			setScale( p_transform.getScale() );
+			if ( _position )
+				setPosition( p_transform.getPosition() );
+			if ( _rotation )
+				setRotation( p_transform.getRotation() );
+			if ( _scale )
+				setScale( p_transform.getScale() );
+		}
+
+		inline void setReadOnly( const bool p_readOnly, const E_FLAG p_flags = E_FLAG::ALL )
+		{
+			if ( _position && ( p_flags & E_FLAG::ROTATION ) != E_FLAG::NONE )
+				_position->setReadOnly( p_readOnly );
+			if ( _rotation && ( p_flags & E_FLAG::ROTATION ) != E_FLAG::NONE )
+				_rotation->setReadOnly( p_readOnly );
+			if ( _scale && ( p_flags & E_FLAG::SCALE ) != E_FLAG::NONE )
+				_scale->setReadOnly( p_readOnly );
+		}
+
+		inline void setEnabled( const bool p_enabled, const E_FLAG p_flags = E_FLAG::ALL )
+		{
+			if ( _position && ( p_flags & E_FLAG::ROTATION ) != E_FLAG::NONE )
+				_position->setEnabled( p_enabled );
+			if ( _rotation && ( p_flags & E_FLAG::ROTATION ) != E_FLAG::NONE )
+				_rotation->setEnabled( p_enabled );
+			if ( _scale && ( p_flags & E_FLAG::SCALE ) != E_FLAG::NONE )
+				_scale->setEnabled( p_enabled );
 		}
 
 	  signals:

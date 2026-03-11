@@ -1,11 +1,12 @@
 ﻿#include "ui/qt/dock_widget/inspector.hpp"
 #include "ui/qt/events.hpp"
+#include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
+#include "ui/qt/widget/camera.hpp"
 #include "ui/qt/widget/main_window.hpp"
-#include "ui/qt/widget/transform.hpp"
 #include <QFontDatabase>
 #include <QLabel>
 #include <QToolBar>
@@ -21,10 +22,40 @@ namespace VTX::UI::QT::DockWidget
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SELECTION ) );
 
-		///////////////
-		_layout->addWidget( new Widget::Transform( this ) );
-		///////////////
+		_filler = new QWidget( this );
+		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
+		_layout->addWidget( _filler );
 
+		connect( &SELECTION(), &SelectionManager::cleared, this, &Inspector::_clear );
+
+		connect(
+			&SELECTION(),
+			&SelectionManager::selected,
+			this,
+			[ this ]( const E_SELECTION_GROUP p_group, const QItemSelection & p_selection )
+			{
+				// Clear all.
+				_clear();
+
+				if ( p_selection.isEmpty() )
+				{
+					return;
+				}
+
+				// Insert widget.
+				switch ( p_group )
+				{
+				case E_SELECTION_GROUP::CAMERA:
+					const auto [ ent, _, __ ]
+						= App::ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+					auto * cameraWidget = new Widget::Camera( ent, this );
+					_layout->insertWidget( _layout->indexOf( _filler ), cameraWidget );
+					break;
+				}
+			}
+		);
+
+		/*
 		// Selection toolbar.
 		auto * toolbar = new QToolBar( this );
 		toolbar->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
@@ -34,7 +65,7 @@ namespace VTX::UI::QT::DockWidget
 		toolbar->addAction( lockAction );
 		toolbar->addAction( Application::getAction<Action::Selection::Save>() );
 		toolbar->addAction( Application::getAction<Action::Selection::Clear>() );
-		_layout->addWidget( toolbar );
+		//_layout->addWidget( toolbar );
 
 		// Picking granularity combobox.
 		auto * cbPickingGranularity = new QComboBox( this );
@@ -56,7 +87,7 @@ namespace VTX::UI::QT::DockWidget
 		_selectionListWidget = new Widget::Selection( this );
 		_layout->addWidget( _selectionListWidget );
 
-		//_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 
 		lockAction->setChecked( SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() );
 
@@ -84,6 +115,20 @@ namespace VTX::UI::QT::DockWidget
 			[ cbPickingGranularity ]( const int )
 			{ SETTINGS().setValue( SETTING_KEY_GRANULARITY, cbPickingGranularity->currentData() ); }
 		);
+		*/
+	}
+
+	void Inspector::_clear()
+	{
+		for ( int i = _layout->count() - 1; i >= 0; --i )
+		{
+			if ( _layout->itemAt( i )->widget() != _filler )
+			{
+				QWidget * w = _layout->itemAt( i )->widget();
+				_layout->removeWidget( w );
+				w->deleteLater();
+			}
+		}
 	}
 
 } // namespace VTX::UI::QT::DockWidget

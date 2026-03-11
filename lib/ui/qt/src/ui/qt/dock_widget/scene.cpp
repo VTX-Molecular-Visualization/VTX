@@ -92,8 +92,14 @@ namespace VTX::UI::QT::DockWidget
 		_mapSystemTreeWidgets[ p_e ]->viewport()->update();
 	}
 
-	void Scene::_onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e )
+	void Scene::_onUpdateSelection( App::ECS::Registry & p_r, App::ECS::Entity p_e )
 	{
+		// Do not clear if full deselection.
+		if ( not p_r.get<App::System::Selection>( p_e ).atoms.isEmpty() )
+		{
+			SELECTION().clearBut( E_SELECTION_GROUP::SYSTEM );
+		}
+
 		assert( _mapSystemTreeWidgets.contains( p_e ) );
 		_mapSystemTreeWidgets[ p_e ]->getSystemSelectionModel().refresh();
 		_mapSystemTreeWidgets[ p_e ]->viewport()->update();

@@ -134,6 +134,8 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
+		SELECTION().clearBut( E_SELECTION_GROUP::SYSTEM );
+
 		auto opt = _indexFromPos( p_e->pos() );
 		if ( not opt )
 		{
@@ -285,7 +287,7 @@ namespace VTX::UI::QT::Widget
 		auto &	  system  = App::REG().get<Core::Struct::System>( _system );
 
 		Index index = clickX / SEQ_CHAR_WIDTH;
-		if ( index >= system.getResidueCount() )
+		if ( index > system.getResidueCount() )
 		{
 			return std::nullopt;
 		}

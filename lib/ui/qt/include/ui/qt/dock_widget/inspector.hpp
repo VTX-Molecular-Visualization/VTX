@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_DOCK_WIDGET_INSPECTOR__
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
-#include "ui/qt/widget/selection.hpp"
+// #include "ui/qt/widget/selection.hpp"
 #include <QComboBox>
 
 namespace VTX::UI::QT::DockWidget
@@ -16,7 +16,13 @@ namespace VTX::UI::QT::DockWidget
 		Inspector( QWidget * );
 
 	  private:
-		QPointer<Widget::Selection> _selectionListWidget;
+		QPointer<QWidget> _filler;
+		// QPointer<Widget::Selection> _selectionListWidget;
+
+		/**
+		 * @brief Clear all widgets except the filler.
+		 */
+		void _clear();
 	};
 
 } // namespace VTX::UI::QT::DockWidget

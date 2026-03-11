@@ -34,9 +34,25 @@ namespace VTX::App::Action::Camera
 	};
 
 	/**
-	 * @brief Set camera scale.
+	 * @brief Set camera field of view.
 	 */
-	struct SetScale
+	struct SetFov
+	{
+		void execute( const float );
+	};
+
+	/**
+	 * @brief Set camera near clipping plane.
+	 */
+	struct SetNearClip
+	{
+		void execute( const float );
+	};
+
+	/**
+	 * @brief Set camera far clipping plane.
+	 */
+	struct SetFarClip
 	{
 		void execute( const float );
 	};

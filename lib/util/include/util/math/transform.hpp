@@ -129,7 +129,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Local scale.
 		 */
-		Vec3f _scale = Vec3f( 1.f );
+		Vec3f _scale = VEC3F_XYZ;
 	};
 } // namespace VTX::Util::Math
 
