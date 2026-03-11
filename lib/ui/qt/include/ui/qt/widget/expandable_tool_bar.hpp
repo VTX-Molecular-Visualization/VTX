@@ -1,7 +1,9 @@
 #ifndef __VTX_UI_QT_WIDGET_EXPANDABLE_TOOL_BAR__
 #define __VTX_UI_QT_WIDGET_EXPANDABLE_TOOL_BAR__
 
+#include "ui/qt/application.hpp"
 #include <QHBoxLayout>
+#include <QToolButton>
 #include <QWidget>
 
 namespace VTX::UI::QT::Widget

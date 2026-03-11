@@ -25,6 +25,7 @@ namespace VTX::Util::Math
 	using ::glm::all;
 	using ::glm::any;
 	using ::glm::clamp;
+	using ::glm::conjugate;
 	using ::glm::cross;
 	using ::glm::degrees;
 	using ::glm::distance;

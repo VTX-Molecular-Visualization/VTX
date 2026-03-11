@@ -30,7 +30,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct SetRotation
 	{
-		void execute( const Vec3f & );
+		void execute( const Quatf & );
 	};
 
 	/**

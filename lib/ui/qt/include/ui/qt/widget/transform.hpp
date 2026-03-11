@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_WIDGET_TRANSFORM__
 
 #include "ui/qt/widget/vector.hpp"
+#include <QLabel>
 #include <QWidget>
 #include <util/enum.hpp>
 #include <util/math/transform.hpp>
@@ -35,6 +36,8 @@ namespace VTX::UI::QT::Widget
 		 */
 		Transform( QWidget * p_parent, const E_FLAG p_flags = E_FLAG::ALL ) : QWidget( p_parent )
 		{
+			using namespace VTX::Util::Math;
+
 			auto * layout = new QVBoxLayout( this );
 			layout->setContentsMargins( 0, 0, 0, 0 );
 
@@ -54,15 +57,16 @@ namespace VTX::UI::QT::Widget
 			// Rotation vector.
 			if ( ( p_flags & E_FLAG::ROTATION ) != E_FLAG::NONE )
 			{
-				_rotation = new Widget::Vector<Vec3i>( this );
-				_rotation->setRange( Vec3i( -360 ), Vec3i( 360 ) );
+				_rotation = new Widget::Vector<Vec3f>( this );
+				_rotation->setRange( Vec3f( -360 ), Vec3f( 360 ) );
+				_rotation->setDecimals( 0 );
 				_rotation->setSuffix( QChar( 0x00B0 ) );
 				layout->addWidget( new QLabel( "Rotation", this ) );
 				layout->addWidget( _rotation );
 				connect(
 					_rotation,
-					&Widget::Vector<Vec3i>::valueEdited,
-					[ this ]() { emit rotationChanged( Quatf( _rotation->value() ) ); }
+					&Widget::Vector<Vec3f>::valueEdited,
+					[ this ]() { emit rotationChanged( Quatf( radians( _rotation->value() ) ) ); }
 				);
 			}
 
@@ -152,7 +156,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Rotation vector.
 		 */
-		QPointer<Vector<Vec3i>> _rotation;
+		QPointer<Vector<Vec3f>> _rotation;
 
 		/**
 		 * @brief Scale vector.

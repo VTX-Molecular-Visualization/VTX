@@ -32,15 +32,20 @@ namespace VTX::App::Action::Camera
 	{
 		const auto [ _, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+		const Vec3f delta = p_position - transform.getPosition();
 		transform.setPosition( p_position );
+		camera.target += delta;
 		HUB().trigger<Events::CameraTransformChange>();
 	}
 
-	void SetRotation::execute( const Vec3f & p_eulerAngles )
+	void SetRotation::execute( const Quatf & p_rotation )
 	{
 		const auto [ _, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
-		transform.setRotation( p_eulerAngles );
+		const Quatf delta = p_rotation * Util::Math::conjugate( transform.getRotation() );
+		transform.setRotation( p_rotation );
+		const Vec3f toTarget = camera.target - transform.getPosition();
+		camera.target		 = transform.getPosition() + delta * toTarget;
 		HUB().trigger<Events::CameraTransformChange>();
 	}
 

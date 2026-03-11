@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_WIDGET_VECTOR__
 
 #include <QDoubleSpinBox>
+#include <QEvent>
 #include <util/constants.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -41,7 +42,7 @@ namespace VTX::UI::QT::Widget
 				if constexpr ( std::is_integral_v<Scalar> )
 				{
 					auto * sb = new QSpinBox( this );
-					sb->setRange( TypeMin<Scalar>, TypeMax<Scalar> );
+					sb->setRange( TypeLowest<Scalar>, TypeMax<Scalar> );
 					sb->setPrefix( QString( PREFIX[ i ] ) + ": " );
 
 					_spinBoxes[ i ] = sb;
@@ -49,7 +50,7 @@ namespace VTX::UI::QT::Widget
 				else
 				{
 					auto * sb = new QDoubleSpinBox( this );
-					sb->setRange( TypeMin<Scalar>, TypeMax<Scalar> );
+					sb->setRange( TypeLowest<Scalar>, TypeMax<Scalar> );
 					sb->setPrefix( QString( PREFIX[ i ] ) + ": " );
 					sb->setDecimals( 2 );
 
@@ -82,6 +83,10 @@ namespace VTX::UI::QT::Widget
 					else if ( p_ev->type() == QEvent::Leave )
 					{
 						sb->setButtonSymbols( QAbstractSpinBox::NoButtons );
+					}
+					else if ( p_ev->type() == QEvent::MouseButtonRelease )
+					{
+						emit valueEdited();
 					}
 				}
 			}

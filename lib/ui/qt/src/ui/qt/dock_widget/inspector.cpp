@@ -13,6 +13,7 @@
 #include <QToolButton>
 #include <app/action/selection.hpp>
 #include <app/services.hpp>
+#include <renderer/camera.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -46,9 +47,8 @@ namespace VTX::UI::QT::DockWidget
 				switch ( p_group )
 				{
 				case E_SELECTION_GROUP::CAMERA:
-					const auto [ ent, _, __ ]
-						= App::ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
-					auto * cameraWidget = new Widget::Camera( ent, this );
+					const auto [ ent, _ ] = App::ECS::getFirstEntityWithComponents<Renderer::Camera>();
+					auto * cameraWidget	  = new Widget::Camera( ent, this );
 					_layout->insertWidget( _layout->indexOf( _filler ), cameraWidget );
 					break;
 				}
