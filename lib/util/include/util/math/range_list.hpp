@@ -4,7 +4,6 @@
 #include "util/math/range.hpp"
 #include <algorithm>
 #include <concepts>
-#include <list>
 #include <span>
 #include <type_traits>
 #include <vector>
@@ -26,14 +25,6 @@ namespace VTX::Util::Math
 		RangeList() = default;
 
 		RangeList( const std::initializer_list<RangeType> p_ranges )
-		{
-			for ( const auto & r : p_ranges )
-			{
-				addRange( r );
-			}
-		}
-
-		explicit RangeList( const std::list<RangeType> & p_ranges )
 		{
 			for ( const auto & r : p_ranges )
 			{
@@ -358,7 +349,7 @@ namespace VTX::Util::Math
 		static RangeList intersect( const RangeList & p_lhs, const RangeList & p_rhs )
 		{
 			using R = Range<T>;
-			std::list<R> out;
+			std::vector<R> out;
 
 			auto a = p_lhs.rangeBegin();
 			auto b = p_rhs.rangeBegin();
@@ -397,7 +388,9 @@ namespace VTX::Util::Math
 					++b;
 				}
 			}
-			return RangeList( out );
+			RangeList res;
+			res._ranges = std::move( out );
+			return res;
 		}
 
 		/**
@@ -525,17 +518,17 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Iterators.
 		 */
-		std::list<RangeType>::iterator		 rangeBegin() { return _ranges.begin(); }
-		std::list<RangeType>::iterator		 rangeEnd() { return _ranges.end(); }
-		std::list<RangeType>::const_iterator rangeBegin() const { return _ranges.begin(); }
-		std::list<RangeType>::const_iterator rangeEnd() const { return _ranges.end(); }
+		std::vector<RangeType>::iterator	   rangeBegin() { return _ranges.begin(); }
+		std::vector<RangeType>::iterator	   rangeEnd() { return _ranges.end(); }
+		std::vector<RangeType>::const_iterator rangeBegin() const { return _ranges.begin(); }
+		std::vector<RangeType>::const_iterator rangeEnd() const { return _ranges.end(); }
 
 		/**
 		 * @brief Iterate over all values in all ranges.
 		 */
 		struct iterator
 		{
-			using ListIt = typename std::list<RangeType>::const_iterator;
+			using ListIt = typename std::vector<RangeType>::const_iterator;
 
 			ListIt it {};
 			ListIt end {};
@@ -558,7 +551,7 @@ namespace VTX::Util::Math
 				}
 			}
 
-			explicit iterator( const std::list<RangeType> & p_ranges ) noexcept :
+			explicit iterator( const std::vector<RangeType> & p_ranges ) noexcept :
 				it( p_ranges.begin() ), end( p_ranges.end() ), cur {}
 			{
 				advanceToValid();
@@ -592,7 +585,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief All ranges.
 		 */
-		std::list<RangeType> _ranges;
+		std::vector<RangeType> _ranges;
 	};
 } // namespace VTX::Util::Math
 
