@@ -556,8 +556,8 @@ namespace VTX::Renderer
 	}
 
 	void Renderer::setSystemVisibility(
-		const SystemUID						 p_uid,
-		const Core::Struct::IndexRangeList & p_visibility
+		const SystemUID			   p_uid,
+		const Util::Math::BitSet & p_visibility
 
 	)
 	{
@@ -576,8 +576,8 @@ namespace VTX::Renderer
 	}
 
 	void Renderer::setSystemSelection(
-		const SystemUID						 p_uid,
-		const Core::Struct::IndexRangeList & p_selection
+		const SystemUID			   p_uid,
+		const Util::Math::BitSet & p_selection
 
 	)
 	{
@@ -591,23 +591,13 @@ namespace VTX::Renderer
 
 		assert( p_selection.size() <= countAtoms );
 
-		systemCache.selection = p_selection;
-
 		static constexpr Flag SEL = 1 << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
 
 		std::vector<Flag> atomFlags( countAtoms, 0 );
 
-		for ( auto it = p_selection.rangeBegin(); it != p_selection.rangeEnd(); ++it )
+		for ( auto i : p_selection )
 		{
-			const Index begin = it->first;
-			const Index end	  = it->last;
-
-			assert( end <= countAtoms );
-
-			for ( size_t i = begin; i < end; ++i )
-			{
-				atomFlags[ i ] |= SEL;
-			}
+			atomFlags[ i ] |= SEL;
 		}
 
 		_layouts.atoms.upload<Layout::ATOM_ATTR::FLAG, Flag>( _context, h, atomFlags );
@@ -687,15 +677,15 @@ namespace VTX::Renderer
 			const auto & cacheRepresentation = _cacheRepresentations[ representationIndex ];
 			if ( not cacheRepresentation.showSphere )
 			{
-				visibleSpheres.substractInPlace( ranges );
+				visibleSpheres.subtractInPlace( ranges );
 			}
 			if ( not cacheRepresentation.showCylinder )
 			{
-				visibleCylinders.substractInPlace( ranges );
+				visibleCylinders.subtractInPlace( ranges );
 			}
 			if ( not cacheRepresentation.showRibbon )
 			{
-				visibleRibbons.substractInPlace( ranges );
+				visibleRibbons.subtractInPlace( ranges );
 			}
 		}
 

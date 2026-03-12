@@ -28,31 +28,15 @@ namespace VTX::Renderer::Geometry
 			_construction.emplace( p_handle, _Construction { &p_data.data.bondPairAtomIndexes } );
 		}
 
-		void setVisibility( const Desc::Handle p_handle, const IndexRangeList & p_ranges )
+		void setVisibility( const Desc::Handle p_handle, const Util::Math::BitSet & p_visibility )
 		{
 			auto &					   indiceBuffer = _indices( p_handle );
 			const std::vector<Index> & bonds		= *_construction[ p_handle ].bonds;
 
 			indiceBuffer.clear();
-			if ( p_ranges.isEmpty() )
-			{
-				return;
-			}
-
-			std::vector<bool> visible( p_ranges.getLast() + 1, false );
-			for ( Index i : p_ranges )
-			{
-				visible[ i ] = true;
-			}
-
 			for ( Index i = 0; i < bonds.size(); i += 2 )
 			{
-				if ( bonds[ i ] >= visible.size() || bonds[ i + 1 ] >= visible.size() )
-				{
-					continue;
-				}
-
-				if ( visible[ bonds[ i ] ] && visible[ bonds[ i + 1 ] ] )
+				if ( p_visibility.test( bonds[ i ] ) && p_visibility.test( bonds[ i + 1 ] ) )
 				{
 					indiceBuffer.emplace_back( bonds[ i ] );
 					indiceBuffer.emplace_back( bonds[ i + 1 ] );

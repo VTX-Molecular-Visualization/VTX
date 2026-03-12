@@ -8,6 +8,7 @@
 #include <map>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
+#include <util/math/bitset.hpp>
 #include <util/math/range_list.hpp>
 #include <util/type_traits.hpp>
 #include <util/types.hpp>

@@ -30,10 +30,15 @@ namespace VTX::Renderer::Geometry
 			std::iota( indiceBuffer.begin(), indiceBuffer.end(), 0 );
 		}
 
-		void setVisibility( const Desc::Handle p_handle, const IndexRangeList & p_ranges )
+		void setVisibility( const Desc::Handle p_handle, const Util::Math::BitSet & p_visibility )
 		{
 			auto & indiceBuffer = _indices( p_handle );
-			indiceBuffer		= p_ranges.toVector<Indice>();
+
+			indiceBuffer.clear();
+			for ( auto i : p_visibility )
+			{
+				indiceBuffer.emplace_back( static_cast<Index>( i ) );
+			}
 		}
 	};
 

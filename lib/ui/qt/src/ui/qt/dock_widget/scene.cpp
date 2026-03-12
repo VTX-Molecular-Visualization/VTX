@@ -95,7 +95,7 @@ namespace VTX::UI::QT::DockWidget
 	void Scene::_onUpdateSelection( App::ECS::Registry & p_r, App::ECS::Entity p_e )
 	{
 		// Do not clear if full deselection.
-		if ( not p_r.get<App::System::Selection>( p_e ).atoms.isEmpty() )
+		if ( p_r.get<App::System::Selection>( p_e ).atoms.any() )
 		{
 			SELECTION().clearBut( E_SELECTION_GROUP::SYSTEM );
 		}

@@ -5,6 +5,7 @@
 #include "renderer/types.hpp"
 #include <core/struct/system.hpp>
 #include <unordered_map>
+#include <util/math/bitset.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer
@@ -25,8 +26,7 @@ namespace VTX::Renderer::Cache
 	struct System
 	{
 		Mat4f					transform;
-		IndexRangeList			visibility;
-		IndexRangeList			selection;
+		Util::Math::BitSet		visibility;
 		MapRepresentationRanges representations;
 	};
 

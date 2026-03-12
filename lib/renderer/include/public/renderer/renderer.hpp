@@ -15,6 +15,7 @@
 #include "renderer/types.hpp"
 #include <unordered_set>
 #include <util/callback.hpp>
+#include <util/math/bitset.hpp>
 
 namespace VTX::Renderer
 {
@@ -90,8 +91,8 @@ namespace VTX::Renderer
 		void setSystemPosition( const SystemUID, std::span<const Vec3f> );
 		void setSystemColors( const SystemUID, std::span<const ColorIndex> );
 		void setSystemRepresentation( const SystemUID, const MapRepresentationRanges & );
-		void setSystemVisibility( const SystemUID, const Core::Struct::IndexRangeList & );
-		void setSystemSelection( const SystemUID, const Core::Struct::IndexRangeList & );
+		void setSystemVisibility( const SystemUID, const Util::Math::BitSet & );
+		void setSystemSelection( const SystemUID, const Util::Math::BitSet & );
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.

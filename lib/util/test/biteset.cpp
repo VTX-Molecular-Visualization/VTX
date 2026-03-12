@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <util/math/bitset.hpp>
+#include <util/math/range_list.hpp>
 #include <vector>
 
 using namespace VTX::Util::Math;
@@ -606,4 +607,381 @@ TEST_CASE( "BitSet data view reflects state", "[util][math][bitset]" )
 	REQUIRE( ( data[ 0 ] & ( 1ull << 63 ) ) != 0ull );
 	REQUIRE( ( data[ 1 ] & ( 1ull << 0 ) ) != 0ull );
 	REQUIRE( ( data[ 2 ] & ( 1ull << 1 ) ) != 0ull );
+}
+
+TEST_CASE( "BitSet set(Range) within single word", "[util][math][bitset]" )
+{
+	BitSet bitset( 64 );
+	bitset.set( Range<size_t>( 4, 10 ) );
+
+	REQUIRE( bitset.count() == 6 );
+	for ( size_t i = 4; i < 10; ++i )
+		REQUIRE( bitset.test( i ) );
+	REQUIRE_FALSE( bitset.test( 3 ) );
+	REQUIRE_FALSE( bitset.test( 10 ) );
+}
+
+TEST_CASE( "BitSet set(Range) across word boundary", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( Range<size_t>( 60, 68 ) );
+
+	REQUIRE( bitset.count() == 8 );
+	for ( size_t i = 60; i < 68; ++i )
+		REQUIRE( bitset.test( i ) );
+	REQUIRE_FALSE( bitset.test( 59 ) );
+	REQUIRE_FALSE( bitset.test( 68 ) );
+}
+
+TEST_CASE( "BitSet set(Range) exact word boundary", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( Range<size_t>( 0, 64 ) );
+
+	REQUIRE( bitset.count() == 64 );
+	for ( size_t i = 0; i < 64; ++i )
+		REQUIRE( bitset.test( i ) );
+	REQUIRE_FALSE( bitset.test( 64 ) );
+}
+
+TEST_CASE( "BitSet set(Range) empty range is no-op", "[util][math][bitset]" )
+{
+	BitSet bitset( 64 );
+	bitset.set( Range<size_t>( 10, 10 ) );
+
+	REQUIRE( bitset.none() );
+}
+
+TEST_CASE( "BitSet reset(Range) clears bits", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.fill();
+	bitset.reset( Range<size_t>( 58, 70 ) );
+
+	REQUIRE( bitset.count() == 128 - 12 );
+	for ( size_t i = 58; i < 70; ++i )
+		REQUIRE_FALSE( bitset.test( i ) );
+	REQUIRE( bitset.test( 57 ) );
+	REQUIRE( bitset.test( 70 ) );
+}
+
+TEST_CASE( "BitSet reset(Range) empty range is no-op", "[util][math][bitset]" )
+{
+	BitSet bitset( 64 );
+	bitset.fill();
+	bitset.reset( Range<size_t>( 10, 10 ) );
+
+	REQUIRE( bitset.all() );
+}
+
+TEST_CASE( "BitSet set and reset RangeList", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	const RangeList<size_t> ranges = { Range<size_t>( 0, 10 ), Range<size_t>( 60, 70 ), Range<size_t>( 120, 128 ) };
+
+	bitset.set( ranges );
+
+	REQUIRE( bitset.count() == 10 + 10 + 8 );
+	REQUIRE( bitset.test( 0 ) );
+	REQUIRE( bitset.test( 9 ) );
+	REQUIRE( bitset.test( 60 ) );
+	REQUIRE( bitset.test( 69 ) );
+	REQUIRE( bitset.test( 120 ) );
+	REQUIRE( bitset.test( 127 ) );
+	REQUIRE_FALSE( bitset.test( 10 ) );
+	REQUIRE_FALSE( bitset.test( 59 ) );
+
+	bitset.reset( ranges );
+	REQUIRE( bitset.none() );
+}
+
+TEST_CASE( "BitSet test(Range) all bits set", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( Range<size_t>( 10, 80 ) );
+
+	REQUIRE( bitset.test( Range<size_t>( 10, 80 ) ) );
+	REQUIRE( bitset.test( Range<size_t>( 20, 60 ) ) );
+	REQUIRE_FALSE( bitset.test( Range<size_t>( 9, 80 ) ) );
+	REQUIRE_FALSE( bitset.test( Range<size_t>( 10, 81 ) ) );
+}
+
+TEST_CASE( "BitSet test(Range) across word boundary", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( Range<size_t>( 60, 70 ) );
+
+	REQUIRE( bitset.test( Range<size_t>( 60, 70 ) ) );
+	REQUIRE_FALSE( bitset.test( Range<size_t>( 59, 70 ) ) );
+	REQUIRE_FALSE( bitset.test( Range<size_t>( 60, 71 ) ) );
+}
+
+TEST_CASE( "BitSet test(Range) empty range returns false", "[util][math][bitset]" )
+{
+	BitSet bitset( 64 );
+	bitset.fill();
+
+	REQUIRE_FALSE( bitset.test( Range<size_t>( 10, 10 ) ) );
+}
+
+TEST_CASE( "BitSet test(RangeList)", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	const RangeList<size_t> ranges = { Range<size_t>( 0, 10 ), Range<size_t>( 60, 70 ) };
+	bitset.set( ranges );
+
+	REQUIRE( bitset.test( ranges ) );
+
+	bitset.reset( 5 );
+	REQUIRE_FALSE( bitset.test( ranges ) );
+}
+
+TEST_CASE( "BitSet any(Range) one bit set", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( 65 );
+
+	REQUIRE( bitset.any( Range<size_t>( 60, 70 ) ) );
+	REQUIRE_FALSE( bitset.any( Range<size_t>( 0, 65 ) ) );
+	REQUIRE_FALSE( bitset.any( Range<size_t>( 66, 80 ) ) );
+}
+
+TEST_CASE( "BitSet any(Range) across word boundary", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( 63 );
+
+	REQUIRE( bitset.any( Range<size_t>( 60, 70 ) ) );
+	REQUIRE( bitset.any( Range<size_t>( 0, 64 ) ) );
+	REQUIRE_FALSE( bitset.any( Range<size_t>( 64, 128 ) ) );
+}
+
+TEST_CASE( "BitSet any(Range) empty range returns false", "[util][math][bitset]" )
+{
+	BitSet bitset( 64 );
+	bitset.fill();
+
+	REQUIRE_FALSE( bitset.any( Range<size_t>( 10, 10 ) ) );
+}
+
+TEST_CASE( "BitSet any(RangeList)", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( 65 );
+
+	const RangeList<size_t> hit	 = { Range<size_t>( 0, 10 ), Range<size_t>( 60, 70 ) };
+	const RangeList<size_t> miss = { Range<size_t>( 0, 10 ), Range<size_t>( 70, 80 ) };
+
+	REQUIRE( bitset.any( hit ) );
+	REQUIRE_FALSE( bitset.any( miss ) );
+}
+
+TEST_CASE( "BitSet merge(Range)", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( 0 );
+	bitset.set( 127 );
+
+	const BitSet result = bitset.merge( Range<size_t>( 60, 70 ) );
+
+	REQUIRE( result.count() == 12 );
+	REQUIRE( result.test( 0 ) );
+	REQUIRE( result.test( 127 ) );
+	for ( size_t i = 60; i < 70; ++i )
+		REQUIRE( result.test( i ) );
+	REQUIRE( bitset.count() == 2 );
+}
+
+TEST_CASE( "BitSet mergeInPlace(Range)", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( 0 );
+
+	BitSet & ref = bitset.mergeInPlace( Range<size_t>( 60, 70 ) );
+
+	REQUIRE( &ref == &bitset );
+	REQUIRE( bitset.count() == 11 );
+	REQUIRE( bitset.test( 0 ) );
+	for ( size_t i = 60; i < 70; ++i )
+		REQUIRE( bitset.test( i ) );
+}
+
+TEST_CASE( "BitSet merge(RangeList)", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( 0 );
+
+	const RangeList<size_t> ranges = { Range<size_t>( 10, 20 ), Range<size_t>( 100, 110 ) };
+	const BitSet			result = bitset.merge( ranges );
+
+	REQUIRE( result.count() == 21 );
+	REQUIRE( result.test( 0 ) );
+	REQUIRE( result.test( 10 ) );
+	REQUIRE( result.test( 19 ) );
+	REQUIRE( result.test( 100 ) );
+	REQUIRE( result.test( 109 ) );
+}
+
+TEST_CASE( "BitSet intersect(Range) keeps only bits in range", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( 5 );
+	bitset.set( 65 );
+	bitset.set( 100 );
+
+	const BitSet result = bitset.intersect( Range<size_t>( 60, 70 ) );
+
+	REQUIRE( result.count() == 1 );
+	REQUIRE( result.test( 65 ) );
+	REQUIRE_FALSE( result.test( 5 ) );
+	REQUIRE_FALSE( result.test( 100 ) );
+}
+
+TEST_CASE( "BitSet intersectInPlace(Range) empty range clears all", "[util][math][bitset]" )
+{
+	BitSet bitset( 64 );
+	bitset.fill();
+
+	bitset.intersectInPlace( Range<size_t>( 10, 10 ) );
+
+	REQUIRE( bitset.none() );
+}
+
+TEST_CASE( "BitSet intersect(RangeList) keeps only bits in any range", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( 5 );
+	bitset.set( 65 );
+	bitset.set( 100 );
+
+	const RangeList<size_t> ranges = { Range<size_t>( 0, 10 ), Range<size_t>( 95, 110 ) };
+	const BitSet			result = bitset.intersect( ranges );
+
+	REQUIRE( result.count() == 2 );
+	REQUIRE( result.test( 5 ) );
+	REQUIRE( result.test( 100 ) );
+	REQUIRE_FALSE( result.test( 65 ) );
+}
+
+TEST_CASE( "BitSet subtract(Range)", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( Range<size_t>( 0, 128 ) );
+
+	const BitSet result = bitset.subtract( Range<size_t>( 60, 70 ) );
+
+	REQUIRE( result.count() == 118 );
+	for ( size_t i = 60; i < 70; ++i )
+		REQUIRE_FALSE( result.test( i ) );
+	REQUIRE( result.test( 59 ) );
+	REQUIRE( result.test( 70 ) );
+	REQUIRE( bitset.count() == 128 );
+}
+
+TEST_CASE( "BitSet subtractInPlace(Range)", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.fill();
+
+	BitSet & ref = bitset.subtractInPlace( Range<size_t>( 60, 70 ) );
+
+	REQUIRE( &ref == &bitset );
+	REQUIRE( bitset.count() == 118 );
+	for ( size_t i = 60; i < 70; ++i )
+		REQUIRE_FALSE( bitset.test( i ) );
+}
+
+TEST_CASE( "BitSet subtract(RangeList)", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.fill();
+
+	const RangeList<size_t> ranges = { Range<size_t>( 0, 10 ), Range<size_t>( 60, 70 ) };
+	const BitSet			result = bitset.subtract( ranges );
+
+	REQUIRE( result.count() == 108 );
+	for ( size_t i = 0; i < 10; ++i )
+		REQUIRE_FALSE( result.test( i ) );
+	for ( size_t i = 60; i < 70; ++i )
+		REQUIRE_FALSE( result.test( i ) );
+	REQUIRE( result.test( 10 ) );
+	REQUIRE( result.test( 59 ) );
+}
+
+TEST_CASE( "BitSet iterator empty bitset", "[util][math][bitset]" )
+{
+	const BitSet bitset( 128 );
+
+	REQUIRE( bitset.begin() == bitset.end() );
+
+	std::vector<size_t> values;
+	for ( const size_t idx : bitset )
+		values.push_back( idx );
+
+	REQUIRE( values.empty() );
+}
+
+TEST_CASE( "BitSet iterator single bit", "[util][math][bitset]" )
+{
+	BitSet bitset( 128 );
+	bitset.set( 42 );
+
+	std::vector<size_t> values;
+	for ( const size_t idx : bitset )
+		values.push_back( idx );
+
+	REQUIRE( values == std::vector<size_t> { 42 } );
+}
+
+TEST_CASE( "BitSet iterator matches forEachSetBit", "[util][math][bitset]" )
+{
+	BitSet bitset( 130 );
+	bitset.set( 0 );
+	bitset.set( 2 );
+	bitset.set( 63 );
+	bitset.set( 64 );
+	bitset.set( 65 );
+	bitset.set( 129 );
+
+	std::vector<size_t> fromIterator;
+	for ( const size_t idx : bitset )
+		fromIterator.push_back( idx );
+
+	std::vector<size_t> fromForEach;
+	bitset.forEachSetBit( [ & ]( const size_t idx ) { fromForEach.push_back( idx ); } );
+
+	REQUIRE( fromIterator == fromForEach );
+}
+
+TEST_CASE( "BitSet iterator ascending order across words", "[util][math][bitset]" )
+{
+	BitSet bitset( 200 );
+	bitset.set( 1 );
+	bitset.set( 63 );
+	bitset.set( 64 );
+	bitset.set( 127 );
+	bitset.set( 128 );
+	bitset.set( 199 );
+
+	const std::vector<size_t> expected = { 1, 63, 64, 127, 128, 199 };
+
+	std::vector<size_t> values;
+	for ( const size_t idx : bitset )
+		values.push_back( idx );
+
+	REQUIRE( values == expected );
+}
+
+TEST_CASE( "BitSet iterator on filled bitset", "[util][math][bitset]" )
+{
+	BitSet bitset( 10 );
+	bitset.fill();
+
+	std::vector<size_t> values;
+	for ( const size_t idx : bitset )
+		values.push_back( idx );
+
+	REQUIRE( values.size() == 10 );
+	for ( size_t i = 0; i < 10; ++i )
+		REQUIRE( values[ i ] == i );
 }

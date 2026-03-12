@@ -109,22 +109,22 @@ namespace VTX::App::Helper::System
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
 		{
-			return not visibility.atoms.isEmpty();
+			return visibility.atoms.any();
 		}
 
 		assert( p_index );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
 		{
-			return visibility.atoms.intersects( system.getChainAtomRange( *p_index ) );
+			return visibility.atoms.any( system.getChainAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
 		{
-			return visibility.atoms.intersects( system.getResidueAtomRange( *p_index ) );
+			return visibility.atoms.any( system.getResidueAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
 		{
-			return visibility.atoms.contains( *p_index );
+			return visibility.atoms.test( *p_index );
 		}
 		else
 		{
@@ -152,11 +152,11 @@ namespace VTX::App::Helper::System
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
 		{
-			return visibility.atoms.contains( system.getChainAtomRange( *p_index ) );
+			return visibility.atoms.test( system.getChainAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
 		{
-			return visibility.atoms.contains( system.getResidueAtomRange( *p_index ) );
+			return visibility.atoms.test( system.getResidueAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
 		{
@@ -181,22 +181,22 @@ namespace VTX::App::Helper::System
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
 		{
-			return not selection.atoms.isEmpty();
+			return selection.atoms.any();
 		}
 
 		assert( p_index );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
 		{
-			return selection.atoms.intersects( system.getChainAtomRange( *p_index ) );
+			return selection.atoms.any( system.getChainAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
 		{
-			return selection.atoms.intersects( system.getResidueAtomRange( *p_index ) );
+			return selection.atoms.any( system.getResidueAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
 		{
-			return selection.atoms.contains( *p_index );
+			return selection.atoms.test( *p_index );
 		}
 		else
 		{
@@ -224,11 +224,11 @@ namespace VTX::App::Helper::System
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
 		{
-			return selection.atoms.contains( system.getChainAtomRange( *p_index ) );
+			return selection.atoms.test( system.getChainAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
 		{
-			return selection.atoms.contains( system.getResidueAtomRange( *p_index ) );
+			return selection.atoms.test( system.getResidueAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
 		{

@@ -146,7 +146,7 @@ namespace VTX::Renderer::Geometry
 			}
 		}
 
-		void setVisibility( const Desc::Handle p_handle, const IndexRangeList & p_ranges )
+		void setVisibility( const Desc::Handle p_handle, const Util::Math::BitSet & p_visibility )
 		{
 			const Construction & cache = _construction.at( p_handle );
 
@@ -158,26 +158,11 @@ namespace VTX::Renderer::Geometry
 			auto & indiceBuffer = _indices( p_handle );
 			indiceBuffer.clear();
 
-			if ( p_ranges.isEmpty() )
-			{
-				return;
-			}
-
-			std::vector<bool> visible( p_ranges.getLast() + 1, false );
-			for ( Index i : p_ranges )
-			{
-				visible[ i ] = true;
-			}
-
 			for ( const auto & data : cache.residues )
 			{
 				const Index ca = data.ca;
-				if ( ca >= visible.size() )
-				{
-					continue;
-				}
 
-				if ( not visible[ ca ] )
+				if ( not p_visibility.test( ca ) )
 				{
 					continue;
 				}

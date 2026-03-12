@@ -161,10 +161,10 @@ namespace VTX::App::System
 		addTrajectory( p_entity, p_data );
 
 		// Visibillity: all visible.
-		visibility.atoms = Core::Struct::IndexRangeList( data.getAtomRange() );
+		visibility.atoms = Util::Math::BitSet( data.getAtomCount(), true );
 
 		// Selection: nothing selected.
-		selection.atoms = {};
+		selection.atoms = Util::Math::BitSet( data.getAtomCount() );
 
 		// Deleted: nothing deleted.
 		deleted.atoms = {};

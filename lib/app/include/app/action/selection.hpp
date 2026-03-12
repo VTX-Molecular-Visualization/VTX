@@ -31,7 +31,7 @@ namespace VTX::App::Action::Selection
 			auto &						 reg	   = REG();
 			auto &						 selection = reg.get<System::Selection>( p_ent );
 			Core::Struct::IndexRangeList atoms	   = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
-			Core::Struct::IndexRangeList current   = selection.atoms;
+			Util::Math::BitSet			 current   = selection.atoms;
 
 			if ( not p_append )
 			{
@@ -43,7 +43,7 @@ namespace VTX::App::Action::Selection
 			}
 			else
 			{
-				current.substractInPlace( atoms );
+				current.subtractInPlace( atoms );
 			}
 
 			if ( selection.atoms != current )

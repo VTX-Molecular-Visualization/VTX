@@ -1,7 +1,8 @@
 #ifndef __VTX_APP_SYSTEM_SELECTION__
 #define __VTX_APP_SYSTEM_SELECTION__
+
 #include <core/struct/system.hpp>
-#include <util/math/range_list.hpp>
+#include <util/math/bitset.hpp>
 
 namespace VTX::App::System
 {
@@ -14,7 +15,7 @@ namespace VTX::App::System
 		/**
 		 * @brief Selected atoms.
 		 */
-		Core::Struct::IndexRangeList atoms;
+		Util::Math::BitSet atoms;
 	};
 
 } // namespace VTX::App::System

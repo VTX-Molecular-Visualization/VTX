@@ -38,7 +38,7 @@ namespace VTX::App::Action::Visibility
 					}
 					else
 					{
-						p_visibility.atoms.substractInPlace( atoms );
+						p_visibility.atoms.subtractInPlace( atoms );
 					}
 				}
 			);
