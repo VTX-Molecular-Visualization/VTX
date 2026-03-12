@@ -1,6 +1,9 @@
 function(vtx_configure_target p_target)
 	if(CMAKE_COMPILER_IS_GNUCC)
 		target_compile_options(${p_target} PRIVATE -Wpedantic -Wall)
+		target_compile_options(${p_target} PRIVATE
+        	$<$<CONFIG:Release>:-O2 -march=native -ffast-math>
+    	)
 	elseif(MSVC)
 		# General.
 		target_compile_options(${p_target} PRIVATE 
@@ -14,7 +17,7 @@ function(vtx_configure_target p_target)
 		)
 		# Optimization.
 		target_compile_options(${p_target} PRIVATE 
-			$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:CXX>>:/O2 /Ob2 /Ot /Oi>
+			$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:CXX>>:/O2 /Ob2 /Ot /Oi /arch:AVX2>
 		)
 	endif()
 	
