@@ -20,9 +20,9 @@ namespace VTX::App::Events
 
 	struct UpdateAvailable
 	{
-		uint major;
-		uint minor;
-		uint patch;
+		std::string version;
+		std::string changelogMd;
+		std::string changelogHtml;
 	};
 
 	struct ApplicationError

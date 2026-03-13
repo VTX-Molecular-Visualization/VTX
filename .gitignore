@@ -3,6 +3,7 @@
 **/.vs/
 **/.vscode/
 **/.claude/
+**/.idea/
 **/Testing/
 /external_project/
 /RELEASE/

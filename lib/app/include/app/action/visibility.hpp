@@ -118,7 +118,6 @@ namespace VTX::App::Action::Visibility
 		}
 	};
 
-	// TODO: other elements.
 } // namespace VTX::App::Action::Visibility
 
 #endif

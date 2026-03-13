@@ -173,8 +173,6 @@ namespace VTX::App
 		HUB().trigger<Events::ApplicationStart>();
 
 		// Updater.
-		// UPDATER().onUpdateAvailable += []( const uint, const uint, const uint ) { UPDATER().downloadUpdate(); };
-
 		if ( not ECS::getCtx<Args>().has( ARG_NO_UPDATE ) )
 		{
 			_updater.checkForUpdate();

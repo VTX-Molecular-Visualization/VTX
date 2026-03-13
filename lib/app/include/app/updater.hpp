@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_VTX_UPDATER__
 #define __VTX_APP_VTX_UPDATER__
 
-#include <util/json/json.hpp>
-#include <util/network.hpp>
+#include <memory>
+#include <optional>
 
 namespace VTX::App
 {
@@ -13,6 +13,12 @@ namespace VTX::App
 	class Updater
 	{
 	  public:
+		/**
+		 * @brief Constructor.
+		 */
+		Updater();
+		~Updater();
+
 		/**
 		 * @brief Check for application update.
 		 */
@@ -25,9 +31,10 @@ namespace VTX::App
 
 	  private:
 		/**
-		 * @brief Distant JSON document containing release information.
+		 * @brief PImpl.
 		 */
-		Util::JSon::Document _document;
+		struct Impl;
+		std::unique_ptr<Impl> _impl;
 	};
 } // namespace VTX::App
 
