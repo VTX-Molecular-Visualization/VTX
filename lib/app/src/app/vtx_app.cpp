@@ -61,43 +61,33 @@ namespace VTX::App
 		VTX_INFO( ECS::getCtx<Args>().toString() );
 		SESSION().print();
 
-		try
-		{
-			// Store main event bus.
-			ECS::setCtx<Util::EventHub>();
-			// Store statistics.
-			ECS::setCtx<Util::Monitoring::Stats>();
-			// Store renderer.
-			ECS::setCtx<Renderer::Renderer>();
-			// Store action manager.
-			ECS::setCtx<Action::ActionManager>();
-			// Store input manager.
-			ECS::setCtx<Input::InputManager>();
-			// Store network manager.
-			ECS::setCtx<Network::NetworkManager>();
-			// Store settings manager.
-			ECS::setCtx<Settings::SettingsManager>();
-			// Store thread manager.
-			ECS::setCtx<Threading::ThreadManager>();
-			// Store uid manager.
-			ECS::setCtx<Uid::UIDManager>();
-			// Store pass manager.
-			ECS::setCtx<Pass::PassManager>();
-			// Store python interpretor.
-			ECS::setCtx<PythonBinding::Interpretor>();
+		// Store main event bus.
+		ECS::setCtx<Util::EventHub>();
+		// Store statistics.
+		ECS::setCtx<Util::Monitoring::Stats>();
+		// Store renderer.
+		ECS::setCtx<Renderer::Renderer>();
+		// Store action manager.
+		ECS::setCtx<Action::ActionManager>();
+		// Store input manager.
+		ECS::setCtx<Input::InputManager>();
+		// Store network manager.
+		ECS::setCtx<Network::NetworkManager>();
+		// Store settings manager.
+		ECS::setCtx<Settings::SettingsManager>();
+		// Store thread manager.
+		ECS::setCtx<Threading::ThreadManager>();
+		// Store uid manager.
+		ECS::setCtx<Uid::UIDManager>();
+		// Store pass manager.
+		ECS::setCtx<Pass::PassManager>();
+		// Store python interpretor.
+		ECS::setCtx<PythonBinding::Interpretor>();
 
-			// Load settings.
-			Settings::initSettings();
-			auto & settings = SETTINGS();
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "Exception during context initialization: {}", p_e.what() );
-		}
-		catch ( ... )
-		{
-			VTX_ERROR( "Unknown exception during context initialization" );
-		}
+		// Load settings.
+		Settings::initSettings();
+
+		VTX_INFO( "VTXApp constructed" );
 	}
 
 	VTXApp::~VTXApp()
@@ -141,7 +131,9 @@ namespace VTX::App
 		{
 			try
 			{
+				VTX_TRACE( "Set openGL" );
 				renderer.setOpenGL( SESSION().getShadersDir() );
+				VTX_TRACE( "Set openGL ok" );
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -155,6 +147,7 @@ namespace VTX::App
 		}
 
 		// Initialize python interpretor.
+		/*
 		INTERPRETOR().subscribe(
 			[]( VTX::PythonBinding::Interpretor & p_interpretor )
 			{
@@ -162,6 +155,7 @@ namespace VTX::App
 				p_interpretor.add( VTX::App::PythonBinding::RunScript() );
 			}
 		);
+		*/
 		VTX_INFO( "Python interpretor initialized" );
 
 		// Create default presets.
@@ -206,7 +200,7 @@ namespace VTX::App
 		// Updater.
 		if ( not ARGS().has( ARG_NO_UPDATE ) )
 		{
-			SESSION().checkForUpdate();
+			// SESSION().checkForUpdate();
 		}
 	}
 

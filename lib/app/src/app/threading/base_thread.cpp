@@ -1,5 +1,6 @@
 #include "app/threading/base_thread.hpp"
 #include "app/threading/thread_manager.hpp"
+#include <util/logger.hpp>
 #include <util/math.hpp>
 
 namespace VTX::App::Threading
@@ -15,7 +16,14 @@ namespace VTX::App::Threading
 		_thread = std::jthread(
 			[ this, p_function ]()
 			{
-				p_function( *this );
+				try
+				{
+					p_function( *this );
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( "Unhandled exception in thread: {}", p_e.what() );
+				}
 				_finish();
 			}
 		);
@@ -25,7 +33,14 @@ namespace VTX::App::Threading
 		_thread = std::jthread(
 			[ this, p_function ]( std::stop_token p_stopToken )
 			{
-				p_function( std::move( p_stopToken ), *this );
+				try
+				{
+					p_function( std::move( p_stopToken ), *this );
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( "Unhandled exception in thread: {}", p_e.what() );
+				}
 				_finish();
 			}
 		);
@@ -35,7 +50,15 @@ namespace VTX::App::Threading
 		_thread = std::jthread(
 			[ this, p_function, p_callback ]()
 			{
-				const uint res = p_function( *this );
+				uint res = 0;
+				try
+				{
+					res = p_function( *this );
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( "Unhandled exception in thread: {}", p_e.what() );
+				}
 
 				if ( _stopped )
 				{
@@ -52,7 +75,15 @@ namespace VTX::App::Threading
 		_thread = std::jthread(
 			[ this, p_function, p_callback ]( std::stop_token p_stopToken )
 			{
-				const uint res = p_function( std::move( p_stopToken ), *this );
+				uint res = 0;
+				try
+				{
+					res = p_function( std::move( p_stopToken ), *this );
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( "Unhandled exception in thread: {}", p_e.what() );
+				}
 
 				if ( _stopped )
 				{

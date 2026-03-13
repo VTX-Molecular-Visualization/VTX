@@ -108,7 +108,7 @@ namespace VTX::PythonBinding
 				throw;
 			}
 			PyConfig_Clear( &config );
-			VTX_INFO( "PY - Interpretor Created." );
+			VTX_DEBUG( "PY - Interpretor Created." );
 			return std::move( interpetor.value() );
 		}
 	} // namespace

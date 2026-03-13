@@ -100,7 +100,7 @@ int main( int p_argc, char * p_argv[] )
 	catch ( const std::exception & p_e )
 	{
 		const std::string error = p_e.what();
-		VTX_ERROR( "Unhandled exception: {}", error );
+		std::cerr << "Unhandled exception: " << error;
 		return EXIT_FAILURE;
 	}
 }

@@ -3,6 +3,8 @@
 
 #include <entt/entt.hpp>
 #include <iostream>
+#include <util/hashing.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::App::ECS
 {
@@ -36,6 +38,7 @@ namespace VTX::App::ECS
 	template<class T, class... Args>
 	T & setCtx( Args &&... p_args )
 	{
+		VTX_TRACE( "Adding service {}", Util::typeName<T>() );
 		return registry().ctx().emplace<T>( std::forward<Args>( p_args )... );
 	}
 
@@ -45,6 +48,7 @@ namespace VTX::App::ECS
 	template<class T>
 	bool eraseCtx()
 	{
+		VTX_TRACE( "Removing service {}", Util::typeName<T>() );
 		return registry().ctx().erase<T>();
 	}
 
