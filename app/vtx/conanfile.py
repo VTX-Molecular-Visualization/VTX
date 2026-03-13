@@ -34,7 +34,7 @@ class VTXRecipe(ConanFile):
         
     def generate(self):
         tc = CMakeToolchain(self)
-        versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
+        versionMajor, versionMinor, versionPatch = map(int, str(self.dependencies["vtx_app"].options.version).split('.'))
         tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
         tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor
         tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 

@@ -34,7 +34,6 @@ install(DIRECTORY $<TARGET_FILE_DIR:vtx>/shaders DESTINATION .)
 install(DIRECTORY $<TARGET_FILE_DIR:vtx>/python_script DESTINATION .)
 install(DIRECTORY $<TARGET_FILE_DIR:vtx>/external DESTINATION .)
 # Data from VTX.
-install(DIRECTORY data DESTINATION .)
 install(FILES README.md DESTINATION .)
 install(FILES CHANGELOG.md DESTINATION .)
 install(FILES license.txt DESTINATION .)
@@ -104,18 +103,5 @@ endif()
 #    message(WARNING "Certaines dépendances n'ont pas pu être résolues : ${unresolved_deps}")
 #  endif()
 #]])
-
-set(CPACK_PACKAGE_NAME "VTX")
-set(CPACK_PACKAGE_VENDOR "VTX dev team")
-set(CPACK_PACKAGE_VERSION_MAJOR "${VTX_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${VTX_VERSION_MINOR}")
-set(CPACK_PACKAGE_VERSION_PATCH "${VTX_VERSION_PATCH}")
-set(CPACK_PACKAGE_EXECUTABLES "vtx" "VTX" )
-set(CPACK_NSIS_MENU_LINKS "vtx.exe" "VTX")
-  
-set(CPACK_NSIS_INSTALL_ROOT "$LOCALAPPDATA")
-# Create deskktop shortcut.
-#set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "CreateShortCut '$DESKTOP/VTX.lnk' '$INSTDIR/vtx.exe' '' '' 'open' 0")
-
 
 include(CPack)

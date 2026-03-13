@@ -93,7 +93,7 @@ jobs:
         conan export lib/util
         conan export tool/example
         conan export tool/mdprep
-        conan create app/vtx -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -o vtx/*:version=${{env.VERSION}} -o vtx_app/*:version=${{env.VERSION}} -o vtx/*:tool_example=${{env.TOOL_EXAMPLE}} -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} -o vtx_renderer/*:cuda_arch="${{env.CUDA_ARCH}}" -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
+        conan create app/vtx -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -o vtx_app/*:version=${{env.VERSION}} -o vtx/*:tool_example=${{env.TOOL_EXAMPLE}} -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} -o vtx_renderer/*:cuda_arch="${{env.CUDA_ARCH}}" -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
 
     - name: Read package path from output.json
       id: read_package_path
