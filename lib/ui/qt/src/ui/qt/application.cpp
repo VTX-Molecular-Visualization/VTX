@@ -10,8 +10,8 @@
 #include <QActionGroup>
 #include <QApplication>
 #include <app/ecs.hpp>
-#include <app/infos.hpp>
 #include <app/services.hpp>
+#include <app/session.hpp>
 #include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
 

@@ -11,6 +11,8 @@
 
 namespace
 {
+	constexpr std::string_view NAME = "vtx_logger";
+
 	std::string pointTimeToStr( const std::chrono::system_clock::time_point & p_timePoint )
 	{
 		const std::string timePointStr( fmt::format( "{:%T}", p_timePoint ) );
@@ -19,15 +21,11 @@ namespace
 
 	VTX::Util::LogInfo spdLogLogMsgToLogInfo( const spdlog::details::log_msg & p_msg )
 	{
-		return {
-			VTX::Util::LOG_LEVEL( int( p_msg.level ) ),
-			pointTimeToStr( p_msg.time ),
-			std::string_view(
-				p_msg.payload.begin(), std::distance( p_msg.payload.begin(), p_msg.payload.end() )
-			) // the string_view(begin, end) ctor doesn't seem to exist on apple clang (both v14 and v15). So for now we
-			  // are forced to used a work around.
-		};
+		return { VTX::Util::LOG_LEVEL( int( p_msg.level ) ),
+				 pointTimeToStr( p_msg.time ),
+				 std::string( p_msg.payload.begin(), p_msg.payload.end() ) };
 	}
+
 } // namespace
 
 namespace VTX::Util
@@ -40,24 +38,25 @@ namespace VTX::Util
 
 			// Console sink.
 			auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-			consoleSink->set_level( p_debug ? spdlog::level::trace : spdlog::level::info );
 
 			// File sink.
 			auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
 				( p_logDir / ( std::to_string( Chrono::getTimestamp() ) + ".log" ) ).string()
 			);
-			fileSink->set_level( spdlog::level::trace );
 
+			// Callback sink.
 			auto callbackSink = std::make_shared<spdlog::sinks::callback_sink_mt>(
 				[]( const spdlog::details::log_msg & p_msg ) { onPrintLog( spdLogLogMsgToLogInfo( p_msg ) ); }
 			);
 
+			consoleSink->set_level( p_debug ? spdlog::level::trace : spdlog::level::info );
+			fileSink->set_level( spdlog::level::trace );
 			callbackSink->set_level( p_debug ? spdlog::level::debug : spdlog::level::info );
 
 			// Logger.
 			std::vector<spdlog::sink_ptr> sinks { consoleSink, fileSink, callbackSink };
 			auto						  logger = std::make_shared<spdlog::async_logger>(
-				 "vtx_logger", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block
+				 NAME.data(), sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block
 			 );
 			logger->set_pattern( "[%t] [%H:%M:%S] [%^%l%$] %v" );
 			logger->set_level( spdlog::level::trace );
@@ -73,7 +72,14 @@ namespace VTX::Util
 		}
 	}
 
-	void Logger::flush() { spdlog::flush_on( spdlog::level::trace ); }
+	void Logger::flush()
+	{
+		if ( auto logger = spdlog::get( NAME.data() ) )
+		{
+			logger->flush();
+		}
+	}
+
 	void Logger::stop()
 	{
 		flush();

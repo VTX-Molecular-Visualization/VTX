@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <util/color/rgba.hpp>
+#include <util/filesystem.hpp>
 #include <util/fmt/glm.hpp>
 #include <util/fmt/range.hpp>
 #include <util/fmt/rgba.hpp>

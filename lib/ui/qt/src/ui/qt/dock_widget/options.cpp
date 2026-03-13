@@ -16,9 +16,9 @@
 #include <QPushButton>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
-#include <app/filesystem.hpp>
 #include <app/network/network_manager.hpp>
 #include <app/services.hpp>
+#include <app/session.hpp>
 #include <util/enum.hpp>
 #include <util/event_hub.hpp>
 #include <util/string.hpp>
@@ -196,7 +196,7 @@ namespace VTX::UI::QT::DockWidget
 		auto * buttonClearCache	  = new ActionablePushButton( Application::getAction<Option::Cache::Clear>(), this );
 		auto * buttonRefreshCache = new ActionablePushButton( Application::getAction<Option::Cache::Refresh>(), this );
 
-		const FilePath cachePath = App::Filesystem::getCacheDir();
+		const FilePath cachePath = App::SESSION().getCacheDir();
 		connect(
 			buttonOpenCache,
 			&QPushButton::clicked,
@@ -262,7 +262,7 @@ namespace VTX::UI::QT::DockWidget
 
 	void Options::_refreshCacheInfos()
 	{
-		const FilePath		cachePath = App::Filesystem::getCacheDir();
+		const FilePath		cachePath = App::SESSION().getCacheDir();
 		const QDir			cacheDir( cachePath );
 		const uint			fileCount = cacheDir.entryList( QDir::Files ).size();
 		const QFileInfoList list	  = cacheDir.entryInfoList();

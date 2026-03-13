@@ -9,7 +9,7 @@
 #include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <app/action/scene.hpp>
-#include <app/filesystem.hpp>
+#include <app/session.hpp>
 
 namespace
 {
@@ -80,7 +80,7 @@ namespace VTX::UI::QT::Dialog
 				if ( pdb.length() == 4 )
 				{
 					FilePath path
-						= App::Filesystem::getCacheDir() / ( pdb + VTX::Util::Url::rcsbPdbDownloadFileExtension() );
+						= App::SESSION().getCacheDir() / ( pdb + VTX::Util::Url::rcsbPdbDownloadFileExtension() );
 					if ( std::filesystem::exists( path ) )
 					{
 						// Show radio buttons.
@@ -107,7 +107,7 @@ namespace VTX::UI::QT::Dialog
 				_url = _comboBoxURL->currentText().trimmed();
 				_pdb = _comboBoxPDB->currentText().trimmed();
 
-				FilePath path = App::Filesystem::getCacheDir()
+				FilePath path = App::SESSION().getCacheDir()
 								/ ( _pdb.toStdString() + VTX::Util::Url::rcsbPdbDownloadFileExtension() );
 				if ( std::filesystem::exists( path ) and _radioButtonOpen->isChecked() )
 				{

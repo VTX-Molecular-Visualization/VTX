@@ -9,7 +9,6 @@
 #include "app/action/representation.hpp"
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
-#include "app/filesystem.hpp"
 #include "app/input/input_manager.hpp"
 #include "app/network/network_manager.hpp"
 #include "app/pass/camera_updater.hpp"
@@ -22,6 +21,7 @@
 #include "app/python_binding/run_script.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
+#include "app/session.hpp"
 #include "app/settings/settings.hpp"
 #include "app/settings/settings_manager.hpp"
 #include "app/threading/thread_manager.hpp"
@@ -54,6 +54,11 @@ namespace VTX::App
 
 		// Store args.
 		ECS::setCtx<Args>( p_args );
+		// Session.
+		ECS::setCtx<Session>();
+		// Logger.
+		LOGGER::init( SESSION().getLogsDir(), p_args.has( ARG_DEBUG ) );
+
 		// Store main event bus.
 		ECS::setCtx<Util::EventHub>();
 		// Store statistics.
@@ -92,7 +97,11 @@ namespace VTX::App
 		);
 	}
 
-	VTXApp::~VTXApp() { ECS::removeCtx<PythonBinding::Interpretor>(); }
+	VTXApp::~VTXApp()
+	{
+		ECS::removeCtx<PythonBinding::Interpretor>();
+		LOGGER().stop();
+	}
 
 	void VTXApp::start()
 	{
@@ -120,7 +129,7 @@ namespace VTX::App
 		{
 			try
 			{
-				renderer.setOpenGL( Filesystem::getShadersDir() );
+				renderer.setOpenGL( SESSION().getShadersDir() );
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -173,9 +182,9 @@ namespace VTX::App
 		HUB().trigger<Events::ApplicationStart>();
 
 		// Updater.
-		if ( not ECS::getCtx<Args>().has( ARG_NO_UPDATE ) )
+		if ( not ARGS().has( ARG_NO_UPDATE ) )
 		{
-			_updater.checkForUpdate();
+			SESSION().checkForUpdate();
 		}
 	}
 

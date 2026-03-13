@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
 // logger.hpp

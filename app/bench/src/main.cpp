@@ -4,6 +4,7 @@
 #include <iostream>
 #include <renderer/graphics_config.hpp>
 #include <renderer/renderer.hpp>
+#include <util/filesystem.hpp>
 #include <util/math/aabb.hpp>
 
 #ifdef _WIN32
@@ -24,10 +25,11 @@ int main( int, char ** )
 	using namespace Bench;
 
 	bool isRunning = true;
-	LOGGER::init( Filesystem::getExecutableDir() / "logs", true );
 
 	try
 	{
+		LOGGER::init( Filesystem::getExecutableDir() / "logs", true );
+
 		// Scene.
 		Scene	 scene( WIDTH, HEIGHT );
 		Camera & camera = scene.getCamera();
@@ -140,7 +142,7 @@ int main( int, char ** )
 		float fZeroOne	= 0.1f;
 		float fZeroFive = 0.5f;
 
-		//Renderer::Representation representation;
+		// Renderer::Representation representation;
 
 		/*
 		representation.set( 0, bTrue );

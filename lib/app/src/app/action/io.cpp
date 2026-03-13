@@ -3,10 +3,10 @@
 #include "app/action/application.hpp"
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
-#include "app/filesystem.hpp"
 #include "app/network/network_manager.hpp"
 #include "app/python_binding/interpretor.hpp"
 #include "app/services.hpp"
+#include "app/session.hpp"
 #include "app/system/load.hpp"
 #include "app/system/metadata.hpp"
 #include "app/system/trajectory_preparation.hpp"
@@ -132,7 +132,7 @@ namespace VTX::App::Action::IO
 	void Snapshot::execute()
 	{
 		execute(
-			Filesystem::getSnapshotsDir() / std::to_string( Util::Chrono::getTimestamp() ),
+			SESSION().getSnapshotsDir() / std::to_string( Util::Chrono::getTimestamp() ),
 			Util::Image::E_FORMAT::PNG,
 			RENDERER().width(),
 			RENDERER().height()

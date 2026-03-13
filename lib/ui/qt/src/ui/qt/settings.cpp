@@ -1,4 +1,5 @@
-#include <app/filesystem.hpp>
+#include <app/services.hpp>
+#include <app/session.hpp>
 #include <ui/qt/settings.hpp>
 #include <util/enum.hpp>
 #include <util/logger.hpp>
@@ -7,7 +8,7 @@ namespace VTX::UI::QT
 {
 
 	Settings::Settings() :
-		QSettings( QString::fromStdString( App::Filesystem::getConfigIniFile().string() ), QSettings::IniFormat )
+		QSettings( QString::fromStdString( App::SESSION().getConfigIniFile().string() ), QSettings::IniFormat )
 	{
 		VTX_DEBUG( "Loading settings: {}", fileName().toStdString() );
 	}

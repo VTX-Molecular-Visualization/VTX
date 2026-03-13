@@ -6,29 +6,55 @@
 
 namespace VTX::Util::Filesystem
 {
-	// Return path to executable
+	/**
+	 * @brief Return path to the executable folder.
+	 */
 	FilePath getExecutableDir();
 
-	// Return path to the executable
+	/**
+	 * @brief Return path to the executable file.
+	 */
 	FilePath getExecutable();
 
-	// Return path to user data directory
-	FilePath getUserDataDir();
+	/**
+	 * @brief Get local directories.
+	 */
+	FilePath getConfigHome();
+	FilePath getDataHome();
+	FilePath getStateDir();
+	FilePath getCacheDir();
+	FilePath getDocumentsFolder();
+	FilePath getDesktopFolder();
+	FilePath getPicturesFolder();
+	FilePath getMusicFolder();
+	FilePath getVideoFolder();
+	FilePath getDownloadFolder();
+	FilePath getSaveGamesFolder1();
+	FilePath getSaveGamesFolder2();
 
-	// Read file at path and return content as a string
+	/**
+	 * @brief Read content of file at path.
+	 */
 	const std::string readPath( const FilePath & p_filePath );
 
-	// Write content to file at path. If file already exists, it will be overwritten.
+	/**
+	 * @brief Write content to file at path (override if exist).
+	 */
 	void writeFile( const FilePath & p_filePath, const std::string & p_content );
 
-	// Remove all files at path (if directory, remove all file in it, if file, remove all sibling files)
+	/**
+	 * @brief Remove file or directory at path (recursively).
+	 */
 	void removeAll( const FilePath & p_filePath );
 
-	// Ensure that p_filepath will not have the name of any other file in its directory (rename it if there is a file
-	// with the same name)
+	/**
+	 * @brief If file at path already exists, generate a new name.
+	 */
 	void generateUniqueFileName( FilePath & p_filePath );
 
-	// Clean destination and copy directory p_filePathSrc at path p_filePathDestination recursively
+	/**
+	 * @brief Copy directory from source to destination (override if exist).
+	 */
 	void copyDirectory( const FilePath & p_filePathSrc, const FilePath & p_filePathDestination );
 
 } // namespace VTX::Util::Filesystem

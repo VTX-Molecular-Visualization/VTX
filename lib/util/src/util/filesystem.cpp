@@ -47,11 +47,18 @@ namespace VTX::Util::Filesystem
 #endif
 	}
 
-	FilePath getUserDataDir()
-	{
-		// TODO.
-		return getExecutableDir();
-	}
+	FilePath getConfigHome() { return FilePath( sago::getConfigHome() ); }
+	FilePath getDataHome() { return FilePath( sago::getDataHome() ); }
+	FilePath getStateDir() { return FilePath( sago::getStateDir() ); }
+	FilePath getCacheDir() { return FilePath( sago::getCacheDir() ); }
+	FilePath getDocumentsFolder() { return FilePath( sago::getDocumentsFolder() ); }
+	FilePath getDesktopFolder() { return FilePath( sago::getDesktopFolder() ); }
+	FilePath getPicturesFolder() { return FilePath( sago::getPicturesFolder() ); }
+	FilePath getMusicFolder() { return FilePath( sago::getMusicFolder() ); }
+	FilePath getVideoFolder() { return FilePath( sago::getVideoFolder() ); }
+	FilePath getDownloadFolder() { return FilePath( sago::getDownloadFolder() ); }
+	FilePath getSaveGamesFolder1() { return FilePath( sago::getSaveGamesFolder1() ); }
+	FilePath getSaveGamesFolder2() { return FilePath( sago::getSaveGamesFolder2() ); }
 
 	const std::string readPath( const FilePath & p_filePath )
 	{

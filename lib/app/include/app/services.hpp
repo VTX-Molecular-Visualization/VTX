@@ -9,7 +9,6 @@
 namespace VTX::App
 {
 	class Args;
-
 	namespace Action
 	{
 		class ActionManager;
@@ -30,6 +29,7 @@ namespace VTX::App
 	{
 		class Interpretor;
 	}
+	class Session;
 	namespace Settings
 	{
 		class SettingsManager;
@@ -90,6 +90,10 @@ namespace VTX::App
 	 * @brief Network manager.
 	 */
 	inline Network::NetworkManager & NETWORK() { return ECS::getCtx<Network::NetworkManager>(); }
+	/**
+	 * @brief Runtime session.
+	 */
+	inline Session & SESSION() { return ECS::getCtx<Session>(); }
 	/**
 	 * @brief Settings manager.
 	 */

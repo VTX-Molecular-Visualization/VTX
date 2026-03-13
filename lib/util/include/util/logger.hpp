@@ -1,13 +1,13 @@
 #ifndef __VTX_UTIL_LOGGER__
 #define __VTX_UTIL_LOGGER__
 
-#include "filesystem.hpp"
 #include <iostream>
 #include <memory>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <string_view>
 #include <util/callback.hpp>
+#include <util/types.hpp>
 
 namespace VTX
 {
@@ -28,18 +28,20 @@ namespace VTX
 		// Log info sent by callback
 		struct LogInfo
 		{
-			LOG_LEVEL		 level;
-			std::string		 date;
-			std::string_view message;
+			LOG_LEVEL	level;
+			std::string date;
+			std::string message;
 		};
 
 		class Logger final
 		{
 		  public:
-			Logger() { std::cout << "Logger created" << std::endl; }
-			~Logger() { std::cout << "Logger destroyed" << std::endl; }
+			static void init( const FilePath & p_logPath, const bool p_debug = false );
 
-			static void init( const FilePath & p_logPath = Filesystem::getExecutableDir(), const bool p_debug = false );
+			static void log( const LOG_LEVEL p_logLevel, std::string_view p_msg )
+			{
+				spdlog::log( spdlog::level::level_enum( p_logLevel ), p_msg );
+			}
 
 			template<typename... Args>
 			static void log( const LOG_LEVEL p_logLevel, const fmt::format_string<Args...> p_fmt, Args &&... p_args )
@@ -59,54 +61,66 @@ namespace VTX
 
 	using LOGGER = Util::Logger;
 
+	inline void VTX_LOG( const Util::LOG_LEVEL p_level, std::string_view p_msg ) { LOGGER::log( p_level, p_msg ); }
 	template<typename... Args>
 	inline void VTX_LOG( const Util::LOG_LEVEL p_level, const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
 		LOGGER::log( p_level, p_fmt, std::forward<Args>( p_args )... );
 	}
 
+	inline void VTX_TRACE( const std::string_view p_msg ) { LOGGER::log( Util::LOG_LEVEL::LOG_TRACE, p_msg ); }
 	template<typename... Args>
 	inline void VTX_TRACE( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_TRACE, p_fmt, std::forward<Args>( p_args )... );
 	}
 
+	inline void VTX_DEBUG( const std::string_view p_msg ) { LOGGER::log( Util::LOG_LEVEL::LOG_DEBUG, p_msg ); }
 	template<typename... Args>
 	inline void VTX_DEBUG( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_DEBUG, p_fmt, std::forward<Args>( p_args )... );
 	}
 
+	inline void VTX_INFO( const std::string_view p_msg ) { LOGGER::log( Util::LOG_LEVEL::LOG_INFO, p_msg ); }
 	template<typename... Args>
 	inline void VTX_INFO( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_INFO, p_fmt, std::forward<Args>( p_args )... );
 	}
 
+	inline void VTX_WARNING( const std::string_view p_msg ) { LOGGER::log( Util::LOG_LEVEL::LOG_WARNING, p_msg ); }
 	template<typename... Args>
 	inline void VTX_WARNING( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_WARNING, p_fmt, std::forward<Args>( p_args )... );
 	}
 
+	inline void VTX_ERROR( const std::string_view p_msg ) { LOGGER::log( Util::LOG_LEVEL::LOG_ERROR, p_msg ); }
 	template<typename... Args>
 	inline void VTX_ERROR( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_ERROR, p_fmt, std::forward<Args>( p_args )... );
 	}
 
+	inline void VTX_CRITICAL( const std::string_view p_msg ) { LOGGER::log( Util::LOG_LEVEL::LOG_CRITICAL, p_msg ); }
 	template<typename... Args>
 	inline void VTX_CRITICAL( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_CRITICAL, p_fmt, std::forward<Args>( p_args )... );
 	}
 
+	inline void VTX_PYTHON_IN( const std::string_view p_msg ) { LOGGER::log( Util::LOG_LEVEL::LOG_PYTHON_IN, p_msg ); }
 	template<typename... Args>
 	inline void VTX_PYTHON_IN( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_PYTHON_IN, p_fmt, std::forward<Args>( p_args )... );
 	}
 
+	inline void VTX_PYTHON_OUT( const std::string_view p_msg )
+	{
+		LOGGER::log( Util::LOG_LEVEL::LOG_PYTHON_OUT, p_msg );
+	}
 	template<typename... Args>
 	inline void VTX_PYTHON_OUT( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{

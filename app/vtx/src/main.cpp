@@ -1,7 +1,4 @@
-#include <app/filesystem.hpp>
 #include <string>
-#include <util/filesystem.hpp>
-#include <util/logger.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -51,8 +48,6 @@ int main( int p_argc, char * p_argv[] )
 		}
 #endif
 
-		LOGGER::init( VTX::App::Filesystem::getLogsDir(), debug );
-
 		std::unique_ptr<App::VTXApp> app;
 #if VTX_UI_QT
 		if ( not args.has( App::ARG_NO_GUI ) )
@@ -91,26 +86,15 @@ int main( int p_argc, char * p_argv[] )
 		Q_INIT_RESOURCE( vtx_qt_resources_tool_mdprep );
 #endif
 #endif
-
-		// const FilePath molPath = App::Filesystem::getInternalDataDir() / "1AGA.mmtf";
-		// const FilePath molPath = "1AGA";
-		// args.add( molPath.string() );
-		const std::string	moleculeName	 = "2ama_1_npt";
-		const std::string	moleculePathname = moleculeName + ".trr";
-		const VTX::FilePath moleculePath	 = VTX::Util::Filesystem::getExecutableDir() / "data\\" / moleculePathname;
-		// args.add( moleculePath.string() );
-
 		// Starting main application loop.
 		app->start();
 
-		LOGGER::stop();
 		return EXIT_SUCCESS;
 	}
 	catch ( const std::exception & p_e )
 	{
 		const std::string error = p_e.what();
 		VTX_ERROR( "Unhandled exception: {}", error );
-		LOGGER::stop();
 		return EXIT_FAILURE;
 	}
 }

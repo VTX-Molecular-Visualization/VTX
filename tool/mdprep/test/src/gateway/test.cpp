@@ -6,7 +6,6 @@
 #include <app/application/scene.hpp>
 #include <app/component/chemistry/system.hpp>
 */
-#include <app/filesystem.hpp>
 #include <app/fixture.hpp>
 #include <app/vtx_app.hpp>
 #include <string>

@@ -1,5 +1,6 @@
 #include "app/helper/chemistry.hpp"
-#include <app/filesystem.hpp>
+#include "app/services.hpp"
+#include "app/session.hpp"
 #include <io/reader/residue_data_reader.hpp>
 
 namespace VTX::App::Helper::Chemistry
@@ -64,7 +65,7 @@ namespace VTX::App::Helper::Chemistry
 		IO::Struct::ResidueData		  residueData;
 
 		if ( reader.readResidueData(
-				 Filesystem::getResidueDataFilePath( p_residueSymbol ), p_residueSymbol, residueData
+				 SESSION().getResidueDataFilePath( p_residueSymbol ), p_residueSymbol, residueData
 			 ) )
 			mapLoadedResidueData.emplace( p_residueSymbol, residueData );
 		else

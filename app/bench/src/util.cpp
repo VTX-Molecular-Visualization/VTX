@@ -1,5 +1,6 @@
 #include "util.hpp"
 #include <io/reader/system.hpp>
+#include <util/filesystem.hpp>
 #include <util/network.hpp>
 
 namespace VTX::Bench

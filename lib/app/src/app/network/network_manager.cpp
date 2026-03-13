@@ -1,5 +1,7 @@
 #include "app/network/network_manager.hpp"
-#include "app/filesystem.hpp"
+#include "app/services.hpp"
+#include "app/session.hpp"
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Network
@@ -20,7 +22,7 @@ namespace VTX::App::Network
 		Util::Network::httpRequestGet( p_url, text );
 
 		// Save to cache.
-		Util::Filesystem::writeFile( Filesystem::getCacheDir() / filepath, text );
+		Util::Filesystem::writeFile( SESSION().getCacheDir() / filepath, text );
 		onFileCached();
 		p_callback( std::move( text ) );
 	}
