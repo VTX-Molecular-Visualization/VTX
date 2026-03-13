@@ -50,7 +50,7 @@ namespace VTX::App
 		Velopack::VelopackApp::Build().Run();
 
 		// Set global registry.
-		ECS ::setRegistry( _registry );
+		ECS::setRegistry( _registry );
 
 		// Store args.
 		ECS::setCtx<Args>( p_args );
@@ -61,32 +61,43 @@ namespace VTX::App
 		VTX_INFO( ECS::getCtx<Args>().toString() );
 		SESSION().print();
 
-		// Store main event bus.
-		ECS::setCtx<Util::EventHub>();
-		// Store statistics.
-		ECS::setCtx<Util::Monitoring::Stats>();
-		// Store renderer.
-		ECS::setCtx<Renderer::Renderer>();
-		// Store action manager.
-		ECS::setCtx<Action::ActionManager>();
-		// Store input manager.
-		ECS::setCtx<Input::InputManager>();
-		// Store network manager.
-		ECS::setCtx<Network::NetworkManager>();
-		// Store settings manager.
-		ECS::setCtx<Settings::SettingsManager>();
-		// Store thread manager.
-		ECS::setCtx<Threading::ThreadManager>();
-		// Store uid manager.
-		ECS::setCtx<Uid::UIDManager>();
-		// Store pass manager.
-		ECS::setCtx<Pass::PassManager>();
-		// Store python interpretor.
-		ECS::setCtx<PythonBinding::Interpretor>();
+		try
+		{
+			// Store main event bus.
+			ECS::setCtx<Util::EventHub>();
+			// Store statistics.
+			ECS::setCtx<Util::Monitoring::Stats>();
+			// Store renderer.
+			ECS::setCtx<Renderer::Renderer>();
+			// Store action manager.
+			ECS::setCtx<Action::ActionManager>();
+			// Store input manager.
+			ECS::setCtx<Input::InputManager>();
+			// Store network manager.
+			ECS::setCtx<Network::NetworkManager>();
+			// Store settings manager.
+			ECS::setCtx<Settings::SettingsManager>();
+			// Store thread manager.
+			ECS::setCtx<Threading::ThreadManager>();
+			// Store uid manager.
+			ECS::setCtx<Uid::UIDManager>();
+			// Store pass manager.
+			ECS::setCtx<Pass::PassManager>();
+			// Store python interpretor.
+			ECS::setCtx<PythonBinding::Interpretor>();
 
-		// Load settings.
-		Settings::initSettings();
-		auto & settings = SETTINGS();
+			// Load settings.
+			Settings::initSettings();
+			auto & settings = SETTINGS();
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Exception during context initialization: {}", p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Unknown exception during context initialization" );
+		}
 	}
 
 	VTXApp::~VTXApp()

@@ -27,7 +27,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 #set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
 include(InstallRequiredSystemLibraries)
-
+install(FILES ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
 install(TARGETS vtx DESTINATION .)
 # Data from other libs.
 install(DIRECTORY $<TARGET_FILE_DIR:vtx>/shaders DESTINATION .)
