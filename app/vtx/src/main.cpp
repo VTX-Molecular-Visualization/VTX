@@ -19,6 +19,7 @@
 #endif
 
 #ifdef _WIN32
+#include <windows.h>
 // Force high performance GPU on Windows.
 extern "C"
 {
@@ -38,13 +39,18 @@ int main( int p_argc, char * p_argv[] )
 #ifdef _DEBUG
 		args.add( App::ARG_DEBUG );
 #endif
-		bool debug = args.has( App::ARG_DEBUG );
+		const bool debug = args.has( App::ARG_DEBUG );
 
 #ifdef _WIN32
-		//  Hide console.
-		if ( not debug )
+		// Disable default console.
+#pragma comment( linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup" )
+		//  Create console.
+		if ( debug )
 		{
-			// FreeConsole();
+			AllocConsole();
+			freopen_s( (FILE **)stdout, "CONOUT$", "w", stdout );
+			freopen_s( (FILE **)stderr, "CONOUT$", "w", stderr );
+			freopen_s( (FILE **)stdin, "CONIN$", "r", stdin );
 		}
 #endif
 

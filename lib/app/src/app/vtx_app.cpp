@@ -99,7 +99,18 @@ namespace VTX::App
 
 	VTXApp::~VTXApp()
 	{
-		ECS::removeCtx<PythonBinding::Interpretor>();
+		try
+		{
+			ECS::removeCtx<PythonBinding::Interpretor>();
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Exception during interpretor cleanup: {}", p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Unknown exception during interpretor cleanup" );
+		}
 		LOGGER().stop();
 	}
 

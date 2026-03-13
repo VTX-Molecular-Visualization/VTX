@@ -73,10 +73,20 @@ namespace VTX::UI::QT
 			[ this ]
 			{
 				VTX_TRACE( "QCoreApplication::aboutToQuit" );
-				// Properly destroy graphics resources before Qt kill the context.
-				App::RENDERER().clear();
+				try
+				{
+					// Properly destroy graphics resources before Qt kill the context.
+					App::RENDERER().clear();
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( "Exception during renderer cleanup: {}", p_e.what() );
+				}
+				catch ( ... )
+				{
+					VTX_ERROR( "Unknown exception during renderer cleanup" );
+				}
 			}
-
 		);
 
 		// Run the main loop.
@@ -90,8 +100,19 @@ namespace VTX::UI::QT
 	Application::~Application()
 	{
 		// Delete elements that need SETTING().
-		App::ECS::removeCtx<Widget::MainWindow>();
-		App::ECS::removeCtx<Style::StyleManager>();
+		try
+		{
+			App::ECS::removeCtx<Widget::MainWindow>();
+			App::ECS::removeCtx<Style::StyleManager>();
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Exception during UI cleanup: {}", p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Unknown exception during UI cleanup" );
+		}
 
 		// Save settings on disk.
 		try
@@ -140,6 +161,11 @@ namespace VTX::UI::QT
 		catch ( const std::exception & p_e )
 		{
 			VTX_ERROR( "{}", p_e.what() );
+			return true;
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Unknown exception in Qt event handler" );
 			return true;
 		}
 	}
