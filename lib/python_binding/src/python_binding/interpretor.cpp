@@ -117,7 +117,7 @@ namespace VTX::PythonBinding
 	  public:
 		Impl()
 		{
-			VTX::VTX_INFO( "Importing python module <{}>", vtx_module_name() );
+			VTX::VTX_DEBUG( "Importing python module <{}>", vtx_module_name() );
 			// Allow the python "print" function to be funneled into our log system
 			_vtxModule.import( "sys" ).attr( "stdout" ) = _vtxModule.attr( "LogRedirection" );
 

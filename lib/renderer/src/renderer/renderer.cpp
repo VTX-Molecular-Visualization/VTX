@@ -46,7 +46,7 @@ namespace VTX::Renderer
 
 	void Renderer::setOpenGL( const FilePath & p_shaderIncludePath )
 	{
-		Util::ScopedChrono timer( "[RENDERER] setOpenGL45" );
+		Util::ScopedChrono timer( "[RENDERER] setOpenGL46" );
 
 		_context.setOpenGL( _width, _height, p_shaderIncludePath );
 		try
@@ -58,7 +58,7 @@ namespace VTX::Renderer
 		catch ( const std::exception & p_e )
 		{
 			VTX_ERROR( "{}", p_e.what() );
-			VTX_ERROR( "Can not build openGL 4.5 backend" );
+			VTX_ERROR( "Can not build openGL 4.6 backend" );
 			setDefault();
 		}
 	}

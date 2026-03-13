@@ -17,7 +17,7 @@ namespace VTX::App::PythonBinding
 {
 	void VTXAppBinder::bind( VTX::PythonBinding::PyTXModule & p_vtxmodule )
 	{
-		VTX::VTX_INFO( "Applying binding on module." );
+		VTX::VTX_DEBUG( "Applying binding on module." );
 
 		VTX::PythonBinding::Wrapper::Module commands = p_vtxmodule.commands();
 

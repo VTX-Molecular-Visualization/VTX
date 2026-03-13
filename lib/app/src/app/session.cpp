@@ -38,7 +38,6 @@ namespace VTX::App
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_WARNING( "Updater not available" );
 			VTX_DEBUG( "{}", p_e.what() );
 		}
 	}
@@ -134,5 +133,23 @@ namespace VTX::App
 	FilePath Session::getEffectsDir() const { return getDataHome() / "effects"; }
 	FilePath Session::getConfigIniFile() const { return getDataHome() / "config.ini"; }
 	// const FilePath Session::getSettingJsonFile() const { return USER_DATA_DIR / "setting.json"; }
+
+	void Session::print() const
+	{
+		VTX_DEBUG( "Version from Conan: {}.{}.{}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH );
+		if ( _impl->manager )
+		{
+			VTX_DEBUG( "Version from Velopack: {}", ( *_impl->manager ).GetCurrentVersion() );
+			VTX_DEBUG( "AppId: {}", ( *_impl->manager ).GetAppId() );
+			VTX_DEBUG( "Is portable: {}", ( *_impl->manager ).IsPortable() );
+		}
+		else
+		{
+			VTX_DEBUG( "No app manager available" );
+		}
+		VTX_DEBUG( "Executable dir: {}", Filesystem::getExecutableDir().string() );
+		VTX_DEBUG( "Data home: {}", getDataHome().string() );
+		VTX_DEBUG( "Pictures folder: {}", getPicturesFolder().string() );
+	}
 
 } // namespace VTX::App

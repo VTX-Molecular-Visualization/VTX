@@ -58,6 +58,8 @@ namespace VTX::App
 		ECS::setCtx<Session>();
 		// Logger.
 		LOGGER::init( SESSION().getLogsDir(), p_args.has( ARG_DEBUG ) );
+		VTX_INFO( ECS::getCtx<Args>().toString() );
+		SESSION().print();
 
 		// Store main event bus.
 		ECS::setCtx<Util::EventHub>();
@@ -85,16 +87,6 @@ namespace VTX::App
 		// Load settings.
 		Settings::initSettings();
 		auto & settings = SETTINGS();
-
-		VTX_INFO( "App initializing interpretor." );
-		// Initialize python interpretor.
-		INTERPRETOR().subscribe(
-			[]( VTX::PythonBinding::Interpretor & p_interpretor )
-			{
-				p_interpretor.add( VTX::App::PythonBinding::VTXAppBinder() );
-				p_interpretor.add( VTX::App::PythonBinding::RunScript() );
-			}
-		);
 	}
 
 	VTXApp::~VTXApp()
@@ -116,8 +108,6 @@ namespace VTX::App
 
 	void VTXApp::start()
 	{
-		VTX_INFO( "Starting application: {}", ECS::getCtx<Args>().toString() );
-
 		// Scene.
 		ECS::Entity sceneEnt = _registry.create();
 		_registry.emplace<Scene::TagRoot>( sceneEnt );
@@ -152,6 +142,16 @@ namespace VTX::App
 				);
 			}
 		}
+
+		// Initialize python interpretor.
+		INTERPRETOR().subscribe(
+			[]( VTX::PythonBinding::Interpretor & p_interpretor )
+			{
+				p_interpretor.add( VTX::App::PythonBinding::VTXAppBinder() );
+				p_interpretor.add( VTX::App::PythonBinding::RunScript() );
+			}
+		);
+		VTX_INFO( "Python interpretor initialized" );
 
 		// Create default presets.
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();

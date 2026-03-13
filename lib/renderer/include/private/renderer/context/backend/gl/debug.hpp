@@ -60,7 +60,7 @@ namespace VTX::Renderer::Context::Backend::GL::Debug
 			assert( false );
 			break;
 		case GL_DEBUG_SEVERITY_MEDIUM:
-		case GL_DEBUG_SEVERITY_LOW: VTX_WARNING( "{}", message ); break;
+		case GL_DEBUG_SEVERITY_LOW: VTX_DEBUG( "{}", message ); break;
 		default: break;
 		}
 	}

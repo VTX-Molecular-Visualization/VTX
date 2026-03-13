@@ -33,7 +33,6 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		void print()
 		{
-			VTX_INFO( "OpenGL infos:" );
 			VTX_INFO( "Device: {} {}", glVendor, glRenderer );
 			VTX_INFO( "Version: {}", glVersion );
 
@@ -60,4 +59,4 @@ namespace VTX::Renderer::Context::Backend::GL
 			VTX_TRACE( "Max compute work group invocations: {}", glMaxComputeWorkGroupInvocations );
 		}
 	};
-} // namespace VTX::Renderer::Context::GL
+} // namespace VTX::Renderer::Context::Backend::GL
