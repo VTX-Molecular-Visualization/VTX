@@ -63,6 +63,7 @@ jobs:
 
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}
+      shell: bash
       run: |
         conan export lib/util
         conan export lib/core

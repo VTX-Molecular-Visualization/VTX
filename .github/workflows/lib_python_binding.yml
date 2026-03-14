@@ -67,6 +67,7 @@ jobs:
 
     - name: Install dependencies
       working-directory: ${{env.LIB_DIR}}
+      shell: bash
       run: |
         conan install python_binding -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
@@ -85,6 +86,7 @@ jobs:
 
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
+      shell: bash
       run: |
         conan create python_binding -b missing \
           -s build_type=${{env.BUILD_TYPE}} \

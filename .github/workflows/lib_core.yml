@@ -59,6 +59,7 @@ jobs:
  
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
+      shell: bash
       run: |
         conan export util
         conan create core -b missing \

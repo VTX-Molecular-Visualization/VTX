@@ -70,6 +70,7 @@ jobs:
 
     - name: Install dependencies
       working-directory: ${{env.ROOT_DIR}}
+      shell: bash
       run: |
         conan install tool/mdprep -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
@@ -86,6 +87,7 @@ jobs:
 
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}
+      shell: bash
       run: |
         conan create tool/mdprep -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
