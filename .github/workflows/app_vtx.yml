@@ -96,6 +96,7 @@ jobs:
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True \
           --format=json > output.json
+      shell: bash
 
     - name: Read package path from output.json
       id: read_package_path
