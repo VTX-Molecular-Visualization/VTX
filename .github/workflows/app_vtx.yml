@@ -50,18 +50,7 @@ env:
   RELEASE_DIR: ${{ github.workspace }}/release
 
 jobs:
-  create-draft:
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v6.0.2
-
-    - name: Create draft release
-      run: gh release create ${{ inputs.version }} --draft --title "VTX ${{ inputs.version }}"
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   build:
-    needs: create-draft
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -151,6 +140,10 @@ jobs:
           --outputDir "${{ env.RELEASE_DIR }}"
       shell: bash
 
+    - name: Remove current version from release dir
+      run: find "${{ env.RELEASE_DIR }}" -name "*${{ env.VERSION }}*" -delete 2>/dev/null || true
+      shell: bash
+
     - name: Pack installer
       run: |
         vpk pack \
@@ -179,6 +172,12 @@ jobs:
           --channel ${{ matrix.channel }} \
           --outputDir "${{ env.RELEASE_DIR }}"
       shell: bash
+
+    - name: Create draft release
+      continue-on-error: true
+      run: gh release create ${{ inputs.version }} --draft --title "VTX ${{ inputs.version }}"
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload to GitHub release
       run: |
