@@ -28,7 +28,7 @@ on:
       cuda_version:
         description: 'CUDA version'
         required: true
-        default: '12.9'
+        default: '12.9.0'
       cuda_arch:
         description: 'Cuda architectures'
         required: true
@@ -92,7 +92,6 @@ jobs:
       with:
         cuda: ${{ inputs.cuda_version }}
         method: network
-        # Sur Linux, évite d'installer les drivers (non dispo sur runner)
         linux-local-args: '["--toolkit"]'
         
     - name: Get Conan
