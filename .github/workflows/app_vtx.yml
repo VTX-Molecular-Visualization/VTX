@@ -11,18 +11,10 @@ on:
         options:
         - Debug
         - Release
-      release_type:
-        description: 'Release type'
-        required: true
-        default: 'Archive'
-        type: choice
-        options:
-        - Archive
-        - Installer
       version: 
         description: 'Version'
         required: true
-        default: '1.0.0'
+        default: '2026.0.0'
       tool_example:
         description: 'Include tool Example'
         required: false
@@ -51,13 +43,14 @@ env:
   TOOL_MDPREP: ${{ inputs.tool_mdprep == true && 'True' || 'False' }}
   CUDA_ARCH: ${{ inputs.cuda_arch }}
   PUBLISH: ${{ inputs.publish }}
+  RELEASE_DIR: ${{ github.workspace }}/release
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-2022, ubuntu-22.04, windows-latest, ubuntu-latest]
+        os: [windows-2022]
       fail-fast: false
 
     steps:
@@ -93,17 +86,58 @@ jobs:
         conan export lib/util
         conan export tool/example
         conan export tool/mdprep
-        conan create app/vtx -b missing -s build_type=${{env.BUILD_TYPE}} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -o vtx_app/*:version=${{env.VERSION}} -o vtx/*:tool_example=${{env.TOOL_EXAMPLE}} -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} -o vtx_renderer/*:cuda_arch="${{env.CUDA_ARCH}}" -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --format=json > output.json
+        conan create app/vtx -b missing \
+          -s build_type=${{env.BUILD_TYPE}} \
+          -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} \
+          -o vtx_app/*:version=${{env.VERSION}} \
+          -o vtx/*:tool_example=${{env.TOOL_EXAMPLE}} \
+          -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} \
+          -o vtx_renderer/*:cuda_arch="${{env.CUDA_ARCH}}" \
+          -c tools.system.package_manager:mode=install \
+          -c tools.system.package_manager:sudo=True \
+          --format=json > output.json
 
     - name: Read package path from output.json
       id: read_package_path
       working-directory: ${{env.ROOT_DIR}}
       run: echo "PACKAGE_PATH=$(jq -r '.graph.nodes["1"].package_folder' output.json)" >> "$GITHUB_OUTPUT"
       shell: bash
+
+    - name: Install Velopack CLI
+      run: |
+        dotnet tool install -g vpk
+        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+      shell: bash
+
+    - name: Download previous release for delta generation
+      continue-on-error: true
+      run: |
+        vpk download github \
+          --repoUrl https://github.com/${{ github.repository }} \
+          --token ${{ secrets.GITHUB_TOKEN }} \
+          --channel win \
+          --outputDir "${{ env.RELEASE_DIR }}"
+      shell: bash
+
+    - name: Pack installer (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        vpk pack \
+          --packId VTX \
+          --packVersion "${{ env.VERSION }}" \
+          --packTitle "VTX" \
+          --packAuthors "VTX Team" \
+          --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
+          --mainExe vtx.exe \
+          --icon "${{ env.ROOT_DIR }}/app/vtx/asset/logo.ico" \
+          --splashImage "${{ env.ROOT_DIR }}/app/vtx/asset/splash.png" \
+          --releaseNotes "${{ env.ROOT_DIR }}/app/vtx/CHANGELOG.md" \
+          --framework vcredist144-x64 \
+          --channel win \
+          --outputDir "${{ env.RELEASE_DIR }}"
+      shell: bash
         
     - uses: actions/upload-artifact@v4.3.1
-      env:
-        PACKAGE_PATH: ${{ steps.read_package_path.outputs.PACKAGE_PATH }}
       with:
         name: VTX_${{matrix.os}}
-        path: ${{env.PACKAGE_PATH}}
+        path: ${{ env.RELEASE_DIR }}
