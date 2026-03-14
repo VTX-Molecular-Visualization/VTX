@@ -33,11 +33,6 @@ on:
         description: 'Cuda architectures'
         required: true
         default: '50;52;60;61;70;75;80;86;89;90'
-      publish:
-        description: 'Publish release'
-        required: false
-        default: false
-        type: boolean
         
 env:
   ROOT_DIR: ${{github.workspace}}
@@ -46,7 +41,6 @@ env:
   TOOL_EXAMPLE: ${{ inputs.tool_example == true && 'True' || 'False' }}
   TOOL_MDPREP: ${{ inputs.tool_mdprep == true && 'True' || 'False' }}
   CUDA_ARCH: ${{ inputs.cuda_arch }}
-  PUBLISH: ${{ inputs.publish }}
   RELEASE_DIR: ${{ github.workspace }}/release
 
 jobs:
@@ -153,6 +147,11 @@ jobs:
         Get-ChildItem "${{ env.RELEASE_DIR }}" -Filter "*${{ env.VERSION }}*" `
           | Remove-Item -Force -ErrorAction SilentlyContinue
 
+    - name: Extract latest changelog
+      shell: bash
+      run: |
+        awk '/^## /{if(found) exit; found=1} found{print}' "${{ env.ROOT_DIR }}/app/vtx/CHANGELOG.md" > "$RUNNER_TEMP/latest_changelog.md"
+
     - name: Pack installer (Windows)
       if: runner.os == 'Windows'
       shell: bash
@@ -164,7 +163,7 @@ jobs:
           --packAuthors "VTX Team" \
           --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
           --mainExe ${{ matrix.main_exe }} \
-          --releaseNotes "${{ env.ROOT_DIR }}/app/vtx/CHANGELOG.md" \
+          --releaseNotes "$RUNNER_TEMP/latest_changelog.md" \
           --icon "${{ env.ROOT_DIR }}/app/vtx/asset/logo.ico" \
           --splashImage "${{ env.ROOT_DIR }}/app/vtx/asset/splash.png" \
           --framework vcredist144-x64 \
@@ -182,15 +181,9 @@ jobs:
           --packAuthors "VTX Team" \
           --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
           --mainExe ${{ matrix.main_exe }} \
-          --releaseNotes "${{ env.ROOT_DIR }}/app/vtx/CHANGELOG.md" \
+          --releaseNotes "$RUNNER_TEMP/latest_changelog.md" \
           --channel ${{ matrix.channel }} \
           --outputDir "${{ env.RELEASE_DIR }}"
-
-    - name: Create draft release
-      continue-on-error: true
-      run: gh release create ${{ inputs.version }} --draft --title "VTX ${{ inputs.version }}"
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload to GitHub release
       run: |
@@ -205,15 +198,3 @@ jobs:
       with:
         name: VTX_${{matrix.os}}
         path: ${{ env.RELEASE_DIR }}
-
-  publish:
-    needs: build
-    if: ${{ inputs.publish == true }}
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v6.0.2
-
-    - name: Publish release
-      run: gh release edit ${{ inputs.version }} --draft=false
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
