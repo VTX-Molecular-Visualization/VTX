@@ -96,19 +96,6 @@ jobs:
         method: network
         linux-local-args: '["--toolkit"]'
 
-    - name: Export CUDA env vars
-      shell: bash
-      run: |
-        echo "CUDA_PATH=${{ steps.cuda-toolkit.outputs.CUDA_PATH }}" >> $GITHUB_ENV
-        echo "CUDACXX=${{ steps.cuda-toolkit.outputs.CUDA_PATH }}/bin/nvcc" >> $GITHUB_ENV
-
-    - name: Inject CUDA compiler into Conan global.conf
-      shell: bash
-      run: |
-        NVCC="${{ steps.cuda-toolkit.outputs.CUDA_PATH }}/bin/nvcc"
-        echo "tools.cmake.cmaketoolchain:extra_variables={'CMAKE_CUDA_COMPILER': '${NVCC}'}" \
-          >> $(conan config home)/global.conf
-
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}
       run: |
