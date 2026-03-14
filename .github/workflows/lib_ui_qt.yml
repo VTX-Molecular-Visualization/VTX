@@ -24,11 +24,20 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-2022, ubuntu-22.04, windows-latest, ubuntu-latest]
+        include:
+          - os: windows-2022
+            conan_cppstd: '20'
+          - os: ubuntu-22.04
+            conan_cppstd: 'gnu20'
+          - os: windows-latest
+            conan_cppstd: '20'
+          - os: ubuntu-latest
+            conan_cppstd: 'gnu20'
       fail-fast: false
 
     steps:
     - name: Set git to use CRLF
+      if: runner.os == 'Windows'
       run: |
         git config --global core.autocrlf true
         git config --global core.eol crlf
@@ -57,7 +66,11 @@ jobs:
         conan export renderer
         conan export app
         conan export python_binding
-        conan create ui/qt -b missing -s build_type=${{ env.BUILD_TYPE }} -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
+        conan create ui/qt -b missing \
+          -s build_type=${{ env.BUILD_TYPE }} \
+          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
+          -c tools.system.package_manager:mode=install \
+          -c tools.system.package_manager:sudo=True
     
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}
