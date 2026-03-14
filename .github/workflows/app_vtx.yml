@@ -195,14 +195,14 @@ jobs:
         name: VTX_${{matrix.os}}
         path: ${{ env.RELEASE_DIR }}
 
-#  publish:
-#    needs: build
-#    if: ${{ inputs.publish == true }}
-#    runs-on: ubuntu-22.04
-#    steps:
-#    - uses: actions/checkout@v4
+  publish:
+    needs: build
+    if: ${{ inputs.publish == true }}
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
 
-#    - name: Publish release
-#      run: gh release edit ${{ inputs.version }} --draft=false
-#      env:
-#        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Publish release
+      run: gh release edit ${{ inputs.version }} --draft=false
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
