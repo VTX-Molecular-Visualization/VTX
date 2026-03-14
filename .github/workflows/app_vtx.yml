@@ -46,15 +46,35 @@ env:
   RELEASE_DIR: ${{ github.workspace }}/release
 
 jobs:
+  create-draft:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Create draft release
+      run: gh release create ${{ inputs.version }} --draft --title "VTX ${{ inputs.version }}"
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   build:
+    needs: create-draft
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-2022]
+        include:
+          - os: windows-2022
+            channel: win
+            main_exe: vtx.exe
+            conan_cppstd: '20'
+          - os: ubuntu-22.04
+            channel: linux
+            main_exe: vtx
+            conan_cppstd: 'gnu20'
       fail-fast: false
 
     steps:
     - name: Set git to use CRLF
+      if: runner.os == 'Windows'
       run: |
         git config --global core.autocrlf true
         git config --global core.eol crlf
@@ -76,7 +96,7 @@ jobs:
 
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}
-      run:  |
+      run: |
         conan export lib/app
         conan export lib/core
         conan export lib/io
@@ -88,7 +108,7 @@ jobs:
         conan export tool/mdprep
         conan create app/vtx -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
-          -s compiler.cppstd=${{ runner.os == 'Windows' && '20' || 'gnu20' }} \
+          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_app/*:version=${{env.VERSION}} \
           -o vtx/*:tool_example=${{env.TOOL_EXAMPLE}} \
           -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} \
@@ -116,12 +136,11 @@ jobs:
         vpk download github \
           --repoUrl https://github.com/${{ github.repository }} \
           --token ${{ secrets.GITHUB_TOKEN }} \
-          --channel win \
+          --channel ${{ matrix.channel }} \
           --outputDir "${{ env.RELEASE_DIR }}"
       shell: bash
 
-    - name: Pack installer (Windows)
-      if: runner.os == 'Windows'
+    - name: Pack installer
       run: |
         vpk pack \
           --packId VTX \
@@ -129,16 +148,49 @@ jobs:
           --packTitle "VTX" \
           --packAuthors "VTX Team" \
           --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
-          --mainExe vtx.exe \
-          --icon "${{ env.ROOT_DIR }}/app/vtx/asset/logo.ico" \
-          --splashImage "${{ env.ROOT_DIR }}/app/vtx/asset/splash.png" \
+          --mainExe ${{ matrix.main_exe }} \
           --releaseNotes "${{ env.ROOT_DIR }}/app/vtx/CHANGELOG.md" \
-          --framework vcredist144-x64 \
-          --channel win \
+          --channel ${{ matrix.channel }} \
           --outputDir "${{ env.RELEASE_DIR }}"
       shell: bash
-        
+
+    - name: Pack installer extras (Windows only)
+      if: runner.os == 'Windows'
+      run: |
+        vpk pack \
+          --packId VTX \
+          --packVersion "${{ env.VERSION }}" \
+          --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
+          --mainExe ${{ matrix.main_exe }} \
+          --icon "${{ env.ROOT_DIR }}/app/vtx/asset/logo.ico" \
+          --splashImage "${{ env.ROOT_DIR }}/app/vtx/asset/splash.png" \
+          --framework vcredist144-x64 \
+          --channel ${{ matrix.channel }} \
+          --outputDir "${{ env.RELEASE_DIR }}"
+      shell: bash
+
+    - name: Upload to GitHub release
+      run: |
+        vpk upload github \
+          --repoUrl https://github.com/${{ github.repository }} \
+          --token ${{ secrets.GITHUB_TOKEN }} \
+          --channel ${{ matrix.channel }} \
+          --outputDir "${{ env.RELEASE_DIR }}"
+      shell: bash
+
     - uses: actions/upload-artifact@v4.3.1
       with:
         name: VTX_${{matrix.os}}
         path: ${{ env.RELEASE_DIR }}
+
+  publish:
+    needs: build
+    if: ${{ inputs.publish == true }}
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Publish release
+      run: gh release edit ${{ inputs.version }} --draft=false
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
