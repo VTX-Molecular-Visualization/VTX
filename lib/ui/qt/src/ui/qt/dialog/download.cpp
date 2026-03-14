@@ -43,7 +43,7 @@ namespace VTX::UI::QT::Dialog
 		_comboBoxPDB->setFocus();
 
 		// Buttons.
-		QDialogButtonBox * buttonBox = new QDialogButtonBox(
+		auto * buttonBox = new QDialogButtonBox(
 			QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open, this
 		);
 
@@ -99,8 +99,8 @@ namespace VTX::UI::QT::Dialog
 
 		// Open button.
 		connect(
-			buttonBox->button( QDialogButtonBox::StandardButton::Open ),
-			&QPushButton::clicked,
+			buttonBox,
+			&QDialogButtonBox::accepted,
 			[ this ]()
 			{
 				// Check inputs.
@@ -154,12 +154,8 @@ namespace VTX::UI::QT::Dialog
 			}
 		);
 
-		// Cancel button.
-		connect(
-			buttonBox->button( QDialogButtonBox::StandardButton::Cancel ),
-			&QPushButton::clicked,
-			[ this ]() { reject(); }
-		);
+		connect( buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept );
+		connect( buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );
 
 		// Load history.
 		_loadHistory( SETTING_KEY_URL, _comboBoxURL );

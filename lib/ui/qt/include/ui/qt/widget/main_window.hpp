@@ -125,11 +125,6 @@ namespace VTX::UI::QT::Widget
 		QPointer<Dialog::Progress> _progressDialog;
 
 		/**
-		 * @brief The dialog window that opens when a trajectory file needs to be associated with a topology
-		 */
-		QPointer<Dialog::TrajectoryAssociation> _trajAssocDialog;
-
-		/**
 		 * @brief Default geometry for layout reset.
 		 */
 		QByteArray _defaultGeometry;
@@ -146,6 +141,7 @@ namespace VTX::UI::QT::Widget
 		void _onBlockingOperationStart( const App::Events::BlockingOperationStart & );
 		void _onBlockingOperationProgress( const App::Events::BlockingOperationProgress & );
 		void _onBlockingOperationEnd( const App::Events::BlockingOperationEnd & );
+		void _onUpdateAvailable( const App::Events::UpdateAvailable & );
 	};
 
 } // namespace VTX::UI::QT::Widget

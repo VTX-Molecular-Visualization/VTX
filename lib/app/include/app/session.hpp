@@ -33,6 +33,15 @@ namespace VTX::App
 		~Session();
 
 		/**
+		 * @brief Current version.
+		 */
+		inline std::string version() const
+		{
+			return std::to_string( VERSION_MAJOR ) + "." + std::to_string( VERSION_MINOR ) + "."
+				   + std::to_string( VERSION_PATCH );
+		}
+
+		/**
 		 * @brief Check for application update.
 		 */
 		void checkForUpdate();

@@ -82,12 +82,10 @@ namespace VTX::App
 		// Store pass manager.
 		ECS::setCtx<Pass::PassManager>();
 		// Store python interpretor.
-		ECS::setCtx<PythonBinding::Interpretor>();
+		// ECS::setCtx<PythonBinding::Interpretor>();
 
 		// Load settings.
 		Settings::initSettings();
-
-		VTX_INFO( "VTXApp constructed" );
 	}
 
 	VTXApp::~VTXApp()
@@ -131,9 +129,7 @@ namespace VTX::App
 		{
 			try
 			{
-				VTX_TRACE( "Set openGL" );
 				renderer.setOpenGL( SESSION().getShadersDir() );
-				VTX_TRACE( "Set openGL ok" );
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -200,7 +196,7 @@ namespace VTX::App
 		// Updater.
 		if ( not ARGS().has( ARG_NO_UPDATE ) )
 		{
-			// SESSION().checkForUpdate();
+			SESSION().checkForUpdate();
 		}
 	}
 

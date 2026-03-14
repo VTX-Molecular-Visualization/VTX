@@ -4,6 +4,7 @@
 #include "ui/qt/application.hpp"
 #include "ui/qt/dialog/progress.hpp"
 #include "ui/qt/dialog/trajectory_association.hpp"
+#include "ui/qt/dialog/updater.hpp"
 #include "ui/qt/dock_widget/color_layouts.hpp"
 #include "ui/qt/dock_widget/console.hpp"
 #include "ui/qt/dock_widget/graphics_configs.hpp"
@@ -118,6 +119,7 @@ namespace VTX::UI::QT::Widget
 		App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
 		App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>( this );
 		App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
+		App::HUB().connect<App::Events::UpdateAvailable, &MainWindow::_onUpdateAvailable>( this );
 	}
 
 	MainWindow::~MainWindow()
@@ -182,9 +184,11 @@ namespace VTX::UI::QT::Widget
 				App::ACTION().execute<App::Action::IO::Open>( url.toLocalFile().toStdString() );
 				break;
 			case App::Helper::IO::FileDropHandling::associateTrajectory:
-				_trajAssocDialog = new Dialog::TrajectoryAssociation( url.toLocalFile().toStdString() );
-				_trajAssocDialog->exec();
+			{
+				Dialog::TrajectoryAssociation dialog( url.toLocalFile().toStdString() );
+				dialog.exec();
 				break;
+			}
 			default: App::ACTION().execute<App::Action::IO::Open>( url.toLocalFile().toStdString() );
 			}
 		}
@@ -219,6 +223,12 @@ namespace VTX::UI::QT::Widget
 			delete _progressDialog;
 			_progressDialog = nullptr;
 		}
+	}
+
+	void MainWindow::_onUpdateAvailable( const App::Events::UpdateAvailable & p_e )
+	{
+		Dialog::Updater dialog( p_e );
+		dialog.exec();
 	}
 
 } // namespace VTX::UI::QT::Widget

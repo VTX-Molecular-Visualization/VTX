@@ -13,7 +13,6 @@ namespace VTX::UI::QT::Dialog
 		{
 			setWindowTitle( "About" );
 			setFixedSize( 400, 200 );
-			setWindowFlags( Qt::Dialog );
 		}
 
 	  private:

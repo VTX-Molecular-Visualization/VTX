@@ -20,9 +20,11 @@ namespace VTX::App::Events
 
 	struct UpdateAvailable
 	{
-		std::string version;
+		std::string currentVersion;
+		std::string newVersion;
 		std::string changelogMd;
 		std::string changelogHtml;
+		size_t		size;
 	};
 
 	struct ApplicationError

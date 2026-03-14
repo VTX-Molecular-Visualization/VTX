@@ -166,8 +166,8 @@ namespace VTX::UI::QT::Dialog
 
 		// Callbacks.
 		connect(
-			buttonBox->button( QDialogButtonBox::StandardButton::Save ),
-			&QPushButton::clicked,
+			buttonBox,
+			&QDialogButtonBox::accepted,
 			[ this ]()
 			{
 				// Pop file dialog.
@@ -190,17 +190,18 @@ namespace VTX::UI::QT::Dialog
 				_lastExportFolder		  = QString::fromStdString( lastExportFolder.string() );
 
 				save();
-				close();
+				accept();
 			}
 		);
 
+
 		connect(
-			buttonBox->button( QDialogButtonBox::StandardButton::Cancel ),
-			&QPushButton::clicked,
+			buttonBox,
+			&QDialogButtonBox::rejected,
 			[ this ]()
 			{
 				save();
-				close();
+				reject();
 			}
 		);
 

@@ -44,9 +44,12 @@ namespace VTX::UI::QT::Dialog
 		);
 		layoutCacheRadio->addWidget( buttonBox );
 
+		connect( buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept );
+		connect( buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );
+
 		connect(
-			buttonBox->button( QDialogButtonBox::StandardButton::Open ),
-			&QPushButton::clicked,
+			this,
+			&QDialog::accepted,
 			[ this ]()
 			{
 				App::ECS::Entity entity = _cbSystem->currentData().value<App::ECS::Entity>();
@@ -55,14 +58,7 @@ namespace VTX::UI::QT::Dialog
 					App::ACTION().execute<App::Action::IO::LoadSystem>( _path );
 				else
 					App::ACTION().execute<App::Action::IO::AssociateTrajectory>( _path, entity );
-				accept();
 			}
-		);
-
-		connect(
-			buttonBox->button( QDialogButtonBox::StandardButton::Cancel ),
-			&QPushButton::clicked,
-			[ this ]() { reject(); }
 		);
 	}
 
