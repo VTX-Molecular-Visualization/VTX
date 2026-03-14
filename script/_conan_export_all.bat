@@ -1,4 +1,5 @@
 @ECHO OFF
+cd /d "%~dp0\.."
 conan export lib/app
 conan export lib/core
 conan export lib/io

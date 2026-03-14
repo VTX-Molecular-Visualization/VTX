@@ -1,4 +1,5 @@
-@ECHO OFF
+#!/bin/bash
+cd "$(dirname "$0")/.."
 conan editable remove lib/app
 conan editable remove lib/core
 conan editable remove lib/io
@@ -8,4 +9,3 @@ conan editable remove lib/ui/qt
 conan editable remove lib/util
 conan editable remove tool/example
 conan editable remove tool/mdprep
-PAUSE

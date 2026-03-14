@@ -1,4 +1,5 @@
 @ECHO OFF
+cd /d "%~dp0\.."
 conan editable add lib/app
 conan editable add lib/core
 conan editable add lib/io
