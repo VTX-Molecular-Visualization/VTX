@@ -78,11 +78,18 @@ jobs:
 
     - name: Install CUDA Toolkit
       uses: Jimver/cuda-toolkit@v0.2.30
+      id: cuda-toolkit
       with:
         cuda: ${{ inputs.cuda_version }}
         method: network
         linux-local-args: '["--toolkit"]'
-        
+
+    - name: Export CUDA env vars
+      shell: bash
+      run: |
+        echo "CUDA_PATH=${{ steps.cuda-toolkit.outputs.CUDA_PATH }}" >> $GITHUB_ENV
+        echo "CUDACXX=${{ steps.cuda-toolkit.outputs.CUDA_PATH }}/bin/nvcc" >> $GITHUB_ENV
+
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.2
       
@@ -115,6 +122,7 @@ jobs:
           -o vtx_renderer/*:cuda_arch="${{env.CUDA_ARCH}}" \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True \
+          -c tools.cmake.cmaketoolchain:extra_variables="{'CMAKE_CUDA_COMPILER': '${{ steps.cuda-toolkit.outputs.CUDA_PATH }}/bin/nvcc'}" \
           --format=json > output.json
       shell: bash
 
@@ -140,9 +148,16 @@ jobs:
           --outputDir "${{ env.RELEASE_DIR }}"
       shell: bash
 
-    - name: Remove current version from release dir
+    - name: Remove current version from release dir (Linux)
+      if: runner.os != 'Windows'
       run: find "${{ env.RELEASE_DIR }}" -name "*${{ env.VERSION }}*" -delete 2>/dev/null || true
-      shell: bash
+
+    - name: Remove current version from release dir (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        Get-ChildItem "${{ env.RELEASE_DIR }}" -Filter "*${{ env.VERSION }}*" `
+          | Remove-Item -Force -ErrorAction SilentlyContinue
 
     - name: Pack installer
       run: |
