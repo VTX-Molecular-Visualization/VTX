@@ -90,6 +90,13 @@ jobs:
         echo "CUDA_PATH=${{ steps.cuda-toolkit.outputs.CUDA_PATH }}" >> $GITHUB_ENV
         echo "CUDACXX=${{ steps.cuda-toolkit.outputs.CUDA_PATH }}/bin/nvcc" >> $GITHUB_ENV
 
+    - name: Inject CUDA compiler into Conan global.conf
+      shell: bash
+      run: |
+        NVCC="${{ steps.cuda-toolkit.outputs.CUDA_PATH }}/bin/nvcc"
+        echo "tools.cmake.cmaketoolchain:extra_variables={'CMAKE_CUDA_COMPILER': '${NVCC}'}" \
+          >> $(conan config home)/global.conf
+
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.2
       
@@ -122,7 +129,6 @@ jobs:
           -o vtx_renderer/*:cuda_arch="${{env.CUDA_ARCH}}" \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True \
-          -c tools.cmake.cmaketoolchain:extra_variables="{'CMAKE_CUDA_COMPILER': '${{ steps.cuda-toolkit.outputs.CUDA_PATH }}/bin/nvcc'}" \
           --format=json > output.json
       shell: bash
 
