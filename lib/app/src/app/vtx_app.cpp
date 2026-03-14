@@ -82,7 +82,7 @@ namespace VTX::App
 		// Store pass manager.
 		ECS::setCtx<Pass::PassManager>();
 		// Store python interpretor.
-		// ECS::setCtx<PythonBinding::Interpretor>();
+		ECS::setCtx<PythonBinding::Interpretor>();
 
 		// Load settings.
 		Settings::initSettings();
@@ -143,16 +143,21 @@ namespace VTX::App
 		}
 
 		// Initialize python interpretor.
-		/*
-		INTERPRETOR().subscribe(
-			[]( VTX::PythonBinding::Interpretor & p_interpretor )
-			{
-				p_interpretor.add( VTX::App::PythonBinding::VTXAppBinder() );
-				p_interpretor.add( VTX::App::PythonBinding::RunScript() );
-			}
-		);
-		*/
-		VTX_INFO( "Python interpretor initialized" );
+		try
+		{
+			INTERPRETOR().subscribe(
+				[]( VTX::PythonBinding::Interpretor & p_interpretor )
+				{
+					p_interpretor.add( VTX::App::PythonBinding::VTXAppBinder() );
+					p_interpretor.add( VTX::App::PythonBinding::RunScript() );
+				}
+			);
+			VTX_INFO( "Python interpretor initialized" );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Failed to initialize python interpretor: {}", p_e.what() );
+		}
 
 		// Create default presets.
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();
