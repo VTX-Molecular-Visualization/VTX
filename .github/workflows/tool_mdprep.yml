@@ -57,7 +57,7 @@ jobs:
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
-    - name: Create package
+    - name: Export local packages
       working-directory: ${{env.ROOT_DIR}}
       run: |
         conan export lib/util
@@ -67,15 +67,29 @@ jobs:
         conan export lib/app
         conan export lib/python_binding
         conan export lib/ui/qt
+
+    - name: Install dependencies
+      working-directory: ${{env.ROOT_DIR}}
+      run: |
+        conan install tool/mdprep -b missing \
+          -s build_type=${{env.BUILD_TYPE}} \
+          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
+          -c tools.system.package_manager:mode=install \
+          -c tools.system.package_manager:sudo=True \
+          -o vtx_tool_mdprep/*:test=True
+
+    - name: Upload dependencies
+      working-directory: ${{env.ROOT_DIR}}
+      run: |
+        conan upload gromacs -r=vtx
+        conan upload re2 -r=vtx
+
+    - name: Create package
+      working-directory: ${{env.ROOT_DIR}}
+      run: |
         conan create tool/mdprep -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True \
           -o vtx_tool_mdprep/*:test=True
- 
-    - name: Upload dependencies
-      working-directory: ${{env.ROOT_DIR}}
-      run: |
-        conan upload gromacs -r=vtx
-        conan upload re2 -r=vtx

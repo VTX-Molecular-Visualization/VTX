@@ -57,12 +57,16 @@ jobs:
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
-    - name: Create package
+    - name: Export local packages
       working-directory: ${{env.LIB_DIR}}
       run: |
         conan export util
         conan export core
-        conan create io -b missing \
+
+    - name: Install dependencies
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan install io -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_io/*:test=True
@@ -71,3 +75,11 @@ jobs:
       working-directory: ${{env.LIB_DIR}}
       run: |
         conan upload chemfiles -r=vtx
+
+    - name: Create package
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan create io -b missing \
+          -s build_type=${{env.BUILD_TYPE}} \
+          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
+          -o vtx_io/*:test=True

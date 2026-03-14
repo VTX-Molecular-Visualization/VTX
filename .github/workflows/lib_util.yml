@@ -57,14 +57,14 @@ jobs:
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
            
-    - name: Create package
+    - name: Install dependencies
       working-directory: ${{env.LIB_DIR}}
       run: |
-        conan create util -b missing \
+        conan install util -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_util/*:test=True
-               
+
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}
       run: |
@@ -80,3 +80,11 @@ jobs:
         conan upload libcurl -r=vtx
         conan upload platformfolders -r=vtx
         conan upload catch2 -r=vtx
+
+    - name: Create package
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan create util -b missing \
+          -s build_type=${{env.BUILD_TYPE}} \
+          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
+          -o vtx_util/*:test=True

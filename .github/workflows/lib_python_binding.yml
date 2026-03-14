@@ -57,14 +57,18 @@ jobs:
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
-    - name: Create package
+    - name: Export local packages
       working-directory: ${{env.LIB_DIR}}
       run: |
         conan export util
         conan export core
         conan export io
         conan export renderer
-        conan create python_binding -b missing \
+
+    - name: Install dependencies
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan install python_binding -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_python_binding/*:test=True \
@@ -78,3 +82,13 @@ jobs:
         conan upload cpython -r=vtx
         conan upload mpdecimal -r=vtx
         conan upload sqlite3 -r=vtx
+
+    - name: Create package
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan create python_binding -b missing \
+          -s build_type=${{env.BUILD_TYPE}} \
+          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
+          -o vtx_python_binding/*:test=True \
+          -c tools.system.package_manager:mode=install \
+          -c tools.system.package_manager:sudo=True

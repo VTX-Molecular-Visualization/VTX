@@ -57,24 +57,37 @@ jobs:
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
-    - name: Create package
+    - name: Export local packages
       working-directory: ${{env.ROOT_DIR}}
       run: |
         conan export lib/util
         conan export lib/core
         conan export lib/renderer
         conan export lib/io
+
+    - name: Install dependencies
+      working-directory: ${{env.ROOT_DIR}}
+      run: |
+        conan install app/bench -b missing \
+          -s build_type=${{env.BUILD_TYPE}} \
+          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
+          -c tools.system.package_manager:mode=install \
+          -c tools.system.package_manager:sudo=True
+
+    - name: Upload dependencies
+      run: |
+        conan upload sdl -r=vtx
+        conan upload imgui -r=vtx
+
+    - name: Create package
+      working-directory: ${{env.ROOT_DIR}}
+      run: |
         conan create app/bench -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True \
           --format=json > output.json
-
-    - name: Upload dependencies
-      run: |
-        conan upload sdl -r=vtx
-        conan upload imgui -r=vtx
 
     - name: Read package path from output.json
       id: read_package_path

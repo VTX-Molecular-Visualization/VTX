@@ -57,7 +57,7 @@ jobs:
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
-    - name: Create package
+    - name: Export local packages
       working-directory: ${{env.LIB_DIR}}
       run: |
         conan export util
@@ -66,13 +66,26 @@ jobs:
         conan export renderer
         conan export app
         conan export python_binding
+
+    - name: Install dependencies
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan install ui/qt -b missing \
+          -s build_type=${{ env.BUILD_TYPE }} \
+          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
+          -c tools.system.package_manager:mode=install \
+          -c tools.system.package_manager:sudo=True
+
+    - name: Upload dependencies
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan upload qt -r=vtx
+
+    - name: Create package
+      working-directory: ${{env.LIB_DIR}}
+      run: |
         conan create ui/qt -b missing \
           -s build_type=${{ env.BUILD_TYPE }} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True
-    
-    - name: Upload dependencies
-      working-directory: ${{env.LIB_DIR}}
-      run: |
-        conan upload qt -r=vtx
