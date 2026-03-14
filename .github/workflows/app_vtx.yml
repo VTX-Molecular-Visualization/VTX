@@ -25,6 +25,10 @@ on:
         required: false
         default: true
         type: boolean
+      cuda_version:
+        description: 'CUDA version'
+        required: true
+        default: '12.4.0'
       cuda_arch:
         description: 'Cuda architectures'
         required: true
@@ -81,7 +85,15 @@ jobs:
         
     - uses: actions/checkout@v4
       with:
-        submodules: recursive   
+        submodules: recursive
+
+    - name: Install CUDA Toolkit
+      uses: Jimver/cuda-toolkit@v0.2.19
+      with:
+        cuda: ${{ inputs.cuda_version }}
+        method: network
+        # Sur Linux, évite d'installer les drivers (non dispo sur runner)
+        linux-local-args: '["--toolkit"]'
         
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.2
@@ -183,14 +195,14 @@ jobs:
         name: VTX_${{matrix.os}}
         path: ${{ env.RELEASE_DIR }}
 
-  publish:
-    needs: build
-    if: ${{ inputs.publish == true }}
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v4
+#  publish:
+#    needs: build
+#    if: ${{ inputs.publish == true }}
+#    runs-on: ubuntu-22.04
+#    steps:
+#    - uses: actions/checkout@v4
 
-    - name: Publish release
-      run: gh release edit ${{ inputs.version }} --draft=false
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#    - name: Publish release
+#      run: gh release edit ${{ inputs.version }} --draft=false
+#      env:
+#        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
