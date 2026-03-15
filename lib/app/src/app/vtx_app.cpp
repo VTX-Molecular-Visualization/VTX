@@ -33,7 +33,6 @@
 #include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
 #include <util/monitoring/stats.hpp>
-#include <velopack/include/Velopack.hpp>
 
 namespace
 {
@@ -46,9 +45,6 @@ namespace VTX::App
 
 	VTXApp::VTXApp( const Args & p_args )
 	{
-		// Catch Velopack hooks.
-		Velopack::VelopackApp::Build().Run();
-
 		// Set global registry.
 		ECS::setRegistry( _registry );
 

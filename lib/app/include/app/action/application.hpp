@@ -31,5 +31,13 @@ namespace VTX::App::Action::Application
 		void execute( const bool p_enable );
 	};
 
+	/**
+	 * @brief Update application.
+	 */
+	struct Update
+	{
+		void execute();
+	};
+
 } // namespace VTX::App::Action::Application
 #endif

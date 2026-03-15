@@ -34,8 +34,19 @@ namespace VTX::App
 	{
 		try
 		{
-			//_impl->manager.emplace( UPDATE_URL.data() );
-			_impl->manager.emplace( "F:/DEPLOY/" );
+			// Velopack hooks and run.
+			auto vpCallback = []( void * p_user_data, const char * psz_app_version ) {};
+			Velopack::VelopackApp::Build()
+				.OnAfterInstall( vpCallback )
+				.OnAfterInstall( vpCallback )
+				.OnBeforeUninstall( vpCallback )
+				.OnBeforeUpdate( vpCallback )
+				.OnAfterUpdate( vpCallback )
+				.OnFirstRun( vpCallback )
+				.OnRestarted( vpCallback )
+
+				.Run();
+			_impl->manager.emplace( UPDATE_URL.data() );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -47,6 +58,7 @@ namespace VTX::App
 
 	void Session::checkForUpdate()
 	{
+		/*
 		Events::UpdateAvailable e;
 		e.currentVersion = version();
 		e.newVersion	 = "0.0.0";
@@ -117,7 +129,7 @@ namespace VTX::App
 			  "tracker</a>.</p>";
 		e.size = 2048;
 		HUB().trigger<Events::UpdateAvailable>( e );
-
+		*/
 		/////////////////////////////////////////
 		if ( not _impl->manager )
 		{

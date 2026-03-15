@@ -1,6 +1,7 @@
 #include "app/action/application.hpp"
 #include "app/ecs.hpp"
 #include "app/services.hpp"
+#include "app/session.hpp"
 #include <renderer/renderer.hpp>
 
 namespace VTX::App::Action::Application
@@ -26,5 +27,7 @@ namespace VTX::App::Action::Application
 	}
 
 	void SetSavePower::execute( const bool p_enable ) { RENDERER().setForceUpdate( not p_enable ); }
+
+	void Update::execute() { SESSION().downloadUpdate(); }
 
 } // namespace VTX::App::Action::Application

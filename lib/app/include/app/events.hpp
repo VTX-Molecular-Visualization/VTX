@@ -27,6 +27,11 @@ namespace VTX::App::Events
 		size_t		size;
 	};
 
+	struct UpdateDownloadProgress
+	{
+		float progress;
+	};
+
 	struct ApplicationError
 	{
 		std::string message;

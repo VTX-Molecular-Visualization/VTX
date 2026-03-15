@@ -10,8 +10,6 @@ namespace VTX::UI::QT::Dialog
 	{
 	  public:
 		Updater( const App::Events::UpdateAvailable & );
-
-	  private:
 	};
 
 } // namespace VTX::UI::QT::Dialog
