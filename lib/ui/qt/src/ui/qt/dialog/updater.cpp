@@ -1,5 +1,6 @@
 #include "ui/qt/dialog/updater.hpp"
 #include <QDialogButtonBox>
+#include <QPushButton>
 #include <QTextBrowser>
 #include <QVBoxLayout>
 #include <app/action/action_manager.hpp>
@@ -53,6 +54,7 @@ namespace VTX::UI::QT::Dialog
 		// Connect.
 		connect( buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept );
 		connect( buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );
+		connect( buttonBox->button( QDialogButtonBox::Apply ), &QPushButton::clicked, this, &QDialog::accept );
 
 		connect(
 			this, &QDialog::accepted, [ this, p_e ]() { App::ACTION().execute<App::Action::Application::Update>(); }

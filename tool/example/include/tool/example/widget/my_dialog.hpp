@@ -32,21 +32,16 @@ namespace VTX::Tool::Example::Widget
 			setLayout( layout );
 
 			// Callbacks.
+			connect( buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept );
+			connect( buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );
+
 			connect(
-				buttonBox->button( QDialogButtonBox::StandardButton::Open ),
-				&QPushButton::clicked,
+				this,
+				&QDialog::accepted,
 				[ this ]()
 				{
-					// Implement logic.
-					//
-
-					close();
+					// TODO: logic
 				}
-			);
-			connect(
-				buttonBox->button( QDialogButtonBox::StandardButton::Cancel ),
-				&QPushButton::clicked,
-				[ this ]() { close(); }
 			);
 		}
 		virtual ~MyDialog() {}
