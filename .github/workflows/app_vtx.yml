@@ -193,8 +193,3 @@ jobs:
           --channel ${{ matrix.channel }} \
           --outputDir "${{ env.RELEASE_DIR }}"
       shell: bash
-
-    - uses: actions/upload-artifact@v7.0.0
-      with:
-        name: VTX_${{matrix.os}}
-        path: ${{ env.RELEASE_DIR }}
