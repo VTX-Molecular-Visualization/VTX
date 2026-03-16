@@ -1,9 +1,6 @@
 name: App Bench
 
 on:
-  push:
-    branches: [ "master", "dev", "dev-sge", "dev-vge" ]
-    paths: ['app/bench/**', 'lib/renderer/**', '.github/workflows/app_bench.yml']
   workflow_dispatch:
       inputs:
         build_type:
