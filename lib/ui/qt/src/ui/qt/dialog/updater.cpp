@@ -55,7 +55,7 @@ namespace VTX::UI::QT::Dialog
 		connect( buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept );
 		connect( buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );
 		connect( buttonBox->button( QDialogButtonBox::Apply ), &QPushButton::clicked, this, &QDialog::accept );
-
+		buttonBox->button( QDialogButtonBox::Apply )->setDefault( true );
 		connect(
 			this, &QDialog::accepted, [ this, p_e ]() { App::ACTION().execute<App::Action::Application::Update>(); }
 		);
