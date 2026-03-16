@@ -70,9 +70,7 @@ namespace VTX::App
 				_impl->pendingUpdate = std::move( update );
 				const auto & release = _impl->pendingUpdate->TargetFullRelease;
 				VTX_INFO( "New version found: {}", release.Version );
-				HUB().trigger<Events::UpdateAvailable>(
-					version(), release.Version, release.NotesMarkdown, release.NotesHtml, release.Size
-				);
+				HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHtml, release.Size );
 			}
 			else
 			{

@@ -22,7 +22,6 @@ namespace VTX::App::Events
 	{
 		std::string currentVersion;
 		std::string newVersion;
-		std::string changelogMd;
 		std::string changelogHtml;
 		size_t		size;
 	};
