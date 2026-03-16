@@ -35,15 +35,14 @@ namespace VTX::App
 		try
 		{
 			// Velopack hooks and run.
-			auto vpCallback = []( void * p_user_data, const char * psz_app_version ) {};
 			Velopack::VelopackApp::Build()
-				.OnAfterInstall( vpCallback )
-				.OnAfterInstall( vpCallback )
-				.OnBeforeUninstall( vpCallback )
-				.OnBeforeUpdate( vpCallback )
-				.OnAfterUpdate( vpCallback )
-				.OnFirstRun( vpCallback )
-				.OnRestarted( vpCallback )
+				//.OnAfterInstall( vpCallback )
+				.OnBeforeUninstall( []( void * p_user_data, const char * psz_app_version )
+									{ Util::Filesystem::removeAll( SESSION().getDataHome() ); } )
+				//.OnBeforeUpdate( vpCallback )
+				//.OnAfterUpdate( vpCallback )
+				//.OnFirstRun( vpCallback )
+				//.OnRestarted( vpCallback )
 				.Run();
 
 			_impl->manager.emplace( UPDATE_URL.data() );
