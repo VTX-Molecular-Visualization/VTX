@@ -14,11 +14,11 @@ namespace VTX::App
 
 	constexpr std::string_view APPLICATION_DISPLAY_NAME = "VTX";
 	constexpr std::string_view APPLICATION_NAME			= "VTX";
-	constexpr std::string_view ORGANIZATION_NAME		= "VTX";
+	constexpr std::string_view ORGANIZATION_NAME		= "VTX Team";
 	constexpr std::string_view ORGANIZATION_DOMAIN		= "vtx.drugdesign.fr";
 
 	constexpr std::string_view UPDATE_URL
-		= "https://github.com/VTX-Molecular-Visualization/VTX_updater/releases/latest/";
+		= "https://github.com/VTX-Molecular-Visualization/VTX_release/releases/latest/";
 
 	/**
 	 * @brief Runtime session.
