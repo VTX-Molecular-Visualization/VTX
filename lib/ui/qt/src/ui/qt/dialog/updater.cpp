@@ -19,7 +19,7 @@ namespace VTX::UI::QT::Dialog
 		setLayout( layout );
 
 		// Title.
-		auto * labelTitle = new QLabel( QString( "Version %1 available" ).arg( p_e.newVersion ) );
+		auto * labelTitle = new QLabel( QString( "VTX %1 available" ).arg( p_e.newVersion ) );
 		labelTitle->setContentsMargins( 0, 20, 0, 20 );
 		QFont font = labelTitle->font();
 		font.setPointSizeF( font.pointSizeF() * 2 );

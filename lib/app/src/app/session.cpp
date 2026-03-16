@@ -44,8 +44,8 @@ namespace VTX::App
 				.OnAfterUpdate( vpCallback )
 				.OnFirstRun( vpCallback )
 				.OnRestarted( vpCallback )
-
 				.Run();
+
 			_impl->manager.emplace( UPDATE_URL.data() );
 		}
 		catch ( const std::exception & p_e )
@@ -61,7 +61,7 @@ namespace VTX::App
 		/*
 		Events::UpdateAvailable e;
 		e.currentVersion = version();
-		e.newVersion	 = "0.0.0";
+		e.newVersion	 = "2026.3.0";
 		e.changelogHtml
 			= "<h1>Change Log</h1>\n<h2>[0.4.2] (beta) - 2024-02-29</h2>\n<h3>Debug</h3>\n<ul>\n<li>Fix possible crash "
 			  "when loading big trajectory.</li>\n<li>Fix Memory leak when reading trajectory in SES "
