@@ -250,7 +250,7 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
-		App::NETWORK().onFileCached += [ this ]() { _refreshCacheInfos(); };
+		App::HUB().connect<App::Events::FileDownloaded, &Options::_refreshCacheInfos>( this );
 	}
 
 	Options::~Options()

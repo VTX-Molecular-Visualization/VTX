@@ -97,6 +97,18 @@ namespace VTX::App::Events
 		std::string name;
 	};
 
+	struct FileDownloaded
+	{
+		uint64_t id;
+		bool	 success;
+	};
+
+	struct FileDownloadProgress
+	{
+		uint64_t id;
+		float	 progress;
+	};
+
 } // namespace VTX::App::Events
 
 #endif

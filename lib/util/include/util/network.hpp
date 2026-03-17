@@ -6,10 +6,14 @@
 
 namespace VTX::Util::Network
 {
-	using CallbackHttpGet = std::function<void( std::string && )>;
+	using CallbackHttpGet	= std::function<void( std::string && )>;
+	using ProgressCallback	= std::function<void( size_t p_downloaded, size_t p_total )>;
 
-	void httpRequestGet( const std::string_view & p_url, std::string & p_text );
-	void httpRequestGetAsync( const std::string_view & p_url, const CallbackHttpGet & p_callback );
+	void httpRequestGet(
+		const std::string_view & p_url,
+		std::string &			 p_text,
+		const ProgressCallback & p_progress = nullptr
+	);
 
 } // namespace VTX::Util::Network
 

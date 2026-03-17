@@ -98,7 +98,7 @@ namespace VTX::App
 					VTX_ERROR( "Updater error: {}", p_e.what() );
 				}
 				_impl->updateCheckReady = true;
-				return 0u;
+				return 0;
 			}
 		);
 

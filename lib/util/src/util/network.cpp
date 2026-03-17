@@ -6,18 +6,6 @@ namespace
 {
 	cpr::SslOptions sslOpts = cpr::Ssl( cpr::ssl::MaxTLSVersion {} );
 
-	cpr::ProgressCallback progressCallback = cpr::ProgressCallback(
-		[]( cpr::cpr_off_t downloadTotal,
-			cpr::cpr_off_t downloadNow,
-			cpr::cpr_off_t uploadTotal,
-			cpr::cpr_off_t uploadNow,
-			intptr_t	   userdata ) -> bool
-		{
-			VTX::VTX_DEBUG( "Downloaded {} / {} bytes", downloadNow, downloadTotal );
-			return true;
-		}
-	);
-
 	void checkResponse( cpr::Response & p_response )
 	{
 		if ( p_response.status_code != 200 )
@@ -30,24 +18,37 @@ namespace
 
 namespace VTX::Util::Network
 {
-	void httpRequestGet( const std::string_view & p_url, std::string & p_text )
+	void httpRequestGet(
+		const std::string_view & p_url,
+		std::string &			 p_text,
+		const ProgressCallback & p_progress
+	)
 	{
-		cpr::Response response = cpr::Get( cpr::Url { p_url }, progressCallback, sslOpts );
-		checkResponse( response );
-		p_text = response.text;
-	}
-
-	void httpRequestGetAsync( const std::string_view & p_url, const CallbackHttpGet & p_callback )
-	{
-		cpr::AsyncWrapper async = cpr::GetCallback(
-			[ p_callback ]( cpr::Response p_response )
-			{
-				checkResponse( p_response );
-				p_callback( std::move( p_response.text ) );
-			},
+		cpr::Response response = cpr::Get(
 			cpr::Url { p_url },
-			progressCallback,
+			cpr::ProgressCallback(
+				[ &p_progress ](
+					cpr::cpr_off_t p_downloadTotal,
+					cpr::cpr_off_t p_downloadNow,
+					cpr::cpr_off_t,
+					cpr::cpr_off_t,
+					intptr_t ) -> bool
+				{
+					if ( p_progress )
+					{
+						p_progress(
+							static_cast<size_t>( p_downloadNow ),
+							static_cast<size_t>( p_downloadTotal )
+						);
+					}
+					return true;
+				}
+			),
 			sslOpts
 		);
+
+		checkResponse( response );
+		p_text = std::move( response.text );
 	}
+
 } // namespace VTX::Util::Network
