@@ -22,7 +22,7 @@ namespace VTX::App::Threading
 	  public:
 		using AsyncOp		   = std::function<uint( BaseThread & )>;
 		using StoppableAsyncOp = std::function<uint( Util::StopToken, BaseThread & )>;
-		using EndCallback	   = std::function<void( BaseThread &, uint )>;
+		using EndCallback	   = std::function<void( BaseThread &, uint, bool p_manuallyStopped )>;
 		using ID			   = std::jthread::id;
 
 	  public:

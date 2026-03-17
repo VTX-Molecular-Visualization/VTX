@@ -87,7 +87,6 @@ namespace VTX::App
 			{
 				try
 				{
-					std::this_thread::sleep_for( std::chrono::seconds( 5 ) );
 					auto update = ( *_impl->manager ).CheckForUpdates();
 					if ( update.has_value() )
 					{

@@ -60,11 +60,7 @@ namespace VTX::App::Threading
 					VTX_ERROR( "Unhandled exception in thread: {}", p_e.what() );
 				}
 
-				if ( _stopped )
-				{
-					p_callback( *this, res );
-				}
-
+				p_callback( *this, res, _stopped );
 				_finish();
 			}
 		);
@@ -85,11 +81,7 @@ namespace VTX::App::Threading
 					VTX_ERROR( "Unhandled exception in thread: {}", p_e.what() );
 				}
 
-				if ( _stopped )
-				{
-					p_callback( *this, res );
-				}
-
+				p_callback( *this, res, _stopped );
 				_finish();
 			}
 		);
