@@ -37,7 +37,10 @@ namespace VTX::App
 		try
 		{
 			// Velopack hooks and run.
+			// Auto-apply is disabled: we manage the update flow manually via downloadUpdate().
+			// Without this, portable mode loops infinitely (downloaded package re-applied on every restart).
 			Velopack::VelopackApp::Build()
+				.SetAutoApplyOnStartup( false )
 				//.OnAfterInstall( vpCallback )
 				.OnBeforeUninstall( []( void * p_user_data, const char * psz_app_version )
 									{ Util::Filesystem::removeAll( SESSION().getDataHome() ); } )
@@ -72,8 +75,8 @@ namespace VTX::App
 				_impl->pendingUpdate = std::move( update );
 				const auto & release = _impl->pendingUpdate->TargetFullRelease;
 				VTX_INFO( "New version found: {}", release.Version );
-				VTX_INFO( "Release notes: {}", release.NotesHTML );
-				HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHTML, release.Size );
+				VTX_INFO( "Release notes: {}", release.NotesHtml );
+				HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHtml, release.Size );
 			}
 			else
 			{
