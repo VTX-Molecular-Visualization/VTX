@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_VTX_UPDATER__
 #define __VTX_APP_VTX_UPDATER__
 
+#include "app/events.hpp"
 #include <memory>
 #include <optional>
 #include <util/types.hpp>
@@ -126,6 +127,11 @@ namespace VTX::App
 		 */
 		struct Impl;
 		std::unique_ptr<Impl> _impl;
+
+		/**
+		 * @brief Called each frame from the main thread to dispatch the update check result.
+		 */
+		void _onUpdateCheckResult( const Events::Update & );
 	};
 } // namespace VTX::App
 

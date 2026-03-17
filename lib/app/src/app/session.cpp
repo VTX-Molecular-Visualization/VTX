@@ -2,8 +2,11 @@
 #include "app/action/action_manager.hpp"
 #include "app/action/application.hpp"
 #include "app/args.hpp"
-#include "app/events.hpp"
 #include "app/services.hpp"
+#include "app/threading/thread_manager.hpp"
+#include <atomic>
+#include <chrono>
+#include <thread>
 #include <util/event_hub.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
@@ -31,6 +34,16 @@ namespace VTX::App
 		 * @brief Available update.
 		 */
 		std::optional<Velopack::UpdateInfo> pendingUpdate;
+
+		/**
+		 * @brief Set by the worker thread when CheckForUpdates completes.
+		 */
+		std::atomic<bool> updateCheckReady = false;
+
+		/**
+		 * @brief Held while waiting for the update check result on the main thread.
+		 */
+		Util::EventHub::Connection updateCheckConnection;
 	};
 
 	Session::Session() : _impl( std::make_unique<Impl>() )
@@ -66,26 +79,59 @@ namespace VTX::App
 			return;
 		}
 
-		try
+		_impl->updateCheckReady = false;
+		_impl->pendingUpdate.reset();
+
+		THREAD().createThread(
+			[ this ]( App::Threading::BaseThread & p_thread ) -> uint
+			{
+				try
+				{
+					std::this_thread::sleep_for( std::chrono::seconds( 5 ) );
+					auto update = ( *_impl->manager ).CheckForUpdates();
+					if ( update.has_value() )
+					{
+						p_thread.set<Velopack::UpdateInfo>( std::move( *update ) );
+					}
+					return update.has_value() ? 1u : 0u;
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( "Updater error: {}", p_e.what() );
+					return 0u;
+				}
+			},
+			[ this ]( App::Threading::BaseThread & p_thread, uint p_result )
+			{
+				if ( p_result == 1 )
+				{
+					_impl->pendingUpdate = p_thread.get<Velopack::UpdateInfo>();
+				}
+				_impl->updateCheckReady = true;
+			}
+		);
+
+		_impl->updateCheckConnection = HUB().connect<Events::Update, &Session::_onUpdateCheckResult>( this );
+	}
+
+	void Session::_onUpdateCheckResult( const Events::Update & )
+	{
+		if ( not _impl->updateCheckReady.exchange( false ) )
 		{
-			auto update = ( *_impl->manager ).CheckForUpdates();
-			if ( update.has_value() )
-			{
-				_impl->pendingUpdate = std::move( update );
-				const auto & release = _impl->pendingUpdate->TargetFullRelease;
-				VTX_INFO( "New version found: {}", release.Version );
-				VTX_INFO( "Release notes: {}", release.NotesMarkdown );
-				VTX_INFO( "Release notes: {}", release.NotesHtml );
-				HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHtml, release.Size );
-			}
-			else
-			{
-				VTX_INFO( "Up to date" );
-			}
+			return;
 		}
-		catch ( const std::exception & p_e )
+
+		HUB().disconnect( _impl->updateCheckConnection );
+
+		if ( _impl->pendingUpdate )
 		{
-			VTX_ERROR( "Updater error: {}", p_e.what() );
+			const auto & release = _impl->pendingUpdate->TargetFullRelease;
+			VTX_INFO( "New version found: {}", release.Version );
+			HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHtml, release.Size );
+		}
+		else
+		{
+			VTX_INFO( "Up to date" );
 		}
 	}
 
