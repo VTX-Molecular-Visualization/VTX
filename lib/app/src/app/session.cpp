@@ -96,10 +96,11 @@ namespace VTX::App
 		try
 		{
 			( *_impl->manager ).DownloadUpdates( *_impl->pendingUpdate );
-
+			VTX_INFO( "Downloading update..." );
 			const bool restart = not isPortable();
 			( *_impl->manager )
 				.WaitExitThenApplyUpdates( *_impl->pendingUpdate, false, restart /*, ARGS().toStringVec()*/ );
+			VTX_INFO( "Update downloaded" );
 			ACTION().execute<Action::Application::Quit>();
 		}
 		catch ( const std::exception & p_e )
