@@ -43,7 +43,7 @@ namespace VTX::App
 				.SetAutoApplyOnStartup( false )
 				//.OnAfterInstall( vpCallback )
 				.OnBeforeUninstall( []( void * p_user_data, const char * psz_app_version )
-									{ Util::Filesystem::removeAll( SESSION().getDataHome() ); } )
+									{ Filesystem::removeAll( Filesystem::getDataHome() / APP_FOLDER_NAME ); } )
 				//.OnBeforeUpdate( vpCallback )
 				//.OnAfterUpdate( vpCallback )
 				//.OnFirstRun( vpCallback )
@@ -94,7 +94,11 @@ namespace VTX::App
 		assert( _impl->pendingUpdate );
 
 		( *_impl->manager ).DownloadUpdates( *_impl->pendingUpdate );
-		( *_impl->manager ).WaitExitThenApplyUpdates( *_impl->pendingUpdate );
+		// In portable mode, don't restart automatically: Velopack can't track the new version
+		// after an in-place update, so restarting would detect the same update again.
+		// The user relaunches the app manually from the updated files.
+		const bool restart = not isPortable();
+		( *_impl->manager ).WaitExitThenApplyUpdates( *_impl->pendingUpdate, false, restart );
 		ACTION().execute<Action::Application::Quit>();
 	}
 
@@ -113,7 +117,7 @@ namespace VTX::App
 		{
 			return Filesystem::getExecutableDir();
 		}
-		return Filesystem::getDataHome() / "VTX";
+		return Filesystem::getDataHome() / APP_FOLDER_NAME;
 	}
 
 	FilePath Session::getPicturesFolder() const
@@ -122,7 +126,7 @@ namespace VTX::App
 		{
 			return Filesystem::getExecutableDir();
 		}
-		return Filesystem::getPicturesFolder() / "VTX";
+		return Filesystem::getPicturesFolder() / APP_FOLDER_NAME;
 	}
 
 	FilePath Session::getShadersDir() const { return Filesystem::getExecutableDir() / "shaders"; }
