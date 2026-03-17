@@ -1,4 +1,6 @@
 #include "app/session.hpp"
+#include "app/action/action_manager.hpp"
+#include "app/action/application.hpp"
 #include "app/events.hpp"
 #include "app/services.hpp"
 #include <util/event_hub.hpp>
@@ -70,8 +72,8 @@ namespace VTX::App
 				_impl->pendingUpdate = std::move( update );
 				const auto & release = _impl->pendingUpdate->TargetFullRelease;
 				VTX_INFO( "New version found: {}", release.Version );
-				VTX_INFO( "Release notes: {}", release.NotesHtml );
-				HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHtml, release.Size );
+				VTX_INFO( "Release notes: {}", release.NotesHTML );
+				HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHTML, release.Size );
 			}
 			else
 			{
@@ -90,6 +92,7 @@ namespace VTX::App
 
 		( *_impl->manager ).DownloadUpdates( *_impl->pendingUpdate );
 		( *_impl->manager ).WaitExitThenApplyUpdates( *_impl->pendingUpdate );
+		ACTION().execute<Action::Application::Quit>();
 	}
 
 	bool Session::isPortable() const

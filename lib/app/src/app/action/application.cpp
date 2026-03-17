@@ -1,16 +1,15 @@
 #include "app/action/application.hpp"
 #include "app/ecs.hpp"
+#include "app/events.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
 #include <renderer/renderer.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::App::Action::Application
 {
 
-	void Quit::execute()
-	{
-		// TODO.
-	}
+	void Quit::execute() { HUB().trigger<Events::ApplicationStop>(); }
 
 	void Resize::execute( const size_t p_width, const size_t p_height )
 	{
