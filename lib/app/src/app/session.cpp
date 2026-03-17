@@ -93,12 +93,19 @@ namespace VTX::App
 	{
 		assert( _impl->pendingUpdate );
 
-		( *_impl->manager ).DownloadUpdates( *_impl->pendingUpdate );
+		try
+		{
+			( *_impl->manager ).DownloadUpdates( *_impl->pendingUpdate );
 
-		const bool restart = not isPortable();
-		( *_impl->manager )
-			.WaitExitThenApplyUpdates( *_impl->pendingUpdate, false, restart /*, ARGS().toStringVec()*/ );
-		ACTION().execute<Action::Application::Quit>();
+			const bool restart = not isPortable();
+			( *_impl->manager )
+				.WaitExitThenApplyUpdates( *_impl->pendingUpdate, false, restart /*, ARGS().toStringVec()*/ );
+			ACTION().execute<Action::Application::Quit>();
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Update download error: {}", p_e.what() );
+		}
 	}
 
 	bool Session::isPortable() const
