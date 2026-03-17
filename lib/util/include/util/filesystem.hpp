@@ -43,11 +43,6 @@ namespace VTX::Util::Filesystem
 	void writeFile( const FilePath & p_filePath, const std::string & p_content );
 
 	/**
-	 * @brief Remove file or directory at path (recursively).
-	 */
-	void removeAll( const FilePath & p_filePath );
-
-	/**
 	 * @brief If file at path already exists, generate a new name.
 	 */
 	void generateUniqueFileName( FilePath & p_filePath );

@@ -25,6 +25,6 @@ TEST_CASE( "Util::Filesystem", "[unit]" )
 	file2 << "Hello, world!";
 	file2.close();
 
-	VTX::Util::Filesystem::removeAll( "data_test/sdqsdqsd" );
+	std::filesystem::remove_all( "data_test" );
 	CHECK( std::filesystem::exists( "data_test" ) == false );
 }

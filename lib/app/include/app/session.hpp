@@ -126,8 +126,6 @@ namespace VTX::App
 		 */
 		struct Impl;
 		std::unique_ptr<Impl> _impl;
-
-		static void _onBeforeUninstall( void *, const char * );
 	};
 } // namespace VTX::App
 

@@ -40,15 +40,17 @@ namespace VTX::App
 			Velopack::VelopackApp::Build()
 				.SetAutoApplyOnStartup( false )
 				//.OnAfterInstall(  )
-				.OnBeforeUninstall( _onBeforeUninstall )
+				.OnBeforeUninstall( []( void *, const char * )
+									{ std::filesystem::remove_all( Filesystem::getDataHome() / APP_FOLDER_NAME ); } )
 				//.OnBeforeUpdate(  )
 				//.OnAfterUpdate(  )
 				//.OnFirstRun(  )
 				//.OnRestarted(  )
 				.Run();
 
-			auto src = std::make_unique<Velopack::GithubSource>( UPDATE_URL.data() );
-			_impl->manager.emplace( std::move( src ) );
+			// auto src = std::make_unique<Velopack::GithubSource>( UPDATE_URL.data() );
+			//_impl->manager.emplace( std::move( src ) );
+			_impl->manager.emplace( UPDATE_URL.data() );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -73,6 +75,7 @@ namespace VTX::App
 				_impl->pendingUpdate = std::move( update );
 				const auto & release = _impl->pendingUpdate->TargetFullRelease;
 				VTX_INFO( "New version found: {}", release.Version );
+				VTX_INFO( "Release notes: {}", release.NotesMarkdown );
 				VTX_INFO( "Release notes: {}", release.NotesHtml );
 				HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHtml, release.Size );
 			}
@@ -159,11 +162,6 @@ namespace VTX::App
 		VTX_DEBUG( "Executable dir: {}", Filesystem::getExecutableDir().string() );
 		VTX_DEBUG( "Data home: {}", getDataHome().string() );
 		VTX_DEBUG( "Pictures folder: {}", getPicturesFolder().string() );
-	}
-
-	void Session::_onBeforeUninstall( void *, const char * )
-	{
-		Filesystem::removeAll( Filesystem::getDataHome() / APP_FOLDER_NAME );
 	}
 
 } // namespace VTX::App
