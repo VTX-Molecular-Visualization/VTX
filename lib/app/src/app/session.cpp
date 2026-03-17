@@ -95,6 +95,7 @@ namespace VTX::App
 
 		try
 		{
+			VTX_INFO( "downloadUpdate" );
 			( *_impl->manager ).DownloadUpdates( *_impl->pendingUpdate );
 			VTX_INFO( "Downloading update..." );
 			const bool restart = not isPortable();
