@@ -54,6 +54,19 @@ namespace VTX::App
 			return str;
 		}
 
+		/**
+		 * @brief Convert arguments to a vector of strings.
+		 */
+		std::vector<std::string> toStringVec() const
+		{
+			std::vector<std::string> vec;
+			for ( const auto arg : _args )
+			{
+				vec.emplace_back( arg );
+			}
+			return vec;
+		}
+
 	  private:
 		/**
 		 * @brief Stored arguments.

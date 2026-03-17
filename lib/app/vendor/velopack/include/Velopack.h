@@ -1,7 +1,7 @@
 #ifndef VELOPACK_H
 #define VELOPACK_H
 
-/* Generated with cbindgen:0.29.0 */
+/* Generated with cbindgen:0.29.2 */
 
 /* THIS FILE IS AUTO-GENERATED - DO NOT EDIT */
 
@@ -107,7 +107,7 @@ typedef struct vpkc_update_options_t {
    */
   bool AllowVersionDowngrade;
   /**
-   * **This option should usually be left None/NULL**.
+   * **This option should usually be left None**.
    * Overrides the default channel used to fetch updates.
    * The default channel will be whatever channel was specified on the command line when building this release.
    * For example, if the current release was packaged with '--channel beta', then the default channel will be 'beta'.
@@ -220,6 +220,46 @@ vpkc_update_source_t *vpkc_new_source_file(const char *psz_file_path);
  * @returns A new vpkc_update_source_t instance, or null on error.
  */
 vpkc_update_source_t *vpkc_new_source_http_url(const char *psz_http_url);
+
+/**
+ * Create a new GithubSource update source for a GitHub repository.
+ * @param psz_repo_url The GitHub repository URL (e.g. "https://github.com/user/repo").
+ * @param psz_access_token Optional access token for private repositories (can be null).
+ * @param b_prerelease Whether to include pre-release versions.
+ * @returns A new vpkc_update_source_t instance, or null on error.
+ */
+vpkc_update_source_t *vpkc_new_source_github(const char *psz_repo_url,
+                                             const char *psz_access_token,
+                                             bool b_prerelease);
+
+/**
+ * Create a new GitlabSource update source for a GitLab repository.
+ * @param psz_repo_url The GitLab repository URL (e.g. "https://gitlab.com/user/repo").
+ * @param psz_access_token Optional access token for private repositories (can be null).
+ * @param b_prerelease Whether to include pre-release versions.
+ * @returns A new vpkc_update_source_t instance, or null on error.
+ */
+vpkc_update_source_t *vpkc_new_source_gitlab(const char *psz_repo_url,
+                                             const char *psz_access_token,
+                                             bool b_prerelease);
+
+/**
+ * Create a new GiteaSource update source for a Gitea repository.
+ * @param psz_repo_url The Gitea repository URL (e.g. "https://gitea.example.com/user/repo").
+ * @param psz_access_token Optional access token for private repositories (can be null).
+ * @param b_prerelease Whether to include pre-release versions.
+ * @returns A new vpkc_update_source_t instance, or null on error.
+ */
+vpkc_update_source_t *vpkc_new_source_gitea(const char *psz_repo_url,
+                                            const char *psz_access_token,
+                                            bool b_prerelease);
+
+/**
+ * Create a new VelopackFlowSource update source for Velopack Flow.
+ * @param psz_base_uri Optional base URI for the Velopack Flow API (can be null for default).
+ * @returns A new vpkc_update_source_t instance, or null on error.
+ */
+vpkc_update_source_t *vpkc_new_source_velopack_flow(const char *psz_base_uri);
 
 /**
  * Create a new _CUSTOM_ update source with user-provided callbacks to fetch release feeds and download assets.

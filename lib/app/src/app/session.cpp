@@ -1,6 +1,7 @@
 #include "app/session.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/application.hpp"
+#include "app/args.hpp"
 #include "app/events.hpp"
 #include "app/services.hpp"
 #include <util/event_hub.hpp>
@@ -36,21 +37,18 @@ namespace VTX::App
 	{
 		try
 		{
-			// Velopack hooks and run.
-			// Auto-apply is disabled: we manage the update flow manually via downloadUpdate().
-			// Without this, portable mode loops infinitely (downloaded package re-applied on every restart).
 			Velopack::VelopackApp::Build()
 				.SetAutoApplyOnStartup( false )
-				//.OnAfterInstall( vpCallback )
-				.OnBeforeUninstall( []( void * p_user_data, const char * psz_app_version )
-									{ Filesystem::removeAll( Filesystem::getDataHome() / APP_FOLDER_NAME ); } )
-				//.OnBeforeUpdate( vpCallback )
-				//.OnAfterUpdate( vpCallback )
-				//.OnFirstRun( vpCallback )
-				//.OnRestarted( vpCallback )
+				//.OnAfterInstall(  )
+				.OnBeforeUninstall( _onBeforeUninstall )
+				//.OnBeforeUpdate(  )
+				//.OnAfterUpdate(  )
+				//.OnFirstRun(  )
+				//.OnRestarted(  )
 				.Run();
 
-			_impl->manager.emplace( UPDATE_URL.data() );
+			auto src = std::make_unique<Velopack::GithubSource>( UPDATE_URL.data() );
+			_impl->manager.emplace( std::move( src ) );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -94,11 +92,9 @@ namespace VTX::App
 		assert( _impl->pendingUpdate );
 
 		( *_impl->manager ).DownloadUpdates( *_impl->pendingUpdate );
-		// In portable mode, don't restart automatically: Velopack can't track the new version
-		// after an in-place update, so restarting would detect the same update again.
-		// The user relaunches the app manually from the updated files.
+
 		const bool restart = not isPortable();
-		( *_impl->manager ).WaitExitThenApplyUpdates( *_impl->pendingUpdate, false, restart );
+		( *_impl->manager ).WaitExitThenApplyUpdates( *_impl->pendingUpdate, false, restart, ARGS().toStringVec() );
 		ACTION().execute<Action::Application::Quit>();
 	}
 
@@ -163,6 +159,11 @@ namespace VTX::App
 		VTX_DEBUG( "Executable dir: {}", Filesystem::getExecutableDir().string() );
 		VTX_DEBUG( "Data home: {}", getDataHome().string() );
 		VTX_DEBUG( "Pictures folder: {}", getPicturesFolder().string() );
+	}
+
+	void Session::_onBeforeUninstall( void *, const char * )
+	{
+		Filesystem::removeAll( Filesystem::getDataHome() / APP_FOLDER_NAME );
 	}
 
 } // namespace VTX::App
