@@ -48,9 +48,8 @@ namespace VTX::App
 				//.OnRestarted(  )
 				.Run();
 
-			// auto src = std::make_unique<Velopack::GithubSource>( UPDATE_URL.data() );
-			//_impl->manager.emplace( std::move( src ) );
-			_impl->manager.emplace( UPDATE_URL.data() );
+			auto src = std::make_unique<Velopack::GithubSource>( UPDATE_URL.data() );
+			_impl->manager.emplace( std::move( src ) );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -97,7 +96,8 @@ namespace VTX::App
 		( *_impl->manager ).DownloadUpdates( *_impl->pendingUpdate );
 
 		const bool restart = not isPortable();
-		( *_impl->manager ).WaitExitThenApplyUpdates( *_impl->pendingUpdate, false, restart, ARGS().toStringVec() );
+		( *_impl->manager )
+			.WaitExitThenApplyUpdates( *_impl->pendingUpdate, false, restart /*, ARGS().toStringVec()*/ );
 		ACTION().execute<Action::Application::Quit>();
 	}
 
