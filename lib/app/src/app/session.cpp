@@ -83,7 +83,7 @@ namespace VTX::App
 		_impl->pendingUpdate.reset();
 
 		THREAD().createThread(
-			[ this ]( App::Threading::BaseThread & p_thread ) -> uint
+			[ this ]( App::Threading::BaseThread & ) -> uint
 			{
 				try
 				{
@@ -91,23 +91,15 @@ namespace VTX::App
 					auto update = ( *_impl->manager ).CheckForUpdates();
 					if ( update.has_value() )
 					{
-						p_thread.set<Velopack::UpdateInfo>( std::move( *update ) );
+						_impl->pendingUpdate = std::move( update );
 					}
-					return update.has_value() ? 1u : 0u;
 				}
 				catch ( const std::exception & p_e )
 				{
 					VTX_ERROR( "Updater error: {}", p_e.what() );
-					return 0u;
-				}
-			},
-			[ this ]( App::Threading::BaseThread & p_thread, uint p_result )
-			{
-				if ( p_result == 1 )
-				{
-					_impl->pendingUpdate = p_thread.get<Velopack::UpdateInfo>();
 				}
 				_impl->updateCheckReady = true;
+				return 0u;
 			}
 		);
 
