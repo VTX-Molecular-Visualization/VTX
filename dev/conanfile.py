@@ -46,8 +46,9 @@ class VTXRecipe(ConanFile):
         self.requires("qt/6.10.1")
         self.requires("gromacs/2026.0")
         self.requires("re2/20240702")
-        self.requires("libarchive/3.7.9")
-        self.requires("boost/1.87.0") # 1.88 version break process package on windows
+        if self.options.local_pdb100:
+            self.requires("libarchive/3.7.9")
+            self.requires("boost/1.87.0") # 1.88 version break process package on windows
         self.requires("platformfolders/4.3.0")
         self.requires("cpython/{}".format(str(python_binding_module.pythonVersion()))) # v >= 3.10 not working with msvc compiler so far
 
