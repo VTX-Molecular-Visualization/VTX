@@ -6,7 +6,7 @@
 #include "ui/qt/widget/tree/graphics_config_presets.hpp"
 #include "ui/qt/widget/tree/representation_presets.hpp"
 #include <app/action/application.hpp>
-#include <app/ecs.hpp >
+#include <app/ecs.hpp>
 #include <app/events.hpp>
 #include <app/services.hpp>
 #include <app/system/selection.hpp>
