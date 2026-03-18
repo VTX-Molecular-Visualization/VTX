@@ -3,13 +3,12 @@
 #include "app/events.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
+#include "app/threading/thread_manager.hpp"
 #include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::App::Action::Application
 {
-
-	void Quit::execute() { HUB().trigger<Events::ApplicationStop>(); }
 
 	void Resize::execute( const size_t p_width, const size_t p_height )
 	{
@@ -25,8 +24,12 @@ namespace VTX::App::Action::Application
 		RENDERER().resize( p_width, p_height );
 	}
 
+	void Update::execute() { SESSION().downloadUpdate(); }
+
+	void Quit::execute() { HUB().trigger<Events::ApplicationStop>(); }
+
 	void SetSavePower::execute( const bool p_enable ) { RENDERER().setForceUpdate( not p_enable ); }
 
-	void Update::execute() { SESSION().downloadUpdate(); }
+	void StopThread::execute( const Threading::BaseThread::ID & p_id ) { THREAD().stop( p_id ); }
 
 } // namespace VTX::App::Action::Application

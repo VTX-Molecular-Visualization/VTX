@@ -1,10 +1,14 @@
 #ifndef __VTX_UI_QT_WIDGET_THREAD__
 #define __VTX_UI_QT_WIDGET_THREAD__
 
+#include "ui/qt/services.hpp"
+#include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
+#include <QHBoxLayout>
 #include <QLabel>
+#include <QPainter>
 #include <QPointer>
 #include <QProgressBar>
-#include <QVBoxLayout>
 #include <QWidget>
 
 namespace VTX::UI::QT::Widget
@@ -14,15 +18,24 @@ namespace VTX::UI::QT::Widget
 	 */
 	class Thread : public QWidget
 	{
+		Q_OBJECT
+
 	  public:
 		Thread( QWidget * p_parent )
 		{
-			auto * layout = new QVBoxLayout( this );
+			auto * layout = new QHBoxLayout( this );
 			layout->setContentsMargins( 0, 0, 0, 0 );
 
-			_progressBar = new QProgressBar( this );
+			_progressBar = new _ProgressBar( this );
 			_progressBar->setTextVisible( true );
 
+			_cancelButton = new QPushButton( this );
+			_cancelButton->setIcon( STYLE().iconFromCodepoint( Style::Icons::CANCEL ) );
+			_cancelButton->setFlat( true );
+
+			connect( _cancelButton, &QPushButton::clicked, this, [ this ]() { emit cancelClicked(); } );
+
+			layout->addWidget( _cancelButton );
 			layout->addWidget( _progressBar );
 		}
 
@@ -40,8 +53,32 @@ namespace VTX::UI::QT::Widget
 			_progressBar->setFormat( p_text );
 		}
 
+	  signals:
+		void cancelClicked();
+
 	  private:
-		QPointer<QProgressBar> _progressBar;
+		/**
+		 * @brief Override progress bar to display text when indeterminate.
+		 */
+		class _ProgressBar : public QProgressBar
+		{
+		  public:
+			using QProgressBar::QProgressBar;
+
+			void paintEvent( QPaintEvent * p_event ) override
+			{
+				QProgressBar::paintEvent( p_event );
+
+				if ( minimum() == 0 && maximum() == 0 )
+				{
+					QPainter painter( this );
+					painter.drawText( rect(), Qt::AlignCenter, format() );
+				}
+			}
+		};
+
+		QPointer<_ProgressBar> _progressBar;
+		QPointer<QPushButton>  _cancelButton;
 	};
 } // namespace VTX::UI::QT::Widget
 

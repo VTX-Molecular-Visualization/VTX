@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_ACTION_APPLICATION__
 #define __VTX_APP_ACTION_APPLICATION__
 
+#include "app/threading/base_thread.hpp"
 #include <util/types.hpp>
 #include <vector>
 
@@ -8,19 +9,27 @@ namespace VTX::App::Action::Application
 {
 
 	/**
-	 * @brief Exit the application.
-	 */
-	struct Quit
-	{
-		void execute();
-	};
-
-	/**
 	 * @brief Resize the renderer window.
 	 */
 	struct Resize
 	{
 		void execute( const size_t p_width, const size_t p_height );
+	};
+
+	/**
+	 * @brief Update application.
+	 */
+	struct Update
+	{
+		void execute();
+	};
+
+	/**
+	 * @brief Exit the application.
+	 */
+	struct Quit
+	{
+		void execute();
 	};
 
 	/**
@@ -32,11 +41,11 @@ namespace VTX::App::Action::Application
 	};
 
 	/**
-	 * @brief Update application.
+	 * @brief Stop a thread by ID.
 	 */
-	struct Update
+	struct StopThread
 	{
-		void execute();
+		void execute( const Threading::BaseThread::ID & );
 	};
 
 } // namespace VTX::App::Action::Application

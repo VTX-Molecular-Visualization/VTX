@@ -107,5 +107,15 @@ namespace VTX::App::Threading
 			}
 	}
 
+	void ThreadManager::stop( const BaseThread::ID & p_id )
+	{
+		BaseThread * thread = nullptr;
+		get( p_id, thread );
+		if ( thread != nullptr )
+		{
+			thread->stop();
+		}
+	}
+
 	void ThreadManager::_clearStoppedThreads() { _stoppingThreads.clear(); }
 } // namespace VTX::App::Threading

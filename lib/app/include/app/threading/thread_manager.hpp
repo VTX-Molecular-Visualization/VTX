@@ -38,7 +38,9 @@ namespace VTX::App::Threading
 
 		void lateUpdate();
 
-		void get( const BaseThread::ID&, BaseThread *& ) noexcept;
+		void get( const BaseThread::ID &, BaseThread *& ) noexcept;
+
+		void stop( const BaseThread::ID & );
 
 	  private:
 		std::list<std::shared_ptr<BaseThread>> _threads;
