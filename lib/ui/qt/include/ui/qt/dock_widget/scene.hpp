@@ -9,6 +9,8 @@
 #include <QComboBox>
 #include <QPointer>
 #include <QTimer>
+#include <app/threading/base_thread.hpp>
+#include <ui/qt/widget/thread.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -31,15 +33,16 @@ namespace VTX::UI::QT::DockWidget
 		 * @brief Trajoectory players trees.
 		 */
 		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::TrajectoryPlayer>> _mapTrajTreeWidgets;
+
 		/**
 		 * @brief System trees.
 		 */
 		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::System>> _mapSystemTreeWidgets;
 
 		/**
-		 * @brief Timer for updating trajectory player display.
+		 * @brief Thread widgets.
 		 */
-		QTimer * _updateTimer = nullptr;
+		std::unordered_map<App::Threading::BaseThread::ID, QPointer<Widget::Thread>> _mapThreadWidgets;
 
 		/**
 		 * @brief Custom spacer to fill empty space.
@@ -75,12 +78,21 @@ namespace VTX::UI::QT::DockWidget
 		 * @brief Lock or unlock selection.
 		 */
 		void _onSelectionLocked( const Events::SelectionLocked & );
-		void _onUpdateTimer();
 
 		/**
 		 * @brief Called when a trajectory is added to any system.
 		 */
 		void _onTrajectoryCreated( App::ECS::Registry &, App::ECS::Entity p_entity );
+
+		/**
+		 * @brief Add or update thread widget.
+		 */
+		void _onThreadProgress( const App::Events::ThreadProgress & );
+
+		/**
+		 * @brief Remove thread widget.
+		 */
+		void _onThreadTerminated( const App::Events::ThreadTerminated & );
 	};
 
 } // namespace VTX::UI::QT::DockWidget

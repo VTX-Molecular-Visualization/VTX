@@ -36,7 +36,7 @@ namespace VTX::Util::Network
 				{
 					if ( p_progress )
 					{
-						p_progress(
+						return p_progress(
 							static_cast<size_t>( p_downloadNow ),
 							static_cast<size_t>( p_downloadTotal )
 						);

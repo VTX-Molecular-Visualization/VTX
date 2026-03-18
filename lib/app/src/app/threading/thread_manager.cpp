@@ -1,4 +1,7 @@
 #include "app/threading/thread_manager.hpp"
+#include "app/events.hpp"
+#include "app/services.hpp"
+#include <util/event_hub.hpp>
 
 namespace VTX::App::Threading
 {
@@ -69,7 +72,23 @@ namespace VTX::App::Threading
 		return _createThread( this, _threads, p_asyncOp, p_callback );
 	}
 
-	void ThreadManager::lateUpdate() { _clearStoppedThreads(); }
+	void ThreadManager::lateUpdate()
+	{
+		for ( const std::shared_ptr<BaseThread> & thread : _threads )
+		{
+			HUB().trigger<Events::ThreadProgress>( thread->getId(), thread->getProgress(), thread->getProgressText() );
+
+			if ( thread->isFinished() )
+			{
+				HUB().trigger<Events::ThreadTerminated>( thread->getId(), thread->isManuallyStopped() );
+				_stoppingThreads.emplace_back( thread );
+			}
+		}
+
+		_threads.remove_if( []( const std::shared_ptr<BaseThread> & p_thread ) { return p_thread->isFinished(); } );
+
+		_clearStoppedThreads();
+	}
 
 	void ThreadManager::get( const BaseThread::ID & p_id, BaseThread *& p_out ) noexcept
 	{
@@ -88,29 +107,5 @@ namespace VTX::App::Threading
 			}
 	}
 
-	void ThreadManager::_killThread( const BaseThread & p_thread )
-	{
-		const std::list<std::shared_ptr<BaseThread>>::const_iterator it = _findPtrFromThread( p_thread );
-
-		if ( it != _threads.end() )
-		{
-			_stoppingThreads.emplace_back( *it );
-			_threads.erase( it );
-		}
-	}
-
 	void ThreadManager::_clearStoppedThreads() { _stoppingThreads.clear(); }
-
-	std::list<std::shared_ptr<BaseThread>>::const_iterator ThreadManager::_findPtrFromThread(
-		const BaseThread & p_thread
-	) const
-	{
-		const BaseThread * const threadPtr = &p_thread;
-
-		return std::find_if(
-			_threads.cbegin(),
-			_threads.cend(),
-			[ threadPtr ]( const std::shared_ptr<BaseThread> & p_ptr ) { return threadPtr == p_ptr.get(); }
-		);
-	}
 } // namespace VTX::App::Threading

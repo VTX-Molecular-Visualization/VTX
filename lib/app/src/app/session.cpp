@@ -83,8 +83,9 @@ namespace VTX::App
 		_impl->pendingUpdate.reset();
 
 		THREAD().createThread(
-			[ this ]( App::Threading::BaseThread & ) -> uint
+			[ this ]( App::Threading::BaseThread & p_thread ) -> uint
 			{
+				p_thread.setProgressText( "Checking for updates..." );
 				try
 				{
 					auto update = ( *_impl->manager ).CheckForUpdates();

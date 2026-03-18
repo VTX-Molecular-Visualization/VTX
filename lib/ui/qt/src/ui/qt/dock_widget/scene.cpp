@@ -48,6 +48,9 @@ namespace VTX::UI::QT::DockWidget
 		App::REG().on_construct<App::System::TrajectoryFullBuffer>().connect<&Scene::_onTrajectoryCreated>( this );
 
 		App::HUB().connect<Events::SelectionLocked, &Scene::_onSelectionLocked>( this );
+
+		App::HUB().connect<App::Events::ThreadProgress, &Scene::_onThreadProgress>( this );
+		App::HUB().connect<App::Events::ThreadTerminated, &Scene::_onThreadTerminated>( this );
 	}
 
 	void Scene::_onCameraConstruct( App::ECS::Registry &, App::ECS::Entity p_e )
@@ -123,6 +126,25 @@ namespace VTX::UI::QT::DockWidget
 		auto * player = new Widget::Tree::TrajectoryPlayer( p_entity, this );
 		_mapTrajTreeWidgets.emplace( p_entity, player );
 		_layout->insertWidget( _layout->indexOf( _mapSystemTreeWidgets[ p_entity ] ), player );
+	}
+
+	void Scene::_onThreadProgress( const App::Events::ThreadProgress & p_event )
+	{
+		if ( not _mapThreadWidgets.contains( p_event.id ) )
+		{
+			_mapThreadWidgets.emplace( p_event.id, new Widget::Thread( this ) );
+			_layout->insertWidget( _layout->indexOf( _filler ), _mapThreadWidgets[ p_event.id ] );
+		}
+
+		_mapThreadWidgets[ p_event.id ]->set( QString::fromStdString( p_event.text ), p_event.progress );
+	}
+
+	void Scene::_onThreadTerminated( const App::Events::ThreadTerminated & p_event )
+	{
+		assert( _mapThreadWidgets.contains( p_event.id ) );
+
+		_mapThreadWidgets[ p_event.id ]->deleteLater();
+		_mapThreadWidgets.erase( p_event.id );
 	}
 
 } // namespace VTX::UI::QT::DockWidget

@@ -2,6 +2,7 @@
 #define __VTX_APP_CORE_NETWORK_NETWORK_SYSTEM__
 
 #include "app/events.hpp"
+#include "app/threading/base_thread.hpp"
 #include <atomic>
 #include <mutex>
 #include <string>
@@ -31,6 +32,11 @@ namespace VTX::App::Network
 			const Util::Network::CallbackHttpGet & p_callback
 		);
 
+		/**
+		 * @brief Stop a download by ID.
+		 */
+		void stopDownload( DownloadId p_id );
+
 	  private:
 		/**
 		 * @brief Download operation struct.
@@ -55,9 +61,9 @@ namespace VTX::App::Network
 		std::mutex _mutex;
 
 		/**
-		 * @brief Pending download.
+		 * @brief Map from DownloadId to thread ID for cancellation.
 		 */
-		std::unordered_map<DownloadId, float> _pendingProgress;
+		std::unordered_map<DownloadId, Threading::BaseThread::ID> _activeDownload;
 
 		/**
 		 * @brief Completed downloads.
@@ -65,12 +71,7 @@ namespace VTX::App::Network
 		std::vector<DownloadResult> _completedDownloads;
 
 		/**
-		 * @brief Connection to the update event.
-		 */
-		Util::EventHub::Connection _updateConnection;
-
-		/**
-		 * @brief Update function to process completed downloads and update progress.
+		 * @brief Connection for update events to dispatch completed downloads.
 		 */
 		void _onUpdate( const Events::Update & );
 	};

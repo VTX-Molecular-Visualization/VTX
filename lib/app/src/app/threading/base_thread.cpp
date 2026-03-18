@@ -101,19 +101,27 @@ namespace VTX::App::Threading
 
 		_stopped = true;
 	}
-	bool BaseThread::isFinished() const { return !_thread.joinable(); }
+
 
 	void BaseThread::setProgress( const float p_value )
 	{
 		const float clampedValue = Util::Math::clamp( p_value, 0.f, 1.f );
-
-		if ( _progress != clampedValue )
-		{
-			_progress = clampedValue;
-			onProgress( _progress );
-		}
+		_progress.store( clampedValue, std::memory_order_relaxed );
+		onProgress( clampedValue );
 	}
 
-	void BaseThread::_finish() { _manager._killThread( *this ); }
+	std::string BaseThread::getProgressText() const
+	{
+		std::lock_guard lock( _progressTextMutex );
+		return _progressText;
+	}
+
+	void BaseThread::setProgressText( const std::string & p_text )
+	{
+		std::lock_guard lock( _progressTextMutex );
+		_progressText = p_text;
+	}
+
+	void BaseThread::_finish() { _finished.store( true, std::memory_order_relaxed ); }
 
 } // namespace VTX::App::Threading

@@ -3,6 +3,7 @@
 
 #include "app/ecs.hpp"
 #include <string>
+#include <thread>
 #include <util/types.hpp>
 
 namespace VTX::App::Events
@@ -97,16 +98,23 @@ namespace VTX::App::Events
 		std::string name;
 	};
 
+	struct ThreadProgress
+	{
+		std::jthread::id id;
+		float			 progress;
+		std::string		 text;
+	};
+
+	struct ThreadTerminated
+	{
+		std::jthread::id id;
+		bool			 manuallyStopped;
+	};
+
 	struct FileDownloaded
 	{
 		uint64_t id;
 		bool	 success;
-	};
-
-	struct FileDownloadProgress
-	{
-		uint64_t id;
-		float	 progress;
 	};
 
 } // namespace VTX::App::Events

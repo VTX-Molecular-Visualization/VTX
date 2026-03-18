@@ -2,9 +2,12 @@
 #define __VTX_APP_THREADING_BASE_THREAD__
 
 #include <any>
+#include <atomic>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <optional>
+#include <string>
 #include <thread>
 #include <util/callback.hpp>
 #include <util/thread.hpp>
@@ -50,11 +53,15 @@ namespace VTX::App::Threading
 		void wait();
 		void stop();
 
-		bool	  isFinished() const;
+		bool	  isFinished() const { return _finished.load( std::memory_order_relaxed ); }
+		bool	  isManuallyStopped() const { return _stopped; }
 		inline ID getId() const { return _thread.get_id(); }
 
-		inline float getProgress() const { return _progress; }
+		inline float getProgress() const { return _progress.load( std::memory_order_relaxed ); }
 		void		 setProgress( const float p_value );
+
+		std::string getProgressText() const;
+		void		setProgressText( const std::string & p_text );
 
 		Util::Callback<float> onProgress;
 
@@ -72,9 +79,13 @@ namespace VTX::App::Threading
 	  private:
 		ThreadManager & _manager;
 
-		std::jthread _thread;
-		float		 _progress = 0.f;
-		bool		 _stopped  = false;
+		std::jthread		 _thread;
+		std::atomic<float>	 _progress  = 0.f;
+		std::atomic<bool>	 _finished  = false;
+		bool				 _stopped   = false;
+
+		mutable std::mutex _progressTextMutex;
+		std::string		   _progressText;
 
 		std::any _data;
 

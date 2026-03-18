@@ -15,8 +15,6 @@ namespace VTX::App::Threading
 	 */
 	class ThreadManager
 	{
-		friend class BaseThread;
-
 	  public:
 		ThreadManager() {}
 		ThreadManager( const ThreadManager & )			   = delete;
@@ -46,17 +44,7 @@ namespace VTX::App::Threading
 		std::list<std::shared_ptr<BaseThread>> _threads;
 		std::list<std::shared_ptr<BaseThread>> _stoppingThreads;
 
-		/*
-		 * @brief Called by an ending thread so that the manager can erase the thread from the _threads member and put
-		 * it in the _stoppingThreads member.
-		 */
-		void _killThread( const BaseThread & p_thread );
-		/**
-		 * @brief Clear _stoppingThreads member.
-		 */
 		void _clearStoppedThreads();
-
-		std::list<std::shared_ptr<BaseThread>>::const_iterator _findPtrFromThread( const BaseThread & p_thread ) const;
 	};
 
 } // namespace VTX::App::Threading

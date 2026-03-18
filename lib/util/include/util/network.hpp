@@ -7,7 +7,8 @@
 namespace VTX::Util::Network
 {
 	using CallbackHttpGet	= std::function<void( std::string && )>;
-	using ProgressCallback	= std::function<void( size_t p_downloaded, size_t p_total )>;
+	// Return false to cancel the download.
+	using ProgressCallback	= std::function<bool( size_t p_downloaded, size_t p_total )>;
 
 	void httpRequestGet(
 		const std::string_view & p_url,
