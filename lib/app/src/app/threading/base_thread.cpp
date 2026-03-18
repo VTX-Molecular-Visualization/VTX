@@ -94,20 +94,16 @@ namespace VTX::App::Threading
 	}
 	void BaseThread::stop()
 	{
-		onProgress.clear();
-
 		if ( _thread.joinable() )
 			_thread.request_stop();
 
 		_stopped = true;
 	}
 
-
 	void BaseThread::setProgress( const float p_value )
 	{
 		const float clampedValue = Util::Math::clamp( p_value, 0.f, 1.f );
 		_progress.store( clampedValue, std::memory_order_relaxed );
-		onProgress( clampedValue );
 	}
 
 	std::string BaseThread::getProgressText() const

@@ -1,3 +1,4 @@
+#include <app/events.hpp>
 #include <app/fixture.hpp>
 #include <app/services.hpp>
 #include <app/threading/base_thread.hpp>
@@ -7,6 +8,7 @@
 #include <chrono>
 #include <thread>
 #include <util/chrono.hpp>
+#include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <util/thread.hpp>
 #include <util/types.hpp>
@@ -77,37 +79,58 @@ TEST_CASE( "VTX_APP - Workers - Progress", "[integration][workers][progress]" )
 	using namespace VTX;
 	using namespace VTX::App;
 
-	App::Fixture app;
+	Fixture app;
 
 	bool callbackCalled		= false;
 	bool callbackStopped	= false;
 	int	 callbackThreadData = 0;
 
-	App::Threading::BaseThread & thread = THREAD().createThread(
+	Threading::BaseThread & thread = THREAD().createThread(
 		asyncOp,
-		[ &callbackCalled, &callbackStopped, &callbackThreadData ](
-			App::Threading::BaseThread & p_thread, uint, bool p_manuallyStopped )
+		[ &callbackCalled,
+		  &callbackStopped,
+		  &callbackThreadData ]( Threading::BaseThread & p_thread, uint, bool p_manuallyStopped )
 		{
-			callbackCalled		= true;
-			callbackStopped		= p_manuallyStopped;
-			callbackThreadData	= p_thread.get<int>();
+			callbackCalled	   = true;
+			callbackStopped	   = p_manuallyStopped;
+			callbackThreadData = p_thread.get<int>();
 		}
 	);
 
-	int	 onProgressCallNum	= 0;
-	bool progressAsExpected = true;
-	thread.onProgress += [ &onProgressCallNum, &progressAsExpected ]( const float p_progress ) mutable
+	const Threading::BaseThread::ID threadId = thread.getId();
+
+	int	  onProgressCallNum = 0;
+	float lastProgress		= 0.f;
+	auto  onProgress = [ &onProgressCallNum, &lastProgress, threadId ]( const Events::ThreadProgress & p_ev ) mutable
 	{
+		if ( p_ev.id != threadId )
+			return;
 		onProgressCallNum++;
-		const float expectedProgress = static_cast<float>( onProgressCallNum ) / 100.f;
-		progressAsExpected &= expectedProgress == p_progress;
+		lastProgress = p_ev.progress;
 	};
 
-	thread.wait();
+	bool terminated	  = false;
+	auto onTerminated = [ &terminated, threadId ]( const Events::ThreadTerminated & p_ev ) mutable
+	{
+		if ( p_ev.id == threadId )
+			terminated = true;
+	};
+
+	auto progressConn	= HUB().connect<Events::ThreadProgress>( onProgress );
+	auto terminatedConn = HUB().connect<Events::ThreadTerminated>( onTerminated );
+
+	while ( !terminated )
+	{
+		THREAD().lateUpdate();
+		std::this_thread::sleep_for( std::chrono::milliseconds( 5 ) );
+	}
+
+	HUB().disconnect( progressConn );
+	HUB().disconnect( terminatedConn );
 
 	CHECK( callbackCalled == true );
 	CHECK( callbackStopped == false );
 	CHECK( callbackThreadData == FINISHED_THREAD );
-	CHECK( progressAsExpected == true );
-	CHECK( onProgressCallNum == THREAD_NUM_STEPS );
+	CHECK( onProgressCallNum > 0 );
+	CHECK( lastProgress == 1.f );
 }

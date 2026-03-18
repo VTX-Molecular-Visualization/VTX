@@ -63,8 +63,6 @@ namespace VTX::App::Threading
 		std::string getProgressText() const;
 		void		setProgressText( const std::string & p_text );
 
-		Util::Callback<float> onProgress;
-
 		template<typename T>
 		T get() const
 		{
@@ -79,10 +77,10 @@ namespace VTX::App::Threading
 	  private:
 		ThreadManager & _manager;
 
-		std::jthread		 _thread;
-		std::atomic<float>	 _progress  = 0.f;
-		std::atomic<bool>	 _finished  = false;
-		bool				 _stopped   = false;
+		std::jthread	   _thread;
+		std::atomic<float> _progress = 0.f;
+		std::atomic<bool>  _finished = false;
+		bool			   _stopped	 = false;
 
 		mutable std::mutex _progressTextMutex;
 		std::string		   _progressText;
