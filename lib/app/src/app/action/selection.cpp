@@ -180,7 +180,7 @@ namespace VTX::App::Action::Selection
 
 			const auto & system		  = REG().get<Core::Struct::System>( firstEnt );
 			const auto & uid		  = REG().get<System::UID>( firstEnt );
-			const Index	 residueIndex = first;
+			const Index	 residueIndex = uid.getResidueIndex( first );
 
 			switch ( granularity )
 			{
