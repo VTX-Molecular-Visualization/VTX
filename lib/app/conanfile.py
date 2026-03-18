@@ -1,6 +1,7 @@
 import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
+from conan.tools.system.package_manager import Apt
 from pathlib import Path
 
 
@@ -24,6 +25,11 @@ class VTXAppRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_python_binding/1.0")
         self.requires("catch2/3.13.0")
+
+    def system_requirements(self):
+        if self.settings.os == "Linux":
+            apt = Apt(self)
+            apt.install(["libnsl-dev"], update=True)
         
     def config_options(self):
         if self.settings.os == "Windows":
