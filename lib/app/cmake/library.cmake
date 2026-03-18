@@ -73,4 +73,4 @@ vtx_copy_registered_data(vtx_app_test) # allow declared files to be copied on bu
 
 include(CTest)
 include(Catch)
-catch_discover_tests(vtx_app_test DISCOVERY_MODE PRE_TEST)
+catch_discover_tests(vtx_app_test DISCOVERY_MODE PRE_TEST PROPERTIES RESOURCE_LOCK vtx_app_test)
