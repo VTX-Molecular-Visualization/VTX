@@ -36,8 +36,6 @@ namespace VTX::App::PythonBinding
 				std::this_thread::sleep_for( _inactivitySleepTime.load() );
 			_thread->stop();
 			_thread->wait();
-			while ( not _threadedLoopFinished )
-				std::this_thread::sleep_for( _inactivitySleepTime.load() );
 		}
 
 		inline void runCommand( const std::string & p_command ) noexcept
@@ -81,11 +79,18 @@ namespace VTX::App::PythonBinding
 		{
 			_stopToken = std::move( p_stopToken );
 			_thread	   = &_;
-			_interpretor.emplace();
-			_threadedLoopStarted = true;
-			this->_listenQueue();
-			_interpretor.reset();
-			_threadedLoopFinished = true;
+			try
+			{
+				_interpretor.emplace();
+				_threadedLoopStarted = true;
+				this->_listenQueue();
+				_interpretor.reset();
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Unhandled exception in python thread: {}", p_e.what() );
+				_threadedLoopStarted = true;
+			}
 			return 0;
 		}
 
@@ -167,8 +172,6 @@ namespace VTX::App::PythonBinding
 
 		std::atomic<std::chrono::milliseconds> _inactivitySleepTime { std::chrono::milliseconds( 100 ) };
 		std::atomic_bool					   _threadedLoopStarted = false;
-		std::atomic_bool					   _threadedLoopFinished
-			= false; // Used to inform the main thread that the python thread has finished
 		std::optional<VTX::PythonBinding::Interpretor>
 			_interpretor; // Optional because it will be created and destroyed in the python thread
 		Util::DataLocker<std::queue<WaitingPythonCommand>> _lockedCmdQueue;

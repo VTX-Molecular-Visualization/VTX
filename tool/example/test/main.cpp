@@ -3,6 +3,7 @@
 
 TEST_CASE( "Tool::Example", "[tool][example]" )
 {
-	VTX::App::Fixture f;
-	CHECK( true );
+	using namespace VTX::App;
+
+	VTX::App::Fixture app;
 }
