@@ -48,16 +48,15 @@ class VTXRecipe(ConanFile):
         self.requires("boost/1.87.0") # 1.88 version break process package on windows
         self.requires("platformfolders/4.3.0")
         self.requires("cpython/{}".format(str(python_binding_module.pythonVersion()))) # v >= 3.10 not working with msvc compiler so far
+        if self.settings.os == "Linux":
+            self.requires("xkbcommon/1.6.0", override=True)
+            self.requires("libffi/3.4.8", override=True)
+            self.requires("wayland/1.24.0", override=True)
+
 
     def config_options(self):   
         qt_module.config_options_qt(self)
         python_binding_module.config_options_cpython(self)
-        
-        if self.settings.os == "Linux":
-            self.options["qt"].qtwayland = True
-            self.options["qt"].with_x11 = True
-            self.options["qt"].with_egl = True
-            self.options["qt"].with_dbus = True
         
     def generate(self):
         tc = CMakeToolchain(self)

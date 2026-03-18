@@ -91,6 +91,11 @@ def config_options_qt(p_conanFile : ConanFile):
     p_conanFile.options["qt"].qtgrpc = False
     p_conanFile.options["qt"].qtquickeffectmaker = False
     p_conanFile.options["qt"].qtgraphs = False
+    if p_conanFile.settings.os == "Linux":
+            p_conanFile.options["qt"].qtwayland = True
+            p_conanFile.options["qt"].with_x11 = True
+            p_conanFile.options["qt"].with_egl = True
+            p_conanFile.options["qt"].with_dbus = True
         
         
 def generate_qt(p_conanFile : ConanFile):
@@ -139,12 +144,6 @@ class VTXUiQtRecipe(ConanFile):
         if self.settings.os == "Windows":
             del self.options.fPIC            
         config_options_qt(self)
-        
-        if self.settings.os == "Linux":
-            self.options["qt"].qtwayland = True
-            self.options["qt"].with_x11 = True
-            self.options["qt"].with_egl = True
-            self.options["qt"].with_dbus = True
             
     def layout(self):
         cmake_layout(self)      
