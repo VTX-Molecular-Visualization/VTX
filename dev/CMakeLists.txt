@@ -70,11 +70,15 @@ include("${DIR_LIBS}/ui/qt/cmake/library.cmake")
 vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Tool example
-include("${DIR_TOOLS}/example/cmake/library.cmake")
+if (VTX_TOOL_EXAMPLE)
+	include("${DIR_TOOLS}/example/cmake/library.cmake")
+endif()
 vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Tool Mdprep
-include("${DIR_TOOLS}/mdprep/cmake/library.cmake")
+if (VTX_TOOL_MDPREP)
+	include("${DIR_TOOLS}/mdprep/cmake/library.cmake")
+endif()
 vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # VTX.
@@ -86,6 +90,8 @@ vtx_clear_registered_copies() # Prevent data from previous package to be copied 
 # 
 
 # PDB100
-set(PDB100_DIRECTORY_PATH "C:/Users/Valen/data/pdb/pdb100") # Needed for pdb100 related projects
-include("${CMAKE_CURRENT_LIST_DIR}/secondary_structure.cmake") # Project for secondary structure algorithm benchmark
-include("${CMAKE_CURRENT_LIST_DIR}/io_vs_pdb100.cmake") # Project for file reading benchmark
+if (LOCAL_PDB100)
+	set(PDB100_DIRECTORY_PATH "C:/Users/Valen/data/pdb/pdb100") # Needed for pdb100 related projects
+	include("${CMAKE_CURRENT_LIST_DIR}/secondary_structure.cmake") # Project for secondary structure algorithm benchmark
+	include("${CMAKE_CURRENT_LIST_DIR}/io_vs_pdb100.cmake") # Project for file reading benchmark
+endif()

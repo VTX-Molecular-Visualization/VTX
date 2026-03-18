@@ -23,6 +23,8 @@ class VTXRecipe(ConanFile):
     name = "vtx"
     version = "1.0"
     package_type = "application"
+    options = {"version": ["ANY"], "tool_example": [True, False], "tool_mdprep": [True, False], "local_pdb100": [True, False] }
+    default_options = {"version": "0.0.0", "tool_example": False, "tool_mdprep": True, "local_pdb100": False }
     
     settings = "os", "compiler", "build_type", "arch"
     
@@ -61,6 +63,15 @@ class VTXRecipe(ConanFile):
     def generate(self):
         tc = CMakeToolchain(self)
         python_binding_module.configureToolChain(tc)
+        
+        versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
+        tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
+        tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor
+        tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
+        tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
+        tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
+        tc.cache_variables["LOCAL_PDB100"] = 1 if self.options.local_pdb100 else 0
+        
         tc.generate()
 
         copy(self, "*sdl3*", os.path.join(self.dependencies["imgui"].package_folder,
