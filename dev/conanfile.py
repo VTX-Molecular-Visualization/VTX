@@ -15,10 +15,10 @@ def import_module_from_file(file_path):
     spec.loader.exec_module(module)
     return module
     
-
 python_binding_module = import_module_from_file( Path("..") / "lib" / "python_binding" / "conanfile.py" )
 qt_module = import_module_from_file( Path("..") / "lib" / "ui"/ "qt" / "conanfile.py" )
 mdprep_module = import_module_from_file( Path("..") / "tool" / "mdprep"/ "conanfile.py" )
+renderer_module = import_module_from_file( Path("..") / "lib" / "renderer" / "conanfile.py" )
 
 class VTXRecipe(ConanFile):
     name = "vtx"
@@ -59,9 +59,7 @@ class VTXRecipe(ConanFile):
 
 
     def system_requirements(self):
-        if self.settings.os == "Linux":
-            apt = Apt(self)
-            apt.install(["libegl-dev", "libgl-dev"], update=True)
+        renderer_module.install_system_dependencies(self)
 
     def config_options(self):
         qt_module.config_options_qt(self)

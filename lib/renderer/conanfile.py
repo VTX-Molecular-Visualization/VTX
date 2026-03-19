@@ -4,6 +4,11 @@ from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 from conan.tools.files import copy
 from conan.tools.system.package_manager import Apt
 
+def install_system_dependencies(conanfile):
+    if conanfile.settings.os == "Linux":
+        apt = Apt(conanfile)
+        apt.install(["libegl-dev", "libgl-dev"], update=True)
+
 class VTXRendererRecipe(ConanFile):
     name = "vtx_renderer"
     version = "1.0"
@@ -25,9 +30,7 @@ class VTXRendererRecipe(ConanFile):
             self.requires("wayland/1.24.0")
         
     def system_requirements(self):
-        if self.settings.os == "Linux":
-            apt = Apt(self)
-            apt.install(["libegl-dev", "libgl-dev"], update=True)
+        install_system_dependencies(self)
 
     def config_options(self):
         if self.settings.os == "Windows":
