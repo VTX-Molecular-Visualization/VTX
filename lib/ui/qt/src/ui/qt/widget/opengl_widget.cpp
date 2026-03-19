@@ -80,7 +80,7 @@ namespace VTX::UI::QT::Widget
 			void * surface = nif->nativeResourceForWindow( "surface", _window );
 			if ( not surface )
 			{
-				throw std::runtime_error( "Qt: native surface is null (window not yet shown?)" );
+				throw std::runtime_error( "Qt: native surface is null" );
 			}
 			return reinterpret_cast<uintptr_t>( surface );
 		}

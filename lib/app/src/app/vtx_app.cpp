@@ -125,7 +125,7 @@ namespace VTX::App
 		{
 			try
 			{
-				renderer.setOpenGL( _isWaylandPlatform(), _getRenderSurface(), SESSION().getShadersDir() );
+				renderer.setOpenGL( _getRenderSurface(), SESSION().getShadersDir() );
 			}
 			catch ( const std::exception & p_e )
 			{

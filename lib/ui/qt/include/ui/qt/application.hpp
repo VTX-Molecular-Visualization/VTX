@@ -67,7 +67,6 @@ namespace VTX::UI::QT
 		}
 
 	  protected:
-		bool	  _isWaylandPlatform() const override;
 		uintptr_t _getRenderSurface() const override;
 
 	  private:

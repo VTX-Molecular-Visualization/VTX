@@ -52,7 +52,7 @@ namespace VTX::Renderer
 		 * @brief Set graphic context.
 		 */
 		void setDefault();
-		void setOpenGL( const bool p_isWayland, const uintptr_t p_nativeWindow, const FilePath & p_shaderDir );
+		void setOpenGL( const uintptr_t p_nativeWindow, const FilePath & p_shaderDir );
 
 		/**
 		 * @brief Resize the renderer.

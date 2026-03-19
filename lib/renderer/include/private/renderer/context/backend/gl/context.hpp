@@ -19,7 +19,7 @@ namespace VTX::Renderer::Context::Backend::GL
 	class WGLContextWrapper
 	{
 	  public:
-		void init( const bool /*p_isWayland*/, const uintptr_t p_nativeWindow )
+		void init( const uintptr_t p_nativeWindow )
 		{
 			_hwnd = reinterpret_cast<HWND>( p_nativeWindow );
 			_hdc  = GetDC( _hwnd );
@@ -166,24 +166,28 @@ namespace VTX::Renderer::Context::Backend::GL
 	class EGLContextWrapper
 	{
 	  public:
-		void init( const bool p_isWayland, const uintptr_t p_nativeWindow )
+		void init( const uintptr_t p_nativeWindow )
 		{
-			// Connect to the display matching Qt's platform.
-			if ( p_isWayland )
+			// Try Wayland first, fall back to X11 if unavailable.
+			_nativeDisplay = wl_display_connect( nullptr );
+			if ( _nativeDisplay )
 			{
-				_platform	   = Platform::Wayland;
-				_nativeDisplay = wl_display_connect( nullptr );
-				if ( not _nativeDisplay )
-				{
-					throw std::runtime_error( "EGL: Failed to connect to Wayland display" );
-				}
 				_display = eglGetPlatformDisplay( EGL_PLATFORM_WAYLAND_KHR, _nativeDisplay, nullptr );
+				if ( _display != EGL_NO_DISPLAY )
+				{
+					_platform = Platform::Wayland;
+				}
+				else
+				{
+					wl_display_disconnect( static_cast<wl_display *>( _nativeDisplay ) );
+					_nativeDisplay = nullptr;
+				}
 			}
-			else
+
+			if ( _platform == Platform::X11 )
 			{
 				// Use EGL_DEFAULT_DISPLAY to let Mesa pick the X11 connection internally,
 				// avoiding the DRI3 path forced by EGL_PLATFORM_X11_KHR.
-				_platform	   = Platform::X11;
 				_nativeDisplay = nullptr;
 				_display	   = eglGetDisplay( EGL_DEFAULT_DISPLAY );
 			}
@@ -237,9 +241,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			if ( _surface == EGL_NO_SURFACE )
 			{
-				const EGLint	   err = eglGetError();
-				std::ostringstream oss;
-				oss << "EGL surface error: 0x" << std::hex << std::uppercase << err;
+				const EGLint err = eglGetError();
 				throw std::runtime_error( oss.str() );
 			}
 
@@ -262,9 +264,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			if ( _context == EGL_NO_CONTEXT )
 			{
-				EGLint			   err = eglGetError();
-				std::ostringstream oss;
-				oss << "EGL context error: 0x" << std::hex << std::uppercase << err;
+				EGLint err = eglGetError();
 				throw std::runtime_error( oss.str() );
 			}
 
@@ -287,15 +287,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 
-		void swapBuffers() const
-		{
-			if ( not eglSwapBuffers( _display, _surface ) )
-			{
-				std::ostringstream oss;
-				oss << "EGL: swapBuffers failed: 0x" << std::hex << std::uppercase << eglGetError();
-				fprintf( stderr, "[EGL] %s\n", oss.str().c_str() );
-			}
-		}
+		void swapBuffers() const { eglSwapBuffers( _display, _surface ); }
 
 		void setSwapInterval( const int p_interval )
 		{
