@@ -23,6 +23,8 @@ class VTXRecipe(ConanFile):
             self.requires("vtx_tool_example/1.0")
         if self.options.tool_mdprep:
             self.requires("vtx_tool_mdprep/1.0")
+        if self.settings.os == "Linux":
+            self.requires("libffi/3.4.8", override=True)
 
     def layout(self):
         cmake_layout(self)
