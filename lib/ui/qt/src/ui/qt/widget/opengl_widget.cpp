@@ -10,7 +10,6 @@
 #include <app/action/selection.hpp>
 #include <app/events.hpp>
 #include <qpa/qplatformnativeinterface.h>
-#include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -84,33 +83,41 @@ namespace VTX::UI::QT::Widget
 			}
 			return reinterpret_cast<uintptr_t>( surface );
 		}
+
 		return static_cast<uintptr_t>( _window->winId() );
 	}
 
 	uintptr_t OpenGLWidget::getNativeDisplay() const
 	{
 		QPlatformNativeInterface * nif = QGuiApplication::platformNativeInterface();
-		if ( not nif )
+		if ( nif == nullptr )
 		{
 			return 0;
 		}
 
-		if ( QGuiApplication::platformName() == "wayland" )
+		if ( void * display = nif->nativeResourceForIntegration( "display" ) )
 		{
-			if ( void * display = nif->nativeResourceForIntegration( "display" ) )
-			{
-				return reinterpret_cast<uintptr_t>( display );
-			}
-		}
-		else if ( QGuiApplication::platformName() == "xcb" )
-		{
-			if ( void * display = nif->nativeResourceForIntegration( "display" ) )
-			{
-				return reinterpret_cast<uintptr_t>( display );
-			}
+			return reinterpret_cast<uintptr_t>( display );
 		}
 
 		return 0;
+	}
+
+	uint8_t OpenGLWidget::getNativePlatform() const
+	{
+		if ( QGuiApplication::platformName() == "wayland" )
+		{
+			return 3;
+		}
+		if ( QGuiApplication::platformName() == "xcb" )
+		{
+			return 2;
+		}
+#ifdef _WIN32
+		return 1;
+#else
+		return 0;
+#endif
 	}
 
 	void OpenGLWidget::resizeEvent( QResizeEvent * p_event )

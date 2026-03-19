@@ -22,15 +22,9 @@ namespace VTX::UI::QT::Widget
 		OpenGLWidget( QWidget * );
 		~OpenGLWidget();
 
-		/**
-		 * @brief Get the native window handle (X11 Window or wl_surface*).
-		 */
 		uintptr_t getNativeSurface() const;
-
-		/**
-		 * @brief Get the native display handle when needed by the platform backend.
-		 */
 		uintptr_t getNativeDisplay() const;
+		uint8_t	  getNativePlatform() const;
 
 		/**
 		 * @brief Override resize.

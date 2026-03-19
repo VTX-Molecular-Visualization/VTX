@@ -47,11 +47,6 @@ namespace VTX::UI::QT::Style
 		~StyleManager();
 
 		/**
-		 * @brief Apply all design elements.
-		 */
-		void load( const std::vector<App::Tool::BaseTool *> & );
-
-		/**
 		 * @brief Get current theme.
 		 */
 		inline E_THEME getCurrentTheme() const { return _currentTheme; }

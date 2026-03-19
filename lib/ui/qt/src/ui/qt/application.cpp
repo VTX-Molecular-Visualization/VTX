@@ -9,10 +9,12 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QApplication>
+#include <QHBoxLayout>
 #include <app/ecs.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
 #include <renderer/renderer.hpp>
+#include <ui/qt/actions.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT
@@ -22,10 +24,9 @@ namespace VTX::UI::QT
 	Application::Application( const App::Args & p_args ) : App::VTXApp( p_args ), QApplication( zero, nullptr )
 	{
 		using namespace Resources;
-		using namespace VTX::App;
+		using namespace App;
 
-		// Splash screen.
-		_splashScreen = new QSplashScreen( QPixmap( SPRITE_SPLASH.data() ) );
+		_splashScreen = new Widget::SplashScreen();
 		_splashScreen->show();
 
 		// Application info.
@@ -43,28 +44,6 @@ namespace VTX::UI::QT
 		setApplicationVersion( QString::fromStdString( version ) );
 		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME.data() ) );
 		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN.data() ) );
-
-		// Settings.
-		try
-		{
-			App::ECS::setCtx<Settings>();
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "Failed to restore settings: {}", p_e.what() );
-		}
-
-		// Load theme.
-		App::ECS::setCtx<Style::StyleManager>().load( _tools );
-
-		// Selection manager.
-		App::ECS::setCtx<SelectionManager>( this );
-
-		// Create and show main window.
-		App::ECS::setCtx<Widget::MainWindow>();
-
-		// Connect quit event that can come from VTXApp.
-		App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
 
 		// After quit, last loop.
 		connect(
@@ -127,17 +106,7 @@ namespace VTX::UI::QT
 
 	void Application::start()
 	{
-		QTimer::singleShot(
-			0,
-			[ & ]()
-			{
-				VTXApp::start();
-				MAIN_WINDOW().show();
-				_splashScreen->finish( &MAIN_WINDOW() );
-				_timer.start( 0 );
-				_durationTimer.start();
-			}
-		);
+		QTimer::singleShot( 0, this, &Application::_postQtStartup );
 
 		// Run Qt main loop.
 		exec();
@@ -170,14 +139,144 @@ namespace VTX::UI::QT
 		}
 	}
 
-	uintptr_t Application::_getRenderSurface() const
+	void Application::_postQtStartup()
 	{
-		return static_cast<Widget::OpenGLWidget *>( MAIN_WINDOW().centralWidget() )->getNativeSurface();
+		try
+		{
+			_startServices();
+
+			QTimer::singleShot( 0, this, &Application::_postQtStartupUI );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Startup failed: {}", p_e.what() );
+			QCoreApplication::quit();
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Unknown exception during startup" );
+			QCoreApplication::quit();
+		}
 	}
 
-	uintptr_t Application::_getRenderDisplay() const
+	void Application::_postQtStartupUI()
 	{
-		return static_cast<Widget::OpenGLWidget *>( MAIN_WINDOW().centralWidget() )->getNativeDisplay();
+		try
+		{
+			try
+			{
+				App::ECS::setCtx<Settings>();
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Failed to restore settings: {}", p_e.what() );
+			}
+
+			App::ECS::setCtx<Style::StyleManager>();
+			App::ECS::setCtx<SelectionManager>( this );
+			App::ECS::setCtx<Widget::MainWindow>();
+
+			_instantiateTools();
+			App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
+
+			QTimer::singleShot( 0, this, &Application::_postQtStartupCore );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Startup UI phase failed: {}", p_e.what() );
+			QCoreApplication::quit();
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Unknown exception during startup UI phase" );
+			QCoreApplication::quit();
+		}
+	}
+
+	void Application::_postQtStartupCore()
+	{
+		try
+		{
+			_createInitialEntities();
+			QTimer::singleShot( 0, this, &Application::_postQtStartupRenderer );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Startup core phase failed: {}", p_e.what() );
+			QCoreApplication::quit();
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Unknown exception during startup core phase" );
+			QCoreApplication::quit();
+		}
+	}
+
+	void Application::_postQtStartupRenderer()
+	{
+		try
+		{
+			try
+			{
+				Renderer::Desc::NativeContextInfo contextInfo;
+				contextInfo.surface = MAIN_WINDOW().getNativeSurface();
+				contextInfo.display = MAIN_WINDOW().getNativeDisplay();
+				contextInfo.plateform
+					= static_cast<Renderer::Desc::E_NATIVE_PLATEFORM>( MAIN_WINDOW().getNativePlatform() );
+
+				App::RENDERER().setOpenGL( contextInfo, App::SESSION().getShadersDir() );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( p_e.what() );
+				App::RENDERER().setDefault();
+				App::HUB().trigger<App::Events::ApplicationError>(
+					"Unable to create OpenGL context. Update your drivers and check your hardware "
+					"compatibility."
+				);
+			}
+
+			QTimer::singleShot( 0, this, &Application::_postQtStartupFinish );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Startup renderer phase failed: {}", p_e.what() );
+			QCoreApplication::quit();
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Unknown exception during startup renderer phase" );
+			QCoreApplication::quit();
+		}
+	}
+
+	void Application::_postQtStartupFinish()
+	{
+		try
+		{
+			_finishStartup();
+
+			MAIN_WINDOW().show();
+
+			if ( _splashScreen )
+			{
+				_splashScreen->stop();
+				_splashScreen->close();
+			}
+
+			_timer.start( 0 );
+			_durationTimer.start();
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Startup finish phase failed: {}", p_e.what() );
+			QCoreApplication::quit();
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Unknown exception during startup finish phase" );
+			QCoreApplication::quit();
+		}
 	}
 
 	QAction * const Application::_getOrCreateAction( const App::UI::DescAction & p_action )
@@ -212,6 +311,24 @@ namespace VTX::UI::QT
 
 				qAction->setCheckable( true );
 				qActionGroup->addAction( qAction );
+			}
+			if ( p_action.group && *p_action.group == "Theme" )
+			{
+				if ( p_action.key == VTX::Util::typeName<Action::Theme::System>()
+					 && STYLE().getCurrentTheme() == Style::E_THEME::SYSTEM )
+				{
+					qAction->setChecked( true );
+				}
+				else if ( p_action.key == VTX::Util::typeName<Action::Theme::Light>()
+						  && STYLE().getCurrentTheme() == Style::E_THEME::LIGHT )
+				{
+					qAction->setChecked( true );
+				}
+				else if ( p_action.key == VTX::Util::typeName<Action::Theme::Dark>()
+						  && STYLE().getCurrentTheme() == Style::E_THEME::DARK )
+				{
+					qAction->setChecked( true );
+				}
 			}
 			// Tip.
 			if ( p_action.tip )

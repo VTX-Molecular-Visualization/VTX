@@ -1,6 +1,5 @@
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/actions.hpp"
-#include "ui/qt/application.hpp"
 #include "ui/qt/resources.hpp"
 #include "ui/qt/services.hpp"
 #include <QIcon>
@@ -63,16 +62,7 @@ namespace
 namespace VTX::UI::QT::Style
 {
 
-	StyleManager::StyleManager() {}
-
-	StyleManager::~StyleManager()
-	{
-		const QString themeName = Util::Enum::enumName( _currentTheme ).data();
-		SETTINGS().setValue( SETTING_KEY_THEME, themeName );
-		SETTINGS().setValue( SETTING_KEY_FONT, getCurrentFontFamily() );
-	}
-
-	void StyleManager::load( const std::vector<App::Tool::BaseTool *> & p_tools )
+	StyleManager::StyleManager()
 	{
 		using namespace Resources;
 
@@ -97,21 +87,8 @@ namespace VTX::UI::QT::Style
 			QString		  themeName = SETTINGS().value( SETTING_KEY_THEME, "SYSTEM" ).toString();
 			const E_THEME theme		= Util::Enum::enumCast<E_THEME>( themeName.toStdString() );
 			QString		  fontName	= SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
-			QFont		  appFont( fontName, 10 );
-
 			setFontFamily( fontName );
-
-			// Trigger action group to update checked action.
-			auto * QActionGroup = Application::getAction<Action::Theme::System>()->actionGroup();
-
-			switch ( theme )
-			{
-			case E_THEME::SYSTEM: Application::getAction<Action::Theme::System>()->trigger(); break;
-			case E_THEME::LIGHT: Application::getAction<Action::Theme::Light>()->trigger(); break;
-			case E_THEME::DARK: Application::getAction<Action::Theme::Dark>()->trigger(); break;
-			case E_THEME::COUNT:;
-			default: break;
-			}
+			setTheme( theme );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -119,6 +96,13 @@ namespace VTX::UI::QT::Style
 			setFontFamily( DEFAULT_FONT_FAMILY );
 			setTheme( DEFAULT_THEME );
 		}
+	}
+
+	StyleManager::~StyleManager()
+	{
+		const QString themeName = Util::Enum::enumName( _currentTheme ).data();
+		SETTINGS().setValue( SETTING_KEY_THEME, themeName );
+		SETTINGS().setValue( SETTING_KEY_FONT, getCurrentFontFamily() );
 	}
 
 	void StyleManager::setTheme( const E_THEME p_theme )

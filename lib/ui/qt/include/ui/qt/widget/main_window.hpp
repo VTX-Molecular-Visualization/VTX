@@ -8,9 +8,8 @@
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QPointer>
-#include <app/ui/concepts.hpp>
-// #include <ui/qt/dialog/progress.hpp>
 #include <app/events.hpp>
+#include <app/ui/concepts.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Dialog
@@ -51,6 +50,10 @@ namespace VTX::UI::QT::Widget
 		 * @brief Reset layout to default state.
 		 */
 		void resetLayout();
+
+		uintptr_t getNativeSurface() const;
+		uintptr_t getNativeDisplay() const;
+		uint8_t	  getNativePlatform() const;
 
 		/**
 		 * @brief Catch close event to quit application.

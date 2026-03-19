@@ -62,8 +62,7 @@ namespace VTX::Renderer::Context::Backend
 		OpenGL(
 			const size_t p_width,
 			const size_t p_height,
-			const uintptr_t p_nativeSurface,
-			const uintptr_t p_nativeDisplay,
+			const Desc::NativeContextInfo &,
 			const FilePath & p_shaderDir
 		);
 		~OpenGL() = default;

@@ -44,15 +44,11 @@ namespace VTX::Renderer
 		}
 	}
 
-	void Renderer::setOpenGL(
-		const uintptr_t	 p_nativeSurface,
-		const uintptr_t	 p_nativeDisplay,
-		const FilePath & p_shaderDir
-	)
+	void Renderer::setOpenGL( const Desc::NativeContextInfo & p_contextInfo, const FilePath & p_shaderDir )
 	{
-		Util::ScopedChrono timer( "[RENDERER] setOpenGL46 / surface: " + std::to_string( p_nativeSurface ) );
+		Util::ScopedChrono timer( "[RENDERER] setOpenGL46 / surface: " + std::to_string( p_contextInfo.surface ) );
 
-		_context.setOpenGL( _width, _height, p_nativeSurface, p_nativeDisplay, p_shaderDir );
+		_context.setOpenGL( _width, _height, p_contextInfo, p_shaderDir );
 		try
 		{
 			_context.build( _queue, _graph.getResources() );

@@ -21,6 +21,27 @@
 namespace VTX::Renderer::Desc
 {
 	/**
+	 * @brief Native context information.
+	 */
+	enum class E_NATIVE_PLATEFORM : uint8_t
+	{
+		UNKNOWN = 0,
+		WINDOWS,
+		X11,
+		WAYLAND
+	};
+
+	/**
+	 * @brief Native context information.
+	 */
+	struct NativeContextInfo
+	{
+		uintptr_t		   surface	 = 0;
+		uintptr_t		   display	 = 0;
+		E_NATIVE_PLATEFORM plateform = E_NATIVE_PLATEFORM::UNKNOWN;
+	};
+
+	/**
 	 * @brief All data types.
 	 */
 	enum struct E_TYPE : uint32_t

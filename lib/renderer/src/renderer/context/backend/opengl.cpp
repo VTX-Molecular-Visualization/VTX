@@ -189,10 +189,9 @@ namespace VTX::Renderer::Context::Backend
 {
 
 	OpenGL::OpenGL(
-		const size_t	 p_width,
-		const size_t	 p_height,
-		const uintptr_t	 p_nativeSurface,
-		const uintptr_t	 p_nativeDisplay,
+		const size_t			   p_width,
+		const size_t			   p_height,
+		const Desc::NativeContextInfo & p_contextInfo,
 		const FilePath & p_shaderDir
 
 	) : _shaderPath( p_shaderDir )
@@ -209,7 +208,7 @@ namespace VTX::Renderer::Context::Backend
 		_height = static_cast<uint32_t>( p_height );
 
 		// Create EGL/WGL context.
-		_glContext.init( p_nativeSurface, p_nativeDisplay );
+		_glContext.init( p_contextInfo );
 
 		// Load OpenGL 4.6 functions.
 		// With external loader.

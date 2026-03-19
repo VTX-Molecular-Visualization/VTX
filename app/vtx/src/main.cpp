@@ -78,16 +78,14 @@ int main( int p_argc, char * p_argv[] )
 
 // Add tools.
 #if VTX_TOOL_EXAMPLE
-		auto exampleTool = std::make_unique<Tool::Example::ExampleTool>();
-		app->addTool( exampleTool.get() );
+		app->addToolFactory( []() { return std::make_unique<Tool::Example::ExampleTool>(); } );
 #if VTX_UI_QT
 		Q_INIT_RESOURCE( vtx_qt_resources_tool_example );
 #endif
 #endif
 // Add tools.
 #if VTX_TOOL_MDPREP
-		auto mdprepTool = std::make_unique<Tool::Mdprep::MdPrep>();
-		app->addTool( mdprepTool.get() );
+		app->addToolFactory( []() { return std::make_unique<Tool::Mdprep::MdPrep>(); } );
 #if VTX_UI_QT
 		Q_INIT_RESOURCE( vtx_qt_resources_tool_mdprep );
 #endif

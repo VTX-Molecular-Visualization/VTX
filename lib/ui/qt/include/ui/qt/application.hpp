@@ -2,11 +2,12 @@
 #define __VTX_UI_QT_APPLICATION__
 
 #include "settings.hpp"
+#include "ui/qt/widget/splashscreen.hpp"
 #include <QAction>
 #include <QApplication>
 #include <QPointer>
-#include <QSplashScreen>
 #include <QTimer>
+#include <QWidget>
 #include <app/events.hpp>
 #include <app/ui/concepts.hpp>
 #include <app/vtx_app.hpp>
@@ -66,16 +67,7 @@ namespace VTX::UI::QT
 			return _getOrCreateAction( action );
 		}
 
-	  protected:
-		uintptr_t _getRenderSurface() const override;
-		uintptr_t _getRenderDisplay() const override;
-
 	  private:
-		/**
-		 * @brief Splash screen (loading sprite).
-		 */
-		QPointer<QSplashScreen> _splashScreen;
-
 		/**
 		 * @brief Handles the main loop timing.
 		 */
@@ -85,6 +77,17 @@ namespace VTX::UI::QT
 		 * @brief Computes elapsed time and interval time between frames.
 		 */
 		VTX::Util::Chrono _durationTimer;
+
+		/**
+		 * @brief Splash screen displayed during startup.
+		 */
+		QPointer<Widget::SplashScreen> _splashScreen;
+
+		void _postQtStartup();
+		void _postQtStartupUI();
+		void _postQtStartupCore();
+		void _postQtStartupRenderer();
+		void _postQtStartupFinish();
 
 		/**
 		 * @brief Get/create application action from description.

@@ -166,6 +166,27 @@ namespace VTX::UI::QT::Widget
 		restoreState( _defaultState );
 	}
 
+	uintptr_t MainWindow::getNativeSurface() const
+	{
+		const auto * widget = static_cast<const OpenGLWidget *>( centralWidget() );
+		assert( widget != nullptr );
+		return widget->getNativeSurface();
+	}
+
+	uintptr_t MainWindow::getNativeDisplay() const
+	{
+		const auto * widget = static_cast<const OpenGLWidget *>( centralWidget() );
+		assert( widget != nullptr );
+		return widget->getNativeDisplay();
+	}
+
+	uint8_t MainWindow::getNativePlatform() const
+	{
+		const auto * widget = static_cast<const OpenGLWidget *>( centralWidget() );
+		assert( widget != nullptr );
+		return widget->getNativePlatform();
+	}
+
 	void MainWindow::closeEvent( QCloseEvent * p_event )
 	{
 		VTX_TRACE( "MainWindow::closeEvent: Qt main window close event" );

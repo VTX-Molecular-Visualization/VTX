@@ -7,8 +7,9 @@ namespace VTX::UI::QT::Resources
 {
 
 	// Sprites.
-	constexpr std::string_view SPRITE_SPLASH = ":/sprite/splash.png";
-	constexpr std::string_view SPRITE_LOGO	 = ":/sprite/logo.png";
+	constexpr std::string_view SPRITE_SPLASH	 = ":/sprite/splash.png";
+	constexpr std::string_view SPRITE_LOGO		 = ":/sprite/logo.png";
+	constexpr std::string_view SPRITE_SPLASH_GIF = ":/sprite/splash.gif";
 
 	// Fonts.
 	constexpr std::string_view FONT_MATERIAL_SYMBOLS = ":/font/MaterialSymbolsOutlined.ttf";
@@ -17,4 +18,3 @@ namespace VTX::UI::QT::Resources
 } // namespace VTX::UI::QT::Resources
 
 #endif
- 

@@ -13,6 +13,8 @@
 
 #include <GL/wglext.h>
 #include <Windows.h>
+#include <renderer/descriptors.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::Renderer::Context::Backend::GL
 {
@@ -22,47 +24,88 @@ namespace VTX::Renderer::Context::Backend::GL
 		WGLContextWrapper() = default;
 		~WGLContextWrapper() { destroy(); }
 
-		void init( const uintptr_t p_nativeSurface, const uintptr_t = 0 )
+		void init( const Desc::NativeContextInfo & p_contextInfo )
 		{
-			_hwnd = reinterpret_cast<HWND>( p_nativeSurface );
+			VTX_TRACE( "[WGL] Creating context for surface {}", p_contextInfo.surface );
+
+			_hwnd = reinterpret_cast<HWND>( p_contextInfo.surface );
 			_hdc  = GetDC( _hwnd );
-
-			PIXELFORMATDESCRIPTOR pfd = {};
-			pfd.nSize				  = sizeof( PIXELFORMATDESCRIPTOR );
-			pfd.nVersion			  = 1;
-			pfd.dwFlags				  = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-			pfd.iPixelType			  = PFD_TYPE_RGBA;
-			pfd.cColorBits			  = 32;
-			pfd.cDepthBits			  = 24;
-			pfd.cStencilBits		  = 8;
-			pfd.iLayerType			  = PFD_MAIN_PLANE;
-
-			const int pixelFormat = ChoosePixelFormat( _hdc, &pfd );
-			if ( not pixelFormat )
+			if ( not _hdc )
 			{
-				throw std::runtime_error( "WGL: Failed to choose pixel format" );
-			}
-			if ( not SetPixelFormat( _hdc, pixelFormat, &pfd ) )
-			{
-				throw std::runtime_error( "WGL: Failed to set pixel format" );
+				throw std::runtime_error( "WGL: Failed to get device context" );
 			}
 
-			// Temporary context to load WGL extensions.
-			HGLRC tempContext = wglCreateContext( _hdc );
+			PIXELFORMATDESCRIPTOR pfd = _defaultPixelFormatDescriptor();
+
+			// Bootstrap WGL extensions from a dummy window/context before configuring the real surface.
+			const HMODULE instance = GetModuleHandleA( nullptr );
+			const char *  className = "VTX_WGLBootstrap";
+			WNDCLASSA	  wc		= {};
+			wc.style				= CS_OWNDC;
+			wc.lpfnWndProc			= DefWindowProcA;
+			wc.hInstance			= instance;
+			wc.lpszClassName		= className;
+
+			if ( not RegisterClassA( &wc ) && GetLastError() != ERROR_CLASS_ALREADY_EXISTS )
+			{
+				throw std::runtime_error( "WGL: Failed to register bootstrap window class" );
+			}
+
+			HWND bootstrapWindow = CreateWindowA(
+				className, "VTX WGL Bootstrap", WS_OVERLAPPEDWINDOW, 0, 0, 1, 1, nullptr, nullptr, instance, nullptr
+			);
+			if ( not bootstrapWindow )
+			{
+				throw std::runtime_error( "WGL: Failed to create bootstrap window" );
+			}
+
+			HDC bootstrapDc = GetDC( bootstrapWindow );
+			if ( not bootstrapDc )
+			{
+				DestroyWindow( bootstrapWindow );
+				throw std::runtime_error( "WGL: Failed to get bootstrap device context" );
+			}
+
+			const PIXELFORMATDESCRIPTOR bootstrapPfd = _defaultPixelFormatDescriptor();
+			const int bootstrapFormat = ChoosePixelFormat( bootstrapDc, &bootstrapPfd );
+			if ( not bootstrapFormat || not SetPixelFormat( bootstrapDc, bootstrapFormat, &bootstrapPfd ) )
+			{
+				ReleaseDC( bootstrapWindow, bootstrapDc );
+				DestroyWindow( bootstrapWindow );
+				throw std::runtime_error( "WGL: Failed to setup bootstrap pixel format" );
+			}
+
+			HGLRC tempContext = wglCreateContext( bootstrapDc );
 			if ( not tempContext )
 			{
+				ReleaseDC( bootstrapWindow, bootstrapDc );
+				DestroyWindow( bootstrapWindow );
 				throw std::runtime_error( "WGL: Failed to create temporary context" );
 			}
-			wglMakeCurrent( _hdc, tempContext );
+			wglMakeCurrent( bootstrapDc, tempContext );
 
 			auto wglCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>(
 				wglGetProcAddress( "wglCreateContextAttribsARB" )
 			);
 			if ( not wglCreateContextAttribsARB )
 			{
+				wglMakeCurrent( nullptr, nullptr );
+				wglDeleteContext( tempContext );
+				ReleaseDC( bootstrapWindow, bootstrapDc );
+				DestroyWindow( bootstrapWindow );
 				throw std::runtime_error( "WGL: wglCreateContextAttribsARB not available" );
 			}
 
+			auto wglChoosePixelFormatARB = reinterpret_cast<PFNWGLCHOOSEPIXELFORMATARBPROC>(
+				wglGetProcAddress( "wglChoosePixelFormatARB" )
+			);
+			VTX_TRACE(
+				"[WGL] Extensions loaded: create_context={}, choose_pixel_format={}",
+				wglCreateContextAttribsARB != nullptr,
+				wglChoosePixelFormatARB != nullptr
+			);
+
+			wglMakeCurrent( nullptr, nullptr );
 			const int contextAttribs[] = { WGL_CONTEXT_MAJOR_VERSION_ARB,
 										   VTX_OPENGL_MAJOR_VERSION,
 										   WGL_CONTEXT_MINOR_VERSION_ARB,
@@ -78,15 +121,37 @@ namespace VTX::Renderer::Context::Backend::GL
 
 										   0 };
 
+			int pixelFormat = 0;
+			try
+			{
+				pixelFormat = _choosePixelFormat( wglChoosePixelFormatARB, pfd );
+			}
+			catch ( const std::exception & )
+			{
+				wglDeleteContext( tempContext );
+				ReleaseDC( bootstrapWindow, bootstrapDc );
+				DestroyWindow( bootstrapWindow );
+				throw;
+			}
+			if ( not SetPixelFormat( _hdc, pixelFormat, &pfd ) )
+			{
+				wglDeleteContext( tempContext );
+				ReleaseDC( bootstrapWindow, bootstrapDc );
+				DestroyWindow( bootstrapWindow );
+				throw std::runtime_error( "WGL: Failed to set pixel format" );
+			}
+
 			_context = wglCreateContextAttribsARB( _hdc, nullptr, contextAttribs );
-			wglMakeCurrent( nullptr, nullptr );
 			wglDeleteContext( tempContext );
+			ReleaseDC( bootstrapWindow, bootstrapDc );
+			DestroyWindow( bootstrapWindow );
 
 			if ( not _context )
 			{
 				throw std::runtime_error( "WGL: Failed to create context" );
 			}
 
+			VTX_TRACE( "[WGL] Core profile context {}.{} created", VTX_OPENGL_MAJOR_VERSION, VTX_OPENGL_MINOR_VERSION );
 			makeCurrent();
 			setSwapInterval( 1 );
 		}
@@ -145,6 +210,73 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 
 	  private:
+		static PIXELFORMATDESCRIPTOR _defaultPixelFormatDescriptor()
+		{
+			PIXELFORMATDESCRIPTOR pfd = {};
+			pfd.nSize				  = sizeof( PIXELFORMATDESCRIPTOR );
+			pfd.nVersion			  = 1;
+			pfd.dwFlags				  = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+			pfd.iPixelType			  = PFD_TYPE_RGBA;
+			pfd.cColorBits			  = 32;
+			pfd.cDepthBits			  = 24;
+			pfd.cStencilBits		  = 8;
+			pfd.iLayerType			  = PFD_MAIN_PLANE;
+			return pfd;
+		}
+
+		int _choosePixelFormat( const PFNWGLCHOOSEPIXELFORMATARBPROC p_choosePixelFormat, PIXELFORMATDESCRIPTOR & p_pfd )
+		{
+			int pixelFormat = 0;
+
+			if ( p_choosePixelFormat )
+			{
+				const int pixelAttribs[] = { WGL_DRAW_TO_WINDOW_ARB,
+											 1,
+											 WGL_SUPPORT_OPENGL_ARB,
+											 1,
+											 WGL_DOUBLE_BUFFER_ARB,
+											 1,
+											 WGL_PIXEL_TYPE_ARB,
+											 WGL_TYPE_RGBA_ARB,
+											 WGL_COLOR_BITS_ARB,
+											 32,
+											 WGL_DEPTH_BITS_ARB,
+											 24,
+											 WGL_STENCIL_BITS_ARB,
+											 8,
+											 0 };
+
+				UINT numFormats = 0;
+				if ( p_choosePixelFormat( _hdc, pixelAttribs, nullptr, 1, &pixelFormat, &numFormats ) && numFormats > 0 )
+				{
+					PIXELFORMATDESCRIPTOR chosen = {};
+					if ( DescribePixelFormat( _hdc, pixelFormat, sizeof( chosen ), &chosen ) != 0 )
+					{
+						p_pfd = chosen;
+						VTX_TRACE(
+							"[WGL] Using ARB pixel format {} (color={}, depth={}, stencil={}, double_buffer={})",
+							pixelFormat,
+							int( p_pfd.cColorBits ),
+							int( p_pfd.cDepthBits ),
+							int( p_pfd.cStencilBits ),
+							( p_pfd.dwFlags & PFD_DOUBLEBUFFER ) != 0
+						);
+						return pixelFormat;
+					}
+				}
+				VTX_TRACE( "[WGL] wglChoosePixelFormatARB available but no suitable format was selected, falling back" );
+			}
+
+			pixelFormat = ChoosePixelFormat( _hdc, &p_pfd );
+			if ( not pixelFormat )
+			{
+				throw std::runtime_error( "WGL: Failed to choose pixel format" );
+			}
+			VTX_TRACE( "[WGL] Falling back to ChoosePixelFormat -> {}", pixelFormat );
+
+			return pixelFormat;
+		}
+
 		HWND  _hwnd	   = nullptr;
 		HDC	  _hdc	   = nullptr;
 		HGLRC _context = nullptr;
@@ -163,6 +295,8 @@ namespace VTX::Renderer::Context::Backend::GL
 #include <EGL/eglext.h>
 #include <X11/Xlib.h>
 #include <wayland-client.h>
+#include <renderer/descriptors.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::Renderer::Context::Backend::GL
 {
@@ -172,36 +306,58 @@ namespace VTX::Renderer::Context::Backend::GL
 		EGLContextWrapper() = default;
 		~EGLContextWrapper() { destroy(); }
 
-		void init( const uintptr_t p_nativeSurface, const uintptr_t p_nativeDisplay = 0 )
+		void init(
+			const Desc::NativeContextInfo & p_contextInfo
+		)
 		{
-			// Try Wayland first, fall back to X11 if unavailable.
-			_nativeDisplay = reinterpret_cast<void *>( p_nativeDisplay );
-			if ( _nativeDisplay )
+			VTX_TRACE(
+				"[EGL] Creating context for surface {} with display {} and platform {}",
+				p_contextInfo.surface,
+				p_contextInfo.display,
+				int( p_contextInfo.plateform )
+			);
+
+			_nativeDisplay = reinterpret_cast<void *>( p_contextInfo.display );
+			switch ( p_contextInfo.plateform )
 			{
+			case Desc::E_NATIVE_PLATEFORM::WAYLAND:
+			{
+				_platform = Platform::Wayland;
+				if ( not _nativeDisplay )
+				{
+					throw std::runtime_error( "EGL: Wayland platform requires a native display" );
+				}
+				VTX_TRACE( "[EGL] Using Wayland platform display" );
 				_display = eglGetPlatformDisplay( EGL_PLATFORM_WAYLAND_KHR, _nativeDisplay, nullptr );
-				if ( _display != EGL_NO_DISPLAY )
+				break;
+			}
+			case Desc::E_NATIVE_PLATEFORM::X11:
+			{
+				_platform = Platform::X11;
+				if ( _nativeDisplay )
 				{
-					_platform = Platform::Wayland;
+					VTX_TRACE( "[EGL] Using X11 platform display" );
+					_display = eglGetPlatformDisplay( EGL_PLATFORM_X11_KHR, _nativeDisplay, nullptr );
 				}
-				else
-				{
-					_nativeDisplay = nullptr;
-				}
+				break;
+			}
+			case Desc::E_NATIVE_PLATEFORM::UNKNOWN:
+			default:
+			{
+				VTX_TRACE( "[EGL] No explicit native platform provided, using EGL default display" );
+				_platform	  = Platform::Default;
+				_nativeDisplay = nullptr;
+				_display	  = eglGetDisplay( EGL_DEFAULT_DISPLAY );
+				break;
+			}
 			}
 
-			if ( _platform == Platform::X11 )
+			if ( _display == EGL_NO_DISPLAY && _platform == Platform::X11 )
 			{
-				if ( p_nativeDisplay != 0 )
-				{
-					_nativeDisplay = reinterpret_cast<void *>( p_nativeDisplay );
-					_display	   = eglGetPlatformDisplay( EGL_PLATFORM_X11_KHR, _nativeDisplay, nullptr );
-				}
-				if ( _display == EGL_NO_DISPLAY )
-				{
-					// Fall back to the default display if the integration display is unavailable.
-					_nativeDisplay = nullptr;
-					_display	   = eglGetDisplay( EGL_DEFAULT_DISPLAY );
-				}
+				VTX_TRACE( "[EGL] X11 platform display unavailable, using EGL default display" );
+				_nativeDisplay = nullptr;
+				_platform	  = Platform::Default;
+				_display	  = eglGetDisplay( EGL_DEFAULT_DISPLAY );
 			}
 
 			if ( _display == EGL_NO_DISPLAY )
@@ -213,6 +369,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			{
 				throw std::runtime_error( "EGL: Initialization failed" );
 			}
+			VTX_TRACE( "[EGL] Initialized EGL {}.{}", _major, _minor );
 
 			if ( not eglBindAPI( EGL_OPENGL_API ) )
 			{
@@ -248,7 +405,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 
 			_surface = eglCreateWindowSurface(
-				_display, _config, reinterpret_cast<EGLNativeWindowType>( p_nativeSurface ), nullptr
+				_display, _config, reinterpret_cast<EGLNativeWindowType>( p_contextInfo.surface ), nullptr
 			);
 
 			if ( _surface == EGL_NO_SURFACE )
@@ -284,6 +441,7 @@ namespace VTX::Renderer::Context::Backend::GL
 				throw std::runtime_error( oss.str() );
 			}
 
+			VTX_TRACE( "[EGL] Core profile context {}.{} created", VTX_OPENGL_MAJOR_VERSION, VTX_OPENGL_MINOR_VERSION );
 			makeCurrent();
 			setSwapInterval( 1 );
 		}
@@ -342,6 +500,7 @@ namespace VTX::Renderer::Context::Backend::GL
 	  private:
 		enum class Platform
 		{
+			Default,
 			X11,
 			Wayland
 		};
@@ -350,7 +509,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		EGLSurface _surface		  = EGL_NO_SURFACE;
 		EGLContext _context		  = EGL_NO_CONTEXT;
 		EGLConfig  _config		  = nullptr;
-		Platform   _platform	  = Platform::X11;
+		Platform   _platform	  = Platform::Default;
 		void *	   _nativeDisplay = nullptr;
 
 		int _major = 0;

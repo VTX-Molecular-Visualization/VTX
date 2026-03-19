@@ -38,6 +38,7 @@ namespace
 {
 	constexpr size_t WIDTH_DEFAULT	= 1280;
 	constexpr size_t HEIGHT_DEFAULT = 720;
+
 } // namespace
 
 namespace VTX::App
@@ -53,35 +54,7 @@ namespace VTX::App
 		// Session.
 		ECS::setCtx<Session>();
 		// Logger.
-		LOGGER::init( SESSION().getLogsDir(), p_args.has( ARG_DEBUG ) );
-		VTX_INFO( ECS::getCtx<Args>().toString() );
-		SESSION().print();
-
-		// Store main event bus.
-		ECS::setCtx<Util::EventHub>();
-		// Store statistics.
-		ECS::setCtx<Util::Monitoring::Stats>();
-		// Store renderer.
-		ECS::setCtx<Renderer::Renderer>();
-		// Store action manager.
-		ECS::setCtx<Action::ActionManager>();
-		// Store input manager.
-		ECS::setCtx<Input::InputManager>();
-		// Store network manager.
-		ECS::setCtx<Network::NetworkManager>();
-		// Store settings manager.
-		ECS::setCtx<Settings::SettingsManager>();
-		// Store thread manager.
-		ECS::setCtx<Threading::ThreadManager>();
-		// Store uid manager.
-		ECS::setCtx<Uid::UIDManager>();
-		// Store pass manager.
-		ECS::setCtx<Pass::PassManager>();
-		// Store python interpretor.
-		ECS::setCtx<PythonBinding::Interpretor>();
-
-		// Load settings.
-		Settings::initSettings();
+		LOGGER::init( SESSION().getLogsDir(), ARGS().has( ARG_DEBUG ) );
 	}
 
 	VTXApp::~VTXApp()
@@ -103,42 +76,44 @@ namespace VTX::App
 
 	void VTXApp::start()
 	{
-		// Scene.
-		ECS::Entity sceneEnt = _registry.create();
-		_registry.emplace<Scene::TagRoot>( sceneEnt );
-		_registry.emplace<Util::Math::AABB>( sceneEnt );
+		_startServices();
+		_instantiateTools();
+		_createInitialEntities();
 
-		// Camera.
-		ECS::Entity cameraEnt = _registry.create();
-		_registry.emplace<Util::Math::Transform>( cameraEnt );
-		_registry.emplace<Renderer::Camera>( cameraEnt );
-		ACTION().execute<App::Action::Application::Resize>( WIDTH_DEFAULT, HEIGHT_DEFAULT );
-
-		// Build the renderer (graphic api backend context ready).
 		auto & renderer = RENDERER();
-		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) )
+		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) || ECS::getCtx<Args>().has( ARG_NO_GUI ) )
 		{
-			VTX_WARNING( "No graphics" );
+			VTX_WARNING( "No graphics backend initialization" );
 			renderer.setDefault();
 		}
 		else
 		{
-			try
-			{
-				renderer.setOpenGL( _getRenderSurface(), _getRenderDisplay(), SESSION().getShadersDir() );
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( p_e.what() );
-				renderer.setDefault();
-				HUB().trigger<Events::ApplicationError>(
-					"Unable to create OpenGL context. Update your drivers and check your hardware "
-					"compatibility."
-				);
-			}
+			VTX_WARNING( "No UI graphics context available, using default backend" );
+			renderer.setDefault();
 		}
 
-		// Initialize python interpretor.
+		_finishStartup();
+	}
+
+	void VTXApp::_startServices()
+	{
+		VTX_INFO( ARGS().toString() );
+		SESSION().print();
+
+		ECS::setCtx<Util::EventHub>();
+		ECS::setCtx<Util::Monitoring::Stats>();
+		ECS::setCtx<Renderer::Renderer>();
+		ECS::setCtx<Action::ActionManager>();
+		ECS::setCtx<Input::InputManager>();
+		ECS::setCtx<Network::NetworkManager>();
+		ECS::setCtx<Settings::SettingsManager>();
+		ECS::setCtx<Threading::ThreadManager>();
+		ECS::setCtx<Uid::UIDManager>();
+		ECS::setCtx<Pass::PassManager>();
+		ECS::setCtx<PythonBinding::Interpretor>();
+
+		Settings::initSettings();
+
 		try
 		{
 			INTERPRETOR().subscribe(
@@ -154,30 +129,45 @@ namespace VTX::App
 		{
 			VTX_ERROR( "Failed to initialize python interpretor: {}", p_e.what() );
 		}
+	}
 
-		// Create default presets.
+	void VTXApp::_instantiateTools()
+	{
+		_tools.clear();
+		_tools.reserve( _toolFactories.size() );
+
+		for ( auto & factory : _toolFactories )
+		{
+			assert( factory );
+
+			auto tool = factory();
+			assert( tool != nullptr );
+
+			_tools.push_back( std::move( tool ) );
+		}
+	}
+
+	void VTXApp::_createInitialEntities()
+	{
+		const ECS::Entity sceneEnt = _registry.create();
+		_registry.emplace<Scene::TagRoot>( sceneEnt );
+		_registry.emplace<Util::Math::AABB>( sceneEnt );
+
+		const ECS::Entity cameraEnt = _registry.create();
+		_registry.emplace<Util::Math::Transform>( cameraEnt );
+		_registry.emplace<Renderer::Camera>( cameraEnt );
+		ACTION().execute<App::Action::Application::Resize>( WIDTH_DEFAULT, HEIGHT_DEFAULT );
+
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::GraphicsConfig>>();
 
-		// First pass to add, next action will trigger updates in this one.
 		PASS().addPass<Pass::SceneUpdater>( sceneEnt );
 
-		// Set preset instances.
-		// First graphics config to setup renderer properly.
-		ACTION().execute<Action::Scene::SetGraphicsConfig>(
-			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>()
-		);
-		ACTION().execute<Action::Scene::SetColorLayout>(
-			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
-		);
-
-		// Other passes.
 		PASS().addPass<Pass::CameraUpdater>( cameraEnt );
 		PASS().addPass<Pass::SystemUpdater>();
 		PASS().addPass<Pass::TrajectoryUpdater>();
-		// TODO: at setting loading.
-		// Camera projection.
+
 		if ( SETTINGS().getValue<Renderer::PROJECTION>( Settings::Camera::PROJECTION_KEY )
 			 == Renderer::PROJECTION::PERSPECTIVE )
 		{
@@ -188,13 +178,20 @@ namespace VTX::App
 			ACTION().execute<Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>();
 		}
 
-		// Trackball controller.
 		ACTION().execute<Action::Controller::SetCameraController<Action::Controller::E_CONTROLLER::TRACKBALL>>();
+	}
 
-		// Trigger application start event.
+	void VTXApp::_finishStartup()
+	{
+		ACTION().execute<Action::Scene::SetGraphicsConfig>(
+			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>()
+		);
+		ACTION().execute<Action::Scene::SetColorLayout>(
+			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
+		);
+
 		HUB().trigger<Events::ApplicationStart>();
 
-		// Updater.
 		if ( not ARGS().has( ARG_NO_UPDATE ) )
 		{
 			SESSION().checkForUpdate();

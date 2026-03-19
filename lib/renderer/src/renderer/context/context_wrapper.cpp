@@ -78,15 +78,19 @@ namespace VTX::Renderer::Context
 	ContextWrapper::~ContextWrapper() = default;
 
 	void ContextWrapper::setOpenGL(
-		const size_t	 p_width,
-		const size_t	 p_height,
-		const uintptr_t	 p_nativeSurface,
-		const uintptr_t	 p_nativeDisplay,
+		const size_t			   p_width,
+		const size_t			   p_height,
+		const Desc::NativeContextInfo & p_contextInfo,
 		const FilePath & p_shaderDir
 	)
 	{
 		_setBackend<Backend::OpenGL>(
-			_impl->backend, _impl->executor, p_width, p_height, p_nativeSurface, p_nativeDisplay, p_shaderDir
+			_impl->backend,
+			_impl->executor,
+			p_width,
+			p_height,
+			p_contextInfo,
+			p_shaderDir
 		);
 		_setExecutor<Executor::OpenGL>( _impl->backend, _impl->executor );
 	}

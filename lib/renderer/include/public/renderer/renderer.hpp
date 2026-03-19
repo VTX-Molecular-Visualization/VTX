@@ -12,14 +12,12 @@
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
 #include "renderer/system_data.hpp"
-#include "renderer/types.hpp"
 #include <unordered_set>
 #include <util/callback.hpp>
 #include <util/math/bitset.hpp>
 
 namespace VTX::Renderer
 {
-
 	/**
 	 * @brief The renderer, only accessed from the facade.
 	 */
@@ -52,7 +50,7 @@ namespace VTX::Renderer
 		 * @brief Set graphic context.
 		 */
 		void setDefault();
-		void setOpenGL( const uintptr_t p_nativeSurface, const uintptr_t p_nativeDisplay, const FilePath & p_shaderDir );
+		void setOpenGL( const Desc::NativeContextInfo &, const FilePath & p_shaderDir );
 
 		/**
 		 * @brief Resize the renderer.
