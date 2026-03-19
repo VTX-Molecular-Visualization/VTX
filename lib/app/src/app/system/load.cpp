@@ -77,6 +77,9 @@ namespace VTX::App::System
 		_attributesPtr->finishEventConnection
 			= HUB().connect<EntityDelivered, &_Data::jobFinished>( _attributesPtr.get() );
 
+		if ( p_stopToken.stop_requested() )
+			return 0;
+
 		pendingData.loader.emplace();
 		if ( pendingData.buffer )
 			pendingData.loader->readBuffer( pendingData.buffer.value(), pendingData.path, pendingData.system );
