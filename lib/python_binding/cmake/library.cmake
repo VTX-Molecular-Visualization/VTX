@@ -61,7 +61,6 @@ message("VTX - vtx_python_binding links: ${VTX_PY_LINK_LIBS}")
 get_target_property(VTX_PY_TEST_LINK_LIBS vtx_python_binding_test LINK_LIBRARIES)
 message("VTX - vtx_python_binding_test links: ${VTX_PY_TEST_LINK_LIBS}")
 include ("${CMAKE_CURRENT_LIST_DIR}/vtx_python_binding_copy_runtime.cmake")
-vtx_python_binding_copy_runtime(vtx_python_binding)
 vtx_python_binding_copy_runtime(vtx_python_binding_test)
 
 vtx_copy_directory(vtx_python_binding_test "${CMAKE_CURRENT_LIST_DIR}/../test/data" "$<TARGET_FILE_DIR:vtx_python_binding_test>/data")

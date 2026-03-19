@@ -2,6 +2,7 @@ import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
 from conan.tools.cmake import CMakeToolchain
+from conan.tools.env import VirtualRunEnv
 
 class VTXToolMdprepRecipe(ConanFile):
     name = "vtx_tool_mdprep"
@@ -9,8 +10,8 @@ class VTXToolMdprepRecipe(ConanFile):
     package_type = "library"
     
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": False, "fPIC": True}
+    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
+    default_options = {"shared": False, "fPIC": True, "test": False}
     
     generators = "CMakeDeps"
     
@@ -27,7 +28,7 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("catch2/3.13.0")
         if self.settings.os == "Linux":
             self.requires("libffi/3.4.8", override=True)
-            self.requires("wayland/1.24.0", override=True)
+            self.requires("wayland/1.24.0", override=True)            
 
     def generate(self):
         tc = CMakeToolchain(self)
@@ -36,6 +37,7 @@ class VTXToolMdprepRecipe(ConanFile):
         tc.cache_variables["CPYTHON_VERSION_MINOR"] = python_binding_conf.get("user.python_binding:cpython_version_minor")
         tc.cache_variables["CPYTHON_VERSION_PATCH"] = python_binding_conf.get("user.python_binding:cpython_version_patch")
         tc.generate()
+        VirtualRunEnv(self).generate()
         
     def config_options(self):
         if self.settings.os == "Windows":
@@ -50,6 +52,8 @@ class VTXToolMdprepRecipe(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+        if self.options.test == True:
+            self.run("ctest --output-on-failure", cwd=self.build_folder, env="conanrun")
         
     def package(self):
         cmake = CMake(self)

@@ -1,6 +1,7 @@
 import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.env import VirtualRunEnv
 from conan.tools.files import copy
 from pathlib import Path
 
@@ -36,12 +37,15 @@ class VTXUtilRecipe(ConanFile):
         cmake_layout(self)
         # self.cpp.source and cpp.build are only for editable.
 
+    def generate(self):
+        VirtualRunEnv(self).generate()
+
     def build(self):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
         if self.options.test == True:
-            cmake.ctest(["--output-on-failure"])
+            self.run("ctest --output-on-failure", cwd=self.build_folder, env="conanrun")
 
     def package(self):
         cmake = CMake(self)        

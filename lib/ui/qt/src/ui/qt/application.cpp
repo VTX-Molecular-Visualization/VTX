@@ -25,7 +25,7 @@ namespace VTX::UI::QT
 		using namespace Resources;
 		using namespace App;
 
-		_splashScreen = new QSplashScreen( QString::fromStdString( Resources::SPRITE_SPLASH.data() ) );
+		_splashScreen = new QSplashScreen( QPixmap( Resources::SPRITE_SPLASH.data() ) );
 		_splashScreen->show();
 
 		// Application info.
@@ -37,7 +37,7 @@ namespace VTX::UI::QT
 			displayName += " (Debug)";
 		}
 
-		setWindowIcon( QIcon( SPRITE_LOGO.data() ) );
+		setWindowIcon( QIcon( QPixmap( SPRITE_LOGO.data() ) ) );
 		setApplicationDisplayName( QString::fromStdString( displayName ) );
 		setApplicationName( QString::fromStdString( APPLICATION_NAME.data() ) );
 		setApplicationVersion( QString::fromStdString( version ) );

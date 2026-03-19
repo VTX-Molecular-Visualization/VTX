@@ -102,19 +102,31 @@ def config_options_qt(p_conanFile : ConanFile):
 def generate_qt(p_conanFile : ConanFile):
 
     # Copy Qt plugins and DLLs to the build folder.
-    qtBinDir = p_conanFile.dependencies["qt"].cpp_info.bindir
+    qtPackageDir = p_conanFile.dependencies["qt"].package_folder
+    qtBinDir = os.path.join(qtPackageDir, "bin")
+    qtLibDir = os.path.join(qtPackageDir, "lib")
     qtPluginsDir = os.path.join(p_conanFile.dependencies["qt"].package_folder, "plugins")
     destDir = os.path.join(p_conanFile.build_folder, p_conanFile.cpp.build.libdirs[0])
 
-    binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll" ]
-    for file in binFiles:
-        p_conanFile.output.highlight(f"Copying {file} from Qt bin directory to {destDir}")
-        copy(p_conanFile, file, qtBinDir, destDir)
+    if p_conanFile.settings.os == "Windows":
+        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll" ]
+        for file in binFiles:
+            p_conanFile.output.highlight(f"Copying {file} from Qt bin directory to {destDir}")
+            copy(p_conanFile, file, qtBinDir, destDir)
 
-    pluginsFolers = [ "imageformats", "platforms", "styles", "tls" ]
-    for folder in pluginsFolers:
-        p_conanFile.output.highlight(f"Copying *.dll from Qt {folder} directory to {destDir}/{folder}")
-        copy(p_conanFile, "*.dll", os.path.join(qtPluginsDir, folder), os.path.join(destDir, folder))
+        pluginsFolers = [ "imageformats", "platforms", "styles", "tls" ]
+        for folder in pluginsFolers:
+            p_conanFile.output.highlight(f"Copying *.dll from Qt {folder} directory to {destDir}/{folder}")
+            copy(p_conanFile, "*.dll", os.path.join(qtPluginsDir, folder), os.path.join(destDir, folder))
+    elif p_conanFile.settings.os == "Linux":
+        p_conanFile.output.highlight(f"Copying Qt shared libraries from {qtLibDir} to {destDir}")
+        copy(p_conanFile, "libQt6*.so*", qtLibDir, destDir)
+
+        for folder in os.listdir(qtPluginsDir):
+            source_dir = os.path.join(qtPluginsDir, folder)
+            if os.path.isdir(source_dir):
+                p_conanFile.output.highlight(f"Copying Qt plugins from {source_dir} to {destDir}/{folder}")
+                copy(p_conanFile, "*.so*", source_dir, os.path.join(destDir, folder))
 
 
 class VTXUiQtRecipe(ConanFile):
@@ -140,6 +152,7 @@ class VTXUiQtRecipe(ConanFile):
         if self.settings.os == "Linux":
             self.requires("freetype/2.14.1", override=True)
             self.requires("libffi/3.4.8", override=True)
+            self.requires("wayland/1.24.0", override=True)
         
     def config_options(self):
         if self.settings.os == "Windows":

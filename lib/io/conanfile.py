@@ -1,5 +1,6 @@
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.env import VirtualRunEnv
 
 class VTXIORecipe(ConanFile):
     name = "vtx_io"
@@ -27,12 +28,15 @@ class VTXIORecipe(ConanFile):
     def layout(self):
         cmake_layout(self)
 
+    def generate(self):
+        VirtualRunEnv(self).generate()
+
     def build(self):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
         if self.options.test == True:
-            cmake.ctest(["--output-on-failure"])
+            self.run("ctest --output-on-failure", cwd=self.build_folder, env="conanrun")
 
     def package(self):
         cmake = CMake(self)

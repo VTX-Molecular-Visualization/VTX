@@ -25,8 +25,6 @@ else()
 endif()
 target_link_libraries(vtx_tool_mdprep PRIVATE re2::re2)
 
-vtx_tool_mdprep_copy_data(vtx_tool_mdprep)
-
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/src/*")
 
 add_executable(vtx_tool_mdprep_test ${SOURCES} )
@@ -43,6 +41,7 @@ endif()
 target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE re2::re2)
+vtx_python_binding_copy_runtime(vtx_tool_mdprep_test)
 vtx_qt_copy_runtime(vtx_tool_mdprep_test)
 
 include(CTest)

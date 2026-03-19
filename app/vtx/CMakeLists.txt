@@ -29,6 +29,7 @@ install(DIRECTORY $<TARGET_FILE_DIR:vtx>/external DESTINATION .)
 install(FILES README.md DESTINATION .)
 install(FILES CHANGELOG.md DESTINATION .)
 install(FILES license.txt DESTINATION .)
+install(FILES asset/qt.conf DESTINATION .)
 # Runtime DLLs.
 #install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
 # DLLS from build dir.
@@ -43,6 +44,21 @@ if(WIN32)
 	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/imageformats DESTINATION .)
 	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/tls DESTINATION .)
 	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/styles DESTINATION .)
+elseif(UNIX AND NOT APPLE)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/ DESTINATION .
+		FILES_MATCHING
+		PATTERN "libQt6*.so*"
+	)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/platforms DESTINATION . OPTIONAL)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/imageformats DESTINATION . OPTIONAL)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/tls DESTINATION . OPTIONAL)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/styles DESTINATION . OPTIONAL)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/platformthemes DESTINATION . OPTIONAL)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/xcbglintegrations DESTINATION . OPTIONAL)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/egldeviceintegrations DESTINATION . OPTIONAL)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/wayland-decoration-client DESTINATION . OPTIONAL)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/wayland-graphics-integration-client DESTINATION . OPTIONAL)
+	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/wayland-shell-integration DESTINATION . OPTIONAL)
 endif()
 
 # Infinite loop.

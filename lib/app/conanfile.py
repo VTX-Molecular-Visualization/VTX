@@ -1,6 +1,7 @@
 import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
+from conan.tools.env import VirtualRunEnv
 from conan.tools.system.package_manager import Apt
 
 
@@ -26,7 +27,6 @@ class VTXAppRecipe(ConanFile):
         self.requires("catch2/3.13.0")
         if self.settings.os == "Linux":
             self.requires("libffi/3.4.8", override=True)
-            self.requires("wayland/1.24.0", override=True)
 
     def system_requirements(self):
         if self.settings.os == "Linux":
@@ -52,13 +52,14 @@ class VTXAppRecipe(ConanFile):
         tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor
         tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch
         tc.generate()
+        VirtualRunEnv(self).generate()
 
     def build(self):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
         if self.options.test == True:
-            cmake.ctest(["--output-on-failure"])
+            self.run("ctest --output-on-failure", cwd=self.build_folder, env="conanrun")
 
     def package(self):
         cmake = CMake(self)

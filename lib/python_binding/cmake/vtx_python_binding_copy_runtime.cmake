@@ -1,8 +1,9 @@
 set(_VTX_PYTHON_BINDING_COPY_RUNTIME_ROOT "${CMAKE_CURRENT_LIST_DIR}/..")
 
 function(_vtx_python_binding_append_runtime_root roots_var candidate)
-	if(EXISTS "${candidate}")
-		list(APPEND ${roots_var} "${candidate}")
+	if(IS_DIRECTORY "${candidate}")
+		get_filename_component(candidate_realpath "${candidate}" REALPATH)
+		list(APPEND ${roots_var} "${candidate_realpath}")
 		set(${roots_var} "${${roots_var}}" PARENT_SCOPE)
 	endif()
 endfunction()
@@ -32,6 +33,8 @@ endfunction()
 
 function(vtx_python_binding_copy_runtime target)
 	set(_vtx_python_binding_runtime_roots)
+	_vtx_python_binding_append_runtime_root(_vtx_python_binding_runtime_roots "${PROJECT_SOURCE_DIR}")
+	_vtx_python_binding_append_runtime_root(_vtx_python_binding_runtime_roots "${CMAKE_CURRENT_SOURCE_DIR}")
 	_vtx_python_binding_append_runtime_root(_vtx_python_binding_runtime_roots "${_VTX_PYTHON_BINDING_COPY_RUNTIME_ROOT}")
 	if(DEFINED CMAKE_BUILD_TYPE AND NOT CMAKE_BUILD_TYPE STREQUAL "")
 		_vtx_python_binding_append_runtime_root(

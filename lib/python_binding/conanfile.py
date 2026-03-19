@@ -3,7 +3,7 @@ import zipfile
 import glob
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeDeps, CMakeToolchain
-from conan.tools.env import VirtualBuildEnv, Environment
+from conan.tools.env import VirtualBuildEnv, VirtualRunEnv, Environment
 from conan.tools.files import copy
 from conan.tools.microsoft import is_msvc
 from pathlib import Path
@@ -120,6 +120,7 @@ class VTXPythonBindingRecipe(ConanFile):
         tc = CMakeToolchain(self)
         configureToolChain(tc)
         tc.generate()
+        VirtualRunEnv(self).generate()
         
         dep_name = "cpython"
         if str(self.settings.os) == "Linux" and dep_name in self.dependencies:
@@ -158,7 +159,7 @@ class VTXPythonBindingRecipe(ConanFile):
 
         if self.options.test == True:
             # self._print_dir_content(executable_folder(self))
-            cmake.ctest(["--output-on-failure"])
+            self.run("ctest --output-on-failure", cwd=self.build_folder, env="conanrun")
 
     def package(self):
         cmake = CMake(self)

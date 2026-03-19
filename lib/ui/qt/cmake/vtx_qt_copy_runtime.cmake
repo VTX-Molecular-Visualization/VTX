@@ -30,10 +30,6 @@ function(_vtx_qt_copy_runtime_directory target source destination)
 endfunction()
 
 function(vtx_qt_copy_runtime target)
-	if(NOT WIN32)
-		return()
-	endif()
-
 	set(_vtx_qt_runtime_roots)
 	_vtx_qt_append_runtime_root(_vtx_qt_runtime_roots "${_VTX_QT_COPY_RUNTIME_ROOT}")
 	if(DEFINED CMAKE_BUILD_TYPE AND NOT CMAKE_BUILD_TYPE STREQUAL "")
@@ -42,8 +38,21 @@ function(vtx_qt_copy_runtime target)
 	_vtx_qt_append_runtime_root(_vtx_qt_runtime_roots "${_VTX_QT_COPY_RUNTIME_ROOT}/build")
 	_vtx_qt_append_runtime_root(_vtx_qt_runtime_roots "${CMAKE_BINARY_DIR}")
 
+	set(_vtx_qt_plugin_dirs
+		imageformats
+		platforms
+		styles
+		tls
+		platformthemes
+		xcbglintegrations
+		egldeviceintegrations
+		wayland-decoration-client
+		wayland-graphics-integration-client
+		wayland-shell-integration
+	)
+
 	foreach(_vtx_qt_runtime_root IN LISTS _vtx_qt_runtime_roots)
-		if(EXISTS "${_vtx_qt_runtime_root}/Qt6Cored.dll" OR EXISTS "${_vtx_qt_runtime_root}/Qt6Core.dll")
+		if(WIN32 AND (EXISTS "${_vtx_qt_runtime_root}/Qt6Cored.dll" OR EXISTS "${_vtx_qt_runtime_root}/Qt6Core.dll"))
 			file(GLOB _vtx_qt_runtime_dlls
 				"${_vtx_qt_runtime_root}/Qt6Core*.dll"
 				"${_vtx_qt_runtime_root}/Qt6Gui*.dll"
@@ -53,7 +62,24 @@ function(vtx_qt_copy_runtime target)
 				_vtx_qt_copy_runtime_file(${target} "${_vtx_qt_runtime_dll}" "$<TARGET_FILE_DIR:${target}>")
 			endforeach()
 
-			foreach(_vtx_qt_plugin_dir IN ITEMS imageformats platforms styles tls)
+			foreach(_vtx_qt_plugin_dir IN LISTS _vtx_qt_plugin_dirs)
+				if(EXISTS "${_vtx_qt_runtime_root}/${_vtx_qt_plugin_dir}")
+					_vtx_qt_copy_runtime_directory(
+						${target}
+						"${_vtx_qt_runtime_root}/${_vtx_qt_plugin_dir}"
+						"$<TARGET_FILE_DIR:${target}>/${_vtx_qt_plugin_dir}"
+					)
+				endif()
+			endforeach()
+		elseif(UNIX AND NOT APPLE AND EXISTS "${_vtx_qt_runtime_root}/libQt6Core.so")
+			file(GLOB _vtx_qt_runtime_sos
+				"${_vtx_qt_runtime_root}/libQt6*.so*"
+			)
+			foreach(_vtx_qt_runtime_so IN LISTS _vtx_qt_runtime_sos)
+				_vtx_qt_copy_runtime_file(${target} "${_vtx_qt_runtime_so}" "$<TARGET_FILE_DIR:${target}>")
+			endforeach()
+
+			foreach(_vtx_qt_plugin_dir IN LISTS _vtx_qt_plugin_dirs)
 				if(EXISTS "${_vtx_qt_runtime_root}/${_vtx_qt_plugin_dir}")
 					_vtx_qt_copy_runtime_directory(
 						${target}

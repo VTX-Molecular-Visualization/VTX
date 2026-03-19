@@ -36,6 +36,10 @@ add_executable(vtx ${SOURCES} ${RESOURCES})
 vtx_configure_target(vtx)
 vtx_link_cuda(vtx)
 
+if(UNIX AND NOT APPLE)
+	set_target_properties(vtx PROPERTIES INSTALL_RPATH "$ORIGIN")
+endif()
+
 if (NOT DEFINED _VTX_CONAN)
 	target_link_libraries(vtx PRIVATE vtx_util)
 	target_link_libraries(vtx PRIVATE vtx_app)

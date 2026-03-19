@@ -1,5 +1,6 @@
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
+from conan.tools.env import VirtualRunEnv
 
 class VTXToolExampleRecipe(ConanFile):
     name = "vtx_tool_example"
@@ -38,13 +39,14 @@ class VTXToolExampleRecipe(ConanFile):
         tc.cache_variables["CPYTHON_VERSION_MINOR"] = python_binding_conf.get("user.python_binding:cpython_version_minor")
         tc.cache_variables["CPYTHON_VERSION_PATCH"] = python_binding_conf.get("user.python_binding:cpython_version_patch")
         tc.generate()
+        VirtualRunEnv(self).generate()
 
     def build(self):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
         if self.options.test == True:
-            cmake.ctest(["--output-on-failure"])
+            self.run("ctest --output-on-failure", cwd=self.build_folder, env="conanrun")
 
     def package(self):
         cmake = CMake(self)

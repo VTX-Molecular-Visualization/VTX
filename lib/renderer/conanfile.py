@@ -1,6 +1,7 @@
 import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
+from conan.tools.env import VirtualRunEnv
 from conan.tools.files import copy
 from conan.tools.system.package_manager import Apt
 
@@ -40,6 +41,7 @@ class VTXRendererRecipe(ConanFile):
         tc = CMakeToolchain(self)
         tc.cache_variables["VTX_CUDA_ARCH"] = self.options.cuda_arch
         tc.generate()
+        VirtualRunEnv(self).generate()
         
     def layout(self):
         cmake_layout(self)
@@ -50,7 +52,7 @@ class VTXRendererRecipe(ConanFile):
         cmake.configure()
         cmake.build() 
         if self.options.test == True:
-            cmake.ctest(["--output-on-failure"])
+            self.run("ctest --output-on-failure", cwd=self.build_folder, env="conanrun")
 
     def package(self):
         cmake = CMake(self)

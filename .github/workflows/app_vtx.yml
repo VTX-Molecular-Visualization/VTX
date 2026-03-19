@@ -82,13 +82,13 @@ jobs:
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
     
- #   - name: Install CUDA Toolkit
- #     uses: Jimver/cuda-toolkit@v0.2.30
- #     id: cuda-toolkit
- #     with:
- #       cuda: ${{ inputs.cuda_version }}
- #       method: network
- #       linux-local-args: '["--toolkit"]'
+#    - name: Install CUDA Toolkit
+#      uses: Jimver/cuda-toolkit@v0.2.30
+#      id: cuda-toolkit
+#      with:
+#        cuda: ${{ inputs.cuda_version }}
+#        method: network
+#        linux-local-args: '["--toolkit"]'
 
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}
@@ -182,13 +182,18 @@ jobs:
           --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
           --mainExe ${{ matrix.main_exe }} \
           --releaseNotes "$RUNNER_TEMP/latest_changelog.md" \
+          --icon "${{ env.ROOT_DIR }}/app/vtx/asset/logo.ico" \
           --channel ${{ matrix.channel }} \
           --outputDir "${{ env.RELEASE_DIR }}"
 
     - name: Upload to GitHub release
       run: |
         vpk upload github \
+          --pre \
+          --merge \
           --repoUrl https://github.com/${{ github.repository }} \
+          --releaseName "VTX ${{ env.VERSION }} beta" \
+          --tag v${{ env.VERSION }} \
           --token ${{ secrets.GITHUB_TOKEN }} \
           --channel ${{ matrix.channel }} \
           --outputDir "${{ env.RELEASE_DIR }}"
