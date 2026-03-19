@@ -7,7 +7,7 @@ from conan.tools.system.package_manager import Apt
 def install_system_dependencies(conanfile):
     if conanfile.settings.os == "Linux":
         apt = Apt(conanfile)
-        apt.install(["libegl-dev", "libgl-dev", "libopengl-dev"], update=True)
+        apt.install(["libegl-dev", "libgl-dev", "libopengl-dev", "libwayland-dev"], update=True)
 
 class VTXRendererRecipe(ConanFile):
     name = "vtx_renderer"
