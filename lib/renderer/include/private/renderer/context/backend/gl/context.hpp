@@ -241,7 +241,9 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			if ( _surface == EGL_NO_SURFACE )
 			{
-				const EGLint err = eglGetError();
+				const EGLint	   err = eglGetError();
+				std::ostringstream oss;
+				oss << "EGL surface error: 0x" << std::hex << std::uppercase << err;
 				throw std::runtime_error( oss.str() );
 			}
 
@@ -264,7 +266,9 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			if ( _context == EGL_NO_CONTEXT )
 			{
-				EGLint err = eglGetError();
+				EGLint			   err = eglGetError();
+				std::ostringstream oss;
+				oss << "EGL context error: 0x" << std::hex << std::uppercase << err;
 				throw std::runtime_error( oss.str() );
 			}
 
