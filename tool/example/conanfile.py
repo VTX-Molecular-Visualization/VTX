@@ -23,8 +23,6 @@ class VTXToolExampleRecipe(ConanFile):
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_python_binding/1.0")
         self.requires("catch2/3.13.0")
-        if self.settings.os == "Linux":
-            self.requires("libffi/3.4.8", override=True)
 
     def config_options(self):
         if self.settings.os == "Windows":

@@ -139,7 +139,7 @@ class VTXPythonBindingRecipe(ConanFile):
         self.requires("catch2/3.13.0")
         self.requires("cpython/{}".format(str(pythonVersion()))) # v >= 3.10 not working with msvc compiler so far
         if self.settings.os == "Linux":
-            self.requires("libffi/3.4.8", force=True)
+            self.requires("libffi/3.4.8", override=True)
 
     def config_options(self):
         if self.settings.os == "Windows":

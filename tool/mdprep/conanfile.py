@@ -35,8 +35,6 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("re2/20240702")
         self.requires("gromacs/2026.0")
         self.requires("catch2/3.13.0")
-        if self.settings.os == "Linux":
-            self.requires("libffi/3.4.8", override=True)
 
     def generate(self):
         tc = CMakeToolchain(self)

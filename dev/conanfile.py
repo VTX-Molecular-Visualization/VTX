@@ -57,7 +57,6 @@ class VTXRecipe(ConanFile):
             self.requires("libffi/3.4.8", override=True)
             self.requires("wayland/1.24.0", override=True)
 
-
     def system_requirements(self):
         renderer_module.install_system_dependencies(self)
 
