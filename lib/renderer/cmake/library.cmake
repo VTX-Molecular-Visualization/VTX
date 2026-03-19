@@ -1,5 +1,5 @@
 include("${CMAKE_CURRENT_LIST_DIR}/vtx_link_cuda.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/vtx_renderer_copy_files.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/vtx_renderer_copy_shaders.cmake")
 
 # Lib.
 add_library(vtx_renderer)
@@ -75,21 +75,19 @@ add_executable(vtx_renderer_test ${TESTS})
 vtx_configure_target(vtx_renderer_test)
 
 if (NOT DEFINED _VTX_RENDERER_CONAN)
-	target_link_libraries(vtx_renderer PRIVATE vtx_util)
-	target_link_libraries(vtx_renderer PRIVATE vtx_core)	
+	target_link_libraries(vtx_renderer PUBLIC vtx_util)
+	target_link_libraries(vtx_renderer PUBLIC vtx_core)	
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_util)
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_core)
 else()
-	target_link_libraries(vtx_renderer PRIVATE vtx_util::vtx_util)
-	target_link_libraries(vtx_renderer PRIVATE vtx_core::vtx_core)
+	target_link_libraries(vtx_renderer PUBLIC vtx_util::vtx_util)
+	target_link_libraries(vtx_renderer PUBLIC vtx_core::vtx_core)
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
 	target_link_libraries(vtx_renderer_test PRIVATE vtx_core::vtx_core)
 endif()
 
 target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer)
 target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
-
-vtx_copy_registered_data(vtx_renderer) # allow declared files to be copied on build
 
 include(CTest)
 include(Catch)

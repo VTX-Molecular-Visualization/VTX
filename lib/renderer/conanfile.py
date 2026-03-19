@@ -62,4 +62,4 @@ class VTXRendererRecipe(ConanFile):
             self.cpp_info.system_libs = ["opengl32"]
         elif self.settings.os == "Linux":
             self.cpp_info.system_libs = ["OpenGL", "EGL", "X11"]
-        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_renderer_copy_files.cmake", "cmake/vtx_link_cuda.cmake"])
+        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_renderer_copy_shaders.cmake", "cmake/vtx_link_cuda.cmake"])

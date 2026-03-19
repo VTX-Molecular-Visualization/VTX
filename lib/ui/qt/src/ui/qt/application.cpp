@@ -25,7 +25,7 @@ namespace VTX::UI::QT
 		using namespace Resources;
 		using namespace App;
 
-		_splashScreen = new Widget::SplashScreen();
+		_splashScreen = new QSplashScreen( QString::fromStdString( Resources::SPRITE_SPLASH.data() ) );
 		_splashScreen->show();
 
 		// Application info.
@@ -188,12 +188,7 @@ namespace VTX::UI::QT
 			_app.finishStartup();
 
 			MAIN_WINDOW().show();
-
-			if ( _splashScreen )
-			{
-				_splashScreen->stop();
-				_splashScreen->close();
-			}
+			_splashScreen->finish( &MAIN_WINDOW() );
 
 			_timer.start( 0 );
 			_durationTimer.start();

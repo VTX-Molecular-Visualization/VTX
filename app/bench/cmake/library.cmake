@@ -29,4 +29,4 @@ endif()
 target_link_libraries(vtx_renderer_bench PRIVATE SDL3::SDL3)
 target_link_libraries(vtx_renderer_bench PRIVATE imgui::imgui)
 	
-vtx_copy_registered_data(vtx_renderer_bench)
+vtx_renderer_copy_shaders(vtx_renderer_bench)

@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_QT_APPLICATION__
 #define __VTX_UI_QT_APPLICATION__
 
+#include "QSplashScreen"
 #include "settings.hpp"
-#include "ui/qt/widget/splashscreen.hpp"
 #include <QAction>
 #include <QApplication>
 #include <QPointer>
@@ -95,7 +95,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Splash screen displayed during startup.
 		 */
-		QPointer<Widget::SplashScreen> _splashScreen;
+		QPointer<QSplashScreen> _splashScreen;
 
 		/**
 		 * @brief Init application after Qt startup (create main window, OpenGL context, etc.).

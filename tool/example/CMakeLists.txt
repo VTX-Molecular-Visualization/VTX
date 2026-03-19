@@ -3,19 +3,13 @@ cmake_minimum_required(VERSION 3.23)
 project(vtx_tool_example)
 
 # Internal lib packages.
-find_package(vtx_util CONFIG REQUIRED)
-find_package(vtx_renderer CONFIG REQUIRED)
-find_package(vtx_core CONFIG REQUIRED)
-find_package(vtx_io CONFIG REQUIRED)
 set (PYBIND11_PYTHON_VERSION "${CPYTHON_VERSION_MAJOR}.${CPYTHON_VERSION_MINOR}.${CPYTHON_VERSION_PATCH}")
 find_package(Python3 "${CPYTHON_VERSION_MAJOR}.${CPYTHON_VERSION_MINOR}.${CPYTHON_VERSION_PATCH}" EXACT REQUIRED COMPONENTS Interpreter Development NO_SYSTEM_ENVIRONMENT_PATH)
+find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_ui_qt CONFIG REQUIRED)
 
 # External dependencies.
-find_package(Qt6 COMPONENTS Core REQUIRED)
-find_package(Qt6 COMPONENTS Gui REQUIRED)
-find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 
 # Workaround.

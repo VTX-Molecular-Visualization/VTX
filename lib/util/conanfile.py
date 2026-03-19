@@ -49,6 +49,6 @@ class VTXUtilRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_util"]
-        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_configure_target.cmake", "cmake/vtx_copy_registration.cmake"])
+        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_configure_target.cmake", "cmake/vtx_copy.cmake"])
         # Same as self.cpp.package.includedirs in layout()
         #self.cpp_info.includedirs = []

@@ -20,6 +20,7 @@ namespace VTX::UI::QT::Dialog
 
 namespace VTX::UI::QT::Widget
 {
+
 	/**
 	 * @brief The application main window.
 	 */

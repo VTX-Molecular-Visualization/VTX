@@ -3,7 +3,6 @@ set(DIR_APPS ${CMAKE_CURRENT_SOURCE_DIR}/../app)
 set(DIR_TOOLS ${CMAKE_CURRENT_SOURCE_DIR}/../tool)
 
 include("${DIR_LIBS}/util/cmake/vtx_configure_target.cmake")
-include("${DIR_LIBS}/util/cmake/vtx_copy_registration.cmake")
 include("${DIR_LIBS}/renderer/cmake/vtx_link_cuda.cmake")
 
 set(PYBIND11_FINDPYTHON ON)
@@ -50,50 +49,40 @@ endif()
 
 # Util.
 include("${DIR_LIBS}/util/cmake/library.cmake")
-vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Core.
 include("${DIR_LIBS}/core/cmake/library.cmake")
-vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # IO.
 include("${DIR_LIBS}/io/cmake/library.cmake")
-vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Renderer.
 include("${DIR_LIBS}/renderer/cmake/library.cmake")
-vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Bench.
 include("${DIR_APPS}/bench/cmake/library.cmake")
-vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Python binding.
 include("${DIR_LIBS}/python_binding/cmake/library.cmake")
 
 # App.
 include("${DIR_LIBS}/app/cmake/library.cmake")
-vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # UI Qt.
 include("${DIR_LIBS}/ui/qt/cmake/library.cmake")
-vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Tool example
 if (VTX_TOOL_EXAMPLE)
 	include("${DIR_TOOLS}/example/cmake/library.cmake")
 endif()
-vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # Tool Mdprep
 if (VTX_TOOL_MDPREP)
 	include("${DIR_TOOLS}/mdprep/cmake/library.cmake")
 endif()
-vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 # VTX.
 include("${DIR_APPS}/vtx/cmake/library.cmake")
-vtx_clear_registered_copies() # Prevent data from previous package to be copied an additional time
 
 
 ## Following projects will be local-dev exclusives. It either serves no purpose to have them built in the clould or it would be to resource-intensive.

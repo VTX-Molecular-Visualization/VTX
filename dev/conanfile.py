@@ -5,6 +5,10 @@ from conan.tools.files import copy
 from conan.tools.system.package_manager import Apt
 from pathlib import Path
 import importlib.util
+import sys
+
+sys.path.append(str(Path(__file__).resolve().parent.parent / "lib" / "python_binding"))
+from python_version import config_options_cpython, configure_toolchain, get_python_version
 
 
 
@@ -51,7 +55,7 @@ class VTXRecipe(ConanFile):
             self.requires("libarchive/3.7.9")
             self.requires("boost/1.87.0") # 1.88 version break process package on windows
         self.requires("platformfolders/4.3.0")
-        self.requires("cpython/{}".format(str(python_binding_module.pythonVersion()))) # v >= 3.10 not working with msvc compiler so far
+        self.requires("cpython/{}".format(str(get_python_version()))) # v >= 3.10 not working with msvc compiler so far
         if self.settings.os == "Linux":
             self.requires("xkbcommon/1.6.0", override=True)
             self.requires("libffi/3.4.8", override=True)
@@ -62,11 +66,11 @@ class VTXRecipe(ConanFile):
 
     def config_options(self):
         qt_module.config_options_qt(self)
-        python_binding_module.config_options_cpython(self)
+        config_options_cpython(self)
         
     def generate(self):
         tc = CMakeToolchain(self)
-        python_binding_module.configureToolChain(tc)
+        configure_toolchain(tc, get_python_version())
         
         versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
         tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
@@ -85,8 +89,6 @@ class VTXRecipe(ConanFile):
 
         qt_module.generate_qt(self)
         python_binding_module.doPythonCopies(self)
-        mdprep_module.copy_gromacs_stuff(self)
-      
         copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "external"), os.path.join(self.build_folder, "external"))        
         copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "data", "tools", "mdprep", "gromacs", "top"), os.path.join(self.build_folder, "data", "tools", "mdprep", "gromacs", "top" ))        
 

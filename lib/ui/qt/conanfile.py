@@ -137,7 +137,6 @@ class VTXUiQtRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_python_binding/1.0")
         self.requires("qt/6.10.1", transitive_headers=True)
-        self.requires("entt/3.16.0", transitive_headers=True) # TODO : see <lib/python_binding/cmake/library.cmake> for details
         if self.settings.os == "Linux":
             self.requires("freetype/2.14.1", override=True)
             self.requires("libffi/3.4.8", override=True)
@@ -152,9 +151,10 @@ class VTXUiQtRecipe(ConanFile):
 
     def generate(self):    
         tc = CMakeToolchain(self)
-        tc.cache_variables["CPYTHON_VERSION_MAJOR"] = self.dependencies["vtx_python_binding"].conf_info.get("user.python_binding:cpython_version_major")
-        tc.cache_variables["CPYTHON_VERSION_MINOR"] = self.dependencies["vtx_python_binding"].conf_info.get("user.python_binding:cpython_version_minor")
-        tc.cache_variables["CPYTHON_VERSION_PATCH"] = self.dependencies["vtx_python_binding"].conf_info.get("user.python_binding:cpython_version_patch")
+        python_binding_conf = self.dependencies["vtx_python_binding"].conf_info
+        tc.cache_variables["CPYTHON_VERSION_MAJOR"] = python_binding_conf.get("user.python_binding:cpython_version_major")
+        tc.cache_variables["CPYTHON_VERSION_MINOR"] = python_binding_conf.get("user.python_binding:cpython_version_minor")
+        tc.cache_variables["CPYTHON_VERSION_PATCH"] = python_binding_conf.get("user.python_binding:cpython_version_patch")
         tc.generate()
         generate_qt(self)
 
@@ -170,4 +170,4 @@ class VTXUiQtRecipe(ConanFile):
     def package_info(self):
         self.cpp_info.libs = ["vtx_ui_qt"]
         self.cpp_info.bindirs = [""]
-        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_qt_configure.cmake", "cmake/vtx_qt_add_resources.cmake"])
+        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_qt_configure.cmake", "cmake/vtx_qt_add_resources.cmake", "cmake/vtx_qt_copy_runtime.cmake"])
