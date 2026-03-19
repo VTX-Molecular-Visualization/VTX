@@ -13,6 +13,5 @@ set(_VTX_RENDERER_CONAN " ") # So the right target name can be linked
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 install(TARGETS vtx_renderer FILE_SET public_headers DESTINATION include)
-install(FILES ${CMAKE_CURRENT_LIST_DIR}/../vendor/EGL/libEGL.dll DESTINATION .)
 install(DIRECTORY shaders DESTINATION .)
 install(DIRECTORY cmake DESTINATION .)

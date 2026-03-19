@@ -2,6 +2,7 @@ import os
 from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMake, CMakeToolchain
 from conan.tools.files import copy
+from conan.tools.system.package_manager import Apt
 from pathlib import Path
 import importlib.util
 
@@ -57,7 +58,12 @@ class VTXRecipe(ConanFile):
             self.requires("wayland/1.24.0", override=True)
 
 
-    def config_options(self):   
+    def system_requirements(self):
+        if self.settings.os == "Linux":
+            apt = Apt(self)
+            apt.install(["libegl-dev", "libgl-dev"], update=True)
+
+    def config_options(self):
         qt_module.config_options_qt(self)
         python_binding_module.config_options_cpython(self)
         
