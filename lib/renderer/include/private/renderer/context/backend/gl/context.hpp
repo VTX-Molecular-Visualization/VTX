@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_CONTEXT__
 #define __VTX_RENDERER_CONTEXT_GL_CONTEXT__
 
-#include <format>
+#include <sstream>
 #include <stdexcept>
 
 // ============================================================
@@ -236,7 +236,8 @@ namespace VTX::Renderer::Context::Backend::GL
 			if ( _surface == EGL_NO_SURFACE )
 			{
 				const EGLint err = eglGetError();
-				throw std::runtime_error( std::format( "EGL surface error: 0x{:X}", err ) );
+				std::ostringstream oss; oss << "EGL surface error: 0x" << std::hex << std::uppercase << err;
+			throw std::runtime_error( oss.str() );
 			}
 
 			const EGLint contextAttribs[] = { EGL_CONTEXT_MAJOR_VERSION,
@@ -259,7 +260,8 @@ namespace VTX::Renderer::Context::Backend::GL
 			if ( _context == EGL_NO_CONTEXT )
 			{
 				EGLint err = eglGetError();
-				throw std::runtime_error( std::format( "EGL context error: 0x{:X}", err ) );
+				std::ostringstream oss; oss << "EGL context error: 0x" << std::hex << std::uppercase << err;
+			throw std::runtime_error( oss.str() );
 			}
 
 			makeCurrent();

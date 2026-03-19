@@ -92,8 +92,10 @@ def config_options_qt(p_conanFile : ConanFile):
     p_conanFile.options["qt"].qtquickeffectmaker = False
     p_conanFile.options["qt"].qtgraphs = False
     if p_conanFile.settings.os == "Linux":
+            p_conanFile.options["qt"].opengl = "desktop" # forced by egl.
             p_conanFile.options["qt"].qtwayland = True
             p_conanFile.options["qt"].with_x11 = True
+            p_conanFile.options["qt"].with_egl = True # forced by wayland.
             p_conanFile.options["qt"].with_dbus = True
         
         
