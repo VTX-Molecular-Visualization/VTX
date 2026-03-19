@@ -4,10 +4,12 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/widget/main_window.hpp"
+#include <QGuiApplication>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/action/selection.hpp>
 #include <app/events.hpp>
+#include <qpa/qplatformnativeinterface.h>
 #include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
 
@@ -65,11 +67,24 @@ namespace VTX::UI::QT::Widget
 		_window->removeEventFilter( this );
 	}
 
-	WId OpenGLWidget::getWindowId() const 
+	uintptr_t OpenGLWidget::getNativeSurface() const
 	{
 		assert( _window );
-
-		return _window->winId();
+		if ( QGuiApplication::platformName() == "wayland" )
+		{
+			QPlatformNativeInterface * nif = QGuiApplication::platformNativeInterface();
+			if ( not nif )
+			{
+				throw std::runtime_error( "Qt: no platform native interface" );
+			}
+			void * surface = nif->nativeResourceForWindow( "surface", _window );
+			if ( not surface )
+			{
+				throw std::runtime_error( "Qt: native surface is null (window not yet shown?)" );
+			}
+			return reinterpret_cast<uintptr_t>( surface );
+		}
+		return static_cast<uintptr_t>( _window->winId() );
 	}
 
 	void OpenGLWidget::resizeEvent( QResizeEvent * p_event )

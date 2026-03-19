@@ -80,11 +80,14 @@ namespace VTX::Renderer::Context
 	void ContextWrapper::setOpenGL(
 		const size_t	 p_width,
 		const size_t	 p_height,
-		const uintptr_t	 p_window,
+		const bool		 p_isWayland,
+		const uintptr_t	 p_nativeWindow,
 		const FilePath & p_shaderDir
 	)
 	{
-		_setBackend<Backend::OpenGL>( _impl->backend, _impl->executor, p_width, p_height, p_window, p_shaderDir );
+		_setBackend<Backend::OpenGL>(
+			_impl->backend, _impl->executor, p_width, p_height, p_isWayland, p_nativeWindow, p_shaderDir
+		);
 		_setExecutor<Executor::OpenGL>( _impl->backend, _impl->executor );
 	}
 

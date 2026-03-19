@@ -1,4 +1,4 @@
-#version 460 core
+#version 450 core
 
 // In.
 in vec3 texCoord;

@@ -60,6 +60,7 @@ namespace VTX::App
 		/**
 		 * @brief Get the native window handle, can be overidden by gui.
 		 */
+		virtual bool	  _isWaylandPlatform() const { return false; }
 		virtual uintptr_t _getRenderSurface() const { return 0; }
 
 	  private:

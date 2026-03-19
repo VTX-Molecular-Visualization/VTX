@@ -1,6 +1,8 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_CONTEXT__
 #define __VTX_RENDERER_CONTEXT_GL_CONTEXT__
 
+#include "include_opengl.hpp"
+#include <cstdio>
 #include <sstream>
 #include <stdexcept>
 
@@ -17,7 +19,7 @@ namespace VTX::Renderer::Context::Backend::GL
 	class WGLContextWrapper
 	{
 	  public:
-		void init( const uintptr_t p_nativeWindow )
+		void init( const bool /*p_isWayland*/, const uintptr_t p_nativeWindow )
 		{
 			_hwnd = reinterpret_cast<HWND>( p_nativeWindow );
 			_hdc  = GetDC( _hwnd );
@@ -59,9 +61,9 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 
 			const int contextAttribs[] = { WGL_CONTEXT_MAJOR_VERSION_ARB,
-										   4,
+										   VTX_OPENGL_MAJOR_VERSION,
 										   WGL_CONTEXT_MINOR_VERSION_ARB,
-										   6,
+										   VTX_OPENGL_MINOR_VERSION,
 
 										   WGL_CONTEXT_PROFILE_MASK_ARB,
 										   WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
@@ -164,31 +166,31 @@ namespace VTX::Renderer::Context::Backend::GL
 	class EGLContextWrapper
 	{
 	  public:
-		void init( const uintptr_t p_nativeWindow )
+		void init( const bool p_isWayland, const uintptr_t p_nativeWindow )
 		{
-			// Detect display server at runtime: try Wayland first, fall back to X11.
-			wl_display * waylandDisplay = wl_display_connect( nullptr );
-			if ( waylandDisplay )
+			// Connect to the display matching Qt's platform.
+			if ( p_isWayland )
 			{
 				_platform	   = Platform::Wayland;
-				_nativeDisplay = waylandDisplay;
-				_display	   = eglGetPlatformDisplay( EGL_PLATFORM_WAYLAND_KHR, waylandDisplay, nullptr );
+				_nativeDisplay = wl_display_connect( nullptr );
+				if ( not _nativeDisplay )
+				{
+					throw std::runtime_error( "EGL: Failed to connect to Wayland display" );
+				}
+				_display = eglGetPlatformDisplay( EGL_PLATFORM_WAYLAND_KHR, _nativeDisplay, nullptr );
 			}
 			else
 			{
-				Display * x11Display = XOpenDisplay( nullptr );
-				if ( not x11Display )
-				{
-					throw std::runtime_error( "EGL: Failed to open display (tried Wayland and X11)" );
-				}
+				// Use EGL_DEFAULT_DISPLAY to let Mesa pick the X11 connection internally,
+				// avoiding the DRI3 path forced by EGL_PLATFORM_X11_KHR.
 				_platform	   = Platform::X11;
-				_nativeDisplay = x11Display;
-				_display	   = eglGetPlatformDisplay( EGL_PLATFORM_X11_KHR, x11Display, nullptr );
+				_nativeDisplay = nullptr;
+				_display	   = eglGetDisplay( EGL_DEFAULT_DISPLAY );
 			}
 
 			if ( _display == EGL_NO_DISPLAY )
 			{
-				throw std::runtime_error( "EGL: No display" );
+				throw std::runtime_error( "EGL: Failed to get platform display" );
 			}
 
 			if ( not eglInitialize( _display, &_major, &_minor ) )
@@ -235,15 +237,16 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			if ( _surface == EGL_NO_SURFACE )
 			{
-				const EGLint err = eglGetError();
-				std::ostringstream oss; oss << "EGL surface error: 0x" << std::hex << std::uppercase << err;
-			throw std::runtime_error( oss.str() );
+				const EGLint	   err = eglGetError();
+				std::ostringstream oss;
+				oss << "EGL surface error: 0x" << std::hex << std::uppercase << err;
+				throw std::runtime_error( oss.str() );
 			}
 
 			const EGLint contextAttribs[] = { EGL_CONTEXT_MAJOR_VERSION,
-											  4,
+											  VTX_OPENGL_MAJOR_VERSION,
 											  EGL_CONTEXT_MINOR_VERSION,
-											  6,
+											  VTX_OPENGL_MINOR_VERSION,
 
 											  EGL_CONTEXT_OPENGL_PROFILE_MASK,
 											  EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
@@ -259,9 +262,10 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			if ( _context == EGL_NO_CONTEXT )
 			{
-				EGLint err = eglGetError();
-				std::ostringstream oss; oss << "EGL context error: 0x" << std::hex << std::uppercase << err;
-			throw std::runtime_error( oss.str() );
+				EGLint			   err = eglGetError();
+				std::ostringstream oss;
+				oss << "EGL context error: 0x" << std::hex << std::uppercase << err;
+				throw std::runtime_error( oss.str() );
 			}
 
 			makeCurrent();
@@ -283,7 +287,15 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 
-		void swapBuffers() const { eglSwapBuffers( _display, _surface ); }
+		void swapBuffers() const
+		{
+			if ( not eglSwapBuffers( _display, _surface ) )
+			{
+				std::ostringstream oss;
+				oss << "EGL: swapBuffers failed: 0x" << std::hex << std::uppercase << eglGetError();
+				fprintf( stderr, "[EGL] %s\n", oss.str().c_str() );
+			}
+		}
 
 		void setSwapInterval( const int p_interval )
 		{
@@ -317,12 +329,8 @@ namespace VTX::Renderer::Context::Backend::GL
 			if ( _platform == Platform::Wayland )
 			{
 				wl_display_disconnect( static_cast<wl_display *>( _nativeDisplay ) );
+				_nativeDisplay = nullptr;
 			}
-			else
-			{
-				XCloseDisplay( static_cast<Display *>( _nativeDisplay ) );
-			}
-			_nativeDisplay = nullptr;
 		}
 
 	  private:

@@ -199,7 +199,7 @@ namespace VTX::UI::QT::Widget
 	void MainWindow::_onApplicationError( const App::Events::ApplicationError & p_e )
 	{
 		VTX_ERROR( "{}", p_e.message );
-		QMessageBox::critical( this, "Error", p_e.message.c_str(), QMessageBox::StandardButton::Ok );
+		QMessageBox::critical( nullptr, "Error", p_e.message.c_str(), QMessageBox::StandardButton::Ok );
 	}
 
 	void MainWindow::_onBlockingOperationStart( const App::Events::BlockingOperationStart & p_e )

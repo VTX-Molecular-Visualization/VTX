@@ -23,9 +23,9 @@ namespace VTX::UI::QT::Widget
 		~OpenGLWidget();
 
 		/**
-		 * @brief Get the window ID..
+		 * @brief Get the native window handle (X11 Window or wl_surface*).
 		 */
-		WId getWindowId() const;
+		uintptr_t getNativeSurface() const;
 
 		/**
 		 * @brief Override resize.

@@ -191,11 +191,14 @@ namespace VTX::Renderer::Context::Backend
 	OpenGL::OpenGL(
 		const size_t	 p_width,
 		const size_t	 p_height,
-		const uintptr_t	 p_window,
+		const bool		 p_isWayland,
+		const uintptr_t	 p_nativeWindow,
 		const FilePath & p_shaderDir
 
 	) : _shaderPath( p_shaderDir )
 	{
+		VTX_INFO( "Initializing OpenGL {}.{} context", VTX_OPENGL_MAJOR_VERSION, VTX_OPENGL_MINOR_VERSION );
+
 		assert( p_width > 0 );
 		assert( p_height > 0 );
 
@@ -205,8 +208,8 @@ namespace VTX::Renderer::Context::Backend
 		_width	= static_cast<uint32_t>( p_width );
 		_height = static_cast<uint32_t>( p_height );
 
-		// Create EGL context.
-		_glContext.init( p_window );
+		// Create EGL/WGL context.
+		_glContext.init( p_isWayland, p_nativeWindow );
 
 		// Load OpenGL 4.6 functions.
 		// With external loader.
@@ -216,10 +219,19 @@ namespace VTX::Renderer::Context::Backend
 		}
 
 		// Check version.
+#if VTX_OPENGL_MINOR_VERSION == 6
 		if ( not GLAD_GL_VERSION_4_6 )
 		{
 			throw GraphicException( "OpenGL 4.6 or higher is required" );
 		}
+#elif VTX_OPENGL_MINOR_VERSION == 5
+		if ( not GLAD_GL_VERSION_4_5 )
+		{
+			throw GraphicException( "OpenGL 4.5 or higher is required" );
+		}
+#else
+#error "Unsupported VTX_OPENGL_MINOR_VERSION"
+#endif
 
 		_getOpenglInfos();
 		_openglInfos.print();

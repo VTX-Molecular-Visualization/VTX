@@ -125,14 +125,14 @@ namespace VTX::App
 		{
 			try
 			{
-				renderer.setOpenGL( _getRenderSurface(), SESSION().getShadersDir() );
+				renderer.setOpenGL( _isWaylandPlatform(), _getRenderSurface(), SESSION().getShadersDir() );
 			}
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( p_e.what() );
 				renderer.setDefault();
 				HUB().trigger<Events::ApplicationError>(
-					"Unable to create OpenGL 4.6 context. Update your drivers and check your hardware "
+					"Unable to create OpenGL context. Update your drivers and check your hardware "
 					"compatibility."
 				);
 			}

@@ -59,7 +59,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Default constructor.
 		 */
-		OpenGL( const size_t, const size_t, const uintptr_t, const FilePath & );
+		OpenGL( const size_t p_width, const size_t p_height, const bool p_isWayland, const uintptr_t p_nativeWindow, const FilePath & p_shaderDir );
 
 		/**
 		 * @brief Build the command buffer from the render queue and resources.

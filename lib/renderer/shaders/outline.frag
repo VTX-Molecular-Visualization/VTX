@@ -1,4 +1,4 @@
-#version 460 core
+#version 450 core
 
 // In.
 layout( binding = 0 ) uniform sampler2D inTextureColor;

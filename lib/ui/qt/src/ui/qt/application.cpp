@@ -170,11 +170,14 @@ namespace VTX::UI::QT
 		}
 	}
 
+	bool Application::_isWaylandPlatform() const
+	{
+		return QGuiApplication::platformName() == "wayland";
+	}
+
 	uintptr_t Application::_getRenderSurface() const
 	{
-		return static_cast<uintptr_t>(
-			static_cast<Widget::OpenGLWidget *>( MAIN_WINDOW().centralWidget() )->getWindowId()
-		);
+		return static_cast<Widget::OpenGLWidget *>( MAIN_WINDOW().centralWidget() )->getNativeSurface();
 	}
 
 	QAction * const Application::_getOrCreateAction( const App::UI::DescAction & p_action )
