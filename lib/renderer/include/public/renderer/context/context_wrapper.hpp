@@ -23,7 +23,13 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Set OpenGL 4.5 graphic context backkend and executor.
 		 */
-		void setOpenGL( const size_t p_width, const size_t p_height, const uintptr_t p_nativeWindow, const FilePath & p_shaderDir );
+		void setOpenGL(
+			const size_t p_width,
+			const size_t p_height,
+			const uintptr_t p_nativeSurface,
+			const uintptr_t p_nativeDisplay,
+			const FilePath & p_shaderDir
+		);
 
 		/**
 		 * @brief Set null executor.

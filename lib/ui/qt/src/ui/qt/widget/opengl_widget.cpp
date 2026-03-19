@@ -87,6 +87,32 @@ namespace VTX::UI::QT::Widget
 		return static_cast<uintptr_t>( _window->winId() );
 	}
 
+	uintptr_t OpenGLWidget::getNativeDisplay() const
+	{
+		QPlatformNativeInterface * nif = QGuiApplication::platformNativeInterface();
+		if ( not nif )
+		{
+			return 0;
+		}
+
+		if ( QGuiApplication::platformName() == "wayland" )
+		{
+			if ( void * display = nif->nativeResourceForIntegration( "display" ) )
+			{
+				return reinterpret_cast<uintptr_t>( display );
+			}
+		}
+		else if ( QGuiApplication::platformName() == "xcb" )
+		{
+			if ( void * display = nif->nativeResourceForIntegration( "display" ) )
+			{
+				return reinterpret_cast<uintptr_t>( display );
+			}
+		}
+
+		return 0;
+	}
+
 	void OpenGLWidget::resizeEvent( QResizeEvent * p_event )
 	{
 		QWidget::resizeEvent( p_event );

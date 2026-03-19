@@ -62,6 +62,11 @@ namespace VTX::App
 		 */
 		virtual uintptr_t _getRenderSurface() const { return 0; }
 
+		/**
+		 * @brief Get the native display handle, if the platform needs one.
+		 */
+		virtual uintptr_t _getRenderDisplay() const { return 0; }
+
 	  private:
 		/**
 		 * @brief Main ECS registry.

@@ -68,6 +68,7 @@ namespace VTX::UI::QT
 
 	  protected:
 		uintptr_t _getRenderSurface() const override;
+		uintptr_t _getRenderDisplay() const override;
 
 	  private:
 		/**

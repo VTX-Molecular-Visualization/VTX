@@ -19,9 +19,12 @@ namespace VTX::Renderer::Context::Backend::GL
 	class WGLContextWrapper
 	{
 	  public:
-		void init( const uintptr_t p_nativeWindow )
+		WGLContextWrapper() = default;
+		~WGLContextWrapper() { destroy(); }
+
+		void init( const uintptr_t p_nativeSurface, const uintptr_t = 0 )
 		{
-			_hwnd = reinterpret_cast<HWND>( p_nativeWindow );
+			_hwnd = reinterpret_cast<HWND>( p_nativeSurface );
 			_hdc  = GetDC( _hwnd );
 
 			PIXELFORMATDESCRIPTOR pfd = {};
@@ -101,7 +104,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		void * getProcAddress() { return reinterpret_cast<void *>( &_wglLoader ); }
 
-		void makeCurrent()
+		void makeCurrent() const
 		{
 			if ( not wglMakeCurrent( _hdc, _context ) )
 			{
@@ -166,10 +169,13 @@ namespace VTX::Renderer::Context::Backend::GL
 	class EGLContextWrapper
 	{
 	  public:
-		void init( const uintptr_t p_nativeWindow )
+		EGLContextWrapper() = default;
+		~EGLContextWrapper() { destroy(); }
+
+		void init( const uintptr_t p_nativeSurface, const uintptr_t p_nativeDisplay = 0 )
 		{
 			// Try Wayland first, fall back to X11 if unavailable.
-			_nativeDisplay = wl_display_connect( nullptr );
+			_nativeDisplay = reinterpret_cast<void *>( p_nativeDisplay );
 			if ( _nativeDisplay )
 			{
 				_display = eglGetPlatformDisplay( EGL_PLATFORM_WAYLAND_KHR, _nativeDisplay, nullptr );
@@ -179,17 +185,23 @@ namespace VTX::Renderer::Context::Backend::GL
 				}
 				else
 				{
-					wl_display_disconnect( static_cast<wl_display *>( _nativeDisplay ) );
 					_nativeDisplay = nullptr;
 				}
 			}
 
 			if ( _platform == Platform::X11 )
 			{
-				// Use EGL_DEFAULT_DISPLAY to let Mesa pick the X11 connection internally,
-				// avoiding the DRI3 path forced by EGL_PLATFORM_X11_KHR.
-				_nativeDisplay = nullptr;
-				_display	   = eglGetDisplay( EGL_DEFAULT_DISPLAY );
+				if ( p_nativeDisplay != 0 )
+				{
+					_nativeDisplay = reinterpret_cast<void *>( p_nativeDisplay );
+					_display	   = eglGetPlatformDisplay( EGL_PLATFORM_X11_KHR, _nativeDisplay, nullptr );
+				}
+				if ( _display == EGL_NO_DISPLAY )
+				{
+					// Fall back to the default display if the integration display is unavailable.
+					_nativeDisplay = nullptr;
+					_display	   = eglGetDisplay( EGL_DEFAULT_DISPLAY );
+				}
 			}
 
 			if ( _display == EGL_NO_DISPLAY )
@@ -236,7 +248,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 
 			_surface = eglCreateWindowSurface(
-				_display, _config, reinterpret_cast<EGLNativeWindowType>( p_nativeWindow ), nullptr
+				_display, _config, reinterpret_cast<EGLNativeWindowType>( p_nativeSurface ), nullptr
 			);
 
 			if ( _surface == EGL_NO_SURFACE )
@@ -283,7 +295,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		void * getProcAddress() { return reinterpret_cast<void *>( &_eglLoader ); }
 
-		void makeCurrent()
+		void makeCurrent() const
 		{
 			if ( not eglMakeCurrent( _display, _surface, _surface, _context ) )
 			{
@@ -320,13 +332,11 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 
 			eglTerminate( _display );
-			_display = EGL_NO_DISPLAY;
-
-			if ( _platform == Platform::Wayland )
-			{
-				wl_display_disconnect( static_cast<wl_display *>( _nativeDisplay ) );
-				_nativeDisplay = nullptr;
-			}
+			_display	   = EGL_NO_DISPLAY;
+			_surface	   = EGL_NO_SURFACE;
+			_context	   = EGL_NO_CONTEXT;
+			_config		   = nullptr;
+			_nativeDisplay = nullptr;
 		}
 
 	  private:

@@ -28,6 +28,11 @@ namespace VTX::UI::QT::Widget
 		uintptr_t getNativeSurface() const;
 
 		/**
+		 * @brief Get the native display handle when needed by the platform backend.
+		 */
+		uintptr_t getNativeDisplay() const;
+
+		/**
 		 * @brief Override resize.
 		 */
 		void resizeEvent( QResizeEvent * ) override;
