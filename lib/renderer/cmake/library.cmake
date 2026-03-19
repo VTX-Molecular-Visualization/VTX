@@ -22,11 +22,11 @@ target_sources(vtx_renderer
 
 # OpenGL.
 if(WIN32)
-	target_link_libraries(vtx_renderer PRIVATE opengl32)
+	target_link_libraries(vtx_renderer PUBLIC opengl32)
 elseif(LINUX)
 	find_package(X11 REQUIRED)
 	find_package(wayland REQUIRED)
-	target_link_libraries(vtx_renderer PRIVATE OpenGL::OpenGL OpenGL::EGL X11::X11 wayland::wayland-client)
+	target_link_libraries(vtx_renderer PUBLIC OpenGL::OpenGL OpenGL::EGL X11::X11 wayland::wayland-client)
 endif()
 
 # Cuda.

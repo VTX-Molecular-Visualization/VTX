@@ -58,8 +58,6 @@ int main( int p_argc, char * p_argv[] )
 		if ( not args.has( App::ARG_NO_GUI ) )
 		{
 			// To set before QApplication construction.
-			QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
-			QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
 			QCoreApplication::setAttribute( Qt::AA_CompressHighFrequencyEvents );
 
 			Q_INIT_RESOURCE( vtx_qt_resources_ui );
