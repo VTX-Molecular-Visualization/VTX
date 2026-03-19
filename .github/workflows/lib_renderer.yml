@@ -66,6 +66,6 @@ jobs:
         conan create renderer -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
-          -o vtx_renderer/*:test=True
+          -o vtx_renderer/*:test=True \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True 
