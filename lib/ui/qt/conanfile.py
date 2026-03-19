@@ -140,6 +140,7 @@ class VTXUiQtRecipe(ConanFile):
         self.requires("entt/3.16.0", transitive_headers=True) # TODO : see <lib/python_binding/cmake/library.cmake> for details
         if self.settings.os == "Linux":
             self.requires("freetype/2.14.1", override=True)
+            self.requires("libffi/3.4.8", override=True)
         
     def config_options(self):
         if self.settings.os == "Windows":
