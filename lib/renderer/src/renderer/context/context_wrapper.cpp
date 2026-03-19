@@ -80,15 +80,19 @@ namespace VTX::Renderer::Context
 	void ContextWrapper::setOpenGL(
 		const size_t	 p_width,
 		const size_t	 p_height,
-		const FilePath & p_shaderPath,
-		void *			 p_proc
+		const uintptr_t	 p_window,
+		const FilePath & p_shaderDir
 	)
 	{
-		_setBackend<Backend::OpenGL>( _impl->backend, _impl->executor, p_width, p_height, p_shaderPath, p_proc );
+		_setBackend<Backend::OpenGL>( _impl->backend, _impl->executor, p_width, p_height, p_window, p_shaderDir );
 		_setExecutor<Executor::OpenGL>( _impl->backend, _impl->executor );
 	}
 
-	void ContextWrapper::setNull() { _setExecutor<Executor::Null>( _impl->backend, _impl->executor ); }
+	void ContextWrapper::setNull()
+	{
+		_setBackend<std::monostate>( _impl->backend, _impl->executor );
+		_setExecutor<Executor::Null>( _impl->backend, _impl->executor );
+	}
 
 	void ContextWrapper::execute() const noexcept
 	{
@@ -227,6 +231,21 @@ namespace VTX::Renderer::Context
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
 					p_backend.setRenderTarget( p_target );
+				}
+			},
+			_impl->backend
+		);
+	}
+
+	void ContextWrapper::setOption( const Desc::E_OPTION p_option, const bool p_value )
+	{
+		std::visit(
+			[ & ]( auto & p_backend )
+			{
+				using T = std::remove_cvref_t<decltype( p_backend )>;
+				if constexpr ( not std::is_same_v<T, std::monostate> )
+				{
+					p_backend.setOption( p_option, p_value );
 				}
 			},
 			_impl->backend

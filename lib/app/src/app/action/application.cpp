@@ -28,6 +28,8 @@ namespace VTX::App::Action::Application
 
 	void Quit::execute() { HUB().trigger<Events::ApplicationStop>(); }
 
+	void SetVSync::execute( const bool p_enable ) { RENDERER().setVSync( p_enable ); }
+
 	void SetSavePower::execute( const bool p_enable ) { RENDERER().setForceUpdate( not p_enable ); }
 
 	void StopThread::execute( const Threading::BaseThread::ID & p_id ) { THREAD().stop( p_id ); }

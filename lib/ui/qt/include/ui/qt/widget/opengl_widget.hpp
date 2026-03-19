@@ -3,39 +3,61 @@
 
 #include "ui/qt/widget/base_widget.hpp"
 #include "ui/qt/window/renderer.hpp"
-#include <QOpenGLContext>
 #include <QPointer>
 
 namespace VTX::UI::QT::Widget
 {
 	/**
-	 * @brief Reimplement a custom OpenGL widget to avoid the use of QOpenGLWidget.
-	 * This is necessary to avoid makeCurrent() and doneCurrent() by using custom context.
+	 * @brief Widget to present an OpenGL rendering context.
+	 * No more Qt OpenGL implementation used.
 	 */
 	class OpenGLWidget : public BaseWidget<OpenGLWidget, QWidget>
 	{
 		Q_OBJECT
 
 	  public:
+		/**
+		 * @brief Constructor.
+		 */
 		OpenGLWidget( QWidget * );
 		~OpenGLWidget();
 
-		void render( const App::Events::PostRender & );
+		/**
+		 * @brief Get the window ID..
+		 */
+		WId getWindowId() const;
+
+		/**
+		 * @brief Override resize.
+		 */
 		void resizeEvent( QResizeEvent * ) override;
 
-		void setVSync( const bool );
-
-		inline bool isVSync() const { return _context->format().swapInterval() == 1; }
-
 	  protected:
+		/**
+		 * @brief Override event filter to handle events from the window and container.
+		 */
 		bool eventFilter( QObject *, QEvent * ) override;
+
+		/**
+		 * @brief Debounce callback.
+		 */
 		void onResizeFinished();
 
 	  private:
-		QPointer<QOpenGLContext>   _context;
+		/**
+		 * @brief OpenGL rendering window.
+		 */
 		QPointer<Window::Renderer> _window;
-		QPointer<QWidget>		   _container;
-		QTimer					   _resizeTimer;
+
+		/**
+		 * @brief Container widget for the OpenGL window.
+		 */
+		QPointer<QWidget> _container;
+
+		/**
+		 * @brief Debounce timer for resize events.
+		 */
+		QTimer _resizeTimer;
 	};
 } // namespace VTX::UI::QT::Widget
 

@@ -35,6 +35,14 @@ namespace VTX::App::Action::Application
 	/**
 	 * @brief Disable force renderer update.
 	 */
+	struct SetVSync
+	{
+		void execute( const bool p_enable );
+	};
+
+	/**
+	 * @brief Disable force renderer update.
+	 */
 	struct SetSavePower
 	{
 		void execute( const bool p_enable );

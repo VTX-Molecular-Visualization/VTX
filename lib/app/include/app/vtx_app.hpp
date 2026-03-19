@@ -57,6 +57,11 @@ namespace VTX::App
 		 */
 		std::vector<Tool::BaseTool *> _tools;
 
+		/**
+		 * @brief Get the native window handle, can be overidden by gui.
+		 */
+		virtual uintptr_t _getRenderSurface() const { return 0; }
+
 	  private:
 		/**
 		 * @brief Main ECS registry.

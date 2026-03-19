@@ -20,6 +20,8 @@ class VTXRendererRecipe(ConanFile):
         self.requires("vtx_util/1.0")
         self.requires("vtx_core/1.0")
         self.requires("catch2/3.13.0")
+        if self.settings.os == "Linux":
+            self.requires("wayland/1.24.0")
         
     def config_options(self):
         if self.settings.os == "Windows":

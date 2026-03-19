@@ -178,6 +178,12 @@ namespace VTX::Renderer::Context::Executor
 				_backend.framebuffer( hFramebuffer ).bind();
 				break;
 			}
+			case E_COMMAND::PRESENT:
+			{
+				// Swap buffers.
+				_backend.swap();
+				break;
+			}
 
 			default: break;
 			}

@@ -18,32 +18,8 @@ namespace VTX::UI::QT::Widget
 	{
 		setAcceptDrops( true );
 
-		// Create surface.
-		QSurfaceFormat format;
-		format.setVersion( 4, 6 );
-		format.setProfile( QSurfaceFormat::CoreProfile );
-		format.setRenderableType( QSurfaceFormat::OpenGL );
-		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
-		format.setSwapInterval( 1 );
-		format.setDepthBufferSize( 24 );
-		format.setStencilBufferSize( 8 );
-		format.setSamples( 0 );
-
-		// Create context.
-		_context = new QOpenGLContext();
-		_context->setFormat( format );
-		_context->setShareContext( nullptr );
-		_context->create();
-
-		if ( not _context->isValid() )
-		{
-			throw std::runtime_error( "Failed to create OpenGL context" );
-		}
-
 		// Create window.
 		_window = new Window::Renderer();
-		_window->setFormat( format );
-		_window->setSurfaceType( QSurface::OpenGLSurface );
 		_window->setFlags( Qt::FramelessWindowHint );
 		_window->installEventFilter( this );
 		_window->create();
@@ -51,9 +27,6 @@ namespace VTX::UI::QT::Widget
 		// Use a widget container to embed the window.
 		_container = createWindowContainer( _window, this );
 		_container->installEventFilter( this );
-
-		// Set context.
-		_context->makeCurrent( _window );
 
 		// Focus policy.
 		_container->setFocusPolicy( Qt::StrongFocus );
@@ -81,9 +54,6 @@ namespace VTX::UI::QT::Widget
 			}
 		);
 
-		// Connect signals.
-		App::HUB().connect<App::Events::PostRender, &OpenGLWidget::render>( this );
-
 		// Setup resize timer.
 		_resizeTimer.setSingleShot( true );
 		connect( &_resizeTimer, &QTimer::timeout, this, &OpenGLWidget::onResizeFinished );
@@ -91,29 +61,15 @@ namespace VTX::UI::QT::Widget
 
 	OpenGLWidget::~OpenGLWidget()
 	{
-		_context->doneCurrent();
 		_container->removeEventFilter( this );
 		_window->removeEventFilter( this );
 	}
 
-	void OpenGLWidget::render( const App::Events::PostRender & p_e )
+	WId OpenGLWidget::getWindowId() const 
 	{
-		if ( not p_e.rendered )
-		{
-			return;
-		}
+		assert( _window );
 
-		if ( not _window->isExposed() )
-		{
-			return;
-		}
-
-		if ( not _context->makeCurrent( _window ) )
-		{
-			return;
-		}
-
-		_context->swapBuffers( _window );
+		return _window->winId();
 	}
 
 	void OpenGLWidget::resizeEvent( QResizeEvent * p_event )
@@ -138,29 +94,6 @@ namespace VTX::UI::QT::Widget
 		const QSize scaledSize = size * _window->devicePixelRatio();
 
 		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
-	}
-
-	void OpenGLWidget::setVSync( const bool p_vsync )
-	{
-		assert( _context != nullptr );
-
-		// Windows.
-		auto wglSwapIntervalEXT
-			= reinterpret_cast<void ( * )( int )>( _context->getProcAddress( "wglSwapIntervalEXT" ) );
-
-		if ( wglSwapIntervalEXT )
-		{
-			wglSwapIntervalEXT( p_vsync ? 1 : 0 );
-		}
-
-		// Linux.
-		auto glXSwapIntervalEXT
-			= reinterpret_cast<void ( * )( int )>( _context->getProcAddress( "glXSwapIntervalEXT" ) );
-
-		if ( glXSwapIntervalEXT )
-		{
-			glXSwapIntervalEXT( p_vsync ? 1 : 0 );
-		}
 	}
 
 	bool OpenGLWidget::eventFilter( QObject * p_watched, QEvent * p_event )

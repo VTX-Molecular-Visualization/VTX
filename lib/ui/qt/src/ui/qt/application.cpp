@@ -170,6 +170,13 @@ namespace VTX::UI::QT
 		}
 	}
 
+	uintptr_t Application::_getRenderSurface() const
+	{
+		return static_cast<uintptr_t>(
+			static_cast<Widget::OpenGLWidget *>( MAIN_WINDOW().centralWidget() )->getWindowId()
+		);
+	}
+
 	QAction * const Application::_getOrCreateAction( const App::UI::DescAction & p_action )
 	{
 		const std::string_view key = p_action.key.empty() ? VTX::Util::typeName<App::UI::DescAction>() : p_action.key;

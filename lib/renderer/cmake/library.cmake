@@ -20,6 +20,15 @@ target_sources(vtx_renderer
 	PRIVATE FILE_SET vendors_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../vendor" FILES ${HEADERS_VENDORS}
 )
 
+# OpenGL.
+if(WIN32)
+	target_link_libraries(vtx_renderer PRIVATE opengl32)
+elseif(LINUX)
+	find_package(X11 REQUIRED)
+	find_package(wayland REQUIRED)
+	target_link_libraries(vtx_renderer PRIVATE OpenGL::OpenGL OpenGL::EGL X11::X11 wayland::wayland-client)
+endif()
+
 # Cuda.
 include(CheckLanguage)
 check_language(CUDA)

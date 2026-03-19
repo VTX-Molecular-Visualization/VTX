@@ -6,7 +6,7 @@ from conan.tools.files import copy
 def config_options_qt(p_conanFile : ConanFile):
     # Package options.
     p_conanFile.options["qt"].shared = True
-    p_conanFile.options["qt"].opengl = "desktop"
+    p_conanFile.options["qt"].opengl = "no"
     p_conanFile.options["qt"].with_vulkan = False
     p_conanFile.options["qt"].openssl = True
     p_conanFile.options["qt"].with_pcre2 = True
@@ -37,10 +37,10 @@ def config_options_qt(p_conanFile : ConanFile):
     p_conanFile.options["qt"].gui = True
     p_conanFile.options["qt"].widgets = True
 
-    p_conanFile.options["qt"].device: None
-    p_conanFile.options["qt"].cross_compile: None
-    p_conanFile.options["qt"].sysroot: None
-    #p_conanFile.options["qt"].multiconfiguration: True
+    p_conanFile.options["qt"].device = None
+    p_conanFile.options["qt"].cross_compile = None
+    p_conanFile.options["qt"].sysroot = None
+    p_conanFile.options["qt"].multiconfiguration = False
     p_conanFile.options["qt"].disabled_features = ""
 
     # Qt modules.        
@@ -94,7 +94,6 @@ def config_options_qt(p_conanFile : ConanFile):
     if p_conanFile.settings.os == "Linux":
             p_conanFile.options["qt"].qtwayland = True
             p_conanFile.options["qt"].with_x11 = True
-            p_conanFile.options["qt"].with_egl = True
             p_conanFile.options["qt"].with_dbus = True
         
         
@@ -169,5 +168,3 @@ class VTXUiQtRecipe(ConanFile):
         self.cpp_info.libs = ["vtx_ui_qt"]
         self.cpp_info.bindirs = [""]
         self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_qt_configure.cmake", "cmake/vtx_qt_add_resources.cmake"])
-        if self.settings.os == "Windows":
-            self.cpp_info.system_libs.append('d3d12')

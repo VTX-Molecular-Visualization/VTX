@@ -24,7 +24,8 @@ namespace VTX::Renderer::Context
 		DRAW_INDIRECT,
 		DRAW_INDEXED_INDIRECT,
 		BIND_OUTPUT,
-		END_PASS
+		END_PASS,
+		PRESENT
 	};
 
 	/**
@@ -95,6 +96,10 @@ namespace VTX::Renderer::Context
 		uint32_t flags = 0;
 	};
 
+	struct PayloadPresent
+	{
+	};
+
 	/**
 	 * @brief Command payload specializations.
 	 */
@@ -139,6 +144,11 @@ namespace VTX::Renderer::Context
 	struct CommandPayload<E_COMMAND::END_PASS>
 	{
 		using type = PayloadEndPass;
+	};
+	template<>
+	struct CommandPayload<E_COMMAND::PRESENT>
+	{
+		using type = PayloadPresent;
 	};
 	template<E_COMMAND C>
 	using PayloadT = typename CommandPayload<C>::type;

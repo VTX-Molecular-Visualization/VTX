@@ -30,7 +30,6 @@ endif()
 target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::Core)
 target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::Gui)
 target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::Widgets)
-target_link_libraries(vtx_tool_mdprep PRIVATE Qt6::OpenGLWidgets)
 target_link_libraries(vtx_tool_mdprep PRIVATE re2::re2)
 
 #vtx_copy_registered_data(vtx_tool_mdprep)
@@ -60,7 +59,6 @@ target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Core)			 # I feel weird about linked lib not being 
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Gui)			 # carried through packages, forcing me
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::Widgets)		 # to link Qt6 explicitly. I don't like it
-target_link_libraries(vtx_tool_mdprep_test PRIVATE Qt6::OpenGLWidgets)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE re2::re2)
 

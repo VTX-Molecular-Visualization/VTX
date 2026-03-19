@@ -53,7 +53,6 @@ endif()
 target_link_libraries(vtx_tool_example PRIVATE Qt6::Core)
 target_link_libraries(vtx_tool_example PRIVATE Qt6::Gui)
 target_link_libraries(vtx_tool_example PRIVATE Qt6::Widgets)
-target_link_libraries(vtx_tool_example PRIVATE Qt6::OpenGLWidgets)
 # Link tests.
 target_link_libraries(vtx_tool_example_test PRIVATE vtx_tool_example)
 target_link_libraries(vtx_tool_example_test PRIVATE Catch2::Catch2WithMain)

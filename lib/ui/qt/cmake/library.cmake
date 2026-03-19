@@ -31,7 +31,6 @@ endif()
 target_link_libraries(vtx_ui_qt PRIVATE Qt6::Core)
 target_link_libraries(vtx_ui_qt PRIVATE Qt6::Gui)
 target_link_libraries(vtx_ui_qt PRIVATE Qt6::Widgets)
-target_link_libraries(vtx_ui_qt PRIVATE Qt6::Test)
 target_link_libraries(vtx_ui_qt PUBLIC EnTT::EnTT)  # TODO : see <lib/python_binding/cmake/library.cmake> for details
 	
 if(MSVC)

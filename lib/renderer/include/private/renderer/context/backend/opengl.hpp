@@ -4,6 +4,7 @@
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/backend/gl/buffer.hpp"
 #include "renderer/context/backend/gl/chrono.hpp"
+#include "renderer/context/backend/gl/context.hpp"
 #include "renderer/context/backend/gl/framebuffer.hpp"
 #include "renderer/context/backend/gl/include_opengl.hpp"
 #include "renderer/context/backend/gl/program.hpp"
@@ -58,7 +59,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Default constructor.
 		 */
-		OpenGL( const size_t, const size_t, const FilePath &, void * = nullptr );
+		OpenGL( const size_t, const size_t, const uintptr_t, const FilePath & );
 
 		/**
 		 * @brief Build the command buffer from the render queue and resources.
@@ -69,6 +70,11 @@ namespace VTX::Renderer::Context::Backend
 		 * @brief Resize textures.
 		 */
 		void resize( const uint32_t, const uint32_t, const Desc::PassList &, const Desc::ResourceMap<Desc::Texture> & );
+
+		/**
+		 * @brief Swap buffers.
+		 */
+		inline void swap() const { _glContext.swapBuffers(); }
 
 		/**
 		 * @brief Set data to a shader buffer.
@@ -99,6 +105,11 @@ namespace VTX::Renderer::Context::Backend
 		 * @brief Set render target.
 		 */
 		void setRenderTarget( const Desc::E_RENDER_TARGET );
+
+		/**
+		 * @brief Set options.
+		 */
+		void setOption( const Desc::E_OPTION, const bool );
 
 		/**
 		 * @brief Fill backend infos.
@@ -154,6 +165,11 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		uint32_t _width;
 		uint32_t _height;
+
+		/**
+		 * @brief EGL context.
+		 */
+		GL::GLContextWrapper _glContext;
 
 		/**
 		 * @brief Render target (default framebuffer or offscreen).

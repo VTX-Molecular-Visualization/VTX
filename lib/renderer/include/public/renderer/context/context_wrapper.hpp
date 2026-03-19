@@ -23,7 +23,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Set OpenGL 4.5 graphic context backkend and executor.
 		 */
-		void setOpenGL( const size_t, const size_t, const FilePath &, void * = nullptr );
+		void setOpenGL( const size_t, const size_t, const uintptr_t, const FilePath & );
 
 		/**
 		 * @brief Set null executor.
@@ -119,6 +119,11 @@ namespace VTX::Renderer::Context
 		 * @brief Set the render target.
 		 */
 		void setRenderTarget( const Desc::E_RENDER_TARGET p_target );
+
+		/**
+		 * @brief Set options.
+		 */
+		void setOption( const Desc::E_OPTION p_option, const bool p_value );
 
 		/**
 		 * @brief Fill renderer infos.

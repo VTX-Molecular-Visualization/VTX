@@ -164,11 +164,7 @@ namespace VTX::UI::QT::DockWidget
 			_checkBoxVSync,
 			&QCheckBox::checkStateChanged,
 			[ this ]( const int p_state )
-			{
-				MAIN_WINDOW()
-					.findChild<Widget::OpenGLWidget *>( Util::typeName<Widget::OpenGLWidget>() )
-					->setVSync( p_state == Qt::Checked );
-			}
+			{ App::ACTION().execute<App::Action::Application::SetVSync>( p_state == Qt::Checked ); }
 		);
 
 		layoutGraphics->addWidget( _checkBoxVSync );
@@ -242,12 +238,7 @@ namespace VTX::UI::QT::DockWidget
 		QTimer::singleShot(
 			0,
 			this,
-			[ this ]()
-			{
-				MAIN_WINDOW()
-					.findChild<Widget::OpenGLWidget *>( Util::typeName<Widget::OpenGLWidget>() )
-					->setVSync( _checkBoxVSync->isChecked() );
-			}
+			[ this ]() { App::ACTION().execute<App::Action::Application::SetVSync>( _checkBoxVSync->isChecked() ); }
 		);
 
 		App::HUB().connect<App::Events::FileDownloaded, &Options::_refreshCacheInfos>( this );

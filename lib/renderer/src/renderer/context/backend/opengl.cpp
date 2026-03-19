@@ -6,6 +6,10 @@
 
 namespace
 {
+	// Undefine min and max macros that might be defined by Windows headers (included from egl).
+#undef min
+#undef max
+
 	using namespace VTX;
 	using namespace VTX::Renderer;
 
@@ -184,8 +188,13 @@ namespace
 namespace VTX::Renderer::Context::Backend
 {
 
-	OpenGL::OpenGL( const size_t p_width, const size_t p_height, const FilePath & p_shaderPath, void * p_proc ) :
-		_shaderPath( p_shaderPath )
+	OpenGL::OpenGL(
+		const size_t	 p_width,
+		const size_t	 p_height,
+		const uintptr_t	 p_window,
+		const FilePath & p_shaderDir
+
+	) : _shaderPath( p_shaderDir )
 	{
 		assert( p_width > 0 );
 		assert( p_height > 0 );
@@ -196,22 +205,20 @@ namespace VTX::Renderer::Context::Backend
 		_width	= static_cast<uint32_t>( p_width );
 		_height = static_cast<uint32_t>( p_height );
 
-		// Load opengl 4.6.
+		// Create EGL context.
+		_glContext.init( p_window );
+
+		// Load OpenGL 4.6 functions.
 		// With external loader.
-		if ( p_proc && gladLoadGL( (GLADloadfunc)p_proc ) == 0 )
+		if ( gladLoadGL( (GLADloadfunc)_glContext.getProcAddress() ) == 0 )
 		{
-			throw GraphicException( "Failed to load OpenGL" );
-		}
-		// With glad integrated loader.
-		else if ( gladLoaderLoadGL() == 0 )
-		{
-			throw GraphicException( "Failed to load OpenGL" );
+			throw GraphicException( "Failed to load OpenGL functions" );
 		}
 
 		// Check version.
 		if ( not GLAD_GL_VERSION_4_6 )
 		{
-			throw GraphicException( "OpenGL 4.5 or higher is required" );
+			throw GraphicException( "OpenGL 4.6 or higher is required" );
 		}
 
 		_getOpenglInfos();
@@ -416,6 +423,9 @@ namespace VTX::Renderer::Context::Backend
 			PayloadEndPass pEndPass { hFramebuffer, flags };
 			p_commands.push<E_COMMAND::END_PASS>( pEndPass );
 		}
+
+		// Push PRESENT.
+		p_commands.push<E_COMMAND::PRESENT>();
 
 		setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
 
@@ -1056,6 +1066,15 @@ namespace VTX::Renderer::Context::Backend
 		return data;
 	}
 	*/
+
+	void OpenGL::setOption( const Desc::E_OPTION p_option, const bool p_value )
+	{
+		switch ( p_option )
+		{
+		case Desc::E_OPTION::VSYNC: _glContext.setSwapInterval( p_value ? 1 : 0 ); break;
+		default: break;
+		}
+	}
 
 	void OpenGL::fillInfos( StructInfos & p_infos ) const
 	{

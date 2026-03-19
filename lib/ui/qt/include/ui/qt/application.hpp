@@ -66,7 +66,13 @@ namespace VTX::UI::QT
 			return _getOrCreateAction( action );
 		}
 
+	  protected:
+		uintptr_t _getRenderSurface() const override;
+
 	  private:
+		/**
+		 * @brief Splash screen (loading sprite).
+		 */
 		QPointer<QSplashScreen> _splashScreen;
 
 		/**

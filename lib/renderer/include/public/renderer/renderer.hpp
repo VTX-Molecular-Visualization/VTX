@@ -52,7 +52,7 @@ namespace VTX::Renderer
 		 * @brief Set graphic context.
 		 */
 		void setDefault();
-		void setOpenGL( const FilePath & );
+		void setOpenGL( const uintptr_t, const FilePath & );
 
 		/**
 		 * @brief Resize the renderer.
@@ -114,6 +114,11 @@ namespace VTX::Renderer
 		 * @brief Force update each frame.
 		 */
 		inline void setForceUpdate( const bool p_value ) { _forceUpdate = p_value; }
+
+		/**
+		 * @brief Force update each frame.
+		 */
+		inline void setVSync( const bool p_value ) { _context.setOption( Desc::E_OPTION::VSYNC, p_value ); }
 
 		/**
 		 * @brief Get the current renderer infos.

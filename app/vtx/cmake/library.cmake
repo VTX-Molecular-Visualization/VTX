@@ -69,7 +69,6 @@ endif()
 target_link_libraries(vtx PRIVATE Qt6::Core)
 target_link_libraries(vtx PRIVATE Qt6::Gui)
 target_link_libraries(vtx PRIVATE Qt6::Widgets)
-target_link_libraries(vtx PRIVATE Qt6::OpenGLWidgets)
 
 # Declare preprocessor definitions.
 target_compile_definitions(vtx PRIVATE VTX_TOOL_EXAMPLE=${VTX_TOOL_EXAMPLE})

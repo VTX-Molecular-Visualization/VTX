@@ -35,6 +35,12 @@ find_package(fmt CONFIG REQUIRED)
 find_package(re2 CONFIG REQUIRED)
 find_package(platform_folders REQUIRED)
 
+if(LINUX)
+	find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
+	find_package(X11 REQUIRED)
+	find_package(wayland REQUIRED)
+endif()
+
 if (LOCAL_PDB100)
 	find_package(Boost CONFIG REQUIRED) # Needed for multiprocessing on pdb database test
 	find_package(LibArchive REQUIRED) # Needed for pdb100 archive reading

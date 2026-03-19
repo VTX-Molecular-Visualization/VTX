@@ -174,6 +174,14 @@ namespace VTX::Renderer::Desc
 	};
 
 	/**
+	 * @brief All options.
+	 */
+	enum struct E_OPTION : uint32_t
+	{
+		VSYNC
+	};
+
+	/**
 	 * @brief Aliases.
 	 */
 	using Key = std::string;
