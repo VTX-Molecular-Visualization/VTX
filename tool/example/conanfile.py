@@ -22,6 +22,7 @@ class VTXToolExampleRecipe(ConanFile):
         self.requires("catch2/3.13.0")
         if self.settings.os == "Linux":
             self.requires("libffi/3.4.8", override=True)
+            self.requires("wayland/1.24.0", override=True)
 
     def config_options(self):
         if self.settings.os == "Windows":
