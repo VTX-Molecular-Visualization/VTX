@@ -56,6 +56,8 @@ class VTXRendererRecipe(ConanFile):
         cmake = CMake(self)
         cmake.install()
 
-    def package_info(self):    
-        self.cpp_info.libs = ["vtx_renderer"]      
+    def package_info(self):
+        self.cpp_info.libs = ["vtx_renderer"]
+        if self.settings.os == "Windows":
+            self.cpp_info.system_libs = ["opengl32"]
         self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_renderer_copy_files.cmake", "cmake/vtx_link_cuda.cmake"])
