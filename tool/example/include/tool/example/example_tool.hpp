@@ -13,6 +13,7 @@ namespace VTX::Tool::Example
 	{
 	  public:
 		ExampleTool();
+		void buildUI() override;
 	};
 
 } // namespace VTX::Tool::Example

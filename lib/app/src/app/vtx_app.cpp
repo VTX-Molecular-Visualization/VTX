@@ -76,9 +76,8 @@ namespace VTX::App
 
 	void VTXApp::start()
 	{
-		_startServices();
-		_instantiateTools();
-		_createInitialEntities();
+		startServices();
+		createInitialEntities();
 
 		auto & renderer = RENDERER();
 		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) || ECS::getCtx<Args>().has( ARG_NO_GUI ) )
@@ -92,10 +91,10 @@ namespace VTX::App
 			renderer.setDefault();
 		}
 
-		_finishStartup();
+		finishStartup();
 	}
 
-	void VTXApp::_startServices()
+	void VTXApp::startServices()
 	{
 		VTX_INFO( ARGS().toString() );
 		SESSION().print();
@@ -131,23 +130,7 @@ namespace VTX::App
 		}
 	}
 
-	void VTXApp::_instantiateTools()
-	{
-		_tools.clear();
-		_tools.reserve( _toolFactories.size() );
-
-		for ( auto & factory : _toolFactories )
-		{
-			assert( factory );
-
-			auto tool = factory();
-			assert( tool != nullptr );
-
-			_tools.push_back( std::move( tool ) );
-		}
-	}
-
-	void VTXApp::_createInitialEntities()
+	void VTXApp::createInitialEntities()
 	{
 		const ECS::Entity sceneEnt = _registry.create();
 		_registry.emplace<Scene::TagRoot>( sceneEnt );
@@ -181,7 +164,7 @@ namespace VTX::App
 		ACTION().execute<Action::Controller::SetCameraController<Action::Controller::E_CONTROLLER::TRACKBALL>>();
 	}
 
-	void VTXApp::_finishStartup()
+	void VTXApp::finishStartup()
 	{
 		ACTION().execute<Action::Scene::SetGraphicsConfig>(
 			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>()

@@ -8,7 +8,9 @@
 
 namespace VTX::Tool::Example
 {
-	ExampleTool::ExampleTool()
+	ExampleTool::ExampleTool() = default;
+
+	void ExampleTool::buildUI()
 	{
 		//////////////////////////
 		// Method 1:

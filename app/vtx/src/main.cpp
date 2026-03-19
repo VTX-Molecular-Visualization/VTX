@@ -54,7 +54,6 @@ int main( int p_argc, char * p_argv[] )
 		}
 #endif
 
-		std::unique_ptr<App::VTXApp> app;
 #if VTX_UI_QT
 		if ( not args.has( App::ARG_NO_GUI ) )
 		{
@@ -64,34 +63,28 @@ int main( int p_argc, char * p_argv[] )
 			QCoreApplication::setAttribute( Qt::AA_CompressHighFrequencyEvents );
 
 			Q_INIT_RESOURCE( vtx_qt_resources_ui );
-			app = std::make_unique<UI::QT::Application>( args );
-		}
-		else
-		{
-			app = std::make_unique<App::VTXApp>( args );
-		}
-#else
-		app = std::make_unique<App::VTXApp>();
-#endif
-
-		assert( app != nullptr );
-
-// Add tools.
+			UI::QT::Application app( args );
 #if VTX_TOOL_EXAMPLE
-		app->addToolFactory( []() { return std::make_unique<Tool::Example::ExampleTool>(); } );
-#if VTX_UI_QT
-		Q_INIT_RESOURCE( vtx_qt_resources_tool_example );
+			Q_INIT_RESOURCE( vtx_qt_resources_tool_example );
+			app.addTool<Tool::Example::ExampleTool>();
 #endif
-#endif
-// Add tools.
 #if VTX_TOOL_MDPREP
-		app->addToolFactory( []() { return std::make_unique<Tool::Mdprep::MdPrep>(); } );
-#if VTX_UI_QT
-		Q_INIT_RESOURCE( vtx_qt_resources_tool_mdprep );
+			Q_INIT_RESOURCE( vtx_qt_resources_tool_mdprep );
+			app.addTool<Tool::Mdprep::MdPrep>();
 #endif
+			app.start();
+			return EXIT_SUCCESS;
+		}
 #endif
-		// Starting main application loop.
-		app->start();
+
+		App::VTXApp app( args );
+#if VTX_TOOL_EXAMPLE
+		app.addTool<Tool::Example::ExampleTool>();
+#endif
+#if VTX_TOOL_MDPREP
+		app.addTool<Tool::Mdprep::MdPrep>();
+#endif
+		app.start();
 
 		return EXIT_SUCCESS;
 	}

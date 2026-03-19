@@ -127,7 +127,9 @@ namespace VTX::Tool::Mdprep
 		}
 	};
 
-	MdPrep::MdPrep()
+	MdPrep::MdPrep() = default;
+
+	void MdPrep::buildUI()
 	{
 		OpenMdPrep action;
 

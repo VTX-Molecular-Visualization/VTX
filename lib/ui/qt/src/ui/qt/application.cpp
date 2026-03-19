@@ -9,7 +9,6 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QApplication>
-#include <QHBoxLayout>
 #include <app/ecs.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
@@ -21,7 +20,7 @@ namespace VTX::UI::QT
 {
 
 	int zero = 0;
-	Application::Application( const App::Args & p_args ) : App::VTXApp( p_args ), QApplication( zero, nullptr )
+	Application::Application( const App::Args & p_args ) : QApplication( zero, nullptr ), _app( p_args )
 	{
 		using namespace Resources;
 		using namespace App;
@@ -45,7 +44,7 @@ namespace VTX::UI::QT
 		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME.data() ) );
 		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN.data() ) );
 
-		// After quit, last loop.
+		// Connect quit.
 		connect(
 			this,
 			&QCoreApplication::aboutToQuit,
@@ -54,7 +53,7 @@ namespace VTX::UI::QT
 				VTX_TRACE( "QCoreApplication::aboutToQuit" );
 				try
 				{
-					// Properly destroy graphics resources before Qt kill the context.
+					// Properly destroy graphics resources before Qt kill native surfaces.
 					App::RENDERER().clear();
 				}
 				catch ( const std::exception & p_e )
@@ -68,11 +67,11 @@ namespace VTX::UI::QT
 			}
 		);
 
-		// Run the main loop.
+		// Connect the main loop.
 		connect(
 			&_timer,
 			&QTimer::timeout,
-			[ this ] { VTXApp::update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); }
+			[ this ] { _app.update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); }
 		);
 	}
 
@@ -143,26 +142,8 @@ namespace VTX::UI::QT
 	{
 		try
 		{
-			_startServices();
+			_app.startServices();
 
-			QTimer::singleShot( 0, this, &Application::_postQtStartupUI );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "Startup failed: {}", p_e.what() );
-			QCoreApplication::quit();
-		}
-		catch ( ... )
-		{
-			VTX_ERROR( "Unknown exception during startup" );
-			QCoreApplication::quit();
-		}
-	}
-
-	void Application::_postQtStartupUI()
-	{
-		try
-		{
 			try
 			{
 				App::ECS::setCtx<Settings>();
@@ -176,46 +157,15 @@ namespace VTX::UI::QT
 			App::ECS::setCtx<SelectionManager>( this );
 			App::ECS::setCtx<Widget::MainWindow>();
 
-			_instantiateTools();
+			for ( auto & tool : _app.getTools() )
+			{
+				assert( tool != nullptr );
+				tool->buildUI();
+			}
+
 			App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
+			_app.createInitialEntities();
 
-			QTimer::singleShot( 0, this, &Application::_postQtStartupCore );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "Startup UI phase failed: {}", p_e.what() );
-			QCoreApplication::quit();
-		}
-		catch ( ... )
-		{
-			VTX_ERROR( "Unknown exception during startup UI phase" );
-			QCoreApplication::quit();
-		}
-	}
-
-	void Application::_postQtStartupCore()
-	{
-		try
-		{
-			_createInitialEntities();
-			QTimer::singleShot( 0, this, &Application::_postQtStartupRenderer );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "Startup core phase failed: {}", p_e.what() );
-			QCoreApplication::quit();
-		}
-		catch ( ... )
-		{
-			VTX_ERROR( "Unknown exception during startup core phase" );
-			QCoreApplication::quit();
-		}
-	}
-
-	void Application::_postQtStartupRenderer()
-	{
-		try
-		{
 			try
 			{
 				Renderer::Desc::NativeContextInfo contextInfo;
@@ -235,26 +185,7 @@ namespace VTX::UI::QT
 					"compatibility."
 				);
 			}
-
-			QTimer::singleShot( 0, this, &Application::_postQtStartupFinish );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "Startup renderer phase failed: {}", p_e.what() );
-			QCoreApplication::quit();
-		}
-		catch ( ... )
-		{
-			VTX_ERROR( "Unknown exception during startup renderer phase" );
-			QCoreApplication::quit();
-		}
-	}
-
-	void Application::_postQtStartupFinish()
-	{
-		try
-		{
-			_finishStartup();
+			_app.finishStartup();
 
 			MAIN_WINDOW().show();
 
@@ -269,12 +200,12 @@ namespace VTX::UI::QT
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( "Startup finish phase failed: {}", p_e.what() );
+			VTX_ERROR( "Startup failed: {}", p_e.what() );
 			QCoreApplication::quit();
 		}
 		catch ( ... )
 		{
-			VTX_ERROR( "Unknown exception during startup finish phase" );
+			VTX_ERROR( "Unknown exception during startup" );
 			QCoreApplication::quit();
 		}
 	}

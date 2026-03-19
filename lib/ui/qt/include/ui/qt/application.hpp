@@ -17,9 +17,9 @@ namespace VTX::UI::QT
 {
 
 	/**
-	 * @brief UI application class inheriting from QApplication and VTXApp.
+	 * @brief UI application class owning a QApplication shell and a VTXApp core instance.
 	 */
-	class Application final : public QApplication, public App::VTXApp
+	class Application final : public QApplication
 	{
 	  public:
 		/**
@@ -48,6 +48,15 @@ namespace VTX::UI::QT
 		bool notify( QObject * const, QEvent * const ) override;
 
 		/**
+		 * @brief Forward tool.
+		 */
+		template<typename T>
+		void addTool()
+		{
+			_app.addTool<T>();
+		}
+
+		/**
 		 * @brief Get app action from description.
 		 */
 
@@ -69,6 +78,11 @@ namespace VTX::UI::QT
 
 	  private:
 		/**
+		 * @brief Application core instance.
+		 */
+		App::VTXApp _app;
+
+		/**
 		 * @brief Handles the main loop timing.
 		 */
 		QTimer _timer;
@@ -83,11 +97,10 @@ namespace VTX::UI::QT
 		 */
 		QPointer<Widget::SplashScreen> _splashScreen;
 
+		/**
+		 * @brief Init application after Qt startup (create main window, OpenGL context, etc.).
+		 */
 		void _postQtStartup();
-		void _postQtStartupUI();
-		void _postQtStartupCore();
-		void _postQtStartupRenderer();
-		void _postQtStartupFinish();
 
 		/**
 		 * @brief Get/create application action from description.

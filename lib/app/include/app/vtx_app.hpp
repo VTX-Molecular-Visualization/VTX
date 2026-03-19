@@ -5,7 +5,6 @@
 #include "app/pipeline.hpp"
 #include "app/tool/base_tool.hpp"
 #include "args.hpp"
-#include <functional>
 #include <memory>
 #include <vector>
 
@@ -49,34 +48,33 @@ namespace VTX::App
 		}
 
 		/**
-		 * @brief Register a tool from another Conan package.
+		 * @brief Add a tool.
 		 */
-		using ToolFactory = std::function<std::unique_ptr<Tool::BaseTool>()>;
-		inline void addToolFactory( const ToolFactory p_factory )
+		template<typename T>
+		inline void addTool()
 		{
-			_toolFactories.push_back( std::move( p_factory ) );
+			_tools.emplace_back( std::make_unique<T>() );
 		}
 
-	  protected:
 		/**
 		 * @brief Start application services (logger, event hub, etc.).
 		 */
-		void _startServices();
+		void startServices();
 
 		/**
 		 * @brief Create initial entities (camera, scene root, presets, etc.) and add main passes to the pipeline.
 		 */
-		void _createInitialEntities();
+		void createInitialEntities();
 
 		/**
 		 * @brief Finish the startup process (apply settings, trigger events, etc.).
 		 */
-		void _finishStartup();
+		void finishStartup();
 
 		/**
-		 * @brief Instantiate tools from registered factories.
+		 * @brief Get instantiated tools.
 		 */
-		void _instantiateTools();
+		inline std::vector<std::unique_ptr<Tool::BaseTool>> & getTools() { return _tools; }
 
 	  private:
 		/**
@@ -88,11 +86,6 @@ namespace VTX::App
 		 * @brief Application pipeline (main loop).
 		 */
 		Pipeline _pipeline;
-
-		/**
-		 * @brief Tools to create.
-		 */
-		std::vector<ToolFactory> _toolFactories;
 
 		/**
 		 * @brief Instantiated tools.
