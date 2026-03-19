@@ -1,0 +1,102 @@
+name: Conan Graph
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'Release'
+        type: choice
+        options:
+        - Debug
+        - Release
+      tool_example:
+        description: 'Include tool Example'
+        required: false
+        default: false
+        type: boolean
+      tool_mdprep:
+        description: 'Include tool Mdprep'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  ROOT_DIR: ${{ github.workspace }}
+  BUILD_TYPE: ${{ inputs.build_type }}
+  TOOL_EXAMPLE: ${{ inputs.tool_example == true && 'True' || 'False' }}
+  TOOL_MDPREP: ${{ inputs.tool_mdprep == true && 'True' || 'False' }}
+
+jobs:
+  graph:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            channel: win
+            conan_cppstd: '20'
+          - os: ubuntu-22.04
+            channel: linux
+            conan_cppstd: 'gnu20'
+
+    steps:
+    - name: Set git to use CRLF
+      if: runner.os == 'Windows'
+      run: |
+        git config --global core.autocrlf true
+        git config --global core.eol crlf
+
+    - uses: actions/checkout@v6.0.2
+      with:
+        submodules: recursive
+
+    - name: Get Conan
+      uses: turtlebrowser/get-conan@v1.2
+
+    - name: Create default profile
+      run: conan profile detect --force
+
+    - name: Add custom remote
+      run: |
+        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
+
+    - name: Export local packages
+      working-directory: ${{ env.ROOT_DIR }}
+      run: |
+        conan export lib/app
+        conan export lib/core
+        conan export lib/io
+        conan export lib/python_binding
+        conan export lib/renderer
+        conan export lib/ui/qt
+        conan export lib/util
+        conan export tool/example
+        conan export tool/mdprep
+      shell: bash
+
+    - name: Generate Conan dependency graph
+      working-directory: ${{ env.ROOT_DIR }}
+      run: |
+        mkdir -p artifacts
+        conan graph info app/vtx \
+          -s build_type=${{ env.BUILD_TYPE }} \
+          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
+          -o vtx/*:tool_example=${{ env.TOOL_EXAMPLE }} \
+          -o vtx/*:tool_mdprep=${{ env.TOOL_MDPREP }} \
+          -o vtx_app/*:version=0.0.0 \
+          -c tools.system.package_manager:mode=install \
+          -c tools.system.package_manager:sudo=True \
+          --format=html \
+          --out-file "${{ env.ROOT_DIR }}/artifacts/conan-graph-${{ matrix.channel }}.html"
+      shell: bash
+
+    - name: Upload Conan graph artifact
+      uses: actions/upload-artifact@v7.0.0
+      with:
+        name: conan-graph-${{ matrix.channel }}
+        path: ${{ env.ROOT_DIR }}/artifacts/conan-graph-${{ matrix.channel }}.html
+        if-no-files-found: error
