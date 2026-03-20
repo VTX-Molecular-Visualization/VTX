@@ -26,6 +26,7 @@ namespace VTX::IO::Reader
 {
 	using MemoryBuffer	= std::string;
 	using AtomPositions = std::vector<Vec3f>;
+	using FrameIndex	= size_t;
 
 	class SystemReader
 	{
@@ -34,8 +35,16 @@ namespace VTX::IO::Reader
 		SystemReader( const FilePath &, Util::StopToken & );
 		SystemReader( MemoryBuffer, const FilePath &, Util::StopToken & );
 
+		size_t frameCount() const;
+
 		void get( Core::Struct ::System & ) noexcept;
+
+		/**
+		 * @brief Always return Frame 0's positions
+		 * @param
+		 */
 		void get( AtomPositions & ) noexcept;
+		void get( const FrameIndex &, AtomPositions & ) noexcept;
 
 	  private:
 		struct _Impl;

@@ -24,8 +24,9 @@ namespace VTX::IO::Reader
 		{
 		}
 
-		void get( Core::Struct ::System & ) noexcept {}
-		void get( AtomPositions & ) noexcept {}
+		void   get( Core::Struct ::System & ) noexcept {}
+		void   get( const FrameIndex &, AtomPositions & ) noexcept {}
+		size_t frameCount() const { return 1; }
 	};
 
 	SystemReader::SystemReader( const FilePath & p_path, Util::StopToken & p_stopToken ) :
@@ -37,6 +38,9 @@ namespace VTX::IO::Reader
 	{
 	}
 
-	void SystemReader::get( Core::Struct::System & p_ ) noexcept { _impl->get( p_ ); }
-	void SystemReader::get( AtomPositions & p_ ) noexcept { _impl->get( p_ ); }
+	void   SystemReader::get( Core::Struct::System & p_ ) noexcept { _impl->get( p_ ); }
+	void   SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) noexcept { _impl->get( p_i, p_ ); }
+	void   SystemReader::get( AtomPositions & p_ ) noexcept { _impl->get( 0, p_ ); }
+	size_t SystemReader::frameCount() const { return _impl->frameCount(); }
+
 } // namespace VTX::IO::Reader
