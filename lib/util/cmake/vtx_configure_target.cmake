@@ -1,9 +1,16 @@
+option(VTX_ENABLE_NATIVE_OPTIMIZATIONS "Enable CPU-specific release optimizations for local builds." OFF)
+
 function(vtx_configure_target p_target)
 	if(CMAKE_COMPILER_IS_GNUCC)
 		target_compile_options(${p_target} PRIVATE -Wpedantic -Wall)
 		target_compile_options(${p_target} PRIVATE
-        	$<$<CONFIG:Release>:-O2 -march=native -ffast-math>
+        	$<$<CONFIG:Release>:-O2 -ffast-math>
     	)
+		if(VTX_ENABLE_NATIVE_OPTIMIZATIONS)
+			target_compile_options(${p_target} PRIVATE
+				$<$<CONFIG:Release>:-march=native>
+			)
+		endif()
 	elseif(MSVC)
 		# General.
 		target_compile_options(${p_target} PRIVATE 
@@ -17,8 +24,13 @@ function(vtx_configure_target p_target)
 		)
 		# Optimization.
 		target_compile_options(${p_target} PRIVATE 
-			$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:CXX>>:/O2 /Ob2 /Ot /Oi /arch:AVX2>
+			$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:CXX>>:/O2 /Ob2 /Ot /Oi>
 		)
+		if(VTX_ENABLE_NATIVE_OPTIMIZATIONS)
+			target_compile_options(${p_target} PRIVATE
+				$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:CXX>>:/arch:AVX2>
+			)
+		endif()
 	endif()
 	
 	set_property(TARGET ${p_target} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
