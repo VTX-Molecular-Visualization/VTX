@@ -3,7 +3,6 @@
 
 #include "app/system/load.hpp"
 #include "app/system/trajectory.hpp"
-#include <io/reader/system.hpp>
 
 namespace VTX::App::System
 {

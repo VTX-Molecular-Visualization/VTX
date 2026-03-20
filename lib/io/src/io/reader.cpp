@@ -328,4 +328,16 @@ namespace VTX::IO
 
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }
 
+	bool isTrajectoryFileFormat( const FilePath & p_path ) noexcept
+	{
+		std::string extension = p_path.extension().string();
+		std::transform( extension.begin(), extension.end(), extension.begin(), tolower );
+		const std::array<std::string_view, 4> _trajectoryFileFormatList { ".xtc", ".dcd", ".lammpstrj", ".trj" };
+		return std::any_of(
+			_trajectoryFileFormatList.begin(),
+			_trajectoryFileFormatList.end(),
+			[ &extension ]( const std::string_view & v ) { return v == extension; }
+		);
+	};
+
 } // namespace VTX::IO

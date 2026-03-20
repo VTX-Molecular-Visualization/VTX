@@ -2,12 +2,15 @@
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/system.hpp>
 #include <fstream>
-#include <io/reader/system.hpp>
 #include <io/writer/chemfiles.hpp>
 #include <io/writer/system.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
+#include <util/thread.hpp>
+#include <util/types.hpp>
 #include <vector>
+//
+#include <io/reader.hpp>
 
 namespace
 {
@@ -168,9 +171,10 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 		twoWaterSystems1frame( trajWriter );
 	}
 
-	VTX::Core::Struct::System system	   = VTX::Core::Struct::System();
-	VTX::IO::Reader::System	  systemReader = VTX::IO::Reader::System();
-	systemReader.readFile( waterPath, system );
+	VTX::Core::Struct::System system = VTX::Core::Struct::System();
+	VTX::Util::StopToken	  t;
+	VTX::IO::SystemReader	  systemReader( waterPath, t );
+	systemReader.get( system );
 
 	CHECK( system.getChainCount() == 1 );
 	CHECK( system.getBondCount() == 4 );
@@ -197,9 +201,10 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 		twoWaterSystems2frame( trajWriter );
 	}
 
-	VTX::Core::Struct::System system	   = VTX::Core::Struct::System();
-	VTX::IO::Reader::System	  systemReader = VTX::IO::Reader::System();
-	systemReader.readFile( waterPath, system );
+	VTX::Core::Struct::System system = VTX::Core::Struct::System();
+	VTX::Util::StopToken	  t;
+	VTX::IO::SystemReader	  systemReader( waterPath, t );
+	systemReader.get( system );
 
 	CHECK( system.getChainCount() == 1 );
 	CHECK( system.getBondCount() == 4 );
@@ -231,9 +236,9 @@ namespace
 
 		VTX::Core::Struct::System system = VTX::Core::Struct::System();
 		{
-			IO::Reader::System systemReader = IO::Reader::System();
-
-			systemReader.readFile( systemPath, system );
+			VTX::Util::StopToken  t;
+			VTX::IO::SystemReader systemReader( systemPath, t );
+			systemReader.get( system );
 		}
 		size_t atomCount  = system.getAtomCount();
 		size_t chainCount = system.getChainCount();
@@ -257,10 +262,10 @@ namespace
 			}
 		);
 
-		VTX::Core::Struct::System system_reread		  = VTX::Core::Struct::System();
-		IO::Reader::System		  systemReader_reread = IO::Reader::System();
-
-		systemReader_reread.readFile( destination, system_reread );
+		VTX::Core::Struct::System system_reread = VTX::Core::Struct::System();
+		VTX::Util::StopToken	  t;
+		VTX::IO::SystemReader	  systemReader( destination, t );
+		systemReader.get( system_reread );
 
 		CHECK( system_reread.getChainCount() == chainCount );
 		CHECK( system_reread.getResidueCount() == resCount );

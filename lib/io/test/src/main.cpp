@@ -3,7 +3,7 @@
 #include <core/struct/circular_buffer_prodcons.hpp>
 #include <core/struct/system.hpp>
 #include <fstream>
-#include <io/reader/system.hpp>
+#include <io/reader.hpp>
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
@@ -25,10 +25,13 @@ TEST_CASE( "VTX_IO - Benchmark", "[.] [integration]" )
 
 	BENCHMARK( "Open systems" )
 	{
-		VTX::Core::Struct::System system	   = VTX::Core::Struct::System();
-		IO::Reader::System		  systemReader = IO::Reader::System();
+		VTX::Core::Struct::System system = VTX::Core::Struct::System();
+		std::vector<VTX::Vec3f>	  pos;
+		VTX::Util::StopToken	  t;
+		IO::SystemReader		  systemReader( systemPath, t );
 
-		systemReader.readFile( systemPath, system );
+		systemReader.get( system );
+		systemReader.get( pos );
 	};
 }
 
