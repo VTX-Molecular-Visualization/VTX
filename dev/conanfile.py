@@ -55,7 +55,7 @@ class VTXRecipe(ConanFile):
             self.requires("libarchive/3.7.9")
             self.requires("boost/1.87.0") # 1.88 version break process package on windows
         self.requires("platformfolders/4.3.0")
-        self.requires("cpython/{}".format(str(get_python_version()))) # v >= 3.10 not working with msvc compiler so far
+        self.requires("cpython/{}".format(str(get_python_version())))
         if self.settings.os == "Linux":
             self.requires("xkbcommon/1.6.0", override=True)
             self.requires("libffi/3.4.8", override=True)

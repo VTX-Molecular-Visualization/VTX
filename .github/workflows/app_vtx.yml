@@ -33,6 +33,10 @@ on:
         description: 'Cuda architectures'
         required: true
         default: '50;52;60;61;70;75;80;86;89;90'
+      python_version:
+        description: 'Python version'
+        required: true
+        default: '3.12.7'
         
 env:
   ROOT_DIR: ${{github.workspace}}
@@ -41,6 +45,7 @@ env:
   TOOL_EXAMPLE: ${{ inputs.tool_example == true && 'True' || 'False' }}
   TOOL_MDPREP: ${{ inputs.tool_mdprep == true && 'True' || 'False' }}
   CUDA_ARCH: ${{ inputs.cuda_arch }}
+  PYTHON_VERSION: ${{ inputs.python_version }}
   RELEASE_DIR: ${{ github.workspace }}/release
 
 jobs:
@@ -112,6 +117,7 @@ jobs:
           -o vtx_app/*:version=${{env.VERSION}} \
           -o vtx/*:tool_example=${{env.TOOL_EXAMPLE}} \
           -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} \
+          -o vtx_python_binding/*:python_version=${{env.PYTHON_VERSION}} \
           -o vtx_renderer/*:cuda_arch="${{env.CUDA_ARCH}}" \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True \

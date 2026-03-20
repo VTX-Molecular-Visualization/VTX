@@ -31,8 +31,13 @@ class PythonVersion:
         return f"python{self.major}{self.minor}.zip"
 
 
-def get_python_version() -> PythonVersion:
-    return PythonVersion("3", "12", "7")
+def parse_python_version(version: str) -> PythonVersion:
+    major, minor, patch = version.split(".")
+    return PythonVersion(major, minor, patch)
+
+
+def get_python_version(version: str | None = None) -> PythonVersion:
+    return parse_python_version(version or "3.12.7")
 
 
 def configure_toolchain(tc, version: PythonVersion | None = None) -> None:

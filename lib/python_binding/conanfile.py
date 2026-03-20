@@ -57,10 +57,9 @@ def _archive_python_stdlib(source_dir: str, output_file: str) -> None:
                 archive.write(file_path, archive_path)
 
 
-def _copy_python_runtime(p_conanFile: ConanFile, dest_root: str) -> None:
+def _copy_python_runtime(p_conanFile: ConanFile, dest_root: str, version) -> None:
     cpython_root = p_conanFile.dependencies["cpython"].package_folder
     runtime_dir = os.path.join(dest_root, "external", "python")
-    version = get_python_version()
 
     if p_conanFile.settings.os == "Windows":
         copy(p_conanFile, "*", os.path.join(cpython_root, "bin", "DLLs"), os.path.join(runtime_dir, "DLLs"))
@@ -84,7 +83,8 @@ def _copy_python_runtime(p_conanFile: ConanFile, dest_root: str) -> None:
 
 
 def do_python_copies(p_conanFile: ConanFile) -> None:
-    _copy_python_runtime(p_conanFile, editable_runtime_root(p_conanFile))
+    version = get_python_version(str(p_conanFile.options.python_version))
+    _copy_python_runtime(p_conanFile, editable_runtime_root(p_conanFile), version)
 
 
 def configureToolChain(tc: CMakeToolchain):
@@ -98,12 +98,15 @@ class VTXPythonBindingRecipe(ConanFile):
     exports = "python_version.py"
 
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
-    default_options = {"shared": False, "fPIC": True, "test": False}
+    options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False], "python_version": ["ANY"]}
+    default_options = {"shared": False, "fPIC": True, "test": False, "python_version": "3.12.7"}
 
     generators = "CMakeDeps"
 
     exports_sources = "CMakeLists.txt", "src/*", "module/*", "include/*", "cmake/*", "python_script/*", "test/*"
+
+    def _python_version(self):
+        return get_python_version(str(self.options.python_version))
 
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -111,7 +114,7 @@ class VTXPythonBindingRecipe(ConanFile):
         self.requires("vtx_io/1.0")
         self.requires("pybind11/2.13.6", transitive_headers=True)
         self.requires("catch2/3.13.0")
-        self.requires("cpython/{}".format(str(get_python_version())))
+        self.requires("cpython/{}".format(str(self._python_version())))
         if self.settings.os == "Linux":
             self.requires("libffi/3.4.8", override=True)
 
@@ -123,7 +126,7 @@ class VTXPythonBindingRecipe(ConanFile):
 
     def generate(self):
         tc = CMakeToolchain(self)
-        configureToolChain(tc)
+        configure_toolchain(tc, self._python_version())
         configure_runtime_toolchain(tc, runtime_root(self))
         tc.generate()
         VirtualRunEnv(self).generate()
@@ -150,13 +153,13 @@ class VTXPythonBindingRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
-        _copy_python_runtime(self, self.package_folder)
+        _copy_python_runtime(self, self.package_folder, self._python_version())
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_python_binding"]
         self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_python_binding_copy_runtime.cmake"])
         define_python_binding_conf(
             self.conf_info,
-            get_python_version(),
+            self._python_version(),
             runtime_root=runtime_root(self),
         )

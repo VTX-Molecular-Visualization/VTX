@@ -14,10 +14,15 @@ on:
           options:
           - Debug
           - Release
+        python_version:
+          description: 'Python version'
+          required: true
+          default: '3.12.7'
 
 env:
   LIB_DIR: ${{github.workspace}}/lib
   BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
+  PYTHON_VERSION: ${{ inputs.python_version || '3.12.7' }}
 
 jobs:
   build:
@@ -73,6 +78,7 @@ jobs:
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_python_binding/*:test=True \
+          -o vtx_python_binding/*:python_version=${{env.PYTHON_VERSION}} \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True
 
@@ -92,5 +98,6 @@ jobs:
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_python_binding/*:test=True \
+          -o vtx_python_binding/*:python_version=${{env.PYTHON_VERSION}} \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True
