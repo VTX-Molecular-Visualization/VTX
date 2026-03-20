@@ -21,6 +21,7 @@ class VTXToolMdprepRecipe(ConanFile):
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_app/1.0")
+        self.requires("vtx_core/1.0")
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_python_binding/1.0")
         self.requires("re2/20240702")

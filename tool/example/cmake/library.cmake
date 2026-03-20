@@ -36,6 +36,7 @@ endif()
 # Link tests.
 target_link_libraries(vtx_tool_example_test PRIVATE vtx_tool_example)
 target_link_libraries(vtx_tool_example_test PRIVATE Catch2::Catch2WithMain)
+vtx_core_copy_data(vtx_tool_example_test)
 vtx_python_binding_copy_runtime(vtx_tool_example_test)
 vtx_qt_copy_runtime(vtx_tool_example_test)
 

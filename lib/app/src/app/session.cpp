@@ -239,7 +239,8 @@ namespace VTX::App
 	FilePath Session::getLicenseFile() const { return Filesystem::getExecutableDir() / "license.txt"; }
 	FilePath Session::getReadmeFile() const { return Filesystem::getExecutableDir() / "README.md"; }
 	FilePath Session::getChangelogFile() const { return Filesystem::getExecutableDir() / "CHANGELOG.md"; }
-	FilePath Session::getResidueDataDir() const { return Filesystem::getExecutableDir() / "residue"; }
+	FilePath Session::getDataDir() const { return Filesystem::getExecutableDir() / "data"; }
+	FilePath Session::getResidueDataDir() const { return getDataDir() / "residue"; }
 	FilePath Session::getResidueDataFilePath( const std::string_view p_residue )
 	{
 		return getResidueDataDir() / p_residue.substr( 0, 1 );

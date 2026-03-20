@@ -17,5 +17,3 @@ if (NOT DEFINED _VTX_CORE_CONAN)
 else()
 	target_link_libraries(vtx_core PUBLIC vtx_util::vtx_util)
 endif()
-
-vtx_core_copy_data(vtx_core)

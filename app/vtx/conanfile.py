@@ -18,6 +18,7 @@ class VTXRecipe(ConanFile):
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_app/1.0")
+        self.requires("vtx_core/1.0")
         self.requires("vtx_ui_qt/1.0")
         if self.options.tool_example:
             self.requires("vtx_tool_example/1.0")

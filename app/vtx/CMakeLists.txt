@@ -5,6 +5,7 @@ project(vtx)
 
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
+find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_ui_qt CONFIG REQUIRED)
 if (VTX_TOOL_EXAMPLE)
 	find_package(vtx_tool_example CONFIG REQUIRED)
@@ -22,6 +23,7 @@ include(InstallRequiredSystemLibraries)
 # Target.
 install(TARGETS vtx DESTINATION .)
 # Data from other libs.
+install(DIRECTORY $<TARGET_FILE_DIR:vtx>/data DESTINATION .)
 install(DIRECTORY $<TARGET_FILE_DIR:vtx>/shaders DESTINATION .)
 install(DIRECTORY $<TARGET_FILE_DIR:vtx>/python_script DESTINATION .)
 install(DIRECTORY $<TARGET_FILE_DIR:vtx>/external DESTINATION .)

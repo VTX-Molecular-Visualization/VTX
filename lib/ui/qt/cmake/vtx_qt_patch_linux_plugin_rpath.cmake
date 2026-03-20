@@ -1,3 +1,4 @@
+# Invoked from a post-build command to rewrite Qt plugin RPATHs inside the bundle.
 if(NOT DEFINED PATCHELF_EXECUTABLE OR NOT EXISTS "${PATCHELF_EXECUTABLE}")
 	message(FATAL_ERROR "PATCHELF_EXECUTABLE is required to patch Qt plugin RPATHs")
 endif()

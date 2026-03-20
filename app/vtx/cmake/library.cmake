@@ -66,6 +66,7 @@ endif()
 target_compile_definitions(vtx PRIVATE VTX_TOOL_EXAMPLE=${VTX_TOOL_EXAMPLE})
 target_compile_definitions(vtx PRIVATE VTX_TOOL_MDPREP=${VTX_TOOL_MDPREP})
 
+vtx_core_copy_data(vtx)
 vtx_renderer_copy_shaders(vtx)
 vtx_python_binding_copy_runtime(vtx)
 vtx_qt_copy_runtime(vtx)

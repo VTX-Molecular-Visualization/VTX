@@ -5,11 +5,15 @@
 
 namespace VTX::UI::QT::Dialog
 {
-
+	/**
+	 * @brief
+	 */
 	class Updater : public BaseDialog<Updater>
 	{
 	  public:
 		Updater( const App::Events::UpdateAvailable & );
+
+	  private:
 	};
 
 } // namespace VTX::UI::QT::Dialog

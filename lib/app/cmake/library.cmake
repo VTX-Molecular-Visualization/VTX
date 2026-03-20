@@ -44,6 +44,7 @@ endif()
 target_link_libraries(vtx_app_test PRIVATE vtx_app)
 target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
 
+vtx_core_copy_data(vtx_app_test)
 vtx_python_binding_copy_runtime(vtx_app_test)
 
 # Vendor libs.
