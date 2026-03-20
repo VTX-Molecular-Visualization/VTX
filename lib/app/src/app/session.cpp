@@ -134,8 +134,9 @@ namespace VTX::App
 				//.OnRestarted(  )
 				.Run();
 
-			auto src = std::make_unique<Velopack::GithubSource>( UPDATE_URL.data() );
-			_impl->manager.emplace( std::move( src ) );
+			// auto src = std::make_unique<Velopack::GithubSource>( UPDATE_URL.data() );
+			//_impl->manager.emplace( std::move( src ) );
+			_impl->manager.emplace( UPDATE_URL.data() );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -192,7 +193,7 @@ namespace VTX::App
 		{
 			const auto & release = _impl->pendingUpdate->TargetFullRelease;
 			VTX_INFO( "New version found: {}", release.Version );
-			HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHtml, release.Size );
+			HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesMarkdown, release.Size );
 		}
 		else
 		{
