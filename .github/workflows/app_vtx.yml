@@ -76,6 +76,10 @@ jobs:
     - name: Create default profile
       run: conan profile detect --force
 
+    - name: Install Linux packaging tools
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y patchelf
+
     - name: Add custom remote
       run: |
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
@@ -192,7 +196,7 @@ jobs:
           --pre \
           --merge \
           --repoUrl https://github.com/${{ github.repository }} \
-          --releaseName "VTX ${{ env.VERSION }} beta" \
+          --releaseName "${{ env.VERSION }} (beta)" \
           --tag v${{ env.VERSION }} \
           --token ${{ secrets.GITHUB_TOKEN }} \
           --channel ${{ matrix.channel }} \

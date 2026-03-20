@@ -1,4 +1,6 @@
 set(_VTX_QT_COPY_RUNTIME_ROOT "${CMAKE_CURRENT_LIST_DIR}/..")
+set(_VTX_QT_COPY_RUNTIME_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+find_program(_VTX_QT_PATCHELF_EXECUTABLE patchelf)
 
 function(_vtx_qt_append_runtime_root roots_var candidate)
 	if(EXISTS "${candidate}")
@@ -25,6 +27,24 @@ function(_vtx_qt_copy_runtime_directory target source destination)
 		COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
 			"${source}"
 			"${destination}"
+		VERBATIM
+	)
+endfunction()
+
+function(_vtx_qt_patch_linux_plugin_rpath target plugin_dir)
+	if(NOT _VTX_QT_PATCHELF_EXECUTABLE)
+		message(WARNING "patchelf not found, Qt plugin RPATH will not be patched for ${target}")
+		return()
+	endif()
+
+	add_custom_command(
+		TARGET ${target}
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND}
+			-DPATCHELF_EXECUTABLE=${_VTX_QT_PATCHELF_EXECUTABLE}
+			-DPLUGIN_DIR=$<TARGET_FILE_DIR:${target}>/${plugin_dir}
+			-DRPATH=\$ORIGIN/..
+			-P "${_VTX_QT_COPY_RUNTIME_CMAKE_DIR}/vtx_qt_patch_linux_plugin_rpath.cmake"
 		VERBATIM
 	)
 endfunction()
@@ -86,6 +106,7 @@ function(vtx_qt_copy_runtime target)
 						"${_vtx_qt_runtime_root}/${_vtx_qt_plugin_dir}"
 						"$<TARGET_FILE_DIR:${target}>/${_vtx_qt_plugin_dir}"
 					)
+					_vtx_qt_patch_linux_plugin_rpath(${target} "${_vtx_qt_plugin_dir}")
 				endif()
 			endforeach()
 		endif()
