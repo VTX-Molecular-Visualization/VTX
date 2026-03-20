@@ -53,10 +53,17 @@ namespace VTX::App
 
 	namespace
 	{
+		enum class SessionPathRoot
+		{
+			Data,
+			Pictures
+		};
+
 		FilePath _getPortableBaseDir()
 		{
 #if defined( __linux__ )
-			if ( const char * appImagePath = std::getenv( "APPIMAGE" ); appImagePath != nullptr && appImagePath[ 0 ] != '\0' )
+			if ( const char * appImagePath = std::getenv( "APPIMAGE" );
+				 appImagePath != nullptr && appImagePath[ 0 ] != '\0' )
 			{
 				return FilePath( appImagePath ).parent_path();
 			}
@@ -68,8 +75,8 @@ namespace VTX::App
 		{
 #if defined( __linux__ )
 			std::error_code ec;
-			FilePath		   candidate = p_path;
-			while ( !candidate.empty() && !std::filesystem::exists( candidate, ec ) )
+			FilePath		candidate = p_path;
+			while ( not candidate.empty() && not std::filesystem::exists( candidate, ec ) )
 			{
 				candidate = candidate.parent_path();
 			}
@@ -84,6 +91,31 @@ namespace VTX::App
 			(void)p_path;
 			return true;
 #endif
+		}
+
+		FilePath _getDefaultBaseDir( const SessionPathRoot p_root )
+		{
+			switch ( p_root )
+			{
+			case SessionPathRoot::Data: return Filesystem::getDataHome();
+			case SessionPathRoot::Pictures: return Filesystem::getPicturesFolder();
+			}
+
+			return Filesystem::getDataHome();
+		}
+
+		FilePath _resolveAppDir( const bool p_isPortable, const SessionPathRoot p_root )
+		{
+			if ( p_isPortable )
+			{
+				const FilePath portableDir = _getPortableBaseDir();
+				if ( _isWritableDirectory( portableDir ) )
+				{
+					return portableDir;
+				}
+			}
+
+			return _getDefaultBaseDir( p_root ) / APP_FOLDER_NAME;
 		}
 	} // namespace
 
@@ -198,31 +230,9 @@ namespace VTX::App
 		return ( *_impl->manager ).IsPortable();
 	}
 
-	FilePath Session::getDataHome() const
-	{
-		if ( isPortable() )
-		{
-			const FilePath portableDir = _getPortableBaseDir();
-			if ( _isWritableDirectory( portableDir ) )
-			{
-				return portableDir;
-			}
-		}
-		return Filesystem::getDataHome() / APP_FOLDER_NAME;
-	}
+	FilePath Session::getDataHome() const { return _resolveAppDir( isPortable(), SessionPathRoot::Data ); }
 
-	FilePath Session::getPicturesFolder() const
-	{
-		if ( isPortable() )
-		{
-			const FilePath portableDir = _getPortableBaseDir();
-			if ( _isWritableDirectory( portableDir ) )
-			{
-				return portableDir;
-			}
-		}
-		return Filesystem::getPicturesFolder() / APP_FOLDER_NAME;
-	}
+	FilePath Session::getPicturesFolder() const { return _resolveAppDir( isPortable(), SessionPathRoot::Pictures ); }
 
 	FilePath Session::getShadersDir() const { return Filesystem::getExecutableDir() / "shaders"; }
 	FilePath Session::getLicenseFile() const { return Filesystem::getExecutableDir() / "license.txt"; }
