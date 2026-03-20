@@ -21,6 +21,10 @@ namespace VTX::IO
 	using MemoryBuffer	= std::string;
 	using AtomPositions = std::vector<Vec3f>;
 	using FrameIndex	= size_t;
+	struct PdbIdCode
+	{
+		mutable std::string * code;
+	};
 
 	class SystemReader
 	{
@@ -39,6 +43,8 @@ namespace VTX::IO
 		 */
 		void get( AtomPositions & ) noexcept;
 		void get( const FrameIndex &, AtomPositions & ) noexcept;
+		void get( const PdbIdCode & ) noexcept;
+		void set( Util::StopToken & ) noexcept;
 
 	  private:
 		struct _Impl;

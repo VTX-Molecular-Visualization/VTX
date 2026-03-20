@@ -63,6 +63,9 @@ namespace VTX::IO
 
 		void get( Core::Struct::System & p_system ) noexcept
 		{
+			if ( stopToken.get().stop_requested() )
+				return;
+
 			// Strip leading dot from extension (e.g. ".pdb" -> "pdb")
 			std::string ext = filePath.extension().string();
 			if ( !ext.empty() && ext[ 0 ] == '.' )
@@ -229,6 +232,9 @@ namespace VTX::IO
 
 		void get( const FrameIndex & p_frameIndex, AtomPositions & p_positions ) noexcept
 		{
+			if ( stopToken.get().stop_requested() )
+				return;
+
 			currentFrame	= trajectory.read_at( p_frameIndex );
 			currentFrameIdx = p_frameIndex;
 
@@ -240,6 +246,15 @@ namespace VTX::IO
 			for ( size_t i = 0; i < pos.size(); ++i )
 				p_positions[ i ] = Vec3f( pos[ i ][ 0 ], pos[ i ][ 1 ], pos[ i ][ 2 ] );
 		}
+		void get( const PdbIdCode & p_ ) noexcept
+		{
+			if ( stopToken.get().stop_requested() )
+				return;
+
+			assert( p_.code != nullptr );
+			*p_.code = currentFrame.get( "pdb_idcode" ) ? currentFrame.get( "pdb_idcode" )->as_string() : "";
+		}
+		void set( Util::StopToken & p_ ) noexcept { stopToken = p_; }
 
 	  private:
 		void _init()
@@ -305,9 +320,12 @@ namespace VTX::IO
 	{
 	}
 
-	void   SystemReader::get( Core::Struct::System & p_ ) noexcept { _impl->get( p_ ); }
-	void   SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) noexcept { _impl->get( p_i, p_ ); }
-	void   SystemReader::get( AtomPositions & p_ ) noexcept { _impl->get( 0, p_ ); }
+	void SystemReader::get( Core::Struct::System & p_ ) noexcept { _impl->get( p_ ); }
+	void SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) noexcept { _impl->get( p_i, p_ ); }
+	void SystemReader::get( AtomPositions & p_ ) noexcept { _impl->get( 0, p_ ); }
+	void SystemReader::get( const PdbIdCode & p_ ) noexcept { _impl->get( p_ ); }
+	void SystemReader::set( Util::StopToken & p_ ) noexcept { _impl->set( p_ ); }
+
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }
 
 } // namespace VTX::IO

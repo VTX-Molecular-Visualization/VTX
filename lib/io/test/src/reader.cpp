@@ -45,3 +45,25 @@ TEST_CASE( "VTX_IO - Test filepath", "[reader][positions]" )
 
 	CHECK( pos.size() == 113095 );
 }
+
+TEST_CASE( "VTX_IO - Test filepath", "[reader][pdb_code]" )
+{
+	using namespace VTX;
+	using namespace VTX::IO;
+
+	const std::string systemName	 = "8OIT";
+	const std::string systemPathname = systemName + ".mmtf";
+	const FilePath	  systemPath	 = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
+
+	Util::StopToken	 t;
+	IO::SystemReader systemReader( systemPath, t );
+
+	std::string s;
+	systemReader.get( VTX::IO::PdbIdCode { &s } );
+	CHECK( s == "8OIT" );
+
+	// std::string		 s;
+	// VTX::IO::PdbIdCode d { s };
+	// systemReader.get( d );
+	// CHECK( d.code == "8OIT" );
+}

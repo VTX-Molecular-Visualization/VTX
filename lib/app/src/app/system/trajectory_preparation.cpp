@@ -3,6 +3,7 @@
 #include "app/system/uid.hpp"
 #include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
+#include <io/reader.hpp>
 
 namespace VTX::App::System
 {
@@ -16,7 +17,7 @@ namespace VTX::App::System
 		class TrajectoryFullBufferReader
 		{
 		  public:
-			TrajectoryFullBufferReader( TrajectoryFullBuffer &, IO::Reader::System && loader );
+			TrajectoryFullBufferReader( TrajectoryFullBuffer &, IO::SystemReader && reader );
 
 			uint operator()( VTX::Util::StopToken, Threading::BaseThread & ) noexcept;
 
@@ -29,7 +30,7 @@ namespace VTX::App::System
 		struct TrajectoryFullBufferReader::_Data
 		{
 			TrajectoryFullBuffer * _dataPtr;
-			IO::Reader::System	   loader;
+			IO::SystemReader	   reader;
 		};
 
 		struct Deleter
@@ -39,8 +40,8 @@ namespace VTX::App::System
 
 		TrajectoryFullBufferReader::TrajectoryFullBufferReader(
 			TrajectoryFullBuffer & p_traj,
-			IO::Reader::System &&  loader
-		) : _ptr( std::shared_ptr<_Data>( new _Data { &p_traj, std::move( loader ) }, Deleter() ) )
+			IO::SystemReader &&	   reader
+		) : _ptr( std::shared_ptr<_Data>( new _Data { &p_traj, std::move( reader ) }, Deleter() ) )
 		{
 		}
 		uint TrajectoryFullBufferReader::operator()(
@@ -48,14 +49,14 @@ namespace VTX::App::System
 			Threading::BaseThread &
 		) noexcept
 		{
-			auto &		 reader		= _ptr->loader.getChemfilesReader();
-			const size_t frameCount = reader.getFrameCount();
+			_ptr->reader.set( p_stopToken );
+			const size_t frameCount = _ptr->reader.frameCount();
 
 			for ( size_t it_currentFrameIndex = 1; it_currentFrameIndex < frameCount; it_currentFrameIndex++ )
 			{
-				_ptr->loader.readNextFrame();
-				std::vector<Vec3f> new_frame = reader.getCurrentFrameAtomPosition();
-				_ptr->_dataPtr->frameCollection.emplace_back( std::move( new_frame ) );
+				_ptr->_dataPtr->frameCollection.emplace_back();
+				_ptr->reader.get( _ptr->_dataPtr->frameCollection.back() );
+
 				_ptr->_dataPtr->lastFrameAvailable = it_currentFrameIndex;
 				if ( p_stopToken.stop_requested() )
 					break;
@@ -64,19 +65,20 @@ namespace VTX::App::System
 		}
 	} // namespace
 
-	void prepare( TrajectoryFullBuffer & p_trajectory, IO::Reader::System && p_loader ) noexcept
+	void prepare( TrajectoryFullBuffer & p_trajectory, IO::SystemReader && p_loader ) noexcept
 	{
-		p_trajectory.genericData.trajectorySize = p_loader.getChemfilesReader().getFrameCount();
-		p_trajectory.frameCollection.reserve( p_loader.getChemfilesReader().getFrameCount() );
-		p_trajectory.frameCollection.emplace_back( p_loader.getChemfilesReader().getCurrentFrameAtomPosition() );
+		p_trajectory.genericData.trajectorySize = static_cast<uint>( p_loader.frameCount() );
+		p_trajectory.frameCollection.resize( 1 );
+		p_trajectory.frameCollection.reserve( p_trajectory.genericData.trajectorySize );
+		p_loader.get( p_trajectory.frameCollection.back() );
 		p_trajectory.genericData.playMode = TrajectoryPlayMode::pingpong;
 		p_trajectory.genericData.player	  = Util::Players::PingPong( p_trajectory.genericData.trajectorySize - 1 );
 		p_trajectory.genericData.currentFrameIndex = 0;
 		p_trajectory.lastFrameAvailable			   = 0;
 	}
-	void prepare( TrajectorySingleFrame & p_trajectory, IO::Reader::System && p_loader ) noexcept
+	void prepare( TrajectorySingleFrame & p_trajectory, IO::SystemReader && p_loader ) noexcept
 	{
-		p_trajectory.atomPositions = p_loader.getChemfilesReader().getCurrentFrameAtomPosition();
+		p_loader.get( p_trajectory.atomPositions );
 	}
 	void startAsyncTrajectoryWork( const ECS::Entity & p_entity, PendingSystem & p_pendingData ) noexcept
 	{
@@ -85,7 +87,7 @@ namespace VTX::App::System
 			traj->threadId
 				= THREAD()
 					  .createThread(
-						  System::TrajectoryFullBufferReader( *traj, std::move( p_pendingData.loader.value() ) )
+						  System::TrajectoryFullBufferReader( *traj, std::move( p_pendingData.reader.value() ) )
 					  )
 					  .getId();
 		}
