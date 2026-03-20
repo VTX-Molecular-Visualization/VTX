@@ -134,6 +134,7 @@ jobs:
       continue-on-error: true
       run: |
         vpk download github \
+          --pre \
           --repoUrl https://github.com/${{ github.repository }} \
           --token ${{ secrets.GITHUB_TOKEN }} \
           --channel ${{ matrix.channel }} \
