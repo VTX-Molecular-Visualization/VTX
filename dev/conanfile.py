@@ -8,7 +8,7 @@ import importlib.util
 import sys
 
 sys.path.append(str(Path(__file__).resolve().parent.parent / "lib" / "python_binding"))
-from python_version import config_options_cpython, configure_toolchain, get_python_version
+from python_version import config_options_cpython, configure_toolchain, configure_runtime_toolchain, get_python_version
 
 
 
@@ -71,6 +71,7 @@ class VTXRecipe(ConanFile):
     def generate(self):
         tc = CMakeToolchain(self)
         configure_toolchain(tc, get_python_version())
+        configure_runtime_toolchain(tc, python_binding_module.runtime_root(self))
         
         versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
         tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
@@ -79,6 +80,12 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
         tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
         tc.cache_variables["LOCAL_PDB100"] = 1 if self.options.local_pdb100 else 0
+        tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_module._cmake_path(
+            os.path.join(self.build_folder, self.cpp.build.libdirs[0])
+        )
+        tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = mdprep_module._cmake_path(
+            mdprep_module.executable_folder(self)
+        )
         
         tc.generate()
 
@@ -87,10 +94,9 @@ class VTXRecipe(ConanFile):
         copy(self, "*opengl3*", os.path.join(self.dependencies["imgui"].package_folder,
             "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
 
+        python_binding_module.do_python_copies(self)
         qt_module.generate_qt(self)
-        python_binding_module.doPythonCopies(self)
-        copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "external"), os.path.join(self.build_folder, "external"))        
-        copy(self, "*", os.path.join(self.dependencies["gromacs"].package_folder, "data", "tools", "mdprep", "gromacs", "top"), os.path.join(self.build_folder, "data", "tools", "mdprep", "gromacs", "top" ))        
+        mdprep_module.do_gromacs_copies(self)
 
     def layout(self):
         cmake_layout(self)

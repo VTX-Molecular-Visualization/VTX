@@ -39,5 +39,5 @@ endif()
 # !Valgrind
 
 install(TARGETS vtx_python_binding FILE_SET public_headers DESTINATION include)
-install(DIRECTORY python_script DESTINATION .)
-install(DIRECTORY cmake DESTINATION .)
+vtx_install_source_directory("python_script")
+vtx_install_build_modules()

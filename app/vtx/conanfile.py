@@ -38,6 +38,16 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
         tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
         tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
+        python_binding_conf = self.dependencies["vtx_python_binding"].conf_info
+        tc.cache_variables["CPYTHON_VERSION_MAJOR"] = python_binding_conf.get("user.python_binding:cpython_version_major")
+        tc.cache_variables["CPYTHON_VERSION_MINOR"] = python_binding_conf.get("user.python_binding:cpython_version_minor")
+        tc.cache_variables["CPYTHON_VERSION_PATCH"] = python_binding_conf.get("user.python_binding:cpython_version_patch")
+        tc.cache_variables["VTX_PYTHON_BINDING_RUNTIME_ROOT"] = python_binding_conf.get("user.python_binding:runtime_root")
+        qt_conf = self.dependencies["vtx_ui_qt"].conf_info
+        tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_conf.get("user.ui_qt:runtime_root")
+        if self.options.tool_mdprep:
+            mdprep_conf = self.dependencies["vtx_tool_mdprep"].conf_info
+            tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = mdprep_conf.get("user.tool_mdprep:runtime_root")
         tc.generate()
 
     def build(self):

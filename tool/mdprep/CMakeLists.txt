@@ -16,5 +16,5 @@ set(_VTX_MDPREP_CONAN " ") # So the right target name can be linked
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 install(TARGETS vtx_tool_mdprep FILE_SET public_headers)
-install(DIRECTORY cmake DESTINATION .)
-install(DIRECTORY data DESTINATION .)
+vtx_install_build_modules()
+vtx_install_source_directory("data")

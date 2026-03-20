@@ -1,7 +1,14 @@
 import os
+from pathlib import Path
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 from conan.tools.files import copy
+
+_CONF_QT_RUNTIME_ROOT = "user.ui_qt:runtime_root"
+
+
+def _cmake_path(path: str) -> str:
+    return path.replace("\\", "/")
 
 def config_options_qt(p_conanFile : ConanFile):
     # Package options.
@@ -129,6 +136,19 @@ def generate_qt(p_conanFile : ConanFile):
                 copy(p_conanFile, "*.so*", source_dir, os.path.join(destDir, folder))
 
 
+def qt_runtime_root(p_conanFile: ConanFile) -> str:
+    package_root = getattr(p_conanFile, "package_folder", None)
+    if package_root and (
+        os.path.isdir(os.path.join(package_root, "platforms"))
+        or os.path.exists(os.path.join(package_root, "Qt6Core.dll"))
+        or os.path.exists(os.path.join(package_root, "libQt6Core.so"))
+    ):
+        return _cmake_path(package_root)
+
+    build_root = Path(p_conanFile.recipe_folder) / p_conanFile.folders.build / p_conanFile.cpp.build.libdirs[0]
+    return _cmake_path(str(build_root))
+
+
 class VTXUiQtRecipe(ConanFile):
     name = "vtx_ui_qt"
     version = "1.0"
@@ -168,6 +188,9 @@ class VTXUiQtRecipe(ConanFile):
         tc.cache_variables["CPYTHON_VERSION_MAJOR"] = python_binding_conf.get("user.python_binding:cpython_version_major")
         tc.cache_variables["CPYTHON_VERSION_MINOR"] = python_binding_conf.get("user.python_binding:cpython_version_minor")
         tc.cache_variables["CPYTHON_VERSION_PATCH"] = python_binding_conf.get("user.python_binding:cpython_version_patch")
+        tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = _cmake_path(
+            os.path.join(self.build_folder, self.cpp.build.libdirs[0])
+        )
         tc.generate()
         generate_qt(self)
 
@@ -184,3 +207,4 @@ class VTXUiQtRecipe(ConanFile):
         self.cpp_info.libs = ["vtx_ui_qt"]
         self.cpp_info.bindirs = [""]
         self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_qt_configure.cmake", "cmake/vtx_qt_add_resources.cmake", "cmake/vtx_qt_copy_runtime.cmake"])
+        self.conf_info.define(_CONF_QT_RUNTIME_ROOT, qt_runtime_root(self))

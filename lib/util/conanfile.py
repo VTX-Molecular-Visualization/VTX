@@ -1,9 +1,6 @@
-import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
 from conan.tools.env import VirtualRunEnv
-from conan.tools.files import copy
-from pathlib import Path
 
 class VTXUtilRecipe(ConanFile):
     name = "vtx_util"

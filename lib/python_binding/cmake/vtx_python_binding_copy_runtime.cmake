@@ -14,42 +14,41 @@ endfunction()
 
 # Bundle python scripts, embedded runtime files and Windows Python DLLs for a target.
 function(vtx_python_binding_copy_runtime target)
-	set(_vtx_python_binding_runtime_roots)
-	vtx_append_existing_realpath(_vtx_python_binding_runtime_roots "${PROJECT_SOURCE_DIR}")
-	vtx_append_existing_realpath(_vtx_python_binding_runtime_roots "${CMAKE_CURRENT_SOURCE_DIR}")
-	vtx_append_existing_realpath(_vtx_python_binding_runtime_roots "${_VTX_PYTHON_BINDING_COPY_RUNTIME_ROOT}")
-	if(DEFINED CMAKE_BUILD_TYPE AND NOT CMAKE_BUILD_TYPE STREQUAL "")
-		vtx_append_existing_realpath(
-			_vtx_python_binding_runtime_roots
-			"${_VTX_PYTHON_BINDING_COPY_RUNTIME_ROOT}/build/${CMAKE_BUILD_TYPE}"
-		)
+	if(NOT IS_DIRECTORY "${_VTX_PYTHON_BINDING_COPY_RUNTIME_ROOT}/python_script")
+		message(FATAL_ERROR "Unable to locate python_script under <${_VTX_PYTHON_BINDING_COPY_RUNTIME_ROOT}>.")
 	endif()
-	vtx_append_existing_realpath(_vtx_python_binding_runtime_roots "${_VTX_PYTHON_BINDING_COPY_RUNTIME_ROOT}/build")
 
-	set(_vtx_python_binding_python_script_target_added FALSE)
-	foreach(_vtx_python_binding_runtime_root IN LISTS _vtx_python_binding_runtime_roots)
-		if(
-			NOT _vtx_python_binding_python_script_target_added
-			AND EXISTS "${_vtx_python_binding_runtime_root}/python_script"
-		)
-			_vtx_python_binding_add_python_script_target(
-				${target}
-				"${_vtx_python_binding_runtime_root}/python_script"
-			)
-			set(_vtx_python_binding_python_script_target_added TRUE)
-		endif()
+	_vtx_python_binding_add_python_script_target(
+		${target}
+		"${_VTX_PYTHON_BINDING_COPY_RUNTIME_ROOT}/python_script"
+	)
 
-		if(EXISTS "${_vtx_python_binding_runtime_root}/external/python")
-			vtx_copy_directory(
-				${target}
-				"${_vtx_python_binding_runtime_root}/external/python"
-				"$<TARGET_FILE_DIR:${target}>/external/python"
-			)
-		endif()
+	if(NOT DEFINED VTX_PYTHON_BINDING_RUNTIME_ROOT OR VTX_PYTHON_BINDING_RUNTIME_ROOT STREQUAL "")
+		message(FATAL_ERROR "VTX_PYTHON_BINDING_RUNTIME_ROOT must be defined before calling vtx_python_binding_copy_runtime().")
+	endif()
 
-		if(WIN32)
-			file(GLOB _vtx_python_binding_runtime_dlls "${_vtx_python_binding_runtime_root}/python*.dll")
-			vtx_copy_files(${target} "$<TARGET_FILE_DIR:${target}>" ${_vtx_python_binding_runtime_dlls})
+	if(NOT IS_DIRECTORY "${VTX_PYTHON_BINDING_RUNTIME_ROOT}/external/python")
+		message(FATAL_ERROR "Unable to locate prepared Python runtime under <${VTX_PYTHON_BINDING_RUNTIME_ROOT}>.")
+	endif()
+
+	vtx_copy_directory(
+		${target}
+		"${VTX_PYTHON_BINDING_RUNTIME_ROOT}/external/python"
+		"$<TARGET_FILE_DIR:${target}>/external/python"
+	)
+
+	if(WIN32)
+		file(GLOB _vtx_python_binding_runtime_dlls "${VTX_PYTHON_BINDING_RUNTIME_ROOT}/python*.dll")
+		if(NOT _vtx_python_binding_runtime_dlls)
+			message(FATAL_ERROR "Unable to locate CPython runtime under <${VTX_PYTHON_BINDING_RUNTIME_ROOT}>.")
 		endif()
-	endforeach()
+		vtx_copy_files(${target} "$<TARGET_FILE_DIR:${target}>" ${_vtx_python_binding_runtime_dlls})
+	elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+		if(NOT IS_DIRECTORY "${VTX_PYTHON_BINDING_RUNTIME_ROOT}/external/python/bin"
+		   OR NOT IS_DIRECTORY "${VTX_PYTHON_BINDING_RUNTIME_ROOT}/external/python/lib")
+			message(FATAL_ERROR "Unable to locate CPython runtime under <${VTX_PYTHON_BINDING_RUNTIME_ROOT}>.")
+		endif()
+	else()
+		message(FATAL_ERROR "Unsupported platform for Python runtime copy.")
+	endif()
 endfunction()

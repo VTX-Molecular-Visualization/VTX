@@ -47,6 +47,7 @@ class VTXAppRecipe(ConanFile):
         tc.cache_variables["CPYTHON_VERSION_MAJOR"] = python_binding_conf.get("user.python_binding:cpython_version_major")
         tc.cache_variables["CPYTHON_VERSION_MINOR"] = python_binding_conf.get("user.python_binding:cpython_version_minor")
         tc.cache_variables["CPYTHON_VERSION_PATCH"] = python_binding_conf.get("user.python_binding:cpython_version_patch")
+        tc.cache_variables["VTX_PYTHON_BINDING_RUNTIME_ROOT"] = python_binding_conf.get("user.python_binding:runtime_root")
         versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
         tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
         tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor

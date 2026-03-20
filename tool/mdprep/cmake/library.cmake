@@ -44,6 +44,7 @@ target_link_libraries(vtx_tool_mdprep_test PRIVATE re2::re2)
 vtx_core_copy_data(vtx_tool_mdprep_test)
 vtx_python_binding_copy_runtime(vtx_tool_mdprep_test)
 vtx_qt_copy_runtime(vtx_tool_mdprep_test)
+vtx_tool_mdprep_copy_runtime(vtx_tool_mdprep_test)
 
 include(CTest)
 include(Catch)

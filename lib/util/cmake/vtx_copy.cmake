@@ -107,3 +107,84 @@ function(vtx_copy_directory target source destination)
 		"Syncing runtime directory for ${target}"
 	)
 endfunction()
+
+# Install a runtime directory from a target output tree.
+function(vtx_install_target_directory target relative_path)
+	set(options OPTIONAL)
+	set(oneValueArgs DESTINATION)
+	cmake_parse_arguments(VTX_INSTALL_DIR "${options}" "${oneValueArgs}" "" ${ARGN})
+
+	if(NOT VTX_INSTALL_DIR_DESTINATION)
+		set(VTX_INSTALL_DIR_DESTINATION ".")
+	endif()
+
+	if(VTX_INSTALL_DIR_OPTIONAL)
+		install(
+			DIRECTORY "$<TARGET_FILE_DIR:${target}>/${relative_path}"
+			DESTINATION "${VTX_INSTALL_DIR_DESTINATION}"
+			OPTIONAL
+		)
+	else()
+		install(
+			DIRECTORY "$<TARGET_FILE_DIR:${target}>/${relative_path}"
+			DESTINATION "${VTX_INSTALL_DIR_DESTINATION}"
+		)
+	endif()
+endfunction()
+
+# Install runtime files from a target output tree using glob-like patterns.
+function(vtx_install_target_files target)
+	set(options OPTIONAL)
+	set(oneValueArgs DESTINATION)
+	set(multiValueArgs PATTERNS)
+	cmake_parse_arguments(VTX_INSTALL_FILES "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+	if(NOT VTX_INSTALL_FILES_DESTINATION)
+		set(VTX_INSTALL_FILES_DESTINATION ".")
+	endif()
+
+	if(NOT VTX_INSTALL_FILES_PATTERNS)
+		return()
+	endif()
+
+	if(VTX_INSTALL_FILES_OPTIONAL)
+		install(
+			DIRECTORY "$<TARGET_FILE_DIR:${target}>/"
+			DESTINATION "${VTX_INSTALL_FILES_DESTINATION}"
+			OPTIONAL
+			FILES_MATCHING
+			${VTX_INSTALL_FILES_PATTERNS}
+		)
+	else()
+		install(
+			DIRECTORY "$<TARGET_FILE_DIR:${target}>/"
+			DESTINATION "${VTX_INSTALL_FILES_DESTINATION}"
+			FILES_MATCHING
+			${VTX_INSTALL_FILES_PATTERNS}
+		)
+	endif()
+endfunction()
+
+# Install a source/package directory without repeating the current-source-root plumbing.
+function(vtx_install_source_directory relative_path)
+	set(options OPTIONAL)
+	set(oneValueArgs DESTINATION)
+	cmake_parse_arguments(VTX_INSTALL_SOURCE "${options}" "${oneValueArgs}" "" ${ARGN})
+
+	if(NOT VTX_INSTALL_SOURCE_DESTINATION)
+		set(VTX_INSTALL_SOURCE_DESTINATION ".")
+	endif()
+
+	set(source_dir "${CMAKE_CURRENT_SOURCE_DIR}/${relative_path}")
+
+	if(VTX_INSTALL_SOURCE_OPTIONAL)
+		install(DIRECTORY "${source_dir}" DESTINATION "${VTX_INSTALL_SOURCE_DESTINATION}" OPTIONAL)
+	else()
+		install(DIRECTORY "${source_dir}" DESTINATION "${VTX_INSTALL_SOURCE_DESTINATION}")
+	endif()
+endfunction()
+
+# Install exported CMake build modules for a package.
+function(vtx_install_build_modules)
+	vtx_install_source_directory("cmake")
+endfunction()

@@ -23,10 +23,10 @@ include(InstallRequiredSystemLibraries)
 # Target.
 install(TARGETS vtx DESTINATION .)
 # Data from other libs.
-install(DIRECTORY $<TARGET_FILE_DIR:vtx>/data DESTINATION .)
-install(DIRECTORY $<TARGET_FILE_DIR:vtx>/shaders DESTINATION .)
-install(DIRECTORY $<TARGET_FILE_DIR:vtx>/python_script DESTINATION .)
-install(DIRECTORY $<TARGET_FILE_DIR:vtx>/external DESTINATION .)
+vtx_install_target_directory(vtx "data")
+vtx_install_target_directory(vtx "shaders")
+vtx_install_target_directory(vtx "python_script")
+vtx_install_target_directory(vtx "external")
 # Data from VTX.
 install(FILES README.md DESTINATION .)
 install(FILES CHANGELOG.md DESTINATION .)
@@ -34,34 +34,7 @@ install(FILES license.txt DESTINATION .)
 install(FILES asset/qt.conf DESTINATION .)
 # Runtime DLLs.
 #install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
-# DLLS from build dir.
-if(WIN32)
-	install(FILES
-		$<TARGET_FILE_DIR:vtx>/Qt6Core$<$<CONFIG:Debug>:d>.dll
-		$<TARGET_FILE_DIR:vtx>/Qt6Gui$<$<CONFIG:Debug>:d>.dll
-		$<TARGET_FILE_DIR:vtx>/Qt6Widgets$<$<CONFIG:Debug>:d>.dll
-		DESTINATION .
-	)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/platforms DESTINATION .)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/imageformats DESTINATION .)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/tls DESTINATION .)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/styles DESTINATION .)
-elseif(UNIX AND NOT APPLE)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/ DESTINATION .
-		FILES_MATCHING
-		PATTERN "libQt6*.so*"
-	)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/platforms DESTINATION . OPTIONAL)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/imageformats DESTINATION . OPTIONAL)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/tls DESTINATION . OPTIONAL)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/styles DESTINATION . OPTIONAL)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/platformthemes DESTINATION . OPTIONAL)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/xcbglintegrations DESTINATION . OPTIONAL)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/egldeviceintegrations DESTINATION . OPTIONAL)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/wayland-decoration-client DESTINATION . OPTIONAL)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/wayland-graphics-integration-client DESTINATION . OPTIONAL)
-	install(DIRECTORY $<TARGET_FILE_DIR:vtx>/wayland-shell-integration DESTINATION . OPTIONAL)
-endif()
+vtx_qt_install_runtime(vtx)
 
 # Infinite loop.
 #install(DIRECTORY ${CMAKE_BINARY_DIR}/
@@ -72,15 +45,8 @@ endif()
 #)
 
 # Copy python and cuda dlls.
-find_package(Python3 REQUIRED COMPONENTS Interpreter)
-if(Python3_EXECUTABLE)
-  get_filename_component(PYTHON_DIR "${Python3_EXECUTABLE}" DIRECTORY)
-  file(GLOB PY_DLLS "${PYTHON_DIR}/python3*.dll")
-	if(PY_DLLS)
-		install(FILES ${PY_DLLS} DESTINATION .)
-	else()
-		message(WARNING "No Python DLL found in: ${PYTHON_DIR}")
-	endif()
+if(WIN32)
+	vtx_install_target_files(vtx PATTERNS PATTERN "python*.dll")
 endif()
 
 include(CheckLanguage)
