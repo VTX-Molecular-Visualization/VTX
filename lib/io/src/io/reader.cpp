@@ -20,7 +20,7 @@
 #include <chemfiles.hpp>
 #pragma warning( pop )
 
-namespace VTX::IO::Reader
+namespace VTX::IO
 {
 	namespace ChemDB = VTX::Core::ChemDB;
 
@@ -83,6 +83,9 @@ namespace VTX::IO::Reader
 
 			for ( Index residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 			{
+				if ( stopToken.get().stop_requested() )
+					return;
+
 				currentResidue = &( ( *residues )[ residueIdx ] );
 
 				const std::string chainName	  = _residueStringProp( "chainname" );
@@ -155,6 +158,9 @@ namespace VTX::IO::Reader
 
 			for ( Index bondIdx = 0; bondIdx < Index( bonds->size() ); ++bondIdx )
 			{
+				if ( stopToken.get().stop_requested() )
+					return;
+
 				const chemfiles::Bond & bond		  = ( *bonds )[ bondIdx ];
 				const Index				firstAtomIdx  = Index( bond[ 0 ] );
 				const Index				secondAtomIdx = Index( bond[ 1 ] );
@@ -192,6 +198,9 @@ namespace VTX::IO::Reader
 
 			for ( Index residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 			{
+				if ( stopToken.get().stop_requested() )
+					return;
+
 				const std::vector<Index> & intraBonds = mapResidueBonds[ residueIdx ];
 				const std::vector<Index> & extraBonds = mapResidueExtraBonds[ residueIdx ];
 
@@ -223,6 +232,9 @@ namespace VTX::IO::Reader
 			currentFrame	= trajectory.read_at( p_frameIndex );
 			currentFrameIdx = p_frameIndex;
 
+			if ( stopToken.get().stop_requested() )
+				return;
+
 			const chemfiles::span<chemfiles::Vector3D> & pos = currentFrame.positions();
 			p_positions.resize( pos.size() );
 			for ( size_t i = 0; i < pos.size(); ++i )
@@ -234,6 +246,9 @@ namespace VTX::IO::Reader
 		{
 			chemfiles::set_warning_callback( []( const std::string & ) {} );
 
+			if ( stopToken.get().stop_requested() )
+				return;
+
 			if ( trajectory.size() == 0 )
 				throw IOException( "Trajectory is empty" );
 
@@ -241,6 +256,9 @@ namespace VTX::IO::Reader
 			topology	 = currentFrame.topology();
 			residues	 = &topology.residues();
 			bonds		 = &topology.bonds();
+
+			if ( stopToken.get().stop_requested() )
+				return;
 
 			// If no residues, wrap all atoms in a single UNK residue.
 			if ( residues->empty() )
@@ -292,4 +310,4 @@ namespace VTX::IO::Reader
 	void   SystemReader::get( AtomPositions & p_ ) noexcept { _impl->get( 0, p_ ); }
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }
 
-} // namespace VTX::IO::Reader
+} // namespace VTX::IO

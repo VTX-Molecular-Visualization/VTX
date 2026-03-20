@@ -16,7 +16,7 @@ namespace VTX::Core::Struct
 	struct System;
 } // namespace VTX::Core::Struct
 
-namespace VTX::IO::Reader
+namespace VTX::IO
 {
 	using MemoryBuffer	= std::string;
 	using AtomPositions = std::vector<Vec3f>;
@@ -31,7 +31,7 @@ namespace VTX::IO::Reader
 
 		size_t frameCount() const;
 
-		void get( Core::Struct ::System & ) noexcept;
+		void get( VTX::Core::Struct ::System & ) noexcept;
 
 		/**
 		 * @brief Always return Frame 0's positions
@@ -49,6 +49,6 @@ namespace VTX::IO::Reader
 		std::unique_ptr<_Impl, Del> _impl = nullptr;
 	};
 
-} // namespace VTX::IO::Reader
+} // namespace VTX::IO
 
 #endif // !__VTX_IO_READER__
