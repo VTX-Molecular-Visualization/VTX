@@ -13,17 +13,27 @@ def _cmake_path(path: str) -> str:
     return path.replace("\\", "/")
 
 
-def executable_folder(p_conanFile: ConanFile) -> str:
-    if Path(p_conanFile.build_folder).name == "build":
-        return str(Path(p_conanFile.build_folder) / p_conanFile.settings.get_safe("build_type", default="Release"))
-    return p_conanFile.build_folder
-
-
 def editable_runtime_root(p_conanFile: ConanFile) -> str:
     build_root = Path(p_conanFile.recipe_folder) / p_conanFile.folders.build
     if build_root.name == "build":
         return str(build_root / p_conanFile.settings.get_safe("build_type", default="Release"))
     return str(build_root)
+
+
+def executable_folder(p_conanFile: ConanFile) -> str:
+    return editable_runtime_root(p_conanFile)
+
+
+def _packaged_runtime_root(p_conanFile: ConanFile) -> Path | None:
+    package_root = getattr(p_conanFile, "package_folder", None)
+    if not package_root:
+        return None
+
+    root = Path(package_root)
+    if (root / "external" / "tools" / "mdprep" / "gromacs").is_dir():
+        return root
+
+    return None
 
 
 def _copy_gromacs_runtime(p_conanFile: ConanFile, dest_root: str) -> None:
@@ -47,9 +57,9 @@ def do_gromacs_copies(p_conanFile: ConanFile) -> None:
 
 
 def runtime_root(p_conanFile: ConanFile) -> str:
-    package_root = getattr(p_conanFile, "package_folder", None)
-    if package_root and os.path.isdir(os.path.join(package_root, "external", "tools", "mdprep", "gromacs")):
-        return _cmake_path(package_root)
+    packaged_root = _packaged_runtime_root(p_conanFile)
+    if packaged_root is not None:
+        return _cmake_path(str(packaged_root))
     return _cmake_path(editable_runtime_root(p_conanFile))
 
 class VTXToolMdprepRecipe(ConanFile):

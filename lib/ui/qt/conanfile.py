@@ -10,6 +10,31 @@ _CONF_QT_RUNTIME_ROOT = "user.ui_qt:runtime_root"
 def _cmake_path(path: str) -> str:
     return path.replace("\\", "/")
 
+
+def _editable_runtime_root(p_conanFile: ConanFile) -> Path:
+    build_root = Path(p_conanFile.recipe_folder) / p_conanFile.folders.build
+    if build_root.name == "build":
+        return build_root / p_conanFile.settings.get_safe("build_type", default="Release")
+    return build_root
+
+
+def _packaged_runtime_root(p_conanFile: ConanFile) -> Path | None:
+    package_root = getattr(p_conanFile, "package_folder", None)
+    if not package_root:
+        return None
+
+    root = Path(package_root)
+    markers = (
+        root / "platforms",
+        root / "Qt6Core.dll",
+        root / "libQt6Core.so",
+    )
+    if any(marker.exists() for marker in markers):
+        return root
+
+    return None
+
+
 def config_options_qt(p_conanFile : ConanFile):
     # Package options.
     p_conanFile.options["qt"].shared = True
@@ -113,7 +138,7 @@ def generate_qt(p_conanFile : ConanFile):
     qtBinDir = os.path.join(qtPackageDir, "bin")
     qtLibDir = os.path.join(qtPackageDir, "lib")
     qtPluginsDir = os.path.join(p_conanFile.dependencies["qt"].package_folder, "plugins")
-    destDir = os.path.join(p_conanFile.build_folder, p_conanFile.cpp.build.libdirs[0])
+    destDir = str(_editable_runtime_root(p_conanFile))
 
     if p_conanFile.settings.os == "Windows":
         binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll" ]
@@ -137,16 +162,10 @@ def generate_qt(p_conanFile : ConanFile):
 
 
 def qt_runtime_root(p_conanFile: ConanFile) -> str:
-    package_root = getattr(p_conanFile, "package_folder", None)
-    if package_root and (
-        os.path.isdir(os.path.join(package_root, "platforms"))
-        or os.path.exists(os.path.join(package_root, "Qt6Core.dll"))
-        or os.path.exists(os.path.join(package_root, "libQt6Core.so"))
-    ):
-        return _cmake_path(package_root)
-
-    build_root = Path(p_conanFile.recipe_folder) / p_conanFile.folders.build / p_conanFile.cpp.build.libdirs[0]
-    return _cmake_path(str(build_root))
+    packaged_root = _packaged_runtime_root(p_conanFile)
+    if packaged_root is not None:
+        return _cmake_path(str(packaged_root))
+    return _cmake_path(str(_editable_runtime_root(p_conanFile)))
 
 
 class VTXUiQtRecipe(ConanFile):
@@ -188,9 +207,7 @@ class VTXUiQtRecipe(ConanFile):
         tc.cache_variables["CPYTHON_VERSION_MAJOR"] = python_binding_conf.get("user.python_binding:cpython_version_major")
         tc.cache_variables["CPYTHON_VERSION_MINOR"] = python_binding_conf.get("user.python_binding:cpython_version_minor")
         tc.cache_variables["CPYTHON_VERSION_PATCH"] = python_binding_conf.get("user.python_binding:cpython_version_patch")
-        tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = _cmake_path(
-            os.path.join(self.build_folder, self.cpp.build.libdirs[0])
-        )
+        tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = _cmake_path(str(_editable_runtime_root(self)))
         tc.generate()
         generate_qt(self)
 

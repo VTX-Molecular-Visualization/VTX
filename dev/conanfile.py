@@ -80,12 +80,8 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
         tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
         tc.cache_variables["LOCAL_PDB100"] = 1 if self.options.local_pdb100 else 0
-        tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_module._cmake_path(
-            os.path.join(self.build_folder, self.cpp.build.libdirs[0])
-        )
-        tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = mdprep_module._cmake_path(
-            mdprep_module.executable_folder(self)
-        )
+        tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_module.qt_runtime_root(self)
+        tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = mdprep_module.runtime_root(self)
         
         tc.generate()
 

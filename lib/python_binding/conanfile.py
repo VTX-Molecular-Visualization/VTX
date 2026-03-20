@@ -17,7 +17,6 @@ from python_version import (
     get_python_version,
 )
 
-
 def _cmake_path(path: str) -> str:
     return path.replace("\\", "/")
 
@@ -29,10 +28,22 @@ def editable_runtime_root(p_conanFile: ConanFile) -> str:
     return str(build_root)
 
 
-def runtime_root(p_conanFile: ConanFile) -> str:
+def _packaged_runtime_root(p_conanFile: ConanFile) -> Path | None:
     package_root = getattr(p_conanFile, "package_folder", None)
-    if package_root and os.path.isdir(os.path.join(package_root, "external", "python")):
-        return _cmake_path(package_root)
+    if not package_root:
+        return None
+
+    root = Path(package_root)
+    if (root / "external" / "python").is_dir():
+        return root
+
+    return None
+
+
+def runtime_root(p_conanFile: ConanFile) -> str:
+    packaged_root = _packaged_runtime_root(p_conanFile)
+    if packaged_root is not None:
+        return _cmake_path(str(packaged_root))
     return _cmake_path(editable_runtime_root(p_conanFile))
 
 
