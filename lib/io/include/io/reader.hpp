@@ -3,23 +3,17 @@
 
 #include <memory>
 #include <string>
+#include <util/types.hpp>
 #include <vector>
 
-namespace VTX
-{
-	class FilePath;
-	struct Vec3f;
-} // namespace VTX
 namespace VTX::Util
 {
 	class StopToken;
-	class FilePath;
 } // namespace VTX::Util
 
 namespace VTX::Core::Struct
 {
 	struct System;
-	struct Frame;
 } // namespace VTX::Core::Struct
 
 namespace VTX::IO::Reader
@@ -32,8 +26,8 @@ namespace VTX::IO::Reader
 	{
 	  public:
 		SystemReader() = delete;
-		SystemReader( const FilePath &, Util::StopToken & );
-		SystemReader( MemoryBuffer, const FilePath &, Util::StopToken & );
+		SystemReader( const VTX::FilePath &, Util::StopToken & );
+		SystemReader( MemoryBuffer, const VTX::FilePath &, Util::StopToken & );
 
 		size_t frameCount() const;
 
