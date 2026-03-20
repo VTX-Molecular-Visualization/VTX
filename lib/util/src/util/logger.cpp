@@ -35,6 +35,7 @@ namespace VTX::Util
 		try
 		{
 			spdlog::init_thread_pool( 8192, 1 );
+			std::filesystem::create_directories( p_logDir );
 
 			// Console sink.
 			auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();

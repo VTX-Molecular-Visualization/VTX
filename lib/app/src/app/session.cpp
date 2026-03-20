@@ -6,11 +6,16 @@
 #include "app/threading/thread_manager.hpp"
 #include <atomic>
 #include <chrono>
+#include <cstdlib>
 #include <thread>
 #include <util/event_hub.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <velopack/include/Velopack.hpp>
+
+#if defined( __linux__ )
+#include <unistd.h>
+#endif
 
 using namespace VTX::Util;
 
@@ -45,6 +50,42 @@ namespace VTX::App
 		 */
 		Util::EventHub::Connection updateCheckConnection;
 	};
+
+	namespace
+	{
+		FilePath _getPortableBaseDir()
+		{
+#if defined( __linux__ )
+			if ( const char * appImagePath = std::getenv( "APPIMAGE" ); appImagePath != nullptr && appImagePath[ 0 ] != '\0' )
+			{
+				return FilePath( appImagePath ).parent_path();
+			}
+#endif
+			return Filesystem::getExecutableDir();
+		}
+
+		bool _isWritableDirectory( const FilePath & p_path )
+		{
+#if defined( __linux__ )
+			std::error_code ec;
+			FilePath		   candidate = p_path;
+			while ( !candidate.empty() && !std::filesystem::exists( candidate, ec ) )
+			{
+				candidate = candidate.parent_path();
+			}
+
+			if ( candidate.empty() || ec )
+			{
+				return false;
+			}
+
+			return access( candidate.string().c_str(), W_OK ) == 0;
+#else
+			(void)p_path;
+			return true;
+#endif
+		}
+	} // namespace
 
 	Session::Session() : _impl( std::make_unique<Impl>() )
 	{
@@ -161,7 +202,11 @@ namespace VTX::App
 	{
 		if ( isPortable() )
 		{
-			return Filesystem::getExecutableDir();
+			const FilePath portableDir = _getPortableBaseDir();
+			if ( _isWritableDirectory( portableDir ) )
+			{
+				return portableDir;
+			}
 		}
 		return Filesystem::getDataHome() / APP_FOLDER_NAME;
 	}
@@ -170,7 +215,11 @@ namespace VTX::App
 	{
 		if ( isPortable() )
 		{
-			return Filesystem::getExecutableDir();
+			const FilePath portableDir = _getPortableBaseDir();
+			if ( _isWritableDirectory( portableDir ) )
+			{
+				return portableDir;
+			}
 		}
 		return Filesystem::getPicturesFolder() / APP_FOLDER_NAME;
 	}
