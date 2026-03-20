@@ -20,7 +20,7 @@ namespace VTX::App
 
 	// constexpr std::string_view UPDATE_URL	   = "https://github.com/VTX-Molecular-Visualization/VTX_release";
 	constexpr std::string_view UPDATE_URL
-		= "https://github.com/VTX-Molecular-Visualization/VTX_release/releases/latest";
+		= "https://github.com/VTX-Molecular-Visualization/VTX_release/releases/latest/download";
 	constexpr std::string_view APP_FOLDER_NAME = "VTX";
 
 	/**
