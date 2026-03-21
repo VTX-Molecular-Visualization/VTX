@@ -1,6 +1,7 @@
 import os
 from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMake, CMakeToolchain
+from conan.errors import ConanInvalidConfiguration
 
 class VTXRecipe(ConanFile):
     name = "vtx"
@@ -8,18 +9,25 @@ class VTXRecipe(ConanFile):
     package_type = "application"
     
     settings = "os", "compiler", "build_type", "arch"
-    options = {"version": ["ANY"], "tool_example": [True, False], "tool_mdprep": [True, False]}
-    default_options = {"version": "0.0.0", "tool_example": False, "tool_mdprep": True }
+    options = {"version": ["ANY"], "tool_example": [True, False], "tool_mdprep": [True, False], "ui_qt": [True, False]}
+    default_options = {"version": "0.0.0", "tool_example": False, "tool_mdprep": True, "ui_qt": True }
 
     generators = "CMakeDeps"
     
     exports_sources = "CMakeLists.txt", "include/*", "src/*", "asset/*", "data/*", "cmake/*", "internal_data/*", "libraries/*", "CHANGELOG.md", "README.md", "license.txt"
+
+    def validate(self):
+        if not self.options.ui_qt and self.options.tool_example:
+            raise ConanInvalidConfiguration("vtx_tool_example currently requires Qt UI. Disable tool_example or enable ui_qt.")
+        if not self.options.ui_qt and self.options.tool_mdprep:
+            raise ConanInvalidConfiguration("vtx_tool_mdprep currently requires Qt UI. Disable tool_mdprep or enable ui_qt.")
     
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_app/1.0")
         self.requires("vtx_core/1.0")
-        self.requires("vtx_ui_qt/1.0")
+        if self.options.ui_qt:
+            self.requires("vtx_ui_qt/1.0")
         if self.options.tool_example:
             self.requires("vtx_tool_example/1.0")
         if self.options.tool_mdprep:
@@ -38,10 +46,12 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
         tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
         tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
+        tc.cache_variables["VTX_UI_QT"] = 1 if self.options.ui_qt else 0
         python_binding_conf = self.dependencies["vtx_python_binding"].conf_info
         tc.cache_variables["VTX_PYTHON_BINDING_RUNTIME_ROOT"] = python_binding_conf.get("user.python_binding:runtime_root")
-        qt_conf = self.dependencies["vtx_ui_qt"].conf_info
-        tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_conf.get("user.ui_qt:runtime_root")
+        if self.options.ui_qt:
+            qt_conf = self.dependencies["vtx_ui_qt"].conf_info
+            tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_conf.get("user.ui_qt:runtime_root")
         if self.options.tool_mdprep:
             mdprep_conf = self.dependencies["vtx_tool_mdprep"].conf_info
             tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = mdprep_conf.get("user.tool_mdprep:runtime_root")

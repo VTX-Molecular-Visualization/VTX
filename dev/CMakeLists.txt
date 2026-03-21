@@ -26,10 +26,12 @@ find_package(EnTT CONFIG REQUIRED)
 set (PYBIND11_PYTHON_VERSION "${CPYTHON_VERSION_MAJOR}.${CPYTHON_VERSION_MINOR}.${CPYTHON_VERSION_PATCH}")
 find_package(Python3 "${CPYTHON_VERSION_MAJOR}.${CPYTHON_VERSION_MINOR}.${CPYTHON_VERSION_PATCH}" EXACT REQUIRED COMPONENTS Interpreter Development NO_SYSTEM_ENVIRONMENT_PATH)
 find_package(pybind11 CONFIG REQUIRED)
-find_package(Qt6 COMPONENTS Core REQUIRED)
-find_package(Qt6 COMPONENTS Gui REQUIRED)
-find_package(Qt6 COMPONENTS Widgets REQUIRED)
-find_package(Qt6 COMPONENTS Test REQUIRED)
+if (VTX_UI_QT)
+	find_package(Qt6 COMPONENTS Core REQUIRED)
+	find_package(Qt6 COMPONENTS Gui REQUIRED)
+	find_package(Qt6 COMPONENTS Widgets REQUIRED)
+	find_package(Qt6 COMPONENTS Test REQUIRED)
+endif()
 find_package(fmt CONFIG REQUIRED)
 find_package(re2 CONFIG REQUIRED)
 find_package(platform_folders REQUIRED)
@@ -69,15 +71,17 @@ include("${DIR_LIBS}/python_binding/cmake/library.cmake")
 include("${DIR_LIBS}/app/cmake/library.cmake")
 
 # UI Qt.
-include("${DIR_LIBS}/ui/qt/cmake/library.cmake")
+if (VTX_UI_QT)
+	include("${DIR_LIBS}/ui/qt/cmake/library.cmake")
+endif()
 
 # Tool example
-if (VTX_TOOL_EXAMPLE)
+if (VTX_UI_QT AND VTX_TOOL_EXAMPLE)
 	include("${DIR_TOOLS}/example/cmake/library.cmake")
 endif()
 
 # Tool Mdprep
-if (VTX_TOOL_MDPREP)
+if (VTX_UI_QT AND VTX_TOOL_MDPREP)
 	include("${DIR_TOOLS}/mdprep/cmake/library.cmake")
 endif()
 

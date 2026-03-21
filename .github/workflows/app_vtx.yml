@@ -25,6 +25,11 @@ on:
         required: false
         default: true
         type: boolean
+      ui_qt:
+        description: 'Include Qt UI'
+        required: false
+        default: true
+        type: boolean
       cuda_version:
         description: 'CUDA version'
         required: true
@@ -44,6 +49,7 @@ env:
   VERSION: ${{ inputs.version }}
   TOOL_EXAMPLE: ${{ inputs.tool_example == true && 'True' || 'False' }}
   TOOL_MDPREP: ${{ inputs.tool_mdprep == true && 'True' || 'False' }}
+  UI_QT: ${{ inputs.ui_qt == true && 'True' || 'False' }}
   CUDA_ARCH: ${{ inputs.cuda_arch }}
   PYTHON_VERSION: ${{ inputs.python_version }}
   RELEASE_DIR: ${{ github.workspace }}/release
@@ -117,6 +123,7 @@ jobs:
           -o vtx_app/*:version=${{env.VERSION}} \
           -o vtx/*:tool_example=${{env.TOOL_EXAMPLE}} \
           -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} \
+          -o vtx/*:ui_qt=${{env.UI_QT}} \
           -o vtx_python_binding/*:python_version=${{env.PYTHON_VERSION}} \
           -o vtx_renderer/*:cuda_arch="${{env.CUDA_ARCH}}" \
           -c tools.system.package_manager:mode=install \

@@ -82,8 +82,12 @@ def _copy_python_runtime(p_conanFile: ConanFile, dest_root: str, version) -> Non
         raise RuntimeError(f"Unsupported platform for Python runtime copy: {p_conanFile.settings.os}")
 
 
-def do_python_copies(p_conanFile: ConanFile) -> None:
-    version = get_python_version(str(p_conanFile.options.python_version))
+def do_python_copies(p_conanFile: ConanFile, version=None) -> None:
+    if version is None:
+        try:
+            version = get_python_version(str(p_conanFile.options.python_version))
+        except Exception:
+            version = get_python_version()
     _copy_python_runtime(p_conanFile, editable_runtime_root(p_conanFile), version)
 
 

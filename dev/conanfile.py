@@ -1,5 +1,6 @@
 import os
 from conan import ConanFile
+from conan.errors import ConanInvalidConfiguration
 from conan.tools.cmake import cmake_layout, CMake, CMakeToolchain
 from conan.tools.files import copy
 from conan.tools.system.package_manager import Apt
@@ -28,13 +29,36 @@ class VTXRecipe(ConanFile):
     name = "vtx"
     version = "1.0"
     package_type = "application"
-    options = {"version": ["ANY"], "tool_example": [True, False], "tool_mdprep": [True, False], "local_pdb100": [True, False] }
-    default_options = {"version": "0.0.0", "tool_example": False, "tool_mdprep": True, "local_pdb100": False }
+    options = {
+        "version": ["ANY"],
+        "tool_example": [True, False],
+        "tool_mdprep": [True, False],
+        "local_pdb100": [True, False],
+        "ui_qt": [True, False],
+        "python_version": ["ANY"],
+    }
+    default_options = {
+        "version": "0.0.0",
+        "tool_example": False,
+        "tool_mdprep": True,
+        "local_pdb100": False,
+        "ui_qt": True,
+        "python_version": "3.12.7",
+    }
     
     settings = "os", "compiler", "build_type", "arch"
     
     generators = "CMakeDeps"
         
+    def _python_version(self):
+        return get_python_version(str(self.options.python_version))
+
+    def validate(self):
+        if not self.options.ui_qt and self.options.tool_example:
+            raise ConanInvalidConfiguration("tool_example currently requires Qt UI. Disable tool_example or enable ui_qt.")
+        if not self.options.ui_qt and self.options.tool_mdprep:
+            raise ConanInvalidConfiguration("tool_mdprep currently requires Qt UI. Disable tool_mdprep or enable ui_qt.")
+
     def requirements(self):
         self.requires("glm/1.0.1")
         self.requires("spdlog/1.17.0")
@@ -48,14 +72,16 @@ class VTXRecipe(ConanFile):
         self.requires("stb/cci.20240531")
         self.requires("entt/3.16.0")
         self.requires("pybind11/2.13.6")
-        self.requires("qt/6.10.1")
-        self.requires("gromacs/2026.0")
+        if self.options.ui_qt:
+            self.requires("qt/6.10.1")
+        if self.options.tool_mdprep:
+            self.requires("gromacs/2026.0")
         self.requires("re2/20240702")
         if self.options.local_pdb100:
             self.requires("libarchive/3.7.9")
             self.requires("boost/1.87.0") # 1.88 version break process package on windows
         self.requires("platformfolders/4.3.0")
-        self.requires("cpython/{}".format(str(get_python_version())))
+        self.requires("cpython/{}".format(str(self._python_version())))
         if self.settings.os == "Linux":
             self.requires("xkbcommon/1.6.0", override=True)
             self.requires("libffi/3.4.8", override=True)
@@ -65,12 +91,13 @@ class VTXRecipe(ConanFile):
         renderer_module.install_system_dependencies(self)
 
     def config_options(self):
-        qt_module.config_options_qt(self)
+        if self.options.ui_qt:
+            qt_module.config_options_qt(self)
         config_options_cpython(self)
         
     def generate(self):
         tc = CMakeToolchain(self)
-        configure_toolchain(tc, get_python_version())
+        configure_toolchain(tc, self._python_version())
         configure_runtime_toolchain(tc, python_binding_module.runtime_root(self))
         
         versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
@@ -79,9 +106,12 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
         tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
         tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
+        tc.cache_variables["VTX_UI_QT"] = 1 if self.options.ui_qt else 0
         tc.cache_variables["LOCAL_PDB100"] = 1 if self.options.local_pdb100 else 0
-        tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_module.qt_runtime_root(self)
-        tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = mdprep_module.runtime_root(self)
+        if self.options.ui_qt:
+            tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_module.qt_runtime_root(self)
+        if self.options.tool_mdprep:
+            tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = mdprep_module.runtime_root(self)
         
         tc.generate()
 
@@ -90,9 +120,11 @@ class VTXRecipe(ConanFile):
         copy(self, "*opengl3*", os.path.join(self.dependencies["imgui"].package_folder,
             "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
 
-        python_binding_module.do_python_copies(self)
-        qt_module.generate_qt(self)
-        mdprep_module.do_gromacs_copies(self)
+        python_binding_module.do_python_copies(self, self._python_version())
+        if self.options.ui_qt:
+            qt_module.generate_qt(self)
+        if self.options.tool_mdprep:
+            mdprep_module.do_gromacs_copies(self)
 
     def layout(self):
         cmake_layout(self)
