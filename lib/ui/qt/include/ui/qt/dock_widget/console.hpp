@@ -32,26 +32,16 @@ namespace VTX::UI::QT::DockWidget
 		~Console();
 
 		/**
+		 * @brief Add a log row.
+		 */
+		void log( const VTX::Util::LogInfo & p_logInfo );
+
+		/**
 		 * @brief Empty logs.
 		 */
 		void clear();
 
-		/**
-		 * @brief Override to handle custom event coming from other threads.
-		 */
-		virtual bool event( QEvent * p_event ) override;
-
 	  private:
-		/**
-		 * @brief Custom event.
-		 */
-		class _AppendLogEvent : public QEvent
-		{
-		  public:
-			_AppendLogEvent( const ::VTX::Util::LogInfo & p_logInfo );
-			VTX::Util::LogInfo logInfo;
-		};
-
 		/**
 		 * @brief Callback id for log printing, to disconnect on destruction.
 		 * Useful because logs can be printed after deletion.

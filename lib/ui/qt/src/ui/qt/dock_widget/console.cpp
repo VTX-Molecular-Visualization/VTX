@@ -1,14 +1,9 @@
 #include "ui/qt/dock_widget/console.hpp"
-#include "ui/qt/util.hpp"
 #include <QApplication>
 #include <QToolBar>
 
 namespace VTX::UI::QT::DockWidget
 {
-	Console::_AppendLogEvent::_AppendLogEvent( const ::VTX::Util::LogInfo & p_logInfo ) :
-		QEvent( QT::Util::CustomEvent::ConsoleAppendLog ), logInfo( p_logInfo )
-	{
-	}
 
 	Console::Console( QWidget * p_parent ) : BaseDockWidget( p_parent, "Console" )
 	{
@@ -36,8 +31,9 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
+		// Get logs and push to main thread.
 		_onPrintLogCallbackId = LOGGER::onPrintLog += [ this ]( const ::VTX::Util::LogInfo & p_logInfo )
-		{ QApplication::postEvent( this, new _AppendLogEvent( p_logInfo ) ); };
+		{ QMetaObject::invokeMethod( this, [ this, p_logInfo ]() { log( p_logInfo ); }, Qt::QueuedConnection ); };
 
 		// Command launcher.
 		_commandLauncher = new UI::QT::Widget::CommandLauncher( this );
@@ -47,55 +43,39 @@ namespace VTX::UI::QT::DockWidget
 
 	Console::~Console() { LOGGER::onPrintLog -= _onPrintLogCallbackId; }
 
-	void Console::clear() { _listWidget->clear(); }
-
-	bool Console::event( QEvent * p_event )
+	void Console::log( const VTX::Util::LogInfo & p_logInfo )
 	{
-		if ( p_event->type() == QT::Util::CustomEvent::ConsoleAppendLog )
+		const std::string message = fmt::format( "[{}] {}", p_logInfo.date, p_logInfo.message );
+		QListWidgetItem * newItem = new QListWidgetItem( QString::fromStdString( message ) );
+
+		// TODO: Use palette color?
+		if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_ERROR )
 		{
-			const _AppendLogEvent *	   appendLogEvent = static_cast<_AppendLogEvent *>( p_event );
-			const VTX::Util::LogInfo & logInfo		  = appendLogEvent->logInfo;
-			const std::string		   message		  = fmt::format( "[{}] {}", logInfo.date, logInfo.message );
-			QListWidgetItem *		   newItem		  = new QListWidgetItem( QString::fromStdString( message ) );
-
-			// TODO: Use palette color?
-			if ( logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_ERROR )
-			{
-				newItem->setForeground( Qt::red );
-			}
-			else if ( logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_WARNING )
-			{
-				newItem->setForeground( Qt::yellow );
-			}
-			else if ( logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_DEBUG )
-			{
-				newItem->setForeground( Qt::green );
-			}
-			else if ( logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_PYTHON_IN )
-			{
-				newItem->setForeground( Qt::green );
-			}
-			else if ( logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_PYTHON_OUT )
-			{
-				newItem->setForeground( Qt::darkGreen );
-			}
-
-			newItem->setFlags( Qt::ItemFlag::ItemNeverHasChildren );
-
-			_listWidget->addItem( newItem );
-
-			if ( _listWidget->count() > CONSOLE_LOG_COUNT )
-			{
-				QListWidgetItem * const itemToRemove = _listWidget->takeItem( 0 );
-				_listWidget->removeItemWidget( itemToRemove );
-				delete itemToRemove;
-			}
-
-			_listWidget->scrollToBottom();
-
-			return true;
+			newItem->setForeground( Qt::red );
 		}
-		return BaseDockWidget<Console, 0, 0>::event( p_event );
+		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_WARNING )
+		{
+			newItem->setForeground( Qt::yellow );
+		}
+		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_DEBUG )
+		{
+			newItem->setForeground( Qt::green );
+		}
+
+		newItem->setFlags( Qt::ItemFlag::ItemNeverHasChildren );
+
+		_listWidget->addItem( newItem );
+
+		if ( _listWidget->count() > CONSOLE_LOG_COUNT )
+		{
+			QListWidgetItem * const itemToRemove = _listWidget->takeItem( 0 );
+			_listWidget->removeItemWidget( itemToRemove );
+			delete itemToRemove;
+		}
+
+		_listWidget->scrollToBottom();
 	}
+
+	void Console::clear() { _listWidget->clear(); }
 
 } // namespace VTX::UI::QT::DockWidget
