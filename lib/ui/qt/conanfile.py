@@ -11,6 +11,14 @@ def _cmake_path(path: str) -> str:
     return path.replace("\\", "/")
 
 
+def _linux_runtime_lib_patterns() -> tuple[str, ...]:
+    return (
+        "libQt6Core.so*",
+        "libQt6Gui.so*",
+        "libQt6Widgets.so*",
+    )
+
+
 def _editable_runtime_root(p_conanFile: ConanFile) -> Path:
     build_root = Path(p_conanFile.recipe_folder) / p_conanFile.folders.build
     if build_root.name == "build":
@@ -151,8 +159,9 @@ def generate_qt(p_conanFile : ConanFile):
             p_conanFile.output.highlight(f"Copying *.dll from Qt {folder} directory to {destDir}/{folder}")
             copy(p_conanFile, "*.dll", os.path.join(qtPluginsDir, folder), os.path.join(destDir, folder))
     elif p_conanFile.settings.os == "Linux":
-        p_conanFile.output.highlight(f"Copying Qt shared libraries from {qtLibDir} to {destDir}")
-        copy(p_conanFile, "libQt6*.so*", qtLibDir, destDir)
+        p_conanFile.output.highlight(f"Copying selected Qt shared libraries from {qtLibDir} to {destDir}")
+        for pattern in _linux_runtime_lib_patterns():
+            copy(p_conanFile, pattern, qtLibDir, destDir)
 
         for folder in os.listdir(qtPluginsDir):
             source_dir = os.path.join(qtPluginsDir, folder)

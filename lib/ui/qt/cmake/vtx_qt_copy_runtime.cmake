@@ -17,6 +17,15 @@ function(_vtx_qt_plugin_dirs out_var)
 	)
 endfunction()
 
+function(_vtx_qt_linux_runtime_lib_patterns out_var)
+	set(${out_var}
+		"libQt6Core.so*"
+		"libQt6Gui.so*"
+		"libQt6Widgets.so*"
+		PARENT_SCOPE
+	)
+endfunction()
+
 # Patch Linux Qt plugins so they resolve bundled Qt libraries instead of system ones.
 function(_vtx_qt_patch_linux_plugin_rpath target plugin_dir)
 	if(NOT _VTX_QT_PATCHELF_EXECUTABLE)
@@ -62,9 +71,12 @@ function(vtx_qt_copy_runtime target)
 			endif()
 		endforeach()
 	elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND EXISTS "${VTX_QT_RUNTIME_ROOT}/libQt6Core.so")
-		file(GLOB _vtx_qt_runtime_sos
-			"${VTX_QT_RUNTIME_ROOT}/libQt6*.so*"
-		)
+		_vtx_qt_linux_runtime_lib_patterns(_vtx_qt_linux_runtime_patterns)
+		set(_vtx_qt_runtime_sos)
+		foreach(_vtx_qt_runtime_pattern IN LISTS _vtx_qt_linux_runtime_patterns)
+			file(GLOB _vtx_qt_runtime_matches "${VTX_QT_RUNTIME_ROOT}/${_vtx_qt_runtime_pattern}")
+			list(APPEND _vtx_qt_runtime_sos ${_vtx_qt_runtime_matches})
+		endforeach()
 		vtx_copy_files(${target} "$<TARGET_FILE_DIR:${target}>" ${_vtx_qt_runtime_sos})
 
 		foreach(_vtx_qt_plugin_dir IN LISTS _vtx_qt_plugin_dirs)
