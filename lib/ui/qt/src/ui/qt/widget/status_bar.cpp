@@ -1,5 +1,7 @@
 #include "ui/qt/widget/status_bar.hpp"
-#include "app/services.hpp"
+#include "ui/qt/services.hpp"
+#include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include <app/services.hpp>
 #include <app/vtx_app.hpp>
 #include <renderer/renderer.hpp>
@@ -24,9 +26,17 @@ namespace VTX::UI::QT::Widget
 		QWidget * spacer = new QWidget( this );
 		spacer->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
 
+		QLabel * gpuIcon = new QLabel( this );
+		gpuIcon->setPixmap( STYLE().iconFromCodepoint( Style::Icons::GPU ).pixmap( 16, 16 ) );
+
+		QLabel * pythonIcon = new QLabel( this );
+		pythonIcon->setPixmap( STYLE().iconFromCodepoint( Style::Icons::PYTHON ).pixmap( 16, 16 ) );
+
 		addPermanentWidget( spacer );
 		addPermanentWidget( _fps );
+		addPermanentWidget( gpuIcon );
 		addPermanentWidget( vendorLabel );
+		addPermanentWidget( pythonIcon );
 		addPermanentWidget( _python );
 
 		// Update vendor when renderer is available.
