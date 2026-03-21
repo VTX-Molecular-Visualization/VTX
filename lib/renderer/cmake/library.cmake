@@ -72,6 +72,7 @@ endif()
 # Tests.
 file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_renderer_test ${TESTS})
+set_property(TARGET vtx_renderer_test PROPERTY FOLDER "test")
 vtx_configure_target(vtx_renderer_test)
 
 if (NOT DEFINED _VTX_RENDERER_CONAN)

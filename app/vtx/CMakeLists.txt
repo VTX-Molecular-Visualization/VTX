@@ -3,6 +3,16 @@ cmake_minimum_required(VERSION 3.23)
 
 project(vtx)
 
+if (NOT DEFINED VTX_RENDERER)
+	set(VTX_RENDERER 1)
+endif()
+if (NOT DEFINED VTX_PYTHON_BINDING)
+	set(VTX_PYTHON_BINDING 1)
+endif()
+if (NOT DEFINED VTX_UI_QT)
+	set(VTX_UI_QT 1)
+endif()
+
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
@@ -26,9 +36,13 @@ include(InstallRequiredSystemLibraries)
 install(TARGETS vtx DESTINATION .)
 # Data from other libs.
 vtx_install_target_directory(vtx "data")
-vtx_install_target_directory(vtx "shaders")
-vtx_install_target_directory(vtx "python_script")
-vtx_install_target_directory(vtx "external")
+if (VTX_RENDERER)
+	vtx_install_target_directory(vtx "shaders")
+endif()
+if (VTX_PYTHON_BINDING)
+	vtx_install_target_directory(vtx "python_script")
+	vtx_install_target_directory(vtx "external")
+endif()
 # Data from VTX.
 install(FILES README.md DESTINATION .)
 install(FILES CHANGELOG.md DESTINATION .)
@@ -51,7 +65,7 @@ endif()
 #)
 
 # Copy python and cuda dlls.
-if(WIN32)
+if(WIN32 AND VTX_PYTHON_BINDING)
 	vtx_install_target_files(vtx PATTERNS PATTERN "python*.dll")
 endif()
 

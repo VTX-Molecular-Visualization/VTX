@@ -1,4 +1,11 @@
 
+if (NOT DEFINED VTX_RENDERER)
+	set(VTX_RENDERER 1)
+endif()
+if (NOT DEFINED VTX_PYTHON_BINDING)
+	set(VTX_PYTHON_BINDING 1)
+endif()
+
 include ("${CMAKE_CURRENT_LIST_DIR}/vtx_tool_mdprep_copy_data.cmake")
 
 add_library(vtx_tool_mdprep)
@@ -28,8 +35,11 @@ target_link_libraries(vtx_tool_mdprep PRIVATE re2::re2)
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/src/*")
 
 add_executable(vtx_tool_mdprep_test ${SOURCES} )
+set_property(TARGET vtx_tool_mdprep_test PROPERTY FOLDER "test")
 vtx_configure_target(vtx_tool_mdprep_test)
-vtx_link_cuda(vtx_tool_mdprep_test)
+if (VTX_RENDERER)
+	vtx_link_cuda(vtx_tool_mdprep_test)
+endif()
 
 target_include_directories(vtx_tool_mdprep_test PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include")
 
@@ -42,7 +52,9 @@ target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE re2::re2)
 vtx_core_copy_data(vtx_tool_mdprep_test)
-vtx_python_binding_copy_runtime(vtx_tool_mdprep_test)
+if (VTX_PYTHON_BINDING)
+	vtx_python_binding_copy_runtime(vtx_tool_mdprep_test)
+endif()
 vtx_qt_copy_runtime(vtx_tool_mdprep_test)
 vtx_tool_mdprep_copy_runtime(vtx_tool_mdprep_test)
 

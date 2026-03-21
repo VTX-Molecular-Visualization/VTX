@@ -11,6 +11,7 @@ target_sources(vtx_io
 # Tests.
 file(GLOB_RECURSE TEST_SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/src/*")
 add_executable(vtx_io_test ${TEST_SOURCES})
+set_property(TARGET vtx_io_test PROPERTY FOLDER "test")
 vtx_configure_target(vtx_io_test)
 
 if (NOT DEFINED _VTX_IO_CONAN)

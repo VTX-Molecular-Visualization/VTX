@@ -91,6 +91,7 @@ class VTXToolMdprepRecipe(ConanFile):
 
     def generate(self):
         tc = CMakeToolchain(self)
+        app_conf = self.dependencies["vtx_app"].conf_info
         python_binding_conf = self.dependencies["vtx_python_binding"].conf_info
         tc.cache_variables["CPYTHON_VERSION_MAJOR"] = python_binding_conf.get("user.python_binding:cpython_version_major")
         tc.cache_variables["CPYTHON_VERSION_MINOR"] = python_binding_conf.get("user.python_binding:cpython_version_minor")
@@ -99,6 +100,8 @@ class VTXToolMdprepRecipe(ConanFile):
         qt_conf = self.dependencies["vtx_ui_qt"].conf_info
         tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_conf.get("user.ui_qt:runtime_root")
         tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = _cmake_path(executable_folder(self))
+        tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")
+        tc.cache_variables["VTX_PYTHON_BINDING"] = app_conf.get("user.app:python_binding")
         tc.generate()
         VirtualRunEnv(self).generate()
         do_gromacs_copies(self)

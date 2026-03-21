@@ -30,6 +30,16 @@ on:
         required: false
         default: true
         type: boolean
+      renderer:
+        description: 'Include Renderer'
+        required: false
+        default: true
+        type: boolean
+      python_binding:
+        description: 'Include Python Binding'
+        required: false
+        default: true
+        type: boolean
       cuda_version:
         description: 'CUDA version'
         required: true
@@ -50,6 +60,8 @@ env:
   TOOL_EXAMPLE: ${{ inputs.tool_example == true && 'True' || 'False' }}
   TOOL_MDPREP: ${{ inputs.tool_mdprep == true && 'True' || 'False' }}
   UI_QT: ${{ inputs.ui_qt == true && 'True' || 'False' }}
+  VTX_RENDERER: ${{ inputs.renderer == true && 'True' || 'False' }}
+  VTX_PYTHON_BINDING: ${{ inputs.python_binding == true && 'True' || 'False' }}
   CUDA_ARCH: ${{ inputs.cuda_arch }}
   PYTHON_VERSION: ${{ inputs.python_version }}
   RELEASE_DIR: ${{ github.workspace }}/release
@@ -121,6 +133,10 @@ jobs:
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_app/*:version=${{env.VERSION}} \
+          -o vtx_app/*:renderer=${{env.VTX_RENDERER}} \
+          -o vtx_app/*:python_binding=${{env.VTX_PYTHON_BINDING}} \
+          -o vtx/*:renderer=${{env.VTX_RENDERER}} \
+          -o vtx/*:python_binding=${{env.VTX_PYTHON_BINDING}} \
           -o vtx/*:tool_example=${{env.TOOL_EXAMPLE}} \
           -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} \
           -o vtx/*:ui_qt=${{env.UI_QT}} \

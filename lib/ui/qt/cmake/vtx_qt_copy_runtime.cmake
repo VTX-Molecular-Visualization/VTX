@@ -20,8 +20,12 @@ endfunction()
 function(_vtx_qt_linux_runtime_lib_patterns out_var)
 	set(${out_var}
 		"libQt6Core.so*"
+		"libQt6DBus.so*"
 		"libQt6Gui.so*"
+		"libQt6OpenGL.so*"
+		"libQt6WaylandClient.so*"
 		"libQt6Widgets.so*"
+		"libQt6XcbQpa.so*"
 		PARENT_SCOPE
 	)
 endfunction()

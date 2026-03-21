@@ -40,6 +40,7 @@ function(vtx_add_copy_directory_target target copy_name source_dir destination_d
 	)
 
 	add_custom_target(${copy_target} DEPENDS "${copy_stamp}")
+	set_property(TARGET ${copy_target} PROPERTY FOLDER "copy")
 	add_dependencies(${target} ${copy_target})
 endfunction()
 
@@ -72,6 +73,7 @@ function(vtx_add_copy_files_target target copy_name destination_dir comment)
 	)
 
 	add_custom_target(${copy_target} DEPENDS "${copy_stamp}")
+	set_property(TARGET ${copy_target} PROPERTY FOLDER "copy")
 	add_dependencies(${target} ${copy_target})
 endfunction()
 

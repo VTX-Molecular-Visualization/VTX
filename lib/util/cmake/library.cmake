@@ -14,6 +14,7 @@ target_sources(vtx_util
 # Tests.
 file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_util_test ${TESTS})
+set_property(TARGET vtx_util_test PROPERTY FOLDER "test")
 vtx_configure_target(vtx_util_test)
 
 target_link_libraries(vtx_util PUBLIC glm::glm)

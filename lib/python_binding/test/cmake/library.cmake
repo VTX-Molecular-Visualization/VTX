@@ -1,6 +1,7 @@
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 
 add_executable(vtx_python_binding_test ${SOURCES})
+set_property(TARGET vtx_python_binding_test PROPERTY FOLDER "test")
 vtx_configure_target(vtx_python_binding_test)
 
 if (NOT DEFINED _VTX_PYTHON_BINDING_TEST_CONAN)

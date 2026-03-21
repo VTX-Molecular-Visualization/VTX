@@ -14,8 +14,12 @@ def _cmake_path(path: str) -> str:
 def _linux_runtime_lib_patterns() -> tuple[str, ...]:
     return (
         "libQt6Core.so*",
+        "libQt6DBus.so*",
         "libQt6Gui.so*",
+        "libQt6OpenGL.so*",
+        "libQt6WaylandClient.so*",
         "libQt6Widgets.so*",
+        "libQt6XcbQpa.so*",
     )
 
 
@@ -212,11 +216,14 @@ class VTXUiQtRecipe(ConanFile):
 
     def generate(self):    
         tc = CMakeToolchain(self)
+        app_conf = self.dependencies["vtx_app"].conf_info
         python_binding_conf = self.dependencies["vtx_python_binding"].conf_info
         tc.cache_variables["CPYTHON_VERSION_MAJOR"] = python_binding_conf.get("user.python_binding:cpython_version_major")
         tc.cache_variables["CPYTHON_VERSION_MINOR"] = python_binding_conf.get("user.python_binding:cpython_version_minor")
         tc.cache_variables["CPYTHON_VERSION_PATCH"] = python_binding_conf.get("user.python_binding:cpython_version_patch")
         tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = _cmake_path(str(_editable_runtime_root(self)))
+        tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")
+        tc.cache_variables["VTX_PYTHON_BINDING"] = app_conf.get("user.app:python_binding")
         tc.generate()
         generate_qt(self)
 

@@ -1,3 +1,10 @@
+if (NOT DEFINED VTX_RENDERER)
+	set(VTX_RENDERER 1)
+endif()
+if (NOT DEFINED VTX_PYTHON_BINDING)
+	set(VTX_PYTHON_BINDING 1)
+endif()
+
 # Create the library.
 add_library(vtx_tool_example)
 vtx_configure_target(vtx_tool_example)
@@ -17,8 +24,11 @@ vtx_qt_add_resources(vtx_tool_example ${CMAKE_CURRENT_LIST_DIR}/../asset vtx_qt_
 # Test exec.
 file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_tool_example_test ${SOURCES_TEST})
+set_property(TARGET vtx_tool_example_test PROPERTY FOLDER "test")
 vtx_configure_target(vtx_tool_example_test)
-vtx_link_cuda(vtx_tool_example_test)
+if (VTX_RENDERER)
+	vtx_link_cuda(vtx_tool_example_test)
+endif()
 
 # Link internal dependencies.
 if (NOT DEFINED _VTX_TOOL_EXAMPLE_CONAN)
@@ -37,7 +47,9 @@ endif()
 target_link_libraries(vtx_tool_example_test PRIVATE vtx_tool_example)
 target_link_libraries(vtx_tool_example_test PRIVATE Catch2::Catch2WithMain)
 vtx_core_copy_data(vtx_tool_example_test)
-vtx_python_binding_copy_runtime(vtx_tool_example_test)
+if (VTX_PYTHON_BINDING)
+	vtx_python_binding_copy_runtime(vtx_tool_example_test)
+endif()
 vtx_qt_copy_runtime(vtx_tool_example_test)
 
 include(CTest)
