@@ -1,29 +1,30 @@
 #include "util.hpp"
-#include <io/reader/system.hpp>
+#include <io/reader.hpp>
 #include <util/filesystem.hpp>
 #include <util/network.hpp>
+#include <util/thread.hpp>
 
 namespace VTX::Bench
 {
 	Core::Struct::System loadSystem( const FilePath & p_filename )
 	{
-		IO::Reader::System	 reader;
+		Util::StopToken		 t;
+		IO::SystemReader	 reader( VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename, t );
 		Core::Struct::System system;
-
-		reader.readFile( VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename, system );
+		reader.get( system );
 
 		return system;
 	}
 
 	Core::Struct::System downloadSystem( const std::string & p_pdb )
 	{
-		IO::Reader::System	 reader;
-		Core::Struct::System system;
-
-		std::string text;
+		IO::MemoryBuffer text;
 		VTX::Util::Network::httpRequestGet( "https://files.rcsb.org/download/" + p_pdb + ".pdb", text );
 
-		reader.readBuffer( text, p_pdb + ".pdb", system );
+		Util::StopToken		 t;
+		IO::SystemReader	 reader( text, p_pdb + ".pdb", t );
+		Core::Struct::System system;
+		reader.get( system );
 		return system;
 	}
 
