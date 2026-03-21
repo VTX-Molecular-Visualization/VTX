@@ -5,6 +5,10 @@
 
 namespace VTX::UI::QT::DockWidget
 {
+	Console::_AppendLogEvent::_AppendLogEvent( const ::VTX::Util::LogInfo & p_logInfo ) :
+		QEvent( QT::Util::CustomEvent::ConsoleAppendLog ), logInfo( p_logInfo )
+	{
+	}
 
 	Console::Console( QWidget * p_parent ) : BaseDockWidget( p_parent, "Console" )
 	{
@@ -32,94 +36,66 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
-		LOGGER::onPrintLog += [ this ]( const ::VTX::Util::LogInfo & p_logInfo ) { _appendLog( p_logInfo ); };
+		_onPrintLogCallbackId = LOGGER::onPrintLog += [ this ]( const ::VTX::Util::LogInfo & p_logInfo )
+		{ QApplication::postEvent( this, new _AppendLogEvent( p_logInfo ) ); };
 
 		// Command launcher.
 		_commandLauncher = new UI::QT::Widget::CommandLauncher( this );
 
 		_layout->addWidget( _commandLauncher );
-
-		this->installEventFilter( _filter );
 	}
 
-	void Console::clear()
+	Console::~Console() { LOGGER::onPrintLog -= _onPrintLogCallbackId; }
+
+	void Console::clear() { _listWidget->clear(); }
+
+	bool Console::event( QEvent * p_event )
 	{
-		_listWidgetMutex.lock();
-		_listWidget->clear();
-		_listWidgetMutex.unlock();
-	}
-
-	void Console::scrollToBottom() noexcept
-	{
-		_listWidgetMutex.lock();
-		_listWidget->scrollToBottom();
-		_listWidgetMutex.unlock();
-	}
-
-	void Console::_appendLog( const ::VTX::Util::LogInfo & p_logInfo )
-	{
-		const std::string message = fmt::format( "[{}] {}", p_logInfo.date, p_logInfo.message );
-
-		QListWidgetItem * const newItem = new QListWidgetItem( QString::fromStdString( message ) );
-
-		// TODO: Use palette color?
-		if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_ERROR )
+		if ( p_event->type() == QT::Util::CustomEvent::ConsoleAppendLog )
 		{
-			newItem->setForeground( Qt::red );
-		}
-		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_WARNING )
-		{
-			newItem->setForeground( Qt::yellow );
-		}
-		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_DEBUG )
-		{
-			return; // Debug shall be seen in the terminal instead of flooding the Qt console. Also using green for
-					// python exclusively is nice.
-			newItem->setForeground( Qt::green );
-		}
-		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_PYTHON_IN )
-		{
-			newItem->setForeground( Qt::green );
-		}
-		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_PYTHON_OUT )
-		{
-			newItem->setForeground( Qt::darkGreen );
-		}
+			const _AppendLogEvent *	   appendLogEvent = static_cast<_AppendLogEvent *>( p_event );
+			const VTX::Util::LogInfo & logInfo		  = appendLogEvent->logInfo;
+			const std::string		   message		  = fmt::format( "[{}] {}", logInfo.date, logInfo.message );
+			QListWidgetItem *		   newItem		  = new QListWidgetItem( QString::fromStdString( message ) );
 
-		newItem->setFlags( Qt::ItemFlag::ItemNeverHasChildren );
+			// TODO: Use palette color?
+			if ( logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_ERROR )
+			{
+				newItem->setForeground( Qt::red );
+			}
+			else if ( logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_WARNING )
+			{
+				newItem->setForeground( Qt::yellow );
+			}
+			else if ( logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_DEBUG )
+			{
+				newItem->setForeground( Qt::green );
+			}
+			else if ( logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_PYTHON_IN )
+			{
+				newItem->setForeground( Qt::green );
+			}
+			else if ( logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_PYTHON_OUT )
+			{
+				newItem->setForeground( Qt::darkGreen );
+			}
 
-		_listWidgetMutex.lock();
-		_listWidget->addItem( newItem );
-		_listWidgetMutex.unlock();
+			newItem->setFlags( Qt::ItemFlag::ItemNeverHasChildren );
 
-		if ( _listWidget->count() > _LOG_COUNT )
-		{
-			_flush();
+			_listWidget->addItem( newItem );
+
+			if ( _listWidget->count() > CONSOLE_LOG_COUNT )
+			{
+				QListWidgetItem * const itemToRemove = _listWidget->takeItem( 0 );
+				_listWidget->removeItemWidget( itemToRemove );
+				delete itemToRemove;
+			}
+
+			_listWidget->scrollToBottom();
+
+			return true;
 		}
-
-		QApplication::postEvent( this, new QEvent( QT::Util::CustomEvent::ConsoleScrollToBottom ) );
-	}
-
-	void Console::_flush()
-	{
-		QListWidgetItem * const itemToRemove = _listWidget->takeItem( 0 );
-		_listWidgetMutex.lock();
-		_listWidget->removeItemWidget( itemToRemove );
-		_listWidgetMutex.unlock();
-		delete itemToRemove;
-	}
-
-	Console::ScrollToBottomFilter::ScrollToBottomFilter( Console & p_ ) : _console( &p_ ) {}
-
-	bool Console::ScrollToBottomFilter::eventFilter( QObject * object, QEvent * event )
-	{
-		if ( reinterpret_cast<uint64_t>( object ) == reinterpret_cast<uint64_t>( _console )
-			 and event->type() == QT::Util::CustomEvent::ConsoleScrollToBottom )
-		{
-			_console->scrollToBottom();
-			return false;
-		}
-		return true;
+		return BaseDockWidget<Console, 0, 0>::event( p_event );
 	}
 
 } // namespace VTX::UI::QT::DockWidget

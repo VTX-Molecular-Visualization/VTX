@@ -52,6 +52,9 @@ namespace VTX
 			static void flush();
 			static void stop();
 
+			/**
+			 * @brief Triggered by spdlog (async).
+			 */
 			inline static Util::Callback<const LogInfo &> onPrintLog;
 		};
 

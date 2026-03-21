@@ -49,11 +49,11 @@ namespace VTX::App::Action
 		void execute( A & p_action, Args &&... p_args ) const
 		{
 			const auto actionName = Util::typeName<A>();
-			VTX_DEBUG( "ActionSystem::execute( {} )", actionName );
+			VTX_TRACE( "ActionSystem::execute( {} )", actionName );
 			try
 			{
 				auto duration = Util::CHRONO_CPU( [ & ]() { p_action.execute( std::forward<Args>( p_args )... ); } );
-				VTX_DEBUG(
+				VTX_TRACE(
 					"ActionSystem::execute( {} ) - done ({})", actionName, Util::String::durationToStr( duration )
 				);
 			}

@@ -9,49 +9,64 @@
 #include <QMenu>
 #include <QVBoxLayout>
 #include <app/vtx_app.hpp>
-#include <mutex>
 #include <util/enum.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
-	class Console;
+	/**
+	 * @brief Max displayed row.
+	 */
+	constexpr uint CONSOLE_LOG_COUNT = 100;
 
 	/**
-	 * @brief Class responsible for docking a console and its prompt. The console will be catching logs and be
-	 * displaying some.
+	 * @brief Class responsible for docking a console and its prompt.
 	 */
 	class Console : public BaseDockWidget<Console, 0, 0>
 	{
 	  public:
+		/**
+		 * @brief Constructor.
+		 */
 		Console( QWidget * p_parent );
-		virtual ~Console() {}
+		~Console();
 
+		/**
+		 * @brief Empty logs.
+		 */
 		void clear();
-		void scrollToBottom() noexcept;
+
+		/**
+		 * @brief Override to handle custom event coming from other threads.
+		 */
+		virtual bool event( QEvent * p_event ) override;
 
 	  private:
-		const int _LOG_COUNT = 500;
-
-		QPointer<QListWidget> _listWidget	   = nullptr;
-		std::mutex			  _listWidgetMutex = std::mutex();
-
-		QPointer<Widget::CommandLauncher> _commandLauncher;
-
-		void _appendLog( const ::VTX::Util::LogInfo & p_logInfo );
-		void _flush();
-
-		class ScrollToBottomFilter : public QObject
+		/**
+		 * @brief Custom event.
+		 */
+		class _AppendLogEvent : public QEvent
 		{
 		  public:
-			ScrollToBottomFilter( Console & );
-
-			virtual bool eventFilter( QObject * object, QEvent * event ) override;
-
-		  private:
-			Console * _console = nullptr;
+			_AppendLogEvent( const ::VTX::Util::LogInfo & p_logInfo );
+			VTX::Util::LogInfo logInfo;
 		};
-		QPointer<ScrollToBottomFilter> _filter { new ScrollToBottomFilter( *this ) };
+
+		/**
+		 * @brief Callback id for log printing, to disconnect on destruction.
+		 * Useful because logs can be printed after deletion.
+		 */
+		VTX::Util::CallbackId _onPrintLogCallbackId;
+
+		/**
+		 * @brief Display logs.
+		 */
+		QPointer<QListWidget> _listWidget = nullptr;
+
+		/**
+		 * @brief Python command launcher.
+		 */
+		QPointer<Widget::CommandLauncher> _commandLauncher;
 	};
 
 } // namespace VTX::UI::QT::DockWidget

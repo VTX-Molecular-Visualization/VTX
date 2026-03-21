@@ -171,9 +171,9 @@ namespace VTX::UI::QT::Util
 	namespace CustomEvent
 	{
 		/**
-		 * @brief Event type used by the console so post an event responsible for scrolling down to the bottom.
+		 * @brief Event type used by the console to append a log line from a non-Qt worker thread.
 		 */
-		const QEvent::Type ConsoleScrollToBottom = static_cast<QEvent::Type>( 1001 );
+		const QEvent::Type ConsoleAppendLog = static_cast<QEvent::Type>( 1000 );
 	} // namespace CustomEvent
 
 } // namespace VTX::UI::QT::Util

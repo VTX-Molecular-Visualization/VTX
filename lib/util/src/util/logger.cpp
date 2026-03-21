@@ -37,28 +37,32 @@ namespace VTX::Util
 			spdlog::init_thread_pool( 8192, 1 );
 			std::filesystem::create_directories( p_logDir );
 
-			// Console sink.
-			auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-
 			// File sink.
 			auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
 				( p_logDir / ( std::to_string( Chrono::getTimestamp() ) + ".log" ) ).string()
 			);
+			fileSink->set_level( spdlog::level::trace );
 
 			// Callback sink.
 			auto callbackSink = std::make_shared<spdlog::sinks::callback_sink_mt>(
 				[]( const spdlog::details::log_msg & p_msg ) { onPrintLog( spdLogLogMsgToLogInfo( p_msg ) ); }
 			);
-
-			consoleSink->set_level( p_debug ? spdlog::level::trace : spdlog::level::info );
-			fileSink->set_level( spdlog::level::trace );
 			callbackSink->set_level( p_debug ? spdlog::level::debug : spdlog::level::info );
 
 			// Logger.
-			std::vector<spdlog::sink_ptr> sinks { consoleSink, fileSink, callbackSink };
-			auto						  logger = std::make_shared<spdlog::async_logger>(
-				 NAME.data(), sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block
-			 );
+			std::vector<spdlog::sink_ptr> sinks { fileSink, callbackSink };
+
+			// Console sink.
+			if ( p_debug )
+			{
+				auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+				consoleSink->set_level( p_debug ? spdlog::level::trace : spdlog::level::info );
+				sinks.push_back( consoleSink );
+			}
+
+			auto logger = std::make_shared<spdlog::async_logger>(
+				NAME.data(), sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block
+			);
 			logger->set_pattern( "[%t] [%H:%M:%S] [%^%l%$] %v" );
 			logger->set_level( spdlog::level::trace );
 			logger->flush_on( p_debug ? spdlog::level::trace : spdlog::level::info );
