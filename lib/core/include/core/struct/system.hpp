@@ -40,9 +40,6 @@ namespace VTX::Core::Struct
 	 */
 	struct System
 	{
-		// TODO: merge here.
-		// Struct::Trajectory trajectory;
-
 		/**
 		 * @brief System name.
 		 */

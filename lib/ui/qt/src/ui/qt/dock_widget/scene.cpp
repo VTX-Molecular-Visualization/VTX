@@ -75,6 +75,9 @@ namespace VTX::UI::QT::DockWidget
 		assert( not _mapSystemTreeWidgets.contains( entity ) );
 		_mapSystemTreeWidgets.emplace( entity, tree );
 		_layout->insertWidget( _layout->indexOf( _filler ), tree );
+
+		if ( App::System::hasMultiFrameTrajectory( p_e.system ) )
+			_onTrajectoryCreated( App::REG(), p_e.system );
 	}
 
 	void Scene::_onSystemDestroy( App::ECS::Registry &, App::ECS::Entity p_e )
@@ -120,7 +123,8 @@ namespace VTX::UI::QT::DockWidget
 	}
 	void Scene::_onTrajectoryCreated( App::ECS::Registry &, App::ECS::Entity p_entity )
 	{
-		assert( _mapSystemTreeWidgets.contains( p_entity ) );
+		if ( not _mapSystemTreeWidgets.contains( p_entity ) )
+			return;
 
 		if ( _mapTrajTreeWidgets.contains( p_entity ) )
 			_mapTrajTreeWidgets.erase( p_entity );

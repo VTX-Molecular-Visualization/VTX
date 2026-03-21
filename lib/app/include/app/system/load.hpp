@@ -7,7 +7,7 @@
 #include <core/struct/system.hpp>
 #include <functional>
 #include <future>
-#include <io/reader/system.hpp>
+#include <io/reader.hpp>
 #include <latch>
 #include <optional>
 #include <util/thread.hpp>
@@ -23,9 +23,9 @@ namespace VTX::App::System
 		bool					   onlyTrajectory = false; // Set to true when the goal is only to set a new trajectory
 		FilePath				   path;
 		std::optional<std::string> buffer;
-		std::optional<IO::Reader::System> loader;
-		Core::Struct::System			  system;
-		std::string						  pdbIdCode;
+		std::optional<IO::SystemReader> reader;
+		Core::Struct::System			system;
+		std::string						pdbIdCode;
 		// Two pass on the system : when the topology is ready, the decision of what kind of trajectory to have in made
 		// on the main loop. Then, the trajectory is red asynchronously. Then, when trajectory is ready, the main loop
 		// proceed with the system creation.
@@ -57,6 +57,8 @@ namespace VTX::App::System
 	  private:
 		struct _Data;
 		std::shared_ptr<_Data> _attributesPtr;
+
+		void _clean();
 	};
 
 	/**

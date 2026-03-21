@@ -24,7 +24,6 @@
 #include "app/uid/uid_manager.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/struct/system.hpp>
-#include <io/reader/system.hpp>
 #include <renderer/renderer.hpp>
 #include <renderer/representation.hpp>
 #include <util/event_hub.hpp>
@@ -34,7 +33,6 @@
 
 namespace VTX::App::Action::Scene
 {
-	
 
 	void DeleteSystem::execute( const ECS::Entity p_e ) { REG().destroy( p_e ); }
 

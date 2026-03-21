@@ -3,7 +3,6 @@
 
 #include "app/system/load.hpp"
 #include "app/system/trajectory.hpp"
-#include <io/reader/system.hpp>
 
 namespace VTX::App::System
 {
@@ -14,8 +13,8 @@ namespace VTX::App::System
 	 * @param p_trajectory
 	 * @param p_loader
 	 */
-	void prepare( TrajectoryFullBuffer & p_trajectory, IO::Reader::System && p_loader ) noexcept;
-	void prepare( TrajectorySingleFrame & p_trajectory, IO::Reader::System && p_loader ) noexcept;
+	void prepare( TrajectoryFullBuffer & p_trajectory, IO::SystemReader && p_loader ) noexcept;
+	void prepare( TrajectorySingleFrame & p_trajectory, IO::SystemReader && p_loader ) noexcept;
 
 	/**
 	 * @brief Lauch asynchronous work related to the trajectory, if any.

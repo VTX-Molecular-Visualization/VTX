@@ -51,7 +51,7 @@ namespace VTX::Util
 		bool stop_requested() { return _ptr->stop_requested(); }
 
 	  private:
-		std::unique_ptr<_model> _ptr = std::unique_ptr<_wrapper<_void>>();
+		std::shared_ptr<_model> _ptr { new _wrapper<_void>( _void() ) };
 	};
 
 	/**

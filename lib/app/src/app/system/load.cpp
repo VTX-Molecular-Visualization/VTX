@@ -64,30 +64,56 @@ namespace VTX::App::System
 			synchronizer.count_down();
 		}
 	};
+	void SystemExtractor::_clean()
+	{
+		REG().destroy( _attributesPtr->entity );
+		_attributesPtr->entity = entt::null;
+		_attributesPtr->synchronizer.count_down();
+		_attributesPtr->finishEventConnection->release();
+	}
+
 	SystemExtractor::SystemExtractor( ECS::Entity p_entity, PendingSystem & p_d ) :
 		_attributesPtr( std::make_shared<_Data>( std::move( p_entity ), p_d ) )
 	{
 	}
 	void SystemExtractor::wait() noexcept { _attributesPtr->synchronizer.wait(); }
 
-	uint SystemExtractor::operator()( Util::StopToken p_stopToken, Threading::BaseThread & ) noexcept
+	uint SystemExtractor::operator()( Util::StopToken p_stopToken, Threading::BaseThread & p_thread ) noexcept
 	{
+		assert( _attributesPtr->entity != entt::null );
+
 		auto & entity	   = _attributesPtr->entity;
 		auto & pendingData = _attributesPtr->data.get();
 		_attributesPtr->finishEventConnection
 			= HUB().connect<EntityDelivered, &_Data::jobFinished>( _attributesPtr.get() );
 
-		pendingData.loader.emplace();
-		if ( pendingData.buffer )
-			pendingData.loader->readBuffer( pendingData.buffer.value(), pendingData.path, pendingData.system );
-		else
-			pendingData.loader->readFile( pendingData.path, pendingData.system );
-		pendingData.pdbIdCode = pendingData.loader->getChemfilesReader().getPdbIdCode();
+		p_thread.setProgressText(
+			fmt::format(
+				"Reading {}...", pendingData.buffer ? "structure from memory" : pendingData.path.filename().string()
+			)
+		);
 
 		if ( p_stopToken.stop_requested() )
+		{
+			_clean();
 			return 0;
+		}
 
-		if ( pendingData.loader->getChemfilesReader().getFrameCount() > 1 )
+		if ( pendingData.buffer )
+			pendingData.reader.emplace( std::move( pendingData.buffer.value() ), pendingData.path, p_stopToken );
+		else
+			pendingData.reader.emplace( pendingData.path, p_stopToken );
+
+		pendingData.reader->get( pendingData.system );
+		pendingData.reader->get( VTX::IO::PdbIdCode { &pendingData.pdbIdCode } );
+
+		if ( p_stopToken.stop_requested() )
+		{
+			_clean();
+			return 0;
+		}
+
+		if ( pendingData.reader->frameCount() > 1 )
 		{
 			pendingData.trajectoryData.emplace<System::TrajectoryFullBuffer>();
 		}
@@ -96,9 +122,16 @@ namespace VTX::App::System
 			pendingData.trajectoryData.emplace<System::TrajectorySingleFrame>();
 		}
 
-		auto visitor = [ loader = &pendingData.loader.value() ]( auto && traj )
-		{ System::prepare( traj, std::move( *loader ) ); };
+		auto visitor = [ reader = &pendingData.reader.value() ]( auto && traj )
+		{ System::prepare( traj, std::move( *reader ) ); };
 		std::visit( visitor, pendingData.trajectoryData );
+
+		if ( p_stopToken.stop_requested() )
+		{
+			_clean();
+			return 0;
+		}
+
 		pendingData.readyToDeliver = true;
 		return 0;
 	}
@@ -109,8 +142,7 @@ namespace VTX::App::System
 			[ &p_entity ]( auto && traj ) mutable
 			{
 				using TrajType = std::remove_cvref_t<decltype( traj )>;
-				TrajType & t   = REG().emplace<TrajType>( p_entity );
-				t			   = std::move( traj );
+				REG().emplace<TrajType>( p_entity, std::move( traj ) );
 			},
 			std::move( p_data.trajectoryData )
 		);

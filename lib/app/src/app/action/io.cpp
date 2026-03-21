@@ -12,8 +12,6 @@
 #include "app/system/trajectory_preparation.hpp"
 #include "app/system/uid.hpp"
 #include "app/threading/thread_manager.hpp"
-#include <io/reader/chemfiles.hpp>
-#include <io/reader/system.hpp>
 #include <renderer/camera.hpp>
 #include <renderer/renderer.hpp>
 #include <util/chrono.hpp>

@@ -1,0 +1,343 @@
+// Needed for io/reader.hpp
+#include <core/struct/system.hpp>
+#include <util/thread.hpp>
+// !Needed for io/reader.hpp
+#include "io/reader.hpp"
+//
+#include <core/chemdb/atom.hpp>
+#include <core/chemdb/bond.hpp>
+#include <core/chemdb/category.hpp>
+#include <core/chemdb/residue.hpp>
+#include <core/chemdb/secondary_structure.hpp>
+#include <fstream>
+#include <map>
+#include <optional>
+#include <unordered_set>
+#include <util/exceptions.hpp>
+#include <util/logger.hpp>
+
+#pragma warning( push, 0 )
+#include <chemfiles.hpp>
+#pragma warning( pop )
+
+namespace VTX::IO
+{
+	namespace ChemDB = VTX::Core::ChemDB;
+
+	struct SystemReader::_Impl
+	{
+		VTX::FilePath							filePath;
+		std::reference_wrapper<Util::StopToken> stopToken;
+		std::optional<std::string>				buffer; // kept alive for memory_reader
+
+		chemfiles::Trajectory					trajectory;
+		chemfiles::Frame						currentFrame;
+		chemfiles::Topology						topology;
+		const std::vector<chemfiles::Residue> * residues		 = nullptr;
+		const std::vector<chemfiles::Bond> *	bonds			 = nullptr;
+		const chemfiles::Residue *				currentResidue	 = nullptr;
+		const chemfiles::Atom *					currentAtom		 = nullptr;
+		size_t									currentAtomIndex = 0;
+		size_t									currentFrameIdx	 = 0;
+
+		_Impl( const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
+			filePath( p_path ), stopToken( p_stopToken ), trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
+		{
+			_init();
+		}
+
+		_Impl( std::string p_buffer, const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
+			filePath( p_path ), stopToken( p_stopToken ), buffer( std::move( p_buffer ) ),
+			trajectory(
+				chemfiles::Trajectory::memory_reader(
+					buffer->c_str(),
+					buffer->size(),
+					chemfiles::guess_format( p_path.string() )
+				)
+			)
+		{
+			_init();
+		}
+
+		size_t frameCount() const { return trajectory.size(); }
+
+		void get( Core::Struct::System & p_system ) noexcept
+		{
+			if ( stopToken.get().stop_requested() )
+				return;
+
+			// Strip leading dot from extension (e.g. ".pdb" -> "pdb")
+			std::string ext = filePath.extension().string();
+			if ( !ext.empty() && ext[ 0 ] == '.' )
+				ext = ext.substr( 1 );
+
+			Index currentChainIndex		   = INVALID_INDEX;
+			Index currentChainResidueCount = 0;
+
+			std::unordered_set<std::string>		seenChainNames;
+			std::map<Index, std::vector<Index>> mapResidueBonds;
+			std::map<Index, std::vector<Index>> mapResidueExtraBonds;
+
+			ChemDB::Category::TYPE lastCategoryEnum = ChemDB::Category::TYPE::UNKNOWN;
+
+			const Index residueCount = Index( residues->size() );
+			p_system.initResidues( residueCount );
+			p_system.initAtoms( Index( currentFrame.size() ) );
+
+			for ( Index residueIdx = 0; residueIdx < residueCount; ++residueIdx )
+			{
+				if ( stopToken.get().stop_requested() )
+					return;
+
+				currentResidue = &( ( *residues )[ residueIdx ] );
+
+				const std::string chainName	  = _residueStringProp( "chainname" );
+				const std::string residueName = currentResidue->name();
+				const Index		  residueId	  = Index( currentResidue->id().value_or( INVALID_INDEX ) );
+
+				const ChemDB::Category::TYPE categoryEnum = _findCategoryType( ext, residueName );
+
+				const bool createNewChain = p_system.getChainCount() == 0 || !seenChainNames.contains( chainName )
+											|| categoryEnum != lastCategoryEnum;
+
+				if ( createNewChain )
+				{
+					if ( currentChainIndex != INVALID_INDEX )
+						p_system.chainResidueCounts[ currentChainIndex ] = currentChainResidueCount;
+
+					p_system.appendNewChain();
+					currentChainIndex++;
+
+					p_system.chainNames[ currentChainIndex ] = chainName;
+					p_system.categories[ uint( categoryEnum ) ].push_back( currentChainIndex );
+					p_system.chainFirstResidues[ currentChainIndex ] = residueIdx;
+
+					currentChainResidueCount = 0;
+
+					if ( !seenChainNames.contains( chainName ) )
+						seenChainNames.emplace( chainName );
+					lastCategoryEnum = categoryEnum;
+				}
+
+				currentChainResidueCount++;
+
+				if ( currentResidue->size() == 0 )
+					VTX_WARNING( "Empty residue found" );
+
+				p_system.residueChainIndexes[ residueIdx ]	   = currentChainIndex;
+				p_system.residueFirstAtomIndexes[ residueIdx ] = Index( *currentResidue->begin() );
+				p_system.residueAtomCounts[ residueIdx ]	   = Index( currentResidue->size() );
+				p_system.residueOriginalIds[ residueIdx ]	   = residueId;
+				p_system.residueSymbols[ residueIdx ]		   = ChemDB::Residue::getSymbolFromName( residueName );
+				p_system.residueNames[ residueIdx ]			   = residueName;
+
+				const std::string ss = _residueStringProp( "secondary_structure" );
+				if ( !ss.empty() )
+					p_system.residueSecondaryStructureTypes[ residueIdx ]
+						= ChemDB::SecondaryStructure::pdbFormattedToEnum( ss );
+
+				mapResidueBonds.emplace( residueIdx, std::vector<Index>() );
+				mapResidueExtraBonds.emplace( residueIdx, std::vector<Index>() );
+
+				for ( chemfiles::Residue::const_iterator it = currentResidue->cbegin(); it != currentResidue->cend();
+					  ++it )
+				{
+					const Index atomIndex = Index( *it );
+					currentAtom			  = &currentFrame[ atomIndex ];
+					currentAtomIndex	  = atomIndex;
+
+					p_system.atomResidueIndexes[ atomIndex ] = residueIdx;
+					p_system.atomNames[ atomIndex ]			 = currentAtom->name();
+					p_system.atomSymbols[ atomIndex ]		 = ChemDB::Atom::getSymbolFromString( currentAtom->type() );
+				}
+			}
+
+			if ( currentChainResidueCount != 0 )
+				p_system.chainResidueCounts[ currentChainIndex ] = currentChainResidueCount;
+
+			// Bonds — classify as intra- or extra-residue and order by residue.
+			const std::vector<chemfiles::Bond::BondOrder> & bondOrders = topology.bond_orders();
+			Index											counter	   = 0;
+
+			for ( Index bondIdx = 0; bondIdx < Index( bonds->size() ); ++bondIdx )
+			{
+				if ( stopToken.get().stop_requested() )
+					return;
+
+				const chemfiles::Bond & bond		  = ( *bonds )[ bondIdx ];
+				const Index				firstAtomIdx  = Index( bond[ 0 ] );
+				const Index				secondAtomIdx = Index( bond[ 1 ] );
+				const Index				residueStart  = p_system.atomResidueIndexes[ firstAtomIdx ];
+				const Index				residueEnd	  = p_system.atomResidueIndexes[ secondAtomIdx ];
+
+				if ( residueStart >= residueCount || residueEnd >= residueCount )
+				{
+					VTX_WARNING(
+						"Bond {} has an atom with invalid residue index ({} or {}). Skipping.",
+						bondIdx,
+						residueStart,
+						residueEnd
+					);
+					continue;
+				}
+
+				if ( residueStart == residueEnd )
+				{
+					mapResidueBonds[ residueStart ].emplace_back( bondIdx );
+					counter++;
+				}
+				else
+				{
+					mapResidueExtraBonds[ residueStart ].emplace_back( bondIdx );
+					mapResidueExtraBonds[ residueEnd ].emplace_back( bondIdx );
+					counter += 2;
+				}
+			}
+
+			p_system.initBonds( counter );
+
+			const Index counterOld = counter;
+			counter				   = 0;
+
+			for ( Index residueIdx = 0; residueIdx < residueCount; ++residueIdx )
+			{
+				if ( stopToken.get().stop_requested() )
+					return;
+
+				const std::vector<Index> & intraBonds = mapResidueBonds[ residueIdx ];
+				const std::vector<Index> & extraBonds = mapResidueExtraBonds[ residueIdx ];
+
+				p_system.residueFirstBondIndexes[ residueIdx ] = counter;
+				p_system.residueBondCounts[ residueIdx ]	   = Index( intraBonds.size() + extraBonds.size() );
+
+				for ( Index i = 0; i < intraBonds.size(); ++i, ++counter )
+				{
+					const chemfiles::Bond & bond					= ( *bonds )[ intraBonds[ i ] ];
+					p_system.bondPairAtomIndexes[ counter * 2 ]		= Index( bond[ 0 ] );
+					p_system.bondPairAtomIndexes[ counter * 2 + 1 ] = Index( bond[ 1 ] );
+					p_system.bondOrders[ counter ] = ChemDB::Bond::ORDER( int( bondOrders[ intraBonds[ i ] ] ) );
+				}
+
+				for ( Index i = 0; i < extraBonds.size(); ++i, ++counter )
+				{
+					const chemfiles::Bond & bond					= ( *bonds )[ extraBonds[ i ] ];
+					p_system.bondPairAtomIndexes[ counter * 2 ]		= Index( bond[ 0 ] );
+					p_system.bondPairAtomIndexes[ counter * 2 + 1 ] = Index( bond[ 1 ] );
+					p_system.bondOrders[ counter ] = ChemDB::Bond::ORDER( int( bondOrders[ extraBonds[ i ] ] ) );
+				}
+			}
+
+			assert( counter == counterOld );
+		}
+
+		void get( const FrameIndex & p_frameIndex, AtomPositions & p_positions ) noexcept
+		{
+			if ( stopToken.get().stop_requested() )
+				return;
+
+			currentFrame	= trajectory.read_at( p_frameIndex );
+			currentFrameIdx = p_frameIndex;
+
+			if ( stopToken.get().stop_requested() )
+				return;
+
+			const chemfiles::span<chemfiles::Vector3D> & pos = currentFrame.positions();
+			p_positions.resize( pos.size() );
+			for ( size_t i = 0; i < pos.size(); ++i )
+				p_positions[ i ] = Vec3f( pos[ i ][ 0 ], pos[ i ][ 1 ], pos[ i ][ 2 ] );
+		}
+		void get( const PdbIdCode & p_ ) noexcept
+		{
+			if ( stopToken.get().stop_requested() )
+				return;
+
+			assert( p_.code != nullptr );
+			*p_.code = currentFrame.get( "pdb_idcode" ) ? currentFrame.get( "pdb_idcode" )->as_string() : "";
+		}
+		void set( Util::StopToken & p_ ) noexcept { stopToken = p_; }
+
+	  private:
+		void _init()
+		{
+			chemfiles::set_warning_callback( []( const std::string & ) {} );
+
+			if ( stopToken.get().stop_requested() )
+				return;
+
+			if ( trajectory.size() == 0 )
+				throw IOException( "Trajectory is empty" );
+
+			currentFrame = trajectory.read();
+			topology	 = currentFrame.topology();
+			residues	 = &topology.residues();
+			bonds		 = &topology.bonds();
+
+			if ( stopToken.get().stop_requested() )
+				return;
+
+			// If no residues, wrap all atoms in a single UNK residue.
+			if ( residues->empty() )
+			{
+				VTX_INFO( "No residues found, wrapping atoms in UNK residue." );
+				chemfiles::Residue unk( "UNK", 0 );
+				for ( size_t i = 0; i < currentFrame.size(); ++i )
+					unk.add_atom( i );
+				currentFrame.add_residue( unk );
+				topology = currentFrame.topology();
+				residues = &topology.residues();
+				bonds	 = &topology.bonds();
+			}
+
+			if ( currentFrame.size() != topology.size() )
+				throw IOException( "Atom/topology size mismatch" );
+		}
+
+		std::string _residueStringProp( const std::string & p_property, const std::string & p_default = "" ) const
+		{
+			const auto & opt = currentResidue->properties().get( p_property );
+			return opt ? opt.value().as_string() : p_default;
+		}
+
+		static ChemDB::Category::TYPE _findCategoryType(
+			const std::string & p_ext,
+			const std::string & /*p_residueName*/
+		)
+		{
+			if ( p_ext == "pdb" || p_ext == "mmcif" || p_ext == "mmtf" )
+				return ChemDB::Category::TYPE::POLYMER;
+			return ChemDB::Category::TYPE::POLYMER;
+		}
+	};
+
+	void SystemReader::Del::operator()( _Impl * p_impl ) noexcept { delete p_impl; }
+
+	SystemReader::SystemReader( const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
+		_impl( new _Impl( p_path, p_stopToken ) )
+	{
+	}
+	SystemReader::SystemReader( MemoryBuffer p_buffer, const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
+		_impl( new _Impl( std::move( p_buffer ), p_path, p_stopToken ) )
+	{
+	}
+
+	void SystemReader::get( Core::Struct::System & p_ ) noexcept { _impl->get( p_ ); }
+	void SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) noexcept { _impl->get( p_i, p_ ); }
+	void SystemReader::get( AtomPositions & p_ ) noexcept { _impl->get( 0, p_ ); }
+	void SystemReader::get( const PdbIdCode & p_ ) noexcept { _impl->get( p_ ); }
+	void SystemReader::set( Util::StopToken & p_ ) noexcept { _impl->set( p_ ); }
+
+	size_t SystemReader::frameCount() const { return _impl->frameCount(); }
+
+	bool isTrajectoryFileFormat( const FilePath & p_path ) noexcept
+	{
+		std::string extension = p_path.extension().string();
+		std::transform( extension.begin(), extension.end(), extension.begin(), tolower );
+		const std::array<std::string_view, 4> _trajectoryFileFormatList { ".xtc", ".dcd", ".lammpstrj", ".trj" };
+		return std::any_of(
+			_trajectoryFileFormatList.begin(),
+			_trajectoryFileFormatList.end(),
+			[ &extension ]( const std::string_view & v ) { return v == extension; }
+		);
+	};
+
+} // namespace VTX::IO
