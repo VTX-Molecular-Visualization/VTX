@@ -197,6 +197,14 @@ namespace VTX::App::PythonBinding
 	{
 		_impl->runScript( p_path, std::move( p_future ) );
 	}
+	std::string Interpretor::getRuntimePythonVersion() noexcept
+	{
+		auto promise = std::make_shared<std::promise<AsyncJobResult>>();
+		auto future	 = promise->get_future();
+		_impl->runCommand( "'{}.{}.{}'.format(*__import__(\"sys\").version_info[:3])", promise );
+		const AsyncJobResult result = future.get();
+		return result.resultStr.substr( 1, result.resultStr.size() - 2 );
+	}
 	// bool Interpretor::lastScriptFailed() const { return _impl->lastScriptFailed(); }
 	void Interpretor::slowerResponseTime() noexcept { _impl->slowerResponseTime(); }
 	void Interpretor::fasterResponseTime() noexcept { _impl->fasterResponseTime(); }

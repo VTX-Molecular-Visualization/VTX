@@ -18,11 +18,13 @@ namespace VTX::UI::QT::Widget
 		StatusBar( QWidget * p_parent );
 
 	  private:
-		QPointer<QLabel> _label;
+		QPointer<QLabel> _fps;
 		bool			 _rendering = false;
+		QPointer<QLabel> _python;
 
 		void _updateGPUState( const App::Events::PostRender & );
 		void _setCurrentFPS();
+		void _pythonInitialized( const App::Events::PythonInitialized & );
 	};
 
 } // namespace VTX::UI::QT::Widget

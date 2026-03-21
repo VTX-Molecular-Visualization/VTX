@@ -117,6 +117,11 @@ namespace VTX::App::Events
 		bool	 success;
 	};
 
+	struct PythonInitialized
+	{
+		std::string version;
+	};
+
 } // namespace VTX::App::Events
 
 #endif

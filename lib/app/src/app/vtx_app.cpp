@@ -106,15 +106,16 @@ namespace VTX::App
 		ECS::setCtx<Input::InputManager>();
 		ECS::setCtx<Network::NetworkManager>();
 		ECS::setCtx<Settings::SettingsManager>();
+
 		ECS::setCtx<Threading::ThreadManager>();
 		ECS::setCtx<Uid::UIDManager>();
 		ECS::setCtx<Pass::PassManager>();
-		ECS::setCtx<PythonBinding::Interpretor>();
 
 		Settings::initSettings();
 
 		try
 		{
+			ECS::setCtx<PythonBinding::Interpretor>();
 			INTERPRETOR().subscribe(
 				[]( VTX::PythonBinding::Interpretor & p_interpretor )
 				{
@@ -122,7 +123,6 @@ namespace VTX::App
 					p_interpretor.add( VTX::App::PythonBinding::RunScript() );
 				}
 			);
-			VTX_INFO( "Python interpretor initialized" );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -166,6 +166,13 @@ namespace VTX::App
 
 	void VTXApp::finishStartup()
 	{
+		const std::string runtimePythonVersion = INTERPRETOR().getRuntimePythonVersion();
+		if ( ! runtimePythonVersion.empty() )
+		{
+			HUB().trigger<Events::PythonInitialized>( runtimePythonVersion );
+			VTX_INFO( "Python interpretor initialized" );
+		}
+
 		ACTION().execute<Action::Scene::SetGraphicsConfig>(
 			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>()
 		);

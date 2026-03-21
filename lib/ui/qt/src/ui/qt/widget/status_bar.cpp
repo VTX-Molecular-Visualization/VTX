@@ -11,18 +11,23 @@ namespace VTX::UI::QT::Widget
 
 	StatusBar::StatusBar( QWidget * p_parent ) : QStatusBar( p_parent )
 	{
-		_label = new QLabel( this );
-		_label->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
+		_python = new QLabel( this );
+		_python->setText( "No Python" );
+
+		_fps = new QLabel( this );
+		//_fps->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 
 		auto * vendorLabel = new QLabel( this );
-		vendorLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
+		vendorLabel->setText( "No renderer" );
+		// vendorLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 
 		QWidget * spacer = new QWidget( this );
 		spacer->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
 
 		addPermanentWidget( spacer );
-		addPermanentWidget( _label );
+		addPermanentWidget( _fps );
 		addPermanentWidget( vendorLabel );
+		addPermanentWidget( _python );
 
 		// Update vendor when renderer is available.
 		App::RENDERER().onReady += [ vendorLabel ]()
@@ -35,6 +40,7 @@ namespace VTX::UI::QT::Widget
 
 		// Update renderering mode.
 		App::HUB().connect<App::Events::PostRender, &StatusBar::_updateGPUState>( this );
+		App::HUB().connect<App::Events::PythonInitialized, &StatusBar::_pythonInitialized>( this );
 	}
 
 	void StatusBar::_updateGPUState( const App::Events::PostRender & p_e )
@@ -48,7 +54,7 @@ namespace VTX::UI::QT::Widget
 
 		if ( not _rendering )
 		{
-			_label->setText( QString( "-idle-" ) );
+			_fps->setText( QString( "-idle-" ) );
 		}
 	}
 
@@ -57,8 +63,13 @@ namespace VTX::UI::QT::Widget
 		if ( _rendering )
 		{
 			const float tickrate = App::ECS::getCtx<Util::Monitoring::Stats>().average();
-			_label->setText( QString( "%1 FPS" ).arg( uint( 1000.0 / tickrate ) ) );
+			_fps->setText( QString( "%1 FPS" ).arg( uint( 1000.0 / tickrate ) ) );
 		}
+	}
+
+	void StatusBar::_pythonInitialized( const App::Events::PythonInitialized & p_e )
+	{
+		_python->setText( QString( "Python %1" ).arg( QString::fromStdString( p_e.version ) ) );
 	}
 
 } // namespace VTX::UI::QT::Widget

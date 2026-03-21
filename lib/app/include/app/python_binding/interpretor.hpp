@@ -55,6 +55,11 @@ namespace VTX::App::PythonBinding
 		void runScript( const FilePath &, std::shared_ptr<std::promise<AsyncJobResult>> ) noexcept;
 
 		/**
+		 * @brief Query the currently loaded Python runtime version and return it as "x.y.z".
+		 */
+		std::string getRuntimePythonVersion() noexcept;
+
+		/**
 		 * @brief Slow the response time down. Python command are not actually executed right away. They are queue up
 		 * and the queue is watched every once in a while and any command found is then executed. Calling this function
 		 * lengthen the time interval at which the queue is watched, effectively making VTX less energy consuming while
