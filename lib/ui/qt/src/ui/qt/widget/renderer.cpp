@@ -33,9 +33,10 @@ namespace VTX::UI::QT::Widget
 		_container->installEventFilter( this );
 
 		// Create transparent overlay for hud toolbars.
-		_overlay = new QWidget( this );
+		_overlay = new QWidget( nullptr, Qt::Tool | Qt::FramelessWindowHint );
 		_overlay->setAttribute( Qt::WA_TranslucentBackground, true );
-		_overlay->setAttribute( Qt::WA_TransparentForMouseEvents, true );
+		_overlay->setAttribute( Qt::WA_NoSystemBackground, true );
+		_overlay->setAttribute( Qt::WA_ShowWithoutActivating, true );
 		_overlayLayout = new QGridLayout( _overlay );
 		_overlayLayout->setContentsMargins( 0, 0, 0, 0 );
 		_overlayLayout->setSpacing( 0 );
@@ -83,6 +84,15 @@ namespace VTX::UI::QT::Widget
 
 	Renderer::~Renderer()
 	{
+		if ( QWidget * const hostWindow = window() )
+		{
+			hostWindow->removeEventFilter( this );
+		}
+		if ( _overlay )
+		{
+			_overlay->hide();
+			delete _overlay;
+		}
 		_container->removeEventFilter( this );
 		_window->removeEventFilter( this );
 	}
@@ -147,6 +157,39 @@ namespace VTX::UI::QT::Widget
 
 		_container->setVisible( false );
 		_resizeTimer.start( 40 );
+		_syncOverlayGeometry();
+	}
+
+	void Renderer::showEvent( QShowEvent * p_event )
+	{
+		QWidget::showEvent( p_event );
+
+		QWidget * const hostWindow = window();
+		if ( hostWindow == nullptr )
+		{
+			return;
+		}
+
+		_overlay->setParent( hostWindow, Qt::Tool | Qt::FramelessWindowHint );
+		hostWindow->removeEventFilter( this );
+		hostWindow->installEventFilter( this );
+
+		_syncOverlayGeometry();
+
+		if ( _overlay )
+		{
+			_overlay->show();
+			_overlay->raise();
+		}
+	}
+
+	void Renderer::hideEvent( QHideEvent * p_event )
+	{
+		QWidget::hideEvent( p_event );
+		if ( _overlay )
+		{
+			_overlay->hide();
+		}
 	}
 
 	void Renderer::onResizeFinished()
@@ -159,8 +202,7 @@ namespace VTX::UI::QT::Widget
 		const QSize size = this->size();
 		_window->resize( size );
 		_container->resize( size );
-		_overlay->resize( size );
-		_overlay->raise();
+		_syncOverlayGeometry();
 
 		const QSize scaledSize = size * _window->devicePixelRatio();
 
@@ -195,6 +237,31 @@ namespace VTX::UI::QT::Widget
 			else if ( p_event->type() == QEvent::WindowActivate || p_event->type() == QEvent::Show )
 			{
 				_container->setFocus( Qt::ActiveWindowFocusReason );
+				if ( _overlay && isVisible() )
+				{
+					_overlay->show();
+					_overlay->raise();
+				}
+			}
+		}
+		else if ( p_watched == window() )
+		{
+			if ( p_event->type() == QEvent::Move || p_event->type() == QEvent::Resize
+				 || p_event->type() == QEvent::Show )
+			{
+				_syncOverlayGeometry();
+				if ( _overlay && window() && window()->isVisible() && isVisible() )
+				{
+					_overlay->show();
+					_overlay->raise();
+				}
+			}
+			else if ( p_event->type() == QEvent::Hide )
+			{
+				if ( _overlay )
+				{
+					_overlay->hide();
+				}
 			}
 		}
 
@@ -205,46 +272,72 @@ namespace VTX::UI::QT::Widget
 	{
 		int row = 0;
 		int col = 0;
+		Qt::Alignment alignment = Qt::AlignCenter;
 		switch ( p_pos )
 		{
 		case HUD_POSITION::TOP_LEFT:
 			row = 0;
 			col = 0;
+			alignment = Qt::AlignTop | Qt::AlignLeft;
 			break;
 		case HUD_POSITION::TOP_CENTER:
 			row = 0;
 			col = 1;
+			alignment = Qt::AlignTop | Qt::AlignHCenter;
 			break;
 		case HUD_POSITION::TOP_RIGHT:
 			row = 0;
 			col = 2;
+			alignment = Qt::AlignTop | Qt::AlignRight;
 			break;
 		case HUD_POSITION::CENTER_LEFT:
 			row = 1;
 			col = 0;
+			alignment = Qt::AlignVCenter | Qt::AlignLeft;
 			break;
 		case HUD_POSITION::CENTER_RIGHT:
 			row = 1;
 			col = 2;
+			alignment = Qt::AlignVCenter | Qt::AlignRight;
 			break;
 		case HUD_POSITION::BOTTOM_LEFT:
 			row = 2;
 			col = 0;
+			alignment = Qt::AlignBottom | Qt::AlignLeft;
 			break;
 		case HUD_POSITION::BOTTOM_CENTER:
 			row = 2;
 			col = 1;
+			alignment = Qt::AlignBottom | Qt::AlignHCenter;
 			break;
 		case HUD_POSITION::BOTTOM_RIGHT:
 			row = 2;
 			col = 2;
+			alignment = Qt::AlignBottom | Qt::AlignRight;
 			break;
 		default: assert( false && "Invalid HUD position" );
 		}
 		p_widget->setParent( _overlay );
-		// p_widget->setAttribute( Qt::WA_TranslucentBackground, true );
 		p_widget->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
-		_overlayLayout->addWidget( p_widget, row, col, Qt::AlignCenter );
+		_overlayLayout->addWidget( p_widget, row, col, alignment );
+		_syncOverlayGeometry();
+		if ( _overlay && isVisible() )
+		{
+			_overlay->show();
+			_overlay->raise();
+		}
+	}
+
+	void Renderer::_syncOverlayGeometry()
+	{
+		if ( _overlay == nullptr || window() == nullptr || !isVisible() )
+		{
+			return;
+		}
+
+		const QPoint topLeft = mapToGlobal( QPoint( 0, 0 ) );
+		_overlay->setGeometry( QRect( topLeft, size() ) );
+		_overlay->raise();
 	}
 
 } // namespace VTX::UI::QT::Widget

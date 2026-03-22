@@ -14,6 +14,11 @@ namespace VTX::UI::QT::Events
 		bool locked;
 	};
 
+	struct SelectionGranularityChanged
+	{
+		int granularity;
+	};
+
 } // namespace VTX::UI::QT::Events
 
 #endif

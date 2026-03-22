@@ -80,7 +80,7 @@ namespace VTX::UI::QT::Widget
 
 		// Main area : opengl widget.
 		auto * renderer = new Renderer( this );
-		renderer->createToolBar<ToolBar::Camera>( Renderer::HUD_POSITION::BOTTOM_RIGHT );
+		renderer->createToolBar<ToolBar::Selection>( Renderer::HUD_POSITION::TOP_RIGHT );
 		setCentralWidget( renderer );
 
 		// Dock widgets.

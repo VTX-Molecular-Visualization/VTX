@@ -10,6 +10,7 @@ namespace VTX::UI::QT::Style::Icons
 	 * Font family: Material Symbols Outlined
 	 * https://fonts.google.com/icons
 	 */
+	constexpr Codepoint ATOM				 = 0xef4a;	// CIRCLE
 	constexpr Codepoint CAMERA				 = 0xe8fc;	// PHOTO_CAMERA
 	constexpr Codepoint CAMERA_ORIENT		 = 0xe9fe;	// VIEW_IN_AR
 	constexpr Codepoint CAMERA_ORTHOGRAPHIC	 = 0xeb36;	// SQUARE

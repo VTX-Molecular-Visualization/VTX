@@ -5,6 +5,7 @@
 #include "ui/qt/window/renderer.hpp"
 #include <QGridLayout>
 #include <QPointer>
+#include <QShowEvent>
 
 namespace VTX::UI::QT::Widget
 {
@@ -60,6 +61,8 @@ namespace VTX::UI::QT::Widget
 		 * @brief Override resize.
 		 */
 		void resizeEvent( QResizeEvent * ) override;
+		void showEvent( QShowEvent * ) override;
+		void hideEvent( QHideEvent * ) override;
 
 	  protected:
 		/**
@@ -102,6 +105,11 @@ namespace VTX::UI::QT::Widget
 		 * @brief Add a widget to the overlay at the given position.
 		 */
 		void _addHUDWidget( QWidget * const, const HUD_POSITION );
+
+		/**
+		 * @brief Synchronize overlay geometry.
+		 */
+		void _syncOverlayGeometry();
 	};
 } // namespace VTX::UI::QT::Widget
 
