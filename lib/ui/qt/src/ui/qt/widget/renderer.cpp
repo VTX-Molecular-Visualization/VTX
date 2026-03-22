@@ -4,6 +4,7 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/widget/main_window.hpp"
+#include <QGridLayout>
 #include <QGuiApplication>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
@@ -17,6 +18,8 @@ namespace VTX::UI::QT::Widget
 
 	Renderer::Renderer( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
+		constexpr int overlayBorderSize = 64;
+
 		setAcceptDrops( true );
 
 		// Create window.
@@ -28,6 +31,24 @@ namespace VTX::UI::QT::Widget
 		// Use a widget container to embed the window.
 		_container = createWindowContainer( _window, this );
 		_container->installEventFilter( this );
+
+		// Create transparent overlay for hud toolbars.
+		_overlay = new QWidget( this );
+		_overlay->setAttribute( Qt::WA_TranslucentBackground, true );
+		_overlay->setAttribute( Qt::WA_TransparentForMouseEvents, true );
+		_overlayLayout = new QGridLayout( _overlay );
+		_overlayLayout->setContentsMargins( 0, 0, 0, 0 );
+		_overlayLayout->setSpacing( 0 );
+		_overlayLayout->setRowMinimumHeight( 0, overlayBorderSize );
+		_overlayLayout->setRowMinimumHeight( 2, overlayBorderSize );
+		_overlayLayout->setColumnMinimumWidth( 0, overlayBorderSize );
+		_overlayLayout->setColumnMinimumWidth( 2, overlayBorderSize );
+		_overlayLayout->setRowStretch( 0, 0 );
+		_overlayLayout->setRowStretch( 1, 1 );
+		_overlayLayout->setRowStretch( 2, 0 );
+		_overlayLayout->setColumnStretch( 0, 0 );
+		_overlayLayout->setColumnStretch( 1, 1 );
+		_overlayLayout->setColumnStretch( 2, 0 );
 
 		// Focus policy.
 		_container->setFocusPolicy( Qt::StrongFocus );
@@ -138,6 +159,8 @@ namespace VTX::UI::QT::Widget
 		const QSize size = this->size();
 		_window->resize( size );
 		_container->resize( size );
+		_overlay->resize( size );
+		_overlay->raise();
 
 		const QSize scaledSize = size * _window->devicePixelRatio();
 
@@ -148,15 +171,16 @@ namespace VTX::UI::QT::Widget
 	{
 		if ( p_watched == _container )
 		{
-			auto * e = p_event->clone();
 			if ( p_event->type() == QEvent::DragEnter )
 			{
+				auto * e = p_event->clone();
 				QCoreApplication::sendEvent( &MAIN_WINDOW(), e );
 				delete e;
 				return true;
 			}
 			else if ( p_event->type() == QEvent::Drop )
 			{
+				auto * e = p_event->clone();
 				QCoreApplication::sendEvent( &MAIN_WINDOW(), e );
 				delete e;
 				return true;
@@ -175,6 +199,52 @@ namespace VTX::UI::QT::Widget
 		}
 
 		return QWidget::eventFilter( p_watched, p_event );
+	}
+
+	void Renderer::_addHUDWidget( QWidget * const p_widget, const HUD_POSITION p_pos )
+	{
+		int row = 0;
+		int col = 0;
+		switch ( p_pos )
+		{
+		case HUD_POSITION::TOP_LEFT:
+			row = 0;
+			col = 0;
+			break;
+		case HUD_POSITION::TOP_CENTER:
+			row = 0;
+			col = 1;
+			break;
+		case HUD_POSITION::TOP_RIGHT:
+			row = 0;
+			col = 2;
+			break;
+		case HUD_POSITION::CENTER_LEFT:
+			row = 1;
+			col = 0;
+			break;
+		case HUD_POSITION::CENTER_RIGHT:
+			row = 1;
+			col = 2;
+			break;
+		case HUD_POSITION::BOTTOM_LEFT:
+			row = 2;
+			col = 0;
+			break;
+		case HUD_POSITION::BOTTOM_CENTER:
+			row = 2;
+			col = 1;
+			break;
+		case HUD_POSITION::BOTTOM_RIGHT:
+			row = 2;
+			col = 2;
+			break;
+		default: assert( false && "Invalid HUD position" );
+		}
+		p_widget->setParent( _overlay );
+		// p_widget->setAttribute( Qt::WA_TranslucentBackground, true );
+		p_widget->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
+		_overlayLayout->addWidget( p_widget, row, col, Qt::AlignCenter );
 	}
 
 } // namespace VTX::UI::QT::Widget

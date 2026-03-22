@@ -60,7 +60,7 @@ namespace VTX::UI::QT::DockWidget
 		auto * toolbar = new QToolBar( this );
 		toolbar->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
 		// toolbar->setIconSize( QSize( 18, 18 ) );
-		auto * lockAction = Application::getAction<Action::Selection::Lock>();
+		
 		lockAction->setCheckable( true );
 		toolbar->addAction( lockAction );
 		toolbar->addAction( Application::getAction<Action::Selection::Save>() );

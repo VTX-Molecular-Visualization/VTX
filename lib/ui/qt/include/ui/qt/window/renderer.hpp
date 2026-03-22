@@ -62,7 +62,7 @@ namespace VTX::UI::QT::Window
 		/**
 		 * @brief Current keyboard layout.
 		 */
-		KB_LAYOUT _layout;
+		KB_LAYOUT _layout = KB_LAYOUT::QWERTY;
 
 		/**
 		 * @brief State for mouse dragging.

@@ -24,6 +24,7 @@
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/tool_bar/camera.hpp"
 #include "ui/qt/tool_bar/file.hpp"
+#include "ui/qt/tool_bar/selection.hpp"
 #include "ui/qt/tool_bar/snapshot.hpp"
 #include <QApplication>
 #include <QMessageBox>
@@ -75,9 +76,12 @@ namespace VTX::UI::QT::Widget
 		createToolBar<ToolBar::File>();
 		createToolBar<ToolBar::Camera>();
 		createToolBar<ToolBar::Snapshot>();
+		createToolBar<ToolBar::Selection>();
 
 		// Main area : opengl widget.
-		setCentralWidget( new Renderer( this ) );
+		auto * renderer = new Renderer( this );
+		renderer->createToolBar<ToolBar::Camera>( Renderer::HUD_POSITION::BOTTOM_RIGHT );
+		setCentralWidget( renderer );
 
 		// Dock widgets.
 		createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );

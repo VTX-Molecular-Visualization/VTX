@@ -3,6 +3,7 @@
 
 #include "ui/qt/widget/base_widget.hpp"
 #include "ui/qt/window/renderer.hpp"
+#include <QGridLayout>
 #include <QPointer>
 
 namespace VTX::UI::QT::Widget
@@ -17,14 +18,43 @@ namespace VTX::UI::QT::Widget
 
 	  public:
 		/**
+		 * @brief Positions for HUD elements.
+		 */
+		enum struct HUD_POSITION
+		{
+			TOP_LEFT,
+			TOP_CENTER,
+			TOP_RIGHT,
+			CENTER_LEFT,
+			CENTER_RIGHT,
+			BOTTOM_LEFT,
+			BOTTOM_CENTER,
+			BOTTOM_RIGHT
+		};
+
+		/**
 		 * @brief Constructor.
 		 */
 		Renderer( QWidget * );
 		~Renderer();
 
+		/**
+		 * @brief Get native surface, display and platform for graphic context creation.
+		 */
 		uintptr_t getNativeSurface() const;
 		uintptr_t getNativeDisplay() const;
 		uint8_t	  getNativePlatform() const;
+
+		/**
+		 * @brief Create a toolbar from type.
+		 */
+		template<typename TB>
+		TB * const createToolBar( const HUD_POSITION p_pos )
+		{
+			TB * const toolBar = new TB( this );
+			_addHUDWidget( toolBar, p_pos );
+			return toolBar;
+		}
 
 		/**
 		 * @brief Override resize.
@@ -54,9 +84,24 @@ namespace VTX::UI::QT::Widget
 		QPointer<QWidget> _container;
 
 		/**
+		 * @brief Transparent overlay widget above the rendering surface.
+		 */
+		QPointer<QWidget> _overlay;
+
+		/**
+		 * @brief Grid layout used to place overlay widgets.
+		 */
+		QPointer<QGridLayout> _overlayLayout;
+
+		/**
 		 * @brief Debounce timer for resize events.
 		 */
 		QTimer _resizeTimer;
+
+		/**
+		 * @brief Add a widget to the overlay at the given position.
+		 */
+		void _addHUDWidget( QWidget * const, const HUD_POSITION );
 	};
 } // namespace VTX::UI::QT::Widget
 
