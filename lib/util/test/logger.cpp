@@ -1,29 +1,32 @@
 #include <catch2/catch_test_macros.hpp>
 #include <chrono>
 #include <condition_variable>
+#include <map>
+#include <memory>
 #include <mutex>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
-#include <vector>
 
 // logger.hpp
 TEST_CASE( "Util::Logger", "[unit]" )
 {
-	VTX::LOGGER::init( VTX::Util::Filesystem::getExecutableDir() / "logs_tests", true );
+	VTX::LOGGER::init( VTX::Util::Filesystem::getExecutableDir() / "logs_tests", false );
 
-	std::vector<VTX::Util::LogInfo> logs;
-	std::mutex						logsMutex;
-	std::condition_variable			logsCv;
-	const auto						callbackId = VTX::LOGGER::onLog.add(
-		 [ & ]( const VTX::Util::LogInfo & p_log )
-		 {
-			 {
-				 const std::lock_guard<std::mutex> lock( logsMutex );
-				 logs.push_back( p_log );
-			 }
-			 logsCv.notify_one();
-		 }
-	 );
+	struct LogState
+	{
+		std::mutex							   mutex;
+		std::condition_variable				   cv;
+		std::map<std::string, VTX::Util::LOG_HINT> received;
+	};
+
+	auto state = std::make_shared<LogState>();
+	const auto callbackId = VTX::LOGGER::onLog.add( [ state ]( const VTX::Util::LogInfo & p_log ) {
+		{
+			const std::lock_guard<std::mutex> lock( state->mutex );
+			state->received[ p_log.message ] = p_log.hint;
+		}
+		state->cv.notify_one();
+	} );
 
 	VTX::VTX_INFO( "info without args" );
 	VTX::VTX_INFO( "info with args: {} {}", "test", 42 );
@@ -33,16 +36,15 @@ TEST_CASE( "Util::Logger", "[unit]" )
 	VTX::LOGGER::flush();
 
 	{
-		std::unique_lock<std::mutex> lock( logsMutex );
-		REQUIRE( logsCv.wait_for( lock, std::chrono::seconds( 2 ), [ & ]() { return logs.size() >= 4; } ) );
-		CHECK( logs[ logs.size() - 4 ].message == "info without args" );
-		CHECK( logs[ logs.size() - 4 ].hint == VTX::Util::LOG_HINT::STD );
-		CHECK( logs[ logs.size() - 3 ].message == "info with args: test 42" );
-		CHECK( logs[ logs.size() - 3 ].hint == VTX::Util::LOG_HINT::STD );
-		CHECK( logs[ logs.size() - 2 ].message == "python in" );
-		CHECK( logs[ logs.size() - 2 ].hint == VTX::Util::LOG_HINT::PY_IN );
-		CHECK( logs[ logs.size() - 1 ].message == "python out" );
-		CHECK( logs[ logs.size() - 1 ].hint == VTX::Util::LOG_HINT::PY_OUT );
+		std::unique_lock<std::mutex> lock( state->mutex );
+		REQUIRE( state->cv.wait_for( lock, std::chrono::seconds( 2 ), [ & ]() {
+			return state->received.contains( "info without args" ) && state->received.contains( "info with args: test 42" )
+				   && state->received.contains( "python in" ) && state->received.contains( "python out" );
+		} ) );
+		CHECK( state->received.at( "info without args" ) == VTX::Util::LOG_HINT::STD );
+		CHECK( state->received.at( "info with args: test 42" ) == VTX::Util::LOG_HINT::STD );
+		CHECK( state->received.at( "python in" ) == VTX::Util::LOG_HINT::PY_IN );
+		CHECK( state->received.at( "python out" ) == VTX::Util::LOG_HINT::PY_OUT );
 	}
 
 	VTX::LOGGER::onLog.remove( callbackId );
