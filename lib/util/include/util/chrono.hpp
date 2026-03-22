@@ -93,12 +93,13 @@ namespace VTX::Util
 		}
 		~ScopedChrono()
 		{
-			VTX_LOG( _level, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() ) );
+			VTX_LOG( _level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() ) );
 		}
 
 	  private:
 		std::string		_name;
 		Util::LOG_LEVEL _level;
+		Util::LOG_HINT	_hint = Util::LOG_HINT::STD;
 	};
 } // namespace VTX::Util
 #endif

@@ -9,14 +9,13 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
 
+		// Log list.
 		_listWidget = new QListWidget( _root );
 		_listWidget->setWordWrap( true );
 		_listWidget->setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAsNeeded );
-
 		_listWidget->setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
 
-		_layout->addWidget( _listWidget );
-
+		// Context menu.
 		connect(
 			_listWidget,
 			&QListWidget::customContextMenuRequested,
@@ -32,34 +31,46 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Get logs and push to main thread.
-		_onPrintLogCallbackId = LOGGER::onPrintLog += [ this ]( const ::VTX::Util::LogInfo & p_logInfo )
+		_callbackId = LOGGER::onLog += [ this ]( const ::VTX::Util::LogInfo & p_logInfo )
 		{ QMetaObject::invokeMethod( this, [ this, p_logInfo ]() { log( p_logInfo ); }, Qt::QueuedConnection ); };
 
 		// Command launcher.
 		_commandLauncher = new UI::QT::Widget::CommandLauncher( this );
 
+		_layout->addWidget( _listWidget );
 		_layout->addWidget( _commandLauncher );
 	}
 
-	Console::~Console() { LOGGER::onPrintLog -= _onPrintLogCallbackId; }
+	Console::~Console() { LOGGER::onLog -= _callbackId; }
 
 	void Console::log( const VTX::Util::LogInfo & p_logInfo )
 	{
 		const std::string message = fmt::format( "[{}] {}", p_logInfo.date, p_logInfo.message );
 		QListWidgetItem * newItem = new QListWidgetItem( QString::fromStdString( message ) );
 
-		// TODO: Use palette color?
-		if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_ERROR )
+		// TODO: Use palette color.
+		if ( p_logInfo.hint == VTX::Util::LOG_HINT::STD )
 		{
-			newItem->setForeground( Qt::red );
+			if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_ERROR )
+			{
+				newItem->setForeground( Qt::red );
+			}
+			else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_WARNING )
+			{
+				newItem->setForeground( Qt::yellow );
+			}
+			else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_DEBUG )
+			{
+				newItem->setForeground( Qt::blue );
+			}
 		}
-		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_WARNING )
-		{
-			newItem->setForeground( Qt::yellow );
-		}
-		else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_DEBUG )
+		else if ( p_logInfo.hint == VTX::Util::LOG_HINT::PY_IN )
 		{
 			newItem->setForeground( Qt::green );
+		}
+		else if ( p_logInfo.hint == VTX::Util::LOG_HINT::PY_OUT )
+		{
+			newItem->setForeground( Qt::darkGreen );
 		}
 
 		newItem->setFlags( Qt::ItemFlag::ItemNeverHasChildren );

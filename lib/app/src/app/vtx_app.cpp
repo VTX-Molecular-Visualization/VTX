@@ -80,7 +80,7 @@ namespace VTX::App
 		createInitialEntities();
 
 		auto & renderer = RENDERER();
-		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) || ECS::getCtx<Args>().has( ARG_NO_GUI ) )
+		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) )
 		{
 			VTX_WARNING( "No graphics backend initialization" );
 			renderer.setDefault();
@@ -167,7 +167,7 @@ namespace VTX::App
 	void VTXApp::finishStartup()
 	{
 		const std::string runtimePythonVersion = INTERPRETOR().getRuntimePythonVersion();
-		if ( ! runtimePythonVersion.empty() )
+		if ( not runtimePythonVersion.empty() )
 		{
 			HUB().trigger<Events::PythonInitialized>( runtimePythonVersion );
 			VTX_INFO( "Python interpretor initialized" );

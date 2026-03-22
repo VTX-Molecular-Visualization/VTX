@@ -1,5 +1,6 @@
 #include "util/logger.hpp"
 #include "util/chrono.hpp"
+#include "util/enum.hpp"
 #include "util/exceptions.hpp"
 #include <chrono>
 #include <fmt/chrono.h>
@@ -13,16 +14,23 @@ namespace
 {
 	constexpr std::string_view NAME = "vtx_logger";
 
-	std::string pointTimeToStr( const std::chrono::system_clock::time_point & p_timePoint )
+	std::string _pointTimeToStr( const std::chrono::system_clock::time_point & p_timePoint )
 	{
 		const std::string timePointStr( fmt::format( "{:%T}", p_timePoint ) );
 		return timePointStr.substr( 0, 8 );
 	}
 
-	VTX::Util::LogInfo spdLogLogMsgToLogInfo( const spdlog::details::log_msg & p_msg )
+	VTX::Util::LOG_HINT _toLogHint( const spdlog::source_loc & p_source )
 	{
-		return { VTX::Util::LOG_LEVEL( int( p_msg.level ) ),
-				 pointTimeToStr( p_msg.time ),
+		const std::string_view hint = p_source.funcname != nullptr ? p_source.funcname : "";
+		return hint.empty() ? VTX::Util::LOG_HINT::STD : VTX::Util::Enum::enumCast<VTX::Util::LOG_HINT>( std::string( hint ) );
+	}
+
+	VTX::Util::LogInfo _toLogInfo( const spdlog::details::log_msg & p_msg )
+	{
+		return { static_cast<VTX::Util::LOG_LEVEL>( p_msg.level ),
+				 _toLogHint( p_msg.source ),
+				 _pointTimeToStr( p_msg.time ),
 				 std::string( p_msg.payload.begin(), p_msg.payload.end() ) };
 	}
 
@@ -30,6 +38,11 @@ namespace
 
 namespace VTX::Util
 {
+	const char * Logger::toSpdlogHint( const LOG_HINT p_hint )
+	{
+		return Enum::enumName( p_hint ).data();
+	}
+
 	void Logger::init( const std::filesystem::path & p_logDir, const bool p_debug )
 	{
 		try
@@ -44,9 +57,9 @@ namespace VTX::Util
 			fileSink->set_level( spdlog::level::trace );
 
 			// Callback sink.
-			auto callbackSink = std::make_shared<spdlog::sinks::callback_sink_mt>(
-				[]( const spdlog::details::log_msg & p_msg ) { onPrintLog( spdLogLogMsgToLogInfo( p_msg ) ); }
-			);
+			auto callbackSink
+				= std::make_shared<spdlog::sinks::callback_sink_mt>( []( const spdlog::details::log_msg & p_msg )
+																	 { onLog( _toLogInfo( p_msg ) ); } );
 			callbackSink->set_level( p_debug ? spdlog::level::debug : spdlog::level::info );
 
 			// Logger.
@@ -88,7 +101,7 @@ namespace VTX::Util
 	void Logger::stop()
 	{
 		flush();
-		onPrintLog.clear();
+		onLog.clear();
 	}
 
 } // namespace VTX::Util

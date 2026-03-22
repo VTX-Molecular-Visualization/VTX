@@ -46,7 +46,7 @@ namespace VTX::UI::QT::DockWidget
 		 * @brief Callback id for log printing, to disconnect on destruction.
 		 * Useful because logs can be printed after deletion.
 		 */
-		VTX::Util::CallbackId _onPrintLogCallbackId;
+		VTX::Util::CallbackId _callbackId;
 
 		/**
 		 * @brief Display logs.
