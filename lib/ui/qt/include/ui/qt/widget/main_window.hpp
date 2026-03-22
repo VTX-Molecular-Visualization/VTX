@@ -1,9 +1,9 @@
 #ifndef __VTX_UI_QT_WIDGET_MAIN_WINDOW__
 #define __VTX_UI_QT_WIDGET_MAIN_WINDOW__
 
-#include "opengl_widget.hpp"
-#include "status_bar.hpp"
 #include "ui/qt/widget/base_widget.hpp"
+#include "ui/qt/widget/renderer.hpp"
+#include "ui/qt/widget/status_bar.hpp"
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QMenuBar>

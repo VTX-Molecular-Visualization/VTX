@@ -77,7 +77,7 @@ namespace VTX::UI::QT::Widget
 		createToolBar<ToolBar::Snapshot>();
 
 		// Main area : opengl widget.
-		setCentralWidget( new OpenGLWidget( this ) );
+		setCentralWidget( new Renderer( this ) );
 
 		// Dock widgets.
 		createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );
@@ -168,21 +168,21 @@ namespace VTX::UI::QT::Widget
 
 	uintptr_t MainWindow::getNativeSurface() const
 	{
-		const auto * widget = static_cast<const OpenGLWidget *>( centralWidget() );
+		const auto * widget = static_cast<const Renderer *>( centralWidget() );
 		assert( widget != nullptr );
 		return widget->getNativeSurface();
 	}
 
 	uintptr_t MainWindow::getNativeDisplay() const
 	{
-		const auto * widget = static_cast<const OpenGLWidget *>( centralWidget() );
+		const auto * widget = static_cast<const Renderer *>( centralWidget() );
 		assert( widget != nullptr );
 		return widget->getNativeDisplay();
 	}
 
 	uint8_t MainWindow::getNativePlatform() const
 	{
-		const auto * widget = static_cast<const OpenGLWidget *>( centralWidget() );
+		const auto * widget = static_cast<const Renderer *>( centralWidget() );
 		assert( widget != nullptr );
 		return widget->getNativePlatform();
 	}

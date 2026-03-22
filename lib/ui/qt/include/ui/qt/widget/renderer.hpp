@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_OPENGL_WIDGET__
-#define __VTX_UI_QT_WIDGET_OPENGL_WIDGET__
+#ifndef __VTX_UI_QT_WIDGET_RENDERER__
+#define __VTX_UI_QT_WIDGET_RENDERER__
 
 #include "ui/qt/widget/base_widget.hpp"
 #include "ui/qt/window/renderer.hpp"
@@ -11,7 +11,7 @@ namespace VTX::UI::QT::Widget
 	 * @brief Widget to present an OpenGL rendering context.
 	 * No more Qt OpenGL implementation used.
 	 */
-	class OpenGLWidget : public BaseWidget<OpenGLWidget, QWidget>
+	class Renderer : public BaseWidget<Renderer, QWidget>
 	{
 		Q_OBJECT
 
@@ -19,8 +19,8 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Constructor.
 		 */
-		OpenGLWidget( QWidget * );
-		~OpenGLWidget();
+		Renderer( QWidget * );
+		~Renderer();
 
 		uintptr_t getNativeSurface() const;
 		uintptr_t getNativeDisplay() const;

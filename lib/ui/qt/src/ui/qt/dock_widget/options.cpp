@@ -8,7 +8,6 @@
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/actionable_push_button.hpp"
 #include "ui/qt/widget/main_window.hpp"
-#include "ui/qt/widget/opengl_widget.hpp"
 #include <QActionGroup>
 #include <QDesktopServices>
 #include <QFileDialog>

@@ -1,4 +1,4 @@
-#include "ui/qt/widget/opengl_widget.hpp"
+#include "ui/qt/widget/renderer.hpp"
 #include "app/services.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
@@ -15,7 +15,7 @@
 namespace VTX::UI::QT::Widget
 {
 
-	OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : BaseWidget( p_parent )
+	Renderer::Renderer( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
 		setAcceptDrops( true );
 
@@ -57,16 +57,16 @@ namespace VTX::UI::QT::Widget
 
 		// Setup resize timer.
 		_resizeTimer.setSingleShot( true );
-		connect( &_resizeTimer, &QTimer::timeout, this, &OpenGLWidget::onResizeFinished );
+		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
 	}
 
-	OpenGLWidget::~OpenGLWidget()
+	Renderer::~Renderer()
 	{
 		_container->removeEventFilter( this );
 		_window->removeEventFilter( this );
 	}
 
-	uintptr_t OpenGLWidget::getNativeSurface() const
+	uintptr_t Renderer::getNativeSurface() const
 	{
 		assert( _window );
 		if ( QGuiApplication::platformName() == "wayland" )
@@ -87,7 +87,7 @@ namespace VTX::UI::QT::Widget
 		return static_cast<uintptr_t>( _window->winId() );
 	}
 
-	uintptr_t OpenGLWidget::getNativeDisplay() const
+	uintptr_t Renderer::getNativeDisplay() const
 	{
 		QPlatformNativeInterface * nif = QGuiApplication::platformNativeInterface();
 		if ( nif == nullptr )
@@ -103,7 +103,7 @@ namespace VTX::UI::QT::Widget
 		return 0;
 	}
 
-	uint8_t OpenGLWidget::getNativePlatform() const
+	uint8_t Renderer::getNativePlatform() const
 	{
 		if ( QGuiApplication::platformName() == "wayland" )
 		{
@@ -120,7 +120,7 @@ namespace VTX::UI::QT::Widget
 #endif
 	}
 
-	void OpenGLWidget::resizeEvent( QResizeEvent * p_event )
+	void Renderer::resizeEvent( QResizeEvent * p_event )
 	{
 		QWidget::resizeEvent( p_event );
 
@@ -128,7 +128,7 @@ namespace VTX::UI::QT::Widget
 		_resizeTimer.start( 40 );
 	}
 
-	void OpenGLWidget::onResizeFinished()
+	void Renderer::onResizeFinished()
 	{
 		assert( _window );
 		assert( _container );
@@ -144,7 +144,7 @@ namespace VTX::UI::QT::Widget
 		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
 	}
 
-	bool OpenGLWidget::eventFilter( QObject * p_watched, QEvent * p_event )
+	bool Renderer::eventFilter( QObject * p_watched, QEvent * p_event )
 	{
 		if ( p_watched == _container )
 		{
