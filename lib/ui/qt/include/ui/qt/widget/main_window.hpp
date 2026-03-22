@@ -55,6 +55,12 @@ namespace VTX::UI::QT::Widget
 		uintptr_t getNativeSurface() const;
 		uintptr_t getNativeDisplay() const;
 		uint8_t	  getNativePlatform() const;
+		void populateViewMenu( QMenu & );
+
+		/**
+		 * @brief Override "view" context menu.
+		 */
+		QMenu * createPopupMenu() override;
 
 		/**
 		 * @brief Catch close event to quit application.
@@ -70,6 +76,15 @@ namespace VTX::UI::QT::Widget
 			M * const menu = new M( menuBar() );
 			menuBar()->addMenu( menu );
 			return menu;
+		}
+
+		/**
+		 * @brief Add a menu.
+		 */
+		void addMenu( QMenu * const p_menu )
+		{
+			p_menu->setParent( menuBar() );
+			menuBar()->addMenu( p_menu );
 		}
 
 		/**

@@ -9,6 +9,7 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QApplication>
+#include <app/constants.hpp>
 #include <app/ecs.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>

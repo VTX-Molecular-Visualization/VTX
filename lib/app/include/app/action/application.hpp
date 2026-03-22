@@ -17,6 +17,14 @@ namespace VTX::App::Action::Application
 	};
 
 	/**
+	 * @brief Check for application update.
+	 */
+	struct CheckForUpdate
+	{
+		void execute();
+	};
+
+	/**
 	 * @brief Update application.
 	 */
 	struct Update

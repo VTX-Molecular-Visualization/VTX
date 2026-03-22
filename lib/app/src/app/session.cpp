@@ -2,6 +2,7 @@
 #include "app/action/action_manager.hpp"
 #include "app/action/application.hpp"
 #include "app/args.hpp"
+#include "app/constants.hpp"
 #include "app/services.hpp"
 #include "app/threading/thread_manager.hpp"
 #include <atomic>
@@ -21,9 +22,6 @@ using namespace VTX::Util;
 
 namespace VTX::App
 {
-	const uint VERSION_MAJOR = static_cast<uint>( VTX_VERSION_MAJOR );
-	const uint VERSION_MINOR = static_cast<uint>( VTX_VERSION_MINOR );
-	const uint VERSION_PATCH = static_cast<uint>( VTX_VERSION_PATCH );
 
 	/**
 	 * @brief Data.
@@ -136,7 +134,7 @@ namespace VTX::App
 
 			// auto src = std::make_unique<Velopack::GithubSource>( UPDATE_URL.data() );
 			//_impl->manager.emplace( std::move( src ) );
-			_impl->manager.emplace( UPDATE_URL.data() );
+			_impl->manager.emplace( URL_UPDATE.data() );
 		}
 		catch ( const std::exception & p_e )
 		{

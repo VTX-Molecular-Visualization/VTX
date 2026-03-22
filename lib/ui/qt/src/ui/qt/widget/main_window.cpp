@@ -68,15 +68,14 @@ namespace VTX::UI::QT::Widget
 		createMenu<Menu::Selection>();
 		createMenu<Menu::Camera>();
 		createMenu<Menu::Tool>();
-		// createMenu<Menu::View>()->setEnabled( false );
-		createMenu<Menu::Theme>();
-		// createMenu<Menu::Help>()->setEnabled( false );
+		createMenu<Menu::View>();
+		// createMenu<Menu::Theme>();
+		createMenu<Menu::Help>();
 
 		// Toolbars.
 		createToolBar<ToolBar::File>();
 		createToolBar<ToolBar::Camera>();
 		createToolBar<ToolBar::Snapshot>();
-		createToolBar<ToolBar::Selection>();
 
 		// Main area : opengl widget.
 		auto * renderer = new Renderer( this );
@@ -189,6 +188,38 @@ namespace VTX::UI::QT::Widget
 		const auto * widget = static_cast<const Renderer *>( centralWidget() );
 		assert( widget != nullptr );
 		return widget->getNativePlatform();
+	}
+
+	void MainWindow::populateViewMenu( QMenu & p_menu )
+	{
+		p_menu.clear();
+
+		QAction * const panelsLabel = p_menu.addAction( "Panels" );
+		panelsLabel->setEnabled( false );
+		for ( QDockWidget * const dock : findChildren<QDockWidget *>() )
+		{
+			p_menu.addAction( dock->toggleViewAction() );
+		}
+
+		p_menu.addSeparator();
+		QAction * const toolbarsLabel = p_menu.addAction( "Toolbars" );
+		toolbarsLabel->setEnabled( false );
+		for ( QToolBar * const toolbar : findChildren<QToolBar *>() )
+		{
+			if ( toolBarArea( toolbar ) == Qt::NoToolBarArea )
+			{
+				continue;
+			}
+			p_menu.addAction( toolbar->toggleViewAction() );
+		}
+	}
+
+	QMenu * MainWindow::createPopupMenu()
+	{
+		QMenu * const menu = new QMenu( this );
+		menu->setTitle( "View" );
+		populateViewMenu( *menu );
+		return menu;
 	}
 
 	void MainWindow::closeEvent( QCloseEvent * p_event )

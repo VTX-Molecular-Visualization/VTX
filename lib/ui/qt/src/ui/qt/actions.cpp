@@ -1,4 +1,5 @@
 #include "ui/qt/actions.hpp"
+#include "app/action/application.hpp"
 #include "app/action/controller.hpp"
 #include "app/action/selection.hpp"
 #include "ui/qt/application.hpp"
@@ -7,10 +8,13 @@
 #include "ui/qt/dialog/open.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
+#include <QDesktopServices>
+#include <QUrl>
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/action/io.hpp>
 #include <app/action/scene.hpp>
+#include <app/constants.hpp>
 
 namespace VTX::UI::QT::Action
 {
@@ -284,11 +288,23 @@ namespace VTX::UI::QT::Action
 	namespace Help
 	{
 
-		Documentation::Documentation() { name = "Documentation"; }
+		Documentation::Documentation()
+		{
+			name	= "Documentation";
+			trigger = []() { QDesktopServices::openUrl( QUrl( App::URL_DOCUMENTATION.data() ) ); };
+		}
 
-		Report::Report() { name = "Report a bug"; }
+		Report::Report()
+		{
+			name	= "Report a bug";
+			trigger = []() { QDesktopServices::openUrl( QUrl( App::URL_REPORT.data() ) ); };
+		}
 
-		CheckUpdates::CheckUpdates() { name = "Check for updates"; }
+		CheckUpdates::CheckUpdates()
+		{
+			name	= "Check for updates";
+			trigger = []() { App::ACTION().execute<App::Action::Application::CheckForUpdate>(); };
+		}
 
 		About::About() { name = "About"; }
 

@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_VTX_UPDATER__
 #define __VTX_APP_VTX_UPDATER__
 
+#include "app/constants.hpp"
 #include "app/events.hpp"
 #include <memory>
 #include <optional>
@@ -8,20 +9,6 @@
 
 namespace VTX::App
 {
-	// Resolved in .cpp with preprocessor definitions only passed to App.
-	extern const uint VERSION_MAJOR;
-	extern const uint VERSION_MINOR;
-	extern const uint VERSION_PATCH;
-
-	constexpr std::string_view APPLICATION_DISPLAY_NAME = "VTX";
-	constexpr std::string_view APPLICATION_NAME			= "VTX";
-	constexpr std::string_view ORGANIZATION_NAME		= "VTX Team";
-	constexpr std::string_view ORGANIZATION_DOMAIN		= "vtx.drugdesign.fr";
-
-	// constexpr std::string_view UPDATE_URL	   = "https://github.com/VTX-Molecular-Visualization/VTX_release";
-	constexpr std::string_view UPDATE_URL
-		= "https://github.com/VTX-Molecular-Visualization/VTX_release/releases/latest/download";
-	constexpr std::string_view APP_FOLDER_NAME = "VTX";
 
 	/**
 	 * @brief Runtime session.
