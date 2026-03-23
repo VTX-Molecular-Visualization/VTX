@@ -2,6 +2,7 @@
 #define __VTX_APP_ACTION_PRESET__
 
 #include "app/action/action_manager.hpp"
+#include "app/action/representation.hpp"
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
 #include "app/helper/preset.hpp"
@@ -151,7 +152,15 @@ namespace VTX::App::Action::Preset
 			{
 				ACTION().execute<Scene::SetGraphicsConfig>( p_e );
 			}
-			else if constexpr ( std::is_same_v<T, Renderer::Representation> ) {}
+			else if constexpr ( std::is_same_v<T, Renderer::Representation> )
+			{
+				// Loop over all systems and apply the representation preset to each of them.
+				auto view = REG().view<System::Representation>();
+				for ( const ECS::Entity entity : view )
+				{
+					ACTION().execute<Action::Representation::Add<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>( entity, p_e );
+				}
+			}
 			else
 			{
 				static_assert( always_false_v<T>, "Unsupported preset type." );
