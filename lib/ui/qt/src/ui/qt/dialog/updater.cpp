@@ -31,7 +31,7 @@ namespace VTX::UI::QT::Dialog
 		// Changelog.
 		auto * browser = new QTextBrowser( this );
 		browser->document()->setDocumentMargin( 10 );
-		browser->setText( QString::fromStdString( p_e.changelogHtml ) );
+		browser->setHtml( QString::fromStdString( p_e.changelogHtml ) );
 		layout->addWidget( browser );
 
 		// Infos.

@@ -45,6 +45,7 @@ namespace VTX::App
 
 		/**
 		 * @brief True while an update check is active and until its result is consumed on the main thread.
+
 		 */
 		std::atomic<bool> updateCheckInProgress = false;
 
@@ -208,7 +209,7 @@ namespace VTX::App
 		{
 			const auto & release = _impl->pendingUpdate->TargetFullRelease;
 			VTX_INFO( "New version found: {}", release.Version );
-			HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesMarkdown, release.Size );
+			HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHtml, release.Size );
 		}
 		else
 		{
