@@ -44,6 +44,16 @@ namespace VTX::App
 		std::atomic<bool> updateCheckReady = false;
 
 		/**
+		 * @brief True while an update check is active and until its result is consumed on the main thread.
+		 */
+		std::atomic<bool> updateCheckInProgress = false;
+
+		/**
+		 * @brief True while an update download/apply is active.
+		 */
+		std::atomic<bool> updateDownloadInProgress = false;
+
+		/**
 		 * @brief Held while waiting for the update check result on the main thread.
 		 */
 		Util::EventHub::Connection updateCheckConnection;
@@ -132,9 +142,9 @@ namespace VTX::App
 				//.OnRestarted(  )
 				.Run();
 
-			// auto src = std::make_unique<Velopack::GithubSource>( UPDATE_URL.data() );
-			//_impl->manager.emplace( std::move( src ) );
-			_impl->manager.emplace( URL_UPDATE.data() );
+			auto src = std::make_unique<Velopack::GithubSource>( URL_UPDATE.data() );
+			_impl->manager.emplace( std::move( src ) );
+			//_impl->manager.emplace( URL_UPDATE.data() );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -148,6 +158,12 @@ namespace VTX::App
 	{
 		if ( not _impl->manager )
 		{
+			return;
+		}
+
+		if ( _impl->updateCheckInProgress.exchange( true ) )
+		{
+			VTX_INFO( "Update check already in progress" );
 			return;
 		}
 
@@ -185,6 +201,7 @@ namespace VTX::App
 			return;
 		}
 
+		_impl->updateCheckInProgress = false;
 		HUB().disconnect( _impl->updateCheckConnection );
 
 		if ( _impl->pendingUpdate )
@@ -201,7 +218,16 @@ namespace VTX::App
 
 	void Session::downloadUpdate()
 	{
-		assert( _impl->pendingUpdate );
+		if ( not _impl->pendingUpdate )
+		{
+			return;
+		}
+
+		if ( _impl->updateDownloadInProgress.exchange( true ) )
+		{
+			VTX_INFO( "Update download already in progress" );
+			return;
+		}
 
 		try
 		{
@@ -216,6 +242,7 @@ namespace VTX::App
 		}
 		catch ( const std::exception & p_e )
 		{
+			_impl->updateDownloadInProgress = false;
 			VTX_ERROR( "Update download error: {}", p_e.what() );
 		}
 	}

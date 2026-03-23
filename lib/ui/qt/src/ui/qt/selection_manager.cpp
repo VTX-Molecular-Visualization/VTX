@@ -1,4 +1,6 @@
 #include "ui/qt/selection_manager.hpp"
+#include "ui/qt/services.hpp"
+#include "ui/qt/settings.hpp"
 #include <QGuiApplication>
 #include <app/action/action_manager.hpp>
 #include <app/action/selection.hpp>

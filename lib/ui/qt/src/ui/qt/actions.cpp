@@ -214,6 +214,8 @@ namespace VTX::UI::QT::Action
 			name = "Lock";
 			tip	 = "Lock the current selection";
 			icon = Style::Icons::LOCK;
+
+			// TODO: trigger/update from setting.
 		}
 
 		Save::Save()

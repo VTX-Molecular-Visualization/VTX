@@ -155,7 +155,7 @@ jobs:
 
     - name: Install Velopack CLI
       run: |
-        dotnet tool install -g vpk
+        dotnet tool install -g vpk --prerelease
         echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
       shell: bash
 
