@@ -24,7 +24,7 @@ namespace VTX::App::Action::Representation
 		)
 		{
 			auto &						 reg	= REG();
-			const auto &				 system = reg.get<Core::Struct::System>( p_ent );
+			const auto &				 system = reg.get<Core::Struct::Topology>( p_ent );
 			Core::Struct::IndexRangeList atoms	= Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 
 			reg.patch<System::Representation>(

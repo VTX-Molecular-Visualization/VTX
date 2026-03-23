@@ -16,7 +16,7 @@ TEST_CASE( "VTX_IO - Test filepath", "[reader][topology]" )
 	const std::string systemPathname = systemName + ".mmtf";
 	const FilePath	  systemPath	 = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
-	VTX::Core::Struct::System system = VTX::Core::Struct::System();
+	VTX::Core::Struct::Topology system = VTX::Core::Struct::Topology();
 	Util::StopToken			  t;
 	IO::SystemReader		  systemReader( systemPath, t );
 

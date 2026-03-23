@@ -31,7 +31,7 @@ namespace VTX::UI::QT::Model
 		using namespace Core::Struct;
 
 		const SystemModel & model  = *static_cast<const SystemModel *>( this->model() );
-		const auto &		system = REG().get<Core::Struct::System>( _system );
+		const auto &		system = REG().get<Core::Struct::Topology>( _system );
 
 		// Unselect others.
 		const Qt::KeyboardModifiers modifiers = QGuiApplication::keyboardModifiers();
@@ -103,7 +103,7 @@ namespace VTX::UI::QT::Model
 		using namespace Core::Struct;
 
 		auto &		 reg	   = REG();
-		const auto & system	   = reg.get<Core::Struct::System>( _system );
+		const auto & system	   = reg.get<Core::Struct::Topology>( _system );
 		const auto & selection = reg.get<App::System::Selection>( _system );
 		const auto & uid	   = reg.get<App::System::UID>( _system );
 		const auto & model	   = *static_cast<const SystemModel *>( this->model() );

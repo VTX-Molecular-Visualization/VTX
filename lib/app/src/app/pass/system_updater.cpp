@@ -84,7 +84,7 @@ namespace VTX::App::Pass
 
 		for ( const ECS::Entity system : _entities )
 		{
-			const auto & data			= reg.get<Core::Struct::System>( system );
+			const auto & data			= reg.get<Core::Struct::Topology>( system );
 			const auto & transform		= reg.get<Util::Math::Transform>( system );
 			const auto & uid			= reg.get<System::UID>( system );
 			const auto & color			= reg.get<System::Color>( system );
@@ -138,7 +138,7 @@ namespace VTX::App::Pass
 		using namespace Renderer;
 
 		const auto & [ representation, uid, data ]
-			= p_r.get<System::Representation, System::UID, Core::Struct::System>( p_e );
+			= p_r.get<System::Representation, System::UID, Core::Struct::Topology>( p_e );
 
 		MapRepresentationRanges mapAtoms;
 
@@ -163,7 +163,7 @@ namespace VTX::App::Pass
 
 	void SystemUpdater::_onUpdateColor( ECS::Registry & p_r, ECS::Entity p_e )
 	{
-		const auto & [ color, uid, data ] = p_r.get<System::Color, System::UID, Core::Struct::System>( p_e );
+		const auto & [ color, uid, data ] = p_r.get<System::Color, System::UID, Core::Struct::Topology>( p_e );
 
 		std::vector<Renderer::ColorIndex> atoms( data.getAtomCount() );
 		size_t							  count = 0;

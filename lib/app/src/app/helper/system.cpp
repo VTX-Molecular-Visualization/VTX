@@ -7,9 +7,9 @@ namespace VTX::App::Helper::System
 {
 	ECS::Entity getSystemByName( const std::string p_name ) noexcept
 	{
-		for ( auto it_entity : REG().view<Core::Struct::System>() )
+		for ( auto it_entity : REG().view<Core::Struct::Topology>() )
 		{
-			auto & metadata = REG().get<Core::Struct::System>( it_entity );
+			auto & metadata = REG().get<Core::Struct::Topology>( it_entity );
 
 			// For now we use the PDB code but the function aims to retrieve a system using what is visible to the user.
 			if ( metadata.name == p_name )
@@ -62,7 +62,7 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 
 		const auto & reg	= REG();
-		const auto & system = reg.get<Core::Struct::System>( p_system.entity );
+		const auto & system = reg.get<Core::Struct::Topology>( p_system.entity );
 		const auto & color	= reg.get<App::System::Color>( p_system.entity );
 		IndexRange	 atoms;
 
@@ -102,7 +102,7 @@ namespace VTX::App::Helper::System
 
 		const ECS::Entity ent	 = p_system.entity;
 		const auto &	  reg	 = REG();
-		const auto &	  system = reg.get<Core::Struct::System>( ent );
+		const auto &	  system = reg.get<Core::Struct::Topology>( ent );
 		const auto &	  color	 = reg.get<Color>( ent );
 
 		for ( const auto & [ _, ranges ] : color.colorSchemeAtoms )
@@ -162,7 +162,7 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 
 		const auto & reg			= REG();
-		const auto & system			= reg.get<Core::Struct::System>( p_system.entity );
+		const auto & system			= reg.get<Core::Struct::Topology>( p_system.entity );
 		const auto & representation = reg.get<App::System::Representation>( p_system.entity );
 		IndexRange	 atoms;
 
@@ -202,7 +202,7 @@ namespace VTX::App::Helper::System
 
 		const ECS::Entity ent			 = p_system.entity;
 		const auto &	  reg			 = REG();
-		const auto &	  system		 = reg.get<Core::Struct::System>( ent );
+		const auto &	  system		 = reg.get<Core::Struct::Topology>( ent );
 		const auto &	  representation = reg.get<Representation>( ent );
 
 		for ( const auto & [ _, ranges ] : representation.presetAtoms )

@@ -505,7 +505,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - System", "[python][binding]
 	const char * factoryName = "TEST_getSampleSystem";
 	vtxModule->def(
 		factoryName,
-		[ mockedSystem = &mockedSystem ]() { return PythonBinding::API::System( *mockedSystem ); },
+		[ mockedSystem = &mockedSystem ]() { return PythonBinding::API::Topology( *mockedSystem ); },
 		pybind11::return_value_policy::move
 	);
 	pybind11::exec( fmt::format( "from {} import *", PythonBinding::vtx_module_name() ) );

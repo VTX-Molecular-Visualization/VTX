@@ -5,7 +5,7 @@
 
 namespace VTX::App::Helper::Chemistry
 {
-	std::vector<Index> findChainsByName( const Core::Struct::System & p_system, const std::string & p_chainName )
+	std::vector<Index> findChainsByName( const Core::Struct::Topology & p_system, const std::string & p_chainName )
 	{
 		std::vector<Index> res;
 
@@ -20,7 +20,7 @@ namespace VTX::App::Helper::Chemistry
 		return res;
 	}
 
-	std::vector<Index> findResiduesByName( const Core::Struct::System & p_system, const std::string & p_residueName )
+	std::vector<Index> findResiduesByName( const Core::Struct::Topology & p_system, const std::string & p_residueName )
 	{
 		using namespace VTX::Core;
 

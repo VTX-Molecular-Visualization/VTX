@@ -13,7 +13,7 @@ namespace VTX::Util
 
 namespace VTX::Core::Struct
 {
-	struct System;
+	struct Topology;
 } // namespace VTX::Core::Struct
 
 namespace VTX::IO
@@ -35,7 +35,7 @@ namespace VTX::IO
 
 		size_t frameCount() const;
 
-		void get( VTX::Core::Struct ::System & ) noexcept;
+		void get( VTX::Core::Struct ::Topology & ) noexcept;
 
 		/**
 		 * @brief Always return Frame 0's positions

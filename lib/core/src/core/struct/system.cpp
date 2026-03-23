@@ -4,21 +4,21 @@
 
 namespace VTX::Core::Struct
 {
-	void System::appendNewChain()
+	void Topology::appendNewChain()
 	{
 		chainNames.emplace_back( "" );
 		chainFirstResidues.emplace_back( INVALID_INDEX );
 		chainResidueCounts.emplace_back( 0 );
 	}
 
-	void System::initChains( const Index p_count )
+	void Topology::initChains( const Index p_count )
 	{
 		chainNames.resize( p_count );
 		chainFirstResidues.resize( p_count, INVALID_INDEX );
 		chainResidueCounts.resize( p_count, 0 );
 	}
 
-	void System::initResidues( const Index p_count )
+	void Topology::initResidues( const Index p_count )
 	{
 		residueSymbols.resize( p_count, ChemDB::Residue::SYMBOL::UNKNOWN );
 		residueChainIndexes.resize( p_count, INVALID_INDEX );
@@ -31,20 +31,20 @@ namespace VTX::Core::Struct
 		residueNames.resize( p_count );
 	}
 
-	void System::initAtoms( const Index p_count )
+	void Topology::initAtoms( const Index p_count )
 	{
 		atomSymbols.resize( p_count, ChemDB::Atom::SYMBOL::UNKNOWN );
 		atomResidueIndexes.resize( p_count, INVALID_INDEX );
 		atomNames.resize( p_count );
 	}
 
-	void System::initBonds( const Index p_count )
+	void Topology::initBonds( const Index p_count )
 	{
 		bondOrders.resize( p_count, ChemDB::Bond::ORDER::UNKNOWN );
 		bondPairAtomIndexes.resize( p_count * 2, INVALID_INDEX );
 	}
 
-	ByteNumber dynamicMemoryUsage( const System & p_sys ) noexcept
+	ByteNumber dynamicMemoryUsage( const Topology & p_sys ) noexcept
 	{
 		ByteNumber out = 0;
 		out += p_sys.name.capacity();

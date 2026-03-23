@@ -14,7 +14,7 @@ namespace VTX::UI::QT::DockWidget
 		setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 
 		App::HUB().connect<App::Events::SystemLoad, &Sequences::_onSystemLoad>( this );
-		App::REG().on_destroy<Core::Struct::System>().connect<&Sequences::_onSystemDestroy>( this );
+		App::REG().on_destroy<Core::Struct::Topology>().connect<&Sequences::_onSystemDestroy>( this );
 
 		// Refresh widget when selection changed.
 		App::REG().on_update<App::System::Selection>().connect<&Sequences::_onUpdateSelection>( this );

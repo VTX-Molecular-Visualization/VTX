@@ -41,7 +41,7 @@ namespace VTX::UI::QT::Widget
 		// Add selected items.
 		for ( auto entity : entities )
 		{
-			const auto & system	   = reg.get<Core::Struct::System>( entity );
+			const auto & system	   = reg.get<Core::Struct::Topology>( entity );
 			const auto & selection = reg.get<App::System::Selection>( entity );
 
 			QString name = QString::fromStdString( system.name );

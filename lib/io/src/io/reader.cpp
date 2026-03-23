@@ -61,7 +61,7 @@ namespace VTX::IO
 
 		size_t frameCount() const { return trajectory.size(); }
 
-		void get( Core::Struct::System & p_system ) noexcept
+		void get( Core::Struct::Topology & p_system ) noexcept
 		{
 			if ( stopToken.get().stop_requested() )
 				return;
@@ -320,7 +320,7 @@ namespace VTX::IO
 	{
 	}
 
-	void SystemReader::get( Core::Struct::System & p_ ) noexcept { _impl->get( p_ ); }
+	void SystemReader::get( Core::Struct::Topology & p_ ) noexcept { _impl->get( p_ ); }
 	void SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) noexcept { _impl->get( p_i, p_ ); }
 	void SystemReader::get( AtomPositions & p_ ) noexcept { _impl->get( 0, p_ ); }
 	void SystemReader::get( const PdbIdCode & p_ ) noexcept { _impl->get( p_ ); }

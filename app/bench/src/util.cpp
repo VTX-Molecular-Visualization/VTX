@@ -6,24 +6,24 @@
 
 namespace VTX::Bench
 {
-	Core::Struct::System loadSystem( const FilePath & p_filename )
+	Core::Struct::Topology loadSystem( const FilePath & p_filename )
 	{
 		Util::StopToken		 t;
 		IO::SystemReader	 reader( VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename, t );
-		Core::Struct::System system;
+		Core::Struct::Topology system;
 		reader.get( system );
 
 		return system;
 	}
 
-	Core::Struct::System downloadSystem( const std::string & p_pdb )
+	Core::Struct::Topology downloadSystem( const std::string & p_pdb )
 	{
 		IO::MemoryBuffer text;
 		VTX::Util::Network::httpRequestGet( "https://files.rcsb.org/download/" + p_pdb + ".pdb", text );
 
 		Util::StopToken		 t;
 		IO::SystemReader	 reader( text, p_pdb + ".pdb", t );
-		Core::Struct::System system;
+		Core::Struct::Topology system;
 		reader.get( system );
 		return system;
 	}

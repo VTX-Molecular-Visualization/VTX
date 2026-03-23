@@ -59,7 +59,7 @@ namespace pdb100
 		if ( r != ARCHIVE_OK )
 			throw VTX::VTXException( "Issue with archive <{}>. Freeing error.", src.string() );
 	}
-	const std::string & chainName( const VTX::Core::Struct::System & p_sys, const uint64_t & p_vtxResId )
+	const std::string & chainName( const VTX::Core::Struct::Topology & p_sys, const uint64_t & p_vtxResId )
 	{
 		if ( p_sys.chainNames.size() == 1 )
 			return p_sys.chainNames[ 0 ];
@@ -76,7 +76,7 @@ namespace pdb100
 	}
 	const char * string( const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_ );
 	std::string	 writeSsReportString(
-		 const VTX::Core::Struct::System &					 p_chemSystem,
+		 const VTX::Core::Struct::Topology &					 p_chemSystem,
 		 const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type,
 		 const bool &										 p_isBeginCorrect,
 		 const bool &										 p_isEndCorrect,
@@ -85,7 +85,7 @@ namespace pdb100
 	 );
 	std::string writeSs( const SecondaryStruct & p_ss );
 
-	std::string writeRcsbSs( const System & p_system )
+	std::string writeRcsbSs( const Topology & p_system )
 	{
 		std::string ret;
 		ret += "RCSB PDB Secondary Structure : \n";
@@ -148,7 +148,7 @@ namespace pdb100
 	 * @return
 	 */
 	std::string writeSsReportString(
-		const VTX::Core::Struct::System &					p_chemSystem,
+		const VTX::Core::Struct::Topology &					p_chemSystem,
 		const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type,
 		const bool &										p_isBeginCorrect,
 		const bool &										p_isEndCorrect,
@@ -277,17 +277,17 @@ namespace pdb100
 		}
 
 		template<typename SS>
-		inline const std::vector<SS> & ssCollection( const System & p_system )
+		inline const std::vector<SS> & ssCollection( const Topology & p_system )
 		{
 			static_assert( false );
 		}
 		template<>
-		inline const std::vector<Strand> & ssCollection<Strand>( const System & p_system )
+		inline const std::vector<Strand> & ssCollection<Strand>( const Topology & p_system )
 		{
 			return p_system.strands;
 		}
 		template<>
-		inline const std::vector<Helix> & ssCollection<Helix>( const System & p_system )
+		inline const std::vector<Helix> & ssCollection<Helix>( const Topology & p_system )
 		{
 			return p_system.helixes;
 		}
@@ -301,7 +301,7 @@ namespace pdb100
 		template<typename SS>
 		void terminateSs(
 			const VTX::Core::ChemDB::SecondaryStructure::TYPE & type,
-			const System &										p_system,
+			const Topology &										p_system,
 			TestContext &										p_context
 		)
 		{
@@ -332,7 +332,7 @@ namespace pdb100
 		 */
 		template<typename SS, typename OtherSS>
 		inline bool specificSsComparison(
-			const System &								  p_system,
+			const Topology &								  p_system,
 			VTX::Core::ChemDB::SecondaryStructure::TYPE & p_currentType,
 			const std::vector<SS> &						  p_ssCollection,
 			TestContext &								  p_context
@@ -465,7 +465,7 @@ namespace pdb100
 		/**
 		 * @brief Compute differences between our prediction and RCSB's and post a report item
 		 */
-		void compare( System & p_system )
+		void compare( Topology & p_system )
 		{
 			using Type = VTX::Core::ChemDB::SecondaryStructure::TYPE;
 			TestContext context;
@@ -516,7 +516,7 @@ namespace pdb100
 	 * @param p_systemPath
 	 * @param p_system
 	 */
-	void testSystem( const fs::path & p_systemPath, System & p_system )
+	void testSystem( const fs::path & p_systemPath, Topology & p_system )
 	{
 		std::stringstream strm;
 		strm << "vtx_file_" << std::this_thread::get_id() << ".cif";
@@ -538,7 +538,7 @@ namespace pdb100
 			return;
 		}
 
-		VTX::IO::Reader::System reader;
+		VTX::IO::Reader::Topology reader;
 
 		reader.readFile( decompressedFile, p_system.system );
 		size_t resIdx = 0;
@@ -569,7 +569,7 @@ namespace pdb100
 		std::string systemName = p_systemPath.stem().string();
 		try
 		{
-			System newSystem;
+			Topology newSystem;
 			memcpy_s( newSystem.code, sizeof( newSystem.code ), systemName.data(), sizeof( newSystem.code ) );
 			newSystem.resultIndex = postCrashItem( newSystem.code );
 			testSystem( p_systemPath, newSystem );

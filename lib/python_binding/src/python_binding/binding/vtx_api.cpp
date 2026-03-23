@@ -92,11 +92,11 @@ namespace VTX::PythonBinding::Binding
 				[]( Quatf & _ ) { return fmt::format( "Quatf(x={}, y={}, z={}, w={})", _.x, _.y, _.z, _.w ); }
 			);
 
-		pybind11::class_<VTX::Core::Struct::System>( p_apiModule, "SystemStruct", pybind11::module_local() )
+		pybind11::class_<VTX::Core::Struct::Topology>( p_apiModule, "SystemStruct", pybind11::module_local() )
 			.def_property(
 				"name",
-				[]( const VTX::Core::Struct::System & p_system ) { return p_system.name; },
-				[]( VTX::Core::Struct::System & p_system, const std::string & p_name ) { p_system.name = p_name; }
+				[]( const VTX::Core::Struct::Topology & p_system ) { return p_system.name; },
+				[]( VTX::Core::Struct::Topology & p_system, const std::string & p_name ) { p_system.name = p_name; }
 			);
 		// Collections
 		registerCollection<API::Atom>( p_apiModule, "CollectionAtom" );

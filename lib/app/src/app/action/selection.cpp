@@ -75,7 +75,7 @@ namespace VTX::App::Action::Selection
 		if ( firstEntOpt )
 		{
 			ECS::Entity	 firstEnt = *firstEntOpt;
-			const auto & system	  = REG().get<Core::Struct::System>( firstEnt );
+			const auto & system	  = REG().get<Core::Struct::Topology>( firstEnt );
 			const auto & uid	  = REG().get<System::UID>( firstEnt );
 
 			const Index firstAtomIndex = uid.getAtomIndex( first );
@@ -178,7 +178,7 @@ namespace VTX::App::Action::Selection
 
 			ECS::Entity firstEnt = *firstEntOpt;
 
-			const auto & system		  = REG().get<Core::Struct::System>( firstEnt );
+			const auto & system		  = REG().get<Core::Struct::Topology>( firstEnt );
 			const auto & uid		  = REG().get<System::UID>( firstEnt );
 			const Index	 residueIndex = uid.getResidueIndex( first );
 

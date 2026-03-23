@@ -43,11 +43,11 @@ namespace VTX::Bench
 
 		if ( p_name.find( '.' ) != std::string::npos )
 		{
-			_systems.emplace_back( std::make_unique<Core::Struct::System>( loadSystem( p_name ) ) );
+			_systems.emplace_back( std::make_unique<Core::Struct::Topology>( loadSystem( p_name ) ) );
 		}
 		else
 		{
-			_systems.emplace_back( std::make_unique<Core::Struct::System>( downloadSystem( p_name ) ) );
+			_systems.emplace_back( std::make_unique<Core::Struct::Topology>( downloadSystem( p_name ) ) );
 		}
 
 		//_systems.back()->transform

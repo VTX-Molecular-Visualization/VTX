@@ -166,7 +166,7 @@ namespace VTX::App::System
 		auto & reg = REG();
 
 		// Add components.
-		auto & data		 = reg.emplace<Core::Struct::System>( p_entity, std::move( p_data.system ) );
+		auto & data		 = reg.emplace<Core::Struct::Topology>( p_entity, std::move( p_data.system ) );
 		auto & metadata	 = reg.emplace<System::Metadata>( p_entity );
 		auto & transform = reg.emplace<Util::Math::Transform>( p_entity );
 		auto & aabb		 = reg.emplace<Util::Math::AABB>( p_entity );
@@ -218,7 +218,7 @@ namespace VTX::App::System
 
 	void deliver( const ECS::Entity & p_entity, PendingSystem & p_data ) noexcept
 	{
-		auto system = REG().try_get<Core::Struct::System>( p_entity );
+		auto system = REG().try_get<Core::Struct::Topology>( p_entity );
 		if ( p_data.onlyTrajectory && system )
 		{
 			if ( system->getAtomCount() == p_data.system.getAtomCount() )

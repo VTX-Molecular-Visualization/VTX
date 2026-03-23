@@ -42,7 +42,7 @@ namespace VTX::UI::QT::Widget
 		using namespace Core::Struct;
 
 		auto & reg				  = REG();
-		auto & system			  = reg.get<Core::Struct::System>( _system );
+		auto & system			  = reg.get<Core::Struct::Topology>( _system );
 		auto & metadata			  = reg.get<App::System::Metadata>( _system );
 		auto & uid				  = reg.get<App::System::UID>( _system );
 		auto & colorLayoutIntance = ECS::getFirstComponent<Scene::ColorLayout>();
@@ -274,7 +274,7 @@ namespace VTX::UI::QT::Widget
 
 	void Sequence::_updateScrollBars()
 	{
-		auto &	   system		= App::REG().get<Core::Struct::System>( _system );
+		auto &	   system		= App::REG().get<Core::Struct::Topology>( _system );
 		const uint contentWidth = uint( system.getResidueCount() ) * SEQ_CHAR_WIDTH;
 		horizontalScrollBar()->setRange( 0, contentWidth - viewport()->width() );
 		horizontalScrollBar()->setPageStep( viewport()->width() );
@@ -284,7 +284,7 @@ namespace VTX::UI::QT::Widget
 	{
 		const int xOffset = horizontalScrollBar()->value();
 		const int clickX  = p.x() + xOffset;
-		auto &	  system  = App::REG().get<Core::Struct::System>( _system );
+		auto &	  system  = App::REG().get<Core::Struct::Topology>( _system );
 
 		Index index = clickX / SEQ_CHAR_WIDTH;
 		if ( index > system.getResidueCount() )

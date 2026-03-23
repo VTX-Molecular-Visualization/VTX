@@ -38,7 +38,7 @@ namespace VTX::Core::Struct
 	/**
 	 * @brief Raw data structure representing a molecular system.
 	 */
-	struct System
+	struct Topology
 	{
 		/**
 		 * @brief System name.
@@ -343,7 +343,7 @@ namespace VTX::Core::Struct
 		}
 	};
 
-	ByteNumber dynamicMemoryUsage( const System & ) noexcept;
+	ByteNumber dynamicMemoryUsage( const Topology & ) noexcept;
 
 } // namespace VTX::Core::Struct
 #endif

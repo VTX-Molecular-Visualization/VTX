@@ -85,7 +85,7 @@ namespace VTX::UI::QT::Model
 		/**
 		 * @brief Reference to the system data.
 		 */
-		std::reference_wrapper<const Core::Struct::System> _data;
+		std::reference_wrapper<const Core::Struct::Topology> _data;
 	};
 
 } // namespace VTX::UI::QT::Model

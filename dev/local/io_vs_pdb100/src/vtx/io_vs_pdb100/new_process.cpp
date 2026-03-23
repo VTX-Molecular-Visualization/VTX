@@ -71,9 +71,9 @@ namespace
 		const std::string systemName	 = structureFile.stem().string();
 		const std::string systemPathname = systemName + structureFile.extension().string();
 
-		VTX::Core::Struct::System system = VTX::Core::Struct::System();
+		VTX::Core::Struct::Topology system = VTX::Core::Struct::Topology();
 		{
-			IO::Reader::System systemReader = IO::Reader::System();
+			IO::Reader::Topology systemReader = IO::Reader::Topology();
 
 			systemReader.readFile( structureFile, system );
 #ifdef FIRST_READ_ONLY
@@ -98,8 +98,8 @@ namespace
 			}
 		);
 
-		VTX::Core::Struct::System system_reread		  = VTX::Core::Struct::System();
-		IO::Reader::System		  systemReader_reread = IO::Reader::System();
+		VTX::Core::Struct::Topology system_reread		  = VTX::Core::Struct::Topology();
+		IO::Reader::Topology		  systemReader_reread = IO::Reader::Topology();
 
 		systemReader_reread.readFile( structureFile, system_reread );
 

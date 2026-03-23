@@ -9,7 +9,7 @@ namespace VTX::Renderer
 	{
 		const SystemUID				 uid;
 		const Mat4f &				 transform;
-		const Core::Struct::System & data;
+		const Core::Struct::Topology & data;
 		std::span<const Vec3f>		 trajectory;
 
 		// TODO: delete and use ssbo with atom indexes in shader.

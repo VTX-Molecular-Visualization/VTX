@@ -54,7 +54,7 @@ namespace VTX::Bench
 		Camera _camera;
 		// Renderer::Proxy::Camera _proxyCamera;
 
-		std::vector<std::unique_ptr<Core::Struct::System>> _systems;
+		std::vector<std::unique_ptr<Core::Struct::Topology>> _systems;
 		std::vector<Vec3f>								   _directions;
 
 		Renderer::Color::Layout _colorLayout;

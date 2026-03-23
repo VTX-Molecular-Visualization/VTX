@@ -92,14 +92,14 @@ namespace VTX::App::Action::Camera
 		Util::Math::AABB aabb;
 
 		// From selection.
-		auto view = ECS::registry().view<Core::Struct::System, Util::Math::AABB, System::Selection>();
+		auto view = ECS::registry().view<Core::Struct::Topology, Util::Math::AABB, System::Selection>();
 
 		if ( view.size_hint() )
 		{
 			view.each(
 				[ & ](
 					const ECS::Entity &			 p_e,
-					const Core::Struct::System & p_data,
+					const Core::Struct::Topology & p_data,
 					const Util::Math::AABB &	 p_aabb,
 					const System::Selection &	 p_selection
 				)

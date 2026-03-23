@@ -8,12 +8,12 @@ namespace VTX::IO::Util::SecondaryStructure
 	{
 
 	}
-	void assignSecondaryStructure( VTX::Core::Struct::System & p_system )
+	void assignSecondaryStructure( VTX::Core::Struct::Topology & p_system )
 	{
 		// This new algorithm will utilize H-bond to assign Beta-sheet and Alpha-helix
 	}
 
-	void computeStride( Core::Struct::System & p_system )
+	void computeStride( Core::Struct::Topology & p_system )
 	{
 #ifdef AnAlgorithmShoudntBeHere
 		using namespace VTX::Util;
