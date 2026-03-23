@@ -200,6 +200,12 @@ namespace VTX::App::Action::Preset
 		void execute()
 		{
 			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Default", Renderer::GraphicsConfigs::DEFAULT );
+			ACTION().execute<Add<Renderer::GraphicsConfig>>(
+				"Presentation", Renderer::GraphicsConfigs::PRESENTATION
+			);
+			ACTION().execute<Add<Renderer::GraphicsConfig>>(
+				"Illustration", Renderer::GraphicsConfigs::ILLUSTRATION
+			);
 		}
 	};
 } // namespace VTX::App::Action::Preset

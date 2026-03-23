@@ -151,6 +151,61 @@ namespace VTX::Renderer
 											  ACTIVE_SELECTION_DEFAULT,
 											  COLOR_SELECTION_DEFAULT
 		};
+
+		inline const GraphicsConfig PRESENTATION { // Shading.
+												   E_SHADING::GLOSSY,
+												   Util::Color::Rgba( 255, 255, 255 ),
+												   Util::Color::Rgba( 18, 20, 24 ),
+												   0.55f,
+												   56.f,
+												   TOON_STEPS_DEFAULT,
+												   // SSAO.
+												   true,
+												   4.f,
+												   21.f,
+												   // Outline.
+												   false,
+												   Util::Color::Rgba( 255, 255, 255 ),
+												   0.5f,
+												   1,
+												   // Fog.
+												   false,
+												   Util::Color::Rgba( 64, 64, 64 ),
+												   30.f,
+												   80.f,
+												   0.5f,
+												   // Selection.
+												   true,
+												   Util::Color::Rgba( 80, 255, 120 )
+		};
+
+		inline const GraphicsConfig ILLUSTRATION { // Shading.
+												   E_SHADING::TOON,
+												   Util::Color::Rgba( 255, 255, 255 ),
+												   Util::Color::Rgba( 245, 245, 242 ),
+												   0.f,
+												   0.f,
+												   4,
+												   // SSAO.
+												   true,
+												   2.5f,
+												   11.f,
+												   // Outline.
+												   true,
+												   Util::Color::Rgba( 28, 28, 28 ),
+												   0.35f,
+												   2,
+												   // Fog.
+												   false,
+												   Util::Color::Rgba( 200, 200, 200 ),
+												   30.f,
+												   80.f,
+												   0.5f,
+												   // Selection.
+												   true,
+												   Util::Color::Rgba( 255, 64, 64 )
+		};
+
 	};
 
 } // namespace VTX::Renderer

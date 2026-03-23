@@ -9,6 +9,7 @@
 #include "app/action/representation.hpp"
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
+#include "app/helper/preset.hpp"
 #include "app/input/input_manager.hpp"
 #include "app/network/network_manager.hpp"
 #include "app/pass/camera_updater.hpp"
@@ -173,12 +174,21 @@ namespace VTX::App
 			VTX_INFO( "Python interpretor initialized" );
 		}
 
-		ACTION().execute<Action::Scene::SetGraphicsConfig>(
-			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>()
-		);
-		ACTION().execute<Action::Scene::SetColorLayout>(
-			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
-		);
+		const ECS::Entity defaultGraphicsConfig = Helper::Preset::getByName<Renderer::GraphicsConfig>( "Default" )
+													 .value_or(
+														 ECS::getFirstEntityOnlyWithComponents<
+															 Preset::Name,
+															 Renderer::GraphicsConfig>()
+													 );
+		ACTION().execute<Action::Scene::SetGraphicsConfig>( defaultGraphicsConfig );
+
+		const ECS::Entity defaultColorLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" )
+												   .value_or(
+													   ECS::getFirstEntityOnlyWithComponents<
+														   Preset::Name,
+														   Renderer::Color::Layout>()
+												   );
+		ACTION().execute<Action::Scene::SetColorLayout>( defaultColorLayout );
 
 		HUB().trigger<Events::ApplicationStart>();
 
