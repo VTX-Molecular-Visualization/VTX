@@ -180,9 +180,7 @@ namespace VTX::App::Action::Preset
 			ACTION().execute<Add<Renderer::Color::Layout>>(
 				"JMol High Contrast", Renderer::Color::Layouts::HIGH_CONTRAST
 			);
-			ACTION().execute<Add<Renderer::Color::Layout>>(
-				"JMol Colorblind", Renderer::Color::Layouts::COLORBLIND
-			);
+			ACTION().execute<Add<Renderer::Color::Layout>>( "JMol Colorblind", Renderer::Color::Layouts::COLORBLIND );
 		}
 	};
 
@@ -191,15 +189,18 @@ namespace VTX::App::Action::Preset
 	{
 		void execute()
 		{
-			ACTION().execute<Add<Renderer::Representation>>( "SES", Renderer::Representations::SES );
-			ACTION().execute<Add<Renderer::Representation>>( "Ribbons", Renderer::Representations::RIBBONS );
+			ACTION().execute<Add<Renderer::Representation>>( "Sticks", Renderer::Representations::STICKS );
 			ACTION().execute<Add<Renderer::Representation>>(
-				"Van der Waals", Renderer::Representations::VAN_DER_WAALS
+				"Sticks and Ribbons", Renderer::Representations::STICKS_AND_RIBBONS
 			);
 			ACTION().execute<Add<Renderer::Representation>>(
 				"Balls and sticks", Renderer::Representations::BALLS_AND_STICKS
 			);
-			ACTION().execute<Add<Renderer::Representation>>( "Sticks", Renderer::Representations::STICKS );
+			ACTION().execute<Add<Renderer::Representation>>(
+				"Van der Waals", Renderer::Representations::VAN_DER_WAALS
+			);
+			ACTION().execute<Add<Renderer::Representation>>( "Ribbons", Renderer::Representations::RIBBONS );
+			// ACTION().execute<Add<Renderer::Representation>>( "SES", Renderer::Representations::SES );
 		}
 	};
 
@@ -209,12 +210,8 @@ namespace VTX::App::Action::Preset
 		void execute()
 		{
 			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Default", Renderer::GraphicsConfigs::DEFAULT );
-			ACTION().execute<Add<Renderer::GraphicsConfig>>(
-				"Presentation", Renderer::GraphicsConfigs::PRESENTATION
-			);
-			ACTION().execute<Add<Renderer::GraphicsConfig>>(
-				"Illustration", Renderer::GraphicsConfigs::ILLUSTRATION
-			);
+			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Presentation", Renderer::GraphicsConfigs::PRESENTATION );
+			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Illustration", Renderer::GraphicsConfigs::ILLUSTRATION );
 		}
 	};
 } // namespace VTX::App::Action::Preset

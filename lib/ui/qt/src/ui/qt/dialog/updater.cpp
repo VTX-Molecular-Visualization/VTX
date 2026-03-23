@@ -34,6 +34,8 @@ namespace VTX::UI::QT::Dialog
 		browser->setHtml( QString::fromStdString( p_e.changelogHtml ) );
 		layout->addWidget( browser );
 
+		VTX_DEBUG( "Changelog HTML: {}", p_e.changelogHtml );
+
 		// Infos.
 		auto * labelCurrentVersion = new QLabel( QString( "Current: %1" ).arg( p_e.currentVersion ) );
 		labelCurrentVersion->setAlignment( Qt::AlignRight );

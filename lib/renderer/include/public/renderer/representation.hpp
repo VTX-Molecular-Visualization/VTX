@@ -81,11 +81,28 @@ namespace VTX::Renderer
 											 0.15f,
 											 false,
 											 // Ribbon.
-											 true,
+											 false,
 											 false,
 											 // SES.
 											 false,
 											 SES_PROBE_RADIUS_DEFAULT
+		};
+
+		inline const Representation STICKS_AND_RIBBONS { // Sphere.
+														 false,
+														 RADIUS_SPHERE_FIXED_DEFAULT,
+														 RADIUS_SPHERE_ADD_DEFAULT,
+														 true,
+														 // Cylinder.
+														 true,
+														 0.15f,
+														 false,
+														 // Ribbon.
+														 true,
+														 true,
+														 // SES.
+														 false,
+														 SES_PROBE_RADIUS_DEFAULT
 		};
 
 		inline const Representation BALLS_AND_STICKS { // Sphere.

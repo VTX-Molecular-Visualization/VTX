@@ -209,6 +209,8 @@ namespace VTX::App
 		{
 			const auto & release = _impl->pendingUpdate->TargetFullRelease;
 			VTX_INFO( "New version found: {}", release.Version );
+			VTX_DEBUG( "Release notes MD:\n{}", release.NotesMarkdown );
+			VTX_DEBUG( "Release notes HTML:\n{}", release.NotesHtml );
 			HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHtml, release.Size );
 		}
 		else

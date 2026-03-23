@@ -7,6 +7,7 @@
 #include "app/action/visibility.hpp"
 #include "app/ecs.hpp"
 #include "app/events.hpp"
+#include "app/helper/preset.hpp"
 #include "app/preset/name.hpp"
 #include "app/scene/color_layout.hpp"
 #include "app/scene/graphics_config.hpp"
@@ -30,6 +31,7 @@
 #include <util/math/aabb.hpp>
 #include <util/math/range_list.hpp>
 #include <util/math/transform.hpp>
+
 namespace VTX::App::System
 {
 	namespace
@@ -206,7 +208,9 @@ namespace VTX::App::System
 
 		// Representation: set default representation.
 		// TODO: configure default representation in settings?
-		representation.presetAtoms[ ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>() ]
+		representation.presetAtoms
+			[ Helper::Preset::getByName<Renderer::Representation>( "Sticks and Ribbons" )
+				  .value_or( ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>() ) ]
 			= Core::Struct::IndexRangeList( data.getAtomRange() );
 
 		// Trigger system load.
