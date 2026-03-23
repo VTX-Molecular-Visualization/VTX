@@ -174,7 +174,16 @@ namespace VTX::App::Action::Preset
 	template<>
 	struct CreateDefault<Renderer::Color::Layout>
 	{
-		void execute() { ACTION().execute<Add<Renderer::Color::Layout>>( "JMol", Renderer::Color::Layouts::JMOL ); }
+		void execute()
+		{
+			ACTION().execute<Add<Renderer::Color::Layout>>( "JMol", Renderer::Color::Layouts::JMOL );
+			ACTION().execute<Add<Renderer::Color::Layout>>(
+				"JMol High Contrast", Renderer::Color::Layouts::HIGH_CONTRAST
+			);
+			ACTION().execute<Add<Renderer::Color::Layout>>(
+				"JMol Colorblind", Renderer::Color::Layouts::COLORBLIND
+			);
+		}
 	};
 
 	template<>

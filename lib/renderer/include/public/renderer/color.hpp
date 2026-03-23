@@ -373,6 +373,29 @@ namespace VTX::Renderer::Color
 		return int( p_type ) + LAYOUT_OFFSET_RIBBONS;
 	}
 
+	namespace
+	{
+		inline Layout _toHighContrast( const Layout & p_source )
+		{
+			Layout result = p_source;
+			for ( Util::Color::Rgba & color : result.colors )
+			{
+				color = color.toHighContrast();
+			}
+			return result;
+		}
+
+		inline Layout _toColorblind( const Layout & p_source )
+		{
+			Layout result = p_source;
+			for ( Util::Color::Rgba & color : result.colors )
+			{
+				color = color.toColorblind();
+			}
+			return result;
+		}
+	} // namespace
+
 	namespace Layouts
 	{
 		inline const Layout JMOL { LayoutArray { COLOR_CYAN,		// UNKNOWN
@@ -635,7 +658,10 @@ namespace VTX::Renderer::Color
 												 COLOR_WHITE,
 												 COLOR_WHITE,
 												 COLOR_WHITE } };
-	}
+
+		inline const Layout HIGH_CONTRAST = _toHighContrast( JMOL );
+		inline const Layout COLORBLIND	  = _toColorblind( JMOL );
+	} // namespace Layouts
 
 	/*
 enum class COLOR_MODE : int

@@ -216,6 +216,12 @@ namespace VTX::Util::Color
 		static Rgba randomPastel() { return random() * 0.5f + 0.5f; }
 		static Rgba random();
 
+		Rgba mixedWith( const Rgba &, const float ) const;
+		Rgba withMinBrightness( const float ) const;
+		Rgba withSaturation( const float ) const;
+		Rgba toHighContrast() const;
+		Rgba toColorblind() const;
+
 		void saturate();
 		void applyGamma( const float & );
 		void oppose();
