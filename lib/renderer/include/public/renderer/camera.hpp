@@ -71,28 +71,30 @@ namespace VTX::Renderer
 		/**
 		 * @brief Compute projection matrix.
 		 */
-		inline Mat4f computeProjectionMatrix() const
+		inline Mat4f computeProjectionMatrix( const Vec3f & p_position ) const
 		{
 			using namespace Util;
 
 			assert( screenWidth > 0.f && screenHeight > 0.f );
 
+			float aspectRatio = float( screenWidth ) / float( screenHeight );
+
 			switch ( projection )
 			{
 			case PROJECTION::PERSPECTIVE:
 			{
-				return Math::perspective(
-					Math::radians( fov ), float( screenWidth ) / float( screenHeight ), near, far
-				);
+				return Math::perspective( Math::radians( fov ), aspectRatio, near, far );
 			}
-
 			case PROJECTION::ORTHOGRAPHIC:
 			{
-				const float halfHeight = screenHeight * 0.5f;
-				const float halfWidth  = screenWidth * 0.5f;
-				return Math::ortho( -halfWidth, halfWidth, -halfHeight, halfHeight, near, far );
-			}
+				float top = tanf( Math::radians( fov ) * 0.5f ) * Math::distance( target, p_position );
 
+				float bottom = -top;
+				float right	 = top * aspectRatio;
+				float left	 = -top * aspectRatio;
+
+				return Math::ortho( left, right, bottom, top, near, far );
+			}
 			default:
 			{
 				assert( false );

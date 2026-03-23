@@ -40,7 +40,7 @@ namespace VTX::App::Pass
 		const Mat4f viewMatrix = Util::Math::lookAt(
 			transform.getPosition(), transform.getPosition() + transform.getFront(), transform.getUp()
 		);
-		const Mat4f projectionMatrix = camera.computeProjectionMatrix();
+		const Mat4f projectionMatrix = camera.computeProjectionMatrix( transform.getPosition() );
 
 		RENDERER().setCamera( camera, transform.getPosition(), viewMatrix, projectionMatrix );
 	}
