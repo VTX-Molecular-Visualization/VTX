@@ -221,8 +221,21 @@ namespace VTX::App
 
 	void Session::downloadUpdate()
 	{
+		if ( not _impl->manager )
+		{
+			VTX_WARNING( "downloadUpdate called without update manager" );
+			return;
+		}
+
+		if ( _impl->updateCheckInProgress )
+		{
+			VTX_INFO( "downloadUpdate ignored while update check is still in progress" );
+			return;
+		}
+
 		if ( not _impl->pendingUpdate )
 		{
+			VTX_WARNING( "downloadUpdate called without a pending update" );
 			return;
 		}
 
@@ -234,13 +247,20 @@ namespace VTX::App
 
 		try
 		{
-			VTX_INFO( "downloadUpdate" );
-			( *_impl->manager ).DownloadUpdates( *_impl->pendingUpdate );
-			VTX_INFO( "Downloading update..." );
+			const Velopack::UpdateInfo pendingUpdate = *_impl->pendingUpdate;
+			const auto &			   release	   = pendingUpdate.TargetFullRelease;
+
+			VTX_INFO( "downloadUpdate: starting update to {}", release.Version );
+			VTX_INFO( "downloadUpdate: calling DownloadUpdates" );
+			( *_impl->manager ).DownloadUpdates( pendingUpdate );
+			VTX_INFO( "downloadUpdate: DownloadUpdates completed" );
+
 			const bool restart = not isPortable();
-			( *_impl->manager )
-				.WaitExitThenApplyUpdates( *_impl->pendingUpdate, false, restart /*, ARGS().toStringVec()*/ );
-			VTX_INFO( "Update downloaded" );
+			VTX_INFO( "downloadUpdate: calling WaitExitThenApplyUpdates (restart={})", restart );
+			( *_impl->manager ).WaitExitThenApplyUpdates( pendingUpdate, false, restart /*, ARGS().toStringVec()*/ );
+			VTX_INFO( "downloadUpdate: WaitExitThenApplyUpdates returned" );
+
+			VTX_INFO( "downloadUpdate: update flow completed, quitting application" );
 			ACTION().execute<Action::Application::Quit>();
 		}
 		catch ( const std::exception & p_e )
