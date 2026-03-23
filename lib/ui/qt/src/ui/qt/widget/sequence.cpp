@@ -16,7 +16,7 @@
 #include <app/system/uid.hpp>
 #include <app/system/visibility.hpp>
 #include <core/chemdb/residue.hpp>
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <renderer/color.hpp>
 #include <util/math.hpp>
 

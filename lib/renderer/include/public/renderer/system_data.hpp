@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_SYSTEM_DATA__
 #define __VTX_RENDERER_SYSTEM_DATA__
 
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 
 namespace VTX::Renderer
 {

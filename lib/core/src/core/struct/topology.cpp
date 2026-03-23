@@ -1,4 +1,4 @@
-#include "core/struct/system.hpp"
+#include "core/struct/topology.hpp"
 #include "core/chemdb/secondary_structure.hpp"
 #include <util/constants.hpp>
 

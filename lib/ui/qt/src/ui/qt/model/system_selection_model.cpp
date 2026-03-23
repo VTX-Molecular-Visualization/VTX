@@ -6,7 +6,7 @@
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
 #include <app/system/uid.hpp>
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 
 namespace VTX::UI::QT::Model
 {

@@ -2,7 +2,7 @@
 #define __VTX_BENCH_SCENE__
 
 #include "camera.hpp"
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <renderer/color.hpp>
 
 namespace VTX::Renderer

@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_STRUCT_SYSTEM__
-#define __VTX_CORE_STRUCT_SYSTEM__
+#ifndef __VTX_CORE_STRUCT_TOPOLOGY__
+#define __VTX_CORE_STRUCT_TOPOLOGY__
 
 #include "core/chemdb/atom.hpp"
 #include "core/chemdb/bond.hpp"

@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_SYSTEM_COLOR__
 #define __VTX_APP_SYSTEM_COLOR__
 
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <renderer/color.hpp>
 
 namespace VTX::App::System

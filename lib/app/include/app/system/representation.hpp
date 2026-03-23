@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_SYSTEM_REPRESENTATION__
 #define __VTX_APP_SYSTEM_REPRESENTATION__
 
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <renderer/representation.hpp>
 #include <unordered_map>
 

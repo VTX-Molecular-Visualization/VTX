@@ -10,7 +10,7 @@
 #include <app/services.hpp>
 #include <app/system/metadata.hpp>
 #include <app/system/trajectory.hpp>
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <qboxlayout.h>
 #include <util/event_hub.hpp>
 

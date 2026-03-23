@@ -23,7 +23,7 @@
 #include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
 #include <core/chemdb/atom.hpp>
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <renderer/renderer.hpp>
 #include <renderer/representation.hpp>
 #include <util/event_hub.hpp>

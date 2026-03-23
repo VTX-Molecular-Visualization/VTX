@@ -1,5 +1,5 @@
 // Needed for io/reader.hpp
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <util/thread.hpp>
 // !Needed for io/reader.hpp
 #include "io/reader.hpp"
@@ -124,12 +124,12 @@ namespace VTX::IO
 				if ( currentResidue->size() == 0 )
 					VTX_WARNING( "Empty residue found" );
 
-				p_topology.residueChainIndexes[ residueIdx ]	   = currentChainIndex;
+				p_topology.residueChainIndexes[ residueIdx ]	 = currentChainIndex;
 				p_topology.residueFirstAtomIndexes[ residueIdx ] = Index( *currentResidue->begin() );
-				p_topology.residueAtomCounts[ residueIdx ]	   = Index( currentResidue->size() );
-				p_topology.residueOriginalIds[ residueIdx ]	   = residueId;
-				p_topology.residueSymbols[ residueIdx ]		   = ChemDB::Residue::getSymbolFromName( residueName );
-				p_topology.residueNames[ residueIdx ]			   = residueName;
+				p_topology.residueAtomCounts[ residueIdx ]		 = Index( currentResidue->size() );
+				p_topology.residueOriginalIds[ residueIdx ]		 = residueId;
+				p_topology.residueSymbols[ residueIdx ]			 = ChemDB::Residue::getSymbolFromName( residueName );
+				p_topology.residueNames[ residueIdx ]			 = residueName;
 
 				const std::string ss = _residueStringProp( "secondary_structure" );
 				if ( !ss.empty() )
@@ -147,8 +147,8 @@ namespace VTX::IO
 					currentAtomIndex	  = atomIndex;
 
 					p_topology.atomResidueIndexes[ atomIndex ] = residueIdx;
-					p_topology.atomNames[ atomIndex ]			 = currentAtom->name();
-					p_topology.atomSymbols[ atomIndex ]		 = ChemDB::Atom::getSymbolFromString( currentAtom->type() );
+					p_topology.atomNames[ atomIndex ]		   = currentAtom->name();
+					p_topology.atomSymbols[ atomIndex ] = ChemDB::Atom::getSymbolFromString( currentAtom->type() );
 				}
 			}
 
@@ -208,20 +208,20 @@ namespace VTX::IO
 				const std::vector<Index> & extraBonds = mapResidueExtraBonds[ residueIdx ];
 
 				p_topology.residueFirstBondIndexes[ residueIdx ] = counter;
-				p_topology.residueBondCounts[ residueIdx ]	   = Index( intraBonds.size() + extraBonds.size() );
+				p_topology.residueBondCounts[ residueIdx ]		 = Index( intraBonds.size() + extraBonds.size() );
 
 				for ( Index i = 0; i < intraBonds.size(); ++i, ++counter )
 				{
-					const chemfiles::Bond & bond					= ( *bonds )[ intraBonds[ i ] ];
-					p_topology.bondPairAtomIndexes[ counter * 2 ]		= Index( bond[ 0 ] );
+					const chemfiles::Bond & bond					  = ( *bonds )[ intraBonds[ i ] ];
+					p_topology.bondPairAtomIndexes[ counter * 2 ]	  = Index( bond[ 0 ] );
 					p_topology.bondPairAtomIndexes[ counter * 2 + 1 ] = Index( bond[ 1 ] );
 					p_topology.bondOrders[ counter ] = ChemDB::Bond::ORDER( int( bondOrders[ intraBonds[ i ] ] ) );
 				}
 
 				for ( Index i = 0; i < extraBonds.size(); ++i, ++counter )
 				{
-					const chemfiles::Bond & bond					= ( *bonds )[ extraBonds[ i ] ];
-					p_topology.bondPairAtomIndexes[ counter * 2 ]		= Index( bond[ 0 ] );
+					const chemfiles::Bond & bond					  = ( *bonds )[ extraBonds[ i ] ];
+					p_topology.bondPairAtomIndexes[ counter * 2 ]	  = Index( bond[ 0 ] );
 					p_topology.bondPairAtomIndexes[ counter * 2 + 1 ] = Index( bond[ 1 ] );
 					p_topology.bondOrders[ counter ] = ChemDB::Bond::ORDER( int( bondOrders[ extraBonds[ i ] ] ) );
 				}

@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_HELPER_CHEMISTRY__
 #define __VTX_APP_HELPER_CHEMISTRY__
 
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <io/struct/bond_data.hpp>
 #include <io/struct/residue_data.hpp>
 #include <map>

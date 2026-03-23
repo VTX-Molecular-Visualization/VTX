@@ -3,7 +3,7 @@
 #include "python_binding/binding/helper.hpp"
 #include "python_binding/interpretor.hpp"
 #include "python_binding/log_redirection.hpp"
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <memory>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl_bind.h>

@@ -1,6 +1,6 @@
 #ifndef __VTX_IO_WRITER_SYSTEM__
 #define __VTX_IO_WRITER_SYSTEM__
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <functional>
 #include <io/writer/shared.hpp>
 #include <util/thread.hpp>

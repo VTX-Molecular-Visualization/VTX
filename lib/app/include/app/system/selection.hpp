@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_SYSTEM_SELECTION__
 #define __VTX_APP_SYSTEM_SELECTION__
 
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <util/math/bitset.hpp>
 
 namespace VTX::App::System

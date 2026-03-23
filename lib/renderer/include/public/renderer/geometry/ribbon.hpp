@@ -4,7 +4,7 @@
 #include "base_geometry.hpp"
 #include "renderer/system_data.hpp"
 #include "renderer/types.hpp"
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <util/math.hpp>
 
 namespace VTX::Renderer::Geometry

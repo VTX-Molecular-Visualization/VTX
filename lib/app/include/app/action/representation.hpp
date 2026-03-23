@@ -4,7 +4,7 @@
 #include "app/ecs.hpp"
 #include "app/helper/system.hpp"
 #include "app/system/representation.hpp"
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <renderer/representation.hpp>
 #include <util/type_traits.hpp>
 

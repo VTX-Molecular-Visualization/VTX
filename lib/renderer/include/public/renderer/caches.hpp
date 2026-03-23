@@ -3,7 +3,7 @@
 
 #include "renderer/camera.hpp"
 #include "renderer/types.hpp"
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <unordered_map>
 #include <util/math/bitset.hpp>
 #include <util/types.hpp>

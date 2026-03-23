@@ -6,7 +6,7 @@
 #include "app/system/color.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/visibility.hpp"
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <util/type_traits.hpp>
 
 /**

@@ -1,7 +1,7 @@
 #ifndef __VTX_BENCH_UTIL__
 #define __VTX_BENCH_UTIL__
 
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Bench

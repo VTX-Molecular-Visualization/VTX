@@ -1,7 +1,7 @@
 #include "app/helper/system.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 
 namespace VTX::App::Helper::System
 {

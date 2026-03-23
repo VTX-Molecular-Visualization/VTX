@@ -3,7 +3,7 @@
 
 #include "ui/qt/widget/base_widget.hpp"
 #include <QAbstractScrollArea>
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 
 namespace VTX::UI::QT::Widget
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <core/chemdb/secondary_structure.hpp>
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <filesystem>
 #include <vector>
 namespace fs = std::filesystem;

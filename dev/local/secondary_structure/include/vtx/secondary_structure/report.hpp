@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <filesystem>
 #include <vtx/secondary_structure/shared/interprocess.hpp>
 namespace fs = std::filesystem;

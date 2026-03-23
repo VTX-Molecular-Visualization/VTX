@@ -1,7 +1,7 @@
 #ifndef __VTX_IO_UTIL_SECONDARY_STRUCTURE__
 #define __VTX_IO_UTIL_SECONDARY_STRUCTURE__
 
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 
 namespace VTX::IO::Util::SecondaryStructure
 {

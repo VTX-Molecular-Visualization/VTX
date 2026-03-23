@@ -5,7 +5,7 @@
 #include <QString>
 #include <app/ecs.hpp>
 #include <app/events.hpp>
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Model

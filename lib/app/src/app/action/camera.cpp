@@ -4,7 +4,7 @@
 #include "app/scene/tag_root.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/trajectory.hpp"
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <util/event_hub.hpp>
 #include <util/math/transform.hpp>
 

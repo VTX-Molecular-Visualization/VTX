@@ -4,7 +4,7 @@
 #include "app/ecs.hpp"
 #include "app/helper/system.hpp"
 #include "app/system/visibility.hpp"
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <util/chrono.hpp>
 #include <util/type_traits.hpp>
 #include <util/types.hpp>

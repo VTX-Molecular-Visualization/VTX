@@ -4,7 +4,7 @@
 #include <app/services.hpp>
 #include <app/system/metadata.hpp>
 #include <app/system/selection.hpp>
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <util/event_hub.hpp>
 
 namespace

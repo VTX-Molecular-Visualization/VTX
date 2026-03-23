@@ -1,7 +1,7 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/circular_buffer_prodcons.hpp>
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <fstream>
 #include <io/reader.hpp>
 #include <util/chrono.hpp>
@@ -25,12 +25,12 @@ TEST_CASE( "VTX_IO - Benchmark", "[.] [integration]" )
 
 	BENCHMARK( "Open systems" )
 	{
-		VTX::Core::Struct::System system = VTX::Core::Struct::System();
-		std::vector<VTX::Vec3f>	  pos;
-		VTX::Util::StopToken	  t;
-		IO::SystemReader		  systemReader( systemPath, t );
+		VTX::Core::Struct::Topology topology;
+		std::vector<VTX::Vec3f>		pos;
+		VTX::Util::StopToken		t;
+		IO::SystemReader			systemReader( systemPath, t );
 
-		systemReader.get( system );
+		systemReader.get( topology );
 		systemReader.get( pos );
 	};
 }
@@ -50,7 +50,7 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2ama_1_npt", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
+	VTX::Core::Struct::Topology topology;
 #ifdef I_BROKE_TRAJECTORY_TESTS
 	molecule.trajectory.setOptimized();
 	IO::Reader::System moleculeReader = IO::Reader::System();
@@ -79,7 +79,7 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2am9", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
+	VTX::Core::Struct::Topology topology;
 #ifdef I_BROKE_TRAJECTORY_TESTS
 	molecule.trajectory.setOptimized();
 	IO::Reader::System moleculeReader = IO::Reader::System();
@@ -101,7 +101,7 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2ama", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
+	VTX::Core::Struct::Topology topology;
 #ifdef I_BROKE_TRAJECTORY_TESTS
 
 	molecule.trajectory.setOptimized();
@@ -124,7 +124,7 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 2pip", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
+	VTX::Core::Struct::Topology topology;
 #ifdef I_BROKE_TRAJECTORY_TESTS
 
 	molecule.trajectory.setOptimized();
@@ -147,7 +147,7 @@ TEST_CASE( "VTX_IO - Test filepath trajectory 5vo4", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
+	VTX::Core::Struct::Topology topology;
 #ifdef I_BROKE_TRAJECTORY_TESTS
 
 	molecule.trajectory.setOptimized();
@@ -170,7 +170,7 @@ TEST_CASE( "VTX_IO - debug cif client", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
+	VTX::Core::Struct::Topology topology;
 #ifdef I_BROKE_TRAJECTORY_TESTS
 	molecule.trajectory.setOptimized();
 	IO::Reader::System moleculeReader = IO::Reader::System();
@@ -192,10 +192,10 @@ TEST_CASE( "VTX_IO - debug cif multiline", "[.] [integration]" )
 
 	VTX_INFO( "Test on {}", moleculeName );
 
-	VTX::Core::Struct::System molecule = VTX::Core::Struct::System();
+	VTX::Core::Struct::Topology topology;
 #ifdef I_BROKE_TRAJECTORY_TESTS
 
-	molecule.trajectory.setOptimized();
+	topology.trajectory.setOptimized();
 	IO::Reader::System moleculeReader = IO::Reader::System();
 
 	moleculeReader.readFile( moleculePath, molecule );

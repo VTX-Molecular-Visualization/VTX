@@ -1,6 +1,6 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <fstream>
 #include <io/writer/chemfiles.hpp>
 #include <io/writer/system.hpp>
@@ -171,17 +171,17 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 		twoWaterSystems1frame( trajWriter );
 	}
 
-	VTX::Core::Struct::System system = VTX::Core::Struct::System();
-	VTX::Util::StopToken	  t;
-	VTX::IO::SystemReader	  systemReader( waterPath, t );
-	systemReader.get( system );
+	VTX::Core::Struct::Topology topology;
+	VTX::Util::StopToken		t;
+	VTX::IO::SystemReader		systemReader( waterPath, t );
+	systemReader.get( topology );
 
-	CHECK( system.getChainCount() == 1 );
-	CHECK( system.getBondCount() == 4 );
-	CHECK( system.getResidueCount() == 2 );
-	CHECK( system.getAtomCount() == 6 );
+	CHECK( topology.getChainCount() == 1 );
+	CHECK( topology.getBondCount() == 4 );
+	CHECK( topology.getResidueCount() == 2 );
+	CHECK( topology.getAtomCount() == 6 );
 #ifdef I_BROKE_TRAJECTORY_TESTS
-	CHECK( system.trajectory.getFrameCount() == 1 );
+	CHECK( topology.trajectory.getFrameCount() == 1 );
 #endif
 }
 TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemfiles][trajectory][2 frames]" )
@@ -201,18 +201,18 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 		twoWaterSystems2frame( trajWriter );
 	}
 
-	VTX::Core::Struct::System system = VTX::Core::Struct::System();
-	VTX::Util::StopToken	  t;
-	VTX::IO::SystemReader	  systemReader( waterPath, t );
-	systemReader.get( system );
+	VTX::Core::Struct::Topology topology;
+	VTX::Util::StopToken		t;
+	VTX::IO::SystemReader		systemReader( waterPath, t );
+	systemReader.get( topology );
 
-	CHECK( system.getChainCount() == 1 );
-	CHECK( system.getBondCount() == 4 );
-	CHECK( system.getResidueCount() == 2 );
-	CHECK( system.getAtomCount() == 6 );
+	CHECK( topology.getChainCount() == 1 );
+	CHECK( topology.getBondCount() == 4 );
+	CHECK( topology.getResidueCount() == 2 );
+	CHECK( topology.getAtomCount() == 6 );
 #ifdef I_BROKE_TRAJECTORY_TESTS
 
-	CHECK( system.trajectory.getFrameCount() == 2 );
+	CHECK( topology.trajectory.getFrameCount() == 2 );
 #endif
 }
 
@@ -234,19 +234,19 @@ namespace
 		const std::string systemPathname = systemName + p_args.extension;
 		const FilePath	  systemPath	 = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
-		VTX::Core::Struct::System system = VTX::Core::Struct::System();
+		VTX::Core::Struct::Topology topology;
 		{
 			VTX::Util::StopToken  t;
 			VTX::IO::SystemReader systemReader( systemPath, t );
-			systemReader.get( system );
+			systemReader.get( topology );
 		}
-		size_t atomCount  = system.getAtomCount();
-		size_t chainCount = system.getChainCount();
+		size_t atomCount  = topology.getAtomCount();
+		size_t chainCount = topology.getChainCount();
 #ifdef I_BROKE_TRAJECTORY_TESTS
-		size_t frameCount = system.trajectory.getFrameCount();
+		size_t frameCount = topology.trajectory.getFrameCount();
 #endif
-		size_t bondCount = system.getBondCount();
-		size_t resCount	 = system.getResidueCount();
+		size_t bondCount = topology.getBondCount();
+		size_t resCount	 = topology.getResidueCount();
 
 		const VTX::FilePath outPath = VTX::Util::Filesystem::getExecutableDir() / "out" / "ChemfilesTrajectory";
 		if ( not std::filesystem::exists( outPath ) )
@@ -258,13 +258,13 @@ namespace
 			WriteArgs {
 				.destination = destination,
 				.format		 = E_FILE_FORMATS::none,
-				.system		 = &system,
+				.system		 = &topology,
 			}
 		);
 
-		VTX::Core::Struct::System system_reread = VTX::Core::Struct::System();
-		VTX::Util::StopToken	  t;
-		VTX::IO::SystemReader	  systemReader( destination, t );
+		VTX::Core::Struct::Topology system_reread;
+		VTX::Util::StopToken		t;
+		VTX::IO::SystemReader		systemReader( destination, t );
 		systemReader.get( system_reread );
 
 		CHECK( system_reread.getChainCount() == chainCount );

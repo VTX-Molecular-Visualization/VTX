@@ -4,7 +4,7 @@
 #include "app/system/trajectory.hpp"
 #include "app/threading/base_thread.hpp"
 #include <atomic>
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <functional>
 #include <future>
 #include <io/reader.hpp>

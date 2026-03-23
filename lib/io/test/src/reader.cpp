@@ -1,7 +1,7 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 //
-#include <core/struct/system.hpp>
+#include <core/struct/topology.hpp>
 #include <util/filesystem.hpp>
 #include <util/thread.hpp>
 //
