@@ -55,9 +55,24 @@ namespace VTX::App
 		std::atomic<bool> updateDownloadInProgress = false;
 
 		/**
+		 * @brief Set by the worker thread when DownloadUpdates completes.
+		 */
+		std::atomic<bool> updateDownloadReady = false;
+
+		/**
+		 * @brief Set by the worker thread when DownloadUpdates succeeds.
+		 */
+		std::atomic<bool> updateDownloadSucceeded = false;
+
+		/**
 		 * @brief Held while waiting for the update check result on the main thread.
 		 */
 		Util::EventHub::Connection updateCheckConnection;
+
+		/**
+		 * @brief Held while waiting for the update download result on the main thread.
+		 */
+		Util::EventHub::Connection updateDownloadConnection;
 	};
 
 	namespace
@@ -249,24 +264,80 @@ namespace VTX::App
 		{
 			const Velopack::UpdateInfo pendingUpdate = *_impl->pendingUpdate;
 			const auto &			   release	   = pendingUpdate.TargetFullRelease;
+			_impl->updateDownloadReady			   = false;
+			_impl->updateDownloadSucceeded		   = false;
 
 			VTX_INFO( "downloadUpdate: starting update to {}", release.Version );
-			VTX_INFO( "downloadUpdate: calling DownloadUpdates" );
-			( *_impl->manager ).DownloadUpdates( pendingUpdate );
-			VTX_INFO( "downloadUpdate: DownloadUpdates completed" );
+			THREAD().createThread(
+				[ this, pendingUpdate ]( App::Threading::BaseThread & p_thread ) -> uint
+				{
+					p_thread.setProgressText( "Downloading update..." );
+					try
+					{
+						VTX_INFO( "downloadUpdate: calling DownloadUpdates" );
+						( *_impl->manager ).DownloadUpdates( pendingUpdate );
+						VTX_INFO( "downloadUpdate: DownloadUpdates completed" );
+						_impl->updateDownloadSucceeded = true;
+					}
+					catch ( const std::exception & p_e )
+					{
+						_impl->updateDownloadSucceeded = false;
+						VTX_ERROR( "Update download error: {}", p_e.what() );
+					}
 
-			const bool restart = not isPortable();
+					_impl->updateDownloadReady = true;
+					return 0;
+				}
+			);
+
+			_impl->updateDownloadConnection = HUB().connect<Events::Update, &Session::_onUpdateDownloadResult>( this );
+		}
+		catch ( const std::exception & p_e )
+		{
+			_impl->updateDownloadInProgress = false;
+			VTX_ERROR( "Update download error: {}", p_e.what() );
+		}
+	}
+
+	void Session::_onUpdateDownloadResult( const Events::Update & )
+	{
+		if ( not _impl->updateDownloadReady.exchange( false ) )
+		{
+			return;
+		}
+
+		HUB().disconnect( _impl->updateDownloadConnection );
+
+		if ( not _impl->updateDownloadSucceeded )
+		{
+			_impl->updateDownloadInProgress = false;
+			VTX_WARNING( "downloadUpdate: download phase failed" );
+			return;
+		}
+
+		if ( not _impl->manager || not _impl->pendingUpdate )
+		{
+			_impl->updateDownloadInProgress = false;
+			VTX_WARNING( "downloadUpdate: apply phase aborted due to invalid updater state" );
+			return;
+		}
+
+		try
+		{
+			const Velopack::UpdateInfo pendingUpdate = *_impl->pendingUpdate;
+			const bool				 restart	   = _shouldRestartAfterUpdate();
 			VTX_INFO( "downloadUpdate: calling WaitExitThenApplyUpdates (restart={})", restart );
 			( *_impl->manager ).WaitExitThenApplyUpdates( pendingUpdate, false, restart /*, ARGS().toStringVec()*/ );
 			VTX_INFO( "downloadUpdate: WaitExitThenApplyUpdates returned" );
 
+			_impl->updateDownloadInProgress = false;
 			VTX_INFO( "downloadUpdate: update flow completed, quitting application" );
 			ACTION().execute<Action::Application::Quit>();
 		}
 		catch ( const std::exception & p_e )
 		{
 			_impl->updateDownloadInProgress = false;
-			VTX_ERROR( "Update download error: {}", p_e.what() );
+			VTX_ERROR( "Update apply error: {}", p_e.what() );
 		}
 	}
 
@@ -277,6 +348,15 @@ namespace VTX::App
 			return true;
 		}
 		return ( *_impl->manager ).IsPortable();
+	}
+
+	bool Session::_shouldRestartAfterUpdate() const
+	{
+#if defined( _WIN32 )
+		return true;
+#else
+		return false;
+#endif
 	}
 
 	FilePath Session::getDataHome() const { return _resolveAppDir( isPortable(), SessionPathRoot::Data ); }

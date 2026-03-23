@@ -121,6 +121,16 @@ namespace VTX::App
 		 * @brief Called each frame from the main thread to dispatch the update check result.
 		 */
 		void _onUpdateCheckResult( const Events::Update & );
+
+		/**
+		 * @brief Called each frame from the main thread to dispatch the update download result.
+		 */
+		void _onUpdateDownloadResult( const Events::Update & );
+
+		/**
+		 * @brief Decide whether the application should be restarted after a successful update apply.
+		 */
+		bool _shouldRestartAfterUpdate() const;
 	};
 } // namespace VTX::App
 

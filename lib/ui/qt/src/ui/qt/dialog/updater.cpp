@@ -1,5 +1,6 @@
 #include "ui/qt/dialog/updater.hpp"
 #include <QDialogButtonBox>
+#include <QLabel>
 #include <QPushButton>
 #include <QTextBrowser>
 #include <QVBoxLayout>
@@ -47,19 +48,34 @@ namespace VTX::UI::QT::Dialog
 		labelSize->setAlignment( Qt::AlignRight );
 		layout->addWidget( labelSize );
 
+		auto * labelStatus = new QLabel( this );
+		labelStatus->setAlignment( Qt::AlignCenter );
+		labelStatus->hide();
+		layout->addWidget( labelStatus );
+
 		// Buttons.
 		auto * buttonBox = new QDialogButtonBox(
 			QDialogButtonBox::StandardButton::Close | QDialogButtonBox::StandardButton::Apply, this
 		);
 		layout->addWidget( buttonBox );
+		QPushButton * const applyButton = buttonBox->button( QDialogButtonBox::Apply );
+		QPushButton * const closeButton = buttonBox->button( QDialogButtonBox::Close );
 
 		// Connect.
-		connect( buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept );
 		connect( buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );
-		connect( buttonBox->button( QDialogButtonBox::Apply ), &QPushButton::clicked, this, &QDialog::accept );
-		buttonBox->button( QDialogButtonBox::Apply )->setDefault( true );
+		applyButton->setDefault( true );
 		connect(
-			this, &QDialog::accepted, [ this, p_e ]() { App::ACTION().execute<App::Action::Application::Update>(); }
+			applyButton,
+			&QPushButton::clicked,
+			this,
+			[ this, applyButton, closeButton, labelStatus ]()
+			{
+				applyButton->setEnabled( false );
+				closeButton->setEnabled( false );
+				labelStatus->setText( "Downloading update..." );
+				labelStatus->show();
+				App::ACTION().execute<App::Action::Application::Update>();
+			}
 		);
 	}
 
