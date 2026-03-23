@@ -55,7 +55,7 @@ namespace VTX::App::System
 			for ( size_t it_currentFrameIndex = 1; it_currentFrameIndex < frameCount; it_currentFrameIndex++ )
 			{
 				_ptr->_dataPtr->frameCollection.emplace_back();
-				_ptr->reader.get( _ptr->_dataPtr->frameCollection.back() );
+				_ptr->reader.get( it_currentFrameIndex, _ptr->_dataPtr->frameCollection.back() );
 
 				_ptr->_dataPtr->lastFrameAvailable = it_currentFrameIndex;
 				if ( p_stopToken.stop_requested() )
