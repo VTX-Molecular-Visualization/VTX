@@ -16,6 +16,7 @@ def _linux_runtime_lib_patterns() -> tuple[str, ...]:
         "libQt6Core.so*",
         "libQt6DBus.so*",
         "libQt6Gui.so*",
+        "libQt6Network.so*",
         "libQt6OpenGL.so*",
         "libQt6WaylandClient.so*",
         "libQt6Widgets.so*",
@@ -153,7 +154,7 @@ def generate_qt(p_conanFile : ConanFile):
     destDir = str(_editable_runtime_root(p_conanFile))
 
     if p_conanFile.settings.os == "Windows":
-        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll" ]
+        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Network*.dll", "Qt6Widgets*.dll" ]
         for file in binFiles:
             p_conanFile.output.highlight(f"Copying {file} from Qt bin directory to {destDir}")
             copy(p_conanFile, file, qtBinDir, destDir)

@@ -22,6 +22,7 @@ function(_vtx_qt_linux_runtime_lib_patterns out_var)
 		"libQt6Core.so*"
 		"libQt6DBus.so*"
 		"libQt6Gui.so*"
+		"libQt6Network.so*"
 		"libQt6OpenGL.so*"
 		"libQt6WaylandClient.so*"
 		"libQt6Widgets.so*"
@@ -61,6 +62,7 @@ function(vtx_qt_copy_runtime target)
 		file(GLOB _vtx_qt_runtime_dlls
 			"${VTX_QT_RUNTIME_ROOT}/Qt6Core*.dll"
 			"${VTX_QT_RUNTIME_ROOT}/Qt6Gui*.dll"
+			"${VTX_QT_RUNTIME_ROOT}/Qt6Network*.dll"
 			"${VTX_QT_RUNTIME_ROOT}/Qt6Widgets*.dll"
 		)
 		vtx_copy_files(${target} "$<TARGET_FILE_DIR:${target}>" ${_vtx_qt_runtime_dlls})
@@ -106,6 +108,7 @@ function(vtx_qt_install_runtime target)
 		install(FILES
 			"$<TARGET_FILE_DIR:${target}>/Qt6Core$<$<CONFIG:Debug>:d>.dll"
 			"$<TARGET_FILE_DIR:${target}>/Qt6Gui$<$<CONFIG:Debug>:d>.dll"
+			"$<TARGET_FILE_DIR:${target}>/Qt6Network$<$<CONFIG:Debug>:d>.dll"
 			"$<TARGET_FILE_DIR:${target}>/Qt6Widgets$<$<CONFIG:Debug>:d>.dll"
 			DESTINATION .
 		)
