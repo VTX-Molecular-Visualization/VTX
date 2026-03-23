@@ -10,10 +10,10 @@ namespace VTX::Bench
 	{
 		Util::StopToken		 t;
 		IO::SystemReader	 reader( VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename, t );
-		Core::Struct::Topology system;
-		reader.get( system );
+		Core::Struct::Topology topology;
+		reader.get( topology );
 
-		return system;
+		return topology;
 	}
 
 	Core::Struct::Topology downloadSystem( const std::string & p_pdb )
@@ -23,9 +23,9 @@ namespace VTX::Bench
 
 		Util::StopToken		 t;
 		IO::SystemReader	 reader( text, p_pdb + ".pdb", t );
-		Core::Struct::Topology system;
-		reader.get( system );
-		return system;
+		Core::Struct::Topology topology;
+		reader.get( topology );
+		return topology;
 	}
 
 } // namespace VTX::Bench

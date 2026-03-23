@@ -30,8 +30,8 @@ namespace VTX::UI::QT::Model
 		using namespace App;
 		using namespace Core::Struct;
 
-		const SystemModel & model  = *static_cast<const SystemModel *>( this->model() );
-		const auto &		system = REG().get<Core::Struct::Topology>( _system );
+		const SystemModel & model	 = *static_cast<const SystemModel *>( this->model() );
+		const auto &		topology = REG().get<Core::Struct::Topology>( _system );
 
 		// Unselect others.
 		const Qt::KeyboardModifiers modifiers = QGuiApplication::keyboardModifiers();
@@ -57,9 +57,9 @@ namespace VTX::UI::QT::Model
 
 					switch ( item )
 					{
-					case E_SYSTEM_ITEM::SYSTEM: deselected.addRange( system.getAtomRange() ); break;
-					case E_SYSTEM_ITEM::CHAIN: deselected.addRange( system.getChainAtomRange( index ) ); break;
-					case E_SYSTEM_ITEM::RESIDUE: deselected.addRange( system.getResidueAtomRange( index ) ); break;
+					case E_SYSTEM_ITEM::SYSTEM: deselected.addRange( topology.getAtomRange() ); break;
+					case E_SYSTEM_ITEM::CHAIN: deselected.addRange( topology.getChainAtomRange( index ) ); break;
+					case E_SYSTEM_ITEM::RESIDUE: deselected.addRange( topology.getResidueAtomRange( index ) ); break;
 					case E_SYSTEM_ITEM::ATOM: deselected.addValue( index ); break;
 					default: break;
 					}
@@ -84,9 +84,9 @@ namespace VTX::UI::QT::Model
 
 					switch ( item )
 					{
-					case E_SYSTEM_ITEM::SYSTEM: selected.addRange( system.getAtomRange() ); break;
-					case E_SYSTEM_ITEM::CHAIN: selected.addRange( system.getChainAtomRange( index ) ); break;
-					case E_SYSTEM_ITEM::RESIDUE: selected.addRange( system.getResidueAtomRange( index ) ); break;
+					case E_SYSTEM_ITEM::SYSTEM: selected.addRange( topology.getAtomRange() ); break;
+					case E_SYSTEM_ITEM::CHAIN: selected.addRange( topology.getChainAtomRange( index ) ); break;
+					case E_SYSTEM_ITEM::RESIDUE: selected.addRange( topology.getResidueAtomRange( index ) ); break;
 					case E_SYSTEM_ITEM::ATOM: selected.addValue( index ); break;
 					default: break;
 					}
@@ -103,7 +103,7 @@ namespace VTX::UI::QT::Model
 		using namespace Core::Struct;
 
 		auto &		 reg	   = REG();
-		const auto & system	   = reg.get<Core::Struct::Topology>( _system );
+		const auto & topology  = reg.get<Core::Struct::Topology>( _system );
 		const auto & selection = reg.get<App::System::Selection>( _system );
 		const auto & uid	   = reg.get<App::System::UID>( _system );
 		const auto & model	   = *static_cast<const SystemModel *>( this->model() );
@@ -119,9 +119,9 @@ namespace VTX::UI::QT::Model
 		else if ( Helper::System::isSelected<E_SYSTEM_ITEM::SYSTEM>( _system ) )
 		{
 			// Chains.
-			for ( Index chain = 0; chain < system.getChainCount(); ++chain )
+			for ( Index chain = 0; chain < topology.getChainCount(); ++chain )
 			{
-				QString chainName = QString::fromStdString( system.getChainName( chain ) );
+				QString chainName = QString::fromStdString( topology.getChainName( chain ) );
 				if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::CHAIN>( _system, chain ) )
 				{
 					const QModelIndex index = model.makeIndex( chain, E_SYSTEM_ITEM::CHAIN, chain );
@@ -134,13 +134,13 @@ namespace VTX::UI::QT::Model
 				}
 
 				// Residues.
-				for ( Index residue : system.getChainResidueRange( chain ) )
+				for ( Index residue : topology.getChainResidueRange( chain ) )
 				{
-					QString residueName = QString::fromStdString( system.getResidueName( residue ) );
+					QString residueName = QString::fromStdString( topology.getResidueName( residue ) );
 					if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::RESIDUE>( _system, residue ) )
 					{
 						const QModelIndex index = model.makeIndex(
-							residue - system.getChainFirstResidue( chain ), E_SYSTEM_ITEM::RESIDUE, residue
+							residue - topology.getChainFirstResidue( chain ), E_SYSTEM_ITEM::RESIDUE, residue
 						);
 						qSelection.select( index, index );
 						continue;
@@ -151,12 +151,12 @@ namespace VTX::UI::QT::Model
 					}
 
 					// Atoms.
-					for ( Index atom : system.getResidueAtomRange( residue ) )
+					for ( Index atom : topology.getResidueAtomRange( residue ) )
 					{
 						if ( Helper::System::isSelected<E_SYSTEM_ITEM::ATOM>( _system, atom ) )
 						{
 							const QModelIndex index = model.makeIndex(
-								atom - system.getResidueFirstAtom( residue ), E_SYSTEM_ITEM::ATOM, atom
+								atom - topology.getResidueFirstAtom( residue ), E_SYSTEM_ITEM::ATOM, atom
 							);
 							qSelection.select( index, index );
 						}

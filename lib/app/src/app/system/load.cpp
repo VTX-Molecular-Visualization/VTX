@@ -104,7 +104,7 @@ namespace VTX::App::System
 		else
 			pendingData.reader.emplace( pendingData.path, p_stopToken );
 
-		pendingData.reader->get( pendingData.system );
+		pendingData.reader->get( pendingData.topology );
 		pendingData.reader->get( VTX::IO::PdbIdCode { &pendingData.pdbIdCode } );
 
 		if ( p_stopToken.stop_requested() )
@@ -166,7 +166,7 @@ namespace VTX::App::System
 		auto & reg = REG();
 
 		// Add components.
-		auto & data		 = reg.emplace<Core::Struct::Topology>( p_entity, std::move( p_data.system ) );
+		auto & data		 = reg.emplace<Core::Struct::Topology>( p_entity, std::move( p_data.topology ) );
 		auto & metadata	 = reg.emplace<System::Metadata>( p_entity );
 		auto & transform = reg.emplace<Util::Math::Transform>( p_entity );
 		auto & aabb		 = reg.emplace<Util::Math::AABB>( p_entity );
@@ -218,10 +218,10 @@ namespace VTX::App::System
 
 	void deliver( const ECS::Entity & p_entity, PendingSystem & p_data ) noexcept
 	{
-		auto system = REG().try_get<Core::Struct::Topology>( p_entity );
-		if ( p_data.onlyTrajectory && system )
+		auto topology = REG().try_get<Core::Struct::Topology>( p_entity );
+		if ( p_data.onlyTrajectory && topology )
 		{
-			if ( system->getAtomCount() == p_data.system.getAtomCount() )
+			if ( topology->getAtomCount() == p_data.topology.getAtomCount() )
 			{
 				addTrajectory( p_entity, p_data );
 
@@ -233,9 +233,9 @@ namespace VTX::App::System
 				VTX::VTX_ERROR(
 					"File {} and system {} has different atom count. ({}/{})",
 					p_data.path.string(),
-					system->name,
-					system->getAtomCount(),
-					p_data.system.getAtomCount()
+					topology->name,
+					topology->getAtomCount(),
+					p_data.topology.getAtomCount()
 				);
 			}
 		}

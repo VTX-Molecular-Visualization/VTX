@@ -24,7 +24,7 @@ namespace VTX::App::System
 		FilePath				   path;
 		std::optional<std::string> buffer;
 		std::optional<IO::SystemReader> reader;
-		Core::Struct::Topology			system;
+		Core::Struct::Topology			topology;
 		std::string						pdbIdCode;
 		// Two pass on the system : when the topology is ready, the decision of what kind of trajectory to have in made
 		// on the main loop. Then, the trajectory is red asynchronously. Then, when trajectory is ready, the main loop

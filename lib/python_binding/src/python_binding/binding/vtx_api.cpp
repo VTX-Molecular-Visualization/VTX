@@ -95,8 +95,8 @@ namespace VTX::PythonBinding::Binding
 		pybind11::class_<VTX::Core::Struct::Topology>( p_apiModule, "SystemStruct", pybind11::module_local() )
 			.def_property(
 				"name",
-				[]( const VTX::Core::Struct::Topology & p_system ) { return p_system.name; },
-				[]( VTX::Core::Struct::Topology & p_system, const std::string & p_name ) { p_system.name = p_name; }
+				[]( const VTX::Core::Struct::Topology & p_topology ) { return p_topology.name; },
+				[]( VTX::Core::Struct::Topology & p_topology, const std::string & p_name ) { p_topology.name = p_name; }
 			);
 		// Collections
 		registerCollection<API::Atom>( p_apiModule, "CollectionAtom" );

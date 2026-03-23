@@ -75,7 +75,7 @@ namespace VTX::App::Action::Selection
 		if ( firstEntOpt )
 		{
 			ECS::Entity	 firstEnt = *firstEntOpt;
-			const auto & system	  = REG().get<Core::Struct::Topology>( firstEnt );
+			const auto & topology	  = REG().get<Core::Struct::Topology>( firstEnt );
 			const auto & uid	  = REG().get<System::UID>( firstEnt );
 
 			const Index firstAtomIndex = uid.getAtomIndex( first );
@@ -94,7 +94,7 @@ namespace VTX::App::Action::Selection
 					break;
 				case E_GRANULARITY::RESIDUE:
 				{
-					const Index resIndex = system.getAtomResidueIndex( firstAtomIndex );
+					const Index resIndex = topology.getAtomResidueIndex( firstAtomIndex );
 					toSelect.addRange( resIndex );
 					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::RESIDUE>>(
 						firstEnt, toSelect, true, p_append
@@ -103,8 +103,8 @@ namespace VTX::App::Action::Selection
 				}
 				case E_GRANULARITY::CHAIN:
 				{
-					const Index resIndex   = system.getAtomResidueIndex( firstAtomIndex );
-					const Index chainIndex = system.getResidueChainIndex( resIndex );
+					const Index resIndex   = topology.getAtomResidueIndex( firstAtomIndex );
+					const Index chainIndex = topology.getResidueChainIndex( resIndex );
 					toSelect.addRange( chainIndex );
 					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::CHAIN>>(
 						firstEnt, toSelect, true, p_append
@@ -137,8 +137,8 @@ namespace VTX::App::Action::Selection
 					break;
 				case E_GRANULARITY::RESIDUE:
 				{
-					toSelect.addRange( system.getAtomResidueIndex( firstAtomIndex ) );
-					toSelect.addRange( system.getAtomResidueIndex( secondAtomIndex ) );
+					toSelect.addRange( topology.getAtomResidueIndex( firstAtomIndex ) );
+					toSelect.addRange( topology.getAtomResidueIndex( secondAtomIndex ) );
 					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::RESIDUE>>(
 						firstEnt, toSelect, true, p_append
 					);
@@ -146,10 +146,10 @@ namespace VTX::App::Action::Selection
 				}
 				case E_GRANULARITY::CHAIN:
 				{
-					const Index firstResIndex  = system.getAtomResidueIndex( firstAtomIndex );
-					const Index secondResIndex = system.getAtomResidueIndex( secondAtomIndex );
-					toSelect.addRange( system.getResidueChainIndex( firstResIndex ) );
-					toSelect.addRange( system.getResidueChainIndex( secondResIndex ) );
+					const Index firstResIndex  = topology.getAtomResidueIndex( firstAtomIndex );
+					const Index secondResIndex = topology.getAtomResidueIndex( secondAtomIndex );
+					toSelect.addRange( topology.getResidueChainIndex( firstResIndex ) );
+					toSelect.addRange( topology.getResidueChainIndex( secondResIndex ) );
 					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::CHAIN>>(
 						firstEnt, toSelect, true, p_append
 					);

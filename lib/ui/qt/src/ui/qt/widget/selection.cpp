@@ -41,10 +41,10 @@ namespace VTX::UI::QT::Widget
 		// Add selected items.
 		for ( auto entity : entities )
 		{
-			const auto & system	   = reg.get<Core::Struct::Topology>( entity );
+			const auto & topology  = reg.get<Core::Struct::Topology>( entity );
 			const auto & selection = reg.get<App::System::Selection>( entity );
 
-			QString name = QString::fromStdString( system.name );
+			QString name = QString::fromStdString( topology.name );
 			if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::SYSTEM>( entity ) )
 			{
 				addItem( name );
@@ -56,9 +56,9 @@ namespace VTX::UI::QT::Widget
 			}
 
 			// Chains.
-			for ( Index chain = 0; chain < system.getChainCount(); ++chain )
+			for ( Index chain = 0; chain < topology.getChainCount(); ++chain )
 			{
-				QString chainName = QString::fromStdString( system.getChainName( chain ) );
+				QString chainName = QString::fromStdString( topology.getChainName( chain ) );
 				if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::CHAIN>( entity, chain ) )
 				{
 					addItem( name + "/" + chainName );
@@ -70,9 +70,9 @@ namespace VTX::UI::QT::Widget
 				}
 
 				// Residues.
-				for ( Index residue : system.getChainResidueRange( chain ) )
+				for ( Index residue : topology.getChainResidueRange( chain ) )
 				{
-					QString residueName = QString::fromStdString( system.getResidueName( residue ) );
+					QString residueName = QString::fromStdString( topology.getResidueName( residue ) );
 					if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::RESIDUE>( entity, residue ) )
 					{
 						addItem( name + "/" + chainName + "/" + residueName );
@@ -84,13 +84,13 @@ namespace VTX::UI::QT::Widget
 					}
 
 					// Atoms.
-					for ( Index atom : system.getResidueAtomRange( residue ) )
+					for ( Index atom : topology.getResidueAtomRange( residue ) )
 					{
 						if ( Helper::System::isSelected<E_SYSTEM_ITEM::ATOM>( entity, atom ) )
 						{
 							addItem(
 								name + "/" + chainName + "/" + residueName + "/"
-								+ QString::fromStdString( system.getAtomName( atom ) )
+								+ QString::fromStdString( topology.getAtomName( atom ) )
 							);
 						}
 					}

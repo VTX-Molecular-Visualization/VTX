@@ -22,22 +22,22 @@ namespace VTX::App::Helper::System
 	{
 		using namespace Core::Struct;
 
-		const auto & system = REG().get<Core::Struct::Topology>( p_ent );
+		const auto & topology = REG().get<Core::Struct::Topology>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
 		{
-			return system.getAtomRange();
+			return topology.getAtomRange();
 		}
 
 		assert( p_index );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
 		{
-			return system.getChainAtomRange( *p_index );
+			return topology.getChainAtomRange( *p_index );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
 		{
-			return system.getResidueAtomRange( *p_index );
+			return topology.getResidueAtomRange( *p_index );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
 		{
@@ -60,25 +60,25 @@ namespace VTX::App::Helper::System
 	{
 		using namespace Core::Struct;
 
-		const auto &   system = REG().get<Core::Struct::Topology>( p_ent );
+		const auto &   topology = REG().get<Core::Struct::Topology>( p_ent );
 		IndexRangeList atoms;
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
 		{
-			return IndexRangeList( system.getAtomRange() );
+			return IndexRangeList( topology.getAtomRange() );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
 		{
 			for ( const auto & index : p_ranges )
 			{
-				atoms.addRange( system.getChainAtomRange( index ) );
+				atoms.addRange( topology.getChainAtomRange( index ) );
 			}
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
 		{
 			for ( const auto & index : p_ranges )
 			{
-				atoms.addRange( system.getResidueAtomRange( index ) );
+				atoms.addRange( topology.getResidueAtomRange( index ) );
 			}
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
@@ -104,7 +104,7 @@ namespace VTX::App::Helper::System
 	{
 		using namespace Core::Struct;
 
-		const auto & system		= REG().get<Core::Struct::Topology>( p_ent );
+		const auto & topology		= REG().get<Core::Struct::Topology>( p_ent );
 		const auto & visibility = REG().get<App::System::Visibility>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
@@ -116,11 +116,11 @@ namespace VTX::App::Helper::System
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
 		{
-			return visibility.atoms.any( system.getChainAtomRange( *p_index ) );
+			return visibility.atoms.any( topology.getChainAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
 		{
-			return visibility.atoms.any( system.getResidueAtomRange( *p_index ) );
+			return visibility.atoms.any( topology.getResidueAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
 		{
@@ -140,23 +140,23 @@ namespace VTX::App::Helper::System
 	{
 		using namespace Core::Struct;
 
-		const auto & system		= REG().get<Core::Struct::Topology>( p_ent );
+		const auto & topology		= REG().get<Core::Struct::Topology>( p_ent );
 		const auto & visibility = REG().get<App::System::Visibility>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
 		{
-			return visibility.atoms.count() == system.getAtomCount();
+			return visibility.atoms.count() == topology.getAtomCount();
 		}
 
 		assert( p_index );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
 		{
-			return visibility.atoms.test( system.getChainAtomRange( *p_index ) );
+			return visibility.atoms.test( topology.getChainAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
 		{
-			return visibility.atoms.test( system.getResidueAtomRange( *p_index ) );
+			return visibility.atoms.test( topology.getResidueAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
 		{
@@ -176,7 +176,7 @@ namespace VTX::App::Helper::System
 	{
 		using namespace Core::Struct;
 
-		const auto & system	   = REG().get<Core::Struct::Topology>( p_ent );
+		const auto & topology	   = REG().get<Core::Struct::Topology>( p_ent );
 		const auto & selection = REG().get<App::System::Selection>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
@@ -188,11 +188,11 @@ namespace VTX::App::Helper::System
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
 		{
-			return selection.atoms.any( system.getChainAtomRange( *p_index ) );
+			return selection.atoms.any( topology.getChainAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
 		{
-			return selection.atoms.any( system.getResidueAtomRange( *p_index ) );
+			return selection.atoms.any( topology.getResidueAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
 		{
@@ -212,23 +212,23 @@ namespace VTX::App::Helper::System
 	{
 		using namespace Core::Struct;
 
-		const auto & system	   = REG().get<Core::Struct::Topology>( p_ent );
+		const auto & topology	   = REG().get<Core::Struct::Topology>( p_ent );
 		const auto & selection = REG().get<App::System::Selection>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
 		{
-			return selection.atoms.count() == system.getAtomCount();
+			return selection.atoms.count() == topology.getAtomCount();
 		}
 
 		assert( p_index );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
 		{
-			return selection.atoms.test( system.getChainAtomRange( *p_index ) );
+			return selection.atoms.test( topology.getChainAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
 		{
-			return selection.atoms.test( system.getResidueAtomRange( *p_index ) );
+			return selection.atoms.test( topology.getResidueAtomRange( *p_index ) );
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
 		{

@@ -24,12 +24,12 @@ namespace VTX::App::Action::Representation
 		)
 		{
 			auto &						 reg	= REG();
-			const auto &				 system = reg.get<Core::Struct::Topology>( p_ent );
+			const auto &				 topology = reg.get<Core::Struct::Topology>( p_ent );
 			Core::Struct::IndexRangeList atoms	= Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 
 			reg.patch<System::Representation>(
 				p_ent,
-				[ &atoms, &system, p_preset ]( System::Representation & p_representation )
+				[ &atoms, &topology, p_preset ]( System::Representation & p_representation )
 				{
 					// Merges ranges.
 					if ( not p_representation.presetAtoms.contains( p_preset ) )
@@ -52,7 +52,7 @@ namespace VTX::App::Action::Representation
 						count += rangeList.count();
 					}
 
-					assert( count == system.getAtomCount() );
+					assert( count == topology.getAtomCount() );
 				}
 			);
 		}

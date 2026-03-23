@@ -62,20 +62,20 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 
 		const auto & reg	= REG();
-		const auto & system = reg.get<Core::Struct::Topology>( p_system.entity );
+		const auto & topology = reg.get<Core::Struct::Topology>( p_system.entity );
 		const auto & color	= reg.get<App::System::Color>( p_system.entity );
 		IndexRange	 atoms;
 
 		switch ( p_system.item )
 		{
-		case E_SYSTEM_ITEM::SYSTEM: atoms = system.getAtomRange(); break;
+		case E_SYSTEM_ITEM::SYSTEM: atoms = topology.getAtomRange(); break;
 		case E_SYSTEM_ITEM::CHAIN:
 			assert( p_system.index );
-			atoms = system.getChainAtomRange( *p_system.index );
+			atoms = topology.getChainAtomRange( *p_system.index );
 			break;
 		case E_SYSTEM_ITEM::RESIDUE:
 			assert( p_system.index );
-			atoms = system.getResidueAtomRange( *p_system.index );
+			atoms = topology.getResidueAtomRange( *p_system.index );
 			break;
 		case E_SYSTEM_ITEM::ATOM:
 			assert( p_system.index );
@@ -102,7 +102,7 @@ namespace VTX::App::Helper::System
 
 		const ECS::Entity ent	 = p_system.entity;
 		const auto &	  reg	 = REG();
-		const auto &	  system = reg.get<Core::Struct::Topology>( ent );
+		const auto &	  topology = reg.get<Core::Struct::Topology>( ent );
 		const auto &	  color	 = reg.get<Color>( ent );
 
 		for ( const auto & [ _, ranges ] : color.colorSchemeAtoms )
@@ -111,7 +111,7 @@ namespace VTX::App::Helper::System
 			switch ( p_system.item )
 			{
 			case E_SYSTEM_ITEM::SYSTEM:
-				if ( ranges.count() == system.getAtomCount() )
+				if ( ranges.count() == topology.getAtomCount() )
 				{
 					return true;
 				}
@@ -119,8 +119,8 @@ namespace VTX::App::Helper::System
 			case E_SYSTEM_ITEM::CHAIN:
 			{
 				assert( p_system.index );
-				const IndexRange systemRange = system.getAtomRange();
-				if ( ranges.contains( system.getChainAtomRange( *p_system.index ) )
+				const IndexRange systemRange = topology.getAtomRange();
+				if ( ranges.contains( topology.getChainAtomRange( *p_system.index ) )
 					 && not ranges.contains( systemRange ) )
 				{
 					return true;
@@ -131,8 +131,8 @@ namespace VTX::App::Helper::System
 			{
 				assert( p_system.index );
 				const IndexRange chainRange
-					= system.getChainAtomRange( system.getResidueChainIndex( *p_system.index ) );
-				if ( ranges.contains( system.getResidueAtomRange( *p_system.index ) )
+					= topology.getChainAtomRange( topology.getResidueChainIndex( *p_system.index ) );
+				if ( ranges.contains( topology.getResidueAtomRange( *p_system.index ) )
 					 && not ranges.contains( chainRange ) )
 				{
 					return true;
@@ -143,7 +143,7 @@ namespace VTX::App::Helper::System
 			{
 				assert( p_system.index );
 				const IndexRange residueRange
-					= system.getResidueAtomRange( system.getAtomResidueIndex( *p_system.index ) );
+					= topology.getResidueAtomRange( topology.getAtomResidueIndex( *p_system.index ) );
 				if ( ranges.contains( *p_system.index ) && not ranges.contains( residueRange ) )
 				{
 					return true;
@@ -162,20 +162,20 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 
 		const auto & reg			= REG();
-		const auto & system			= reg.get<Core::Struct::Topology>( p_system.entity );
+		const auto & topology			= reg.get<Core::Struct::Topology>( p_system.entity );
 		const auto & representation = reg.get<App::System::Representation>( p_system.entity );
 		IndexRange	 atoms;
 
 		switch ( p_system.item )
 		{
-		case E_SYSTEM_ITEM::SYSTEM: atoms = system.getAtomRange(); break;
+		case E_SYSTEM_ITEM::SYSTEM: atoms = topology.getAtomRange(); break;
 		case E_SYSTEM_ITEM::CHAIN:
 			assert( p_system.index );
-			atoms = system.getChainAtomRange( *p_system.index );
+			atoms = topology.getChainAtomRange( *p_system.index );
 			break;
 		case E_SYSTEM_ITEM::RESIDUE:
 			assert( p_system.index );
-			atoms = system.getResidueAtomRange( *p_system.index );
+			atoms = topology.getResidueAtomRange( *p_system.index );
 			break;
 		case E_SYSTEM_ITEM::ATOM:
 			assert( p_system.index );
@@ -202,7 +202,7 @@ namespace VTX::App::Helper::System
 
 		const ECS::Entity ent			 = p_system.entity;
 		const auto &	  reg			 = REG();
-		const auto &	  system		 = reg.get<Core::Struct::Topology>( ent );
+		const auto &	  topology		 = reg.get<Core::Struct::Topology>( ent );
 		const auto &	  representation = reg.get<Representation>( ent );
 
 		for ( const auto & [ _, ranges ] : representation.presetAtoms )
@@ -211,7 +211,7 @@ namespace VTX::App::Helper::System
 			switch ( p_system.item )
 			{
 			case E_SYSTEM_ITEM::SYSTEM:
-				if ( ranges.count() == system.getAtomCount() )
+				if ( ranges.count() == topology.getAtomCount() )
 				{
 					return true;
 				}
@@ -219,8 +219,8 @@ namespace VTX::App::Helper::System
 			case E_SYSTEM_ITEM::CHAIN:
 			{
 				assert( p_system.index );
-				const IndexRange systemRange = system.getAtomRange();
-				if ( ranges.contains( system.getChainAtomRange( *p_system.index ) )
+				const IndexRange systemRange = topology.getAtomRange();
+				if ( ranges.contains( topology.getChainAtomRange( *p_system.index ) )
 					 && not ranges.contains( systemRange ) )
 				{
 					return true;
@@ -231,8 +231,8 @@ namespace VTX::App::Helper::System
 			{
 				assert( p_system.index );
 				const IndexRange chainRange
-					= system.getChainAtomRange( system.getResidueChainIndex( *p_system.index ) );
-				if ( ranges.contains( system.getResidueAtomRange( *p_system.index ) )
+					= topology.getChainAtomRange( topology.getResidueChainIndex( *p_system.index ) );
+				if ( ranges.contains( topology.getResidueAtomRange( *p_system.index ) )
 					 && not ranges.contains( chainRange ) )
 				{
 					return true;
@@ -243,7 +243,7 @@ namespace VTX::App::Helper::System
 			{
 				assert( p_system.index );
 				const IndexRange residueRange
-					= system.getResidueAtomRange( system.getAtomResidueIndex( *p_system.index ) );
+					= topology.getResidueAtomRange( topology.getAtomResidueIndex( *p_system.index ) );
 				if ( ranges.contains( *p_system.index ) && not ranges.contains( residueRange ) )
 				{
 					return true;

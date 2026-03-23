@@ -42,7 +42,7 @@ namespace VTX::UI::QT::Widget
 		using namespace Core::Struct;
 
 		auto & reg				  = REG();
-		auto & system			  = reg.get<Core::Struct::Topology>( _system );
+		auto & topology			  = reg.get<Core::Struct::Topology>( _system );
 		auto & metadata			  = reg.get<App::System::Metadata>( _system );
 		auto & uid				  = reg.get<App::System::UID>( _system );
 		auto & colorLayoutIntance = ECS::getFirstComponent<Scene::ColorLayout>();
@@ -53,7 +53,7 @@ namespace VTX::UI::QT::Widget
 		const Index startIndex = xOffset / SEQ_CHAR_WIDTH;
 
 		Index endIndex
-			= Util::Math::min( startIndex + ( viewport()->width() / SEQ_CHAR_WIDTH ) + 2, system.getResidueCount() );
+			= Util::Math::min( startIndex + ( viewport()->width() / SEQ_CHAR_WIDTH ) + 2, topology.getResidueCount() );
 
 		if ( endIndex <= startIndex )
 		{
@@ -63,10 +63,10 @@ namespace VTX::UI::QT::Widget
 		int x = -( xOffset % SEQ_CHAR_WIDTH );
 
 		// Label with current chain.
-		const Index firstChain = system.residueChainIndexes[ startIndex ];
+		const Index firstChain = topology.residueChainIndexes[ startIndex ];
 
 		const QString headerLabel = QString( "%1/%2" ).arg(
-			QString::fromStdString( metadata.pdbIDCode ), QString::fromStdString( system.chainNames[ firstChain ] )
+			QString::fromStdString( metadata.pdbIDCode ), QString::fromStdString( topology.chainNames[ firstChain ] )
 		);
 		painter.setPen( Helper::toQColor( colorlayout.getChainColor( firstChain + 1 ) ) );
 		painter.drawText( 0, SEQ_CHAR_HEIGHT, headerLabel );
@@ -76,7 +76,7 @@ namespace VTX::UI::QT::Widget
 		Index lastChain = firstChain;
 		for ( Index residue = startIndex; residue < endIndex; ++residue )
 		{
-			const Index chain = system.residueChainIndexes[ residue ];
+			const Index chain = topology.residueChainIndexes[ residue ];
 			painter.setPen( Helper::toQColor( colorlayout.getChainColor( size_t( chain + 1 ) ) ) );
 
 			// Chain labels.
@@ -85,7 +85,7 @@ namespace VTX::UI::QT::Widget
 			{
 				if ( x > labelWidth )
 				{
-					QString chainLabel = QString( "/%1" ).arg( QString::fromStdString( system.chainNames[ chain ] ) );
+					QString chainLabel = QString( "/%1" ).arg( QString::fromStdString( topology.chainNames[ chain ] ) );
 					painter.drawText( x, SEQ_CHAR_HEIGHT, chainLabel );
 					labelChainWidth = painter.fontMetrics().horizontalAdvance( chainLabel );
 				}
@@ -93,7 +93,7 @@ namespace VTX::UI::QT::Widget
 			}
 
 			// Rule.
-			const size_t indexInChain = residue - system.chainFirstResidues[ chain ] + 1;
+			const size_t indexInChain = residue - topology.chainFirstResidues[ chain ] + 1;
 			if ( x > labelWidth && x > labelChainWidth && indexInChain % SEQ_RULE_STEP == 0 )
 			{
 				painter.drawText( x, SEQ_CHAR_HEIGHT, QString::number( indexInChain ) );
@@ -113,10 +113,10 @@ namespace VTX::UI::QT::Widget
 
 			// Residue symbol.
 			// Display residue standardized symbol or name if unknown.
-			const auto symbol = system.residueSymbols[ residue ];
+			const auto symbol = topology.residueSymbols[ residue ];
 			const auto name	  = symbol != Core::ChemDB::Residue::SYMBOL::UNKNOWN
 									? Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ]
-									: system.residueNames[ residue ];
+									: topology.residueNames[ residue ];
 			painter.drawText( x, SEQ_CHAR_HEIGHT * 2, QString( name.at( 0 ) ) );
 
 			x += SEQ_CHAR_WIDTH;
@@ -274,8 +274,8 @@ namespace VTX::UI::QT::Widget
 
 	void Sequence::_updateScrollBars()
 	{
-		auto &	   system		= App::REG().get<Core::Struct::Topology>( _system );
-		const uint contentWidth = uint( system.getResidueCount() ) * SEQ_CHAR_WIDTH;
+		auto &	   topology		= App::REG().get<Core::Struct::Topology>( _system );
+		const uint contentWidth = uint( topology.getResidueCount() ) * SEQ_CHAR_WIDTH;
 		horizontalScrollBar()->setRange( 0, contentWidth - viewport()->width() );
 		horizontalScrollBar()->setPageStep( viewport()->width() );
 	}
@@ -284,10 +284,10 @@ namespace VTX::UI::QT::Widget
 	{
 		const int xOffset = horizontalScrollBar()->value();
 		const int clickX  = p.x() + xOffset;
-		auto &	  system  = App::REG().get<Core::Struct::Topology>( _system );
+		auto &	  topology  = App::REG().get<Core::Struct::Topology>( _system );
 
 		Index index = clickX / SEQ_CHAR_WIDTH;
-		if ( index > system.getResidueCount() )
+		if ( index > topology.getResidueCount() )
 		{
 			return std::nullopt;
 		}

@@ -10,8 +10,11 @@
 
 namespace VTX::App::Helper::Chemistry
 {
-	std::vector<Index> findChainsByName( const Core::Struct::Topology & p_system, const std::string & p_chainName );
-	std::vector<Index> findResiduesByName( const Core::Struct::Topology & p_system, const std::string & p_residueName );
+	std::vector<Index> findChainsByName( const Core::Struct::Topology & p_topology, const std::string & p_chainName );
+	std::vector<Index> findResiduesByName(
+		const Core::Struct::Topology & p_topology,
+		const std::string &			   p_residueName
+	);
 
 	inline std::map<std::string, IO::Struct::ResidueData> mapLoadedResidueData
 		= { { "", IO::Struct::ResidueData::DEFAULT } };
