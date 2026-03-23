@@ -19,16 +19,16 @@ namespace VTX::PythonBinding::API
 			return _ptr->getChain();
 		return Chain();
 	}
-	const Topology Residue::getSystem() const
+	const System Residue::getSystem() const
 	{
 		if ( _ptr )
 			return _ptr->getSystem();
-		return Topology();
+		return System();
 	}
-	Topology Residue::getSystem()
+	System Residue::getSystem()
 	{
 		if ( _ptr )
 			return _ptr->getSystem();
-		return Topology();
+		return System();
 	}
 } // namespace VTX::PythonBinding::API

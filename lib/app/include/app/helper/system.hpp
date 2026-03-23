@@ -22,7 +22,7 @@ namespace VTX::App::Helper::System
 	{
 		using namespace Core::Struct;
 
-		const auto & system = REG().get<Core::Struct::System>( p_ent );
+		const auto & system = REG().get<Core::Struct::Topology>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
 		{
@@ -60,7 +60,7 @@ namespace VTX::App::Helper::System
 	{
 		using namespace Core::Struct;
 
-		const auto &   system = REG().get<Core::Struct::System>( p_ent );
+		const auto &   system = REG().get<Core::Struct::Topology>( p_ent );
 		IndexRangeList atoms;
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
@@ -104,7 +104,7 @@ namespace VTX::App::Helper::System
 	{
 		using namespace Core::Struct;
 
-		const auto & system		= REG().get<Core::Struct::System>( p_ent );
+		const auto & system		= REG().get<Core::Struct::Topology>( p_ent );
 		const auto & visibility = REG().get<App::System::Visibility>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
@@ -140,7 +140,7 @@ namespace VTX::App::Helper::System
 	{
 		using namespace Core::Struct;
 
-		const auto & system		= REG().get<Core::Struct::System>( p_ent );
+		const auto & system		= REG().get<Core::Struct::Topology>( p_ent );
 		const auto & visibility = REG().get<App::System::Visibility>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
@@ -176,7 +176,7 @@ namespace VTX::App::Helper::System
 	{
 		using namespace Core::Struct;
 
-		const auto & system	   = REG().get<Core::Struct::System>( p_ent );
+		const auto & system	   = REG().get<Core::Struct::Topology>( p_ent );
 		const auto & selection = REG().get<App::System::Selection>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
@@ -212,7 +212,7 @@ namespace VTX::App::Helper::System
 	{
 		using namespace Core::Struct;
 
-		const auto & system	   = REG().get<Core::Struct::System>( p_ent );
+		const auto & system	   = REG().get<Core::Struct::Topology>( p_ent );
 		const auto & selection = REG().get<App::System::Selection>( p_ent );
 
 		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )

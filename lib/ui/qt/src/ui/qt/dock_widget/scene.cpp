@@ -43,7 +43,7 @@ namespace VTX::UI::QT::DockWidget
 		App::REG().on_construct<Renderer::Camera>().connect<&Scene::_onCameraConstruct>( this );
 
 		App::HUB().connect<App::Events::SystemLoad, &Scene::_onSystemLoad>( this );
-		App::REG().on_destroy<Core::Struct::System>().connect<&Scene::_onSystemDestroy>( this );
+		App::REG().on_destroy<Core::Struct::Topology>().connect<&Scene::_onSystemDestroy>( this );
 		App::REG().on_update<App::System::Visibility>().connect<&Scene::_onUpdateVisibility>( this );
 		App::REG().on_update<App::System::Selection>().connect<&Scene::_onUpdateSelection>( this );
 		App::REG().on_construct<App::System::TrajectoryFullBuffer>().connect<&Scene::_onTrajectoryCreated>( this );
