@@ -10,13 +10,11 @@ namespace VTX::UI::QT::Menu
 	{
 		setTitle( "Theme" );
 
-		auto * system = addAction<Action::Theme::System>();
-		auto * light  = addAction<Action::Theme::Light>();
-		auto * dark	  = addAction<Action::Theme::Dark>();
+		addAction<Action::Theme::System>();
+		addAction<Action::Theme::Light>();
+		addAction<Action::Theme::Dark>();
 		addSeparator();
-		connect( addAction<Action::Theme::ResetLayout>(), &QAction::triggered, this, &Theme::_resetLayout );
+		addAction<Action::Theme::ResetLayout>();
 	}
-
-	void Theme::_resetLayout() { MAIN_WINDOW().resetLayout(); }
 
 } // namespace VTX::UI::QT::Menu

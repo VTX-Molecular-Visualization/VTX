@@ -61,7 +61,7 @@ namespace VTX::UI::QT::DockWidget
 			}
 			else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_DEBUG )
 			{
-				newItem->setForeground( Qt::blue );
+				newItem->setForeground( Qt::darkCyan );
 			}
 		}
 		else if ( p_logInfo.hint == VTX::Util::LOG_HINT::PY_IN )

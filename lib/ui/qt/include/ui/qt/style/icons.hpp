@@ -11,6 +11,7 @@ namespace VTX::UI::QT::Style::Icons
 	 * https://fonts.google.com/icons
 	 */
 	constexpr Codepoint ATOM				 = 0xef4a;	// CIRCLE
+	constexpr Codepoint BUG					 = 0xe868;	// BUG_REPORT
 	constexpr Codepoint CAMERA				 = 0xe8fc;	// PHOTO_CAMERA
 	constexpr Codepoint CAMERA_ORIENT		 = 0xe9fe;	// VIEW_IN_AR
 	constexpr Codepoint CAMERA_ORTHOGRAPHIC	 = 0xeb36;	// SQUARE
@@ -22,9 +23,11 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint CONTROLLER_TRACKBALL = 0xe577;	// 360
 	constexpr Codepoint COLOR_LAYOUT		 = 0xe997;	// COLORS
 	constexpr Codepoint DELETE				 = 0xe872;	// DELETE
+	constexpr Codepoint DOCUMENTATION		 = 0xe666;	// AUTO_STORY
 	constexpr Codepoint DOWNLOAD			 = 0xf090;	// DOWNLOAD
 	constexpr Codepoint GRAPHICS_CONFIG		 = 0xed38;	// 3D
 	constexpr Codepoint GPU					 = 0xe322;	// MEMORY
+	constexpr Codepoint INFO				 = 0xe88e;	// INFO
 	constexpr Codepoint LOCK				 = 0xe897;	// LOCK
 	constexpr Codepoint NEW					 = 0xf710;	// NEW_WINDOW
 	constexpr Codepoint OPEN				 = 0xe2c8;	// FOLDER_OPEN
@@ -43,6 +46,7 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint SNAPSHOT_EXPORT		 = 0xf317;	// IMAGE_ARROW_UP
 	constexpr Codepoint STOP				 = 0xe047;	// STOP_SHALLOW
 	constexpr Codepoint SYSTEM				 = 0xe9f4;	// HUB
+	constexpr Codepoint UPDATE				 = 0xf5f4;	// DEPLOYED_CODE_UPDATE
 	constexpr Codepoint VISIBILITY_OFF		 = 0xe8f5;	// VISIBILITY_OFF
 
 } // namespace VTX::UI::QT::Style::Icons

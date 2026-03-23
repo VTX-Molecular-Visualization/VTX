@@ -53,6 +53,8 @@ namespace VTX::UI::QT::DockWidget
 		auto * dark	  = addAction<Action::Theme::Dark>();
 
 		_comboBoxTheme = new QComboBox( this );
+		_comboBoxTheme->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		_comboBoxTheme->setMinimumWidth( 0 );
 
 		_comboBoxTheme->addItem( "System", QVariant::fromValue( system ) );
 		_comboBoxTheme->addItem( "Light", QVariant::fromValue( light ) );
@@ -101,6 +103,8 @@ namespace VTX::UI::QT::DockWidget
 
 		// Font.
 		_comboBoxFont = new QComboBox( this );
+		_comboBoxFont->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		_comboBoxFont->setMinimumWidth( 0 );
 
 		uint i = 0;
 		for ( const QString & fontName : STYLE().getAvailableFonts() )
@@ -122,12 +126,16 @@ namespace VTX::UI::QT::DockWidget
 
 		// Reset layout.
 		auto * buttonResetLayout = new ActionablePushButton( Application::getAction<Theme::ResetLayout>(), this );
+		buttonResetLayout->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		buttonResetLayout->setMinimumWidth( 0 );
 		layoutDisplay->addWidget( buttonResetLayout );
 
 		// Inputs.
 		auto * groupBoxInputs = new QGroupBox( "Inputs" );
 		auto * layoutInputs	  = new QVBoxLayout( groupBoxInputs );
 		_comboBoxKBLayout	  = new QComboBox( this );
+		_comboBoxKBLayout->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		_comboBoxKBLayout->setMinimumWidth( 0 );
 
 		const Window::KB_LAYOUT defaultLayout
 			= QLocale::system().language() == QLocale::French ? Window::KB_LAYOUT::AZERTY : Window::KB_LAYOUT::QWERTY;
@@ -187,9 +195,13 @@ namespace VTX::UI::QT::DockWidget
 
 		auto * layoutCacheButton = new QHBoxLayout();
 
-		auto * buttonOpenCache	  = new ActionablePushButton( Application::getAction<Option::Cache::Open>(), this );
-		auto * buttonClearCache	  = new ActionablePushButton( Application::getAction<Option::Cache::Clear>(), this );
-		auto * buttonRefreshCache = new ActionablePushButton( Application::getAction<Option::Cache::Refresh>(), this );
+		auto * buttonOpenCache	= new ActionablePushButton( Application::getAction<Option::Cache::Open>(), this );
+		auto * buttonClearCache = new ActionablePushButton( Application::getAction<Option::Cache::Clear>(), this );
+
+		buttonOpenCache->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		buttonClearCache->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		buttonOpenCache->setMinimumWidth( 0 );
+		buttonClearCache->setMinimumWidth( 0 );
 
 		const FilePath cachePath = App::SESSION().getCacheDir();
 		connect(
@@ -209,8 +221,6 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
-		connect( buttonRefreshCache, &QPushButton::clicked, [ this ]() { _refreshCacheInfos(); } );
-
 		_labelCacheCount = new QLabel( this );
 		_labelCacheSize	 = new QLabel( this );
 
@@ -218,7 +228,9 @@ namespace VTX::UI::QT::DockWidget
 		layoutCache->addWidget( _labelCacheSize );
 		layoutCacheButton->addWidget( buttonOpenCache );
 		layoutCacheButton->addWidget( buttonClearCache );
-		layoutCacheButton->addWidget( buttonRefreshCache );
+		layoutCacheButton->setStretch( 0, 1 );
+		layoutCacheButton->setStretch( 1, 1 );
+		layoutCacheButton->setStretch( 2, 1 );
 		layoutCache->addLayout( layoutCacheButton );
 
 		_layout->addWidget( groupBoxDisplay );

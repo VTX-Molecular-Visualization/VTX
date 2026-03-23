@@ -259,7 +259,11 @@ namespace VTX::UI::QT::Action
 			trigger = []() { STYLE().setTheme( Style::E_THEME::DARK ); };
 		}
 
-		ResetLayout::ResetLayout() { name = "Reset layout"; }
+		ResetLayout::ResetLayout()
+		{
+			name	= "Reset layout";
+			trigger = []() { MAIN_WINDOW().resetLayout(); };
+		}
 
 	} // namespace Theme
 	namespace Option
@@ -291,22 +295,33 @@ namespace VTX::UI::QT::Action
 		Documentation::Documentation()
 		{
 			name	= "Documentation";
+			tip		= "Open online full documentation";
+			icon	= Style::Icons::DOCUMENTATION;
 			trigger = []() { QDesktopServices::openUrl( QUrl( App::URL_DOCUMENTATION.data() ) ); };
 		}
 
 		Report::Report()
 		{
 			name	= "Report a bug";
+			tip		= "Report a bug or ask for a feature";
+			icon	= Style::Icons::BUG;
 			trigger = []() { QDesktopServices::openUrl( QUrl( App::URL_REPORT.data() ) ); };
 		}
 
 		CheckUpdates::CheckUpdates()
 		{
 			name	= "Check for updates";
+			tip		= "Check online for a new version ";
+			icon	= Style::Icons::UPDATE;
 			trigger = []() { App::ACTION().execute<App::Action::Application::CheckForUpdate>(); };
 		}
 
-		About::About() { name = "About"; }
+		About::About()
+		{
+			name	= "About";
+			icon	= Style::Icons::INFO;
+			trigger = []() {};
+		}
 
 	} // namespace Help
 
