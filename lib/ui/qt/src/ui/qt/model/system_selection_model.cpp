@@ -37,10 +37,7 @@ namespace VTX::UI::QT::Model
 		const Qt::KeyboardModifiers modifiers = QGuiApplication::keyboardModifiers();
 
 		// Check Ctrl to clear others entities.
-		if ( modifiers.testFlag( Qt::ControlModifier ) == false )
-		{
-			ACTION().execute<Action::Selection::Clear>( _system, Action::Selection::Clear::E_MODE::BUT );
-		}
+		const bool append = ( modifiers.testFlag( Qt::ControlModifier ) );
 
 		// Deselected items.
 		Core::Struct::IndexRangeList deselected;

@@ -8,7 +8,6 @@
 #include <QGuiApplication>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
-#include <app/action/selection.hpp>
 #include <app/events.hpp>
 #include <qpa/qplatformnativeinterface.h>
 #include <util/event_hub.hpp>
@@ -64,14 +63,8 @@ namespace VTX::UI::QT::Widget
 			{
 				if ( not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
 				{
-					SELECTION().clearBut( E_SELECTION_GROUP::SYSTEM );
-
-					App::ACTION().execute<App::Action::Selection::Pick>(
-						Vec2i( p_pos.x(), p_pos.y() ),
-						static_cast<App::Action::Selection::E_GRANULARITY>(
-							SETTINGS().value( SETTING_KEY_GRANULARITY, 0 ).toInt()
-						),
-						QGuiApplication::keyboardModifiers() & Qt::ControlModifier
+					SELECTION().pick(
+						Vec2i( p_pos.x(), p_pos.y() ), QGuiApplication::keyboardModifiers() & Qt::ControlModifier
 					);
 				}
 			}
@@ -213,6 +206,7 @@ namespace VTX::UI::QT::Widget
 	{
 		if ( p_watched == _container )
 		{
+			// Transmit drag and drop events to the main window to allow dropping files on the renderer.
 			if ( p_event->type() == QEvent::DragEnter )
 			{
 				auto * e = p_event->clone();
@@ -228,6 +222,7 @@ namespace VTX::UI::QT::Widget
 				return true;
 			}
 		}
+		// Handle window events to keep the overlay in sync and focused when the window is active.
 		else if ( p_watched == _window )
 		{
 			if ( p_event->type() == QEvent::Expose )
@@ -244,6 +239,7 @@ namespace VTX::UI::QT::Widget
 				}
 			}
 		}
+		// Handle host window events to keep the overlay in sync and hide it when the window is hidden.
 		else if ( p_watched == window() )
 		{
 			if ( p_event->type() == QEvent::Move || p_event->type() == QEvent::Resize
@@ -270,49 +266,49 @@ namespace VTX::UI::QT::Widget
 
 	void Renderer::_addHUDWidget( QWidget * const p_widget, const HUD_POSITION p_pos )
 	{
-		int row = 0;
-		int col = 0;
+		int			  row		= 0;
+		int			  col		= 0;
 		Qt::Alignment alignment = Qt::AlignCenter;
 		switch ( p_pos )
 		{
 		case HUD_POSITION::TOP_LEFT:
-			row = 0;
-			col = 0;
+			row		  = 0;
+			col		  = 0;
 			alignment = Qt::AlignTop | Qt::AlignLeft;
 			break;
 		case HUD_POSITION::TOP_CENTER:
-			row = 0;
-			col = 1;
+			row		  = 0;
+			col		  = 1;
 			alignment = Qt::AlignTop | Qt::AlignHCenter;
 			break;
 		case HUD_POSITION::TOP_RIGHT:
-			row = 0;
-			col = 2;
+			row		  = 0;
+			col		  = 2;
 			alignment = Qt::AlignTop | Qt::AlignRight;
 			break;
 		case HUD_POSITION::CENTER_LEFT:
-			row = 1;
-			col = 0;
+			row		  = 1;
+			col		  = 0;
 			alignment = Qt::AlignVCenter | Qt::AlignLeft;
 			break;
 		case HUD_POSITION::CENTER_RIGHT:
-			row = 1;
-			col = 2;
+			row		  = 1;
+			col		  = 2;
 			alignment = Qt::AlignVCenter | Qt::AlignRight;
 			break;
 		case HUD_POSITION::BOTTOM_LEFT:
-			row = 2;
-			col = 0;
+			row		  = 2;
+			col		  = 0;
 			alignment = Qt::AlignBottom | Qt::AlignLeft;
 			break;
 		case HUD_POSITION::BOTTOM_CENTER:
-			row = 2;
-			col = 1;
+			row		  = 2;
+			col		  = 1;
 			alignment = Qt::AlignBottom | Qt::AlignHCenter;
 			break;
 		case HUD_POSITION::BOTTOM_RIGHT:
-			row = 2;
-			col = 2;
+			row		  = 2;
+			col		  = 2;
 			alignment = Qt::AlignBottom | Qt::AlignRight;
 			break;
 		default: assert( false && "Invalid HUD position" );

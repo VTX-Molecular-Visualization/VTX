@@ -4,6 +4,12 @@
 #include <QAbstractItemView>
 #include <QItemSelectionModel>
 #include <QObject>
+#include <app/action/action_manager.hpp>
+#include <app/action/selection.hpp>
+#include <app/ecs.hpp>
+#include <app/services.hpp>
+#include <core/struct/topology.hpp>
+#include <util/types.hpp>
 
 namespace VTX::UI::QT
 {
@@ -51,6 +57,34 @@ namespace VTX::UI::QT
 		 * @brief Clear selection of all group except the given one.
 		 */
 		void clearBut( const E_SELECTION_GROUP );
+
+		/**
+		 * @brief Select item.
+		 */
+		template<Core::Struct::E_SYSTEM_ITEM ITEM, typename S>
+		void select(
+			const App::ECS::Entity p_ent,
+			const S &			   p_data,
+			const bool			   p_selected = true,
+			const bool			   p_append	  = false
+		)
+		{
+			using namespace App::Action;
+
+			clearBut( E_SELECTION_GROUP::SYSTEM );
+
+			if ( not p_append )
+			{
+				App::ACTION().execute<App::Action::Selection::Clear>( p_ent, Selection::Clear::E_MODE::OTHERS );
+			}
+
+			App::ACTION().execute<App::Action::Selection::SetSelected<ITEM>>( p_ent, p_data, p_selected, p_append );
+		}
+
+		/**
+		 * @brief Pick item at position and add it to the selection.
+		 */
+		void pick( const Vec2i &, const bool );
 
 	  signals:
 		/**

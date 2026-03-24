@@ -134,8 +134,6 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		SELECTION().clearBut( E_SELECTION_GROUP::SYSTEM );
-
 		auto opt = _indexFromPos( p_e->pos() );
 		if ( not opt )
 		{
@@ -150,17 +148,12 @@ namespace VTX::UI::QT::Widget
 		bool shift = p_e->modifiers() & Qt::ShiftModifier;
 		bool ctrl  = p_e->modifiers() & Qt::ControlModifier;
 
-		if ( not ctrl )
-		{
-			ACTION().execute<Selection::Clear>( _system, Selection::Clear::E_MODE::BUT );
-		}
-
 		bool selected = App::Helper::System::isSelected<E_SYSTEM_ITEM::RESIDUE>( _system, index );
 
 		if ( not shift && not ctrl )
 		{
 			// Normal.
-			ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>( _system, index );
+			SELECTION().select<E_SYSTEM_ITEM::RESIDUE>( _system, index );
 
 			_anchor		 = index;
 			_lastClicked = index;
@@ -176,9 +169,7 @@ namespace VTX::UI::QT::Widget
 			Index a = Util::Math::min( _anchor, index );
 			Index b = Util::Math::max( _anchor, index );
 
-			ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>(
-				_system, Core::Struct::IndexRange { a, b }
-			);
+			SELECTION().select<E_SYSTEM_ITEM::RESIDUE>( _system, Core::Struct::IndexRange { a, b } );
 
 			_lastClicked = index;
 		}
@@ -187,11 +178,11 @@ namespace VTX::UI::QT::Widget
 			// CTRL.
 			if ( selected )
 			{
-				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>( _system, index, false, true );
+				SELECTION().select<E_SYSTEM_ITEM::RESIDUE>( _system, index, false, true );
 			}
 			else
 			{
-				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>( _system, index, true, true );
+				SELECTION().select<E_SYSTEM_ITEM::RESIDUE>( _system, index, true, true );
 			}
 
 			_anchor		 = index;
@@ -231,24 +222,18 @@ namespace VTX::UI::QT::Widget
 		// Normal.
 		if ( not( p_e->modifiers() & Qt::ControlModifier ) )
 		{
-			ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>(
-				_system, Core::Struct::IndexRange { a, b }
-			);
+			SELECTION().select<E_SYSTEM_ITEM::RESIDUE>( _system, Core::Struct::IndexRange { a, b } );
 		}
 		// CTRL.
 		else
 		{
 			if ( _dragAddMode )
 			{
-				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>(
-					_system, Core::Struct::IndexRange { a, b }, true, true
-				);
+				SELECTION().select<E_SYSTEM_ITEM::RESIDUE>( _system, Core::Struct::IndexRange { a, b }, true, true );
 			}
 			else
 			{
-				ACTION().execute<Selection::SetSelected<E_SYSTEM_ITEM::RESIDUE>>(
-					_system, Core::Struct::IndexRange { a, b }, false, true
-				);
+				SELECTION().select<E_SYSTEM_ITEM::RESIDUE>( _system, Core::Struct::IndexRange { a, b }, false, true );
 			}
 		}
 	}
@@ -282,9 +267,9 @@ namespace VTX::UI::QT::Widget
 
 	std::optional<Index> Sequence::_indexFromPos( const QPoint & p )
 	{
-		const int xOffset = horizontalScrollBar()->value();
-		const int clickX  = p.x() + xOffset;
-		auto &	  topology  = App::REG().get<Core::Struct::Topology>( _system );
+		const int xOffset  = horizontalScrollBar()->value();
+		const int clickX   = p.x() + xOffset;
+		auto &	  topology = App::REG().get<Core::Struct::Topology>( _system );
 
 		Index index = clickX / SEQ_CHAR_WIDTH;
 		if ( index > topology.getResidueCount() )

@@ -103,7 +103,7 @@ namespace VTX::App::Action::Selection
 		enum struct E_MODE : uint
 		{
 			THIS,
-			BUT
+			OTHERS
 		};
 
 		/**

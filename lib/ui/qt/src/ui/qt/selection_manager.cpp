@@ -79,4 +79,20 @@ namespace VTX::UI::QT
 			}
 		}
 	}
+
+	void SelectionManager::pick( const Vec2i & p_pos, const bool p_append = false )
+	{
+		clearBut( E_SELECTION_GROUP::SYSTEM );
+
+		if ( not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
+		{
+			App::ACTION().execute<App::Action::Selection::Pick>(
+				p_pos,
+				static_cast<App::Action::Selection::E_GRANULARITY>(
+					SETTINGS().value( SETTING_KEY_GRANULARITY, 0 ).toInt()
+				),
+				p_append
+			);
+		}
+	}
 } // namespace VTX::UI::QT

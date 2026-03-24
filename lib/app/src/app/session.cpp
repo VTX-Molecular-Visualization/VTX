@@ -149,13 +149,10 @@ namespace VTX::App
 		{
 			Velopack::VelopackApp::Build()
 				.SetAutoApplyOnStartup( false )
-				//.OnAfterInstall(  )
+
 				.OnBeforeUninstall( []( void *, const char * )
 									{ std::filesystem::remove_all( Filesystem::getDataHome() / APP_FOLDER_NAME ); } )
-				//.OnBeforeUpdate(  )
-				//.OnAfterUpdate(  )
-				//.OnFirstRun(  )
-				//.OnRestarted(  )
+
 				.Run();
 
 			auto src = std::make_unique<Velopack::GithubSource>( URL_UPDATE.data() );
@@ -263,9 +260,9 @@ namespace VTX::App
 		try
 		{
 			const Velopack::UpdateInfo pendingUpdate = *_impl->pendingUpdate;
-			const auto &			   release	   = pendingUpdate.TargetFullRelease;
-			_impl->updateDownloadReady			   = false;
-			_impl->updateDownloadSucceeded		   = false;
+			const auto &			   release		 = pendingUpdate.TargetFullRelease;
+			_impl->updateDownloadReady				 = false;
+			_impl->updateDownloadSucceeded			 = false;
 
 			VTX_INFO( "downloadUpdate: starting update to {}", release.Version );
 			THREAD().createThread(
@@ -325,7 +322,7 @@ namespace VTX::App
 		try
 		{
 			const Velopack::UpdateInfo pendingUpdate = *_impl->pendingUpdate;
-			const bool				 restart	   = _shouldRestartAfterUpdate();
+			const bool				   restart		 = _shouldRestartAfterUpdate();
 			VTX_INFO( "downloadUpdate: calling WaitExitThenApplyUpdates (restart={})", restart );
 			( *_impl->manager ).WaitExitThenApplyUpdates( pendingUpdate, false, restart /*, ARGS().toStringVec()*/ );
 			VTX_INFO( "downloadUpdate: WaitExitThenApplyUpdates returned" );
