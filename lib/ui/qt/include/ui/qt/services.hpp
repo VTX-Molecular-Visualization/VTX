@@ -8,7 +8,6 @@ namespace VTX::UI::QT
 	namespace Model
 	{
 		class SystemModel;
-		class SystemSelectionModel;
 	} // namespace Model
 	class SelectionManager;
 	class Settings;

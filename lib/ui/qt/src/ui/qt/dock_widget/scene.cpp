@@ -66,10 +66,7 @@ namespace VTX::UI::QT::DockWidget
 		const auto entity = p_e.system;
 		auto *	   tree	  = new Widget::Tree::System( entity, this );
 
-		const bool selectionLocked = SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool();
-		tree->setSelectionMode(
-			selectionLocked ? QAbstractItemView::NoSelection : QAbstractItemView::ExtendedSelection
-		);
+		tree->setSelectionMode( QAbstractItemView::NoSelection );
 		SELECTION().add( tree->selectionModel(), E_SELECTION_GROUP::SYSTEM );
 
 		assert( not _mapSystemTreeWidgets.contains( entity ) );
@@ -108,7 +105,6 @@ namespace VTX::UI::QT::DockWidget
 		}
 
 		assert( _mapSystemTreeWidgets.contains( p_e ) );
-		_mapSystemTreeWidgets[ p_e ]->getSystemSelectionModel().refresh();
 		_mapSystemTreeWidgets[ p_e ]->viewport()->update();
 	}
 
@@ -116,9 +112,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		for ( const auto & [ _, w ] : _mapSystemTreeWidgets )
 		{
-			w->setSelectionMode(
-				p_event.locked ? QAbstractItemView::NoSelection : QAbstractItemView::ExtendedSelection
-			);
+			w->setSelectionMode( QAbstractItemView::NoSelection );
 		}
 	}
 	void Scene::_onTrajectoryCreated( App::ECS::Registry &, App::ECS::Entity p_entity )

@@ -101,7 +101,8 @@ namespace VTX::UI::QT::Widget
 
 			// Selection.
 			const QRect cellRect( x - 2, SEQ_CHAR_HEIGHT + 5, SEQ_CHAR_WIDTH, SEQ_CHAR_HEIGHT );
-			bool		selected = App::Helper::System::isSelected<E_SYSTEM_ITEM::RESIDUE>( _system, residue );
+			const bool	selected = App::Helper::System::getSelectionState( { _system, E_SYSTEM_ITEM::RESIDUE, residue } )
+								  != App::System::E_SELECTION_STATE::NONE;
 			if ( selected )
 			{
 				painter.fillRect( cellRect, palette().highlight() );
@@ -148,7 +149,9 @@ namespace VTX::UI::QT::Widget
 		bool shift = p_e->modifiers() & Qt::ShiftModifier;
 		bool ctrl  = p_e->modifiers() & Qt::ControlModifier;
 
-		bool selected = App::Helper::System::isSelected<E_SYSTEM_ITEM::RESIDUE>( _system, index );
+		const bool selected
+			= App::Helper::System::getSelectionState( { _system, E_SYSTEM_ITEM::RESIDUE, index } )
+			  != App::System::E_SELECTION_STATE::NONE;
 
 		if ( not shift && not ctrl )
 		{

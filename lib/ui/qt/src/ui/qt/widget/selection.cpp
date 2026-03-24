@@ -45,12 +45,13 @@ namespace VTX::UI::QT::Widget
 			const auto & selection = reg.get<App::System::Selection>( entity );
 
 			QString name = QString::fromStdString( topology.name );
-			if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::SYSTEM>( entity ) )
+			const auto systemState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
+			if ( systemState == App::System::E_SELECTION_STATE::FULL )
 			{
 				addItem( name );
 				continue;
 			}
-			else if ( Helper::System::isSelected<E_SYSTEM_ITEM::SYSTEM>( entity ) == false )
+			else if ( systemState == App::System::E_SELECTION_STATE::NONE )
 			{
 				continue;
 			}
@@ -59,12 +60,13 @@ namespace VTX::UI::QT::Widget
 			for ( Index chain = 0; chain < topology.getChainCount(); ++chain )
 			{
 				QString chainName = QString::fromStdString( topology.getChainName( chain ) );
-				if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::CHAIN>( entity, chain ) )
+				const auto chainState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::CHAIN, chain } );
+				if ( chainState == App::System::E_SELECTION_STATE::FULL )
 				{
 					addItem( name + "/" + chainName );
 					continue;
 				}
-				else if ( Helper::System::isSelected<E_SYSTEM_ITEM::CHAIN>( entity, chain ) == false )
+				else if ( chainState == App::System::E_SELECTION_STATE::NONE )
 				{
 					continue;
 				}
@@ -73,12 +75,13 @@ namespace VTX::UI::QT::Widget
 				for ( Index residue : topology.getChainResidueRange( chain ) )
 				{
 					QString residueName = QString::fromStdString( topology.getResidueName( residue ) );
-					if ( Helper::System::isFullySelected<E_SYSTEM_ITEM::RESIDUE>( entity, residue ) )
+					const auto residueState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::RESIDUE, residue } );
+					if ( residueState == App::System::E_SELECTION_STATE::FULL )
 					{
 						addItem( name + "/" + chainName + "/" + residueName );
 						continue;
 					}
-					else if ( Helper::System::isSelected<E_SYSTEM_ITEM::RESIDUE>( entity, residue ) == false )
+					else if ( residueState == App::System::E_SELECTION_STATE::NONE )
 					{
 						continue;
 					}
@@ -86,7 +89,8 @@ namespace VTX::UI::QT::Widget
 					// Atoms.
 					for ( Index atom : topology.getResidueAtomRange( residue ) )
 					{
-						if ( Helper::System::isSelected<E_SYSTEM_ITEM::ATOM>( entity, atom ) )
+						if ( Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::ATOM, atom } )
+							 == App::System::E_SELECTION_STATE::FULL )
 						{
 							addItem(
 								name + "/" + chainName + "/" + residueName + "/"

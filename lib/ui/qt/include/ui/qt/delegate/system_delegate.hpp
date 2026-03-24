@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_DELEGATE_SYSTEM_DELEGATE__
 
 #include <QStyledItemDelegate>
+#include <QStyleOptionViewItem>
 #include <app/ecs.hpp>
 #include <util/types.hpp>
 
@@ -58,6 +59,11 @@ namespace VTX::UI::QT::Delegate
 		 * @brief Override: set data from the editor widget back into the model (if any).
 		 */
 		void setModelData( QWidget *, QAbstractItemModel *, const QModelIndex & ) const override;
+
+		/**
+		 * @brief Check if the given point overlaps an action button.
+		 */
+		bool hitsButton( const QStyleOptionViewItem &, const QPoint & ) const;
 
 	  signals:
 		/**

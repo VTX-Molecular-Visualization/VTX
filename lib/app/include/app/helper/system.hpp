@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_HELPER_VISIBILITY__
-#define __VTX_APP_HELPER_VISIBILITY__
+#ifndef __VTX_APP_HELPER_SYSTEM__
+#define __VTX_APP_HELPER_SYSTEM__
 
 #include "app/ecs.hpp"
 #include "app/scene/tag_root.hpp"
@@ -97,150 +97,6 @@ namespace VTX::App::Helper::System
 	}
 
 	/**
-	 * @brief Check if an item is visible.
-	 */
-	template<Core::Struct::E_SYSTEM_ITEM ITEM>
-	bool isVisible( const ECS::Entity p_ent, const std::optional<Index> p_index = std::nullopt )
-	{
-		using namespace Core::Struct;
-
-		const auto & topology		= REG().get<Core::Struct::Topology>( p_ent );
-		const auto & visibility = REG().get<App::System::Visibility>( p_ent );
-
-		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
-		{
-			return visibility.atoms.any();
-		}
-
-		assert( p_index );
-
-		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
-		{
-			return visibility.atoms.any( topology.getChainAtomRange( *p_index ) );
-		}
-		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
-		{
-			return visibility.atoms.any( topology.getResidueAtomRange( *p_index ) );
-		}
-		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
-		{
-			return visibility.atoms.test( *p_index );
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	/**
-	 * @brief Check if an item is fully visible.
-	 */
-	template<Core::Struct::E_SYSTEM_ITEM ITEM>
-	bool isFullyVisible( const ECS::Entity p_ent, const std::optional<Index> p_index = std::nullopt )
-	{
-		using namespace Core::Struct;
-
-		const auto & topology		= REG().get<Core::Struct::Topology>( p_ent );
-		const auto & visibility = REG().get<App::System::Visibility>( p_ent );
-
-		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
-		{
-			return visibility.atoms.count() == topology.getAtomCount();
-		}
-
-		assert( p_index );
-
-		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
-		{
-			return visibility.atoms.test( topology.getChainAtomRange( *p_index ) );
-		}
-		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
-		{
-			return visibility.atoms.test( topology.getResidueAtomRange( *p_index ) );
-		}
-		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	/**
-	 * @brief Check if an item is selected.
-	 */
-	template<Core::Struct::E_SYSTEM_ITEM ITEM>
-	bool isSelected( const ECS::Entity p_ent, const std::optional<Index> p_index = std::nullopt )
-	{
-		using namespace Core::Struct;
-
-		const auto & topology	   = REG().get<Core::Struct::Topology>( p_ent );
-		const auto & selection = REG().get<App::System::Selection>( p_ent );
-
-		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
-		{
-			return selection.atoms.any();
-		}
-
-		assert( p_index );
-
-		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
-		{
-			return selection.atoms.any( topology.getChainAtomRange( *p_index ) );
-		}
-		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
-		{
-			return selection.atoms.any( topology.getResidueAtomRange( *p_index ) );
-		}
-		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
-		{
-			return selection.atoms.test( *p_index );
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	/**
-	 * @brief Check if an item is fully selected.
-	 */
-	template<Core::Struct::E_SYSTEM_ITEM ITEM>
-	bool isFullySelected( const ECS::Entity p_ent, const std::optional<Index> p_index = std::nullopt )
-	{
-		using namespace Core::Struct;
-
-		const auto & topology	   = REG().get<Core::Struct::Topology>( p_ent );
-		const auto & selection = REG().get<App::System::Selection>( p_ent );
-
-		if constexpr ( ITEM == E_SYSTEM_ITEM::SYSTEM )
-		{
-			return selection.atoms.count() == topology.getAtomCount();
-		}
-
-		assert( p_index );
-
-		if constexpr ( ITEM == E_SYSTEM_ITEM::CHAIN )
-		{
-			return selection.atoms.test( topology.getChainAtomRange( *p_index ) );
-		}
-		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
-		{
-			return selection.atoms.test( topology.getResidueAtomRange( *p_index ) );
-		}
-		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	/**
 	 * @brief Struct that describes a system item.
 	 */
 	struct SystemItemView
@@ -254,6 +110,11 @@ namespace VTX::App::Helper::System
 	 * @brief Get the visibility state of an item.
 	 */
 	App::System::E_VISIBLE_STATE getVisibleState( const SystemItemView & );
+
+	/**
+	 * @brief Get the selection state of an item.
+	 */
+	App::System::E_SELECTION_STATE getSelectionState( const SystemItemView & );
 
 	/**
 	 * @brief Get the color scheme of an item (nothing if multiples).

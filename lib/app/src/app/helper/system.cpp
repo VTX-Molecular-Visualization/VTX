@@ -3,6 +3,33 @@
 #include "app/system/representation.hpp"
 #include <core/struct/topology.hpp>
 
+namespace
+{
+	VTX::App::System::E_VISIBLE_STATE _getVisibleState(
+		const VTX::Util::Math::BitSet &	  p_visibility,
+		const VTX::Core::Struct::IndexRange p_range
+	)
+	{
+		using namespace VTX::App::System;
+
+		return p_visibility.test( p_range ) ? E_VISIBLE_STATE::VISIBLE
+			   : p_visibility.any( p_range ) ? E_VISIBLE_STATE::PARTIAL
+											: E_VISIBLE_STATE::HIDDEN;
+	}
+
+	VTX::App::System::E_SELECTION_STATE _getSelectionState(
+		const VTX::Util::Math::BitSet &	  p_selection,
+		const VTX::Core::Struct::IndexRange p_range
+	)
+	{
+		using namespace VTX::App::System;
+
+		return p_selection.test( p_range ) ? E_SELECTION_STATE::FULL
+			   : p_selection.any( p_range ) ? E_SELECTION_STATE::PARTIAL
+										   : E_SELECTION_STATE::NONE;
+	}
+} // namespace
+
 namespace VTX::App::Helper::System
 {
 	ECS::Entity getSystemByName( const std::string p_name ) noexcept
@@ -24,37 +51,55 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 		using namespace App::System;
 
-		const ECS::Entity ent = p_system.entity;
+		const ECS::Entity ent	   = p_system.entity;
+		const auto &	  reg	   = REG();
+		const auto &	  topology = reg.get<Core::Struct::Topology>( ent );
+		const auto &	  visibility = reg.get<App::System::Visibility>( ent );
 
-		if ( isFullyVisible<E_SYSTEM_ITEM::SYSTEM>( ent ) )
+		switch ( p_system.item )
 		{
-			return App::System::E_VISIBLE_STATE::VISIBLE;
-		}
-		else
-		{
-			switch ( p_system.item )
-			{
-			case E_SYSTEM_ITEM::SYSTEM:
-				return isVisible<E_SYSTEM_ITEM::SYSTEM>( ent ) ? E_VISIBLE_STATE::PARTIAL : E_VISIBLE_STATE::HIDDEN;
-			case E_SYSTEM_ITEM::CHAIN:
-				assert( p_system.index );
-				return isFullyVisible<E_SYSTEM_ITEM::CHAIN>( ent, *p_system.index ) ? E_VISIBLE_STATE::VISIBLE
-					   : isVisible<E_SYSTEM_ITEM::CHAIN>( ent, *p_system.index )	? E_VISIBLE_STATE::PARTIAL
-																					: E_VISIBLE_STATE::HIDDEN;
-			case E_SYSTEM_ITEM::RESIDUE:
-				assert( p_system.index );
-				return isFullyVisible<E_SYSTEM_ITEM::RESIDUE>( ent, *p_system.index ) ? E_VISIBLE_STATE::VISIBLE
-					   : isVisible<E_SYSTEM_ITEM::RESIDUE>( ent, *p_system.index )	  ? E_VISIBLE_STATE::PARTIAL
-																					  : E_VISIBLE_STATE::HIDDEN;
-			case E_SYSTEM_ITEM::ATOM:
-				assert( p_system.index );
-				return isVisible<E_SYSTEM_ITEM::ATOM>( ent, *p_system.index ) ? E_VISIBLE_STATE::VISIBLE
-																			  : E_VISIBLE_STATE::HIDDEN;
-			default: break;
-			}
+		case E_SYSTEM_ITEM::SYSTEM: return _getVisibleState( visibility.atoms, topology.getAtomRange() );
+		case E_SYSTEM_ITEM::CHAIN:
+			assert( p_system.index );
+			return _getVisibleState( visibility.atoms, topology.getChainAtomRange( *p_system.index ) );
+		case E_SYSTEM_ITEM::RESIDUE:
+			assert( p_system.index );
+			return _getVisibleState( visibility.atoms, topology.getResidueAtomRange( *p_system.index ) );
+		case E_SYSTEM_ITEM::ATOM:
+			assert( p_system.index );
+			return visibility.atoms.test( *p_system.index ) ? E_VISIBLE_STATE::VISIBLE : E_VISIBLE_STATE::HIDDEN;
+		default: break;
 		}
 
-		return App::System::E_VISIBLE_STATE::HIDDEN;
+		return E_VISIBLE_STATE::HIDDEN;
+	}
+
+	App::System::E_SELECTION_STATE getSelectionState( const SystemItemView & p_system )
+	{
+		using namespace Core::Struct;
+		using namespace App::System;
+
+		const ECS::Entity ent	   = p_system.entity;
+		const auto &	  reg	   = REG();
+		const auto &	  topology = reg.get<Core::Struct::Topology>( ent );
+		const auto &	  selection = reg.get<App::System::Selection>( ent );
+
+		switch ( p_system.item )
+		{
+		case E_SYSTEM_ITEM::SYSTEM: return _getSelectionState( selection.atoms, topology.getAtomRange() );
+		case E_SYSTEM_ITEM::CHAIN:
+			assert( p_system.index );
+			return _getSelectionState( selection.atoms, topology.getChainAtomRange( *p_system.index ) );
+		case E_SYSTEM_ITEM::RESIDUE:
+			assert( p_system.index );
+			return _getSelectionState( selection.atoms, topology.getResidueAtomRange( *p_system.index ) );
+		case E_SYSTEM_ITEM::ATOM:
+			assert( p_system.index );
+			return selection.atoms.test( *p_system.index ) ? E_SELECTION_STATE::FULL : E_SELECTION_STATE::NONE;
+		default: break;
+		}
+
+		return E_SELECTION_STATE::NONE;
 	}
 
 	std::optional<App::System::E_COLOR_SCHEME> getColorScheme( const SystemItemView & p_system )

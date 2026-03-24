@@ -104,7 +104,8 @@ namespace VTX::App::Action::Camera
 					const System::Selection &	 p_selection
 				)
 				{
-					if ( Helper::System::isFullySelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>( p_e ) )
+					if ( Helper::System::getSelectionState( { p_e, Core::Struct::E_SYSTEM_ITEM::SYSTEM } )
+						 == System::E_SELECTION_STATE::FULL )
 					{
 						aabb.extend( p_aabb );
 					}

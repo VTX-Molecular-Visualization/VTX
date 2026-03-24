@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
+#include <app/system/selection.hpp>
 #include <app/system/visibility.hpp>
 
 namespace VTX::UI::QT::Delegate
@@ -25,9 +26,30 @@ namespace VTX::UI::QT::Delegate
 		const QModelIndex &			 p_index
 	) const
 	{
-		QStyledItemDelegate::paint( p_painter, p_option, p_index );
+		const App::System::E_SELECTION_STATE selectionState = static_cast<App::System::E_SELECTION_STATE>(
+			p_index.data( Model::SystemModel::Roles::SelectionStateRole ).toInt()
+		);
+
+		QStyleOptionViewItem option = p_option;
+		option.state.setFlag( QStyle::State_Selected, selectionState == App::System::E_SELECTION_STATE::FULL );
+
+		QStyledItemDelegate::paint( p_painter, option, p_index );
 
 		p_painter->save();
+
+		if ( selectionState == App::System::E_SELECTION_STATE::PARTIAL )
+		{
+			QColor partialColor = option.palette.highlight().color();
+			partialColor.setAlpha( 128 );
+
+			const QRect accentRect( option.rect.left(), option.rect.top(), 4, option.rect.height() );
+			p_painter->fillRect( accentRect, partialColor );
+
+			QPen pen( partialColor );
+			pen.setWidth( 1 );
+			p_painter->setPen( pen );
+			p_painter->drawRect( option.rect.adjusted( 0, 0, -1, -1 ) );
+		}
 
 		std::array<bool, toUnderlying( ACTION::COUNT )> pinButtons { false, false, false };
 
@@ -48,9 +70,9 @@ namespace VTX::UI::QT::Delegate
 		// Paint buttons.
 		for ( int i = 0; i < _icons.size(); ++i )
 		{
-			if ( pinButtons[ i ] || p_option.state & QStyle::State_MouseOver )
+			if ( pinButtons[ i ] || option.state & QStyle::State_MouseOver )
 			{
-				const QRect r = _buttonRect( p_option, i );
+				const QRect r = _buttonRect( option, i );
 				_icons[ i ].paint( p_painter, r, Qt::AlignCenter, QIcon::Normal );
 			}
 		}
@@ -128,6 +150,11 @@ namespace VTX::UI::QT::Delegate
 	) const
 	{
 		QStyledItemDelegate::setModelData( p_editor, p_model, p_index );
+	}
+
+	bool SystemDelegate::hitsButton( const QStyleOptionViewItem & p_option, const QPoint & p_pos ) const
+	{
+		return _hitTestButton( p_option, p_pos ) >= 0;
 	}
 
 	QRect SystemDelegate::_buttonsRect( const QStyleOptionViewItem & p_option ) const

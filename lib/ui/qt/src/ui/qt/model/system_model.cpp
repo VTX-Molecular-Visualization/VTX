@@ -102,6 +102,8 @@ namespace VTX::UI::QT::Model
 			}
 			return {};
 		case ItemRole: return toUnderlying( item );
+		case SelectionStateRole:
+			return toUnderlying( App::Helper::System::getSelectionState( { _system, item, index } ) );
 		case Qt::DecorationRole:
 			switch ( item )
 			{

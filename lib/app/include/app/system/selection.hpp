@@ -6,6 +6,15 @@
 
 namespace VTX::App::System
 {
+	/**
+	 * @brief Selection state of an item.
+	 */
+	enum struct E_SELECTION_STATE : uint8_t
+	{
+		NONE,
+		PARTIAL,
+		FULL
+	};
 
 	/**
 	 * @brief Store selected elements.

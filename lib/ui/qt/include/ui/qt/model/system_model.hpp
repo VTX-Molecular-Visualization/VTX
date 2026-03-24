@@ -23,6 +23,8 @@ namespace VTX::UI::QT::Model
 		{
 			// SYSTEM, CHAIN, RESIDUE, ATOM.
 			ItemRole = Qt::UserRole + 1,
+			// NONE, PARTIAL, FULL.
+			SelectionStateRole,
 			// VISIBLE, PARTIAL, HIDDEN.
 			VisibleRole,
 			// true/false.
