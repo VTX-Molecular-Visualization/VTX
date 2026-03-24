@@ -120,8 +120,6 @@ namespace VTX::App::Action::Preset
 				throw VTXException( "Cannot delete the last preset." );
 			}
 
-			return;
-
 			// TODO: check if preset is used in an instance.
 			/*
 			auto viewInstance = REG().view<App::Preset::Instance<T>>();

@@ -62,6 +62,7 @@ namespace VTX::UI::QT::Widget::Tree
 				= new QTreeWidgetItem( QStringList() << QString::fromStdString( name.name ) );
 			presetItem->setData( 0, Qt::UserRole, QVariant::fromValue( p_e ) );
 			W::topLevelItem( 0 )->addChild( presetItem );
+			W::topLevelItem( 0 )->sortChildren( 0, Qt::AscendingOrder );
 			_entityToItemMap.emplace( p_e, presetItem );
 			W::updateGeometry();
 		}
@@ -88,6 +89,7 @@ namespace VTX::UI::QT::Widget::Tree
 
 			QTreeWidgetItem * const presetItem = _entityToItemMap.at( p_event.preset );
 			presetItem->setText( 0, QString::fromStdString( p_event.name ) );
+			W::topLevelItem( 0 )->sortChildren( 0, Qt::AscendingOrder );
 		}
 	};
 

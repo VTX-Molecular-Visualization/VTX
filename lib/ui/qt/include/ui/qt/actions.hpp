@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_ACTIONS__
 
 #include "app/services.hpp"
+#include "ui/qt/style/icons.hpp"
 #include <QStyle>
 #include <app/ui/concepts.hpp>
 
@@ -204,7 +205,7 @@ namespace VTX::UI::QT
 				{
 					name = "New";
 					tip	 = "Create a new empty preset";
-					icon = static_cast<int>( QStyle::StandardPixmap::SP_FileIcon );
+					icon = Style::Icons::NEW;
 				}
 			};
 
@@ -215,7 +216,7 @@ namespace VTX::UI::QT
 				{
 					name = "Duplicate";
 					tip	 = "Create a new preset from this one";
-					icon = static_cast<int>( QStyle::StandardPixmap::SP_DialogSaveButton );
+					icon = Style::Icons::COPY;
 				}
 			};
 
@@ -226,7 +227,7 @@ namespace VTX::UI::QT
 				{
 					name = "Delete";
 					tip	 = "Delete this preset";
-					icon = static_cast<int>( QStyle::StandardPixmap::SP_TrashIcon );
+					icon = Style::Icons::DELETE;
 				}
 			};
 
@@ -237,7 +238,7 @@ namespace VTX::UI::QT
 				{
 					name = "Apply";
 					tip	 = "Apply this preset";
-					icon = static_cast<int>( QStyle::StandardPixmap::SP_DialogOkButton );
+					icon = Style::Icons::APPLY;
 				}
 			};
 		} // namespace Preset

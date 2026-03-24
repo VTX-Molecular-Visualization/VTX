@@ -34,6 +34,8 @@ namespace VTX::UI::QT::Widget::Library
 		inline QGroupBox * const presetGroupBox() const { return _groupboxPreset; }
 		inline void addWidget( QWidget * const p_widget ) { _groupboxPreset->layout()->addWidget( p_widget ); }
 		inline void setTitle( const QString & p_title ) { _groupboxPreset->setTitle( p_title ); }
+		inline void refresh() { _presetSelector->refresh(); }
+		inline void setCurrentPreset( const App::ECS::Entity p_preset ) { _presetSelector->setCurrentPreset( p_preset ); }
 
 		/**
 		 * @brief Update the widget when the preset is updated.

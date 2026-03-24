@@ -3,6 +3,7 @@
 
 #include "base_preset_widget.hpp"
 #include "ui/qt/widget/color_picker.hpp"
+#include <QCheckBox>
 #include <span>
 
 namespace VTX::UI::QT::Widget::Library
@@ -27,6 +28,7 @@ namespace VTX::UI::QT::Widget::Library
 	  private:
 		inline static const int _BUTTON_SIZE = 32;
 
+		QPointer<QCheckBox> _checkBoxHideNonUsual;
 		std::vector<QPointer<ColorPicker>> _buttons;
 
 		void _createGroupBox(
