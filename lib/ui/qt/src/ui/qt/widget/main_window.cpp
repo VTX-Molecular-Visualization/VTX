@@ -29,8 +29,10 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QTimer>
 #include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
+#include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -129,6 +131,24 @@ namespace VTX::UI::QT::Widget
 	{
 		SETTINGS().setValue( SETTING_KEY_GEOMETRY, saveGeometry() );
 		SETTINGS().setValue( SETTING_KEY_STATE, saveState() );
+	}
+
+	bool MainWindow::event( QEvent * p_event )
+	{
+		if ( p_event != nullptr )
+		{
+			switch ( p_event->type() )
+			{
+			case QEvent::LayoutRequest:
+			case QEvent::UpdateRequest:
+			case QEvent::WindowStateChange:
+				QTimer::singleShot( 0, this, []() { App::RENDERER().setNeedUpdate( true ); } );
+				break;
+			default: break;
+			}
+		}
+
+		return QMainWindow::event( p_event );
 	}
 
 	void MainWindow::addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action )

@@ -98,7 +98,7 @@ namespace VTX::UI::QT::Widget
 	{
 		setFocusPolicy( Qt::NoFocus );
 		setAttribute( Qt::WA_NativeWindow, true );
-		setAttribute( Qt::WA_NoSystemBackground, true );
+		// setAttribute( Qt::WA_NoSystemBackground, true );
 		setAutoFillBackground( false );
 		winId();
 
@@ -207,6 +207,27 @@ namespace VTX::UI::QT::Widget
 		VTX_TRACE( "Renderer::getNativePlatform platform={} code=0", QGuiApplication::platformName().toStdString() );
 		return 0;
 #endif
+	}
+
+	bool Renderer::event( QEvent * p_event )
+	{
+		if ( p_event != nullptr )
+		{
+			switch ( p_event->type() )
+			{
+			case QEvent::Show:
+			case QEvent::ShowToParent:
+			case QEvent::UpdateRequest:
+			case QEvent::WindowActivate:
+			case QEvent::WindowDeactivate:
+			case QEvent::ActivationChange:
+			case QEvent::WindowStateChange:
+			case QEvent::Expose: QTimer::singleShot( 0, this, []() { App::RENDERER().setNeedUpdate( true ); } ); break;
+			default: break;
+			}
+		}
+
+		return QWidget::event( p_event );
 	}
 
 	void Renderer::resizeEvent( QResizeEvent * p_event )
