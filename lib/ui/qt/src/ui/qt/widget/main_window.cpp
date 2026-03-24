@@ -77,6 +77,7 @@ namespace VTX::UI::QT::Widget
 		// Toolbars.
 		createToolBar<ToolBar::File>();
 		createToolBar<ToolBar::Camera>();
+		createToolBar<ToolBar::Selection>();
 		createToolBar<ToolBar::Snapshot>();
 
 		// Main area : opengl widget.

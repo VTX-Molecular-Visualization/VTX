@@ -67,7 +67,12 @@ namespace VTX::UI::QT::Widget
 		template<typename TB>
 		TB * const createToolBar( const HUD_POSITION p_pos )
 		{
-			TB * const toolBar = new TB( this );
+			TB * toolBar = new TB( this );
+			toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
+			for ( auto * button : toolBar->findChildren<QToolButton *>() )
+			{
+				button->setToolButtonStyle( toolBar->toolButtonStyle() );
+			}
 			_addHUDWidget( toolBar, p_pos );
 			return toolBar;
 		}

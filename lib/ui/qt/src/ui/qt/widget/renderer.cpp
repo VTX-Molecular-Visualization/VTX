@@ -327,6 +327,9 @@ namespace VTX::UI::QT::Widget
 	{
 		p_widget->setParent( this );
 		p_widget->setAttribute( Qt::WA_NativeWindow, true );
+		p_widget->setAttribute( Qt::WA_TranslucentBackground );
+		p_widget->setAttribute( Qt::WA_NoSystemBackground );
+		p_widget->setAutoFillBackground( false );
 		p_widget->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
 		p_widget->move( 0, 0 );
 		p_widget->show();

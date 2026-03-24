@@ -41,8 +41,9 @@ namespace VTX::UI::QT::ToolBar
 
 			// Granularity tool buttons.
 			_granularityButton = new QToolButton( this );
-			_granularityButton->setToolButtonStyle( Qt::ToolButtonIconOnly );
+			_granularityButton->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
 			_granularityButton->setPopupMode( QToolButton::InstantPopup );
+			_granularityButton->setText( "Selection" );
 
 			QMenu * menu		= new QMenu( _granularityButton );
 			auto *	actionGroup = new QActionGroup( menu );
