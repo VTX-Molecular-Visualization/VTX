@@ -3,133 +3,184 @@
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
-#include "ui/qt/widget/main_window.hpp"
-#include <QGridLayout>
 #include <QGuiApplication>
-#include <QRegion>
+#include <QStyleHints>
+#include <QWindow>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
-#include <app/events.hpp>
+#include <app/action/camera.hpp>
+#include <app/services.hpp>
 #include <qpa/qplatformnativeinterface.h>
+#include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
+#include <util/type_traits.hpp>
+
+namespace
+{
+	using namespace VTX::UI::QT::Widget;
+
+	enum ACTION
+	{
+		MOVE_FRONT,
+		MOVE_BACK,
+		MOVE_LEFT,
+		MOVE_RIGHT,
+		MOVE_UP,
+		MOVE_DOWN,
+		ROTATE_LEFT,
+		ROTATE_RIGHT
+	};
+
+	template<ACTION A, KB_LAYOUT = KB_LAYOUT::QWERTY>
+	constexpr Qt::Key _key()
+	{
+		if constexpr ( A == MOVE_FRONT )
+		{
+			return Qt::Key::Key_W;
+		}
+		else if constexpr ( A == MOVE_BACK )
+		{
+			return Qt::Key::Key_S;
+		}
+		else if constexpr ( A == MOVE_LEFT )
+		{
+			return Qt::Key::Key_A;
+		}
+		else if constexpr ( A == MOVE_RIGHT )
+		{
+			return Qt::Key::Key_D;
+		}
+		else if constexpr ( A == MOVE_UP )
+		{
+			return Qt::Key::Key_R;
+		}
+		else if constexpr ( A == MOVE_DOWN )
+		{
+			return Qt::Key::Key_F;
+		}
+		else if constexpr ( A == ROTATE_LEFT )
+		{
+			return Qt::Key::Key_Q;
+		}
+		else if constexpr ( A == ROTATE_RIGHT )
+		{
+			return Qt::Key::Key_E;
+		}
+		else
+		{
+			static_assert( VTX::always_false_v<A>, "Invalid action" );
+			return Qt::Key::Key_unknown;
+		}
+	}
+
+	template<>
+	constexpr Qt::Key _key<MOVE_FRONT, KB_LAYOUT::AZERTY>()
+	{
+		return Qt::Key::Key_Z;
+	}
+
+	template<>
+	constexpr Qt::Key _key<MOVE_LEFT, KB_LAYOUT::AZERTY>()
+	{
+		return Qt::Key::Key_Q;
+	}
+
+	template<>
+	constexpr Qt::Key _key<ROTATE_LEFT, KB_LAYOUT::AZERTY>()
+	{
+		return Qt::Key::Key_A;
+	}
+} // namespace
 
 namespace VTX::UI::QT::Widget
 {
-	Renderer::Renderer( QWidget * p_parent ) : BaseWidget( p_parent )
+	Renderer::Renderer( QWidget * p_parent ) : BaseWidget( p_parent ), _inputManager( App::INPUT() )
 	{
-		constexpr int overlayBorderSize = 64;
+		setFocusPolicy( Qt::NoFocus );
+		setAttribute( Qt::WA_NativeWindow, true );
+		setAttribute( Qt::WA_NoSystemBackground, true );
+		setAutoFillBackground( false );
+		winId();
 
-		setAcceptDrops( true );
+		App::HUB().connect<Events::KeyboardLayoutChanged, &Renderer::_onKBLayoutChange>( this );
 
-		// Create window.
-		_window = new Window::Renderer();
-		_window->setFlags( Qt::FramelessWindowHint );
-		_window->installEventFilter( this );
-		_window->create();
-
-		// Use a widget container to embed the window.
-		_container = createWindowContainer( _window, this );
-		_container->installEventFilter( this );
-
-		// Create transparent overlay for hud toolbars.
-		_overlay = new QWidget( nullptr, Qt::Tool | Qt::FramelessWindowHint | Qt::WindowDoesNotAcceptFocus );
-		_overlay->setAttribute( Qt::WA_TranslucentBackground, true );
-		_overlay->setAttribute( Qt::WA_NoSystemBackground, true );
-		_overlay->setAttribute( Qt::WA_ShowWithoutActivating, true );
-		_overlayLayout = new QGridLayout( _overlay );
-		_overlayLayout->setContentsMargins( 0, 0, 0, 0 );
-		_overlayLayout->setSpacing( 0 );
-		_overlayLayout->setRowMinimumHeight( 0, overlayBorderSize );
-		_overlayLayout->setRowMinimumHeight( 2, overlayBorderSize );
-		_overlayLayout->setColumnMinimumWidth( 0, overlayBorderSize );
-		_overlayLayout->setColumnMinimumWidth( 2, overlayBorderSize );
-		_overlayLayout->setRowStretch( 0, 0 );
-		_overlayLayout->setRowStretch( 1, 1 );
-		_overlayLayout->setRowStretch( 2, 0 );
-		_overlayLayout->setColumnStretch( 0, 0 );
-		_overlayLayout->setColumnStretch( 1, 1 );
-		_overlayLayout->setColumnStretch( 2, 0 );
-
-		// Focus policy.
-		_container->setFocusPolicy( Qt::StrongFocus );
-		this->setFocusPolicy( Qt::NoFocus );
-		this->setFocusProxy( _container );
-
-		// Connect picking.
-		connect(
-			_window,
-			&Window::Renderer::clicked,
-			[]( const Qt::MouseButton, const QPoint p_pos )
-			{
-				if ( not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
-				{
-					SELECTION().pick(
-						Vec2i( p_pos.x(), p_pos.y() ), QGuiApplication::keyboardModifiers() & Qt::ControlModifier
-					);
-				}
-			}
-		);
-
-		// Setup resize timer.
 		_resizeTimer.setSingleShot( true );
 		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
 	}
 
-	void Renderer::moveEvent( QMoveEvent * p_event )
-	{
-		QWidget::moveEvent( p_event );
-		_syncOverlayGeometry();
-	}
-
-	Renderer::~Renderer()
-	{
-		if ( QWidget * const hostWindow = window() )
-		{
-			hostWindow->removeEventFilter( this );
-		}
-		if ( _overlay )
-		{
-			_overlay->hide();
-			delete _overlay;
-		}
-		_container->removeEventFilter( this );
-		_window->removeEventFilter( this );
-	}
+	Renderer::~Renderer() = default;
 
 	uintptr_t Renderer::getNativeSurface() const
 	{
-		assert( _window );
+		const_cast<Renderer *>( this )->winId();
+
 		if ( QGuiApplication::platformName() == "wayland" )
 		{
-			QPlatformNativeInterface * nif = QGuiApplication::platformNativeInterface();
+			QPlatformNativeInterface * const nif = QGuiApplication::platformNativeInterface();
 			if ( not nif )
 			{
 				throw std::runtime_error( "Qt: no platform native interface" );
 			}
-			void * surface = nif->nativeResourceForWindow( "surface", _window );
+
+			QWindow * const handle = windowHandle();
+			if ( handle == nullptr )
+			{
+				throw std::runtime_error( "Qt: widget has no window handle" );
+			}
+
+			void * const surface = nif->nativeResourceForWindow( "surface", handle );
 			if ( not surface )
 			{
 				throw std::runtime_error( "Qt: native surface is null" );
 			}
+			VTX_TRACE(
+				"Renderer::getNativeSurface platform={} widget_winid={} window_handle={} surface={}",
+				QGuiApplication::platformName().toStdString(),
+				static_cast<uintptr_t>( const_cast<Renderer *>( this )->winId() ),
+				reinterpret_cast<uintptr_t>( handle ),
+				reinterpret_cast<uintptr_t>( surface )
+			);
 			return reinterpret_cast<uintptr_t>( surface );
 		}
 
-		return static_cast<uintptr_t>( _window->winId() );
+		const uintptr_t surface = static_cast<uintptr_t>( const_cast<Renderer *>( this )->winId() );
+		VTX_TRACE(
+			"Renderer::getNativeSurface platform={} widget_winid={} surface={}",
+			QGuiApplication::platformName().toStdString(),
+			surface,
+			surface
+		);
+		return surface;
 	}
 
 	uintptr_t Renderer::getNativeDisplay() const
 	{
-		QPlatformNativeInterface * nif = QGuiApplication::platformNativeInterface();
+		QPlatformNativeInterface * const nif = QGuiApplication::platformNativeInterface();
 		if ( nif == nullptr )
 		{
+			VTX_TRACE(
+				"Renderer::getNativeDisplay platform={} native_interface=0 display=0",
+				QGuiApplication::platformName().toStdString()
+			);
 			return 0;
 		}
 
-		if ( void * display = nif->nativeResourceForIntegration( "display" ) )
+		if ( void * const display = nif->nativeResourceForIntegration( "display" ) )
 		{
+			VTX_TRACE(
+				"Renderer::getNativeDisplay platform={} native_interface={} display={}",
+				QGuiApplication::platformName().toStdString(),
+				reinterpret_cast<uintptr_t>( nif ),
+				reinterpret_cast<uintptr_t>( display )
+			);
 			return reinterpret_cast<uintptr_t>( display );
 		}
 
+		VTX_TRACE(
+			"Renderer::getNativeDisplay platform={} native_interface={} display=0",
+			QGuiApplication::platformName().toStdString(),
+			reinterpret_cast<uintptr_t>( nif )
+		);
 		return 0;
 	}
 
@@ -137,15 +188,23 @@ namespace VTX::UI::QT::Widget
 	{
 		if ( QGuiApplication::platformName() == "wayland" )
 		{
+			VTX_TRACE(
+				"Renderer::getNativePlatform platform={} code=3", QGuiApplication::platformName().toStdString()
+			);
 			return 3;
 		}
 		if ( QGuiApplication::platformName() == "xcb" )
 		{
+			VTX_TRACE(
+				"Renderer::getNativePlatform platform={} code=2", QGuiApplication::platformName().toStdString()
+			);
 			return 2;
 		}
 #ifdef _WIN32
+		VTX_TRACE( "Renderer::getNativePlatform platform={} code=1", QGuiApplication::platformName().toStdString() );
 		return 1;
 #else
+		VTX_TRACE( "Renderer::getNativePlatform platform={} code=0", QGuiApplication::platformName().toStdString() );
 		return 0;
 #endif
 	}
@@ -153,222 +212,218 @@ namespace VTX::UI::QT::Widget
 	void Renderer::resizeEvent( QResizeEvent * p_event )
 	{
 		QWidget::resizeEvent( p_event );
-
-		_container->setVisible( false );
-		_resizeTimer.start( 40 );
 		_syncOverlayGeometry();
+		_resizeTimer.start( 40 );
 	}
 
 	void Renderer::showEvent( QShowEvent * p_event )
 	{
 		QWidget::showEvent( p_event );
+		winId();
+		onResizeFinished();
+	}
 
-		QWidget * const hostWindow = window();
-		if ( hostWindow == nullptr )
+	void Renderer::keyPressEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, true ); }
+
+	void Renderer::keyReleaseEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, false ); }
+
+	void Renderer::mousePressEvent( QMouseEvent * p_event )
+	{
+		// setFocus( Qt::MouseFocusReason );
+
+		_pressPos = p_event->position();
+		_lastPos  = _pressPos;
+		_dragging = false;
+	}
+
+	void Renderer::mouseMoveEvent( QMouseEvent * p_event )
+	{
+		if ( p_event->buttons() == Qt::NoButton )
 		{
 			return;
 		}
 
-		hostWindow->removeEventFilter( this );
-		hostWindow->installEventFilter( this );
-		_overlay->winId();
-		if ( _overlay->windowHandle() != nullptr && hostWindow->windowHandle() != nullptr )
+		const int threshold = QGuiApplication::styleHints()->startDragDistance();
+		if ( not _dragging && ( p_event->position() - _pressPos ).manhattanLength() >= threshold )
 		{
-			_overlay->windowHandle()->setTransientParent( hostWindow->windowHandle() );
+			_dragging = true;
+			_lastPos  = p_event->position();
+			return;
 		}
 
-		_syncOverlayGeometry();
-
-		if ( _overlay )
+		if ( _dragging )
 		{
-			_overlay->show();
-			_overlay->raise();
+			const QPoint delta = _toDevicePixels( p_event->position() - _lastPos );
+			const Vec2i	 deltaVec( delta.x(), delta.y() );
+
+			if ( p_event->buttons() & Qt::LeftButton )
+			{
+				_inputManager.rotateBy( deltaVec );
+			}
+			else if ( p_event->buttons() & Qt::MiddleButton )
+			{
+				_inputManager.panBy( deltaVec );
+			}
+			else if ( p_event->buttons() & Qt::RightButton )
+			{
+				_inputManager.rotateAltBy( deltaVec );
+			}
+
+			_lastPos = p_event->position();
 		}
 	}
 
-	void Renderer::hideEvent( QHideEvent * p_event )
+	void Renderer::mouseReleaseEvent( QMouseEvent * p_event )
 	{
-		QWidget::hideEvent( p_event );
-		if ( _overlay )
+		if ( not _dragging && not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
 		{
-			_overlay->hide();
+			const QPoint pos = _toDevicePixels( p_event->position() );
+			SELECTION().pick( Vec2i( pos.x(), pos.y() ), QGuiApplication::keyboardModifiers() & Qt::ControlModifier );
 		}
+
+		_dragging = false;
 	}
+
+	void Renderer::mouseDoubleClickEvent( QMouseEvent * const )
+	{
+		_dragging = false;
+		App::ACTION().execute<App::Action::Camera::Orient>();
+	}
+
+	void Renderer::wheelEvent( QWheelEvent * const p_event ) { _inputManager.zoomBy( p_event->angleDelta().y() ); }
 
 	void Renderer::onResizeFinished()
 	{
-		assert( _window );
-		assert( _container );
-
-		_container->setVisible( true );
-
-		const QSize size = this->size();
-		_window->resize( size );
-		_container->resize( size );
 		_syncOverlayGeometry();
 
-		const QSize scaledSize = size * _window->devicePixelRatio();
-
-		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
-	}
-
-	bool Renderer::eventFilter( QObject * p_watched, QEvent * p_event )
-	{
-		if ( p_watched == _container )
-		{
-			// Transmit drag and drop events to the main window to allow dropping files on the renderer.
-			if ( p_event->type() == QEvent::DragEnter )
-			{
-				auto * e = p_event->clone();
-				QCoreApplication::sendEvent( &MAIN_WINDOW(), e );
-				delete e;
-				return true;
-			}
-			else if ( p_event->type() == QEvent::Drop )
-			{
-				auto * e = p_event->clone();
-				QCoreApplication::sendEvent( &MAIN_WINDOW(), e );
-				delete e;
-				return true;
-			}
-		}
-		// Handle window events to keep the overlay in sync and focused when the window is active.
-		else if ( p_watched == _window )
-		{
-			if ( p_event->type() == QEvent::Expose )
-			{
-				onResizeFinished();
-			}
-			else if ( p_event->type() == QEvent::WindowActivate || p_event->type() == QEvent::Show )
-			{
-				_container->setFocus( Qt::ActiveWindowFocusReason );
-				if ( _overlay && isVisible() )
-				{
-					_overlay->show();
-					_overlay->raise();
-				}
-			}
-		}
-		// Handle host window events to keep the overlay in sync and hide it when the window is hidden.
-		else if ( p_watched == window() )
-		{
-			if ( p_event->type() == QEvent::Move || p_event->type() == QEvent::Resize
-				 || p_event->type() == QEvent::Show || p_event->type() == QEvent::WindowActivate )
-			{
-				_syncOverlayGeometry();
-				if ( _overlay && window() && window()->isVisible() && isVisible() )
-				{
-					_overlay->show();
-					_overlay->raise();
-				}
-			}
-			else if ( p_event->type() == QEvent::Hide )
-			{
-				if ( _overlay )
-				{
-					_overlay->hide();
-				}
-			}
-		}
-
-		return QWidget::eventFilter( p_watched, p_event );
+		const QSizeF scaledSize = QSizeF( size() ) * devicePixelRatioF();
+		App::ACTION().execute<App::Action::Application::Resize>(
+			int( scaledSize.width() ), int( scaledSize.height() )
+		);
 	}
 
 	void Renderer::_addHUDWidget( QWidget * const p_widget, const HUD_POSITION p_pos )
 	{
-		int			  row		= 0;
-		int			  col		= 0;
-		Qt::Alignment alignment = Qt::AlignCenter;
-		switch ( p_pos )
-		{
-		case HUD_POSITION::TOP_LEFT:
-			row		  = 0;
-			col		  = 0;
-			alignment = Qt::AlignTop | Qt::AlignLeft;
-			break;
-		case HUD_POSITION::TOP_CENTER:
-			row		  = 0;
-			col		  = 1;
-			alignment = Qt::AlignTop | Qt::AlignHCenter;
-			break;
-		case HUD_POSITION::TOP_RIGHT:
-			row		  = 0;
-			col		  = 2;
-			alignment = Qt::AlignTop | Qt::AlignRight;
-			break;
-		case HUD_POSITION::CENTER_LEFT:
-			row		  = 1;
-			col		  = 0;
-			alignment = Qt::AlignVCenter | Qt::AlignLeft;
-			break;
-		case HUD_POSITION::CENTER_RIGHT:
-			row		  = 1;
-			col		  = 2;
-			alignment = Qt::AlignVCenter | Qt::AlignRight;
-			break;
-		case HUD_POSITION::BOTTOM_LEFT:
-			row		  = 2;
-			col		  = 0;
-			alignment = Qt::AlignBottom | Qt::AlignLeft;
-			break;
-		case HUD_POSITION::BOTTOM_CENTER:
-			row		  = 2;
-			col		  = 1;
-			alignment = Qt::AlignBottom | Qt::AlignHCenter;
-			break;
-		case HUD_POSITION::BOTTOM_RIGHT:
-			row		  = 2;
-			col		  = 2;
-			alignment = Qt::AlignBottom | Qt::AlignRight;
-			break;
-		default: assert( false && "Invalid HUD position" );
-		}
-		p_widget->setParent( _overlay );
+		p_widget->setParent( this );
+		p_widget->setAttribute( Qt::WA_NativeWindow, true );
 		p_widget->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
-		_overlayLayout->addWidget( p_widget, row, col, alignment );
+		p_widget->move( 0, 0 );
+		p_widget->show();
+		_hudItems.push_back( { p_widget, p_pos } );
 		_syncOverlayGeometry();
-		if ( _overlay && isVisible() )
-		{
-			_overlay->show();
-			_overlay->raise();
-		}
 	}
 
 	void Renderer::_syncOverlayGeometry()
 	{
-		if ( _overlay == nullptr || _overlayLayout == nullptr || window() == nullptr || not isVisible() )
+		if ( not isVisible() )
 		{
 			return;
 		}
 
-		const QPoint topLeft = mapToGlobal( QPoint( 0, 0 ) );
-		_overlay->setGeometry( QRect( topLeft, size() ) );
-
-		_overlayLayout->activate();
-
-		QRegion mask;
-		for ( int i = 0; i < _overlayLayout->count(); ++i )
+		const QRect availableRect = rect();
+		for ( const HUDItem & item : _hudItems )
 		{
-			QLayoutItem * const item = _overlayLayout->itemAt( i );
-			QWidget * const	   widget = item ? item->widget() : nullptr;
+			QWidget * const widget = item.widget;
 			if ( widget == nullptr || not widget->isVisible() )
 			{
 				continue;
 			}
 
-			mask += QRegion( widget->geometry() );
-		}
+			widget->adjustSize();
 
-		if ( mask.isEmpty() )
-		{
-			_overlay->clearMask();
-		}
-		else
-		{
-			_overlay->setMask( mask );
-		}
+			const QSize size = widget->sizeHint().expandedTo( widget->minimumSizeHint() );
+			int			x	 = availableRect.left();
+			int			y	 = availableRect.top();
 
-		_overlay->raise();
+			switch ( item.position )
+			{
+			case HUD_POSITION::TOP_LEFT: break;
+			case HUD_POSITION::TOP_CENTER:
+				x = availableRect.left() + ( availableRect.width() - size.width() ) / 2;
+				break;
+			case HUD_POSITION::TOP_RIGHT: x = availableRect.right() - size.width() + 1; break;
+			case HUD_POSITION::CENTER_LEFT:
+				y = availableRect.top() + ( availableRect.height() - size.height() ) / 2;
+				break;
+			case HUD_POSITION::CENTER_RIGHT:
+				x = availableRect.right() - size.width() + 1;
+				y = availableRect.top() + ( availableRect.height() - size.height() ) / 2;
+				break;
+			case HUD_POSITION::BOTTOM_LEFT: y = availableRect.bottom() - size.height() + 1; break;
+			case HUD_POSITION::BOTTOM_CENTER:
+				x = availableRect.left() + ( availableRect.width() - size.width() ) / 2;
+				y = availableRect.bottom() - size.height() + 1;
+				break;
+			case HUD_POSITION::BOTTOM_RIGHT:
+				x = availableRect.right() - size.width() + 1;
+				y = availableRect.bottom() - size.height() + 1;
+				break;
+			default: assert( false && "Invalid HUD position" );
+			}
+
+			const QRect geometry( QPoint( x, y ), size );
+			widget->setGeometry( geometry );
+			widget->raise();
+		}
 	}
 
+	void Renderer::_handleKeyboard( QKeyEvent * const p_event, const bool p_enable )
+	{
+		if ( p_event->isAutoRepeat() )
+		{
+			return;
+		}
+
+		if ( _layout == KB_LAYOUT::QWERTY )
+		{
+			switch ( p_event->key() )
+			{
+			case _key<MOVE_FRONT>(): _inputManager.setMoveFront( p_enable ); break;
+			case _key<MOVE_BACK>(): _inputManager.setMoveBack( p_enable ); break;
+			case _key<MOVE_LEFT>(): _inputManager.setMoveLeft( p_enable ); break;
+			case _key<MOVE_RIGHT>(): _inputManager.setMoveRight( p_enable ); break;
+			case _key<MOVE_UP>(): _inputManager.setMoveUp( p_enable ); break;
+			case _key<MOVE_DOWN>(): _inputManager.setMoveDown( p_enable ); break;
+			case _key<ROTATE_LEFT>(): _inputManager.setRotateLeft( p_enable ); break;
+			case _key<ROTATE_RIGHT>(): _inputManager.setRotateRight( p_enable ); break;
+			default: break;
+			}
+		}
+		else if ( _layout == KB_LAYOUT::AZERTY )
+		{
+			switch ( p_event->key() )
+			{
+			case _key<MOVE_FRONT, KB_LAYOUT::AZERTY>(): _inputManager.setMoveFront( p_enable ); break;
+			case _key<MOVE_BACK, KB_LAYOUT::AZERTY>(): _inputManager.setMoveBack( p_enable ); break;
+			case _key<MOVE_LEFT, KB_LAYOUT::AZERTY>(): _inputManager.setMoveLeft( p_enable ); break;
+			case _key<MOVE_RIGHT, KB_LAYOUT::AZERTY>(): _inputManager.setMoveRight( p_enable ); break;
+			case _key<MOVE_UP, KB_LAYOUT::AZERTY>(): _inputManager.setMoveUp( p_enable ); break;
+			case _key<MOVE_DOWN, KB_LAYOUT::AZERTY>(): _inputManager.setMoveDown( p_enable ); break;
+			case _key<ROTATE_LEFT, KB_LAYOUT::AZERTY>(): _inputManager.setRotateLeft( p_enable ); break;
+			case _key<ROTATE_RIGHT, KB_LAYOUT::AZERTY>(): _inputManager.setRotateRight( p_enable ); break;
+			default: break;
+			}
+		}
+
+		_handleModifiers();
+	}
+
+	void Renderer::_handleModifiers()
+	{
+		const Qt::KeyboardModifiers mods = QGuiApplication::queryKeyboardModifiers();
+
+		_inputManager.setAccelerate( mods & Qt::ShiftModifier );
+		_inputManager.setDecelerate( mods & Qt::ControlModifier );
+	}
+
+	QPoint Renderer::_toDevicePixels( const QPointF & p_logicalPos ) const
+	{
+		const qreal dpr = devicePixelRatioF();
+		return { int( p_logicalPos.x() * dpr ), int( p_logicalPos.y() * dpr ) };
+	}
+
+	void Renderer::_onKBLayoutChange( const Events::KeyboardLayoutChanged & p_e )
+	{
+		_layout = static_cast<KB_LAYOUT>( p_e.layout );
+	}
 } // namespace VTX::UI::QT::Widget
