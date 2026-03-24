@@ -14,13 +14,7 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		Selection( QWidget * const p_parent = nullptr );
-
-		/**
-		 * @brief Refresh the whole QListWidget content.
-		 */
-
-	  private:
-		void _onUpdateSelection( App::ECS::Registry &, App::ECS::Entity );
+		void refresh();
 	};
 } // namespace VTX::UI::QT::Widget
 

@@ -3,12 +3,13 @@
 
 #include "base_preset_widget.hpp"
 #include "ui/qt/widget/color_picker.hpp"
+#include <QCheckBox>
 #include <span>
 
 namespace VTX::UI::QT::Widget::Library
 {
 
-	class ColorLayout final : public BasePresetWidget<Renderer::Color::Layout>
+	class ColorLayout final : public BasePresetWidget<VTX::Renderer::Color::Layout>
 	{
 	  public:
 		ColorLayout( QWidget * p_parent );
@@ -27,6 +28,7 @@ namespace VTX::UI::QT::Widget::Library
 	  private:
 		inline static const int _BUTTON_SIZE = 32;
 
+		QPointer<QCheckBox> _checkBoxHideNonUsual;
 		std::vector<QPointer<ColorPicker>> _buttons;
 
 		void _createGroupBox(

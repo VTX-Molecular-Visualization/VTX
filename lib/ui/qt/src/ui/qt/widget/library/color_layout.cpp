@@ -1,6 +1,8 @@
 #include "ui/qt/widget/library/color_layout.hpp"
 #include "ui/qt/helper.hpp"
 #include "ui/qt/layout/flow_layout.hpp"
+#include "ui/qt/services.hpp"
+#include "ui/qt/settings.hpp"
 #include <app/action/color_layout.hpp>
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/chain.hpp>
@@ -22,6 +24,9 @@ namespace VTX::UI::QT::Widget::Library
 		auto * searchBar = new QLineEdit( this );
 		searchBar->setPlaceholderText( "TODO" );
 		addWidget( searchBar );
+
+		_checkBoxHideNonUsual = new QCheckBox( "Hide non usual", this );
+		addWidget( _checkBoxHideNonUsual );
 
 		_buttons.resize( COLOR_LAYOUT_SIZE );
 
@@ -48,6 +53,20 @@ namespace VTX::UI::QT::Widget::Library
 		);
 
 		addWidget( buttonRandomize );
+
+		connect(
+			_checkBoxHideNonUsual,
+			&QCheckBox::checkStateChanged,
+			this,
+			[ this ]( const int p_state )
+			{
+				const bool hide = p_state == Qt::Checked;
+				SETTINGS().setValue( SETTING_KEY_COLORS_HIDE_NON_USUAL, hide );
+				refreshVisibility( hide );
+			}
+		);
+
+		_checkBoxHideNonUsual->setChecked( SETTINGS().value( SETTING_KEY_COLORS_HIDE_NON_USUAL, true ).toBool() );
 	}
 
 	void ColorLayout::_update( App::ECS::Entity p_e )

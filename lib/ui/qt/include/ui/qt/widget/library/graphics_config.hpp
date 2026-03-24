@@ -10,7 +10,7 @@
 
 namespace VTX::UI::QT::Widget::Library
 {
-	class GraphicsConfig final : public BasePresetWidget<Renderer::GraphicsConfig>
+	class GraphicsConfig final : public BasePresetWidget<VTX::Renderer::GraphicsConfig>
 	{
 	  public:
 		GraphicsConfig( QWidget * p_parent );
@@ -59,7 +59,7 @@ namespace VTX::UI::QT::Widget::Library
 			App::ACTION().execute<App::Action::GraphicsConfig::Change<S, T>>( currentPreset(), p_value );
 		}
 
-		void _applyLogic( const Renderer::GraphicsConfig & );
+		void _applyLogic( const VTX::Renderer::GraphicsConfig & );
 	};
 } // namespace VTX::UI::QT::Widget::Library
 

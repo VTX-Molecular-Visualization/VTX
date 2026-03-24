@@ -7,10 +7,10 @@
 namespace VTX::UI::QT::Widget::Tree
 {
 
-	class RepresentationPresets : public Widget::Tree::BaseTreePreset<Renderer::Representation>
+	class RepresentationPresets : public Widget::Tree::BaseTreePreset<VTX::Renderer::Representation>
 	{
 	  public:
-		RepresentationPresets( QWidget * p_parent ) : BaseTreePreset( p_parent )
+		RepresentationPresets( QWidget * p_parent ) : BaseTreePreset<VTX::Renderer::Representation>( p_parent )
 		{
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Representations" ) );
 			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::REPRESENTATION ) );

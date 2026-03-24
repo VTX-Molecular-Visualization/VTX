@@ -10,6 +10,7 @@ namespace VTX::UI::QT::Style::Icons
 	 * Font family: Material Symbols Outlined
 	 * https://fonts.google.com/icons
 	 */
+	constexpr Codepoint APPLY				 = 0xe5ca;	// CHECK
 	constexpr Codepoint ATOM				 = 0xef4a;	// CIRCLE
 	constexpr Codepoint BUG					 = 0xe868;	// BUG_REPORT
 	constexpr Codepoint CAMERA				 = 0xe8fc;	// PHOTO_CAMERA
@@ -22,6 +23,7 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint CONTROLLER_FREEFLY	 = 0xf71e;	// DRAG_PAN
 	constexpr Codepoint CONTROLLER_TRACKBALL = 0xe577;	// 360
 	constexpr Codepoint COLOR_LAYOUT		 = 0xe997;	// COLORS
+	constexpr Codepoint COPY				 = 0xe173;	// FILE_COPY
 	constexpr Codepoint DELETE				 = 0xe872;	// DELETE
 	constexpr Codepoint DOCUMENTATION		 = 0xe666;	// AUTO_STORY
 	constexpr Codepoint DOWNLOAD			 = 0xf090;	// DOWNLOAD

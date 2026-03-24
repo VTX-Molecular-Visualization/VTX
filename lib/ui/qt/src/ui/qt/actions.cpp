@@ -8,7 +8,6 @@
 #include "ui/qt/dialog/open.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
-#include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include <QDesktopServices>
 #include <QUrl>
