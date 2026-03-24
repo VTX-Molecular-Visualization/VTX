@@ -1,15 +1,29 @@
 #ifndef __VTX_UI_QT_WIDGET_RENDERER__
 #define __VTX_UI_QT_WIDGET_RENDERER__
 
+#include "ui/qt/events.hpp"
 #include "ui/qt/widget/base_widget.hpp"
-#include "ui/qt/window/renderer.hpp"
 #include <QGridLayout>
-#include <QMoveEvent>
+#include <QHideEvent>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QPointF>
 #include <QPointer>
+#include <QResizeEvent>
 #include <QShowEvent>
+#include <QTimer>
+#include <QWheelEvent>
+#include <app/input/input_manager.hpp>
 
 namespace VTX::UI::QT::Widget
 {
+	enum struct KB_LAYOUT : uint8_t
+	{
+		QWERTY,
+		AZERTY,
+		COUNT
+	};
+
 	/**
 	 * @brief Widget to present an OpenGL rendering context.
 	 * No more Qt OpenGL implementation used.
@@ -61,33 +75,24 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Override resize.
 		 */
-		void moveEvent( QMoveEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
 		void showEvent( QShowEvent * ) override;
 		void hideEvent( QHideEvent * ) override;
+		void keyPressEvent( QKeyEvent * const ) override;
+		void keyReleaseEvent( QKeyEvent * const ) override;
+		void mousePressEvent( QMouseEvent * ) override;
+		void mouseMoveEvent( QMouseEvent * ) override;
+		void mouseReleaseEvent( QMouseEvent * ) override;
+		void mouseDoubleClickEvent( QMouseEvent * const ) override;
+		void wheelEvent( QWheelEvent * const ) override;
 
 	  protected:
-		/**
-		 * @brief Override event filter to handle events from the window and container.
-		 */
-		bool eventFilter( QObject *, QEvent * ) override;
-
 		/**
 		 * @brief Debounce callback.
 		 */
 		void onResizeFinished();
 
 	  private:
-		/**
-		 * @brief OpenGL rendering window.
-		 */
-		QPointer<Window::Renderer> _window;
-
-		/**
-		 * @brief Container widget for the OpenGL window.
-		 */
-		QPointer<QWidget> _container;
-
 		/**
 		 * @brief Transparent overlay widget above the rendering surface.
 		 */
@@ -104,6 +109,23 @@ namespace VTX::UI::QT::Widget
 		QTimer _resizeTimer;
 
 		/**
+		 * @brief Reference to the application's input manager.
+		 */
+		App::Input::InputManager & _inputManager;
+
+		/**
+		 * @brief Current keyboard layout.
+		 */
+		KB_LAYOUT _layout = KB_LAYOUT::QWERTY;
+
+		/**
+		 * @brief State for mouse dragging.
+		 */
+		QPointF _pressPos = {};
+		QPointF _lastPos  = {};
+		bool	_dragging = false;
+
+		/**
 		 * @brief Add a widget to the overlay at the given position.
 		 */
 		void _addHUDWidget( QWidget * const, const HUD_POSITION );
@@ -112,6 +134,26 @@ namespace VTX::UI::QT::Widget
 		 * @brief Synchronize overlay geometry.
 		 */
 		void _syncOverlayGeometry();
+
+		/**
+		 * @brief Handle keyboard events and forward them to the input manager.
+		 */
+		void _handleKeyboard( QKeyEvent * const, const bool p_enable );
+
+		/**
+		 * @brief Handle modifier keys (Shift, Ctrl).
+		 */
+		void _handleModifiers();
+
+		/**
+		 * @brief Convert a point from logical pixels to device pixels.
+		 */
+		QPoint _toDevicePixels( const QPointF & ) const;
+
+		/**
+		 * @brief Update current keyboard layout.
+		 */
+		void _onKBLayoutChange( const Events::KeyboardLayoutChanged & );
 	};
 } // namespace VTX::UI::QT::Widget
 

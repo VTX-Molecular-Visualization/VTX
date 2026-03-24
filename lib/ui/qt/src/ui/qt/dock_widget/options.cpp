@@ -7,7 +7,7 @@
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/actionable_push_button.hpp"
-#include "ui/qt/widget/main_window.hpp"
+#include "ui/qt/widget/renderer.hpp"
 #include <QActionGroup>
 #include <QDesktopServices>
 #include <QFileDialog>
@@ -137,15 +137,15 @@ namespace VTX::UI::QT::DockWidget
 		_comboBoxKBLayout->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxKBLayout->setMinimumWidth( 0 );
 
-		const Window::KB_LAYOUT defaultLayout
-			= QLocale::system().language() == QLocale::French ? Window::KB_LAYOUT::AZERTY : Window::KB_LAYOUT::QWERTY;
-		const Window::KB_LAYOUT layout = static_cast<Window::KB_LAYOUT>(
+		const Widget::KB_LAYOUT defaultLayout
+			= QLocale::system().language() == QLocale::French ? Widget::KB_LAYOUT::AZERTY : Widget::KB_LAYOUT::QWERTY;
+		const Widget::KB_LAYOUT layout = static_cast<Widget::KB_LAYOUT>(
 			SETTINGS().value( SETTING_KEY_KEYBOARD_LAYOUT, toUnderlying( defaultLayout ) ).toUInt()
 		);
 
-		for ( int l = 0; l < toUnderlying( Window::KB_LAYOUT::COUNT ); l++ )
+		for ( int l = 0; l < toUnderlying( Widget::KB_LAYOUT::COUNT ); l++ )
 		{
-			const Window::KB_LAYOUT kbLayout   = static_cast<Window::KB_LAYOUT>( l );
+			const Widget::KB_LAYOUT kbLayout   = static_cast<Widget::KB_LAYOUT>( l );
 			QString					layoutName = QString::fromStdString( Util::Enum::enumName( kbLayout ).data() );
 			_comboBoxKBLayout->addItem( layoutName, QVariant::fromValue( kbLayout ) );
 		}
