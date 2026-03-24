@@ -32,7 +32,7 @@ namespace VTX::UI::QT::Widget
 		_container->installEventFilter( this );
 
 		// Create transparent overlay for hud toolbars.
-		_overlay = new QWidget( nullptr, Qt::FramelessWindowHint | Qt::WindowDoesNotAcceptFocus );
+		_overlay = new QWidget( nullptr, Qt::Tool | Qt::FramelessWindowHint | Qt::WindowDoesNotAcceptFocus );
 		_overlay->setAttribute( Qt::WA_TranslucentBackground, true );
 		_overlay->setAttribute( Qt::WA_NoSystemBackground, true );
 		_overlay->setAttribute( Qt::WA_ShowWithoutActivating, true );
