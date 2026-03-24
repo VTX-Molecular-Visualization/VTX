@@ -6,6 +6,7 @@
 #include "ui/qt/widget/main_window.hpp"
 #include <QGridLayout>
 #include <QGuiApplication>
+#include <QRegion>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/events.hpp>
@@ -14,7 +15,6 @@
 
 namespace VTX::UI::QT::Widget
 {
-
 	Renderer::Renderer( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
 		constexpr int overlayBorderSize = 64;
@@ -32,7 +32,7 @@ namespace VTX::UI::QT::Widget
 		_container->installEventFilter( this );
 
 		// Create transparent overlay for hud toolbars.
-		_overlay = new QWidget( nullptr, Qt::Tool | Qt::FramelessWindowHint );
+		_overlay = new QWidget( nullptr, Qt::FramelessWindowHint | Qt::WindowDoesNotAcceptFocus );
 		_overlay->setAttribute( Qt::WA_TranslucentBackground, true );
 		_overlay->setAttribute( Qt::WA_NoSystemBackground, true );
 		_overlay->setAttribute( Qt::WA_ShowWithoutActivating, true );
@@ -73,6 +73,12 @@ namespace VTX::UI::QT::Widget
 		// Setup resize timer.
 		_resizeTimer.setSingleShot( true );
 		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
+	}
+
+	void Renderer::moveEvent( QMoveEvent * p_event )
+	{
+		QWidget::moveEvent( p_event );
+		_syncOverlayGeometry();
 	}
 
 	Renderer::~Renderer()
@@ -163,9 +169,13 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		_overlay->setParent( hostWindow, Qt::Tool | Qt::FramelessWindowHint );
 		hostWindow->removeEventFilter( this );
 		hostWindow->installEventFilter( this );
+		_overlay->winId();
+		if ( _overlay->windowHandle() != nullptr && hostWindow->windowHandle() != nullptr )
+		{
+			_overlay->windowHandle()->setTransientParent( hostWindow->windowHandle() );
+		}
 
 		_syncOverlayGeometry();
 
@@ -243,7 +253,7 @@ namespace VTX::UI::QT::Widget
 		else if ( p_watched == window() )
 		{
 			if ( p_event->type() == QEvent::Move || p_event->type() == QEvent::Resize
-				 || p_event->type() == QEvent::Show )
+				 || p_event->type() == QEvent::Show || p_event->type() == QEvent::WindowActivate )
 			{
 				_syncOverlayGeometry();
 				if ( _overlay && window() && window()->isVisible() && isVisible() )
@@ -326,13 +336,38 @@ namespace VTX::UI::QT::Widget
 
 	void Renderer::_syncOverlayGeometry()
 	{
-		if ( _overlay == nullptr || window() == nullptr || !isVisible() )
+		if ( _overlay == nullptr || _overlayLayout == nullptr || window() == nullptr || not isVisible() )
 		{
 			return;
 		}
 
 		const QPoint topLeft = mapToGlobal( QPoint( 0, 0 ) );
 		_overlay->setGeometry( QRect( topLeft, size() ) );
+
+		_overlayLayout->activate();
+
+		QRegion mask;
+		for ( int i = 0; i < _overlayLayout->count(); ++i )
+		{
+			QLayoutItem * const item = _overlayLayout->itemAt( i );
+			QWidget * const	   widget = item ? item->widget() : nullptr;
+			if ( widget == nullptr || not widget->isVisible() )
+			{
+				continue;
+			}
+
+			mask += QRegion( widget->geometry() );
+		}
+
+		if ( mask.isEmpty() )
+		{
+			_overlay->clearMask();
+		}
+		else
+		{
+			_overlay->setMask( mask );
+		}
+
 		_overlay->raise();
 	}
 

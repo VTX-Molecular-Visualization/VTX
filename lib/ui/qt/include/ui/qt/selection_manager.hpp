@@ -21,8 +21,7 @@ namespace VTX::UI::QT
 		GRAPHICS_CONFIG,
 		COLOR_LAYOUT,
 		REPRESENTATION,
-		CAMERA,
-		SYSTEM,
+		CAMERA
 	};
 
 	/**
@@ -49,6 +48,11 @@ namespace VTX::UI::QT
 		void clear();
 
 		/**
+		 * @brief Clear the application system selection from the UI.
+		 */
+		void clearSystem();
+
+		/**
 		 * @brief Clear selection of a group.
 		 */
 		void clear( const E_SELECTION_GROUP );
@@ -71,7 +75,7 @@ namespace VTX::UI::QT
 		{
 			using namespace App::Action;
 
-			clearBut( E_SELECTION_GROUP::SYSTEM );
+			clear();
 
 			if ( not p_append )
 			{
@@ -88,14 +92,10 @@ namespace VTX::UI::QT
 
 	  signals:
 		/**
-		 * @brief Selected signal.
-		 */
-		void selected( const E_SELECTION_GROUP, const QItemSelection & p_selection );
+		 * @brief UI selection changed signal. Empty selection means no item is selected in the group.
 
-		/**
-		 * @brief Clear selection.
 		 */
-		void cleared( const E_SELECTION_GROUP );
+		void selectionChanged( const E_SELECTION_GROUP, const QItemSelection & p_selection );
 
 	  private:
 		/**

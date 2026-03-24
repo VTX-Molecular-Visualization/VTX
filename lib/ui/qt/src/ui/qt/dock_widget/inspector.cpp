@@ -27,11 +27,9 @@ namespace VTX::UI::QT::DockWidget
 		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
 		_layout->addWidget( _filler );
 
-		connect( &SELECTION(), &SelectionManager::cleared, this, &Inspector::_clear );
-
 		connect(
 			&SELECTION(),
-			&SelectionManager::selected,
+			&SelectionManager::selectionChanged,
 			this,
 			[ this ]( const E_SELECTION_GROUP p_group, const QItemSelection & p_selection )
 			{

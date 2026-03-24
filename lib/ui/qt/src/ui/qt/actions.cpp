@@ -6,6 +6,8 @@
 #include "ui/qt/dialog/download.hpp"
 #include "ui/qt/dialog/export_image.hpp"
 #include "ui/qt/dialog/open.hpp"
+#include "ui/qt/selection_manager.hpp"
+#include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include <QDesktopServices>
@@ -230,7 +232,7 @@ namespace VTX::UI::QT::Action
 			name = "Clear";
 			tip	 = "Clear selection";
 			// icon = static_cast<int>( QStyle::StandardPixmap::SP_TrashIcon );
-			trigger = []() { App::ACTION().execute<App::Action::Selection::Clear>(); };
+			trigger = []() { SELECTION().clearSystem(); };
 		}
 
 	} // namespace Selection

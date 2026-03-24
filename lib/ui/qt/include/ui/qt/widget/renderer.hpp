@@ -4,6 +4,7 @@
 #include "ui/qt/widget/base_widget.hpp"
 #include "ui/qt/window/renderer.hpp"
 #include <QGridLayout>
+#include <QMoveEvent>
 #include <QPointer>
 #include <QShowEvent>
 
@@ -60,6 +61,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Override resize.
 		 */
+		void moveEvent( QMoveEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
 		void showEvent( QShowEvent * ) override;
 		void hideEvent( QHideEvent * ) override;

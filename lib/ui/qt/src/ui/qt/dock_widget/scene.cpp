@@ -67,7 +67,6 @@ namespace VTX::UI::QT::DockWidget
 		auto *	   tree	  = new Widget::Tree::System( entity, this );
 
 		tree->setSelectionMode( QAbstractItemView::NoSelection );
-		SELECTION().add( tree->selectionModel(), E_SELECTION_GROUP::SYSTEM );
 
 		assert( not _mapSystemTreeWidgets.contains( entity ) );
 		_mapSystemTreeWidgets.emplace( entity, tree );
@@ -101,7 +100,7 @@ namespace VTX::UI::QT::DockWidget
 		// Do not clear if full deselection.
 		if ( p_r.get<App::System::Selection>( p_e ).atoms.any() )
 		{
-			SELECTION().clearBut( E_SELECTION_GROUP::SYSTEM );
+			SELECTION().clear();
 		}
 
 		assert( _mapSystemTreeWidgets.contains( p_e ) );

@@ -36,13 +36,9 @@ namespace VTX::UI::QT
 			[ this, p_group, p_view ]( const QItemSelection &, const QItemSelection & )
 			{
 				clearBut( p_group );
+				App::ACTION().execute<App::Action::Selection::Clear>();
 
-				if ( p_group != E_SELECTION_GROUP::SYSTEM )
-				{
-					App::ACTION().execute<App::Action::Selection::Clear>();
-				}
-
-				emit selected( p_group, p_view->selection() );
+				emit selectionChanged( p_group, p_view->selection() );
 			}
 		);
 	}
@@ -55,17 +51,30 @@ namespace VTX::UI::QT
 		}
 	}
 
+	void SelectionManager::clearSystem()
+	{
+		clear();
+		App::ACTION().execute<App::Action::Selection::Clear>();
+	}
+
 	void SelectionManager::clear( const E_SELECTION_GROUP p_group )
 	{
 		if ( _views.contains( p_group ) )
 		{
+			bool changed = false;
 			for ( QItemSelectionModel * v : _views[ p_group ] )
 			{
 				if ( v->hasSelection() )
+				{
 					_clear( v );
+					changed = true;
+				}
 			}
 
-			emit cleared( p_group );
+			if ( changed )
+			{
+				emit selectionChanged( p_group, QItemSelection() );
+			}
 		}
 	}
 
@@ -82,7 +91,7 @@ namespace VTX::UI::QT
 
 	void SelectionManager::pick( const Vec2i & p_pos, const bool p_append = false )
 	{
-		clearBut( E_SELECTION_GROUP::SYSTEM );
+		clear();
 
 		if ( not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
 		{
