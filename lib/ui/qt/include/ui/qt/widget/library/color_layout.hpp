@@ -9,7 +9,7 @@
 namespace VTX::UI::QT::Widget::Library
 {
 
-	class ColorLayout final : public BasePresetWidget<Renderer::Color::Layout>
+	class ColorLayout final : public BasePresetWidget<VTX::Renderer::Color::Layout>
 	{
 	  public:
 		ColorLayout( QWidget * p_parent );

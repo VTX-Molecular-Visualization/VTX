@@ -4,6 +4,9 @@
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/events.hpp"
 #include "ui/qt/widget/tree/camera.hpp"
+#include "ui/qt/widget/tree/color_layout_presets.hpp"
+#include "ui/qt/widget/tree/graphics_config_presets.hpp"
+#include "ui/qt/widget/tree/representation_presets.hpp"
 #include "ui/qt/widget/tree/system.hpp"
 #include "ui/qt/widget/tree/trajectory_player.hpp"
 #include <QComboBox>
@@ -33,6 +36,11 @@ namespace VTX::UI::QT::DockWidget
 		 * @brief Trajoectory players trees.
 		 */
 		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::TrajectoryPlayer>> _mapTrajTreeWidgets;
+
+		QPointer<Widget::Tree::GraphicsConfigPresets> _treeGraphicsConfigPresets;
+		QPointer<Widget::Tree::ColorLayoutPresets>	   _treeColorLayoutPresets;
+		QPointer<Widget::Tree::RepresentationPresets> _treeRepresentationPresets;
+		QPointer<Widget::Tree::Camera>				   _treeCamera;
 
 		/**
 		 * @brief System trees.

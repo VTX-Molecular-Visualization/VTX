@@ -3,6 +3,9 @@
 
 #include "ui/qt/actions.hpp"
 #include "ui/qt/application.hpp"
+#include "ui/qt/events.hpp"
+#include "ui/qt/services.hpp"
+#include "ui/qt/settings.hpp"
 #include "ui/qt/widget/actionable_push_button.hpp"
 #include <QApplication>
 #include <QComboBox>
@@ -17,6 +20,7 @@
 #include <app/ecs.hpp>
 #include <app/preset/name.hpp>
 #include <app/services.hpp>
+#include <util/event_hub.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Widget::Library
@@ -127,6 +131,15 @@ namespace VTX::UI::QT::Widget::Library
 			reg.on_destroy<P>().template connect<&PresetSelector::_refreshComboBox>( this );
 			reg.on_update<App::Preset::Name>().template connect<&PresetSelector::_onPresetNameUpdated>( this );
 			reg.on_update<P>().template connect<&PresetSelector::_onUpdatePreset>( this );
+		}
+
+		virtual ~PresetSelector()
+		{
+			auto & reg = App::REG();
+			reg.on_construct<P>().template disconnect<&PresetSelector::_refreshComboBox>( this );
+			reg.on_destroy<P>().template disconnect<&PresetSelector::_refreshComboBox>( this );
+			reg.on_update<App::Preset::Name>().template disconnect<&PresetSelector::_onPresetNameUpdated>( this );
+			reg.on_update<P>().template disconnect<&PresetSelector::_onUpdatePreset>( this );
 		}
 
 		inline App::ECS::Entity getCurrentPreset() const { return _comboBox->currentData().value<App::ECS::Entity>(); }

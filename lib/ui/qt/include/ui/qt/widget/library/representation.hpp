@@ -11,7 +11,7 @@
 namespace VTX::UI::QT::Widget::Library
 {
 
-	class Representation final : public BasePresetWidget<Renderer::Representation>
+	class Representation final : public BasePresetWidget<VTX::Renderer::Representation>
 	{
 	  public:
 		Representation( QWidget * p_parent );
@@ -44,13 +44,13 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<HideableGroupBox> _groupboxSes;
 		QPointer<EditableSlider>   _sliderSesProbeRadius;
 
-		template<Renderer::E_REPRESENTATION_VALUES S, typename T>
+		template<VTX::Renderer::E_REPRESENTATION_VALUES S, typename T>
 		void _changeValue( const T p_value )
 		{
 			App::ACTION().execute<App::Action::Representation::Change<S, T>>( currentPreset(), p_value );
 		}
 
-		void _applyLogic( const Renderer::Representation & );
+		void _applyLogic( const VTX::Renderer::Representation & );
 	};
 
 } // namespace VTX::UI::QT::Widget::Library

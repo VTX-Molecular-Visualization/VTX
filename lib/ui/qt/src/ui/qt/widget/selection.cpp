@@ -19,13 +19,11 @@ namespace VTX::UI::QT::Widget
 	{
 		// Disable selection.
 		this->setSelectionMode( QAbstractItemView::NoSelection );
-
-		// Refresh widget when selection changed.
-		App::REG().on_update<App::System::Selection>().connect<&Selection::_onUpdateSelection>( this );
+		refresh();
 	}
 
 	// TODO: optimize and factorize.
-	void Selection::_onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e )
+	void Selection::refresh()
 	{
 		Util::ScopedChrono timer( "QT::Widget::Selection::_onUpdateSelection" );
 
@@ -44,7 +42,7 @@ namespace VTX::UI::QT::Widget
 			const auto & topology  = reg.get<Core::Struct::Topology>( entity );
 			const auto & selection = reg.get<App::System::Selection>( entity );
 
-			QString name = QString::fromStdString( topology.name );
+			QString	   name		   = QString::fromStdString( topology.name );
 			const auto systemState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
 			if ( systemState == App::System::E_SELECTION_STATE::FULL )
 			{
@@ -59,7 +57,7 @@ namespace VTX::UI::QT::Widget
 			// Chains.
 			for ( Index chain = 0; chain < topology.getChainCount(); ++chain )
 			{
-				QString chainName = QString::fromStdString( topology.getChainName( chain ) );
+				QString	   chainName  = QString::fromStdString( topology.getChainName( chain ) );
 				const auto chainState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::CHAIN, chain } );
 				if ( chainState == App::System::E_SELECTION_STATE::FULL )
 				{
@@ -74,8 +72,9 @@ namespace VTX::UI::QT::Widget
 				// Residues.
 				for ( Index residue : topology.getChainResidueRange( chain ) )
 				{
-					QString residueName = QString::fromStdString( topology.getResidueName( residue ) );
-					const auto residueState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::RESIDUE, residue } );
+					QString	   residueName = QString::fromStdString( topology.getResidueName( residue ) );
+					const auto residueState
+						= Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::RESIDUE, residue } );
 					if ( residueState == App::System::E_SELECTION_STATE::FULL )
 					{
 						addItem( name + "/" + chainName + "/" + residueName );

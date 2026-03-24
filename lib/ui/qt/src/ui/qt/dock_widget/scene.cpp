@@ -17,24 +17,36 @@
 
 namespace VTX::UI::QT::DockWidget
 {
+	namespace
+	{
+		void _setSelectionEnabled( QAbstractItemView * const p_view, const bool p_enabled )
+		{
+			if ( p_view == nullptr )
+			{
+				return;
+			}
+
+			p_view->setSelectionMode( p_enabled ? QAbstractItemView::SingleSelection : QAbstractItemView::NoSelection );
+		}
+	}
 
 	Scene::Scene( QWidget * p_parent ) : BaseDockWidget( p_parent, "Scene" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SCENE ) );
 
-		auto * treeGraphicsConfigPresets = new Widget::Tree::GraphicsConfigPresets( this );
-		auto * treeColorLayoutPresets	 = new Widget::Tree::ColorLayoutPresets( this );
-		auto * treeRepresentationPresets = new Widget::Tree::RepresentationPresets( this );
+		_treeGraphicsConfigPresets = new Widget::Tree::GraphicsConfigPresets( this );
+		_treeColorLayoutPresets	   = new Widget::Tree::ColorLayoutPresets( this );
+		_treeRepresentationPresets = new Widget::Tree::RepresentationPresets( this );
 
-		_layout->addWidget( treeGraphicsConfigPresets );
-		_layout->addWidget( treeColorLayoutPresets );
-		_layout->addWidget( treeRepresentationPresets );
+		_layout->addWidget( _treeGraphicsConfigPresets );
+		_layout->addWidget( _treeColorLayoutPresets );
+		_layout->addWidget( _treeRepresentationPresets );
 
 		auto & selection = SELECTION();
-		selection.add( treeGraphicsConfigPresets->selectionModel(), E_SELECTION_GROUP::GRAPHICS_CONFIG );
-		selection.add( treeColorLayoutPresets->selectionModel(), E_SELECTION_GROUP::COLOR_LAYOUT );
-		selection.add( treeRepresentationPresets->selectionModel(), E_SELECTION_GROUP::REPRESENTATION );
+		selection.add( _treeGraphicsConfigPresets->selectionModel(), E_SELECTION_GROUP::GRAPHICS_CONFIG );
+		selection.add( _treeColorLayoutPresets->selectionModel(), E_SELECTION_GROUP::COLOR_LAYOUT );
+		selection.add( _treeRepresentationPresets->selectionModel(), E_SELECTION_GROUP::REPRESENTATION );
 
 		_filler = new QWidget( this );
 		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
@@ -52,13 +64,16 @@ namespace VTX::UI::QT::DockWidget
 
 		App::HUB().connect<App::Events::ThreadProgress, &Scene::_onThreadProgress>( this );
 		App::HUB().connect<App::Events::ThreadTerminated, &Scene::_onThreadTerminated>( this );
+
+		_onSelectionLocked( Events::SelectionLocked { SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() } );
 	}
 
 	void Scene::_onCameraConstruct( App::ECS::Registry &, App::ECS::Entity p_e )
 	{
-		auto * treeCamera = new Widget::Tree::Camera( p_e, this );
-		SELECTION().add( treeCamera->selectionModel(), E_SELECTION_GROUP::CAMERA );
-		_layout->insertWidget( _layout->indexOf( _filler ), treeCamera );
+		_treeCamera = new Widget::Tree::Camera( p_e, this );
+		SELECTION().add( _treeCamera->selectionModel(), E_SELECTION_GROUP::CAMERA );
+		_layout->insertWidget( _layout->indexOf( _filler ), _treeCamera );
+		_setSelectionEnabled( _treeCamera, not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() );
 	}
 
 	void Scene::_onSystemLoad( const App::Events::SystemLoad & p_e )
@@ -109,10 +124,11 @@ namespace VTX::UI::QT::DockWidget
 
 	void Scene::_onSelectionLocked( const Events::SelectionLocked & p_event )
 	{
-		for ( const auto & [ _, w ] : _mapSystemTreeWidgets )
-		{
-			w->setSelectionMode( QAbstractItemView::NoSelection );
-		}
+		const bool selectionEnabled = not p_event.locked;
+		_setSelectionEnabled( _treeGraphicsConfigPresets, selectionEnabled );
+		_setSelectionEnabled( _treeColorLayoutPresets, selectionEnabled );
+		_setSelectionEnabled( _treeRepresentationPresets, selectionEnabled );
+		_setSelectionEnabled( _treeCamera, selectionEnabled );
 	}
 	void Scene::_onTrajectoryCreated( App::ECS::Registry &, App::ECS::Entity p_entity )
 	{
