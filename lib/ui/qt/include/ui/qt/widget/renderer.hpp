@@ -7,6 +7,7 @@
 #include <QHideEvent>
 #include <QKeyEvent>
 #include <QMouseEvent>
+#include <QPaintEngine>
 #include <QPointF>
 #include <QPointer>
 #include <QResizeEvent>
@@ -91,6 +92,7 @@ namespace VTX::UI::QT::Widget
 		 * @brief Debounce callback.
 		 */
 		void onResizeFinished();
+		QPaintEngine * paintEngine() const override { return nullptr; }
 
 	  private:
 		/**

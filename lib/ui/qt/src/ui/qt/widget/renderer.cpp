@@ -6,6 +6,7 @@
 #include <QGuiApplication>
 #include <QRegion>
 #include <QStyleHints>
+#include <QWindow>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/action/camera.hpp>
@@ -92,14 +93,14 @@ namespace
 
 namespace VTX::UI::QT::Widget
 {
-	Renderer::Renderer( QWidget * p_parent ) :
-		BaseWidget( p_parent ),
-		_inputManager( App::INPUT() )
+	Renderer::Renderer( QWidget * p_parent ) : BaseWidget( p_parent ), _inputManager( App::INPUT() )
 	{
 		constexpr int overlayBorderSize = 64;
 
 		setFocusPolicy( Qt::StrongFocus );
 		setAttribute( Qt::WA_NativeWindow, true );
+		setAttribute( Qt::WA_PaintOnScreen, true );
+		setAttribute( Qt::WA_OpaquePaintEvent, true );
 		setAttribute( Qt::WA_NoSystemBackground, true );
 		setAutoFillBackground( false );
 		winId();
@@ -108,6 +109,7 @@ namespace VTX::UI::QT::Widget
 		_overlay->setAttribute( Qt::WA_TranslucentBackground, true );
 		_overlay->setAttribute( Qt::WA_NoSystemBackground, true );
 		_overlay->setAttribute( Qt::WA_NativeWindow, true );
+		_overlay->setAutoFillBackground( false );
 		_overlay->setFocusPolicy( Qt::NoFocus );
 		_overlay->winId();
 		_overlayLayout = new QGridLayout( _overlay );
@@ -160,10 +162,24 @@ namespace VTX::UI::QT::Widget
 			{
 				throw std::runtime_error( "Qt: native surface is null" );
 			}
+			VTX_TRACE(
+				"Renderer::getNativeSurface platform={} widget_winid={} window_handle={} surface={}",
+				QGuiApplication::platformName().toStdString(),
+				static_cast<uintptr_t>( const_cast<Renderer *>( this )->winId() ),
+				reinterpret_cast<uintptr_t>( handle ),
+				reinterpret_cast<uintptr_t>( surface )
+			);
 			return reinterpret_cast<uintptr_t>( surface );
 		}
 
-		return static_cast<uintptr_t>( const_cast<Renderer *>( this )->winId() );
+		const uintptr_t surface = static_cast<uintptr_t>( const_cast<Renderer *>( this )->winId() );
+		VTX_TRACE(
+			"Renderer::getNativeSurface platform={} widget_winid={} surface={}",
+			QGuiApplication::platformName().toStdString(),
+			surface,
+			surface
+		);
+		return surface;
 	}
 
 	uintptr_t Renderer::getNativeDisplay() const
@@ -171,14 +187,29 @@ namespace VTX::UI::QT::Widget
 		QPlatformNativeInterface * const nif = QGuiApplication::platformNativeInterface();
 		if ( nif == nullptr )
 		{
+			VTX_TRACE(
+				"Renderer::getNativeDisplay platform={} native_interface=0 display=0",
+				QGuiApplication::platformName().toStdString()
+			);
 			return 0;
 		}
 
 		if ( void * const display = nif->nativeResourceForIntegration( "display" ) )
 		{
+			VTX_TRACE(
+				"Renderer::getNativeDisplay platform={} native_interface={} display={}",
+				QGuiApplication::platformName().toStdString(),
+				reinterpret_cast<uintptr_t>( nif ),
+				reinterpret_cast<uintptr_t>( display )
+			);
 			return reinterpret_cast<uintptr_t>( display );
 		}
 
+		VTX_TRACE(
+			"Renderer::getNativeDisplay platform={} native_interface={} display=0",
+			QGuiApplication::platformName().toStdString(),
+			reinterpret_cast<uintptr_t>( nif )
+		);
 		return 0;
 	}
 
@@ -186,15 +217,23 @@ namespace VTX::UI::QT::Widget
 	{
 		if ( QGuiApplication::platformName() == "wayland" )
 		{
+			VTX_TRACE(
+				"Renderer::getNativePlatform platform={} code=3", QGuiApplication::platformName().toStdString()
+			);
 			return 3;
 		}
 		if ( QGuiApplication::platformName() == "xcb" )
 		{
+			VTX_TRACE(
+				"Renderer::getNativePlatform platform={} code=2", QGuiApplication::platformName().toStdString()
+			);
 			return 2;
 		}
 #ifdef _WIN32
+		VTX_TRACE( "Renderer::getNativePlatform platform={} code=1", QGuiApplication::platformName().toStdString() );
 		return 1;
 #else
+		VTX_TRACE( "Renderer::getNativePlatform platform={} code=0", QGuiApplication::platformName().toStdString() );
 		return 0;
 #endif
 	}
@@ -235,9 +274,9 @@ namespace VTX::UI::QT::Widget
 	{
 		setFocus( Qt::MouseFocusReason );
 
-		_pressPos	   = p_event->position();
-		_lastPos	   = _pressPos;
-		_dragging	   = false;
+		_pressPos = p_event->position();
+		_lastPos  = _pressPos;
+		_dragging = false;
 	}
 
 	void Renderer::mouseMoveEvent( QMouseEvent * p_event )
@@ -258,7 +297,7 @@ namespace VTX::UI::QT::Widget
 		if ( _dragging )
 		{
 			const QPoint delta = _toDevicePixels( p_event->position() - _lastPos );
-			const Vec2i  deltaVec( delta.x(), delta.y() );
+			const Vec2i	 deltaVec( delta.x(), delta.y() );
 
 			if ( p_event->buttons() & Qt::LeftButton )
 			{
@@ -285,12 +324,12 @@ namespace VTX::UI::QT::Widget
 			SELECTION().pick( Vec2i( pos.x(), pos.y() ), QGuiApplication::keyboardModifiers() & Qt::ControlModifier );
 		}
 
-		_dragging	   = false;
+		_dragging = false;
 	}
 
 	void Renderer::mouseDoubleClickEvent( QMouseEvent * const )
 	{
-		_dragging	   = false;
+		_dragging = false;
 		App::ACTION().execute<App::Action::Camera::Orient>();
 	}
 
@@ -377,8 +416,8 @@ namespace VTX::UI::QT::Widget
 		QRegion mask;
 		for ( int i = 0; i < _overlayLayout->count(); ++i )
 		{
-			QLayoutItem * const item = _overlayLayout->itemAt( i );
-			QWidget * const	   widget = item ? item->widget() : nullptr;
+			QLayoutItem * const item   = _overlayLayout->itemAt( i );
+			QWidget * const		widget = item ? item->widget() : nullptr;
 			if ( widget == nullptr || not widget->isVisible() )
 			{
 				continue;
