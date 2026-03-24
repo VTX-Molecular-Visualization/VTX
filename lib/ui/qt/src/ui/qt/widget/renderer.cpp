@@ -9,7 +9,6 @@
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/action/camera.hpp>
-#include <app/services.hpp>
 #include <qpa/qplatformnativeinterface.h>
 #include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
@@ -96,7 +95,7 @@ namespace VTX::UI::QT::Widget
 {
 	Renderer::Renderer( QWidget * p_parent ) : BaseWidget( p_parent ), _inputManager( App::INPUT() )
 	{
-		setFocusPolicy( Qt::NoFocus );
+		setFocusPolicy( Qt::StrongFocus );
 		setAttribute( Qt::WA_NativeWindow, true );
 		setAttribute( Qt::WA_NoSystemBackground, true );
 		setAutoFillBackground( false );
@@ -209,6 +208,31 @@ namespace VTX::UI::QT::Widget
 #endif
 	}
 
+	bool Renderer::event( QEvent * p_event )
+	{
+		if ( p_event != nullptr )
+		{
+			switch ( p_event->type() )
+			{
+			case QEvent::Show:
+			case QEvent::ShowToParent:
+			case QEvent::UpdateRequest:
+			case QEvent::WindowActivate:
+			case QEvent::WindowDeactivate:
+			case QEvent::ActivationChange:
+			case QEvent::WindowStateChange:
+			case QEvent::Expose:
+			{
+				QTimer::singleShot( 0, this, []() { App::RENDERER().setNeedUpdate( true ); } );
+				break;
+			}
+			default: break;
+			}
+		}
+
+		return QWidget::event( p_event );
+	}
+
 	void Renderer::resizeEvent( QResizeEvent * p_event )
 	{
 		QWidget::resizeEvent( p_event );
@@ -219,7 +243,6 @@ namespace VTX::UI::QT::Widget
 	void Renderer::showEvent( QShowEvent * p_event )
 	{
 		QWidget::showEvent( p_event );
-		winId();
 		onResizeFinished();
 	}
 
@@ -229,8 +252,6 @@ namespace VTX::UI::QT::Widget
 
 	void Renderer::mousePressEvent( QMouseEvent * p_event )
 	{
-		// setFocus( Qt::MouseFocusReason );
-
 		_pressPos = p_event->position();
 		_lastPos  = _pressPos;
 		_dragging = false;

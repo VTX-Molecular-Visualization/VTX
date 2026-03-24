@@ -5,6 +5,7 @@
 #include "ui/qt/widget/renderer.hpp"
 #include "ui/qt/widget/status_bar.hpp"
 #include <QDockWidget>
+#include <QEvent>
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QPointer>
@@ -126,6 +127,8 @@ namespace VTX::UI::QT::Widget
 		}
 
 	  protected:
+		bool event( QEvent * ) override;
+
 		/**
 		 * @brief Drag and drop events.
 		 */

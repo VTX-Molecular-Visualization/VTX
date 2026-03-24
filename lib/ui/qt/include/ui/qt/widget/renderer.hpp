@@ -3,6 +3,7 @@
 
 #include "ui/qt/events.hpp"
 #include "ui/qt/widget/base_widget.hpp"
+#include <QEvent>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QPointF>
@@ -74,6 +75,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Override resize.
 		 */
+		bool event( QEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
 		void showEvent( QShowEvent * ) override;
 		void keyPressEvent( QKeyEvent * const ) override;
