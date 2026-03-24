@@ -3,11 +3,8 @@
 
 #include "ui/qt/events.hpp"
 #include "ui/qt/widget/base_widget.hpp"
-#include <QGridLayout>
-#include <QHideEvent>
 #include <QKeyEvent>
 #include <QMouseEvent>
-#include <QPaintEngine>
 #include <QPointF>
 #include <QPointer>
 #include <QResizeEvent>
@@ -15,6 +12,7 @@
 #include <QTimer>
 #include <QWheelEvent>
 #include <app/input/input_manager.hpp>
+#include <vector>
 
 namespace VTX::UI::QT::Widget
 {
@@ -78,7 +76,6 @@ namespace VTX::UI::QT::Widget
 		 */
 		void resizeEvent( QResizeEvent * ) override;
 		void showEvent( QShowEvent * ) override;
-		void hideEvent( QHideEvent * ) override;
 		void keyPressEvent( QKeyEvent * const ) override;
 		void keyReleaseEvent( QKeyEvent * const ) override;
 		void mousePressEvent( QMouseEvent * ) override;
@@ -92,18 +89,18 @@ namespace VTX::UI::QT::Widget
 		 * @brief Debounce callback.
 		 */
 		void onResizeFinished();
-		QPaintEngine * paintEngine() const override { return nullptr; }
 
 	  private:
-		/**
-		 * @brief Transparent overlay widget above the rendering surface.
-		 */
-		QPointer<QWidget> _overlay;
+		struct HUDItem
+		{
+			QPointer<QWidget> widget;
+			HUD_POSITION	  position;
+		};
 
 		/**
-		 * @brief Grid layout used to place overlay widgets.
+		 * @brief HUD widgets and their anchor positions.
 		 */
-		QPointer<QGridLayout> _overlayLayout;
+		std::vector<HUDItem> _hudItems;
 
 		/**
 		 * @brief Debounce timer for resize events.

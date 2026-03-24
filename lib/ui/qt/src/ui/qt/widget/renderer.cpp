@@ -4,13 +4,14 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include <QGuiApplication>
-#include <QRegion>
 #include <QStyleHints>
 #include <QWindow>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/action/camera.hpp>
+#include <app/services.hpp>
 #include <qpa/qplatformnativeinterface.h>
+#include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
 #include <util/type_traits.hpp>
 
@@ -95,35 +96,11 @@ namespace VTX::UI::QT::Widget
 {
 	Renderer::Renderer( QWidget * p_parent ) : BaseWidget( p_parent ), _inputManager( App::INPUT() )
 	{
-		constexpr int overlayBorderSize = 64;
-
-		setFocusPolicy( Qt::StrongFocus );
+		setFocusPolicy( Qt::NoFocus );
 		setAttribute( Qt::WA_NativeWindow, true );
-		setAttribute( Qt::WA_PaintOnScreen, true );
-		setAttribute( Qt::WA_OpaquePaintEvent, true );
 		setAttribute( Qt::WA_NoSystemBackground, true );
 		setAutoFillBackground( false );
 		winId();
-
-		_overlay = new QWidget( this, Qt::FramelessWindowHint );
-		_overlay->setAttribute( Qt::WA_TranslucentBackground, true );
-		_overlay->setAttribute( Qt::WA_NoSystemBackground, true );
-		_overlay->setAttribute( Qt::WA_NativeWindow, true );
-		_overlay->setAutoFillBackground( false );
-		_overlay->setFocusPolicy( Qt::NoFocus );
-		_overlay->winId();
-		_overlayLayout = new QGridLayout( _overlay );
-		_overlayLayout->setContentsMargins(
-			overlayBorderSize, overlayBorderSize, overlayBorderSize, overlayBorderSize
-		);
-		_overlayLayout->setSpacing( 0 );
-		_overlayLayout->setRowStretch( 0, 0 );
-		_overlayLayout->setRowStretch( 1, 1 );
-		_overlayLayout->setRowStretch( 2, 0 );
-		_overlayLayout->setColumnStretch( 0, 0 );
-		_overlayLayout->setColumnStretch( 1, 1 );
-		_overlayLayout->setColumnStretch( 2, 0 );
-		_overlay->show();
 
 		App::HUB().connect<Events::KeyboardLayoutChanged, &Renderer::_onKBLayoutChange>( this );
 
@@ -131,13 +108,7 @@ namespace VTX::UI::QT::Widget
 		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
 	}
 
-	Renderer::~Renderer()
-	{
-		if ( _overlay )
-		{
-			delete _overlay;
-		}
-	}
+	Renderer::~Renderer() = default;
 
 	uintptr_t Renderer::getNativeSurface() const
 	{
@@ -249,21 +220,7 @@ namespace VTX::UI::QT::Widget
 	{
 		QWidget::showEvent( p_event );
 		winId();
-		if ( _overlay )
-		{
-			_overlay->show();
-			_overlay->raise();
-		}
 		onResizeFinished();
-	}
-
-	void Renderer::hideEvent( QHideEvent * p_event )
-	{
-		QWidget::hideEvent( p_event );
-		if ( _overlay )
-		{
-			_overlay->hide();
-		}
 	}
 
 	void Renderer::keyPressEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, true ); }
@@ -272,7 +229,7 @@ namespace VTX::UI::QT::Widget
 
 	void Renderer::mousePressEvent( QMouseEvent * p_event )
 	{
-		setFocus( Qt::MouseFocusReason );
+		// setFocus( Qt::MouseFocusReason );
 
 		_pressPos = p_event->position();
 		_lastPos  = _pressPos;
@@ -347,95 +304,67 @@ namespace VTX::UI::QT::Widget
 
 	void Renderer::_addHUDWidget( QWidget * const p_widget, const HUD_POSITION p_pos )
 	{
-		int			  row		= 0;
-		int			  col		= 0;
-		Qt::Alignment alignment = Qt::AlignCenter;
-		switch ( p_pos )
-		{
-		case HUD_POSITION::TOP_LEFT:
-			row		  = 0;
-			col		  = 0;
-			alignment = Qt::AlignTop | Qt::AlignLeft;
-			break;
-		case HUD_POSITION::TOP_CENTER:
-			row		  = 0;
-			col		  = 1;
-			alignment = Qt::AlignTop | Qt::AlignHCenter;
-			break;
-		case HUD_POSITION::TOP_RIGHT:
-			row		  = 0;
-			col		  = 2;
-			alignment = Qt::AlignTop | Qt::AlignRight;
-			break;
-		case HUD_POSITION::CENTER_LEFT:
-			row		  = 1;
-			col		  = 0;
-			alignment = Qt::AlignVCenter | Qt::AlignLeft;
-			break;
-		case HUD_POSITION::CENTER_RIGHT:
-			row		  = 1;
-			col		  = 2;
-			alignment = Qt::AlignVCenter | Qt::AlignRight;
-			break;
-		case HUD_POSITION::BOTTOM_LEFT:
-			row		  = 2;
-			col		  = 0;
-			alignment = Qt::AlignBottom | Qt::AlignLeft;
-			break;
-		case HUD_POSITION::BOTTOM_CENTER:
-			row		  = 2;
-			col		  = 1;
-			alignment = Qt::AlignBottom | Qt::AlignHCenter;
-			break;
-		case HUD_POSITION::BOTTOM_RIGHT:
-			row		  = 2;
-			col		  = 2;
-			alignment = Qt::AlignBottom | Qt::AlignRight;
-			break;
-		default: assert( false && "Invalid HUD position" );
-		}
-
-		p_widget->setParent( _overlay );
+		p_widget->setParent( this );
+		p_widget->setAttribute( Qt::WA_NativeWindow, true );
 		p_widget->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
-		_overlayLayout->addWidget( p_widget, row, col, alignment );
+		p_widget->move( 0, 0 );
+		p_widget->show();
+		_hudItems.push_back( { p_widget, p_pos } );
 		_syncOverlayGeometry();
-		_overlay->show();
-		_overlay->raise();
 	}
 
 	void Renderer::_syncOverlayGeometry()
 	{
-		if ( _overlay == nullptr || _overlayLayout == nullptr || not isVisible() )
+		if ( not isVisible() )
 		{
 			return;
 		}
 
-		_overlay->setGeometry( rect() );
-		_overlayLayout->activate();
-
-		QRegion mask;
-		for ( int i = 0; i < _overlayLayout->count(); ++i )
+		const QRect availableRect = rect();
+		for ( const HUDItem & item : _hudItems )
 		{
-			QLayoutItem * const item   = _overlayLayout->itemAt( i );
-			QWidget * const		widget = item ? item->widget() : nullptr;
+			QWidget * const widget = item.widget;
 			if ( widget == nullptr || not widget->isVisible() )
 			{
 				continue;
 			}
 
-			mask += QRegion( widget->geometry() );
-		}
+			widget->adjustSize();
 
-		if ( mask.isEmpty() )
-		{
-			_overlay->clearMask();
-		}
-		else
-		{
-			_overlay->setMask( mask );
-		}
+			const QSize size = widget->sizeHint().expandedTo( widget->minimumSizeHint() );
+			int			x	 = availableRect.left();
+			int			y	 = availableRect.top();
 
-		_overlay->raise();
+			switch ( item.position )
+			{
+			case HUD_POSITION::TOP_LEFT: break;
+			case HUD_POSITION::TOP_CENTER:
+				x = availableRect.left() + ( availableRect.width() - size.width() ) / 2;
+				break;
+			case HUD_POSITION::TOP_RIGHT: x = availableRect.right() - size.width() + 1; break;
+			case HUD_POSITION::CENTER_LEFT:
+				y = availableRect.top() + ( availableRect.height() - size.height() ) / 2;
+				break;
+			case HUD_POSITION::CENTER_RIGHT:
+				x = availableRect.right() - size.width() + 1;
+				y = availableRect.top() + ( availableRect.height() - size.height() ) / 2;
+				break;
+			case HUD_POSITION::BOTTOM_LEFT: y = availableRect.bottom() - size.height() + 1; break;
+			case HUD_POSITION::BOTTOM_CENTER:
+				x = availableRect.left() + ( availableRect.width() - size.width() ) / 2;
+				y = availableRect.bottom() - size.height() + 1;
+				break;
+			case HUD_POSITION::BOTTOM_RIGHT:
+				x = availableRect.right() - size.width() + 1;
+				y = availableRect.bottom() - size.height() + 1;
+				break;
+			default: assert( false && "Invalid HUD position" );
+			}
+
+			const QRect geometry( QPoint( x, y ), size );
+			widget->setGeometry( geometry );
+			widget->raise();
+		}
 	}
 
 	void Renderer::_handleKeyboard( QKeyEvent * const p_event, const bool p_enable )
