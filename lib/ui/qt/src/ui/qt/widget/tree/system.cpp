@@ -186,7 +186,8 @@ namespace VTX::UI::QT::Widget::Tree
 					}
 					else
 					{
-						_applySelection( index, true, append );
+						const bool selected = not append or not _isFullySelected( index );
+						_applySelection( index, selected, append );
 						_anchor = index;
 
 						_dragging		 = true;
@@ -244,6 +245,19 @@ namespace VTX::UI::QT::Widget::Tree
 
 		const auto * delegate = static_cast<const Delegate::SystemDelegate *>( itemDelegateForIndex( p_index ) );
 		return delegate != nullptr && isBranchClick == false && not delegate->hitsButton( p_option, p_e->pos() );
+	}
+
+	bool System::_isFullySelected( const QModelIndex & p_index ) const
+	{
+		using namespace App;
+		using namespace Core::Struct;
+
+		E_SYSTEM_ITEM item;
+		Index		  itemIndex;
+		Model::SystemModel::unpack( p_index.internalId(), item, itemIndex );
+
+		return App::Helper::System::getSelectionState( { _system, item, itemIndex } )
+			   == App::System::E_SELECTION_STATE::FULL;
 	}
 
 	void System::_applySelection( const QModelIndex & p_index, const bool p_selected, const bool p_append )

@@ -57,6 +57,7 @@ namespace VTX::UI::QT::Widget::Tree
 		QPersistentModelIndex _lastDraggedIndex;
 
 		bool _shouldHandleSelectionClick( QMouseEvent *, const QModelIndex &, QStyleOptionViewItem & ) const;
+		bool _isFullySelected( const QModelIndex & ) const;
 		void _applySelection( const QModelIndex &, const bool = true, const bool = false );
 		void _selectVisibleRange( const QModelIndex &, const QModelIndex & );
 	};
