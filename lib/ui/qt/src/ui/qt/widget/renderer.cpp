@@ -6,7 +6,6 @@
 #include <QGuiApplication>
 #include <QPainterPath>
 #include <QStyleHints>
-#include <QToolButton >
 #include <QWindow>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
