@@ -11,6 +11,8 @@
 #include <QResizeEvent>
 #include <QShowEvent>
 #include <QTimer>
+#include <QToolBar>
+#include <QToolButton>
 #include <QWheelEvent>
 #include <app/input/input_manager.hpp>
 #include <vector>
