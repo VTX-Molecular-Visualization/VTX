@@ -71,7 +71,7 @@ namespace VTX::UI::QT::Widget
 		{
 			TB * toolBar = new TB( this );
 			toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
-			for ( auto * button : toolBar->findChildren<QToolButton *>() )
+			for ( auto * button : toolBar->template findChildren<QToolButton *>() )
 			{
 				button->setToolButtonStyle( toolBar->toolButtonStyle() );
 			}
