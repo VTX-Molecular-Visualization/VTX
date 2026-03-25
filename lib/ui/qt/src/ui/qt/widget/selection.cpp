@@ -1,10 +1,14 @@
 #include "ui/qt/widget/selection.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/widget/transform.hpp"
+#include <QGroupBox>
+#include <QListWidget>
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
 #include <app/system/metadata.hpp>
 #include <app/system/selection.hpp>
 #include <core/struct/topology.hpp>
+#include <util/chrono.hpp>
 #include <util/event_hub.hpp>
 
 namespace
@@ -15,12 +19,7 @@ namespace
 
 namespace VTX::UI::QT::Widget
 {
-	Selection::Selection( QWidget * const p_parent ) : BaseWidget( p_parent )
-	{
-		// Disable selection.
-		this->setSelectionMode( QAbstractItemView::NoSelection );
-		refresh();
-	}
+	Selection::Selection( QWidget * const p_parent ) : QWidget( p_parent ) { refresh(); }
 
 	// TODO: optimize and factorize.
 	void Selection::refresh()
@@ -34,7 +33,7 @@ namespace VTX::UI::QT::Widget
 		const auto entities = reg.view<App::System::Selection>();
 
 		// Delete all items.
-		this->clear();
+		_layout = new QVBoxLayout( this );
 
 		// Add selected items.
 		for ( auto entity : entities )
@@ -46,7 +45,12 @@ namespace VTX::UI::QT::Widget
 			const auto systemState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
 			if ( systemState == App::System::E_SELECTION_STATE::FULL )
 			{
-				addItem( name );
+				auto * groupBoxTransform = new QGroupBox( name, this );
+				auto * layout			 = new QVBoxLayout( groupBoxTransform );
+				auto * transform		 = new Widget::Transform( groupBoxTransform );
+				layout->addWidget( transform );
+
+				// addItem( name );
 				continue;
 			}
 			else if ( systemState == App::System::E_SELECTION_STATE::NONE )
@@ -61,7 +65,7 @@ namespace VTX::UI::QT::Widget
 				const auto chainState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::CHAIN, chain } );
 				if ( chainState == App::System::E_SELECTION_STATE::FULL )
 				{
-					addItem( name + "/" + chainName );
+					// addItem( name + "/" + chainName );
 					continue;
 				}
 				else if ( chainState == App::System::E_SELECTION_STATE::NONE )
@@ -77,7 +81,7 @@ namespace VTX::UI::QT::Widget
 						= Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::RESIDUE, residue } );
 					if ( residueState == App::System::E_SELECTION_STATE::FULL )
 					{
-						addItem( name + "/" + chainName + "/" + residueName );
+						// addItem( name + "/" + chainName + "/" + residueName );
 						continue;
 					}
 					else if ( residueState == App::System::E_SELECTION_STATE::NONE )
@@ -91,14 +95,16 @@ namespace VTX::UI::QT::Widget
 						if ( Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::ATOM, atom } )
 							 == App::System::E_SELECTION_STATE::FULL )
 						{
-							addItem(
-								name + "/" + chainName + "/" + residueName + "/"
-								+ QString::fromStdString( topology.getAtomName( atom ) )
-							);
+							// addItem(
+							//	name + "/" + chainName + "/" + residueName + "/"
+							//	+ QString::fromStdString( topology.getAtomName( atom ) )
+							//);
 						}
 					}
 				}
 			}
 		}
+
+		setLayout( _layout );
 	}
 } // namespace VTX::UI::QT::Widget
