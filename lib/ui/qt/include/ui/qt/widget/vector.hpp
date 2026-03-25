@@ -3,6 +3,7 @@
 
 #include <QDoubleSpinBox>
 #include <QEvent>
+#include <QHBoxLayout>
 #include <util/constants.hpp>
 
 namespace VTX::UI::QT::Widget

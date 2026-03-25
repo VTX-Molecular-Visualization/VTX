@@ -1,109 +1,10 @@
 #include "app/action/selection.hpp"
 #include "app/action/action_manager.hpp"
-#include "app/ecs.hpp"
 #include "app/helper/scene.hpp"
 #include "app/input/input_manager.hpp"
 #include "app/services.hpp"
 #include "app/system/uid.hpp"
 #include <renderer/renderer.hpp>
-
-namespace
-{
-	template<VTX::Core::Struct::E_SYSTEM_ITEM ITEM>
-	void _setSelected(
-		const VTX::App::ECS::Entity				  p_ent,
-		const VTX::Core::Struct::IndexRangeList & p_ranges,
-		const bool								  p_append
-	)
-	{
-		VTX::App::ACTION().execute<VTX::App::Action::Selection::SetSelected<ITEM>>( p_ent, p_ranges, true, p_append );
-	}
-
-	void _pickAtom(
-		const VTX::App::ECS::Entity						 p_ent,
-		const VTX::Core::Struct::Topology &				 p_topology,
-		const VTX::Index								 p_firstAtomIndex,
-		const VTX::Index * const						 p_secondAtomIndex,
-		const VTX::App::Action::Selection::E_GRANULARITY p_granularity,
-		const bool										 p_append
-	)
-	{
-		VTX::Core::Struct::IndexRangeList toSelect;
-
-		switch ( p_granularity )
-		{
-		case VTX::App::Action::Selection::E_GRANULARITY::ATOM:
-			toSelect.addRange( p_firstAtomIndex );
-			if ( p_secondAtomIndex != nullptr )
-			{
-				toSelect.addRange( *p_secondAtomIndex );
-			}
-			_setSelected<VTX::Core::Struct::E_SYSTEM_ITEM::ATOM>( p_ent, toSelect, p_append );
-			return;
-
-		case VTX::App::Action::Selection::E_GRANULARITY::RESIDUE:
-			toSelect.addRange( p_topology.getAtomResidueIndex( p_firstAtomIndex ) );
-			if ( p_secondAtomIndex != nullptr )
-			{
-				toSelect.addRange( p_topology.getAtomResidueIndex( *p_secondAtomIndex ) );
-			}
-			_setSelected<VTX::Core::Struct::E_SYSTEM_ITEM::RESIDUE>( p_ent, toSelect, p_append );
-			return;
-
-		case VTX::App::Action::Selection::E_GRANULARITY::CHAIN:
-			toSelect.addRange( p_topology.getResidueChainIndex( p_topology.getAtomResidueIndex( p_firstAtomIndex ) ) );
-			if ( p_secondAtomIndex != nullptr )
-			{
-				toSelect.addRange(
-					p_topology.getResidueChainIndex( p_topology.getAtomResidueIndex( *p_secondAtomIndex ) )
-				);
-			}
-			_setSelected<VTX::Core::Struct::E_SYSTEM_ITEM::CHAIN>( p_ent, toSelect, p_append );
-			return;
-
-		case VTX::App::Action::Selection::E_GRANULARITY::SYSTEM:
-			_setSelected<VTX::Core::Struct::E_SYSTEM_ITEM::SYSTEM>( p_ent, toSelect, p_append );
-			return;
-
-		default: assert( false ); return;
-		}
-	}
-
-	void _pickResidue(
-		const VTX::App::ECS::Entity				   p_ent,
-		const VTX::Core::Struct::Topology &		   p_topology,
-		const VTX::Index						   p_residueIndex,
-		VTX::App::Action::Selection::E_GRANULARITY p_granularity,
-		const bool								   p_append
-	)
-	{
-		VTX::Core::Struct::IndexRangeList toSelect;
-
-		if ( p_granularity == VTX::App::Action::Selection::E_GRANULARITY::ATOM )
-		{
-			p_granularity = VTX::App::Action::Selection::E_GRANULARITY::RESIDUE;
-		}
-
-		switch ( p_granularity )
-		{
-		case VTX::App::Action::Selection::E_GRANULARITY::RESIDUE:
-			toSelect.addRange( p_residueIndex );
-			_setSelected<VTX::Core::Struct::E_SYSTEM_ITEM::RESIDUE>( p_ent, toSelect, p_append );
-			return;
-
-		case VTX::App::Action::Selection::E_GRANULARITY::CHAIN:
-			toSelect.addRange( p_topology.getResidueChainIndex( p_residueIndex ) );
-			_setSelected<VTX::Core::Struct::E_SYSTEM_ITEM::CHAIN>( p_ent, toSelect, p_append );
-			return;
-
-		case VTX::App::Action::Selection::E_GRANULARITY::SYSTEM:
-			_setSelected<VTX::Core::Struct::E_SYSTEM_ITEM::SYSTEM>( p_ent, toSelect, p_append );
-			return;
-
-		default: assert( false ); return;
-		}
-	}
-} // namespace
 
 namespace VTX::App::Action::Selection
 {
@@ -147,7 +48,8 @@ namespace VTX::App::Action::Selection
 	void Pick::execute( const Vec2i & p_mousePos, const E_GRANULARITY p_granularity, const bool p_append )
 	{
 		// Get renderer picking info at mouse position.
-		const Vec2i		 picked = RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y );
+		Vec2i picked = RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y );
+
 		const PickingUID first	= picked.x;
 		const PickingUID second = picked.y;
 
@@ -165,31 +67,103 @@ namespace VTX::App::Action::Selection
 			return;
 		}
 
+		Core::Struct::IndexRangeList toSelect;
+		E_GRANULARITY				 granularity = p_granularity;
+
 		// Look for atom.
 		auto firstEntOpt = Helper::Scene::findSystemByAtomUID( first );
 		if ( firstEntOpt )
 		{
-			const ECS::Entity firstEnt = *firstEntOpt;
-			const auto &	  topology = REG().get<Core::Struct::Topology>( firstEnt );
-			const auto &	  uid	   = REG().get<System::UID>( firstEnt );
+			ECS::Entity	 firstEnt = *firstEntOpt;
+			const auto & topology = REG().get<Core::Struct::Topology>( firstEnt );
+			const auto & uid	  = REG().get<System::UID>( firstEnt );
 
-			const Index	  firstAtomIndex  = uid.getAtomIndex( first );
-			Index		  secondAtomIndex = 0;
-			const Index * secondAtom	  = nullptr;
+			const Index firstAtomIndex = uid.getAtomIndex( first );
 
-			if ( second != INVALID_UID )
+			auto secondEntOpt = Helper::Scene::findSystemByAtomUID( second );
+
+			if ( not secondEntOpt )
 			{
-				auto secondEntOpt = Helper::Scene::findSystemByAtomUID( second );
-				if ( secondEntOpt )
+				switch ( granularity )
 				{
-					const ECS::Entity secondEnt = *secondEntOpt;
-					assert( secondEnt == firstEnt );
-					secondAtomIndex = uid.getAtomIndex( second );
-					secondAtom		= &secondAtomIndex;
+				case E_GRANULARITY::ATOM:
+					toSelect.addRange( firstAtomIndex );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>(
+						firstEnt, toSelect, true, p_append
+					);
+					break;
+				case E_GRANULARITY::RESIDUE:
+				{
+					const Index resIndex = topology.getAtomResidueIndex( firstAtomIndex );
+					toSelect.addRange( resIndex );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::RESIDUE>>(
+						firstEnt, toSelect, true, p_append
+					);
+					break;
+				}
+				case E_GRANULARITY::CHAIN:
+				{
+					const Index resIndex   = topology.getAtomResidueIndex( firstAtomIndex );
+					const Index chainIndex = topology.getResidueChainIndex( resIndex );
+					toSelect.addRange( chainIndex );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::CHAIN>>(
+						firstEnt, toSelect, true, p_append
+					);
+					break;
+				}
+				case E_GRANULARITY::SYSTEM:
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>(
+						firstEnt, toSelect, true, p_append
+					);
+					return;
+
+				default: assert( false ); break;
 				}
 			}
+			else
+			{
+				ECS::Entity secondEnt = *secondEntOpt;
+				assert( secondEnt == firstEnt );
+				const Index secondAtomIndex = uid.getAtomIndex( second );
 
-			_pickAtom( firstEnt, topology, firstAtomIndex, secondAtom, p_granularity, p_append );
+				switch ( granularity )
+				{
+				case E_GRANULARITY::ATOM:
+					toSelect.addRange( firstAtomIndex );
+					toSelect.addRange( secondAtomIndex );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>(
+						firstEnt, toSelect, true, p_append
+					);
+					break;
+				case E_GRANULARITY::RESIDUE:
+				{
+					toSelect.addRange( topology.getAtomResidueIndex( firstAtomIndex ) );
+					toSelect.addRange( topology.getAtomResidueIndex( secondAtomIndex ) );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::RESIDUE>>(
+						firstEnt, toSelect, true, p_append
+					);
+					break;
+				}
+				case E_GRANULARITY::CHAIN:
+				{
+					const Index firstResIndex  = topology.getAtomResidueIndex( firstAtomIndex );
+					const Index secondResIndex = topology.getAtomResidueIndex( secondAtomIndex );
+					toSelect.addRange( topology.getResidueChainIndex( firstResIndex ) );
+					toSelect.addRange( topology.getResidueChainIndex( secondResIndex ) );
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::CHAIN>>(
+						firstEnt, toSelect, true, p_append
+					);
+					break;
+				}
+				case E_GRANULARITY::SYSTEM:
+					ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>(
+						firstEnt, toSelect, true, p_append
+					);
+					return;
+
+				default: assert( false ); break;
+				}
+			}
 		}
 		else
 		{
@@ -197,13 +171,42 @@ namespace VTX::App::Action::Selection
 			firstEntOpt = Helper::Scene::findSystemByResidueUID( first );
 			assert( firstEntOpt );
 			assert( second == INVALID_UID );
+			if ( granularity == E_GRANULARITY::ATOM )
+			{
+				granularity = E_GRANULARITY::RESIDUE;
+			}
 
-			const ECS::Entity firstEnt	   = *firstEntOpt;
-			const auto &	  topology	   = REG().get<Core::Struct::Topology>( firstEnt );
-			const auto &	  uid		   = REG().get<System::UID>( firstEnt );
-			const Index		  residueIndex = uid.getResidueIndex( first );
+			ECS::Entity firstEnt = *firstEntOpt;
 
-			_pickResidue( firstEnt, topology, residueIndex, p_granularity, p_append );
+			const auto & system		  = REG().get<Core::Struct::Topology>( firstEnt );
+			const auto & uid		  = REG().get<System::UID>( firstEnt );
+			const Index	 residueIndex = uid.getResidueIndex( first );
+
+			switch ( granularity )
+			{
+			case E_GRANULARITY::RESIDUE:
+			{
+				toSelect.addRange( residueIndex );
+				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::RESIDUE>>(
+					firstEnt, toSelect, true, p_append
+				);
+				break;
+			}
+			case E_GRANULARITY::CHAIN:
+			{
+				const Index chainIndex = system.getResidueChainIndex( residueIndex );
+				toSelect.addRange( chainIndex );
+				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::CHAIN>>( firstEnt, toSelect, true, p_append );
+				break;
+			}
+			case E_GRANULARITY::SYSTEM:
+				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>(
+					firstEnt, toSelect, true, p_append
+				);
+				return;
+
+			default: assert( false ); break;
+			}
 		}
 	}
 } // namespace VTX::App::Action::Selection
