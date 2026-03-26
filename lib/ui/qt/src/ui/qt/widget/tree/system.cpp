@@ -124,8 +124,9 @@ namespace VTX::UI::QT::Widget::Tree
 				{
 					// Get menu selection.
 					const auto selected = res->data().value<Menu::ColorScheme::Selected>();
-					// TODO: handle index for plain color.
-					App::ACTION().execute<App::Action::Color::AddItem>( _system, item, selected.scheme, index );
+					App::ACTION().execute<App::Action::Color::AddItem>(
+						_system, item, selected.scheme, index, selected.index
+					);
 				}
 			}
 		);

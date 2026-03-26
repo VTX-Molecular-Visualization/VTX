@@ -51,12 +51,18 @@ namespace VTX::UI::QT::Menu
 			addItem( "Residues", { E_COLOR_SCHEME::RESIDUE }, p_scheme );
 			addItem( "Chains", { E_COLOR_SCHEME::CHAIN }, p_scheme );
 
-			auto * subMenu = QMenu::addMenu( "Plain" );
+			auto * subMenu = QMenu::addMenu( "Custom" );
 			for ( Renderer::ColorIndex i = 0; i < Renderer::Color::LAYOUT_COUNT_CUSTOM; ++i )
 			{
 				auto * wa	= new QWidgetAction( subMenu );
 				auto * item = new ColorItem( QT::Helper::toQColor( colorlayout.getCustomColor( i ) ) );
 				item->setMinimumSize( 120, 24 );
+				wa->setData(
+					QVariant::fromValue(
+						Selected { E_COLOR_SCHEME::CUSTOM,
+								   static_cast<Renderer::ColorIndex>( Renderer::Color::LAYOUT_OFFSET_CUSTOM + i ) }
+					)
+				);
 				wa->setDefaultWidget( item );
 				subMenu->addAction( wa );
 			}
@@ -87,5 +93,7 @@ namespace VTX::UI::QT::Menu
 	};
 
 } // namespace VTX::UI::QT::Menu
+
+Q_DECLARE_METATYPE( VTX::UI::QT::Menu::ColorScheme::Selected )
 
 #endif

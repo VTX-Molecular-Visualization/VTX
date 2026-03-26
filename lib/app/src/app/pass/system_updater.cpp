@@ -211,6 +211,14 @@ namespace VTX::App::Pass
 			}
 			count += ranges.count();
 		}
+		for ( const auto & [ colorIndex, ranges ] : color.customColorAtoms )
+		{
+			for ( Index atom : ranges )
+			{
+				atoms[ atom ] = colorIndex;
+			}
+			count += ranges.count();
+		}
 
 		assert( count == data.getAtomCount() );
 
