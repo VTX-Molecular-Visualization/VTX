@@ -204,11 +204,11 @@ namespace VTX::UI::QT::DockWidget
 		}
 
 		// Already displaying system selection.
-		if ( _selectionListWidget )
-		{
-			_selectionListWidget->refresh();
-			return;
-		}
+		// if ( _selectionListWidget )
+		//{
+		//	_selectionListWidget->refresh();
+		//	return;
+		//}
 
 		_clear();
 		_selectionListWidget = new Widget::Selection( this );
