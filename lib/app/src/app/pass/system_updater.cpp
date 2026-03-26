@@ -35,7 +35,6 @@ namespace VTX::App::Pass
 
 	void SystemUpdater::update( const float p_delta, const float p_total )
 	{
-		_pendingSystemUpdate();
 		return;
 		for ( auto & entity : _entities )
 		{
@@ -44,18 +43,6 @@ namespace VTX::App::Pass
 				[ p_delta ]( Util::Math::Transform & p_transform ) { p_transform.rotateYaw( p_delta * 0.001f ); }
 			);
 		}
-	}
-	void SystemUpdater::_pendingSystemUpdate() noexcept
-	{
-		// for ( auto it_entity : REG().view<System::PendingSystem>() )
-		//{
-		//	auto & pendingSystem = REG().get<System::PendingSystem>( it_entity );
-		//	if ( pendingSystem.readyToDeliver )
-		//	{
-		//		System::deliver( it_entity, pendingSystem );
-		//		continue;
-		//	}
-		// }
 	}
 
 	void SystemUpdater::_onUpdateTransform( ECS::Registry & p_r, ECS::Entity p_e )

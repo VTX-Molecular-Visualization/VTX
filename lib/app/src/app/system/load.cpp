@@ -34,6 +34,8 @@
 
 namespace VTX::App::System
 {
+	void deliver( PendingSystem && p_data ) noexcept;
+
 	namespace
 	{
 		/**
@@ -62,7 +64,7 @@ namespace VTX::App::System
 
 		void execute()
 		{
-			System::deliver( std::move( jobFinishedPtr->data ) );
+			deliver( std::move( jobFinishedPtr->data ) );
 			jobFinishedPtr->jobFinished();
 		}
 	};
@@ -76,6 +78,11 @@ namespace VTX::App::System
 		SystemExtractor( std::move( p_path ) )
 	{
 		_attributesPtr->data.buffer = std::move( p_buffer );
+	}
+	SystemExtractor::SystemExtractor( ECS::Entity p_entity, FilePath p_path ) : SystemExtractor( std::move( p_path ) )
+	{
+		_attributesPtr->data.entity			= p_entity;
+		_attributesPtr->data.onlyTrajectory = true;
 	}
 
 	void SystemExtractor::wait() noexcept { _attributesPtr->synchronizer.wait(); }
@@ -222,32 +229,29 @@ namespace VTX::App::System
 
 	void deliver( PendingSystem && p_data ) noexcept
 	{
-		// auto topology = REG().try_get<Core::Struct::Topology>( p_entity );
-		// if ( p_data.onlyTrajectory && topology )
-		//{
-		//	if ( topology->getAtomCount() == p_data.topology.getAtomCount() )
-		//	{
-		//		addTrajectory( p_entity, p_data );
+		if ( p_data.onlyTrajectory && p_data.entity )
+		{
+			auto topology = REG().try_get<Core::Struct::Topology>( p_data.entity.value() );
+			if ( topology && topology->getAtomCount() == p_data.topology.getAtomCount() )
+			{
+				addTrajectory( *p_data.entity, p_data );
 
-		//		if ( auto uid = REG().try_get<System::UID>( p_entity ) )
-		//			RENDERER().setSystemPosition( uid->system, getCurrentAtomPositions( p_entity ) );
-		//	}
-		//	else
-		//	{
-		//		VTX::VTX_ERROR(
-		//			"File {} and system {} has different atom count. ({}/{})",
-		//			p_data.path.string(),
-		//			topology->name,
-		//			topology->getAtomCount(),
-		//			p_data.topology.getAtomCount()
-		//		);
-		//	}
-		//}
-		// else
-		create( p_data );
-
-		// REG().erase<PendingSystem>( p_entity );
-		//  HUB().trigger<EntityDelivered>( { p_entity } );
+				if ( auto uid = REG().try_get<System::UID>( *p_data.entity ) )
+					RENDERER().setSystemPosition( uid->system, getCurrentAtomPositions( *p_data.entity ) );
+			}
+			else
+			{
+				VTX::VTX_ERROR(
+					"File {} and system {} has different atom count. ({}/{})",
+					p_data.path.string(),
+					topology->name,
+					topology->getAtomCount(),
+					p_data.topology.getAtomCount()
+				);
+			}
+		}
+		else
+			create( p_data );
 	}
 
 } // namespace VTX::App::System

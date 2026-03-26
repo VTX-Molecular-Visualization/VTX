@@ -20,6 +20,7 @@ namespace VTX::App::System
 	 */
 	struct PendingSystem
 	{
+		std::optional<ECS::Entity> entity;				   // Used for attaching a trajectory to an existing system
 		bool					   onlyTrajectory = false; // Set to true when the goal is only to set a new trajectory
 		FilePath				   path;
 		std::optional<std::string> buffer;
@@ -42,8 +43,21 @@ namespace VTX::App::System
 	{
 	  public:
 		SystemExtractor() = delete;
+		/**
+		 * @brief Extract a system into a new entity
+		 * @param p_path
+		 */
 		SystemExtractor( FilePath p_path );
+		/**
+		 * @brief Extract a system into a new entity from memory
+		 * @param p_path
+		 */
 		SystemExtractor( FilePath p_path, std::string && p_buffer );
+		/**
+		 * @brief Associate a trajectory to an existing system
+		 * @param p_path
+		 */
+		SystemExtractor( ECS::Entity p_entity, FilePath p_path );
 
 		/**
 		 * @brief Meant to be used as a thread callable. Actually perform the extraction
@@ -62,10 +76,5 @@ namespace VTX::App::System
 		void _clean();
 	};
 
-	/**
-	 * @brief If PendingSystem::onlyTrajectory is false, actually create a system, appending all necessary component to
-	 * the input entity from scratch, using data from the input PendingSystem. Else, only append the trajectory
-	 */
-	void deliver( PendingSystem && ) noexcept;
 } // namespace VTX::App::System
 #endif

@@ -35,11 +35,6 @@ namespace VTX::App::Pass
 		std::vector<ECS::Entity> _entities;
 
 		/**
-		 * @brief Called during the update loop to manage pending systems.
-		 */
-		void _pendingSystemUpdate() noexcept;
-
-		/**
 		 * @brief Current used representations.
 		 */
 		// TODO: use resource manager to purge unused.
