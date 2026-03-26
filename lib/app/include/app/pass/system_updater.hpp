@@ -35,6 +35,12 @@ namespace VTX::App::Pass
 		std::vector<ECS::Entity> _entities;
 
 		/**
+		 * @brief Dirty flag to push systems to renderer at the next update.
+		 * Avoid pushing systems multiple times when multiple systems changed.
+		 */
+		bool _needPush = false;
+
+		/**
 		 * @brief Called during the update loop to manage pending systems.
 		 */
 		void _pendingSystemUpdate() noexcept;
@@ -46,9 +52,10 @@ namespace VTX::App::Pass
 		std::map<ECS::Entity, Renderer::RepresentationIndex> _representations;
 
 		/**
-		 * @brief On system loaded event.
+		 * @brief On system loaded/destroyed events.
 		 */
 		void _onSystemLoaded( const Events::SystemLoad & );
+		void _onSystemDestroyed( ECS::Registry &, ECS::Entity );
 
 		/**
 		 * @brief Update renderer when data changed.
@@ -64,6 +71,11 @@ namespace VTX::App::Pass
 		void _setRepresentation();
 
 		void _onTrajectoryDestruction( ECS::Registry &, ECS::Entity );
+
+		/**
+		 * @brief Push all systems to renderer.
+		 */
+		void _pushSystems();
 	};
 } // namespace VTX::App::Pass
 

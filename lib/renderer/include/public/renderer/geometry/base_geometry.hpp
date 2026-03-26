@@ -57,6 +57,16 @@ namespace VTX::Renderer::Geometry
 		}
 
 		/**
+		 * @brief Clear all geometry ranges and cached indices.
+		 */
+		void clear()
+		{
+			_resources.clear();
+			_size  = 0;
+			count = 0;
+		}
+
+		/**
 		 * @brief Upload index buffer data.
 		 */
 		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )

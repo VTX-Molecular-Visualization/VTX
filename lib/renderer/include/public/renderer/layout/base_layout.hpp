@@ -28,6 +28,15 @@ namespace VTX::Renderer::Layout
 		}
 
 		/**
+		 * @brief Clear all registered ranges.
+		 */
+		inline void clear()
+		{
+			_ranges.clear();
+			_rangeList.clear();
+		}
+
+		/**
 		 * @brief Resize whole layout.
 		 */
 		inline void resize( Context::ContextWrapper & p_context )

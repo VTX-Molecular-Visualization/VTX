@@ -16,6 +16,12 @@ namespace VTX::Renderer::Geometry
 			indirectBuffer = "Indirect.Cylinders";
 		}
 
+		void clear()
+		{
+			BaseGeometry::clear();
+			_construction.clear();
+		}
+
 		void construct( const Desc::Handle p_handle, const SystemData & p_data )
 		{
 			const Index count = p_data.data.getBondCount() * 2;
