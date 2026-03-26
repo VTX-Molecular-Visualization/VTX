@@ -45,7 +45,8 @@ namespace VTX::App::Action
 		 * @brief Execute an action of type A with the given arguments.
 		 */
 		template<typename A, typename... Args>
-		void execute( Args &&... p_args ) const
+			requires not ThreadableAction<A, Args...>
+					 void execute( Args && ... p_args ) const
 		{
 			A a;
 			execute( a, std::forward<Args>( p_args )... );
@@ -76,6 +77,7 @@ namespace VTX::App::Action
 				);
 			}
 		}
+
 		/**
 		 * @brief Execute the given action.
 		 */
@@ -165,8 +167,9 @@ namespace VTX::App::Action
 			{
 				if constexpr ( not std::same_as<SomeAction, _dummy> )
 				{
-					auto exec = [ this ]( auto... args ) { _obj.execute( args... ); };
-					std::apply( exec, _args );
+					auto exec = [ this ]( Args &&... args ) mutable
+					{ ACTION().execute<SomeAction>( _obj, std::forward<Args>( args )... ); };
+					std::apply( exec, std::move( _args ) );
 				}
 			}
 			void wait() override
