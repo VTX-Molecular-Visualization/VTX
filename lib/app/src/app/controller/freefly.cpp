@@ -42,31 +42,11 @@ namespace VTX::App::Controller
 		}
 
 		// Translation.
+		const Vec3i translationAxis = input.translationAxis();
 		Vec3f translation = VEC3F_ZERO;
-		if ( input.moveFront() )
-		{
-			translation.z--;
-		}
-		if ( input.moveBack() )
-		{
-			translation.z++;
-		}
-		if ( input.moveLeft() )
-		{
-			translation.x--;
-		}
-		if ( input.moveRight() )
-		{
-			translation.x++;
-		}
-		if ( input.moveUp() )
-		{
-			translation.y++;
-		}
-		if ( input.moveDown() )
-		{
-			translation.y--;
-		}
+		translation.x		 = float( translationAxis.x );
+		translation.y		 = float( translationAxis.y );
+		translation.z		 = float( translationAxis.z );
 
 		if ( translation != VEC3F_ZERO )
 		{

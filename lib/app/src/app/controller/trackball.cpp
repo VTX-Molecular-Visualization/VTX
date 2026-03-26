@@ -64,37 +64,23 @@ namespace VTX::App::Controller
 		}
 
 		// Keyboard.
-		if ( input.moveFront() )
+		const Vec3i translationAxis = input.translationAxis();
+		const int	rotationAxis	= input.rotationAxis();
+		if ( translationAxis.z != 0 )
 		{
-			deltaDistance = 1.5f * deltaTime;
+			deltaDistance = -1.5f * deltaTime * float( translationAxis.z );
 		}
-		if ( input.moveBack() )
+		if ( translationAxis.x != 0 )
 		{
-			deltaDistance = -1.5f * deltaTime;
+			deltaVelocity.x = -1e4f * deltaTime * float( translationAxis.x );
 		}
-		if ( input.moveRight() )
+		if ( translationAxis.y != 0 )
 		{
-			deltaVelocity.x = 1e4f * deltaTime;
+			deltaVelocity.y = 1e4f * deltaTime * float( translationAxis.y );
 		}
-		if ( input.moveLeft() )
+		if ( rotationAxis != 0 )
 		{
-			deltaVelocity.x = -1e4f * deltaTime;
-		}
-		if ( input.moveUp() )
-		{
-			deltaVelocity.y = 1e4f * deltaTime;
-		}
-		if ( input.moveDown() )
-		{
-			deltaVelocity.y = -1e4f * deltaTime;
-		}
-		if ( input.rotateRight() )
-		{
-			deltaVelocity.z = 1e4f * deltaTime;
-		}
-		if ( input.rotateLeft() )
-		{
-			deltaVelocity.z = -1e4f * deltaTime;
+			deltaVelocity.z = 1e4f * deltaTime * float( rotationAxis );
 		}
 
 		// Set values from settings.

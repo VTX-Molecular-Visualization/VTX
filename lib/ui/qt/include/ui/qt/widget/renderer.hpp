@@ -4,6 +4,7 @@
 #include "ui/qt/events.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include <QEvent>
+#include <QFocusEvent>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QPointF>
@@ -15,6 +16,7 @@
 #include <QToolButton>
 #include <QWheelEvent>
 #include <app/input/input_manager.hpp>
+#include <optional>
 #include <vector>
 
 namespace VTX::UI::QT::Widget
@@ -83,6 +85,8 @@ namespace VTX::UI::QT::Widget
 		 * @brief Override resize.
 		 */
 		bool event( QEvent * ) override;
+		void focusInEvent( QFocusEvent * ) override;
+		void focusOutEvent( QFocusEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
 		void showEvent( QShowEvent * ) override;
 		void keyPressEvent( QKeyEvent * const ) override;
@@ -152,6 +156,16 @@ namespace VTX::UI::QT::Widget
 		 * @brief Handle modifier keys (Shift, Ctrl).
 		 */
 		void _handleModifiers();
+
+		/**
+		 * @brief Convert a Qt key into an input action.
+		 */
+		std::optional<App::Input::InputManager::Action> _getKeyboardAction( const int ) const;
+
+		/**
+		 * @brief Reset all continuous keyboard states tracked by the input manager.
+		 */
+		void _resetKeyboardState();
 
 		/**
 		 * @brief Convert a point from logical pixels to device pixels.
