@@ -2,7 +2,10 @@
 #define __VTX_APP_ACTION_IO__
 
 #include "app/ecs.hpp"
+#include "app/threading/base_thread.hpp"
+#include <app/action/action_manager.hpp>
 #include <util/image.hpp>
+#include <util/thread.hpp>
 #include <util/types.hpp>
 #include <util/url.hpp>
 
@@ -38,6 +41,8 @@ namespace VTX::App::Action::IO
 	struct LoadSystem
 	{
 		LoadSystem();
+		LoadSystem( Util::StopToken, Threading::OptionalThreadReference );
+
 		void execute( FilePath p_path );
 		void execute( FilePath p_path, std::string && p_buffer );
 		void wait() noexcept;
@@ -53,6 +58,7 @@ namespace VTX::App::Action::IO
 	struct AssociateTrajectory
 	{
 		AssociateTrajectory();
+		AssociateTrajectory( Util::StopToken, Threading::OptionalThreadReference );
 		void execute( const FilePath & p_path, const ECS::Entity & );
 		void execute( const std::string & p_path, const ECS::Entity & );
 		void wait() noexcept;

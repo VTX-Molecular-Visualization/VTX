@@ -3,6 +3,7 @@
 
 #include "app/events.hpp"
 #include "app/services.hpp"
+#include "app/threading/thread_manager.hpp"
 #include <concepts>
 #include <latch>
 #include <memory>
@@ -13,6 +14,14 @@
 
 namespace VTX::App::Action
 {
+	/**
+	 * @brief Concept for action that can be threadable.
+	 */
+	template<typename T, typename... Args>
+	concept ThreadableAction
+		= requires( T t, Util::StopToken token, Threading::OptionalThreadReference thr, Args &&... args ) {
+			  { T( token, thr ) };
+		  };
 
 	class QueuedAction;
 
@@ -27,7 +36,7 @@ namespace VTX::App::Action
 		void update( const float, const float ) noexcept;
 
 		/**
-		 * @brief Subscribe an action to be executed later on the main loop. Meant to be used only through QueueAction
+		 * @brief Thread safe. Subscribe an action to be executed later on the main thread.
 		 * @param
 		 */
 		void subscribe( QueuedAction ) noexcept;
@@ -42,6 +51,31 @@ namespace VTX::App::Action
 			execute( a, std::forward<Args>( p_args )... );
 		}
 
+		/**
+		 * @brief Execute the given action.
+		 */
+		template<typename A, typename... Args>
+			requires ThreadableAction<A, Args...>
+		void execute( Args &&... p_args ) const
+		{
+			if ( _noGui() )
+			{
+				A a;
+				execute( a, std::forward<Args>( p_args )... );
+			}
+			else
+			{
+				THREAD().createThread(
+					[... args
+					 = std::forward<Args>( p_args ) ]( Util::StopToken p_token, Threading::BaseThread & p_thr ) mutable
+					{
+						A action( std::move( p_token ), p_thr );
+						action.execute( std::move( args )... );
+						return 0;
+					}
+				);
+			}
+		}
 		/**
 		 * @brief Execute the given action.
 		 */
@@ -72,6 +106,8 @@ namespace VTX::App::Action
 		};
 		std::unique_ptr<_Data, Del> _attributesPtr;
 		float						_skipTime = 0.f;
+
+		bool _noGui() const noexcept;
 	};
 
 	/**

@@ -47,15 +47,15 @@ namespace VTX::App::Pass
 	}
 	void SystemUpdater::_pendingSystemUpdate() noexcept
 	{
-		for ( auto it_entity : REG().view<System::PendingSystem>() )
-		{
-			auto & pendingSystem = REG().get<System::PendingSystem>( it_entity );
-			if ( pendingSystem.readyToDeliver )
-			{
-				System::deliver( it_entity, pendingSystem );
-				continue;
-			}
-		}
+		// for ( auto it_entity : REG().view<System::PendingSystem>() )
+		//{
+		//	auto & pendingSystem = REG().get<System::PendingSystem>( it_entity );
+		//	if ( pendingSystem.readyToDeliver )
+		//	{
+		//		System::deliver( it_entity, pendingSystem );
+		//		continue;
+		//	}
+		// }
 	}
 
 	void SystemUpdater::_onUpdateTransform( ECS::Registry & p_r, ECS::Entity p_e )

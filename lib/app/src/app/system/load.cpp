@@ -43,57 +43,56 @@ namespace VTX::App::System
 		{
 			ECS::Entity entity;
 		};
+
 	} // namespace
 	struct SystemExtractor::_Data
 	{
-		ECS::Entity								  entity;
-		std::reference_wrapper<PendingSystem>	  data;
-		std::latch								  synchronizer { 1 };
-		std::optional<Util::EventHub::Connection> finishEventConnection = std::nullopt;
-		_Data( ECS::Entity p_entity, PendingSystem & p_data ) : entity( std::move( p_entity ) ), data( p_data ) {}
+		PendingSystem data;
+		std::latch	  synchronizer { 1 };
 
-		// RO5
-		~_Data() { HUB().disconnect( finishEventConnection.value() ); }
-		_Data( _Data && )				   = delete;
-		_Data( const _Data & )			   = delete;
-		_Data & operator=( _Data && )	   = delete;
-		_Data & operator=( const _Data & ) = delete;
+		_Data() = default;
 
-		void jobFinished( const EntityDelivered & p_ )
+		void jobFinished() { synchronizer.count_down(); }
+	};
+
+	template<typename JobFinishSignaler>
+	struct DeliverSytem
+	{
+		JobFinishSignaler jobFinishedPtr;
+
+		void execute()
 		{
-			if ( p_.entity != entity )
-				return;
-			synchronizer.count_down();
+			System::deliver( std::move( jobFinishedPtr->data ) );
+			jobFinishedPtr->jobFinished();
 		}
 	};
-	void SystemExtractor::_clean()
+	void SystemExtractor::_clean() { _attributesPtr->synchronizer.count_down(); }
+
+	SystemExtractor::SystemExtractor( FilePath p_path ) : _attributesPtr( std::make_shared<_Data>() )
 	{
-		REG().destroy( _attributesPtr->entity );
-		_attributesPtr->entity = entt::null;
-		_attributesPtr->synchronizer.count_down();
-		_attributesPtr->finishEventConnection->release();
+		_attributesPtr->data.path = std::move( p_path );
+	}
+	SystemExtractor::SystemExtractor( FilePath p_path, std::string && p_buffer ) :
+		SystemExtractor( std::move( p_path ) )
+	{
+		_attributesPtr->data.buffer = std::move( p_buffer );
 	}
 
-	SystemExtractor::SystemExtractor( ECS::Entity p_entity, PendingSystem & p_d ) :
-		_attributesPtr( std::make_shared<_Data>( std::move( p_entity ), p_d ) )
-	{
-	}
 	void SystemExtractor::wait() noexcept { _attributesPtr->synchronizer.wait(); }
 
-	uint SystemExtractor::operator()( Util::StopToken p_stopToken, Threading::BaseThread & p_thread ) noexcept
+	uint SystemExtractor::operator()(
+		Util::StopToken					   p_stopToken,
+		Threading::OptionalThreadReference p_thread
+	) noexcept
 	{
-		assert( _attributesPtr->entity != entt::null );
+		auto & pendingData = _attributesPtr->data;
 
-		auto & entity	   = _attributesPtr->entity;
-		auto & pendingData = _attributesPtr->data.get();
-		_attributesPtr->finishEventConnection
-			= HUB().connect<EntityDelivered, &_Data::jobFinished>( _attributesPtr.get() );
-
-		p_thread.setProgressText(
-			fmt::format(
-				"Reading {}...", pendingData.buffer ? "structure from memory" : pendingData.path.filename().string()
-			)
-		);
+		if ( p_thread )
+			p_thread.value().get().setProgressText(
+				fmt::format(
+					"Reading {}...", pendingData.buffer ? "structure from memory" : pendingData.path.filename().string()
+				)
+			);
 
 		if ( p_stopToken.stop_requested() )
 		{
@@ -134,7 +133,7 @@ namespace VTX::App::System
 			return 0;
 		}
 
-		pendingData.readyToDeliver = true;
+		ACTION().subscribe( Action::QueuedAction( DeliverSytem<std::shared_ptr<_Data>> { _attributesPtr } ) );
 		return 0;
 	}
 
@@ -163,11 +162,12 @@ namespace VTX::App::System
 			}
 		);
 	}
-	void create( const ECS::Entity & p_entity, PendingSystem & p_data ) noexcept
+	void create( PendingSystem & p_data ) noexcept
 	{
 		auto & reg = REG();
 
 		// Add components.
+		auto   p_entity	 = reg.create();
 		auto & data		 = reg.emplace<Core::Struct::Topology>( p_entity, std::move( p_data.topology ) );
 		auto & metadata	 = reg.emplace<System::Metadata>( p_entity );
 		auto & transform = reg.emplace<Util::Math::Transform>( p_entity );
@@ -220,34 +220,34 @@ namespace VTX::App::System
 		ACTION().execute<Action::Camera::Orient>( aabb );
 	}
 
-	void deliver( const ECS::Entity & p_entity, PendingSystem & p_data ) noexcept
+	void deliver( PendingSystem && p_data ) noexcept
 	{
-		auto topology = REG().try_get<Core::Struct::Topology>( p_entity );
-		if ( p_data.onlyTrajectory && topology )
-		{
-			if ( topology->getAtomCount() == p_data.topology.getAtomCount() )
-			{
-				addTrajectory( p_entity, p_data );
+		// auto topology = REG().try_get<Core::Struct::Topology>( p_entity );
+		// if ( p_data.onlyTrajectory && topology )
+		//{
+		//	if ( topology->getAtomCount() == p_data.topology.getAtomCount() )
+		//	{
+		//		addTrajectory( p_entity, p_data );
 
-				if ( auto uid = REG().try_get<System::UID>( p_entity ) )
-					RENDERER().setSystemPosition( uid->system, getCurrentAtomPositions( p_entity ) );
-			}
-			else
-			{
-				VTX::VTX_ERROR(
-					"File {} and system {} has different atom count. ({}/{})",
-					p_data.path.string(),
-					topology->name,
-					topology->getAtomCount(),
-					p_data.topology.getAtomCount()
-				);
-			}
-		}
-		else
-			create( p_entity, p_data );
+		//		if ( auto uid = REG().try_get<System::UID>( p_entity ) )
+		//			RENDERER().setSystemPosition( uid->system, getCurrentAtomPositions( p_entity ) );
+		//	}
+		//	else
+		//	{
+		//		VTX::VTX_ERROR(
+		//			"File {} and system {} has different atom count. ({}/{})",
+		//			p_data.path.string(),
+		//			topology->name,
+		//			topology->getAtomCount(),
+		//			p_data.topology.getAtomCount()
+		//		);
+		//	}
+		//}
+		// else
+		create( p_data );
 
-		REG().erase<PendingSystem>( p_entity );
-		HUB().trigger<EntityDelivered>( { p_entity } );
+		// REG().erase<PendingSystem>( p_entity );
+		//  HUB().trigger<EntityDelivered>( { p_entity } );
 	}
 
 } // namespace VTX::App::System

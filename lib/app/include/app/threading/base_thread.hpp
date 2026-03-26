@@ -90,5 +90,7 @@ namespace VTX::App::Threading
 		Util::StopToken _stopToken;
 		void			_finish();
 	};
+
+	using OptionalThreadReference = std::optional<std::reference_wrapper<BaseThread>>;
 } // namespace VTX::App::Threading
 #endif

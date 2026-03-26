@@ -33,6 +33,8 @@ namespace VTX::App::Action::IO
 	}
 	struct _SystemIo
 	{
+		Util::StopToken						   stopToken;
+		Threading::OptionalThreadReference	   threadRef;
 		std::latch							   extractorCreation { 1 };
 		std::optional<System::SystemExtractor> extractor;
 		inline void							   wait() noexcept
@@ -45,22 +47,25 @@ namespace VTX::App::Action::IO
 	void _SystemIoDel::operator()( _SystemIo * p_ ) noexcept { delete p_; }
 
 	LoadSystem::LoadSystem() : _data( new _SystemIo() ) {}
+	LoadSystem::LoadSystem( Util::StopToken p_token, Threading::OptionalThreadReference p_thr ) :
+		_data( new _SystemIo { std::move( p_token ), std::move( p_thr ) } )
+	{
+	}
 
 	void LoadSystem::execute( FilePath p_path )
 	{
-		auto & reg = REG();
-
-		// Create entity.
-		ECS::Entity entity			  = reg.create();
-		auto &		pendingSystemData = reg.emplace<System::PendingSystem>( entity );
-		pendingSystemData.path		  = std::move( p_path );
-		_data->extractor			  = System::SystemExtractor( std::move( entity ), pendingSystemData );
+		_data->extractor = System::SystemExtractor( std::move( p_path ) );
 		_data->extractorCreation.count_down();
 
-		THREAD().createThread( _data->extractor.value() );
+		_data->extractor.value()( _data->stopToken, _data->threadRef );
 	}
 	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
 	{
+		_data->extractor = System::SystemExtractor( std::move( p_path ), std::move( p_buffer ) );
+		_data->extractorCreation.count_down();
+
+		_data->extractor.value()( _data->stopToken, _data->threadRef );
+		/*
 		auto & reg = REG();
 
 		// Create entity.
@@ -72,12 +77,14 @@ namespace VTX::App::Action::IO
 		_data->extractorCreation.count_down();
 
 		THREAD().createThread( _data->extractor.value() );
+		*/
 	}
 	void LoadSystem::wait() noexcept { _data->wait(); }
 
 	AssociateTrajectory::AssociateTrajectory() : _data( new _SystemIo() ) {}
 	void AssociateTrajectory::execute( const FilePath & p_path, const ECS::Entity & p_entity )
 	{
+		/*
 		if ( p_entity == entt::null )
 		{
 			VTX_ERROR( "System entity null." );
@@ -92,6 +99,7 @@ namespace VTX::App::Action::IO
 		_data->extractorCreation.count_down();
 
 		THREAD().createThread( _data->extractor.value() );
+		*/
 	}
 	void AssociateTrajectory::execute( const std::string & p_path, const ECS::Entity & p_e )
 	{

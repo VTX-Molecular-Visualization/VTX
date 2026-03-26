@@ -42,12 +42,13 @@ namespace VTX::App::System
 	{
 	  public:
 		SystemExtractor() = delete;
-		SystemExtractor( ECS::Entity, PendingSystem & );
+		SystemExtractor( FilePath p_path );
+		SystemExtractor( FilePath p_path, std::string && p_buffer );
 
 		/**
 		 * @brief Meant to be used as a thread callable. Actually perform the extraction
 		 */
-		uint operator()( Util::StopToken, Threading::BaseThread & ) noexcept;
+		uint operator()( Util::StopToken, Threading::OptionalThreadReference ) noexcept;
 
 		/**
 		 * @brief Stop current execution until the system is extracted.
@@ -65,6 +66,6 @@ namespace VTX::App::System
 	 * @brief If PendingSystem::onlyTrajectory is false, actually create a system, appending all necessary component to
 	 * the input entity from scratch, using data from the input PendingSystem. Else, only append the trajectory
 	 */
-	void deliver( const ECS::Entity &, PendingSystem & ) noexcept;
+	void deliver( PendingSystem && ) noexcept;
 } // namespace VTX::App::System
 #endif
