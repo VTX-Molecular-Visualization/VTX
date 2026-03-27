@@ -26,4 +26,5 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 install(TARGETS vtx_tool_mdprep FILE_SET public_headers)
 vtx_install_build_modules()
+vtx_qt_install_runtime(vtx_tool_mdprep)
 vtx_install_source_directory("data")
