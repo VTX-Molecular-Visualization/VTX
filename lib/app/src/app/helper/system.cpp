@@ -136,8 +136,31 @@ namespace VTX::App::Helper::System
 				return scheme;
 			}
 		}
+		for ( const auto & [ _, rangeList ] : color.customColorAtoms )
+		{
+			if ( rangeList.contains( atoms ) )
+			{
+				return App::System::E_COLOR_SCHEME::CUSTOM;
+			}
+		}
 
 		return std::nullopt;
+	}
+
+	size_t countAssignedColorAtoms( const App::System::Color & p_color )
+	{
+		size_t count = 0;
+
+		for ( const auto & [ _, rangeList ] : p_color.colorSchemeAtoms )
+		{
+			count += rangeList.count();
+		}
+		for ( const auto & [ _, rangeList ] : p_color.customColorAtoms )
+		{
+			count += rangeList.count();
+		}
+
+		return count;
 	}
 
 	bool isColorSchemeRoot( const SystemItemView & p_system )
@@ -150,7 +173,7 @@ namespace VTX::App::Helper::System
 		const auto &	  topology = reg.get<Core::Struct::Topology>( ent );
 		const auto &	  color	 = reg.get<Color>( ent );
 
-		for ( const auto & [ _, ranges ] : color.colorSchemeAtoms )
+		auto isRootForRanges = [ & ]( const Core::Struct::IndexRangeList & ranges )
 		{
 			// Check if indexes contained but not parent.
 			switch ( p_system.item )
@@ -196,6 +219,23 @@ namespace VTX::App::Helper::System
 				break;
 			}
 			default: break;
+			}
+
+			return false;
+		};
+
+		for ( const auto & [ _, ranges ] : color.colorSchemeAtoms )
+		{
+			if ( isRootForRanges( ranges ) )
+			{
+				return true;
+			}
+		}
+		for ( const auto & [ _, ranges ] : color.customColorAtoms )
+		{
+			if ( isRootForRanges( ranges ) )
+			{
+				return true;
 			}
 		}
 

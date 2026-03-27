@@ -4,92 +4,47 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include <QGuiApplication>
-#include <QPainterPath>
 #include <QStyleHints>
-#include <QWindow>
+#include <array>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/action/camera.hpp>
 #include <qpa/qplatformnativeinterface.h>
 #include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
-#include <util/type_traits.hpp>
 
 namespace
 {
-	using namespace VTX::UI::QT::Widget;
+	using Action	   = VTX::App::Input::InputManager::Action;
+	using BindingTable = std::array<std::optional<Action>, 256>;
 
-	enum ACTION
+	const BindingTable _QWERTY_BINDINGS = []()
 	{
-		MOVE_FRONT,
-		MOVE_BACK,
-		MOVE_LEFT,
-		MOVE_RIGHT,
-		MOVE_UP,
-		MOVE_DOWN,
-		ROTATE_LEFT,
-		ROTATE_RIGHT
-	};
+		BindingTable bindings;
+		bindings[ Qt::Key_W ] = Action::MoveFront;
+		bindings[ Qt::Key_S ] = Action::MoveBack;
+		bindings[ Qt::Key_A ] = Action::MoveLeft;
+		bindings[ Qt::Key_D ] = Action::MoveRight;
+		bindings[ Qt::Key_R ] = Action::MoveUp;
+		bindings[ Qt::Key_F ] = Action::MoveDown;
+		bindings[ Qt::Key_Q ] = Action::RotateLeft;
+		bindings[ Qt::Key_E ] = Action::RotateRight;
+		return bindings;
+	}();
 
-	template<ACTION A, KB_LAYOUT = KB_LAYOUT::QWERTY>
-	constexpr Qt::Key _key()
+	const BindingTable _AZERTY_BINDINGS = []()
 	{
-		if constexpr ( A == MOVE_FRONT )
-		{
-			return Qt::Key::Key_W;
-		}
-		else if constexpr ( A == MOVE_BACK )
-		{
-			return Qt::Key::Key_S;
-		}
-		else if constexpr ( A == MOVE_LEFT )
-		{
-			return Qt::Key::Key_A;
-		}
-		else if constexpr ( A == MOVE_RIGHT )
-		{
-			return Qt::Key::Key_D;
-		}
-		else if constexpr ( A == MOVE_UP )
-		{
-			return Qt::Key::Key_R;
-		}
-		else if constexpr ( A == MOVE_DOWN )
-		{
-			return Qt::Key::Key_F;
-		}
-		else if constexpr ( A == ROTATE_LEFT )
-		{
-			return Qt::Key::Key_Q;
-		}
-		else if constexpr ( A == ROTATE_RIGHT )
-		{
-			return Qt::Key::Key_E;
-		}
-		else
-		{
-			static_assert( VTX::always_false_v<A>, "Invalid action" );
-			return Qt::Key::Key_unknown;
-		}
-	}
-
-	template<>
-	constexpr Qt::Key _key<MOVE_FRONT, KB_LAYOUT::AZERTY>()
-	{
-		return Qt::Key::Key_Z;
-	}
-
-	template<>
-	constexpr Qt::Key _key<MOVE_LEFT, KB_LAYOUT::AZERTY>()
-	{
-		return Qt::Key::Key_Q;
-	}
-
-	template<>
-	constexpr Qt::Key _key<ROTATE_LEFT, KB_LAYOUT::AZERTY>()
-	{
-		return Qt::Key::Key_A;
-	}
+		BindingTable bindings;
+		bindings[ Qt::Key_Z ] = Action::MoveFront;
+		bindings[ Qt::Key_S ] = Action::MoveBack;
+		bindings[ Qt::Key_Q ] = Action::MoveLeft;
+		bindings[ Qt::Key_D ] = Action::MoveRight;
+		bindings[ Qt::Key_R ] = Action::MoveUp;
+		bindings[ Qt::Key_F ] = Action::MoveDown;
+		bindings[ Qt::Key_A ] = Action::RotateLeft;
+		bindings[ Qt::Key_E ] = Action::RotateRight;
+		return bindings;
+	}();
 } // namespace
 
 namespace VTX::UI::QT::Widget
@@ -214,17 +169,28 @@ namespace VTX::UI::QT::Widget
 		if ( p_event != nullptr )
 		{
 			VTX_DEBUG( "Renderer::event type={}", Util::Enum::enumName( p_event->type() ) );
+
 			switch ( p_event->type() )
 			{
 			case QEvent::Show:
 			case QEvent::ShowToParent:
 			case QEvent::UpdateRequest:
 			case QEvent::WindowActivate:
-			case QEvent::WindowDeactivate:
 			case QEvent::ActivationChange:
 			case QEvent::WindowStateChange:
 			case QEvent::Expose:
 			{
+				if ( p_event->type() == QEvent::WindowActivate )
+				{
+					_handleModifiers();
+				}
+
+				QTimer::singleShot( 0, this, []() { App::RENDERER().setNeedUpdate( true ); } );
+				break;
+			}
+			case QEvent::WindowDeactivate:
+			{
+				_resetKeyboardState();
 				QTimer::singleShot( 0, this, []() { App::RENDERER().setNeedUpdate( true ); } );
 				break;
 			}
@@ -233,6 +199,18 @@ namespace VTX::UI::QT::Widget
 		}
 
 		return QWidget::event( p_event );
+	}
+
+	void Renderer::focusInEvent( QFocusEvent * p_event )
+	{
+		QWidget::focusInEvent( p_event );
+		_handleModifiers();
+	}
+
+	void Renderer::focusOutEvent( QFocusEvent * p_event )
+	{
+		QWidget::focusOutEvent( p_event );
+		_resetKeyboardState();
 	}
 
 	void Renderer::resizeEvent( QResizeEvent * p_event )
@@ -417,35 +395,9 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		if ( _layout == KB_LAYOUT::QWERTY )
+		if ( const auto action = _getKeyboardAction( p_event->key() ); action.has_value() )
 		{
-			switch ( p_event->key() )
-			{
-			case _key<MOVE_FRONT>(): _inputManager.setMoveFront( p_enable ); break;
-			case _key<MOVE_BACK>(): _inputManager.setMoveBack( p_enable ); break;
-			case _key<MOVE_LEFT>(): _inputManager.setMoveLeft( p_enable ); break;
-			case _key<MOVE_RIGHT>(): _inputManager.setMoveRight( p_enable ); break;
-			case _key<MOVE_UP>(): _inputManager.setMoveUp( p_enable ); break;
-			case _key<MOVE_DOWN>(): _inputManager.setMoveDown( p_enable ); break;
-			case _key<ROTATE_LEFT>(): _inputManager.setRotateLeft( p_enable ); break;
-			case _key<ROTATE_RIGHT>(): _inputManager.setRotateRight( p_enable ); break;
-			default: break;
-			}
-		}
-		else if ( _layout == KB_LAYOUT::AZERTY )
-		{
-			switch ( p_event->key() )
-			{
-			case _key<MOVE_FRONT, KB_LAYOUT::AZERTY>(): _inputManager.setMoveFront( p_enable ); break;
-			case _key<MOVE_BACK, KB_LAYOUT::AZERTY>(): _inputManager.setMoveBack( p_enable ); break;
-			case _key<MOVE_LEFT, KB_LAYOUT::AZERTY>(): _inputManager.setMoveLeft( p_enable ); break;
-			case _key<MOVE_RIGHT, KB_LAYOUT::AZERTY>(): _inputManager.setMoveRight( p_enable ); break;
-			case _key<MOVE_UP, KB_LAYOUT::AZERTY>(): _inputManager.setMoveUp( p_enable ); break;
-			case _key<MOVE_DOWN, KB_LAYOUT::AZERTY>(): _inputManager.setMoveDown( p_enable ); break;
-			case _key<ROTATE_LEFT, KB_LAYOUT::AZERTY>(): _inputManager.setRotateLeft( p_enable ); break;
-			case _key<ROTATE_RIGHT, KB_LAYOUT::AZERTY>(): _inputManager.setRotateRight( p_enable ); break;
-			default: break;
-			}
+			_inputManager.setAction( *action, p_enable );
 		}
 
 		_handleModifiers();
@@ -455,8 +407,25 @@ namespace VTX::UI::QT::Widget
 	{
 		const Qt::KeyboardModifiers mods = QGuiApplication::queryKeyboardModifiers();
 
-		_inputManager.setAccelerate( mods & Qt::ShiftModifier );
-		_inputManager.setDecelerate( mods & Qt::ControlModifier );
+		_inputManager.setAction( App::Input::InputManager::Action::Accelerate, mods & Qt::ShiftModifier );
+		_inputManager.setAction( App::Input::InputManager::Action::Decelerate, mods & Qt::ControlModifier );
+	}
+
+	std::optional<App::Input::InputManager::Action> Renderer::_getKeyboardAction( const int p_key ) const
+	{
+		if ( p_key < 0 || p_key >= int( _QWERTY_BINDINGS.size() ) )
+		{
+			return std::nullopt;
+		}
+
+		const BindingTable & bindings = _layout == KB_LAYOUT::AZERTY ? _AZERTY_BINDINGS : _QWERTY_BINDINGS;
+		return bindings[ p_key ];
+	}
+
+	void Renderer::_resetKeyboardState()
+	{
+		_inputManager.clearActions();
+		_dragging = false;
 	}
 
 	QPoint Renderer::_toDevicePixels( const QPointF & p_logicalPos ) const

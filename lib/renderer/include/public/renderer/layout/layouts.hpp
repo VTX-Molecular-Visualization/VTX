@@ -14,6 +14,13 @@ namespace VTX::Renderer
 		Layout::Residues residues;
 		Layout::Voxels	 voxels;
 
+		void clear()
+		{
+			atoms.clear();
+			residues.clear();
+			voxels.clear();
+		}
+
 		void resize( Context::ContextWrapper & p_context )
 		{
 			atoms.resize( p_context );

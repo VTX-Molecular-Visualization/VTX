@@ -3,6 +3,7 @@
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
+#include "app/setting/controller.hpp"
 
 namespace VTX::App::Controller
 {
@@ -41,7 +42,7 @@ namespace VTX::App::Controller
 		/**
 		 * @brief Called each frame.
 		 */
-		bool update( const float, Util::Math::Transform &, Vec3f & );
+		bool update( const float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
 
 		/**
 		 * @brief Stop camera movement.

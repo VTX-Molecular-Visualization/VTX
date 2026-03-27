@@ -112,6 +112,9 @@ namespace VTX::UI::QT::Widget
 		_statusBar = new StatusBar( this );
 		setStatusBar( _statusBar );
 
+		// Focus central widgetrend to enable shortcuts.
+		centralWidget()->setFocus();
+
 		// Backup default geometry and state.
 		_defaultGeometry = saveGeometry();
 		_defaultState	 = saveState();

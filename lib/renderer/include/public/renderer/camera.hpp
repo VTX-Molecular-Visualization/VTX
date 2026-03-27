@@ -52,10 +52,10 @@ namespace VTX::Renderer
 		/**
 		 * @brief Camera settings.
 		 */
-		float	   near;
-		float	   far;
-		float	   fov;
-		PROJECTION projection;
+		float	   near		  = NEAR_CLIP_DEFAULT;
+		float	   far		  = FAR_CLIP_DEFAULT;
+		float	   fov		  = FOV_DEFAULT;
+		PROJECTION projection = PROJECTION_DEFAULT;
 
 		/**
 		 * @brief Screen size.

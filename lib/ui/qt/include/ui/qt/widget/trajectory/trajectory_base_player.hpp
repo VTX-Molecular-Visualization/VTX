@@ -188,11 +188,7 @@ namespace VTX::UI::QT::Widget
 				&QSlider::valueChanged,
 				this,
 				[ & ]( const int p_value )
-				{
-					App::ACTION().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>(
-						_system, p_value
-					);
-				}
+				{ App::ACTION().execute<App::Action::Trajectory::SetTrajectoryCurrentFrame>( _system, p_value ); }
 			);
 
 			connect(

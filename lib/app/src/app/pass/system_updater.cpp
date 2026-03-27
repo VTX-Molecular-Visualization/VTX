@@ -30,18 +30,16 @@ namespace VTX::App::Pass
 		reg.on_update<Renderer::Representation>().connect<&SystemUpdater::_onUpdateRepresentationPreset>( this );
 		reg.on_destroy<System::TrajectoryFullBuffer>().connect<&SystemUpdater::_onTrajectoryDestruction>( this );
 
+		reg.on_destroy<Core::Struct::Topology>().connect<&SystemUpdater::_onSystemDestroyed>( this );
 		HUB().connect<Events::SystemLoad, &SystemUpdater::_onSystemLoaded>( this );
 	}
 
 	void SystemUpdater::update( const float p_delta, const float p_total )
 	{
-		return;
-		for ( auto & entity : _entities )
+		if ( _needPush )
 		{
-			REG().patch<Util::Math::Transform>(
-				entity,
-				[ p_delta ]( Util::Math::Transform & p_transform ) { p_transform.rotateYaw( p_delta * 0.001f ); }
-			);
+			_pushSystems();
+			_needPush = false;
 		}
 	}
 
@@ -65,6 +63,19 @@ namespace VTX::App::Pass
 		assert( std::find( _entities.begin(), _entities.end(), system ) == _entities.end() );
 
 		_entities.push_back( system );
+		_needPush = true;
+	}
+
+	void SystemUpdater::_onSystemDestroyed( ECS::Registry &, ECS::Entity p_e )
+	{
+		_entities.erase( std::remove( _entities.begin(), _entities.end(), p_e ), _entities.end() );
+		_representations.erase( p_e );
+		_needPush = true;
+	}
+
+	void SystemUpdater::_pushSystems()
+	{
+		auto & reg = REG();
 
 		std::vector<Renderer::SystemData> systemsData;
 		_representations.clear();
@@ -183,6 +194,14 @@ namespace VTX::App::Pass
 			else
 			{
 				assert( false && "Unsupported System::E_COLOR_SCHEME type in ColorScheme::Add action." );
+			}
+			count += ranges.count();
+		}
+		for ( const auto & [ colorIndex, ranges ] : color.customColorAtoms )
+		{
+			for ( Index atom : ranges )
+			{
+				atoms[ atom ] = colorIndex;
 			}
 			count += ranges.count();
 		}

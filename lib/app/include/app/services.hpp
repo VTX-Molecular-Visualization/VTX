@@ -30,10 +30,6 @@ namespace VTX::App
 		class Interpretor;
 	}
 	class Session;
-	namespace Settings
-	{
-		class SettingsManager;
-	}
 	namespace Threading
 	{
 		class ThreadManager;
@@ -94,10 +90,6 @@ namespace VTX::App
 	 * @brief Runtime session.
 	 */
 	inline Session & SESSION() { return ECS::getCtx<Session>(); }
-	/**
-	 * @brief Settings manager.
-	 */
-	inline Settings::SettingsManager & SETTINGS() { return ECS::getCtx<Settings::SettingsManager>(); }
 	/**
 	 * @brief Thread manager.
 	 */

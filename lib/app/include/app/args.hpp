@@ -8,15 +8,16 @@
 
 namespace VTX::App
 {
-	struct Arg
-	{
-		std::string_view strShort;
-		std::string_view strLong;
-		std::string_view helper;
+	using Arg = std::string_view;
+	// struct Arg
+	//{
+	//	std::string_view strShort;
+	//	std::string_view strLong;
+	//	std::string_view helper;
 
-		bool operator==( const Arg & ) const noexcept = default;
-	};
-	bool operator==( const Arg & l, const std::string_view & r ) noexcept;
+	//	bool operator==( const Arg & ) const noexcept = default;
+	//};
+	// bool operator==( const Arg & l, const std::string_view & r ) noexcept;
 
 	/**
 	 * @brief Store command line arguments.
@@ -57,7 +58,7 @@ namespace VTX::App
 			std::string str;
 			for ( const auto arg : _args )
 			{
-				str.append( arg.strLong ).append( " " );
+				str.append( arg ).append( " " );
 			}
 			return str;
 		}

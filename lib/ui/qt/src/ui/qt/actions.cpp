@@ -2,6 +2,7 @@
 #include "app/action/application.hpp"
 #include "app/action/controller.hpp"
 #include "app/action/selection.hpp"
+#include "app/setting/controller.hpp"
 #include "ui/qt/application.hpp"
 #include "ui/qt/dialog/download.hpp"
 #include "ui/qt/dialog/export_image.hpp"
@@ -140,8 +141,7 @@ namespace VTX::UI::QT::Action
 			trigger	 = []()
 			{
 				App::ACTION()
-					.execute<App::Action::Controller::SetCameraController<
-						App::Action::Controller::E_CONTROLLER::TRACKBALL>>();
+					.execute<App::Action::Controller::SetCameraController<App::Setting::E_CONTROLLER::TRACKBALL>>();
 			};
 		}
 
@@ -155,8 +155,7 @@ namespace VTX::UI::QT::Action
 			trigger	 = []()
 			{
 				App::ACTION()
-					.execute<
-						App::Action::Controller::SetCameraController<App::Action::Controller::E_CONTROLLER::FREEFLY>>();
+					.execute<App::Action::Controller::SetCameraController<App::Setting::E_CONTROLLER::FREEFLY>>();
 			};
 		}
 

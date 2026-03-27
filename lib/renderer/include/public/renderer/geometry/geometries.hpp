@@ -20,6 +20,14 @@ namespace VTX::Renderer
 		Geometry::Grid	   grid;
 		//  Geometry::SES	   ses;
 
+		void clear()
+		{
+			spheres.clear();
+			cylinders.clear();
+			ribbons.clear();
+			grid.clear();
+		}
+
 		void construct( const Desc::Handle p_handle, const SystemData & p_data )
 		{
 			spheres.construct( p_handle, p_data );

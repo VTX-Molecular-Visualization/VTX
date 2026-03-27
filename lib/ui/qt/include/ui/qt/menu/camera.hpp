@@ -5,6 +5,7 @@
 #include <QMenu>
 #include <app/action/controller.hpp>
 #include <app/events.hpp>
+#include <app/setting/controller.hpp>
 #include <renderer/camera.hpp>
 #include <util/event_hub.hpp>
 #include <util/type_traits.hpp>
@@ -28,8 +29,7 @@ namespace VTX::UI::QT::Menu
 
 			// Connect.
 			App::REG().on_update<Renderer::Camera>().connect<&Camera::_onProjectionChanged>( this );
-			App::HUB().connect<App::Events::CameraControllerChange, &Camera::_onControllerChanged>( this );
-			App::HUB().connect<App::Events::CameraControllerChange, &Camera::_onControllerChanged>( this );
+			App::REG().on_update<App::Setting::Controller>().connect<&Camera::_onControllerChanged>( this );
 		}
 
 	  private:
@@ -52,11 +52,13 @@ namespace VTX::UI::QT::Menu
 			}
 		}
 
-		void _onControllerChanged( const App::Events::CameraControllerChange & p_e )
+		void _onControllerChanged( App::ECS::Registry &, const App::ECS::Entity p_e )
 		{
-			using namespace App::Action::Controller;
+			using namespace App::Setting;
 
-			E_CONTROLLER type = static_cast<E_CONTROLLER>( p_e.type );
+			const auto & setting = App::REG().get<Controller>( p_e );
+
+			E_CONTROLLER type = static_cast<E_CONTROLLER>( setting.current );
 
 			switch ( type )
 			{

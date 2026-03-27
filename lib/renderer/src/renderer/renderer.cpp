@@ -354,23 +354,23 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setSystems" );
 
+		_systems.clear();
+		_layouts.clear();
+		_geometries.clear();
+		_systemToRefresh.clear();
+
 		// Register new systems.
 		for ( const auto & systemData : p_systems )
 		{
-			if ( not _systems.contains( systemData.uid ) )
-			{
-				_systems.emplace( systemData.uid, {}, Cache::System { systemData.transform } );
-				const Desc::Handle h = _systems.handle( systemData.uid );
+			_systems.emplace( systemData.uid, {}, Cache::System { systemData.transform } );
+			const Desc::Handle h = _systems.handle( systemData.uid );
 
-				// Compute geometries.
-				_geometries.construct( h, systemData );
+			// Compute geometries.
+			_geometries.construct( h, systemData );
 
-				// Register ranges in layouts.
-				_layouts.atoms.add( h, _geometries.spheres.size( h ) );
-				_layouts.residues.add(
-					h, static_cast<uint32_t>( _geometries.ribbons.construction( h ).residues.size() )
-				);
-			}
+			// Register ranges in layouts.
+			_layouts.atoms.add( h, _geometries.spheres.size( h ) );
+			_layouts.residues.add( h, static_cast<uint32_t>( _geometries.ribbons.construction( h ).residues.size() ) );
 		}
 
 		// Reserve data.
@@ -417,6 +417,9 @@ namespace VTX::Renderer
 
 		// Set models.
 		_refreshDataModels();
+
+		// Rebuild commands immediately, including the empty-scene case.
+		_geometries.buildDrawRanges( _context );
 
 		// Build draw ranges.
 		auto handles	 = _systems.handles();

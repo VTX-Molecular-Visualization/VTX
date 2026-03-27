@@ -21,7 +21,12 @@ namespace VTX::App::Controller
 	/**
 	 * @brief Called each frame.
 	 */
-	bool Animation::update( const float p_delta, Util::Math::Transform & p_transform, Vec3f & )
+	bool Animation::update(
+		const float p_delta,
+		const Setting::Controller &,
+		Util::Math::Transform & p_transform,
+		Vec3f &
+	)
 	{
 		using namespace Util;
 

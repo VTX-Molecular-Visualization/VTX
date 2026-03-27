@@ -20,6 +20,12 @@ namespace VTX::Renderer::Geometry
 			indirectBuffer = "Indirect.Ribbons";
 		}
 
+		void clear()
+		{
+			BaseGeometry::clear();
+			_construction.clear();
+		}
+
 		struct Construction
 		{
 			bool isEmpty = false;

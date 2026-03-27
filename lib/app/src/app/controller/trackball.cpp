@@ -2,8 +2,6 @@
 #include "app/events.hpp"
 #include "app/input/input_manager.hpp"
 #include "app/services.hpp"
-#include "app/settings/settings.hpp"
-#include "app/settings/settings_manager.hpp"
 #include <util/event_hub.hpp>
 #include <util/math.hpp>
 #include <util/math/transform.hpp>
@@ -15,20 +13,13 @@ namespace
 
 namespace VTX::App::Controller
 {
-	Trackball::Trackball()
-	{
-		// TODO: use setting object?
-		auto & settings		= SETTINGS();
-		_translationSpeed	= settings.getValue<float>( Settings::Controller::TRANSLATION_SPEED_KEY );
-		_accelerationFactor = settings.getValue<float>( Settings::Controller::ACCELERATION_FACTOR_KEY );
-		_decelerationFactor = settings.getValue<float>( Settings::Controller::DECELERATION_FACTOR_KEY );
-		_rotationSpeed		= settings.getValue<float>( Settings::Controller::ROTATION_SPEED_KEY );
-		_invertY			= settings.getValue<bool>( Settings::Controller::INVERT_Y_KEY );
-		_elasticityActive	= settings.getValue<bool>( Settings::Controller::ELASTICITY_ACTIVE_KEY );
-		_elasticityFactor	= settings.getValue<float>( Settings::Controller::ELASTICITY_FACTOR_KEY );
-	}
 
-	bool Trackball::update( const float p_delta, Util::Math::Transform & p_transform, Vec3f & p_target )
+	bool Trackball::update(
+		const float					p_delta,
+		const Setting::Controller & p_settings,
+		Util::Math::Transform &		p_transform,
+		Vec3f &						p_target
+	)
 	{
 		using namespace Util;
 		auto & input = INPUT();
@@ -64,51 +55,37 @@ namespace VTX::App::Controller
 		}
 
 		// Keyboard.
-		if ( input.moveFront() )
+		const Vec3i translationAxis = input.translationAxis();
+		const int	rotationAxis	= input.rotationAxis();
+		if ( translationAxis.z != 0 )
 		{
-			deltaDistance = 1.5f * deltaTime;
+			deltaDistance = -1.5f * deltaTime * float( translationAxis.z );
 		}
-		if ( input.moveBack() )
+		if ( translationAxis.x != 0 )
 		{
-			deltaDistance = -1.5f * deltaTime;
+			deltaVelocity.x = -1e4f * deltaTime * float( translationAxis.x );
 		}
-		if ( input.moveRight() )
+		if ( translationAxis.y != 0 )
 		{
-			deltaVelocity.x = 1e4f * deltaTime;
+			deltaVelocity.y = 1e4f * deltaTime * float( translationAxis.y );
 		}
-		if ( input.moveLeft() )
+		if ( rotationAxis != 0 )
 		{
-			deltaVelocity.x = -1e4f * deltaTime;
-		}
-		if ( input.moveUp() )
-		{
-			deltaVelocity.y = 1e4f * deltaTime;
-		}
-		if ( input.moveDown() )
-		{
-			deltaVelocity.y = -1e4f * deltaTime;
-		}
-		if ( input.rotateRight() )
-		{
-			deltaVelocity.z = 1e4f * deltaTime;
-		}
-		if ( input.rotateLeft() )
-		{
-			deltaVelocity.z = -1e4f * deltaTime;
+			deltaVelocity.z = 1e4f * deltaTime * float( rotationAxis );
 		}
 
 		// Set values from settings.
 		if ( deltaDistance != 0.f )
 		{
-			deltaDistance *= _translationSpeed;
+			deltaDistance *= p_settings.translationSpeed;
 
 			if ( input.accelerate() )
 			{
-				deltaDistance *= _accelerationFactor;
+				deltaDistance *= p_settings.accelerationFactor;
 			}
 			if ( input.decelerate() )
 			{
-				deltaDistance /= _decelerationFactor;
+				deltaDistance /= p_settings.decelerationFactor;
 			}
 
 			_needUpdate = true;
@@ -118,16 +95,16 @@ namespace VTX::App::Controller
 		{
 			if ( input.accelerate() )
 			{
-				deltaVelocity *= _accelerationFactor;
+				deltaVelocity *= p_settings.accelerationFactor;
 			}
 			if ( input.decelerate() )
 			{
-				deltaVelocity /= _decelerationFactor;
+				deltaVelocity /= p_settings.decelerationFactor;
 			}
 
-			_velocity.x += _rotationSpeed * deltaVelocity.x;
-			_velocity.y += _rotationSpeed * deltaVelocity.y * ( _invertY ? -1.f : 1.f );
-			_velocity.z += _rotationSpeed * deltaVelocity.z;
+			_velocity.x += p_settings.rotationSpeed * deltaVelocity.x;
+			_velocity.y += p_settings.rotationSpeed * deltaVelocity.y * ( p_settings.invertY ? -1.f : 1.f );
+			_velocity.z += p_settings.rotationSpeed * deltaVelocity.z;
 		}
 
 		_needUpdate |= _velocity != VEC3F_ZERO;
@@ -138,8 +115,9 @@ namespace VTX::App::Controller
 			float distance = Math::distance( p_transform.getPosition(), p_target );
 			distance	   = Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 
-			const Quatf rotation
-				= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z ) * ( _elasticityActive ? deltaTime : 0.2f ) );
+			const Quatf rotation = Quatf(
+				Vec3f( _velocity.y, _velocity.x, _velocity.z ) * ( p_settings.elasticityActive ? deltaTime : 0.2f )
+			);
 
 			p_transform.rotateAround( rotation, p_target, distance );
 			HUB().trigger<Events::CameraTransformChange>();
@@ -148,9 +126,9 @@ namespace VTX::App::Controller
 		}
 
 		// Handle elasticity.
-		if ( _elasticityActive )
+		if ( p_settings.elasticityActive )
 		{
-			_updateElasticity( deltaTime );
+			_updateVelocity( deltaTime, p_settings.elasticityFactor );
 		}
 		else
 		{
@@ -160,11 +138,11 @@ namespace VTX::App::Controller
 		return true;
 	}
 
-	void Trackball::_updateElasticity( const float & p_deltaTime )
+	void Trackball::_updateVelocity( const float p_deltaTime, const float p_elasticityFactor )
 	{
 		if ( _velocity != VEC3F_ZERO )
 		{
-			_velocity = Util::Math::lerp( _velocity, VEC3F_ZERO, p_deltaTime * _elasticityFactor );
+			_velocity = Util::Math::lerp( _velocity, VEC3F_ZERO, p_deltaTime * p_elasticityFactor );
 
 			Vec3f::bool_type res
 				= Util::Math::lessThan( Util::Math::abs( _velocity ), Vec3f( _CONTROLLER_ELASTICITY_THRESHOLD ) );

@@ -122,6 +122,11 @@ namespace VTX::App::Helper::System
 	std::optional<App::System::E_COLOR_SCHEME> getColorScheme( const SystemItemView & );
 
 	/**
+	 * @brief Count all atoms assigned in the color component.
+	 */
+	size_t countAssignedColorAtoms( const App::System::Color & );
+
+	/**
 	 * @brief Check if an item is a color scheme root.
 	 */
 	bool isColorSchemeRoot( const SystemItemView & );
