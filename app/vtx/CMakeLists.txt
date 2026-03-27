@@ -47,10 +47,7 @@ endif()
 install(FILES README.md DESTINATION .)
 install(FILES CHANGELOG.md DESTINATION .)
 install(FILES license.txt DESTINATION .)
-if (VTX_UI_QT)
-	install(FILES asset/qt.conf DESTINATION .)
-endif()
-# Runtime DLLs.
+ # Runtime DLLs.
 #install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
 if (VTX_UI_QT)
 	vtx_qt_install_runtime(vtx)

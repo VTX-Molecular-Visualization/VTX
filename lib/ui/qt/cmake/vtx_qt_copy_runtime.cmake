@@ -1,6 +1,22 @@
 set(_VTX_QT_COPY_RUNTIME_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 find_program(_VTX_QT_PATCHELF_EXECUTABLE patchelf)
 
+function(_vtx_qt_conf_source out_var)
+	set(_vtx_qt_conf_candidates
+		"${VTX_QT_RUNTIME_ROOT}/qt.conf"
+		"${_VTX_QT_COPY_RUNTIME_CMAKE_DIR}/../asset/qt.conf"
+	)
+
+	foreach(_vtx_qt_conf_candidate IN LISTS _vtx_qt_conf_candidates)
+		if(EXISTS "${_vtx_qt_conf_candidate}")
+			set(${out_var} "${_vtx_qt_conf_candidate}" PARENT_SCOPE)
+			return()
+		endif()
+	endforeach()
+
+	set(${out_var} "" PARENT_SCOPE)
+endfunction()
+
 function(_vtx_qt_plugin_dirs out_var)
 	set(${out_var}
 		imageformats
@@ -57,6 +73,10 @@ function(vtx_qt_copy_runtime target)
 	endif()
 
 	_vtx_qt_plugin_dirs(_vtx_qt_plugin_dirs)
+	_vtx_qt_conf_source(_vtx_qt_conf_source)
+	if(_vtx_qt_conf_source)
+		vtx_copy_file(${target} "${_vtx_qt_conf_source}" "$<TARGET_FILE_DIR:${target}>")
+	endif()
 
 	if(WIN32 AND (EXISTS "${VTX_QT_RUNTIME_ROOT}/Qt6Cored.dll" OR EXISTS "${VTX_QT_RUNTIME_ROOT}/Qt6Core.dll"))
 		file(GLOB _vtx_qt_runtime_dlls
@@ -103,6 +123,12 @@ endfunction()
 # Install the prepared Qt runtime copied next to a target.
 function(vtx_qt_install_runtime target)
 	_vtx_qt_plugin_dirs(_vtx_qt_plugin_dirs)
+
+	install(FILES
+		"$<TARGET_FILE_DIR:${target}>/qt.conf"
+		DESTINATION .
+		OPTIONAL
+	)
 
 	if(WIN32)
 		install(FILES

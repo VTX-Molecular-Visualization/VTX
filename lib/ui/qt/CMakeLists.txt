@@ -29,4 +29,6 @@ include("./cmake/library.cmake")
 
 install(TARGETS vtx_ui_qt FILE_SET public_headers DESTINATION include)
 vtx_install_build_modules()
-vtx_qt_install_runtime(vtx_ui_qt)
+if (VTX_UI_QT)
+	vtx_qt_install_runtime(vtx_ui_qt)
+endif()
