@@ -98,10 +98,10 @@ namespace VTX::App::Action::Camera
 		{
 			view.each(
 				[ & ](
-					const ECS::Entity &			 p_e,
+					const ECS::Entity &			   p_e,
 					const Core::Struct::Topology & p_data,
-					const Util::Math::AABB &	 p_aabb,
-					const System::Selection &	 p_selection
+					const Util::Math::AABB &	   p_aabb,
+					const System::Selection &	   p_selection
 				)
 				{
 					if ( Helper::System::getSelectionState( { p_e, Core::Struct::E_SYSTEM_ITEM::SYSTEM } )

@@ -3,6 +3,8 @@
 
 #include "ui/qt/widget/vector.hpp"
 #include <QLabel>
+#include <QPointer>
+#include <QVBoxLayout>
 #include <QWidget>
 #include <util/enum.hpp>
 #include <util/math/transform.hpp>

@@ -4,6 +4,7 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include <QGuiApplication>
+#include <QPainterPath>
 #include <QStyleHints>
 #include <QWindow>
 #include <app/action/action_manager.hpp>
@@ -327,6 +328,23 @@ namespace VTX::UI::QT::Widget
 	void Renderer::_addHUDWidget( QWidget * const p_widget, const HUD_POSITION p_pos )
 	{
 		p_widget->setParent( this );
+
+		// QPainterPath path;
+		// path.addRoundedRect( p_widget->rect(), 2, 2 );
+		//  p_widget->setMask( QRegion( path.toFillPolygon().toPolygon() ) );
+
+		// QRegion region;
+
+		// for ( QWidget * const child : findChildren<QWidget *>( QString(), Qt::FindDirectChildrenOnly ) )
+		//{
+		//	if ( child->isVisible() )
+		//	{
+		//		region |= child->geometry();
+		//	}
+		// }
+
+		// p_widget->setMask( region );
+
 		p_widget->setAttribute( Qt::WA_NativeWindow, true );
 		p_widget->setAttribute( Qt::WA_TranslucentBackground );
 		p_widget->setAttribute( Qt::WA_NoSystemBackground );

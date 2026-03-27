@@ -1,20 +1,58 @@
 #ifndef __VTX_UI_QT_WIDGET_SELECTION__
 #define __VTX_UI_QT_WIDGET_SELECTION__
 
-#include "ui/qt/widget/base_widget.hpp"
+#include "ui/qt/widget/transform.hpp"
 #include <QListWidget>
-#include <app/events.hpp>
+#include <QPointer>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <app/ecs.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
 	/**
-	 * @brief Widget displaying the current selection as a list.
+	 * @brief Widget displaying the current selection.
 	 */
-	class Selection : public BaseWidget<Selection, QListWidget>
+	class Selection : public QWidget
 	{
 	  public:
+		/**
+		 * @brief Constructor.
+		 */
 		Selection( QWidget * const p_parent = nullptr );
-		void refresh();
+		~Selection();
+
+	  private:
+		/**
+		 * @brief Main layout.
+		 */
+		QPointer<QVBoxLayout> _layout;
+
+		/**
+		 * @brief List of select items.
+		 */
+		QPointer<QListWidget> _list;
+
+		/**
+		 * @brief Display all full selected system transforms.
+		 */
+		QPointer<Widget::Transform> _transform;
+
+		/**
+		 * @brief Refresh from app.
+		 */
+		Util::EventHub::Connection _connTransformChanged;
+
+		/**
+		 * @brief Currently selected entities.
+		 */
+		std::vector<App::ECS::Entity> _entities;
+
+		/**
+		 * @brief Transform updated.
+		 */
+		void _transformUpdated( App::ECS::Registry &, App::ECS::Entity );
 	};
 } // namespace VTX::UI::QT::Widget
 
