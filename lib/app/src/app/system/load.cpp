@@ -60,9 +60,7 @@ namespace VTX::App::System
 	template<typename JobFinishSignaler>
 	struct DeliverSytem
 	{
-		JobFinishSignaler jobFinishedPtr;
-
-		void execute()
+		void execute( JobFinishSignaler jobFinishedPtr )
 		{
 			deliver( std::move( jobFinishedPtr->data ) );
 			jobFinishedPtr->jobFinished();
@@ -137,7 +135,10 @@ namespace VTX::App::System
 			return 0;
 		}
 
-		ACTION().subscribe( Action::QueuedAction( DeliverSytem<std::shared_ptr<_Data>> { _attributesPtr } ) );
+		// ACTION().execute<Action::QueueAction<DeliverSytem<std::shared_ptr<_Data>>>>( _attributesPtr );
+		ACTION().subscribe(
+			Action::QueuedAction( DeliverSytem<std::shared_ptr<_Data>>(), std::move( _attributesPtr ) )
+		);
 		return 0;
 	}
 
