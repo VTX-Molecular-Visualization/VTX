@@ -94,8 +94,7 @@ namespace VTX::App
 
 		finishStartup();
 
-		// Dunno if that's the right place for this
-		if ( ARGS().has( ARG_SCRIPT_LONG ) || ARGS().has( ARG_SCRIPT_SHORT ) ) {}
+		_handleArgs();
 	}
 
 	void VTXApp::startServices()
@@ -195,7 +194,7 @@ namespace VTX::App
 		}
 	}
 
-	void VTXApp::_handleArgs( const Args & p_args )
+	void VTXApp::_handleArgs()
 	{
 		// TODO: load pdb automatically or python script.
 
