@@ -33,7 +33,7 @@ namespace VTX::App::Action
 	  public:
 		ActionManager();
 
-		void update( const float, const float ) noexcept;
+		void update( const float, const float );
 
 		/**
 		 * @brief Thread safe. Subscribe an action to be executed later on the main thread.

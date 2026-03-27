@@ -21,7 +21,7 @@ namespace VTX::App::Action
 
 	ActionManager::ActionManager() : _attributesPtr( new _Data { ARGS().has( App::ARG_NO_GUI ) } ) {}
 
-	void ActionManager::update( const float p_delta, const float ) noexcept
+	void ActionManager::update( const float p_delta, const float ) 
 	{
 		_skipTime += p_delta;
 		if ( _skipTime < 100.f )

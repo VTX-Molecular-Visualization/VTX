@@ -62,7 +62,7 @@ namespace VTX::App::System
 		/**
 		 * @brief Meant to be used as a thread callable. Actually perform the extraction
 		 */
-		uint operator()( Util::StopToken, Threading::OptionalThreadReference ) noexcept;
+		uint operator()( Util::StopToken, Threading::OptionalThreadReference );
 
 		/**
 		 * @brief Stop current execution until the system is extracted.

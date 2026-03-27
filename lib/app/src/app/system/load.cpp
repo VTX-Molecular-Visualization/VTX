@@ -87,10 +87,7 @@ namespace VTX::App::System
 
 	void SystemExtractor::wait() noexcept { _attributesPtr->synchronizer.wait(); }
 
-	uint SystemExtractor::operator()(
-		Util::StopToken					   p_stopToken,
-		Threading::OptionalThreadReference p_thread
-	) noexcept
+	uint SystemExtractor::operator()( Util::StopToken p_stopToken, Threading::OptionalThreadReference p_thread )
 	{
 		auto & pendingData = _attributesPtr->data;
 
