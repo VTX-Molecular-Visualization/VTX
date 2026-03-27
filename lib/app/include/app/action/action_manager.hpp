@@ -22,11 +22,6 @@ namespace VTX::App::Action
 		= requires( T t, Util::StopToken token, Threading::OptionalThreadReference thr, Args &&... args ) {
 			  { T( token, thr ) };
 		  };
-	template<typename T, typename... Args>
-	concept NotThreadableAction
-		= not requires( T t, Util::StopToken token, Threading::OptionalThreadReference thr, Args &&... args ) {
-			  { T( token, thr ) };
-		  };
 
 	class QueuedAction;
 
