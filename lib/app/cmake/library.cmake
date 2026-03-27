@@ -67,6 +67,7 @@ else()
 	endif()
 endif()
 
+target_link_libraries(vtx_app PRIVATE argparse::argparse)
 target_link_libraries(vtx_app_test PRIVATE vtx_app)
 target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
 vtx_core_copy_data(vtx_app_test)

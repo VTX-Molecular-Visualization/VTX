@@ -8,7 +8,15 @@
 
 namespace VTX::App
 {
-	using Arg = std::string_view;
+	struct Arg
+	{
+		std::string_view strShort;
+		std::string_view strLong;
+		std::string_view helper;
+
+		bool operator==( const Arg & ) const noexcept = default;
+	};
+	bool operator==( const Arg & l, const std::string_view & r ) noexcept;
 
 	/**
 	 * @brief Store command line arguments.
@@ -29,7 +37,7 @@ namespace VTX::App
 		/**
 		 * @brief Check argument existence.
 		 */
-		inline bool has( const Arg p_arg ) const { return _args.contains( p_arg ); }
+		inline bool has( const std::string_view p_arg ) const { return _args.contains( p_arg ); }
 
 		/**
 		 * @brief Add an argument.
@@ -49,7 +57,7 @@ namespace VTX::App
 			std::string str;
 			for ( const auto arg : _args )
 			{
-				str.append( arg ).append( " " );
+				str.append( arg.strLong ).append( " " );
 			}
 			return str;
 		}

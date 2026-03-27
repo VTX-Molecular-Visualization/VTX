@@ -49,6 +49,7 @@ endif()
 find_package(fmt CONFIG REQUIRED)
 find_package(re2 CONFIG REQUIRED)
 find_package(platform_folders REQUIRED)
+find_package(argparse REQUIRED)
 
 if(LINUX)
 	find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
