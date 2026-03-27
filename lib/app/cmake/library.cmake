@@ -104,4 +104,4 @@ vtx_copy_directory(vtx_app_test "${CMAKE_CURRENT_LIST_DIR}/../test/data" "$<TARG
 
 include(CTest)
 include(Catch)
-catch_discover_tests(vtx_app_test DISCOVERY_MODE PRE_TEST )
+catch_discover_tests(vtx_app_test DISCOVERY_MODE PRE_TEST PROPERTIES RESOURCE_LOCK vtx_app_test)
