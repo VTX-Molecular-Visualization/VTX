@@ -36,7 +36,7 @@ class VTXIORecipe(ConanFile):
         cmake.configure()
         cmake.build()
         if self.options.test == True:
-            self.run("ctest --output-on-failure", cwd=self.build_folder, env="conanrun")
+            cmake.ctest(["--output-on-failure"])
 
     def package(self):
         cmake = CMake(self)
