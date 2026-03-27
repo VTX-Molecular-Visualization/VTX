@@ -22,6 +22,11 @@ namespace VTX::App::Action
 		= requires( T t, Util::StopToken token, Threading::OptionalThreadReference thr, Args &&... args ) {
 			  { T( token, thr ) };
 		  };
+	template<typename T, typename... Args>
+	concept NotThreadableAction
+		= not requires( T t, Util::StopToken token, Threading::OptionalThreadReference thr, Args &&... args ) {
+			  { T( token, thr ) };
+		  };
 
 	class QueuedAction;
 
@@ -45,8 +50,8 @@ namespace VTX::App::Action
 		 * @brief Execute an action of type A with the given arguments.
 		 */
 		template<typename A, typename... Args>
-			requires not ThreadableAction<A, Args...>
-					 void execute( Args && ... p_args ) const
+			requires( not ThreadableAction<A, Args...> )
+		void execute( Args &&... p_args ) const
 		{
 			A a;
 			execute( a, std::forward<Args>( p_args )... );
@@ -59,7 +64,7 @@ namespace VTX::App::Action
 			requires ThreadableAction<A, Args...>
 		void execute( Args &&... p_args ) const
 		{
-			if ( _noGui() )
+			if ( _noThread() )
 			{
 				A a;
 				execute( a, std::forward<Args>( p_args )... );
@@ -109,7 +114,7 @@ namespace VTX::App::Action
 		std::unique_ptr<_Data, Del> _attributesPtr;
 		float						_skipTime = 0.f;
 
-		bool _noGui() const noexcept;
+		bool _noThread() const noexcept;
 	};
 
 	/**

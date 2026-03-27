@@ -12,7 +12,7 @@ namespace VTX::App::Action
 
 	struct ActionManager::_Data
 	{
-		bool					 noGui		  = false;
+		bool					 noThread	  = false;
 		std::thread::id			 mainThreadId = std::this_thread::get_id();
 		std::queue<QueuedAction> actions;
 		std::mutex				 mutex;
@@ -50,7 +50,7 @@ namespace VTX::App::Action
 		std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
 		_attributesPtr->actions.push( std::move( p_action ) );
 	}
-	bool ActionManager::_noGui() const noexcept { return _attributesPtr->noGui; }
+	bool ActionManager::_noThread() const noexcept { return _attributesPtr->noThread; }
 
 	QueuedAction::Waiter QueuedAction::getWaiter() { return Waiter( _ptr ); }
 } // namespace VTX::App::Action

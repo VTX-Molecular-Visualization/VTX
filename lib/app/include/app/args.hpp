@@ -8,7 +8,9 @@
 
 namespace VTX::App
 {
-	using Arg = std::string_view;
+	struct Arg
+	{ // TODO
+	};
 
 	/**
 	 * @brief Store command line arguments.

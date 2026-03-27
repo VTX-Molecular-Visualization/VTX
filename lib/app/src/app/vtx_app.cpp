@@ -93,6 +93,9 @@ namespace VTX::App
 		}
 
 		finishStartup();
+
+		// Dunno if that's the right place for this
+		if ( ARGS().has( ARG_SCRIPT_LONG ) || ARGS().has( ARG_SCRIPT_SHORT ) ) {}
 	}
 
 	void VTXApp::startServices()
@@ -174,20 +177,14 @@ namespace VTX::App
 			VTX_INFO( "Python interpretor initialized" );
 		}
 
-		const ECS::Entity defaultGraphicsConfig = Helper::Preset::getByName<Renderer::GraphicsConfig>( "Default" )
-													 .value_or(
-														 ECS::getFirstEntityOnlyWithComponents<
-															 Preset::Name,
-															 Renderer::GraphicsConfig>()
-													 );
+		const ECS::Entity defaultGraphicsConfig
+			= Helper::Preset::getByName<Renderer::GraphicsConfig>( "Default" )
+				  .value_or( ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>() );
 		ACTION().execute<Action::Scene::SetGraphicsConfig>( defaultGraphicsConfig );
 
-		const ECS::Entity defaultColorLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" )
-												   .value_or(
-													   ECS::getFirstEntityOnlyWithComponents<
-														   Preset::Name,
-														   Renderer::Color::Layout>()
-												   );
+		const ECS::Entity defaultColorLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" ).value_or(
+			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
+		);
 		ACTION().execute<Action::Scene::SetColorLayout>( defaultColorLayout );
 
 		HUB().trigger<Events::ApplicationStart>();

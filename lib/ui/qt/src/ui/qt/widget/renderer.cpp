@@ -212,6 +212,7 @@ namespace VTX::UI::QT::Widget
 	{
 		if ( p_event != nullptr )
 		{
+			// VTX_DEBUG( "Renderer::event type={}", Util::Enum::enumName( p_event->type() ) );
 			switch ( p_event->type() )
 			{
 			case QEvent::Show:

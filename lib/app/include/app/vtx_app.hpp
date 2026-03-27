@@ -13,10 +13,12 @@ namespace VTX::App
 	/**
 	 * @brief Available command line arguments.
 	 */
-	constexpr Arg ARG_DEBUG		  = "-debug";
-	constexpr Arg ARG_NO_GUI	  = "-no-gui";
-	constexpr Arg ARG_NO_GRAPHICS = "-no-graphics";
-	constexpr Arg ARG_NO_UPDATE	  = "-no-update";
+	constexpr Arg ARG_DEBUG		   = "-debug";
+	constexpr Arg ARG_NO_GUI	   = "-no-gui";
+	constexpr Arg ARG_NO_GRAPHICS  = "-no-graphics";
+	constexpr Arg ARG_NO_UPDATE	   = "-no-update";
+	constexpr Arg ARG_SCRIPT_SHORT = "-s";
+	constexpr Arg ARG_SCRIPT_LONG  = "--script";
 
 	/**
 	 * @brief Main application class.
