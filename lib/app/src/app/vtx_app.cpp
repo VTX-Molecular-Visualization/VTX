@@ -23,8 +23,7 @@
 #include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
-#include "app/settings/settings.hpp"
-#include "app/settings/settings_manager.hpp"
+#include "app/setting/controller.hpp"
 #include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
 #include <exception>
@@ -106,13 +105,10 @@ namespace VTX::App
 		ECS::setCtx<Action::ActionManager>();
 		ECS::setCtx<Input::InputManager>();
 		ECS::setCtx<Network::NetworkManager>();
-		ECS::setCtx<Settings::SettingsManager>();
 
 		ECS::setCtx<Threading::ThreadManager>();
 		ECS::setCtx<Uid::UIDManager>();
 		ECS::setCtx<Pass::PassManager>();
-
-		Settings::initSettings();
 
 		try
 		{
@@ -133,36 +129,30 @@ namespace VTX::App
 
 	void VTXApp::createInitialEntities()
 	{
+		// Scene.
 		const ECS::Entity sceneEnt = _registry.create();
 		_registry.emplace<Scene::TagRoot>( sceneEnt );
 		_registry.emplace<Util::Math::AABB>( sceneEnt );
 
+		// Camera.
 		const ECS::Entity cameraEnt = _registry.create();
 		_registry.emplace<Util::Math::Transform>( cameraEnt );
 		_registry.emplace<Renderer::Camera>( cameraEnt );
+		_registry.emplace<Setting::Controller>( cameraEnt );
+
+		// Resize renderer.
 		ACTION().execute<App::Action::Application::Resize>( WIDTH_DEFAULT, HEIGHT_DEFAULT );
 
+		// Default presets.
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::GraphicsConfig>>();
 
+		// Run passes.
 		PASS().addPass<Pass::SceneUpdater>( sceneEnt );
-
 		PASS().addPass<Pass::CameraUpdater>( cameraEnt );
 		PASS().addPass<Pass::SystemUpdater>();
 		PASS().addPass<Pass::TrajectoryUpdater>();
-
-		if ( SETTINGS().getValue<Renderer::PROJECTION>( Settings::Camera::PROJECTION_KEY )
-			 == Renderer::PROJECTION::PERSPECTIVE )
-		{
-			ACTION().execute<Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>();
-		}
-		else
-		{
-			ACTION().execute<Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>();
-		}
-
-		ACTION().execute<Action::Controller::SetCameraController<Action::Controller::E_CONTROLLER::TRACKBALL>>();
 	}
 
 	void VTXApp::finishStartup()
@@ -174,20 +164,14 @@ namespace VTX::App
 			VTX_INFO( "Python interpretor initialized" );
 		}
 
-		const ECS::Entity defaultGraphicsConfig = Helper::Preset::getByName<Renderer::GraphicsConfig>( "Default" )
-													 .value_or(
-														 ECS::getFirstEntityOnlyWithComponents<
-															 Preset::Name,
-															 Renderer::GraphicsConfig>()
-													 );
+		const ECS::Entity defaultGraphicsConfig
+			= Helper::Preset::getByName<Renderer::GraphicsConfig>( "Default" )
+				  .value_or( ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>() );
 		ACTION().execute<Action::Scene::SetGraphicsConfig>( defaultGraphicsConfig );
 
-		const ECS::Entity defaultColorLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" )
-												   .value_or(
-													   ECS::getFirstEntityOnlyWithComponents<
-														   Preset::Name,
-														   Renderer::Color::Layout>()
-												   );
+		const ECS::Entity defaultColorLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" ).value_or(
+			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
+		);
 		ACTION().execute<Action::Scene::SetColorLayout>( defaultColorLayout );
 
 		HUB().trigger<Events::ApplicationStart>();

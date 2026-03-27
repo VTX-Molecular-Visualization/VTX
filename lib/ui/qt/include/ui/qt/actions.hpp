@@ -13,52 +13,52 @@ namespace VTX::UI::QT
 		// System.
 		namespace System
 		{
-			struct New : public App::UI::DescAction
+			struct New : App::UI::DescAction
 			{
 				New();
 			};
 
-			struct Download : public App::UI::DescAction
+			struct Download : App::UI::DescAction
 			{
 				Download();
 			};
 
-			struct Open : public App::UI::DescAction
+			struct Open : App::UI::DescAction
 			{
 				Open();
 			};
 
-			struct OpenRecent : public App::UI::DescAction
+			struct OpenRecent : App::UI::DescAction
 			{
 				OpenRecent();
 			};
 
-			struct Delete : public App::UI::DescAction
+			struct Delete : App::UI::DescAction
 			{
 				Delete();
 			};
 
-			struct Save : public App::UI::DescAction
+			struct Save : App::UI::DescAction
 			{
 				Save();
 			};
 
-			struct SaveAs : public App::UI::DescAction
+			struct SaveAs : App::UI::DescAction
 			{
 				SaveAs();
 			};
 
-			struct Import : public App::UI::DescAction
+			struct Import : App::UI::DescAction
 			{
 				Import();
 			};
 
-			struct Export : public App::UI::DescAction
+			struct Export : App::UI::DescAction
 			{
 				Export();
 			};
 
-			struct Quit : public App::UI::DescAction
+			struct Quit : App::UI::DescAction
 			{
 				Quit();
 			};
@@ -67,93 +67,93 @@ namespace VTX::UI::QT
 		// Camera.
 		namespace Camera
 		{
-			struct Orthographic : public App::UI::DescAction
+			struct Orthographic : App::UI::DescAction
 			{
 				Orthographic();
 			};
 
-			struct Perspective : public App::UI::DescAction
+			struct Perspective : App::UI::DescAction
 			{
 				Perspective();
 			};
 
-			struct Trackball : public App::UI::DescAction
+			struct Trackball : App::UI::DescAction
 			{
 				Trackball();
 			};
 
-			struct Freefly : public App::UI::DescAction
+			struct Freefly : App::UI::DescAction
 			{
 				Freefly();
 			};
 
-			struct Orient : public App::UI::DescAction
+			struct Orient : App::UI::DescAction
 			{
 				Orient();
 			};
 
-			struct Reset : public App::UI::DescAction
+			struct Reset : App::UI::DescAction
 			{
 				Reset();
 			};
 		} // namespace Camera
 		namespace Snapshot
 		{
-			struct Snapshot : public App::UI::DescAction
+			struct Snapshot : App::UI::DescAction
 			{
 				Snapshot();
 			};
 
-			struct Export : public App::UI::DescAction
+			struct Export : App::UI::DescAction
 			{
 				Export();
 			};
 		} // namespace Snapshot
 		namespace Theme
 		{
-			struct System : public App::UI::DescAction
+			struct System : App::UI::DescAction
 			{
 				System();
 			};
 
-			struct Light : public App::UI::DescAction
+			struct Light : App::UI::DescAction
 			{
 				Light();
 			};
 
-			struct Dark : public App::UI::DescAction
+			struct Dark : App::UI::DescAction
 			{
 				Dark();
 			};
 
-			struct ResetLayout : public App::UI::DescAction
+			struct ResetLayout : App::UI::DescAction
 			{
 				ResetLayout();
 			};
 
-			struct SetFont : public App::UI::DescAction
+			struct SetFont : App::UI::DescAction
 			{
 				SetFont();
 			};
 		} // namespace Theme
 		namespace Help
 		{
-			struct Documentation : public App::UI::DescAction
+			struct Documentation : App::UI::DescAction
 			{
 				Documentation();
 			};
 
-			struct Report : public App::UI::DescAction
+			struct Report : App::UI::DescAction
 			{
 				Report();
 			};
 
-			struct CheckUpdates : public App::UI::DescAction
+			struct CheckUpdates : App::UI::DescAction
 			{
 				CheckUpdates();
 			};
 
-			struct About : public App::UI::DescAction
+			struct About : App::UI::DescAction
 			{
 				About();
 			};
@@ -161,37 +161,37 @@ namespace VTX::UI::QT
 		} // namespace Help
 		namespace Selection
 		{
-			struct Lock : public App::UI::DescAction
+			struct Lock : App::UI::DescAction
 			{
 				Lock();
 			};
 
-			struct Save : public App::UI::DescAction
+			struct Save : App::UI::DescAction
 			{
 				Save();
 			};
 
-			struct Clear : public App::UI::DescAction
+			struct Clear : App::UI::DescAction
 			{
 				Clear();
 			};
 
-			struct SetGranularitySystem : public App::UI::DescAction
+			struct SetGranularitySystem : App::UI::DescAction
 			{
 				SetGranularitySystem();
 			};
 
-			struct SetGranularityChain : public App::UI::DescAction
+			struct SetGranularityChain : App::UI::DescAction
 			{
 				SetGranularityChain();
 			};
 
-			struct SetGranularityResidue : public App::UI::DescAction
+			struct SetGranularityResidue : App::UI::DescAction
 			{
 				SetGranularityResidue();
 			};
 
-			struct SetGranularityAtom : public App::UI::DescAction
+			struct SetGranularityAtom : App::UI::DescAction
 			{
 				SetGranularityAtom();
 			};
@@ -199,7 +199,7 @@ namespace VTX::UI::QT
 		namespace Preset
 		{
 			template<typename P>
-			struct Add : public App::UI::DescAction
+			struct Add : App::UI::DescAction
 			{
 				Add()
 				{
@@ -210,7 +210,7 @@ namespace VTX::UI::QT
 			};
 
 			template<typename P>
-			struct Duplicate : public App::UI::DescAction
+			struct Duplicate : App::UI::DescAction
 			{
 				Duplicate()
 				{
@@ -221,7 +221,7 @@ namespace VTX::UI::QT
 			};
 
 			template<typename P>
-			struct Delete : public App::UI::DescAction
+			struct Delete : App::UI::DescAction
 			{
 				Delete()
 				{
@@ -232,7 +232,7 @@ namespace VTX::UI::QT
 			};
 
 			template<typename P>
-			struct Apply : public App::UI::DescAction
+			struct Apply : App::UI::DescAction
 			{
 				Apply()
 				{
@@ -246,17 +246,17 @@ namespace VTX::UI::QT
 		{
 			namespace Cache
 			{
-				struct Open : public App::UI::DescAction
+				struct Open : App::UI::DescAction
 				{
 					Open();
 				};
 
-				struct Clear : public App::UI::DescAction
+				struct Clear : App::UI::DescAction
 				{
 					Clear();
 				};
 
-				struct Refresh : public App::UI::DescAction
+				struct Refresh : App::UI::DescAction
 				{
 					Refresh();
 				};

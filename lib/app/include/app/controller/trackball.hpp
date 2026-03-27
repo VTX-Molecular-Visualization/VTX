@@ -3,7 +3,7 @@
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
-#include "app/settings/settings.hpp"
+#include "app/setting/controller.hpp"
 #include <util/constants.hpp>
 
 namespace VTX::App::Controller
@@ -16,14 +16,9 @@ namespace VTX::App::Controller
 	{
 	  public:
 		/**
-		 * @brief Constructor.
-		 */
-		Trackball();
-
-		/**
 		 * @brief Called each frame.
 		 */
-		bool update( const float, Util::Math::Transform &, Vec3f & );
+		bool update( const float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
 
 		/**
 		 * @brief Stop movement.
@@ -42,20 +37,9 @@ namespace VTX::App::Controller
 		bool _needUpdate = true;
 
 		/**
-		 * @brief Controller settings.
-		 */
-		float _translationSpeed;
-		float _accelerationFactor;
-		float _decelerationFactor;
-		float _rotationSpeed;
-		bool  _invertY;
-		bool  _elasticityActive;
-		float _elasticityFactor;
-
-		/**
 		 * @brief Update velocity from elasticity.
 		 */
-		void _updateElasticity( const float & );
+		void _updateVelocity( const float, const float );
 	};
 
 } // namespace VTX::App::Controller

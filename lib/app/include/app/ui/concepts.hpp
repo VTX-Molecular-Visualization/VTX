@@ -20,7 +20,6 @@ namespace VTX::App::UI
 		using Icon	   = std::variant<std::string, int>;
 		using Callable = std::function<void()>;
 
-	  public:
 		std::string				   key;
 		std::string				   name;
 		std::optional<std::string> group = std::nullopt;

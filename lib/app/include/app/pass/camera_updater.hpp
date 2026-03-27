@@ -7,6 +7,7 @@
 #include "app/input/input_manager.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/services.hpp"
+#include "app/setting/controller.hpp"
 #include <util/constants.hpp>
 
 namespace VTX::App::Pass
@@ -21,7 +22,8 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Controller update fonction (corresponds to ConceptController).
 		 */
-		using UpdateDelegate = Util::EventHub::Delegate<bool( const float, Util::Math::Transform &, Vec3f & )>;
+		using UpdateDelegate = Util::EventHub::Delegate<
+			bool( const float, const Setting::Controller &, Util::Math::Transform &, Vec3f & )>;
 
 		/**
 		 * @brief Constructor.
@@ -36,7 +38,7 @@ namespace VTX::App::Pass
 			if ( not _controllers.empty() )
 			{
 				// If ended, go to next controller.
-				if ( not _controllers.front().update( p_delta, _transform.get(), _target.get() ) )
+				if ( not _controllers.front().update( p_delta, _settings.get(), _transform.get(), _target.get() ) )
 				{
 					nextController();
 				}
@@ -122,6 +124,7 @@ namespace VTX::App::Pass
 		 */
 		std::reference_wrapper<Util::Math::Transform> _transform;
 		std::reference_wrapper<Vec3f>				  _target;
+		std::reference_wrapper<Setting::Controller>	  _settings;
 
 		/**
 		 * @brief Controller running definition.
@@ -139,9 +142,14 @@ namespace VTX::App::Pass
 		std::deque<Entry> _controllers;
 
 		/**
-		 * @brief On update.
+		 * @brief On update controller setting.
 		 */
-		void _onUpdate();
+		void _onControllerSetting();
+
+		/**
+		 * @brief On update camera.
+		 */
+		void _onUpdateCamera();
 
 	}; // namespace VTX::App::Pass
 } // namespace VTX::App::Pass

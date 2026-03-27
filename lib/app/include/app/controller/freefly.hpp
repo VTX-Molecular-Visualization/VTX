@@ -3,6 +3,7 @@
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
+#include "app/setting/controller.hpp"
 
 namespace VTX::App::Controller
 {
@@ -14,29 +15,14 @@ namespace VTX::App::Controller
 	{
 	  public:
 		/**
-		 * @brief Constructor.
-		 */
-		Freefly();
-
-		/**
 		 * @brief Called each frame.
 		 */
-		bool update( const float, Util::Math::Transform &, Vec3f & );
+		bool update( const float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
 
 		/**
 		 * @brief Stop movement.
 		 */
 		void stop() override {}
-
-	  private:
-		/**
-		 * @brief Controller settings.
-		 */
-		float _translationSpeed;
-		float _accelerationFactor;
-		float _decelerationFactor;
-		float _rotationSpeed;
-		bool  _invertY;
 	};
 } // namespace VTX::App::Controller
 #endif

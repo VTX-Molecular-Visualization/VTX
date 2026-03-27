@@ -8,8 +8,6 @@
 #include "app/events.hpp"
 #include "app/pass/camera_updater.hpp"
 #include "app/services.hpp"
-#include "app/settings/settings.hpp"
-#include "app/settings/settings_manager.hpp"
 #include <renderer/camera.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
