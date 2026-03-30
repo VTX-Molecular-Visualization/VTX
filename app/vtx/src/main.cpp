@@ -1,3 +1,4 @@
+#include <app/arguments.hpp>
 #include <string>
 #include <util/types.hpp>
 #include <vector>
@@ -36,18 +37,25 @@ int main( int p_argc, char * p_argv[] )
 
 	try
 	{
-		App::Args args( p_argc, p_argv );
+		App::Arguments			   argss;
+		std::optional<std::string> help;
+		{
+			App::ArgumentParser parser( p_argc, p_argv );
+			parser.parse();
+			if ( parser.needHelp() )
+				help = parser.help();
+			parser.get( argss );
+		}
 
 #ifdef _DEBUG
-		args.add( App::ARG_DEBUG );
+		argss.debug = true;
 #endif
-		const bool debug = args.has( App::ARG_DEBUG );
 
 #ifdef _WIN32
 		// Disable default console.
 #pragma comment( linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup" )
 		//  Create console.
-		if ( debug )
+		if ( argss.debug )
 		{
 			AllocConsole();
 			freopen_s( (FILE **)stdout, "CONOUT$", "w", stdout );
@@ -56,14 +64,20 @@ int main( int p_argc, char * p_argv[] )
 		}
 #endif
 
+		if ( help )
+		{
+			std::cout << *help;
+			return EXIT_SUCCESS;
+		}
+
 #if VTX_UI_QT
-		if ( not args.has( App::ARG_NO_GUI ) )
+		if ( not argss.noGui )
 		{
 			// To set before QApplication construction.
 			QCoreApplication::setAttribute( Qt::AA_CompressHighFrequencyEvents );
 
 			Q_INIT_RESOURCE( vtx_qt_resources_ui );
-			UI::QT::Application app( args );
+			UI::QT::Application app( std::move( argss ) );
 #if VTX_TOOL_EXAMPLE
 			Q_INIT_RESOURCE( vtx_qt_resources_tool_example );
 			app.addTool<Tool::Example::ExampleTool>();
@@ -77,7 +91,7 @@ int main( int p_argc, char * p_argv[] )
 		}
 #endif
 
-		App::VTXApp app( args );
+		App::VTXApp app( std::move( argss ) );
 #if VTX_TOOL_EXAMPLE
 		app.addTool<Tool::Example::ExampleTool>();
 #endif

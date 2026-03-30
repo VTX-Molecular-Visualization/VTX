@@ -8,7 +8,7 @@
  */
 namespace VTX::App
 {
-	class Args;
+	struct Arguments;
 	namespace Action
 	{
 		class ActionManager;
@@ -61,7 +61,7 @@ namespace VTX::App
 	/**
 	 * @brief Arguments launching the application with.
 	 */
-	inline Args & ARGS() { return ECS::getCtx<Args>(); }
+	inline const Arguments & ARGS() { return ECS::getCtx<Arguments>(); }
 	/**
 	 * @brief Main event bus.
 	 */

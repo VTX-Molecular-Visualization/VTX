@@ -1,7 +1,6 @@
 #include "app/session.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/application.hpp"
-#include "app/args.hpp"
 #include "app/constants.hpp"
 #include "app/services.hpp"
 #include "app/threading/thread_manager.hpp"

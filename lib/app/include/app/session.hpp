@@ -25,7 +25,7 @@ namespace VTX::App
 		/**
 		 * @brief Current version.
 		 */
-		inline std::string version() const
+		inline static std::string version()
 		{
 			return std::to_string( VERSION_MAJOR ) + "." + std::to_string( VERSION_MINOR ) + "."
 				   + std::to_string( VERSION_PATCH );

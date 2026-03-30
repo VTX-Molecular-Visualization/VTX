@@ -44,17 +44,19 @@ namespace
 namespace VTX::App
 {
 
-	VTXApp::VTXApp( const Args & p_args )
+	VTXApp::VTXApp( Arguments && p_args )
 	{
+		bool debug = p_args.debug;
+
 		// Set global registry.
 		ECS::setRegistry( _registry );
 
 		// Store args.
-		ECS::setCtx<Args>( p_args );
+		ECS::setCtx<Arguments>( std::move( p_args ) );
 		// Session.
 		ECS::setCtx<Session>();
 		// Logger.
-		LOGGER::init( SESSION().getLogsDir(), ARGS().has( ARG_DEBUG ) );
+		LOGGER::init( SESSION().getLogsDir(), debug );
 	}
 
 	VTXApp::~VTXApp()
@@ -80,7 +82,7 @@ namespace VTX::App
 		createInitialEntities();
 
 		auto & renderer = RENDERER();
-		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) )
+		if ( ECS::getCtx<Arguments>().noGraphics )
 		{
 			VTX_WARNING( "No graphics backend initialization" );
 			renderer.setDefault();
@@ -98,7 +100,7 @@ namespace VTX::App
 
 	void VTXApp::startServices()
 	{
-		VTX_INFO( ARGS().toString() );
+		VTX_INFO( toString( ARGS() ) );
 		SESSION().print();
 
 		ECS::setCtx<Util::EventHub>();
@@ -178,7 +180,7 @@ namespace VTX::App
 
 		HUB().trigger<Events::ApplicationStart>();
 
-		if ( not ARGS().has( ARG_NO_UPDATE ) )
+		if ( not ARGS().noUpdates )
 		{
 			SESSION().checkForUpdate();
 		}
