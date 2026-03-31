@@ -97,6 +97,8 @@ class VTXRecipe(ConanFile):
     def system_requirements(self):
         if self.options.renderer:
             renderer_module.install_system_dependencies(self)
+        if self.options.ui_qt:
+            qt_module.install_system_dependencies(self)
 
     def config_options(self):
         if self.options.ui_qt:

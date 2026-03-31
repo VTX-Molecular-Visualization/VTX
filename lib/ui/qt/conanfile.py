@@ -3,6 +3,7 @@ from pathlib import Path
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 from conan.tools.files import copy
+from conan.tools.system.package_manager import Apt
 
 _CONF_QT_RUNTIME_ROOT = "user.ui_qt:runtime_root"
 
@@ -46,6 +47,12 @@ def _packaged_runtime_root(p_conanFile: ConanFile) -> Path | None:
         return root
 
     return None
+
+
+def install_system_dependencies(p_conanFile: ConanFile) -> None:
+    if p_conanFile.settings.os == "Linux":
+        apt = Apt(p_conanFile)
+        apt.install(["patchelf"], update=True)
 
 
 def config_options_qt(p_conanFile : ConanFile):
@@ -211,6 +218,9 @@ class VTXUiQtRecipe(ConanFile):
         if self.settings.os == "Windows":
             del self.options.fPIC            
         config_options_qt(self)
+
+    def system_requirements(self):
+        install_system_dependencies(self)
             
     def layout(self):
         cmake_layout(self)      

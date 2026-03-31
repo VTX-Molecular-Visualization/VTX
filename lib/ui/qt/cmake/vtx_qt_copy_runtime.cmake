@@ -1,6 +1,10 @@
 set(_VTX_QT_COPY_RUNTIME_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 find_program(_VTX_QT_PATCHELF_EXECUTABLE patchelf)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT _VTX_QT_PATCHELF_EXECUTABLE)
+	message(FATAL_ERROR "patchelf is required to patch Qt plugin RPATHs on Linux. Install it before configuring the project.")
+endif()
+
 function(_vtx_qt_conf_source out_var)
 	set(_vtx_qt_conf_candidates
 		"${VTX_QT_RUNTIME_ROOT}/qt.conf"
@@ -49,11 +53,6 @@ endfunction()
 
 # Patch Linux Qt plugins so they resolve bundled Qt libraries instead of system ones.
 function(_vtx_qt_patch_linux_plugin_rpath target plugin_dir)
-	if(NOT _VTX_QT_PATCHELF_EXECUTABLE)
-		message(WARNING "patchelf not found, Qt plugin RPATH will not be patched for ${target}")
-		return()
-	endif()
-
 	add_custom_command(
 		TARGET ${target}
 		POST_BUILD
