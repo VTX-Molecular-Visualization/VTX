@@ -11,15 +11,15 @@
 namespace bcs::ssesdf
 {
     template<class Type>
-    struct IsNonZero : thrust::unary_function<Type, Type>
+    struct IsNonZero
     {
-        __host__ __device__ Type operator()( Type x ) { return static_cast<Type>( x != 0 ); }
+        __host__ __device__ Type operator()( Type x ) const { return static_cast<Type>( x != 0 ); }
     };
 
     template<class Type>
-    struct IsIntersected : thrust::unary_function<Type, Type>
+    struct IsIntersected
     {
-        __host__ __device__ Type operator()( Type x ) { return static_cast<Type>( x == 1 ); }
+        __host__ __device__ Type operator()( Type x ) const { return static_cast<Type>( x == 1 ); }
     };
 
     void findCircles( AccelerationGrid & grid, SsesdfContext & sesContext )

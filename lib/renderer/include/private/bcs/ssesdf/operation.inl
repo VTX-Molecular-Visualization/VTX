@@ -19,9 +19,9 @@ namespace bcs::ssesdf
 	{
 		__device__ bool operator()( const int4 a ) { return abs( a.w ) == 2; }
 	};
-	struct IsComplete : thrust::unary_function<uint8_t, uint8_t>
+	struct IsComplete
 	{
-		__host__ __device__ uint8_t operator()( uint8_t x ) { return uint8_t( x == 2 ); }
+		__host__ __device__ uint8_t operator()( uint8_t x ) const { return uint8_t( x == 2 ); }
 	};
 
 	template<uint32_t MaxNeighborPerAtom>

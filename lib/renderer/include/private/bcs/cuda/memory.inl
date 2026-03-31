@@ -1,4 +1,5 @@
 #include <thrust/device_ptr.h>
+#include <thrust/scan.h>
 #include <thrust/transform_scan.h>
 
 #include "bcs/cuda/memory.cuh"

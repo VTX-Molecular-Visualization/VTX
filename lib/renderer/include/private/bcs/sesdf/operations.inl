@@ -56,7 +56,7 @@ namespace bcs::sesdf
 			thrust::make_counting_iterator<uint32_t>( sesContext.getMaximumCircleNb() ),
 			mask,
 			trimmedToGlobalId.get<uint32_t>(),
-			thrust::identity<uint32_t>()
+			[] __device__( uint32_t x ) { return x != 0; }
 		);
 
 		// Convex patches

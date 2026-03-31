@@ -2,7 +2,6 @@
 #define BCS_CUDA_MEMORY_CUH
 
 #include <device_types.h>
-#include <thrust/async/copy.h>
 #include <thrust/execution_policy.h>
 
 #include "bcs/core/meta.hpp"

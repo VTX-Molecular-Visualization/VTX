@@ -1,5 +1,4 @@
 #include <device_launch_parameters.h>
-#include <thrust/async/sort.h>
 #include <thrust/sort.h>
 #include <vector_functions.h>
 

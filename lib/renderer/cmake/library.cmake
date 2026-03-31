@@ -60,6 +60,7 @@ if (CMAKE_CUDA_COMPILER)
 			--use_fast_math
 			--relocatable-device-code=true
 			--extended-lambda
+			-Xcompiler=/Zc:preprocessor
 			-Xcudafe
 			--diag_suppress=esa_on_defaulted_function_ignored
 			-Wno-deprecated-gpu-targets
