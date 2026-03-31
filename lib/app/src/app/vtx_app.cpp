@@ -92,6 +92,8 @@ namespace VTX::App
 		}
 
 		finishStartup();
+
+		_handleArgs();
 	}
 
 	void VTXApp::startServices()
@@ -182,7 +184,7 @@ namespace VTX::App
 		}
 	}
 
-	void VTXApp::_handleArgs( const Args & p_args )
+	void VTXApp::_handleArgs()
 	{
 		// TODO: load pdb automatically or python script.
 

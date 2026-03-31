@@ -1,8 +1,31 @@
+#include <app/action/action_manager.hpp>
+#include <app/action/io.hpp>
 #include <app/action/visibility.hpp>
 #include <app/fixture.hpp>
 #include <app/helper/system.hpp>
+#include <app/services.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <core/struct/topology.hpp>
+
+TEST_CASE( "VTX_APP - System - Load", "[system][load]" )
+{
+	using namespace VTX;
+	App::Fixture app;
+
+	App::ACTION().execute<App::Action::IO::LoadSystem>(
+		VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "1AGA.mmtf" )
+	);
+
+	uint num_system = 0;
+	for ( auto it_topolNTT : App::REG().view<Core::Struct::Topology>() )
+	{
+		auto & topol = App::REG().get<Core::Struct::Topology>( it_topolNTT );
+		num_system++;
+		CHECK( topol.getAtomCount() == 126 );
+	}
+	CHECK( num_system == 1 );
+}
 
 /*
 TEST_CASE( "VTX_APP - System - Remove", "[unit][remove]" )

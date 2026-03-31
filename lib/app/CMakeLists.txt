@@ -21,6 +21,7 @@ if (VTX_PYTHON_BINDING)
 	find_package(vtx_python_binding CONFIG REQUIRED)
 endif()
 find_package(Catch2 CONFIG REQUIRED)
+find_package(argparse REQUIRED)
 
 set(_VTX_APP_CONAN " ") # So the right target name can be linked
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")

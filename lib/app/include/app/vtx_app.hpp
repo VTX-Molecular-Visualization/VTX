@@ -13,10 +13,13 @@ namespace VTX::App
 	/**
 	 * @brief Available command line arguments.
 	 */
-	constexpr Arg ARG_DEBUG		  = "-debug";
-	constexpr Arg ARG_NO_GUI	  = "-no-gui";
-	constexpr Arg ARG_NO_GRAPHICS = "-no-graphics";
-	constexpr Arg ARG_NO_UPDATE	  = "-no-update";
+
+	constexpr Arg ARG_DEBUG		   = "--debug";
+	constexpr Arg ARG_NO_GUI	   = "--no-gui";
+	constexpr Arg ARG_NO_GRAPHICS  = "--no-graphics";
+	constexpr Arg ARG_NO_UPDATE	   = "--no-update";
+	constexpr Arg ARG_SCRIPT_SHORT = "-s";
+	constexpr Arg ARG_SCRIPT_LONG  = "--script";
 
 	/**
 	 * @brief Main application class.
@@ -93,7 +96,7 @@ namespace VTX::App
 		std::vector<std::unique_ptr<Tool::BaseTool>> _tools;
 
 		// TODO: redo.
-		void _handleArgs( const Args & p_args );
+		void _handleArgs( );
 	};
 
 } // namespace VTX::App

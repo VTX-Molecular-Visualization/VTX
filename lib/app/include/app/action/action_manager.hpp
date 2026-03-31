@@ -3,6 +3,7 @@
 
 #include "app/events.hpp"
 #include "app/services.hpp"
+#include "app/threading/thread_manager.hpp"
 #include <concepts>
 #include <latch>
 #include <memory>
@@ -13,6 +14,14 @@
 
 namespace VTX::App::Action
 {
+	/**
+	 * @brief Concept for action that can be threadable.
+	 */
+	template<typename T, typename... Args>
+	concept ThreadableAction
+		= requires( T t, Util::StopToken token, Threading::OptionalThreadReference thr, Args &&... args ) {
+			  { T( token, thr ) };
+		  };
 
 	class QueuedAction;
 
@@ -24,10 +33,10 @@ namespace VTX::App::Action
 	  public:
 		ActionManager();
 
-		void update( const float, const float ) noexcept;
+		void update( const float, const float );
 
 		/**
-		 * @brief Subscribe an action to be executed later on the main loop. Meant to be used only through QueueAction
+		 * @brief Thread safe. Subscribe an action to be executed later on the main thread.
 		 * @param
 		 */
 		void subscribe( QueuedAction ) noexcept;
@@ -36,10 +45,37 @@ namespace VTX::App::Action
 		 * @brief Execute an action of type A with the given arguments.
 		 */
 		template<typename A, typename... Args>
+			requires( not ThreadableAction<A, Args...> )
 		void execute( Args &&... p_args ) const
 		{
 			A a;
 			execute( a, std::forward<Args>( p_args )... );
+		}
+
+		/**
+		 * @brief Execute the given action, priorizing multithreading when there is no gui.
+		 */
+		template<typename A, typename... Args>
+			requires ThreadableAction<A, Args...>
+		void execute( Args &&... p_args ) const
+		{
+			if ( _noThread() )
+			{
+				A a;
+				execute( a, std::forward<Args>( p_args )... );
+			}
+			else
+			{
+				THREAD().createThread(
+					[... args
+					 = std::forward<Args>( p_args ) ]( Util::StopToken p_token, Threading::BaseThread & p_thr ) mutable
+					{
+						A action( std::move( p_token ), p_thr );
+						action.execute( std::move( args )... );
+						return 0;
+					}
+				);
+			}
 		}
 
 		/**
@@ -72,6 +108,8 @@ namespace VTX::App::Action
 		};
 		std::unique_ptr<_Data, Del> _attributesPtr;
 		float						_skipTime = 0.f;
+
+		bool _noThread() const noexcept;
 	};
 
 	/**
@@ -129,8 +167,9 @@ namespace VTX::App::Action
 			{
 				if constexpr ( not std::same_as<SomeAction, _dummy> )
 				{
-					auto exec = [ this ]( auto... args ) { _obj.execute( args... ); };
-					std::apply( exec, _args );
+					auto exec = [ this ]( Args &&... args ) mutable
+					{ ACTION().execute<SomeAction>( _obj, std::forward<Args>( args )... ); };
+					std::apply( exec, std::move( _args ) );
 				}
 			}
 			void wait() override

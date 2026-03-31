@@ -33,6 +33,8 @@ namespace VTX::App::Action::IO
 	}
 	struct _SystemIo
 	{
+		Util::StopToken						   stopToken;
+		Threading::OptionalThreadReference	   threadRef;
 		std::latch							   extractorCreation { 1 };
 		std::optional<System::SystemExtractor> extractor;
 		inline void							   wait() noexcept
@@ -41,41 +43,43 @@ namespace VTX::App::Action::IO
 			if ( this->extractor )
 				this->extractor->wait();
 		}
+
+		inline void start_extraction()
+		{
+			assert( extractor );
+			extractor.value()( stopToken, threadRef );
+		}
 	};
 	void _SystemIoDel::operator()( _SystemIo * p_ ) noexcept { delete p_; }
 
 	LoadSystem::LoadSystem() : _data( new _SystemIo() ) {}
+	LoadSystem::LoadSystem( Util::StopToken p_token, Threading::OptionalThreadReference p_thr ) :
+		_data( new _SystemIo { std::move( p_token ), std::move( p_thr ) } )
+	{
+	}
 
 	void LoadSystem::execute( FilePath p_path )
 	{
-		auto & reg = REG();
-
-		// Create entity.
-		ECS::Entity entity			  = reg.create();
-		auto &		pendingSystemData = reg.emplace<System::PendingSystem>( entity );
-		pendingSystemData.path		  = std::move( p_path );
-		_data->extractor			  = System::SystemExtractor( std::move( entity ), pendingSystemData );
+		_data->extractor = System::SystemExtractor( std::move( p_path ) );
 		_data->extractorCreation.count_down();
 
-		THREAD().createThread( _data->extractor.value() );
+		_data->start_extraction();
 	}
 	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
 	{
-		auto & reg = REG();
-
-		// Create entity.
-		ECS::Entity				entity			  = reg.create();
-		System::PendingSystem & pendingSystemData = reg.emplace<System::PendingSystem>( entity );
-		pendingSystemData.path					  = std::move( p_path );
-		pendingSystemData.buffer.emplace( std::move( p_buffer ) );
-		_data->extractor = System::SystemExtractor( std::move( entity ), pendingSystemData );
+		_data->extractor = System::SystemExtractor( std::move( p_path ), std::move( p_buffer ) );
 		_data->extractorCreation.count_down();
 
-		THREAD().createThread( _data->extractor.value() );
+		_data->start_extraction();
 	}
 	void LoadSystem::wait() noexcept { _data->wait(); }
 
 	AssociateTrajectory::AssociateTrajectory() : _data( new _SystemIo() ) {}
+	AssociateTrajectory::AssociateTrajectory( Util::StopToken p_token, Threading::OptionalThreadReference p_thr ) :
+		_data( new _SystemIo { std::move( p_token ), std::move( p_thr ) } )
+
+	{
+	}
 	void AssociateTrajectory::execute( const FilePath & p_path, const ECS::Entity & p_entity )
 	{
 		if ( p_entity == entt::null )
@@ -84,14 +88,9 @@ namespace VTX::App::Action::IO
 			return;
 		}
 
-		auto & pendingSystemData		 = REG().emplace<System::PendingSystem>( p_entity );
-		pendingSystemData.onlyTrajectory = true;
-		pendingSystemData.path			 = p_path;
-
-		_data->extractor = System::SystemExtractor( p_entity, pendingSystemData );
+		_data->extractor = System::SystemExtractor( p_entity, p_path );
 		_data->extractorCreation.count_down();
-
-		THREAD().createThread( _data->extractor.value() );
+		_data->start_extraction();
 	}
 	void AssociateTrajectory::execute( const std::string & p_path, const ECS::Entity & p_e )
 	{

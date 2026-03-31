@@ -39,14 +39,7 @@ namespace VTX::App::Pass
 		 * Avoid pushing systems multiple times when multiple systems changed.
 		 */
 		bool _needPush = false;
-
-		/**
-		 * @brief Called during the update loop to manage pending systems.
-		 */
-		void _pendingSystemUpdate() noexcept;
-
-		/**
-		 * @brief Current used representations.
+		/** @brief Current used representations.
 		 */
 		// TODO: use resource manager to purge unused.
 		std::map<ECS::Entity, Renderer::RepresentationIndex> _representations;

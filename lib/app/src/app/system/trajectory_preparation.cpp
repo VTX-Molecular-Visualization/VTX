@@ -45,10 +45,11 @@ namespace VTX::App::System
 		{
 		}
 		uint TrajectoryFullBufferReader::operator()(
-			VTX::Util::StopToken p_stopToken,
-			Threading::BaseThread &
+			VTX::Util::StopToken	p_stopToken,
+			Threading::BaseThread & p_thr
 		) noexcept
 		{
+			p_thr.setProgressText( "Reading trajectory ..." );
 			_ptr->reader.set( p_stopToken );
 			const size_t frameCount = _ptr->reader.frameCount();
 
