@@ -328,7 +328,9 @@ namespace VTX::Renderer::Context::Backend::GL
 					throw std::runtime_error( "EGL: Wayland platform requires a native display" );
 				}
 				VTX_TRACE( "[EGL] Using Wayland platform display" );
+				VTX_TRACE( "[EGL] Calling eglGetPlatformDisplay(WAYLAND)" );
 				_display = eglGetPlatformDisplay( EGL_PLATFORM_WAYLAND_KHR, _nativeDisplay, nullptr );
+				VTX_TRACE( "[EGL] eglGetPlatformDisplay(WAYLAND) -> {}", reinterpret_cast<uintptr_t>( _display ) );
 				break;
 			}
 			case Desc::E_NATIVE_PLATEFORM::X11:
@@ -337,7 +339,9 @@ namespace VTX::Renderer::Context::Backend::GL
 				if ( _nativeDisplay )
 				{
 					VTX_TRACE( "[EGL] Using X11 platform display" );
+					VTX_TRACE( "[EGL] Calling eglGetPlatformDisplay(X11)" );
 					_display = eglGetPlatformDisplay( EGL_PLATFORM_X11_KHR, _nativeDisplay, nullptr );
+					VTX_TRACE( "[EGL] eglGetPlatformDisplay(X11) -> {}", reinterpret_cast<uintptr_t>( _display ) );
 				}
 				break;
 			}
@@ -347,7 +351,9 @@ namespace VTX::Renderer::Context::Backend::GL
 				VTX_TRACE( "[EGL] No explicit native platform provided, using EGL default display" );
 				_platform	  = Platform::Default;
 				_nativeDisplay = nullptr;
+				VTX_TRACE( "[EGL] Calling eglGetDisplay(EGL_DEFAULT_DISPLAY)" );
 				_display	  = eglGetDisplay( EGL_DEFAULT_DISPLAY );
+				VTX_TRACE( "[EGL] eglGetDisplay(EGL_DEFAULT_DISPLAY) -> {}", reinterpret_cast<uintptr_t>( _display ) );
 				break;
 			}
 			}
@@ -357,7 +363,9 @@ namespace VTX::Renderer::Context::Backend::GL
 				VTX_TRACE( "[EGL] X11 platform display unavailable, using EGL default display" );
 				_nativeDisplay = nullptr;
 				_platform	  = Platform::Default;
+				VTX_TRACE( "[EGL] Calling eglGetDisplay(EGL_DEFAULT_DISPLAY) fallback" );
 				_display	  = eglGetDisplay( EGL_DEFAULT_DISPLAY );
+				VTX_TRACE( "[EGL] eglGetDisplay(EGL_DEFAULT_DISPLAY) fallback -> {}", reinterpret_cast<uintptr_t>( _display ) );
 			}
 
 			if ( _display == EGL_NO_DISPLAY )
@@ -365,16 +373,19 @@ namespace VTX::Renderer::Context::Backend::GL
 				throw std::runtime_error( "EGL: Failed to get platform display" );
 			}
 
+			VTX_TRACE( "[EGL] Calling eglInitialize" );
 			if ( not eglInitialize( _display, &_major, &_minor ) )
 			{
 				throw std::runtime_error( "EGL: Initialization failed" );
 			}
 			VTX_TRACE( "[EGL] Initialized EGL {}.{}", _major, _minor );
 
+			VTX_TRACE( "[EGL] Calling eglBindAPI(EGL_OPENGL_API)" );
 			if ( not eglBindAPI( EGL_OPENGL_API ) )
 			{
 				throw std::runtime_error( "EGL: Failed to bind OpenGL API" );
 			}
+			VTX_TRACE( "[EGL] eglBindAPI(EGL_OPENGL_API) succeeded" );
 
 			const EGLint configAttribs[] = { EGL_SURFACE_TYPE,
 											 EGL_WINDOW_BIT,
@@ -399,14 +410,18 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			EGLint numConfigs = 0;
 
+			VTX_TRACE( "[EGL] Calling eglChooseConfig" );
 			if ( not eglChooseConfig( _display, configAttribs, &_config, 1, &numConfigs ) || numConfigs == 0 )
 			{
 				throw std::runtime_error( "EGL: Failed to choose config" );
 			}
+			VTX_TRACE( "[EGL] eglChooseConfig succeeded with {} config(s)", numConfigs );
 
+			VTX_TRACE( "[EGL] Calling eglCreateWindowSurface for native surface {}", p_contextInfo.surface );
 			_surface = eglCreateWindowSurface(
 				_display, _config, reinterpret_cast<EGLNativeWindowType>( p_contextInfo.surface ), nullptr
 			);
+			VTX_TRACE( "[EGL] eglCreateWindowSurface -> {}", reinterpret_cast<uintptr_t>( _surface ) );
 
 			if ( _surface == EGL_NO_SURFACE )
 			{
@@ -431,7 +446,9 @@ namespace VTX::Renderer::Context::Backend::GL
 
 											  EGL_NONE };
 
+			VTX_TRACE( "[EGL] Calling eglCreateContext" );
 			_context = eglCreateContext( _display, _config, EGL_NO_CONTEXT, contextAttribs );
+			VTX_TRACE( "[EGL] eglCreateContext -> {}", reinterpret_cast<uintptr_t>( _context ) );
 
 			if ( _context == EGL_NO_CONTEXT )
 			{
@@ -455,10 +472,12 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		void makeCurrent() const
 		{
+			VTX_TRACE( "[EGL] Calling eglMakeCurrent" );
 			if ( not eglMakeCurrent( _display, _surface, _surface, _context ) )
 			{
 				throw std::runtime_error( "EGL: makeCurrent failed" );
 			}
+			VTX_TRACE( "[EGL] eglMakeCurrent succeeded" );
 		}
 
 		void swapBuffers() const { eglSwapBuffers( _display, _surface ); }

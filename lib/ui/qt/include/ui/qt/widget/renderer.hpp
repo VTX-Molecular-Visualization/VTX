@@ -117,9 +117,14 @@ namespace VTX::UI::QT::Widget
 		void _addHUDWidget( QWidget * const, const HUD_POSITION );
 
 		/**
-		 * @brief Synchronize overlay geometry.
+		 * @brief Synchronize HUD geometry and optionally show items.
 		 */
-		void _syncOverlayGeometry();
+		void _syncHUDWidgets( const bool p_showWidgets = false );
+
+		/**
+		 * @brief Compute the geometry of a HUD widget for the current renderer rect.
+		 */
+		QRect _getHUDGeometry( QWidget * const, const HUD_POSITION ) const;
 
 		/**
 		 * @brief Give focus back to the rendering surface.

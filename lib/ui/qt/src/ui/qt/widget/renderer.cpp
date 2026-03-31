@@ -130,6 +130,7 @@ namespace VTX::UI::QT::Widget
 	void Renderer::showEvent( QShowEvent * p_event )
 	{
 		QWidget::showEvent( p_event );
+		_syncHUDWidgets( true );
 		_focusRenderer();
 	}
 
@@ -137,7 +138,7 @@ namespace VTX::UI::QT::Widget
 	{
 		QWidget::resizeEvent( p_event );
 
-		_syncOverlayGeometry();
+		_syncHUDWidgets();
 
 		if ( _container != nullptr )
 		{
@@ -158,7 +159,7 @@ namespace VTX::UI::QT::Widget
 		const QSize size = this->size();
 		_window->resize( size );
 		_container->resize( size );
-		_syncOverlayGeometry();
+		_syncHUDWidgets();
 
 		const QSize scaledSize = size * _window->devicePixelRatio();
 		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
@@ -178,69 +179,75 @@ namespace VTX::UI::QT::Widget
 	void Renderer::_addHUDWidget( QWidget * const p_widget, const HUD_POSITION p_pos )
 	{
 		p_widget->setParent( this );
+		// Keep the HUD native so it stays above the embedded QWindow container.
 		p_widget->setAttribute( Qt::WA_NativeWindow, true );
-		p_widget->setAttribute( Qt::WA_TranslucentBackground );
-		p_widget->setAttribute( Qt::WA_NoSystemBackground );
-		p_widget->setAutoFillBackground( false );
 		p_widget->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
-		p_widget->move( 0, 0 );
-		p_widget->show();
 		_hudItems.push_back( { p_widget, p_pos } );
-		_syncOverlayGeometry();
+		_syncHUDWidgets( isVisible() );
 	}
 
-	void Renderer::_syncOverlayGeometry()
+	void Renderer::_syncHUDWidgets( const bool p_showWidgets )
 	{
 		if ( not isVisible() )
 		{
 			return;
 		}
 
-		const QRect availableRect = rect();
 		for ( const HUDItem & item : _hudItems )
 		{
 			QWidget * const widget = item.widget;
-			if ( widget == nullptr || not widget->isVisible() )
+			if ( widget == nullptr )
 			{
 				continue;
 			}
 
-			widget->adjustSize();
-
-			const QSize size = widget->sizeHint().expandedTo( widget->minimumSizeHint() );
-			int			x	 = availableRect.left();
-			int			y	 = availableRect.top();
-
-			switch ( item.position )
+			widget->setGeometry( _getHUDGeometry( widget, item.position ) );
+			if ( p_showWidgets )
 			{
-			case HUD_POSITION::TOP_LEFT: break;
-			case HUD_POSITION::TOP_CENTER:
-				x = availableRect.left() + ( availableRect.width() - size.width() ) / 2;
-				break;
-			case HUD_POSITION::TOP_RIGHT: x = availableRect.right() - size.width() + 1; break;
-			case HUD_POSITION::CENTER_LEFT:
-				y = availableRect.top() + ( availableRect.height() - size.height() ) / 2;
-				break;
-			case HUD_POSITION::CENTER_RIGHT:
-				x = availableRect.right() - size.width() + 1;
-				y = availableRect.top() + ( availableRect.height() - size.height() ) / 2;
-				break;
-			case HUD_POSITION::BOTTOM_LEFT: y = availableRect.bottom() - size.height() + 1; break;
-			case HUD_POSITION::BOTTOM_CENTER:
-				x = availableRect.left() + ( availableRect.width() - size.width() ) / 2;
-				y = availableRect.bottom() - size.height() + 1;
-				break;
-			case HUD_POSITION::BOTTOM_RIGHT:
-				x = availableRect.right() - size.width() + 1;
-				y = availableRect.bottom() - size.height() + 1;
-				break;
-			default: assert( false && "Invalid HUD position" );
+				widget->show();
 			}
-
-			const QRect geometry( QPoint( x, y ), size );
-			widget->setGeometry( geometry );
 			widget->raise();
 		}
+	}
+
+	QRect Renderer::_getHUDGeometry( QWidget * const p_widget, const HUD_POSITION p_pos ) const
+	{
+		assert( p_widget != nullptr );
+
+		p_widget->adjustSize();
+
+		const QRect availableRect = rect();
+		const QSize size		  = p_widget->sizeHint().expandedTo( p_widget->minimumSizeHint() );
+		int			x			  = availableRect.left();
+		int			y			  = availableRect.top();
+
+		switch ( p_pos )
+		{
+		case HUD_POSITION::TOP_LEFT: break;
+		case HUD_POSITION::TOP_CENTER:
+			x = availableRect.left() + ( availableRect.width() - size.width() ) / 2;
+			break;
+		case HUD_POSITION::TOP_RIGHT: x = availableRect.right() - size.width() + 1; break;
+		case HUD_POSITION::CENTER_LEFT:
+			y = availableRect.top() + ( availableRect.height() - size.height() ) / 2;
+			break;
+		case HUD_POSITION::CENTER_RIGHT:
+			x = availableRect.right() - size.width() + 1;
+			y = availableRect.top() + ( availableRect.height() - size.height() ) / 2;
+			break;
+		case HUD_POSITION::BOTTOM_LEFT: y = availableRect.bottom() - size.height() + 1; break;
+		case HUD_POSITION::BOTTOM_CENTER:
+			x = availableRect.left() + ( availableRect.width() - size.width() ) / 2;
+			y = availableRect.bottom() - size.height() + 1;
+			break;
+		case HUD_POSITION::BOTTOM_RIGHT:
+			x = availableRect.right() - size.width() + 1;
+			y = availableRect.bottom() - size.height() + 1;
+			break;
+		default: assert( false && "Invalid HUD position" );
+		}
+
+		return { QPoint( x, y ), size };
 	}
 
 } // namespace VTX::UI::QT::Widget
