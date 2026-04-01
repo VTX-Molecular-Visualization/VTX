@@ -8,7 +8,7 @@
 
 namespace VTX::PythonBinding
 {
-	const char * vtx_module_name() { return "vtx_python_api"; }
+	const char * vtx_module_name() { return "vtx"; }
 
 	const char * vtx_initialization_script_name() { return "vtx_module_init.py"; }
 

@@ -15,22 +15,20 @@
 
 namespace VTX::App::PythonBinding
 {
-	void VTXAppBinder::bind( VTX::PythonBinding::PyTXModule & p_vtxmodule )
+	void VTXAppBinder::bind( VTX::PythonBinding::Wrapper::Module & p_vtxmodule )
 	{
 		VTX::VTX_DEBUG( "Applying binding on module." );
 
-		VTX::PythonBinding::Wrapper::Module commands = p_vtxmodule.commands();
-
 		pybind11::module_ * apiModulePtr = nullptr;
-		p_vtxmodule.api().getPythonModule( &apiModulePtr );
+		p_vtxmodule.getPythonModule( &apiModulePtr );
 
-		commands.bindAction<App::Action::Scene::Clear>( "newScene", "Clear scene." );
+		p_vtxmodule.bindAction<App::Action::Scene::Clear>( "newScene", "Clear scene." );
 
 		pybind11::module_ * commandModulePtr = nullptr;
-		p_vtxmodule.commands().getPythonModule( &commandModulePtr );
+		p_vtxmodule.getPythonModule( &commandModulePtr );
 		// Selection::bind_selection( *commandModulePtr ); // ??
 		VTX::PythonBinding::Helper::declareEnum<Util::Image::E_FORMAT>( *commandModulePtr, "IMAGE_FORMAT" );
-		commands.bindAction<
+		p_vtxmodule.bindAction<
 			App::Action::IO::Snapshot,
 			const std::string &,
 			Util::Image::E_FORMAT,
@@ -44,11 +42,11 @@ namespace VTX::App::PythonBinding
 			VTX::PythonBinding::Wrapper::Arg( "height" )
 		);
 
-		commands.bindAction<Action::QueueAction<App::Action::IO::LoadSystem>, const std::string &>(
+		p_vtxmodule.bindAction<Action::QueueAction<App::Action::IO::LoadSystem>, const std::string &>(
 			"openFile", "Open files at given path.", VTX::PythonBinding::Wrapper::Arg( "path" )
 		);
 
-		commands.bindAction<
+		p_vtxmodule.bindAction<
 			Action::QueueAction<App::Action::IO::AssociateTrajectory>,
 			const std::string &,
 			const ECS::Entity &>(
@@ -57,56 +55,56 @@ namespace VTX::App::PythonBinding
 			VTX::PythonBinding::Wrapper::Arg( "path" ),
 			VTX::PythonBinding::Wrapper::Arg( "systemId" )
 		);
-		commands.def(
+		p_vtxmodule.def(
 			"getSystemIdByName",
 			&Helper::System::getSystemByName,
 			"Return a system ID that matches given name (case sensitive)."
 		);
-		commands.bindAction<Action::QueueAction<App::Action::IO::DownloadSystem>, const std::string &>(
+		p_vtxmodule.bindAction<Action::QueueAction<App::Action::IO::DownloadSystem>, const std::string &>(
 			"download", "Retrieve a system from the RCSB PDB.", VTX::PythonBinding::Wrapper::Arg( "system_id" )
 		);
 		/*
-		commands.bindAction<App::Action::IO::SaveScene, const std::string &>(
+		p_vtxmodule.bindAction<App::Action::IO::SaveScene, const std::string &>(
 			"save", "Save scene.", VTX::PythonBinding::Wrapper::VArg<std::string>( "path", "" )
 		);
-		commands.bindAction<App::Action::IO::SaveSettings>( "saveSettings", "Save settings." );
-		commands.bindAction<App::Action::IO::ReloadSettings>( "reloadSettings", "Reload settings." );
-		commands.bindAction<App::Action::IO::ResetSettings>( "resetSettings", "Reset settings." );
+		p_vtxmodule.bindAction<App::Action::IO::SaveSettings>( "saveSettings", "Save settings." );
+		p_vtxmodule.bindAction<App::Action::IO::ReloadSettings>( "reloadSettings", "Reload settings." );
+		p_vtxmodule.bindAction<App::Action::IO::ResetSettings>( "resetSettings", "Reset settings." );
 		*/
-		commands.bindAction<Action::QueueAction<App::Action::Scene::Clear>>( "clear", "Clear scene." );
+		p_vtxmodule.bindAction<Action::QueueAction<App::Action::Scene::Clear>>( "clear", "Clear scene." );
 
-		commands.bindAction<
+		p_vtxmodule.bindAction<
 			Action::QueueAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>>(
 			"setCameraProjectionOrthographic", "Set the render projection into Orthographic mode."
 		);
-		commands
+		p_vtxmodule
 			.bindAction<Action::QueueAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>>(
 				"setCameraProjectionPerspective", "Set the render projection into Perspective mode."
 			);
 		/*
-		commands.bindAction<App::Action::Camera::ToggleCameraProjection>(
+		p_vtxmodule.bindAction<App::Action::Camera::ToggleCameraProjection>(
 			"toggleCameraProjection", "Toggle the render projection between Perspective and Orthographic mode."
 		);
 		*/
-		commands.bindAction<Action::QueueAction<App::Action::Camera::Reset>>(
+		p_vtxmodule.bindAction<Action::QueueAction<App::Action::Camera::Reset>>(
 			"resetCamera", "Put the camera back in the initial space."
 		);
 
 		// TODO : test the stuff below after threading
 		/*
-		commands.bindAction<App::Action::Camera::MoveCamera, TravelViewpoint>(
+		p_vtxmodule.bindAction<App::Action::Camera::MoveCamera, TravelViewpoint>(
 			"travelTo",
 			"Travel to a point in space and rotate the camera within the travel time window.",
 			VTX::PythonBinding::Wrapper::Arg( "travelViewpoint" )
 		);
-		commands.bindAction<App::Action::Camera::MoveCamera, Vec3f, Quatf, float>(
+		p_vtxmodule.bindAction<App::Action::Camera::MoveCamera, Vec3f, Quatf, float>(
 			"travelTo",
 			"Travel to a point in space and rotate the camera within the travel time window.",
 			VTX::PythonBinding::Wrapper::Arg( "position" ),
 			VTX::PythonBinding::Wrapper::Arg( "rotation" ),
 			VTX::PythonBinding::Wrapper::Arg( "travelTime" )
 		);
-		commands.bindAction<App::Action::Camera::MoveCamera, float, float, float, float, float, float, float, float>(
+		p_vtxmodule.bindAction<App::Action::Camera::MoveCamera, float, float, float, float, float, float, float, float>(
 			"travelTo",
 			"Travel to a point in space and rotate the camera within the travel time window.",
 			VTX::PythonBinding::Wrapper::Arg( "position_x" ),
@@ -119,7 +117,7 @@ namespace VTX::App::PythonBinding
 			VTX::PythonBinding::Wrapper::Arg( "travelTime" )
 		);
 		*/
-		commands.def(
+		p_vtxmodule.def(
 			"getCameraPosition",
 			[]()
 			{
@@ -129,7 +127,7 @@ namespace VTX::App::PythonBinding
 			},
 			"Return current camera position vector"
 		);
-		commands.def(
+		p_vtxmodule.def(
 			"getCameraRotation",
 			[]()
 			{
@@ -177,13 +175,13 @@ namespace VTX::App::PythonBinding
 	{
 		/*
 		VTX::PythonBinding::importObject(
-			fmt::format( "{}.Command", VTX::PythonBinding::vtx_module_name() ), "select"
+			fmt::format( "{}", VTX::PythonBinding::vtx_module_name() ), "select"
 		);
 		VTX::PythonBinding::importObject(
-			fmt::format( "{}.Command", VTX::PythonBinding::vtx_module_name() ), "intersect"
+			fmt::format( "{}", VTX::PythonBinding::vtx_module_name() ), "intersect"
 		);
 		VTX::PythonBinding::importObject(
-			fmt::format( "{}.Command", VTX::PythonBinding::vtx_module_name() ), "exclusive"
+			fmt::format( "{}", VTX::PythonBinding::vtx_module_name() ), "exclusive"
 		);
 		*/
 	}

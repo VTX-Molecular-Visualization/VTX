@@ -304,7 +304,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Atom", "[python][binding][a
 		pybind11::return_value_policy::move
 	);
 	pybind11::exec( fmt::format( "from {} import *", PythonBinding::vtx_module_name() ) );
-	pybind11::exec( fmt::format( "from {}.API import *", PythonBinding::vtx_module_name() ) );
 
 	Test::Tester tester { factoryName };
 

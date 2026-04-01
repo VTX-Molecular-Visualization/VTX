@@ -50,8 +50,8 @@ namespace VTX::PythonBinding
 		 */
 		Wrapper::Module loadModule( const FilePath & p_path ) const;
 
-		const PyTXModule & getModule() const;
-		PyTXModule &	   getModule();
+		const Wrapper::Module & getModule() const;
+		Wrapper::Module &		getModule();
 
 		void print( const std::string & p_line ) const;
 

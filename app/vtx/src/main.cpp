@@ -94,8 +94,10 @@ int main( int p_argc, char * p_argv[] )
 		if ( help )
 		{
 			std::cout << std::endl << *help;
+#ifdef _WIN32
 			if ( hasParentConsole )
 				unblockParentConsole();
+#endif
 			return EXIT_SUCCESS;
 		}
 

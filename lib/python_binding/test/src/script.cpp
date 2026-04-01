@@ -31,7 +31,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][action
 	CHECK( Test::ExternalTool::Action::ToolAction::executed() == false );
 
 	Test::ExternalTool::Action::ToolAction::reset();
-	interpretor.runCommand( "ToolActionExecute()" );
+	interpretor.runCommand( "vtx.ToolActionExecute()" );
 	CHECK( Test::ExternalTool::Action::ToolAction::executed() == true );
 }
 

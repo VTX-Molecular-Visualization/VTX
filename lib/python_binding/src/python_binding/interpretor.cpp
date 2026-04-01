@@ -4,7 +4,6 @@
 #include "python_binding/binding/vtx_module.hpp"
 #include "python_binding/command_filter.hpp"
 #include "python_binding/log_redirection.hpp"
-#include "python_binding/vtx_python_module.hpp"
 #include "python_binding/wrapper/module.hpp"
 #include <algorithm>
 #include <io/internal/filesystem.hpp>
@@ -15,7 +14,7 @@
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
-PYBIND11_EMBEDDED_MODULE( vtx_python_api, m )
+PYBIND11_EMBEDDED_MODULE( vtx, m )
 {
 	// At first we were building an external python binary (.pyd or .so) and we imported that module to bind commands,
 	// classes and all ... However, because of the separate binary thing and how we use global variables such as the
@@ -121,13 +120,6 @@ namespace VTX::PythonBinding
 			// Allow the python "print" function to be funneled into our log system
 			_vtxModule.import( "sys" ).attr( "stdout" ) = _vtxModule.attr( "LogRedirection" );
 
-			pybind11::module_ vtxCoreModule
-				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Core" ).c_str() );
-			pybind11::module_ vtxApiModule
-				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".API" ).c_str() );
-			pybind11::module_ vtxCommandModule
-				= pybind11::module_::import( ( std::string( vtx_module_name() ) + ".Command" ).c_str() );
-
 			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
 			FilePath initCommandsFile = initScriptDir / vtx_initialization_script_name();
 
@@ -140,14 +132,11 @@ namespace VTX::PythonBinding
 		void add( Binder p_binder )
 		{
 			_binders.push_back( std::move( p_binder ) );
-			_binders.back().bind( *_pyTXModule );
+			_binders.back().bind( _wrapper );
 			_binders.back().importHeaders();
-
-			// Put newly added command to the module global namespace
-			pybind11::exec( fmt::format( "from {}.Command import *", vtx_module_name() ) );
 		}
 
-		PyTXModule & getPyTXModule() { return *_pyTXModule; }
+		Wrapper::Module & getVTXModule() { return _wrapper; }
 
 		void clearBinders()
 		{
@@ -161,8 +150,7 @@ namespace VTX::PythonBinding
 		LogRedirection	   _logger;
 		pybind11::scoped_interpreter _interpretor { createInterpretor( _pythonBinDir ) };
 		pybind11::module_			 _vtxModule { pybind11::module_::import( vtx_module_name() ) };
-		std::unique_ptr<PyTXModule>	 _pyTXModule
-			= std::make_unique<PyTXModule>( Wrapper::Module( _vtxModule, vtx_module_name() ) );
+		Wrapper::Module				 _wrapper { _vtxModule, vtx_module_name() };
 
 		std::vector<Binder> _binders;
 	};
@@ -235,7 +223,7 @@ namespace VTX::PythonBinding
 		runScript( p_path );
 
 		const std::string dir = p_path.parent_path().string();
-		getModule().core().runFunction<void>( "addSysPath", dir );
+		getModule().runFunction<void>( "addSysPath", dir );
 
 		const std::string filename = p_path.stem().string();
 		pybind11::module  loadedModule;
@@ -253,9 +241,9 @@ namespace VTX::PythonBinding
 
 	} // namespace VTX::PythonBinding
 
-	const PyTXModule & Interpretor::getModule() const { return _impl->getPyTXModule(); }
+	const Wrapper::Module & Interpretor::getModule() const { return _impl->getVTXModule(); }
 
-	PyTXModule & Interpretor::getModule() { return _impl->getPyTXModule(); }
+	Wrapper::Module & Interpretor::getModule() { return _impl->getVTXModule(); }
 
 	void Interpretor::Del::operator()( Interpretor::Impl * p_ptr ) const noexcept { delete p_ptr; }
 

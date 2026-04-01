@@ -17,6 +17,7 @@ namespace VTX::App::Test::Util
 		std::filesystem::create_directory( path );
 		LOGGER::init( path );
 
+		return;
 		try
 		{
 			// We intend to load API into the test executable interpretor. This has to be done once per process, so if
@@ -26,6 +27,10 @@ namespace VTX::App::Test::Util
 			interpretor.getPythonModule( &modul );
 
 			VTX::PythonBinding::Binding::applyVtxApiBinding( *modul );
+		}
+		catch ( std::exception & e )
+		{
+			VTX_ERROR( "Exception caught in python fixture : <{}>", e.what() );
 		}
 		catch ( ... )
 		{

@@ -56,20 +56,7 @@ namespace VTX::PythonBinding::Binding
 			.def_static( "write", &LogRedirection::write )
 			.def_static( "flush", &LogRedirection::flush );
 
-		// Core module : Contains some core functions which must be hidden for users
-		pybind11::module_ vtxCoreModule = p_module.def_submodule( "Core", "VTX Python core functions" );
-		vtxCoreModule.doc()				= "Contains some core functions which must be hidden for users.";
-
-		// Command module : Contains all commands accessible to user via command line.
-		// Keep in mind that some command won't be accessible from the external module, such as "runscript" which needs
-		// the interpreter in the external binary extension.
-		pybind11::module_ vtxCommandModule = p_module.def_submodule( "Command", "VTX Python command interface" );
-		vtxCommandModule.doc() = "Command module : Contains all commands accessible to user via command line.";
-
-		pybind11::module_ vtxAPIModule = p_module.def_submodule( "API", "VTX API." );
-		vtxAPIModule.doc()			   = "VTX API module."; // optional module docstring
-
-		Binding::applyVtxApiBinding( vtxAPIModule );
+		Binding::applyVtxApiBinding( p_module );
 	}
 	void applyVtxApiBinding( pybind11::module_ & p_apiModule )
 	{

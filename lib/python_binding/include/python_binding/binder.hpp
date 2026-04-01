@@ -1,7 +1,7 @@
 #ifndef __VTX_PYTHON_BINDING_BINDER__
 #define __VTX_PYTHON_BINDING_BINDER__
 
-#include "python_binding/vtx_python_module.hpp"
+#include "python_binding/wrapper/module.hpp"
 #include <string>
 
 namespace VTX::PythonBinding
@@ -10,7 +10,7 @@ namespace VTX::PythonBinding
 	class Binder;
 
 	template<typename BinderType>
-	concept BinderConcept = requires( BinderType & o, PyTXModule & p ) {
+	concept BinderConcept = requires( BinderType & o, Wrapper::Module & p ) {
 		{ o.bind( p ) };
 	};
 
@@ -26,7 +26,7 @@ namespace VTX::PythonBinding
 		 * @brief Method to implement to bind actions to commands.
 		 * @param p_pytxModule Module provided by the interpretor to bind actions into.
 		 */
-		inline void bind( PyTXModule & p_ )
+		inline void bind( Wrapper::Module & p_ )
 		{
 			if ( _ptr )
 				_ptr->bind( p_ );
@@ -45,9 +45,9 @@ namespace VTX::PythonBinding
 	  private:
 		struct _interface
 		{
-			virtual ~_interface()				 = default;
-			virtual void bind( PyTXModule & p_ ) = 0;
-			virtual void importHeaders()		 = 0;
+			virtual ~_interface()					  = default;
+			virtual void bind( Wrapper::Module & p_ ) = 0;
+			virtual void importHeaders()			  = 0;
 		};
 		template<typename T>
 		class _wrapper final : public _interface
@@ -56,7 +56,7 @@ namespace VTX::PythonBinding
 
 		  public:
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
-			virtual void bind( PyTXModule & p_ ) override { _obj.bind( p_ ); }
+			virtual void bind( Wrapper::Module & p_ ) override { _obj.bind( p_ ); }
 			virtual void importHeaders()
 			{
 				if constexpr ( requires( T & o ) {

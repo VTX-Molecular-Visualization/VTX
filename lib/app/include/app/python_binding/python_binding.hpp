@@ -11,7 +11,7 @@ namespace VTX::App::PythonBinding
 	class VTXAppBinder
 	{
 	  public:
-		void bind( VTX::PythonBinding::PyTXModule & p_vtxmodule );
+		void bind( VTX::PythonBinding::Wrapper::Module & p_vtxmodule );
 		void importHeaders();
 	};
 } // namespace VTX::App::PythonBinding

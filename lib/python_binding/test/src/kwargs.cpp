@@ -35,11 +35,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 	VTX::App::Test::Util::PythonFixture f;
 
 	pybind11::module_ * mod = nullptr;
-	f.interpretor.getModule().commands().getPythonModule( &mod );
+	f.interpretor.getModule().getPythonModule( &mod );
 
 	Test::TestStruct test;
 
-	f.interpretor.getModule().commands().def(
+	f.interpretor.getModule().def(
 		"test_kwargs",
 		[ & ]( const pybind11::kwargs & p_kwargs )
 		{
@@ -55,7 +55,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 		"Test for keyword arguments"
 	);
 
-	pybind11::exec( fmt::format( "from {}.Command import *", VTX::PythonBinding::vtx_module_name() ) );
+	pybind11::exec( fmt::format( "from {} import *", VTX::PythonBinding::vtx_module_name() ) );
 
 	pybind11::exec( "test_kwargs(name='poney')" );
 	CHECK( test.size == 1 );
