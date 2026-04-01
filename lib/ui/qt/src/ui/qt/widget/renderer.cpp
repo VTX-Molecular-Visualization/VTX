@@ -172,8 +172,8 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		//_container->setFocus( Qt::OtherFocusReason );
-		//_window->requestActivate();
+		_container->setFocus( Qt::OtherFocusReason );
+		_window->requestActivate();
 	}
 
 	void Renderer::_addHUDWidget( QWidget * const p_widget, const HUD_POSITION p_pos )
