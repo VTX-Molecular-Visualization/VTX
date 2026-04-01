@@ -26,9 +26,9 @@ namespace VTX::App::PythonBinding
 		};
 	} // namespace
 
-	void RunScript::bind( VTX::PythonBinding::PyTXModule & p_vtxModule )
+	void RunScript::bind( VTX::PythonBinding::Wrapper::Module & p_vtxModule )
 	{
-		p_vtxModule.commands().bindAction<RunScriptAction, std::string>(
+		p_vtxModule.bindAction<RunScriptAction, std::string>(
 			"runScript", "Execute the script located at the path provided in argument."
 		);
 	}
