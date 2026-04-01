@@ -130,7 +130,7 @@ namespace VTX::UI::QT::Widget
 	void Renderer::showEvent( QShowEvent * p_event )
 	{
 		QWidget::showEvent( p_event );
-		_syncHUDWidgets( true );
+		//_syncHUDWidgets( true );
 		_focusRenderer();
 	}
 
@@ -138,7 +138,7 @@ namespace VTX::UI::QT::Widget
 	{
 		QWidget::resizeEvent( p_event );
 
-		_syncHUDWidgets();
+		//_syncHUDWidgets();
 
 		if ( _container != nullptr )
 		{
@@ -159,7 +159,7 @@ namespace VTX::UI::QT::Widget
 		const QSize size = this->size();
 		_window->resize( size );
 		_container->resize( size );
-		_syncHUDWidgets();
+		//_syncHUDWidgets();
 
 		const QSize scaledSize = size * _window->devicePixelRatio();
 		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
@@ -176,6 +176,7 @@ namespace VTX::UI::QT::Widget
 		_window->requestActivate();
 	}
 
+	/*
 	void Renderer::_addHUDWidget( QWidget * const p_widget, const HUD_POSITION p_pos )
 	{
 		p_widget->setParent( this );
@@ -185,7 +186,9 @@ namespace VTX::UI::QT::Widget
 		_hudItems.push_back( { p_widget, p_pos } );
 		_syncHUDWidgets( isVisible() );
 	}
+	*/
 
+	/*
 	void Renderer::_syncHUDWidgets( const bool p_showWidgets )
 	{
 		if ( not isVisible() )
@@ -209,7 +212,9 @@ namespace VTX::UI::QT::Widget
 			widget->raise();
 		}
 	}
+	*/
 
+	/*
 	QRect Renderer::_getHUDGeometry( QWidget * const p_widget, const HUD_POSITION p_pos ) const
 	{
 		assert( p_widget != nullptr );
@@ -245,5 +250,6 @@ namespace VTX::UI::QT::Widget
 
 		return { QPoint( x, y ), size };
 	}
+	*/
 
 } // namespace VTX::UI::QT::Widget
