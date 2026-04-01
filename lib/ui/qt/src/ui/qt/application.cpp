@@ -187,6 +187,7 @@ namespace VTX::UI::QT
 				);
 			}
 			_app.finishStartup();
+			_app.handleArgs();
 
 			MAIN_WINDOW().show();
 			_splashScreen->finish( &MAIN_WINDOW() );

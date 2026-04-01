@@ -65,6 +65,12 @@ namespace VTX::App
 		void finishStartup();
 
 		/**
+		 * @brief Perform tasks instructed by the arguments.
+		 * Submitted files are loaded on the main thread in sequence.
+		 */
+		void handleArgs();
+
+		/**
 		 * @brief Get instantiated tools.
 		 */
 		inline std::vector<std::unique_ptr<Tool::BaseTool>> & getTools() { return _tools; }
@@ -84,9 +90,6 @@ namespace VTX::App
 		 * @brief Instantiated tools.
 		 */
 		std::vector<std::unique_ptr<Tool::BaseTool>> _tools;
-
-		// TODO: redo.
-		void _handleArgs();
 	};
 
 } // namespace VTX::App

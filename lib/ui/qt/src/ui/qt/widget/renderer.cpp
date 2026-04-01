@@ -5,10 +5,10 @@
 #include "ui/qt/settings.hpp"
 #include <QGuiApplication>
 #include <QStyleHints>
-#include <array>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/action/camera.hpp>
+#include <array>
 #include <qpa/qplatformnativeinterface.h>
 #include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
@@ -168,8 +168,6 @@ namespace VTX::UI::QT::Widget
 	{
 		if ( p_event != nullptr )
 		{
-			VTX_DEBUG( "Renderer::event type={}", Util::Enum::enumName( p_event->type() ) );
-
 			switch ( p_event->type() )
 			{
 			case QEvent::Show:
