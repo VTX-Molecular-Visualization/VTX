@@ -11,8 +11,9 @@ namespace VTX::App::ECS
 	/**
 	 * @brief Aliases.
 	 */
-	using Registry = entt::registry;
-	using Entity   = entt::entity;
+	using Registry				   = entt::registry;
+	using Entity				   = entt::entity;
+	constexpr Entity InvalidEntity = entt::null;
 
 	/**
 	 * @brief Helper type to check if a view get function returns void (i.e. tag component).
