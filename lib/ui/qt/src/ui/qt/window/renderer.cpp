@@ -52,6 +52,21 @@ namespace VTX::UI::QT::Window
 
 	void Renderer::keyReleaseEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, false ); }
 
+	void Renderer::focusInEvent( QFocusEvent * p_event )
+	{
+		QWindow::focusInEvent( p_event );
+		_handleModifiers();
+	}
+
+	void Renderer::focusOutEvent( QFocusEvent * p_event )
+	{
+		QWindow::focusOutEvent( p_event );
+
+		_inputManager.clearActions();
+		_pressedButton = Qt::NoButton;
+		_dragging	   = false;
+	}
+
 	void Renderer::mousePressEvent( QMouseEvent * p_event )
 	{
 		_pressedButton = p_event->button();
