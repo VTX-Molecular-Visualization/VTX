@@ -85,8 +85,8 @@ namespace VTX::App
 		FilePath _getPortableBaseDir()
 		{
 #if defined( __linux__ )
-			if ( const char * appImagePath = std::getenv( "APPIMAGE" );
-				 appImagePath != nullptr && appImagePath[ 0 ] != '\0' )
+			const char * appImagePath = std::getenv( "APPIMAGE" );
+			if ( appImagePath != nullptr && appImagePath[ 0 ] != '\0' )
 			{
 				return FilePath( appImagePath ).parent_path();
 			}
@@ -154,9 +154,9 @@ namespace VTX::App
 
 				.Run();
 
-			auto src = std::make_unique<Velopack::GithubSource>( URL_UPDATE.data() );
-			_impl->manager.emplace( std::move( src ) );
-			//_impl->manager.emplace( URL_UPDATE.data() );
+			// auto src = std::make_unique<Velopack::GithubSource>( URL_UPDATE.data() );
+			//_impl->manager.emplace( std::move( src ) );
+			_impl->manager.emplace( URL_UPDATE.data() );
 		}
 		catch ( const std::exception & p_e )
 		{
