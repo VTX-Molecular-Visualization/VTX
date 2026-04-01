@@ -14,8 +14,15 @@ namespace VTX::App
 	  public:
 		inline Fixture()
 		{
-			Args args( { ARG_NO_GRAPHICS, ARG_NO_GUI, ARG_NO_UPDATE, ARG_DEBUG } );
-			_app = std::make_unique<VTXApp>( args );
+			Arguments args;
+			args.argc		= 1;
+			const char * _	= "";
+			args.argv		= &_;
+			args.noGraphics = true;
+			args.noUpdates	= true;
+			args.noGui		= true;
+			args.debug		= true;
+			_app			= std::make_unique<VTXApp>( std::move( args ) );
 			_app->start();
 		}
 

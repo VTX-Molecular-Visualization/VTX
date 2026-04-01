@@ -1,3 +1,4 @@
+#include <app/arguments.hpp>
 #include <string>
 #include <util/types.hpp>
 #include <vector>
@@ -30,40 +31,82 @@ extern "C"
 }
 #endif
 
+/**
+ * @brief On windows, the console returns before the text is returned. The behavior is tight to the Windows OS : a
+ * console starts a new process and returns, then the process writes stuff in the console. It makes the help text appear
+ * after where the user expect the cursor to be, making it look like it is stuck even though it is not.
+ * To work around this, we add an "enter" input after we flush the stdcout to have a fresh cursor after the help text.
+ * All this stuff is pointless on linux as the console waits for the process to finish before returning hand.
+ */
+void unblockParentConsole() noexcept
+{
+#ifdef _WIN32
+	std::cout.flush();
+	// Inject Enter to unblock the cmd.exe prompt that fired before our output.
+	INPUT_RECORD ir						= {};
+	ir.EventType						= KEY_EVENT;
+	ir.Event.KeyEvent.bKeyDown			= TRUE;
+	ir.Event.KeyEvent.wRepeatCount		= 1;
+	ir.Event.KeyEvent.wVirtualKeyCode	= VK_RETURN;
+	ir.Event.KeyEvent.wVirtualScanCode	= MapVirtualKey( VK_RETURN, MAPVK_VK_TO_VSC );
+	ir.Event.KeyEvent.uChar.UnicodeChar = L'\r';
+
+	DWORD written;
+	WriteConsoleInput( GetStdHandle( STD_INPUT_HANDLE ), &ir, 1, &written );
+#endif
+}
+
 int main( int p_argc, char * p_argv[] )
 {
 	using namespace VTX;
 
 	try
 	{
-		App::Args args( p_argc, p_argv );
+		App::Arguments			   argss;
+		std::optional<std::string> help;
+		{
+			App::ArgumentParser parser( p_argc, p_argv );
+			parser.parse();
+			if ( parser.needHelp() )
+				help = parser.help();
+			parser.get( argss );
+		}
 
 #ifdef _DEBUG
-		args.add( App::ARG_DEBUG );
+		argss.debug = true;
 #endif
-		const bool debug = args.has( App::ARG_DEBUG );
 
 #ifdef _WIN32
-		// Disable default console.
 #pragma comment( linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup" )
-		//  Create console.
-		if ( debug )
-		{
+		// Attach to parent console if launched from CLI (cmd/PowerShell).
+		// Falls through silently if launched from Explorer (no parent console).
+		bool hasParentConsole = AttachConsole( ATTACH_PARENT_PROCESS );
+		if ( not hasParentConsole && argss.debug )
 			AllocConsole();
+		if ( hasParentConsole || argss.debug )
+		{
 			freopen_s( (FILE **)stdout, "CONOUT$", "w", stdout );
 			freopen_s( (FILE **)stderr, "CONOUT$", "w", stderr );
 			freopen_s( (FILE **)stdin, "CONIN$", "r", stdin );
 		}
 #endif
 
+		if ( help )
+		{
+			std::cout << std::endl << *help;
+			if ( hasParentConsole )
+				unblockParentConsole();
+			return EXIT_SUCCESS;
+		}
+
 #if VTX_UI_QT
-		if ( not args.has( App::ARG_NO_GUI ) )
+		if ( not argss.noGui )
 		{
 			// To set before QApplication construction.
 			QCoreApplication::setAttribute( Qt::AA_CompressHighFrequencyEvents );
 
 			Q_INIT_RESOURCE( vtx_qt_resources_ui );
-			UI::QT::Application app( args );
+			UI::QT::Application app( std::move( argss ) );
 #if VTX_TOOL_EXAMPLE
 			Q_INIT_RESOURCE( vtx_qt_resources_tool_example );
 			app.addTool<Tool::Example::ExampleTool>();
@@ -77,7 +120,7 @@ int main( int p_argc, char * p_argv[] )
 		}
 #endif
 
-		App::VTXApp app( args );
+		App::VTXApp app( std::move( argss ) );
 #if VTX_TOOL_EXAMPLE
 		app.addTool<Tool::Example::ExampleTool>();
 #endif

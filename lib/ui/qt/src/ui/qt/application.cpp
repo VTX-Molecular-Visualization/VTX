@@ -21,7 +21,7 @@ namespace VTX::UI::QT
 {
 
 	int zero = 0;
-	Application::Application( const App::Args & p_args ) : QApplication( zero, nullptr ), _app( p_args )
+	Application::Application( App::Arguments && p_args ) : QApplication( zero, nullptr ), _app( std::move( p_args ) )
 	{
 		using namespace Resources;
 		using namespace App;
@@ -33,7 +33,7 @@ namespace VTX::UI::QT
 		const std::string version = std::to_string( VERSION_MAJOR ) + "." + std::to_string( VERSION_MINOR ) + "."
 									+ std::to_string( VERSION_PATCH );
 		std::string displayName = APPLICATION_DISPLAY_NAME.data() + std::string( " v" ) + version;
-		if ( p_args.has( App::ARG_DEBUG ) )
+		if ( ARGS().debug )
 		{
 			displayName += " (Debug)";
 		}
@@ -187,6 +187,7 @@ namespace VTX::UI::QT
 				);
 			}
 			_app.finishStartup();
+			_app.handleArgs();
 
 			MAIN_WINDOW().show();
 			_splashScreen->finish( &MAIN_WINDOW() );

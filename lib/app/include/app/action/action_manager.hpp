@@ -53,7 +53,7 @@ namespace VTX::App::Action
 		}
 
 		/**
-		 * @brief Execute the given action, priorizing multithreading when there is no gui.
+		 * @brief Execute the given action, priorizing multithreading except when there is no gui.
 		 */
 		template<typename A, typename... Args>
 			requires ThreadableAction<A, Args...>
@@ -79,7 +79,7 @@ namespace VTX::App::Action
 		}
 
 		/**
-		 * @brief Execute the given action.
+		 * @brief Execute the given action right away.
 		 */
 		template<typename A, typename... Args>
 		void execute( A & p_action, Args &&... p_args ) const

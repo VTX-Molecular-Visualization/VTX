@@ -25,7 +25,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Construct the application with given arguments.
 		 */
-		Application( const App::Args & );
+		Application(  App::Arguments && );
 
 		/**
 		 * @brief Destructor.

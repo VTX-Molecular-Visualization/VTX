@@ -5,6 +5,7 @@
 #include "app/action/color_layout.hpp"
 #include "app/action/controller.hpp"
 #include "app/action/graphics_config.hpp"
+#include "app/action/io.hpp"
 #include "app/action/preset.hpp"
 #include "app/action/representation.hpp"
 #include "app/action/scene.hpp"
@@ -44,17 +45,19 @@ namespace
 namespace VTX::App
 {
 
-	VTXApp::VTXApp( const Args & p_args )
+	VTXApp::VTXApp( Arguments && p_args )
 	{
+		bool debug = p_args.debug;
+
 		// Set global registry.
 		ECS::setRegistry( _registry );
 
 		// Store args.
-		ECS::setCtx<Args>( p_args );
+		ECS::setCtx<Arguments>( std::move( p_args ) );
 		// Session.
 		ECS::setCtx<Session>();
 		// Logger.
-		LOGGER::init( SESSION().getLogsDir(), ARGS().has( ARG_DEBUG ) );
+		LOGGER::init( SESSION().getLogsDir(), debug );
 	}
 
 	VTXApp::~VTXApp()
@@ -80,10 +83,10 @@ namespace VTX::App
 		createInitialEntities();
 
 		auto & renderer = RENDERER();
-		if ( ECS::getCtx<Args>().has( ARG_NO_GRAPHICS ) )
+		if ( ECS::getCtx<Arguments>().noGraphics )
 		{
 			VTX_WARNING( "No graphics backend initialization" );
-			renderer.setDefault();
+			renderer.setDefault(); // TODO : SetDefault in both cases ?
 		}
 		else
 		{
@@ -93,12 +96,12 @@ namespace VTX::App
 
 		finishStartup();
 
-		_handleArgs();
+		handleArgs();
 	}
 
 	void VTXApp::startServices()
 	{
-		VTX_INFO( ARGS().toString() );
+		VTX_INFO( toString( ARGS() ) );
 		SESSION().print();
 
 		ECS::setCtx<Util::EventHub>();
@@ -178,70 +181,30 @@ namespace VTX::App
 
 		HUB().trigger<Events::ApplicationStart>();
 
-		if ( not ARGS().has( ARG_NO_UPDATE ) )
+		if ( not ARGS().noUpdates )
 		{
 			SESSION().checkForUpdate();
 		}
 	}
 
-	void VTXApp::_handleArgs()
+	void VTXApp::handleArgs()
 	{
-		// TODO: load pdb automatically or python script.
-
-		/*
-		using FILE_TYPE_ENUM = IO::Internal::Filesystem::FILE_TYPE_ENUM;
-		for ( const auto arg : args.all() )
+		const Arguments & args = ARGS();
+		for ( auto & it_file : args.positionalFiles )
 		{
-			// If argument is an existing file
-			if ( std::filesystem::exists( arg ) )
-			{
-				const FilePath		 path	  = FilePath( arg );
-				const FILE_TYPE_ENUM fileType = IO::Internal::Filesystem::getFileTypeFromFilePath( path );
+			if ( it_file.empty() )
+				continue; // The user probably didn't do it on purpose so no need to complain here
 
-				try
-				{
-					switch ( fileType )
-					{
-					case FILE_TYPE_ENUM::MOLECULE:
-					case FILE_TYPE_ENUM::TRAJECTORY:
-						App::ACTION().execute<App::Action::Scene::LoadSystem>( arg );
-						break;
-
-					case FILE_TYPE_ENUM::SCENE:
-						App::ACTION().execute<App::Action::Application::OpenScene>( arg );
-						break;
-
-					case FILE_TYPE_ENUM::SCRIPT:
-						// App::VTX_ACTION().execute<PythonBinding::Action::RunScript>( arg );
-						break;
-					}
-				}
-				catch ( const IOException & p_e )
-				{
-					VTX_ERROR( "Can't open file '{}' : {}.", arg, p_e.what() );
-				}
-			}
-			// If argument is a system name.
-			else if ( arg.size() == 4 )
+			if ( not std::filesystem::exists( it_file ) )
 			{
-				// Check only letter and number.
-				if ( std::all_of( arg.begin(), arg.end(), []( const char c ) { return std::isalnum( c ); } ) )
-				{
-					App::ACTION().execute<App::Action::Scene::DownloadSystem>(
-						arg, std::string( arg ) + ".pdb"
-					);
-				}
-				else
-				{
-					VTX_WARNING( "Argument '{}' is not a valid system name.", arg );
-				}
+				// Maybe there is a problem with the path so we need to tell 'em
+				VTX_WARNING( "File <{}> not found. VTX will skip it.", it_file );
+				continue;
 			}
-			else
-			{
-				VTX_WARNING( "Argument '{}' is not valid.", arg );
-			}
+
+			Action::IO::Open openAction;
+			ACTION().execute( openAction, it_file );
 		}
-		*/
 	}
 
 	//	bool VTXApp::hasAnyModifications() const

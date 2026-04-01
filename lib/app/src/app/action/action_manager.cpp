@@ -1,5 +1,4 @@
 #include "app/action/action_manager.hpp"
-#include "app/args.hpp"
 #include "app/events.hpp"
 #include "app/services.hpp"
 #include "app/vtx_app.hpp"
@@ -19,9 +18,9 @@ namespace VTX::App::Action
 	};
 	void ActionManager::Del::operator()( ActionManager::_Data * p_ ) noexcept { delete p_; }
 
-	ActionManager::ActionManager() : _attributesPtr( new _Data { ARGS().has( App::ARG_NO_GUI ) } ) {}
+	ActionManager::ActionManager() : _attributesPtr( new _Data { ARGS().noGui } ) {}
 
-	void ActionManager::update( const float p_delta, const float ) 
+	void ActionManager::update( const float p_delta, const float )
 	{
 		_skipTime += p_delta;
 		if ( _skipTime < 100.f )

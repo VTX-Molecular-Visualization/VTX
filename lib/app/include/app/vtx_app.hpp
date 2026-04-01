@@ -1,25 +1,15 @@
 #ifndef __VTX_APP_VTX_APP__
 #define __VTX_APP_VTX_APP__
 
+#include "app/arguments.hpp"
 #include "app/ecs.hpp"
 #include "app/pipeline.hpp"
 #include "app/tool/base_tool.hpp"
-#include "args.hpp"
 #include <memory>
 #include <vector>
 
 namespace VTX::App
 {
-	/**
-	 * @brief Available command line arguments.
-	 */
-
-	constexpr Arg ARG_DEBUG		   = "--debug";
-	constexpr Arg ARG_NO_GUI	   = "--no-gui";
-	constexpr Arg ARG_NO_GRAPHICS  = "--no-graphics";
-	constexpr Arg ARG_NO_UPDATE	   = "--no-update";
-	constexpr Arg ARG_SCRIPT_SHORT = "-s";
-	constexpr Arg ARG_SCRIPT_LONG  = "--script";
 
 	/**
 	 * @brief Main application class.
@@ -30,7 +20,7 @@ namespace VTX::App
 		/**
 		 * @brief Constructs a VTXApp object with the specified arguments.
 		 */
-		VTXApp( const Args & p_args );
+		VTXApp( Arguments && p_args );
 
 		/**
 		 * @brief Virtual destructor.
@@ -75,6 +65,12 @@ namespace VTX::App
 		void finishStartup();
 
 		/**
+		 * @brief Perform tasks instructed by the arguments.
+		 * Submitted files are loaded on the main thread in sequence.
+		 */
+		void handleArgs();
+
+		/**
 		 * @brief Get instantiated tools.
 		 */
 		inline std::vector<std::unique_ptr<Tool::BaseTool>> & getTools() { return _tools; }
@@ -94,9 +90,6 @@ namespace VTX::App
 		 * @brief Instantiated tools.
 		 */
 		std::vector<std::unique_ptr<Tool::BaseTool>> _tools;
-
-		// TODO: redo.
-		void _handleArgs( );
 	};
 
 } // namespace VTX::App

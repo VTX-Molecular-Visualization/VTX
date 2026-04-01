@@ -224,13 +224,9 @@ namespace VTX::UI::QT::Widget
 		switch ( p_pos )
 		{
 		case HUD_POSITION::TOP_LEFT: break;
-		case HUD_POSITION::TOP_CENTER:
-			x = availableRect.left() + ( availableRect.width() - size.width() ) / 2;
-			break;
+		case HUD_POSITION::TOP_CENTER: x = availableRect.left() + ( availableRect.width() - size.width() ) / 2; break;
 		case HUD_POSITION::TOP_RIGHT: x = availableRect.right() - size.width() + 1; break;
-		case HUD_POSITION::CENTER_LEFT:
-			y = availableRect.top() + ( availableRect.height() - size.height() ) / 2;
-			break;
+		case HUD_POSITION::CENTER_LEFT: y = availableRect.top() + ( availableRect.height() - size.height() ) / 2; break;
 		case HUD_POSITION::CENTER_RIGHT:
 			x = availableRect.right() - size.width() + 1;
 			y = availableRect.top() + ( availableRect.height() - size.height() ) / 2;
