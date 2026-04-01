@@ -29,6 +29,7 @@ namespace VTX::App::PythonBinding
 										{ return runPythonThread( p_stopToken, p_thread ); } )
 			)
 		{
+			_thread->setSilent( true );
 		}
 		~_Impl()
 		{
