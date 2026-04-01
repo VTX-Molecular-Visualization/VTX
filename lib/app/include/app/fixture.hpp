@@ -16,6 +16,9 @@ namespace VTX::App
 		inline Fixture()
 		{
 			Arguments args;
+			args.argc		= 1;
+			const char * _	= "";
+			args.argv		= &_;
 			args.noGraphics = true;
 			args.noUpdates	= true;
 			args.noGui		= true;
