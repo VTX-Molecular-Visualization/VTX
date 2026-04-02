@@ -47,6 +47,11 @@ namespace VTX::App
 		void applyDownloadedUpdate();
 
 		/**
+		 * @brief Does the application have an update manager available (not in dev mode).
+		 */
+		bool hasManager() const;
+
+		/**
 		 * @brief Is this version portable.
 		 */
 		bool isPortable() const;

@@ -6,7 +6,6 @@
 #include "app/services.hpp"
 #include "app/threading/thread_manager.hpp"
 #include <atomic>
-#include <cstdlib>
 #include <util/event_hub.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
@@ -89,52 +88,6 @@ namespace VTX::App
 		 */
 		Util::EventHub::Connection updateDownloadProgressConnection;
 	};
-
-	namespace
-	{
-		enum class SessionPathRoot
-		{
-			Data,
-			Pictures
-		};
-
-		FilePath _getDefaultBaseDir( const SessionPathRoot p_root )
-		{
-			switch ( p_root )
-			{
-			case SessionPathRoot::Data: return Filesystem::getDataHome();
-			case SessionPathRoot::Pictures: return Filesystem::getPicturesFolder();
-			}
-
-			return Filesystem::getDataHome();
-		}
-
-		FilePath _getPortableBaseDir()
-		{
-#if defined( __linux__ )
-			const char * appImagePath = std::getenv( "APPIMAGE" );
-			if ( appImagePath != nullptr && appImagePath[ 0 ] != '\0' )
-			{
-				return FilePath( appImagePath ).parent_path();
-			}
-#endif
-			return Filesystem::getExecutableDir();
-		}
-
-		FilePath _getPortableDataRoot()
-		{
-#if defined( _WIN32 )
-			const FilePath executableDir = Filesystem::getExecutableDir();
-			const FilePath parentDir	 = executableDir.parent_path();
-			if ( not parentDir.empty() )
-			{
-				return parentDir;
-			}
-#endif
-
-			return _getPortableBaseDir();
-		}
-	} // namespace
 
 	Session::Session() : _impl( std::make_unique<Impl>() )
 	{
@@ -380,7 +333,9 @@ namespace VTX::App
 		try
 		{
 			const Velopack::UpdateInfo pendingUpdate = *_impl->pendingUpdate;
-			( *_impl->manager ).WaitExitThenApplyUpdates( pendingUpdate, false, true, toStringVector( ARGS() ) );
+			std::vector<std::string>   args			 = toStringVector( ARGS() );
+			( *_impl->manager )
+				.WaitExitThenApplyUpdates( pendingUpdate, false, true, { args.begin() + 1, args.end() } );
 			VTX_INFO( "applyDownloadedUpdate: WaitExitThenApplyUpdates returned" );
 			ACTION().execute<Action::Application::Quit>();
 		}
@@ -392,31 +347,79 @@ namespace VTX::App
 		}
 	}
 
+	bool Session::hasManager() const { return _impl->manager.has_value(); }
+
 	bool Session::isPortable() const
 	{
-		if ( not _impl->manager )
-		{
-			return true;
-		}
+		assert( _impl->manager );
+
 		return ( *_impl->manager ).IsPortable();
 	}
 
+	namespace
+	{
+		enum class SessionPathRoot
+		{
+			Data,
+			Pictures
+		};
+
+		FilePath _getDefaultBaseDir( const SessionPathRoot p_root )
+		{
+			switch ( p_root )
+			{
+			case SessionPathRoot::Data: return Filesystem::getDataHome();
+			case SessionPathRoot::Pictures: return Filesystem::getPicturesFolder();
+			}
+
+			return Filesystem::getDataHome();
+		}
+
+		FilePath _getPortableWindowsRoot()
+		{
+			const FilePath executablePath = Filesystem::getExecutable();
+			const FilePath executableDir  = executablePath.parent_path();
+			const FilePath parentDir	   = executableDir.parent_path();
+
+			if ( not parentDir.empty() )
+			{
+				return parentDir;
+			}
+
+			return executableDir;
+		}
+	} // namespace
+
 	FilePath Session::getDataHome() const
 	{
+		if ( not hasManager() )
+		{
+			return Filesystem::getExecutableDir();
+		}
+
+#if defined( _WIN32 )
 		if ( isPortable() )
 		{
-			return _getPortableDataRoot() / APP_FOLDER_NAME;
+			return _getPortableWindowsRoot();
 		}
+#endif
 
 		return _getDefaultBaseDir( SessionPathRoot::Data ) / APP_FOLDER_NAME;
 	}
 
 	FilePath Session::getPicturesFolder() const
 	{
+		if ( not hasManager() )
+		{
+			return Filesystem::getExecutableDir();
+		}
+
+#if defined( _WIN32 )
 		if ( isPortable() )
 		{
-			return _getPortableDataRoot() / APP_FOLDER_NAME;
+			return _getPortableWindowsRoot();
 		}
+#endif
 
 		return _getDefaultBaseDir( SessionPathRoot::Pictures ) / APP_FOLDER_NAME;
 	}
