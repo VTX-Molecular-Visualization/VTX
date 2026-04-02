@@ -307,8 +307,10 @@ namespace VTX::UI::QT::Widget
 
 	void MainWindow::_onUpdateAvailable( const App::Events::UpdateAvailable & p_e )
 	{
-		Dialog::Updater dialog( p_e );
-		dialog.exec();
+		Dialog::Updater * const dialog = new Dialog::Updater( p_e );
+		dialog->setAttribute( Qt::WA_DeleteOnClose, true );
+		dialog->setModal( true );
+		dialog->open();
 	}
 
 } // namespace VTX::UI::QT::Widget
