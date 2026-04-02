@@ -76,10 +76,7 @@ namespace VTX::App
 		p_args			 = std::move( _impl->args );
 		_impl->args_gone = true;
 	}
-	void ArgumentParser::parse()
-	{
-		_impl->parser.parse_args( _impl->args.argc, _impl->args.argv );
-	}
+	void ArgumentParser::parse() { _impl->parser.parse_args( _impl->args.argc, _impl->args.argv ); }
 
 	std::string toString( const Arguments & p_args ) noexcept
 	{
@@ -91,6 +88,18 @@ namespace VTX::App
 		{
 			out += " ";
 			out += std::string( p_args.argv[ i ] );
+		}
+		return out;
+	}
+
+	std::vector<std::string> toStringVector( const Arguments & p_args ) noexcept
+	{
+		assert( p_args.argv != nullptr );
+		assert( p_args.argc > 0 );
+		std::vector<std::string> out;
+		for ( int i = 0; i < p_args.argc; i++ )
+		{
+			out.emplace_back( p_args.argv[ i ] );
 		}
 		return out;
 	}

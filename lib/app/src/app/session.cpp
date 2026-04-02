@@ -1,21 +1,15 @@
 #include "app/session.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/application.hpp"
+#include "app/arguments.hpp"
 #include "app/constants.hpp"
 #include "app/services.hpp"
 #include "app/threading/thread_manager.hpp"
 #include <atomic>
-#include <chrono>
-#include <cstdlib>
-#include <thread>
 #include <util/event_hub.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <velopack/include/Velopack.hpp>
-
-#if defined( __linux__ )
-#include <unistd.h>
-#endif
 
 using namespace VTX::Util;
 
@@ -82,6 +76,17 @@ namespace VTX::App
 			Pictures
 		};
 
+		FilePath _getDefaultBaseDir( const SessionPathRoot p_root )
+		{
+			switch ( p_root )
+			{
+			case SessionPathRoot::Data: return Filesystem::getDataHome();
+			case SessionPathRoot::Pictures: return Filesystem::getPicturesFolder();
+			}
+
+			return Filesystem::getDataHome();
+		}
+
 		FilePath _getPortableBaseDir()
 		{
 #if defined( __linux__ )
@@ -94,51 +99,18 @@ namespace VTX::App
 			return Filesystem::getExecutableDir();
 		}
 
-		bool _isWritableDirectory( const FilePath & p_path )
+		FilePath _getPortableDataRoot()
 		{
-#if defined( __linux__ )
-			std::error_code ec;
-			FilePath		candidate = p_path;
-			while ( not candidate.empty() && not std::filesystem::exists( candidate, ec ) )
+#if defined( _WIN32 )
+			const FilePath executableDir = Filesystem::getExecutableDir();
+			const FilePath parentDir	 = executableDir.parent_path();
+			if ( not parentDir.empty() )
 			{
-				candidate = candidate.parent_path();
+				return parentDir;
 			}
-
-			if ( candidate.empty() || ec )
-			{
-				return false;
-			}
-
-			return access( candidate.string().c_str(), W_OK ) == 0;
-#else
-			(void)p_path;
-			return true;
 #endif
-		}
 
-		FilePath _getDefaultBaseDir( const SessionPathRoot p_root )
-		{
-			switch ( p_root )
-			{
-			case SessionPathRoot::Data: return Filesystem::getDataHome();
-			case SessionPathRoot::Pictures: return Filesystem::getPicturesFolder();
-			}
-
-			return Filesystem::getDataHome();
-		}
-
-		FilePath _resolveAppDir( const bool p_isPortable, const SessionPathRoot p_root )
-		{
-			if ( p_isPortable )
-			{
-				const FilePath portableDir = _getPortableBaseDir();
-				if ( _isWritableDirectory( portableDir ) )
-				{
-					return portableDir;
-				}
-			}
-
-			return _getDefaultBaseDir( p_root ) / APP_FOLDER_NAME;
+			return _getPortableBaseDir();
 		}
 	} // namespace
 
@@ -148,10 +120,13 @@ namespace VTX::App
 		{
 			Velopack::VelopackApp::Build()
 				.SetAutoApplyOnStartup( false )
-
+				//.OnAfterInstall(  )
+				//.OnBeforeUpdate(  )
+				//.OnAfterUpdate(  )
+				//.OnFirstRun(  )
+				//.OnRestarted(  )
 				.OnBeforeUninstall( []( void *, const char * )
 									{ std::filesystem::remove_all( Filesystem::getDataHome() / APP_FOLDER_NAME ); } )
-
 				.Run();
 
 			// auto src = std::make_unique<Velopack::GithubSource>( URL_UPDATE.data() );
@@ -222,7 +197,7 @@ namespace VTX::App
 			VTX_INFO( "New version found: {}", release.Version );
 			VTX_DEBUG( "Release notes MD:\n{}", release.NotesMarkdown );
 			VTX_DEBUG( "Release notes HTML:\n{}", release.NotesHtml );
-			HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHtml, release.Size );
+			HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesMarkdown, release.Size );
 		}
 		else
 		{
@@ -321,9 +296,7 @@ namespace VTX::App
 		try
 		{
 			const Velopack::UpdateInfo pendingUpdate = *_impl->pendingUpdate;
-			const bool				   restart		 = _shouldRestartAfterUpdate();
-			VTX_INFO( "downloadUpdate: calling WaitExitThenApplyUpdates (restart={})", restart );
-			( *_impl->manager ).WaitExitThenApplyUpdates( pendingUpdate, false, restart /*, ARGS().toStringVec()*/ );
+			( *_impl->manager ).WaitExitThenApplyUpdates( pendingUpdate, false, true, toStringVector( ARGS() ) );
 			VTX_INFO( "downloadUpdate: WaitExitThenApplyUpdates returned" );
 
 			_impl->updateDownloadInProgress = false;
@@ -346,18 +319,25 @@ namespace VTX::App
 		return ( *_impl->manager ).IsPortable();
 	}
 
-	bool Session::_shouldRestartAfterUpdate() const
+	FilePath Session::getDataHome() const
 	{
-#if defined( _WIN32 )
-		return true;
-#else
-		return false;
-#endif
+		if ( isPortable() )
+		{
+			return _getPortableDataRoot() / APP_FOLDER_NAME;
+		}
+
+		return _getDefaultBaseDir( SessionPathRoot::Data ) / APP_FOLDER_NAME;
 	}
 
-	FilePath Session::getDataHome() const { return _resolveAppDir( isPortable(), SessionPathRoot::Data ); }
+	FilePath Session::getPicturesFolder() const
+	{
+		if ( isPortable() )
+		{
+			return _getPortableDataRoot() / APP_FOLDER_NAME;
+		}
 
-	FilePath Session::getPicturesFolder() const { return _resolveAppDir( isPortable(), SessionPathRoot::Pictures ); }
+		return _getDefaultBaseDir( SessionPathRoot::Pictures ) / APP_FOLDER_NAME;
+	}
 
 	FilePath Session::getShadersDir() const { return Filesystem::getExecutableDir() / "shaders"; }
 	FilePath Session::getLicenseFile() const { return Filesystem::getExecutableDir() / "license.txt"; }

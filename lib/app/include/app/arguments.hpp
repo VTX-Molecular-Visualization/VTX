@@ -44,7 +44,8 @@ namespace VTX::App
 		std::unique_ptr<_data, _del> _impl;
 	};
 
-	std::string toString( const Arguments & ) noexcept;
+	std::string				 toString( const Arguments & ) noexcept;
+	std::vector<std::string> toStringVector( const Arguments & ) noexcept;
 
 } // namespace VTX::App
 

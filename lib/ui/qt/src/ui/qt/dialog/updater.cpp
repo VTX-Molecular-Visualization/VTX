@@ -32,10 +32,11 @@ namespace VTX::UI::QT::Dialog
 		// Changelog.
 		auto * browser = new QTextBrowser( this );
 		browser->document()->setDocumentMargin( 10 );
-		browser->setHtml( QString::fromStdString( p_e.changelogHtml ) );
+		// browser->setHtml( QString::fromStdString( p_e.changelogHtml ) );
+		browser->setText( QString::fromStdString( p_e.changelog ) );
 		layout->addWidget( browser );
 
-		VTX_DEBUG( "Changelog HTML: {}", p_e.changelogHtml );
+		VTX_DEBUG( "Changelog: {}", p_e.changelog );
 
 		// Infos.
 		auto * labelCurrentVersion = new QLabel( QString( "Current: %1" ).arg( p_e.currentVersion ) );
