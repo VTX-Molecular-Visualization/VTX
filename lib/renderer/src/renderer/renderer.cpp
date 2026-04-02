@@ -293,8 +293,8 @@ namespace VTX::Renderer
 			}
 			else
 			{
-				// Hide ribbon if VdW radius.
-				if ( not isSphereRadiusFixed )
+				// Pure VdW display is sphere-only, but keep other primitives available when spheres are hidden.
+				if ( showSphere && not isSphereRadiusFixed )
 				{
 					showCylinder = false;
 					showRibbon	 = false;

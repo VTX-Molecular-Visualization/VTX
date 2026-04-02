@@ -18,7 +18,7 @@ namespace VTX::UI::QT::Menu
 			addAction<Action::Help::Documentation>();
 			addAction<Action::Help::Report>();
 			addAction<Action::Help::CheckUpdates>();
-			addAction<Action::Help::About>();
+			// addAction<Action::Help::About>();
 		}
 
 	  private:
