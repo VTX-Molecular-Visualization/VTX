@@ -106,7 +106,8 @@ namespace VTX::App
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_DEBUG( "{}", p_e.what() );
+			// Logger not initialized.
+			std::cerr << "Velopack startup hook error: " << p_e.what() << std::endl;
 		}
 	}
 
@@ -136,7 +137,7 @@ namespace VTX::App
 
 		if ( _impl->updateCheckInProgress.exchange( true ) )
 		{
-			VTX_INFO( "Update check already in progress" );
+			VTX_TRACE( "Update check already in progress" );
 			return;
 		}
 
@@ -195,25 +196,25 @@ namespace VTX::App
 	{
 		if ( not _impl->manager )
 		{
-			VTX_WARNING( "downloadUpdate called without update manager" );
+			VTX_TRACE( "downloadUpdate called without update manager" );
 			return;
 		}
 
 		if ( _impl->updateCheckInProgress )
 		{
-			VTX_INFO( "downloadUpdate ignored while update check is still in progress" );
+			VTX_TRACE( "downloadUpdate ignored while update check is still in progress" );
 			return;
 		}
 
 		if ( not _impl->pendingUpdate )
 		{
-			VTX_WARNING( "downloadUpdate called without a pending update" );
+			VTX_TRACE( "downloadUpdate called without a pending update" );
 			return;
 		}
 
 		if ( _impl->updateDownloadInProgress.exchange( true ) )
 		{
-			VTX_INFO( "Update download already in progress" );
+			VTX_TRACE( "Update download already in progress" );
 			return;
 		}
 
@@ -226,14 +227,14 @@ namespace VTX::App
 			_impl->updateReadyToRestart				 = false;
 			_impl->updateDownloadError.clear();
 
-			VTX_INFO( "downloadUpdate: starting update to {}", release.Version );
+			VTX_TRACE( "downloadUpdate: starting update to {}", release.Version );
 			Threading::BaseThread & downloadThread = THREAD().createThread(
 				[ this, pendingUpdate ]( App::Threading::BaseThread & p_thread ) -> uint
 				{
 					p_thread.setProgressText( "Downloading update..." );
 					try
 					{
-						VTX_INFO( "downloadUpdate: calling DownloadUpdates" );
+						VTX_TRACE( "downloadUpdate: calling DownloadUpdates" );
 						( *_impl->manager )
 							.DownloadUpdates(
 								pendingUpdate,
@@ -246,7 +247,7 @@ namespace VTX::App
 								&p_thread
 							);
 						p_thread.setProgress( 1.f );
-						VTX_INFO( "downloadUpdate: DownloadUpdates completed" );
+						VTX_TRACE( "downloadUpdate: DownloadUpdates completed" );
 						_impl->updateDownloadSucceeded = true;
 					}
 					catch ( const std::exception & p_e )
@@ -286,7 +287,7 @@ namespace VTX::App
 		if ( not _impl->updateDownloadSucceeded )
 		{
 			_impl->updateDownloadInProgress = false;
-			VTX_WARNING( "downloadUpdate: download phase failed" );
+			VTX_TRACE( "downloadUpdate: download phase failed" );
 			HUB().trigger<Events::UpdateDownloadFailed>(
 				_impl->updateDownloadError.empty() ? "Update download failed." : _impl->updateDownloadError
 			);
@@ -296,7 +297,7 @@ namespace VTX::App
 		if ( not _impl->manager || not _impl->pendingUpdate )
 		{
 			_impl->updateDownloadInProgress = false;
-			VTX_WARNING( "downloadUpdate: apply phase aborted due to invalid updater state" );
+			VTX_TRACE( "downloadUpdate: apply phase aborted due to invalid updater state" );
 			HUB().trigger<Events::UpdateDownloadFailed>( "Downloaded update is no longer available." );
 			return;
 		}
@@ -330,13 +331,13 @@ namespace VTX::App
 	{
 		if ( not _impl->updateReadyToRestart.exchange( false ) )
 		{
-			VTX_WARNING( "applyDownloadedUpdate called without a downloaded update" );
+			VTX_TRACE( "applyDownloadedUpdate called without a downloaded update" );
 			return;
 		}
 
 		if ( not _impl->manager || not _impl->pendingUpdate )
 		{
-			VTX_WARNING( "applyDownloadedUpdate aborted due to invalid updater state" );
+			VTX_TRACE( "applyDownloadedUpdate aborted due to invalid updater state" );
 			return;
 		}
 
@@ -346,7 +347,7 @@ namespace VTX::App
 			std::vector<std::string>   args			 = toStringVector( ARGS() );
 			( *_impl->manager )
 				.WaitExitThenApplyUpdates( pendingUpdate, false, true, { args.begin() + 1, args.end() } );
-			VTX_INFO( "applyDownloadedUpdate: WaitExitThenApplyUpdates returned" );
+			VTX_TRACE( "applyDownloadedUpdate: WaitExitThenApplyUpdates returned" );
 			ACTION().execute<Action::Application::Quit>();
 		}
 		catch ( const std::exception & p_e )
@@ -389,7 +390,7 @@ namespace VTX::App
 		{
 			const FilePath executablePath = Filesystem::getExecutable();
 			const FilePath executableDir  = executablePath.parent_path();
-			const FilePath parentDir	   = executableDir.parent_path();
+			const FilePath parentDir	  = executableDir.parent_path();
 
 			if ( not parentDir.empty() )
 			{
@@ -435,10 +436,8 @@ namespace VTX::App
 	}
 
 	FilePath Session::getShadersDir() const { return Filesystem::getExecutableDir() / "shaders"; }
-	FilePath Session::getLicenseFile() const { return Filesystem::getExecutableDir() / "license.txt"; }
-	FilePath Session::getReadmeFile() const { return Filesystem::getExecutableDir() / "README.md"; }
-	FilePath Session::getChangelogFile() const { return Filesystem::getExecutableDir() / "CHANGELOG.md"; }
 	FilePath Session::getDataDir() const { return Filesystem::getExecutableDir() / "data"; }
+	FilePath Session::getLicenseFile() const { return Filesystem::getExecutableDir() / "license.txt"; }
 	FilePath Session::getResidueDataDir() const { return getDataDir() / "residue"; }
 	FilePath Session::getResidueDataFilePath( const std::string_view p_residue )
 	{
