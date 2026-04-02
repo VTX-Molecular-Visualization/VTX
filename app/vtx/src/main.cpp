@@ -1,4 +1,5 @@
 #include <app/arguments.hpp>
+#include <app/session.hpp>
 #include <string>
 #include <util/types.hpp>
 #include <vector>
@@ -62,6 +63,8 @@ int main( int p_argc, char * p_argv[] )
 
 	try
 	{
+		App::Session::handleStartupActivation();
+
 		App::Arguments			   argss;
 		std::optional<std::string> help;
 		{

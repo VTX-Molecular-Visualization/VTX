@@ -32,6 +32,11 @@ namespace VTX::App
 		}
 
 		/**
+		 * @brief Run Velopack startup hooks before application argument parsing.
+		 */
+		static void handleStartupActivation();
+
+		/**
 		 * @brief Check for application update.
 		 */
 		void checkForUpdate();

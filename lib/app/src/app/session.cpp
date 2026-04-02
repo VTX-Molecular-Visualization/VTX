@@ -89,7 +89,7 @@ namespace VTX::App
 		Util::EventHub::Connection updateDownloadProgressConnection;
 	};
 
-	Session::Session() : _impl( std::make_unique<Impl>() )
+	void Session::handleStartupActivation()
 	{
 		try
 		{
@@ -103,7 +103,17 @@ namespace VTX::App
 				.OnBeforeUninstall( []( void *, const char * )
 									{ std::filesystem::remove_all( Filesystem::getDataHome() / APP_FOLDER_NAME ); } )
 				.Run();
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_DEBUG( "{}", p_e.what() );
+		}
+	}
 
+	Session::Session() : _impl( std::make_unique<Impl>() )
+	{
+		try
+		{
 			// auto src = std::make_unique<Velopack::GithubSource>( URL_UPDATE.data() );
 			//_impl->manager.emplace( std::move( src ) );
 			_impl->manager.emplace( URL_UPDATE.data() );
