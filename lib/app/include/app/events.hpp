@@ -29,7 +29,16 @@ namespace VTX::App::Events
 
 	struct UpdateDownloadProgress
 	{
-		float progress;
+		uint progress;
+	};
+
+	struct UpdateReadyToRestart
+	{
+	};
+
+	struct UpdateDownloadFailed
+	{
+		std::string message;
 	};
 
 	struct ApplicationError

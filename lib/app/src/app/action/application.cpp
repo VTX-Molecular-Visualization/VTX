@@ -28,6 +28,8 @@ namespace VTX::App::Action::Application
 
 	void Update::execute() { SESSION().downloadUpdate(); }
 
+	void RestartAfterUpdate::execute() { SESSION().applyDownloadedUpdate(); }
+
 	void Quit::execute() { HUB().trigger<Events::ApplicationStop>(); }
 
 	void SetVSync::execute( const bool p_enable ) { RENDERER().setVSync( p_enable ); }

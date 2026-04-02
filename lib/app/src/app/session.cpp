@@ -6,6 +6,7 @@
 #include "app/services.hpp"
 #include "app/threading/thread_manager.hpp"
 #include <atomic>
+#include <cstdlib>
 #include <util/event_hub.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
@@ -58,6 +59,22 @@ namespace VTX::App
 		std::atomic<bool> updateDownloadSucceeded = false;
 
 		/**
+		 * @brief True once the update payload has been downloaded and is waiting for user restart.
+
+		 */
+		std::atomic<bool> updateReadyToRestart = false;
+
+		/**
+		 * @brief Download worker thread id.
+		 */
+		Threading::BaseThread::ID updateDownloadThreadId {};
+
+		/**
+		 * @brief Last error message produced during the download phase.
+		 */
+		std::string updateDownloadError;
+
+		/**
 		 * @brief Held while waiting for the update check result on the main thread.
 		 */
 		Util::EventHub::Connection updateCheckConnection;
@@ -66,6 +83,11 @@ namespace VTX::App
 		 * @brief Held while waiting for the update download result on the main thread.
 		 */
 		Util::EventHub::Connection updateDownloadConnection;
+
+		/**
+		 * @brief Held while waiting for the update download progress on the main thread.
+		 */
+		Util::EventHub::Connection updateDownloadProgressConnection;
 	};
 
 	namespace
@@ -145,6 +167,7 @@ namespace VTX::App
 	{
 		if ( not _impl->manager )
 		{
+			VTX_INFO( "No update manager" );
 			return;
 		}
 
@@ -237,22 +260,36 @@ namespace VTX::App
 			const auto &			   release		 = pendingUpdate.TargetFullRelease;
 			_impl->updateDownloadReady				 = false;
 			_impl->updateDownloadSucceeded			 = false;
+			_impl->updateReadyToRestart				 = false;
+			_impl->updateDownloadError.clear();
 
 			VTX_INFO( "downloadUpdate: starting update to {}", release.Version );
-			THREAD().createThread(
+			Threading::BaseThread & downloadThread = THREAD().createThread(
 				[ this, pendingUpdate ]( App::Threading::BaseThread & p_thread ) -> uint
 				{
 					p_thread.setProgressText( "Downloading update..." );
 					try
 					{
 						VTX_INFO( "downloadUpdate: calling DownloadUpdates" );
-						( *_impl->manager ).DownloadUpdates( pendingUpdate );
+						( *_impl->manager )
+							.DownloadUpdates(
+								pendingUpdate,
+								[]( void * p_userData, size_t p_progress )
+								{
+									App::Threading::BaseThread * thread
+										= reinterpret_cast<App::Threading::BaseThread *>( p_userData );
+									thread->setProgress( float( p_progress ) / 100.f );
+								},
+								&p_thread
+							);
+						p_thread.setProgress( 1.f );
 						VTX_INFO( "downloadUpdate: DownloadUpdates completed" );
 						_impl->updateDownloadSucceeded = true;
 					}
 					catch ( const std::exception & p_e )
 					{
 						_impl->updateDownloadSucceeded = false;
+						_impl->updateDownloadError	   = p_e.what();
 						VTX_ERROR( "Update download error: {}", p_e.what() );
 					}
 
@@ -260,8 +297,11 @@ namespace VTX::App
 					return 0;
 				}
 			);
+			_impl->updateDownloadThreadId = downloadThread.getId();
 
 			_impl->updateDownloadConnection = HUB().connect<Events::Update, &Session::_onUpdateDownloadResult>( this );
+			_impl->updateDownloadProgressConnection
+				= HUB().connect<Events::Update, &Session::_onUpdateDownloadProgress>( this );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -278,11 +318,15 @@ namespace VTX::App
 		}
 
 		HUB().disconnect( _impl->updateDownloadConnection );
+		HUB().disconnect( _impl->updateDownloadProgressConnection );
 
 		if ( not _impl->updateDownloadSucceeded )
 		{
 			_impl->updateDownloadInProgress = false;
 			VTX_WARNING( "downloadUpdate: download phase failed" );
+			HUB().trigger<Events::UpdateDownloadFailed>(
+				_impl->updateDownloadError.empty() ? "Update download failed." : _impl->updateDownloadError
+			);
 			return;
 		}
 
@@ -290,6 +334,46 @@ namespace VTX::App
 		{
 			_impl->updateDownloadInProgress = false;
 			VTX_WARNING( "downloadUpdate: apply phase aborted due to invalid updater state" );
+			HUB().trigger<Events::UpdateDownloadFailed>( "Downloaded update is no longer available." );
+			return;
+		}
+
+		HUB().trigger<Events::UpdateDownloadProgress>( 100 );
+
+		_impl->updateDownloadInProgress = false;
+		_impl->updateReadyToRestart		= true;
+		HUB().trigger<Events::UpdateReadyToRestart>();
+	}
+
+	void Session::_onUpdateDownloadProgress( const Events::Update & )
+	{
+		if ( not _impl->updateDownloadInProgress )
+		{
+			return;
+		}
+
+		Threading::BaseThread * downloadThread = nullptr;
+		THREAD().get( _impl->updateDownloadThreadId, downloadThread );
+		if ( downloadThread == nullptr )
+		{
+			return;
+		}
+
+		const uint progress = uint( downloadThread->getProgress() * 100.f );
+		HUB().trigger<Events::UpdateDownloadProgress>( progress );
+	}
+
+	void Session::applyDownloadedUpdate()
+	{
+		if ( not _impl->updateReadyToRestart.exchange( false ) )
+		{
+			VTX_WARNING( "applyDownloadedUpdate called without a downloaded update" );
+			return;
+		}
+
+		if ( not _impl->manager || not _impl->pendingUpdate )
+		{
+			VTX_WARNING( "applyDownloadedUpdate aborted due to invalid updater state" );
 			return;
 		}
 
@@ -297,16 +381,14 @@ namespace VTX::App
 		{
 			const Velopack::UpdateInfo pendingUpdate = *_impl->pendingUpdate;
 			( *_impl->manager ).WaitExitThenApplyUpdates( pendingUpdate, false, true, toStringVector( ARGS() ) );
-			VTX_INFO( "downloadUpdate: WaitExitThenApplyUpdates returned" );
-
-			_impl->updateDownloadInProgress = false;
-			VTX_INFO( "downloadUpdate: update flow completed, quitting application" );
+			VTX_INFO( "applyDownloadedUpdate: WaitExitThenApplyUpdates returned" );
 			ACTION().execute<Action::Application::Quit>();
 		}
 		catch ( const std::exception & p_e )
 		{
-			_impl->updateDownloadInProgress = false;
+			_impl->updateReadyToRestart = true;
 			VTX_ERROR( "Update apply error: {}", p_e.what() );
+			HUB().trigger<Events::ApplicationError>( "Failed to restart and apply the downloaded update." );
 		}
 	}
 

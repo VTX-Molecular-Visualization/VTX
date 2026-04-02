@@ -42,6 +42,11 @@ namespace VTX::App
 		void downloadUpdate();
 
 		/**
+		 * @brief Apply a previously downloaded update and restart the application.
+		 */
+		void applyDownloadedUpdate();
+
+		/**
 		 * @brief Is this version portable.
 		 */
 		bool isPortable() const;
@@ -126,6 +131,11 @@ namespace VTX::App
 		 * @brief Called each frame from the main thread to dispatch the update download result.
 		 */
 		void _onUpdateDownloadResult( const Events::Update & );
+
+		/**
+		 * @brief Called each frame from the main thread to dispatch update download progress.
+		 */
+		void _onUpdateDownloadProgress( const Events::Update & );
 	};
 } // namespace VTX::App
 
