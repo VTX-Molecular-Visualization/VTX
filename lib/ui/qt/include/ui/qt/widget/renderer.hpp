@@ -58,6 +58,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Create a toolbar from type.
 		 */
+		/*
 		template<typename TB>
 		TB * const createToolBar( const HUD_POSITION p_pos )
 		{
@@ -70,6 +71,7 @@ namespace VTX::UI::QT::Widget
 			_addHUDWidget( toolBar, p_pos );
 			return toolBar;
 		}
+		*/
 
 		/**
 		 * @brief Override resize.
@@ -85,16 +87,18 @@ namespace VTX::UI::QT::Widget
 		void onResizeFinished();
 
 	  private:
+		/*
 		struct HUDItem
 		{
 			QPointer<QWidget> widget;
 			HUD_POSITION	  position;
 		};
+		*/
 
 		/**
 		 * @brief HUD widgets and their anchor positions.
 		 */
-		std::vector<HUDItem> _hudItems;
+		// std::vector<HUDItem> _hudItems;
 
 		/**
 		 * @brief Debounce timer for resize events.
@@ -114,17 +118,17 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Add a widget to the overlay at the given position.
 		 */
-		void _addHUDWidget( QWidget * const, const HUD_POSITION );
+		// void _addHUDWidget( QWidget * const, const HUD_POSITION );
 
 		/**
 		 * @brief Synchronize HUD geometry and optionally show items.
 		 */
-		void _syncHUDWidgets( const bool p_showWidgets = false );
+		// void _syncHUDWidgets( const bool p_showWidgets = false );
 
 		/**
 		 * @brief Compute the geometry of a HUD widget for the current renderer rect.
 		 */
-		QRect _getHUDGeometry( QWidget * const, const HUD_POSITION ) const;
+		// QRect _getHUDGeometry( QWidget * const, const HUD_POSITION ) const;
 
 		/**
 		 * @brief Give focus back to the rendering surface.

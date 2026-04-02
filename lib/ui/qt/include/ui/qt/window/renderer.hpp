@@ -4,6 +4,7 @@
 #include "ui/qt/events.hpp"
 #include <QKeyEvent>
 #include <QMouseEvent>
+#include <QFocusEvent>
 #include <QWheelEvent>
 #include <QWindow>
 #include <app/input/input_manager.hpp>
@@ -44,6 +45,8 @@ namespace VTX::UI::QT::Window
 		 */
 		void keyPressEvent( QKeyEvent * const ) override;
 		void keyReleaseEvent( QKeyEvent * const ) override;
+		void focusInEvent( QFocusEvent * ) override;
+		void focusOutEvent( QFocusEvent * ) override;
 		void mousePressEvent( QMouseEvent * ) override;
 		void mouseMoveEvent( QMouseEvent * ) override;
 		void mouseReleaseEvent( QMouseEvent * ) override;
