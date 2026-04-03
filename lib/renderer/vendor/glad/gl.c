@@ -42,8 +42,6 @@ int GLAD_GL_VERSION_4_3 = 0;
 int GLAD_GL_VERSION_4_4 = 0;
 int GLAD_GL_VERSION_4_5 = 0;
 int GLAD_GL_VERSION_4_6 = 0;
-int GLAD_GL_ATI_meminfo = 0;
-int GLAD_GL_NVX_gpu_memory_info = 0;
 
 
 
@@ -1519,8 +1517,7 @@ static int glad_gl_find_extensions_gl(void) {
     char **exts_i = NULL;
     if (!glad_gl_get_extensions(&exts, &exts_i)) return 0;
 
-    GLAD_GL_ATI_meminfo = glad_gl_has_extension(exts, exts_i, "GL_ATI_meminfo");
-    GLAD_GL_NVX_gpu_memory_info = glad_gl_has_extension(exts, exts_i, "GL_NVX_gpu_memory_info");
+    GLAD_UNUSED(&glad_gl_has_extension);
 
     glad_gl_free_extensions(exts_i);
 

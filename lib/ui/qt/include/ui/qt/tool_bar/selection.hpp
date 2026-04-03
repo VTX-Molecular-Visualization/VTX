@@ -24,21 +24,6 @@ namespace VTX::UI::QT::ToolBar
 		{
 			setWindowTitle( "Selection" );
 
-			// Lock selection.
-			auto * lockAction = addAction<Action::Selection::Lock>();
-			lockAction->setCheckable( true );
-			lockAction->setChecked( SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() );
-			connect(
-				lockAction,
-				&QAction::toggled,
-				this,
-				[]( const bool p_locked )
-				{
-					SETTINGS().setValue( SETTING_KEY_LOCK_SELECTION, p_locked );
-					App::HUB().trigger<Events::SelectionLocked>( p_locked );
-				}
-			);
-
 			// Granularity tool buttons.
 			_granularityButton = new QToolButton( this );
 			_granularityButton->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
@@ -101,6 +86,21 @@ namespace VTX::UI::QT::ToolBar
 			addWidget( _granularityButton );
 			_syncGranularityButton();
 			App::HUB().connect<Events::SelectionGranularityChanged, &Selection::_onGranularityChanged>( this );
+
+			// Lock selection.
+			auto * lockAction = addAction<Action::Selection::Lock>();
+			lockAction->setCheckable( true );
+			lockAction->setChecked( SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() );
+			connect(
+				lockAction,
+				&QAction::toggled,
+				this,
+				[]( const bool p_locked )
+				{
+					SETTINGS().setValue( SETTING_KEY_LOCK_SELECTION, p_locked );
+					App::HUB().trigger<Events::SelectionLocked>( p_locked );
+				}
+			);
 		}
 
 	  private:
