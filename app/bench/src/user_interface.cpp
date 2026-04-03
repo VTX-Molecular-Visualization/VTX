@@ -1,7 +1,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
 #include "user_interface.hpp"
-#include "camera.hpp"
+#include "camera_controller.hpp"
 #include "scene.hpp"
 #include <cstring>
 #include <imgui.h>
@@ -81,7 +81,11 @@ namespace VTX::Bench
 		SDL_Quit();
 	}
 
-	void UserInterface::draw( Camera * const p_camera, Scene * const p_scene, Renderer::Renderer * const p_renderer )
+	void UserInterface::draw(
+		CameraController * const   p_camera,
+		Scene * const			   p_scene,
+		Renderer::Renderer * const p_renderer
+	)
 	{
 		// ImGui_ImplSDL3_NewFrame();
 		// ImGui::NewFrame();
@@ -195,7 +199,7 @@ namespace VTX::Bench
 	}
 
 	void UserInterface::_drawMenuBar(
-		Camera * const			   p_camera,
+		CameraController * const   p_camera,
 		Renderer::Renderer * const p_renderer,
 		Scene * const			   p_scene
 	)
@@ -316,8 +320,9 @@ namespace VTX::Bench
 		}
 	}
 
-	void UserInterface::_drawCamera( Camera * const p_camera ) const
+	void UserInterface::_drawCamera( CameraController * const p_camera ) const
 	{
+		/*
 		if ( ImGui::Begin( "Camera" ) )
 		{
 			float cameraNear		  = p_camera->getNear();
@@ -367,6 +372,7 @@ namespace VTX::Bench
 			}
 		}
 		ImGui::End();
+		*/
 	}
 
 	void UserInterface::_drawRenderer( Renderer::Renderer * const p_renderer )
