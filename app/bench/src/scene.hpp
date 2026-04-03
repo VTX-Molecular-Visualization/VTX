@@ -45,9 +45,6 @@ namespace VTX::Bench
 			}
 		}
 
-		inline const Renderer::Color::Layout & getColorLayout() const { return _colorLayout; }
-		inline void setColorLayout( const Renderer::Color::Layout & p_colorLayout ) { _colorLayout = p_colorLayout; }
-
 		bool isUpdate = false;
 
 	  private:
@@ -55,9 +52,7 @@ namespace VTX::Bench
 		// Renderer::Proxy::Camera _proxyCamera;
 
 		std::vector<std::unique_ptr<Core::Struct::Topology>> _systems;
-		std::vector<Vec3f>								   _directions;
-
-		Renderer::Color::Layout _colorLayout;
+		std::vector<Vec3f>									 _directions;
 
 		// std::unique_ptr<Renderer::Proxy::System> _proxify( const Core::Struct::System & p_system );
 	};

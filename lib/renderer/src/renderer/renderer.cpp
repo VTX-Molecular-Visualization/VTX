@@ -626,8 +626,8 @@ namespace VTX::Renderer
 	{
 		assert( p_mins.size() == p_maxs.size() );
 
-		_context.setPipelineBuffer<Vec3f>( "Voxels.Mins", p_mins );
-		_context.setPipelineBuffer<Vec3f>( "Voxels.Maxs", p_maxs );
+		//_context.setPipelineBuffer<Vec3f>( "Voxels.Mins", p_mins );
+		//_context.setPipelineBuffer<Vec3f>( "Voxels.Maxs", p_maxs );
 
 		//_geometries.voxels.drawRanges.firsts = { 0 };
 		//_geometries.voxels.drawRanges.counts = { uint( p_mins.size() ) };

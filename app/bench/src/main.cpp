@@ -38,9 +38,14 @@ int main( int, char ** )
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		Renderer::Renderer renderer( WIDTH, HEIGHT );
-		// renderer.setOpenGL45( Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
-		// renderer.setProxyCamera( scene.getProxyCamera() );
+		Renderer::Renderer				  renderer( WIDTH, HEIGHT );
+		Renderer::Desc::NativeContextInfo contextInfo;
+		contextInfo.surface	  = ui.getNativeSurface();
+		contextInfo.display	  = ui.getNativeDisplay();
+		contextInfo.plateform = static_cast<Renderer::Desc::E_NATIVE_PLATEFORM>( ui.getNativePlatform() );
+
+		renderer.setOpenGL( contextInfo, Filesystem::getExecutableDir() / "shaders" );
+		// renderer.setVSync( false );
 
 		// Input manager.
 		InputManager inputManager;
@@ -86,14 +91,6 @@ int main( int, char ** )
 				{
 					// renderer.addProxySystem( scene.addSystem( "3j3q.mmtf" ) );
 				}
-				else if ( p_key == SDL_SCANCODE_F5 )
-				{
-					Renderer::Color::Layout colorLayout;
-					std::generate(
-						colorLayout.colors.begin(), colorLayout.colors.end(), [] { return Color::Rgba::random(); }
-					);
-					scene.setColorLayout( colorLayout );
-				}
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -131,64 +128,11 @@ int main( int, char ** )
 				}
 			}
 		}
+		// renderer.setVoxels( mins, maxs );
 
-		renderer.setVoxels( mins, maxs );
-		renderer.setColorLayout( scene.getColorLayout() );
-
-		// Quickfix.
-		bool  bTrue		= true;
-		bool  bFalse	= false;
-		float fZero		= 0.f;
-		float fZeroOne	= 0.1f;
-		float fZeroFive = 0.5f;
-
-		// Renderer::Representation representation;
-
-		/*
-		representation.set( 0, bTrue );
-		representation.set( 1, fZeroFive );
-		representation.set( 2, fZero );
-		representation.set( 3, bTrue );
-
-		representation.set( 4, bTrue );
-		representation.set( 5, fZeroOne );
-		representation.set( 6, bFalse );
-
-		representation.set( 7, bTrue );
-		representation.set( 8, bTrue );
-
-		representation.set( 9, bFalse );
-		*/
-
-		// renderer.setRepresentation( representation );
-
-		Renderer::GraphicsConfig settings;
-		settings.shadingMode		= Renderer::E_SHADING::TOON;
-		settings.colorLight			= COLOR_WHITE;
-		settings.colorBackground	= COLOR_BLACK;
-		settings.specularFactor		= 0.5f;
-		settings.shininess			= 32.f;
-		settings.toonSteps			= 4;
-		settings.activeSSAO			= true;
-		settings.ssaoIntensity		= 5.f;
-		settings.blurSize			= 4.f;
-		settings.activeOutline		= true;
-		settings.colorOutline		= COLOR_BLACK;
-		settings.outlineSensitivity = 0.5f;
-		settings.outlineThickness	= 2;
-		settings.activeFog			= false;
-		settings.colorFog			= COLOR_WHITE;
-		settings.fogNear			= 100.f;
-		settings.fogFar				= 1000.f;
-		settings.fogDensity			= 0.01f;
-		settings.activeSelection	= true;
-		settings.colorSelection		= COLOR_WHITE;
-
-		// Renderer::Proxy::RenderSettings renderSettings
-		//	= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
-		//		3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
-
-		renderer.setGraphicsConfig( settings );
+		renderer.setGraphicsConfig( Renderer::GraphicsConfigs::DEFAULT );
+		renderer.setColorLayout( Renderer::Color::Layouts::JMOL );
+		renderer.setRepresentations( { &Renderer::Representations::STICKS_AND_RIBBONS } );
 
 		// Main loop.
 		while ( isRunning )

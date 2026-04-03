@@ -20,12 +20,11 @@ namespace VTX::Bench
 
 		inline double getTime() const { return double( SDL_GetTicks() ); }
 		inline float  getDeltaTime() const { return ImGui::GetIO().DeltaTime; }
-		inline void * getProcAddress() { return reinterpret_cast<void *>( SDL_GL_GetProcAddress ); }
-		inline void	  setVSync( const bool p_vsync )
-		{
-			_vsync = p_vsync;
-			SDL_GL_SetSwapInterval( _vsync );
-		}
+		inline void	  setVSync( const bool p_vsync ) { _vsync = p_vsync; }
+
+		uintptr_t getNativeSurface() const;
+		uintptr_t getNativeDisplay() const;
+		uint8_t	  getNativePlatform() const;
 
 		void draw( Camera * const p_camera, Scene * const p_scene, Renderer::Renderer * const p_renderer );
 
@@ -42,10 +41,9 @@ namespace VTX::Bench
 		}
 
 	  private:
-		SDL_Window *  _window	 = nullptr;
-		SDL_GLContext _glContext = nullptr;
-		bool		  _vsync	 = true;
-		bool		  _drawUi	 = true;
+		SDL_Window * _window = nullptr;
+		bool		 _vsync  = true;
+		bool		 _drawUi = true;
 
 		void _drawMenuBar( Camera * const p_camera, Renderer::Renderer * const p_renderer, Scene * const p_scene );
 		void _drawCamera( Camera * const p_camera ) const;

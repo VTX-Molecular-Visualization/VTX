@@ -8,22 +8,18 @@
 namespace VTX::Bench
 {
 
-	Scene::Scene( const size_t p_width, const size_t p_height ) :
-		_camera( p_width, p_height )
-		/*,
-		_proxyCamera(
-										  { _camera.getMatrixViewPtr(),
-											_camera.getMatrixProjectionPtr(),
-											_camera.getPosition(),
-											VEC2I_ZERO,
-											_camera.getNear(),
-											_camera.getFar(),
-											_camera.isPerspective() }
-									  )*/
-		,
-		_colorLayout(
-			// Renderer::Color::Layout::COLOR_LAYOUT_JMOL
-		)
+	Scene::Scene( const size_t p_width, const size_t p_height ) : _camera( p_width, p_height )
+	/*,
+	_proxyCamera(
+									  { _camera.getMatrixViewPtr(),
+										_camera.getMatrixProjectionPtr(),
+										_camera.getPosition(),
+										VEC2I_ZERO,
+										_camera.getNear(),
+										_camera.getFar(),
+										_camera.isPerspective() }
+								  )*/
+
 	{
 		/*
 		_camera.callbackMatrixView += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixView(); };
