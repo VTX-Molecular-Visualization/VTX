@@ -84,9 +84,10 @@ namespace VTX::UI::QT::Style
 		// Load theme from settings.
 		try
 		{
-			QString		  themeName = SETTINGS().value( SETTING_KEY_THEME, "SYSTEM" ).toString();
-			const E_THEME theme		= Util::Enum::enumCast<E_THEME>( themeName.toStdString() );
-			QString		  fontName	= SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
+			QString		  themeName = SETTINGS().value( SETTING_KEY_THEME, "" ).toString();
+			const E_THEME theme
+				= themeName.isEmpty() ? DEFAULT_THEME : Util::Enum::enumCast<E_THEME>( themeName.toStdString() );
+			QString fontName = SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
 			setFontFamily( fontName );
 			setTheme( theme );
 		}

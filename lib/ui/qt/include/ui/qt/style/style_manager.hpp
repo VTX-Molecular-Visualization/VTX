@@ -80,7 +80,7 @@ namespace VTX::UI::QT::Style
 		/**
 		 * @brief Current theme.
 		 */
-		E_THEME _currentTheme;
+		E_THEME _currentTheme = DEFAULT_THEME;
 
 		/**
 		 * @brief Store palettes for each theme.
