@@ -49,7 +49,10 @@ namespace VTX::PythonBinding::Binding
 	}
 	void applyModuleCustomization( pybind11::module_ & p_module )
 	{
-		p_module.doc() = "VTX Python module."; // optional module docstring
+		p_module.doc()
+			= "VTX Python module. Will contain every functions and classes provided by VTX to interact with the "
+			  "renderer and its underlying data. Please use the function help([Anything]) on any element of the module "
+			  "to get help message."; // optional module docstring
 
 		// Class to redirect Python prints
 		pybind11::class_<LogRedirection>( p_module, "LogRedirection", pybind11::module_local() )
