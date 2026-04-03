@@ -1,4 +1,4 @@
-#version 450
+#version 460
 
 layout(std140, binding = 0) uniform SsesdfSettings
 {

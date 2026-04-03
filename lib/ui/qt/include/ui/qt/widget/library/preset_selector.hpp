@@ -97,12 +97,14 @@ namespace VTX::UI::QT::Widget::Library
 			connect(
 				aNew,
 				&QAction::triggered,
+				this,
 				[ this ]() { App::ACTION().execute<App::Action::Preset::Add<P>>( std::nullopt, std::nullopt ); }
 			);
 
 			connect(
 				aDuplicate,
 				&QAction::triggered,
+				this,
 				[ this ]()
 				{ App::ACTION().execute<App::Action::Preset::Duplicate<P>>( getCurrentPreset(), std::nullopt ); }
 			);
@@ -110,12 +112,14 @@ namespace VTX::UI::QT::Widget::Library
 			connect(
 				aApply,
 				&QAction::triggered,
+				this,
 				[ this ]() { App::ACTION().execute<App::Action::Preset::Apply<P>>( getCurrentPreset() ); }
 			);
 
 			connect(
 				_lineRename,
 				&QLineEdit::editingFinished,
+				this,
 				[ this ]()
 				{
 					App::ACTION().execute<App::Action::Preset::Rename<P>>(
@@ -127,19 +131,19 @@ namespace VTX::UI::QT::Widget::Library
 			// Callbacks.
 			auto & reg = App::REG();
 
-			reg.on_construct<P>().template connect<&PresetSelector::_refreshComboBox>( this );
-			reg.on_destroy<P>().template connect<&PresetSelector::_refreshComboBox>( this );
-			reg.on_update<App::Preset::Name>().template connect<&PresetSelector::_onPresetNameUpdated>( this );
-			reg.on_update<P>().template connect<&PresetSelector::_onUpdatePreset>( this );
+			_onConstructConnection = reg.on_construct<P>().template connect<&PresetSelector::_refreshComboBox>( this );
+			_onDestroyConnection   = reg.on_destroy<P>().template connect<&PresetSelector::_refreshComboBox>( this );
+			_onNameUpdateConnection
+				= reg.on_update<App::Preset::Name>().template connect<&PresetSelector::_onPresetNameUpdated>( this );
+			_onPresetUpdateConnection = reg.on_update<P>().template connect<&PresetSelector::_onUpdatePreset>( this );
 		}
 
 		virtual ~PresetSelector()
 		{
-			auto & reg = App::REG();
-			reg.on_construct<P>().template disconnect<&PresetSelector::_refreshComboBox>( this );
-			reg.on_destroy<P>().template disconnect<&PresetSelector::_refreshComboBox>( this );
-			reg.on_update<App::Preset::Name>().template disconnect<&PresetSelector::_onPresetNameUpdated>( this );
-			reg.on_update<P>().template disconnect<&PresetSelector::_onUpdatePreset>( this );
+			_onConstructConnection.release();
+			_onDestroyConnection.release();
+			_onNameUpdateConnection.release();
+			_onPresetUpdateConnection.release();
 		}
 
 		inline App::ECS::Entity getCurrentPreset() const { return _comboBox->currentData().value<App::ECS::Entity>(); }
@@ -168,6 +172,14 @@ namespace VTX::UI::QT::Widget::Library
 		 * @brief Line edit to rename the preset.
 		 */
 		QPointer<QLineEdit> _lineRename;
+
+		/**
+		 * @brief Connections to App.
+		 */
+		VTX::Util::EventHub::Connection _onConstructConnection;
+		VTX::Util::EventHub::Connection _onDestroyConnection;
+		VTX::Util::EventHub::Connection _onNameUpdateConnection;
+		VTX::Util::EventHub::Connection _onPresetUpdateConnection;
 
 		/**
 		 * @brief Refresh the combo box when presets are added or removed.

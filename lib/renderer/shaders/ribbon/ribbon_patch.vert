@@ -1,6 +1,4 @@
-#version 450 core
-#extension GL_ARB_shader_draw_parameters : require
-#define gl_DrawID gl_DrawIDARB
+#version 460 core
 
 #include "../constant.glsl"
 #include "../layout_uniforms_color.glsl"

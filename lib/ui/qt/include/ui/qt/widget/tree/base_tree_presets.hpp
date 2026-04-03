@@ -2,10 +2,11 @@
 #define __VTX_UI_QT_WIDGET_TREE_BASE_TREE_PRESETS__
 
 #include "ui/qt/widget/tree/base_tree.hpp"
-#include <QThread>
 #include <QTreeWidget>
 #include <app/action/preset.hpp>
 #include <app/preset/name.hpp>
+#include <app/services.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -19,9 +20,9 @@ namespace VTX::UI::QT::Widget::Tree
 		{
 			W::setExpandsOnDoubleClick( true );
 
-			auto & reg = App::REG();
-			reg.on_construct<P>().template connect<&BaseTreePreset::_addPreset>( this );
-			reg.on_destroy<P>().template connect<&BaseTreePreset::_removePreset>( this );
+			auto & reg			   = App::REG();
+			_onConstructConnection = reg.on_construct<P>().template connect<&BaseTreePreset::_addPreset>( this );
+			_onDestroyConnection   = reg.on_destroy<P>().template connect<&BaseTreePreset::_removePreset>( this );
 			App::HUB().connect<App::Events::PresetRename<P>, &BaseTreePreset::_onPresetRename>( this );
 
 			// Connect double click to apply the preset.
@@ -42,13 +43,24 @@ namespace VTX::UI::QT::Widget::Tree
 			);
 		}
 
-		virtual ~BaseTreePreset() = default;
+		virtual ~BaseTreePreset()
+		{
+			_onConstructConnection.release();
+			_onDestroyConnection.release();
+			App::HUB().disconnectAllOf( *this );
+		}
 
 	  private:
 		/**
 		 * @brief Map entities to tree items.
 		 */
 		std::unordered_map<App::ECS::Entity, QTreeWidgetItem *> _entityToItemMap;
+
+		/**
+		 * @brief Connections to App.
+		 */
+		Util::EventHub::Connection _onConstructConnection;
+		Util::EventHub::Connection _onDestroyConnection;
 
 		/**
 		 * @brief Add a preset to the tree.

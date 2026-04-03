@@ -32,6 +32,11 @@ namespace VTX::App
 		}
 
 		/**
+		 * @brief Run Velopack startup hooks before application argument parsing.
+		 */
+		static void handleStartupActivation();
+
+		/**
 		 * @brief Check for application update.
 		 */
 		void checkForUpdate();
@@ -40,6 +45,16 @@ namespace VTX::App
 		 * @brief Download the latest update.
 		 */
 		void downloadUpdate();
+
+		/**
+		 * @brief Apply a previously downloaded update and restart the application.
+		 */
+		void applyDownloadedUpdate();
+
+		/**
+		 * @brief Does the application have an update manager available (not in dev mode).
+		 */
+		bool hasManager() const;
 
 		/**
 		 * @brief Is this version portable.
@@ -128,9 +143,9 @@ namespace VTX::App
 		void _onUpdateDownloadResult( const Events::Update & );
 
 		/**
-		 * @brief Decide whether the application should be restarted after a successful update apply.
+		 * @brief Called each frame from the main thread to dispatch update download progress.
 		 */
-		bool _shouldRestartAfterUpdate() const;
+		void _onUpdateDownloadProgress( const Events::Update & );
 	};
 } // namespace VTX::App
 

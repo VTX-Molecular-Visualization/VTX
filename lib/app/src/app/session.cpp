@@ -1,21 +1,15 @@
 #include "app/session.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/application.hpp"
+#include "app/arguments.hpp"
 #include "app/constants.hpp"
 #include "app/services.hpp"
 #include "app/threading/thread_manager.hpp"
 #include <atomic>
-#include <chrono>
-#include <cstdlib>
-#include <thread>
 #include <util/event_hub.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <velopack/include/Velopack.hpp>
-
-#if defined( __linux__ )
-#include <unistd.h>
-#endif
 
 using namespace VTX::Util;
 
@@ -64,6 +58,22 @@ namespace VTX::App
 		std::atomic<bool> updateDownloadSucceeded = false;
 
 		/**
+		 * @brief True once the update payload has been downloaded and is waiting for user restart.
+
+		 */
+		std::atomic<bool> updateReadyToRestart = false;
+
+		/**
+		 * @brief Download worker thread id.
+		 */
+		Threading::BaseThread::ID updateDownloadThreadId {};
+
+		/**
+		 * @brief Last error message produced during the download phase.
+		 */
+		std::string updateDownloadError;
+
+		/**
 		 * @brief Held while waiting for the update check result on the main thread.
 		 */
 		Util::EventHub::Connection updateCheckConnection;
@@ -72,95 +82,47 @@ namespace VTX::App
 		 * @brief Held while waiting for the update download result on the main thread.
 		 */
 		Util::EventHub::Connection updateDownloadConnection;
+
+		/**
+		 * @brief Held while waiting for the update download progress on the main thread.
+		 */
+		Util::EventHub::Connection updateDownloadProgressConnection;
 	};
 
-	namespace
-	{
-		enum class SessionPathRoot
-		{
-			Data,
-			Pictures
-		};
-
-		FilePath _getPortableBaseDir()
-		{
-#if defined( __linux__ )
-			if ( const char * appImagePath = std::getenv( "APPIMAGE" );
-				 appImagePath != nullptr && appImagePath[ 0 ] != '\0' )
-			{
-				return FilePath( appImagePath ).parent_path();
-			}
-#endif
-			return Filesystem::getExecutableDir();
-		}
-
-		bool _isWritableDirectory( const FilePath & p_path )
-		{
-#if defined( __linux__ )
-			std::error_code ec;
-			FilePath		candidate = p_path;
-			while ( not candidate.empty() && not std::filesystem::exists( candidate, ec ) )
-			{
-				candidate = candidate.parent_path();
-			}
-
-			if ( candidate.empty() || ec )
-			{
-				return false;
-			}
-
-			return access( candidate.string().c_str(), W_OK ) == 0;
-#else
-			(void)p_path;
-			return true;
-#endif
-		}
-
-		FilePath _getDefaultBaseDir( const SessionPathRoot p_root )
-		{
-			switch ( p_root )
-			{
-			case SessionPathRoot::Data: return Filesystem::getDataHome();
-			case SessionPathRoot::Pictures: return Filesystem::getPicturesFolder();
-			}
-
-			return Filesystem::getDataHome();
-		}
-
-		FilePath _resolveAppDir( const bool p_isPortable, const SessionPathRoot p_root )
-		{
-			if ( p_isPortable )
-			{
-				const FilePath portableDir = _getPortableBaseDir();
-				if ( _isWritableDirectory( portableDir ) )
-				{
-					return portableDir;
-				}
-			}
-
-			return _getDefaultBaseDir( p_root ) / APP_FOLDER_NAME;
-		}
-	} // namespace
-
-	Session::Session() : _impl( std::make_unique<Impl>() )
+	void Session::handleStartupActivation()
 	{
 		try
 		{
 			Velopack::VelopackApp::Build()
 				.SetAutoApplyOnStartup( false )
-
+				//.OnAfterInstall(  )
+				//.OnBeforeUpdate(  )
+				//.OnAfterUpdate(  )
+				//.OnFirstRun(  )
+				//.OnRestarted(  )
 				.OnBeforeUninstall( []( void *, const char * )
 									{ std::filesystem::remove_all( Filesystem::getDataHome() / APP_FOLDER_NAME ); } )
-
 				.Run();
-
-			auto src = std::make_unique<Velopack::GithubSource>( URL_UPDATE.data() );
-			_impl->manager.emplace( std::move( src ) );
-			//_impl->manager.emplace( URL_UPDATE.data() );
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_DEBUG( "{}", p_e.what() );
+			// Logger not initialized.
+			std::cout << "Velopack startup hook: " << p_e.what() << std::endl;
+		}
+	}
+
+	Session::Session() : _impl( std::make_unique<Impl>() )
+	{
+		try
+		{
+			// auto src = std::make_unique<Velopack::GithubSource>( URL_UPDATE.data() );
+			//_impl->manager.emplace( std::move( src ) );
+			_impl->manager.emplace( URL_UPDATE.data() );
+		}
+		catch ( const std::exception & p_e )
+		{
+			// Logger not initialized yet.
+			std::cerr << "Velopack update manager error: " << p_e.what() << std::endl;
 		}
 	}
 
@@ -170,12 +132,13 @@ namespace VTX::App
 	{
 		if ( not _impl->manager )
 		{
+			VTX_INFO( "No update manager" );
 			return;
 		}
 
 		if ( _impl->updateCheckInProgress.exchange( true ) )
 		{
-			VTX_INFO( "Update check already in progress" );
+			VTX_TRACE( "Update check already in progress" );
 			return;
 		}
 
@@ -222,7 +185,7 @@ namespace VTX::App
 			VTX_INFO( "New version found: {}", release.Version );
 			VTX_DEBUG( "Release notes MD:\n{}", release.NotesMarkdown );
 			VTX_DEBUG( "Release notes HTML:\n{}", release.NotesHtml );
-			HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHtml, release.Size );
+			HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesMarkdown, release.Size );
 		}
 		else
 		{
@@ -234,25 +197,25 @@ namespace VTX::App
 	{
 		if ( not _impl->manager )
 		{
-			VTX_WARNING( "downloadUpdate called without update manager" );
+			VTX_TRACE( "downloadUpdate called without update manager" );
 			return;
 		}
 
 		if ( _impl->updateCheckInProgress )
 		{
-			VTX_INFO( "downloadUpdate ignored while update check is still in progress" );
+			VTX_TRACE( "downloadUpdate ignored while update check is still in progress" );
 			return;
 		}
 
 		if ( not _impl->pendingUpdate )
 		{
-			VTX_WARNING( "downloadUpdate called without a pending update" );
+			VTX_TRACE( "downloadUpdate called without a pending update" );
 			return;
 		}
 
 		if ( _impl->updateDownloadInProgress.exchange( true ) )
 		{
-			VTX_INFO( "Update download already in progress" );
+			VTX_TRACE( "Update download already in progress" );
 			return;
 		}
 
@@ -262,22 +225,36 @@ namespace VTX::App
 			const auto &			   release		 = pendingUpdate.TargetFullRelease;
 			_impl->updateDownloadReady				 = false;
 			_impl->updateDownloadSucceeded			 = false;
+			_impl->updateReadyToRestart				 = false;
+			_impl->updateDownloadError.clear();
 
-			VTX_INFO( "downloadUpdate: starting update to {}", release.Version );
-			THREAD().createThread(
+			VTX_TRACE( "downloadUpdate: starting update to {}", release.Version );
+			Threading::BaseThread & downloadThread = THREAD().createThread(
 				[ this, pendingUpdate ]( App::Threading::BaseThread & p_thread ) -> uint
 				{
 					p_thread.setProgressText( "Downloading update..." );
 					try
 					{
-						VTX_INFO( "downloadUpdate: calling DownloadUpdates" );
-						( *_impl->manager ).DownloadUpdates( pendingUpdate );
-						VTX_INFO( "downloadUpdate: DownloadUpdates completed" );
+						VTX_TRACE( "downloadUpdate: calling DownloadUpdates" );
+						( *_impl->manager )
+							.DownloadUpdates(
+								pendingUpdate,
+								[]( void * p_userData, size_t p_progress )
+								{
+									App::Threading::BaseThread * thread
+										= reinterpret_cast<App::Threading::BaseThread *>( p_userData );
+									thread->setProgress( float( p_progress ) / 100.f );
+								},
+								&p_thread
+							);
+						p_thread.setProgress( 1.f );
+						VTX_TRACE( "downloadUpdate: DownloadUpdates completed" );
 						_impl->updateDownloadSucceeded = true;
 					}
 					catch ( const std::exception & p_e )
 					{
 						_impl->updateDownloadSucceeded = false;
+						_impl->updateDownloadError	   = p_e.what();
 						VTX_ERROR( "Update download error: {}", p_e.what() );
 					}
 
@@ -285,8 +262,11 @@ namespace VTX::App
 					return 0;
 				}
 			);
+			_impl->updateDownloadThreadId = downloadThread.getId();
 
 			_impl->updateDownloadConnection = HUB().connect<Events::Update, &Session::_onUpdateDownloadResult>( this );
+			_impl->updateDownloadProgressConnection
+				= HUB().connect<Events::Update, &Session::_onUpdateDownloadProgress>( this );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -303,67 +283,162 @@ namespace VTX::App
 		}
 
 		HUB().disconnect( _impl->updateDownloadConnection );
+		HUB().disconnect( _impl->updateDownloadProgressConnection );
 
 		if ( not _impl->updateDownloadSucceeded )
 		{
 			_impl->updateDownloadInProgress = false;
-			VTX_WARNING( "downloadUpdate: download phase failed" );
+			VTX_TRACE( "downloadUpdate: download phase failed" );
+			HUB().trigger<Events::UpdateDownloadFailed>(
+				_impl->updateDownloadError.empty() ? "Update download failed." : _impl->updateDownloadError
+			);
 			return;
 		}
 
 		if ( not _impl->manager || not _impl->pendingUpdate )
 		{
 			_impl->updateDownloadInProgress = false;
-			VTX_WARNING( "downloadUpdate: apply phase aborted due to invalid updater state" );
+			VTX_TRACE( "downloadUpdate: apply phase aborted due to invalid updater state" );
+			HUB().trigger<Events::UpdateDownloadFailed>( "Downloaded update is no longer available." );
+			return;
+		}
+
+		HUB().trigger<Events::UpdateDownloadProgress>( 100 );
+
+		_impl->updateDownloadInProgress = false;
+		_impl->updateReadyToRestart		= true;
+		HUB().trigger<Events::UpdateReadyToRestart>();
+	}
+
+	void Session::_onUpdateDownloadProgress( const Events::Update & )
+	{
+		if ( not _impl->updateDownloadInProgress )
+		{
+			return;
+		}
+
+		Threading::BaseThread * downloadThread = nullptr;
+		THREAD().get( _impl->updateDownloadThreadId, downloadThread );
+		if ( downloadThread == nullptr )
+		{
+			return;
+		}
+
+		const uint progress = uint( downloadThread->getProgress() * 100.f );
+		HUB().trigger<Events::UpdateDownloadProgress>( progress );
+	}
+
+	void Session::applyDownloadedUpdate()
+	{
+		if ( not _impl->updateReadyToRestart.exchange( false ) )
+		{
+			VTX_TRACE( "applyDownloadedUpdate called without a downloaded update" );
+			return;
+		}
+
+		if ( not _impl->manager || not _impl->pendingUpdate )
+		{
+			VTX_TRACE( "applyDownloadedUpdate aborted due to invalid updater state" );
 			return;
 		}
 
 		try
 		{
 			const Velopack::UpdateInfo pendingUpdate = *_impl->pendingUpdate;
-			const bool				   restart		 = _shouldRestartAfterUpdate();
-			VTX_INFO( "downloadUpdate: calling WaitExitThenApplyUpdates (restart={})", restart );
-			( *_impl->manager ).WaitExitThenApplyUpdates( pendingUpdate, false, restart /*, ARGS().toStringVec()*/ );
-			VTX_INFO( "downloadUpdate: WaitExitThenApplyUpdates returned" );
-
-			_impl->updateDownloadInProgress = false;
-			VTX_INFO( "downloadUpdate: update flow completed, quitting application" );
+			std::vector<std::string>   args			 = toStringVector( ARGS() );
+			( *_impl->manager )
+				.WaitExitThenApplyUpdates( pendingUpdate, false, true, { args.begin() + 1, args.end() } );
+			VTX_TRACE( "applyDownloadedUpdate: WaitExitThenApplyUpdates returned" );
 			ACTION().execute<Action::Application::Quit>();
 		}
 		catch ( const std::exception & p_e )
 		{
-			_impl->updateDownloadInProgress = false;
+			_impl->updateReadyToRestart = true;
 			VTX_ERROR( "Update apply error: {}", p_e.what() );
+			HUB().trigger<Events::ApplicationError>( "Failed to restart and apply the downloaded update." );
 		}
 	}
+
+	bool Session::hasManager() const { return _impl->manager.has_value(); }
 
 	bool Session::isPortable() const
 	{
-		if ( not _impl->manager )
-		{
-			return true;
-		}
+		assert( _impl->manager );
+
 		return ( *_impl->manager ).IsPortable();
 	}
 
-	bool Session::_shouldRestartAfterUpdate() const
+	namespace
 	{
+		enum class SessionPathRoot
+		{
+			Data,
+			Pictures
+		};
+
+		FilePath _getDefaultBaseDir( const SessionPathRoot p_root )
+		{
+			switch ( p_root )
+			{
+			case SessionPathRoot::Data: return Filesystem::getDataHome();
+			case SessionPathRoot::Pictures: return Filesystem::getPicturesFolder();
+			}
+
+			return Filesystem::getDataHome();
+		}
+
+		FilePath _getPortableWindowsRoot()
+		{
+			const FilePath executablePath = Filesystem::getExecutable();
+			const FilePath executableDir  = executablePath.parent_path();
+			const FilePath parentDir	  = executableDir.parent_path();
+
+			if ( not parentDir.empty() )
+			{
+				return parentDir;
+			}
+
+			return executableDir;
+		}
+	} // namespace
+
+	FilePath Session::getDataHome() const
+	{
+		if ( not hasManager() )
+		{
+			return Filesystem::getExecutableDir();
+		}
+
 #if defined( _WIN32 )
-		return true;
-#else
-		return false;
+		if ( isPortable() )
+		{
+			return _getPortableWindowsRoot();
+		}
 #endif
+
+		return _getDefaultBaseDir( SessionPathRoot::Data ) / APP_FOLDER_NAME;
 	}
 
-	FilePath Session::getDataHome() const { return _resolveAppDir( isPortable(), SessionPathRoot::Data ); }
+	FilePath Session::getPicturesFolder() const
+	{
+		if ( not hasManager() )
+		{
+			return Filesystem::getExecutableDir();
+		}
 
-	FilePath Session::getPicturesFolder() const { return _resolveAppDir( isPortable(), SessionPathRoot::Pictures ); }
+#if defined( _WIN32 )
+		if ( isPortable() )
+		{
+			return _getPortableWindowsRoot();
+		}
+#endif
+
+		return _getDefaultBaseDir( SessionPathRoot::Pictures ) / APP_FOLDER_NAME;
+	}
 
 	FilePath Session::getShadersDir() const { return Filesystem::getExecutableDir() / "shaders"; }
-	FilePath Session::getLicenseFile() const { return Filesystem::getExecutableDir() / "license.txt"; }
-	FilePath Session::getReadmeFile() const { return Filesystem::getExecutableDir() / "README.md"; }
-	FilePath Session::getChangelogFile() const { return Filesystem::getExecutableDir() / "CHANGELOG.md"; }
 	FilePath Session::getDataDir() const { return Filesystem::getExecutableDir() / "data"; }
+	FilePath Session::getLicenseFile() const { return Filesystem::getExecutableDir() / "license.txt"; }
 	FilePath Session::getResidueDataDir() const { return getDataDir() / "residue"; }
 	FilePath Session::getResidueDataFilePath( const std::string_view p_residue )
 	{

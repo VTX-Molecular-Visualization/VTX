@@ -1,13 +1,16 @@
 #ifndef __VTX_BENCH_SCENE__
 #define __VTX_BENCH_SCENE__
 
-#include "camera.hpp"
+#include "camera_controller.hpp"
 #include <core/struct/topology.hpp>
+#include <renderer/caches.hpp>
 #include <renderer/color.hpp>
+#include <renderer/system_data.hpp>
+#include <util/math/bitset.hpp>
 
 namespace VTX::Renderer
 {
-	class Facade;
+	class Renderer;
 }
 
 namespace VTX::Bench
@@ -18,48 +21,47 @@ namespace VTX::Bench
 		Scene() = delete;
 		Scene( const size_t p_width, const size_t p_height );
 
-		inline Camera & getCamera() { return _camera; }
+		inline CameraController & getCamera() { return _camera; }
 
 		void addSystem( const std::string & p_name );
 		void removeSystem( const size_t p_index );
+		void syncRenderer( Renderer::Renderer & p_renderer ) const;
 
 		inline void update( const float p_deltaTime )
 		{
-			// if ( not isUpdate )
-			//{
-			//	return;
-			// }
-
-			int i = 0;
-			// static uint currentFrame = 0;
-
-			for ( auto & system : _systems )
+			if ( not isUpdate )
 			{
-				// system->transform = Util::Math::rotate( system->transform, p_deltaTime, _directions[ i ] );
-
-				//_proxySystems[ i ]->atomPositions
-				//	= &system->trajectory.frames[ currentFrame++ % system->trajectory.frames.size() ];
-				//_proxySystems[ i ]->onAtomPositions();
-
-				//_proxySystems[ i++ ]->onTransform();
+				return;
 			}
-		}
 
-		inline const Renderer::Color::Layout & getColorLayout() const { return _colorLayout; }
-		inline void setColorLayout( const Renderer::Color::Layout & p_colorLayout ) { _colorLayout = p_colorLayout; }
+			//
+		}
 
 		bool isUpdate = false;
 
 	  private:
-		Camera _camera;
-		// Renderer::Proxy::Camera _proxyCamera;
+		struct SystemEntry
+		{
+			std::unique_ptr<Core::Struct::Topology> topology;
+			std::vector<Vec3f>						positions;
+			Mat4f									transform = MAT4F_ID;
+			SystemUID								uid		  = 0;
+			std::vector<PickingUID>					atomUids;
+			std::vector<PickingUID>					residueUids;
+		};
 
-		std::vector<std::unique_ptr<Core::Struct::Topology>> _systems;
-		std::vector<Vec3f>								   _directions;
+		[[nodiscard]] std::vector<Renderer::SystemData> _buildRendererSystems() const;
+		[[nodiscard]] std::vector<Renderer::ColorIndex> _buildAtomColors(
+			const Core::Struct::Topology & p_topology
+		) const;
+		[[nodiscard]] Renderer::MapRepresentationRanges _buildDefaultRepresentation(
+			const Core::Struct::Topology & p_topology
+		) const;
 
-		Renderer::Color::Layout _colorLayout;
-
-		// std::unique_ptr<Renderer::Proxy::System> _proxify( const Core::Struct::System & p_system );
+		CameraController		 _camera;
+		std::vector<SystemEntry> _systems;
+		SystemUID				 _nextSystemUid	 = 1;
+		PickingUID				 _nextPickingUid = 1;
 	};
 
 } // namespace VTX::Bench

@@ -1,4 +1,4 @@
-#version 450 core
+#version 460 core
 
 #include "../struct_data_packed.glsl"
 

@@ -59,6 +59,8 @@ namespace VTX::UI::QT::Widget::Library
 		// SES.
 		_groupboxSes = new HideableGroupBox( "SES", presetGroupBox() );
 		addWidget( _groupboxSes );
+		// Keep SES support in code for now, but do not expose the preset editor controls.
+		_groupboxSes->hide();
 
 		_sliderSesProbeRadius = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSes );
 		_groupboxSes->addWidget( new QLabel( "Probe radius", _groupboxSes ) );

@@ -47,6 +47,18 @@ namespace VTX::App::Action::Preset
 			{
 				reg.emplace<T>( e, *p_data );
 			}
+			else if constexpr ( std::is_same_v<T, Renderer::Color::Layout> )
+			{
+				reg.emplace<T>( e, Renderer::Color::Layouts::JMOL );
+			}
+			else if constexpr ( std::is_same_v<T, Renderer::GraphicsConfig> )
+			{
+				reg.emplace<T>( e, Renderer::GraphicsConfigs::DEFAULT );
+			}
+			else if constexpr ( std::is_same_v<T, Renderer::Representation> )
+			{
+				reg.emplace<T>( e, Renderer::Representations::STICKS_AND_RIBBONS );
+			}
 			else
 			{
 				reg.emplace<T>( e );

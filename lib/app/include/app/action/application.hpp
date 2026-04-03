@@ -33,6 +33,14 @@ namespace VTX::App::Action::Application
 	};
 
 	/**
+	 * @brief Apply a downloaded update and restart the application.
+	 */
+	struct RestartAfterUpdate
+	{
+		void execute();
+	};
+
+	/**
 	 * @brief Exit the application.
 	 */
 	struct Quit

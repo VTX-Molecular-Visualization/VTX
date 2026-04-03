@@ -1,12 +1,14 @@
 #include "ui/qt/dialog/updater.hpp"
 #include <QDialogButtonBox>
 #include <QLabel>
+#include <QProgressBar>
 #include <QPushButton>
 #include <QTextBrowser>
 #include <QVBoxLayout>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/services.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Dialog
 {
@@ -32,10 +34,10 @@ namespace VTX::UI::QT::Dialog
 		// Changelog.
 		auto * browser = new QTextBrowser( this );
 		browser->document()->setDocumentMargin( 10 );
-		browser->setHtml( QString::fromStdString( p_e.changelogHtml ) );
+		browser->setText( QString::fromStdString( p_e.changelog ) );
 		layout->addWidget( browser );
 
-		VTX_DEBUG( "Changelog HTML: {}", p_e.changelogHtml );
+		VTX_DEBUG( "Changelog: {}", p_e.changelog );
 
 		// Infos.
 		auto * labelCurrentVersion = new QLabel( QString( "Current: %1" ).arg( p_e.currentVersion ) );
@@ -48,35 +50,88 @@ namespace VTX::UI::QT::Dialog
 		labelSize->setAlignment( Qt::AlignRight );
 		layout->addWidget( labelSize );
 
-		auto * labelStatus = new QLabel( this );
-		labelStatus->setAlignment( Qt::AlignCenter );
-		labelStatus->hide();
-		layout->addWidget( labelStatus );
+		_progressBar = new QProgressBar( this );
+		_progressBar->setRange( 0, 100 );
+		_progressBar->setValue( 0 );
+		_progressBar->setTextVisible( true );
+		_progressBar->setFormat( "Downloading update... %p%" );
+		layout->addWidget( _progressBar );
 
-		// Buttons.
-		auto * buttonBox = new QDialogButtonBox(
+		_buttonBox = new QDialogButtonBox(
 			QDialogButtonBox::StandardButton::Close | QDialogButtonBox::StandardButton::Apply, this
 		);
-		layout->addWidget( buttonBox );
-		QPushButton * const applyButton = buttonBox->button( QDialogButtonBox::Apply );
-		QPushButton * const closeButton = buttonBox->button( QDialogButtonBox::Close );
+		layout->addWidget( _buttonBox );
+		QPushButton * const applyButton = _buttonBox->button( QDialogButtonBox::Apply );
 
-		// Connect.
-		connect( buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );
+		_restartButton = new QPushButton( "Restart", this );
+		layout->addWidget( _restartButton );
+
+		connect( _buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );
 		applyButton->setDefault( true );
 		connect(
 			applyButton,
 			&QPushButton::clicked,
 			this,
-			[ this, applyButton, closeButton, labelStatus ]()
+			[ this ]()
 			{
-				applyButton->setEnabled( false );
-				closeButton->setEnabled( false );
-				labelStatus->setText( "Downloading update..." );
-				labelStatus->show();
+				_setDownloadingState();
 				App::ACTION().execute<App::Action::Application::Update>();
 			}
 		);
+		connect(
+			_restartButton,
+			&QPushButton::clicked,
+			this,
+			[ this ]()
+			{
+				accept();
+				App::ACTION().execute<App::Action::Application::RestartAfterUpdate>();
+			}
+		);
+
+		App::HUB().connect<App::Events::UpdateDownloadProgress, &Updater::_onUpdateDownloadProgress>( this );
+		App::HUB().connect<App::Events::UpdateReadyToRestart, &Updater::_onUpdateReadyToRestart>( this );
+		App::HUB().connect<App::Events::UpdateDownloadFailed, &Updater::_onUpdateDownloadFailed>( this );
+
+		_setIdleState();
+	}
+
+	Updater::~Updater() { App::HUB().disconnectAllOf( *this ); }
+
+	void Updater::_onUpdateDownloadProgress( const App::Events::UpdateDownloadProgress & p_e )
+	{
+		if ( _progressBar )
+		{
+			_progressBar->setValue( int( p_e.progress ) );
+		}
+	}
+
+	void Updater::_onUpdateReadyToRestart( const App::Events::UpdateReadyToRestart & ) { _setReadyToRestartState(); }
+
+	void Updater::_onUpdateDownloadFailed( const App::Events::UpdateDownloadFailed & ) { _setIdleState(); }
+
+	void Updater::_setDownloadingState()
+	{
+		_progressBar->setValue( 0 );
+		_progressBar->show();
+		_buttonBox->hide();
+		_restartButton->hide();
+	}
+
+	void Updater::_setReadyToRestartState()
+	{
+		_progressBar->hide();
+		_buttonBox->hide();
+		_restartButton->show();
+		_restartButton->setDefault( true );
+		_restartButton->setFocus();
+	}
+
+	void Updater::_setIdleState()
+	{
+		_progressBar->hide();
+		_buttonBox->show();
+		_restartButton->hide();
 	}
 
 } // namespace VTX::UI::QT::Dialog

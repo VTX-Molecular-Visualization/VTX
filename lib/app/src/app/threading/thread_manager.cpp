@@ -76,11 +76,19 @@ namespace VTX::App::Threading
 	{
 		for ( const std::shared_ptr<BaseThread> & thread : _threads )
 		{
-			HUB().trigger<Events::ThreadProgress>( thread->getId(), thread->getProgress(), thread->getProgressText() );
-
+			// TODO: do not spam progress event every frame.
+			if ( not thread->silent() )
+			{
+				HUB().trigger<Events::ThreadProgress>(
+					thread->getId(), thread->getProgress(), thread->getProgressText()
+				);
+			}
 			if ( thread->isFinished() )
 			{
-				HUB().trigger<Events::ThreadTerminated>( thread->getId(), thread->isManuallyStopped() );
+				if ( not thread->silent() )
+				{
+					HUB().trigger<Events::ThreadTerminated>( thread->getId(), thread->isManuallyStopped() );
+				}
 				_stoppingThreads.emplace_back( thread );
 			}
 		}

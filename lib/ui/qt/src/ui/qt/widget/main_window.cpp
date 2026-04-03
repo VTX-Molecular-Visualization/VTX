@@ -89,12 +89,12 @@ namespace VTX::UI::QT::Widget
 		createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );
 
 		auto * dwScene = createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
-		createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea )->close();
-		createDockWidget<DockWidget::ColorLayouts>( Qt::LeftDockWidgetArea )->close();
+		// createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea )->close();
+		// createDockWidget<DockWidget::ColorLayouts>( Qt::LeftDockWidgetArea )->close();
 		dwScene->raise();
 
 		auto * dwInspector = createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
-		createDockWidget<DockWidget::GraphicsConfigs>( Qt::RightDockWidgetArea )->close();
+		// createDockWidget<DockWidget::GraphicsConfigs>( Qt::RightDockWidgetArea )->close();
 		auto * dwOptions = createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
 		dwInspector->raise();
 
@@ -307,8 +307,10 @@ namespace VTX::UI::QT::Widget
 
 	void MainWindow::_onUpdateAvailable( const App::Events::UpdateAvailable & p_e )
 	{
-		Dialog::Updater dialog( p_e );
-		dialog.exec();
+		Dialog::Updater * const dialog = new Dialog::Updater( p_e );
+		dialog->setAttribute( Qt::WA_DeleteOnClose, true );
+		dialog->setModal( true );
+		dialog->open();
 	}
 
 } // namespace VTX::UI::QT::Widget

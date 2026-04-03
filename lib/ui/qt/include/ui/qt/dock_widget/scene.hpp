@@ -38,9 +38,9 @@ namespace VTX::UI::QT::DockWidget
 		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::TrajectoryPlayer>> _mapTrajTreeWidgets;
 
 		QPointer<Widget::Tree::GraphicsConfigPresets> _treeGraphicsConfigPresets;
-		QPointer<Widget::Tree::ColorLayoutPresets>	   _treeColorLayoutPresets;
+		QPointer<Widget::Tree::ColorLayoutPresets>	  _treeColorLayoutPresets;
 		QPointer<Widget::Tree::RepresentationPresets> _treeRepresentationPresets;
-		QPointer<Widget::Tree::Camera>				   _treeCamera;
+		QPointer<Widget::Tree::Camera>				  _treeCamera;
 
 		/**
 		 * @brief System trees.

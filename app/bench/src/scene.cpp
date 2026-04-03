@@ -3,27 +3,24 @@
 #include <io/util/secondary_structure.hpp>
 #include <numeric>
 #include <renderer/color.hpp>
+#include <renderer/renderer.hpp>
 #include <util/math.hpp>
 
 namespace VTX::Bench
 {
 
-	Scene::Scene( const size_t p_width, const size_t p_height ) :
-		_camera( p_width, p_height )
-		/*,
-		_proxyCamera(
-										  { _camera.getMatrixViewPtr(),
-											_camera.getMatrixProjectionPtr(),
-											_camera.getPosition(),
-											VEC2I_ZERO,
-											_camera.getNear(),
-											_camera.getFar(),
-											_camera.isPerspective() }
-									  )*/
-		,
-		_colorLayout(
-			// Renderer::Color::Layout::COLOR_LAYOUT_JMOL
-		)
+	Scene::Scene( const size_t p_width, const size_t p_height ) : _camera( p_width, p_height )
+	/*,
+	_proxyCamera(
+									  { _camera.getMatrixViewPtr(),
+										_camera.getMatrixProjectionPtr(),
+										_camera.getPosition(),
+										VEC2I_ZERO,
+										_camera.getNear(),
+										_camera.getFar(),
+										_camera.isPerspective() }
+								  )*/
+
 	{
 		/*
 		_camera.callbackMatrixView += [ & ]( const Mat4f & p_matrix ) { _proxyCamera.onMatrixView(); };
@@ -41,90 +38,92 @@ namespace VTX::Bench
 	{
 		using namespace Util;
 
+		SystemEntry	 system;
+		LoadedSystem loadedSystem;
 		if ( p_name.find( '.' ) != std::string::npos )
 		{
-			_systems.emplace_back( std::make_unique<Core::Struct::Topology>( loadSystem( p_name ) ) );
+			loadedSystem = loadSystem( p_name );
 		}
 		else
 		{
-			_systems.emplace_back( std::make_unique<Core::Struct::Topology>( downloadSystem( p_name ) ) );
+			loadedSystem = downloadSystem( p_name );
 		}
 
-		//_systems.back()->transform
-		//	= Math::translate( _systems.back()->transform, Math::randomVec3f() * 200.f - 100.f );
-		IO::Util::SecondaryStructure::computeStride( *_systems.back() );
-		_directions.emplace_back( Math::randomVec3f() * 2.f - 1.f );
+		system.topology	 = std::make_unique<Core::Struct::Topology>( std::move( loadedSystem.topology ) );
+		system.positions = std::move( loadedSystem.positions );
+		system.uid		 = _nextSystemUid++;
+
+		const size_t residueCount = system.topology->getResidueCount();
+		system.residueUids.resize( residueCount );
+		std::iota( system.residueUids.begin(), system.residueUids.end(), _nextPickingUid );
+		_nextPickingUid += PickingUID( residueCount );
+
+		const size_t atomCount = system.topology->getAtomCount();
+		system.atomUids.resize( atomCount );
+		std::iota( system.atomUids.begin(), system.atomUids.end(), _nextPickingUid );
+		_nextPickingUid += PickingUID( atomCount );
+
+		_systems.emplace_back( std::move( system ) );
 	};
 
-	void Scene::removeSystem( const size_t p_index )
+	void Scene::removeSystem( const size_t p_index ) { _systems.erase( _systems.begin() + p_index ); }
+
+	std::vector<Renderer::SystemData> Scene::_buildRendererSystems() const
 	{
-		_systems.erase( _systems.begin() + p_index );
-		_directions.erase( _directions.begin() + p_index );
+		std::vector<Renderer::SystemData> systems;
+		systems.reserve( _systems.size() );
+
+		for ( const SystemEntry & system : _systems )
+		{
+			systems.push_back(
+				Renderer::SystemData { system.uid,
+									   system.transform,
+									   *system.topology,
+									   system.positions,
+									   system.atomUids,
+									   system.residueUids }
+			);
+		}
+
+		return systems;
 	}
 
-	/*
-	std::unique_ptr<Renderer::Proxy::System> Scene::_proxify( const Core::Struct::System & p_system )
+	std::vector<Renderer::ColorIndex> Scene::_buildAtomColors( const Core::Struct::Topology & p_topology ) const
 	{
-		const size_t									sizeAtoms	= p_system.trajectory.getCurrentFrame().size();
-		const std::vector<Core::ChemDB::Atom::SYMBOL> & symbols		= p_system.atomSymbols;
-		const size_t									sizeResidue = p_system.residueOriginalIds.size();
+		const size_t					  atomCount = p_topology.getAtomCount();
+		std::vector<Renderer::ColorIndex> colors( atomCount );
 
-		std::vector<uchar> atomColors( sizeAtoms );
-		size_t			   i = 0;
-		std::generate(
-			atomColors.begin(), atomColors.end(), [ & ] { return Renderer::Color::getColorIndex( symbols[ i++ ] ); }
-		);
+		for ( Index atomIndex = 0; atomIndex < atomCount; ++atomIndex )
+		{
+			colors[ atomIndex ] = Renderer::Color::getColorIndex( p_topology.getAtomSymbol( atomIndex ) );
+		}
 
-		auto atomRadii = std::vector<float>( sizeAtoms );
-		i			   = 0;
-		std::generate(
-			atomRadii.begin(),
-			atomRadii.end(),
-			[ & ] { return Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ int( symbols[ i++ ] ) ]; }
-		);
-
-		std::vector<uint> atomIds( sizeAtoms );
-		std::iota( atomIds.begin(), atomIds.end(), 0 );
-
-		std::vector<uint> residueIds( sizeResidue );
-		std::iota( residueIds.begin(), residueIds.end(), 0 );
-
-		std::vector<uchar> residueColors( sizeResidue );
-		i = 0;
-		std::generate(
-			residueColors.begin(),
-			residueColors.end(),
-			[ & ] { return Renderer::Color::getColorIndex( p_system.residueSecondaryStructureTypes[ i++ ] ); }
-		);
-
-		const std::vector<Index> & polymerChainIds
-			= p_system.getChainIndexesFromCategory( Core::ChemDB::Category::TYPE::POLYMER );
-		const std::vector<Index> & carbohydrateChainIds
-			= p_system.getChainIndexesFromCategory( Core::ChemDB::Category::TYPE::CARBOHYDRATE );
-
-		const std::vector<Vec3f> * atomsPositions = &p_system.trajectory.getCurrentFrame();
-
-		return std::make_unique<Renderer::Proxy::System>(
-			 Renderer::Proxy::System {
-			&p_system.transform,
-			atomsPositions,
-			&p_system.bondPairAtomIndexes,
-			&p_system.atomNames,
-			reinterpret_cast<const std::vector<uchar> *>( &p_system.residueSecondaryStructureTypes ),
-			&p_system.residueFirstAtomIndexes,
-			&p_system.residueAtomCounts,
-			&p_system.chainFirstResidues,
-			&p_system.chainResidueCounts,
-			atomColors,
-			atomRadii,
-			atomIds,
-			residueColors,
-			residueIds,
-			polymerChainIds,
-			carbohydrateChainIds,
-			0 }
-		);
+		return colors;
 	}
-	*/
+
+	Renderer::MapRepresentationRanges Scene::_buildDefaultRepresentation(
+		const Core::Struct::Topology & p_topology
+	) const
+	{
+		Renderer::MapRepresentationRanges representations;
+		representations.emplace(
+			Renderer::RepresentationIndex( 0 ), Core::Struct::IndexRangeList( p_topology.getAtomRange() )
+		);
+		return representations;
+	}
+
+	void Scene::syncRenderer( Renderer::Renderer & p_renderer ) const
+	{
+		p_renderer.setSystems( _buildRendererSystems() );
+
+		for ( const SystemEntry & system : _systems )
+		{
+			const size_t atomCount = system.topology->getAtomCount();
+			p_renderer.setSystemColors( system.uid, _buildAtomColors( *system.topology ) );
+			p_renderer.setSystemRepresentation( system.uid, _buildDefaultRepresentation( *system.topology ) );
+			p_renderer.setSystemVisibility( system.uid, Util::Math::BitSet( atomCount, true ) );
+			p_renderer.setSystemSelection( system.uid, Util::Math::BitSet( atomCount ) );
+		}
+	}
 
 } // namespace VTX::Bench

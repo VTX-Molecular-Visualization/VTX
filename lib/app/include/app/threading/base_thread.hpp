@@ -63,6 +63,9 @@ namespace VTX::App::Threading
 		std::string getProgressText() const;
 		void		setProgressText( const std::string & p_text );
 
+		inline bool silent() const { return _silent; }
+		inline void setSilent( const bool p_silent ) { _silent = p_silent; }
+
 		template<typename T>
 		T get() const
 		{
@@ -89,6 +92,8 @@ namespace VTX::App::Threading
 
 		Util::StopToken _stopToken;
 		void			_finish();
+
+		bool _silent = false;
 	};
 
 	using OptionalThreadReference = std::optional<std::reference_wrapper<BaseThread>>;

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <renderer/graphics_config.hpp>
 #include <renderer/renderer.hpp>
+#include <renderer/representation.hpp>
 #include <util/filesystem.hpp>
 #include <util/math/aabb.hpp>
 
@@ -31,87 +32,28 @@ int main( int, char ** )
 		LOGGER::init( Filesystem::getExecutableDir() / "logs", true );
 
 		// Scene.
-		Scene	 scene( WIDTH, HEIGHT );
-		Camera & camera = scene.getCamera();
+		Scene			   scene( WIDTH, HEIGHT );
+		CameraController & camera = scene.getCamera();
 
 		// UI.
 		UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
-		Renderer::Renderer renderer( WIDTH, HEIGHT );
-		// renderer.setOpenGL45( Filesystem::getExecutableDir() / "shaders", ui.getProcAddress() );
-		// renderer.setProxyCamera( scene.getProxyCamera() );
+		Renderer::Renderer				  renderer( WIDTH, HEIGHT );
+		Renderer::Desc::NativeContextInfo contextInfo;
+		contextInfo.surface	  = ui.getNativeSurface();
+		contextInfo.display	  = ui.getNativeDisplay();
+		contextInfo.plateform = static_cast<Renderer::Desc::E_NATIVE_PLATEFORM>( ui.getNativePlatform() );
+
+		renderer.setOpenGL( contextInfo, Filesystem::getExecutableDir() / "shaders" );
+		renderer.setGraphicsConfig( Renderer::GraphicsConfigs::DEFAULT );
+		renderer.setColorLayout( Renderer::Color::Layouts::JMOL );
+		renderer.setRepresentations( { &Renderer::Representations::STICKS_AND_RIBBONS } );
+		// renderer.setVSync( false );
+		scene.syncRenderer( renderer );
 
 		// Input manager.
 		InputManager inputManager;
-		inputManager.onClose += [ &isRunning ]() { isRunning = false; };
-		inputManager.onTranslate +=
-			[ &camera, &ui ]( const Vec3i & p_delta ) { camera.translate( Vec3f( p_delta ) * ui.getDeltaTime() ); };
-		inputManager.onRotate += [ &camera, &ui ]( const Vec2i & p_delta )
-		{ camera.rotate( Vec3f( -p_delta.y, -p_delta.x, 0.f ) * ui.getDeltaTime() ); };
-		inputManager.onZoom +=
-			[ &camera, &ui ]( const int p_delta ) { camera.zoom( -float( p_delta ) * ui.getDeltaTime() ); };
-
-		inputManager.onResize += [ &renderer, &camera ]( const size_t p_width, const size_t p_height )
-		{
-			renderer.resize( p_width, p_height );
-			camera.resize( p_width, p_height );
-		};
-		inputManager.onRestore += [ &renderer ]() { renderer.setNeedUpdate( true ); };
-		inputManager.onMousePick += [ &renderer ]( const size_t p_x, const size_t p_y )
-		{
-			// Vec2i ids = renderer.getPickedIds( p_x, p_y );
-			// VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
-		};
-		// inputManager.onMouseMotion +=
-		//	[ & ]( const Vec2i & p_position ) { scene.getProxyCamera().onMousePosition( p_position ); };
-
-		inputManager.onKeyPressed += [ & ]( const SDL_Scancode p_key )
-		{
-			try
-			{
-				if ( p_key == SDL_SCANCODE_F1 )
-				{
-					// renderer.addProxySystem( scene.addSystem( "4hhb" ) );
-				}
-				else if ( p_key == SDL_SCANCODE_F2 )
-				{
-					// renderer.addProxySystem( scene.addSystem( "1aga" ) );
-				}
-				else if ( p_key == SDL_SCANCODE_F3 )
-				{
-					// renderer.addProxySystem( scene.addSystem( "4v6x" ) );
-				}
-				else if ( p_key == SDL_SCANCODE_F4 )
-				{
-					// renderer.addProxySystem( scene.addSystem( "3j3q.mmtf" ) );
-				}
-				else if ( p_key == SDL_SCANCODE_F5 )
-				{
-					Renderer::Color::Layout colorLayout;
-					std::generate(
-						colorLayout.colors.begin(), colorLayout.colors.end(), [] { return Color::Rgba::random(); }
-					);
-					scene.setColorLayout( colorLayout );
-				}
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( "{}", p_e.what() );
-			}
-		};
-
-		inputManager.onFileDrop += [ & ]( const FilePath & p_filePath )
-		{
-			try
-			{
-				// renderer.addProxySystem( scene.addSystem( p_filePath.string() ) );
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( "{}", p_e.what() );
-			}
-		};
 
 		// Math::AABB aabb( VEC3F_ZERO, 100.f );
 
@@ -131,89 +73,113 @@ int main( int, char ** )
 				}
 			}
 		}
-
 		renderer.setVoxels( mins, maxs );
-		renderer.setColorLayout( scene.getColorLayout() );
 
-		// Quickfix.
-		bool  bTrue		= true;
-		bool  bFalse	= false;
-		float fZero		= 0.f;
-		float fZeroOne	= 0.1f;
-		float fZeroFive = 0.5f;
-
-		// Renderer::Representation representation;
-
-		/*
-		representation.set( 0, bTrue );
-		representation.set( 1, fZeroFive );
-		representation.set( 2, fZero );
-		representation.set( 3, bTrue );
-
-		representation.set( 4, bTrue );
-		representation.set( 5, fZeroOne );
-		representation.set( 6, bFalse );
-
-		representation.set( 7, bTrue );
-		representation.set( 8, bTrue );
-
-		representation.set( 9, bFalse );
-		*/
-
-		// renderer.setRepresentation( representation );
-
-		Renderer::GraphicsConfig settings;
-		settings.shadingMode		= Renderer::E_SHADING::TOON;
-		settings.colorLight			= COLOR_WHITE;
-		settings.colorBackground	= COLOR_BLACK;
-		settings.specularFactor		= 0.5f;
-		settings.shininess			= 32.f;
-		settings.toonSteps			= 4;
-		settings.activeSSAO			= true;
-		settings.ssaoIntensity		= 5.f;
-		settings.blurSize			= 4.f;
-		settings.activeOutline		= true;
-		settings.colorOutline		= COLOR_BLACK;
-		settings.outlineSensitivity = 0.5f;
-		settings.outlineThickness	= 2;
-		settings.activeFog			= false;
-		settings.colorFog			= COLOR_WHITE;
-		settings.fogNear			= 100.f;
-		settings.fogFar				= 1000.f;
-		settings.fogDensity			= 0.01f;
-		settings.activeSelection	= true;
-		settings.colorSelection		= COLOR_WHITE;
-
-		// Renderer::Proxy::RenderSettings renderSettings
-		//	= { 6.f, 18.f,	 COLOR_WHITE, COLOR_YELLOW, COLOR_BLACK, 2,	  1.f, 1.f,
-		//		3,	 1000.f, 1000.f,	  0.5f,			COLOR_RED,	 1.f, 1,   COLOR_BLUE };
-
-		renderer.setGraphicsConfig( settings );
+		float previousTime = float( ui.getTime() ) * 1e-3f;
 
 		// Main loop.
 		while ( isRunning )
 		{
-			float time		= float( ui.getTime() );
-			float deltaTime = ui.getDeltaTime();
-
-			// Update scene.
-			scene.update( deltaTime );
-
-			// Renderer.
-			renderer.render( deltaTime, time );
-
-			// UI.
-			ui.draw( &camera, &scene, &renderer );
-
-			// Events.
 			SDL_Event event;
 			while ( ui.getEvent( event ) )
 			{
 				inputManager.handle( event );
 			}
 
+			const float time	  = float( ui.getTime() ) * 1e-3f;
+			const float deltaTime = time - previousTime;
+			previousTime		  = time;
+
 			inputManager.update();
-			inputManager.consumeInputs();
+			const FrameInputs frameInputs		  = inputManager.consumeInputs();
+			const auto		  syncSceneToRenderer = [ &renderer, &scene ]() { scene.syncRenderer( renderer ); };
+
+			isRunning = not frameInputs.closeRequested;
+
+			if ( frameInputs.resize.has_value() )
+			{
+				renderer.resize( frameInputs.resize->width, frameInputs.resize->height );
+				camera.resize( frameInputs.resize->width, frameInputs.resize->height );
+			}
+			if ( frameInputs.restoreRequested )
+			{
+				renderer.setNeedUpdate( true );
+			}
+			if ( frameInputs.translation != VEC3I_ZERO )
+			{
+				camera.translate( Vec3f( frameInputs.translation ) * deltaTime );
+			}
+			if ( frameInputs.rotation != VEC2I_ZERO )
+			{
+				camera.rotate( Vec3f( -frameInputs.rotation.y, -frameInputs.rotation.x, 0.f ) * deltaTime );
+			}
+			if ( frameInputs.zoom != 0 )
+			{
+				camera.zoom( -float( frameInputs.zoom ) * deltaTime );
+			}
+
+			if ( frameInputs.mousePick.has_value() )
+			{
+				Vec2i ids = renderer.getPickedIds( frameInputs.mousePick->x, frameInputs.mousePick->y );
+				VTX_DEBUG( "Picked ids: {} {}", ids.x, ids.y );
+			}
+
+			for ( const SDL_Scancode key : frameInputs.pressedKeys )
+			{
+				try
+				{
+					if ( key == SDL_SCANCODE_F1 )
+					{
+						scene.addSystem( "4hhb" );
+						syncSceneToRenderer();
+					}
+					else if ( key == SDL_SCANCODE_F2 )
+					{
+						scene.addSystem( "1aga" );
+						syncSceneToRenderer();
+					}
+					else if ( key == SDL_SCANCODE_F3 )
+					{
+						scene.addSystem( "4v6x" );
+						syncSceneToRenderer();
+					}
+					else if ( key == SDL_SCANCODE_F4 )
+					{
+						scene.addSystem( "3j3q.mmtf" );
+						syncSceneToRenderer();
+					}
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( "{}", p_e.what() );
+				}
+			}
+
+			for ( const FilePath & filePath : frameInputs.droppedFiles )
+			{
+				try
+				{
+					scene.addSystem( filePath.string() );
+					syncSceneToRenderer();
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( "{}", p_e.what() );
+				}
+			}
+
+			// Update scene.
+			scene.update( deltaTime );
+
+			renderer.setCamera(
+				camera.getCamera(), camera.getPosition(), camera.computeViewMatrix(), camera.computeProjectionMatrix()
+			);
+
+			// Renderer.
+			renderer.render( deltaTime, time );
+
+			// UI.
+			ui.draw( &camera, &scene, &renderer );
 		}
 	}
 	catch ( const std::exception & p_e )

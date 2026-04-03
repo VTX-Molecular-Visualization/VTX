@@ -43,11 +43,8 @@ if (VTX_PYTHON_BINDING)
 	vtx_install_target_directory(vtx "python_script")
 	vtx_install_target_directory(vtx "external")
 endif()
-# Data from VTX.
-install(FILES README.md DESTINATION .)
-install(FILES CHANGELOG.md DESTINATION .)
 install(FILES license.txt DESTINATION .)
- # Runtime DLLs.
+# Runtime DLLs.
 #install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
 if (VTX_UI_QT)
 	vtx_qt_install_runtime(vtx)

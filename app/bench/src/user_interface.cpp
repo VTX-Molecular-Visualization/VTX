@@ -1,10 +1,10 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
 #include "user_interface.hpp"
-#include "camera.hpp"
+#include "camera_controller.hpp"
 #include "scene.hpp"
+#include <cstring>
 #include <imgui.h>
-#include <imgui/imgui_impl_opengl3.h>
 #include <imnodes/imnodes.h>
 #include <renderer/color.hpp>
 #include <util/enum.hpp>
@@ -17,41 +17,35 @@ namespace VTX::Bench
 
 	UserInterface::UserInterface( const size_t p_width, const size_t p_height )
 	{
-		// Init SDL2.
+		// Init SDL.
 		if ( not SDL_Init( SDL_INIT_VIDEO ) )
 		{
 			throw std::runtime_error( "Failed to init SDL: " + std::string( SDL_GetError() ) );
 		}
 
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, 0 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 6 );
-		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, true );
-		// SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
-		// SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
+		SDL_PropertiesID windowProps = SDL_CreateProperties();
+		if ( windowProps == 0 )
+		{
+			throw std::runtime_error( "Failed to create SDL window properties" );
+		}
 
-		_window = SDL_CreateWindow(
-			"VTX_RENDERER_BENCH",
-			int( p_width ),
-			int( p_height ),
-			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
-		);
+		SDL_SetStringProperty( windowProps, SDL_PROP_WINDOW_CREATE_TITLE_STRING, "VTX_RENDERER_BENCH" );
+		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, Sint64( p_width ) );
+		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, Sint64( p_height ) );
+		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_X_NUMBER, SDL_WINDOWPOS_CENTERED );
+		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDL_WINDOWPOS_CENTERED );
+		SDL_SetBooleanProperty( windowProps, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true );
+		SDL_SetBooleanProperty( windowProps, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true );
+		SDL_SetBooleanProperty( windowProps, SDL_PROP_WINDOW_CREATE_EXTERNAL_GRAPHICS_CONTEXT_BOOLEAN, true );
+
+		_window = SDL_CreateWindowWithProperties( windowProps );
+		SDL_DestroyProperties( windowProps );
 
 		if ( _window == nullptr )
 		{
-			throw std::runtime_error( "Failed to create SDL2 window" );
+			throw std::runtime_error( "Failed to create SDL window" );
 		}
 
-		_glContext = SDL_GL_CreateContext( _window );
-		if ( _glContext == nullptr )
-		{
-			throw std::runtime_error( SDL_GetError() );
-		}
-
-		SDL_GL_MakeCurrent( _window, _glContext );
-		SDL_GL_SetSwapInterval( _vsync );
-		SDL_SetWindowPosition( _window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED );
 		SDL_ShowWindow( _window );
 
 		// Init ImGui.
@@ -63,13 +57,9 @@ namespace VTX::Bench
 		ImGui::CreateContext();
 		ImGui::StyleColorsDark();
 
-		if ( not ImGui_ImplSDL3_InitForOpenGL( _window, _glContext ) )
+		if ( not ImGui_ImplSDL3_InitForOther( _window ) )
 		{
-			throw std::runtime_error( "ImGui_ImplSDL2_InitForOpenGL failed" );
-		}
-		if ( not ImGui_ImplOpenGL3_Init( "#version 450 core" ) )
-		{
-			throw std::runtime_error( "ImGui_ImplOpenGL3_Init failed" );
+			throw std::runtime_error( "ImGui_ImplSDL3_InitForOther failed" );
 		}
 
 		// ImGui plugins.
@@ -78,16 +68,11 @@ namespace VTX::Bench
 
 	UserInterface::~UserInterface()
 	{
-		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplSDL3_Shutdown();
 		if ( ImGui::GetCurrentContext() != nullptr )
 		{
 			ImNodes::DestroyContext();
 			ImGui::DestroyContext();
-		}
-		if ( _glContext )
-		{
-			SDL_GL_DestroyContext( _glContext );
 		}
 		if ( _window )
 		{
@@ -96,41 +81,125 @@ namespace VTX::Bench
 		SDL_Quit();
 	}
 
-	void UserInterface::draw( Camera * const p_camera, Scene * const p_scene, Renderer::Renderer * const p_renderer )
+	void UserInterface::draw(
+		CameraController * const   p_camera,
+		Scene * const			   p_scene,
+		Renderer::Renderer * const p_renderer
+	)
 	{
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplSDL3_NewFrame();
-		ImGui::NewFrame();
+		// ImGui_ImplSDL3_NewFrame();
+		// ImGui::NewFrame();
 
 		// Menu bar.
-		_drawMenuBar( p_camera, p_renderer, p_scene );
+		//_drawMenuBar( p_camera, p_renderer, p_scene );
 
 		if ( _drawUi )
 		{
 			// Camera.
-			_drawCamera( p_camera );
+			//_drawCamera( p_camera );
 
 			// Scene.
-			_drawRenderer( p_renderer );
+			//_drawRenderer( p_renderer );
 
 			// Times.
-			_drawDurations( p_renderer );
+			//_drawDurations( p_renderer );
 
 			// Scene.
-			_drawScene( p_scene, p_renderer );
+			//_drawScene( p_scene, p_renderer );
 
 			// Node editor.
 			//_drawNodeEditor( p_renderer );
 		}
 
-		// Render.
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
-		SDL_GL_SwapWindow( _window );
+		// The renderer owns the native OpenGL context and performs the present itself.
+		// Keep ImGui as an input/frame utility here until bench gains a pre-present hook.
+		// ImGui::Render();
+	}
+
+	uintptr_t UserInterface::getNativeSurface() const
+	{
+		if ( _window == nullptr )
+		{
+			return 0;
+		}
+
+		const SDL_PropertiesID windowProps = SDL_GetWindowProperties( _window );
+		if ( windowProps == 0 )
+		{
+			return 0;
+		}
+
+#ifdef _WIN32
+		return reinterpret_cast<uintptr_t>(
+			SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr )
+		);
+#elif defined( __linux__ )
+		if ( getNativePlatform() == uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND ) )
+		{
+			return reinterpret_cast<uintptr_t>(
+				SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WAYLAND_SURFACE_POINTER, nullptr )
+			);
+		}
+
+		return uintptr_t( SDL_GetNumberProperty( windowProps, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0 ) );
+#else
+		return 0;
+#endif
+	}
+
+	uintptr_t UserInterface::getNativeDisplay() const
+	{
+		if ( _window == nullptr )
+		{
+			return 0;
+		}
+
+		const SDL_PropertiesID windowProps = SDL_GetWindowProperties( _window );
+		if ( windowProps == 0 )
+		{
+			return 0;
+		}
+
+#ifdef _WIN32
+		return 0;
+#elif defined( __linux__ )
+		if ( getNativePlatform() == uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND ) )
+		{
+			return reinterpret_cast<uintptr_t>(
+				SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WAYLAND_DISPLAY_POINTER, nullptr )
+			);
+		}
+
+		return reinterpret_cast<uintptr_t>(
+			SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr )
+		);
+#else
+		return 0;
+#endif
+	}
+
+	uint8_t UserInterface::getNativePlatform() const
+	{
+#ifdef _WIN32
+		return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WINDOWS );
+#elif defined( __linux__ )
+		const char * const videoDriver = SDL_GetCurrentVideoDriver();
+		if ( videoDriver != nullptr && std::strcmp( videoDriver, "wayland" ) == 0 )
+		{
+			return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND );
+		}
+		if ( videoDriver != nullptr && std::strcmp( videoDriver, "x11" ) == 0 )
+		{
+			return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::X11 );
+		}
+		return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::UNKNOWN );
+#else
+		return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::UNKNOWN );
+#endif
 	}
 
 	void UserInterface::_drawMenuBar(
-		Camera * const			   p_camera,
+		CameraController * const   p_camera,
 		Renderer::Renderer * const p_renderer,
 		Scene * const			   p_scene
 	)
@@ -179,7 +248,7 @@ namespace VTX::Bench
 					std::generate(
 						colorLayout.colors.begin(), colorLayout.colors.end(), [] { return Util::Color::Rgba::random(); }
 					);
-					p_scene->setColorLayout( colorLayout );
+					// p_scene->setColorLayout( colorLayout );
 				}
 				if ( ImGui::MenuItem( "Random pastel" ) )
 				{
@@ -189,7 +258,7 @@ namespace VTX::Bench
 						colorLayout.colors.end(),
 						[] { return Util::Color::Rgba::randomPastel(); }
 					);
-					p_scene->setColorLayout( colorLayout );
+					// p_scene->setColorLayout( colorLayout );
 				}
 
 				ImGui::EndMenu();
@@ -238,6 +307,7 @@ namespace VTX::Bench
 			if ( ImGui::Checkbox( "Vsync", &_vsync ) )
 			{
 				setVSync( _vsync );
+				p_renderer->setVSync( _vsync );
 			}
 
 			// ImGui::Checkbox( "Timers", &p_renderer->logDurations );
@@ -250,8 +320,9 @@ namespace VTX::Bench
 		}
 	}
 
-	void UserInterface::_drawCamera( Camera * const p_camera ) const
+	void UserInterface::_drawCamera( CameraController * const p_camera ) const
 	{
+		/*
 		if ( ImGui::Begin( "Camera" ) )
 		{
 			float cameraNear		  = p_camera->getNear();
@@ -301,6 +372,7 @@ namespace VTX::Bench
 			}
 		}
 		ImGui::End();
+		*/
 	}
 
 	void UserInterface::_drawRenderer( Renderer::Renderer * const p_renderer )

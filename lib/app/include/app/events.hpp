@@ -23,13 +23,22 @@ namespace VTX::App::Events
 	{
 		std::string currentVersion;
 		std::string newVersion;
-		std::string changelogHtml;
+		std::string changelog;
 		size_t		size;
 	};
 
 	struct UpdateDownloadProgress
 	{
-		float progress;
+		uint progress;
+	};
+
+	struct UpdateReadyToRestart
+	{
+	};
+
+	struct UpdateDownloadFailed
+	{
+		std::string message;
 	};
 
 	struct ApplicationError

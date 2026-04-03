@@ -16,9 +16,9 @@ namespace VTX::App
 	constexpr std::string_view ORGANIZATION_NAME		= "VTX Team";
 	constexpr std::string_view ORGANIZATION_DOMAIN		= "vtx.drugdesign.fr";
 
-	constexpr std::string_view URL_UPDATE = "https://github.com/VTX-Molecular-Visualization/VTX_release";
-	// constexpr std::string_view URL_UPDATE
-	//	= "https://github.com/VTX-Molecular-Visualization/VTX_release/releases/latest/download";
+	// constexpr std::string_view URL_UPDATE = "https://github.com/VTX-Molecular-Visualization/VTX_release";
+	constexpr std::string_view URL_UPDATE
+		= "https://github.com/VTX-Molecular-Visualization/VTX_release/releases/latest/download";
 	constexpr std::string_view APP_FOLDER_NAME = "VTX";
 
 	constexpr std::string_view URL_WEBSITE		 = "https://vtx.drugdesign.fr";

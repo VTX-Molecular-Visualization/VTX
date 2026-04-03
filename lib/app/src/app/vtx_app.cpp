@@ -110,7 +110,6 @@ namespace VTX::App
 		ECS::setCtx<Action::ActionManager>();
 		ECS::setCtx<Input::InputManager>();
 		ECS::setCtx<Network::NetworkManager>();
-
 		ECS::setCtx<Threading::ThreadManager>();
 		ECS::setCtx<Uid::UIDManager>();
 		ECS::setCtx<Pass::PassManager>();

@@ -6,8 +6,14 @@
 
 namespace VTX::Bench
 {
-	Core::Struct::Topology loadSystem( const FilePath & p_filename );
-	Core::Struct::Topology downloadSystem( const std::string & p_pdb );
+	struct LoadedSystem
+	{
+		Core::Struct::Topology topology;
+		std::vector<Vec3f>	 positions;
+	};
+
+	LoadedSystem loadSystem( const FilePath & p_filename );
+	LoadedSystem downloadSystem( const std::string & p_pdb );
 
 	// Skybox tests.
 	/*

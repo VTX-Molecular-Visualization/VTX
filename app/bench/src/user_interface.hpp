@@ -1,6 +1,7 @@
 #ifndef __VTX_BENCH_USER_INTERFACE__
 #define __VTX_BENCH_USER_INTERFACE__
 
+#include "camera_controller.hpp"
 #include <SDL3/SDL.h>
 #include <imgui/imgui_impl_sdl3.h>
 #include <renderer/descriptors.hpp>
@@ -20,14 +21,13 @@ namespace VTX::Bench
 
 		inline double getTime() const { return double( SDL_GetTicks() ); }
 		inline float  getDeltaTime() const { return ImGui::GetIO().DeltaTime; }
-		inline void * getProcAddress() { return reinterpret_cast<void *>( SDL_GL_GetProcAddress ); }
-		inline void	  setVSync( const bool p_vsync )
-		{
-			_vsync = p_vsync;
-			SDL_GL_SetSwapInterval( _vsync );
-		}
+		inline void	  setVSync( const bool p_vsync ) { _vsync = p_vsync; }
 
-		void draw( Camera * const p_camera, Scene * const p_scene, Renderer::Renderer * const p_renderer );
+		uintptr_t getNativeSurface() const;
+		uintptr_t getNativeDisplay() const;
+		uint8_t	  getNativePlatform() const;
+
+		void draw( CameraController * const p_camera, Scene * const p_scene, Renderer::Renderer * const p_renderer );
 
 		inline bool getEvent( SDL_Event & p_event ) const
 		{
@@ -42,13 +42,16 @@ namespace VTX::Bench
 		}
 
 	  private:
-		SDL_Window *  _window	 = nullptr;
-		SDL_GLContext _glContext = nullptr;
-		bool		  _vsync	 = true;
-		bool		  _drawUi	 = true;
+		SDL_Window * _window = nullptr;
+		bool		 _vsync	 = true;
+		bool		 _drawUi = true;
 
-		void _drawMenuBar( Camera * const p_camera, Renderer::Renderer * const p_renderer, Scene * const p_scene );
-		void _drawCamera( Camera * const p_camera ) const;
+		void _drawMenuBar(
+			CameraController * const   p_camera,
+			Renderer::Renderer * const p_renderer,
+			Scene * const			   p_scene
+		);
+		void _drawCamera( CameraController * const p_camera ) const;
 		void _drawRenderer( Renderer::Renderer * const p_renderer );
 		void _drawDurations( Renderer::Renderer * const p_renderer ) const;
 		void _drawScene( Scene * const p_scene, Renderer::Renderer * const p_renderer );

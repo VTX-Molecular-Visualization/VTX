@@ -99,15 +99,10 @@ jobs:
     - name: Create default profile
       run: conan profile detect --force
 
-    - name: Install Linux packaging tools
-      if: runner.os == 'Linux'
-      run: sudo apt-get update && sudo apt-get install -y patchelf
-
     - name: Add custom remote
       run: |
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
-
     
 #    - name: Install CUDA Toolkit
 #      uses: Jimver/cuda-toolkit@v0.2.30
@@ -155,7 +150,7 @@ jobs:
 
     - name: Install Velopack CLI
       run: |
-        dotnet tool install -g vpk --prerelease
+        dotnet tool install -g vpk
         echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
       shell: bash
 
