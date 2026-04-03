@@ -515,7 +515,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][bindin
 	std::shared_ptr<std::promise<AsyncJobResult>> promise	   = std::make_shared<std::promise<AsyncJobResult>>();
 	std::future<AsyncJobResult>					  _future	   = promise->get_future();
 	std::stringstream							  ssCommandRun = std::stringstream();
-	ssCommandRun << "runScript(" << scriptPath << " )";
+	ssCommandRun << "vtx.runScript(" << scriptPath << " )";
 	App::INTERPRETOR().runCommand( ssCommandRun.str(), promise );
 	_future.wait();
 	if ( _future.valid() )
@@ -525,7 +525,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][bindin
 
 	promise = std::make_shared<std::promise<AsyncJobResult>>();
 	_future = promise->get_future();
-	App::INTERPRETOR().runCommand( "runScript('bzzzz')", promise );
+	App::INTERPRETOR().runCommand( "vtx.runScript('bzzzz')", promise );
 	_future.wait();
 	if ( _future.valid() )
 		CHECK( _future.get().success == false );
