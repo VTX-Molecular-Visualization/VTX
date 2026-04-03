@@ -9,16 +9,17 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
 
-		// Log list.
-		_listWidget = new QListWidget( _root );
-		_listWidget->setWordWrap( true );
-		_listWidget->setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAsNeeded );
-		_listWidget->setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
+		// Log area.
+		_textEdit = new QPlainTextEdit( _root );
+		_textEdit->setReadOnly( true );
+		_textEdit->setWordWrapMode( QTextOption::WrapAnywhere );
+		_textEdit->setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAsNeeded );
+		_textEdit->setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
 
 		// Context menu.
 		connect(
-			_listWidget,
-			&QListWidget::customContextMenuRequested,
+			_textEdit,
+			&QPlainTextEdit::customContextMenuRequested,
 			this,
 			[ & ]( const QPoint & p_pos )
 			{
@@ -26,7 +27,7 @@ namespace VTX::UI::QT::DockWidget
 				QAction * const clearAction = new QAction( "Clear", &menu );
 				connect( clearAction, &QAction::triggered, this, &Console::clear );
 				menu.addAction( clearAction );
-				menu.exec( _listWidget->mapToGlobal( p_pos ) );
+				menu.exec( _textEdit->mapToGlobal( p_pos ) );
 			}
 		);
 
@@ -37,7 +38,7 @@ namespace VTX::UI::QT::DockWidget
 		// Command launcher.
 		_commandLauncher = new UI::QT::Widget::CommandLauncher( this );
 
-		_layout->addWidget( _listWidget );
+		_layout->addWidget( _textEdit );
 		_layout->addWidget( _commandLauncher );
 	}
 
@@ -46,47 +47,46 @@ namespace VTX::UI::QT::DockWidget
 	void Console::log( const VTX::Util::LogInfo & p_logInfo )
 	{
 		const std::string message = fmt::format( "[{}] {}", p_logInfo.date, p_logInfo.message );
-		QListWidgetItem * newItem = new QListWidgetItem( QString::fromStdString( message ) );
 
 		// TODO: Use palette color.
+		QColor color = _textEdit->palette().text().color();
 		if ( p_logInfo.hint == VTX::Util::LOG_HINT::STD )
 		{
 			if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_ERROR )
-			{
-				newItem->setForeground( Qt::red );
-			}
+				color = Qt::red;
 			else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_WARNING )
-			{
-				newItem->setForeground( Qt::yellow );
-			}
+				color = Qt::yellow;
 			else if ( p_logInfo.level == ::VTX::Util::LOG_LEVEL::LOG_DEBUG )
-			{
-				newItem->setForeground( Qt::darkCyan );
-			}
+				color = Qt::darkCyan;
 		}
 		else if ( p_logInfo.hint == VTX::Util::LOG_HINT::PY_IN )
-		{
-			newItem->setForeground( Qt::green );
-		}
+			color = Qt::green;
 		else if ( p_logInfo.hint == VTX::Util::LOG_HINT::PY_OUT )
+			color = Qt::darkGreen;
+
+		QTextCharFormat format;
+		format.setForeground( color );
+
+		QTextCursor cursor = _textEdit->textCursor();
+		cursor.movePosition( QTextCursor::End );
+		if ( !_textEdit->document()->isEmpty() )
+			cursor.insertBlock();
+		cursor.setCharFormat( format );
+		cursor.insertText( QString::fromStdString( message ) );
+
+		if ( _textEdit->document()->blockCount() > static_cast<int>( CONSOLE_LOG_COUNT ) )
 		{
-			newItem->setForeground( Qt::darkGreen );
+			QTextCursor removeCursor( _textEdit->document() );
+			removeCursor.movePosition( QTextCursor::Start );
+			removeCursor.movePosition( QTextCursor::EndOfBlock, QTextCursor::KeepAnchor );
+			removeCursor.movePosition( QTextCursor::NextCharacter, QTextCursor::KeepAnchor );
+			removeCursor.removeSelectedText();
 		}
 
-		newItem->setFlags( Qt::ItemFlag::ItemNeverHasChildren );
-
-		_listWidget->addItem( newItem );
-
-		if ( _listWidget->count() > CONSOLE_LOG_COUNT )
-		{
-			QListWidgetItem * const itemToRemove = _listWidget->takeItem( 0 );
-			_listWidget->removeItemWidget( itemToRemove );
-			delete itemToRemove;
-		}
-
-		_listWidget->scrollToBottom();
+		_textEdit->moveCursor( QTextCursor::End );
+		_textEdit->ensureCursorVisible();
 	}
 
-	void Console::clear() { _listWidget->clear(); }
+	void Console::clear() { _textEdit->clear(); }
 
 } // namespace VTX::UI::QT::DockWidget
