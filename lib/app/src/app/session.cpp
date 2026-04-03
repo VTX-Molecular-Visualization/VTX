@@ -107,7 +107,7 @@ namespace VTX::App
 		catch ( const std::exception & p_e )
 		{
 			// Logger not initialized.
-			std::cerr << "Velopack startup hook error: " << p_e.what() << std::endl;
+			std::cout << "Velopack startup hook: " << p_e.what() << std::endl;
 		}
 	}
 
@@ -121,7 +121,8 @@ namespace VTX::App
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_DEBUG( "{}", p_e.what() );
+			// Logger not initialized yet.
+			std::cerr << "Velopack update manager error: " << p_e.what() << std::endl;
 		}
 	}
 

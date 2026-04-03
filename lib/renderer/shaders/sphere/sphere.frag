@@ -1,4 +1,4 @@
-#version 450 core
+#version 460 core
 
 #include "../layout_uniforms_camera.glsl"
 #include "../struct_data_packed.glsl"

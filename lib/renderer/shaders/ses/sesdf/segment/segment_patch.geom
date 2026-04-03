@@ -1,4 +1,4 @@
-#version 450
+#version 460
 
 #include "../../../layout_uniforms_camera.glsl"
 #include "struct_segment.glsl"
