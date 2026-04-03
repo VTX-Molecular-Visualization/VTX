@@ -128,9 +128,7 @@ namespace VTX::PythonBinding::Binding
 			;
 
 		// Residue
-		Helper::declareEnum<VTX::Core::ChemDB::Residue::SYMBOL>(
-			p_apiModule, "RESIDUE_SYMBOL", pybind11::module_local()
-		);
+		Helper::declareEnum<VTX::Core::ChemDB::Residue::SYMBOL>( p_apiModule, "RESIDUE_SYMBOL" );
 
 		pybind11::class_<API::Residue>( p_apiModule, "Residue", pybind11::module_local() )
 			.def( "getShortName", &API::Residue::getShortName )
@@ -163,8 +161,8 @@ namespace VTX::PythonBinding::Binding
 			;
 
 		// Atom
-		Helper::declareEnum<VTX::Core::ChemDB::Atom::SYMBOL>( p_apiModule, "ATOM_SYMBOL", pybind11::module_local() );
-		Helper::declareEnum<VTX::Core::ChemDB::Atom::TYPE>( p_apiModule, "ATOM_TYPE", pybind11::module_local() );
+		Helper::declareEnum<VTX::Core::ChemDB::Atom::SYMBOL>( p_apiModule, "ATOM_SYMBOL" );
+		Helper::declareEnum<VTX::Core::ChemDB::Atom::TYPE>( p_apiModule, "ATOM_TYPE" );
 
 		pybind11::class_<API::Atom>( p_apiModule, "Atom", pybind11::module_local() )
 			.def( "getLocalPosition", &API::Atom::getLocalPosition )

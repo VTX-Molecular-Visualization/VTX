@@ -14,7 +14,7 @@
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 
-PYBIND11_EMBEDDED_MODULE( vtx, m )
+PYBIND11_EMBEDDED_MODULE( vtx, m, pybind11::multiple_interpreters::per_interpreter_gil() )
 {
 	// At first we were building an external python binary (.pyd or .so) and we imported that module to bind commands,
 	// classes and all ... However, because of the separate binary thing and how we use global variables such as the

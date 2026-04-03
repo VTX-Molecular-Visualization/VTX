@@ -46,8 +46,9 @@ namespace VTX::UI::QT::DockWidget
 
 	void Console::log( const VTX::Util::LogInfo & p_logInfo )
 	{
+		if ( p_logInfo.message == "\n" )
+			return;
 		const std::string message = fmt::format( "[{}] {}", p_logInfo.date, p_logInfo.message );
-
 		// TODO: Use palette color.
 		QColor color = _textEdit->palette().text().color();
 		if ( p_logInfo.hint == VTX::Util::LOG_HINT::STD )

@@ -78,7 +78,7 @@ class VTXRecipe(ConanFile):
         self.requires("stb/cci.20240531")
         self.requires("entt/3.16.0")
         if self.options.python_binding:
-            self.requires("pybind11/2.13.6")
+            self.requires("pybind11/3.0.1")
         if self.options.ui_qt:
             self.requires("qt/6.10.1")
         if self.options.tool_mdprep:

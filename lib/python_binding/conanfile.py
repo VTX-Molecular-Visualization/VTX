@@ -116,7 +116,7 @@ class VTXPythonBindingRecipe(ConanFile):
         self.requires("vtx_util/1.0")
         self.requires("vtx_core/1.0")
         self.requires("vtx_io/1.0")
-        self.requires("pybind11/2.13.6", transitive_headers=True)
+        self.requires("pybind11/3.0.1", transitive_headers=True)
         self.requires("catch2/3.13.0")
         self.requires("cpython/{}".format(str(self._python_version())))
         if self.settings.os == "Linux":

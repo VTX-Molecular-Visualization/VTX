@@ -18,7 +18,10 @@ class CustomHelper:
 
     def __call__(self, *args, **kwargs):
         if not args and not kwargs:
-            return """Welcome to VTX python helper.\nYou can have a very detailed list of functions and classes and what they do by running help(vtx).\n"""
+           print( "Welcome to VTX python helper.")
+           print("You can have a very detailed list of functions and classes and what they do by running help(vtx) or a minimalistic list of classes and functions by running dir(vtx).")
+           print("Use help([symbol]) to print information on a vtx class of function.")
+           print("E.g. : help(vtx.runScript)")
         else:
             self._original(*args, **kwargs)
 
