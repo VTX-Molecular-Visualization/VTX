@@ -189,6 +189,27 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	CHECK( hasFXAA );
 }
 
+TEST_CASE( "Residue representations follow each residue CA atom", "[renderer][representation]" )
+{
+	VTX::Renderer::Geometry::Ribbon::Construction construction;
+	construction.residues = {
+		{ 10, 3, 4 },
+		{ 11, 0, 5 },
+		{ 12, 2, 6 },
+	};
+
+	const std::vector<RepresentationIndex> atomRepresentations = { 7, 8, 9, 4, 5 };
+	std::vector<RepresentationIndex> residueRepresentations( construction.residues.size() );
+
+	for ( size_t i = 0; i < construction.residues.size(); ++i )
+		residueRepresentations[ i ] = atomRepresentations[ construction.residues[ i ].ca ];
+
+	REQUIRE( residueRepresentations.size() == 3 );
+	CHECK( residueRepresentations[ 0 ] == 4 );
+	CHECK( residueRepresentations[ 1 ] == 7 );
+	CHECK( residueRepresentations[ 2 ] == 9 );
+}
+
 static bool bytesEqual( const void * p_a, const void * p_b, size_t p_n ) { return std::memcmp( p_a, p_b, p_n ) == 0; }
 
 TEST_CASE( "CommandBuffer: push command without payload sets NO_PAYLOAD" )

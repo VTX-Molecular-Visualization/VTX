@@ -545,11 +545,13 @@ namespace VTX::Renderer
 
 		for ( Index i = 0; i < countResidues; ++i )
 		{
-			const RepresentationIndex representationIndex = atoms[ construction.residues[ i ].ca ];
-			residues[ i ]								  = atoms[ representationIndex ];
+			const Index atomIndex = construction.residues[ i ].ca;
+			assert( atomIndex < atoms.size() );
+			residues[ i ] = atoms[ atomIndex ];
 		}
 
 		assert( count == countAtoms );
+		assert( residues.size() == countResidues );
 
 		_layouts.residues.upload<Layout::RESIDUE_ATTR::REPRESENTATION, RepresentationIndex>( _context, h, residues );
 
