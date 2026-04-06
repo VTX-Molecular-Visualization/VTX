@@ -161,15 +161,19 @@ def generate_qt(p_conanFile : ConanFile):
     destDir = str(_editable_runtime_root(p_conanFile))
 
     if p_conanFile.settings.os == "Windows":
-        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Network*.dll", "Qt6Widgets*.dll" ]
+        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll" ]
         for file in binFiles:
             p_conanFile.output.highlight(f"Copying {file} from Qt bin directory to {destDir}")
             copy(p_conanFile, file, qtBinDir, destDir)
 
-        pluginsFolers = [ "imageformats", "platforms", "styles", "tls" ]
-        for folder in pluginsFolers:
-            p_conanFile.output.highlight(f"Copying *.dll from Qt {folder} directory to {destDir}/{folder}")
-            copy(p_conanFile, "*.dll", os.path.join(qtPluginsDir, folder), os.path.join(destDir, folder))
+        pluginsPatterns = (
+            ("imageformats", "qgif*.dll"),
+            ("imageformats", "qjpeg*.dll"),
+            ("platforms", "qwindows*.dll"),
+        )
+        for folder, pattern in pluginsPatterns:
+            p_conanFile.output.highlight(f"Copying {pattern} from Qt {folder} directory to {destDir}/{folder}")
+            copy(p_conanFile, pattern, os.path.join(qtPluginsDir, folder), os.path.join(destDir, folder))
     elif p_conanFile.settings.os == "Linux":
         p_conanFile.output.highlight(f"Copying selected Qt shared libraries from {qtLibDir} to {destDir}")
         for pattern in _linux_runtime_lib_patterns():

@@ -67,6 +67,7 @@ namespace VTX::UI::QT::Style
 		using namespace Resources;
 
 		// Set Desktop style.
+		// ("windows11", "windowsvista", "Windows", "Fusion")
 		Q_APP()->setStyle( "Fusion" );
 
 		QFontDatabase::addApplicationFont( FONT_MATERIAL_SYMBOLS.data() );
