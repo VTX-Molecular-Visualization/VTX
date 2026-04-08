@@ -174,6 +174,28 @@ namespace VTX::App::Action::Selection
 	{
 		void execute( const Vec2i &, const E_GRANULARITY = E_GRANULARITY::RESIDUE, const bool = false );
 	};
+
+
+	struct ExtendSelection
+	{
+		void execute(const float threshhold);
+	};
+
+	struct ExtendSelectionRes
+	{
+		void execute();
+	};
+
+	struct RevertSelection
+	{
+		void execute();
+	};
+
+	struct ExtendSelectionFast
+	{
+		void execute();
+	};
+
 } // namespace VTX::App::Action::Selection
 
 #endif

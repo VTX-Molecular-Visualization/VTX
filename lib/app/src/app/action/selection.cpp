@@ -4,7 +4,9 @@
 #include "app/input/input_manager.hpp"
 #include "app/services.hpp"
 #include "app/system/uid.hpp"
+#include "util/math/range_list.hpp"
 #include <optional>
+#include "app/system/trajectory.hpp"
 #include <renderer/renderer.hpp>
 
 namespace VTX::App::Action::Selection
@@ -254,6 +256,115 @@ namespace VTX::App::Action::Selection
 
 			default: assert( false ); break;
 			}
+		}
+	}
+
+	void ExtendSelection::execute(const float threshold)
+	{
+		struct SystemData
+		{
+			ECS::Entity entity;
+			std::span<const Vec3f> positions;
+			App::System::Selection * selection;
+		};
+
+		std::vector<SystemData> systems;
+		for (const ECS::Entity system : REG().view<Core::Struct::Topology>())
+		{
+			systems.emplace_back(
+				system,
+				VTX::App::System::getCurrentAtomPositions( system ),
+				&REG().get<App::System::Selection>( system )
+			);
+		}
+
+		const float threshold2 = threshold * threshold;
+
+		//boucle sur les systemes
+		for ( const SystemData & testedSystem : systems )
+		{
+			//index des atomes à sélectionner 
+			Core::Struct::IndexRangeList toSelect;
+
+			//boucle sur les atomes du systeme v
+			for (size_t i = 0; i < testedSystem.selection->atoms.size(); ++i)
+			{
+				//teste si l'atome est sélectionné
+				bool status = testedSystem.selection->atoms.test(i);
+				if (!status)
+				{
+					const Vec3f & p1 = testedSystem.positions[i];
+					for ( const SystemData & testingSystem : systems )
+					{
+						//boucle sur les atomes sélectionnés
+						for (size_t j : testingSystem.selection->atoms)
+						{
+							const Vec3f & p2 = testingSystem.positions[j];
+
+							const float dx = p1.x - p2.x;
+							if (std::abs(dx) > threshold) continue;
+
+							const float dy = p1.y - p2.y;
+							if (std::abs(dy) > threshold) continue;
+
+							const float dz = p1.z - p2.z;
+							if (std::abs(dz) > threshold) continue;
+
+							const float dist2 = dx*dx + dy*dy + dz*dz;
+
+							if (dist2 <= threshold2)
+							{
+								toSelect.addRange(i);
+								break;
+							}
+						}
+					}
+				}
+			}
+			ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>( testedSystem.entity, toSelect, true, true );
+		}
+	}
+
+	void ExtendSelectionFast::execute()
+	{
+		
+	}
+
+	void ExtendSelectionRes::execute()
+	{
+		//boucle sur les systemes
+		for ( const ECS::Entity system : REG().view<Core::Struct::Topology>() )
+		{
+			auto & topology = REG().get<Core::Struct::Topology>(system);
+
+			//reference vers les atomes du systeme v
+			auto & currentSelection = REG().get<App::System::Selection>( system );
+
+			//index des atomes à sélectionner 
+			Core::Struct::IndexRangeList toSelect;
+
+			//boucle sur les atomes sélectionnés
+			for (size_t i : currentSelection.atoms)
+			{
+				const Index resIndex = topology.getAtomResidueIndex( i );
+				const Core::Struct::IndexRange range = topology.getResidueAtomRange( resIndex );
+				toSelect.addRange(range);
+			}
+			ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>( system, toSelect, true, true );
+		}
+	}
+
+	void RevertSelection::execute()
+	{
+		//boucle sur les systemes
+		for ( const ECS::Entity system : REG().view<Core::Struct::Topology>())
+		{
+			auto & currentSelection = REG().get<App::System::Selection>(system);
+			//currentSelection.atoms.flipInPlace();
+			REG().patch<System::Selection>(
+					system, [ &currentSelection ]( System::Selection & p_selection ) 
+					{ p_selection.atoms = currentSelection.atoms; p_selection.atoms.flipInPlace(); }
+				);
 		}
 	}
 } // namespace VTX::App::Action::Selection
