@@ -46,9 +46,9 @@ namespace VTX::Core::Struct
 		std::string name;
 
 		/**
-		 * @brief Chains indexes by category.
+		 * @brief Category of each residue.
 		 */
-		std::array<std::vector<Index>, static_cast<uint>( ChemDB::Category::TYPE::COUNT )> categories;
+		std::vector<ChemDB::Category::TYPE> residueCategories;
 		/**
 		 * @brief Chain names.
 		 */
@@ -158,11 +158,6 @@ namespace VTX::Core::Struct
 		inline Index getAtomCount() const { return Index( atomSymbols.size() ); }
 
 		inline Index getBondCount() const { return Index( bondOrders.size() ); }
-
-		inline const std::vector<Index> & getChainIndexesFromCategory( const ChemDB::Category::TYPE p_category ) const
-		{
-			return categories[ uint( p_category ) ];
-		}
 
 		inline IndexRange getAtomRange() const { return IndexRange::fromFirstCount( 0, getAtomCount() ); }
 

@@ -15,6 +15,10 @@ namespace VTX::Core::Struct
 {
 	struct Topology;
 } // namespace VTX::Core::Struct
+namespace VTX::Core::ChemDB::Category
+{
+	struct Dictionary;
+}
 
 namespace VTX::IO
 {
@@ -35,7 +39,7 @@ namespace VTX::IO
 
 		size_t frameCount() const;
 
-		void get( VTX::Core::Struct ::Topology & ) noexcept;
+		void get( const Core::ChemDB::Category::Dictionary &, VTX::Core::Struct ::Topology & ) noexcept;
 
 		/**
 		 * @brief Always return Frame 0's positions
