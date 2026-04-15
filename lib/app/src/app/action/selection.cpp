@@ -8,6 +8,7 @@
 #include <optional>
 #include "app/system/trajectory.hpp"
 #include <renderer/renderer.hpp>
+#include "app/system/gridAtomList.hpp"
 
 namespace VTX::App::Action::Selection
 {
@@ -259,6 +260,122 @@ namespace VTX::App::Action::Selection
 		}
 	}
 
+	VTX::App::System::GridCoord getCell(const Vec3f & p,float cellSize)
+	{
+		return {int(std::floor(p.x/cellSize)),
+				int(std::floor(p.y/cellSize)),
+				int(std::floor(p.z/cellSize))
+		};
+	}
+
+	struct SystemData
+		{
+			ECS::Entity entity;
+			std::span<const Vec3f> positions;
+			App::System::Selection * selection;
+			App::System::GridAtomList * gridList;
+			Core::Struct::IndexRangeList toSelect;
+		};
+
+	void ExtendSelectionNonSelecFirst::execute(const float threshold)
+	{
+		VTX::Util::Chrono chrono;
+		chrono.start();
+		
+		std::vector<SystemData> systems;
+		for (const ECS::Entity system : REG().view<Core::Struct::Topology>())
+		{
+			systems.emplace_back(
+				system,
+				VTX::App::System::getCurrentAtomPositions( system ),
+				&REG().get<App::System::Selection>( system ),
+				&REG().get<App::System::GridAtomList>( system ),
+				Core::Struct::IndexRangeList {}
+			);
+			auto & gridList = REG().get<App::System::GridAtomList>(system);
+			for (auto & [coord, voxel] : gridList.grid)
+			{
+				voxel.selectedCount = 0;
+				voxel.viewed = false;
+			}
+		}
+
+		const float threshold2 = threshold * threshold;
+
+		//boucle sur les systemes
+		for ( const SystemData & testedSystem : systems )
+		{
+			Core::Struct::IndexRangeList toSelect;
+
+			//boucle atomes du systeme
+			for (size_t i = 0; i < testedSystem.selection->atoms.size(); ++i)
+			{
+				bool status = testedSystem.selection->atoms.test(i);
+				if (!status)
+				{
+					//coord atm i
+					const Vec3f & p1 = testedSystem.positions[i];
+					//voxel atm i
+					VTX::App::System::GridCoord cell = getCell(testedSystem.positions[i],4.0f);
+					//nb de voxels voisins
+					float vd = int(std::floor(threshold/4.0f));
+					//boucle systemes
+					for ( const SystemData & testingSystem : systems )
+					{
+						//recupere les voxels
+						auto & gridAtomList = REG().get<VTX::App::System::GridAtomList>(testingSystem.entity);
+						bool found = false;
+						//boucle voxels voisins
+						for (int dx = -vd; dx <= vd && !found; ++dx)
+						for (int dy = -vd; dy <= vd && !found; ++dy)
+						for (int dz = -vd; dz <= vd && !found; ++dz)
+						{
+							VTX::App::System::GridCoord neighbor {cell.x+dx, cell.y+dy, cell.z+dz};
+
+							auto it = gridAtomList.grid.find(neighbor);
+							if (it == gridAtomList.grid.end() || (it->second.viewed && it->second.selectedCount == 0))
+								continue;
+							//boucle atomes voxel neighbor
+							for (const size_t j : it->second.atoms)
+							{
+								bool status = testingSystem.selection->atoms.test(j);
+								if (status)
+								{
+									const Vec3f & p2 = testingSystem.positions[j];
+
+									const float dx = p1.x - p2.x;
+									if (std::abs(dx) > threshold) continue;
+
+									const float dy = p1.y - p2.y;
+									if (std::abs(dy) > threshold) continue;
+
+									const float dz = p1.z - p2.z;
+									if (std::abs(dz) > threshold) continue;
+
+									const float dist2 = dx*dx + dy*dy + dz*dz;
+
+									if (dist2 <= threshold2)
+									{
+										toSelect.addRange(i);
+										found = true;
+										break;
+									}
+									if (!it->second.viewed)
+									{
+										it->second.selectedCount++;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>( testedSystem.entity, toSelect, true, true );
+		}
+		auto t = chrono.elapsedTime();
+		VTX_INFO("Temps écoulé : {}",t);
+	}
+
 	void ExtendSelection::execute(const float threshold)
 	{
 		struct SystemData
@@ -325,11 +442,6 @@ namespace VTX::App::Action::Selection
 		}
 	}
 
-	void ExtendSelectionFast::execute()
-	{
-		
-	}
-
 	void ExtendSelectionRes::execute()
 	{
 		//boucle sur les systemes
@@ -366,5 +478,118 @@ namespace VTX::App::Action::Selection
 					{ p_selection.atoms = currentSelection.atoms; p_selection.atoms.flipInPlace(); }
 				);
 		}
+	}
+
+	void Mapping::execute(const ECS::Entity system)
+	{
+		int count{0};
+		auto & gridAtomList = REG().get<VTX::App::System::GridAtomList>(system);
+		std::span<const Vec3f> positions = VTX::App::System::getCurrentAtomPositions(system);
+		for(size_t i = 0; i < positions.size(); ++i)
+		{
+			VTX::App::System::GridCoord cell = getCell(positions[i], 4.0f);
+			gridAtomList.grid[cell].atoms.push_back(i);
+		}
+	}
+
+	void ExtendSelectionSelecFirst::execute(const float threshold)
+	{
+		VTX::Util::Chrono chrono;
+		chrono.start();
+		struct SystemData
+		{
+			ECS::Entity entity;
+			std::span<const Vec3f> positions;
+			App::System::Selection * selection;
+			App::System::GridAtomList * gridList;
+			Core::Struct::IndexRangeList toSelect;
+		};
+
+		std::vector<SystemData> systems;
+		for (const ECS::Entity system : REG().view<Core::Struct::Topology>())
+		{
+			systems.emplace_back(
+				system,
+				VTX::App::System::getCurrentAtomPositions( system ),
+				&REG().get<App::System::Selection>( system ),
+				&REG().get<App::System::GridAtomList>( system ),
+				Core::Struct::IndexRangeList {}
+			);
+			auto & gridList = REG().get<App::System::GridAtomList>(system);
+			for (auto & [coord, voxel] : gridList.grid)
+			{
+				voxel.selectedCount = 0;
+				voxel.viewed = false;
+			}
+		}
+
+		const float threshold2 = threshold * threshold;
+
+		//boucle systemes
+		for (const SystemData & testedSystem : systems)
+		{
+			//boucle atomes sélectionnés de testedSystem
+			for (size_t i : testedSystem.selection->atoms)
+			{
+				const Vec3f & p1 = testedSystem.positions[i];
+				VTX::App::System::GridCoord cell = getCell(testedSystem.positions[i],4.0f);
+				float vd = int(std::floor(threshold/4.0f));
+				for (SystemData & testingSystem : systems)
+				{
+					//boucle voxels voisins de i
+					for (int dx = -1*vd; dx <= 1*vd; ++dx)
+					for (int dy = -1*vd; dy <= 1*vd; ++dy)
+					for (int dz = -1*vd; dz <= 1*vd; ++dz)
+					{
+						//Core::Struct::IndexRangeList toSelect;
+						VTX::App::System::GridCoord neighbor {cell.x+dx, cell.y+dy, cell.z+dz};
+						auto it = testingSystem.gridList->grid.find(neighbor);
+						if (it == testingSystem.gridList->grid.end())
+							continue;
+						if ((it->second.viewed && it->second.atoms.size()==it->second.selectedCount))
+							continue;
+
+						//boucle atomes voxel neighbor
+						for (const size_t j : it->second.atoms)
+						{
+							bool status = testingSystem.selection->atoms.test(j);
+							if (!status)
+							{
+								const Vec3f & p2 = testingSystem.positions[j];
+
+								const float dx = p1.x - p2.x;
+								if (std::abs(dx) > threshold) continue;
+
+								const float dy = p1.y - p2.y;
+								if (std::abs(dy) > threshold) continue;
+
+								const float dz = p1.z - p2.z;
+								if (std::abs(dz) > threshold) continue;
+
+								const float dist2 = dx*dx + dy*dy + dz*dz;
+
+								if (dist2 <= threshold2)
+								{
+									testingSystem.toSelect.addRange(j);
+									it->second.selectedCount++;
+								}
+							}
+							else if (status and !it->second.viewed)
+							{
+								it->second.selectedCount++;
+							}
+						}
+						it->second.viewed=true;
+					}
+				}
+			}
+			
+		}
+		for (const SystemData & v : systems)
+		{
+			ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>( v.entity, v.toSelect, true, true );
+		}
+		auto t = chrono.elapsedTime();
+		VTX_INFO("Temps écoulé : {}",t);
 	}
 } // namespace VTX::App::Action::Selection
