@@ -191,11 +191,20 @@ namespace VTX::App::Action::Selection
 		void execute();
 	};
 
-	struct ExtendSelectionFast
+	struct ExtendSelectionSelecFirst
 	{
-		void execute();
+		void execute(const float threshold);
 	};
 
+	struct ExtendSelectionNonSelecFirst
+	{
+		void execute(const float threshold);
+	};
+
+	struct Mapping
+	{
+		void execute(const ECS::Entity system);
+	};
 } // namespace VTX::App::Action::Selection
 
 #endif
