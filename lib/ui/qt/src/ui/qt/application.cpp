@@ -240,24 +240,7 @@ namespace VTX::UI::QT
 				qAction->setCheckable( true );
 				qActionGroup->addAction( qAction );
 			}
-			if ( p_action.group && *p_action.group == "Theme" )
-			{
-				if ( p_action.key == VTX::Util::typeName<Action::Theme::System>()
-					 && STYLE().getCurrentTheme() == Style::E_THEME::SYSTEM )
-				{
-					qAction->setChecked( true );
-				}
-				else if ( p_action.key == VTX::Util::typeName<Action::Theme::Light>()
-						  && STYLE().getCurrentTheme() == Style::E_THEME::LIGHT )
-				{
-					qAction->setChecked( true );
-				}
-				else if ( p_action.key == VTX::Util::typeName<Action::Theme::Dark>()
-						  && STYLE().getCurrentTheme() == Style::E_THEME::DARK )
-				{
-					qAction->setChecked( true );
-				}
-			}
+
 			// Tip.
 			if ( p_action.tip )
 			{

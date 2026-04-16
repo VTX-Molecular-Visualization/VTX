@@ -7,7 +7,7 @@
 
 namespace VTX::App::UI
 {
-	using WidgetId = std::string;
+	using WidgetId = std::string_view;
 
 	/**
 	 * @brief Desribes an UI action that can be added to a menu or toolbar.

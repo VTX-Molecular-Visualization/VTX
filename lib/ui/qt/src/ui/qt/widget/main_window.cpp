@@ -166,7 +166,7 @@ namespace VTX::UI::QT::Widget
 			}
 		}
 
-		QMenu * const menu = menuBar()->addMenu( p_menu.c_str() );
+		QMenu * const menu = menuBar()->addMenu( p_menu.data() );
 		menu->addAction( Application::getAction( p_action ) );
 	}
 
@@ -181,7 +181,7 @@ namespace VTX::UI::QT::Widget
 			}
 		}
 
-		QToolBar * const toolbar = new QToolBar( p_toolbar.c_str(), this );
+		QToolBar * const toolbar = new QToolBar( p_toolbar.data(), this );
 		addToolBar( toolbar );
 		toolbar->addAction( Application::getAction( p_action ) );
 	}
