@@ -113,6 +113,7 @@ namespace VTX::App
 		ECS::setCtx<Threading::ThreadManager>();
 		ECS::setCtx<Uid::UIDManager>();
 		ECS::setCtx<Pass::PassManager>();
+		ECS::setCtx<Core::ChemDB::Category::Dictionary>( Core::ChemDB::Category::createDefaultDictionary() );
 
 		try
 		{

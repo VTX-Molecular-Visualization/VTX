@@ -29,6 +29,7 @@ namespace VTX::Core::Struct
 		residueOriginalIds.resize( p_count, 0 );
 		residueSecondaryStructureTypes.resize( p_count, ChemDB::SecondaryStructure::TYPE::UNKNOWN );
 		residueNames.resize( p_count );
+		residueCategories.resize( p_count, ChemDB::Category::TYPE::UNKNOWN );
 	}
 
 	void Topology::initAtoms( const Index p_count )
@@ -49,7 +50,7 @@ namespace VTX::Core::Struct
 		ByteNumber out = 0;
 		out += p_sys.name.capacity();
 		// Mat4f should have dynamic allocation, right ?
-		//out += dynamicMemoryUsage( p_sys.trajectory );
+		// out += dynamicMemoryUsage( p_sys.trajectory );
 		for ( auto & it_str : p_sys.chainNames )
 			out += it_str.capacity();
 		out += p_sys.chainNames.size() * sizeof( std::string );

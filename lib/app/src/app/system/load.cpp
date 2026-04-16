@@ -107,7 +107,7 @@ namespace VTX::App::System
 		else
 			pendingData.reader.emplace( pendingData.path, p_stopToken );
 
-		pendingData.reader->get( pendingData.topology );
+		pendingData.reader->get( ECS::getCtx<Core::ChemDB::Category::Dictionary>(), pendingData.topology );
 		pendingData.reader->get( VTX::IO::PdbIdCode { &pendingData.pdbIdCode } );
 
 		if ( p_stopToken.stop_requested() )

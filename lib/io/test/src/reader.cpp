@@ -16,11 +16,12 @@ TEST_CASE( "VTX_IO - Test filepath", "[reader][topology]" )
 	const std::string systemPathname = systemName + ".mmtf";
 	const FilePath	  systemPath	 = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
-	VTX::Core::Struct::Topology topology = VTX::Core::Struct::Topology();
-	Util::StopToken			  t;
-	IO::SystemReader		  systemReader( systemPath, t );
+	VTX::Core::Struct::Topology				topology = VTX::Core::Struct::Topology();
+	Util::StopToken							t;
+	IO::SystemReader						systemReader( systemPath, t );
+	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 
-	systemReader.get( topology );
+	systemReader.get( dict, topology );
 
 	CHECK( topology.getChainCount() == 62 );
 	CHECK( topology.getResidueCount() == 11381 );

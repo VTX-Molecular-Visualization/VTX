@@ -171,10 +171,11 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 		twoWaterSystems1frame( trajWriter );
 	}
 
-	VTX::Core::Struct::Topology topology;
-	VTX::Util::StopToken		t;
-	VTX::IO::SystemReader		systemReader( waterPath, t );
-	systemReader.get( topology );
+	VTX::Core::Struct::Topology				topology;
+	VTX::Util::StopToken					t;
+	VTX::IO::SystemReader					systemReader( waterPath, t );
+	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
+	systemReader.get( dict, topology );
 
 	CHECK( topology.getChainCount() == 1 );
 	CHECK( topology.getBondCount() == 4 );
@@ -201,10 +202,11 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 		twoWaterSystems2frame( trajWriter );
 	}
 
-	VTX::Core::Struct::Topology topology;
-	VTX::Util::StopToken		t;
-	VTX::IO::SystemReader		systemReader( waterPath, t );
-	systemReader.get( topology );
+	VTX::Core::Struct::Topology				topology;
+	VTX::Util::StopToken					t;
+	VTX::IO::SystemReader					systemReader( waterPath, t );
+	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
+	systemReader.get( dict, topology );
 
 	CHECK( topology.getChainCount() == 1 );
 	CHECK( topology.getBondCount() == 4 );
@@ -229,6 +231,7 @@ namespace
 		using namespace VTX;
 		using namespace VTX::IO;
 		using namespace VTX::IO::Writer;
+		VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 
 		const std::string systemName	 = p_args.systemName;
 		const std::string systemPathname = systemName + p_args.extension;
@@ -238,7 +241,7 @@ namespace
 		{
 			VTX::Util::StopToken  t;
 			VTX::IO::SystemReader systemReader( systemPath, t );
-			systemReader.get( topology );
+			systemReader.get( dict, topology );
 		}
 		size_t atomCount  = topology.getAtomCount();
 		size_t chainCount = topology.getChainCount();
@@ -265,7 +268,7 @@ namespace
 		VTX::Core::Struct::Topology system_reread;
 		VTX::Util::StopToken		t;
 		VTX::IO::SystemReader		systemReader( destination, t );
-		systemReader.get( system_reread );
+		systemReader.get( dict, system_reread );
 
 		CHECK( system_reread.getChainCount() == chainCount );
 		CHECK( system_reread.getResidueCount() == resCount );
