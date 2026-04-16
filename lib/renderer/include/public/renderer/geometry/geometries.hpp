@@ -22,10 +22,15 @@ namespace VTX::Renderer
 
 		void clear()
 		{
+			clearSystems();
+			grid.clear();
+		}
+
+		void clearSystems()
+		{
 			spheres.clear();
 			cylinders.clear();
 			ribbons.clear();
-			grid.clear();
 		}
 
 		void construct( const Desc::Handle p_handle, const SystemData & p_data )
@@ -44,6 +49,11 @@ namespace VTX::Renderer
 
 		void resize( Context::ContextWrapper & p_context )
 		{
+			resizeSystems( p_context );
+		}
+
+		void resizeSystems( Context::ContextWrapper & p_context )
+		{
 			spheres.resize( p_context );
 			cylinders.resize( p_context );
 			ribbons.resize( p_context );
@@ -54,6 +64,7 @@ namespace VTX::Renderer
 			p_context.setPipelineBuffer( "Indirect.Spheres", _toBuffer( spheres.toDrawIndexedIndirectCommands() ) );
 			p_context.setPipelineBuffer( "Indirect.Cylinders", _toBuffer( cylinders.toDrawIndexedIndirectCommands() ) );
 			p_context.setPipelineBuffer( "Indirect.Ribbons", _toBuffer( ribbons.toDrawIndexedIndirectCommands() ) );
+			p_context.setPipelineBuffer( "Indirect.Grid", _toBuffer( grid.toDrawIndirectCommands() ) );
 		}
 
 	  private:

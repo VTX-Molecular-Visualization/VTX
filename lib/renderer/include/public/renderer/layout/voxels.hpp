@@ -20,6 +20,11 @@ namespace VTX::Renderer::Layout
 			attributes.push_back( { VOXELS_MAXS, Desc::E_TYPE::VEC3F } );
 		}
 
+		void resizeStorage( Context::ContextWrapper & p_context, const Index p_size )
+		{
+			_resize( p_context, p_size == 0 ? 1 : p_size );
+		}
+
 		template<VOXEL_ATTR A, typename T>
 		void upload( Context::ContextWrapper & p_context, const Desc::Handle, std::span<const T> p_data )
 		{

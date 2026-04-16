@@ -355,8 +355,8 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setSystems" );
 
 		_systems.clear();
-		_layouts.clear();
-		_geometries.clear();
+		_layouts.clearSystems();
+		_geometries.clearSystems();
 		_systemToRefresh.clear();
 
 		// Register new systems.
@@ -374,8 +374,8 @@ namespace VTX::Renderer
 		}
 
 		// Reserve data.
-		_layouts.resize( _context );
-		_geometries.resize( _context );
+		_layouts.resizeSystems( _context );
+		_geometries.resizeSystems( _context );
 
 		for ( const auto & systemData : p_systems )
 		{
@@ -624,15 +624,17 @@ namespace VTX::Renderer
 		setNeedUpdate( true );
 	}
 
-	void Renderer::setVoxels( const std::vector<Vec3f> & p_mins, const std::vector<Vec3f> & p_maxs )
+	void Renderer::setVoxels( std::span<const Vec3f> p_mins, std::span<const Vec3f> p_maxs )
 	{
 		assert( p_mins.size() == p_maxs.size() );
 
-		//_context.setPipelineBuffer<Vec3f>( "Voxels.Mins", p_mins );
-		//_context.setPipelineBuffer<Vec3f>( "Voxels.Maxs", p_maxs );
+		_geometries.grid.setVoxelCount( p_mins.size() );
+		_layouts.voxels.resizeStorage( _context, _geometries.grid.voxelCount() );
 
-		//_geometries.voxels.drawRanges.firsts = { 0 };
-		//_geometries.voxels.drawRanges.counts = { uint( p_mins.size() ) };
+		_layouts.voxels.upload<Layout::VOXEL_ATTR::MINS, Vec3f>( _context, Desc::NO_HANDLE, p_mins );
+		_layouts.voxels.upload<Layout::VOXEL_ATTR::MAXS, Vec3f>( _context, Desc::NO_HANDLE, p_maxs );
+
+		_geometries.buildDrawRanges( _context );
 
 		setNeedUpdate( true );
 	}

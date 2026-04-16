@@ -75,7 +75,7 @@ namespace VTX::Renderer
 		void setGraphicsConfig( const GraphicsConfig & );
 		void setColorLayout( const Color::Layout & );
 		void setRepresentations( const std::vector<const Representation *> & );
-		void setVoxels( const std::vector<Vec3f> &, const std::vector<Vec3f> & );
+		void setVoxels( std::span<const Vec3f>, std::span<const Vec3f> );
 
 		/**
 		 * @brief Push systems.
