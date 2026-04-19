@@ -1,5 +1,4 @@
 #include "ui/qt/widget/selection.hpp"
-#include "ui/qt/services.hpp"
 #include <QGroupBox>
 #include <app/action/action_manager.hpp>
 #include <app/action/system.hpp>

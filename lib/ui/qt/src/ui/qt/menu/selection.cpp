@@ -1,8 +1,9 @@
 #include "ui/qt/menu/selection.hpp"
-#include "ui/qt/services.hpp"
-#include <QModelIndexList>
 #include <app/action/scene.hpp>
-#include <ranges>
+#include <app/helper/system.hpp>
+#include <app/system/metadata.hpp>
+#include <app/system/selection.hpp>
+#include <core/struct/topology.hpp>
 
 namespace VTX::UI::QT::Menu
 {
@@ -10,110 +11,126 @@ namespace VTX::UI::QT::Menu
 	{
 		setTitle( "Selection" );
 
-		/*
-		auto & selection = SELECTION();
-
 		// Refresh menu when opened.
 		connect( this, &QMenu::aboutToShow, this, &Selection::_refresh );
-
-		// Renable/disable menu based on selection.
-		connect(
-			&selection,
-			&QItemSelectionModel::selectionChanged,
-			this,
-			[ this, &selection ]( const QItemSelection &, const QItemSelection & )
-			{ this->setEnabled( selection.hasSelection() ); }
-		);
-
-		setEnabled( selection.hasSelection() );
-		*/
 	}
 
 	void Selection::_refresh()
 	{
-		/*
-		using namespace App::Scene;
+		using namespace App;
+		using namespace Core::Struct;
 
 		// Clear previous actions.
 		clear();
 
+		// TODO: Switch on E_SELECTION_GROUP.
+		// auto & selectionModel = SELECTION();
+		//
+		// But for now, just check system selection from App.
+		auto &	   reg		= REG();
+		const auto entities = reg.view<App::System::Selection>();
 
-		// TODO: parameters?
+		Index countSystem  = 0;
+		Index countChain   = 0;
+		Index countResidue = 0;
+		Index countAtom	   = 0;
 
-		auto & selectionModel = SELECTION();
-		auto & model		  = MODEL();
-
-		const size_t			  count = size_t( E_ITEM::COUNT );
-		std::array<size_t, count> rowsPerItem;
-		rowsPerItem.fill( 0 );
-		std::vector<SystemUID> systemGlobalIndexes;
-
-		const QModelIndex	  clickedRow = selectionModel.currentIndex(); // TODO: not valid in menubar context.
-		const QModelIndexList rows		 = selectionModel.selectedRows();
-		for ( const QModelIndex & index : rows )
+		for ( auto entity : entities )
 		{
-			if ( not index.isValid() )
+			const auto & topology  = reg.get<Core::Struct::Topology>( entity );
+			const auto & selection = reg.get<App::System::Selection>( entity );
+			const auto & metadata  = reg.get<App::System::Metadata>( entity );
+
+			QString name = QString::fromStdString( topology.name );
+
+			const auto systemState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
+			if ( systemState == App::System::E_SELECTION_STATE::FULL )
+			{
+				countSystem++;
+				countChain += topology.getChainCount();
+				countResidue += topology.getResidueCount();
+				countAtom += topology.getAtomCount();
+
+				continue;
+			}
+			else if ( systemState == App::System::E_SELECTION_STATE::NONE )
 			{
 				continue;
 			}
 
-			// Decode index to get entity.
-			E_ITEM	  item;
-			SystemUID globalIndex;
-			Index	  localIndex;
-			Model::unpack( index.internalId(), item, globalIndex, localIndex );
-
-			rowsPerItem[ size_t( item ) ] += 1;
-
-			if ( item == E_ITEM::SYSTEM )
+			// Chains.
+			for ( Index chain = 0; chain < topology.getChainCount(); ++chain )
 			{
-				systemGlobalIndexes.push_back( globalIndex );
+				QString	   chainName  = QString::fromStdString( topology.getChainName( chain ) );
+				const auto chainState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::CHAIN, chain } );
+				if ( chainState == App::System::E_SELECTION_STATE::FULL )
+				{
+					countChain++;
+					countResidue += topology.getChainResidueCount( chain );
+					countAtom += topology.getChainAtomCount( chain );
+
+					continue;
+				}
+				else if ( chainState == App::System::E_SELECTION_STATE::NONE )
+				{
+					continue;
+				}
+
+				// Residues.
+				for ( Index residue : topology.getChainResidueRange( chain ) )
+				{
+					QString	   residueName = QString::fromStdString( topology.getResidueName( residue ) );
+					const auto residueState
+						= Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::RESIDUE, residue } );
+					if ( residueState == App::System::E_SELECTION_STATE::FULL )
+					{
+						countResidue++;
+						countAtom += topology.getResidueAtomCount( residue );
+
+						continue;
+					}
+					else if ( residueState == App::System::E_SELECTION_STATE::NONE )
+					{
+						continue;
+					}
+
+					// Atoms.
+					for ( Index atom : topology.getResidueAtomRange( residue ) )
+					{
+						if ( Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::ATOM, atom } )
+							 == App::System::E_SELECTION_STATE::FULL )
+						{
+							countAtom++;
+						}
+					}
+				}
 			}
 		}
 
-		const size_t systemRows	 = rowsPerItem[ size_t( E_ITEM::SYSTEM ) ];
-		const size_t chainRows	 = rowsPerItem[ size_t( E_ITEM::CHAIN ) ];
-		const size_t residueRows = rowsPerItem[ size_t( E_ITEM::RESIDUE ) ];
-		const size_t atomRows	 = rowsPerItem[ size_t( E_ITEM::ATOM ) ];
-
-		if ( systemRows > 0 )
+		if ( countSystem > 0 )
 		{
 			addSection(
-				QString( "%1 system%2" ).arg( QString::number( systemRows ) ).arg( systemRows > 1 ? "s" : "" )
+				QString( "%1 system%2" ).arg( QString::number( countSystem ) ).arg( countSystem > 1 ? "s" : "" )
 			);
 			auto * const action = addAction<Action::System::Delete>();
-			connect(
-				action,
-				&QAction::triggered,
-				[ &model, systemGlobalIndexes ]()
-				{
-					//					auto & mapGlobalId = model.getMapRows();
-					//					for ( const auto & systemGlobalIndex : systemGlobalIndexes )
-					//					{
-					//						App::ACTION().execute<App::Action::Scene::DeleteSystem>(
-					//							mapGlobalId.at( systemGlobalIndex )->entity
-					//						);
-					//					}
-				}
-			);
 		}
 
-		if ( chainRows > 0 )
+		if ( countChain > 0 )
 		{
-			addSection( QString( "%1 chain%2" ).arg( QString::number( chainRows ) ).arg( chainRows > 1 ? "s" : "" ) );
+			addSection( QString( "%1 chain%2" ).arg( QString::number( countChain ) ).arg( countChain > 1 ? "s" : "" ) );
+			auto * const action = addAction<Action::System::Delete>();
 		}
 
-		if ( residueRows > 0 )
+		if ( countResidue > 0 )
 		{
 			addSection(
-				QString( "%1 residue%2" ).arg( QString::number( residueRows ) ).arg( residueRows > 1 ? "s" : "" )
+				QString( "%1 residue%2" ).arg( QString::number( countResidue ) ).arg( countResidue > 1 ? "s" : "" )
 			);
 		}
 
-		if ( atomRows > 0 )
+		if ( countAtom > 0 )
 		{
-			addSection( QString( "%1 atom%2" ).arg( QString::number( atomRows ) ).arg( atomRows > 1 ? "s" : "" ) );
+			addSection( QString( "%1 atom%2" ).arg( QString::number( countAtom ) ).arg( countAtom > 1 ? "s" : "" ) );
 		}
-		*/
 	}
 } // namespace VTX::UI::QT::Menu

@@ -33,6 +33,17 @@ namespace VTX::UI::QT
 
 	  public:
 		/**
+		 * @brief Current selection state.
+		 */
+		/*
+		struct Current
+		{
+			E_SELECTION_GROUP group;
+			QModelIndex &	  index;
+		};
+		*/
+
+		/**
 		 * @brief Constructor.
 		 */
 		SelectionManager( QObject * p_parent ) : QObject( p_parent ) {}
@@ -90,6 +101,11 @@ namespace VTX::UI::QT
 		 */
 		void pick( const Vec2i &, const bool );
 
+		/**
+		 * @brief Get current selection.
+		 */
+		// inline const std::optional<Current> & getCurrent() const { return _current; }
+
 	  signals:
 		/**
 		 * @brief UI selection changed signal. Empty selection means no item is selected in the group.
@@ -102,6 +118,11 @@ namespace VTX::UI::QT
 		 * @brief Grouped selection models.
 		 */
 		std::unordered_map<E_SELECTION_GROUP, std::vector<QItemSelectionModel *>> _views;
+
+		/**
+		 * @brief Current selection.
+		 */
+		// std::optional<Current> _current;
 	};
 } // namespace VTX::UI::QT
 

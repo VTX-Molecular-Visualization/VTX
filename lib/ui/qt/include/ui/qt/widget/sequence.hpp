@@ -3,6 +3,7 @@
 
 #include "ui/qt/widget/base_widget.hpp"
 #include <QAbstractScrollArea>
+#include <QContextMenuEvent>
 #include <core/struct/topology.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -17,6 +18,7 @@ namespace VTX::UI::QT::Widget
 
 	  protected:
 		void paintEvent( QPaintEvent * ) override;
+		void contextMenuEvent( QContextMenuEvent * ) override;
 		void mousePressEvent( QMouseEvent * ) override;
 		void mouseMoveEvent( QMouseEvent * e ) override;
 		void mouseReleaseEvent( QMouseEvent * ) override;

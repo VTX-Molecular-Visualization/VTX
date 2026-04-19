@@ -165,8 +165,14 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void System::mousePressEvent( QMouseEvent * p_e )
 	{
+		if ( p_e->button() == Qt::RightButton && ( p_e->modifiers() & Qt::ControlModifier ) )
+		{
+			return;
+		}
+
 		const QModelIndex index = indexAt( p_e->pos() );
-		if ( index.isValid() && p_e->button() == Qt::LeftButton )
+		const bool		  selectionButton = p_e->button() == Qt::LeftButton || p_e->button() == Qt::RightButton;
+		if ( index.isValid() && selectionButton )
 		{
 			QStyleOptionViewItem option;
 			if ( _shouldHandleSelectionClick( p_e, index, option ) )
@@ -205,7 +211,8 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void System::mouseMoveEvent( QMouseEvent * p_e )
 	{
-		if ( _dragging == false || not( p_e->buttons() & Qt::LeftButton )
+		const bool draggingButton = p_e->buttons() & ( Qt::LeftButton | Qt::RightButton );
+		if ( _dragging == false || not draggingButton
 			 || SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
 		{
 			QTreeView::mouseMoveEvent( p_e );
@@ -245,7 +252,9 @@ namespace VTX::UI::QT::Widget::Tree
 		const bool isBranchClick = p_e->pos().x() < p_option.rect.left();
 
 		const auto * delegate = static_cast<const Delegate::SystemDelegate *>( itemDelegateForIndex( p_index ) );
-		return delegate != nullptr && isBranchClick == false && not delegate->hitsButton( p_option, p_e->pos() );
+		const bool	 actionButtonClick
+			= p_e->button() == Qt::LeftButton && delegate != nullptr && delegate->hitsButton( p_option, p_e->pos() );
+		return delegate != nullptr && isBranchClick == false && not actionButtonClick;
 	}
 
 	bool System::_isFullySelected( const QModelIndex & p_index ) const

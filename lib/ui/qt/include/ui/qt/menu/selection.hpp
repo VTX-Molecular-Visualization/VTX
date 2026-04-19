@@ -6,7 +6,10 @@
 
 namespace VTX::UI::QT::Menu
 {
-
+	/**
+	 * @brief Menu for selection actions.
+	 * This menu is dynamically filled with actions based on the current selection when opened.
+	 */
 	class Selection : public Widget::BaseWidget<Selection, QMenu>
 	{
 	  public:

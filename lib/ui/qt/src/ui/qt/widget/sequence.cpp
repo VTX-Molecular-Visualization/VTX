@@ -1,7 +1,9 @@
 ﻿#include "ui/qt/widget/sequence.hpp"
 #include "ui/qt/helper.hpp"
+#include "ui/qt/menu/selection.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
+#include <QContextMenuEvent>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
@@ -124,11 +126,28 @@ namespace VTX::UI::QT::Widget
 		}
 	}
 
+	void Sequence::contextMenuEvent( QContextMenuEvent * p_e )
+	{
+		Menu::Selection menu( this );
+		menu.exec( p_e->globalPos() );
+	}
+
 	void Sequence::mousePressEvent( QMouseEvent * p_e )
 	{
 		using namespace App;
 		using namespace App::Action;
 		using namespace Core::Struct;
+
+		if ( p_e->button() == Qt::RightButton && ( p_e->modifiers() & Qt::ControlModifier ) )
+		{
+			return;
+		}
+
+		const bool selectionButton = p_e->button() == Qt::LeftButton || p_e->button() == Qt::RightButton;
+		if ( not selectionButton )
+		{
+			return;
+		}
 
 		if ( SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
 		{
@@ -203,7 +222,8 @@ namespace VTX::UI::QT::Widget
 		using namespace App::Action;
 		using namespace Core::Struct;
 
-		if ( not _dragging )
+		const bool draggingButton = p_e->buttons() & ( Qt::LeftButton | Qt::RightButton );
+		if ( not _dragging || not draggingButton )
 		{
 			return;
 		}

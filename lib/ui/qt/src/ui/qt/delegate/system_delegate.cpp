@@ -109,6 +109,11 @@ namespace VTX::UI::QT::Delegate
 				return QStyledItemDelegate::editorEvent( p_event, p_model, p_option, p_index );
 			}
 
+			if ( p_event->type() != QEvent::MouseButtonPress || e->button() != Qt::LeftButton )
+			{
+				return QStyledItemDelegate::editorEvent( p_event, p_model, p_option, p_index );
+			}
+
 			switch ( static_cast<ACTION>( hit ) )
 			{
 			case ACTION::VISIBILITY:

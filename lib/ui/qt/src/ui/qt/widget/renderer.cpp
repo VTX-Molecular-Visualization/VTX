@@ -1,10 +1,12 @@
 #include "ui/qt/widget/renderer.hpp"
 #include "app/services.hpp"
+#include "ui/qt/menu/selection.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include <QCoreApplication>
+#include <QCursor>
 #include <QGuiApplication>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
@@ -31,13 +33,21 @@ namespace VTX::UI::QT::Widget
 			_window,
 			&Window::Renderer::clicked,
 			this,
-			[]( const Qt::MouseButton, const QPoint p_pos )
+			[ this ]( const Qt::MouseButton p_button, const QPoint p_pos )
 			{
-				if ( not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
+				const bool preserveSelection
+					= p_button == Qt::RightButton && ( QGuiApplication::keyboardModifiers() & Qt::ControlModifier );
+				if ( not preserveSelection && not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
 				{
 					SELECTION().pick(
 						Vec2i( p_pos.x(), p_pos.y() ), QGuiApplication::keyboardModifiers() & Qt::ControlModifier
 					);
+				}
+
+				if ( p_button == Qt::RightButton )
+				{
+					Menu::Selection menu( this );
+					menu.exec( QCursor::pos() );
 				}
 			}
 		);
