@@ -5,6 +5,7 @@
 #include "ui/qt/style/style_manager.hpp"
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
+#include <io/reader.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <variant>
@@ -83,7 +84,14 @@ namespace VTX::UI::QT::Model
 			{
 			case E_SYSTEM_ITEM::SYSTEM:
 			{
-				return QString::fromStdString( _metadata.get().name );
+				if ( _metadata.get().pdbIDCode != IO::PDB_ID_CODE_DEFAULT )
+				{
+					return QString::fromStdString( _metadata.get().pdbIDCode );
+				}
+				else
+				{
+					return QString::fromStdString( _metadata.get().path.stem().string() );
+				}
 			}
 			case E_SYSTEM_ITEM::CHAIN:
 			{

@@ -61,7 +61,7 @@ namespace VTX::App::Action::Visibility
 			auto & reg = REG();
 
 			REG().view<System::Selection>().each(
-				[ &reg, p_visible ]( auto p_e, auto & p_selection )
+				[ &reg, p_visible ]( auto p_e, const auto & p_selection )
 				{
 					reg.patch<System::Visibility>(
 						p_e,

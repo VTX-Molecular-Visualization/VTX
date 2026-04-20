@@ -251,7 +251,8 @@ namespace VTX::IO
 				return;
 
 			assert( p_.code != nullptr );
-			*p_.code = currentFrame.get( "pdb_idcode" ) ? currentFrame.get( "pdb_idcode" )->as_string() : "";
+			*p_.code = currentFrame.get( "pdb_idcode" ) ? currentFrame.get( "pdb_idcode" )->as_string()
+														: PDB_ID_CODE_DEFAULT;
 		}
 		void get( const SystemName & p_ ) noexcept
 		{

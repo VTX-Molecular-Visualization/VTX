@@ -12,8 +12,8 @@ namespace VTX::App::System
 	struct Metadata
 	{
 		FilePath	path;
-		std::string pdbIDCode;
 		std::string name;
+		std::string pdbIDCode;
 		bool		structureHasChanged				   = false;
 		bool		isSecondaryStructureLoadedFromFile = false;
 

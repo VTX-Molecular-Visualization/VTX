@@ -25,6 +25,9 @@ namespace VTX::IO
 	using MemoryBuffer	= std::string;
 	using AtomPositions = std::vector<Vec3f>;
 	using FrameIndex	= size_t;
+
+	constexpr std::string_view PDB_ID_CODE_DEFAULT = "----";
+
 	struct PdbIdCode
 	{
 		mutable std::string * code;

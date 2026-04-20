@@ -183,7 +183,8 @@ namespace VTX::App::System
 		auto & deleted		  = reg.emplace<System::Deleted>( p_entity );
 
 		metadata.pdbIDCode = p_data.pdbIdCode;
-		metadata.name	   = p_data.name.empty() ? p_data.path.stem().string() : p_data.name;
+		metadata.name	   = p_data.name;
+		metadata.path	   = p_data.path;
 
 		// UIDs: get from UID manager.
 		auto & uidManager = App::UID();
