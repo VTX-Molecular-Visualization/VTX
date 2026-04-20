@@ -283,11 +283,11 @@ namespace VTX::IO
 			if ( stopToken.get().stop_requested() )
 				return;
 
-			// If no residues, wrap all atoms in a single UNK residue.
+			// If no residues, wrap all atoms in an unnamed residue.
 			if ( residues->empty() )
 			{
-				VTX_INFO( "No residues found, wrapping atoms in UNK residue." );
-				chemfiles::Residue unk( "UNK", 0 );
+				VTX_INFO( "No residues found, wrapping atoms in unnamed residue." );
+				chemfiles::Residue unk( "", 0 );
 				for ( size_t i = 0; i < currentFrame.size(); ++i )
 					unk.add_atom( i );
 				currentFrame.add_residue( unk );

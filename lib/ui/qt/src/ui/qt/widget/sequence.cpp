@@ -117,11 +117,8 @@ namespace VTX::UI::QT::Widget
 			}
 
 			// Residue symbol.
-			// Display residue standardized symbol or name if unknown.
 			const auto symbol = topology.residueSymbols[ residue ];
-			const auto name	  = symbol != Core::ChemDB::Residue::SYMBOL::UNKNOWN
-									? Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ]
-									: topology.residueNames[ residue ];
+			const auto name	  = Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
 			painter.drawText( x, SEQ_CHAR_HEIGHT * 2, QString( name.at( 0 ) ) );
 
 			x += SEQ_CHAR_WIDTH;

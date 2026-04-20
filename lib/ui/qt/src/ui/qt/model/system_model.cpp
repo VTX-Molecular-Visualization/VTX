@@ -6,6 +6,7 @@
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
 #include <io/reader.hpp>
+#include <util/enum.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <variant>
@@ -79,36 +80,44 @@ namespace VTX::UI::QT::Model
 		switch ( p_role )
 		{
 		case Qt::DisplayRole:
-
 			switch ( item )
 			{
 			case E_SYSTEM_ITEM::SYSTEM:
 			{
 				if ( _metadata.get().pdbIDCode != IO::PDB_ID_CODE_DEFAULT )
-				{
 					return QString::fromStdString( _metadata.get().pdbIDCode );
-				}
 				else
-				{
 					return QString::fromStdString( _metadata.get().path.stem().string() );
-				}
 			}
 			case E_SYSTEM_ITEM::CHAIN:
 			{
 				assert( index < _data.get().getChainCount() );
-				return QString::fromStdString( _data.get().chainNames[ index ] );
+
+				if ( not _data.get().chainNames[ index ].empty() )
+					return QString::fromStdString( _data.get().chainNames[ index ] );
+				else
+					return "-";
 			}
 			case E_SYSTEM_ITEM::RESIDUE:
 			{
 				assert( index < _data.get().getResidueCount() );
-				return QString::fromStdString( _data.get().residueNames[ index ] );
+
+				if ( not _data.get().residueNames[ index ].empty() )
+					return QString::fromStdString( _data.get().residueNames[ index ] );
+				else
+					return "-";
 			}
 			case E_SYSTEM_ITEM::ATOM:
 			{
 				assert( index < _data.get().getAtomCount() );
-				return QString::fromStdString( _data.get().atomNames[ index ] );
+
+				if ( not _data.get().atomNames[ index ].empty() )
+					return QString::fromStdString( _data.get().atomNames[ index ] );
+				else
+					return "-";
 			}
 			}
+
 			return {};
 		case ItemRole: return toUnderlying( item );
 		case SelectionStateRole:

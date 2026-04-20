@@ -45,9 +45,9 @@ namespace VTX::UI::QT::Widget
 			const auto & metadata  = reg.get<App::System::Metadata>( entity );
 			const auto & transform = reg.get<Util::Math::Transform>( entity );
 
-			QString pdb = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
-							  ? QString::fromStdString( metadata.path.stem().string() )
-							  : QString::fromStdString( metadata.pdbIDCode );
+			QString systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
+									 ? QString::fromStdString( metadata.path.stem().string() )
+									 : QString::fromStdString( metadata.pdbIDCode );
 
 			const auto systemState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
 			if ( systemState == App::System::E_SELECTION_STATE::FULL )
@@ -70,13 +70,12 @@ namespace VTX::UI::QT::Widget
 				);
 
 				// Path.
-				QString path	  = QString::fromStdString( metadata.path.string() );
-				auto *	labelFile = new QLabel(
+				auto * labelFile = new QLabel(
 					QString( "File: %1" ).arg( QString::fromStdString( metadata.path.filename().string() ) ), this
 				);
 				labelFile->setWordWrap( true );
 				labelFile->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
-				labelFile->setToolTip( path );
+				labelFile->setToolTip( QString::fromStdString( metadata.path.generic_string() ) );
 				labelFile->setCursor( Qt::WhatsThisCursor );
 				_layout->addWidget( labelFile );
 
@@ -109,7 +108,7 @@ namespace VTX::UI::QT::Widget
 				layout->addWidget( _transform );
 				_layout->addWidget( groupBoxTransform );
 
-				_list->addItem( pdb );
+				_list->addItem( systemName );
 
 				continue;
 			}
@@ -129,7 +128,7 @@ namespace VTX::UI::QT::Widget
 					countChain++;
 					countResidue += topology.getChainResidueCount( chain );
 					countAtom += topology.getChainAtomCount( chain );
-					_list->addItem( pdb + "/" + chainName );
+					_list->addItem( systemName + "/" + chainName );
 					continue;
 				}
 				else if ( chainState == App::System::E_SELECTION_STATE::NONE )
@@ -148,7 +147,7 @@ namespace VTX::UI::QT::Widget
 					{
 						countResidue++;
 						countAtom += topology.getResidueAtomCount( residue );
-						_list->addItem( pdb + "/" + chainName + "/" + residueName );
+						_list->addItem( systemName + "/" + chainName + "/" + residueName );
 						continue;
 					}
 					else if ( residueState == App::System::E_SELECTION_STATE::NONE )
@@ -165,7 +164,7 @@ namespace VTX::UI::QT::Widget
 						{
 							countAtom++;
 							_list->addItem(
-								pdb + "/" + chainName + "/" + residueName + "/"
+								systemName + "/" + chainName + "/" + residueName + "/"
 								+ QString::fromStdString( topology.getAtomName( atom ) )
 							);
 						}

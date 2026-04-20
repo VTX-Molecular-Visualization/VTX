@@ -81,9 +81,7 @@ namespace VTX::UI::QT::Delegate
 	}
 
 	QSize SystemDelegate::sizeHint( const QStyleOptionViewItem & p_option, const QModelIndex & p_index ) const
-	{
-		return QStyledItemDelegate::sizeHint( p_option, p_index );
-	}
+	{ return QStyledItemDelegate::sizeHint( p_option, p_index ); }
 
 	bool SystemDelegate::editorEvent(
 		QEvent *					 p_event,
@@ -139,28 +137,20 @@ namespace VTX::UI::QT::Delegate
 		const QStyleOptionViewItem & p_option,
 		const QModelIndex &			 p_index
 	) const
-	{
-		return QStyledItemDelegate::createEditor( p_parent, p_option, p_index );
-	}
+	{ return QStyledItemDelegate::createEditor( p_parent, p_option, p_index ); }
 
 	void SystemDelegate::setEditorData( QWidget * p_editor, const QModelIndex & p_index ) const
-	{
-		QStyledItemDelegate::setEditorData( p_editor, p_index );
-	}
+	{ QStyledItemDelegate::setEditorData( p_editor, p_index ); }
 
 	void SystemDelegate::setModelData(
 		QWidget *			 p_editor,
 		QAbstractItemModel * p_model,
 		const QModelIndex &	 p_index
 	) const
-	{
-		QStyledItemDelegate::setModelData( p_editor, p_model, p_index );
-	}
+	{ QStyledItemDelegate::setModelData( p_editor, p_model, p_index ); }
 
 	bool SystemDelegate::hitsButton( const QStyleOptionViewItem & p_option, const QPoint & p_pos ) const
-	{
-		return _hitTestButton( p_option, p_pos ) >= 0;
-	}
+	{ return _hitTestButton( p_option, p_pos ) >= 0; }
 
 	QRect SystemDelegate::_buttonsRect( const QStyleOptionViewItem & p_option ) const
 	{
