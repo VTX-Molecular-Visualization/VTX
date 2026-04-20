@@ -1,40 +1,28 @@
 #include "app/action/scene.hpp"
-#include "app/action/action_manager.hpp"
-#include "app/action/camera.hpp"
-#include "app/action/color.hpp"
-#include "app/action/representation.hpp"
-#include "app/action/visibility.hpp"
-#include "app/events.hpp"
-#include "app/preset/name.hpp"
+#include "app/helper/system.hpp"
 #include "app/scene/color_layout.hpp"
 #include "app/scene/graphics_config.hpp"
 #include "app/scene/tag_root.hpp"
-#include "app/services.hpp"
-#include "app/system/color.hpp"
-#include "app/system/deleted.hpp"
-#include "app/system/load.hpp"
 #include "app/system/metadata.hpp"
-#include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
-#include "app/system/trajectory_preparation.hpp"
-#include "app/system/uid.hpp"
-#include "app/system/visibility.hpp"
-#include "app/threading/base_thread.hpp"
-#include "app/threading/thread_manager.hpp"
-#include "app/uid/uid_manager.hpp"
-#include <core/chemdb/atom.hpp>
-#include <core/struct/topology.hpp>
-#include <renderer/renderer.hpp>
-#include <renderer/representation.hpp>
-#include <util/event_hub.hpp>
-#include <util/logger.hpp>
-#include <util/math/aabb.hpp>
-#include <util/math/transform.hpp>
 
 namespace VTX::App::Action::Scene
 {
 
 	void DeleteSystem::execute( const ECS::Entity p_e ) { REG().destroy( p_e ); }
+
+	void DeleteSystemSelected::execute()
+	{
+		REG().view<System::Metadata, System::Selection>().each(
+			[ & ]( auto p_e, auto &, auto & )
+			{
+				if ( Helper::System::getSelectionState( { p_e } ) == System::E_SELECTION_STATE::FULL )
+				{
+					REG().destroy( p_e );
+				}
+			}
+		);
+	}
 
 	void Clear::execute()
 	{

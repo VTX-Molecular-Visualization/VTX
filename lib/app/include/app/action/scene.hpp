@@ -7,13 +7,20 @@
 namespace VTX::App::Action::Scene
 {
 
-
 	/**
-	 * @brief Load a molecular system from disk or buffer.
+	 * @brief Remove a system from the scene.
 	 */
 	struct DeleteSystem
 	{
 		void execute( const ECS::Entity );
+	};
+
+	/**
+	 * @brief Remove all selected systems.
+	 */
+	struct DeleteSystemSelected
+	{
+		void execute();
 	};
 
 	/**

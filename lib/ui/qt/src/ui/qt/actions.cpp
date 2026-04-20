@@ -1,6 +1,7 @@
 #include "ui/qt/actions.hpp"
 #include "app/action/application.hpp"
 #include "app/action/controller.hpp"
+#include "app/action/scene.hpp"
 #include "app/action/selection.hpp"
 #include "app/setting/controller.hpp"
 #include "ui/qt/application.hpp"
@@ -269,6 +270,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Delete system";
 			icon	 = Style::Icons::DELETE;
 			shortcut = "Del";
+			trigger	 = []() { App::ACTION().execute<App::Action::Scene::DeleteSystemSelected>(); };
 		}
 
 	} // namespace Selection
