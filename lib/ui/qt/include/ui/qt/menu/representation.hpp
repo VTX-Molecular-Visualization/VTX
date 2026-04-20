@@ -26,8 +26,11 @@ namespace VTX::UI::QT::Menu
 				const auto & name			= App::REG().get<App::Preset::Name>( ent );
 
 				QAction * a = QMenu::addAction( QString::fromStdString( name.name ) );
-				a->setCheckable( true );
-				a->setChecked( p_representation && *p_representation == ent );
+				if ( p_representation )
+				{
+					a->setCheckable( true );
+					a->setChecked( *p_representation == ent );
+				}
 				a->setData( QVariant::fromValue( ent ) );
 			}
 		}

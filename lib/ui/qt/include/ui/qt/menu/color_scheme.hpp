@@ -42,8 +42,11 @@ namespace VTX::UI::QT::Menu
 						   )
 			{
 				QAction * a = QMenu::addAction( p_label );
-				a->setCheckable( true );
-				a->setChecked( p_currentScheme && *p_currentScheme == p_data.scheme );
+				if ( p_currentScheme )
+				{
+					a->setCheckable( true );
+					a->setChecked( *p_currentScheme == p_data.scheme );
+				}
 				a->setData( QVariant::fromValue( p_data ) );
 			};
 
