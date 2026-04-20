@@ -33,11 +33,6 @@ namespace VTX::UI::QT
 				OpenRecent();
 			};
 
-			struct Delete : App::UI::DescAction
-			{
-				Delete();
-			};
-
 			struct Save : App::UI::DescAction
 			{
 				Save();
@@ -194,6 +189,36 @@ namespace VTX::UI::QT
 			struct SetGranularityAtom : App::UI::DescAction
 			{
 				SetGranularityAtom();
+			};
+
+			struct Show : App::UI::DescAction
+			{
+				Show();
+			};
+
+			struct Hide : App::UI::DescAction
+			{
+				Hide();
+			};
+
+			struct Solo : App::UI::DescAction
+			{
+				Solo();
+			};
+
+			struct SetColorScheme : App::UI::DescAction
+			{
+				SetColorScheme();
+			};
+
+			struct SetRepresentation : App::UI::DescAction
+			{
+				SetRepresentation();
+			};
+
+			struct Delete : App::UI::DescAction
+			{
+				Delete();
 			};
 		} // namespace Selection
 		namespace Preset

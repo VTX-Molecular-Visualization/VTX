@@ -2,6 +2,8 @@
 #define __VTX_UI_QT_MENU_COLOR_SCHEME__
 
 #include "ui/qt/helper.hpp"
+#include "ui/qt/services.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include <QMenu>
 #include <QPainter>
@@ -16,6 +18,8 @@ namespace VTX::UI::QT::Menu
 
 	class ColorScheme : public Widget::BaseWidget<ColorScheme, QMenu>
 	{
+		Q_OBJECT
+
 	  public:
 		struct Selected
 		{
@@ -33,6 +37,7 @@ namespace VTX::UI::QT::Menu
 			auto & colorlayout		  = REG().get<Renderer::Color::Layout>( colorLayoutIntance.preset );
 
 			setTitle( "Color scheme" );
+			setIcon( STYLE().iconFromCodepoint( Style::Icons::COLOR_LAYOUT ) );
 
 			auto addItem = [ this ](
 
@@ -48,6 +53,7 @@ namespace VTX::UI::QT::Menu
 					a->setChecked( *p_currentScheme == p_data.scheme );
 				}
 				a->setData( QVariant::fromValue( p_data ) );
+				connect( a, &QAction::triggered, this, [ this, p_data ]() { emit selected( p_data ); } );
 			};
 
 			addItem( "Atoms", { E_COLOR_SCHEME::ATOM }, p_scheme );
@@ -60,16 +66,18 @@ namespace VTX::UI::QT::Menu
 				auto * wa	= new QWidgetAction( subMenu );
 				auto * item = new ColorItem( QT::Helper::toQColor( colorlayout.getCustomColor( i ) ) );
 				item->setMinimumSize( 120, 24 );
-				wa->setData(
-					QVariant::fromValue(
-						Selected { E_COLOR_SCHEME::CUSTOM,
-								   static_cast<Renderer::ColorIndex>( Renderer::Color::LAYOUT_OFFSET_CUSTOM + i ) }
-					)
-				);
+				const Selected selected
+					= { E_COLOR_SCHEME::CUSTOM,
+						static_cast<Renderer::ColorIndex>( Renderer::Color::LAYOUT_OFFSET_CUSTOM + i ) };
+				wa->setData( QVariant::fromValue( selected ) );
 				wa->setDefaultWidget( item );
+				connect( wa, &QAction::triggered, this, [ this, selected ]() { emit this->selected( selected ); } );
 				subMenu->addAction( wa );
 			}
 		}
+
+	  signals:
+		void selected( const Selected & );
 
 	  private:
 		/**
@@ -79,9 +87,7 @@ namespace VTX::UI::QT::Menu
 		{
 		  public:
 			ColorItem( const QColor & c, QWidget * parent = nullptr ) : QWidget( parent ), _color( c )
-			{
-				setMinimumHeight( 24 );
-			}
+			{ setMinimumHeight( 24 ); }
 
 		  protected:
 			void paintEvent( QPaintEvent * ) override

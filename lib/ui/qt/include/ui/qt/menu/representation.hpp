@@ -1,6 +1,9 @@
 #ifndef __VTX_UI_QT_MENU_REPRESENTATION__
 #define __VTX_UI_QT_MENU_REPRESENTATION__
 
+#include "ui/qt/services.hpp"
+#include "ui/qt/style/style_manager.hpp"
+#include "ui/qt/widget/base_widget.hpp"
 #include <QMenu>
 #include <app/preset/name.hpp>
 #include <optional>
@@ -11,11 +14,14 @@ namespace VTX::UI::QT::Menu
 
 	class Representation : public Widget::BaseWidget<Representation, QMenu>
 	{
+		Q_OBJECT
+
 	  public:
 		Representation( QWidget * p_parent, const std::optional<App::ECS::Entity> p_representation = std::nullopt ) :
 			BaseWidget( p_parent )
 		{
 			setTitle( "Representation" );
+			setIcon( STYLE().iconFromCodepoint( Style::Icons::REPRESENTATION ) );
 
 			auto & reg	= App::REG();
 			auto   view = reg.view<Renderer::Representation>();
@@ -32,8 +38,12 @@ namespace VTX::UI::QT::Menu
 					a->setChecked( *p_representation == ent );
 				}
 				a->setData( QVariant::fromValue( ent ) );
+				connect( a, &QAction::triggered, this, [ this, ent ]() { emit selected( ent ); } );
 			}
 		}
+
+	  signals:
+		void selected( App::ECS::Entity );
 	};
 
 } // namespace VTX::UI::QT::Menu

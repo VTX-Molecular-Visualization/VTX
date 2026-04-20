@@ -67,13 +67,6 @@ namespace VTX::UI::QT::Action
 			icon = "sprite/file/open_recent.png";
 		}
 
-		Delete::Delete()
-		{
-			name = "Delete";
-			tip	 = "Delete system";
-			icon = Style::Icons::DELETE;
-		}
-
 		Save::Save()
 		{
 			name	 = "Save";
@@ -231,6 +224,51 @@ namespace VTX::UI::QT::Action
 			tip	 = "Clear selection";
 			// icon = static_cast<int>( QStyle::StandardPixmap::SP_TrashIcon );
 			trigger = []() { SELECTION().clearSystem(); };
+		}
+
+		Show::Show()
+		{
+			name	 = "Show";
+			tip		 = "Show selection";
+			icon	 = Style::Icons::VISIBILITY;
+			shortcut = "Ctrl+Alt+S";
+		}
+
+		Hide::Hide()
+		{
+			name	 = "Hide";
+			tip		 = "Hide selection";
+			icon	 = Style::Icons::VISIBILITY_OFF;
+			shortcut = "Ctrl+Alt+H";
+		}
+
+		Solo::Solo()
+		{
+			name = "Solo";
+			tip	 = "Hide all but selection";
+			icon = Style::Icons::VISIBILITY;
+		}
+
+		SetColorScheme::SetColorScheme()
+		{
+			name = "Set color scheme";
+			tip	 = "Change selection color scheme";
+			icon = Style::Icons::COLOR_LAYOUT;
+		}
+
+		SetRepresentation::SetRepresentation()
+		{
+			name = "Set representation";
+			tip	 = "Change selection representation";
+			icon = Style::Icons::REPRESENTATION;
+		}
+
+		Delete::Delete()
+		{
+			name	 = "Delete";
+			tip		 = "Delete system";
+			icon	 = Style::Icons::DELETE;
+			shortcut = "Del";
 		}
 
 	} // namespace Selection

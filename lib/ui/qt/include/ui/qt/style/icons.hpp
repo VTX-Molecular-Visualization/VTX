@@ -49,6 +49,7 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint STOP				 = 0xe047;	// STOP_SHALLOW
 	constexpr Codepoint SYSTEM				 = 0xe9f4;	// HUB
 	constexpr Codepoint UPDATE				 = 0xf5f4;	// DEPLOYED_CODE_UPDATE
+	constexpr Codepoint VISIBILITY			 = 0xe8f4;	// VISIBILITY
 	constexpr Codepoint VISIBILITY_OFF		 = 0xe8f5;	// VISIBILITY_OFF
 
 } // namespace VTX::UI::QT::Style::Icons
