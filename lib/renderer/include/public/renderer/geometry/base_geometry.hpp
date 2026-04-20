@@ -167,7 +167,7 @@ namespace VTX::Renderer::Geometry
 		/**
 		 * @brief Resources.
 		 */
-		std::unordered_map<Desc::Handle, Data> _resources;
+		std::map<Desc::Handle, Data> _resources;
 
 		/**
 		 * @brief Current size to draw (before applying anything).

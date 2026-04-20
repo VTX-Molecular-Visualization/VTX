@@ -60,14 +60,10 @@ namespace VTX::Renderer::Geometry
 
 			Construction & cache = _construction[ p_handle ];
 
-			if ( cache.isEmpty )
-			{
-				return;
-			}
-
 			if ( p_data.data.residueSecondaryStructureTypes.empty() )
 			{
 				cache.isEmpty = true;
+				_addRange( p_handle, 0, 0 );
 				return;
 			}
 
@@ -141,12 +137,10 @@ namespace VTX::Renderer::Geometry
 			assert( static_cast<Index>( residues.size() ) >= segmentCount );
 
 			cache.isEmpty = residues.empty();
+			_addRange( p_handle, static_cast<Index>( bufferIndices.size() ), static_cast<Index>( residues.size() ) );
+
 			if ( not cache.isEmpty )
 			{
-				_addRange(
-					p_handle, static_cast<Index>( bufferIndices.size() ), static_cast<Index>( residues.size() )
-				);
-
 				auto & indiceBuffer = _indices( p_handle );
 				indiceBuffer		= bufferIndices;
 			}
