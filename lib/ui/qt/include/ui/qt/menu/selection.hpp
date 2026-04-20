@@ -23,7 +23,6 @@ namespace VTX::UI::QT::Menu
 		QPointer<Representation> _representationMenu;
 
 		void _refresh();
-		void _clearDynamicSubMenus();
 	};
 
 } // namespace VTX::UI::QT::Menu

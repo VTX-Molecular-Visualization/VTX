@@ -13,8 +13,8 @@ namespace VTX::App::Action::Scene
 
 	void DeleteSystemSelected::execute()
 	{
-		REG().view<System::Metadata, System::Selection>().each(
-			[ & ]( auto p_e, auto &, auto & )
+		REG().view<System::Selection>().each(
+			[ & ]( auto p_e, auto & )
 			{
 				if ( Helper::System::getSelectionState( { p_e } ) == System::E_SELECTION_STATE::FULL )
 				{

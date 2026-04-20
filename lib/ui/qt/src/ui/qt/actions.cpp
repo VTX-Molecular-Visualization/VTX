@@ -17,6 +17,7 @@
 #include <app/action/camera.hpp>
 #include <app/action/io.hpp>
 #include <app/action/scene.hpp>
+#include <app/action/visibility.hpp>
 #include <app/constants.hpp>
 
 namespace VTX::UI::QT::Action
@@ -233,6 +234,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Show selection";
 			icon	 = Style::Icons::VISIBILITY;
 			shortcut = "Ctrl+Alt+S";
+			trigger	 = []() { App::ACTION().execute<App::Action::Visibility::SetVisibleSelected>( true ); };
 		}
 
 		Hide::Hide()
@@ -241,6 +243,7 @@ namespace VTX::UI::QT::Action
 			tip		 = "Hide selection";
 			icon	 = Style::Icons::VISIBILITY_OFF;
 			shortcut = "Ctrl+Alt+H";
+			trigger	 = []() { App::ACTION().execute<App::Action::Visibility::SetVisibleSelected>( false ); };
 		}
 
 		Solo::Solo()

@@ -23,11 +23,12 @@ namespace VTX::UI::QT::Menu
 
 		// Clear previous actions.
 		clear();
-		_clearDynamicSubMenus();
+		delete _colorSchemeMenu;
+		delete _representationMenu;
 
 		addAction<Action::Selection::Show>();
 		addAction<Action::Selection::Hide>();
-		addAction<Action::Selection::Solo>();
+		// addAction<Action::Selection::Solo>();
 		addSeparator();
 
 		QAction * const colorSchemeAction = Application::getAction<Action::Selection::SetColorScheme>();
@@ -76,12 +77,4 @@ namespace VTX::UI::QT::Menu
 		}
 	}
 
-	void Selection::_clearDynamicSubMenus()
-	{
-		delete _colorSchemeMenu;
-		_colorSchemeMenu = nullptr;
-
-		delete _representationMenu;
-		_representationMenu = nullptr;
-	}
 } // namespace VTX::UI::QT::Menu

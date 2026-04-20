@@ -45,18 +45,40 @@ namespace VTX::App::Action::Visibility
 		}
 
 		void execute( const ECS::Entity p_ent, const Core::Struct::IndexRange & p_range, const bool p_visible = true )
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_visible );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_visible ); }
 
 		void execute( const ECS::Entity p_ent, const std::vector<Index> & p_values, const bool p_visible = true )
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_visible );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_visible ); }
 
 		void execute( const ECS::Entity p_ent, const Index p_value, const bool p_visible = true )
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_visible ); }
+	};
+
+	struct SetVisibleSelected
+	{
+		void execute( const bool p_visible = true )
 		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_visible );
+			auto & reg = REG();
+
+			REG().view<System::Selection>().each(
+				[ &reg, p_visible ]( auto p_e, auto & p_selection )
+				{
+					reg.patch<System::Visibility>(
+						p_e,
+						[ &p_selection, p_visible ]( System::Visibility & p_visibility )
+						{
+							if ( p_visible )
+							{
+								p_visibility.atoms |= p_selection.atoms;
+							}
+							else
+							{
+								p_visibility.atoms &= ~p_selection.atoms;
+							}
+						}
+					);
+				}
+			);
 		}
 	};
 
@@ -93,9 +115,7 @@ namespace VTX::App::Action::Visibility
 			const Core::Struct::IndexRange &  p_range,
 			const bool						  p_visible = true
 		)
-		{
-			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_visible );
-		}
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_visible ); }
 
 		void execute(
 			const ECS::Entity				  p_ent,
@@ -103,9 +123,7 @@ namespace VTX::App::Action::Visibility
 			const std::vector<Index> &		  p_values,
 			const bool						  p_visible = true
 		)
-		{
-			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_visible );
-		}
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_visible ); }
 
 		void execute(
 			const ECS::Entity				  p_ent,
@@ -113,9 +131,7 @@ namespace VTX::App::Action::Visibility
 			const Index						  p_value,
 			const bool						  p_visible = true
 		)
-		{
-			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_visible );
-		}
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_visible ); }
 	};
 
 } // namespace VTX::App::Action::Visibility
