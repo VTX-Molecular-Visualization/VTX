@@ -7,6 +7,7 @@
 #include <app/system/metadata.hpp>
 #include <app/system/selection.hpp>
 #include <core/struct/topology.hpp>
+#include <io/reader.hpp>
 #include <util/chrono.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -44,7 +45,9 @@ namespace VTX::UI::QT::Widget
 			const auto & metadata  = reg.get<App::System::Metadata>( entity );
 			const auto & transform = reg.get<Util::Math::Transform>( entity );
 
-			QString pdb = QString::fromStdString( metadata.pdbIDCode );
+			QString pdb = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
+							  ? QString::fromStdString( metadata.path.stem().string() )
+							  : QString::fromStdString( metadata.pdbIDCode );
 
 			const auto systemState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
 			if ( systemState == App::System::E_SELECTION_STATE::FULL )
@@ -62,8 +65,9 @@ namespace VTX::UI::QT::Widget
 				_layout->addWidget( labelName );
 
 				// PDB.
-				QString pdb = QString::fromStdString( metadata.pdbIDCode );
-				_layout->addWidget( new QLabel( QString( "PDB: %1" ).arg( pdb ), this ) );
+				_layout->addWidget(
+					new QLabel( QString( "PDB: %1" ).arg( QString::fromStdString( metadata.pdbIDCode ) ), this )
+				);
 
 				// Path.
 				QString path	  = QString::fromStdString( metadata.path.string() );

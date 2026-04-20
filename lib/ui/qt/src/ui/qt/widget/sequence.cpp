@@ -103,7 +103,7 @@ namespace VTX::UI::QT::Widget
 
 			// Selection.
 			const QRect cellRect( x - 2, SEQ_CHAR_HEIGHT + 5, SEQ_CHAR_WIDTH, SEQ_CHAR_HEIGHT );
-			const bool	selected = App::Helper::System::getSelectionState( { _system, E_SYSTEM_ITEM::RESIDUE, residue } )
+			const bool selected = App::Helper::System::getSelectionState( { _system, E_SYSTEM_ITEM::RESIDUE, residue } )
 								  != App::System::E_SELECTION_STATE::NONE;
 			if ( selected )
 			{
@@ -168,9 +168,8 @@ namespace VTX::UI::QT::Widget
 		bool shift = p_e->modifiers() & Qt::ShiftModifier;
 		bool ctrl  = p_e->modifiers() & Qt::ControlModifier;
 
-		const bool selected
-			= App::Helper::System::getSelectionState( { _system, E_SYSTEM_ITEM::RESIDUE, index } )
-			  != App::System::E_SELECTION_STATE::NONE;
+		const bool selected = App::Helper::System::getSelectionState( { _system, E_SYSTEM_ITEM::RESIDUE, index } )
+							  != App::System::E_SELECTION_STATE::NONE;
 
 		if ( not shift && not ctrl )
 		{

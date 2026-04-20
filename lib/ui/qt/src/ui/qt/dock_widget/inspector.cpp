@@ -148,6 +148,7 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		App::REG().on_update<App::System::Selection>().connect<&Inspector::_onSystemSelectionUpdated>( this );
+		// App::REG().on_destroy<App::System::Selection>().connect<&Inspector::_onSystemSelectionUpdated>( this );
 	}
 
 	void Inspector::_clear()
