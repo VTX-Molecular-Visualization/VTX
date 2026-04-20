@@ -55,12 +55,26 @@ namespace VTX::UI::QT::Widget
 				countAtom += topology.getAtomCount();
 
 				// Name.
-				QString name = QString::fromStdString( metadata.name );
-				_layout->addWidget( new QLabel( QString( "Name: %1" ).arg( name ), this ) );
+				QString name	  = QString::fromStdString( metadata.name );
+				auto *	labelName = new QLabel( QString( "Name: %1" ).arg( name ), this );
+				labelName->setWordWrap( true );
+				labelName->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+				_layout->addWidget( labelName );
 
 				// PDB.
 				QString pdb = QString::fromStdString( metadata.pdbIDCode );
 				_layout->addWidget( new QLabel( QString( "PDB: %1" ).arg( pdb ), this ) );
+
+				// Path.
+				QString path	  = QString::fromStdString( metadata.path.string() );
+				auto *	labelFile = new QLabel(
+					QString( "File: %1" ).arg( QString::fromStdString( metadata.path.filename().string() ) ), this
+				);
+				labelFile->setWordWrap( true );
+				labelFile->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+				labelFile->setToolTip( path );
+				labelFile->setCursor( Qt::WhatsThisCursor );
+				_layout->addWidget( labelFile );
 
 				// Transform.
 				auto * groupBoxTransform = new QGroupBox( "Transform", this );

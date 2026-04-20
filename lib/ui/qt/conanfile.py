@@ -211,6 +211,7 @@ class VTXUiQtRecipe(ConanFile):
         self.requires("vtx_app/1.0")
         self.requires("vtx_renderer/1.0")
         self.requires("vtx_core/1.0")
+        self.requires("vtx_io/1.0")
         self.requires("vtx_python_binding/1.0")
         self.requires("qt/6.10.1", transitive_headers=True)
         if self.settings.os == "Linux":
