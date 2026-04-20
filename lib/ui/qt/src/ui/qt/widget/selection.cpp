@@ -44,7 +44,6 @@ namespace VTX::UI::QT::Widget
 			const auto & metadata  = reg.get<App::System::Metadata>( entity );
 			const auto & transform = reg.get<Util::Math::Transform>( entity );
 
-			// QString name = QString::fromStdString( metadata.name );
 			QString pdb = QString::fromStdString( metadata.pdbIDCode );
 
 			const auto systemState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
@@ -55,7 +54,15 @@ namespace VTX::UI::QT::Widget
 				countResidue += topology.getResidueCount();
 				countAtom += topology.getAtomCount();
 
-				///////////////////////// Transform.
+				// Name.
+				QString name = QString::fromStdString( metadata.name );
+				_layout->addWidget( new QLabel( QString( "Name: %1" ).arg( name ), this ) );
+
+				// PDB.
+				QString pdb = QString::fromStdString( metadata.pdbIDCode );
+				_layout->addWidget( new QLabel( QString( "PDB: %1" ).arg( pdb ), this ) );
+
+				// Transform.
 				auto * groupBoxTransform = new QGroupBox( "Transform", this );
 				auto * layout			 = new QVBoxLayout( groupBoxTransform );
 
@@ -85,6 +92,7 @@ namespace VTX::UI::QT::Widget
 				_layout->addWidget( groupBoxTransform );
 
 				_list->addItem( pdb );
+
 				continue;
 			}
 			else if ( systemState == App::System::E_SELECTION_STATE::NONE )
