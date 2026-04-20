@@ -271,9 +271,7 @@ namespace VTX::PythonBinding::API
 			}
 			virtual Chain		getChain( const Index p_index ) override { return { *obj().getChain( p_index ) }; }
 			virtual const Chain getChain( const Index p_index ) const override
-			{
-				return { *obj().getChain( p_index ) };
-			}
+			{ return { *obj().getChain( p_index ) }; }
 
 			virtual void initResidues( const Index p_residueCount ) override
 			{
@@ -282,9 +280,7 @@ namespace VTX::PythonBinding::API
 			}
 			virtual Residue getResidue( const Index p_index ) override { return { *obj().getResidue( p_index ) }; }
 			virtual const Residue getResidue( const Index p_index ) const override
-			{
-				return { *obj().getResidue( p_index ) };
-			}
+			{ return { *obj().getResidue( p_index ) }; }
 
 			virtual void initAtoms( const Index p_atomCount ) override
 			{

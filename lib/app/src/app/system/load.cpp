@@ -69,14 +69,10 @@ namespace VTX::App::System
 	void SystemExtractor::_clean() { _attributesPtr->synchronizer.count_down(); }
 
 	SystemExtractor::SystemExtractor( FilePath p_path ) : _attributesPtr( std::make_shared<_Data>() )
-	{
-		_attributesPtr->data.path = std::move( p_path );
-	}
+	{ _attributesPtr->data.path = std::move( p_path ); }
 	SystemExtractor::SystemExtractor( FilePath p_path, std::string && p_buffer ) :
 		SystemExtractor( std::move( p_path ) )
-	{
-		_attributesPtr->data.buffer = std::move( p_buffer );
-	}
+	{ _attributesPtr->data.buffer = std::move( p_buffer ); }
 	SystemExtractor::SystemExtractor( ECS::Entity p_entity, FilePath p_path ) : SystemExtractor( std::move( p_path ) )
 	{
 		_attributesPtr->data.entity			= p_entity;
@@ -109,6 +105,7 @@ namespace VTX::App::System
 
 		pendingData.reader->get( ECS::getCtx<Core::ChemDB::Category::Dictionary>(), pendingData.topology );
 		pendingData.reader->get( VTX::IO::PdbIdCode { &pendingData.pdbIdCode } );
+		pendingData.reader->get( VTX::IO::SystemName { &pendingData.name } );
 
 		if ( p_stopToken.stop_requested() )
 		{
@@ -185,11 +182,8 @@ namespace VTX::App::System
 		auto & color		  = reg.emplace<System::Color>( p_entity );
 		auto & deleted		  = reg.emplace<System::Deleted>( p_entity );
 
-		const std::string & pdbId	 = p_data.pdbIdCode;
-		metadata.pdbIDCode			 = pdbId;
-		const std::string systemName = pdbId == "" ? p_data.path.stem().string() : pdbId;
-		metadata.name				 = systemName;
-		data.name					 = systemName; // TODO: remove
+		metadata.pdbIDCode = p_data.pdbIdCode;
+		metadata.name	   = p_data.name.empty() ? p_data.path.stem().string() : p_data.name;
 
 		// UIDs: get from UID manager.
 		auto & uidManager = App::UID();
@@ -240,9 +234,8 @@ namespace VTX::App::System
 			else
 			{
 				VTX::VTX_ERROR(
-					"File {} and system {} has different atom count. ({}/{})",
+					"File {} has different atom count. ({}/{})",
 					p_data.path.string(),
-					topology->name,
 					topology->getAtomCount(),
 					p_data.topology.getAtomCount()
 				);

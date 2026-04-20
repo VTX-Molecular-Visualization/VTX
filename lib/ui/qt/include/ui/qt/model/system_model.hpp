@@ -5,6 +5,7 @@
 #include <QString>
 #include <app/ecs.hpp>
 #include <app/events.hpp>
+#include <app/system/metadata.hpp>
 #include <core/struct/topology.hpp>
 #include <vector>
 
@@ -87,6 +88,7 @@ namespace VTX::UI::QT::Model
 		/**
 		 * @brief Reference to the system data.
 		 */
+		std::reference_wrapper<const App::System::Metadata>	 _metadata;
 		std::reference_wrapper<const Core::Struct::Topology> _data;
 	};
 

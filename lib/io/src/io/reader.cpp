@@ -42,9 +42,7 @@ namespace VTX::IO
 
 		_Impl( const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
 			filePath( p_path ), stopToken( p_stopToken ), trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
-		{
-			_init();
-		}
+		{ _init(); }
 
 		_Impl( std::string p_buffer, const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
 			filePath( p_path ), stopToken( p_stopToken ), buffer( std::move( p_buffer ) ),
@@ -55,9 +53,7 @@ namespace VTX::IO
 					chemfiles::guess_format( p_path.string() )
 				)
 			)
-		{
-			_init();
-		}
+		{ _init(); }
 
 		size_t frameCount() const { return trajectory.size(); }
 
@@ -257,6 +253,14 @@ namespace VTX::IO
 			assert( p_.code != nullptr );
 			*p_.code = currentFrame.get( "pdb_idcode" ) ? currentFrame.get( "pdb_idcode" )->as_string() : "";
 		}
+		void get( const SystemName & p_ ) noexcept
+		{
+			if ( stopToken.get().stop_requested() )
+				return;
+
+			assert( p_.name != nullptr );
+			*p_.name = currentFrame.get( "name" ) ? currentFrame.get( "name" )->as_string() : "";
+		}
 		void set( Util::StopToken & p_ ) noexcept { stopToken = p_; }
 
 	  private:
@@ -324,12 +328,11 @@ namespace VTX::IO
 	}
 
 	void SystemReader::get( const ChemDB::Category::Dictionary & p_d, Core::Struct::Topology & p_ ) noexcept
-	{
-		_impl->get( p_d, p_ );
-	}
+	{ _impl->get( p_d, p_ ); }
 	void SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) noexcept { _impl->get( p_i, p_ ); }
 	void SystemReader::get( AtomPositions & p_ ) noexcept { _impl->get( 0, p_ ); }
 	void SystemReader::get( const PdbIdCode & p_ ) noexcept { _impl->get( p_ ); }
+	void SystemReader::get( const SystemName & p_ ) noexcept { _impl->get( p_ ); }
 	void SystemReader::set( Util::StopToken & p_ ) noexcept { _impl->set( p_ ); }
 
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }

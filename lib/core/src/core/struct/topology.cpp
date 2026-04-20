@@ -48,7 +48,6 @@ namespace VTX::Core::Struct
 	ByteNumber dynamicMemoryUsage( const Topology & p_sys ) noexcept
 	{
 		ByteNumber out = 0;
-		out += p_sys.name.capacity();
 		// Mat4f should have dynamic allocation, right ?
 		// out += dynamicMemoryUsage( p_sys.trajectory );
 		for ( auto & it_str : p_sys.chainNames )

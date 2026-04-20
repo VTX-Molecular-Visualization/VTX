@@ -12,7 +12,8 @@
 namespace VTX::UI::QT::Model
 {
 	SystemModel::SystemModel( const App::ECS::Entity p_system, QObject * p_parent ) :
-		_system( p_system ), _data( App::REG().get<Core::Struct::Topology>( p_system ) ), QAbstractItemModel( p_parent )
+		_system( p_system ), _metadata( App::REG().get<App::System::Metadata>( p_system ) ),
+		_data( App::REG().get<Core::Struct::Topology>( p_system ) ), QAbstractItemModel( p_parent )
 	{
 	}
 
@@ -82,7 +83,7 @@ namespace VTX::UI::QT::Model
 			{
 			case E_SYSTEM_ITEM::SYSTEM:
 			{
-				return QString::fromStdString( _data.get().name );
+				return QString::fromStdString( _metadata.get().name );
 			}
 			case E_SYSTEM_ITEM::CHAIN:
 			{

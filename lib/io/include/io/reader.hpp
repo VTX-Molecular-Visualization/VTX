@@ -29,6 +29,10 @@ namespace VTX::IO
 	{
 		mutable std::string * code;
 	};
+	struct SystemName
+	{
+		mutable std::string * name;
+	};
 
 	class SystemReader
 	{
@@ -48,6 +52,7 @@ namespace VTX::IO
 		void get( AtomPositions & ) noexcept;
 		void get( const FrameIndex &, AtomPositions & ) noexcept;
 		void get( const PdbIdCode & ) noexcept;
+		void get( const SystemName & ) noexcept;
 		void set( Util::StopToken & ) noexcept;
 
 	  private:

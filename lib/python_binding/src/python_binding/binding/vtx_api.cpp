@@ -82,12 +82,6 @@ namespace VTX::PythonBinding::Binding
 				[]( Quatf & _ ) { return fmt::format( "Quatf(x={}, y={}, z={}, w={})", _.x, _.y, _.z, _.w ); }
 			);
 
-		pybind11::class_<VTX::Core::Struct::Topology>( p_apiModule, "SystemStruct", pybind11::module_local() )
-			.def_property(
-				"name",
-				[]( const VTX::Core::Struct::Topology & p_topology ) { return p_topology.name; },
-				[]( VTX::Core::Struct::Topology & p_topology, const std::string & p_name ) { p_topology.name = p_name; }
-			);
 		// Collections
 		registerCollection<API::Atom>( p_apiModule, "CollectionAtom" );
 		registerCollection<API::Residue>( p_apiModule, "CollectionResidue" );

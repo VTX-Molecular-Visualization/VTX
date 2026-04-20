@@ -44,7 +44,8 @@ namespace VTX::UI::QT::Widget
 			const auto & metadata  = reg.get<App::System::Metadata>( entity );
 			const auto & transform = reg.get<Util::Math::Transform>( entity );
 
-			QString name = QString::fromStdString( topology.name );
+			// QString name = QString::fromStdString( metadata.name );
+			QString pdb = QString::fromStdString( metadata.pdbIDCode );
 
 			const auto systemState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
 			if ( systemState == App::System::E_SELECTION_STATE::FULL )
@@ -83,7 +84,7 @@ namespace VTX::UI::QT::Widget
 				layout->addWidget( _transform );
 				_layout->addWidget( groupBoxTransform );
 
-				_list->addItem( name );
+				_list->addItem( pdb );
 				continue;
 			}
 			else if ( systemState == App::System::E_SELECTION_STATE::NONE )
@@ -102,7 +103,7 @@ namespace VTX::UI::QT::Widget
 					countChain++;
 					countResidue += topology.getChainResidueCount( chain );
 					countAtom += topology.getChainAtomCount( chain );
-					_list->addItem( name + "/" + chainName );
+					_list->addItem( pdb + "/" + chainName );
 					continue;
 				}
 				else if ( chainState == App::System::E_SELECTION_STATE::NONE )
@@ -121,7 +122,7 @@ namespace VTX::UI::QT::Widget
 					{
 						countResidue++;
 						countAtom += topology.getResidueAtomCount( residue );
-						_list->addItem( name + "/" + chainName + "/" + residueName );
+						_list->addItem( pdb + "/" + chainName + "/" + residueName );
 						continue;
 					}
 					else if ( residueState == App::System::E_SELECTION_STATE::NONE )
@@ -138,7 +139,7 @@ namespace VTX::UI::QT::Widget
 						{
 							countAtom++;
 							_list->addItem(
-								name + "/" + chainName + "/" + residueName + "/"
+								pdb + "/" + chainName + "/" + residueName + "/"
 								+ QString::fromStdString( topology.getAtomName( atom ) )
 							);
 						}

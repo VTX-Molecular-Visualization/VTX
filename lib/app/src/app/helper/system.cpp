@@ -1,49 +1,62 @@
 #include "app/helper/system.hpp"
 #include "app/system/color.hpp"
+#include "app/system/metadata.hpp"
 #include "app/system/representation.hpp"
 #include <core/struct/topology.hpp>
 
 namespace
 {
 	VTX::App::System::E_VISIBLE_STATE _getVisibleState(
-		const VTX::Util::Math::BitSet &	  p_visibility,
+		const VTX::Util::Math::BitSet &		p_visibility,
 		const VTX::Core::Struct::IndexRange p_range
 	)
 	{
 		using namespace VTX::App::System;
 
-		return p_visibility.test( p_range ) ? E_VISIBLE_STATE::VISIBLE
+		return p_visibility.test( p_range )	 ? E_VISIBLE_STATE::VISIBLE
 			   : p_visibility.any( p_range ) ? E_VISIBLE_STATE::PARTIAL
-											: E_VISIBLE_STATE::HIDDEN;
+											 : E_VISIBLE_STATE::HIDDEN;
 	}
 
 	VTX::App::System::E_SELECTION_STATE _getSelectionState(
-		const VTX::Util::Math::BitSet &	  p_selection,
+		const VTX::Util::Math::BitSet &		p_selection,
 		const VTX::Core::Struct::IndexRange p_range
 	)
 	{
 		using namespace VTX::App::System;
 
-		return p_selection.test( p_range ) ? E_SELECTION_STATE::FULL
+		return p_selection.test( p_range )	? E_SELECTION_STATE::FULL
 			   : p_selection.any( p_range ) ? E_SELECTION_STATE::PARTIAL
-										   : E_SELECTION_STATE::NONE;
+											: E_SELECTION_STATE::NONE;
 	}
 } // namespace
 
 namespace VTX::App::Helper::System
 {
-	ECS::Entity getSystemByName( const std::string p_name ) noexcept
+	ECS::Entity getSystemByName( const std::string_view p_name )
 	{
-		for ( auto it_entity : REG().view<Core::Struct::Topology>() )
+		for ( auto e : REG().view<App::System::Metadata>() )
 		{
-			auto & metadata = REG().get<Core::Struct::Topology>( it_entity );
+			auto & metadata = REG().get<App::System::Metadata>( e );
 
-			// For now we use the PDB code but the function aims to retrieve a system using what is visible to the user.
 			if ( metadata.name == p_name )
-				return it_entity;
+				return e;
 		}
 
-		return entt::null;
+		return ECS::InvalidEntity;
+	}
+
+	ECS::Entity getSystemByPdb( const std::string_view p_pdb )
+	{
+		for ( auto e : REG().view<App::System::Metadata>() )
+		{
+			auto & metadata = REG().get<App::System::Metadata>( e );
+
+			if ( metadata.pdbIDCode == p_pdb )
+				return e;
+		}
+
+		return ECS::InvalidEntity;
 	}
 
 	App::System::E_VISIBLE_STATE getVisibleState( const SystemItemView & p_system )
@@ -51,9 +64,9 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 		using namespace App::System;
 
-		const ECS::Entity ent	   = p_system.entity;
-		const auto &	  reg	   = REG();
-		const auto &	  topology = reg.get<Core::Struct::Topology>( ent );
+		const ECS::Entity ent		 = p_system.entity;
+		const auto &	  reg		 = REG();
+		const auto &	  topology	 = reg.get<Core::Struct::Topology>( ent );
 		const auto &	  visibility = reg.get<App::System::Visibility>( ent );
 
 		switch ( p_system.item )
@@ -79,9 +92,9 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 		using namespace App::System;
 
-		const ECS::Entity ent	   = p_system.entity;
-		const auto &	  reg	   = REG();
-		const auto &	  topology = reg.get<Core::Struct::Topology>( ent );
+		const ECS::Entity ent		= p_system.entity;
+		const auto &	  reg		= REG();
+		const auto &	  topology	= reg.get<Core::Struct::Topology>( ent );
 		const auto &	  selection = reg.get<App::System::Selection>( ent );
 
 		switch ( p_system.item )
@@ -106,9 +119,9 @@ namespace VTX::App::Helper::System
 	{
 		using namespace Core::Struct;
 
-		const auto & reg	= REG();
+		const auto & reg	  = REG();
 		const auto & topology = reg.get<Core::Struct::Topology>( p_system.entity );
-		const auto & color	= reg.get<App::System::Color>( p_system.entity );
+		const auto & color	  = reg.get<App::System::Color>( p_system.entity );
 		IndexRange	 atoms;
 
 		switch ( p_system.item )
@@ -168,10 +181,10 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 		using namespace App::System;
 
-		const ECS::Entity ent	 = p_system.entity;
-		const auto &	  reg	 = REG();
+		const ECS::Entity ent	   = p_system.entity;
+		const auto &	  reg	   = REG();
 		const auto &	  topology = reg.get<Core::Struct::Topology>( ent );
-		const auto &	  color	 = reg.get<Color>( ent );
+		const auto &	  color	   = reg.get<Color>( ent );
 
 		auto isRootForRanges = [ & ]( const Core::Struct::IndexRangeList & ranges )
 		{
@@ -247,7 +260,7 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 
 		const auto & reg			= REG();
-		const auto & topology			= reg.get<Core::Struct::Topology>( p_system.entity );
+		const auto & topology		= reg.get<Core::Struct::Topology>( p_system.entity );
 		const auto & representation = reg.get<App::System::Representation>( p_system.entity );
 		IndexRange	 atoms;
 
