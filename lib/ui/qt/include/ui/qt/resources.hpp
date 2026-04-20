@@ -14,7 +14,17 @@ namespace VTX::UI::QT::Resources
 	// Fonts.
 	constexpr std::string_view FONT_MATERIAL_SYMBOLS = ":/font/MaterialSymbolsOutlined.ttf";
 	constexpr std::string_view FONT_INTER			 = ":/font/Inter-VariableFont_opsz,wght.ttf";
+	constexpr std::string_view FONT_LIBERATION_MONO	 = ":/font/LiberationMono-Regular.ttf";
+	constexpr std::string_view FONT_CASCADIA_MONO	 = ":/font/CascadiaMono-VariableFont_wght.ttf";
+	constexpr std::string_view FONT_CASCADIA_CODE	 = ":/font/CascadiaCode-VariableFont_wght.ttf";
 	constexpr std::string_view FONT_OPEN_DYSLEXIC	 = ":/font/OpenDyslexic-Regular.otf";
+
+	// Font families.
+	constexpr std::string_view FONT_INTER_FAMILY		   = "Inter";
+	constexpr std::string_view FONT_LIBERATION_MONO_FAMILY = "Liberation Mono";
+	constexpr std::string_view FONT_CASCADIA_MONO_FAMILY   = "Cascadia Mono";
+	constexpr std::string_view FONT_CASCADIA_CODE_FAMILY   = "Cascadia Code";
+
 } // namespace VTX::UI::QT::Resources
 
 #endif

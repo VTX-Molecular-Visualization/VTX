@@ -72,6 +72,8 @@ namespace VTX::UI::QT::Style
 
 		QFontDatabase::addApplicationFont( FONT_MATERIAL_SYMBOLS.data() );
 		QFontDatabase::addApplicationFont( FONT_INTER.data() );
+		QFontDatabase::addApplicationFont( FONT_LIBERATION_MONO.data() );
+		QFontDatabase::addApplicationFont( FONT_CASCADIA_CODE.data() );
 		QFontDatabase::addApplicationFont( FONT_OPEN_DYSLEXIC.data() );
 
 		// Linux only?
@@ -121,12 +123,11 @@ namespace VTX::UI::QT::Style
 	void StyleManager::setFontFamily( const QString & p_fontName )
 	{
 		QFont appFont( p_fontName, DEFAULT_FONT_SIZE );
+		appFont.setStyleHint( QFont::Monospace );
 		Q_APP()->setFont( appFont );
 	}
 
 	QIcon StyleManager::iconFromCodepoint( const Codepoint p_codepoint )
-	{
-		return QIcon( new CodepointIconEngine( p_codepoint ) );
-	}
+	{ return QIcon( new CodepointIconEngine( p_codepoint ) ); }
 
 } // namespace VTX::UI::QT::Style

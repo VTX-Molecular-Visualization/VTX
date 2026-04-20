@@ -31,7 +31,9 @@ namespace VTX::UI::QT::Widget
 	Sequence::Sequence( const App::ECS::Entity p_system, QWidget * p_parent ) :
 		QAbstractScrollArea( p_parent ), _system( p_system )
 	{
-		setFont( QFont( "Courier", 10 ) );
+		QFont f( Style::DEFAULT_FONT_FAMILY_SEQUENCE, 10 );
+		f.setStyleHint( QFont::Monospace );
+		setFont( f );
 		setMouseTracking( true );
 	}
 

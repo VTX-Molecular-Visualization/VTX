@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_STYLE_STYLE_MANAGER__
 
 #include "ui/qt/application.hpp"
+#include "ui/qt/resources.hpp"
 #include "ui/qt/style/codepoint_icon_engine.hpp"
 #include <QFontDatabase>
 #include <QPalette>
@@ -28,14 +29,15 @@ namespace VTX::UI::QT::Style
 	/**
 	 * @brief Default values.
 	 */
-	constexpr float	  DEFAULT_SIZE_SCALE		 = 0.85f;
-	constexpr int	  DEFAULT_FONT_SIZE			 = 10;
-	constexpr E_THEME DEFAULT_THEME				 = E_THEME::DARK;
-	const QString	  DEFAULT_FONT_FAMILY		 = "Consolas";
-	constexpr int	  MINIMUM_DOCK_PANEL_WIDTH	 = 200;
-	constexpr int	  MINIMUM_DOCK_PANEL_HEIGHT	 = 50;
-	constexpr int	  DEFAULT_LATERAL_DOCK_WIDTH = 250;
-	constexpr int	  DEFAULT_CONSOLE_HEIGHT	 = 120;
+	constexpr float	  DEFAULT_SIZE_SCALE		   = 0.85f;
+	constexpr int	  DEFAULT_FONT_SIZE			   = 10;
+	constexpr E_THEME DEFAULT_THEME				   = E_THEME::DARK;
+	const QString	  DEFAULT_FONT_FAMILY		   = Resources::FONT_CASCADIA_MONO_FAMILY.data();
+	const QString	  DEFAULT_FONT_FAMILY_SEQUENCE = Resources::FONT_LIBERATION_MONO_FAMILY.data();
+	constexpr int	  MINIMUM_DOCK_PANEL_WIDTH	   = 200;
+	constexpr int	  MINIMUM_DOCK_PANEL_HEIGHT	   = 50;
+	constexpr int	  DEFAULT_LATERAL_DOCK_WIDTH   = 250;
+	constexpr int	  DEFAULT_CONSOLE_HEIGHT	   = 120;
 
 	/**
 	 * @brief Class managing application style (themes, stylesheets, etc.).
