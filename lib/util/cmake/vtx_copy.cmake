@@ -34,7 +34,7 @@ function(vtx_add_copy_directory_target target copy_name source_dir destination_d
 			"${source_dir}"
 			"${destination_dir}"
 		COMMAND ${CMAKE_COMMAND} -E touch "${copy_stamp}"
-		DEPENDS ${copy_source_files}
+		DEPENDS "${source_dir}" ${copy_source_files}
 		COMMENT "${comment}"
 		VERBATIM
 	)
