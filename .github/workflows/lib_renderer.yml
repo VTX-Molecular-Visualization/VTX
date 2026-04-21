@@ -21,13 +21,13 @@ on:
         cuda_arch:
           description: 'Cuda architectures'
           required: true
-          default: '50;52;60;61;70;75;80;86;89;90'
+          default: '75;80;86;89;90;120-real'
 
 env:
   LIB_DIR: ${{github.workspace}}/lib
   BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
   CUDA_VERSION: ${{ inputs.cuda_version || '12.9.0' }}
-  CUDA_ARCH: ${{ inputs.cuda_arch || 'native' }}
+  CUDA_ARCH: ${{ inputs.cuda_arch || '75;80;86;89;90;120-real' }}
 
 jobs:
   build:

@@ -3,6 +3,8 @@ from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 from conan.tools.env import VirtualRunEnv
 from conan.tools.system.package_manager import Apt
 
+DEFAULT_CUDA_ARCH = "native"
+
 def install_system_dependencies(conanfile):
     if conanfile.settings.os == "Linux":
         apt = Apt(conanfile)
@@ -15,7 +17,7 @@ class VTXRendererRecipe(ConanFile):
     
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False], "cuda_arch": ["ANY"]}
-    default_options = {"shared": False, "fPIC": True, "test": False, "cuda_arch": "native"}
+    default_options = {"shared": False, "fPIC": True, "test": False, "cuda_arch": DEFAULT_CUDA_ARCH}
     
     generators = "CMakeDeps"
     
