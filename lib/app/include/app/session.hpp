@@ -72,8 +72,6 @@ namespace VTX::App
 		FilePath getReadmeFile() const;
 		FilePath getChangelogFile() const;
 		FilePath getDataDir() const;
-		FilePath getResidueDataDir() const;
-		FilePath getResidueDataFilePath( const std::string_view );
 		FilePath getLogsDir() const;
 		FilePath getCacheDir() const;
 		FilePath getSnapshotsDir() const;

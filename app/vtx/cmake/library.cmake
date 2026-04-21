@@ -80,7 +80,6 @@ target_compile_definitions(vtx PRIVATE VTX_TOOL_EXAMPLE=${VTX_TOOL_EXAMPLE})
 target_compile_definitions(vtx PRIVATE VTX_TOOL_MDPREP=${VTX_TOOL_MDPREP})
 target_compile_definitions(vtx PRIVATE VTX_UI_QT=${VTX_UI_QT})
 
-vtx_core_copy_data(vtx)
 if (VTX_RENDERER)
 	vtx_renderer_copy_shaders(vtx)
 endif()

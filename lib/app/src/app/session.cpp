@@ -439,11 +439,6 @@ namespace VTX::App
 	FilePath Session::getShadersDir() const { return Filesystem::getExecutableDir() / "shaders"; }
 	FilePath Session::getDataDir() const { return Filesystem::getExecutableDir() / "data"; }
 	FilePath Session::getLicenseFile() const { return Filesystem::getExecutableDir() / "license.txt"; }
-	FilePath Session::getResidueDataDir() const { return getDataDir() / "residue"; }
-	FilePath Session::getResidueDataFilePath( const std::string_view p_residue )
-	{
-		return getResidueDataDir() / p_residue.substr( 0, 1 );
-	}
 	FilePath Session::getLogsDir() const { return getDataHome() / "logs"; }
 	FilePath Session::getCacheDir() const { return getDataHome() / "cache"; }
 	FilePath Session::getSnapshotsDir() const { return getPicturesFolder() / "snapshots"; }

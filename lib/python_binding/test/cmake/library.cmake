@@ -22,7 +22,6 @@ endif()
 
 target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
 
-vtx_core_copy_data(vtx_python_binding_test)
 vtx_copy_directory(vtx_python_binding_test "${CMAKE_CURRENT_LIST_DIR}/../data" "$<TARGET_FILE_DIR:vtx_python_binding_test>/data")
 
 include(CTest)

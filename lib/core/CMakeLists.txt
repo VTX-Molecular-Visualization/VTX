@@ -9,5 +9,4 @@ set(_VTX_CORE_CONAN " ") # So the right target name can be linked
 include(cmake/library.cmake)
 
 install(TARGETS vtx_core FILE_SET public_headers)
-vtx_install_source_directory("data")
 vtx_install_build_modules()

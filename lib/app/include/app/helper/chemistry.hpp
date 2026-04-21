@@ -15,14 +15,6 @@ namespace VTX::App::Helper::Chemistry
 		const Core::Struct::Topology & p_topology,
 		const std::string &			   p_residueName
 	);
-
-	inline std::map<std::string, IO::Struct::ResidueData> mapLoadedResidueData
-		= { { "", IO::Struct::ResidueData::DEFAULT } };
-
-	void									  loadResidueData( const std::string & p_residueSymbol );
-	const std::string &						  getResidueFullName( const std::string & p_residueSymbol );
-	const std::vector<IO::Struct::BondData> & getResidueBonds( const std::string & p_residueSymbol );
-	VTX::Core::ChemDB::Category::TYPE		  getResidueCategory( const std::string & p_residueSymbol );
 } // namespace VTX::App::Helper::Chemistry
 
 #endif

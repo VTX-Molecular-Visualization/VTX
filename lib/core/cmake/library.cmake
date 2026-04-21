@@ -1,5 +1,3 @@
-include("${CMAKE_CURRENT_LIST_DIR}/vtx_core_copy_data.cmake")
-
 add_library(vtx_core)
 vtx_configure_target(vtx_core)
 

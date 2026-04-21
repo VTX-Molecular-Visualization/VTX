@@ -20,7 +20,10 @@ namespace VTX::App::Helper::Chemistry
 		return res;
 	}
 
-	std::vector<Index> findResiduesByName( const Core::Struct::Topology & p_topology, const std::string & p_residueName )
+	std::vector<Index> findResiduesByName(
+		const Core::Struct::Topology & p_topology,
+		const std::string &			   p_residueName
+	)
 	{
 		using namespace VTX::Core;
 
@@ -57,43 +60,6 @@ namespace VTX::App::Helper::Chemistry
 		*/
 
 		return res;
-	}
-
-	void loadResidueData( const std::string & p_residueSymbol )
-	{
-		IO::Reader::ResidueDataReader reader = IO::Reader::ResidueDataReader();
-		IO::Struct::ResidueData		  residueData;
-
-		if ( reader.readResidueData(
-				 SESSION().getResidueDataFilePath( p_residueSymbol ), p_residueSymbol, residueData
-			 ) )
-			mapLoadedResidueData.emplace( p_residueSymbol, residueData );
-		else
-			mapLoadedResidueData.emplace( p_residueSymbol, IO::Struct::ResidueData::DEFAULT );
-	}
-
-	const std::string & getResidueFullName( const std::string & p_residueSymbol )
-	{
-		if ( mapLoadedResidueData.find( p_residueSymbol ) == mapLoadedResidueData.end() )
-			loadResidueData( p_residueSymbol );
-
-		return mapLoadedResidueData[ p_residueSymbol ].fullname;
-	}
-
-	const std::vector<VTX::IO::Struct::BondData> & getResidueBonds( const std::string & p_residueSymbol )
-	{
-		if ( mapLoadedResidueData.find( p_residueSymbol ) == mapLoadedResidueData.end() )
-			loadResidueData( p_residueSymbol );
-
-		return mapLoadedResidueData[ p_residueSymbol ].bondData;
-	}
-
-	VTX::Core::ChemDB::Category::TYPE getResidueCategory( const std::string & p_residueSymbol )
-	{
-		if ( mapLoadedResidueData.find( p_residueSymbol ) == mapLoadedResidueData.end() )
-			loadResidueData( p_residueSymbol );
-
-		return mapLoadedResidueData[ p_residueSymbol ].category;
 	}
 
 } // namespace VTX::App::Helper::Chemistry
