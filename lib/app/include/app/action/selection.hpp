@@ -9,9 +9,26 @@
 #include <util/logger.hpp>
 #include <util/type_traits.hpp>
 #include <util/types.hpp>
+#include <utility>
 
 namespace VTX::App::Action::Selection
 {
+	/**
+	 * @brief Patch selection if different from current selection to avoid unnecessary updates.
+	 */
+	inline void patchSelection( const ECS::Entity p_ent, Util::Math::BitSet p_atoms )
+	{
+		auto &		 reg	   = REG();
+		const auto & selection = reg.get<System::Selection>( p_ent );
+		if ( selection.atoms == p_atoms )
+		{
+			return;
+		}
+
+		reg.patch<System::Selection>(
+			p_ent, [ &p_atoms ]( System::Selection & p_selection ) { p_selection.atoms = std::move( p_atoms ); }
+		);
+	}
 
 	/**
 	 * @brief Set item selection.
@@ -28,8 +45,7 @@ namespace VTX::App::Action::Selection
 		{
 			Util::ScopedChrono timer( "App::Action::SetSelected" );
 
-			auto &						 reg	   = REG();
-			auto &						 selection = reg.get<System::Selection>( p_ent );
+			const auto &				 selection = REG().get<System::Selection>( p_ent );
 			Core::Struct::IndexRangeList atoms	   = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 			Util::Math::BitSet			 current   = selection.atoms;
 
@@ -46,13 +62,7 @@ namespace VTX::App::Action::Selection
 				current.subtractInPlace( atoms );
 			}
 
-			if ( selection.atoms != current )
-			{
-				// VTX_DEBUG( "{} {}", selection.atoms.toString(), current.toString() );
-				reg.patch<System::Selection>(
-					p_ent, [ &current ]( System::Selection & p_selection ) { p_selection.atoms = current; }
-				);
-			}
+			patchSelection( p_ent, std::move( current ) );
 		}
 
 		inline void execute(
@@ -61,9 +71,7 @@ namespace VTX::App::Action::Selection
 			const bool						 p_selected = true,
 			const bool						 p_append	= false
 		)
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_selected, p_append );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_selected, p_append ); }
 
 		inline void execute(
 			const ECS::Entity		   p_ent,
@@ -71,9 +79,7 @@ namespace VTX::App::Action::Selection
 			const bool				   p_selected = true,
 			const bool				   p_append	  = false
 		)
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_selected, p_append );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_selected, p_append ); }
 
 		inline void execute(
 			const ECS::Entity p_ent,
@@ -81,9 +87,12 @@ namespace VTX::App::Action::Selection
 			const bool		  p_selected = true,
 			const bool		  p_append	 = false
 		)
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_selected, p_append );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_selected, p_append ); }
+	};
+
+	struct SelectAll
+	{
+		void execute();
 	};
 
 	/**

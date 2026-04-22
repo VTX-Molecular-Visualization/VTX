@@ -3,14 +3,30 @@
 
 #include "app/ecs.hpp"
 #include "app/helper/system.hpp"
+#include "app/system/selection.hpp"
 #include "app/system/visibility.hpp"
 #include <core/struct/topology.hpp>
 #include <util/chrono.hpp>
 #include <util/type_traits.hpp>
 #include <util/types.hpp>
+#include <utility>
 
 namespace VTX::App::Action::Visibility
 {
+	inline void patchVisibility( const ECS::Entity p_ent, Util::Math::BitSet p_atoms )
+	{
+		auto &		 reg		= REG();
+		const auto & visibility = reg.get<System::Visibility>( p_ent );
+		if ( visibility.atoms == p_atoms )
+		{
+			return;
+		}
+
+		reg.patch<System::Visibility>(
+			p_ent, [ &p_atoms ]( System::Visibility & p_visibility ) { p_visibility.atoms = std::move( p_atoms ); }
+		);
+	}
+
 	/**
 	 * @brief Set item visibility.
 	 */
@@ -25,23 +41,45 @@ namespace VTX::App::Action::Visibility
 		{
 			Util::ScopedChrono timer( "App::Action::SetVisible" );
 
-			auto &						 reg   = REG();
-			Core::Struct::IndexRangeList atoms = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
+			const auto & visibility = REG().get<System::Visibility>( p_ent );
 
-			reg.patch<System::Visibility>(
-				p_ent,
-				[ &atoms, p_visible ]( System::Visibility & p_visibility )
+			if constexpr ( ITEM == Core::Struct::E_SYSTEM_ITEM::SYSTEM )
+			{
+				if ( p_visible )
 				{
-					if ( p_visible )
+					if ( visibility.atoms.all() )
 					{
-						p_visibility.atoms.mergeInPlace( atoms );
+						return;
 					}
-					else
-					{
-						p_visibility.atoms.subtractInPlace( atoms );
-					}
+
+					patchVisibility( p_ent, Util::Math::BitSet( visibility.atoms.size(), true ) );
 				}
-			);
+				else
+				{
+					if ( visibility.atoms.none() )
+					{
+						return;
+					}
+
+					patchVisibility( p_ent, Util::Math::BitSet( visibility.atoms.size() ) );
+				}
+			}
+			else
+			{
+				Core::Struct::IndexRangeList atoms	 = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
+				Util::Math::BitSet			 current = visibility.atoms;
+
+				if ( p_visible )
+				{
+					current.mergeInPlace( atoms );
+				}
+				else
+				{
+					current.subtractInPlace( atoms );
+				}
+
+				patchVisibility( p_ent, std::move( current ) );
+			}
 		}
 
 		void execute( const ECS::Entity p_ent, const Core::Struct::IndexRange & p_range, const bool p_visible = true )
@@ -58,25 +96,29 @@ namespace VTX::App::Action::Visibility
 	{
 		void execute( const bool p_visible = true )
 		{
-			auto & reg = REG();
-
-			REG().view<System::Selection>().each(
-				[ &reg, p_visible ]( auto p_e, const auto & p_selection )
+			REG().view<System::Selection, System::Visibility>().each(
+				[ p_visible ](
+					const ECS::Entity		   p_ent,
+					const System::Selection &  p_selection,
+					const System::Visibility & p_visibility
+				)
 				{
-					reg.patch<System::Visibility>(
-						p_e,
-						[ &p_selection, p_visible ]( System::Visibility & p_visibility )
-						{
-							if ( p_visible )
-							{
-								p_visibility.atoms |= p_selection.atoms;
-							}
-							else
-							{
-								p_visibility.atoms &= ~p_selection.atoms;
-							}
-						}
-					);
+					if ( p_selection.atoms.none() )
+					{
+						return;
+					}
+
+					Util::Math::BitSet current = p_visibility.atoms;
+					if ( p_visible )
+					{
+						current.mergeInPlace( p_selection.atoms );
+					}
+					else
+					{
+						current.subtractInPlace( p_selection.atoms );
+					}
+
+					patchVisibility( p_ent, std::move( current ) );
 				}
 			);
 		}
