@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QPointer>
 #include <QProgressBar>
+#include <QPushButton>
 #include <QWidget>
 
 namespace VTX::UI::QT::Widget
