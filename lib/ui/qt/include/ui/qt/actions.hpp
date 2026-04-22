@@ -113,7 +113,7 @@ namespace VTX::UI::QT
 				action.name		= "Quit";
 				action.tip		= "Exit software";
 				action.icon		= Style::Icons::QUIT;
-				action.shortcut = "Esc";
+				action.shortcut = "Shift+Esc";
 				return action;
 			}
 		} // namespace System
@@ -348,9 +348,10 @@ namespace VTX::UI::QT
 			inline App::UI::DescAction clearAction()
 			{
 				App::UI::DescAction action;
-				action.key	= CLEAR;
-				action.name = "Clear";
-				action.tip	= "Clear selection";
+				action.key		= CLEAR;
+				action.name		= "Clear";
+				action.tip		= "Clear selection";
+				action.shortcut = "Esc";
 				return action;
 			}
 

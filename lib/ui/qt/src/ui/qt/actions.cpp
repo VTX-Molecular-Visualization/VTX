@@ -137,7 +137,18 @@ namespace VTX::UI::QT::Action
 			}
 		);
 		p_registry.registerAction( Selection::saveAction() );
-		p_registry.registerAction( Selection::clearAction(), handler( []() { SELECTION().clearSystem(); } ) );
+		p_registry.registerAction(
+			Selection::clearAction(),
+			[]( const ActionRegistry::ActionContext & )
+			{
+				if ( UI_ACTIONS().isChecked( Selection::LOCK ) )
+				{
+					return;
+				}
+
+				SELECTION().clearSystem();
+			}
+		);
 		p_registry.registerAction(
 			Selection::selectAllAction(),
 			handler( []() { App::ACTION().execute<App::Action::Selection::SelectAll>(); } )
