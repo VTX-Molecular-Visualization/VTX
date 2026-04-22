@@ -352,9 +352,7 @@ namespace VTX::Util::Math
 		 * @brief Returns true if both bitsets have the same size and content.
 		 */
 		[[nodiscard]] inline bool equals( const BitSet & p_other ) const noexcept
-		{
-			return _size == p_other._size && _data == p_other._data;
-		}
+		{ return _size == p_other._size && _data == p_other._data; }
 
 		/**
 		 * @brief Returns the number of bits.
@@ -728,6 +726,49 @@ namespace VTX::Util::Math
 					bits &= bits - 1;
 				}
 			}
+		}
+
+		/**
+		 * @brief Convert to range list.
+		 */
+		template<std::integral T = size_t>
+		[[nodiscard]] inline RangeList<T> toRangeList() const
+		{
+			RangeList<T> ranges;
+			bool		 hasRange = false;
+			T			 first	  = 0;
+			T			 last	  = 0;
+
+			forEachSetBit(
+				[ & ]( const size_t p_index )
+				{
+					const T index = static_cast<T>( p_index );
+					if ( not hasRange )
+					{
+						first	 = index;
+						last	 = index + T( 1 );
+						hasRange = true;
+						return;
+					}
+
+					if ( index == last )
+					{
+						++last;
+						return;
+					}
+
+					ranges.addRange( Range<T>( first, last ) );
+					first = index;
+					last  = index + T( 1 );
+				}
+			);
+
+			if ( hasRange )
+			{
+				ranges.addRange( Range<T>( first, last ) );
+			}
+
+			return ranges;
 		}
 
 		/**

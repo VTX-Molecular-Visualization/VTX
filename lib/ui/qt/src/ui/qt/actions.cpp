@@ -195,8 +195,33 @@ namespace VTX::UI::QT::Action
 			handler( []() { App::ACTION().execute<App::Action::Visibility::SetVisibleSelected>( false ); } )
 		);
 		p_registry.registerAction( Selection::soloAction() );
-		p_registry.registerAction( Selection::setColorSchemeAction() );
-		p_registry.registerAction( Selection::setRepresentationAction() );
+		p_registry.registerAction(
+			Selection::setColorSchemeAction(),
+			[]( const ActionRegistry::ActionContext & p_context )
+			{
+				const auto schemeParam	   = p_context.param<int>( Selection::PARAM_COLOR_SCHEME );
+				const auto colorIndexParam = p_context.param<int>( Selection::PARAM_COLOR_INDEX );
+				if ( schemeParam )
+				{
+					App::ACTION().execute<App::Action::Color::AddSelected>(
+						static_cast<App::System::E_COLOR_SCHEME>( *schemeParam ), colorIndexParam
+					);
+				}
+			}
+		);
+		p_registry.registerAction(
+			Selection::setRepresentationAction(),
+			[]( const ActionRegistry::ActionContext & p_context )
+			{
+				const auto representationParam = p_context.param<int>( Selection::PARAM_REPRESENTATION );
+				if ( representationParam )
+				{
+					App::ACTION().execute<App::Action::Representation::AddSelected>(
+						static_cast<App::ECS::Entity>( *representationParam )
+					);
+				}
+			}
+		);
 		p_registry.registerAction(
 			Selection::deleteAction(),
 			handler( []() { App::ACTION().execute<App::Action::Scene::DeleteSystemSelected>(); } )

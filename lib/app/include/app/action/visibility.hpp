@@ -103,22 +103,20 @@ namespace VTX::App::Action::Visibility
 					const System::Visibility & p_visibility
 				)
 				{
-					if ( p_selection.atoms.none() )
+					if ( p_selection.atoms.any() )
 					{
-						return;
-					}
+						Util::Math::BitSet current = p_visibility.atoms;
+						if ( p_visible )
+						{
+							current.mergeInPlace( p_selection.atoms );
+						}
+						else
+						{
+							current.subtractInPlace( p_selection.atoms );
+						}
 
-					Util::Math::BitSet current = p_visibility.atoms;
-					if ( p_visible )
-					{
-						current.mergeInPlace( p_selection.atoms );
+						patchVisibility( p_ent, std::move( current ) );
 					}
-					else
-					{
-						current.subtractInPlace( p_selection.atoms );
-					}
-
-					patchVisibility( p_ent, std::move( current ) );
 				}
 			);
 		}

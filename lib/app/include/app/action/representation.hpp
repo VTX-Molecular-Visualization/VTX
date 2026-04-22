@@ -4,6 +4,7 @@
 #include "app/ecs.hpp"
 #include "app/helper/system.hpp"
 #include "app/system/representation.hpp"
+#include "app/system/selection.hpp"
 #include <core/struct/topology.hpp>
 #include <renderer/representation.hpp>
 #include <util/type_traits.hpp>
@@ -23,9 +24,9 @@ namespace VTX::App::Action::Representation
 			const Core::Struct::IndexRangeList & p_ranges = {}
 		)
 		{
-			auto &						 reg	= REG();
+			auto &						 reg	  = REG();
 			const auto &				 topology = reg.get<Core::Struct::Topology>( p_ent );
-			Core::Struct::IndexRangeList atoms	= Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
+			Core::Struct::IndexRangeList atoms	  = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 
 			reg.patch<System::Representation>(
 				p_ent,
@@ -58,19 +59,13 @@ namespace VTX::App::Action::Representation
 		}
 
 		void execute( const ECS::Entity p_ent, const ECS::Entity p_preset, const Core::Struct::IndexRange & p_range )
-		{
-			execute( p_ent, p_preset, Core::Struct::IndexRangeList( p_range ) );
-		}
+		{ execute( p_ent, p_preset, Core::Struct::IndexRangeList( p_range ) ); }
 
 		void execute( const ECS::Entity p_ent, const ECS::Entity p_preset, const std::vector<Index> & p_values )
-		{
-			execute( p_ent, p_preset, Core::Struct::IndexRangeList( p_values ) );
-		}
+		{ execute( p_ent, p_preset, Core::Struct::IndexRangeList( p_values ) ); }
 
 		void execute( const ECS::Entity p_ent, const ECS::Entity p_preset, const Index p_value )
-		{
-			execute( p_ent, p_preset, Core::Struct::IndexRangeList( p_value ) );
-		}
+		{ execute( p_ent, p_preset, Core::Struct::IndexRangeList( p_value ) ); }
 	};
 
 	struct AddItem
@@ -106,9 +101,7 @@ namespace VTX::App::Action::Representation
 			const ECS::Entity				  p_preset,
 			const Core::Struct::IndexRange &  p_range
 		)
-		{
-			execute( p_ent, p_item, p_preset, Core::Struct::IndexRangeList( p_range ) );
-		}
+		{ execute( p_ent, p_item, p_preset, Core::Struct::IndexRangeList( p_range ) ); }
 
 		void execute(
 			const ECS::Entity				  p_ent,
@@ -116,9 +109,7 @@ namespace VTX::App::Action::Representation
 			const ECS::Entity				  p_preset,
 			const std::vector<Index> &		  p_values
 		)
-		{
-			execute( p_ent, p_item, p_preset, Core::Struct::IndexRangeList( p_values ) );
-		}
+		{ execute( p_ent, p_item, p_preset, Core::Struct::IndexRangeList( p_values ) ); }
 
 		void execute(
 			const ECS::Entity				  p_ent,
@@ -126,9 +117,7 @@ namespace VTX::App::Action::Representation
 			const ECS::Entity				  p_preset,
 			const Index						  p_value
 		)
-		{
-			execute( p_ent, p_item, p_preset, Core::Struct::IndexRangeList( p_value ) );
-		}
+		{ execute( p_ent, p_item, p_preset, Core::Struct::IndexRangeList( p_value ) ); }
 	};
 
 	/**
@@ -191,6 +180,27 @@ namespace VTX::App::Action::Representation
 					{
 						static_assert( always_false_v<S>, "Representation::Change: invalid representation value." );
 					}
+				}
+			);
+		}
+	};
+
+	struct AddSelected
+	{
+		void execute( const ECS::Entity p_e )
+		{
+			REG().view<System::Selection, System::Representation>().each(
+				[ p_e ](
+					const ECS::Entity p_ent, const System::Selection & p_selection, const System::Representation &
+				)
+				{
+					const Core::Struct::IndexRangeList ranges = p_selection.atoms.toRangeList<Index>();
+					if ( ranges.isEmpty() )
+					{
+						return;
+					}
+
+					Add<Core::Struct::E_SYSTEM_ITEM::ATOM>().execute( p_ent, p_e, ranges );
 				}
 			);
 		}

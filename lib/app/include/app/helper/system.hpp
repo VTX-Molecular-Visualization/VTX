@@ -83,10 +83,7 @@ namespace VTX::App::Helper::System
 		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::ATOM )
 		{
-			for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); it++ )
-			{
-				atoms.addRange( *it );
-			}
+			return p_ranges;
 		}
 		else
 		{

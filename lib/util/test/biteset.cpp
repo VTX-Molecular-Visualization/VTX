@@ -985,3 +985,38 @@ TEST_CASE( "BitSet iterator on filled bitset", "[util][math][bitset]" )
 	for ( size_t i = 0; i < 10; ++i )
 		REQUIRE( values[ i ] == i );
 }
+
+TEST_CASE( "BitSet toRangeList empty bitset", "[util][math][bitset]" )
+{
+	const BitSet bitset( 128 );
+
+	const RangeList<size_t> ranges = bitset.toRangeList();
+
+	REQUIRE( ranges.isEmpty() );
+}
+
+TEST_CASE( "BitSet toRangeList compact ranges", "[util][math][bitset]" )
+{
+	BitSet bitset( 200 );
+	bitset.set( Range<size_t>( 0, 3 ) );
+	bitset.set( Range<size_t>( 63, 66 ) );
+	bitset.set( 100 );
+	bitset.set( Range<size_t>( 150, 200 ) );
+
+	const RangeList<size_t> ranges = bitset.toRangeList();
+	const RangeList<size_t> expected
+		= { Range<size_t>( 0, 3 ), Range<size_t>( 63, 66 ), Range<size_t>( 100 ), Range<size_t>( 150, 200 ) };
+
+	REQUIRE( ranges == expected );
+}
+
+TEST_CASE( "BitSet toRangeList supports explicit index type", "[util][math][bitset]" )
+{
+	BitSet bitset( 16 );
+	bitset.set( Range<size_t>( 4, 8 ) );
+
+	const RangeList<uint32_t> ranges = bitset.toRangeList<uint32_t>();
+	const RangeList<uint32_t> expected = { Range<uint32_t>( 4, 8 ) };
+
+	REQUIRE( ranges == expected );
+}
