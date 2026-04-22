@@ -13,6 +13,7 @@ class VTXRecipe(ConanFile):
         "version": ["ANY"],
         "tool_example": [True, False],
         "tool_mdprep": [True, False],
+        "tool_topology_editor": [True, False],
         "ui_qt": [True, False],
         "renderer": [True, False],
         "python_binding": [True, False],
@@ -21,6 +22,7 @@ class VTXRecipe(ConanFile):
         "version": "0.0.0",
         "tool_example": False,
         "tool_mdprep": True,
+        "tool_topology_editor": True,
         "ui_qt": True,
         "renderer": True,
         "python_binding": True,
@@ -39,6 +41,8 @@ class VTXRecipe(ConanFile):
             raise ConanInvalidConfiguration("vtx_tool_example currently requires Qt UI. Disable tool_example or enable ui_qt.")
         if not self.options.ui_qt and self.options.tool_mdprep:
             raise ConanInvalidConfiguration("vtx_tool_mdprep currently requires Qt UI. Disable tool_mdprep or enable ui_qt.")
+        if not self.options.ui_qt and self.options.tool_topology_editor:
+            raise ConanInvalidConfiguration("vtx_tool_topology_editor currently requires Qt UI. Disable tool_topology_editor or enable ui_qt.")
     
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -50,6 +54,8 @@ class VTXRecipe(ConanFile):
             self.requires("vtx_tool_example/1.0")
         if self.options.tool_mdprep:
             self.requires("vtx_tool_mdprep/1.0")
+        if self.options.tool_topology_editor:
+            self.requires("vtx_tool_topology_editor/1.0")
         if self.settings.os == "Linux":
             self.requires("libffi/3.4.8", override=True)
 
@@ -65,6 +71,7 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
         tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
         tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
+        tc.cache_variables["VTX_TOOL_TOPOLOGY_EDITOR"] = 1 if self.options.tool_topology_editor else 0
         tc.cache_variables["VTX_UI_QT"] = 1 if self.options.ui_qt else 0
         tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")
         tc.cache_variables["VTX_PYTHON_BINDING"] = app_conf.get("user.app:python_binding")

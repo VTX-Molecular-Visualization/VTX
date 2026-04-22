@@ -22,6 +22,10 @@
 #include <tool/mdprep/mdprep.hpp>
 #endif
 
+#if VTX_TOOL_TOPOLOGY_EDITOR
+#include <tool/topology_editor/topology_editor.hpp>
+#endif
+
 #ifdef _WIN32
 #include <windows.h>
 // Force high performance GPU on Windows.
@@ -120,6 +124,9 @@ int main( int p_argc, char * p_argv[] )
 			Q_INIT_RESOURCE( vtx_qt_resources_tool_mdprep );
 			app.addTool<Tool::Mdprep::MdPrep>();
 #endif
+#if VTX_TOOL_TOPOLOGY_EDITOR
+			app.addTool<Tool::TopologyEditor::TopologyEditor>();
+#endif
 			app.start();
 			return EXIT_SUCCESS;
 		}
@@ -131,6 +138,9 @@ int main( int p_argc, char * p_argv[] )
 #endif
 #if VTX_TOOL_MDPREP
 		app.addTool<Tool::Mdprep::MdPrep>();
+#endif
+#if VTX_TOOL_TOPOLOGY_EDITOR
+		app.addTool<Tool::TopologyEditor::TopologyEditor>();
 #endif
 		app.start();
 

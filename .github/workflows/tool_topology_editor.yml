@@ -1,0 +1,80 @@
+name: Tool Topology Editor
+
+on:
+  push:
+    branches: [ "master", "dev", "dev-sge", "dev-vge" ]
+    paths: ['tool/topology_editor/**', '.github/workflows/tool_topology_editor.yml']
+  workflow_dispatch:
+      inputs:
+        build_type:
+          description: 'Build type'
+          required: true
+          default: 'Release'
+          type: choice
+          options:
+          - Debug
+          - Release
+
+env:
+  ROOT_DIR: ${{github.workspace}}
+  BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-2022
+            conan_cppstd: '20'
+          - os: ubuntu-22.04
+            conan_cppstd: 'gnu20'
+          - os: windows-latest
+            conan_cppstd: '20'
+          - os: ubuntu-latest
+            conan_cppstd: 'gnu20'
+      fail-fast: false
+
+    steps:
+    - name: Set git to use CRLF
+      if: runner.os == 'Windows'
+      run: |
+        git config --global core.autocrlf true
+        git config --global core.eol crlf
+
+    - uses: actions/checkout@v6.0.2
+      with:
+        submodules: recursive
+
+    - name: Get Conan
+      uses: turtlebrowser/get-conan@v1.2
+
+    - name: Create default profile
+      run: conan profile detect --force
+
+    - name: Add custom remote
+      run: |
+        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
+
+    - name: Install xvfb (Linux)
+      if: runner.os == 'Linux'
+      run: sudo apt-get install -y xvfb
+
+    - name: Create package
+      working-directory: ${{env.ROOT_DIR}}
+      shell: bash
+      run: |
+        conan export lib/util
+        conan export lib/core
+        conan export lib/io
+        conan export lib/renderer
+        conan export lib/app
+        conan export lib/python_binding
+        conan export lib/ui/qt
+        ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/topology_editor -b missing \
+          -s build_type=${{env.BUILD_TYPE}} \
+          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
+          -c tools.system.package_manager:mode=install \
+          -c tools.system.package_manager:sudo=True \
+          -o vtx_tool_topology_editor/*:test=True

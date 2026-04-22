@@ -21,12 +21,18 @@ on:
         required: false
         default: true
         type: boolean
+      tool_topology_editor:
+        description: 'Include tool Topology Editor'
+        required: false
+        default: true
+        type: boolean
 
 env:
   ROOT_DIR: ${{ github.workspace }}
   BUILD_TYPE: ${{ inputs.build_type }}
   TOOL_EXAMPLE: ${{ inputs.tool_example == true && 'True' || 'False' }}
   TOOL_MDPREP: ${{ inputs.tool_mdprep == true && 'True' || 'False' }}
+  TOOL_TOPOLOGY_EDITOR: ${{ inputs.tool_topology_editor == true && 'True' || 'False' }}
 
 jobs:
   graph:
@@ -76,6 +82,7 @@ jobs:
         conan export lib/util
         conan export tool/example
         conan export tool/mdprep
+        conan export tool/topology_editor
       shell: bash
 
     - name: Generate Conan dependency graph
@@ -87,6 +94,7 @@ jobs:
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx/*:tool_example=${{ env.TOOL_EXAMPLE }} \
           -o vtx/*:tool_mdprep=${{ env.TOOL_MDPREP }} \
+          -o vtx/*:tool_topology_editor=${{ env.TOOL_TOPOLOGY_EDITOR }} \
           -o vtx_app/*:version=0.0.0 \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True \

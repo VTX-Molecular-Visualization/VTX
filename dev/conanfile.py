@@ -33,6 +33,7 @@ class VTXRecipe(ConanFile):
         "version": ["ANY"],
         "tool_example": [True, False],
         "tool_mdprep": [True, False],
+        "tool_topology_editor": [True, False],
         "local_pdb100": [True, False],
         "ui_qt": [True, False],
         "renderer": [True, False],
@@ -43,6 +44,7 @@ class VTXRecipe(ConanFile):
         "version": "0.0.0",
         "tool_example": False,
         "tool_mdprep": True,
+        "tool_topology_editor": True,
         "local_pdb100": False,
         "ui_qt": True,
         "renderer": True,
@@ -62,6 +64,8 @@ class VTXRecipe(ConanFile):
             raise ConanInvalidConfiguration("tool_example currently requires Qt UI. Disable tool_example or enable ui_qt.")
         if not self.options.ui_qt and self.options.tool_mdprep:
             raise ConanInvalidConfiguration("tool_mdprep currently requires Qt UI. Disable tool_mdprep or enable ui_qt.")
+        if not self.options.ui_qt and self.options.tool_topology_editor:
+            raise ConanInvalidConfiguration("tool_topology_editor currently requires Qt UI. Disable tool_topology_editor or enable ui_qt.")
 
     def requirements(self):
         self.requires("glm/1.0.1")
@@ -119,6 +123,7 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
         tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
         tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
+        tc.cache_variables["VTX_TOOL_TOPOLOGY_EDITOR"] = 1 if self.options.tool_topology_editor else 0
         tc.cache_variables["VTX_UI_QT"] = 1 if self.options.ui_qt else 0
         tc.cache_variables["VTX_RENDERER"] = 1 if self.options.renderer else 0
         tc.cache_variables["VTX_PYTHON_BINDING"] = 1 if self.options.python_binding else 0

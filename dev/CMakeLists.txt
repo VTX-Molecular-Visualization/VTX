@@ -21,6 +21,9 @@ endif()
 if (NOT DEFINED VTX_UI_QT)
 	set(VTX_UI_QT 1)
 endif()
+if (NOT DEFINED VTX_TOOL_TOPOLOGY_EDITOR)
+	set(VTX_TOOL_TOPOLOGY_EDITOR 1)
+endif()
 
 find_package(glm CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
@@ -104,6 +107,11 @@ endif()
 # Tool Mdprep
 if (VTX_UI_QT AND VTX_TOOL_MDPREP)
 	include("${DIR_TOOLS}/mdprep/cmake/library.cmake")
+endif()
+
+# Tool Topology Editor
+if (VTX_UI_QT AND VTX_TOOL_TOPOLOGY_EDITOR)
+	include("${DIR_TOOLS}/topology_editor/cmake/library.cmake")
 endif()
 
 # VTX.
