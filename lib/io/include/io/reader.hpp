@@ -28,13 +28,12 @@ namespace VTX::IO
 
 	constexpr std::string_view PDB_ID_CODE_DEFAULT = "----";
 
-	struct PdbIdCode
+	struct Metadata
 	{
-		mutable std::string * code;
-	};
-	struct SystemName
-	{
+		mutable std::string * pdbCode;
 		mutable std::string * name;
+		mutable bool *		  isSecondaryStructureLoadedFromFile;
+		mutable bool *		  isTopologyDegenerated;
 	};
 
 	class SystemReader
@@ -54,8 +53,7 @@ namespace VTX::IO
 		 */
 		void get( AtomPositions & ) noexcept;
 		void get( const FrameIndex &, AtomPositions & ) noexcept;
-		void get( const PdbIdCode & ) noexcept;
-		void get( const SystemName & ) noexcept;
+		void get( const Metadata & ) noexcept;
 		void set( Util::StopToken & ) noexcept;
 
 	  private:

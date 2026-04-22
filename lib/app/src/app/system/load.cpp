@@ -1,17 +1,10 @@
 #include "app/system/load.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/camera.hpp"
-#include "app/action/color.hpp"
-#include "app/action/representation.hpp"
-#include "app/action/scene.hpp"
-#include "app/action/visibility.hpp"
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/helper/preset.hpp"
 #include "app/preset/name.hpp"
-#include "app/scene/color_layout.hpp"
-#include "app/scene/graphics_config.hpp"
-#include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/deleted.hpp"
@@ -69,7 +62,7 @@ namespace VTX::App::System
 	void SystemExtractor::_clean() { _attributesPtr->synchronizer.count_down(); }
 
 	SystemExtractor::SystemExtractor( FilePath p_path ) : _attributesPtr( std::make_shared<_Data>() )
-	{ _attributesPtr->data.path = std::move( p_path ); }
+	{ _attributesPtr->data.metadata.path = std::move( p_path ); }
 	SystemExtractor::SystemExtractor( FilePath p_path, std::string && p_buffer ) :
 		SystemExtractor( std::move( p_path ) )
 	{ _attributesPtr->data.buffer = std::move( p_buffer ); }
@@ -88,7 +81,8 @@ namespace VTX::App::System
 		if ( p_thread )
 			p_thread.value().get().setProgressText(
 				fmt::format(
-					"Reading {}...", pendingData.buffer ? "structure from memory" : pendingData.path.filename().string()
+					"Reading {}...",
+					pendingData.buffer ? "structure from memory" : pendingData.metadata.path.filename().string()
 				)
 			);
 
@@ -99,13 +93,19 @@ namespace VTX::App::System
 		}
 
 		if ( pendingData.buffer )
-			pendingData.reader.emplace( std::move( pendingData.buffer.value() ), pendingData.path, p_stopToken );
+			pendingData.reader.emplace(
+				std::move( pendingData.buffer.value() ), pendingData.metadata.path, p_stopToken
+			);
 		else
-			pendingData.reader.emplace( pendingData.path, p_stopToken );
+			pendingData.reader.emplace( pendingData.metadata.path, p_stopToken );
 
 		pendingData.reader->get( ECS::getCtx<Core::ChemDB::Category::Dictionary>(), pendingData.topology );
-		pendingData.reader->get( VTX::IO::PdbIdCode { &pendingData.pdbIdCode } );
-		pendingData.reader->get( VTX::IO::SystemName { &pendingData.name } );
+		pendingData.reader->get(
+			VTX::IO::Metadata { &pendingData.metadata.pdbIDCode,
+								&pendingData.metadata.name,
+								&pendingData.metadata.isSecondaryStructureLoadedFromFile,
+								&pendingData.metadata.isTopologyDegenerated }
+		);
 
 		if ( p_stopToken.stop_requested() )
 		{
@@ -171,7 +171,7 @@ namespace VTX::App::System
 		// Add components.
 		auto   p_entity	 = reg.create();
 		auto & data		 = reg.emplace<Core::Struct::Topology>( p_entity, std::move( p_data.topology ) );
-		auto & metadata	 = reg.emplace<System::Metadata>( p_entity );
+		auto & metadata	 = reg.emplace<System::Metadata>( p_entity, std::move( p_data.metadata ) );
 		auto & transform = reg.emplace<Util::Math::Transform>( p_entity );
 		auto & aabb		 = reg.emplace<Util::Math::AABB>( p_entity );
 		auto & uid		 = reg.emplace<System::UID>( p_entity );
@@ -181,10 +181,6 @@ namespace VTX::App::System
 		auto & representation = reg.emplace<System::Representation>( p_entity );
 		auto & color		  = reg.emplace<System::Color>( p_entity );
 		auto & deleted		  = reg.emplace<System::Deleted>( p_entity );
-
-		metadata.pdbIDCode = p_data.pdbIdCode;
-		metadata.name	   = p_data.name;
-		metadata.path	   = p_data.path;
 
 		// UIDs: get from UID manager.
 		auto & uidManager = App::UID();
@@ -236,7 +232,7 @@ namespace VTX::App::System
 			{
 				VTX::VTX_ERROR(
 					"File {} has different atom count. ({}/{})",
-					p_data.path.string(),
+					p_data.metadata.path.string(),
 					topology->getAtomCount(),
 					p_data.topology.getAtomCount()
 				);

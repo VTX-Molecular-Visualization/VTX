@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_SYSTEM_LOAD__
 #define __VTX_APP_SYSTEM_LOAD__
 
+#include "app/system/metadata.hpp"
 #include "app/system/trajectory.hpp"
 #include "app/threading/base_thread.hpp"
 #include <atomic>
@@ -22,12 +23,10 @@ namespace VTX::App::System
 	{
 		std::optional<ECS::Entity> entity;				   // Used for attaching a trajectory to an existing system
 		bool					   onlyTrajectory = false; // Set to true when the goal is only to set a new trajectory
-		FilePath				   path;
 		std::optional<std::string> buffer;
 		std::optional<IO::SystemReader> reader;
 		Core::Struct::Topology			topology;
-		std::string						pdbIdCode;
-		std::string						name;
+		Metadata						metadata;
 		// Two pass on the system : when the topology is ready, the decision of what kind of trajectory to have in made
 		// on the main loop. Then, the trajectory is red asynchronously. Then, when trajectory is ready, the main loop
 		// proceed with the system creation.

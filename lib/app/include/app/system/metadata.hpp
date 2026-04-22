@@ -14,14 +14,8 @@ namespace VTX::App::System
 		FilePath	path;
 		std::string name;
 		std::string pdbIDCode;
-		bool		structureHasChanged				   = false;
 		bool		isSecondaryStructureLoadedFromFile = false;
-
-		// TODO: keep that?
-		std::set<uint>		  solventAtomIds;
-		std::set<uint>		  ionAtomIds;
-		std::set<std::string> solventResidueSymbols;
-		std::set<std::string> ionResidueSymbols;
+		bool		isTopologyDegenerated			   = false;
 	};
 } // namespace VTX::App::System
 #endif

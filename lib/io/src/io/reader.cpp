@@ -29,16 +29,17 @@ namespace VTX::IO
 		VTX::FilePath							filePath;
 		std::reference_wrapper<Util::StopToken> stopToken;
 		std::optional<std::string>				buffer; // kept alive for memory_reader
-
 		chemfiles::Trajectory					trajectory;
 		chemfiles::Frame						currentFrame;
 		chemfiles::Topology						topology;
-		const std::vector<chemfiles::Residue> * residues		 = nullptr;
-		const std::vector<chemfiles::Bond> *	bonds			 = nullptr;
-		const chemfiles::Residue *				currentResidue	 = nullptr;
-		const chemfiles::Atom *					currentAtom		 = nullptr;
-		size_t									currentAtomIndex = 0;
-		size_t									currentFrameIdx	 = 0;
+		const std::vector<chemfiles::Residue> * residues						   = nullptr;
+		const std::vector<chemfiles::Bond> *	bonds							   = nullptr;
+		const chemfiles::Residue *				currentResidue					   = nullptr;
+		const chemfiles::Atom *					currentAtom						   = nullptr;
+		size_t									currentAtomIndex				   = 0;
+		size_t									currentFrameIdx					   = 0;
+		bool									isSecondaryStructureLoadedFromFile = false;
+		bool									isTopologyDegenerated			   = false;
 
 		_Impl( const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
 			filePath( p_path ), stopToken( p_stopToken ), trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
@@ -245,23 +246,23 @@ namespace VTX::IO
 			for ( size_t i = 0; i < pos.size(); ++i )
 				p_positions[ i ] = Vec3f( pos[ i ][ 0 ], pos[ i ][ 1 ], pos[ i ][ 2 ] );
 		}
-		void get( const PdbIdCode & p_ ) noexcept
+		void get( const Metadata & p_ ) noexcept
 		{
 			if ( stopToken.get().stop_requested() )
 				return;
 
-			assert( p_.code != nullptr );
-			*p_.code = currentFrame.get( "pdb_idcode" ) ? currentFrame.get( "pdb_idcode" )->as_string()
-														: PDB_ID_CODE_DEFAULT;
-		}
-		void get( const SystemName & p_ ) noexcept
-		{
-			if ( stopToken.get().stop_requested() )
-				return;
-
+			assert( p_.pdbCode != nullptr );
 			assert( p_.name != nullptr );
-			*p_.name = currentFrame.get( "name" ) ? currentFrame.get( "name" )->as_string() : "";
+			assert( p_.isSecondaryStructureLoadedFromFile != nullptr );
+			assert( p_.isTopologyDegenerated != nullptr );
+
+			*p_.pdbCode = currentFrame.get( "pdb_idcode" ) ? currentFrame.get( "pdb_idcode" )->as_string()
+														   : PDB_ID_CODE_DEFAULT;
+			*p_.name	= currentFrame.get( "name" ) ? currentFrame.get( "name" )->as_string() : "";
+			*p_.isSecondaryStructureLoadedFromFile = isSecondaryStructureLoadedFromFile;
+			*p_.isTopologyDegenerated			   = isTopologyDegenerated;
 		}
+
 		void set( Util::StopToken & p_ ) noexcept { stopToken = p_; }
 
 	  private:
@@ -332,8 +333,7 @@ namespace VTX::IO
 	{ _impl->get( p_d, p_ ); }
 	void SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) noexcept { _impl->get( p_i, p_ ); }
 	void SystemReader::get( AtomPositions & p_ ) noexcept { _impl->get( 0, p_ ); }
-	void SystemReader::get( const PdbIdCode & p_ ) noexcept { _impl->get( p_ ); }
-	void SystemReader::get( const SystemName & p_ ) noexcept { _impl->get( p_ ); }
+	void SystemReader::get( const Metadata & p_ ) noexcept { _impl->get( p_ ); }
 	void SystemReader::set( Util::StopToken & p_ ) noexcept { _impl->set( p_ ); }
 
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }
