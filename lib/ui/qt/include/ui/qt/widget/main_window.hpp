@@ -11,6 +11,7 @@
 #include <QPointer>
 #include <app/events.hpp>
 #include <app/ui/concepts.hpp>
+#include <string_view>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Dialog
@@ -39,14 +40,14 @@ namespace VTX::UI::QT::Widget
 		~MainWindow();
 
 		/**
-		 * @brief Hook an action to the given menu.
+		 * @brief Hook a registered action to the given menu.
 		 */
-		void addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action );
+		void addMenuAction( const App::UI::WidgetId & p_menu, const std::string_view p_actionId );
 
 		/**
-		 * @brief Hook an action to the given toolbar.
+		 * @brief Hook a registered action to the given toolbar.
 		 */
-		void addToolBarAction( const App::UI::WidgetId & p_toolbar, const App::UI::DescAction & p_action );
+		void addToolBarAction( const App::UI::WidgetId & p_toolbar, const std::string_view p_actionId );
 
 		/**
 		 * @brief Reset layout to default state.

@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_DOCK_WIDGET_OPTIONS__
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
+#include "ui/qt/events.hpp"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLabel>
@@ -31,6 +32,8 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<QLabel>	_labelCacheCount;
 		QPointer<QLabel>	_labelCacheSize;
 
+		void _syncThemeComboBox();
+		void _onThemeChanged( const Events::ThemeChanged & );
 		void _refreshCacheInfos();
 	};
 

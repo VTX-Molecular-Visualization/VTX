@@ -1,52 +1,51 @@
 #ifndef __VTX_TOOL_EXAMPLE_ACTIONS_
 #define __VTX_TOOL_EXAMPLE_ACTIONS_
 
-#include "widget/my_dialog.hpp"
 #include <app/ui/concepts.hpp>
+#include <string_view>
 
 namespace VTX::Tool::Example::Action
 {
+	inline constexpr std::string_view MY_ACTION_1 = "example.myAction1";
+	inline constexpr std::string_view MY_ACTION_2 = "example.myAction2";
+	inline constexpr std::string_view MY_ACTION_3 = "example.myAction3";
+	inline constexpr std::string_view MY_ACTION_4 = "example.myAction4";
 
-	struct MyAction1 : public App::UI::DescAction
+	inline App::UI::DescAction myAction1()
 	{
-		MyAction1()
-		{
-			name	= "Open dialog";
-			tip		= "Demo action";
-			trigger = []()
-			{
-				Widget::MyDialog dialog;
-				dialog.exec();
-			};
-		}
-	};
+		App::UI::DescAction action;
+		action.key	= MY_ACTION_1;
+		action.name = "Open dialog";
+		action.tip	= "Demo action";
+		return action;
+	}
 
-	struct MyAction2 : public App::UI::DescAction
+	inline App::UI::DescAction myAction2()
 	{
-		MyAction2()
-		{
-			name = "My action 2";
-			tip	 = "Demo action";
-		}
-	};
+		App::UI::DescAction action;
+		action.key	= MY_ACTION_2;
+		action.name = "My action 2";
+		action.tip	= "Demo action";
+		return action;
+	}
 
-	struct MyAction3 : public App::UI::DescAction
+	inline App::UI::DescAction myAction3()
 	{
-		MyAction3()
-		{
-			name = "My action 3";
-			tip	 = "Demo action";
-		}
-	};
+		App::UI::DescAction action;
+		action.key	= MY_ACTION_3;
+		action.name = "My action 3";
+		action.tip	= "Demo action";
+		return action;
+	}
 
-	struct MyAction4 : public App::UI::DescAction
+	inline App::UI::DescAction myAction4()
 	{
-		MyAction4()
-		{
-			name = "My action 4";
-			tip	 = "Demo action";
-		}
-	};
+		App::UI::DescAction action;
+		action.key	= MY_ACTION_4;
+		action.name = "My action 4";
+		action.tip	= "Demo action";
+		return action;
+	}
 
 } // namespace VTX::Tool::Example::Action
 

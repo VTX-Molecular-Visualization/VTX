@@ -15,10 +15,10 @@ namespace VTX::UI::QT::Menu
 		{
 			setTitle( "Help" );
 
-			addAction<Action::Help::Documentation>();
-			addAction<Action::Help::Report>();
-			addAction<Action::Help::CheckUpdates>();
-			// addAction<Action::Help::About>();
+			addAction( Action::Help::DOCUMENTATION );
+			addAction( Action::Help::REPORT );
+			addAction( Action::Help::CHECK_UPDATES );
+			// addAction( Action::Help::ABOUT );
 		}
 
 	  private:

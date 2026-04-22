@@ -1,6 +1,7 @@
 #include "ui/qt/widget/main_window.hpp"
 #include "app/helper/io.hpp"
 #include "app/services.hpp"
+#include "ui/qt/action_registry.hpp"
 #include "ui/qt/application.hpp"
 #include "ui/qt/dialog/progress.hpp"
 #include "ui/qt/dialog/trajectory_association.hpp"
@@ -89,12 +90,12 @@ namespace VTX::UI::QT::Widget
 		createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );
 
 		auto * dwScene = createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
-		// createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea )->close();
-		// createDockWidget<DockWidget::ColorLayouts>( Qt::LeftDockWidgetArea )->close();
+		createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea )->close();
+		createDockWidget<DockWidget::ColorLayouts>( Qt::LeftDockWidgetArea )->close();
 		dwScene->raise();
 
 		auto * dwInspector = createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
-		// createDockWidget<DockWidget::GraphicsConfigs>( Qt::RightDockWidgetArea )->close();
+		createDockWidget<DockWidget::GraphicsConfigs>( Qt::RightDockWidgetArea )->close();
 		auto * dwOptions = createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
 		dwInspector->raise();
 
@@ -155,35 +156,35 @@ namespace VTX::UI::QT::Widget
 		return QMainWindow::event( p_event );
 	}
 
-	void MainWindow::addMenuAction( const App::UI::WidgetId & p_menu, const App::UI::DescAction & p_action )
+	void MainWindow::addMenuAction( const App::UI::WidgetId & p_menu, const std::string_view p_actionId )
 	{
 		for ( QMenu * const menu : menuBar()->findChildren<QMenu *>() )
 		{
 			if ( menu->title().toStdString() == p_menu )
 			{
-				menu->addAction( Application::getAction( p_action ) );
+				UI_ACTIONS().addMenuAction( *menu, p_actionId );
 				return;
 			}
 		}
 
 		QMenu * const menu = menuBar()->addMenu( p_menu.data() );
-		menu->addAction( Application::getAction( p_action ) );
+		UI_ACTIONS().addMenuAction( *menu, p_actionId );
 	}
 
-	void MainWindow::addToolBarAction( const App::UI::WidgetId & p_toolbar, const App::UI::DescAction & p_action )
+	void MainWindow::addToolBarAction( const App::UI::WidgetId & p_toolbar, const std::string_view p_actionId )
 	{
 		for ( QToolBar * const toolbar : findChildren<QToolBar *>() )
 		{
 			if ( toolbar->windowTitle().toStdString() == p_toolbar )
 			{
-				toolbar->addAction( Application::getAction( p_action ) );
+				UI_ACTIONS().addToolBarAction( *toolbar, p_actionId );
 				return;
 			}
 		}
 
 		QToolBar * const toolbar = new QToolBar( p_toolbar.data(), this );
 		addToolBar( toolbar );
-		toolbar->addAction( Application::getAction( p_action ) );
+		UI_ACTIONS().addToolBarAction( *toolbar, p_actionId );
 	}
 
 	void MainWindow::resetLayout()
@@ -291,9 +292,7 @@ namespace VTX::UI::QT::Widget
 	}
 
 	void MainWindow::_onBlockingOperationProgress( const App::Events::BlockingOperationProgress & p_e )
-	{
-		_progressDialog->setValue( p_e.progress );
-	}
+	{ _progressDialog->setValue( p_e.progress ); }
 
 	void MainWindow::_onBlockingOperationEnd( const App::Events::BlockingOperationEnd & )
 	{

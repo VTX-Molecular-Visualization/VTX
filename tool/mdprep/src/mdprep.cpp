@@ -24,11 +24,13 @@
 #include "tool/mdprep/ui/form_switch_button.hpp"
 #include <QDockWidget>
 #include <app/tool/base_tool.hpp>
+#include <ui/qt/action_registry.hpp>
 #include <ui/qt/application.hpp>
 #include <ui/qt/dock_widget/base_dock_widget.hpp>
 #include <ui/qt/services.hpp>
 #include <ui/qt/util.hpp>
 #include <ui/qt/widget/main_window.hpp>
+#include <string_view>
 #include <util/logger.hpp>
 //
 #include "tool/mdprep/ui/form.hpp"
@@ -42,6 +44,10 @@
 
 namespace VTX::Tool::Mdprep
 {
+	namespace
+	{
+		constexpr std::string_view ACTION_OPEN_MDPREP = "tool.mdprep.open";
+	}
 
 	// Class responsible for managing the mdprep main window by coordinating the common form and the md engine
 	// specifics.
@@ -101,41 +107,46 @@ namespace VTX::Tool::Mdprep
 		p_out			  = g_win;
 	}
 
-	struct OpenMdPrep : public App::UI::DescAction
+	App::UI::DescAction openMdPrepAction()
 	{
-		OpenMdPrep()
-		{
-			key		 = "tool.mdprep.open";
-			name	 = "MdPrep";
-			tip		 = "Prepare Molecular Dynamic Simulation";
-			icon	 = "sprite/icon_tool_mdprep_mainButton.png";
-			shortcut = "ctrl+alt+M";
-			trigger	 = []()
-			{
-				MainWindow * win;
-				get( win );
+		App::UI::DescAction action;
+		action.key		= ACTION_OPEN_MDPREP;
+		action.name		= "MdPrep";
+		action.tip		= "Prepare Molecular Dynamic Simulation";
+		action.icon		= "sprite/icon_tool_mdprep_mainButton.png";
+		action.shortcut = "ctrl+alt+M";
+		return action;
+	}
 
-				if ( win->isHidden() )
-				{
-					win->resize( win->PREFERRED_SIZE );
-					win->show();
-					win->raise();
-				}
-				else
-					win->hide();
-			};
+	void openMdPrep()
+	{
+		MainWindow * win;
+		get( win );
+
+		if ( win->isHidden() )
+		{
+			win->resize( win->PREFERRED_SIZE );
+			win->show();
+			win->raise();
 		}
-	};
+		else
+			win->hide();
+	}
 
 	MdPrep::MdPrep() = default;
 
+	void MdPrep::registerActions()
+	{
+		UI::QT::UI_ACTIONS().registerAction(
+			openMdPrepAction(), []( const UI::QT::ActionRegistry::ActionContext & ) { openMdPrep(); }
+		);
+	}
+
 	void MdPrep::buildUI()
 	{
-		OpenMdPrep action;
-
 		auto & mainWindow = UI::QT::MAIN_WINDOW();
-		mainWindow.addMenuAction( "Tool", action );
-		mainWindow.addToolBarAction( "Tool", action );
+		mainWindow.addMenuAction( "Tool", ACTION_OPEN_MDPREP );
+		mainWindow.addToolBarAction( "Tool", ACTION_OPEN_MDPREP );
 	}
 
 } // namespace VTX::Tool::Mdprep

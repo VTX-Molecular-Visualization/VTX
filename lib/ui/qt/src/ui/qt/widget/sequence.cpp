@@ -1,4 +1,6 @@
 ﻿#include "ui/qt/widget/sequence.hpp"
+#include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
 #include "ui/qt/helper.hpp"
 #include "ui/qt/menu/selection.hpp"
 #include "ui/qt/selection_manager.hpp"
@@ -148,7 +150,7 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		if ( SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
+		if ( UI_ACTIONS().isChecked( Action::Selection::LOCK ) )
 		{
 			return;
 		}

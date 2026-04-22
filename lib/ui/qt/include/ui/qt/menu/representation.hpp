@@ -37,7 +37,6 @@ namespace VTX::UI::QT::Menu
 					a->setCheckable( true );
 					a->setChecked( *p_representation == ent );
 				}
-				a->setData( QVariant::fromValue( ent ) );
 				connect( a, &QAction::triggered, this, [ this, ent ]() { emit selected( ent ); } );
 			}
 		}

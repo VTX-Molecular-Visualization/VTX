@@ -15,12 +15,12 @@ namespace VTX::Tool::Example::Widget
 		{
 			setWindowTitle( "My Menu" );
 
-			addAction<Action::MyAction1>();
+			addAction( Action::MY_ACTION_1 );
 			addSeparator();
-			addAction<Action::MyAction2>();
-			addAction<Action::MyAction3>();
+			addAction( Action::MY_ACTION_2 );
+			addAction( Action::MY_ACTION_3 );
 			addSeparator();
-			addAction<Action::MyAction4>();
+			addAction( Action::MY_ACTION_4 );
 		}
 		virtual ~MyMenu() {}
 

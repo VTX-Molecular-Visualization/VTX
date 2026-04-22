@@ -1,4 +1,5 @@
 #include "ui/qt/dock_widget/options.hpp"
+#include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
 #include "ui/qt/application.hpp"
 #include "ui/qt/events.hpp"
@@ -8,7 +9,6 @@
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/actionable_push_button.hpp"
 #include "ui/qt/widget/renderer.hpp"
-#include <QActionGroup>
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QGroupBox>
@@ -18,15 +18,24 @@
 #include <app/network/network_manager.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
+#include <string>
 #include <util/enum.hpp>
 #include <util/event_hub.hpp>
 #include <util/string.hpp>
 #include <util/type_traits.hpp>
+#include <util/types.hpp>
 
 namespace
 {
 	const QString _TEXT_CACHE_COUNT = "Files : %1";
 	const QString _TEXT_CACHE_SIZE	= "Size : %1";
+
+	VTX::UI::QT::ActionRegistry::ActionParams _themeParams( const VTX::UI::QT::Style::E_THEME p_theme )
+	{
+		return VTX::UI::QT::ActionRegistry::ActionParams {
+			{ std::string( VTX::UI::QT::Action::Theme::PARAM_THEME ), static_cast<int>( VTX::toUnderlying( p_theme ) ) }
+		};
+	}
 
 } // namespace
 
@@ -39,65 +48,31 @@ namespace VTX::UI::QT::DockWidget
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::OPTIONS ) );
 
 		using namespace Widget;
-		using namespace Action;
-		using namespace Option;
 
 		// Display.
 		// Theme.
 		auto * groupBoxDisplay = new QGroupBox( "Display" );
 		auto * layoutDisplay   = new QVBoxLayout( groupBoxDisplay );
 
-		// TODO: refacto.
-		auto * system = addAction<Action::Theme::System>();
-		auto * light  = addAction<Action::Theme::Light>();
-		auto * dark	  = addAction<Action::Theme::Dark>();
-
 		_comboBoxTheme = new QComboBox( this );
 		_comboBoxTheme->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxTheme->setMinimumWidth( 0 );
 
-		_comboBoxTheme->addItem( "System", QVariant::fromValue( system ) );
-		_comboBoxTheme->addItem( "Light", QVariant::fromValue( light ) );
-		_comboBoxTheme->addItem( "Dark", QVariant::fromValue( dark ) );
-
-		// Set default value.
-		QSignalBlocker blocker0( _comboBoxTheme );
-		switch ( STYLE().getCurrentTheme() )
-		{
-		case Style::E_THEME::SYSTEM: _comboBoxTheme->setCurrentText( "System" ); break;
-		case Style::E_THEME::LIGHT: _comboBoxTheme->setCurrentText( "Light" ); break;
-		case Style::E_THEME::DARK: _comboBoxTheme->setCurrentText( "Dark" ); break;
-		default: break;
-		}
+		_comboBoxTheme->addItem( "System", static_cast<int>( toUnderlying( Style::E_THEME::SYSTEM ) ) );
+		_comboBoxTheme->addItem( "Light", static_cast<int>( toUnderlying( Style::E_THEME::LIGHT ) ) );
+		_comboBoxTheme->addItem( "Dark", static_cast<int>( toUnderlying( Style::E_THEME::DARK ) ) );
+		_syncThemeComboBox();
 
 		connect(
 			_comboBoxTheme,
-			&QComboBox::currentTextChanged,
-			[ this ]( const QString & p_text )
+			&QComboBox::currentIndexChanged,
+			[ this ]( const int )
 			{
-				QAction * const action = _comboBoxTheme->currentData().value<QAction *>();
-				if ( action )
-				{
-					action->trigger();
-				}
+				const auto theme = static_cast<Style::E_THEME>( _comboBoxTheme->currentData().toInt() );
+				UI_ACTIONS().trigger( Action::Theme::SET, _themeParams( theme ) );
 			}
 		);
-
-		// TODO: move in Action factory?
-		system->actionGroup();
-		connect(
-			system->actionGroup(),
-			&QActionGroup::triggered,
-			[ this ]( QAction * p_action )
-			{
-				const int index = _comboBoxTheme->findData( QVariant::fromValue( p_action ) );
-				if ( index != -1 )
-				{
-					QSignalBlocker blocker1( _comboBoxTheme );
-					_comboBoxTheme->setCurrentIndex( index );
-				}
-			}
-		);
+		App::HUB().connect<Events::ThemeChanged, &Options::_onThemeChanged>( this );
 
 		layoutDisplay->addWidget( _comboBoxTheme );
 
@@ -125,7 +100,8 @@ namespace VTX::UI::QT::DockWidget
 		layoutDisplay->addWidget( _comboBoxFont );
 
 		// Reset layout.
-		auto * buttonResetLayout = new ActionablePushButton( Application::getAction<Theme::ResetLayout>(), this );
+		auto * buttonResetLayout
+			= new ActionablePushButton( UI_ACTIONS().getAction( Action::Theme::RESET_LAYOUT ), this );
 		buttonResetLayout->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		buttonResetLayout->setMinimumWidth( 0 );
 		layoutDisplay->addWidget( buttonResetLayout );
@@ -195,8 +171,10 @@ namespace VTX::UI::QT::DockWidget
 
 		auto * layoutCacheButton = new QHBoxLayout();
 
-		auto * buttonOpenCache	= new ActionablePushButton( Application::getAction<Option::Cache::Open>(), this );
-		auto * buttonClearCache = new ActionablePushButton( Application::getAction<Option::Cache::Clear>(), this );
+		auto * buttonOpenCache
+			= new ActionablePushButton( UI_ACTIONS().getAction( Action::Option::Cache::OPEN ), this );
+		auto * buttonClearCache
+			= new ActionablePushButton( UI_ACTIONS().getAction( Action::Option::Cache::CLEAR ), this );
 
 		buttonOpenCache->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		buttonClearCache->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
@@ -261,6 +239,19 @@ namespace VTX::UI::QT::DockWidget
 		SETTINGS().setValue( SETTING_KEY_VSYNC, _checkBoxVSync->isChecked() );
 		SETTINGS().setValue( SETTING_KEY_SAVE_POWER, _checkBoxSavePower->isChecked() );
 	}
+
+	void Options::_syncThemeComboBox()
+	{
+		const int theme = toUnderlying( STYLE().getCurrentTheme() );
+		const int index = _comboBoxTheme->findData( theme );
+		if ( index != -1 )
+		{
+			QSignalBlocker blocker( _comboBoxTheme );
+			_comboBoxTheme->setCurrentIndex( index );
+		}
+	}
+
+	void Options::_onThemeChanged( const Events::ThemeChanged & ) { _syncThemeComboBox(); }
 
 	void Options::_refreshCacheInfos()
 	{

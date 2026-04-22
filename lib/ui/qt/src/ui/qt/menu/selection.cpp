@@ -1,13 +1,44 @@
 #include "ui/qt/menu/selection.hpp"
-#include "ui/qt/application.hpp"
+#include "ui/qt/services.hpp"
 #include <app/action/scene.hpp>
 #include <app/helper/system.hpp>
 #include <app/system/metadata.hpp>
 #include <app/system/selection.hpp>
 #include <core/struct/topology.hpp>
+#include <string>
+#include <util/types.hpp>
 
 namespace VTX::UI::QT::Menu
 {
+	namespace
+	{
+		ActionRegistry::ActionParams colorSchemeParams( const ColorScheme::Selected & p_selected )
+		{
+			ActionRegistry::ActionParams params {
+				{ std::string( Action::Selection::PARAM_COLOR_SCHEME ),
+				  static_cast<int>( toUnderlying( p_selected.scheme ) ) }
+			};
+
+			if ( p_selected.index )
+			{
+				params.emplace(
+					std::string( Action::Selection::PARAM_COLOR_INDEX ),
+					static_cast<int>( *p_selected.index )
+				);
+			}
+
+			return params;
+		}
+
+		ActionRegistry::ActionParams representationParams( const App::ECS::Entity p_representation )
+		{
+			return ActionRegistry::ActionParams {
+				{ std::string( Action::Selection::PARAM_REPRESENTATION ),
+				  static_cast<int>( toUnderlying( p_representation ) ) }
+			};
+		}
+	} // namespace
+
 	Selection::Selection( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
 		setTitle( "Selection" );
@@ -26,35 +57,33 @@ namespace VTX::UI::QT::Menu
 		delete _colorSchemeMenu;
 		delete _representationMenu;
 
-		addAction<Action::Selection::Show>();
-		addAction<Action::Selection::Hide>();
-		// addAction<Action::Selection::Solo>();
+		addAction( Action::Selection::SHOW );
+		addAction( Action::Selection::HIDE );
+		// addAction( Action::Selection::SOLO );
 		addSeparator();
 
-		QAction * const colorSchemeAction = Application::getAction<Action::Selection::SetColorScheme>();
-		_colorSchemeMenu				  = new ColorScheme( this );
+		_colorSchemeMenu = new ColorScheme( this );
 		connect(
 			_colorSchemeMenu,
 			&ColorScheme::selected,
 			this,
-			[ colorSchemeAction ]( const ColorScheme::Selected & p_selected )
+			[]( const ColorScheme::Selected & p_selected )
 			{
-				colorSchemeAction->setData( QVariant::fromValue( p_selected ) );
-				colorSchemeAction->trigger();
+				UI_ACTIONS().trigger( Action::Selection::SET_COLOR_SCHEME, colorSchemeParams( p_selected ) );
 			}
 		);
 		addMenu( _colorSchemeMenu );
 
-		QAction * const representationAction = Application::getAction<Action::Selection::SetRepresentation>();
-		_representationMenu					 = new Representation( this );
+		_representationMenu = new Representation( this );
 		connect(
 			_representationMenu,
 			&Representation::selected,
 			this,
-			[ representationAction ]( const App::ECS::Entity p_representation )
+			[]( const App::ECS::Entity p_representation )
 			{
-				representationAction->setData( QVariant::fromValue( p_representation ) );
-				representationAction->trigger();
+				UI_ACTIONS().trigger(
+					Action::Selection::SET_REPRESENTATION, representationParams( p_representation )
+				);
 			}
 		);
 		addMenu( _representationMenu );
@@ -71,7 +100,7 @@ namespace VTX::UI::QT::Menu
 			if ( systemState == App::System::E_SELECTION_STATE::FULL )
 			{
 				addSeparator();
-				auto * const action = addAction<Action::Selection::Delete>();
+				auto * const action = addAction( Action::Selection::DELETE );
 				continue;
 			}
 		}

@@ -14,14 +14,14 @@ namespace VTX::UI::QT::ToolBar
 		{
 			setWindowTitle( "Camera" );
 
-			addAction<Action::Camera::Perspective>();
-			addAction<Action::Camera::Orthographic>();
+			addAction( Action::Camera::PERSPECTIVE );
+			addAction( Action::Camera::ORTHOGRAPHIC );
 			addSeparator();
-			addAction<Action::Camera::Trackball>();
-			addAction<Action::Camera::Freefly>();
+			addAction( Action::Camera::TRACKBALL );
+			addAction( Action::Camera::FREEFLY );
 			addSeparator();
-			addAction<Action::Camera::Orient>();
-			addAction<Action::Camera::Reset>();
+			addAction( Action::Camera::ORIENT );
+			addAction( Action::Camera::RESET );
 		}
 
 	  private:

@@ -22,16 +22,16 @@ namespace VTX::UI::QT::Widget
 		// Projection.
 		auto * labelProjection	 = new QLabel( "Projection", this );
 		auto * toolbarProjection = new ExpandableToolBar( this );
-		toolbarProjection->addAction<Action::Camera::Perspective>();
-		toolbarProjection->addAction<Action::Camera::Orthographic>();
+		toolbarProjection->addAction( Action::Camera::PERSPECTIVE );
+		toolbarProjection->addAction( Action::Camera::ORTHOGRAPHIC );
 		layout->addWidget( labelProjection );
 		layout->addWidget( toolbarProjection );
 
 		// Controller.
 		auto * labelController	 = new QLabel( "Controller", this );
 		auto * toolbarController = new ExpandableToolBar( this );
-		toolbarController->addAction<Action::Camera::Trackball>();
-		toolbarController->addAction<Action::Camera::Freefly>();
+		toolbarController->addAction( Action::Camera::TRACKBALL );
+		toolbarController->addAction( Action::Camera::FREEFLY );
 		layout->addWidget( labelController );
 		layout->addWidget( toolbarController );
 

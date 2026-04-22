@@ -10,6 +10,7 @@ namespace VTX::Tool::Mdprep
 	{
 	  public:
 		MdPrep();
+		void registerActions() override;
 		void buildUI() override;
 	};
 

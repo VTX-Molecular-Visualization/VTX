@@ -4,370 +4,247 @@
 #include "app/action/scene.hpp"
 #include "app/action/selection.hpp"
 #include "app/setting/controller.hpp"
-#include "ui/qt/application.hpp"
+#include "ui/qt/action_registry.hpp"
 #include "ui/qt/dialog/download.hpp"
 #include "ui/qt/dialog/export_image.hpp"
 #include "ui/qt/dialog/open.hpp"
+#include "ui/qt/events.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/settings.hpp"
 #include "ui/qt/style/style_manager.hpp"
+#include <QCoreApplication>
 #include <QDesktopServices>
 #include <QUrl>
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
+#include <app/action/color.hpp>
 #include <app/action/io.hpp>
-#include <app/action/scene.hpp>
+#include <app/action/representation.hpp>
 #include <app/action/visibility.hpp>
 #include <app/constants.hpp>
+#include <app/system/selection.hpp>
+#include <string>
+#include <util/logger.hpp>
+#include <util/types.hpp>
+#include <utility>
 
 namespace VTX::UI::QT::Action
 {
-
-	// System.
-	namespace System
+	void registerActions( ActionRegistry & p_registry )
 	{
+		const auto handler = []( auto p_callback )
+		{ return [ callback = std::move( p_callback ) ]( const ActionRegistry::ActionContext & ) { callback(); }; };
 
-		New::New()
-		{
-			name	 = "New";
-			tip		 = "Create a new project";
-			icon	 = Style::Icons::NEW;
-			shortcut = "Ctrl+N";
-			trigger	 = []() { App::ACTION().execute<App::Action::Scene::Clear>(); };
-		}
+		p_registry.registerAction(
+			System::newAction(), handler( []() { App::ACTION().execute<App::Action::Scene::Clear>(); } )
+		);
+		p_registry.registerAction(
+			System::downloadAction(),
+			handler(
+				[]()
+				{
+					Dialog::Download dialog;
+					dialog.exec();
+				}
+			)
+		);
+		p_registry.registerAction(
+			System::openAction(),
+			handler(
+				[]()
+				{
+					Dialog::Open dialog;
+					dialog.exec();
+				}
+			)
+		);
+		p_registry.registerAction( System::openRecentAction() );
+		p_registry.registerAction( System::saveAction() );
+		p_registry.registerAction( System::saveAsAction() );
+		p_registry.registerAction( System::importAction() );
+		p_registry.registerAction( System::exportAction() );
+		p_registry.registerAction( System::quitAction(), handler( []() { QCoreApplication::quit(); } ) );
 
-		Download::Download()
-		{
-			name	 = "Download";
-			tip		 = "Download structure from PDB id";
-			icon	 = Style::Icons::DOWNLOAD;
-			shortcut = "Ctrl+D";
-			trigger	 = []()
+		p_registry.registerAction(
+			Camera::orthographicAction(),
+			handler(
+				[]()
+				{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>(); }
+			)
+		);
+		p_registry.registerAction(
+			Camera::perspectiveAction(),
+			handler(
+				[]()
+				{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>(); }
+			)
+		);
+		p_registry.registerAction(
+			Camera::trackballAction(),
+			handler(
+				[]()
+				{
+					App::ACTION()
+						.execute<App::Action::Controller::SetCameraController<App::Setting::E_CONTROLLER::TRACKBALL>>();
+				}
+			)
+		);
+		p_registry.registerAction(
+			Camera::freeflyAction(),
+			handler(
+				[]()
+				{
+					App::ACTION()
+						.execute<App::Action::Controller::SetCameraController<App::Setting::E_CONTROLLER::FREEFLY>>();
+				}
+			)
+		);
+		p_registry.registerAction(
+			Camera::orientAction(), handler( []() { App::ACTION().execute<App::Action::Camera::Orient>(); } )
+		);
+		p_registry.registerAction(
+			Camera::resetAction(), handler( []() { App::ACTION().execute<App::Action::Camera::Reset>(); } )
+		);
+
+		p_registry.registerAction(
+			Snapshot::snapshotAction(),
+			handler(
+				[]()
+				{
+					App::Action::IO::Snapshot action;
+					App::ACTION().execute( action );
+				}
+			)
+		);
+		p_registry.registerAction(
+			Snapshot::exportAction(),
+			handler(
+				[]()
+				{
+					Dialog::ExportImage dialog;
+					dialog.exec();
+				}
+			)
+		);
+
+		p_registry.registerAction(
+			Selection::lockAction(),
+			[]( const ActionRegistry::ActionContext & p_context )
 			{
-				Dialog::Download dialog;
-				dialog.exec();
-			};
-		}
-
-		Open::Open()
-		{
-			name	 = "Open";
-			tip		 = "Open a project or a molecular file";
-			icon	 = Style::Icons::OPEN;
-			shortcut = "Ctrl+O";
-			trigger	 = []()
-			{
-				Dialog::Open dialog;
-				dialog.exec();
-			};
-		}
-
-		OpenRecent::OpenRecent()
-		{
-			name = "Open recent";
-			tip	 = "Open a recent document";
-			icon = "sprite/file/open_recent.png";
-		}
-
-		Save::Save()
-		{
-			name	 = "Save";
-			tip		 = "Save project";
-			icon	 = Style::Icons::SAVE;
-			shortcut = "Ctrl+S";
-		}
-
-		SaveAs::SaveAs()
-		{
-			name	 = "Save as...";
-			tip		 = "Copy project in a new save";
-			icon	 = Style::Icons::SAVE_AS;
-			shortcut = "Ctrl+Shift+S";
-		}
-
-		Import::Import() { name = "Import"; }
-
-		Export::Export() { name = "Export"; }
-
-		Quit::Quit()
-		{
-			name	 = "Quit";
-			tip		 = "Exit software";
-			icon	 = Style::Icons::QUIT;
-			trigger	 = []() { QCoreApplication::quit(); };
-			shortcut = "Esc";
-		}
-
-	} // namespace System
-
-	// Camera.
-	namespace Camera
-	{
-
-		Orthographic::Orthographic()
-		{
-			name	 = "Orthographic";
-			group	 = "CameraProjection";
-			tip		 = "Change camera projection mode";
-			icon	 = Style::Icons::CAMERA_ORTHOGRAPHIC;
-			shortcut = "Alt+O";
-			trigger	 = []()
-			{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>(); };
-		}
-
-		Perspective::Perspective()
-		{
-			name	 = "Perspective";
-			group	 = "CameraProjection";
-			tip		 = "Change camera projection mode";
-			icon	 = Style::Icons::CAMERA_PERSPECTIVE;
-			shortcut = "Alt+P";
-			trigger	 = []()
-			{ App::ACTION().execute<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>(); };
-		}
-
-		Trackball::Trackball()
-		{
-			name	 = "Trackball";
-			group	 = "CameraController";
-			tip		 = "Use Trackball controller";
-			icon	 = Style::Icons::CONTROLLER_TRACKBALL;
-			shortcut = "Alt+T";
-			trigger	 = []()
-			{
-				App::ACTION()
-					.execute<App::Action::Controller::SetCameraController<App::Setting::E_CONTROLLER::TRACKBALL>>();
-			};
-		}
-
-		Freefly::Freefly()
-		{
-			name	 = "Freefly";
-			group	 = "CameraController";
-			tip		 = "Use Freefly controller";
-			icon	 = Style::Icons::CONTROLLER_FREEFLY;
-			shortcut = "Alt+F";
-			trigger	 = []()
-			{
-				App::ACTION()
-					.execute<App::Action::Controller::SetCameraController<App::Setting::E_CONTROLLER::FREEFLY>>();
-			};
-		}
-
-		Orient::Orient()
-		{
-			name	= "Orient";
-			tip		= "Orient camera on selection";
-			icon	= Style::Icons::CAMERA_ORIENT;
-			trigger = []() { App::ACTION().execute<App::Action::Camera::Orient>(); };
-		}
-
-		Reset::Reset()
-		{
-			name	= "Reset";
-			tip		= "Reset camera";
-			icon	= Style::Icons::CAMERA_RESET;
-			trigger = []() { App::ACTION().execute<App::Action::Camera::Reset>(); };
-		}
-
-	} // namespace Camera
-	namespace Snapshot
-	{
-
-		Snapshot::Snapshot()
-		{
-			name	 = "Snapshot";
-			tip		 = "Save current image";
-			icon	 = Style::Icons::SNAPSHOT;
-			shortcut = "F2";
-			trigger	 = []()
-			{
-				App::Action::IO::Snapshot action;
-				App::ACTION().execute( action );
-			};
-		}
-
-		Export::Export()
-		{
-			name	 = "Export";
-			tip		 = "Open dialog to export image";
-			icon	 = Style::Icons::SNAPSHOT_EXPORT;
-			shortcut = "F3";
-			trigger	 = []()
-			{
-				Dialog::ExportImage dialog;
-				dialog.exec();
-			};
-		}
-
-	} // namespace Snapshot
-	namespace Selection
-	{
-
-		Lock::Lock()
-		{
-			name = "Lock";
-			tip	 = "Lock the current selection";
-			icon = Style::Icons::LOCK;
-
-			// TODO: trigger/update from setting.
-		}
-
-		Save::Save()
-		{
-			name = "Save";
-			tip	 = "Save the current selection";
-			// icon = static_cast<int>( QStyle::StandardPixmap::SP_DialogSaveButton );
-		}
-
-		Clear::Clear()
-		{
-			name = "Clear";
-			tip	 = "Clear selection";
-			// icon = static_cast<int>( QStyle::StandardPixmap::SP_TrashIcon );
-			trigger = []() { SELECTION().clearSystem(); };
-		}
-
-		Show::Show()
-		{
-			name	 = "Show";
-			tip		 = "Show selection";
-			icon	 = Style::Icons::VISIBILITY;
-			shortcut = "Ctrl+Alt+S";
-			trigger	 = []() { App::ACTION().execute<App::Action::Visibility::SetVisibleSelected>( true ); };
-		}
-
-		Hide::Hide()
-		{
-			name	 = "Hide";
-			tip		 = "Hide selection";
-			icon	 = Style::Icons::VISIBILITY_OFF;
-			shortcut = "Ctrl+Alt+H";
-			trigger	 = []() { App::ACTION().execute<App::Action::Visibility::SetVisibleSelected>( false ); };
-		}
-
-		Solo::Solo()
-		{
-			name = "Solo";
-			tip	 = "Hide all but selection";
-			icon = Style::Icons::VISIBILITY;
-		}
-
-		SetColorScheme::SetColorScheme()
-		{
-			name = "Set color scheme";
-			tip	 = "Change selection color scheme";
-			icon = Style::Icons::COLOR_LAYOUT;
-		}
-
-		SetRepresentation::SetRepresentation()
-		{
-			name = "Set representation";
-			tip	 = "Change selection representation";
-			icon = Style::Icons::REPRESENTATION;
-		}
-
-		Delete::Delete()
-		{
-			name	 = "Delete";
-			tip		 = "Delete system";
-			icon	 = Style::Icons::DELETE;
-			shortcut = "Del";
-			trigger	 = []() { App::ACTION().execute<App::Action::Scene::DeleteSystemSelected>(); };
-		}
-
-	} // namespace Selection
-	namespace Theme
-	{
-
-		System::System()
-		{
-			name	= "System";
-			group	= "Theme";
-			tip		= "Use system theme";
-			trigger = []() { STYLE().setTheme( Style::E_THEME::SYSTEM ); };
-		}
-
-		Light::Light()
-		{
-			name	= "Light";
-			group	= "Theme";
-			tip		= "Use light theme";
-			trigger = []() { STYLE().setTheme( Style::E_THEME::LIGHT ); };
-		}
-
-		Dark::Dark()
-		{
-			name	= "Dark";
-			group	= "Theme";
-			tip		= "Use dark theme";
-			trigger = []() { STYLE().setTheme( Style::E_THEME::DARK ); };
-		}
-
-		ResetLayout::ResetLayout()
-		{
-			name	= "Reset layout";
-			trigger = []() { MAIN_WINDOW().resetLayout(); };
-		}
-
-	} // namespace Theme
-	namespace Option
-	{
-		namespace Cache
-		{
-			Open::Open()
-			{
-				name = "Open";
-				tip	 = "Open the cache folder in explorer";
+				const bool locked = UI_ACTIONS().isChecked( p_context.actionId );
+				App::HUB().trigger<Events::SelectionLocked>( locked );
 			}
+		);
+		p_registry.registerAction( Selection::saveAction() );
+		p_registry.registerAction( Selection::clearAction(), handler( []() { SELECTION().clearSystem(); } ) );
+		p_registry.registerAction(
+			Selection::selectAllAction(),
+			handler( []() { App::ACTION().execute<App::Action::Selection::SelectAll>(); } )
+		);
+		p_registry.registerAction(
+			Selection::setGranularitySystemAction(),
+			handler(
+				[]()
+				{
+					const int granularity = toUnderlying( App::Action::Selection::E_GRANULARITY::SYSTEM );
+					SETTINGS().setValue( SETTING_KEY_GRANULARITY, granularity );
+					App::HUB().trigger<Events::SelectionGranularityChanged>( granularity );
+				}
+			)
+		);
+		p_registry.registerAction(
+			Selection::setGranularityChainAction(),
+			handler(
+				[]()
+				{
+					const int granularity = toUnderlying( App::Action::Selection::E_GRANULARITY::CHAIN );
+					SETTINGS().setValue( SETTING_KEY_GRANULARITY, granularity );
+					App::HUB().trigger<Events::SelectionGranularityChanged>( granularity );
+				}
+			)
+		);
+		p_registry.registerAction(
+			Selection::setGranularityResidueAction(),
+			handler(
+				[]()
+				{
+					const int granularity = toUnderlying( App::Action::Selection::E_GRANULARITY::RESIDUE );
+					SETTINGS().setValue( SETTING_KEY_GRANULARITY, granularity );
+					App::HUB().trigger<Events::SelectionGranularityChanged>( granularity );
+				}
+			)
+		);
+		p_registry.registerAction(
+			Selection::setGranularityAtomAction(),
+			handler(
+				[]()
+				{
+					const int granularity = toUnderlying( App::Action::Selection::E_GRANULARITY::ATOM );
+					SETTINGS().setValue( SETTING_KEY_GRANULARITY, granularity );
+					App::HUB().trigger<Events::SelectionGranularityChanged>( granularity );
+				}
+			)
+		);
+		p_registry.registerAction(
+			Selection::showAction(),
+			handler( []() { App::ACTION().execute<App::Action::Visibility::SetVisibleSelected>( true ); } )
+		);
+		p_registry.registerAction(
+			Selection::hideAction(),
+			handler( []() { App::ACTION().execute<App::Action::Visibility::SetVisibleSelected>( false ); } )
+		);
+		p_registry.registerAction( Selection::soloAction() );
+		p_registry.registerAction( Selection::setColorSchemeAction() );
+		p_registry.registerAction( Selection::setRepresentationAction() );
+		p_registry.registerAction(
+			Selection::deleteAction(),
+			handler( []() { App::ACTION().execute<App::Action::Scene::DeleteSystemSelected>(); } )
+		);
 
-			Clear::Clear()
+		p_registry.registerAction(
+			Theme::setAction(),
+			[]( const ActionRegistry::ActionContext & p_context )
 			{
-				name = "Clear";
-				tip	 = "Delete all cached files";
+				const auto themeParam = p_context.param<int>( Theme::PARAM_THEME );
+				if ( not themeParam )
+				{
+					VTX_WARNING(
+						"Missing or invalid parameter for UI action {}: {}", p_context.actionId, Theme::PARAM_THEME
+					);
+					return;
+				}
+
+				const int theme = *themeParam;
+				if ( theme < 0 || theme >= toUnderlying( Style::E_THEME::COUNT ) )
+				{
+					VTX_WARNING( "Invalid theme parameter for UI action {}: {}", p_context.actionId, theme );
+					return;
+				}
+
+				STYLE().setTheme( static_cast<Style::E_THEME>( theme ) );
+				App::HUB().trigger<Events::ThemeChanged>( theme );
 			}
+		);
+		p_registry.registerAction( Theme::resetLayoutAction(), handler( []() { MAIN_WINDOW().resetLayout(); } ) );
+		p_registry.registerAction( Theme::setFontAction() );
 
-			Refresh::Refresh()
-			{
-				name = "Refresh";
-				tip	 = "Refresh cache size";
-			}
-		} // namespace Cache
-	} // namespace Option
-	namespace Help
-	{
+		p_registry.registerAction( Option::Cache::openAction() );
+		p_registry.registerAction( Option::Cache::clearAction() );
+		p_registry.registerAction( Option::Cache::refreshAction() );
 
-		Documentation::Documentation()
-		{
-			name	= "Documentation";
-			tip		= "Open online full documentation";
-			icon	= Style::Icons::DOCUMENTATION;
-			trigger = []() { QDesktopServices::openUrl( QUrl( App::URL_DOCUMENTATION.data() ) ); };
-		}
-
-		Report::Report()
-		{
-			name	= "Report a bug";
-			tip		= "Report a bug or ask for a feature";
-			icon	= Style::Icons::BUG;
-			trigger = []() { QDesktopServices::openUrl( QUrl( App::URL_REPORT.data() ) ); };
-		}
-
-		CheckUpdates::CheckUpdates()
-		{
-			name	= "Check for updates";
-			tip		= "Check online for a new version ";
-			icon	= Style::Icons::UPDATE;
-			trigger = []() { App::ACTION().execute<App::Action::Application::CheckForUpdate>(); };
-		}
-
-		About::About()
-		{
-			name	= "About";
-			icon	= Style::Icons::INFO;
-			trigger = []() {};
-		}
-
-	} // namespace Help
+		p_registry.registerAction(
+			Help::documentationAction(),
+			handler( []() { QDesktopServices::openUrl( QUrl( App::URL_DOCUMENTATION.data() ) ); } )
+		);
+		p_registry.registerAction(
+			Help::reportAction(), handler( []() { QDesktopServices::openUrl( QUrl( App::URL_REPORT.data() ) ); } )
+		);
+		p_registry.registerAction(
+			Help::checkUpdatesAction(),
+			handler( []() { App::ACTION().execute<App::Action::Application::CheckForUpdate>(); } )
+		);
+		p_registry.registerAction( Help::aboutAction() );
+	}
 
 } // namespace VTX::UI::QT::Action

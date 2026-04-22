@@ -16,10 +16,10 @@ namespace VTX::Tool::Example::Widget
 		{
 			setWindowTitle( "My ToolBar" );
 
-			addAction<Action::MyAction1>();
-			addAction<Action::MyAction2>();
-			addAction<Action::MyAction3>();
-			addAction<Action::MyAction4>();
+			addAction( Action::MY_ACTION_1 );
+			addAction( Action::MY_ACTION_2 );
+			addAction( Action::MY_ACTION_3 );
+			addAction( Action::MY_ACTION_4 );
 		}
 
 		virtual ~MyToolBar() {}

@@ -1,10 +1,14 @@
 #ifndef __VTX_UI_QT_WIDGET_EXPANDABLE_TOOL_BAR__
 #define __VTX_UI_QT_WIDGET_EXPANDABLE_TOOL_BAR__
 
-#include "ui/qt/application.hpp"
+#include "ui/qt/action_registry.hpp"
+#include "ui/qt/services.hpp"
 #include <QHBoxLayout>
+#include <QPointer>
 #include <QToolButton>
 #include <QWidget>
+#include <string_view>
+#include <util/logger.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -20,18 +24,16 @@ namespace VTX::UI::QT::Widget
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 		}
 
-		template<App::UI::ConceptAction A>
-		QAction * addAction()
+		QAction * addAction( const std::string_view p_actionId )
 		{
-			auto * btn	  = new QToolButton( this );
-			auto * action = Application::getAction<A>();
-			btn->setDefaultAction( action );
-			btn->setToolButtonStyle( _style );
-			btn->setIconSize( _iconSize );
-			btn->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
-			btn->setAutoRaise( true );
-			_layout->addWidget( btn );
+			auto * action = UI_ACTIONS().getAction( p_actionId );
+			if ( action == nullptr )
+			{
+				VTX_ERROR( "Unable to add unregistered UI action to expandable toolbar: {}", p_actionId );
+				return nullptr;
+			}
 
+			_addButton( *action );
 			return action;
 		}
 
@@ -63,6 +65,17 @@ namespace VTX::UI::QT::Widget
 		QPointer<QHBoxLayout> _layout;
 		Qt::ToolButtonStyle	  _style	= Qt::ToolButtonTextUnderIcon;
 		QSize				  _iconSize = QSize( 18, 18 );
+
+		void _addButton( QAction & p_action )
+		{
+			auto * btn = new QToolButton( this );
+			btn->setDefaultAction( &p_action );
+			btn->setToolButtonStyle( _style );
+			btn->setIconSize( _iconSize );
+			btn->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
+			btn->setAutoRaise( true );
+			_layout->addWidget( btn );
+		}
 	};
 } // namespace VTX::UI::QT::Widget
 #endif

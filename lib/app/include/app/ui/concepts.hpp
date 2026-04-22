@@ -1,9 +1,10 @@
 #ifndef __VTX_APP_UI_CONCEPTS__
 #define __VTX_APP_UI_CONCEPTS__
 
-#include <functional>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <variant>
 
 namespace VTX::App::UI
 {
@@ -17,25 +18,16 @@ namespace VTX::App::UI
 		/**
 		 * @brief Icon can be a sprite path (string), uint (codepoint).
 		 */
-		using Icon	   = std::variant<std::string, int>;
-		using Callable = std::function<void()>;
+		using Icon = std::variant<std::string, int>;
 
 		std::string				   key;
 		std::string				   name;
-		std::optional<std::string> group = std::nullopt;
-		std::optional<std::string> tip	 = std::nullopt;
-		std::optional<Icon>		   icon	 = std::nullopt;
-		std::optional<std::string> shortcut;
-
-		/**
-		 * @brief Trigger function is called when button is clicked.
-		 */
-		std::optional<Callable> trigger = std::nullopt;
+		std::optional<std::string> tip		 = std::nullopt;
+		std::optional<Icon>		   icon		 = std::nullopt;
+		std::optional<std::string> shortcut	 = std::nullopt;
+		std::optional<std::string> group	 = std::nullopt;
+		bool					   checkable = false;
 	};
-
-	template<typename A>
-	concept ConceptAction = std::is_base_of_v<DescAction, A>;
-
 } // namespace VTX::App::UI
 
 #endif

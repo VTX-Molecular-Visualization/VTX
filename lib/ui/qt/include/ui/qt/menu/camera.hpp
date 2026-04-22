@@ -18,14 +18,14 @@ namespace VTX::UI::QT::Menu
 		Camera( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
 			setTitle( "Camera" );
-			_aPerspective = addAction<Action::Camera::Perspective>();
-			_aOrtho		  = addAction<Action::Camera::Orthographic>();
+			_aPerspective = addAction( Action::Camera::PERSPECTIVE );
+			_aOrtho		  = addAction( Action::Camera::ORTHOGRAPHIC );
 			addSeparator();
-			_aTrackball = addAction<Action::Camera::Trackball>();
-			_aFreefly	= addAction<Action::Camera::Freefly>();
+			_aTrackball = addAction( Action::Camera::TRACKBALL );
+			_aFreefly	= addAction( Action::Camera::FREEFLY );
 			addSeparator();
-			addAction<Action::Camera::Orient>();
-			addAction<Action::Camera::Reset>();
+			addAction( Action::Camera::ORIENT );
+			addAction( Action::Camera::RESET );
 
 			// Connect.
 			App::REG().on_update<Renderer::Camera>().connect<&Camera::_onProjectionChanged>( this );

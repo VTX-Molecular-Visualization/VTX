@@ -14,10 +14,10 @@ namespace VTX::UI::QT::ToolBar
 		{
 			setWindowTitle( "File" );
 
-			addAction<Action::System::New>();
-			addAction<Action::System::Download>();
-			addAction<Action::System::Open>();
-			addAction<Action::System::Save>();
+			addAction( Action::System::NEW );
+			addAction( Action::System::DOWNLOAD );
+			addAction( Action::System::OPEN );
+			addAction( Action::System::SAVE );
 		}
 
 	  private:

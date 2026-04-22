@@ -1,25 +1,25 @@
 #ifndef __VTX_UI_QT_WIDGET_PRESET_SELECTOR__
 #define __VTX_UI_QT_WIDGET_PRESET_SELECTOR__
 
-#include "ui/qt/actions.hpp"
-#include "ui/qt/application.hpp"
-#include "ui/qt/events.hpp"
 #include "ui/qt/services.hpp"
-#include "ui/qt/settings.hpp"
-#include "ui/qt/widget/actionable_push_button.hpp"
-#include <QApplication>
+#include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include <QComboBox>
 #include <QGroupBox>
 #include <QLineEdit>
 #include <QPointer>
-#include <QPushButton>
+#include <QSignalBlocker>
 #include <QToolBar>
+#include <QToolButton>
+#include <QVariant>
 #include <QVBoxLayout>
 #include <algorithm>
 #include <app/action/preset.hpp>
 #include <app/ecs.hpp>
 #include <app/preset/name.hpp>
 #include <app/services.hpp>
+#include <optional>
+#include <utility>
 #include <util/event_hub.hpp>
 #include <vector>
 
@@ -65,19 +65,13 @@ namespace VTX::UI::QT::Widget::Library
 			_comboBox = new QComboBox( this );
 			layout->addWidget( _comboBox );
 
-			using namespace Action;
-
 			auto * toolbar = new QToolBar( this );
 			toolbar->setToolButtonStyle( Qt::ToolButtonIconOnly );
 			// toolbar->setIconSize( QSize( 12, 12 ) );
-			auto * aNew		  = Application::getAction<Preset::Add<P>>();
-			auto * aDuplicate = Application::getAction<Preset::Duplicate<P>>();
-			auto * aApply	  = Application::getAction<Preset::Apply<P>>();
-			toolbar->addAction( aNew );
-			toolbar->addAction( aDuplicate );
-
-			// toolbar->addAction( Application::getAction<Preset::Delete<P>>() );
-			toolbar->addAction( aApply );
+			auto * bNew		  = _addButton( *toolbar, "New", Style::Icons::NEW, "Create a new empty preset" );
+			auto * bDuplicate
+				= _addButton( *toolbar, "Duplicate", Style::Icons::COPY, "Create a new preset from this one" );
+			auto * bApply	  = _addButton( *toolbar, "Apply", Style::Icons::APPLY, "Apply this preset" );
 			layout->addWidget( toolbar );
 
 			_lineRename = new QLineEdit( this );
@@ -95,25 +89,38 @@ namespace VTX::UI::QT::Widget::Library
 			);
 
 			connect(
-				aNew,
-				&QAction::triggered,
+				bNew,
+				&QToolButton::clicked,
 				this,
-				[ this ]() { App::ACTION().execute<App::Action::Preset::Add<P>>( std::nullopt, std::nullopt ); }
+				[]() { App::ACTION().execute<App::Action::Preset::Add<P>>( std::nullopt, std::nullopt ); }
 			);
 
 			connect(
-				aDuplicate,
-				&QAction::triggered,
+				bDuplicate,
+				&QToolButton::clicked,
 				this,
 				[ this ]()
-				{ App::ACTION().execute<App::Action::Preset::Duplicate<P>>( getCurrentPreset(), std::nullopt ); }
+				{
+					const App::ECS::Entity preset = getCurrentPreset();
+					if ( preset != App::ECS::InvalidEntity )
+					{
+						App::ACTION().execute<App::Action::Preset::Duplicate<P>>( preset, std::nullopt );
+					}
+				}
 			);
 
 			connect(
-				aApply,
-				&QAction::triggered,
+				bApply,
+				&QToolButton::clicked,
 				this,
-				[ this ]() { App::ACTION().execute<App::Action::Preset::Apply<P>>( getCurrentPreset() ); }
+				[ this ]()
+				{
+					const App::ECS::Entity preset = getCurrentPreset();
+					if ( preset != App::ECS::InvalidEntity )
+					{
+						App::ACTION().execute<App::Action::Preset::Apply<P>>( preset );
+					}
+				}
 			);
 
 			connect(
@@ -180,6 +187,22 @@ namespace VTX::UI::QT::Widget::Library
 		VTX::Util::EventHub::Connection _onDestroyConnection;
 		VTX::Util::EventHub::Connection _onNameUpdateConnection;
 		VTX::Util::EventHub::Connection _onPresetUpdateConnection;
+
+		QToolButton * _addButton(
+			QToolBar & p_toolbar, const QString & p_text, const Style::Codepoint p_icon, const QString & p_tip
+		)
+		{
+			auto * const button = new QToolButton( &p_toolbar );
+			button->setText( p_text );
+			button->setIcon( STYLE().iconFromCodepoint( p_icon ) );
+			button->setToolTip( p_tip );
+			button->setWhatsThis( p_tip );
+			button->setStatusTip( p_tip );
+			button->setToolButtonStyle( p_toolbar.toolButtonStyle() );
+			button->setAutoRaise( true );
+			p_toolbar.addWidget( button );
+			return button;
+		}
 
 		/**
 		 * @brief Refresh the combo box when presets are added or removed.

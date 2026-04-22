@@ -1,4 +1,6 @@
 #include "ui/qt/dock_widget/scene.hpp"
+#include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
@@ -65,7 +67,7 @@ namespace VTX::UI::QT::DockWidget
 		App::HUB().connect<App::Events::ThreadProgress, &Scene::_onThreadProgress>( this );
 		App::HUB().connect<App::Events::ThreadTerminated, &Scene::_onThreadTerminated>( this );
 
-		_onSelectionLocked( Events::SelectionLocked { SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() } );
+		_onSelectionLocked( Events::SelectionLocked { UI_ACTIONS().isChecked( Action::Selection::LOCK ) } );
 	}
 
 	void Scene::_onCameraConstruct( App::ECS::Registry &, App::ECS::Entity p_e )
@@ -73,7 +75,7 @@ namespace VTX::UI::QT::DockWidget
 		_treeCamera = new Widget::Tree::Camera( p_e, this );
 		SELECTION().add( _treeCamera->selectionModel(), E_SELECTION_GROUP::CAMERA );
 		_layout->insertWidget( _layout->indexOf( _filler ), _treeCamera );
-		_setSelectionEnabled( _treeCamera, not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() );
+		_setSelectionEnabled( _treeCamera, not UI_ACTIONS().isChecked( Action::Selection::LOCK ) );
 	}
 
 	void Scene::_onSystemLoad( const App::Events::SystemLoad & p_e )

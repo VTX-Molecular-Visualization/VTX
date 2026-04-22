@@ -14,19 +14,19 @@ namespace VTX::UI::QT::Menu
 		{
 			setTitle( "File" );
 
-			addAction<Action::System::New>();
+			addAction( Action::System::NEW );
 			addSeparator();
-			addAction<Action::System::Download>();
+			addAction( Action::System::DOWNLOAD );
 			addSeparator();
-			addAction<Action::System::Open>();
-			addAction<Action::System::OpenRecent>()->setEnabled( false );
-			addAction<Action::System::Save>()->setEnabled( false );
-			addAction<Action::System::SaveAs>()->setEnabled( false );
+			addAction( Action::System::OPEN );
+			addAction( Action::System::OPEN_RECENT )->setEnabled( false );
+			addAction( Action::System::SAVE )->setEnabled( false );
+			addAction( Action::System::SAVE_AS )->setEnabled( false );
 			addSeparator();
-			addAction<Action::System::Import>()->setEnabled( false );
-			addAction<Action::System::Export>()->setEnabled( false );
+			addAction( Action::System::IMPORT )->setEnabled( false );
+			addAction( Action::System::EXPORT )->setEnabled( false );
 			addSeparator();
-			addAction<Action::System::Quit>();
+			addAction( Action::System::QUIT );
 		}
 
 	  private:

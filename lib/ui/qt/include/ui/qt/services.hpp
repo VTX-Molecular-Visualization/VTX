@@ -5,6 +5,7 @@
 
 namespace VTX::UI::QT
 {
+	class ActionRegistry;
 	namespace Model
 	{
 		class SystemModel;
@@ -20,6 +21,7 @@ namespace VTX::UI::QT
 		class MainWindow;
 	}
 
+	inline ActionRegistry &		 UI_ACTIONS() { return App::ECS::getCtx<ActionRegistry>(); }
 	inline SelectionManager &	 SELECTION() { return App::ECS::getCtx<SelectionManager>(); }
 	inline Settings &			 SETTINGS() { return App::ECS::getCtx<Settings>(); }
 	inline Style::StyleManager & STYLE() { return App::ECS::getCtx<Style::StyleManager>(); }

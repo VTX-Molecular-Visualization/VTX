@@ -3,13 +3,10 @@
 
 #include "QSplashScreen"
 #include "settings.hpp"
-#include <QAction>
 #include <QApplication>
 #include <QPointer>
 #include <QTimer>
-#include <QWidget>
 #include <app/events.hpp>
-#include <app/ui/concepts.hpp>
 #include <app/vtx_app.hpp>
 #include <util/chrono.hpp>
 
@@ -56,26 +53,6 @@ namespace VTX::UI::QT
 			_app.addTool<T>();
 		}
 
-		/**
-		 * @brief Get app action from description.
-		 */
-
-		static inline QAction * const getAction( const App::UI::DescAction & p_action )
-		{
-			return _getOrCreateAction( p_action );
-		}
-
-		/**
-		 * @brief Get app action from type.
-		 */
-		template<App::UI::ConceptAction A>
-		static inline QAction * getAction()
-		{
-			A action;
-			action.key = VTX::Util::typeName<A>();
-			return _getOrCreateAction( action );
-		}
-
 	  private:
 		/**
 		 * @brief Application core instance.
@@ -102,10 +79,6 @@ namespace VTX::UI::QT
 		 */
 		void _postQtStartup();
 
-		/**
-		 * @brief Get/create application action from description.
-		 */
-		static QAction * const _getOrCreateAction( const App::UI::DescAction & );
 	};
 
 	/**

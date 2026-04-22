@@ -1,4 +1,6 @@
 #include "ui/qt/selection_manager.hpp"
+#include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include <QGuiApplication>
@@ -93,7 +95,7 @@ namespace VTX::UI::QT
 	{
 		clear();
 
-		if ( not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
+		if ( not UI_ACTIONS().isChecked( Action::Selection::LOCK ) )
 		{
 			App::ACTION().execute<App::Action::Selection::Pick>(
 				p_pos,

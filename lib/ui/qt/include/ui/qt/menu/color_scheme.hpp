@@ -52,7 +52,6 @@ namespace VTX::UI::QT::Menu
 					a->setCheckable( true );
 					a->setChecked( *p_currentScheme == p_data.scheme );
 				}
-				a->setData( QVariant::fromValue( p_data ) );
 				connect( a, &QAction::triggered, this, [ this, p_data ]() { emit selected( p_data ); } );
 			};
 
@@ -69,7 +68,6 @@ namespace VTX::UI::QT::Menu
 				const Selected selected
 					= { E_COLOR_SCHEME::CUSTOM,
 						static_cast<Renderer::ColorIndex>( Renderer::Color::LAYOUT_OFFSET_CUSTOM + i ) };
-				wa->setData( QVariant::fromValue( selected ) );
 				wa->setDefaultWidget( item );
 				connect( wa, &QAction::triggered, this, [ this, selected ]() { emit this->selected( selected ); } );
 				subMenu->addAction( wa );
@@ -102,7 +100,5 @@ namespace VTX::UI::QT::Menu
 	};
 
 } // namespace VTX::UI::QT::Menu
-
-Q_DECLARE_METATYPE( VTX::UI::QT::Menu::ColorScheme::Selected )
 
 #endif

@@ -8,8 +8,7 @@ namespace VTX::UI::QT
 	const QString SETTING_KEY_GEOMETRY = "main/geometry";
 	const QString SETTING_KEY_STATE	   = "main/state";
 
-	const QString SETTING_KEY_GRANULARITY	 = "selection/granularity";
-	const QString SETTING_KEY_LOCK_SELECTION = "selection/lock";
+	const QString SETTING_KEY_GRANULARITY = "selection/granularity";
 
 	const QString SETTING_KEY_URL			= "dialog/download/history/url";
 	const QString SETTING_KEY_PDB			= "dialog/download/history/pdb";

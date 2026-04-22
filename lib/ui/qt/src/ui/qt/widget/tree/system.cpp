@@ -1,11 +1,12 @@
 #include "ui/qt/widget/tree/system.hpp"
+#include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
 #include "ui/qt/delegate/system_delegate.hpp"
 #include "ui/qt/menu/color_scheme.hpp"
 #include "ui/qt/menu/representation.hpp"
 #include "ui/qt/menu/selection.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
-#include "ui/qt/settings.hpp"
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/action/color.hpp>
@@ -15,6 +16,7 @@
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
 #include <app/system/trajectory.hpp>
+#include <optional>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -120,12 +122,18 @@ namespace VTX::UI::QT::Widget::Tree
 					= App::Helper::System::getColorScheme( { _system, item, index } );
 
 				Menu::ColorScheme menu( this, scheme );
-				if ( const auto * res = menu.exec( QCursor::pos() ) )
+				std::optional<Menu::ColorScheme::Selected> selected;
+				QObject::connect(
+					&menu,
+					&Menu::ColorScheme::selected,
+					&menu,
+					[ &selected ]( const Menu::ColorScheme::Selected & p_selected ) { selected = p_selected; }
+				);
+
+				if ( menu.exec( QCursor::pos() ) && selected )
 				{
-					// Get menu selection.
-					const auto selected = res->data().value<Menu::ColorScheme::Selected>();
 					App::ACTION().execute<App::Action::Color::AddItem>(
-						_system, item, selected.scheme, index, selected.index
+						_system, item, selected->scheme, index, selected->index
 					);
 				}
 			}
@@ -147,11 +155,17 @@ namespace VTX::UI::QT::Widget::Tree
 					= App::Helper::System::getRepresentation( { _system, item, index } );
 
 				Menu::Representation menu( this, representation );
-				if ( const auto * res = menu.exec( QCursor::pos() ) )
+				std::optional<App::ECS::Entity> selected;
+				QObject::connect(
+					&menu,
+					&Menu::Representation::selected,
+					&menu,
+					[ &selected ]( const App::ECS::Entity p_selected ) { selected = p_selected; }
+				);
+
+				if ( menu.exec( QCursor::pos() ) && selected )
 				{
-					// Get menu selection.
-					const auto selected = res->data().value<App::ECS::Entity>();
-					App::ACTION().execute<App::Action::Representation::AddItem>( _system, item, selected, index );
+					App::ACTION().execute<App::Action::Representation::AddItem>( _system, item, *selected, index );
 				}
 			}
 		);
@@ -177,7 +191,7 @@ namespace VTX::UI::QT::Widget::Tree
 			QStyleOptionViewItem option;
 			if ( _shouldHandleSelectionClick( p_e, index, option ) )
 			{
-				if ( not SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
+				if ( not UI_ACTIONS().isChecked( Action::Selection::LOCK ) )
 				{
 					const bool shift  = p_e->modifiers() & Qt::ShiftModifier;
 					const bool append = p_e->modifiers() & Qt::ControlModifier;
@@ -212,8 +226,7 @@ namespace VTX::UI::QT::Widget::Tree
 	void System::mouseMoveEvent( QMouseEvent * p_e )
 	{
 		const bool draggingButton = p_e->buttons() & ( Qt::LeftButton | Qt::RightButton );
-		if ( _dragging == false || not draggingButton
-			 || SETTINGS().value( SETTING_KEY_LOCK_SELECTION, false ).toBool() )
+		if ( _dragging == false || not draggingButton || UI_ACTIONS().isChecked( Action::Selection::LOCK ) )
 		{
 			QTreeView::mouseMoveEvent( p_e );
 			return;

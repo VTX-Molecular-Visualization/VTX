@@ -13,6 +13,7 @@ namespace VTX::Tool::Example
 	{
 	  public:
 		ExampleTool();
+		void registerActions() override;
 		void buildUI() override;
 	};
 

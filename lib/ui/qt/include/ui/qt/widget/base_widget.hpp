@@ -1,12 +1,15 @@
 #ifndef __VTX_UI_QT_WIDGET_BASE_WIDGET__
 #define __VTX_UI_QT_WIDGET_BASE_WIDGET__
 
+#include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
-#include "ui/qt/application.hpp"
+#include "ui/qt/services.hpp"
 #include <QGuiApplication>
 #include <QScreen>
 #include <QTimer>
 #include <QWidget>
+#include <string_view>
+#include <type_traits>
 #include <util/hashing.hpp>
 #include <util/logger.hpp>
 
@@ -52,15 +55,21 @@ namespace VTX::UI::QT::Widget
 		}
 
 		/**
-		 * @brief Hide QWidget::addAction(). Link typed action to this widget.
+		 * @brief Hide QWidget::addAction(). Link registered action to this widget.
 		 */
-		template<App::UI::ConceptAction A>
-		QAction * const addAction()
+		QAction * const addAction( const std::string_view p_actionId )
 		{
-			QAction * const action = Application::getAction<A>();
+			QAction * const action = UI_ACTIONS().getAction( p_actionId );
+			if ( action == nullptr )
+			{
+				VTX_ERROR( "Unable to add unregistered UI action to widget: {}", p_actionId );
+				return nullptr;
+			}
+
 			QWidget::addAction( action );
 			return action;
 		}
+
 	};
 
 } // namespace VTX::UI::QT::Widget

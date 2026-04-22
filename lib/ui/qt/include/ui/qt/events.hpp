@@ -19,6 +19,11 @@ namespace VTX::UI::QT::Events
 		int granularity;
 	};
 
+	struct ThemeChanged
+	{
+		int theme;
+	};
+
 } // namespace VTX::UI::QT::Events
 
 #endif

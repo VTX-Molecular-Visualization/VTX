@@ -10,14 +10,32 @@
 namespace VTX::App::Action::Selection
 {
 
+	void SelectAll::execute()
+	{
+		REG().view<System::Selection>().each(
+			[]( const ECS::Entity p_ent, System::Selection & p_selection )
+			{
+				if ( p_selection.atoms.all() )
+				{
+					return;
+				}
+
+				patchSelection( p_ent, Util::Math::BitSet( p_selection.atoms.size(), true ) );
+			}
+		);
+	}
+
 	void Clear::execute()
 	{
 		REG().view<System::Selection>().each(
-			[]( const ECS::Entity p_ent, System::Selection & )
+			[]( const ECS::Entity p_ent, System::Selection & p_selection )
 			{
-				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>(
-					p_ent, Core::Struct::IndexRangeList(), false
-				);
+				if ( p_selection.atoms.none() )
+				{
+					return;
+				}
+
+				patchSelection( p_ent, Util::Math::BitSet( p_selection.atoms.size() ) );
 			}
 		);
 	}
@@ -26,20 +44,27 @@ namespace VTX::App::Action::Selection
 	{
 		if ( p_mode == E_MODE::THIS )
 		{
-			ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>(
-				p_ent, Core::Struct::IndexRangeList(), false
-			);
+			const auto & selection = REG().get<System::Selection>( p_ent );
+			if ( selection.atoms.none() )
+			{
+				return;
+			}
+
+			patchSelection( p_ent, Util::Math::BitSet( selection.atoms.size() ) );
 		}
 		else
 		{
 			REG().view<System::Selection>().each(
-				[ p_ent ]( const ECS::Entity ent, System::Selection & )
+				[ p_ent ]( const ECS::Entity ent, System::Selection & p_selection )
 				{
 					if ( p_ent != ent )
 					{
-						ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>(
-							ent, Core::Struct::IndexRangeList(), false
-						);
+						if ( p_selection.atoms.none() )
+						{
+							return;
+						}
+
+						patchSelection( ent, Util::Math::BitSet( p_selection.atoms.size() ) );
 					}
 				}
 			);
