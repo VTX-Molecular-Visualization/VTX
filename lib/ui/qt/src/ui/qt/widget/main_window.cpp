@@ -90,12 +90,12 @@ namespace VTX::UI::QT::Widget
 		createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );
 
 		auto * dwScene = createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
-		createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea )->close();
-		createDockWidget<DockWidget::ColorLayouts>( Qt::LeftDockWidgetArea )->close();
+		createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea )->hide();
+		createDockWidget<DockWidget::ColorLayouts>( Qt::LeftDockWidgetArea )->hide();
 		dwScene->raise();
 
 		auto * dwInspector = createDockWidget<DockWidget::Inspector>( Qt::RightDockWidgetArea );
-		createDockWidget<DockWidget::GraphicsConfigs>( Qt::RightDockWidgetArea )->close();
+		createDockWidget<DockWidget::GraphicsConfigs>( Qt::RightDockWidgetArea )->hide();
 		auto * dwOptions = createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
 		dwInspector->raise();
 
