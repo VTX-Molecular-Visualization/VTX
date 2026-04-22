@@ -1,4 +1,5 @@
 #include "ui/qt/widget/selection.hpp"
+#include "ui/qt/helper.hpp"
 #include <QDesktopServices>
 #include <QGroupBox>
 #include <QLabel>
@@ -54,7 +55,7 @@ namespace VTX::UI::QT::Widget
 									 ? QString::fromStdString( metadata.path.stem().string() )
 									 : QString::fromStdString( metadata.pdbIDCode );
 
-			const auto systemState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
+			const auto systemState = App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
 			if ( systemState == App::System::E_SELECTION_STATE::FULL )
 			{
 				countSystem++;
@@ -158,7 +159,7 @@ namespace VTX::UI::QT::Widget
 			for ( Index chain = 0; chain < topology.getChainCount(); ++chain )
 			{
 				QString	   chainName  = QString::fromStdString( topology.getChainName( chain ) );
-				const auto chainState = Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::CHAIN, chain } );
+				const auto chainState = App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::CHAIN, chain } );
 				if ( chainState == App::System::E_SELECTION_STATE::FULL )
 				{
 					countChain++;
@@ -178,7 +179,7 @@ namespace VTX::UI::QT::Widget
 				{
 					QString	   residueName = QString::fromStdString( topology.getResidueName( residue ) );
 					const auto residueState
-						= Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::RESIDUE, residue } );
+						= App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::RESIDUE, residue } );
 					if ( residueState == App::System::E_SELECTION_STATE::FULL )
 					{
 						countResidue++;
@@ -195,7 +196,7 @@ namespace VTX::UI::QT::Widget
 					// Atoms.
 					for ( Index atom : topology.getResidueAtomRange( residue ) )
 					{
-						if ( Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::ATOM, atom } )
+						if ( App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::ATOM, atom } )
 							 == App::System::E_SELECTION_STATE::FULL )
 						{
 							countAtom++;
@@ -212,11 +213,19 @@ namespace VTX::UI::QT::Widget
 		// Display counters.
 		if ( countSystem > 1 )
 		{
-			_layout->addWidget( new QLabel( QString( "Systems: %1" ).arg( countSystem ), this ) );
+			_layout->addWidget(
+				new QLabel( QString( "Systems: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countSystem ) ), this )
+			);
 		}
-		_layout->addWidget( new QLabel( QString( "Chains: %1" ).arg( countChain ), this ) );
-		_layout->addWidget( new QLabel( QString( "Residues: %1" ).arg( countResidue ), this ) );
-		_layout->addWidget( new QLabel( QString( "Atoms: %1" ).arg( countAtom ), this ) );
+		_layout->addWidget(
+			new QLabel( QString( "Chains: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countChain ) ), this )
+		);
+		_layout->addWidget(
+			new QLabel( QString( "Residues: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countResidue ) ), this )
+		);
+		_layout->addWidget(
+			new QLabel( QString( "Atoms: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countAtom ) ), this )
+		);
 
 		// Connect.
 		_connTransformChanged
