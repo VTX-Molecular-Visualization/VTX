@@ -1,5 +1,11 @@
 #include "ui/qt/widget/selection.hpp"
+#include <QDesktopServices>
 #include <QGroupBox>
+#include <QLabel>
+#include <QMenu>
+#include <QPlainTextEdit>
+#include <QPoint>
+#include <QUrl>
 #include <app/action/action_manager.hpp>
 #include <app/action/system.hpp>
 #include <app/helper/system.hpp>
@@ -58,11 +64,12 @@ namespace VTX::UI::QT::Widget
 				countAtom += topology.getAtomCount();
 
 				// Name.
-				QString name	  = QString::fromStdString( metadata.name );
-				auto *	labelName = new QLabel( QString( "Name: %1" ).arg( name ), this );
-				labelName->setWordWrap( true );
-				labelName->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
-				_layout->addWidget( labelName );
+				auto * textName = new QPlainTextEdit( QString::fromStdString( metadata.name ), this );
+				textName->setPlaceholderText( "No name" );
+				textName->setLineWrapMode( QPlainTextEdit::WidgetWidth );
+				textName->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Fixed );
+				textName->setFixedHeight( textName->fontMetrics().lineSpacing() * 4 );
+				_layout->addWidget( textName );
 
 				// PDB.
 				_layout->addWidget(
@@ -70,6 +77,8 @@ namespace VTX::UI::QT::Widget
 				);
 
 				// Path.
+				const QUrl parentFolderUrl
+					= QUrl::fromLocalFile( QString::fromStdString( metadata.path.parent_path().string() ) );
 				auto * labelFile = new QLabel(
 					QString( "File: %1" ).arg( QString::fromStdString( metadata.path.filename().string() ) ), this
 				);
@@ -77,6 +86,22 @@ namespace VTX::UI::QT::Widget
 				labelFile->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 				labelFile->setToolTip( QString::fromStdString( metadata.path.generic_string() ) );
 				labelFile->setCursor( Qt::WhatsThisCursor );
+				labelFile->setContextMenuPolicy( Qt::CustomContextMenu );
+				connect(
+					labelFile,
+					&QLabel::customContextMenuRequested,
+					this,
+					[ labelFile, parentFolderUrl ]( const QPoint & p_pos )
+					{
+						QMenu menu( labelFile );
+						menu.addAction(
+							"Show in explorer",
+							labelFile,
+							[ parentFolderUrl ]() { QDesktopServices::openUrl( parentFolderUrl ); }
+						);
+						menu.exec( labelFile->mapToGlobal( p_pos ) );
+					}
+				);
 				_layout->addWidget( labelFile );
 
 				// Transform.

@@ -80,10 +80,7 @@ namespace VTX::App::System
 
 		if ( p_thread )
 			p_thread.value().get().setProgressText(
-				fmt::format(
-					"Reading {}...",
-					pendingData.buffer ? "structure from memory" : pendingData.metadata.path.filename().string()
-				)
+				fmt::format( "Reading {}...", pendingData.metadata.path.filename().string() )
 			);
 
 		if ( p_stopToken.stop_requested() )
