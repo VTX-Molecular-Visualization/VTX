@@ -3,7 +3,6 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QMenu>
-#include <QPlainTextEdit>
 #include <QPoint>
 #include <QUrl>
 #include <app/action/action_manager.hpp>
@@ -64,12 +63,24 @@ namespace VTX::UI::QT::Widget
 				countAtom += topology.getAtomCount();
 
 				// Name.
-				auto * textName = new QPlainTextEdit( QString::fromStdString( metadata.name ), this );
-				textName->setPlaceholderText( "No name" );
-				textName->setLineWrapMode( QPlainTextEdit::WidgetWidth );
-				textName->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Fixed );
-				textName->setFixedHeight( textName->fontMetrics().lineSpacing() * 4 );
-				_layout->addWidget( textName );
+				_textName = new QPlainTextEdit( QString::fromStdString( metadata.name ), this );
+				_textName->setPlaceholderText( "No name" );
+				_textName->setLineWrapMode( QPlainTextEdit::WidgetWidth );
+				_textName->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Fixed );
+				_textName->setFixedHeight( _textName->fontMetrics().lineSpacing() * 4 );
+				_layout->addWidget( _textName );
+
+				connect(
+					_textName,
+					&QPlainTextEdit::textChanged,
+					this,
+					[ this, entity ]()
+					{
+						App::ACTION().execute<App::Action::System::SetName>(
+							entity, _textName->toPlainText().toStdString()
+						);
+					}
+				);
 
 				// PDB.
 				_layout->addWidget(
@@ -210,9 +221,15 @@ namespace VTX::UI::QT::Widget
 		// Connect.
 		_connTransformChanged
 			= App::REG().on_update<Util::Math::Transform>().connect<&Selection::_transformUpdated>( this );
+		_connMetadataChanged
+			= App::REG().on_update<App::System::Metadata>().connect<&Selection::_metadataUpdated>( this );
 	}
 
-	Selection::~Selection() { _connTransformChanged.release(); }
+	Selection::~Selection()
+	{
+		_connTransformChanged.release();
+		_connMetadataChanged.release();
+	}
 
 	void Selection::_transformUpdated( App::ECS::Registry & p_reg, App::ECS::Entity p_entity )
 	{
@@ -224,5 +241,23 @@ namespace VTX::UI::QT::Widget
 		QSignalBlocker blocker( _transform );
 		const auto &   transform = p_reg.get<Util::Math::Transform>( p_entity );
 		_transform->setTransform( transform );
+	}
+
+	void Selection::_metadataUpdated( App::ECS::Registry & p_reg, App::ECS::Entity p_entity )
+	{
+		if ( std::find( _entities.begin(), _entities.end(), p_entity ) == _entities.end() )
+		{
+			return;
+		}
+
+		const auto &   metadata = p_reg.get<App::System::Metadata>( p_entity );
+		const QString name	 = QString::fromStdString( metadata.name );
+		if ( _textName->toPlainText() == name )
+		{
+			return;
+		}
+
+		QSignalBlocker blocker( _textName );
+		_textName->setPlainText( name );
 	}
 } // namespace VTX::UI::QT::Widget

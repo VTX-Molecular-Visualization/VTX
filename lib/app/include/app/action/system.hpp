@@ -7,6 +7,14 @@
 namespace VTX::App::Action::System
 {
 	/**
+	 * @brief Set system name.
+	 */
+	struct SetName
+	{
+		void execute( const ECS::Entity, const std::string_view );
+	};
+
+	/**
 	 * @brief Set system position.
 	 */
 	struct SetPosition

@@ -1,11 +1,19 @@
 #include "app/action/system.hpp"
 #include "app/services.hpp"
+#include "app/system/metadata.hpp"
 #include <util/event_hub.hpp>
 #include <util/math.hpp>
 #include <util/math/transform.hpp>
 
 namespace VTX::App::Action::System
 {
+	void SetName::execute( const ECS::Entity p_ent, const std::string_view p_name )
+	{
+		REG().patch<App::System::Metadata>(
+			p_ent, [ &p_name ]( App::System::Metadata & p_metadata ) { p_metadata.name = std::string( p_name ); }
+		);
+	}
+
 	void SetPosition::execute( const ECS::Entity p_ent, const Vec3f & p_position )
 	{
 		REG().patch<Util::Math::Transform>(

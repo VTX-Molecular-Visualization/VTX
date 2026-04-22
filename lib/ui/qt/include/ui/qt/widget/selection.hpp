@@ -3,6 +3,7 @@
 
 #include "ui/qt/widget/transform.hpp"
 #include <QListWidget>
+#include <QPlainTextEdit>
 #include <QPointer>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -40,9 +41,15 @@ namespace VTX::UI::QT::Widget
 		QPointer<Widget::Transform> _transform;
 
 		/**
+		 * @brief Name edition.
+		 */
+		QPointer<QPlainTextEdit> _textName;
+
+		/**
 		 * @brief Refresh from app.
 		 */
 		Util::EventHub::Connection _connTransformChanged;
+		Util::EventHub::Connection _connMetadataChanged;
 
 		/**
 		 * @brief Currently selected entities.
@@ -53,6 +60,11 @@ namespace VTX::UI::QT::Widget
 		 * @brief Transform updated.
 		 */
 		void _transformUpdated( App::ECS::Registry &, App::ECS::Entity );
+
+		/**
+		 * @brief Metadata updated.
+		 */
+		void _metadataUpdated( App::ECS::Registry &, App::ECS::Entity );
 	};
 } // namespace VTX::UI::QT::Widget
 
