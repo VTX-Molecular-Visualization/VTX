@@ -47,6 +47,5 @@ TEST_CASE( "Util::Logger", "[unit]" )
 		CHECK( state->received.at( "python out" ) == VTX::Util::LOG_HINT::PY_OUT );
 	}
 
-	VTX::LOGGER::onLog.remove( callbackId );
 	VTX::LOGGER::stop();
 }

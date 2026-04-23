@@ -100,7 +100,7 @@ namespace VTX::Util
 
 	void Logger::stop()
 	{
-		flush();
+		spdlog::shutdown();
 		onLog.clear();
 	}
 

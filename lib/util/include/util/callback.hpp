@@ -5,7 +5,9 @@
 #include <cassert>
 #include <functional>
 #include <map>
+#include <mutex>
 #include <utility>
+#include <vector>
 
 namespace VTX::Util
 {
@@ -49,23 +51,39 @@ namespace VTX::Util
 				"Callable type is not invocable with the expected arguments."
 			);
 
+			const std::lock_guard<std::mutex> lock( _mutex );
 			_callbacks.emplace( _nextId++, std::forward<Callable>( p_callback ) );
 			return _nextId - 1;
 		}
 
 		void remove( const CallbackId p_id )
 		{
+			const std::lock_guard<std::mutex> lock( _mutex );
 			assert( _callbacks.contains( p_id ) );
 			_callbacks.erase( p_id );
 		}
 
-		inline void clear() { _callbacks.clear(); }
+		inline void clear()
+		{
+			const std::lock_guard<std::mutex> lock( _mutex );
+			_callbacks.clear();
+		}
 
 		inline void operator()( Args... p_args ) const
 		{
-			for ( const auto & callback : _callbacks )
+			std::vector<Func> callbacks;
 			{
-				callback.second( p_args... );
+				const std::lock_guard<std::mutex> lock( _mutex );
+				callbacks.reserve( _callbacks.size() );
+				for ( const auto & callback : _callbacks )
+				{
+					callbacks.emplace_back( callback.second );
+				}
+			}
+
+			for ( const auto & callback : callbacks )
+			{
+				callback( p_args... );
 			}
 		}
 
@@ -80,6 +98,7 @@ namespace VTX::Util
 
 	  private:
 		std::map<CallbackId, Func> _callbacks;
+		mutable std::mutex		   _mutex;
 		CallbackId				   _nextId = 0;
 	};
 
