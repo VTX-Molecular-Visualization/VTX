@@ -1,12 +1,14 @@
 #include "app/extractor/system.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/camera.hpp"
+#include "app/action/selection.hpp"
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/generic/name.hpp"
 #include "app/helper/preset.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
+#include "app/system/gridAtomList.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/trajectory_preparation.hpp"
@@ -49,7 +51,9 @@ namespace VTX::App::Extractor
 	namespace
 	{
 		size_t _getCurrentAtomPositionCount( const App::System::TrajectorySingleFrame & p_trajectory ) noexcept
-		{ return p_trajectory.atomPositions.size(); }
+		{
+			return p_trajectory.atomPositions.size();
+		}
 
 		size_t _getCurrentAtomPositionCount( const App::System::TrajectoryFullBuffer & p_trajectory ) noexcept
 		{
@@ -101,7 +105,9 @@ namespace VTX::App::Extractor
 
 	System::System( FilePath p_path, std::string && p_buffer, IO::READER_OPTION p_options ) :
 		System( std::move( p_path ), p_options )
-	{ _attributesPtr->data.buffer = std::move( p_buffer ); }
+	{
+		_attributesPtr->data.buffer = std::move( p_buffer );
+	}
 
 	System::System( Entity p_entity, FilePath p_path, IO::READER_OPTION p_options ) :
 		System( std::move( p_path ), p_options )
@@ -219,10 +225,11 @@ namespace VTX::App::Extractor
 		reg.emplace<Util::Math::Grid<Index>>( p_entity, std::move( p_data.atomGrid ) );
 		auto & uid = reg.emplace<App::System::UID>( p_entity );
 
-		auto & visibility	  = reg.emplace<App::System::Visibility>( p_entity );
-		auto & selection	  = reg.emplace<App::System::Selection>( p_entity );
-		auto & representation = reg.emplace<App::System::Representation>( p_entity );
-		auto & color		  = reg.emplace<App::System::Color>( p_entity );
+		auto & visibility	  = reg.emplace<System::Visibility>( p_entity );
+		auto & selection	  = reg.emplace<System::Selection>( p_entity );
+		auto & representation = reg.emplace<System::Representation>( p_entity );
+		auto & color		  = reg.emplace<System::Color>( p_entity );
+		auto & gridAtomList	  = reg.emplace<System::GridAtomList>( p_entity );
 
 		// UIDs: get from UID manager.
 		auto & uidManager = App::UID();
@@ -244,9 +251,10 @@ namespace VTX::App::Extractor
 
 		// Representation: set default representation.
 		// TODO: configure default representation in settings?
-		representation.presetAtoms
-			[ Helper::Preset::getByName<Renderer::Representation>( "Sticks and Ribbons" )
-				  .value_or( ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::Representation>() ) ]
+		representation
+			.presetAtoms[ Helper::Preset::getByName<Renderer::Representation>( "Sticks and Ribbons" )
+							  .value_or( ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::Representation>(
+							  ) ) ]
 			= Core::Struct::IndexRangeList( data.getAtomRange() );
 
 		// Trigger system load.
@@ -254,6 +262,8 @@ namespace VTX::App::Extractor
 
 		// Orient.
 		ACTION().execute<Action::Camera::Orient>( aabb );
+
+		ACTION().execute<Action::Selection::Mapping>( p_entity );
 	}
 
 	void deliver( Pending && p_data ) noexcept
