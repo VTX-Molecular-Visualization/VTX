@@ -3,6 +3,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/vtx_copy.cmake")
 
 # Lib.
 add_library(vtx_util)
+add_library(vtx_util::vtx_util ALIAS vtx_util)
 vtx_configure_target(vtx_util)
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
@@ -26,7 +27,7 @@ target_link_libraries(vtx_util PRIVATE cpr::cpr)
 target_link_libraries(vtx_util PRIVATE stb::stb)
 target_link_libraries(vtx_util PRIVATE sago::platform_folders)
 
-target_link_libraries(vtx_util_test PRIVATE vtx_util)
+target_link_libraries(vtx_util_test PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_util_test PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(vtx_util_test PRIVATE Catch2::Catch2WithMain)
 

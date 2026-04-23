@@ -1,5 +1,6 @@
 # Create the library.
 add_library(vtx_tool_topology_editor)
+add_library(vtx_tool_topology_editor::vtx_tool_topology_editor ALIAS vtx_tool_topology_editor)
 vtx_configure_target(vtx_tool_topology_editor)
 
 # Get files.
@@ -21,20 +22,13 @@ if (VTX_RENDERER)
 endif()
 
 # Link internal dependencies.
-if (NOT DEFINED _VTX_TOOL_TOPOLOGY_EDITOR_CONAN)
-	target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_util)
-	target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_app)
-	target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_ui_qt)
-	target_link_libraries(vtx_tool_topology_editor_test PRIVATE vtx_app)
-else()
-	target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_util::vtx_util)
-	target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_app::vtx_app)
-	target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_ui_qt::vtx_ui_qt)
-	target_link_libraries(vtx_tool_topology_editor_test PRIVATE vtx_app::vtx_app)
-endif()
+target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_util::vtx_util)
+target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_app::vtx_app)
+target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_ui_qt::vtx_ui_qt)
+target_link_libraries(vtx_tool_topology_editor_test PRIVATE vtx_app::vtx_app)
 
 # Link tests.
-target_link_libraries(vtx_tool_topology_editor_test PRIVATE vtx_tool_topology_editor)
+target_link_libraries(vtx_tool_topology_editor_test PRIVATE vtx_tool_topology_editor::vtx_tool_topology_editor)
 target_link_libraries(vtx_tool_topology_editor_test PRIVATE Catch2::Catch2WithMain)
 if (VTX_PYTHON_BINDING)
 	vtx_python_binding_copy_runtime(vtx_tool_topology_editor_test)

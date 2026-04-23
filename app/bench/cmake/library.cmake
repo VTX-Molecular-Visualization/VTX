@@ -10,21 +10,12 @@ add_executable(vtx_renderer_bench ${SOURCES} ${VENDORS_STATIC} ${VENDORS_DYNAMIC
 vtx_configure_target(vtx_renderer_bench)
 vtx_link_cuda(vtx_renderer_bench)
 
-if(NOT DEFINED _VTX_RENDERER_BENCH_CONAN)
-	target_include_directories(vtx_renderer_bench PRIVATE "${_VTX_RENDERER_BENCH_VENDOR_DIR}" ./vendor)
+target_include_directories(vtx_renderer_bench PRIVATE "${_VTX_RENDERER_BENCH_VENDOR_DIR}" vendor)
 
-	target_link_libraries(vtx_renderer_bench PRIVATE vtx_util)
-	target_link_libraries(vtx_renderer_bench PRIVATE vtx_renderer)
-	target_link_libraries(vtx_renderer_bench PRIVATE vtx_core)
-	target_link_libraries(vtx_renderer_bench PRIVATE vtx_io)
-else()
-	target_include_directories(vtx_renderer_bench PRIVATE vendor)
-
-	target_link_libraries(vtx_renderer_bench PRIVATE vtx_util::vtx_util)
-	target_link_libraries(vtx_renderer_bench PRIVATE vtx_renderer::vtx_renderer)
-	target_link_libraries(vtx_renderer_bench PRIVATE vtx_core::vtx_core)
-	target_link_libraries(vtx_renderer_bench PRIVATE vtx_io::vtx_io)
-endif()
+target_link_libraries(vtx_renderer_bench PRIVATE vtx_util::vtx_util)
+target_link_libraries(vtx_renderer_bench PRIVATE vtx_renderer::vtx_renderer)
+target_link_libraries(vtx_renderer_bench PRIVATE vtx_core::vtx_core)
+target_link_libraries(vtx_renderer_bench PRIVATE vtx_io::vtx_io)
 
 target_link_libraries(vtx_renderer_bench PRIVATE SDL3::SDL3)
 target_link_libraries(vtx_renderer_bench PRIVATE imgui::imgui)

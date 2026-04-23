@@ -10,7 +10,6 @@ find_package(vtx_io CONFIG REQUIRED)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(imgui REQUIRED)
 
-set(_VTX_RENDERER_BENCH_CONAN " ")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 set_target_properties(vtx_renderer_bench PROPERTIES OUTPUT_NAME bench)

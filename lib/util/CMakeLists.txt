@@ -12,7 +12,6 @@ find_package(stb CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 find_package(platform_folders REQUIRED)
 
-set(_VTX_UTIL_CONAN " ") # So the right target name can be linked
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 install(TARGETS vtx_util FILE_SET public_headers)

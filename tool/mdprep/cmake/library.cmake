@@ -1,6 +1,7 @@
 include ("${CMAKE_CURRENT_LIST_DIR}/vtx_tool_mdprep_copy_data.cmake")
 
 add_library(vtx_tool_mdprep)
+add_library(vtx_tool_mdprep::vtx_tool_mdprep ALIAS vtx_tool_mdprep)
 vtx_configure_target(vtx_tool_mdprep)
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
@@ -13,15 +14,9 @@ target_sources(vtx_tool_mdprep
 
 vtx_qt_add_resources(vtx_tool_mdprep ${CMAKE_CURRENT_LIST_DIR}/../asset vtx_qt_resources_tool_mdprep)
 
-if (NOT DEFINED _VTX_MDPREP_CONAN)
-	target_link_libraries(vtx_tool_mdprep PUBLIC vtx_util)
-	target_link_libraries(vtx_tool_mdprep PUBLIC vtx_app)
-	target_link_libraries(vtx_tool_mdprep PUBLIC vtx_ui_qt)
-else()
-	target_link_libraries(vtx_tool_mdprep PUBLIC vtx_util::vtx_util)
-	target_link_libraries(vtx_tool_mdprep PUBLIC vtx_app::vtx_app)
-	target_link_libraries(vtx_tool_mdprep PUBLIC vtx_ui_qt::vtx_ui_qt)
-endif()
+target_link_libraries(vtx_tool_mdprep PUBLIC vtx_util::vtx_util)
+target_link_libraries(vtx_tool_mdprep PUBLIC vtx_app::vtx_app)
+target_link_libraries(vtx_tool_mdprep PUBLIC vtx_ui_qt::vtx_ui_qt)
 target_link_libraries(vtx_tool_mdprep PRIVATE re2::re2)
 
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/src/*")
@@ -35,12 +30,8 @@ endif()
 
 target_include_directories(vtx_tool_mdprep_test PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include")
 
-if (NOT DEFINED _VTX_MDPREP_CONAN)
-	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app)
-else()
-	target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app::vtx_app)
-endif()
-target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep)
+target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app::vtx_app)
+target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep::vtx_tool_mdprep)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE re2::re2)
 if (VTX_PYTHON_BINDING)

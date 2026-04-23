@@ -25,7 +25,6 @@ find_package(vtx_core CONFIG REQUIRED)
 find_package(vtx_io CONFIG REQUIRED)
 find_package(pybind11 CONFIG REQUIRED)
 
-set(_VTX_PYTHON_BINDING_CONAN " ") # So the right target name can be linked
 include(cmake/library.cmake)
 
 # Valgrind

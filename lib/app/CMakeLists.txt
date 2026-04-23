@@ -16,7 +16,6 @@ endif()
 find_package(Catch2 CONFIG REQUIRED)
 find_package(argparse REQUIRED)
 
-set(_VTX_APP_CONAN " ") # So the right target name can be linked
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 install(TARGETS vtx_app FILE_SET public_headers)

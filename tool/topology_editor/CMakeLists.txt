@@ -16,7 +16,6 @@ find_package(vtx_ui_qt CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 
 # Workaround.
-set(_VTX_TOOL_TOPOLOGY_EDITOR_CONAN " ")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 # Install target and headers.

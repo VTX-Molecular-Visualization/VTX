@@ -14,7 +14,6 @@ find_package(vtx_ui_qt CONFIG REQUIRED)
 find_package(re2 CONFIG REQUIRED)
 find_package(Catch2 REQUIRED)
 
-set(_VTX_MDPREP_CONAN " ") # So the right target name can be linked
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 install(TARGETS vtx_tool_mdprep FILE_SET public_headers)

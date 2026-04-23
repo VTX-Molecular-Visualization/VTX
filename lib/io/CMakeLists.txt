@@ -7,7 +7,6 @@ find_package(vtx_core CONFIG REQUIRED)
 find_package(chemfiles CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 
-set(_VTX_IO_CONAN " ") # So the right target name can be linked
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 install(TARGETS vtx_io FILE_SET public_headers)

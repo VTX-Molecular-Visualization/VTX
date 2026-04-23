@@ -3,6 +3,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/vtx_renderer_copy_shaders.cmake")
 
 # Lib.
 add_library(vtx_renderer)
+add_library(vtx_renderer::vtx_renderer ALIAS vtx_renderer)
 vtx_configure_target(vtx_renderer)
 
 file(GLOB_RECURSE HEADERS_PUBLIC "${CMAKE_CURRENT_LIST_DIR}/../include/public/*")
@@ -69,19 +70,12 @@ add_executable(vtx_renderer_test ${TESTS})
 set_property(TARGET vtx_renderer_test PROPERTY FOLDER "test")
 vtx_configure_target(vtx_renderer_test)
 
-if (NOT DEFINED _VTX_RENDERER_CONAN)
-	target_link_libraries(vtx_renderer PUBLIC vtx_util)
-	target_link_libraries(vtx_renderer PUBLIC vtx_core)	
-	target_link_libraries(vtx_renderer_test PRIVATE vtx_util)
-	target_link_libraries(vtx_renderer_test PRIVATE vtx_core)
-else()
-	target_link_libraries(vtx_renderer PUBLIC vtx_util::vtx_util)
-	target_link_libraries(vtx_renderer PUBLIC vtx_core::vtx_core)
-	target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
-	target_link_libraries(vtx_renderer_test PRIVATE vtx_core::vtx_core)
-endif()
+target_link_libraries(vtx_renderer PUBLIC vtx_util::vtx_util)
+target_link_libraries(vtx_renderer PUBLIC vtx_core::vtx_core)
+target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
+target_link_libraries(vtx_renderer_test PRIVATE vtx_core::vtx_core)
 
-target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer)
+target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer::vtx_renderer)
 target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
 
 include(CTest)

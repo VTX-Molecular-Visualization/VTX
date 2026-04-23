@@ -1,6 +1,7 @@
 
 
 add_library(vtx_python_binding)
+add_library(vtx_python_binding::vtx_python_binding ALIAS vtx_python_binding)
 vtx_configure_target(vtx_python_binding)
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
@@ -23,29 +24,19 @@ target_include_directories(vtx_python_binding_test PRIVATE "${CMAKE_CURRENT_LIST
 vtx_configure_target(vtx_python_binding_test)
 
 
-if(NOT DEFINED _VTX_PYTHON_BINDING_CONAN)
-	target_link_libraries(vtx_python_binding PUBLIC vtx_util)
-	target_link_libraries(vtx_python_binding PUBLIC vtx_core)
-	target_link_libraries(vtx_python_binding PUBLIC vtx_io)
+target_link_libraries(vtx_python_binding PUBLIC vtx_util::vtx_util)
+target_link_libraries(vtx_python_binding PUBLIC vtx_core::vtx_core)
+target_link_libraries(vtx_python_binding PUBLIC vtx_io::vtx_io)
 
-	target_link_libraries(vtx_python_binding_test PRIVATE vtx_util)
-	target_link_libraries(vtx_python_binding_test PRIVATE vtx_core)
-	target_link_libraries(vtx_python_binding_test PRIVATE vtx_io)
-else()
-	target_link_libraries(vtx_python_binding PUBLIC vtx_util::vtx_util)
-	target_link_libraries(vtx_python_binding PUBLIC vtx_core::vtx_core)
-	target_link_libraries(vtx_python_binding PUBLIC vtx_io::vtx_io)
-
-	target_link_libraries(vtx_python_binding_test PRIVATE vtx_util::vtx_util)
-	target_link_libraries(vtx_python_binding_test PRIVATE vtx_core::vtx_core)
-	target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
-endif()
+target_link_libraries(vtx_python_binding_test PRIVATE vtx_util::vtx_util)
+target_link_libraries(vtx_python_binding_test PRIVATE vtx_core::vtx_core)
+target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
 
 target_link_libraries(vtx_python_binding PUBLIC pybind11::module)
 target_link_libraries(vtx_python_binding_test PRIVATE Python3::Python)
 target_link_libraries(vtx_python_binding PRIVATE Python3::Python Python3::Module)
 
-target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding)
+target_link_libraries(vtx_python_binding_test PRIVATE vtx_python_binding::vtx_python_binding)
 target_link_libraries(vtx_python_binding_test PRIVATE Catch2::Catch2WithMain)
 
 target_compile_definitions(vtx_python_binding PRIVATE CPYTHON_VERSION_MAJOR="${CPYTHON_VERSION_MAJOR}")
