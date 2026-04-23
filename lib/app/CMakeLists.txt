@@ -2,13 +2,6 @@ message("vtx_app")
 cmake_minimum_required(VERSION 3.23)
 project(vtx_app)
 
-if (NOT DEFINED VTX_RENDERER)
-	set(VTX_RENDERER 1)
-endif()
-if (NOT DEFINED VTX_PYTHON_BINDING)
-	set(VTX_PYTHON_BINDING 1)
-endif()
-
 find_package(vtx_util CONFIG REQUIRED)
 if (VTX_RENDERER)
 	find_package(vtx_renderer CONFIG REQUIRED)

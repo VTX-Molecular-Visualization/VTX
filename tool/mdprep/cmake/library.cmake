@@ -1,11 +1,3 @@
-
-if (NOT DEFINED VTX_RENDERER)
-	set(VTX_RENDERER 1)
-endif()
-if (NOT DEFINED VTX_PYTHON_BINDING)
-	set(VTX_PYTHON_BINDING 1)
-endif()
-
 include ("${CMAKE_CURRENT_LIST_DIR}/vtx_tool_mdprep_copy_data.cmake")
 
 add_library(vtx_tool_mdprep)

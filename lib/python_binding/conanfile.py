@@ -10,6 +10,7 @@ from conan.tools.files import copy
 
 sys.path.append(str(Path(__file__).resolve().parent))
 from python_version import (
+    DEFAULT_PYTHON_VERSION,
     config_options_cpython as configure_cpython_options,
     configure_toolchain,
     configure_runtime_toolchain,
@@ -103,7 +104,7 @@ class VTXPythonBindingRecipe(ConanFile):
 
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False], "python_version": ["ANY"]}
-    default_options = {"shared": False, "fPIC": True, "test": False, "python_version": "3.12.7"}
+    default_options = {"shared": False, "fPIC": True, "test": False, "python_version": DEFAULT_PYTHON_VERSION}
 
     generators = "CMakeDeps"
 

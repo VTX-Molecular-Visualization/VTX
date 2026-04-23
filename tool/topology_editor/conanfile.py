@@ -43,6 +43,7 @@ class VTXToolTopologyEditorRecipe(ConanFile):
         tc.cache_variables["VTX_PYTHON_BINDING_RUNTIME_ROOT"] = python_binding_conf.get("user.python_binding:runtime_root")
         qt_conf = self.dependencies["vtx_ui_qt"].conf_info
         tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_conf.get("user.ui_qt:runtime_root")
+        tc.cache_variables["VTX_UI_QT"] = 1
         tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")
         tc.cache_variables["VTX_PYTHON_BINDING"] = app_conf.get("user.app:python_binding")
         tc.generate()

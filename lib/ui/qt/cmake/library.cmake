@@ -2,13 +2,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/vtx_qt_configure.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/vtx_qt_add_resources.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/vtx_qt_copy_runtime.cmake")
 
-if (NOT DEFINED VTX_RENDERER)
-	set(VTX_RENDERER 1)
-endif()
-if (NOT DEFINED VTX_PYTHON_BINDING)
-	set(VTX_PYTHON_BINDING 1)
-endif()
-
 vtx_qt_configure()
 add_library(vtx_ui_qt)
 vtx_configure_target(vtx_ui_qt)

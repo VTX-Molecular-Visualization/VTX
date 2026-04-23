@@ -9,7 +9,7 @@ import importlib.util
 import sys
 
 sys.path.append(str(Path(__file__).resolve().parent.parent / "lib" / "python_binding"))
-from python_version import config_options_cpython, configure_toolchain, configure_runtime_toolchain, get_python_version
+from python_version import DEFAULT_PYTHON_VERSION, config_options_cpython, configure_toolchain, configure_runtime_toolchain, get_python_version
 
 
 
@@ -39,17 +39,19 @@ class VTXRecipe(ConanFile):
         "renderer": [True, False],
         "python_binding": [True, False],
         "python_version": ["ANY"],
+        "cuda_arch": ["ANY"],
     }
     default_options = {
         "version": "0.0.0",
         "tool_example": False,
-        "tool_mdprep": True,
-        "tool_topology_editor": True,
+        "tool_mdprep": False,
+        "tool_topology_editor": False,
         "local_pdb100": False,
         "ui_qt": True,
         "renderer": True,
         "python_binding": True,
-        "python_version": "3.12.7",
+        "python_version": DEFAULT_PYTHON_VERSION,
+        "cuda_arch": renderer_module.DEFAULT_CUDA_ARCH,
     }
     
     settings = "os", "compiler", "build_type", "arch"
@@ -127,6 +129,8 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["VTX_UI_QT"] = 1 if self.options.ui_qt else 0
         tc.cache_variables["VTX_RENDERER"] = 1 if self.options.renderer else 0
         tc.cache_variables["VTX_PYTHON_BINDING"] = 1 if self.options.python_binding else 0
+        if self.options.renderer:
+            tc.cache_variables["VTX_CUDA_ARCH"] = self.options.cuda_arch
         tc.cache_variables["LOCAL_PDB100"] = 1 if self.options.local_pdb100 else 0
         if self.options.ui_qt:
             tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_module.qt_runtime_root(self)

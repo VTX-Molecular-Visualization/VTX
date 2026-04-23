@@ -17,17 +17,16 @@ on:
         cuda_version:
           description: 'CUDA version'
           required: true
-          default: '12.9.0'
+          default: '13.2.1'
         cuda_arch:
           description: 'Cuda architectures'
-          required: true
-          default: '75;80;86;89;90;120-real'
+          required: false
 
 env:
   LIB_DIR: ${{github.workspace}}/lib
   BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
-  CUDA_VERSION: ${{ inputs.cuda_version || '12.9.0' }}
-  CUDA_ARCH: ${{ inputs.cuda_arch || '75;80;86;89;90;120-real' }}
+  CUDA_VERSION: ${{ inputs.cuda_version || '13.2.1' }}
+  CUDA_ARCH: ${{ inputs.cuda_arch }}
 
 jobs:
   build:
@@ -71,12 +70,17 @@ jobs:
       working-directory: ${{env.LIB_DIR}}
       shell: bash
       run: |
+        CUDA_ARCH_OPTION=()
+        if [ -n "${CUDA_ARCH}" ]; then
+          CUDA_ARCH_OPTION=(-o "vtx_renderer/*:cuda_arch=${CUDA_ARCH}")
+        fi
+
         conan export util
         conan export core
         conan create renderer -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_renderer/*:test=True \
-          -o vtx_renderer/*:cuda_arch="${{env.CUDA_ARCH}}" \
+          "${CUDA_ARCH_OPTION[@]}" \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True 

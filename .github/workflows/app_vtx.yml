@@ -23,12 +23,12 @@ on:
       tool_mdprep:
         description: 'Include tool Mdprep'
         required: false
-        default: true
+        default: false
         type: boolean
       tool_topology_editor:
         description: 'Include tool Topology Editor'
         required: false
-        default: true
+        default: false
         type: boolean
       ui_qt:
         description: 'Include Qt UI'
@@ -48,15 +48,13 @@ on:
       cuda_version:
         description: 'CUDA version'
         required: true
-        default: '12.9.0'
+        default: '13.2.1'
       cuda_arch:
         description: 'Cuda architectures'
-        required: true
-        default: '75;80;86;89;90;120-real'
+        required: false
       python_version:
         description: 'Python version'
-        required: true
-        default: '3.12.7'
+        required: false
         
 env:
   ROOT_DIR: ${{github.workspace}}
@@ -121,6 +119,15 @@ jobs:
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}
       run: |
+        PYTHON_VERSION_OPTION=()
+        if [ -n "${PYTHON_VERSION}" ]; then
+          PYTHON_VERSION_OPTION=(-o "vtx_python_binding/*:python_version=${PYTHON_VERSION}")
+        fi
+        CUDA_ARCH_OPTION=()
+        if [ -n "${CUDA_ARCH}" ]; then
+          CUDA_ARCH_OPTION=(-o "vtx_renderer/*:cuda_arch=${CUDA_ARCH}")
+        fi
+
         conan export lib/app
         conan export lib/core
         conan export lib/io
@@ -143,8 +150,8 @@ jobs:
           -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} \
           -o vtx/*:tool_topology_editor=${{env.TOOL_TOPOLOGY_EDITOR}} \
           -o vtx/*:ui_qt=${{env.UI_QT}} \
-          -o vtx_python_binding/*:python_version=${{env.PYTHON_VERSION}} \
-          -o vtx_renderer/*:cuda_arch="${{env.CUDA_ARCH}}" \
+          "${PYTHON_VERSION_OPTION[@]}" \
+          "${CUDA_ARCH_OPTION[@]}" \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True \
           --format=json > output.json

@@ -2,13 +2,6 @@
 add_library(vtx_app)
 vtx_configure_target(vtx_app)
 
-if (NOT DEFINED VTX_RENDERER)
-	set(VTX_RENDERER 1)
-endif()
-if (NOT DEFINED VTX_PYTHON_BINDING)
-	set(VTX_PYTHON_BINDING 1)
-endif()
-
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 file(GLOB_RECURSE HEADERS_VENDORS "${CMAKE_CURRENT_LIST_DIR}/../vendor/*hpp" "${CMAKE_CURRENT_LIST_DIR}/../vendor/*h")
@@ -82,17 +75,6 @@ else()
 	set(VELOPACK_LIB "${CMAKE_CURRENT_LIST_DIR}/../vendor/velopack/lib-static/libvelopack_libc_linux_x64_gnu.a")
 endif()
 target_link_libraries(vtx_app PRIVATE ${VELOPACK_LIB})
-
-# Declare preprocessor definitions.
-if (NOT DEFINED VTX_VERSION_MAJOR)
-	set(VTX_VERSION_MAJOR 0)
-endif()
-if (NOT DEFINED VTX_VERSION_MINOR)
-	set(VTX_VERSION_MINOR 0)
-endif()
-if (NOT DEFINED VTX_VERSION_PATCH)
-	set(VTX_VERSION_PATCH 0)
-endif()
 
 target_compile_definitions(vtx_app PRIVATE VTX_VERSION_MAJOR=${VTX_VERSION_MAJOR})
 target_compile_definitions(vtx_app PRIVATE VTX_VERSION_MINOR=${VTX_VERSION_MINOR})

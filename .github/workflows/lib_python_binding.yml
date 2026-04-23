@@ -16,13 +16,12 @@ on:
           - Release
         python_version:
           description: 'Python version'
-          required: true
-          default: '3.12.7'
+          required: false
 
 env:
   LIB_DIR: ${{github.workspace}}/lib
   BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
-  PYTHON_VERSION: ${{ inputs.python_version || '3.12.7' }}
+  PYTHON_VERSION: ${{ inputs.python_version }}
 
 jobs:
   build:
@@ -74,11 +73,16 @@ jobs:
       working-directory: ${{env.LIB_DIR}}
       shell: bash
       run: |
+        PYTHON_VERSION_OPTION=()
+        if [ -n "${PYTHON_VERSION}" ]; then
+          PYTHON_VERSION_OPTION=(-o "vtx_python_binding/*:python_version=${PYTHON_VERSION}")
+        fi
+
         conan install python_binding -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_python_binding/*:test=True \
-          -o vtx_python_binding/*:python_version=${{env.PYTHON_VERSION}} \
+          "${PYTHON_VERSION_OPTION[@]}" \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True
 
@@ -94,10 +98,15 @@ jobs:
       working-directory: ${{env.LIB_DIR}}
       shell: bash
       run: |
+        PYTHON_VERSION_OPTION=()
+        if [ -n "${PYTHON_VERSION}" ]; then
+          PYTHON_VERSION_OPTION=(-o "vtx_python_binding/*:python_version=${PYTHON_VERSION}")
+        fi
+
         conan create python_binding -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_python_binding/*:test=True \
-          -o vtx_python_binding/*:python_version=${{env.PYTHON_VERSION}} \
+          "${PYTHON_VERSION_OPTION[@]}" \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True

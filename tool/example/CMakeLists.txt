@@ -2,13 +2,6 @@ message("vtx_tool_example")
 cmake_minimum_required(VERSION 3.23)
 project(vtx_tool_example)
 
-if (NOT DEFINED VTX_RENDERER)
-	set(VTX_RENDERER 1)
-endif()
-if (NOT DEFINED VTX_PYTHON_BINDING)
-	set(VTX_PYTHON_BINDING 1)
-endif()
-
 # Internal lib packages.
 if (VTX_PYTHON_BINDING)
 	set(PYBIND11_PYTHON_VERSION "${CPYTHON_VERSION_MAJOR}.${CPYTHON_VERSION_MINOR}.${CPYTHON_VERSION_PATCH}")

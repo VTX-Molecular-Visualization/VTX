@@ -6,6 +6,8 @@ _CONF_MINOR = "user.python_binding:cpython_version_minor"
 _CONF_PATCH = "user.python_binding:cpython_version_patch"
 _CONF_RUNTIME_ROOT = "user.python_binding:runtime_root"
 
+DEFAULT_PYTHON_VERSION = "3.12.7"
+
 
 def _cmake_path(path: str | None) -> str | None:
     if path is None:
@@ -37,7 +39,7 @@ def parse_python_version(version: str) -> PythonVersion:
 
 
 def get_python_version(version: str | None = None) -> PythonVersion:
-    return parse_python_version(version or "3.12.7")
+    return parse_python_version(version or DEFAULT_PYTHON_VERSION)
 
 
 def configure_toolchain(tc, version: PythonVersion | None = None) -> None:

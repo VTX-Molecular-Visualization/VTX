@@ -5,9 +5,6 @@
 #include <vector>
 
 // Conditional includes.
-#ifndef VTX_UI_QT
-#define VTX_UI_QT 1
-#endif
 #if VTX_UI_QT
 #include <ui/qt/application.hpp>
 #else

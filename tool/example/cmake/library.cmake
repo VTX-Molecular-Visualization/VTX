@@ -1,10 +1,3 @@
-if (NOT DEFINED VTX_RENDERER)
-	set(VTX_RENDERER 1)
-endif()
-if (NOT DEFINED VTX_PYTHON_BINDING)
-	set(VTX_PYTHON_BINDING 1)
-endif()
-
 # Create the library.
 add_library(vtx_tool_example)
 vtx_configure_target(vtx_tool_example)
