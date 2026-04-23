@@ -74,7 +74,7 @@ namespace VTX::App
 		{
 			VTX_ERROR( "Unknown exception during interpretor cleanup" );
 		}
-		LOGGER().stop();
+		LOGGER().flush();
 	}
 
 	void VTXApp::start()

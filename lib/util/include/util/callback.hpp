@@ -2,7 +2,6 @@
 #define __VTX_UTIL_CALLBACK__
 
 #include <algorithm>
-#include <cassert>
 #include <functional>
 #include <map>
 #include <mutex>
@@ -59,7 +58,6 @@ namespace VTX::Util
 		void remove( const CallbackId p_id )
 		{
 			const std::lock_guard<std::mutex> lock( _mutex );
-			assert( _callbacks.contains( p_id ) );
 			_callbacks.erase( p_id );
 		}
 
