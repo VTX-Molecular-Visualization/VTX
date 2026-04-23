@@ -71,7 +71,9 @@ namespace VTX::App::Action::Selection
 			const bool						 p_selected = true,
 			const bool						 p_append	= false
 		)
-		{ execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_selected, p_append ); }
+		{
+			execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_selected, p_append );
+		}
 
 		inline void execute(
 			const Entity			   p_ent,
@@ -79,7 +81,9 @@ namespace VTX::App::Action::Selection
 			const bool				   p_selected = true,
 			const bool				   p_append	  = false
 		)
-		{ execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_selected, p_append ); }
+		{
+			execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_selected, p_append );
+		}
 
 		inline void execute(
 			const Entity p_ent,
@@ -87,7 +91,9 @@ namespace VTX::App::Action::Selection
 			const bool	 p_selected = true,
 			const bool	 p_append	= false
 		)
-		{ execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_selected, p_append ); }
+		{
+			execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_selected, p_append );
+		}
 	};
 
 	struct SetSelectedItem
@@ -175,12 +181,6 @@ namespace VTX::App::Action::Selection
 		void execute( const Vec2i &, const E_GRANULARITY = E_GRANULARITY::RESIDUE, const bool = false );
 	};
 
-
-	struct ExtendSelection
-	{
-		void execute(const float threshhold);
-	};
-
 	struct ExtendSelectionRes
 	{
 		void execute();
@@ -193,17 +193,17 @@ namespace VTX::App::Action::Selection
 
 	struct ExtendSelectionSelecFirst
 	{
-		void execute(const float threshold);
+		void execute( const float threshold );
 	};
 
 	struct ExtendSelectionNonSelecFirst
 	{
-		void execute(const float threshold);
+		void execute( const float threshold );
 	};
 
 	struct Mapping
 	{
-		void execute(const ECS::Entity system);
+		void execute( const ECS::Entity system );
 	};
 } // namespace VTX::App::Action::Selection
 

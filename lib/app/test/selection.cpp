@@ -1,7 +1,10 @@
+#include "app/action/action_manager.hpp"
+#include "app/services.hpp"
 #include <app/action/selection.hpp>
 #include <app/fixture.hpp>
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
+#include <app/system/trajectory.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/topology.hpp>
 #include <optional>
@@ -44,6 +47,107 @@ namespace
 		return std::nullopt;
 	}
 } // namespace
+
+TEST_CASE( "VTX_APP - Selection - Extend selection to 4 angstrom", "[extendSelection]" )
+{
+	using namespace VTX;
+	App::Fixture app;
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "6fxo.bcif.gz" ) );
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		const Index toSelect { 1667 };
+		App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system, toSelect );
+	}
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "4hhb.bcif.gz" ) );
+
+	const std::vector<int> refValue { 7, 28, 83 };
+
+	for ( int i = 0; i < 3; i++ )
+	{
+		App::ACTION().execute<App::Action::Selection::ExtendSelectionSelecFirst>( 4.0 );
+		int count { 0 };
+		int size { 0 };
+		for ( auto system : App::REG().view<Core::Struct::Topology>() )
+		{
+			const auto & selection = App::REG().get<App::System::Selection>( system );
+			size += selection.atoms.size();
+
+			for ( size_t j : selection.atoms )
+				count++;
+		}
+		CHECK( count == refValue[ i ] );
+	}
+}
+
+TEST_CASE( "VTX_APP - Selection - Extend selection to residues", "[extendSelection]" )
+{
+	using namespace VTX;
+	App::Fixture app;
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "6fxo.bcif.gz" ) );
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "4hhb.bcif.gz" ) );
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		Core::Struct::IndexRangeList toSelect;
+		toSelect.addRange( 0 );
+		toSelect.addRange( 1758 );
+		App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system, toSelect );
+	}
+
+	App::ACTION().execute<App::Action::Selection::ExtendSelectionRes>();
+
+	int count { 0 };
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		const auto & selection = App::REG().get<App::System::Selection>( system );
+		for ( size_t j : selection.atoms )
+			count++;
+	}
+	CHECK( count == 35 );
+}
+
+TEST_CASE( "VTX_APP - Selection - RevertSelection", "[extendSelection]" )
+{
+	using namespace VTX;
+	App::Fixture app;
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "6fxo.bcif.gz" ) );
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		Index toSelect { 0 };
+		App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system, toSelect );
+	}
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "4hhb.bcif.gz" ) );
+
+	App::ACTION().execute<App::Action::Selection::RevertSelection>();
+
+	int count { 0 };
+	int L { 0 };
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		auto & selection = App::REG().get<App::System::Selection>( system );
+		L += selection.atoms.size();
+		for ( size_t j : selection.atoms )
+			count++;
+	}
+	CHECK( count == L - 1 );
+
+	App::ACTION().execute<Clear>();
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		Core::Struct::IndexRange toSelect { 0, 1200 };
+		App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system, toSelect );
+	}
+
+	App::ACTION().execute<App::Action::Selection::RevertSelection>();
+
+	count = 0;
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		auto & selection = App::REG().get<App::System::Selection>( system );
+		for ( size_t j : selection.atoms )
+			count++;
+	}
+	CHECK( count == L - 2400 );
+}
 
 TEST_CASE( "VTX_APP - Selection - Loaded system starts empty", "[integration][selection]" )
 {
