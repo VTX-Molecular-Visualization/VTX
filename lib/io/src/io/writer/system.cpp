@@ -137,7 +137,7 @@ namespace VTX::IO::Writer
 			for ( size_t frameIdx = 0; frameIdx < p_traj.frameCount(); frameIdx++ )
 			{
 				Frame				   w_frame				= p_system.newFrame();
-				std::span<const Vec3f> currentAtomPositions = p_traj.getAtomPositions( frameIdx );
+				std::span<const Vec3f> currentAtomPositions = p_traj.getAtomPositions( static_cast<uint>( frameIdx ) );
 				for ( size_t atomIdx = 0; atomIdx < currentAtomPositions.size(); atomIdx++ )
 				{
 					Atom w_atom;

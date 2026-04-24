@@ -174,16 +174,17 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 	VTX::Core::Struct::Topology				topology;
 	VTX::Util::StopToken					t;
 	VTX::IO::SystemReader					systemReader( waterPath, t );
+	VTX::IO::AtomPositions					positions;
 	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 	systemReader.get( dict, topology );
+	systemReader.get( positions );
 
 	CHECK( topology.getChainCount() == 1 );
 	CHECK( topology.getBondCount() == 4 );
 	CHECK( topology.getResidueCount() == 2 );
 	CHECK( topology.getAtomCount() == 6 );
-#ifdef I_BROKE_TRAJECTORY_TESTS
-	CHECK( topology.trajectory.getFrameCount() == 1 );
-#endif
+	CHECK( systemReader.frameCount() == 1 );
+	CHECK( positions.size() == 6 );
 }
 TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemfiles][trajectory][2 frames]" )
 {
