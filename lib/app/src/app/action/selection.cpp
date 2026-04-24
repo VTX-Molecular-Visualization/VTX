@@ -3,7 +3,7 @@
 #include "app/helper/scene.hpp"
 #include "app/input/input_manager.hpp"
 #include "app/services.hpp"
-#include "app/system/gridAtomList.hpp"
+#include "app/system/grid.hpp"
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "util/math/range_list.hpp"
