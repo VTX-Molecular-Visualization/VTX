@@ -136,14 +136,15 @@ namespace VTX::IO::Writer
 		{
 			for ( size_t frameIdx = 0; frameIdx < p_traj.frameCount(); frameIdx++ )
 			{
-				Frame w_frame = p_system.newFrame();
-				for ( size_t atomIdx = 0; atomIdx < p_mol.trajectory.getFrameFromIndex( frameIdx ).size(); atomIdx++ )
+				Frame				   w_frame				= p_system.newFrame();
+				std::span<const Vec3f> currentAtomPositions = p_traj.getAtomPositions( frameIdx );
+				for ( size_t atomIdx = 0; atomIdx < currentAtomPositions.size(); atomIdx++ )
 				{
 					Atom w_atom;
 					// if the atom doesn't exist for some reason, we skip to the next
 					if ( p_system.fetch( w_atom, { atomIdx } ) )
 					{
-						const VTX::Vec3f & coords = p_mol.trajectory.getFrameFromIndex( frameIdx )[ atomIdx ];
+						const VTX::Vec3f & coords = currentAtomPositions[ atomIdx ];
 						w_frame.set( w_atom, AtomCoordinates { .x = coords[ 0 ], .y = coords[ 1 ], .z = coords[ 2 ] } );
 					}
 				}
@@ -168,6 +169,7 @@ namespace VTX::IO::Writer
 			if ( p_args.stopToken.stop_requested() )
 				return;
 
+			fillFrames( p_args.trajectory, w_system );
 			// fillFrames( *p_args.system, w_system );
 
 			// We fill the write destination at the very end so if we stopped due to the stoptoken, nothing get written
