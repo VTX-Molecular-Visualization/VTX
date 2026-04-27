@@ -59,16 +59,8 @@ TEST_CASE( "VTX_IO - Test filepath", "[reader][pdb_code]" )
 	Util::StopToken	 t;
 	IO::SystemReader systemReader( systemPath, t );
 
-	std::string code;
-	std::string name;
-	bool		isSecondaryStructureLoadedFromFile;
-	bool		isTopologyDegenerated;
+	VTX::IO::Metadata metadata;
 
-	systemReader.get( VTX::IO::Metadata { &code, &name, &isSecondaryStructureLoadedFromFile, &isTopologyDegenerated } );
-	CHECK( code == "8OIT" );
-
-	// std::string		 s;
-	// VTX::IO::PdbIdCode d { s };
-	// systemReader.get( d );
-	// CHECK( d.code == "8OIT" );
+	systemReader.get( metadata );
+	CHECK( metadata.pdbIDCode == "8OIT" );
 }

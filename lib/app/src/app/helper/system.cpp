@@ -1,8 +1,8 @@
 #include "app/helper/system.hpp"
 #include "app/system/color.hpp"
-#include "app/system/metadata.hpp"
 #include "app/system/representation.hpp"
 #include <core/struct/topology.hpp>
+#include <io/metadata.hpp>
 
 namespace
 {
@@ -35,9 +35,9 @@ namespace VTX::App::Helper::System
 {
 	ECS::Entity getSystemByName( const std::string_view p_name )
 	{
-		for ( auto e : REG().view<App::System::Metadata>() )
+		for ( auto e : REG().view<IO::Metadata>() )
 		{
-			auto & metadata = REG().get<App::System::Metadata>( e );
+			auto & metadata = REG().get<IO::Metadata>( e );
 
 			if ( metadata.name == p_name )
 				return e;
@@ -48,9 +48,9 @@ namespace VTX::App::Helper::System
 
 	ECS::Entity getSystemByPdb( const std::string_view p_pdb )
 	{
-		for ( auto e : REG().view<App::System::Metadata>() )
+		for ( auto e : REG().view<IO::Metadata>() )
 		{
-			auto & metadata = REG().get<App::System::Metadata>( e );
+			auto & metadata = REG().get<IO::Metadata>( e );
 
 			if ( metadata.pdbIDCode == p_pdb )
 				return e;

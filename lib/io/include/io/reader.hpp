@@ -1,8 +1,11 @@
 #ifndef __VTX_IO_READER__
 #define __VTX_IO_READER__
 
+#include "io/constants.hpp"
+#include "io/metadata.hpp"
 #include <memory>
 #include <string>
+#include <util/enum.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -26,16 +29,6 @@ namespace VTX::IO
 	using AtomPositions = std::vector<Vec3f>;
 	using FrameIndex	= size_t;
 
-	constexpr std::string_view PDB_ID_CODE_DEFAULT = "----";
-
-	struct Metadata
-	{
-		mutable std::string * pdbCode;
-		mutable std::string * name;
-		mutable bool *		  isSecondaryStructureLoadedFromFile;
-		mutable bool *		  isTopologyDegenerated;
-	};
-
 	class SystemReader
 	{
 	  public:
@@ -53,7 +46,7 @@ namespace VTX::IO
 		 */
 		void get( AtomPositions & ) noexcept;
 		void get( const FrameIndex &, AtomPositions & ) noexcept;
-		void get( const Metadata & ) noexcept;
+		void get( Metadata & ) noexcept;
 		void set( Util::StopToken & ) noexcept;
 
 	  private:

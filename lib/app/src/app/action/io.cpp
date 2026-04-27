@@ -8,7 +8,6 @@
 #include "app/services.hpp"
 #include "app/session.hpp"
 #include "app/system/load.hpp"
-#include "app/system/metadata.hpp"
 #include "app/system/trajectory_preparation.hpp"
 #include "app/system/uid.hpp"
 #include "app/threading/thread_manager.hpp"
@@ -93,27 +92,19 @@ namespace VTX::App::Action::IO
 		_data->start_extraction();
 	}
 	void AssociateTrajectory::execute( const std::string & p_path, const ECS::Entity & p_e )
-	{
-		execute( FilePath( p_path ), p_e );
-	}
+	{ execute( FilePath( p_path ), p_e ); }
 	void AssociateTrajectory::wait() noexcept { _data->wait(); }
 
 	void RunPythonScript::execute( const FilePath & p_path ) { INTERPRETOR().runScript( p_path ); }
 
 	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id )
-	{
-		execute( p_id, p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() );
-	}
+	{ execute( p_id, p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() ); }
 
 	void DownloadSystem::execute( const std::string & p_systemId )
-	{
-		execute( Util::Url::SystemId( p_systemId.data() ) );
-	}
+	{ execute( Util::Url::SystemId( p_systemId.data() ) ); }
 
 	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id, FilePath p_path )
-	{
-		execute( VTX::Util::Url::UrlFull( p_id ), p_path );
-	}
+	{ execute( VTX::Util::Url::UrlFull( p_id ), p_path ); }
 
 	void DownloadSystem::execute( VTX::Util::Url::UrlFull p_url, FilePath p_path )
 	{

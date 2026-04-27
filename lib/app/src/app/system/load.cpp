@@ -8,7 +8,6 @@
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/deleted.hpp"
-#include "app/system/metadata.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/trajectory_preparation.hpp"
@@ -17,6 +16,7 @@
 #include "app/uid/uid_manager.hpp"
 #include <core/chemdb/atom.hpp>
 #include <core/struct/topology.hpp>
+#include <io/metadata.hpp>
 #include <renderer/renderer.hpp>
 #include <renderer/representation.hpp>
 #include <util/event_hub.hpp>
@@ -97,12 +97,7 @@ namespace VTX::App::System
 			pendingData.reader.emplace( pendingData.metadata.path, p_stopToken );
 
 		pendingData.reader->get( ECS::getCtx<Core::ChemDB::Category::Dictionary>(), pendingData.topology );
-		pendingData.reader->get(
-			VTX::IO::Metadata { &pendingData.metadata.pdbIDCode,
-								&pendingData.metadata.name,
-								&pendingData.metadata.isSecondaryStructureLoadedFromFile,
-								&pendingData.metadata.isTopologyDegenerated }
-		);
+		pendingData.reader->get( pendingData.metadata );
 
 		if ( p_stopToken.stop_requested() )
 		{
@@ -168,7 +163,7 @@ namespace VTX::App::System
 		// Add components.
 		auto   p_entity	 = reg.create();
 		auto & data		 = reg.emplace<Core::Struct::Topology>( p_entity, std::move( p_data.topology ) );
-		auto & metadata	 = reg.emplace<System::Metadata>( p_entity, std::move( p_data.metadata ) );
+		auto & metadata	 = reg.emplace<IO::Metadata>( p_entity, std::move( p_data.metadata ) );
 		auto & transform = reg.emplace<Util::Math::Transform>( p_entity );
 		auto & aabb		 = reg.emplace<Util::Math::AABB>( p_entity );
 		auto & uid		 = reg.emplace<System::UID>( p_entity );

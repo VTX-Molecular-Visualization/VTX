@@ -8,9 +8,9 @@
 #include <app/ecs.hpp>
 #include <app/events.hpp>
 #include <app/services.hpp>
-#include <app/system/metadata.hpp>
 #include <app/system/trajectory.hpp>
 #include <core/struct/topology.hpp>
+#include <io/metadata.hpp>
 #include <qboxlayout.h>
 #include <util/event_hub.hpp>
 
@@ -29,9 +29,9 @@ namespace VTX::UI::QT::Dialog
 		_cbSystem->setEditable( true );
 		_cbSystem->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
 
-		for ( auto & it_entity : App::REG().view<App::System::Metadata>() )
+		for ( auto & it_entity : App::REG().view<IO::Metadata>() )
 		{
-			auto &	metadata	  = App::REG().get<App::System::Metadata>( it_entity );
+			auto &	metadata	  = App::REG().get<IO::Metadata>( it_entity );
 			QString displayString = QString::fromStdString( metadata.name );
 			_cbSystem->addItem( displayString, QVariant::fromValue( it_entity ) );
 		}

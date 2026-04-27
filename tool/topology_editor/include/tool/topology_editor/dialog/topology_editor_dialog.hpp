@@ -3,37 +3,36 @@
 
 #include <QPointer>
 #include <app/ecs.hpp>
+#include <core/struct/topology.hpp>
+#include <array>
 #include <memory>
-#include <optional>
 #include <ui/qt/dialog/base_dialog.hpp>
 
-class QComboBox;
 class QLabel;
 class QLineEdit;
 class QPushButton;
 class QShowEvent;
 class QTableWidget;
-class QTreeView;
-
-namespace VTX::UI::QT::Model
-{
-	class SystemModel;
-}
 
 namespace VTX::Tool::TopologyEditor::Dialog
 {
 	class TopologyEditorDialog : public UI::QT::Dialog::BaseDialog<TopologyEditorDialog>
 	{
 	  public:
-		TopologyEditorDialog();
+		explicit TopologyEditorDialog( App::ECS::Entity p_system );
+		App::ECS::Entity getSystem() const;
 
 	  protected:
 		void showEvent( QShowEvent * p_event ) override;
 
 	  private:
-		QPointer<QComboBox>	  _systemSelector;
+		QPointer<QLabel>	  _systemName;
 		QPointer<QLabel>	  _systemStatus;
-		QPointer<QTreeView>	  _structureTree;
+		QPointer<QLineEdit>	  _chainsFilter;
+		QPointer<QLineEdit>	  _residuesFilter;
+		QPointer<QLineEdit>	  _atomsFilter;
+		QPointer<QLineEdit>	  _bondsFilter;
+		QPointer<QLineEdit>	  _validationFilter;
 		QPointer<QTableWidget> _chainsTable;
 		QPointer<QTableWidget> _residuesTable;
 		QPointer<QTableWidget> _atomsTable;
@@ -41,24 +40,25 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		QPointer<QTableWidget> _validationTable;
 		QPointer<QLineEdit>	  _selectedType;
 		QPointer<QLineEdit>	  _selectedName;
-		QPointer<QLineEdit>	  _selectedParent;
-		QPointer<QLineEdit>	  _selectedPosition;
+		std::array<QPointer<QLabel>, 6>	  _propertyLabels;
+		std::array<QPointer<QLineEdit>, 6> _propertyValues;
 		QPointer<QPushButton> _applyButton;
 
-		std::unique_ptr<UI::QT::Model::SystemModel> _systemModel;
-		std::optional<App::ECS::Entity>			   _currentSystem;
+		App::ECS::Entity _system;
 
 		void _buildUi();
-		void _refreshSystems();
-		void _setCurrentSystem( const App::ECS::Entity p_system );
 		void _clearSystemViews();
+		void _clearSelectionInspector();
+		void _setInspectorProperty( const int p_index, const QString & p_label, const QString & p_value );
 		void _populateTables();
 		void _populateChainsTable();
 		void _populateResiduesTable();
 		void _populateAtomsTable();
 		void _populateBondsTable();
 		void _populateValidationTable();
-		void _updateSelectionInspector( const QModelIndex & p_index );
+		void _applyTableFilter( QTableWidget & p_table, const QString & p_filter );
+		void _updateSelectionInspector( const Core::Struct::E_SYSTEM_ITEM p_item, const Index p_index );
+		void _updateBondInspector( const Index p_index );
 	};
 } // namespace VTX::Tool::TopologyEditor::Dialog
 

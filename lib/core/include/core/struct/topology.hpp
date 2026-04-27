@@ -107,6 +107,10 @@ namespace VTX::Core::Struct
 		 * @brief Atom names.
 		 */
 		std::vector<std::string> atomNames;
+		/**
+		 * @brief Original atom IDs from the input file.
+		 */
+		std::vector<Index> atomOriginalIds;
 
 		/**
 		 * @brief Bond informations.
@@ -272,6 +276,8 @@ namespace VTX::Core::Struct
 		{ return atomSymbols[ p_atomIndex ]; }
 
 		inline const std::string & getAtomName( const Index p_atomIndex ) const { return atomNames[ p_atomIndex ]; }
+
+		inline Index getAtomOriginalId( const Index p_atomIndex ) const { return atomOriginalIds[ p_atomIndex ]; }
 
 		inline Index getAtomResidueIndex( const Index p_atomIndex ) const { return atomResidueIndexes[ p_atomIndex ]; }
 

@@ -1,13 +1,13 @@
 #ifndef __VTX_APP_SYSTEM_LOAD__
 #define __VTX_APP_SYSTEM_LOAD__
 
-#include "app/system/metadata.hpp"
 #include "app/system/trajectory.hpp"
 #include "app/threading/base_thread.hpp"
 #include <atomic>
 #include <core/struct/topology.hpp>
 #include <functional>
 #include <future>
+#include <io/metadata.hpp>
 #include <io/reader.hpp>
 #include <latch>
 #include <optional>
@@ -26,7 +26,7 @@ namespace VTX::App::System
 		std::optional<std::string> buffer;
 		std::optional<IO::SystemReader> reader;
 		Core::Struct::Topology			topology;
-		Metadata						metadata;
+		IO::Metadata					metadata;
 		// Two pass on the system : when the topology is ready, the decision of what kind of trajectory to have in made
 		// on the main loop. Then, the trajectory is red asynchronously. Then, when trajectory is ready, the main loop
 		// proceed with the system creation.

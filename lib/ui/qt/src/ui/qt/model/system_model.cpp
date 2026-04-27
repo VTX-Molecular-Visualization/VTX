@@ -14,7 +14,7 @@
 namespace VTX::UI::QT::Model
 {
 	SystemModel::SystemModel( const App::ECS::Entity p_system, QObject * p_parent ) :
-		_system( p_system ), _metadata( App::REG().get<App::System::Metadata>( p_system ) ),
+		_system( p_system ), _metadata( App::REG().get<IO::Metadata>( p_system ) ),
 		_data( App::REG().get<Core::Struct::Topology>( p_system ) ), QAbstractItemModel( p_parent )
 	{
 	}
