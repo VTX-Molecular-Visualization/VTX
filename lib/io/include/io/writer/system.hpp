@@ -26,18 +26,20 @@ namespace VTX::IO::Writer
 	class TrajectoryFrameGetter
 	{
 	  public:
+		TrajectoryFrameGetter() = default;
+
 		/**
 		 * @brief Return number of available frames
 		 * @return
 		 */
-		uint frameCount() const;
+		inline uint frameCount() const { return _ptr->frameCount(); }
 
 		/**
 		 * @brief Returns the n-th frame
 		 * @return
 		 */
-		std::span<const Vec3f> getAtomPositions( const uint & ) const;
-		std::span<const Vec3f> getCurrentAtomPositions() const;
+		inline std::span<const Vec3f> getAtomPositions( const uint & p_ ) const { return _ptr->getAtomPositions( p_ ); }
+		inline std::span<const Vec3f> getCurrentAtomPositions() const { return _ptr->getCurrentAtomPositions(); }
 
 	  private:
 		struct _interface
