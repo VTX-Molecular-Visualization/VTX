@@ -25,7 +25,7 @@ namespace VTX::Bench
 		VTX::Util::Network::httpRequestGet( "https://files.rcsb.org/download/" + p_pdb + ".pdb", text );
 
 		Util::StopToken	 t;
-		IO::SystemReader reader( text, p_pdb + ".pdb", t );
+		IO::SystemReader reader( std::move( text ), p_pdb + ".pdb", t );
 		LoadedSystem	 system;
 		auto			 d = Core::ChemDB::Category::createDefaultDictionary();
 		reader.get( d, system.topology );

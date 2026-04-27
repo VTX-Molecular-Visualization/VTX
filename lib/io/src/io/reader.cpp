@@ -47,7 +47,7 @@ namespace VTX::IO
 			filePath( p_path ), stopToken( p_stopToken ), trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
 		{ _init(); }
 
-		_Impl( std::string p_buffer, const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
+		_Impl( MemoryBuffer && p_buffer, const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
 			filePath( p_path ), stopToken( p_stopToken ), buffer( std::move( p_buffer ) ),
 			trajectory(
 				chemfiles::Trajectory::memory_reader(
@@ -327,7 +327,7 @@ namespace VTX::IO
 		_impl( new _Impl( p_path, p_stopToken ) )
 	{
 	}
-	SystemReader::SystemReader( MemoryBuffer p_buffer, const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
+	SystemReader::SystemReader( MemoryBuffer && p_buffer, const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
 		_impl( new _Impl( std::move( p_buffer ), p_path, p_stopToken ) )
 	{
 	}

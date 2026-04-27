@@ -34,7 +34,7 @@ namespace VTX::IO
 	  public:
 		SystemReader() = delete;
 		SystemReader( const VTX::FilePath &, Util::StopToken & );
-		SystemReader( MemoryBuffer, const VTX::FilePath &, Util::StopToken & );
+		SystemReader( MemoryBuffer &&, const VTX::FilePath &, Util::StopToken & );
 
 		size_t frameCount() const;
 
