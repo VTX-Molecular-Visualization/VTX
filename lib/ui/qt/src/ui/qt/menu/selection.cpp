@@ -2,9 +2,9 @@
 #include "ui/qt/services.hpp"
 #include <app/action/scene.hpp>
 #include <app/helper/system.hpp>
-#include <app/system/metadata.hpp>
 #include <app/system/selection.hpp>
 #include <core/struct/topology.hpp>
+#include <io/metadata.hpp>
 #include <string>
 #include <util/types.hpp>
 
@@ -14,16 +14,13 @@ namespace VTX::UI::QT::Menu
 	{
 		ActionRegistry::ActionParams colorSchemeParams( const ColorScheme::Selected & p_selected )
 		{
-			ActionRegistry::ActionParams params {
-				{ std::string( Action::Selection::PARAM_COLOR_SCHEME ),
-				  static_cast<int>( toUnderlying( p_selected.scheme ) ) }
-			};
+			ActionRegistry::ActionParams params { { std::string( Action::Selection::PARAM_COLOR_SCHEME ),
+													static_cast<int>( toUnderlying( p_selected.scheme ) ) } };
 
 			if ( p_selected.index )
 			{
 				params.emplace(
-					std::string( Action::Selection::PARAM_COLOR_INDEX ),
-					static_cast<int>( *p_selected.index )
+					std::string( Action::Selection::PARAM_COLOR_INDEX ), static_cast<int>( *p_selected.index )
 				);
 			}
 
@@ -32,10 +29,8 @@ namespace VTX::UI::QT::Menu
 
 		ActionRegistry::ActionParams representationParams( const App::ECS::Entity p_representation )
 		{
-			return ActionRegistry::ActionParams {
-				{ std::string( Action::Selection::PARAM_REPRESENTATION ),
-				  static_cast<int>( toUnderlying( p_representation ) ) }
-			};
+			return ActionRegistry::ActionParams { { std::string( Action::Selection::PARAM_REPRESENTATION ),
+													static_cast<int>( toUnderlying( p_representation ) ) } };
 		}
 	} // namespace
 
@@ -68,9 +63,7 @@ namespace VTX::UI::QT::Menu
 			&ColorScheme::selected,
 			this,
 			[]( const ColorScheme::Selected & p_selected )
-			{
-				UI_ACTIONS().trigger( Action::Selection::SET_COLOR_SCHEME, colorSchemeParams( p_selected ) );
-			}
+			{ UI_ACTIONS().trigger( Action::Selection::SET_COLOR_SCHEME, colorSchemeParams( p_selected ) ); }
 		);
 		addMenu( _colorSchemeMenu );
 
@@ -80,11 +73,7 @@ namespace VTX::UI::QT::Menu
 			&Representation::selected,
 			this,
 			[]( const App::ECS::Entity p_representation )
-			{
-				UI_ACTIONS().trigger(
-					Action::Selection::SET_REPRESENTATION, representationParams( p_representation )
-				);
-			}
+			{ UI_ACTIONS().trigger( Action::Selection::SET_REPRESENTATION, representationParams( p_representation ) ); }
 		);
 		addMenu( _representationMenu );
 
@@ -92,7 +81,7 @@ namespace VTX::UI::QT::Menu
 		const auto entities = reg.view<App::System::Selection>();
 		for ( auto entity : entities )
 		{
-			const auto & metadata = reg.get<App::System::Metadata>( entity );
+			const auto & metadata = reg.get<IO::Metadata>( entity );
 
 			QString name = QString::fromStdString( metadata.name );
 

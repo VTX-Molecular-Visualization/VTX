@@ -3,8 +3,8 @@
 #include "app/scene/color_layout.hpp"
 #include "app/scene/graphics_config.hpp"
 #include "app/scene/tag_root.hpp"
-#include "app/system/metadata.hpp"
 #include "app/system/selection.hpp"
+#include <io/metadata.hpp>
 
 namespace VTX::App::Action::Scene
 {
@@ -26,7 +26,7 @@ namespace VTX::App::Action::Scene
 
 	void Clear::execute()
 	{
-		REG().view<System::Metadata>().each( [ & ]( auto p_e, auto & ) { REG().destroy( p_e ); } );
+		REG().view<IO::Metadata>().each( [ & ]( auto p_e, auto & ) { REG().destroy( p_e ); } );
 	}
 
 	void SetColorLayout::execute( const ECS::Entity p_e )

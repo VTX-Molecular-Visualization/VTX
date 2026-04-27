@@ -10,9 +10,9 @@
 #include <app/action/system.hpp>
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
-#include <app/system/metadata.hpp>
 #include <app/system/selection.hpp>
 #include <core/struct/topology.hpp>
+#include <io/metadata.hpp>
 #include <io/reader.hpp>
 #include <util/chrono.hpp>
 
@@ -48,7 +48,7 @@ namespace VTX::UI::QT::Widget
 
 			const auto & topology  = reg.get<Core::Struct::Topology>( entity );
 			const auto & selection = reg.get<App::System::Selection>( entity );
-			const auto & metadata  = reg.get<App::System::Metadata>( entity );
+			const auto & metadata  = reg.get<IO::Metadata>( entity );
 			const auto & transform = reg.get<Util::Math::Transform>( entity );
 
 			QString systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
@@ -158,8 +158,9 @@ namespace VTX::UI::QT::Widget
 			// Chains.
 			for ( Index chain = 0; chain < topology.getChainCount(); ++chain )
 			{
-				QString	   chainName  = QString::fromStdString( topology.getChainName( chain ) );
-				const auto chainState = App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::CHAIN, chain } );
+				QString	   chainName = QString::fromStdString( topology.getChainName( chain ) );
+				const auto chainState
+					= App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::CHAIN, chain } );
 				if ( chainState == App::System::E_SELECTION_STATE::FULL )
 				{
 					countChain++;
@@ -230,8 +231,7 @@ namespace VTX::UI::QT::Widget
 		// Connect.
 		_connTransformChanged
 			= App::REG().on_update<Util::Math::Transform>().connect<&Selection::_transformUpdated>( this );
-		_connMetadataChanged
-			= App::REG().on_update<App::System::Metadata>().connect<&Selection::_metadataUpdated>( this );
+		_connMetadataChanged = App::REG().on_update<IO::Metadata>().connect<&Selection::_metadataUpdated>( this );
 	}
 
 	Selection::~Selection()
@@ -259,8 +259,8 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		const auto &   metadata = p_reg.get<App::System::Metadata>( p_entity );
-		const QString name	 = QString::fromStdString( metadata.name );
+		const auto &  metadata = p_reg.get<IO::Metadata>( p_entity );
+		const QString name	   = QString::fromStdString( metadata.name );
 		if ( _textName->toPlainText() == name )
 		{
 			return;

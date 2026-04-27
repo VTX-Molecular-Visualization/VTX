@@ -15,12 +15,12 @@
 #include <app/ecs.hpp>
 #include <app/helper/system.hpp>
 #include <app/scene/color_layout.hpp>
-#include <app/system/metadata.hpp>
 #include <app/system/selection.hpp>
 #include <app/system/uid.hpp>
 #include <app/system/visibility.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/struct/topology.hpp>
+#include <io/metadata.hpp>
 #include <renderer/color.hpp>
 #include <util/math.hpp>
 
@@ -49,7 +49,7 @@ namespace VTX::UI::QT::Widget
 
 		auto & reg				  = REG();
 		auto & topology			  = reg.get<Core::Struct::Topology>( _system );
-		auto & metadata			  = reg.get<App::System::Metadata>( _system );
+		auto & metadata			  = reg.get<IO::Metadata>( _system );
 		auto & uid				  = reg.get<App::System::UID>( _system );
 		auto & colorLayoutIntance = ECS::getFirstComponent<Scene::ColorLayout>();
 		auto & colorlayout		  = reg.get<Renderer::Color::Layout>( colorLayoutIntance.preset );

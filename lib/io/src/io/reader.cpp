@@ -13,6 +13,7 @@
 #include <map>
 #include <optional>
 #include <unordered_set>
+#include <util/chrono.hpp>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
 
@@ -32,14 +33,15 @@ namespace VTX::IO
 		chemfiles::Trajectory					trajectory;
 		chemfiles::Frame						currentFrame;
 		chemfiles::Topology						topology;
-		const std::vector<chemfiles::Residue> * residues						   = nullptr;
-		const std::vector<chemfiles::Bond> *	bonds							   = nullptr;
-		const chemfiles::Residue *				currentResidue					   = nullptr;
-		const chemfiles::Atom *					currentAtom						   = nullptr;
-		size_t									currentAtomIndex				   = 0;
-		size_t									currentFrameIdx					   = 0;
-		bool									isSecondaryStructureLoadedFromFile = false;
-		bool									isTopologyDegenerated			   = false;
+		const std::vector<chemfiles::Residue> * residues			  = nullptr;
+		const std::vector<chemfiles::Bond> *	bonds				  = nullptr;
+		const chemfiles::Residue *				currentResidue		  = nullptr;
+		const chemfiles::Atom *					currentAtom			  = nullptr;
+		size_t									currentAtomIndex	  = 0;
+		size_t									currentFrameIdx		  = 0;
+		READER_OPTION							readerOption		  = READER_OPTION::ALL;
+		READER_OPTION							performedReaderOption = READER_OPTION::NONE;
+		TOPOLOGY_STATE							topologyState		  = TOPOLOGY_STATE::OK;
 
 		_Impl( const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
 			filePath( p_path ), stopToken( p_stopToken ), trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
@@ -63,13 +65,17 @@ namespace VTX::IO
 			Core::Struct::Topology &				   p_topology
 		) noexcept
 		{
+			Util::ScopedChrono chrono( "SystemReader::_Impl::get" );
+
 			if ( stopToken.get().stop_requested() )
 				return;
 
 			// Strip leading dot from extension (e.g. ".pdb" -> "pdb")
 			std::string ext = filePath.extension().string();
-			if ( !ext.empty() && ext[ 0 ] == '.' )
+			if ( not ext.empty() && ext[ 0 ] == '.' )
+			{
 				ext = ext.substr( 1 );
+			}
 
 			Index currentChainIndex		   = INVALID_INDEX;
 			Index currentChainResidueCount = 0;
@@ -246,21 +252,17 @@ namespace VTX::IO
 			for ( size_t i = 0; i < pos.size(); ++i )
 				p_positions[ i ] = Vec3f( pos[ i ][ 0 ], pos[ i ][ 1 ], pos[ i ][ 2 ] );
 		}
-		void get( const Metadata & p_ ) noexcept
+		void get( Metadata & p_ ) noexcept
 		{
 			if ( stopToken.get().stop_requested() )
 				return;
 
-			assert( p_.pdbCode != nullptr );
-			assert( p_.name != nullptr );
-			assert( p_.isSecondaryStructureLoadedFromFile != nullptr );
-			assert( p_.isTopologyDegenerated != nullptr );
-
-			*p_.pdbCode = currentFrame.get( "pdb_idcode" ) ? currentFrame.get( "pdb_idcode" )->as_string()
-														   : PDB_ID_CODE_DEFAULT;
-			*p_.name	= currentFrame.get( "name" ) ? currentFrame.get( "name" )->as_string() : "";
-			*p_.isSecondaryStructureLoadedFromFile = isSecondaryStructureLoadedFromFile;
-			*p_.isTopologyDegenerated			   = isTopologyDegenerated;
+			p_.pdbIDCode			 = currentFrame.get( "pdb_idcode" ) ? currentFrame.get( "pdb_idcode" )->as_string()
+																		: PDB_ID_CODE_DEFAULT;
+			p_.name					 = currentFrame.get( "name" ) ? currentFrame.get( "name" )->as_string() : "";
+			p_.readerOption			 = readerOption;
+			p_.performedReaderOption = performedReaderOption;
+			p_.topologyState		 = topologyState;
 		}
 
 		void set( Util::StopToken & p_ ) noexcept { stopToken = p_; }
@@ -333,7 +335,7 @@ namespace VTX::IO
 	{ _impl->get( p_d, p_ ); }
 	void SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) noexcept { _impl->get( p_i, p_ ); }
 	void SystemReader::get( AtomPositions & p_ ) noexcept { _impl->get( 0, p_ ); }
-	void SystemReader::get( const Metadata & p_ ) noexcept { _impl->get( p_ ); }
+	void SystemReader::get( Metadata & p_ ) noexcept { _impl->get( p_ ); }
 	void SystemReader::set( Util::StopToken & p_ ) noexcept { _impl->set( p_ ); }
 
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }

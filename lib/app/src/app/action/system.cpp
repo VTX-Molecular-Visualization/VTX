@@ -1,6 +1,6 @@
 #include "app/action/system.hpp"
 #include "app/services.hpp"
-#include "app/system/metadata.hpp"
+#include <io/metadata.hpp>
 #include <util/event_hub.hpp>
 #include <util/math.hpp>
 #include <util/math/transform.hpp>
@@ -9,8 +9,8 @@ namespace VTX::App::Action::System
 {
 	void SetName::execute( const ECS::Entity p_ent, const std::string_view p_name )
 	{
-		REG().patch<App::System::Metadata>(
-			p_ent, [ &p_name ]( App::System::Metadata & p_metadata ) { p_metadata.name = std::string( p_name ); }
+		REG().patch<IO::Metadata>(
+			p_ent, [ &p_name ]( IO::Metadata & p_metadata ) { p_metadata.name = std::string( p_name ); }
 		);
 	}
 

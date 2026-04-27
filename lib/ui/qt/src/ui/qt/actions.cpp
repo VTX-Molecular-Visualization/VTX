@@ -242,24 +242,12 @@ namespace VTX::UI::QT::Action
 			Theme::setAction(),
 			[]( const ActionRegistry::ActionContext & p_context )
 			{
-				const auto themeParam = p_context.param<int>( Theme::PARAM_THEME );
-				if ( not themeParam )
+				const auto theme = p_context.param<int>( Theme::PARAM_THEME );
+				if ( theme )
 				{
-					VTX_WARNING(
-						"Missing or invalid parameter for UI action {}: {}", p_context.actionId, Theme::PARAM_THEME
-					);
-					return;
+					STYLE().setTheme( static_cast<Style::E_THEME>( *theme ) );
+					App::HUB().trigger<Events::ThemeChanged>( *theme );
 				}
-
-				const int theme = *themeParam;
-				if ( theme < 0 || theme >= toUnderlying( Style::E_THEME::COUNT ) )
-				{
-					VTX_WARNING( "Invalid theme parameter for UI action {}: {}", p_context.actionId, theme );
-					return;
-				}
-
-				STYLE().setTheme( static_cast<Style::E_THEME>( theme ) );
-				App::HUB().trigger<Events::ThemeChanged>( theme );
 			}
 		);
 		p_registry.registerAction( Theme::resetLayoutAction(), handler( []() { MAIN_WINDOW().resetLayout(); } ) );

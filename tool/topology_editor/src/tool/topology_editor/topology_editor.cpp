@@ -3,9 +3,9 @@
 #include <QCursor>
 #include <QMenu>
 #include <QPointer>
-#include <app/system/metadata.hpp>
-#include <core/struct/topology.hpp>
 #include <app/ui/concepts.hpp>
+#include <core/struct/topology.hpp>
+#include <io/metadata.hpp>
 #include <string_view>
 #include <ui/qt/action_registry.hpp>
 #include <ui/qt/services.hpp>
@@ -16,12 +16,12 @@ namespace VTX::Tool::TopologyEditor
 {
 	namespace
 	{
-		constexpr std::string_view ACTION_OPEN_TOPOLOGY_EDITOR = "tool.topology_editor.open";
+		constexpr std::string_view			   ACTION_OPEN_TOPOLOGY_EDITOR = "tool.topology_editor.open";
 		QPointer<Dialog::TopologyEditorDialog> g_dialog;
 
 		QString entityLabel( const App::ECS::Entity p_entity )
 		{
-			const auto & metadata = App::REG().get<App::System::Metadata>( p_entity );
+			const auto & metadata = App::REG().get<IO::Metadata>( p_entity );
 			if ( not metadata.name.empty() )
 			{
 				return QString::fromStdString( metadata.name );
@@ -80,7 +80,7 @@ namespace VTX::Tool::TopologyEditor
 			openTopologyEditorAction(),
 			[]( const UI::QT::ActionRegistry::ActionContext & )
 			{
-				auto  systems = App::REG().view<Core::Struct::Topology, App::System::Metadata>();
+				auto systems = App::REG().view<Core::Struct::Topology, IO::Metadata>();
 				if ( systems.begin() == systems.end() )
 				{
 					VTX_WARNING( "Topology Editor: no system available" );
@@ -88,7 +88,7 @@ namespace VTX::Tool::TopologyEditor
 				}
 
 				const App::ECS::Entity firstSystem = *systems.begin();
-				auto				   secondIt	 = systems.begin();
+				auto				   secondIt	   = systems.begin();
 				++secondIt;
 				if ( secondIt == systems.end() )
 				{
