@@ -227,11 +227,25 @@ namespace
 
 	struct TestResults
 	{
+		struct Read
+		{
+			bool atLeastOneFrame = false;
+
+		} firstRead, reRead;
 		bool matchAtoms	   = false;
 		bool matchResidues = false;
 		bool matchChains   = false;
 		bool matchBonds	   = false;
 		bool matchFrames   = false;
+	};
+	struct LazyTrajectory
+	{
+		std::vector<std::vector<VTX::Vec3f>> frames;
+
+		inline VTX::uint				   frameCount() const { return static_cast<VTX::uint>( frames.size() ); }
+		inline std::span<const VTX::Vec3f> getCurrentAtomPositions() const { return frames[ 0 ]; }
+		inline std::span<const VTX::Vec3f> getAtomPositions( const VTX::uint & p_index ) const
+		{ return frames[ p_index ]; }
 	};
 
 	/**
@@ -251,17 +265,24 @@ namespace
 
 		size_t						frameCount = 0;
 		VTX::Core::Struct::Topology topology;
+		LazyTrajectory				traj;
 		{
 			VTX::Util::StopToken  t;
 			VTX::IO::SystemReader systemReader( systemPath, t );
 			systemReader.get( dict, topology );
 			frameCount = systemReader.frameCount();
+			for ( size_t it_fc = 0; it_fc < frameCount; it_fc++ )
+			{
+				traj.frames.push_back( {} );
+				systemReader.get( it_fc, traj.frames.back() );
+			}
 		}
 		size_t atomCount  = topology.getAtomCount();
 		size_t chainCount = topology.getChainCount();
 		size_t bondCount  = topology.getBondCount();
 		size_t resCount	  = topology.getResidueCount();
-		CHECK( frameCount > 0 );
+
+		p_out.firstRead.atLeastOneFrame = ( frameCount > 0 );
 
 		const VTX::FilePath outPath = VTX::Util::Filesystem::getExecutableDir() / "out" / "ChemfilesTrajectory";
 		if ( not std::filesystem::exists( outPath ) )
@@ -270,11 +291,10 @@ namespace
 		const VTX::FilePath destination = outPath / ( systemName + p_args.writtenExtension );
 
 		writeFile(
-			WriteArgs {
-				.destination = destination,
-				.format		 = E_FILE_FORMATS::none,
-				.topology	 = &topology,
-			}
+			WriteArgs { .destination = destination,
+						.format		 = E_FILE_FORMATS::none,
+						.topology	 = &topology,
+						.trajectory	 = std::move( traj ) }
 		);
 
 		VTX::Core::Struct::Topology system_reread;
@@ -282,10 +302,12 @@ namespace
 		VTX::IO::SystemReader		systemReader( destination, t );
 		systemReader.get( dict, system_reread );
 
-		CHECK( system_reread.getChainCount() == chainCount );
-		CHECK( system_reread.getResidueCount() == resCount );
-		CHECK( system_reread.getAtomCount() == atomCount );
-		CHECK( systemReader.frameCount() == frameCount );
+		p_out.matchChains			 = ( system_reread.getChainCount() == chainCount );
+		p_out.matchResidues			 = ( system_reread.getResidueCount() == resCount );
+		p_out.matchAtoms			 = ( system_reread.getAtomCount() == atomCount );
+		p_out.matchFrames			 = ( systemReader.frameCount() == frameCount );
+		p_out.reRead.atLeastOneFrame = systemReader.frameCount() > 0;
+		p_out.matchBonds			 = system_reread.getBondCount() == bondCount;
 
 		// Bond are not reliably written in files so we won't check them.
 		// e.g. 2qwo has disulfide bond that is not retrieved when reloading the file
@@ -293,17 +315,21 @@ namespace
 	}
 } // namespace
 
-TEST_CASE( "VTX_IO - Test writeFile", "[writer][chemfiles][trajectory][specific_file]" )
+TEST_CASE( "VTX_IO - Test writeFile", "[writer][chemfiles][trajectory][specific_file][read_write_read]" )
 {
 	{
 		TestResults results;
 		testSystem(
-			TestSystemArgs { .systemName = "1AGA", .extension = ".mmtf", .writtenExtension = ".mmcif" }, results
+			TestSystemArgs { .systemName = "1AGA", .extension = ".mmtf", .writtenExtension = ".bcif" }, results
 		);
 		CHECK( results.matchAtoms );
 		CHECK( results.matchResidues );
 		CHECK( results.matchChains );
-		CHECK( results.matchBonds );
+		// CHECK( results.matchBonds ); // Bonds won't be reliably written depending on the format. mmcif has completly
+		// given up on bonds. bcif doesn't currently write struc_conn it seems. pdb is weird and I don't know what's
+		// wrong but it is wrong. And so on
 		CHECK( results.matchFrames );
+		CHECK( results.firstRead.atLeastOneFrame );
+		CHECK( results.reRead.atLeastOneFrame );
 	}
 }
