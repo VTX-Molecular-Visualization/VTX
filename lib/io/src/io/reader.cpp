@@ -28,27 +28,31 @@ namespace VTX::IO
 	struct SystemReader::_Impl
 	{
 		VTX::FilePath							filePath;
+		READER_OPTION							readerOption;
 		std::reference_wrapper<Util::StopToken> stopToken;
 		std::optional<std::string>				buffer; // kept alive for memory_reader
 		chemfiles::Trajectory					trajectory;
 		chemfiles::Frame						currentFrame;
 		chemfiles::Topology						topology;
-		const std::vector<chemfiles::Residue> * residues			  = nullptr;
-		const std::vector<chemfiles::Bond> *	bonds				  = nullptr;
-		const chemfiles::Residue *				currentResidue		  = nullptr;
-		const chemfiles::Atom *					currentAtom			  = nullptr;
-		size_t									currentAtomIndex	  = 0;
-		size_t									currentFrameIdx		  = 0;
-		READER_OPTION							readerOption		  = READER_OPTION::ALL;
-		READER_OPTION							performedReaderOption = READER_OPTION::NONE;
-		TOPOLOGY_STATE							topologyState		  = TOPOLOGY_STATE::OK;
+		const std::vector<chemfiles::Residue> * residues		 = nullptr;
+		const std::vector<chemfiles::Bond> *	bonds			 = nullptr;
+		const chemfiles::Residue *				currentResidue	 = nullptr;
+		const chemfiles::Atom *					currentAtom		 = nullptr;
+		size_t									currentAtomIndex = 0;
+		size_t									currentFrameIdx	 = 0;
 
-		_Impl( const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
-			filePath( p_path ), stopToken( p_stopToken ), trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
+		_Impl( const VTX::FilePath & p_path, const READER_OPTION p_options, Util::StopToken & p_stopToken ) :
+			filePath( p_path ), readerOption( p_options ), stopToken( p_stopToken ),
+			trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
 		{ _init(); }
 
-		_Impl( MemoryBuffer && p_buffer, const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
-			filePath( p_path ), stopToken( p_stopToken ), buffer( std::move( p_buffer ) ),
+		_Impl(
+			MemoryBuffer &&		  p_buffer,
+			const VTX::FilePath & p_path,
+			const READER_OPTION	  p_options,
+			Util::StopToken &	  p_stopToken
+		) :
+			filePath( p_path ), readerOption( p_options ), stopToken( p_stopToken ), buffer( std::move( p_buffer ) ),
 			trajectory(
 				chemfiles::Trajectory::memory_reader(
 					buffer->c_str(),
@@ -62,13 +66,27 @@ namespace VTX::IO
 
 		void get(
 			const Core::ChemDB::Category::Dictionary & p_categories,
-			Core::Struct::Topology &				   p_topology
+			Core::Struct::Topology &				   p_topology,
+			Metadata &								   p_metadata
 		) noexcept
 		{
 			Util::ScopedChrono chrono( "SystemReader::_Impl::get" );
 
 			if ( stopToken.get().stop_requested() )
 				return;
+
+			// Metadata.
+			p_metadata.path			= filePath;
+			p_metadata.readerOption = readerOption;
+			p_metadata.pdbIDCode	= currentFrame.get( "pdb_idcode" ) ? currentFrame.get( "pdb_idcode" )->as_string()
+																	   : PDB_ID_CODE_DEFAULT;
+			p_metadata.name			= currentFrame.get( "name" ) ? currentFrame.get( "name" )->as_string() : "";
+			p_metadata.performedReaderOption = READER_OPTION::NONE;
+			p_metadata.topologyState		 = TOPOLOGY_STATE::OK;
+
+			// TODO.
+			// p_metadata.performedReaderOption = performedReaderOption;
+			// p_metadata.topologyState			= topologyState;
 
 			// Strip leading dot from extension (e.g. ".pdb" -> "pdb")
 			std::string ext = filePath.extension().string();
@@ -252,19 +270,6 @@ namespace VTX::IO
 			for ( size_t i = 0; i < pos.size(); ++i )
 				p_positions[ i ] = Vec3f( pos[ i ][ 0 ], pos[ i ][ 1 ], pos[ i ][ 2 ] );
 		}
-		void get( Metadata & p_ ) noexcept
-		{
-			if ( stopToken.get().stop_requested() )
-				return;
-
-			p_.path					 = filePath;
-			p_.pdbIDCode			 = currentFrame.get( "pdb_idcode" ) ? currentFrame.get( "pdb_idcode" )->as_string()
-																		: PDB_ID_CODE_DEFAULT;
-			p_.name					 = currentFrame.get( "name" ) ? currentFrame.get( "name" )->as_string() : "";
-			p_.readerOption			 = readerOption;
-			p_.performedReaderOption = performedReaderOption;
-			p_.topologyState		 = topologyState;
-		}
 
 		void set( Util::StopToken & p_ ) noexcept { stopToken = p_; }
 
@@ -323,20 +328,30 @@ namespace VTX::IO
 
 	void SystemReader::Del::operator()( _Impl * p_impl ) noexcept { delete p_impl; }
 
-	SystemReader::SystemReader( const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
-		_impl( new _Impl( p_path, p_stopToken ) )
+	SystemReader::SystemReader(
+		const VTX::FilePath & p_path,
+		const READER_OPTION	  p_options,
+		Util::StopToken &	  p_stopToken
+	) : _impl( new _Impl( p_path, p_options, p_stopToken ) )
 	{
 	}
-	SystemReader::SystemReader( MemoryBuffer && p_buffer, const VTX::FilePath & p_path, Util::StopToken & p_stopToken ) :
-		_impl( new _Impl( std::move( p_buffer ), p_path, p_stopToken ) )
+	SystemReader::SystemReader(
+		MemoryBuffer &&		  p_buffer,
+		const VTX::FilePath & p_path,
+		const READER_OPTION	  p_options,
+		Util::StopToken &	  p_stopToken
+	) : _impl( new _Impl( std::move( p_buffer ), p_path, p_options, p_stopToken ) )
 	{
 	}
 
-	void SystemReader::get( const ChemDB::Category::Dictionary & p_d, Core::Struct::Topology & p_ ) noexcept
-	{ _impl->get( p_d, p_ ); }
+	void SystemReader::get(
+		const ChemDB::Category::Dictionary & p_d,
+		Core::Struct::Topology &			 p_t,
+		Metadata &							 p_m
+	) noexcept
+	{ _impl->get( p_d, p_t, p_m ); }
 	void SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) noexcept { _impl->get( p_i, p_ ); }
 	void SystemReader::get( AtomPositions & p_ ) noexcept { _impl->get( 0, p_ ); }
-	void SystemReader::get( Metadata & p_ ) noexcept { _impl->get( p_ ); }
 	void SystemReader::set( Util::StopToken & p_ ) noexcept { _impl->set( p_ ); }
 
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }

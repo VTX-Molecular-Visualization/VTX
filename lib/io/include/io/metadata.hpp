@@ -2,6 +2,7 @@
 #define __VTX_IO_METADATA__
 
 #include "io/constants.hpp"
+#include <string>
 
 namespace VTX::IO
 {

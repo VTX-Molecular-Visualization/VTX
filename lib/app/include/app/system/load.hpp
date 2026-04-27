@@ -23,6 +23,8 @@ namespace VTX::App::System
 	{
 		std::optional<ECS::Entity> entity;				   // Used for attaching a trajectory to an existing system
 		bool					   onlyTrajectory = false; // Set to true when the goal is only to set a new trajectory
+		FilePath				   sourcePath;
+		IO::READER_OPTION		   readerOption;
 		std::optional<std::string> buffer;
 		std::optional<IO::SystemReader> reader;
 		Core::Struct::Topology			topology;
@@ -47,17 +49,17 @@ namespace VTX::App::System
 		 * @brief Extract a system into a new entity
 		 * @param p_path
 		 */
-		SystemExtractor( FilePath p_path );
+		SystemExtractor( FilePath p_path, IO::READER_OPTION = IO::READER_OPTION::ALL );
 		/**
 		 * @brief Extract a system into a new entity from memory
 		 * @param p_path
 		 */
-		SystemExtractor( FilePath p_path, std::string && p_buffer );
+		SystemExtractor( FilePath p_path, std::string && p_buffer, IO::READER_OPTION = IO::READER_OPTION::ALL );
 		/**
 		 * @brief Associate a trajectory to an existing system
 		 * @param p_path
 		 */
-		SystemExtractor( ECS::Entity p_entity, FilePath p_path );
+		SystemExtractor( ECS::Entity p_entity, FilePath p_path, IO::READER_OPTION = IO::READER_OPTION::ALL );
 
 		/**
 		 * @brief Meant to be used as a thread callable. Actually perform the extraction

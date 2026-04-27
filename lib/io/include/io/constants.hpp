@@ -1,6 +1,8 @@
 #ifndef __VTX_IO_CONSTANTS__
 #define __VTX_IO_CONSTANTS__
 
+#include <string_view>
+#include <util/enum.hpp>
 #include <util/types.hpp>
 
 namespace VTX::IO

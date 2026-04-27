@@ -172,10 +172,11 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 	}
 
 	VTX::Core::Struct::Topology				topology;
+	VTX::IO::Metadata						metadata;
 	VTX::Util::StopToken					t;
-	VTX::IO::SystemReader					systemReader( waterPath, t );
+	VTX::IO::SystemReader					systemReader( waterPath, VTX::IO::READER_OPTION::ALL, t );
 	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
-	systemReader.get( dict, topology );
+	systemReader.get( dict, topology, metadata );
 
 	CHECK( topology.getChainCount() == 1 );
 	CHECK( topology.getBondCount() == 4 );
@@ -204,9 +205,10 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 
 	VTX::Core::Struct::Topology				topology;
 	VTX::Util::StopToken					t;
-	VTX::IO::SystemReader					systemReader( waterPath, t );
+	VTX::IO::SystemReader					systemReader( waterPath, VTX::IO::READER_OPTION::ALL, t );
 	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
-	systemReader.get( dict, topology );
+	VTX::IO::Metadata						metadata;
+	systemReader.get( dict, topology, metadata );
 
 	CHECK( topology.getChainCount() == 1 );
 	CHECK( topology.getBondCount() == 4 );
@@ -240,8 +242,9 @@ namespace
 		VTX::Core::Struct::Topology topology;
 		{
 			VTX::Util::StopToken  t;
-			VTX::IO::SystemReader systemReader( systemPath, t );
-			systemReader.get( dict, topology );
+			VTX::IO::SystemReader systemReader( systemPath, VTX::IO::READER_OPTION::ALL, t );
+			VTX::IO::Metadata	  metadata;
+			systemReader.get( dict, topology, metadata );
 		}
 		size_t atomCount  = topology.getAtomCount();
 		size_t chainCount = topology.getChainCount();
@@ -267,8 +270,9 @@ namespace
 
 		VTX::Core::Struct::Topology system_reread;
 		VTX::Util::StopToken		t;
-		VTX::IO::SystemReader		systemReader( destination, t );
-		systemReader.get( dict, system_reread );
+		VTX::IO::SystemReader		systemReader( destination, VTX::IO::READER_OPTION::ALL, t );
+		VTX::IO::Metadata			metadata;
+		systemReader.get( dict, system_reread, metadata );
 
 		CHECK( system_reread.getChainCount() == chainCount );
 		CHECK( system_reread.getResidueCount() == resCount );
