@@ -62,5 +62,6 @@ TEST_CASE( "VTX_IO - Test filepath", "[reader][pdb_code]" )
 	VTX::IO::Metadata metadata;
 
 	systemReader.get( metadata );
+	CHECK( metadata.path == systemPath );
 	CHECK( metadata.pdbIDCode == "8OIT" );
 }

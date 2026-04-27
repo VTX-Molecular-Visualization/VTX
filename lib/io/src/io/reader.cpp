@@ -257,6 +257,7 @@ namespace VTX::IO
 			if ( stopToken.get().stop_requested() )
 				return;
 
+			p_.path					 = filePath;
 			p_.pdbIDCode			 = currentFrame.get( "pdb_idcode" ) ? currentFrame.get( "pdb_idcode" )->as_string()
 																		: PDB_ID_CODE_DEFAULT;
 			p_.name					 = currentFrame.get( "name" ) ? currentFrame.get( "name" )->as_string() : "";
