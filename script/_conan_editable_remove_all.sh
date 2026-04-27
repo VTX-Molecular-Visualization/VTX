@@ -9,3 +9,4 @@ conan editable remove lib/ui/qt
 conan editable remove lib/util
 conan editable remove tool/example
 conan editable remove tool/mdprep
+conan editable remove tool/topology_editor

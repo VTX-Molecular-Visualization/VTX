@@ -9,3 +9,4 @@ conan editable add lib/ui/qt
 conan editable add lib/util
 conan editable add tool/example
 conan editable add tool/mdprep
+conan editable add tool/topology_editor
