@@ -213,10 +213,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 	CHECK( topology.getBondCount() == 4 );
 	CHECK( topology.getResidueCount() == 2 );
 	CHECK( topology.getAtomCount() == 6 );
-#ifdef I_BROKE_TRAJECTORY_TESTS
-
-	CHECK( topology.trajectory.getFrameCount() == 2 );
-#endif
+	CHECK( systemReader.frameCount() == 2 );
 }
 
 namespace
@@ -227,7 +224,21 @@ namespace
 		const char * extension;
 		const char * writtenExtension;
 	};
-	void testSystem( TestSystemArgs p_args )
+
+	struct TestResults
+	{
+		bool matchAtoms	   = false;
+		bool matchResidues = false;
+		bool matchChains   = false;
+		bool matchBonds	   = false;
+		bool matchFrames   = false;
+	};
+
+	/**
+	 * @brief Test consistency over read-write-read protocol
+	 * @param p_args
+	 */
+	void testSystem( TestSystemArgs p_args, TestResults & p_out )
 	{
 		using namespace VTX;
 		using namespace VTX::IO;
@@ -238,19 +249,19 @@ namespace
 		const std::string systemPathname = systemName + p_args.extension;
 		const FilePath	  systemPath	 = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
+		size_t						frameCount = 0;
 		VTX::Core::Struct::Topology topology;
 		{
 			VTX::Util::StopToken  t;
 			VTX::IO::SystemReader systemReader( systemPath, t );
 			systemReader.get( dict, topology );
+			frameCount = systemReader.frameCount();
 		}
 		size_t atomCount  = topology.getAtomCount();
 		size_t chainCount = topology.getChainCount();
-#ifdef I_BROKE_TRAJECTORY_TESTS
-		size_t frameCount = topology.trajectory.getFrameCount();
-#endif
-		size_t bondCount = topology.getBondCount();
-		size_t resCount	 = topology.getResidueCount();
+		size_t bondCount  = topology.getBondCount();
+		size_t resCount	  = topology.getResidueCount();
+		CHECK( frameCount > 0 );
 
 		const VTX::FilePath outPath = VTX::Util::Filesystem::getExecutableDir() / "out" / "ChemfilesTrajectory";
 		if ( not std::filesystem::exists( outPath ) )
@@ -262,7 +273,7 @@ namespace
 			WriteArgs {
 				.destination = destination,
 				.format		 = E_FILE_FORMATS::none,
-				.system		 = &topology,
+				.topology	 = &topology,
 			}
 		);
 
@@ -274,6 +285,7 @@ namespace
 		CHECK( system_reread.getChainCount() == chainCount );
 		CHECK( system_reread.getResidueCount() == resCount );
 		CHECK( system_reread.getAtomCount() == atomCount );
+		CHECK( systemReader.frameCount() == frameCount );
 
 		// Bond are not reliably written in files so we won't check them.
 		// e.g. 2qwo has disulfide bond that is not retrieved when reloading the file
@@ -283,11 +295,15 @@ namespace
 
 TEST_CASE( "VTX_IO - Test writeFile", "[writer][chemfiles][trajectory][specific_file]" )
 {
-	return;
-	VTX::VTX_INFO( "Test reading and writing on {}.", "1idx" );
-	VTX::VTX_INFO( "This one has reported atom mismatch" );
-	testSystem( TestSystemArgs { .systemName = "1idx", .extension = ".cif", .writtenExtension = ".mmcif" } );
-	VTX::VTX_INFO( "Test reading and writing on {}.", "202d" );
-	VTX::VTX_INFO( "This one has reported residue mismatch" );
-	testSystem( TestSystemArgs { .systemName = "202d", .extension = ".cif", .writtenExtension = ".mmcif" } );
+	{
+		TestResults results;
+		testSystem(
+			TestSystemArgs { .systemName = "1AGA", .extension = ".mmtf", .writtenExtension = ".mmcif" }, results
+		);
+		CHECK( results.matchAtoms );
+		CHECK( results.matchResidues );
+		CHECK( results.matchChains );
+		CHECK( results.matchBonds );
+		CHECK( results.matchFrames );
+	}
 }
