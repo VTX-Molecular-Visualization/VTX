@@ -2,6 +2,7 @@
 #include "app/scene/color_layout.hpp"
 #include "app/scene/graphics_config.hpp"
 #include "app/services.hpp"
+#include <core/struct/topology.hpp>
 #include <renderer/renderer.hpp>
 #include <util/math/aabb.hpp>
 
@@ -13,6 +14,7 @@ namespace VTX::App::Pass
 
 		// Update functions.
 		reg.on_update<Util::Math::AABB>().connect<&SceneUpdater::_onUpdateAABB>( this );
+		reg.on_destroy<Core::Struct::Topology>().connect<&SceneUpdater::_onSystemDestroy>( this );
 		// TODO: Keep only construct and use custom event to update each value at once.
 		reg.on_construct<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
 		reg.on_update<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
@@ -31,10 +33,34 @@ namespace VTX::App::Pass
 			return;
 		}
 
-		auto &		 sceneAABB = p_r.get<Util::Math::AABB>( _entity );
-		const auto & otherAABB = p_r.get<Util::Math::AABB>( p_e );
+		_recomputeSceneAABB( p_r );
+	}
 
-		sceneAABB.extend( otherAABB );
+	void SceneUpdater::_onSystemDestroy( ECS::Registry & p_r, ECS::Entity p_e )
+	{
+		_recomputeSceneAABB( p_r, p_e );
+	}
+
+	void SceneUpdater::_recomputeSceneAABB( ECS::Registry & p_r, ECS::Entity p_excluded )
+	{
+		p_r.patch<Util::Math::AABB>(
+			_entity,
+			[ &p_r, p_excluded ]( Util::Math::AABB & p_sceneAABB )
+			{
+				p_sceneAABB.invalidate();
+
+				auto systems = p_r.view<Core::Struct::Topology, Util::Math::AABB>();
+				for ( const ECS::Entity system : systems )
+				{
+					if ( system == p_excluded )
+					{
+						continue;
+					}
+
+					p_sceneAABB.extend( systems.get<Util::Math::AABB>( system ) );
+				}
+			}
+		);
 	}
 
 	void SceneUpdater::_onUpdateGraphicsConfig( ECS::Registry & p_r, ECS::Entity )

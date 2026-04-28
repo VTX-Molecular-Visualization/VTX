@@ -28,6 +28,16 @@ namespace VTX::App::Pass
 		void _onUpdateAABB( ECS::Registry &, ECS::Entity );
 
 		/**
+		 * @brief Recompute the scene AABB when a system is removed.
+		 */
+		void _onSystemDestroy( ECS::Registry &, ECS::Entity );
+
+		/**
+		 * @brief Recompute scene AABB from all systems.
+		 */
+		void _recomputeSceneAABB( ECS::Registry &, ECS::Entity p_excluded = ECS::InvalidEntity );
+
+		/**
 		 * @brief Update renderer when a preset is instantiated.
 		 */
 		void _onUpdateGraphicsConfig( ECS::Registry &, ECS::Entity );
