@@ -68,12 +68,14 @@ namespace VTX::IO
 			const Core::ChemDB::Category::Dictionary & p_categories,
 			Core::Struct::Topology &				   p_topology,
 			Metadata &								   p_metadata
-		) noexcept
+		)
 		{
 			Util::ScopedChrono chrono( "SystemReader::_Impl::get" );
 
 			if ( stopToken.get().stop_requested() )
+			{
 				return;
+			}
 
 			// Metadata.
 			p_metadata.path			= filePath;
@@ -83,10 +85,6 @@ namespace VTX::IO
 			p_metadata.name			= currentFrame.get( "name" ) ? currentFrame.get( "name" )->as_string() : "";
 			p_metadata.performedReaderOption = READER_OPTION::NONE;
 			p_metadata.topologyState		 = TOPOLOGY_STATE::OK;
-
-			// TODO.
-			// p_metadata.performedReaderOption = performedReaderOption;
-			// p_metadata.topologyState			= topologyState;
 
 			// Strip leading dot from extension (e.g. ".pdb" -> "pdb")
 			std::string ext = filePath.extension().string();
@@ -99,6 +97,7 @@ namespace VTX::IO
 			Index currentChainResidueCount = 0;
 
 			std::unordered_set<std::string>		seenChainNames;
+			std::string							previousChainName;
 			std::map<Index, std::vector<Index>> mapResidueBonds;
 			std::map<Index, std::vector<Index>> mapResidueExtraBonds;
 
@@ -111,7 +110,9 @@ namespace VTX::IO
 			for ( Index residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 			{
 				if ( stopToken.get().stop_requested() )
+				{
 					return;
+				}
 
 				currentResidue = &( ( *residues )[ residueIdx ] );
 
@@ -119,15 +120,28 @@ namespace VTX::IO
 				const std::string residueName = currentResidue->name();
 				const Index		  residueId	  = Index( currentResidue->id().value_or( INVALID_INDEX ) );
 
+				if ( chainName.empty() )
+				{
+					VTX_WARNING( "Residue {} has no chain name", residueIdx );
+					p_metadata.topologyState = p_metadata.topologyState | TOPOLOGY_STATE::MISSING_CHAIN_INFO;
+				}
+				else if ( residueIdx > 0 && chainName != previousChainName && seenChainNames.contains( chainName ) )
+				{
+					VTX_WARNING( "Chain '{}' is used for not contiguous multiple chains", chainName );
+					p_metadata.topologyState = p_metadata.topologyState | TOPOLOGY_STATE::CHAIN_DEGENERATED;
+				}
+
 				const ChemDB::Category::TYPE categoryEnum = _findCategoryType( ext, residueName );
 
-				const bool createNewChain = p_topology.getChainCount() == 0 || !seenChainNames.contains( chainName )
+				const bool createNewChain = p_topology.getChainCount() == 0 || not seenChainNames.contains( chainName )
 											|| categoryEnum != lastCategoryEnum;
 
 				if ( createNewChain )
 				{
 					if ( currentChainIndex != INVALID_INDEX )
+					{
 						p_topology.chainResidueCounts[ currentChainIndex ] = currentChainResidueCount;
+					}
 
 					p_topology.appendNewChain();
 					currentChainIndex++;
@@ -137,15 +151,20 @@ namespace VTX::IO
 
 					currentChainResidueCount = 0;
 
-					if ( !seenChainNames.contains( chainName ) )
+					if ( not seenChainNames.contains( chainName ) )
+					{
 						seenChainNames.emplace( chainName );
+					}
 					lastCategoryEnum = categoryEnum;
 				}
 
+				previousChainName = chainName;
 				currentChainResidueCount++;
 
 				if ( currentResidue->size() == 0 )
+				{
 					VTX_WARNING( "Empty residue found" );
+				}
 
 				p_topology.residueChainIndexes[ residueIdx ]	 = currentChainIndex;
 				p_topology.residueFirstAtomIndexes[ residueIdx ] = Index( *currentResidue->begin() );
@@ -156,12 +175,17 @@ namespace VTX::IO
 				ChemDB::Category::get( p_categories, residueName, p_topology.residueCategories[ residueIdx ] );
 
 				const std::string ss = _residueStringProp( "secondary_structure" );
-				if ( !ss.empty() )
+				if ( not ss.empty() )
+				{
 					p_topology.residueSecondaryStructureTypes[ residueIdx ]
 						= ChemDB::SecondaryStructure::pdbFormattedToEnum( ss );
+				}
 
 				mapResidueBonds.emplace( residueIdx, std::vector<Index>() );
 				mapResidueExtraBonds.emplace( residueIdx, std::vector<Index>() );
+
+				bool  isFirstAtomInResidue = true;
+				Index previousAtomIndex	   = INVALID_INDEX;
 
 				for ( chemfiles::Residue::const_iterator it = currentResidue->cbegin(); it != currentResidue->cend();
 					  ++it )
@@ -170,14 +194,28 @@ namespace VTX::IO
 					currentAtom			  = &currentFrame[ atomIndex ];
 					currentAtomIndex	  = atomIndex;
 
+					if ( not isFirstAtomInResidue && atomIndex != previousAtomIndex + 1 )
+					{
+						VTX_WARNING(
+							"Atoms in residue {} are not contiguous",
+							residueIdx
+						);
+						p_metadata.topologyState = p_metadata.topologyState | TOPOLOGY_STATE::RESIDUE_DEGENERATED;
+					}
+
 					p_topology.atomResidueIndexes[ atomIndex ] = residueIdx;
 					p_topology.atomNames[ atomIndex ]		   = currentAtom->name();
 					p_topology.atomSymbols[ atomIndex ] = ChemDB::Atom::getSymbolFromString( currentAtom->type() );
+
+					previousAtomIndex	 = atomIndex;
+					isFirstAtomInResidue = false;
 				}
 			}
 
 			if ( currentChainResidueCount != 0 )
+			{
 				p_topology.chainResidueCounts[ currentChainIndex ] = currentChainResidueCount;
+			}
 
 			// Bonds — classify as intra- or extra-residue and order by residue.
 			const std::vector<chemfiles::Bond::BondOrder> & bondOrders = topology.bond_orders();
@@ -186,7 +224,9 @@ namespace VTX::IO
 			for ( Index bondIdx = 0; bondIdx < Index( bonds->size() ); ++bondIdx )
 			{
 				if ( stopToken.get().stop_requested() )
+				{
 					return;
+				}
 
 				const chemfiles::Bond & bond		  = ( *bonds )[ bondIdx ];
 				const Index				firstAtomIdx  = Index( bond[ 0 ] );
@@ -226,7 +266,9 @@ namespace VTX::IO
 			for ( Index residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 			{
 				if ( stopToken.get().stop_requested() )
+				{
 					return;
+				}
 
 				const std::vector<Index> & intraBonds = mapResidueBonds[ residueIdx ];
 				const std::vector<Index> & extraBonds = mapResidueExtraBonds[ residueIdx ];
@@ -254,16 +296,20 @@ namespace VTX::IO
 			assert( counter == counterOld );
 		}
 
-		void get( const FrameIndex & p_frameIndex, AtomPositions & p_positions ) noexcept
+		void get( const FrameIndex & p_frameIndex, AtomPositions & p_positions )
 		{
 			if ( stopToken.get().stop_requested() )
+			{
 				return;
+			}
 
 			currentFrame	= trajectory.read_at( p_frameIndex );
 			currentFrameIdx = p_frameIndex;
 
 			if ( stopToken.get().stop_requested() )
+			{
 				return;
+			}
 
 			const chemfiles::span<chemfiles::Vector3D> & pos = currentFrame.positions();
 			p_positions.resize( pos.size() );
@@ -279,10 +325,14 @@ namespace VTX::IO
 			chemfiles::set_warning_callback( []( const std::string & ) {} );
 
 			if ( stopToken.get().stop_requested() )
+			{
 				return;
+			}
 
 			if ( trajectory.size() == 0 )
+			{
 				throw IOException( "Trajectory is empty" );
+			}
 
 			currentFrame = trajectory.read();
 			topology	 = currentFrame.topology();
@@ -290,7 +340,9 @@ namespace VTX::IO
 			bonds		 = &topology.bonds();
 
 			if ( stopToken.get().stop_requested() )
+			{
 				return;
+			}
 
 			// If no residues, wrap all atoms in an unnamed residue.
 			if ( residues->empty() )
@@ -306,7 +358,9 @@ namespace VTX::IO
 			}
 
 			if ( currentFrame.size() != topology.size() )
+			{
 				throw IOException( "Atom/topology size mismatch" );
+			}
 		}
 
 		std::string _residueStringProp( const std::string & p_property, const std::string & p_default = "" ) const
@@ -321,7 +375,9 @@ namespace VTX::IO
 		)
 		{
 			if ( p_ext == "pdb" || p_ext == "mmcif" || p_ext == "mmtf" )
+			{
 				return ChemDB::Category::TYPE::POLYMER;
+			}
 			return ChemDB::Category::TYPE::POLYMER;
 		}
 	};
@@ -344,14 +400,10 @@ namespace VTX::IO
 	{
 	}
 
-	void SystemReader::get(
-		const ChemDB::Category::Dictionary & p_d,
-		Core::Struct::Topology &			 p_t,
-		Metadata &							 p_m
-	) noexcept
+	void SystemReader::get( const ChemDB::Category::Dictionary & p_d, Core::Struct::Topology & p_t, Metadata & p_m )
 	{ _impl->get( p_d, p_t, p_m ); }
-	void SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) noexcept { _impl->get( p_i, p_ ); }
-	void SystemReader::get( AtomPositions & p_ ) noexcept { _impl->get( 0, p_ ); }
+	void SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) { _impl->get( p_i, p_ ); }
+	void SystemReader::get( AtomPositions & p_ ) { _impl->get( 0, p_ ); }
 	void SystemReader::set( Util::StopToken & p_ ) noexcept { _impl->set( p_ ); }
 
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }

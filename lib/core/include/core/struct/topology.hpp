@@ -108,9 +108,9 @@ namespace VTX::Core::Struct
 		 */
 		std::vector<std::string> atomNames;
 		/**
-		 * @brief Original atom IDs from the input file.
+		 * @brief Mapping from current atom index to original source atom index after retopology.
 		 */
-		std::vector<Index> atomOriginalIds;
+		std::optional<std::vector<Index>> atomOriginalIndexes;
 
 		/**
 		 * @brief Bond informations.
@@ -277,7 +277,14 @@ namespace VTX::Core::Struct
 
 		inline const std::string & getAtomName( const Index p_atomIndex ) const { return atomNames[ p_atomIndex ]; }
 
-		inline Index getAtomOriginalId( const Index p_atomIndex ) const { return atomOriginalIds[ p_atomIndex ]; }
+		inline std::optional<Index> getAtomOriginalIndex( const Index p_atomIndex ) const
+		{
+			if ( not atomOriginalIndexes )
+			{
+				return std::nullopt;
+			}
+			return ( *atomOriginalIndexes )[ p_atomIndex ];
+		}
 
 		inline Index getAtomResidueIndex( const Index p_atomIndex ) const { return atomResidueIndexes[ p_atomIndex ]; }
 

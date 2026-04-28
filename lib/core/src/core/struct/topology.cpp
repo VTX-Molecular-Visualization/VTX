@@ -37,7 +37,7 @@ namespace VTX::Core::Struct
 		atomSymbols.resize( p_count, ChemDB::Atom::SYMBOL::UNKNOWN );
 		atomResidueIndexes.resize( p_count, INVALID_INDEX );
 		atomNames.resize( p_count );
-		atomOriginalIds.resize( p_count, INVALID_INDEX );
+		atomOriginalIndexes.reset();
 	}
 
 	void Topology::initBonds( const Index p_count )
@@ -68,6 +68,8 @@ namespace VTX::Core::Struct
 		out += sizeof( ChemDB::Atom::SYMBOL ) * p_sys.atomSymbols.size();
 		out += sizeof( size_t ) * p_sys.atomResidueIndexes.size();
 		out += sizeof( std::string ) * p_sys.atomNames.size();
+		if ( p_sys.atomOriginalIndexes )
+			out += sizeof( Index ) * p_sys.atomOriginalIndexes->size();
 		out += sizeof( ChemDB::Bond::ORDER ) * p_sys.bondOrders.size();
 		out += sizeof( Index ) * p_sys.bondPairAtomIndexes.size();
 

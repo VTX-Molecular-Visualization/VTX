@@ -38,14 +38,14 @@ namespace VTX::IO
 
 		size_t frameCount() const;
 
-		void get( const Core::ChemDB::Category::Dictionary &, VTX::Core::Struct ::Topology &, Metadata & ) noexcept;
+		void get( const Core::ChemDB::Category::Dictionary &, VTX::Core::Struct ::Topology &, Metadata & );
 
 		/**
 		 * @brief Always return Frame 0's positions
 		 * @param
 		 */
-		void get( AtomPositions & ) noexcept;
-		void get( const FrameIndex &, AtomPositions & ) noexcept;
+		void get( AtomPositions & );
+		void get( const FrameIndex &, AtomPositions & );
 		void set( Util::StopToken & ) noexcept;
 
 	  private:
