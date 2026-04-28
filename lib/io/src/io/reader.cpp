@@ -88,13 +88,29 @@ namespace VTX::IO
 
 			// Strip leading dot from extension (e.g. ".pdb" -> "pdb")
 			std::string ext = filePath.extension().string();
-			if ( not ext.empty() && ext[ 0 ] == '.' )
+			ext				= ext.starts_with( '.' ) ? ext.substr( 1 ) : ext;
+
+			// No residues, create a wrapping one.
+			if ( residues->empty() )
 			{
-				ext = ext.substr( 1 );
+				p_metadata.topologyState |= TOPOLOGY_STATE::MISSING_RESIDUES;
+
+				VTX_WARNING( "No residues found, wrapping atoms in unnamed residue" );
+
+				chemfiles::Residue unk( "", 0 );
+				for ( size_t i = 0; i < currentFrame.size(); ++i )
+				{
+					unk.add_atom( i );
+				}
+				currentFrame.add_residue( unk );
+				topology = currentFrame.topology();
+				residues = &topology.residues();
+				bonds	 = &topology.bonds();
 			}
 
-			Index currentChainIndex		   = INVALID_INDEX;
-			Index currentChainResidueCount = 0;
+			Index currentChainIndex				= INVALID_INDEX;
+			Index currentChainResidueCount		= 0;
+			Index expectedNextAtomIndexInChain	= INVALID_INDEX;
 
 			std::unordered_set<std::string>		seenChainNames;
 			std::string							previousChainName;
@@ -116,19 +132,22 @@ namespace VTX::IO
 
 				currentResidue = &( ( *residues )[ residueIdx ] );
 
-				const std::string chainName	  = _residueStringProp( "chainname" );
+				std::string		  chainName	  = _residueStringProp( "chainname" );
 				const std::string residueName = currentResidue->name();
 				const Index		  residueId	  = Index( currentResidue->id().value_or( INVALID_INDEX ) );
+				const Index		  residueFirstAtomIndex
+					= currentResidue->size() == 0 ? INVALID_INDEX : Index( *currentResidue->begin() );
 
 				if ( chainName.empty() )
 				{
-					VTX_WARNING( "Residue {} has no chain name", residueIdx );
-					p_metadata.topologyState = p_metadata.topologyState | TOPOLOGY_STATE::MISSING_CHAIN_INFO;
+					VTX_WARNING( "Residue {} has no chain name, wrapping residue in unnamed chain", residueIdx );
+					p_metadata.topologyState |= TOPOLOGY_STATE::MISSING_CHAIN_INFO;
+					chainName = "-";
 				}
 				else if ( residueIdx > 0 && chainName != previousChainName && seenChainNames.contains( chainName ) )
 				{
 					VTX_WARNING( "Chain '{}' is used for not contiguous multiple chains", chainName );
-					p_metadata.topologyState = p_metadata.topologyState | TOPOLOGY_STATE::CHAIN_DEGENERATED;
+					p_metadata.topologyState |= TOPOLOGY_STATE::CHAIN_DEGENERATED;
 				}
 
 				const ChemDB::Category::TYPE categoryEnum = _findCategoryType( ext, residueName );
@@ -149,7 +168,8 @@ namespace VTX::IO
 					p_topology.chainNames[ currentChainIndex ]		   = chainName;
 					p_topology.chainFirstResidues[ currentChainIndex ] = residueIdx;
 
-					currentChainResidueCount = 0;
+					currentChainResidueCount	 = 0;
+					expectedNextAtomIndexInChain = INVALID_INDEX;
 
 					if ( not seenChainNames.contains( chainName ) )
 					{
@@ -161,13 +181,24 @@ namespace VTX::IO
 				previousChainName = chainName;
 				currentChainResidueCount++;
 
+				if ( expectedNextAtomIndexInChain != INVALID_INDEX && residueFirstAtomIndex != INVALID_INDEX
+					 && residueFirstAtomIndex != expectedNextAtomIndexInChain )
+				{
+					VTX_WARNING( "Residues in chain '{}' do not form a contiguous atom range", chainName );
+					p_metadata.topologyState |= TOPOLOGY_STATE::CHAIN_ORDER_DEGENERATED;
+				}
+				if ( residueFirstAtomIndex != INVALID_INDEX )
+				{
+					expectedNextAtomIndexInChain = residueFirstAtomIndex + Index( currentResidue->size() );
+				}
+
 				if ( currentResidue->size() == 0 )
 				{
 					VTX_WARNING( "Empty residue found" );
 				}
 
 				p_topology.residueChainIndexes[ residueIdx ]	 = currentChainIndex;
-				p_topology.residueFirstAtomIndexes[ residueIdx ] = Index( *currentResidue->begin() );
+				p_topology.residueFirstAtomIndexes[ residueIdx ] = residueFirstAtomIndex;
 				p_topology.residueAtomCounts[ residueIdx ]		 = Index( currentResidue->size() );
 				p_topology.residueOriginalIds[ residueIdx ]		 = residueId;
 				p_topology.residueSymbols[ residueIdx ]			 = ChemDB::Residue::getSymbolFromName( residueName );
@@ -196,11 +227,8 @@ namespace VTX::IO
 
 					if ( not isFirstAtomInResidue && atomIndex != previousAtomIndex + 1 )
 					{
-						VTX_WARNING(
-							"Atoms in residue {} are not contiguous",
-							residueIdx
-						);
-						p_metadata.topologyState = p_metadata.topologyState | TOPOLOGY_STATE::RESIDUE_DEGENERATED;
+						VTX_WARNING( "Atoms in residue {} are not contiguous", residueIdx );
+						p_metadata.topologyState |= TOPOLOGY_STATE::RESIDUE_DEGENERATED;
 					}
 
 					p_topology.atomResidueIndexes[ atomIndex ] = residueIdx;
@@ -342,19 +370,6 @@ namespace VTX::IO
 			if ( stopToken.get().stop_requested() )
 			{
 				return;
-			}
-
-			// If no residues, wrap all atoms in an unnamed residue.
-			if ( residues->empty() )
-			{
-				VTX_INFO( "No residues found, wrapping atoms in unnamed residue." );
-				chemfiles::Residue unk( "", 0 );
-				for ( size_t i = 0; i < currentFrame.size(); ++i )
-					unk.add_atom( i );
-				currentFrame.add_residue( unk );
-				topology = currentFrame.topology();
-				residues = &topology.residues();
-				bonds	 = &topology.bonds();
 			}
 
 			if ( currentFrame.size() != topology.size() )

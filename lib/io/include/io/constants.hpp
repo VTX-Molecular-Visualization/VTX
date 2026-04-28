@@ -31,11 +31,13 @@ namespace VTX::IO
 	enum struct TOPOLOGY_STATE : uint8_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
-		OK					= 0,
-		CHAIN_DEGENERATED	= 1 << 0,
-		RESIDUE_DEGENERATED = 1 << 1,
-		MISSING_CHAIN_INFO	= 1 << 2,
-		MISSING_RESIDUES	= 1 << 3
+		OK						= 0,
+		MISSING_CHAIN_INFO		= 1 << 0,
+		MISSING_RESIDUES		= 1 << 1,
+		CHAIN_DEGENERATED		= 1 << 2,
+		CHAIN_ORDER_DEGENERATED = 1 << 3,
+		RESIDUE_DEGENERATED		= 1 << 4
+
 	};
 } // namespace VTX::IO
 
