@@ -28,6 +28,11 @@ namespace VTX::App::Pass
 		void _onUpdateAABB( ECS::Registry &, ECS::Entity );
 
 		/**
+		 * @brief Update the scene AABB when a system transform is updated.
+		 */
+		void _onUpdateTransform( ECS::Registry &, ECS::Entity );
+
+		/**
 		 * @brief Recompute the scene AABB when a system is removed.
 		 */
 		void _onSystemDestroy( ECS::Registry &, ECS::Entity );

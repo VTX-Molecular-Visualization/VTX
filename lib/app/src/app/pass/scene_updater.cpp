@@ -5,6 +5,7 @@
 #include <core/struct/topology.hpp>
 #include <renderer/renderer.hpp>
 #include <util/math/aabb.hpp>
+#include <util/math/transform.hpp>
 
 namespace VTX::App::Pass
 {
@@ -14,6 +15,7 @@ namespace VTX::App::Pass
 
 		// Update functions.
 		reg.on_update<Util::Math::AABB>().connect<&SceneUpdater::_onUpdateAABB>( this );
+		reg.on_update<Util::Math::Transform>().connect<&SceneUpdater::_onUpdateTransform>( this );
 		reg.on_destroy<Core::Struct::Topology>().connect<&SceneUpdater::_onSystemDestroy>( this );
 		// TODO: Keep only construct and use custom event to update each value at once.
 		reg.on_construct<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
@@ -36,6 +38,17 @@ namespace VTX::App::Pass
 		_recomputeSceneAABB( p_r );
 	}
 
+	void SceneUpdater::_onUpdateTransform( ECS::Registry & p_r, ECS::Entity p_e )
+	{
+		auto systems = p_r.view<Core::Struct::Topology, Util::Math::AABB>();
+		if ( not systems.contains( p_e ) )
+		{
+			return;
+		}
+
+		_recomputeSceneAABB( p_r );
+	}
+
 	void SceneUpdater::_onSystemDestroy( ECS::Registry & p_r, ECS::Entity p_e )
 	{
 		_recomputeSceneAABB( p_r, p_e );
@@ -49,7 +62,7 @@ namespace VTX::App::Pass
 			{
 				p_sceneAABB.invalidate();
 
-				auto systems = p_r.view<Core::Struct::Topology, Util::Math::AABB>();
+				auto systems = p_r.view<Core::Struct::Topology, Util::Math::AABB, Util::Math::Transform>();
 				for ( const ECS::Entity system : systems )
 				{
 					if ( system == p_excluded )
@@ -57,7 +70,8 @@ namespace VTX::App::Pass
 						continue;
 					}
 
-					p_sceneAABB.extend( systems.get<Util::Math::AABB>( system ) );
+					const auto & [ aabb, transform ] = systems.get<Util::Math::AABB, Util::Math::Transform>( system );
+					p_sceneAABB.extend( aabb.transformed( transform ) );
 				}
 			}
 		);

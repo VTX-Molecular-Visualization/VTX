@@ -7,6 +7,8 @@
 
 namespace VTX::Util::Math
 {
+	class Transform;
+
 	/**
 	 * @brief Axis Aligned Bounding Box.
 	 */
@@ -77,6 +79,11 @@ namespace VTX::Util::Math
 			_min += p_translation;
 			_max += p_translation;
 		}
+
+		/**
+		 * @brief Return this AABB transformed by the given transform.
+		 */
+		AABB transformed( const Transform & p_transform ) const;
 
 		/**
 		 * @brief Compute properties of the AABB.

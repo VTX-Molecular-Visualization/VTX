@@ -1,5 +1,6 @@
 #include "util/math/aabb.hpp"
 #include "util/math.hpp"
+#include "util/math/transform.hpp"
 
 namespace VTX::Util::Math
 {
@@ -23,6 +24,23 @@ namespace VTX::Util::Math
 		return { { _min.x, _min.y, _min.z }, { _min.x, _min.y, _max.z }, { _min.x, _max.y, _min.z },
 				 { _min.x, _max.y, _max.z }, { _max.x, _min.y, _min.z }, { _max.x, _min.y, _max.z },
 				 { _max.x, _max.y, _min.z }, { _max.x, _max.y, _max.z } };
+	}
+
+	AABB AABB::transformed( const Transform & p_transform ) const
+	{
+		AABB transformedAABB;
+		if ( not isValid() )
+		{
+			return transformedAABB;
+		}
+
+		const Mat4f transform = p_transform.computeMatrix();
+		for ( const Vec3f & summit : getSummits() )
+		{
+			transformedAABB.extend( Vec3f( transform * Vec4f( summit, 1.f ) ) );
+		}
+
+		return transformedAABB;
 	}
 
 	uint AABB::largestAxis() const

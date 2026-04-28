@@ -4,6 +4,8 @@
 #include "app/scene/tag_root.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/trajectory.hpp"
+#include <algorithm>
+#include <cmath>
 #include <core/struct/topology.hpp>
 #include <util/event_hub.hpp>
 #include <util/math/transform.hpp>
@@ -79,9 +81,9 @@ namespace VTX::App::Action::Camera
 		const auto [ _, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
-		Vec3f position = _computeCameraOrientPosition( FRONT_AXIS, camera.fov, aabb );
-		transform.setPosition( position );
 		transform.setRotation( QUATF_ID );
+		const Vec3f position = _computeCameraOrientPosition( FRONT_AXIS, camera.fov, aabb );
+		transform.setPosition( position );
 		transform.lookAt( aabb.centroid() );
 		camera.target = aabb.centroid();
 		HUB().trigger<Events::CameraTransformChange>();
@@ -92,7 +94,8 @@ namespace VTX::App::Action::Camera
 		Util::Math::AABB aabb;
 
 		// From selection.
-		auto view = ECS::registry().view<Core::Struct::Topology, Util::Math::AABB, System::Selection>();
+		auto view = ECS::registry()
+						.view<Core::Struct::Topology, Util::Math::AABB, Util::Math::Transform, System::Selection>();
 
 		if ( view.size_hint() )
 		{
@@ -101,22 +104,29 @@ namespace VTX::App::Action::Camera
 					const ECS::Entity &			   p_e,
 					const Core::Struct::Topology & p_data,
 					const Util::Math::AABB &	   p_aabb,
+					const Util::Math::Transform &  p_transform,
 					const System::Selection &	   p_selection
 				)
 				{
 					if ( Helper::System::getSelectionState( { p_e, Core::Struct::E_SYSTEM_ITEM::SYSTEM } )
 						 == System::E_SELECTION_STATE::FULL )
 					{
-						aabb.extend( p_aabb );
+						aabb.extend( p_aabb.transformed( p_transform ) );
 					}
 					// TODO: not recompute each time: cache values?
 					else
 					{
+						Util::Math::AABB	   localAABB;
 						std::span<const Vec3f> atomPositions = System::getCurrentAtomPositions( p_e );
 
 						for ( auto atomIndex : p_selection.atoms )
 						{
-							aabb.extend( atomPositions[ atomIndex ], Core::ChemDB::Atom::VDW_RADIUS_MIN );
+							localAABB.extend( atomPositions[ atomIndex ], Core::ChemDB::Atom::VDW_RADIUS_MIN );
+						}
+
+						if ( localAABB.isValid() )
+						{
+							aabb.extend( localAABB.transformed( p_transform ) );
 						}
 					}
 				}
