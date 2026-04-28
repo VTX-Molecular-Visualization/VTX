@@ -8,7 +8,9 @@
 #include "app/pass/pass_manager.hpp"
 #include "app/services.hpp"
 #include "app/setting/controller.hpp"
+#include <renderer/camera.hpp>
 #include <util/constants.hpp>
+#include <util/math/transform.hpp>
 
 namespace VTX::App::Pass
 {
@@ -37,8 +39,12 @@ namespace VTX::App::Pass
 		{
 			if ( not _controllers.empty() )
 			{
+				const auto & settings = REG().get<Setting::Controller>( _entity );
+				auto &		 transform = REG().get<Util::Math::Transform>( _entity );
+				auto &		 target	   = REG().get<Renderer::Camera>( _entity ).target;
+
 				// If ended, go to next controller.
-				if ( not _controllers.front().update( p_delta, _settings.get(), _transform.get(), _target.get() ) )
+				if ( not _controllers.front().update( p_delta, settings, transform, target ) )
 				{
 					nextController();
 				}
@@ -118,13 +124,6 @@ namespace VTX::App::Pass
 		 * @brief Camera entity.
 		 */
 		const ECS::Entity _entity;
-
-		/**
-		 * @brief Camera references (avoid get component in update).
-		 */
-		std::reference_wrapper<Util::Math::Transform> _transform;
-		std::reference_wrapper<Vec3f>				  _target;
-		std::reference_wrapper<Setting::Controller>	  _settings;
 
 		/**
 		 * @brief Controller running definition.
