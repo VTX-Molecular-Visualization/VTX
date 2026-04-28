@@ -6,6 +6,12 @@ namespace VTX::IO::Writer
 {
 	namespace
 	{
+		struct WriteContext
+		{
+			uint currentChainIdx = 0;
+			uint currentResIdx	 = 0;
+			uint currentAtomIdx	 = 0;
+		};
 		inline bool isResidueOfChain(
 			const size_t &						p_residueIdx,
 			const size_t &						p_chainIdx,
@@ -61,7 +67,9 @@ namespace VTX::IO::Writer
 			const size_t &						p_residueIdx,
 			System &							p_system,
 			Chain &								p_chain,
-			AtomFilter &						p_atomFilter
+			AtomFilter &						p_atomFilter,
+			uint &								atomWritten
+
 		)
 		{
 			Residue w_residue = p_system.newResidue();
@@ -89,14 +97,18 @@ namespace VTX::IO::Writer
 				  atomIdx++ )
 			{
 				if ( p_atomFilter( p_mol, atomIdx ) )
+				{
 					addAtom( p_mol, atomIdx, p_system, w_residue );
+					atomWritten++;
+				}
 			}
 		}
 		inline void addChain(
 			const VTX::Core::Struct::Topology & p_mol,
 			const size_t &						p_chainIdx,
 			System &							p_system,
-			AtomFilter &						p_atomFilter
+			AtomFilter &						p_atomFilter,
+			uint &								atomWritten
 		)
 		{
 			Chain w_chain = p_system.newChain();
@@ -110,14 +122,14 @@ namespace VTX::IO::Writer
 				  isResidueOfChain( residueIdx, p_chainIdx, p_mol );
 				  residueIdx++ )
 			{
-				addResidue( p_mol, residueIdx, p_system, w_chain, p_atomFilter );
+				addResidue( p_mol, residueIdx, p_system, w_chain, p_atomFilter, atomWritten );
 			}
 		}
 		inline void setBonds(
 			const VTX::Core::Struct::Topology & p_mol,
 			System &							p_system,
-			AtomFilter &						p_atomFilter
-
+			AtomFilter &						p_atomFilter,
+			const uint &						p_atomIdxOffset
 		)
 		{
 			for ( size_t bondIdx = 0; bondIdx < p_mol.getBondCount(); bondIdx += 2 )
@@ -128,11 +140,11 @@ namespace VTX::IO::Writer
 				{
 					E_BOND_ORDER w_bondOrder = E_BOND_ORDER::unknown;
 					convert( p_mol.bondOrders[ bondIdx >> 1 ], w_bondOrder );
-					p_system.bind( { atomIdx1 }, { atomIdx2 }, w_bondOrder );
+					p_system.bind( { p_atomIdxOffset + atomIdx1 }, { p_atomIdxOffset + atomIdx2 }, w_bondOrder );
 				}
 			}
 		}
-		inline void fillFrames( const TrajectoryFrameGetter & p_traj, System & p_system )
+		inline void fillFrames( const TrajectoryFrameGetter & p_traj, System & p_system, const uint & atomIdxOffset )
 		{
 			for ( size_t frameIdx = 0; frameIdx < p_traj.frameCount(); frameIdx++ )
 			{
@@ -142,7 +154,7 @@ namespace VTX::IO::Writer
 				{
 					Atom w_atom;
 					// if the atom doesn't exist for some reason, we skip to the next
-					if ( p_system.fetch( w_atom, { atomIdx } ) )
+					if ( p_system.fetch( w_atom, AtomId { atomIdxOffset + atomIdx } ) )
 					{
 						const VTX::Vec3f & coords = currentAtomPositions[ atomIdx ];
 						w_frame.set( w_atom, AtomCoordinates { .x = coords[ 0 ], .y = coords[ 1 ], .z = coords[ 2 ] } );
@@ -156,20 +168,33 @@ namespace VTX::IO::Writer
 			ChemfilesTrajectory writer;
 			System				w_system = writer.system();
 
-			for ( size_t chainIdx = 0; chainIdx < p_args.topology->getChainCount(); chainIdx++ )
+			uint atomIdxOffset
+				= 0; // bonds and positions are set by atom index. When writting multiple systems, we need to refer to
+					 // atoms for by knowing how many atoms have be written from the previous systems.
+			for ( auto & system : p_args.topologies )
 			{
-				addChain( *p_args.topology, chainIdx, w_system, p_args.atomFilter );
+				auto & topology	   = system.topology;
+				uint   atomWritten = 0;
+				for ( size_t chainIdx = 0; chainIdx < system.topology->getChainCount(); chainIdx++ )
+				{
+					addChain( *system.topology, chainIdx, w_system, system.atomFilter, atomWritten );
+				}
+
+				if ( p_args.stopToken.stop_requested() )
+					return;
+
+				// TODO : This algorithm doesn't work for bonds and positions.
+				// When an atom is filtered out, there is a shift between the position index that contains all atoms,
+				// and the atomIdx from the system being written. Maybe we need to hold two counter while looping : the
+				// unfiltered index and the filtered atom index.
+				setBonds( *system.topology, w_system, system.atomFilter, atomIdxOffset );
+
+				if ( p_args.stopToken.stop_requested() )
+					return;
+
+				fillFrames( system.trajectory, w_system, atomIdxOffset );
+				atomIdxOffset += atomWritten;
 			}
-
-			if ( p_args.stopToken.stop_requested() )
-				return;
-
-			setBonds( *p_args.topology, w_system, p_args.atomFilter );
-
-			if ( p_args.stopToken.stop_requested() )
-				return;
-
-			fillFrames( p_args.trajectory, w_system );
 
 			// We fill the write destination at the very end so if we stopped due to the stoptoken, nothing get written
 			writer.setWriteDestination( std::move( p_args.destination ) );
@@ -183,8 +208,8 @@ namespace VTX::IO::Writer
 			return;
 		if ( p_args.writeType != E_WRITE_TYPE::trajectory )
 			throw VTXException( "Other type of writings aren't implemented yet" );
-		if ( p_args.topology == nullptr )
-			throw VTXException( "Topology was nullptr." );
+		if ( p_args.topologies.empty() )
+			throw VTXException( "Nothing to write." );
 		writeTrajectoryFile( std::move( p_args ) );
 	}
 } // namespace VTX::IO::Writer
