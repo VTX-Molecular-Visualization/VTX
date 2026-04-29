@@ -175,16 +175,17 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 	VTX::IO::Metadata						metadata;
 	VTX::Util::StopToken					t;
 	VTX::IO::SystemReader					systemReader( waterPath, VTX::IO::READER_OPTION::ALL, t );
+	VTX::IO::AtomPositions					positions;
 	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 	systemReader.get( dict, topology, metadata );
+	systemReader.get( positions );
 
 	CHECK( topology.getChainCount() == 1 );
 	CHECK( topology.getBondCount() == 4 );
 	CHECK( topology.getResidueCount() == 2 );
 	CHECK( topology.getAtomCount() == 6 );
-#ifdef I_BROKE_TRAJECTORY_TESTS
-	CHECK( topology.trajectory.getFrameCount() == 1 );
-#endif
+	CHECK( systemReader.frameCount() == 1 );
+	CHECK( positions.size() == 6 );
 }
 TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemfiles][trajectory][2 frames]" )
 {
@@ -214,10 +215,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 	CHECK( topology.getBondCount() == 4 );
 	CHECK( topology.getResidueCount() == 2 );
 	CHECK( topology.getAtomCount() == 6 );
-#ifdef I_BROKE_TRAJECTORY_TESTS
-
-	CHECK( topology.trajectory.getFrameCount() == 2 );
-#endif
+	CHECK( systemReader.frameCount() == 2 );
 }
 
 namespace
@@ -228,7 +226,35 @@ namespace
 		const char * extension;
 		const char * writtenExtension;
 	};
-	void testSystem( TestSystemArgs p_args )
+
+	struct TestResults
+	{
+		struct Read
+		{
+			bool atLeastOneFrame = false;
+
+		} firstRead, reRead;
+		bool matchAtoms	   = false;
+		bool matchResidues = false;
+		bool matchChains   = false;
+		bool matchBonds	   = false;
+		bool matchFrames   = false;
+	};
+	struct LazyTrajectory
+	{
+		std::vector<std::vector<VTX::Vec3f>> frames;
+
+		inline VTX::uint				   frameCount() const { return static_cast<VTX::uint>( frames.size() ); }
+		inline std::span<const VTX::Vec3f> getCurrentAtomPositions() const { return frames[ 0 ]; }
+		inline std::span<const VTX::Vec3f> getAtomPositions( const VTX::uint & p_index ) const
+		{ return frames[ p_index ]; }
+	};
+
+	/**
+	 * @brief Test consistency over read-write-read protocol
+	 * @param p_args
+	 */
+	void testSystem( TestSystemArgs p_args, TestResults & p_out )
 	{
 		using namespace VTX;
 		using namespace VTX::IO;
@@ -239,20 +265,27 @@ namespace
 		const std::string systemPathname = systemName + p_args.extension;
 		const FilePath	  systemPath	 = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
+		size_t						frameCount = 0;
 		VTX::Core::Struct::Topology topology;
+		LazyTrajectory				traj;
 		{
 			VTX::Util::StopToken  t;
 			VTX::IO::SystemReader systemReader( systemPath, VTX::IO::READER_OPTION::ALL, t );
 			VTX::IO::Metadata	  metadata;
 			systemReader.get( dict, topology, metadata );
+			frameCount = systemReader.frameCount();
+			for ( size_t it_fc = 0; it_fc < frameCount; it_fc++ )
+			{
+				traj.frames.push_back( {} );
+				systemReader.get( it_fc, traj.frames.back() );
+			}
 		}
 		size_t atomCount  = topology.getAtomCount();
 		size_t chainCount = topology.getChainCount();
-#ifdef I_BROKE_TRAJECTORY_TESTS
-		size_t frameCount = topology.trajectory.getFrameCount();
-#endif
-		size_t bondCount = topology.getBondCount();
-		size_t resCount	 = topology.getResidueCount();
+		size_t bondCount  = topology.getBondCount();
+		size_t resCount	  = topology.getResidueCount();
+
+		p_out.firstRead.atLeastOneFrame = ( frameCount > 0 );
 
 		const VTX::FilePath outPath = VTX::Util::Filesystem::getExecutableDir() / "out" / "ChemfilesTrajectory";
 		if ( not std::filesystem::exists( outPath ) )
@@ -261,11 +294,10 @@ namespace
 		const VTX::FilePath destination = outPath / ( systemName + p_args.writtenExtension );
 
 		writeFile(
-			WriteArgs {
-				.destination = destination,
-				.format		 = E_FILE_FORMATS::none,
-				.system		 = &topology,
-			}
+			WriteArgs { .destination = destination,
+						.format		 = E_FILE_FORMATS::none,
+						.topology	 = &topology,
+						.trajectory	 = std::move( traj ) }
 		);
 
 		VTX::Core::Struct::Topology system_reread;
@@ -274,9 +306,12 @@ namespace
 		VTX::IO::Metadata			metadata;
 		systemReader.get( dict, system_reread, metadata );
 
-		CHECK( system_reread.getChainCount() == chainCount );
-		CHECK( system_reread.getResidueCount() == resCount );
-		CHECK( system_reread.getAtomCount() == atomCount );
+		p_out.matchChains			 = ( system_reread.getChainCount() == chainCount );
+		p_out.matchResidues			 = ( system_reread.getResidueCount() == resCount );
+		p_out.matchAtoms			 = ( system_reread.getAtomCount() == atomCount );
+		p_out.matchFrames			 = ( systemReader.frameCount() == frameCount );
+		p_out.reRead.atLeastOneFrame = systemReader.frameCount() > 0;
+		p_out.matchBonds			 = system_reread.getBondCount() == bondCount;
 
 		// Bond are not reliably written in files so we won't check them.
 		// e.g. 2qwo has disulfide bond that is not retrieved when reloading the file
@@ -284,13 +319,21 @@ namespace
 	}
 } // namespace
 
-TEST_CASE( "VTX_IO - Test writeFile", "[writer][chemfiles][trajectory][specific_file]" )
+TEST_CASE( "VTX_IO - Test writeFile", "[writer][chemfiles][trajectory][specific_file][read_write_read]" )
 {
-	return;
-	VTX::VTX_INFO( "Test reading and writing on {}.", "1idx" );
-	VTX::VTX_INFO( "This one has reported atom mismatch" );
-	testSystem( TestSystemArgs { .systemName = "1idx", .extension = ".cif", .writtenExtension = ".mmcif" } );
-	VTX::VTX_INFO( "Test reading and writing on {}.", "202d" );
-	VTX::VTX_INFO( "This one has reported residue mismatch" );
-	testSystem( TestSystemArgs { .systemName = "202d", .extension = ".cif", .writtenExtension = ".mmcif" } );
+	{
+		TestResults results;
+		testSystem(
+			TestSystemArgs { .systemName = "1AGA", .extension = ".mmtf", .writtenExtension = ".bcif" }, results
+		);
+		CHECK( results.matchAtoms );
+		CHECK( results.matchResidues );
+		CHECK( results.matchChains );
+		// CHECK( results.matchBonds ); // Bonds won't be reliably written depending on the format. mmcif has completly
+		// given up on bonds. bcif doesn't currently write struc_conn it seems. pdb is weird and I don't know what's
+		// wrong but it is wrong. And so on
+		CHECK( results.matchFrames );
+		CHECK( results.firstRead.atLeastOneFrame );
+		CHECK( results.reRead.atLeastOneFrame );
+	}
 }

@@ -166,19 +166,13 @@ namespace VTX::IO::Writer
 
 		template<typename T>
 		inline void setProperty( T & cf, const std::string & key, const std::string & value )
-		{
-			cf.set( key, value );
-		}
+		{ cf.set( key, value ); }
 		template<typename T>
 		inline void setProperty( T & cf, const std::string & key, const double & value )
-		{
-			cf.set( key, value );
-		}
+		{ cf.set( key, value ); }
 		template<typename T>
 		inline void setProperty( T & cf, const std::string & key, const bool & value )
-		{
-			cf.set( key, value );
-		}
+		{ cf.set( key, value ); }
 		template<typename T>
 		void transferProperties( T & cf, const PropertyCollection & props ) noexcept
 		{
@@ -186,9 +180,7 @@ namespace VTX::IO::Writer
 				std::visit( [ & ]( auto v ) { setProperty<T>( cf, prop.first, v ); }, prop.second );
 		}
 		inline void convert( const AtomCoordinates & in, ::chemfiles::Vector3D & out ) noexcept
-		{
-			out = ::chemfiles::Vector3D( in.x, in.y, in.z );
-		}
+		{ out = ::chemfiles::Vector3D( in.x, in.y, in.z ); }
 		inline void convert( const E_BOND_ORDER & in, ::chemfiles::Bond::BondOrder & out ) noexcept
 		{
 			switch ( in )
@@ -210,7 +202,8 @@ namespace VTX::IO::Writer
 		}
 		void writeFile( const FilePath & dest, const E_FILE_FORMATS & format, _System & system )
 		{
-			::chemfiles::Trajectory cf_traj( dest.string(), 'w', string( format ) );
+			// TODO I disabled the format things as chemfiles has a format guessing adequat enough
+			::chemfiles::Trajectory cf_traj( dest.string(), 'w' /*, string( format )*/ );
 
 			std::unordered_map<AtomId, size_t> atomIdCorrespondaceTable; // We need a correspondance table between the
 																		 // ID that chemfiles accepts and the ID we
@@ -288,10 +281,11 @@ namespace VTX::IO::Writer
 				return;
 			if ( _dest.empty() )
 				return;
-			if ( _format == E_FILE_FORMATS::none )
-				figureFormat( _dest, _format );
-			if ( _format == E_FILE_FORMATS::none )
-				return;
+			// TODO I disabled the format things as chemfiles has a format guessing adequat enough
+			// if ( _format == E_FILE_FORMATS::none )
+			//	figureFormat( _dest, _format );
+			// if ( _format == E_FILE_FORMATS::none )
+			//	return;
 
 			writeFile( _dest, _format, _system );
 		}
@@ -421,9 +415,7 @@ namespace VTX::IO::Writer
 	namespace
 	{
 		void vtxBondThrow( const AtomId & atom )
-		{
-			throw VTXException( "Couldn't create bond because atom <{}> wasn't declared", atom.value );
-		}
+		{ throw VTXException( "Couldn't create bond because atom <{}> wasn't declared", atom.value ); }
 	} // namespace
 	void System::bind( const AtomId & p_l, const AtomId & p_r, E_BOND_ORDER p_bondOrder )
 	{
