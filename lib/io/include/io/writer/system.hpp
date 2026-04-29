@@ -109,7 +109,7 @@ namespace VTX::IO::Writer
 		};
 		FilePath			destination;
 		E_FILE_FORMATS		format = E_FILE_FORMATS::none;
-		std::vector<System> trajectories;
+		std::vector<System> topologies;
 		E_WRITE_TYPE writeType = E_WRITE_TYPE::trajectory; // Placeholder because at some point we will probably need to
 														   // write docking results and stuff
 		Util::StopToken stopToken;

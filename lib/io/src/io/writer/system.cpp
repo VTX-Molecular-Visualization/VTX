@@ -6,12 +6,37 @@ namespace VTX::IO::Writer
 {
 	namespace
 	{
-		struct WriteContext
+		/**
+		 * @brief Class used to convert topology atom index into new system index
+		 */
+		class AtomIndexManager
 		{
-			uint currentChainIdx = 0;
-			uint currentResIdx	 = 0;
-			uint currentAtomIdx	 = 0;
+		  public:
+			AtomIndexManager( const std::vector<System> & p_topols ) : _topologies( p_topols ) {}
+
+			// > Thoughs
+			// On the write main loop, we have addChain, bonds, and frame functions.
+			// addChain will eventually loop over atoms in a inconsistent order and add them to the writesystem
+			// bonds and frame functions will loops over all atoms at once.
+			// However, indexing can be fucked up in multiple ways :
+			// If there is one system to write from, we would rather keep original atom IDs
+			// If there is multiple systems, we need to re-index everything in a new way, accounting filtered atoms and
+			// atoms added through a previous system. So we need to keep track of atomIndexes that refer to the
+			// topology, and link them to the atomIndex as it has been added to the writeSystem.
+			//
+			// Knowing that, we need to think about how to make things as simple
+			// as possible
+
+			/**
+			 * @brief Tells the manager that from now on, we are going to query next system's atom indexes.
+			 */
+			void nextSystem();
+
+		  private:
+			std::reference_wrapper<const std::vector<System>> _topologies;
 		};
+
+		using WrittenAtomMap = std::unordered_map<uint, uint>;
 		inline bool isResidueOfChain(
 			const size_t &						p_residueIdx,
 			const size_t &						p_chainIdx,
@@ -49,87 +74,88 @@ namespace VTX::IO::Writer
 		}
 
 		inline void addAtom(
-			const VTX::Core::Struct::Topology & p_mol,
+			const VTX::Core::Struct::Topology & p_topology,
 			const size_t &						p_atomIdx,
 			System &							p_system,
 			Residue &							p_residue
 		)
 		{
-			Atom w_atom = p_system.newAtom( { p_atomIdx } );
+			Atom w_atom = p_system.newAtom( { p_topology.atomOriginalIds[ p_atomIdx ] } );
 			p_residue.add( w_atom );
-			w_atom.setName( p_mol.atomNames[ p_atomIdx ] );
+			w_atom.setName( p_topology.atomNames[ p_atomIdx ] );
 			auto & constSymbol
-				= VTX::Core::ChemDB::Atom ::SYMBOL_STR[ static_cast<int>( p_mol.atomSymbols[ p_atomIdx ] ) ];
+				= VTX::Core::ChemDB::Atom ::SYMBOL_STR[ static_cast<int>( p_topology.atomSymbols[ p_atomIdx ] ) ];
 			w_atom.setSymbol( std::string( constSymbol.begin(), constSymbol.end() ) );
 		}
 		inline void addResidue(
-			const VTX::Core::Struct::Topology & p_mol,
+			const VTX::Core::Struct::Topology & p_topology,
 			const size_t &						p_residueIdx,
 			System &							p_system,
 			Chain &								p_chain,
 			AtomFilter &						p_atomFilter,
-			uint &								atomWritten
+			WrittenAtomMap &					p_writtenAtoms
 
 		)
 		{
 			Residue w_residue = p_system.newResidue();
 			p_chain.add( w_residue );
-			w_residue.setResId( static_cast<int>( p_mol.residueOriginalIds[ p_residueIdx ] ) );
+			w_residue.setResId( static_cast<int>( p_topology.residueOriginalIds[ p_residueIdx ] ) );
 			auto & constSymbol
-				= VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>( p_mol.residueSymbols[ p_residueIdx ] ) ];
+				= VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>( p_topology
+																				.residueSymbols[ p_residueIdx ] ) ];
 			std::string residueSymbol
-				= p_mol.residueSymbols[ p_residueIdx ] == VTX::Core::ChemDB::Residue::SYMBOL::UNKNOWN
-					  ? p_mol.residueNames[ p_residueIdx ]
+				= p_topology.residueSymbols[ p_residueIdx ] == VTX::Core::ChemDB::Residue::SYMBOL::UNKNOWN
+					  ? p_topology.residueNames[ p_residueIdx ]
 					  : std::string( constSymbol.begin(), constSymbol.end() );
 			w_residue.setSymbol( residueSymbol );
 			w_residue.set(
 				Property { .key	  = "secondary_structure",
 						   .value = VTX::Core::ChemDB::SecondaryStructure::enumToPdbFormatted(
-							   p_mol.residueSecondaryStructureTypes[ p_residueIdx ]
+							   p_topology.residueSecondaryStructureTypes[ p_residueIdx ]
 						   ) }
 			);
 			w_residue.set(
 				Property { .key	  = "is_standard_pdb",
 						   .value = VTX::Core::ChemDB::Residue::checkIfStandardFromName( residueSymbol ) }
 			);
-			for ( size_t atomIdx = p_mol.residueFirstAtomIndexes[ p_residueIdx ];
-				  isAtomOfResidue( atomIdx, p_residueIdx, p_mol );
-				  atomIdx++ )
+			for ( size_t it_atomIdx = p_topology.residueFirstAtomIndexes[ p_residueIdx ];
+				  isAtomOfResidue( it_atomIdx, p_residueIdx, p_topology );
+				  it_atomIdx++ )
 			{
-				if ( p_atomFilter( p_mol, atomIdx ) )
+				if ( p_atomFilter( p_topology, it_atomIdx ) )
 				{
-					addAtom( p_mol, atomIdx, p_system, w_residue );
-					atomWritten++;
+					addAtom( p_topology, it_atomIdx, p_system, w_residue );
+					;
 				}
 			}
 		}
 		inline void addChain(
-			const VTX::Core::Struct::Topology & p_mol,
+			const VTX::Core::Struct::Topology & p_topology,
 			const size_t &						p_chainIdx,
 			System &							p_system,
 			AtomFilter &						p_atomFilter,
-			uint &								atomWritten
+			WrittenAtomMap &					atomWritten
 		)
 		{
 			Chain w_chain = p_system.newChain();
-			w_chain.setName( p_mol.chainNames[ p_chainIdx ] );
+			w_chain.setName( p_topology.chainNames[ p_chainIdx ] );
 
 			// When I wrote this, we didn't read the chainID from chemfiles and we don't store it anywhere. So we will
 			// put the name instead for now.
-			w_chain.setId( p_mol.chainNames[ p_chainIdx ] );
+			w_chain.setId( p_topology.chainNames[ p_chainIdx ] );
 
-			for ( size_t residueIdx = p_mol.chainFirstResidues[ p_chainIdx ];
-				  isResidueOfChain( residueIdx, p_chainIdx, p_mol );
-				  residueIdx++ )
+			for ( size_t it_residueIdx = p_topology.chainFirstResidues[ p_chainIdx ];
+				  isResidueOfChain( it_residueIdx, p_chainIdx, p_topology );
+				  it_residueIdx++ )
 			{
-				addResidue( p_mol, residueIdx, p_system, w_chain, p_atomFilter, atomWritten );
+				addResidue( p_topology, it_residueIdx, p_system, w_chain, p_atomFilter, atomWritten );
 			}
 		}
 		inline void setBonds(
 			const VTX::Core::Struct::Topology & p_mol,
 			System &							p_system,
 			AtomFilter &						p_atomFilter,
-			const uint &						p_atomIdxOffset
+			const WrittenAtomMap &				p_writtenAtoms
 		)
 		{
 			for ( size_t bondIdx = 0; bondIdx < p_mol.getBondCount(); bondIdx += 2 )
@@ -140,23 +166,30 @@ namespace VTX::IO::Writer
 				{
 					E_BOND_ORDER w_bondOrder = E_BOND_ORDER::unknown;
 					convert( p_mol.bondOrders[ bondIdx >> 1 ], w_bondOrder );
-					p_system.bind( { p_atomIdxOffset + atomIdx1 }, { p_atomIdxOffset + atomIdx2 }, w_bondOrder );
+					p_system.bind(
+						{ p_mol.atomOriginalIds[ atomIdx1 ] }, { p_mol.atomOriginalIds[ atomIdx1 ] }, w_bondOrder
+					);
 				}
 			}
 		}
-		inline void fillFrames( const TrajectoryFrameGetter & p_traj, System & p_system, const uint & atomIdxOffset )
+		inline void fillFrames(
+			const TrajectoryFrameGetter &  p_traj,
+			const Core::Struct::Topology & p_topology,
+			System &					   p_system
+		)
 		{
 			for ( size_t frameIdx = 0; frameIdx < p_traj.frameCount(); frameIdx++ )
 			{
 				Frame				   w_frame				= p_system.newFrame();
 				std::span<const Vec3f> currentAtomPositions = p_traj.getAtomPositions( static_cast<uint>( frameIdx ) );
-				for ( size_t atomIdx = 0; atomIdx < currentAtomPositions.size(); atomIdx++ )
+				for ( size_t it_atomIdx = 0; it_atomIdx < currentAtomPositions.size(); it_atomIdx++ )
 				{
 					Atom w_atom;
+
 					// if the atom doesn't exist for some reason, we skip to the next
-					if ( p_system.fetch( w_atom, AtomId { atomIdxOffset + atomIdx } ) )
+					if ( p_system.fetch( w_atom, AtomId { p_topology.atomOriginalIds[ it_atomIdx ] } ) )
 					{
-						const VTX::Vec3f & coords = currentAtomPositions[ atomIdx ];
+						const VTX::Vec3f & coords = currentAtomPositions[ it_atomIdx ];
 						w_frame.set( w_atom, AtomCoordinates { .x = coords[ 0 ], .y = coords[ 1 ], .z = coords[ 2 ] } );
 					}
 				}
@@ -173,11 +206,13 @@ namespace VTX::IO::Writer
 					 // atoms for by knowing how many atoms have be written from the previous systems.
 			for ( auto & system : p_args.topologies )
 			{
-				auto & topology	   = system.topology;
-				uint   atomWritten = 0;
+				auto & topology = system.topology;
+				if ( topology == nullptr )
+					continue;
+				uint atomWritten = 0;
 				for ( size_t chainIdx = 0; chainIdx < system.topology->getChainCount(); chainIdx++ )
 				{
-					addChain( *system.topology, chainIdx, w_system, system.atomFilter, atomWritten );
+					addChain( *system.topology, chainIdx, w_system, system.atomFilter, actualIdx2WrittenIdx );
 				}
 
 				if ( p_args.stopToken.stop_requested() )
@@ -187,13 +222,13 @@ namespace VTX::IO::Writer
 				// When an atom is filtered out, there is a shift between the position index that contains all atoms,
 				// and the atomIdx from the system being written. Maybe we need to hold two counter while looping : the
 				// unfiltered index and the filtered atom index.
-				setBonds( *system.topology, w_system, system.atomFilter, atomIdxOffset );
+				setBonds( *system.topology, w_system, system.atomFilter, actualIdx2WrittenIdx );
 
 				if ( p_args.stopToken.stop_requested() )
 					return;
 
-				fillFrames( system.trajectory, w_system, atomIdxOffset );
-				atomIdxOffset += atomWritten;
+				fillFrames( system.trajectory, *topology, w_system );
+				atomIdxOffset += actualIdx2WrittenIdx.size();
 			}
 
 			// We fill the write destination at the very end so if we stopped due to the stoptoken, nothing get written
