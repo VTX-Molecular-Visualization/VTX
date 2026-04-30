@@ -14,8 +14,7 @@
 namespace VTX::UI::QT::Model
 {
 	SystemModel::SystemModel( const App::ECS::Entity p_system, QObject * p_parent ) :
-		_system( p_system ), _metadata( App::REG().get<IO::Metadata>( p_system ) ),
-		_data( App::REG().get<Core::Struct::Topology>( p_system ) ), QAbstractItemModel( p_parent )
+		_system( p_system ), QAbstractItemModel( p_parent )
 	{
 	}
 
@@ -24,6 +23,8 @@ namespace VTX::UI::QT::Model
 	int SystemModel::rowCount( const QModelIndex & p_parent ) const
 	{
 		using namespace Core::Struct;
+
+		const auto & data = App::REG().get<Core::Struct::Topology>( _system );
 
 		// Top level.
 		if ( not p_parent.isValid() )
@@ -39,25 +40,25 @@ namespace VTX::UI::QT::Model
 		{
 		case E_SYSTEM_ITEM::SYSTEM:
 		{
-			return _data.get().getChainCount();
+			return data.getChainCount();
 		}
 		case E_SYSTEM_ITEM::CHAIN:
 		{
-			if ( index >= _data.get().getChainCount() )
+			if ( index >= data.getChainCount() )
 			{
 				return 0;
 			}
 
-			return _data.get().chainResidueCounts[ index ];
+			return data.chainResidueCounts[ index ];
 		}
 		case E_SYSTEM_ITEM::RESIDUE:
 		{
-			if ( index >= _data.get().getResidueCount() )
+			if ( index >= data.getResidueCount() )
 			{
 				return 0;
 			}
 
-			return _data.get().residueAtomCounts[ index ];
+			return data.residueAtomCounts[ index ];
 		}
 		default: return 0;
 		}
@@ -77,6 +78,8 @@ namespace VTX::UI::QT::Model
 		Index		  index;
 		unpack( p_index.internalId(), item, index );
 
+		const auto & data = App::REG().get<Core::Struct::Topology>( _system );
+
 		switch ( p_role )
 		{
 		case Qt::DisplayRole:
@@ -84,35 +87,39 @@ namespace VTX::UI::QT::Model
 			{
 			case E_SYSTEM_ITEM::SYSTEM:
 			{
-				if ( _metadata.get().pdbIDCode != IO::PDB_ID_CODE_DEFAULT )
-					return QString::fromStdString( _metadata.get().pdbIDCode );
+				const auto & metadata = App::REG().get<IO::Metadata>( _system );
+
+				if ( not metadata.name.empty() )
+					return QString::fromStdString( metadata.name );
+				else if ( metadata.pdbIDCode != IO::PDB_ID_CODE_DEFAULT )
+					return QString::fromStdString( metadata.pdbIDCode );
 				else
-					return QString::fromStdString( _metadata.get().path.stem().string() );
+					return QString::fromStdString( metadata.path.stem().string() );
 			}
 			case E_SYSTEM_ITEM::CHAIN:
 			{
-				assert( index < _data.get().getChainCount() );
+				assert( index < data.getChainCount() );
 
-				if ( not _data.get().chainNames[ index ].empty() )
-					return QString::fromStdString( _data.get().chainNames[ index ] );
+				if ( not data.chainNames[ index ].empty() )
+					return QString::fromStdString( data.chainNames[ index ] );
 				else
 					return "-";
 			}
 			case E_SYSTEM_ITEM::RESIDUE:
 			{
-				assert( index < _data.get().getResidueCount() );
+				assert( index < data.getResidueCount() );
 
-				if ( not _data.get().residueNames[ index ].empty() )
-					return QString::fromStdString( _data.get().residueNames[ index ] );
+				if ( not data.residueNames[ index ].empty() )
+					return QString::fromStdString( data.residueNames[ index ] );
 				else
 					return "-";
 			}
 			case E_SYSTEM_ITEM::ATOM:
 			{
-				assert( index < _data.get().getAtomCount() );
+				assert( index < data.getAtomCount() );
 
-				if ( not _data.get().atomNames[ index ].empty() )
-					return QString::fromStdString( _data.get().atomNames[ index ] );
+				if ( not data.atomNames[ index ].empty() )
+					return QString::fromStdString( data.atomNames[ index ] );
 				else
 					return "-";
 			}
@@ -142,9 +149,12 @@ namespace VTX::UI::QT::Model
 				return {};
 			}
 			}
-		case VisibleRole: return toUnderlying( App::Helper::System::getVisibleState( { _system, item, index } ) );
-		case ColorSchemeRootRole: return App::Helper::System::isColorSchemeRoot( { _system, item, index } );
-		case RepresentationRootRole: return App::Helper::System::isRepresentationRoot( { _system, item, index } );
+		case VisibleRole:
+			return toUnderlying( App::Helper::System::getVisibleState( { _system, item, index } ) );
+		case ColorSchemeRootRole:
+			return App::Helper::System::isColorSchemeRoot( { _system, item, index } );
+		case RepresentationRootRole:
+			return App::Helper::System::isRepresentationRoot( { _system, item, index } );
 		default: return {};
 		}
 	}
@@ -153,12 +163,21 @@ namespace VTX::UI::QT::Model
 	{
 		using namespace Core::Struct;
 
-		assert( p_column == 0 && p_row >= 0 );
+		if ( p_column != 0 || p_row < 0 )
+		{
+			return {};
+		}
+
+		const auto & data = App::REG().get<Core::Struct::Topology>( _system );
 
 		// System.
 		if ( not p_parent.isValid() )
 		{
-			assert( p_row == 0 );
+			if ( p_row != 0 )
+			{
+				return {};
+			}
+
 			return createIndex( p_row, p_column, pack( E_SYSTEM_ITEM::SYSTEM, 0 ) );
 		}
 
@@ -171,25 +190,35 @@ namespace VTX::UI::QT::Model
 		// Chain.
 		case E_SYSTEM_ITEM::SYSTEM:
 		{
-			assert( p_row < static_cast<int>( _data.get().getChainCount() ) );
+			if ( p_row >= static_cast<int>( data.getChainCount() ) )
+			{
+				return {};
+			}
+
 			return createIndex( p_row, p_column, pack( E_SYSTEM_ITEM::CHAIN, p_row ) );
 		}
 		// Residue.
 		case E_SYSTEM_ITEM::CHAIN:
 		{
-			assert( index < _data.get().getChainCount() );
-			assert( p_row < static_cast<int>( _data.get().chainResidueCounts[ index ] ) );
+			if ( index >= data.getChainCount() || p_row >= static_cast<int>( data.chainResidueCounts[ index ] ) )
+			{
+				return {};
+			}
+
 			return createIndex(
-				p_row, p_column, pack( E_SYSTEM_ITEM::RESIDUE, _data.get().chainFirstResidues[ index ] + p_row )
+				p_row, p_column, pack( E_SYSTEM_ITEM::RESIDUE, data.chainFirstResidues[ index ] + p_row )
 			);
 		}
 		// Atom.
 		case E_SYSTEM_ITEM::RESIDUE:
 		{
-			assert( index < _data.get().getResidueCount() );
-			assert( p_row < static_cast<int>( _data.get().residueAtomCounts[ index ] ) );
+			if ( index >= data.getResidueCount() || p_row >= static_cast<int>( data.residueAtomCounts[ index ] ) )
+			{
+				return {};
+			}
+
 			return createIndex(
-				p_row, p_column, pack( E_SYSTEM_ITEM::ATOM, _data.get().residueFirstAtomIndexes[ index ] + p_row )
+				p_row, p_column, pack( E_SYSTEM_ITEM::ATOM, data.residueFirstAtomIndexes[ index ] + p_row )
 			);
 		}
 		default: return {};
@@ -209,6 +238,8 @@ namespace VTX::UI::QT::Model
 		Index		  index;
 		unpack( p_index.internalId(), item, index );
 
+		const auto & data = App::REG().get<Core::Struct::Topology>( _system );
+
 		// Root.
 		if ( item == E_SYSTEM_ITEM::SYSTEM )
 		{
@@ -219,22 +250,34 @@ namespace VTX::UI::QT::Model
 		{
 		case E_SYSTEM_ITEM::CHAIN:
 		{
-			assert( index < _data.get().getChainCount() );
+			if ( index >= data.getChainCount() )
+			{
+				return {};
+			}
+
 			return createIndex( 0, 0, pack( E_SYSTEM_ITEM::SYSTEM, 0 ) );
 		}
 		case E_SYSTEM_ITEM::RESIDUE:
 		{
-			assert( index < _data.get().getResidueCount() );
-			const Index chain		= _data.get().residueChainIndexes[ index ];
+			if ( index >= data.getResidueCount() )
+			{
+				return {};
+			}
+
+			const Index chain		= data.residueChainIndexes[ index ];
 			const int	rowInSystem = int( chain );
 			return createIndex( rowInSystem, 0, pack( E_SYSTEM_ITEM::CHAIN, chain ) );
 		}
 		case E_SYSTEM_ITEM::ATOM:
 		{
-			assert( index < _data.get().getAtomCount() );
-			const Index residue	   = _data.get().atomResidueIndexes[ index ];
-			const Index chain	   = _data.get().residueChainIndexes[ residue ];
-			const int	rowInChain = int( residue - _data.get().chainFirstResidues[ chain ] );
+			if ( index >= data.getAtomCount() )
+			{
+				return {};
+			}
+
+			const Index residue	   = data.atomResidueIndexes[ index ];
+			const Index chain	   = data.residueChainIndexes[ residue ];
+			const int	rowInChain = int( residue - data.chainFirstResidues[ chain ] );
 			return createIndex( rowInChain, 0, pack( E_SYSTEM_ITEM::RESIDUE, residue ) );
 		}
 		default: return {};

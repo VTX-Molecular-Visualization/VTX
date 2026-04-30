@@ -61,12 +61,17 @@ namespace VTX::App::System
 	};
 	void SystemExtractor::_clean() { _attributesPtr->synchronizer.count_down(); }
 
-	SystemExtractor::SystemExtractor( FilePath p_path ) : _attributesPtr( std::make_shared<_Data>() )
-	{ _attributesPtr->data.metadata.path = std::move( p_path ); }
-	SystemExtractor::SystemExtractor( FilePath p_path, std::string && p_buffer ) :
-		SystemExtractor( std::move( p_path ) )
+	SystemExtractor::SystemExtractor( FilePath p_path, IO::READER_OPTION p_options ) :
+		_attributesPtr( std::make_shared<_Data>() )
+	{
+		_attributesPtr->data.sourcePath	  = std::move( p_path );
+		_attributesPtr->data.readerOption = p_options;
+	}
+	SystemExtractor::SystemExtractor( FilePath p_path, std::string && p_buffer, IO::READER_OPTION p_options ) :
+		SystemExtractor( std::move( p_path ), p_options )
 	{ _attributesPtr->data.buffer = std::move( p_buffer ); }
-	SystemExtractor::SystemExtractor( ECS::Entity p_entity, FilePath p_path ) : SystemExtractor( std::move( p_path ) )
+	SystemExtractor::SystemExtractor( ECS::Entity p_entity, FilePath p_path, IO::READER_OPTION p_options ) :
+		SystemExtractor( std::move( p_path ), p_options )
 	{
 		_attributesPtr->data.entity			= p_entity;
 		_attributesPtr->data.onlyTrajectory = true;
@@ -80,7 +85,7 @@ namespace VTX::App::System
 
 		if ( p_thread )
 			p_thread.value().get().setProgressText(
-				fmt::format( "Reading {}...", pendingData.metadata.path.filename().string() )
+				fmt::format( "Reading {}...", pendingData.sourcePath.filename().string() )
 			);
 
 		if ( p_stopToken.stop_requested() )
@@ -91,13 +96,13 @@ namespace VTX::App::System
 
 		if ( pendingData.buffer )
 			pendingData.reader.emplace(
-				std::move( pendingData.buffer.value() ), pendingData.metadata.path, p_stopToken
+				std::move( pendingData.buffer.value() ), pendingData.sourcePath, pendingData.readerOption, p_stopToken
 			);
 		else
-			pendingData.reader.emplace( pendingData.metadata.path, p_stopToken );
-
-		pendingData.reader->get( ECS::getCtx<Core::ChemDB::Category::Dictionary>(), pendingData.topology );
-		pendingData.reader->get( pendingData.metadata );
+			pendingData.reader.emplace( pendingData.sourcePath, pendingData.readerOption, p_stopToken );
+		pendingData.reader->get(
+			ECS::getCtx<Core::ChemDB::Category::Dictionary>(), pendingData.topology, pendingData.metadata
+		);
 
 		if ( p_stopToken.stop_requested() )
 		{
@@ -224,7 +229,7 @@ namespace VTX::App::System
 			{
 				VTX::VTX_ERROR(
 					"File {} has different atom count. ({}/{})",
-					p_data.metadata.path.string(),
+					p_data.sourcePath.string(),
 					topology->getAtomCount(),
 					p_data.topology.getAtomCount()
 				);

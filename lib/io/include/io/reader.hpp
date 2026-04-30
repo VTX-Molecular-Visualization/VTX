@@ -33,20 +33,19 @@ namespace VTX::IO
 	{
 	  public:
 		SystemReader() = delete;
-		SystemReader( const VTX::FilePath &, Util::StopToken & );
-		SystemReader( MemoryBuffer, const VTX::FilePath &, Util::StopToken & );
+		SystemReader( const VTX::FilePath &, const READER_OPTION, Util::StopToken & );
+		SystemReader( MemoryBuffer &&, const VTX::FilePath &, const READER_OPTION, Util::StopToken & );
 
 		size_t frameCount() const;
 
-		void get( const Core::ChemDB::Category::Dictionary &, VTX::Core::Struct ::Topology & ) noexcept;
+		void get( const Core::ChemDB::Category::Dictionary &, VTX::Core::Struct ::Topology &, Metadata & );
 
 		/**
 		 * @brief Always return Frame 0's positions
 		 * @param
 		 */
-		void get( AtomPositions & ) noexcept;
-		void get( const FrameIndex &, AtomPositions & ) noexcept;
-		void get( Metadata & ) noexcept;
+		void get( AtomPositions & );
+		void get( const FrameIndex &, AtomPositions & );
 		void set( Util::StopToken & ) noexcept;
 
 	  private:

@@ -85,11 +85,6 @@ namespace VTX::UI::QT::Model
 		 */
 		const App::ECS::Entity _system;
 
-		/**
-		 * @brief Reference to the system data.
-		 */
-		std::reference_wrapper<const IO::Metadata>			 _metadata;
-		std::reference_wrapper<const Core::Struct::Topology> _data;
 	};
 
 } // namespace VTX::UI::QT::Model

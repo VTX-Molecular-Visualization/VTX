@@ -172,11 +172,12 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 	}
 
 	VTX::Core::Struct::Topology				topology;
+	VTX::IO::Metadata						metadata;
 	VTX::Util::StopToken					t;
-	VTX::IO::SystemReader					systemReader( waterPath, t );
+	VTX::IO::SystemReader					systemReader( waterPath, VTX::IO::READER_OPTION::ALL, t );
 	VTX::IO::AtomPositions					positions;
 	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
-	systemReader.get( dict, topology );
+	systemReader.get( dict, topology, metadata );
 	systemReader.get( positions );
 
 	CHECK( topology.getChainCount() == 1 );
@@ -205,9 +206,10 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 
 	VTX::Core::Struct::Topology				topology;
 	VTX::Util::StopToken					t;
-	VTX::IO::SystemReader					systemReader( waterPath, t );
+	VTX::IO::SystemReader					systemReader( waterPath, VTX::IO::READER_OPTION::ALL, t );
 	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
-	systemReader.get( dict, topology );
+	VTX::IO::Metadata						metadata;
+	systemReader.get( dict, topology, metadata );
 
 	CHECK( topology.getChainCount() == 1 );
 	CHECK( topology.getBondCount() == 4 );
@@ -268,8 +270,9 @@ namespace
 		LazyTrajectory				traj;
 		{
 			VTX::Util::StopToken  t;
-			VTX::IO::SystemReader systemReader( systemPath, t );
-			systemReader.get( dict, topology );
+			VTX::IO::SystemReader systemReader( systemPath, VTX::IO::READER_OPTION::ALL, t );
+			VTX::IO::Metadata	  metadata;
+			systemReader.get( dict, topology, metadata );
 			frameCount = systemReader.frameCount();
 			for ( size_t it_fc = 0; it_fc < frameCount; it_fc++ )
 			{
@@ -299,8 +302,9 @@ namespace
 
 		VTX::Core::Struct::Topology system_reread;
 		VTX::Util::StopToken		t;
-		VTX::IO::SystemReader		systemReader( destination, t );
-		systemReader.get( dict, system_reread );
+		VTX::IO::SystemReader		systemReader( destination, VTX::IO::READER_OPTION::ALL, t );
+		VTX::IO::Metadata			metadata;
+		systemReader.get( dict, system_reread, metadata );
 
 		p_out.matchChains			 = ( system_reread.getChainCount() == chainCount );
 		p_out.matchResidues			 = ( system_reread.getResidueCount() == resCount );

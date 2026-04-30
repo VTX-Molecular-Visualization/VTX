@@ -546,7 +546,12 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			_atomsTable->setItem( int( atom ), 1, _readonlyItem( _textOrDash( topology.getResidueName( residue ) ) ) );
 			_atomsTable->setItem( int( atom ), 2, _readonlyItem( UI::QT::Helper::formatNumber( atomInResidue ) ) );
 			_atomsTable->setItem( int( atom ), 3, _item( _textOrDash( topology.getAtomName( atom ) ) ) );
-			_atomsTable->setItem( int( atom ), 4, _item( QString::number( topology.getAtomOriginalId( atom ) ) ) );
+			const auto originalAtomIndex = topology.getAtomOriginalIndex( atom );
+			_atomsTable->setItem(
+				int( atom ),
+				4,
+				_item( originalAtomIndex ? QString::number( *originalAtomIndex ) : "-" )
+			);
 			_atomsTable->setItem(
 				int( atom ),
 				5,

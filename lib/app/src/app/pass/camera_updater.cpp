@@ -8,9 +8,7 @@
 
 namespace VTX::App::Pass
 {
-	CameraUpdater::CameraUpdater( const ECS::Entity & p_ent ) :
-		_entity( p_ent ), _transform( REG().get<Util::Math::Transform>( p_ent ) ),
-		_target( REG().get<Renderer::Camera>( p_ent ).target ), _settings( REG().get<Setting::Controller>( p_ent ) )
+	CameraUpdater::CameraUpdater( const ECS::Entity & p_ent ) : _entity( p_ent )
 	{
 		auto & reg = REG();
 
@@ -25,11 +23,13 @@ namespace VTX::App::Pass
 
 	void CameraUpdater::_onControllerSetting()
 	{
+		const auto & settings = REG().get<Setting::Controller>( _entity );
+
 		// Checlk if controller changed.
-		if ( _controllers.empty() || _controllers.front().hash != Util::hash( _settings.get().current ) )
+		if ( _controllers.empty() || _controllers.front().hash != Util::hash( settings.current ) )
 		{
 			// Set controller.
-			switch ( _settings.get().current )
+			switch ( settings.current )
 			{
 			case Setting::E_CONTROLLER::TRACKBALL: setController<Controller::Trackball>(); break;
 			case Setting::E_CONTROLLER::FREEFLY: setController<Controller::Freefly>(); break;
