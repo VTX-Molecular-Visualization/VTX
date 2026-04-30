@@ -44,10 +44,21 @@ namespace VTX::IO::Writer
 				else
 					return p_currentSystemAtomIdx;
 			}
+
+			/**
+			 * @brief Returns the index used in the written system from that specific topology index.
+			 *        Returns _filteredSentinel when the atom was excluded by the AtomFilter so that
+			 *        the caller's fetch() gracefully returns false instead of crashing.
+			 * @param p_currentSystemAtomIdx
+			 * @return
+			 */
 			inline const uint & getAtomIdx( const uint & p_currentSystemAtomIdx ) const
 			{
 				if ( _multiSystem )
-					return _currentSystemAtomIdxMap.at( p_currentSystemAtomIdx );
+				{
+					auto it = _currentSystemAtomIdxMap.find( p_currentSystemAtomIdx );
+					return it != _currentSystemAtomIdxMap.end() ? it->second : _filteredSentinel;
+				}
 				else if ( _currentSystem->topology->atomOriginalIndexes )
 					return _currentSystem->topology->atomOriginalIndexes.value()[ p_currentSystemAtomIdx ];
 				else
@@ -89,8 +100,10 @@ namespace VTX::IO::Writer
 			// We might need to associate topology indexes to a new one defined for the written system. Therefore,
 			std::unordered_map<uint, uint> _currentSystemAtomIdxMap;
 			std::unordered_map<uint, uint> _currentSystemResIdxMap;
-			uint						   _lastAtomIdx = 0;
-			uint						   _lastResIdx	= 0;
+			uint						   _lastAtomIdx		   = 0;
+			uint						   _lastResIdx		   = 0;
+			// Returned by getAtomIdx for filtered atoms; no real atom ever gets this ID.
+			static constexpr uint		   _filteredSentinel = std::numeric_limits<uint>::max();
 		};
 
 		using WrittenAtomMap = std::unordered_map<uint, uint>;
@@ -138,7 +151,7 @@ namespace VTX::IO::Writer
 			SystemIndexManager &				p_indexManager
 		)
 		{
-			Atom w_atom = p_system.newAtom( AtomId { p_indexManager.newAtomIdx( p_atomIdx ) } );
+			Atom w_atom = p_system.newAtom( AtomId { p_indexManager.newAtomIdx( static_cast<uint>( p_atomIdx ) ) } );
 			p_residue.add( w_atom );
 			w_atom.setName( p_topology.atomNames[ p_atomIdx ] );
 			auto & constSymbol
@@ -157,7 +170,7 @@ namespace VTX::IO::Writer
 		{
 			Residue w_residue = p_system.newResidue();
 			p_chain.add( w_residue );
-			w_residue.setResId( static_cast<int>( p_indexManager.newResIdx( p_residueIdx ) ) );
+			w_residue.setResId( static_cast<int>( p_indexManager.newResIdx( static_cast<uint>( p_residueIdx ) ) ) );
 			auto & constSymbol
 				= VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>( p_topology
 																				.residueSymbols[ p_residueIdx ] ) ];
@@ -226,8 +239,8 @@ namespace VTX::IO::Writer
 					E_BOND_ORDER w_bondOrder = E_BOND_ORDER::unknown;
 					convert( p_mol.bondOrders[ bondIdx >> 1 ], w_bondOrder );
 					p_system.bind(
-						AtomId { p_indexManager.getAtomIdx( atomIdx1 ) },
-						AtomId { p_indexManager.getAtomIdx( atomIdx2 ) },
+						AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIdx1 ) ) },
+						AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIdx2 ) ) },
 						w_bondOrder
 					);
 				}
@@ -250,7 +263,9 @@ namespace VTX::IO::Writer
 					Atom w_atom;
 
 					// if the atom doesn't exist for some reason, we skip to the next
-					if ( p_system.fetch( w_atom, AtomId { p_indexManager.getAtomIdx( it_atomIdx ) } ) )
+					if ( p_system.fetch(
+							 w_atom, AtomId { p_indexManager.getAtomIdx( static_cast<uint>( it_atomIdx ) ) }
+						 ) )
 					{
 						const VTX::Vec3f & coords = currentAtomPositions[ it_atomIdx ];
 						w_frame.set( w_atom, AtomCoordinates { .x = coords[ 0 ], .y = coords[ 1 ], .z = coords[ 2 ] } );

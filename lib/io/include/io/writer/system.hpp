@@ -104,8 +104,8 @@ namespace VTX::IO::Writer
 		struct System
 		{
 			const VTX::Core::Struct::Topology * topology;
-			AtomFilter							atomFilter = g_takeAllAtoms;
 			TrajectoryFrameGetter				trajectory;
+			AtomFilter							atomFilter = g_takeAllAtoms;
 		};
 		FilePath			destination;
 		E_FILE_FORMATS		format = E_FILE_FORMATS::none;
