@@ -658,12 +658,16 @@ TEST_CASE(
 					.chain( "B" )
 					.residue( "R2", 2 )
 					.atom( "O1", VTX::Core::ChemDB::Atom::SYMBOL::A_O ) // index 0 – kept
-					.atom( "N", VTX::Core::ChemDB::Atom::SYMBOL::A_N )	 // index 1 – filtered
+					.atom( "N", VTX::Core::ChemDB::Atom::SYMBOL::A_N )	// index 1 – filtered
 					.atom( "O2", VTX::Core::ChemDB::Atom::SYMBOL::A_O ) // index 2 – kept
 					.finish();
 
-	AtomFilter keepNonN
-		= []( const VTX::Core::Struct::Topology & t, const size_t & i ) -> bool { return t.atomNames[ i ] != "N"; };
+	AtomFilter keepNonN = []( const VTX::Core::Struct::Topology & t, const size_t & i ) -> bool
+	{
+		//
+		return t.atomNames[ i ] != "N";
+		//
+	};
 
 	FixedTrajectory traj1, traj2;
 	traj1.frame = { { 1.f, 0.f, 0.f }, { 2.f, 0.f, 0.f }, { 3.f, 0.f, 0.f } };

@@ -100,10 +100,10 @@ namespace VTX::IO::Writer
 			// We might need to associate topology indexes to a new one defined for the written system. Therefore,
 			std::unordered_map<uint, uint> _currentSystemAtomIdxMap;
 			std::unordered_map<uint, uint> _currentSystemResIdxMap;
-			uint						   _lastAtomIdx		   = 0;
-			uint						   _lastResIdx		   = 0;
+			uint						   _lastAtomIdx = 0;
+			uint						   _lastResIdx	= 0;
 			// Returned by getAtomIdx for filtered atoms; no real atom ever gets this ID.
-			static constexpr uint		   _filteredSentinel = std::numeric_limits<uint>::max();
+			static constexpr uint _filteredSentinel = std::numeric_limits<uint>::max();
 		};
 
 		using WrittenAtomMap = std::unordered_map<uint, uint>;
@@ -256,7 +256,10 @@ namespace VTX::IO::Writer
 		{
 			for ( size_t frameIdx = 0; frameIdx < p_traj.frameCount(); frameIdx++ )
 			{
-				Frame				   w_frame				= p_system.newFrame();
+				Frame w_frame;
+				if ( not p_system.fetch( w_frame, frameIdx ) )
+					w_frame = p_system.newFrame();
+
 				std::span<const Vec3f> currentAtomPositions = p_traj.getAtomPositions( static_cast<uint>( frameIdx ) );
 				for ( size_t it_atomIdx = 0; it_atomIdx < currentAtomPositions.size(); it_atomIdx++ )
 				{
