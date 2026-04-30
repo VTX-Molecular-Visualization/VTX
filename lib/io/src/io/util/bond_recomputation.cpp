@@ -2,6 +2,8 @@
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/residue.hpp>
 #include <iostream>
+#include <util/chrono.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::IO::Util
 {
@@ -31,9 +33,7 @@ namespace VTX::IO::Util
 	}
 
 	const std::vector<size_t> & BondRecomputation::CellList::getNeighbours( const size_t & p_index ) const
-	{
-		return _neighbourList[ p_index ];
-	}
+	{ return _neighbourList[ p_index ]; }
 	const std::vector<size_t> & BondRecomputation::CellList::getNeighbours(
 		const chemfiles::Vector3D & p_position
 	) const
@@ -42,17 +42,11 @@ namespace VTX::IO::Util
 		return _neighbourList[ cellIndex ];
 	}
 	const std::vector<size_t> & BondRecomputation::CellList::getCysteineSulfurAtoms( const size_t p_cellIndex ) const
-	{
-		return _cysteinSulfurIndexes[ p_cellIndex ];
-	}
+	{ return _cysteinSulfurIndexes[ p_cellIndex ]; }
 	const std::vector<std::vector<size_t>> & BondRecomputation::CellList::getCysteineSulfurAtoms() const
-	{
-		return _cysteinSulfurIndexes;
-	}
+	{ return _cysteinSulfurIndexes; }
 	const std::vector<std::vector<size_t>> & BondRecomputation::CellList::getNonStdAtoms() const
-	{
-		return _nonStdAtoms;
-	}
+	{ return _nonStdAtoms; }
 	std::vector<std::vector<size_t>> & BondRecomputation::CellList::getNonStdAtoms() { return _nonStdAtoms; }
 
 	size_t BondRecomputation::CellList::_getIndexFromPosition( const chemfiles::Vector3D & p_position ) const
@@ -212,6 +206,12 @@ namespace VTX::IO::Util
 				}
 			}
 		}
+	}
+
+	void BondRecomputation::recomputeBonds( VTX::Core::Struct::Topology & p_topology )
+	{
+		VTX::Util::ScopedChrono chrono( "BondRecomputation::recomputeBonds" );
+		VTX_INFO( "Recomputing bonds..." );
 	}
 
 	void BondRecomputation::recomputeBonds( chemfiles::Frame & p_frame, const VTX::Util::Math::AABB & p_aabb )

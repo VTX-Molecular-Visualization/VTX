@@ -6,6 +6,7 @@
 #include <chemfiles.hpp>
 #pragma warning( pop )
 #include <algorithm>
+#include <core/struct/topology.hpp>
 #include <string>
 #include <unordered_set>
 
@@ -74,6 +75,7 @@ namespace VTX::IO::Util
 		};
 
 	  public:
+		static void recomputeBonds( VTX::Core::Struct::Topology & p_topology );
 		static void recomputeBonds( chemfiles::Frame & p_frame, const VTX::Util::Math::AABB & p_aabb );
 
 	  private:
@@ -82,9 +84,11 @@ namespace VTX::IO::Util
 			= MAX_DISTANCE_FOR_DISULFIDE_BOND * MAX_DISTANCE_FOR_DISULFIDE_BOND;
 
 		static void _recomputeBondsOfNonStandardResidues( chemfiles::Frame & frame, const CellList & p_cellList );
-		static void _recomputeDisulfides( chemfiles::Frame &				 p_frame,
-										  const CellList &					 p_cellList,
-										  const std::unordered_set<size_t> & p_sulphurAtoms );
+		static void _recomputeDisulfides(
+			chemfiles::Frame &				   p_frame,
+			const CellList &				   p_cellList,
+			const std::unordered_set<size_t> & p_sulphurAtoms
+		);
 
 		static double _sqrDistance( const chemfiles::Vector3D & p_lhs, const chemfiles::Vector3D & p_rhs );
 	};

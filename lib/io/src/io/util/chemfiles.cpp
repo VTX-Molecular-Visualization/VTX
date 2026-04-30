@@ -1,6 +1,4 @@
 #include "io/util/chemfiles.hpp"
-#include "io/util/bond_order_guessing.hpp"
-#include "io/util/bond_recomputation.hpp"
 
 namespace VTX::IO::Util::Chemfiles
 {
@@ -20,19 +18,4 @@ namespace VTX::IO::Util::Chemfiles
 		}
 	}
 
-	void recomputeBonds( chemfiles::Frame & p_frame, const VTX::Util::Math::AABB & p_aabb )
-	{
-		IO::Util::BondRecomputation::recomputeBonds( p_frame, p_aabb );
-	}
-
-	void recomputeBondOrders( chemfiles::Frame & p_frame )
-	{
-		IO::Util::BondOrderGuessing::recomputeBondOrders( p_frame );
-	}
-
-	bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame )
-	{
-		return IO::Util::BondOrderGuessing::recomputeBondOrdersFromFile( p_frame );
-	}
-
-} // namespace VTX::IO::Util::ChemfilesTrajectory
+} // namespace VTX::IO::Util::Chemfiles

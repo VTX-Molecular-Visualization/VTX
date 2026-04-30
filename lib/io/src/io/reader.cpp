@@ -4,6 +4,9 @@
 // !Needed for io/reader.hpp
 #include "io/reader.hpp"
 //
+#include "io/util/bond_order_guessing.hpp"
+#include "io/util/bond_recomputation.hpp"
+#include "io/util/secondary_structure.hpp"
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -28,13 +31,15 @@
 
 namespace VTX::IO
 {
-	namespace ChemDB = VTX::Core::ChemDB;
+	using namespace VTX::Core::ChemDB;
+	using namespace VTX::Core::Struct;
+	using namespace VTX::Util;
 
 	struct SystemReader::_Impl
 	{
-		VTX::FilePath							_filePath;
+		FilePath								_filePath;
 		READER_OPTION							_readerOption;
-		std::reference_wrapper<Util::StopToken> _stopToken;
+		std::reference_wrapper<StopToken>		_stopToken;
 		std::optional<std::string>				_buffer; // kept alive for memory_reader
 		chemfiles::Trajectory					_trajectory;
 		chemfiles::Frame						_currentFrame;
@@ -47,16 +52,16 @@ namespace VTX::IO
 		size_t									_currentFrameIdx	 = 0;
 		std::vector<Index>						_atomOriginalIndexes = {};
 
-		_Impl( const VTX::FilePath & p_path, const READER_OPTION p_options, Util::StopToken & p_stopToken ) :
+		_Impl( const FilePath & p_path, const READER_OPTION p_options, StopToken & p_stopToken ) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
 			_trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
 		{ _init(); }
 
 		_Impl(
-			MemoryBuffer &&		  p_buffer,
-			const VTX::FilePath & p_path,
-			const READER_OPTION	  p_options,
-			Util::StopToken &	  p_stopToken
+			MemoryBuffer &&		p_buffer,
+			const FilePath &	p_path,
+			const READER_OPTION p_options,
+			StopToken &			p_stopToken
 		) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
 			_buffer( std::move( p_buffer ) ), _trajectory(
@@ -70,13 +75,9 @@ namespace VTX::IO
 
 		size_t frameCount() const { return _trajectory.size(); }
 
-		void get(
-			const Core::ChemDB::Category::Dictionary & p_categories,
-			Core::Struct::Topology &				   p_topology,
-			Metadata &								   p_metadata
-		)
+		void get( const Category::Dictionary & p_categories, Topology & p_topology, Metadata & p_metadata )
 		{
-			Util::ScopedChrono chrono( "SystemReader::_Impl::get" );
+			ScopedChrono chrono( "SystemReader::_Impl::get" );
 			VTX_INFO( "Reading topology" );
 
 			if ( _stopToken.get().stop_requested() )
@@ -92,7 +93,7 @@ namespace VTX::IO
 																		: PDB_ID_CODE_DEFAULT;
 			p_metadata.name			= _currentFrame.get( "name" ) ? _currentFrame.get( "name" )->as_string() : "";
 			p_metadata.performedReaderOption = READER_OPTION::NONE;
-			p_metadata.missingData			 = MISSING_DATA::NONE;
+			p_metadata.missingData			 = MISSING_DATA::SECONDARY_STRUCTURE;
 			p_metadata.topologyState		 = TOPOLOGY_STATE::OK;
 
 			// Strip leading dot from extension (e.g. ".pdb" -> "pdb")
@@ -116,7 +117,7 @@ namespace VTX::IO
 			std::unordered_set<std::string> seenChainNames;
 			std::string						previousChainName;
 
-			ChemDB::Category::TYPE lastCategoryEnum = ChemDB::Category::TYPE::UNKNOWN;
+			Category::TYPE lastCategoryEnum = Category::TYPE::UNKNOWN;
 
 			const Index residueCount = static_cast<Index>( _residues->size() );
 			p_topology.initResidues( residueCount );
@@ -145,7 +146,7 @@ namespace VTX::IO
 					break;
 				}
 
-				const ChemDB::Category::TYPE categoryEnum = _findCategoryType( ext, residueName );
+				const Category::TYPE categoryEnum = _findCategoryType( ext, residueName );
 
 				const bool createNewChain = p_topology.getChainCount() == 0 || not seenChainNames.contains( chainName )
 											|| categoryEnum != lastCategoryEnum;
@@ -195,7 +196,7 @@ namespace VTX::IO
 				p_topology.residueChainIndexes[ residueIdx ]	 = currentChainIndex;
 				p_topology.residueFirstAtomIndexes[ residueIdx ] = residueFirstAtomIndex;
 				p_topology.residueAtomCounts[ residueIdx ]		 = static_cast<Index>( _currentResidue->size() );
-				_fillResidue( p_categories, residueIdx, residueIdx, p_topology );
+				_fillResidue( p_categories, residueIdx, residueIdx, p_topology, p_metadata );
 
 				bool  isFirstAtomInResidue = true;
 				Index previousAtomIndex	   = INVALID_INDEX;
@@ -246,20 +247,16 @@ namespace VTX::IO
 			}
 
 			_fillBonds( p_topology );
+			_recomputeMissingData( p_metadata, p_topology );
 		}
 
-		void _retopologize(
-			const Core::ChemDB::Category::Dictionary & p_categories,
-			Core::Struct::Topology &				   p_topology,
-			Metadata &								   p_metadata
-		)
+		void _retopologize( const Category::Dictionary & p_categories, Topology & p_topology, Metadata & p_metadata )
 		{
-			Util::ScopedChrono chrono( "SystemReader::_Impl::_retopologize" );
+			ScopedChrono chrono( "SystemReader::_Impl::_retopologize" );
 			VTX_INFO( "Retopologizing structure" );
 
 			// Clean previous data.
-			p_topology = Core::Struct::Topology();
-
+			p_topology = Topology();
 			// Temporary structures.
 			struct Residue
 			{
@@ -280,7 +277,7 @@ namespace VTX::IO
 			std::vector<Residue>				   residues;
 			std::unordered_map<std::string, Index> chainNameToIndex;
 			std::vector<Index>					   oldAtomToNewAtom( _currentFrame.size(), INVALID_INDEX );
-			Core::Struct::Topology				   topology;
+			Topology							   topology;
 
 			chains.reserve( _residues->size() );
 			residues.reserve( _residues->size() );
@@ -438,7 +435,9 @@ namespace VTX::IO
 					}
 					else
 					{
-						_fillResidue( p_categories, residue.sourceResidueIndex, targetResidueIndex, topology );
+						_fillResidue(
+							p_categories, residue.sourceResidueIndex, targetResidueIndex, topology, p_metadata
+						);
 					}
 
 					for ( const Index sourceAtomIndex : residue.atomIndexes )
@@ -455,25 +454,27 @@ namespace VTX::IO
 			}
 
 			_fillBonds( topology, oldAtomToNewAtom );
-			p_topology					   = std::move( topology );
+			_recomputeMissingData( p_metadata, topology );
+			p_topology = std::move( topology );
+			// Keep track of original atom indexes for trajectory remapping.
 			p_topology.atomOriginalIndexes = _atomOriginalIndexes;
 		}
 
-		void _fillArtificialResidue( const Index p_targetResidueIndex, Core::Struct::Topology & p_topology )
+		void _fillArtificialResidue( const Index p_targetResidueIndex, Topology & p_topology )
 		{
-			p_topology.residueOriginalIds[ p_targetResidueIndex ] = INVALID_INDEX;
-			p_topology.residueSymbols[ p_targetResidueIndex ]	  = ChemDB::Residue::SYMBOL::UNKNOWN;
-			p_topology.residueNames[ p_targetResidueIndex ]		  = "";
-			p_topology.residueCategories[ p_targetResidueIndex ]  = ChemDB::Category::TYPE::UNKNOWN;
-			p_topology.residueSecondaryStructureTypes[ p_targetResidueIndex ]
-				= ChemDB::SecondaryStructure::TYPE::UNKNOWN;
+			p_topology.residueOriginalIds[ p_targetResidueIndex ]			  = INVALID_INDEX;
+			p_topology.residueSymbols[ p_targetResidueIndex ]				  = Residue::SYMBOL::UNKNOWN;
+			p_topology.residueNames[ p_targetResidueIndex ]					  = "";
+			p_topology.residueCategories[ p_targetResidueIndex ]			  = Category::TYPE::UNKNOWN;
+			p_topology.residueSecondaryStructureTypes[ p_targetResidueIndex ] = SecondaryStructure::TYPE::UNKNOWN;
 		}
 
 		void _fillResidue(
-			const Core::ChemDB::Category::Dictionary & p_categories,
-			const Index								   p_sourceResidueIndex,
-			const Index								   p_targetResidueIndex,
-			Core::Struct::Topology &				   p_topology
+			const Category::Dictionary & p_categories,
+			const Index					 p_sourceResidueIndex,
+			const Index					 p_targetResidueIndex,
+			Topology &					 p_topology,
+			Metadata &					 p_metadata
 		)
 		{
 			_currentResidue = &( ( *_residues )[ p_sourceResidueIndex ] );
@@ -482,23 +483,24 @@ namespace VTX::IO
 			const Index		  residueId	  = static_cast<Index>( _currentResidue->id().value_or( INVALID_INDEX ) );
 
 			p_topology.residueOriginalIds[ p_targetResidueIndex ] = residueId;
-			p_topology.residueSymbols[ p_targetResidueIndex ]	  = ChemDB::Residue::getSymbolFromName( residueName );
+			p_topology.residueSymbols[ p_targetResidueIndex ]	  = Residue::getSymbolFromName( residueName );
 			p_topology.residueNames[ p_targetResidueIndex ]		  = residueName;
-			ChemDB::Category::get( p_categories, residueName, p_topology.residueCategories[ p_targetResidueIndex ] );
+			Category::get( p_categories, residueName, p_topology.residueCategories[ p_targetResidueIndex ] );
 
 			const std::string ss = _residueStringProp( "secondary_structure" );
 			if ( not ss.empty() )
 			{
 				p_topology.residueSecondaryStructureTypes[ p_targetResidueIndex ]
-					= ChemDB::SecondaryStructure::pdbFormattedToEnum( ss );
+					= SecondaryStructure::pdbFormattedToEnum( ss );
+				p_metadata.missingData &= ~MISSING_DATA::SECONDARY_STRUCTURE;
 			}
 		}
 
 		void _fillAtom(
-			const Index				 p_sourceAtomIndex,
-			const Index				 p_targetAtomIndex,
-			const Index				 p_targetResidueIndex,
-			Core::Struct::Topology & p_topology
+			const Index p_sourceAtomIndex,
+			const Index p_targetAtomIndex,
+			const Index p_targetResidueIndex,
+			Topology &	p_topology
 		)
 		{
 			_currentAtom	  = &_currentFrame[ p_sourceAtomIndex ];
@@ -506,10 +508,10 @@ namespace VTX::IO
 
 			p_topology.atomResidueIndexes[ p_targetAtomIndex ] = p_targetResidueIndex;
 			p_topology.atomNames[ p_targetAtomIndex ]		   = _currentAtom->name();
-			p_topology.atomSymbols[ p_targetAtomIndex ] = ChemDB::Atom::getSymbolFromString( _currentAtom->type() );
+			p_topology.atomSymbols[ p_targetAtomIndex ]		   = Atom::getSymbolFromString( _currentAtom->type() );
 		}
 
-		void _fillBonds( Core::Struct::Topology & p_topology, const std::span<const Index> p_oldAtomToNewAtom = {} )
+		void _fillBonds( Topology & p_topology, const std::span<const Index> p_oldAtomToNewAtom = {} )
 		{
 			std::map<Index, std::vector<Index>> mapResidueBonds;
 			std::map<Index, std::vector<Index>> mapResidueExtraBonds;
@@ -608,7 +610,7 @@ namespace VTX::IO
 		void _fillBond(
 			const Index					 p_sourceBondIndex,
 			const Index					 p_targetBondIndex,
-			Core::Struct::Topology &	 p_topology,
+			Topology &					 p_topology,
 			const std::span<const Index> p_oldAtomToNewAtom = {}
 		)
 		{
@@ -625,7 +627,7 @@ namespace VTX::IO
 
 			p_topology.bondPairAtomIndexes[ p_targetBondIndex * 2 ]		= firstAtom;
 			p_topology.bondPairAtomIndexes[ p_targetBondIndex * 2 + 1 ] = secondAtom;
-			p_topology.bondOrders[ p_targetBondIndex ] = ChemDB::Bond::ORDER( int( bondOrders[ p_sourceBondIndex ] ) );
+			p_topology.bondOrders[ p_targetBondIndex ] = Bond::ORDER( int( bondOrders[ p_sourceBondIndex ] ) );
 		}
 
 		static Vec3f _toVec3f( const chemfiles::Vector3D & p_position )
@@ -668,7 +670,28 @@ namespace VTX::IO
 			}
 		}
 
-		void set( Util::StopToken & p_ ) noexcept { _stopToken = p_; }
+		void _recomputeMissingData( const Metadata & p_metadata, Topology & p_topology )
+		{
+			if ( Enum::hasBits( _readerOption, READER_OPTION::RECOMPUTE_MISSING_BONDS )
+				 && Enum::hasBits( p_metadata.missingData, MISSING_DATA::BONDS ) )
+			{
+				Util::BondRecomputation::recomputeBonds( p_topology );
+			}
+			else if (
+				Enum::hasBits( _readerOption, READER_OPTION::GUESS_UNKNOWN_BOND_ORDERS )
+				&& Enum::hasBits( p_metadata.missingData, MISSING_DATA::BOND_ORDERS )
+			)
+			{
+				Util::BondOrderGuessing::recomputeBondOrders( p_topology );
+			}
+			if ( Enum::hasBits( _readerOption, READER_OPTION::COMPUTE_MISSING_SECONDARY_STRUCTURE )
+				 && Enum::hasBits( p_metadata.missingData, MISSING_DATA::SECONDARY_STRUCTURE ) )
+			{
+				Util::SecondaryStructure::assignSecondaryStructure( p_topology );
+			}
+		}
+
+		void set( StopToken & p_ ) noexcept { _stopToken = p_; }
 
 	  private:
 		void _init()
@@ -707,45 +730,42 @@ namespace VTX::IO
 			return opt ? opt.value().as_string() : p_default;
 		}
 
-		static ChemDB::Category::TYPE _findCategoryType(
+		static Category::TYPE _findCategoryType(
 			const std::string & p_ext,
 			const std::string & /*p_residueName*/
 		)
 		{
 			if ( p_ext == "pdb" || p_ext == "mmcif" || p_ext == "mmtf" )
 			{
-				return ChemDB::Category::TYPE::POLYMER;
+				return Category::TYPE::POLYMER;
 			}
-			return ChemDB::Category::TYPE::POLYMER;
+			return Category::TYPE::POLYMER;
 		}
 	};
 
 	void SystemReader::Del::operator()( _Impl * p_impl ) noexcept { delete p_impl; }
 
-	SystemReader::SystemReader(
-		const VTX::FilePath & p_path,
-		const READER_OPTION	  p_options,
-		Util::StopToken &	  p_stopToken
-	) : _impl( new _Impl( p_path, p_options, p_stopToken ) )
+	SystemReader::SystemReader( const FilePath & p_path, const READER_OPTION p_options, StopToken & p_stopToken ) :
+		_impl( new _Impl( p_path, p_options, p_stopToken ) )
 	{
 	}
 	SystemReader::SystemReader(
-		MemoryBuffer &&		  p_buffer,
-		const VTX::FilePath & p_path,
-		const READER_OPTION	  p_options,
-		Util::StopToken &	  p_stopToken
+		MemoryBuffer &&		p_buffer,
+		const FilePath &	p_path,
+		const READER_OPTION p_options,
+		StopToken &			p_stopToken
 	) : _impl( new _Impl( std::move( p_buffer ), p_path, p_options, p_stopToken ) )
 	{
 	}
 
-	void SystemReader::get( const ChemDB::Category::Dictionary & p_d, Core::Struct::Topology & p_t, Metadata & p_m )
+	void SystemReader::get( const Category::Dictionary & p_d, Topology & p_t, Metadata & p_m )
 	{ _impl->get( p_d, p_t, p_m ); }
 
 	void SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) { _impl->get( p_i, p_ ); }
 
 	void SystemReader::get( AtomPositions & p_ ) { _impl->get( 0, p_ ); }
 
-	void SystemReader::set( Util::StopToken & p_ ) noexcept { _impl->set( p_ ); }
+	void SystemReader::set( StopToken & p_ ) noexcept { _impl->set( p_ ); }
 
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }
 
