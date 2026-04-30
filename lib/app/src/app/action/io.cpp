@@ -10,6 +10,7 @@
 #include "app/system/load.hpp"
 #include "app/system/trajectory_preparation.hpp"
 #include "app/system/uid.hpp"
+#include "app/system/writer.hpp"
 #include "app/threading/thread_manager.hpp"
 #include <renderer/camera.hpp>
 #include <renderer/renderer.hpp>
@@ -73,12 +74,42 @@ namespace VTX::App::Action::IO
 	}
 	void LoadSystem::wait() noexcept { _data->wait(); }
 
+	struct WriteSelection::_WriterIo
+	{
+		Util::StopToken						   stopToken;
+		Threading::OptionalThreadReference	   threadRef;
+		std::optional<System::SelectionWriter> writer;
+		std::latch							   writerSync { 1 };
+
+		void wait() noexcept
+		{
+			writerSync.wait();
+			if ( writer )
+				writer->wait();
+		}
+	};
+	WriteSelection::WriteSelection() : _data( new _WriterIo() ) {}
+	WriteSelection::WriteSelection( Util::StopToken p_stop, Threading::OptionalThreadReference p_thr ) :
+		_data( new _WriterIo( std::move( p_stop ), std::move( p_thr ) ) )
+	{
+	}
+	void WriteSelection::execute( FilePath p_path )
+	{
+		_data->writer.emplace( p_path );
+		_data->writerSync.count_down();
+
+		_data->writer.value()( std::move( _data->stopToken ), _data->threadRef );
+	}
+
+	void WriteSelection::wait() noexcept { _data->wait(); }
+
 	AssociateTrajectory::AssociateTrajectory() : _data( new _SystemIo() ) {}
 	AssociateTrajectory::AssociateTrajectory( Util::StopToken p_token, Threading::OptionalThreadReference p_thr ) :
 		_data( new _SystemIo { std::move( p_token ), std::move( p_thr ) } )
 
 	{
 	}
+
 	void AssociateTrajectory::execute( const FilePath & p_path, const ECS::Entity & p_entity )
 	{
 		if ( p_entity == entt::null )
@@ -152,4 +183,5 @@ namespace VTX::App::Action::IO
 			VTX_ERROR( "Snapshot failed: {}", p_e.what() );
 		}
 	}
+	void WriteSelection::_del::operator()( _WriterIo * p_ ) const noexcept { delete p_; }
 } // namespace VTX::App::Action::IO

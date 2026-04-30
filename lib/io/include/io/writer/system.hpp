@@ -101,11 +101,15 @@ namespace VTX::IO::Writer
 	 */
 	struct WriteArgs
 	{
-		FilePath							destination;
-		E_FILE_FORMATS						format	 = E_FILE_FORMATS::none;
-		const VTX::Core::Struct::Topology * topology = nullptr;
-		TrajectoryFrameGetter				trajectory;
-		AtomFilter							atomFilter = g_takeAllAtoms;
+		struct System
+		{
+			const VTX::Core::Struct::Topology * topology;
+			TrajectoryFrameGetter				trajectory;
+			AtomFilter							atomFilter = g_takeAllAtoms;
+		};
+		FilePath			destination;
+		E_FILE_FORMATS		format = E_FILE_FORMATS::none;
+		std::vector<System> topologies;
 		E_WRITE_TYPE writeType = E_WRITE_TYPE::trajectory; // Placeholder because at some point we will probably need to
 														   // write docking results and stuff
 		Util::StopToken stopToken;

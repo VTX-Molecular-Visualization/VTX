@@ -180,6 +180,14 @@ namespace VTX::IO::Writer
 		 */
 		bool fetch( Atom &, const AtomId & ) noexcept;
 
+		/**
+		 * @brief Return the frame with the right index
+		 * @param Output
+		 * @param frame number
+		 * @return Wether the fetch was succesful or not
+		 */
+		bool fetch( Frame &, const size_t & ) noexcept;
+
 	  public:
 		_System * _data = nullptr;
 	};

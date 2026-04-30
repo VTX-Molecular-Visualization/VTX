@@ -465,6 +465,19 @@ namespace VTX::IO::Writer
 		}
 		return false;
 	}
+	bool System::fetch( Frame & p_out, const size_t & p_index ) noexcept
+	{
+		if ( _data == nullptr )
+			return false;
+
+		if ( _data->frames.size() > p_index )
+		{
+			auto it_frame = std::next( _data->frames.begin(), p_index );
+			p_out		  = Frame( *it_frame );
+			return true;
+		}
+		return false;
+	}
 
 	// Pimpl pattern method forwarding vv
 

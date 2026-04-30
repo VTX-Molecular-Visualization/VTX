@@ -4,6 +4,7 @@
 #include "app/ecs.hpp"
 #include "app/services.hpp"
 #include "app/system/trajectory.hpp"
+#include <io/writer/system.hpp>
 #include <renderer/renderer.hpp>
 
 namespace VTX::App::System
@@ -22,9 +23,7 @@ namespace VTX::App::System
 	}
 
 	bool hasMultiFrameTrajectory( const ECS::Entity & p_entity ) noexcept
-	{
-		return REG().any_of<TrajectoryFullBuffer>( p_entity );
-	}
+	{ return REG().any_of<TrajectoryFullBuffer>( p_entity ); }
 	void get( const ECS::Entity & p_entity, GenericTrajectory *& p_trajPtr ) noexcept
 	{
 		p_trajPtr = nullptr;
@@ -54,6 +53,47 @@ namespace VTX::App::System
 			REG().patch<TrajectoryFullBuffer>(
 				p_entity, [ &p_lambda ]( TrajectoryFullBuffer & p_ ) { p_lambda( p_.genericData ); }
 			);
+		}
+	}
+
+	class SingleFrameTrajectoryFrameGetter
+	{
+	  public:
+		SingleFrameTrajectoryFrameGetter( const TrajectorySingleFrame & p_ ) : _traj( p_ ) {}
+
+		inline uint frameCount() const { return 1u; }
+
+		inline std::span<const Vec3f> getAtomPositions( const uint & p_ ) const { return _traj.get().atomPositions; }
+		inline std::span<const Vec3f> getCurrentAtomPositions() const { return _traj.get().atomPositions; }
+
+	  private:
+		std::reference_wrapper<const TrajectorySingleFrame> _traj;
+	};
+
+	class FullBufferTrajectoryFrameGetter
+	{
+	  public:
+		FullBufferTrajectoryFrameGetter( const TrajectoryFullBuffer & p_ ) : _traj( p_ ) {}
+
+		inline uint frameCount() const { return static_cast<uint>( _traj.get().lastFrameAvailable ); }
+
+		inline std::span<const Vec3f> getAtomPositions( const uint & p_ ) const
+		{ return _traj.get().frameCollection[ p_ ]; }
+		inline std::span<const Vec3f> getCurrentAtomPositions() const
+		{ return _traj.get().frameCollection[ _traj.get().genericData.currentFrameIndex ]; }
+
+	  private:
+		std::reference_wrapper<const TrajectoryFullBuffer> _traj;
+	};
+	void get( const ECS::Entity & p_entity, VTX::IO::Writer::TrajectoryFrameGetter & p_traj ) noexcept
+	{
+		if ( auto traj = REG().try_get<TrajectorySingleFrame>( p_entity ) )
+		{
+			p_traj = SingleFrameTrajectoryFrameGetter( *traj );
+		}
+		if ( auto traj = REG().try_get<TrajectoryFullBuffer>( p_entity ) )
+		{
+			p_traj = FullBufferTrajectoryFrameGetter( *traj );
 		}
 	}
 
