@@ -9,6 +9,7 @@
 #include "core/struct/trajectory.hpp"
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
 #include <util/math/range_list.hpp>
 #include <util/types.hpp>
