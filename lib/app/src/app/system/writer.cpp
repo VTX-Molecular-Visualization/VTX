@@ -47,7 +47,7 @@ namespace VTX::App::System
 			return 0;
 
 		if ( p_thread )
-			p_thread.value().get().setProgressText( std::format( "Writting file {} ...", _ptr->_dest.string() ) );
+			p_thread.value().get().setProgressText( fmt::format( "Writting file {} ...", _ptr->_dest.string() ) );
 
 		VTX::IO::Writer::writeFile(
 			VTX::IO::Writer::WriteArgs { .destination = _ptr->_dest, .topologies = std::move( _ptr->systems ) }
