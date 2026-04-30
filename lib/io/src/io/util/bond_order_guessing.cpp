@@ -15,7 +15,7 @@ namespace VTX::IO::Util
 	)
 	{
 		VTX::Util::ScopedChrono chrono( "BondOrderGuessing::recomputeBondOrders" );
-		VTX_INFO( "Recomputing bond orders (%1)...", p_bondIndexes.size() );
+		VTX_INFO( "Guessing {} bond orders...", p_bondIndexes.size() );
 	}
 
 	void BondOrderGuessing::recomputeBondOrders( chemfiles::Frame & p_frame )

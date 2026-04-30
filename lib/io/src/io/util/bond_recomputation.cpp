@@ -214,7 +214,7 @@ namespace VTX::IO::Util
 	)
 	{
 		VTX::Util::ScopedChrono chrono( "BondRecomputation::recomputeBonds" );
-		VTX_INFO( "Recomputing bonds (%1)...", p_atomIndexes.size() );
+		VTX_INFO( "Recomputing {} bonds...", p_atomIndexes.size() );
 	}
 
 	void BondRecomputation::recomputeBonds( chemfiles::Frame & p_frame, const VTX::Util::Math::AABB & p_aabb )
