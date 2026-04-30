@@ -16,6 +16,7 @@ namespace VTX::IO
 		std::string	   name					 = "";
 		READER_OPTION  readerOption			 = READER_OPTION::ALL;
 		READER_OPTION  performedReaderOption = READER_OPTION::NONE;
+		MISSING_DATA   missingData			 = MISSING_DATA::NONE;
 		TOPOLOGY_STATE topologyState		 = TOPOLOGY_STATE::OK;
 
 		/*

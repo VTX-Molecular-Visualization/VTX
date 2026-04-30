@@ -5,7 +5,6 @@
 #include "io/metadata.hpp"
 #include <memory>
 #include <string>
-#include <util/enum.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -41,8 +40,7 @@ namespace VTX::IO
 		void get( const Core::ChemDB::Category::Dictionary &, VTX::Core::Struct ::Topology &, Metadata & );
 
 		/**
-		 * @brief Always return Frame 0's positions
-		 * @param
+		 * @brief Always return Frame 0's positions.
 		 */
 		void get( AtomPositions & );
 		void get( const FrameIndex &, AtomPositions & );

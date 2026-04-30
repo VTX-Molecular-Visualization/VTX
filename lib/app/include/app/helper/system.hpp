@@ -148,6 +148,11 @@ namespace VTX::App::Helper::System
 	 */
 	ECS::Entity getSystemByPdb( const std::string_view );
 
+	/**
+	 * @brief Retrieve a system with the corresponding file name.
+	 */
+	ECS::Entity getSystemByFileName( const std::string_view );
+
 } // namespace VTX::App::Helper::System
 
 #endif

@@ -60,6 +60,16 @@ namespace VTX::App::PythonBinding
 			&Helper::System::getSystemByName,
 			"Return a system ID that matches given name (case sensitive)."
 		);
+		p_vtxmodule.def(
+			"getSystemIdByPdb",
+			&Helper::System::getSystemByPdb,
+			"Return a system ID that matches given RCSB PDB ID code (case sensitive)."
+		);
+		p_vtxmodule.def(
+			"getSystemIdByFileName",
+			&Helper::System::getSystemByFileName,
+			"Return a system ID that matches given file name (case sensitive)."
+		);
 		p_vtxmodule.bindAction<Action::QueueAction<App::Action::IO::DownloadSystem>, const std::string &>(
 			"download", "Retrieve a system from the RCSB PDB.", VTX::PythonBinding::Wrapper::Arg( "system_id" )
 		);
