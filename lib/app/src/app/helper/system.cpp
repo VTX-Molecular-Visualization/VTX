@@ -59,6 +59,17 @@ namespace VTX::App::Helper::System
 		return ECS::InvalidEntity;
 	}
 
+	ECS::Entity getSystemByFileName( const std::string_view p_fileName )
+	{
+		for ( auto e : REG().view<IO::Metadata>() )
+		{
+			auto & metadata = REG().get<IO::Metadata>( e );
+			if ( metadata.path.filename() == p_fileName )
+				return e;
+		}
+		return ECS::InvalidEntity;
+	}
+
 	App::System::E_VISIBLE_STATE getVisibleState( const SystemItemView & p_system )
 	{
 		using namespace Core::Struct;
