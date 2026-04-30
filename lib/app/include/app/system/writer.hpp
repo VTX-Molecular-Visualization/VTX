@@ -7,6 +7,7 @@
 
 namespace VTX::App::System
 {
+
 	/**
 	 * @brief Responsible for gathering atom selection and writing it into a file.
 	 */

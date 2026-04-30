@@ -95,8 +95,10 @@ namespace VTX::App::Action::IO
 	}
 	void WriteSelection::execute( FilePath p_path )
 	{
-		_data->writer.emplace( std::move( _data->stopToken ), _data->threadRef );
+		_data->writer.emplace( p_path );
 		_data->writerSync.count_down();
+
+		_data->writer.value()( std::move( _data->stopToken ), _data->threadRef );
 	}
 
 	void WriteSelection::wait() noexcept { _data->wait(); }

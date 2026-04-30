@@ -15,6 +15,10 @@ namespace VTX::App::Threading
 {
 	class BaseThread;
 }
+namespace VTX::IO::Writer
+{
+	class TrajectoryFrameGetter;
+}
 
 namespace VTX::App::System
 {
@@ -87,6 +91,7 @@ namespace VTX::App::System
 	bool				   hasMultiFrameTrajectory( const ECS::Entity & ) noexcept;
 	void				   eraseTrajectory( const ECS::Entity & ) noexcept;
 	void				   get( const ECS::Entity &, GenericTrajectory *& ) noexcept;
+	void				   get( const ECS::Entity &, VTX::IO::Writer::TrajectoryFrameGetter & ) noexcept;
 
 } // namespace VTX::App::System
 
