@@ -10,6 +10,7 @@
 #include <core/struct/topology.hpp>
 #include <map>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 namespace VTX::IO::Util
@@ -73,7 +74,10 @@ namespace VTX::IO::Util
 		};
 
 	  public:
-		static void recomputeBondOrders( VTX::Core::Struct::Topology & p_topology );
+		static void recomputeBondOrders(
+			VTX::Core::Struct::Topology &	  p_topology,
+			const std::unordered_set<Index> & p_bondIndexes
+		);
 		static void recomputeBondOrders( chemfiles::Frame & p_frame );
 		static bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );
 

@@ -9,10 +9,13 @@ namespace VTX::IO::Util
 {
 	namespace ChemDB = VTX::Core::ChemDB;
 
-	void BondOrderGuessing::recomputeBondOrders( VTX::Core::Struct::Topology & p_topology )
+	void BondOrderGuessing::recomputeBondOrders(
+		VTX::Core::Struct::Topology &	  p_topology,
+		const std::unordered_set<Index> & p_bondIndexes
+	)
 	{
 		VTX::Util::ScopedChrono chrono( "BondOrderGuessing::recomputeBondOrders" );
-		VTX_INFO( "Recomputing bond orders..." );
+		VTX_INFO( "Recomputing bond orders (%1)...", p_bondIndexes.size() );
 	}
 
 	void BondOrderGuessing::recomputeBondOrders( chemfiles::Frame & p_frame )

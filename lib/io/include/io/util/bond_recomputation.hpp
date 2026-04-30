@@ -76,7 +76,7 @@ namespace VTX::IO::Util
 
 	  public:
 		static void recomputeBonds(
-			VTX::Core::Struct::Topology &	 p_topology,
+			VTX::Core::Struct::Topology &	  p_topology,
 			const std::unordered_set<Index> & p_atomIndexes
 		);
 		static void recomputeBonds( chemfiles::Frame & p_frame, const VTX::Util::Math::AABB & p_aabb );
