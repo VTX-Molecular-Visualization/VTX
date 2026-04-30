@@ -43,6 +43,11 @@ namespace VTX::App
 		std::atomic<bool> updateCheckInProgress = false;
 
 		/**
+		 * @brief Set by the worker thread when CheckForUpdates fails.
+		 */
+		std::atomic<bool> updateCheckFailed = false;
+
+		/**
 		 * @brief True while an update download/apply is active.
 		 */
 		std::atomic<bool> updateDownloadInProgress = false;
@@ -143,6 +148,7 @@ namespace VTX::App
 		}
 
 		_impl->updateCheckReady = false;
+		_impl->updateCheckFailed = false;
 		_impl->pendingUpdate.reset();
 
 		THREAD().createThread(
@@ -159,6 +165,7 @@ namespace VTX::App
 				}
 				catch ( const std::exception & p_e )
 				{
+					_impl->updateCheckFailed = true;
 					VTX_ERROR( "Updater error: {}", p_e.what() );
 				}
 				_impl->updateCheckReady = true;
@@ -178,6 +185,12 @@ namespace VTX::App
 
 		_impl->updateCheckInProgress = false;
 		HUB().disconnect( _impl->updateCheckConnection );
+
+		if ( _impl->updateCheckFailed )
+		{
+			VTX_TRACE( "Update check failed" );
+			return;
+		}
 
 		if ( _impl->pendingUpdate )
 		{
