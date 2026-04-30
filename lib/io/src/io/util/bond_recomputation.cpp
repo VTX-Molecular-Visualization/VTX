@@ -208,10 +208,13 @@ namespace VTX::IO::Util
 		}
 	}
 
-	void BondRecomputation::recomputeBonds( VTX::Core::Struct::Topology & p_topology )
+	void BondRecomputation::recomputeBonds(
+		VTX::Core::Struct::Topology &	  p_topology,
+		const std::unordered_set<Index> & p_atomIndexes
+	)
 	{
 		VTX::Util::ScopedChrono chrono( "BondRecomputation::recomputeBonds" );
-		VTX_INFO( "Recomputing bonds..." );
+		VTX_INFO( "Recomputing bonds (%1)...", p_atomIndexes.size() );
 	}
 
 	void BondRecomputation::recomputeBonds( chemfiles::Frame & p_frame, const VTX::Util::Math::AABB & p_aabb )
