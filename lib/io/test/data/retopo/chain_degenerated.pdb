@@ -1,8 +1,0 @@
-REMARK Minimal topology fixture: chain A is split by chain B.
-ATOM      1  N   ALA A   1       0.000   0.000   0.000  1.00  0.00           N
-ATOM      2  CA  ALA A   1       1.000   0.000   0.000  1.00  0.00           C
-ATOM      3  N   GLY B   2       2.000   0.000   0.000  1.00  0.00           N
-ATOM      4  CA  GLY B   2       3.000   0.000   0.000  1.00  0.00           C
-ATOM      5  N   SER A   3       4.000   0.000   0.000  1.00  0.00           N
-ATOM      6  CA  SER A   3       5.000   0.000   0.000  1.00  0.00           C
-END

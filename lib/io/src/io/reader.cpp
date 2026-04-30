@@ -77,6 +77,7 @@ namespace VTX::IO
 		)
 		{
 			Util::ScopedChrono chrono( "SystemReader::_Impl::get" );
+			VTX_INFO( "Reading topology" );
 
 			if ( _stopToken.get().stop_requested() )
 			{
@@ -103,7 +104,6 @@ namespace VTX::IO
 			{
 				p_metadata.topologyState |= TOPOLOGY_STATE::MISSING_RESIDUES;
 				VTX_WARNING( "No residues found" );
-				VTX_INFO( "Retopologizing structure" );
 				_retopologize( p_categories, p_topology, p_metadata );
 				return;
 			}
@@ -227,7 +227,6 @@ namespace VTX::IO
 
 			if ( p_metadata.topologyState != TOPOLOGY_STATE::OK )
 			{
-				VTX_INFO( "Retopologizing structure" );
 				_retopologize( p_categories, p_topology, p_metadata );
 				return;
 			}
@@ -236,7 +235,7 @@ namespace VTX::IO
 			{
 				p_metadata.topologyState |= TOPOLOGY_STATE::ATOM_RESIDUE_MEMBERSHIP;
 				VTX_WARNING( "Some atoms are not assigned to any residue" );
-				VTX_INFO( "Retopologizing structure" );
+
 				_retopologize( p_categories, p_topology, p_metadata );
 				return;
 			}
@@ -256,6 +255,7 @@ namespace VTX::IO
 		)
 		{
 			Util::ScopedChrono chrono( "SystemReader::_Impl::_retopologize" );
+			VTX_INFO( "Retopologizing structure" );
 
 			// Clean previous data.
 			p_topology = Core::Struct::Topology();

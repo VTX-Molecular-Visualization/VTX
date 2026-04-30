@@ -1,4 +1,0 @@
-REMARK Minimal topology fixture: atoms have no residue fields.
-ATOM      1  C           0       0.000   0.000   0.000  1.00  0.00           C
-ATOM      2  O           0       1.000   0.000   0.000  1.00  0.00           O
-END
