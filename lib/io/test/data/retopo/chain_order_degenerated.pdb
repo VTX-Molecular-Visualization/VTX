@@ -1,0 +1,6 @@
+REMARK Minimal topology fixture: residues are stored in reverse atom order.
+ATOM      1  N   GLY A   2       0.000   0.000   0.000  1.00  0.00           N
+ATOM      2  CA  GLY A   2       1.000   0.000   0.000  1.00  0.00           C
+ATOM      3  N   ALA A   1       2.000   0.000   0.000  1.00  0.00           N
+ATOM      4  CA  ALA A   1       3.000   0.000   0.000  1.00  0.00           C
+END

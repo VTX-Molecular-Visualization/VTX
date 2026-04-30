@@ -1,0 +1,6 @@
+REMARK Minimal topology fixture: residue ALA A 1 is split by residue GLY A 2.
+ATOM      1  N   ALA A   1       0.000   0.000   0.000  1.00  0.00           N
+ATOM      2  N   GLY A   2       1.000   0.000   0.000  1.00  0.00           N
+ATOM      3  CA  ALA A   1       2.000   0.000   0.000  1.00  0.00           C
+ATOM      4  CA  GLY A   2       3.000   0.000   0.000  1.00  0.00           C
+END
