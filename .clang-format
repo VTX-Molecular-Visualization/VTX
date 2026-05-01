@@ -64,6 +64,7 @@ PenaltyBreakFirstLessLess: 120
 PenaltyReturnTypeOnItsOwnLine: 1000
 PointerAlignment: Middle
 ReflowComments: true
+SeparateDefinitionBlocks: Always
 SortIncludes: true
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
