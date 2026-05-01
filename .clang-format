@@ -49,6 +49,7 @@ DisableFormat: false
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
 IncludeBlocks: Merge
+InsertBraces: true
 IndentCaseLabels: false
 IndentWidth: 4
 IndentWrappedFunctionNames: false
