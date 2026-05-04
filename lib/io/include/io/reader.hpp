@@ -3,6 +3,7 @@
 
 #include "io/constants.hpp"
 #include "io/metadata.hpp"
+#include <core/struct/trajectory.hpp>
 #include <memory>
 #include <string>
 #include <util/types.hpp>
@@ -17,6 +18,7 @@ namespace VTX::Core::Struct
 {
 	struct Topology;
 } // namespace VTX::Core::Struct
+
 namespace VTX::Core::ChemDB::Category
 {
 	struct Dictionary;
@@ -25,7 +27,7 @@ namespace VTX::Core::ChemDB::Category
 namespace VTX::IO
 {
 	using MemoryBuffer	= std::string;
-	using AtomPositions = std::vector<Vec3f>;
+	using AtomPositions = VTX::Core::Struct::Frame;
 	using FrameIndex	= size_t;
 
 	class SystemReader
@@ -48,10 +50,12 @@ namespace VTX::IO
 
 	  private:
 		struct _Impl;
+
 		struct Del
 		{
 			void operator()( _Impl * ) noexcept;
 		};
+
 		std::unique_ptr<_Impl, Del> _impl = nullptr;
 	};
 

@@ -48,9 +48,10 @@ namespace VTX::IO
 		const std::vector<chemfiles::Bond> *	_bonds				 = nullptr;
 		const chemfiles::Residue *				_currentResidue		 = nullptr;
 		const chemfiles::Atom *					_currentAtom		 = nullptr;
-		size_t									_currentAtomIndex	 = 0;
-		size_t									_currentFrameIdx	 = 0;
+		int64_t									_currentAtomIndex	 = -1;
+		int64_t									_currentFrameIdx	 = -1;
 		std::vector<Index>						_atomOriginalIndexes = {};
+		AtomPositions							_firstFrame;
 
 		_Impl( const FilePath & p_path, const READER_OPTION p_options, StopToken & p_stopToken ) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
@@ -249,7 +250,104 @@ namespace VTX::IO
 			}
 
 			_fillBonds( p_metadata, p_topology, recomputableAtomIndexes, recomputableBondOrderIndexes );
-			_recomputeMissingData( p_metadata, p_topology, recomputableAtomIndexes, recomputableBondOrderIndexes );
+			get( 0, _firstFrame );
+			_recomputeMissingData(
+				p_metadata, p_topology, _firstFrame, recomputableAtomIndexes, recomputableBondOrderIndexes
+			);
+		}
+
+		void get( const FrameIndex & p_frameIndex, AtomPositions & p_positions )
+		{
+			if ( _stopToken.get().stop_requested() )
+			{
+				return;
+			}
+
+			if ( p_frameIndex == 0 && not _firstFrame.empty() )
+			{
+				p_positions = std::move( _firstFrame );
+				_firstFrame.clear();
+			}
+
+			_currentFrameIdx = p_frameIndex;
+			_currentFrame	 = _trajectory.read_at( p_frameIndex );
+
+			if ( _stopToken.get().stop_requested() )
+			{
+				return;
+			}
+
+			const chemfiles::span<chemfiles::Vector3D> & pos = _currentFrame.positions();
+			p_positions.resize( pos.size() );
+
+			// Retopologized.
+			if ( not _atomOriginalIndexes.empty() )
+			{
+				for ( size_t i = 0; i < pos.size(); ++i )
+				{
+					const Index sourceAtomIndex = _atomOriginalIndexes[ i ];
+					p_positions[ i ]			= _toVec3f( pos[ sourceAtomIndex ] );
+				}
+			}
+			// Normal.
+			else
+			{
+				for ( size_t i = 0; i < pos.size(); ++i )
+				{
+					p_positions[ i ] = _toVec3f( pos[ i ] );
+				}
+			}
+		}
+
+		void set( StopToken & p_ ) noexcept { _stopToken = p_; }
+
+	  private:
+		void _init()
+		{
+			chemfiles::set_warning_callback( []( const std::string & ) {} );
+
+			if ( _stopToken.get().stop_requested() )
+			{
+				return;
+			}
+
+			if ( _trajectory.size() == 0 )
+			{
+				throw IOException( "Trajectory is empty" );
+			}
+
+			_currentFrame = _trajectory.read();
+			_topology	  = _currentFrame.topology();
+			_residues	  = &_topology.residues();
+			_bonds		  = &_topology.bonds();
+
+			if ( _stopToken.get().stop_requested() )
+			{
+				return;
+			}
+
+			if ( _currentFrame.size() != _topology.size() )
+			{
+				throw IOException( "Atom/topology size mismatch" );
+			}
+		}
+
+		std::string _residueStringProp( const std::string & p_property, const std::string & p_default = "" ) const
+		{
+			const auto & opt = _currentResidue->properties().get( p_property );
+			return opt ? opt.value().as_string() : p_default;
+		}
+
+		static Category::TYPE _findCategoryType(
+			const std::string & p_ext,
+			const std::string & /*p_residueName*/
+		)
+		{
+			if ( p_ext == "pdb" || p_ext == "mmcif" || p_ext == "mmtf" )
+			{
+				return Category::TYPE::POLYMER;
+			}
+			return Category::TYPE::POLYMER;
 		}
 
 		void _retopologize( const Category::Dictionary & p_categories, Topology & p_topology, Metadata & p_metadata )
@@ -259,6 +357,7 @@ namespace VTX::IO
 
 			// Clean previous data.
 			p_topology = Topology();
+
 			// Temporary structures.
 			struct Residue
 			{
@@ -460,7 +559,10 @@ namespace VTX::IO
 			}
 
 			_fillBonds( p_metadata, topology, recomputableAtomIndexes, recomputableBondOrderIndexes, oldAtomToNewAtom );
-			_recomputeMissingData( p_metadata, topology, recomputableAtomIndexes, recomputableBondOrderIndexes );
+			get( 0, _firstFrame );
+			_recomputeMissingData(
+				p_metadata, topology, _firstFrame, recomputableAtomIndexes, recomputableBondOrderIndexes
+			);
 			p_topology = std::move( topology );
 			// Keep track of original atom indexes for trajectory remapping.
 			p_topology.atomOriginalIndexes = _atomOriginalIndexes;
@@ -676,53 +778,16 @@ namespace VTX::IO
 			}
 		}
 
-		static Vec3f _toVec3f( const chemfiles::Vector3D & p_position )
-		{ return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] ); }
-
-		void get( const FrameIndex & p_frameIndex, AtomPositions & p_positions )
-		{
-			if ( _stopToken.get().stop_requested() )
-			{
-				return;
-			}
-
-			_currentFrame	 = _trajectory.read_at( p_frameIndex );
-			_currentFrameIdx = p_frameIndex;
-
-			if ( _stopToken.get().stop_requested() )
-			{
-				return;
-			}
-
-			const chemfiles::span<chemfiles::Vector3D> & pos = _currentFrame.positions();
-			p_positions.resize( pos.size() );
-
-			// Retopologized.
-			if ( not _atomOriginalIndexes.empty() )
-			{
-				for ( size_t i = 0; i < pos.size(); ++i )
-				{
-					const Index sourceAtomIndex = _atomOriginalIndexes[ i ];
-					p_positions[ i ]			= _toVec3f( pos[ sourceAtomIndex ] );
-				}
-			}
-			// Normal.
-			else
-			{
-				for ( size_t i = 0; i < pos.size(); ++i )
-				{
-					p_positions[ i ] = _toVec3f( pos[ i ] );
-				}
-			}
-		}
-
 		void _recomputeMissingData(
 			Metadata &						  p_metadata,
 			Topology &						  p_topology,
+			const AtomPositions &			  p_positions,
 			const std::unordered_set<Index> & p_recomputableAtomIndexes,
 			const std::unordered_set<Index> & p_recomputableBondOrderIndexes
 		)
 		{
+			assert( p_positions.size() == p_topology.getAtomCount() );
+
 			if ( Enum::hasBits( _readerOption, READER_OPTION::RECOMPUTE_MISSING_BONDS )
 				 && Enum::hasBits( p_metadata.missingData, MISSING_DATA::BONDS ) )
 			{
@@ -738,61 +803,13 @@ namespace VTX::IO
 			if ( Enum::hasBits( _readerOption, READER_OPTION::COMPUTE_MISSING_SECONDARY_STRUCTURE )
 				 && Enum::hasBits( p_metadata.missingData, MISSING_DATA::SECONDARY_STRUCTURE ) )
 			{
-				Util::SecondaryStructure::assignSecondaryStructure( p_topology );
+				Util::SecondaryStructure::assignSecondaryStructure( p_topology, p_positions );
 				p_metadata.performedReaderOption |= READER_OPTION::COMPUTE_MISSING_SECONDARY_STRUCTURE;
 			}
 		}
 
-		void set( StopToken & p_ ) noexcept { _stopToken = p_; }
-
-	  private:
-		void _init()
-		{
-			chemfiles::set_warning_callback( []( const std::string & ) {} );
-
-			if ( _stopToken.get().stop_requested() )
-			{
-				return;
-			}
-
-			if ( _trajectory.size() == 0 )
-			{
-				throw IOException( "Trajectory is empty" );
-			}
-
-			_currentFrame = _trajectory.read();
-			_topology	  = _currentFrame.topology();
-			_residues	  = &_topology.residues();
-			_bonds		  = &_topology.bonds();
-
-			if ( _stopToken.get().stop_requested() )
-			{
-				return;
-			}
-
-			if ( _currentFrame.size() != _topology.size() )
-			{
-				throw IOException( "Atom/topology size mismatch" );
-			}
-		}
-
-		std::string _residueStringProp( const std::string & p_property, const std::string & p_default = "" ) const
-		{
-			const auto & opt = _currentResidue->properties().get( p_property );
-			return opt ? opt.value().as_string() : p_default;
-		}
-
-		static Category::TYPE _findCategoryType(
-			const std::string & p_ext,
-			const std::string & /*p_residueName*/
-		)
-		{
-			if ( p_ext == "pdb" || p_ext == "mmcif" || p_ext == "mmtf" )
-			{
-				return Category::TYPE::POLYMER;
-			}
-			return Category::TYPE::POLYMER;
-		}
+		static Vec3f _toVec3f( const chemfiles::Vector3D & p_position )
+		{ return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] ); }
 	};
 
 	void SystemReader::Del::operator()( _Impl * p_impl ) noexcept { delete p_impl; }
@@ -801,6 +818,7 @@ namespace VTX::IO
 		_impl( new _Impl( p_path, p_options, p_stopToken ) )
 	{
 	}
+
 	SystemReader::SystemReader(
 		MemoryBuffer &&		p_buffer,
 		const FilePath &	p_path,
