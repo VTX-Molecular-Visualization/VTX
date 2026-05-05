@@ -1,17 +1,41 @@
 include("${CMAKE_CURRENT_LIST_DIR}/vtx_link_cuda.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/vtx_renderer_copy_shaders.cmake")
 
+# Cuda.
+include(CheckLanguage)
+check_language(CUDA)
+set(VTX_CUDA_ENABLED OFF)
+if(CMAKE_CUDA_COMPILER)
+	enable_language(CUDA)
+	find_package(CUDAToolkit)
+	if(CUDAToolkit_FOUND)
+		set(VTX_CUDA_ENABLED ON)
+	else()
+		message(STATUS "CUDA toolkit not found")
+	endif()
+else()
+	message(STATUS "CUDA not found")
+endif()
+
 # Lib.
 add_library(vtx_renderer)
 add_library(vtx_renderer::vtx_renderer ALIAS vtx_renderer)
 vtx_configure_target(vtx_renderer)
 
 file(GLOB_RECURSE HEADERS_PUBLIC "${CMAKE_CURRENT_LIST_DIR}/../include/public/*")
-file(GLOB_RECURSE HEADERS_PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include/private/*")
-file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
-file(GLOB_RECURSE HEADERS_VENDORS "${CMAKE_CURRENT_LIST_DIR}/../vendor/*.h")
-file(GLOB_RECURSE SOURCES_VENDORS "${CMAKE_CURRENT_LIST_DIR}/../vendor/*.c")
+file(GLOB_RECURSE HEADERS_PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include/private/renderer/*")
+file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/renderer/*")
+file(GLOB_RECURSE HEADERS_VENDORS "${CMAKE_CURRENT_LIST_DIR}/../vendor/glad/*.h")
+file(GLOB_RECURSE SOURCES_VENDORS "${CMAKE_CURRENT_LIST_DIR}/../vendor/glad/*.c")
 file(GLOB_RECURSE SHADERS "${CMAKE_CURRENT_LIST_DIR}/../shaders/*")
+if(VTX_CUDA_ENABLED)
+	file(GLOB_RECURSE HEADERS_PRIVATE_BCS "${CMAKE_CURRENT_LIST_DIR}/../include/private/bcs/*")
+	file(GLOB_RECURSE SOURCES_BCS "${CMAKE_CURRENT_LIST_DIR}/../src/bcs/*")
+	file(GLOB_RECURSE HEADERS_VENDORS_CUDA_HELPER "${CMAKE_CURRENT_LIST_DIR}/../vendor/cuda_helper/*.h")
+	list(APPEND HEADERS_PRIVATE ${HEADERS_PRIVATE_BCS})
+	list(APPEND SOURCES ${SOURCES_BCS})
+	list(APPEND HEADERS_VENDORS ${HEADERS_VENDORS_CUDA_HELPER})
+endif()
 source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/../shaders" FILES ${SHADERS})
 target_sources(vtx_renderer
 	PRIVATE ${SOURCES}
@@ -32,11 +56,7 @@ elseif(LINUX)
 endif()
 
 # Cuda.
-include(CheckLanguage)
-check_language(CUDA)
-if (CMAKE_CUDA_COMPILER)
-	enable_language(CUDA)
-	find_package(CUDAToolkit)
+if(VTX_CUDA_ENABLED)
 	target_link_libraries(vtx_renderer PRIVATE CUDA::toolkit)
 
 	set_target_properties(vtx_renderer PROPERTIES
@@ -60,8 +80,6 @@ if (CMAKE_CUDA_COMPILER)
 		>
 	)
 	target_compile_definitions(vtx_renderer PRIVATE VTX_CUDA_ENABLED)
-else()
-	message(STATUS "CUDA not found")
 endif()
 
 # Tests.
