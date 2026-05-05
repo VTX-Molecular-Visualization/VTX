@@ -4,6 +4,8 @@
 
 namespace
 {
+	constexpr uint32_t SES_MAX_PROBE_NEIGHBOR_NB = 128u;
+
 	/*
 	auto linearizeColorFloat = []( float c ) -> float
 	{
@@ -329,6 +331,7 @@ namespace VTX::Renderer
 			buffer.write( uint( representation->cylinderColorBlending ) );
 			buffer.write( uint( representation->ribbonColorBlending ) );
 			buffer.write( representation->sesProbeRadius );
+			buffer.write( SES_MAX_PROBE_NEIGHBOR_NB );
 
 			// Cache.
 			_cacheRepresentations[ index ] = Cache::Representation { showSphere, showCylinder, showRibbon, showSes };

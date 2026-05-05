@@ -5,6 +5,11 @@
 #include <util/exceptions.hpp>
 #include <util/math.hpp>
 
+namespace
+{
+	constexpr uint32_t SES_MAX_PROBE_NEIGHBOR_NB = 128u;
+}
+
 namespace VTX::Renderer
 {
 	const Desc::RenderQueue RenderGraph::build()
@@ -254,19 +259,30 @@ namespace VTX::Renderer
 			  makeUniform( "CylinderColorBlending", uint32_t( 0 ) ),
 			  makeUniform( "RibbonColorBlending", uint32_t( 0 ) ),
 			  makeUniform( "SESProbeRadius", 0.0f ),
-			  makeUniform( "SESMaxProbeNeighborNb", uint32_t( 0 ) ) }
+			  makeUniform( "SESMaxProbeNeighborNb", SES_MAX_PROBE_NEIGHBOR_NB ) }
 		);
 
 		// Vertex streams.
 		g.vertexLayout( "Atoms", p_layouts.atoms );
 		g.vertexLayout( "Residues", p_layouts.residues );
 		g.vertexLayout( "Voxels", p_layouts.voxels );
+		g.pipelineBuffer( "SES.ConvexPatches.Elements", E_PIPELINE_BUFFER_KIND::VERTEX, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.pipelineBuffer( "SES.CirclePatches.Atoms", E_PIPELINE_BUFFER_KIND::VERTEX, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.pipelineBuffer( "SES.SegmentPatches.Ids", E_PIPELINE_BUFFER_KIND::VERTEX, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.vertexLayout( "SES.ConvexPatches", { { "SES.ConvexPatches.Elements", E_TYPE::VEC2U } } );
+		g.vertexLayout( "SES.CirclePatches", { { "SES.CirclePatches.Atoms", E_TYPE::VEC2U } } );
+		g.vertexLayout( "SES.SegmentPatches", { { "SES.SegmentPatches.Ids", E_TYPE::VEC4U } } );
+		g.vertexLayout( "SES.ConcavePatches", VertexLayout {} );
 
 		// Geometries.
 		g.geometry( "Spheres", p_geometries.spheres );
 		g.geometry( "Cylinders", p_geometries.cylinders );
 		g.geometry( "Ribbons", p_geometries.ribbons );
 		g.geometry( "Grid", p_geometries.grid );
+		g.geometry( "SES.ConvexPatches", p_geometries.ses.convexPatches );
+		g.geometry( "SES.CirclePatches", p_geometries.ses.circlePatches );
+		g.geometry( "SES.SegmentPatches", p_geometries.ses.segmentPatches );
+		g.geometry( "SES.ConcavePatches", p_geometries.ses.concavePatches );
 
 		// Textures.
 		g.texture( "Geometry", E_FORMAT::RGBA32UI )
@@ -339,6 +355,10 @@ namespace VTX::Renderer
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Cylinders" )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Ribbons" )
 			.in( E_RESOURCE_TYPE::GEOMETRY, "Grid" )
+			.in( E_RESOURCE_TYPE::GEOMETRY, "SES.ConvexPatches" )
+			.in( E_RESOURCE_TYPE::GEOMETRY, "SES.CirclePatches" )
+			.in( E_RESOURCE_TYPE::GEOMETRY, "SES.SegmentPatches" )
+			.in( E_RESOURCE_TYPE::GEOMETRY, "SES.ConcavePatches" )
 			.out( "Geometry" )
 			.out( "Color" )
 			.out( "Picking" )
@@ -358,6 +378,38 @@ namespace VTX::Renderer
 			.program( "Voxel" )
 			.shadersDir( "voxel" )
 			.draw( "Grid", E_PRIMITIVE::POINTS, reinterpret_cast<uintptr_t>( &p_geometries.grid.count ) )
+			.endProgram()
+			.program( "SES.ConvexPatch" )
+			.shadersDir( "ses/sesdf/convex" )
+			.draw(
+				"SES.ConvexPatches",
+				E_PRIMITIVE::POINTS,
+				reinterpret_cast<uintptr_t>( &p_geometries.ses.countConvexPatches )
+			)
+			.endProgram()
+			.program( "SES.CirclePatch" )
+			.shadersDir( "ses/sesdf/circle" )
+			.draw(
+				"SES.CirclePatches",
+				E_PRIMITIVE::POINTS,
+				reinterpret_cast<uintptr_t>( &p_geometries.ses.countCirclePatches )
+			)
+			.endProgram()
+			.program( "SES.SegmentPatch" )
+			.shadersDir( "ses/sesdf/segment" )
+			.draw(
+				"SES.SegmentPatches",
+				E_PRIMITIVE::POINTS,
+				reinterpret_cast<uintptr_t>( &p_geometries.ses.countSegmentPatches )
+			)
+			.endProgram()
+			.program( "SES.ConcavePatch" )
+			.shadersDir( "ses/sesdf/concave" )
+			.draw(
+				"SES.ConcavePatches",
+				E_PRIMITIVE::POINTS,
+				reinterpret_cast<uintptr_t>( &p_geometries.ses.countConcavePatches )
+			)
 			.endProgram()
 			.endPass();
 

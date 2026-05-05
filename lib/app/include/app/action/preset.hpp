@@ -219,7 +219,7 @@ namespace VTX::App::Action::Preset
 				"Van der Waals", Renderer::Representations::VAN_DER_WAALS
 			);
 			ACTION().execute<Add<Renderer::Representation>>( "Ribbons", Renderer::Representations::RIBBONS );
-			// ACTION().execute<Add<Renderer::Representation>>( "SES", Renderer::Representations::SES );
+			ACTION().execute<Add<Renderer::Representation>>( "SES", Renderer::Representations::SES );
 		}
 	};
 

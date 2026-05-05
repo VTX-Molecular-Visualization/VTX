@@ -18,7 +18,7 @@ namespace VTX::Renderer
 		Geometry::Cylinder cylinders;
 		Geometry::Ribbon   ribbons;
 		Geometry::Grid	   grid;
-		//  Geometry::SES	   ses;
+		Geometry::SES	   ses;
 
 		void clear()
 		{
@@ -31,6 +31,7 @@ namespace VTX::Renderer
 			spheres.clear();
 			cylinders.clear();
 			ribbons.clear();
+			ses.clear();
 		}
 
 		void construct( const Desc::Handle p_handle, const SystemData & p_data )
@@ -65,6 +66,18 @@ namespace VTX::Renderer
 			p_context.setPipelineBuffer( "Indirect.Cylinders", _toBuffer( cylinders.toDrawIndexedIndirectCommands() ) );
 			p_context.setPipelineBuffer( "Indirect.Ribbons", _toBuffer( ribbons.toDrawIndexedIndirectCommands() ) );
 			p_context.setPipelineBuffer( "Indirect.Grid", _toBuffer( grid.toDrawIndirectCommands() ) );
+			p_context.setPipelineBuffer(
+				"Indirect.SES.ConvexPatches", _toBuffer( ses.toDrawIndirectCommands( ses.countConvexPatches ) )
+			);
+			p_context.setPipelineBuffer(
+				"Indirect.SES.CirclePatches", _toBuffer( ses.toDrawIndirectCommands( ses.countCirclePatches ) )
+			);
+			p_context.setPipelineBuffer(
+				"Indirect.SES.SegmentPatches", _toBuffer( ses.toDrawIndirectCommands( ses.countSegmentPatches ) )
+			);
+			p_context.setPipelineBuffer(
+				"Indirect.SES.ConcavePatches", _toBuffer( ses.toDrawIndirectCommands( ses.countConcavePatches ) )
+			);
 		}
 
 	  private:

@@ -55,9 +55,11 @@ namespace VTX::Renderer::Desc
 		UINT,
 		FLOAT,
 		VEC2I,
+		VEC2U,
 		VEC2F,
 		VEC3F,
 		VEC4F,
+		VEC4U,
 		MAT3F,
 		MAT4F
 	};

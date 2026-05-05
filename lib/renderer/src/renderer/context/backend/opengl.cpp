@@ -167,6 +167,8 @@ namespace
 		case E_TYPE::VEC3F: return { GL_FLOAT, 3, false, 4, 1 };
 		case E_TYPE::VEC4F: return { GL_FLOAT, 4, false, 4, 1 };
 		case E_TYPE::VEC2I: return { GL_INT, 2, false, 4, 1 };
+		case E_TYPE::VEC2U: return { GL_UNSIGNED_INT, 2, false, 4, 1 };
+		case E_TYPE::VEC4U: return { GL_UNSIGNED_INT, 4, false, 4, 1 };
 		case E_TYPE::MAT3F: return { GL_FLOAT, 3, false, 4, 3 };
 		case E_TYPE::MAT4F: return { GL_FLOAT, 4, false, 4, 4 };
 		default: assert( false ); return {};
