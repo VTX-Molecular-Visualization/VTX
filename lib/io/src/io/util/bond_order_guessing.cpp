@@ -11,11 +11,14 @@ namespace VTX::IO::Util
 
 	void BondOrderGuessing::recomputeBondOrders(
 		VTX::Core::Struct::Topology &	  p_topology,
+		const VTX::Core::Struct::Frame &  p_frame,
 		const std::unordered_set<Index> & p_bondIndexes
 	)
 	{
 		VTX::Util::ScopedChrono chrono( "BondOrderGuessing::recomputeBondOrders" );
 		VTX_INFO( "Guessing {} bond orders...", p_bondIndexes.size() );
+
+		//
 	}
 
 	void BondOrderGuessing::recomputeBondOrders( chemfiles::Frame & p_frame )
@@ -66,6 +69,7 @@ namespace VTX::IO::Util
 			_tagCyclesRecursive( p_frame, p_linkedAtomsVector, p_cycleStatePerAtoms, cycleIndexes, 1 );
 		}
 	}
+
 	void BondOrderGuessing::_tagCyclesRecursive(
 		const chemfiles::Frame &				 p_frame,
 		const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
@@ -142,11 +146,17 @@ namespace VTX::IO::Util
 					const std::string nextAtomType = p_frame[ nextAtomIndex ].type();
 
 					if ( nextAtomType == "C" )
+					{
 						neighbourData.carbons.emplace_back( atomData );
+					}
 					else if ( nextAtomType == "O" )
+					{
 						neighbourData.oxygens.emplace_back( atomData );
+					}
 					else if ( nextAtomType == "N" )
+					{
 						neighbourData.nitrogens.emplace_back( atomData );
+					}
 				}
 
 				if ( atomType == "C" )
@@ -471,13 +481,17 @@ namespace VTX::IO::Util
 		const size_t atomCount = p_atoms.size();
 
 		if ( atomCount == 0 )
+		{
 			return result;
+		}
 
 		std::vector<chemfiles::Vector3D> positions = std::vector<chemfiles::Vector3D>();
 		positions.resize( atomCount + 1 );
 
 		for ( size_t i = 0; i < atomCount; i++ )
+		{
 			positions[ i ] = p_frame.positions()[ p_atoms[ i ] ];
+		}
 
 		positions[ atomCount ] = positions[ 1 ];
 
@@ -495,7 +509,9 @@ namespace VTX::IO::Util
 			_normalizeVector( crossProducts[ i ] );
 
 			if ( i > 1 && chemfiles::dot( crossProducts[ i - 1 ], crossProducts[ i ] ) < 0.0 )
+			{
 				crossProducts[ i ] = -crossProducts[ i ];
+			}
 		}
 		crossProducts[ atomCount ] = crossProducts[ 1 ];
 
@@ -507,6 +523,7 @@ namespace VTX::IO::Util
 
 		return avg / ( atomCount - 1 );
 	}
+
 	float BondOrderGuessing::_computeAverageRingDotCross(
 		const chemfiles::Frame &	p_frame,
 		const std::vector<size_t> & p_atoms,
@@ -519,7 +536,9 @@ namespace VTX::IO::Util
 		positions.resize( p_atomCount + 2 );
 
 		for ( size_t i = 0; i < p_atomCount; i++ )
+		{
 			positions[ i ] = p_frame.positions()[ p_atoms[ i ] ];
+		}
 
 		std::vector<chemfiles::Vector3D> crossProducts = std::vector<chemfiles::Vector3D>();
 		crossProducts.resize( p_atomCount + 1 );
@@ -540,7 +559,9 @@ namespace VTX::IO::Util
 			_normalizeVector( crossProducts[ i ] );
 
 			if ( i > 1 && chemfiles::dot( crossProducts[ i - 1 ], crossProducts[ i ] ) < 0.0 )
+			{
 				crossProducts[ i ] = -crossProducts[ i ];
+			}
 
 			dir += crossProducts[ i ];
 		}
@@ -555,6 +576,7 @@ namespace VTX::IO::Util
 
 		return result;
 	}
+
 	bool BondOrderGuessing::_verifyPlanarBonds(
 		const chemfiles::Frame &				 p_frame,
 		const std::vector<size_t> &				 p_atoms,
@@ -572,14 +594,18 @@ namespace VTX::IO::Util
 			const std::string			atomType = p_frame[ atomIndex ].type();
 
 			if ( !( atomType == "C" || atomType == "N" || atomType == "O" || atomType == "S" ) )
+			{
 				continue;
+			}
 
 			for ( const size_t neighbourIndex : p_linkedAtomsVector[ atomIndex ] )
 			{
 				const std::string neighbourType = p_frame[ neighbourIndex ].type();
 
 				if ( !( atomType == "C" || atomType == "N" || atomType == "O" || atomType == "S" ) )
+				{
 					continue;
+				}
 
 				const chemfiles::Vector3D & neighbourPos = p_frame.positions()[ neighbourIndex ];
 				chemfiles::Vector3D			vec			 = neighbourPos - atomPos;
@@ -588,12 +614,15 @@ namespace VTX::IO::Util
 				dot		  = dot < 0 ? -dot : dot;
 
 				if ( dot > cutoff )
+				{
 					return false;
+				}
 			}
 		}
 
 		return true;
 	}
+
 	void BondOrderGuessing::_setBondOrder(
 		chemfiles::Frame &				 p_frame,
 		const size_t					 p_firstAtomIndex,
@@ -622,7 +651,9 @@ namespace VTX::IO::Util
 		for ( size_t iBond = 0; iBond < p_frame.topology().bonds().size(); iBond++ )
 		{
 			if ( p_frame.topology().bond_orders()[ iBond ] != chemfiles::Bond::BondOrder::UNKNOWN )
+			{
 				continue;
+			}
 
 			const chemfiles::Bond & bond = p_frame.topology().bonds()[ iBond ];
 

@@ -791,13 +791,13 @@ namespace VTX::IO
 			if ( Enum::hasBits( _readerOption, READER_OPTION::RECOMPUTE_MISSING_BONDS )
 				 && Enum::hasBits( p_metadata.missingData, MISSING_DATA::BONDS ) )
 			{
-				Util::BondRecomputation::recomputeBonds( p_topology, p_recomputableAtomIndexes );
+				Util::BondRecomputation::recomputeBonds( p_topology, p_positions, p_recomputableAtomIndexes );
 				p_metadata.performedReaderOption |= READER_OPTION::RECOMPUTE_MISSING_BONDS;
 			}
 			if ( Enum::hasBits( _readerOption, READER_OPTION::GUESS_UNKNOWN_BOND_ORDERS )
 				 && Enum::hasBits( p_metadata.missingData, MISSING_DATA::BOND_ORDERS ) )
 			{
-				Util::BondOrderGuessing::recomputeBondOrders( p_topology, p_recomputableBondOrderIndexes );
+				Util::BondOrderGuessing::recomputeBondOrders( p_topology, p_positions, p_recomputableBondOrderIndexes );
 				p_metadata.performedReaderOption |= READER_OPTION::GUESS_UNKNOWN_BOND_ORDERS;
 			}
 			if ( Enum::hasBits( _readerOption, READER_OPTION::COMPUTE_MISSING_SECONDARY_STRUCTURE )

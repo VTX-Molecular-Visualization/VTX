@@ -10,10 +10,12 @@ namespace VTX::Util::Math
 	{
 	  public:
 		Grid() = default;
+
 		Grid( const Vec3f & p_worldOrigin, const Vec3f & p_cellSize, const Vec3i & p_size ) :
 			worldOrigin( p_worldOrigin ), cellSize( p_cellSize ), size( p_size )
 		{
 		}
+
 		~Grid() = default;
 
 		Vec3f worldOrigin;

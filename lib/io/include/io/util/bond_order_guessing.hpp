@@ -24,6 +24,7 @@ namespace VTX::IO::Util
 			Cyclic = 1,
 			Planar = 2,
 		};
+
 		struct NeighbourData
 		{
 		  public:
@@ -41,19 +42,24 @@ namespace VTX::IO::Util
 
 			  public:
 				AtomData() {}
+
 				AtomData( const size_t p_index, const chemfiles::Vector3D & p_position, const float p_distance ) :
 					_index( p_index ), _position( p_position ), _distance( p_distance )
 				{
 				}
+
 				AtomData( const size_t p_index, const Vec3f & p_position, const float p_distance ) :
 					_index( p_index ), _position( p_position ), _distance( p_distance )
 				{
 				}
 
-				size_t						getIndex() { return _index; }
+				size_t getIndex() { return _index; }
+
 				const chemfiles::Vector3D & getChemfilesPosition() { return _position.chemfiles; }
-				const Vec3f &				getVTXPosition() { return _position.vtx; }
-				float						getDistance() { return _distance; }
+
+				const Vec3f & getVTXPosition() { return _position.vtx; }
+
+				float getDistance() { return _distance; }
 
 			  private:
 				size_t		   _index;
@@ -76,6 +82,7 @@ namespace VTX::IO::Util
 	  public:
 		static void recomputeBondOrders(
 			VTX::Core::Struct::Topology &	  p_topology,
+			const VTX::Core::Struct::Frame &  p_frame,
 			const std::unordered_set<Index> & p_bondIndexes
 		);
 		static void recomputeBondOrders( chemfiles::Frame & p_frame );

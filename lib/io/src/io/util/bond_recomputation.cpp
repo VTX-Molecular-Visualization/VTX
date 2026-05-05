@@ -12,6 +12,7 @@ namespace VTX::IO::Util
 		const size_t atomIndex = _getIndexFromPosition( p_position );
 		_cellList[ atomIndex ].emplace_back( p_atomIndex );
 	}
+
 	void BondRecomputation::CellList::addAtomFromNonStandardResidue(
 		const size_t				p_atomIndex,
 		const chemfiles::Vector3D & p_position
@@ -34,6 +35,7 @@ namespace VTX::IO::Util
 
 	const std::vector<size_t> & BondRecomputation::CellList::getNeighbours( const size_t & p_index ) const
 	{ return _neighbourList[ p_index ]; }
+
 	const std::vector<size_t> & BondRecomputation::CellList::getNeighbours(
 		const chemfiles::Vector3D & p_position
 	) const
@@ -41,12 +43,16 @@ namespace VTX::IO::Util
 		const size_t cellIndex = _getIndexFromPosition( p_position );
 		return _neighbourList[ cellIndex ];
 	}
+
 	const std::vector<size_t> & BondRecomputation::CellList::getCysteineSulfurAtoms( const size_t p_cellIndex ) const
 	{ return _cysteinSulfurIndexes[ p_cellIndex ]; }
+
 	const std::vector<std::vector<size_t>> & BondRecomputation::CellList::getCysteineSulfurAtoms() const
 	{ return _cysteinSulfurIndexes; }
+
 	const std::vector<std::vector<size_t>> & BondRecomputation::CellList::getNonStdAtoms() const
 	{ return _nonStdAtoms; }
+
 	std::vector<std::vector<size_t>> & BondRecomputation::CellList::getNonStdAtoms() { return _nonStdAtoms; }
 
 	size_t BondRecomputation::CellList::_getIndexFromPosition( const chemfiles::Vector3D & p_position ) const
@@ -57,6 +63,7 @@ namespace VTX::IO::Util
 
 		return xIndex * _height * _depth + yIndex * _depth + zIndex;
 	}
+
 	void BondRecomputation::CellList::_generateNeighbourList()
 	{
 		_neighbourList = std::vector<std::vector<size_t>>();
@@ -210,6 +217,7 @@ namespace VTX::IO::Util
 
 	void BondRecomputation::recomputeBonds(
 		VTX::Core::Struct::Topology &	  p_topology,
+		const VTX::Core::Struct::Frame &  p_frame,
 		const std::unordered_set<Index> & p_atomIndexes
 	)
 	{
@@ -283,13 +291,17 @@ namespace VTX::IO::Util
 				for ( const size_t sulfurAtom2 : sulfurVectorInNeighbour )
 				{
 					if ( sulfurAtom1 <= sulfurAtom2 )
+					{
 						continue;
+					}
 
 					const double sqrDist
 						= _sqrDistance( p_frame.positions()[ sulfurAtom1 ], p_frame.positions()[ sulfurAtom2 ] );
 
 					if ( sqrDist < MAX_SQR_DISTANCE_FOR_DISULFIDE_BOND )
+					{
 						p_frame.add_bond( sulfurAtom1, sulfurAtom2 );
+					}
 				}
 			}
 		}
