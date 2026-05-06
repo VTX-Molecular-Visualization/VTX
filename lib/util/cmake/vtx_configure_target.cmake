@@ -14,13 +14,18 @@ function(vtx_configure_target p_target)
 	elseif(MSVC)
 		# General.
 		target_compile_options(${p_target} PRIVATE 
-			$<$<COMPILE_LANGUAGE:CXX>:/W3>            # Warning level 3
-			$<$<COMPILE_LANGUAGE:CXX>:/WX>            # Warnings as errors
-			$<$<COMPILE_LANGUAGE:CXX>:/MP>		      # Multicore compilation.
-			$<$<COMPILE_LANGUAGE:CXX>:/sdl>           # Security Checks
-			$<$<COMPILE_LANGUAGE:CXX>:/utf-8>         # UTF-8 encoding
-			$<$<COMPILE_LANGUAGE:CXX>:/fp:fast>       # Floating Point
-			$<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>
+			$<$<COMPILE_LANGUAGE:CXX>:/W3>              # Warning level 3
+			$<$<COMPILE_LANGUAGE:CXX>:/WX>              # Warnings as errors
+			$<$<COMPILE_LANGUAGE:CXX>:/MP>		        # Multicore compilation.
+			$<$<COMPILE_LANGUAGE:CXX>:/sdl>             # Security Checks
+			$<$<COMPILE_LANGUAGE:CXX>:/utf-8>           # UTF-8 encoding
+			$<$<COMPILE_LANGUAGE:CXX>:/fp:fast>         # Floating Point
+			$<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>  # Report the correct C++ standard in __cplusplus
+			$<$<COMPILE_LANGUAGE:CXX>:/Zc:preprocessor> # Use the standard-conforming preprocessor
+		)
+		target_compile_definitions(${p_target} PRIVATE
+			NOMINMAX		    # Prevent Windows headers from defining min/max macros
+			WIN32_LEAN_AND_MEAN # Exclude rarely used Windows headers
 		)
 		# Optimization.
 		target_compile_options(${p_target} PRIVATE 
