@@ -125,6 +125,7 @@ namespace VTX::Renderer
 		_context.setRenderTarget( Desc::E_RENDER_TARGET::OFFSCREEN );
 		_render( 0.f, 0.f );
 
+		// TODO: get last pass instead of hardcoding FXAA.
 		std::vector<std::byte> data = _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
 
 		_context.setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );

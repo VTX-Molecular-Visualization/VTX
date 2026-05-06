@@ -39,6 +39,7 @@ namespace VTX::Renderer
 			spheres.construct( p_handle, p_data );
 			cylinders.construct( p_handle, p_data );
 			ribbons.construct( p_handle, p_data );
+			ses.construct( p_handle, p_data );
 		}
 
 		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
@@ -46,18 +47,17 @@ namespace VTX::Renderer
 			spheres.uploadIndexes( p_context, p_handle );
 			cylinders.uploadIndexes( p_context, p_handle );
 			ribbons.uploadIndexes( p_context, p_handle );
+			ses.uploadIndexes( p_context, p_handle );
 		}
 
-		void resize( Context::ContextWrapper & p_context )
-		{
-			resizeSystems( p_context );
-		}
+		void resize( Context::ContextWrapper & p_context ) { resizeSystems( p_context ); }
 
 		void resizeSystems( Context::ContextWrapper & p_context )
 		{
 			spheres.resize( p_context );
 			cylinders.resize( p_context );
 			ribbons.resize( p_context );
+			ses.resize( p_context );
 		}
 
 		void buildDrawRanges( Context::ContextWrapper & p_context )
@@ -67,16 +67,16 @@ namespace VTX::Renderer
 			p_context.setPipelineBuffer( "Indirect.Ribbons", _toBuffer( ribbons.toDrawIndexedIndirectCommands() ) );
 			p_context.setPipelineBuffer( "Indirect.Grid", _toBuffer( grid.toDrawIndirectCommands() ) );
 			p_context.setPipelineBuffer(
-				"Indirect.SES.ConvexPatches", _toBuffer( ses.toDrawIndirectCommands( ses.countConvexPatches ) )
+				"Indirect.SES.ConvexPatches", _toBuffer( ses.convexPatches.toDrawIndexedIndirectCommands() )
 			);
 			p_context.setPipelineBuffer(
-				"Indirect.SES.CirclePatches", _toBuffer( ses.toDrawIndirectCommands( ses.countCirclePatches ) )
+				"Indirect.SES.CirclePatches", _toBuffer( ses.circlePatches.toDrawIndexedIndirectCommands() )
 			);
 			p_context.setPipelineBuffer(
-				"Indirect.SES.SegmentPatches", _toBuffer( ses.toDrawIndirectCommands( ses.countSegmentPatches ) )
+				"Indirect.SES.SegmentPatches", _toBuffer( ses.segmentPatches.toDrawIndexedIndirectCommands() )
 			);
 			p_context.setPipelineBuffer(
-				"Indirect.SES.ConcavePatches", _toBuffer( ses.toDrawIndirectCommands( ses.countConcavePatches ) )
+				"Indirect.SES.ConcavePatches", _toBuffer( ses.concavePatches.toDrawIndexedIndirectCommands() )
 			);
 		}
 

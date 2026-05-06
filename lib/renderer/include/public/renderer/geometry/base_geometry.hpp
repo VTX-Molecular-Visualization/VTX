@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 #define __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 
+#include "renderer/context/context_wrapper.hpp"
 #include "renderer/descriptors.hpp"
 #include "renderer/resource_handler.hpp"
 #include "renderer/system_data.hpp"
@@ -17,23 +18,11 @@ namespace VTX::Renderer::Geometry
 {
 
 	/**
-	 * @brief If more than this number of consecutive items are not visible, split draw calls.
-	 * Otherwise, use bool mask to skip them in shader.
-	 */
-	constexpr size_t RANGE_CHUNK_SIZE = 10;
-
-	/**
 	 * @brief Base geometry struct to handle and build draw ranges.
 	 */
 	class BaseGeometry : public Desc::Geometry
 	{
 	  public:
-		/**
-		 * @brief Mask of ranges to not draw per system (local indexes).
-		 */
-		// MapUIDRangeList visibilityMask;
-		// MapUIDRangeList representationMask;
-
 		/**
 		 * @brief Compiled draw ranges count for GPU calls.
 		 */
@@ -62,7 +51,7 @@ namespace VTX::Renderer::Geometry
 		void clear()
 		{
 			_resources.clear();
-			_size  = 0;
+			_size = 0;
 			count = 0;
 		}
 

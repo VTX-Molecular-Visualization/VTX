@@ -6,10 +6,6 @@
 
 namespace
 {
-	// Undefine min and max macros that might be defined by Windows headers (included from egl).
-#undef min
-#undef max
-
 	using namespace VTX;
 	using namespace VTX::Renderer;
 

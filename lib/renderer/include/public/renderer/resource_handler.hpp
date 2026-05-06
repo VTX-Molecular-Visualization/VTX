@@ -3,6 +3,7 @@
 
 #include "renderer/descriptors.hpp"
 #include <algorithm>
+#include <util/logger.hpp>
 #include <vector>
 
 namespace VTX::Renderer
@@ -135,9 +136,7 @@ namespace VTX::Renderer
 		}
 
 		inline bool contains( const Desc::Handle p_handle ) const noexcept
-		{
-			return p_handle < _resources.size() && _resources[ p_handle ];
-		}
+		{ return p_handle < _resources.size() && _resources[ p_handle ]; }
 
 		/**
 		 * @brief Check if a resource exists from key and remove from invalids if present.
@@ -180,7 +179,8 @@ namespace VTX::Renderer
 		 * @brief Access resource by key.
 		 */
 		inline const T & get( const K & p_key ) const { return get( handle( p_key ) ); }
-		inline T &		 get( const K & p_key ) { return get( handle( p_key ) ); }
+
+		inline T & get( const K & p_key ) { return get( handle( p_key ) ); }
 
 		/**
 		 * @brief Get all keys.
@@ -214,7 +214,8 @@ namespace VTX::Renderer
 		 * @brief Get the number of valid resources.
 		 */
 		inline size_t size() const { return _resources.size() - _availables.size(); }
-		inline bool	  empty() const { return size() == 0; }
+
+		inline bool empty() const { return size() == 0; }
 
 		/**
 		 * @brief Access resource by handle.
@@ -286,9 +287,7 @@ namespace VTX::Renderer
 			using VecIter = typename std::vector<std::unique_ptr<T>>::iterator;
 
 			iterator( ResourceHandler * p_handler, VecIter p_it ) : _handler( p_handler ), _it( p_it )
-			{
-				skipInvalid();
-			}
+			{ skipInvalid(); }
 
 			iterator & operator++()
 			{
@@ -315,6 +314,7 @@ namespace VTX::Renderer
 		};
 
 		iterator begin() { return iterator( this, _resources.begin() ); }
+
 		iterator end() { return iterator( this, _resources.end() ); }
 
 	  private:

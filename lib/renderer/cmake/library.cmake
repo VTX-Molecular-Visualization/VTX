@@ -58,6 +58,7 @@ endif()
 # Cuda.
 if(VTX_CUDA_ENABLED)
 	target_link_libraries(vtx_renderer PRIVATE CUDA::toolkit)
+	target_include_directories(vtx_renderer PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../vendor/cuda_helper")
 
 	set_target_properties(vtx_renderer PROPERTIES
 		CUDA_ARCHITECTURES "${VTX_CUDA_ARCH}"

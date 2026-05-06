@@ -384,7 +384,7 @@ namespace VTX::Renderer
 			.draw(
 				"SES.ConvexPatches",
 				E_PRIMITIVE::POINTS,
-				reinterpret_cast<uintptr_t>( &p_geometries.ses.countConvexPatches )
+				reinterpret_cast<uintptr_t>( &p_geometries.ses.convexPatches.count )
 			)
 			.endProgram()
 			.program( "SES.CirclePatch" )
@@ -392,7 +392,7 @@ namespace VTX::Renderer
 			.draw(
 				"SES.CirclePatches",
 				E_PRIMITIVE::POINTS,
-				reinterpret_cast<uintptr_t>( &p_geometries.ses.countCirclePatches )
+				reinterpret_cast<uintptr_t>( &p_geometries.ses.circlePatches.count )
 			)
 			.endProgram()
 			.program( "SES.SegmentPatch" )
@@ -400,7 +400,7 @@ namespace VTX::Renderer
 			.draw(
 				"SES.SegmentPatches",
 				E_PRIMITIVE::POINTS,
-				reinterpret_cast<uintptr_t>( &p_geometries.ses.countSegmentPatches )
+				reinterpret_cast<uintptr_t>( &p_geometries.ses.segmentPatches.count )
 			)
 			.endProgram()
 			.program( "SES.ConcavePatch" )
@@ -408,7 +408,7 @@ namespace VTX::Renderer
 			.draw(
 				"SES.ConcavePatches",
 				E_PRIMITIVE::POINTS,
-				reinterpret_cast<uintptr_t>( &p_geometries.ses.countConcavePatches )
+				reinterpret_cast<uintptr_t>( &p_geometries.ses.concavePatches.count )
 			)
 			.endProgram()
 			.endPass();
