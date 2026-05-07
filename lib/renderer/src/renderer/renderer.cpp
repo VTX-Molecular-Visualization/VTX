@@ -104,6 +104,7 @@ namespace VTX::Renderer
 				_refreshSystemVisibility( system );
 			}
 			_geometries.buildDrawRanges( _context );
+
 			_systemToRefresh.clear();
 			setNeedUpdate( true );
 		}

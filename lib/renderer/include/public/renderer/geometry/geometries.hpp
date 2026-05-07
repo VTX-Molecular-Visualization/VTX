@@ -67,16 +67,16 @@ namespace VTX::Renderer
 			p_context.setPipelineBuffer( "Indirect.Ribbons", _toBuffer( ribbons.toDrawIndexedIndirectCommands() ) );
 			p_context.setPipelineBuffer( "Indirect.Grid", _toBuffer( grid.toDrawIndirectCommands() ) );
 			p_context.setPipelineBuffer(
-				"Indirect.SES.ConvexPatches", _toBuffer( ses.convexPatches.toDrawIndexedIndirectCommands() )
+				"Indirect.SES.ConvexPatches", _toBuffer( ses.convexPatches.toDrawIndirectCommands() )
 			);
 			p_context.setPipelineBuffer(
-				"Indirect.SES.CirclePatches", _toBuffer( ses.circlePatches.toDrawIndexedIndirectCommands() )
+				"Indirect.SES.CirclePatches", _toBuffer( ses.circlePatches.toDrawIndirectCommands() )
 			);
 			p_context.setPipelineBuffer(
-				"Indirect.SES.SegmentPatches", _toBuffer( ses.segmentPatches.toDrawIndexedIndirectCommands() )
+				"Indirect.SES.SegmentPatches", _toBuffer( ses.segmentPatches.toDrawIndirectCommands() )
 			);
 			p_context.setPipelineBuffer(
-				"Indirect.SES.ConcavePatches", _toBuffer( ses.concavePatches.toDrawIndexedIndirectCommands() )
+				"Indirect.SES.ConcavePatches", _toBuffer( ses.concavePatches.toDrawIndirectCommands() )
 			);
 		}
 

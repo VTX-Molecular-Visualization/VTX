@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_GEOMETRY_SES__
 
 #include "base_geometry.hpp"
+#include <array>
 #include <memory>
 
 namespace VTX::Renderer::Geometry
@@ -9,42 +10,30 @@ namespace VTX::Renderer::Geometry
 	class SES
 	{
 	  public:
+		class PatchGeometry : public BaseGeometry
+		{
+		  public:
+			void construct( const Desc::Handle p_handle, const Index p_count )
+			{ _addRange( p_handle, p_count, p_count ); }
+		};
+
 		SES();
 		~SES();
 
-
-		BaseGeometry convexPatches;
-		BaseGeometry circlePatches;
-		BaseGeometry segmentPatches;
-		BaseGeometry concavePatches;
+		PatchGeometry convexPatches;
+		PatchGeometry circlePatches;
+		PatchGeometry segmentPatches;
+		PatchGeometry concavePatches;
 
 		struct Construction;
 
 		void construct( const Desc::Handle p_handle, const SystemData & p_data );
 
-		void resize( Context::ContextWrapper & p_context )
-		{
-			convexPatches.resize( p_context );
-			circlePatches.resize( p_context );
-			segmentPatches.resize( p_context );
-			concavePatches.resize( p_context );
-		}
+		void resize( Context::ContextWrapper & p_context );
 
-		void clear()
-		{
-			convexPatches.clear();
-			circlePatches.clear();
-			segmentPatches.clear();
-			concavePatches.clear();
-		}
+		void clear();
 
-		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
-		{
-			convexPatches.uploadIndexes( p_context, p_handle );
-			circlePatches.uploadIndexes( p_context, p_handle );
-			segmentPatches.uploadIndexes( p_context, p_handle );
-			concavePatches.uploadIndexes( p_context, p_handle );
-		}
+		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle );
 
 		[[nodiscard]] std::vector<Desc::DrawIndirectCommand> toDrawIndirectCommands( const uint32_t p_count ) const
 		{
@@ -58,6 +47,9 @@ namespace VTX::Renderer::Geometry
 
 	  protected:
 		std::map<Desc::Handle, std::unique_ptr<Construction>> _construction;
+		std::vector<std::array<uint32_t, 2>>				  _convexPatchElements;
+		std::vector<std::array<uint32_t, 2>>				  _circlePatchAtoms;
+		std::vector<std::array<uint32_t, 4>>				  _segmentPatchIds;
 	};
 
 } // namespace VTX::Renderer::Geometry

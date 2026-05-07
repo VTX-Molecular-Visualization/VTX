@@ -196,6 +196,8 @@ namespace VTX::UI::QT::DockWidget
 
 	void Inspector::_onSystemSelectionUpdated( App::ECS::Registry &, App::ECS::Entity )
 	{
+		Util::ScopedChrono timer( "Inspector::_onSystemSelectionUpdated" );
+
 		if ( not _hasSystemSelection() )
 		{
 			if ( _selectionListWidget )
