@@ -41,7 +41,7 @@ namespace VTX::Renderer::Geometry
 
 			if ( indiceBuffer )
 			{
-				p_context.setPipelineBuffer<Indice>( *indiceBuffer, size == 0 ? 1 : size );
+				p_context.setBuffer<Indice>( *indiceBuffer, size == 0 ? 1 : size );
 			}
 		}
 
@@ -62,7 +62,7 @@ namespace VTX::Renderer::Geometry
 		{
 			assert( indiceBuffer );
 
-			p_context.setPipelineBuffer<Indice>(
+			p_context.setBuffer<Indice>(
 				*indiceBuffer, _resources[ p_handle ].indices, _resources[ p_handle ].range.first
 			);
 		}

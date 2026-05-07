@@ -74,16 +74,21 @@ namespace
 		}
 	}
 
-	constexpr GLenum _toGL( const Desc::E_SHADER_BUFFER_KIND p_bufferRole ) noexcept
+	constexpr GLenum _toGLShaderTarget( const Desc::E_BUFFER_USAGE p_usage ) noexcept
 	{
 		using namespace Desc;
 
-		switch ( p_bufferRole )
+		if ( Util::Enum::hasBits( p_usage, E_BUFFER_USAGE::UNIFORM ) )
 		{
-		case E_SHADER_BUFFER_KIND::PARAMETERS: return GL_UNIFORM_BUFFER;
-		case E_SHADER_BUFFER_KIND::STRUCTURED: return GL_SHADER_STORAGE_BUFFER;
-		default: assert( false ); return GL_INVALID_INDEX;
+			return GL_UNIFORM_BUFFER;
 		}
+		if ( Util::Enum::hasBits( p_usage, E_BUFFER_USAGE::STORAGE ) )
+		{
+			return GL_SHADER_STORAGE_BUFFER;
+		}
+
+		assert( false );
+		return GL_INVALID_INDEX;
 	}
 
 	constexpr GLbitfield _toGLStorageFlags(
@@ -185,7 +190,6 @@ namespace
 
 namespace VTX::Renderer::Context::Backend
 {
-
 	OpenGL::OpenGL(
 		const size_t			   p_width,
 		const size_t			   p_height,
@@ -268,8 +272,7 @@ namespace VTX::Renderer::Context::Backend
 		_textures.invalidate();
 		_samplers.invalidate();
 		_programs.invalidate();
-		_shaderBuffers.invalidate();
-		_pipelineBuffers.invalidate();
+		_buffers.invalidate();
 		_vertexArrays.invalidate();
 
 		// Create all resources.
@@ -287,13 +290,9 @@ namespace VTX::Renderer::Context::Backend
 		{
 			_getOrCreateVertexLayout( key, vertexStream );
 		}
-		for ( const auto & [ key, buffer ] : p_resources.shaderBuffers )
+		for ( const auto & [ key, buffer ] : p_resources.buffers )
 		{
-			_getOrCreateShaderBuffer( buffer );
-		}
-		for ( const auto & [ key, buffer ] : p_resources.pipelineBuffers )
-		{
-			_getOrCreatePipelineBuffer( key, buffer );
+			_getOrCreateBuffer( key, buffer );
 		}
 
 		// Bind geometries to VAOs.
@@ -379,7 +378,7 @@ namespace VTX::Renderer::Context::Backend
 						{
 							PayloadDrawIndexed pDraw { hProgram, hVao };
 							pDraw.primitive	  = toUnderlying( drawCall.primitive );
-							pDraw.indexBuffer = _pipelineBuffers.handle( geometry.indiceBuffer.value() );
+							pDraw.indexBuffer = _buffers.handle( geometry.indiceBuffer.value() );
 							pDraw.first		  = rangePtr->first;
 							pDraw.count		  = rangePtr->count;
 							p_commands.push<E_COMMAND::DRAW_INDEXED>( pDraw );
@@ -402,8 +401,8 @@ namespace VTX::Renderer::Context::Backend
 						{
 							PayloadDrawIndexedIndirect pDraw { hProgram, hVao };
 							pDraw.primitive		 = toUnderlying( drawCall.primitive );
-							pDraw.indirectBuffer = _pipelineBuffers.handle( geometry.indirectBuffer.value() );
-							pDraw.indiceBuffer	 = _pipelineBuffers.handle( geometry.indiceBuffer.value() );
+							pDraw.indirectBuffer = _buffers.handle( geometry.indirectBuffer.value() );
+							pDraw.indiceBuffer	 = _buffers.handle( geometry.indiceBuffer.value() );
 							pDraw.count			 = *ptr;
 							p_commands.push<E_COMMAND::DRAW_INDEXED_INDIRECT>( pDraw );
 						}
@@ -411,7 +410,7 @@ namespace VTX::Renderer::Context::Backend
 						{
 							PayloadDrawIndirect pDraw { hProgram, hVao };
 							pDraw.primitive		 = toUnderlying( drawCall.primitive );
-							pDraw.indirectBuffer = _pipelineBuffers.handle( geometry.indirectBuffer.value() );
+							pDraw.indirectBuffer = _buffers.handle( geometry.indirectBuffer.value() );
 							pDraw.count			 = *ptr;
 							p_commands.push<E_COMMAND::DRAW_INDIRECT>( pDraw );
 						}
@@ -444,8 +443,7 @@ namespace VTX::Renderer::Context::Backend
 		_textures.purge();
 		_samplers.purge();
 		_programs.purge();
-		_shaderBuffers.purge();
-		_pipelineBuffers.purge();
+		_buffers.purge();
 		_vertexArrays.purge();
 
 		// Dump errors.
@@ -454,7 +452,7 @@ namespace VTX::Renderer::Context::Backend
 		// GLOBAL BINDINGS: done once at startup.
 		for ( auto & bufferBinding : _globalShaderBuffers )
 		{
-			_shaderBuffers.get( bufferBinding.buffer ).bind( _toGL( bufferBinding.kind ), bufferBinding.binding );
+			_buffers.get( bufferBinding.buffer ).bind( _toGLShaderTarget( bufferBinding.usage ), bufferBinding.binding );
 		}
 	}
 
@@ -656,24 +654,27 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL::_getOrCreateShaderBuffer( const Desc::BufferShader & p_buffer )
+	Desc::Handle OpenGL::_getOrCreateBuffer( const Desc::Key & p_key, const Desc::Buffer & p_buffer )
 	{
 		using namespace Desc;
 
-		const Key key = p_buffer.name;
-
-		if ( _shaderBuffers.validate( key, p_buffer ) )
+		if ( _buffers.validate( p_key, p_buffer ) )
 		{
-			return _shaderBuffers.handle( key );
+			return _buffers.handle( p_key );
+		}
+
+		if ( p_buffer.values.empty() )
+		{
+			return _buffers.emplace( p_key, p_buffer );
 		}
 
 		using CpuBuffer = std::variant<BinaryBuffer<E_LAYOUT_TYPE::Std140>, BinaryBuffer<E_LAYOUT_TYPE::Std430>>;
 
-		CpuBuffer cpuBuffer = ( p_buffer.role == E_SHADER_BUFFER_KIND::PARAMETERS )
+		CpuBuffer cpuBuffer = Util::Enum::hasBits( p_buffer.usage, E_BUFFER_USAGE::UNIFORM )
 								  ? CpuBuffer { BinaryBuffer<E_LAYOUT_TYPE::Std140> {} }
 								  : CpuBuffer { BinaryBuffer<E_LAYOUT_TYPE::Std430> {} };
 
-		const Handle h = std::visit(
+		return std::visit(
 			[ & ]( auto & p_buf )
 			{
 				using BB = std::decay_t<decltype( p_buf )>;
@@ -694,8 +695,8 @@ namespace VTX::Renderer::Context::Backend
 				const uint32_t bufferSize = static_cast<uint32_t>( p_buf.size() );
 				assert( bufferSize > 0 );
 
-				const auto hBuffer = _shaderBuffers.emplace( key, p_buffer );
-				auto &	   gl	   = _shaderBuffers.get( hBuffer );
+				const auto hBuffer = _buffers.emplace( p_key, p_buffer );
+				auto &	   gl	   = _buffers.get( hBuffer );
 
 				switch ( p_buffer.mutability )
 				{
@@ -720,22 +721,6 @@ namespace VTX::Renderer::Context::Backend
 			},
 			cpuBuffer
 		);
-
-		return h;
-	}
-
-	Desc::Handle OpenGL::_getOrCreatePipelineBuffer( const Desc::Key & p_key, const Desc::BufferPipeline & p_buffer )
-	{
-		using namespace Desc;
-
-		if ( _pipelineBuffers.validate( p_key, p_buffer ) )
-		{
-			return _pipelineBuffers.handle( p_key );
-		}
-
-		const Handle h = _pipelineBuffers.emplace( p_key, p_buffer );
-
-		return h;
 	}
 
 	Desc::Handle OpenGL::_getOrCreateProgram( const Desc::Program & p_program )
@@ -745,14 +730,14 @@ namespace VTX::Renderer::Context::Backend
 		// Create shader buffer if uniforms.
 		if ( not p_program.uniforms.empty() )
 		{
-			BufferShader buffer;
+			Buffer buffer;
 			buffer.name		  = p_program.name;
-			buffer.role		  = E_SHADER_BUFFER_KIND::PARAMETERS;
+			buffer.usage	  = E_BUFFER_USAGE::UNIFORM;
 			buffer.mutability = E_BUFFER_MUTABILITY::IMMUTABLE;
 			buffer.access	  = E_BUFFER_ACCESS::NONE;
 			buffer.frequency  = E_UPDATE_FREQUENCY::DYNAMIC;
 			buffer.values	  = p_program.uniforms;
-			_getOrCreateShaderBuffer( buffer );
+			_getOrCreateBuffer( p_program.name, buffer );
 		}
 
 		const Key & key = p_program.name;
@@ -772,11 +757,17 @@ namespace VTX::Renderer::Context::Backend
 
 		OpenGL::GlobalShaderBuffers gsb;
 
-		for ( const auto & [ key, buffer ] : p_resources.shaderBuffers )
+		for ( const auto & [ key, buffer ] : p_resources.buffers )
 		{
+			if ( not buffer.binding )
+			{
+				continue;
+			}
+			assert( Util::Enum::hasBits( buffer.usage, E_BUFFER_USAGE::UNIFORM )
+					|| Util::Enum::hasBits( buffer.usage, E_BUFFER_USAGE::STORAGE ) );
 			assert( buffer.binding );
-			const Handle hBuf = _shaderBuffers.handle( key );
-			gsb.emplace_back( hBuf, buffer.role, *buffer.binding );
+			const Handle hBuf = _buffers.handle( key );
+			gsb.emplace_back( hBuf, buffer.usage, *buffer.binding );
 		}
 
 		return gsb;
@@ -809,9 +800,9 @@ namespace VTX::Renderer::Context::Backend
 			}
 			case E_RESOURCE_TYPE::BUFFER:
 			{
-				const Handle		 hBuf	= _shaderBuffers.handle( input.primary );
-				const BufferShader & buffer = p_resources.shaderBuffers.at( input.primary );
-				rt.shaderBuffers.emplace_back( hBuf, buffer.role, b++ );
+				const Handle   hBuf	  = _buffers.handle( input.primary );
+				const Buffer & buffer = p_resources.buffers.at( input.primary );
+				rt.buffers.emplace_back( hBuf, buffer.usage, b++ );
 				break;
 			}
 			default: break;
@@ -822,10 +813,10 @@ namespace VTX::Renderer::Context::Backend
 		for ( auto & program : p_pass.programs )
 		{
 			const Key & key = program.name;
-			if ( _shaderBuffers.contains( key ) )
+			if ( _buffers.contains( key ) )
 			{
-				const Handle hBuf = _shaderBuffers.handle( key );
-				rt.shaderBuffers.emplace_back( hBuf, E_SHADER_BUFFER_KIND::PARAMETERS, b++ );
+				const Handle hBuf = _buffers.handle( key );
+				rt.buffers.emplace_back( hBuf, E_BUFFER_USAGE::UNIFORM, b++ );
 			}
 		}
 
@@ -837,9 +828,9 @@ namespace VTX::Renderer::Context::Backend
 			{
 			case E_RESOURCE_TYPE::BUFFER:
 			{
-				const Handle		 hBuf	= _shaderBuffers.handle( output.primary );
-				const BufferShader & buffer = p_resources.shaderBuffers.at( output.primary );
-				rt.shaderBuffers.emplace_back( hBuf, buffer.role, b++ );
+				const Handle   hBuf	  = _buffers.handle( output.primary );
+				const Buffer & buffer = p_resources.buffers.at( output.primary );
+				rt.buffers.emplace_back( hBuf, buffer.usage, b++ );
 
 				break;
 			}
@@ -921,7 +912,7 @@ namespace VTX::Renderer::Context::Backend
 		{
 			const GLAttrib	   ga		 = toGLAttrib( a.type );
 			const Key		   bufferKey = a.name;
-			const GL::Buffer & vbo		 = _pipelineBuffers.get( bufferKey );
+			const GL::Buffer & vbo		 = _buffers.get( bufferKey );
 
 			const GLsizei stride = GLsizei( ga.columns * ga.components * ga.bytesPerComp );
 			for ( uint8_t col = 0; col < ga.columns; ++col )
@@ -943,11 +934,13 @@ namespace VTX::Renderer::Context::Backend
 		VertexLayout quadLayout;
 		quadLayout.attributes = { VertexAttribute { _QUAD_VBO, E_TYPE::VEC2F } };
 
-		const Key	   quadVboKey = _QUAD_VBO;
-		BufferPipeline quadVboDesc { quadVboKey, E_PIPELINE_BUFFER_KIND::VERTEX, E_UPDATE_FREQUENCY::STATIC };
+		const Key quadVboKey = _QUAD_VBO;
+		Buffer	  quadVboDesc;
+		quadVboDesc.name	  = quadVboKey;
+		quadVboDesc.usage	  = E_BUFFER_USAGE::VERTEX;
+		quadVboDesc.frequency = E_UPDATE_FREQUENCY::STATIC;
 
-		if ( _vertexArrays.validate( quadLayoutKey, quadLayout )
-			 && _pipelineBuffers.validate( quadVboKey, quadVboDesc ) )
+		if ( _vertexArrays.validate( quadLayoutKey, quadLayout ) && _buffers.validate( quadVboKey, quadVboDesc ) )
 		{
 			return _vertexArrays.handle( quadLayoutKey );
 		}
@@ -960,7 +953,7 @@ namespace VTX::Renderer::Context::Backend
 		quadGeo.indiceBuffer = std::nullopt;
 
 		const Handle h = _getOrCreateVertexLayout( quadLayoutKey, quadLayout );
-		_getOrCreatePipelineBuffer( quadVboKey, quadVboDesc );
+		_getOrCreateBuffer( quadVboKey, quadVboDesc );
 
 		Resources fakeRes;
 		fakeRes.vertexStreams.emplace( quadLayoutKey, quadLayout );
@@ -968,47 +961,27 @@ namespace VTX::Renderer::Context::Backend
 
 		_bindGeometryToVao( quadLayoutKey, quadGeo, fakeRes );
 
-		_pipelineBuffers.get( quadVboKey ).setStorage( quad.data(), GLsizei( sizeof( quad ) ) );
+		_buffers.get( quadVboKey ).setStorage( quad.data(), GLsizei( sizeof( quad ) ) );
 
 		return h;
 	}
 
-	void OpenGL::setShaderBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
+	void OpenGL::setBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
 	{
 		using namespace Desc;
 
-		const Handle h	  = _shaderBuffers.handle( p_key );
-		const auto & desc = _shaderBuffers.descriptor( p_key );
+		const Handle h	  = _buffers.handle( p_key );
+		const auto & desc = _buffers.descriptor( p_key );
 
-		switch ( desc.mutability )
+		if ( ( Util::Enum::hasBits( desc.usage, E_BUFFER_USAGE::UNIFORM )
+			   || Util::Enum::hasBits( desc.usage, E_BUFFER_USAGE::STORAGE ) )
+			 && desc.mutability == E_BUFFER_MUTABILITY::IMMUTABLE )
 		{
-		case E_BUFFER_MUTABILITY::MUTABLE:
-		{
-			_shaderBuffers.get( h ).setData(
-				p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( desc.frequency )
-			);
-			break;
+			_buffers.get( h ).setSub( p_bytes.data(), GLsizei( p_bytes.size() ), p_offset );
+			return;
 		}
-		case E_BUFFER_MUTABILITY::IMMUTABLE:
-		{
-			_shaderBuffers.get( h ).setSub( p_bytes.data(), GLsizei( p_bytes.size() ), p_offset );
-			break;
-		}
-		default: break;
-		}
-	}
 
-	// Pipeline buffers are default immutables.
-	void OpenGL::setPipelineBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
-	{
-		using namespace Desc;
-
-		const Handle h	  = _pipelineBuffers.handle( p_key );
-		const auto & desc = _pipelineBuffers.descriptor( p_key );
-
-		_pipelineBuffers.get( h ).setData(
-			p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( desc.frequency )
-		);
+		_buffers.get( h ).setData( p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( desc.frequency ) );
 	}
 
 	std::vector<std::byte> OpenGL::getTextureData(

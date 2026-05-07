@@ -7,7 +7,6 @@
 #include <memory>
 #include <span>
 #include <util/types.hpp>
-#include <vector>
 
 namespace VTX::Renderer::Geometry::SESDetail
 {
@@ -31,10 +30,6 @@ namespace VTX::Renderer::Geometry::SESDetail
 		uint32_t circlePatchNb	= 0;
 		uint32_t segmentPatchNb = 0;
 		uint32_t concavePatchNb = 0;
-
-		std::vector<UVec2> convexPatches;
-		std::vector<UVec2> circlePatches;
-		std::vector<UVec4> segmentPatches;
 	};
 
 	CudaBuildResult buildCudaConstruction(

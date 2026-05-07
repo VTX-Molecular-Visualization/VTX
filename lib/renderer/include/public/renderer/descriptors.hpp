@@ -10,6 +10,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <util/constants.hpp>
+#include <util/enum.hpp>
 #include <util/hashing.hpp>
 #include <util/types.hpp>
 #include <variant>
@@ -103,15 +104,6 @@ namespace VTX::Renderer::Desc
 	};
 
 	/**
-	 * @brief All buffer roles.
-	 */
-	enum struct E_SHADER_BUFFER_KIND : uint32_t
-	{
-		PARAMETERS,
-		STRUCTURED
-	};
-
-	/**
 	 * @brief All buffer mutability types.
 	 */
 	enum struct E_BUFFER_MUTABILITY : uint32_t
@@ -142,14 +134,19 @@ namespace VTX::Renderer::Desc
 	};
 
 	/**
-	 * @brief All data buffer kinds.
-	 * // TODO: no more needed, keep for semantic?
+	 * @brief All ways a buffer can be consumed by the renderer or external compute backends.
 	 */
-	enum struct E_PIPELINE_BUFFER_KIND : uint32_t
+	enum struct E_BUFFER_USAGE : uint32_t
 	{
-		VERTEX,
-		INDICE,
-		INDIRECT_COMMAND
+		VTX_ENUM_ENABLE_BITMASK,
+		NONE	   = 0u,
+		VERTEX	   = 1u << 0,
+		INDEX	   = 1u << 1,
+		INDIRECT   = 1u << 2,
+		UNIFORM	   = 1u << 3,
+		STORAGE	   = 1u << 4,
+		CUDA_READ  = 1u << 5,
+		CUDA_WRITE = 1u << 6,
 	};
 
 	/**
@@ -283,27 +280,17 @@ namespace VTX::Renderer::Desc
 	};
 
 	/**
-	 * @brief Uniform buffer descriptor.
+	 * @brief Buffer descriptor.
 	 */
-	struct BufferShader
+	struct Buffer
 	{
 		Key						  name;
-		E_SHADER_BUFFER_KIND	  role;
-		E_BUFFER_MUTABILITY		  mutability;
-		E_BUFFER_ACCESS			  access;
-		E_UPDATE_FREQUENCY		  frequency;
-		std::optional<Binding>	  binding; // TODO: remove and use backend reflection.
+		E_BUFFER_USAGE			  usage		 = E_BUFFER_USAGE::NONE;
+		E_BUFFER_MUTABILITY		  mutability = E_BUFFER_MUTABILITY::MUTABLE;
+		E_BUFFER_ACCESS			  access	 = E_BUFFER_ACCESS::NONE;
+		E_UPDATE_FREQUENCY		  frequency	 = E_UPDATE_FREQUENCY::STATIC;
+		std::optional<Binding>	  binding	 = std::nullopt; // TODO: remove and use backend reflection.
 		std::vector<UniformValue> values;
-	};
-
-	/**
-	 * @brief Data buffer descriptor.
-	 */
-	struct BufferPipeline
-	{
-		Key					   name;
-		E_PIPELINE_BUFFER_KIND kind;
-		E_UPDATE_FREQUENCY	   frequency;
 	};
 
 	/**
@@ -420,8 +407,7 @@ namespace VTX::Renderer::Desc
 		ResourceMap<Texture>		textures;
 		ResourceMap<Sampler>		samplers;
 		ResourceMap<VertexLayout>	vertexStreams;
-		ResourceMap<BufferShader>	shaderBuffers;
-		ResourceMap<BufferPipeline> pipelineBuffers;
+		ResourceMap<Buffer>			buffers;
 		ResourceMap<Geometry>		geometries;
 	};
 

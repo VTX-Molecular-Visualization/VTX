@@ -188,25 +188,16 @@ namespace VTX::Renderer
 		GraphBuilder & vertexLayout( const Desc::Key &, const Desc::VertexLayout & );
 
 		/**
-		 * @brief uniformBuffer().
+		 * @brief buffer().
 		 */
-		GraphBuilder & shaderBuffer(
+		GraphBuilder & buffer(
 			const Desc::Key &,
-			const Desc::E_SHADER_BUFFER_KIND,
-			const Desc::E_BUFFER_MUTABILITY,
-			const Desc::E_BUFFER_ACCESS,
-			const Desc::E_UPDATE_FREQUENCY,
-			const uint32_t,
+			const Desc::E_BUFFER_USAGE,
+			const Desc::E_UPDATE_FREQUENCY	= Desc::E_UPDATE_FREQUENCY::STATIC,
+			const Desc::E_BUFFER_MUTABILITY = Desc::E_BUFFER_MUTABILITY::MUTABLE,
+			const Desc::E_BUFFER_ACCESS		= Desc::E_BUFFER_ACCESS::NONE,
+			const std::optional<uint32_t>	= std::nullopt,
 			const std::initializer_list<Desc::UniformValue> = {}
-		);
-
-		/**
-		 * @brief dataBuffer().
-		 */
-		GraphBuilder & pipelineBuffer(
-			const Desc::Key &,
-			const Desc::E_PIPELINE_BUFFER_KIND = Desc::E_PIPELINE_BUFFER_KIND::VERTEX,
-			const Desc::E_UPDATE_FREQUENCY	   = Desc::E_UPDATE_FREQUENCY::STATIC
 		);
 
 		/**

@@ -62,20 +62,20 @@ namespace VTX::Renderer
 
 		void buildDrawRanges( Context::ContextWrapper & p_context )
 		{
-			p_context.setPipelineBuffer( "Indirect.Spheres", _toBuffer( spheres.toDrawIndexedIndirectCommands() ) );
-			p_context.setPipelineBuffer( "Indirect.Cylinders", _toBuffer( cylinders.toDrawIndexedIndirectCommands() ) );
-			p_context.setPipelineBuffer( "Indirect.Ribbons", _toBuffer( ribbons.toDrawIndexedIndirectCommands() ) );
-			p_context.setPipelineBuffer( "Indirect.Grid", _toBuffer( grid.toDrawIndirectCommands() ) );
-			p_context.setPipelineBuffer(
+			p_context.setBuffer( "Indirect.Spheres", _toBuffer( spheres.toDrawIndexedIndirectCommands() ) );
+			p_context.setBuffer( "Indirect.Cylinders", _toBuffer( cylinders.toDrawIndexedIndirectCommands() ) );
+			p_context.setBuffer( "Indirect.Ribbons", _toBuffer( ribbons.toDrawIndexedIndirectCommands() ) );
+			p_context.setBuffer( "Indirect.Grid", _toBuffer( grid.toDrawIndirectCommands() ) );
+			p_context.setBuffer(
 				"Indirect.SES.ConvexPatches", _toBuffer( ses.convexPatches.toDrawIndirectCommands() )
 			);
-			p_context.setPipelineBuffer(
+			p_context.setBuffer(
 				"Indirect.SES.CirclePatches", _toBuffer( ses.circlePatches.toDrawIndirectCommands() )
 			);
-			p_context.setPipelineBuffer(
+			p_context.setBuffer(
 				"Indirect.SES.SegmentPatches", _toBuffer( ses.segmentPatches.toDrawIndirectCommands() )
 			);
-			p_context.setPipelineBuffer(
+			p_context.setBuffer(
 				"Indirect.SES.ConcavePatches", _toBuffer( ses.concavePatches.toDrawIndirectCommands() )
 			);
 		}

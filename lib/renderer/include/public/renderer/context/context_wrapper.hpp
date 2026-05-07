@@ -67,36 +67,20 @@ namespace VTX::Renderer::Context
 		}
 
 		/**
-		 * @brief Set shader buffer data.
+		 * @brief Set buffer data.
 		 */
 		template<typename T>
-		inline void setShaderBuffer( const Desc::Key & p_key, std::span<const T> p_data, const size_t p_offset = 0 )
+		inline void setBuffer( const Desc::Key & p_key, std::span<const T> p_data, const size_t p_offset = 0 )
 		{
-			setShaderBuffer( p_key, asBytes( p_data ), p_offset * sizeof( T ) );
+			setBuffer( p_key, asBytes( p_data ), p_offset * sizeof( T ) );
 		}
 		template<typename T>
-		inline void setShaderBuffer( const Desc::Key & p_key, const size_t p_size )
+		inline void setBuffer( const Desc::Key & p_key, const size_t p_size )
 		{
 			auto span = SpanBytes { static_cast<std::byte *>( nullptr ), p_size * sizeof( T ) };
-			setPipelineBuffer( p_key, span, 0 );
+			setBuffer( p_key, span, 0 );
 		}
-		void setShaderBuffer( const Desc::Key & p_key, SpanBytes, const size_t p_offset = 0 );
-
-		/**
-		 * @brief Set pipeline buffer data.
-		 */
-		template<typename T>
-		inline void setPipelineBuffer( const Desc::Key & p_key, std::span<const T> p_data, const size_t p_offset = 0 )
-		{
-			setPipelineBuffer( p_key, asBytes( p_data ), p_offset * sizeof( T ) );
-		}
-		template<typename T>
-		inline void setPipelineBuffer( const Desc::Key & p_key, const size_t p_size )
-		{
-			auto span = SpanBytes { static_cast<std::byte *>( nullptr ), p_size * sizeof( T ) };
-			setPipelineBuffer( p_key, span, 0 );
-		}
-		void setPipelineBuffer( const Desc::Key & p_key, SpanBytes, const size_t p_offset = 0 );
+		void setBuffer( const Desc::Key & p_key, SpanBytes, const size_t p_offset = 0 );
 
 		/**
 		 * @brief Get texture data.

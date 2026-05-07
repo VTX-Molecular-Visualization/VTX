@@ -40,11 +40,11 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		struct BufferBinding
 		{
-			Desc::Handle			   buffer;
-			Desc::E_SHADER_BUFFER_KIND kind;
-			Desc::Binding			   binding;
-			uint32_t				   offsetBytes = 0;
-			uint32_t				   sizeBytes   = 0;
+			Desc::Handle		  buffer;
+			Desc::E_BUFFER_USAGE usage;
+			Desc::Binding		  binding;
+			uint32_t			  offsetBytes = 0;
+			uint32_t			  sizeBytes   = 0;
 		};
 
 		/**
@@ -53,7 +53,7 @@ namespace VTX::Renderer::Context::Backend
 		struct ResourceTable
 		{
 			std::vector<TextureBinding> textures;
-			std::vector<BufferBinding>	shaderBuffers;
+			std::vector<BufferBinding>	buffers;
 		};
 
 		/**
@@ -83,14 +83,9 @@ namespace VTX::Renderer::Context::Backend
 		inline void swap() const { _glContext.swapBuffers(); }
 
 		/**
-		 * @brief Set data to a shader buffer.
+		 * @brief Set data to a buffer.
 		 */
-		void setShaderBufferData( const Desc::Key &, SpanBytes, const size_t );
-
-		/**
-		 * @brief Set data to a pipeline buffer.
-		 */
-		void setPipelineBufferData( const Desc::Key &, SpanBytes, const size_t );
+		void setBufferData( const Desc::Key &, SpanBytes, const size_t );
 
 		/**
 		 * @brief Get texture data at a given pixel, or full texture.
@@ -150,14 +145,9 @@ namespace VTX::Renderer::Context::Backend
 			return _programs.get( p_handle );
 		}
 
-		inline const GL::Buffer & shaderBuffer( const Desc::Handle p_handle ) const noexcept
+		inline const GL::Buffer & buffer( const Desc::Handle p_handle ) const noexcept
 		{
-			return _shaderBuffers.get( p_handle );
-		}
-
-		inline const GL::Buffer & pipelineBuffer( const Desc::Handle p_handle ) const noexcept
-		{
-			return _pipelineBuffers.get( p_handle );
+			return _buffers.get( p_handle );
 		}
 
 		inline const GL::VertexArray & vertexArray( const Desc::Handle p_handle ) const noexcept
@@ -201,8 +191,7 @@ namespace VTX::Renderer::Context::Backend
 		ResourceHandler<GL::Framebuffer>					 _framebuffers;
 		ResourceHandler<ResourceTable>						 _resourceTables;
 		ResourceHandler<GL::VertexArray, Desc::VertexLayout> _vertexArrays;
-		ResourceHandler<GL::Buffer, Desc::BufferPipeline>	 _pipelineBuffers;
-		ResourceHandler<GL::Buffer, Desc::BufferShader>		 _shaderBuffers;
+		ResourceHandler<GL::Buffer, Desc::Buffer>			 _buffers;
 		ResourceHandler<GL::Texture2D, Desc::Texture>		 _textures;
 		ResourceHandler<GL::Sampler, Desc::Sampler>			 _samplers;
 		ResourceHandler<GL::Program, Desc::Program>			 _programs;
@@ -216,8 +205,7 @@ namespace VTX::Renderer::Context::Backend
 		Desc::Handle _getOrCreateTexture( const Desc::Key &, const Desc::Texture & );
 		Desc::Handle _getOrCreateSampler( const Desc::Key &, const Desc::Sampler & );
 		Desc::Handle _getOrCreateVertexLayout( const Desc::Key &, const Desc::VertexLayout & );
-		Desc::Handle _getOrCreateShaderBuffer( const Desc::BufferShader & );
-		Desc::Handle _getOrCreatePipelineBuffer( const Desc::Key &, const Desc::BufferPipeline & );
+		Desc::Handle _getOrCreateBuffer( const Desc::Key &, const Desc::Buffer & );
 		Desc::Handle _getOrCreateProgram( const Desc::Program & );
 
 		/**

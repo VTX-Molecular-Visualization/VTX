@@ -25,7 +25,7 @@ namespace VTX::Renderer
 			{
 				return true;
 			}
-			if ( _resources.shaderBuffers.contains( name ) )
+			if ( _resources.buffers.contains( name ) )
 			{
 				return true;
 			}
@@ -95,11 +95,11 @@ namespace VTX::Renderer
 			{
 				throw GraphicException( "Geometry '{}': vertex layout '{}' not found", key, geometry.vertexLayout );
 			}
-			if ( geometry.indiceBuffer && not _resources.pipelineBuffers.contains( *geometry.indiceBuffer ) )
+			if ( geometry.indiceBuffer && not _resources.buffers.contains( *geometry.indiceBuffer ) )
 			{
 				throw GraphicException( "Geometry '{}': index buffer '{}' not found", key, *geometry.indiceBuffer );
 			}
-			if ( geometry.indirectBuffer && not _resources.pipelineBuffers.contains( *geometry.indirectBuffer ) )
+			if ( geometry.indirectBuffer && not _resources.buffers.contains( *geometry.indirectBuffer ) )
 			{
 				throw GraphicException(
 					"Geometry '{}': indirect buffer '{}' not found", key, *geometry.indirectBuffer
@@ -152,14 +152,9 @@ namespace VTX::Renderer
 			auto [ it, inserted ] = _resources.vertexStreams.emplace( key, vertexStream );
 			assert( inserted );
 		}
-		for ( const auto & [ key, buffer ] : p_builder.resources.shaderBuffers )
+		for ( const auto & [ key, buffer ] : p_builder.resources.buffers )
 		{
-			auto [ it, inserted ] = _resources.shaderBuffers.emplace( key, buffer );
-			assert( inserted );
-		}
-		for ( const auto & [ key, buffer ] : p_builder.resources.pipelineBuffers )
-		{
-			auto [ it, inserted ] = _resources.pipelineBuffers.emplace( key, buffer );
+			auto [ it, inserted ] = _resources.buffers.emplace( key, buffer );
 			assert( inserted );
 		}
 		for ( const auto & [ key, sampler ] : p_builder.resources.samplers )
@@ -205,12 +200,12 @@ namespace VTX::Renderer
 		GraphBuilder g;
 
 		// Buffers.
-		g.shaderBuffer(
+		g.buffer(
 			"Camera",
-			E_SHADER_BUFFER_KIND::PARAMETERS,
+			E_BUFFER_USAGE::UNIFORM,
+			E_UPDATE_FREQUENCY::STREAM,
 			E_BUFFER_MUTABILITY::IMMUTABLE,
 			E_BUFFER_ACCESS::NONE,
-			E_UPDATE_FREQUENCY::STREAM,
 			15,
 			{ makeUniform( "MatrixView", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixProjection", Mat4f( MAT4F_ID ) ),
@@ -223,34 +218,34 @@ namespace VTX::Renderer
 			  makeUniform( "IsPerspective", uint32_t( 1 ) ) }
 		);
 
-		g.shaderBuffer(
+		g.buffer(
 			"ColorLayout",
-			E_SHADER_BUFFER_KIND::PARAMETERS,
+			E_BUFFER_USAGE::UNIFORM,
+			E_UPDATE_FREQUENCY::DYNAMIC,
 			E_BUFFER_MUTABILITY::IMMUTABLE,
 			E_BUFFER_ACCESS::NONE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
 			14,
 			{ makeUniformArray( "Colors", Util::Color::Rgba {}, 256 ) }
 		);
 
-		g.shaderBuffer(
+		g.buffer(
 			"Models",
-			E_SHADER_BUFFER_KIND::STRUCTURED,
+			E_BUFFER_USAGE::STORAGE,
+			E_UPDATE_FREQUENCY::STREAM,
 			E_BUFFER_MUTABILITY::MUTABLE,
 			E_BUFFER_ACCESS::NONE,
-			E_UPDATE_FREQUENCY::STREAM,
 			13,
 			{ makeUniform( "MatrixModelView", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixModelViewInv", Mat4f( MAT4F_ID ) ),
 			  makeUniform( "MatrixNormal", Mat4f( MAT4F_ID ) ) }
 		);
 
-		g.shaderBuffer(
+		g.buffer(
 			"Representations",
-			E_SHADER_BUFFER_KIND::STRUCTURED,
+			E_BUFFER_USAGE::STORAGE,
+			E_UPDATE_FREQUENCY::DYNAMIC,
 			E_BUFFER_MUTABILITY::MUTABLE,
 			E_BUFFER_ACCESS::NONE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
 			12,
 			{ makeUniform( "SphereRadiusFixed", 0.0f ),
 			  makeUniform( "SphereRadiusAdd", 0.0f ),
@@ -266,9 +261,9 @@ namespace VTX::Renderer
 		g.vertexLayout( "Atoms", p_layouts.atoms );
 		g.vertexLayout( "Residues", p_layouts.residues );
 		g.vertexLayout( "Voxels", p_layouts.voxels );
-		g.pipelineBuffer( "SES.ConvexPatches.Elements", E_PIPELINE_BUFFER_KIND::VERTEX, E_UPDATE_FREQUENCY::DYNAMIC );
-		g.pipelineBuffer( "SES.CirclePatches.Atoms", E_PIPELINE_BUFFER_KIND::VERTEX, E_UPDATE_FREQUENCY::DYNAMIC );
-		g.pipelineBuffer( "SES.SegmentPatches.Ids", E_PIPELINE_BUFFER_KIND::VERTEX, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.buffer( "SES.ConvexPatches.Elements", E_BUFFER_USAGE::VERTEX, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.buffer( "SES.CirclePatches.Atoms", E_BUFFER_USAGE::VERTEX, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.buffer( "SES.SegmentPatches.Ids", E_BUFFER_USAGE::VERTEX, E_UPDATE_FREQUENCY::DYNAMIC );
 		g.vertexLayout( "SES.ConvexPatches", { { "SES.ConvexPatches.Elements", E_TYPE::VEC2U } } );
 		g.vertexLayout( "SES.CirclePatches", { { "SES.CirclePatches.Atoms", E_TYPE::VEC2U } } );
 		g.vertexLayout( "SES.SegmentPatches", { { "SES.SegmentPatches.Ids", E_TYPE::VEC4U } } );

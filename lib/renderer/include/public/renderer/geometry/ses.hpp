@@ -47,9 +47,6 @@ namespace VTX::Renderer::Geometry
 
 	  protected:
 		std::map<Desc::Handle, std::unique_ptr<Construction>> _construction;
-		std::vector<std::array<uint32_t, 2>>				  _convexPatchElements;
-		std::vector<std::array<uint32_t, 2>>				  _circlePatchAtoms;
-		std::vector<std::array<uint32_t, 4>>				  _segmentPatchIds;
 	};
 
 } // namespace VTX::Renderer::Geometry

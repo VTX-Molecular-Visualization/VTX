@@ -189,7 +189,7 @@ namespace VTX::Renderer
 		buffer.write( uint( p_camera.projection == PROJECTION::PERSPECTIVE ) );
 		buffer.close();
 
-		_context.setShaderBuffer( "Camera", buffer );
+		_context.setBuffer( "Camera", buffer );
 
 		_cacheCamera = { p_camera, p_position, p_matView, p_matProj };
 
@@ -220,25 +220,25 @@ namespace VTX::Renderer
 		bufferShading.write( p_config.fogFar );
 		bufferShading.write( p_config.activeFog ? p_config.fogDensity : 0.f );
 		bufferShading.close();
-		_context.setShaderBuffer( "Shading", bufferShading );
+		_context.setBuffer( "Shading", bufferShading );
 
 		if ( p_config.activeSSAO )
 		{
 			BinaryBuffer140 bufferSSAO;
 			bufferSSAO.write( p_config.ssaoIntensity );
 			bufferSSAO.close();
-			_context.setShaderBuffer( "SSAO", bufferSSAO );
+			_context.setBuffer( "SSAO", bufferSSAO );
 
 			BinaryBuffer140 bufferBlurX;
 			bufferBlurX.write( Vec2i( 1, 0 ) );
 			bufferBlurX.write( p_config.blurSize );
 			bufferBlurX.close();
-			_context.setShaderBuffer( "BlurX", bufferBlurX );
+			_context.setBuffer( "BlurX", bufferBlurX );
 			BinaryBuffer140 bufferBlurY;
 			bufferBlurY.write( Vec2i( 0, 1 ) );
 			bufferBlurY.write( p_config.blurSize );
 			bufferBlurY.close();
-			_context.setShaderBuffer( "BlurY", bufferBlurY );
+			_context.setBuffer( "BlurY", bufferBlurY );
 		}
 		if ( p_config.activeOutline )
 		{
@@ -247,14 +247,14 @@ namespace VTX::Renderer
 			bufferOutline.write( p_config.outlineSensitivity );
 			bufferOutline.write( p_config.outlineThickness );
 			bufferOutline.close();
-			_context.setShaderBuffer( "Outline", bufferOutline );
+			_context.setBuffer( "Outline", bufferOutline );
 		}
 		if ( p_config.activeSelection )
 		{
 			BinaryBuffer140 bufferSelection;
 			bufferSelection.write( p_config.colorSelection );
 			bufferSelection.close();
-			_context.setShaderBuffer( "Selection", bufferSelection );
+			_context.setBuffer( "Selection", bufferSelection );
 		}
 
 		setNeedUpdate( true );
@@ -264,7 +264,7 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setColorLayout" );
 
-		_context.setShaderBuffer<Util::Color::Rgba>( "ColorLayout", p_layout.colors );
+		_context.setBuffer<Util::Color::Rgba>( "ColorLayout", p_layout.colors );
 
 		setNeedUpdate( true );
 	}
@@ -343,7 +343,7 @@ namespace VTX::Renderer
 
 		buffer.close();
 
-		_context.setShaderBuffer( "Representations", buffer );
+		_context.setBuffer( "Representations", buffer );
 
 		auto handles	 = _systems.handles();
 		_systemToRefresh = std::unordered_set<Desc::Handle>( handles.begin(), handles.end() );
@@ -669,7 +669,7 @@ namespace VTX::Renderer
 
 		buffer.close();
 
-		_context.setShaderBuffer( "Models", buffer );
+		_context.setBuffer( "Models", buffer );
 	}
 
 	void Renderer::_refreshSystemVisibility( const Desc::Handle p_handle )

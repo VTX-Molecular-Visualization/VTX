@@ -20,16 +20,6 @@ namespace VTX::Renderer::Geometry
 		uint32_t concavePatchNb = 0;
 	};
 
-	namespace
-	{
-		using UVec2 = std::array<uint32_t, 2>;
-		using UVec4 = std::array<uint32_t, 4>;
-
-		template<typename T>
-		std::span<const T> _safeSpan( const std::vector<T> & p_data, const std::vector<T> & p_fallback )
-		{ return p_data.empty() ? std::span<const T>( p_fallback ) : std::span<const T>( p_data ); }
-	} // namespace
-
 	SES::SES()
 	{
 		convexPatches.vertexLayout	 = "SES.ConvexPatches";
@@ -73,16 +63,6 @@ namespace VTX::Renderer::Geometry
 			construction->circlePatchNb	   = result.circlePatchNb;
 			construction->segmentPatchNb   = result.segmentPatchNb;
 			construction->concavePatchNb   = result.concavePatchNb;
-
-			_convexPatchElements.insert(
-				_convexPatchElements.end(), result.convexPatches.begin(), result.convexPatches.end()
-			);
-			_circlePatchAtoms.insert(
-				_circlePatchAtoms.end(), result.circlePatches.begin(), result.circlePatches.end()
-			);
-			_segmentPatchIds.insert(
-				_segmentPatchIds.end(), result.segmentPatches.begin(), result.segmentPatches.end()
-			);
 #endif
 		}
 
@@ -96,12 +76,15 @@ namespace VTX::Renderer::Geometry
 
 	void SES::resize( Context::ContextWrapper & p_context )
 	{
-		static const std::vector<UVec2> fallbackUVec2 { UVec2 { 0u, 0u } };
-		static const std::vector<UVec4> fallbackUVec4 { UVec4 { 0u, 0u, 0u, 0u } };
-
-		p_context.setPipelineBuffer( "SES.ConvexPatches.Elements", _safeSpan( _convexPatchElements, fallbackUVec2 ) );
-		p_context.setPipelineBuffer( "SES.CirclePatches.Atoms", _safeSpan( _circlePatchAtoms, fallbackUVec2 ) );
-		p_context.setPipelineBuffer( "SES.SegmentPatches.Ids", _safeSpan( _segmentPatchIds, fallbackUVec4 ) );
+		p_context.setBuffer<std::array<uint32_t, 2>>(
+			"SES.ConvexPatches.Elements", std::max<uint32_t>( 1u, convexPatches.count )
+		);
+		p_context.setBuffer<std::array<uint32_t, 2>>(
+			"SES.CirclePatches.Atoms", std::max<uint32_t>( 1u, circlePatches.count )
+		);
+		p_context.setBuffer<std::array<uint32_t, 4>>(
+			"SES.SegmentPatches.Ids", std::max<uint32_t>( 1u, segmentPatches.count )
+		);
 	}
 
 	void SES::clear()
@@ -112,9 +95,6 @@ namespace VTX::Renderer::Geometry
 		concavePatches.clear();
 
 		_construction.clear();
-		_convexPatchElements.clear();
-		_circlePatchAtoms.clear();
-		_segmentPatchIds.clear();
 	}
 
 	void SES::uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )

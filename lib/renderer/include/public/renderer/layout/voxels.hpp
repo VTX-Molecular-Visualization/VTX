@@ -30,11 +30,11 @@ namespace VTX::Renderer::Layout
 		{
 			if constexpr ( A == VOXEL_ATTR::MINS )
 			{
-				p_context.setPipelineBuffer<Vec3f>( VOXELS_MINS, p_data );
+				p_context.setBuffer<Vec3f>( VOXELS_MINS, p_data );
 			}
 			else if constexpr ( A == VOXEL_ATTR::MAXS )
 			{
-				p_context.setPipelineBuffer<Vec3f>( VOXELS_MAXS, p_data );
+				p_context.setBuffer<Vec3f>( VOXELS_MAXS, p_data );
 			}
 			else
 			{
@@ -45,8 +45,8 @@ namespace VTX::Renderer::Layout
 	  protected:
 		void _resize( Context::ContextWrapper & p_context, const Index p_size ) override
 		{
-			p_context.setPipelineBuffer<Vec3f>( VOXELS_MINS, p_size );
-			p_context.setPipelineBuffer<Vec3f>( VOXELS_MAXS, p_size );
+			p_context.setBuffer<Vec3f>( VOXELS_MINS, p_size );
+			p_context.setBuffer<Vec3f>( VOXELS_MAXS, p_size );
 		}
 
 	  private:

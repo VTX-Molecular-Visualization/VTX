@@ -2,7 +2,6 @@
 
 namespace VTX::Renderer
 {
-
 	GraphBuilder::GraphBuilder()
 	{
 		// Create default sampler.
@@ -52,9 +51,9 @@ namespace VTX::Renderer
 	{
 		for ( auto & attr : p_layout.attributes )
 		{
-			if ( not resources.pipelineBuffers.contains( attr.name ) )
+			if ( not resources.buffers.contains( attr.name ) )
 			{
-				pipelineBuffer( attr.name, Desc::E_PIPELINE_BUFFER_KIND::VERTEX, Desc::E_UPDATE_FREQUENCY::STATIC );
+				buffer( attr.name, Desc::E_BUFFER_USAGE::VERTEX, Desc::E_UPDATE_FREQUENCY::STATIC );
 			}
 		}
 
@@ -62,39 +61,33 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	GraphBuilder & GraphBuilder::shaderBuffer(
+	GraphBuilder & GraphBuilder::buffer(
 		const Desc::Key &								p_name,
-		const Desc::E_SHADER_BUFFER_KIND				p_role,
+		const Desc::E_BUFFER_USAGE						p_usage,
+		const Desc::E_UPDATE_FREQUENCY					p_frequency,
 		const Desc::E_BUFFER_MUTABILITY					p_mutability,
 		const Desc::E_BUFFER_ACCESS						p_access,
-		const Desc::E_UPDATE_FREQUENCY					p_frequency,
-		const uint32_t									p_binding, // will be removed later
+		const std::optional<uint32_t>					p_binding,
 		const std::initializer_list<Desc::UniformValue> p_values
 	)
 	{
-		Desc::BufferShader desc;
-		desc.name		= p_name;
-		desc.role		= p_role;
+		Desc::Buffer & desc = resources.buffers[ p_name ];
+		desc.name		   = p_name;
+		desc.usage |= p_usage;
+		desc.frequency = p_frequency;
 		desc.mutability = p_mutability;
 		desc.access		= p_access;
-		desc.frequency	= p_frequency;
-		desc.binding	= p_binding;
-		desc.values.assign( p_values.begin(), p_values.end() );
-		resources.shaderBuffers[ p_name ] = std::move( desc );
-		return *this;
-	}
 
-	VTX::Renderer::GraphBuilder & VTX::Renderer::GraphBuilder::pipelineBuffer(
-		const Desc::Key &				   p_name,
-		const Desc::E_PIPELINE_BUFFER_KIND p_kind,
-		const Desc::E_UPDATE_FREQUENCY	   p_frequency
-	)
-	{
-		Desc::BufferPipeline db;
-		db.name								= p_name;
-		db.kind								= p_kind;
-		db.frequency						= p_frequency;
-		resources.pipelineBuffers[ p_name ] = std::move( db );
+		if ( p_binding )
+		{
+			desc.binding = *p_binding;
+		}
+
+		if ( p_values.size() > 0 )
+		{
+			desc.values.assign( p_values.begin(), p_values.end() );
+		}
+
 		return *this;
 	}
 
@@ -105,15 +98,13 @@ namespace VTX::Renderer
 		const std::optional<Desc::Key> p_indirectBuffer
 	)
 	{
-		if ( p_indiceBuffer && not resources.pipelineBuffers.contains( *p_indiceBuffer ) )
+		if ( p_indiceBuffer && not resources.buffers.contains( *p_indiceBuffer ) )
 		{
-			pipelineBuffer( *p_indiceBuffer, Desc::E_PIPELINE_BUFFER_KIND::INDICE, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
+			buffer( *p_indiceBuffer, Desc::E_BUFFER_USAGE::INDEX, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
 		}
-		if ( p_indirectBuffer && not resources.pipelineBuffers.contains( *p_indirectBuffer ) )
+		if ( p_indirectBuffer && not resources.buffers.contains( *p_indirectBuffer ) )
 		{
-			pipelineBuffer(
-				*p_indirectBuffer, Desc::E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND, Desc::E_UPDATE_FREQUENCY::DYNAMIC
-			);
+			buffer( *p_indirectBuffer, Desc::E_BUFFER_USAGE::INDIRECT, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
 		}
 
 		Desc::Geometry geom;
@@ -126,19 +117,13 @@ namespace VTX::Renderer
 
 	GraphBuilder & GraphBuilder::geometry( const Desc::Key & p_name, const Desc::Geometry & p_geometry )
 	{
-		if ( p_geometry.indiceBuffer && not resources.pipelineBuffers.contains( *p_geometry.indiceBuffer ) )
+		if ( p_geometry.indiceBuffer && not resources.buffers.contains( *p_geometry.indiceBuffer ) )
 		{
-			pipelineBuffer(
-				*p_geometry.indiceBuffer, Desc::E_PIPELINE_BUFFER_KIND::INDICE, Desc::E_UPDATE_FREQUENCY::DYNAMIC
-			);
+			buffer( *p_geometry.indiceBuffer, Desc::E_BUFFER_USAGE::INDEX, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
 		}
-		if ( p_geometry.indirectBuffer && not resources.pipelineBuffers.contains( *p_geometry.indirectBuffer ) )
+		if ( p_geometry.indirectBuffer && not resources.buffers.contains( *p_geometry.indirectBuffer ) )
 		{
-			pipelineBuffer(
-				*p_geometry.indirectBuffer,
-				Desc::E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND,
-				Desc::E_UPDATE_FREQUENCY::DYNAMIC
-			);
+			buffer( *p_geometry.indirectBuffer, Desc::E_BUFFER_USAGE::INDIRECT, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
 		}
 
 		resources.geometries[ p_name ] = p_geometry;

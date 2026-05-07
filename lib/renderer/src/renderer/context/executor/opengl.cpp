@@ -22,6 +22,23 @@ namespace
 		}
 	}
 
+	constexpr GLenum _toGLShaderTarget( const Desc::E_BUFFER_USAGE p_usage ) noexcept
+	{
+		using namespace Desc;
+
+		if ( Util::Enum::hasBits( p_usage, E_BUFFER_USAGE::UNIFORM ) )
+		{
+			return GL_UNIFORM_BUFFER;
+		}
+		if ( Util::Enum::hasBits( p_usage, E_BUFFER_USAGE::STORAGE ) )
+		{
+			return GL_SHADER_STORAGE_BUFFER;
+		}
+
+		assert( false );
+		return GL_INVALID_INDEX;
+	}
+
 } // namespace
 
 namespace VTX::Renderer::Context::Executor
@@ -102,15 +119,11 @@ namespace VTX::Renderer::Context::Executor
 					sampler.bindToUnit( unit );
 				}
 
-				// Shader buffers.
-				for ( const auto & bufferBinding : rt.shaderBuffers )
+				// Shader-visible buffers.
+				for ( const auto & bufferBinding : rt.buffers )
 				{
-					const Backend::GL::Buffer & buffer = _backend.shaderBuffer( bufferBinding.buffer );
-					buffer.bind(
-						bufferBinding.kind == E_SHADER_BUFFER_KIND::PARAMETERS ? GL_UNIFORM_BUFFER
-																			   : GL_SHADER_STORAGE_BUFFER,
-						bufferBinding.binding
-					);
+					const Backend::GL::Buffer & buffer = _backend.buffer( bufferBinding.buffer );
+					buffer.bind( _toGLShaderTarget( bufferBinding.usage ), bufferBinding.binding );
 				}
 
 				break;
@@ -136,7 +149,7 @@ namespace VTX::Renderer::Context::Executor
 
 				auto & vao = _backend.vertexArray( p.pipeline );
 				vao.bind();
-				vao.bindElementBuffer( _backend.pipelineBuffer( p.indexBuffer ) );
+				vao.bindElementBuffer( _backend.buffer( p.indexBuffer ) );
 				_backend.program( p.program ).use();
 				_backend.vertexArray( p.pipeline )
 					.drawElements( _toGL( p.primitive ), static_cast<uint32_t>( p.count ), GL_UNSIGNED_INT, &p.first );
@@ -149,7 +162,7 @@ namespace VTX::Renderer::Context::Executor
 				const uint32_t * count = reinterpret_cast<uint32_t *>( p.count );
 
 				_backend.vertexArray( p.pipeline ).bind();
-				_backend.pipelineBuffer( p.indirectBuffer ).bind( GL_DRAW_INDIRECT_BUFFER );
+				_backend.buffer( p.indirectBuffer ).bind( GL_DRAW_INDIRECT_BUFFER );
 				_backend.program( p.program ).use();
 				_backend.vertexArray( p.pipeline ).multiDrawArraysIndirect( _toGL( p.primitive ), nullptr, *count );
 
@@ -162,8 +175,8 @@ namespace VTX::Renderer::Context::Executor
 
 				auto & vao = _backend.vertexArray( p.pipeline );
 				vao.bind();
-				vao.bindElementBuffer( _backend.pipelineBuffer( p.indiceBuffer ) );
-				_backend.pipelineBuffer( p.indirectBuffer ).bind( GL_DRAW_INDIRECT_BUFFER );
+				vao.bindElementBuffer( _backend.buffer( p.indiceBuffer ) );
+				_backend.buffer( p.indirectBuffer ).bind( GL_DRAW_INDIRECT_BUFFER );
 				_backend.program( p.program ).use();
 				_backend.vertexArray( p.pipeline )
 					.multiDrawElementsIndirect( _toGL( p.primitive ), GL_UNSIGNED_INT, nullptr, *count );

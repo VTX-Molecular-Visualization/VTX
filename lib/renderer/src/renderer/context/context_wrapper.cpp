@@ -153,7 +153,7 @@ namespace VTX::Renderer::Context
 		);
 	}
 
-	void ContextWrapper::setShaderBuffer( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
+	void ContextWrapper::setBuffer( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
 	{
 		if ( p_bytes.size() == 0 )
 		{
@@ -166,27 +166,7 @@ namespace VTX::Renderer::Context
 				using T = std::remove_cvref_t<decltype( p_backend )>;
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
-					p_backend.setShaderBufferData( p_key, p_bytes, p_offset );
-				}
-			},
-			_impl->backend
-		);
-	}
-
-	void ContextWrapper::setPipelineBuffer( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
-	{
-		if ( p_bytes.size() == 0 )
-		{
-			return;
-		}
-
-		std::visit(
-			[ & ]( auto & p_backend )
-			{
-				using T = std::remove_cvref_t<decltype( p_backend )>;
-				if constexpr ( not std::is_same_v<T, std::monostate> )
-				{
-					p_backend.setPipelineBufferData( p_key, p_bytes, p_offset );
+					p_backend.setBufferData( p_key, p_bytes, p_offset );
 				}
 			},
 			_impl->backend

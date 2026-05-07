@@ -1,5 +1,4 @@
 #include "bcs/sesdf/sesdf.hpp"
-#include "renderer/context/backend/gl/include_opengl.hpp"
 #include "renderer/geometry/ses_cuda.hpp"
 #include <glm/common.hpp>
 
@@ -26,42 +25,6 @@ namespace VTX::Renderer::Geometry::SESDetail
 			}
 
 			return aabb;
-		}
-
-		std::vector<UVec2> _readUVec2Buffer( const bcs::HandleSpan<unsigned int> & p_buffer, const uint32_t p_count )
-		{
-			std::vector<UVec2> result( p_count );
-			if ( p_count == 0 )
-			{
-				return result;
-			}
-
-			glGetNamedBufferSubData(
-				p_buffer.handle,
-				static_cast<GLintptr>( p_buffer.offset ),
-				static_cast<GLsizeiptr>( p_count * sizeof( UVec2 ) ),
-				result.data()
-			);
-
-			return result;
-		}
-
-		std::vector<UVec4> _readUVec4Buffer( const bcs::HandleSpan<unsigned int> & p_buffer, const uint32_t p_count )
-		{
-			std::vector<UVec4> result( p_count );
-			if ( p_count == 0 )
-			{
-				return result;
-			}
-
-			glGetNamedBufferSubData(
-				p_buffer.handle,
-				static_cast<GLintptr>( p_buffer.offset ),
-				static_cast<GLsizeiptr>( p_count * sizeof( UVec4 ) ),
-				result.data()
-			);
-
-			return result;
 		}
 	} // namespace
 
@@ -103,10 +66,7 @@ namespace VTX::Renderer::Geometry::SESDetail
 		result.segmentPatchNb = graphics.segmentPatchNb;
 		result.concavePatchNb = graphics.concavePatchNb;
 
-		result.convexPatches  = _readUVec2Buffer( graphics.convexPatches, graphics.convexPatchNb );
-		result.circlePatches  = _readUVec2Buffer( graphics.circlePatches, graphics.circlePatchNb );
-		result.segmentPatches = _readUVec4Buffer( graphics.segmentPatches, graphics.segmentPatchNb );
-		result.construction	  = CudaConstructionPtr( construction.release() );
+		result.construction = CudaConstructionPtr( construction.release() );
 
 		return result;
 	}

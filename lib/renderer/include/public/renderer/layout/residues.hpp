@@ -39,31 +39,31 @@ namespace VTX::Renderer::Layout
 
 			if constexpr ( A == RESIDUE_ATTR::POSITION )
 			{
-				p_context.setPipelineBuffer<Vec4f>( RESIDUES_POSITIONS, p_data, o );
+				p_context.setBuffer<Vec4f>( RESIDUES_POSITIONS, p_data, o );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::DIRECTION )
 			{
-				p_context.setPipelineBuffer<Vec3f>( RESIDUES_DIRECTIONS, p_data, o );
+				p_context.setBuffer<Vec3f>( RESIDUES_DIRECTIONS, p_data, o );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::TYPE )
 			{
-				p_context.setPipelineBuffer<uint8_t>( RESIDUES_TYPES, p_data, o );
+				p_context.setBuffer<uint8_t>( RESIDUES_TYPES, p_data, o );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::COLOR )
 			{
-				p_context.setPipelineBuffer<ColorIndex>( RESIDUES_COLORS, p_data, o );
+				p_context.setBuffer<ColorIndex>( RESIDUES_COLORS, p_data, o );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::ID )
 			{
-				p_context.setPipelineBuffer<PickingUID>( RESIDUES_IDS, p_data, o );
+				p_context.setBuffer<PickingUID>( RESIDUES_IDS, p_data, o );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::FLAG )
 			{
-				p_context.setPipelineBuffer<Flag>( RESIDUES_FLAGS, p_data, o );
+				p_context.setBuffer<Flag>( RESIDUES_FLAGS, p_data, o );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::REPRESENTATION )
 			{
-				p_context.setPipelineBuffer<RepresentationIndex>( RESIDUES_REPRESENTATIONS, p_data, o );
+				p_context.setBuffer<RepresentationIndex>( RESIDUES_REPRESENTATIONS, p_data, o );
 			}
 			else
 			{
@@ -74,13 +74,13 @@ namespace VTX::Renderer::Layout
 	  protected:
 		void _resize( Context::ContextWrapper & p_context, const Index p_size ) override
 		{
-			p_context.setPipelineBuffer<Vec4f>( RESIDUES_POSITIONS, p_size );
-			p_context.setPipelineBuffer<Vec3f>( RESIDUES_DIRECTIONS, p_size );
-			p_context.setPipelineBuffer<uint8_t>( RESIDUES_TYPES, p_size );
-			p_context.setPipelineBuffer<ColorIndex>( RESIDUES_COLORS, p_size );
-			p_context.setPipelineBuffer<PickingUID>( RESIDUES_IDS, p_size );
-			p_context.setPipelineBuffer<Flag>( RESIDUES_FLAGS, p_size );
-			p_context.setPipelineBuffer<RepresentationIndex>( RESIDUES_REPRESENTATIONS, p_size );
+			p_context.setBuffer<Vec4f>( RESIDUES_POSITIONS, p_size );
+			p_context.setBuffer<Vec3f>( RESIDUES_DIRECTIONS, p_size );
+			p_context.setBuffer<uint8_t>( RESIDUES_TYPES, p_size );
+			p_context.setBuffer<ColorIndex>( RESIDUES_COLORS, p_size );
+			p_context.setBuffer<PickingUID>( RESIDUES_IDS, p_size );
+			p_context.setBuffer<Flag>( RESIDUES_FLAGS, p_size );
+			p_context.setBuffer<RepresentationIndex>( RESIDUES_REPRESENTATIONS, p_size );
 		}
 
 	  private:
