@@ -84,7 +84,7 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("vtx_python_binding/1.0")
         self.requires("re2/20240702")
         self.requires("gromacs/2026.0")
-        self.requires("catch2/3.13.0")
+        self.requires("catch2/3.14.0")
         if self.settings.os == "Linux":
             self.requires("libffi/3.4.8", override=True)
             self.requires("wayland/1.24.0", override=True)            

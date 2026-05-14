@@ -21,9 +21,9 @@ class VTXUtilRecipe(ConanFile):
         self.requires("magic_enum/0.9.7", transitive_headers=True)
         self.requires("entt/3.16.0", transitive_headers=True)
         self.requires("nlohmann_json/3.12.0")
-        self.requires("cpr/1.14.1")
+        self.requires("cpr/1.14.2")
         self.requires("stb/cci.20240531")
-        self.requires("catch2/3.13.0")
+        self.requires("catch2/3.14.0")
         self.requires("platformfolders/4.3.0")
         
     def config_options(self):
