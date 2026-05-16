@@ -30,10 +30,6 @@ jobs:
             conan_cppstd: '20'
           - os: ubuntu-latest
             conan_cppstd: 'gnu20'
-          - os: windows-11-arm
-            conan_cppstd: '20'
-          - os: ubuntu-24.04-arm
-            conan_cppstd: 'gnu20'
       fail-fast: false
 
     steps:
