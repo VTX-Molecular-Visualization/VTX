@@ -31,9 +31,9 @@ namespace VTX
 	template<class T>
 	constexpr bool is_color4_v = is_color4<T>::value;
 
-	template<auto>
+	template<typename>
 	constexpr bool always_true_v = true;
-	template<auto>
+	template<typename>
 	constexpr bool always_false_v = false;
 
 } // namespace VTX
