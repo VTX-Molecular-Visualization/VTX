@@ -1,5 +1,6 @@
 #include "renderer/renderer.hpp"
 #include "renderer/binary_buffer.hpp"
+#include "renderer/system_build.hpp"
 #include <util/chrono.hpp>
 
 namespace
@@ -171,7 +172,7 @@ namespace VTX::Renderer
 		}
 
 		const auto function = reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass );
-		const auto context  = reinterpret_cast<uintptr_t>( this );
+		const auto context	= reinterpret_cast<uintptr_t>( this );
 		_context.setExternalPass( Geometry::SES::PASS_COMPUTE, function, context );
 	}
 
@@ -402,28 +403,15 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setSystems" );
 
-		_systems.clear();
-		_layouts.clearSystems();
-		_geometries.clearSystems();
-		_systemToRefresh.clear();
+		SystemBuild::Context buildContext {
+			_context, _systems, _layouts, _geometries, _systemToRefresh,
+		};
 
-		// Register new systems.
-		for ( const auto & systemData : p_systems )
-		{
-			_systems.emplace( systemData.uid, {}, Cache::System { systemData.transform } );
-			const Desc::Handle h = _systems.handle( systemData.uid );
-
-			// TODO: Build costly geometries lazily when requested by a representation (ribbons, SES).
-			_geometries.construct( h, systemData );
-
-			// Register ranges in layouts.
-			_layouts.atoms.add( h, _geometries.spheres.size( h ) );
-			_layouts.residues.add( h, static_cast<uint32_t>( _geometries.ribbons.construction( h ).residues.size() ) );
-		}
-
-		// Reserve data.
-		_layouts.resizeSystems( _context );
-		_geometries.resizeSystems( _context );
+		SystemBuild::DefaultPipeline pipeline;
+		pipeline.clear( buildContext );
+		pipeline.registerSystems( buildContext, std::span<const SystemData>( p_systems ) );
+		pipeline.allocateInputs( buildContext );
+		pipeline.allocateOutputs( buildContext );
 
 		for ( const auto & systemData : p_systems )
 		{
@@ -467,7 +455,7 @@ namespace VTX::Renderer
 		_refreshDataModels();
 
 		// Rebuild commands immediately, including the empty-scene case.
-		_geometries.buildDrawRanges( _context );
+		pipeline.buildDrawRanges( buildContext );
 		_markSESDirty();
 
 		// Build draw ranges.
