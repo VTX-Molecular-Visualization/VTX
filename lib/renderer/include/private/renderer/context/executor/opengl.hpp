@@ -4,6 +4,7 @@
 #include "renderer/context/backend/gl/debug.hpp"
 #include "renderer/context/backend/opengl.hpp"
 #include "renderer/context/command_buffer.hpp"
+#include <util/hashing.hpp>
 #include <util/type_traits.hpp>
 
 namespace VTX::Renderer::Context::Executor
@@ -26,7 +27,7 @@ namespace VTX::Renderer::Context::Executor
 		void execute( const PayLoad & ) const noexcept
 		{
 			// Display an error with payload type.
-			VTX_ERROR( "OpenGL::execute: unknown payload type {}", typeName<PayLoad>() );
+			VTX_ERROR( "OpenGL::execute: unknown payload type {}", Util::typeName<PayLoad>() );
 		}
 
 		void execute( const PayloadBeginPass & p_payload ) const noexcept
