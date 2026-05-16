@@ -120,6 +120,7 @@ class VTXPythonBindingRecipe(ConanFile):
         self.requires("pybind11/3.0.1", transitive_headers=True)
         self.requires("catch2/3.14.0")
         self.requires("cpython/{}".format(str(self._python_version())))
+        self.requires("mpdecimal/4.0.0", override=True)
         if self.settings.os == "Linux":
             self.requires("libffi/3.4.8", override=True)
 
