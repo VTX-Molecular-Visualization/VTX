@@ -22,6 +22,7 @@ namespace VTX::Renderer::Context::Backend::GL
 	{
 	  public:
 		WGLContextWrapper() = default;
+
 		~WGLContextWrapper() { destroy(); }
 
 		void init( const Desc::NativeContextInfo & p_contextInfo )
@@ -38,7 +39,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			PIXELFORMATDESCRIPTOR pfd = _defaultPixelFormatDescriptor();
 
 			// Bootstrap WGL extensions from a dummy window/context before configuring the real surface.
-			const HMODULE instance = GetModuleHandleA( nullptr );
+			const HMODULE instance	= GetModuleHandleA( nullptr );
 			const char *  className = "VTX_WGLBootstrap";
 			WNDCLASSA	  wc		= {};
 			wc.style				= CS_OWNDC;
@@ -66,8 +67,8 @@ namespace VTX::Renderer::Context::Backend::GL
 				throw std::runtime_error( "WGL: Failed to get bootstrap device context" );
 			}
 
-			const PIXELFORMATDESCRIPTOR bootstrapPfd = _defaultPixelFormatDescriptor();
-			const int bootstrapFormat = ChoosePixelFormat( bootstrapDc, &bootstrapPfd );
+			const PIXELFORMATDESCRIPTOR bootstrapPfd	= _defaultPixelFormatDescriptor();
+			const int					bootstrapFormat = ChoosePixelFormat( bootstrapDc, &bootstrapPfd );
 			if ( not bootstrapFormat || not SetPixelFormat( bootstrapDc, bootstrapFormat, &bootstrapPfd ) )
 			{
 				ReleaseDC( bootstrapWindow, bootstrapDc );
@@ -96,9 +97,8 @@ namespace VTX::Renderer::Context::Backend::GL
 				throw std::runtime_error( "WGL: wglCreateContextAttribsARB not available" );
 			}
 
-			auto wglChoosePixelFormatARB = reinterpret_cast<PFNWGLCHOOSEPIXELFORMATARBPROC>(
-				wglGetProcAddress( "wglChoosePixelFormatARB" )
-			);
+			auto wglChoosePixelFormatARB
+				= reinterpret_cast<PFNWGLCHOOSEPIXELFORMATARBPROC>( wglGetProcAddress( "wglChoosePixelFormatARB" ) );
 			VTX_TRACE(
 				"[WGL] Extensions loaded: create_context={}, choose_pixel_format={}",
 				wglCreateContextAttribsARB != nullptr,
@@ -224,7 +224,10 @@ namespace VTX::Renderer::Context::Backend::GL
 			return pfd;
 		}
 
-		int _choosePixelFormat( const PFNWGLCHOOSEPIXELFORMATARBPROC p_choosePixelFormat, PIXELFORMATDESCRIPTOR & p_pfd )
+		int _choosePixelFormat(
+			const PFNWGLCHOOSEPIXELFORMATARBPROC p_choosePixelFormat,
+			PIXELFORMATDESCRIPTOR &				 p_pfd
+		)
 		{
 			int pixelFormat = 0;
 
@@ -247,7 +250,8 @@ namespace VTX::Renderer::Context::Backend::GL
 											 0 };
 
 				UINT numFormats = 0;
-				if ( p_choosePixelFormat( _hdc, pixelAttribs, nullptr, 1, &pixelFormat, &numFormats ) && numFormats > 0 )
+				if ( p_choosePixelFormat( _hdc, pixelAttribs, nullptr, 1, &pixelFormat, &numFormats )
+					 && numFormats > 0 )
 				{
 					PIXELFORMATDESCRIPTOR chosen = {};
 					if ( DescribePixelFormat( _hdc, pixelFormat, sizeof( chosen ), &chosen ) != 0 )
@@ -264,7 +268,9 @@ namespace VTX::Renderer::Context::Backend::GL
 						return pixelFormat;
 					}
 				}
-				VTX_TRACE( "[WGL] wglChoosePixelFormatARB available but no suitable format was selected, falling back" );
+				VTX_TRACE(
+					"[WGL] wglChoosePixelFormatARB available but no suitable format was selected, falling back"
+				);
 			}
 
 			pixelFormat = ChoosePixelFormat( _hdc, &p_pfd );
@@ -287,6 +293,42 @@ namespace VTX::Renderer::Context::Backend::GL
 } // namespace VTX::Renderer::Context::Backend::GL
 
 // ============================================================
+// CGL/NSOpenGL (macOS)
+// ============================================================
+#elif defined( __APPLE__ )
+
+#include <renderer/descriptors.hpp>
+
+namespace VTX::Renderer::Context::Backend::GL
+{
+	class MacOSGLContextWrapper
+	{
+	  public:
+		MacOSGLContextWrapper() = default;
+
+		~MacOSGLContextWrapper() { destroy(); }
+
+		void init( const Desc::NativeContextInfo & )
+		{
+			throw std::runtime_error( "macOS OpenGL context creation is not implemented yet" );
+		}
+
+		void * getProcAddress() { return nullptr; }
+
+		void makeCurrent() const { throw std::runtime_error( "macOS OpenGL context is not initialized" ); }
+
+		void swapBuffers() const {}
+
+		void setSwapInterval( int ) {}
+
+		void destroy() {}
+	};
+
+	using GLContextWrapper = MacOSGLContextWrapper;
+
+} // namespace VTX::Renderer::Context::Backend::GL
+
+// ============================================================
 // EGL (Linux)
 // ============================================================
 #elif defined( __linux__ )
@@ -294,9 +336,9 @@ namespace VTX::Renderer::Context::Backend::GL
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <X11/Xlib.h>
-#include <wayland-client.h>
 #include <renderer/descriptors.hpp>
 #include <util/logger.hpp>
+#include <wayland-client.h>
 
 namespace VTX::Renderer::Context::Backend::GL
 {
@@ -304,11 +346,10 @@ namespace VTX::Renderer::Context::Backend::GL
 	{
 	  public:
 		EGLContextWrapper() = default;
+
 		~EGLContextWrapper() { destroy(); }
 
-		void init(
-			const Desc::NativeContextInfo & p_contextInfo
-		)
+		void init( const Desc::NativeContextInfo & p_contextInfo )
 		{
 			VTX_TRACE(
 				"[EGL] Creating context for surface {} with display {} and platform {}",
@@ -349,10 +390,10 @@ namespace VTX::Renderer::Context::Backend::GL
 			default:
 			{
 				VTX_TRACE( "[EGL] No explicit native platform provided, using EGL default display" );
-				_platform	  = Platform::Default;
+				_platform	   = Platform::Default;
 				_nativeDisplay = nullptr;
 				VTX_TRACE( "[EGL] Calling eglGetDisplay(EGL_DEFAULT_DISPLAY)" );
-				_display	  = eglGetDisplay( EGL_DEFAULT_DISPLAY );
+				_display = eglGetDisplay( EGL_DEFAULT_DISPLAY );
 				VTX_TRACE( "[EGL] eglGetDisplay(EGL_DEFAULT_DISPLAY) -> {}", reinterpret_cast<uintptr_t>( _display ) );
 				break;
 			}
@@ -362,10 +403,12 @@ namespace VTX::Renderer::Context::Backend::GL
 			{
 				VTX_TRACE( "[EGL] X11 platform display unavailable, using EGL default display" );
 				_nativeDisplay = nullptr;
-				_platform	  = Platform::Default;
+				_platform	   = Platform::Default;
 				VTX_TRACE( "[EGL] Calling eglGetDisplay(EGL_DEFAULT_DISPLAY) fallback" );
-				_display	  = eglGetDisplay( EGL_DEFAULT_DISPLAY );
-				VTX_TRACE( "[EGL] eglGetDisplay(EGL_DEFAULT_DISPLAY) fallback -> {}", reinterpret_cast<uintptr_t>( _display ) );
+				_display = eglGetDisplay( EGL_DEFAULT_DISPLAY );
+				VTX_TRACE(
+					"[EGL] eglGetDisplay(EGL_DEFAULT_DISPLAY) fallback -> {}", reinterpret_cast<uintptr_t>( _display )
+				);
 			}
 
 			if ( _display == EGL_NO_DISPLAY )
