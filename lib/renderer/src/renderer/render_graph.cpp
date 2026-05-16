@@ -5,11 +5,6 @@
 #include <util/exceptions.hpp>
 #include <util/math.hpp>
 
-namespace
-{
-	constexpr uint32_t SES_MAX_PROBE_NEIGHBOR_NB = 128u;
-}
-
 namespace VTX::Renderer
 {
 	const Desc::RenderQueue RenderGraph::build()
@@ -36,7 +31,9 @@ namespace VTX::Renderer
 		{
 			if ( _resources.textures.contains( name ) )
 			{
-				return not _resources.textures.at( name ).data.empty();
+				const auto it = _resources.textures.find( name );
+				assert( it != _resources.textures.end() );
+				return not it->second.data.empty();
 			}
 			return false;
 		};
@@ -85,6 +82,19 @@ namespace VTX::Renderer
 				}
 
 				produced.insert( output.primary );
+			}
+
+			for ( const Program & program : pass.programs )
+			{
+				if ( program.dispatchIndirect
+					 && not _resources.buffers.contains( program.dispatchIndirect->indirectBuffer ) )
+				{
+					throw GraphicException(
+						"Program '{}': dispatch indirect buffer '{}' not found",
+						program.name,
+						program.dispatchIndirect->indirectBuffer
+					);
+				}
 			}
 		}
 
@@ -194,6 +204,11 @@ namespace VTX::Renderer
 	)
 	{
 		using namespace Desc;
+		using CylinderGeometry = VTX::Renderer::Geometry::Cylinder;
+		using GridGeometry	   = VTX::Renderer::Geometry::Grid;
+		using RibbonGeometry   = VTX::Renderer::Geometry::Ribbon;
+		using SESGeometry	   = VTX::Renderer::Geometry::SES;
+		using SphereGeometry   = VTX::Renderer::Geometry::Sphere;
 
 		_config = p_config;
 
@@ -254,30 +269,99 @@ namespace VTX::Renderer
 			  makeUniform( "CylinderColorBlending", uint32_t( 0 ) ),
 			  makeUniform( "RibbonColorBlending", uint32_t( 0 ) ),
 			  makeUniform( "SESProbeRadius", 0.0f ),
-			  makeUniform( "SESMaxProbeNeighborNb", SES_MAX_PROBE_NEIGHBOR_NB ) }
+			  makeUniform( "SESMaxProbeNeighborNb", SESGeometry::MAX_PROBE_NEIGHBOR_NB ) }
 		);
 
 		// Vertex streams.
-		g.vertexLayout( "Atoms", p_layouts.atoms );
-		g.vertexLayout( "Residues", p_layouts.residues );
-		g.vertexLayout( "Voxels", p_layouts.voxels );
-		g.buffer( "SES.ConvexPatches.Elements", E_BUFFER_USAGE::VERTEX, E_UPDATE_FREQUENCY::DYNAMIC );
-		g.buffer( "SES.CirclePatches.Atoms", E_BUFFER_USAGE::VERTEX, E_UPDATE_FREQUENCY::DYNAMIC );
-		g.buffer( "SES.SegmentPatches.Ids", E_BUFFER_USAGE::VERTEX, E_UPDATE_FREQUENCY::DYNAMIC );
-		g.vertexLayout( "SES.ConvexPatches", { { "SES.ConvexPatches.Elements", E_TYPE::VEC2U } } );
-		g.vertexLayout( "SES.CirclePatches", { { "SES.CirclePatches.Atoms", E_TYPE::VEC2U } } );
-		g.vertexLayout( "SES.SegmentPatches", { { "SES.SegmentPatches.Ids", E_TYPE::VEC4U } } );
-		g.vertexLayout( "SES.ConcavePatches", VertexLayout {} );
+		g.vertexLayout( SphereGeometry::VERTEX_LAYOUT_ATOMS, p_layouts.atoms );
+		g.vertexLayout( RibbonGeometry::VERTEX_LAYOUT_RESIDUES, p_layouts.residues );
+		g.vertexLayout( GridGeometry::VERTEX_LAYOUT_VOXELS, p_layouts.voxels );
+		g.buffer(
+			SESGeometry::BUFFER_ATOMS,
+			E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
+			E_UPDATE_FREQUENCY::DYNAMIC,
+			E_BUFFER_MUTABILITY::MUTABLE,
+			E_BUFFER_ACCESS::NONE,
+			1
+		);
+		g.buffer(
+			SESGeometry::BUFFER_PROBES,
+			E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
+			E_UPDATE_FREQUENCY::DYNAMIC,
+			E_BUFFER_MUTABILITY::MUTABLE,
+			E_BUFFER_ACCESS::NONE,
+			3
+		);
+		g.buffer(
+			SESGeometry::BUFFER_PROBE_ATOM_INDICES,
+			E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
+			E_UPDATE_FREQUENCY::DYNAMIC,
+			E_BUFFER_MUTABILITY::MUTABLE,
+			E_BUFFER_ACCESS::NONE,
+			4
+		);
+		g.buffer(
+			SESGeometry::BUFFER_PROBE_NEIGHBORS,
+			E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
+			E_UPDATE_FREQUENCY::DYNAMIC,
+			E_BUFFER_MUTABILITY::MUTABLE,
+			E_BUFFER_ACCESS::NONE,
+			5
+		);
+		g.buffer(
+			SESGeometry::BUFFER_SECTORS,
+			E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
+			E_UPDATE_FREQUENCY::DYNAMIC,
+			E_BUFFER_MUTABILITY::MUTABLE,
+			E_BUFFER_ACCESS::NONE,
+			6
+		);
+		g.buffer(
+			SESGeometry::BUFFER_CONVEX_PATCH_ELEMENTS,
+			E_BUFFER_USAGE::VERTEX | E_BUFFER_USAGE::CUDA_WRITE,
+			E_UPDATE_FREQUENCY::DYNAMIC
+		);
+		g.buffer(
+			SESGeometry::BUFFER_CIRCLE_PATCH_ATOMS,
+			E_BUFFER_USAGE::VERTEX | E_BUFFER_USAGE::CUDA_WRITE,
+			E_UPDATE_FREQUENCY::DYNAMIC
+		);
+		g.buffer(
+			SESGeometry::BUFFER_SEGMENT_PATCH_IDS,
+			E_BUFFER_USAGE::VERTEX | E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
+			E_UPDATE_FREQUENCY::DYNAMIC,
+			E_BUFFER_MUTABILITY::MUTABLE,
+			E_BUFFER_ACCESS::NONE,
+			2
+		);
+		g.buffer( SESGeometry::INDEX_CONVEX_PATCHES, E_BUFFER_USAGE::INDEX, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.buffer( SESGeometry::INDEX_CIRCLE_PATCHES, E_BUFFER_USAGE::INDEX, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.buffer( SESGeometry::INDEX_SEGMENT_PATCHES, E_BUFFER_USAGE::INDEX, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.buffer( SESGeometry::INDEX_CONCAVE_PATCHES, E_BUFFER_USAGE::INDEX, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.buffer( SESGeometry::INDIRECT_CONVEX_PATCHES, E_BUFFER_USAGE::INDIRECT, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.buffer( SESGeometry::INDIRECT_CIRCLE_PATCHES, E_BUFFER_USAGE::INDIRECT, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.buffer( SESGeometry::INDIRECT_SEGMENT_PATCHES, E_BUFFER_USAGE::INDIRECT, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.buffer( SESGeometry::INDIRECT_CONCAVE_PATCHES, E_BUFFER_USAGE::INDIRECT, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.vertexLayout(
+			SESGeometry::GEOMETRY_CONVEX_PATCHES, { { SESGeometry::BUFFER_CONVEX_PATCH_ELEMENTS, E_TYPE::VEC2U } }
+		);
+		g.vertexLayout(
+			SESGeometry::GEOMETRY_CIRCLE_PATCHES, { { SESGeometry::BUFFER_CIRCLE_PATCH_ATOMS, E_TYPE::VEC2U } }
+		);
+		g.vertexLayout(
+			SESGeometry::GEOMETRY_SEGMENT_PATCHES, { { SESGeometry::BUFFER_SEGMENT_PATCH_IDS, E_TYPE::VEC4U } }
+		);
+		g.vertexLayout( SESGeometry::GEOMETRY_CONCAVE_PATCHES, VertexLayout {} );
 
 		// Geometries.
-		g.geometry( "Spheres", p_geometries.spheres );
-		g.geometry( "Cylinders", p_geometries.cylinders );
-		g.geometry( "Ribbons", p_geometries.ribbons );
-		g.geometry( "Grid", p_geometries.grid );
-		g.geometry( "SES.ConvexPatches", p_geometries.ses.convexPatches );
-		g.geometry( "SES.CirclePatches", p_geometries.ses.circlePatches );
-		g.geometry( "SES.SegmentPatches", p_geometries.ses.segmentPatches );
-		g.geometry( "SES.ConcavePatches", p_geometries.ses.concavePatches );
+		g.geometry( SphereGeometry::GEOMETRY_SPHERES, p_geometries.spheres );
+		g.geometry( CylinderGeometry::GEOMETRY_CYLINDERS, p_geometries.cylinders );
+		g.geometry( RibbonGeometry::GEOMETRY_RIBBONS, p_geometries.ribbons );
+		g.geometry( GridGeometry::GEOMETRY_GRID, p_geometries.grid );
+		g.geometry( SESGeometry::GEOMETRY_CONVEX_PATCHES, p_geometries.ses.convexPatches );
+		g.geometry( SESGeometry::GEOMETRY_CIRCLE_PATCHES, p_geometries.ses.circlePatches );
+		g.geometry( SESGeometry::GEOMETRY_SEGMENT_PATCHES, p_geometries.ses.segmentPatches );
+		g.geometry( SESGeometry::GEOMETRY_CONCAVE_PATCHES, p_geometries.ses.concavePatches );
 
 		// Textures.
 		g.texture( "Geometry", E_FORMAT::RGBA32UI )
@@ -343,68 +427,54 @@ namespace VTX::Renderer
 		);
 
 		// Passes.
+		g.externalPass( SESGeometry::PASS_COMPUTE ).endPass();
+
 		// Geometric.
 		g.pass( "Geometric" )
 			.settings( { E_SETTING::CLEAR_COLOR, E_SETTING::CLEAR_DEPTH, E_SETTING::ENABLE_DEPTH } )
-			.in( E_RESOURCE_TYPE::GEOMETRY, "Spheres" )
-			.in( E_RESOURCE_TYPE::GEOMETRY, "Cylinders" )
-			.in( E_RESOURCE_TYPE::GEOMETRY, "Ribbons" )
-			.in( E_RESOURCE_TYPE::GEOMETRY, "Grid" )
-			.in( E_RESOURCE_TYPE::GEOMETRY, "SES.ConvexPatches" )
-			.in( E_RESOURCE_TYPE::GEOMETRY, "SES.CirclePatches" )
-			.in( E_RESOURCE_TYPE::GEOMETRY, "SES.SegmentPatches" )
-			.in( E_RESOURCE_TYPE::GEOMETRY, "SES.ConcavePatches" )
+			.in( E_RESOURCE_TYPE::GEOMETRY, SphereGeometry::GEOMETRY_SPHERES )
+			.in( E_RESOURCE_TYPE::GEOMETRY, CylinderGeometry::GEOMETRY_CYLINDERS )
+			.in( E_RESOURCE_TYPE::GEOMETRY, RibbonGeometry::GEOMETRY_RIBBONS )
+			.in( E_RESOURCE_TYPE::GEOMETRY, GridGeometry::GEOMETRY_GRID )
+			.in( E_RESOURCE_TYPE::GEOMETRY, SESGeometry::GEOMETRY_CONVEX_PATCHES )
+			.in( E_RESOURCE_TYPE::GEOMETRY, SESGeometry::GEOMETRY_CIRCLE_PATCHES )
+			.in( E_RESOURCE_TYPE::GEOMETRY, SESGeometry::GEOMETRY_SEGMENT_PATCHES )
+			.in( E_RESOURCE_TYPE::GEOMETRY, SESGeometry::GEOMETRY_CONCAVE_PATCHES )
 			.out( "Geometry" )
 			.out( "Color" )
 			.out( "Picking" )
 			.out( "DepthRaw" )
 			.program( "Sphere" )
 			.shadersDir( "sphere" )
-			.draw( "Spheres", E_PRIMITIVE::POINTS, reinterpret_cast<uintptr_t>( &p_geometries.spheres.count ) )
+			.draw( SphereGeometry::GEOMETRY_SPHERES, E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "Cylinder" )
 			.shadersDir( "cylinder" )
-			.draw( "Cylinders", E_PRIMITIVE::LINES, reinterpret_cast<uintptr_t>( &p_geometries.cylinders.count ) )
+			.draw( CylinderGeometry::GEOMETRY_CYLINDERS, E_PRIMITIVE::LINES )
 			.endProgram()
 			.program( "Ribbon" )
 			.shadersDir( "ribbon" )
-			.draw( "Ribbons", E_PRIMITIVE::PATCHES, reinterpret_cast<uintptr_t>( &p_geometries.ribbons.count ) )
+			.draw( RibbonGeometry::GEOMETRY_RIBBONS, E_PRIMITIVE::PATCHES )
 			.endProgram()
 			.program( "Voxel" )
 			.shadersDir( "voxel" )
-			.draw( "Grid", E_PRIMITIVE::POINTS, reinterpret_cast<uintptr_t>( &p_geometries.grid.count ) )
+			.draw( GridGeometry::GEOMETRY_GRID, E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "SES.ConvexPatch" )
 			.shadersDir( "ses/sesdf/convex" )
-			.draw(
-				"SES.ConvexPatches",
-				E_PRIMITIVE::POINTS,
-				reinterpret_cast<uintptr_t>( &p_geometries.ses.convexPatches.count )
-			)
+			.draw( SESGeometry::GEOMETRY_CONVEX_PATCHES, E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "SES.CirclePatch" )
 			.shadersDir( "ses/sesdf/circle" )
-			.draw(
-				"SES.CirclePatches",
-				E_PRIMITIVE::POINTS,
-				reinterpret_cast<uintptr_t>( &p_geometries.ses.circlePatches.count )
-			)
+			.draw( SESGeometry::GEOMETRY_CIRCLE_PATCHES, E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "SES.SegmentPatch" )
 			.shadersDir( "ses/sesdf/segment" )
-			.draw(
-				"SES.SegmentPatches",
-				E_PRIMITIVE::POINTS,
-				reinterpret_cast<uintptr_t>( &p_geometries.ses.segmentPatches.count )
-			)
+			.draw( SESGeometry::GEOMETRY_SEGMENT_PATCHES, E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "SES.ConcavePatch" )
 			.shadersDir( "ses/sesdf/concave" )
-			.draw(
-				"SES.ConcavePatches",
-				E_PRIMITIVE::POINTS,
-				reinterpret_cast<uintptr_t>( &p_geometries.ses.concavePatches.count )
-			)
+			.draw( SESGeometry::GEOMETRY_CONCAVE_PATCHES, E_PRIMITIVE::POINTS )
 			.endProgram()
 			.endPass();
 

@@ -9,11 +9,16 @@ namespace VTX::Renderer::Geometry
 	class Sphere : public BaseGeometry
 	{
 	  public:
+		inline static const Desc::Key VERTEX_LAYOUT_ATOMS = "Atoms";
+		inline static const Desc::Key GEOMETRY_SPHERES	  = "Spheres";
+		inline static const Desc::Key INDEX_ATOMS		  = "Index.Atoms";
+		inline static const Desc::Key INDIRECT_SPHERES	  = "Indirect.Spheres";
+
 		Sphere()
 		{
-			vertexLayout   = "Atoms";
-			indiceBuffer   = "Index.Atoms";
-			indirectBuffer = "Indirect.Spheres";
+			vertexLayout   = VERTEX_LAYOUT_ATOMS;
+			indiceBuffer   = INDEX_ATOMS;
+			indirectBuffer = INDIRECT_SPHERES;
 		}
 
 		void construct( const Desc::Handle p_handle, const SystemData & p_data )

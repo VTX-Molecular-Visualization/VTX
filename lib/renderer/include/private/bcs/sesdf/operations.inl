@@ -2,6 +2,7 @@
 #include "bcs/sesdf/operations.cuh"
 #include <cooperative_groups.h>
 #include <cub/warp/warp_merge_sort.cuh>
+#include <cuda/std/functional>
 #include <thrust/count.h>
 #include <thrust/execution_policy.h>
 #include <thrust/sort.h>
@@ -67,7 +68,7 @@ namespace bcs::sesdf
 			mask,
 			[] __device__( uint8_t x ) { return uint32_t( x != 0 ); },
 			0,
-			thrust::plus<uint32_t>()
+			cuda::std::plus<uint32_t>()
 		);
 
 		mmemcpy<MemcpyType::DeviceToHost>( sesContext.hVisibleCircleNb, mask + sesContext.getMaximumCircleNb(), 1 );
@@ -93,7 +94,9 @@ namespace bcs::sesdf
 		}
 
 		if ( *sesContext.hFullCircleNb > 0 )
+		{
 			copy( fCirclesAndSectors.get<uint2>(), tempFullCircles, *sesContext.hFullCircleNb );
+		}
 
 		return std::make_pair<ResultBuffer, DeviceBuffer>(
 			std::move( fCirclesAndSectors ), std::move( trimmedToGlobalId )
@@ -106,6 +109,7 @@ namespace bcs::sesdf
 		// and false otherwise."
 		__device__ bool operator()( const int4 a, const int4 b ) { return abs( a.w ) > abs( b.w ); }
 	};
+
 	struct HasNeighbors
 	{
 		__device__ bool operator()( const int4 a ) { return abs( a.w ) == 2; }
@@ -162,7 +166,7 @@ namespace bcs::sesdf
 				startIds,
 				[] __device__( uint8_t c ) { return static_cast<uint32_t>( c ); },
 				0,
-				thrust::plus<uint32_t>()
+				cuda::std::plus<uint32_t>()
 			);
 
 			auto circleIntersectionStencil = DeviceBuffer::Typed<uint32_t>( *sesContext.hIntersectedCircleNb, true );
@@ -228,17 +232,23 @@ namespace bcs::sesdf
 		}
 
 		if ( threadIdx.x == 0 )
+		{
 			writeStartIndex = unoccludedCirclesScan[ blockIdx.x * sesContext.maxNeighborPerAtom ];
+		}
 
 		__syncthreads();
 
 		uint32_t writingIdx;
 		BlockScan( tempStorage ).ExclusiveSum( isSector, writingIdx );
 		if ( isSector )
+		{
 			sectors[ writeStartIndex + writingIdx ] = sector;
+		}
 
 		if ( threadIdx.x == blockDim.x - 1 )
+		{
 			atomsElementIds[ blockIdx.x ] = make_uint2( writeStartIndex, writeStartIndex + writingIdx + isSector );
+		}
 	}
 
 	template<uint32_t MaxNeighborPerAtom>
@@ -268,7 +278,9 @@ namespace bcs::sesdf
 		auto workGroup = cg::this_thread_block();
 
 		if ( threadIdx.x == 0 )
+		{
 			groupIntersectionNb = startIntersectionId = trimmedCircleNb = 0;
+		}
 
 		workGroup.sync();
 
@@ -373,8 +385,9 @@ namespace bcs::sesdf
                         {
                             const uint32_t index = i * warp.size() + warp.thread_rank();
                             jKExist              = index < jNeighborNb && neighborSave[ i ] == currentK;
-                            if ( jKExist )
+                            if ( jKExist ){
                                 tempJKIndex = index;
+}
 
                             jKExist = warp.ballot( jKExist );
                         }
@@ -433,8 +446,9 @@ namespace bcs::sesdf
                         for ( uint16_t lIndex = warp.thread_rank(); ( x1Visible || x2Visible ) && lIndex < iNeighborNb;
                               lIndex += warp.size() )
                         {
-                            if ( lIndex == localNeighbor || lIndex == iterationLocalK )
+                            if ( lIndex == localNeighbor || lIndex == iterationLocalK ){
                                 continue;
+}
 
                             const float4 secondAtom        = blockNeighborhoodData[ lIndex ];
                             const float3 secondAtomPos     = make_float3( secondAtom );
@@ -486,7 +500,9 @@ namespace bcs::sesdf
 		// Saving intersections data to global memory
 		workGroup.sync();
 		if ( workGroup.thread_rank() == 0 )
+		{
 			startIntersectionId = ::atomicAdd( sesContext.dIntersectionNb, groupIntersectionNb );
+		}
 		workGroup.sync();
 
 		for ( uint32_t i = workGroup.thread_rank(); i < groupIntersectionNb; i += workGroup.size() )
@@ -546,7 +562,9 @@ namespace bcs::sesdf
 
 			constexpr uint32_t WarpThreadNb = 16;
 			if ( numThreads.x % WarpThreadNb != 0 )
+			{
 				numThreads.x = circleWithSegmentNb + WarpThreadNb - circleWithSegmentNb % WarpThreadNb;
+			}
 
 			buildSegments<256, MaxIntersectionsPerCircle><<<numBlocks, numThreads>>>(
 				sesContext,
@@ -658,7 +676,9 @@ namespace bcs::sesdf
 				float3 v1 = ref;
 				float3 v2 = normalize( currentPoint - geometry.center );
 				if ( pickedDirection < 0.f )
+				{
 					thrust::swap( v1, v2 );
+				}
 
 				const float angle = angleBetweenEdges( v1, v2, geometry.normal );
 
@@ -687,7 +707,9 @@ namespace bcs::sesdf
 				uint32_t firstInt  = intersectionIds[ firstId ];
 				uint32_t secondInt = intersectionIds[ secondId ];
 				if ( pickedDirection < 0.f )
+				{
 					thrust::swap( firstInt, secondInt );
+				}
 
 				segmentsData[ segmentsStartIdx + k ] = make_uint4( circle.i, circle.j, firstInt, secondInt );
 			}

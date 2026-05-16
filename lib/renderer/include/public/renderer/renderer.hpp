@@ -34,8 +34,10 @@ namespace VTX::Renderer
 		/**
 		 * @brief Accessors.
 		 */
-		inline size_t		 width() const { return _width; }
-		inline size_t		 height() const { return _height; }
+		inline size_t width() const { return _width; }
+
+		inline size_t height() const { return _height; }
+
 		inline RenderGraph & graph() { return _graph; }
 
 		// TODO: redo or remove.
@@ -193,6 +195,18 @@ namespace VTX::Renderer
 		 * @return true if the graph has changed.
 		 */
 		bool _refreshGraph( const GraphicsConfig & );
+
+		/**
+		 * @brief Bind renderer-owned external passes after command buffer rebuilds.
+		 */
+		void _bindExternalPasses();
+
+		/**
+		 * @brief Schedule the SES CUDA pass when present in the current graph.
+		 */
+		void _markSESDirty();
+
+		static void _executeSESExternalPass( uintptr_t );
 
 		/**
 		 * @brief Refresh transform when camera or system changed.

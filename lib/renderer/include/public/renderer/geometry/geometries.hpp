@@ -62,21 +62,27 @@ namespace VTX::Renderer
 
 		void buildDrawRanges( Context::ContextWrapper & p_context )
 		{
-			p_context.setBuffer( "Indirect.Spheres", _toBuffer( spheres.toDrawIndexedIndirectCommands() ) );
-			p_context.setBuffer( "Indirect.Cylinders", _toBuffer( cylinders.toDrawIndexedIndirectCommands() ) );
-			p_context.setBuffer( "Indirect.Ribbons", _toBuffer( ribbons.toDrawIndexedIndirectCommands() ) );
-			p_context.setBuffer( "Indirect.Grid", _toBuffer( grid.toDrawIndirectCommands() ) );
 			p_context.setBuffer(
-				"Indirect.SES.ConvexPatches", _toBuffer( ses.convexPatches.toDrawIndirectCommands() )
+				Geometry::Sphere::INDIRECT_SPHERES, _toBuffer( spheres.toDrawIndexedIndirectCommands() )
 			);
 			p_context.setBuffer(
-				"Indirect.SES.CirclePatches", _toBuffer( ses.circlePatches.toDrawIndirectCommands() )
+				Geometry::Cylinder::INDIRECT_CYLINDERS, _toBuffer( cylinders.toDrawIndexedIndirectCommands() )
 			);
 			p_context.setBuffer(
-				"Indirect.SES.SegmentPatches", _toBuffer( ses.segmentPatches.toDrawIndirectCommands() )
+				Geometry::Ribbon::INDIRECT_RIBBONS, _toBuffer( ribbons.toDrawIndexedIndirectCommands() )
+			);
+			p_context.setBuffer( Geometry::Grid::INDIRECT_GRID, _toBuffer( grid.toDrawIndirectCommands() ) );
+			p_context.setBuffer(
+				Geometry::SES::INDIRECT_CONVEX_PATCHES, _toBuffer( ses.convexPatches.toDrawIndexedIndirectCommands() )
 			);
 			p_context.setBuffer(
-				"Indirect.SES.ConcavePatches", _toBuffer( ses.concavePatches.toDrawIndirectCommands() )
+				Geometry::SES::INDIRECT_CIRCLE_PATCHES, _toBuffer( ses.circlePatches.toDrawIndexedIndirectCommands() )
+			);
+			p_context.setBuffer(
+				Geometry::SES::INDIRECT_SEGMENT_PATCHES, _toBuffer( ses.segmentPatches.toDrawIndexedIndirectCommands() )
+			);
+			p_context.setBuffer(
+				Geometry::SES::INDIRECT_CONCAVE_PATCHES, _toBuffer( ses.concavePatches.toDrawIndexedIndirectCommands() )
 			);
 		}
 
@@ -84,6 +90,9 @@ namespace VTX::Renderer
 		[[nodiscard]] BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndirectCommand> & p_draw )
 		{
 			BinaryBuffer430 buffer;
+
+			buffer.write( static_cast<uint32_t>( p_draw.size() ) );
+			buffer.alignTo( Desc::DRAW_INDIRECT_COMMANDS_OFFSET );
 
 			for ( const Desc::DrawIndirectCommand & draw : p_draw )
 			{
@@ -100,6 +109,9 @@ namespace VTX::Renderer
 		[[nodiscard]] BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndexedIndirectCommand> & p_draw )
 		{
 			BinaryBuffer430 buffer;
+
+			buffer.write( static_cast<uint32_t>( p_draw.size() ) );
+			buffer.alignTo( Desc::DRAW_INDIRECT_COMMANDS_OFFSET );
 
 			for ( const Desc::DrawIndexedIndirectCommand & draw : p_draw )
 			{

@@ -1,7 +1,44 @@
 #include "renderer/graph_builder.hpp"
+#include <util/enum.hpp>
+#include <util/exceptions.hpp>
 
 namespace VTX::Renderer
 {
+	namespace
+	{
+		void _requirePassType(
+			const Desc::Pass &		p_pass,
+			const Desc::E_PASS_TYPE p_expected,
+			const std::string_view	p_action
+		)
+		{
+			if ( p_pass.type == p_expected )
+			{
+				return;
+			}
+
+			throw GraphicException(
+				"Cannot call '{}' in pass '{}': expected pass type {}, got {}",
+				p_action,
+				p_pass.name,
+				Util::Enum::enumName( p_expected ),
+				Util::Enum::enumName( p_pass.type )
+			);
+		}
+
+		void _ensureNoProgramExecution( const Desc::Program & p_program, const std::string_view p_action )
+		{
+			if ( p_program.drawCall || p_program.dispatch || p_program.dispatchIndirect )
+			{
+				throw GraphicException(
+					"Program '{}': cannot add '{}' because an execution command is already set",
+					p_program.name,
+					p_action
+				);
+			}
+		}
+	} // namespace
+
 	GraphBuilder::GraphBuilder()
 	{
 		// Create default sampler.
@@ -72,9 +109,9 @@ namespace VTX::Renderer
 	)
 	{
 		Desc::Buffer & desc = resources.buffers[ p_name ];
-		desc.name		   = p_name;
+		desc.name			= p_name;
 		desc.usage |= p_usage;
-		desc.frequency = p_frequency;
+		desc.frequency	= p_frequency;
 		desc.mutability = p_mutability;
 		desc.access		= p_access;
 
@@ -130,7 +167,24 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	PassBuilder GraphBuilder::pass( const Desc::Key & p_name ) { return PassBuilder( *this, p_name ); }
+	PassBuilder GraphBuilder::pass(
+		const Desc::Key &			 p_name,
+		const Desc::E_PASS_TYPE		 p_type,
+		const Desc::E_PASS_EXECUTION p_execution
+	)
+	{
+		return PassBuilder( *this, p_name, p_type, p_execution );
+	}
+
+	PassBuilder GraphBuilder::computePass( const Desc::Key & p_name, const Desc::E_PASS_EXECUTION p_execution )
+	{
+		return pass( p_name, Desc::E_PASS_TYPE::COMPUTE, p_execution );
+	}
+
+	PassBuilder GraphBuilder::externalPass( const Desc::Key & p_name, const Desc::E_PASS_EXECUTION p_execution )
+	{
+		return pass( p_name, Desc::E_PASS_TYPE::EXTERNAL, p_execution );
+	}
 
 	ProgramBuilder::ProgramBuilder( PassBuilder & p_p, Desc::Program & p_prog ) : parent( p_p ), program( p_prog ) {}
 
@@ -152,12 +206,20 @@ namespace VTX::Renderer
 		return *this;
 	}
 
+	ProgramBuilder & ProgramBuilder::draw( const Desc::Key & p_geometry, const Desc::E_PRIMITIVE p_primitive )
+	{
+		return draw( p_geometry, p_primitive, Desc::DrawCall::Indirect {} );
+	}
+
 	ProgramBuilder & ProgramBuilder::draw(
 		const Desc::Key &					  p_geometry,
 		const Desc::E_PRIMITIVE				  p_primitive,
 		const Desc::DrawCall::RangesVariant & p_ranges
 	)
 	{
+		_requirePassType( parent.pass, Desc::E_PASS_TYPE::GRAPHICS, "draw" );
+		_ensureNoProgramExecution( program, "draw" );
+
 		Desc::DrawCall dc;
 		dc.geometry		 = p_geometry;
 		dc.primitive	 = p_primitive;
@@ -166,9 +228,71 @@ namespace VTX::Renderer
 		return *this;
 	}
 
+	ProgramBuilder & ProgramBuilder::dispatch( const Desc::Dispatch & p_dispatch )
+	{
+		_requirePassType( parent.pass, Desc::E_PASS_TYPE::COMPUTE, "dispatch" );
+		_ensureNoProgramExecution( program, "dispatch" );
+
+		program.dispatch = p_dispatch;
+		return *this;
+	}
+
+	ProgramBuilder & ProgramBuilder::dispatch(
+		const uint32_t p_groupX,
+		const uint32_t p_groupY,
+		const uint32_t p_groupZ,
+		const Desc::E_MEMORY_BARRIER p_barriers
+	)
+	{
+		return dispatch(
+			Desc::Dispatch { .groupX = p_groupX, .groupY = p_groupY, .groupZ = p_groupZ, .barriers = p_barriers }
+		);
+	}
+
+	ProgramBuilder & ProgramBuilder::dispatchIndirect(
+		const Desc::Key &			  p_indirectBuffer,
+		const uint32_t				  p_offset,
+		const Desc::E_MEMORY_BARRIER p_barriers
+	)
+	{
+		_requirePassType( parent.pass, Desc::E_PASS_TYPE::COMPUTE, "dispatchIndirect" );
+		_ensureNoProgramExecution( program, "dispatchIndirect" );
+
+		if ( not parent.graph.resources.buffers.contains( p_indirectBuffer ) )
+		{
+			parent.graph.buffer( p_indirectBuffer, Desc::E_BUFFER_USAGE::INDIRECT, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
+		}
+
+		program.dispatchIndirect
+			= Desc::DispatchIndirect { .indirectBuffer = p_indirectBuffer, .offset = p_offset, .barriers = p_barriers };
+		return *this;
+	}
+
 	PassBuilder & ProgramBuilder::endProgram() { return parent; }
 
-	PassBuilder::PassBuilder( GraphBuilder & p_g, const Desc::Key & p_name ) : graph( p_g ) { pass.name = p_name; }
+	PassBuilder::PassBuilder(
+		GraphBuilder &				 p_g,
+		const Desc::Key &			 p_name,
+		const Desc::E_PASS_TYPE		 p_type,
+		const Desc::E_PASS_EXECUTION p_execution
+	) : graph( p_g )
+	{
+		pass.name	   = p_name;
+		pass.type	   = p_type;
+		pass.execution = p_execution;
+	}
+
+	PassBuilder & PassBuilder::type( const Desc::E_PASS_TYPE p_type )
+	{
+		pass.type = p_type;
+		return *this;
+	}
+
+	PassBuilder & PassBuilder::execution( const Desc::E_PASS_EXECUTION p_execution )
+	{
+		pass.execution = p_execution;
+		return *this;
+	}
 
 	PassBuilder & PassBuilder::in(
 		const Desc::E_RESOURCE_TYPE	   p_type,
@@ -208,16 +332,15 @@ namespace VTX::Renderer
 
 	ProgramBuilder PassBuilder::program( const Desc::Key & p_name )
 	{
+		if ( pass.type == Desc::E_PASS_TYPE::EXTERNAL )
+		{
+			throw GraphicException( "Cannot add program '{}' to external pass '{}'", p_name, pass.name );
+		}
+
 		pass.programs.emplace_back();
 		Desc::Program & prog = pass.programs.back();
 		prog.name			 = p_name;
 		return ProgramBuilder( *this, prog );
-	}
-
-	PassBuilder & PassBuilder::callback( const Desc::RenderFunc p_func )
-	{
-		pass.customCallback = std::move( p_func );
-		return *this;
 	}
 
 	GraphBuilder & PassBuilder::endPass()

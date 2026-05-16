@@ -9,11 +9,16 @@ namespace VTX::Renderer::Geometry
 	class Cylinder : public BaseGeometry
 	{
 	  public:
+		inline static const Desc::Key VERTEX_LAYOUT_ATOMS = "Atoms";
+		inline static const Desc::Key GEOMETRY_CYLINDERS  = "Cylinders";
+		inline static const Desc::Key INDEX_BONDS		  = "Index.Bonds";
+		inline static const Desc::Key INDIRECT_CYLINDERS  = "Indirect.Cylinders";
+
 		Cylinder()
 		{
-			vertexLayout   = "Atoms";
-			indiceBuffer   = "Index.Bonds";
-			indirectBuffer = "Indirect.Cylinders";
+			vertexLayout   = VERTEX_LAYOUT_ATOMS;
+			indiceBuffer   = INDEX_BONDS;
+			indirectBuffer = INDIRECT_CYLINDERS;
 		}
 
 		void clear()
@@ -55,6 +60,7 @@ namespace VTX::Renderer::Geometry
 		{
 			const std::vector<Index> * bonds;
 		};
+
 		std::unordered_map<Desc::Handle, _Construction> _construction;
 	};
 } // namespace VTX::Renderer::Geometry

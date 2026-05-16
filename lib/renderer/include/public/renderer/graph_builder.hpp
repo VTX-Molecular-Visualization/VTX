@@ -19,46 +19,55 @@ namespace VTX::Renderer
 	{
 		return Desc::E_TYPE::BOOL;
 	}
+
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<float>()
 	{
 		return Desc::E_TYPE::FLOAT;
 	}
+
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<unsigned int>()
 	{
 		return Desc::E_TYPE::UINT;
 	}
+
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Vec2i>()
 	{
 		return Desc::E_TYPE::VEC2I;
 	}
+
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Vec2f>()
 	{
 		return Desc::E_TYPE::VEC2F;
 	}
+
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Vec3f>()
 	{
 		return Desc::E_TYPE::VEC3F;
 	}
+
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Vec4f>()
 	{
 		return Desc::E_TYPE::VEC4F;
 	}
+
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Mat3f>()
 	{
 		return Desc::E_TYPE::MAT3F;
 	}
+
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Mat4f>()
 	{
 		return Desc::E_TYPE::MAT4F;
 	}
+
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Util::Color::Rgba>()
 	{
@@ -193,10 +202,10 @@ namespace VTX::Renderer
 		GraphBuilder & buffer(
 			const Desc::Key &,
 			const Desc::E_BUFFER_USAGE,
-			const Desc::E_UPDATE_FREQUENCY	= Desc::E_UPDATE_FREQUENCY::STATIC,
-			const Desc::E_BUFFER_MUTABILITY = Desc::E_BUFFER_MUTABILITY::MUTABLE,
-			const Desc::E_BUFFER_ACCESS		= Desc::E_BUFFER_ACCESS::NONE,
-			const std::optional<uint32_t>	= std::nullopt,
+			const Desc::E_UPDATE_FREQUENCY					= Desc::E_UPDATE_FREQUENCY::STATIC,
+			const Desc::E_BUFFER_MUTABILITY					= Desc::E_BUFFER_MUTABILITY::MUTABLE,
+			const Desc::E_BUFFER_ACCESS						= Desc::E_BUFFER_ACCESS::NONE,
+			const std::optional<uint32_t>					= std::nullopt,
 			const std::initializer_list<Desc::UniformValue> = {}
 		);
 
@@ -218,7 +227,18 @@ namespace VTX::Renderer
 		/**
 		 * @brief pass().
 		 */
-		PassBuilder pass( const Desc::Key & );
+		PassBuilder pass(
+			const Desc::Key &,
+			const Desc::E_PASS_TYPE		 = Desc::E_PASS_TYPE::GRAPHICS,
+			const Desc::E_PASS_EXECUTION = Desc::E_PASS_EXECUTION::EVERY_FRAME
+		);
+
+		PassBuilder computePass(
+			const Desc::Key &,
+			const Desc::E_PASS_EXECUTION = Desc::E_PASS_EXECUTION::EVERY_FRAME
+		);
+
+		PassBuilder externalPass( const Desc::Key &, const Desc::E_PASS_EXECUTION = Desc::E_PASS_EXECUTION::ON_DIRTY );
 	};
 
 	/**
@@ -255,7 +275,24 @@ namespace VTX::Renderer
 		/**
 		 * @brief draw().
 		 */
+		ProgramBuilder & draw( const Desc::Key &, const Desc::E_PRIMITIVE );
 		ProgramBuilder & draw( const Desc::Key &, const Desc::E_PRIMITIVE, const Desc::DrawCall::RangesVariant & );
+
+		/**
+		 * @brief dispatch().
+		 */
+		ProgramBuilder & dispatch( const Desc::Dispatch & );
+		ProgramBuilder & dispatch(
+			const uint32_t,
+			const uint32_t				   = 1,
+			const uint32_t				   = 1,
+			const Desc::E_MEMORY_BARRIER = Desc::E_MEMORY_BARRIER::NONE
+		);
+		ProgramBuilder & dispatchIndirect(
+			const Desc::Key &,
+			const uint32_t				   = 0,
+			const Desc::E_MEMORY_BARRIER = Desc::E_MEMORY_BARRIER::NONE
+		);
 
 		/**
 		 * @brief uniform().
@@ -295,7 +332,10 @@ namespace VTX::Renderer
 		/**
 		 * @brief Constructor.
 		 */
-		PassBuilder( GraphBuilder &, const Desc::Key & );
+		PassBuilder( GraphBuilder &, const Desc::Key &, const Desc::E_PASS_TYPE, const Desc::E_PASS_EXECUTION );
+
+		PassBuilder & type( const Desc::E_PASS_TYPE );
+		PassBuilder & execution( const Desc::E_PASS_EXECUTION );
 
 		/**
 		 * @brief in().
@@ -332,11 +372,6 @@ namespace VTX::Renderer
 		 * @brief program().
 		 */
 		ProgramBuilder program( const Desc::Key & );
-
-		/**
-		 * @brief callback().
-		 */
-		PassBuilder & callback( const Desc::RenderFunc );
 
 		/**
 		 * @brief endPass().

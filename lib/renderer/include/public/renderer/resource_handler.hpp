@@ -43,7 +43,8 @@ namespace VTX::Renderer
 			// Existing resource, update it.
 			if ( _cache.contains( p_key ) )
 			{
-				handle				 = _cache.at( p_key ).handle;
+				assert( _cache.contains( p_key ) );
+				handle				 = _cache[ p_key ].handle;
 				_resources[ handle ] = std::make_unique<T>( std::forward<Args>( p_args )... );
 			}
 			// Reuse available handle if any.
@@ -136,7 +137,9 @@ namespace VTX::Renderer
 		}
 
 		inline bool contains( const Desc::Handle p_handle ) const noexcept
-		{ return p_handle < _resources.size() && _resources[ p_handle ]; }
+		{
+			return p_handle < _resources.size() && _resources[ p_handle ];
+		}
 
 		/**
 		 * @brief Check if a resource exists from key and remove from invalids if present.
@@ -168,12 +171,22 @@ namespace VTX::Renderer
 		/**
 		 * @brief Access handle by key.
 		 */
-		inline Desc::Handle handle( const K & p_key ) const { return _cache.at( p_key ).handle; }
+		inline Desc::Handle handle( const K & p_key ) const
+		{
+			const auto it = _cache.find( p_key );
+			assert( it != _cache.end() );
+			return it->second.handle;
+		}
 
 		/**
 		 * @brief Access descriptor by key.
 		 */
-		inline const D & descriptor( const K & p_key ) const { return _cache.at( p_key ).descriptor; }
+		inline const D & descriptor( const K & p_key ) const
+		{
+			const auto it = _cache.find( p_key );
+			assert( it != _cache.end() );
+			return it->second.descriptor;
+		}
 
 		/**
 		 * @brief Access resource by key.
@@ -287,7 +300,9 @@ namespace VTX::Renderer
 			using VecIter = typename std::vector<std::unique_ptr<T>>::iterator;
 
 			iterator( ResourceHandler * p_handler, VecIter p_it ) : _handler( p_handler ), _it( p_it )
-			{ skipInvalid(); }
+			{
+				skipInvalid();
+			}
 
 			iterator & operator++()
 			{

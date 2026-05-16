@@ -3,6 +3,7 @@
 
 #include <array>
 #include <core/chemdb/atom.hpp>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <span>
@@ -26,10 +27,49 @@ namespace VTX::Renderer::Geometry::SESDetail
 	{
 		CudaConstructionPtr construction;
 
+		uint32_t atomNb			= 0;
 		uint32_t convexPatchNb	= 0;
 		uint32_t circlePatchNb	= 0;
 		uint32_t segmentPatchNb = 0;
+		uint32_t probeNb		= 0;
+		uint32_t sectorNb		= 0;
 		uint32_t concavePatchNb = 0;
+	};
+
+	// GPU buffer slice owned by the render graph and mapped for CUDA access.
+	struct CudaBufferView
+	{
+		void * devicePtr   = nullptr;
+		size_t sizeBytes   = 0;
+		size_t offsetBytes = 0;
+	};
+
+	// Output contract for the SES renderer buffers.
+	//
+	// Types:
+	// - atoms: float4(x, y, z, radius)
+	// - sectors: float4(axis.xyz, angle)
+	// - convexPatches: uint2(firstSector, endSector)
+	// - circlePatches: uint2(atomA, atomB)
+	// - segmentPatches: uint4(atomA, atomB, probeA, probeB)
+	// - probes: float4(x, y, z, signedSide)
+	// - probeAtomIndices: int4(atomA, atomB, atomC, neighborCount)
+	// - probeNeighbors: float4 neighbor positions, laid out as probeId * maxProbeNeighborNb + neighborId
+	struct SesdfRenderBuffers
+	{
+		CudaBufferView atoms;
+		CudaBufferView sectors;
+		CudaBufferView convexPatches;
+		CudaBufferView circlePatches;
+		CudaBufferView segmentPatches;
+		CudaBufferView probes;
+		CudaBufferView probeAtomIndices;
+		CudaBufferView probeNeighbors;
+
+		uint32_t atomIndexOffset	= 0;
+		uint32_t probeIndexOffset	= 0;
+		uint32_t sectorIndexOffset	= 0;
+		uint32_t maxProbeNeighborNb = 0;
 	};
 
 	CudaBuildResult buildCudaConstruction(
@@ -37,6 +77,8 @@ namespace VTX::Renderer::Geometry::SESDetail
 		std::span<const Core::ChemDB::Atom::SYMBOL> p_symbols,
 		float										p_probeRadius
 	);
+
+	void writeCudaConstruction( CudaConstruction &, const SesdfRenderBuffers & );
 } // namespace VTX::Renderer::Geometry::SESDetail
 
 #endif

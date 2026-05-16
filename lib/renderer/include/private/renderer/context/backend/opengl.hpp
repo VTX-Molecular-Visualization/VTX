@@ -12,10 +12,14 @@
 #include "renderer/context/backend/gl/struct_opengl_infos.hpp"
 #include "renderer/context/backend/gl/texture_2d.hpp"
 #include "renderer/context/backend/gl/vertex_array.hpp"
+#include "renderer/context/backend/interop/opengl_cuda_interop.hpp"
 #include "renderer/context/command_buffer.hpp"
 #include "renderer/descriptors.hpp"
 #include "renderer/resource_handler.hpp"
 #include "renderer/struct_infos.hpp"
+#include <memory>
+#include <span>
+#include <vector>
 
 namespace VTX::Renderer::Context::Backend
 {
@@ -40,11 +44,11 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		struct BufferBinding
 		{
-			Desc::Handle		  buffer;
+			Desc::Handle		 buffer;
 			Desc::E_BUFFER_USAGE usage;
-			Desc::Binding		  binding;
-			uint32_t			  offsetBytes = 0;
-			uint32_t			  sizeBytes   = 0;
+			Desc::Binding		 binding;
+			uint32_t			 offsetBytes = 0;
+			uint32_t			 sizeBytes	 = 0;
 		};
 
 		/**
@@ -65,7 +69,7 @@ namespace VTX::Renderer::Context::Backend
 			const Desc::NativeContextInfo &,
 			const FilePath & p_shaderDir
 		);
-		~OpenGL() = default;
+		~OpenGL();
 
 		/**
 		 * @brief Build the command buffer from the render queue and resources.
@@ -86,6 +90,19 @@ namespace VTX::Renderer::Context::Backend
 		 * @brief Set data to a buffer.
 		 */
 		void setBufferData( const Desc::Key &, SpanBytes, const size_t );
+
+		/**
+		 * @brief Map graphics buffers to an external compute backend pointer.
+		 */
+		Desc::InteropBufferMapping				mapInteropBuffer( Desc::E_INTEROP_API, const Desc::Key & );
+		std::vector<Desc::InteropBufferMapping> mapInteropBuffers( Desc::E_INTEROP_API, std::span<const Desc::Key> );
+		void unmapInteropBuffer( Desc::E_INTEROP_API, const Desc::InteropBufferMapping & );
+		void unmapInteropBuffers( Desc::E_INTEROP_API, std::span<const Desc::InteropBufferMapping> );
+
+		/**
+		 * @brief Query external API availability for graphics interop.
+		 */
+		Desc::InteropAvailability interopAvailability( Desc::E_INTEROP_API ) const;
 
 		/**
 		 * @brief Get texture data at a given pixel, or full texture.
@@ -170,9 +187,9 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Render target (default framebuffer or offscreen).
 		 */
-		Desc::Handle _default;
-		Desc::Handle _offscreen;
-		Desc::Handle _target;
+		Desc::Handle _default	= Desc::NO_HANDLE;
+		Desc::Handle _offscreen = Desc::NO_HANDLE;
+		Desc::Handle _target	= Desc::NO_HANDLE;
 
 		/**
 		 * @brief Shader path.
@@ -232,6 +249,11 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		GL::StructOpenglInfos _openglInfos;
 		void				  _getOpenglInfos();
+
+		/**
+		 * @brief Interop with CUDA.
+		 */
+		Interop::OpenGLCudaInterop _cudaInterop;
 	};
 } // namespace VTX::Renderer::Context::Backend
 

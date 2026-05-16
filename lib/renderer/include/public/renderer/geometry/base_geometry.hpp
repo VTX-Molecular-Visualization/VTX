@@ -24,11 +24,6 @@ namespace VTX::Renderer::Geometry
 	{
 	  public:
 		/**
-		 * @brief Compiled draw ranges count for GPU calls.
-		 */
-		uint32_t count = 0;
-
-		/**
 		 * @brief Resize whole layout.
 		 */
 		inline void resize( Context::ContextWrapper & p_context )
@@ -52,7 +47,6 @@ namespace VTX::Renderer::Geometry
 		{
 			_resources.clear();
 			_size = 0;
-			count = 0;
 		}
 
 		/**
@@ -81,8 +75,6 @@ namespace VTX::Renderer::Geometry
 				);
 			}
 
-			count = static_cast<uint32_t>( commands.size() );
-
 			return commands;
 		}
 
@@ -103,8 +95,6 @@ namespace VTX::Renderer::Geometry
 				baseVertex += data.vertexCount;
 			}
 
-			count = static_cast<uint32_t>( commands.size() );
-
 			return commands;
 		}
 
@@ -112,7 +102,18 @@ namespace VTX::Renderer::Geometry
 		{
 			assert( _resources.contains( p_handle ) );
 
-			return _resources.at( p_handle ).range.getCount();
+			const auto it = _resources.find( p_handle );
+			assert( it != _resources.end() );
+			return it->second.range.getCount();
+		}
+
+		Index offset( const Desc::Handle p_handle ) const
+		{
+			assert( _resources.contains( p_handle ) );
+
+			const auto it = _resources.find( p_handle );
+			assert( it != _resources.end() );
+			return it->second.range.getFirst();
 		}
 
 	  protected:

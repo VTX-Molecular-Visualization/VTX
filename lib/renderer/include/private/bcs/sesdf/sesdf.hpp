@@ -34,6 +34,7 @@ namespace bcs
 
 		sesdf::SesdfGraphics getGraphics() const;
 		sesdf::SesdfData	 getData();
+		void				 writeData( const sesdf::SesdfWriteBuffers & );
 
 		// Helper to analyse the surface
 		uint16_t			  getMaxNeighborPerAtom() const;

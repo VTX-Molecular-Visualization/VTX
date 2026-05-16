@@ -1,7 +1,9 @@
 #include "renderer/context/backend/opengl.hpp"
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/backend/gl/debug.hpp"
+#include <array>
 #include <numeric>
+#include <util/enum.hpp>
 #include <util/exceptions.hpp>
 
 namespace
@@ -191,10 +193,10 @@ namespace
 namespace VTX::Renderer::Context::Backend
 {
 	OpenGL::OpenGL(
-		const size_t			   p_width,
-		const size_t			   p_height,
+		const size_t					p_width,
+		const size_t					p_height,
 		const Desc::NativeContextInfo & p_contextInfo,
-		const FilePath & p_shaderDir
+		const FilePath &				p_shaderDir
 
 	) : _shaderPath( p_shaderDir )
 	{
@@ -236,6 +238,7 @@ namespace VTX::Renderer::Context::Backend
 
 		_getOpenglInfos();
 		_openglInfos.print();
+		_cudaInterop.refreshAvailability();
 
 		glViewport( 0, 0, int32_t( p_width ), int32_t( p_height ) );
 		glPatchParameteri( GL_PATCH_VERTICES, 4 );
@@ -256,6 +259,8 @@ namespace VTX::Renderer::Context::Backend
 #endif
 	}
 
+	OpenGL::~OpenGL() = default;
+
 	// Create resources, configure, and push commands.
 	// No OpenGL objects in this function, only Handles.
 	void OpenGL::build(
@@ -265,6 +270,8 @@ namespace VTX::Renderer::Context::Backend
 	)
 	{
 		using namespace Desc;
+
+		_cudaInterop.clear();
 
 		// Mark all resources as invalid.
 		_resourceTables.invalidate();
@@ -310,10 +317,7 @@ namespace VTX::Renderer::Context::Backend
 			// CONFIGURATION.
 			const Pass & pass		= *passPtr;
 			const bool	 isLastPass = ( passPtr == p_renderQueue.back() );
-
-			// FBO.
-			const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
-			_attachTexturesToFramebuffer( pass, p_resources.textures );
+			const PassID passID		= p_commands.beginPass( pass );
 
 			// Create programs.
 			for ( const Program & program : pass.programs )
@@ -321,121 +325,171 @@ namespace VTX::Renderer::Context::Backend
 				const Handle hProgram = _getOrCreateProgram( program );
 			}
 
-			// Resource table, clear each build.
-			const Handle	hResourceTable = _getOrCreateResourceTable( pass, p_resources );
-			ResourceTable & resourceTable  = _resourceTables.get( hResourceTable );
-			resourceTable				   = _buildResourceTableForPass( pass, p_resources );
-
-			// COMMANDS.
-			// Push BEGIN_PASS/BIND_OUTPUT.
-			uint32_t flags = _toSettingFlags( pass.settings );
-			if ( not isLastPass )
+			if ( pass.type == E_PASS_TYPE::GRAPHICS )
 			{
-				PayloadBeginPass pBeginPass { hFramebuffer, flags };
-				p_commands.push<E_COMMAND::BEGIN_PASS>( pBeginPass );
-			}
-			else
-			{
-				PayloadBindOutput pBindOutput { reinterpret_cast<uintptr_t>( &_target ) };
-				p_commands.push<E_COMMAND::BIND_OUTPUT>( pBindOutput );
-			}
+				// Resource table, clear each build.
+				const Handle	hResourceTable = _getOrCreateResourceTable( pass, p_resources );
+				ResourceTable & resourceTable  = _resourceTables.get( hResourceTable );
+				resourceTable				   = _buildResourceTableForPass( pass, p_resources );
 
-			// Push BIND_RESOURCES.
-			PayloadBindResources pBindResources { hResourceTable };
-			p_commands.push<E_COMMAND::BIND_RESOURCES>( pBindResources );
+				// FBO.
+				const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
+				_attachTexturesToFramebuffer( pass, p_resources.textures );
 
-			// Foreach program.
-			for ( const Program & program : pass.programs )
-			{
-				const bool hasDrawCall = program.drawCall.has_value();
-				Handle	   hVao;
-
-				if ( hasDrawCall )
+				// Push BEGIN_PASS/BIND_OUTPUT.
+				uint32_t flags = _toSettingFlags( pass.settings );
+				if ( not isLastPass )
 				{
-					const Geometry g = p_resources.geometries.at( program.drawCall.value().geometry );
-					hVao			 = _vertexArrays.handle( g.vertexLayout );
+					PayloadBeginPass pBeginPass { hFramebuffer, flags };
+					p_commands.push<E_COMMAND::BEGIN_PASS>( pBeginPass );
 				}
 				else
 				{
-					hVao = _vertexArrays.handle( _QUAD );
+					PayloadBindOutput pBindOutput { _target };
+					p_commands.push<E_COMMAND::BIND_OUTPUT>( pBindOutput );
 				}
 
-				// Push DRAW.
-				const Handle hProgram = _programs.handle( program.name );
-				if ( hasDrawCall )
+				// Push BIND_RESOURCES.
+				PayloadBindResources pBindResources { hResourceTable };
+				p_commands.push<E_COMMAND::BIND_RESOURCES>( pBindResources );
+
+				// Foreach program.
+				for ( const Program & program : pass.programs )
 				{
-					const DrawCall & drawCall = program.drawCall.value();
-					const Geometry & geometry = p_resources.geometries.at( drawCall.geometry );
-					const bool		 indexed  = geometry.indiceBuffer.has_value();
-					const bool		 indirect = geometry.indirectBuffer.has_value();
+					const bool hasDrawCall = program.drawCall.has_value();
+					Handle	   hVao;
 
-					if ( not indirect )
+					if ( hasDrawCall )
 					{
-						const DrawCall::Range * rangePtr = std::get_if<DrawCall::Range>( &drawCall.ranges );
-						assert( rangePtr );
+						const auto it = p_resources.geometries.find( program.drawCall.value().geometry );
+						assert( it != p_resources.geometries.end() );
+						const Geometry g = it->second;
+						hVao			 = _vertexArrays.handle( g.vertexLayout );
+					}
+					else
+					{
+						hVao = _vertexArrays.handle( _QUAD );
+					}
 
-						if ( indexed )
+					// Push DRAW.
+					const Handle hProgram = _programs.handle( program.name );
+					if ( hasDrawCall )
+					{
+						const DrawCall & drawCall = program.drawCall.value();
+						const auto		 it		  = p_resources.geometries.find( drawCall.geometry );
+						assert( it != p_resources.geometries.end() );
+						const Geometry & geometry = it->second;
+						const bool		 indexed  = geometry.indiceBuffer.has_value();
+						const bool		 indirect = geometry.indirectBuffer.has_value();
+
+						if ( not indirect )
 						{
-							PayloadDrawIndexed pDraw { hProgram, hVao };
-							pDraw.primitive	  = toUnderlying( drawCall.primitive );
-							pDraw.indexBuffer = _buffers.handle( geometry.indiceBuffer.value() );
-							pDraw.first		  = rangePtr->first;
-							pDraw.count		  = rangePtr->count;
-							p_commands.push<E_COMMAND::DRAW_INDEXED>( pDraw );
+							const DrawCall::Range * rangePtr = std::get_if<DrawCall::Range>( &drawCall.ranges );
+							assert( rangePtr );
+
+							if ( indexed )
+							{
+								PayloadDrawIndexed pDraw { hProgram, hVao };
+								pDraw.primitive	  = toUnderlying( drawCall.primitive );
+								pDraw.indexBuffer = _buffers.handle( geometry.indiceBuffer.value() );
+								pDraw.first		  = rangePtr->first;
+								pDraw.count		  = rangePtr->count;
+								p_commands.push<E_COMMAND::DRAW_INDEXED>( pDraw );
+							}
+							else
+							{
+								PayloadDraw pDraw { hProgram, hVao };
+								pDraw.primitive = toUnderlying( drawCall.primitive );
+								pDraw.first		= rangePtr->first;
+								pDraw.count		= rangePtr->count;
+								p_commands.push<E_COMMAND::DRAW>( pDraw );
+							}
 						}
 						else
 						{
-							PayloadDraw pDraw { hProgram, hVao };
-							pDraw.primitive = toUnderlying( drawCall.primitive );
-							pDraw.first		= rangePtr->first;
-							pDraw.count		= rangePtr->count;
-							p_commands.push<E_COMMAND::DRAW>( pDraw );
+							assert( std::holds_alternative<DrawCall::Indirect>( drawCall.ranges ) );
+
+							if ( indexed )
+							{
+								PayloadDrawIndexedIndirect pDraw { hProgram, hVao };
+								pDraw.primitive		 = toUnderlying( drawCall.primitive );
+								pDraw.indirectBuffer = _buffers.handle( geometry.indirectBuffer.value() );
+								pDraw.indiceBuffer	 = _buffers.handle( geometry.indiceBuffer.value() );
+								pDraw.countOffset	 = DRAW_INDIRECT_COUNT_OFFSET;
+								pDraw.commandOffset	 = DRAW_INDIRECT_COMMANDS_OFFSET;
+								p_commands.push<E_COMMAND::DRAW_INDEXED_INDIRECT>( pDraw );
+							}
+							else
+							{
+								PayloadDrawIndirect pDraw { hProgram, hVao };
+								pDraw.primitive		 = toUnderlying( drawCall.primitive );
+								pDraw.indirectBuffer = _buffers.handle( geometry.indirectBuffer.value() );
+								pDraw.countOffset	 = DRAW_INDIRECT_COUNT_OFFSET;
+								pDraw.commandOffset	 = DRAW_INDIRECT_COMMANDS_OFFSET;
+								p_commands.push<E_COMMAND::DRAW_INDIRECT>( pDraw );
+							}
 						}
 					}
 					else
 					{
-						const uintptr_t * ptr = std::get_if<uintptr_t>( &drawCall.ranges );
-						assert( ptr );
-
-						if ( indexed )
-						{
-							PayloadDrawIndexedIndirect pDraw { hProgram, hVao };
-							pDraw.primitive		 = toUnderlying( drawCall.primitive );
-							pDraw.indirectBuffer = _buffers.handle( geometry.indirectBuffer.value() );
-							pDraw.indiceBuffer	 = _buffers.handle( geometry.indiceBuffer.value() );
-							pDraw.count			 = *ptr;
-							p_commands.push<E_COMMAND::DRAW_INDEXED_INDIRECT>( pDraw );
-						}
-						else
-						{
-							PayloadDrawIndirect pDraw { hProgram, hVao };
-							pDraw.primitive		 = toUnderlying( drawCall.primitive );
-							pDraw.indirectBuffer = _buffers.handle( geometry.indirectBuffer.value() );
-							pDraw.count			 = *ptr;
-							p_commands.push<E_COMMAND::DRAW_INDIRECT>( pDraw );
-						}
+						// Fullscreen quad draw.
+						PayloadDraw pDraw { hProgram, hVao };
+						pDraw.primitive = static_cast<uint32_t>( toUnderlying( E_PRIMITIVE::TRIANGLES ) );
+						pDraw.first		= 0;
+						pDraw.count		= 4;
+						p_commands.push<E_COMMAND::DRAW>( pDraw );
 					}
 				}
-				else
+
+				// Push END_PASS.
+				PayloadEndPass pEndPass { hFramebuffer, flags };
+				p_commands.push<E_COMMAND::END_PASS>( pEndPass );
+
+				if ( isLastPass )
 				{
-					// Fullscreen quad draw.
-					PayloadDraw pDraw { hProgram, hVao };
-					pDraw.primitive = static_cast<uint32_t>( toUnderlying( E_PRIMITIVE::TRIANGLES ) );
-					pDraw.first		= 0;
-					pDraw.count		= 4;
-					p_commands.push<E_COMMAND::DRAW>( pDraw );
+					p_commands.push<E_COMMAND::PRESENT>();
 				}
 			}
+			else if ( pass.type == E_PASS_TYPE::COMPUTE )
+			{
+				// Resource table, clear each build.
+				const Handle	hResourceTable = _getOrCreateResourceTable( pass, p_resources );
+				ResourceTable & resourceTable  = _resourceTables.get( hResourceTable );
+				resourceTable				   = _buildResourceTableForPass( pass, p_resources );
 
-			// Push END_PASS.
-			PayloadEndPass pEndPass { hFramebuffer, flags };
-			p_commands.push<E_COMMAND::END_PASS>( pEndPass );
+				PayloadBindResources pBindResources { hResourceTable };
+				p_commands.push<E_COMMAND::BIND_RESOURCES>( pBindResources );
+
+				for ( const Program & program : pass.programs )
+				{
+					const Handle hProgram = _programs.handle( program.name );
+
+					if ( program.dispatch )
+					{
+						PayloadDispatch pDispatch { hProgram };
+						pDispatch.barriers = toUnderlying( program.dispatch->barriers );
+						pDispatch.groupX   = program.dispatch->groupX;
+						pDispatch.groupY   = program.dispatch->groupY;
+						pDispatch.groupZ   = program.dispatch->groupZ;
+						p_commands.push<E_COMMAND::DISPATCH>( pDispatch );
+					}
+					else if ( program.dispatchIndirect )
+					{
+						PayloadDispatchIndirect pDispatch { hProgram };
+						pDispatch.barriers		 = toUnderlying( program.dispatchIndirect->barriers );
+						pDispatch.indirectBuffer = _buffers.handle( program.dispatchIndirect->indirectBuffer );
+						pDispatch.offset		 = program.dispatchIndirect->offset;
+						p_commands.push<E_COMMAND::DISPATCH_INDIRECT>( pDispatch );
+					}
+				}
+			}
+			else if ( pass.type == E_PASS_TYPE::EXTERNAL )
+			{
+				p_commands.push<E_COMMAND::EXTERNAL>( PayloadExternal {} );
+			}
+
+			p_commands.endPass( passID );
 		}
-
-		// Push PRESENT.
-		p_commands.push<E_COMMAND::PRESENT>();
-
-		setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
 
 		// Purge invalid resources.
 		_resourceTables.purge();
@@ -452,7 +506,8 @@ namespace VTX::Renderer::Context::Backend
 		// GLOBAL BINDINGS: done once at startup.
 		for ( auto & bufferBinding : _globalShaderBuffers )
 		{
-			_buffers.get( bufferBinding.buffer ).bind( _toGLShaderTarget( bufferBinding.usage ), bufferBinding.binding );
+			_buffers.get( bufferBinding.buffer )
+				.bind( _toGLShaderTarget( bufferBinding.usage ), bufferBinding.binding );
 		}
 	}
 
@@ -501,6 +556,11 @@ namespace VTX::Renderer::Context::Backend
 
 		for ( const auto & pass : p_passes )
 		{
+			if ( pass->type != E_PASS_TYPE::GRAPHICS )
+			{
+				continue;
+			}
+
 			_attachTexturesToFramebuffer( *pass, p_textures );
 		}
 	}
@@ -527,6 +587,10 @@ namespace VTX::Renderer::Context::Backend
 
 		if ( p_isLast )
 		{
+			const bool targetWasUnset	  = _target == NO_HANDLE;
+			const bool targetWasDefault	  = _target == _default;
+			const bool targetWasOffscreen = _target == _offscreen;
+
 			// Save as offscreen target.
 			_offscreen = h;
 
@@ -534,6 +598,15 @@ namespace VTX::Renderer::Context::Backend
 			if ( not _framebuffers.validate( _DEFAULT_FBO ) )
 			{
 				_default = _framebuffers.emplace( _DEFAULT_FBO, {}, 0 );
+			}
+
+			if ( targetWasUnset || targetWasDefault )
+			{
+				_target = _default;
+			}
+			else if ( targetWasOffscreen )
+			{
+				_target = _offscreen;
 			}
 		}
 
@@ -763,8 +836,10 @@ namespace VTX::Renderer::Context::Backend
 			{
 				continue;
 			}
-			assert( Util::Enum::hasBits( buffer.usage, E_BUFFER_USAGE::UNIFORM )
-					|| Util::Enum::hasBits( buffer.usage, E_BUFFER_USAGE::STORAGE ) );
+			assert(
+				Util::Enum::hasBits( buffer.usage, E_BUFFER_USAGE::UNIFORM )
+				|| Util::Enum::hasBits( buffer.usage, E_BUFFER_USAGE::STORAGE )
+			);
 			assert( buffer.binding );
 			const Handle hBuf = _buffers.handle( key );
 			gsb.emplace_back( hBuf, buffer.usage, *buffer.binding );
@@ -800,8 +875,10 @@ namespace VTX::Renderer::Context::Backend
 			}
 			case E_RESOURCE_TYPE::BUFFER:
 			{
-				const Handle   hBuf	  = _buffers.handle( input.primary );
-				const Buffer & buffer = p_resources.buffers.at( input.primary );
+				const Handle hBuf = _buffers.handle( input.primary );
+				const auto	 it	  = p_resources.buffers.find( input.primary );
+				assert( it != p_resources.buffers.end() );
+				const Buffer & buffer = it->second;
 				rt.buffers.emplace_back( hBuf, buffer.usage, b++ );
 				break;
 			}
@@ -828,8 +905,10 @@ namespace VTX::Renderer::Context::Backend
 			{
 			case E_RESOURCE_TYPE::BUFFER:
 			{
-				const Handle   hBuf	  = _buffers.handle( output.primary );
-				const Buffer & buffer = p_resources.buffers.at( output.primary );
+				const Handle hBuf = _buffers.handle( output.primary );
+				const auto	 it	  = p_resources.buffers.find( output.primary );
+				assert( it != p_resources.buffers.end() );
+				const Buffer & buffer = it->second;
 				rt.buffers.emplace_back( hBuf, buffer.usage, b++ );
 
 				break;
@@ -862,7 +941,9 @@ namespace VTX::Renderer::Context::Backend
 
 			const GL::Texture2D & texture = _textures.get( output.primary );
 
-			const E_FORMAT format  = p_textures.at( output.primary ).format;
+			const auto it = p_textures.find( output.primary );
+			assert( it != p_textures.end() );
+			const E_FORMAT format  = it->second.format;
 			const bool	   isDepth = _toGL( format ).isDepth;
 
 			if ( isDepth )
@@ -900,8 +981,10 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		const Key &			 kVao	= p_geo.vertexLayout;
-		const VertexLayout & layout = p_resources.vertexStreams.at( kVao );
+		const Key & kVao = p_geo.vertexLayout;
+		const auto	it	 = p_resources.vertexStreams.find( kVao );
+		assert( it != p_resources.vertexStreams.end() );
+		const VertexLayout & layout = it->second;
 		const auto &		 vao	= _vertexArrays.get( kVao );
 
 		vao.bind();
@@ -970,6 +1053,8 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
+		assert( _buffers.contains( p_key ) );
+
 		const Handle h	  = _buffers.handle( p_key );
 		const auto & desc = _buffers.descriptor( p_key );
 
@@ -978,10 +1063,94 @@ namespace VTX::Renderer::Context::Backend
 			 && desc.mutability == E_BUFFER_MUTABILITY::IMMUTABLE )
 		{
 			_buffers.get( h ).setSub( p_bytes.data(), GLsizei( p_bytes.size() ), p_offset );
+
 			return;
 		}
 
-		_buffers.get( h ).setData( p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( desc.frequency ) );
+		auto & buffer = _buffers.get( h );
+		if ( ( Util::Enum::hasBits( desc.usage, E_BUFFER_USAGE::CUDA_READ )
+			   || Util::Enum::hasBits( desc.usage, E_BUFFER_USAGE::CUDA_WRITE ) )
+			 && p_offset + p_bytes.size() > size_t( buffer.size() ) )
+		{
+			_cudaInterop.unregisterBuffer( p_key );
+		}
+
+		buffer.setData( p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( desc.frequency ) );
+	}
+
+	Desc::InteropBufferMapping OpenGL::mapInteropBuffer( const Desc::E_INTEROP_API p_api, const Desc::Key & p_key )
+	{
+		std::array<Desc::Key, 1> keys { p_key };
+		auto					 mappings = mapInteropBuffers( p_api, keys );
+		assert( mappings.size() == 1 );
+
+		return std::move( mappings.front() );
+	}
+
+	std::vector<Desc::InteropBufferMapping> OpenGL::mapInteropBuffers(
+		const Desc::E_INTEROP_API  p_api,
+		std::span<const Desc::Key> p_keys
+	)
+	{
+		using namespace Desc;
+
+		if ( p_api != E_INTEROP_API::CUDA )
+		{
+			return {};
+		}
+
+		std::vector<InteropBufferMapping> result;
+		result.reserve( p_keys.size() );
+
+		glFlush();
+
+		for ( const Desc::Key & key : p_keys )
+		{
+			assert( _buffers.contains( key ) );
+
+			const Handle h	  = _buffers.handle( key );
+			const auto & desc = _buffers.descriptor( key );
+			assert(
+				Util::Enum::hasBits( desc.usage, E_BUFFER_USAGE::CUDA_READ )
+				|| Util::Enum::hasBits( desc.usage, E_BUFFER_USAGE::CUDA_WRITE )
+			);
+
+			result.emplace_back( _cudaInterop.mapBuffer( key, _buffers.get( h ).getId(), desc.usage ) );
+		}
+
+		return result;
+	}
+
+	void OpenGL::unmapInteropBuffer( const Desc::E_INTEROP_API p_api, const Desc::InteropBufferMapping & p_mapping )
+	{
+		std::array<Desc::InteropBufferMapping, 1> mappings { p_mapping };
+		unmapInteropBuffers( p_api, mappings );
+	}
+
+	void OpenGL::unmapInteropBuffers(
+		const Desc::E_INTEROP_API					p_api,
+		std::span<const Desc::InteropBufferMapping> p_mappings
+	)
+	{
+		if ( p_api != Desc::E_INTEROP_API::CUDA )
+		{
+			return;
+		}
+
+		for ( const Desc::InteropBufferMapping & mapping : p_mappings )
+		{
+			_cudaInterop.unmapBuffer( mapping.key );
+		}
+	}
+
+	Desc::InteropAvailability OpenGL::interopAvailability( const Desc::E_INTEROP_API p_api ) const
+	{
+		switch ( p_api )
+		{
+		case Desc::E_INTEROP_API::CUDA: return _cudaInterop.availability();
+		case Desc::E_INTEROP_API::OPTIX: return {};
+		default: return {};
+		}
 	}
 
 	std::vector<std::byte> OpenGL::getTextureData(
@@ -1033,6 +1202,11 @@ namespace VTX::Renderer::Context::Backend
 
 	void OpenGL::setRenderTarget( const Desc::E_RENDER_TARGET p_target )
 	{
+		if ( _default == Desc::NO_HANDLE || _offscreen == Desc::NO_HANDLE )
+		{
+			return;
+		}
+
 		_target = p_target == Desc::E_RENDER_TARGET::SCREEN ? _default : _offscreen;
 	}
 

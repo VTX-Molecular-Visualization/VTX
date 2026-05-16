@@ -4,8 +4,6 @@
 
 namespace
 {
-	constexpr uint32_t SES_MAX_PROBE_NEIGHBOR_NB = 128u;
-
 	/*
 	auto linearizeColorFloat = []( float c ) -> float
 	{
@@ -38,6 +36,7 @@ namespace VTX::Renderer
 		try
 		{
 			_context.build( _queue, _graph.getResources() );
+			_bindExternalPasses();
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -54,6 +53,7 @@ namespace VTX::Renderer
 		try
 		{
 			_context.build( _queue, _graph.getResources() );
+			_bindExternalPasses();
 			_context.fillInfos( _infos );
 			onReady();
 		}
@@ -124,12 +124,16 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] snapshot" );
 
 		_context.setRenderTarget( Desc::E_RENDER_TARGET::OFFSCREEN );
+		_context.build( _queue, _graph.getResources() );
+		_bindExternalPasses();
 		_render( 0.f, 0.f );
 
 		// TODO: get last pass instead of hardcoding FXAA.
 		std::vector<std::byte> data = _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
 
 		_context.setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
+		_context.build( _queue, _graph.getResources() );
+		_bindExternalPasses();
 		_render( 0.f, 0.f );
 
 		return data;
@@ -157,6 +161,44 @@ namespace VTX::Renderer
 		_context.fillInfos( _infos );
 
 		return _infos;
+	}
+
+	void Renderer::_bindExternalPasses()
+	{
+		if ( not _context.containsPass( Geometry::SES::PASS_COMPUTE ) )
+		{
+			return;
+		}
+
+		const auto function = reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass );
+		const auto context  = reinterpret_cast<uintptr_t>( this );
+		_context.setExternalPass( Geometry::SES::PASS_COMPUTE, function, context );
+	}
+
+	void Renderer::_markSESDirty()
+	{
+		if ( _context.containsPass( Geometry::SES::PASS_COMPUTE ) )
+		{
+			_context.markPassDirty( Geometry::SES::PASS_COMPUTE );
+		}
+	}
+
+	void Renderer::_executeSESExternalPass( const uintptr_t p_context )
+	{
+		auto * const renderer = reinterpret_cast<Renderer *>( p_context );
+		if ( renderer == nullptr )
+		{
+			return;
+		}
+
+		try
+		{
+			renderer->_geometries.ses.compute( renderer->_context );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "SES external pass failed: {}", p_e.what() );
+		}
 	}
 
 #pragma endregion
@@ -206,6 +248,7 @@ namespace VTX::Renderer
 		if ( _refreshGraph( p_config ) )
 		{
 			_context.build( _queue, _graph.getResources() );
+			_bindExternalPasses();
 		}
 
 		BinaryBuffer140 bufferShading;
@@ -333,7 +376,7 @@ namespace VTX::Renderer
 			buffer.write( uint( representation->cylinderColorBlending ) );
 			buffer.write( uint( representation->ribbonColorBlending ) );
 			buffer.write( representation->sesProbeRadius );
-			buffer.write( SES_MAX_PROBE_NEIGHBOR_NB );
+			buffer.write( Geometry::SES::MAX_PROBE_NEIGHBOR_NB );
 
 			// Cache.
 			_cacheRepresentations[ index ] = Cache::Representation { showSphere, showCylinder, showRibbon, showSes };
@@ -370,7 +413,7 @@ namespace VTX::Renderer
 			_systems.emplace( systemData.uid, {}, Cache::System { systemData.transform } );
 			const Desc::Handle h = _systems.handle( systemData.uid );
 
-			// Compute geometries.
+			// TODO: Build costly geometries lazily when requested by a representation (ribbons, SES).
 			_geometries.construct( h, systemData );
 
 			// Register ranges in layouts.
@@ -425,6 +468,7 @@ namespace VTX::Renderer
 
 		// Rebuild commands immediately, including the empty-scene case.
 		_geometries.buildDrawRanges( _context );
+		_markSESDirty();
 
 		// Build draw ranges.
 		auto handles	 = _systems.handles();

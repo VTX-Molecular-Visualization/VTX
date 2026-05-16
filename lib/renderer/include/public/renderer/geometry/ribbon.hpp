@@ -13,11 +13,16 @@ namespace VTX::Renderer::Geometry
 	class Ribbon : public BaseGeometry
 	{
 	  public:
+		inline static const Desc::Key VERTEX_LAYOUT_RESIDUES = "Residues";
+		inline static const Desc::Key GEOMETRY_RIBBONS		 = "Ribbons";
+		inline static const Desc::Key INDEX_RIBBONS			 = "Index.Ribbons";
+		inline static const Desc::Key INDIRECT_RIBBONS		 = "Indirect.Ribbons";
+
 		Ribbon()
 		{
-			vertexLayout   = "Residues";
-			indiceBuffer   = "Index.Ribbons";
-			indirectBuffer = "Indirect.Ribbons";
+			vertexLayout   = VERTEX_LAYOUT_RESIDUES;
+			indiceBuffer   = INDEX_RIBBONS;
+			indirectBuffer = INDIRECT_RIBBONS;
 		}
 
 		void clear()
@@ -43,12 +48,19 @@ namespace VTX::Renderer::Geometry
 			std::vector<Indice>				 indices;
 		};
 
-		bool empty( const SystemUID p_uid ) const { return _construction.at( p_uid ).isEmpty; }
+		bool empty( const SystemUID p_uid ) const
+		{
+			const auto it = _construction.find( p_uid );
+			assert( it != _construction.end() );
+			return it->second.isEmpty;
+		}
 
 		const Construction & construction( const Desc::Handle p_handle ) const
 		{
 			assert( _construction.contains( p_handle ) );
-			return _construction.at( p_handle );
+			const auto it = _construction.find( p_handle );
+			assert( it != _construction.end() );
+			return it->second;
 		}
 
 		void construct( const Desc::Handle p_handle, const SystemData & p_data )
@@ -148,7 +160,9 @@ namespace VTX::Renderer::Geometry
 
 		void setVisibility( const Desc::Handle p_handle, const Util::Math::BitSet & p_visibility )
 		{
-			const Construction & cache = _construction.at( p_handle );
+			const auto it = _construction.find( p_handle );
+			assert( it != _construction.end() );
+			const Construction & cache = it->second;
 
 			if ( cache.isEmpty )
 			{

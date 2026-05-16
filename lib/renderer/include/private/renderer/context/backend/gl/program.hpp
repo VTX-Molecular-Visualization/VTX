@@ -145,9 +145,10 @@ namespace VTX::Renderer::Context::Backend::GL
 		static ENUM_SHADER_TYPE getShaderType( const FilePath & p_name )
 		{
 			std::string extension = p_name.extension().string();
-			if ( _EXTENSIONS.find( extension ) != _EXTENSIONS.end() )
+			const auto	it = _EXTENSIONS.find( extension );
+			if ( it != _EXTENSIONS.end() )
 			{
-				return _EXTENSIONS.at( extension );
+				return it->second;
 			}
 
 			return ENUM_SHADER_TYPE::INVALID;

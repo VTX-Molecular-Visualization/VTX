@@ -158,11 +158,11 @@ namespace VTX::Renderer::Context::Backend::GL
 			const GLenum		 p_mode,
 			const GLvoid * const p_indirect,
 			const GLintptr		 p_drawCountOffset,
-			const GLsizei		 p_maxDrawCount
+			const GLsizei		 p_drawCapacity
 		) const noexcept
 		{
 			glMultiDrawArraysIndirectCount(
-				p_mode, p_indirect, p_drawCountOffset, p_maxDrawCount, sizeof( DrawArraysIndirectCommand )
+				p_mode, p_indirect, p_drawCountOffset, p_drawCapacity, sizeof( DrawArraysIndirectCommand )
 			);
 		}
 
@@ -213,11 +213,11 @@ namespace VTX::Renderer::Context::Backend::GL
 			const GLenum		 p_type,
 			const GLvoid * const p_indirect,
 			const GLintptr		 p_drawCountOffset,
-			const GLsizei		 p_maxDrawCount
+			const GLsizei		 p_drawCapacity
 		) const noexcept
 		{
 			glMultiDrawElementsIndirectCount(
-				p_mode, p_type, p_indirect, p_drawCountOffset, p_maxDrawCount, sizeof( DrawElementsIndirectCommand )
+				p_mode, p_type, p_indirect, p_drawCountOffset, p_drawCapacity, sizeof( DrawElementsIndirectCommand )
 			);
 		}
 

@@ -5,6 +5,10 @@
 #include "renderer/context/command_buffer.hpp"
 #include "renderer/descriptors.hpp"
 #include "renderer/struct_infos.hpp"
+#include <functional>
+#include <memory>
+#include <span>
+#include <vector>
 
 namespace VTX::Renderer::Context
 {
@@ -41,9 +45,29 @@ namespace VTX::Renderer::Context
 		void execute() const noexcept;
 
 		/**
+		 * @brief Execute selected pass ranges from the current command buffer.
+		 */
+		void execute( std::span<const PassID> ) const noexcept;
+
+		/**
 		 * @brief Build the command buffer from the render queue and resources.
 		 */
 		void build( const Desc::RenderQueue &, const Desc::Resources & );
+
+		/**
+		 * @brief Set the function and user context for an external pass command.
+		 */
+		void setExternalPass( const Desc::Key &, uintptr_t, uintptr_t = 0 );
+
+		/**
+		 * @brief Check if a pass exists in the current command buffer.
+		 */
+		bool containsPass( const Desc::Key & ) const;
+
+		/**
+		 * @brief Schedule an ON_DIRTY pass for the next execute().
+		 */
+		void markPassDirty( const Desc::Key & );
 
 		/**
 		 * @brief Resize backend resources.
@@ -74,12 +98,14 @@ namespace VTX::Renderer::Context
 		{
 			setBuffer( p_key, asBytes( p_data ), p_offset * sizeof( T ) );
 		}
+
 		template<typename T>
 		inline void setBuffer( const Desc::Key & p_key, const size_t p_size )
 		{
 			auto span = SpanBytes { static_cast<std::byte *>( nullptr ), p_size * sizeof( T ) };
 			setBuffer( p_key, span, 0 );
 		}
+
 		void setBuffer( const Desc::Key & p_key, SpanBytes, const size_t p_offset = 0 );
 
 		/**
@@ -102,6 +128,7 @@ namespace VTX::Renderer::Context
 		{
 			setTextureData( p_key, asBytes( p_data ) );
 		}
+
 		void setTextureData( const Desc::Key & p_key, SpanBytes p_data );
 
 		/**
@@ -118,6 +145,24 @@ namespace VTX::Renderer::Context
 		 * @brief Fill renderer infos.
 		 */
 		void fillInfos( StructInfos & p_infos ) const;
+
+		/**
+		 * @brief Map graphics buffers to an external compute backend pointer.
+		 */
+		[[nodiscard]] Desc::InteropBufferMapping mapInteropBuffer( const Desc::E_INTEROP_API, const Desc::Key & );
+		[[nodiscard]] std::vector<Desc::InteropBufferMapping> mapInteropBuffers(
+			const Desc::E_INTEROP_API,
+			std::span<const Desc::Key>
+		);
+		void unmapInteropBuffer( const Desc::E_INTEROP_API, const Desc::InteropBufferMapping & );
+		void unmapInteropBuffers( const Desc::E_INTEROP_API, std::span<const Desc::InteropBufferMapping> );
+
+		/**
+		 * @brief Query whether a backend interop API can access renderer-owned graphics resources.
+
+		 */
+		Desc::InteropAvailability interopAvailability( Desc::E_INTEROP_API ) const;
+		bool					  isInteropAvailable( Desc::E_INTEROP_API ) const;
 
 		/**
 		 * @brief Getters.

@@ -12,9 +12,10 @@ namespace VTX::Renderer::Context::Executor
 	{
 	  public:
 		/**
-		 * @brief Execute commands from the command buffer.
+		 * @brief Execute a single command.
 		 */
-		inline void execute( const CommandBuffer & ) const noexcept
+		template<typename PayLoad>
+		inline void execute( const PayLoad & ) const noexcept
 		{
 			// Do nothing.
 		}
