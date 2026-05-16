@@ -47,6 +47,9 @@ jobs:
           - os: ubuntu-22.04
             channel: linux
             conan_cppstd: 'gnu20'
+          - os: ubuntu-latest
+            channel: linux-latest
+            conan_cppstd: 'gnu20'
           - os: windows-11-arm
             channel: win-arm
             conan_cppstd: '20'
