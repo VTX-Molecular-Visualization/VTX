@@ -10,7 +10,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief Static pipeline for system/geometry build phases.
 	 */
-	template<typename... B>
+	template<typename... Builders>
 	class SystemBuildPipeline
 	{
 	  public:
@@ -19,7 +19,7 @@ namespace VTX::Renderer
 		 */
 		SystemBuildPipeline() = default;
 
-		SystemBuildPipeline( B... p_builders ) : _builders( std::move( p_builders )... ) {}
+		SystemBuildPipeline( BuildersB... p_builders ) : _builders( std::move( p_builders )... ) {}
 
 		/**
 		 * @brief Call given phase for all builders.
@@ -73,15 +73,15 @@ namespace VTX::Renderer
 			_forEachBuilder( [ & ]<typename B>( B & p_builder ) { _buildDrawRanges( p_builder, p_context ); } );
 		}
 
-		inline std::tuple<B...> & builders() noexcept { return _builders; }
+		inline std::tuple<Builders...> & builders() noexcept { return _builders; }
 
-		inline const std::tuple<B...> & builders() const noexcept { return _builders; }
+		inline const std::tuple<Builders...> & builders() const noexcept { return _builders; }
 
 	  private:
 		/**
 		 * @brief All builders.
 		 */
-		std::tuple<B...> _builders;
+		std::tuple<Builders...> _builders;
 
 		/**
 		 * @brief Apply for each builder.
@@ -95,8 +95,8 @@ namespace VTX::Renderer
 		/**
 		 * @brief Call builder impl. if function exists.
 		 */
-		template<typename BD, typename C>
-		static void _clear( BD & p_builder, C & p_context )
+		template<typename B, typename C>
+		static void _clear( B & p_builder, C & p_context )
 		{
 			if constexpr ( requires { p_builder.clear( p_context ); } )
 			{
@@ -104,8 +104,8 @@ namespace VTX::Renderer
 			}
 		}
 
-		template<typename BD, typename C, typename S>
-		static void _registerSystems( BD & p_builder, C & p_context, std::span<const S> p_systems )
+		template<typename B, typename C, typename S>
+		static void _registerSystems( B & p_builder, C & p_context, std::span<const S> p_systems )
 		{
 			if constexpr ( requires { p_builder.registerSystems( p_context, p_systems ); } )
 			{
@@ -120,8 +120,8 @@ namespace VTX::Renderer
 			}
 		}
 
-		template<typename BD, typename C>
-		static void _allocateInputs( BD & p_builder, C & p_context )
+		template<typename B, typename C>
+		static void _allocateInputs( B & p_builder, C & p_context )
 		{
 			if constexpr ( requires { p_builder.allocateInputs( p_context ); } )
 			{
@@ -129,8 +129,8 @@ namespace VTX::Renderer
 			}
 		}
 
-		template<typename BD, typename C, typename S>
-		static void _uploadInputs( BD & p_builder, C & p_context, std::span<const S> p_systems )
+		template<typename B, typename C, typename S>
+		static void _uploadInputs( B & p_builder, C & p_context, std::span<const S> p_systems )
 		{
 			if constexpr ( requires { p_builder.uploadInputs( p_context, p_systems ); } )
 			{
@@ -145,8 +145,8 @@ namespace VTX::Renderer
 			}
 		}
 
-		template<typename BD, typename C>
-		static void _buildDerived( BD & p_builder, C & p_context )
+		template<typename B, typename C>
+		static void _buildDerived( B & p_builder, C & p_context )
 		{
 			if constexpr ( requires { p_builder.buildDerived( p_context ); } )
 			{
@@ -154,8 +154,8 @@ namespace VTX::Renderer
 			}
 		}
 
-		template<typename BD, typename C>
-		static void _allocateOutputs( BD & p_builder, C & p_context )
+		template<typename B, typename C>
+		static void _allocateOutputs( B & p_builder, C & p_context )
 		{
 			if constexpr ( requires { p_builder.allocateOutputs( p_context ); } )
 			{
@@ -163,8 +163,8 @@ namespace VTX::Renderer
 			}
 		}
 
-		template<typename BD, typename C, typename S>
-		static void _writeOutputs( BD & p_builder, C & p_context, std::span<const S> p_systems )
+		template<typename B, typename C, typename S>
+		static void _writeOutputs( B & p_builder, C & p_context, std::span<const S> p_systems )
 		{
 			if constexpr ( requires { p_builder.writeOutputs( p_context, p_systems ); } )
 			{
@@ -179,8 +179,8 @@ namespace VTX::Renderer
 			}
 		}
 
-		template<typename BD, typename C>
-		static void _buildDrawRanges( BD & p_builder, C & p_context )
+		template<typename B, typename C>
+		static void _buildDrawRanges( B & p_builder, C & p_context )
 		{
 			if constexpr ( requires { p_builder.buildDrawRanges( p_context ); } )
 			{
