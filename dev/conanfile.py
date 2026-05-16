@@ -24,6 +24,7 @@ python_binding_module = import_module_from_file( Path("..") / "lib" / "python_bi
 qt_module = import_module_from_file( Path("..") / "lib" / "ui"/ "qt" / "conanfile.py" )
 mdprep_module = import_module_from_file( Path("..") / "tool" / "mdprep"/ "conanfile.py" )
 renderer_module = import_module_from_file( Path("..") / "lib" / "renderer" / "conanfile.py" )
+app_module = import_module_from_file( Path("..") / "lib" / "app" / "conanfile.py" )
 
 class VTXRecipe(ConanFile):
     name = "vtx"
@@ -130,6 +131,9 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["VTX_UI_QT"] = 1 if self.options.ui_qt else 0
         tc.cache_variables["VTX_RENDERER"] = 1 if self.options.renderer else 0
         tc.cache_variables["VTX_PYTHON_BINDING"] = 1 if self.options.python_binding else 0
+        tc.cache_variables["VTX_VELOPACK_LIB"] = app_module.velopack_lib_name(
+            str(self.settings.os), str(self.settings.arch)
+        )
         if self.options.renderer:
             tc.cache_variables["VTX_CUDA_ARCH"] = self.options.cuda_arch
         tc.cache_variables["LOCAL_PDB100"] = 1 if self.options.local_pdb100 else 0

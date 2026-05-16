@@ -6,7 +6,7 @@ from conan.tools.env import VirtualRunEnv
 from conan.tools.system.package_manager import Apt
 
 
-def _velopack_lib_name(os_name: str, arch: str) -> str:
+def velopack_lib_name(os_name: str, arch: str) -> str:
     if os_name == "Windows":
         if arch == "x86_64":
             return "velopack_libc_win_x64_msvc.lib"
@@ -14,9 +14,9 @@ def _velopack_lib_name(os_name: str, arch: str) -> str:
             return "velopack_libc_win_arm64_msvc.lib"
     elif os_name == "Linux":
         if arch == "x86_64":
-            return "libvelopack_libc_linux_x64_gnu.a"
+            return "velopack_libc_linux_x64_gnu.a"
         if arch == "armv8":
-            return "libvelopack_libc_linux_arm64_gnu.a"
+            return "velopack_libc_linux_arm64_gnu.a"
     elif os_name == "Macos":
         if arch == "x86_64":
             return "velopack_libc_osx_x64_gnu.a"
@@ -101,7 +101,7 @@ class VTXAppRecipe(ConanFile):
         tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch
         tc.cache_variables["VTX_RENDERER"] = 1 if self.options.renderer else 0
         tc.cache_variables["VTX_PYTHON_BINDING"] = 1 if self.options.python_binding else 0
-        tc.cache_variables["VTX_VELOPACK_LIB"] = _velopack_lib_name(
+        tc.cache_variables["VTX_VELOPACK_LIB"] = velopack_lib_name(
             str(self.settings.os), str(self.settings.arch)
         )
         tc.generate()
@@ -121,12 +121,12 @@ class VTXAppRecipe(ConanFile):
     def package_info(self):
         os_name = str(self.settings.os)
         arch = str(self.settings.arch)
-        velopack_lib_name = _velopack_lib_name(os_name, arch)
+        velopack_lib_filename = velopack_lib_name(os_name, arch)
 
         self.cpp_info.libs = ["vtx_app"]        
         self.cpp_info.libdirs.append(os.path.join("vendor", "velopack", "lib-static"))
         self.conf_info.define("user.app:renderer", "1" if self.options.renderer else "0")
         self.conf_info.define("user.app:python_binding", "1" if self.options.python_binding else "0")
-        self.cpp_info.libs.append(_conan_lib_name(velopack_lib_name))
+        self.cpp_info.libs.append(_conan_lib_name(velopack_lib_filename))
         if os_name == "Windows":
             self.cpp_info.system_libs.append("ntdll")
