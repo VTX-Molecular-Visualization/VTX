@@ -54,11 +54,11 @@ jobs:
       with:
         submodules: recursive
         
-    - name: Get Conan
-      uses: turtlebrowser/get-conan@v1.2
-      
-    - name: Create default profile
-      run: conan profile detect
+    - name: Setup Conan
+      uses: conan-io/setup-conan@v1.3.0
+      with:
+        use_venv: true
+        profile_detect: true
       
     - name: Add custom remote
       run: |
