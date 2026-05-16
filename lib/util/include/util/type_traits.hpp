@@ -34,6 +34,8 @@ namespace VTX
 	template<typename>
 	constexpr bool always_true_v = true;
 	template<typename>
+	constexpr bool always_false_t = false;
+	template<auto>
 	constexpr bool always_false_v = false;
 
 } // namespace VTX

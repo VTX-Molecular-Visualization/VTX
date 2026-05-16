@@ -97,7 +97,7 @@ namespace VTX::Util
 			*/
 			else
 			{
-				static_assert( always_false_v<T>, "Util::Collection::create(): unrecognized type." );
+				static_assert( always_false_t<T>, "Util::Collection::create(): unrecognized type." );
 			}
 		}
 
@@ -151,7 +151,7 @@ namespace VTX::Util
 			*/
 			else
 			{
-				static_assert( always_false_v<T>, "Util::Collection::create(): unrecognized type." );
+				static_assert( always_false_t<T>, "Util::Collection::create(): unrecognized type." );
 			}
 		}
 
@@ -220,7 +220,7 @@ namespace VTX::Util
 			*/
 			else
 			{
-				static_assert( always_false_v<T>, "Util::Collection::create(): unrecognized type." );
+				static_assert( always_false_t<T>, "Util::Collection::create(): unrecognized type." );
 			}
 
 			return get<T>( p_hash );

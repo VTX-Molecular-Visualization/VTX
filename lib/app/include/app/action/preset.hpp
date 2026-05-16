@@ -173,7 +173,7 @@ namespace VTX::App::Action::Preset
 			}
 			else
 			{
-				static_assert( always_false_v<T>, "Unsupported preset type." );
+				static_assert( always_false_t<T>, "Unsupported preset type." );
 			}
 		}
 	};
