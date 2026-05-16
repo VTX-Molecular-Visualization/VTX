@@ -4,6 +4,7 @@
 #include <renderer/render_graph.hpp>
 #include <renderer/representation.hpp>
 #include <renderer/resource_handler.hpp>
+#include <renderer/system_build_pipeline.hpp>
 #include <util/exceptions.hpp>
 #include <util/math.hpp>
 
@@ -51,6 +52,77 @@ namespace
 		return g;
 	}
 } // namespace
+
+TEST_CASE( "SystemBuildPipeline: calls optional phases in builder order", "[renderer][system-build]" )
+{
+	struct TestSystem
+	{
+		int id = 0;
+	};
+
+	struct TestContext
+	{
+		std::vector<std::string> events;
+
+		void push( const std::string & p_event ) { events.emplace_back( p_event ); }
+	};
+
+	struct AtomBuilder
+	{
+		void registerSystem( TestContext & p_context, const TestSystem & p_system )
+		{
+			p_context.push( "atoms.register." + std::to_string( p_system.id ) );
+		}
+
+		void allocateInputs( TestContext & p_context ) { p_context.push( "atoms.allocateInputs" ); }
+
+		void uploadInput( TestContext & p_context, const TestSystem & p_system )
+		{
+			p_context.push( "atoms.upload." + std::to_string( p_system.id ) );
+		}
+	};
+
+	struct SESBuilder
+	{
+		void registerSystems( TestContext & p_context, std::span<const TestSystem> p_systems )
+		{
+			p_context.push( "ses.registerBatch." + std::to_string( p_systems.size() ) );
+		}
+
+		void buildDerived( TestContext & p_context ) { p_context.push( "ses.buildDerived" ); }
+
+		void allocateOutputs( TestContext & p_context ) { p_context.push( "ses.allocateOutputs" ); }
+
+		void writeOutputs( TestContext & p_context, std::span<const TestSystem> p_systems )
+		{
+			p_context.push( "ses.writeBatch." + std::to_string( p_systems.size() ) );
+		}
+	};
+
+	struct DrawBuilder
+	{
+		void buildDrawRanges( TestContext & p_context ) { p_context.push( "draw.buildRanges" ); }
+	};
+
+	TestContext					  context;
+	const std::vector<TestSystem> systems { { 10 }, { 20 } };
+
+	SystemBuildPipeline<AtomBuilder, SESBuilder, DrawBuilder> pipeline;
+	pipeline.registerSystems( context, std::span<const TestSystem>( systems ) );
+	pipeline.allocateInputs( context );
+	pipeline.uploadInputs( context, std::span<const TestSystem>( systems ) );
+	pipeline.buildDerived( context );
+	pipeline.allocateOutputs( context );
+	pipeline.writeOutputs( context, std::span<const TestSystem>( systems ) );
+	pipeline.buildDrawRanges( context );
+
+	const std::vector<std::string> expected {
+		"atoms.register.10", "atoms.register.20", "ses.registerBatch.2", "atoms.allocateInputs", "atoms.upload.10",
+		"atoms.upload.20",	 "ses.buildDerived",  "ses.allocateOutputs", "ses.writeBatch.2",	 "draw.buildRanges",
+	};
+
+	CHECK( context.events == expected );
+}
 
 TEST_CASE( "RenderGraph: simple linear graph builds and preserves order", "[renderer][graph]" )
 {
@@ -220,8 +292,7 @@ TEST_CASE( "GraphBuilder: compute dispatch pass builds", "[renderer][graph]" )
 	CHECK( queue[ 0 ]->programs[ 0 ].dispatch->groupY == 2 );
 	CHECK( queue[ 0 ]->programs[ 0 ].dispatch->groupZ == 1 );
 	CHECK(
-		queue[ 0 ]->programs[ 0 ].dispatch->barriers
-		== ( E_MEMORY_BARRIER::SHADER_STORAGE | E_MEMORY_BARRIER::COMMAND )
+		queue[ 0 ]->programs[ 0 ].dispatch->barriers == ( E_MEMORY_BARRIER::SHADER_STORAGE | E_MEMORY_BARRIER::COMMAND )
 	);
 }
 

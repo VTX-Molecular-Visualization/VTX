@@ -1,8 +1,8 @@
 #include "renderer/geometry/ses.hpp"
 #include "renderer/representation.hpp"
 #include <array>
+#include <util/chrono.hpp>
 #include <util/logger.hpp>
-
 #ifdef VTX_CUDA_ENABLED
 #include "renderer/geometry/ses_cuda.hpp"
 #endif
@@ -50,6 +50,8 @@ namespace VTX::Renderer::Geometry
 
 	void SES::construct( const Desc::Handle p_handle, const SystemData & p_data )
 	{
+		Util::ScopedChrono chrono( "SES construct" );
+
 		auto construction = std::make_unique<Construction>();
 		for ( const auto & [ handle, existingConstruction ] : _construction )
 		{
@@ -147,6 +149,8 @@ namespace VTX::Renderer::Geometry
 
 	void SES::compute( Context::ContextWrapper & p_context )
 	{
+		Util::ScopedChrono chrono( "SES compute" );
+
 #ifdef VTX_CUDA_ENABLED
 		bool hasCudaConstruction = false;
 		for ( const auto & entry : _construction )
@@ -165,12 +169,7 @@ namespace VTX::Renderer::Geometry
 
 		if ( not p_context.isInteropAvailable( Desc::E_INTEROP_API::CUDA ) )
 		{
-			static bool warningSent = false;
-			if ( not warningSent )
-			{
-				VTX_WARNING( "Can not compute SES: CUDA graphics interop is not available." );
-				warningSent = true;
-			}
+			VTX_WARNING( "Can not compute SES: CUDA graphics interop is not available." );
 			return;
 		}
 
