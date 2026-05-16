@@ -47,6 +47,12 @@ jobs:
           - os: ubuntu-22.04
             channel: linux
             conan_cppstd: 'gnu20'
+          - os: windows-11-arm
+            channel: win-arm
+            conan_cppstd: '20'
+          - os: ubuntu-24.04-arm
+            channel: linux-arm
+            conan_cppstd: 'gnu20'
 
     steps:
     - name: Set git to use CRLF
