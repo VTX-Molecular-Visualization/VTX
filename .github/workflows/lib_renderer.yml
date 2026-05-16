@@ -44,8 +44,12 @@ jobs:
             conan_cppstd: 'gnu20'
           - os: windows-11-arm
             conan_cppstd: '20'
-          - os: ubuntu-24.04-arm
+          - os: ubuntu-22.04-arm
             conan_cppstd: 'gnu20'
+          - os: macos-15-intel
+            conan_cppstd: '20'
+          - os: macos-15
+            conan_cppstd: '20'
       fail-fast: false
 
     steps:
