@@ -2,10 +2,13 @@
 #include "util/exceptions.hpp"
 #include <filesystem>
 #include <fstream>
+#include <string>
 #include <sago/platform_folders.h>
 
 #ifdef _WIN32
 #include <windows.h>
+#elif defined( __APPLE__ )
+#include <mach-o/dyld.h>
 #elif defined( __linux__ )
 #include <limits.h>
 #include <unistd.h>
@@ -29,6 +32,25 @@ namespace VTX::Util::Filesystem
 		GetModuleFileNameW( NULL, szPath, MAX_PATH );
 
 		return std::filesystem::path { szPath }; // to finish the folder path with (back)slash
+#elif defined( __APPLE__ )
+		uint32_t size = 0;
+		_NSGetExecutablePath( nullptr, &size );
+		std::string path( size, '\0' );
+
+		if ( _NSGetExecutablePath( path.data(), &size ) == 0 )
+		{
+			path.resize( std::char_traits<char>::length( path.c_str() ) );
+			try
+			{
+				return std::filesystem::canonical( path );
+			}
+			catch ( const std::filesystem::filesystem_error & )
+			{
+				return std::filesystem::path { path };
+			}
+		}
+
+		return std::filesystem::current_path();
 #elif defined( __linux__ )
 		// Linux specific
 		char	szPath[ PATH_MAX ];
