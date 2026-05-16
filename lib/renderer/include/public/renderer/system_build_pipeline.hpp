@@ -19,7 +19,7 @@ namespace VTX::Renderer
 		 */
 		SystemBuildPipeline() = default;
 
-		SystemBuildPipeline( BuildersB... p_builders ) : _builders( std::move( p_builders )... ) {}
+		SystemBuildPipeline( Builders... p_builders ) : _builders( std::move( p_builders )... ) {}
 
 		/**
 		 * @brief Call given phase for all builders.
