@@ -451,41 +451,10 @@ namespace VTX::Renderer
 		assert( _systems.contains( p_uid ) );
 
 		const Desc::Handle h = _systems.handle( p_uid );
+		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
 
-		// Push atom positions.
-		_layouts.atoms.upload<Layout::ATOM_ATTR::POSITION, Vec3f>( _context, h, p_positions );
-
-		// Compute ribbon positions and directions.
-		const auto & construction = _geometries.ribbons.construction( h );
-		if ( not construction.isEmpty )
-		{
-			const Index		   countResidues = _layouts.residues.size( h );
-			std::vector<Vec4f> ribbonPositions( countResidues );
-			std::vector<Vec3f> ribbonDirections( countResidues );
-
-			for ( Index i = 0; i < countResidues; ++i )
-			{
-				// Compute direction between carbon alpha and oxygen.
-				const Vec3f & positionCA   = p_positions[ construction.residues[ i ].ca ];
-				const Vec3f & positionO	   = p_positions[ construction.residues[ i ].o ];
-				const Vec3f	  directionCAO = Util::Math::normalize( positionO - positionCA );
-
-				ribbonPositions[ i ]  = Vec4f( positionCA, i );
-				ribbonDirections[ i ] = directionCAO;
-
-				if ( i > 0 )
-				{
-					const Vec3f & prevDirection = ribbonDirections[ i - 1 ];
-					if ( Util::Math::dot( directionCAO, prevDirection ) < 0.f )
-					{
-						ribbonDirections[ i ] = -directionCAO;
-					}
-				}
-			}
-
-			_layouts.residues.upload<Layout::RESIDUE_ATTR::POSITION, Vec4f>( _context, h, ribbonPositions );
-			_layouts.residues.upload<Layout::RESIDUE_ATTR::DIRECTION, Vec3f>( _context, h, ribbonDirections );
-		}
+		Builder::AtomLayout::uploadPositions( buildContext, h, p_positions );
+		Builder::RibbonGeometry::uploadPositions( buildContext, h, p_positions );
 
 		setNeedUpdate( true );
 	}
@@ -496,7 +465,7 @@ namespace VTX::Renderer
 
 		const Desc::Handle h = _systems.handle( p_uid );
 		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
-		Builder::UploadSystemRenderState::uploadColors( buildContext, h, p_colors );
+		Builder::AtomLayout::uploadColors( buildContext, h, p_colors );
 
 		setNeedUpdate( true );
 	}
@@ -513,9 +482,8 @@ namespace VTX::Renderer
 
 		const Desc::Handle h = _systems.handle( p_uid );
 		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
-		Builder::UploadSystemRenderState::uploadRepresentations(
-			buildContext, h, p_representations, p_atomRepresentations
-		);
+		Builder::AtomLayout::uploadRepresentations( buildContext, h, p_representations, p_atomRepresentations );
+		Builder::ResidueLayout::uploadRepresentations( buildContext, h, p_atomRepresentations );
 
 		setNeedUpdate( true );
 	}
@@ -523,7 +491,6 @@ namespace VTX::Renderer
 	void Renderer::setSystemVisibility(
 		const SystemUID			   p_uid,
 		const Util::Math::BitSet & p_visibility
-
 	)
 	{
 		assert( _systems.contains( p_uid ) );
@@ -532,7 +499,7 @@ namespace VTX::Renderer
 
 		const Desc::Handle h = _systems.handle( p_uid );
 		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
-		Builder::UploadSystemRenderState::uploadVisibility( buildContext, h, p_visibility );
+		Builder::SystemVisibility::uploadVisibility( buildContext, h, p_visibility );
 
 		setNeedUpdate( true );
 	}
@@ -545,7 +512,8 @@ namespace VTX::Renderer
 
 		const Desc::Handle h = _systems.handle( p_uid );
 		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
-		Builder::UploadSystemRenderState::uploadSelection( buildContext, h, p_atomFlags );
+		Builder::AtomLayout::uploadSelection( buildContext, h, p_atomFlags );
+		Builder::ResidueLayout::uploadSelection( buildContext, h, p_atomFlags );
 
 		setNeedUpdate( true );
 	}

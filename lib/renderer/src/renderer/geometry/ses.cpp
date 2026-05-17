@@ -60,6 +60,15 @@ namespace VTX::Renderer::Geometry
 			construction->sectorOffset += existingConstruction->sectorNb;
 		}
 
+		// Temporary SES bypass: keep empty geometry ranges so the render graph stays valid, but skip the CUDA build.
+		convexPatches.construct( p_handle, 0 );
+		circlePatches.construct( p_handle, 0 );
+		segmentPatches.construct( p_handle, 0 );
+		concavePatches.construct( p_handle, 0 );
+
+		_construction.emplace( p_handle, std::move( construction ) );
+		return;
+
 		const Index atomCount = p_data.data.getAtomCount();
 		if ( atomCount != 0 && p_data.trajectory.size() != atomCount )
 		{
@@ -150,6 +159,7 @@ namespace VTX::Renderer::Geometry
 	void SES::compute( Context::ContextWrapper & p_context )
 	{
 		Util::ScopedChrono chrono( "SES compute" );
+		return;
 
 #ifdef VTX_CUDA_ENABLED
 		bool hasCudaConstruction = false;
