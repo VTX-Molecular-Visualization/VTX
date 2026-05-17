@@ -4,13 +4,20 @@
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/pass/pass_manager.hpp"
+#include <core/struct/topology.hpp>
+#include <map>
 #include <renderer/types.hpp>
 #include <unordered_map>
+#include <vector>
 
 namespace VTX::App::System
 {
 	struct PendingSystem;
-}
+	struct Color;
+	struct Representation;
+	struct Selection;
+} // namespace VTX::App::System
+
 namespace VTX::App::Pass
 {
 	/**
@@ -61,7 +68,17 @@ namespace VTX::App::Pass
 
 		void _onUpdateRepresentationPreset( ECS::Registry &, ECS::Entity );
 
-		void _setRepresentation();
+		void									   _setRepresentation();
+		Renderer::MapRepresentationRanges		   _buildRepresentationRanges( const System::Representation & );
+		std::vector<Renderer::RepresentationIndex> _buildAtomRepresentations(
+			const Core::Struct::Topology &,
+			const Renderer::MapRepresentationRanges &
+		) const;
+		std::vector<Renderer::ColorIndex> _buildAtomColors(
+			const System::Color &,
+			const Core::Struct::Topology &
+		) const;
+		std::vector<Renderer::Flag> _buildAtomFlags( const System::Selection &, const size_t ) const;
 
 		void _onTrajectoryDestruction( ECS::Registry &, ECS::Entity );
 

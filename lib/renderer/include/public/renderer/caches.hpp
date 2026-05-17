@@ -3,15 +3,8 @@
 
 #include "renderer/camera.hpp"
 #include "renderer/types.hpp"
-#include <core/struct/topology.hpp>
-#include <unordered_map>
 #include <util/math/bitset.hpp>
 #include <util/types.hpp>
-
-namespace VTX::Renderer
-{
-	using MapRepresentationRanges = std::unordered_map<RepresentationIndex, Core::Struct::IndexRangeList>;
-}
 
 namespace VTX::Renderer::Cache
 {

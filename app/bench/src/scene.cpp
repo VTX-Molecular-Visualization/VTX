@@ -75,13 +75,20 @@ namespace VTX::Bench
 
 		for ( const SystemEntry & system : _systems )
 		{
+			const size_t atomCount			  = system.topology->getAtomCount();
+			const auto	 representationRanges = _buildDefaultRepresentation( *system.topology );
 			systems.push_back(
 				Renderer::SystemData { system.uid,
 									   system.transform,
 									   *system.topology,
 									   system.positions,
 									   system.atomUids,
-									   system.residueUids }
+									   system.residueUids,
+									   _buildAtomColors( *system.topology ),
+									   representationRanges,
+									   std::vector<Renderer::RepresentationIndex>( atomCount, 0 ),
+									   Util::Math::BitSet( atomCount, true ),
+									   std::vector<Renderer::Flag>( atomCount, 0 ) }
 			);
 		}
 
@@ -115,15 +122,6 @@ namespace VTX::Bench
 	void Scene::syncRenderer( Renderer::Renderer & p_renderer ) const
 	{
 		p_renderer.setSystems( _buildRendererSystems() );
-
-		for ( const SystemEntry & system : _systems )
-		{
-			const size_t atomCount = system.topology->getAtomCount();
-			p_renderer.setSystemColors( system.uid, _buildAtomColors( *system.topology ) );
-			p_renderer.setSystemRepresentation( system.uid, _buildDefaultRepresentation( *system.topology ) );
-			p_renderer.setSystemVisibility( system.uid, Util::Math::BitSet( atomCount, true ) );
-			p_renderer.setSystemSelection( system.uid, Util::Math::BitSet( atomCount ) );
-		}
 	}
 
 } // namespace VTX::Bench

@@ -82,14 +82,15 @@ namespace VTX::App::Pass
 
 		for ( const ECS::Entity system : _entities )
 		{
-			const auto & data			= reg.get<Core::Struct::Topology>( system );
-			const auto & transform		= reg.get<Util::Math::Transform>( system );
-			const auto & uid			= reg.get<System::UID>( system );
-			const auto & color			= reg.get<System::Color>( system );
-			const auto & representation = reg.get<System::Representation>( system );
-			const auto & visibility		= reg.get<System::Visibility>( system );
-			const auto & selection		= reg.get<System::Selection>( system );
-			const size_t atomCount		= data.getAtomCount();
+			const auto & data				  = reg.get<Core::Struct::Topology>( system );
+			const auto & transform			  = reg.get<Util::Math::Transform>( system );
+			const auto & uid				  = reg.get<System::UID>( system );
+			const auto & color				  = reg.get<System::Color>( system );
+			const auto & representation		  = reg.get<System::Representation>( system );
+			const auto & visibility			  = reg.get<System::Visibility>( system );
+			const auto & selection			  = reg.get<System::Selection>( system );
+			const size_t atomCount			  = data.getAtomCount();
+			const auto	 representationRanges = _buildRepresentationRanges( representation );
 
 			assert( atomCount > 0 );
 
@@ -100,21 +101,17 @@ namespace VTX::App::Pass
 									   data,
 									   positions,
 									   uid.atoms.toStdVector(),
-									   uid.residues.toStdVector() }
+									   uid.residues.toStdVector(),
+									   _buildAtomColors( color, data ),
+									   representationRanges,
+									   _buildAtomRepresentations( data, representationRanges ),
+									   visibility.atoms,
+									   _buildAtomFlags( selection, atomCount ) }
 			);
 		}
 
-		// Push systems.
+		_setRepresentation();
 		RENDERER().setSystems( systemsData );
-
-		// Push data.
-		for ( const ECS::Entity e : _entities )
-		{
-			_onUpdateVisibility( reg, e );
-			_onUpdateSelection( reg, e );
-			_onUpdateColor( reg, e );
-			_onUpdateRepresentation( reg, e );
-		}
 	}
 
 	void SystemUpdater::_onUpdateVisibility( ECS::Registry & p_r, ECS::Entity p_e )
@@ -126,9 +123,9 @@ namespace VTX::App::Pass
 
 	void SystemUpdater::_onUpdateSelection( ECS::Registry & p_r, ECS::Entity p_e )
 	{
-		const auto & [ selection, uid ] = p_r.get<System::Selection, System::UID>( p_e );
+		const auto & [ selection, uid, data ] = p_r.get<System::Selection, System::UID, Core::Struct::Topology>( p_e );
 
-		RENDERER().setSystemSelection( uid.system, selection.atoms );
+		RENDERER().setSystemSelection( uid.system, _buildAtomFlags( selection, data.getAtomCount() ) );
 	}
 
 	void SystemUpdater::_onUpdateRepresentation( ECS::Registry & p_r, ECS::Entity p_e )
@@ -138,57 +135,96 @@ namespace VTX::App::Pass
 		const auto & [ representation, uid, data ]
 			= p_r.get<System::Representation, System::UID, Core::Struct::Topology>( p_e );
 
-		MapRepresentationRanges mapAtoms;
+		const size_t representationCountBefore = _representations.size();
+		const auto	 mapAtoms				   = _buildRepresentationRanges( representation );
 
-		bool newRepresentation = false;
-		for ( const auto & [ entity, ranges ] : representation.presetAtoms )
-		{
-			if ( not _representations.contains( entity ) )
-			{
-				_representations[ entity ] = static_cast<RepresentationIndex>( _representations.size() );
-				newRepresentation		   = true;
-			}
-			mapAtoms.emplace( _representations[ entity ], ranges );
-		}
-
-		if ( newRepresentation )
+		if ( _representations.size() != representationCountBefore )
 		{
 			_setRepresentation();
 		}
 
-		RENDERER().setSystemRepresentation( uid.system, mapAtoms );
+		RENDERER().setSystemRepresentation( uid.system, mapAtoms, _buildAtomRepresentations( data, mapAtoms ) );
 	}
 
 	void SystemUpdater::_onUpdateColor( ECS::Registry & p_r, ECS::Entity p_e )
 	{
 		const auto & [ color, uid, data ] = p_r.get<System::Color, System::UID, Core::Struct::Topology>( p_e );
 
-		std::vector<Renderer::ColorIndex> atoms( data.getAtomCount() );
+		RENDERER().setSystemColors( uid.system, _buildAtomColors( color, data ) );
+	}
+
+	Renderer::MapRepresentationRanges SystemUpdater::_buildRepresentationRanges(
+		const System::Representation & p_representation
+	)
+	{
+		Renderer::MapRepresentationRanges mapAtoms;
+
+		for ( const auto & [ entity, ranges ] : p_representation.presetAtoms )
+		{
+			if ( not _representations.contains( entity ) )
+			{
+				_representations[ entity ] = static_cast<Renderer::RepresentationIndex>( _representations.size() );
+			}
+			mapAtoms.emplace( _representations[ entity ], ranges );
+		}
+
+		return mapAtoms;
+	}
+
+	std::vector<Renderer::RepresentationIndex> SystemUpdater::_buildAtomRepresentations(
+		const Core::Struct::Topology &			  p_data,
+		const Renderer::MapRepresentationRanges & p_representations
+	) const
+	{
+		const size_t							   atomCount = p_data.getAtomCount();
+		std::vector<Renderer::RepresentationIndex> atoms( atomCount );
+		size_t									   count = 0;
+
+		for ( const auto & [ index, ranges ] : p_representations )
+		{
+			for ( auto it = ranges.rangeBegin(); it != ranges.rangeEnd(); ++it )
+			{
+				std::fill_n( atoms.begin() + it->getFirst(), it->getCount(), index );
+			}
+			count += ranges.count();
+		}
+
+		assert( count == atomCount );
+
+		return atoms;
+	}
+
+	std::vector<Renderer::ColorIndex> SystemUpdater::_buildAtomColors(
+		const System::Color &		   p_color,
+		const Core::Struct::Topology & p_data
+	) const
+	{
+		std::vector<Renderer::ColorIndex> atoms( p_data.getAtomCount() );
 		size_t							  count = 0;
 
-		for ( const auto & [ scheme, ranges ] : color.colorSchemeAtoms )
+		for ( const auto & [ scheme, ranges ] : p_color.colorSchemeAtoms )
 		{
 			if ( scheme == System::E_COLOR_SCHEME::ATOM )
 			{
 				for ( Index atom : ranges )
 				{
-					atoms[ atom ] = Renderer::Color::getColorIndex( data.getAtomSymbol( atom ) );
+					atoms[ atom ] = Renderer::Color::getColorIndex( p_data.getAtomSymbol( atom ) );
 				}
 			}
 			else if ( scheme == System::E_COLOR_SCHEME::RESIDUE )
 			{
 				for ( Index atom : ranges )
 				{
-					const Index residue = data.atomResidueIndexes[ atom ];
-					atoms[ atom ]		= Renderer::Color::getColorIndex( data.getResidueSymbol( residue ) );
+					const Index residue = p_data.atomResidueIndexes[ atom ];
+					atoms[ atom ]		= Renderer::Color::getColorIndex( p_data.getResidueSymbol( residue ) );
 				}
 			}
 			else if ( scheme == System::E_COLOR_SCHEME::CHAIN )
 			{
 				for ( Index atom : ranges )
 				{
-					const Index chain = data.getAtomChainIndex( atom );
-					atoms[ atom ]	  = Renderer::Color::getColorIndex( data.getChainName( chain ) );
+					const Index chain = p_data.getAtomChainIndex( atom );
+					atoms[ atom ]	  = Renderer::Color::getColorIndex( p_data.getChainName( chain ) );
 				}
 			}
 			else
@@ -197,7 +233,7 @@ namespace VTX::App::Pass
 			}
 			count += ranges.count();
 		}
-		for ( const auto & [ colorIndex, ranges ] : color.customColorAtoms )
+		for ( const auto & [ colorIndex, ranges ] : p_color.customColorAtoms )
 		{
 			for ( Index atom : ranges )
 			{
@@ -206,9 +242,24 @@ namespace VTX::App::Pass
 			count += ranges.count();
 		}
 
-		assert( count == data.getAtomCount() );
+		assert( count == p_data.getAtomCount() );
 
-		RENDERER().setSystemColors( uid.system, atoms );
+		return atoms;
+	}
+
+	std::vector<Renderer::Flag> SystemUpdater::_buildAtomFlags(
+		const System::Selection & p_selection,
+		const size_t			  p_atomCount
+	) const
+	{
+		std::vector<Renderer::Flag> atomFlags( p_atomCount, 0 );
+
+		for ( auto i : p_selection.atoms )
+		{
+			atomFlags[ i ] |= Renderer::ELEMENT_FLAG_SELECTION;
+		}
+
+		return atomFlags;
 	}
 
 	void SystemUpdater::_onUpdateRepresentationPreset( ECS::Registry & p_r, ECS::Entity p_e )
@@ -239,6 +290,7 @@ namespace VTX::App::Pass
 
 		RENDERER().setRepresentations( representations );
 	}
+
 	void SystemUpdater::_onTrajectoryDestruction( ECS::Registry &, ECS::Entity p_entity )
 	{
 		if ( auto traj = REG().try_get<System::TrajectoryFullBuffer>( p_entity ) )

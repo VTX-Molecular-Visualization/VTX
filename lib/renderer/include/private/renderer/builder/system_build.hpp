@@ -176,6 +176,136 @@ namespace VTX::Renderer::Builder
 		}
 	};
 
+	struct UploadSystemRenderState
+	{
+		void uploadInput( Context & p_context, const SystemData & p_system ) const
+		{
+			const Desc::Handle handle = p_context.systems.handle( p_system.uid );
+
+			uploadColors( p_context, handle, p_system.atomColors );
+			uploadRepresentations( p_context, handle, p_system.representationRanges, p_system.atomRepresentations );
+			uploadVisibility( p_context, handle, p_system.visibility );
+			uploadSelection( p_context, handle, p_system.atomFlags );
+		}
+
+		static void uploadColors(
+			Context &					p_context,
+			const Desc::Handle			p_handle,
+			std::span<const ColorIndex> p_colors
+		)
+		{
+			using namespace Layout;
+
+			assert( p_colors.size() == p_context.layouts.atoms.size( p_handle ) );
+
+			p_context.layouts.atoms.upload<ATOM_ATTR::COLOR, ColorIndex>(
+				p_context.rendererContext, p_handle, p_colors
+			);
+		}
+
+		static void uploadRepresentations(
+			Context &							 p_context,
+			const Desc::Handle					 p_handle,
+			const MapRepresentationRanges &		 p_representations,
+			std::span<const RepresentationIndex> p_atomRepresentations
+		)
+		{
+			using namespace Layout;
+
+			Cache::System & cache = p_context.systems.get( p_handle );
+			cache.representations = p_representations;
+
+			const Index countAtoms = p_context.layouts.atoms.size( p_handle );
+			assert( p_atomRepresentations.size() == countAtoms );
+
+			p_context.layouts.atoms.upload<ATOM_ATTR::REPRESENTATION, RepresentationIndex>(
+				p_context.rendererContext, p_handle, p_atomRepresentations
+			);
+
+			_uploadResidueRepresentations( p_context, p_handle, p_atomRepresentations );
+
+			p_context.systemToRefresh.insert( p_handle );
+		}
+
+		static void uploadVisibility(
+			Context &				   p_context,
+			const Desc::Handle		   p_handle,
+			const Util::Math::BitSet & p_visibility
+		)
+		{
+			Cache::System & cache = p_context.systems.get( p_handle );
+			cache.visibility	  = p_visibility;
+
+			p_context.systemToRefresh.insert( p_handle );
+		}
+
+		static void uploadSelection(
+			Context &			  p_context,
+			const Desc::Handle	  p_handle,
+			std::span<const Flag> p_atomFlags
+		)
+		{
+			using namespace Layout;
+
+			assert( p_atomFlags.size() == p_context.layouts.atoms.size( p_handle ) );
+
+			p_context.layouts.atoms.upload<ATOM_ATTR::FLAG, Flag>( p_context.rendererContext, p_handle, p_atomFlags );
+
+			_uploadResidueFlags( p_context, p_handle, p_atomFlags );
+		}
+
+	  private:
+		static void _uploadResidueRepresentations(
+			Context &							 p_context,
+			const Desc::Handle					 p_handle,
+			std::span<const RepresentationIndex> p_atomRepresentations
+		)
+		{
+			using namespace Layout;
+
+			const auto &					 construction  = p_context.geometries.ribbons.construction( p_handle );
+			const Index						 countResidues = p_context.layouts.residues.size( p_handle );
+			std::vector<RepresentationIndex> residues( countResidues );
+
+			for ( Index i = 0; i < countResidues; ++i )
+			{
+				const Index atomIndex = construction.residues[ i ].ca;
+				assert( atomIndex < p_atomRepresentations.size() );
+				residues[ i ] = p_atomRepresentations[ atomIndex ];
+			}
+
+			p_context.layouts.residues.upload<RESIDUE_ATTR::REPRESENTATION, RepresentationIndex>(
+				p_context.rendererContext, p_handle, residues
+			);
+		}
+
+		static void _uploadResidueFlags(
+			Context &			  p_context,
+			const Desc::Handle	  p_handle,
+			std::span<const Flag> p_atomFlags
+		)
+		{
+			using namespace Layout;
+
+			const auto &	  construction = p_context.geometries.ribbons.construction( p_handle );
+			std::vector<Flag> residueFlags( p_context.layouts.residues.size( p_handle ), 0 );
+
+			for ( Index i = 0; i < residueFlags.size(); ++i )
+			{
+				const Index atomIndex = construction.residues[ i ].ca;
+				assert( atomIndex < p_atomFlags.size() );
+				if ( p_atomFlags[ atomIndex ] & ELEMENT_FLAG_SELECTION )
+				{
+					residueFlags[ i ] |= ELEMENT_FLAG_SELECTION;
+				}
+			}
+
+			p_context.layouts.residues.upload<RESIDUE_ATTR::FLAG, Flag>(
+				p_context.rendererContext, p_handle, residueFlags
+			);
+		}
+	};
+
 	struct WriteGeometryOutputs
 	{
 		void writeOutput( Context & p_context, const SystemData & p_system ) const
@@ -206,6 +336,7 @@ namespace VTX::Renderer::Builder
 		AllocateSystemInputs,
 		AllocateGeometryOutputs,
 		UploadSystemInputs,
+		UploadSystemRenderState,
 		BuildRibbonInputs,
 		WriteGeometryOutputs,
 		BuildDrawRanges>;

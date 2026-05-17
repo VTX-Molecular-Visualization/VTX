@@ -495,70 +495,27 @@ namespace VTX::Renderer
 		assert( _systems.contains( p_uid ) );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		_layouts.atoms.upload<Layout::ATOM_ATTR::COLOR, ColorIndex>( _context, h, p_colors );
-
-		/*
-		const auto &			construction  = _geometries.ribbons.construction( h );
-		const Index				countResidues = _layouts.residues.size( h );
-		std::vector<ColorIndex> ribbonColors( countResidues );
-		for ( Index i = 0; i < countResidues; ++i )
-		{
-			ribbonColors[ i ] = p_colors[ construction.residues[ i ].ca ];
-		}
-
-		_layouts.residues.upload<Layout::RESIDUE_ATTR::COLOR, ColorIndex>( _context, h, ribbonColors );
-		*/
+		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
+		Builder::UploadSystemRenderState::uploadColors( buildContext, h, p_colors );
 
 		setNeedUpdate( true );
 	}
 
-	void Renderer::setSystemRepresentation( const SystemUID p_uid, const MapRepresentationRanges & p_representations )
+	void Renderer::setSystemRepresentation(
+		const SystemUID						 p_uid,
+		const MapRepresentationRanges &		 p_representations,
+		std::span<const RepresentationIndex> p_atomRepresentations
+	)
 	{
 		assert( _systems.contains( p_uid ) );
 
 		Util::ScopedChrono timer( "[RENDERER] setSystemRepresentation" );
 
-		const Desc::Handle h		   = _systems.handle( p_uid );
-		Cache::System &	   systemCache = _systems.get( p_uid );
-
-		systemCache.representations = p_representations;
-
-		const Index						 countAtoms = _layouts.atoms.size( h );
-		std::vector<RepresentationIndex> atoms( countAtoms );
-		Index							 count = 0;
-
-		for ( const auto & [ index, ranges ] : p_representations )
-		{
-			// Atoms.
-			for ( auto it = ranges.rangeBegin(); it != ranges.rangeEnd(); ++it )
-			{
-				std::fill_n( atoms.begin() + it->getFirst(), it->getCount(), index );
-			}
-			count += ranges.count();
-		}
-
-		assert( count == countAtoms );
-
-		_layouts.atoms.upload<Layout::ATOM_ATTR::REPRESENTATION, RepresentationIndex>( _context, h, atoms );
-
-		// Residues.
-		const auto &					 construction  = _geometries.ribbons.construction( h );
-		const Index						 countResidues = _layouts.residues.size( h );
-		std::vector<RepresentationIndex> residues( countResidues );
-
-		for ( Index i = 0; i < countResidues; ++i )
-		{
-			const Index atomIndex = construction.residues[ i ].ca;
-			assert( atomIndex < atoms.size() );
-			residues[ i ] = atoms[ atomIndex ];
-		}
-
-		assert( count == countAtoms );
-		assert( residues.size() == countResidues );
-
-		_layouts.residues.upload<Layout::RESIDUE_ATTR::REPRESENTATION, RepresentationIndex>( _context, h, residues );
-
-		_systemToRefresh.insert( h );
+		const Desc::Handle h = _systems.handle( p_uid );
+		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
+		Builder::UploadSystemRenderState::uploadRepresentations(
+			buildContext, h, p_representations, p_atomRepresentations
+		);
 
 		setNeedUpdate( true );
 	}
@@ -573,56 +530,22 @@ namespace VTX::Renderer
 
 		Util::ScopedChrono timer( "[RENDERER] setSystemVisibility" );
 
-		const Desc::Handle h		   = _systems.handle( p_uid );
-		Cache::System &	   systemCache = _systems.get( p_uid );
-
-		systemCache.visibility = p_visibility;
-
-		_systemToRefresh.insert( h );
+		const Desc::Handle h = _systems.handle( p_uid );
+		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
+		Builder::UploadSystemRenderState::uploadVisibility( buildContext, h, p_visibility );
 
 		setNeedUpdate( true );
 	}
 
-	void Renderer::setSystemSelection(
-		const SystemUID			   p_uid,
-		const Util::Math::BitSet & p_selection
-
-	)
+	void Renderer::setSystemSelection( const SystemUID p_uid, std::span<const Flag> p_atomFlags )
 	{
 		assert( _systems.contains( p_uid ) );
 
 		Util::ScopedChrono timer( "[RENDERER] setSystemSelection" );
 
-		const Desc::Handle h		   = _systems.handle( p_uid );
-		Cache::System &	   systemCache = _systems.get( p_uid );
-		const Index		   countAtoms  = _layouts.atoms.size( h );
-
-		assert( p_selection.size() <= countAtoms );
-
-		static constexpr Flag SEL = 1 << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
-
-		std::vector<Flag> atomFlags( countAtoms, 0 );
-
-		for ( auto i : p_selection )
-		{
-			atomFlags[ i ] |= SEL;
-		}
-
-		_layouts.atoms.upload<Layout::ATOM_ATTR::FLAG, Flag>( _context, h, atomFlags );
-
-		const auto &	  construction = _geometries.ribbons.construction( h );
-		std::vector<Flag> residueFlags( _layouts.residues.size( h ), 0 );
-
-		for ( Index i = 0; i < residueFlags.size(); ++i )
-		{
-			const Index atomIndex = construction.residues[ i ].ca;
-			if ( atomFlags[ atomIndex ] & SEL )
-			{
-				residueFlags[ i ] |= SEL;
-			}
-		}
-
-		_layouts.residues.upload<Layout::RESIDUE_ATTR::FLAG, Flag>( _context, h, residueFlags );
+		const Desc::Handle h = _systems.handle( p_uid );
+		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
+		Builder::UploadSystemRenderState::uploadSelection( buildContext, h, p_atomFlags );
 
 		setNeedUpdate( true );
 	}

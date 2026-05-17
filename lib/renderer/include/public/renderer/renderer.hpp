@@ -90,9 +90,13 @@ namespace VTX::Renderer
 		void setSystemTransform( const SystemUID, const Mat4f & );
 		void setSystemPosition( const SystemUID, std::span<const Vec3f> );
 		void setSystemColors( const SystemUID, std::span<const ColorIndex> );
-		void setSystemRepresentation( const SystemUID, const MapRepresentationRanges & );
+		void setSystemRepresentation(
+			const SystemUID,
+			const MapRepresentationRanges &,
+			std::span<const RepresentationIndex>
+		);
 		void setSystemVisibility( const SystemUID, const Util::Math::BitSet & );
-		void setSystemSelection( const SystemUID, const Util::Math::BitSet & );
+		void setSystemSelection( const SystemUID, std::span<const Flag> );
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
@@ -217,15 +221,6 @@ namespace VTX::Renderer
 		 * @brief Refresh visibility from visibility and representation ranges.
 		 */
 		void _refreshSystemVisibility( const Desc::Handle );
-
-		/**
-		 * @brief Flags to push boolean values into one byte.
-		 */
-		enum struct E_ELEMENT_FLAGS : uint8_t
-		{
-			VISIBILITY = 0,
-			SELECTION  = 1
-		};
 
 		/**
 		 * @brief The main render loop that call each generated instruction.
