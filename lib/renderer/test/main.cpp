@@ -1,10 +1,10 @@
 #include <catch2/catch_test_macros.hpp>
+#include <renderer/builder/system_build_pipeline.hpp>
 #include <renderer/context/command_buffer.hpp>
 #include <renderer/graph_builder.hpp>
 #include <renderer/render_graph.hpp>
 #include <renderer/representation.hpp>
 #include <renderer/resource_handler.hpp>
-#include <renderer/system_build_pipeline.hpp>
 #include <util/exceptions.hpp>
 #include <util/math.hpp>
 
@@ -99,6 +99,14 @@ TEST_CASE( "SystemBuildPipeline: calls optional phases in builder order", "[rend
 		}
 	};
 
+	struct RibbonBuilder
+	{
+		void buildDerived( TestContext & p_context, const TestSystem & p_system )
+		{
+			p_context.push( "ribbon.buildDerived." + std::to_string( p_system.id ) );
+		}
+	};
+
 	struct DrawBuilder
 	{
 		void buildDrawRanges( TestContext & p_context ) { p_context.push( "draw.buildRanges" ); }
@@ -107,18 +115,19 @@ TEST_CASE( "SystemBuildPipeline: calls optional phases in builder order", "[rend
 	TestContext					  context;
 	const std::vector<TestSystem> systems { { 10 }, { 20 } };
 
-	SystemBuildPipeline<AtomBuilder, SESBuilder, DrawBuilder> pipeline;
+	Builder::SystemBuildPipeline<AtomBuilder, SESBuilder, RibbonBuilder, DrawBuilder> pipeline;
 	pipeline.registerSystems( context, std::span<const TestSystem>( systems ) );
 	pipeline.allocateInputs( context );
 	pipeline.uploadInputs( context, std::span<const TestSystem>( systems ) );
-	pipeline.buildDerived( context );
+	pipeline.buildDerived( context, std::span<const TestSystem>( systems ) );
 	pipeline.allocateOutputs( context );
 	pipeline.writeOutputs( context, std::span<const TestSystem>( systems ) );
 	pipeline.buildDrawRanges( context );
 
 	const std::vector<std::string> expected {
-		"atoms.register.10", "atoms.register.20", "ses.registerBatch.2", "atoms.allocateInputs", "atoms.upload.10",
-		"atoms.upload.20",	 "ses.buildDerived",  "ses.allocateOutputs", "ses.writeBatch.2",	 "draw.buildRanges",
+		"atoms.register.10",	  "atoms.register.20",	 "ses.registerBatch.2", "atoms.allocateInputs",
+		"atoms.upload.10",		  "atoms.upload.20",	 "ses.buildDerived",	"ribbon.buildDerived.10",
+		"ribbon.buildDerived.20", "ses.allocateOutputs", "ses.writeBatch.2",	"draw.buildRanges",
 	};
 
 	CHECK( context.events == expected );

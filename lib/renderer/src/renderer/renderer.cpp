@@ -1,6 +1,6 @@
 #include "renderer/renderer.hpp"
 #include "renderer/binary_buffer.hpp"
-#include "renderer/system_build.hpp"
+#include "renderer/builder/system_build.hpp"
 #include <util/chrono.hpp>
 
 namespace
@@ -403,53 +403,19 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setSystems" );
 
-		SystemBuild::Context buildContext {
+		Builder::Context buildContext {
 			_context, _systems, _layouts, _geometries, _systemToRefresh,
 		};
 
-		SystemBuild::DefaultPipeline pipeline;
+		Builder::DefaultPipeline		  pipeline;
+		const std::span<const SystemData> systems( p_systems );
 		pipeline.clear( buildContext );
-		pipeline.registerSystems( buildContext, std::span<const SystemData>( p_systems ) );
+		pipeline.registerSystems( buildContext, systems );
 		pipeline.allocateInputs( buildContext );
 		pipeline.allocateOutputs( buildContext );
-
-		for ( const auto & systemData : p_systems )
-		{
-			using namespace Layout;
-
-			const Desc::Handle h = _systems.handle( systemData.uid );
-
-			// Upload layouts and geometries data.
-			_layouts.atoms.upload<ATOM_ATTR::SYMBOL, Symbol>( _context, h, systemData.data.atomSymbols );
-			_layouts.atoms.upload<ATOM_ATTR::ID, PickingUID>( _context, h, systemData.atomUids );
-
-			_geometries.spheres.uploadIndexes( _context, h );
-			_geometries.cylinders.uploadIndexes( _context, h );
-
-			if ( not _geometries.ribbons.empty( h ) )
-			{
-				const auto &			construction  = _geometries.ribbons.construction( h );
-				const Index				countResidues = _layouts.residues.size( h );
-				std::vector<PickingUID> residueIds( countResidues );
-				std::vector<uint8_t>	residueTypes( countResidues );
-				std::vector<ColorIndex> residueColors( countResidues );
-				for ( Index i = 0; i < countResidues; ++i )
-				{
-					const Index residueIndex = construction.residues[ i ].index;
-					residueIds[ i ]			 = systemData.residueUids[ residueIndex ];
-					auto ss					 = systemData.data.residueSecondaryStructureTypes[ residueIndex ];
-					residueTypes[ i ]		 = toUnderlying( ss );
-					residueColors[ i ]		 = Color::getColorIndex( ss );
-				}
-
-				_layouts.residues.upload<RESIDUE_ATTR::ID, PickingUID>( _context, h, residueIds );
-				_layouts.residues.upload<RESIDUE_ATTR::TYPE, uint8_t>( _context, h, residueTypes );
-				_layouts.residues.upload<RESIDUE_ATTR::COLOR, ColorIndex>( _context, h, residueColors );
-				_geometries.ribbons.uploadIndexes( _context, h );
-			}
-
-			setSystemPosition( systemData.uid, systemData.trajectory );
-		}
+		pipeline.uploadInputs( buildContext, systems );
+		pipeline.buildDerived( buildContext, systems );
+		pipeline.writeOutputs( buildContext, systems );
 
 		// Set models.
 		_refreshDataModels();

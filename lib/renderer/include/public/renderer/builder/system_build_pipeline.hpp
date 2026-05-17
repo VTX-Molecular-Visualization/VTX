@@ -1,11 +1,11 @@
-#ifndef __VTX_RENDERER_SYSTEM_BUILD_PIPELINE__
-#define __VTX_RENDERER_SYSTEM_BUILD_PIPELINE__
+#ifndef __VTX_RENDERER_BUILDER_SYSTEM_BUILD_PIPELINE__
+#define __VTX_RENDERER_BUILDER_SYSTEM_BUILD_PIPELINE__
 
 #include <span>
 #include <tuple>
 #include <utility>
 
-namespace VTX::Renderer
+namespace VTX::Renderer::Builder
 {
 	/**
 	 * @brief Static pipeline for system/geometry build phases.
@@ -53,6 +53,12 @@ namespace VTX::Renderer
 		void buildDerived( C & p_context )
 		{
 			_forEachBuilder( [ & ]<typename B>( B & p_builder ) { _buildDerived( p_builder, p_context ); } );
+		}
+
+		template<typename C, typename S>
+		void buildDerived( C & p_context, std::span<const S> p_systems )
+		{
+			_forEachBuilder( [ & ]<typename B>( B & p_builder ) { _buildDerived( p_builder, p_context, p_systems ); } );
 		}
 
 		template<typename C>
@@ -154,6 +160,26 @@ namespace VTX::Renderer
 			}
 		}
 
+		template<typename B, typename C, typename S>
+		static void _buildDerived( B & p_builder, C & p_context, std::span<const S> p_systems )
+		{
+			if constexpr ( requires { p_builder.buildDerived( p_context, p_systems ); } )
+			{
+				p_builder.buildDerived( p_context, p_systems );
+			}
+			else if constexpr ( requires( const S & p_system ) { p_builder.buildDerived( p_context, p_system ); } )
+			{
+				for ( const S & system : p_systems )
+				{
+					p_builder.buildDerived( p_context, system );
+				}
+			}
+			else
+			{
+				_buildDerived( p_builder, p_context );
+			}
+		}
+
 		template<typename B, typename C>
 		static void _allocateOutputs( B & p_builder, C & p_context )
 		{
@@ -188,6 +214,6 @@ namespace VTX::Renderer
 			}
 		}
 	};
-} // namespace VTX::Renderer
+} // namespace VTX::Renderer::Builder
 
 #endif
