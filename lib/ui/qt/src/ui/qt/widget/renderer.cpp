@@ -217,6 +217,12 @@ namespace VTX::UI::QT::Widget
 		if ( _container != nullptr )
 		{
 			_container->setFixedSize( 0, 0 );
+
+			_container->resize( 0, 0 );
+			if ( _window != nullptr )
+			{
+				_window->resize( 0, 0 );
+			}
 		}
 		_resizeTimer.start( 40 );
 	}
