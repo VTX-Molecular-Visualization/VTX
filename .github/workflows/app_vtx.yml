@@ -60,6 +60,7 @@ env:
   ROOT_DIR: ${{github.workspace}}
   BUILD_TYPE: ${{ inputs.build_type }}
   VERSION: ${{ inputs.version }}
+  PACKAGE_VERSION: ${{ inputs.version }}-beta
   TOOL_EXAMPLE: ${{ inputs.tool_example == true && 'True' || 'False' }}
   TOOL_MDPREP: ${{ inputs.tool_mdprep == true && 'True' || 'False' }}
   TOOL_TOPOLOGY_EDITOR: ${{ inputs.tool_topology_editor == true && 'True' || 'False' }}
@@ -77,27 +78,29 @@ jobs:
       matrix:
         include:
           - os: windows-2022
-            channel: win
+            channel: win-x64
+            framework: vcredist144-x64
             main_exe: vtx.exe
             conan_cppstd: '20'
           - os: ubuntu-22.04
-            channel: linux
+            channel: linux-x64
             main_exe: vtx
             conan_cppstd: 'gnu20'
           - os: windows-11-arm
-            channel: win-arm
+            channel: win-arm64
+            framework: vcredist144-arm64
             main_exe: vtx.exe
             conan_cppstd: '20'
           - os: ubuntu-22.04-arm
-            channel: linux-arm
+            channel: linux-arm64
             main_exe: vtx
             conan_cppstd: 'gnu20'
           - os: macos-15-intel
-            channel: macos-intel
+            channel: osx-x64
             main_exe: vtx
             conan_cppstd: '20'
           - os: macos-15
-            channel: macos-arm
+            channel: osx-arm64
             main_exe: vtx
             conan_cppstd: '20'
       fail-fast: false
@@ -224,15 +227,16 @@ jobs:
       run: |
         vpk pack \
           --packId VTX \
-          --packVersion "${{ env.VERSION }}" \
+          --packVersion "${{ env.PACKAGE_VERSION }}+${{ matrix.channel }}" \
           --packTitle "VTX" \
           --packAuthors "VTX Team" \
           --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
           --mainExe ${{ matrix.main_exe }} \
+          --runtime ${{ matrix.channel }} \
           --releaseNotes "$RUNNER_TEMP/latest_changelog.md" \
           --icon "${{ env.ROOT_DIR }}/app/vtx/asset/logo.ico" \
           --splashImage "${{ env.ROOT_DIR }}/app/vtx/asset/splash.png" \
-          --framework vcredist144-x64 \
+          --framework ${{ matrix.framework }} \
           --channel ${{ matrix.channel }} \
           --outputDir "${{ env.RELEASE_DIR }}"
 
@@ -242,11 +246,12 @@ jobs:
       run: |
         vpk pack \
           --packId VTX \
-          --packVersion "${{ env.VERSION }}" \
+          --packVersion "${{ env.PACKAGE_VERSION }}+${{ matrix.channel }}" \
           --packTitle "VTX" \
           --packAuthors "VTX Team" \
           --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
           --mainExe ${{ matrix.main_exe }} \
+          --runtime ${{ matrix.channel }} \
           --releaseNotes "$RUNNER_TEMP/latest_changelog.md" \
           --icon "${{ env.ROOT_DIR }}/app/vtx/asset/logo.ico" \
           --channel ${{ matrix.channel }} \
