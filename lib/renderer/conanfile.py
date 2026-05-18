@@ -28,7 +28,7 @@ class VTXRendererRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("catch2/3.14.0")
         if self.settings.os == "Linux":
-            self.requires("wayland/1.24.0", transitive_headers=True, transitive_libs=True)
+            self.requires("wayland/1.24.0")
             
     def system_requirements(self):
         install_system_dependencies(self)

@@ -69,8 +69,6 @@ class VTXAppRecipe(ConanFile):
         if self.options.python_binding:
             self.requires("vtx_python_binding/1.0")
         self.requires("catch2/3.14.0")
-        if self.settings.os == "Linux":
-            self.requires("libffi/3.4.8", override=True)
         self.requires("argparse/3.2")
         
 
