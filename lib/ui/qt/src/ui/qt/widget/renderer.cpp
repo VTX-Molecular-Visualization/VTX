@@ -151,11 +151,6 @@ namespace VTX::UI::QT::Widget
 
 		//_syncHUDWidgets();
 
-		if ( _container != nullptr )
-		{
-			_container->setVisible( false );
-		}
-
 		_resizeTimer.start( 40 );
 	}
 
@@ -164,9 +159,6 @@ namespace VTX::UI::QT::Widget
 		assert( _window != nullptr );
 		assert( _container != nullptr );
 
-		_container->setVisible( true );
-		_focusRenderer();
-
 		const QSize size = this->size();
 		_window->resize( size );
 		_container->resize( size );
@@ -174,6 +166,7 @@ namespace VTX::UI::QT::Widget
 
 		const QSize scaledSize = size * _window->devicePixelRatio();
 		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
+		_focusRenderer();
 	}
 
 	void Renderer::_focusRenderer()
