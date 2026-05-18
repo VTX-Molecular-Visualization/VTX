@@ -25,7 +25,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		~WGLContextWrapper() { destroy(); }
 
-		void init( const Desc::NativeContextInfo & p_contextInfo )
+		void init( const Desc::NativeContextInfo & p_contextInfo, const uint32_t, const uint32_t )
 		{
 			VTX_TRACE( "[WGL] Creating context for surface {}", p_contextInfo.surface );
 
@@ -190,6 +190,8 @@ namespace VTX::Renderer::Context::Backend::GL
 			wglSwapIntervalEXT( p_interval );
 		}
 
+		void resize( const uint32_t, const uint32_t ) {}
+
 		void destroy()
 		{
 			if ( not _hdc )
@@ -308,7 +310,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		~MacOSGLContextWrapper() { destroy(); }
 
-		void init( const Desc::NativeContextInfo & )
+		void init( const Desc::NativeContextInfo &, const uint32_t, const uint32_t )
 		{
 			throw std::runtime_error( "macOS OpenGL context creation is not implemented yet" );
 		}
@@ -320,6 +322,8 @@ namespace VTX::Renderer::Context::Backend::GL
 		void swapBuffers() const {}
 
 		void setSwapInterval( int ) {}
+
+		void resize( const uint32_t, const uint32_t ) {}
 
 		void destroy() {}
 	};
@@ -339,6 +343,7 @@ namespace VTX::Renderer::Context::Backend::GL
 #include <renderer/descriptors.hpp>
 #include <util/logger.hpp>
 #include <wayland-client.h>
+#include <wayland-egl.h>
 
 namespace VTX::Renderer::Context::Backend::GL
 {
@@ -349,7 +354,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		~EGLContextWrapper() { destroy(); }
 
-		void init( const Desc::NativeContextInfo & p_contextInfo )
+		void init( const Desc::NativeContextInfo & p_contextInfo, const uint32_t p_width, const uint32_t p_height )
 		{
 			VTX_TRACE(
 				"[EGL] Creating context for surface {} with display {} and platform {}",
@@ -460,10 +465,31 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 			VTX_TRACE( "[EGL] eglChooseConfig succeeded with {} config(s)", numConfigs );
 
-			VTX_TRACE( "[EGL] Calling eglCreateWindowSurface for native surface {}", p_contextInfo.surface );
-			_surface = eglCreateWindowSurface(
-				_display, _config, reinterpret_cast<EGLNativeWindowType>( p_contextInfo.surface ), nullptr
+			EGLNativeWindowType nativeWindow = reinterpret_cast<EGLNativeWindowType>( p_contextInfo.surface );
+			if ( _platform == Platform::Wayland )
+			{
+				auto * const waylandSurface = reinterpret_cast<wl_surface *>( p_contextInfo.surface );
+				if ( waylandSurface == nullptr )
+				{
+					throw std::runtime_error( "EGL: Wayland platform requires a native surface" );
+				}
+
+				_waylandWindow = wl_egl_window_create(
+					waylandSurface, static_cast<int>( p_width ), static_cast<int>( p_height )
+				);
+				if ( _waylandWindow == nullptr )
+				{
+					throw std::runtime_error( "EGL: Failed to create Wayland EGL window" );
+				}
+
+				nativeWindow = reinterpret_cast<EGLNativeWindowType>( _waylandWindow );
+				VTX_TRACE( "[EGL] Created Wayland EGL window {}", reinterpret_cast<uintptr_t>( _waylandWindow ) );
+			}
+
+			VTX_TRACE(
+				"[EGL] Calling eglCreateWindowSurface for native window {}", reinterpret_cast<uintptr_t>( nativeWindow )
 			);
+			_surface = eglCreateWindowSurface( _display, _config, nativeWindow, nullptr );
 			VTX_TRACE( "[EGL] eglCreateWindowSurface -> {}", reinterpret_cast<uintptr_t>( _surface ) );
 
 			if ( _surface == EGL_NO_SURFACE )
@@ -533,6 +559,16 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 
+		void resize( const uint32_t p_width, const uint32_t p_height )
+		{
+			if ( _waylandWindow != nullptr )
+			{
+				wl_egl_window_resize(
+					_waylandWindow, static_cast<int>( p_width ), static_cast<int>( p_height ), 0, 0
+				);
+			}
+		}
+
 		void destroy()
 		{
 			if ( _display == EGL_NO_DISPLAY )
@@ -550,6 +586,10 @@ namespace VTX::Renderer::Context::Backend::GL
 			{
 				eglDestroySurface( _display, _surface );
 			}
+			if ( _waylandWindow != nullptr )
+			{
+				wl_egl_window_destroy( _waylandWindow );
+			}
 
 			eglTerminate( _display );
 			_display	   = EGL_NO_DISPLAY;
@@ -557,6 +597,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			_context	   = EGL_NO_CONTEXT;
 			_config		   = nullptr;
 			_nativeDisplay = nullptr;
+			_waylandWindow = nullptr;
 		}
 
 	  private:
@@ -567,12 +608,13 @@ namespace VTX::Renderer::Context::Backend::GL
 			Wayland
 		};
 
-		EGLDisplay _display		  = EGL_NO_DISPLAY;
-		EGLSurface _surface		  = EGL_NO_SURFACE;
-		EGLContext _context		  = EGL_NO_CONTEXT;
-		EGLConfig  _config		  = nullptr;
-		Platform   _platform	  = Platform::Default;
-		void *	   _nativeDisplay = nullptr;
+		EGLDisplay		_display	   = EGL_NO_DISPLAY;
+		EGLSurface		_surface	   = EGL_NO_SURFACE;
+		EGLContext		_context	   = EGL_NO_CONTEXT;
+		EGLConfig		_config		   = nullptr;
+		Platform		_platform	   = Platform::Default;
+		void *			_nativeDisplay = nullptr;
+		wl_egl_window * _waylandWindow = nullptr;
 
 		int _major = 0;
 		int _minor = 0;

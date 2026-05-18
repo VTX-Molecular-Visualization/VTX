@@ -54,7 +54,12 @@ if(WIN32)
 elseif(LINUX)
 	find_package(X11 REQUIRED)
 	find_package(wayland REQUIRED)
-	target_link_libraries(vtx_renderer PRIVATE OpenGL::OpenGL OpenGL::EGL X11::X11 wayland::wayland-client)
+	if(TARGET wayland::wayland-egl)
+		set(VTX_WAYLAND_EGL_TARGET wayland::wayland-egl)
+	else()
+		find_library(VTX_WAYLAND_EGL_TARGET wayland-egl REQUIRED)
+	endif()
+	target_link_libraries(vtx_renderer PRIVATE OpenGL::OpenGL OpenGL::EGL X11::X11 wayland::wayland-client ${VTX_WAYLAND_EGL_TARGET})
 endif()
 
 # Cuda.

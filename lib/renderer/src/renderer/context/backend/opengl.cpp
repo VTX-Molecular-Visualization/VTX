@@ -212,7 +212,7 @@ namespace VTX::Renderer::Context::Backend
 		_height = static_cast<uint32_t>( p_height );
 
 		// Create EGL/WGL context.
-		_glContext.init( p_contextInfo );
+		_glContext.init( p_contextInfo, _width, _height );
 
 		// Load OpenGL 4.6 functions.
 		// With external loader.
@@ -529,6 +529,7 @@ namespace VTX::Renderer::Context::Backend
 		_width	= p_width;
 		_height = p_height;
 
+		_glContext.resize( _width, _height );
 		glViewport( 0, 0, static_cast<GLsizei>( _width ), static_cast<GLsizei>( _height ) );
 
 		uint32_t texWidth  = p_width;
