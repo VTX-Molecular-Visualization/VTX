@@ -20,7 +20,7 @@ vtx_configure_target(vtx)
 vtx_link_cuda(vtx)
 
 if(UNIX AND NOT APPLE)
-	set_target_properties(vtx PROPERTIES INSTALL_RPATH "$ORIGIN")
+	set_target_properties(vtx PROPERTIES BUILD_RPATH "$ORIGIN" INSTALL_RPATH "$ORIGIN")
 endif()
 
 target_link_libraries(vtx PRIVATE vtx_util::vtx_util)
