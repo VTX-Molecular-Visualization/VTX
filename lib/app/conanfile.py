@@ -14,9 +14,9 @@ def velopack_lib_name(os_name: str, arch: str) -> str:
             return "velopack_libc_win_arm64_msvc.lib"
     elif os_name == "Linux":
         if arch == "x86_64":
-            return "velopack_libc_linux_x64_gnu.a"
+            return "libvelopack_libc_linux_x64_gnu.a"
         if arch == "armv8":
-            return "velopack_libc_linux_arm64_gnu.a"
+            return "libvelopack_libc_linux_arm64_gnu.a"
     elif os_name == "Macos":
         if arch == "x86_64":
             return "velopack_libc_osx_x64_gnu.a"
