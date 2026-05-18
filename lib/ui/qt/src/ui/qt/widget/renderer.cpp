@@ -216,13 +216,9 @@ namespace VTX::UI::QT::Widget
 
 		if ( _container != nullptr )
 		{
+			_container->move( -_container->width(), -_container->height() );
 			_container->setFixedSize( 0, 0 );
-
-			_container->resize( 0, 0 );
-			if ( _window != nullptr )
-			{
-				_window->resize( 0, 0 );
-			}
+			update();
 		}
 		_resizeTimer.start( 40 );
 	}
@@ -244,6 +240,7 @@ namespace VTX::UI::QT::Widget
 		const QSize size = this->size();
 		_container->setMinimumSize( 0, 0 );
 		_container->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
+		_container->move( 0, 0 );
 		_window->resize( size );
 		_container->resize( size );
 		//_syncHUDWidgets();
