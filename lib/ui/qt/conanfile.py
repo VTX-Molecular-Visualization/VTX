@@ -149,6 +149,7 @@ def config_options_qt(p_conanFile : ConanFile):
             p_conanFile.options["qt"].with_x11 = True
             p_conanFile.options["qt"].with_egl = True # forced by wayland.
             p_conanFile.options["qt"].with_dbus = True
+            p_conanFile.options["qt"].with_fontconfig = True
         
         
 def generate_qt(p_conanFile : ConanFile):
