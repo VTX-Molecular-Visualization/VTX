@@ -21,8 +21,8 @@
 namespace VTX::UI::QT
 {
 
-	int zero = 0;
-	Application::Application( App::Arguments && p_args ) : QApplication( zero, nullptr ), _app( std::move( p_args ) )
+	Application::Application( int & p_argc, char ** p_argv, App::Arguments && p_args )
+		: QApplication( p_argc, p_argv ), _app( std::move( p_args ) )
 	{
 		using namespace Resources;
 		using namespace App;
