@@ -28,7 +28,7 @@ class VTXRendererRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("catch2/3.14.0")
         if self.settings.os == "Linux":
-            self.requires("wayland/1.24.0")
+            self.requires("wayland/1.24.0", transitive_headers=True, transitive_libs=True)
             
     def system_requirements(self):
         install_system_dependencies(self)
@@ -63,5 +63,5 @@ class VTXRendererRecipe(ConanFile):
         if self.settings.os == "Windows":
             self.cpp_info.system_libs = ["opengl32"]
         elif self.settings.os == "Linux":
-            self.cpp_info.system_libs = ["OpenGL", "EGL", "X11", "wayland-client", "wayland-egl"]
+            self.cpp_info.system_libs = ["OpenGL", "EGL", "X11"]
         self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_renderer_copy_shaders.cmake", "cmake/vtx_link_cuda.cmake"])
