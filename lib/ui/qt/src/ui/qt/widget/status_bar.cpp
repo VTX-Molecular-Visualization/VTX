@@ -7,55 +7,38 @@
 #include <app/action/application.hpp>
 #include <app/services.hpp>
 #include <app/vtx_app.hpp>
-#include <renderer/renderer.hpp>
 #include <array>
+#include <renderer/renderer.hpp>
 #include <string>
 #include <string_view>
 #include <util/event_hub.hpp>
 #include <util/monitoring/stats.hpp>
-
-namespace
-{
-	struct ResolutionPreset
-	{
-		std::string_view name;
-		size_t			 width;
-		size_t			 height;
-	};
-
-	constexpr std::array<ResolutionPreset, 11> RESOLUTION_PRESETS {
-		ResolutionPreset { "SVGA", 800, 600 },
-		ResolutionPreset { "XGA", 1024, 768 },
-		ResolutionPreset { "HD", 1280, 720 },
-		ResolutionPreset { "WXGA", 1280, 800 },
-		ResolutionPreset { "SXGA", 1280, 1024 },
-		ResolutionPreset { "HD+", 1600, 900 },
-		ResolutionPreset { "WSXGA+", 1680, 1050 },
-		ResolutionPreset { "Full HD", 1920, 1080 },
-		ResolutionPreset { "WUXGA", 1920, 1200 },
-		ResolutionPreset { "QHD", 2560, 1440 },
-		ResolutionPreset { "4K UHD", 3840, 2160 },
-	};
-}
 
 namespace VTX::UI::QT::Widget
 {
 
 	StatusBar::StatusBar( QWidget * p_parent ) : QStatusBar( p_parent )
 	{
+		// Python status.
 		_python = new QLabel( this );
 		_python->setText( "No Python" );
 
+		// FPS status.
 		_fps = new QLabel( this );
 		//_fps->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 
-		_resolution = new QToolButton( this );
-		_resolution->setAutoRaise( true );
-		_resolution->setPopupMode( QToolButton::InstantPopup );
-		_resolution->setToolButtonStyle( Qt::ToolButtonTextOnly );
-		_setResolution( App::RENDERER().width(), App::RENDERER().height() );
-		_setupResolutionMenu();
+		// Resolution widget.
+		_resolution = new ToolButton::ResolutionSelector( this );
+		_resolution->setResolution( App::RENDERER().width(), App::RENDERER().height() );
+		connect(
+			_resolution,
+			&ToolButton::ResolutionSelector::resolutionChanged,
+			this,
+			[ this ]( const size_t width, const size_t height )
+			{ App::ACTION().execute<App::Action::Application::Resize>( width, height ); }
+		);
 
+		// Labels.
 		auto * vendorLabel = new QLabel( this );
 		vendorLabel->setText( "No renderer" );
 		// vendorLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
@@ -111,40 +94,10 @@ namespace VTX::UI::QT::Widget
 		}
 	}
 
-	void StatusBar::_setupResolutionMenu()
-	{
-		auto * const menu = new QMenu( _resolution );
-
-		for ( const ResolutionPreset & preset : RESOLUTION_PRESETS )
-		{
-			QAction * const action = menu->addAction(
-				QString( "%1 (%2x%3)" )
-					.arg( QString::fromStdString( std::string( preset.name ) ) )
-					.arg( preset.width )
-					.arg( preset.height )
-			);
-
-			connect(
-				action,
-				&QAction::triggered,
-				this,
-				[ width = preset.width, height = preset.height ]()
-				{ App::ACTION().execute<App::Action::Application::Resize>( width, height ); }
-			);
-		}
-
-		_resolution->setMenu( menu );
-	}
-
-	void StatusBar::_setResolution( const size_t p_width, const size_t p_height )
-	{
-		_resolution->setText( QString( "%1x%2" ).arg( p_width ).arg( p_height ) );
-		_resolution->setFixedWidth( _resolution->fontMetrics().horizontalAdvance( _resolution->text() ) + 8 );
-	}
-
 	void StatusBar::_updateResolution( const App::Events::RendererResize & p_e )
 	{
-		_setResolution( p_e.width, p_e.height );
+		_resolution->setResolution( p_e.width, p_e.height );
+		_resolution->setFixedWidth( _resolution->fontMetrics().horizontalAdvance( _resolution->text() ) + 8 );
 	}
 
 	void StatusBar::_setCurrentFPS()

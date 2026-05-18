@@ -68,11 +68,6 @@ namespace VTX::UI::QT::Widget
 		App::RENDERER().onReady += [ this ]()
 		{
 			_rendererReady = true;
-			if ( _container != nullptr )
-			{
-				_container->setMinimumSize( 0, 0 );
-				_container->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
-			}
 			App::ACTION().execute<App::Action::Application::SetVSync>(
 				SETTINGS().value( SETTING_KEY_VSYNC, VSYNC_DEFAULT ).toBool()
 			);
