@@ -6,6 +6,8 @@
 #include "ui/qt/window/renderer.hpp"
 #include <QEvent>
 #include <QHideEvent>
+#include <QPaintEvent>
+#include <QPixmap>
 #include <QPointer>
 #include <QResizeEvent>
 #include <QShowEvent>
@@ -79,6 +81,7 @@ namespace VTX::UI::QT::Widget
 		 * @brief Override resize.
 		 */
 		bool eventFilter( QObject *, QEvent * ) override;
+		void paintEvent( QPaintEvent * ) override;
 		void showEvent( QShowEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
 
@@ -118,9 +121,19 @@ namespace VTX::UI::QT::Widget
 		QPointer<QWidget> _container;
 
 		/**
+		 * @brief Logo painted behind the native renderer surface during startup and resize.
+		 */
+		QPixmap _backgroundLogo;
+
+		/**
 		 * @brief True while applying a resize requested by App, to avoid sending it back to App.
 		 */
 		bool _ignoreResizeEvents = false;
+
+		/**
+		 * @brief True once the native renderer is initialized and can be shown.
+		 */
+		bool _rendererReady = false;
 
 		/**
 		 * @brief Size to ignore if Qt relayouts back after an App-requested resize.

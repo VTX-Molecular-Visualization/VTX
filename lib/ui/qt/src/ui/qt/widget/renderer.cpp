@@ -3,24 +3,29 @@
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
 #include "ui/qt/menu/selection.hpp"
+#include "ui/qt/resources.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include <QCoreApplication>
 #include <QCursor>
 #include <QGuiApplication>
+#include <QPainter>
+#include <QPalette>
 #include <QScopedValueRollback>
+#include <algorithm>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
-#include <util/event_hub.hpp>
 #include <qpa/qplatformnativeinterface.h>
 #include <renderer/renderer.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
 	Renderer::Renderer( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
 		setAcceptDrops( true );
+		_backgroundLogo = QPixmap( Resources::SPRITE_LOGO.data() );
 
 		_window = new Window::Renderer();
 		_window->setFlags( Qt::FramelessWindowHint );
@@ -31,6 +36,7 @@ namespace VTX::UI::QT::Widget
 		_container->setFocusPolicy( Qt::StrongFocus );
 		setFocusPolicy( Qt::NoFocus );
 		setFocusProxy( _container );
+		_container->setFixedSize( 0, 0 );
 
 		connect(
 			_window,
@@ -59,6 +65,16 @@ namespace VTX::UI::QT::Widget
 		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
 
 		App::HUB().connect<App::Events::RendererResize, &Renderer::_onRendererResize>( this );
+		App::RENDERER().onReady += [ this ]()
+		{
+			_rendererReady = true;
+			if ( _container != nullptr )
+			{
+				_container->setMinimumSize( 0, 0 );
+				_container->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
+			}
+			QTimer::singleShot( 0, this, &Renderer::onResizeFinished );
+		};
 	}
 
 	Renderer::~Renderer()
@@ -142,6 +158,31 @@ namespace VTX::UI::QT::Widget
 		return QWidget::eventFilter( p_watched, p_event );
 	}
 
+	void Renderer::paintEvent( QPaintEvent * p_event )
+	{
+		QWidget::paintEvent( p_event );
+
+		QPainter painter( this );
+		painter.fillRect( rect(), palette().color( QPalette::Base ) );
+
+		if ( _backgroundLogo.isNull() )
+		{
+			return;
+		}
+
+		const int	maxSide	 = std::max( 1, std::min( std::min( width(), height() ) / 3, 180 ) );
+		const QSize logoSize = _backgroundLogo.size().scaled( maxSide, maxSide, Qt::KeepAspectRatio );
+		const QRect logoRect(
+			( width() - logoSize.width() ) / 2,
+			( height() - logoSize.height() ) / 2,
+			logoSize.width(),
+			logoSize.height()
+		);
+
+		painter.setOpacity( 0.5 );
+		painter.drawPixmap( logoRect, _backgroundLogo );
+	}
+
 	void Renderer::showEvent( QShowEvent * p_event )
 	{
 		QWidget::showEvent( p_event );
@@ -155,6 +196,12 @@ namespace VTX::UI::QT::Widget
 
 		//_syncHUDWidgets();
 
+		if ( not _rendererReady )
+		{
+			_resizeTimer.stop();
+			return;
+		}
+
 		if ( _ignoreResizeEvents )
 		{
 			_resizeTimer.stop();
@@ -167,6 +214,10 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
+		if ( _container != nullptr )
+		{
+			_container->setFixedSize( 0, 0 );
+		}
 		_resizeTimer.start( 40 );
 	}
 
@@ -176,11 +227,17 @@ namespace VTX::UI::QT::Widget
 		{
 			return;
 		}
+		if ( not _rendererReady )
+		{
+			return;
+		}
 
 		assert( _window != nullptr );
 		assert( _container != nullptr );
 
 		const QSize size = this->size();
+		_container->setMinimumSize( 0, 0 );
+		_container->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
 		_window->resize( size );
 		_container->resize( size );
 		//_syncHUDWidgets();
@@ -211,6 +268,10 @@ namespace VTX::UI::QT::Widget
 		{
 			return;
 		}
+		if ( not _rendererReady )
+		{
+			return;
+		}
 		if ( not p_e.resizeMainWindow )
 		{
 			return;
@@ -222,14 +283,13 @@ namespace VTX::UI::QT::Widget
 		}
 
 		const QSize size(
-			qRound( static_cast<qreal>( p_e.width ) / dpr ),
-			qRound( static_cast<qreal>( p_e.height ) / dpr )
+			qRound( static_cast<qreal>( p_e.width ) / dpr ), qRound( static_cast<qreal>( p_e.height ) / dpr )
 		);
 
-		const QSize currentSize		  = this->size();
-		const bool  widgetSizeChanged	  = currentSize != size;
-		const bool  windowSizeChanged	  = _window->size() != size;
-		const bool  containerSizeChanged = _container->size() != size;
+		const QSize currentSize			 = this->size();
+		const bool	widgetSizeChanged	 = currentSize != size;
+		const bool	windowSizeChanged	 = _window->size() != size;
+		const bool	containerSizeChanged = _container->size() != size;
 		if ( not widgetSizeChanged && not windowSizeChanged && not containerSizeChanged )
 		{
 			return;
