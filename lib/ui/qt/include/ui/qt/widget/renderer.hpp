@@ -11,7 +11,6 @@
 #include <QPointer>
 #include <QResizeEvent>
 #include <QShowEvent>
-#include <QSize>
 #include <QTimer>
 #include <QToolBar>
 #include <QToolButton>
@@ -141,9 +140,6 @@ namespace VTX::UI::QT::Widget
 		 */
 		std::optional<QSize> _pendingLayoutReboundSize;
 
-		bool  _pendingRendererReveal = false;
-		QSize _pendingRendererRevealSize;
-
 		/**
 		 * @brief Add a widget to the overlay at the given position.
 		 */
@@ -163,14 +159,6 @@ namespace VTX::UI::QT::Widget
 		 * @brief Give focus back to the rendering surface.
 		 */
 		void _focusRenderer();
-
-		bool _shouldDelayRendererReveal() const;
-
-		void _collapseRenderer();
-
-		void _revealRenderer( const QSize & );
-
-		void _onPostRender( const App::Events::PostRender & );
 
 		/**
 		 * @brief Synchronize widget size after an App renderer resize.

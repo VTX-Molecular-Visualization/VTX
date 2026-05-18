@@ -65,7 +65,6 @@ namespace VTX::UI::QT::Widget
 		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
 
 		App::HUB().connect<App::Events::RendererResize, &Renderer::_onRendererResize>( this );
-		App::HUB().connect<App::Events::PostRender, &Renderer::_onPostRender>( this );
 		App::RENDERER().onReady += [ this ]()
 		{
 			_rendererReady = true;
@@ -215,10 +214,9 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		if ( _window != nullptr && _container != nullptr )
+		if ( _container != nullptr )
 		{
-			_pendingRendererReveal = false;
-			_collapseRenderer();
+			_container->setFixedSize( 0, 0 );
 		}
 		_resizeTimer.start( 40 );
 	}
@@ -240,19 +238,13 @@ namespace VTX::UI::QT::Widget
 		const QSize size = this->size();
 		_container->setMinimumSize( 0, 0 );
 		_container->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
-
-		if ( _shouldDelayRendererReveal() )
-		{
-			_pendingRendererReveal		= true;
-			_pendingRendererRevealSize	= size;
-		}
-		else
-		{
-			_revealRenderer( size );
-		}
+		_window->resize( size );
+		_container->resize( size );
+		//_syncHUDWidgets();
 
 		const QSize scaledSize = size * _window->devicePixelRatio();
 		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height(), false );
+		_focusRenderer();
 	}
 
 	void Renderer::_focusRenderer()
@@ -264,70 +256,6 @@ namespace VTX::UI::QT::Widget
 
 		_container->setFocus( Qt::OtherFocusReason );
 		_window->requestActivate();
-	}
-
-	bool Renderer::_shouldDelayRendererReveal() const
-	{
-#ifdef __linux__
-		const auto platformName = QGuiApplication::platformName();
-		return platformName == "wayland" || platformName == "xcb";
-#else
-		return false;
-#endif
-	}
-
-	void Renderer::_collapseRenderer()
-	{
-		if ( _window == nullptr || _container == nullptr )
-		{
-			return;
-		}
-
-		if ( QGuiApplication::platformName() == "wayland" )
-		{
-			_window->setGeometry( -_window->width(), -_window->height(), 1, 1 );
-			_container->setFixedSize( 0, 0 );
-			update();
-		}
-		else
-		{
-			_container->setFixedSize( 0, 0 );
-			_container->resize( 0, 0 );
-			_window->resize( 0, 0 );
-		}
-		update();
-	}
-
-	void Renderer::_revealRenderer( const QSize & p_size )
-	{
-		if ( _window == nullptr || _container == nullptr )
-		{
-			return;
-		}
-
-		_container->setMinimumSize( 0, 0 );
-		_container->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
-		if ( QGuiApplication::platformName() == "wayland" )
-		{
-			_window->setGeometry( 0, 0, p_size.width(), p_size.height() );
-		}
-		else
-		{
-			_window->resize( p_size );
-		}
-		_container->resize( p_size );
-		_focusRenderer();
-	}
-
-	void Renderer::_onPostRender( const App::Events::PostRender & p_e )
-	{
-		if ( not _pendingRendererReveal || not p_e.rendered )
-		{
-			return;
-		}
-
-		_pendingRendererReveal = false;
-		_revealRenderer( _pendingRendererRevealSize );
 	}
 
 	void Renderer::_onRendererResize( const App::Events::RendererResize & p_e )
@@ -374,8 +302,6 @@ namespace VTX::UI::QT::Widget
 
 		_resizeTimer.stop();
 		QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
-		_pendingRendererReveal = false;
-		_collapseRenderer();
 
 		if ( widgetSizeChanged )
 		{
@@ -384,15 +310,39 @@ namespace VTX::UI::QT::Widget
 		}
 
 		const QSize appliedSize = this->size();
-		if ( _shouldDelayRendererReveal() )
+		if ( _window->size() != appliedSize )
 		{
-			_pendingRendererReveal		= true;
-			_pendingRendererRevealSize	= appliedSize;
+			_window->resize( appliedSize );
 		}
-		else
+		if ( _container->size() != appliedSize )
 		{
-			_revealRenderer( appliedSize );
+			_container->resize( appliedSize );
 		}
+
+		QTimer::singleShot(
+			0,
+			this,
+			[ this ]()
+			{
+				if ( _window == nullptr || _container == nullptr )
+				{
+					return;
+				}
+
+				_resizeTimer.stop();
+				QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
+
+				const QSize size = this->size();
+				if ( _window->size() != size )
+				{
+					_window->resize( size );
+				}
+				if ( _container->size() != size )
+				{
+					_container->resize( size );
+				}
+			}
+		);
 	}
 
 	/*
