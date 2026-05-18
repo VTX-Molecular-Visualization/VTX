@@ -102,6 +102,7 @@ function(vtx_qt_copy_runtime target)
 			list(APPEND _vtx_qt_runtime_sos ${_vtx_qt_runtime_matches})
 		endforeach()
 		vtx_copy_files(${target} "$<TARGET_FILE_DIR:${target}>" ${_vtx_qt_runtime_sos})
+		_vtx_qt_patch_linux_plugin_rpath(${target} ".")
 
 		foreach(_vtx_qt_plugin_dir IN LISTS _vtx_qt_plugin_dirs)
 			if(EXISTS "${VTX_QT_RUNTIME_ROOT}/${_vtx_qt_plugin_dir}")
