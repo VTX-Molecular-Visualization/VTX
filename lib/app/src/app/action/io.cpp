@@ -170,9 +170,9 @@ namespace VTX::App::Action::IO
 			const size_t currentWidth  = RENDERER().width();
 			const size_t currentHeight = RENDERER().height();
 
-			ACTION().execute<Application::Resize>( p_width, p_height );
+			ACTION().execute<Application::Resize>( p_width, p_height, false );
 			std::vector<std::byte> image = RENDERER().snapshot();
-			ACTION().execute<Application::Resize>( currentWidth, currentHeight );
+			ACTION().execute<Application::Resize>( currentWidth, currentHeight, false );
 
 			FilePath path = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
 

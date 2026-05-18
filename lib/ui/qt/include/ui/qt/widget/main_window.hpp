@@ -165,6 +165,7 @@ namespace VTX::UI::QT::Widget
 		void _onBlockingOperationProgress( const App::Events::BlockingOperationProgress & );
 		void _onBlockingOperationEnd( const App::Events::BlockingOperationEnd & );
 		void _onUpdateAvailable( const App::Events::UpdateAvailable & );
+		void _onRendererResize( const App::Events::RendererResize & );
 	};
 
 } // namespace VTX::UI::QT::Widget

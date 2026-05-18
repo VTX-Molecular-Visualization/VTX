@@ -129,6 +129,23 @@ namespace VTX::UI::QT::Action
 		);
 
 		p_registry.registerAction(
+			View::fullscreenAction(),
+			handler(
+				[]()
+				{
+					if ( MAIN_WINDOW().isFullScreen() )
+					{
+						MAIN_WINDOW().showNormal();
+					}
+					else
+					{
+						MAIN_WINDOW().showFullScreen();
+					}
+				}
+			)
+		);
+
+		p_registry.registerAction(
 			Selection::lockAction(),
 			[]( const ActionRegistry::ActionContext & p_context )
 			{

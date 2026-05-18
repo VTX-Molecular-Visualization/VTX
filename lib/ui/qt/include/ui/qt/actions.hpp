@@ -224,6 +224,22 @@ namespace VTX::UI::QT
 			}
 		} // namespace Snapshot
 
+		namespace View
+		{
+			inline constexpr std::string_view FULLSCREEN = "view.fullscreen";
+
+			inline App::UI::DescAction fullscreenAction()
+			{
+				App::UI::DescAction action;
+				action.key		 = FULLSCREEN;
+				action.name		 = "Fullscreen";
+				action.tip		 = "Toggle fullscreen";
+				action.shortcut	 = "F11";
+				action.checkable = true;
+				return action;
+			}
+		} // namespace View
+
 		namespace Theme
 		{
 			inline constexpr std::string_view SET		   = "theme.set";

@@ -186,7 +186,7 @@ namespace VTX::UI::QT::Widget
 		//_syncHUDWidgets();
 
 		const QSize scaledSize = size * _window->devicePixelRatio();
-		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
+		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height(), false );
 		_focusRenderer();
 	}
 
@@ -211,7 +211,10 @@ namespace VTX::UI::QT::Widget
 		{
 			return;
 		}
-
+		if ( not p_e.resizeMainWindow )
+		{
+			return;
+		}
 		qreal dpr = _window->devicePixelRatio();
 		if ( dpr <= 0 )
 		{

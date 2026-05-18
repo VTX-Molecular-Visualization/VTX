@@ -2,6 +2,7 @@
 #include "app/helper/io.hpp"
 #include "app/services.hpp"
 #include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
 #include "ui/qt/application.hpp"
 #include "ui/qt/dialog/progress.hpp"
 #include "ui/qt/dialog/trajectory_association.hpp"
@@ -130,6 +131,7 @@ namespace VTX::UI::QT::Widget
 		App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>( this );
 		App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
 		App::HUB().connect<App::Events::UpdateAvailable, &MainWindow::_onUpdateAvailable>( this );
+		App::HUB().connect<App::Events::RendererResize, &MainWindow::_onRendererResize>( this );
 	}
 
 	MainWindow::~MainWindow()
@@ -148,6 +150,10 @@ namespace VTX::UI::QT::Widget
 			case QEvent::UpdateRequest:
 			case QEvent::WindowStateChange:
 				QTimer::singleShot( 0, this, []() { App::RENDERER().setNeedUpdate( true ); } );
+				if ( p_event->type() == QEvent::WindowStateChange )
+				{
+					UI_ACTIONS().setChecked( Action::View::FULLSCREEN, isFullScreen() );
+				}
 				break;
 			default: break;
 			}
@@ -218,6 +224,13 @@ namespace VTX::UI::QT::Widget
 	void MainWindow::populateViewMenu( QMenu & p_menu )
 	{
 		p_menu.clear();
+
+		QAction * const fullscreenAction = UI_ACTIONS().addMenuAction( p_menu, Action::View::FULLSCREEN );
+		if ( fullscreenAction != nullptr )
+		{
+			fullscreenAction->setChecked( isFullScreen() );
+		}
+		p_menu.addSeparator();
 
 		QAction * const panelsLabel = p_menu.addAction( "Panels" );
 		panelsLabel->setEnabled( false );
@@ -310,6 +323,17 @@ namespace VTX::UI::QT::Widget
 		dialog->setAttribute( Qt::WA_DeleteOnClose, true );
 		dialog->setModal( true );
 		dialog->open();
+	}
+
+	void MainWindow::_onRendererResize( const App::Events::RendererResize & p_e )
+	{
+		if ( not p_e.resizeMainWindow || not isFullScreen() )
+		{
+			return;
+		}
+
+		showNormal();
+		UI_ACTIONS().setChecked( Action::View::FULLSCREEN, false );
 	}
 
 } // namespace VTX::UI::QT::Widget

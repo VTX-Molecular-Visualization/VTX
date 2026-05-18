@@ -69,6 +69,7 @@ namespace VTX::App::Events
 	{
 		size_t width;
 		size_t height;
+		bool   resizeMainWindow;
 	};
 
 	struct BlockingOperationStart
