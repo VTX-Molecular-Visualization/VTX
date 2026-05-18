@@ -4,11 +4,6 @@
 #include <util/types.hpp>
 #include <vector>
 
-//#include <cstdlib>
-//#ifdef __linux__
-//#include <unistd.h>
-//#endif
-
 // Conditional includes.
 #if VTX_UI_QT
 #include <ui/qt/application.hpp>
@@ -37,37 +32,6 @@ extern "C"
 	__declspec( dllexport ) int		 AmdPowerXpressRequestHighPerformance = 1;
 }
 #endif
-/*
-// Force high performance GPU on Linux.
-#ifdef __linux__
-namespace
-{
-	bool hasEnv( const char * const p_name ) noexcept { return std::getenv( p_name ) != nullptr; }
-
-	bool pathExists( const char * const p_path ) noexcept { return access( p_path, F_OK ) == 0; }
-
-	bool hasNvidiaDriver() noexcept
-	{
-		return pathExists( "/dev/nvidiactl" ) || pathExists( "/proc/driver/nvidia/version" )
-			   || pathExists( "/sys/module/nvidia" );
-	}
-
-	void preferDiscreteGpuOnLinux() noexcept
-	{
-		if ( hasEnv( "__NV_PRIME_RENDER_OFFLOAD" ) || hasEnv( "__GLX_VENDOR_LIBRARY_NAME" )
-			 || hasEnv( "__VK_LAYER_NV_optimus" ) || not hasNvidiaDriver() )
-		{
-			return;
-		}
-
-		// Mirrors prime-run defaults so hybrid Linux laptops use the NVIDIA GPU on fresh installs.
-		setenv( "__NV_PRIME_RENDER_OFFLOAD", "1", 0 );
-		setenv( "__GLX_VENDOR_LIBRARY_NAME", "nvidia", 0 );
-		setenv( "__VK_LAYER_NV_optimus", "NVIDIA_only", 0 );
-	}
-} // namespace
-#endif
-*/
 
 /**
  * @brief On windows, the console returns before the text is returned. The behavior is tight to the Windows OS : a
@@ -152,9 +116,6 @@ int main( int p_argc, char * p_argv[] )
 #if VTX_UI_QT
 		if ( not argss.noGui )
 		{
-//#ifdef __linux__
-//			preferDiscreteGpuOnLinux();
-//#endif
 			// To set before QApplication construction.
 			QCoreApplication::setAttribute( Qt::AA_CompressHighFrequencyEvents );
 
