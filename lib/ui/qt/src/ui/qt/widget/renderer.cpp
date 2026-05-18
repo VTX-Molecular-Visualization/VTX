@@ -160,6 +160,12 @@ namespace VTX::UI::QT::Widget
 			_resizeTimer.stop();
 			return;
 		}
+		if ( _pendingLayoutReboundSize && p_event->size() == *_pendingLayoutReboundSize )
+		{
+			_resizeTimer.stop();
+			_pendingLayoutReboundSize.reset();
+			return;
+		}
 
 		_resizeTimer.start( 40 );
 	}
@@ -201,6 +207,10 @@ namespace VTX::UI::QT::Widget
 		{
 			return;
 		}
+		if ( not isVisible() )
+		{
+			return;
+		}
 
 		qreal dpr = _window->devicePixelRatio();
 		if ( dpr <= 0 )
@@ -213,12 +223,63 @@ namespace VTX::UI::QT::Widget
 			qRound( static_cast<qreal>( p_e.height ) / dpr )
 		);
 
+		const QSize currentSize		  = this->size();
+		const bool  widgetSizeChanged	  = currentSize != size;
+		const bool  windowSizeChanged	  = _window->size() != size;
+		const bool  containerSizeChanged = _container->size() != size;
+		if ( not widgetSizeChanged && not windowSizeChanged && not containerSizeChanged )
+		{
+			return;
+		}
+
+		if ( widgetSizeChanged )
+		{
+			_pendingLayoutReboundSize = this->size();
+		}
+
 		_resizeTimer.stop();
 		QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
 
-		resize( size );
-		_window->resize( size );
-		_container->resize( size );
+		if ( widgetSizeChanged )
+		{
+			const QSize delta = size - currentSize;
+			MAIN_WINDOW().resize( MAIN_WINDOW().size() + delta );
+		}
+
+		const QSize appliedSize = this->size();
+		if ( _window->size() != appliedSize )
+		{
+			_window->resize( appliedSize );
+		}
+		if ( _container->size() != appliedSize )
+		{
+			_container->resize( appliedSize );
+		}
+
+		QTimer::singleShot(
+			0,
+			this,
+			[ this ]()
+			{
+				if ( _window == nullptr || _container == nullptr )
+				{
+					return;
+				}
+
+				_resizeTimer.stop();
+				QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
+
+				const QSize size = this->size();
+				if ( _window->size() != size )
+				{
+					_window->resize( size );
+				}
+				if ( _container->size() != size )
+				{
+					_container->resize( size );
+				}
+			}
+		);
 	}
 
 	/*

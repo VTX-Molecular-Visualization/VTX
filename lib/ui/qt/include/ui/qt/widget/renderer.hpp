@@ -13,6 +13,7 @@
 #include <QToolBar>
 #include <QToolButton>
 #include <app/events.hpp>
+#include <optional>
 #include <vector>
 
 namespace VTX::UI::QT::Widget
@@ -120,6 +121,11 @@ namespace VTX::UI::QT::Widget
 		 * @brief True while applying a resize requested by App, to avoid sending it back to App.
 		 */
 		bool _ignoreResizeEvents = false;
+
+		/**
+		 * @brief Size to ignore if Qt relayouts back after an App-requested resize.
+		 */
+		std::optional<QSize> _pendingLayoutReboundSize;
 
 		/**
 		 * @brief Add a widget to the overlay at the given position.
