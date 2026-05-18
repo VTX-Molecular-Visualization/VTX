@@ -342,7 +342,6 @@ namespace VTX::Renderer::Context::Backend::GL
 #include <X11/Xlib.h>
 #include <renderer/descriptors.hpp>
 #include <util/logger.hpp>
-#include <wayland-client.h>
 #include <wayland-egl.h>
 
 namespace VTX::Renderer::Context::Backend::GL

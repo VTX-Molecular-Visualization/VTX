@@ -1,6 +1,7 @@
 #ifndef __VTX_PYTHON_API_ARGUMENTS__
 #define __VTX_PYTHON_API_ARGUMENTS__
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
