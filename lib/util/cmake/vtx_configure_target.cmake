@@ -1,4 +1,5 @@
 option(VTX_ENABLE_NATIVE_OPTIMIZATIONS "Enable CPU-specific release optimizations for local builds." OFF)
+option(VTX_ENABLE_INTERPROCEDURAL_OPTIMIZATION "Enable interprocedural optimization for VTX targets." OFF)
 
 function(vtx_configure_target p_target)
 	if(CMAKE_COMPILER_IS_GNUCC)
@@ -38,7 +39,9 @@ function(vtx_configure_target p_target)
 		endif()
 	endif()
 	
-	set_property(TARGET ${p_target} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	if(VTX_ENABLE_INTERPROCEDURAL_OPTIMIZATION)
+		set_property(TARGET ${p_target} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	endif()
 	
 	# Force _DEBUG preprocessor on all plateforms.
 	if(DEFINED CMAKE_BUILD_TYPE)
