@@ -16,7 +16,6 @@ namespace VTX::UI::QT::DockWidget
 		/**
 		 * @brief Default values.
 		 */
-		static constexpr bool VSYNC_DEFAULT		 = true;
 		static constexpr bool SAVE_POWER_DEFAULT = true;
 
 	  public:

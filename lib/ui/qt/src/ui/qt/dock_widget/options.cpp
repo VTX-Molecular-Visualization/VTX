@@ -32,9 +32,8 @@ namespace
 
 	VTX::UI::QT::ActionRegistry::ActionParams _themeParams( const VTX::UI::QT::Style::E_THEME p_theme )
 	{
-		return VTX::UI::QT::ActionRegistry::ActionParams {
-			{ std::string( VTX::UI::QT::Action::Theme::PARAM_THEME ), static_cast<int>( VTX::toUnderlying( p_theme ) ) }
-		};
+		return VTX::UI::QT::ActionRegistry::ActionParams { { std::string( VTX::UI::QT::Action::Theme::PARAM_THEME ),
+															 static_cast<int>( VTX::toUnderlying( p_theme ) ) } };
 	}
 
 } // namespace
@@ -221,14 +220,8 @@ namespace VTX::UI::QT::DockWidget
 
 		// Settings.
 		QSignalBlocker b( _checkBoxVSync ); // Do not emit, opengl widget already knows.
-		_checkBoxVSync->setChecked( SETTINGS().value( SETTING_KEY_VSYNC, VSYNC_DEFAULT ).toBool() );
+		_checkBoxVSync->setChecked( SETTINGS().value( SETTING_KEY_VSYNC, Renderer::VSYNC_DEFAULT ).toBool() );
 		_checkBoxSavePower->setChecked( SETTINGS().value( SETTING_KEY_SAVE_POWER, SAVE_POWER_DEFAULT ).toBool() );
-
-		QTimer::singleShot(
-			0,
-			this,
-			[ this ]() { App::ACTION().execute<App::Action::Application::SetVSync>( _checkBoxVSync->isChecked() ); }
-		);
 
 		App::HUB().connect<App::Events::FileDownloaded, &Options::_refreshCacheInfos>( this );
 	}

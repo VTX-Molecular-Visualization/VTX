@@ -73,6 +73,9 @@ namespace VTX::UI::QT::Widget
 				_container->setMinimumSize( 0, 0 );
 				_container->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
 			}
+			App::ACTION().execute<App::Action::Application::SetVSync>(
+				SETTINGS().value( SETTING_KEY_VSYNC, VSYNC_DEFAULT ).toBool()
+			);
 			QTimer::singleShot( 0, this, &Renderer::onResizeFinished );
 		};
 	}

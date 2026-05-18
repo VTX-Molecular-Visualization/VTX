@@ -31,9 +31,12 @@ namespace VTX::UI::QT::Widget
 		Q_OBJECT
 
 	  public:
+		static constexpr bool VSYNC_DEFAULT = true;
+
 		/**
 		 * @brief Positions for HUD elements.
 		 */
+		/*
 		enum struct HUD_POSITION
 		{
 			TOP_LEFT,
@@ -45,6 +48,7 @@ namespace VTX::UI::QT::Widget
 			BOTTOM_CENTER,
 			BOTTOM_RIGHT
 		};
+		*/
 
 		/**
 		 * @brief Constructor.

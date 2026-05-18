@@ -488,10 +488,7 @@ namespace VTX::Renderer
 		setNeedUpdate( true );
 	}
 
-	void Renderer::setSystemVisibility(
-		const SystemUID			   p_uid,
-		const Util::Math::BitSet & p_visibility
-	)
+	void Renderer::setSystemVisibility( const SystemUID p_uid, const Util::Math::BitSet & p_visibility )
 	{
 		assert( _systems.contains( p_uid ) );
 
