@@ -65,6 +65,12 @@ namespace VTX::App::Events
 		bool  rendered;
 	};
 
+	struct RendererResize
+	{
+		size_t width;
+		size_t height;
+	};
+
 	struct BlockingOperationStart
 	{
 		std::string message;

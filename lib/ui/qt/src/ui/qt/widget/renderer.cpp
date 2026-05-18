@@ -9,8 +9,10 @@
 #include <QCoreApplication>
 #include <QCursor>
 #include <QGuiApplication>
+#include <QScopedValueRollback>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
+#include <util/event_hub.hpp>
 #include <qpa/qplatformnativeinterface.h>
 #include <renderer/renderer.hpp>
 
@@ -55,6 +57,8 @@ namespace VTX::UI::QT::Widget
 
 		_resizeTimer.setSingleShot( true );
 		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
+
+		App::HUB().connect<App::Events::RendererResize, &Renderer::_onRendererResize>( this );
 	}
 
 	Renderer::~Renderer()
@@ -151,11 +155,22 @@ namespace VTX::UI::QT::Widget
 
 		//_syncHUDWidgets();
 
+		if ( _ignoreResizeEvents )
+		{
+			_resizeTimer.stop();
+			return;
+		}
+
 		_resizeTimer.start( 40 );
 	}
 
 	void Renderer::onResizeFinished()
 	{
+		if ( _ignoreResizeEvents )
+		{
+			return;
+		}
+
 		assert( _window != nullptr );
 		assert( _container != nullptr );
 
@@ -178,6 +193,32 @@ namespace VTX::UI::QT::Widget
 
 		_container->setFocus( Qt::OtherFocusReason );
 		_window->requestActivate();
+	}
+
+	void Renderer::_onRendererResize( const App::Events::RendererResize & p_e )
+	{
+		if ( _window == nullptr || _container == nullptr )
+		{
+			return;
+		}
+
+		qreal dpr = _window->devicePixelRatio();
+		if ( dpr <= 0 )
+		{
+			dpr = 1;
+		}
+
+		const QSize size(
+			qRound( static_cast<qreal>( p_e.width ) / dpr ),
+			qRound( static_cast<qreal>( p_e.height ) / dpr )
+		);
+
+		_resizeTimer.stop();
+		QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
+
+		resize( size );
+		_window->resize( size );
+		_container->resize( size );
 	}
 
 	/*

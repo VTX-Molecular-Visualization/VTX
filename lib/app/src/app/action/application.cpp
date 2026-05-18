@@ -22,6 +22,7 @@ namespace VTX::App::Action::Application
 		);
 
 		RENDERER().resize( p_width, p_height );
+		HUB().trigger<Events::RendererResize>( p_width, p_height );
 	}
 
 	void CheckForUpdate::execute() { SESSION().checkForUpdate(); }
