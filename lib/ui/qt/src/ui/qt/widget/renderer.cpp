@@ -216,15 +216,18 @@ namespace VTX::UI::QT::Widget
 
 		if ( _window != nullptr && _container != nullptr )
 		{
-#ifdef __linux__
-			_window->setGeometry( -_window->width(), -_window->height(), 1, 1 );
-			_container->setFixedSize( 0, 0 );
-			update();
-#else
-			_container->setFixedSize( 0, 0 );
-			_container->resize( 0, 0 );
-			_window->resize( 0, 0 );
-#endif
+			if ( QGuiApplication::platformName() == "wayland" )
+			{
+				_window->setGeometry( -_window->width(), -_window->height(), 1, 1 );
+				_container->setFixedSize( 0, 0 );
+				update();
+			}
+			else
+			{
+				_container->setFixedSize( 0, 0 );
+				_container->resize( 0, 0 );
+				_window->resize( 0, 0 );
+			}
 		}
 		_resizeTimer.start( 40 );
 	}
@@ -246,11 +249,14 @@ namespace VTX::UI::QT::Widget
 		const QSize size = this->size();
 		_container->setMinimumSize( 0, 0 );
 		_container->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
-#ifdef __linux__
-		_window->setGeometry( 0, 0, size.width(), size.height() );
-#else
-		_window->resize( size );
-#endif
+		if ( QGuiApplication::platformName() == "wayland" )
+		{
+			_window->setGeometry( 0, 0, size.width(), size.height() );
+		}
+		else
+		{
+			_window->resize( size );
+		}
 		_container->resize( size );
 		//_syncHUDWidgets();
 
