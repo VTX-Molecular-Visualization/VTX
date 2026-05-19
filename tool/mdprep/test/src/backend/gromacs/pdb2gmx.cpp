@@ -152,7 +152,6 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[conver
 	};
 	data.instructions.customParameter.emplace();
 
-	data.expectedArgs.arguments.push_back( "" );
 	for ( int kwIdx = 0; kwIdx < static_cast<int>( VTX::Tool::Mdprep::backends::Gromacs::E_INTERACTIVE_KEYWORD::COUNT );
 		  kwIdx++ )
 	{
@@ -161,10 +160,17 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[conver
 		id.kw = kw;
 		data.instructions.customParameter->kwValue.clear();
 		data.instructions.customParameter->kwValue.insert( { id, "0" } );
-		data.expectedArgs.arguments.back() = std::string( "-" ) += VTX::Tool::Mdprep::backends::Gromacs::string( kw );
 
 		VTX::Tool::Mdprep::backends::Gromacs::convert( data.instructions, args );
-		data.expectedArgs.interactiveSettings = args.interactiveSettings;
-		CHECK( data.expectedArgs.arguments == args.arguments );
+
+		// Protonation state selection is now handled via -batch file, not interactive stdin.
+		CHECK( args.interactiveSettings.has_value() == false );
+
+		// A -batch flag must always be present when customParameter is set.
+		auto batchIt = std::find( args.arguments.begin(), args.arguments.end(), "-batch" );
+		REQUIRE( batchIt != args.arguments.end() );
+		auto batchPathIt = std::next( batchIt );
+		REQUIRE( batchPathIt != args.arguments.end() );
+		CHECK( fs::exists( fs::path( *batchPathIt ) ) );
 	}
 }
