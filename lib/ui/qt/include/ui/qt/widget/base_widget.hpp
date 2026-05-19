@@ -38,10 +38,10 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Check if widget is of type T.
 		 */
-		template<typename T>
+		template<typename Type>
 		bool is() const
 		{
-			return W::objectName() == VTX::Util::typeName<T>();
+			return W::objectName() == VTX::Util::typeName<Type>();
 		}
 	};
 
