@@ -1,5 +1,6 @@
 #include "renderer/renderer.hpp"
 #include "renderer/binary_buffer.hpp"
+#include "renderer/builder/render_graph_build.hpp"
 #include "renderer/builder/system_build.hpp"
 #include <util/chrono.hpp>
 
@@ -500,7 +501,8 @@ namespace VTX::Renderer
 			return false;
 		}
 
-		_graph.createDefaultPipeline( config, _layouts, _geometries );
+		_graph.setPipelineConfig( config );
+		_graph.set( Builder::DefaultRenderGraph::build( config, _layouts, _geometries ) );
 		_queue = _graph.build();
 		return true;
 	}

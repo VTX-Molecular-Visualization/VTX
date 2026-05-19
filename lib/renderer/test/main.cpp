@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <renderer/builder/render_graph_build.hpp>
 #include <renderer/builder/system_build_pipeline.hpp>
 #include <renderer/context/command_buffer.hpp>
 #include <renderer/graph_builder.hpp>
@@ -244,7 +245,8 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	cfg.enableSelection = true;
 
 	RenderGraph graph;
-	graph.createDefaultPipeline( cfg, Layouts {}, Geometries {} );
+	graph.setPipelineConfig( cfg );
+	graph.set( Builder::DefaultRenderGraph::build( cfg, Layouts {}, Geometries {} ) );
 
 	RenderQueue queue;
 	REQUIRE_NOTHROW( queue = graph.build() );

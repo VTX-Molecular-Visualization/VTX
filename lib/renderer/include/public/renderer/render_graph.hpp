@@ -57,14 +57,10 @@ namespace VTX::Renderer
 		void clear();
 
 		/**
-		 * @brief Create a default pipeline from config.
-		 */
-		void createDefaultPipeline( const PipelineConfig &, const Layouts &, const Geometries & );
-
-		/**
 		 * @brief Get pipeline config.
 		 */
 		const std::optional<PipelineConfig> & getPipelineConfig() const { return _config; }
+		void								  setPipelineConfig( const PipelineConfig & p_config ) { _config = p_config; }
 
 	  private:
 		Desc::Resources _resources;
