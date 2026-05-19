@@ -213,16 +213,6 @@ namespace VTX::Renderer
 		static void _executeSESExternalPass( uintptr_t );
 
 		/**
-		 * @brief Refresh transform when camera or system changed.
-		 */
-		void _refreshDataModels();
-
-		/**
-		 * @brief Refresh visibility from visibility and representation ranges.
-		 */
-		void _refreshSystemVisibility( const Desc::Handle );
-
-		/**
 		 * @brief The main render loop that call each generated instruction.
 		 */
 		inline void _render( const float p_deltaTime, const float p_elapsedTime ) const noexcept { _context.execute(); }

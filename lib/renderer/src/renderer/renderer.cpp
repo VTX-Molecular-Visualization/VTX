@@ -100,11 +100,14 @@ namespace VTX::Renderer
 	{
 		if ( _systemToRefresh.size() )
 		{
+			Builder::Context buildContext {
+				_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+			};
 			for ( const auto & system : _systemToRefresh )
 			{
-				_refreshSystemVisibility( system );
+				Builder::SystemVisibility::refreshGeometryVisibility( buildContext, system );
 			}
-			_geometries.buildDrawRanges( _context );
+			Builder::DrawRanges::buildDrawRanges( buildContext );
 
 			_systemToRefresh.clear();
 			setNeedUpdate( true );
@@ -236,7 +239,10 @@ namespace VTX::Renderer
 
 		_cacheCamera = { p_camera, p_position, p_matView, p_matProj };
 
-		_refreshDataModels();
+		Builder::Context buildContext {
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		};
+		Builder::SystemModels::upload( buildContext );
 
 		setNeedUpdate( true );
 	}
@@ -404,7 +410,7 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setSystems" );
 
 		Builder::Context buildContext {
-			_context, _systems, _layouts, _geometries, _systemToRefresh,
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
 		};
 
 		Builder::DefaultPipeline		  pipeline;
@@ -417,8 +423,7 @@ namespace VTX::Renderer
 		pipeline.buildDerived( buildContext, systems );
 		pipeline.writeOutputs( buildContext, systems );
 
-		// Set models.
-		_refreshDataModels();
+		Builder::SystemModels::upload( buildContext );
 
 		// Rebuild commands immediately, including the empty-scene case.
 		pipeline.buildDrawRanges( buildContext );
@@ -441,8 +446,10 @@ namespace VTX::Renderer
 		assert( _systems.contains( h ) );
 		_systems.get( h ).transform = p_transform;
 
-		// TODO: refresh only needed!
-		_refreshDataModels();
+		Builder::Context buildContext {
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		};
+		Builder::SystemModels::upload( buildContext );
 		setNeedUpdate( true );
 	}
 
@@ -451,7 +458,9 @@ namespace VTX::Renderer
 		assert( _systems.contains( p_uid ) );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
+		Builder::Context buildContext {
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		};
 
 		Builder::AtomLayout::uploadPositions( buildContext, h, p_positions );
 		Builder::RibbonGeometry::uploadPositions( buildContext, h, p_positions );
@@ -464,7 +473,9 @@ namespace VTX::Renderer
 		assert( _systems.contains( p_uid ) );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
+		Builder::Context buildContext {
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		};
 		Builder::AtomLayout::uploadColors( buildContext, h, p_colors );
 
 		setNeedUpdate( true );
@@ -481,7 +492,9 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setSystemRepresentation" );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
+		Builder::Context buildContext {
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		};
 		Builder::AtomLayout::uploadRepresentations( buildContext, h, p_representations, p_atomRepresentations );
 		Builder::ResidueLayout::uploadRepresentations( buildContext, h, p_atomRepresentations );
 
@@ -495,7 +508,9 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setSystemVisibility" );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
+		Builder::Context buildContext {
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		};
 		Builder::SystemVisibility::uploadVisibility( buildContext, h, p_visibility );
 
 		setNeedUpdate( true );
@@ -508,7 +523,9 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setSystemSelection" );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context   buildContext { _context, _systems, _layouts, _geometries, _systemToRefresh };
+		Builder::Context buildContext {
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		};
 		Builder::AtomLayout::uploadSelection( buildContext, h, p_atomFlags );
 		Builder::ResidueLayout::uploadSelection( buildContext, h, p_atomFlags );
 
@@ -525,7 +542,10 @@ namespace VTX::Renderer
 		_layouts.voxels.upload<Layout::VOXEL_ATTR::MINS, Vec3f>( _context, Desc::NO_HANDLE, p_mins );
 		_layouts.voxels.upload<Layout::VOXEL_ATTR::MAXS, Vec3f>( _context, Desc::NO_HANDLE, p_maxs );
 
-		_geometries.buildDrawRanges( _context );
+		Builder::Context buildContext {
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		};
+		Builder::DrawRanges::buildDrawRanges( buildContext );
 
 		setNeedUpdate( true );
 	}
@@ -533,66 +553,6 @@ namespace VTX::Renderer
 #pragma endregion
 
 #pragma region Internals
-
-	void Renderer::_refreshDataModels()
-	{
-		if ( _systems.empty() )
-		{
-			return;
-		}
-
-		BinaryBuffer430 buffer;
-		for ( const auto & system : _systems )
-		{
-			const Mat4f matrixModelView	   = _cacheCamera.matView * system.transform;
-			const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
-			const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
-
-			buffer.write( matrixModelView );
-			buffer.write( matrixModelViewInv );
-			buffer.write( matrixNormal );
-		}
-
-		buffer.close();
-
-		_context.setBuffer( "Models", buffer );
-	}
-
-	void Renderer::_refreshSystemVisibility( const Desc::Handle p_handle )
-	{
-		Util::ScopedChrono timer( "[RENDERER] _refreshSystemVisibility" );
-
-		const Cache::System & systemCache = _systems.get( p_handle );
-
-		auto visibleSpheres	  = systemCache.visibility;
-		auto visibleCylinders = systemCache.visibility;
-		auto visibleRibbons	  = systemCache.visibility;
-
-		for ( const auto & [ representationIndex, ranges ] : systemCache.representations )
-		{
-			assert( _cacheRepresentations.contains( representationIndex ) );
-
-			const auto & cacheRepresentation = _cacheRepresentations[ representationIndex ];
-			if ( not cacheRepresentation.showSphere )
-			{
-				visibleSpheres.subtractInPlace( ranges );
-			}
-			if ( not cacheRepresentation.showCylinder )
-			{
-				visibleCylinders.subtractInPlace( ranges );
-			}
-			if ( not cacheRepresentation.showRibbon )
-			{
-				visibleRibbons.subtractInPlace( ranges );
-			}
-		}
-
-		_geometries.spheres.setVisibility( p_handle, visibleSpheres );
-		_geometries.cylinders.setVisibility( p_handle, visibleCylinders );
-		_geometries.ribbons.setVisibility( p_handle, visibleRibbons );
-
-		_geometries.uploadIndexes( _context, p_handle );
-	}
 
 	bool Renderer::_refreshGraph( const GraphicsConfig & p_config )
 	{

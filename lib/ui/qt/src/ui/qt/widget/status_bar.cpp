@@ -30,6 +30,7 @@ namespace VTX::UI::QT::Widget
 		// Resolution widget.
 		_resolution = new ToolButton::ResolutionSelector( this );
 		_resolution->setResolution( App::RENDERER().width(), App::RENDERER().height() );
+		_resolution->setAutoRaise( false );
 		_resolution->setToolTip( "Change resolution" );
 		_resolution->setStatusTip( "Change the resolution of the renderer" );
 		connect(
@@ -99,7 +100,7 @@ namespace VTX::UI::QT::Widget
 	void StatusBar::_updateResolution( const App::Events::RendererResize & p_e )
 	{
 		_resolution->setResolution( p_e.width, p_e.height );
-		_resolution->setFixedWidth( _resolution->fontMetrics().horizontalAdvance( _resolution->text() ) + 8 );
+		_resolution->setFixedWidth( _resolution->fontMetrics().horizontalAdvance( _resolution->text() ) + 12 );
 	}
 
 	void StatusBar::_setCurrentFPS()

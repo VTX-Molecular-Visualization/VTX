@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_BUILDER_SYSTEM_BUILD__
 #define __VTX_RENDERER_BUILDER_SYSTEM_BUILD__
 
+#include "renderer/binary_buffer.hpp"
 #include "renderer/builder/system_build_pipeline.hpp"
 #include "renderer/caches.hpp"
 #include "renderer/color.hpp"
@@ -9,6 +10,7 @@
 #include "renderer/layout/layouts.hpp"
 #include "renderer/resource_handler.hpp"
 #include "renderer/system_data.hpp"
+#include <unordered_map>
 #include <unordered_set>
 #include <util/enum.hpp>
 #include <util/math.hpp>
@@ -22,6 +24,8 @@ namespace VTX::Renderer::Builder
 	{
 		VTX::Renderer::Context::ContextWrapper &			   rendererContext;
 		ResourceHandler<Cache::System, DescDummy, SystemUID> & systems;
+		std::unordered_map<RepresentationIndex, Cache::Representation> & representations;
+		Cache::Camera &										   camera;
 		Layouts &											   layouts;
 		Geometries &										   geometries;
 		std::unordered_set<Desc::Handle> &					   systemToRefresh;
@@ -173,6 +177,40 @@ namespace VTX::Renderer::Builder
 			cache.visibility	  = p_visibility;
 
 			p_context.systemToRefresh.insert( p_handle );
+		}
+
+		static void refreshGeometryVisibility( Context & p_context, const Desc::Handle p_handle )
+		{
+			const Cache::System & systemCache = p_context.systems.get( p_handle );
+
+			auto visibleSpheres   = systemCache.visibility;
+			auto visibleCylinders = systemCache.visibility;
+			auto visibleRibbons   = systemCache.visibility;
+
+			for ( const auto & [ representationIndex, ranges ] : systemCache.representations )
+			{
+				assert( p_context.representations.contains( representationIndex ) );
+
+				const auto & representation = p_context.representations[ representationIndex ];
+				if ( not representation.showSphere )
+				{
+					visibleSpheres.subtractInPlace( ranges );
+				}
+				if ( not representation.showCylinder )
+				{
+					visibleCylinders.subtractInPlace( ranges );
+				}
+				if ( not representation.showRibbon )
+				{
+					visibleRibbons.subtractInPlace( ranges );
+				}
+			}
+
+			p_context.geometries.spheres.setVisibility( p_handle, visibleSpheres );
+			p_context.geometries.cylinders.setVisibility( p_handle, visibleCylinders );
+			p_context.geometries.ribbons.setVisibility( p_handle, visibleRibbons );
+
+			p_context.geometries.uploadIndexes( p_context.rendererContext, p_handle );
 		}
 	};
 
@@ -387,9 +425,36 @@ namespace VTX::Renderer::Builder
 		}
 	};
 
+	struct SystemModels
+	{
+		static void upload( Context & p_context )
+		{
+			if ( p_context.systems.empty() )
+			{
+				return;
+			}
+
+			BinaryBuffer430 buffer;
+			for ( const auto & system : p_context.systems )
+			{
+				const Mat4f matrixModelView	  = p_context.camera.matView * system.transform;
+				const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
+				const Mat4f matrixNormal	  = Util::Math::transpose( matrixModelViewInv );
+
+				buffer.write( matrixModelView );
+				buffer.write( matrixModelViewInv );
+				buffer.write( matrixNormal );
+			}
+
+			buffer.close();
+
+			p_context.rendererContext.setBuffer( "Models", buffer );
+		}
+	};
+
 	struct DrawRanges
 	{
-		void buildDrawRanges( Context & p_context ) const
+		static void buildDrawRanges( Context & p_context )
 		{
 			p_context.geometries.buildDrawRanges( p_context.rendererContext );
 		}
