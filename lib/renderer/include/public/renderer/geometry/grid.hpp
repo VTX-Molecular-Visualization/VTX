@@ -34,14 +34,14 @@ namespace VTX::Renderer::Geometry
 
 		uint32_t voxelCount() const { return _voxelCount; }
 
-		[[nodiscard]] std::vector<Desc::DrawIndirectCommand> toDrawIndirectCommands()
+		[[nodiscard]] std::vector<Desc::DrawIndirectRecord> toDrawIndirectCommands()
 		{
 			if ( _voxelCount == 0 )
 			{
 				return {};
 			}
 
-			return { Desc::DrawIndirectCommand { _voxelCount, 1, 0, 0 } };
+			return { Desc::DrawIndirectRecord { Desc::DrawIndirectCommand { _voxelCount, 1, 0, 0 }, 0 } };
 		}
 
 	  private:

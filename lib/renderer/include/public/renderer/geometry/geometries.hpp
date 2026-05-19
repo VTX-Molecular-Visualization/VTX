@@ -96,29 +96,6 @@ namespace VTX::Renderer
 		}
 
 	  private:
-		[[nodiscard]] BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndirectCommand> & p_draw )
-		{
-			BinaryBuffer430 buffer;
-
-			buffer.write( static_cast<uint32_t>( p_draw.size() ) );
-			buffer.alignTo( Desc::DRAW_INDIRECT_COMMANDS_OFFSET );
-
-			for ( const Desc::DrawIndirectCommand & draw : p_draw )
-			{
-				buffer.write( draw.vertexCount );
-				buffer.write( draw.instanceCout );
-				buffer.write( draw.firstVertex );
-				buffer.write( draw.baseInstance );
-				buffer.write( uint32_t( 0 ) );
-				buffer.write( uint32_t( 0 ) );
-				buffer.write( uint32_t( 0 ) );
-				buffer.write( uint32_t( 0 ) );
-			}
-			buffer.close();
-
-			return buffer;
-		}
-
 		[[nodiscard]] BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndirectRecord> & p_records )
 		{
 			BinaryBuffer430 buffer;
@@ -129,7 +106,7 @@ namespace VTX::Renderer
 			for ( const Desc::DrawIndirectRecord & record : p_records )
 			{
 				buffer.write( record.command.vertexCount );
-				buffer.write( record.command.instanceCout );
+				buffer.write( record.command.instanceCount );
 				buffer.write( record.command.firstVertex );
 				buffer.write( record.command.baseInstance );
 				buffer.write( record.idModel );

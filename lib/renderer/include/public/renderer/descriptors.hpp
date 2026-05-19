@@ -394,7 +394,7 @@ namespace VTX::Renderer::Desc
 	struct DrawIndirectCommand
 	{
 		uint32_t vertexCount;
-		uint32_t instanceCout;
+		uint32_t instanceCount;
 		uint32_t firstVertex;
 		uint32_t baseInstance;
 	};

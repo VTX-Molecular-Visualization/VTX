@@ -86,16 +86,6 @@ namespace VTX::Renderer::Geometry
 
 		[[nodiscard]] bool hasPendingCompute() const;
 
-		[[nodiscard]] std::vector<Desc::DrawIndirectCommand> toDrawIndirectCommands( const uint32_t p_count ) const
-		{
-			if ( p_count == 0 )
-			{
-				return {};
-			}
-
-			return { Desc::DrawIndirectCommand { p_count, 1, 0, 0 } };
-		}
-
 	  protected:
 		std::map<Desc::Handle, std::unique_ptr<Construction>> _construction;
 
