@@ -214,9 +214,7 @@ namespace VTX::UI::QT::Widget
 
 		if ( _window != nullptr && _container != nullptr )
 		{
-			_container->setFixedSize( 1, 1 );
-			_container->resize( 1, 1 );
-			_window->resize( 1, 1 );
+			_container->setVisible( false );
 			update();
 		}
 		_resizeTimer.start( 40 );
@@ -241,6 +239,7 @@ namespace VTX::UI::QT::Widget
 		_container->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
 		_window->resize( size );
 		_container->resize( size );
+		_container->setVisible( true );
 		//_syncHUDWidgets();
 
 		const QSize scaledSize = size * _window->devicePixelRatio();

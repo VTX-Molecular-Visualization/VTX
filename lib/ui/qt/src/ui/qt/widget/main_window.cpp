@@ -228,13 +228,6 @@ namespace VTX::UI::QT::Widget
 	{
 		p_menu.clear();
 
-		QAction * const fullscreenAction = UI_ACTIONS().addTo( p_menu, Action::View::FULLSCREEN );
-		if ( fullscreenAction != nullptr )
-		{
-			fullscreenAction->setChecked( isFullScreen() );
-		}
-		p_menu.addSeparator();
-
 		QAction * const panelsLabel = p_menu.addAction( "Panels" );
 		panelsLabel->setEnabled( false );
 		for ( QDockWidget * const dock : findChildren<QDockWidget *>() )
@@ -252,6 +245,13 @@ namespace VTX::UI::QT::Widget
 				continue;
 			}
 			p_menu.addAction( toolbar->toggleViewAction() );
+		}
+
+		p_menu.addSeparator();
+		QAction * const fullscreenAction = UI_ACTIONS().addTo( p_menu, Action::View::FULLSCREEN );
+		if ( fullscreenAction != nullptr )
+		{
+			fullscreenAction->setChecked( isFullScreen() );
 		}
 	}
 
