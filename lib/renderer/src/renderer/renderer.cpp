@@ -181,7 +181,7 @@ namespace VTX::Renderer
 
 	void Renderer::_markSESDirty()
 	{
-		if ( _context.containsPass( Geometry::SES::PASS_COMPUTE ) )
+		if ( _context.containsPass( Geometry::SES::PASS_COMPUTE ) && _geometries.ses.hasPendingCompute() )
 		{
 			_context.markPassDirty( Geometry::SES::PASS_COMPUTE );
 		}

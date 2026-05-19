@@ -1,4 +1,5 @@
 #include "renderer/geometry/ses.hpp"
+#include "renderer/binary_buffer.hpp"
 #include "renderer/layout/atoms.hpp"
 #include "renderer/representation.hpp"
 #include <array>
@@ -12,10 +13,19 @@ namespace VTX::Renderer::Geometry
 {
 	struct SES::Construction
 	{
+		enum class State : uint8_t
+		{
+			Empty,
+			PendingWrite,
+			Written,
+			Incalculable,
+		};
+
 #ifdef VTX_CUDA_ENABLED
 		SESDetail::CudaConstructionPtr cudaConstruction;
 #endif
 
+		State	 state			= State::Empty;
 		uint32_t atomOffset		= 0;
 		uint32_t atomNb			= 0;
 		uint32_t probeOffset	= 0;
@@ -26,7 +36,82 @@ namespace VTX::Renderer::Geometry
 		uint32_t probeNb		= 0;
 		uint32_t sectorNb		= 0;
 		uint32_t concavePatchNb = 0;
+
+		[[nodiscard]] bool pendingWrite() const
+		{
+#ifdef VTX_CUDA_ENABLED
+			return state == State::PendingWrite && cudaConstruction != nullptr;
+#else
+			return false;
+#endif
+		}
+
+		void markIncalculable()
+		{
+#ifdef VTX_CUDA_ENABLED
+			cudaConstruction.reset();
+#endif
+			state = State::Incalculable;
+		}
 	};
+
+	namespace
+	{
+		BinaryBuffer430 _emptyIndirectBuffer()
+		{
+			BinaryBuffer430 buffer;
+			buffer.write( uint32_t( 0 ) );
+			buffer.alignTo( Desc::DRAW_INDIRECT_COMMANDS_OFFSET );
+			buffer.close();
+			return buffer;
+		}
+
+#ifdef VTX_CUDA_ENABLED
+		SESDetail::SesdfRenderBuffers _renderBuffers(
+			std::span<const Desc::InteropBufferMapping> p_mappings,
+			const SES::Construction &					 p_construction,
+			const Desc::Handle							 p_handle,
+			const SES::PatchGeometry &					 p_convexPatches,
+			const SES::PatchGeometry &					 p_circlePatches,
+			const SES::PatchGeometry &					 p_segmentPatches
+		)
+		{
+			SESDetail::SesdfRenderBuffers renderBuffers;
+			renderBuffers.atoms
+				= { p_mappings[ 0 ].devicePtr, p_mappings[ 0 ].size, p_construction.atomOffset * sizeof( Vec4f ) };
+			renderBuffers.convexPatches
+				= { p_mappings[ 1 ].devicePtr,
+					p_mappings[ 1 ].size,
+					p_convexPatches.offset( p_handle ) * sizeof( std::array<uint32_t, 2> ) };
+			renderBuffers.circlePatches
+				= { p_mappings[ 2 ].devicePtr,
+					p_mappings[ 2 ].size,
+					p_circlePatches.offset( p_handle ) * sizeof( std::array<uint32_t, 2> ) };
+			renderBuffers.segmentPatches
+				= { p_mappings[ 3 ].devicePtr,
+					p_mappings[ 3 ].size,
+					p_segmentPatches.offset( p_handle ) * sizeof( std::array<uint32_t, 4> ) };
+			renderBuffers.probes
+				= { p_mappings[ 4 ].devicePtr, p_mappings[ 4 ].size, p_construction.probeOffset * sizeof( Vec4f ) };
+			renderBuffers.probeAtomIndices
+				= { p_mappings[ 5 ].devicePtr,
+					p_mappings[ 5 ].size,
+					p_construction.probeOffset * sizeof( std::array<int32_t, 4> ) };
+			renderBuffers.probeNeighbors
+				= { p_mappings[ 6 ].devicePtr,
+					p_mappings[ 6 ].size,
+					p_construction.probeOffset * SES::MAX_PROBE_NEIGHBOR_NB * sizeof( Vec4f ) };
+			renderBuffers.sectors
+				= { p_mappings[ 7 ].devicePtr, p_mappings[ 7 ].size, p_construction.sectorOffset * sizeof( Vec4f ) };
+			renderBuffers.atomIndexOffset	 = p_construction.atomOffset;
+			renderBuffers.probeIndexOffset	 = p_construction.probeOffset;
+			renderBuffers.sectorIndexOffset	 = p_construction.sectorOffset;
+			renderBuffers.maxProbeNeighborNb = SES::MAX_PROBE_NEIGHBOR_NB;
+
+			return renderBuffers;
+		}
+#endif
+	} // namespace
 
 	SES::SES()
 	{
@@ -66,9 +151,19 @@ namespace VTX::Renderer::Geometry
 			construction->sectorOffset += existingConstruction->sectorNb;
 		}
 
+		// TEMP BYPASS.
+		constexpr bool bypassSES = false;
+		if constexpr ( bypassSES )
+		{
+			_constructEmptyRanges( p_handle );
+			_construction.emplace( p_handle, std::move( construction ) );
+			return;
+		}
+
 		const Index atomCount = p_data.data.getAtomCount();
 		if ( atomCount != 0 && p_data.trajectory.size() != atomCount )
 		{
+			construction->markIncalculable();
 			VTX_WARNING(
 				"Can not build SES for system {}: atom count ({}) and position count ({}) mismatch.",
 				p_data.uid,
@@ -81,6 +176,7 @@ namespace VTX::Renderer::Geometry
 #ifdef VTX_CUDA_ENABLED
 			if ( not p_context.isInteropAvailable( Desc::E_INTEROP_API::CUDA ) )
 			{
+				construction->markIncalculable();
 				VTX_WARNING( "Can not build SES: CUDA graphics interop is not available." );
 			}
 			else
@@ -98,10 +194,10 @@ namespace VTX::Renderer::Geometry
 					assert( mappings.size() == keys.size() );
 
 					SESDetail::SesdfInputBuffers inputs;
-					inputs.positions	= { mappings[ 0 ].devicePtr, mappings[ 0 ].size, 0 };
-					inputs.symbols		= { mappings[ 1 ].devicePtr, mappings[ 1 ].size, 0 };
-					inputs.atomOffset	= p_inputAtomOffset;
-					inputs.atomNb		= uint32_t( atomCount );
+					inputs.positions  = { mappings[ 0 ].devicePtr, mappings[ 0 ].size, 0 };
+					inputs.symbols	  = { mappings[ 1 ].devicePtr, mappings[ 1 ].size, 0 };
+					inputs.atomOffset = p_inputAtomOffset;
+					inputs.atomNb	  = uint32_t( atomCount );
 
 					SESDetail::CudaBuildResult result = SESDetail::buildCudaConstructionFromRendererBuffers(
 						inputs, p_data.trajectory, SES_PROBE_RADIUS_DEFAULT
@@ -115,27 +211,59 @@ namespace VTX::Renderer::Geometry
 					construction->probeNb		   = result.probeNb;
 					construction->sectorNb		   = result.sectorNb;
 					construction->concavePatchNb   = result.concavePatchNb;
+					construction->state = construction->cudaConstruction != nullptr
+											  ? Construction::State::PendingWrite
+											  : Construction::State::Incalculable;
+				}
+				catch ( const std::exception & p_e )
+				{
+					construction->markIncalculable();
+					VTX_WARNING( "Can not build SES for system {}: {}", p_data.uid, p_e.what() );
 				}
 				catch ( ... )
 				{
-					if ( not mappings.empty() )
-					{
-						p_context.unmapInteropBuffers( Desc::E_INTEROP_API::CUDA, mappings );
-					}
-					throw;
+					construction->markIncalculable();
+					VTX_WARNING( "Can not build SES for system {}: unknown error.", p_data.uid );
 				}
 
-				p_context.unmapInteropBuffers( Desc::E_INTEROP_API::CUDA, mappings );
+				if ( not mappings.empty() )
+				{
+					p_context.unmapInteropBuffers( Desc::E_INTEROP_API::CUDA, mappings );
+				}
 			}
+#else
+			construction->markIncalculable();
 #endif
 		}
 
-		convexPatches.construct( p_handle, construction->convexPatchNb );
-		circlePatches.construct( p_handle, construction->circlePatchNb );
-		segmentPatches.construct( p_handle, construction->segmentPatchNb );
-		concavePatches.construct( p_handle, construction->concavePatchNb );
+		if ( construction->state == Construction::State::Incalculable )
+		{
+			_constructEmptyRanges( p_handle );
+		}
+		else
+		{
+			convexPatches.construct( p_handle, construction->convexPatchNb );
+			circlePatches.construct( p_handle, construction->circlePatchNb );
+			segmentPatches.construct( p_handle, construction->segmentPatchNb );
+			concavePatches.construct( p_handle, construction->concavePatchNb );
+		}
 
 		_construction.emplace( p_handle, std::move( construction ) );
+	}
+
+	bool SES::hasPendingCompute() const
+	{
+#ifdef VTX_CUDA_ENABLED
+		for ( const auto & [ handle, construction ] : _construction )
+		{
+			if ( construction->pendingWrite() )
+			{
+				return true;
+			}
+		}
+#endif
+
+		return false;
 	}
 
 	void SES::resize( Context::ContextWrapper & p_context )
@@ -194,17 +322,7 @@ namespace VTX::Renderer::Geometry
 		Util::ScopedChrono chrono( "SES compute" );
 
 #ifdef VTX_CUDA_ENABLED
-		bool hasCudaConstruction = false;
-		for ( const auto & entry : _construction )
-		{
-			if ( entry.second->cudaConstruction != nullptr )
-			{
-				hasCudaConstruction = true;
-				break;
-			}
-		}
-
-		if ( not hasCudaConstruction )
+		if ( not hasPendingCompute() )
 		{
 			return;
 		}
@@ -219,48 +337,113 @@ namespace VTX::Renderer::Geometry
 			BUFFER_ATOMS,  BUFFER_CONVEX_PATCH_ELEMENTS, BUFFER_CIRCLE_PATCH_ATOMS, BUFFER_SEGMENT_PATCH_IDS,
 			BUFFER_PROBES, BUFFER_PROBE_ATOM_INDICES,	 BUFFER_PROBE_NEIGHBORS,	BUFFER_SECTORS,
 		};
-		std::vector<Desc::InteropBufferMapping> mappings
-			= p_context.mapInteropBuffers( Desc::E_INTEROP_API::CUDA, keys );
-		assert( mappings.size() == keys.size() );
 
-		for ( const auto & [ handle, construction ] : _construction )
+		std::vector<Desc::InteropBufferMapping> mappings;
+
+		try
 		{
-			if ( construction->cudaConstruction == nullptr )
+			mappings = p_context.mapInteropBuffers( Desc::E_INTEROP_API::CUDA, keys );
+			assert( mappings.size() == keys.size() );
+
+			for ( const auto & [ handle, construction ] : _construction )
 			{
-				continue;
+				if ( not construction->pendingWrite() )
+				{
+					continue;
+				}
+
+				SESDetail::writeCudaConstruction(
+					*construction->cudaConstruction,
+					_renderBuffers( mappings, *construction, handle, convexPatches, circlePatches, segmentPatches )
+				);
+				construction->cudaConstruction.reset();
+				construction->state = Construction::State::Written;
 			}
-
-			SESDetail::SesdfRenderBuffers renderBuffers;
-			renderBuffers.atoms
-				= { mappings[ 0 ].devicePtr, mappings[ 0 ].size, construction->atomOffset * sizeof( Vec4f ) };
-			renderBuffers.sectors
-				= { mappings[ 7 ].devicePtr, mappings[ 7 ].size, construction->sectorOffset * sizeof( Vec4f ) };
-			renderBuffers.convexPatches	 = { mappings[ 1 ].devicePtr,
-											 mappings[ 1 ].size,
-											 convexPatches.offset( handle ) * sizeof( std::array<uint32_t, 2> ) };
-			renderBuffers.circlePatches	 = { mappings[ 2 ].devicePtr,
-											 mappings[ 2 ].size,
-											 circlePatches.offset( handle ) * sizeof( std::array<uint32_t, 2> ) };
-			renderBuffers.segmentPatches = { mappings[ 3 ].devicePtr,
-											 mappings[ 3 ].size,
-											 segmentPatches.offset( handle ) * sizeof( std::array<uint32_t, 4> ) };
-			renderBuffers.probes
-				= { mappings[ 4 ].devicePtr, mappings[ 4 ].size, construction->probeOffset * sizeof( Vec4f ) };
-			renderBuffers.probeAtomIndices	 = { mappings[ 5 ].devicePtr,
-												 mappings[ 5 ].size,
-												 construction->probeOffset * sizeof( std::array<int32_t, 4> ) };
-			renderBuffers.probeNeighbors	 = { mappings[ 6 ].devicePtr,
-												 mappings[ 6 ].size,
-												 construction->probeOffset * MAX_PROBE_NEIGHBOR_NB * sizeof( Vec4f ) };
-			renderBuffers.atomIndexOffset	 = construction->atomOffset;
-			renderBuffers.probeIndexOffset	 = construction->probeOffset;
-			renderBuffers.sectorIndexOffset	 = construction->sectorOffset;
-			renderBuffers.maxProbeNeighborNb = MAX_PROBE_NEIGHBOR_NB;
-
-			SESDetail::writeCudaConstruction( *construction->cudaConstruction, renderBuffers );
+		}
+		catch ( const std::exception & p_e )
+		{
+			if ( not mappings.empty() )
+			{
+				p_context.unmapInteropBuffers( Desc::E_INTEROP_API::CUDA, mappings );
+			}
+			_discardPendingCompute( p_context );
+			VTX_WARNING( "Can not write SES renderer buffers: {}", p_e.what() );
+			return;
+		}
+		catch ( ... )
+		{
+			if ( not mappings.empty() )
+			{
+				p_context.unmapInteropBuffers( Desc::E_INTEROP_API::CUDA, mappings );
+			}
+			_discardPendingCompute( p_context );
+			VTX_WARNING( "Can not write SES renderer buffers: unknown error." );
+			return;
 		}
 
 		p_context.unmapInteropBuffers( Desc::E_INTEROP_API::CUDA, mappings );
 #endif
+	}
+
+	void SES::_constructEmptyRanges( const Desc::Handle p_handle )
+	{
+		convexPatches.construct( p_handle, 0 );
+		circlePatches.construct( p_handle, 0 );
+		segmentPatches.construct( p_handle, 0 );
+		concavePatches.construct( p_handle, 0 );
+	}
+
+	void SES::_clearPatchGeometries()
+	{
+		convexPatches.clear();
+		circlePatches.clear();
+		segmentPatches.clear();
+		concavePatches.clear();
+	}
+
+	void SES::_releaseBuffers( Context::ContextWrapper & p_context )
+	{
+		p_context.setBuffer<Vec4f>( BUFFER_ATOMS, 1 );
+		p_context.setBuffer<Vec4f>( BUFFER_PROBES, 1 );
+		p_context.setBuffer<std::array<int32_t, 4>>( BUFFER_PROBE_ATOM_INDICES, 1 );
+		p_context.setBuffer<Vec4f>( BUFFER_PROBE_NEIGHBORS, 1 );
+		p_context.setBuffer<Vec4f>( BUFFER_SECTORS, 1 );
+		p_context.setBuffer<std::array<uint32_t, 2>>( BUFFER_CONVEX_PATCH_ELEMENTS, 1 );
+		p_context.setBuffer<std::array<uint32_t, 2>>( BUFFER_CIRCLE_PATCH_ATOMS, 1 );
+		p_context.setBuffer<std::array<uint32_t, 4>>( BUFFER_SEGMENT_PATCH_IDS, 1 );
+
+		p_context.setBuffer<Indice>( INDEX_CONVEX_PATCHES, 1 );
+		p_context.setBuffer<Indice>( INDEX_CIRCLE_PATCHES, 1 );
+		p_context.setBuffer<Indice>( INDEX_SEGMENT_PATCHES, 1 );
+		p_context.setBuffer<Indice>( INDEX_CONCAVE_PATCHES, 1 );
+	}
+
+	void SES::_disableDraws( Context::ContextWrapper & p_context )
+	{
+		BinaryBuffer430 buffer = _emptyIndirectBuffer();
+
+		p_context.setBuffer( INDIRECT_CONVEX_PATCHES, buffer );
+		p_context.setBuffer( INDIRECT_CIRCLE_PATCHES, buffer );
+		p_context.setBuffer( INDIRECT_SEGMENT_PATCHES, buffer );
+		p_context.setBuffer( INDIRECT_CONCAVE_PATCHES, buffer );
+	}
+
+	void SES::_markPendingConstructionsAsIncalculable()
+	{
+		for ( auto & [ handle, construction ] : _construction )
+		{
+			if ( construction->state == Construction::State::PendingWrite )
+			{
+				construction->markIncalculable();
+			}
+		}
+	}
+
+	void SES::_discardPendingCompute( Context::ContextWrapper & p_context )
+	{
+		_markPendingConstructionsAsIncalculable();
+		_clearPatchGeometries();
+		_releaseBuffers( p_context );
+		_disableDraws( p_context );
 	}
 } // namespace VTX::Renderer::Geometry

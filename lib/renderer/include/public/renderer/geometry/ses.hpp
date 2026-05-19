@@ -84,6 +84,8 @@ namespace VTX::Renderer::Geometry
 
 		void compute( Context::ContextWrapper & p_context );
 
+		[[nodiscard]] bool hasPendingCompute() const;
+
 		[[nodiscard]] std::vector<Desc::DrawIndirectCommand> toDrawIndirectCommands( const uint32_t p_count ) const
 		{
 			if ( p_count == 0 )
@@ -96,6 +98,14 @@ namespace VTX::Renderer::Geometry
 
 	  protected:
 		std::map<Desc::Handle, std::unique_ptr<Construction>> _construction;
+
+	  private:
+		void _constructEmptyRanges( Desc::Handle );
+		void _clearPatchGeometries();
+		void _releaseBuffers( Context::ContextWrapper & );
+		void _disableDraws( Context::ContextWrapper & );
+		void _markPendingConstructionsAsIncalculable();
+		void _discardPendingCompute( Context::ContextWrapper & );
 	};
 
 } // namespace VTX::Renderer::Geometry
