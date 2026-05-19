@@ -248,6 +248,8 @@ namespace VTX::UI::QT::Widget
 		}
 
 		p_menu.addSeparator();
+		QAction * const applicationLabel = p_menu.addAction( "Application" );
+		applicationLabel->setEnabled( false );
 		QAction * const fullscreenAction = UI_ACTIONS().addTo( p_menu, Action::View::FULLSCREEN );
 		if ( fullscreenAction != nullptr )
 		{

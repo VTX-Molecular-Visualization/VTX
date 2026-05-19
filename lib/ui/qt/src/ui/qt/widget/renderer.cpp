@@ -322,6 +322,9 @@ namespace VTX::UI::QT::Widget
 		{
 			_container->resize( appliedSize );
 		}
+#ifdef _WIN32
+		_container->setVisible( true );
+#endif
 
 		QTimer::singleShot(
 			0,
@@ -345,6 +348,9 @@ namespace VTX::UI::QT::Widget
 				{
 					_container->resize( size );
 				}
+#ifdef _WIN32
+				_container->setVisible( true );
+#endif
 			}
 		);
 	}
