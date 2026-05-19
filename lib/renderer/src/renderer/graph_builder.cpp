@@ -141,7 +141,11 @@ namespace VTX::Renderer
 		}
 		if ( p_indirectBuffer && not resources.buffers.contains( *p_indirectBuffer ) )
 		{
-			buffer( *p_indirectBuffer, Desc::E_BUFFER_USAGE::INDIRECT, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
+			buffer(
+				*p_indirectBuffer,
+				Desc::E_BUFFER_USAGE::INDIRECT | Desc::E_BUFFER_USAGE::STORAGE,
+				Desc::E_UPDATE_FREQUENCY::DYNAMIC
+			);
 		}
 
 		Desc::Geometry geom;
@@ -160,7 +164,11 @@ namespace VTX::Renderer
 		}
 		if ( p_geometry.indirectBuffer && not resources.buffers.contains( *p_geometry.indirectBuffer ) )
 		{
-			buffer( *p_geometry.indirectBuffer, Desc::E_BUFFER_USAGE::INDIRECT, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
+			buffer(
+				*p_geometry.indirectBuffer,
+				Desc::E_BUFFER_USAGE::INDIRECT | Desc::E_BUFFER_USAGE::STORAGE,
+				Desc::E_UPDATE_FREQUENCY::DYNAMIC
+			);
 		}
 
 		resources.geometries[ p_name ] = p_geometry;

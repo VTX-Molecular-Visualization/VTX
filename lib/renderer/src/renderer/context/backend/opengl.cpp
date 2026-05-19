@@ -882,7 +882,8 @@ namespace VTX::Renderer::Context::Backend
 				const auto	 it	  = p_resources.buffers.find( input.primary );
 				assert( it != p_resources.buffers.end() );
 				const Buffer & buffer = it->second;
-				rt.buffers.emplace_back( hBuf, buffer.usage, b++ );
+				const Binding binding = buffer.binding ? *buffer.binding : b++;
+				rt.buffers.emplace_back( hBuf, buffer.usage, binding );
 				break;
 			}
 			default: break;
@@ -912,7 +913,8 @@ namespace VTX::Renderer::Context::Backend
 				const auto	 it	  = p_resources.buffers.find( output.primary );
 				assert( it != p_resources.buffers.end() );
 				const Buffer & buffer = it->second;
-				rt.buffers.emplace_back( hBuf, buffer.usage, b++ );
+				const Binding binding = buffer.binding ? *buffer.binding : b++;
+				rt.buffers.emplace_back( hBuf, buffer.usage, binding );
 
 				break;
 			}
