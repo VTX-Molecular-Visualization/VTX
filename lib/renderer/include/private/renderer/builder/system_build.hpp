@@ -8,6 +8,7 @@
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/geometry/geometries.hpp"
 #include "renderer/layout/layouts.hpp"
+#include "renderer/representation.hpp"
 #include "renderer/resource_handler.hpp"
 #include "renderer/system_data.hpp"
 #include <unordered_map>
@@ -211,6 +212,79 @@ namespace VTX::Renderer::Builder
 			p_context.geometries.ribbons.setVisibility( p_handle, visibleRibbons );
 
 			p_context.geometries.uploadIndexes( p_context.rendererContext, p_handle );
+		}
+	};
+
+	struct RepresentationState
+	{
+		static void upload( Context & p_context, const std::vector<const Representation *> & p_representations )
+		{
+			BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
+			RepresentationIndex					index = 0;
+
+			for ( const auto * representation : p_representations )
+			{
+				// Apply primitive compatibility rules before caching the resolved flags.
+				bool showSphere	  = representation->hasSphere;
+				bool showCylinder = representation->hasCylinder;
+				bool showRibbon	  = representation->hasRibbon;
+				bool showSes	  = representation->hasSes;
+
+				bool		isSphereRadiusFixed = representation->isRadiusSphereFixed;
+				const float cylinderRadius		= representation->radiusCylinder;
+				float		sphereRadiusFixed	= representation->radiusSphereFixed;
+
+				if ( showSes )
+				{
+					showSphere	 = false;
+					showCylinder = false;
+					showRibbon	 = false;
+				}
+				else
+				{
+					if ( showSphere && not isSphereRadiusFixed )
+					{
+						showCylinder = false;
+						showRibbon	 = false;
+					}
+					else
+					{
+						if ( showSphere && showCylinder )
+						{
+							if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
+							{
+								sphereRadiusFixed = cylinderRadius;
+							}
+						}
+						else if ( not showSphere && showCylinder )
+						{
+							showSphere			= true;
+							isSphereRadiusFixed = true;
+							sphereRadiusFixed	= cylinderRadius;
+						}
+					}
+				}
+
+				buffer.write( sphereRadiusFixed );
+				buffer.write( representation->radiusSphereAdd );
+				buffer.write( uint( isSphereRadiusFixed ) );
+				buffer.write( representation->radiusCylinder );
+				buffer.write( uint( representation->cylinderColorBlending ) );
+				buffer.write( uint( representation->ribbonColorBlending ) );
+				buffer.write( representation->sesProbeRadius );
+				buffer.write( Geometry::SES::MAX_PROBE_NEIGHBOR_NB );
+
+				p_context.representations[ index ] = Cache::Representation { showSphere, showCylinder, showRibbon, showSes };
+
+				index++;
+			}
+
+			buffer.close();
+
+			p_context.rendererContext.setBuffer( "Representations", buffer );
+
+			auto handles			  = p_context.systems.handles();
+			p_context.systemToRefresh = std::unordered_set<Desc::Handle>( handles.begin(), handles.end() );
 		}
 	};
 

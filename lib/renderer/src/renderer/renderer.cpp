@@ -323,80 +323,10 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setRepresentations" );
 
-		BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
-		RepresentationIndex					index = 0;
-
-		for ( const auto * representation : p_representations )
-		{
-			// Aply logic.
-			bool showSphere	  = representation->hasSphere;
-			bool showCylinder = representation->hasCylinder;
-			bool showRibbon	  = representation->hasRibbon;
-			bool showSes	  = representation->hasSes;
-
-			bool		isSphereRadiusFixed = representation->isRadiusSphereFixed;
-			const float cylinderRadius		= representation->radiusCylinder;
-			float		sphereRadiusFixed	= representation->radiusSphereFixed;
-
-			// Asked SES, hide all others.
-			if ( showSes )
-			{
-				showSphere	 = false;
-				showCylinder = false;
-				showRibbon	 = false;
-			}
-			else
-			{
-				// Pure VdW display is sphere-only, but keep other primitives available when spheres are hidden.
-				if ( showSphere && not isSphereRadiusFixed )
-				{
-					showCylinder = false;
-					showRibbon	 = false;
-				}
-				else
-				{
-					// If B&S.
-					if ( showSphere && showCylinder )
-					{
-						// Scale sphere radius to cylinder radius if not VdW.
-						if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
-						{
-							sphereRadiusFixed = cylinderRadius;
-						}
-					}
-
-					// If sticks only, force sphere at cylinder radius.
-					else if ( not showSphere && showCylinder )
-					{
-						showSphere			= true;
-						isSphereRadiusFixed = true;
-						sphereRadiusFixed	= cylinderRadius;
-					}
-				}
-			}
-
-			// Write buffer.
-			buffer.write( sphereRadiusFixed );
-			buffer.write( representation->radiusSphereAdd );
-			buffer.write( uint( isSphereRadiusFixed ) );
-			buffer.write( representation->radiusCylinder );
-			buffer.write( uint( representation->cylinderColorBlending ) );
-			buffer.write( uint( representation->ribbonColorBlending ) );
-			buffer.write( representation->sesProbeRadius );
-			buffer.write( Geometry::SES::MAX_PROBE_NEIGHBOR_NB );
-
-			// Cache.
-			_cacheRepresentations[ index ] = Cache::Representation { showSphere, showCylinder, showRibbon, showSes };
-
-			index++;
-		}
-
-		buffer.close();
-
-		_context.setBuffer( "Representations", buffer );
-
-		auto handles	 = _systems.handles();
-		_systemToRefresh = std::unordered_set<Desc::Handle>( handles.begin(), handles.end() );
+		Builder::Context buildContext {
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		};
+		Builder::RepresentationState::upload( buildContext, p_representations );
 
 		setNeedUpdate( true );
 	}
