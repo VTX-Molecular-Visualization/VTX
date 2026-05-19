@@ -104,8 +104,14 @@ namespace bcs
 		const Aabb &	 aabb,
 		const float		 probeRadius,
 		bool			 buildSurface,
-		bool			 graphics
-	) : m_molecule( molecule ), m_probeRadius( probeRadius ), m_atomNb( molecule.size ), m_graphics( graphics )
+		bool			 graphics,
+		const float4 *	 deviceAtoms
+	) :
+		m_molecule( molecule ),
+		m_dInputAtoms( deviceAtoms ),
+		m_probeRadius( probeRadius ),
+		m_atomNb( molecule.size ),
+		m_graphics( graphics )
 	{
 		constexpr float maxVdwRadius = 3.48f;
 
@@ -166,6 +172,7 @@ namespace bcs
 	Sesdf::Sesdf( Sesdf && other )
 	{
 		std::swap( m_molecule, other.m_molecule );
+		std::swap( m_dInputAtoms, other.m_dInputAtoms );
 		std::swap( m_probeRadius, other.m_probeRadius );
 		std::swap( m_atomNb, other.m_atomNb );
 
@@ -206,6 +213,7 @@ namespace bcs
 	Sesdf & Sesdf::operator=( Sesdf && other )
 	{
 		std::swap( m_molecule, other.m_molecule );
+		std::swap( m_dInputAtoms, other.m_dInputAtoms );
 		std::swap( m_probeRadius, other.m_probeRadius );
 		std::swap( m_atomNb, other.m_atomNb );
 
@@ -297,10 +305,19 @@ namespace bcs
 			sesContext.hVisibleCircleNb	 = m_hVisibleCircleNb;
 			*sesContext.hVisibleCircleNb = 0;
 
-			// #1: CPU => GPU
-			mmemcpy<MemcpyType::HostToDevice>(
-				m_dAtoms.get<float4>(), reinterpret_cast<const float4 *>( m_molecule.ptr ), m_atomNb
-			);
+			// #1: Input atoms => working atoms
+			if ( m_dInputAtoms != nullptr )
+			{
+				cudaCheck( cudaMemcpy(
+					m_dAtoms.get<float4>(), m_dInputAtoms, m_atomNb * sizeof( float4 ), cudaMemcpyDeviceToDevice
+				) );
+			}
+			else
+			{
+				mmemcpy<MemcpyType::HostToDevice>(
+					m_dAtoms.get<float4>(), reinterpret_cast<const float4 *>( m_molecule.ptr ), m_atomNb
+				);
+			}
 
 			// #2: Find Circles
 			auto [ fCircleAndSectors, trimmedToGlobalId ] = sesdf::findCircles<MaxNeighborPerAtom>(

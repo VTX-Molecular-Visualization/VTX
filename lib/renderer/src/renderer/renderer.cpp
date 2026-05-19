@@ -348,9 +348,9 @@ namespace VTX::Renderer
 		pipeline.clear( buildContext );
 		pipeline.registerSystems( buildContext, systems );
 		pipeline.allocateInputs( buildContext );
-		pipeline.allocateOutputs( buildContext );
 		pipeline.uploadInputs( buildContext, systems );
 		pipeline.buildDerived( buildContext, systems );
+		pipeline.allocateOutputs( buildContext );
 		pipeline.writeOutputs( buildContext, systems );
 
 		Builder::SystemModels::upload( buildContext );

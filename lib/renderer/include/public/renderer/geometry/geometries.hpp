@@ -39,7 +39,16 @@ namespace VTX::Renderer
 			spheres.construct( p_handle, p_data );
 			cylinders.construct( p_handle, p_data );
 			ribbons.construct( p_handle, p_data );
-			ses.construct( p_handle, p_data );
+		}
+
+		void constructSES(
+			Context::ContextWrapper & p_context,
+			const Desc::Handle		 p_handle,
+			const SystemData &		 p_data,
+			const uint32_t			 p_inputAtomOffset
+		)
+		{
+			ses.construct( p_context, p_handle, p_data, p_inputAtomOffset );
 		}
 
 		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )

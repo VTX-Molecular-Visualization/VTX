@@ -274,6 +274,8 @@ namespace VTX::Renderer
 
 		// Vertex streams.
 		g.vertexLayout( SphereGeometry::VERTEX_LAYOUT_ATOMS, p_layouts.atoms );
+		g.buffer( Layout::Atoms::ATOMS_POSITIONS, E_BUFFER_USAGE::CUDA_READ, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.buffer( Layout::Atoms::ATOMS_SYMBOLS, E_BUFFER_USAGE::CUDA_READ, E_UPDATE_FREQUENCY::DYNAMIC );
 		g.vertexLayout( RibbonGeometry::VERTEX_LAYOUT_RESIDUES, p_layouts.residues );
 		g.vertexLayout( GridGeometry::VERTEX_LAYOUT_VOXELS, p_layouts.voxels );
 		g.buffer(

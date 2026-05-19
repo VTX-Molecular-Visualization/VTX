@@ -1,4 +1,5 @@
 #include "renderer/geometry/ses.hpp"
+#include "renderer/layout/atoms.hpp"
 #include "renderer/representation.hpp"
 #include <array>
 #include <util/chrono.hpp>
@@ -48,7 +49,12 @@ namespace VTX::Renderer::Geometry
 
 	SES::~SES() = default;
 
-	void SES::construct( const Desc::Handle p_handle, const SystemData & p_data )
+	void SES::construct(
+		Context::ContextWrapper & p_context,
+		const Desc::Handle		  p_handle,
+		const SystemData &		  p_data,
+		const uint32_t			  p_inputAtomOffset
+	)
 	{
 		Util::ScopedChrono chrono( "SES construct" );
 
@@ -73,18 +79,54 @@ namespace VTX::Renderer::Geometry
 		else if ( atomCount != 0 )
 		{
 #ifdef VTX_CUDA_ENABLED
-			SESDetail::CudaBuildResult result = SESDetail::buildCudaConstruction(
-				p_data.trajectory, p_data.data.atomSymbols, SES_PROBE_RADIUS_DEFAULT
-			);
+			if ( not p_context.isInteropAvailable( Desc::E_INTEROP_API::CUDA ) )
+			{
+				VTX_WARNING( "Can not build SES: CUDA graphics interop is not available." );
+			}
+			else
+			{
+				const std::array<Desc::Key, 2> keys {
+					Layout::Atoms::ATOMS_POSITIONS,
+					Layout::Atoms::ATOMS_SYMBOLS,
+				};
 
-			construction->cudaConstruction = std::move( result.construction );
-			construction->atomNb		   = result.atomNb;
-			construction->convexPatchNb	   = result.convexPatchNb;
-			construction->circlePatchNb	   = result.circlePatchNb;
-			construction->segmentPatchNb   = result.segmentPatchNb;
-			construction->probeNb		   = result.probeNb;
-			construction->sectorNb		   = result.sectorNb;
-			construction->concavePatchNb   = result.concavePatchNb;
+				std::vector<Desc::InteropBufferMapping> mappings;
+
+				try
+				{
+					mappings = p_context.mapInteropBuffers( Desc::E_INTEROP_API::CUDA, keys );
+					assert( mappings.size() == keys.size() );
+
+					SESDetail::SesdfInputBuffers inputs;
+					inputs.positions	= { mappings[ 0 ].devicePtr, mappings[ 0 ].size, 0 };
+					inputs.symbols		= { mappings[ 1 ].devicePtr, mappings[ 1 ].size, 0 };
+					inputs.atomOffset	= p_inputAtomOffset;
+					inputs.atomNb		= uint32_t( atomCount );
+
+					SESDetail::CudaBuildResult result = SESDetail::buildCudaConstructionFromRendererBuffers(
+						inputs, p_data.trajectory, SES_PROBE_RADIUS_DEFAULT
+					);
+
+					construction->cudaConstruction = std::move( result.construction );
+					construction->atomNb		   = result.atomNb;
+					construction->convexPatchNb	   = result.convexPatchNb;
+					construction->circlePatchNb	   = result.circlePatchNb;
+					construction->segmentPatchNb   = result.segmentPatchNb;
+					construction->probeNb		   = result.probeNb;
+					construction->sectorNb		   = result.sectorNb;
+					construction->concavePatchNb   = result.concavePatchNb;
+				}
+				catch ( ... )
+				{
+					if ( not mappings.empty() )
+					{
+						p_context.unmapInteropBuffers( Desc::E_INTEROP_API::CUDA, mappings );
+					}
+					throw;
+				}
+
+				p_context.unmapInteropBuffers( Desc::E_INTEROP_API::CUDA, mappings );
+			}
 #endif
 		}
 

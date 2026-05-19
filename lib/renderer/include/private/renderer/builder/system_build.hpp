@@ -483,6 +483,20 @@ namespace VTX::Renderer::Builder
 		}
 	};
 
+	struct SESGeometry
+	{
+		void buildDerived( Context & p_context, std::span<const SystemData> p_systems ) const
+		{
+			for ( const SystemData & system : p_systems )
+			{
+				const Desc::Handle handle = p_context.systems.handle( system.uid );
+				p_context.geometries.constructSES(
+					p_context.rendererContext, handle, system, p_context.layouts.atoms.offset( handle )
+				);
+			}
+		}
+	};
+
 	struct GeometryBuffers
 	{
 		void allocateOutputs( Context & p_context ) const
@@ -540,6 +554,7 @@ namespace VTX::Renderer::Builder
 		SystemVisibility,
 		ResidueLayout,
 		RibbonGeometry,
+		SESGeometry,
 		GeometryBuffers,
 		DrawRanges>;
 } // namespace VTX::Renderer::Builder

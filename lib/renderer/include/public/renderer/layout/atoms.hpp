@@ -18,6 +18,13 @@ namespace VTX::Renderer::Layout
 	class Atoms : public BaseLayout
 	{
 	  public:
+		inline static const std::string ATOMS_POSITIONS		  = "Atoms.Positions";
+		inline static const std::string ATOMS_COLORS		  = "Atoms.Colors";
+		inline static const std::string ATOMS_SYMBOLS		  = "Atoms.Symbols";
+		inline static const std::string ATOMS_IDS			  = "Atoms.Ids";
+		inline static const std::string ATOMS_FLAGS			  = "Atoms.Flags";
+		inline static const std::string ATOMS_REPRESENTATIONS = "Atoms.Representations";
+
 		Atoms()
 		{
 			attributes.push_back( { ATOMS_POSITIONS, Desc::E_TYPE::VEC3F } );
@@ -75,14 +82,6 @@ namespace VTX::Renderer::Layout
 			p_context.setBuffer<RepresentationIndex>( ATOMS_REPRESENTATIONS, p_size );
 			p_context.setBuffer<Flag>( ATOMS_FLAGS, p_size );
 		}
-
-	  private:
-		inline static const std::string ATOMS_POSITIONS		  = "Atoms.Positions";
-		inline static const std::string ATOMS_COLORS		  = "Atoms.Colors";
-		inline static const std::string ATOMS_SYMBOLS		  = "Atoms.Symbols";
-		inline static const std::string ATOMS_IDS			  = "Atoms.Ids";
-		inline static const std::string ATOMS_FLAGS			  = "Atoms.Flags";
-		inline static const std::string ATOMS_REPRESENTATIONS = "Atoms.Representations";
 	};
 } // namespace VTX::Renderer::Layout
 

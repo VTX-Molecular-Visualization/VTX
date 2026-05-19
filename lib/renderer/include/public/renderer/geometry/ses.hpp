@@ -69,7 +69,12 @@ namespace VTX::Renderer::Geometry
 
 		struct Construction;
 
-		void construct( const Desc::Handle p_handle, const SystemData & p_data );
+		void construct(
+			Context::ContextWrapper & p_context,
+			Desc::Handle			  p_handle,
+			const SystemData &		  p_data,
+			uint32_t				  p_inputAtomOffset
+		);
 
 		void resize( Context::ContextWrapper & p_context );
 

@@ -72,10 +72,25 @@ namespace VTX::Renderer::Geometry::SESDetail
 		uint32_t maxProbeNeighborNb = 0;
 	};
 
+	struct SesdfInputBuffers
+	{
+		CudaBufferView positions;
+		CudaBufferView symbols;
+
+		uint32_t atomOffset = 0;
+		uint32_t atomNb		= 0;
+	};
+
 	CudaBuildResult buildCudaConstruction(
 		std::span<const Vec3f>						p_positions,
 		std::span<const Core::ChemDB::Atom::SYMBOL> p_symbols,
 		float										p_probeRadius
+	);
+
+	CudaBuildResult buildCudaConstructionFromRendererBuffers(
+		const SesdfInputBuffers & p_inputs,
+		std::span<const Vec3f>	p_aabbPositions,
+		float					p_probeRadius
 	);
 
 	void writeCudaConstruction( CudaConstruction &, const SesdfRenderBuffers & );
