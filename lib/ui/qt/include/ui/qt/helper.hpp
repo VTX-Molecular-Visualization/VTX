@@ -11,6 +11,11 @@
 namespace VTX::UI::QT::Helper
 {
 	/**
+	 * @brief Center a widget in a given rectangle.
+	 */
+	void centerWidget( QWidget &, const QRect & );
+
+	/**
 	 * @brief Conversion between QColor and Rgba
 	 */
 	VTX::Util::Color::Rgba fromQColor( const QColor & );

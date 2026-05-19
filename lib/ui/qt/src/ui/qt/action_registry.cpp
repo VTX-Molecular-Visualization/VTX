@@ -100,7 +100,20 @@ namespace VTX::UI::QT
 		}
 	}
 
-	QAction * ActionRegistry::addMenuAction( QMenu & p_menu, const std::string_view p_key )
+	QAction * ActionRegistry::addTo( QWidget & p_widget, const std::string_view p_key )
+	{
+		QAction * const action = getAction( p_key );
+		if ( action == nullptr )
+		{
+			VTX_ERROR( "Unable to add unregistered UI action to widget: {}", p_key );
+			return nullptr;
+		}
+
+		p_widget.addAction( action );
+		return action;
+	}
+
+	QAction * ActionRegistry::addTo( QMenu & p_menu, const std::string_view p_key )
 	{
 		QAction * const action = getAction( p_key );
 		if ( action == nullptr )
@@ -113,7 +126,7 @@ namespace VTX::UI::QT
 		return action;
 	}
 
-	QAction * ActionRegistry::addToolBarAction( QToolBar & p_toolbar, const std::string_view p_key )
+	QAction * ActionRegistry::addTo( QToolBar & p_toolbar, const std::string_view p_key )
 	{
 		QAction * const action = getAction( p_key );
 		if ( action == nullptr )

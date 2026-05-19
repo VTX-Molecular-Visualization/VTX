@@ -4,6 +4,8 @@
 #include "tool/example/actions.hpp"
 #include <QGridLayout>
 #include <QToolBar>
+#include <ui/qt/action_registry.hpp>
+#include <ui/qt/services.hpp>
 #include <ui/qt/widget/base_widget.hpp>
 
 namespace VTX::Tool::Example::Widget
@@ -16,10 +18,10 @@ namespace VTX::Tool::Example::Widget
 		{
 			setWindowTitle( "My ToolBar" );
 
-			addAction( Action::MY_ACTION_1 );
-			addAction( Action::MY_ACTION_2 );
-			addAction( Action::MY_ACTION_3 );
-			addAction( Action::MY_ACTION_4 );
+			UI::QT::UI_ACTIONS().addTo( *this, Action::MY_ACTION_1 );
+			UI::QT::UI_ACTIONS().addTo( *this, Action::MY_ACTION_2 );
+			UI::QT::UI_ACTIONS().addTo( *this, Action::MY_ACTION_3 );
+			UI::QT::UI_ACTIONS().addTo( *this, Action::MY_ACTION_4 );
 		}
 
 		virtual ~MyToolBar() {}

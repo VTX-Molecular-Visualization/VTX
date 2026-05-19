@@ -15,6 +15,7 @@
 #include "ui/qt/dock_widget/representations.hpp"
 #include "ui/qt/dock_widget/scene.hpp"
 #include "ui/qt/dock_widget/sequences.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/menu/camera.hpp"
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/menu/help.hpp"
@@ -43,10 +44,12 @@ namespace VTX::UI::QT::Widget
 	MainWindow::MainWindow() : BaseWidget( nullptr )
 	{
 		// Size.
-		QSize size = screen()->availableGeometry().size();
+		QRect geometry = screen()->availableGeometry();
+		QSize size	   = geometry.size();
 		size *= Style::DEFAULT_SIZE_SCALE;
 		resize( size );
-		center();
+
+		Helper::centerWidget( *this, geometry );
 
 		// Set all settings.
 		setDockNestingEnabled( false );
@@ -168,13 +171,13 @@ namespace VTX::UI::QT::Widget
 		{
 			if ( menu->title().toStdString() == p_menu )
 			{
-				UI_ACTIONS().addMenuAction( *menu, p_actionId );
+				UI_ACTIONS().addTo( *menu, p_actionId );
 				return;
 			}
 		}
 
 		QMenu * const menu = menuBar()->addMenu( p_menu.data() );
-		UI_ACTIONS().addMenuAction( *menu, p_actionId );
+		UI_ACTIONS().addTo( *menu, p_actionId );
 	}
 
 	void MainWindow::addToolBarAction( const App::UI::WidgetId & p_toolbar, const std::string_view p_actionId )
@@ -183,14 +186,14 @@ namespace VTX::UI::QT::Widget
 		{
 			if ( toolbar->windowTitle().toStdString() == p_toolbar )
 			{
-				UI_ACTIONS().addToolBarAction( *toolbar, p_actionId );
+				UI_ACTIONS().addTo( *toolbar, p_actionId );
 				return;
 			}
 		}
 
 		QToolBar * const toolbar = new QToolBar( p_toolbar.data(), this );
 		addToolBar( toolbar );
-		UI_ACTIONS().addToolBarAction( *toolbar, p_actionId );
+		UI_ACTIONS().addTo( *toolbar, p_actionId );
 	}
 
 	void MainWindow::resetLayout()
@@ -225,7 +228,7 @@ namespace VTX::UI::QT::Widget
 	{
 		p_menu.clear();
 
-		QAction * const fullscreenAction = UI_ACTIONS().addMenuAction( p_menu, Action::View::FULLSCREEN );
+		QAction * const fullscreenAction = UI_ACTIONS().addTo( p_menu, Action::View::FULLSCREEN );
 		if ( fullscreenAction != nullptr )
 		{
 			fullscreenAction->setChecked( isFullScreen() );
@@ -305,7 +308,9 @@ namespace VTX::UI::QT::Widget
 	}
 
 	void MainWindow::_onBlockingOperationProgress( const App::Events::BlockingOperationProgress & p_e )
-	{ _progressDialog->setValue( p_e.progress ); }
+	{
+		_progressDialog->setValue( p_e.progress );
+	}
 
 	void MainWindow::_onBlockingOperationEnd( const App::Events::BlockingOperationEnd & )
 	{

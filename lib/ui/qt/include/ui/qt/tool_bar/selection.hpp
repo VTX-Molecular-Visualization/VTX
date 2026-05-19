@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_TOOL_BAR_SELECTION__
 
 #include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
 #include "ui/qt/events.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
@@ -52,7 +53,7 @@ namespace VTX::UI::QT::ToolBar
 			App::HUB().connect<Events::SelectionGranularityChanged, &Selection::_onGranularityChanged>( this );
 
 			// Lock selection.
-			addAction( Action::Selection::LOCK );
+			UI_ACTIONS().addTo( *this, Action::Selection::LOCK );
 		}
 
 	  private:

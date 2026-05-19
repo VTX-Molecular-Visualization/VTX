@@ -1,5 +1,6 @@
 #include "ui/qt/menu/theme.hpp"
 #include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/main_window.hpp"
@@ -31,7 +32,7 @@ namespace VTX::UI::QT::Menu
 		_addThemeAction( "Light", Style::E_THEME::LIGHT );
 		_addThemeAction( "Dark", Style::E_THEME::DARK );
 		addSeparator();
-		addAction( Action::Theme::RESET_LAYOUT );
+		UI_ACTIONS().addTo( *this, Action::Theme::RESET_LAYOUT );
 
 		_syncTheme();
 		connect( this, &QMenu::aboutToShow, this, &Theme::_syncTheme );

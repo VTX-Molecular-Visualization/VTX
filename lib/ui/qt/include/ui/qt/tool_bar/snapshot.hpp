@@ -1,6 +1,8 @@
 #ifndef __VTX_UI_QT_TOOL_SNAPSHOT__
 #define __VTX_UI_QT_TOOL_SNAPSHOT__
 
+#include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/base_widget.hpp"
@@ -20,8 +22,8 @@ namespace VTX::UI::QT::ToolBar
 		{
 			setWindowTitle( "Snapshot" );
 
-			addAction( Action::Snapshot::SNAPSHOT );
-			// addAction( Action::Snapshot::EXPORT );
+			UI_ACTIONS().addTo( *this, Action::Snapshot::SNAPSHOT );
+			// UI_ACTIONS().addTo( *this, Action::Snapshot::EXPORT );
 
 			return;
 			auto * btn = new QToolButton;

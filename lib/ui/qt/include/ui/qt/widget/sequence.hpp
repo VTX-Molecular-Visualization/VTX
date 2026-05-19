@@ -1,10 +1,11 @@
 #ifndef __VTX_UI_QT_WIDGET_SEQUENCE__
 #define __VTX_UI_QT_WIDGET_SEQUENCE__
 
-#include "ui/qt/widget/base_widget.hpp"
 #include <QAbstractScrollArea>
 #include <QContextMenuEvent>
+#include <app/ecs.hpp>
 #include <core/struct/topology.hpp>
+#include <optional>
 
 namespace VTX::UI::QT::Widget
 {

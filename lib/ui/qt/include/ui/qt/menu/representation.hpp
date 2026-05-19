@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_MENU_REPRESENTATION__
 
 #include "ui/qt/services.hpp"
+#include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include <QMenu>

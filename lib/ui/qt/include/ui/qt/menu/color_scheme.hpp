@@ -3,6 +3,7 @@
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include <QMenu>

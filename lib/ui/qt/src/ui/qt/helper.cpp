@@ -1,7 +1,14 @@
 #include "ui/qt/helper.hpp"
+#include <QWidget>
 
 namespace VTX::UI::QT::Helper
 {
+	void centerWidget( QWidget & p_widget, const QRect & p_rect )
+	{
+		const int x = ( p_rect.width() - p_widget.width() ) / 2;
+		const int y = ( p_rect.height() - p_widget.height() ) / 2;
+		p_widget.move( x, y );
+	}
 
 	QColor toQColor( const Util::Color::Rgba & p_color )
 	{
