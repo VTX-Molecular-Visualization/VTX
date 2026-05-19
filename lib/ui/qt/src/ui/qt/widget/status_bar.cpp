@@ -30,6 +30,8 @@ namespace VTX::UI::QT::Widget
 		// Resolution widget.
 		_resolution = new ToolButton::ResolutionSelector( this );
 		_resolution->setResolution( App::RENDERER().width(), App::RENDERER().height() );
+		_resolution->setToolTip( "Change resolution" );
+		_resolution->setStatusTip( "Change the resolution of the renderer" );
 		connect(
 			_resolution,
 			&ToolButton::ResolutionSelector::resolutionChanged,
