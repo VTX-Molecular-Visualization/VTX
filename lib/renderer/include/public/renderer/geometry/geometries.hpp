@@ -109,26 +109,56 @@ namespace VTX::Renderer
 				buffer.write( draw.instanceCout );
 				buffer.write( draw.firstVertex );
 				buffer.write( draw.baseInstance );
+				buffer.write( uint32_t( 0 ) );
+				buffer.write( uint32_t( 0 ) );
+				buffer.write( uint32_t( 0 ) );
+				buffer.write( uint32_t( 0 ) );
 			}
 			buffer.close();
 
 			return buffer;
 		}
 
-		[[nodiscard]] BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndexedIndirectCommand> & p_draw )
+		[[nodiscard]] BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndirectRecord> & p_records )
 		{
 			BinaryBuffer430 buffer;
 
-			buffer.write( static_cast<uint32_t>( p_draw.size() ) );
+			buffer.write( static_cast<uint32_t>( p_records.size() ) );
 			buffer.alignTo( Desc::DRAW_INDIRECT_COMMANDS_OFFSET );
 
-			for ( const Desc::DrawIndexedIndirectCommand & draw : p_draw )
+			for ( const Desc::DrawIndirectRecord & record : p_records )
 			{
-				buffer.write( draw.indexCount );
-				buffer.write( draw.instanceCount );
-				buffer.write( draw.firstIndex );
-				buffer.write( draw.baseVertex );
-				buffer.write( draw.baseInstance );
+				buffer.write( record.command.vertexCount );
+				buffer.write( record.command.instanceCout );
+				buffer.write( record.command.firstVertex );
+				buffer.write( record.command.baseInstance );
+				buffer.write( record.idModel );
+				buffer.write( record.padding0 );
+				buffer.write( record.padding1 );
+				buffer.write( record.padding2 );
+			}
+			buffer.close();
+
+			return buffer;
+		}
+
+		[[nodiscard]] BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndexedIndirectRecord> & p_records )
+		{
+			BinaryBuffer430 buffer;
+
+			buffer.write( static_cast<uint32_t>( p_records.size() ) );
+			buffer.alignTo( Desc::DRAW_INDIRECT_COMMANDS_OFFSET );
+
+			for ( const Desc::DrawIndexedIndirectRecord & record : p_records )
+			{
+				buffer.write( record.command.indexCount );
+				buffer.write( record.command.instanceCount );
+				buffer.write( record.command.firstIndex );
+				buffer.write( record.command.baseVertex );
+				buffer.write( record.command.baseInstance );
+				buffer.write( record.idModel );
+				buffer.write( record.padding0 );
+				buffer.write( record.padding1 );
 			}
 			buffer.close();
 

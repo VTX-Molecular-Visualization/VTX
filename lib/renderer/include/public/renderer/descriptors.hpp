@@ -399,6 +399,15 @@ namespace VTX::Renderer::Desc
 		uint32_t baseInstance;
 	};
 
+	struct DrawIndirectRecord
+	{
+		DrawIndirectCommand command;
+		uint32_t			idModel	 = 0;
+		uint32_t			padding0 = 0;
+		uint32_t			padding1 = 0;
+		uint32_t			padding2 = 0;
+	};
+
 	struct DrawIndexedIndirectCommand
 	{
 		uint32_t indexCount;
@@ -408,8 +417,21 @@ namespace VTX::Renderer::Desc
 		uint32_t baseInstance;
 	};
 
+	struct DrawIndexedIndirectRecord
+	{
+		DrawIndexedIndirectCommand command;
+		uint32_t					idModel	 = 0;
+		uint32_t					padding0 = 0;
+		uint32_t					padding1 = 0;
+	};
+
+	static_assert( sizeof( DrawIndirectRecord ) == 32 );
+	static_assert( sizeof( DrawIndexedIndirectRecord ) == 32 );
+
 	inline constexpr uint32_t DRAW_INDIRECT_COUNT_OFFSET	= 0u;
 	inline constexpr uint32_t DRAW_INDIRECT_COMMANDS_OFFSET = 16u;
+	inline constexpr uint32_t DRAW_INDIRECT_RECORD_SIZE		= sizeof( DrawIndirectRecord );
+	inline constexpr uint32_t DRAW_INDEXED_INDIRECT_RECORD_SIZE = sizeof( DrawIndexedIndirectRecord );
 
 	/**
 	 * @brief Draw call descriptor.

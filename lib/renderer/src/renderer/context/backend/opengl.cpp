@@ -417,6 +417,7 @@ namespace VTX::Renderer::Context::Backend
 								pDraw.indiceBuffer	 = _buffers.handle( geometry.indiceBuffer.value() );
 								pDraw.countOffset	 = DRAW_INDIRECT_COUNT_OFFSET;
 								pDraw.commandOffset	 = DRAW_INDIRECT_COMMANDS_OFFSET;
+								pDraw.commandStride	 = DRAW_INDEXED_INDIRECT_RECORD_SIZE;
 								p_commands.push<E_COMMAND::DRAW_INDEXED_INDIRECT>( pDraw );
 							}
 							else
@@ -426,6 +427,7 @@ namespace VTX::Renderer::Context::Backend
 								pDraw.indirectBuffer = _buffers.handle( geometry.indirectBuffer.value() );
 								pDraw.countOffset	 = DRAW_INDIRECT_COUNT_OFFSET;
 								pDraw.commandOffset	 = DRAW_INDIRECT_COMMANDS_OFFSET;
+								pDraw.commandStride	 = DRAW_INDIRECT_RECORD_SIZE;
 								p_commands.push<E_COMMAND::DRAW_INDIRECT>( pDraw );
 							}
 						}

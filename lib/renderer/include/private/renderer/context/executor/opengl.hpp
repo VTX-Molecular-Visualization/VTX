@@ -134,9 +134,8 @@ namespace VTX::Renderer::Context::Executor
 		void execute( const PayloadDrawIndirect & p_payload ) const noexcept
 		{
 			const Backend::GL::Buffer & indirectBuffer = _backend.buffer( p_payload.indirectBuffer );
-			const GLsizei drawCapacity = _drawCapacity<Backend::GL::VertexArray::DrawArraysIndirectCommand>(
-				indirectBuffer, p_payload.commandOffset
-			);
+			const GLsizei drawCapacity
+				= _drawCapacity( indirectBuffer, p_payload.commandOffset, p_payload.commandStride );
 
 			if ( drawCapacity == 0 )
 			{
@@ -152,7 +151,8 @@ namespace VTX::Renderer::Context::Executor
 					_toGL( p_payload.primitive ),
 					reinterpret_cast<const void *>( uintptr_t( p_payload.commandOffset ) ),
 					p_payload.countOffset,
-					drawCapacity
+					drawCapacity,
+					static_cast<GLsizei>( p_payload.commandStride )
 				);
 
 			_dumpGLError();
@@ -161,9 +161,8 @@ namespace VTX::Renderer::Context::Executor
 		void execute( const PayloadDrawIndexedIndirect & p_payload ) const noexcept
 		{
 			const Backend::GL::Buffer & indirectBuffer = _backend.buffer( p_payload.indirectBuffer );
-			const GLsizei drawCapacity = _drawCapacity<Backend::GL::VertexArray::DrawElementsIndirectCommand>(
-				indirectBuffer, p_payload.commandOffset
-			);
+			const GLsizei drawCapacity
+				= _drawCapacity( indirectBuffer, p_payload.commandOffset, p_payload.commandStride );
 
 			if ( drawCapacity == 0 )
 			{
@@ -182,7 +181,8 @@ namespace VTX::Renderer::Context::Executor
 					GL_UNSIGNED_INT,
 					reinterpret_cast<const void *>( uintptr_t( p_payload.commandOffset ) ),
 					p_payload.countOffset,
-					drawCapacity
+					drawCapacity,
+					static_cast<GLsizei>( p_payload.commandStride )
 				);
 
 			_dumpGLError();
@@ -369,12 +369,14 @@ namespace VTX::Renderer::Context::Executor
 			return GL_INVALID_INDEX;
 		}
 
-		template<typename DrawCommand>
 		static GLsizei _drawCapacity(
 			const Backend::GL::Buffer & p_indirectBuffer,
-			const uint32_t				p_commandOffset
+			const uint32_t				p_commandOffset,
+			const uint32_t				p_commandStride
 		) noexcept
 		{
+			assert( p_commandStride > 0 );
+
 			const GLsizei bufferSize = p_indirectBuffer.size();
 			if ( p_commandOffset >= static_cast<uint32_t>( bufferSize ) )
 			{
@@ -382,7 +384,7 @@ namespace VTX::Renderer::Context::Executor
 			}
 
 			return static_cast<GLsizei>(
-				( static_cast<uint32_t>( bufferSize ) - p_commandOffset ) / sizeof( DrawCommand )
+				( static_cast<uint32_t>( bufferSize ) - p_commandOffset ) / p_commandStride
 			);
 		}
 

@@ -83,6 +83,7 @@ namespace VTX::Renderer::Context
 		uint32_t indirectBuffer;
 		uint32_t countOffset;
 		uint32_t commandOffset;
+		uint32_t commandStride;
 	};
 
 	struct PayloadDrawIndexedIndirect : BasePayloadDraw
@@ -91,6 +92,7 @@ namespace VTX::Renderer::Context
 		uint32_t indiceBuffer;
 		uint32_t countOffset;
 		uint32_t commandOffset;
+		uint32_t commandStride;
 	};
 
 	struct BasePayloadDispatch

@@ -64,38 +64,42 @@ namespace VTX::Renderer::Geometry
 		/**
 		 * @brief Build GPU draw commands from the current ranges and masks.
 		 */
-		[[nodiscard]] std::vector<Desc::DrawIndirectCommand> toDrawIndirectCommands()
+		[[nodiscard]] std::vector<Desc::DrawIndirectRecord> toDrawIndirectCommands()
 		{
-			std::vector<Desc::DrawIndirectCommand> commands;
+			std::vector<Desc::DrawIndirectRecord> records;
 
 			for ( const auto & [ uid, data ] : _resources )
 			{
-				commands.emplace_back(
-					Desc::DrawIndirectCommand { data.range.getCount(), 1, data.range.getFirst(), 0 }
+				records.emplace_back(
+					Desc::DrawIndirectRecord {
+						Desc::DrawIndirectCommand { data.range.getCount(), 1, data.range.getFirst(), 0 },
+						static_cast<uint32_t>( uid ) }
 				);
 			}
 
-			return commands;
+			return records;
 		}
 
 		/**
 		 * @brief Build GPU draw indexed commands from the current ranges and masks.
 		 */
-		[[nodiscard]] std::vector<Desc::DrawIndexedIndirectCommand> toDrawIndexedIndirectCommands()
+		[[nodiscard]] std::vector<Desc::DrawIndexedIndirectRecord> toDrawIndexedIndirectCommands()
 		{
-			std::vector<Desc::DrawIndexedIndirectCommand> commands;
+			std::vector<Desc::DrawIndexedIndirectRecord> records;
 			int											  baseVertex = 0;
 
 			for ( const auto & [ uid, data ] : _resources )
 			{
-				commands.emplace_back(
-					Desc::DrawIndexedIndirectCommand {
-						static_cast<uint32_t>( data.indices.size() ), 1, data.range.getFirst(), baseVertex, 0 }
+				records.emplace_back(
+					Desc::DrawIndexedIndirectRecord {
+						Desc::DrawIndexedIndirectCommand {
+							static_cast<uint32_t>( data.indices.size() ), 1, data.range.getFirst(), baseVertex, 0 },
+						static_cast<uint32_t>( uid ) }
 				);
 				baseVertex += data.vertexCount;
 			}
 
-			return commands;
+			return records;
 		}
 
 		Index size( const Desc::Handle p_handle ) const
