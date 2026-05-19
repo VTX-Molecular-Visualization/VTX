@@ -119,7 +119,7 @@ namespace VTX::Renderer::Geometry::SESDetail
 				   );
 		}
 
-		void _packRendererAtoms( const SesdfInputBuffers & p_inputs, bcs::DeviceBuffer & p_dst )
+		void _packRendererAtoms( const SesdfInputBuffers & p_inputs, float4 * const p_dst )
 		{
 			constexpr uint32_t threadNb = 256u;
 			const uint32_t	  blockNb  = ( p_inputs.atomNb + threadNb - 1u ) / threadNb;
@@ -149,7 +149,7 @@ namespace VTX::Renderer::Geometry::SESDetail
 			);
 
 			_packAtomsKernel<<<blockNb, threadNb>>>(
-				p_dst.get<float4>(), positions, symbols, dVdwRadii.get<float>(), p_inputs.atomNb
+				p_dst, positions, symbols, dVdwRadii.get<float>(), p_inputs.atomNb
 			);
 			_cudaCheck( cudaGetLastError(), "SES atom input packing failed" );
 			_cudaCheck( cudaDeviceSynchronize(), "SES atom input packing synchronization failed" );
@@ -231,18 +231,16 @@ namespace VTX::Renderer::Geometry::SESDetail
 
 		auto construction = std::make_unique<CudaConstruction>();
 
-		bcs::DeviceBuffer dInputAtoms = bcs::DeviceBuffer::Typed<float4>( p_inputs.atomNb );
-		_packRendererAtoms( p_inputs, dInputAtoms );
-
 		const bcs::Aabb aabb = _computeAabb( p_aabbPositions );
 		construction->ses	 = std::make_unique<bcs::Sesdf>(
 			   bcs::ConstSpan<bcs::Vec4f>( nullptr, p_inputs.atomNb ),
 			   aabb,
 			   p_probeRadius,
-			   true,
 			   false,
-			   dInputAtoms.get<const float4>()
+			   false
 		   );
+		_packRendererAtoms( p_inputs, construction->ses->getDAtoms() );
+		construction->ses->build();
 
 		const bcs::sesdf::SesdfData data = construction->ses->getData();
 		construction->sectorNb			 = _getActualSectorNb( data );

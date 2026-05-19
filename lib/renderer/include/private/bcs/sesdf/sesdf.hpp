@@ -19,8 +19,7 @@ namespace bcs
 			const Aabb &	 aabb,
 			const float		 probeRadius  = 1.4f,
 			bool			 buildSurface = true,
-			bool			 graphics	  = true,
-			const float4 *	 deviceAtoms  = nullptr
+			bool			 graphics	  = true
 		);
 
 		Sesdf( const Sesdf & )			   = delete;
@@ -36,6 +35,7 @@ namespace bcs
 		sesdf::SesdfGraphics getGraphics() const;
 		sesdf::SesdfData	 getData();
 		void				 writeData( const sesdf::SesdfWriteBuffers & );
+		float4 *			 getDAtoms();
 
 		// Helper to analyse the surface
 		uint16_t			  getMaxNeighborPerAtom() const;
@@ -55,7 +55,6 @@ namespace bcs
 		static const uint16_t MaxIntersectionNeighbors;
 
 		ConstSpan<Vec4f> m_molecule;
-		const float4 *	 m_dInputAtoms = nullptr;
 		float			 m_probeRadius = 0.f;
 		uint32_t		 m_atomNb	   = 0;
 		bool			 m_graphics	   = true;
