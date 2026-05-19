@@ -1,5 +1,6 @@
 struct StructSegment
 {
+	uint model;
 	vec3  v1;
 	vec3  v2;
 	vec4  startAtom;

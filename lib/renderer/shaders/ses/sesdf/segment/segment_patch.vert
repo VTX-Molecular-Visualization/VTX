@@ -5,6 +5,7 @@
 #include "../../../layout_uniforms_color.glsl"
 #include "../../../layout_uniforms_model.glsl"
 #include "../../../layout_uniforms_representation.glsl"
+#include "../../../struct/draw_indexed_indirect.glsl"
 #include "struct_segment.glsl"
 #include "struct_vertex_shader.glsl"
 
@@ -22,6 +23,15 @@ layout(std140, binding = 3) readonly buffer Probes {
 // Out.
 flat out StructVertexShader vsData;
 flat out StructSegment vsSegment;
+
+layout( std430, binding = 26 ) readonly buffer SegmentPatchIndirectDraws
+{
+	uint segmentPatchDrawCount;
+	uint segmentPatchDrawPadding0;
+	uint segmentPatchDrawPadding1;
+	uint segmentPatchDrawPadding2;
+	DrawIndexedIndirectRecord segmentPatchDraws[];
+};
 
 const float TwoPi = 6.2831853;
 
@@ -130,21 +140,24 @@ vec3 orthogonalVector(vec3 normal)
 
 void main()
 {
+	const uint idModel = segmentPatchDraws[ gl_DrawID ].idModel;
+
 	uint startAtomId = segmentIds.x ;
+	vsSegment.model = idModel;
 	vsSegment.startAtom = atoms[startAtomId];
-	vsSegment.startAtom.xyz = ( uniformsModel[ 0 ].matrixModelView * vec4( vsSegment.startAtom.xyz, 1.f ) ).xyz;
+	vsSegment.startAtom.xyz = ( uniformsModel[ idModel ].matrixModelView * vec4( vsSegment.startAtom.xyz, 1.f ) ).xyz;
 
 	vec4 endAtom = atoms[segmentIds.y];
-	endAtom.xyz  = ( uniformsModel[ 0 ].matrixModelView * vec4( endAtom.xyz,  1.f ) ).xyz;
+	endAtom.xyz  = ( uniformsModel[ idModel ].matrixModelView * vec4( endAtom.xyz,  1.f ) ).xyz;
 	
 	const vec4 startIntersection = probes[segmentIds.z];
 	const vec4 endIntersection   = probes[segmentIds.w];
 
 	vsSegment.circle = computeMidCircle(vsSegment.startAtom, endAtom);
 
-	vec3 x1p = (uniformsModel[ 0 ].matrixModelView * vec4(startIntersection.xyz, 1.) ).xyz;
+	vec3 x1p = (uniformsModel[ idModel ].matrixModelView * vec4(startIntersection.xyz, 1.) ).xyz;
 	vsSegment.v1 = (x1p - vsSegment.circle.xyz) / vsSegment.circle.w;
-	vec3 x2p = (uniformsModel[ 0 ].matrixModelView * vec4(endIntersection.xyz, 1.) ).xyz;
+	vec3 x2p = (uniformsModel[ idModel ].matrixModelView * vec4(endIntersection.xyz, 1.) ).xyz;
 	vsSegment.v2 = (x2p - vsSegment.circle.xyz) / vsSegment.circle.w;
 
 	vsSegment.normal.xyz = normalize( endAtom.xyz - vsSegment.startAtom.xyz );

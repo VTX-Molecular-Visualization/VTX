@@ -13,6 +13,7 @@ namespace VTX::Renderer::Geometry
 		inline static const Desc::Key GEOMETRY_SPHERES	  = "Spheres";
 		inline static const Desc::Key INDEX_ATOMS		  = "Index.Atoms";
 		inline static const Desc::Key INDIRECT_SPHERES	  = "Indirect.Spheres";
+		inline static constexpr Desc::Binding BINDING_INDIRECT_SPHERES = 20;
 
 		Sphere()
 		{

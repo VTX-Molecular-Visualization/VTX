@@ -73,7 +73,7 @@ bool fConcavePatchSingularities( const in vec3 point, const in StructTetrahedron
 	uint baseId = p_tetrahedron.startNeighborId;
 	uint maxId  = baseId + p_tetrahedron.neighborNb;
 	
-	const vec3 vPoint = (uniformsModel[ 0 ].matrixModelViewInv * vec4(point, 1.)).xyz;
+	const vec3 vPoint = (uniformsModel[ p_tetrahedron.model ].matrixModelViewInv * vec4(point, 1.)).xyz;
 
 	bool valid = true;
 	for(uint otherId = baseId; otherId < maxId; otherId++)

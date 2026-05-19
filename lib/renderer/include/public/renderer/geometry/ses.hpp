@@ -56,6 +56,10 @@ namespace VTX::Renderer::Geometry
 		inline static const Desc::Key INDIRECT_CIRCLE_PATCHES  = "Indirect.SES.CirclePatches";
 		inline static const Desc::Key INDIRECT_SEGMENT_PATCHES = "Indirect.SES.SegmentPatches";
 		inline static const Desc::Key INDIRECT_CONCAVE_PATCHES = "Indirect.SES.ConcavePatches";
+		inline static constexpr Desc::Binding BINDING_INDIRECT_CONVEX_PATCHES  = 24;
+		inline static constexpr Desc::Binding BINDING_INDIRECT_CIRCLE_PATCHES  = 25;
+		inline static constexpr Desc::Binding BINDING_INDIRECT_SEGMENT_PATCHES = 26;
+		inline static constexpr Desc::Binding BINDING_INDIRECT_CONCAVE_PATCHES = 27;
 		inline static const Desc::Key INDEX_CONVEX_PATCHES	   = "Index.SES.ConvexPatches";
 		inline static const Desc::Key INDEX_CIRCLE_PATCHES	   = "Index.SES.CirclePatches";
 		inline static const Desc::Key INDEX_SEGMENT_PATCHES	   = "Index.SES.SegmentPatches";

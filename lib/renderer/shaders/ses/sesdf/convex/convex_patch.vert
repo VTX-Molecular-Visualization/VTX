@@ -2,6 +2,7 @@
 
 #include "../../../constant.glsl"
 #include "../../../layout_uniforms_model.glsl"
+#include "../../../struct/draw_indexed_indirect.glsl"
 #include "struct_convex_patch.glsl"
 #include "struct_vertex_shader.glsl"
 
@@ -15,12 +16,24 @@ layout(std140, binding = 1) readonly buffer SortedAtoms {
 flat out StructVertexShader vsData;
 flat out StructConvexPatch vsPatchData;
 
+layout( std430, binding = 24 ) readonly buffer ConvexPatchIndirectDraws
+{
+	uint convexPatchDrawCount;
+	uint convexPatchDrawPadding0;
+	uint convexPatchDrawPadding1;
+	uint convexPatchDrawPadding2;
+	DrawIndexedIndirectRecord convexPatchDraws[];
+};
+
 void main()
 {
+	const uint idModel = convexPatchDraws[ gl_DrawID ].idModel;
+
 	const vec4 ithData		 = atoms[gl_VertexID];
+	vsPatchData.model = idModel;
 	vsPatchData.atomId = gl_VertexID;
 	vsPatchData.wsAtomData	 = ithData;
-	vsPatchData.vAtomData.xyz = (uniformsModel[ 0 ].matrixModelView * vec4(ithData.xyz, 1.)).xyz;
+	vsPatchData.vAtomData.xyz = (uniformsModel[ idModel ].matrixModelView * vec4(ithData.xyz, 1.)).xyz;
 	vsPatchData.vAtomData.w   = ithData.w;
 	vsPatchData.elementsId	 = elementIds;
 

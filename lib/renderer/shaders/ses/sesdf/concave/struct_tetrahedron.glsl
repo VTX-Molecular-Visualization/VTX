@@ -1,5 +1,6 @@
 struct StructTetrahedron
 {
+	uint model;
 	vec4 point;			  // (x, y, z): coordinate of the point
 	Plane plane1;
 	Plane plane2;

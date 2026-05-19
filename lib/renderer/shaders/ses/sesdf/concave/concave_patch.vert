@@ -5,6 +5,7 @@
 #include "../../../layout_uniforms_color.glsl"
 #include "../../../layout_uniforms_model.glsl"
 #include "../../../layout_uniforms_representation.glsl"
+#include "../../../struct/draw_indexed_indirect.glsl"
 #include "struct_plane.glsl"
 #include "struct_tetrahedron.glsl"
 #include "struct_vertex_shader.glsl"
@@ -25,6 +26,15 @@ layout(std140, binding = 4) readonly buffer ProbesAtomIndices {
 // Out.
 flat out StructVertexShader vsData;
 flat out StructTetrahedron vsTetrahedron;
+
+layout( std430, binding = 27 ) readonly buffer ConcavePatchIndirectDraws
+{
+	uint concavePatchDrawCount;
+	uint concavePatchDrawPadding0;
+	uint concavePatchDrawPadding1;
+	uint concavePatchDrawPadding2;
+	DrawIndexedIndirectRecord concavePatchDraws[];
+};
 
 //https://www.shadertoy.com/view/Xt3cDn
 uint baseHash(uint p)
@@ -49,21 +59,24 @@ float length2(vec3 v) { return dot(v,v); }
 
 void main()
 {
+	const uint idModel = concavePatchDraws[ gl_DrawID ].idModel;
+
 	const vec4 intersectionCenter   = probes[gl_VertexID];
 	const ivec4 intersectionIndices = probesAtomIndices[gl_VertexID];
 	
+	vsTetrahedron.model = idModel;
 	vsTetrahedron.point.w   = gl_VertexID;
-	vsTetrahedron.point.xyz = ( uniformsModel[ 0 ].matrixModelView * vec4( intersectionCenter.xyz, 1.f ) ).xyz;
+	vsTetrahedron.point.xyz = ( uniformsModel[ idModel ].matrixModelView * vec4( intersectionCenter.xyz, 1.f ) ).xyz;
 
 	vsTetrahedron.startNeighborId = int(gl_VertexID * uniformsRepresentation[ 0 ].SESMaxProbeNeighborNb);
 	vsTetrahedron.neighborNb		 = int(intersectionIndices.w);
 	
 	vec4 atom1 = atoms[intersectionIndices.x];
-	atom1 = vec4(( uniformsModel[ 0 ].matrixModelView * vec4( atom1.xyz, 1.f ) ).xyz, atom1.w);
+	atom1 = vec4(( uniformsModel[ idModel ].matrixModelView * vec4( atom1.xyz, 1.f ) ).xyz, atom1.w);
 	vec4 atom2 = atoms[intersectionIndices.y];
-	atom2 = vec4(( uniformsModel[ 0 ].matrixModelView * vec4( atom2.xyz, 1.f ) ).xyz, atom2.w);
+	atom2 = vec4(( uniformsModel[ idModel ].matrixModelView * vec4( atom2.xyz, 1.f ) ).xyz, atom2.w);
 	vec4 atom3 = atoms[intersectionIndices.z];
-	atom3 = vec4(( uniformsModel[ 0 ].matrixModelView * vec4( atom3.xyz, 1.f ) ).xyz, atom3.w);
+	atom3 = vec4(( uniformsModel[ idModel ].matrixModelView * vec4( atom3.xyz, 1.f ) ).xyz, atom3.w);
 	
 	vsTetrahedron.color = vec3(1.);//vec3(hash31(intersectionIndices.x) + hash31(intersectionIndices.y) + + hash31(intersectionIndices.z)) / 3.;
 

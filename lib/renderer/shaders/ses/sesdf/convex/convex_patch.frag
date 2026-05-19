@@ -68,7 +68,7 @@ bool isInSector(vec3 p, vec3 o, float r)
 bool isInPatch(const vec3 viewP)
 {
     //if(gsPatchData.elementsId.y - gsPatchData.elementsId.x != 16)
-    const vec3 centerToPoint = (uniformsModel[ 0 ].matrixModelViewInv * vec4((viewP - gsPatchData.vAtomData.xyz) / gsPatchData.wsAtomData.w, 0.)).xyz;
+    const vec3 centerToPoint = (uniformsModel[ gsPatchData.model ].matrixModelViewInv * vec4((viewP - gsPatchData.vAtomData.xyz) / gsPatchData.wsAtomData.w, 0.)).xyz;
     bool isIn = true;
     for( uint i = gsPatchData.elementsId.x; i < gsPatchData.elementsId.y && isIn; i++) 
     {

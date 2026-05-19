@@ -1,5 +1,6 @@
 struct StructCircle
 {
+	uint model;
 	vec4  firstAtom;  // ith pos + ith radius
 	vec4  secondAtom; // jth pos + jth radius
 	vec4  center;	  // Circle center + circle radius

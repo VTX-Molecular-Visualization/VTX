@@ -5,6 +5,7 @@
 #include "../../../layout_uniforms_color.glsl"
 #include "../../../layout_uniforms_model.glsl"
 #include "../../../layout_uniforms_representation.glsl"
+#include "../../../struct/draw_indexed_indirect.glsl"
 #include "struct_circle.glsl"
 #include "struct_vertex_shader.glsl"
 
@@ -17,6 +18,15 @@ layout( std140, binding = 1 ) readonly buffer SortedAtoms {
 // Out.
 flat out StructVertexShader vsData;
 flat out StructCircle vsCircle;
+
+layout( std430, binding = 25 ) readonly buffer CirclePatchIndirectDraws
+{
+	uint circlePatchDrawCount;
+	uint circlePatchDrawPadding0;
+	uint circlePatchDrawPadding1;
+	uint circlePatchDrawPadding2;
+	DrawIndexedIndirectRecord circlePatchDraws[];
+};
 
 float length2(vec3 v){return dot(v,v);}
 
@@ -78,11 +88,14 @@ Bound getCircleBoundingBox(vec3 n)
 
 void main()
 {
+	const uint idModel = circlePatchDraws[ gl_DrawID ].idModel;
+
 	const vec4 atom1 = atoms[atomsId.x];
 	const vec4 atom2 = atoms[atomsId.y];
-	vsCircle.firstAtom  = vec4(( uniformsModel[ 0 ].matrixModelView * vec4( atom1.xyz, 1.f ) ).xyz, atom1.w);
+	vsCircle.model = idModel;
+	vsCircle.firstAtom  = vec4(( uniformsModel[ idModel ].matrixModelView * vec4( atom1.xyz, 1.f ) ).xyz, atom1.w);
 	const float ithExtendedRadius = vsCircle.firstAtom.w + uniformsRepresentation[ 0 ].SESProbeRadius;
-	vsCircle.secondAtom = vec4(( uniformsModel[ 0 ].matrixModelView * vec4( atom2.xyz, 1.f ) ).xyz, atom2.w);
+	vsCircle.secondAtom = vec4(( uniformsModel[ idModel ].matrixModelView * vec4( atom2.xyz, 1.f ) ).xyz, atom2.w);
 
 	const vec3  circleCenter = computeCircleCenter(vsCircle.firstAtom, vsCircle.secondAtom);
 	const vec3  circleToI    = vsCircle.firstAtom.xyz - circleCenter;
