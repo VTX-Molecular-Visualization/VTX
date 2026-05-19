@@ -15,7 +15,8 @@ namespace VTX::UI::QT::Widget
 	concept ConceptWidget = std::is_base_of_v<QWidget, W>;
 
 	/**
-	 * @brief Abstract class that describes a widget behaviour.
+	 * @brief Abstract class that describes a typed widget.
+	 * It can be retrieved by its type, and lifetime is logged.
 	 */
 	template<typename T, ConceptWidget W>
 	class BaseWidget : public W
@@ -33,6 +34,15 @@ namespace VTX::UI::QT::Widget
 		}
 
 		virtual ~BaseWidget() { VTX_TRACE( "Widget deleted: {}", W::objectName().toStdString() ); }
+
+		/**
+		 * @brief Check if widget is of type T.
+		 */
+		template<typename T>
+		bool is() const
+		{
+			return W::objectName() == VTX::Util::typeName<T>();
+		}
 	};
 
 } // namespace VTX::UI::QT::Widget
