@@ -3,6 +3,7 @@
 
 #include "include_opengl.hpp"
 #include <type_traits>
+#include <utility>
 
 namespace VTX::Renderer::Context::Backend::GL
 {
@@ -16,7 +17,25 @@ namespace VTX::Renderer::Context::Backend::GL
 			glCreateVertexArrays( 1, &_id );
 		}
 
-		~VertexArray() noexcept
+		VertexArray( const VertexArray & )			 = delete;
+		VertexArray & operator=( const VertexArray & ) = delete;
+
+		VertexArray( VertexArray && p_other ) noexcept : _id( std::exchange( p_other._id, GL_INVALID_INDEX ) ) {}
+
+		VertexArray & operator=( VertexArray && p_other ) noexcept
+		{
+			if ( this != &p_other )
+			{
+				destroy();
+				_id = std::exchange( p_other._id, GL_INVALID_INDEX );
+			}
+
+			return *this;
+		}
+
+		~VertexArray() noexcept { destroy(); }
+
+		void destroy() noexcept
 		{
 			if ( _id != GL_INVALID_INDEX )
 			{

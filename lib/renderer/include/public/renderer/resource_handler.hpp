@@ -3,7 +3,11 @@
 
 #include "renderer/descriptors.hpp"
 #include <algorithm>
+#include <cstddef>
+#include <memory>
+#include <new>
 #include <util/logger.hpp>
+#include <utility>
 #include <vector>
 
 namespace VTX::Renderer
@@ -44,21 +48,22 @@ namespace VTX::Renderer
 			if ( _cache.contains( p_key ) )
 			{
 				assert( _cache.contains( p_key ) );
-				handle				 = _cache[ p_key ].handle;
-				_resources[ handle ] = std::make_unique<T>( std::forward<Args>( p_args )... );
+				handle = _cache[ p_key ].handle;
+				_resources[ handle ].construct( std::forward<Args>( p_args )... );
 			}
 			// Reuse available handle if any.
 			else if ( not _availables.empty() )
 			{
 				handle = _availables.back();
 				_availables.pop_back();
-				_resources[ handle ] = std::make_unique<T>( std::forward<Args>( p_args )... );
+				_resources[ handle ].construct( std::forward<Args>( p_args )... );
 			}
 			// Create new handle.
 			else
 			{
 				handle = static_cast<Desc::Handle>( _resources.size() );
-				_resources.emplace_back( std::make_unique<T>( std::forward<Args>( p_args )... ) );
+				_resources.emplace_back();
+				_resources[ handle ].construct( std::forward<Args>( p_args )... );
 			}
 
 			// Update cache.
@@ -96,7 +101,7 @@ namespace VTX::Renderer
 			{
 				return;
 			}
-			if ( _resources[ p_handle ] == nullptr )
+			if ( _resources[ p_handle ].alive == false )
 			{
 				return;
 			}
@@ -109,7 +114,7 @@ namespace VTX::Renderer
 				_cache.erase( it );
 			}
 
-			_resources[ p_handle ].reset();
+			_resources[ p_handle ].destroy();
 			_availables.push_back( p_handle );
 		}
 
@@ -138,7 +143,7 @@ namespace VTX::Renderer
 
 		inline bool contains( const Desc::Handle p_handle ) const noexcept
 		{
-			return p_handle < _resources.size() && _resources[ p_handle ];
+			return p_handle < _resources.size() && _resources[ p_handle ].alive;
 		}
 
 		/**
@@ -237,16 +242,18 @@ namespace VTX::Renderer
 		{
 			assert( p_handle < _resources.size() );
 			assert( std::find( _availables.begin(), _availables.end(), p_handle ) == _availables.end() );
+			assert( _resources[ p_handle ].alive );
 
-			return *_resources[ p_handle ];
+			return _resources[ p_handle ].get();
 		}
 
 		inline T & get( const Desc::Handle p_handle ) noexcept
 		{
 			assert( p_handle < _resources.size() );
 			assert( std::find( _availables.begin(), _availables.end(), p_handle ) == _availables.end() );
+			assert( _resources[ p_handle ].alive );
 
-			return *_resources[ p_handle ];
+			return _resources[ p_handle ].get();
 		}
 
 		/**
@@ -292,12 +299,73 @@ namespace VTX::Renderer
 		}
 
 		/**
-		 * @brief Iterator over key-value pairs.
+		 * @brief Slot to store destructible and aligned resource.
+		 */
+		struct _Slot
+		{
+			_Slot() = default;
+
+			_Slot( const _Slot & )			   = delete;
+			_Slot & operator=( const _Slot & ) = delete;
+
+			_Slot( _Slot && p_other )
+			{
+				if ( p_other.alive )
+				{
+					construct( std::move( p_other.get() ) );
+				}
+			}
+
+			~_Slot() { destroy(); }
+
+			template<typename... Args>
+			T & construct( Args &&... p_args )
+			{
+				destroy();
+				T * data = std::construct_at( _data(), std::forward<Args>( p_args )... );
+				alive	 = true;
+
+				return *data;
+			}
+
+			void destroy() noexcept
+			{
+				if ( alive )
+				{
+					std::destroy_at( _data() );
+					alive = false;
+				}
+			}
+
+			T & get() noexcept
+			{
+				assert( alive );
+				return *_data();
+			}
+
+			const T & get() const noexcept
+			{
+				assert( alive );
+				return *_data();
+			}
+
+			bool alive = false;
+
+		  private:
+			T * _data() noexcept { return std::launder( reinterpret_cast<T *>( _storage ) ); }
+
+			const T * _data() const noexcept { return std::launder( reinterpret_cast<const T *>( _storage ) ); }
+
+			alignas( T ) std::byte _storage[ sizeof( T ) ];
+		};
+
+		/**
+		 * @brief Iterator over valid resources.
 		 */
 		class iterator
 		{
 		  public:
-			using VecIter = typename std::vector<std::unique_ptr<T>>::iterator;
+			using VecIter = typename std::vector<_Slot>::iterator;
 
 			iterator( ResourceHandler * p_handler, VecIter p_it ) : _handler( p_handler ), _it( p_it )
 			{
@@ -313,12 +381,12 @@ namespace VTX::Renderer
 
 			bool operator!=( const iterator & p_other ) const { return _it != p_other._it; }
 
-			T & operator*() const { return **_it; }
+			T & operator*() const { return _it->get(); }
 
 		  private:
 			void skipInvalid()
 			{
-				while ( _it != _handler->_resources.end() && *_it == nullptr )
+				while ( _it != _handler->_resources.end() && not _it->alive )
 				{
 					++_it;
 				}
@@ -336,8 +404,8 @@ namespace VTX::Renderer
 		/**
 		 * @brief Resource pool : Handle = index.
 		 */
-		std::vector<std::unique_ptr<T>> _resources;
-		std::unordered_map<K, Entry>	_cache;
+		std::vector<_Slot>			 _resources;
+		std::unordered_map<K, Entry> _cache;
 
 		/**
 		 * @brief Available handles for reuse.

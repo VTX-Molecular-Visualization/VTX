@@ -3,6 +3,7 @@
 
 #include "include_opengl.hpp"
 #include <cassert>
+#include <utility>
 
 namespace VTX::Renderer::Context::Backend::GL
 {
@@ -18,6 +19,30 @@ namespace VTX::Renderer::Context::Backend::GL
 			_format = p_format;
 
 			_create();
+		}
+
+		Texture2D( const Texture2D & )			 = delete;
+		Texture2D & operator=( const Texture2D & ) = delete;
+
+		Texture2D( Texture2D && p_other ) noexcept
+			: _id( std::exchange( p_other._id, GL_INVALID_INDEX ) ),
+			  _width( std::exchange( p_other._width, 0 ) ), _height( std::exchange( p_other._height, 0 ) ),
+			  _format( std::exchange( p_other._format, GL_RGBA32F ) )
+		{
+		}
+
+		Texture2D & operator=( Texture2D && p_other ) noexcept
+		{
+			if ( this != &p_other )
+			{
+				_destroy();
+				_id		= std::exchange( p_other._id, GL_INVALID_INDEX );
+				_width	= std::exchange( p_other._width, 0 );
+				_height = std::exchange( p_other._height, 0 );
+				_format = std::exchange( p_other._format, GL_RGBA32F );
+			}
+
+			return *this;
 		}
 
 		~Texture2D() noexcept { _destroy(); }

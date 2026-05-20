@@ -3,6 +3,7 @@
 
 #include "include_opengl.hpp"
 #include <cassert>
+#include <utility>
 
 namespace VTX::Renderer::Context::Backend::GL
 {
@@ -22,7 +23,26 @@ namespace VTX::Renderer::Context::Backend::GL
 			glSamplerParameteri( _id, GL_TEXTURE_MIN_FILTER, p_minFilter );
 			glSamplerParameteri( _id, GL_TEXTURE_MAG_FILTER, p_magFilter );
 		}
-		~Sampler() noexcept
+
+		Sampler( const Sampler & )			 = delete;
+		Sampler & operator=( const Sampler & ) = delete;
+
+		Sampler( Sampler && p_other ) noexcept : _id( std::exchange( p_other._id, GL_INVALID_INDEX ) ) {}
+
+		Sampler & operator=( Sampler && p_other ) noexcept
+		{
+			if ( this != &p_other )
+			{
+				destroy();
+				_id = std::exchange( p_other._id, GL_INVALID_INDEX );
+			}
+
+			return *this;
+		}
+
+		~Sampler() noexcept { destroy(); }
+
+		void destroy() noexcept
 		{
 			if ( _id != GL_INVALID_INDEX )
 			{
