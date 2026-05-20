@@ -203,6 +203,7 @@ namespace VTX::Renderer
 			const Desc::Key &,
 			const Desc::E_BUFFER_USAGE,
 			const Desc::E_UPDATE_FREQUENCY					= Desc::E_UPDATE_FREQUENCY::STATIC,
+			const Desc::E_BUFFER_ALLOCATION					= Desc::E_BUFFER_ALLOCATION::SINGLE,
 			const Desc::E_BUFFER_MUTABILITY					= Desc::E_BUFFER_MUTABILITY::MUTABLE,
 			const Desc::E_BUFFER_ACCESS						= Desc::E_BUFFER_ACCESS::NONE,
 			const std::optional<uint32_t>					= std::nullopt,

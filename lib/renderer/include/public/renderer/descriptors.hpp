@@ -149,6 +149,15 @@ namespace VTX::Renderer::Desc
 	};
 
 	/**
+	 * @brief Physical allocation strategy for a logical render graph buffer.
+	 */
+	enum struct E_BUFFER_ALLOCATION : uint32_t
+	{
+		SINGLE,
+		CHUNKED
+	};
+
+	/**
 	 * @brief All sampler wrapping modes.
 	 */
 	enum struct E_WRAPPING : uint32_t
@@ -344,6 +353,7 @@ namespace VTX::Renderer::Desc
 	{
 		Key						  name;
 		E_BUFFER_USAGE			  usage		 = E_BUFFER_USAGE::NONE;
+		E_BUFFER_ALLOCATION		  allocation = E_BUFFER_ALLOCATION::SINGLE;
 		E_BUFFER_MUTABILITY		  mutability = E_BUFFER_MUTABILITY::MUTABLE;
 		E_BUFFER_ACCESS			  access	 = E_BUFFER_ACCESS::NONE;
 		E_UPDATE_FREQUENCY		  frequency	 = E_UPDATE_FREQUENCY::STATIC;

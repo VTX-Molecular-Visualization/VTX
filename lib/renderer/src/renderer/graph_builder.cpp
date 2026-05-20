@@ -102,6 +102,7 @@ namespace VTX::Renderer
 		const Desc::Key &								p_name,
 		const Desc::E_BUFFER_USAGE						p_usage,
 		const Desc::E_UPDATE_FREQUENCY					p_frequency,
+		const Desc::E_BUFFER_ALLOCATION					p_allocation,
 		const Desc::E_BUFFER_MUTABILITY					p_mutability,
 		const Desc::E_BUFFER_ACCESS						p_access,
 		const std::optional<uint32_t>					p_binding,
@@ -111,6 +112,10 @@ namespace VTX::Renderer
 		Desc::Buffer & desc = resources.buffers[ p_name ];
 		desc.name			= p_name;
 		desc.usage |= p_usage;
+		if ( p_allocation == Desc::E_BUFFER_ALLOCATION::CHUNKED )
+		{
+			desc.allocation = Desc::E_BUFFER_ALLOCATION::CHUNKED;
+		}
 		desc.frequency	= p_frequency;
 		desc.mutability = p_mutability;
 		desc.access		= p_access;
