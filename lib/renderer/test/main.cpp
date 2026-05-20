@@ -239,13 +239,12 @@ TEST_CASE( "RenderGraph: add() merges builders and build() still works", "[rende
 
 TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[renderer][graph]" )
 {
-	RenderGraph::PipelineConfig cfg;
+	Builder::PipelineConfig cfg;
 	cfg.enableSSAO		= true;
 	cfg.enableOutline	= true;
 	cfg.enableSelection = true;
 
 	RenderGraph graph;
-	graph.setPipelineConfig( cfg );
 	graph.set( Builder::DefaultRenderGraph::build( cfg, Layouts {}, Geometries {} ) );
 
 	const Resources & resources = graph.getResources();

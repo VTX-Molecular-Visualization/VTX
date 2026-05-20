@@ -2,11 +2,8 @@
 #define __VTX_RENDERER_RENDER_GRAPH__
 
 #include "renderer/descriptors.hpp"
-#include "renderer/geometry/geometries.hpp"
 #include "renderer/graph_builder.hpp"
-#include "renderer/layout/layouts.hpp"
-#include <util/exceptions.hpp>
-#include <util/logger.hpp>
+#include <span>
 
 namespace VTX::Renderer
 {
@@ -18,22 +15,16 @@ namespace VTX::Renderer
 	{
 	  public:
 		/**
-		 * @brief Default pipeline configuration.
-		 */
-		struct PipelineConfig
-		{
-			bool enableSSAO		 = false;
-			bool enableOutline	 = false;
-			bool enableSelection = false;
-
-			bool operator==( const PipelineConfig & ) const = default;
-		};
-
-		/**
 		 * @brief Accessors.
 		 */
 		inline const Desc::Resources & getResources() const { return _resources; }
-		inline const Desc::PassList &  getPasses() const { return _passes; }
+
+		inline const Desc::PassList & getPasses() const { return _passes; }
+
+		/**
+		 * @brief Update the active physical chunks for a geometry resource.
+		 */
+		bool setGeometryChunks( const Desc::Key &, std::span<const uint32_t> );
 
 		/**
 		 * @brief Validate graph and build render queue.
@@ -56,17 +47,9 @@ namespace VTX::Renderer
 		 */
 		void clear();
 
-		/**
-		 * @brief Get pipeline config.
-		 */
-		const std::optional<PipelineConfig> & getPipelineConfig() const { return _config; }
-		void								  setPipelineConfig( const PipelineConfig & p_config ) { _config = p_config; }
-
 	  private:
 		Desc::Resources _resources;
 		Desc::PassList	_passes;
-
-		std::optional<PipelineConfig> _config;
 	};
 
 } // namespace VTX::Renderer

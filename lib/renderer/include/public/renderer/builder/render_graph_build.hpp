@@ -4,17 +4,24 @@
 #include "renderer/geometry/geometries.hpp"
 #include "renderer/graph_builder.hpp"
 #include "renderer/layout/layouts.hpp"
-#include "renderer/render_graph.hpp"
 
 namespace VTX::Renderer::Builder
 {
+	/**
+	 * @brief Default pipeline configuration.
+	 */
+	struct PipelineConfig
+	{
+		bool enableSSAO		 = false;
+		bool enableOutline	 = false;
+		bool enableSelection = false;
+
+		bool operator==( const PipelineConfig & ) const = default;
+	};
+
 	struct DefaultRenderGraph
 	{
-		static GraphBuilder build(
-			const RenderGraph::PipelineConfig &,
-			const Layouts &,
-			const Geometries &
-		);
+		static GraphBuilder build( const PipelineConfig &, const Layouts &, const Geometries & );
 	};
 } // namespace VTX::Renderer::Builder
 
