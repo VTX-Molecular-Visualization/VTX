@@ -38,7 +38,6 @@ namespace VTX::Renderer
 		{
 			spheres.construct( p_handle, p_data );
 			cylinders.construct( p_handle, p_data );
-			ribbons.construct( p_handle, p_data );
 		}
 
 		void constructSES(
@@ -55,7 +54,10 @@ namespace VTX::Renderer
 		{
 			spheres.uploadIndexes( p_context, p_handle );
 			cylinders.uploadIndexes( p_context, p_handle );
-			ribbons.uploadIndexes( p_context, p_handle );
+			if ( ribbons.built( p_handle ) )
+			{
+				ribbons.uploadIndexes( p_context, p_handle );
+			}
 			ses.uploadIndexes( p_context, p_handle );
 		}
 

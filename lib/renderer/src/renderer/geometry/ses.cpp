@@ -372,6 +372,10 @@ namespace VTX::Renderer::Geometry
 	void SES::uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
 	{
 		const auto it = _surfaces.bySystem.find( p_handle );
+		if ( it == _surfaces.bySystem.end() )
+		{
+			return;
+		}
 		assert( it != _surfaces.bySystem.end() );
 
 		for ( const SurfaceID surface : it->second )
@@ -380,6 +384,26 @@ namespace VTX::Renderer::Geometry
 			circlePatches.uploadIndexes( p_context, surface );
 			segmentPatches.uploadIndexes( p_context, surface );
 			concavePatches.uploadIndexes( p_context, surface );
+		}
+	}
+
+	bool SES::built( const Desc::Handle p_handle ) const { return _surfaces.bySystem.contains( p_handle ); }
+
+	void SES::setVisibility( const Desc::Handle p_handle, const bool p_visible )
+	{
+		const auto it = _surfaces.bySystem.find( p_handle );
+		if ( it == _surfaces.bySystem.end() )
+		{
+			return;
+		}
+		assert( it != _surfaces.bySystem.end() );
+
+		for ( const SurfaceID surface : it->second )
+		{
+			convexPatches.setVisibility( surface, p_visible );
+			circlePatches.setVisibility( surface, p_visible );
+			segmentPatches.setVisibility( surface, p_visible );
+			concavePatches.setVisibility( surface, p_visible );
 		}
 	}
 

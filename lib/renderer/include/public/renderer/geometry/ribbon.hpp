@@ -49,10 +49,16 @@ namespace VTX::Renderer::Geometry
 			std::vector<Indice>				 indices;
 		};
 
-		bool empty( const SystemUID p_uid ) const
+		bool built( const Desc::Handle p_handle ) const { return _construction.contains( p_handle ); }
+
+		bool empty( const Desc::Handle p_handle ) const
 		{
-			const auto it = _construction.find( p_uid );
-			assert( it != _construction.end() );
+			const auto it = _construction.find( p_handle );
+			if ( it == _construction.end() )
+			{
+				return true;
+			}
+
 			return it->second.isEmpty;
 		}
 

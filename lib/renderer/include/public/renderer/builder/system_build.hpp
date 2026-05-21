@@ -45,16 +45,26 @@ namespace VTX::Renderer::Builder
 
 		void registerSystem( Context & p_context, const SystemData & p_system ) const
 		{
-			p_context.systems.emplace( p_system.uid, {}, Cache::System { p_system.transform } );
+			p_context.systems.emplace(
+				p_system.uid,
+				{},
+				Cache::System { p_system.uid,
+								p_system.transform,
+								&p_system.data,
+								std::vector<Vec3f>( p_system.trajectory.begin(), p_system.trajectory.end() ),
+								p_system.atomUids,
+								p_system.residueUids,
+								p_system.atomColors,
+								p_system.atomRepresentations,
+								p_system.atomFlags,
+								p_system.visibility,
+								p_system.representationRanges }
+			);
 			const Desc::Handle handle = p_context.systems.handle( p_system.uid );
 
-			// TODO: Build costly geometries lazily when requested by a representation (ribbons, SES).
 			p_context.geometries.construct( handle, p_system );
 
 			p_context.layouts.atoms.add( handle, p_context.geometries.spheres.size( handle ) );
-			p_context.layouts.residues.add(
-				handle, static_cast<uint32_t>( p_context.geometries.ribbons.construction( handle ).residues.size() )
-			);
 		}
 	};
 
@@ -104,6 +114,7 @@ namespace VTX::Renderer::Builder
 			using namespace Layout;
 
 			assert( p_positions.size() == p_context.layouts.atoms.size( p_handle ) );
+			p_context.systems.get( p_handle ).trajectory.assign( p_positions.begin(), p_positions.end() );
 
 			p_context.layouts.atoms.upload<ATOM_ATTR::POSITION, Vec3f>(
 				p_context.rendererContext, p_handle, p_positions
@@ -119,6 +130,7 @@ namespace VTX::Renderer::Builder
 			using namespace Layout;
 
 			assert( p_colors.size() == p_context.layouts.atoms.size( p_handle ) );
+			p_context.systems.get( p_handle ).atomColors.assign( p_colors.begin(), p_colors.end() );
 
 			p_context.layouts.atoms.upload<ATOM_ATTR::COLOR, ColorIndex>(
 				p_context.rendererContext, p_handle, p_colors
@@ -136,6 +148,7 @@ namespace VTX::Renderer::Builder
 
 			Cache::System & cache = p_context.systems.get( p_handle );
 			cache.representations = p_representations;
+			cache.atomRepresentations.assign( p_atomRepresentations.begin(), p_atomRepresentations.end() );
 
 			const Index countAtoms = p_context.layouts.atoms.size( p_handle );
 			assert( p_atomRepresentations.size() == countAtoms );
@@ -156,6 +169,7 @@ namespace VTX::Renderer::Builder
 			using namespace Layout;
 
 			assert( p_atomFlags.size() == p_context.layouts.atoms.size( p_handle ) );
+			p_context.systems.get( p_handle ).atomFlags.assign( p_atomFlags.begin(), p_atomFlags.end() );
 
 			p_context.layouts.atoms.upload<ATOM_ATTR::FLAG, Flag>( p_context.rendererContext, p_handle, p_atomFlags );
 		}
@@ -188,6 +202,8 @@ namespace VTX::Renderer::Builder
 			auto visibleSpheres	  = systemCache.visibility;
 			auto visibleCylinders = systemCache.visibility;
 			auto visibleRibbons	  = systemCache.visibility;
+			bool requestedRibbon  = false;
+			bool visibleSes		  = false;
 
 			for ( const auto & [ representationIndex, ranges ] : systemCache.representations )
 			{
@@ -206,13 +222,172 @@ namespace VTX::Renderer::Builder
 				{
 					visibleRibbons.subtractInPlace( ranges );
 				}
+				else if ( systemCache.visibility.any( ranges ) )
+				{
+					requestedRibbon = true;
+				}
+				if ( representation.showSes && systemCache.visibility.any( ranges ) )
+				{
+					visibleSes = true;
+				}
+			}
+
+			if ( requestedRibbon && not p_context.geometries.ribbons.built( p_handle ) )
+			{
+				constructRibbon( p_context, p_handle );
+			}
+			if ( visibleSes && not p_context.geometries.ses.built( p_handle ) )
+			{
+				constructSES( p_context, p_handle );
 			}
 
 			p_context.geometries.spheres.setVisibility( p_handle, visibleSpheres );
 			p_context.geometries.cylinders.setVisibility( p_handle, visibleCylinders );
 			p_context.geometries.ribbons.setVisibility( p_handle, visibleRibbons );
+			p_context.geometries.ses.setVisibility( p_handle, visibleSes );
 
 			p_context.geometries.uploadIndexes( p_context.rendererContext, p_handle );
+		}
+
+		static void constructRibbon( Context & p_context, const Desc::Handle p_handle )
+		{
+			const SystemData data = systemData( p_context, p_handle );
+
+			p_context.geometries.ribbons.construct( p_handle, data );
+			p_context.geometries.ribbons.resize( p_context.rendererContext );
+
+			const auto & construction = p_context.geometries.ribbons.construction( p_handle );
+			if ( construction.isEmpty )
+			{
+				return;
+			}
+
+			p_context.layouts.residues.add(
+				p_handle, static_cast<uint32_t>( construction.residues.size() )
+			);
+			p_context.layouts.residues.resize( p_context.rendererContext );
+
+			uploadRibbonResidues( p_context, p_handle, data );
+			uploadRibbonPositions( p_context, p_handle, data.trajectory );
+		}
+
+		static void constructSES( Context & p_context, const Desc::Handle p_handle )
+		{
+			const SystemData data = systemData( p_context, p_handle );
+
+			p_context.geometries.constructSES(
+				p_context.rendererContext, p_handle, data, p_context.layouts.atoms.offset( p_handle )
+			);
+			p_context.geometries.ses.resize( p_context.rendererContext );
+		}
+
+		static SystemData systemData( Context & p_context, const Desc::Handle p_handle )
+		{
+			const Cache::System & cache = p_context.systems.get( p_handle );
+			assert( cache.data != nullptr );
+
+			return SystemData { cache.uid,
+								cache.transform,
+								*cache.data,
+								cache.trajectory,
+								cache.atomUids,
+								cache.residueUids,
+								cache.atomColors,
+								cache.representations,
+								cache.atomRepresentations,
+								cache.visibility,
+								cache.atomFlags };
+		}
+
+		static void uploadRibbonResidues( Context & p_context, const Desc::Handle p_handle, const SystemData & p_system )
+		{
+			using namespace Layout;
+
+			const auto &			construction  = p_context.geometries.ribbons.construction( p_handle );
+			const Index				countResidues = p_context.layouts.residues.size( p_handle );
+			std::vector<PickingUID> residueIds( countResidues );
+			std::vector<uint8_t>	residueTypes( countResidues );
+			std::vector<ColorIndex> residueColors( countResidues );
+			std::vector<RepresentationIndex> residueRepresentations( countResidues );
+			std::vector<Flag>				 residueFlags( countResidues, 0 );
+
+			for ( Index i = 0; i < countResidues; ++i )
+			{
+				const Index residueIndex = construction.residues[ i ].index;
+				const Index atomIndex	= construction.residues[ i ].ca;
+				const auto	ss			= p_system.data.residueSecondaryStructureTypes[ residueIndex ];
+
+				residueIds[ i ]				= p_system.residueUids[ residueIndex ];
+				residueTypes[ i ]			= toUnderlying( ss );
+				residueColors[ i ]			= Color::getColorIndex( ss );
+				residueRepresentations[ i ] = p_system.atomRepresentations[ atomIndex ];
+
+				if ( p_system.atomFlags[ atomIndex ] & toUnderlying( E_ELEMENT_FLAGS::SELECTION ) )
+				{
+					residueFlags[ i ] |= toUnderlying( E_ELEMENT_FLAGS::SELECTION );
+				}
+			}
+
+			p_context.layouts.residues.upload<RESIDUE_ATTR::ID, PickingUID>(
+				p_context.rendererContext, p_handle, residueIds
+			);
+			p_context.layouts.residues.upload<RESIDUE_ATTR::TYPE, uint8_t>(
+				p_context.rendererContext, p_handle, residueTypes
+			);
+			p_context.layouts.residues.upload<RESIDUE_ATTR::COLOR, ColorIndex>(
+				p_context.rendererContext, p_handle, residueColors
+			);
+			p_context.layouts.residues.upload<RESIDUE_ATTR::REPRESENTATION, RepresentationIndex>(
+				p_context.rendererContext, p_handle, residueRepresentations
+			);
+			p_context.layouts.residues.upload<RESIDUE_ATTR::FLAG, Flag>(
+				p_context.rendererContext, p_handle, residueFlags
+			);
+		}
+
+		static void uploadRibbonPositions(
+			Context &			   p_context,
+			const Desc::Handle	   p_handle,
+			std::span<const Vec3f> p_positions
+		)
+		{
+			using namespace Layout;
+
+			const auto & construction = p_context.geometries.ribbons.construction( p_handle );
+			if ( construction.isEmpty )
+			{
+				return;
+			}
+
+			const Index		   countResidues = p_context.layouts.residues.size( p_handle );
+			std::vector<Vec4f> ribbonPositions( countResidues );
+			std::vector<Vec3f> ribbonDirections( countResidues );
+
+			for ( Index i = 0; i < countResidues; ++i )
+			{
+				const Vec3f & positionCA	= p_positions[ construction.residues[ i ].ca ];
+				const Vec3f & positionO		= p_positions[ construction.residues[ i ].o ];
+				const Vec3f	  directionCAO	= Util::Math::normalize( positionO - positionCA );
+
+				ribbonPositions[ i ]  = Vec4f( positionCA, i );
+				ribbonDirections[ i ] = directionCAO;
+
+				if ( i > 0 )
+				{
+					const Vec3f & prevDirection = ribbonDirections[ i - 1 ];
+					if ( Util::Math::dot( directionCAO, prevDirection ) < 0.f )
+					{
+						ribbonDirections[ i ] = -directionCAO;
+					}
+				}
+			}
+
+			p_context.layouts.residues.upload<RESIDUE_ATTR::POSITION, Vec4f>(
+				p_context.rendererContext, p_handle, ribbonPositions
+			);
+			p_context.layouts.residues.upload<RESIDUE_ATTR::DIRECTION, Vec3f>(
+				p_context.rendererContext, p_handle, ribbonDirections
+			);
 		}
 	};
 
@@ -319,6 +494,11 @@ namespace VTX::Renderer::Builder
 		{
 			using namespace Layout;
 
+			if ( p_context.geometries.ribbons.empty( p_handle ) )
+			{
+				return;
+			}
+
 			const auto &					 construction  = p_context.geometries.ribbons.construction( p_handle );
 			const Index						 countResidues = p_context.layouts.residues.size( p_handle );
 			std::vector<RepresentationIndex> residues( countResidues );
@@ -342,6 +522,11 @@ namespace VTX::Renderer::Builder
 		)
 		{
 			using namespace Layout;
+
+			if ( p_context.geometries.ribbons.empty( p_handle ) )
+			{
+				return;
+			}
 
 			const auto &	  construction = p_context.geometries.ribbons.construction( p_handle );
 			std::vector<Flag> residueFlags( p_context.layouts.residues.size( p_handle ), 0 );
@@ -429,6 +614,11 @@ namespace VTX::Renderer::Builder
 		{
 			using namespace Layout;
 
+			if ( not p_context.geometries.ribbons.built( p_handle ) )
+			{
+				return;
+			}
+
 			const auto & construction = p_context.geometries.ribbons.construction( p_handle );
 			if ( construction.isEmpty )
 			{
@@ -501,14 +691,6 @@ namespace VTX::Renderer::Builder
 			p_context.rendererContext.setBuffer<uint32_t>(
 				{ Geometry::SES::BUFFER_ATOM_IDS }, std::max<uint32_t>( 1u, atomCount )
 			);
-
-			for ( const SystemData & system : p_systems )
-			{
-				const Desc::Handle handle = p_context.systems.handle( system.uid );
-				p_context.geometries.constructSES(
-					p_context.rendererContext, handle, system, p_context.layouts.atoms.offset( handle )
-				);
-			}
 		}
 	};
 

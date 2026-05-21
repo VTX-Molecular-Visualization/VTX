@@ -132,6 +132,23 @@ namespace VTX::Renderer::Geometry
 				p_context.setBuffer<Indice>( ref, data.indices );
 			}
 
+			void setVisibility( const SurfaceID p_surface, const bool p_visible )
+			{
+				const auto it = _data().find( p_surface );
+				assert( it != _data().end() );
+
+				auto & indices = _indices( p_surface );
+				indices.clear();
+
+				if ( not p_visible )
+				{
+					return;
+				}
+
+				indices.resize( it->second.range.getCount() );
+				std::iota( indices.begin(), indices.end(), 0 );
+			}
+
 			[[nodiscard]] std::vector<Desc::DrawIndexedIndirectRecord> toDrawIndexedIndirectCommands(
 				const SurfaceID p_surface
 			) const
@@ -223,6 +240,10 @@ namespace VTX::Renderer::Geometry
 		void clear();
 
 		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle );
+
+		[[nodiscard]] bool built( Desc::Handle p_handle ) const;
+
+		void setVisibility( Desc::Handle p_handle, bool p_visible );
 
 		void compute( Context::ContextWrapper & p_context );
 

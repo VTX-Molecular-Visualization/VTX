@@ -107,6 +107,11 @@ namespace VTX::Renderer
 				Builder::SystemVisibility::refreshGeometryVisibility( buildContext, system );
 			}
 			Builder::DrawRanges::buildDrawRanges( buildContext );
+			if ( _syncGeometryChunks() )
+			{
+				_rebuildCommandBuffer();
+			}
+			_markSESDirty();
 
 			_systemToRefresh.clear();
 			setNeedUpdate( true );
