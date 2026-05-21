@@ -1,6 +1,8 @@
 struct StructSegment
 {
 	uint model;
+	uint selection;
+	vec4  color;
 	vec3  v1;
 	vec3  v2;
 	vec4  startAtom;

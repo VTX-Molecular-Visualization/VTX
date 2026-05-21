@@ -3,8 +3,11 @@
 
 #include "renderer/descriptors.hpp"
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <iostream>
+#include <new>
+#include <type_traits>
 #include <unordered_map>
 #include <util/constants.hpp>
 #include <util/enum.hpp>
@@ -25,7 +28,9 @@ namespace VTX::Renderer::Context
 		DRAW,
 		DRAW_INDEXED,
 		DRAW_INDIRECT,
+		DRAW_INDIRECT_READABLE,
 		DRAW_INDEXED_INDIRECT,
+		DRAW_INDEXED_INDIRECT_READABLE,
 		DISPATCH,
 		DISPATCH_INDIRECT,
 		EXTERNAL,
@@ -86,6 +91,11 @@ namespace VTX::Renderer::Context
 		uint32_t commandStride;
 	};
 
+	struct PayloadDrawIndirectReadable : PayloadDrawIndirect
+	{
+		uint32_t shaderStorageBinding;
+	};
+
 	struct PayloadDrawIndexedIndirect : BasePayloadDraw
 	{
 		uint32_t indirectBuffer;
@@ -93,6 +103,11 @@ namespace VTX::Renderer::Context
 		uint32_t countOffset;
 		uint32_t commandOffset;
 		uint32_t commandStride;
+	};
+
+	struct PayloadDrawIndexedIndirectReadable : PayloadDrawIndexedIndirect
+	{
+		uint32_t shaderStorageBinding;
 	};
 
 	struct BasePayloadDispatch
@@ -172,9 +187,21 @@ namespace VTX::Renderer::Context
 	};
 
 	template<>
+	struct CommandPayload<E_COMMAND::DRAW_INDIRECT_READABLE>
+	{
+		using type = PayloadDrawIndirectReadable;
+	};
+
+	template<>
 	struct CommandPayload<E_COMMAND::DRAW_INDEXED_INDIRECT>
 	{
 		using type = PayloadDrawIndexedIndirect;
+	};
+
+	template<>
+	struct CommandPayload<E_COMMAND::DRAW_INDEXED_INDIRECT_READABLE>
+	{
+		using type = PayloadDrawIndexedIndirectReadable;
 	};
 
 	template<>
@@ -394,6 +421,7 @@ namespace VTX::Renderer::Context
 			assert( p_offset != NO_PAYLOAD );
 			assert( p_offset + sizeof( T ) <= payload.size() );
 			assert( ( p_offset % alignof( T ) ) == 0 );
+			assert( ( reinterpret_cast<uintptr_t>( payload.data() + p_offset ) % alignof( T ) ) == 0 );
 
 			return *reinterpret_cast<T *>( payload.data() + p_offset );
 		}
@@ -404,6 +432,7 @@ namespace VTX::Renderer::Context
 			assert( p_offset != NO_PAYLOAD );
 			assert( p_offset + sizeof( T ) <= payload.size() );
 			assert( ( p_offset % alignof( T ) ) == 0 );
+			assert( ( reinterpret_cast<uintptr_t>( payload.data() + p_offset ) % alignof( T ) ) == 0 );
 
 			return *reinterpret_cast<const T *>( payload.data() + p_offset );
 		}
@@ -444,6 +473,7 @@ namespace VTX::Renderer::Context
 		PayloadOffset pushPayload( const T & p_data )
 		{
 			static_assert( std::is_trivially_copyable_v<T> );
+			static_assert( alignof( T ) <= __STDCPP_DEFAULT_NEW_ALIGNMENT__ );
 
 			constexpr PayloadOffset A		= static_cast<PayloadOffset>( alignof( T ) );
 			PayloadOffset			offset	= static_cast<PayloadOffset>( payload.size() );

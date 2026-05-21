@@ -37,7 +37,6 @@ float computeDepth( const vec3 v )
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
 
-
 void handleImpostor()
 {
 #ifdef SHOW_IMPOSTORS
@@ -47,8 +46,8 @@ void handleImpostor()
 		vec3 normal = normalize(-gsData.viewImpPos);
 		
 		// Output data.
-		packData( gsData.viewImpPos, normal, 0, outDataPacked );
-		outColor			  = vec4( gsTetrahedron.color, 32.f ); // w = specular shininess.
+		packData( gsData.viewImpPos, normal, gsTetrahedron.selection, outDataPacked );
+		outColor			  = vec4( gsTetrahedron.color.rgb, 32.f ); // w = specular shininess.
 
 		gl_FragDepth = computeDepth( gsData.viewImpPos );
 #else
@@ -145,7 +144,7 @@ void main()
 		gl_FragDepth = computeDepth( hit );
 			
 		// Output data.
-		packData( hit, normal, 0, outDataPacked );
-		outColor = vec4(gsTetrahedron.color, 32.f); // w = specular shininess.
+		packData( hit, normal, gsTetrahedron.selection, outDataPacked );
+		outColor = vec4(gsTetrahedron.color.rgb, 32.f); // w = specular shininess.
 	}
 }

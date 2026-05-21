@@ -23,13 +23,13 @@ namespace VTX::Renderer::Builder
 	 */
 	struct Context
 	{
-		VTX::Renderer::Context::ContextWrapper &			   rendererContext;
-		ResourceHandler<Cache::System, DescDummy, SystemUID> & systems;
+		VTX::Renderer::Context::ContextWrapper &						 rendererContext;
+		ResourceHandler<Cache::System, DescDummy, SystemUID> &			 systems;
 		std::unordered_map<RepresentationIndex, Cache::Representation> & representations;
-		Cache::Camera &										   camera;
-		Layouts &											   layouts;
-		Geometries &										   geometries;
-		std::unordered_set<Desc::Handle> &					   systemToRefresh;
+		Cache::Camera &													 camera;
+		Layouts &														 layouts;
+		Geometries &													 geometries;
+		std::unordered_set<Desc::Handle> &								 systemToRefresh;
 	};
 
 	struct SystemRegistry
@@ -184,9 +184,9 @@ namespace VTX::Renderer::Builder
 		{
 			const Cache::System & systemCache = p_context.systems.get( p_handle );
 
-			auto visibleSpheres   = systemCache.visibility;
+			auto visibleSpheres	  = systemCache.visibility;
 			auto visibleCylinders = systemCache.visibility;
-			auto visibleRibbons   = systemCache.visibility;
+			auto visibleRibbons	  = systemCache.visibility;
 
 			for ( const auto & [ representationIndex, ranges ] : systemCache.representations )
 			{
@@ -274,14 +274,15 @@ namespace VTX::Renderer::Builder
 				buffer.write( representation->sesProbeRadius );
 				buffer.write( Geometry::SES::MAX_PROBE_NEIGHBOR_NB );
 
-				p_context.representations[ index ] = Cache::Representation { showSphere, showCylinder, showRibbon, showSes };
+				p_context.representations[ index ]
+					= Cache::Representation { showSphere, showCylinder, showRibbon, showSes };
 
 				index++;
 			}
 
 			buffer.close();
 
-			p_context.rendererContext.setBuffer( "Representations", buffer );
+			p_context.rendererContext.setBuffer( { "Representations" }, buffer );
 
 			auto handles			  = p_context.systems.handles();
 			p_context.systemToRefresh = std::unordered_set<Desc::Handle>( handles.begin(), handles.end() );
@@ -348,9 +349,9 @@ namespace VTX::Renderer::Builder
 			{
 				const Index atomIndex = construction.residues[ i ].ca;
 				assert( atomIndex < p_atomFlags.size() );
-				if ( p_atomFlags[ atomIndex ] & ELEMENT_FLAG_SELECTION )
+				if ( p_atomFlags[ atomIndex ] & toUnderlying( E_ELEMENT_FLAGS::SELECTION ) )
 				{
-					residueFlags[ i ] |= ELEMENT_FLAG_SELECTION;
+					residueFlags[ i ] |= toUnderlying( E_ELEMENT_FLAGS::SELECTION );
 				}
 			}
 
@@ -525,9 +526,9 @@ namespace VTX::Renderer::Builder
 			BinaryBuffer430 buffer;
 			for ( const auto & system : p_context.systems )
 			{
-				const Mat4f matrixModelView	  = p_context.camera.matView * system.transform;
+				const Mat4f matrixModelView	   = p_context.camera.matView * system.transform;
 				const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
-				const Mat4f matrixNormal	  = Util::Math::transpose( matrixModelViewInv );
+				const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
 
 				buffer.write( matrixModelView );
 				buffer.write( matrixModelViewInv );
@@ -536,7 +537,7 @@ namespace VTX::Renderer::Builder
 
 			buffer.close();
 
-			p_context.rendererContext.setBuffer( "Models", buffer );
+			p_context.rendererContext.setBuffer( { "Models" }, buffer );
 		}
 	};
 

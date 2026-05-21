@@ -10,9 +10,11 @@
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
 #include "app/threading/thread_manager.hpp"
+#include "renderer/types.hpp"
 #include <renderer/renderer.hpp>
 #include <util/chrono.hpp>
 #include <util/math/transform.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Pass
 {
@@ -256,7 +258,7 @@ namespace VTX::App::Pass
 
 		for ( auto i : p_selection.atoms )
 		{
-			atomFlags[ i ] |= Renderer::ELEMENT_FLAG_SELECTION;
+			atomFlags[ i ] |= toUnderlying( Renderer::E_ELEMENT_FLAGS::SELECTION );
 		}
 
 		return atomFlags;

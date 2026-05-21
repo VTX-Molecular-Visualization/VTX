@@ -3,6 +3,7 @@
 
 #include "renderer/descriptors.hpp"
 #include "renderer/graph_builder.hpp"
+#include "renderer/types.hpp"
 #include <span>
 
 namespace VTX::Renderer
@@ -24,7 +25,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Update the active physical chunks for a geometry resource.
 		 */
-		bool setGeometryChunks( const Desc::Key &, std::span<const uint32_t> );
+		bool setGeometryChunks( const Desc::Key &, std::span<const BufferChunk> );
 
 		/**
 		 * @brief Validate graph and build render queue.

@@ -25,6 +25,9 @@ namespace VTX::Renderer::Layout
 		inline static const std::string ATOMS_FLAGS			  = "Atoms.Flags";
 		inline static const std::string ATOMS_REPRESENTATIONS = "Atoms.Representations";
 
+		inline static constexpr Desc::Binding BINDING_ATOMS_COLORS = 8;
+		inline static constexpr Desc::Binding BINDING_ATOMS_FLAGS  = 9;
+
 		Atoms()
 		{
 			attributes.push_back( { ATOMS_POSITIONS, Desc::E_TYPE::VEC3F } );
@@ -44,27 +47,27 @@ namespace VTX::Renderer::Layout
 
 			if constexpr ( A == ATOM_ATTR::POSITION )
 			{
-				p_context.setBuffer<Vec3f>( ATOMS_POSITIONS, p_data, o );
+				p_context.setBuffer<Vec3f>( { ATOMS_POSITIONS }, p_data, o );
 			}
 			else if constexpr ( A == ATOM_ATTR::SYMBOL )
 			{
-				p_context.setBuffer<Symbol>( ATOMS_SYMBOLS, p_data, o );
+				p_context.setBuffer<Symbol>( { ATOMS_SYMBOLS }, p_data, o );
 			}
 			else if constexpr ( A == ATOM_ATTR::ID )
 			{
-				p_context.setBuffer<PickingUID>( ATOMS_IDS, p_data, o );
+				p_context.setBuffer<PickingUID>( { ATOMS_IDS }, p_data, o );
 			}
 			else if constexpr ( A == ATOM_ATTR::COLOR )
 			{
-				p_context.setBuffer<ColorIndex>( ATOMS_COLORS, p_data, o );
+				p_context.setBuffer<ColorIndex>( { ATOMS_COLORS }, p_data, o );
 			}
 			else if constexpr ( A == ATOM_ATTR::REPRESENTATION )
 			{
-				p_context.setBuffer<RepresentationIndex>( ATOMS_REPRESENTATIONS, p_data, o );
+				p_context.setBuffer<RepresentationIndex>( { ATOMS_REPRESENTATIONS }, p_data, o );
 			}
 			else if constexpr ( A == ATOM_ATTR::FLAG )
 			{
-				p_context.setBuffer<Flag>( ATOMS_FLAGS, p_data, o );
+				p_context.setBuffer<Flag>( { ATOMS_FLAGS }, p_data, o );
 			}
 			else
 			{
@@ -75,12 +78,12 @@ namespace VTX::Renderer::Layout
 	  protected:
 		void _resize( Context::ContextWrapper & p_context, const Index p_size ) override
 		{
-			p_context.setBuffer<Vec3f>( ATOMS_POSITIONS, p_size );
-			p_context.setBuffer<Symbol>( ATOMS_SYMBOLS, p_size );
-			p_context.setBuffer<PickingUID>( ATOMS_IDS, p_size );
-			p_context.setBuffer<ColorIndex>( ATOMS_COLORS, p_size );
-			p_context.setBuffer<RepresentationIndex>( ATOMS_REPRESENTATIONS, p_size );
-			p_context.setBuffer<Flag>( ATOMS_FLAGS, p_size );
+			p_context.setBuffer<Vec3f>( { ATOMS_POSITIONS }, p_size );
+			p_context.setBuffer<Symbol>( { ATOMS_SYMBOLS }, p_size );
+			p_context.setBuffer<PickingUID>( { ATOMS_IDS }, p_size );
+			p_context.setBuffer<uint32_t>( { ATOMS_COLORS }, ( p_size + 3 ) / 4 );
+			p_context.setBuffer<RepresentationIndex>( { ATOMS_REPRESENTATIONS }, p_size );
+			p_context.setBuffer<uint32_t>( { ATOMS_FLAGS }, ( p_size + 3 ) / 4 );
 		}
 	};
 } // namespace VTX::Renderer::Layout

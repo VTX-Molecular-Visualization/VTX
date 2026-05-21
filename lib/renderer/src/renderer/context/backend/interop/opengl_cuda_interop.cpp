@@ -109,8 +109,7 @@ namespace VTX::Renderer::Context::Backend::Interop
 			throw GraphicException( "CUDA graphics interop is not available" );
 		}
 
-		if ( not Util::Enum::hasBits( p_usage, Desc::E_BUFFER_USAGE::CUDA_READ )
-			 && not Util::Enum::hasBits( p_usage, Desc::E_BUFFER_USAGE::CUDA_WRITE ) )
+		if ( not Util::Enum::hasAnyBit( p_usage, Desc::E_BUFFER_USAGE::CUDA_READ | Desc::E_BUFFER_USAGE::CUDA_WRITE ) )
 		{
 			throw GraphicException( "Buffer '{}' is not declared with CUDA usage", p_key );
 		}
@@ -119,13 +118,13 @@ namespace VTX::Renderer::Context::Backend::Interop
 		if ( registration.resource == nullptr )
 		{
 			uint flags = cudaGraphicsRegisterFlagsNone;
-			if ( Util::Enum::hasBits( p_usage, Desc::E_BUFFER_USAGE::CUDA_READ )
-				 && not Util::Enum::hasBits( p_usage, Desc::E_BUFFER_USAGE::CUDA_WRITE ) )
+			if ( Util::Enum::hasAnyBit( p_usage, Desc::E_BUFFER_USAGE::CUDA_READ )
+				 && not Util::Enum::hasAnyBit( p_usage, Desc::E_BUFFER_USAGE::CUDA_WRITE ) )
 			{
 				flags = cudaGraphicsRegisterFlagsReadOnly;
 			}
-			else if ( not Util::Enum::hasBits( p_usage, Desc::E_BUFFER_USAGE::CUDA_READ )
-					  && Util::Enum::hasBits( p_usage, Desc::E_BUFFER_USAGE::CUDA_WRITE ) )
+			else if ( not Util::Enum::hasAnyBit( p_usage, Desc::E_BUFFER_USAGE::CUDA_READ )
+					  && Util::Enum::hasAnyBit( p_usage, Desc::E_BUFFER_USAGE::CUDA_WRITE ) )
 			{
 				flags = cudaGraphicsRegisterFlagsWriteDiscard;
 			}

@@ -125,7 +125,7 @@ namespace VTX::Renderer::Context::Executor
 					_toGL( p_payload.primitive ),
 					static_cast<uint32_t>( p_payload.count ),
 					GL_UNSIGNED_INT,
-					&p_payload.first
+					reinterpret_cast<const void *>( uintptr_t( p_payload.first * sizeof( uint32_t ) ) )
 				);
 
 			_dumpGLError();
@@ -134,7 +134,7 @@ namespace VTX::Renderer::Context::Executor
 		void execute( const PayloadDrawIndirect & p_payload ) const noexcept
 		{
 			const Backend::GL::Buffer & indirectBuffer = _backend.buffer( p_payload.indirectBuffer );
-			const GLsizei drawCapacity
+			const GLsizei				drawCapacity
 				= _drawCapacity( indirectBuffer, p_payload.commandOffset, p_payload.commandStride );
 
 			if ( drawCapacity == 0 )
@@ -158,10 +158,38 @@ namespace VTX::Renderer::Context::Executor
 			_dumpGLError();
 		}
 
+		void execute( const PayloadDrawIndirectReadable & p_payload ) const noexcept
+		{
+			const Backend::GL::Buffer & indirectBuffer = _backend.buffer( p_payload.indirectBuffer );
+			const GLsizei				drawCapacity
+				= _drawCapacity( indirectBuffer, p_payload.commandOffset, p_payload.commandStride );
+
+			if ( drawCapacity == 0 )
+			{
+				return;
+			}
+
+			_backend.vertexArray( p_payload.pipeline ).bind();
+			indirectBuffer.bind( GL_DRAW_INDIRECT_BUFFER );
+			indirectBuffer.bind( GL_PARAMETER_BUFFER );
+			indirectBuffer.bind( GL_SHADER_STORAGE_BUFFER, p_payload.shaderStorageBinding );
+			_backend.program( p_payload.program ).use();
+			_backend.vertexArray( p_payload.pipeline )
+				.multiDrawArraysIndirectCount(
+					_toGL( p_payload.primitive ),
+					reinterpret_cast<const void *>( uintptr_t( p_payload.commandOffset ) ),
+					p_payload.countOffset,
+					drawCapacity,
+					static_cast<GLsizei>( p_payload.commandStride )
+				);
+
+			_dumpGLError();
+		}
+
 		void execute( const PayloadDrawIndexedIndirect & p_payload ) const noexcept
 		{
 			const Backend::GL::Buffer & indirectBuffer = _backend.buffer( p_payload.indirectBuffer );
-			const GLsizei drawCapacity
+			const GLsizei				drawCapacity
 				= _drawCapacity( indirectBuffer, p_payload.commandOffset, p_payload.commandStride );
 
 			if ( drawCapacity == 0 )
@@ -174,6 +202,37 @@ namespace VTX::Renderer::Context::Executor
 			vao.bindElementBuffer( _backend.buffer( p_payload.indiceBuffer ) );
 			indirectBuffer.bind( GL_DRAW_INDIRECT_BUFFER );
 			indirectBuffer.bind( GL_PARAMETER_BUFFER );
+			_backend.program( p_payload.program ).use();
+			_backend.vertexArray( p_payload.pipeline )
+				.multiDrawElementsIndirectCount(
+					_toGL( p_payload.primitive ),
+					GL_UNSIGNED_INT,
+					reinterpret_cast<const void *>( uintptr_t( p_payload.commandOffset ) ),
+					p_payload.countOffset,
+					drawCapacity,
+					static_cast<GLsizei>( p_payload.commandStride )
+				);
+
+			_dumpGLError();
+		}
+
+		void execute( const PayloadDrawIndexedIndirectReadable & p_payload ) const noexcept
+		{
+			const Backend::GL::Buffer & indirectBuffer = _backend.buffer( p_payload.indirectBuffer );
+			const GLsizei				drawCapacity
+				= _drawCapacity( indirectBuffer, p_payload.commandOffset, p_payload.commandStride );
+
+			if ( drawCapacity == 0 )
+			{
+				return;
+			}
+
+			auto & vao = _backend.vertexArray( p_payload.pipeline );
+			vao.bind();
+			vao.bindElementBuffer( _backend.buffer( p_payload.indiceBuffer ) );
+			indirectBuffer.bind( GL_DRAW_INDIRECT_BUFFER );
+			indirectBuffer.bind( GL_PARAMETER_BUFFER );
+			indirectBuffer.bind( GL_SHADER_STORAGE_BUFFER, p_payload.shaderStorageBinding );
 			_backend.program( p_payload.program ).use();
 			_backend.vertexArray( p_payload.pipeline )
 				.multiDrawElementsIndirectCount(
@@ -356,11 +415,11 @@ namespace VTX::Renderer::Context::Executor
 		{
 			using namespace Desc;
 
-			if ( Util::Enum::hasBits( p_usage, E_BUFFER_USAGE::UNIFORM ) )
+			if ( Util::Enum::hasAnyBit( p_usage, E_BUFFER_USAGE::UNIFORM ) )
 			{
 				return GL_UNIFORM_BUFFER;
 			}
-			if ( Util::Enum::hasBits( p_usage, E_BUFFER_USAGE::STORAGE ) )
+			if ( Util::Enum::hasAnyBit( p_usage, E_BUFFER_USAGE::STORAGE ) )
 			{
 				return GL_SHADER_STORAGE_BUFFER;
 			}
@@ -383,9 +442,7 @@ namespace VTX::Renderer::Context::Executor
 				return 0;
 			}
 
-			return static_cast<GLsizei>(
-				( static_cast<uint32_t>( bufferSize ) - p_commandOffset ) / p_commandStride
-			);
+			return static_cast<GLsizei>( ( static_cast<uint32_t>( bufferSize ) - p_commandOffset ) / p_commandStride );
 		}
 
 		static void _dumpGLError() noexcept

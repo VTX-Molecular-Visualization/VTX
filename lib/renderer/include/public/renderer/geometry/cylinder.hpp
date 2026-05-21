@@ -9,10 +9,10 @@ namespace VTX::Renderer::Geometry
 	class Cylinder : public BaseGeometry
 	{
 	  public:
-		inline static const Desc::Key VERTEX_LAYOUT_ATOMS = "Atoms";
-		inline static const Desc::Key GEOMETRY_CYLINDERS  = "Cylinders";
-		inline static const Desc::Key INDEX_BONDS		  = "Index.Bonds";
-		inline static const Desc::Key INDIRECT_CYLINDERS  = "Indirect.Cylinders";
+		inline static const Desc::Key		  VERTEX_LAYOUT_ATOMS		 = "Atoms";
+		inline static const Desc::Key		  GEOMETRY_CYLINDERS		 = "Cylinders";
+		inline static const Desc::Key		  INDEX_BONDS				 = "Index.Bonds";
+		inline static const Desc::Key		  INDIRECT_CYLINDERS		 = "Indirect.Cylinders";
 		inline static constexpr Desc::Binding BINDING_INDIRECT_CYLINDERS = 21;
 
 		Cylinder()

@@ -24,9 +24,18 @@ namespace VTX::Util::Enum
 	 * @brief Checks if all specified bits are set in an enumeration value (must contain VTX_ENUM_ENABLE_BITMASK).
 	 */
 	template<Concept E>
-	inline constexpr bool hasBits( const E p_e, const E p_bits ) noexcept
+	inline constexpr bool hasAllBits( const E p_e, const E p_bits ) noexcept
 	{
 		return ( p_e & p_bits ) == p_bits;
+	}
+
+	/**
+	 * @brief Checks if a specific bit is set in an enumeration value (must contain VTX_ENUM_ENABLE_BITMASK).
+	 */
+	template<Concept E>
+	inline constexpr bool hasAnyBit( const E p_e, const E p_bit ) noexcept
+	{
+		return ( p_e & p_bit ) != E( 0 );
 	}
 
 	/**

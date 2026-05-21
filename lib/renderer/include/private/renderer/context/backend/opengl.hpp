@@ -17,6 +17,7 @@
 #include "renderer/descriptors.hpp"
 #include "renderer/resource_handler.hpp"
 #include "renderer/struct_infos.hpp"
+#include "renderer/types.hpp"
 #include <memory>
 #include <span>
 #include <vector>
@@ -89,13 +90,18 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Set data to a buffer.
 		 */
-		void setBufferData( const Desc::Key &, SpanBytes, const size_t );
+		void setBufferData( const Desc::BufferRef &, SpanBytes, const size_t );
+		bool ensureBufferChunk( const Desc::BufferRef & );
+		bool releaseBufferChunk( const Desc::BufferRef & );
 
 		/**
 		 * @brief Map graphics buffers to an external compute backend pointer.
 		 */
-		Desc::InteropBufferMapping				mapInteropBuffer( Desc::E_INTEROP_API, const Desc::Key & );
-		std::vector<Desc::InteropBufferMapping> mapInteropBuffers( Desc::E_INTEROP_API, std::span<const Desc::Key> );
+		Desc::InteropBufferMapping				mapInteropBuffer( Desc::E_INTEROP_API, const Desc::BufferRef & );
+		std::vector<Desc::InteropBufferMapping> mapInteropBuffers(
+			Desc::E_INTEROP_API,
+			std::span<const Desc::BufferRef>
+		);
 		void unmapInteropBuffer( Desc::E_INTEROP_API, const Desc::InteropBufferMapping & );
 		void unmapInteropBuffers( Desc::E_INTEROP_API, std::span<const Desc::InteropBufferMapping> );
 
@@ -222,8 +228,23 @@ namespace VTX::Renderer::Context::Backend
 		Desc::Handle _getOrCreateTexture( const Desc::Key &, const Desc::Texture & );
 		Desc::Handle _getOrCreateSampler( const Desc::Key &, const Desc::Sampler & );
 		Desc::Handle _getOrCreateVertexLayout( const Desc::Key &, const Desc::VertexLayout & );
+		Desc::Handle _getOrCreateGeometryVertexArray(
+			const Desc::Geometry &,
+			const Desc::Resources &,
+			const BufferChunk
+		);
 		Desc::Handle _getOrCreateBuffer( const Desc::Key &, const Desc::Buffer & );
+		Desc::Handle _getOrCreateBufferChunk( const Desc::Key &, const Desc::Buffer &, const BufferChunk );
 		Desc::Handle _getOrCreateProgram( const Desc::Program & );
+		Desc::Handle _bufferHandle( const Desc::Key &, const Desc::Resources &, const BufferChunk );
+		Desc::Key	 _physicalBufferKey( const Desc::BufferRef & );
+		void		 _setBufferData( const Desc::Key &, SpanBytes, const size_t );
+		std::vector<Desc::InteropBufferMapping> _mapPhysicalInteropBuffers(
+			Desc::E_INTEROP_API,
+			std::span<const Desc::Key>
+		);
+		static Desc::Key _bufferChunkKey( const Desc::Key &, BufferChunk );
+		static Desc::Key _vertexArrayChunkKey( const Desc::Key &, BufferChunk );
 
 		/**
 		 * @brief Build resources.
@@ -235,7 +256,12 @@ namespace VTX::Renderer::Context::Backend
 		 * @brief Bind resources.
 		 */
 		void _attachTexturesToFramebuffer( const Desc::Pass &, const Desc::ResourceMap<Desc::Texture> & );
-		void _bindGeometryToVao( const Desc::Key &, const Desc::Geometry &, const Desc::Resources & );
+		void _bindGeometryToVao(
+			const Desc::Key &,
+			const Desc::Geometry &,
+			const Desc::Resources &,
+			const BufferChunk
+		);
 
 		/**
 		 * @brief Create the screen quad.

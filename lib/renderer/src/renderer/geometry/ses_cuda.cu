@@ -258,7 +258,7 @@ namespace VTX::Renderer::Geometry::SESDetail
 		return result;
 	}
 
-	void writeCudaConstruction( CudaConstruction & p_construction, const SesdfRenderBuffers & p_targets )
+	void writeCudaConstruction( CudaConstruction & p_construction, const SesdfOutputBuffers & p_targets )
 	{
 		bcs::sesdf::SesdfData data = p_construction.ses->getData();
 
@@ -269,6 +269,7 @@ namespace VTX::Renderer::Geometry::SESDetail
 
 		bcs::sesdf::SesdfWriteBuffers output;
 		output.atoms = _targetPtr<float4>( p_targets.atoms, data.atomNb * sizeof( float4 ), "Atoms" );
+		output.atomIds = _targetPtr<uint32_t>( p_targets.atomIds, data.atomNb * sizeof( uint32_t ), "AtomIds" );
 		output.convexPatches
 			= _targetPtr<uint2>( p_targets.convexPatches, data.convexPatchNb * sizeof( uint2 ), "ConvexPatches" );
 		output.circlePatches
@@ -287,6 +288,7 @@ namespace VTX::Renderer::Geometry::SESDetail
 		output.sectors = _targetPtr<float4>( p_targets.sectors, p_construction.sectorNb * sizeof( float4 ), "Sectors" );
 
 		output.atomIndexOffset	   = p_targets.atomIndexOffset;
+		output.atomIdOffset		   = p_targets.rendererAtomIndexOffset;
 		output.probeIndexOffset	   = p_targets.probeIndexOffset;
 		output.sectorIndexOffset   = p_targets.sectorIndexOffset;
 		output.maxConcaveNeighbors = p_targets.maxProbeNeighborNb;

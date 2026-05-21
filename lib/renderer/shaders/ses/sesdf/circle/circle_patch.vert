@@ -14,6 +14,15 @@ layout( location = 0 ) in uvec2 atomsId;
 layout( std140, binding = 1 ) readonly buffer SortedAtoms {
 	vec4 atoms[];
 };
+layout(std430, binding = 7) readonly buffer SESAtomIds {
+	uint rendererAtomIds[];
+};
+layout(std430, binding = 8) readonly buffer AtomColors {
+	uint atomColorWords[];
+};
+layout(std430, binding = 9) readonly buffer AtomFlags {
+	uint atomFlagWords[];
+};
 
 // Out.
 flat out StructVertexShader vsData;
@@ -27,6 +36,23 @@ layout( std430, binding = 25 ) readonly buffer CirclePatchIndirectDraws
 	uint circlePatchDrawPadding2;
 	DrawIndexedIndirectRecord circlePatchDraws[];
 };
+
+uint readPackedAtomColor( const uint p_index )
+{
+	const uint word = atomColorWords[ p_index >> 2 ];
+	return ( word >> ( ( p_index & 3u ) * 8u ) ) & 0xFFu;
+}
+
+uint readPackedAtomFlag( const uint p_index )
+{
+	const uint word = atomFlagWords[ p_index >> 2 ];
+	return ( word >> ( ( p_index & 3u ) * 8u ) ) & 0xFFu;
+}
+
+vec4 sesColor( const vec4 p_atomColor )
+{
+	return vec4( p_atomColor.rgb, 1.f );
+}
 
 float length2(vec3 v){return dot(v,v);}
 
@@ -89,10 +115,18 @@ Bound getCircleBoundingBox(vec3 n)
 void main()
 {
 	const uint idModel = circlePatchDraws[ gl_DrawID ].idModel;
+	const uint rendererAtomId1 = rendererAtomIds[ atomsId.x ];
+	const uint rendererAtomId2 = rendererAtomIds[ atomsId.y ];
 
 	const vec4 atom1 = atoms[atomsId.x];
 	const vec4 atom2 = atoms[atomsId.y];
 	vsCircle.model = idModel;
+	vsCircle.selection = ( readPackedAtomFlag( rendererAtomId1 ) | readPackedAtomFlag( rendererAtomId2 ) )
+					   & ( 1u << FLAG_SELECTION );
+	vsCircle.color
+		= sesColor( ( uniformsColor[ readPackedAtomColor( rendererAtomId1 ) ]
+					+ uniformsColor[ readPackedAtomColor( rendererAtomId2 ) ] )
+				   * 0.5f );
 	vsCircle.firstAtom  = vec4(( uniformsModel[ idModel ].matrixModelView * vec4( atom1.xyz, 1.f ) ).xyz, atom1.w);
 	const float ithExtendedRadius = vsCircle.firstAtom.w + uniformsRepresentation[ 0 ].SESProbeRadius;
 	vsCircle.secondAtom = vec4(( uniformsModel[ idModel ].matrixModelView * vec4( atom2.xyz, 1.f ) ).xyz, atom2.w);

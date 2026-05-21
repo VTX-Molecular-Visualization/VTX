@@ -94,19 +94,31 @@ namespace VTX::Renderer::Context
 		 * @brief Set buffer data.
 		 */
 		template<typename T>
-		inline void setBuffer( const Desc::Key & p_key, std::span<const T> p_data, const size_t p_offset = 0 )
+		inline void setBuffer( const Desc::BufferRef & p_ref, std::span<const T> p_data, const size_t p_offset = 0 )
 		{
-			setBuffer( p_key, asBytes( p_data ), p_offset * sizeof( T ) );
+			setBuffer( p_ref, asBytes( p_data ), p_offset * sizeof( T ) );
 		}
 
 		template<typename T>
-		inline void setBuffer( const Desc::Key & p_key, const size_t p_size )
+		inline void setBuffer( const Desc::BufferRef & p_ref, const size_t p_size )
 		{
 			auto span = SpanBytes { static_cast<std::byte *>( nullptr ), p_size * sizeof( T ) };
-			setBuffer( p_key, span, 0 );
+			setBuffer( p_ref, span, 0 );
 		}
 
-		void setBuffer( const Desc::Key & p_key, SpanBytes, const size_t p_offset = 0 );
+		void setBuffer( const Desc::BufferRef &, SpanBytes, const size_t p_offset = 0 );
+
+		/**
+		 * @brief Ensure a physical chunk exists for a chunked logical buffer.
+		 * @return true if a new chunk was created and the command buffer must be rebuilt.
+		 */
+		bool ensureBufferChunk( const Desc::BufferRef & );
+
+		/**
+		 * @brief Release a physical chunk for a chunked logical buffer.
+		 * @return true if a chunk was released and the command buffer must be rebuilt.
+		 */
+		bool releaseBufferChunk( const Desc::BufferRef & );
 
 		/**
 		 * @brief Get texture data.
@@ -149,10 +161,13 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Map graphics buffers to an external compute backend pointer.
 		 */
-		[[nodiscard]] Desc::InteropBufferMapping mapInteropBuffer( const Desc::E_INTEROP_API, const Desc::Key & );
+		[[nodiscard]] Desc::InteropBufferMapping mapInteropBuffer(
+			const Desc::E_INTEROP_API,
+			const Desc::BufferRef &
+		);
 		[[nodiscard]] std::vector<Desc::InteropBufferMapping> mapInteropBuffers(
 			const Desc::E_INTEROP_API,
-			std::span<const Desc::Key>
+			std::span<const Desc::BufferRef>
 		);
 		void unmapInteropBuffer( const Desc::E_INTEROP_API, const Desc::InteropBufferMapping & );
 		void unmapInteropBuffers( const Desc::E_INTEROP_API, std::span<const Desc::InteropBufferMapping> );

@@ -43,9 +43,9 @@ namespace VTX::Renderer
 
 		void constructSES(
 			Context::ContextWrapper & p_context,
-			const Desc::Handle		 p_handle,
-			const SystemData &		 p_data,
-			const uint32_t			 p_inputAtomOffset
+			const Desc::Handle		  p_handle,
+			const SystemData &		  p_data,
+			const uint32_t			  p_inputAtomOffset
 		)
 		{
 			ses.construct( p_context, p_handle, p_data, p_inputAtomOffset );
@@ -72,30 +72,45 @@ namespace VTX::Renderer
 		void buildDrawRanges( Context::ContextWrapper & p_context )
 		{
 			p_context.setBuffer(
-				Geometry::Sphere::INDIRECT_SPHERES, _toBuffer( spheres.toDrawIndexedIndirectCommands() )
+				{ Geometry::Sphere::INDIRECT_SPHERES }, _toBuffer( spheres.toDrawIndexedIndirectCommands() )
 			);
 			p_context.setBuffer(
-				Geometry::Cylinder::INDIRECT_CYLINDERS, _toBuffer( cylinders.toDrawIndexedIndirectCommands() )
+				{ Geometry::Cylinder::INDIRECT_CYLINDERS }, _toBuffer( cylinders.toDrawIndexedIndirectCommands() )
 			);
 			p_context.setBuffer(
-				Geometry::Ribbon::INDIRECT_RIBBONS, _toBuffer( ribbons.toDrawIndexedIndirectCommands() )
+				{ Geometry::Ribbon::INDIRECT_RIBBONS }, _toBuffer( ribbons.toDrawIndexedIndirectCommands() )
 			);
-			p_context.setBuffer( Geometry::Grid::INDIRECT_GRID, _toBuffer( grid.toDrawIndirectCommands() ) );
-			p_context.setBuffer(
-				Geometry::SES::INDIRECT_CONVEX_PATCHES, _toBuffer( ses.convexPatches.toDrawIndexedIndirectCommands() )
-			);
-			p_context.setBuffer(
-				Geometry::SES::INDIRECT_CIRCLE_PATCHES, _toBuffer( ses.circlePatches.toDrawIndexedIndirectCommands() )
-			);
-			p_context.setBuffer(
-				Geometry::SES::INDIRECT_SEGMENT_PATCHES, _toBuffer( ses.segmentPatches.toDrawIndexedIndirectCommands() )
-			);
-			p_context.setBuffer(
-				Geometry::SES::INDIRECT_CONCAVE_PATCHES, _toBuffer( ses.concavePatches.toDrawIndexedIndirectCommands() )
-			);
+			p_context.setBuffer( { Geometry::Grid::INDIRECT_GRID }, _toBuffer( grid.toDrawIndirectCommands() ) );
+			_uploadPatchDrawCommands( p_context, { Geometry::SES::INDIRECT_CONVEX_PATCHES }, ses.convexPatches );
+			_uploadPatchDrawCommands( p_context, { Geometry::SES::INDIRECT_CIRCLE_PATCHES }, ses.circlePatches );
+			_uploadPatchDrawCommands( p_context, { Geometry::SES::INDIRECT_SEGMENT_PATCHES }, ses.segmentPatches );
+			_uploadPatchDrawCommands( p_context, { Geometry::SES::INDIRECT_CONCAVE_PATCHES }, ses.concavePatches );
 		}
 
 	  private:
+		void _uploadPatchDrawCommands(
+			Context::ContextWrapper &			 p_context,
+			const Desc::Key &					 p_indirectBuffer,
+			const Geometry::SES::PatchGeometry & p_geometry
+		)
+		{
+			if ( p_geometry.chunks.empty() )
+			{
+				p_context.setBuffer(
+					Desc::BufferRef { p_indirectBuffer, uint32_t( 0 ) },
+					_toBuffer( std::vector<Desc::DrawIndexedIndirectRecord> {} )
+				);
+				return;
+			}
+
+			for ( const BufferChunk chunk : p_geometry.chunks )
+			{
+				const Desc::BufferRef ref { p_indirectBuffer, chunk };
+				p_context.ensureBufferChunk( ref );
+				p_context.setBuffer( ref, _toBuffer( p_geometry.toDrawIndexedIndirectCommands( chunk ) ) );
+			}
+		}
+
 		[[nodiscard]] BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndirectRecord> & p_records )
 		{
 			BinaryBuffer430 buffer;

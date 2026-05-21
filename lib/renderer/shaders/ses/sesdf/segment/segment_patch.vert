@@ -15,6 +15,15 @@ layout(location = 0) in uvec4 segmentIds;
 layout(std140, binding = 1) readonly buffer SortedAtoms {
 	vec4 atoms[];
 };
+layout(std430, binding = 7) readonly buffer SESAtomIds {
+	uint rendererAtomIds[];
+};
+layout(std430, binding = 8) readonly buffer AtomColors {
+	uint atomColorWords[];
+};
+layout(std430, binding = 9) readonly buffer AtomFlags {
+	uint atomFlagWords[];
+};
 
 layout(std140, binding = 3) readonly buffer Probes {
 	vec4 probes[];
@@ -32,6 +41,23 @@ layout( std430, binding = 26 ) readonly buffer SegmentPatchIndirectDraws
 	uint segmentPatchDrawPadding2;
 	DrawIndexedIndirectRecord segmentPatchDraws[];
 };
+
+uint readPackedAtomColor( const uint p_index )
+{
+	const uint word = atomColorWords[ p_index >> 2 ];
+	return ( word >> ( ( p_index & 3u ) * 8u ) ) & 0xFFu;
+}
+
+uint readPackedAtomFlag( const uint p_index )
+{
+	const uint word = atomFlagWords[ p_index >> 2 ];
+	return ( word >> ( ( p_index & 3u ) * 8u ) ) & 0xFFu;
+}
+
+vec4 sesColor( const vec4 p_atomColor )
+{
+	return vec4( p_atomColor.rgb, 1.f );
+}
 
 const float TwoPi = 6.2831853;
 
@@ -143,7 +169,15 @@ void main()
 	const uint idModel = segmentPatchDraws[ gl_DrawID ].idModel;
 
 	uint startAtomId = segmentIds.x ;
+	const uint rendererAtomId1 = rendererAtomIds[ startAtomId ];
+	const uint rendererAtomId2 = rendererAtomIds[ segmentIds.y ];
 	vsSegment.model = idModel;
+	vsSegment.selection = ( readPackedAtomFlag( rendererAtomId1 ) | readPackedAtomFlag( rendererAtomId2 ) )
+						& ( 1u << FLAG_SELECTION );
+	vsSegment.color
+		= sesColor( ( uniformsColor[ readPackedAtomColor( rendererAtomId1 ) ]
+					+ uniformsColor[ readPackedAtomColor( rendererAtomId2 ) ] )
+				   * 0.5f );
 	vsSegment.startAtom = atoms[startAtomId];
 	vsSegment.startAtom.xyz = ( uniformsModel[ idModel ].matrixModelView * vec4( vsSegment.startAtom.xyz, 1.f ) ).xyz;
 
@@ -164,7 +198,7 @@ void main()
 	float maxAngle      = angleBetweenEdges(vsSegment.v1, vsSegment.v2, vsSegment.normal.xyz);;
 	vsSegment.normal.w   = maxAngle;
 
-	vsData.vColor = vec4(hash31(uint(gl_VertexID)), 1.);
+	vsData.vColor = vsSegment.color;
 
     vec4 sCircle  = computeSmallCircle(vsSegment.startAtom, vsSegment.normal.xyz, x1p);
     vec4 sCircle2 = computeSmallCircle(endAtom,			   vsSegment.normal.xyz, x1p);

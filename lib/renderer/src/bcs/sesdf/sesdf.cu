@@ -62,6 +62,19 @@ namespace bcs
 			}
 		}
 
+		__global__ void copyUintAdd(
+			uint32_t * const	   dst,
+			const uint32_t * const src,
+			const uint32_t		   count,
+			const uint32_t		   offset
+		)
+		{
+			for ( uint32_t i = blockIdx.x * blockDim.x + threadIdx.x; i < count; i += blockDim.x * gridDim.x )
+			{
+				dst[ i ] = src[ i ] + offset;
+			}
+		}
+
 		__global__ void copyProbeNeighbors(
 			float4 * const		 dst,
 			const float4 * const src,
@@ -456,6 +469,18 @@ namespace bcs
 				cudaMemcpy(
 					output.atoms, m_dAtoms.get<float4>(), m_atomNb * sizeof( float4 ), cudaMemcpyDeviceToDevice
 				)
+			);
+		}
+
+		if ( m_atomNb > 0 && output.atomIds != nullptr )
+		{
+			launchCopyKernel(
+				m_atomNb,
+				copyUintAdd,
+				output.atomIds,
+				m_dAtomIndices.get<uint32_t>(),
+				m_atomNb,
+				output.atomIdOffset
 			);
 		}
 

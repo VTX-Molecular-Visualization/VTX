@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_RENDERER__
 #define __VTX_RENDERER_RENDERER__
 
+#include "renderer/builder/render_graph_build.hpp"
 #include "renderer/caches.hpp"
 #include "renderer/camera.hpp"
 #include "renderer/color.hpp"
@@ -85,6 +86,13 @@ namespace VTX::Renderer
 		void setSystems( const std::vector<SystemData> & );
 
 		/**
+		 * @brief Ensure a physical chunk exists for a chunked render graph buffer.
+		 * @return true if a command buffer rebuild was required.
+		 */
+		bool ensureBufferChunk( const Desc::BufferRef & );
+		bool releaseBufferChunk( const Desc::BufferRef & );
+
+		/**
 		 * @brief Push system data.
 		 */
 		void setSystemTransform( const SystemUID, const Mat4f & );
@@ -140,6 +148,11 @@ namespace VTX::Renderer
 		 * @brief Render _graph to handle the rendering pipeline.
 		 */
 		RenderGraph _graph;
+
+		/**
+		 * @brief Current pipeline configuration.
+		 */
+		std::optional<Builder::PipelineConfig> _config;
 
 		/**
 		 * @brief Render queue built from the _graph.
@@ -209,6 +222,16 @@ namespace VTX::Renderer
 		 * @brief Schedule the SES CUDA pass when present in the current graph.
 		 */
 		void _markSESDirty();
+
+		/**
+		 * @brief Synchronize runtime geometry chunks into the render graph resources.
+		 */
+		bool _syncGeometryChunks();
+
+		/**
+		 * @brief Rebuild backend commands from the current queue/resources.
+		 */
+		void _rebuildCommandBuffer();
 
 		static void _executeSESExternalPass( uintptr_t );
 

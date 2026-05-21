@@ -48,6 +48,7 @@ namespace VTX::Renderer::Geometry::SESDetail
 	//
 	// Types:
 	// - atoms: float4(x, y, z, radius)
+	// - atomIds: uint renderer atom id for each BCS/sorted atom id
 	// - sectors: float4(axis.xyz, angle)
 	// - convexPatches: uint2(firstSector, endSector)
 	// - circlePatches: uint2(atomA, atomB)
@@ -55,9 +56,10 @@ namespace VTX::Renderer::Geometry::SESDetail
 	// - probes: float4(x, y, z, signedSide)
 	// - probeAtomIndices: int4(atomA, atomB, atomC, neighborCount)
 	// - probeNeighbors: float4 neighbor positions, laid out as probeId * maxProbeNeighborNb + neighborId
-	struct SesdfRenderBuffers
+	struct SesdfOutputBuffers
 	{
 		CudaBufferView atoms;
+		CudaBufferView atomIds;
 		CudaBufferView sectors;
 		CudaBufferView convexPatches;
 		CudaBufferView circlePatches;
@@ -66,10 +68,11 @@ namespace VTX::Renderer::Geometry::SESDetail
 		CudaBufferView probeAtomIndices;
 		CudaBufferView probeNeighbors;
 
-		uint32_t atomIndexOffset	= 0;
-		uint32_t probeIndexOffset	= 0;
-		uint32_t sectorIndexOffset	= 0;
-		uint32_t maxProbeNeighborNb = 0;
+		uint32_t atomIndexOffset		   = 0;
+		uint32_t rendererAtomIndexOffset = 0;
+		uint32_t probeIndexOffset	   = 0;
+		uint32_t sectorIndexOffset	   = 0;
+		uint32_t maxProbeNeighborNb	   = 0;
 	};
 
 	struct SesdfInputBuffers
@@ -93,7 +96,7 @@ namespace VTX::Renderer::Geometry::SESDetail
 		float					p_probeRadius
 	);
 
-	void writeCudaConstruction( CudaConstruction &, const SesdfRenderBuffers & );
+	void writeCudaConstruction( CudaConstruction &, const SesdfOutputBuffers & );
 } // namespace VTX::Renderer::Geometry::SESDetail
 
 #endif

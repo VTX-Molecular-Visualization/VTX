@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_DESCRIPTORS__
 #define __VTX_RENDERER_DESCRIPTORS__
 
+#include "renderer/types.hpp"
 #include <array>
 #include <memory>
 #include <optional>
@@ -12,6 +13,7 @@
 #include <util/enum.hpp>
 #include <util/hashing.hpp>
 #include <util/types.hpp>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -357,8 +359,17 @@ namespace VTX::Renderer::Desc
 		E_BUFFER_MUTABILITY		  mutability = E_BUFFER_MUTABILITY::MUTABLE;
 		E_BUFFER_ACCESS			  access	 = E_BUFFER_ACCESS::NONE;
 		E_UPDATE_FREQUENCY		  frequency	 = E_UPDATE_FREQUENCY::STATIC;
-		std::optional<Binding>	  binding	 = std::nullopt; // TODO: remove and use backend reflection.
+		std::optional<Binding>	  binding	 = std::nullopt; // TODO: remove and use backend reflection?
 		std::vector<UniformValue> values;
+	};
+
+	/**
+	 * @brief Reference to a logical buffer, optionally targeting a physical chunk.
+	 */
+	struct BufferRef
+	{
+		Key						   key;
+		std::optional<BufferChunk> chunk = std::nullopt;
 	};
 
 	/**
@@ -393,9 +404,10 @@ namespace VTX::Renderer::Desc
 	 */
 	struct Geometry
 	{
-		Key				   vertexLayout;
-		std::optional<Key> indiceBuffer	  = {};
-		std::optional<Key> indirectBuffer = {};
+		Key						 vertexLayout;
+		std::optional<Key>		 indiceBuffer	= {};
+		std::optional<Key>		 indirectBuffer = {};
+		std::vector<BufferChunk> chunks;
 	};
 
 	/**
@@ -430,17 +442,17 @@ namespace VTX::Renderer::Desc
 	struct DrawIndexedIndirectRecord
 	{
 		DrawIndexedIndirectCommand command;
-		uint32_t					idModel	 = 0;
-		uint32_t					padding0 = 0;
-		uint32_t					padding1 = 0;
+		uint32_t				   idModel	= 0;
+		uint32_t				   padding0 = 0;
+		uint32_t				   padding1 = 0;
 	};
 
 	static_assert( sizeof( DrawIndirectRecord ) == 32 );
 	static_assert( sizeof( DrawIndexedIndirectRecord ) == 32 );
 
-	inline constexpr uint32_t DRAW_INDIRECT_COUNT_OFFSET	= 0u;
-	inline constexpr uint32_t DRAW_INDIRECT_COMMANDS_OFFSET = 16u;
-	inline constexpr uint32_t DRAW_INDIRECT_RECORD_SIZE		= sizeof( DrawIndirectRecord );
+	inline constexpr uint32_t DRAW_INDIRECT_COUNT_OFFSET		= 0u;
+	inline constexpr uint32_t DRAW_INDIRECT_COMMANDS_OFFSET		= 16u;
+	inline constexpr uint32_t DRAW_INDIRECT_RECORD_SIZE			= sizeof( DrawIndirectRecord );
 	inline constexpr uint32_t DRAW_INDEXED_INDIRECT_RECORD_SIZE = sizeof( DrawIndexedIndirectRecord );
 
 	/**
@@ -453,12 +465,14 @@ namespace VTX::Renderer::Desc
 
 		struct Range
 		{
-			uint32_t first = 0;
-			uint32_t count = 0;
+			uint32_t				   first = 0;
+			uint32_t				   count = 0;
+			std::optional<BufferChunk> chunk = std::nullopt;
 		};
 
 		struct Indirect
 		{
+			std::optional<BufferChunk> chunk = std::nullopt;
 		};
 
 		// Could be a direct range, or an indirect draw buffer whose draw count lives on the GPU.

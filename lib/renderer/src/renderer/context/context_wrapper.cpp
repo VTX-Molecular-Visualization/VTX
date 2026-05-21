@@ -109,8 +109,14 @@ namespace VTX::Renderer::Context
 			case E_COMMAND::DRAW_INDIRECT:
 				_executePayload<E_COMMAND::DRAW_INDIRECT>( p_executor, p_commands, p_command );
 				break;
+			case E_COMMAND::DRAW_INDIRECT_READABLE:
+				_executePayload<E_COMMAND::DRAW_INDIRECT_READABLE>( p_executor, p_commands, p_command );
+				break;
 			case E_COMMAND::DRAW_INDEXED_INDIRECT:
 				_executePayload<E_COMMAND::DRAW_INDEXED_INDIRECT>( p_executor, p_commands, p_command );
+				break;
+			case E_COMMAND::DRAW_INDEXED_INDIRECT_READABLE:
+				_executePayload<E_COMMAND::DRAW_INDEXED_INDIRECT_READABLE>( p_executor, p_commands, p_command );
 				break;
 			case E_COMMAND::DISPATCH: _executePayload<E_COMMAND::DISPATCH>( p_executor, p_commands, p_command ); break;
 			case E_COMMAND::DISPATCH_INDIRECT:
@@ -289,7 +295,7 @@ namespace VTX::Renderer::Context
 		);
 	}
 
-	void ContextWrapper::setBuffer( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
+	void ContextWrapper::setBuffer( const Desc::BufferRef & p_ref, SpanBytes p_bytes, const size_t p_offset )
 	{
 		if ( p_bytes.size() == 0 )
 		{
@@ -300,9 +306,47 @@ namespace VTX::Renderer::Context
 			[ & ]( auto & p_backend )
 			{
 				using T = std::remove_cvref_t<decltype( p_backend )>;
-				if constexpr ( not std::is_same_v<T, std::monostate> )
+				if constexpr ( std::is_same_v<T, Backend::OpenGL> )
 				{
-					p_backend.setBufferData( p_key, p_bytes, p_offset );
+					p_backend.setBufferData( p_ref, p_bytes, p_offset );
+				}
+			},
+			_impl->backend
+		);
+	}
+
+	bool ContextWrapper::ensureBufferChunk( const Desc::BufferRef & p_ref )
+	{
+		return std::visit(
+			[ & ]( auto & p_backend )
+			{
+				using T = std::remove_cvref_t<decltype( p_backend )>;
+				if constexpr ( std::is_same_v<T, Backend::OpenGL> )
+				{
+					return p_backend.ensureBufferChunk( p_ref );
+				}
+				else
+				{
+					return false;
+				}
+			},
+			_impl->backend
+		);
+	}
+
+	bool ContextWrapper::releaseBufferChunk( const Desc::BufferRef & p_ref )
+	{
+		return std::visit(
+			[ & ]( auto & p_backend )
+			{
+				using T = std::remove_cvref_t<decltype( p_backend )>;
+				if constexpr ( std::is_same_v<T, Backend::OpenGL> )
+				{
+					return p_backend.releaseBufferChunk( p_ref );
+				}
+				else
+				{
+					return false;
 				}
 			},
 			_impl->backend
@@ -311,18 +355,18 @@ namespace VTX::Renderer::Context
 
 	Desc::InteropBufferMapping ContextWrapper::mapInteropBuffer(
 		const Desc::E_INTEROP_API p_api,
-		const Desc::Key &		  p_key
+		const Desc::BufferRef &	  p_ref
 	)
 	{
-		std::array<Desc::Key, 1> keys { p_key };
-		auto					 mappings = mapInteropBuffers( p_api, keys );
+		std::array<Desc::BufferRef, 1> refs { p_ref };
+		auto						   mappings = mapInteropBuffers( p_api, refs );
 		assert( mappings.size() == 1 );
 		return std::move( mappings.front() );
 	}
 
 	std::vector<Desc::InteropBufferMapping> ContextWrapper::mapInteropBuffers(
-		const Desc::E_INTEROP_API  p_api,
-		std::span<const Desc::Key> p_keys
+		const Desc::E_INTEROP_API		p_api,
+		std::span<const Desc::BufferRef> p_refs
 	)
 	{
 		return std::visit(
@@ -331,7 +375,7 @@ namespace VTX::Renderer::Context
 				using T = std::remove_cvref_t<decltype( p_backend )>;
 				if constexpr ( std::is_same_v<T, Backend::OpenGL> )
 				{
-					return p_backend.mapInteropBuffers( p_api, p_keys );
+					return p_backend.mapInteropBuffers( p_api, p_refs );
 				}
 				else
 				{

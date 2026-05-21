@@ -36,6 +36,8 @@ TEST_CASE( "Util::Generic::EnumFlag", "[unit]" )
 	{
 		VTX_ENUM_ENABLE_BITMASK,
 
+		NONE = 0,
+
 		BIT_0 = 1 << 0,
 		BIT_1 = 1 << 1,
 		BIT_2 = 1 << 2,
@@ -46,25 +48,53 @@ TEST_CASE( "Util::Generic::EnumFlag", "[unit]" )
 		BIT_7 = 1 << 7,
 		BIT_8 = 1 << 8,
 
-		NONE = 0,
-		ALL	 = 0xFFFF
-
+		ALL = 0xFFFF
 	};
 
 	using namespace VTX::Util::Enum;
 
 	E_FLAG_TEST_ENUM testFlag = E_FLAG_TEST_ENUM::NONE;
-	testFlag				  = testFlag | E_FLAG_TEST_ENUM::BIT_0;
-	CHECK( testFlag == E_FLAG_TEST_ENUM::BIT_0 );
 
-	testFlag = testFlag | E_FLAG_TEST_ENUM::BIT_2;
+	CHECK_FALSE( hasAnyBit( testFlag, E_FLAG_TEST_ENUM::BIT_0 ) );
+	CHECK_FALSE( hasAllBits( testFlag, E_FLAG_TEST_ENUM::BIT_0 ) );
+	CHECK( hasAllBits( testFlag, E_FLAG_TEST_ENUM::NONE ) );
+
+	testFlag |= E_FLAG_TEST_ENUM::BIT_0;
+	CHECK( testFlag == E_FLAG_TEST_ENUM::BIT_0 );
+	CHECK( hasAnyBit( testFlag, E_FLAG_TEST_ENUM::BIT_0 ) );
+	CHECK( hasAllBits( testFlag, E_FLAG_TEST_ENUM::BIT_0 ) );
+
+	testFlag |= E_FLAG_TEST_ENUM::BIT_2;
 	CHECK( testFlag == ( E_FLAG_TEST_ENUM::BIT_0 | E_FLAG_TEST_ENUM::BIT_2 ) );
-	CHECK( hasBits( testFlag, E_FLAG_TEST_ENUM::BIT_0 ) );
-	CHECK( !( testFlag & E_FLAG_TEST_ENUM::BIT_1 ) );
-	CHECK( ( testFlag & E_FLAG_TEST_ENUM::BIT_2 ) );
+
+	CHECK( hasAnyBit( testFlag, E_FLAG_TEST_ENUM::BIT_0 ) );
+	CHECK( hasAnyBit( testFlag, E_FLAG_TEST_ENUM::BIT_2 ) );
+	CHECK_FALSE( hasAnyBit( testFlag, E_FLAG_TEST_ENUM::BIT_1 ) );
+
+	CHECK( hasAllBits( testFlag, E_FLAG_TEST_ENUM::BIT_0 ) );
+	CHECK( hasAllBits( testFlag, E_FLAG_TEST_ENUM::BIT_2 ) );
+	CHECK( hasAllBits( testFlag, E_FLAG_TEST_ENUM::BIT_0 | E_FLAG_TEST_ENUM::BIT_2 ) );
+	CHECK_FALSE( hasAllBits( testFlag, E_FLAG_TEST_ENUM::BIT_0 | E_FLAG_TEST_ENUM::BIT_1 ) );
+
+	CHECK( hasAnyBit( testFlag, E_FLAG_TEST_ENUM::BIT_0 | E_FLAG_TEST_ENUM::BIT_1 ) );
+	CHECK_FALSE( hasAllBits( testFlag, E_FLAG_TEST_ENUM::BIT_0 | E_FLAG_TEST_ENUM::BIT_1 ) );
+
+	CHECK( testFlag & E_FLAG_TEST_ENUM::BIT_0 );
+	CHECK_FALSE( testFlag & E_FLAG_TEST_ENUM::BIT_1 );
+	CHECK( testFlag & E_FLAG_TEST_ENUM::BIT_2 );
 
 	testFlag &= ( E_FLAG_TEST_ENUM::BIT_0 | E_FLAG_TEST_ENUM::BIT_1 );
-	CHECK( hasBits( testFlag, E_FLAG_TEST_ENUM::BIT_0 ) );
-	CHECK( ( testFlag & E_FLAG_TEST_ENUM::BIT_0 ) );
-	CHECK( !( testFlag & E_FLAG_TEST_ENUM::BIT_2 ) );
+
+	CHECK( testFlag == E_FLAG_TEST_ENUM::BIT_0 );
+	CHECK( hasAnyBit( testFlag, E_FLAG_TEST_ENUM::BIT_0 ) );
+	CHECK( hasAllBits( testFlag, E_FLAG_TEST_ENUM::BIT_0 ) );
+	CHECK_FALSE( hasAnyBit( testFlag, E_FLAG_TEST_ENUM::BIT_2 ) );
+	CHECK_FALSE( hasAllBits( testFlag, E_FLAG_TEST_ENUM::BIT_0 | E_FLAG_TEST_ENUM::BIT_2 ) );
+
+	testFlag &= E_FLAG_TEST_ENUM::NONE;
+
+	CHECK( testFlag == E_FLAG_TEST_ENUM::NONE );
+	CHECK_FALSE( hasAnyBit( testFlag, E_FLAG_TEST_ENUM::BIT_0 ) );
+	CHECK_FALSE( hasAnyBit( testFlag, E_FLAG_TEST_ENUM::ALL ) );
+	CHECK_FALSE( testFlag & E_FLAG_TEST_ENUM::BIT_0 );
 }

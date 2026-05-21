@@ -23,6 +23,18 @@ layout(std140, binding = 4) readonly buffer ProbesAtomIndices {
 	ivec4 probesAtomIndices[];
 };
 
+layout(std430, binding = 7) readonly buffer SESAtomIds {
+	uint rendererAtomIds[];
+};
+
+layout(std430, binding = 8) readonly buffer AtomColors {
+	uint atomColorWords[];
+};
+
+layout(std430, binding = 9) readonly buffer AtomFlags {
+	uint atomFlagWords[];
+};
+
 // Out.
 flat out StructVertexShader vsData;
 flat out StructTetrahedron vsTetrahedron;
@@ -35,6 +47,23 @@ layout( std430, binding = 27 ) readonly buffer ConcavePatchIndirectDraws
 	uint concavePatchDrawPadding2;
 	DrawIndexedIndirectRecord concavePatchDraws[];
 };
+
+uint readPackedAtomColor( const uint p_index )
+{
+	const uint word = atomColorWords[ p_index >> 2 ];
+	return ( word >> ( ( p_index & 3u ) * 8u ) ) & 0xFFu;
+}
+
+uint readPackedAtomFlag( const uint p_index )
+{
+	const uint word = atomFlagWords[ p_index >> 2 ];
+	return ( word >> ( ( p_index & 3u ) * 8u ) ) & 0xFFu;
+}
+
+vec4 sesColor( const vec4 p_atomColor )
+{
+	return vec4( p_atomColor.rgb, 1.f );
+}
 
 //https://www.shadertoy.com/view/Xt3cDn
 uint baseHash(uint p)
@@ -59,16 +88,18 @@ float length2(vec3 v) { return dot(v,v); }
 
 void main()
 {
-	const uint idModel = concavePatchDraws[ gl_DrawID ].idModel;
+	const DrawIndexedIndirectRecord draw = concavePatchDraws[ gl_DrawID ];
+	const uint idModel = draw.idModel;
+	const uint probeId = draw.padding0 + uint( gl_VertexID );
 
-	const vec4 intersectionCenter   = probes[gl_VertexID];
-	const ivec4 intersectionIndices = probesAtomIndices[gl_VertexID];
+	const vec4 intersectionCenter   = probes[probeId];
+	const ivec4 intersectionIndices = probesAtomIndices[probeId];
 	
 	vsTetrahedron.model = idModel;
-	vsTetrahedron.point.w   = gl_VertexID;
+	vsTetrahedron.point.w   = float( probeId );
 	vsTetrahedron.point.xyz = ( uniformsModel[ idModel ].matrixModelView * vec4( intersectionCenter.xyz, 1.f ) ).xyz;
 
-	vsTetrahedron.startNeighborId = int(gl_VertexID * uniformsRepresentation[ 0 ].SESMaxProbeNeighborNb);
+	vsTetrahedron.startNeighborId = int(probeId * uniformsRepresentation[ 0 ].SESMaxProbeNeighborNb);
 	vsTetrahedron.neighborNb		 = int(intersectionIndices.w);
 	
 	vec4 atom1 = atoms[intersectionIndices.x];
@@ -78,7 +109,16 @@ void main()
 	vec4 atom3 = atoms[intersectionIndices.z];
 	atom3 = vec4(( uniformsModel[ idModel ].matrixModelView * vec4( atom3.xyz, 1.f ) ).xyz, atom3.w);
 	
-	vsTetrahedron.color = vec3(1.);//vec3(hash31(intersectionIndices.x) + hash31(intersectionIndices.y) + + hash31(intersectionIndices.z)) / 3.;
+	const uint rendererAtomId1 = rendererAtomIds[ uint( intersectionIndices.x ) ];
+	const uint rendererAtomId2 = rendererAtomIds[ uint( intersectionIndices.y ) ];
+	const uint rendererAtomId3 = rendererAtomIds[ uint( intersectionIndices.z ) ];
+	vsTetrahedron.selection	  = ( readPackedAtomFlag( rendererAtomId1 ) | readPackedAtomFlag( rendererAtomId2 )
+							  | readPackedAtomFlag( rendererAtomId3 ) )
+							  & ( 1u << FLAG_SELECTION );
+	vsTetrahedron.color		  = sesColor( ( uniformsColor[ readPackedAtomColor( rendererAtomId1 ) ]
+							  + uniformsColor[ readPackedAtomColor( rendererAtomId2 ) ]
+							  + uniformsColor[ readPackedAtomColor( rendererAtomId3 ) ] )
+							  / 3.f );
 
 	vec3 p1 = vsTetrahedron.point.xyz;
 	vec3 p2 = atom1.xyz;

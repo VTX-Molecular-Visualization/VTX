@@ -35,19 +35,18 @@ void submit(in vec3 p, in vec3 n, in vec3 c)
 	n = faceforward(n, gsData.viewImpPos, n);
 
 	// fill G-buffers.
-	packData( p, n, 0, outDataPacked );
+	packData( p, n, gsCircle.selection, outDataPacked );
 
 	// Output data.	
 	gl_FragDepth = computeDepth( p );
 
-	//outColor = vec4( c, 32.f ); // w = specular shininess.
-	outColor = vec4( 1.f );
+	outColor = vec4( c, 32.f ); // w = specular shininess.
 }
 
 void handleImpostor()
 {
 #ifdef SHOW_IMPOSTORS
-		submit(gsData.viewImpPos, normalize(-gsData.viewImpPos), vec3(1.));
+		submit(gsData.viewImpPos, normalize(-gsData.viewImpPos), gsCircle.color.rgb);
 #else
 		discard;
 #endif
@@ -170,7 +169,7 @@ void main()
 		if(sphereTracing(ro, rd, dist, closestPoint, dist.x))
 		{
 			vec3 p = ro + rd * dist.x;
-			submit( p, normalize(closestPoint - p), vec3(1.) );
+			submit( p, normalize(closestPoint - p), gsCircle.color.rgb );
 		}
 		else
 		{

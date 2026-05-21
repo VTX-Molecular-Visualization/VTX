@@ -37,8 +37,7 @@ namespace VTX::Renderer
 		_context.setNull();
 		try
 		{
-			_context.build( _queue, _graph.getResources() );
-			_bindExternalPasses();
+			_rebuildCommandBuffer();
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -54,8 +53,7 @@ namespace VTX::Renderer
 		_context.setOpenGL( _width, _height, p_contextInfo, p_shaderDir );
 		try
 		{
-			_context.build( _queue, _graph.getResources() );
-			_bindExternalPasses();
+			_rebuildCommandBuffer();
 			_context.fillInfos( _infos );
 			onReady();
 		}
@@ -129,16 +127,14 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] snapshot" );
 
 		_context.setRenderTarget( Desc::E_RENDER_TARGET::OFFSCREEN );
-		_context.build( _queue, _graph.getResources() );
-		_bindExternalPasses();
+		_rebuildCommandBuffer();
 		_render( 0.f, 0.f );
 
 		// TODO: get last pass instead of hardcoding FXAA.
 		std::vector<std::byte> data = _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
 
 		_context.setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
-		_context.build( _queue, _graph.getResources() );
-		_bindExternalPasses();
+		_rebuildCommandBuffer();
 		_render( 0.f, 0.f );
 
 		return data;
@@ -186,6 +182,34 @@ namespace VTX::Renderer
 		{
 			_context.markPassDirty( Geometry::SES::PASS_COMPUTE );
 		}
+	}
+
+	bool Renderer::_syncGeometryChunks()
+	{
+		bool changed = false;
+
+		auto sync = [ & ]( const Desc::Key & p_geometry, const Desc::Geometry & p_source )
+		{
+			if ( not _graph.getResources().geometries.contains( p_geometry ) )
+			{
+				return;
+			}
+
+			changed = _graph.setGeometryChunks( p_geometry, p_source.chunks ) || changed;
+		};
+
+		sync( Geometry::SES::GEOMETRY_CONVEX_PATCHES, _geometries.ses.convexPatches );
+		sync( Geometry::SES::GEOMETRY_CIRCLE_PATCHES, _geometries.ses.circlePatches );
+		sync( Geometry::SES::GEOMETRY_SEGMENT_PATCHES, _geometries.ses.segmentPatches );
+		sync( Geometry::SES::GEOMETRY_CONCAVE_PATCHES, _geometries.ses.concavePatches );
+
+		return changed;
+	}
+
+	void Renderer::_rebuildCommandBuffer()
+	{
+		_context.build( _queue, _graph.getResources() );
+		_bindExternalPasses();
 	}
 
 	void Renderer::_executeSESExternalPass( const uintptr_t p_context )
@@ -236,7 +260,7 @@ namespace VTX::Renderer
 		buffer.write( uint( p_camera.projection == PROJECTION::PERSPECTIVE ) );
 		buffer.close();
 
-		_context.setBuffer( "Camera", buffer );
+		_context.setBuffer( { "Camera" }, buffer );
 
 		_cacheCamera = { p_camera, p_position, p_matView, p_matProj };
 
@@ -255,8 +279,7 @@ namespace VTX::Renderer
 		// If graph changed from config, rebuild backend.
 		if ( _refreshGraph( p_config ) )
 		{
-			_context.build( _queue, _graph.getResources() );
-			_bindExternalPasses();
+			_rebuildCommandBuffer();
 		}
 
 		BinaryBuffer140 bufferShading;
@@ -271,25 +294,25 @@ namespace VTX::Renderer
 		bufferShading.write( p_config.fogFar );
 		bufferShading.write( p_config.activeFog ? p_config.fogDensity : 0.f );
 		bufferShading.close();
-		_context.setBuffer( "Shading", bufferShading );
+		_context.setBuffer( { "Shading" }, bufferShading );
 
 		if ( p_config.activeSSAO )
 		{
 			BinaryBuffer140 bufferSSAO;
 			bufferSSAO.write( p_config.ssaoIntensity );
 			bufferSSAO.close();
-			_context.setBuffer( "SSAO", bufferSSAO );
+			_context.setBuffer( { "SSAO" }, bufferSSAO );
 
 			BinaryBuffer140 bufferBlurX;
 			bufferBlurX.write( Vec2i( 1, 0 ) );
 			bufferBlurX.write( p_config.blurSize );
 			bufferBlurX.close();
-			_context.setBuffer( "BlurX", bufferBlurX );
+			_context.setBuffer( { "BlurX" }, bufferBlurX );
 			BinaryBuffer140 bufferBlurY;
 			bufferBlurY.write( Vec2i( 0, 1 ) );
 			bufferBlurY.write( p_config.blurSize );
 			bufferBlurY.close();
-			_context.setBuffer( "BlurY", bufferBlurY );
+			_context.setBuffer( { "BlurY" }, bufferBlurY );
 		}
 		if ( p_config.activeOutline )
 		{
@@ -298,14 +321,14 @@ namespace VTX::Renderer
 			bufferOutline.write( p_config.outlineSensitivity );
 			bufferOutline.write( p_config.outlineThickness );
 			bufferOutline.close();
-			_context.setBuffer( "Outline", bufferOutline );
+			_context.setBuffer( { "Outline" }, bufferOutline );
 		}
 		if ( p_config.activeSelection )
 		{
 			BinaryBuffer140 bufferSelection;
 			bufferSelection.write( p_config.colorSelection );
 			bufferSelection.close();
-			_context.setBuffer( "Selection", bufferSelection );
+			_context.setBuffer( { "Selection" }, bufferSelection );
 		}
 
 		setNeedUpdate( true );
@@ -315,7 +338,7 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setColorLayout" );
 
-		_context.setBuffer<Util::Color::Rgba>( "ColorLayout", p_layout.colors );
+		_context.setBuffer<Util::Color::Rgba>( { "ColorLayout" }, p_layout.colors );
 
 		setNeedUpdate( true );
 	}
@@ -358,6 +381,10 @@ namespace VTX::Renderer
 
 		// Rebuild commands immediately, including the empty-scene case.
 		pipeline.buildDrawRanges( buildContext );
+		if ( _syncGeometryChunks() )
+		{
+			_rebuildCommandBuffer();
+		}
 		_markSESDirty();
 
 		// Build draw ranges.
@@ -365,6 +392,34 @@ namespace VTX::Renderer
 		_systemToRefresh = std::unordered_set<Desc::Handle>( handles.begin(), handles.end() );
 
 		setNeedUpdate( true );
+	}
+
+	bool Renderer::ensureBufferChunk( const Desc::BufferRef & p_ref )
+	{
+		const bool created = _context.ensureBufferChunk( p_ref );
+		if ( not created )
+		{
+			return false;
+		}
+
+		_rebuildCommandBuffer();
+		setNeedUpdate( true );
+
+		return true;
+	}
+
+	bool Renderer::releaseBufferChunk( const Desc::BufferRef & p_ref )
+	{
+		const bool released = _context.releaseBufferChunk( p_ref );
+		if ( not released )
+		{
+			return false;
+		}
+
+		_rebuildCommandBuffer();
+		setNeedUpdate( true );
+
+		return true;
 	}
 
 	void Renderer::setSystemTransform( const SystemUID p_uid, const Mat4f & p_transform )
@@ -389,8 +444,8 @@ namespace VTX::Renderer
 		assert( _systems.contains( p_uid ) );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		Builder::Context   buildContext {
+			  _context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
 		};
 
 		Builder::AtomLayout::uploadPositions( buildContext, h, p_positions );
@@ -404,8 +459,8 @@ namespace VTX::Renderer
 		assert( _systems.contains( p_uid ) );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		Builder::Context   buildContext {
+			  _context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
 		};
 		Builder::AtomLayout::uploadColors( buildContext, h, p_colors );
 
@@ -423,8 +478,8 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setSystemRepresentation" );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		Builder::Context   buildContext {
+			  _context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
 		};
 		Builder::AtomLayout::uploadRepresentations( buildContext, h, p_representations, p_atomRepresentations );
 		Builder::ResidueLayout::uploadRepresentations( buildContext, h, p_atomRepresentations );
@@ -439,8 +494,8 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setSystemVisibility" );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		Builder::Context   buildContext {
+			  _context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
 		};
 		Builder::SystemVisibility::uploadVisibility( buildContext, h, p_visibility );
 
@@ -454,8 +509,8 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setSystemSelection" );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+		Builder::Context   buildContext {
+			  _context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
 		};
 		Builder::AtomLayout::uploadSelection( buildContext, h, p_atomFlags );
 		Builder::ResidueLayout::uploadSelection( buildContext, h, p_atomFlags );
@@ -489,19 +544,18 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] _refreshGraph" );
 
-		RenderGraph::PipelineConfig config;
+		Builder::PipelineConfig config;
 
 		config.enableSSAO	   = p_config.activeSSAO;
 		config.enableOutline   = p_config.activeOutline;
 		config.enableSelection = p_config.activeSelection;
 
-		auto & configOpt = _graph.getPipelineConfig();
-		if ( configOpt && *configOpt == config )
+		if ( _config && *_config == config )
 		{
 			return false;
 		}
 
-		_graph.setPipelineConfig( config );
+		_config = config;
 		_graph.set( Builder::DefaultRenderGraph::build( config, _layouts, _geometries ) );
 		_queue = _graph.build();
 		return true;

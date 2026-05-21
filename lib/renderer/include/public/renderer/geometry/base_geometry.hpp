@@ -36,7 +36,7 @@ namespace VTX::Renderer::Geometry
 
 			if ( indiceBuffer )
 			{
-				p_context.setBuffer<Indice>( *indiceBuffer, size == 0 ? 1 : size );
+				p_context.setBuffer<Indice>( { *indiceBuffer }, size == 0 ? 1 : size );
 			}
 		}
 
@@ -46,6 +46,7 @@ namespace VTX::Renderer::Geometry
 		void clear()
 		{
 			_resources.clear();
+			chunks.clear();
 			_size = 0;
 		}
 
@@ -57,7 +58,7 @@ namespace VTX::Renderer::Geometry
 			assert( indiceBuffer );
 
 			p_context.setBuffer<Indice>(
-				*indiceBuffer, _resources[ p_handle ].indices, _resources[ p_handle ].range.first
+				{ *indiceBuffer }, _resources[ p_handle ].indices, _resources[ p_handle ].range.first
 			);
 		}
 
@@ -86,7 +87,7 @@ namespace VTX::Renderer::Geometry
 		[[nodiscard]] std::vector<Desc::DrawIndexedIndirectRecord> toDrawIndexedIndirectCommands()
 		{
 			std::vector<Desc::DrawIndexedIndirectRecord> records;
-			int											  baseVertex = 0;
+			int											 baseVertex = 0;
 
 			for ( const auto & [ uid, data ] : _resources )
 			{
@@ -156,6 +157,11 @@ namespace VTX::Renderer::Geometry
 
 			return _resources[ p_handle ].indices;
 		}
+
+		/**
+		 * @brief Access per-system geometry resources from specialized geometries.
+		 */
+		const std::map<Desc::Handle, Data> & _data() const { return _resources; }
 
 	  private:
 		/**

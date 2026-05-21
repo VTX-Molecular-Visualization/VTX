@@ -56,7 +56,9 @@ namespace VTX::IO
 		_Impl( const FilePath & p_path, const READER_OPTION p_options, StopToken & p_stopToken ) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
 			_trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
-		{ _init(); }
+		{
+			_init();
+		}
 
 		_Impl(
 			MemoryBuffer &&		p_buffer,
@@ -72,7 +74,9 @@ namespace VTX::IO
 													  chemfiles::guess_format( p_path.string() )
 												  )
 											  )
-		{ _init(); }
+		{
+			_init();
+		}
 
 		size_t frameCount() const { return _trajectory.size(); }
 
@@ -135,11 +139,11 @@ namespace VTX::IO
 
 				_currentResidue = &( ( *_residues )[ residueIdx ] );
 
-				std::string		  chainName		 = _residueStringProp( "chainname" );
-				const std::string residueName	 = _currentResidue->name();
-				const bool		  isEmptyResidue = _currentResidue->size() == 0;
-				Index residueFirstAtomIndex		 = isEmptyResidue ? static_cast<Index>( _currentFrame.size() )
-																  : static_cast<Index>( *_currentResidue->begin() );
+				std::string		  chainName				= _residueStringProp( "chainname" );
+				const std::string residueName			= _currentResidue->name();
+				const bool		  isEmptyResidue		= _currentResidue->size() == 0;
+				Index			  residueFirstAtomIndex = isEmptyResidue ? static_cast<Index>( _currentFrame.size() )
+																		 : static_cast<Index>( *_currentResidue->begin() );
 				coveredAtomCount += static_cast<Index>( _currentResidue->size() );
 
 				if ( residueIdx > 0 && chainName != previousChainName && seenChainNames.contains( chainName ) )
@@ -788,20 +792,20 @@ namespace VTX::IO
 		{
 			assert( p_positions.size() == p_topology.getAtomCount() );
 
-			if ( Enum::hasBits( _readerOption, READER_OPTION::RECOMPUTE_MISSING_BONDS )
-				 && Enum::hasBits( p_metadata.missingData, MISSING_DATA::BONDS ) )
+			if ( Enum::hasAnyBit( _readerOption, READER_OPTION::RECOMPUTE_MISSING_BONDS )
+				 && Enum::hasAnyBit( p_metadata.missingData, MISSING_DATA::BONDS ) )
 			{
 				Util::BondRecomputation::recomputeBonds( p_topology, p_positions, p_recomputableAtomIndexes );
 				p_metadata.performedReaderOption |= READER_OPTION::RECOMPUTE_MISSING_BONDS;
 			}
-			if ( Enum::hasBits( _readerOption, READER_OPTION::GUESS_UNKNOWN_BOND_ORDERS )
-				 && Enum::hasBits( p_metadata.missingData, MISSING_DATA::BOND_ORDERS ) )
+			if ( Enum::hasAnyBit( _readerOption, READER_OPTION::GUESS_UNKNOWN_BOND_ORDERS )
+				 && Enum::hasAnyBit( p_metadata.missingData, MISSING_DATA::BOND_ORDERS ) )
 			{
 				Util::BondOrderGuessing::recomputeBondOrders( p_topology, p_positions, p_recomputableBondOrderIndexes );
 				p_metadata.performedReaderOption |= READER_OPTION::GUESS_UNKNOWN_BOND_ORDERS;
 			}
-			if ( Enum::hasBits( _readerOption, READER_OPTION::COMPUTE_MISSING_SECONDARY_STRUCTURE )
-				 && Enum::hasBits( p_metadata.missingData, MISSING_DATA::SECONDARY_STRUCTURE ) )
+			if ( Enum::hasAnyBit( _readerOption, READER_OPTION::COMPUTE_MISSING_SECONDARY_STRUCTURE )
+				 && Enum::hasAnyBit( p_metadata.missingData, MISSING_DATA::SECONDARY_STRUCTURE ) )
 			{
 				Util::SecondaryStructure::assignSecondaryStructure( p_topology, p_positions );
 				p_metadata.performedReaderOption |= READER_OPTION::COMPUTE_MISSING_SECONDARY_STRUCTURE;
@@ -809,7 +813,9 @@ namespace VTX::IO
 		}
 
 		static Vec3f _toVec3f( const chemfiles::Vector3D & p_position )
-		{ return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] ); }
+		{
+			return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] );
+		}
 	};
 
 	void SystemReader::Del::operator()( _Impl * p_impl ) noexcept { delete p_impl; }
@@ -829,7 +835,9 @@ namespace VTX::IO
 	}
 
 	void SystemReader::get( const Category::Dictionary & p_d, Topology & p_t, Metadata & p_m )
-	{ _impl->get( p_d, p_t, p_m ); }
+	{
+		_impl->get( p_d, p_t, p_m );
+	}
 
 	void SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) { _impl->get( p_i, p_ ); }
 

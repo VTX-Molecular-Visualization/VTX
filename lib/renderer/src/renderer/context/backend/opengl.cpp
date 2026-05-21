@@ -3,6 +3,7 @@
 #include "renderer/context/backend/gl/debug.hpp"
 #include <array>
 #include <numeric>
+#include <string>
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
 
@@ -80,11 +81,11 @@ namespace
 	{
 		using namespace Desc;
 
-		if ( Util::Enum::hasBits( p_usage, E_BUFFER_USAGE::UNIFORM ) )
+		if ( Util::Enum::hasAnyBit( p_usage, E_BUFFER_USAGE::UNIFORM ) )
 		{
 			return GL_UNIFORM_BUFFER;
 		}
-		if ( Util::Enum::hasBits( p_usage, E_BUFFER_USAGE::STORAGE ) )
+		if ( Util::Enum::hasAnyBit( p_usage, E_BUFFER_USAGE::STORAGE ) )
 		{
 			return GL_SHADER_STORAGE_BUFFER;
 		}
@@ -186,6 +187,20 @@ namespace
 			mask |= toUnderlying( setting );
 		}
 		return mask;
+	}
+
+	std::vector<BufferChunk> _drawChunks( const Desc::Geometry & p_geometry, const std::optional<BufferChunk> p_chunk )
+	{
+		if ( p_chunk )
+		{
+			return { *p_chunk };
+		}
+		if ( p_geometry.chunks.empty() )
+		{
+			return { 0 };
+		}
+
+		return p_geometry.chunks;
 	}
 
 } // namespace
@@ -299,13 +314,14 @@ namespace VTX::Renderer::Context::Backend
 		}
 		for ( const auto & [ key, buffer ] : p_resources.buffers )
 		{
-			_getOrCreateBuffer( key, buffer );
-		}
-
-		// Bind geometries to VAOs.
-		for ( const auto & [ key, geometry ] : p_resources.geometries )
-		{
-			_bindGeometryToVao( key, geometry, p_resources );
+			if ( buffer.allocation == E_BUFFER_ALLOCATION::CHUNKED )
+			{
+				_getOrCreateBufferChunk( key, buffer, 0 );
+			}
+			else
+			{
+				_getOrCreateBuffer( key, buffer );
+			}
 		}
 
 		// Global resource table.
@@ -357,19 +373,6 @@ namespace VTX::Renderer::Context::Backend
 				for ( const Program & program : pass.programs )
 				{
 					const bool hasDrawCall = program.drawCall.has_value();
-					Handle	   hVao;
-
-					if ( hasDrawCall )
-					{
-						const auto it = p_resources.geometries.find( program.drawCall.value().geometry );
-						assert( it != p_resources.geometries.end() );
-						const Geometry g = it->second;
-						hVao			 = _vertexArrays.handle( g.vertexLayout );
-					}
-					else
-					{
-						hVao = _vertexArrays.handle( _QUAD );
-					}
 
 					// Push DRAW.
 					const Handle hProgram = _programs.handle( program.name );
@@ -387,55 +390,111 @@ namespace VTX::Renderer::Context::Backend
 							const DrawCall::Range * rangePtr = std::get_if<DrawCall::Range>( &drawCall.ranges );
 							assert( rangePtr );
 
-							if ( indexed )
+							for ( const BufferChunk chunk : _drawChunks( geometry, rangePtr->chunk ) )
 							{
-								PayloadDrawIndexed pDraw { hProgram, hVao };
-								pDraw.primitive	  = toUnderlying( drawCall.primitive );
-								pDraw.indexBuffer = _buffers.handle( geometry.indiceBuffer.value() );
-								pDraw.first		  = rangePtr->first;
-								pDraw.count		  = rangePtr->count;
-								p_commands.push<E_COMMAND::DRAW_INDEXED>( pDraw );
-							}
-							else
-							{
-								PayloadDraw pDraw { hProgram, hVao };
-								pDraw.primitive = toUnderlying( drawCall.primitive );
-								pDraw.first		= rangePtr->first;
-								pDraw.count		= rangePtr->count;
-								p_commands.push<E_COMMAND::DRAW>( pDraw );
+								const Handle hVao = _getOrCreateGeometryVertexArray( geometry, p_resources, chunk );
+
+								if ( indexed )
+								{
+									PayloadDrawIndexed pDraw { hProgram, hVao };
+									pDraw.primitive = toUnderlying( drawCall.primitive );
+									pDraw.indexBuffer
+										= _bufferHandle( geometry.indiceBuffer.value(), p_resources, chunk );
+									pDraw.first = rangePtr->first;
+									pDraw.count = rangePtr->count;
+									p_commands.push<E_COMMAND::DRAW_INDEXED>( pDraw );
+								}
+								else
+								{
+									PayloadDraw pDraw { hProgram, hVao };
+									pDraw.primitive = toUnderlying( drawCall.primitive );
+									pDraw.first		= rangePtr->first;
+									pDraw.count		= rangePtr->count;
+									p_commands.push<E_COMMAND::DRAW>( pDraw );
+								}
 							}
 						}
 						else
 						{
-							assert( std::holds_alternative<DrawCall::Indirect>( drawCall.ranges ) );
+							const DrawCall::Indirect * indirectPtr
+								= std::get_if<DrawCall::Indirect>( &drawCall.ranges );
+							assert( indirectPtr );
 
-							if ( indexed )
+							for ( const uint32_t chunk : _drawChunks( geometry, indirectPtr->chunk ) )
 							{
-								PayloadDrawIndexedIndirect pDraw { hProgram, hVao };
-								pDraw.primitive		 = toUnderlying( drawCall.primitive );
-								pDraw.indirectBuffer = _buffers.handle( geometry.indirectBuffer.value() );
-								pDraw.indiceBuffer	 = _buffers.handle( geometry.indiceBuffer.value() );
-								pDraw.countOffset	 = DRAW_INDIRECT_COUNT_OFFSET;
-								pDraw.commandOffset	 = DRAW_INDIRECT_COMMANDS_OFFSET;
-								pDraw.commandStride	 = DRAW_INDEXED_INDIRECT_RECORD_SIZE;
-								p_commands.push<E_COMMAND::DRAW_INDEXED_INDIRECT>( pDraw );
-							}
-							else
-							{
-								PayloadDrawIndirect pDraw { hProgram, hVao };
-								pDraw.primitive		 = toUnderlying( drawCall.primitive );
-								pDraw.indirectBuffer = _buffers.handle( geometry.indirectBuffer.value() );
-								pDraw.countOffset	 = DRAW_INDIRECT_COUNT_OFFSET;
-								pDraw.commandOffset	 = DRAW_INDIRECT_COMMANDS_OFFSET;
-								pDraw.commandStride	 = DRAW_INDIRECT_RECORD_SIZE;
-								p_commands.push<E_COMMAND::DRAW_INDIRECT>( pDraw );
+								const Handle   hVao = _getOrCreateGeometryVertexArray( geometry, p_resources, chunk );
+								const Buffer & indirectBufferDesc
+									= p_resources.buffers.at( geometry.indirectBuffer.value() );
+
+								if ( indexed )
+								{
+									if ( indirectBufferDesc.binding.has_value() )
+									{
+										PayloadDrawIndexedIndirectReadable pDraw {};
+										pDraw.program	= hProgram;
+										pDraw.pipeline	= hVao;
+										pDraw.primitive = toUnderlying( drawCall.primitive );
+										pDraw.indirectBuffer
+											= _bufferHandle( geometry.indirectBuffer.value(), p_resources, chunk );
+										pDraw.indiceBuffer
+											= _bufferHandle( geometry.indiceBuffer.value(), p_resources, chunk );
+										assert( indirectBufferDesc.binding.has_value() );
+										pDraw.shaderStorageBinding = *indirectBufferDesc.binding;
+										pDraw.countOffset		   = DRAW_INDIRECT_COUNT_OFFSET;
+										pDraw.commandOffset		   = DRAW_INDIRECT_COMMANDS_OFFSET;
+										pDraw.commandStride		   = DRAW_INDEXED_INDIRECT_RECORD_SIZE;
+										p_commands.push<E_COMMAND::DRAW_INDEXED_INDIRECT_READABLE>( pDraw );
+									}
+									else
+									{
+										PayloadDrawIndexedIndirect pDraw { hProgram, hVao };
+										pDraw.primitive = toUnderlying( drawCall.primitive );
+										pDraw.indirectBuffer
+											= _bufferHandle( geometry.indirectBuffer.value(), p_resources, chunk );
+										pDraw.indiceBuffer
+											= _bufferHandle( geometry.indiceBuffer.value(), p_resources, chunk );
+										pDraw.countOffset	= DRAW_INDIRECT_COUNT_OFFSET;
+										pDraw.commandOffset = DRAW_INDIRECT_COMMANDS_OFFSET;
+										pDraw.commandStride = DRAW_INDEXED_INDIRECT_RECORD_SIZE;
+										p_commands.push<E_COMMAND::DRAW_INDEXED_INDIRECT>( pDraw );
+									}
+								}
+								else
+								{
+									if ( indirectBufferDesc.binding.has_value() )
+									{
+										PayloadDrawIndirectReadable pDraw {};
+										pDraw.program	= hProgram;
+										pDraw.pipeline	= hVao;
+										pDraw.primitive = toUnderlying( drawCall.primitive );
+										pDraw.indirectBuffer
+											= _bufferHandle( geometry.indirectBuffer.value(), p_resources, chunk );
+										assert( indirectBufferDesc.binding.has_value() );
+										pDraw.shaderStorageBinding = *indirectBufferDesc.binding;
+										pDraw.countOffset		   = DRAW_INDIRECT_COUNT_OFFSET;
+										pDraw.commandOffset		   = DRAW_INDIRECT_COMMANDS_OFFSET;
+										pDraw.commandStride		   = DRAW_INDIRECT_RECORD_SIZE;
+										p_commands.push<E_COMMAND::DRAW_INDIRECT_READABLE>( pDraw );
+									}
+									else
+									{
+										PayloadDrawIndirect pDraw { hProgram, hVao };
+										pDraw.primitive = toUnderlying( drawCall.primitive );
+										pDraw.indirectBuffer
+											= _bufferHandle( geometry.indirectBuffer.value(), p_resources, chunk );
+										pDraw.countOffset	= DRAW_INDIRECT_COUNT_OFFSET;
+										pDraw.commandOffset = DRAW_INDIRECT_COMMANDS_OFFSET;
+										pDraw.commandStride = DRAW_INDIRECT_RECORD_SIZE;
+										p_commands.push<E_COMMAND::DRAW_INDIRECT>( pDraw );
+									}
+								}
 							}
 						}
 					}
 					else
 					{
 						// Fullscreen quad draw.
-						PayloadDraw pDraw { hProgram, hVao };
+						PayloadDraw pDraw { hProgram, _vertexArrays.handle( _QUAD ) };
 						pDraw.primitive = static_cast<uint32_t>( toUnderlying( E_PRIMITIVE::TRIANGLES ) );
 						pDraw.first		= 0;
 						pDraw.count		= 4;
@@ -730,6 +789,33 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
+	Desc::Key OpenGL::_vertexArrayChunkKey( const Desc::Key & p_key, const BufferChunk p_chunk )
+	{
+		if ( p_chunk == 0 )
+		{
+			return p_key;
+		}
+
+		return p_key + ".Chunk." + std::to_string( p_chunk );
+	}
+
+	Desc::Handle OpenGL::_getOrCreateGeometryVertexArray(
+		const Desc::Geometry &	p_geometry,
+		const Desc::Resources & p_resources,
+		const BufferChunk		p_chunk
+	)
+	{
+		const Desc::Key vaoKey = _vertexArrayChunkKey( p_geometry.vertexLayout, p_chunk );
+		const auto		it	   = p_resources.vertexStreams.find( p_geometry.vertexLayout );
+		assert( it != p_resources.vertexStreams.end() );
+		const Desc::VertexLayout & layout = it->second;
+
+		const Desc::Handle hVao = _getOrCreateVertexLayout( vaoKey, layout );
+		_bindGeometryToVao( vaoKey, p_geometry, p_resources, p_chunk );
+
+		return hVao;
+	}
+
 	Desc::Handle OpenGL::_getOrCreateBuffer( const Desc::Key & p_key, const Desc::Buffer & p_buffer )
 	{
 		using namespace Desc;
@@ -746,7 +832,7 @@ namespace VTX::Renderer::Context::Backend
 
 		using CpuBuffer = std::variant<BinaryBuffer<E_LAYOUT_TYPE::Std140>, BinaryBuffer<E_LAYOUT_TYPE::Std430>>;
 
-		CpuBuffer cpuBuffer = Util::Enum::hasBits( p_buffer.usage, E_BUFFER_USAGE::UNIFORM )
+		CpuBuffer cpuBuffer = Util::Enum::hasAnyBit( p_buffer.usage, E_BUFFER_USAGE::UNIFORM )
 								  ? CpuBuffer { BinaryBuffer<E_LAYOUT_TYPE::Std140> {} }
 								  : CpuBuffer { BinaryBuffer<E_LAYOUT_TYPE::Std430> {} };
 
@@ -797,6 +883,66 @@ namespace VTX::Renderer::Context::Backend
 			},
 			cpuBuffer
 		);
+	}
+
+	Desc::Key OpenGL::_bufferChunkKey( const Desc::Key & p_key, const BufferChunk p_chunk )
+	{
+		if ( p_chunk == 0 )
+		{
+			return p_key;
+		}
+
+		return p_key + ".Chunk." + std::to_string( p_chunk );
+	}
+
+	Desc::Handle OpenGL::_bufferHandle(
+		const Desc::Key &		p_key,
+		const Desc::Resources & p_resources,
+		const BufferChunk		p_chunk
+	)
+	{
+		const auto it = p_resources.buffers.find( p_key );
+		assert( it != p_resources.buffers.end() );
+
+		if ( it->second.allocation == Desc::E_BUFFER_ALLOCATION::CHUNKED )
+		{
+			return _getOrCreateBufferChunk( p_key, it->second, p_chunk );
+		}
+
+		return _buffers.handle( p_key );
+	}
+
+	Desc::Key OpenGL::_physicalBufferKey( const Desc::BufferRef & p_ref )
+	{
+		assert( _buffers.contains( p_ref.key ) );
+
+		const Desc::Buffer & desc = _buffers.descriptor( p_ref.key );
+		if ( desc.allocation == Desc::E_BUFFER_ALLOCATION::CHUNKED )
+		{
+			const uint32_t	chunk	 = p_ref.chunk.value_or( 0 );
+			const Desc::Key chunkKey = _bufferChunkKey( p_ref.key, chunk );
+
+			_getOrCreateBufferChunk( p_ref.key, desc, chunk );
+
+			return chunkKey;
+		}
+
+		assert( not p_ref.chunk );
+		return p_ref.key;
+	}
+
+	Desc::Handle OpenGL::_getOrCreateBufferChunk(
+		const Desc::Key &	 p_key,
+		const Desc::Buffer & p_buffer,
+		const BufferChunk	 p_chunk
+	)
+	{
+		assert( p_buffer.allocation == Desc::E_BUFFER_ALLOCATION::CHUNKED );
+
+		Desc::Buffer chunkDesc = p_buffer;
+		chunkDesc.name		   = _bufferChunkKey( p_key, p_chunk );
+
+		return _getOrCreateBuffer( chunkDesc.name, chunkDesc );
 	}
 
 	Desc::Handle OpenGL::_getOrCreateProgram( const Desc::Program & p_program )
@@ -881,8 +1027,8 @@ namespace VTX::Renderer::Context::Backend
 				const Handle hBuf = _buffers.handle( input.primary );
 				const auto	 it	  = p_resources.buffers.find( input.primary );
 				assert( it != p_resources.buffers.end() );
-				const Buffer & buffer = it->second;
-				const Binding binding = buffer.binding ? *buffer.binding : b++;
+				const Buffer & buffer  = it->second;
+				const Binding  binding = buffer.binding ? *buffer.binding : b++;
 				rt.buffers.emplace_back( hBuf, buffer.usage, binding );
 				break;
 			}
@@ -912,8 +1058,8 @@ namespace VTX::Renderer::Context::Backend
 				const Handle hBuf = _buffers.handle( output.primary );
 				const auto	 it	  = p_resources.buffers.find( output.primary );
 				assert( it != p_resources.buffers.end() );
-				const Buffer & buffer = it->second;
-				const Binding binding = buffer.binding ? *buffer.binding : b++;
+				const Buffer & buffer  = it->second;
+				const Binding  binding = buffer.binding ? *buffer.binding : b++;
 				rt.buffers.emplace_back( hBuf, buffer.usage, binding );
 
 				break;
@@ -979,9 +1125,10 @@ namespace VTX::Renderer::Context::Backend
 	}
 
 	void OpenGL::_bindGeometryToVao(
-		const Desc::Key &		p_key,
+		const Desc::Key &		p_vaoKey,
 		const Desc::Geometry &	p_geo,
-		const Desc::Resources & p_resources
+		const Desc::Resources & p_resources,
+		const BufferChunk		p_chunk
 	)
 	{
 		using namespace Desc;
@@ -990,7 +1137,7 @@ namespace VTX::Renderer::Context::Backend
 		const auto	it	 = p_resources.vertexStreams.find( kVao );
 		assert( it != p_resources.vertexStreams.end() );
 		const VertexLayout & layout = it->second;
-		const auto &		 vao	= _vertexArrays.get( kVao );
+		const auto &		 vao	= _vertexArrays.get( p_vaoKey );
 
 		vao.bind();
 
@@ -1000,7 +1147,8 @@ namespace VTX::Renderer::Context::Backend
 		{
 			const GLAttrib	   ga		 = toGLAttrib( a.type );
 			const Key		   bufferKey = a.name;
-			const GL::Buffer & vbo		 = _buffers.get( bufferKey );
+			const Handle	   hBuffer	 = _bufferHandle( bufferKey, p_resources, p_chunk );
+			const GL::Buffer & vbo		 = _buffers.get( hBuffer );
 
 			const GLsizei stride = GLsizei( ga.columns * ga.components * ga.bytesPerComp );
 			for ( uint8_t col = 0; col < ga.columns; ++col )
@@ -1045,16 +1193,17 @@ namespace VTX::Renderer::Context::Backend
 
 		Resources fakeRes;
 		fakeRes.vertexStreams.emplace( quadLayoutKey, quadLayout );
+		fakeRes.buffers.emplace( quadVboKey, quadVboDesc );
 		fakeRes.geometries.emplace( quadLayoutKey, quadGeo );
 
-		_bindGeometryToVao( quadLayoutKey, quadGeo, fakeRes );
+		_bindGeometryToVao( quadLayoutKey, quadGeo, fakeRes, 0 );
 
 		_buffers.get( quadVboKey ).setStorage( quad.data(), GLsizei( sizeof( quad ) ) );
 
 		return h;
 	}
 
-	void OpenGL::setBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
+	void OpenGL::_setBufferData( const Desc::Key & p_key, SpanBytes p_bytes, const size_t p_offset )
 	{
 		using namespace Desc;
 
@@ -1063,8 +1212,7 @@ namespace VTX::Renderer::Context::Backend
 		const Handle h	  = _buffers.handle( p_key );
 		const auto & desc = _buffers.descriptor( p_key );
 
-		if ( ( Util::Enum::hasBits( desc.usage, E_BUFFER_USAGE::UNIFORM )
-			   || Util::Enum::hasBits( desc.usage, E_BUFFER_USAGE::STORAGE ) )
+		if ( ( Util::Enum::hasAnyBit( desc.usage, E_BUFFER_USAGE::UNIFORM | E_BUFFER_USAGE::STORAGE ) )
 			 && desc.mutability == E_BUFFER_MUTABILITY::IMMUTABLE )
 		{
 			_buffers.get( h ).setSub( p_bytes.data(), GLsizei( p_bytes.size() ), p_offset );
@@ -1073,8 +1221,7 @@ namespace VTX::Renderer::Context::Backend
 		}
 
 		auto & buffer = _buffers.get( h );
-		if ( ( Util::Enum::hasBits( desc.usage, E_BUFFER_USAGE::CUDA_READ )
-			   || Util::Enum::hasBits( desc.usage, E_BUFFER_USAGE::CUDA_WRITE ) )
+		if ( ( Util::Enum::hasAnyBit( desc.usage, E_BUFFER_USAGE::CUDA_READ | E_BUFFER_USAGE::CUDA_WRITE ) )
 			 && p_offset + p_bytes.size() > size_t( buffer.size() ) )
 		{
 			_cudaInterop.unregisterBuffer( p_key );
@@ -1083,16 +1230,79 @@ namespace VTX::Renderer::Context::Backend
 		buffer.setData( p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( desc.frequency ) );
 	}
 
-	Desc::InteropBufferMapping OpenGL::mapInteropBuffer( const Desc::E_INTEROP_API p_api, const Desc::Key & p_key )
+	void OpenGL::setBufferData( const Desc::BufferRef & p_ref, SpanBytes p_bytes, const size_t p_offset )
 	{
-		std::array<Desc::Key, 1> keys { p_key };
-		auto					 mappings = mapInteropBuffers( p_api, keys );
+		_setBufferData( _physicalBufferKey( p_ref ), p_bytes, p_offset );
+	}
+
+	bool OpenGL::ensureBufferChunk( const Desc::BufferRef & p_ref )
+	{
+		using namespace Desc;
+
+		if ( not p_ref.chunk )
+		{
+			return false;
+		}
+
+		const Key chunkKey = _bufferChunkKey( p_ref.key, *p_ref.chunk );
+		if ( _buffers.contains( chunkKey ) )
+		{
+			return false;
+		}
+
+		assert( _buffers.contains( p_ref.key ) );
+		const Buffer & desc = _buffers.descriptor( p_ref.key );
+		assert( desc.allocation == E_BUFFER_ALLOCATION::CHUNKED );
+
+		_getOrCreateBufferChunk( p_ref.key, desc, *p_ref.chunk );
+
+		return true;
+	}
+
+	bool OpenGL::releaseBufferChunk( const Desc::BufferRef & p_ref )
+	{
+		if ( not p_ref.chunk || *p_ref.chunk == 0 )
+		{
+			return false;
+		}
+
+		const Desc::Key chunkKey = _bufferChunkKey( p_ref.key, *p_ref.chunk );
+		if ( not _buffers.contains( chunkKey ) )
+		{
+			return false;
+		}
+
+		_cudaInterop.unregisterBuffer( chunkKey );
+		_buffers.erase( chunkKey );
+
+		const Desc::Key chunkSuffix = _vertexArrayChunkKey( "", *p_ref.chunk );
+		for ( const Desc::Key & vertexArrayKey : _vertexArrays.keys() )
+		{
+			if ( vertexArrayKey.size() >= chunkSuffix.size()
+				 && vertexArrayKey.compare(
+						vertexArrayKey.size() - chunkSuffix.size(), chunkSuffix.size(), chunkSuffix
+					) == 0 )
+			{
+				_vertexArrays.erase( vertexArrayKey );
+			}
+		}
+
+		return true;
+	}
+
+	Desc::InteropBufferMapping OpenGL::mapInteropBuffer(
+		const Desc::E_INTEROP_API p_api,
+		const Desc::BufferRef &	  p_ref
+	)
+	{
+		std::array<Desc::BufferRef, 1> refs { p_ref };
+		auto						   mappings = mapInteropBuffers( p_api, refs );
 		assert( mappings.size() == 1 );
 
 		return std::move( mappings.front() );
 	}
 
-	std::vector<Desc::InteropBufferMapping> OpenGL::mapInteropBuffers(
+	std::vector<Desc::InteropBufferMapping> OpenGL::_mapPhysicalInteropBuffers(
 		const Desc::E_INTEROP_API  p_api,
 		std::span<const Desc::Key> p_keys
 	)
@@ -1124,6 +1334,27 @@ namespace VTX::Renderer::Context::Backend
 		}
 
 		return result;
+	}
+
+	std::vector<Desc::InteropBufferMapping> OpenGL::mapInteropBuffers(
+		const Desc::E_INTEROP_API		 p_api,
+		std::span<const Desc::BufferRef> p_refs
+	)
+	{
+		if ( p_api != Desc::E_INTEROP_API::CUDA )
+		{
+			return {};
+		}
+
+		std::vector<Desc::Key> keys;
+		keys.reserve( p_refs.size() );
+
+		for ( const Desc::BufferRef & ref : p_refs )
+		{
+			keys.emplace_back( _physicalBufferKey( ref ) );
+		}
+
+		return _mapPhysicalInteropBuffers( p_api, std::span<const Desc::Key> { keys.data(), keys.size() } );
 	}
 
 	void OpenGL::unmapInteropBuffer( const Desc::E_INTEROP_API p_api, const Desc::InteropBufferMapping & p_mapping )

@@ -1,6 +1,7 @@
 #version 460 core
 
 #include "../../../constant.glsl"
+#include "../../../layout_uniforms_color.glsl"
 #include "../../../layout_uniforms_model.glsl"
 #include "../../../struct/draw_indexed_indirect.glsl"
 #include "struct_convex_patch.glsl"
@@ -10,6 +11,15 @@
 layout(location = 0) in uvec2 elementIds;
 layout(std140, binding = 1) readonly buffer SortedAtoms {
 	vec4 atoms[];
+};
+layout(std430, binding = 7) readonly buffer SESAtomIds {
+	uint rendererAtomIds[];
+};
+layout(std430, binding = 8) readonly buffer AtomColors {
+	uint atomColorWords[];
+};
+layout(std430, binding = 9) readonly buffer AtomFlags {
+	uint atomFlagWords[];
 };
 
 // Out.
@@ -25,13 +35,36 @@ layout( std430, binding = 24 ) readonly buffer ConvexPatchIndirectDraws
 	DrawIndexedIndirectRecord convexPatchDraws[];
 };
 
+uint readPackedAtomColor( const uint p_index )
+{
+	const uint word = atomColorWords[ p_index >> 2 ];
+	return ( word >> ( ( p_index & 3u ) * 8u ) ) & 0xFFu;
+}
+
+uint readPackedAtomFlag( const uint p_index )
+{
+	const uint word = atomFlagWords[ p_index >> 2 ];
+	return ( word >> ( ( p_index & 3u ) * 8u ) ) & 0xFFu;
+}
+
+vec4 sesColor( const vec4 p_atomColor )
+{
+	return vec4( p_atomColor.rgb, 1.f );
+}
+
 void main()
 {
-	const uint idModel = convexPatchDraws[ gl_DrawID ].idModel;
+	const DrawIndexedIndirectRecord draw = convexPatchDraws[ gl_DrawID ];
+	const uint idModel = draw.idModel;
+	const uint atomId = draw.padding0 + uint( gl_VertexID );
+	const uint rendererAtomId = rendererAtomIds[ atomId ];
 
-	const vec4 ithData		 = atoms[gl_VertexID];
+	const vec4 ithData		 = atoms[atomId];
 	vsPatchData.model = idModel;
-	vsPatchData.atomId = gl_VertexID;
+	vsPatchData.atomId = atomId;
+	vsPatchData.rendererAtomId = rendererAtomId;
+	vsPatchData.selection = readPackedAtomFlag( rendererAtomId ) & ( 1u << FLAG_SELECTION );
+	vsPatchData.color = sesColor( uniformsColor[ readPackedAtomColor( rendererAtomId ) ] );
 	vsPatchData.wsAtomData	 = ithData;
 	vsPatchData.vAtomData.xyz = (uniformsModel[ idModel ].matrixModelView * vec4(ithData.xyz, 1.)).xyz;
 	vsPatchData.vAtomData.w   = ithData.w;

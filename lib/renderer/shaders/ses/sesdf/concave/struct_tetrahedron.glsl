@@ -7,5 +7,6 @@ struct StructTetrahedron
 	Plane plane3;
 	int  startNeighborId;
 	int  neighborNb;
-	vec3 color;
+	uint selection;
+	vec4 color;
 };
