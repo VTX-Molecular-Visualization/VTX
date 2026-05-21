@@ -70,16 +70,14 @@ namespace VTX::Renderer::Geometry
 		}
 
 #ifdef VTX_CUDA_ENABLED
-		constexpr size_t OUTPUT_ATOMS			   = 0;
-		constexpr size_t OUTPUT_ATOM_IDS		   = 1;
-		constexpr size_t OUTPUT_CONVEX_PATCHES	   = 2;
-		constexpr size_t OUTPUT_CIRCLE_PATCHES	   = 3;
-		constexpr size_t OUTPUT_SEGMENT_PATCHES	   = 4;
-		constexpr size_t OUTPUT_PROBES			   = 5;
-		constexpr size_t OUTPUT_PROBE_ATOM_INDICES = 6;
-		constexpr size_t OUTPUT_PROBE_NEIGHBORS	   = 7;
-		constexpr size_t OUTPUT_SECTORS			   = 8;
-		constexpr size_t OUTPUT_BUFFER_NB		   = 9;
+		constexpr size_t OUTPUT_CONVEX_PATCHES	   = 0;
+		constexpr size_t OUTPUT_CIRCLE_PATCHES	   = 1;
+		constexpr size_t OUTPUT_SEGMENT_PATCHES	   = 2;
+		constexpr size_t OUTPUT_PROBES			   = 3;
+		constexpr size_t OUTPUT_PROBE_ATOM_INDICES = 4;
+		constexpr size_t OUTPUT_PROBE_NEIGHBORS	   = 5;
+		constexpr size_t OUTPUT_SECTORS			   = 6;
+		constexpr size_t OUTPUT_BUFFER_NB		   = 7;
 
 		std::array<Desc::BufferRef, OUTPUT_BUFFER_NB> _outputBufferRefs(
 			const SES::SurfaceConstruction & p_construction
@@ -88,8 +86,6 @@ namespace VTX::Renderer::Geometry
 			const uint32_t chunk = p_construction.surface.id;
 
 			return {
-				Desc::BufferRef { SES::BUFFER_ATOMS },
-				Desc::BufferRef { SES::BUFFER_ATOM_IDS },
 				Desc::BufferRef { SES::BUFFER_CONVEX_PATCH_ELEMENTS, chunk },
 				Desc::BufferRef { SES::BUFFER_CIRCLE_PATCH_ATOMS, chunk },
 				Desc::BufferRef { SES::BUFFER_SEGMENT_PATCH_IDS, chunk },
@@ -108,12 +104,6 @@ namespace VTX::Renderer::Geometry
 			assert( p_mappings.size() == OUTPUT_BUFFER_NB );
 
 			SESDetail::SesdfOutputBuffers outputBuffers;
-			outputBuffers.atoms	  = { p_mappings[ OUTPUT_ATOMS ].devicePtr,
-									  p_mappings[ OUTPUT_ATOMS ].size,
-									  p_construction.atomOffset * sizeof( Vec4f ) };
-			outputBuffers.atomIds = { p_mappings[ OUTPUT_ATOM_IDS ].devicePtr,
-									  p_mappings[ OUTPUT_ATOM_IDS ].size,
-									  p_construction.atomOffset * sizeof( uint32_t ) };
 			outputBuffers.convexPatches
 				= { p_mappings[ OUTPUT_CONVEX_PATCHES ].devicePtr, p_mappings[ OUTPUT_CONVEX_PATCHES ].size, 0 };
 			outputBuffers.circlePatches
@@ -216,9 +206,11 @@ namespace VTX::Renderer::Geometry
 			}
 			else
 			{
-				const std::array<Desc::BufferRef, 2> buffers {
+				const std::array<Desc::BufferRef, 4> buffers {
 					Desc::BufferRef { Layout::Atoms::ATOMS_POSITIONS },
 					Desc::BufferRef { Layout::Atoms::ATOMS_SYMBOLS },
+					Desc::BufferRef { BUFFER_ATOMS },
+					Desc::BufferRef { BUFFER_ATOM_IDS },
 				};
 
 				std::vector<Desc::InteropBufferMapping> mappings;
@@ -231,8 +223,15 @@ namespace VTX::Renderer::Geometry
 					SESDetail::SesdfInputBuffers inputs;
 					inputs.positions  = { mappings[ 0 ].devicePtr, mappings[ 0 ].size, 0 };
 					inputs.symbols	  = { mappings[ 1 ].devicePtr, mappings[ 1 ].size, 0 };
-					inputs.atomOffset = p_inputAtomOffset;
-					inputs.atomNb	  = uint32_t( atomCount );
+					inputs.outputAtoms = { mappings[ 2 ].devicePtr,
+										   mappings[ 2 ].size,
+										   construction->atomOffset * sizeof( Vec4f ) };
+					inputs.outputAtomIds = { mappings[ 3 ].devicePtr,
+											 mappings[ 3 ].size,
+											 construction->atomOffset * sizeof( uint32_t ) };
+					inputs.atomOffset		   = p_inputAtomOffset;
+					inputs.rendererAtomOffset = construction->rendererAtomOffset;
+					inputs.atomNb			   = uint32_t( atomCount );
 
 					SESDetail::CudaBuildResult result = SESDetail::buildCudaConstructionFromRendererBuffers(
 						inputs, p_data.trajectory, SES_PROBE_RADIUS_DEFAULT
@@ -309,18 +308,14 @@ namespace VTX::Renderer::Geometry
 
 	void SES::resize( Context::ContextWrapper & p_context )
 	{
-		uint32_t atomNb	  = 0;
 		uint32_t probeNb  = 0;
 		uint32_t sectorNb = 0;
 		for ( const auto & [ surfaceID, construction ] : _constructions )
 		{
-			atomNb += construction->atomNb;
 			probeNb += construction->probeNb;
 			sectorNb += construction->sectorNb;
 		}
 
-		p_context.setBuffer<Vec4f>( { BUFFER_ATOMS }, std::max<uint32_t>( 1u, atomNb ) );
-		p_context.setBuffer<uint32_t>( { BUFFER_ATOM_IDS }, std::max<uint32_t>( 1u, atomNb ) );
 		p_context.setBuffer<Vec4f>( { BUFFER_PROBES }, std::max<uint32_t>( 1u, probeNb ) );
 		p_context.setBuffer<std::array<int32_t, 4>>( { BUFFER_PROBE_ATOM_INDICES }, std::max<uint32_t>( 1u, probeNb ) );
 		p_context.setBuffer<Vec4f>(

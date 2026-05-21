@@ -117,12 +117,18 @@ namespace bcs
 		const Aabb &	 aabb,
 		const float		 probeRadius,
 		bool			 buildSurface,
-		bool			 graphics
+		bool			 graphics,
+		float4 *		 externalAtoms,
+		uint32_t *		 externalAtomIds,
+		const uint32_t	 externalAtomIdOffset
 	) :
 		m_molecule( molecule ),
 		m_probeRadius( probeRadius ),
 		m_atomNb( molecule.size ),
-		m_graphics( graphics )
+		m_graphics( graphics ),
+		m_externalAtoms( externalAtoms ),
+		m_externalAtomIds( externalAtomIds ),
+		m_externalAtomIdOffset( externalAtomIdOffset )
 	{
 		constexpr float maxVdwRadius = 3.48f;
 
@@ -158,7 +164,10 @@ namespace bcs
 		cudaCheck( cudaMalloc( &m_dFullCircleNb, sizeof( uint32_t ) ) );
 		cudaCheck( cudaMalloc( &m_dSegmentCount, sizeof( uint32_t ) ) );
 
-		m_dAtoms		 = ResultBuffer::Typed<float4>( m_atomNb, false, m_graphics );
+		if ( m_externalAtoms == nullptr )
+		{
+			m_dAtoms = ResultBuffer::Typed<float4>( m_atomNb, false, m_graphics );
+		}
 		m_dConvexPatches = ResultBuffer::Typed<uint2>( m_atomNb, false, m_graphics );
 
 		m_dAtomIndices			  = DeviceBuffer::Typed<uint32_t>( m_atomNb );
@@ -213,6 +222,9 @@ namespace bcs
 		std::swap( m_hVisibleCircleNb, other.m_hVisibleCircleNb );
 
 		// Rendering buffers
+		std::swap( m_externalAtoms, other.m_externalAtoms );
+		std::swap( m_externalAtomIds, other.m_externalAtomIds );
+		std::swap( m_externalAtomIdOffset, other.m_externalAtomIdOffset );
 		std::swap( m_dAtoms, other.m_dAtoms );
 		std::swap( m_dIntersections, other.m_dIntersections );
 		std::swap( m_dSegments, other.m_dSegments );
@@ -253,6 +265,9 @@ namespace bcs
 		std::swap( m_hVisibleCircleNb, other.m_hVisibleCircleNb );
 
 		// Rendering buffers
+		std::swap( m_externalAtoms, other.m_externalAtoms );
+		std::swap( m_externalAtomIds, other.m_externalAtomIds );
+		std::swap( m_externalAtomIdOffset, other.m_externalAtomIdOffset );
 		std::swap( m_dAtoms, other.m_dAtoms );
 		std::swap( m_dIntersections, other.m_dIntersections );
 		std::swap( m_dSegments, other.m_dSegments );
@@ -281,7 +296,7 @@ namespace bcs
 			sesdf::SesdfContext sesContext {};
 			sesContext.probeRadius				  = m_probeRadius;
 			sesContext.atomNb					  = m_atomNb;
-			sesContext.atoms					  = m_dAtoms.get<float4>();
+			sesContext.atoms					  = getDAtoms();
 			sesContext.sortedToInitialIndices	  = m_dAtomIndices.get<uint32_t>();
 			sesContext.neighborNb				  = m_dAtomNeighborsCount.get<uint32_t>();
 			sesContext.neighborIds				  = m_dAtomNeighborsIndices.get<uint32_t>();
@@ -319,7 +334,7 @@ namespace bcs
 			if ( m_molecule.ptr != nullptr )
 			{
 				mmemcpy<MemcpyType::HostToDevice>(
-					m_dAtoms.get<float4>(), reinterpret_cast<const float4 *>( m_molecule.ptr ), m_atomNb
+					getDAtoms(), reinterpret_cast<const float4 *>( m_molecule.ptr ), m_atomNb
 				);
 			}
 
@@ -333,6 +348,18 @@ namespace bcs
 			m_convexPatchNb				 = m_atomNb;
 			m_fullCircleNb				 = *sesContext.hFullCircleNb;
 			m_sectorNb = ( m_dFCircleAndSectors.size() - m_fullCircleNb * sizeof( uint2 ) ) / sizeof( float4 );
+
+			if ( m_atomNb > 0 && m_externalAtomIds != nullptr )
+			{
+				launchCopyKernel(
+					m_atomNb,
+					copyUintAdd,
+					m_externalAtomIds,
+					m_dAtomIndices.get<uint32_t>(),
+					m_atomNb,
+					m_externalAtomIdOffset
+				);
+			}
 
 			if ( *sesContext.hIntersectedCircleNb > 0 )
 			{
@@ -378,7 +405,7 @@ namespace bcs
 		}
 	}
 
-	float4 * Sesdf::getDAtoms() { return m_dAtoms.get<float4>(); }
+	float4 * Sesdf::getDAtoms() { return m_externalAtoms != nullptr ? m_externalAtoms : m_dAtoms.get<float4>(); }
 
 	sesdf::SesdfGraphics Sesdf::getGraphics() const
 	{
@@ -417,7 +444,7 @@ namespace bcs
 
 	sesdf::SesdfData Sesdf::getData()
 	{
-		float4 * dAtoms			= m_dAtoms.get<float4>();
+		float4 * dAtoms			= getDAtoms();
 		uint2 *	 dConvexPatches = m_dConvexPatches.get<uint2>();
 
 		uint32_t sectorPadding
@@ -462,7 +489,7 @@ namespace bcs
 
 	void Sesdf::writeData( const sesdf::SesdfWriteBuffers & output )
 	{
-		if ( m_atomNb > 0 && output.atoms != nullptr )
+		if ( m_atomNb > 0 && output.atoms != nullptr && m_externalAtoms == nullptr )
 		{
 			cudaCheck(
 				"SES atoms external buffer write failed",
@@ -472,7 +499,7 @@ namespace bcs
 			);
 		}
 
-		if ( m_atomNb > 0 && output.atomIds != nullptr )
+		if ( m_atomNb > 0 && output.atomIds != nullptr && m_externalAtomIds == nullptr )
 		{
 			launchCopyKernel(
 				m_atomNb,
@@ -484,7 +511,7 @@ namespace bcs
 			);
 		}
 
-		if ( m_convexPatchNb > 0 )
+		if ( m_convexPatchNb > 0 && output.convexPatches != nullptr )
 		{
 			launchCopyKernel(
 				m_convexPatchNb,
@@ -508,7 +535,7 @@ namespace bcs
 			);
 		}
 
-		if ( m_fullCircleNb > 0 )
+		if ( m_fullCircleNb > 0 && output.circlePatches != nullptr )
 		{
 			launchCopyKernel(
 				m_fullCircleNb,
@@ -521,7 +548,7 @@ namespace bcs
 			);
 		}
 
-		if ( m_segmentNb > 0 )
+		if ( m_segmentNb > 0 && output.segmentPatches != nullptr )
 		{
 			launchCopyKernel(
 				m_segmentNb,
@@ -553,16 +580,19 @@ namespace bcs
 				);
 			}
 
-			launchCopyKernel(
-				m_intersectionNb,
-				copyInt4Add,
-				output.concavePatchesId,
-				m_dIntersections.get<int4>(),
-				m_intersectionNb,
-				static_cast<int>( output.atomIndexOffset )
-			);
+			if ( output.concavePatchesId != nullptr )
+			{
+				launchCopyKernel(
+					m_intersectionNb,
+					copyInt4Add,
+					output.concavePatchesId,
+					m_dIntersections.get<int4>(),
+					m_intersectionNb,
+					static_cast<int>( output.atomIndexOffset )
+				);
+			}
 
-			if ( output.maxConcaveNeighbors < MaxIntersectionNeighbors )
+			if ( output.concavePatchesNeighbors != nullptr && output.maxConcaveNeighbors < MaxIntersectionNeighbors )
 			{
 				std::cerr << "Error: SES external probe neighbor buffer stride is too small: "
 						  << output.maxConcaveNeighbors << " < " << MaxIntersectionNeighbors << std::endl;
@@ -572,16 +602,19 @@ namespace bcs
 			float4 * concavePatchNeighbors = reinterpret_cast<float4 *>(
 				m_dIntersections.get() + m_intersectionNb * ( sizeof( int4 ) + sizeof( float4 ) )
 			);
-			launchCopyKernel(
-				m_intersectionNb,
-				copyProbeNeighbors,
-				output.concavePatchesNeighbors,
-				concavePatchNeighbors,
-				m_dIntersections.get<int4>(),
-				m_intersectionNb,
-				MaxIntersectionNeighbors,
-				output.maxConcaveNeighbors
-			);
+			if ( output.concavePatchesNeighbors != nullptr )
+			{
+				launchCopyKernel(
+					m_intersectionNb,
+					copyProbeNeighbors,
+					output.concavePatchesNeighbors,
+					concavePatchNeighbors,
+					m_dIntersections.get<int4>(),
+					m_intersectionNb,
+					MaxIntersectionNeighbors,
+					output.maxConcaveNeighbors
+				);
+			}
 		}
 	}
 

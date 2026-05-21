@@ -79,9 +79,12 @@ namespace VTX::Renderer::Geometry::SESDetail
 	{
 		CudaBufferView positions;
 		CudaBufferView symbols;
+		CudaBufferView outputAtoms;
+		CudaBufferView outputAtomIds;
 
-		uint32_t atomOffset = 0;
-		uint32_t atomNb		= 0;
+		uint32_t atomOffset		  = 0;
+		uint32_t rendererAtomOffset = 0;
+		uint32_t atomNb			  = 0;
 	};
 
 	CudaBuildResult buildCudaConstruction(

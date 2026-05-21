@@ -11,6 +11,7 @@
 #include "renderer/representation.hpp"
 #include "renderer/resource_handler.hpp"
 #include "renderer/system_data.hpp"
+#include <algorithm>
 #include <unordered_map>
 #include <unordered_set>
 #include <util/enum.hpp>
@@ -488,6 +489,19 @@ namespace VTX::Renderer::Builder
 	{
 		void buildDerived( Context & p_context, std::span<const SystemData> p_systems ) const
 		{
+			uint32_t atomCount = 0;
+			for ( const SystemData & system : p_systems )
+			{
+				atomCount += uint32_t( system.data.getAtomCount() );
+			}
+
+			p_context.rendererContext.setBuffer<Vec4f>(
+				{ Geometry::SES::BUFFER_ATOMS }, std::max<uint32_t>( 1u, atomCount )
+			);
+			p_context.rendererContext.setBuffer<uint32_t>(
+				{ Geometry::SES::BUFFER_ATOM_IDS }, std::max<uint32_t>( 1u, atomCount )
+			);
+
 			for ( const SystemData & system : p_systems )
 			{
 				const Desc::Handle handle = p_context.systems.handle( system.uid );

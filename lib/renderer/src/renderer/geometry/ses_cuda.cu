@@ -85,6 +85,17 @@ namespace VTX::Renderer::Geometry::SESDetail
 			return reinterpret_cast<T *>( static_cast<uint8_t *>( p_target.devicePtr ) + p_target.offsetBytes );
 		}
 
+		template<typename T>
+		T * _optionalTargetPtr( const CudaBufferView & p_target, const size_t p_size, const char * const p_name )
+		{
+			if ( p_target.devicePtr == nullptr )
+			{
+				return nullptr;
+			}
+
+			return _targetPtr<T>( p_target, p_size, p_name );
+		}
+
 		void _cudaCheck( const cudaError_t p_error, const char * const p_context )
 		{
 			if ( p_error == cudaSuccess )
@@ -93,6 +104,34 @@ namespace VTX::Renderer::Geometry::SESDetail
 			}
 
 			throw std::runtime_error( std::string( p_context ) + ": " + cudaGetErrorString( p_error ) );
+		}
+
+		float4 * _optionalTargetAtoms( const SesdfInputBuffers & p_inputs )
+		{
+			if ( p_inputs.outputAtoms.devicePtr == nullptr )
+			{
+				return nullptr;
+			}
+
+			const size_t atomSize = p_inputs.atomNb * sizeof( float4 );
+			_checkTarget( p_inputs.outputAtoms, atomSize, "OutputAtoms" );
+			return reinterpret_cast<float4 *>(
+				static_cast<uint8_t *>( p_inputs.outputAtoms.devicePtr ) + p_inputs.outputAtoms.offsetBytes
+			);
+		}
+
+		uint32_t * _optionalTargetAtomIds( const SesdfInputBuffers & p_inputs )
+		{
+			if ( p_inputs.outputAtomIds.devicePtr == nullptr )
+			{
+				return nullptr;
+			}
+
+			const size_t atomIdSize = p_inputs.atomNb * sizeof( uint32_t );
+			_checkTarget( p_inputs.outputAtomIds, atomIdSize, "OutputAtomIds" );
+			return reinterpret_cast<uint32_t *>(
+				static_cast<uint8_t *>( p_inputs.outputAtomIds.devicePtr ) + p_inputs.outputAtomIds.offsetBytes
+			);
 		}
 
 		__global__ void _packAtomsKernel(
@@ -232,12 +271,17 @@ namespace VTX::Renderer::Geometry::SESDetail
 		auto construction = std::make_unique<CudaConstruction>();
 
 		const bcs::Aabb aabb = _computeAabb( p_aabbPositions );
+		float4 * const outputAtoms = _optionalTargetAtoms( p_inputs );
+		uint32_t * const outputAtomIds = _optionalTargetAtomIds( p_inputs );
 		construction->ses	 = std::make_unique<bcs::Sesdf>(
 			   bcs::ConstSpan<bcs::Vec4f>( nullptr, p_inputs.atomNb ),
 			   aabb,
 			   p_probeRadius,
 			   false,
-			   false
+			   false,
+			   outputAtoms,
+			   outputAtomIds,
+			   p_inputs.rendererAtomOffset
 		   );
 		_packRendererAtoms( p_inputs, construction->ses->getDAtoms() );
 		construction->ses->build();
@@ -268,8 +312,9 @@ namespace VTX::Renderer::Geometry::SESDetail
 		}
 
 		bcs::sesdf::SesdfWriteBuffers output;
-		output.atoms = _targetPtr<float4>( p_targets.atoms, data.atomNb * sizeof( float4 ), "Atoms" );
-		output.atomIds = _targetPtr<uint32_t>( p_targets.atomIds, data.atomNb * sizeof( uint32_t ), "AtomIds" );
+		output.atoms = _optionalTargetPtr<float4>( p_targets.atoms, data.atomNb * sizeof( float4 ), "Atoms" );
+		output.atomIds
+			= _optionalTargetPtr<uint32_t>( p_targets.atomIds, data.atomNb * sizeof( uint32_t ), "AtomIds" );
 		output.convexPatches
 			= _targetPtr<uint2>( p_targets.convexPatches, data.convexPatchNb * sizeof( uint2 ), "ConvexPatches" );
 		output.circlePatches

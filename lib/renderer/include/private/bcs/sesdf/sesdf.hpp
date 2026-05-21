@@ -19,7 +19,10 @@ namespace bcs
 			const Aabb &	 aabb,
 			const float		 probeRadius  = 1.4f,
 			bool			 buildSurface = true,
-			bool			 graphics	  = true
+			bool			 graphics	  = true,
+			float4 *		 externalAtoms = nullptr,
+			uint32_t *		 externalAtomIds = nullptr,
+			uint32_t		 externalAtomIdOffset = 0
 		);
 
 		Sesdf( const Sesdf & )			   = delete;
@@ -87,6 +90,9 @@ namespace bcs
 		uint32_t * m_hVisibleCircleNb	  = nullptr;
 
 		// Rendering buffers
+		float4 *	 m_externalAtoms		 = nullptr;
+		uint32_t *	 m_externalAtomIds		 = nullptr;
+		uint32_t	 m_externalAtomIdOffset = 0;
 		ResultBuffer m_dAtoms;
 		ResultBuffer m_dIntersections;
 		ResultBuffer m_dSegments;
