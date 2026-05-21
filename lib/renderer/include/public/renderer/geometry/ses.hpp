@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_GEOMETRY_SES__
 
 #include "base_geometry.hpp"
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <map>
@@ -96,6 +97,20 @@ namespace VTX::Renderer::Geometry
 				_systems.clear();
 				_dataOffsets.clear();
 				totalSize = 0;
+			}
+
+			void remove( const SurfaceID p_surface )
+			{
+				const auto it = _data().find( p_surface );
+				if ( it != _data().end() )
+				{
+					totalSize -= it->second.range.getCount();
+				}
+
+				_removeRange( p_surface );
+				_systems.erase( p_surface );
+				_dataOffsets.erase( p_surface );
+				chunks.erase( std::remove( chunks.begin(), chunks.end(), p_surface ), chunks.end() );
 			}
 
 			void resize( Context::ContextWrapper & p_context )
@@ -238,6 +253,7 @@ namespace VTX::Renderer::Geometry
 		void resize( Context::ContextWrapper & p_context );
 
 		void clear();
+		void invalidate( Desc::Handle p_handle );
 
 		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle );
 

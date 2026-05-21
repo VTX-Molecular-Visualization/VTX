@@ -985,11 +985,10 @@ namespace VTX::Renderer::Context::Backend
 			{
 				continue;
 			}
-			assert(
-				Util::Enum::hasBits( buffer.usage, E_BUFFER_USAGE::UNIFORM )
-				|| Util::Enum::hasBits( buffer.usage, E_BUFFER_USAGE::STORAGE )
-			);
+
+			assert( Util::Enum::hasAnyBit( buffer.usage, E_BUFFER_USAGE::UNIFORM | E_BUFFER_USAGE::STORAGE ) );
 			assert( buffer.binding );
+
 			const Handle hBuf = _buffers.handle( key );
 			gsb.emplace_back( hBuf, buffer.usage, *buffer.binding );
 		}
@@ -1325,10 +1324,8 @@ namespace VTX::Renderer::Context::Backend
 
 			const Handle h	  = _buffers.handle( key );
 			const auto & desc = _buffers.descriptor( key );
-			assert(
-				Util::Enum::hasBits( desc.usage, E_BUFFER_USAGE::CUDA_READ )
-				|| Util::Enum::hasBits( desc.usage, E_BUFFER_USAGE::CUDA_WRITE )
-			);
+
+			assert( Util::Enum::hasAnyBit( desc.usage, E_BUFFER_USAGE::CUDA_READ | E_BUFFER_USAGE::CUDA_WRITE ) );
 
 			result.emplace_back( _cudaInterop.mapBuffer( key, _buffers.get( h ).getId(), desc.usage ) );
 		}

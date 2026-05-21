@@ -384,17 +384,33 @@ namespace VTX::Renderer
 
 		Builder::SystemModels::upload( buildContext );
 
-		// Rebuild commands immediately, including the empty-scene case.
+		auto handles	 = _systems.handles();
+		_systemToRefresh = std::unordered_set<Desc::Handle>( handles.begin(), handles.end() );
+
+		bool representationsReady = true;
+		for ( const auto & system : _systems )
+		{
+			for ( const auto & representation : system.representations )
+			{
+				representationsReady = representationsReady && _cacheRepresentations.contains( representation.first );
+			}
+		}
+
+		if ( representationsReady )
+		{
+			for ( const auto & system : _systemToRefresh )
+			{
+				Builder::SystemVisibility::refreshGeometryVisibility( buildContext, system );
+			}
+			_systemToRefresh.clear();
+		}
+
 		pipeline.buildDrawRanges( buildContext );
 		if ( _syncGeometryChunks() )
 		{
 			_rebuildCommandBuffer();
 		}
 		_markSESDirty();
-
-		// Build draw ranges.
-		auto handles	 = _systems.handles();
-		_systemToRefresh = std::unordered_set<Desc::Handle>( handles.begin(), handles.end() );
 
 		setNeedUpdate( true );
 	}
@@ -455,6 +471,9 @@ namespace VTX::Renderer
 
 		Builder::AtomLayout::uploadPositions( buildContext, h, p_positions );
 		Builder::RibbonGeometry::uploadPositions( buildContext, h, p_positions );
+
+		_geometries.ses.invalidate( h );
+		_systemToRefresh.insert( h );
 
 		setNeedUpdate( true );
 	}

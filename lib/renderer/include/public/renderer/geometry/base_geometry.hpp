@@ -148,6 +148,8 @@ namespace VTX::Renderer::Geometry
 			_size = countIndex;
 		}
 
+		void _removeRange( const Desc::Handle p_handle ) { _resources.erase( p_handle ); }
+
 		/**
 		 * @brief Access indices.
 		 */

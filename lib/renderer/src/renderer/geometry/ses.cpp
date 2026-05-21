@@ -167,12 +167,15 @@ namespace VTX::Renderer::Geometry
 		auto construction				 = std::make_unique<SurfaceConstruction>();
 		construction->surface			 = _createWholeSurface( p_handle );
 		construction->rendererAtomOffset = p_inputAtomOffset;
+		construction->atomOffset		 = p_inputAtomOffset;
 
 		for ( const auto & [ surfaceID, existingConstruction ] : _constructions )
 		{
-			construction->atomOffset += existingConstruction->atomNb;
-			construction->probeOffset += existingConstruction->probeNb;
-			construction->sectorOffset += existingConstruction->sectorNb;
+			construction->probeOffset
+				= std::max( construction->probeOffset, existingConstruction->probeOffset + existingConstruction->probeNb );
+			construction->sectorOffset = std::max(
+				construction->sectorOffset, existingConstruction->sectorOffset + existingConstruction->sectorNb
+			);
 		}
 
 		// TEMP BYPASS.
@@ -312,8 +315,8 @@ namespace VTX::Renderer::Geometry
 		uint32_t sectorNb = 0;
 		for ( const auto & [ surfaceID, construction ] : _constructions )
 		{
-			probeNb += construction->probeNb;
-			sectorNb += construction->sectorNb;
+			probeNb	 = std::max( probeNb, construction->probeOffset + construction->probeNb );
+			sectorNb = std::max( sectorNb, construction->sectorOffset + construction->sectorNb );
 		}
 
 		p_context.setBuffer<Vec4f>( { BUFFER_PROBES }, std::max<uint32_t>( 1u, probeNb ) );
@@ -367,6 +370,38 @@ namespace VTX::Renderer::Geometry
 
 		_constructions.clear();
 		_surfaces.clear();
+	}
+
+	void SES::invalidate( const Desc::Handle p_handle )
+	{
+		const auto it = _surfaces.bySystem.find( p_handle );
+		if ( it == _surfaces.bySystem.end() )
+		{
+			return;
+		}
+
+		for ( const SurfaceID surface : it->second )
+		{
+			convexPatches.remove( surface );
+			circlePatches.remove( surface );
+			segmentPatches.remove( surface );
+			concavePatches.remove( surface );
+			_constructions.erase( surface );
+		}
+
+		for ( auto surfaceIt = _surfaces.ids.begin(); surfaceIt != _surfaces.ids.end(); )
+		{
+			if ( surfaceIt->first.system == p_handle )
+			{
+				surfaceIt = _surfaces.ids.erase( surfaceIt );
+			}
+			else
+			{
+				++surfaceIt;
+			}
+		}
+
+		_surfaces.bySystem.erase( it );
 	}
 
 	void SES::uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )

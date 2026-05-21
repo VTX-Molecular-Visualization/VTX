@@ -168,7 +168,11 @@ namespace VTX::Renderer::Geometry
 		void setVisibility( const Desc::Handle p_handle, const Util::Math::BitSet & p_visibility )
 		{
 			const auto it = _construction.find( p_handle );
-			assert( it != _construction.end() );
+			if ( it == _construction.end() )
+			{
+				return;
+			}
+
 			const Construction & cache = it->second;
 
 			if ( cache.isEmpty )
