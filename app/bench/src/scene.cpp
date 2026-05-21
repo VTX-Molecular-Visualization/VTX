@@ -68,31 +68,21 @@ namespace VTX::Bench
 
 	void Scene::removeSystem( const size_t p_index ) { _systems.erase( _systems.begin() + p_index ); }
 
-	std::vector<Renderer::SystemData> Scene::_buildRendererSystems() const
+	Renderer::SystemData Scene::_buildRendererSystem( const SystemEntry & p_system ) const
 	{
-		std::vector<Renderer::SystemData> systems;
-		systems.reserve( _systems.size() );
-
-		for ( const SystemEntry & system : _systems )
-		{
-			const size_t atomCount			  = system.topology->getAtomCount();
-			const auto	 representationRanges = _buildDefaultRepresentation( *system.topology );
-			systems.push_back(
-				Renderer::SystemData { system.uid,
-									   system.transform,
-									   *system.topology,
-									   system.positions,
-									   system.atomUids,
-									   system.residueUids,
-									   _buildAtomColors( *system.topology ),
-									   representationRanges,
-									   std::vector<Renderer::RepresentationIndex>( atomCount, 0 ),
-									   Util::Math::BitSet( atomCount, true ),
-									   std::vector<Renderer::Flag>( atomCount, 0 ) }
-			);
-		}
-
-		return systems;
+		const size_t atomCount			  = p_system.topology->getAtomCount();
+		const auto	 representationRanges = _buildDefaultRepresentation( *p_system.topology );
+		return Renderer::SystemData { p_system.uid,
+									  p_system.transform,
+									  *p_system.topology,
+									  p_system.positions,
+									  p_system.atomUids,
+									  p_system.residueUids,
+									  _buildAtomColors( *p_system.topology ),
+									  representationRanges,
+									  std::vector<Renderer::RepresentationIndex>( atomCount, 0 ),
+									  Util::Math::BitSet( atomCount, true ),
+									  std::vector<Renderer::Flag>( atomCount, 0 ) };
 	}
 
 	std::vector<Renderer::ColorIndex> Scene::_buildAtomColors( const Core::Struct::Topology & p_topology ) const
@@ -121,7 +111,32 @@ namespace VTX::Bench
 
 	void Scene::syncRenderer( Renderer::Renderer & p_renderer ) const
 	{
-		p_renderer.setSystems( _buildRendererSystems() );
+		std::unordered_set<SystemUID> currentSystemUids;
+		currentSystemUids.reserve( _systems.size() );
+
+		for ( const SystemEntry & system : _systems )
+		{
+			currentSystemUids.insert( system.uid );
+			if ( _syncedSystemUids.contains( system.uid ) )
+			{
+				continue;
+			}
+
+			p_renderer.addSystem( _buildRendererSystem( system ) );
+			_syncedSystemUids.insert( system.uid );
+		}
+
+		for ( auto it = _syncedSystemUids.begin(); it != _syncedSystemUids.end(); )
+		{
+			if ( currentSystemUids.contains( *it ) )
+			{
+				++it;
+				continue;
+			}
+
+			p_renderer.removeSystem( *it );
+			it = _syncedSystemUids.erase( it );
+		}
 	}
 
 } // namespace VTX::Bench

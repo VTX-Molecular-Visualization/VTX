@@ -177,6 +177,31 @@ namespace VTX::Renderer
 
 	void Renderer::_flushDirty()
 	{
+		std::vector<Desc::Handle> invalidDirtySystems;
+		const auto collectInvalidDirtySystems = [ & ]( const auto & p_handles )
+		{
+			for ( const Desc::Handle handle : p_handles )
+			{
+				if ( not _systems.contains( handle ) )
+				{
+					invalidDirtySystems.emplace_back( handle );
+				}
+			}
+		};
+
+		collectInvalidDirtySystems( _dirty.addedSystems );
+		collectInvalidDirtySystems( _dirty.atomPositions );
+		collectInvalidDirtySystems( _dirty.atomColors );
+		collectInvalidDirtySystems( _dirty.atomRepresentations );
+		collectInvalidDirtySystems( _dirty.atomSelection );
+		collectInvalidDirtySystems( _dirty.systemModels );
+		collectInvalidDirtySystems( _dirty.geometrySystems );
+
+		for ( const Desc::Handle handle : invalidDirtySystems )
+		{
+			_dirty.removeSystem( handle );
+		}
+
 		Builder::Context buildContext {
 			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _dirty.geometrySystems,
 		};
@@ -436,56 +461,6 @@ namespace VTX::Renderer
 
 #pragma region Geometries
 
-	void Renderer::setSystems( const std::vector<SystemData> & p_systems )
-	{
-		Util::ScopedChrono timer( "[RENDERER] setSystems" );
-
-		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _dirty.geometrySystems,
-		};
-
-		Builder::DefaultPipeline		  pipeline;
-		const std::span<const SystemData> systems( p_systems );
-		pipeline.clear( buildContext );
-		pipeline.registerSystems( buildContext, systems );
-		pipeline.allocateInputs( buildContext );
-		pipeline.uploadInputs( buildContext, systems );
-		pipeline.buildDerived( buildContext, systems );
-		pipeline.allocateOutputs( buildContext );
-		pipeline.writeOutputs( buildContext, systems );
-
-		Builder::SystemModels::upload( buildContext );
-
-		auto handles	 = _systems.handles();
-		_dirty.clear();
-		_dirty.markGeometries( handles );
-
-		bool representationsReady = true;
-		for ( const auto & system : _systems )
-		{
-			for ( const auto & representation : system.representations )
-			{
-				representationsReady = representationsReady && _cacheRepresentations.contains( representation.first );
-			}
-		}
-
-		if ( representationsReady )
-		{
-			_flushDirty();
-		}
-		else
-		{
-			pipeline.buildDrawRanges( buildContext );
-			if ( _syncGeometryChunks() )
-			{
-				_rebuildCommandBuffer();
-			}
-			_markSESDirty();
-		}
-
-		setNeedUpdate( true );
-	}
-
 	void Renderer::addSystem( const SystemData & p_system )
 	{
 		Util::ScopedChrono timer( "[RENDERER] addSystem" );
@@ -500,6 +475,63 @@ namespace VTX::Renderer
 
 		const Desc::Handle handle = _systems.handle( p_system.uid );
 		_dirty.markAddedSystem( handle );
+
+		setNeedUpdate( true );
+	}
+
+	void Renderer::removeSystem( const SystemUID p_uid )
+	{
+		Util::ScopedChrono timer( "[RENDERER] removeSystem" );
+
+		if ( not _systems.contains( p_uid ) )
+		{
+			return;
+		}
+
+		Builder::Context buildContext {
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _dirty.geometrySystems,
+		};
+
+		_systems.erase( p_uid );
+
+		std::vector<SystemData>		   remainingSystems;
+		std::vector<std::vector<Vec3f>> remainingTrajectories;
+		const auto					   remainingHandles = _systems.handles();
+		remainingSystems.reserve( remainingHandles.size() );
+		remainingTrajectories.reserve( remainingHandles.size() );
+		for ( const Desc::Handle handle : remainingHandles )
+		{
+			const Cache::System & cache = _systems.get( handle );
+			assert( cache.data != nullptr );
+
+			remainingTrajectories.emplace_back( cache.trajectory );
+			remainingSystems.emplace_back(
+				SystemData { cache.uid,
+							 cache.transform,
+							 *cache.data,
+							 remainingTrajectories.back(),
+							 cache.atomUids,
+							 cache.residueUids,
+							 cache.atomColors,
+							 cache.representations,
+							 cache.atomRepresentations,
+							 cache.visibility,
+							 cache.atomFlags }
+			);
+		}
+
+		Builder::DefaultPipeline pipeline;
+		pipeline.clear( buildContext );
+
+		const std::span<const SystemData> systems( remainingSystems );
+		pipeline.registerSystems( buildContext, systems );
+
+		_dirty.clear();
+		for ( const Desc::Handle handle : _systems.handles() )
+		{
+			_dirty.markAddedSystem( handle );
+		}
+		_dirty.markGeometryStructure();
 
 		setNeedUpdate( true );
 	}
@@ -534,7 +566,10 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemTransform( const SystemUID p_uid, const Mat4f & p_transform )
 	{
-		assert( _systems.contains( p_uid ) );
+		if ( not _systems.contains( p_uid ) )
+		{
+			return;
+		}
 
 		Util::ScopedChrono timer( "[RENDERER] setSystemTransform" );
 
@@ -547,7 +582,10 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
 	{
-		assert( _systems.contains( p_uid ) );
+		if ( not _systems.contains( p_uid ) )
+		{
+			return;
+		}
 
 		const Desc::Handle h = _systems.handle( p_uid );
 		_systems.get( h ).trajectory.assign( p_positions.begin(), p_positions.end() );
@@ -559,7 +597,10 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemColors( const SystemUID p_uid, std::span<const ColorIndex> p_colors )
 	{
-		assert( _systems.contains( p_uid ) );
+		if ( not _systems.contains( p_uid ) )
+		{
+			return;
+		}
 
 		const Desc::Handle h = _systems.handle( p_uid );
 		_systems.get( h ).atomColors.assign( p_colors.begin(), p_colors.end() );
@@ -574,7 +615,10 @@ namespace VTX::Renderer
 		std::span<const RepresentationIndex> p_atomRepresentations
 	)
 	{
-		assert( _systems.contains( p_uid ) );
+		if ( not _systems.contains( p_uid ) )
+		{
+			return;
+		}
 
 		Util::ScopedChrono timer( "[RENDERER] setSystemRepresentation" );
 
@@ -588,7 +632,10 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemVisibility( const SystemUID p_uid, const Util::Math::BitSet & p_visibility )
 	{
-		assert( _systems.contains( p_uid ) );
+		if ( not _systems.contains( p_uid ) )
+		{
+			return;
+		}
 
 		Util::ScopedChrono timer( "[RENDERER] setSystemVisibility" );
 
@@ -600,7 +647,10 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemSelection( const SystemUID p_uid, std::span<const Flag> p_atomFlags )
 	{
-		assert( _systems.contains( p_uid ) );
+		if ( not _systems.contains( p_uid ) )
+		{
+			return;
+		}
 
 		Util::ScopedChrono timer( "[RENDERER] setSystemSelection" );
 

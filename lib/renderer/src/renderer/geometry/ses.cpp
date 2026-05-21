@@ -165,7 +165,7 @@ namespace VTX::Renderer::Geometry
 		auto construction				 = std::make_unique<SurfaceConstruction>();
 		construction->surface			 = _createWholeSurface( p_handle );
 		construction->rendererAtomOffset = p_inputAtomOffset;
-		construction->atomOffset		 = p_inputAtomOffset;
+		construction->atomOffset		 = 0;
 
 		for ( const auto & [ surfaceID, existingConstruction ] : _constructions )
 		{
@@ -210,26 +210,30 @@ namespace VTX::Renderer::Geometry
 				const std::array<Desc::BufferRef, 4> buffers {
 					Desc::BufferRef { Layout::Atoms::ATOMS_POSITIONS },
 					Desc::BufferRef { Layout::Atoms::ATOMS_SYMBOLS },
-					Desc::BufferRef { BUFFER_ATOMS },
-					Desc::BufferRef { BUFFER_ATOM_IDS },
+					Desc::BufferRef { BUFFER_ATOMS, construction->surface.id },
+					Desc::BufferRef { BUFFER_ATOM_IDS, construction->surface.id },
 				};
 
 				std::vector<Desc::InteropBufferMapping> mappings;
 
 				try
 				{
+					const Desc::BufferRef atomsRef { BUFFER_ATOMS, construction->surface.id };
+					p_context.ensureBufferChunk( atomsRef );
+					p_context.setBuffer<Vec4f>( atomsRef, std::max<uint32_t>( 1u, uint32_t( atomCount ) ) );
+
+					const Desc::BufferRef atomIdsRef { BUFFER_ATOM_IDS, construction->surface.id };
+					p_context.ensureBufferChunk( atomIdsRef );
+					p_context.setBuffer<uint32_t>( atomIdsRef, std::max<uint32_t>( 1u, uint32_t( atomCount ) ) );
+
 					mappings = p_context.mapInteropBuffers( Desc::E_INTEROP_API::CUDA, buffers );
 					assert( mappings.size() == buffers.size() );
 
 					SESDetail::SesdfInputBuffers inputs;
 					inputs.positions  = { mappings[ 0 ].devicePtr, mappings[ 0 ].size, 0 };
 					inputs.symbols	  = { mappings[ 1 ].devicePtr, mappings[ 1 ].size, 0 };
-					inputs.outputAtoms = { mappings[ 2 ].devicePtr,
-										   mappings[ 2 ].size,
-										   construction->atomOffset * sizeof( Vec4f ) };
-					inputs.outputAtomIds = { mappings[ 3 ].devicePtr,
-											 mappings[ 3 ].size,
-											 construction->atomOffset * sizeof( uint32_t ) };
+					inputs.outputAtoms = { mappings[ 2 ].devicePtr, mappings[ 2 ].size, 0 };
+					inputs.outputAtomIds = { mappings[ 3 ].devicePtr, mappings[ 3 ].size, 0 };
 					inputs.atomOffset		   = p_inputAtomOffset;
 					inputs.rendererAtomOffset = construction->rendererAtomOffset;
 					inputs.atomNb			   = uint32_t( atomCount );

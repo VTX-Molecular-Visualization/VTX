@@ -14,9 +14,9 @@
 #include "renderer/struct_infos.hpp"
 #include "renderer/system_data.hpp"
 #include <unordered_set>
-#include <vector>
 #include <util/callback.hpp>
 #include <util/math/bitset.hpp>
+#include <vector>
 
 namespace VTX::Renderer
 {
@@ -84,12 +84,13 @@ namespace VTX::Renderer
 		/**
 		 * @brief Push systems.
 		 */
-		void setSystems( const std::vector<SystemData> & );
 		void addSystem( const SystemData & );
+		void removeSystem( SystemUID );
 
 		/**
 		 * @brief Ensure a physical chunk exists for a chunked render graph buffer.
-		 * @return true if a command buffer rebuild was required.
+		 * @return true
+		 * if a command buffer rebuild was required.
 		 */
 		bool ensureBufferChunk( const Desc::BufferRef & );
 		bool releaseBufferChunk( const Desc::BufferRef & );
@@ -201,15 +202,15 @@ namespace VTX::Renderer
 			std::unordered_set<Desc::Handle> atomSelection;
 			std::unordered_set<Desc::Handle> systemModels;
 			std::unordered_set<Desc::Handle> geometrySystems;
-			bool						   drawRanges	   = false;
-			bool						   geometryChunks = false;
-			bool						   externalPasses = false;
+			bool							 drawRanges		= false;
+			bool							 geometryChunks = false;
+			bool							 externalPasses = false;
 
 			[[nodiscard]] bool empty() const noexcept
 			{
-				return addedSystems.empty() && atomPositions.empty() && atomColors.empty() && atomRepresentations.empty()
-					   && atomSelection.empty() && systemModels.empty() && geometrySystems.empty() && not drawRanges
-					   && not geometryChunks && not externalPasses;
+				return addedSystems.empty() && atomPositions.empty() && atomColors.empty()
+					   && atomRepresentations.empty() && atomSelection.empty() && systemModels.empty()
+					   && geometrySystems.empty() && not drawRanges && not geometryChunks && not externalPasses;
 			}
 
 			void clear()
@@ -274,6 +275,17 @@ namespace VTX::Renderer
 			}
 
 			void markDrawRanges() { drawRanges = true; }
+
+			void removeSystem( const Desc::Handle p_handle )
+			{
+				addedSystems.erase( p_handle );
+				atomPositions.erase( p_handle );
+				atomColors.erase( p_handle );
+				atomRepresentations.erase( p_handle );
+				atomSelection.erase( p_handle );
+				systemModels.erase( p_handle );
+				geometrySystems.erase( p_handle );
+			}
 		};
 
 		/**

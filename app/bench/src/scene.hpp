@@ -6,6 +6,7 @@
 #include <renderer/caches.hpp>
 #include <renderer/color.hpp>
 #include <renderer/system_data.hpp>
+#include <unordered_set>
 #include <util/math/bitset.hpp>
 
 namespace VTX::Renderer
@@ -50,7 +51,7 @@ namespace VTX::Bench
 			std::vector<PickingUID>					residueUids;
 		};
 
-		[[nodiscard]] std::vector<Renderer::SystemData> _buildRendererSystems() const;
+		[[nodiscard]] Renderer::SystemData _buildRendererSystem( const SystemEntry & ) const;
 		[[nodiscard]] std::vector<Renderer::ColorIndex> _buildAtomColors(
 			const Core::Struct::Topology & p_topology
 		) const;
@@ -60,6 +61,7 @@ namespace VTX::Bench
 
 		CameraController		 _camera;
 		std::vector<SystemEntry> _systems;
+		mutable std::unordered_set<SystemUID> _syncedSystemUids;
 		SystemUID				 _nextSystemUid	 = 1;
 		PickingUID				 _nextPickingUid = 1;
 	};

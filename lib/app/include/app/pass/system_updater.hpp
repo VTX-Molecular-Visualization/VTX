@@ -33,8 +33,9 @@ namespace VTX::App::Pass
 		/**
 		 * @brief All system entities.
 		 */
-		std::vector<ECS::Entity> _entities;
-		std::vector<ECS::Entity> _pushedEntities;
+		std::vector<ECS::Entity>				   _entities;
+		std::vector<ECS::Entity>				   _pushedEntities;
+		std::unordered_map<ECS::Entity, SystemUID> _pushedSystemUids;
 
 		/**
 		 * @brief Dirty flag to push systems to renderer at the next update.

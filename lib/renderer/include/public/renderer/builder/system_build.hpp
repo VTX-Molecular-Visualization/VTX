@@ -690,21 +690,7 @@ namespace VTX::Renderer::Builder
 
 	struct SESGeometry
 	{
-		void buildDerived( Context & p_context, std::span<const SystemData> p_systems ) const
-		{
-			uint32_t atomCount = 0;
-			for ( const SystemData & system : p_systems )
-			{
-				atomCount += uint32_t( system.data.getAtomCount() );
-			}
-
-			p_context.rendererContext.setBuffer<Vec4f>(
-				{ Geometry::SES::BUFFER_ATOMS }, std::max<uint32_t>( 1u, atomCount )
-			);
-			p_context.rendererContext.setBuffer<uint32_t>(
-				{ Geometry::SES::BUFFER_ATOM_IDS }, std::max<uint32_t>( 1u, atomCount )
-			);
-		}
+		void buildDerived( Context &, std::span<const SystemData> ) const {}
 	};
 
 	struct GeometryBuffers

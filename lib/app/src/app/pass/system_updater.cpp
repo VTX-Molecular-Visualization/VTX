@@ -70,6 +70,13 @@ namespace VTX::App::Pass
 
 	void SystemUpdater::_onSystemDestroyed( ECS::Registry &, ECS::Entity p_e )
 	{
+		const auto pushedIt = _pushedSystemUids.find( p_e );
+		if ( pushedIt != _pushedSystemUids.end() )
+		{
+			RENDERER().removeSystem( pushedIt->second );
+			_pushedSystemUids.erase( pushedIt );
+		}
+
 		_entities.erase( std::remove( _entities.begin(), _entities.end(), p_e ), _entities.end() );
 		_pushedEntities.erase( std::remove( _pushedEntities.begin(), _pushedEntities.end(), p_e ), _pushedEntities.end() );
 		_representations.erase( p_e );
@@ -116,6 +123,7 @@ namespace VTX::App::Pass
 														 _buildAtomFlags( selection, atomCount ) } );
 
 			_pushedEntities.push_back( system );
+			_pushedSystemUids.emplace( system, uid.system );
 			representationChanged = representationChanged || _representations.size() != representationCountBefore;
 		}
 
