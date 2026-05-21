@@ -225,6 +225,7 @@ namespace VTX::Renderer::Context::Backend
 		Desc::Handle _getOrCreateQuad();
 		Desc::Handle _getOrCreateFramebuffer( const Desc::Pass &, const Desc::Resources &, const bool = false );
 		Desc::Handle _getOrCreateResourceTable( const Desc::Pass &, const Desc::Resources & );
+		Desc::Handle _getOrCreateChunkResourceTable( const Desc::Pass &, BufferChunk );
 		Desc::Handle _getOrCreateTexture( const Desc::Key &, const Desc::Texture & );
 		Desc::Handle _getOrCreateSampler( const Desc::Key &, const Desc::Sampler & );
 		Desc::Handle _getOrCreateVertexLayout( const Desc::Key &, const Desc::VertexLayout & );
@@ -251,6 +252,7 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		GlobalShaderBuffers _buildGlobalShaderBuffers( const Desc::Resources & );
 		ResourceTable		_buildResourceTableForPass( const Desc::Pass &, const Desc::Resources & );
+		ResourceTable		_buildChunkResourceTable( const Desc::Resources &, BufferChunk );
 
 		/**
 		 * @brief Bind resources.

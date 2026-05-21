@@ -71,6 +71,7 @@ namespace VTX::App::Pass
 	void SystemUpdater::_onSystemDestroyed( ECS::Registry &, ECS::Entity p_e )
 	{
 		_entities.erase( std::remove( _entities.begin(), _entities.end(), p_e ), _entities.end() );
+		_pushedEntities.erase( std::remove( _pushedEntities.begin(), _pushedEntities.end(), p_e ), _pushedEntities.end() );
 		_representations.erase( p_e );
 		_needPush = true;
 	}
@@ -79,11 +80,15 @@ namespace VTX::App::Pass
 	{
 		auto & reg = REG();
 
-		std::vector<Renderer::SystemData> systemsData;
-		_representations.clear();
+		bool representationChanged = false;
 
 		for ( const ECS::Entity system : _entities )
 		{
+			if ( std::find( _pushedEntities.begin(), _pushedEntities.end(), system ) != _pushedEntities.end() )
+			{
+				continue;
+			}
+
 			const auto & data				  = reg.get<Core::Struct::Topology>( system );
 			const auto & transform			  = reg.get<Util::Math::Transform>( system );
 			const auto & uid				  = reg.get<System::UID>( system );
@@ -92,28 +97,32 @@ namespace VTX::App::Pass
 			const auto & visibility			  = reg.get<System::Visibility>( system );
 			const auto & selection			  = reg.get<System::Selection>( system );
 			const size_t atomCount			  = data.getAtomCount();
+			const size_t representationCountBefore = _representations.size();
 			const auto	 representationRanges = _buildRepresentationRanges( representation );
 
 			assert( atomCount > 0 );
 
 			std::span<const Vec3f> positions = System::getCurrentAtomPositions( system );
-			systemsData.push_back(
-				Renderer::SystemData { uid.system,
-									   transform.computeMatrix(),
-									   data,
-									   positions,
-									   uid.atoms.toStdVector(),
-									   uid.residues.toStdVector(),
-									   _buildAtomColors( color, data ),
-									   representationRanges,
-									   _buildAtomRepresentations( data, representationRanges ),
-									   visibility.atoms,
-									   _buildAtomFlags( selection, atomCount ) }
-			);
+			RENDERER().addSystem( Renderer::SystemData { uid.system,
+														 transform.computeMatrix(),
+														 data,
+														 positions,
+														 uid.atoms.toStdVector(),
+														 uid.residues.toStdVector(),
+														 _buildAtomColors( color, data ),
+														 representationRanges,
+														 _buildAtomRepresentations( data, representationRanges ),
+														 visibility.atoms,
+														 _buildAtomFlags( selection, atomCount ) } );
+
+			_pushedEntities.push_back( system );
+			representationChanged = representationChanged || _representations.size() != representationCountBefore;
 		}
 
-		_setRepresentation();
-		RENDERER().setSystems( systemsData );
+		if ( representationChanged )
+		{
+			_setRepresentation();
+		}
 	}
 
 	void SystemUpdater::_onUpdateVisibility( ECS::Registry & p_r, ECS::Entity p_e )

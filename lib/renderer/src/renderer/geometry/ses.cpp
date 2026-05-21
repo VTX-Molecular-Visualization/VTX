@@ -89,10 +89,10 @@ namespace VTX::Renderer::Geometry
 				Desc::BufferRef { SES::BUFFER_CONVEX_PATCH_ELEMENTS, chunk },
 				Desc::BufferRef { SES::BUFFER_CIRCLE_PATCH_ATOMS, chunk },
 				Desc::BufferRef { SES::BUFFER_SEGMENT_PATCH_IDS, chunk },
-				Desc::BufferRef { SES::BUFFER_PROBES },
-				Desc::BufferRef { SES::BUFFER_PROBE_ATOM_INDICES },
-				Desc::BufferRef { SES::BUFFER_PROBE_NEIGHBORS },
-				Desc::BufferRef { SES::BUFFER_SECTORS },
+				Desc::BufferRef { SES::BUFFER_PROBES, chunk },
+				Desc::BufferRef { SES::BUFFER_PROBE_ATOM_INDICES, chunk },
+				Desc::BufferRef { SES::BUFFER_PROBE_NEIGHBORS, chunk },
+				Desc::BufferRef { SES::BUFFER_SECTORS, chunk },
 			};
 		}
 
@@ -112,21 +112,19 @@ namespace VTX::Renderer::Geometry
 				= { p_mappings[ OUTPUT_SEGMENT_PATCHES ].devicePtr, p_mappings[ OUTPUT_SEGMENT_PATCHES ].size, 0 };
 			outputBuffers.probes		   = { p_mappings[ OUTPUT_PROBES ].devicePtr,
 											   p_mappings[ OUTPUT_PROBES ].size,
-											   p_construction.probeOffset * sizeof( Vec4f ) };
+											   0 };
 			outputBuffers.probeAtomIndices = { p_mappings[ OUTPUT_PROBE_ATOM_INDICES ].devicePtr,
 											   p_mappings[ OUTPUT_PROBE_ATOM_INDICES ].size,
-											   p_construction.probeOffset * sizeof( std::array<int32_t, 4> ) };
+											   0 };
 			outputBuffers.probeNeighbors
-				= { p_mappings[ OUTPUT_PROBE_NEIGHBORS ].devicePtr,
-					p_mappings[ OUTPUT_PROBE_NEIGHBORS ].size,
-					p_construction.probeOffset * SES::MAX_PROBE_NEIGHBOR_NB * sizeof( Vec4f ) };
+				= { p_mappings[ OUTPUT_PROBE_NEIGHBORS ].devicePtr, p_mappings[ OUTPUT_PROBE_NEIGHBORS ].size, 0 };
 			outputBuffers.sectors				  = { p_mappings[ OUTPUT_SECTORS ].devicePtr,
 													  p_mappings[ OUTPUT_SECTORS ].size,
-													  p_construction.sectorOffset * sizeof( Vec4f ) };
+													  0 };
 			outputBuffers.atomIndexOffset		  = p_construction.atomOffset;
 			outputBuffers.rendererAtomIndexOffset = p_construction.rendererAtomOffset;
-			outputBuffers.probeIndexOffset		  = p_construction.probeOffset;
-			outputBuffers.sectorIndexOffset		  = p_construction.sectorOffset;
+			outputBuffers.probeIndexOffset		  = 0;
+			outputBuffers.sectorIndexOffset		  = 0;
 			outputBuffers.maxProbeNeighborNb	  = SES::MAX_PROBE_NEIGHBOR_NB;
 
 			return outputBuffers;
@@ -285,9 +283,7 @@ namespace VTX::Renderer::Geometry
 			);
 			circlePatches.construct( surface.id, surface.system, construction->circlePatchNb );
 			segmentPatches.construct( surface.id, surface.system, construction->segmentPatchNb );
-			concavePatches.construct(
-				surface.id, surface.system, construction->concavePatchNb, construction->probeOffset
-			);
+			concavePatches.construct( surface.id, surface.system, construction->concavePatchNb, 0 );
 		}
 
 		const SurfaceID surfaceID = construction->surface.id;
@@ -311,21 +307,6 @@ namespace VTX::Renderer::Geometry
 
 	void SES::resize( Context::ContextWrapper & p_context )
 	{
-		uint32_t probeNb  = 0;
-		uint32_t sectorNb = 0;
-		for ( const auto & [ surfaceID, construction ] : _constructions )
-		{
-			probeNb	 = std::max( probeNb, construction->probeOffset + construction->probeNb );
-			sectorNb = std::max( sectorNb, construction->sectorOffset + construction->sectorNb );
-		}
-
-		p_context.setBuffer<Vec4f>( { BUFFER_PROBES }, std::max<uint32_t>( 1u, probeNb ) );
-		p_context.setBuffer<std::array<int32_t, 4>>( { BUFFER_PROBE_ATOM_INDICES }, std::max<uint32_t>( 1u, probeNb ) );
-		p_context.setBuffer<Vec4f>(
-			{ BUFFER_PROBE_NEIGHBORS }, std::max<uint32_t>( 1u, probeNb * MAX_PROBE_NEIGHBOR_NB )
-		);
-		p_context.setBuffer<Vec4f>( { BUFFER_SECTORS }, std::max<uint32_t>( 1u, sectorNb ) );
-
 		for ( const auto & [ surfaceID, construction ] : _constructions )
 		{
 			if ( construction->state != SurfaceConstruction::State::PendingWrite
@@ -335,6 +316,26 @@ namespace VTX::Renderer::Geometry
 			}
 
 			const uint32_t chunk = construction->surface.id;
+
+			Desc::BufferRef probesRef { BUFFER_PROBES, chunk };
+			p_context.ensureBufferChunk( probesRef );
+			p_context.setBuffer<Vec4f>( probesRef, std::max<uint32_t>( 1u, construction->probeNb ) );
+
+			Desc::BufferRef probeAtomIndicesRef { BUFFER_PROBE_ATOM_INDICES, chunk };
+			p_context.ensureBufferChunk( probeAtomIndicesRef );
+			p_context.setBuffer<std::array<int32_t, 4>>(
+				probeAtomIndicesRef, std::max<uint32_t>( 1u, construction->probeNb )
+			);
+
+			Desc::BufferRef probeNeighborsRef { BUFFER_PROBE_NEIGHBORS, chunk };
+			p_context.ensureBufferChunk( probeNeighborsRef );
+			p_context.setBuffer<Vec4f>(
+				probeNeighborsRef, std::max<uint32_t>( 1u, construction->probeNb * MAX_PROBE_NEIGHBOR_NB )
+			);
+
+			Desc::BufferRef sectorsRef { BUFFER_SECTORS, chunk };
+			p_context.ensureBufferChunk( sectorsRef );
+			p_context.setBuffer<Vec4f>( sectorsRef, std::max<uint32_t>( 1u, construction->sectorNb ) );
 
 			Desc::BufferRef convexRef { BUFFER_CONVEX_PATCH_ELEMENTS, chunk };
 			p_context.ensureBufferChunk( convexRef );
@@ -411,7 +412,6 @@ namespace VTX::Renderer::Geometry
 		{
 			return;
 		}
-		assert( it != _surfaces.bySystem.end() );
 
 		for ( const SurfaceID surface : it->second )
 		{
@@ -431,7 +431,6 @@ namespace VTX::Renderer::Geometry
 		{
 			return;
 		}
-		assert( it != _surfaces.bySystem.end() );
 
 		for ( const SurfaceID surface : it->second )
 		{

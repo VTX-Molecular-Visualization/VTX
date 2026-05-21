@@ -111,8 +111,23 @@ namespace VTX::Renderer::Context::Backend::GL
 			const GLsizei requiredSize = GLsizei( p_offset + p_size );
 			if ( requiredSize > _size )
 			{
+				const GLsizei previousSize = _size;
+				GLuint		  previousData = GL_INVALID_INDEX;
+				if ( p_data == nullptr && previousSize > 0 )
+				{
+					glCreateBuffers( 1, &previousData );
+					glNamedBufferData( previousData, previousSize, nullptr, p_usage );
+					glCopyNamedBufferSubData( _id, previousData, 0, 0, previousSize );
+				}
+
 				_size = requiredSize;
 				glNamedBufferData( _id, _size, nullptr, p_usage );
+
+				if ( previousData != GL_INVALID_INDEX )
+				{
+					glCopyNamedBufferSubData( previousData, _id, 0, 0, previousSize );
+					glDeleteBuffers( 1, &previousData );
+				}
 			}
 
 			if ( p_data != nullptr )

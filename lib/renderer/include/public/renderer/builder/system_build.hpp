@@ -30,7 +30,7 @@ namespace VTX::Renderer::Builder
 		Cache::Camera &													 camera;
 		Layouts &														 layouts;
 		Geometries &													 geometries;
-		std::unordered_set<Desc::Handle> &								 systemToRefresh;
+		std::unordered_set<Desc::Handle> &								 dirtyGeometrySystems;
 	};
 
 	struct SystemRegistry
@@ -40,7 +40,7 @@ namespace VTX::Renderer::Builder
 			p_context.systems.clear();
 			p_context.layouts.clearSystems();
 			p_context.geometries.clearSystems();
-			p_context.systemToRefresh.clear();
+			p_context.dirtyGeometrySystems.clear();
 		}
 
 		void registerSystem( Context & p_context, const SystemData & p_system ) const
@@ -114,7 +114,11 @@ namespace VTX::Renderer::Builder
 			using namespace Layout;
 
 			assert( p_positions.size() == p_context.layouts.atoms.size( p_handle ) );
-			p_context.systems.get( p_handle ).trajectory.assign( p_positions.begin(), p_positions.end() );
+			auto & trajectory = p_context.systems.get( p_handle ).trajectory;
+			if ( trajectory.data() != p_positions.data() )
+			{
+				trajectory.assign( p_positions.begin(), p_positions.end() );
+			}
 
 			p_context.layouts.atoms.upload<ATOM_ATTR::POSITION, Vec3f>(
 				p_context.rendererContext, p_handle, p_positions
@@ -130,7 +134,11 @@ namespace VTX::Renderer::Builder
 			using namespace Layout;
 
 			assert( p_colors.size() == p_context.layouts.atoms.size( p_handle ) );
-			p_context.systems.get( p_handle ).atomColors.assign( p_colors.begin(), p_colors.end() );
+			auto & atomColors = p_context.systems.get( p_handle ).atomColors;
+			if ( atomColors.data() != p_colors.data() )
+			{
+				atomColors.assign( p_colors.begin(), p_colors.end() );
+			}
 
 			p_context.layouts.atoms.upload<ATOM_ATTR::COLOR, ColorIndex>(
 				p_context.rendererContext, p_handle, p_colors
@@ -148,7 +156,10 @@ namespace VTX::Renderer::Builder
 
 			Cache::System & cache = p_context.systems.get( p_handle );
 			cache.representations = p_representations;
-			cache.atomRepresentations.assign( p_atomRepresentations.begin(), p_atomRepresentations.end() );
+			if ( cache.atomRepresentations.data() != p_atomRepresentations.data() )
+			{
+				cache.atomRepresentations.assign( p_atomRepresentations.begin(), p_atomRepresentations.end() );
+			}
 
 			const Index countAtoms = p_context.layouts.atoms.size( p_handle );
 			assert( p_atomRepresentations.size() == countAtoms );
@@ -157,7 +168,7 @@ namespace VTX::Renderer::Builder
 				p_context.rendererContext, p_handle, p_atomRepresentations
 			);
 
-			p_context.systemToRefresh.insert( p_handle );
+			p_context.dirtyGeometrySystems.insert( p_handle );
 		}
 
 		static void uploadSelection(
@@ -169,7 +180,11 @@ namespace VTX::Renderer::Builder
 			using namespace Layout;
 
 			assert( p_atomFlags.size() == p_context.layouts.atoms.size( p_handle ) );
-			p_context.systems.get( p_handle ).atomFlags.assign( p_atomFlags.begin(), p_atomFlags.end() );
+			auto & atomFlags = p_context.systems.get( p_handle ).atomFlags;
+			if ( atomFlags.data() != p_atomFlags.data() )
+			{
+				atomFlags.assign( p_atomFlags.begin(), p_atomFlags.end() );
+			}
 
 			p_context.layouts.atoms.upload<ATOM_ATTR::FLAG, Flag>( p_context.rendererContext, p_handle, p_atomFlags );
 		}
@@ -192,7 +207,7 @@ namespace VTX::Renderer::Builder
 			Cache::System & cache = p_context.systems.get( p_handle );
 			cache.visibility	  = p_visibility;
 
-			p_context.systemToRefresh.insert( p_handle );
+			p_context.dirtyGeometrySystems.insert( p_handle );
 		}
 
 		static void refreshGeometryVisibility( Context & p_context, const Desc::Handle p_handle )
@@ -245,8 +260,6 @@ namespace VTX::Renderer::Builder
 			p_context.geometries.cylinders.setVisibility( p_handle, visibleCylinders );
 			p_context.geometries.ribbons.setVisibility( p_handle, visibleRibbons );
 			p_context.geometries.ses.setVisibility( p_handle, visibleSes );
-
-			p_context.geometries.uploadIndexes( p_context.rendererContext, p_handle );
 		}
 
 		static void constructRibbon( Context & p_context, const Desc::Handle p_handle )
@@ -461,7 +474,7 @@ namespace VTX::Renderer::Builder
 			p_context.rendererContext.setBuffer( { "Representations" }, buffer );
 
 			auto handles			  = p_context.systems.handles();
-			p_context.systemToRefresh = std::unordered_set<Desc::Handle>( handles.begin(), handles.end() );
+			p_context.dirtyGeometrySystems = std::unordered_set<Desc::Handle>( handles.begin(), handles.end() );
 		}
 	};
 

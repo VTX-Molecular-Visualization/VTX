@@ -26,12 +26,6 @@ namespace VTX::App::Pass
 	class SystemUpdater : public IPass
 	{
 	  public:
-		/**
-		 * @brief Map representation entity to its current index.
-		 */
-		using MapRepresentationIndex = std::map<ECS::Entity, Renderer::RepresentationIndex>;
-		using MapRepresentationBonds = std::map<ECS::Entity, Renderer::RepresentationIndex>;
-
 		SystemUpdater();
 		void update( const float, const float );
 
@@ -40,6 +34,7 @@ namespace VTX::App::Pass
 		 * @brief All system entities.
 		 */
 		std::vector<ECS::Entity> _entities;
+		std::vector<ECS::Entity> _pushedEntities;
 
 		/**
 		 * @brief Dirty flag to push systems to renderer at the next update.

@@ -369,6 +369,21 @@ namespace VTX::Renderer::Context::Backend
 				PayloadBindResources pBindResources { hResourceTable };
 				p_commands.push<E_COMMAND::BIND_RESOURCES>( pBindResources );
 
+				const auto bindChunkResources = [ & ]( const BufferChunk p_chunk )
+				{
+					const Handle	hChunkResourceTable = _getOrCreateChunkResourceTable( pass, p_chunk );
+					ResourceTable & chunkResourceTable  = _resourceTables.get( hChunkResourceTable );
+					chunkResourceTable				   = _buildChunkResourceTable( p_resources, p_chunk );
+
+					if ( chunkResourceTable.buffers.empty() )
+					{
+						return;
+					}
+
+					PayloadBindResources pBindChunkResources { hChunkResourceTable };
+					p_commands.push<E_COMMAND::BIND_RESOURCES>( pBindChunkResources );
+				};
+
 				// Foreach program.
 				for ( const Program & program : pass.programs )
 				{
@@ -393,6 +408,7 @@ namespace VTX::Renderer::Context::Backend
 							for ( const BufferChunk chunk : _drawChunks( geometry, rangePtr->chunk ) )
 							{
 								const Handle hVao = _getOrCreateGeometryVertexArray( geometry, p_resources, chunk );
+								bindChunkResources( chunk );
 
 								if ( indexed )
 								{
@@ -425,6 +441,7 @@ namespace VTX::Renderer::Context::Backend
 								const Handle   hVao = _getOrCreateGeometryVertexArray( geometry, p_resources, chunk );
 								const Buffer & indirectBufferDesc
 									= p_resources.buffers.at( geometry.indirectBuffer.value() );
+								bindChunkResources( chunk );
 
 								if ( indexed )
 								{
@@ -680,6 +697,22 @@ namespace VTX::Renderer::Context::Backend
 		using namespace Desc;
 
 		const Key & key = p_pass.name;
+
+		if ( _resourceTables.validate( key ) )
+		{
+			return _resourceTables.handle( key );
+		}
+
+		const Handle h = _resourceTables.emplace( key );
+
+		return h;
+	}
+
+	Desc::Handle OpenGL::_getOrCreateChunkResourceTable( const Desc::Pass & p_pass, const BufferChunk p_chunk )
+	{
+		using namespace Desc;
+
+		const Key key = p_pass.name + ".Chunk." + std::to_string( p_chunk );
 
 		if ( _resourceTables.validate( key ) )
 		{
@@ -981,7 +1014,7 @@ namespace VTX::Renderer::Context::Backend
 
 		for ( const auto & [ key, buffer ] : p_resources.buffers )
 		{
-			if ( not buffer.binding )
+			if ( not buffer.binding || buffer.allocation == E_BUFFER_ALLOCATION::CHUNKED )
 			{
 				continue;
 			}
@@ -1065,6 +1098,35 @@ namespace VTX::Renderer::Context::Backend
 			}
 			default: break;
 			}
+		}
+
+		return rt;
+	}
+
+	OpenGL::ResourceTable OpenGL::_buildChunkResourceTable(
+		const Desc::Resources & p_resources,
+		const BufferChunk		p_chunk
+	)
+	{
+		using namespace Desc;
+
+		OpenGL::ResourceTable rt;
+
+		for ( const auto & [ key, buffer ] : p_resources.buffers )
+		{
+			if ( buffer.allocation != E_BUFFER_ALLOCATION::CHUNKED || not buffer.binding )
+			{
+				continue;
+			}
+			if ( Util::Enum::hasAnyBit( buffer.usage, E_BUFFER_USAGE::INDIRECT ) )
+			{
+				continue;
+			}
+
+			assert( Util::Enum::hasAnyBit( buffer.usage, E_BUFFER_USAGE::UNIFORM | E_BUFFER_USAGE::STORAGE ) );
+
+			const Handle hBuf = _bufferHandle( key, p_resources, p_chunk );
+			rt.buffers.emplace_back( hBuf, buffer.usage, *buffer.binding );
 		}
 
 		return rt;

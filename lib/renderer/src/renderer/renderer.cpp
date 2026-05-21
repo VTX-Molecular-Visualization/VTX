@@ -92,29 +92,15 @@ namespace VTX::Renderer
 	{
 		_context.clear();
 		_graph.clear();
+		_dirty.clear();
 		_needUpdate = false;
 	}
 
 	bool Renderer::render( const float p_deltaTime, const float p_elapsedTime ) noexcept
 	{
-		if ( _systemToRefresh.size() )
+		if ( not _dirty.empty() )
 		{
-			Builder::Context buildContext {
-				_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
-			};
-			for ( const auto & system : _systemToRefresh )
-			{
-				Builder::SystemVisibility::refreshGeometryVisibility( buildContext, system );
-			}
-			Builder::DrawRanges::buildDrawRanges( buildContext );
-			if ( _syncGeometryChunks() )
-			{
-				_rebuildCommandBuffer();
-			}
-			_markSESDirty();
-
-			_systemToRefresh.clear();
-			setNeedUpdate( true );
+			_flushDirty();
 		}
 
 		if ( _needUpdate || _forceUpdate )
@@ -187,6 +173,90 @@ namespace VTX::Renderer
 		{
 			_context.markPassDirty( Geometry::SES::PASS_COMPUTE );
 		}
+	}
+
+	void Renderer::_flushDirty()
+	{
+		Builder::Context buildContext {
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _dirty.geometrySystems,
+		};
+		Builder::DefaultPipeline pipeline;
+
+		if ( not _dirty.addedSystems.empty() )
+		{
+			std::vector<SystemData> cachedSystems;
+			const auto				handles = _systems.handles();
+			_dirty.markGeometries( handles );
+
+			cachedSystems.reserve( handles.size() );
+			for ( const Desc::Handle handle : handles )
+			{
+				cachedSystems.emplace_back( Builder::SystemVisibility::systemData( buildContext, handle ) );
+			}
+			const std::span<const SystemData> allSystems( cachedSystems );
+
+			pipeline.allocateInputs( buildContext );
+			pipeline.uploadInputs( buildContext, allSystems );
+			pipeline.buildDerived( buildContext, allSystems );
+			pipeline.allocateOutputs( buildContext );
+			pipeline.writeOutputs( buildContext, allSystems );
+
+			Builder::SystemModels::upload( buildContext );
+		}
+
+		for ( const Desc::Handle system : _dirty.atomPositions )
+		{
+			const Cache::System & cache = _systems.get( system );
+			Builder::AtomLayout::uploadPositions( buildContext, system, cache.trajectory );
+			Builder::RibbonGeometry::uploadPositions( buildContext, system, cache.trajectory );
+		}
+		for ( const Desc::Handle system : _dirty.atomColors )
+		{
+			Builder::AtomLayout::uploadColors( buildContext, system, _systems.get( system ).atomColors );
+		}
+		for ( const Desc::Handle system : _dirty.atomRepresentations )
+		{
+			const Cache::System & cache = _systems.get( system );
+			Builder::AtomLayout::uploadRepresentations(
+				buildContext, system, cache.representations, cache.atomRepresentations
+			);
+			Builder::ResidueLayout::uploadRepresentations( buildContext, system, cache.atomRepresentations );
+		}
+		for ( const Desc::Handle system : _dirty.atomSelection )
+		{
+			const Cache::System & cache = _systems.get( system );
+			Builder::AtomLayout::uploadSelection( buildContext, system, cache.atomFlags );
+			Builder::ResidueLayout::uploadSelection( buildContext, system, cache.atomFlags );
+		}
+		if ( not _dirty.systemModels.empty() )
+		{
+			Builder::SystemModels::upload( buildContext );
+		}
+
+		for ( const auto & system : _dirty.geometrySystems )
+		{
+			Builder::SystemVisibility::refreshGeometryVisibility( buildContext, system );
+		}
+		for ( const auto & system : _dirty.geometrySystems )
+		{
+			_geometries.uploadIndexes( _context, system );
+		}
+
+		if ( _dirty.drawRanges )
+		{
+			Builder::DrawRanges::buildDrawRanges( buildContext );
+		}
+		if ( _dirty.geometryChunks && _syncGeometryChunks() )
+		{
+			_rebuildCommandBuffer();
+		}
+		if ( _dirty.externalPasses )
+		{
+			_markSESDirty();
+		}
+
+		_dirty.clear();
+		setNeedUpdate( true );
 	}
 
 	bool Renderer::_syncGeometryChunks()
@@ -270,7 +340,7 @@ namespace VTX::Renderer
 		_cacheCamera = { p_camera, p_position, p_matView, p_matProj };
 
 		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _dirty.geometrySystems,
 		};
 		Builder::SystemModels::upload( buildContext );
 
@@ -353,10 +423,12 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setRepresentations" );
 
 		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _dirty.geometrySystems,
 		};
 		Builder::RepresentationState::upload( buildContext, p_representations );
 
+		auto handles = _systems.handles();
+		_dirty.markGeometries( handles );
 		setNeedUpdate( true );
 	}
 
@@ -369,7 +441,7 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setSystems" );
 
 		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _dirty.geometrySystems,
 		};
 
 		Builder::DefaultPipeline		  pipeline;
@@ -385,7 +457,8 @@ namespace VTX::Renderer
 		Builder::SystemModels::upload( buildContext );
 
 		auto handles	 = _systems.handles();
-		_systemToRefresh = std::unordered_set<Desc::Handle>( handles.begin(), handles.end() );
+		_dirty.clear();
+		_dirty.markGeometries( handles );
 
 		bool representationsReady = true;
 		for ( const auto & system : _systems )
@@ -398,19 +471,35 @@ namespace VTX::Renderer
 
 		if ( representationsReady )
 		{
-			for ( const auto & system : _systemToRefresh )
+			_flushDirty();
+		}
+		else
+		{
+			pipeline.buildDrawRanges( buildContext );
+			if ( _syncGeometryChunks() )
 			{
-				Builder::SystemVisibility::refreshGeometryVisibility( buildContext, system );
+				_rebuildCommandBuffer();
 			}
-			_systemToRefresh.clear();
+			_markSESDirty();
 		}
 
-		pipeline.buildDrawRanges( buildContext );
-		if ( _syncGeometryChunks() )
-		{
-			_rebuildCommandBuffer();
-		}
-		_markSESDirty();
+		setNeedUpdate( true );
+	}
+
+	void Renderer::addSystem( const SystemData & p_system )
+	{
+		Util::ScopedChrono timer( "[RENDERER] addSystem" );
+
+		Builder::Context buildContext {
+			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _dirty.geometrySystems,
+		};
+
+		Builder::DefaultPipeline pipeline;
+		const std::span<const SystemData> systems( &p_system, 1 );
+		pipeline.registerSystems( buildContext, systems );
+
+		const Desc::Handle handle = _systems.handle( p_system.uid );
+		_dirty.markAddedSystem( handle );
 
 		setNeedUpdate( true );
 	}
@@ -452,11 +541,7 @@ namespace VTX::Renderer
 		const Desc::Handle h = _systems.handle( p_uid );
 		assert( _systems.contains( h ) );
 		_systems.get( h ).transform = p_transform;
-
-		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
-		};
-		Builder::SystemModels::upload( buildContext );
+		_dirty.markSystemModels( h );
 		setNeedUpdate( true );
 	}
 
@@ -465,15 +550,9 @@ namespace VTX::Renderer
 		assert( _systems.contains( p_uid ) );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context   buildContext {
-			  _context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
-		};
-
-		Builder::AtomLayout::uploadPositions( buildContext, h, p_positions );
-		Builder::RibbonGeometry::uploadPositions( buildContext, h, p_positions );
-
+		_systems.get( h ).trajectory.assign( p_positions.begin(), p_positions.end() );
 		_geometries.ses.invalidate( h );
-		_systemToRefresh.insert( h );
+		_dirty.markAtomPositions( h );
 
 		setNeedUpdate( true );
 	}
@@ -483,10 +562,8 @@ namespace VTX::Renderer
 		assert( _systems.contains( p_uid ) );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context   buildContext {
-			  _context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
-		};
-		Builder::AtomLayout::uploadColors( buildContext, h, p_colors );
+		_systems.get( h ).atomColors.assign( p_colors.begin(), p_colors.end() );
+		_dirty.markAtomColors( h );
 
 		setNeedUpdate( true );
 	}
@@ -502,12 +579,10 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setSystemRepresentation" );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context   buildContext {
-			  _context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
-		};
-		Builder::AtomLayout::uploadRepresentations( buildContext, h, p_representations, p_atomRepresentations );
-		Builder::ResidueLayout::uploadRepresentations( buildContext, h, p_atomRepresentations );
-
+		Cache::System &	   cache = _systems.get( h );
+		cache.representations	  = p_representations;
+		cache.atomRepresentations.assign( p_atomRepresentations.begin(), p_atomRepresentations.end() );
+		_dirty.markAtomRepresentations( h );
 		setNeedUpdate( true );
 	}
 
@@ -518,11 +593,8 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setSystemVisibility" );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context   buildContext {
-			  _context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
-		};
-		Builder::SystemVisibility::uploadVisibility( buildContext, h, p_visibility );
-
+		_systems.get( h ).visibility = p_visibility;
+		_dirty.markGeometry( h );
 		setNeedUpdate( true );
 	}
 
@@ -533,11 +605,8 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setSystemSelection" );
 
 		const Desc::Handle h = _systems.handle( p_uid );
-		Builder::Context   buildContext {
-			  _context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
-		};
-		Builder::AtomLayout::uploadSelection( buildContext, h, p_atomFlags );
-		Builder::ResidueLayout::uploadSelection( buildContext, h, p_atomFlags );
+		_systems.get( h ).atomFlags.assign( p_atomFlags.begin(), p_atomFlags.end() );
+		_dirty.markAtomSelection( h );
 
 		setNeedUpdate( true );
 	}
@@ -552,10 +621,7 @@ namespace VTX::Renderer
 		_layouts.voxels.upload<Layout::VOXEL_ATTR::MINS, Vec3f>( _context, Desc::NO_HANDLE, p_mins );
 		_layouts.voxels.upload<Layout::VOXEL_ATTR::MAXS, Vec3f>( _context, Desc::NO_HANDLE, p_maxs );
 
-		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _systemToRefresh,
-		};
-		Builder::DrawRanges::buildDrawRanges( buildContext );
+		_dirty.markDrawRanges();
 
 		setNeedUpdate( true );
 	}

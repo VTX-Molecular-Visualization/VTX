@@ -22,8 +22,8 @@ namespace VTX::Renderer
 	enum struct E_ELEMENT_FLAGS : uint8_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
-		VISIBILITY = 0,
-		SELECTION  = 1
+		VISIBILITY = 1 << 0,
+		SELECTION  = 1 << 1
 	};
 
 } // namespace VTX::Renderer

@@ -14,6 +14,7 @@
 #include "renderer/struct_infos.hpp"
 #include "renderer/system_data.hpp"
 #include <unordered_set>
+#include <vector>
 #include <util/callback.hpp>
 #include <util/math/bitset.hpp>
 
@@ -84,6 +85,7 @@ namespace VTX::Renderer
 		 * @brief Push systems.
 		 */
 		void setSystems( const std::vector<SystemData> & );
+		void addSystem( const SystemData & );
 
 		/**
 		 * @brief Ensure a physical chunk exists for a chunked render graph buffer.
@@ -190,10 +192,94 @@ namespace VTX::Renderer
 		 */
 		bool _needUpdate = false;
 
+		struct DirtyState
+		{
+			std::unordered_set<Desc::Handle> addedSystems;
+			std::unordered_set<Desc::Handle> atomPositions;
+			std::unordered_set<Desc::Handle> atomColors;
+			std::unordered_set<Desc::Handle> atomRepresentations;
+			std::unordered_set<Desc::Handle> atomSelection;
+			std::unordered_set<Desc::Handle> systemModels;
+			std::unordered_set<Desc::Handle> geometrySystems;
+			bool						   drawRanges	   = false;
+			bool						   geometryChunks = false;
+			bool						   externalPasses = false;
+
+			[[nodiscard]] bool empty() const noexcept
+			{
+				return addedSystems.empty() && atomPositions.empty() && atomColors.empty() && atomRepresentations.empty()
+					   && atomSelection.empty() && systemModels.empty() && geometrySystems.empty() && not drawRanges
+					   && not geometryChunks && not externalPasses;
+			}
+
+			void clear()
+			{
+				addedSystems.clear();
+				atomPositions.clear();
+				atomColors.clear();
+				atomRepresentations.clear();
+				atomSelection.clear();
+				systemModels.clear();
+				geometrySystems.clear();
+				drawRanges	   = false;
+				geometryChunks = false;
+				externalPasses = false;
+			}
+
+			void markGeometryStructure()
+			{
+				drawRanges	   = true;
+				geometryChunks = true;
+				externalPasses = true;
+			}
+
+			void markGeometry( const Desc::Handle p_handle )
+			{
+				geometrySystems.insert( p_handle );
+				markGeometryStructure();
+			}
+
+			void markAddedSystem( const Desc::Handle p_handle )
+			{
+				addedSystems.insert( p_handle );
+				markGeometry( p_handle );
+			}
+
+			void markAtomPositions( const Desc::Handle p_handle )
+			{
+				atomPositions.insert( p_handle );
+				markGeometry( p_handle );
+			}
+
+			void markAtomColors( const Desc::Handle p_handle ) { atomColors.insert( p_handle ); }
+
+			void markAtomRepresentations( const Desc::Handle p_handle )
+			{
+				atomRepresentations.insert( p_handle );
+				markGeometry( p_handle );
+			}
+
+			void markAtomSelection( const Desc::Handle p_handle )
+			{
+				atomSelection.insert( p_handle );
+				geometrySystems.insert( p_handle );
+			}
+
+			void markSystemModels( const Desc::Handle p_handle ) { systemModels.insert( p_handle ); }
+
+			void markGeometries( const std::vector<Desc::Handle> & p_handles )
+			{
+				geometrySystems.insert( p_handles.begin(), p_handles.end() );
+				markGeometryStructure();
+			}
+
+			void markDrawRanges() { drawRanges = true; }
+		};
+
 		/**
-		 * @brief Rebuild draw ranges next frame.
+		 * @brief Pending renderer refreshes flushed at frame start.
 		 */
-		std::unordered_set<Desc::Handle> _systemToRefresh;
+		DirtyState _dirty;
 
 		/**
 		 * @brief Renderer infos.
@@ -222,6 +308,11 @@ namespace VTX::Renderer
 		 * @brief Schedule the SES CUDA pass when present in the current graph.
 		 */
 		void _markSESDirty();
+
+		/**
+		 * @brief Flush pending renderer refreshes.
+		 */
+		void _flushDirty();
 
 		/**
 		 * @brief Synchronize runtime geometry chunks into the render graph resources.
