@@ -372,8 +372,8 @@ namespace VTX::Renderer::Context::Backend
 				const auto bindChunkResources = [ & ]( const BufferChunk p_chunk )
 				{
 					const Handle	hChunkResourceTable = _getOrCreateChunkResourceTable( pass, p_chunk );
-					ResourceTable & chunkResourceTable  = _resourceTables.get( hChunkResourceTable );
-					chunkResourceTable				   = _buildChunkResourceTable( p_resources, p_chunk );
+					ResourceTable & chunkResourceTable	= _resourceTables.get( hChunkResourceTable );
+					chunkResourceTable					= _buildChunkResourceTable( p_resources, p_chunk );
 
 					if ( chunkResourceTable.buffers.empty() )
 					{
@@ -676,7 +676,7 @@ namespace VTX::Renderer::Context::Backend
 			// Create a default fbo.
 			if ( not _framebuffers.validate( _DEFAULT_FBO ) )
 			{
-				_default = _framebuffers.emplace( _DEFAULT_FBO, {}, 0 );
+				_default = _framebuffers.emplace( _DEFAULT_FBO, 0 );
 			}
 
 			if ( targetWasUnset || targetWasDefault )

@@ -25,7 +25,7 @@ namespace VTX::Renderer::Builder
 	struct Context
 	{
 		VTX::Renderer::Context::ContextWrapper &						 rendererContext;
-		ResourceHandler<Cache::System, DescDummy, SystemUID> &			 systems;
+		ResourceHandler<Cache::System, SystemUID> &						 systems;
 		std::unordered_map<RepresentationIndex, Cache::Representation> & representations;
 		Cache::Camera &													 camera;
 		Layouts &														 layouts;
@@ -47,7 +47,6 @@ namespace VTX::Renderer::Builder
 		{
 			p_context.systems.emplace(
 				p_system.uid,
-				{},
 				Cache::System { p_system.uid,
 								p_system.transform,
 								&p_system.data,
@@ -275,9 +274,7 @@ namespace VTX::Renderer::Builder
 				return;
 			}
 
-			p_context.layouts.residues.add(
-				p_handle, static_cast<uint32_t>( construction.residues.size() )
-			);
+			p_context.layouts.residues.add( p_handle, static_cast<uint32_t>( construction.residues.size() ) );
 			p_context.layouts.residues.resize( p_context.rendererContext );
 
 			uploadRibbonResidues( p_context, p_handle, data );
@@ -299,36 +296,33 @@ namespace VTX::Renderer::Builder
 			const Cache::System & cache = p_context.systems.get( p_handle );
 			assert( cache.data != nullptr );
 
-			return SystemData { cache.uid,
-								cache.transform,
-								*cache.data,
-								cache.trajectory,
-								cache.atomUids,
-								cache.residueUids,
-								cache.atomColors,
-								cache.representations,
-								cache.atomRepresentations,
-								cache.visibility,
-								cache.atomFlags };
+			return SystemData { cache.uid,		  cache.transform,		 *cache.data,
+								cache.trajectory, cache.atomUids,		 cache.residueUids,
+								cache.atomColors, cache.representations, cache.atomRepresentations,
+								cache.visibility, cache.atomFlags };
 		}
 
-		static void uploadRibbonResidues( Context & p_context, const Desc::Handle p_handle, const SystemData & p_system )
+		static void uploadRibbonResidues(
+			Context &		   p_context,
+			const Desc::Handle p_handle,
+			const SystemData & p_system
+		)
 		{
 			using namespace Layout;
 
-			const auto &			construction  = p_context.geometries.ribbons.construction( p_handle );
-			const Index				countResidues = p_context.layouts.residues.size( p_handle );
-			std::vector<PickingUID> residueIds( countResidues );
-			std::vector<uint8_t>	residueTypes( countResidues );
-			std::vector<ColorIndex> residueColors( countResidues );
+			const auto &					 construction  = p_context.geometries.ribbons.construction( p_handle );
+			const Index						 countResidues = p_context.layouts.residues.size( p_handle );
+			std::vector<PickingUID>			 residueIds( countResidues );
+			std::vector<uint8_t>			 residueTypes( countResidues );
+			std::vector<ColorIndex>			 residueColors( countResidues );
 			std::vector<RepresentationIndex> residueRepresentations( countResidues );
 			std::vector<Flag>				 residueFlags( countResidues, 0 );
 
 			for ( Index i = 0; i < countResidues; ++i )
 			{
 				const Index residueIndex = construction.residues[ i ].index;
-				const Index atomIndex	= construction.residues[ i ].ca;
-				const auto	ss			= p_system.data.residueSecondaryStructureTypes[ residueIndex ];
+				const Index atomIndex	 = construction.residues[ i ].ca;
+				const auto	ss			 = p_system.data.residueSecondaryStructureTypes[ residueIndex ];
 
 				residueIds[ i ]				= p_system.residueUids[ residueIndex ];
 				residueTypes[ i ]			= toUnderlying( ss );
@@ -378,9 +372,9 @@ namespace VTX::Renderer::Builder
 
 			for ( Index i = 0; i < countResidues; ++i )
 			{
-				const Vec3f & positionCA	= p_positions[ construction.residues[ i ].ca ];
-				const Vec3f & positionO		= p_positions[ construction.residues[ i ].o ];
-				const Vec3f	  directionCAO	= Util::Math::normalize( positionO - positionCA );
+				const Vec3f & positionCA   = p_positions[ construction.residues[ i ].ca ];
+				const Vec3f & positionO	   = p_positions[ construction.residues[ i ].o ];
+				const Vec3f	  directionCAO = Util::Math::normalize( positionO - positionCA );
 
 				ribbonPositions[ i ]  = Vec4f( positionCA, i );
 				ribbonDirections[ i ] = directionCAO;
@@ -473,7 +467,7 @@ namespace VTX::Renderer::Builder
 
 			p_context.rendererContext.setBuffer( { "Representations" }, buffer );
 
-			auto handles			  = p_context.systems.handles();
+			auto handles				   = p_context.systems.handles();
 			p_context.dirtyGeometrySystems = std::unordered_set<Desc::Handle>( handles.begin(), handles.end() );
 		}
 	};

@@ -13,35 +13,82 @@
 namespace VTX::Renderer
 {
 	/**
-	 * @brief Empty descriptor.
-	 */
-	struct DescDummy
-	{
-	};
-
-	/**
 	 * @brief Generic resource handler.
 	 * Store resources and provide access through handles.
 	 */
-	template<typename T, typename D = DescDummy, typename K = Desc::Key>
+	template<typename T, typename K = Desc::Key, typename D = void>
 	class ResourceHandler
 	{
 	  public:
 		/**
 		 * @brief Cache : mapping Key -> { Handle, Desc }.
 		 */
-		struct Entry
+		template<typename _D>
+		struct EntryT
 		{
 			Desc::Handle handle;
-			D			 descriptor;
+			_D			 descriptor;
 		};
+
+		template<>
+		struct EntryT<void>
+		{
+			Desc::Handle handle;
+		};
+
+		using Entry = EntryT<D>;
 
 		/**
 		 * @brief Emplace a new resource.
 		 * Reuse available handles if any.
 		 */
 		template<typename... Args>
-		Desc::Handle emplace( const K & p_key, const D & p_desc = {}, Args &&... p_args )
+		Desc::Handle emplace( const K & p_key, Args &&... p_args )
+			requires std::is_same_v<D, void>
+		{
+			Desc::Handle handle;
+			// Existing resource, update it.
+			if ( _cache.contains( p_key ) )
+			{
+				assert( _cache.contains( p_key ) );
+				handle = _cache[ p_key ].handle;
+				_resources[ handle ].construct( std::forward<Args>( p_args )... );
+			}
+			// Reuse available handle if any.
+			else if ( not _availables.empty() )
+			{
+				handle = _availables.back();
+				_availables.pop_back();
+				_resources[ handle ].construct( std::forward<Args>( p_args )... );
+			}
+			// Create new handle.
+			else
+			{
+				handle = static_cast<Desc::Handle>( _resources.size() );
+				_resources.emplace_back();
+				_resources[ handle ].construct( std::forward<Args>( p_args )... );
+			}
+
+			// Update cache.
+			_cache.insert_or_assign( p_key, Entry { handle } );
+
+			// Remove from invalids if present.
+			auto it = std::find( _invalids.begin(), _invalids.end(), handle );
+			if ( it != _invalids.end() )
+			{
+				_invalids.erase( it );
+			}
+
+			return handle;
+		}
+
+		/**
+		 * @brief Emplace a new resource.
+		 * Reuse available handles if any.
+		 */
+		template<typename _D = D, typename... Args>
+		Desc::Handle emplace( const K & p_key, const _D & p_desc, Args &&... p_args )
+			requires not std::is_same_v<_D, void>
 		{
 			Desc::Handle handle;
 			// Existing resource, update it.
@@ -149,7 +196,9 @@ namespace VTX::Renderer
 		/**
 		 * @brief Check if a resource exists from key and remove from invalids if present.
 		 */
-		inline bool validate( const K p_key, const D p_desc = {} )
+		template<typename _D = D>
+		inline bool validate( const K p_key, const _D p_desc )
+			requires not std::is_same_v<_D, void>
 		{
 			if ( not _cache.contains( p_key ) )
 			{
@@ -157,6 +206,19 @@ namespace VTX::Renderer
 			}
 
 			if ( Desc::hashDesc( p_desc ) != Desc::hashDesc( descriptor( p_key ) ) )
+			{
+				return false;
+			}
+
+			const Desc::Handle h = handle( p_key );
+
+			return validate( h );
+		}
+
+		inline bool validate( const K p_key )
+			requires std::is_same_v<D, void>
+		{
+			if ( not _cache.contains( p_key ) )
 			{
 				return false;
 			}
@@ -186,7 +248,9 @@ namespace VTX::Renderer
 		/**
 		 * @brief Access descriptor by key.
 		 */
-		inline const D & descriptor( const K & p_key ) const
+		template<typename _D = D>
+		inline const _D & descriptor( const K & p_key ) const
+			requires not std::is_same_v<_D, void>
 		{
 			const auto it = _cache.find( p_key );
 			assert( it != _cache.end() );

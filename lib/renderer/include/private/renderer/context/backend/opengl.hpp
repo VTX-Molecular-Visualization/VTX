@@ -211,13 +211,13 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Resource pools.
 		 */
-		ResourceHandler<GL::Framebuffer>					 _framebuffers;
-		ResourceHandler<ResourceTable>						 _resourceTables;
-		ResourceHandler<GL::VertexArray, Desc::VertexLayout> _vertexArrays;
-		ResourceHandler<GL::Buffer, Desc::Buffer>			 _buffers;
-		ResourceHandler<GL::Texture2D, Desc::Texture>		 _textures;
-		ResourceHandler<GL::Sampler, Desc::Sampler>			 _samplers;
-		ResourceHandler<GL::Program, Desc::Program>			 _programs;
+		ResourceHandler<GL::Framebuffer>								_framebuffers;
+		ResourceHandler<ResourceTable>									_resourceTables;
+		ResourceHandler<GL::VertexArray, Desc::Key, Desc::VertexLayout> _vertexArrays;
+		ResourceHandler<GL::Buffer, Desc::Key, Desc::Buffer>			_buffers;
+		ResourceHandler<GL::Texture2D, Desc::Key, Desc::Texture>		_textures;
+		ResourceHandler<GL::Sampler, Desc::Key, Desc::Sampler>			_samplers;
+		ResourceHandler<GL::Program, Desc::Key, Desc::Program>			_programs;
 
 		/**
 		 * @brief Get or create resources.

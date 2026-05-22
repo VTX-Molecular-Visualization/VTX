@@ -585,14 +585,13 @@ namespace VTX::Renderer::Desc
 
 TEST_CASE( "ResourceHandler: emplace creates new handles sequentially", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
+	ResourceHandler<TestRes> h;
 
-	const Key	   k1 = "1", k2 = "2", k3 = "3";
-	const FakeDesc d { 1, 2 };
+	const Key k1 = "1", k2 = "2", k3 = "3";
 
-	const Handle h1 = h.emplace( k1, d, 10 );
-	const Handle h2 = h.emplace( k2, d, 20 );
-	const Handle h3 = h.emplace( k3, d, 30 );
+	const Handle h1 = h.emplace( k1, 10 );
+	const Handle h2 = h.emplace( k2, 20 );
+	const Handle h3 = h.emplace( k3, 30 );
 
 	REQUIRE( h1 == 0 );
 	REQUIRE( h2 == 1 );
@@ -609,7 +608,7 @@ TEST_CASE( "ResourceHandler: emplace creates new handles sequentially", "[Resour
 
 TEST_CASE( "ResourceHandler: emplace with existing key updates resource and keeps same handle", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
+	ResourceHandler<TestRes, Key, FakeDesc> h;
 
 	const Key	   k = "42";
 	const FakeDesc d1 { 1, 2 };
@@ -628,13 +627,12 @@ TEST_CASE( "ResourceHandler: emplace with existing key updates resource and keep
 
 TEST_CASE( "ResourceHandler: erase(key) removes and makes handle reusable", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
-	const FakeDesc					   d { 1, 2 };
+	ResourceHandler<TestRes> h;
 
 	const Key k1 = "1", k2 = "2", k3 = "3";
 
-	const Handle h1 = h.emplace( k1, d, 10 ); // 0
-	const Handle h2 = h.emplace( k2, d, 20 ); // 1
+	const Handle h1 = h.emplace( k1, 10 ); // 0
+	const Handle h2 = h.emplace( k2, 20 ); // 1
 	(void)h2;
 
 	REQUIRE( h1 == 0 );
@@ -645,18 +643,17 @@ TEST_CASE( "ResourceHandler: erase(key) removes and makes handle reusable", "[Re
 	REQUIRE( h.contains( k2 ) );
 
 	// Next emplace should reuse the freed handle (LIFO from _availables)
-	const Handle h3 = h.emplace( k3, d, 30 );
+	const Handle h3 = h.emplace( k3, 30 );
 	REQUIRE( h3 == h1 );
 	REQUIRE( h.get( k3 ).value == 30 );
 }
 
 TEST_CASE( "ResourceHandler: erase(handle) is safe for out-of-range and null slots", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
-	const FakeDesc					   d { 1, 2 };
+	ResourceHandler<TestRes> h;
 
 	const Key	 k		= "1";
-	const Handle handle = h.emplace( k, d, 123 );
+	const Handle handle = h.emplace( k, 123 );
 
 	// Out of range: no crash, no change
 	h.erase( handle + 1000 );
@@ -673,7 +670,7 @@ TEST_CASE( "ResourceHandler: erase(handle) is safe for out-of-range and null slo
 
 TEST_CASE( "ResourceHandler: validate(key, desc) matches by hash and clears invalid state", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
+	ResourceHandler<TestRes, Key, FakeDesc> h;
 
 	const Key	   k1 = "1", k2 = "2";
 	const FakeDesc d_ok { 1, 2 };
@@ -703,13 +700,12 @@ TEST_CASE( "ResourceHandler: validate(key, desc) matches by hash and clears inva
 
 TEST_CASE( "ResourceHandler: invalidate ignores available handles (already erased)", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
-	const FakeDesc					   d { 1, 2 };
+	ResourceHandler<TestRes> h;
 
 	const Key k1 = "1", k2 = "2";
 
-	const Handle h1 = h.emplace( k1, d, 10 );
-	const Handle h2 = h.emplace( k2, d, 20 );
+	const Handle h1 = h.emplace( k1, 10 );
+	const Handle h2 = h.emplace( k2, 20 );
 
 	h.erase( h1 ); // make h1 available (null slot)
 
@@ -724,13 +720,12 @@ TEST_CASE( "ResourceHandler: invalidate ignores available handles (already erase
 
 TEST_CASE( "ResourceHandler: clear removes everything and resets handle numbering", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
-	const FakeDesc					   d { 1, 2 };
+	ResourceHandler<TestRes> h;
 
 	const Key k1 = "1", k2 = "2";
 
-	const Handle h1 = h.emplace( k1, d, 10 );
-	const Handle h2 = h.emplace( k2, d, 20 );
+	const Handle h1 = h.emplace( k1, 10 );
+	const Handle h2 = h.emplace( k2, 20 );
 	(void)h1;
 	(void)h2;
 
@@ -740,7 +735,7 @@ TEST_CASE( "ResourceHandler: clear removes everything and resets handle numberin
 	REQUIRE_FALSE( h.contains( k2 ) );
 
 	// After clear(), new handle should start at 0 again
-	const Handle h3 = h.emplace( "999", d, 30 );
+	const Handle h3 = h.emplace( "999", 30 );
 	REQUIRE( h3 == 0 );
 	REQUIRE( h.get( "999" ).value == 30 );
 }

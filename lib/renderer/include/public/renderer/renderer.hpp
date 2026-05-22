@@ -302,7 +302,7 @@ namespace VTX::Renderer
 		 * @brief Cached data to update.
 		 */
 		Cache::Camera												   _cacheCamera;
-		ResourceHandler<Cache::System, DescDummy, SystemUID>		   _systems;
+		ResourceHandler<Cache::System, SystemUID>					   _systems;
 		std::unordered_map<RepresentationIndex, Cache::Representation> _cacheRepresentations;
 
 		/**
