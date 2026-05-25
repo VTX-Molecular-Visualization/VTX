@@ -209,7 +209,7 @@ namespace VTX::App::System
 		deleted.atoms = {};
 
 		// Color: set default color scheme.
-		color.colorSchemeAtoms[ System::E_COLOR_SCHEME::ATOM ] = Core::Struct::IndexRangeList( data.getAtomRange() );
+		color.colorSchemeAtoms[ Renderer::E_COLOR_SCHEME::ATOM ] = Core::Struct::IndexRangeList( data.getAtomRange() );
 
 		// Representation: set default representation.
 		// TODO: configure default representation in settings?
@@ -234,10 +234,12 @@ namespace VTX::App::System
 			{
 				addTrajectory( *p_data.entity, p_data );
 
+				/*
 				if ( auto uid = REG().try_get<System::UID>( *p_data.entity ) )
 				{
 					RENDERER().setSystemPosition( uid->system, getCurrentAtomPositions( *p_data.entity ) );
 				}
+				*/
 			}
 			else
 			{

@@ -15,7 +15,7 @@ namespace VTX::UI::QT::Widget
 	class Sequence : public QAbstractScrollArea
 	{
 	  public:
-		Sequence( const App::Entity, QWidget * );
+		Sequence( const Entity, QWidget * );
 
 	  protected:
 		void paintEvent( QPaintEvent * ) override;
@@ -30,7 +30,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Entity of the system to display.
 		 */
-		const App::Entity _system;
+		const Entity _system;
 
 		/**
 		 * @brief UI controls.

@@ -23,13 +23,13 @@ namespace VTX::Renderer::Builder
 			Systems &						   p_systems,
 			Layouts &						   p_layouts,
 			Geometries &					   p_geometries,
-			std::unordered_set<Desc::Handle> & p_dirtyGeometrySystems
+			std::unordered_set<Desc::Handle> & p_geometryRefreshSystems
 		)
 		{
 			p_systems.clear();
 			p_layouts.clearSystems();
 			p_geometries.clearSystems();
-			p_dirtyGeometrySystems.clear();
+			p_geometryRefreshSystems.clear();
 		}
 
 		template<typename Systems>
@@ -40,13 +40,7 @@ namespace VTX::Renderer::Builder
 			Cache::System && p_system
 		)
 		{
-			Desc::Handle key = 0;
-			for ( const Desc::Handle existingKey : p_systems.keys() )
-			{
-				key = std::max<Desc::Handle>( key, existingKey + 1 );
-			}
-
-			const Desc::Handle	  handle = p_systems.emplace( key, std::move( p_system ) );
+			const Desc::Handle	  handle = p_systems.emplace( std::move( p_system ) );
 			const Cache::System & system = p_systems.get( handle );
 
 			p_geometries.construct( handle, system );
@@ -69,7 +63,7 @@ namespace VTX::Renderer::Builder
 			Systems &						   p_systems,
 			Layouts &						   p_layouts,
 			const Desc::Handle				   p_handle,
-			std::unordered_set<Desc::Handle> & p_dirtyGeometrySystems
+			std::unordered_set<Desc::Handle> & p_geometryRefreshSystems
 		)
 		{
 			const Cache::System & system		  = p_systems.get( p_handle );
@@ -82,7 +76,7 @@ namespace VTX::Renderer::Builder
 			uploadIds( p_context, p_layouts, p_handle, atomIds );
 			uploadPositions( p_context, p_systems, p_layouts, p_handle, system.trajectory );
 			uploadColors( p_context, p_layouts, p_handle, colors );
-			uploadRepresentations( p_context, p_layouts, p_handle, representations, p_dirtyGeometrySystems );
+			uploadRepresentations( p_context, p_layouts, p_handle, representations, p_geometryRefreshSystems );
 			uploadSelection( p_context, p_layouts, p_handle, flags );
 		}
 
@@ -238,7 +232,7 @@ namespace VTX::Renderer::Builder
 			Layouts &							 p_layouts,
 			const Desc::Handle					 p_handle,
 			std::span<const RepresentationIndex> p_atomRepresentations,
-			std::unordered_set<Desc::Handle> &	 p_dirtyGeometrySystems
+			std::unordered_set<Desc::Handle> &	 p_geometryRefreshSystems
 		)
 		{
 			using namespace Layout;
@@ -247,7 +241,7 @@ namespace VTX::Renderer::Builder
 			p_layouts.atoms.upload<ATOM_ATTR::REPRESENTATION, RepresentationIndex>(
 				p_context, p_handle, p_atomRepresentations
 			);
-			p_dirtyGeometrySystems.insert( p_handle );
+			p_geometryRefreshSystems.insert( p_handle );
 		}
 
 		static void uploadSelection(
@@ -270,21 +264,21 @@ namespace VTX::Renderer::Builder
 		static void uploadInput(
 			Systems &						   p_systems,
 			const Desc::Handle				   p_handle,
-			std::unordered_set<Desc::Handle> & p_dirtyGeometrySystems
+			std::unordered_set<Desc::Handle> & p_geometryRefreshSystems
 		)
 		{
-			uploadVisibility( p_systems, p_dirtyGeometrySystems, p_handle );
+			uploadVisibility( p_systems, p_geometryRefreshSystems, p_handle );
 		}
 
 		template<typename Systems>
 		static void uploadVisibility(
 			Systems &						   p_systems,
-			std::unordered_set<Desc::Handle> & p_dirtyGeometrySystems,
+			std::unordered_set<Desc::Handle> & p_geometryRefreshSystems,
 			const Desc::Handle				   p_handle
 		)
 		{
 			assert( p_systems.contains( p_handle ) );
-			p_dirtyGeometrySystems.insert( p_handle );
+			p_geometryRefreshSystems.insert( p_handle );
 		}
 
 		template<typename Systems, typename Representations>
@@ -486,7 +480,7 @@ namespace VTX::Renderer::Builder
 			Context::ContextWrapper &					p_context,
 			Systems &									p_systems,
 			Representations &							p_representations,
-			std::unordered_set<Desc::Handle> &			p_dirtyGeometrySystems,
+			std::unordered_set<Desc::Handle> &			p_geometryRefreshSystems,
 			const std::vector<const Representation *> & p_representationsData
 		)
 		{
@@ -548,8 +542,10 @@ namespace VTX::Renderer::Builder
 			buffer.close();
 			p_context.setBuffer( { "Representations" }, buffer );
 
-			auto handles = p_systems.handles();
-			p_dirtyGeometrySystems.insert( handles.begin(), handles.end() );
+			for ( const auto entry : p_systems.entries() )
+			{
+				p_geometryRefreshSystems.insert( entry.handle );
+			}
 		}
 	};
 

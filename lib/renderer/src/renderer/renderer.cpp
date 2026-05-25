@@ -192,6 +192,7 @@ namespace VTX::Renderer
 		auto hasDirty = []( const auto p_flags, const auto p_bit ) { return Util::Enum::hasAnyBit( p_flags, p_bit ); };
 
 		std::unordered_map<Desc::Handle, SystemDirty> dirtySystems;
+		std::unordered_set<Desc::Handle>			  geometryRefreshSystems;
 		for ( const DirtySystem & dirty : _dirtySystems )
 		{
 			if ( not _systems.contains( dirty.handle ) )
@@ -205,23 +206,27 @@ namespace VTX::Renderer
 		const bool fullRefresh = hasDirty( _dirtyRenderer, RendererDirty::ALL );
 		if ( fullRefresh )
 		{
-			const auto handles = _systems.handles();
-			dirtyGeometrySystems.insert( handles.begin(), handles.end() );
+			for ( const auto entry : _systems.entries() )
+			{
+				geometryRefreshSystems.insert( entry.handle );
+			}
 
 			Builder::AtomLayout::allocateInputs( _context, _layouts );
 			Builder::ResidueLayout::allocateInputs( _context, _layouts );
 
-			for ( const Desc::Handle system : handles )
+			for ( const auto entry : _systems.entries() )
 			{
-				Builder::AtomLayout::uploadInput( _context, _systems, _layouts, system, dirtyGeometrySystems );
-				Builder::SystemVisibility::uploadInput( _systems, system, dirtyGeometrySystems );
+				const Desc::Handle system = entry.handle;
+				Builder::AtomLayout::uploadInput( _context, _systems, _layouts, system, geometryRefreshSystems );
+				Builder::SystemVisibility::uploadInput( _systems, system, geometryRefreshSystems );
 				Builder::ResidueLayout::uploadInput( _context, _layouts, _geometries, system, _systems.get( system ) );
 			}
 
 			Builder::GeometryBuffers::allocateOutputs( _context, _geometries );
 
-			for ( const Desc::Handle system : handles )
+			for ( const auto entry : _systems.entries() )
 			{
+				const Desc::Handle system = entry.handle;
 				Builder::RibbonGeometry::writeOutput( _context, _geometries, system );
 				Builder::GeometryBuffers::writeOutput( _context, _geometries, system );
 			}
@@ -251,7 +256,7 @@ namespace VTX::Renderer
 					Builder::RibbonGeometry::uploadPositions(
 						_context, _layouts, _geometries, system, cache.trajectory
 					);
-					dirtyGeometrySystems.insert( system );
+					geometryRefreshSystems.insert( system );
 				}
 				if ( hasDirty( flags, SystemDirty::COLOR ) )
 				{
@@ -260,19 +265,19 @@ namespace VTX::Renderer
 				if ( hasDirty( flags, SystemDirty::REPRESENTATION ) )
 				{
 					// TODO: resolve Cache::System preset entities to renderer representation handles.
-					dirtyGeometrySystems.insert( system );
+					geometryRefreshSystems.insert( system );
 				}
 				if ( hasDirty( flags, SystemDirty::VISIBILITY ) )
 				{
-					Builder::SystemVisibility::uploadVisibility( _systems, dirtyGeometrySystems, system );
-					dirtyGeometrySystems.insert( system );
+					Builder::SystemVisibility::uploadVisibility( _systems, geometryRefreshSystems, system );
+					geometryRefreshSystems.insert( system );
 				}
 				if ( hasDirty( flags, SystemDirty::SELECTION ) )
 				{
 					const std::vector<Flag> atomFlags = Builder::AtomLayout::buildAtomFlags( cache );
 					Builder::AtomLayout::uploadSelection( _context, _layouts, system, atomFlags );
 					Builder::ResidueLayout::uploadSelection( _context, _layouts, _geometries, system, atomFlags );
-					dirtyGeometrySystems.insert( system );
+					geometryRefreshSystems.insert( system );
 				}
 			}
 		}
@@ -282,18 +287,18 @@ namespace VTX::Renderer
 			Builder::SystemModels::upload( _context, _systems, _camera );
 		}
 
-		for ( const auto & system : dirtyGeometrySystems )
+		for ( const auto & system : geometryRefreshSystems )
 		{
 			Builder::SystemVisibility::refreshGeometryVisibility(
 				_context, _systems, _representations, _layouts, _geometries, system
 			);
 		}
-		for ( const auto & system : dirtyGeometrySystems )
+		for ( const auto & system : geometryRefreshSystems )
 		{
 			_geometries.uploadIndexes( _context, system );
 		}
 
-		if ( not dirtyGeometrySystems.empty() )
+		if ( not geometryRefreshSystems.empty() )
 		{
 			updateDrawRanges	 = true;
 			updateGeometryChunks = true;
@@ -501,15 +506,14 @@ namespace VTX::Renderer
 		_systems.erase( p_handle );
 
 		std::vector<Cache::System> remainingSystems;
-		const auto				   remainingHandles = _systems.handles();
-		remainingSystems.reserve( remainingHandles.size() );
-		for ( const Desc::Handle handle : remainingHandles )
+		remainingSystems.reserve( _systems.size() );
+		for ( const auto entry : _systems.entries() )
 		{
-			remainingSystems.emplace_back( _systems.get( handle ) );
+			remainingSystems.emplace_back( entry.resource );
 		}
 
-		std::unordered_set<Desc::Handle> dirtyGeometrySystems;
-		Builder::SystemRegistry::clear( _systems, _layouts, _geometries, dirtyGeometrySystems );
+		std::unordered_set<Desc::Handle> geometryRefreshSystems;
+		Builder::SystemRegistry::clear( _systems, _layouts, _geometries, geometryRefreshSystems );
 
 		for ( Cache::System & system : remainingSystems )
 		{
@@ -518,9 +522,9 @@ namespace VTX::Renderer
 
 		_dirtyRenderer = Cache::E_RENDERER_DIRTY::ALL;
 		_dirtySystems.clear();
-		for ( const Desc::Handle handle : _systems.handles() )
+		for ( const auto entry : _systems.entries() )
 		{
-			_dirtySystems.emplace_back( handle, Cache::E_SYSTEM_DIRTY::ALL );
+			_dirtySystems.emplace_back( entry.handle, Cache::E_SYSTEM_DIRTY::ALL );
 		}
 
 		setNeedUpdate( true );

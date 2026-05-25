@@ -29,7 +29,7 @@ namespace VTX::UI::QT::Menu
 			return params;
 		}
 
-		ActionRegistry::ActionParams representationParams( const App::Entity p_representation )
+		ActionRegistry::ActionParams representationParams( const Entity p_representation )
 		{
 			return ActionRegistry::ActionParams { { std::string( Action::Selection::PARAM_REPRESENTATION ),
 													static_cast<int>( toUnderlying( p_representation ) ) } };
@@ -74,7 +74,7 @@ namespace VTX::UI::QT::Menu
 			_representationMenu,
 			&Representation::selected,
 			this,
-			[]( const App::Entity p_representation )
+			[]( const Entity p_representation )
 			{ UI_ACTIONS().trigger( Action::Selection::SET_REPRESENTATION, representationParams( p_representation ) ); }
 		);
 		addMenu( _representationMenu );

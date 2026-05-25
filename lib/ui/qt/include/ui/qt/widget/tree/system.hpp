@@ -19,7 +19,7 @@ namespace VTX::UI::QT::Widget::Tree
 		Q_OBJECT
 
 	  public:
-		System( const App::Entity, QWidget * );
+		System( const Entity, QWidget * );
 		void							  contextMenuEvent( QContextMenuEvent * p_e ) override;
 		void							  mousePressEvent( QMouseEvent * p_e ) override;
 		void							  mouseMoveEvent( QMouseEvent * p_e ) override;
@@ -34,7 +34,7 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Entity to display.
 		 */
-		const App::Entity _system;
+		const Entity _system;
 
 		/**
 		 * @brief Layout.

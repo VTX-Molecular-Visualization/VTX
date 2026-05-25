@@ -243,7 +243,7 @@ namespace VTX::UI::QT::Widget::Library
 		};
 	}
 
-	void GraphicsConfig::_update( App::Entity p_e )
+	void GraphicsConfig::_update( Entity p_e )
 	{
 		auto & preset = App::REG().get<Renderer::GraphicsConfig>( p_e );
 

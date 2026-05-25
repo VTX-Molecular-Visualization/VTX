@@ -232,7 +232,7 @@ namespace VTX::UI::QT::Action
 				if ( schemeParam )
 				{
 					App::ACTION().execute<App::Action::Color::AddSelected>(
-						static_cast<App::System::E_COLOR_SCHEME>( *schemeParam ), colorIndexParam
+						static_cast<Renderer::E_COLOR_SCHEME>( *schemeParam ), colorIndexParam
 					);
 				}
 			}
@@ -245,7 +245,7 @@ namespace VTX::UI::QT::Action
 				if ( representationParam )
 				{
 					App::ACTION().execute<App::Action::Representation::AddSelected>(
-						static_cast<App::Entity>( *representationParam )
+						static_cast<Entity>( *representationParam )
 					);
 				}
 			}

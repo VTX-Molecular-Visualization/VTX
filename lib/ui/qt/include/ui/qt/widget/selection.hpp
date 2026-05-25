@@ -54,17 +54,17 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Currently selected entities.
 		 */
-		std::vector<App::Entity> _entities;
+		std::vector<Entity> _entities;
 
 		/**
 		 * @brief Transform updated.
 		 */
-		void _transformUpdated( App::Registry &, App::Entity );
+		void _transformUpdated( Registry &, Entity );
 
 		/**
 		 * @brief Metadata updated.
 		 */
-		void _metadataUpdated( App::Registry &, App::Entity );
+		void _metadataUpdated( Registry &, Entity );
 	};
 } // namespace VTX::UI::QT::Widget
 

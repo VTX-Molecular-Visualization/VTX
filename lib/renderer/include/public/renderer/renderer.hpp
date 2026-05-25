@@ -220,9 +220,9 @@ namespace VTX::Renderer
 		/**
 		 * @brief Cached data to update.
 		 */
-		Cache::Camera												_camera;
-		ResourceHandler<Cache::System, Desc::Handle>				_systems;
-		ResourceHandler<Cache::Representation, RepresentationIndex> _representations;
+		Cache::Camera						_camera;
+		ResourcePool<Cache::System>			_systems;
+		ResourcePool<Cache::Representation> _representations;
 
 		/**
 		 * @brief Flush pending renderer refreshes.

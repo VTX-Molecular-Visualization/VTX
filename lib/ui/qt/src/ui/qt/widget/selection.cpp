@@ -32,12 +32,12 @@ namespace VTX::UI::QT::Widget
 		_list = new QListWidget( this );
 		_layout->addWidget( _list );
 
-		auto &	   reg		= REG();
-		const auto entities = reg.view<App::System::Selection>();
-		App::Entity editableSystemEntity = App::ECS::InvalidEntity;
-		Index			 selectedSystemCount  = 0;
+		auto &	   reg					= REG();
+		const auto entities				= reg.view<App::System::Selection>();
+		Entity	   editableSystemEntity = InvalidEntity;
+		Index	   selectedSystemCount	= 0;
 
-		for ( const App::Entity entity : entities )
+		for ( const Entity entity : entities )
 		{
 			const auto & selection = reg.get<App::System::Selection>( entity );
 			if ( selection.atoms.none() )
@@ -53,7 +53,7 @@ namespace VTX::UI::QT::Widget
 			}
 		}
 
-		const bool showEditableSystemFields = selectedSystemCount == 1 && editableSystemEntity != App::ECS::InvalidEntity;
+		const bool showEditableSystemFields = selectedSystemCount == 1 && editableSystemEntity != InvalidEntity;
 
 		if ( showEditableSystemFields )
 		{
@@ -270,7 +270,7 @@ namespace VTX::UI::QT::Widget
 		_connMetadataChanged.release();
 	}
 
-	void Selection::_transformUpdated( App::Registry & p_reg, App::Entity p_entity )
+	void Selection::_transformUpdated( Registry & p_reg, Entity p_entity )
 	{
 		if ( !_transform || std::find( _entities.begin(), _entities.end(), p_entity ) == _entities.end() )
 		{
@@ -282,7 +282,7 @@ namespace VTX::UI::QT::Widget
 		_transform->setTransform( transform );
 	}
 
-	void Selection::_metadataUpdated( App::Registry & p_reg, App::Entity p_entity )
+	void Selection::_metadataUpdated( Registry & p_reg, Entity p_entity )
 	{
 		if ( !_textName || std::find( _entities.begin(), _entities.end(), p_entity ) == _entities.end() )
 		{

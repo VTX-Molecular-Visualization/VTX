@@ -2,6 +2,9 @@
 #define __VTX_RENDERER_LAYOUT_RESIDUES__
 
 #include "base_layout.hpp"
+#include "renderer/caches.hpp"
+#include "renderer/color.hpp"
+#include "renderer/representation.hpp"
 
 namespace VTX::Renderer::Layout
 {

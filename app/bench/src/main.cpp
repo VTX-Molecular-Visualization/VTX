@@ -48,7 +48,7 @@ int main( int, char ** )
 		renderer.setOpenGL( contextInfo, Filesystem::getExecutableDir() / "shaders" );
 		renderer.setGraphicsConfig( Renderer::GraphicsConfigs::DEFAULT );
 		renderer.setColorLayout( Renderer::Color::Layouts::JMOL );
-		renderer.setRepresentations( { &Renderer::Representations::STICKS_AND_RIBBONS } );
+		renderer.addRepresentation( Renderer::Representations::STICKS_AND_RIBBONS );
 		// renderer.setVSync( false );
 		scene.syncRenderer( renderer );
 

@@ -40,7 +40,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Recompute scene AABB from all systems.
 		 */
-		void _recomputeSceneAABB( Registry &, Entity p_excluded = ECS::InvalidEntity );
+		void _recomputeSceneAABB( Registry &, Entity p_excluded = InvalidEntity );
 
 		/**
 		 * @brief Update renderer when a preset is instantiated.

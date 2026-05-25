@@ -42,7 +42,7 @@ namespace VTX::UI::QT::Menu
 		QPointer<QAction> _aTrackball;
 		QPointer<QAction> _aFreefly;
 
-		void _onProjectionChanged( App::Registry &, const App::Entity p_e )
+		void _onProjectionChanged( Registry &, const Entity p_e )
 		{
 			const auto & camera = App::REG().get<Renderer::Camera>( p_e );
 
@@ -56,7 +56,7 @@ namespace VTX::UI::QT::Menu
 			}
 		}
 
-		void _onControllerChanged( App::Registry &, const App::Entity p_e )
+		void _onControllerChanged( Registry &, const Entity p_e )
 		{
 			using namespace App::Setting;
 

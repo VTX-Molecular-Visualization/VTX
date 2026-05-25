@@ -145,13 +145,13 @@ TEST_CASE( "VTX_APP - Selection - Clear handles this system, others and all syst
 {
 	using namespace VTX;
 
-	Fixture			 app;
-	App::Entity firstSystem  = App::ECS::InvalidEntity;
-	App::Entity secondSystem = App::ECS::InvalidEntity;
+	Fixture app;
+	Entity	firstSystem	 = InvalidEntity;
+	Entity	secondSystem = InvalidEntity;
 	app.loadSystem();
 	app.loadSystem();
 
-	App::Registry & reg = App::REG();
+	Registry & reg = App::REG();
 
 	// Get the two loaded entities from view.
 	{
@@ -173,8 +173,8 @@ TEST_CASE( "VTX_APP - Selection - Clear handles this system, others and all syst
 			systemCount++;
 		}
 		REQUIRE( systemCount == 2 );
-		REQUIRE( firstSystem != App::ECS::InvalidEntity );
-		REQUIRE( secondSystem != App::ECS::InvalidEntity );
+		REQUIRE( firstSystem != InvalidEntity );
+		REQUIRE( secondSystem != InvalidEntity );
 	}
 
 	ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( firstSystem, Index( 0 ) );

@@ -5,6 +5,7 @@
 
 namespace VTX::App::ECS
 {
+
 	/**
 	 * @brief Set the global registry.
 	 */
@@ -15,11 +16,125 @@ namespace VTX::App::ECS
 	 */
 	Registry & registry() noexcept;
 
+	/**
+	 * @brief Add a global service to the registry context.
+	 */
+	template<class T, class... Args>
+	T & setCtx( Args &&... p_args )
+	{
+		VTX_TRACE( "Adding service {}", Util::typeName<T>() );
+		return registry().ctx().emplace<T>( std::forward<Args>( p_args )... );
+	}
+
+	/**
+	 * @brief Add a global service to the registry context.
+	 */
+	template<class T>
+	bool eraseCtx()
+	{
+		VTX_TRACE( "Removing service {}", Util::typeName<T>() );
+		return registry().ctx().erase<T>();
+	}
+
+	/**
+	 * @brief Get a global service from the registry context.
+	 */
+	template<class T>
+	T & getCtx()
+	{
+		return registry().ctx().get<T>();
+	}
+
+	/**
+	 * @brief Check for existence of a global service in the registry context.
+	 */
+	template<class T>
+	bool hasCtx()
+	{
+		return registry().ctx().contains<T>();
+	}
+
+	/**
+	 * @brief Remove a global service from the registry context.
+	 */
+	template<class T>
+	void removeCtx()
+	{
+		registry().ctx().erase<T>();
+	}
+
+	/**
+	 * @brief Get the first entity with components (references) of type in the registry.
+	 */
+	template<typename... T>
+	auto getFirstEntityWithComponents()
+	{
+		auto view = registry().view<T...>();
+		assert( view.begin() != view.end() );
+
+		Entity e = *view.begin();
+
+		auto make = [ & ]<typename C>() -> decltype( auto )
+		{
+			if constexpr ( std::is_void_v<decltype( view.template get<C>( e ) )> )
+			{
+				// Tag.
+				return std::tuple<> {};
+			}
+			else
+			{
+				// Component.
+				return std::tuple<C &> { view.template get<C>( e ) };
+			}
+		};
+
+		return std::tuple_cat( std::tuple<Entity> { e }, make.template operator()<T>()... );
+	}
+
+	/**
+	 * @brief Get only the first entity in the registry with components.
+	 */
+	template<typename... T>
+	Entity getFirstEntityOnlyWithComponents()
+	{
+		auto view = registry().view<T...>();
+		assert( view.begin() != view.end() );
+		return *view.begin();
+	}
+
+	/**
+	 * @brief Get the first component of type T in the registry.
+	 */
+	template<typename T>
+	T & getFirstComponent()
+	{
+		return registry().get<T>( getFirstEntityOnlyWithComponents<T>() );
+	}
+
+	/**
+	 * @brief Debug infos.
+	 */
+	inline void toString()
+	{
+		for ( const entt::entity e : registry().view<entt::entity>() )
+		{
+			std::cout << "entity " << int( e ) << '\n';
+
+			for ( auto && [ id, storage ] : registry().storage() )
+			{
+				if ( storage.contains( e ) )
+				{
+					std::cout << " - component id: " << id << '\n';
+				}
+			}
+		}
+	}
+
 } // namespace VTX::App::ECS
 
 namespace VTX::App
 {
-	inline Registry & REG() { return Registry(); }
+	inline Registry & REG() { return ECS::registry(); }
 
 } // namespace VTX::App
 

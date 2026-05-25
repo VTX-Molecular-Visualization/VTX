@@ -17,7 +17,6 @@
 #include "renderer/descriptors.hpp"
 #include "renderer/resource_handler.hpp"
 #include "renderer/struct_infos.hpp"
-#include "renderer/types.hpp"
 #include <memory>
 #include <span>
 #include <vector>

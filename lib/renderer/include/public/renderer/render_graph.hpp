@@ -3,7 +3,6 @@
 
 #include "renderer/descriptors.hpp"
 #include "renderer/graph_builder.hpp"
-#include "renderer/types.hpp"
 #include <span>
 
 namespace VTX::Renderer

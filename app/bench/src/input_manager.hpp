@@ -4,6 +4,7 @@
 #include <SDL3/SDL.h>
 #include <optional>
 #include <util/constants.hpp>
+#include <util/filesystem.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -38,6 +39,7 @@ namespace VTX::Bench
 	{
 	  public:
 		inline bool isKeyPressed( const SDL_Scancode p_key ) const { return _keys[ p_key ]; }
+
 		inline bool isMouseButtonPressed( const size_t p_button ) const { return _mouseButtons[ p_button ]; }
 
 		inline void handle( const SDL_Event & p_event )
@@ -56,7 +58,9 @@ namespace VTX::Bench
 			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 				_mouseButtons[ p_event.button.button - 1 ] = true;
 				if ( p_event.button.button == SDL_BUTTON_LEFT )
+				{
 					_frame.mousePick = MousePick { uint( p_event.button.x ), uint( p_event.button.y ) };
+				}
 				break;
 			case SDL_EVENT_MOUSE_BUTTON_UP: _mouseButtons[ p_event.button.button - 1 ] = false; break;
 			case SDL_EVENT_MOUSE_MOTION:

@@ -40,12 +40,12 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Signal emitted when the selected preset is changed from the widget.
 		 */
-		void presetChanged( const App::Entity );
+		void presetChanged( const Entity );
 
 		/**
 		 * @brief Signal emitted when the current preset is updated from App.
 		 */
-		void currentPresetUpdated( const App::Entity );
+		void currentPresetUpdated( const Entity );
 	};
 
 	/**
@@ -101,8 +101,8 @@ namespace VTX::UI::QT::Widget::Library
 				this,
 				[ this ]()
 				{
-					const App::Entity preset = getCurrentPreset();
-					if ( preset != App::ECS::InvalidEntity )
+					const Entity preset = getCurrentPreset();
+					if ( preset != InvalidEntity )
 					{
 						App::ACTION().execute<App::Action::Preset::Duplicate<P>>( preset, std::nullopt );
 					}
@@ -115,8 +115,8 @@ namespace VTX::UI::QT::Widget::Library
 				this,
 				[ this ]()
 				{
-					const App::Entity preset = getCurrentPreset();
-					if ( preset != App::ECS::InvalidEntity )
+					const Entity preset = getCurrentPreset();
+					if ( preset != InvalidEntity )
 					{
 						App::ACTION().execute<App::Action::Preset::Apply<P>>( preset );
 					}
@@ -153,16 +153,16 @@ namespace VTX::UI::QT::Widget::Library
 			_onPresetUpdateConnection.release();
 		}
 
-		inline App::Entity getCurrentPreset() const { return _comboBox->currentData().value<App::Entity>(); }
-		inline void				refresh() { _refreshComboBox( App::REG(), App::Entity {} ); }
-		inline void				setCurrentPreset( const App::Entity p_preset )
+		inline Entity getCurrentPreset() const { return _comboBox->currentData().value<Entity>(); }
+		inline void				refresh() { _refreshComboBox( App::REG(), Entity {} ); }
+		inline void				setCurrentPreset( const Entity p_preset )
 		{
 			if ( _comboBox->count() == 0 )
 			{
 				refresh();
 			}
 
-			const int index = _comboBox->findData( QVariant::fromValue<App::Entity>( p_preset ) );
+			const int index = _comboBox->findData( QVariant::fromValue<Entity>( p_preset ) );
 			if ( index != -1 )
 			{
 				_comboBox->setCurrentIndex( index );
@@ -207,7 +207,7 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Refresh the combo box when presets are added or removed.
 		 */
-		void _refreshComboBox( App::Registry &, App::Entity )
+		void _refreshComboBox( Registry &, Entity )
 		{
 			using namespace App;
 			QSignalBlocker blocker( _comboBox );
@@ -256,7 +256,7 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Update preset name in the combo box.
 		 */
-		void _onPresetNameUpdated( App::Registry & p_r, App::Entity p_e )
+		void _onPresetNameUpdated( Registry & p_r, Entity p_e )
 		{
 			if ( not p_r.all_of<P>( p_e ) )
 			{
@@ -265,7 +265,7 @@ namespace VTX::UI::QT::Widget::Library
 
 			const QSignalBlocker blocker( _comboBox );
 			const QString		 newName = QString::fromStdString( p_r.get<App::Preset::Name>( p_e ).name );
-			const int			 index	 = _comboBox->findData( QVariant::fromValue<App::Entity>( p_e ) );
+			const int			 index	 = _comboBox->findData( QVariant::fromValue<Entity>( p_e ) );
 			if ( index != -1 )
 			{
 				_comboBox->setItemText( index, newName );
@@ -279,7 +279,7 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Trigger signal when the current preset is updated from App.
 		 */
-		void _onUpdatePreset( App::Registry & p_r, App::Entity p_e )
+		void _onUpdatePreset( Registry & p_r, Entity p_e )
 		{
 			if ( p_e == getCurrentPreset() )
 			{

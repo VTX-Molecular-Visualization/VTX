@@ -1,10 +1,10 @@
 #ifndef __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 #define __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 
+#include "renderer/caches.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/descriptors.hpp"
 #include "renderer/resource_handler.hpp"
-#include "renderer/types.hpp"
 #include <map>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>

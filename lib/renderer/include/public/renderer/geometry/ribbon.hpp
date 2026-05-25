@@ -3,7 +3,6 @@
 
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
-#include "renderer/types.hpp"
 #include <core/struct/topology.hpp>
 #include <util/math.hpp>
 

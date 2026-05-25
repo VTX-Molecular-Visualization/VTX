@@ -31,7 +31,7 @@ namespace VTX::UI::QT::DockWidget
 		void _clear();
 
 		bool _hasSystemSelection() const;
-		void _onSystemSelectionUpdated( App::Registry &, App::Entity );
+		void _onSystemSelectionUpdated( Registry &, Entity );
 	};
 
 } // namespace VTX::UI::QT::DockWidget

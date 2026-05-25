@@ -8,7 +8,6 @@
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
-#include "app/threading/thread_manager.hpp"
 #include <renderer/renderer.hpp>
 #include <util/chrono.hpp>
 #include <util/math/transform.hpp>
@@ -32,7 +31,6 @@ namespace VTX::App::Pass
 
 		reg.on_update<Renderer::Representation>().connect<&SystemUpdater::_onUpdateRepresentationPreset>( this );
 
-		reg.on_destroy<System::TrajectoryFullBuffer>().connect<&SystemUpdater::_onDestroyTrajectory>( this );
 		reg.on_destroy<System::UID>().connect<&SystemUpdater::_onDestroySystem>( this );
 	}
 
@@ -164,21 +162,5 @@ namespace VTX::App::Pass
 	}
 
 	*/
-
-	void SystemUpdater::_onDestroyTrajectory( Registry &, Entity p_entity )
-	{
-		if ( auto traj = REG().try_get<System::TrajectoryFullBuffer>( p_entity ) )
-		{
-			// If the trajectory worker is still doing stuff, stop it and join the thread before destroying the
-			// component.
-			Threading::BaseThread * thr = nullptr;
-			THREAD().get( traj->threadId, thr );
-			if ( thr )
-			{
-				thr->stop();
-				thr->wait();
-			}
-		}
-	}
 
 } // namespace VTX::App::Pass

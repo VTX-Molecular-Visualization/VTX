@@ -2,6 +2,8 @@
 #define __VTX_RENDERER_CACHES__
 
 #include "renderer/camera.hpp"
+#include "renderer/color.hpp"
+#include "renderer/representation.hpp"
 #include <core/struct/topology.hpp>
 #include <span>
 #include <unordered_map>

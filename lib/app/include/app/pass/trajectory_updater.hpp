@@ -7,6 +7,7 @@
 #include "app/system/trajectory.hpp"
 #include <unordered_map>
 #include <util/players.hpp>
+
 namespace VTX::App::Pass
 {
 	class TrajectoryUpdater final : public IPass
@@ -19,7 +20,7 @@ namespace VTX::App::Pass
 		bool _tryUpdateFrame( const Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept;
 
 		void _onTrajectoryFullBufferCreation( Entity );
-		void _onTrajectoryDestruction( Entity );
+		void _onDestroyTrajectory( Registry &, Entity );
 	};
 } // namespace VTX::App::Pass
 #endif

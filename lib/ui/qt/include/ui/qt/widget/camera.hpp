@@ -11,11 +11,11 @@ namespace VTX::UI::QT::Widget
 	class Camera : public QGroupBox
 	{
 	  public:
-		Camera( const App::Entity, QWidget * );
+		Camera( const Entity, QWidget * );
 		~Camera();
 
 	  private:
-		const App::Entity _entity;
+		const Entity _entity;
 
 		QPointer<Transform>		 _transform;
 		QPointer<EditableSlider> _sliderFov;

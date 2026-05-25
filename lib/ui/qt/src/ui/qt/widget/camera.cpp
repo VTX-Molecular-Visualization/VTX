@@ -9,7 +9,7 @@
 
 namespace VTX::UI::QT::Widget
 {
-	Camera::Camera( const App::Entity p_entity, QWidget * p_parent ) :
+	Camera::Camera( const Entity p_entity, QWidget * p_parent ) :
 		QGroupBox( "Camera", p_parent ), _entity( p_entity )
 	{
 		// Layout.

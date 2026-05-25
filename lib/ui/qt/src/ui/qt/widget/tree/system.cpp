@@ -38,7 +38,7 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 	} // namespace
 
-	System::System( const App::Entity p_system, QWidget * p_parent ) :
+	System::System( const Entity p_system, QWidget * p_parent ) :
 		Widget::Tree::BaseTree<System, QTreeView>( p_parent ), _system( p_system )
 	{
 		setExpandsOnDoubleClick( false );
@@ -118,7 +118,7 @@ namespace VTX::UI::QT::Widget::Tree
 				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
 				// Get current scheme.
-				std::optional<App::System::E_COLOR_SCHEME> scheme
+				std::optional<Renderer::E_COLOR_SCHEME> scheme
 					= App::Helper::System::getColorScheme( { _system, item, index } );
 
 				Menu::ColorScheme menu( this, scheme );
@@ -151,16 +151,16 @@ namespace VTX::UI::QT::Widget::Tree
 				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
 				// Get current representation.
-				std::optional<App::Entity> representation
+				std::optional<Entity> representation
 					= App::Helper::System::getRepresentation( { _system, item, index } );
 
 				Menu::Representation menu( this, representation );
-				std::optional<App::Entity> selected;
+				std::optional<Entity> selected;
 				QObject::connect(
 					&menu,
 					&Menu::Representation::selected,
 					&menu,
-					[ &selected ]( const App::Entity p_selected ) { selected = p_selected; }
+					[ &selected ]( const Entity p_selected ) { selected = p_selected; }
 				);
 
 				if ( menu.exec( QCursor::pos() ) && selected )

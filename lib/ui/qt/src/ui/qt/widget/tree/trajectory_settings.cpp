@@ -10,7 +10,7 @@
 namespace VTX::UI::QT::Widget::Tree
 {
 
-	TrajectorySettings::TrajectorySettings( App::Entity p_system, QWidget * p_parent ) :
+	TrajectorySettings::TrajectorySettings( Entity p_system, QWidget * p_parent ) :
 		QWidget( p_parent ), _system( p_system )
 	{
 		auto * formLayout = new QFormLayout( this );
@@ -73,7 +73,9 @@ namespace VTX::UI::QT::Widget::Tree
 	void TrajectorySettings::_onPlayerModeChanged( int p_index )
 	{
 		if ( _isRefreshing )
+		{
 			return;
+		}
 
 		auto mode = static_cast<App::System::TrajectoryPlayMode>( _playerModeCombo->itemData( p_index ).toInt() );
 		App::ACTION().execute<App::Action::Trajectory::ChangePlayer>( _system, mode );
@@ -82,7 +84,9 @@ namespace VTX::UI::QT::Widget::Tree
 	void TrajectorySettings::_onSpeedSliderChanged( int p_value )
 	{
 		if ( _isRefreshing )
+		{
 			return;
+		}
 
 		_isRefreshing = true;
 		_speedSpinBox->setValue( double( p_value ) );
@@ -94,7 +98,9 @@ namespace VTX::UI::QT::Widget::Tree
 	void TrajectorySettings::_onSpeedSpinBoxChanged( double p_value )
 	{
 		if ( _isRefreshing )
+		{
 			return;
+		}
 
 		_isRefreshing = true;
 		_speedSlider->setValue( int( p_value ) );
@@ -106,12 +112,14 @@ namespace VTX::UI::QT::Widget::Tree
 	void TrajectorySettings::_onFrameSpinBoxChanged( int p_value )
 	{
 		if ( _isRefreshing )
+		{
 			return;
+		}
 
 		App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, uint( p_value ) );
 	}
 
-	void TrajectorySettings::_onTrajectoryUpdated( App::Registry &, App::Entity p_entity )
+	void TrajectorySettings::_onTrajectoryUpdated( Registry &, Entity p_entity )
 	{
 		if ( p_entity == _system )
 		{
@@ -145,7 +153,9 @@ namespace VTX::UI::QT::Widget::Tree
 		App::System::get( _system, trajPtr );
 
 		if ( trajPtr == nullptr )
+		{
 			return;
+		}
 
 		_isRefreshing = true;
 
@@ -153,9 +163,13 @@ namespace VTX::UI::QT::Widget::Tree
 		uint currentFrame = trajPtr->currentFrameIndex;
 
 		if ( totalFrames == std::numeric_limits<uint>::max() )
+		{
 			totalFrames = 0;
+		}
 		if ( currentFrame == std::numeric_limits<uint>::max() )
+		{
 			currentFrame = 0;
+		}
 
 		_playerModeCombo->setCurrentIndex( _playerModeCombo->findData( int( trajPtr->playMode ) ) );
 

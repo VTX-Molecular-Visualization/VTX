@@ -30,17 +30,17 @@ namespace VTX::UI::QT::Widget::Library
 			connect( _presetSelector, &PresetSelector<P>::presetChanged, this, &BasePresetWidget::_update );
 		}
 
-		inline App::Entity	 currentPreset() const { return _presetSelector->getCurrentPreset(); }
+		inline Entity	 currentPreset() const { return _presetSelector->getCurrentPreset(); }
 		inline QGroupBox * const presetGroupBox() const { return _groupboxPreset; }
 		inline void addWidget( QWidget * const p_widget ) { _groupboxPreset->layout()->addWidget( p_widget ); }
 		inline void setTitle( const QString & p_title ) { _groupboxPreset->setTitle( p_title ); }
 		inline void refresh() { _presetSelector->refresh(); }
-		inline void setCurrentPreset( const App::Entity p_preset ) { _presetSelector->setCurrentPreset( p_preset ); }
+		inline void setCurrentPreset( const Entity p_preset ) { _presetSelector->setCurrentPreset( p_preset ); }
 
 		/**
 		 * @brief Update the widget when the preset is updated.
 		 */
-		virtual void _update( App::Entity ) = 0;
+		virtual void _update( Entity ) = 0;
 
 	  private:
 		QPointer<QVBoxLayout>						 _layout;

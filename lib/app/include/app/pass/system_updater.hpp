@@ -4,6 +4,7 @@
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/pass/pass_manager.hpp"
+#include <renderer/descriptors.hpp>
 #include <vector>
 
 namespace VTX::App::System
@@ -47,7 +48,6 @@ namespace VTX::App::Pass
 		void _onUpdateSelection( Registry &, Entity );
 		void _onUpdateRepresentation( Registry &, Entity );
 		void _onUpdateColor( Registry &, Entity );
-		void _onDestroyTrajectory( Registry &, Entity );
 
 		/**
 		 * @brief Push representation preset data to renderer.
