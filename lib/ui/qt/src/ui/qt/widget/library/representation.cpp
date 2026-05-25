@@ -142,7 +142,7 @@ namespace VTX::UI::QT::Widget::Library
 		);
 	}
 
-	void Representation::_update( App::ECS::Entity p_e )
+	void Representation::_update( App::Entity p_e )
 	{
 		auto & preset = App::REG().get<Renderer::Representation>( p_e );
 

@@ -36,7 +36,7 @@ namespace VTX::App::System
 		 */
 		struct EntityDelivered
 		{
-			ECS::Entity entity;
+			Entity entity;
 		};
 
 	} // namespace
@@ -72,9 +72,11 @@ namespace VTX::App::System
 
 	SystemExtractor::SystemExtractor( FilePath p_path, std::string && p_buffer, IO::READER_OPTION p_options ) :
 		SystemExtractor( std::move( p_path ), p_options )
-	{ _attributesPtr->data.buffer = std::move( p_buffer ); }
+	{
+		_attributesPtr->data.buffer = std::move( p_buffer );
+	}
 
-	SystemExtractor::SystemExtractor( ECS::Entity p_entity, FilePath p_path, IO::READER_OPTION p_options ) :
+	SystemExtractor::SystemExtractor( Entity p_entity, FilePath p_path, IO::READER_OPTION p_options ) :
 		SystemExtractor( std::move( p_path ), p_options )
 	{
 		_attributesPtr->data.entity			= p_entity;
@@ -146,7 +148,7 @@ namespace VTX::App::System
 		return 0;
 	}
 
-	void addTrajectory( const ECS::Entity & p_entity, PendingSystem & p_data ) noexcept
+	void addTrajectory( const Entity & p_entity, PendingSystem & p_data ) noexcept
 	{
 		std::visit(
 			[ &p_entity ]( auto && traj ) mutable
@@ -192,7 +194,6 @@ namespace VTX::App::System
 
 		// UIDs: get from UID manager.
 		auto & uidManager = App::UID();
-		uid.system		  = uidManager.getRootPool().registerValue();
 		uid.residues	  = uidManager.getPickingPool().registerRange( data.getResidueCount() );
 		uid.atoms		  = uidManager.getPickingPool().registerRange( data.getAtomCount() );
 

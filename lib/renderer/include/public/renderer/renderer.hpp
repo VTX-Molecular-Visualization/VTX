@@ -12,7 +12,6 @@
 #include "renderer/render_graph.hpp"
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
-#include "renderer/system_data.hpp"
 #include <unordered_set>
 #include <util/callback.hpp>
 #include <util/math/bitset.hpp>
@@ -78,14 +77,19 @@ namespace VTX::Renderer
 		void setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );
 		void setGraphicsConfig( const GraphicsConfig & );
 		void setColorLayout( const Color::Layout & );
-		void setRepresentations( const std::vector<const Representation *> & );
 		void setVoxels( std::span<const Vec3f>, std::span<const Vec3f> );
 
 		/**
-		 * @brief Push systems.
+		 * @brief Add/remove systems.
 		 */
-		void addSystem( const SystemData & );
-		void removeSystem( SystemUID );
+		Desc::Handle addSystem( Cache::System && );
+		void		 removeSystem( const Desc::Handle );
+
+		/**
+		 * @brief Add/remove representation presets.
+		 */
+		Desc::Handle addRepresentation( const Representation & );
+		void		 removeRepresentation( const Desc::Handle );
 
 		/**
 		 * @brief Ensure a physical chunk exists for a chunked render graph buffer.
@@ -98,16 +102,9 @@ namespace VTX::Renderer
 		/**
 		 * @brief Push system data.
 		 */
-		void setSystemTransform( const SystemUID, const Mat4f & );
-		void setSystemPosition( const SystemUID, std::span<const Vec3f> );
-		void setSystemColors( const SystemUID, std::span<const ColorIndex> );
-		void setSystemRepresentation(
-			const SystemUID,
-			const MapRepresentationRanges &,
-			std::span<const RepresentationIndex>
-		);
-		void setSystemVisibility( const SystemUID, const Util::Math::BitSet & );
-		void setSystemSelection( const SystemUID, std::span<const Flag> );
+		void setSystemTransform( const Desc::Handle, const Mat4f & );
+
+		void setSystemDirty( const Desc::Handle, const Cache::E_SYSTEM_DIRTY );
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
@@ -193,105 +190,27 @@ namespace VTX::Renderer
 		 */
 		bool _needUpdate = false;
 
-		struct DirtyState
+		/**
+		 * @brief Dirty entries.
+		 */
+		struct DirtySystem
 		{
-			std::unordered_set<Desc::Handle> addedSystems;
-			std::unordered_set<Desc::Handle> atomPositions;
-			std::unordered_set<Desc::Handle> atomColors;
-			std::unordered_set<Desc::Handle> atomRepresentations;
-			std::unordered_set<Desc::Handle> atomSelection;
-			std::unordered_set<Desc::Handle> systemModels;
-			std::unordered_set<Desc::Handle> geometrySystems;
-			bool							 drawRanges		= false;
-			bool							 geometryChunks = false;
-			bool							 externalPasses = false;
+			Desc::Handle		  handle;
+			Cache::E_SYSTEM_DIRTY flags;
+		};
 
-			[[nodiscard]] bool empty() const noexcept
-			{
-				return addedSystems.empty() && atomPositions.empty() && atomColors.empty()
-					   && atomRepresentations.empty() && atomSelection.empty() && systemModels.empty()
-					   && geometrySystems.empty() && not drawRanges && not geometryChunks && not externalPasses;
-			}
-
-			void clear()
-			{
-				addedSystems.clear();
-				atomPositions.clear();
-				atomColors.clear();
-				atomRepresentations.clear();
-				atomSelection.clear();
-				systemModels.clear();
-				geometrySystems.clear();
-				drawRanges	   = false;
-				geometryChunks = false;
-				externalPasses = false;
-			}
-
-			void markGeometryStructure()
-			{
-				drawRanges	   = true;
-				geometryChunks = true;
-				externalPasses = true;
-			}
-
-			void markGeometry( const Desc::Handle p_handle )
-			{
-				geometrySystems.insert( p_handle );
-				markGeometryStructure();
-			}
-
-			void markAddedSystem( const Desc::Handle p_handle )
-			{
-				addedSystems.insert( p_handle );
-				markGeometry( p_handle );
-			}
-
-			void markAtomPositions( const Desc::Handle p_handle )
-			{
-				atomPositions.insert( p_handle );
-				markGeometry( p_handle );
-			}
-
-			void markAtomColors( const Desc::Handle p_handle ) { atomColors.insert( p_handle ); }
-
-			void markAtomRepresentations( const Desc::Handle p_handle )
-			{
-				atomRepresentations.insert( p_handle );
-				markGeometry( p_handle );
-			}
-
-			void markAtomSelection( const Desc::Handle p_handle )
-			{
-				atomSelection.insert( p_handle );
-				geometrySystems.insert( p_handle );
-			}
-
-			void markSystemModels( const Desc::Handle p_handle ) { systemModels.insert( p_handle ); }
-
-			void markGeometries( const std::vector<Desc::Handle> & p_handles )
-			{
-				geometrySystems.insert( p_handles.begin(), p_handles.end() );
-				markGeometryStructure();
-			}
-
-			void markDrawRanges() { drawRanges = true; }
-
-			void removeSystem( const Desc::Handle p_handle )
-			{
-				addedSystems.erase( p_handle );
-				atomPositions.erase( p_handle );
-				atomColors.erase( p_handle );
-				atomRepresentations.erase( p_handle );
-				atomSelection.erase( p_handle );
-				systemModels.erase( p_handle );
-				geometrySystems.erase( p_handle );
-			}
+		struct DirtyRepresentation
+		{
+			Desc::Handle				  handle;
+			Cache::E_REPRESENTATION_DIRTY flags;
 		};
 
 		/**
 		 * @brief Pending renderer refreshes flushed at frame start.
 		 */
-		DirtyState _dirty;
+		Cache::E_RENDERER_DIRTY			 _dirtyRenderer = Cache::E_RENDERER_DIRTY::NONE;
+		std::vector<DirtySystem>		 _dirtySystems;
+		std::vector<DirtyRepresentation> _dirtyRepresentations;
 
 		/**
 		 * @brief Renderer infos.
@@ -301,40 +220,14 @@ namespace VTX::Renderer
 		/**
 		 * @brief Cached data to update.
 		 */
-		Cache::Camera												   _cacheCamera;
-		ResourceHandler<Cache::System, SystemUID>					   _systems;
-		std::unordered_map<RepresentationIndex, Cache::Representation> _cacheRepresentations;
-
-		/**
-		 * @brief Refresh the render graph according to the graphics config.
-		 * @return true if the graph has changed.
-		 */
-		bool _refreshGraph( const GraphicsConfig & );
-
-		/**
-		 * @brief Bind renderer-owned external passes after command buffer rebuilds.
-		 */
-		void _bindExternalPasses();
-
-		/**
-		 * @brief Schedule the SES CUDA pass when present in the current graph.
-		 */
-		void _markSESDirty();
+		Cache::Camera												_camera;
+		ResourceHandler<Cache::System, Desc::Handle>				_systems;
+		ResourceHandler<Cache::Representation, RepresentationIndex> _representations;
 
 		/**
 		 * @brief Flush pending renderer refreshes.
 		 */
 		void _flushDirty();
-
-		/**
-		 * @brief Synchronize runtime geometry chunks into the render graph resources.
-		 */
-		bool _syncGeometryChunks();
-
-		/**
-		 * @brief Rebuild backend commands from the current queue/resources.
-		 */
-		void _rebuildCommandBuffer();
 
 		static void _executeSESExternalPass( uintptr_t );
 

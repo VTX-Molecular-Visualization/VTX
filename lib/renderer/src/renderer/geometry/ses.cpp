@@ -110,17 +110,13 @@ namespace VTX::Renderer::Geometry
 				= { p_mappings[ OUTPUT_CIRCLE_PATCHES ].devicePtr, p_mappings[ OUTPUT_CIRCLE_PATCHES ].size, 0 };
 			outputBuffers.segmentPatches
 				= { p_mappings[ OUTPUT_SEGMENT_PATCHES ].devicePtr, p_mappings[ OUTPUT_SEGMENT_PATCHES ].size, 0 };
-			outputBuffers.probes		   = { p_mappings[ OUTPUT_PROBES ].devicePtr,
-											   p_mappings[ OUTPUT_PROBES ].size,
-											   0 };
+			outputBuffers.probes = { p_mappings[ OUTPUT_PROBES ].devicePtr, p_mappings[ OUTPUT_PROBES ].size, 0 };
 			outputBuffers.probeAtomIndices = { p_mappings[ OUTPUT_PROBE_ATOM_INDICES ].devicePtr,
 											   p_mappings[ OUTPUT_PROBE_ATOM_INDICES ].size,
 											   0 };
 			outputBuffers.probeNeighbors
 				= { p_mappings[ OUTPUT_PROBE_NEIGHBORS ].devicePtr, p_mappings[ OUTPUT_PROBE_NEIGHBORS ].size, 0 };
-			outputBuffers.sectors				  = { p_mappings[ OUTPUT_SECTORS ].devicePtr,
-													  p_mappings[ OUTPUT_SECTORS ].size,
-													  0 };
+			outputBuffers.sectors = { p_mappings[ OUTPUT_SECTORS ].devicePtr, p_mappings[ OUTPUT_SECTORS ].size, 0 };
 			outputBuffers.atomIndexOffset		  = p_construction.atomOffset;
 			outputBuffers.rendererAtomIndexOffset = p_construction.rendererAtomOffset;
 			outputBuffers.probeIndexOffset		  = 0;
@@ -156,7 +152,7 @@ namespace VTX::Renderer::Geometry
 	void SES::construct(
 		Context::ContextWrapper & p_context,
 		const Desc::Handle		  p_handle,
-		const SystemData &		  p_data,
+		const Cache::System &	  p_data,
 		const uint32_t			  p_inputAtomOffset
 	)
 	{
@@ -169,8 +165,9 @@ namespace VTX::Renderer::Geometry
 
 		for ( const auto & [ surfaceID, existingConstruction ] : _constructions )
 		{
-			construction->probeOffset
-				= std::max( construction->probeOffset, existingConstruction->probeOffset + existingConstruction->probeNb );
+			construction->probeOffset = std::max(
+				construction->probeOffset, existingConstruction->probeOffset + existingConstruction->probeNb
+			);
 			construction->sectorOffset = std::max(
 				construction->sectorOffset, existingConstruction->sectorOffset + existingConstruction->sectorNb
 			);
@@ -191,8 +188,7 @@ namespace VTX::Renderer::Geometry
 		{
 			construction->markIncalculable();
 			VTX_WARNING(
-				"Can not build SES for system {}: atom count ({}) and position count ({}) mismatch.",
-				p_data.uid,
+				"Can not build SES: atom count ({}) and position count ({}) mismatch.",
 				atomCount,
 				p_data.trajectory.size()
 			);
@@ -230,13 +226,13 @@ namespace VTX::Renderer::Geometry
 					assert( mappings.size() == buffers.size() );
 
 					SESDetail::SesdfInputBuffers inputs;
-					inputs.positions  = { mappings[ 0 ].devicePtr, mappings[ 0 ].size, 0 };
-					inputs.symbols	  = { mappings[ 1 ].devicePtr, mappings[ 1 ].size, 0 };
-					inputs.outputAtoms = { mappings[ 2 ].devicePtr, mappings[ 2 ].size, 0 };
-					inputs.outputAtomIds = { mappings[ 3 ].devicePtr, mappings[ 3 ].size, 0 };
-					inputs.atomOffset		   = p_inputAtomOffset;
+					inputs.positions		  = { mappings[ 0 ].devicePtr, mappings[ 0 ].size, 0 };
+					inputs.symbols			  = { mappings[ 1 ].devicePtr, mappings[ 1 ].size, 0 };
+					inputs.outputAtoms		  = { mappings[ 2 ].devicePtr, mappings[ 2 ].size, 0 };
+					inputs.outputAtomIds	  = { mappings[ 3 ].devicePtr, mappings[ 3 ].size, 0 };
+					inputs.atomOffset		  = p_inputAtomOffset;
 					inputs.rendererAtomOffset = construction->rendererAtomOffset;
-					inputs.atomNb			   = uint32_t( atomCount );
+					inputs.atomNb			  = uint32_t( atomCount );
 
 					SESDetail::CudaBuildResult result = SESDetail::buildCudaConstructionFromRendererBuffers(
 						inputs, p_data.trajectory, SES_PROBE_RADIUS_DEFAULT
@@ -257,12 +253,12 @@ namespace VTX::Renderer::Geometry
 				catch ( const std::exception & p_e )
 				{
 					construction->markIncalculable();
-					VTX_WARNING( "Can not build SES for system {}: {}", p_data.uid, p_e.what() );
+					VTX_WARNING( "Can not build SES for system: {}", p_e.what() );
 				}
 				catch ( ... )
 				{
 					construction->markIncalculable();
-					VTX_WARNING( "Can not build SES for system {}: unknown error.", p_data.uid );
+					VTX_WARNING( "Can not build SES for system: unknown error" );
 				}
 
 				if ( not mappings.empty() )

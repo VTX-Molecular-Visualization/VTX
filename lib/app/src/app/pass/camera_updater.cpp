@@ -8,7 +8,7 @@
 
 namespace VTX::App::Pass
 {
-	CameraUpdater::CameraUpdater( const ECS::Entity & p_ent ) : _entity( p_ent )
+	CameraUpdater::CameraUpdater( const Entity & p_ent ) : _entity( p_ent )
 	{
 		auto & reg = REG();
 

@@ -146,12 +146,12 @@ TEST_CASE( "VTX_APP - Selection - Clear handles this system, others and all syst
 	using namespace VTX;
 
 	Fixture			 app;
-	App::ECS::Entity firstSystem  = App::ECS::InvalidEntity;
-	App::ECS::Entity secondSystem = App::ECS::InvalidEntity;
+	App::Entity firstSystem  = App::ECS::InvalidEntity;
+	App::Entity secondSystem = App::ECS::InvalidEntity;
 	app.loadSystem();
 	app.loadSystem();
 
-	App::ECS::Registry & reg = App::REG();
+	App::Registry & reg = App::REG();
 
 	// Get the two loaded entities from view.
 	{

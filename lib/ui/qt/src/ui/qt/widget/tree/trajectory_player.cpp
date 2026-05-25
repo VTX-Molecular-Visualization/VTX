@@ -13,7 +13,7 @@
 namespace VTX::UI::QT::Widget::Tree
 {
 
-	TrajectoryPlayer::TrajectoryPlayer( App::ECS::Entity p_system, QWidget * p_parent ) :
+	TrajectoryPlayer::TrajectoryPlayer( App::Entity p_system, QWidget * p_parent ) :
 		QWidget( p_parent ), _system( p_system )
 	{
 		// Main vertical layout
@@ -122,7 +122,7 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 	}
 
-	void TrajectoryPlayer::_onTrajectoryUpdated( App::ECS::Registry &, App::ECS::Entity p_entity )
+	void TrajectoryPlayer::_onTrajectoryUpdated( App::Registry &, App::Entity p_entity )
 	{
 		// Only refresh if this is our system
 		if ( p_entity == _system )

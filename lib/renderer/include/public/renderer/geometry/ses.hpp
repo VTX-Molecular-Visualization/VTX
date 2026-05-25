@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_GEOMETRY_SES__
 
 #include "base_geometry.hpp"
+#include "renderer/caches.hpp"
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -246,7 +247,7 @@ namespace VTX::Renderer::Geometry
 		void construct(
 			Context::ContextWrapper & p_context,
 			Desc::Handle			  p_handle,
-			const SystemData &		  p_data,
+			const Cache::System &	  p_data,
 			uint32_t				  p_inputAtomOffset
 		);
 

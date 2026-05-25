@@ -55,7 +55,7 @@ namespace VTX::Renderer::Layout
 			}
 			else if constexpr ( A == ATOM_ATTR::ID )
 			{
-				p_context.setBuffer<PickingUID>( { ATOMS_IDS }, p_data, o );
+				p_context.setBuffer<UID32>( { ATOMS_IDS }, p_data, o );
 			}
 			else if constexpr ( A == ATOM_ATTR::COLOR )
 			{
@@ -80,7 +80,7 @@ namespace VTX::Renderer::Layout
 		{
 			p_context.setBuffer<Vec3f>( { ATOMS_POSITIONS }, p_size );
 			p_context.setBuffer<Symbol>( { ATOMS_SYMBOLS }, p_size );
-			p_context.setBuffer<PickingUID>( { ATOMS_IDS }, p_size );
+			p_context.setBuffer<UID32>( { ATOMS_IDS }, p_size );
 			p_context.setBuffer<uint32_t>( { ATOMS_COLORS }, ( p_size + 3 ) / 4 );
 			p_context.setBuffer<RepresentationIndex>( { ATOMS_REPRESENTATIONS }, p_size );
 			p_context.setBuffer<uint32_t>( { ATOMS_FLAGS }, ( p_size + 3 ) / 4 );

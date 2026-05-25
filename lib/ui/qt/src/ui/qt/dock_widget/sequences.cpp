@@ -36,7 +36,7 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( sequenceWidget );
 	}
 
-	void Sequences::_onSystemDestroy( App::ECS::Registry & p_r, App::ECS::Entity p_e )
+	void Sequences::_onSystemDestroy( App::Registry & p_r, App::Entity p_e )
 	{
 		// Remove from map and delete widget.
 		assert( _mapSequenceWidgets.contains( p_e ) );
@@ -44,13 +44,13 @@ namespace VTX::UI::QT::DockWidget
 		_mapSequenceWidgets.erase( p_e );
 	}
 
-	void Sequences::_onUpdateSelection( App::ECS::Registry &, const App::ECS::Entity p_e )
+	void Sequences::_onUpdateSelection( App::Registry &, const App::Entity p_e )
 	{
 		assert( _mapSequenceWidgets.contains( p_e ) );
 		_mapSequenceWidgets[ p_e ]->viewport()->update();
 	}
 
-	void Sequences::_onColorsChanged( App::ECS::Registry &, const App::ECS::Entity p_e )
+	void Sequences::_onColorsChanged( App::Registry &, const App::Entity p_e )
 	{
 		for ( auto & [ _, w ] : _mapSequenceWidgets )
 		{
@@ -58,7 +58,7 @@ namespace VTX::UI::QT::DockWidget
 		}
 	}
 
-	void Sequences::_onColorsPresetChanged( App::ECS::Registry & p_reg, const App::ECS::Entity p_e )
+	void Sequences::_onColorsPresetChanged( App::Registry & p_reg, const App::Entity p_e )
 	{
 		const auto & colorLayout = App::ECS::getFirstComponent<App::Scene::ColorLayout>();
 

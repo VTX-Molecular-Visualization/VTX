@@ -1,6 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
 #include <renderer/builder/render_graph_build.hpp>
-#include <renderer/builder/system_build_pipeline.hpp>
 #include <renderer/context/command_buffer.hpp>
 #include <renderer/graph_builder.hpp>
 #include <renderer/render_graph.hpp>
@@ -53,86 +52,6 @@ namespace
 		return g;
 	}
 } // namespace
-
-TEST_CASE( "SystemBuildPipeline: calls optional phases in builder order", "[renderer][system-build]" )
-{
-	struct TestSystem
-	{
-		int id = 0;
-	};
-
-	struct TestContext
-	{
-		std::vector<std::string> events;
-
-		void push( const std::string & p_event ) { events.emplace_back( p_event ); }
-	};
-
-	struct AtomBuilder
-	{
-		void registerSystem( TestContext & p_context, const TestSystem & p_system )
-		{
-			p_context.push( "atoms.register." + std::to_string( p_system.id ) );
-		}
-
-		void allocateInputs( TestContext & p_context ) { p_context.push( "atoms.allocateInputs" ); }
-
-		void uploadInput( TestContext & p_context, const TestSystem & p_system )
-		{
-			p_context.push( "atoms.upload." + std::to_string( p_system.id ) );
-		}
-	};
-
-	struct SESBuilder
-	{
-		void registerSystems( TestContext & p_context, std::span<const TestSystem> p_systems )
-		{
-			p_context.push( "ses.registerBatch." + std::to_string( p_systems.size() ) );
-		}
-
-		void buildDerived( TestContext & p_context ) { p_context.push( "ses.buildDerived" ); }
-
-		void allocateOutputs( TestContext & p_context ) { p_context.push( "ses.allocateOutputs" ); }
-
-		void writeOutputs( TestContext & p_context, std::span<const TestSystem> p_systems )
-		{
-			p_context.push( "ses.writeBatch." + std::to_string( p_systems.size() ) );
-		}
-	};
-
-	struct RibbonBuilder
-	{
-		void buildDerived( TestContext & p_context, const TestSystem & p_system )
-		{
-			p_context.push( "ribbon.buildDerived." + std::to_string( p_system.id ) );
-		}
-	};
-
-	struct DrawBuilder
-	{
-		void buildDrawRanges( TestContext & p_context ) { p_context.push( "draw.buildRanges" ); }
-	};
-
-	TestContext					  context;
-	const std::vector<TestSystem> systems { { 10 }, { 20 } };
-
-	Builder::SystemBuildPipeline<AtomBuilder, SESBuilder, RibbonBuilder, DrawBuilder> pipeline;
-	pipeline.registerSystems( context, std::span<const TestSystem>( systems ) );
-	pipeline.allocateInputs( context );
-	pipeline.uploadInputs( context, std::span<const TestSystem>( systems ) );
-	pipeline.buildDerived( context, std::span<const TestSystem>( systems ) );
-	pipeline.allocateOutputs( context );
-	pipeline.writeOutputs( context, std::span<const TestSystem>( systems ) );
-	pipeline.buildDrawRanges( context );
-
-	const std::vector<std::string> expected {
-		"atoms.register.10",	  "atoms.register.20",	 "ses.registerBatch.2", "atoms.allocateInputs",
-		"atoms.upload.10",		  "atoms.upload.20",	 "ses.buildDerived",	"ribbon.buildDerived.10",
-		"ribbon.buildDerived.20", "ses.allocateOutputs", "ses.writeBatch.2",	"draw.buildRanges",
-	};
-
-	CHECK( context.events == expected );
-}
 
 TEST_CASE( "RenderGraph: simple linear graph builds and preserves order", "[renderer][graph]" )
 {

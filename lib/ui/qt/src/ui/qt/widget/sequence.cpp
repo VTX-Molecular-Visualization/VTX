@@ -30,7 +30,7 @@ namespace VTX::UI::QT::Widget
 	constexpr int SEQ_CHAR_HEIGHT = 18;
 	constexpr int SEQ_RULE_STEP	  = 5;
 
-	Sequence::Sequence( const App::ECS::Entity p_system, QWidget * p_parent ) :
+	Sequence::Sequence( const App::Entity p_system, QWidget * p_parent ) :
 		QAbstractScrollArea( p_parent ), _system( p_system )
 	{
 		QFont f( Style::DEFAULT_FONT_FAMILY_SEQUENCE, 10 );

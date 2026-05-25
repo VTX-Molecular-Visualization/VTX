@@ -2,7 +2,9 @@
 #include "renderer/binary_buffer.hpp"
 #include "renderer/builder/render_graph_build.hpp"
 #include "renderer/builder/system_build.hpp"
+#include <unordered_map>
 #include <util/chrono.hpp>
+#include <util/enum.hpp>
 
 namespace
 {
@@ -37,7 +39,13 @@ namespace VTX::Renderer
 		_context.setNull();
 		try
 		{
-			_rebuildCommandBuffer();
+			Builder::RenderGraphRuntime::rebuildCommandBuffer(
+				_context,
+				_queue,
+				_graph.getResources(),
+				reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+				reinterpret_cast<uintptr_t>( this )
+			);
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -53,7 +61,13 @@ namespace VTX::Renderer
 		_context.setOpenGL( _width, _height, p_contextInfo, p_shaderDir );
 		try
 		{
-			_rebuildCommandBuffer();
+			Builder::RenderGraphRuntime::rebuildCommandBuffer(
+				_context,
+				_queue,
+				_graph.getResources(),
+				reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+				reinterpret_cast<uintptr_t>( this )
+			);
 			_context.fillInfos( _infos );
 			onReady();
 		}
@@ -92,13 +106,16 @@ namespace VTX::Renderer
 	{
 		_context.clear();
 		_graph.clear();
-		_dirty.clear();
+		_dirtyRenderer = Cache::E_RENDERER_DIRTY::NONE;
+		_dirtySystems.clear();
+		_dirtyRepresentations.clear();
 		_needUpdate = false;
 	}
 
 	bool Renderer::render( const float p_deltaTime, const float p_elapsedTime ) noexcept
 	{
-		if ( not _dirty.empty() )
+		if ( _dirtyRenderer != Cache::E_RENDERER_DIRTY::NONE || not _dirtySystems.empty()
+			 || not _dirtyRepresentations.empty() )
 		{
 			_flushDirty();
 		}
@@ -118,14 +135,26 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] snapshot" );
 
 		_context.setRenderTarget( Desc::E_RENDER_TARGET::OFFSCREEN );
-		_rebuildCommandBuffer();
+		Builder::RenderGraphRuntime::rebuildCommandBuffer(
+			_context,
+			_queue,
+			_graph.getResources(),
+			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+			reinterpret_cast<uintptr_t>( this )
+		);
 		_render( 0.f, 0.f );
 
 		// TODO: get last pass instead of hardcoding FXAA.
 		std::vector<std::byte> data = _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
 
 		_context.setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
-		_rebuildCommandBuffer();
+		Builder::RenderGraphRuntime::rebuildCommandBuffer(
+			_context,
+			_queue,
+			_graph.getResources(),
+			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+			reinterpret_cast<uintptr_t>( this )
+		);
 		_render( 0.f, 0.f );
 
 		return data;
@@ -155,161 +184,149 @@ namespace VTX::Renderer
 		return _infos;
 	}
 
-	void Renderer::_bindExternalPasses()
-	{
-		if ( not _context.containsPass( Geometry::SES::PASS_COMPUTE ) )
-		{
-			return;
-		}
-
-		const auto function = reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass );
-		const auto context	= reinterpret_cast<uintptr_t>( this );
-		_context.setExternalPass( Geometry::SES::PASS_COMPUTE, function, context );
-	}
-
-	void Renderer::_markSESDirty()
-	{
-		if ( _context.containsPass( Geometry::SES::PASS_COMPUTE ) && _geometries.ses.hasPendingCompute() )
-		{
-			_context.markPassDirty( Geometry::SES::PASS_COMPUTE );
-		}
-	}
-
 	void Renderer::_flushDirty()
 	{
-		std::vector<Desc::Handle> invalidDirtySystems;
-		const auto collectInvalidDirtySystems = [ & ]( const auto & p_handles )
+		using RendererDirty = Cache::E_RENDERER_DIRTY;
+		using SystemDirty	= Cache::E_SYSTEM_DIRTY;
+
+		auto hasDirty = []( const auto p_flags, const auto p_bit ) { return Util::Enum::hasAnyBit( p_flags, p_bit ); };
+
+		std::unordered_map<Desc::Handle, SystemDirty> dirtySystems;
+		for ( const DirtySystem & dirty : _dirtySystems )
 		{
-			for ( const Desc::Handle handle : p_handles )
+			if ( not _systems.contains( dirty.handle ) )
 			{
-				if ( not _systems.contains( handle ) )
+				continue;
+			}
+
+			dirtySystems[ dirty.handle ] |= dirty.flags;
+		}
+
+		const bool fullRefresh = hasDirty( _dirtyRenderer, RendererDirty::ALL );
+		if ( fullRefresh )
+		{
+			const auto handles = _systems.handles();
+			dirtyGeometrySystems.insert( handles.begin(), handles.end() );
+
+			Builder::AtomLayout::allocateInputs( _context, _layouts );
+			Builder::ResidueLayout::allocateInputs( _context, _layouts );
+
+			for ( const Desc::Handle system : handles )
+			{
+				Builder::AtomLayout::uploadInput( _context, _systems, _layouts, system, dirtyGeometrySystems );
+				Builder::SystemVisibility::uploadInput( _systems, system, dirtyGeometrySystems );
+				Builder::ResidueLayout::uploadInput( _context, _layouts, _geometries, system, _systems.get( system ) );
+			}
+
+			Builder::GeometryBuffers::allocateOutputs( _context, _geometries );
+
+			for ( const Desc::Handle system : handles )
+			{
+				Builder::RibbonGeometry::writeOutput( _context, _geometries, system );
+				Builder::GeometryBuffers::writeOutput( _context, _geometries, system );
+			}
+
+			Builder::SystemModels::upload( _context, _systems, _camera );
+		}
+
+		bool updateModels		  = fullRefresh;
+		bool updateDrawRanges	  = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::DRAW_RANGES );
+		bool updateGeometryChunks = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::GEOMETRY_CHUNKS );
+		bool updateExternalPasses = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::EXTERNAL_PASSES );
+		bool updateCommandBuffer  = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::COMMAND_BUFFER );
+
+		if ( not fullRefresh )
+		{
+			for ( const auto & [ system, flags ] : dirtySystems )
+			{
+				const Cache::System & cache = _systems.get( system );
+
+				if ( hasDirty( flags, SystemDirty::TRANSFORM ) )
 				{
-					invalidDirtySystems.emplace_back( handle );
+					updateModels = true;
+				}
+				if ( hasDirty( flags, SystemDirty::TRAJECTORY ) )
+				{
+					Builder::AtomLayout::uploadPositions( _context, _systems, _layouts, system, cache.trajectory );
+					Builder::RibbonGeometry::uploadPositions(
+						_context, _layouts, _geometries, system, cache.trajectory
+					);
+					dirtyGeometrySystems.insert( system );
+				}
+				if ( hasDirty( flags, SystemDirty::COLOR ) )
+				{
+					Builder::AtomLayout::refreshColors( _context, _systems, _layouts, system );
+				}
+				if ( hasDirty( flags, SystemDirty::REPRESENTATION ) )
+				{
+					// TODO: resolve Cache::System preset entities to renderer representation handles.
+					dirtyGeometrySystems.insert( system );
+				}
+				if ( hasDirty( flags, SystemDirty::VISIBILITY ) )
+				{
+					Builder::SystemVisibility::uploadVisibility( _systems, dirtyGeometrySystems, system );
+					dirtyGeometrySystems.insert( system );
+				}
+				if ( hasDirty( flags, SystemDirty::SELECTION ) )
+				{
+					const std::vector<Flag> atomFlags = Builder::AtomLayout::buildAtomFlags( cache );
+					Builder::AtomLayout::uploadSelection( _context, _layouts, system, atomFlags );
+					Builder::ResidueLayout::uploadSelection( _context, _layouts, _geometries, system, atomFlags );
+					dirtyGeometrySystems.insert( system );
 				}
 			}
-		};
-
-		collectInvalidDirtySystems( _dirty.addedSystems );
-		collectInvalidDirtySystems( _dirty.atomPositions );
-		collectInvalidDirtySystems( _dirty.atomColors );
-		collectInvalidDirtySystems( _dirty.atomRepresentations );
-		collectInvalidDirtySystems( _dirty.atomSelection );
-		collectInvalidDirtySystems( _dirty.systemModels );
-		collectInvalidDirtySystems( _dirty.geometrySystems );
-
-		for ( const Desc::Handle handle : invalidDirtySystems )
-		{
-			_dirty.removeSystem( handle );
 		}
 
-		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _dirty.geometrySystems,
-		};
-		Builder::DefaultPipeline pipeline;
-
-		if ( not _dirty.addedSystems.empty() )
+		if ( updateModels )
 		{
-			std::vector<SystemData> cachedSystems;
-			const auto				handles = _systems.handles();
-			_dirty.markGeometries( handles );
-
-			cachedSystems.reserve( handles.size() );
-			for ( const Desc::Handle handle : handles )
-			{
-				cachedSystems.emplace_back( Builder::SystemVisibility::systemData( buildContext, handle ) );
-			}
-			const std::span<const SystemData> allSystems( cachedSystems );
-
-			pipeline.allocateInputs( buildContext );
-			pipeline.uploadInputs( buildContext, allSystems );
-			pipeline.buildDerived( buildContext, allSystems );
-			pipeline.allocateOutputs( buildContext );
-			pipeline.writeOutputs( buildContext, allSystems );
-
-			Builder::SystemModels::upload( buildContext );
+			Builder::SystemModels::upload( _context, _systems, _camera );
 		}
 
-		for ( const Desc::Handle system : _dirty.atomPositions )
+		for ( const auto & system : dirtyGeometrySystems )
 		{
-			const Cache::System & cache = _systems.get( system );
-			Builder::AtomLayout::uploadPositions( buildContext, system, cache.trajectory );
-			Builder::RibbonGeometry::uploadPositions( buildContext, system, cache.trajectory );
-		}
-		for ( const Desc::Handle system : _dirty.atomColors )
-		{
-			Builder::AtomLayout::uploadColors( buildContext, system, _systems.get( system ).atomColors );
-		}
-		for ( const Desc::Handle system : _dirty.atomRepresentations )
-		{
-			const Cache::System & cache = _systems.get( system );
-			Builder::AtomLayout::uploadRepresentations(
-				buildContext, system, cache.representations, cache.atomRepresentations
+			Builder::SystemVisibility::refreshGeometryVisibility(
+				_context, _systems, _representations, _layouts, _geometries, system
 			);
-			Builder::ResidueLayout::uploadRepresentations( buildContext, system, cache.atomRepresentations );
 		}
-		for ( const Desc::Handle system : _dirty.atomSelection )
-		{
-			const Cache::System & cache = _systems.get( system );
-			Builder::AtomLayout::uploadSelection( buildContext, system, cache.atomFlags );
-			Builder::ResidueLayout::uploadSelection( buildContext, system, cache.atomFlags );
-		}
-		if ( not _dirty.systemModels.empty() )
-		{
-			Builder::SystemModels::upload( buildContext );
-		}
-
-		for ( const auto & system : _dirty.geometrySystems )
-		{
-			Builder::SystemVisibility::refreshGeometryVisibility( buildContext, system );
-		}
-		for ( const auto & system : _dirty.geometrySystems )
+		for ( const auto & system : dirtyGeometrySystems )
 		{
 			_geometries.uploadIndexes( _context, system );
 		}
 
-		if ( _dirty.drawRanges )
+		if ( not dirtyGeometrySystems.empty() )
 		{
-			Builder::DrawRanges::buildDrawRanges( buildContext );
-		}
-		if ( _dirty.geometryChunks && _syncGeometryChunks() )
-		{
-			_rebuildCommandBuffer();
-		}
-		if ( _dirty.externalPasses )
-		{
-			_markSESDirty();
+			updateDrawRanges	 = true;
+			updateGeometryChunks = true;
+			updateExternalPasses = true;
 		}
 
-		_dirty.clear();
+		if ( updateDrawRanges )
+		{
+			Builder::DrawRanges::buildDrawRanges( _context, _geometries );
+		}
+		if ( updateGeometryChunks && Builder::RenderGraphRuntime::syncGeometryChunks( _graph, _geometries ) )
+		{
+			updateCommandBuffer = true;
+		}
+		if ( updateCommandBuffer )
+		{
+			Builder::RenderGraphRuntime::rebuildCommandBuffer(
+				_context,
+				_queue,
+				_graph.getResources(),
+				reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+				reinterpret_cast<uintptr_t>( this )
+			);
+		}
+		if ( updateExternalPasses )
+		{
+			Builder::RenderGraphRuntime::markSESDirty( _context, _geometries );
+		}
+
+		_dirtyRenderer = RendererDirty::NONE;
+		_dirtySystems.clear();
+		_dirtyRepresentations.clear();
 		setNeedUpdate( true );
-	}
-
-	bool Renderer::_syncGeometryChunks()
-	{
-		bool changed = false;
-
-		auto sync = [ & ]( const Desc::Key & p_geometry, const Desc::Geometry & p_source )
-		{
-			if ( not _graph.getResources().geometries.contains( p_geometry ) )
-			{
-				return;
-			}
-
-			changed = _graph.setGeometryChunks( p_geometry, p_source.chunks ) || changed;
-		};
-
-		sync( Geometry::SES::GEOMETRY_CONVEX_PATCHES, _geometries.ses.convexPatches );
-		sync( Geometry::SES::GEOMETRY_CIRCLE_PATCHES, _geometries.ses.circlePatches );
-		sync( Geometry::SES::GEOMETRY_SEGMENT_PATCHES, _geometries.ses.segmentPatches );
-		sync( Geometry::SES::GEOMETRY_CONCAVE_PATCHES, _geometries.ses.concavePatches );
-
-		return changed;
-	}
-
-	void Renderer::_rebuildCommandBuffer()
-	{
-		_context.build( _queue, _graph.getResources() );
-		_bindExternalPasses();
 	}
 
 	void Renderer::_executeSESExternalPass( const uintptr_t p_context )
@@ -362,12 +379,9 @@ namespace VTX::Renderer
 
 		_context.setBuffer( { "Camera" }, buffer );
 
-		_cacheCamera = { p_camera, p_position, p_matView, p_matProj };
+		_camera = { p_camera, p_position, p_matView, p_matProj };
 
-		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _dirty.geometrySystems,
-		};
-		Builder::SystemModels::upload( buildContext );
+		Builder::SystemModels::upload( _context, _systems, _camera );
 
 		setNeedUpdate( true );
 	}
@@ -377,9 +391,15 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setGraphicsConfig" );
 
 		// If graph changed from config, rebuild backend.
-		if ( _refreshGraph( p_config ) )
+		if ( Builder::RenderGraphRuntime::refreshGraph( p_config, _config, _graph, _queue, _layouts, _geometries ) )
 		{
-			_rebuildCommandBuffer();
+			Builder::RenderGraphRuntime::rebuildCommandBuffer(
+				_context,
+				_queue,
+				_graph.getResources(),
+				reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+				reinterpret_cast<uintptr_t>( this )
+			);
 		}
 
 		BinaryBuffer140 bufferShading;
@@ -443,95 +463,65 @@ namespace VTX::Renderer
 		setNeedUpdate( true );
 	}
 
-	void Renderer::setRepresentations( const std::vector<const Representation *> & p_representations )
+	Desc::Handle Renderer::addRepresentation( const Representation & p_representation )
 	{
-		Util::ScopedChrono timer( "[RENDERER] setRepresentations" );
+		//
+		return 0;
+	}
 
-		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _dirty.geometrySystems,
-		};
-		Builder::RepresentationState::upload( buildContext, p_representations );
-
-		auto handles = _systems.handles();
-		_dirty.markGeometries( handles );
-		setNeedUpdate( true );
+	void Renderer::removeRepresentation( const Desc::Handle )
+	{
+		//
 	}
 
 #pragma endregion
 
-#pragma region Geometries
-
-	void Renderer::addSystem( const SystemData & p_system )
+	Desc::Handle Renderer::addSystem( Cache::System && p_system )
 	{
 		Util::ScopedChrono timer( "[RENDERER] addSystem" );
 
-		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _dirty.geometrySystems,
-		};
-
-		Builder::DefaultPipeline pipeline;
-		const std::span<const SystemData> systems( &p_system, 1 );
-		pipeline.registerSystems( buildContext, systems );
-
-		const Desc::Handle handle = _systems.handle( p_system.uid );
-		_dirty.markAddedSystem( handle );
+		const Desc::Handle handle
+			= Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, std::move( p_system ) );
+		_dirtyRenderer = Cache::E_RENDERER_DIRTY::ALL;
+		_dirtySystems.emplace_back( handle, Cache::E_SYSTEM_DIRTY::ALL );
 
 		setNeedUpdate( true );
+		return handle;
 	}
 
-	void Renderer::removeSystem( const SystemUID p_uid )
+	void Renderer::removeSystem( const Desc::Handle p_handle )
 	{
 		Util::ScopedChrono timer( "[RENDERER] removeSystem" );
 
-		if ( not _systems.contains( p_uid ) )
+		if ( not _systems.contains( p_handle ) )
 		{
 			return;
 		}
 
-		Builder::Context buildContext {
-			_context, _systems, _cacheRepresentations, _cacheCamera, _layouts, _geometries, _dirty.geometrySystems,
-		};
+		_systems.erase( p_handle );
 
-		_systems.erase( p_uid );
-
-		std::vector<SystemData>		   remainingSystems;
-		std::vector<std::vector<Vec3f>> remainingTrajectories;
-		const auto					   remainingHandles = _systems.handles();
+		std::vector<Cache::System> remainingSystems;
+		const auto				   remainingHandles = _systems.handles();
 		remainingSystems.reserve( remainingHandles.size() );
-		remainingTrajectories.reserve( remainingHandles.size() );
 		for ( const Desc::Handle handle : remainingHandles )
 		{
-			const Cache::System & cache = _systems.get( handle );
-			assert( cache.data != nullptr );
-
-			remainingTrajectories.emplace_back( cache.trajectory );
-			remainingSystems.emplace_back(
-				SystemData { cache.uid,
-							 cache.transform,
-							 *cache.data,
-							 remainingTrajectories.back(),
-							 cache.atomUids,
-							 cache.residueUids,
-							 cache.atomColors,
-							 cache.representations,
-							 cache.atomRepresentations,
-							 cache.visibility,
-							 cache.atomFlags }
-			);
+			remainingSystems.emplace_back( _systems.get( handle ) );
 		}
 
-		Builder::DefaultPipeline pipeline;
-		pipeline.clear( buildContext );
+		std::unordered_set<Desc::Handle> dirtyGeometrySystems;
+		Builder::SystemRegistry::clear( _systems, _layouts, _geometries, dirtyGeometrySystems );
 
-		const std::span<const SystemData> systems( remainingSystems );
-		pipeline.registerSystems( buildContext, systems );
+		for ( Cache::System & system : remainingSystems )
+		{
+			Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, std::move( system ) );
+		}
 
-		_dirty.clear();
+		_dirtyRenderer = Cache::E_RENDERER_DIRTY::ALL;
+		_dirtySystems.clear();
 		for ( const Desc::Handle handle : _systems.handles() )
 		{
-			_dirty.markAddedSystem( handle );
+			_dirtySystems.emplace_back( handle, Cache::E_SYSTEM_DIRTY::ALL );
 		}
-		_dirty.markGeometryStructure();
 
 		setNeedUpdate( true );
 	}
@@ -544,7 +534,13 @@ namespace VTX::Renderer
 			return false;
 		}
 
-		_rebuildCommandBuffer();
+		Builder::RenderGraphRuntime::rebuildCommandBuffer(
+			_context,
+			_queue,
+			_graph.getResources(),
+			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+			reinterpret_cast<uintptr_t>( this )
+		);
 		setNeedUpdate( true );
 
 		return true;
@@ -558,106 +554,32 @@ namespace VTX::Renderer
 			return false;
 		}
 
-		_rebuildCommandBuffer();
+		Builder::RenderGraphRuntime::rebuildCommandBuffer(
+			_context,
+			_queue,
+			_graph.getResources(),
+			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+			reinterpret_cast<uintptr_t>( this )
+		);
 		setNeedUpdate( true );
 
 		return true;
 	}
 
-	void Renderer::setSystemTransform( const SystemUID p_uid, const Mat4f & p_transform )
+	void Renderer::setSystemTransform( const Desc::Handle p_handle, const Mat4f & p_transform )
 	{
-		if ( not _systems.contains( p_uid ) )
-		{
-			return;
-		}
-
 		Util::ScopedChrono timer( "[RENDERER] setSystemTransform" );
 
-		const Desc::Handle h = _systems.handle( p_uid );
-		assert( _systems.contains( h ) );
-		_systems.get( h ).transform = p_transform;
-		_dirty.markSystemModels( h );
+		assert( _systems.contains( p_handle ) );
+		_systems.get( p_handle ).transform = p_transform;
+		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::TRANSFORM );
 		setNeedUpdate( true );
 	}
 
-	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
+	void Renderer::setSystemDirty( const Desc::Handle p_handle, const Cache::E_SYSTEM_DIRTY p_flags )
 	{
-		if ( not _systems.contains( p_uid ) )
-		{
-			return;
-		}
-
-		const Desc::Handle h = _systems.handle( p_uid );
-		_systems.get( h ).trajectory.assign( p_positions.begin(), p_positions.end() );
-		_geometries.ses.invalidate( h );
-		_dirty.markAtomPositions( h );
-
-		setNeedUpdate( true );
-	}
-
-	void Renderer::setSystemColors( const SystemUID p_uid, std::span<const ColorIndex> p_colors )
-	{
-		if ( not _systems.contains( p_uid ) )
-		{
-			return;
-		}
-
-		const Desc::Handle h = _systems.handle( p_uid );
-		_systems.get( h ).atomColors.assign( p_colors.begin(), p_colors.end() );
-		_dirty.markAtomColors( h );
-
-		setNeedUpdate( true );
-	}
-
-	void Renderer::setSystemRepresentation(
-		const SystemUID						 p_uid,
-		const MapRepresentationRanges &		 p_representations,
-		std::span<const RepresentationIndex> p_atomRepresentations
-	)
-	{
-		if ( not _systems.contains( p_uid ) )
-		{
-			return;
-		}
-
-		Util::ScopedChrono timer( "[RENDERER] setSystemRepresentation" );
-
-		const Desc::Handle h = _systems.handle( p_uid );
-		Cache::System &	   cache = _systems.get( h );
-		cache.representations	  = p_representations;
-		cache.atomRepresentations.assign( p_atomRepresentations.begin(), p_atomRepresentations.end() );
-		_dirty.markAtomRepresentations( h );
-		setNeedUpdate( true );
-	}
-
-	void Renderer::setSystemVisibility( const SystemUID p_uid, const Util::Math::BitSet & p_visibility )
-	{
-		if ( not _systems.contains( p_uid ) )
-		{
-			return;
-		}
-
-		Util::ScopedChrono timer( "[RENDERER] setSystemVisibility" );
-
-		const Desc::Handle h = _systems.handle( p_uid );
-		_systems.get( h ).visibility = p_visibility;
-		_dirty.markGeometry( h );
-		setNeedUpdate( true );
-	}
-
-	void Renderer::setSystemSelection( const SystemUID p_uid, std::span<const Flag> p_atomFlags )
-	{
-		if ( not _systems.contains( p_uid ) )
-		{
-			return;
-		}
-
-		Util::ScopedChrono timer( "[RENDERER] setSystemSelection" );
-
-		const Desc::Handle h = _systems.handle( p_uid );
-		_systems.get( h ).atomFlags.assign( p_atomFlags.begin(), p_atomFlags.end() );
-		_dirty.markAtomSelection( h );
-
+		assert( _systems.contains( p_handle ) );
+		_dirtySystems.emplace_back( p_handle, p_flags );
 		setNeedUpdate( true );
 	}
 
@@ -671,35 +593,9 @@ namespace VTX::Renderer
 		_layouts.voxels.upload<Layout::VOXEL_ATTR::MINS, Vec3f>( _context, Desc::NO_HANDLE, p_mins );
 		_layouts.voxels.upload<Layout::VOXEL_ATTR::MAXS, Vec3f>( _context, Desc::NO_HANDLE, p_maxs );
 
-		_dirty.markDrawRanges();
+		_dirtyRenderer = Cache::E_RENDERER_DIRTY::DRAW_RANGES;
 
 		setNeedUpdate( true );
 	}
 
-#pragma endregion
-
-#pragma region Internals
-
-	bool Renderer::_refreshGraph( const GraphicsConfig & p_config )
-	{
-		Util::ScopedChrono timer( "[RENDERER] _refreshGraph" );
-
-		Builder::PipelineConfig config;
-
-		config.enableSSAO	   = p_config.activeSSAO;
-		config.enableOutline   = p_config.activeOutline;
-		config.enableSelection = p_config.activeSelection;
-
-		if ( _config && *_config == config )
-		{
-			return false;
-		}
-
-		_config = config;
-		_graph.set( Builder::DefaultRenderGraph::build( config, _layouts, _geometries ) );
-		_queue = _graph.build();
-		return true;
-	}
-
-#pragma endregion
 } // namespace VTX::Renderer

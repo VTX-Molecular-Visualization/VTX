@@ -2,7 +2,7 @@
 
 namespace
 {
-	VTX::App::ECS::Registry * _reg = nullptr;
+	VTX::Registry * _reg = nullptr;
 }
 
 namespace VTX::App::ECS

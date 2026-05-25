@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_GEOMETRY_SPHERE__
 
 #include "base_geometry.hpp"
+#include "renderer/caches.hpp"
 
 namespace VTX::Renderer::Geometry
 {
@@ -22,12 +23,12 @@ namespace VTX::Renderer::Geometry
 			indirectBuffer = INDIRECT_SPHERES;
 		}
 
-		void construct( const Desc::Handle p_handle, const SystemData & p_data )
+		void construct( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
 			const Index count = p_data.data.getAtomCount();
 
 			assert( count > 0 );
-			assert( p_data.atomUids.size() == count );
+			assert( p_data.atomUids.getCount() == count );
 
 			_addRange( p_handle, count, count );
 

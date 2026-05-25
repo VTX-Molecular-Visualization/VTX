@@ -3,6 +3,7 @@
 
 #include "util/types.hpp"
 #include <concepts>
+#include <memory>
 
 namespace VTX::Util
 {
@@ -17,17 +18,22 @@ namespace VTX::Util
 		 * @param p_step New current step
 		 */
 		inline void jumpTo( const uint & p_step ) noexcept { _ptr->jumpTo( p_step ); }
+
 		/**
 		 * @brief Returns the next step. Does not change internal state.
 		 * @param p_out
 		 */
 		inline void next( uint & p_out ) const noexcept { _ptr->next( p_out ); }
+
 		inline void next( const uint & p_incr, uint & p_out ) const noexcept { _ptr->next( p_incr, p_out ); }
+
 		inline void current( uint & p_out ) const noexcept { _ptr->current( p_out ); }
+
 		/**
 		 * @brief Move to the next step.
 		 */
 		inline void increment() noexcept { _ptr->increment(); }
+
 		/**
 		 * @brief Skip N steps.
 		 */
@@ -44,9 +50,11 @@ namespace VTX::Util
 			virtual void increment() noexcept									  = 0;
 			virtual void increment( const uint & p_N ) noexcept					  = 0;
 		};
+
 		struct _dummy
 		{
 		};
+
 		template<typename T>
 		class _wrapper final : public _interface
 		{
@@ -54,6 +62,7 @@ namespace VTX::Util
 
 		  public:
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
+
 			virtual void jumpTo( const uint & p_step ) noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
@@ -61,6 +70,7 @@ namespace VTX::Util
 					_obj.jumpTo( p_step );
 				}
 			}
+
 			virtual void next( uint & p_out ) const noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
@@ -68,6 +78,7 @@ namespace VTX::Util
 					_obj.next( p_out );
 				}
 			}
+
 			virtual void next( const uint & p_incr, uint & p_out ) const noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
@@ -75,6 +86,7 @@ namespace VTX::Util
 					_obj.next( p_incr, p_out );
 				}
 			}
+
 			virtual void current( uint & p_out ) const noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
@@ -82,6 +94,7 @@ namespace VTX::Util
 					_obj.current( p_out );
 				}
 			}
+
 			virtual void increment() noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
@@ -89,6 +102,7 @@ namespace VTX::Util
 					_obj.increment();
 				}
 			}
+
 			virtual void increment( const uint & p_N ) noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
@@ -97,6 +111,7 @@ namespace VTX::Util
 				}
 			}
 		};
+
 		std::unique_ptr<_interface> _ptr { std::make_unique<_wrapper<_dummy>>( _dummy() ) };
 
 	  public:
@@ -104,6 +119,7 @@ namespace VTX::Util
 		Player( PlayerT && p_ ) : _ptr( new _wrapper<PlayerT>( std::forward<PlayerT>( p_ ) ) )
 		{
 		}
+
 		Player() = default;
 	};
 
@@ -124,6 +140,7 @@ namespace VTX::Util
 			uint _lastIndex	  = 0;
 			uint _currentStep = 0;
 		};
+
 		class ForwardLoop
 		{
 		  public:
@@ -139,6 +156,7 @@ namespace VTX::Util
 			uint _lastIndex	  = 0;
 			uint _currentStep = 0;
 		};
+
 		class Backward
 		{
 		  public:
@@ -154,6 +172,7 @@ namespace VTX::Util
 			uint _lastIndex	  = 0;
 			uint _currentStep = 0;
 		};
+
 		class BackwardLoop
 		{
 		  public:
@@ -169,6 +188,7 @@ namespace VTX::Util
 			uint _lastIndex	  = 0;
 			uint _currentStep = 0;
 		};
+
 		class PingPong
 		{
 		  public:

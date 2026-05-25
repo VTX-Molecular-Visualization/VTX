@@ -1,6 +1,7 @@
 #include "renderer/builder/render_graph_build.hpp"
 #include "renderer/graphics_config.hpp"
 #include "renderer/representation.hpp"
+#include <util/chrono.hpp>
 
 namespace VTX::Renderer::Builder
 {
@@ -633,5 +634,89 @@ namespace VTX::Renderer::Builder
 			*/
 
 		return g;
+	}
+
+	bool RenderGraphRuntime::refreshGraph(
+		const GraphicsConfig &			 p_config,
+		std::optional<PipelineConfig> & p_currentConfig,
+		RenderGraph &					 p_graph,
+		Desc::RenderQueue &			 p_queue,
+		const Layouts &				 p_layouts,
+		const Geometries &			 p_geometries
+	)
+	{
+		Util::ScopedChrono timer( "[RENDERER] _refreshGraph" );
+
+		PipelineConfig config;
+		config.enableSSAO	   = p_config.activeSSAO;
+		config.enableOutline   = p_config.activeOutline;
+		config.enableSelection = p_config.activeSelection;
+
+		if ( p_currentConfig && *p_currentConfig == config )
+		{
+			return false;
+		}
+
+		p_currentConfig = config;
+		p_graph.set( DefaultRenderGraph::build( config, p_layouts, p_geometries ) );
+		p_queue = p_graph.build();
+
+		return true;
+	}
+
+	bool RenderGraphRuntime::syncGeometryChunks( RenderGraph & p_graph, const Geometries & p_geometries )
+	{
+		bool changed = false;
+
+		auto sync = [ & ]( const Desc::Key & p_geometry, const Desc::Geometry & p_source )
+		{
+			if ( not p_graph.getResources().geometries.contains( p_geometry ) )
+			{
+				return;
+			}
+
+			changed = p_graph.setGeometryChunks( p_geometry, p_source.chunks ) || changed;
+		};
+
+		sync( Geometry::SES::GEOMETRY_CONVEX_PATCHES, p_geometries.ses.convexPatches );
+		sync( Geometry::SES::GEOMETRY_CIRCLE_PATCHES, p_geometries.ses.circlePatches );
+		sync( Geometry::SES::GEOMETRY_SEGMENT_PATCHES, p_geometries.ses.segmentPatches );
+		sync( Geometry::SES::GEOMETRY_CONCAVE_PATCHES, p_geometries.ses.concavePatches );
+
+		return changed;
+	}
+
+	void RenderGraphRuntime::bindExternalPasses(
+		Context::ContextWrapper & p_context,
+		const uintptr_t			 p_function,
+		const uintptr_t			 p_contextPtr
+	)
+	{
+		if ( not p_context.containsPass( Geometry::SES::PASS_COMPUTE ) )
+		{
+			return;
+		}
+
+		p_context.setExternalPass( Geometry::SES::PASS_COMPUTE, p_function, p_contextPtr );
+	}
+
+	void RenderGraphRuntime::markSESDirty( Context::ContextWrapper & p_context, const Geometries & p_geometries )
+	{
+		if ( p_context.containsPass( Geometry::SES::PASS_COMPUTE ) && p_geometries.ses.hasPendingCompute() )
+		{
+			p_context.markPassDirty( Geometry::SES::PASS_COMPUTE );
+		}
+	}
+
+	void RenderGraphRuntime::rebuildCommandBuffer(
+		Context::ContextWrapper & p_context,
+		const Desc::RenderQueue & p_queue,
+		const Desc::Resources &	 p_resources,
+		const uintptr_t			 p_externalFunction,
+		const uintptr_t			 p_externalContext
+	)
+	{
+		p_context.build( p_queue, p_resources );
+		bindExternalPasses( p_context, p_externalFunction, p_externalContext );
 	}
 } // namespace VTX::Renderer::Builder

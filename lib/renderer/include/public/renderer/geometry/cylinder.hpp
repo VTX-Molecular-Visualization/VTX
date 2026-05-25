@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_GEOMETRY_CYLINDER__
 
 #include "base_geometry.hpp"
+#include "renderer/caches.hpp"
 
 namespace VTX::Renderer::Geometry
 {
@@ -28,7 +29,7 @@ namespace VTX::Renderer::Geometry
 			_construction.clear();
 		}
 
-		void construct( const Desc::Handle p_handle, const SystemData & p_data )
+		void construct( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
 			const Index count = p_data.data.getBondCount() * 2;
 

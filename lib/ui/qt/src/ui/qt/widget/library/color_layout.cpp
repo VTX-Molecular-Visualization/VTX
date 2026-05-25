@@ -69,7 +69,7 @@ namespace VTX::UI::QT::Widget::Library
 		_checkBoxHideNonUsual->setChecked( SETTINGS().value( SETTING_KEY_COLORS_HIDE_NON_USUAL, true ).toBool() );
 	}
 
-	void ColorLayout::_update( App::ECS::Entity p_e )
+	void ColorLayout::_update( App::Entity p_e )
 	{
 		auto & preset = App::REG().get<Renderer::Color::Layout>( p_e );
 

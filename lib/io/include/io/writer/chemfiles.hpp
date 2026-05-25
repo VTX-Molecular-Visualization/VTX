@@ -2,6 +2,8 @@
 #define __VTX_IO_WRITER_CHEMFILES__
 
 #include <io/writer/shared.hpp>
+#include <string>
+#include <util/filesystem.hpp>
 #include <util/types.hpp>
 #include <variant>
 
@@ -9,6 +11,7 @@ namespace VTX::IO::Writer
 {
 
 	using PropertyValue = std::variant<std::string, double, bool>;
+
 	/**
 	 * @brief Property that can be attached to various components of the system
 	 */
@@ -26,6 +29,7 @@ namespace VTX::IO::Writer
 		uint64_t value										 = 0xffffffffffffffff;
 		bool	 operator==( const AtomId & ) const noexcept = default;
 	};
+
 	inline bool operator<( const AtomId & lhs, const AtomId & rhs ) noexcept { return lhs.value < rhs.value; }
 
 	/**
@@ -40,6 +44,7 @@ namespace VTX::IO::Writer
 
 	struct _Atom;
 	struct _AtomInfo;
+
 	/**
 	 * @brief Atoms are provided by the System.
 	 */
@@ -63,6 +68,7 @@ namespace VTX::IO::Writer
 	};
 
 	struct _Residue;
+
 	/**
 	 * @brief Allows to configure a residue to be written. Residues can be added atoms and properties.
 	 */
@@ -88,6 +94,7 @@ namespace VTX::IO::Writer
 	};
 
 	struct _Chain;
+
 	/**
 	 * @brief Allows to configure a chain to be written.
 	 */
@@ -111,6 +118,7 @@ namespace VTX::IO::Writer
 	};
 
 	struct _Frame;
+
 	/**
 	 * @brief Allow to configure one frame of the system. A frame is defined by a set of coordinates for all atoms. If a
 	 * simple structure file is written, only one frame will suffice.
@@ -131,6 +139,7 @@ namespace VTX::IO::Writer
 	};
 
 	struct _System;
+
 	/**
 	 * @brief Responsible for creating objects to configure the chemfiles system.
 	 */
@@ -221,10 +230,12 @@ namespace VTX::IO::Writer
 
 	  private:
 		class _Impl;
+
 		struct Del
 		{
 			void operator()( _Impl * ) noexcept;
 		};
+
 		std::unique_ptr<_Impl, Del> _ = nullptr;
 	};
 } // namespace VTX::IO::Writer

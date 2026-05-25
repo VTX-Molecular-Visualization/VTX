@@ -189,7 +189,10 @@ namespace
 		return mask;
 	}
 
-	std::vector<BufferChunk> _drawChunks( const Desc::Geometry & p_geometry, const std::optional<BufferChunk> p_chunk )
+	std::vector<Desc::BufferChunk> _drawChunks(
+		const Desc::Geometry &				   p_geometry,
+		const std::optional<Desc::BufferChunk> p_chunk
+	)
 	{
 		if ( p_chunk )
 		{
@@ -708,7 +711,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL::_getOrCreateChunkResourceTable( const Desc::Pass & p_pass, const BufferChunk p_chunk )
+	Desc::Handle OpenGL::_getOrCreateChunkResourceTable( const Desc::Pass & p_pass, const Desc::BufferChunk p_chunk )
 	{
 		using namespace Desc;
 
@@ -822,7 +825,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Key OpenGL::_vertexArrayChunkKey( const Desc::Key & p_key, const BufferChunk p_chunk )
+	Desc::Key OpenGL::_vertexArrayChunkKey( const Desc::Key & p_key, const Desc::BufferChunk p_chunk )
 	{
 		if ( p_chunk == 0 )
 		{
@@ -835,7 +838,7 @@ namespace VTX::Renderer::Context::Backend
 	Desc::Handle OpenGL::_getOrCreateGeometryVertexArray(
 		const Desc::Geometry &	p_geometry,
 		const Desc::Resources & p_resources,
-		const BufferChunk		p_chunk
+		const Desc::BufferChunk p_chunk
 	)
 	{
 		const Desc::Key vaoKey = _vertexArrayChunkKey( p_geometry.vertexLayout, p_chunk );
@@ -918,7 +921,7 @@ namespace VTX::Renderer::Context::Backend
 		);
 	}
 
-	Desc::Key OpenGL::_bufferChunkKey( const Desc::Key & p_key, const BufferChunk p_chunk )
+	Desc::Key OpenGL::_bufferChunkKey( const Desc::Key & p_key, const Desc::BufferChunk p_chunk )
 	{
 		if ( p_chunk == 0 )
 		{
@@ -931,7 +934,7 @@ namespace VTX::Renderer::Context::Backend
 	Desc::Handle OpenGL::_bufferHandle(
 		const Desc::Key &		p_key,
 		const Desc::Resources & p_resources,
-		const BufferChunk		p_chunk
+		const Desc::BufferChunk p_chunk
 	)
 	{
 		const auto it = p_resources.buffers.find( p_key );
@@ -965,9 +968,9 @@ namespace VTX::Renderer::Context::Backend
 	}
 
 	Desc::Handle OpenGL::_getOrCreateBufferChunk(
-		const Desc::Key &	 p_key,
-		const Desc::Buffer & p_buffer,
-		const BufferChunk	 p_chunk
+		const Desc::Key &		p_key,
+		const Desc::Buffer &	p_buffer,
+		const Desc::BufferChunk p_chunk
 	)
 	{
 		assert( p_buffer.allocation == Desc::E_BUFFER_ALLOCATION::CHUNKED );
@@ -1105,7 +1108,7 @@ namespace VTX::Renderer::Context::Backend
 
 	OpenGL::ResourceTable OpenGL::_buildChunkResourceTable(
 		const Desc::Resources & p_resources,
-		const BufferChunk		p_chunk
+		const Desc::BufferChunk p_chunk
 	)
 	{
 		using namespace Desc;
@@ -1189,7 +1192,7 @@ namespace VTX::Renderer::Context::Backend
 		const Desc::Key &		p_vaoKey,
 		const Desc::Geometry &	p_geo,
 		const Desc::Resources & p_resources,
-		const BufferChunk		p_chunk
+		const Desc::BufferChunk p_chunk
 	)
 	{
 		using namespace Desc;

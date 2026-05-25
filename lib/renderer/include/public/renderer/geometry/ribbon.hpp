@@ -2,7 +2,7 @@
 #define __VTX_RENDERER_GEOMETRY_RIBBON__
 
 #include "base_geometry.hpp"
-#include "renderer/system_data.hpp"
+#include "renderer/caches.hpp"
 #include "renderer/types.hpp"
 #include <core/struct/topology.hpp>
 #include <util/math.hpp>
@@ -13,10 +13,10 @@ namespace VTX::Renderer::Geometry
 	class Ribbon : public BaseGeometry
 	{
 	  public:
-		inline static const Desc::Key VERTEX_LAYOUT_RESIDUES = "Residues";
-		inline static const Desc::Key GEOMETRY_RIBBONS		 = "Ribbons";
-		inline static const Desc::Key INDEX_RIBBONS			 = "Index.Ribbons";
-		inline static const Desc::Key INDIRECT_RIBBONS		 = "Indirect.Ribbons";
+		inline static const Desc::Key		  VERTEX_LAYOUT_RESIDUES   = "Residues";
+		inline static const Desc::Key		  GEOMETRY_RIBBONS		   = "Ribbons";
+		inline static const Desc::Key		  INDEX_RIBBONS			   = "Index.Ribbons";
+		inline static const Desc::Key		  INDIRECT_RIBBONS		   = "Indirect.Ribbons";
 		inline static constexpr Desc::Binding BINDING_INDIRECT_RIBBONS = 22;
 
 		Ribbon()
@@ -70,11 +70,11 @@ namespace VTX::Renderer::Geometry
 			return it->second;
 		}
 
-		void construct( const Desc::Handle p_handle, const SystemData & p_data )
+		void construct( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
-			assert( p_data.residueUids.size() == p_data.data.residueSecondaryStructureTypes.size() );
-			assert( p_data.residueUids.size() == p_data.data.residueFirstAtomIndexes.size() );
-			assert( p_data.residueUids.size() == p_data.data.residueAtomCounts.size() );
+			assert( p_data.residueUids.getCount() == p_data.data.residueSecondaryStructureTypes.size() );
+			assert( p_data.residueUids.getCount() == p_data.data.residueFirstAtomIndexes.size() );
+			assert( p_data.residueUids.getCount() == p_data.data.residueAtomCounts.size() );
 			assert( p_data.data.chainFirstResidues.size() == p_data.data.chainResidueCounts.size() );
 
 			Construction & cache = _construction[ p_handle ];

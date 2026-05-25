@@ -33,7 +33,7 @@ namespace
 
 namespace VTX::App::Helper::System
 {
-	ECS::Entity getSystemByName( const std::string_view p_name )
+	Entity getSystemByName( const std::string_view p_name )
 	{
 		for ( auto e : REG().view<IO::Metadata>() )
 		{
@@ -46,7 +46,7 @@ namespace VTX::App::Helper::System
 		return ECS::InvalidEntity;
 	}
 
-	ECS::Entity getSystemByPdb( const std::string_view p_pdb )
+	Entity getSystemByPdb( const std::string_view p_pdb )
 	{
 		for ( auto e : REG().view<IO::Metadata>() )
 		{
@@ -59,7 +59,7 @@ namespace VTX::App::Helper::System
 		return ECS::InvalidEntity;
 	}
 
-	ECS::Entity getSystemByFileName( const std::string_view p_fileName )
+	Entity getSystemByFileName( const std::string_view p_fileName )
 	{
 		for ( auto e : REG().view<IO::Metadata>() )
 		{
@@ -75,7 +75,7 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 		using namespace App::System;
 
-		const ECS::Entity ent		 = p_system.entity;
+		const Entity ent		 = p_system.entity;
 		const auto &	  reg		 = REG();
 		const auto &	  topology	 = reg.get<Core::Struct::Topology>( ent );
 		const auto &	  visibility = reg.get<App::System::Visibility>( ent );
@@ -103,7 +103,7 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 		using namespace App::System;
 
-		const ECS::Entity ent		= p_system.entity;
+		const Entity ent		= p_system.entity;
 		const auto &	  reg		= REG();
 		const auto &	  topology	= reg.get<Core::Struct::Topology>( ent );
 		const auto &	  selection = reg.get<App::System::Selection>( ent );
@@ -192,7 +192,7 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 		using namespace App::System;
 
-		const ECS::Entity ent	   = p_system.entity;
+		const Entity ent	   = p_system.entity;
 		const auto &	  reg	   = REG();
 		const auto &	  topology = reg.get<Core::Struct::Topology>( ent );
 		const auto &	  color	   = reg.get<Color>( ent );
@@ -266,7 +266,7 @@ namespace VTX::App::Helper::System
 		return false;
 	}
 
-	std::optional<ECS::Entity> getRepresentation( const SystemItemView & p_system )
+	std::optional<Entity> getRepresentation( const SystemItemView & p_system )
 	{
 		using namespace Core::Struct;
 
@@ -309,7 +309,7 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 		using namespace App::System;
 
-		const ECS::Entity ent			 = p_system.entity;
+		const Entity ent			 = p_system.entity;
 		const auto &	  reg			 = REG();
 		const auto &	  topology		 = reg.get<Core::Struct::Topology>( ent );
 		const auto &	  representation = reg.get<Representation>( ent );

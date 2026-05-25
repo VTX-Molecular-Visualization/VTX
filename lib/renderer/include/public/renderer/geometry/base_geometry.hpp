@@ -4,7 +4,6 @@
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/descriptors.hpp"
 #include "renderer/resource_handler.hpp"
-#include "renderer/system_data.hpp"
 #include "renderer/types.hpp"
 #include <map>
 #include <util/exceptions.hpp>

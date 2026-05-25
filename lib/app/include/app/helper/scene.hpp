@@ -3,26 +3,20 @@
 
 #include "app/ecs.hpp"
 #include <optional>
-#include <util/types.hpp>
+#include <util/uid.hpp>
 
 namespace VTX::App::Helper::Scene
 {
 	/**
 	 * @brief Get all system entities.
 	 */
-	 std::vector<ECS::Entity> getAllSystems();
+	std::vector<Entity> getAllSystems();
 
 	/**
-	 * @brief Get a map of all systems with their root UIDs as keys.
+	 * @brief Find system by element UID.
 	 */
-	 std::unordered_map<SystemUID, ECS::Entity> getAllSystemsMap();
-
-	/**
-	 * @brief Find system entity by UID.
-	 */
-	 std::optional<ECS::Entity> findSystemByRootUID( const SystemUID );
-	 std::optional<ECS::Entity> findSystemByAtomUID( const PickingUID );
-	 std::optional<ECS::Entity> findSystemByResidueUID( const PickingUID );
+	std::optional<Entity> findSystemByAtomUID( const UID32 );
+	std::optional<Entity> findSystemByResidueUID( const UID32 );
 
 } // namespace VTX::App::Helper::Scene
 

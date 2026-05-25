@@ -4,11 +4,11 @@
 
 namespace VTX::App::Action::Trajectory
 {
-	void ToggleStartPause::execute( ECS::Entity p_entity ) noexcept
+	void ToggleStartPause::execute( Entity p_entity ) noexcept
 	{
 		System::patchGenericTrajectories( p_entity, []( System::GenericTrajectory & traj ) { traj.paused ^= 1; } );
 	}
-	void Stop::execute( ECS::Entity p_entity ) noexcept
+	void Stop::execute( Entity p_entity ) noexcept
 	{
 		System::patchGenericTrajectories(
 			p_entity,
@@ -21,7 +21,7 @@ namespace VTX::App::Action::Trajectory
 		);
 	}
 
-	void JumpTo::execute( ECS::Entity p_entity, uint p_step ) noexcept
+	void JumpTo::execute( Entity p_entity, uint p_step ) noexcept
 	{
 		System::patchGenericTrajectories(
 			p_entity,
@@ -36,7 +36,7 @@ namespace VTX::App::Action::Trajectory
 		);
 	}
 
-	void ChangePlayer::execute( ECS::Entity p_entity, System::TrajectoryPlayMode p_playerType ) noexcept
+	void ChangePlayer::execute( Entity p_entity, System::TrajectoryPlayMode p_playerType ) noexcept
 	{
 		System::patchGenericTrajectories(
 			p_entity,
@@ -66,7 +66,7 @@ namespace VTX::App::Action::Trajectory
 		);
 	}
 
-	void ChangeSpeed::execute( ECS::Entity p_entity, float p_speed ) noexcept
+	void ChangeSpeed::execute( Entity p_entity, float p_speed ) noexcept
 	{
 		System::patchGenericTrajectories(
 			p_entity, [ &p_speed ]( System::GenericTrajectory & traj ) { traj.playingSpeed = p_speed; }

@@ -1,17 +1,18 @@
-#include <app/uid/pool.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <exception>
 #include <limits>
 #include <util/exceptions.hpp>
+#include <util/uid.hpp>
 
 TEST_CASE( "VTX_APP - UID", "[unit]" )
 {
 	using namespace VTX;
-	using namespace VTX::App::Uid;
+	using namespace VTX::Util;
+	using namespace VTX::Util::Uid;
 
 	using uid	   = uint32_t;
-	using UIDRange = Util::Math::Range<uid>;
+	using UIDRange = Math::Range<uid>;
 
 	uid		 value;
 	UIDRange range;

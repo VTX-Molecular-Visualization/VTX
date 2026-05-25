@@ -8,12 +8,12 @@
 
 namespace VTX::Renderer
 {
-	bool RenderGraph::setGeometryChunks( const Desc::Key & p_geometry, std::span<const BufferChunk> p_chunks )
+	bool RenderGraph::setGeometryChunks( const Desc::Key & p_geometry, std::span<const Desc::BufferChunk> p_chunks )
 	{
 		const auto it = _resources.geometries.find( p_geometry );
 		assert( it != _resources.geometries.end() );
 
-		std::vector<BufferChunk> chunks( p_chunks.begin(), p_chunks.end() );
+		std::vector<Desc::BufferChunk> chunks( p_chunks.begin(), p_chunks.end() );
 		if ( it->second.chunks == chunks )
 		{
 			return false;

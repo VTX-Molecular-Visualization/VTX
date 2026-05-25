@@ -99,13 +99,13 @@ namespace VTX::App::Events
 	 */
 	struct SystemLoad
 	{
-		ECS::Entity system;
+		Entity system;
 	};
 
 	template<typename P>
 	struct PresetRename
 	{
-		ECS::Entity preset;
+		Entity preset;
 		std::string name;
 	};
 

@@ -78,7 +78,7 @@ namespace VTX::UI::QT
 		 */
 		template<Core::Struct::E_SYSTEM_ITEM ITEM, typename S>
 		void select(
-			const App::ECS::Entity p_ent,
+			const App::Entity p_ent,
 			const S &			   p_data,
 			const bool			   p_selected = true,
 			const bool			   p_append	  = false

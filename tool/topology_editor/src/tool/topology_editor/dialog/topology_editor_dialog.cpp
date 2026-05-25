@@ -41,7 +41,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			return QString::fromStdString( p_value );
 		}
 
-		QString _entityLabel( const App::ECS::Entity p_entity )
+		QString _entityLabel( const App::Entity p_entity )
 		{
 			const auto & metadata = App::REG().get<IO::Metadata>( p_entity );
 			if ( not metadata.name.empty() )
@@ -124,9 +124,9 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		}
 	} // namespace
 
-	TopologyEditorDialog::TopologyEditorDialog( const App::ECS::Entity p_system ) : _system( p_system ) { _buildUi(); }
+	TopologyEditorDialog::TopologyEditorDialog( const App::Entity p_system ) : _system( p_system ) { _buildUi(); }
 
-	App::ECS::Entity TopologyEditorDialog::getSystem() const { return _system; }
+	App::Entity TopologyEditorDialog::getSystem() const { return _system; }
 
 	void TopologyEditorDialog::showEvent( QShowEvent * p_event )
 	{

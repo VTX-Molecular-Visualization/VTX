@@ -19,7 +19,7 @@ namespace VTX::Tool::TopologyEditor
 		constexpr std::string_view			   ACTION_OPEN_TOPOLOGY_EDITOR = "tool.topology_editor.open";
 		QPointer<Dialog::TopologyEditorDialog> g_dialog;
 
-		QString entityLabel( const App::ECS::Entity p_entity )
+		QString entityLabel( const App::Entity p_entity )
 		{
 			const auto & metadata = App::REG().get<IO::Metadata>( p_entity );
 			if ( not metadata.name.empty() )
@@ -37,7 +37,7 @@ namespace VTX::Tool::TopologyEditor
 			return QString( "System %1" ).arg( static_cast<uint>( p_entity ) );
 		}
 
-		void openDialogForSystem( const App::ECS::Entity p_system )
+		void openDialogForSystem( const App::Entity p_system )
 		{
 			if ( p_system == App::ECS::InvalidEntity )
 			{
@@ -87,7 +87,7 @@ namespace VTX::Tool::TopologyEditor
 					return;
 				}
 
-				const App::ECS::Entity firstSystem = *systems.begin();
+				const App::Entity firstSystem = *systems.begin();
 				auto				   secondIt	   = systems.begin();
 				++secondIt;
 				if ( secondIt == systems.end() )
@@ -97,7 +97,7 @@ namespace VTX::Tool::TopologyEditor
 				}
 
 				QMenu menu( &UI::QT::MAIN_WINDOW() );
-				for ( const App::ECS::Entity entity : systems )
+				for ( const App::Entity entity : systems )
 				{
 					QAction * const action = menu.addAction( entityLabel( entity ) );
 					action->setData( static_cast<uint>( entity ) );
@@ -109,7 +109,7 @@ namespace VTX::Tool::TopologyEditor
 					return;
 				}
 
-				openDialogForSystem( App::ECS::Entity( selected->data().toUInt() ) );
+				openDialogForSystem( App::Entity( selected->data().toUInt() ) );
 			}
 		);
 	}

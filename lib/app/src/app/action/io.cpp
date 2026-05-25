@@ -110,7 +110,7 @@ namespace VTX::App::Action::IO
 	{
 	}
 
-	void AssociateTrajectory::execute( const FilePath & p_path, const ECS::Entity & p_entity )
+	void AssociateTrajectory::execute( const FilePath & p_path, const Entity & p_entity )
 	{
 		if ( p_entity == entt::null )
 		{
@@ -122,7 +122,7 @@ namespace VTX::App::Action::IO
 		_data->extractorCreation.count_down();
 		_data->start_extraction();
 	}
-	void AssociateTrajectory::execute( const std::string & p_path, const ECS::Entity & p_e )
+	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e )
 	{ execute( FilePath( p_path ), p_e ); }
 	void AssociateTrajectory::wait() noexcept { _data->wait(); }
 

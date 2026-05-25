@@ -30,7 +30,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Constructor.
 		 */
-		CameraUpdater( const ECS::Entity & );
+		CameraUpdater( const Entity & );
 
 		/**
 		 * @brief Update each frame.
@@ -123,7 +123,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Camera entity.
 		 */
-		const ECS::Entity _entity;
+		const Entity _entity;
 
 		/**
 		 * @brief Controller running definition.

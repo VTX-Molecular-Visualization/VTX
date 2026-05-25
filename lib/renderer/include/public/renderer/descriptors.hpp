@@ -1,7 +1,6 @@
 #ifndef __VTX_RENDERER_DESCRIPTORS__
 #define __VTX_RENDERER_DESCRIPTORS__
 
-#include "renderer/types.hpp"
 #include <array>
 #include <memory>
 #include <optional>
@@ -362,6 +361,11 @@ namespace VTX::Renderer::Desc
 		std::optional<Binding>	  binding	 = std::nullopt; // TODO: remove and use backend reflection?
 		std::vector<UniformValue> values;
 	};
+
+	/**
+	 * @brief Physical chunk of a buffer, used when allocation strategy is chunked.
+	 */
+	using BufferChunk = uint32_t;
 
 	/**
 	 * @brief Reference to a logical buffer, optionally targeting a physical chunk.

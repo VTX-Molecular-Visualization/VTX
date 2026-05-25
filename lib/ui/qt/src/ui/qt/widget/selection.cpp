@@ -34,10 +34,10 @@ namespace VTX::UI::QT::Widget
 
 		auto &	   reg		= REG();
 		const auto entities = reg.view<App::System::Selection>();
-		App::ECS::Entity editableSystemEntity = App::ECS::InvalidEntity;
+		App::Entity editableSystemEntity = App::ECS::InvalidEntity;
 		Index			 selectedSystemCount  = 0;
 
-		for ( const App::ECS::Entity entity : entities )
+		for ( const App::Entity entity : entities )
 		{
 			const auto & selection = reg.get<App::System::Selection>( entity );
 			if ( selection.atoms.none() )
@@ -270,7 +270,7 @@ namespace VTX::UI::QT::Widget
 		_connMetadataChanged.release();
 	}
 
-	void Selection::_transformUpdated( App::ECS::Registry & p_reg, App::ECS::Entity p_entity )
+	void Selection::_transformUpdated( App::Registry & p_reg, App::Entity p_entity )
 	{
 		if ( !_transform || std::find( _entities.begin(), _entities.end(), p_entity ) == _entities.end() )
 		{
@@ -282,7 +282,7 @@ namespace VTX::UI::QT::Widget
 		_transform->setTransform( transform );
 	}
 
-	void Selection::_metadataUpdated( App::ECS::Registry & p_reg, App::ECS::Entity p_entity )
+	void Selection::_metadataUpdated( App::Registry & p_reg, App::Entity p_entity )
 	{
 		if ( !_textName || std::find( _entities.begin(), _entities.end(), p_entity ) == _entities.end() )
 		{

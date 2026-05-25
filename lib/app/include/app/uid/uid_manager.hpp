@@ -1,32 +1,24 @@
 #ifndef __VTX_APP_CORE_UID_UID_MANAGER__
 #define __VTX_APP_CORE_UID_UID_MANAGER__
 
-#include "app/uid/pool.hpp"
+#include <util/uid.hpp>
 
 namespace VTX::App::Uid
 {
+
 	/**
-	 * @brief Manager multiple UID pools.
+	 * @brief Manage multiple UID pools.
 	 */
 	class UIDManager
 	{
 	  public:
-		using PickingUIDRange = Util::Math::Range<PickingUID>;
-		using RootUIDRange	  = Util::Math::Range<SystemUID>;
-
-		inline Pool<PickingUID> & getPickingPool() { return _pickingPool; }
-		inline Pool<SystemUID> &	  getRootPool() { return _rootPool; }
+		inline Util::Uid::Pool<UID32> & getPickingPool() { return _pickingPool; }
 
 	  private:
 		/**
 		 * @brief Pool for picking UIDs (atoms/residues).
 		 */
-		Pool<PickingUID> _pickingPool;
-
-		/**
-		 * @brief Pool for root UIDs (system).
-		 */
-		Pool<SystemUID> _rootPool;
+		Util::Uid::Pool<UID32> _pickingPool;
 	};
 } // namespace VTX::App::Uid
 

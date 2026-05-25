@@ -12,7 +12,7 @@
 namespace VTX::UI::QT::Delegate
 {
 
-	SystemDelegate::SystemDelegate( const App::ECS::Entity p_system, QObject * p_parent ) :
+	SystemDelegate::SystemDelegate( const App::Entity p_system, QObject * p_parent ) :
 		QStyledItemDelegate( p_parent ), _system( p_system )
 	{
 		_icons[ 0 ] = STYLE().iconFromCodepoint( Style::Icons::VISIBILITY_OFF );

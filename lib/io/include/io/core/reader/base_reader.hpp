@@ -3,7 +3,7 @@
 
 #include <string>
 #include <util/exceptions.hpp>
-#include <util/types.hpp>
+#include <util/filesystem.hpp>
 
 namespace VTX::IO::Core::Reader
 {
@@ -14,6 +14,7 @@ namespace VTX::IO::Core::Reader
 		virtual ~BaseReader() = default;
 
 		virtual void readFile( const FilePath &, T & ) = 0;
+
 		virtual void readBuffer( const std::string & p_buffer, const FilePath &, T & )
 		{
 			throw NotImplementedException();

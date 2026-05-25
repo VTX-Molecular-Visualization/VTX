@@ -37,7 +37,7 @@ namespace VTX::UI::QT::Model
 		/**
 		 * @brief Constructor.
 		 */
-		SystemModel( const App::ECS::Entity, QObject * = nullptr );
+		SystemModel( const App::Entity, QObject * = nullptr );
 
 		/**
 		 * @brief Number of columns is always 1.
@@ -83,7 +83,7 @@ namespace VTX::UI::QT::Model
 		/**
 		 * @brief Entity of fetch data from.
 		 */
-		const App::ECS::Entity _system;
+		const App::Entity _system;
 
 	};
 

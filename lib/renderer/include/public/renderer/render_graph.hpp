@@ -25,7 +25,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Update the active physical chunks for a geometry resource.
 		 */
-		bool setGeometryChunks( const Desc::Key &, std::span<const BufferChunk> );
+		bool setGeometryChunks( const Desc::Key &, std::span<const Desc::BufferChunk> );
 
 		/**
 		 * @brief Validate graph and build render queue.

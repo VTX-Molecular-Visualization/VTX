@@ -17,6 +17,9 @@ namespace VTX::Util::Math
 	class BitSet
 	{
 	  public:
+		/**
+		 * @brief Byte size type.
+		 */
 		using Word = uint64_t;
 
 		/**
@@ -352,7 +355,9 @@ namespace VTX::Util::Math
 		 * @brief Returns true if both bitsets have the same size and content.
 		 */
 		[[nodiscard]] inline bool equals( const BitSet & p_other ) const noexcept
-		{ return _size == p_other._size && _data == p_other._data; }
+		{
+			return _size == p_other._size && _data == p_other._data;
+		}
 
 		/**
 		 * @brief Returns the number of bits.
@@ -668,14 +673,17 @@ namespace VTX::Util::Math
 		 * @brief Union operator.
 		 */
 		[[nodiscard]] inline BitSet operator|( const BitSet & p_other ) const { return merge( p_other ); }
+
 		/**
 		 * @brief Intersection operator.
 		 */
 		[[nodiscard]] inline BitSet operator&( const BitSet & p_other ) const { return intersect( p_other ); }
+
 		/**
 		 * @brief Subtraction operator.
 		 */
 		[[nodiscard]] inline BitSet operator-( const BitSet & p_other ) const { return subtract( p_other ); }
+
 		/**
 		 * @brief Symmetric difference operator.
 		 */
@@ -685,14 +693,17 @@ namespace VTX::Util::Math
 		 * @brief In-place union operator.
 		 */
 		inline BitSet & operator|=( const BitSet & p_other ) noexcept { return mergeInPlace( p_other ); }
+
 		/**
 		 * @brief In-place intersection operator.
 		 */
 		inline BitSet & operator&=( const BitSet & p_other ) noexcept { return intersectInPlace( p_other ); }
+
 		/**
 		 * @brief In-place subtraction operator.
 		 */
 		inline BitSet & operator-=( const BitSet & p_other ) noexcept { return subtractInPlace( p_other ); }
+
 		/**
 		 * @brief In-place symmetric difference operator.
 		 */
@@ -702,6 +713,7 @@ namespace VTX::Util::Math
 		 * @brief Equality operator.
 		 */
 		[[nodiscard]] inline bool operator==( const BitSet & p_other ) const noexcept { return equals( p_other ); }
+
 		/**
 		 * @brief Inequality operator.
 		 */
@@ -727,6 +739,13 @@ namespace VTX::Util::Math
 				}
 			}
 		}
+
+		/*
+		inline std::span<const std::byte> toSpan() const noexcept
+		{
+			return std::span<const std::byte>( _data.data(), _size );
+		}
+		*/
 
 		/**
 		 * @brief Convert to range list.
@@ -775,6 +794,7 @@ namespace VTX::Util::Math
 		 * @brief Returns a read-only reference to the internal word storage.
 		 */
 		[[nodiscard]] inline const std::vector<Word> & data() const noexcept { return _data; }
+
 		/**
 		 * @brief Returns a reference to the internal word storage.
 		 */
@@ -810,6 +830,7 @@ namespace VTX::Util::Math
 			}
 
 			bool operator==( const Iterator & p_other ) const noexcept { return _wordIndex == p_other._wordIndex; }
+
 			bool operator!=( const Iterator & p_other ) const noexcept { return _wordIndex != p_other._wordIndex; }
 
 		  private:
@@ -835,6 +856,7 @@ namespace VTX::Util::Math
 		 * @brief Returns an iterator to the first set bit.
 		 */
 		[[nodiscard]] inline Iterator begin() const noexcept { return Iterator( _data, 0 ); }
+
 		/**
 		 * @brief Returns a past-the-end iterator.
 		 */

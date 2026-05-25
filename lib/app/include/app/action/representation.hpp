@@ -19,8 +19,8 @@ namespace VTX::App::Action::Representation
 	struct Add
 	{
 		void execute(
-			const ECS::Entity					 p_ent,
-			const ECS::Entity					 p_preset,
+			const Entity					 p_ent,
+			const Entity					 p_preset,
 			const Core::Struct::IndexRangeList & p_ranges = {}
 		)
 		{
@@ -58,22 +58,22 @@ namespace VTX::App::Action::Representation
 			);
 		}
 
-		void execute( const ECS::Entity p_ent, const ECS::Entity p_preset, const Core::Struct::IndexRange & p_range )
+		void execute( const Entity p_ent, const Entity p_preset, const Core::Struct::IndexRange & p_range )
 		{ execute( p_ent, p_preset, Core::Struct::IndexRangeList( p_range ) ); }
 
-		void execute( const ECS::Entity p_ent, const ECS::Entity p_preset, const std::vector<Index> & p_values )
+		void execute( const Entity p_ent, const Entity p_preset, const std::vector<Index> & p_values )
 		{ execute( p_ent, p_preset, Core::Struct::IndexRangeList( p_values ) ); }
 
-		void execute( const ECS::Entity p_ent, const ECS::Entity p_preset, const Index p_value )
+		void execute( const Entity p_ent, const Entity p_preset, const Index p_value )
 		{ execute( p_ent, p_preset, Core::Struct::IndexRangeList( p_value ) ); }
 	};
 
 	struct AddItem
 	{
 		void execute(
-			const ECS::Entity					 p_ent,
+			const Entity					 p_ent,
 			const Core::Struct::E_SYSTEM_ITEM	 p_item,
-			const ECS::Entity					 p_preset,
+			const Entity					 p_preset,
 			const Core::Struct::IndexRangeList & p_ranges = {}
 		)
 		{
@@ -96,25 +96,25 @@ namespace VTX::App::Action::Representation
 		}
 
 		void execute(
-			const ECS::Entity				  p_ent,
+			const Entity				  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM p_item,
-			const ECS::Entity				  p_preset,
+			const Entity				  p_preset,
 			const Core::Struct::IndexRange &  p_range
 		)
 		{ execute( p_ent, p_item, p_preset, Core::Struct::IndexRangeList( p_range ) ); }
 
 		void execute(
-			const ECS::Entity				  p_ent,
+			const Entity				  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM p_item,
-			const ECS::Entity				  p_preset,
+			const Entity				  p_preset,
 			const std::vector<Index> &		  p_values
 		)
 		{ execute( p_ent, p_item, p_preset, Core::Struct::IndexRangeList( p_values ) ); }
 
 		void execute(
-			const ECS::Entity				  p_ent,
+			const Entity				  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM p_item,
-			const ECS::Entity				  p_preset,
+			const Entity				  p_preset,
 			const Index						  p_value
 		)
 		{ execute( p_ent, p_item, p_preset, Core::Struct::IndexRangeList( p_value ) ); }
@@ -126,7 +126,7 @@ namespace VTX::App::Action::Representation
 	template<VTX::Renderer::E_REPRESENTATION_VALUES S, typename T>
 	struct Change
 	{
-		void execute( const ECS::Entity p_e, const T & p_value )
+		void execute( const Entity p_e, const T & p_value )
 		{
 			REG().patch<Renderer::Representation>(
 				p_e,
@@ -187,11 +187,11 @@ namespace VTX::App::Action::Representation
 
 	struct AddSelected
 	{
-		void execute( const ECS::Entity p_e )
+		void execute( const Entity p_e )
 		{
 			REG().view<System::Selection, System::Representation>().each(
 				[ p_e ](
-					const ECS::Entity p_ent, const System::Selection & p_selection, const System::Representation &
+					const Entity p_ent, const System::Selection & p_selection, const System::Representation &
 				)
 				{
 					const Core::Struct::IndexRangeList ranges = p_selection.atoms.toRangeList<Index>();

@@ -27,7 +27,7 @@ namespace VTX::UI::QT::Delegate
 		/**
 		 * @brief Constructor.
 		 */
-		SystemDelegate( const App::ECS::Entity, QObject * );
+		SystemDelegate( const App::Entity, QObject * );
 
 		/**
 		 * @brief Override: paint the system item with custom visuals.
@@ -78,7 +78,7 @@ namespace VTX::UI::QT::Delegate
 		/**
 		 * @brief Entity to display.
 		 */
-		App::ECS::Entity _system;
+		App::Entity _system;
 
 		static constexpr int ICON_SIZE = 15;
 		static constexpr int SPACING   = 4;

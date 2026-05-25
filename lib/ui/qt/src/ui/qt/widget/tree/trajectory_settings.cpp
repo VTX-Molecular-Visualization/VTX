@@ -10,7 +10,7 @@
 namespace VTX::UI::QT::Widget::Tree
 {
 
-	TrajectorySettings::TrajectorySettings( App::ECS::Entity p_system, QWidget * p_parent ) :
+	TrajectorySettings::TrajectorySettings( App::Entity p_system, QWidget * p_parent ) :
 		QWidget( p_parent ), _system( p_system )
 	{
 		auto * formLayout = new QFormLayout( this );
@@ -111,7 +111,7 @@ namespace VTX::UI::QT::Widget::Tree
 		App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, uint( p_value ) );
 	}
 
-	void TrajectorySettings::_onTrajectoryUpdated( App::ECS::Registry &, App::ECS::Entity p_entity )
+	void TrajectorySettings::_onTrajectoryUpdated( App::Registry &, App::Entity p_entity )
 	{
 		if ( p_entity == _system )
 		{

@@ -1,8 +1,10 @@
 #ifndef __VTX_IO_WRITER_SYSTEM__
 #define __VTX_IO_WRITER_SYSTEM__
+
 #include <core/struct/topology.hpp>
 #include <functional>
 #include <io/writer/shared.hpp>
+#include <util/filesystem.hpp>
 #include <util/thread.hpp>
 
 namespace VTX::IO::Writer
@@ -17,7 +19,8 @@ namespace VTX::IO::Writer
 	 * @brief Convenient function used to create the default AtomFilter callable.
 	 * @return true
 	 */
-	inline bool		 returnTrue( const VTX::Core::Struct::Topology &, const size_t & ) noexcept { return true; }
+	inline bool returnTrue( const VTX::Core::Struct::Topology &, const size_t & ) noexcept { return true; }
+
 	const AtomFilter g_takeAllAtoms = AtomFilter( &returnTrue ); // default argument for the write atom filter
 
 	/**
@@ -39,6 +42,7 @@ namespace VTX::IO::Writer
 		 * @return
 		 */
 		inline std::span<const Vec3f> getAtomPositions( const uint & p_ ) const { return _ptr->getAtomPositions( p_ ); }
+
 		inline std::span<const Vec3f> getCurrentAtomPositions() const { return _ptr->getCurrentAtomPositions(); }
 
 	  private:
@@ -49,35 +53,46 @@ namespace VTX::IO::Writer
 			virtual std::span<const Vec3f> getAtomPositions( const uint & ) const = 0;
 			virtual std::span<const Vec3f> getCurrentAtomPositions() const		  = 0;
 		};
+
 		struct _dummy
 		{
 		};
+
 		template<typename T>
 		struct _wrapper final : public _interface
 		{
 			_wrapper( T && p_obj ) : _obj( std::forward<T>( p_obj ) ) {}
+
 			virtual uint frameCount() const override
 			{
 				if constexpr ( std::same_as<T, _dummy> )
+				{
 					return 0;
+				}
 				else
 				{
 					return _obj.frameCount();
 				}
 			}
+
 			virtual std::span<const Vec3f> getAtomPositions( const uint & p_index ) const override
 			{
 				if constexpr ( std::same_as<T, _dummy> )
+				{
 					return {};
+				}
 				else
 				{
 					return _obj.getAtomPositions( p_index );
 				}
 			}
+
 			virtual std::span<const Vec3f> getCurrentAtomPositions() const override
 			{
 				if constexpr ( std::same_as<T, _dummy> )
+				{
 					return {};
+				}
 				else
 				{
 					return _obj.getCurrentAtomPositions();
@@ -87,6 +102,7 @@ namespace VTX::IO::Writer
 		  private:
 			T _obj;
 		};
+
 		std::unique_ptr<_interface> _ptr { new _wrapper<_dummy>( _dummy() ) };
 
 	  public:
@@ -107,6 +123,7 @@ namespace VTX::IO::Writer
 			TrajectoryFrameGetter				trajectory;
 			AtomFilter							atomFilter = g_takeAllAtoms;
 		};
+
 		FilePath			destination;
 		E_FILE_FORMATS		format = E_FILE_FORMATS::none;
 		std::vector<System> topologies;

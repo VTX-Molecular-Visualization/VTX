@@ -29,7 +29,7 @@ namespace VTX::App::System
 	};
 	SelectionWriter::SelectionWriter( FilePath p_dest ) : _ptr( new _impl( std::move( p_dest ) ) )
 	{
-		std::vector<ECS::Entity> systems;
+		std::vector<Entity> systems;
 		for ( auto it_selectionEntt : REG().group<System::Selection, Core::Struct::Topology>() )
 		{
 			_ptr->systems.emplace_back(

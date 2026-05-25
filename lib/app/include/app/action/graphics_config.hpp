@@ -12,7 +12,7 @@ namespace VTX::App::Action::GraphicsConfig
 	template<VTX::Renderer::E_GRAPHICS_CONFIG_VALUES S, typename T>
 	struct Change
 	{
-		void execute( const ECS::Entity p_e, const T & p_value )
+		void execute( const Entity p_e, const T & p_value )
 		{
 			REG().patch<Renderer::GraphicsConfig>(
 				p_e,

@@ -2,7 +2,6 @@
 #define __VTX_UTIL_TYPES__
 
 #include <cstdint>
-#include <filesystem>
 #include <glm/detail/qualifier.hpp>
 #include <glm/detail/type_quat.hpp>
 #include <glm/glm.hpp>
@@ -16,16 +15,6 @@ namespace VTX
 	using uchar	 = uint8_t;
 	using ushort = uint16_t;
 	using uint	 = uint32_t;
-
-	/**
-	 * @brief Filesystem.
-	 */
-	using FilePath = std::filesystem::path;
-
-	/**
-	 * @brief Hashing.
-	 */
-	using Hash = size_t;
 
 	/**
 	 * @brief GLM.
@@ -49,21 +38,6 @@ namespace VTX
 	 * @brief Index type used for local indexing (e.g. atoms in residue, etc...).
 	 */
 	using Index = uint32_t;
-
-	/**
-	 * @brief UID type used for picking operations.
-	 */
-	using PickingUID = uint32_t;
-
-	/**
-	 * @brief UID type used for scene root objects (systems).
-	 */
-	using SystemUID = uint16_t;
-
-	/**
-	 * @brief Byte size type.
-	 */
-	using ByteNumber = uint64_t;
 
 	/**
 	 * @brief Convert enum to its underlying type.

@@ -55,7 +55,7 @@ namespace VTX::Renderer::Layout
 			}
 			else if constexpr ( A == RESIDUE_ATTR::ID )
 			{
-				p_context.setBuffer<PickingUID>( { RESIDUES_IDS }, p_data, o );
+				p_context.setBuffer<UID32>( { RESIDUES_IDS }, p_data, o );
 			}
 			else if constexpr ( A == RESIDUE_ATTR::FLAG )
 			{
@@ -78,7 +78,7 @@ namespace VTX::Renderer::Layout
 			p_context.setBuffer<Vec3f>( { RESIDUES_DIRECTIONS }, p_size );
 			p_context.setBuffer<uint8_t>( { RESIDUES_TYPES }, p_size );
 			p_context.setBuffer<ColorIndex>( { RESIDUES_COLORS }, p_size );
-			p_context.setBuffer<PickingUID>( { RESIDUES_IDS }, p_size );
+			p_context.setBuffer<UID32>( { RESIDUES_IDS }, p_size );
 			p_context.setBuffer<Flag>( { RESIDUES_FLAGS }, p_size );
 			p_context.setBuffer<RepresentationIndex>( { RESIDUES_REPRESENTATIONS }, p_size );
 		}

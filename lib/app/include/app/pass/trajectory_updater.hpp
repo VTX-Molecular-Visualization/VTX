@@ -16,10 +16,10 @@ namespace VTX::App::Pass
 		void update( const float, const float );
 
 	  private:
-		bool _tryUpdateFrame( const ECS::Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept;
+		bool _tryUpdateFrame( const Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept;
 
-		void _onTrajectoryFullBufferCreation( ECS::Entity );
-		void _onTrajectoryDestruction( ECS::Entity );
+		void _onTrajectoryFullBufferCreation( Entity );
+		void _onTrajectoryDestruction( Entity );
 	};
 } // namespace VTX::App::Pass
 #endif

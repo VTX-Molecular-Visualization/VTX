@@ -6,6 +6,14 @@
 #include <string_view>
 #include <utility>
 
+namespace VTX
+{
+	/**
+	 * @brief Hashing.
+	 */
+	using Hash = size_t;
+} // namespace VTX
+
 namespace VTX::Util
 {
 	// Template function to hash a value.

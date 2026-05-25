@@ -9,7 +9,7 @@
 namespace VTX::App::Action::Scene
 {
 
-	void DeleteSystem::execute( const ECS::Entity p_e ) { REG().destroy( p_e ); }
+	void DeleteSystem::execute( const Entity p_e ) { REG().destroy( p_e ); }
 
 	void DeleteSystemSelected::execute()
 	{
@@ -29,7 +29,7 @@ namespace VTX::App::Action::Scene
 		REG().view<IO::Metadata>().each( [ & ]( auto p_e, auto & ) { REG().destroy( p_e ); } );
 	}
 
-	void SetColorLayout::execute( const ECS::Entity p_e )
+	void SetColorLayout::execute( const Entity p_e )
 	{
 		using CL = App::Scene::ColorLayout;
 
@@ -43,7 +43,7 @@ namespace VTX::App::Action::Scene
 		reg.emplace<CL>( scene, p_e );
 	}
 
-	void SetGraphicsConfig::execute( const ECS::Entity p_e )
+	void SetGraphicsConfig::execute( const Entity p_e )
 	{
 		using GC = App::Scene::GraphicsConfig;
 

@@ -20,7 +20,14 @@ namespace VTX::Renderer
 		RIBBON_COLOR_BLENDING,
 
 		HAS_SES,
+		SES_COMPUTE_MODE,
 		SES_PROBE_RADIUS
+	};
+
+	enum struct E_SES_COMPUTE_MODE
+	{
+		SYSTEM,
+		CATEGORY
 	};
 
 	// Default values.
@@ -42,10 +49,13 @@ namespace VTX::Renderer
 	constexpr bool HAS_RIBBON_DEFAULT			 = true;
 	constexpr bool RIBBON_COLOR_BLENDING_DEFAULT = true;
 
-	constexpr bool	HAS_SES_DEFAULT			 = false;
-	constexpr float SES_PROBE_RADIUS_DEFAULT = 1.4f;
-	constexpr float SES_PROBE_RADIUS_MIN	 = 0.2f;
-	constexpr float SES_PROBE_RADIUS_MAX	 = 3.f;
+	constexpr bool				 HAS_SES_DEFAULT		  = false;
+	constexpr E_SES_COMPUTE_MODE SES_COMPUTE_MODE_DEFAULT = E_SES_COMPUTE_MODE::CATEGORY;
+	constexpr float				 SES_PROBE_RADIUS_DEFAULT = 1.4f;
+	constexpr float				 SES_PROBE_RADIUS_MIN	  = 0.2f;
+	constexpr float				 SES_PROBE_RADIUS_MAX	  = 3.f;
+
+	using RepresentationIndex = uint8_t;
 
 	struct Representation
 	{
@@ -65,8 +75,9 @@ namespace VTX::Renderer
 		uint ribbonColorBlending;
 
 		// SES.
-		bool  hasSes;
-		float sesProbeRadius;
+		bool			   hasSes;
+		E_SES_COMPUTE_MODE sesComputeMode;
+		float			   sesProbeRadius;
 	};
 
 	namespace Representations
@@ -85,6 +96,7 @@ namespace VTX::Renderer
 											 false,
 											 // SES.
 											 false,
+											 SES_COMPUTE_MODE_DEFAULT,
 											 SES_PROBE_RADIUS_DEFAULT
 		};
 
@@ -102,6 +114,7 @@ namespace VTX::Renderer
 														 true,
 														 // SES.
 														 false,
+														 SES_COMPUTE_MODE_DEFAULT,
 														 SES_PROBE_RADIUS_DEFAULT
 		};
 
@@ -119,6 +132,7 @@ namespace VTX::Renderer
 													   false,
 													   // SES.
 													   false,
+													   SES_COMPUTE_MODE_DEFAULT,
 													   SES_PROBE_RADIUS_DEFAULT
 		};
 
@@ -136,6 +150,7 @@ namespace VTX::Renderer
 													false,
 													// SES.
 													false,
+													SES_COMPUTE_MODE_DEFAULT,
 													SES_PROBE_RADIUS_DEFAULT
 		};
 
@@ -153,6 +168,7 @@ namespace VTX::Renderer
 											  true,
 											  // SES.
 											  false,
+											  SES_COMPUTE_MODE_DEFAULT,
 											  SES_PROBE_RADIUS_DEFAULT
 		};
 
@@ -170,6 +186,7 @@ namespace VTX::Renderer
 										  false,
 										  // SES.
 										  true,
+										  SES_COMPUTE_MODE_DEFAULT,
 										  SES_PROBE_RADIUS_DEFAULT
 		};
 	} // namespace Representations

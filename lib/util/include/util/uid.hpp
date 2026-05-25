@@ -1,11 +1,20 @@
-#ifndef __VTX_APP_CORE_UID_POOL__
-#define __VTX_APP_CORE_UID_POOL__
+#ifndef __VTX_UTIL_UID_POOL__
+#define __VTX_UTIL_UID_POOL__
 
 #include <mutex>
 #include <util/exceptions.hpp>
 #include <util/math/range_list.hpp>
 
-namespace VTX::App::Uid
+namespace VTX
+{
+	/**
+	 * @brief UIDs.
+	 */
+	using UID32 = uint32_t;
+	using UID64 = uint64_t;
+} // namespace VTX
+
+namespace VTX::Util::Uid
 {
 	/**
 	 * @brief Pool managing unique identifiers by type.
@@ -14,8 +23,8 @@ namespace VTX::App::Uid
 	class Pool
 	{
 	  public:
-		using UIDRange	   = Util::Math::Range<UID>;
-		using UIDRangeList = Util::Math::RangeList<UID>;
+		using UIDRange	   = Math::Range<UID>;
+		using UIDRangeList = Math::RangeList<UID>;
 
 		/**
 		 * @brief Constructor.
@@ -85,7 +94,7 @@ namespace VTX::App::Uid
 		void clear()
 		{
 			std::lock_guard<std::mutex> guard( _mutex );
-			_available = UIDRangeList( { Util::Math::Range<UID>( UID( 1 ), std::numeric_limits<UID>::max() ) } );
+			_available = UIDRangeList( { Math::Range<UID>( UID( 1 ), std::numeric_limits<UID>::max() ) } );
 			_available.removeValue( UID( INVALID_UID ) );
 		}
 
@@ -100,6 +109,6 @@ namespace VTX::App::Uid
 		 */
 		std::mutex _mutex;
 	};
-} // namespace VTX::App::Uid
+} // namespace VTX::Util::Uid
 
 #endif

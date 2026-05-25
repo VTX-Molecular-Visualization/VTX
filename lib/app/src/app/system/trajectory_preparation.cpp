@@ -81,7 +81,7 @@ namespace VTX::App::System
 	{
 		p_loader.get( p_trajectory.atomPositions );
 	}
-	void startAsyncTrajectoryWork( const ECS::Entity & p_entity, PendingSystem & p_pendingData ) noexcept
+	void startAsyncTrajectoryWork( const Entity & p_entity, PendingSystem & p_pendingData ) noexcept
 	{
 		if ( auto traj = REG().try_get<TrajectoryFullBuffer>( p_entity ) )
 		{

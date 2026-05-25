@@ -3,6 +3,7 @@
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"
+#include "renderer/descriptors.hpp"
 #include "renderer/geometry/cylinder.hpp"
 #include "renderer/geometry/grid.hpp"
 #include "renderer/geometry/ribbon.hpp"
@@ -34,7 +35,7 @@ namespace VTX::Renderer
 			ses.clear();
 		}
 
-		void construct( const Desc::Handle p_handle, const SystemData & p_data )
+		void construct( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
 			spheres.construct( p_handle, p_data );
 			cylinders.construct( p_handle, p_data );
@@ -43,7 +44,7 @@ namespace VTX::Renderer
 		void constructSES(
 			Context::ContextWrapper & p_context,
 			const Desc::Handle		  p_handle,
-			const SystemData &		  p_data,
+			const Cache::System &	  p_data,
 			const uint32_t			  p_inputAtomOffset
 		)
 		{
@@ -105,7 +106,7 @@ namespace VTX::Renderer
 				return;
 			}
 
-			for ( const BufferChunk chunk : p_geometry.chunks )
+			for ( const Desc::BufferChunk chunk : p_geometry.chunks )
 			{
 				const Desc::BufferRef ref { p_indirectBuffer, chunk };
 				p_context.ensureBufferChunk( ref );

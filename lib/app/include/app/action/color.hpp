@@ -17,7 +17,7 @@ namespace VTX::App::Action::Color
 	struct Add
 	{
 		void execute(
-			const ECS::Entity						  p_ent,
+			const Entity						  p_ent,
 			const System::E_COLOR_SCHEME			  p_scheme,
 			const Core::Struct::IndexRangeList &	  p_ranges	   = {},
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
@@ -101,7 +101,7 @@ namespace VTX::App::Action::Color
 		}
 
 		void execute(
-			const ECS::Entity						  p_ent,
+			const Entity						  p_ent,
 			const System::E_COLOR_SCHEME			  p_scheme,
 			const Core::Struct::IndexRange &		  p_range,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
@@ -109,7 +109,7 @@ namespace VTX::App::Action::Color
 		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex ); }
 
 		void execute(
-			const ECS::Entity						  p_ent,
+			const Entity						  p_ent,
 			const System::E_COLOR_SCHEME			  p_scheme,
 			const std::vector<Index> &				  p_values,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
@@ -117,7 +117,7 @@ namespace VTX::App::Action::Color
 		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex ); }
 
 		void execute(
-			const ECS::Entity						  p_ent,
+			const Entity						  p_ent,
 			const System::E_COLOR_SCHEME			  p_scheme,
 			const Index								  p_value,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
@@ -128,7 +128,7 @@ namespace VTX::App::Action::Color
 	struct AddItem
 	{
 		void execute(
-			const ECS::Entity						  p_ent,
+			const Entity						  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM		  p_item,
 			const System::E_COLOR_SCHEME			  p_scheme,
 			const Core::Struct::IndexRangeList &	  p_ranges	   = {},
@@ -154,7 +154,7 @@ namespace VTX::App::Action::Color
 		}
 
 		void execute(
-			const ECS::Entity						  p_ent,
+			const Entity						  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM		  p_item,
 			const System::E_COLOR_SCHEME			  p_scheme,
 			const Core::Struct::IndexRange &		  p_range,
@@ -163,7 +163,7 @@ namespace VTX::App::Action::Color
 		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex ); }
 
 		void execute(
-			const ECS::Entity						  p_ent,
+			const Entity						  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM		  p_item,
 			const System::E_COLOR_SCHEME			  p_scheme,
 			const std::vector<Index> &				  p_values,
@@ -172,7 +172,7 @@ namespace VTX::App::Action::Color
 		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex ); }
 
 		void execute(
-			const ECS::Entity						  p_ent,
+			const Entity						  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM		  p_item,
 			const System::E_COLOR_SCHEME			  p_scheme,
 			const Index								  p_value,
@@ -190,7 +190,7 @@ namespace VTX::App::Action::Color
 		{
 			REG().view<System::Selection, System::Color>().each(
 				[ p_scheme, p_colorIndex ](
-					const ECS::Entity p_ent, const System::Selection & p_selection, const System::Color & p_color
+					const Entity p_ent, const System::Selection & p_selection, const System::Color & p_color
 				)
 				{
 					const Core::Struct::IndexRangeList ranges = p_selection.atoms.toRangeList<Index>();

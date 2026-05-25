@@ -12,7 +12,7 @@ namespace VTX::App::Action::Scene
 	 */
 	struct DeleteSystem
 	{
-		void execute( const ECS::Entity );
+		void execute( const Entity );
 	};
 
 	/**
@@ -36,7 +36,7 @@ namespace VTX::App::Action::Scene
 	 */
 	struct SetColorLayout
 	{
-		void execute( const ECS::Entity p_e );
+		void execute( const Entity p_e );
 	};
 
 	/**
@@ -44,7 +44,7 @@ namespace VTX::App::Action::Scene
 	 */
 	struct SetGraphicsConfig
 	{
-		void execute( const ECS::Entity p_e );
+		void execute( const Entity p_e );
 	};
 } // namespace VTX::App::Action::Scene
 #endif

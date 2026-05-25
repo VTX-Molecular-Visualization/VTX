@@ -16,7 +16,7 @@ namespace VTX::App::System
 		/**
 		 * @brief Associates entities with lists of index ranges.
 		 */
-		std::unordered_map<ECS::Entity, Core::Struct::IndexRangeList> presetAtoms;
+		std::unordered_map<Entity, Core::Struct::IndexRangeList> presetAtoms;
 	};
 
 } // namespace VTX::App::System

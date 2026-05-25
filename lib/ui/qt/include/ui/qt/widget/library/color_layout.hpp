@@ -23,7 +23,7 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Update the widget when the preset is updated from App.
 		 */
-		void _update( App::ECS::Entity ) override;
+		void _update( App::Entity ) override;
 
 	  private:
 		inline static const int _BUTTON_SIZE = 32;

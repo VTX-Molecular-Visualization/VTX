@@ -7,18 +7,7 @@
 namespace VTX::App::System
 {
 
-	/**
-	 * @brief Different color schemes to apply.
-	 */
-	enum struct E_COLOR_SCHEME : uint8_t
-	{
-		CHAIN,
-		RESIDUE,
-		ATOM,
-		CUSTOM
-	};
-
-	constexpr E_COLOR_SCHEME COLOR_SCHEME_DEFAULT = E_COLOR_SCHEME::ATOM;
+	constexpr Renderer::E_COLOR_SCHEME COLOR_SCHEME_DEFAULT = Renderer::E_COLOR_SCHEME::ATOM;
 
 	/**
 	 * @brief Store atom color index in the current layout.
@@ -28,7 +17,7 @@ namespace VTX::App::System
 		/**
 		 * @brief Associates color schemes with lists of index ranges.
 		 */
-		std::unordered_map<E_COLOR_SCHEME, Core::Struct::IndexRangeList> colorSchemeAtoms;
+		std::unordered_map<Renderer::E_COLOR_SCHEME, Core::Struct::IndexRangeList> colorSchemeAtoms;
 
 		/**
 		 * @brief Associates custom renderer color indexes with lists of atom ranges.

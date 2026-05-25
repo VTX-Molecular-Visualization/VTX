@@ -225,34 +225,34 @@ namespace VTX::Renderer::Context::Backend
 		Desc::Handle _getOrCreateQuad();
 		Desc::Handle _getOrCreateFramebuffer( const Desc::Pass &, const Desc::Resources &, const bool = false );
 		Desc::Handle _getOrCreateResourceTable( const Desc::Pass &, const Desc::Resources & );
-		Desc::Handle _getOrCreateChunkResourceTable( const Desc::Pass &, BufferChunk );
+		Desc::Handle _getOrCreateChunkResourceTable( const Desc::Pass &, Desc::BufferChunk );
 		Desc::Handle _getOrCreateTexture( const Desc::Key &, const Desc::Texture & );
 		Desc::Handle _getOrCreateSampler( const Desc::Key &, const Desc::Sampler & );
 		Desc::Handle _getOrCreateVertexLayout( const Desc::Key &, const Desc::VertexLayout & );
 		Desc::Handle _getOrCreateGeometryVertexArray(
 			const Desc::Geometry &,
 			const Desc::Resources &,
-			const BufferChunk
+			const Desc::BufferChunk
 		);
 		Desc::Handle _getOrCreateBuffer( const Desc::Key &, const Desc::Buffer & );
-		Desc::Handle _getOrCreateBufferChunk( const Desc::Key &, const Desc::Buffer &, const BufferChunk );
+		Desc::Handle _getOrCreateBufferChunk( const Desc::Key &, const Desc::Buffer &, const Desc::BufferChunk );
 		Desc::Handle _getOrCreateProgram( const Desc::Program & );
-		Desc::Handle _bufferHandle( const Desc::Key &, const Desc::Resources &, const BufferChunk );
+		Desc::Handle _bufferHandle( const Desc::Key &, const Desc::Resources &, const Desc::BufferChunk );
 		Desc::Key	 _physicalBufferKey( const Desc::BufferRef & );
 		void		 _setBufferData( const Desc::Key &, SpanBytes, const size_t );
 		std::vector<Desc::InteropBufferMapping> _mapPhysicalInteropBuffers(
 			Desc::E_INTEROP_API,
 			std::span<const Desc::Key>
 		);
-		static Desc::Key _bufferChunkKey( const Desc::Key &, BufferChunk );
-		static Desc::Key _vertexArrayChunkKey( const Desc::Key &, BufferChunk );
+		static Desc::Key _bufferChunkKey( const Desc::Key &, Desc::BufferChunk );
+		static Desc::Key _vertexArrayChunkKey( const Desc::Key &, Desc::BufferChunk );
 
 		/**
 		 * @brief Build resources.
 		 */
 		GlobalShaderBuffers _buildGlobalShaderBuffers( const Desc::Resources & );
 		ResourceTable		_buildResourceTableForPass( const Desc::Pass &, const Desc::Resources & );
-		ResourceTable		_buildChunkResourceTable( const Desc::Resources &, BufferChunk );
+		ResourceTable		_buildChunkResourceTable( const Desc::Resources &, Desc::BufferChunk );
 
 		/**
 		 * @brief Bind resources.
@@ -262,7 +262,7 @@ namespace VTX::Renderer::Context::Backend
 			const Desc::Key &,
 			const Desc::Geometry &,
 			const Desc::Resources &,
-			const BufferChunk
+			const Desc::BufferChunk
 		);
 
 		/**

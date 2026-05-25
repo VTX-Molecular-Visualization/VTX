@@ -24,12 +24,12 @@ namespace VTX::UI::QT::Widget::Tree
 		Q_OBJECT
 
 	  public:
-		explicit TrajectoryPlayer( App::ECS::Entity p_system, QWidget * p_parent = nullptr );
+		explicit TrajectoryPlayer( App::Entity p_system, QWidget * p_parent = nullptr );
 
 	  private:
 		static std::array<QIcon, 4> _getIcons();
 
-		App::ECS::Entity _system;
+		App::Entity _system;
 
 		QPointer<QPushButton>		_btnPlayPause;
 		QPointer<QPushButton>		_btnStop;
@@ -45,7 +45,7 @@ namespace VTX::UI::QT::Widget::Tree
 		void _onStopClicked();
 		void _onSettingsClicked();
 		void _onSliderValueChanged( int p_value );
-		void _onTrajectoryUpdated( App::ECS::Registry &, App::ECS::Entity p_entity );
+		void _onTrajectoryUpdated( App::Registry &, App::Entity p_entity );
 
 		void _refresh();
 		void _updatePlayPauseIcon();

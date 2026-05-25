@@ -9,7 +9,7 @@ namespace VTX::App::Pass
 	TrajectoryUpdater::TrajectoryUpdater() {}
 
 	bool TrajectoryUpdater::_tryUpdateFrame(
-		const ECS::Entity &			   entity,
+		const Entity &			   entity,
 		System::TrajectoryFullBuffer & p_traj
 	) noexcept
 	{
@@ -29,7 +29,7 @@ namespace VTX::App::Pass
 		 * @param p_traj
 		 * @return
 		 */
-		bool tryUpdateFrame( const ECS::Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept
+		bool tryUpdateFrame( const Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept
 		{
 			if ( p_traj.lastFrameAvailable < p_traj.genericData.requestedFrameIndex )
 				return false;
@@ -68,7 +68,7 @@ namespace VTX::App::Pass
 		template<typename TrajectoryT>
 		void updateTrajectoresPosition( const float p_elapsedTime )
 		{
-			for ( ECS::Entity it_entity : REG().view<TrajectoryT>() )
+			for ( Entity it_entity : REG().view<TrajectoryT>() )
 			{
 				const TrajectoryT &			traj		   = REG().get<TrajectoryT>( it_entity );
 				System::GenericTrajectory * genericTrajPtr = nullptr;

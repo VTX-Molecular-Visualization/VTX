@@ -245,7 +245,7 @@ namespace VTX::UI::QT::Action
 				if ( representationParam )
 				{
 					App::ACTION().execute<App::Action::Representation::AddSelected>(
-						static_cast<App::ECS::Entity>( *representationParam )
+						static_cast<App::Entity>( *representationParam )
 					);
 				}
 			}

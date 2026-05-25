@@ -3,6 +3,7 @@
 
 #include "types.hpp"
 #include <optional>
+#include <util/filesystem.hpp>
 
 namespace VTX::Util::Image
 {

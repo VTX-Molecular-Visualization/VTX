@@ -12,9 +12,18 @@
 
 namespace VTX::Renderer
 {
+
+	/**
+	 * @brief Generic resource pool.
+	 */
+	template<typename T>
+	class ResoucePool
+	{
+	};
+
 	/**
 	 * @brief Generic resource handler.
-	 * Store resources and provide access through handles.
+	 * Store resources and provide access through handles/keys.
 	 */
 	template<typename T, typename K = Desc::Key, typename D = void>
 	class ResourceHandler
