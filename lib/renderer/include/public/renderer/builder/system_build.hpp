@@ -631,8 +631,6 @@ namespace VTX::Renderer::Builder
 			const size_t			  p_height
 		)
 		{
-			Util::ScopedChrono timer( "[BUILDER] CameraState::upload" );
-
 			BinaryBuffer140 buffer;
 			const Mat4f		matrixViewInv	   = Util::Math::inverse( p_camera.matView );
 			const Mat4f		matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
@@ -939,8 +937,6 @@ namespace VTX::Renderer::Builder
 		template<typename Systems>
 		static void upload( Context::ContextWrapper & p_context, Systems & p_systems, const Cache::Camera & p_camera )
 		{
-			Util::ScopedChrono timer( "[BUILDER] SystemModels::upload" );
-
 			if ( p_systems.empty() )
 			{
 				return;

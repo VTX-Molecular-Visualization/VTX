@@ -9,8 +9,6 @@ namespace VTX::Renderer
 {
 	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height ) {}
 
-#pragma region Contexts
-
 	void Renderer::setDefault()
 	{
 		Util::ScopedChrono timer( "[RENDERER] setDefault" );
@@ -58,10 +56,6 @@ namespace VTX::Renderer
 		}
 	}
 
-#pragma endregion
-
-#pragma region Renderer
-
 	void Renderer::resize( const size_t p_width, const size_t p_height )
 	{
 		Util::ScopedChrono timer( "[RENDERER] resize" );
@@ -77,8 +71,6 @@ namespace VTX::Renderer
 			_graph.getPasses(),
 			_graph.getResources().textures
 		);
-
-		setNeedUpdate( true );
 	}
 
 	void Renderer::clear()
@@ -88,21 +80,21 @@ namespace VTX::Renderer
 		_dirtyRenderer = Cache::E_RENDERER_DIRTY::NONE;
 		_dirtySystems.clear();
 		_dirtyRepresentations.clear();
-		_needUpdate = false;
 	}
 
 	bool Renderer::render( const float p_deltaTime, const float p_elapsedTime ) noexcept
 	{
-		if ( _dirtyRenderer != Cache::E_RENDERER_DIRTY::NONE || not _dirtySystems.empty()
-			 || not _dirtyRepresentations.empty() )
+		bool hasDirty = _dirtyRenderer != Cache::E_RENDERER_DIRTY::NONE || not _dirtySystems.empty()
+						|| not _dirtyRepresentations.empty();
+
+		if ( hasDirty )
 		{
 			_flushDirty();
 		}
 
-		if ( _needUpdate || _forceUpdate )
+		if ( hasDirty || _forceUpdate )
 		{
 			_render( p_deltaTime, p_elapsedTime );
-			setNeedUpdate( false );
 			return true;
 		}
 
@@ -430,7 +422,6 @@ namespace VTX::Renderer
 		_dirtyRenderer = RendererDirty::NONE;
 		_dirtySystems.clear();
 		_dirtyRepresentations.clear();
-		setNeedUpdate( true );
 	}
 
 	void Renderer::_executeSESExternalPass( const uintptr_t p_context )
@@ -451,10 +442,6 @@ namespace VTX::Renderer
 		}
 	}
 
-#pragma endregion
-
-#pragma region Buffers
-
 	void Renderer::setCamera(
 		const Camera & p_camera,
 		const Vec3f &  p_position,
@@ -466,8 +453,6 @@ namespace VTX::Renderer
 
 		_camera = { p_camera, p_position, p_matView, p_matProj };
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::CAMERA;
-
-		setNeedUpdate( true );
 	}
 
 	void Renderer::setGraphicsConfig( const GraphicsConfig & p_config )
@@ -484,8 +469,6 @@ namespace VTX::Renderer
 		{
 			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::GRAPH | Cache::E_RENDERER_DIRTY::COMMAND_BUFFER;
 		}
-
-		setNeedUpdate( true );
 	}
 
 	void Renderer::setColorLayout( const Color::Layout & p_layout )
@@ -494,8 +477,6 @@ namespace VTX::Renderer
 
 		_colorLayout.data = p_layout;
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COLOR_LAYOUT;
-
-		setNeedUpdate( true );
 	}
 
 	Desc::Handle Renderer::addRepresentation( const Representation & p_representation )
@@ -506,7 +487,7 @@ namespace VTX::Renderer
 			= _representations.emplace( Builder::RepresentationState::buildCache( p_representation ) );
 
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::REPRESENTATIONS;
-		setNeedUpdate( true );
+
 		return handle;
 	}
 
@@ -519,7 +500,6 @@ namespace VTX::Renderer
 		_representations.erase( p_handle );
 
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::REPRESENTATIONS;
-		setNeedUpdate( true );
 	}
 
 	void Renderer::setRepresentationDirty( const Desc::Handle p_handle, const Cache::E_REPRESENTATION_DIRTY p_flags )
@@ -527,10 +507,7 @@ namespace VTX::Renderer
 		assert( _representations.contains( p_handle ) );
 
 		_dirtyRepresentations.emplace_back( p_handle, p_flags );
-		setNeedUpdate( true );
 	}
-
-#pragma endregion
 
 	Desc::Handle Renderer::addSystem( Cache::System && p_system )
 	{
@@ -542,7 +519,6 @@ namespace VTX::Renderer
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ALL;
 		_dirtySystems.emplace_back( handle, Cache::E_SYSTEM_DIRTY::ALL );
 
-		setNeedUpdate( true );
 		return handle;
 	}
 
@@ -553,7 +529,6 @@ namespace VTX::Renderer
 		assert( _systems.contains( p_handle ) );
 
 		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::DELETING );
-		setNeedUpdate( true );
 	}
 
 	bool Renderer::ensureBufferChunk( const Desc::BufferRef & p_ref )
@@ -571,7 +546,6 @@ namespace VTX::Renderer
 			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
 			reinterpret_cast<uintptr_t>( this )
 		);
-		setNeedUpdate( true );
 
 		return true;
 	}
@@ -591,7 +565,6 @@ namespace VTX::Renderer
 			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
 			reinterpret_cast<uintptr_t>( this )
 		);
-		setNeedUpdate( true );
 
 		return true;
 	}
@@ -601,16 +574,16 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] setSystemTransform" );
 
 		assert( _systems.contains( p_handle ) );
+
 		_systems.get( p_handle ).transform = p_transform;
 		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::TRANSFORM );
-		setNeedUpdate( true );
 	}
 
 	void Renderer::setSystemDirty( const Desc::Handle p_handle, const Cache::E_SYSTEM_DIRTY p_flags )
 	{
 		assert( _systems.contains( p_handle ) );
+
 		_dirtySystems.emplace_back( p_handle, p_flags );
-		setNeedUpdate( true );
 	}
 
 	void Renderer::setVoxels( std::span<const Vec3f> p_mins, std::span<const Vec3f> p_maxs )
@@ -624,8 +597,6 @@ namespace VTX::Renderer
 		_layouts.voxels.upload<Layout::VOXEL_ATTR::MAXS, Vec3f>( _context, Desc::NO_HANDLE, p_maxs );
 
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::DRAW_RANGES;
-
-		setNeedUpdate( true );
 	}
 
 } // namespace VTX::Renderer

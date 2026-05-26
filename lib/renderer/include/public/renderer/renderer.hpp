@@ -41,14 +41,6 @@ namespace VTX::Renderer
 
 		inline RenderGraph & graph() { return _graph; }
 
-		// TODO: redo or remove.
-		template<typename T>
-		inline void setValue( const T & p_value, const Desc::Key & p_key, const size_t p_index = 0 )
-		{
-			//_context.setValue<T>( p_value, p_key, p_index );
-			setNeedUpdate( true );
-		}
-
 		/**
 		 * @brief Set graphic context.
 		 */
@@ -121,7 +113,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Ask for a render update.
 		 */
-		inline void setNeedUpdate( const bool p_value ) { _needUpdate = p_value; }
+		void setNeedUpdate( const bool p_value ) { _dirtyRenderer |= Cache::E_RENDERER_DIRTY::NEED_UPDATE; }
 
 		/**
 		 * @brief Force update each frame.
@@ -189,24 +181,18 @@ namespace VTX::Renderer
 		bool _forceUpdate = true;
 
 		/**
-		 * @brief Update next frame.
-		 */
-		bool _needUpdate = false;
-
-		/**
 		 * @brief Dirty entries.
 		 */
-		struct DirtySystem
+		template<typename T>
+			requires std::is_enum_v<T>
+		struct DirtyEntry
 		{
-			Desc::Handle		  handle;
-			Cache::E_SYSTEM_DIRTY flags;
+			Desc::Handle handle;
+			T			 flags;
 		};
 
-		struct DirtyRepresentation
-		{
-			Desc::Handle				  handle;
-			Cache::E_REPRESENTATION_DIRTY flags;
-		};
+		using DirtySystem		  = DirtyEntry<Cache::E_SYSTEM_DIRTY>;
+		using DirtyRepresentation = DirtyEntry<Cache::E_REPRESENTATION_DIRTY>;
 
 		/**
 		 * @brief Pending renderer refreshes flushed at frame start.
