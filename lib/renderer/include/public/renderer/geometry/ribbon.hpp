@@ -76,7 +76,7 @@ namespace VTX::Renderer::Geometry
 			return it->second;
 		}
 
-		void construct( const Desc::Handle p_handle, const Cache::System & p_data )
+		void registerSystem( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
 			assert(
 				p_data.data.residueUids->getCount() == p_data.data.topology->residueSecondaryStructureTypes.size()

@@ -50,10 +50,10 @@ namespace VTX::Renderer
 			ses.invalidate( p_handle );
 		}
 
-		void construct( const Desc::Handle p_handle, const Cache::System & p_data )
+		void registerSystem( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
-			spheres.construct( p_handle, p_data );
-			cylinders.construct( p_handle, p_data );
+			spheres.registerSystem( p_handle, p_data );
+			cylinders.registerSystem( p_handle, p_data );
 		}
 
 		void constructSES(

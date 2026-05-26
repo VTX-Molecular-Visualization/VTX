@@ -66,7 +66,7 @@ namespace VTX::Renderer::Builder
 
 			const Cache::System & system = p_systems.get( p_handle );
 
-			p_geometries.construct( p_handle, system );
+			p_geometries.registerSystem( p_handle, system );
 			p_layouts.atoms.add( p_handle, p_geometries.spheres.size( p_handle ) );
 		}
 	};
@@ -410,7 +410,7 @@ namespace VTX::Renderer::Builder
 
 			const Cache::System & system = p_systems.get( p_handle );
 
-			p_geometries.ribbons.construct( p_handle, system );
+			p_geometries.ribbons.registerSystem( p_handle, system );
 			p_geometries.ribbons.resize( p_context );
 
 			const auto & construction = p_geometries.ribbons.construction( p_handle );

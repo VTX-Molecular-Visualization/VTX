@@ -23,7 +23,7 @@ namespace VTX::Renderer::Geometry
 			indirectBuffer = INDIRECT_SPHERES;
 		}
 
-		void construct( const Desc::Handle p_handle, const Cache::System & p_data )
+		void registerSystem( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
 			const Index count = p_data.data.topology->getAtomCount();
 

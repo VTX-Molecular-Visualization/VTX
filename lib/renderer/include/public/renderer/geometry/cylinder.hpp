@@ -31,16 +31,20 @@ namespace VTX::Renderer::Geometry
 
 		void removeConstruction( const Desc::Handle p_handle ) { _construction.erase( p_handle ); }
 
-		void construct( const Desc::Handle p_handle, const Cache::System & p_data )
+		void registerSystem( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
-			const Index count = p_data.data.topology->getBondCount() * 2;
+			if ( not _construction.contains( p_handle ) )
+			{
+				_construction.emplace( p_handle, _Construction { &p_data.data.topology->bondPairAtomIndexes } );
+			}
+
+			const std::vector<Index> & bonds = *_construction[ p_handle ].bonds;
+			const Index				   count = static_cast<Index>( bonds.size() );
 
 			_addRange( p_handle, count, p_data.data.topology->getAtomCount() );
 
 			auto & indiceBuffer = _indices( p_handle );
-			indiceBuffer		= p_data.data.topology->bondPairAtomIndexes;
-
-			_construction.emplace( p_handle, _Construction { &p_data.data.topology->bondPairAtomIndexes } );
+			indiceBuffer		= bonds;
 		}
 
 		void setVisibility( const Desc::Handle p_handle, const Util::Math::BitSet & p_visibility )
