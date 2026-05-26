@@ -33,10 +33,7 @@ namespace VTX::Renderer::Geometry
 
 		void registerSystem( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
-			if ( not _construction.contains( p_handle ) )
-			{
-				_construction.emplace( p_handle, _Construction { &p_data.data.topology->bondPairAtomIndexes } );
-			}
+			_construction[ p_handle ] = _Construction { &p_data.data.topology->bondPairAtomIndexes };
 
 			const std::vector<Index> & bonds = *_construction[ p_handle ].bonds;
 			const Index				   count = static_cast<Index>( bonds.size() );

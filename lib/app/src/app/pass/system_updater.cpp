@@ -41,26 +41,19 @@ namespace VTX::App::Pass
 	{
 		auto & reg = REG();
 
-		// Remove pending.
-		for ( const auto system : _systemRemoved )
-		{
-			RENDERER().removeSystem( _systems[ system ] );
-		}
-		for ( const auto representation : _representationRemoved )
-		{
-			RENDERER().removeRepresentation( _representations[ representation ] );
-		}
+		const bool systemChanged		 = not _systemAdded.empty() || not _systemRemoved.empty();
+		const bool representationChanged = not _representationAdded.empty() || not _representationRemoved.empty();
 
-		auto getSystemData = [ & ]( const Entity system ) -> Renderer::Cache::System::Data
+		const auto getSystemData = [ & ]( const Entity p_ent ) -> Renderer::Cache::System::Data
 		{
-			const auto & topology		= reg.get<Core::Struct::Topology>( system );
-			const auto & uid			= reg.get<System::UID>( system );
-			const auto & color			= reg.get<System::Color>( system );
-			const auto & representation = reg.get<System::Representation>( system );
-			const auto & visibility		= reg.get<System::Visibility>( system );
-			const auto & selection		= reg.get<System::Selection>( system );
+			const auto & topology		= reg.get<Core::Struct::Topology>( p_ent );
+			const auto & uid			= reg.get<System::UID>( p_ent );
+			const auto & color			= reg.get<System::Color>( p_ent );
+			const auto & representation = reg.get<System::Representation>( p_ent );
+			const auto & visibility		= reg.get<System::Visibility>( p_ent );
+			const auto & selection		= reg.get<System::Selection>( p_ent );
 
-			std::span<const Vec3f> positions = System::getCurrentAtomPositions( system );
+			std::span<const Vec3f> positions = System::getCurrentAtomPositions( p_ent );
 			assert( topology.getAtomCount() > 0 );
 
 			return { &topology,
@@ -74,19 +67,6 @@ namespace VTX::App::Pass
 					 &visibility.atoms,
 					 &selection.atoms };
 		};
-
-		// Patch because renderer use views to raw data.
-		// entt components are not guaranteed to be contiguous in memory.
-		// So ptr can dangle after add/remove.
-		for ( const auto & pair : _systems )
-		{
-			RENDERER().patchSystem( pair.second, getSystemData( pair.first ) );
-		}
-		for ( const auto & pair : _representations )
-		{
-			const auto & rep = reg.get<Renderer::Representation>( pair.first );
-			RENDERER().patchRepresentation( pair.second, { &rep } );
-		}
 
 		// Add pending.
 		for ( const auto system : _systemAdded )
@@ -106,6 +86,35 @@ namespace VTX::App::Pass
 
 			const auto & rep = REG().get<Renderer::Representation>( representation );
 			_representations.emplace( representation, RENDERER().addRepresentation( rep ) );
+		}
+
+		// Remove pending.
+		for ( const auto system : _systemRemoved )
+		{
+			RENDERER().removeSystem( system );
+		}
+		for ( const auto representation : _representationRemoved )
+		{
+			RENDERER().removeRepresentation( representation );
+		}
+
+		// Patch because renderer use views to raw data.
+		// entt components are not guaranteed to be contiguous in memory.
+		// So ptr can dangle after add/remove.
+		if ( systemChanged )
+		{
+			for ( const auto & pair : _systems )
+			{
+				RENDERER().patchSystem( pair.second, getSystemData( pair.first ) );
+			}
+		}
+		if ( representationChanged )
+		{
+			for ( const auto & pair : _representations )
+			{
+				const auto & rep = reg.get<Renderer::Representation>( pair.first );
+				RENDERER().patchRepresentation( pair.second, { &rep } );
+			}
 		}
 
 		// Clear pending.
@@ -143,8 +152,8 @@ namespace VTX::App::Pass
 	{
 		assert( _systems.contains( p_e ) );
 
+		_systemRemoved.emplace_back( _systems[ p_e ] );
 		_systems.erase( p_e );
-		_systemRemoved.emplace_back( p_e );
 	}
 
 	void SystemUpdater::_onUpdateVisibility( Registry & p_r, Entity p_e )
@@ -193,10 +202,8 @@ namespace VTX::App::Pass
 	{
 		assert( _representations.contains( p_e ) );
 
+		_representationRemoved.emplace_back( _representations[ p_e ] );
 		_representations.erase( p_e );
-		_representationRemoved.emplace_back( p_e );
-
-		// RENDERER().removeRepresentation( _representations[ p_e ] );
 	}
 
 } // namespace VTX::App::Pass

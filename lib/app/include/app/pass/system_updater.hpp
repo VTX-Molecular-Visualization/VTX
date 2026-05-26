@@ -40,17 +40,16 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Entities pending to be added/removed.
 		 */
-		std::vector<Entity> _systemAdded;
-		std::vector<Entity> _systemRemoved;
-		std::vector<Entity> _representationAdded;
-		std::vector<Entity> _representationRemoved;
+		std::vector<Entity>					_systemAdded;
+		std::vector<Renderer::Desc::Handle> _systemRemoved;
+		std::vector<Entity>					_representationAdded;
+		std::vector<Renderer::Desc::Handle> _representationRemoved;
 
 		/**
 		 * @brief Push system data to renderer.
 		 */
 		void _onSystemLoad( const Events::SystemLoad & );
 		void _onDestroySystem( Registry &, Entity );
-		void _setSystems();
 
 		/**
 		 * @brief Update system data in renderer when components are updated.

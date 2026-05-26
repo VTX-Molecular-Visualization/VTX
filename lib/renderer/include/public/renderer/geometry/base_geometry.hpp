@@ -51,7 +51,8 @@ namespace VTX::Renderer::Geometry
 		void clearRanges()
 		{
 			_resources.clear();
-			_size = 0;
+			_size		= 0;
+			_vertexSize = 0;
 		}
 
 		/**
@@ -91,17 +92,18 @@ namespace VTX::Renderer::Geometry
 		[[nodiscard]] std::vector<Desc::DrawIndexedIndirectRecord> toDrawIndexedIndirectCommands()
 		{
 			std::vector<Desc::DrawIndexedIndirectRecord> records;
-			int											 baseVertex = 0;
 
 			for ( const auto & [ uid, data ] : _resources )
 			{
 				records.emplace_back(
 					Desc::DrawIndexedIndirectRecord {
-						Desc::DrawIndexedIndirectCommand {
-							static_cast<uint32_t>( data.indices.size() ), 1, data.range.getFirst(), baseVertex, 0 },
+						Desc::DrawIndexedIndirectCommand { static_cast<uint32_t>( data.indices.size() ),
+														   1,
+														   data.range.getFirst(),
+														   static_cast<int32_t>( data.vertexFirst ),
+														   0 },
 						static_cast<uint32_t>( uid ) }
 				);
-				baseVertex += data.vertexCount;
 			}
 
 			return records;
@@ -132,6 +134,7 @@ namespace VTX::Renderer::Geometry
 		struct Data
 		{
 			IndexRange			range;
+			Index				vertexFirst;
 			Index				vertexCount;
 			std::vector<Indice> indices;
 		};
@@ -148,8 +151,9 @@ namespace VTX::Renderer::Geometry
 			}
 
 			Index countIndex = static_cast<Index>( count );
-			_resources.emplace( p_handle, Data { IndexRange { _size, countIndex }, p_countVertex } );
+			_resources.emplace( p_handle, Data { IndexRange { _size, countIndex }, _vertexSize, p_countVertex } );
 			_size = countIndex;
+			_vertexSize += p_countVertex;
 		}
 
 		void _removeRange( const Desc::Handle p_handle ) { _resources.erase( p_handle ); }
@@ -180,7 +184,8 @@ namespace VTX::Renderer::Geometry
 		/**
 		 * @brief Current size to draw (before applying anything).
 		 */
-		Index _size = 0;
+		Index _size		  = 0;
+		Index _vertexSize = 0;
 	};
 } // namespace VTX::Renderer::Geometry
 

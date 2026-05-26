@@ -157,8 +157,6 @@ namespace VTX::Renderer
 
 	void Renderer::_flushDirty()
 	{
-		Util::ScopedChrono timer( "[RENDERER] _flushDirty" );
-
 		using RendererDirty		  = Cache::E_RENDERER_DIRTY;
 		using RepresentationDirty = Cache::E_REPRESENTATION_DIRTY;
 		using SystemDirty		  = Cache::E_SYSTEM_DIRTY;
