@@ -71,14 +71,16 @@ namespace VTX::Renderer::Geometry
 		{
 		  public:
 			void construct(
-				const SurfaceID	   p_surface,
-				const Desc::Handle p_system,
-				const Index		   p_count,
-				const uint32_t	   p_dataOffset = 0
+				const SurfaceID			  p_surface,
+				const Desc::Handle		  p_system,
+				const Index				  p_count,
+				const RepresentationIndex p_representation,
+				const uint32_t			  p_dataOffset = 0
 			)
 			{
 				_addRange( p_surface, p_count, p_count );
 				_systems.emplace( p_surface, p_system );
+				_representations.emplace( p_surface, p_representation );
 				_dataOffsets.emplace( p_surface, p_dataOffset );
 				totalSize += p_count;
 
@@ -96,6 +98,7 @@ namespace VTX::Renderer::Geometry
 			{
 				BaseGeometry::clear();
 				_systems.clear();
+				_representations.clear();
 				_dataOffsets.clear();
 				totalSize = 0;
 			}
@@ -110,6 +113,7 @@ namespace VTX::Renderer::Geometry
 
 				_removeRange( p_surface );
 				_systems.erase( p_surface );
+				_representations.erase( p_surface );
 				_dataOffsets.erase( p_surface );
 				chunks.erase( std::remove( chunks.begin(), chunks.end(), p_surface ), chunks.end() );
 			}
@@ -180,7 +184,8 @@ namespace VTX::Renderer::Geometry
 				return { Desc::DrawIndexedIndirectRecord {
 					Desc::DrawIndexedIndirectCommand { static_cast<uint32_t>( data.indices.size() ), 1, 0, 0, 0 },
 					static_cast<uint32_t>( _system( p_surface ) ),
-					_dataOffset( p_surface ) } };
+					_dataOffset( p_surface ),
+					static_cast<uint32_t>( _representation( p_surface ) ) } };
 			}
 
 			Index totalSize = 0;
@@ -200,8 +205,16 @@ namespace VTX::Renderer::Geometry
 				return it->second;
 			}
 
-			std::map<SurfaceID, Desc::Handle> _systems;
-			std::map<SurfaceID, uint32_t>	  _dataOffsets;
+			RepresentationIndex _representation( const SurfaceID p_surface ) const
+			{
+				const auto it = _representations.find( p_surface );
+				assert( it != _representations.end() );
+				return it->second;
+			}
+
+			std::map<SurfaceID, Desc::Handle>		 _systems;
+			std::map<SurfaceID, RepresentationIndex> _representations;
+			std::map<SurfaceID, uint32_t>			 _dataOffsets;
 		};
 
 		SES();
@@ -248,7 +261,9 @@ namespace VTX::Renderer::Geometry
 			Context::ContextWrapper & p_context,
 			Desc::Handle			  p_handle,
 			const Cache::System &	  p_data,
-			uint32_t				  p_inputAtomOffset
+			uint32_t				  p_inputAtomOffset,
+			float					  p_probeRadius,
+			RepresentationIndex		  p_representation
 		);
 
 		void resize( Context::ContextWrapper & p_context );
@@ -258,7 +273,8 @@ namespace VTX::Renderer::Geometry
 
 		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle );
 
-		[[nodiscard]] bool built( Desc::Handle p_handle ) const;
+		[[nodiscard]] bool	built( Desc::Handle p_handle ) const;
+		[[nodiscard]] float probeRadius( Desc::Handle p_handle ) const;
 
 		void setVisibility( Desc::Handle p_handle, bool p_visible );
 

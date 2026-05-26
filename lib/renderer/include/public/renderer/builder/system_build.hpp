@@ -10,10 +10,12 @@
 #include "renderer/representation.hpp"
 #include "renderer/resource_handler.hpp"
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <limits>
 #include <unordered_set>
 #include <util/chrono.hpp>
+#include <util/constants.hpp>
 #include <util/enum.hpp>
 #include <util/math.hpp>
 
@@ -346,11 +348,14 @@ namespace VTX::Renderer::Builder
 
 			const Cache::System & systemCache = p_systems.get( p_handle );
 
-			auto visibleSpheres	  = *systemCache.data.visibility;
-			auto visibleCylinders = *systemCache.data.visibility;
-			auto visibleRibbons	  = *systemCache.data.visibility;
-			bool requestedRibbon  = false;
-			bool visibleSes		  = false;
+			auto				visibleSpheres	  = *systemCache.data.visibility;
+			auto				visibleCylinders  = *systemCache.data.visibility;
+			auto				visibleRibbons	  = *systemCache.data.visibility;
+			bool				requestedRibbon	  = false;
+			bool				visibleSes		  = false;
+			bool				hasSesProbeRadius = false;
+			float				sesProbeRadius	  = SES_PROBE_RADIUS_DEFAULT;
+			RepresentationIndex sesRepresentation = 0;
 
 			for ( const auto & [ preset, ranges ] : *systemCache.data.presetAtoms )
 			{
@@ -379,6 +384,22 @@ namespace VTX::Renderer::Builder
 				if ( representation.showSes && systemCache.data.visibility->any( ranges ) )
 				{
 					visibleSes = true;
+
+					const float representationProbeRadius = representation.data.rep->sesProbeRadius;
+					if ( not hasSesProbeRadius )
+					{
+						sesProbeRadius	  = representationProbeRadius;
+						sesRepresentation = representationIndex;
+						hasSesProbeRadius = true;
+					}
+					else if ( std::abs( sesProbeRadius - representationProbeRadius ) > EPSILON )
+					{
+						VTX_WARNING(
+							"Multiple visible SES probe radii on the same system. Using {} and ignoring {}.",
+							sesProbeRadius,
+							representationProbeRadius
+						);
+					}
 				}
 			}
 
@@ -386,9 +407,16 @@ namespace VTX::Renderer::Builder
 			{
 				constructRibbon( p_systems, p_layouts, p_geometries, p_handle );
 			}
+			if ( visibleSes && p_geometries.ses.built( p_handle )
+				 && std::abs( p_geometries.ses.probeRadius( p_handle ) - sesProbeRadius ) > EPSILON )
+			{
+				p_geometries.ses.invalidate( p_handle );
+			}
 			if ( visibleSes && not p_geometries.ses.built( p_handle ) )
 			{
-				constructSES( p_context, p_systems, p_layouts, p_geometries, p_handle );
+				constructSES(
+					p_context, p_systems, p_layouts, p_geometries, p_handle, sesProbeRadius, sesRepresentation
+				);
 			}
 
 			p_geometries.spheres.setVisibility( p_handle, visibleSpheres );
@@ -424,13 +452,17 @@ namespace VTX::Renderer::Builder
 			Systems &				  p_systems,
 			Layouts &				  p_layouts,
 			Geometries &			  p_geometries,
-			const Desc::Handle		  p_handle
+			const Desc::Handle		  p_handle,
+			const float				  p_probeRadius,
+			const RepresentationIndex p_representation
 		)
 		{
 			Util::ScopedChrono timer( "[BUILDER] SystemVisibility::constructSES" );
 
 			const Cache::System & system = p_systems.get( p_handle );
-			p_geometries.constructSES( p_context, p_handle, system, p_layouts.atoms.offset( p_handle ) );
+			p_geometries.constructSES(
+				p_context, p_handle, system, p_layouts.atoms.offset( p_handle ), p_probeRadius, p_representation
+			);
 		}
 
 		static void uploadRibbonResidues(

@@ -3,39 +3,40 @@
 // #define SHOW_IMPOSTORS
 // #define SHOW_STEPS
 
-layout (depth_greater) out float gl_FragDepth;
+layout( depth_greater ) out float gl_FragDepth;
 
 #include "../../../layout_uniforms_camera.glsl"
 #include "../../../layout_uniforms_model.glsl"
 #include "../../../layout_uniforms_representation.glsl"
 #include "../../../struct_data_packed.glsl"
-#include "struct_segment.glsl"
 #include "struct_geometry_shader.glsl"
+#include "struct_segment.glsl"
 
 // In.
 smooth in StructGeometryShaderSmooth gsDataSmooth;
-smooth in StructGeometryShaderFlat gsDataFlat;
-flat in StructSegment gsSegment;
+smooth in StructGeometryShaderFlat	 gsDataFlat;
+flat in StructSegment				 gsSegment;
 
 // Out.
 layout( location = 0 ) out PackedData outDataPacked;
 layout( location = 1 ) out vec4 outColor;
 
-const float Epsilon			   = 1e-6;
-const float Pi				   = 3.1415926;
-const float TwoPi			   = 6.2831853;
+const float Epsilon = 1e-6;
+const float Pi		= 3.1415926;
+const float TwoPi	= 6.2831853;
 
 float computeDepth( const vec3 v )
 {
 	// Computes 'v' NDC depth ([-1,1])
-	const float ndcDepth = ( v.z * uniformsCamera.matrixProjection[ 2 ].z + uniformsCamera.matrixProjection[ 3 ].z ) / -v.z;
+	const float ndcDepth
+		= ( v.z * uniformsCamera.matrixProjection[ 2 ].z + uniformsCamera.matrixProjection[ 3 ].z ) / -v.z;
 	// Return depth according to depth range
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
 
-void submit(in vec3 p, in vec3 n, in vec3 c)
+void submit( in vec3 p, in vec3 n, in vec3 c )
 {
-	n = faceforward(n, gsDataSmooth.viewImpPos, n);
+	n = faceforward( n, gsDataSmooth.viewImpPos, n );
 
 	// Output data.
 	packData( p, n, gsSegment.selection, outDataPacked );
@@ -47,34 +48,36 @@ void submit(in vec3 p, in vec3 n, in vec3 c)
 void handleImpostor()
 {
 #ifdef SHOW_IMPOSTORS
-		submit(gsDataSmooth.viewImpPos, normalize(-gsDataSmooth.viewImpPos), gsDataFlat.color.rgb);
+	submit( gsDataSmooth.viewImpPos, normalize( -gsDataSmooth.viewImpPos ), gsDataFlat.color.rgb );
 #else
-		discard;
+	discard;
 #endif
 }
 
-vec3 orthogonalVector(vec3 normal) 
+vec3 orthogonalVector( vec3 normal )
 {
-	vec3 ref = vec3(1., 0., 0.);
-	if (abs(dot(normal, ref)) > 1e-4)
-		ref = vec3(0., 1., 0.);
-    return cross(normal, ref);
+	vec3 ref = vec3( 1., 0., 0. );
+	if ( abs( dot( normal, ref ) ) > 1e-4 )
+	{
+		ref = vec3( 0., 1., 0. );
+	}
+	return cross( normal, ref );
 }
 
 // Based on https://github.com/quanchaoyu/MolSurfComp/blob/master/Dist_Computation/fsas.m#L204
-float angleBetweenEdges(vec3 u, vec3 v, vec3 n)
+float angleBetweenEdges( vec3 u, vec3 v, vec3 n )
 {
 	const float theta = acos( clamp( dot( u, v ) / ( length( u ) * length( v ) ), -1.f, 1.f ) );
-    
-    // Use triple product to compute which way of the circle we're currently looking at.
-    return determinant(mat3(u, v, n)) > 0. ? theta : TwoPi - theta;
+
+	// Use triple product to compute which way of the circle we're currently looking at.
+	return determinant( mat3( u, v, n ) ) > 0. ? theta : TwoPi - theta;
 }
 
 vec3 closestPointOnCircle( vec3 circleCenter, vec3 circleNormal, float circleRadius, vec3 point )
 {
-	const vec3 circleCenterToP1 = point + dot( circleCenter - point, circleNormal ) * circleNormal - circleCenter;
-	const float distToP1		= length( circleCenterToP1 );
-	if ( abs( distToP1 ) > Epsilon ) 
+	const vec3	circleCenterToP1 = point + dot( circleCenter - point, circleNormal ) * circleNormal - circleCenter;
+	const float distToP1		 = length( circleCenterToP1 );
+	if ( abs( distToP1 ) > Epsilon )
 	{
 		return circleCenter + circleRadius * circleCenterToP1 / distToP1;
 	}
@@ -86,111 +89,119 @@ vec3 closestPointOnCircle( vec3 circleCenter, vec3 circleNormal, float circleRad
 }
 
 // https://www.geeks3d.com/20141201/how-to-rotate-a-vertex-by-a-quaternion-in-glsl/
-vec4 quatFromAxis(float angle, vec3 axis) 
+vec4 quatFromAxis( float angle, vec3 axis )
 {
 	float halfAngle = angle / 2.;
-	return vec4(
-		axis.x * sin(halfAngle),
-		axis.y * sin(halfAngle),
-		axis.z * sin(halfAngle),
-		cos(halfAngle)
-	);
+	return vec4( axis.x * sin( halfAngle ), axis.y * sin( halfAngle ), axis.z * sin( halfAngle ), cos( halfAngle ) );
 }
 
 // Using GLM's way to multiply a vector with a quaternion
-vec3 quatMult(const in vec4 q, const in vec3 v)
+vec3 quatMult( const in vec4 q, const in vec3 v )
 {
 	return 2. * dot( q.xyz, v ) * q.xyz + ( q.w * q.w - dot( q.xyz, q.xyz ) ) * v + 2. * q.w * cross( q.xyz, v );
 }
 
-float sdCircle(vec3 p, vec3 c, vec3 n, float r)
+float sdCircle( vec3 p, vec3 c, vec3 n, float r ) { return length( closestPointOnCircle( c, n, r, p ) - p ); }
+
+float sdToroidalPatch( in vec3 p, in vec3 x1, in vec3 x1n, in vec3 x2, in vec3 x2n, out vec3 cl )
 {
-    return length(closestPointOnCircle(c, n, r, p) - p);
+	cl = closestPointOnCircle( gsSegment.circle.xyz, gsSegment.normal.xyz, gsSegment.circle.w, p );
+
+	vec3		v			= ( cl - gsSegment.circle.xyz ) / gsSegment.circle.w;
+	float		a1			= angleBetweenEdges( gsSegment.v1, v, gsSegment.normal.xyz );
+	const float probeRadius = uniformsRepresentation[ gsSegment.representation ].SESProbeRadius;
+	if ( a1 < gsSegment.normal.w )
+	{
+		return -distance( p, cl ) + probeRadius;
+	}
+
+	if ( distance( p, x1 ) < distance( p, x2 ) )
+	{
+		return sdCircle( p, x1, x1n, probeRadius );
+	}
+	return sdCircle( p, x2, x2n, probeRadius );
 }
 
-float sdToroidalPatch(in vec3 p, in vec3 x1, in vec3 x1n, in vec3 x2, in vec3 x2n, out vec3 cl)
+const int	MaxSteps  = 100;
+const float BaseBound = 5e-3;
+
+bool sphereTracing( const in vec3 ro, const in vec3 rd, const in vec2 bounds, out vec3 closestPoint, inout float t )
 {
-    cl = closestPointOnCircle(gsSegment.circle.xyz, gsSegment.normal.xyz, gsSegment.circle.w, p);
-    
-    vec3 v = (cl - gsSegment.circle.xyz) / gsSegment.circle.w;
-    float a1 = angleBetweenEdges(gsSegment.v1, v, gsSegment.normal.xyz);
-    if( a1 < gsSegment.normal.w )
-        return -distance(p, cl) + uniformsRepresentation[ 0 ].SESProbeRadius;
+	const vec3	x1	  = gsSegment.circle.xyz + gsSegment.v1.xyz * gsSegment.circle.w;
+	const vec3	x2	  = gsSegment.circle.xyz + gsSegment.v2.xyz * gsSegment.circle.w;
+	const vec3	x1n	  = cross( gsSegment.normal.xyz, gsSegment.v1 );
+	const vec3	x2n	  = cross( gsSegment.normal.xyz, gsSegment.v2 );
+	const float bound = max( length( ro ) * BaseBound * 1e-1, BaseBound );
 
-	if(distance(p, x1) < distance(p, x2))
-		return sdCircle(p, x1, x1n, uniformsRepresentation[ 0 ].SESProbeRadius);
-    return sdCircle(p, x2, x2n, uniformsRepresentation[ 0 ].SESProbeRadius);
-}	
+	int i = 0;
+	while ( t < bounds.y && i++ < MaxSteps )
+	{
+		vec3  p = ro + rd * t;
+		float d = abs( sdToroidalPatch( p, x1, x1n, x2, x2n, closestPoint ) );
+		if ( d < bound )
+		{
+			return true;
+		}
 
-const int MaxSteps		 = 100;
-const float BaseBound	 = 5e-3; 
-bool sphereTracing(const in vec3 ro, const in vec3 rd, const in vec2 bounds, out vec3 closestPoint, inout float t)
-{
-	const vec3 x1 = gsSegment.circle.xyz + gsSegment.v1.xyz * gsSegment.circle.w;
-	const vec3 x2 = gsSegment.circle.xyz + gsSegment.v2.xyz * gsSegment.circle.w;
-	const vec3 x1n = cross(gsSegment.normal.xyz, gsSegment.v1);
-    const vec3 x2n = cross(gsSegment.normal.xyz, gsSegment.v2);
-	const float bound = max(length(ro) * BaseBound * 1e-1, BaseBound);
-
-    int i = 0;
-    while(t < bounds.y && i++ < MaxSteps)
-    {
-        vec3 p  = ro + rd * t;
-        float d = abs(sdToroidalPatch(p, x1, x1n, x2, x2n, closestPoint));
-        if( d < bound )
-            return true;
-
-        t += max(d, bound);
-    }
+		t += max( d, bound );
+	}
 
 	return false;
 }
 
 // By Inigo Quilez
 // ray-box intersection
-vec2 iBox( in vec3 ro, in vec3 rd, in vec3 pMin, in vec3 pMax ) 
+vec2 iBox( in vec3 ro, in vec3 rd, in vec3 pMin, in vec3 pMax )
 {
-    vec3 cen = 0.5*(pMin+pMax);
-    vec3 rad = 0.5*(pMax-pMin);
+	vec3 cen = 0.5 * ( pMin + pMax );
+	vec3 rad = 0.5 * ( pMax - pMin );
 
-    vec3 m = 1.0/rd;
-    vec3 n = m*(ro-cen);
-    vec3 k = abs(m)*rad;
+	vec3 m = 1.0 / rd;
+	vec3 n = m * ( ro - cen );
+	vec3 k = abs( m ) * rad;
 
-    vec3 t1 = -n - k;
-    vec3 t2 = -n + k;
+	vec3 t1 = -n - k;
+	vec3 t2 = -n + k;
 
 	float tN = max( max( t1.x, t1.y ), t1.z );
 	float tF = min( min( t2.x, t2.y ), t2.z );
-	
-	if( tN > tF || tF < 0.0) return vec2(-1.0);
+
+	if ( tN > tF || tF < 0.0 )
+	{
+		return vec2( -1.0 );
+	}
 
 	return vec2( tN, tF );
 }
+
 vec2 iSphere( in vec3 ro, in vec3 rd, in vec4 sph )
 {
-	vec3 oc = ro - sph.xyz;
-	float b = dot( oc, rd );
-	float c = dot( oc, oc ) - sph.w*sph.w;
-	float h = b*b - c;
-	if( h<0.0 ) return vec2(-1., -1.);
-	return vec2(-b - sqrt( h ), -b + sqrt( h ));
+	vec3  oc = ro - sph.xyz;
+	float b	 = dot( oc, rd );
+	float c	 = dot( oc, oc ) - sph.w * sph.w;
+	float h	 = b * b - c;
+	if ( h < 0.0 )
+	{
+		return vec2( -1., -1. );
+	}
+	return vec2( -b - sqrt( h ), -b + sqrt( h ) );
 }
 
-vec2 iOOBB( in vec3 ro, in vec3 rd, in vec3 p, in vec3 dim, in vec4 rot)
+vec2 iOOBB( in vec3 ro, in vec3 rd, in vec3 p, in vec3 dim, in vec4 rot )
 {
-    ro -= p;
-    ro = quatMult(rot, ro), rd = quatMult(rot, rd);
-    return iBox(ro, rd, -dim, dim);
+	ro -= p;
+	ro = quatMult( rot, ro ), rd = quatMult( rot, rd );
+	return iBox( ro, rd, -dim, dim );
 }
+
 void main()
 {
 	const vec3 ro = gsDataSmooth.viewImpPos;
-	const vec3 rd = normalize(gsDataSmooth.viewImpPos);
-	
-	vec2 dist = iOOBB(ro, rd, gsSegment.bbPos, gsSegment.bbDim, gsSegment.rot);
+	const vec3 rd = normalize( gsDataSmooth.viewImpPos );
+
+	vec2 dist  = iOOBB( ro, rd, gsSegment.bbPos, gsSegment.bbDim, gsSegment.rot );
 	vec2 sDist = iSphere( ro, rd, gsSegment.vSphere );
-    
+
 	if ( dist.x == -1. || sDist.x == -1. )
 	{
 		discard;
@@ -198,13 +209,13 @@ void main()
 	}
 	else
 	{
-		dist.x = max(dist.x, max(sDist.x, 0.));
-		dist.y = min(dist.y, sDist.y);
+		dist.x = max( dist.x, max( sDist.x, 0. ) );
+		dist.y = min( dist.y, sDist.y );
 		vec3 closestPoint;
-		if(sphereTracing(ro, rd, dist, closestPoint, dist.x))
+		if ( sphereTracing( ro, rd, dist, closestPoint, dist.x ) )
 		{
 			vec3 p = ro + rd * dist.x;
-			submit( p, normalize(closestPoint - p), gsSegment.color.rgb );
+			submit( p, normalize( closestPoint - p ), gsSegment.color.rgb );
 		}
 		else
 		{

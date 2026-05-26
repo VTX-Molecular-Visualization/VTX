@@ -60,10 +60,12 @@ namespace VTX::Renderer
 			Context::ContextWrapper & p_context,
 			const Desc::Handle		  p_handle,
 			const Cache::System &	  p_data,
-			const uint32_t			  p_inputAtomOffset
+			const uint32_t			  p_inputAtomOffset,
+			const float				  p_probeRadius,
+			const RepresentationIndex p_representation
 		)
 		{
-			ses.construct( p_context, p_handle, p_data, p_inputAtomOffset );
+			ses.construct( p_context, p_handle, p_data, p_inputAtomOffset, p_probeRadius, p_representation );
 		}
 
 		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )

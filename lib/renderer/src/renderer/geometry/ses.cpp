@@ -39,6 +39,7 @@ namespace VTX::Renderer::Geometry
 		uint32_t probeNb			= 0;
 		uint32_t sectorNb			= 0;
 		uint32_t concavePatchNb		= 0;
+		float	 probeRadius		= SES_PROBE_RADIUS_DEFAULT;
 
 		[[nodiscard]] bool pendingWrite() const
 		{
@@ -153,7 +154,9 @@ namespace VTX::Renderer::Geometry
 		Context::ContextWrapper & p_context,
 		const Desc::Handle		  p_handle,
 		const Cache::System &	  p_data,
-		const uint32_t			  p_inputAtomOffset
+		const uint32_t			  p_inputAtomOffset,
+		const float				  p_probeRadius,
+		const RepresentationIndex p_representation
 	)
 	{
 		Util::ScopedChrono chrono( "SES construct" );
@@ -162,6 +165,7 @@ namespace VTX::Renderer::Geometry
 		construction->surface			 = _createWholeSurface( p_handle );
 		construction->rendererAtomOffset = p_inputAtomOffset;
 		construction->atomOffset		 = 0;
+		construction->probeRadius		 = p_probeRadius;
 
 		for ( const auto & [ surfaceID, existingConstruction ] : _constructions )
 		{
@@ -235,7 +239,7 @@ namespace VTX::Renderer::Geometry
 					inputs.atomNb			  = uint32_t( atomCount );
 
 					SESDetail::CudaBuildResult result = SESDetail::buildCudaConstructionFromRendererBuffers(
-						inputs, p_data.data.trajectory, SES_PROBE_RADIUS_DEFAULT
+						inputs, p_data.data.trajectory, p_probeRadius
 					);
 
 					construction->cudaConstruction = std::move( result.construction );
@@ -279,11 +283,11 @@ namespace VTX::Renderer::Geometry
 		{
 			const Surface & surface = construction->surface;
 			convexPatches.construct(
-				surface.id, surface.system, construction->convexPatchNb, construction->atomOffset
+				surface.id, surface.system, construction->convexPatchNb, p_representation, construction->atomOffset
 			);
-			circlePatches.construct( surface.id, surface.system, construction->circlePatchNb );
-			segmentPatches.construct( surface.id, surface.system, construction->segmentPatchNb );
-			concavePatches.construct( surface.id, surface.system, construction->concavePatchNb, 0 );
+			circlePatches.construct( surface.id, surface.system, construction->circlePatchNb, p_representation );
+			segmentPatches.construct( surface.id, surface.system, construction->segmentPatchNb, p_representation );
+			concavePatches.construct( surface.id, surface.system, construction->concavePatchNb, p_representation, 0 );
 		}
 
 		const SurfaceID surfaceID = construction->surface.id;
@@ -424,6 +428,17 @@ namespace VTX::Renderer::Geometry
 
 	bool SES::built( const Desc::Handle p_handle ) const { return _surfaces.bySystem.contains( p_handle ); }
 
+	float SES::probeRadius( const Desc::Handle p_handle ) const
+	{
+		const auto surfaceIt = _surfaces.bySystem.find( p_handle );
+		assert( surfaceIt != _surfaces.bySystem.end() );
+		assert( not surfaceIt->second.empty() );
+
+		const auto constructionIt = _constructions.find( surfaceIt->second.front() );
+		assert( constructionIt != _constructions.end() );
+		return constructionIt->second->probeRadius;
+	}
+
 	void SES::setVisibility( const Desc::Handle p_handle, const bool p_visible )
 	{
 		const auto it = _surfaces.bySystem.find( p_handle );
@@ -529,10 +544,10 @@ namespace VTX::Renderer::Geometry
 
 	void SES::_constructEmptyRanges( const Surface & p_surface )
 	{
-		convexPatches.construct( p_surface.id, p_surface.system, 0 );
-		circlePatches.construct( p_surface.id, p_surface.system, 0 );
-		segmentPatches.construct( p_surface.id, p_surface.system, 0 );
-		concavePatches.construct( p_surface.id, p_surface.system, 0 );
+		convexPatches.construct( p_surface.id, p_surface.system, 0, 0 );
+		circlePatches.construct( p_surface.id, p_surface.system, 0, 0 );
+		segmentPatches.construct( p_surface.id, p_surface.system, 0, 0 );
+		concavePatches.construct( p_surface.id, p_surface.system, 0, 0 );
 	}
 
 	void SES::_disableDraws( Context::ContextWrapper & p_context, const SurfaceID p_surface )
