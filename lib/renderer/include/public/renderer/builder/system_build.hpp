@@ -10,7 +10,10 @@
 #include "renderer/representation.hpp"
 #include "renderer/resource_handler.hpp"
 #include <algorithm>
+#include <cstdint>
+#include <limits>
 #include <unordered_set>
+#include <util/chrono.hpp>
 #include <util/enum.hpp>
 #include <util/math.hpp>
 
@@ -18,35 +21,33 @@ namespace VTX::Renderer::Builder
 {
 	struct SystemRegistry
 	{
-		template<typename Systems>
 		static void clear(
-			Systems &						   p_systems,
 			Layouts &						   p_layouts,
 			Geometries &					   p_geometries,
 			std::unordered_set<Desc::Handle> & p_geometryRefreshSystems
 		)
 		{
-			p_systems.clear();
+			Util::ScopedChrono timer( "[BUILDER] SystemRegistry::clear" );
+
 			p_layouts.clearSystems();
 			p_geometries.clearSystems();
 			p_geometryRefreshSystems.clear();
 		}
 
 		template<typename Systems>
-		static Desc::Handle registerSystem(
-			Systems &		 p_systems,
-			Geometries &	 p_geometries,
-			Layouts &		 p_layouts,
-			Cache::System && p_system
+		static void registerSystem(
+			Systems &	 p_systems,
+			Geometries & p_geometries,
+			Layouts &	 p_layouts,
+			Desc::Handle p_handle
 		)
 		{
-			const Desc::Handle	  handle = p_systems.emplace( std::move( p_system ) );
-			const Cache::System & system = p_systems.get( handle );
+			Util::ScopedChrono timer( "[BUILDER] SystemRegistry::registerSystem" );
 
-			p_geometries.construct( handle, system );
-			p_layouts.atoms.add( handle, p_geometries.spheres.size( handle ) );
+			const Cache::System & system = p_systems.get( p_handle );
 
-			return handle;
+			p_geometries.construct( p_handle, system );
+			p_layouts.atoms.add( p_handle, p_geometries.spheres.size( p_handle ) );
 		}
 	};
 
@@ -54,6 +55,8 @@ namespace VTX::Renderer::Builder
 	{
 		static void allocateInputs( Context::ContextWrapper & p_context, Layouts & p_layouts )
 		{
+			Util::ScopedChrono timer( "[BUILDER] AtomLayout::allocateInputs" );
+
 			p_layouts.atoms.resize( p_context );
 		}
 
@@ -66,6 +69,8 @@ namespace VTX::Renderer::Builder
 			std::unordered_set<Desc::Handle> & p_geometryRefreshSystems
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] AtomLayout::uploadInput" );
+
 			const Cache::System & system		  = p_systems.get( p_handle );
 			const auto			  colors		  = buildAtomColors( system );
 			const auto			  representations = buildAtomRepresentations( system );
@@ -134,20 +139,31 @@ namespace VTX::Renderer::Builder
 
 		static std::vector<RepresentationIndex> buildAtomRepresentations( const Cache::System & p_system )
 		{
-			std::vector<RepresentationIndex> atoms( p_system.data.getAtomCount(), RepresentationIndex( 0 ) );
+			constexpr RepresentationIndex invalidRepresentation = std::numeric_limits<RepresentationIndex>::max();
 
-			// TODO: resolve App preset Entity keys to renderer representation handles.
-			size_t count = 0;
+			std::vector<RepresentationIndex> atoms( p_system.data.getAtomCount(), invalidRepresentation );
+			size_t							 count = 0;
 			for ( const auto & [ preset, ranges ] : p_system.presetAtoms )
 			{
+				const auto representationIt = p_system.representationHandles.find( preset );
+				assert( representationIt != p_system.representationHandles.end() );
+				assert( representationIt->second < invalidRepresentation );
+
+				const auto representationIndex = static_cast<RepresentationIndex>( representationIt->second );
+
 				for ( auto it = ranges.rangeBegin(); it != ranges.rangeEnd(); ++it )
 				{
-					std::fill_n( atoms.begin() + it->getFirst(), it->getCount(), RepresentationIndex( 0 ) );
+					assert( it->getLast() <= atoms.size() );
+					for ( Index atom = it->getFirst(); atom < it->getLast(); ++atom )
+					{
+						assert( atoms[ atom ] == invalidRepresentation );
+						atoms[ atom ] = representationIndex;
+					}
 				}
 				count += ranges.count();
 			}
 
-			assert( count == 0 || count == p_system.data.getAtomCount() );
+			assert( count == p_system.data.getAtomCount() );
 
 			return atoms;
 		}
@@ -169,6 +185,8 @@ namespace VTX::Renderer::Builder
 			const Desc::Handle		  p_handle
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] AtomLayout::refreshColors" );
+
 			uploadColors( p_context, p_layouts, p_handle, buildAtomColors( p_systems.get( p_handle ) ) );
 		}
 
@@ -207,6 +225,8 @@ namespace VTX::Renderer::Builder
 			std::span<const Vec3f>	  p_positions
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] AtomLayout::uploadPositions" );
+
 			using namespace Layout;
 
 			assert( p_positions.size() == p_layouts.atoms.size( p_handle ) );
@@ -221,6 +241,8 @@ namespace VTX::Renderer::Builder
 			std::span<const ColorIndex> p_colors
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] AtomLayout::uploadColors" );
+
 			using namespace Layout;
 
 			assert( p_colors.size() == p_layouts.atoms.size( p_handle ) );
@@ -235,6 +257,8 @@ namespace VTX::Renderer::Builder
 			std::unordered_set<Desc::Handle> &	 p_geometryRefreshSystems
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] AtomLayout::uploadRepresentations" );
+
 			using namespace Layout;
 
 			assert( p_atomRepresentations.size() == p_layouts.atoms.size( p_handle ) );
@@ -251,6 +275,8 @@ namespace VTX::Renderer::Builder
 			std::span<const Flag>	  p_atomFlags
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] AtomLayout::uploadSelection" );
+
 			using namespace Layout;
 
 			assert( p_atomFlags.size() == p_layouts.atoms.size( p_handle ) );
@@ -267,6 +293,8 @@ namespace VTX::Renderer::Builder
 			std::unordered_set<Desc::Handle> & p_geometryRefreshSystems
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] SystemVisibility::uploadInput" );
+
 			uploadVisibility( p_systems, p_geometryRefreshSystems, p_handle );
 		}
 
@@ -277,6 +305,8 @@ namespace VTX::Renderer::Builder
 			const Desc::Handle				   p_handle
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] SystemVisibility::uploadVisibility" );
+
 			assert( p_systems.contains( p_handle ) );
 			p_geometryRefreshSystems.insert( p_handle );
 		}
@@ -291,6 +321,8 @@ namespace VTX::Renderer::Builder
 			const Desc::Handle		  p_handle
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] SystemVisibility::refreshGeometryVisibility" );
+
 			const Cache::System & systemCache = p_systems.get( p_handle );
 
 			auto visibleSpheres	  = systemCache.visibility;
@@ -301,7 +333,9 @@ namespace VTX::Renderer::Builder
 
 			for ( const auto & [ preset, ranges ] : systemCache.presetAtoms )
 			{
-				const RepresentationIndex representationIndex = 0;
+				const auto representationIt = systemCache.representationHandles.find( preset );
+				assert( representationIt != systemCache.representationHandles.end() );
+				const auto representationIndex = static_cast<RepresentationIndex>( representationIt->second );
 				assert( p_representations.contains( representationIndex ) );
 
 				const auto & representation = p_representations.get( representationIndex );
@@ -351,6 +385,8 @@ namespace VTX::Renderer::Builder
 			const Desc::Handle		  p_handle
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] SystemVisibility::constructRibbon" );
+
 			const Cache::System & system = p_systems.get( p_handle );
 
 			p_geometries.ribbons.construct( p_handle, system );
@@ -378,6 +414,8 @@ namespace VTX::Renderer::Builder
 			const Desc::Handle		  p_handle
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] SystemVisibility::constructSES" );
+
 			const Cache::System & system = p_systems.get( p_handle );
 			p_geometries.constructSES( p_context, p_handle, system, p_layouts.atoms.offset( p_handle ) );
 			p_geometries.ses.resize( p_context );
@@ -475,77 +513,215 @@ namespace VTX::Renderer::Builder
 
 	struct RepresentationState
 	{
-		template<typename Systems, typename Representations>
-		static void upload(
-			Context::ContextWrapper &					p_context,
-			Systems &									p_systems,
-			Representations &							p_representations,
-			std::unordered_set<Desc::Handle> &			p_geometryRefreshSystems,
-			const std::vector<const Representation *> & p_representationsData
-		)
+		static Cache::Representation buildCache( const Representation & p_representation )
 		{
-			BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
-			RepresentationIndex					index = 0;
+			bool showSphere	  = p_representation.hasSphere;
+			bool showCylinder = p_representation.hasCylinder;
+			bool showRibbon	  = p_representation.hasRibbon;
+			bool showSes	  = p_representation.hasSes;
 
-			for ( const auto * representation : p_representationsData )
+			const bool	isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
+			const float cylinderRadius		= p_representation.radiusCylinder;
+			float		sphereRadiusFixed	= p_representation.radiusSphereFixed;
+
+			if ( showSes )
 			{
-				bool showSphere	  = representation->hasSphere;
-				bool showCylinder = representation->hasCylinder;
-				bool showRibbon	  = representation->hasRibbon;
-				bool showSes	  = representation->hasSes;
-
-				bool  isSphereRadiusFixed = representation->isRadiusSphereFixed;
-				float cylinderRadius	  = representation->radiusCylinder;
-				float sphereRadiusFixed	  = representation->radiusSphereFixed;
-
-				if ( showSes )
+				showSphere	 = false;
+				showCylinder = false;
+				showRibbon	 = false;
+			}
+			else if ( showSphere && not isSphereRadiusFixed )
+			{
+				showCylinder = false;
+				showRibbon	 = false;
+			}
+			else if ( showSphere && showCylinder )
+			{
+				if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
 				{
-					showSphere	 = false;
-					showCylinder = false;
-					showRibbon	 = false;
+					sphereRadiusFixed = cylinderRadius;
 				}
-				else if ( showSphere && not isSphereRadiusFixed )
+			}
+			else if ( not showSphere && showCylinder )
+			{
+				showSphere = true;
+			}
+
+			return Cache::Representation { p_representation, showSphere, showCylinder, showRibbon, showSes };
+		}
+
+		static void refreshCache( Cache::Representation & p_cache )
+		{
+			const Cache::Representation refreshed = buildCache( p_cache.data );
+
+			p_cache.showSphere	 = refreshed.showSphere;
+			p_cache.showCylinder = refreshed.showCylinder;
+			p_cache.showRibbon	 = refreshed.showRibbon;
+			p_cache.showSes		 = refreshed.showSes;
+		}
+
+		template<typename RepresentationPool>
+		static void upload( Context::ContextWrapper & p_context, const RepresentationPool & p_representations )
+		{
+			Util::ScopedChrono timer( "[BUILDER] RepresentationState::upload" );
+
+			BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
+			if ( p_representations.empty() )
+			{
+				_write( buffer, VTX::Renderer::Representations::STICKS_AND_RIBBONS );
+			}
+			else
+			{
+				Desc::Handle lastHandle = 0;
+				for ( const auto entry : p_representations.entries() )
 				{
-					showCylinder = false;
-					showRibbon	 = false;
-				}
-				else if ( showSphere && showCylinder )
-				{
-					if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
-					{
-						sphereRadiusFixed = cylinderRadius;
-					}
-				}
-				else if ( not showSphere && showCylinder )
-				{
-					showSphere			= true;
-					isSphereRadiusFixed = true;
-					sphereRadiusFixed	= cylinderRadius;
+					lastHandle = std::max( lastHandle, entry.handle );
 				}
 
-				buffer.write( sphereRadiusFixed );
-				buffer.write( representation->radiusSphereAdd );
-				buffer.write( uint( isSphereRadiusFixed ) );
-				buffer.write( representation->radiusCylinder );
-				buffer.write( uint( representation->cylinderColorBlending ) );
-				buffer.write( uint( representation->ribbonColorBlending ) );
-				buffer.write( representation->sesProbeRadius );
-				buffer.write( Geometry::SES::MAX_PROBE_NEIGHBOR_NB );
-
-				p_representations.emplace(
-					index, Cache::Representation { showSphere, showCylinder, showRibbon, showSes }
-				);
-
-				index++;
+				for ( Desc::Handle handle = 0; handle <= lastHandle; ++handle )
+				{
+					const Representation & representation = p_representations.contains( handle )
+																? p_representations.get( handle ).data
+																: VTX::Renderer::Representations::STICKS_AND_RIBBONS;
+					_write( buffer, representation );
+				}
 			}
 
 			buffer.close();
 			p_context.setBuffer( { "Representations" }, buffer );
+		}
 
-			for ( const auto entry : p_systems.entries() )
+	  private:
+		static void _write( BinaryBuffer<E_LAYOUT_TYPE::Std140> & p_buffer, const Representation & p_representation )
+		{
+			bool  isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
+			float cylinderRadius	  = p_representation.radiusCylinder;
+			float sphereRadiusFixed	  = p_representation.radiusSphereFixed;
+
+			if ( p_representation.hasSphere && p_representation.hasCylinder )
 			{
-				p_geometryRefreshSystems.insert( entry.handle );
+				if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
+				{
+					sphereRadiusFixed = cylinderRadius;
+				}
 			}
+			else if ( not p_representation.hasSphere && p_representation.hasCylinder )
+			{
+				isSphereRadiusFixed = true;
+				sphereRadiusFixed	= cylinderRadius;
+			}
+
+			p_buffer.write( sphereRadiusFixed );
+			p_buffer.write( p_representation.radiusSphereAdd );
+			p_buffer.write( uint( isSphereRadiusFixed ) );
+			p_buffer.write( p_representation.radiusCylinder );
+			p_buffer.write( uint( p_representation.cylinderColorBlending ) );
+			p_buffer.write( uint( p_representation.ribbonColorBlending ) );
+			p_buffer.write( p_representation.sesProbeRadius );
+			p_buffer.write( Geometry::SES::MAX_PROBE_NEIGHBOR_NB );
+		}
+	};
+
+	struct CameraState
+	{
+		static void upload(
+			Context::ContextWrapper & p_context,
+			const Cache::Camera &	  p_camera,
+			const size_t			  p_width,
+			const size_t			  p_height
+		)
+		{
+			Util::ScopedChrono timer( "[BUILDER] CameraState::upload" );
+
+			BinaryBuffer140 buffer;
+			const Mat4f		matrixViewInv	   = Util::Math::inverse( p_camera.matView );
+			const Mat4f		matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
+
+			buffer.write( p_camera.matView );
+			buffer.write( p_camera.matProj );
+			buffer.write( matrixViewInv );
+			buffer.write( matrixViewInvTrans );
+			buffer.write( p_camera.position );
+			buffer.write( Vec4f(
+				p_camera.camera.near * p_camera.camera.far,
+				p_camera.camera.far,
+				p_camera.camera.far - p_camera.camera.near,
+				p_camera.camera.near
+			) );
+			buffer.write( Vec2i( int( p_width ), int( p_height ) ) );
+			buffer.write( Vec2i() );
+			buffer.write( uint( p_camera.camera.projection == PROJECTION::PERSPECTIVE ) );
+			buffer.close();
+
+			p_context.setBuffer( { "Camera" }, buffer );
+		}
+	};
+
+	struct GraphicsConfigState
+	{
+		static void upload( Context::ContextWrapper & p_context, const GraphicsConfig & p_config )
+		{
+			Util::ScopedChrono timer( "[BUILDER] GraphicsConfigState::upload" );
+
+			BinaryBuffer140 bufferShading;
+			bufferShading.write( p_config.colorBackground );
+			bufferShading.write( p_config.colorLight );
+			bufferShading.write( p_config.colorFog );
+			bufferShading.write( uint32_t( p_config.shadingMode ) );
+			bufferShading.write( p_config.specularFactor );
+			bufferShading.write( p_config.shininess );
+			bufferShading.write( p_config.toonSteps );
+			bufferShading.write( p_config.fogNear );
+			bufferShading.write( p_config.fogFar );
+			bufferShading.write( p_config.activeFog ? p_config.fogDensity : 0.f );
+			bufferShading.close();
+			p_context.setBuffer( { "Shading" }, bufferShading );
+
+			if ( p_config.activeSSAO )
+			{
+				BinaryBuffer140 bufferSSAO;
+				bufferSSAO.write( p_config.ssaoIntensity );
+				bufferSSAO.close();
+				p_context.setBuffer( { "SSAO" }, bufferSSAO );
+
+				BinaryBuffer140 bufferBlurX;
+				bufferBlurX.write( Vec2i( 1, 0 ) );
+				bufferBlurX.write( p_config.blurSize );
+				bufferBlurX.close();
+				p_context.setBuffer( { "BlurX" }, bufferBlurX );
+
+				BinaryBuffer140 bufferBlurY;
+				bufferBlurY.write( Vec2i( 0, 1 ) );
+				bufferBlurY.write( p_config.blurSize );
+				bufferBlurY.close();
+				p_context.setBuffer( { "BlurY" }, bufferBlurY );
+			}
+			if ( p_config.activeOutline )
+			{
+				BinaryBuffer140 bufferOutline;
+				bufferOutline.write( p_config.colorOutline );
+				bufferOutline.write( p_config.outlineSensitivity );
+				bufferOutline.write( p_config.outlineThickness );
+				bufferOutline.close();
+				p_context.setBuffer( { "Outline" }, bufferOutline );
+			}
+			if ( p_config.activeSelection )
+			{
+				BinaryBuffer140 bufferSelection;
+				bufferSelection.write( p_config.colorSelection );
+				bufferSelection.close();
+				p_context.setBuffer( { "Selection" }, bufferSelection );
+			}
+		}
+	};
+
+	struct ColorLayoutState
+	{
+		static void upload( Context::ContextWrapper & p_context, const Color::Layout & p_layout )
+		{
+			Util::ScopedChrono timer( "[BUILDER] ColorLayoutState::upload" );
+
+			p_context.setBuffer<Util::Color::Rgba>( { "ColorLayout" }, p_layout.colors );
 		}
 	};
 
@@ -553,6 +729,8 @@ namespace VTX::Renderer::Builder
 	{
 		static void allocateInputs( Context::ContextWrapper & p_context, Layouts & p_layouts )
 		{
+			Util::ScopedChrono timer( "[BUILDER] ResidueLayout::allocateInputs" );
+
 			p_layouts.residues.resize( p_context );
 		}
 
@@ -564,6 +742,8 @@ namespace VTX::Renderer::Builder
 			const Cache::System &	  p_system
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] ResidueLayout::uploadInput" );
+
 			if ( p_geometries.ribbons.empty( p_handle ) )
 			{
 				return;
@@ -585,6 +765,8 @@ namespace VTX::Renderer::Builder
 			std::span<const RepresentationIndex> p_atomRepresentations
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] ResidueLayout::uploadRepresentations" );
+
 			using namespace Layout;
 
 			if ( p_geometries.ribbons.empty( p_handle ) )
@@ -616,6 +798,8 @@ namespace VTX::Renderer::Builder
 			std::span<const Flag>	  p_atomFlags
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] ResidueLayout::uploadSelection" );
+
 			using namespace Layout;
 
 			if ( p_geometries.ribbons.empty( p_handle ) )
@@ -648,6 +832,8 @@ namespace VTX::Renderer::Builder
 			const Cache::System &	  p_system
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] ResidueLayout::uploadIds" );
+
 			using namespace Layout;
 
 			const auto &	   construction	 = p_geometries.ribbons.construction( p_handle );
@@ -717,6 +903,8 @@ namespace VTX::Renderer::Builder
 			const Desc::Handle		  p_handle
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] RibbonGeometry::writeOutput" );
+
 			if ( not p_geometries.ribbons.empty( p_handle ) )
 			{
 				p_geometries.ribbons.uploadIndexes( p_context, p_handle );
@@ -728,6 +916,8 @@ namespace VTX::Renderer::Builder
 	{
 		static void allocateOutputs( Context::ContextWrapper & p_context, Geometries & p_geometries )
 		{
+			Util::ScopedChrono timer( "[BUILDER] GeometryBuffers::allocateOutputs" );
+
 			p_geometries.resizeSystems( p_context );
 		}
 
@@ -737,6 +927,8 @@ namespace VTX::Renderer::Builder
 			const Desc::Handle		  p_handle
 		)
 		{
+			Util::ScopedChrono timer( "[BUILDER] GeometryBuffers::writeOutput" );
+
 			p_geometries.spheres.uploadIndexes( p_context, p_handle );
 			p_geometries.cylinders.uploadIndexes( p_context, p_handle );
 		}
@@ -747,6 +939,8 @@ namespace VTX::Renderer::Builder
 		template<typename Systems>
 		static void upload( Context::ContextWrapper & p_context, Systems & p_systems, const Cache::Camera & p_camera )
 		{
+			Util::ScopedChrono timer( "[BUILDER] SystemModels::upload" );
+
 			if ( p_systems.empty() )
 			{
 				return;
@@ -773,6 +967,8 @@ namespace VTX::Renderer::Builder
 	{
 		static void buildDrawRanges( Context::ContextWrapper & p_context, Geometries & p_geometries )
 		{
+			Util::ScopedChrono timer( "[BUILDER] DrawRanges::buildDrawRanges" );
+
 			p_geometries.buildDrawRanges( p_context );
 		}
 	};

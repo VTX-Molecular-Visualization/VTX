@@ -46,14 +46,15 @@ namespace VTX::Bench
 	  private:
 		struct SystemEntry
 		{
+			uint																   uid = 0;
 			std::unique_ptr<Core::Struct::Topology>								   topology;
 			std::vector<Vec3f>													   positions;
 			Mat4f																   transform = MAT4F_ID;
-			uint																   uid		 = 0;
 			Util::Math::Range<UID32>											   atomUids;
 			Util::Math::Range<UID32>											   residueUids;
 			std::unordered_map<Renderer::E_COLOR_SCHEME, Renderer::IndexRangeList> colorSchemeAtoms;
 			std::unordered_map<Renderer::ColorIndex, Renderer::IndexRangeList>	   customColorAtoms;
+			std::unordered_map<Entity, Renderer::Desc::Handle>					   representationHandles;
 			std::unordered_map<Entity, Renderer::IndexRangeList>				   presetAtoms;
 			Util::Math::BitSet													   visibility;
 			Util::Math::BitSet													   selection;
@@ -64,7 +65,7 @@ namespace VTX::Bench
 		CameraController										 _camera;
 		std::vector<SystemEntry>								 _systems;
 		mutable std::unordered_map<uint, Renderer::Desc::Handle> _syncedSystems;
-		uint													 _nextSystemUid = 1;
+		uint													 _nextSystemUID = 1;
 		UID32													 _nextUID32		= 1;
 	};
 

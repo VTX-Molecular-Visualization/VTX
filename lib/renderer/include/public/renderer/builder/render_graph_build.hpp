@@ -3,8 +3,8 @@
 
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/geometry/geometries.hpp"
-#include "renderer/graphics_config.hpp"
 #include "renderer/graph_builder.hpp"
+#include "renderer/graphics_config.hpp"
 #include "renderer/layout/layouts.hpp"
 #include "renderer/render_graph.hpp"
 #include <optional>
@@ -30,6 +30,8 @@ namespace VTX::Renderer::Builder
 
 	struct RenderGraphRuntime
 	{
+		static PipelineConfig pipelineConfig( const GraphicsConfig & );
+
 		static bool refreshGraph(
 			const GraphicsConfig &,
 			std::optional<PipelineConfig> &,

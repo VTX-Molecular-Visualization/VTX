@@ -11,6 +11,8 @@ namespace VTX::Renderer::Builder
 		const Geometries &	   p_geometries
 	)
 	{
+		Util::ScopedChrono timer( "[BUILDER] DefaultRenderGraph::build" );
+
 		using namespace Desc;
 		using CylinderGeometry = VTX::Renderer::Geometry::Cylinder;
 		using GridGeometry	   = VTX::Renderer::Geometry::Grid;
@@ -636,21 +638,28 @@ namespace VTX::Renderer::Builder
 		return g;
 	}
 
-	bool RenderGraphRuntime::refreshGraph(
-		const GraphicsConfig &			 p_config,
-		std::optional<PipelineConfig> & p_currentConfig,
-		RenderGraph &					 p_graph,
-		Desc::RenderQueue &			 p_queue,
-		const Layouts &				 p_layouts,
-		const Geometries &			 p_geometries
-	)
+	PipelineConfig RenderGraphRuntime::pipelineConfig( const GraphicsConfig & p_config )
 	{
-		Util::ScopedChrono timer( "[RENDERER] _refreshGraph" );
-
 		PipelineConfig config;
 		config.enableSSAO	   = p_config.activeSSAO;
 		config.enableOutline   = p_config.activeOutline;
 		config.enableSelection = p_config.activeSelection;
+
+		return config;
+	}
+
+	bool RenderGraphRuntime::refreshGraph(
+		const GraphicsConfig &			p_config,
+		std::optional<PipelineConfig> & p_currentConfig,
+		RenderGraph &					p_graph,
+		Desc::RenderQueue &				p_queue,
+		const Layouts &					p_layouts,
+		const Geometries &				p_geometries
+	)
+	{
+		Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::refreshGraph" );
+
+		const PipelineConfig config = pipelineConfig( p_config );
 
 		if ( p_currentConfig && *p_currentConfig == config )
 		{
@@ -666,6 +675,8 @@ namespace VTX::Renderer::Builder
 
 	bool RenderGraphRuntime::syncGeometryChunks( RenderGraph & p_graph, const Geometries & p_geometries )
 	{
+		Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::syncGeometryChunks" );
+
 		bool changed = false;
 
 		auto sync = [ & ]( const Desc::Key & p_geometry, const Desc::Geometry & p_source )
@@ -688,10 +699,12 @@ namespace VTX::Renderer::Builder
 
 	void RenderGraphRuntime::bindExternalPasses(
 		Context::ContextWrapper & p_context,
-		const uintptr_t			 p_function,
-		const uintptr_t			 p_contextPtr
+		const uintptr_t			  p_function,
+		const uintptr_t			  p_contextPtr
 	)
 	{
+		Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::bindExternalPasses" );
+
 		if ( not p_context.containsPass( Geometry::SES::PASS_COMPUTE ) )
 		{
 			return;
@@ -702,6 +715,8 @@ namespace VTX::Renderer::Builder
 
 	void RenderGraphRuntime::markSESDirty( Context::ContextWrapper & p_context, const Geometries & p_geometries )
 	{
+		Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::markSESDirty" );
+
 		if ( p_context.containsPass( Geometry::SES::PASS_COMPUTE ) && p_geometries.ses.hasPendingCompute() )
 		{
 			p_context.markPassDirty( Geometry::SES::PASS_COMPUTE );
@@ -711,11 +726,13 @@ namespace VTX::Renderer::Builder
 	void RenderGraphRuntime::rebuildCommandBuffer(
 		Context::ContextWrapper & p_context,
 		const Desc::RenderQueue & p_queue,
-		const Desc::Resources &	 p_resources,
-		const uintptr_t			 p_externalFunction,
-		const uintptr_t			 p_externalContext
+		const Desc::Resources &	  p_resources,
+		const uintptr_t			  p_externalFunction,
+		const uintptr_t			  p_externalContext
 	)
 	{
+		Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::rebuildCommandBuffer" );
+
 		p_context.build( p_queue, p_resources );
 		bindExternalPasses( p_context, p_externalFunction, p_externalContext );
 	}

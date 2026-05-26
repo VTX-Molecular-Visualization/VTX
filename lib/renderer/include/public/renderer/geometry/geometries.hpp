@@ -9,6 +9,7 @@
 #include "renderer/geometry/ribbon.hpp"
 #include "renderer/geometry/ses.hpp"
 #include "renderer/geometry/sphere.hpp"
+#include <util/logger.hpp>
 
 namespace VTX::Renderer
 {
@@ -74,16 +75,21 @@ namespace VTX::Renderer
 
 		void buildDrawRanges( Context::ContextWrapper & p_context )
 		{
-			p_context.setBuffer(
-				{ Geometry::Sphere::INDIRECT_SPHERES }, _toBuffer( spheres.toDrawIndexedIndirectCommands() )
-			);
-			p_context.setBuffer(
-				{ Geometry::Cylinder::INDIRECT_CYLINDERS }, _toBuffer( cylinders.toDrawIndexedIndirectCommands() )
-			);
-			p_context.setBuffer(
-				{ Geometry::Ribbon::INDIRECT_RIBBONS }, _toBuffer( ribbons.toDrawIndexedIndirectCommands() )
-			);
-			p_context.setBuffer( { Geometry::Grid::INDIRECT_GRID }, _toBuffer( grid.toDrawIndirectCommands() ) );
+			const auto sphereDraws = spheres.toDrawIndexedIndirectCommands();
+			_logDrawRanges( { Geometry::Sphere::INDIRECT_SPHERES }, sphereDraws );
+			p_context.setBuffer( { Geometry::Sphere::INDIRECT_SPHERES }, _toBuffer( sphereDraws ) );
+
+			const auto cylinderDraws = cylinders.toDrawIndexedIndirectCommands();
+			_logDrawRanges( { Geometry::Cylinder::INDIRECT_CYLINDERS }, cylinderDraws );
+			p_context.setBuffer( { Geometry::Cylinder::INDIRECT_CYLINDERS }, _toBuffer( cylinderDraws ) );
+
+			const auto ribbonDraws = ribbons.toDrawIndexedIndirectCommands();
+			_logDrawRanges( { Geometry::Ribbon::INDIRECT_RIBBONS }, ribbonDraws );
+			p_context.setBuffer( { Geometry::Ribbon::INDIRECT_RIBBONS }, _toBuffer( ribbonDraws ) );
+
+			const auto gridDraws = grid.toDrawIndirectCommands();
+			_logDrawRanges( { Geometry::Grid::INDIRECT_GRID }, gridDraws );
+			p_context.setBuffer( { Geometry::Grid::INDIRECT_GRID }, _toBuffer( gridDraws ) );
 			_uploadPatchDrawCommands( p_context, { Geometry::SES::INDIRECT_CONVEX_PATCHES }, ses.convexPatches );
 			_uploadPatchDrawCommands( p_context, { Geometry::SES::INDIRECT_CIRCLE_PATCHES }, ses.circlePatches );
 			_uploadPatchDrawCommands( p_context, { Geometry::SES::INDIRECT_SEGMENT_PATCHES }, ses.segmentPatches );
@@ -99,18 +105,79 @@ namespace VTX::Renderer
 		{
 			if ( p_geometry.chunks.empty() )
 			{
-				p_context.setBuffer(
-					Desc::BufferRef { p_indirectBuffer, uint32_t( 0 ) },
-					_toBuffer( std::vector<Desc::DrawIndexedIndirectRecord> {} )
-				);
+				const std::vector<Desc::DrawIndexedIndirectRecord> records;
+				_logDrawRanges( { p_indirectBuffer, uint32_t( 0 ) }, records );
+				p_context.setBuffer( Desc::BufferRef { p_indirectBuffer, uint32_t( 0 ) }, _toBuffer( records ) );
 				return;
 			}
 
 			for ( const Desc::BufferChunk chunk : p_geometry.chunks )
 			{
 				const Desc::BufferRef ref { p_indirectBuffer, chunk };
+				const auto			  records = p_geometry.toDrawIndexedIndirectCommands( chunk );
+				_logDrawRanges( ref, records );
 				p_context.ensureBufferChunk( ref );
-				p_context.setBuffer( ref, _toBuffer( p_geometry.toDrawIndexedIndirectCommands( chunk ) ) );
+				p_context.setBuffer( ref, _toBuffer( records ) );
+			}
+		}
+
+		void _logDrawRanges( const Desc::BufferRef & p_ref, const std::vector<Desc::DrawIndirectRecord> & p_records )
+		{
+			if ( p_ref.chunk )
+			{
+				VTX_DEBUG( "[DRAW_RANGES] {} chunk={} count={}", p_ref.key, *p_ref.chunk, p_records.size() );
+			}
+			else
+			{
+				VTX_DEBUG( "[DRAW_RANGES] {} count={}", p_ref.key, p_records.size() );
+			}
+
+			for ( size_t i = 0; i < p_records.size(); ++i )
+			{
+				const Desc::DrawIndirectRecord & record = p_records[ i ];
+				VTX_TRACE(
+					"[DRAW_RANGES] {}[{}] vertexCount={} instanceCount={} firstVertex={} baseInstance={} idModel={}",
+					p_ref.key,
+					i,
+					record.command.vertexCount,
+					record.command.instanceCount,
+					record.command.firstVertex,
+					record.command.baseInstance,
+					record.idModel
+				);
+			}
+		}
+
+		void _logDrawRanges(
+			const Desc::BufferRef &								 p_ref,
+			const std::vector<Desc::DrawIndexedIndirectRecord> & p_records
+		)
+		{
+			if ( p_ref.chunk )
+			{
+				VTX_DEBUG( "[DRAW_RANGES] {} chunk={} count={}", p_ref.key, *p_ref.chunk, p_records.size() );
+			}
+			else
+			{
+				VTX_DEBUG( "[DRAW_RANGES] {} count={}", p_ref.key, p_records.size() );
+			}
+
+			for ( size_t i = 0; i < p_records.size(); ++i )
+			{
+				const Desc::DrawIndexedIndirectRecord & record = p_records[ i ];
+				VTX_TRACE(
+					"[DRAW_RANGES] {}[{}] indexCount={} instanceCount={} firstIndex={} baseVertex={} "
+					"baseInstance={} idModel={} data0={}",
+					p_ref.key,
+					i,
+					record.command.indexCount,
+					record.command.instanceCount,
+					record.command.firstIndex,
+					record.command.baseVertex,
+					record.command.baseInstance,
+					record.idModel,
+					record.padding0
+				);
 			}
 		}
 

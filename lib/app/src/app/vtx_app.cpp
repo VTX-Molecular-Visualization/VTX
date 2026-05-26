@@ -148,16 +148,16 @@ namespace VTX::App
 		// Resize renderer.
 		ACTION().execute<App::Action::Application::Resize>( WIDTH_DEFAULT, HEIGHT_DEFAULT );
 
-		// Default presets.
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::GraphicsConfig>>();
-
 		// Run passes.
 		PASS().addPass<Pass::SceneUpdater>( sceneEnt );
 		PASS().addPass<Pass::CameraUpdater>( cameraEnt );
 		PASS().addPass<Pass::SystemUpdater>();
 		PASS().addPass<Pass::TrajectoryUpdater>();
+
+		// Default presets.
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::GraphicsConfig>>();
 	}
 
 	void VTXApp::finishStartup()

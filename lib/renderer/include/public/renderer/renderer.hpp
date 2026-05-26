@@ -90,6 +90,7 @@ namespace VTX::Renderer
 		 */
 		Desc::Handle addRepresentation( const Representation & );
 		void		 removeRepresentation( const Desc::Handle );
+		void		 setRepresentationDirty( const Desc::Handle, const Cache::E_REPRESENTATION_DIRTY );
 
 		/**
 		 * @brief Ensure a physical chunk exists for a chunked render graph buffer.
@@ -153,6 +154,8 @@ namespace VTX::Renderer
 		 * @brief Current pipeline configuration.
 		 */
 		std::optional<Builder::PipelineConfig> _config;
+		Cache::GraphicsConfig				   _graphicsConfig;
+		Cache::ColorLayout					   _colorLayout;
 
 		/**
 		 * @brief Render queue built from the _graph.

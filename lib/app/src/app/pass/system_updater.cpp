@@ -71,6 +71,7 @@ namespace VTX::App::Pass
 									  uid.residues,
 									  color.colorSchemeAtoms,
 									  color.customColorAtoms,
+									  _representations,
 									  representation.presetAtoms,
 									  visibility.atoms,
 									  selection.atoms }
@@ -125,15 +126,9 @@ namespace VTX::App::Pass
 
 	void SystemUpdater::_onUpdateRepresentationPreset( Registry & p_r, Entity p_e )
 	{
-		// Check if entity used.
-		const auto it = std::find_if(
-			_representations.begin(), _representations.end(), [ p_e ]( const auto & pair ) { return pair.first == p_e; }
-		);
+		assert( _representations.contains( p_e ) );
 
-		if ( it != _representations.end() )
-		{
-			//_setRepresentation();
-		}
+		RENDERER().setRepresentationDirty( _representations[ p_e ], Renderer::Cache::E_REPRESENTATION_DIRTY::ALL );
 	}
 
 	void SystemUpdater::_onDestroyRepresentationPreset( Registry &, Entity p_e )
@@ -143,24 +138,5 @@ namespace VTX::App::Pass
 		RENDERER().removeRepresentation( _representations[ p_e ] );
 		_representations.erase( p_e );
 	}
-
-	/*
-	void SystemUpdater::_setRepresentation()
-	{
-		std::vector<const Renderer::Representation *> representations( _representations.size() );
-
-		for ( auto & [ ent, index ] : _representations )
-		{
-			const auto * const rep = REG().try_get<Renderer::Representation>( ent );
-
-			assert( rep );
-
-			representations[ index ] = rep;
-		}
-
-		RENDERER().setRepresentations( representations );
-	}
-
-	*/
 
 } // namespace VTX::App::Pass

@@ -1,30 +1,9 @@
 #include "renderer/renderer.hpp"
-#include "renderer/binary_buffer.hpp"
 #include "renderer/builder/render_graph_build.hpp"
 #include "renderer/builder/system_build.hpp"
 #include <unordered_map>
 #include <util/chrono.hpp>
 #include <util/enum.hpp>
-
-namespace
-{
-	/*
-	auto linearizeColorFloat = []( float c ) -> float
-	{
-		return c;
-		if ( c <= 0.04045f )
-			return c / 12.92f;
-		return std::pow( ( c + 0.055f ) / 1.055f, 2.4f );
-	};
-
-	using namespace VTX;
-	auto linearizeColor = []( const Util::Color::Rgba & c ) -> Vec4f
-	{
-		return Vec4f( linearizeColorFloat( c.r() ), linearizeColorFloat( c.g() ), linearizeColorFloat( c.b() ), c.a() );
-	};
-	*/
-
-} // namespace
 
 namespace VTX::Renderer
 {
@@ -186,13 +165,16 @@ namespace VTX::Renderer
 
 	void Renderer::_flushDirty()
 	{
-		using RendererDirty = Cache::E_RENDERER_DIRTY;
-		using SystemDirty	= Cache::E_SYSTEM_DIRTY;
+		using RendererDirty		  = Cache::E_RENDERER_DIRTY;
+		using RepresentationDirty = Cache::E_REPRESENTATION_DIRTY;
+		using SystemDirty		  = Cache::E_SYSTEM_DIRTY;
 
 		auto hasDirty = []( const auto p_flags, const auto p_bit ) { return Util::Enum::hasAnyBit( p_flags, p_bit ); };
 
-		std::unordered_map<Desc::Handle, SystemDirty> dirtySystems;
-		std::unordered_set<Desc::Handle>			  geometryRefreshSystems;
+		std::unordered_map<Desc::Handle, SystemDirty>		  dirtySystems;
+		std::unordered_map<Desc::Handle, RepresentationDirty> dirtyRepresentations;
+		std::unordered_set<Desc::Handle>					  geometryRefreshSystems;
+		std::vector<Desc::Handle>							  deletingSystems;
 		for ( const DirtySystem & dirty : _dirtySystems )
 		{
 			if ( not _systems.contains( dirty.handle ) )
@@ -203,7 +185,96 @@ namespace VTX::Renderer
 			dirtySystems[ dirty.handle ] |= dirty.flags;
 		}
 
-		const bool fullRefresh = hasDirty( _dirtyRenderer, RendererDirty::ALL );
+		for ( const auto & [ system, flags ] : dirtySystems )
+		{
+			if ( hasDirty( flags, SystemDirty::DELETING ) )
+			{
+				deletingSystems.emplace_back( system );
+			}
+		}
+
+		if ( not deletingSystems.empty() )
+		{
+			for ( const Desc::Handle system : deletingSystems )
+			{
+				_systems.erase( system );
+				dirtySystems.erase( system );
+			}
+
+			std::unordered_set<Desc::Handle> ignoredRefreshSystems;
+			Builder::SystemRegistry::clear( _layouts, _geometries, ignoredRefreshSystems );
+
+			for ( const auto entry : _systems.entries() )
+			{
+				Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, entry.handle );
+			}
+
+			dirtySystems.clear();
+			for ( const auto entry : _systems.entries() )
+			{
+				dirtySystems.emplace( entry.handle, SystemDirty::ALL );
+			}
+
+			_dirtyRenderer |= RendererDirty::ALL;
+		}
+		for ( const DirtyRepresentation & dirty : _dirtyRepresentations )
+		{
+			if ( not _representations.contains( dirty.handle ) )
+			{
+				continue;
+			}
+
+			dirtyRepresentations[ dirty.handle ] |= dirty.flags;
+		}
+
+		const bool fullRefresh	= Util::Enum::hasAllBits( _dirtyRenderer, RendererDirty::ALL );
+		bool	   graphChanged = false;
+		if ( fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::GRAPH ) )
+		{
+			graphChanged = Builder::RenderGraphRuntime::refreshGraph(
+				_graphicsConfig.data, _config, _graph, _queue, _layouts, _geometries
+			);
+			if ( graphChanged )
+			{
+				Builder::RenderGraphRuntime::rebuildCommandBuffer(
+					_context,
+					_queue,
+					_graph.getResources(),
+					reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+					reinterpret_cast<uintptr_t>( this )
+				);
+			}
+		}
+		const bool updateGraphicsConfig
+			= fullRefresh || graphChanged || hasDirty( _dirtyRenderer, RendererDirty::GRAPHICS_CONFIG );
+		const bool updateColorLayout
+			= fullRefresh || graphChanged || hasDirty( _dirtyRenderer, RendererDirty::COLOR_LAYOUT );
+		if ( fullRefresh )
+		{
+			dirtyRepresentations.clear();
+			for ( const auto entry : _representations.entries() )
+			{
+				dirtyRepresentations.emplace( entry.handle, RepresentationDirty::ALL );
+			}
+		}
+		const bool updateRepresentations = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::REPRESENTATIONS )
+										   || not dirtyRepresentations.empty();
+
+		if ( not dirtyRepresentations.empty() )
+		{
+			for ( const auto & [ representation, flags ] : dirtyRepresentations )
+			{
+				Builder::RepresentationState::refreshCache( _representations.get( representation ) );
+			}
+		}
+
+		if ( updateRepresentations )
+		{
+			for ( const auto entry : _systems.entries() )
+			{
+				dirtySystems[ entry.handle ] |= SystemDirty::REPRESENTATION;
+			}
+		}
 		if ( fullRefresh )
 		{
 			for ( const auto entry : _systems.entries() )
@@ -239,6 +310,15 @@ namespace VTX::Renderer
 		bool updateGeometryChunks = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::GEOMETRY_CHUNKS );
 		bool updateExternalPasses = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::EXTERNAL_PASSES );
 		bool updateCommandBuffer  = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::COMMAND_BUFFER );
+		if ( fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::CAMERA ) )
+		{
+			Builder::CameraState::upload( _context, _camera, width(), height() );
+			updateModels = true;
+		}
+		if ( hasDirty( _dirtyRenderer, RendererDirty::MODELS ) )
+		{
+			updateModels = true;
+		}
 
 		if ( not fullRefresh )
 		{
@@ -264,7 +344,14 @@ namespace VTX::Renderer
 				}
 				if ( hasDirty( flags, SystemDirty::REPRESENTATION ) )
 				{
-					// TODO: resolve Cache::System preset entities to renderer representation handles.
+					const std::vector<RepresentationIndex> atomRepresentations
+						= Builder::AtomLayout::buildAtomRepresentations( cache );
+					Builder::AtomLayout::uploadRepresentations(
+						_context, _layouts, system, atomRepresentations, geometryRefreshSystems
+					);
+					Builder::ResidueLayout::uploadRepresentations(
+						_context, _layouts, _geometries, system, atomRepresentations
+					);
 					geometryRefreshSystems.insert( system );
 				}
 				if ( hasDirty( flags, SystemDirty::VISIBILITY ) )
@@ -323,6 +410,18 @@ namespace VTX::Renderer
 				reinterpret_cast<uintptr_t>( this )
 			);
 		}
+		if ( updateRepresentations )
+		{
+			Builder::RepresentationState::upload( _context, _representations );
+		}
+		if ( updateGraphicsConfig )
+		{
+			Builder::GraphicsConfigState::upload( _context, _graphicsConfig.data );
+		}
+		if ( updateColorLayout )
+		{
+			Builder::ColorLayoutState::upload( _context, _colorLayout.data );
+		}
 		if ( updateExternalPasses )
 		{
 			Builder::RenderGraphRuntime::markSESDirty( _context, _geometries );
@@ -365,28 +464,8 @@ namespace VTX::Renderer
 	{
 		// Util::ScopedChrono timer( "[RENDERER] setCamera" );
 
-		const Mat4f matrixViewInv	   = Util::Math::inverse( p_matView );
-		const Mat4f matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
-
-		BinaryBuffer140 buffer;
-		buffer.write( p_matView );
-		buffer.write( p_matProj );
-		buffer.write( matrixViewInv );
-		buffer.write( matrixViewInvTrans );
-		buffer.write( p_position );
-		buffer.write(
-			Vec4f( p_camera.near * p_camera.far, p_camera.far, p_camera.far - p_camera.near, p_camera.near )
-		);
-		buffer.write( Vec2i( width(), height() ) );
-		buffer.write( Vec2i() );
-		buffer.write( uint( p_camera.projection == PROJECTION::PERSPECTIVE ) );
-		buffer.close();
-
-		_context.setBuffer( { "Camera" }, buffer );
-
 		_camera = { p_camera, p_position, p_matView, p_matProj };
-
-		Builder::SystemModels::upload( _context, _systems, _camera );
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::CAMERA;
 
 		setNeedUpdate( true );
 	}
@@ -395,65 +474,15 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setGraphicsConfig" );
 
-		// If graph changed from config, rebuild backend.
-		if ( Builder::RenderGraphRuntime::refreshGraph( p_config, _config, _graph, _queue, _layouts, _geometries ) )
-		{
-			Builder::RenderGraphRuntime::rebuildCommandBuffer(
-				_context,
-				_queue,
-				_graph.getResources(),
-				reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
-				reinterpret_cast<uintptr_t>( this )
-			);
-		}
+		const Builder::PipelineConfig pipelineConfig = Builder::RenderGraphRuntime::pipelineConfig( p_config );
+		const bool					  graphReady	 = _config.has_value();
+		const bool					  graphChanged	 = not graphReady || *_config != pipelineConfig;
 
-		BinaryBuffer140 bufferShading;
-		bufferShading.write( p_config.colorBackground );
-		bufferShading.write( p_config.colorLight );
-		bufferShading.write( p_config.colorFog );
-		bufferShading.write( uint32_t( p_config.shadingMode ) );
-		bufferShading.write( p_config.specularFactor );
-		bufferShading.write( p_config.shininess );
-		bufferShading.write( p_config.toonSteps );
-		bufferShading.write( p_config.fogNear );
-		bufferShading.write( p_config.fogFar );
-		bufferShading.write( p_config.activeFog ? p_config.fogDensity : 0.f );
-		bufferShading.close();
-		_context.setBuffer( { "Shading" }, bufferShading );
-
-		if ( p_config.activeSSAO )
+		_graphicsConfig.data = p_config;
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::GRAPHICS_CONFIG;
+		if ( graphChanged )
 		{
-			BinaryBuffer140 bufferSSAO;
-			bufferSSAO.write( p_config.ssaoIntensity );
-			bufferSSAO.close();
-			_context.setBuffer( { "SSAO" }, bufferSSAO );
-
-			BinaryBuffer140 bufferBlurX;
-			bufferBlurX.write( Vec2i( 1, 0 ) );
-			bufferBlurX.write( p_config.blurSize );
-			bufferBlurX.close();
-			_context.setBuffer( { "BlurX" }, bufferBlurX );
-			BinaryBuffer140 bufferBlurY;
-			bufferBlurY.write( Vec2i( 0, 1 ) );
-			bufferBlurY.write( p_config.blurSize );
-			bufferBlurY.close();
-			_context.setBuffer( { "BlurY" }, bufferBlurY );
-		}
-		if ( p_config.activeOutline )
-		{
-			BinaryBuffer140 bufferOutline;
-			bufferOutline.write( p_config.colorOutline );
-			bufferOutline.write( p_config.outlineSensitivity );
-			bufferOutline.write( p_config.outlineThickness );
-			bufferOutline.close();
-			_context.setBuffer( { "Outline" }, bufferOutline );
-		}
-		if ( p_config.activeSelection )
-		{
-			BinaryBuffer140 bufferSelection;
-			bufferSelection.write( p_config.colorSelection );
-			bufferSelection.close();
-			_context.setBuffer( { "Selection" }, bufferSelection );
+			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::GRAPH | Cache::E_RENDERER_DIRTY::COMMAND_BUFFER;
 		}
 
 		setNeedUpdate( true );
@@ -463,20 +492,42 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] setColorLayout" );
 
-		_context.setBuffer<Util::Color::Rgba>( { "ColorLayout" }, p_layout.colors );
+		_colorLayout.data = p_layout;
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COLOR_LAYOUT;
 
 		setNeedUpdate( true );
 	}
 
 	Desc::Handle Renderer::addRepresentation( const Representation & p_representation )
 	{
-		//
-		return 0;
+		Util::ScopedChrono timer( "[RENDERER] addRepresentation" );
+
+		const Desc::Handle handle
+			= _representations.emplace( Builder::RepresentationState::buildCache( p_representation ) );
+
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::REPRESENTATIONS;
+		setNeedUpdate( true );
+		return handle;
 	}
 
-	void Renderer::removeRepresentation( const Desc::Handle )
+	void Renderer::removeRepresentation( const Desc::Handle p_handle )
 	{
-		//
+		Util::ScopedChrono timer( "[RENDERER] removeRepresentation" );
+
+		assert( _representations.contains( p_handle ) );
+
+		_representations.erase( p_handle );
+
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::REPRESENTATIONS;
+		setNeedUpdate( true );
+	}
+
+	void Renderer::setRepresentationDirty( const Desc::Handle p_handle, const Cache::E_REPRESENTATION_DIRTY p_flags )
+	{
+		assert( _representations.contains( p_handle ) );
+
+		_dirtyRepresentations.emplace_back( p_handle, p_flags );
+		setNeedUpdate( true );
 	}
 
 #pragma endregion
@@ -485,9 +536,10 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] addSystem" );
 
-		const Desc::Handle handle
-			= Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, std::move( p_system ) );
-		_dirtyRenderer = Cache::E_RENDERER_DIRTY::ALL;
+		const Desc::Handle handle = _systems.emplace( std::move( p_system ) );
+		Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, handle );
+
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ALL;
 		_dirtySystems.emplace_back( handle, Cache::E_SYSTEM_DIRTY::ALL );
 
 		setNeedUpdate( true );
@@ -498,35 +550,9 @@ namespace VTX::Renderer
 	{
 		Util::ScopedChrono timer( "[RENDERER] removeSystem" );
 
-		if ( not _systems.contains( p_handle ) )
-		{
-			return;
-		}
+		assert( _systems.contains( p_handle ) );
 
-		_systems.erase( p_handle );
-
-		std::vector<Cache::System> remainingSystems;
-		remainingSystems.reserve( _systems.size() );
-		for ( const auto entry : _systems.entries() )
-		{
-			remainingSystems.emplace_back( entry.resource );
-		}
-
-		std::unordered_set<Desc::Handle> geometryRefreshSystems;
-		Builder::SystemRegistry::clear( _systems, _layouts, _geometries, geometryRefreshSystems );
-
-		for ( Cache::System & system : remainingSystems )
-		{
-			Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, std::move( system ) );
-		}
-
-		_dirtyRenderer = Cache::E_RENDERER_DIRTY::ALL;
-		_dirtySystems.clear();
-		for ( const auto entry : _systems.entries() )
-		{
-			_dirtySystems.emplace_back( entry.handle, Cache::E_SYSTEM_DIRTY::ALL );
-		}
-
+		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::DELETING );
 		setNeedUpdate( true );
 	}
 
@@ -597,7 +623,7 @@ namespace VTX::Renderer
 		_layouts.voxels.upload<Layout::VOXEL_ATTR::MINS, Vec3f>( _context, Desc::NO_HANDLE, p_mins );
 		_layouts.voxels.upload<Layout::VOXEL_ATTR::MAXS, Vec3f>( _context, Desc::NO_HANDLE, p_maxs );
 
-		_dirtyRenderer = Cache::E_RENDERER_DIRTY::DRAW_RANGES;
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::DRAW_RANGES;
 
 		setNeedUpdate( true );
 	}

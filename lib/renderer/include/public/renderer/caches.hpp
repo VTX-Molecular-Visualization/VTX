@@ -3,6 +3,8 @@
 
 #include "renderer/camera.hpp"
 #include "renderer/color.hpp"
+#include "renderer/descriptors.hpp"
+#include "renderer/graphics_config.hpp"
 #include "renderer/representation.hpp"
 #include <core/struct/topology.hpp>
 #include <span>
@@ -42,18 +44,29 @@ namespace VTX::Renderer::Cache
 		Mat4f				  matProj;
 	};
 
+	struct ColorLayout
+	{
+		Color::Layout data;
+	};
+
+	struct GraphicsConfig
+	{
+		VTX::Renderer::GraphicsConfig data;
+	};
+
 	enum struct E_SYSTEM_DIRTY : uint16_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
 		NONE		   = 0,
 		STRUCTURE	   = 1 << 0,
-		TRANSFORM	   = 1 << 1,
-		TRAJECTORY	   = 1 << 2,
-		COLOR		   = 1 << 3,
-		REPRESENTATION = 1 << 4,
-		VISIBILITY	   = 1 << 5,
-		SELECTION	   = 1 << 6,
-		ALL			   = 0xFFFF
+		DELETING	   = 1 << 1,
+		TRANSFORM	   = 1 << 2,
+		TRAJECTORY	   = 1 << 3,
+		COLOR		   = 1 << 4,
+		REPRESENTATION = 1 << 5,
+		VISIBILITY	   = 1 << 6,
+		SELECTION	   = 1 << 7,
+		ALL			   = STRUCTURE | TRANSFORM | TRAJECTORY | COLOR | REPRESENTATION | VISIBILITY | SELECTION
 	};
 
 	enum struct E_REPRESENTATION_DIRTY : uint8_t
@@ -62,10 +75,10 @@ namespace VTX::Renderer::Cache
 		NONE	   = 0,
 		PARAMETERS = 1 << 0,
 		VISIBILITY = 1 << 1,
-		ALL		   = 0xFF
+		ALL		   = PARAMETERS | VISIBILITY
 	};
 
-	enum struct E_RENDERER_DIRTY : uint8_t
+	enum struct E_RENDERER_DIRTY : uint16_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
 		NONE			= 0,
@@ -75,7 +88,13 @@ namespace VTX::Renderer::Cache
 		COMMAND_BUFFER	= 1 << 3,
 		NEED_UPDATE		= 1 << 4,
 		GRAPH			= 1 << 5,
-		ALL				= 0xFF
+		REPRESENTATIONS = 1 << 6,
+		CAMERA			= 1 << 7,
+		MODELS			= 1 << 8,
+		COLOR_LAYOUT	= 1 << 9,
+		GRAPHICS_CONFIG = 1 << 10,
+		ALL = DRAW_RANGES | GEOMETRY_CHUNKS | EXTERNAL_PASSES | COMMAND_BUFFER | NEED_UPDATE | GRAPH | REPRESENTATIONS
+			  | CAMERA | MODELS | COLOR_LAYOUT | GRAPHICS_CONFIG
 	};
 
 	struct System
@@ -90,6 +109,7 @@ namespace VTX::Renderer::Cache
 		const Util::Math::Range<UID32> &								 residueUids;
 		const std::unordered_map<E_COLOR_SCHEME, IndexRangeList> &		 colorSchemeAtoms;
 		const std::unordered_map<ColorIndex, IndexRangeList> &			 customColorAtoms;
+		const std::unordered_map<Entity, Desc::Handle> &				 representationHandles;
 		const std::unordered_map<Entity, Core::Struct::IndexRangeList> & presetAtoms;
 		const Util::Math::BitSet &										 visibility;
 		const Util::Math::BitSet &										 selection;
@@ -97,10 +117,14 @@ namespace VTX::Renderer::Cache
 
 	struct Representation
 	{
+		// View.
+		const VTX::Renderer::Representation & data;
+
+		// Computed.
 		bool showSphere;
 		bool showCylinder;
-		bool showRibbon = false;
-		bool showSes	= false;
+		bool showRibbon;
+		bool showSes;
 	};
 } // namespace VTX::Renderer::Cache
 

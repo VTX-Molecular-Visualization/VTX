@@ -51,7 +51,7 @@ namespace VTX::Bench
 
 		system.topology	 = std::make_unique<Core::Struct::Topology>( std::move( loadedSystem.topology ) );
 		system.positions = std::move( loadedSystem.positions );
-		system.uid		 = _nextSystemUid++;
+		system.uid		 = _nextSystemUID++;
 
 		const size_t residueCount = system.topology->getResidueCount();
 		system.residueUids		  = Util::Math::Range<UID32>::fromFirstCount( _nextUID32, UID32( residueCount ) );
@@ -64,6 +64,7 @@ namespace VTX::Bench
 		system.colorSchemeAtoms.emplace(
 			Renderer::E_COLOR_SCHEME::ATOM, Core::Struct::IndexRangeList( system.topology->getAtomRange() )
 		);
+		system.representationHandles.emplace( Entity( 0 ), Renderer::Desc::Handle( 0 ) );
 		system.presetAtoms.emplace( Entity( 0 ), Core::Struct::IndexRangeList( system.topology->getAtomRange() ) );
 		system.visibility = Util::Math::BitSet( atomCount, true );
 		system.selection  = Util::Math::BitSet( atomCount, false );
@@ -75,10 +76,11 @@ namespace VTX::Bench
 
 	Renderer::Cache::System Scene::_buildRendererSystem( const SystemEntry & p_system ) const
 	{
-		return Renderer::Cache::System { p_system.transform,		*p_system.topology,	  p_system.positions,
-										 p_system.atomUids,			p_system.residueUids, p_system.colorSchemeAtoms,
-										 p_system.customColorAtoms, p_system.presetAtoms, p_system.visibility,
-										 p_system.selection };
+		return Renderer::Cache::System {
+			p_system.transform,	  *p_system.topology,		 p_system.positions,		p_system.atomUids,
+			p_system.residueUids, p_system.colorSchemeAtoms, p_system.customColorAtoms, p_system.representationHandles,
+			p_system.presetAtoms, p_system.visibility,		 p_system.selection
+		};
 	}
 
 	void Scene::syncRenderer( Renderer::Renderer & p_renderer ) const
