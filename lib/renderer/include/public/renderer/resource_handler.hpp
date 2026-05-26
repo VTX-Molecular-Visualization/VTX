@@ -408,6 +408,19 @@ namespace VTX::Renderer
 		std::vector<Desc::Handle> _invalids;
 	};
 
+	template<typename D>
+	struct ResourceHandlerEntry
+	{
+		Desc::Handle handle;
+		D			 descriptor;
+	};
+
+	template<>
+	struct ResourceHandlerEntry<void>
+	{
+		Desc::Handle handle;
+	};
+
 	/**
 	 * @brief Generic resource handler.
 	 * Store resources and provide access through handles/keys.
@@ -427,23 +440,7 @@ namespace VTX::Renderer
 		using Pool::get;
 		using Pool::size;
 
-		/**
-		 * @brief Cache : mapping Key -> { Handle, Desc }.
-		 */
-		template<typename _D>
-		struct EntryT
-		{
-			Desc::Handle handle;
-			_D			 descriptor;
-		};
-
-		template<>
-		struct EntryT<void>
-		{
-			Desc::Handle handle;
-		};
-
-		using Entry = EntryT<D>;
+		using Entry = ResourceHandlerEntry<D>;
 
 		/**
 		 * @brief Emplace a new resource.
@@ -558,7 +555,7 @@ namespace VTX::Renderer
 		 */
 		template<typename _D = D>
 		inline bool validate( const K p_key, const _D p_desc )
-			requires not std::is_same_v<_D, void>
+			requires( not std::is_same_v<_D, void> )
 		{
 			if ( not _cache.contains( p_key ) )
 			{
@@ -601,7 +598,7 @@ namespace VTX::Renderer
 		 */
 		template<typename _D = D>
 		inline const _D & descriptor( const K & p_key ) const
-			requires not std::is_same_v<_D, void>
+			requires( not std::is_same_v<_D, void> )
 		{
 			const auto it = _cache.find( p_key );
 			assert( it != _cache.end() );
