@@ -194,20 +194,6 @@ namespace VTX::Renderer
 				dirtySystems.erase( system );
 			}
 
-			std::unordered_set<Desc::Handle> ignoredRefreshSystems;
-			Builder::SystemRegistry::clearSystemRanges( _layouts, _geometries, ignoredRefreshSystems );
-
-			for ( const auto entry : _systems.entries() )
-			{
-				Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, entry.handle );
-			}
-
-			dirtySystems.clear();
-			for ( const auto entry : _systems.entries() )
-			{
-				dirtySystems.emplace( entry.handle, SystemDirty::ALL );
-			}
-
 			_dirtyRenderer |= RendererDirty::ALL;
 		}
 		for ( const DirtyRepresentation & dirty : _dirtyRepresentations )
@@ -220,8 +206,21 @@ namespace VTX::Renderer
 			dirtyRepresentations[ dirty.handle ] |= dirty.flags;
 		}
 
-		const bool fullRefresh	= Util::Enum::hasAllBits( _dirtyRenderer, RendererDirty::ALL );
-		bool	   graphChanged = false;
+		const bool fullRefresh				   = Util::Enum::hasAllBits( _dirtyRenderer, RendererDirty::ALL );
+		bool	   geometryVisibilityRefreshed = false;
+		bool	   geometryIndexesUploaded	   = false;
+		if ( fullRefresh )
+		{
+			Builder::SystemRegistry::clearSystemRanges( _layouts, _geometries, geometryRefreshSystems );
+
+			for ( const auto entry : _systems.entries() )
+			{
+				Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, entry.handle );
+				geometryRefreshSystems.insert( entry.handle );
+			}
+		}
+
+		bool graphChanged = false;
 		if ( fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::GRAPH ) )
 		{
 			graphChanged = Builder::RenderGraphRuntime::refreshGraph(
@@ -270,20 +269,32 @@ namespace VTX::Renderer
 		}
 		if ( fullRefresh )
 		{
-			for ( const auto entry : _systems.entries() )
-			{
-				geometryRefreshSystems.insert( entry.handle );
-			}
-
 			Builder::AtomLayout::allocateInputs( _context, _layouts );
-			Builder::ResidueLayout::allocateInputs( _context, _layouts );
 
 			for ( const auto entry : _systems.entries() )
 			{
 				const Desc::Handle system = entry.handle;
 				Builder::AtomLayout::uploadInput( _context, _systems, _layouts, system, geometryRefreshSystems );
 				Builder::SystemVisibility::uploadInput( _systems, system, geometryRefreshSystems );
+			}
+
+			for ( const auto & system : geometryRefreshSystems )
+			{
+				Builder::SystemVisibility::refreshGeometryVisibility(
+					_context, _systems, _representations, _layouts, _geometries, system
+				);
+			}
+			geometryVisibilityRefreshed = true;
+
+			Builder::ResidueLayout::allocateInputs( _context, _layouts );
+
+			for ( const auto entry : _systems.entries() )
+			{
+				const Desc::Handle system = entry.handle;
 				Builder::ResidueLayout::uploadInput( _context, _layouts, _geometries, system, _systems.get( system ) );
+				Builder::RibbonGeometry::uploadPositions(
+					_context, _layouts, _geometries, system, _systems.get( system ).data.trajectory
+				);
 			}
 
 			Builder::GeometryBuffers::allocateOutputs( _context, _geometries );
@@ -294,6 +305,12 @@ namespace VTX::Renderer
 				Builder::RibbonGeometry::writeOutput( _context, _geometries, system );
 				Builder::GeometryBuffers::writeOutput( _context, _geometries, system );
 			}
+
+			for ( const auto & system : geometryRefreshSystems )
+			{
+				_geometries.uploadIndexes( _context, system );
+			}
+			geometryIndexesUploaded = true;
 
 			Builder::SystemModels::upload( _context, _systems, _camera );
 		}
@@ -371,15 +388,42 @@ namespace VTX::Renderer
 			Builder::SystemModels::upload( _context, _systems, _camera );
 		}
 
-		for ( const auto & system : geometryRefreshSystems )
+		if ( not geometryVisibilityRefreshed )
 		{
-			Builder::SystemVisibility::refreshGeometryVisibility(
-				_context, _systems, _representations, _layouts, _geometries, system
-			);
+			for ( const auto & system : geometryRefreshSystems )
+			{
+				Builder::SystemVisibility::refreshGeometryVisibility(
+					_context, _systems, _representations, _layouts, _geometries, system
+				);
+			}
 		}
-		for ( const auto & system : geometryRefreshSystems )
+		if ( not geometryIndexesUploaded )
 		{
-			_geometries.uploadIndexes( _context, system );
+			if ( not geometryRefreshSystems.empty() )
+			{
+				Builder::ResidueLayout::allocateInputs( _context, _layouts );
+
+				for ( const auto entry : _systems.entries() )
+				{
+					const Desc::Handle system = entry.handle;
+					Builder::ResidueLayout::uploadInput(
+						_context, _layouts, _geometries, system, _systems.get( system )
+					);
+					Builder::RibbonGeometry::uploadPositions(
+						_context, _layouts, _geometries, system, _systems.get( system ).data.trajectory
+					);
+				}
+
+				Builder::GeometryBuffers::allocateOutputs( _context, _geometries );
+
+				for ( const auto entry : _systems.entries() )
+				{
+					const Desc::Handle system = entry.handle;
+					Builder::RibbonGeometry::writeOutput( _context, _geometries, system );
+					Builder::GeometryBuffers::writeOutput( _context, _geometries, system );
+					_geometries.uploadIndexes( _context, system );
+				}
+			}
 		}
 
 		if ( not geometryRefreshSystems.empty() )

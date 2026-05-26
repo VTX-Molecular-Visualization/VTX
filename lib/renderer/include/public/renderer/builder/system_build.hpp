@@ -384,7 +384,7 @@ namespace VTX::Renderer::Builder
 
 			if ( requestedRibbon && not p_geometries.ribbons.built( p_handle ) )
 			{
-				constructRibbon( p_context, p_systems, p_layouts, p_geometries, p_handle );
+				constructRibbon( p_systems, p_layouts, p_geometries, p_handle );
 			}
 			if ( visibleSes && not p_geometries.ses.built( p_handle ) )
 			{
@@ -399,11 +399,10 @@ namespace VTX::Renderer::Builder
 
 		template<typename Systems>
 		static void constructRibbon(
-			Context::ContextWrapper & p_context,
-			Systems &				  p_systems,
-			Layouts &				  p_layouts,
-			Geometries &			  p_geometries,
-			const Desc::Handle		  p_handle
+			Systems &		   p_systems,
+			Layouts &		   p_layouts,
+			Geometries &	   p_geometries,
+			const Desc::Handle p_handle
 		)
 		{
 			Util::ScopedChrono timer( "[BUILDER] SystemVisibility::constructRibbon" );
@@ -411,19 +410,12 @@ namespace VTX::Renderer::Builder
 			const Cache::System & system = p_systems.get( p_handle );
 
 			p_geometries.ribbons.registerSystem( p_handle, system );
-			p_geometries.ribbons.resize( p_context );
 
 			const auto & construction = p_geometries.ribbons.construction( p_handle );
-			if ( construction.isEmpty )
+			if ( not construction.isEmpty )
 			{
-				return;
+				p_layouts.residues.add( p_handle, static_cast<uint32_t>( construction.residues.size() ) );
 			}
-
-			p_layouts.residues.add( p_handle, static_cast<uint32_t>( construction.residues.size() ) );
-			p_layouts.residues.resize( p_context );
-
-			uploadRibbonResidues( p_context, p_layouts, p_geometries, p_handle, system );
-			uploadRibbonPositions( p_context, p_layouts, p_geometries, p_handle, system.data.trajectory );
 		}
 
 		template<typename Systems>
@@ -439,7 +431,6 @@ namespace VTX::Renderer::Builder
 
 			const Cache::System & system = p_systems.get( p_handle );
 			p_geometries.constructSES( p_context, p_handle, system, p_layouts.atoms.offset( p_handle ) );
-			p_geometries.ses.resize( p_context );
 		}
 
 		static void uploadRibbonResidues(
