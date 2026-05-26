@@ -476,7 +476,7 @@ namespace VTX::Renderer
 		 */
 		template<typename _D = D, typename... Args>
 		Desc::Handle emplace( const K & p_key, const _D & p_desc, Args &&... p_args )
-			requires not std::is_same_v<_D, void>
+			requires( not std::is_same_v<_D, void> )
 		{
 			Desc::Handle handle;
 			if ( _cache.contains( p_key ) )

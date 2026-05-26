@@ -94,7 +94,7 @@ namespace VTX::App::Action::Camera
 		Util::Math::AABB aabb;
 
 		// From selection.
-		auto view = Registry()
+		auto view = REG()
 						.view<Core::Struct::Topology, Util::Math::AABB, Util::Math::Transform, System::Selection>();
 
 		if ( view.size_hint() )
