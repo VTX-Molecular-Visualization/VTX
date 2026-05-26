@@ -7,6 +7,7 @@
 #include "renderer/graphics_config.hpp"
 #include "renderer/representation.hpp"
 #include <core/struct/topology.hpp>
+#include <cstdint>
 #include <span>
 #include <unordered_map>
 #include <util/ecs.hpp>
@@ -103,22 +104,37 @@ namespace VTX::Renderer::Cache
 		Mat4f transform;
 
 		// Views.
-		const Core::Struct::Topology &									 data;
-		std::span<const Vec3f>											 trajectory;
-		const Util::Math::Range<UID32> &								 atomUids; // TODO: delete and use gpu buffer?
-		const Util::Math::Range<UID32> &								 residueUids;
-		const std::unordered_map<E_COLOR_SCHEME, IndexRangeList> &		 colorSchemeAtoms;
-		const std::unordered_map<ColorIndex, IndexRangeList> &			 customColorAtoms;
-		const std::unordered_map<Entity, Desc::Handle> &				 representationHandles;
-		const std::unordered_map<Entity, Core::Struct::IndexRangeList> & presetAtoms;
-		const Util::Math::BitSet &										 visibility;
-		const Util::Math::BitSet &										 selection;
+		struct Data
+		{
+			const Core::Struct::Topology * topology;
+			std::span<const Vec3f>		   trajectory;
+			// TODO: delete and use gpu buffer?
+			const Util::Math::Range<UID32> *						   atomUids;
+			const Util::Math::Range<UID32> *						   residueUids;
+			const std::unordered_map<E_COLOR_SCHEME, IndexRangeList> * colorSchemeAtoms;
+			const std::unordered_map<ColorIndex, IndexRangeList> *	   customColorAtoms;
+			// Ugly.
+			const std::unordered_map<Entity, Desc::Handle> *				 representationHandles;
+			const std::unordered_map<Entity, Core::Struct::IndexRangeList> * presetAtoms;
+			const Util::Math::BitSet *										 visibility;
+			const Util::Math::BitSet *										 selection;
+		};
+
+		Data data;
+
+		// Computed.
+		uint32_t modelIndex = 0;
 	};
 
 	struct Representation
 	{
 		// View.
-		const VTX::Renderer::Representation & data;
+		struct Data
+		{
+			const VTX::Renderer::Representation * rep;
+		};
+
+		Data data;
 
 		// Computed.
 		bool showSphere;

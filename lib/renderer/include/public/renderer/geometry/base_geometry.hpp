@@ -44,8 +44,13 @@ namespace VTX::Renderer::Geometry
 		 */
 		void clear()
 		{
-			_resources.clear();
+			clearRanges();
 			chunks.clear();
+		}
+
+		void clearRanges()
+		{
+			_resources.clear();
 			_size = 0;
 		}
 
@@ -163,6 +168,8 @@ namespace VTX::Renderer::Geometry
 		 * @brief Access per-system geometry resources from specialized geometries.
 		 */
 		const std::map<Desc::Handle, Data> & _data() const { return _resources; }
+
+		bool _hasRange( const Desc::Handle p_handle ) const { return _resources.contains( p_handle ); }
 
 	  private:
 		/**

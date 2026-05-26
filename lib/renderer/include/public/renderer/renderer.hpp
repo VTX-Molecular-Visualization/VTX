@@ -75,14 +75,17 @@ namespace VTX::Renderer
 		 * @brief Add/remove systems.
 		 */
 		Desc::Handle addSystem( Cache::System && );
+		void		 patchSystem( const Desc::Handle, Cache::System::Data && );
 		void		 removeSystem( const Desc::Handle );
 
 		/**
 		 * @brief Add/remove representation presets.
 		 */
 		Desc::Handle addRepresentation( const Representation & );
+		void		 patchRepresentation( const Desc::Handle, Cache::Representation::Data && );
 		void		 removeRepresentation( const Desc::Handle );
-		void		 setRepresentationDirty( const Desc::Handle, const Cache::E_REPRESENTATION_DIRTY );
+
+		void setRepresentationDirty( const Desc::Handle, const Cache::E_REPRESENTATION_DIRTY );
 
 		/**
 		 * @brief Ensure a physical chunk exists for a chunked render graph buffer.
@@ -97,6 +100,14 @@ namespace VTX::Renderer
 		 */
 		void setSystemTransform( const Desc::Handle, const Mat4f & );
 
+		/**
+		 * @brief Push frame.
+		 */
+		void setSystemPositions( const Desc::Handle, std::span<const Vec3f> );
+
+		/**
+		 * @brief Update system data.
+		 */
 		void setSystemDirty( const Desc::Handle, const Cache::E_SYSTEM_DIRTY );
 
 		/**

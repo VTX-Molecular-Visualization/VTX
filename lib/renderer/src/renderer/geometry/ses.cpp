@@ -183,14 +183,14 @@ namespace VTX::Renderer::Geometry
 			return;
 		}
 
-		const Index atomCount = p_data.data.getAtomCount();
-		if ( atomCount != 0 && p_data.trajectory.size() != atomCount )
+		const Index atomCount = p_data.data.topology->getAtomCount();
+		if ( atomCount != 0 && p_data.data.trajectory.size() != atomCount )
 		{
 			construction->markIncalculable();
 			VTX_WARNING(
 				"Can not build SES: atom count ({}) and position count ({}) mismatch.",
 				atomCount,
-				p_data.trajectory.size()
+				p_data.data.trajectory.size()
 			);
 		}
 		else if ( atomCount != 0 )
@@ -235,7 +235,7 @@ namespace VTX::Renderer::Geometry
 					inputs.atomNb			  = uint32_t( atomCount );
 
 					SESDetail::CudaBuildResult result = SESDetail::buildCudaConstructionFromRendererBuffers(
-						inputs, p_data.trajectory, SES_PROBE_RADIUS_DEFAULT
+						inputs, p_data.data.trajectory, SES_PROBE_RADIUS_DEFAULT
 					);
 
 					construction->cudaConstruction = std::move( result.construction );

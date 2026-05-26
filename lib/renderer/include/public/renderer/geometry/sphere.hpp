@@ -25,10 +25,10 @@ namespace VTX::Renderer::Geometry
 
 		void construct( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
-			const Index count = p_data.data.getAtomCount();
+			const Index count = p_data.data.topology->getAtomCount();
 
 			assert( count > 0 );
-			assert( p_data.atomUids.getCount() == count );
+			assert( p_data.data.atomUids->getCount() == count );
 
 			_addRange( p_handle, count, count );
 

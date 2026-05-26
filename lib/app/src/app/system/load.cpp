@@ -17,7 +17,6 @@
 #include <core/chemdb/atom.hpp>
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
-#include <renderer/renderer.hpp>
 #include <renderer/representation.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
@@ -215,7 +214,7 @@ namespace VTX::App::System
 		// TODO: configure default representation in settings?
 		representation.presetAtoms
 			[ Helper::Preset::getByName<Renderer::Representation>( "Sticks and Ribbons" )
-				  .value_or( ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>() ) ]
+				  .value_or( ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>() ) ]
 			= Core::Struct::IndexRangeList( data.getAtomRange() );
 
 		// Trigger system load.
@@ -234,12 +233,12 @@ namespace VTX::App::System
 			{
 				addTrajectory( *p_data.entity, p_data );
 
-				/*
 				if ( auto uid = REG().try_get<System::UID>( *p_data.entity ) )
 				{
-					RENDERER().setSystemPosition( uid->system, getCurrentAtomPositions( *p_data.entity ) );
+					// Trigger trajectory event.
+					HUB().trigger<Events::TrajectoryLoad>( { *p_data.entity,
+															 getCurrentAtomPositions( *p_data.entity ) } );
 				}
-				*/
 			}
 			else
 			{

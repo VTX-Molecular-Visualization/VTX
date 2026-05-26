@@ -36,6 +36,20 @@ namespace VTX::Renderer
 			ses.clear();
 		}
 
+		void clearSystemRanges()
+		{
+			spheres.clearRanges();
+			cylinders.clearRanges();
+			ribbons.clearRanges();
+		}
+
+		void removeSystemConstruction( const Desc::Handle p_handle )
+		{
+			cylinders.removeConstruction( p_handle );
+			ribbons.removeConstruction( p_handle );
+			ses.invalidate( p_handle );
+		}
+
 		void construct( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
 			spheres.construct( p_handle, p_data );
@@ -73,32 +87,57 @@ namespace VTX::Renderer
 			ses.resize( p_context );
 		}
 
-		void buildDrawRanges( Context::ContextWrapper & p_context )
+		template<typename Systems>
+		void buildDrawRanges( Context::ContextWrapper & p_context, Systems & p_systems )
 		{
-			const auto sphereDraws = spheres.toDrawIndexedIndirectCommands();
+			auto sphereDraws = spheres.toDrawIndexedIndirectCommands();
+			_setModelIndices( sphereDraws, p_systems );
 			_logDrawRanges( { Geometry::Sphere::INDIRECT_SPHERES }, sphereDraws );
 			p_context.setBuffer( { Geometry::Sphere::INDIRECT_SPHERES }, _toBuffer( sphereDraws ) );
 
-			const auto cylinderDraws = cylinders.toDrawIndexedIndirectCommands();
+			auto cylinderDraws = cylinders.toDrawIndexedIndirectCommands();
+			_setModelIndices( cylinderDraws, p_systems );
 			_logDrawRanges( { Geometry::Cylinder::INDIRECT_CYLINDERS }, cylinderDraws );
 			p_context.setBuffer( { Geometry::Cylinder::INDIRECT_CYLINDERS }, _toBuffer( cylinderDraws ) );
 
-			const auto ribbonDraws = ribbons.toDrawIndexedIndirectCommands();
+			auto ribbonDraws = ribbons.toDrawIndexedIndirectCommands();
+			_setModelIndices( ribbonDraws, p_systems );
 			_logDrawRanges( { Geometry::Ribbon::INDIRECT_RIBBONS }, ribbonDraws );
 			p_context.setBuffer( { Geometry::Ribbon::INDIRECT_RIBBONS }, _toBuffer( ribbonDraws ) );
 
 			const auto gridDraws = grid.toDrawIndirectCommands();
 			_logDrawRanges( { Geometry::Grid::INDIRECT_GRID }, gridDraws );
 			p_context.setBuffer( { Geometry::Grid::INDIRECT_GRID }, _toBuffer( gridDraws ) );
-			_uploadPatchDrawCommands( p_context, { Geometry::SES::INDIRECT_CONVEX_PATCHES }, ses.convexPatches );
-			_uploadPatchDrawCommands( p_context, { Geometry::SES::INDIRECT_CIRCLE_PATCHES }, ses.circlePatches );
-			_uploadPatchDrawCommands( p_context, { Geometry::SES::INDIRECT_SEGMENT_PATCHES }, ses.segmentPatches );
-			_uploadPatchDrawCommands( p_context, { Geometry::SES::INDIRECT_CONCAVE_PATCHES }, ses.concavePatches );
+			_uploadPatchDrawCommands(
+				p_context, p_systems, { Geometry::SES::INDIRECT_CONVEX_PATCHES }, ses.convexPatches
+			);
+			_uploadPatchDrawCommands(
+				p_context, p_systems, { Geometry::SES::INDIRECT_CIRCLE_PATCHES }, ses.circlePatches
+			);
+			_uploadPatchDrawCommands(
+				p_context, p_systems, { Geometry::SES::INDIRECT_SEGMENT_PATCHES }, ses.segmentPatches
+			);
+			_uploadPatchDrawCommands(
+				p_context, p_systems, { Geometry::SES::INDIRECT_CONCAVE_PATCHES }, ses.concavePatches
+			);
 		}
 
 	  private:
+		template<typename Records, typename Systems>
+		void _setModelIndices( Records & p_records, Systems & p_systems )
+		{
+			for ( auto & record : p_records )
+			{
+				const Desc::Handle system = record.idModel;
+				assert( p_systems.contains( system ) );
+				record.idModel = p_systems.get( system ).modelIndex;
+			}
+		}
+
+		template<typename Systems>
 		void _uploadPatchDrawCommands(
 			Context::ContextWrapper &			 p_context,
+			Systems &							 p_systems,
 			const Desc::Key &					 p_indirectBuffer,
 			const Geometry::SES::PatchGeometry & p_geometry
 		)
@@ -114,7 +153,8 @@ namespace VTX::Renderer
 			for ( const Desc::BufferChunk chunk : p_geometry.chunks )
 			{
 				const Desc::BufferRef ref { p_indirectBuffer, chunk };
-				const auto			  records = p_geometry.toDrawIndexedIndirectCommands( chunk );
+				auto				  records = p_geometry.toDrawIndexedIndirectCommands( chunk );
+				_setModelIndices( records, p_systems );
 				_logDrawRanges( ref, records );
 				p_context.ensureBufferChunk( ref );
 				p_context.setBuffer( ref, _toBuffer( records ) );

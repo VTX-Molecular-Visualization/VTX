@@ -76,11 +76,12 @@ namespace VTX::Bench
 
 	Renderer::Cache::System Scene::_buildRendererSystem( const SystemEntry & p_system ) const
 	{
-		return Renderer::Cache::System {
-			p_system.transform,	  *p_system.topology,		 p_system.positions,		p_system.atomUids,
-			p_system.residueUids, p_system.colorSchemeAtoms, p_system.customColorAtoms, p_system.representationHandles,
-			p_system.presetAtoms, p_system.visibility,		 p_system.selection
-		};
+		return Renderer::Cache::System { p_system.transform,		 p_system.topology.get(),
+										 p_system.positions,		 &p_system.atomUids,
+										 &p_system.residueUids,		 &p_system.colorSchemeAtoms,
+										 &p_system.customColorAtoms, &p_system.representationHandles,
+										 &p_system.presetAtoms,		 &p_system.visibility,
+										 &p_system.selection };
 	}
 
 	void Scene::syncRenderer( Renderer::Renderer & p_renderer ) const

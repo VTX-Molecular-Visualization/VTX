@@ -25,20 +25,32 @@ namespace VTX::App::Pass
 	  public:
 		SystemUpdater();
 
-		inline void update( const float, const float ) {}
+		/**
+		 * @brief Update the renderer with pending changes.
+		 */
+		void update( const float, const float );
 
 	  private:
 		/**
-		 * @brief Entities mapped to renderer indexes.
+		 * @brief Active entities mapped to renderer indexes.
 		 */
 		std::unordered_map<Entity, Renderer::Desc::Handle> _systems;
 		std::unordered_map<Entity, Renderer::Desc::Handle> _representations;
+
+		/**
+		 * @brief Entities pending to be added/removed.
+		 */
+		std::vector<Entity> _systemAdded;
+		std::vector<Entity> _systemRemoved;
+		std::vector<Entity> _representationAdded;
+		std::vector<Entity> _representationRemoved;
 
 		/**
 		 * @brief Push system data to renderer.
 		 */
 		void _onSystemLoad( const Events::SystemLoad & );
 		void _onDestroySystem( Registry &, Entity );
+		void _setSystems();
 
 		/**
 		 * @brief Update system data in renderer when components are updated.
@@ -50,11 +62,17 @@ namespace VTX::App::Pass
 		void _onUpdateColor( Registry &, Entity );
 
 		/**
+		 * @brief Push trajectory frame to renderer.
+		 */
+		void _onTrajectoryLoad( const Events::TrajectoryLoad & );
+
+		/**
 		 * @brief Push representation preset data to renderer.
 		 */
 		void _onConstructRepresentationPreset( Registry &, Entity );
 		void _onUpdateRepresentationPreset( Registry &, Entity );
 		void _onDestroyRepresentationPreset( Registry &, Entity );
+		void _setRepresentations();
 	};
 } // namespace VTX::App::Pass
 

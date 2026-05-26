@@ -19,23 +19,105 @@ namespace VTX::App::Pass
 	SystemUpdater::SystemUpdater()
 	{
 		auto & reg = REG();
+		auto & hub = HUB();
 
-		HUB().connect<Events::SystemLoad, &SystemUpdater::_onSystemLoad>( this );
-		reg.on_construct<Renderer::Representation>().connect<&SystemUpdater::_onConstructRepresentationPreset>( this );
-
+		// System.
+		hub.connect<Events::SystemLoad, &SystemUpdater::_onSystemLoad>( this );
+		hub.connect<Events::TrajectoryLoad, &SystemUpdater::_onTrajectoryLoad>( this );
 		reg.on_update<Util::Math::Transform>().connect<&SystemUpdater::_onUpdateTransform>( this );
 		reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateVisibility>( this );
 		reg.on_update<System::Selection>().connect<&SystemUpdater::_onUpdateSelection>( this );
 		reg.on_update<System::Representation>().connect<&SystemUpdater::_onUpdateRepresentation>( this );
 		reg.on_update<System::Color>().connect<&SystemUpdater::_onUpdateColor>( this );
+		reg.on_destroy<Core::Struct::Topology>().connect<&SystemUpdater::_onDestroySystem>( this );
 
+		// Representation preset.
+		reg.on_construct<Renderer::Representation>().connect<&SystemUpdater::_onConstructRepresentationPreset>( this );
 		reg.on_update<Renderer::Representation>().connect<&SystemUpdater::_onUpdateRepresentationPreset>( this );
+		reg.on_destroy<Renderer::Representation>().connect<&SystemUpdater::_onDestroyRepresentationPreset>( this );
+	}
 
-		reg.on_destroy<System::UID>().connect<&SystemUpdater::_onDestroySystem>( this );
+	void SystemUpdater::update( const float, const float )
+	{
+		auto & reg = REG();
+
+		// Remove pending.
+		for ( const auto system : _systemRemoved )
+		{
+			RENDERER().removeSystem( _systems[ system ] );
+		}
+		for ( const auto representation : _representationRemoved )
+		{
+			RENDERER().removeRepresentation( _representations[ representation ] );
+		}
+
+		auto getSystemData = [ & ]( const Entity system ) -> Renderer::Cache::System::Data
+		{
+			const auto & topology		= reg.get<Core::Struct::Topology>( system );
+			const auto & uid			= reg.get<System::UID>( system );
+			const auto & color			= reg.get<System::Color>( system );
+			const auto & representation = reg.get<System::Representation>( system );
+			const auto & visibility		= reg.get<System::Visibility>( system );
+			const auto & selection		= reg.get<System::Selection>( system );
+
+			std::span<const Vec3f> positions = System::getCurrentAtomPositions( system );
+			assert( topology.getAtomCount() > 0 );
+
+			return { &topology,
+					 positions,
+					 &uid.atoms,
+					 &uid.residues,
+					 &color.colorSchemeAtoms,
+					 &color.customColorAtoms,
+					 &_representations,
+					 &representation.presetAtoms,
+					 &visibility.atoms,
+					 &selection.atoms };
+		};
+
+		// Patch because renderer use views to raw data.
+		// entt components are not guaranteed to be contiguous in memory.
+		// So ptr can dangle after add/remove.
+		for ( const auto & pair : _systems )
+		{
+			RENDERER().patchSystem( pair.second, getSystemData( pair.first ) );
+		}
+		for ( const auto & pair : _representations )
+		{
+			const auto & rep = reg.get<Renderer::Representation>( pair.first );
+			RENDERER().patchRepresentation( pair.second, { &rep } );
+		}
+
+		// Add pending.
+		for ( const auto system : _systemAdded )
+		{
+			assert( not _systems.contains( system ) );
+
+			const auto & transform = reg.get<Util::Math::Transform>( system );
+
+			const Renderer::Desc::Handle systemHandle
+				= RENDERER().addSystem( { transform.computeMatrix(), getSystemData( system ) } );
+
+			_systems.emplace( system, systemHandle );
+		}
+		for ( const auto representation : _representationAdded )
+		{
+			assert( not _representations.contains( representation ) );
+
+			const auto & rep = REG().get<Renderer::Representation>( representation );
+			_representations.emplace( representation, RENDERER().addRepresentation( rep ) );
+		}
+
+		// Clear pending.
+		_systemAdded.clear();
+		_systemRemoved.clear();
+		_representationAdded.clear();
+		_representationRemoved.clear();
 	}
 
 	void SystemUpdater::_onUpdateTransform( Registry & p_r, Entity p_e )
 	{
+		// Filter entities that are not systems (can be optimized with custom event).
 		if ( _systems.contains( p_e ) )
 		{
 			const auto & transform = p_r.get<Util::Math::Transform>( p_e );
@@ -45,47 +127,24 @@ namespace VTX::App::Pass
 
 	void SystemUpdater::_onSystemLoad( const Events::SystemLoad & p_event )
 	{
-		Util::ScopedChrono timer( "_onSystemLoaded" );
-		auto &			   reg	  = REG();
-		const Entity	   system = p_event.system;
+		assert( not _systems.contains( p_event.system ) );
 
-		assert( not _systems.contains( system ) );
+		_systemAdded.emplace_back( p_event.system );
+	}
 
-		const auto & topology		= reg.get<Core::Struct::Topology>( system );
-		const auto & transform		= reg.get<Util::Math::Transform>( system );
-		const auto & uid			= reg.get<System::UID>( system );
-		const auto & color			= reg.get<System::Color>( system );
-		const auto & representation = reg.get<System::Representation>( system );
-		const auto & visibility		= reg.get<System::Visibility>( system );
-		const auto & selection		= reg.get<System::Selection>( system );
+	void SystemUpdater::_onTrajectoryLoad( const Events::TrajectoryLoad & p_event )
+	{
+		assert( _systems.contains( p_event.system ) );
 
-		std::span<const Vec3f> positions = System::getCurrentAtomPositions( system );
-
-		assert( topology.getAtomCount() > 0 );
-
-		const Renderer::Desc::Handle systemHandle = RENDERER().addSystem(
-			Renderer::Cache::System { transform.computeMatrix(),
-									  topology,
-									  positions,
-									  uid.atoms,
-									  uid.residues,
-									  color.colorSchemeAtoms,
-									  color.customColorAtoms,
-									  _representations,
-									  representation.presetAtoms,
-									  visibility.atoms,
-									  selection.atoms }
-		);
-
-		_systems.emplace( system, systemHandle );
+		RENDERER().setSystemPositions( _systems[ p_event.system ], p_event.frame );
 	}
 
 	void SystemUpdater::_onDestroySystem( Registry &, Entity p_e )
 	{
 		assert( _systems.contains( p_e ) );
 
-		RENDERER().removeSystem( _systems[ p_e ] );
 		_systems.erase( p_e );
+		_systemRemoved.emplace_back( p_e );
 	}
 
 	void SystemUpdater::_onUpdateVisibility( Registry & p_r, Entity p_e )
@@ -120,8 +179,7 @@ namespace VTX::App::Pass
 	{
 		assert( not _representations.contains( p_e ) );
 
-		const auto & rep = REG().get<Renderer::Representation>( p_e );
-		_representations.emplace( p_e, RENDERER().addRepresentation( rep ) );
+		_representationAdded.emplace_back( p_e );
 	}
 
 	void SystemUpdater::_onUpdateRepresentationPreset( Registry & p_r, Entity p_e )
@@ -135,8 +193,10 @@ namespace VTX::App::Pass
 	{
 		assert( _representations.contains( p_e ) );
 
-		RENDERER().removeRepresentation( _representations[ p_e ] );
 		_representations.erase( p_e );
+		_representationRemoved.emplace_back( p_e );
+
+		// RENDERER().removeRepresentation( _representations[ p_e ] );
 	}
 
 } // namespace VTX::App::Pass

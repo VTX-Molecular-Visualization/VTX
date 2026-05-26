@@ -19,11 +19,10 @@ namespace VTX::App::Pass
 			return false;
 		}
 
-		/*
-		RENDERER().setSystemPosition(
-			REG().get<System::UID>( entity ).system, p_traj.frameCollection[ p_traj.genericData.requestedFrameIndex ]
-		);
-		*/
+		// Trigger trajectory event.
+		HUB().trigger<Events::TrajectoryLoad>( { entity,
+												 p_traj.frameCollection[ p_traj.genericData.requestedFrameIndex ] } );
+
 		return true;
 	}
 
@@ -58,12 +57,10 @@ namespace VTX::App::Pass
 				return false;
 			}
 
-			/*
-			RENDERER().setSystemPosition(
-				REG().get<System::UID>( entity ).system,
-				p_traj.frameCollection[ p_traj.genericData.requestedFrameIndex ]
+			// Trigger trajectory event.
+			HUB().trigger<Events::TrajectoryLoad>(
+				{ entity, p_traj.frameCollection[ p_traj.genericData.requestedFrameIndex ] }
 			);
-			*/
 
 			return true;
 		}

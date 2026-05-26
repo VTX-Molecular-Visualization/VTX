@@ -157,6 +157,8 @@ namespace VTX::Renderer
 
 	void Renderer::_flushDirty()
 	{
+		Util::ScopedChrono timer( "[RENDERER] _flushDirty" );
+
 		using RendererDirty		  = Cache::E_RENDERER_DIRTY;
 		using RepresentationDirty = Cache::E_REPRESENTATION_DIRTY;
 		using SystemDirty		  = Cache::E_SYSTEM_DIRTY;
@@ -189,12 +191,13 @@ namespace VTX::Renderer
 		{
 			for ( const Desc::Handle system : deletingSystems )
 			{
+				Builder::SystemRegistry::removeSystemConstruction( _geometries, system );
 				_systems.erase( system );
 				dirtySystems.erase( system );
 			}
 
 			std::unordered_set<Desc::Handle> ignoredRefreshSystems;
-			Builder::SystemRegistry::clear( _layouts, _geometries, ignoredRefreshSystems );
+			Builder::SystemRegistry::clearSystemRanges( _layouts, _geometries, ignoredRefreshSystems );
 
 			for ( const auto entry : _systems.entries() )
 			{
@@ -324,11 +327,15 @@ namespace VTX::Renderer
 				}
 				if ( hasDirty( flags, SystemDirty::TRAJECTORY ) )
 				{
-					Builder::AtomLayout::uploadPositions( _context, _systems, _layouts, system, cache.trajectory );
+					Builder::AtomLayout::uploadPositions( _context, _systems, _layouts, system, cache.data.trajectory );
 					Builder::RibbonGeometry::uploadPositions(
-						_context, _layouts, _geometries, system, cache.trajectory
+						_context, _layouts, _geometries, system, cache.data.trajectory
 					);
-					geometryRefreshSystems.insert( system );
+					if ( _geometries.ses.built( system ) )
+					{
+						_geometries.ses.invalidate( system );
+						geometryRefreshSystems.insert( system );
+					}
 				}
 				if ( hasDirty( flags, SystemDirty::COLOR ) )
 				{
@@ -386,7 +393,7 @@ namespace VTX::Renderer
 
 		if ( updateDrawRanges )
 		{
-			Builder::DrawRanges::buildDrawRanges( _context, _geometries );
+			Builder::DrawRanges::buildDrawRanges( _context, _geometries, _systems );
 		}
 		if ( updateGeometryChunks && Builder::RenderGraphRuntime::syncGeometryChunks( _graph, _geometries ) )
 		{
@@ -449,16 +456,12 @@ namespace VTX::Renderer
 		const Mat4f &  p_matProj
 	)
 	{
-		// Util::ScopedChrono timer( "[RENDERER] setCamera" );
-
 		_camera = { p_camera, p_position, p_matView, p_matProj };
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::CAMERA;
 	}
 
 	void Renderer::setGraphicsConfig( const GraphicsConfig & p_config )
 	{
-		Util::ScopedChrono timer( "[RENDERER] setGraphicsConfig" );
-
 		const Builder::PipelineConfig pipelineConfig = Builder::RenderGraphRuntime::pipelineConfig( p_config );
 		const bool					  graphReady	 = _config.has_value();
 		const bool					  graphChanged	 = not graphReady || *_config != pipelineConfig;
@@ -473,16 +476,12 @@ namespace VTX::Renderer
 
 	void Renderer::setColorLayout( const Color::Layout & p_layout )
 	{
-		Util::ScopedChrono timer( "[RENDERER] setColorLayout" );
-
 		_colorLayout.data = p_layout;
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COLOR_LAYOUT;
 	}
 
 	Desc::Handle Renderer::addRepresentation( const Representation & p_representation )
 	{
-		Util::ScopedChrono timer( "[RENDERER] addRepresentation" );
-
 		const Desc::Handle handle
 			= _representations.emplace( Builder::RepresentationState::buildCache( p_representation ) );
 
@@ -491,10 +490,15 @@ namespace VTX::Renderer
 		return handle;
 	}
 
+	void Renderer::patchRepresentation( const Desc::Handle p_handle, Cache::Representation::Data && p_representation )
+	{
+		assert( _representations.contains( p_handle ) );
+
+		_representations.get( p_handle ).data = std::move( p_representation );
+	}
+
 	void Renderer::removeRepresentation( const Desc::Handle p_handle )
 	{
-		Util::ScopedChrono timer( "[RENDERER] removeRepresentation" );
-
 		assert( _representations.contains( p_handle ) );
 
 		_representations.erase( p_handle );
@@ -511,8 +515,6 @@ namespace VTX::Renderer
 
 	Desc::Handle Renderer::addSystem( Cache::System && p_system )
 	{
-		Util::ScopedChrono timer( "[RENDERER] addSystem" );
-
 		const Desc::Handle handle = _systems.emplace( std::move( p_system ) );
 		Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, handle );
 
@@ -522,10 +524,15 @@ namespace VTX::Renderer
 		return handle;
 	}
 
+	void Renderer::patchSystem( const Desc::Handle p_handle, Cache::System::Data && p_system )
+	{
+		assert( _systems.contains( p_handle ) );
+
+		_systems.get( p_handle ).data = std::move( p_system );
+	}
+
 	void Renderer::removeSystem( const Desc::Handle p_handle )
 	{
-		Util::ScopedChrono timer( "[RENDERER] removeSystem" );
-
 		assert( _systems.contains( p_handle ) );
 
 		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::DELETING );
@@ -571,12 +578,18 @@ namespace VTX::Renderer
 
 	void Renderer::setSystemTransform( const Desc::Handle p_handle, const Mat4f & p_transform )
 	{
-		Util::ScopedChrono timer( "[RENDERER] setSystemTransform" );
-
 		assert( _systems.contains( p_handle ) );
 
 		_systems.get( p_handle ).transform = p_transform;
 		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::TRANSFORM );
+	}
+
+	void Renderer::setSystemPositions( const Desc::Handle p_handle, std::span<const Vec3f> p_positions )
+	{
+		assert( _systems.contains( p_handle ) );
+
+		_systems.get( p_handle ).data.trajectory = p_positions;
+		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::TRAJECTORY );
 	}
 
 	void Renderer::setSystemDirty( const Desc::Handle p_handle, const Cache::E_SYSTEM_DIRTY p_flags )

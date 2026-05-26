@@ -31,6 +31,8 @@ namespace VTX::Renderer::Geometry
 			_construction.clear();
 		}
 
+		void removeConstruction( const Desc::Handle p_handle ) { _construction.erase( p_handle ); }
+
 		struct Construction
 		{
 			bool isEmpty = false;
@@ -48,10 +50,15 @@ namespace VTX::Renderer::Geometry
 			std::vector<Indice>				 indices;
 		};
 
-		bool built( const Desc::Handle p_handle ) const { return _construction.contains( p_handle ); }
+		bool built( const Desc::Handle p_handle ) const { return _hasRange( p_handle ); }
 
 		bool empty( const Desc::Handle p_handle ) const
 		{
+			if ( not built( p_handle ) )
+			{
+				return true;
+			}
+
 			const auto it = _construction.find( p_handle );
 			if ( it == _construction.end() )
 			{
@@ -71,14 +78,34 @@ namespace VTX::Renderer::Geometry
 
 		void construct( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
-			assert( p_data.residueUids.getCount() == p_data.data.residueSecondaryStructureTypes.size() );
-			assert( p_data.residueUids.getCount() == p_data.data.residueFirstAtomIndexes.size() );
-			assert( p_data.residueUids.getCount() == p_data.data.residueAtomCounts.size() );
-			assert( p_data.data.chainFirstResidues.size() == p_data.data.chainResidueCounts.size() );
+			assert(
+				p_data.data.residueUids->getCount() == p_data.data.topology->residueSecondaryStructureTypes.size()
+			);
+			assert( p_data.data.residueUids->getCount() == p_data.data.topology->residueFirstAtomIndexes.size() );
+			assert( p_data.data.residueUids->getCount() == p_data.data.topology->residueAtomCounts.size() );
+			assert(
+				p_data.data.topology->chainFirstResidues.size() == p_data.data.topology->chainResidueCounts.size()
+			);
+
+			if ( const auto it = _construction.find( p_handle ); it != _construction.end() )
+			{
+				const Construction & cache = it->second;
+				_addRange(
+					p_handle, static_cast<Index>( cache.indices.size() ), static_cast<Index>( cache.residues.size() )
+				);
+
+				if ( not cache.isEmpty )
+				{
+					auto & indiceBuffer = _indices( p_handle );
+					indiceBuffer		= cache.indices;
+				}
+
+				return;
+			}
 
 			Construction & cache = _construction[ p_handle ];
 
-			if ( p_data.data.residueSecondaryStructureTypes.empty() )
+			if ( p_data.data.topology->residueSecondaryStructureTypes.empty() )
 			{
 				cache.isEmpty = true;
 				_addRange( p_handle, 0, 0 );
@@ -90,25 +117,25 @@ namespace VTX::Renderer::Geometry
 			std::unordered_map<Index, Index> & residueToIndices	  = cache.residueToIndices;
 			std::unordered_map<Index, Index> & residueToPositions = cache.residueToPositions;
 
-			for ( Index chainIdx : p_data.data.getChainRange() )
+			for ( Index chainIdx : p_data.data.topology->getChainRange() )
 			{
-				if ( p_data.data.getChainResidueCount( chainIdx ) < 4 )
+				if ( p_data.data.topology->getChainResidueCount( chainIdx ) < 4 )
 				{
 					continue;
 				}
 
 				std::vector<Construction::Data> usedResidues;
-				usedResidues.reserve( p_data.data.getChainResidueCount( chainIdx ) );
+				usedResidues.reserve( p_data.data.topology->getChainResidueCount( chainIdx ) );
 
-				for ( Index residueIdx : p_data.data.getChainResidueRange( chainIdx ) )
+				for ( Index residueIdx : p_data.data.topology->getChainResidueRange( chainIdx ) )
 				{
-					const auto optCA = p_data.data.findFirstAtomByName( residueIdx, "CA" );
+					const auto optCA = p_data.data.topology->findFirstAtomByName( residueIdx, "CA" );
 					if ( not optCA )
 					{
 						continue;
 					}
 
-					const auto optO = p_data.data.findFirstAtomByName( residueIdx, "O" );
+					const auto optO = p_data.data.topology->findFirstAtomByName( residueIdx, "O" );
 					if ( not optO )
 					{
 						continue;

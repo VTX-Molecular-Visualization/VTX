@@ -34,6 +34,26 @@ namespace VTX::Renderer::Builder
 			p_geometryRefreshSystems.clear();
 		}
 
+		static void clearSystemRanges(
+			Layouts &						   p_layouts,
+			Geometries &					   p_geometries,
+			std::unordered_set<Desc::Handle> & p_geometryRefreshSystems
+		)
+		{
+			Util::ScopedChrono timer( "[BUILDER] SystemRegistry::clearSystemRanges" );
+
+			p_layouts.clearSystems();
+			p_geometries.clearSystemRanges();
+			p_geometryRefreshSystems.clear();
+		}
+
+		static void removeSystemConstruction( Geometries & p_geometries, const Desc::Handle p_handle )
+		{
+			Util::ScopedChrono timer( "[BUILDER] SystemRegistry::removeSystemConstruction" );
+
+			p_geometries.removeSystemConstruction( p_handle );
+		}
+
 		template<typename Systems>
 		static void registerSystem(
 			Systems &	 p_systems,
@@ -75,11 +95,11 @@ namespace VTX::Renderer::Builder
 			const auto			  colors		  = buildAtomColors( system );
 			const auto			  representations = buildAtomRepresentations( system );
 			const auto			  flags			  = buildAtomFlags( system );
-			const auto			  atomIds		  = system.atomUids.toStdVector();
+			const auto			  atomIds		  = system.data.atomUids->toStdVector();
 
-			uploadSymbols( p_context, p_layouts, p_handle, system.data.atomSymbols );
+			uploadSymbols( p_context, p_layouts, p_handle, system.data.topology->atomSymbols );
 			uploadIds( p_context, p_layouts, p_handle, atomIds );
-			uploadPositions( p_context, p_systems, p_layouts, p_handle, system.trajectory );
+			uploadPositions( p_context, p_systems, p_layouts, p_handle, system.data.trajectory );
 			uploadColors( p_context, p_layouts, p_handle, colors );
 			uploadRepresentations( p_context, p_layouts, p_handle, representations, p_geometryRefreshSystems );
 			uploadSelection( p_context, p_layouts, p_handle, flags );
@@ -87,11 +107,11 @@ namespace VTX::Renderer::Builder
 
 		static std::vector<ColorIndex> buildAtomColors( const Cache::System & p_system )
 		{
-			const Core::Struct::Topology & data = p_system.data;
+			const Core::Struct::Topology & data = *p_system.data.topology;
 			std::vector<ColorIndex>		   atoms( data.getAtomCount() );
 			size_t						   count = 0;
 
-			for ( const auto & [ scheme, ranges ] : p_system.colorSchemeAtoms )
+			for ( const auto & [ scheme, ranges ] : *p_system.data.colorSchemeAtoms )
 			{
 				if ( scheme == E_COLOR_SCHEME::ATOM )
 				{
@@ -123,7 +143,7 @@ namespace VTX::Renderer::Builder
 
 				count += ranges.count();
 			}
-			for ( const auto & [ colorIndex, ranges ] : p_system.customColorAtoms )
+			for ( const auto & [ colorIndex, ranges ] : *p_system.data.customColorAtoms )
 			{
 				for ( const Index atom : ranges )
 				{
@@ -141,12 +161,12 @@ namespace VTX::Renderer::Builder
 		{
 			constexpr RepresentationIndex invalidRepresentation = std::numeric_limits<RepresentationIndex>::max();
 
-			std::vector<RepresentationIndex> atoms( p_system.data.getAtomCount(), invalidRepresentation );
+			std::vector<RepresentationIndex> atoms( p_system.data.topology->getAtomCount(), invalidRepresentation );
 			size_t							 count = 0;
-			for ( const auto & [ preset, ranges ] : p_system.presetAtoms )
+			for ( const auto & [ preset, ranges ] : *p_system.data.presetAtoms )
 			{
-				const auto representationIt = p_system.representationHandles.find( preset );
-				assert( representationIt != p_system.representationHandles.end() );
+				const auto representationIt = p_system.data.representationHandles->find( preset );
+				assert( representationIt != p_system.data.representationHandles->end() );
 				assert( representationIt->second < invalidRepresentation );
 
 				const auto representationIndex = static_cast<RepresentationIndex>( representationIt->second );
@@ -163,16 +183,17 @@ namespace VTX::Renderer::Builder
 				count += ranges.count();
 			}
 
-			assert( count == p_system.data.getAtomCount() );
+			assert( count == p_system.data.topology->getAtomCount() );
 
 			return atoms;
 		}
 
 		static std::vector<Flag> buildAtomFlags( const Cache::System & p_system )
 		{
-			std::vector<Flag> atomFlags( p_system.data.getAtomCount(), 0 );
-			p_system.selection.forEachSetBit( [ & ]( const size_t p_atom )
-											  { atomFlags[ p_atom ] |= toUnderlying( E_ELEMENT_FLAGS::SELECTION ); } );
+			std::vector<Flag> atomFlags( p_system.data.topology->getAtomCount(), 0 );
+			p_system.data.selection->forEachSetBit(
+				[ & ]( const size_t p_atom ) { atomFlags[ p_atom ] |= toUnderlying( E_ELEMENT_FLAGS::SELECTION ); }
+			);
 
 			return atomFlags;
 		}
@@ -230,7 +251,7 @@ namespace VTX::Renderer::Builder
 			using namespace Layout;
 
 			assert( p_positions.size() == p_layouts.atoms.size( p_handle ) );
-			p_systems.get( p_handle ).trajectory = p_positions;
+			p_systems.get( p_handle ).data.trajectory = p_positions;
 			p_layouts.atoms.upload<ATOM_ATTR::POSITION, Vec3f>( p_context, p_handle, p_positions );
 		}
 
@@ -325,16 +346,16 @@ namespace VTX::Renderer::Builder
 
 			const Cache::System & systemCache = p_systems.get( p_handle );
 
-			auto visibleSpheres	  = systemCache.visibility;
-			auto visibleCylinders = systemCache.visibility;
-			auto visibleRibbons	  = systemCache.visibility;
+			auto visibleSpheres	  = *systemCache.data.visibility;
+			auto visibleCylinders = *systemCache.data.visibility;
+			auto visibleRibbons	  = *systemCache.data.visibility;
 			bool requestedRibbon  = false;
 			bool visibleSes		  = false;
 
-			for ( const auto & [ preset, ranges ] : systemCache.presetAtoms )
+			for ( const auto & [ preset, ranges ] : *systemCache.data.presetAtoms )
 			{
-				const auto representationIt = systemCache.representationHandles.find( preset );
-				assert( representationIt != systemCache.representationHandles.end() );
+				const auto representationIt = systemCache.data.representationHandles->find( preset );
+				assert( representationIt != systemCache.data.representationHandles->end() );
 				const auto representationIndex = static_cast<RepresentationIndex>( representationIt->second );
 				assert( p_representations.contains( representationIndex ) );
 
@@ -351,11 +372,11 @@ namespace VTX::Renderer::Builder
 				{
 					visibleRibbons.subtractInPlace( ranges );
 				}
-				else if ( systemCache.visibility.any( ranges ) )
+				else if ( systemCache.data.visibility->any( ranges ) )
 				{
 					requestedRibbon = true;
 				}
-				if ( representation.showSes && systemCache.visibility.any( ranges ) )
+				if ( representation.showSes && systemCache.data.visibility->any( ranges ) )
 				{
 					visibleSes = true;
 				}
@@ -402,7 +423,7 @@ namespace VTX::Renderer::Builder
 			p_layouts.residues.resize( p_context );
 
 			uploadRibbonResidues( p_context, p_layouts, p_geometries, p_handle, system );
-			uploadRibbonPositions( p_context, p_layouts, p_geometries, p_handle, system.trajectory );
+			uploadRibbonPositions( p_context, p_layouts, p_geometries, p_handle, system.data.trajectory );
 		}
 
 		template<typename Systems>
@@ -445,9 +466,9 @@ namespace VTX::Renderer::Builder
 			{
 				const Index residueIndex = construction.residues[ i ].index;
 				const Index atomIndex	 = construction.residues[ i ].ca;
-				const auto	ss			 = p_system.data.residueSecondaryStructureTypes[ residueIndex ];
+				const auto	ss			 = p_system.data.topology->residueSecondaryStructureTypes[ residueIndex ];
 
-				residueIds[ i ]				= p_system.residueUids.first + residueIndex;
+				residueIds[ i ]				= p_system.data.residueUids->first + residueIndex;
 				residueTypes[ i ]			= toUnderlying( ss );
 				residueColors[ i ]			= Color::getColorIndex( ss );
 				residueRepresentations[ i ] = atomRepresentations[ atomIndex ];
@@ -547,12 +568,14 @@ namespace VTX::Renderer::Builder
 				showSphere = true;
 			}
 
-			return Cache::Representation { p_representation, showSphere, showCylinder, showRibbon, showSes };
+			return Cache::Representation {
+				Cache::Representation::Data { &p_representation }, showSphere, showCylinder, showRibbon, showSes
+			};
 		}
 
 		static void refreshCache( Cache::Representation & p_cache )
 		{
-			const Cache::Representation refreshed = buildCache( p_cache.data );
+			const Cache::Representation refreshed = buildCache( *p_cache.data.rep );
 
 			p_cache.showSphere	 = refreshed.showSphere;
 			p_cache.showCylinder = refreshed.showCylinder;
@@ -581,7 +604,7 @@ namespace VTX::Renderer::Builder
 				for ( Desc::Handle handle = 0; handle <= lastHandle; ++handle )
 				{
 					const Representation & representation = p_representations.contains( handle )
-																? p_representations.get( handle ).data
+																? *p_representations.get( handle ).data.rep
 																: VTX::Renderer::Representations::STICKS_AND_RIBBONS;
 					_write( buffer, representation );
 				}
@@ -841,7 +864,7 @@ namespace VTX::Renderer::Builder
 			for ( Index i = 0; i < countResidues; ++i )
 			{
 				const Index residueIndex = construction.residues[ i ].index;
-				residueIds[ i ]			 = p_system.residueUids.first + residueIndex;
+				residueIds[ i ]			 = p_system.data.residueUids->first + residueIndex;
 			}
 
 			p_layouts.residues.upload<RESIDUE_ATTR::ID, UID32>( p_context, p_handle, residueIds );
@@ -865,7 +888,7 @@ namespace VTX::Renderer::Builder
 			for ( Index i = 0; i < countResidues; ++i )
 			{
 				const Index residueIndex = construction.residues[ i ].index;
-				auto		ss			 = p_system.data.residueSecondaryStructureTypes[ residueIndex ];
+				auto		ss			 = p_system.data.topology->residueSecondaryStructureTypes[ residueIndex ];
 				residueTypes[ i ]		 = toUnderlying( ss );
 				residueColors[ i ]		 = Color::getColorIndex( ss );
 			}
@@ -943,8 +966,12 @@ namespace VTX::Renderer::Builder
 			}
 
 			BinaryBuffer430 buffer;
-			for ( const Cache::System & system : p_systems )
+			uint32_t		modelIndex = 0;
+			for ( auto entry : p_systems.entries() )
 			{
+				Cache::System & system = entry.resource;
+				system.modelIndex	   = modelIndex++;
+
 				const Mat4f matrixModelView	   = p_camera.matView * system.transform;
 				const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
 				const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
@@ -961,11 +988,16 @@ namespace VTX::Renderer::Builder
 
 	struct DrawRanges
 	{
-		static void buildDrawRanges( Context::ContextWrapper & p_context, Geometries & p_geometries )
+		template<typename Systems>
+		static void buildDrawRanges(
+			Context::ContextWrapper & p_context,
+			Geometries &			  p_geometries,
+			Systems &				  p_systems
+		)
 		{
 			Util::ScopedChrono timer( "[BUILDER] DrawRanges::buildDrawRanges" );
 
-			p_geometries.buildDrawRanges( p_context );
+			p_geometries.buildDrawRanges( p_context, p_systems );
 		}
 	};
 } // namespace VTX::Renderer::Builder

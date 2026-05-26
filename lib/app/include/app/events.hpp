@@ -102,10 +102,16 @@ namespace VTX::App::Events
 		Entity system;
 	};
 
+	struct TrajectoryLoad
+	{
+		Entity				   system;
+		std::span<const Vec3f> frame;
+	};
+
 	template<typename P>
 	struct PresetRename
 	{
-		Entity preset;
+		Entity		preset;
 		std::string name;
 	};
 
