@@ -83,6 +83,21 @@ jobs:
         cuda: ${{ env.CUDA_VERSION }}
         method: network
         linux-local-args: '["--toolkit"]'
+    
+    - name: Setup CUDA environment
+      shell: bash
+      run: |
+        CUDA_PATH_UNIX="$(cygpath -u "$CUDA_PATH")"
+        CUDA_BIN="$CUDA_PATH_UNIX/bin"
+
+        echo "CUDA_PATH=$CUDA_PATH"
+        echo "CUDA_PATH_UNIX=$CUDA_PATH_UNIX"
+        echo "CUDA_BIN=$CUDA_BIN"
+
+        "$CUDA_BIN/nvcc.exe" --version
+
+        echo "$CUDA_BIN" >> "$GITHUB_PATH"
+        echo "CUDACXX=$CUDA_BIN/nvcc.exe" >> "$GITHUB_ENV"
 
     - name: Check CUDA
       shell: bash
