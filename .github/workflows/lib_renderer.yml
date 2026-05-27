@@ -85,6 +85,7 @@ jobs:
         linux-local-args: '["--toolkit"]'
     
     - name: Setup CUDA environment
+      if: env.CUDA_VERSION != ''
       shell: bash
       run: |
         if [[ "$RUNNER_OS" == "Windows" ]]; then
@@ -115,12 +116,18 @@ jobs:
         echo "CUDACXX=$NVCC" >> "$GITHUB_ENV"
 
     - name: Check CUDA
-      if: env.CUDA_VERSION != ''
+      if: env.CUDA_VERSION != ''   
       shell: bash
       run: |
         echo "CUDA_PATH=$CUDA_PATH"
-        ls "$CUDA_PATH/bin" || true
-        "$CUDA_PATH/bin/nvcc.exe" --version
+        ls "$CUDA_PATH/bin"
+
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          "$CUDA_PATH/bin/nvcc.exe" --version
+        else
+          "$CUDA_PATH/bin/nvcc" --version
+        fi
+
         nvcc --version
 
     - name: Create package
