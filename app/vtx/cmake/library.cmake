@@ -15,6 +15,9 @@ endif()
 
 add_executable(vtx ${SOURCES} ${RESOURCES})
 vtx_configure_target(vtx)
+if (VTX_RENDERER)
+	vtx_link_cuda(vtx)
+endif()
 
 if(UNIX AND NOT APPLE)
 	set_target_properties(vtx PROPERTIES BUILD_RPATH "$ORIGIN" INSTALL_RPATH "$ORIGIN")
@@ -34,8 +37,6 @@ endif()
 if (VTX_TOOL_TOPOLOGY_EDITOR)
 	target_link_libraries(vtx PRIVATE vtx_tool_topology_editor::vtx_tool_topology_editor)
 endif()
-
-vtx_link_cuda(vtx)
 
 # Declare preprocessor definitions.
 target_compile_definitions(vtx PRIVATE VTX_TOOL_EXAMPLE=${VTX_TOOL_EXAMPLE})

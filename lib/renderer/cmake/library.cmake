@@ -80,12 +80,15 @@ if(VTX_CUDA_ENABLED)
 
     $<$<COMPILE_LANGUAGE:CUDA>:
         --use_fast_math
-        --relocatable-device-code=true
         --extended-lambda
         -Xcudafe
         --diag_suppress=esa_on_defaulted_function_ignored
         -Wno-deprecated-gpu-targets
     >
+
+	$<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
+		-Xcompiler=-Wno-gnu-line-marker
+	>
 
     $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CXX_COMPILER_ID:MSVC>>:
         -Xcompiler=/Zc:preprocessor
