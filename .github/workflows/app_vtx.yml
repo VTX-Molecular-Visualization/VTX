@@ -118,6 +118,9 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@v5
+
     - name: Setup Conan
       uses: conan-io/setup-conan@v1.3.0
       with:
@@ -137,6 +140,56 @@ jobs:
         cuda: ${{ env.CUDA_VERSION }}
         method: network
         linux-local-args: '["--toolkit"]'
+    
+    - name: Setup CUDA environment
+      if: env.CUDA_VERSION != ''
+      shell: bash
+      run: |
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          CUDA_PATH_WIN="$(cygpath -m "$CUDA_PATH")"
+          CUDA_PATH_UNIX="$(cygpath -u "$CUDA_PATH")"
+
+          NVCC="$CUDA_PATH_WIN/bin/nvcc.exe"
+          CUDA_BIN="$CUDA_PATH_UNIX/bin"
+
+        else
+          CUDA_PATH_WIN="$CUDA_PATH"
+          CUDA_PATH_UNIX="$CUDA_PATH"
+
+          NVCC="$CUDA_PATH/bin/nvcc"
+          CUDA_BIN="$CUDA_PATH/bin"
+        fi
+
+        echo "CUDA_PATH=$CUDA_PATH_WIN"
+        echo "CUDA_BIN=$CUDA_BIN"
+        echo "NVCC=$NVCC"
+
+        "$NVCC" --version
+
+        echo "$CUDA_BIN" >> "$GITHUB_PATH"
+
+        echo "CUDA_PATH=$CUDA_PATH_WIN" >> "$GITHUB_ENV"
+        echo "CUDAToolkit_ROOT=$CUDA_PATH_WIN" >> "$GITHUB_ENV"
+        echo "CUDACXX=$NVCC" >> "$GITHUB_ENV"
+
+    - name: Check CUDA
+      if: env.CUDA_VERSION != ''   
+      shell: bash
+      run: |
+        echo "CUDA_PATH=$CUDA_PATH"
+        ls "$CUDA_PATH/bin"
+
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          "$CUDA_PATH/bin/nvcc.exe" --version
+        else
+          "$CUDA_PATH/bin/nvcc" --version
+        fi
+
+        nvcc --version
+
+    - name: Setup MSVC environment
+      uses: ilammy/msvc-dev-cmd@v1
+      if: runner.os == 'Windows'
 
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}
@@ -174,8 +227,10 @@ jobs:
           -o vtx/*:ui_qt=${{env.UI_QT}} \
           "${PYTHON_VERSION_OPTION[@]}" \
           "${CUDA_ARCH_OPTION[@]}" \
+          -c tools.cmake.cmaketoolchain:generator=Ninja \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True \
+           -c tools.cmake.cmaketoolchain:extra_variables="{\"CMAKE_CUDA_COMPILER\":\"$CUDACXX\",\"CUDAToolkit_ROOT\":\"$CUDAToolkit_ROOT\"}" 
           --format=json > output.json
       shell: bash
 

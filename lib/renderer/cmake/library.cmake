@@ -69,19 +69,23 @@ if(VTX_CUDA_ENABLED)
 		CUDA_STANDARD 20
 	)
 	target_compile_options(vtx_renderer PRIVATE 
-		$<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CONFIG:Debug>>:
-			--generate-line-info
-		>
-		$<$<COMPILE_LANGUAGE:CUDA>:
-			--use_fast_math
-			--relocatable-device-code=true
-			--extended-lambda
-			-Xcompiler=/Zc:preprocessor
-			-Xcudafe
-			--diag_suppress=esa_on_defaulted_function_ignored
-			-Wno-deprecated-gpu-targets
-		>
-	)
+    $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CONFIG:Debug>>:
+        --generate-line-info
+    >
+
+    $<$<COMPILE_LANGUAGE:CUDA>:
+        --use_fast_math
+        --relocatable-device-code=true
+        --extended-lambda
+        -Xcudafe
+        --diag_suppress=esa_on_defaulted_function_ignored
+        -Wno-deprecated-gpu-targets
+    >
+
+    $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CXX_COMPILER_ID:MSVC>>:
+        -Xcompiler=/Zc:preprocessor
+    >
+)
 	target_compile_definitions(vtx_renderer PRIVATE VTX_CUDA_ENABLED)
 endif()
 
