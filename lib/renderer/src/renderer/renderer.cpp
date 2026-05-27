@@ -46,7 +46,7 @@ namespace VTX::Renderer
 				reinterpret_cast<uintptr_t>( this )
 			);
 			_context.fillInfos( _infos );
-			onReady();
+			onReady( _infos );
 		}
 		catch ( const std::exception & p_e )
 		{

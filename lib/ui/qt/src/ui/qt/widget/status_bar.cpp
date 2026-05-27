@@ -68,8 +68,8 @@ namespace VTX::UI::QT::Widget
 		addPermanentWidget( _python );
 
 		// Update vendor when renderer is available.
-		App::RENDERER().onReady += [ vendorLabel ]()
-		{ vendorLabel->setText( QString::fromStdString( App::RENDERER().getInfos( true ).renderer ) ); };
+		App::RENDERER().onReady += [ vendorLabel ]( const VTX::Renderer::StructInfos & p_infos )
+		{ vendorLabel->setText( QString::fromStdString( p_infos.renderer ) ); };
 
 		// Update FPS each second.
 		auto * timer = new QTimer( this );

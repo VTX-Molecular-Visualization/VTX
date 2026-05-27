@@ -157,6 +157,14 @@ namespace VTX::UI::QT::Widget::Library
 			[ this ]( const float p_value )
 			{ _changeValue<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>( p_value ); }
 		);
+
+		// Enable SES if available.
+		const bool cudaAvailable = App::RENDERER().getInfos().cudaAvailable;
+		_groupboxSes->setEnabled( cudaAvailable );
+		if ( not cudaAvailable )
+		{
+			_groupboxSes->setTitle( "SES (CUDA not available)" );
+		}
 	}
 
 	void Representation::_update( Entity p_e )
