@@ -78,7 +78,7 @@ jobs:
       matrix:
         include:
           - os: windows-2022
-            channel: windows-x64
+            channel: win-x64
             framework: vcredist144-x64
             main_exe: vtx.exe
             conan_cppstd: '20'
@@ -86,21 +86,21 @@ jobs:
             channel: linux-x64
             main_exe: vtx
             conan_cppstd: 'gnu20'
+          - os: macos-15-intel
+            channel: osx-x64
+            main_exe: vtx
+            conan_cppstd: '20'
           - os: windows-11-arm
-            channel: windows-arm64
+            channel: win-arm64
             framework: vcredist144-arm64
             main_exe: vtx.exe
             conan_cppstd: '20'
           - os: ubuntu-22.04-arm
             channel: linux-arm64
             main_exe: vtx
-            conan_cppstd: 'gnu20'
-          - os: macos-15-intel
-            channel: macos-x64
-            main_exe: vtx
-            conan_cppstd: '20'
+            conan_cppstd: 'gnu20'         
           - os: macos-15
-            channel: macos-arm64
+            channel: osx-arm64
             main_exe: vtx
             conan_cppstd: '20'
       fail-fast: false
