@@ -8,9 +8,7 @@
 namespace VTX::App::Pass
 {
 	TrajectoryUpdater::TrajectoryUpdater()
-	{
-		REG().on_destroy<System::TrajectoryFullBuffer>().connect<&TrajectoryUpdater::_onDestroyTrajectory>( this );
-	}
+	{ REG().on_destroy<System::TrajectoryFullBuffer>().connect<&TrajectoryUpdater::_onDestroyTrajectory>( this ); }
 
 	bool TrajectoryUpdater::_tryUpdateFrame( const Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept
 	{
@@ -66,9 +64,7 @@ namespace VTX::App::Pass
 		}
 
 		uint autoplayNextFrameCount( const System::GenericTrajectory & p_traj, const float p_elapsedTime ) noexcept
-		{
-			return static_cast<uint>( ( p_elapsedTime - p_traj.lastFrameUpdateTime ) / p_traj.playingSpeed );
-		}
+		{ return static_cast<uint>( ( p_elapsedTime - p_traj.lastFrameUpdateTime ) / p_traj.playingSpeed ); }
 
 		/**
 		 * @brief Return true if the frame should be updated.
@@ -84,9 +80,7 @@ namespace VTX::App::Pass
 
 		template<typename TrajectoryT>
 		System::GenericTrajectory & genericData( TrajectoryT & p_ )
-		{
-			return p_.genericData;
-		}
+		{ return p_.genericData; }
 
 		/**
 		 * @brief Update frame for every trajectory of the input type
@@ -98,7 +92,6 @@ namespace VTX::App::Pass
 		{
 			for ( Entity it_entity : REG().view<TrajectoryT>() )
 			{
-				const TrajectoryT &			traj		   = REG().get<TrajectoryT>( it_entity );
 				System::GenericTrajectory * genericTrajPtr = nullptr;
 				System::get( it_entity, genericTrajPtr );
 				if ( genericTrajPtr == nullptr )
