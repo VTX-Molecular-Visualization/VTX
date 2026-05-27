@@ -1,10 +1,12 @@
 #ifndef BCS_CUDA_MATH_CUH
 #define BCS_CUDA_MATH_CUH
 
-#include <cmath>
-
 #include <device_types.h>
+// Conflict with gcc.
+#define lerp cudaHelperLerp
 #include <cuda_helper/helper_math.h>
+#undef lerp
+#include <cmath>
 
 #include "bcs/core/math.hpp"
 
