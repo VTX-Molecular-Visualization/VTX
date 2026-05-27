@@ -79,8 +79,8 @@ namespace VTX::App::Action::IO
 	{
 		AssociateTrajectory();
 		AssociateTrajectory( Util::StopToken, Threading::OptionalThreadReference );
-		void execute( const FilePath & p_path, const ECS::Entity & );
-		void execute( const std::string & p_path, const ECS::Entity & );
+		void execute( const FilePath & p_path, const Entity & );
+		void execute( const std::string & p_path, const Entity & );
 		void wait() noexcept;
 
 	  private:

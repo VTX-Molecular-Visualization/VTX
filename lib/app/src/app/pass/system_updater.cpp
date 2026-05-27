@@ -1,18 +1,17 @@
-#include "app/system/load.hpp"
-// Forward decl
-#include "app/events.hpp"
 #include "app/pass/system_updater.hpp"
+#include "app/events.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
+#include "app/system/load.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
-#include "app/threading/thread_manager.hpp"
 #include <renderer/renderer.hpp>
 #include <util/chrono.hpp>
 #include <util/math/transform.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Pass
 {
@@ -20,237 +19,191 @@ namespace VTX::App::Pass
 	SystemUpdater::SystemUpdater()
 	{
 		auto & reg = REG();
+		auto & hub = HUB();
 
+		// System.
+		hub.connect<Events::SystemLoad, &SystemUpdater::_onSystemLoad>( this );
+		hub.connect<Events::TrajectoryLoad, &SystemUpdater::_onTrajectoryLoad>( this );
 		reg.on_update<Util::Math::Transform>().connect<&SystemUpdater::_onUpdateTransform>( this );
 		reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateVisibility>( this );
 		reg.on_update<System::Selection>().connect<&SystemUpdater::_onUpdateSelection>( this );
 		reg.on_update<System::Representation>().connect<&SystemUpdater::_onUpdateRepresentation>( this );
 		reg.on_update<System::Color>().connect<&SystemUpdater::_onUpdateColor>( this );
+		reg.on_destroy<Core::Struct::Topology>().connect<&SystemUpdater::_onDestroySystem>( this );
 
+		// Representation preset.
+		reg.on_construct<Renderer::Representation>().connect<&SystemUpdater::_onConstructRepresentationPreset>( this );
 		reg.on_update<Renderer::Representation>().connect<&SystemUpdater::_onUpdateRepresentationPreset>( this );
-		reg.on_destroy<System::TrajectoryFullBuffer>().connect<&SystemUpdater::_onTrajectoryDestruction>( this );
-
-		reg.on_destroy<Core::Struct::Topology>().connect<&SystemUpdater::_onSystemDestroyed>( this );
-		HUB().connect<Events::SystemLoad, &SystemUpdater::_onSystemLoaded>( this );
+		reg.on_destroy<Renderer::Representation>().connect<&SystemUpdater::_onDestroyRepresentationPreset>( this );
 	}
 
-	void SystemUpdater::update( const float p_delta, const float p_total )
-	{
-		if ( _needPush )
-		{
-			_pushSystems();
-			_needPush = false;
-		}
-	}
-
-	void SystemUpdater::_onUpdateTransform( ECS::Registry & p_r, ECS::Entity p_e )
-	{
-		if ( std::find( _entities.begin(), _entities.end(), p_e ) != _entities.end() )
-		{
-			const auto & [ transform, uid ] = p_r.get<Util::Math::Transform, System::UID>( p_e );
-			RENDERER().setSystemTransform( uid.system, transform.computeMatrix() );
-		}
-	}
-
-	void SystemUpdater::_onSystemLoaded( const Events::SystemLoad & p_event )
-	{
-		Util::ScopedChrono timer( "_onSystemLoaded" );
-		auto &			   reg	  = REG();
-		const ECS::Entity  system = p_event.system;
-
-		timer.start();
-
-		assert( std::find( _entities.begin(), _entities.end(), system ) == _entities.end() );
-
-		_entities.push_back( system );
-		_needPush = true;
-	}
-
-	void SystemUpdater::_onSystemDestroyed( ECS::Registry &, ECS::Entity p_e )
-	{
-		_entities.erase( std::remove( _entities.begin(), _entities.end(), p_e ), _entities.end() );
-		_representations.erase( p_e );
-		_needPush = true;
-	}
-
-	void SystemUpdater::_pushSystems()
+	void SystemUpdater::update( const float, const float )
 	{
 		auto & reg = REG();
 
-		std::vector<Renderer::SystemData> systemsData;
-		_representations.clear();
+		const bool systemChanged		 = not _systemAdded.empty() || not _systemRemoved.empty();
+		const bool representationChanged = not _representationAdded.empty() || not _representationRemoved.empty();
 
-		for ( const ECS::Entity system : _entities )
+		const auto getSystemData = [ & ]( const Entity p_ent ) -> Renderer::Cache::System::Data
 		{
-			const auto & data			= reg.get<Core::Struct::Topology>( system );
-			const auto & transform		= reg.get<Util::Math::Transform>( system );
-			const auto & uid			= reg.get<System::UID>( system );
-			const auto & color			= reg.get<System::Color>( system );
-			const auto & representation = reg.get<System::Representation>( system );
-			const auto & visibility		= reg.get<System::Visibility>( system );
-			const auto & selection		= reg.get<System::Selection>( system );
-			const size_t atomCount		= data.getAtomCount();
+			const auto & topology		= reg.get<Core::Struct::Topology>( p_ent );
+			const auto & uid			= reg.get<System::UID>( p_ent );
+			const auto & color			= reg.get<System::Color>( p_ent );
+			const auto & representation = reg.get<System::Representation>( p_ent );
+			const auto & visibility		= reg.get<System::Visibility>( p_ent );
+			const auto & selection		= reg.get<System::Selection>( p_ent );
 
-			assert( atomCount > 0 );
+			std::span<const Vec3f> positions = System::getCurrentAtomPositions( p_ent );
+			assert( topology.getAtomCount() > 0 );
 
-			std::span<const Vec3f> positions = System::getCurrentAtomPositions( system );
-			systemsData.push_back(
-				Renderer::SystemData { uid.system,
-									   transform.computeMatrix(),
-									   data,
-									   positions,
-									   uid.atoms.toStdVector(),
-									   uid.residues.toStdVector() }
-			);
+			return { &topology,
+					 positions,
+					 &uid.atoms,
+					 &uid.residues,
+					 &color.colorSchemeAtoms,
+					 &color.customColorAtoms,
+					 &_representations,
+					 &representation.presetAtoms,
+					 &visibility.atoms,
+					 &selection.atoms };
+		};
+
+		// Add pending.
+		for ( const auto system : _systemAdded )
+		{
+			assert( not _systems.contains( system ) );
+
+			const auto & transform = reg.get<Util::Math::Transform>( system );
+
+			const Renderer::Desc::Handle systemHandle
+				= RENDERER().addSystem( { transform.computeMatrix(), getSystemData( system ) } );
+
+			_systems.emplace( system, systemHandle );
+		}
+		for ( const auto representation : _representationAdded )
+		{
+			assert( not _representations.contains( representation ) );
+
+			const auto & rep = REG().get<Renderer::Representation>( representation );
+			_representations.emplace( representation, RENDERER().addRepresentation( rep ) );
 		}
 
-		// Push systems.
-		RENDERER().setSystems( systemsData );
-
-		// Push data.
-		for ( const ECS::Entity e : _entities )
+		// Remove pending.
+		for ( const auto system : _systemRemoved )
 		{
-			_onUpdateVisibility( reg, e );
-			_onUpdateSelection( reg, e );
-			_onUpdateColor( reg, e );
-			_onUpdateRepresentation( reg, e );
+			RENDERER().removeSystem( system );
+		}
+		for ( const auto representation : _representationRemoved )
+		{
+			RENDERER().removeRepresentation( representation );
+		}
+
+		// Patch because renderer use views to raw data.
+		// entt components are not guaranteed to be contiguous in memory.
+		// So ptr can dangle after add/remove.
+		if ( systemChanged )
+		{
+			for ( const auto & pair : _systems )
+			{
+				RENDERER().patchSystem( pair.second, getSystemData( pair.first ) );
+			}
+		}
+		if ( representationChanged )
+		{
+			for ( const auto & pair : _representations )
+			{
+				const auto & rep = reg.get<Renderer::Representation>( pair.first );
+				RENDERER().patchRepresentation( pair.second, { &rep } );
+			}
+		}
+
+		// Clear pending.
+		_systemAdded.clear();
+		_systemRemoved.clear();
+		_representationAdded.clear();
+		_representationRemoved.clear();
+	}
+
+	void SystemUpdater::_onUpdateTransform( Registry & p_r, Entity p_e )
+	{
+		// Filter entities that are not systems (can be optimized with custom event).
+		if ( _systems.contains( p_e ) )
+		{
+			const auto & transform = p_r.get<Util::Math::Transform>( p_e );
+			RENDERER().setSystemTransform( _systems[ p_e ], transform.computeMatrix() );
 		}
 	}
 
-	void SystemUpdater::_onUpdateVisibility( ECS::Registry & p_r, ECS::Entity p_e )
+	void SystemUpdater::_onSystemLoad( const Events::SystemLoad & p_event )
 	{
-		const auto & [ visibility, uid ] = p_r.get<System::Visibility, System::UID>( p_e );
+		assert( not _systems.contains( p_event.system ) );
 
-		RENDERER().setSystemVisibility( uid.system, visibility.atoms );
+		_systemAdded.emplace_back( p_event.system );
 	}
 
-	void SystemUpdater::_onUpdateSelection( ECS::Registry & p_r, ECS::Entity p_e )
+	void SystemUpdater::_onTrajectoryLoad( const Events::TrajectoryLoad & p_event )
 	{
-		const auto & [ selection, uid ] = p_r.get<System::Selection, System::UID>( p_e );
+		assert( _systems.contains( p_event.system ) );
 
-		RENDERER().setSystemSelection( uid.system, selection.atoms );
+		RENDERER().setSystemPositions( _systems[ p_event.system ], p_event.frame );
 	}
 
-	void SystemUpdater::_onUpdateRepresentation( ECS::Registry & p_r, ECS::Entity p_e )
+	void SystemUpdater::_onDestroySystem( Registry &, Entity p_e )
 	{
-		using namespace Renderer;
+		assert( _systems.contains( p_e ) );
 
-		const auto & [ representation, uid, data ]
-			= p_r.get<System::Representation, System::UID, Core::Struct::Topology>( p_e );
-
-		MapRepresentationRanges mapAtoms;
-
-		bool newRepresentation = false;
-		for ( const auto & [ entity, ranges ] : representation.presetAtoms )
-		{
-			if ( not _representations.contains( entity ) )
-			{
-				_representations[ entity ] = static_cast<RepresentationIndex>( _representations.size() );
-				newRepresentation		   = true;
-			}
-			mapAtoms.emplace( _representations[ entity ], ranges );
-		}
-
-		if ( newRepresentation )
-		{
-			_setRepresentation();
-		}
-
-		RENDERER().setSystemRepresentation( uid.system, mapAtoms );
+		_systemRemoved.emplace_back( _systems[ p_e ] );
+		_systems.erase( p_e );
 	}
 
-	void SystemUpdater::_onUpdateColor( ECS::Registry & p_r, ECS::Entity p_e )
+	void SystemUpdater::_onUpdateVisibility( Registry & p_r, Entity p_e )
 	{
-		const auto & [ color, uid, data ] = p_r.get<System::Color, System::UID, Core::Struct::Topology>( p_e );
+		assert( _systems.contains( p_e ) );
 
-		std::vector<Renderer::ColorIndex> atoms( data.getAtomCount() );
-		size_t							  count = 0;
-
-		for ( const auto & [ scheme, ranges ] : color.colorSchemeAtoms )
-		{
-			if ( scheme == System::E_COLOR_SCHEME::ATOM )
-			{
-				for ( Index atom : ranges )
-				{
-					atoms[ atom ] = Renderer::Color::getColorIndex( data.getAtomSymbol( atom ) );
-				}
-			}
-			else if ( scheme == System::E_COLOR_SCHEME::RESIDUE )
-			{
-				for ( Index atom : ranges )
-				{
-					const Index residue = data.atomResidueIndexes[ atom ];
-					atoms[ atom ]		= Renderer::Color::getColorIndex( data.getResidueSymbol( residue ) );
-				}
-			}
-			else if ( scheme == System::E_COLOR_SCHEME::CHAIN )
-			{
-				for ( Index atom : ranges )
-				{
-					const Index chain = data.getAtomChainIndex( atom );
-					atoms[ atom ]	  = Renderer::Color::getColorIndex( data.getChainName( chain ) );
-				}
-			}
-			else
-			{
-				assert( false && "Unsupported System::E_COLOR_SCHEME type in ColorScheme::Add action." );
-			}
-			count += ranges.count();
-		}
-		for ( const auto & [ colorIndex, ranges ] : color.customColorAtoms )
-		{
-			for ( Index atom : ranges )
-			{
-				atoms[ atom ] = colorIndex;
-			}
-			count += ranges.count();
-		}
-
-		assert( count == data.getAtomCount() );
-
-		RENDERER().setSystemColors( uid.system, atoms );
+		RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::VISIBILITY );
 	}
 
-	void SystemUpdater::_onUpdateRepresentationPreset( ECS::Registry & p_r, ECS::Entity p_e )
+	void SystemUpdater::_onUpdateSelection( Registry & p_r, Entity p_e )
 	{
-		// Check if entity used.
-		const auto it = std::find_if(
-			_representations.begin(), _representations.end(), [ p_e ]( const auto & pair ) { return pair.first == p_e; }
-		);
+		assert( _systems.contains( p_e ) );
 
-		if ( it != _representations.end() )
-		{
-			_setRepresentation();
-		}
+		RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::SELECTION );
 	}
 
-	void SystemUpdater::_setRepresentation()
+	void SystemUpdater::_onUpdateRepresentation( Registry & p_r, Entity p_e )
 	{
-		std::vector<const Renderer::Representation *> representations( _representations.size() );
+		assert( _systems.contains( p_e ) );
 
-		for ( auto & [ ent, index ] : _representations )
-		{
-			const auto * const rep = REG().try_get<Renderer::Representation>( ent );
-
-			assert( rep );
-
-			representations[ index ] = rep;
-		}
-
-		RENDERER().setRepresentations( representations );
+		RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::REPRESENTATION );
 	}
-	void SystemUpdater::_onTrajectoryDestruction( ECS::Registry &, ECS::Entity p_entity )
+
+	void SystemUpdater::_onUpdateColor( Registry & p_r, Entity p_e )
 	{
-		if ( auto traj = REG().try_get<System::TrajectoryFullBuffer>( p_entity ) )
-		{ // If the trajectory worker is still doing stuff, stop it and join the thread before destroying the component.
-			Threading::BaseThread * thr = nullptr;
-			THREAD().get( traj->threadId, thr );
-			if ( thr )
-			{
-				thr->stop();
-				thr->wait();
-			}
-		}
+		assert( _systems.contains( p_e ) );
+
+		RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::COLOR );
+	}
+
+	void SystemUpdater::_onConstructRepresentationPreset( Registry &, Entity p_e )
+	{
+		assert( not _representations.contains( p_e ) );
+
+		_representationAdded.emplace_back( p_e );
+	}
+
+	void SystemUpdater::_onUpdateRepresentationPreset( Registry & p_r, Entity p_e )
+	{
+		assert( _representations.contains( p_e ) );
+
+		RENDERER().setRepresentationDirty( _representations[ p_e ], Renderer::Cache::E_REPRESENTATION_DIRTY::ALL );
+	}
+
+	void SystemUpdater::_onDestroyRepresentationPreset( Registry &, Entity p_e )
+	{
+		assert( _representations.contains( p_e ) );
+
+		_representationRemoved.emplace_back( _representations[ p_e ] );
+		_representations.erase( p_e );
 	}
 
 } // namespace VTX::App::Pass

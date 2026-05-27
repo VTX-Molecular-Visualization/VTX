@@ -18,10 +18,12 @@ namespace VTX::Core::Struct
 	 * tasks
 	 */
 	using Frame = std::vector<Vec3f>;
+
 	class Trajectory final
 	{
 	  public:
 		Trajectory() {}
+
 		/**
 		 * @brief Move ctor explicit because FramesDataCircBuffProdCons members section has mutexes.
 		 */
@@ -31,6 +33,7 @@ namespace VTX::Core::Struct
 			_framesOptimized = std::move( movable._framesOptimized );
 			_framesPlain	 = std::move( movable._framesPlain );
 		}
+
 		/**
 		 * @brief Move assignement operator explicit because FramesDataCircBuffProdCons members section has mutexes.
 		 */
@@ -55,7 +58,9 @@ namespace VTX::Core::Struct
 				_framesOptimized.writeElement( frame );
 			}
 			else
+			{
 				_framesPlain.fillFrame( p_systemFrameIndex, p_atomPositions );
+			}
 		}
 
 		/**
@@ -67,16 +72,25 @@ namespace VTX::Core::Struct
 		const Frame & getCurrentFrame() const
 		{
 			if ( _isOptimized )
+			{
 				return _framesOptimized.getCurrentFrame();
+			}
 			else
+			{
 				return _framesPlain.getCurrentFrame();
+			}
 		}
+
 		Frame & getCurrentFrame()
 		{
 			if ( _isOptimized )
+			{
 				return _framesOptimized.getCurrentFrame();
+			}
 			else
+			{
 				return _framesPlain.getCurrentFrame();
+			}
 		}
 
 		/**
@@ -86,9 +100,12 @@ namespace VTX::Core::Struct
 		void setCurrentFrameIndex( size_t p_currentFrameIdx )
 		{
 			if ( _isOptimized )
+			{
 				return;
+			}
 			_framesPlain.setCurrentFrameIndex( p_currentFrameIdx );
 		}
+
 		/**
 		 * @brief Gets the current frame index for the vector trajectory holder.
 		 * Not available for optimized trajectories (circular buffer holder).
@@ -96,7 +113,9 @@ namespace VTX::Core::Struct
 		const size_t getCurrentFrameIndex( void ) const
 		{
 			if ( _isOptimized )
+			{
 				return (size_t)( -1 );
+			}
 			return _framesPlain.getCurrentFrameIndex();
 		}
 
@@ -106,25 +125,36 @@ namespace VTX::Core::Struct
 		 * FIXME no checks of optimization state done !
 		 */
 		const Frame & getFrameFromIndex( size_t p_index ) const { return _framesPlain.getFrameFromIndex( p_index ); }
-		Frame &		  getFrameFromIndex( size_t p_index ) { return _framesPlain.getFrameFromIndex( p_index ); }
+
+		Frame & getFrameFromIndex( size_t p_index ) { return _framesPlain.getFrameFromIndex( p_index ); }
 
 		const size_t getFrameCount() const
 		{
 			if ( _isOptimized )
+			{
 				return _framesOptimized.getTotalElements();
+			}
 			else
+			{
 				return _framesPlain.getTotalElements();
+			}
 		}
+
 		void setTotalElements( const size_t size )
 		{
 			if ( _isOptimized )
+			{
 				_framesOptimized.setTotalElements( size );
+			}
 			else
+			{
 				_framesPlain.setTotalElements( size );
+			}
 		}
 
 		const bool isOptimized( void ) const { return _isOptimized; }
-		void	   setOptimized( void ) { _isOptimized = true; }
+
+		void setOptimized( void ) { _isOptimized = true; }
 
 		/**
 		 * @brief Reads the current frame for the circular buffer trajectory holder.
@@ -132,6 +162,7 @@ namespace VTX::Core::Struct
 		 * FIXME no checks of optimization state done !
 		 */
 		Frame & readOptimizedElement( void ) { return _framesOptimized.readElement(); }
+
 		/**
 		 * @brief Resets read and write indexes of the circular buffer trajectory holder.
 		 * Not available for non-optimized trajectories (vector holder).
@@ -159,7 +190,7 @@ namespace VTX::Core::Struct
 		FramesDataVector		   _framesPlain;
 	};
 
-	ByteNumber dynamicMemoryUsage( const Trajectory & ) noexcept;
+	size_t dynamicMemoryUsage( const Trajectory & ) noexcept;
 
 } // namespace VTX::Core::Struct
 

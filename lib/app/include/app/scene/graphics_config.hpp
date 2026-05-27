@@ -14,7 +14,7 @@ namespace VTX::App::Scene
 		/**
 		 * @brief Linked preset.
 		 */
-		ECS::Entity preset;
+		Entity preset;
 	};
 } // namespace VTX::App::Scene
 

@@ -2,8 +2,7 @@
 #define __VTX_RENDERER_GEOMETRY_RIBBON__
 
 #include "base_geometry.hpp"
-#include "renderer/system_data.hpp"
-#include "renderer/types.hpp"
+#include "renderer/caches.hpp"
 #include <core/struct/topology.hpp>
 #include <util/math.hpp>
 
@@ -13,11 +12,17 @@ namespace VTX::Renderer::Geometry
 	class Ribbon : public BaseGeometry
 	{
 	  public:
+		inline static const Desc::Key		  VERTEX_LAYOUT_RESIDUES   = "Residues";
+		inline static const Desc::Key		  GEOMETRY_RIBBONS		   = "Ribbons";
+		inline static const Desc::Key		  INDEX_RIBBONS			   = "Index.Ribbons";
+		inline static const Desc::Key		  INDIRECT_RIBBONS		   = "Indirect.Ribbons";
+		inline static constexpr Desc::Binding BINDING_INDIRECT_RIBBONS = 22;
+
 		Ribbon()
 		{
-			vertexLayout   = "Residues";
-			indiceBuffer   = "Index.Ribbons";
-			indirectBuffer = "Indirect.Ribbons";
+			vertexLayout   = VERTEX_LAYOUT_RESIDUES;
+			indiceBuffer   = INDEX_RIBBONS;
+			indirectBuffer = INDIRECT_RIBBONS;
 		}
 
 		void clear()
@@ -25,6 +30,8 @@ namespace VTX::Renderer::Geometry
 			BaseGeometry::clear();
 			_construction.clear();
 		}
+
+		void removeConstruction( const Desc::Handle p_handle ) { _construction.erase( p_handle ); }
 
 		struct Construction
 		{
@@ -43,24 +50,62 @@ namespace VTX::Renderer::Geometry
 			std::vector<Indice>				 indices;
 		};
 
-		bool empty( const SystemUID p_uid ) const { return _construction.at( p_uid ).isEmpty; }
+		bool built( const Desc::Handle p_handle ) const { return _hasRange( p_handle ); }
+
+		bool empty( const Desc::Handle p_handle ) const
+		{
+			if ( not built( p_handle ) )
+			{
+				return true;
+			}
+
+			const auto it = _construction.find( p_handle );
+			if ( it == _construction.end() )
+			{
+				return true;
+			}
+
+			return it->second.isEmpty;
+		}
 
 		const Construction & construction( const Desc::Handle p_handle ) const
 		{
 			assert( _construction.contains( p_handle ) );
-			return _construction.at( p_handle );
+			const auto it = _construction.find( p_handle );
+			assert( it != _construction.end() );
+			return it->second;
 		}
 
-		void construct( const Desc::Handle p_handle, const SystemData & p_data )
+		void registerSystem( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
-			assert( p_data.residueUids.size() == p_data.data.residueSecondaryStructureTypes.size() );
-			assert( p_data.residueUids.size() == p_data.data.residueFirstAtomIndexes.size() );
-			assert( p_data.residueUids.size() == p_data.data.residueAtomCounts.size() );
-			assert( p_data.data.chainFirstResidues.size() == p_data.data.chainResidueCounts.size() );
+			assert(
+				p_data.data.residueUids->getCount() == p_data.data.topology->residueSecondaryStructureTypes.size()
+			);
+			assert( p_data.data.residueUids->getCount() == p_data.data.topology->residueFirstAtomIndexes.size() );
+			assert( p_data.data.residueUids->getCount() == p_data.data.topology->residueAtomCounts.size() );
+			assert(
+				p_data.data.topology->chainFirstResidues.size() == p_data.data.topology->chainResidueCounts.size()
+			);
+
+			if ( const auto it = _construction.find( p_handle ); it != _construction.end() )
+			{
+				const Construction & cache = it->second;
+				_addRange(
+					p_handle, static_cast<Index>( cache.indices.size() ), static_cast<Index>( cache.residues.size() )
+				);
+
+				if ( not cache.isEmpty )
+				{
+					auto & indiceBuffer = _indices( p_handle );
+					indiceBuffer		= cache.indices;
+				}
+
+				return;
+			}
 
 			Construction & cache = _construction[ p_handle ];
 
-			if ( p_data.data.residueSecondaryStructureTypes.empty() )
+			if ( p_data.data.topology->residueSecondaryStructureTypes.empty() )
 			{
 				cache.isEmpty = true;
 				_addRange( p_handle, 0, 0 );
@@ -72,25 +117,25 @@ namespace VTX::Renderer::Geometry
 			std::unordered_map<Index, Index> & residueToIndices	  = cache.residueToIndices;
 			std::unordered_map<Index, Index> & residueToPositions = cache.residueToPositions;
 
-			for ( Index chainIdx : p_data.data.getChainRange() )
+			for ( Index chainIdx : p_data.data.topology->getChainRange() )
 			{
-				if ( p_data.data.getChainResidueCount( chainIdx ) < 4 )
+				if ( p_data.data.topology->getChainResidueCount( chainIdx ) < 4 )
 				{
 					continue;
 				}
 
 				std::vector<Construction::Data> usedResidues;
-				usedResidues.reserve( p_data.data.getChainResidueCount( chainIdx ) );
+				usedResidues.reserve( p_data.data.topology->getChainResidueCount( chainIdx ) );
 
-				for ( Index residueIdx : p_data.data.getChainResidueRange( chainIdx ) )
+				for ( Index residueIdx : p_data.data.topology->getChainResidueRange( chainIdx ) )
 				{
-					const auto optCA = p_data.data.findFirstAtomByName( residueIdx, "CA" );
+					const auto optCA = p_data.data.topology->findFirstAtomByName( residueIdx, "CA" );
 					if ( not optCA )
 					{
 						continue;
 					}
 
-					const auto optO = p_data.data.findFirstAtomByName( residueIdx, "O" );
+					const auto optO = p_data.data.topology->findFirstAtomByName( residueIdx, "O" );
 					if ( not optO )
 					{
 						continue;
@@ -148,7 +193,18 @@ namespace VTX::Renderer::Geometry
 
 		void setVisibility( const Desc::Handle p_handle, const Util::Math::BitSet & p_visibility )
 		{
-			const Construction & cache = _construction.at( p_handle );
+			if ( not _hasRange( p_handle ) )
+			{
+				return;
+			}
+
+			const auto it = _construction.find( p_handle );
+			if ( it == _construction.end() )
+			{
+				return;
+			}
+
+			const Construction & cache = it->second;
 
 			if ( cache.isEmpty )
 			{

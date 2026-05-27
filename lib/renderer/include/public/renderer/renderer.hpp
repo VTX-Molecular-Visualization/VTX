@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_RENDERER__
 #define __VTX_RENDERER_RENDERER__
 
+#include "renderer/builder/render_graph_build.hpp"
 #include "renderer/caches.hpp"
 #include "renderer/camera.hpp"
 #include "renderer/color.hpp"
@@ -11,10 +12,10 @@
 #include "renderer/render_graph.hpp"
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
-#include "renderer/system_data.hpp"
 #include <unordered_set>
 #include <util/callback.hpp>
 #include <util/math/bitset.hpp>
+#include <vector>
 
 namespace VTX::Renderer
 {
@@ -34,17 +35,11 @@ namespace VTX::Renderer
 		/**
 		 * @brief Accessors.
 		 */
-		inline size_t		 width() const { return _width; }
-		inline size_t		 height() const { return _height; }
-		inline RenderGraph & graph() { return _graph; }
+		inline size_t width() const { return _width; }
 
-		// TODO: redo or remove.
-		template<typename T>
-		inline void setValue( const T & p_value, const Desc::Key & p_key, const size_t p_index = 0 )
-		{
-			//_context.setValue<T>( p_value, p_key, p_index );
-			setNeedUpdate( true );
-		}
+		inline size_t height() const { return _height; }
+
+		inline RenderGraph & graph() { return _graph; }
 
 		/**
 		 * @brief Set graphic context.
@@ -74,23 +69,46 @@ namespace VTX::Renderer
 		void setCamera( const Camera &, const Vec3f &, const Mat4f &, const Mat4f & );
 		void setGraphicsConfig( const GraphicsConfig & );
 		void setColorLayout( const Color::Layout & );
-		void setRepresentations( const std::vector<const Representation *> & );
 		void setVoxels( std::span<const Vec3f>, std::span<const Vec3f> );
 
 		/**
-		 * @brief Push systems.
+		 * @brief Add/remove systems.
 		 */
-		void setSystems( const std::vector<SystemData> & );
+		Desc::Handle addSystem( Cache::System && );
+		void		 patchSystem( const Desc::Handle, Cache::System::Data && );
+		void		 removeSystem( const Desc::Handle );
+
+		/**
+		 * @brief Add/remove representation presets.
+		 */
+		Desc::Handle addRepresentation( const Representation & );
+		void		 patchRepresentation( const Desc::Handle, Cache::Representation::Data && );
+		void		 removeRepresentation( const Desc::Handle );
+
+		void setRepresentationDirty( const Desc::Handle, const Cache::E_REPRESENTATION_DIRTY );
+
+		/**
+		 * @brief Ensure a physical chunk exists for a chunked render graph buffer.
+		 * @return true
+		 * if a command buffer rebuild was required.
+		 */
+		bool ensureBufferChunk( const Desc::BufferRef & );
+		bool releaseBufferChunk( const Desc::BufferRef & );
 
 		/**
 		 * @brief Push system data.
 		 */
-		void setSystemTransform( const SystemUID, const Mat4f & );
-		void setSystemPosition( const SystemUID, std::span<const Vec3f> );
-		void setSystemColors( const SystemUID, std::span<const ColorIndex> );
-		void setSystemRepresentation( const SystemUID, const MapRepresentationRanges & );
-		void setSystemVisibility( const SystemUID, const Util::Math::BitSet & );
-		void setSystemSelection( const SystemUID, const Util::Math::BitSet & );
+		void setSystemTransform( const Desc::Handle, const Mat4f & );
+
+		/**
+		 * @brief Push frame.
+		 */
+		void setSystemPositions( const Desc::Handle, std::span<const Vec3f> );
+
+		/**
+		 * @brief Update system data.
+		 */
+		void setSystemDirty( const Desc::Handle, const Cache::E_SYSTEM_DIRTY );
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
@@ -106,7 +124,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Ask for a render update.
 		 */
-		inline void setNeedUpdate( const bool p_value ) { _needUpdate = p_value; }
+		void setNeedUpdate( const bool p_value ) { _dirtyRenderer |= Cache::E_RENDERER_DIRTY::NEED_UPDATE; }
 
 		/**
 		 * @brief Force update each frame.
@@ -127,13 +145,20 @@ namespace VTX::Renderer
 		 * @brief Callback when ready.
 		 * TODO: use event hub?
 		 */
-		Util::Callback<> onReady;
+		Util::Callback<const StructInfos &> onReady;
 
 	  private:
 		/**
 		 * @brief Render _graph to handle the rendering pipeline.
 		 */
 		RenderGraph _graph;
+
+		/**
+		 * @brief Current pipeline configuration.
+		 */
+		std::optional<Builder::PipelineConfig> _config;
+		Cache::GraphicsConfig				   _graphicsConfig;
+		Cache::ColorLayout					   _colorLayout;
 
 		/**
 		 * @brief Render queue built from the _graph.
@@ -167,14 +192,25 @@ namespace VTX::Renderer
 		bool _forceUpdate = true;
 
 		/**
-		 * @brief Update next frame.
+		 * @brief Dirty entries.
 		 */
-		bool _needUpdate = false;
+		template<typename T>
+			requires std::is_enum_v<T>
+		struct DirtyEntry
+		{
+			Desc::Handle handle;
+			T			 flags;
+		};
+
+		using DirtySystem		  = DirtyEntry<Cache::E_SYSTEM_DIRTY>;
+		using DirtyRepresentation = DirtyEntry<Cache::E_REPRESENTATION_DIRTY>;
 
 		/**
-		 * @brief Rebuild draw ranges next frame.
+		 * @brief Pending renderer refreshes flushed at frame start.
 		 */
-		std::unordered_set<Desc::Handle> _systemToRefresh;
+		Cache::E_RENDERER_DIRTY			 _dirtyRenderer = Cache::E_RENDERER_DIRTY::NONE;
+		std::vector<DirtySystem>		 _dirtySystems;
+		std::vector<DirtyRepresentation> _dirtyRepresentations;
 
 		/**
 		 * @brief Renderer infos.
@@ -184,34 +220,16 @@ namespace VTX::Renderer
 		/**
 		 * @brief Cached data to update.
 		 */
-		Cache::Camera												   _cacheCamera;
-		ResourceHandler<Cache::System, DescDummy, SystemUID>		   _systems;
-		std::unordered_map<RepresentationIndex, Cache::Representation> _cacheRepresentations;
+		Cache::Camera						_camera;
+		ResourcePool<Cache::System>			_systems;
+		ResourcePool<Cache::Representation> _representations;
 
 		/**
-		 * @brief Refresh the render graph according to the graphics config.
-		 * @return true if the graph has changed.
+		 * @brief Flush pending renderer refreshes.
 		 */
-		bool _refreshGraph( const GraphicsConfig & );
+		void _flushDirty();
 
-		/**
-		 * @brief Refresh transform when camera or system changed.
-		 */
-		void _refreshDataModels();
-
-		/**
-		 * @brief Refresh visibility from visibility and representation ranges.
-		 */
-		void _refreshSystemVisibility( const Desc::Handle );
-
-		/**
-		 * @brief Flags to push boolean values into one byte.
-		 */
-		enum struct E_ELEMENT_FLAGS : uint8_t
-		{
-			VISIBILITY = 0,
-			SELECTION  = 1
-		};
+		static void _executeSESExternalPass( uintptr_t );
 
 		/**
 		 * @brief The main render loop that call each generated instruction.

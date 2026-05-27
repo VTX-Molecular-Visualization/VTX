@@ -21,10 +21,7 @@ class VTXToolTopologyEditorRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_python_binding/1.0")
-        self.requires("catch2/3.13.0")
-        if self.settings.os == "Linux":
-            self.requires("libffi/3.4.8", override=True)
-            self.requires("wayland/1.24.0", override=True)
+        self.requires("catch2/3.14.0")
 
     def config_options(self):
         if self.settings.os == "Windows":

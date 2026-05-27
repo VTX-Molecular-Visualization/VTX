@@ -48,11 +48,16 @@ if (VTX_PYTHON_BINDING)
 endif()
 
 # Vendor libs.
+if(NOT VTX_VELOPACK_LIB)
+	message(FATAL_ERROR "VTX_VELOPACK_LIB is not set")
+endif()
+set(VELOPACK_LIB "${CMAKE_CURRENT_LIST_DIR}/../vendor/velopack/lib-static/${VTX_VELOPACK_LIB}")
+if (NOT EXISTS "${VELOPACK_LIB}")
+	message(FATAL_ERROR "Velopack library not found: ${VELOPACK_LIB}")
+endif()
+
 if(WIN32)
-	set(VELOPACK_LIB "${CMAKE_CURRENT_LIST_DIR}/../vendor/velopack/lib-static/velopack_libc_win_x64_msvc.lib")
 	target_link_libraries(vtx_app PRIVATE ntdll)
-else()
-	set(VELOPACK_LIB "${CMAKE_CURRENT_LIST_DIR}/../vendor/velopack/lib-static/libvelopack_libc_linux_x64_gnu.a")
 endif()
 target_link_libraries(vtx_app PRIVATE ${VELOPACK_LIB})
 

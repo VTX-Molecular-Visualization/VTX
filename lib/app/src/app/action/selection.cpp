@@ -13,7 +13,7 @@ namespace VTX::App::Action::Selection
 	void SelectAll::execute()
 	{
 		REG().view<System::Selection>().each(
-			[]( const ECS::Entity p_ent, System::Selection & p_selection )
+			[]( const Entity p_ent, System::Selection & p_selection )
 			{
 				if ( p_selection.atoms.all() )
 				{
@@ -28,7 +28,7 @@ namespace VTX::App::Action::Selection
 	void Clear::execute()
 	{
 		REG().view<System::Selection>().each(
-			[]( const ECS::Entity p_ent, System::Selection & p_selection )
+			[]( const Entity p_ent, System::Selection & p_selection )
 			{
 				if ( p_selection.atoms.none() )
 				{
@@ -40,7 +40,7 @@ namespace VTX::App::Action::Selection
 		);
 	}
 
-	void Clear::execute( const ECS::Entity p_ent, const E_MODE p_mode )
+	void Clear::execute( const Entity p_ent, const E_MODE p_mode )
 	{
 		if ( p_mode == E_MODE::THIS )
 		{
@@ -55,7 +55,7 @@ namespace VTX::App::Action::Selection
 		else
 		{
 			REG().view<System::Selection>().each(
-				[ p_ent ]( const ECS::Entity ent, System::Selection & p_selection )
+				[ p_ent ]( const Entity ent, System::Selection & p_selection )
 				{
 					if ( p_ent != ent )
 					{
@@ -76,8 +76,8 @@ namespace VTX::App::Action::Selection
 		// Get renderer picking info at mouse position.
 		Vec2i picked = RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y );
 
-		const PickingUID first	= picked.x;
-		const PickingUID second = picked.y;
+		const UID32 first	= picked.x;
+		const UID32 second = picked.y;
 
 		// None.
 		if ( first == INVALID_UID )
@@ -102,7 +102,7 @@ namespace VTX::App::Action::Selection
 
 		if ( firstEntOpt )
 		{
-			ECS::Entity	 firstEnt  = *firstEntOpt;
+			Entity	 firstEnt  = *firstEntOpt;
 			const auto & topology  = REG().get<Core::Struct::Topology>( firstEnt );
 			const auto & uid	   = REG().get<System::UID>( firstEnt );
 			const auto & selection = REG().get<System::Selection>( firstEnt );
@@ -187,7 +187,7 @@ namespace VTX::App::Action::Selection
 				granularity = E_GRANULARITY::RESIDUE;
 			}
 
-			ECS::Entity firstEnt = *firstEntOpt;
+			Entity firstEnt = *firstEntOpt;
 
 			const auto & system		  = REG().get<Core::Struct::Topology>( firstEnt );
 			const auto & uid		  = REG().get<System::UID>( firstEnt );

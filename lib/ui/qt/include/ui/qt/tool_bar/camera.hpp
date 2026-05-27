@@ -1,6 +1,9 @@
 #ifndef __VTX_UI_QT_TOOL_BAR_CAMERA__
 #define __VTX_UI_QT_TOOL_BAR_CAMERA__
 
+#include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
+#include "ui/qt/services.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include <QToolBar>
 
@@ -14,14 +17,14 @@ namespace VTX::UI::QT::ToolBar
 		{
 			setWindowTitle( "Camera" );
 
-			addAction( Action::Camera::PERSPECTIVE );
-			addAction( Action::Camera::ORTHOGRAPHIC );
+			UI_ACTIONS().addTo( *this, Action::Camera::PERSPECTIVE );
+			UI_ACTIONS().addTo( *this, Action::Camera::ORTHOGRAPHIC );
 			addSeparator();
-			addAction( Action::Camera::TRACKBALL );
-			addAction( Action::Camera::FREEFLY );
+			UI_ACTIONS().addTo( *this, Action::Camera::TRACKBALL );
+			UI_ACTIONS().addTo( *this, Action::Camera::FREEFLY );
 			addSeparator();
-			addAction( Action::Camera::ORIENT );
-			addAction( Action::Camera::RESET );
+			UI_ACTIONS().addTo( *this, Action::Camera::ORIENT );
+			UI_ACTIONS().addTo( *this, Action::Camera::RESET );
 		}
 
 	  private:

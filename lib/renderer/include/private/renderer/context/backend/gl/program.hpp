@@ -5,6 +5,7 @@
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/types.hpp>
+#include <utility>
 #include <variant>
 
 namespace VTX::Renderer::Context::Backend::GL
@@ -69,12 +70,37 @@ namespace VTX::Renderer::Context::Backend::GL
 			VTX_TRACE( "Program {} created: {}", _id, p_name );
 		}
 
-		~Program()
+		Program( const Program & )			 = delete;
+		Program & operator=( const Program & ) = delete;
+
+		Program( Program && p_other ) noexcept
+			: _id( std::exchange( p_other._id, GL_INVALID_INDEX ) ), _name( std::move( p_other._name ) ),
+			  _toInject( std::move( p_other._toInject ) )
+		{
+		}
+
+		Program & operator=( Program && p_other ) noexcept
+		{
+			if ( this != &p_other )
+			{
+				destroy();
+				_id		  = std::exchange( p_other._id, GL_INVALID_INDEX );
+				_name	  = std::move( p_other._name );
+				_toInject = std::move( p_other._toInject );
+			}
+
+			return *this;
+		}
+
+		~Program() { destroy(); }
+
+		void destroy()
 		{
 			if ( _id != GL_INVALID_INDEX )
 			{
 				deleteShaders();
 				glDeleteProgram( _id );
+				_id = GL_INVALID_INDEX;
 			}
 		}
 
@@ -145,9 +171,10 @@ namespace VTX::Renderer::Context::Backend::GL
 		static ENUM_SHADER_TYPE getShaderType( const FilePath & p_name )
 		{
 			std::string extension = p_name.extension().string();
-			if ( _EXTENSIONS.find( extension ) != _EXTENSIONS.end() )
+			const auto	it = _EXTENSIONS.find( extension );
+			if ( it != _EXTENSIONS.end() )
 			{
-				return _EXTENSIONS.at( extension );
+				return it->second;
 			}
 
 			return ENUM_SHADER_TYPE::INVALID;

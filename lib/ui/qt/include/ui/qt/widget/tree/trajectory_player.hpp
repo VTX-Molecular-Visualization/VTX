@@ -24,20 +24,20 @@ namespace VTX::UI::QT::Widget::Tree
 		Q_OBJECT
 
 	  public:
-		explicit TrajectoryPlayer( App::ECS::Entity p_system, QWidget * p_parent = nullptr );
+		explicit TrajectoryPlayer( Entity p_system, QWidget * p_parent = nullptr );
 
 	  private:
 		static std::array<QIcon, 4> _getIcons();
 
-		App::ECS::Entity _system;
+		Entity _system;
 
-		QPointer<QPushButton>		_btnPlayPause;
-		QPointer<QPushButton>		_btnStop;
-		QPointer<QPushButton>		_btnSettings;
-		QPointer<TrajectorySlider>	_slider;
-		QPointer<QLabel>			_frameLabel;
+		QPointer<QPushButton>		 _btnPlayPause;
+		QPointer<QPushButton>		 _btnStop;
+		QPointer<QPushButton>		 _btnSettings;
+		QPointer<TrajectorySlider>	 _slider;
+		QPointer<QLabel>			 _frameLabel;
 		QPointer<TrajectorySettings> _settings;
-		std::array<QIcon, 4>		_icons { _getIcons() };
+		std::array<QIcon, 4>		 _icons { _getIcons() };
 
 		bool _isRefreshing = false; // Prevent feedback loops between _refresh() and valueChanged
 
@@ -45,7 +45,7 @@ namespace VTX::UI::QT::Widget::Tree
 		void _onStopClicked();
 		void _onSettingsClicked();
 		void _onSliderValueChanged( int p_value );
-		void _onTrajectoryUpdated( App::ECS::Registry &, App::ECS::Entity p_entity );
+		void _onTrajectoryUpdated( Registry &, Entity p_entity );
 
 		void _refresh();
 		void _updatePlayPauseIcon();

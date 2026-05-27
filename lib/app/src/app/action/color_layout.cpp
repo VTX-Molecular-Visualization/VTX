@@ -4,7 +4,7 @@
 namespace VTX::App::Action::ColorLayout
 {
 
-	void Change::execute( const ECS::Entity p_e, const Index p_index, const Util::Color::Rgba & p_color )
+	void Change::execute( const Entity p_e, const Index p_index, const Util::Color::Rgba & p_color )
 	{
 		REG().patch<Renderer::Color::Layout>(
 			p_e,
@@ -16,14 +16,14 @@ namespace VTX::App::Action::ColorLayout
 		);
 	}
 
-	void ChangeAll::execute( const ECS::Entity p_e, const Renderer::Color::LayoutArray & p_colors )
+	void ChangeAll::execute( const Entity p_e, const Renderer::Color::LayoutArray & p_colors )
 	{
 		REG().patch<Renderer::Color::Layout>(
 			p_e, [ p_colors ]( Renderer::Color::Layout & p_layout ) { p_layout.colors = p_colors; }
 		);
 	}
 
-	void Randomize::execute( const ECS::Entity p_e )
+	void Randomize::execute( const Entity p_e )
 	{
 		REG().patch<Renderer::Color::Layout>(
 			p_e,

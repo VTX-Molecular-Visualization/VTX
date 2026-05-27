@@ -13,7 +13,7 @@
 
 namespace VTX::UI::QT::Model
 {
-	SystemModel::SystemModel( const App::ECS::Entity p_system, QObject * p_parent ) :
+	SystemModel::SystemModel( const Entity p_system, QObject * p_parent ) :
 		_system( p_system ), QAbstractItemModel( p_parent )
 	{
 	}

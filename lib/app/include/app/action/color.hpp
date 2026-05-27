@@ -4,7 +4,6 @@
 #include "app/ecs.hpp"
 #include "app/helper/system.hpp"
 #include "app/system/color.hpp"
-#include "app/system/uid.hpp"
 #include <core/struct/topology.hpp>
 #include <optional>
 
@@ -17,8 +16,8 @@ namespace VTX::App::Action::Color
 	struct Add
 	{
 		void execute(
-			const ECS::Entity						  p_ent,
-			const System::E_COLOR_SCHEME			  p_scheme,
+			const Entity							  p_ent,
+			const Renderer::E_COLOR_SCHEME			  p_scheme,
 			const Core::Struct::IndexRangeList &	  p_ranges	   = {},
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
@@ -28,15 +27,15 @@ namespace VTX::App::Action::Color
 			Core::Struct::IndexRangeList atoms	= Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 
 			assert(
-				( p_scheme == System::E_COLOR_SCHEME::CUSTOM && p_colorIndex.has_value() )
-				|| ( p_scheme != System::E_COLOR_SCHEME::CUSTOM && not p_colorIndex.has_value() )
+				( p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM && p_colorIndex.has_value() )
+				|| ( p_scheme != Renderer::E_COLOR_SCHEME::CUSTOM && not p_colorIndex.has_value() )
 			);
 
 			reg.patch<System::Color>(
 				p_ent,
 				[ &atoms, &system, p_scheme, p_colorIndex ]( System::Color & p_color )
 				{
-					if ( p_scheme == System::E_COLOR_SCHEME::CUSTOM )
+					if ( p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM )
 					{
 						assert( p_colorIndex.has_value() );
 						assert( *p_colorIndex >= Renderer::Color::LAYOUT_OFFSET_CUSTOM );
@@ -101,36 +100,42 @@ namespace VTX::App::Action::Color
 		}
 
 		void execute(
-			const ECS::Entity						  p_ent,
-			const System::E_COLOR_SCHEME			  p_scheme,
+			const Entity							  p_ent,
+			const Renderer::E_COLOR_SCHEME			  p_scheme,
 			const Core::Struct::IndexRange &		  p_range,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
-		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex ); }
+		{
+			execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex );
+		}
 
 		void execute(
-			const ECS::Entity						  p_ent,
-			const System::E_COLOR_SCHEME			  p_scheme,
+			const Entity							  p_ent,
+			const Renderer::E_COLOR_SCHEME			  p_scheme,
 			const std::vector<Index> &				  p_values,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
-		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex ); }
+		{
+			execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex );
+		}
 
 		void execute(
-			const ECS::Entity						  p_ent,
-			const System::E_COLOR_SCHEME			  p_scheme,
+			const Entity							  p_ent,
+			const Renderer::E_COLOR_SCHEME			  p_scheme,
 			const Index								  p_value,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
-		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_value ), p_colorIndex ); }
+		{
+			execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_value ), p_colorIndex );
+		}
 	};
 
 	struct AddItem
 	{
 		void execute(
-			const ECS::Entity						  p_ent,
+			const Entity							  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM		  p_item,
-			const System::E_COLOR_SCHEME			  p_scheme,
+			const Renderer::E_COLOR_SCHEME			  p_scheme,
 			const Core::Struct::IndexRangeList &	  p_ranges	   = {},
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
@@ -154,43 +159,49 @@ namespace VTX::App::Action::Color
 		}
 
 		void execute(
-			const ECS::Entity						  p_ent,
+			const Entity							  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM		  p_item,
-			const System::E_COLOR_SCHEME			  p_scheme,
+			const Renderer::E_COLOR_SCHEME			  p_scheme,
 			const Core::Struct::IndexRange &		  p_range,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
-		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex ); }
+		{
+			execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex );
+		}
 
 		void execute(
-			const ECS::Entity						  p_ent,
+			const Entity							  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM		  p_item,
-			const System::E_COLOR_SCHEME			  p_scheme,
+			const Renderer::E_COLOR_SCHEME			  p_scheme,
 			const std::vector<Index> &				  p_values,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
-		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex ); }
+		{
+			execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex );
+		}
 
 		void execute(
-			const ECS::Entity						  p_ent,
+			const Entity							  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM		  p_item,
-			const System::E_COLOR_SCHEME			  p_scheme,
+			const Renderer::E_COLOR_SCHEME			  p_scheme,
 			const Index								  p_value,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
-		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_value ), p_colorIndex ); }
+		{
+			execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_value ), p_colorIndex );
+		}
 	};
 
 	struct AddSelected
 	{
 		void execute(
-			const System::E_COLOR_SCHEME			  p_scheme,
+			const Renderer::E_COLOR_SCHEME			  p_scheme,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
 		{
 			REG().view<System::Selection, System::Color>().each(
 				[ p_scheme, p_colorIndex ](
-					const ECS::Entity p_ent, const System::Selection & p_selection, const System::Color & p_color
+					const Entity p_ent, const System::Selection & p_selection, const System::Color & p_color
 				)
 				{
 					const Core::Struct::IndexRangeList ranges = p_selection.atoms.toRangeList<Index>();

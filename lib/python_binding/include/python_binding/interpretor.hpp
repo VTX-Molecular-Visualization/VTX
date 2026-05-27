@@ -4,7 +4,7 @@
 #include "python_binding/binder.hpp"
 #include <memory>
 #include <string>
-#include <util/types.hpp>
+#include <util/filesystem.hpp>
 
 namespace VTX::PythonBinding
 {
@@ -59,10 +59,12 @@ namespace VTX::PythonBinding
 
 	  private:
 		struct Impl;
+
 		struct Del
 		{
 			void operator()( Impl * ) const noexcept;
 		};
+
 		std::unique_ptr<Impl, Del> _impl;
 	};
 

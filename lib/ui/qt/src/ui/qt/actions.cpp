@@ -129,6 +129,23 @@ namespace VTX::UI::QT::Action
 		);
 
 		p_registry.registerAction(
+			View::fullscreenAction(),
+			handler(
+				[]()
+				{
+					if ( MAIN_WINDOW().isFullScreen() )
+					{
+						MAIN_WINDOW().showNormal();
+					}
+					else
+					{
+						MAIN_WINDOW().showFullScreen();
+					}
+				}
+			)
+		);
+
+		p_registry.registerAction(
 			Selection::lockAction(),
 			[]( const ActionRegistry::ActionContext & p_context )
 			{
@@ -215,7 +232,7 @@ namespace VTX::UI::QT::Action
 				if ( schemeParam )
 				{
 					App::ACTION().execute<App::Action::Color::AddSelected>(
-						static_cast<App::System::E_COLOR_SCHEME>( *schemeParam ), colorIndexParam
+						static_cast<Renderer::E_COLOR_SCHEME>( *schemeParam ), colorIndexParam
 					);
 				}
 			}
@@ -228,7 +245,7 @@ namespace VTX::UI::QT::Action
 				if ( representationParam )
 				{
 					App::ACTION().execute<App::Action::Representation::AddSelected>(
-						static_cast<App::ECS::Entity>( *representationParam )
+						static_cast<Entity>( *representationParam )
 					);
 				}
 			}

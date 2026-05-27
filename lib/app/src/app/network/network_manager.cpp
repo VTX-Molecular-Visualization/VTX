@@ -120,7 +120,6 @@ namespace VTX::App::Network
 			{
 				result.callback( std::move( result.data ) );
 			}
-			HUB().trigger<Events::FileDownloaded>( result.id, result.success );
 		}
 	}
 

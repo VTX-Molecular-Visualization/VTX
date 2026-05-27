@@ -135,12 +135,12 @@ namespace VTX::App
 	void VTXApp::createInitialEntities()
 	{
 		// Scene.
-		const ECS::Entity sceneEnt = _registry.create();
+		const Entity sceneEnt = _registry.create();
 		_registry.emplace<Scene::TagRoot>( sceneEnt );
 		_registry.emplace<Util::Math::AABB>( sceneEnt );
 
 		// Camera.
-		const ECS::Entity cameraEnt = _registry.create();
+		const Entity cameraEnt = _registry.create();
 		_registry.emplace<Util::Math::Transform>( cameraEnt );
 		_registry.emplace<Renderer::Camera>( cameraEnt );
 		_registry.emplace<Setting::Controller>( cameraEnt );
@@ -148,16 +148,16 @@ namespace VTX::App
 		// Resize renderer.
 		ACTION().execute<App::Action::Application::Resize>( WIDTH_DEFAULT, HEIGHT_DEFAULT );
 
-		// Default presets.
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::GraphicsConfig>>();
-
 		// Run passes.
 		PASS().addPass<Pass::SceneUpdater>( sceneEnt );
 		PASS().addPass<Pass::CameraUpdater>( cameraEnt );
 		PASS().addPass<Pass::SystemUpdater>();
 		PASS().addPass<Pass::TrajectoryUpdater>();
+
+		// Default presets.
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::GraphicsConfig>>();
 	}
 
 	void VTXApp::finishStartup()
@@ -169,12 +169,12 @@ namespace VTX::App
 			VTX_INFO( "Python interpretor initialized" );
 		}
 
-		const ECS::Entity defaultGraphicsConfig
+		const Entity defaultGraphicsConfig
 			= Helper::Preset::getByName<Renderer::GraphicsConfig>( "Default" )
 				  .value_or( ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>() );
 		ACTION().execute<Action::Scene::SetGraphicsConfig>( defaultGraphicsConfig );
 
-		const ECS::Entity defaultColorLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" ).value_or(
+		const Entity defaultColorLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" ).value_or(
 			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
 		);
 		ACTION().execute<Action::Scene::SetColorLayout>( defaultColorLayout );
@@ -193,7 +193,9 @@ namespace VTX::App
 		for ( auto & it_file : args.positionalFiles )
 		{
 			if ( it_file.empty() )
+			{
 				continue; // The user probably didn't do it on purpose so no need to complain here
+			}
 
 			if ( not std::filesystem::exists( it_file ) )
 			{

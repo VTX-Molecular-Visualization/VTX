@@ -37,7 +37,7 @@ namespace VTX::UI::QT::Widget::Tree
 						return;
 					}
 
-					App::ECS::Entity entity = item->data( 0, Qt::UserRole ).value<App::ECS::Entity>();
+					Entity entity = item->data( 0, Qt::UserRole ).value<Entity>();
 					App::ACTION().execute<App::Action::Preset::Apply<P>>( entity );
 				}
 			);
@@ -54,7 +54,7 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Map entities to tree items.
 		 */
-		std::unordered_map<App::ECS::Entity, QTreeWidgetItem *> _entityToItemMap;
+		std::unordered_map<Entity, QTreeWidgetItem *> _entityToItemMap;
 
 		/**
 		 * @brief Connections to App.
@@ -65,7 +65,7 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Add a preset to the tree.
 		 */
-		void _addPreset( App::ECS::Registry & p_r, App::ECS::Entity p_e )
+		void _addPreset( Registry & p_r, Entity p_e )
 		{
 			assert( not _entityToItemMap.contains( p_e ) );
 
@@ -82,7 +82,7 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Remove a preset from the tree.
 		 */
-		void _removePreset( App::ECS::Registry & p_r, App::ECS::Entity p_e )
+		void _removePreset( Registry & p_r, Entity p_e )
 		{
 			assert( _entityToItemMap.contains( p_e ) );
 

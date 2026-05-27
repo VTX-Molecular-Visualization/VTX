@@ -22,7 +22,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Construct the application with given arguments.
 		 */
-		Application(  App::Arguments && );
+		Application( int &, char **, App::Arguments && );
 
 		/**
 		 * @brief Destructor.

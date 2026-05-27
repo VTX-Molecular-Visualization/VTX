@@ -49,7 +49,7 @@ namespace VTX::App::PythonBinding
 		p_vtxmodule.bindAction<
 			Action::QueueAction<App::Action::IO::AssociateTrajectory>,
 			const std::string &,
-			const ECS::Entity &>(
+			const Entity &>(
 			"associateTrajectory",
 			"Associate input file trajectory to a system.",
 			VTX::PythonBinding::Wrapper::Arg( "path" ),

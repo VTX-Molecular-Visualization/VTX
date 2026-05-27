@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_QT_DELEGATE_SYSTEM_DELEGATE__
 #define __VTX_UI_QT_DELEGATE_SYSTEM_DELEGATE__
 
-#include <QStyledItemDelegate>
 #include <QStyleOptionViewItem>
+#include <QStyledItemDelegate>
 #include <app/ecs.hpp>
 #include <util/types.hpp>
 
@@ -27,7 +27,7 @@ namespace VTX::UI::QT::Delegate
 		/**
 		 * @brief Constructor.
 		 */
-		SystemDelegate( const App::ECS::Entity, QObject * );
+		SystemDelegate( const Entity, QObject * );
 
 		/**
 		 * @brief Override: paint the system item with custom visuals.
@@ -78,7 +78,7 @@ namespace VTX::UI::QT::Delegate
 		/**
 		 * @brief Entity to display.
 		 */
-		App::ECS::Entity _system;
+		Entity _system;
 
 		static constexpr int ICON_SIZE = 15;
 		static constexpr int SPACING   = 4;

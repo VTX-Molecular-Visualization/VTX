@@ -17,7 +17,6 @@
 #include <core/chemdb/atom.hpp>
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
-#include <renderer/renderer.hpp>
 #include <renderer/representation.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
@@ -36,10 +35,11 @@ namespace VTX::App::System
 		 */
 		struct EntityDelivered
 		{
-			ECS::Entity entity;
+			Entity entity;
 		};
 
 	} // namespace
+
 	struct SystemExtractor::_Data
 	{
 		PendingSystem data;
@@ -59,6 +59,7 @@ namespace VTX::App::System
 			jobFinishedPtr->jobFinished();
 		}
 	};
+
 	void SystemExtractor::_clean() { _attributesPtr->synchronizer.count_down(); }
 
 	SystemExtractor::SystemExtractor( FilePath p_path, IO::READER_OPTION p_options ) :
@@ -67,10 +68,14 @@ namespace VTX::App::System
 		_attributesPtr->data.sourcePath	  = std::move( p_path );
 		_attributesPtr->data.readerOption = p_options;
 	}
+
 	SystemExtractor::SystemExtractor( FilePath p_path, std::string && p_buffer, IO::READER_OPTION p_options ) :
 		SystemExtractor( std::move( p_path ), p_options )
-	{ _attributesPtr->data.buffer = std::move( p_buffer ); }
-	SystemExtractor::SystemExtractor( ECS::Entity p_entity, FilePath p_path, IO::READER_OPTION p_options ) :
+	{
+		_attributesPtr->data.buffer = std::move( p_buffer );
+	}
+
+	SystemExtractor::SystemExtractor( Entity p_entity, FilePath p_path, IO::READER_OPTION p_options ) :
 		SystemExtractor( std::move( p_path ), p_options )
 	{
 		_attributesPtr->data.entity			= p_entity;
@@ -84,9 +89,11 @@ namespace VTX::App::System
 		auto & pendingData = _attributesPtr->data;
 
 		if ( p_thread )
+		{
 			p_thread.value().get().setProgressText(
 				fmt::format( "Reading {}...", pendingData.sourcePath.filename().string() )
 			);
+		}
 
 		if ( p_stopToken.stop_requested() )
 		{
@@ -95,11 +102,15 @@ namespace VTX::App::System
 		}
 
 		if ( pendingData.buffer )
+		{
 			pendingData.reader.emplace(
 				std::move( pendingData.buffer.value() ), pendingData.sourcePath, pendingData.readerOption, p_stopToken
 			);
+		}
 		else
+		{
 			pendingData.reader.emplace( pendingData.sourcePath, pendingData.readerOption, p_stopToken );
+		}
 		pendingData.reader->get(
 			ECS::getCtx<Core::ChemDB::Category::Dictionary>(), pendingData.topology, pendingData.metadata
 		);
@@ -136,7 +147,7 @@ namespace VTX::App::System
 		return 0;
 	}
 
-	void addTrajectory( const ECS::Entity & p_entity, PendingSystem & p_data ) noexcept
+	void addTrajectory( const Entity & p_entity, PendingSystem & p_data ) noexcept
 	{
 		std::visit(
 			[ &p_entity ]( auto && traj ) mutable
@@ -161,6 +172,7 @@ namespace VTX::App::System
 			}
 		);
 	}
+
 	void create( PendingSystem & p_data ) noexcept
 	{
 		auto & reg = REG();
@@ -181,7 +193,6 @@ namespace VTX::App::System
 
 		// UIDs: get from UID manager.
 		auto & uidManager = App::UID();
-		uid.system		  = uidManager.getRootPool().registerValue();
 		uid.residues	  = uidManager.getPickingPool().registerRange( data.getResidueCount() );
 		uid.atoms		  = uidManager.getPickingPool().registerRange( data.getAtomCount() );
 
@@ -197,13 +208,13 @@ namespace VTX::App::System
 		deleted.atoms = {};
 
 		// Color: set default color scheme.
-		color.colorSchemeAtoms[ System::E_COLOR_SCHEME::ATOM ] = Core::Struct::IndexRangeList( data.getAtomRange() );
+		color.colorSchemeAtoms[ Renderer::E_COLOR_SCHEME::ATOM ] = Core::Struct::IndexRangeList( data.getAtomRange() );
 
 		// Representation: set default representation.
 		// TODO: configure default representation in settings?
 		representation.presetAtoms
 			[ Helper::Preset::getByName<Renderer::Representation>( "Sticks and Ribbons" )
-				  .value_or( ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>() ) ]
+				  .value_or( ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>() ) ]
 			= Core::Struct::IndexRangeList( data.getAtomRange() );
 
 		// Trigger system load.
@@ -223,7 +234,11 @@ namespace VTX::App::System
 				addTrajectory( *p_data.entity, p_data );
 
 				if ( auto uid = REG().try_get<System::UID>( *p_data.entity ) )
-					RENDERER().setSystemPosition( uid->system, getCurrentAtomPositions( *p_data.entity ) );
+				{
+					// Trigger trajectory event.
+					HUB().trigger<Events::TrajectoryLoad>( { *p_data.entity,
+															 getCurrentAtomPositions( *p_data.entity ) } );
+				}
 			}
 			else
 			{
@@ -236,7 +251,9 @@ namespace VTX::App::System
 			}
 		}
 		else
+		{
 			create( p_data );
+		}
 	}
 
 } // namespace VTX::App::System

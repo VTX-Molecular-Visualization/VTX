@@ -2,6 +2,7 @@
 #include "app/helper/io.hpp"
 #include "app/services.hpp"
 #include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
 #include "ui/qt/application.hpp"
 #include "ui/qt/dialog/progress.hpp"
 #include "ui/qt/dialog/trajectory_association.hpp"
@@ -14,6 +15,7 @@
 #include "ui/qt/dock_widget/representations.hpp"
 #include "ui/qt/dock_widget/scene.hpp"
 #include "ui/qt/dock_widget/sequences.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/menu/camera.hpp"
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/menu/help.hpp"
@@ -42,10 +44,12 @@ namespace VTX::UI::QT::Widget
 	MainWindow::MainWindow() : BaseWidget( nullptr )
 	{
 		// Size.
-		QSize size = screen()->availableGeometry().size();
+		QRect geometry = screen()->availableGeometry();
+		QSize size	   = geometry.size();
 		size *= Style::DEFAULT_SIZE_SCALE;
 		resize( size );
-		center();
+
+		Helper::centerWidget( *this, geometry );
 
 		// Set all settings.
 		setDockNestingEnabled( false );
@@ -130,6 +134,7 @@ namespace VTX::UI::QT::Widget
 		App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>( this );
 		App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
 		App::HUB().connect<App::Events::UpdateAvailable, &MainWindow::_onUpdateAvailable>( this );
+		App::HUB().connect<App::Events::RendererResize, &MainWindow::_onRendererResize>( this );
 	}
 
 	MainWindow::~MainWindow()
@@ -148,6 +153,10 @@ namespace VTX::UI::QT::Widget
 			case QEvent::UpdateRequest:
 			case QEvent::WindowStateChange:
 				QTimer::singleShot( 0, this, []() { App::RENDERER().setNeedUpdate( true ); } );
+				if ( p_event->type() == QEvent::WindowStateChange )
+				{
+					UI_ACTIONS().setChecked( Action::View::FULLSCREEN, isFullScreen() );
+				}
 				break;
 			default: break;
 			}
@@ -162,13 +171,13 @@ namespace VTX::UI::QT::Widget
 		{
 			if ( menu->title().toStdString() == p_menu )
 			{
-				UI_ACTIONS().addMenuAction( *menu, p_actionId );
+				UI_ACTIONS().addTo( *menu, p_actionId );
 				return;
 			}
 		}
 
 		QMenu * const menu = menuBar()->addMenu( p_menu.data() );
-		UI_ACTIONS().addMenuAction( *menu, p_actionId );
+		UI_ACTIONS().addTo( *menu, p_actionId );
 	}
 
 	void MainWindow::addToolBarAction( const App::UI::WidgetId & p_toolbar, const std::string_view p_actionId )
@@ -177,14 +186,14 @@ namespace VTX::UI::QT::Widget
 		{
 			if ( toolbar->windowTitle().toStdString() == p_toolbar )
 			{
-				UI_ACTIONS().addToolBarAction( *toolbar, p_actionId );
+				UI_ACTIONS().addTo( *toolbar, p_actionId );
 				return;
 			}
 		}
 
 		QToolBar * const toolbar = new QToolBar( p_toolbar.data(), this );
 		addToolBar( toolbar );
-		UI_ACTIONS().addToolBarAction( *toolbar, p_actionId );
+		UI_ACTIONS().addTo( *toolbar, p_actionId );
 	}
 
 	void MainWindow::resetLayout()
@@ -236,6 +245,15 @@ namespace VTX::UI::QT::Widget
 				continue;
 			}
 			p_menu.addAction( toolbar->toggleViewAction() );
+		}
+
+		p_menu.addSeparator();
+		QAction * const applicationLabel = p_menu.addAction( "Application" );
+		applicationLabel->setEnabled( false );
+		QAction * const fullscreenAction = UI_ACTIONS().addTo( p_menu, Action::View::FULLSCREEN );
+		if ( fullscreenAction != nullptr )
+		{
+			fullscreenAction->setChecked( isFullScreen() );
 		}
 	}
 
@@ -292,7 +310,9 @@ namespace VTX::UI::QT::Widget
 	}
 
 	void MainWindow::_onBlockingOperationProgress( const App::Events::BlockingOperationProgress & p_e )
-	{ _progressDialog->setValue( p_e.progress ); }
+	{
+		_progressDialog->setValue( p_e.progress );
+	}
 
 	void MainWindow::_onBlockingOperationEnd( const App::Events::BlockingOperationEnd & )
 	{
@@ -310,6 +330,17 @@ namespace VTX::UI::QT::Widget
 		dialog->setAttribute( Qt::WA_DeleteOnClose, true );
 		dialog->setModal( true );
 		dialog->open();
+	}
+
+	void MainWindow::_onRendererResize( const App::Events::RendererResize & p_e )
+	{
+		if ( not p_e.resizeMainWindow || not isFullScreen() )
+		{
+			return;
+		}
+
+		showNormal();
+		UI_ACTIONS().setChecked( Action::View::FULLSCREEN, false );
 	}
 
 } // namespace VTX::UI::QT::Widget

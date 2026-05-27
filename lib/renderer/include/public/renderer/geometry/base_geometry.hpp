@@ -1,10 +1,10 @@
 #ifndef __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 #define __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
 
+#include "renderer/caches.hpp"
+#include "renderer/context/context_wrapper.hpp"
 #include "renderer/descriptors.hpp"
 #include "renderer/resource_handler.hpp"
-#include "renderer/system_data.hpp"
-#include "renderer/types.hpp"
 #include <map>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
@@ -17,28 +17,11 @@ namespace VTX::Renderer::Geometry
 {
 
 	/**
-	 * @brief If more than this number of consecutive items are not visible, split draw calls.
-	 * Otherwise, use bool mask to skip them in shader.
-	 */
-	constexpr size_t RANGE_CHUNK_SIZE = 10;
-
-	/**
 	 * @brief Base geometry struct to handle and build draw ranges.
 	 */
 	class BaseGeometry : public Desc::Geometry
 	{
 	  public:
-		/**
-		 * @brief Mask of ranges to not draw per system (local indexes).
-		 */
-		// MapUIDRangeList visibilityMask;
-		// MapUIDRangeList representationMask;
-
-		/**
-		 * @brief Compiled draw ranges count for GPU calls.
-		 */
-		uint32_t count = 0;
-
 		/**
 		 * @brief Resize whole layout.
 		 */
@@ -52,7 +35,7 @@ namespace VTX::Renderer::Geometry
 
 			if ( indiceBuffer )
 			{
-				p_context.setPipelineBuffer<Indice>( *indiceBuffer, size == 0 ? 1 : size );
+				p_context.setBuffer<Indice>( { *indiceBuffer }, size == 0 ? 1 : size );
 			}
 		}
 
@@ -61,9 +44,15 @@ namespace VTX::Renderer::Geometry
 		 */
 		void clear()
 		{
+			clearRanges();
+			chunks.clear();
+		}
+
+		void clearRanges()
+		{
 			_resources.clear();
-			_size  = 0;
-			count = 0;
+			_size		= 0;
+			_vertexSize = 0;
 		}
 
 		/**
@@ -73,57 +62,70 @@ namespace VTX::Renderer::Geometry
 		{
 			assert( indiceBuffer );
 
-			p_context.setPipelineBuffer<Indice>(
-				*indiceBuffer, _resources[ p_handle ].indices, _resources[ p_handle ].range.first
-			);
+			const auto it = _resources.find( p_handle );
+			assert( it != _resources.end() );
+
+			p_context.setBuffer<Indice>( { *indiceBuffer }, it->second.indices, it->second.range.first );
 		}
 
 		/**
 		 * @brief Build GPU draw commands from the current ranges and masks.
 		 */
-		[[nodiscard]] std::vector<Desc::DrawIndirectCommand> toDrawIndirectCommands()
+		[[nodiscard]] std::vector<Desc::DrawIndirectRecord> toDrawIndirectCommands()
 		{
-			std::vector<Desc::DrawIndirectCommand> commands;
+			std::vector<Desc::DrawIndirectRecord> records;
 
 			for ( const auto & [ uid, data ] : _resources )
 			{
-				commands.emplace_back(
-					Desc::DrawIndirectCommand { data.range.getCount(), 1, data.range.getFirst(), 0 }
+				records.emplace_back(
+					Desc::DrawIndirectRecord {
+						Desc::DrawIndirectCommand { data.range.getCount(), 1, data.range.getFirst(), 0 },
+						static_cast<uint32_t>( uid ) }
 				);
 			}
 
-			count = static_cast<uint32_t>( commands.size() );
-
-			return commands;
+			return records;
 		}
 
 		/**
 		 * @brief Build GPU draw indexed commands from the current ranges and masks.
 		 */
-		[[nodiscard]] std::vector<Desc::DrawIndexedIndirectCommand> toDrawIndexedIndirectCommands()
+		[[nodiscard]] std::vector<Desc::DrawIndexedIndirectRecord> toDrawIndexedIndirectCommands()
 		{
-			std::vector<Desc::DrawIndexedIndirectCommand> commands;
-			int											  baseVertex = 0;
+			std::vector<Desc::DrawIndexedIndirectRecord> records;
 
 			for ( const auto & [ uid, data ] : _resources )
 			{
-				commands.emplace_back(
-					Desc::DrawIndexedIndirectCommand {
-						static_cast<uint32_t>( data.indices.size() ), 1, data.range.getFirst(), baseVertex, 0 }
+				records.emplace_back(
+					Desc::DrawIndexedIndirectRecord {
+						Desc::DrawIndexedIndirectCommand { static_cast<uint32_t>( data.indices.size() ),
+														   1,
+														   data.range.getFirst(),
+														   static_cast<int32_t>( data.vertexFirst ),
+														   0 },
+						static_cast<uint32_t>( uid ) }
 				);
-				baseVertex += data.vertexCount;
 			}
 
-			count = static_cast<uint32_t>( commands.size() );
-
-			return commands;
+			return records;
 		}
 
 		Index size( const Desc::Handle p_handle ) const
 		{
 			assert( _resources.contains( p_handle ) );
 
-			return _resources.at( p_handle ).range.getCount();
+			const auto it = _resources.find( p_handle );
+			assert( it != _resources.end() );
+			return it->second.range.getCount();
+		}
+
+		Index offset( const Desc::Handle p_handle ) const
+		{
+			assert( _resources.contains( p_handle ) );
+
+			const auto it = _resources.find( p_handle );
+			assert( it != _resources.end() );
+			return it->second.range.getFirst();
 		}
 
 	  protected:
@@ -133,6 +135,7 @@ namespace VTX::Renderer::Geometry
 		struct Data
 		{
 			IndexRange			range;
+			Index				vertexFirst;
 			Index				vertexCount;
 			std::vector<Indice> indices;
 		};
@@ -149,19 +152,33 @@ namespace VTX::Renderer::Geometry
 			}
 
 			Index countIndex = static_cast<Index>( count );
-			_resources.emplace( p_handle, Data { IndexRange { _size, countIndex }, p_countVertex } );
+			const auto [ it, inserted ]
+				= _resources.emplace( p_handle, Data { IndexRange { _size, countIndex }, _vertexSize, p_countVertex } );
+			assert( inserted );
+
 			_size = countIndex;
+			_vertexSize += p_countVertex;
 		}
+
+		void _removeRange( const Desc::Handle p_handle ) { _resources.erase( p_handle ); }
 
 		/**
 		 * @brief Access indices.
 		 */
 		std::vector<Indice> & _indices( const Desc::Handle p_handle )
 		{
-			assert( _resources.contains( p_handle ) );
+			const auto it = _resources.find( p_handle );
+			assert( it != _resources.end() );
 
-			return _resources[ p_handle ].indices;
+			return it->second.indices;
 		}
+
+		/**
+		 * @brief Access per-system geometry resources from specialized geometries.
+		 */
+		const std::map<Desc::Handle, Data> & _data() const { return _resources; }
+
+		bool _hasRange( const Desc::Handle p_handle ) const { return _resources.contains( p_handle ); }
 
 	  private:
 		/**
@@ -172,7 +189,8 @@ namespace VTX::Renderer::Geometry
 		/**
 		 * @brief Current size to draw (before applying anything).
 		 */
-		Index _size = 0;
+		Index _size		  = 0;
+		Index _vertexSize = 0;
 	};
 } // namespace VTX::Renderer::Geometry
 

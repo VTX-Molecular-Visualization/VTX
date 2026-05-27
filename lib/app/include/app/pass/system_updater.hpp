@@ -4,13 +4,17 @@
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/pass/pass_manager.hpp"
-#include <renderer/types.hpp>
-#include <unordered_map>
+#include <renderer/descriptors.hpp>
+#include <vector>
 
 namespace VTX::App::System
 {
 	struct PendingSystem;
-}
+	struct Color;
+	struct Representation;
+	struct Selection;
+} // namespace VTX::App::System
+
 namespace VTX::App::Pass
 {
 	/**
@@ -19,56 +23,55 @@ namespace VTX::App::Pass
 	class SystemUpdater : public IPass
 	{
 	  public:
-		/**
-		 * @brief Map representation entity to its current index.
-		 */
-		using MapRepresentationIndex = std::map<ECS::Entity, Renderer::RepresentationIndex>;
-		using MapRepresentationBonds = std::map<ECS::Entity, Renderer::RepresentationIndex>;
-
 		SystemUpdater();
+
+		/**
+		 * @brief Update the renderer with pending changes.
+		 */
 		void update( const float, const float );
 
 	  private:
 		/**
-		 * @brief All system entities.
+		 * @brief Active entities mapped to renderer indexes.
 		 */
-		std::vector<ECS::Entity> _entities;
+		std::unordered_map<Entity, Renderer::Desc::Handle> _systems;
+		std::unordered_map<Entity, Renderer::Desc::Handle> _representations;
 
 		/**
-		 * @brief Dirty flag to push systems to renderer at the next update.
-		 * Avoid pushing systems multiple times when multiple systems changed.
+		 * @brief Entities pending to be added/removed.
 		 */
-		bool _needPush = false;
-		/** @brief Current used representations.
-		 */
-		// TODO: use resource manager to purge unused.
-		std::map<ECS::Entity, Renderer::RepresentationIndex> _representations;
+		std::vector<Entity>					_systemAdded;
+		std::vector<Renderer::Desc::Handle> _systemRemoved;
+		std::vector<Entity>					_representationAdded;
+		std::vector<Renderer::Desc::Handle> _representationRemoved;
 
 		/**
-		 * @brief On system loaded/destroyed events.
+		 * @brief Push system data to renderer.
 		 */
-		void _onSystemLoaded( const Events::SystemLoad & );
-		void _onSystemDestroyed( ECS::Registry &, ECS::Entity );
+		void _onSystemLoad( const Events::SystemLoad & );
+		void _onDestroySystem( Registry &, Entity );
 
 		/**
-		 * @brief Update renderer when data changed.
+		 * @brief Update system data in renderer when components are updated.
 		 */
-		void _onUpdateTransform( ECS::Registry &, ECS::Entity );
-		void _onUpdateVisibility( ECS::Registry &, ECS::Entity );
-		void _onUpdateSelection( ECS::Registry &, ECS::Entity );
-		void _onUpdateRepresentation( ECS::Registry &, ECS::Entity );
-		void _onUpdateColor( ECS::Registry &, ECS::Entity );
-
-		void _onUpdateRepresentationPreset( ECS::Registry &, ECS::Entity );
-
-		void _setRepresentation();
-
-		void _onTrajectoryDestruction( ECS::Registry &, ECS::Entity );
+		void _onUpdateTransform( Registry &, Entity );
+		void _onUpdateVisibility( Registry &, Entity );
+		void _onUpdateSelection( Registry &, Entity );
+		void _onUpdateRepresentation( Registry &, Entity );
+		void _onUpdateColor( Registry &, Entity );
 
 		/**
-		 * @brief Push all systems to renderer.
+		 * @brief Push trajectory frame to renderer.
 		 */
-		void _pushSystems();
+		void _onTrajectoryLoad( const Events::TrajectoryLoad & );
+
+		/**
+		 * @brief Push representation preset data to renderer.
+		 */
+		void _onConstructRepresentationPreset( Registry &, Entity );
+		void _onUpdateRepresentationPreset( Registry &, Entity );
+		void _onDestroyRepresentationPreset( Registry &, Entity );
+		void _setRepresentations();
 	};
 } // namespace VTX::App::Pass
 

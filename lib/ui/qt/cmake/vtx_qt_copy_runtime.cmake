@@ -53,13 +53,18 @@ endfunction()
 
 # Patch Linux Qt plugins so they resolve bundled Qt libraries instead of system ones.
 function(_vtx_qt_patch_linux_plugin_rpath target plugin_dir)
+	set(_vtx_qt_plugin_rpath "\$ORIGIN/..")
+	if(ARGC GREATER 2)
+		set(_vtx_qt_plugin_rpath "${ARGV2}")
+	endif()
+
 	add_custom_command(
 		TARGET ${target}
 		POST_BUILD
 		COMMAND ${CMAKE_COMMAND}
 			-DPATCHELF_EXECUTABLE=${_VTX_QT_PATCHELF_EXECUTABLE}
 			-DPLUGIN_DIR=$<TARGET_FILE_DIR:${target}>/${plugin_dir}
-			-DRPATH=\$ORIGIN/..
+			-DRPATH=${_vtx_qt_plugin_rpath}
 			-P "${_VTX_QT_COPY_RUNTIME_CMAKE_DIR}/vtx_qt_patch_linux_plugin_rpath.cmake"
 		VERBATIM
 	)
@@ -102,6 +107,7 @@ function(vtx_qt_copy_runtime target)
 			list(APPEND _vtx_qt_runtime_sos ${_vtx_qt_runtime_matches})
 		endforeach()
 		vtx_copy_files(${target} "$<TARGET_FILE_DIR:${target}>" ${_vtx_qt_runtime_sos})
+		_vtx_qt_patch_linux_plugin_rpath(${target} "." "\$ORIGIN")
 
 		foreach(_vtx_qt_plugin_dir IN LISTS _vtx_qt_plugin_dirs)
 			if(EXISTS "${VTX_QT_RUNTIME_ROOT}/${_vtx_qt_plugin_dir}")
@@ -110,7 +116,7 @@ function(vtx_qt_copy_runtime target)
 					"${VTX_QT_RUNTIME_ROOT}/${_vtx_qt_plugin_dir}"
 					"$<TARGET_FILE_DIR:${target}>/${_vtx_qt_plugin_dir}"
 				)
-				_vtx_qt_patch_linux_plugin_rpath(${target} "${_vtx_qt_plugin_dir}")
+				_vtx_qt_patch_linux_plugin_rpath(${target} "${_vtx_qt_plugin_dir}" "\$ORIGIN/..")
 			endif()
 		endforeach()
 	else()

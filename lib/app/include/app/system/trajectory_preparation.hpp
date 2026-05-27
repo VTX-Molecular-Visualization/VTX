@@ -21,6 +21,6 @@ namespace VTX::App::System
 	 * @param
 	 * @param
 	 */
-	void startAsyncTrajectoryWork( const ECS::Entity &, PendingSystem & ) noexcept;
+	void startAsyncTrajectoryWork( const Entity &, PendingSystem & ) noexcept;
 } // namespace VTX::App::System
 #endif

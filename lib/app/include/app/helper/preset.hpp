@@ -15,7 +15,7 @@ namespace VTX::App::Helper::Preset
 	bool exists( const std::string_view p_name )
 	{
 		auto view = REG().view<App::Preset::Name, T>();
-		for ( const ECS::Entity entity : view )
+		for ( const Entity entity : view )
 		{
 			const auto & presetName = view.template get<App::Preset::Name>( entity ).name;
 			if ( presetName == p_name )
@@ -31,10 +31,10 @@ namespace VTX::App::Helper::Preset
 	 * @brief Get a preset entity by its name.
 	 */
 	template<typename T>
-	std::optional<ECS::Entity> getByName( const std::string_view p_name )
+	std::optional<Entity> getByName( const std::string_view p_name )
 	{
 		auto view = REG().view<App::Preset::Name, T>();
-		for ( const ECS::Entity entity : view )
+		for ( const Entity entity : view )
 		{
 			const auto & presetName = view.template get<App::Preset::Name>( entity ).name;
 			if ( presetName == p_name )

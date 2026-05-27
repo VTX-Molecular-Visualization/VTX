@@ -6,6 +6,7 @@
 #include "../layout_uniforms_color.glsl"
 #include "../layout_uniforms_model.glsl"
 #include "../layout_uniforms_representation.glsl"
+#include "../struct/draw_indexed_indirect.glsl"
 #include "struct_sphere.glsl"
 #include "struct_vertex_shader.glsl"
 
@@ -16,9 +17,20 @@
 flat out StructVertexShader vsData;
 flat out StructSphere vsSphere;
 
+layout( std430, binding = 20 ) readonly buffer SphereIndirectDraws
+{
+	uint sphereDrawCount;
+	uint sphereDrawPadding0;
+	uint sphereDrawPadding1;
+	uint sphereDrawPadding2;
+	DrawIndexedIndirectRecord sphereDraws[];
+};
+
 void main()
 {
-	vsSphere.viewPos	 = vec3( uniformsModel[ gl_DrawID ].matrixModelView * vec4( inAtomPosition, 1.f ) );
+	const uint idModel = sphereDraws[ gl_DrawID ].idModel;
+
+	vsSphere.viewPos	 = vec3( uniformsModel[ idModel ].matrixModelView * vec4( inAtomPosition, 1.f ) );
 	vsSphere.color		 = uniformsColor[ inAtomColor ];
 	//vsSphere.sphereColor		 = vec4( 1.f, 1.f, 1.f, 1.f );
 	Representation representation = uniformsRepresentation[ inAtomRepresentation ];

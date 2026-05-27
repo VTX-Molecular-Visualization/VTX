@@ -5,11 +5,6 @@
 #include "util/types.hpp"
 #include <limits>
 
-#ifdef __APPLE__
-#undef SIZE_T_MIN
-#undef SIZE_T_MAX
-#endif
-
 namespace VTX
 {
 	template<typename T>

@@ -110,7 +110,7 @@ namespace VTX::App::Action::IO
 	{
 	}
 
-	void AssociateTrajectory::execute( const FilePath & p_path, const ECS::Entity & p_entity )
+	void AssociateTrajectory::execute( const FilePath & p_path, const Entity & p_entity )
 	{
 		if ( p_entity == entt::null )
 		{
@@ -122,7 +122,7 @@ namespace VTX::App::Action::IO
 		_data->extractorCreation.count_down();
 		_data->start_extraction();
 	}
-	void AssociateTrajectory::execute( const std::string & p_path, const ECS::Entity & p_e )
+	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e )
 	{ execute( FilePath( p_path ), p_e ); }
 	void AssociateTrajectory::wait() noexcept { _data->wait(); }
 
@@ -170,9 +170,9 @@ namespace VTX::App::Action::IO
 			const size_t currentWidth  = RENDERER().width();
 			const size_t currentHeight = RENDERER().height();
 
-			ACTION().execute<Application::Resize>( p_width, p_height );
+			ACTION().execute<Application::Resize>( p_width, p_height, false );
 			std::vector<std::byte> image = RENDERER().snapshot();
-			ACTION().execute<Application::Resize>( currentWidth, currentHeight );
+			ACTION().execute<Application::Resize>( currentWidth, currentHeight, false );
 
 			FilePath path = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
 

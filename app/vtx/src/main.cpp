@@ -35,10 +35,12 @@ extern "C"
 
 /**
  * @brief On windows, the console returns before the text is returned. The behavior is tight to the Windows OS : a
- * console starts a new process and returns, then the process writes stuff in the console. It makes the help text appear
- * after where the user expect the cursor to be, making it look like it is stuck even though it is not.
- * To work around this, we add an "enter" input after we flush the stdcout to have a fresh cursor after the help text.
- * All this stuff is pointless on linux as the console waits for the process to finish before returning hand.
+
+ * * console starts a new process and returns, then the process writes stuff in the console. It makes the help text
+ * appear
+ * after where the user expect the cursor to be, making it look like it is stuck even though it is not. To
+ * work around this, we add an "enter" input after we flush the stdcout to have a fresh cursor after the help text. All
+ * this stuff is pointless on linux as the console waits for the process to finish before returning hand.
  */
 void unblockParentConsole() noexcept
 {
@@ -72,7 +74,9 @@ int main( int p_argc, char * p_argv[] )
 			App::ArgumentParser parser( p_argc, p_argv );
 			parser.parse();
 			if ( parser.needHelp() )
+			{
 				help = parser.help();
+			}
 			parser.get( argss );
 		}
 
@@ -86,7 +90,9 @@ int main( int p_argc, char * p_argv[] )
 		// Falls through silently if launched from Explorer (no parent console).
 		bool hasParentConsole = AttachConsole( ATTACH_PARENT_PROCESS );
 		if ( not hasParentConsole && argss.debug )
+		{
 			AllocConsole();
+		}
 		if ( hasParentConsole || argss.debug )
 		{
 			freopen_s( (FILE **)stdout, "CONOUT$", "w", stdout );
@@ -100,7 +106,9 @@ int main( int p_argc, char * p_argv[] )
 			std::cout << std::endl << *help;
 #ifdef _WIN32
 			if ( hasParentConsole )
+			{
 				unblockParentConsole();
+			}
 #endif
 			return EXIT_SUCCESS;
 		}
@@ -112,7 +120,7 @@ int main( int p_argc, char * p_argv[] )
 			QCoreApplication::setAttribute( Qt::AA_CompressHighFrequencyEvents );
 
 			Q_INIT_RESOURCE( vtx_qt_resources_ui );
-			UI::QT::Application app( std::move( argss ) );
+			UI::QT::Application app( p_argc, p_argv, std::move( argss ) );
 #if VTX_TOOL_EXAMPLE
 			Q_INIT_RESOURCE( vtx_qt_resources_tool_example );
 			app.addTool<Tool::Example::ExampleTool>();

@@ -4,6 +4,7 @@
 #include "include_opengl.hpp"
 #include "texture_2d.hpp"
 #include <cassert>
+#include <utility>
 #include <vector>
 
 namespace VTX::Renderer::Context::Backend::GL
@@ -27,7 +28,25 @@ namespace VTX::Renderer::Context::Backend::GL
 			_id = p_id;
 		}
 
-		~Framebuffer() noexcept
+		Framebuffer( const Framebuffer & )			 = delete;
+		Framebuffer & operator=( const Framebuffer & ) = delete;
+
+		Framebuffer( Framebuffer && p_other ) noexcept : _id( std::exchange( p_other._id, GL_INVALID_INDEX ) ) {}
+
+		Framebuffer & operator=( Framebuffer && p_other ) noexcept
+		{
+			if ( this != &p_other )
+			{
+				destroy();
+				_id = std::exchange( p_other._id, GL_INVALID_INDEX );
+			}
+
+			return *this;
+		}
+
+		~Framebuffer() noexcept { destroy(); }
+
+		void destroy() noexcept
 		{
 			if ( _id != GL_INVALID_INDEX )
 			{

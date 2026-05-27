@@ -59,6 +59,8 @@ namespace VTX::UI::QT::Widget
 
 		inline void freeze( const bool p_freeze ) { _toggleButton->blockSignals( p_freeze ); }
 
+		inline void setTitle( const QString & p_title ) { _toggleButton->setText( p_title ); }
+
 	  signals:
 		void toggled( bool );
 

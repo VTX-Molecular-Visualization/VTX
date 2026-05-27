@@ -7,7 +7,7 @@ struct Representation
 	uint cylinderColorBlendingMode;
 	uint ribbonColorBlendingMode;
 	float SESProbeRadius;
-	//uint  SESMaxProbeNeighborNb;
+	uint  SESMaxProbeNeighborNb;
 };
 
 layout( std430, binding = 12 ) readonly buffer UniformsRepresentation

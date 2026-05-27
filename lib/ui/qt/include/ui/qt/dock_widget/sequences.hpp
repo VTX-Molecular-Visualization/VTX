@@ -19,13 +19,13 @@ namespace VTX::UI::QT::DockWidget
 		Sequences( QWidget * );
 
 	  private:
-		std::unordered_map<App::ECS::Entity, QPointer<Widget::Sequence>> _mapSequenceWidgets;
+		std::unordered_map<Entity, QPointer<Widget::Sequence>> _mapSequenceWidgets;
 
 		void _onSystemLoad( const App::Events::SystemLoad & );
-		void _onSystemDestroy( App::ECS::Registry &, App::ECS::Entity );
-		void _onUpdateSelection( App::ECS::Registry &, App::ECS::Entity );
-		void _onColorsChanged( App::ECS::Registry &, App::ECS::Entity );
-		void _onColorsPresetChanged( App::ECS::Registry &, App::ECS::Entity );
+		void _onSystemDestroy( Registry &, Entity );
+		void _onUpdateSelection( Registry &, Entity );
+		void _onColorsChanged( Registry &, Entity );
+		void _onColorsPresetChanged( Registry &, Entity );
 	};
 
 } // namespace VTX::UI::QT::DockWidget

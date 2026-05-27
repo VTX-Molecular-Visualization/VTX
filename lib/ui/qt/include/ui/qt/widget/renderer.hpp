@@ -6,12 +6,16 @@
 #include "ui/qt/window/renderer.hpp"
 #include <QEvent>
 #include <QHideEvent>
+#include <QPaintEvent>
+#include <QPixmap>
 #include <QPointer>
 #include <QResizeEvent>
 #include <QShowEvent>
 #include <QTimer>
 #include <QToolBar>
 #include <QToolButton>
+#include <app/events.hpp>
+#include <optional>
 #include <vector>
 
 namespace VTX::UI::QT::Widget
@@ -27,9 +31,12 @@ namespace VTX::UI::QT::Widget
 		Q_OBJECT
 
 	  public:
+		static constexpr bool VSYNC_DEFAULT = true;
+
 		/**
 		 * @brief Positions for HUD elements.
 		 */
+		/*
 		enum struct HUD_POSITION
 		{
 			TOP_LEFT,
@@ -41,6 +48,7 @@ namespace VTX::UI::QT::Widget
 			BOTTOM_CENTER,
 			BOTTOM_RIGHT
 		};
+		*/
 
 		/**
 		 * @brief Constructor.
@@ -77,6 +85,7 @@ namespace VTX::UI::QT::Widget
 		 * @brief Override resize.
 		 */
 		bool eventFilter( QObject *, QEvent * ) override;
+		void paintEvent( QPaintEvent * ) override;
 		void showEvent( QShowEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
 
@@ -116,6 +125,26 @@ namespace VTX::UI::QT::Widget
 		QPointer<QWidget> _container;
 
 		/**
+		 * @brief Logo painted behind the native renderer surface during startup and resize.
+		 */
+		QPixmap _backgroundLogo;
+
+		/**
+		 * @brief True while applying a resize requested by App, to avoid sending it back to App.
+		 */
+		bool _ignoreResizeEvents = false;
+
+		/**
+		 * @brief True once the native renderer is initialized and can be shown.
+		 */
+		bool _rendererReady = false;
+
+		/**
+		 * @brief Size to ignore if Qt relayouts back after an App-requested resize.
+		 */
+		std::optional<QSize> _pendingLayoutReboundSize;
+
+		/**
 		 * @brief Add a widget to the overlay at the given position.
 		 */
 		// void _addHUDWidget( QWidget * const, const HUD_POSITION );
@@ -134,6 +163,11 @@ namespace VTX::UI::QT::Widget
 		 * @brief Give focus back to the rendering surface.
 		 */
 		void _focusRenderer();
+
+		/**
+		 * @brief Synchronize widget size after an App renderer resize.
+		 */
+		void _onRendererResize( const App::Events::RendererResize & );
 	};
 } // namespace VTX::UI::QT::Widget
 

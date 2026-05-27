@@ -12,10 +12,14 @@
 #include "renderer/context/backend/gl/struct_opengl_infos.hpp"
 #include "renderer/context/backend/gl/texture_2d.hpp"
 #include "renderer/context/backend/gl/vertex_array.hpp"
+#include "renderer/context/backend/interop/opengl_cuda_interop.hpp"
 #include "renderer/context/command_buffer.hpp"
 #include "renderer/descriptors.hpp"
 #include "renderer/resource_handler.hpp"
 #include "renderer/struct_infos.hpp"
+#include <memory>
+#include <span>
+#include <vector>
 
 namespace VTX::Renderer::Context::Backend
 {
@@ -40,11 +44,11 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		struct BufferBinding
 		{
-			Desc::Handle			   buffer;
-			Desc::E_SHADER_BUFFER_KIND kind;
-			Desc::Binding			   binding;
-			uint32_t				   offsetBytes = 0;
-			uint32_t				   sizeBytes   = 0;
+			Desc::Handle		 buffer;
+			Desc::E_BUFFER_USAGE usage;
+			Desc::Binding		 binding;
+			uint32_t			 offsetBytes = 0;
+			uint32_t			 sizeBytes	 = 0;
 		};
 
 		/**
@@ -53,7 +57,7 @@ namespace VTX::Renderer::Context::Backend
 		struct ResourceTable
 		{
 			std::vector<TextureBinding> textures;
-			std::vector<BufferBinding>	shaderBuffers;
+			std::vector<BufferBinding>	buffers;
 		};
 
 		/**
@@ -65,7 +69,7 @@ namespace VTX::Renderer::Context::Backend
 			const Desc::NativeContextInfo &,
 			const FilePath & p_shaderDir
 		);
-		~OpenGL() = default;
+		~OpenGL();
 
 		/**
 		 * @brief Build the command buffer from the render queue and resources.
@@ -83,14 +87,28 @@ namespace VTX::Renderer::Context::Backend
 		inline void swap() const { _glContext.swapBuffers(); }
 
 		/**
-		 * @brief Set data to a shader buffer.
+		 * @brief Set data to a buffer.
 		 */
-		void setShaderBufferData( const Desc::Key &, SpanBytes, const size_t );
+		void setBufferData( const Desc::BufferRef &, SpanBytes, const size_t );
+		bool ensureBufferChunk( const Desc::BufferRef & );
+		bool releaseBufferChunk( const Desc::BufferRef & );
 
 		/**
-		 * @brief Set data to a pipeline buffer.
+		 * @brief Map graphics buffers to an external compute backend pointer.
 		 */
-		void setPipelineBufferData( const Desc::Key &, SpanBytes, const size_t );
+		Desc::InteropBufferMapping				mapInteropBuffer( Desc::E_INTEROP_API, const Desc::BufferRef & );
+		std::vector<Desc::InteropBufferMapping> mapInteropBuffers(
+			Desc::E_INTEROP_API,
+			std::span<const Desc::BufferRef>
+		);
+		void unmapInteropBuffer( Desc::E_INTEROP_API, const Desc::InteropBufferMapping & );
+		void unmapInteropBuffers( Desc::E_INTEROP_API, std::span<const Desc::InteropBufferMapping> );
+		void unregisterInteropBuffer( Desc::E_INTEROP_API, const Desc::BufferRef & );
+
+		/**
+		 * @brief Query external API availability for graphics interop.
+		 */
+		Desc::InteropAvailability interopAvailability( Desc::E_INTEROP_API ) const;
 
 		/**
 		 * @brief Get texture data at a given pixel, or full texture.
@@ -150,14 +168,9 @@ namespace VTX::Renderer::Context::Backend
 			return _programs.get( p_handle );
 		}
 
-		inline const GL::Buffer & shaderBuffer( const Desc::Handle p_handle ) const noexcept
+		inline const GL::Buffer & buffer( const Desc::Handle p_handle ) const noexcept
 		{
-			return _shaderBuffers.get( p_handle );
-		}
-
-		inline const GL::Buffer & pipelineBuffer( const Desc::Handle p_handle ) const noexcept
-		{
-			return _pipelineBuffers.get( p_handle );
+			return _buffers.get( p_handle );
 		}
 
 		inline const GL::VertexArray & vertexArray( const Desc::Handle p_handle ) const noexcept
@@ -180,9 +193,9 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Render target (default framebuffer or offscreen).
 		 */
-		Desc::Handle _default;
-		Desc::Handle _offscreen;
-		Desc::Handle _target;
+		Desc::Handle _default	= Desc::NO_HANDLE;
+		Desc::Handle _offscreen = Desc::NO_HANDLE;
+		Desc::Handle _target	= Desc::NO_HANDLE;
 
 		/**
 		 * @brief Shader path.
@@ -198,14 +211,13 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Resource pools.
 		 */
-		ResourceHandler<GL::Framebuffer>					 _framebuffers;
-		ResourceHandler<ResourceTable>						 _resourceTables;
-		ResourceHandler<GL::VertexArray, Desc::VertexLayout> _vertexArrays;
-		ResourceHandler<GL::Buffer, Desc::BufferPipeline>	 _pipelineBuffers;
-		ResourceHandler<GL::Buffer, Desc::BufferShader>		 _shaderBuffers;
-		ResourceHandler<GL::Texture2D, Desc::Texture>		 _textures;
-		ResourceHandler<GL::Sampler, Desc::Sampler>			 _samplers;
-		ResourceHandler<GL::Program, Desc::Program>			 _programs;
+		ResourceHandler<GL::Framebuffer>								_framebuffers;
+		ResourceHandler<ResourceTable>									_resourceTables;
+		ResourceHandler<GL::VertexArray, Desc::Key, Desc::VertexLayout> _vertexArrays;
+		ResourceHandler<GL::Buffer, Desc::Key, Desc::Buffer>			_buffers;
+		ResourceHandler<GL::Texture2D, Desc::Key, Desc::Texture>		_textures;
+		ResourceHandler<GL::Sampler, Desc::Key, Desc::Sampler>			_samplers;
+		ResourceHandler<GL::Program, Desc::Key, Desc::Program>			_programs;
 
 		/**
 		 * @brief Get or create resources.
@@ -213,24 +225,45 @@ namespace VTX::Renderer::Context::Backend
 		Desc::Handle _getOrCreateQuad();
 		Desc::Handle _getOrCreateFramebuffer( const Desc::Pass &, const Desc::Resources &, const bool = false );
 		Desc::Handle _getOrCreateResourceTable( const Desc::Pass &, const Desc::Resources & );
+		Desc::Handle _getOrCreateChunkResourceTable( const Desc::Pass &, Desc::BufferChunk );
 		Desc::Handle _getOrCreateTexture( const Desc::Key &, const Desc::Texture & );
 		Desc::Handle _getOrCreateSampler( const Desc::Key &, const Desc::Sampler & );
 		Desc::Handle _getOrCreateVertexLayout( const Desc::Key &, const Desc::VertexLayout & );
-		Desc::Handle _getOrCreateShaderBuffer( const Desc::BufferShader & );
-		Desc::Handle _getOrCreatePipelineBuffer( const Desc::Key &, const Desc::BufferPipeline & );
+		Desc::Handle _getOrCreateGeometryVertexArray(
+			const Desc::Geometry &,
+			const Desc::Resources &,
+			const Desc::BufferChunk
+		);
+		Desc::Handle _getOrCreateBuffer( const Desc::Key &, const Desc::Buffer & );
+		Desc::Handle _getOrCreateBufferChunk( const Desc::Key &, const Desc::Buffer &, const Desc::BufferChunk );
 		Desc::Handle _getOrCreateProgram( const Desc::Program & );
+		Desc::Handle _bufferHandle( const Desc::Key &, const Desc::Resources &, const Desc::BufferChunk );
+		Desc::Key	 _physicalBufferKey( const Desc::BufferRef & );
+		void		 _setBufferData( const Desc::Key &, SpanBytes, const size_t );
+		std::vector<Desc::InteropBufferMapping> _mapPhysicalInteropBuffers(
+			Desc::E_INTEROP_API,
+			std::span<const Desc::Key>
+		);
+		static Desc::Key _bufferChunkKey( const Desc::Key &, Desc::BufferChunk );
+		static Desc::Key _vertexArrayChunkKey( const Desc::Key &, Desc::BufferChunk );
 
 		/**
 		 * @brief Build resources.
 		 */
 		GlobalShaderBuffers _buildGlobalShaderBuffers( const Desc::Resources & );
 		ResourceTable		_buildResourceTableForPass( const Desc::Pass &, const Desc::Resources & );
+		ResourceTable		_buildChunkResourceTable( const Desc::Resources &, Desc::BufferChunk );
 
 		/**
 		 * @brief Bind resources.
 		 */
 		void _attachTexturesToFramebuffer( const Desc::Pass &, const Desc::ResourceMap<Desc::Texture> & );
-		void _bindGeometryToVao( const Desc::Key &, const Desc::Geometry &, const Desc::Resources & );
+		void _bindGeometryToVao(
+			const Desc::Key &,
+			const Desc::Geometry &,
+			const Desc::Resources &,
+			const Desc::BufferChunk
+		);
 
 		/**
 		 * @brief Create the screen quad.
@@ -244,6 +277,11 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		GL::StructOpenglInfos _openglInfos;
 		void				  _getOpenglInfos();
+
+		/**
+		 * @brief Interop with CUDA.
+		 */
+		Interop::OpenGLCudaInterop _cudaInterop;
 	};
 } // namespace VTX::Renderer::Context::Backend
 

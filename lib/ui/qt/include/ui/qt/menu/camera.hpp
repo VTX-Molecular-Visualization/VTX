@@ -1,8 +1,12 @@
 #ifndef __VTX_UI_QT_MENU_CAMERA__
 #define __VTX_UI_QT_MENU_CAMERA__
 
+#include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
+#include "ui/qt/services.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include <QMenu>
+#include <QPointer>
 #include <app/action/controller.hpp>
 #include <app/events.hpp>
 #include <app/setting/controller.hpp>
@@ -18,14 +22,14 @@ namespace VTX::UI::QT::Menu
 		Camera( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
 			setTitle( "Camera" );
-			_aPerspective = addAction( Action::Camera::PERSPECTIVE );
-			_aOrtho		  = addAction( Action::Camera::ORTHOGRAPHIC );
+			_aPerspective = UI_ACTIONS().addTo( *this, Action::Camera::PERSPECTIVE );
+			_aOrtho		  = UI_ACTIONS().addTo( *this, Action::Camera::ORTHOGRAPHIC );
 			addSeparator();
-			_aTrackball = addAction( Action::Camera::TRACKBALL );
-			_aFreefly	= addAction( Action::Camera::FREEFLY );
+			_aTrackball = UI_ACTIONS().addTo( *this, Action::Camera::TRACKBALL );
+			_aFreefly	= UI_ACTIONS().addTo( *this, Action::Camera::FREEFLY );
 			addSeparator();
-			addAction( Action::Camera::ORIENT );
-			addAction( Action::Camera::RESET );
+			UI_ACTIONS().addTo( *this, Action::Camera::ORIENT );
+			UI_ACTIONS().addTo( *this, Action::Camera::RESET );
 
 			// Connect.
 			App::REG().on_update<Renderer::Camera>().connect<&Camera::_onProjectionChanged>( this );
@@ -38,7 +42,7 @@ namespace VTX::UI::QT::Menu
 		QPointer<QAction> _aTrackball;
 		QPointer<QAction> _aFreefly;
 
-		void _onProjectionChanged( App::ECS::Registry &, const App::ECS::Entity p_e )
+		void _onProjectionChanged( Registry &, const Entity p_e )
 		{
 			const auto & camera = App::REG().get<Renderer::Camera>( p_e );
 
@@ -52,7 +56,7 @@ namespace VTX::UI::QT::Menu
 			}
 		}
 
-		void _onControllerChanged( App::ECS::Registry &, const App::ECS::Entity p_e )
+		void _onControllerChanged( Registry &, const Entity p_e )
 		{
 			using namespace App::Setting;
 

@@ -10,19 +10,18 @@ namespace VTX::Renderer::Geometry
 	class Grid : public Desc::Geometry
 	{
 	  public:
+		inline static const Desc::Key VERTEX_LAYOUT_VOXELS = "Voxels";
+		inline static const Desc::Key GEOMETRY_GRID		   = "Grid";
+		inline static const Desc::Key INDIRECT_GRID		   = "Indirect.Grid";
+		inline static constexpr Desc::Binding BINDING_INDIRECT_GRID = 23;
+
 		Grid()
 		{
-			vertexLayout   = "Voxels";
-			indirectBuffer = "Indirect.Grid";
+			vertexLayout   = VERTEX_LAYOUT_VOXELS;
+			indirectBuffer = INDIRECT_GRID;
 		}
 
-		uint32_t count = 0;
-
-		void clear()
-		{
-			_voxelCount = 0;
-			count		= 0;
-		}
+		void clear() { _voxelCount = 0; }
 
 		void setVoxelCount( const size_t p_count )
 		{
@@ -32,21 +31,18 @@ namespace VTX::Renderer::Geometry
 			}
 
 			_voxelCount = static_cast<uint32_t>( p_count );
-			count		= _voxelCount == 0 ? 0 : 1;
 		}
 
 		uint32_t voxelCount() const { return _voxelCount; }
 
-		[[nodiscard]] std::vector<Desc::DrawIndirectCommand> toDrawIndirectCommands()
+		[[nodiscard]] std::vector<Desc::DrawIndirectRecord> toDrawIndirectCommands()
 		{
-			count = _voxelCount == 0 ? 0 : 1;
-
 			if ( _voxelCount == 0 )
 			{
 				return {};
 			}
 
-			return { Desc::DrawIndirectCommand { _voxelCount, 1, 0, 0 } };
+			return { Desc::DrawIndirectRecord { Desc::DrawIndirectCommand { _voxelCount, 1, 0, 0 }, 0 } };
 		}
 
 	  private:

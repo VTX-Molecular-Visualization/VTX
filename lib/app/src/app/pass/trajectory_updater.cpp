@@ -2,25 +2,44 @@
 #include "app/services.hpp"
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
+#include "app/threading/thread_manager.hpp"
 #include <renderer/renderer.hpp>
 
 namespace VTX::App::Pass
 {
-	TrajectoryUpdater::TrajectoryUpdater() {}
+	TrajectoryUpdater::TrajectoryUpdater()
+	{ REG().on_destroy<System::TrajectoryFullBuffer>().connect<&TrajectoryUpdater::_onDestroyTrajectory>( this ); }
 
-	bool TrajectoryUpdater::_tryUpdateFrame(
-		const ECS::Entity &			   entity,
-		System::TrajectoryFullBuffer & p_traj
-	) noexcept
+	bool TrajectoryUpdater::_tryUpdateFrame( const Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept
 	{
 		if ( p_traj.lastFrameAvailable < p_traj.genericData.requestedFrameIndex )
+		{
 			return false;
+		}
 
-		RENDERER().setSystemPosition(
-			REG().get<System::UID>( entity ).system, p_traj.frameCollection[ p_traj.genericData.requestedFrameIndex ]
-		);
+		// Trigger trajectory event.
+		HUB().trigger<Events::TrajectoryLoad>( { entity,
+												 p_traj.frameCollection[ p_traj.genericData.requestedFrameIndex ] } );
+
 		return true;
 	}
+
+	void TrajectoryUpdater::_onDestroyTrajectory( Registry &, Entity p_entity )
+	{
+		if ( auto traj = REG().try_get<System::TrajectoryFullBuffer>( p_entity ) )
+		{
+			// If the trajectory worker is still doing stuff, stop it and join the thread before destroying the
+			// component.
+			Threading::BaseThread * thr = nullptr;
+			THREAD().get( traj->threadId, thr );
+			if ( thr )
+			{
+				thr->stop();
+				thr->wait();
+			}
+		}
+	}
+
 	namespace
 	{
 		/**
@@ -29,21 +48,24 @@ namespace VTX::App::Pass
 		 * @param p_traj
 		 * @return
 		 */
-		bool tryUpdateFrame( const ECS::Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept
+		bool tryUpdateFrame( const Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept
 		{
 			if ( p_traj.lastFrameAvailable < p_traj.genericData.requestedFrameIndex )
+			{
 				return false;
+			}
 
-			RENDERER().setSystemPosition(
-				REG().get<System::UID>( entity ).system,
-				p_traj.frameCollection[ p_traj.genericData.requestedFrameIndex ]
+			// Trigger trajectory event.
+			HUB().trigger<Events::TrajectoryLoad>(
+				{ entity, p_traj.frameCollection[ p_traj.genericData.requestedFrameIndex ] }
 			);
+
 			return true;
 		}
+
 		uint autoplayNextFrameCount( const System::GenericTrajectory & p_traj, const float p_elapsedTime ) noexcept
-		{
-			return static_cast<uint>( ( p_elapsedTime - p_traj.lastFrameUpdateTime ) / p_traj.playingSpeed );
-		}
+		{ return static_cast<uint>( ( p_elapsedTime - p_traj.lastFrameUpdateTime ) / p_traj.playingSpeed ); }
+
 		/**
 		 * @brief Return true if the frame should be updated.
 		 * @param p_traj trajectory data
@@ -55,11 +77,11 @@ namespace VTX::App::Pass
 			return p_traj.currentFrameIndex != p_traj.requestedFrameIndex
 				   && p_traj.lastFrameUpdateTime + p_traj.playingSpeed > p_elapsedTime;
 		}
+
 		template<typename TrajectoryT>
 		System::GenericTrajectory & genericData( TrajectoryT & p_ )
-		{
-			return p_.genericData;
-		}
+		{ return p_.genericData; }
+
 		/**
 		 * @brief Update frame for every trajectory of the input type
 		 * @tparam TrajectoryT type of trajectory
@@ -68,13 +90,14 @@ namespace VTX::App::Pass
 		template<typename TrajectoryT>
 		void updateTrajectoresPosition( const float p_elapsedTime )
 		{
-			for ( ECS::Entity it_entity : REG().view<TrajectoryT>() )
+			for ( Entity it_entity : REG().view<TrajectoryT>() )
 			{
-				const TrajectoryT &			traj		   = REG().get<TrajectoryT>( it_entity );
 				System::GenericTrajectory * genericTrajPtr = nullptr;
 				System::get( it_entity, genericTrajPtr );
 				if ( genericTrajPtr == nullptr )
+				{
 					continue;
+				}
 				auto & player = genericTrajPtr->player;
 
 				uint nextStep				  = genericTrajPtr->requestedFrameIndex;
@@ -87,7 +110,9 @@ namespace VTX::App::Pass
 					player.next( autoplayUpdateIncrNumber, nextStep );
 				}
 				if ( nextStep == genericTrajPtr->currentFrameIndex )
+				{
 					continue;
+				}
 
 				REG().patch<TrajectoryT>(
 					it_entity,

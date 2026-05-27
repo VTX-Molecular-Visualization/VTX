@@ -13,7 +13,7 @@ namespace VTX::App::Action::Application
 	 */
 	struct Resize
 	{
-		void execute( const size_t p_width, const size_t p_height );
+		void execute( const size_t p_width, const size_t p_height, const bool p_resizeMainWindow = true );
 	};
 
 	/**

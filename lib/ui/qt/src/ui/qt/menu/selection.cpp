@@ -1,4 +1,6 @@
 #include "ui/qt/menu/selection.hpp"
+#include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
 #include "ui/qt/services.hpp"
 #include <app/action/scene.hpp>
 #include <app/helper/system.hpp>
@@ -27,7 +29,7 @@ namespace VTX::UI::QT::Menu
 			return params;
 		}
 
-		ActionRegistry::ActionParams representationParams( const App::ECS::Entity p_representation )
+		ActionRegistry::ActionParams representationParams( const Entity p_representation )
 		{
 			return ActionRegistry::ActionParams { { std::string( Action::Selection::PARAM_REPRESENTATION ),
 													static_cast<int>( toUnderlying( p_representation ) ) } };
@@ -52,9 +54,9 @@ namespace VTX::UI::QT::Menu
 		delete _colorSchemeMenu;
 		delete _representationMenu;
 
-		addAction( Action::Selection::SHOW );
-		addAction( Action::Selection::HIDE );
-		// addAction( Action::Selection::SOLO );
+		UI_ACTIONS().addTo( *this, Action::Selection::SHOW );
+		UI_ACTIONS().addTo( *this, Action::Selection::HIDE );
+		// UI_ACTIONS().addTo( *this, Action::Selection::SOLO );
 		addSeparator();
 
 		_colorSchemeMenu = new ColorScheme( this );
@@ -72,7 +74,7 @@ namespace VTX::UI::QT::Menu
 			_representationMenu,
 			&Representation::selected,
 			this,
-			[]( const App::ECS::Entity p_representation )
+			[]( const Entity p_representation )
 			{ UI_ACTIONS().trigger( Action::Selection::SET_REPRESENTATION, representationParams( p_representation ) ); }
 		);
 		addMenu( _representationMenu );
@@ -89,7 +91,7 @@ namespace VTX::UI::QT::Menu
 			if ( systemState == App::System::E_SELECTION_STATE::FULL )
 			{
 				addSeparator();
-				auto * const action = addAction( Action::Selection::DELETE );
+				UI_ACTIONS().addTo( *this, Action::Selection::DELETE );
 				continue;
 			}
 		}

@@ -20,18 +20,18 @@ namespace VTX::UI::QT::Widget::Tree
 		Q_OBJECT
 
 	  public:
-		explicit TrajectorySettings( App::ECS::Entity p_system, QWidget * p_parent = nullptr );
+		explicit TrajectorySettings( Entity p_system, QWidget * p_parent = nullptr );
 
 	  protected:
 		bool eventFilter( QObject * p_watched, QEvent * p_event ) override;
 
 	  private:
-		App::ECS::Entity _system;
+		Entity _system;
 
-		QPointer<QComboBox>		  _playerModeCombo;
-		QPointer<QSlider>		  _speedSlider;
-		QPointer<QDoubleSpinBox>  _speedSpinBox;
-		QPointer<QSpinBox>		  _frameSpinBox;
+		QPointer<QComboBox>		 _playerModeCombo;
+		QPointer<QSlider>		 _speedSlider;
+		QPointer<QDoubleSpinBox> _speedSpinBox;
+		QPointer<QSpinBox>		 _frameSpinBox;
 
 		bool _isRefreshing = false;
 
@@ -40,7 +40,7 @@ namespace VTX::UI::QT::Widget::Tree
 		void _onSpeedSpinBoxChanged( double p_value );
 		void _onFrameSpinBoxFocused();
 		void _onFrameSpinBoxChanged( int p_value );
-		void _onTrajectoryUpdated( App::ECS::Registry &, App::ECS::Entity p_entity );
+		void _onTrajectoryUpdated( Registry &, Entity p_entity );
 
 		void _refresh();
 	};

@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cstddef>
 #include <iostream>
+#include <utility>
 #include <util/logger.hpp>
 #include <vector>
 
@@ -20,6 +21,26 @@ namespace VTX::Renderer::Context::Backend::GL
 			glCreateBuffers( 1, &_id );
 
 			assert( glIsBuffer( _id ) );
+		}
+
+		Buffer( const Buffer & )			 = delete;
+		Buffer & operator=( const Buffer & ) = delete;
+
+		Buffer( Buffer && p_other ) noexcept
+			: _id( std::exchange( p_other._id, GL_INVALID_INDEX ) ), _size( std::exchange( p_other._size, 0 ) )
+		{
+		}
+
+		Buffer & operator=( Buffer && p_other ) noexcept
+		{
+			if ( this != &p_other )
+			{
+				destroy();
+				_id	  = std::exchange( p_other._id, GL_INVALID_INDEX );
+				_size = std::exchange( p_other._size, 0 );
+			}
+
+			return *this;
 		}
 
 		~Buffer() noexcept { destroy(); }
@@ -87,15 +108,16 @@ namespace VTX::Renderer::Context::Backend::GL
 			assert( glIsBuffer( _id ) );
 			assert( p_size > 0 );
 
-			if ( p_offset + p_size <= _size )
+			const GLsizei requiredSize = GLsizei( p_offset + p_size );
+			if ( requiredSize > _size )
+			{
+				_size = requiredSize;
+				glNamedBufferData( _id, _size, nullptr, p_usage );
+			}
+
+			if ( p_data != nullptr )
 			{
 				setSub( p_data, p_size, p_offset );
-			}
-			else
-			{
-				assert( p_offset == 0 );
-				_size = p_size;
-				glNamedBufferData( _id, _size, p_data, p_usage );
 			}
 		}
 

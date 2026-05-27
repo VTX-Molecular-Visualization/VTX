@@ -5,15 +5,34 @@
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
-#include <renderer/types.hpp>
 #include <util/color/rgba.hpp>
 #include <util/constants.hpp>
+
+namespace VTX::Renderer
+{
+	/**
+	 * @brief Color index in the layout.
+	 */
+	using ColorIndex = uint8_t;
+
+	/**
+	 * @brief Different color schemes to apply.
+	 */
+	enum struct E_COLOR_SCHEME : uint8_t
+	{
+		CHAIN,
+		RESIDUE,
+		ATOM,
+		CUSTOM
+	};
+} // namespace VTX::Renderer
 
 namespace VTX::Renderer::Color
 {
 	/**
 	 * @brief Color layout used for atoms, residues, chains, ribbons and custom elements.
 	 */
+
 	constexpr size_t COLOR_LAYOUT_SIZE = TypeCount<ColorIndex>;
 	using LayoutArray				   = std::array<Util::Color::Rgba, COLOR_LAYOUT_SIZE>;
 
@@ -630,20 +649,20 @@ namespace VTX::Renderer::Color
 												 COLOR_WHITE,		   // COIL
 												 {},
 
-												 { 230, 57, 70 },	// CUSTOM_0
+												 { 230, 57, 70 },  // CUSTOM_0
 												 { 244, 122, 32 }, // CUSTOM_1
 												 { 255, 190, 11 }, // CUSTOM_2
 												 { 138, 201, 38 }, // CUSTOM_3
 												 { 46, 196, 182 }, // CUSTOM_4
-												 { 0, 180, 216 },	// CUSTOM_5
-												 { 67, 97, 238 },	// CUSTOM_6
-												 { 114, 9, 183 },	// CUSTOM_7
+												 { 0, 180, 216 },  // CUSTOM_5
+												 { 67, 97, 238 },  // CUSTOM_6
+												 { 114, 9, 183 },  // CUSTOM_7
 												 { 181, 23, 158 }, // CUSTOM_8
 												 { 255, 77, 109 }, // CUSTOM_9
 												 { 131, 56, 236 }, // CUSTOM_10
 												 { 58, 134, 255 }, // CUSTOM_11
 												 { 25, 130, 196 }, // CUSTOM_12
-												 { 109, 76, 65 },	// CUSTOM_13
+												 { 109, 76, 65 },  // CUSTOM_13
 												 COLOR_WHITE,
 												 COLOR_WHITE,
 												 COLOR_WHITE,

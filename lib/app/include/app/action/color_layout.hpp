@@ -13,7 +13,7 @@ namespace VTX::App::Action::ColorLayout
 	 */
 	struct Change
 	{
-		void execute( const ECS::Entity, const Index, const Util::Color::Rgba & );
+		void execute( const Entity, const Index, const Util::Color::Rgba & );
 	};
 
 	/**
@@ -21,7 +21,7 @@ namespace VTX::App::Action::ColorLayout
 	 */
 	struct ChangeAll
 	{
-		void execute( const ECS::Entity, const Renderer::Color::LayoutArray & );
+		void execute( const Entity, const Renderer::Color::LayoutArray & );
 	};
 
 	/**
@@ -29,7 +29,7 @@ namespace VTX::App::Action::ColorLayout
 	 */
 	struct Randomize
 	{
-		void execute( const ECS::Entity );
+		void execute( const Entity );
 	};
 
 } // namespace VTX::App::Action::ColorLayout

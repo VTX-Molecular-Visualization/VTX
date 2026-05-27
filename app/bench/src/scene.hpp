@@ -5,8 +5,12 @@
 #include <core/struct/topology.hpp>
 #include <renderer/caches.hpp>
 #include <renderer/color.hpp>
-#include <renderer/system_data.hpp>
+#include <renderer/descriptors.hpp>
+#include <renderer/representation.hpp>
+#include <unordered_map>
+#include <unordered_set>
 #include <util/math/bitset.hpp>
+#include <util/math/range.hpp>
 
 namespace VTX::Renderer
 {
@@ -42,26 +46,27 @@ namespace VTX::Bench
 	  private:
 		struct SystemEntry
 		{
-			std::unique_ptr<Core::Struct::Topology> topology;
-			std::vector<Vec3f>						positions;
-			Mat4f									transform = MAT4F_ID;
-			SystemUID								uid		  = 0;
-			std::vector<PickingUID>					atomUids;
-			std::vector<PickingUID>					residueUids;
+			uint																   uid = 0;
+			std::unique_ptr<Core::Struct::Topology>								   topology;
+			std::vector<Vec3f>													   positions;
+			Mat4f																   transform = MAT4F_ID;
+			Util::Math::Range<UID32>											   atomUids;
+			Util::Math::Range<UID32>											   residueUids;
+			std::unordered_map<Renderer::E_COLOR_SCHEME, Renderer::IndexRangeList> colorSchemeAtoms;
+			std::unordered_map<Renderer::ColorIndex, Renderer::IndexRangeList>	   customColorAtoms;
+			std::unordered_map<Entity, Renderer::Desc::Handle>					   representationHandles;
+			std::unordered_map<Entity, Renderer::IndexRangeList>				   presetAtoms;
+			Util::Math::BitSet													   visibility;
+			Util::Math::BitSet													   selection;
 		};
 
-		[[nodiscard]] std::vector<Renderer::SystemData> _buildRendererSystems() const;
-		[[nodiscard]] std::vector<Renderer::ColorIndex> _buildAtomColors(
-			const Core::Struct::Topology & p_topology
-		) const;
-		[[nodiscard]] Renderer::MapRepresentationRanges _buildDefaultRepresentation(
-			const Core::Struct::Topology & p_topology
-		) const;
+		[[nodiscard]] Renderer::Cache::System _buildRendererSystem( const SystemEntry & ) const;
 
-		CameraController		 _camera;
-		std::vector<SystemEntry> _systems;
-		SystemUID				 _nextSystemUid	 = 1;
-		PickingUID				 _nextPickingUid = 1;
+		CameraController										 _camera;
+		std::vector<SystemEntry>								 _systems;
+		mutable std::unordered_map<uint, Renderer::Desc::Handle> _syncedSystems;
+		uint													 _nextSystemUID = 1;
+		UID32													 _nextUID32		= 1;
 	};
 
 } // namespace VTX::Bench

@@ -1,6 +1,9 @@
 #ifndef __VTX_UI_QT_TOOL_BAR_FILE__
 #define __VTX_UI_QT_TOOL_BAR_FILE__
 
+#include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
+#include "ui/qt/services.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include <QToolBar>
 
@@ -14,10 +17,10 @@ namespace VTX::UI::QT::ToolBar
 		{
 			setWindowTitle( "File" );
 
-			addAction( Action::System::NEW );
-			addAction( Action::System::DOWNLOAD );
-			addAction( Action::System::OPEN );
-			addAction( Action::System::SAVE );
+			UI_ACTIONS().addTo( *this, Action::System::NEW );
+			UI_ACTIONS().addTo( *this, Action::System::DOWNLOAD );
+			UI_ACTIONS().addTo( *this, Action::System::OPEN );
+			UI_ACTIONS().addTo( *this, Action::System::SAVE );
 		}
 
 	  private:

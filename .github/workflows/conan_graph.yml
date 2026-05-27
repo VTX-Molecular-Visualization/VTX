@@ -47,6 +47,21 @@ jobs:
           - os: ubuntu-22.04
             channel: linux
             conan_cppstd: 'gnu20'
+          - os: ubuntu-latest
+            channel: linux-latest
+            conan_cppstd: 'gnu20'
+          - os: windows-11-arm
+            channel: win-arm
+            conan_cppstd: '20'
+          - os: ubuntu-22.04-arm
+            channel: linux-arm
+            conan_cppstd: 'gnu20'
+          - os: macos-15-intel
+            channel: macos-intel
+            conan_cppstd: '20'
+          - os: macos-15
+            channel: macos-arm
+            conan_cppstd: '20'
 
     steps:
     - name: Set git to use CRLF
@@ -59,11 +74,11 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Get Conan
-      uses: turtlebrowser/get-conan@v1.2
-
-    - name: Create default profile
-      run: conan profile detect --force
+    - name: Setup Conan
+      uses: conan-io/setup-conan@v1.3.0
+      with:
+        use_venv: true
+        profile_detect: true
 
     - name: Add custom remote
       run: |

@@ -41,7 +41,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			return QString::fromStdString( p_value );
 		}
 
-		QString _entityLabel( const App::ECS::Entity p_entity )
+		QString _entityLabel( const Entity p_entity )
 		{
 			const auto & metadata = App::REG().get<IO::Metadata>( p_entity );
 			if ( not metadata.name.empty() )
@@ -124,9 +124,9 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		}
 	} // namespace
 
-	TopologyEditorDialog::TopologyEditorDialog( const App::ECS::Entity p_system ) : _system( p_system ) { _buildUi(); }
+	TopologyEditorDialog::TopologyEditorDialog( const Entity p_system ) : _system( p_system ) { _buildUi(); }
 
-	App::ECS::Entity TopologyEditorDialog::getSystem() const { return _system; }
+	Entity TopologyEditorDialog::getSystem() const { return _system; }
 
 	void TopologyEditorDialog::showEvent( QShowEvent * p_event )
 	{
@@ -193,7 +193,9 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		_residuesFilter->setClearButtonEnabled( true );
 		_residuesFilter->setPlaceholderText( "Filter residues" );
 		_residuesTable = new QTableWidget( residuesPage );
-		_configureTable( *_residuesTable, { "Index", "Chain", "Name", "Symbol", "Original ID", "Atoms" } );
+		_configureTable(
+			*_residuesTable, { "Index", "Chain", "Name", "Symbol", "Original ID", "Secondary Structure", "Atoms" }
+		);
 		residuesLayout->addWidget( _residuesFilter );
 		residuesLayout->addWidget( _residuesTable, 1 );
 
@@ -206,7 +208,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		_atomsFilter->setPlaceholderText( "Filter atoms" );
 		_atomsTable = new QTableWidget( atomsPage );
 		_configureTable(
-			*_atomsTable, { "Index", "Residue", "In Residue", "Name", "Original ID", "Element", "X", "Y", "Z" }
+			*_atomsTable, { "Index", "Residue", "In Residue", "Name", "Original Index", "Element", "X", "Y", "Z" }
 		);
 		atomsLayout->addWidget( _atomsFilter );
 		atomsLayout->addWidget( _atomsTable, 1 );
@@ -526,6 +528,13 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			_residuesTable->setItem(
 				int( residue ),
 				5,
+				_readonlyItem( QString::fromStdString(
+					std::string( Util::Enum::enumName( topology.getResidueSecondaryStructureType( residue ) ) )
+				) )
+			);
+			_residuesTable->setItem(
+				int( residue ),
+				6,
 				_readonlyItem( UI::QT::Helper::formatNumber( topology.getResidueAtomCount( residue ) ) )
 			);
 		}
@@ -632,6 +641,10 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		for ( int row = 0; row < p_table.rowCount(); ++row )
 		{
 			bool visible = normalizedFilter.isEmpty();
+			if ( not visible )
+			{
+				visible = QString::number( row ).contains( normalizedFilter, Qt::CaseInsensitive );
+			}
 			if ( not visible )
 			{
 				for ( int column = 0; column < p_table.columnCount(); ++column )

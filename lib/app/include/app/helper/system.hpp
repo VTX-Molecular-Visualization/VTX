@@ -18,7 +18,7 @@ namespace VTX::App::Helper::System
 	 * @brief Get the atom range of an item.
 	 */
 	template<Core::Struct::E_SYSTEM_ITEM ITEM>
-	Core::Struct::IndexRange getAtomRange( const ECS::Entity p_ent, const std::optional<Index> p_index = std::nullopt )
+	Core::Struct::IndexRange getAtomRange( const Entity p_ent, const std::optional<Index> p_index = std::nullopt )
 	{
 		using namespace Core::Struct;
 
@@ -54,7 +54,7 @@ namespace VTX::App::Helper::System
 	 */
 	template<Core::Struct::E_SYSTEM_ITEM ITEM>
 	Core::Struct::IndexRangeList getAtomRangeList(
-		const ECS::Entity					 p_ent,
+		const Entity						 p_ent,
 		const Core::Struct::IndexRangeList & p_ranges = {}
 	)
 	{
@@ -98,7 +98,7 @@ namespace VTX::App::Helper::System
 	 */
 	struct SystemItemView
 	{
-		ECS::Entity					entity;
+		Entity						entity;
 		Core::Struct::E_SYSTEM_ITEM item  = Core::Struct::E_SYSTEM_ITEM::SYSTEM;
 		std::optional<Index>		index = std::nullopt;
 	};
@@ -116,7 +116,7 @@ namespace VTX::App::Helper::System
 	/**
 	 * @brief Get the color scheme of an item (nothing if multiples).
 	 */
-	std::optional<App::System::E_COLOR_SCHEME> getColorScheme( const SystemItemView & );
+	std::optional<Renderer::E_COLOR_SCHEME> getColorScheme( const SystemItemView & );
 
 	/**
 	 * @brief Count all atoms assigned in the color component.
@@ -131,7 +131,7 @@ namespace VTX::App::Helper::System
 	/**
 	 * @brief Get the representation of an item (nothing if multiples).
 	 */
-	std::optional<ECS::Entity> getRepresentation( const SystemItemView & );
+	std::optional<Entity> getRepresentation( const SystemItemView & );
 
 	/**
 	 * @brief Check if an item is a representation root.
@@ -141,17 +141,17 @@ namespace VTX::App::Helper::System
 	/**
 	 * @brief Retrieve a system with the corresponding name. Initially meant to be used for scripting purposes.
 	 */
-	ECS::Entity getSystemByName( const std::string_view );
+	Entity getSystemByName( const std::string_view );
 
 	/**
 	 * @brief Retrieve a system with the corresponding pdb.
 	 */
-	ECS::Entity getSystemByPdb( const std::string_view );
+	Entity getSystemByPdb( const std::string_view );
 
 	/**
 	 * @brief Retrieve a system with the corresponding file name.
 	 */
-	ECS::Entity getSystemByFileName( const std::string_view );
+	Entity getSystemByFileName( const std::string_view );
 
 } // namespace VTX::App::Helper::System
 

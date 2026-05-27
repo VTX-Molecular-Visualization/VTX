@@ -14,7 +14,7 @@
 #include <qboxlayout.h>
 #include <util/event_hub.hpp>
 
-Q_DECLARE_METATYPE( VTX::App::ECS::Entity ) // used to allow QVariant conversion
+Q_DECLARE_METATYPE( VTX::Entity ) // used to allow QVariant conversion
 
 namespace VTX::UI::QT::Dialog
 {
@@ -35,7 +35,7 @@ namespace VTX::UI::QT::Dialog
 			QString displayString = QString::fromStdString( metadata.name );
 			_cbSystem->addItem( displayString, QVariant::fromValue( it_entity ) );
 		}
-		_cbSystem->addItem( "New structure", QVariant::fromValue( VTX::App::ECS::Entity( entt::null ) ) );
+		_cbSystem->addItem( "New structure", QVariant::fromValue( VTX::Entity( entt::null ) ) );
 
 		_cbSystem->setCurrentIndex( 0 );
 		layoutCacheRadio->addWidget( _cbSystem.data() );
@@ -52,7 +52,7 @@ namespace VTX::UI::QT::Dialog
 			&QDialog::accepted,
 			[ this ]()
 			{
-				App::ECS::Entity entity = _cbSystem->currentData().value<App::ECS::Entity>();
+				Entity entity = _cbSystem->currentData().value<Entity>();
 				if ( entity == entt::null )
 
 					App::ACTION().execute<App::Action::IO::LoadSystem>( _path );

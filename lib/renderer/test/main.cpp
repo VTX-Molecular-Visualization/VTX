@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <renderer/builder/render_graph_build.hpp>
 #include <renderer/context/command_buffer.hpp>
 #include <renderer/graph_builder.hpp>
 #include <renderer/render_graph.hpp>
@@ -157,13 +158,31 @@ TEST_CASE( "RenderGraph: add() merges builders and build() still works", "[rende
 
 TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[renderer][graph]" )
 {
-	RenderGraph::PipelineConfig cfg;
+	Builder::PipelineConfig cfg;
 	cfg.enableSSAO		= true;
 	cfg.enableOutline	= true;
 	cfg.enableSelection = true;
 
 	RenderGraph graph;
-	graph.createDefaultPipeline( cfg, Layouts {}, Geometries {} );
+	graph.set( Builder::DefaultRenderGraph::build( cfg, Layouts {}, Geometries {} ) );
+
+	const Resources & resources = graph.getResources();
+	CHECK(
+		resources.buffers.at( VTX::Renderer::Geometry::SES::BUFFER_CONVEX_PATCH_ELEMENTS ).allocation
+		== E_BUFFER_ALLOCATION::CHUNKED
+	);
+	CHECK(
+		resources.buffers.at( VTX::Renderer::Geometry::SES::INDEX_CONVEX_PATCHES ).allocation
+		== E_BUFFER_ALLOCATION::CHUNKED
+	);
+	CHECK(
+		resources.buffers.at( VTX::Renderer::Geometry::SES::INDIRECT_CONVEX_PATCHES ).allocation
+		== E_BUFFER_ALLOCATION::CHUNKED
+	);
+	CHECK(
+		resources.buffers.at( VTX::Renderer::Geometry::Sphere::INDIRECT_SPHERES ).allocation
+		== E_BUFFER_ALLOCATION::SINGLE
+	);
 
 	RenderQueue queue;
 	REQUIRE_NOTHROW( queue = graph.build() );
@@ -177,16 +196,139 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	for ( const Pass * p : queue )
 	{
 		if ( p->name == "Geometric" )
+		{
 			hasGeometric = true;
+		}
 		if ( p->name == "Shading" )
+		{
 			hasShading = true;
+		}
 		if ( p->name == "FXAA" )
+		{
 			hasFXAA = true;
+		}
 	}
 
 	CHECK( hasGeometric );
 	CHECK( hasShading );
 	CHECK( hasFXAA );
+}
+
+TEST_CASE( "GraphBuilder: compute dispatch pass builds", "[renderer][graph]" )
+{
+	GraphBuilder g;
+
+	g.computePass( "Compute" )
+		.program( "ComputeProg" )
+		.shaders( { FilePath( "compute.comp" ) } )
+		.dispatch( 4, 2, 1, E_MEMORY_BARRIER::SHADER_STORAGE | E_MEMORY_BARRIER::COMMAND )
+		.endProgram()
+		.endPass();
+
+	RenderGraph graph;
+	graph.set( std::move( g ) );
+
+	RenderQueue queue;
+	REQUIRE_NOTHROW( queue = graph.build() );
+
+	REQUIRE( queue.size() == 1 );
+	CHECK( queue[ 0 ]->type == E_PASS_TYPE::COMPUTE );
+	REQUIRE( queue[ 0 ]->programs.size() == 1 );
+	REQUIRE( queue[ 0 ]->programs[ 0 ].dispatch );
+	CHECK( queue[ 0 ]->programs[ 0 ].dispatch->groupX == 4 );
+	CHECK( queue[ 0 ]->programs[ 0 ].dispatch->groupY == 2 );
+	CHECK( queue[ 0 ]->programs[ 0 ].dispatch->groupZ == 1 );
+	CHECK(
+		queue[ 0 ]->programs[ 0 ].dispatch->barriers == ( E_MEMORY_BARRIER::SHADER_STORAGE | E_MEMORY_BARRIER::COMMAND )
+	);
+}
+
+TEST_CASE( "GraphBuilder: compute dispatch indirect creates its buffer", "[renderer][graph]" )
+{
+	GraphBuilder g;
+
+	g.computePass( "Compute" )
+		.program( "ComputeProg" )
+		.shaders( { FilePath( "compute.comp" ) } )
+		.dispatchIndirect( "DispatchIndirect", 16, E_MEMORY_BARRIER::COMMAND )
+		.endProgram()
+		.endPass();
+
+	REQUIRE( g.resources.buffers.contains( "DispatchIndirect" ) );
+	CHECK( g.resources.buffers.at( "DispatchIndirect" ).usage == E_BUFFER_USAGE::INDIRECT );
+	CHECK( g.resources.buffers.at( "DispatchIndirect" ).frequency == E_UPDATE_FREQUENCY::DYNAMIC );
+
+	RenderGraph graph;
+	graph.set( std::move( g ) );
+
+	RenderQueue queue;
+	REQUIRE_NOTHROW( queue = graph.build() );
+
+	REQUIRE( queue.size() == 1 );
+	REQUIRE( queue[ 0 ]->programs.size() == 1 );
+	REQUIRE( queue[ 0 ]->programs[ 0 ].dispatchIndirect );
+	CHECK( queue[ 0 ]->programs[ 0 ].dispatchIndirect->indirectBuffer == "DispatchIndirect" );
+	CHECK( queue[ 0 ]->programs[ 0 ].dispatchIndirect->offset == 16 );
+	CHECK( queue[ 0 ]->programs[ 0 ].dispatchIndirect->barriers == E_MEMORY_BARRIER::COMMAND );
+}
+
+TEST_CASE( "GraphBuilder: rejects pipeline commands in the wrong pass type", "[renderer][graph]" )
+{
+	auto drawInCompute = []()
+	{
+		GraphBuilder g;
+		g.computePass( "Compute" )
+			.program( "DrawProg" )
+			.shaders( { FilePath( "draw.vert" ), FilePath( "draw.frag" ) } )
+			.draw( "Geometry", E_PRIMITIVE::POINTS, DrawCall::Range { 0, 1 } );
+	};
+
+	auto dispatchInGraphics = []()
+	{
+		GraphBuilder g;
+		g.pass( "Graphics" ).program( "DispatchProg" ).shaders( { FilePath( "compute.comp" ) } ).dispatch( 1, 1, 1 );
+	};
+
+	auto programInExternal = []()
+	{
+		GraphBuilder g;
+		g.externalPass( "External" ).program( "ExternalProg" );
+	};
+
+	REQUIRE_THROWS_AS( drawInCompute(), GraphicException );
+	REQUIRE_THROWS_AS( dispatchInGraphics(), GraphicException );
+	REQUIRE_THROWS_AS( programInExternal(), GraphicException );
+}
+
+TEST_CASE( "RenderGraph: dispatch indirect buffer must exist", "[renderer][graph]" )
+{
+	GraphBuilder g;
+	g.computePass( "Compute" ).endPass();
+
+	g.passes[ 0 ]->programs.push_back( Program {} );
+	Program & program = g.passes[ 0 ]->programs.back();
+	program.name	  = "ComputeProg";
+	program.shaders.emplace<FilePath>( "compute.comp" );
+	program.dispatchIndirect = DispatchIndirect { .indirectBuffer = "MissingDispatchIndirect", .offset = 0 };
+
+	RenderGraph graph;
+	graph.set( std::move( g ) );
+
+	REQUIRE_THROWS_AS( graph.build(), GraphicException );
+}
+
+TEST_CASE( "RenderGraph: external pass does not require resources", "[renderer][graph]" )
+{
+	GraphBuilder g;
+	g.externalPass( "External" ).endPass();
+
+	RenderGraph graph;
+	graph.set( std::move( g ) );
+
+	const RenderQueue queue = graph.build();
+	REQUIRE( queue.size() == 1 );
+	CHECK( queue[ 0 ]->type == E_PASS_TYPE::EXTERNAL );
+	CHECK( queue[ 0 ]->execution == E_PASS_EXECUTION::ON_DIRTY );
 }
 
 TEST_CASE( "Residue representations follow each residue CA atom", "[renderer][representation]" )
@@ -199,10 +341,12 @@ TEST_CASE( "Residue representations follow each residue CA atom", "[renderer][re
 	};
 
 	const std::vector<RepresentationIndex> atomRepresentations = { 7, 8, 9, 4, 5 };
-	std::vector<RepresentationIndex> residueRepresentations( construction.residues.size() );
+	std::vector<RepresentationIndex>	   residueRepresentations( construction.residues.size() );
 
 	for ( size_t i = 0; i < construction.residues.size(); ++i )
+	{
 		residueRepresentations[ i ] = atomRepresentations[ construction.residues[ i ].ca ];
+	}
 
 	REQUIRE( residueRepresentations.size() == 3 );
 	CHECK( residueRepresentations[ 0 ] == 4 );
@@ -244,6 +388,46 @@ TEST_CASE( "CommandBuffer: push command with payload stores bytes and is readabl
 
 	const auto & back = cb.getPayload<PayloadBeginPass>( off );
 	REQUIRE( bytesEqual( &back, &bp, sizeof( PayloadBeginPass ) ) );
+}
+
+TEST_CASE( "CommandBuffer: external payload stores function and context" )
+{
+	CommandBuffer cb;
+
+	const PayloadExternal payload { .function = 42, .context = 1337 };
+	cb.push<E_COMMAND::EXTERNAL>( payload );
+
+	REQUIRE( cb.commands.size() == 1 );
+	REQUIRE( cb.commands[ 0 ].type == E_COMMAND::EXTERNAL );
+
+	const PayloadExternal & back = cb.getPayload<PayloadExternal>( cb.commands[ 0 ].payloadOffset );
+	CHECK( back.function == payload.function );
+	CHECK( back.context == payload.context );
+}
+
+TEST_CASE( "CommandBuffer: ON_DIRTY pass is scheduled explicitly" )
+{
+	CommandBuffer cb;
+
+	Pass pass;
+	pass.name	   = "External";
+	pass.type	   = E_PASS_TYPE::EXTERNAL;
+	pass.execution = E_PASS_EXECUTION::ON_DIRTY;
+
+	const PassID passID = cb.beginPass( pass );
+	cb.push<E_COMMAND::EXTERNAL>( PayloadExternal {} );
+	cb.endPass( passID );
+
+	REQUIRE( cb.onDirtyPassIDs.empty() );
+
+	cb.markPassDirty( "External" );
+	cb.markPassDirty( "External" );
+
+	REQUIRE( cb.onDirtyPassIDs.size() == 1 );
+	CHECK( cb.onDirtyPassIDs[ 0 ] == passID );
+
+	cb.clearDirtyPasses();
+	CHECK( cb.onDirtyPassIDs.empty() );
 }
 
 struct alignas( 16 ) A16
@@ -299,6 +483,7 @@ TEST_CASE( "CommandBuffer: clear empties commands and payload" )
 struct TestRes
 {
 	int value = 0;
+
 	explicit TestRes( int v ) : value( v ) {}
 };
 
@@ -319,14 +504,13 @@ namespace VTX::Renderer::Desc
 
 TEST_CASE( "ResourceHandler: emplace creates new handles sequentially", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
+	ResourceHandler<TestRes> h;
 
-	const Key	   k1 = "1", k2 = "2", k3 = "3";
-	const FakeDesc d { 1, 2 };
+	const Key k1 = "1", k2 = "2", k3 = "3";
 
-	const Handle h1 = h.emplace( k1, d, 10 );
-	const Handle h2 = h.emplace( k2, d, 20 );
-	const Handle h3 = h.emplace( k3, d, 30 );
+	const Handle h1 = h.emplace( k1, 10 );
+	const Handle h2 = h.emplace( k2, 20 );
+	const Handle h3 = h.emplace( k3, 30 );
 
 	REQUIRE( h1 == 0 );
 	REQUIRE( h2 == 1 );
@@ -343,7 +527,7 @@ TEST_CASE( "ResourceHandler: emplace creates new handles sequentially", "[Resour
 
 TEST_CASE( "ResourceHandler: emplace with existing key updates resource and keeps same handle", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
+	ResourceHandler<TestRes, Key, FakeDesc> h;
 
 	const Key	   k = "42";
 	const FakeDesc d1 { 1, 2 };
@@ -362,13 +546,12 @@ TEST_CASE( "ResourceHandler: emplace with existing key updates resource and keep
 
 TEST_CASE( "ResourceHandler: erase(key) removes and makes handle reusable", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
-	const FakeDesc					   d { 1, 2 };
+	ResourceHandler<TestRes> h;
 
 	const Key k1 = "1", k2 = "2", k3 = "3";
 
-	const Handle h1 = h.emplace( k1, d, 10 ); // 0
-	const Handle h2 = h.emplace( k2, d, 20 ); // 1
+	const Handle h1 = h.emplace( k1, 10 ); // 0
+	const Handle h2 = h.emplace( k2, 20 ); // 1
 	(void)h2;
 
 	REQUIRE( h1 == 0 );
@@ -379,18 +562,17 @@ TEST_CASE( "ResourceHandler: erase(key) removes and makes handle reusable", "[Re
 	REQUIRE( h.contains( k2 ) );
 
 	// Next emplace should reuse the freed handle (LIFO from _availables)
-	const Handle h3 = h.emplace( k3, d, 30 );
+	const Handle h3 = h.emplace( k3, 30 );
 	REQUIRE( h3 == h1 );
 	REQUIRE( h.get( k3 ).value == 30 );
 }
 
 TEST_CASE( "ResourceHandler: erase(handle) is safe for out-of-range and null slots", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
-	const FakeDesc					   d { 1, 2 };
+	ResourceHandler<TestRes> h;
 
 	const Key	 k		= "1";
-	const Handle handle = h.emplace( k, d, 123 );
+	const Handle handle = h.emplace( k, 123 );
 
 	// Out of range: no crash, no change
 	h.erase( handle + 1000 );
@@ -407,7 +589,7 @@ TEST_CASE( "ResourceHandler: erase(handle) is safe for out-of-range and null slo
 
 TEST_CASE( "ResourceHandler: validate(key, desc) matches by hash and clears invalid state", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
+	ResourceHandler<TestRes, Key, FakeDesc> h;
 
 	const Key	   k1 = "1", k2 = "2";
 	const FakeDesc d_ok { 1, 2 };
@@ -437,13 +619,12 @@ TEST_CASE( "ResourceHandler: validate(key, desc) matches by hash and clears inva
 
 TEST_CASE( "ResourceHandler: invalidate ignores available handles (already erased)", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
-	const FakeDesc					   d { 1, 2 };
+	ResourceHandler<TestRes> h;
 
 	const Key k1 = "1", k2 = "2";
 
-	const Handle h1 = h.emplace( k1, d, 10 );
-	const Handle h2 = h.emplace( k2, d, 20 );
+	const Handle h1 = h.emplace( k1, 10 );
+	const Handle h2 = h.emplace( k2, 20 );
 
 	h.erase( h1 ); // make h1 available (null slot)
 
@@ -458,13 +639,12 @@ TEST_CASE( "ResourceHandler: invalidate ignores available handles (already erase
 
 TEST_CASE( "ResourceHandler: clear removes everything and resets handle numbering", "[ResourceHandler]" )
 {
-	ResourceHandler<TestRes, FakeDesc> h;
-	const FakeDesc					   d { 1, 2 };
+	ResourceHandler<TestRes> h;
 
 	const Key k1 = "1", k2 = "2";
 
-	const Handle h1 = h.emplace( k1, d, 10 );
-	const Handle h2 = h.emplace( k2, d, 20 );
+	const Handle h1 = h.emplace( k1, 10 );
+	const Handle h2 = h.emplace( k2, 20 );
 	(void)h1;
 	(void)h2;
 
@@ -474,7 +654,7 @@ TEST_CASE( "ResourceHandler: clear removes everything and resets handle numberin
 	REQUIRE_FALSE( h.contains( k2 ) );
 
 	// After clear(), new handle should start at 0 again
-	const Handle h3 = h.emplace( "999", d, 30 );
+	const Handle h3 = h.emplace( "999", 30 );
 	REQUIRE( h3 == 0 );
 	REQUIRE( h.get( "999" ).value == 30 );
 }

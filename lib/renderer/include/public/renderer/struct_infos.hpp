@@ -12,6 +12,7 @@ namespace VTX::Renderer
 	struct StructInfos
 	{
 		std::string renderer;
+		bool		cudaAvailable = false;
 
 		// Can be undefined.
 		long long gpuMemoryInfoDedicated;

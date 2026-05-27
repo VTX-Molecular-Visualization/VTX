@@ -56,7 +56,7 @@ namespace VTX::App::System
 	 * @param entity
 	 * @param patching callable
 	 */
-	void patchGenericTrajectories( ECS::Entity, std::function<void( GenericTrajectory & )> ) noexcept;
+	void patchGenericTrajectories( Entity, std::function<void( GenericTrajectory & )> ) noexcept;
 
 	struct TrajectorySingleFrame
 	{
@@ -80,18 +80,18 @@ namespace VTX::App::System
 		uint lowerBoundIndex  = 0;
 		uint higherBoundIndex = 0;
 	};
-	void get( const ECS::Entity &, AvailableFrames & ) noexcept;
+	void get( const Entity &, AvailableFrames & ) noexcept;
 
 	/**
 	 * @brief Obtains the atom position of a system. Be it single frame or multiframe trajectory
 	 * @param
 	 * @return
 	 */
-	std::span<const Vec3f> getCurrentAtomPositions( const ECS::Entity & ) noexcept;
-	bool				   hasMultiFrameTrajectory( const ECS::Entity & ) noexcept;
-	void				   eraseTrajectory( const ECS::Entity & ) noexcept;
-	void				   get( const ECS::Entity &, GenericTrajectory *& ) noexcept;
-	void				   get( const ECS::Entity &, VTX::IO::Writer::TrajectoryFrameGetter & ) noexcept;
+	std::span<const Vec3f> getCurrentAtomPositions( const Entity & ) noexcept;
+	bool				   hasMultiFrameTrajectory( const Entity & ) noexcept;
+	void				   eraseTrajectory( const Entity & ) noexcept;
+	void				   get( const Entity &, GenericTrajectory *& ) noexcept;
+	void				   get( const Entity &, VTX::IO::Writer::TrajectoryFrameGetter & ) noexcept;
 
 } // namespace VTX::App::System
 

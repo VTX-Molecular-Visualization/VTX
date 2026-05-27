@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_CONTEXT_GL_DEBUG__
 #define __VTX_RENDERER_CONTEXT_GL_DEBUG__
 
+#include "renderer/context/backend/gl/include_opengl.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::Renderer::Context::Backend::GL::Debug

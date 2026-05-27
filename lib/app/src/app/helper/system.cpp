@@ -33,41 +33,47 @@ namespace
 
 namespace VTX::App::Helper::System
 {
-	ECS::Entity getSystemByName( const std::string_view p_name )
+	Entity getSystemByName( const std::string_view p_name )
 	{
 		for ( auto e : REG().view<IO::Metadata>() )
 		{
 			auto & metadata = REG().get<IO::Metadata>( e );
 
 			if ( metadata.name == p_name )
+			{
 				return e;
+			}
 		}
 
-		return ECS::InvalidEntity;
+		return InvalidEntity;
 	}
 
-	ECS::Entity getSystemByPdb( const std::string_view p_pdb )
+	Entity getSystemByPdb( const std::string_view p_pdb )
 	{
 		for ( auto e : REG().view<IO::Metadata>() )
 		{
 			auto & metadata = REG().get<IO::Metadata>( e );
 
 			if ( metadata.pdbIDCode == p_pdb )
+			{
 				return e;
+			}
 		}
 
-		return ECS::InvalidEntity;
+		return InvalidEntity;
 	}
 
-	ECS::Entity getSystemByFileName( const std::string_view p_fileName )
+	Entity getSystemByFileName( const std::string_view p_fileName )
 	{
 		for ( auto e : REG().view<IO::Metadata>() )
 		{
 			auto & metadata = REG().get<IO::Metadata>( e );
 			if ( metadata.path.filename() == p_fileName )
+			{
 				return e;
+			}
 		}
-		return ECS::InvalidEntity;
+		return InvalidEntity;
 	}
 
 	App::System::E_VISIBLE_STATE getVisibleState( const SystemItemView & p_system )
@@ -75,10 +81,10 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 		using namespace App::System;
 
-		const ECS::Entity ent		 = p_system.entity;
-		const auto &	  reg		 = REG();
-		const auto &	  topology	 = reg.get<Core::Struct::Topology>( ent );
-		const auto &	  visibility = reg.get<App::System::Visibility>( ent );
+		const Entity ent		= p_system.entity;
+		const auto & reg		= REG();
+		const auto & topology	= reg.get<Core::Struct::Topology>( ent );
+		const auto & visibility = reg.get<App::System::Visibility>( ent );
 
 		switch ( p_system.item )
 		{
@@ -103,10 +109,10 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 		using namespace App::System;
 
-		const ECS::Entity ent		= p_system.entity;
-		const auto &	  reg		= REG();
-		const auto &	  topology	= reg.get<Core::Struct::Topology>( ent );
-		const auto &	  selection = reg.get<App::System::Selection>( ent );
+		const Entity ent	   = p_system.entity;
+		const auto & reg	   = REG();
+		const auto & topology  = reg.get<Core::Struct::Topology>( ent );
+		const auto & selection = reg.get<App::System::Selection>( ent );
 
 		switch ( p_system.item )
 		{
@@ -126,7 +132,7 @@ namespace VTX::App::Helper::System
 		return E_SELECTION_STATE::NONE;
 	}
 
-	std::optional<App::System::E_COLOR_SCHEME> getColorScheme( const SystemItemView & p_system )
+	std::optional<Renderer::E_COLOR_SCHEME> getColorScheme( const SystemItemView & p_system )
 	{
 		using namespace Core::Struct;
 
@@ -164,7 +170,7 @@ namespace VTX::App::Helper::System
 		{
 			if ( rangeList.contains( atoms ) )
 			{
-				return App::System::E_COLOR_SCHEME::CUSTOM;
+				return Renderer::E_COLOR_SCHEME::CUSTOM;
 			}
 		}
 
@@ -192,10 +198,10 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 		using namespace App::System;
 
-		const ECS::Entity ent	   = p_system.entity;
-		const auto &	  reg	   = REG();
-		const auto &	  topology = reg.get<Core::Struct::Topology>( ent );
-		const auto &	  color	   = reg.get<Color>( ent );
+		const Entity ent	  = p_system.entity;
+		const auto & reg	  = REG();
+		const auto & topology = reg.get<Core::Struct::Topology>( ent );
+		const auto & color	  = reg.get<Color>( ent );
 
 		auto isRootForRanges = [ & ]( const Core::Struct::IndexRangeList & ranges )
 		{
@@ -266,7 +272,7 @@ namespace VTX::App::Helper::System
 		return false;
 	}
 
-	std::optional<ECS::Entity> getRepresentation( const SystemItemView & p_system )
+	std::optional<Entity> getRepresentation( const SystemItemView & p_system )
 	{
 		using namespace Core::Struct;
 
@@ -309,10 +315,10 @@ namespace VTX::App::Helper::System
 		using namespace Core::Struct;
 		using namespace App::System;
 
-		const ECS::Entity ent			 = p_system.entity;
-		const auto &	  reg			 = REG();
-		const auto &	  topology		 = reg.get<Core::Struct::Topology>( ent );
-		const auto &	  representation = reg.get<Representation>( ent );
+		const Entity ent			= p_system.entity;
+		const auto & reg			= REG();
+		const auto & topology		= reg.get<Core::Struct::Topology>( ent );
+		const auto & representation = reg.get<Representation>( ent );
 
 		for ( const auto & [ _, ranges ] : representation.presetAtoms )
 		{

@@ -10,7 +10,7 @@
 namespace VTX::App::Action::Application
 {
 
-	void Resize::execute( const size_t p_width, const size_t p_height )
+	void Resize::execute( const size_t p_width, const size_t p_height, const bool p_resizeMainWindow )
 	{
 		REG().patch<Renderer::Camera>(
 			ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>(),
@@ -22,6 +22,7 @@ namespace VTX::App::Action::Application
 		);
 
 		RENDERER().resize( p_width, p_height );
+		HUB().trigger<Events::RendererResize>( p_width, p_height, p_resizeMainWindow );
 	}
 
 	void CheckForUpdate::execute() { SESSION().checkForUpdate(); }

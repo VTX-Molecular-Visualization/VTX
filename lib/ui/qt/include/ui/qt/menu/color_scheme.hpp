@@ -3,6 +3,7 @@
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include <QMenu>
@@ -23,27 +24,26 @@ namespace VTX::UI::QT::Menu
 	  public:
 		struct Selected
 		{
-			App::System::E_COLOR_SCHEME			scheme;
+			Renderer::E_COLOR_SCHEME			scheme;
 			std::optional<Renderer::ColorIndex> index = std::nullopt;
 		};
 
-		ColorScheme( QWidget * p_parent, const std::optional<App::System::E_COLOR_SCHEME> p_scheme = std::nullopt ) :
+		ColorScheme( QWidget * p_parent, const std::optional<Renderer::E_COLOR_SCHEME> p_scheme = std::nullopt ) :
 			BaseWidget( p_parent )
 		{
-			using namespace App;
-			using namespace App::System;
+			using namespace Renderer;
 
-			auto & colorLayoutIntance = ECS::getFirstComponent<Scene::ColorLayout>();
-			auto & colorlayout		  = REG().get<Renderer::Color::Layout>( colorLayoutIntance.preset );
+			auto & colorLayoutIntance = App::ECS::getFirstComponent<App::Scene::ColorLayout>();
+			auto & colorlayout		  = App::REG().get<Color::Layout>( colorLayoutIntance.preset );
 
 			setTitle( "Color scheme" );
 			setIcon( STYLE().iconFromCodepoint( Style::Icons::COLOR_LAYOUT ) );
 
 			auto addItem = [ this ](
 
-							   const QString &									p_label,
-							   const Selected &									p_data,
-							   const std::optional<App::System::E_COLOR_SCHEME> p_currentScheme
+							   const QString &					   p_label,
+							   const Selected &					   p_data,
+							   const std::optional<E_COLOR_SCHEME> p_currentScheme
 						   )
 			{
 				QAction * a = QMenu::addAction( p_label );
@@ -60,14 +60,13 @@ namespace VTX::UI::QT::Menu
 			addItem( "Chains", { E_COLOR_SCHEME::CHAIN }, p_scheme );
 
 			auto * subMenu = QMenu::addMenu( "Custom" );
-			for ( Renderer::ColorIndex i = 0; i < Renderer::Color::LAYOUT_COUNT_CUSTOM; ++i )
+			for ( ColorIndex i = 0; i < Color::LAYOUT_COUNT_CUSTOM; ++i )
 			{
 				auto * wa	= new QWidgetAction( subMenu );
 				auto * item = new ColorItem( QT::Helper::toQColor( colorlayout.getCustomColor( i ) ) );
 				item->setMinimumSize( 120, 24 );
 				const Selected selected
-					= { E_COLOR_SCHEME::CUSTOM,
-						static_cast<Renderer::ColorIndex>( Renderer::Color::LAYOUT_OFFSET_CUSTOM + i ) };
+					= { E_COLOR_SCHEME::CUSTOM, static_cast<ColorIndex>( Color::LAYOUT_OFFSET_CUSTOM + i ) };
 				wa->setDefaultWidget( item );
 				connect( wa, &QAction::triggered, this, [ this, selected ]() { emit this->selected( selected ); } );
 				subMenu->addAction( wa );
@@ -85,7 +84,9 @@ namespace VTX::UI::QT::Menu
 		{
 		  public:
 			ColorItem( const QColor & c, QWidget * parent = nullptr ) : QWidget( parent ), _color( c )
-			{ setMinimumHeight( 24 ); }
+			{
+				setMinimumHeight( 24 );
+			}
 
 		  protected:
 			void paintEvent( QPaintEvent * ) override

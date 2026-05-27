@@ -15,12 +15,6 @@ namespace VTX::IO::Util::Chemfiles
 {
 	chemfiles::Bond::BondOrder convertBondOrder( const VTX::Core::ChemDB::Bond::ORDER p_bondOrder );
 
-	void recomputeBonds( chemfiles::Frame & p_frame, const VTX::Util::Math::AABB & p_aabb );
-
-	void recomputeBondOrders( chemfiles::Frame & p_frame );
-
-	bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );
-
-} // namespace VTX::IO::Util::ChemfilesTrajectory
+} // namespace VTX::IO::Util::Chemfiles
 
 #endif

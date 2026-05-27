@@ -19,8 +19,8 @@ namespace VTX::Tool::TopologyEditor::Dialog
 	class TopologyEditorDialog : public UI::QT::Dialog::BaseDialog<TopologyEditorDialog>
 	{
 	  public:
-		explicit TopologyEditorDialog( App::ECS::Entity p_system );
-		App::ECS::Entity getSystem() const;
+		explicit TopologyEditorDialog( Entity p_system );
+		Entity getSystem() const;
 
 	  protected:
 		void showEvent( QShowEvent * p_event ) override;
@@ -44,7 +44,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		std::array<QPointer<QLineEdit>, 6> _propertyValues;
 		QPointer<QPushButton> _applyButton;
 
-		App::ECS::Entity _system;
+		Entity _system;
 
 		void _buildUi();
 		void _clearSystemViews();

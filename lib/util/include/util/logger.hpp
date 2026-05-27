@@ -7,7 +7,7 @@
 #include <string>
 #include <string_view>
 #include <util/callback.hpp>
-#include <util/types.hpp>
+#include <util/filesystem.hpp>
 
 namespace VTX
 {
@@ -53,7 +53,7 @@ namespace VTX
 		class Logger final
 		{
 		  public:
-			static void init( const FilePath & p_logPath, const bool p_debug = false );
+			static void			init( const FilePath & p_logPath, const bool p_debug = false );
 			static const char * toSpdlogHint( const LOG_HINT p_hint );
 
 			static void log( const LOG_LEVEL p_lvl, const LOG_HINT p_hint, std::string_view p_msg )
@@ -97,6 +97,7 @@ namespace VTX
 	{
 		LOGGER::log( p_level, p_hint, p_msg );
 	}
+
 	template<typename... Args>
 	inline void VTX_LOG(
 		const Util::LOG_LEVEL			  p_level,
@@ -112,6 +113,7 @@ namespace VTX
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_TRACE, Util::LOG_HINT::STD, p_msg );
 	}
+
 	template<typename... Args>
 	inline void VTX_TRACE( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
@@ -122,6 +124,7 @@ namespace VTX
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_DEBUG, Util::LOG_HINT::STD, p_msg );
 	}
+
 	template<typename... Args>
 	inline void VTX_DEBUG( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
@@ -132,6 +135,7 @@ namespace VTX
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::STD, p_msg );
 	}
+
 	template<typename... Args>
 	inline void VTX_INFO( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
@@ -142,6 +146,7 @@ namespace VTX
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_WARNING, Util::LOG_HINT::STD, p_msg );
 	}
+
 	template<typename... Args>
 	inline void VTX_WARNING( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
@@ -152,6 +157,7 @@ namespace VTX
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_ERROR, Util::LOG_HINT::STD, p_msg );
 	}
+
 	template<typename... Args>
 	inline void VTX_ERROR( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
@@ -162,6 +168,7 @@ namespace VTX
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_CRITICAL, Util::LOG_HINT::STD, p_msg );
 	}
+
 	template<typename... Args>
 	inline void VTX_CRITICAL( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
@@ -172,6 +179,7 @@ namespace VTX
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::PY_IN, p_msg );
 	}
+
 	template<typename... Args>
 	inline void VTX_PYTHON_IN( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{
@@ -182,6 +190,7 @@ namespace VTX
 	{
 		LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::PY_OUT, p_msg );
 	}
+
 	template<typename... Args>
 	inline void VTX_PYTHON_OUT( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
 	{

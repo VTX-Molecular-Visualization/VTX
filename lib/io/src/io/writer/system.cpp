@@ -13,6 +13,7 @@ namespace VTX::IO::Writer
 		{
 		  public:
 			SystemIndexManager() = delete;
+
 			SystemIndexManager( const std::vector<WriteArgs::System> & p_topols ) : _topologies( p_topols ) {}
 
 			// > Thoughs
@@ -38,11 +39,17 @@ namespace VTX::IO::Writer
 			inline uint newAtomIdx( const uint & p_currentSystemAtomIdx )
 			{
 				if ( _multiSystem )
+				{
 					return _currentSystemAtomIdxMap[ p_currentSystemAtomIdx ] = ++_lastAtomIdx;
+				}
 				else if ( _currentSystem->topology->atomOriginalIndexes )
+				{
 					return _currentSystem->topology->atomOriginalIndexes.value()[ p_currentSystemAtomIdx ];
+				}
 				else
+				{
 					return p_currentSystemAtomIdx;
+				}
 			}
 
 			/**
@@ -60,24 +67,37 @@ namespace VTX::IO::Writer
 					return it != _currentSystemAtomIdxMap.end() ? it->second : _filteredSentinel;
 				}
 				else if ( _currentSystem->topology->atomOriginalIndexes )
+				{
 					return _currentSystem->topology->atomOriginalIndexes.value()[ p_currentSystemAtomIdx ];
+				}
 				else
+				{
 					return p_currentSystemAtomIdx;
+				}
 			}
 
 			inline uint newResIdx( const uint & p_currentSystemResIdx )
 			{
 				if ( _multiSystem )
+				{
 					return _currentSystemResIdxMap[ p_currentSystemResIdx ] = ++_lastResIdx;
+				}
 				else
+				{
 					return _currentSystem->topology->residueOriginalIds[ p_currentSystemResIdx ];
+				}
 			}
+
 			inline const uint & getResIdx( const uint & p_currentSystemResIdx ) const
 			{
 				if ( _multiSystem )
+				{
 					return _currentSystemResIdxMap.at( p_currentSystemResIdx );
+				}
 				else
+				{
 					return _currentSystem->topology->residueOriginalIds[ p_currentSystemResIdx ];
+				}
 			}
 
 			/**
@@ -107,6 +127,7 @@ namespace VTX::IO::Writer
 		};
 
 		using WrittenAtomMap = std::unordered_map<uint, uint>;
+
 		inline bool isResidueOfChain(
 			const size_t &						p_residueIdx,
 			const size_t &						p_chainIdx,
@@ -114,9 +135,12 @@ namespace VTX::IO::Writer
 		) noexcept
 		{
 			if ( p_chainIdx < p_mol.getChainCount() - 1 )
+			{
 				return p_residueIdx < p_mol.chainFirstResidues[ p_chainIdx ] + p_mol.chainResidueCounts[ p_chainIdx ];
+			}
 			return p_residueIdx < p_mol.getResidueCount();
 		}
+
 		inline bool isAtomOfResidue(
 			const size_t &						p_atomIdx,
 			const size_t &						p_residueIdx,
@@ -124,10 +148,13 @@ namespace VTX::IO::Writer
 		)
 		{
 			if ( p_residueIdx < p_mol.getResidueCount() - 1 )
+			{
 				return p_atomIdx
 					   < p_mol.residueFirstAtomIndexes[ p_residueIdx ] + p_mol.residueAtomCounts[ p_residueIdx ];
+			}
 			return p_atomIdx < p_mol.getAtomCount();
 		}
+
 		void convert( const VTX::Core::ChemDB::Bond::ORDER & in, E_BOND_ORDER & out ) noexcept
 		{
 			switch ( in )
@@ -158,6 +185,7 @@ namespace VTX::IO::Writer
 				= VTX::Core::ChemDB::Atom ::SYMBOL_STR[ static_cast<int>( p_topology.atomSymbols[ p_atomIdx ] ) ];
 			w_atom.setSymbol( std::string( constSymbol.begin(), constSymbol.end() ) );
 		}
+
 		inline void addResidue(
 			const VTX::Core::Struct::Topology & p_topology,
 			const size_t &						p_residueIdx,
@@ -193,13 +221,14 @@ namespace VTX::IO::Writer
 				  isAtomOfResidue( it_atomIdx, p_residueIdx, p_topology );
 				  it_atomIdx++ )
 			{
-				if ( p_atomFilter( p_topology, it_atomIdx ) )
+				if ( p_atomFilter( it_atomIdx ) )
 				{
 					addAtom( p_topology, it_atomIdx, p_system, w_residue, p_indexManager );
 					;
 				}
 			}
 		}
+
 		inline void addChain(
 			const VTX::Core::Struct::Topology & p_topology,
 			const size_t &						p_chainIdx,
@@ -223,6 +252,7 @@ namespace VTX::IO::Writer
 				addResidue( p_topology, it_residueIdx, p_system, w_chain, p_atomFilter, p_indexManager );
 			}
 		}
+
 		inline void setBonds(
 			const VTX::Core::Struct::Topology & p_mol,
 			System &							p_system,
@@ -234,7 +264,7 @@ namespace VTX::IO::Writer
 			{
 				size_t atomIdx1 = p_mol.bondPairAtomIndexes[ bondIdx ],
 					   atomIdx2 = p_mol.bondPairAtomIndexes[ bondIdx + 1 ];
-				if ( p_atomFilter( p_mol, atomIdx1 ) && p_atomFilter( p_mol, atomIdx2 ) )
+				if ( p_atomFilter( atomIdx1 ) && p_atomFilter( atomIdx2 ) )
 				{
 					E_BOND_ORDER w_bondOrder = E_BOND_ORDER::unknown;
 					convert( p_mol.bondOrders[ bondIdx >> 1 ], w_bondOrder );
@@ -246,6 +276,7 @@ namespace VTX::IO::Writer
 				}
 			}
 		}
+
 		inline void fillFrames(
 			const TrajectoryFrameGetter &  p_traj,
 			const Core::Struct::Topology & p_topology,
@@ -258,7 +289,9 @@ namespace VTX::IO::Writer
 			{
 				Frame w_frame;
 				if ( not p_system.fetch( w_frame, frameIdx ) )
+				{
 					w_frame = p_system.newFrame();
+				}
 
 				std::span<const Vec3f> currentAtomPositions = p_traj.getAtomPositions( static_cast<uint>( frameIdx ) );
 				for ( size_t it_atomIdx = 0; it_atomIdx < currentAtomPositions.size(); it_atomIdx++ )
@@ -287,7 +320,9 @@ namespace VTX::IO::Writer
 			{
 				auto & topology = system.topology;
 				if ( topology == nullptr )
+				{
 					continue;
+				}
 				uint atomWritten = 0;
 				for ( size_t chainIdx = 0; chainIdx < system.topology->getChainCount(); chainIdx++ )
 				{
@@ -295,7 +330,9 @@ namespace VTX::IO::Writer
 				}
 
 				if ( p_args.stopToken.stop_requested() )
+				{
 					return;
+				}
 
 				// TODO : This algorithm doesn't work for bonds and positions.
 				// When an atom is filtered out, there is a shift between the position index that contains all atoms,
@@ -304,7 +341,9 @@ namespace VTX::IO::Writer
 				setBonds( *system.topology, w_system, system.atomFilter, indexManager );
 
 				if ( p_args.stopToken.stop_requested() )
+				{
 					return;
+				}
 
 				fillFrames( system.trajectory, *topology, w_system, indexManager );
 				indexManager.nextSystem();
@@ -319,11 +358,17 @@ namespace VTX::IO::Writer
 	void writeFile( WriteArgs p_args )
 	{
 		if ( p_args.stopToken.stop_requested() )
+		{
 			return;
+		}
 		if ( p_args.writeType != E_WRITE_TYPE::trajectory )
+		{
 			throw VTXException( "Other type of writings aren't implemented yet" );
+		}
 		if ( p_args.topologies.empty() )
+		{
 			throw VTXException( "Nothing to write." );
+		}
 		writeTrajectoryFile( std::move( p_args ) );
 	}
 } // namespace VTX::IO::Writer

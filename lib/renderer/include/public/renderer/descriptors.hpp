@@ -2,7 +2,6 @@
 #define __VTX_RENDERER_DESCRIPTORS__
 
 #include <array>
-#include <functional>
 #include <memory>
 #include <optional>
 #include <span>
@@ -10,8 +9,10 @@
 #include <tuple>
 #include <unordered_map>
 #include <util/constants.hpp>
+#include <util/enum.hpp>
 #include <util/hashing.hpp>
 #include <util/types.hpp>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -55,9 +56,11 @@ namespace VTX::Renderer::Desc
 		UINT,
 		FLOAT,
 		VEC2I,
+		VEC2U,
 		VEC2F,
 		VEC3F,
 		VEC4F,
+		VEC4U,
 		MAT3F,
 		MAT4F
 	};
@@ -101,15 +104,6 @@ namespace VTX::Renderer::Desc
 	};
 
 	/**
-	 * @brief All buffer roles.
-	 */
-	enum struct E_SHADER_BUFFER_KIND : uint32_t
-	{
-		PARAMETERS,
-		STRUCTURED
-	};
-
-	/**
 	 * @brief All buffer mutability types.
 	 */
 	enum struct E_BUFFER_MUTABILITY : uint32_t
@@ -140,14 +134,28 @@ namespace VTX::Renderer::Desc
 	};
 
 	/**
-	 * @brief All data buffer kinds.
-	 * // TODO: no more needed, keep for semantic?
+	 * @brief All ways a buffer can be consumed by the renderer or external compute backends.
 	 */
-	enum struct E_PIPELINE_BUFFER_KIND : uint32_t
+	enum struct E_BUFFER_USAGE : uint32_t
 	{
-		VERTEX,
-		INDICE,
-		INDIRECT_COMMAND
+		VTX_ENUM_ENABLE_BITMASK,
+		NONE	   = 0u,
+		VERTEX	   = 1u << 0,
+		INDEX	   = 1u << 1,
+		INDIRECT   = 1u << 2,
+		UNIFORM	   = 1u << 3,
+		STORAGE	   = 1u << 4,
+		CUDA_READ  = 1u << 5,
+		CUDA_WRITE = 1u << 6,
+	};
+
+	/**
+	 * @brief Physical allocation strategy for a logical render graph buffer.
+	 */
+	enum struct E_BUFFER_ALLOCATION : uint32_t
+	{
+		SINGLE,
+		CHUNKED
 	};
 
 	/**
@@ -180,13 +188,72 @@ namespace VTX::Renderer::Desc
 	 */
 	enum struct E_SETTING : uint32_t
 	{
+		VTX_ENUM_ENABLE_BITMASK,
 		CLEAR_COLOR	 = 1u << 0,
 		CLEAR_DEPTH	 = 1u << 1,
 		ENABLE_DEPTH = 1u << 2,
 	};
 
 	/**
-	 * @brief All render target types.
+	 * @brief Memory barriers required after a compute dispatch.
+	 */
+	enum struct E_MEMORY_BARRIER : uint32_t
+	{
+		VTX_ENUM_ENABLE_BITMASK,
+		NONE				 = 0u,
+		VERTEX_ATTRIB_ARRAY	 = 1u << 0,
+		ELEMENT_ARRAY		 = 1u << 1,
+		UNIFORM				 = 1u << 2,
+		TEXTURE_FETCH		 = 1u << 3,
+		SHADER_IMAGE_ACCESS	 = 1u << 4,
+		COMMAND				 = 1u << 5,
+		PIXEL_BUFFER		 = 1u << 6,
+		TEXTURE_UPDATE		 = 1u << 7,
+		BUFFER_UPDATE		 = 1u << 8,
+		FRAMEBUFFER			 = 1u << 9,
+		TRANSFORM_FEEDBACK	 = 1u << 10,
+		ATOMIC_COUNTER		 = 1u << 11,
+		SHADER_STORAGE		 = 1u << 12,
+		QUERY				 = 1u << 13,
+		CLIENT_MAPPED_BUFFER = 1u << 14,
+		ALL					 = 0xFFFFFFFFu
+	};
+
+	/**
+	 * @brief External compute APIs that can interop with renderer-owned resources.
+	 */
+	enum struct E_INTEROP_API : uint32_t
+	{
+		CUDA,
+		OPTIX
+	};
+
+	/**
+	 * @brief All pass types.
+	 */
+	enum struct E_PASS_TYPE : uint8_t
+	{
+		// Produces render commands for the graphics pipeline.
+		GRAPHICS,
+		// Produces dispatch commands for compute pipelines.
+		COMPUTE,
+		// Others: CUDA, etc...
+		EXTERNAL
+	};
+
+	/**
+	 * @brief All pass execution types.
+	 */
+	enum struct E_PASS_EXECUTION : uint8_t
+	{
+		// Execute every frame.
+		EVERY_FRAME,
+		// Execute only when explicitly marked dirty by the renderer.
+		ON_DIRTY
+	};
+
+	/**
+	 * @brief Set render target for the graphics pipeline.
 	 */
 	enum struct E_RENDER_TARGET : uint32_t
 	{
@@ -281,27 +348,32 @@ namespace VTX::Renderer::Desc
 	};
 
 	/**
-	 * @brief Uniform buffer descriptor.
+	 * @brief Buffer descriptor.
 	 */
-	struct BufferShader
+	struct Buffer
 	{
 		Key						  name;
-		E_SHADER_BUFFER_KIND	  role;
-		E_BUFFER_MUTABILITY		  mutability;
-		E_BUFFER_ACCESS			  access;
-		E_UPDATE_FREQUENCY		  frequency;
-		std::optional<Binding>	  binding; // TODO: remove and use backend reflection.
+		E_BUFFER_USAGE			  usage		 = E_BUFFER_USAGE::NONE;
+		E_BUFFER_ALLOCATION		  allocation = E_BUFFER_ALLOCATION::SINGLE;
+		E_BUFFER_MUTABILITY		  mutability = E_BUFFER_MUTABILITY::MUTABLE;
+		E_BUFFER_ACCESS			  access	 = E_BUFFER_ACCESS::NONE;
+		E_UPDATE_FREQUENCY		  frequency	 = E_UPDATE_FREQUENCY::STATIC;
+		std::optional<Binding>	  binding	 = std::nullopt; // TODO: remove and use backend reflection?
 		std::vector<UniformValue> values;
 	};
 
 	/**
-	 * @brief Data buffer descriptor.
+	 * @brief Physical chunk of a buffer, used when allocation strategy is chunked.
 	 */
-	struct BufferPipeline
+	using BufferChunk = uint32_t;
+
+	/**
+	 * @brief Reference to a logical buffer, optionally targeting a physical chunk.
+	 */
+	struct BufferRef
 	{
-		Key					   name;
-		E_PIPELINE_BUFFER_KIND kind;
-		E_UPDATE_FREQUENCY	   frequency;
+		Key						   key;
+		std::optional<BufferChunk> chunk = std::nullopt;
 	};
 
 	/**
@@ -336,9 +408,10 @@ namespace VTX::Renderer::Desc
 	 */
 	struct Geometry
 	{
-		Key				   vertexLayout;
-		std::optional<Key> indiceBuffer	  = {};
-		std::optional<Key> indirectBuffer = {};
+		Key						 vertexLayout;
+		std::optional<Key>		 indiceBuffer	= {};
+		std::optional<Key>		 indirectBuffer = {};
+		std::vector<BufferChunk> chunks;
 	};
 
 	/**
@@ -347,9 +420,18 @@ namespace VTX::Renderer::Desc
 	struct DrawIndirectCommand
 	{
 		uint32_t vertexCount;
-		uint32_t instanceCout;
+		uint32_t instanceCount;
 		uint32_t firstVertex;
 		uint32_t baseInstance;
+	};
+
+	struct DrawIndirectRecord
+	{
+		DrawIndirectCommand command;
+		uint32_t			idModel	 = 0;
+		uint32_t			padding0 = 0;
+		uint32_t			padding1 = 0;
+		uint32_t			padding2 = 0;
 	};
 
 	struct DrawIndexedIndirectCommand
@@ -361,6 +443,22 @@ namespace VTX::Renderer::Desc
 		uint32_t baseInstance;
 	};
 
+	struct DrawIndexedIndirectRecord
+	{
+		DrawIndexedIndirectCommand command;
+		uint32_t				   idModel	= 0;
+		uint32_t				   padding0 = 0;
+		uint32_t				   padding1 = 0;
+	};
+
+	static_assert( sizeof( DrawIndirectRecord ) == 32 );
+	static_assert( sizeof( DrawIndexedIndirectRecord ) == 32 );
+
+	inline constexpr uint32_t DRAW_INDIRECT_COUNT_OFFSET		= 0u;
+	inline constexpr uint32_t DRAW_INDIRECT_COMMANDS_OFFSET		= 16u;
+	inline constexpr uint32_t DRAW_INDIRECT_RECORD_SIZE			= sizeof( DrawIndirectRecord );
+	inline constexpr uint32_t DRAW_INDEXED_INDIRECT_RECORD_SIZE = sizeof( DrawIndexedIndirectRecord );
+
 	/**
 	 * @brief Draw call descriptor.
 	 */
@@ -371,12 +469,37 @@ namespace VTX::Renderer::Desc
 
 		struct Range
 		{
-			uint32_t first = 0;
-			uint32_t count = 0;
+			uint32_t				   first = 0;
+			uint32_t				   count = 0;
+			std::optional<BufferChunk> chunk = std::nullopt;
 		};
-		// Could be a single range, or reference to a count in a buffer for indirect draw.
-		using RangesVariant	 = std::variant<Range, uintptr_t>;
+
+		struct Indirect
+		{
+			std::optional<BufferChunk> chunk = std::nullopt;
+		};
+
+		// Could be a direct range, or an indirect draw buffer whose draw count lives on the GPU.
+		using RangesVariant	 = std::variant<Range, Indirect>;
 		RangesVariant ranges = Range { 0, 0 };
+	};
+
+	/**
+	 * @brief Compute dispatch descriptors.
+	 */
+	struct Dispatch
+	{
+		uint32_t		 groupX	  = 1;
+		uint32_t		 groupY	  = 1;
+		uint32_t		 groupZ	  = 1;
+		E_MEMORY_BARRIER barriers = E_MEMORY_BARRIER::NONE;
+	};
+
+	struct DispatchIndirect
+	{
+		Key				 indirectBuffer;
+		uint32_t		 offset	  = 0;
+		E_MEMORY_BARRIER barriers = E_MEMORY_BARRIER::NONE;
 	};
 
 	/**
@@ -384,16 +507,13 @@ namespace VTX::Renderer::Desc
 	 */
 	struct Program
 	{
-		Key						  name;
-		DirOrFiles				  shaders;
-		std::vector<UniformValue> uniforms;
-		std::optional<DrawCall>	  drawCall;
+		Key								name;
+		DirOrFiles						shaders;
+		std::vector<UniformValue>		uniforms;
+		std::optional<DrawCall>			drawCall;
+		std::optional<Dispatch>			dispatch;
+		std::optional<DispatchIndirect> dispatchIndirect;
 	};
-
-	/**
-	 * @brief Render function descriptor.
-	 */
-	using RenderFunc = std::function<void()>;
 
 	/**
 	 * @brief Pass descriptor.
@@ -401,11 +521,12 @@ namespace VTX::Renderer::Desc
 	struct Pass
 	{
 		Key							 name;
+		E_PASS_TYPE					 type	   = E_PASS_TYPE::GRAPHICS;
+		E_PASS_EXECUTION			 execution = E_PASS_EXECUTION::EVERY_FRAME;
 		std::vector<ResourceBinding> inputs;
 		std::vector<ResourceBinding> outputs;
 		std::vector<Program>		 programs;
 		std::vector<E_SETTING>		 settings;
-		std::optional<RenderFunc>	 customCallback;
 	};
 
 	/**
@@ -413,14 +534,14 @@ namespace VTX::Renderer::Desc
 	 */
 	template<typename T>
 	using ResourceMap = std::unordered_map<Key, T>;
+
 	struct Resources
 	{
-		ResourceMap<Texture>		textures;
-		ResourceMap<Sampler>		samplers;
-		ResourceMap<VertexLayout>	vertexStreams;
-		ResourceMap<BufferShader>	shaderBuffers;
-		ResourceMap<BufferPipeline> pipelineBuffers;
-		ResourceMap<Geometry>		geometries;
+		ResourceMap<Texture>	  textures;
+		ResourceMap<Sampler>	  samplers;
+		ResourceMap<VertexLayout> vertexStreams;
+		ResourceMap<Buffer>		  buffers;
+		ResourceMap<Geometry>	  geometries;
 	};
 
 	/**
@@ -449,6 +570,46 @@ namespace VTX::Renderer::Desc
 	{
 		return Util::hash( toUnderlying( p_text.format ) ) + p_text.data.size();
 	}
+
+	/**
+	 * @brief Information about the availability of interop with other backends.
+	 */
+	struct InteropAvailability
+	{
+		/**
+		 * @brief Shipped with this build.
+		 */
+		bool compiled = false;
+		/**
+		 * @brief Initlialized at runtime.
+		 */
+		bool runtime = false;
+
+		/**
+		 * @brief Availability.
+		 */
+		bool inline available() const noexcept { return compiled && runtime; }
+	};
+
+	/**
+	 * @brief Buffer mapping for interop with external compute backends.
+	 */
+	struct InteropBufferMapping
+	{
+		/**
+		 * @brief Key of the mapped buffer.
+		 */
+		Key key;
+		/**
+		 * @brief Generic device pointer.
+		 */
+		void * devicePtr = nullptr;
+
+		/**
+		 * @brief Size of the mapped buffer.
+		 */
+		size_t size = 0;
+	};
 
 } // namespace VTX::Renderer::Desc
 

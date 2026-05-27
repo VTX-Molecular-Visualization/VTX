@@ -9,7 +9,7 @@
 
 namespace VTX::App::System
 {
-	std::span<const Vec3f> getCurrentAtomPositions( const ECS::Entity & p_entity ) noexcept
+	std::span<const Vec3f> getCurrentAtomPositions( const Entity & p_entity ) noexcept
 	{
 		if ( auto traj = REG().try_get<TrajectorySingleFrame>( p_entity ) )
 		{
@@ -22,15 +22,15 @@ namespace VTX::App::System
 		return {};
 	}
 
-	bool hasMultiFrameTrajectory( const ECS::Entity & p_entity ) noexcept
+	bool hasMultiFrameTrajectory( const Entity & p_entity ) noexcept
 	{ return REG().any_of<TrajectoryFullBuffer>( p_entity ); }
-	void get( const ECS::Entity & p_entity, GenericTrajectory *& p_trajPtr ) noexcept
+	void get( const Entity & p_entity, GenericTrajectory *& p_trajPtr ) noexcept
 	{
 		p_trajPtr = nullptr;
 		if ( REG().all_of<TrajectoryFullBuffer>( p_entity ) )
 			p_trajPtr = &REG().get<TrajectoryFullBuffer>( p_entity ).genericData;
 	}
-	void get( const ECS::Entity & p_entity, AvailableFrames & p_out ) noexcept
+	void get( const Entity & p_entity, AvailableFrames & p_out ) noexcept
 	{
 		if ( auto traj = REG().try_get<TrajectoryFullBuffer>( p_entity ) )
 		{
@@ -40,13 +40,13 @@ namespace VTX::App::System
 		}
 	}
 
-	void eraseTrajectory( const ECS::Entity & p_entity ) noexcept
+	void eraseTrajectory( const Entity & p_entity ) noexcept
 	{
 		REG().remove<TrajectoryFullBuffer>( p_entity );
 		REG().remove<TrajectorySingleFrame>( p_entity );
 	}
 
-	void patchGenericTrajectories( ECS::Entity p_entity, std::function<void( GenericTrajectory & )> p_lambda ) noexcept
+	void patchGenericTrajectories( Entity p_entity, std::function<void( GenericTrajectory & )> p_lambda ) noexcept
 	{
 		if ( REG().all_of<TrajectoryFullBuffer>( p_entity ) )
 		{
@@ -85,7 +85,7 @@ namespace VTX::App::System
 	  private:
 		std::reference_wrapper<const TrajectoryFullBuffer> _traj;
 	};
-	void get( const ECS::Entity & p_entity, VTX::IO::Writer::TrajectoryFrameGetter & p_traj ) noexcept
+	void get( const Entity & p_entity, VTX::IO::Writer::TrajectoryFrameGetter & p_traj ) noexcept
 	{
 		if ( auto traj = REG().try_get<TrajectorySingleFrame>( p_entity ) )
 		{

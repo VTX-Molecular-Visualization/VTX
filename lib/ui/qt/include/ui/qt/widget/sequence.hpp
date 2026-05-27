@@ -1,10 +1,11 @@
 #ifndef __VTX_UI_QT_WIDGET_SEQUENCE__
 #define __VTX_UI_QT_WIDGET_SEQUENCE__
 
-#include "ui/qt/widget/base_widget.hpp"
 #include <QAbstractScrollArea>
 #include <QContextMenuEvent>
+#include <app/ecs.hpp>
 #include <core/struct/topology.hpp>
+#include <optional>
 
 namespace VTX::UI::QT::Widget
 {
@@ -14,7 +15,7 @@ namespace VTX::UI::QT::Widget
 	class Sequence : public QAbstractScrollArea
 	{
 	  public:
-		Sequence( const App::ECS::Entity, QWidget * );
+		Sequence( const Entity, QWidget * );
 
 	  protected:
 		void paintEvent( QPaintEvent * ) override;
@@ -29,7 +30,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Entity of the system to display.
 		 */
-		const App::ECS::Entity _system;
+		const Entity _system;
 
 		/**
 		 * @brief UI controls.

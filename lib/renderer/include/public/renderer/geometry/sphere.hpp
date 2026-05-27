@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_GEOMETRY_SPHERE__
 
 #include "base_geometry.hpp"
+#include "renderer/caches.hpp"
 
 namespace VTX::Renderer::Geometry
 {
@@ -9,19 +10,25 @@ namespace VTX::Renderer::Geometry
 	class Sphere : public BaseGeometry
 	{
 	  public:
+		inline static const Desc::Key		  VERTEX_LAYOUT_ATOMS	   = "Atoms";
+		inline static const Desc::Key		  GEOMETRY_SPHERES		   = "Spheres";
+		inline static const Desc::Key		  INDEX_ATOMS			   = "Index.Atoms";
+		inline static const Desc::Key		  INDIRECT_SPHERES		   = "Indirect.Spheres";
+		inline static constexpr Desc::Binding BINDING_INDIRECT_SPHERES = 20;
+
 		Sphere()
 		{
-			vertexLayout   = "Atoms";
-			indiceBuffer   = "Index.Atoms";
-			indirectBuffer = "Indirect.Spheres";
+			vertexLayout   = VERTEX_LAYOUT_ATOMS;
+			indiceBuffer   = INDEX_ATOMS;
+			indirectBuffer = INDIRECT_SPHERES;
 		}
 
-		void construct( const Desc::Handle p_handle, const SystemData & p_data )
+		void registerSystem( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
-			const Index count = p_data.data.getAtomCount();
+			const Index count = p_data.data.topology->getAtomCount();
 
 			assert( count > 0 );
-			assert( p_data.atomUids.size() == count );
+			assert( p_data.data.atomUids->getCount() == count );
 
 			_addRange( p_handle, count, count );
 
@@ -32,6 +39,11 @@ namespace VTX::Renderer::Geometry
 
 		void setVisibility( const Desc::Handle p_handle, const Util::Math::BitSet & p_visibility )
 		{
+			if ( not _hasRange( p_handle ) )
+			{
+				return;
+			}
+
 			auto & indiceBuffer = _indices( p_handle );
 
 			indiceBuffer.clear();

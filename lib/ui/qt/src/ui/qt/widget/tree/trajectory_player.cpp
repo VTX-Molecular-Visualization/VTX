@@ -13,8 +13,7 @@
 namespace VTX::UI::QT::Widget::Tree
 {
 
-	TrajectoryPlayer::TrajectoryPlayer( App::ECS::Entity p_system, QWidget * p_parent ) :
-		QWidget( p_parent ), _system( p_system )
+	TrajectoryPlayer::TrajectoryPlayer( Entity p_system, QWidget * p_parent ) : QWidget( p_parent ), _system( p_system )
 	{
 		// Main vertical layout
 		auto * mainLayout = new QVBoxLayout( this );
@@ -122,7 +121,7 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 	}
 
-	void TrajectoryPlayer::_onTrajectoryUpdated( App::ECS::Registry &, App::ECS::Entity p_entity )
+	void TrajectoryPlayer::_onTrajectoryUpdated( Registry &, Entity p_entity )
 	{
 		// Only refresh if this is our system
 		if ( p_entity == _system )
@@ -184,6 +183,7 @@ namespace VTX::UI::QT::Widget::Tree
 		// Use unicode symbols for now (can be replaced with icons)
 		_btnPlayPause->setIcon( isPlaying ? _icons[ 1 ] : _icons[ 0 ] );
 	}
+
 	void TrajectoryPlayer::_onSettingsClicked() { _settings->setVisible( _btnSettings->isChecked() ); }
 
 } // namespace VTX::UI::QT::Widget::Tree

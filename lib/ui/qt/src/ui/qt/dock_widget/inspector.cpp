@@ -45,7 +45,7 @@ namespace VTX::UI::QT::DockWidget
 				const QModelIndex index
 					= p_selection.indexes().isEmpty() ? QModelIndex() : p_selection.indexes().first();
 				const QVariant		   data		 = index.data( Qt::UserRole );
-				const App::ECS::Entity preset	 = data.value<App::ECS::Entity>();
+				const Entity preset	 = data.value<Entity>();
 				const bool			   hasPreset = data.isValid();
 
 				// Insert widget.
@@ -183,7 +183,7 @@ namespace VTX::UI::QT::DockWidget
 
 	bool Inspector::_hasSystemSelection() const
 	{
-		for ( const App::ECS::Entity entity : App::REG().view<App::System::Selection>() )
+		for ( const Entity entity : App::REG().view<App::System::Selection>() )
 		{
 			if ( App::REG().get<App::System::Selection>( entity ).atoms.any() )
 			{
@@ -194,8 +194,10 @@ namespace VTX::UI::QT::DockWidget
 		return false;
 	}
 
-	void Inspector::_onSystemSelectionUpdated( App::ECS::Registry &, App::ECS::Entity )
+	void Inspector::_onSystemSelectionUpdated( Registry &, Entity )
 	{
+		Util::ScopedChrono timer( "Inspector::_onSystemSelectionUpdated" );
+
 		if ( not _hasSystemSelection() )
 		{
 			if ( _selectionListWidget )

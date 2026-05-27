@@ -2,7 +2,16 @@
 #define __VTX_UTIL_FILESYSTEM__
 
 #include "types.hpp"
+#include <filesystem>
 #include <string>
+
+namespace VTX
+{
+	/**
+	 * @brief Filesystem.
+	 */
+	using FilePath = std::filesystem::path;
+} // namespace VTX
 
 namespace VTX::Util::Filesystem
 {

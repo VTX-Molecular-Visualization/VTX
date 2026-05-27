@@ -11,7 +11,7 @@ namespace VTX::App::Action::System
 	 */
 	struct SetName
 	{
-		void execute( const ECS::Entity, const std::string_view );
+		void execute( const Entity, const std::string_view );
 	};
 
 	/**
@@ -19,7 +19,7 @@ namespace VTX::App::Action::System
 	 */
 	struct SetPosition
 	{
-		void execute( const ECS::Entity, const Vec3f & );
+		void execute( const Entity, const Vec3f & );
 	};
 
 	/**
@@ -27,7 +27,7 @@ namespace VTX::App::Action::System
 	 */
 	struct SetRotation
 	{
-		void execute( const ECS::Entity, const Quatf & );
+		void execute( const Entity, const Quatf & );
 	};
 
 	/**
@@ -35,7 +35,7 @@ namespace VTX::App::Action::System
 	 */
 	struct SetScale
 	{
-		void execute( const ECS::Entity, const Vec3f & );
+		void execute( const Entity, const Vec3f & );
 	};
 
 } // namespace VTX::App::Action::System

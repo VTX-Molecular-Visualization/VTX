@@ -9,7 +9,7 @@
 
 namespace VTX::App::Pass
 {
-	SceneUpdater::SceneUpdater( const ECS::Entity & p_ent ) : _entity( p_ent )
+	SceneUpdater::SceneUpdater( const Entity & p_ent ) : _entity( p_ent )
 	{
 		auto & reg = REG();
 
@@ -27,7 +27,7 @@ namespace VTX::App::Pass
 		reg.on_update<Renderer::Color::Layout>().connect<&SceneUpdater::_onUpdateColorLayoutPreset>( this );
 	}
 
-	void SceneUpdater::_onUpdateAABB( ECS::Registry & p_r, ECS::Entity p_e )
+	void SceneUpdater::_onUpdateAABB( Registry & p_r, Entity p_e )
 	{
 		// TODO: use event instead of this.
 		if ( p_e == _entity )
@@ -38,7 +38,7 @@ namespace VTX::App::Pass
 		_recomputeSceneAABB( p_r );
 	}
 
-	void SceneUpdater::_onUpdateTransform( ECS::Registry & p_r, ECS::Entity p_e )
+	void SceneUpdater::_onUpdateTransform( Registry & p_r, Entity p_e )
 	{
 		auto systems = p_r.view<Core::Struct::Topology, Util::Math::AABB>();
 		if ( not systems.contains( p_e ) )
@@ -49,12 +49,12 @@ namespace VTX::App::Pass
 		_recomputeSceneAABB( p_r );
 	}
 
-	void SceneUpdater::_onSystemDestroy( ECS::Registry & p_r, ECS::Entity p_e )
+	void SceneUpdater::_onSystemDestroy( Registry & p_r, Entity p_e )
 	{
 		_recomputeSceneAABB( p_r, p_e );
 	}
 
-	void SceneUpdater::_recomputeSceneAABB( ECS::Registry & p_r, ECS::Entity p_excluded )
+	void SceneUpdater::_recomputeSceneAABB( Registry & p_r, Entity p_excluded )
 	{
 		p_r.patch<Util::Math::AABB>(
 			_entity,
@@ -63,7 +63,7 @@ namespace VTX::App::Pass
 				p_sceneAABB.invalidate();
 
 				auto systems = p_r.view<Core::Struct::Topology, Util::Math::AABB, Util::Math::Transform>();
-				for ( const ECS::Entity system : systems )
+				for ( const Entity system : systems )
 				{
 					if ( system == p_excluded )
 					{
@@ -77,7 +77,7 @@ namespace VTX::App::Pass
 		);
 	}
 
-	void SceneUpdater::_onUpdateGraphicsConfig( ECS::Registry & p_r, ECS::Entity )
+	void SceneUpdater::_onUpdateGraphicsConfig( Registry & p_r, Entity )
 	{
 		auto &		 renderer = RENDERER();
 		const auto & instance = p_r.get<Scene::GraphicsConfig>( _entity );
@@ -85,7 +85,7 @@ namespace VTX::App::Pass
 		renderer.setGraphicsConfig( preset );
 	}
 
-	void SceneUpdater::_onUpdateColorLayout( ECS::Registry & p_r, ECS::Entity )
+	void SceneUpdater::_onUpdateColorLayout( Registry & p_r, Entity )
 	{
 		auto &		 renderer = RENDERER();
 		const auto & instance = p_r.get<Scene::ColorLayout>( _entity );
@@ -93,7 +93,7 @@ namespace VTX::App::Pass
 		renderer.setColorLayout( preset );
 	}
 
-	void SceneUpdater::_onUpdateGraphicsConfigPreset( ECS::Registry & p_r, ECS::Entity p_e )
+	void SceneUpdater::_onUpdateGraphicsConfigPreset( Registry & p_r, Entity p_e )
 	{
 		auto & instance = p_r.get<Scene::GraphicsConfig>( _entity );
 		if ( instance.preset == p_e )
@@ -102,7 +102,7 @@ namespace VTX::App::Pass
 		}
 	}
 
-	void SceneUpdater::_onUpdateColorLayoutPreset( ECS::Registry & p_r, ECS::Entity p_e )
+	void SceneUpdater::_onUpdateColorLayoutPreset( Registry & p_r, Entity p_e )
 	{
 		auto & instance = p_r.get<Scene::ColorLayout>( _entity );
 		if ( instance.preset == p_e )

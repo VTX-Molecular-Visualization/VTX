@@ -4,16 +4,23 @@
 #include "types.hpp"
 #include <string>
 #include <string_view>
+#include <typeinfo>
 #include <utility>
+
+namespace VTX
+{
+	/**
+	 * @brief Hashing.
+	 */
+	using Hash = size_t;
+} // namespace VTX
 
 namespace VTX::Util
 {
 	// Template function to hash a value.
 	template<typename T>
 	inline Hash hash( const T & p_value )
-	{
-		return std::hash<T>()( p_value );
-	}
+	{ return std::hash<T>()( p_value ); }
 
 	// Speicalization for char*, using content instead of ptr.
 	inline Hash hash( const char * p_value ) { return std::hash<std::string_view>()( std::string_view( p_value ) ); }
@@ -23,15 +30,11 @@ namespace VTX::Util
 
 	template<typename T>
 	constexpr Hash hash()
-	{
-		return typeid( DefaultHashProcess<T> ).hash_code();
-	}
+	{ return typeid( DefaultHashProcess<T> ).hash_code(); }
 
 	template<typename T>
 	constexpr std::string_view typeName()
-	{
-		return typeid( DefaultHashProcess<T> ).name();
-	}
+	{ return typeid( DefaultHashProcess<T> ).name(); }
 
 } // namespace VTX::Util
 #endif

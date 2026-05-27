@@ -72,7 +72,7 @@ namespace VTX::App::Action::Preset
 	template<typename T>
 	struct Rename
 	{
-		void execute( const ECS::Entity p_e, const std::string_view p_dest )
+		void execute( const Entity p_e, const std::string_view p_dest )
 		{
 			std::string name { p_dest };
 
@@ -99,7 +99,7 @@ namespace VTX::App::Action::Preset
 	template<typename T>
 	struct Duplicate
 	{
-		void execute( const ECS::Entity p_e, const std::optional<std::string_view> p_dest = std::nullopt )
+		void execute( const Entity p_e, const std::optional<std::string_view> p_dest = std::nullopt )
 		{
 			auto & reg = REG();
 			auto & src = reg.get<App::Preset::Name>( p_e );
@@ -123,7 +123,7 @@ namespace VTX::App::Action::Preset
 	template<typename T>
 	struct Delete
 	{
-		void execute( const ECS::Entity p_e )
+		void execute( const Entity p_e )
 		{
 			auto view = REG().view<App::Preset::Name, T>();
 
@@ -135,7 +135,7 @@ namespace VTX::App::Action::Preset
 			// TODO: check if preset is used in an instance.
 			/*
 			auto viewInstance = REG().view<App::Preset::Instance<T>>();
-			for ( const ECS::Entity entity : viewInstance )
+			for ( const Entity entity : viewInstance )
 			{
 				const auto & presetInstance = viewInstance.template get<App::Preset::Instance<T>>( entity );
 				if ( presetInstance.entity == p_e )
@@ -152,7 +152,7 @@ namespace VTX::App::Action::Preset
 	template<typename T>
 	struct Apply
 	{
-		void execute( const ECS::Entity p_e )
+		void execute( const Entity p_e )
 		{
 			if constexpr ( std::is_same_v<T, Renderer::Color::Layout> )
 			{
@@ -166,14 +166,14 @@ namespace VTX::App::Action::Preset
 			{
 				// Loop over all systems and apply the representation preset to each of them.
 				auto view = REG().view<System::Representation>();
-				for ( const ECS::Entity entity : view )
+				for ( const Entity entity : view )
 				{
 					ACTION().execute<Action::Representation::Add<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>( entity, p_e );
 				}
 			}
 			else
 			{
-				static_assert( always_false_v<T>, "Unsupported preset type." );
+				static_assert( always_false_t<T>, "Unsupported preset type." );
 			}
 		}
 	};
@@ -219,7 +219,7 @@ namespace VTX::App::Action::Preset
 				"Van der Waals", Renderer::Representations::VAN_DER_WAALS
 			);
 			ACTION().execute<Add<Renderer::Representation>>( "Ribbons", Renderer::Representations::RIBBONS );
-			// ACTION().execute<Add<Renderer::Representation>>( "SES", Renderer::Representations::SES );
+			ACTION().execute<Add<Renderer::Representation>>( "SES", Renderer::Representations::SES );
 		}
 	};
 

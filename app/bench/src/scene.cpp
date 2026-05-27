@@ -51,78 +51,65 @@ namespace VTX::Bench
 
 		system.topology	 = std::make_unique<Core::Struct::Topology>( std::move( loadedSystem.topology ) );
 		system.positions = std::move( loadedSystem.positions );
-		system.uid		 = _nextSystemUid++;
+		system.uid		 = _nextSystemUID++;
 
 		const size_t residueCount = system.topology->getResidueCount();
-		system.residueUids.resize( residueCount );
-		std::iota( system.residueUids.begin(), system.residueUids.end(), _nextPickingUid );
-		_nextPickingUid += PickingUID( residueCount );
+		system.residueUids		  = Util::Math::Range<UID32>::fromFirstCount( _nextUID32, UID32( residueCount ) );
+		_nextUID32 += UID32( residueCount );
 
 		const size_t atomCount = system.topology->getAtomCount();
-		system.atomUids.resize( atomCount );
-		std::iota( system.atomUids.begin(), system.atomUids.end(), _nextPickingUid );
-		_nextPickingUid += PickingUID( atomCount );
+		system.atomUids		   = Util::Math::Range<UID32>::fromFirstCount( _nextUID32, UID32( atomCount ) );
+		_nextUID32 += UID32( atomCount );
+
+		system.colorSchemeAtoms.emplace(
+			Renderer::E_COLOR_SCHEME::ATOM, Core::Struct::IndexRangeList( system.topology->getAtomRange() )
+		);
+		system.representationHandles.emplace( Entity( 0 ), Renderer::Desc::Handle( 0 ) );
+		system.presetAtoms.emplace( Entity( 0 ), Core::Struct::IndexRangeList( system.topology->getAtomRange() ) );
+		system.visibility = Util::Math::BitSet( atomCount, true );
+		system.selection  = Util::Math::BitSet( atomCount, false );
 
 		_systems.emplace_back( std::move( system ) );
 	};
 
 	void Scene::removeSystem( const size_t p_index ) { _systems.erase( _systems.begin() + p_index ); }
 
-	std::vector<Renderer::SystemData> Scene::_buildRendererSystems() const
+	Renderer::Cache::System Scene::_buildRendererSystem( const SystemEntry & p_system ) const
 	{
-		std::vector<Renderer::SystemData> systems;
-		systems.reserve( _systems.size() );
-
-		for ( const SystemEntry & system : _systems )
-		{
-			systems.push_back(
-				Renderer::SystemData { system.uid,
-									   system.transform,
-									   *system.topology,
-									   system.positions,
-									   system.atomUids,
-									   system.residueUids }
-			);
-		}
-
-		return systems;
-	}
-
-	std::vector<Renderer::ColorIndex> Scene::_buildAtomColors( const Core::Struct::Topology & p_topology ) const
-	{
-		const size_t					  atomCount = p_topology.getAtomCount();
-		std::vector<Renderer::ColorIndex> colors( atomCount );
-
-		for ( Index atomIndex = 0; atomIndex < atomCount; ++atomIndex )
-		{
-			colors[ atomIndex ] = Renderer::Color::getColorIndex( p_topology.getAtomSymbol( atomIndex ) );
-		}
-
-		return colors;
-	}
-
-	Renderer::MapRepresentationRanges Scene::_buildDefaultRepresentation(
-		const Core::Struct::Topology & p_topology
-	) const
-	{
-		Renderer::MapRepresentationRanges representations;
-		representations.emplace(
-			Renderer::RepresentationIndex( 0 ), Core::Struct::IndexRangeList( p_topology.getAtomRange() )
-		);
-		return representations;
+		return Renderer::Cache::System { p_system.transform,		 p_system.topology.get(),
+										 p_system.positions,		 &p_system.atomUids,
+										 &p_system.residueUids,		 &p_system.colorSchemeAtoms,
+										 &p_system.customColorAtoms, &p_system.representationHandles,
+										 &p_system.presetAtoms,		 &p_system.visibility,
+										 &p_system.selection };
 	}
 
 	void Scene::syncRenderer( Renderer::Renderer & p_renderer ) const
 	{
-		p_renderer.setSystems( _buildRendererSystems() );
+		std::unordered_set<uint> currentSystemUids;
+		currentSystemUids.reserve( _systems.size() );
 
 		for ( const SystemEntry & system : _systems )
 		{
-			const size_t atomCount = system.topology->getAtomCount();
-			p_renderer.setSystemColors( system.uid, _buildAtomColors( *system.topology ) );
-			p_renderer.setSystemRepresentation( system.uid, _buildDefaultRepresentation( *system.topology ) );
-			p_renderer.setSystemVisibility( system.uid, Util::Math::BitSet( atomCount, true ) );
-			p_renderer.setSystemSelection( system.uid, Util::Math::BitSet( atomCount ) );
+			currentSystemUids.insert( system.uid );
+			if ( _syncedSystems.contains( system.uid ) )
+			{
+				continue;
+			}
+
+			_syncedSystems.emplace( system.uid, p_renderer.addSystem( _buildRendererSystem( system ) ) );
+		}
+
+		for ( auto it = _syncedSystems.begin(); it != _syncedSystems.end(); )
+		{
+			if ( currentSystemUids.contains( it->first ) )
+			{
+				++it;
+				continue;
+			}
+
+			p_renderer.removeSystem( it->second );
+			it = _syncedSystems.erase( it );
 		}
 	}
 

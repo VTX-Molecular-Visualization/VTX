@@ -2,6 +2,7 @@
 #define __VTX_APP_EVENTS__
 
 #include "app/ecs.hpp"
+#include <span>
 #include <string>
 #include <thread>
 #include <util/types.hpp>
@@ -65,6 +66,13 @@ namespace VTX::App::Events
 		bool  rendered;
 	};
 
+	struct RendererResize
+	{
+		size_t width;
+		size_t height;
+		bool   resizeMainWindow;
+	};
+
 	struct BlockingOperationStart
 	{
 		std::string message;
@@ -92,13 +100,19 @@ namespace VTX::App::Events
 	 */
 	struct SystemLoad
 	{
-		ECS::Entity system;
+		Entity system;
+	};
+
+	struct TrajectoryLoad
+	{
+		Entity				   system;
+		std::span<const Vec3f> frame;
 	};
 
 	template<typename P>
 	struct PresetRename
 	{
-		ECS::Entity preset;
+		Entity		preset;
 		std::string name;
 	};
 
@@ -113,12 +127,6 @@ namespace VTX::App::Events
 	{
 		std::jthread::id id;
 		bool			 manuallyStopped;
-	};
-
-	struct FileDownloaded
-	{
-		uint64_t id;
-		bool	 success;
 	};
 
 	struct PythonInitialized

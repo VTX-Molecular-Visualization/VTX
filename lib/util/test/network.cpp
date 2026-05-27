@@ -2,7 +2,7 @@
 #include <util/network.hpp>
 
 // network.cpp
-TEST_CASE( "Util::Network", "[unit]" )
+TEST_CASE( "Util::Network", "[.] [integration][network]" )
 {
 	using namespace VTX;
 	using namespace Util::Network;

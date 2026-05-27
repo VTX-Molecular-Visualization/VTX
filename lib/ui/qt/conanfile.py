@@ -149,6 +149,7 @@ def config_options_qt(p_conanFile : ConanFile):
             p_conanFile.options["qt"].with_x11 = True
             p_conanFile.options["qt"].with_egl = True # forced by wayland.
             p_conanFile.options["qt"].with_dbus = True
+            p_conanFile.options["qt"].with_fontconfig = True
         
         
 def generate_qt(p_conanFile : ConanFile):
@@ -213,11 +214,12 @@ class VTXUiQtRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_io/1.0")
         self.requires("vtx_python_binding/1.0")
-        self.requires("qt/6.10.1", transitive_headers=True)
+        self.requires("qt/6.11.0", transitive_headers=True)
         if self.settings.os == "Linux":
-            self.requires("freetype/2.14.1", override=True)
-            self.requires("libffi/3.4.8", override=True)
-            self.requires("wayland/1.24.0", override=True)
+            self.requires("fontconfig/2.17.1", override=True)
+            self.requires("freetype/2.14.1", force=True)
+            self.requires("libffi/3.4.8", force=True)
+            self.requires("wayland/1.24.0", force=True)
         
     def config_options(self):
         if self.settings.os == "Windows":

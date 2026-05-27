@@ -79,7 +79,7 @@ namespace VTX::App
 		/**
 		 * @brief Main ECS registry.
 		 */
-		ECS::Registry _registry;
+		Registry _registry;
 
 		/**
 		 * @brief Application pipeline (main loop).

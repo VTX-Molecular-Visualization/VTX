@@ -3,9 +3,9 @@
 namespace VTX::Core::Struct
 {
 
-	ByteNumber dynamicMemoryUsage( const Trajectory & p_trj ) noexcept
+	size_t dynamicMemoryUsage( const Trajectory & p_trj ) noexcept
 	{
-		ByteNumber out = 0;
+		size_t out = 0;
 
 		// FIXME needs refacto to handle circular buffers
 		if ( !p_trj.isOptimized() )

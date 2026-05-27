@@ -35,7 +35,7 @@ namespace VTX::UI::QT::DockWidget
 		/**
 		 * @brief Trajoectory players trees.
 		 */
-		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::TrajectoryPlayer>> _mapTrajTreeWidgets;
+		std::unordered_map<Entity, QPointer<Widget::Tree::TrajectoryPlayer>> _mapTrajTreeWidgets;
 
 		QPointer<Widget::Tree::GraphicsConfigPresets> _treeGraphicsConfigPresets;
 		QPointer<Widget::Tree::ColorLayoutPresets>	  _treeColorLayoutPresets;
@@ -45,7 +45,7 @@ namespace VTX::UI::QT::DockWidget
 		/**
 		 * @brief System trees.
 		 */
-		std::unordered_map<App::ECS::Entity, QPointer<Widget::Tree::System>> _mapSystemTreeWidgets;
+		std::unordered_map<Entity, QPointer<Widget::Tree::System>> _mapSystemTreeWidgets;
 
 		/**
 		 * @brief Thread widgets.
@@ -60,7 +60,7 @@ namespace VTX::UI::QT::DockWidget
 		/**
 		 * @brief Remove tree when system is removed.
 		 */
-		void _onCameraConstruct( App::ECS::Registry &, App::ECS::Entity );
+		void _onCameraConstruct( Registry &, Entity );
 
 		/**
 		 * @brief Add tree when system is loaded.
@@ -70,17 +70,17 @@ namespace VTX::UI::QT::DockWidget
 		/**
 		 * @brief Remove tree when system is removed.
 		 */
-		void _onSystemDestroy( App::ECS::Registry &, App::ECS::Entity );
+		void _onSystemDestroy( Registry &, Entity );
 
 		/**
 		 * @brief Update selection.
 		 */
-		void _onUpdateVisibility( App::ECS::Registry &, App::ECS::Entity p_e );
+		void _onUpdateVisibility( Registry &, Entity p_e );
 
 		/**
 		 * @brief Update selection.
 		 */
-		void _onUpdateSelection( App::ECS::Registry &, App::ECS::Entity p_e );
+		void _onUpdateSelection( Registry &, Entity p_e );
 
 		/**
 		 * @brief Lock or unlock selection.
@@ -90,7 +90,7 @@ namespace VTX::UI::QT::DockWidget
 		/**
 		 * @brief Called when a trajectory is added to any system.
 		 */
-		void _onTrajectoryCreated( App::ECS::Registry &, App::ECS::Entity p_entity );
+		void _onTrajectoryCreated( Registry &, Entity p_entity );
 
 		/**
 		 * @brief Add or update thread widget.

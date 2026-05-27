@@ -5,123 +5,175 @@
 #include "../../../layout_uniforms_color.glsl"
 #include "../../../layout_uniforms_model.glsl"
 #include "../../../layout_uniforms_representation.glsl"
+#include "../../../struct/draw_indexed_indirect.glsl"
 #include "struct_circle.glsl"
 #include "struct_vertex_shader.glsl"
 
 // In.
 layout( location = 0 ) in uvec2 atomsId;
-layout( std140, binding = 1 ) readonly buffer SortedAtoms {
-	vec4 atoms[];
-};
+
+layout( std140, binding = 1 ) readonly buffer SortedAtoms { vec4 atoms[]; };
+
+layout( std430, binding = 7 ) readonly buffer SESAtomIds { uint rendererAtomIds[]; };
+
+layout( std430, binding = 8 ) readonly buffer AtomColors { uint atomColorWords[]; };
+
+layout( std430, binding = 9 ) readonly buffer AtomFlags { uint atomFlagWords[]; };
 
 // Out.
 flat out StructVertexShader vsData;
-flat out StructCircle vsCircle;
+flat out StructCircle		vsCircle;
 
-float length2(vec3 v){return dot(v,v);}
-
-vec3 computeCircleCenter( vec4 c1, vec4 c2 )
+layout( std430, binding = 25 ) readonly buffer CirclePatchIndirectDraws
 {
-	c1.w += uniformsRepresentation[ 0 ].SESProbeRadius;
-	c2.w += uniformsRepresentation[ 0 ].SESProbeRadius;
+	uint					  circlePatchDrawCount;
+	uint					  circlePatchDrawPadding0;
+	uint					  circlePatchDrawPadding1;
+	uint					  circlePatchDrawPadding2;
+	DrawIndexedIndirectRecord circlePatchDraws[];
+};
+
+uint readPackedAtomColor( const uint p_index )
+{
+	const uint word = atomColorWords[ p_index >> 2 ];
+	return ( word >> ( ( p_index & 3u ) * 8u ) ) & 0xFFu;
+}
+
+uint readPackedAtomFlag( const uint p_index )
+{
+	const uint word = atomFlagWords[ p_index >> 2 ];
+	return ( word >> ( ( p_index & 3u ) * 8u ) ) & 0xFFu;
+}
+
+vec4 sesColor( const vec4 p_atomColor ) { return vec4( p_atomColor.rgb, 1.f ); }
+
+float length2( vec3 v ) { return dot( v, v ); }
+
+vec3 computeCircleCenter( vec4 c1, vec4 c2, const uint representation )
+{
+	const float probeRadius = uniformsRepresentation[ representation ].SESProbeRadius;
+	c1.w += probeRadius;
+	c2.w += probeRadius;
 	const float d = length2( c1.xyz - c2.xyz );
 	const float t = ( c1.w * c1.w - c2.w * c2.w + d ) / ( 2.f * d );
 	return c1.xyz + ( c2.xyz - c1.xyz ) * t;
 }
 
 // Based on GLM implementation
-vec3 quatMult(vec4 q, vec3 v)
+vec3 quatMult( vec4 q, vec3 v )
 {
 	const vec3 qAxis = q.xyz;
-	return 2. * dot( qAxis, v ) * qAxis + ( q.w * q.w - dot( qAxis, qAxis ) ) * v
-			+ 2. * q.w * cross( qAxis, v );
+	return 2. * dot( qAxis, v ) * qAxis + ( q.w * q.w - dot( qAxis, qAxis ) ) * v + 2. * q.w * cross( qAxis, v );
 }
 
 vec4 toLocalSpaceTransform( const vec3 n )
 {
-    const vec3 ref = vec3( 0.f, 0.f, 1.f );
-    if ( dot( n, ref ) < -1.f + 1e-4f )
-        return vec4( 1.f, 0.f, 0.f, 0.f );
+	const vec3 ref = vec3( 0.f, 0.f, 1.f );
+	if ( dot( n, ref ) < -1.f + 1e-4f )
+	{
+		return vec4( 1.f, 0.f, 0.f, 0.f );
+	}
 
-    float angle = 1.f + dot( n, ref ); 
-    vec3 axis   = cross( n, ref );
-    return normalize( vec4( axis, angle ) );
+	float angle = 1.f + dot( n, ref );
+	vec3  axis	= cross( n, ref );
+	return normalize( vec4( axis, angle ) );
 }
 
-vec4 computeSmallCircle(vec4 atom, vec3 n, vec3 x)
+vec4 computeSmallCircle( vec4 atom, vec3 n, vec3 x )
 {
-    vec3 sCircle = atom.xyz + n * dot(n, normalize(x - atom.xyz) * atom.w);
-    float sqCircleDistance = length2(atom.xyz - sCircle);
-	float r = sqrt( atom.w * atom.w - sqCircleDistance );
-    return vec4(sCircle, r);
+	vec3  sCircle		   = atom.xyz + n * dot( n, normalize( x - atom.xyz ) * atom.w );
+	float sqCircleDistance = length2( atom.xyz - sCircle );
+	float r				   = sqrt( atom.w * atom.w - sqCircleDistance );
+	return vec4( sCircle, r );
 }
 
-vec3 orthogonalVector(vec3 normal) 
+vec3 orthogonalVector( vec3 normal )
 {
-	vec3 ref = vec3(1., 0., 0.);
-	if (abs(dot(normal, ref)) < 1e-4)
-		ref = vec3(0., 1., 0.);
-    return normalize(cross(normal, ref));
+	vec3 ref = vec3( 1., 0., 0. );
+	if ( abs( dot( normal, ref ) ) < 1e-4 )
+	{
+		ref = vec3( 0., 1., 0. );
+	}
+	return normalize( cross( normal, ref ) );
 }
 
 struct Bound
 {
-    vec3 pMin;
-    vec3 pMax;
+	vec3 pMin;
+	vec3 pMax;
 };
-Bound getCircleBoundingBox(vec3 n)
+
+Bound getCircleBoundingBox( vec3 n )
 {
 	// https://iquilezles.org/articles/diskbbox/
-	vec3 v = sqrt(1. - n*n );
-	return Bound(-v, v);
+	vec3 v = sqrt( 1. - n * n );
+	return Bound( -v, v );
 }
 
 void main()
 {
-	const vec4 atom1 = atoms[atomsId.x];
-	const vec4 atom2 = atoms[atomsId.y];
-	vsCircle.firstAtom  = vec4(( uniformsModel[ 0 ].matrixModelView * vec4( atom1.xyz, 1.f ) ).xyz, atom1.w);
-	const float ithExtendedRadius = vsCircle.firstAtom.w + uniformsRepresentation[ 0 ].SESProbeRadius;
-	vsCircle.secondAtom = vec4(( uniformsModel[ 0 ].matrixModelView * vec4( atom2.xyz, 1.f ) ).xyz, atom2.w);
+	const DrawIndexedIndirectRecord draw			= circlePatchDraws[ gl_DrawID ];
+	const uint						idModel			= draw.idModel;
+	const uint						representation	= draw.padding1;
+	const uint						rendererAtomId1 = rendererAtomIds[ atomsId.x ];
+	const uint						rendererAtomId2 = rendererAtomIds[ atomsId.y ];
 
-	const vec3  circleCenter = computeCircleCenter(vsCircle.firstAtom, vsCircle.secondAtom);
-	const vec3  circleToI    = vsCircle.firstAtom.xyz - circleCenter;
+	const vec4 atom1		= atoms[ atomsId.x ];
+	const vec4 atom2		= atoms[ atomsId.y ];
+	vsCircle.model			= idModel;
+	vsCircle.representation = representation;
+	vsCircle.selection
+		= ( readPackedAtomFlag( rendererAtomId1 ) | readPackedAtomFlag( rendererAtomId2 ) ) & ( 1u << FLAG_SELECTION );
+	vsCircle.color = sesColor(
+		( uniformsColor[ readPackedAtomColor( rendererAtomId1 ) ]
+		  + uniformsColor[ readPackedAtomColor( rendererAtomId2 ) ] )
+		* 0.5f
+	);
+	vsCircle.firstAtom = vec4( ( uniformsModel[ idModel ].matrixModelView * vec4( atom1.xyz, 1.f ) ).xyz, atom1.w );
+	const float probeRadius		  = uniformsRepresentation[ representation ].SESProbeRadius;
+	const float ithExtendedRadius = vsCircle.firstAtom.w + probeRadius;
+	vsCircle.secondAtom = vec4( ( uniformsModel[ idModel ].matrixModelView * vec4( atom2.xyz, 1.f ) ).xyz, atom2.w );
+
+	const vec3	circleCenter		  = computeCircleCenter( vsCircle.firstAtom, vsCircle.secondAtom, representation );
+	const vec3	circleToI			  = vsCircle.firstAtom.xyz - circleCenter;
 	const float squaredCircleDistance = dot( circleToI, circleToI );
-	const float radius = sqrt( ithExtendedRadius * ithExtendedRadius - squaredCircleDistance );
+	const float radius				  = sqrt( ithExtendedRadius * ithExtendedRadius - squaredCircleDistance );
 
 	vsCircle.center = vec4( circleCenter, radius );
 	vsCircle.normal = vec4( normalize( vsCircle.secondAtom.xyz - vsCircle.firstAtom.xyz ), 0. );
 
-	vsCircle.rot = toLocalSpaceTransform(vsCircle.normal.xyz);
-	const Bound bound = Bound(-vec3(1., 1., 0.), vec3(1., 1., 0.)); // getCircleBoundingBox(vec3(0., 0., 1.));
+	vsCircle.rot	  = toLocalSpaceTransform( vsCircle.normal.xyz );
+	const Bound bound = Bound( -vec3( 1., 1., 0. ), vec3( 1., 1., 0. ) ); // getCircleBoundingBox(vec3(0., 0., 1.));
 
-	const vec3 x1p = circleCenter + orthogonalVector(vsCircle.normal.xyz) * radius;
-	const vec4 sCircle  = computeSmallCircle(vsCircle.firstAtom,  vsCircle.normal.xyz, x1p);
-    const vec4 sCircle2 = computeSmallCircle(vsCircle.secondAtom, vsCircle.normal.xyz, x1p);
-	
-    const float rad = max(sCircle.w, sCircle2.w);
-    vec3 sMin = min(bound.pMin * rad, bound.pMin * max(0., radius - uniformsRepresentation[ 0 ].SESProbeRadius));
-    vec3 sMax = max(bound.pMax * rad, bound.pMax * max(0., radius - uniformsRepresentation[ 0 ].SESProbeRadius));
+	const vec3 x1p		= circleCenter + orthogonalVector( vsCircle.normal.xyz ) * radius;
+	const vec4 sCircle	= computeSmallCircle( vsCircle.firstAtom, vsCircle.normal.xyz, x1p );
+	const vec4 sCircle2 = computeSmallCircle( vsCircle.secondAtom, vsCircle.normal.xyz, x1p );
 
-    const vec2 dim = abs((sMax - sMin).xy * .5);
-    vsCircle.bbDim = vec3(dim, length(sCircle.xyz - sCircle2.xyz) * .5);
+	const float rad	 = max( sCircle.w, sCircle2.w );
+	vec3		sMin = min( bound.pMin * rad, bound.pMin * max( 0., radius - probeRadius ) );
+	vec3		sMax = max( bound.pMax * rad, bound.pMax * max( 0., radius - probeRadius ) );
 
-    sMin = quatMult(vec4(-vsCircle.rot.xyz, vsCircle.rot.w), sMin);
-    sMax = quatMult(vec4(-vsCircle.rot.xyz, vsCircle.rot.w), sMax);
+	const vec2 dim = abs( ( sMax - sMin ).xy * .5 );
+	vsCircle.bbDim = vec3( dim, length( sCircle.xyz - sCircle2.xyz ) * .5 );
 
-	vsCircle.bbPos = (sCircle.xyz + sCircle2.xyz) * .5 + (sMax + sMin) * .5;
+	sMin = quatMult( vec4( -vsCircle.rot.xyz, vsCircle.rot.w ), sMin );
+	sMax = quatMult( vec4( -vsCircle.rot.xyz, vsCircle.rot.w ), sMax );
+
+	vsCircle.bbPos = ( sCircle.xyz + sCircle2.xyz ) * .5 + ( sMax + sMin ) * .5;
 
 	// Compute normalized view vector.
-	const float dotViewSpherePos  = dot( circleCenter, circleCenter );
-	const float dSphereCenter	  = sqrt( dotViewSpherePos );
-	const vec3	view			  = circleCenter / dSphereCenter;
+	const float dotViewSpherePos = dot( circleCenter, circleCenter );
+	const float dSphereCenter	 = sqrt( dotViewSpherePos );
+	const vec3	view			 = circleCenter / dSphereCenter;
 
 	vec3 p = x1p;
-	vec3 x = normalize(p - vsCircle.firstAtom.xyz) * vsCircle.firstAtom.w;
-	vec3 c = (length(p - vsCircle.firstAtom.xyz) / (length(p - vsCircle.secondAtom.xyz) + length(p - vsCircle.firstAtom.xyz))) * (vsCircle.secondAtom.xyz - vsCircle.firstAtom.xyz);
-	float d = length(x - c);
-	c = c + vsCircle.firstAtom.xyz;
-	vsCircle.vSphere = vec4(c, d);
+	vec3 x = normalize( p - vsCircle.firstAtom.xyz ) * vsCircle.firstAtom.w;
+	vec3 c = ( length( p - vsCircle.firstAtom.xyz )
+			   / ( length( p - vsCircle.secondAtom.xyz ) + length( p - vsCircle.firstAtom.xyz ) ) )
+			 * ( vsCircle.secondAtom.xyz - vsCircle.firstAtom.xyz );
+	float d			 = length( x - c );
+	c				 = c + vsCircle.firstAtom.xyz;
+	vsCircle.vSphere = vec4( c, d );
 
 	// Impostor in front of the sphere.
 	const vec3 viewImpPos = vsCircle.vSphere.xyz - vsCircle.vSphere.w * view;

@@ -2,9 +2,15 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
+#include <QMenu>
+#include <app/action/action_manager.hpp>
+#include <app/action/application.hpp>
 #include <app/services.hpp>
 #include <app/vtx_app.hpp>
+#include <array>
 #include <renderer/renderer.hpp>
+#include <string>
+#include <string_view>
 #include <util/event_hub.hpp>
 #include <util/monitoring/stats.hpp>
 
@@ -13,12 +19,29 @@ namespace VTX::UI::QT::Widget
 
 	StatusBar::StatusBar( QWidget * p_parent ) : QStatusBar( p_parent )
 	{
+		// Python status.
 		_python = new QLabel( this );
 		_python->setText( "No Python" );
 
+		// FPS status.
 		_fps = new QLabel( this );
 		//_fps->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 
+		// Resolution widget.
+		_resolution = new ToolButton::ResolutionSelector( this );
+		_resolution->setResolution( App::RENDERER().width(), App::RENDERER().height() );
+		_resolution->setAutoRaise( false );
+		_resolution->setToolTip( "Change resolution" );
+		_resolution->setStatusTip( "Change the resolution of the renderer" );
+		connect(
+			_resolution,
+			&ToolButton::ResolutionSelector::resolutionChanged,
+			this,
+			[ this ]( const size_t width, const size_t height )
+			{ App::ACTION().execute<App::Action::Application::Resize>( width, height ); }
+		);
+
+		// Labels.
 		auto * vendorLabel = new QLabel( this );
 		vendorLabel->setText( "No renderer" );
 		// vendorLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
@@ -29,19 +52,24 @@ namespace VTX::UI::QT::Widget
 		QLabel * gpuIcon = new QLabel( this );
 		gpuIcon->setPixmap( STYLE().iconFromCodepoint( Style::Icons::GPU ).pixmap( 16, 16 ) );
 
+		QLabel * resolutionIcon = new QLabel( this );
+		resolutionIcon->setPixmap( STYLE().iconFromCodepoint( Style::Icons::SCREEN_RESOLUTION ).pixmap( 16, 16 ) );
+
 		QLabel * pythonIcon = new QLabel( this );
 		pythonIcon->setPixmap( STYLE().iconFromCodepoint( Style::Icons::PYTHON ).pixmap( 16, 16 ) );
 
 		addPermanentWidget( spacer );
 		addPermanentWidget( _fps );
+		addPermanentWidget( resolutionIcon );
+		addPermanentWidget( _resolution );
 		addPermanentWidget( gpuIcon );
 		addPermanentWidget( vendorLabel );
 		addPermanentWidget( pythonIcon );
 		addPermanentWidget( _python );
 
 		// Update vendor when renderer is available.
-		App::RENDERER().onReady += [ vendorLabel ]()
-		{ vendorLabel->setText( QString::fromStdString( App::RENDERER().getInfos( true ).renderer ) ); };
+		App::RENDERER().onReady += [ vendorLabel ]( const VTX::Renderer::StructInfos & p_infos )
+		{ vendorLabel->setText( QString::fromStdString( p_infos.renderer ) ); };
 
 		// Update FPS each second.
 		auto * timer = new QTimer( this );
@@ -50,6 +78,7 @@ namespace VTX::UI::QT::Widget
 
 		// Update renderering mode.
 		App::HUB().connect<App::Events::PostRender, &StatusBar::_updateGPUState>( this );
+		App::HUB().connect<App::Events::RendererResize, &StatusBar::_updateResolution>( this );
 		App::HUB().connect<App::Events::PythonInitialized, &StatusBar::_pythonInitialized>( this );
 	}
 
@@ -66,6 +95,12 @@ namespace VTX::UI::QT::Widget
 		{
 			_fps->setText( QString( "-idle-" ) );
 		}
+	}
+
+	void StatusBar::_updateResolution( const App::Events::RendererResize & p_e )
+	{
+		_resolution->setResolution( p_e.width, p_e.height );
+		_resolution->setFixedWidth( _resolution->fontMetrics().horizontalAdvance( _resolution->text() ) + 12 );
 	}
 
 	void StatusBar::_setCurrentFPS()

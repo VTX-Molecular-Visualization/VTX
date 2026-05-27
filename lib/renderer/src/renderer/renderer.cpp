@@ -1,32 +1,13 @@
 #include "renderer/renderer.hpp"
-#include "renderer/binary_buffer.hpp"
+#include "renderer/builder/render_graph_build.hpp"
+#include "renderer/builder/system_build.hpp"
+#include <unordered_map>
 #include <util/chrono.hpp>
-
-namespace
-{
-	/*
-	auto linearizeColorFloat = []( float c ) -> float
-	{
-		return c;
-		if ( c <= 0.04045f )
-			return c / 12.92f;
-		return std::pow( ( c + 0.055f ) / 1.055f, 2.4f );
-	};
-
-	using namespace VTX;
-	auto linearizeColor = []( const Util::Color::Rgba & c ) -> Vec4f
-	{
-		return Vec4f( linearizeColorFloat( c.r() ), linearizeColorFloat( c.g() ), linearizeColorFloat( c.b() ), c.a() );
-	};
-	*/
-
-} // namespace
+#include <util/enum.hpp>
 
 namespace VTX::Renderer
 {
 	Renderer::Renderer( const size_t p_width, const size_t p_height ) : _width( p_width ), _height( p_height ) {}
-
-#pragma region Contexts
 
 	void Renderer::setDefault()
 	{
@@ -35,7 +16,13 @@ namespace VTX::Renderer
 		_context.setNull();
 		try
 		{
-			_context.build( _queue, _graph.getResources() );
+			Builder::RenderGraphRuntime::rebuildCommandBuffer(
+				_context,
+				_queue,
+				_graph.getResources(),
+				reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+				reinterpret_cast<uintptr_t>( this )
+			);
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -51,9 +38,15 @@ namespace VTX::Renderer
 		_context.setOpenGL( _width, _height, p_contextInfo, p_shaderDir );
 		try
 		{
-			_context.build( _queue, _graph.getResources() );
+			Builder::RenderGraphRuntime::rebuildCommandBuffer(
+				_context,
+				_queue,
+				_graph.getResources(),
+				reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+				reinterpret_cast<uintptr_t>( this )
+			);
 			_context.fillInfos( _infos );
-			onReady();
+			onReady( _infos );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -62,10 +55,6 @@ namespace VTX::Renderer
 			setDefault();
 		}
 	}
-
-#pragma endregion
-
-#pragma region Renderer
 
 	void Renderer::resize( const size_t p_width, const size_t p_height )
 	{
@@ -82,34 +71,30 @@ namespace VTX::Renderer
 			_graph.getPasses(),
 			_graph.getResources().textures
 		);
-
-		setNeedUpdate( true );
 	}
 
 	void Renderer::clear()
 	{
 		_context.clear();
 		_graph.clear();
-		_needUpdate = false;
+		_dirtyRenderer = Cache::E_RENDERER_DIRTY::NONE;
+		_dirtySystems.clear();
+		_dirtyRepresentations.clear();
 	}
 
 	bool Renderer::render( const float p_deltaTime, const float p_elapsedTime ) noexcept
 	{
-		if ( _systemToRefresh.size() )
+		bool hasDirty = _dirtyRenderer != Cache::E_RENDERER_DIRTY::NONE || not _dirtySystems.empty()
+						|| not _dirtyRepresentations.empty();
+
+		if ( hasDirty )
 		{
-			for ( const auto & system : _systemToRefresh )
-			{
-				_refreshSystemVisibility( system );
-			}
-			_geometries.buildDrawRanges( _context );
-			_systemToRefresh.clear();
-			setNeedUpdate( true );
+			_flushDirty();
 		}
 
-		if ( _needUpdate || _forceUpdate )
+		if ( hasDirty || _forceUpdate )
 		{
 			_render( p_deltaTime, p_elapsedTime );
-			setNeedUpdate( false );
 			return true;
 		}
 
@@ -121,11 +106,26 @@ namespace VTX::Renderer
 		Util::ScopedChrono timer( "[RENDERER] snapshot" );
 
 		_context.setRenderTarget( Desc::E_RENDER_TARGET::OFFSCREEN );
+		Builder::RenderGraphRuntime::rebuildCommandBuffer(
+			_context,
+			_queue,
+			_graph.getResources(),
+			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+			reinterpret_cast<uintptr_t>( this )
+		);
 		_render( 0.f, 0.f );
 
+		// TODO: get last pass instead of hardcoding FXAA.
 		std::vector<std::byte> data = _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
 
 		_context.setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
+		Builder::RenderGraphRuntime::rebuildCommandBuffer(
+			_context,
+			_queue,
+			_graph.getResources(),
+			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+			reinterpret_cast<uintptr_t>( this )
+		);
 		_render( 0.f, 0.f );
 
 		return data;
@@ -155,9 +155,341 @@ namespace VTX::Renderer
 		return _infos;
 	}
 
-#pragma endregion
+	void Renderer::_flushDirty()
+	{
+		using RendererDirty		  = Cache::E_RENDERER_DIRTY;
+		using RepresentationDirty = Cache::E_REPRESENTATION_DIRTY;
+		using SystemDirty		  = Cache::E_SYSTEM_DIRTY;
 
-#pragma region Buffers
+		auto hasDirty = []( const auto p_flags, const auto p_bit ) { return Util::Enum::hasAnyBit( p_flags, p_bit ); };
+
+		std::unordered_map<Desc::Handle, SystemDirty>		  dirtySystems;
+		std::unordered_map<Desc::Handle, RepresentationDirty> dirtyRepresentations;
+		std::unordered_set<Desc::Handle>					  geometryRefreshSystems;
+		std::vector<Desc::Handle>							  deletingSystems;
+		for ( const DirtySystem & dirty : _dirtySystems )
+		{
+			if ( not _systems.contains( dirty.handle ) )
+			{
+				continue;
+			}
+
+			dirtySystems[ dirty.handle ] |= dirty.flags;
+		}
+
+		for ( const auto & [ system, flags ] : dirtySystems )
+		{
+			if ( hasDirty( flags, SystemDirty::DELETING ) )
+			{
+				deletingSystems.emplace_back( system );
+			}
+		}
+
+		if ( not deletingSystems.empty() )
+		{
+			for ( const Desc::Handle system : deletingSystems )
+			{
+				Builder::SystemRegistry::removeSystemConstruction( _context, _geometries, system );
+				_systems.erase( system );
+				dirtySystems.erase( system );
+			}
+
+			_dirtyRenderer |= RendererDirty::ALL;
+		}
+		for ( const DirtyRepresentation & dirty : _dirtyRepresentations )
+		{
+			if ( not _representations.contains( dirty.handle ) )
+			{
+				continue;
+			}
+
+			dirtyRepresentations[ dirty.handle ] |= dirty.flags;
+		}
+
+		const bool fullRefresh				   = Util::Enum::hasAllBits( _dirtyRenderer, RendererDirty::ALL );
+		bool	   geometryVisibilityRefreshed = false;
+		bool	   geometryIndexesUploaded	   = false;
+		if ( fullRefresh )
+		{
+			Builder::SystemRegistry::clearSystemRanges( _layouts, _geometries, geometryRefreshSystems );
+
+			for ( const auto entry : _systems.entries() )
+			{
+				Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, entry.handle );
+				geometryRefreshSystems.insert( entry.handle );
+			}
+		}
+
+		bool graphChanged = false;
+		if ( fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::GRAPH ) )
+		{
+			graphChanged = Builder::RenderGraphRuntime::refreshGraph(
+				_graphicsConfig.data, _config, _graph, _queue, _layouts, _geometries
+			);
+			if ( graphChanged )
+			{
+				Builder::RenderGraphRuntime::rebuildCommandBuffer(
+					_context,
+					_queue,
+					_graph.getResources(),
+					reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+					reinterpret_cast<uintptr_t>( this )
+				);
+			}
+		}
+		const bool updateGraphicsConfig
+			= fullRefresh || graphChanged || hasDirty( _dirtyRenderer, RendererDirty::GRAPHICS_CONFIG );
+		const bool updateColorLayout
+			= fullRefresh || graphChanged || hasDirty( _dirtyRenderer, RendererDirty::COLOR_LAYOUT );
+		if ( fullRefresh )
+		{
+			dirtyRepresentations.clear();
+			for ( const auto entry : _representations.entries() )
+			{
+				dirtyRepresentations.emplace( entry.handle, RepresentationDirty::ALL );
+			}
+		}
+		const bool updateRepresentations = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::REPRESENTATIONS )
+										   || not dirtyRepresentations.empty();
+
+		if ( not dirtyRepresentations.empty() )
+		{
+			for ( const auto & [ representation, flags ] : dirtyRepresentations )
+			{
+				Builder::RepresentationState::refreshCache( _representations.get( representation ) );
+			}
+		}
+
+		if ( updateRepresentations )
+		{
+			for ( const auto entry : _systems.entries() )
+			{
+				dirtySystems[ entry.handle ] |= SystemDirty::REPRESENTATION;
+			}
+		}
+		if ( fullRefresh )
+		{
+			Builder::AtomLayout::allocateInputs( _context, _layouts );
+
+			for ( const auto entry : _systems.entries() )
+			{
+				const Desc::Handle system = entry.handle;
+				Builder::AtomLayout::uploadInput( _context, _systems, _layouts, system, geometryRefreshSystems );
+				Builder::SystemVisibility::uploadInput( _systems, system, geometryRefreshSystems );
+			}
+
+			for ( const auto & system : geometryRefreshSystems )
+			{
+				Builder::SystemVisibility::refreshGeometryVisibility(
+					_context, _systems, _representations, _layouts, _geometries, system
+				);
+			}
+			geometryVisibilityRefreshed = true;
+
+			Builder::ResidueLayout::allocateInputs( _context, _layouts );
+
+			for ( const auto entry : _systems.entries() )
+			{
+				const Desc::Handle system = entry.handle;
+				Builder::ResidueLayout::uploadInput( _context, _layouts, _geometries, system, _systems.get( system ) );
+				Builder::RibbonGeometry::uploadPositions(
+					_context, _layouts, _geometries, system, _systems.get( system ).data.trajectory
+				);
+			}
+
+			Builder::GeometryBuffers::allocateOutputs( _context, _geometries );
+
+			for ( const auto entry : _systems.entries() )
+			{
+				const Desc::Handle system = entry.handle;
+				Builder::RibbonGeometry::writeOutput( _context, _geometries, system );
+				Builder::GeometryBuffers::writeOutput( _context, _geometries, system );
+			}
+
+			for ( const auto & system : geometryRefreshSystems )
+			{
+				_geometries.uploadIndexes( _context, system );
+			}
+			geometryIndexesUploaded = true;
+
+			Builder::SystemModels::upload( _context, _systems, _camera );
+		}
+
+		bool updateModels		  = fullRefresh;
+		bool updateDrawRanges	  = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::DRAW_RANGES );
+		bool updateGeometryChunks = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::GEOMETRY_CHUNKS );
+		bool updateExternalPasses = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::EXTERNAL_PASSES );
+		bool updateCommandBuffer  = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::COMMAND_BUFFER );
+		if ( fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::CAMERA ) )
+		{
+			Builder::CameraState::upload( _context, _camera, width(), height() );
+			updateModels = true;
+		}
+		if ( hasDirty( _dirtyRenderer, RendererDirty::MODELS ) )
+		{
+			updateModels = true;
+		}
+
+		if ( not fullRefresh )
+		{
+			for ( const auto & [ system, flags ] : dirtySystems )
+			{
+				const Cache::System & cache = _systems.get( system );
+
+				if ( hasDirty( flags, SystemDirty::TRANSFORM ) )
+				{
+					updateModels = true;
+				}
+				if ( hasDirty( flags, SystemDirty::TRAJECTORY ) )
+				{
+					Builder::AtomLayout::uploadPositions( _context, _systems, _layouts, system, cache.data.trajectory );
+					Builder::RibbonGeometry::uploadPositions(
+						_context, _layouts, _geometries, system, cache.data.trajectory
+					);
+					if ( _geometries.ses.built( system ) )
+					{
+						_geometries.ses.invalidateForRecompute( system );
+						geometryRefreshSystems.insert( system );
+					}
+				}
+				if ( hasDirty( flags, SystemDirty::COLOR ) )
+				{
+					Builder::AtomLayout::refreshColors( _context, _systems, _layouts, system );
+				}
+				if ( hasDirty( flags, SystemDirty::REPRESENTATION ) )
+				{
+					const std::vector<RepresentationIndex> atomRepresentations
+						= Builder::AtomLayout::buildAtomRepresentations( cache );
+					Builder::AtomLayout::uploadRepresentations(
+						_context, _layouts, system, atomRepresentations, geometryRefreshSystems
+					);
+					Builder::ResidueLayout::uploadRepresentations(
+						_context, _layouts, _geometries, system, atomRepresentations
+					);
+					geometryRefreshSystems.insert( system );
+				}
+				if ( hasDirty( flags, SystemDirty::VISIBILITY ) )
+				{
+					Builder::SystemVisibility::uploadVisibility( _systems, geometryRefreshSystems, system );
+					geometryRefreshSystems.insert( system );
+				}
+				if ( hasDirty( flags, SystemDirty::SELECTION ) )
+				{
+					const std::vector<Flag> atomFlags = Builder::AtomLayout::buildAtomFlags( cache );
+					Builder::AtomLayout::uploadSelection( _context, _layouts, system, atomFlags );
+					Builder::ResidueLayout::uploadSelection( _context, _layouts, _geometries, system, atomFlags );
+					geometryRefreshSystems.insert( system );
+				}
+			}
+		}
+
+		if ( updateModels )
+		{
+			Builder::SystemModels::upload( _context, _systems, _camera );
+		}
+
+		if ( not geometryVisibilityRefreshed )
+		{
+			for ( const auto & system : geometryRefreshSystems )
+			{
+				Builder::SystemVisibility::refreshGeometryVisibility(
+					_context, _systems, _representations, _layouts, _geometries, system
+				);
+			}
+		}
+		if ( not geometryIndexesUploaded )
+		{
+			if ( not geometryRefreshSystems.empty() )
+			{
+				Builder::ResidueLayout::allocateInputs( _context, _layouts );
+
+				for ( const auto entry : _systems.entries() )
+				{
+					const Desc::Handle system = entry.handle;
+					Builder::ResidueLayout::uploadInput(
+						_context, _layouts, _geometries, system, _systems.get( system )
+					);
+					Builder::RibbonGeometry::uploadPositions(
+						_context, _layouts, _geometries, system, _systems.get( system ).data.trajectory
+					);
+				}
+
+				Builder::GeometryBuffers::allocateOutputs( _context, _geometries );
+
+				for ( const auto entry : _systems.entries() )
+				{
+					const Desc::Handle system = entry.handle;
+					Builder::RibbonGeometry::writeOutput( _context, _geometries, system );
+					Builder::GeometryBuffers::writeOutput( _context, _geometries, system );
+					_geometries.uploadIndexes( _context, system );
+				}
+			}
+		}
+
+		if ( not geometryRefreshSystems.empty() )
+		{
+			updateDrawRanges	 = true;
+			updateGeometryChunks = true;
+			updateExternalPasses = true;
+		}
+
+		if ( updateDrawRanges )
+		{
+			Builder::DrawRanges::buildDrawRanges( _context, _geometries, _systems );
+		}
+		if ( updateGeometryChunks && Builder::RenderGraphRuntime::syncGeometryChunks( _graph, _geometries ) )
+		{
+			updateCommandBuffer = true;
+		}
+		if ( updateCommandBuffer )
+		{
+			Builder::RenderGraphRuntime::rebuildCommandBuffer(
+				_context,
+				_queue,
+				_graph.getResources(),
+				reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+				reinterpret_cast<uintptr_t>( this )
+			);
+		}
+		if ( updateRepresentations )
+		{
+			Builder::RepresentationState::upload( _context, _representations );
+		}
+		if ( updateGraphicsConfig )
+		{
+			Builder::GraphicsConfigState::upload( _context, _graphicsConfig.data );
+		}
+		if ( updateColorLayout )
+		{
+			Builder::ColorLayoutState::upload( _context, _colorLayout.data );
+		}
+		if ( updateExternalPasses )
+		{
+			Builder::RenderGraphRuntime::markSESDirty( _context, _geometries );
+		}
+
+		_dirtyRenderer = RendererDirty::NONE;
+		_dirtySystems.clear();
+		_dirtyRepresentations.clear();
+	}
+
+	void Renderer::_executeSESExternalPass( const uintptr_t p_context )
+	{
+		auto * const renderer = reinterpret_cast<Renderer *>( p_context );
+		if ( renderer == nullptr )
+		{
+			return;
+		}
+
+		try
+		{
+			renderer->_geometries.ses.compute( renderer->_context );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "SES external pass failed: {}", p_e.what() );
+		}
+	}
 
 	void Renderer::setCamera(
 		const Camera & p_camera,
@@ -166,462 +498,147 @@ namespace VTX::Renderer
 		const Mat4f &  p_matProj
 	)
 	{
-		// Util::ScopedChrono timer( "[RENDERER] setCamera" );
-
-		const Mat4f matrixViewInv	   = Util::Math::inverse( p_matView );
-		const Mat4f matrixViewInvTrans = Util::Math::transpose( matrixViewInv );
-
-		BinaryBuffer140 buffer;
-		buffer.write( p_matView );
-		buffer.write( p_matProj );
-		buffer.write( matrixViewInv );
-		buffer.write( matrixViewInvTrans );
-		buffer.write( p_position );
-		buffer.write(
-			Vec4f( p_camera.near * p_camera.far, p_camera.far, p_camera.far - p_camera.near, p_camera.near )
-		);
-		buffer.write( Vec2i( width(), height() ) );
-		buffer.write( Vec2i() );
-		buffer.write( uint( p_camera.projection == PROJECTION::PERSPECTIVE ) );
-		buffer.close();
-
-		_context.setShaderBuffer( "Camera", buffer );
-
-		_cacheCamera = { p_camera, p_position, p_matView, p_matProj };
-
-		_refreshDataModels();
-
-		setNeedUpdate( true );
+		_camera = { p_camera, p_position, p_matView, p_matProj };
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::CAMERA;
 	}
 
 	void Renderer::setGraphicsConfig( const GraphicsConfig & p_config )
 	{
-		Util::ScopedChrono timer( "[RENDERER] setGraphicsConfig" );
+		const Builder::PipelineConfig pipelineConfig = Builder::RenderGraphRuntime::pipelineConfig( p_config );
+		const bool					  graphReady	 = _config.has_value();
+		const bool					  graphChanged	 = not graphReady || *_config != pipelineConfig;
 
-		// If graph changed from config, rebuild backend.
-		if ( _refreshGraph( p_config ) )
+		_graphicsConfig.data = p_config;
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::GRAPHICS_CONFIG;
+		if ( graphChanged )
 		{
-			_context.build( _queue, _graph.getResources() );
+			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::GRAPH | Cache::E_RENDERER_DIRTY::COMMAND_BUFFER;
 		}
-
-		BinaryBuffer140 bufferShading;
-		bufferShading.write( p_config.colorBackground );
-		bufferShading.write( p_config.colorLight );
-		bufferShading.write( p_config.colorFog );
-		bufferShading.write( uint32_t( p_config.shadingMode ) );
-		bufferShading.write( p_config.specularFactor );
-		bufferShading.write( p_config.shininess );
-		bufferShading.write( p_config.toonSteps );
-		bufferShading.write( p_config.fogNear );
-		bufferShading.write( p_config.fogFar );
-		bufferShading.write( p_config.activeFog ? p_config.fogDensity : 0.f );
-		bufferShading.close();
-		_context.setShaderBuffer( "Shading", bufferShading );
-
-		if ( p_config.activeSSAO )
-		{
-			BinaryBuffer140 bufferSSAO;
-			bufferSSAO.write( p_config.ssaoIntensity );
-			bufferSSAO.close();
-			_context.setShaderBuffer( "SSAO", bufferSSAO );
-
-			BinaryBuffer140 bufferBlurX;
-			bufferBlurX.write( Vec2i( 1, 0 ) );
-			bufferBlurX.write( p_config.blurSize );
-			bufferBlurX.close();
-			_context.setShaderBuffer( "BlurX", bufferBlurX );
-			BinaryBuffer140 bufferBlurY;
-			bufferBlurY.write( Vec2i( 0, 1 ) );
-			bufferBlurY.write( p_config.blurSize );
-			bufferBlurY.close();
-			_context.setShaderBuffer( "BlurY", bufferBlurY );
-		}
-		if ( p_config.activeOutline )
-		{
-			BinaryBuffer140 bufferOutline;
-			bufferOutline.write( p_config.colorOutline );
-			bufferOutline.write( p_config.outlineSensitivity );
-			bufferOutline.write( p_config.outlineThickness );
-			bufferOutline.close();
-			_context.setShaderBuffer( "Outline", bufferOutline );
-		}
-		if ( p_config.activeSelection )
-		{
-			BinaryBuffer140 bufferSelection;
-			bufferSelection.write( p_config.colorSelection );
-			bufferSelection.close();
-			_context.setShaderBuffer( "Selection", bufferSelection );
-		}
-
-		setNeedUpdate( true );
 	}
 
 	void Renderer::setColorLayout( const Color::Layout & p_layout )
 	{
-		Util::ScopedChrono timer( "[RENDERER] setColorLayout" );
-
-		_context.setShaderBuffer<Util::Color::Rgba>( "ColorLayout", p_layout.colors );
-
-		setNeedUpdate( true );
+		_colorLayout.data = p_layout;
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COLOR_LAYOUT;
 	}
 
-	void Renderer::setRepresentations( const std::vector<const Representation *> & p_representations )
+	Desc::Handle Renderer::addRepresentation( const Representation & p_representation )
 	{
-		Util::ScopedChrono timer( "[RENDERER] setRepresentations" );
+		const Desc::Handle handle
+			= _representations.emplace( Builder::RepresentationState::buildCache( p_representation ) );
 
-		BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
-		RepresentationIndex					index = 0;
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::REPRESENTATIONS;
 
-		for ( const auto * representation : p_representations )
-		{
-			// Aply logic.
-			bool showSphere	  = representation->hasSphere;
-			bool showCylinder = representation->hasCylinder;
-			bool showRibbon	  = representation->hasRibbon;
-			bool showSes	  = representation->hasSes;
-
-			bool		isSphereRadiusFixed = representation->isRadiusSphereFixed;
-			const float cylinderRadius		= representation->radiusCylinder;
-			float		sphereRadiusFixed	= representation->radiusSphereFixed;
-
-			// Asked SES, hide all others.
-			if ( showSes )
-			{
-				showSphere	 = false;
-				showCylinder = false;
-				showRibbon	 = false;
-			}
-			else
-			{
-				// Pure VdW display is sphere-only, but keep other primitives available when spheres are hidden.
-				if ( showSphere && not isSphereRadiusFixed )
-				{
-					showCylinder = false;
-					showRibbon	 = false;
-				}
-				else
-				{
-					// If B&S.
-					if ( showSphere && showCylinder )
-					{
-						// Scale sphere radius to cylinder radius if not VdW.
-						if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
-						{
-							sphereRadiusFixed = cylinderRadius;
-						}
-					}
-
-					// If sticks only, force sphere at cylinder radius.
-					else if ( not showSphere && showCylinder )
-					{
-						showSphere			= true;
-						isSphereRadiusFixed = true;
-						sphereRadiusFixed	= cylinderRadius;
-					}
-				}
-			}
-
-			// Write buffer.
-			buffer.write( sphereRadiusFixed );
-			buffer.write( representation->radiusSphereAdd );
-			buffer.write( uint( isSphereRadiusFixed ) );
-			buffer.write( representation->radiusCylinder );
-			buffer.write( uint( representation->cylinderColorBlending ) );
-			buffer.write( uint( representation->ribbonColorBlending ) );
-			buffer.write( representation->sesProbeRadius );
-
-			// Cache.
-			_cacheRepresentations[ index ] = Cache::Representation { showSphere, showCylinder, showRibbon, showSes };
-
-			index++;
-		}
-
-		buffer.close();
-
-		_context.setShaderBuffer( "Representations", buffer );
-
-		auto handles	 = _systems.handles();
-		_systemToRefresh = std::unordered_set<Desc::Handle>( handles.begin(), handles.end() );
-
-		setNeedUpdate( true );
+		return handle;
 	}
 
-#pragma endregion
-
-#pragma region Geometries
-
-	void Renderer::setSystems( const std::vector<SystemData> & p_systems )
+	void Renderer::patchRepresentation( const Desc::Handle p_handle, Cache::Representation::Data && p_representation )
 	{
-		Util::ScopedChrono timer( "[RENDERER] setSystems" );
+		assert( _representations.contains( p_handle ) );
 
-		_systems.clear();
-		_layouts.clearSystems();
-		_geometries.clearSystems();
-		_systemToRefresh.clear();
-
-		// Register new systems.
-		for ( const auto & systemData : p_systems )
-		{
-			_systems.emplace( systemData.uid, {}, Cache::System { systemData.transform } );
-			const Desc::Handle h = _systems.handle( systemData.uid );
-
-			// Compute geometries.
-			_geometries.construct( h, systemData );
-
-			// Register ranges in layouts.
-			_layouts.atoms.add( h, _geometries.spheres.size( h ) );
-			_layouts.residues.add( h, static_cast<uint32_t>( _geometries.ribbons.construction( h ).residues.size() ) );
-		}
-
-		// Reserve data.
-		_layouts.resizeSystems( _context );
-		_geometries.resizeSystems( _context );
-
-		for ( const auto & systemData : p_systems )
-		{
-			using namespace Layout;
-
-			const Desc::Handle h = _systems.handle( systemData.uid );
-
-			// Upload layouts and geometries data.
-			_layouts.atoms.upload<ATOM_ATTR::SYMBOL, Symbol>( _context, h, systemData.data.atomSymbols );
-			_layouts.atoms.upload<ATOM_ATTR::ID, PickingUID>( _context, h, systemData.atomUids );
-
-			_geometries.spheres.uploadIndexes( _context, h );
-			_geometries.cylinders.uploadIndexes( _context, h );
-
-			if ( not _geometries.ribbons.empty( h ) )
-			{
-				const auto &			construction  = _geometries.ribbons.construction( h );
-				const Index				countResidues = _layouts.residues.size( h );
-				std::vector<PickingUID> residueIds( countResidues );
-				std::vector<uint8_t>	residueTypes( countResidues );
-				std::vector<ColorIndex> residueColors( countResidues );
-				for ( Index i = 0; i < countResidues; ++i )
-				{
-					const Index residueIndex = construction.residues[ i ].index;
-					residueIds[ i ]			 = systemData.residueUids[ residueIndex ];
-					auto ss					 = systemData.data.residueSecondaryStructureTypes[ residueIndex ];
-					residueTypes[ i ]		 = toUnderlying( ss );
-					residueColors[ i ]		 = Color::getColorIndex( ss );
-				}
-
-				_layouts.residues.upload<RESIDUE_ATTR::ID, PickingUID>( _context, h, residueIds );
-				_layouts.residues.upload<RESIDUE_ATTR::TYPE, uint8_t>( _context, h, residueTypes );
-				_layouts.residues.upload<RESIDUE_ATTR::COLOR, ColorIndex>( _context, h, residueColors );
-				_geometries.ribbons.uploadIndexes( _context, h );
-			}
-
-			setSystemPosition( systemData.uid, systemData.trajectory );
-		}
-
-		// Set models.
-		_refreshDataModels();
-
-		// Rebuild commands immediately, including the empty-scene case.
-		_geometries.buildDrawRanges( _context );
-
-		// Build draw ranges.
-		auto handles	 = _systems.handles();
-		_systemToRefresh = std::unordered_set<Desc::Handle>( handles.begin(), handles.end() );
-
-		setNeedUpdate( true );
+		_representations.get( p_handle ).data = std::move( p_representation );
 	}
 
-	void Renderer::setSystemTransform( const SystemUID p_uid, const Mat4f & p_transform )
+	void Renderer::removeRepresentation( const Desc::Handle p_handle )
 	{
-		assert( _systems.contains( p_uid ) );
+		assert( _representations.contains( p_handle ) );
 
-		Util::ScopedChrono timer( "[RENDERER] setSystemTransform" );
+		_representations.erase( p_handle );
 
-		const Desc::Handle h = _systems.handle( p_uid );
-		assert( _systems.contains( h ) );
-		_systems.get( h ).transform = p_transform;
-
-		// TODO: refresh only needed!
-		_refreshDataModels();
-		setNeedUpdate( true );
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::REPRESENTATIONS;
 	}
 
-	void Renderer::setSystemPosition( const SystemUID p_uid, std::span<const Vec3f> p_positions )
+	void Renderer::setRepresentationDirty( const Desc::Handle p_handle, const Cache::E_REPRESENTATION_DIRTY p_flags )
 	{
-		assert( _systems.contains( p_uid ) );
+		assert( _representations.contains( p_handle ) );
 
-		const Desc::Handle h = _systems.handle( p_uid );
-
-		// Push atom positions.
-		_layouts.atoms.upload<Layout::ATOM_ATTR::POSITION, Vec3f>( _context, h, p_positions );
-
-		// Compute ribbon positions and directions.
-		const auto & construction = _geometries.ribbons.construction( h );
-		if ( not construction.isEmpty )
-		{
-			const Index		   countResidues = _layouts.residues.size( h );
-			std::vector<Vec4f> ribbonPositions( countResidues );
-			std::vector<Vec3f> ribbonDirections( countResidues );
-
-			for ( Index i = 0; i < countResidues; ++i )
-			{
-				// Compute direction between carbon alpha and oxygen.
-				const Vec3f & positionCA   = p_positions[ construction.residues[ i ].ca ];
-				const Vec3f & positionO	   = p_positions[ construction.residues[ i ].o ];
-				const Vec3f	  directionCAO = Util::Math::normalize( positionO - positionCA );
-
-				ribbonPositions[ i ]  = Vec4f( positionCA, i );
-				ribbonDirections[ i ] = directionCAO;
-
-				if ( i > 0 )
-				{
-					const Vec3f & prevDirection = ribbonDirections[ i - 1 ];
-					if ( Util::Math::dot( directionCAO, prevDirection ) < 0.f )
-					{
-						ribbonDirections[ i ] = -directionCAO;
-					}
-				}
-			}
-
-			_layouts.residues.upload<Layout::RESIDUE_ATTR::POSITION, Vec4f>( _context, h, ribbonPositions );
-			_layouts.residues.upload<Layout::RESIDUE_ATTR::DIRECTION, Vec3f>( _context, h, ribbonDirections );
-		}
-
-		setNeedUpdate( true );
+		_dirtyRepresentations.emplace_back( p_handle, p_flags );
 	}
 
-	void Renderer::setSystemColors( const SystemUID p_uid, std::span<const ColorIndex> p_colors )
+	Desc::Handle Renderer::addSystem( Cache::System && p_system )
 	{
-		assert( _systems.contains( p_uid ) );
+		const Desc::Handle handle = _systems.emplace( std::move( p_system ) );
+		Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, handle );
 
-		const Desc::Handle h = _systems.handle( p_uid );
-		_layouts.atoms.upload<Layout::ATOM_ATTR::COLOR, ColorIndex>( _context, h, p_colors );
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ALL;
+		_dirtySystems.emplace_back( handle, Cache::E_SYSTEM_DIRTY::ALL );
 
-		/*
-		const auto &			construction  = _geometries.ribbons.construction( h );
-		const Index				countResidues = _layouts.residues.size( h );
-		std::vector<ColorIndex> ribbonColors( countResidues );
-		for ( Index i = 0; i < countResidues; ++i )
-		{
-			ribbonColors[ i ] = p_colors[ construction.residues[ i ].ca ];
-		}
-
-		_layouts.residues.upload<Layout::RESIDUE_ATTR::COLOR, ColorIndex>( _context, h, ribbonColors );
-		*/
-
-		setNeedUpdate( true );
+		return handle;
 	}
 
-	void Renderer::setSystemRepresentation( const SystemUID p_uid, const MapRepresentationRanges & p_representations )
+	void Renderer::patchSystem( const Desc::Handle p_handle, Cache::System::Data && p_system )
 	{
-		assert( _systems.contains( p_uid ) );
+		assert( _systems.contains( p_handle ) );
 
-		Util::ScopedChrono timer( "[RENDERER] setSystemRepresentation" );
-
-		const Desc::Handle h		   = _systems.handle( p_uid );
-		Cache::System &	   systemCache = _systems.get( p_uid );
-
-		systemCache.representations = p_representations;
-
-		const Index						 countAtoms = _layouts.atoms.size( h );
-		std::vector<RepresentationIndex> atoms( countAtoms );
-		Index							 count = 0;
-
-		for ( const auto & [ index, ranges ] : p_representations )
-		{
-			// Atoms.
-			for ( auto it = ranges.rangeBegin(); it != ranges.rangeEnd(); ++it )
-			{
-				std::fill_n( atoms.begin() + it->getFirst(), it->getCount(), index );
-			}
-			count += ranges.count();
-		}
-
-		assert( count == countAtoms );
-
-		_layouts.atoms.upload<Layout::ATOM_ATTR::REPRESENTATION, RepresentationIndex>( _context, h, atoms );
-
-		// Residues.
-		const auto &					 construction  = _geometries.ribbons.construction( h );
-		const Index						 countResidues = _layouts.residues.size( h );
-		std::vector<RepresentationIndex> residues( countResidues );
-
-		for ( Index i = 0; i < countResidues; ++i )
-		{
-			const Index atomIndex = construction.residues[ i ].ca;
-			assert( atomIndex < atoms.size() );
-			residues[ i ] = atoms[ atomIndex ];
-		}
-
-		assert( count == countAtoms );
-		assert( residues.size() == countResidues );
-
-		_layouts.residues.upload<Layout::RESIDUE_ATTR::REPRESENTATION, RepresentationIndex>( _context, h, residues );
-
-		_systemToRefresh.insert( h );
-
-		setNeedUpdate( true );
+		_systems.get( p_handle ).data = std::move( p_system );
 	}
 
-	void Renderer::setSystemVisibility(
-		const SystemUID			   p_uid,
-		const Util::Math::BitSet & p_visibility
-
-	)
+	void Renderer::removeSystem( const Desc::Handle p_handle )
 	{
-		assert( _systems.contains( p_uid ) );
+		assert( _systems.contains( p_handle ) );
 
-		Util::ScopedChrono timer( "[RENDERER] setSystemVisibility" );
-
-		const Desc::Handle h		   = _systems.handle( p_uid );
-		Cache::System &	   systemCache = _systems.get( p_uid );
-
-		systemCache.visibility = p_visibility;
-
-		_systemToRefresh.insert( h );
-
-		setNeedUpdate( true );
+		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::DELETING );
 	}
 
-	void Renderer::setSystemSelection(
-		const SystemUID			   p_uid,
-		const Util::Math::BitSet & p_selection
-
-	)
+	bool Renderer::ensureBufferChunk( const Desc::BufferRef & p_ref )
 	{
-		assert( _systems.contains( p_uid ) );
-
-		Util::ScopedChrono timer( "[RENDERER] setSystemSelection" );
-
-		const Desc::Handle h		   = _systems.handle( p_uid );
-		Cache::System &	   systemCache = _systems.get( p_uid );
-		const Index		   countAtoms  = _layouts.atoms.size( h );
-
-		assert( p_selection.size() <= countAtoms );
-
-		static constexpr Flag SEL = 1 << toUnderlying( E_ELEMENT_FLAGS::SELECTION );
-
-		std::vector<Flag> atomFlags( countAtoms, 0 );
-
-		for ( auto i : p_selection )
+		const bool created = _context.ensureBufferChunk( p_ref );
+		if ( not created )
 		{
-			atomFlags[ i ] |= SEL;
+			return false;
 		}
 
-		_layouts.atoms.upload<Layout::ATOM_ATTR::FLAG, Flag>( _context, h, atomFlags );
+		Builder::RenderGraphRuntime::rebuildCommandBuffer(
+			_context,
+			_queue,
+			_graph.getResources(),
+			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+			reinterpret_cast<uintptr_t>( this )
+		);
 
-		const auto &	  construction = _geometries.ribbons.construction( h );
-		std::vector<Flag> residueFlags( _layouts.residues.size( h ), 0 );
+		return true;
+	}
 
-		for ( Index i = 0; i < residueFlags.size(); ++i )
+	bool Renderer::releaseBufferChunk( const Desc::BufferRef & p_ref )
+	{
+		const bool released = _context.releaseBufferChunk( p_ref );
+		if ( not released )
 		{
-			const Index atomIndex = construction.residues[ i ].ca;
-			if ( atomFlags[ atomIndex ] & SEL )
-			{
-				residueFlags[ i ] |= SEL;
-			}
+			return false;
 		}
 
-		_layouts.residues.upload<Layout::RESIDUE_ATTR::FLAG, Flag>( _context, h, residueFlags );
+		Builder::RenderGraphRuntime::rebuildCommandBuffer(
+			_context,
+			_queue,
+			_graph.getResources(),
+			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
+			reinterpret_cast<uintptr_t>( this )
+		);
 
-		setNeedUpdate( true );
+		return true;
+	}
+
+	void Renderer::setSystemTransform( const Desc::Handle p_handle, const Mat4f & p_transform )
+	{
+		assert( _systems.contains( p_handle ) );
+
+		_systems.get( p_handle ).transform = p_transform;
+		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::TRANSFORM );
+	}
+
+	void Renderer::setSystemPositions( const Desc::Handle p_handle, std::span<const Vec3f> p_positions )
+	{
+		assert( _systems.contains( p_handle ) );
+
+		_systems.get( p_handle ).data.trajectory = p_positions;
+		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::TRAJECTORY );
+	}
+
+	void Renderer::setSystemDirty( const Desc::Handle p_handle, const Cache::E_SYSTEM_DIRTY p_flags )
+	{
+		assert( _systems.contains( p_handle ) );
+
+		_dirtySystems.emplace_back( p_handle, p_flags );
 	}
 
 	void Renderer::setVoxels( std::span<const Vec3f> p_mins, std::span<const Vec3f> p_maxs )
@@ -634,95 +651,7 @@ namespace VTX::Renderer
 		_layouts.voxels.upload<Layout::VOXEL_ATTR::MINS, Vec3f>( _context, Desc::NO_HANDLE, p_mins );
 		_layouts.voxels.upload<Layout::VOXEL_ATTR::MAXS, Vec3f>( _context, Desc::NO_HANDLE, p_maxs );
 
-		_geometries.buildDrawRanges( _context );
-
-		setNeedUpdate( true );
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::DRAW_RANGES;
 	}
 
-#pragma endregion
-
-#pragma region Internals
-
-	void Renderer::_refreshDataModels()
-	{
-		if ( _systems.empty() )
-		{
-			return;
-		}
-
-		BinaryBuffer430 buffer;
-		for ( const auto & system : _systems )
-		{
-			const Mat4f matrixModelView	   = _cacheCamera.matView * system.transform;
-			const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
-			const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
-
-			buffer.write( matrixModelView );
-			buffer.write( matrixModelViewInv );
-			buffer.write( matrixNormal );
-		}
-
-		buffer.close();
-
-		_context.setShaderBuffer( "Models", buffer );
-	}
-
-	void Renderer::_refreshSystemVisibility( const Desc::Handle p_handle )
-	{
-		Util::ScopedChrono timer( "[RENDERER] _refreshSystemVisibility" );
-
-		const Cache::System & systemCache = _systems.get( p_handle );
-
-		auto visibleSpheres	  = systemCache.visibility;
-		auto visibleCylinders = systemCache.visibility;
-		auto visibleRibbons	  = systemCache.visibility;
-
-		for ( const auto & [ representationIndex, ranges ] : systemCache.representations )
-		{
-			assert( _cacheRepresentations.contains( representationIndex ) );
-
-			const auto & cacheRepresentation = _cacheRepresentations[ representationIndex ];
-			if ( not cacheRepresentation.showSphere )
-			{
-				visibleSpheres.subtractInPlace( ranges );
-			}
-			if ( not cacheRepresentation.showCylinder )
-			{
-				visibleCylinders.subtractInPlace( ranges );
-			}
-			if ( not cacheRepresentation.showRibbon )
-			{
-				visibleRibbons.subtractInPlace( ranges );
-			}
-		}
-
-		_geometries.spheres.setVisibility( p_handle, visibleSpheres );
-		_geometries.cylinders.setVisibility( p_handle, visibleCylinders );
-		_geometries.ribbons.setVisibility( p_handle, visibleRibbons );
-
-		_geometries.uploadIndexes( _context, p_handle );
-	}
-
-	bool Renderer::_refreshGraph( const GraphicsConfig & p_config )
-	{
-		Util::ScopedChrono timer( "[RENDERER] _refreshGraph" );
-
-		RenderGraph::PipelineConfig config;
-
-		config.enableSSAO	   = p_config.activeSSAO;
-		config.enableOutline   = p_config.activeOutline;
-		config.enableSelection = p_config.activeSelection;
-
-		auto & configOpt = _graph.getPipelineConfig();
-		if ( configOpt && *configOpt == config )
-		{
-			return false;
-		}
-
-		_graph.createDefaultPipeline( config, _layouts, _geometries );
-		_queue = _graph.build();
-		return true;
-	}
-
-#pragma endregion
 } // namespace VTX::Renderer

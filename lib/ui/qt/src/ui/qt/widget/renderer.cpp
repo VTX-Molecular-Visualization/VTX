@@ -3,22 +3,29 @@
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
 #include "ui/qt/menu/selection.hpp"
+#include "ui/qt/resources.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include <QCoreApplication>
 #include <QCursor>
 #include <QGuiApplication>
+#include <QPainter>
+#include <QPalette>
+#include <QScopedValueRollback>
+#include <algorithm>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <qpa/qplatformnativeinterface.h>
 #include <renderer/renderer.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
 	Renderer::Renderer( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
 		setAcceptDrops( true );
+		_backgroundLogo = QPixmap( Resources::SPRITE_LOGO.data() );
 
 		_window = new Window::Renderer();
 		_window->setFlags( Qt::FramelessWindowHint );
@@ -29,6 +36,7 @@ namespace VTX::UI::QT::Widget
 		_container->setFocusPolicy( Qt::StrongFocus );
 		setFocusPolicy( Qt::NoFocus );
 		setFocusProxy( _container );
+		_container->setFixedSize( 0, 0 );
 
 		connect(
 			_window,
@@ -55,6 +63,16 @@ namespace VTX::UI::QT::Widget
 
 		_resizeTimer.setSingleShot( true );
 		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
+
+		App::HUB().connect<App::Events::RendererResize, &Renderer::_onRendererResize>( this );
+		App::RENDERER().onReady += [ this ]( const VTX::Renderer::StructInfos & )
+		{
+			_rendererReady = true;
+			App::ACTION().execute<App::Action::Application::SetVSync>(
+				SETTINGS().value( SETTING_KEY_VSYNC, VSYNC_DEFAULT ).toBool()
+			);
+			QTimer::singleShot( 0, this, &Renderer::onResizeFinished );
+		};
 	}
 
 	Renderer::~Renderer()
@@ -138,6 +156,31 @@ namespace VTX::UI::QT::Widget
 		return QWidget::eventFilter( p_watched, p_event );
 	}
 
+	void Renderer::paintEvent( QPaintEvent * p_event )
+	{
+		QWidget::paintEvent( p_event );
+
+		QPainter painter( this );
+		painter.fillRect( rect(), palette().color( QPalette::Base ) );
+
+		if ( _backgroundLogo.isNull() )
+		{
+			return;
+		}
+
+		const int	maxSide	 = std::max( 1, std::min( std::min( width(), height() ) / 3, 180 ) );
+		const QSize logoSize = _backgroundLogo.size().scaled( maxSide, maxSide, Qt::KeepAspectRatio );
+		const QRect logoRect(
+			( width() - logoSize.width() ) / 2,
+			( height() - logoSize.height() ) / 2,
+			logoSize.width(),
+			logoSize.height()
+		);
+
+		painter.setOpacity( 0.5 );
+		painter.drawPixmap( logoRect, _backgroundLogo );
+	}
+
 	void Renderer::showEvent( QShowEvent * p_event )
 	{
 		QWidget::showEvent( p_event );
@@ -151,29 +194,61 @@ namespace VTX::UI::QT::Widget
 
 		//_syncHUDWidgets();
 
-		if ( _container != nullptr )
+		if ( not _rendererReady )
 		{
-			_container->setVisible( false );
+			_resizeTimer.stop();
+			return;
 		}
 
+		if ( _ignoreResizeEvents )
+		{
+			_resizeTimer.stop();
+			return;
+		}
+		if ( _pendingLayoutReboundSize && p_event->size() == *_pendingLayoutReboundSize )
+		{
+			_resizeTimer.stop();
+			_pendingLayoutReboundSize.reset();
+			return;
+		}
+
+		if ( _window != nullptr && _container != nullptr )
+		{
+#ifdef _WIN32
+			_container->setVisible( false );
+			update();
+#endif
+		}
 		_resizeTimer.start( 40 );
 	}
 
 	void Renderer::onResizeFinished()
 	{
+		if ( _ignoreResizeEvents )
+		{
+			return;
+		}
+		if ( not _rendererReady )
+		{
+			return;
+		}
+
 		assert( _window != nullptr );
 		assert( _container != nullptr );
 
-		_container->setVisible( true );
-		_focusRenderer();
-
 		const QSize size = this->size();
+		_container->setMinimumSize( 0, 0 );
+		_container->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
 		_window->resize( size );
 		_container->resize( size );
+#ifdef _WIN32
+		_container->setVisible( true );
+#endif
 		//_syncHUDWidgets();
 
 		const QSize scaledSize = size * _window->devicePixelRatio();
-		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height() );
+		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height(), false );
+		_focusRenderer();
 	}
 
 	void Renderer::_focusRenderer()
@@ -185,6 +260,99 @@ namespace VTX::UI::QT::Widget
 
 		_container->setFocus( Qt::OtherFocusReason );
 		_window->requestActivate();
+	}
+
+	void Renderer::_onRendererResize( const App::Events::RendererResize & p_e )
+	{
+		if ( _window == nullptr || _container == nullptr )
+		{
+			return;
+		}
+		if ( not isVisible() )
+		{
+			return;
+		}
+		if ( not _rendererReady )
+		{
+			return;
+		}
+		if ( not p_e.resizeMainWindow )
+		{
+			return;
+		}
+		qreal dpr = _window->devicePixelRatio();
+		if ( dpr <= 0 )
+		{
+			dpr = 1;
+		}
+
+		const QSize size(
+			qRound( static_cast<qreal>( p_e.width ) / dpr ), qRound( static_cast<qreal>( p_e.height ) / dpr )
+		);
+
+		const QSize currentSize			 = this->size();
+		const bool	widgetSizeChanged	 = currentSize != size;
+		const bool	windowSizeChanged	 = _window->size() != size;
+		const bool	containerSizeChanged = _container->size() != size;
+		if ( not widgetSizeChanged && not windowSizeChanged && not containerSizeChanged )
+		{
+			return;
+		}
+
+		if ( widgetSizeChanged )
+		{
+			_pendingLayoutReboundSize = this->size();
+		}
+
+		_resizeTimer.stop();
+		QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
+
+		if ( widgetSizeChanged )
+		{
+			const QSize delta = size - currentSize;
+			MAIN_WINDOW().resize( MAIN_WINDOW().size() + delta );
+		}
+
+		const QSize appliedSize = this->size();
+		if ( _window->size() != appliedSize )
+		{
+			_window->resize( appliedSize );
+		}
+		if ( _container->size() != appliedSize )
+		{
+			_container->resize( appliedSize );
+		}
+#ifdef _WIN32
+		_container->setVisible( true );
+#endif
+
+		QTimer::singleShot(
+			0,
+			this,
+			[ this ]()
+			{
+				if ( _window == nullptr || _container == nullptr )
+				{
+					return;
+				}
+
+				_resizeTimer.stop();
+				QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
+
+				const QSize size = this->size();
+				if ( _window->size() != size )
+				{
+					_window->resize( size );
+				}
+				if ( _container->size() != size )
+				{
+					_container->resize( size );
+				}
+#ifdef _WIN32
+				_container->setVisible( true );
+#endif
+			}
+		);
 	}
 
 	/*

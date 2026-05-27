@@ -21,8 +21,8 @@
 namespace VTX::UI::QT
 {
 
-	int zero = 0;
-	Application::Application( App::Arguments && p_args ) : QApplication( zero, nullptr ), _app( std::move( p_args ) )
+	Application::Application( int & p_argc, char ** p_argv, App::Arguments && p_args )
+		: QApplication( p_argc, p_argv ), _app( std::move( p_args ) )
 	{
 		using namespace Resources;
 		using namespace App;
@@ -180,6 +180,10 @@ namespace VTX::UI::QT
 			App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
 			_app.createInitialEntities();
 
+			// Show the native window before creating the OpenGL context.
+			MAIN_WINDOW().show();
+			QCoreApplication::processEvents();
+
 			try
 			{
 				Renderer::Desc::NativeContextInfo contextInfo;
@@ -202,7 +206,6 @@ namespace VTX::UI::QT
 			_app.finishStartup();
 			_app.handleArgs();
 
-			MAIN_WINDOW().show();
 			_splashScreen->finish( &MAIN_WINDOW() );
 
 			_timer.start( 0 );

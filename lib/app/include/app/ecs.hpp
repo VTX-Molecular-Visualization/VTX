@@ -1,27 +1,10 @@
 #ifndef __VTX_APP_ECS__
 #define __VTX_APP_ECS__
 
-#include <entt/entt.hpp>
-#include <iostream>
-#include <util/hashing.hpp>
-#include <util/logger.hpp>
+#include <util/ecs.hpp>
 
 namespace VTX::App::ECS
 {
-	/**
-	 * @brief Aliases.
-	 */
-	using Registry				   = entt::registry;
-	using Entity				   = entt::entity;
-	constexpr Entity InvalidEntity = entt::null;
-
-	/**
-	 * @brief Helper type to check if a view get function returns void (i.e. tag component).
-	 */
-	template<typename View, typename T, typename Entity>
-	using view_get_t = decltype( std::declval<View &>().template get<T>( std::declval<Entity>() ) );
-	template<typename View, typename T, typename Entity>
-	inline constexpr bool view_get_is_void_v = std::is_void_v<view_get_t<View, T, Entity>>;
 
 	/**
 	 * @brief Set the global registry.
@@ -131,7 +114,7 @@ namespace VTX::App::ECS
 	/**
 	 * @brief Debug infos.
 	 */
-	inline void regToString()
+	inline void toString()
 	{
 		for ( const entt::entity e : registry().view<entt::entity>() )
 		{
@@ -151,7 +134,7 @@ namespace VTX::App::ECS
 
 namespace VTX::App
 {
-	inline ECS::Registry & REG() { return ECS::registry(); }
+	inline Registry & REG() { return ECS::registry(); }
 
 } // namespace VTX::App
 

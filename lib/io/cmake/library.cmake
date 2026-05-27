@@ -24,7 +24,7 @@ target_link_libraries(vtx_io PUBLIC chemfiles::chemfiles)
 target_link_libraries(vtx_io_test PRIVATE vtx_io::vtx_io)
 target_link_libraries(vtx_io_test PRIVATE Catch2::Catch2WithMain)
 
-vtx_copy_directory(vtx_io_test "${CMAKE_CURRENT_LIST_DIR}/../data" "$<TARGET_FILE_DIR:vtx_io_test>/data")
+vtx_copy_directory(vtx_io_test "${CMAKE_CURRENT_LIST_DIR}/../test/data" "$<TARGET_FILE_DIR:vtx_io_test>/data")
 
 include(CTest)
 include(Catch)

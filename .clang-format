@@ -49,6 +49,7 @@ DisableFormat: false
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
 IncludeBlocks: Merge
+InsertBraces: true
 IndentCaseLabels: false
 IndentWidth: 4
 IndentWrappedFunctionNames: false
@@ -63,6 +64,7 @@ PenaltyBreakFirstLessLess: 120
 PenaltyReturnTypeOnItsOwnLine: 1000
 PointerAlignment: Middle
 ReflowComments: true
+SeparateDefinitionBlocks: Always
 SortIncludes: true
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false

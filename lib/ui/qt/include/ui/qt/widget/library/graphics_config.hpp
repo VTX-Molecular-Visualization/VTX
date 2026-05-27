@@ -16,7 +16,7 @@ namespace VTX::UI::QT::Widget::Library
 		GraphicsConfig( QWidget * p_parent );
 
 	  protected:
-		void _update( App::ECS::Entity ) override;
+		void _update( Entity ) override;
 
 	  private:
 		// Shading.

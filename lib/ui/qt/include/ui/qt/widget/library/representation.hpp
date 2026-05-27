@@ -20,7 +20,7 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Update the widget when the preset is updated from App.
 		 */
-		void _update( App::ECS::Entity ) override;
+		void _update( Entity ) override;
 
 	  private:
 		// Sphere.
@@ -42,6 +42,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		// SES.
 		QPointer<HideableGroupBox> _groupboxSes;
+		QPointer<QComboBox>		   _comboBoxSesComputeMode;
 		QPointer<EditableSlider>   _sliderSesProbeRadius;
 
 		template<VTX::Renderer::E_REPRESENTATION_VALUES S, typename T>

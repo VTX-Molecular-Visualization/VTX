@@ -46,13 +46,15 @@ namespace VTX::Core::Struct
 		bondPairAtomIndexes.resize( p_count * 2, INVALID_INDEX );
 	}
 
-	ByteNumber dynamicMemoryUsage( const Topology & p_sys ) noexcept
+	size_t dynamicMemoryUsage( const Topology & p_sys ) noexcept
 	{
-		ByteNumber out = 0;
+		size_t out = 0;
 		// Mat4f should have dynamic allocation, right ?
 		// out += dynamicMemoryUsage( p_sys.trajectory );
 		for ( auto & it_str : p_sys.chainNames )
+		{
 			out += it_str.capacity();
+		}
 		out += p_sys.chainNames.size() * sizeof( std::string );
 		out += sizeof( size_t ) * p_sys.chainFirstResidues.size();
 		out += sizeof( size_t ) * p_sys.chainResidueCounts.size();
@@ -69,7 +71,9 @@ namespace VTX::Core::Struct
 		out += sizeof( size_t ) * p_sys.atomResidueIndexes.size();
 		out += sizeof( std::string ) * p_sys.atomNames.size();
 		if ( p_sys.atomOriginalIndexes )
+		{
 			out += sizeof( Index ) * p_sys.atomOriginalIndexes->size();
+		}
 		out += sizeof( ChemDB::Bond::ORDER ) * p_sys.bondOrders.size();
 		out += sizeof( Index ) * p_sys.bondPairAtomIndexes.size();
 

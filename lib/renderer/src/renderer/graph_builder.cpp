@@ -1,7 +1,43 @@
 #include "renderer/graph_builder.hpp"
+#include <util/enum.hpp>
+#include <util/exceptions.hpp>
 
 namespace VTX::Renderer
 {
+	namespace
+	{
+		void _requirePassType(
+			const Desc::Pass &		p_pass,
+			const Desc::E_PASS_TYPE p_expected,
+			const std::string_view	p_action
+		)
+		{
+			if ( p_pass.type == p_expected )
+			{
+				return;
+			}
+
+			throw GraphicException(
+				"Cannot call '{}' in pass '{}': expected pass type {}, got {}",
+				p_action,
+				p_pass.name,
+				Util::Enum::enumName( p_expected ),
+				Util::Enum::enumName( p_pass.type )
+			);
+		}
+
+		void _ensureNoProgramExecution( const Desc::Program & p_program, const std::string_view p_action )
+		{
+			if ( p_program.drawCall || p_program.dispatch || p_program.dispatchIndirect )
+			{
+				throw GraphicException(
+					"Program '{}': cannot add '{}' because an execution command is already set",
+					p_program.name,
+					p_action
+				);
+			}
+		}
+	} // namespace
 
 	GraphBuilder::GraphBuilder()
 	{
@@ -52,9 +88,9 @@ namespace VTX::Renderer
 	{
 		for ( auto & attr : p_layout.attributes )
 		{
-			if ( not resources.pipelineBuffers.contains( attr.name ) )
+			if ( not resources.buffers.contains( attr.name ) )
 			{
-				pipelineBuffer( attr.name, Desc::E_PIPELINE_BUFFER_KIND::VERTEX, Desc::E_UPDATE_FREQUENCY::STATIC );
+				buffer( attr.name, Desc::E_BUFFER_USAGE::VERTEX, Desc::E_UPDATE_FREQUENCY::STATIC );
 			}
 		}
 
@@ -62,39 +98,38 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	GraphBuilder & GraphBuilder::shaderBuffer(
+	GraphBuilder & GraphBuilder::buffer(
 		const Desc::Key &								p_name,
-		const Desc::E_SHADER_BUFFER_KIND				p_role,
+		const Desc::E_BUFFER_USAGE						p_usage,
+		const Desc::E_UPDATE_FREQUENCY					p_frequency,
+		const Desc::E_BUFFER_ALLOCATION					p_allocation,
 		const Desc::E_BUFFER_MUTABILITY					p_mutability,
 		const Desc::E_BUFFER_ACCESS						p_access,
-		const Desc::E_UPDATE_FREQUENCY					p_frequency,
-		const uint32_t									p_binding, // will be removed later
+		const std::optional<uint32_t>					p_binding,
 		const std::initializer_list<Desc::UniformValue> p_values
 	)
 	{
-		Desc::BufferShader desc;
-		desc.name		= p_name;
-		desc.role		= p_role;
+		Desc::Buffer & desc = resources.buffers[ p_name ];
+		desc.name			= p_name;
+		desc.usage |= p_usage;
+		if ( p_allocation == Desc::E_BUFFER_ALLOCATION::CHUNKED )
+		{
+			desc.allocation = Desc::E_BUFFER_ALLOCATION::CHUNKED;
+		}
+		desc.frequency	= p_frequency;
 		desc.mutability = p_mutability;
 		desc.access		= p_access;
-		desc.frequency	= p_frequency;
-		desc.binding	= p_binding;
-		desc.values.assign( p_values.begin(), p_values.end() );
-		resources.shaderBuffers[ p_name ] = std::move( desc );
-		return *this;
-	}
 
-	VTX::Renderer::GraphBuilder & VTX::Renderer::GraphBuilder::pipelineBuffer(
-		const Desc::Key &				   p_name,
-		const Desc::E_PIPELINE_BUFFER_KIND p_kind,
-		const Desc::E_UPDATE_FREQUENCY	   p_frequency
-	)
-	{
-		Desc::BufferPipeline db;
-		db.name								= p_name;
-		db.kind								= p_kind;
-		db.frequency						= p_frequency;
-		resources.pipelineBuffers[ p_name ] = std::move( db );
+		if ( p_binding )
+		{
+			desc.binding = *p_binding;
+		}
+
+		if ( p_values.size() > 0 )
+		{
+			desc.values.assign( p_values.begin(), p_values.end() );
+		}
+
 		return *this;
 	}
 
@@ -105,14 +140,16 @@ namespace VTX::Renderer
 		const std::optional<Desc::Key> p_indirectBuffer
 	)
 	{
-		if ( p_indiceBuffer && not resources.pipelineBuffers.contains( *p_indiceBuffer ) )
+		if ( p_indiceBuffer && not resources.buffers.contains( *p_indiceBuffer ) )
 		{
-			pipelineBuffer( *p_indiceBuffer, Desc::E_PIPELINE_BUFFER_KIND::INDICE, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
+			buffer( *p_indiceBuffer, Desc::E_BUFFER_USAGE::INDEX, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
 		}
-		if ( p_indirectBuffer && not resources.pipelineBuffers.contains( *p_indirectBuffer ) )
+		if ( p_indirectBuffer && not resources.buffers.contains( *p_indirectBuffer ) )
 		{
-			pipelineBuffer(
-				*p_indirectBuffer, Desc::E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND, Desc::E_UPDATE_FREQUENCY::DYNAMIC
+			buffer(
+				*p_indirectBuffer,
+				Desc::E_BUFFER_USAGE::INDIRECT | Desc::E_BUFFER_USAGE::STORAGE,
+				Desc::E_UPDATE_FREQUENCY::DYNAMIC
 			);
 		}
 
@@ -126,17 +163,15 @@ namespace VTX::Renderer
 
 	GraphBuilder & GraphBuilder::geometry( const Desc::Key & p_name, const Desc::Geometry & p_geometry )
 	{
-		if ( p_geometry.indiceBuffer && not resources.pipelineBuffers.contains( *p_geometry.indiceBuffer ) )
+		if ( p_geometry.indiceBuffer && not resources.buffers.contains( *p_geometry.indiceBuffer ) )
 		{
-			pipelineBuffer(
-				*p_geometry.indiceBuffer, Desc::E_PIPELINE_BUFFER_KIND::INDICE, Desc::E_UPDATE_FREQUENCY::DYNAMIC
-			);
+			buffer( *p_geometry.indiceBuffer, Desc::E_BUFFER_USAGE::INDEX, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
 		}
-		if ( p_geometry.indirectBuffer && not resources.pipelineBuffers.contains( *p_geometry.indirectBuffer ) )
+		if ( p_geometry.indirectBuffer && not resources.buffers.contains( *p_geometry.indirectBuffer ) )
 		{
-			pipelineBuffer(
+			buffer(
 				*p_geometry.indirectBuffer,
-				Desc::E_PIPELINE_BUFFER_KIND::INDIRECT_COMMAND,
+				Desc::E_BUFFER_USAGE::INDIRECT | Desc::E_BUFFER_USAGE::STORAGE,
 				Desc::E_UPDATE_FREQUENCY::DYNAMIC
 			);
 		}
@@ -145,7 +180,24 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	PassBuilder GraphBuilder::pass( const Desc::Key & p_name ) { return PassBuilder( *this, p_name ); }
+	PassBuilder GraphBuilder::pass(
+		const Desc::Key &			 p_name,
+		const Desc::E_PASS_TYPE		 p_type,
+		const Desc::E_PASS_EXECUTION p_execution
+	)
+	{
+		return PassBuilder( *this, p_name, p_type, p_execution );
+	}
+
+	PassBuilder GraphBuilder::computePass( const Desc::Key & p_name, const Desc::E_PASS_EXECUTION p_execution )
+	{
+		return pass( p_name, Desc::E_PASS_TYPE::COMPUTE, p_execution );
+	}
+
+	PassBuilder GraphBuilder::externalPass( const Desc::Key & p_name, const Desc::E_PASS_EXECUTION p_execution )
+	{
+		return pass( p_name, Desc::E_PASS_TYPE::EXTERNAL, p_execution );
+	}
 
 	ProgramBuilder::ProgramBuilder( PassBuilder & p_p, Desc::Program & p_prog ) : parent( p_p ), program( p_prog ) {}
 
@@ -167,12 +219,20 @@ namespace VTX::Renderer
 		return *this;
 	}
 
+	ProgramBuilder & ProgramBuilder::draw( const Desc::Key & p_geometry, const Desc::E_PRIMITIVE p_primitive )
+	{
+		return draw( p_geometry, p_primitive, Desc::DrawCall::Indirect {} );
+	}
+
 	ProgramBuilder & ProgramBuilder::draw(
 		const Desc::Key &					  p_geometry,
 		const Desc::E_PRIMITIVE				  p_primitive,
 		const Desc::DrawCall::RangesVariant & p_ranges
 	)
 	{
+		_requirePassType( parent.pass, Desc::E_PASS_TYPE::GRAPHICS, "draw" );
+		_ensureNoProgramExecution( program, "draw" );
+
 		Desc::DrawCall dc;
 		dc.geometry		 = p_geometry;
 		dc.primitive	 = p_primitive;
@@ -181,9 +241,71 @@ namespace VTX::Renderer
 		return *this;
 	}
 
+	ProgramBuilder & ProgramBuilder::dispatch( const Desc::Dispatch & p_dispatch )
+	{
+		_requirePassType( parent.pass, Desc::E_PASS_TYPE::COMPUTE, "dispatch" );
+		_ensureNoProgramExecution( program, "dispatch" );
+
+		program.dispatch = p_dispatch;
+		return *this;
+	}
+
+	ProgramBuilder & ProgramBuilder::dispatch(
+		const uint32_t p_groupX,
+		const uint32_t p_groupY,
+		const uint32_t p_groupZ,
+		const Desc::E_MEMORY_BARRIER p_barriers
+	)
+	{
+		return dispatch(
+			Desc::Dispatch { .groupX = p_groupX, .groupY = p_groupY, .groupZ = p_groupZ, .barriers = p_barriers }
+		);
+	}
+
+	ProgramBuilder & ProgramBuilder::dispatchIndirect(
+		const Desc::Key &			  p_indirectBuffer,
+		const uint32_t				  p_offset,
+		const Desc::E_MEMORY_BARRIER p_barriers
+	)
+	{
+		_requirePassType( parent.pass, Desc::E_PASS_TYPE::COMPUTE, "dispatchIndirect" );
+		_ensureNoProgramExecution( program, "dispatchIndirect" );
+
+		if ( not parent.graph.resources.buffers.contains( p_indirectBuffer ) )
+		{
+			parent.graph.buffer( p_indirectBuffer, Desc::E_BUFFER_USAGE::INDIRECT, Desc::E_UPDATE_FREQUENCY::DYNAMIC );
+		}
+
+		program.dispatchIndirect
+			= Desc::DispatchIndirect { .indirectBuffer = p_indirectBuffer, .offset = p_offset, .barriers = p_barriers };
+		return *this;
+	}
+
 	PassBuilder & ProgramBuilder::endProgram() { return parent; }
 
-	PassBuilder::PassBuilder( GraphBuilder & p_g, const Desc::Key & p_name ) : graph( p_g ) { pass.name = p_name; }
+	PassBuilder::PassBuilder(
+		GraphBuilder &				 p_g,
+		const Desc::Key &			 p_name,
+		const Desc::E_PASS_TYPE		 p_type,
+		const Desc::E_PASS_EXECUTION p_execution
+	) : graph( p_g )
+	{
+		pass.name	   = p_name;
+		pass.type	   = p_type;
+		pass.execution = p_execution;
+	}
+
+	PassBuilder & PassBuilder::type( const Desc::E_PASS_TYPE p_type )
+	{
+		pass.type = p_type;
+		return *this;
+	}
+
+	PassBuilder & PassBuilder::execution( const Desc::E_PASS_EXECUTION p_execution )
+	{
+		pass.execution = p_execution;
+		return *this;
+	}
 
 	PassBuilder & PassBuilder::in(
 		const Desc::E_RESOURCE_TYPE	   p_type,
@@ -223,16 +345,15 @@ namespace VTX::Renderer
 
 	ProgramBuilder PassBuilder::program( const Desc::Key & p_name )
 	{
+		if ( pass.type == Desc::E_PASS_TYPE::EXTERNAL )
+		{
+			throw GraphicException( "Cannot add program '{}' to external pass '{}'", p_name, pass.name );
+		}
+
 		pass.programs.emplace_back();
 		Desc::Program & prog = pass.programs.back();
 		prog.name			 = p_name;
 		return ProgramBuilder( *this, prog );
-	}
-
-	PassBuilder & PassBuilder::callback( const Desc::RenderFunc p_func )
-	{
-		pass.customCallback = std::move( p_func );
-		return *this;
 	}
 
 	GraphBuilder & PassBuilder::endPass()

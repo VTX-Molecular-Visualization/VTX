@@ -86,14 +86,19 @@ namespace VTX::UI::QT
 		void installShortcuts( QWidget & ) const;
 
 		/**
-		 * @brief Add an action to a menu.
+		 * @brief Add a registered action to a widget.
 		 */
-		QAction * addMenuAction( QMenu &, const std::string_view );
+		QAction * addTo( QWidget &, const std::string_view );
 
 		/**
-		 * @brief Add an action to a toolbar.
+		 * @brief Add a registered action to a menu.
 		 */
-		QAction * addToolBarAction( QToolBar &, const std::string_view );
+		QAction * addTo( QMenu &, const std::string_view );
+
+		/**
+		 * @brief Add a registered action to a toolbar.
+		 */
+		QAction * addTo( QToolBar &, const std::string_view );
 
 	  private:
 		/**

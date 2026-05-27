@@ -70,7 +70,7 @@ namespace VTX::UI::QT::DockWidget
 		_onSelectionLocked( Events::SelectionLocked { UI_ACTIONS().isChecked( Action::Selection::LOCK ) } );
 	}
 
-	void Scene::_onCameraConstruct( App::ECS::Registry &, App::ECS::Entity p_e )
+	void Scene::_onCameraConstruct( Registry &, Entity p_e )
 	{
 		_treeCamera = new Widget::Tree::Camera( p_e, this );
 		SELECTION().add( _treeCamera->selectionModel(), E_SELECTION_GROUP::CAMERA );
@@ -93,7 +93,7 @@ namespace VTX::UI::QT::DockWidget
 			_onTrajectoryCreated( App::REG(), p_e.system );
 	}
 
-	void Scene::_onSystemDestroy( App::ECS::Registry &, App::ECS::Entity p_e )
+	void Scene::_onSystemDestroy( Registry &, Entity p_e )
 	{
 		assert( _mapSystemTreeWidgets.contains( p_e ) );
 		_mapSystemTreeWidgets[ p_e ]->deleteLater();
@@ -106,13 +106,13 @@ namespace VTX::UI::QT::DockWidget
 		}
 	}
 
-	void Scene::_onUpdateVisibility( App::ECS::Registry &, App::ECS::Entity p_e )
+	void Scene::_onUpdateVisibility( Registry &, Entity p_e )
 	{
 		assert( _mapSystemTreeWidgets.contains( p_e ) );
 		_mapSystemTreeWidgets[ p_e ]->viewport()->update();
 	}
 
-	void Scene::_onUpdateSelection( App::ECS::Registry & p_r, App::ECS::Entity p_e )
+	void Scene::_onUpdateSelection( Registry & p_r, Entity p_e )
 	{
 		// Do not clear if full deselection.
 		if ( p_r.get<App::System::Selection>( p_e ).atoms.any() )
@@ -132,7 +132,7 @@ namespace VTX::UI::QT::DockWidget
 		_setSelectionEnabled( _treeRepresentationPresets, selectionEnabled );
 		_setSelectionEnabled( _treeCamera, selectionEnabled );
 	}
-	void Scene::_onTrajectoryCreated( App::ECS::Registry &, App::ECS::Entity p_entity )
+	void Scene::_onTrajectoryCreated( Registry &, Entity p_entity )
 	{
 		if ( not _mapSystemTreeWidgets.contains( p_entity ) )
 			return;

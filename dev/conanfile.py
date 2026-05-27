@@ -24,6 +24,7 @@ python_binding_module = import_module_from_file( Path("..") / "lib" / "python_bi
 qt_module = import_module_from_file( Path("..") / "lib" / "ui"/ "qt" / "conanfile.py" )
 mdprep_module = import_module_from_file( Path("..") / "tool" / "mdprep"/ "conanfile.py" )
 renderer_module = import_module_from_file( Path("..") / "lib" / "renderer" / "conanfile.py" )
+app_module = import_module_from_file( Path("..") / "lib" / "app" / "conanfile.py" )
 
 class VTXRecipe(ConanFile):
     name = "vtx"
@@ -74,19 +75,19 @@ class VTXRecipe(ConanFile):
         self.requires("spdlog/1.17.0")
         self.requires("magic_enum/0.9.7")
         self.requires("nlohmann_json/3.12.0")
-        self.requires("cpr/1.14.1")
-        self.requires("catch2/3.13.0")
+        self.requires("cpr/1.14.2")
+        self.requires("catch2/3.14.0")
         self.requires("chemfiles/2026.02.4")
         self.requires("argparse/3.2")
         if self.options.renderer:
             self.requires("sdl/3.4.0")
-            self.requires("imgui/1.92.5")
+            self.requires("imgui/1.92.7")
         self.requires("stb/cci.20240531")
         self.requires("entt/3.16.0")
         if self.options.python_binding:
             self.requires("pybind11/3.0.1")
         if self.options.ui_qt:
-            self.requires("qt/6.10.1")
+            self.requires("qt/6.11.0")
         if self.options.tool_mdprep:
             self.requires("gromacs/2026.0")
         self.requires("re2/20240702")
@@ -96,10 +97,12 @@ class VTXRecipe(ConanFile):
         self.requires("platformfolders/4.3.0")
         if self.options.python_binding:
             self.requires("cpython/{}".format(str(self._python_version())))
+            self.requires("mpdecimal/4.0.0", force=True)
         if self.settings.os == "Linux":
-            self.requires("xkbcommon/1.6.0", override=True)
-            self.requires("libffi/3.4.8", override=True)
-            self.requires("wayland/1.24.0", override=True)
+            self.requires("fontconfig/2.17.1", override=True)
+            self.requires("xkbcommon/1.6.0", force=True)
+            self.requires("libffi/3.4.8", force=True)
+            self.requires("wayland/1.24.0", force=True)
 
     def system_requirements(self):
         if self.options.renderer:
@@ -129,6 +132,9 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["VTX_UI_QT"] = 1 if self.options.ui_qt else 0
         tc.cache_variables["VTX_RENDERER"] = 1 if self.options.renderer else 0
         tc.cache_variables["VTX_PYTHON_BINDING"] = 1 if self.options.python_binding else 0
+        tc.cache_variables["VTX_VELOPACK_LIB"] = app_module.velopack_lib_name(
+            str(self.settings.os), str(self.settings.arch)
+        )
         if self.options.renderer:
             tc.cache_variables["VTX_CUDA_ARCH"] = self.options.cuda_arch
         tc.cache_variables["LOCAL_PDB100"] = 1 if self.options.local_pdb100 else 0

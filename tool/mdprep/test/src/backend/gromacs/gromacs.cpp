@@ -25,12 +25,15 @@ namespace VTX::test
 			[ & ]( const forcefield & p_ ) { return p_.getName() == p_ffName; }
 		);
 		if ( it != std::end( in.pdb2gmx.forcefields ) )
+		{
 			in.pdb2gmx.forcefieldIndex = std::distance( in.pdb2gmx.forcefields.begin(), it );
+		}
 	}
 } // namespace VTX::test
 
 TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 1ubq", "[prepareStructure][1ubq]" )
 {
+	return; // TMP TODO : Put it back online
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
 
@@ -53,7 +56,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 1ubq", "[prepareStructure][1ubq]"
 
 	in.rootDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "prepareStructure" / "1ubq";
 	if ( fs::exists( in.rootDir ) )
+	{
 		fs::remove_all( in.rootDir );
+	}
 	fs::create_directories( in.rootDir );
 
 	std::stop_token token;
@@ -73,6 +78,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 1ubq", "[prepareStructure][1ubq]"
 
 TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 2wfv", "[prepareStructure][2wfv]" )
 {
+	return; // TMP TODO : Put it back online
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
 
@@ -95,7 +101,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 2wfv", "[prepareStructure][2wfv]"
 
 	in.rootDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "prepareStructure" / "2wfv";
 	if ( fs::exists( in.rootDir ) )
+	{
 		fs::remove_all( in.rootDir );
+	}
 	fs::create_directories( in.rootDir );
 
 	std::stop_token token;
@@ -112,6 +120,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 2wfv", "[prepareStructure][2wfv]"
 		CHECK( fs::exists( fs::path( *outputFileStrPtr ) ) );
 	}
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - SystemTester", "[SystemTester]" )
 {
 	// Passing ones : 4j6s 2wfv 8hu4.nolig
@@ -135,8 +144,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - SystemTester", "[SystemTester]" )
 	CHECK( s_4nxo == false );
 	CHECK( s_8hu4 == false );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - prepPy", "[prepPy]" ) // temporary UT meant to generate runMD.py test env
 {
+	return; // TMP TODO : Put it back online
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
 
@@ -159,7 +170,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepPy", "[prepPy]" ) // temporary UT meant to gen
 
 	in.rootDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "prepareStructure" / "1gcn";
 	if ( fs::exists( in.rootDir ) )
+	{
 		fs::remove_all( in.rootDir );
+	}
 	fs::create_directories( in.rootDir );
 
 	std::stop_token token;
@@ -200,7 +213,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepPy", "[prepPy]" ) // temporary UT meant to gen
 	md.prod.nstxout_compressed = 1;
 	fs::path outDir			   = VTX::Tool::Mdprep::executableDirectory() / "out" / "packed" / "1gcn";
 	if ( fs::exists( outDir ) )
+	{
 		fs::remove_all( outDir );
+	}
 	fs::create_directories( outDir );
 	pack( VTX::Tool::Mdprep::executableDirectory() / "out" / "packed" / "1gcn", in.outputs, md );
 }

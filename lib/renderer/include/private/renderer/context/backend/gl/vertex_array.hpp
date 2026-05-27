@@ -3,6 +3,7 @@
 
 #include "include_opengl.hpp"
 #include <type_traits>
+#include <utility>
 
 namespace VTX::Renderer::Context::Backend::GL
 {
@@ -16,7 +17,25 @@ namespace VTX::Renderer::Context::Backend::GL
 			glCreateVertexArrays( 1, &_id );
 		}
 
-		~VertexArray() noexcept
+		VertexArray( const VertexArray & )			 = delete;
+		VertexArray & operator=( const VertexArray & ) = delete;
+
+		VertexArray( VertexArray && p_other ) noexcept : _id( std::exchange( p_other._id, GL_INVALID_INDEX ) ) {}
+
+		VertexArray & operator=( VertexArray && p_other ) noexcept
+		{
+			if ( this != &p_other )
+			{
+				destroy();
+				_id = std::exchange( p_other._id, GL_INVALID_INDEX );
+			}
+
+			return *this;
+		}
+
+		~VertexArray() noexcept { destroy(); }
+
+		void destroy() noexcept
 		{
 			if ( _id != GL_INVALID_INDEX )
 			{
@@ -137,33 +156,25 @@ namespace VTX::Renderer::Context::Backend::GL
 			glMultiDrawArrays( p_mode, p_first, p_count, p_primcount );
 		}
 
-		struct DrawArraysIndirectCommand
-		{
-			GLuint count;
-			GLuint instanceCount;
-			GLuint first;
-			GLuint baseInstance;
-		};
-
 		inline void multiDrawArraysIndirect(
 			const GLenum		 p_mode,
 			const GLvoid * const p_indirect,
-			const GLsizei		 p_drawCount
+			const GLsizei		 p_drawCount,
+			const GLsizei		 p_stride
 		) const noexcept
 		{
-			glMultiDrawArraysIndirect( p_mode, p_indirect, p_drawCount, sizeof( DrawArraysIndirectCommand ) );
+			glMultiDrawArraysIndirect( p_mode, p_indirect, p_drawCount, p_stride );
 		}
 
 		inline void multiDrawArraysIndirectCount(
 			const GLenum		 p_mode,
 			const GLvoid * const p_indirect,
 			const GLintptr		 p_drawCountOffset,
-			const GLsizei		 p_maxDrawCount
+			const GLsizei		 p_drawCapacity,
+			const GLsizei		 p_stride
 		) const noexcept
 		{
-			glMultiDrawArraysIndirectCount(
-				p_mode, p_indirect, p_drawCountOffset, p_maxDrawCount, sizeof( DrawArraysIndirectCommand )
-			);
+			glMultiDrawArraysIndirectCount( p_mode, p_indirect, p_drawCountOffset, p_drawCapacity, p_stride );
 		}
 
 		inline void drawElements(
@@ -187,25 +198,15 @@ namespace VTX::Renderer::Context::Backend::GL
 			glMultiDrawElements( p_mode, p_count, p_type, p_offset, p_primcount );
 		}
 
-		struct DrawElementsIndirectCommand
-		{
-			GLuint count;
-			GLuint instanceCount;
-			GLuint firstIndex;
-			GLint  baseVertex;
-			GLuint baseInstance;
-		};
-
 		inline void multiDrawElementsIndirect(
 			const GLenum		 p_mode,
 			const GLenum		 p_type,
 			const GLvoid * const p_indirect,
-			const GLsizei		 p_drawCount
+			const GLsizei		 p_drawCount,
+			const GLsizei		 p_stride
 		) const noexcept
 		{
-			glMultiDrawElementsIndirect(
-				p_mode, p_type, p_indirect, p_drawCount, sizeof( DrawElementsIndirectCommand )
-			);
+			glMultiDrawElementsIndirect( p_mode, p_type, p_indirect, p_drawCount, p_stride );
 		}
 
 		inline void multiDrawElementsIndirectCount(
@@ -213,12 +214,11 @@ namespace VTX::Renderer::Context::Backend::GL
 			const GLenum		 p_type,
 			const GLvoid * const p_indirect,
 			const GLintptr		 p_drawCountOffset,
-			const GLsizei		 p_maxDrawCount
+			const GLsizei		 p_drawCapacity,
+			const GLsizei		 p_stride
 		) const noexcept
 		{
-			glMultiDrawElementsIndirectCount(
-				p_mode, p_type, p_indirect, p_drawCountOffset, p_maxDrawCount, sizeof( DrawElementsIndirectCommand )
-			);
+			glMultiDrawElementsIndirectCount( p_mode, p_type, p_indirect, p_drawCountOffset, p_drawCapacity, p_stride );
 		}
 
 		inline bool hasEbo() const noexcept

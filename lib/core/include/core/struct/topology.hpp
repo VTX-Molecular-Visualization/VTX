@@ -319,7 +319,7 @@ namespace VTX::Core::Struct
 		}
 	};
 
-	ByteNumber dynamicMemoryUsage( const Topology & ) noexcept;
+	size_t dynamicMemoryUsage( const Topology & ) noexcept;
 
 } // namespace VTX::Core::Struct
 #endif

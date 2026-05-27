@@ -1,24 +1,19 @@
 #include "io/util/secondary_structure.hpp"
+#include <util/chrono.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
 
 namespace VTX::IO::Util::SecondaryStructure
 {
-	namespace
-	{
 
-	}
-	void assignSecondaryStructure( VTX::Core::Struct::Topology & p_topology )
+	void assignSecondaryStructure( Core::Struct::Topology & p_topology, const VTX::Core::Struct::Frame & p_positions )
 	{
-		// This new algorithm will utilize H-bond to assign Beta-sheet and Alpha-helix
-	}
+		VTX::Util::ScopedChrono chrono( "SecondaryStructure::assignSecondaryStructure" );
+		VTX_INFO( "Computing secondary structure with stride algorithm..." );
 
-	void computeStride( Core::Struct::Topology & p_topology )
-	{
-#ifdef AnAlgorithmShoudntBeHere
 		using namespace VTX::Util;
 
-		const Core::Struct::Frame & positions = p_topology.trajectory.getCurrentFrame();
+		const Core::Struct::Frame & positions = p_positions;
 
 		std::vector<Core::ChemDB::SecondaryStructure::TYPE> & types = p_topology.residueSecondaryStructureTypes;
 
@@ -220,7 +215,6 @@ namespace VTX::IO::Util::SecondaryStructure
 				}
 			}
 		}
-#endif
 	}
 
 } // namespace VTX::IO::Util::SecondaryStructure
