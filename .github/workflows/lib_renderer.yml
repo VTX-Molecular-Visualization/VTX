@@ -14,6 +14,11 @@ on:
           options:
           - Debug
           - Release
+        cuda:
+          description: 'Enable CUDA'
+          required: false
+          default: true
+          type: boolean
         cuda_version:
           description: 'CUDA version'
           required: false
@@ -26,7 +31,7 @@ on:
 env:
   LIB_DIR: ${{github.workspace}}/lib
   BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
-  CUDA_VERSION: ${{ inputs.cuda_version }}
+  CUDA_VERSION: ${{ inputs.cuda == true && inputs.cuda_version || '' }}
   CUDA_ARCH: ${{ inputs.cuda_arch }}
 
 jobs:

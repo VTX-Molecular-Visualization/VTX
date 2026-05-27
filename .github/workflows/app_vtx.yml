@@ -45,6 +45,11 @@ on:
         required: false
         default: true
         type: boolean
+      cuda:
+        description: 'Enable CUDA'
+        required: false
+        default: true
+        type: boolean
       cuda_version:
         description: 'CUDA version'
         required: false
@@ -68,7 +73,7 @@ env:
   UI_QT: ${{ inputs.ui_qt == true && 'True' || 'False' }}
   VTX_RENDERER: ${{ inputs.renderer == true && 'True' || 'False' }}
   VTX_PYTHON_BINDING: ${{ inputs.python_binding == true && 'True' || 'False' }}
-  CUDA_VERSION: ${{ inputs.cuda_version }}
+  CUDA_VERSION: ${{ inputs.cuda == true && inputs.cuda_version || '' }}
   CUDA_ARCH: ${{ inputs.cuda_arch }}
   PYTHON_VERSION: ${{ inputs.python_version }}
   RELEASE_DIR: ${{ github.workspace }}/release
