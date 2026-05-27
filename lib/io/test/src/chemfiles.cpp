@@ -16,6 +16,7 @@
 namespace
 {
 	using namespace VTX::IO::Writer;
+
 	void twoWaterSystems1frame( ChemfilesTrajectory & trajWriter )
 	{
 		System system = trajWriter.system();
@@ -81,6 +82,7 @@ namespace
 		system.bind( id_wat2_O, id_wat2_H1, E_BOND_ORDER::single );
 		system.bind( id_wat2_O, id_wat2_H2, E_BOND_ORDER::single );
 	}
+
 	void twoWaterSystems2frame( ChemfilesTrajectory & trajWriter )
 	{
 		System system = trajWriter.system();
@@ -161,7 +163,9 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 
 	const VTX::FilePath outPath = VTX::Util::Filesystem::getExecutableDir() / "out" / "ChemfilesTrajectory";
 	if ( not std::filesystem::exists( outPath ) )
+	{
 		std::filesystem::create_directories( outPath );
+	}
 
 	const VTX::FilePath waterPath = outPath / "water.pdb";
 
@@ -188,13 +192,16 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 	CHECK( systemReader.frameCount() == 1 );
 	CHECK( positions.size() == 6 );
 }
+
 TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemfiles][trajectory][2 frames]" )
 {
 	using namespace VTX::IO::Writer;
 
 	const VTX::FilePath outPath = VTX::Util::Filesystem::getExecutableDir() / "out" / "ChemfilesTrajectory";
 	if ( not std::filesystem::exists( outPath ) )
+	{
 		std::filesystem::create_directories( outPath );
+	}
 
 	const VTX::FilePath waterPath = outPath / "water_2frames.pdb";
 
@@ -235,18 +242,22 @@ namespace
 			bool atLeastOneFrame = false;
 
 		} firstRead, reRead;
+
 		bool matchAtoms	   = false;
 		bool matchResidues = false;
 		bool matchChains   = false;
 		bool matchBonds	   = false;
 		bool matchFrames   = false;
 	};
+
 	struct LazyTrajectory
 	{
 		std::vector<std::vector<VTX::Vec3f>> frames;
 
-		inline VTX::uint				   frameCount() const { return static_cast<VTX::uint>( frames.size() ); }
+		inline VTX::uint frameCount() const { return static_cast<VTX::uint>( frames.size() ); }
+
 		inline std::span<const VTX::Vec3f> getCurrentAtomPositions() const { return frames[ 0 ]; }
+
 		inline std::span<const VTX::Vec3f> getAtomPositions( const VTX::uint & p_index ) const
 		{ return frames[ p_index ]; }
 	};
@@ -290,7 +301,9 @@ namespace
 
 		const VTX::FilePath outPath = VTX::Util::Filesystem::getExecutableDir() / "out" / "ChemfilesTrajectory";
 		if ( not std::filesystem::exists( outPath ) )
+		{
 			std::filesystem::create_directories( outPath );
+		}
 
 		const VTX::FilePath destination = outPath / ( systemName + p_args.writtenExtension );
 
@@ -353,8 +366,10 @@ namespace
 	{
 		std::vector<VTX::Vec3f> frame;
 
-		VTX::uint					frameCount() const { return frame.empty() ? 0u : 1u; }
+		VTX::uint frameCount() const { return frame.empty() ? 0u : 1u; }
+
 		std::span<const VTX::Vec3f> getCurrentAtomPositions() const { return frame; }
+
 		std::span<const VTX::Vec3f> getAtomPositions( const VTX::uint & ) const { return frame; }
 	};
 
@@ -403,7 +418,9 @@ namespace
 	{
 		VTX::FilePath path = VTX::Util::Filesystem::getExecutableDir() / "out" / "writeFile_multi";
 		if ( !std::filesystem::exists( path ) )
+		{
 			std::filesystem::create_directories( path );
+		}
 		return path;
 	}
 
@@ -420,9 +437,13 @@ namespace
 		VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 		reader.get( dict, top, meta );
 		if ( positions )
+		{
 			reader.get( *positions );
+		}
 		if ( frameCount )
+		{
 			*frameCount = reader.frameCount();
+		}
 		return top;
 	}
 } // namespace
@@ -573,7 +594,9 @@ TEST_CASE(
 
 	std::vector<float> xs;
 	for ( const auto & p : positions )
+	{
 		xs.push_back( p[ 0 ] );
+	}
 	std::sort( xs.begin(), xs.end() );
 
 	// Every original coordinate must survive unmodified
@@ -603,8 +626,7 @@ TEST_CASE(
 	FixedTrajectory traj;
 	traj.frame = { { 1.f, 0.f, 0.f }, { 99.f, 0.f, 0.f }, { 3.f, 0.f, 0.f } };
 
-	AtomFilter keepNonN
-		= []( const VTX::Core::Struct::Topology & t, const size_t & i ) -> bool { return t.atomNames[ i ] != "N"; };
+	AtomFilter keepNonN = [ &top ]( const size_t & i ) -> bool { return top.atomNames[ i ] != "N"; };
 
 	const VTX::FilePath			   dest = multiOutDir() / "filter_single.pdb";
 	std::vector<WriteArgs::System> topologies;
@@ -625,7 +647,9 @@ TEST_CASE(
 
 	// The sentinel coordinate 99 must not appear
 	for ( const auto & p : positions )
+	{
 		CHECK( p[ 0 ] != Catch::Approx( 99.f ).margin( 0.01f ) );
+	}
 
 	// C (x=1) and O (x=3) must have their original coordinates
 	std::vector<float> xs = { positions[ 0 ][ 0 ], positions[ 1 ][ 0 ] };
@@ -662,10 +686,10 @@ TEST_CASE(
 					.atom( "O2", VTX::Core::ChemDB::Atom::SYMBOL::A_O ) // index 2 – kept
 					.finish();
 
-	AtomFilter keepNonN = []( const VTX::Core::Struct::Topology & t, const size_t & i ) -> bool
+	AtomFilter keepNonN = [ &sys2 ]( const size_t & i ) -> bool
 	{
 		//
-		return t.atomNames[ i ] != "N";
+		return sys2.atomNames[ i ] != "N";
 		//
 	};
 
@@ -693,12 +717,16 @@ TEST_CASE(
 	CHECK( reread.getChainCount() == 2 );
 
 	for ( VTX::Index i = 0; i < reread.getAtomCount(); ++i )
+	{
 		CHECK( reread.atomNames[ i ] != "N" );
+	}
 
 	REQUIRE( positions.size() == 5 );
 	std::vector<float> xs;
 	for ( const auto & p : positions )
+	{
 		xs.push_back( p[ 0 ] );
+	}
 	std::sort( xs.begin(), xs.end() );
 	CHECK( xs[ 0 ] == Catch::Approx( 1.f ).margin( 0.01f ) );
 	CHECK( xs[ 4 ] == Catch::Approx( 5.f ).margin( 0.01f ) );
