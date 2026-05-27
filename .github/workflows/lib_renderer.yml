@@ -85,20 +85,34 @@ jobs:
         linux-local-args: '["--toolkit"]'
     
     - name: Setup CUDA environment
-      if: env.CUDA_VERSION != ''
       shell: bash
       run: |
-        CUDA_PATH_UNIX="$(cygpath -u "$CUDA_PATH")"
-        CUDA_BIN="$CUDA_PATH_UNIX/bin"
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          CUDA_PATH_WIN="$(cygpath -m "$CUDA_PATH")"
+          CUDA_PATH_UNIX="$(cygpath -u "$CUDA_PATH")"
 
-        echo "CUDA_PATH=$CUDA_PATH"
-        echo "CUDA_PATH_UNIX=$CUDA_PATH_UNIX"
+          NVCC="$CUDA_PATH_WIN/bin/nvcc.exe"
+          CUDA_BIN="$CUDA_PATH_UNIX/bin"
+
+        else
+          CUDA_PATH_WIN="$CUDA_PATH"
+          CUDA_PATH_UNIX="$CUDA_PATH"
+
+          NVCC="$CUDA_PATH/bin/nvcc"
+          CUDA_BIN="$CUDA_PATH/bin"
+        fi
+
+        echo "CUDA_PATH=$CUDA_PATH_WIN"
         echo "CUDA_BIN=$CUDA_BIN"
+        echo "NVCC=$NVCC"
 
-        "$CUDA_BIN/nvcc.exe" --version
+        "$NVCC" --version
 
         echo "$CUDA_BIN" >> "$GITHUB_PATH"
-        echo "CUDACXX=$CUDA_BIN/nvcc.exe" >> "$GITHUB_ENV"
+
+        echo "CUDA_PATH=$CUDA_PATH_WIN" >> "$GITHUB_ENV"
+        echo "CUDAToolkit_ROOT=$CUDA_PATH_WIN" >> "$GITHUB_ENV"
+        echo "CUDACXX=$NVCC" >> "$GITHUB_ENV"
 
     - name: Check CUDA
       if: env.CUDA_VERSION != ''
@@ -126,4 +140,5 @@ jobs:
           -o vtx_renderer/*:test=True \
           "${CUDA_ARCH_OPTION[@]}" \
           -c tools.system.package_manager:mode=install \
-          -c tools.system.package_manager:sudo=True 
+          -c tools.system.package_manager:sudo=True \
+          -c tools.cmake.cmaketoolchain:extra_variables="{\"CMAKE_CUDA_COMPILER\":\"$CUDACXX\",\"CUDAToolkit_ROOT\":\"$CUDAToolkit_ROOT\"}" 

@@ -54,7 +54,7 @@ on:
         required: false
         default: "75;80;86;87;89;90;100;120"
       python_version:
-        description: 'Python version'
+        description: 'Python version (override)'
         required: false
         
 env:
