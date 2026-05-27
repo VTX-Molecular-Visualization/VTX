@@ -45,8 +45,10 @@ target_sources(vtx_renderer
 	PRIVATE ${SHADERS}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include/public" FILES ${HEADERS_PUBLIC}
 	PRIVATE FILE_SET private_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include/private" FILES ${HEADERS_PRIVATE}
-	PRIVATE FILE_SET vendors_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../vendor" FILES ${HEADERS_VENDORS}
+	#PRIVATE FILE_SET vendors_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../vendor" FILES ${HEADERS_VENDORS}
 )
+
+target_include_directories(vtx_renderer	SYSTEM PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../vendor")
 
 # OpenGL.
 if(WIN32)
