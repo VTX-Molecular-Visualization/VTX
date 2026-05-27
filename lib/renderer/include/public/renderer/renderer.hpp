@@ -145,7 +145,7 @@ namespace VTX::Renderer
 		 * @brief Callback when ready.
 		 * TODO: use event hub?
 		 */
-		Util::Callback<> onReady;
+		Util::Callback<const StructInfos &> onReady;
 
 	  private:
 		/**

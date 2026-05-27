@@ -110,20 +110,23 @@ namespace VTX::Renderer::Context
 
 		/**
 		 * @brief Ensure a physical chunk exists for a chunked logical buffer.
-		 * @return true if a new chunk was created and the command buffer must be rebuilt.
+		 * @return true if a new
+		 * chunk was created and the command buffer must be rebuilt.
 		 */
 		bool ensureBufferChunk( const Desc::BufferRef & );
 
 		/**
 		 * @brief Release a physical chunk for a chunked logical buffer.
-		 * @return true if a chunk was released and the command buffer must be rebuilt.
+		 * @return true if a chunk
+		 * was released and the command buffer must be rebuilt.
 		 */
 		bool releaseBufferChunk( const Desc::BufferRef & );
 
 		/**
 		 * @brief Get texture data.
 		 * Can use a different read format (default is upload format).
-		 * Coordinates = single pixel, default = whole texture.
+
+		 * * Coordinates = single pixel, default = whole texture.
 		 */
 		std::vector<std::byte> getTextureData(
 			const Desc::Key & p_key,
@@ -161,16 +164,14 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Map graphics buffers to an external compute backend pointer.
 		 */
-		[[nodiscard]] Desc::InteropBufferMapping mapInteropBuffer(
-			const Desc::E_INTEROP_API,
-			const Desc::BufferRef &
-		);
+		[[nodiscard]] Desc::InteropBufferMapping mapInteropBuffer( const Desc::E_INTEROP_API, const Desc::BufferRef & );
 		[[nodiscard]] std::vector<Desc::InteropBufferMapping> mapInteropBuffers(
 			const Desc::E_INTEROP_API,
 			std::span<const Desc::BufferRef>
 		);
 		void unmapInteropBuffer( const Desc::E_INTEROP_API, const Desc::InteropBufferMapping & );
 		void unmapInteropBuffers( const Desc::E_INTEROP_API, std::span<const Desc::InteropBufferMapping> );
+		void unregisterInteropBuffer( Desc::E_INTEROP_API, const Desc::BufferRef & );
 
 		/**
 		 * @brief Query whether a backend interop API can access renderer-owned graphics resources.

@@ -39,6 +39,11 @@ namespace VTX::Renderer::Geometry
 
 		void setVisibility( const Desc::Handle p_handle, const Util::Math::BitSet & p_visibility )
 		{
+			if ( not _hasRange( p_handle ) )
+			{
+				return;
+			}
+
 			auto & indiceBuffer = _indices( p_handle );
 
 			indiceBuffer.clear();

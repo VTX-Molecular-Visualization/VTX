@@ -8,11 +8,13 @@
 #include <memory>
 #include <span>
 #include <util/types.hpp>
+#include <vector>
 
 namespace VTX::Renderer::Geometry::SESDetail
 {
 	using UVec2 = std::array<uint32_t, 2>;
 	using UVec4 = std::array<uint32_t, 4>;
+	using IVec4 = std::array<int32_t, 4>;
 
 	struct CudaConstruction;
 
@@ -87,6 +89,14 @@ namespace VTX::Renderer::Geometry::SESDetail
 		uint32_t atomNb			  = 0;
 	};
 
+	struct SesdfVisibilityData
+	{
+		std::vector<uint32_t> atomIds;
+		std::vector<UVec2>	circleAtoms;
+		std::vector<UVec2>	segmentAtoms;
+		std::vector<IVec4>	concaveAtoms;
+	};
+
 	CudaBuildResult buildCudaConstruction(
 		std::span<const Vec3f>						p_positions,
 		std::span<const Core::ChemDB::Atom::SYMBOL> p_symbols,
@@ -99,7 +109,16 @@ namespace VTX::Renderer::Geometry::SESDetail
 		float					p_probeRadius
 	);
 
+	CudaBuildResult buildCudaConstructionFromRendererBuffers(
+		const SesdfInputBuffers & p_inputs,
+		std::span<const Vec3f>	p_aabbPositions,
+		std::span<const Index>	p_atomIndices,
+		float					p_probeRadius
+	);
+
 	void writeCudaConstruction( CudaConstruction &, const SesdfOutputBuffers & );
+	std::vector<uint32_t> readAtomIds( const CudaBufferView &, uint32_t );
+	void				  readConstructionVisibilityData( CudaConstruction &, SesdfVisibilityData & );
 } // namespace VTX::Renderer::Geometry::SESDetail
 
 #endif

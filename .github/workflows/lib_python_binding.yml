@@ -15,7 +15,7 @@ on:
           - Debug
           - Release
         python_version:
-          description: 'Python version'
+          description: 'Python version (override)'
           required: false
 
 env:

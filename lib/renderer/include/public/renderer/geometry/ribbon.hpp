@@ -193,6 +193,11 @@ namespace VTX::Renderer::Geometry
 
 		void setVisibility( const Desc::Handle p_handle, const Util::Math::BitSet & p_visibility )
 		{
+			if ( not _hasRange( p_handle ) )
+			{
+				return;
+			}
+
 			const auto it = _construction.find( p_handle );
 			if ( it == _construction.end() )
 			{

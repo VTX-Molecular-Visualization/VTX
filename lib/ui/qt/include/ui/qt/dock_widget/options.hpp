@@ -7,6 +7,10 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QPointer>
+#include <QString>
+#include <util/types.hpp>
+
+class QGroupBox;
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -30,10 +34,25 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<QCheckBox> _checkBoxSavePower;
 		QPointer<QLabel>	_labelCacheCount;
 		QPointer<QLabel>	_labelCacheSize;
+		QPointer<QLabel>	_labelSnapshotsCount;
+		QPointer<QLabel>	_labelSnapshotsSize;
+		QPointer<QLabel>	_labelLogsCount;
+		QPointer<QLabel>	_labelLogsSize;
 
-		void _syncThemeComboBox();
-		void _onThemeChanged( const Events::ThemeChanged & );
-		void _refreshCacheInfos();
+		void		_syncThemeComboBox();
+		void		_onThemeChanged( const Events::ThemeChanged & );
+		QGroupBox * _createFolderGroupBox(
+			const QString &	   p_title,
+			const FilePath &   p_path,
+			QPointer<QLabel> & p_labelCount,
+			QPointer<QLabel> & p_labelSize
+		);
+		void _refreshFolderInfos(
+			const FilePath & p_path,
+			QLabel * const	 p_labelCount,
+			QLabel * const	 p_labelSize
+		) const;
+		void _refreshFoldersInfos();
 	};
 
 } // namespace VTX::UI::QT::DockWidget

@@ -46,8 +46,19 @@ namespace VTX::Renderer::Geometry
 
 		void setVisibility( const Desc::Handle p_handle, const Util::Math::BitSet & p_visibility )
 		{
+			if ( not _hasRange( p_handle ) )
+			{
+				return;
+			}
+
+			const auto constructionIt = _construction.find( p_handle );
+			if ( constructionIt == _construction.end() )
+			{
+				return;
+			}
+
 			auto &					   indiceBuffer = _indices( p_handle );
-			const std::vector<Index> & bonds		= *_construction[ p_handle ].bonds;
+			const std::vector<Index> & bonds		= *constructionIt->second.bonds;
 
 			indiceBuffer.clear();
 			for ( Index i = 0; i < bonds.size(); i += 2 )

@@ -2,6 +2,7 @@
 #define __VTX_PYTHON_API_RESIDUE__
 
 #include <concepts>
+#include <memory>
 #include <util/types.hpp>
 
 namespace VTX::PythonBinding::API

@@ -1,5 +1,7 @@
 #include "renderer/context/backend/interop/opengl_cuda_interop.hpp"
 #include "renderer/context/backend/gl/include_opengl.hpp"
+#include <array>
+#include <string>
 #include <unordered_map>
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
@@ -14,7 +16,7 @@ namespace VTX::Renderer::Context::Backend::Interop
 #ifdef VTX_CUDA_ENABLED
 	namespace
 	{
-		void _cudaCheck( const cudaError_t p_error, const char * const p_context )
+		void _cudaCheck( const cudaError_t p_error, const std::string & p_context )
 		{
 			if ( p_error != cudaSuccess )
 			{
@@ -97,11 +99,7 @@ namespace VTX::Renderer::Context::Backend::Interop
 #endif
 	}
 
-	Desc::InteropBufferMapping OpenGLCudaInterop::mapBuffer(
-		const Desc::Key &		   p_key,
-		const uint				   p_graphicsBufferId,
-		const Desc::E_BUFFER_USAGE p_usage
-	)
+	std::vector<Desc::InteropBufferMapping> OpenGLCudaInterop::mapBuffers( std::span<const BufferRequest> p_requests )
 	{
 #ifdef VTX_CUDA_ENABLED
 		if ( not _impl->availability.available() )
@@ -109,35 +107,66 @@ namespace VTX::Renderer::Context::Backend::Interop
 			throw GraphicException( "CUDA graphics interop is not available" );
 		}
 
-		if ( not Util::Enum::hasAnyBit( p_usage, Desc::E_BUFFER_USAGE::CUDA_READ | Desc::E_BUFFER_USAGE::CUDA_WRITE ) )
-		{
-			throw GraphicException( "Buffer '{}' is not declared with CUDA usage", p_key );
-		}
+		glFinish();
 
-		Impl::Registration & registration = _impl->registrations[ p_key ];
-		if ( registration.resource == nullptr )
+		for ( const BufferRequest & request : p_requests )
 		{
+			if ( not Util::Enum::hasAnyBit(
+					 request.usage, Desc::E_BUFFER_USAGE::CUDA_READ | Desc::E_BUFFER_USAGE::CUDA_WRITE
+				 ) )
+			{
+				throw GraphicException( "Buffer '{}' is not declared with CUDA usage", request.key );
+			}
+
+			Impl::Registration & registration = _impl->registrations[ request.key ];
+			if ( registration.resource != nullptr )
+			{
+				continue;
+			}
+
 			uint flags = cudaGraphicsRegisterFlagsNone;
-			if ( Util::Enum::hasAnyBit( p_usage, Desc::E_BUFFER_USAGE::CUDA_READ )
-				 && not Util::Enum::hasAnyBit( p_usage, Desc::E_BUFFER_USAGE::CUDA_WRITE ) )
+			if ( Util::Enum::hasAnyBit( request.usage, Desc::E_BUFFER_USAGE::CUDA_READ )
+				 && not Util::Enum::hasAnyBit( request.usage, Desc::E_BUFFER_USAGE::CUDA_WRITE ) )
 			{
 				flags = cudaGraphicsRegisterFlagsReadOnly;
 			}
-			else if ( not Util::Enum::hasAnyBit( p_usage, Desc::E_BUFFER_USAGE::CUDA_READ )
-					  && Util::Enum::hasAnyBit( p_usage, Desc::E_BUFFER_USAGE::CUDA_WRITE ) )
+			else if ( not Util::Enum::hasAnyBit( request.usage, Desc::E_BUFFER_USAGE::CUDA_READ )
+					  && Util::Enum::hasAnyBit( request.usage, Desc::E_BUFFER_USAGE::CUDA_WRITE ) )
 			{
 				flags = cudaGraphicsRegisterFlagsWriteDiscard;
 			}
 
 			_cudaCheck(
-				cudaGraphicsGLRegisterBuffer( &registration.resource, p_graphicsBufferId, flags ),
-				"Could not register graphics buffer for CUDA interop"
+				cudaGraphicsGLRegisterBuffer( &registration.resource, request.graphicsBufferId, flags ),
+				"Could not register graphics buffer '" + request.key + "' for CUDA interop"
 			);
 		}
 
-		if ( not registration.mapped )
+		std::vector<cudaGraphicsResource_t> resourcesToMap;
+		resourcesToMap.reserve( p_requests.size() );
+		for ( const BufferRequest & request : p_requests )
 		{
-			_cudaCheck( cudaGraphicsMapResources( 1, &registration.resource ), "Could not map CUDA interop buffer" );
+			Impl::Registration & registration = _impl->registrations[ request.key ];
+			if ( not registration.mapped )
+			{
+				resourcesToMap.emplace_back( registration.resource );
+			}
+		}
+
+		if ( not resourcesToMap.empty() )
+		{
+			_cudaCheck(
+				cudaGraphicsMapResources( int( resourcesToMap.size() ), resourcesToMap.data() ),
+				"Could not map CUDA interop buffers"
+			);
+		}
+
+		std::vector<Desc::InteropBufferMapping> result;
+		result.reserve( p_requests.size() );
+
+		for ( const BufferRequest & request : p_requests )
+		{
+			Impl::Registration & registration = _impl->registrations[ request.key ];
 			_cudaCheck(
 				cudaGraphicsResourceGetMappedPointer(
 					&registration.devicePtr, &registration.size, registration.resource
@@ -145,12 +174,29 @@ namespace VTX::Renderer::Context::Backend::Interop
 				"Could not get CUDA device pointer from graphics buffer"
 			);
 			registration.mapped = true;
+
+			result.push_back( { request.key, registration.devicePtr, registration.size } );
 		}
 
-		return { p_key, registration.devicePtr, registration.size };
+		return result;
 #else
 		return {};
 #endif
+	}
+
+	Desc::InteropBufferMapping OpenGLCudaInterop::mapBuffer(
+		const Desc::Key &		   p_key,
+		const uint				   p_graphicsBufferId,
+		const Desc::E_BUFFER_USAGE p_usage
+	)
+	{
+		const std::array<BufferRequest, 1> requests {
+			BufferRequest { p_key, p_graphicsBufferId, p_usage },
+		};
+		auto mappings = mapBuffers( requests );
+		assert( mappings.size() == 1 );
+
+		return std::move( mappings.front() );
 	}
 
 	void OpenGLCudaInterop::unmapBuffer( const Desc::Key & p_key )

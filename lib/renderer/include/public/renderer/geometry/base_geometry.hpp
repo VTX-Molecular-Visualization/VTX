@@ -62,9 +62,10 @@ namespace VTX::Renderer::Geometry
 		{
 			assert( indiceBuffer );
 
-			p_context.setBuffer<Indice>(
-				{ *indiceBuffer }, _resources[ p_handle ].indices, _resources[ p_handle ].range.first
-			);
+			const auto it = _resources.find( p_handle );
+			assert( it != _resources.end() );
+
+			p_context.setBuffer<Indice>( { *indiceBuffer }, it->second.indices, it->second.range.first );
 		}
 
 		/**
@@ -151,7 +152,10 @@ namespace VTX::Renderer::Geometry
 			}
 
 			Index countIndex = static_cast<Index>( count );
-			_resources.emplace( p_handle, Data { IndexRange { _size, countIndex }, _vertexSize, p_countVertex } );
+			const auto [ it, inserted ]
+				= _resources.emplace( p_handle, Data { IndexRange { _size, countIndex }, _vertexSize, p_countVertex } );
+			assert( inserted );
+
 			_size = countIndex;
 			_vertexSize += p_countVertex;
 		}
@@ -163,9 +167,10 @@ namespace VTX::Renderer::Geometry
 		 */
 		std::vector<Indice> & _indices( const Desc::Handle p_handle )
 		{
-			assert( _resources.contains( p_handle ) );
+			const auto it = _resources.find( p_handle );
+			assert( it != _resources.end() );
 
-			return _resources[ p_handle ].indices;
+			return it->second.indices;
 		}
 
 		/**

@@ -10,10 +10,12 @@
 #include "renderer/representation.hpp"
 #include "renderer/resource_handler.hpp"
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <limits>
 #include <unordered_set>
 #include <util/chrono.hpp>
+#include <util/constants.hpp>
 #include <util/enum.hpp>
 #include <util/math.hpp>
 
@@ -47,11 +49,15 @@ namespace VTX::Renderer::Builder
 			p_geometryRefreshSystems.clear();
 		}
 
-		static void removeSystemConstruction( Geometries & p_geometries, const Desc::Handle p_handle )
+		static void removeSystemConstruction(
+			Context::ContextWrapper & p_context,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle
+		)
 		{
 			Util::ScopedChrono timer( "[BUILDER] SystemRegistry::removeSystemConstruction" );
 
-			p_geometries.removeSystemConstruction( p_handle );
+			p_geometries.removeSystemConstruction( p_context, p_handle );
 		}
 
 		template<typename Systems>
@@ -346,11 +352,17 @@ namespace VTX::Renderer::Builder
 
 			const Cache::System & systemCache = p_systems.get( p_handle );
 
-			auto visibleSpheres	  = *systemCache.data.visibility;
-			auto visibleCylinders = *systemCache.data.visibility;
-			auto visibleRibbons	  = *systemCache.data.visibility;
-			bool requestedRibbon  = false;
-			bool visibleSes		  = false;
+			auto				visibleSpheres	  = *systemCache.data.visibility;
+			auto				visibleCylinders  = *systemCache.data.visibility;
+			auto				visibleRibbons	  = *systemCache.data.visibility;
+			auto				visibleSesAtoms	  = *systemCache.data.visibility;
+			bool				requestedRibbon	  = false;
+			bool				visibleSes		  = false;
+			bool				hasSesProbeRadius = false;
+			bool				hasSesComputeMode = false;
+			float				sesProbeRadius	  = SES_PROBE_RADIUS_DEFAULT;
+			E_SES_COMPUTE_MODE	sesComputeMode	  = SES_COMPUTE_MODE_DEFAULT;
+			RepresentationIndex sesRepresentation = 0;
 
 			for ( const auto & [ preset, ranges ] : *systemCache.data.presetAtoms )
 			{
@@ -379,31 +391,85 @@ namespace VTX::Renderer::Builder
 				if ( representation.showSes && systemCache.data.visibility->any( ranges ) )
 				{
 					visibleSes = true;
+
+					const float representationProbeRadius = representation.data.rep->sesProbeRadius;
+					const E_SES_COMPUTE_MODE representationComputeMode = representation.data.rep->sesComputeMode;
+					if ( not hasSesProbeRadius )
+					{
+						sesProbeRadius	  = representationProbeRadius;
+						sesRepresentation = representationIndex;
+						hasSesProbeRadius = true;
+					}
+					else if ( std::abs( sesProbeRadius - representationProbeRadius ) > EPSILON )
+					{
+						VTX_WARNING(
+							"Multiple visible SES probe radii on the same system. Using {} and ignoring {}.",
+							sesProbeRadius,
+							representationProbeRadius
+						);
+					}
+					if ( not hasSesComputeMode )
+					{
+						sesComputeMode	  = representationComputeMode;
+						hasSesComputeMode = true;
+					}
+					else if ( sesComputeMode != representationComputeMode )
+					{
+						VTX_WARNING( "Multiple visible SES compute modes on the same system. Using first one." );
+					}
+				}
+				else
+				{
+					visibleSesAtoms.subtractInPlace( ranges );
 				}
 			}
 
 			if ( requestedRibbon && not p_geometries.ribbons.built( p_handle ) )
 			{
-				constructRibbon( p_context, p_systems, p_layouts, p_geometries, p_handle );
+				constructRibbon( p_systems, p_layouts, p_geometries, p_handle );
 			}
-			if ( visibleSes && not p_geometries.ses.built( p_handle ) )
+			if ( visibleSes && p_geometries.ses.built( p_handle )
+				 && ( std::abs( p_geometries.ses.probeRadius( p_handle ) - sesProbeRadius ) > EPSILON
+					  || p_geometries.ses.computeMode( p_handle ) != sesComputeMode ) )
 			{
-				constructSES( p_context, p_systems, p_layouts, p_geometries, p_handle );
+				p_geometries.ses.invalidateForRecompute( p_handle );
+				constructSES(
+					p_context,
+					p_systems,
+					p_layouts,
+					p_geometries,
+					p_handle,
+					sesProbeRadius,
+					sesComputeMode,
+					sesRepresentation
+				);
+			}
+			else if ( visibleSes && not p_geometries.ses.built( p_handle ) )
+			{
+				constructSES(
+					p_context,
+					p_systems,
+					p_layouts,
+					p_geometries,
+					p_handle,
+					sesProbeRadius,
+					sesComputeMode,
+					sesRepresentation
+				);
 			}
 
 			p_geometries.spheres.setVisibility( p_handle, visibleSpheres );
 			p_geometries.cylinders.setVisibility( p_handle, visibleCylinders );
 			p_geometries.ribbons.setVisibility( p_handle, visibleRibbons );
-			p_geometries.ses.setVisibility( p_handle, visibleSes );
+			p_geometries.ses.setVisibility( p_handle, visibleSesAtoms );
 		}
 
 		template<typename Systems>
 		static void constructRibbon(
-			Context::ContextWrapper & p_context,
-			Systems &				  p_systems,
-			Layouts &				  p_layouts,
-			Geometries &			  p_geometries,
-			const Desc::Handle		  p_handle
+			Systems &		   p_systems,
+			Layouts &		   p_layouts,
+			Geometries &	   p_geometries,
+			const Desc::Handle p_handle
 		)
 		{
 			Util::ScopedChrono timer( "[BUILDER] SystemVisibility::constructRibbon" );
@@ -411,19 +477,12 @@ namespace VTX::Renderer::Builder
 			const Cache::System & system = p_systems.get( p_handle );
 
 			p_geometries.ribbons.registerSystem( p_handle, system );
-			p_geometries.ribbons.resize( p_context );
 
 			const auto & construction = p_geometries.ribbons.construction( p_handle );
-			if ( construction.isEmpty )
+			if ( not construction.isEmpty )
 			{
-				return;
+				p_layouts.residues.add( p_handle, static_cast<uint32_t>( construction.residues.size() ) );
 			}
-
-			p_layouts.residues.add( p_handle, static_cast<uint32_t>( construction.residues.size() ) );
-			p_layouts.residues.resize( p_context );
-
-			uploadRibbonResidues( p_context, p_layouts, p_geometries, p_handle, system );
-			uploadRibbonPositions( p_context, p_layouts, p_geometries, p_handle, system.data.trajectory );
 		}
 
 		template<typename Systems>
@@ -432,14 +491,24 @@ namespace VTX::Renderer::Builder
 			Systems &				  p_systems,
 			Layouts &				  p_layouts,
 			Geometries &			  p_geometries,
-			const Desc::Handle		  p_handle
+			const Desc::Handle		  p_handle,
+			const float				  p_probeRadius,
+			const E_SES_COMPUTE_MODE  p_computeMode,
+			const RepresentationIndex p_representation
 		)
 		{
 			Util::ScopedChrono timer( "[BUILDER] SystemVisibility::constructSES" );
 
 			const Cache::System & system = p_systems.get( p_handle );
-			p_geometries.constructSES( p_context, p_handle, system, p_layouts.atoms.offset( p_handle ) );
-			p_geometries.ses.resize( p_context );
+			p_geometries.constructSES(
+				p_context,
+				p_handle,
+				system,
+				p_layouts.atoms.offset( p_handle ),
+				p_probeRadius,
+				p_computeMode,
+				p_representation
+			);
 		}
 
 		static void uploadRibbonResidues(

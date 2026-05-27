@@ -42,6 +42,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		// SES.
 		QPointer<HideableGroupBox> _groupboxSes;
+		QPointer<QComboBox>		   _comboBoxSesComputeMode;
 		QPointer<EditableSlider>   _sliderSesProbeRadius;
 
 		template<VTX::Renderer::E_REPRESENTATION_VALUES S, typename T>

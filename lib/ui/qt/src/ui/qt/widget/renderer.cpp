@@ -65,7 +65,7 @@ namespace VTX::UI::QT::Widget
 		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
 
 		App::HUB().connect<App::Events::RendererResize, &Renderer::_onRendererResize>( this );
-		App::RENDERER().onReady += [ this ]()
+		App::RENDERER().onReady += [ this ]( const VTX::Renderer::StructInfos & )
 		{
 			_rendererReady = true;
 			App::ACTION().execute<App::Action::Application::SetVSync>(

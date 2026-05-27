@@ -2,6 +2,7 @@
 #define __VTX_APP_EVENTS__
 
 #include "app/ecs.hpp"
+#include <span>
 #include <string>
 #include <thread>
 #include <util/types.hpp>
@@ -126,12 +127,6 @@ namespace VTX::App::Events
 	{
 		std::jthread::id id;
 		bool			 manuallyStopped;
-	};
-
-	struct FileDownloaded
-	{
-		uint64_t id;
-		bool	 success;
 	};
 
 	struct PythonInitialized

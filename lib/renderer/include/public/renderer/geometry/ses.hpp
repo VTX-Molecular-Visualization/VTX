@@ -3,12 +3,16 @@
 
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
+#include "renderer/representation.hpp"
+#include "util/math/bitset.hpp"
 #include <algorithm>
 #include <array>
 #include <cstdint>
 #include <map>
 #include <memory>
 #include <numeric>
+#include <span>
+#include <utility>
 #include <vector>
 
 namespace VTX::Renderer::Geometry
@@ -18,24 +22,19 @@ namespace VTX::Renderer::Geometry
 	  public:
 		using SurfaceID = uint32_t;
 
-		enum class E_SURFACE_SCOPE : uint8_t
-		{
-			WHOLE,
-		};
-
 		struct Surface
 		{
-			SurfaceID		id	   = 0;
-			Desc::Handle	system = Desc::NO_HANDLE;
-			E_SURFACE_SCOPE scope  = E_SURFACE_SCOPE::WHOLE;
-			uint32_t		index  = 0;
+			SurfaceID		   id	  = 0;
+			Desc::Handle	   system = Desc::NO_HANDLE;
+			E_SES_COMPUTE_MODE scope  = E_SES_COMPUTE_MODE::SYSTEM;
+			uint32_t		   index  = 0;
 		};
 
 		struct SurfaceKey
 		{
-			Desc::Handle	system = Desc::NO_HANDLE;
-			E_SURFACE_SCOPE scope  = E_SURFACE_SCOPE::WHOLE;
-			uint32_t		index  = 0;
+			Desc::Handle	   system = Desc::NO_HANDLE;
+			E_SES_COMPUTE_MODE scope  = E_SES_COMPUTE_MODE::SYSTEM;
+			uint32_t		   index  = 0;
 
 			[[nodiscard]] bool operator<( const SurfaceKey & p_other ) const
 			{
@@ -71,14 +70,21 @@ namespace VTX::Renderer::Geometry
 		{
 		  public:
 			void construct(
-				const SurfaceID	   p_surface,
-				const Desc::Handle p_system,
-				const Index		   p_count,
-				const uint32_t	   p_dataOffset = 0
+				const SurfaceID			  p_surface,
+				const Desc::Handle		  p_system,
+				const Index				  p_count,
+				const RepresentationIndex p_representation,
+				const uint32_t			  p_dataOffset = 0
 			)
 			{
+				if ( contains( p_surface ) )
+				{
+					remove( p_surface );
+				}
+
 				_addRange( p_surface, p_count, p_count );
 				_systems.emplace( p_surface, p_system );
+				_representations.emplace( p_surface, p_representation );
 				_dataOffsets.emplace( p_surface, p_dataOffset );
 				totalSize += p_count;
 
@@ -96,6 +102,7 @@ namespace VTX::Renderer::Geometry
 			{
 				BaseGeometry::clear();
 				_systems.clear();
+				_representations.clear();
 				_dataOffsets.clear();
 				totalSize = 0;
 			}
@@ -110,9 +117,12 @@ namespace VTX::Renderer::Geometry
 
 				_removeRange( p_surface );
 				_systems.erase( p_surface );
+				_representations.erase( p_surface );
 				_dataOffsets.erase( p_surface );
 				chunks.erase( std::remove( chunks.begin(), chunks.end(), p_surface ), chunks.end() );
 			}
+
+			[[nodiscard]] bool contains( const SurfaceID p_surface ) const { return _hasRange( p_surface ); }
 
 			void resize( Context::ContextWrapper & p_context )
 			{
@@ -165,6 +175,12 @@ namespace VTX::Renderer::Geometry
 				std::iota( indices.begin(), indices.end(), 0 );
 			}
 
+			void setIndices( const SurfaceID p_surface, std::vector<Indice> p_indices )
+			{
+				assert( _data().contains( p_surface ) );
+				_indices( p_surface ) = std::move( p_indices );
+			}
+
 			[[nodiscard]] std::vector<Desc::DrawIndexedIndirectRecord> toDrawIndexedIndirectCommands(
 				const SurfaceID p_surface
 			) const
@@ -180,7 +196,8 @@ namespace VTX::Renderer::Geometry
 				return { Desc::DrawIndexedIndirectRecord {
 					Desc::DrawIndexedIndirectCommand { static_cast<uint32_t>( data.indices.size() ), 1, 0, 0, 0 },
 					static_cast<uint32_t>( _system( p_surface ) ),
-					_dataOffset( p_surface ) } };
+					_dataOffset( p_surface ),
+					static_cast<uint32_t>( _representation( p_surface ) ) } };
 			}
 
 			Index totalSize = 0;
@@ -200,8 +217,16 @@ namespace VTX::Renderer::Geometry
 				return it->second;
 			}
 
-			std::map<SurfaceID, Desc::Handle> _systems;
-			std::map<SurfaceID, uint32_t>	  _dataOffsets;
+			RepresentationIndex _representation( const SurfaceID p_surface ) const
+			{
+				const auto it = _representations.find( p_surface );
+				assert( it != _representations.end() );
+				return it->second;
+			}
+
+			std::map<SurfaceID, Desc::Handle>		 _systems;
+			std::map<SurfaceID, RepresentationIndex> _representations;
+			std::map<SurfaceID, uint32_t>			 _dataOffsets;
 		};
 
 		SES();
@@ -248,19 +273,27 @@ namespace VTX::Renderer::Geometry
 			Context::ContextWrapper & p_context,
 			Desc::Handle			  p_handle,
 			const Cache::System &	  p_data,
-			uint32_t				  p_inputAtomOffset
+			uint32_t				  p_inputAtomOffset,
+			float					  p_probeRadius,
+			E_SES_COMPUTE_MODE		  p_computeMode,
+			RepresentationIndex		  p_representation
 		);
 
 		void resize( Context::ContextWrapper & p_context );
 
 		void clear();
+		void remove( Context::ContextWrapper & p_context, Desc::Handle p_handle );
 		void invalidate( Desc::Handle p_handle );
+		void invalidateForRecompute( Desc::Handle p_handle );
 
 		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle );
 
-		[[nodiscard]] bool built( Desc::Handle p_handle ) const;
+		[[nodiscard]] bool	built( Desc::Handle p_handle ) const;
+		[[nodiscard]] float probeRadius( Desc::Handle p_handle ) const;
+		[[nodiscard]] E_SES_COMPUTE_MODE computeMode( Desc::Handle p_handle ) const;
 
 		void setVisibility( Desc::Handle p_handle, bool p_visible );
+		void setVisibility( Desc::Handle p_handle, const Util::Math::BitSet & p_visibility );
 
 		void compute( Context::ContextWrapper & p_context );
 
@@ -271,10 +304,25 @@ namespace VTX::Renderer::Geometry
 
 	  private:
 		Surface _createSurface( const SurfaceKey & );
+		Surface _getOrCreateSurface( const SurfaceKey & );
 		Surface _createWholeSurface( Desc::Handle );
+		Surface _getOrCreateWholeSurface( Desc::Handle );
+		void	_constructSurface(
+			   Context::ContextWrapper & p_context,
+			   const Cache::System &	  p_data,
+			   uint32_t				  p_inputAtomOffset,
+			   float					  p_probeRadius,
+			   E_SES_COMPUTE_MODE		  p_computeMode,
+			   RepresentationIndex		  p_representation,
+			   const Surface &			  p_surface,
+			   std::span<const Index>	  p_atomIndices
+		   );
+		void	_releaseChunks( Context::ContextWrapper &, SurfaceID );
+		void	_unregisterCudaInputSourceBuffers( Context::ContextWrapper & );
+		void	_unregisterCudaConstructionBuffers( Context::ContextWrapper &, SurfaceID );
+		void	_unregisterCudaSurfaceBuffers( Context::ContextWrapper &, SurfaceID );
 		void	_constructEmptyRanges( const Surface & );
 		void	_disableDraws( Context::ContextWrapper &, SurfaceID );
-		void	_discardPendingCompute( Context::ContextWrapper & );
 
 		SurfaceRegistry _surfaces;
 	};

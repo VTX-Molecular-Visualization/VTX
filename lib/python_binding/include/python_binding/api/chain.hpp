@@ -2,6 +2,7 @@
 #define __VTX_PYTHON_API_CHAIN__
 
 #include <concepts>
+#include <memory>
 #include <util/constants.hpp>
 
 namespace VTX::PythonBinding::API

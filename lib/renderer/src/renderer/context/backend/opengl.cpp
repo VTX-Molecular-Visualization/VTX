@@ -1285,8 +1285,7 @@ namespace VTX::Renderer::Context::Backend
 		}
 
 		auto & buffer = _buffers.get( h );
-		if ( ( Util::Enum::hasAnyBit( desc.usage, E_BUFFER_USAGE::CUDA_READ | E_BUFFER_USAGE::CUDA_WRITE ) )
-			 && p_offset + p_bytes.size() > size_t( buffer.size() ) )
+		if ( Util::Enum::hasAnyBit( desc.usage, E_BUFFER_USAGE::CUDA_READ | E_BUFFER_USAGE::CUDA_WRITE ) )
 		{
 			_cudaInterop.unregisterBuffer( p_key );
 		}
@@ -1380,6 +1379,8 @@ namespace VTX::Renderer::Context::Backend
 
 		std::vector<InteropBufferMapping> result;
 		result.reserve( p_keys.size() );
+		std::vector<Interop::OpenGLCudaInterop::BufferRequest> requests;
+		requests.reserve( p_keys.size() );
 
 		glFlush();
 
@@ -1392,7 +1393,24 @@ namespace VTX::Renderer::Context::Backend
 
 			assert( Util::Enum::hasAnyBit( desc.usage, E_BUFFER_USAGE::CUDA_READ | E_BUFFER_USAGE::CUDA_WRITE ) );
 
-			result.emplace_back( _cudaInterop.mapBuffer( key, _buffers.get( h ).getId(), desc.usage ) );
+			requests.push_back( { key, _buffers.get( h ).getId(), desc.usage } );
+		}
+
+		try
+		{
+			result = _cudaInterop.mapBuffers( requests );
+		}
+		catch ( ... )
+		{
+			for ( const Desc::InteropBufferMapping & mapping : result )
+			{
+				_cudaInterop.unmapBuffer( mapping.key );
+			}
+			for ( const Desc::Key & cleanupKey : p_keys )
+			{
+				_cudaInterop.unregisterBuffer( cleanupKey );
+			}
+			throw;
 		}
 
 		return result;
@@ -1439,6 +1457,16 @@ namespace VTX::Renderer::Context::Backend
 		{
 			_cudaInterop.unmapBuffer( mapping.key );
 		}
+	}
+
+	void OpenGL::unregisterInteropBuffer( const Desc::E_INTEROP_API p_api, const Desc::BufferRef & p_ref )
+	{
+		if ( p_api != Desc::E_INTEROP_API::CUDA )
+		{
+			return;
+		}
+
+		_cudaInterop.unregisterBuffer( _physicalBufferKey( p_ref ) );
 	}
 
 	Desc::InteropAvailability OpenGL::interopAvailability( const Desc::E_INTEROP_API p_api ) const
@@ -1532,7 +1560,8 @@ namespace VTX::Renderer::Context::Backend
 
 	void OpenGL::fillInfos( StructInfos & p_infos ) const
 	{
-		p_infos.renderer = _openglInfos.glRenderer;
+		p_infos.renderer	  = _openglInfos.glRenderer;
+		p_infos.cudaAvailable = _cudaInterop.availability().available();
 
 // NVX_gpu_memory_info
 #if ( GL_NVX_gpu_memory_info == 1 )
