@@ -3,12 +3,14 @@
 
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
+#include "renderer/representation.hpp"
 #include <algorithm>
 #include <array>
 #include <cstdint>
 #include <map>
 #include <memory>
 #include <numeric>
+#include <span>
 #include <vector>
 
 namespace VTX::Renderer::Geometry
@@ -18,24 +20,19 @@ namespace VTX::Renderer::Geometry
 	  public:
 		using SurfaceID = uint32_t;
 
-		enum class E_SURFACE_SCOPE : uint8_t
-		{
-			WHOLE,
-		};
-
 		struct Surface
 		{
-			SurfaceID		id	   = 0;
-			Desc::Handle	system = Desc::NO_HANDLE;
-			E_SURFACE_SCOPE scope  = E_SURFACE_SCOPE::WHOLE;
-			uint32_t		index  = 0;
+			SurfaceID		   id	  = 0;
+			Desc::Handle	   system = Desc::NO_HANDLE;
+			E_SES_COMPUTE_MODE scope  = E_SES_COMPUTE_MODE::SYSTEM;
+			uint32_t		   index  = 0;
 		};
 
 		struct SurfaceKey
 		{
-			Desc::Handle	system = Desc::NO_HANDLE;
-			E_SURFACE_SCOPE scope  = E_SURFACE_SCOPE::WHOLE;
-			uint32_t		index  = 0;
+			Desc::Handle	   system = Desc::NO_HANDLE;
+			E_SES_COMPUTE_MODE scope  = E_SES_COMPUTE_MODE::SYSTEM;
+			uint32_t		   index  = 0;
 
 			[[nodiscard]] bool operator<( const SurfaceKey & p_other ) const
 			{
@@ -270,6 +267,7 @@ namespace VTX::Renderer::Geometry
 			const Cache::System &	  p_data,
 			uint32_t				  p_inputAtomOffset,
 			float					  p_probeRadius,
+			E_SES_COMPUTE_MODE		  p_computeMode,
 			RepresentationIndex		  p_representation
 		);
 
@@ -284,6 +282,7 @@ namespace VTX::Renderer::Geometry
 
 		[[nodiscard]] bool	built( Desc::Handle p_handle ) const;
 		[[nodiscard]] float probeRadius( Desc::Handle p_handle ) const;
+		[[nodiscard]] E_SES_COMPUTE_MODE computeMode( Desc::Handle p_handle ) const;
 
 		void setVisibility( Desc::Handle p_handle, bool p_visible );
 
@@ -296,8 +295,19 @@ namespace VTX::Renderer::Geometry
 
 	  private:
 		Surface _createSurface( const SurfaceKey & );
+		Surface _getOrCreateSurface( const SurfaceKey & );
 		Surface _createWholeSurface( Desc::Handle );
 		Surface _getOrCreateWholeSurface( Desc::Handle );
+		void	_constructSurface(
+			   Context::ContextWrapper & p_context,
+			   const Cache::System &	  p_data,
+			   uint32_t				  p_inputAtomOffset,
+			   float					  p_probeRadius,
+			   E_SES_COMPUTE_MODE		  p_computeMode,
+			   RepresentationIndex		  p_representation,
+			   const Surface &			  p_surface,
+			   std::span<const Index>	  p_atomIndices
+		   );
 		void	_releaseChunks( Context::ContextWrapper &, SurfaceID );
 		void	_unregisterCudaInputSourceBuffers( Context::ContextWrapper & );
 		void	_unregisterCudaConstructionBuffers( Context::ContextWrapper &, SurfaceID );

@@ -62,10 +62,13 @@ namespace VTX::Renderer
 			const Cache::System &	  p_data,
 			const uint32_t			  p_inputAtomOffset,
 			const float				  p_probeRadius,
+			const E_SES_COMPUTE_MODE  p_computeMode,
 			const RepresentationIndex p_representation
 		)
 		{
-			ses.construct( p_context, p_handle, p_data, p_inputAtomOffset, p_probeRadius, p_representation );
+			ses.construct(
+				p_context, p_handle, p_data, p_inputAtomOffset, p_probeRadius, p_computeMode, p_representation
+			);
 		}
 
 		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )

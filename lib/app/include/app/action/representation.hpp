@@ -172,6 +172,10 @@ namespace VTX::App::Action::Representation
 					{
 						p_representation.hasSes = p_value;
 					}
+					else if constexpr ( S == Renderer::E_REPRESENTATION_VALUES::SES_COMPUTE_MODE )
+					{
+						p_representation.sesComputeMode = p_value;
+					}
 					else if constexpr ( S == Renderer::E_REPRESENTATION_VALUES::SES_PROBE_RADIUS )
 					{
 						p_representation.sesProbeRadius = p_value;

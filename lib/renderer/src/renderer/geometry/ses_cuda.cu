@@ -2,7 +2,9 @@
 #include "bcs/sesdf/sesdf.hpp"
 #include "renderer/geometry/ses_cuda.hpp"
 #include <glm/common.hpp>
+#include <algorithm>
 #include <stdexcept>
+#include <vector>
 
 namespace VTX::Renderer::Geometry::SESDetail
 {
@@ -23,6 +25,20 @@ namespace VTX::Renderer::Geometry::SESDetail
 
 			for ( const Vec3f & position : p_positions )
 			{
+				aabb.min = glm::min( aabb.min, position );
+				aabb.max = glm::max( aabb.max, position );
+			}
+
+			return aabb;
+		}
+
+		bcs::Aabb _computeAabb( const std::span<const Vec3f> p_positions, const std::span<const Index> p_atomIndices )
+		{
+			bcs::Aabb aabb { p_positions[ p_atomIndices.front() ], p_positions[ p_atomIndices.front() ] };
+
+			for ( const Index atom : p_atomIndices )
+			{
+				const Vec3f & position = p_positions[ atom ];
 				aabb.min = glm::min( aabb.min, position );
 				aabb.max = glm::max( aabb.max, position );
 			}
@@ -158,6 +174,73 @@ namespace VTX::Renderer::Geometry::SESDetail
 			   );
 		}
 
+		__global__ void _packIndexedAtomsKernel(
+			float4 *		 p_dst,
+			const float *	 p_positions,
+			const uint8_t *	 p_symbols,
+			const uint32_t * p_atomIndices,
+			const float *	 p_vdwRadii,
+			const uint32_t	 p_atomOffset,
+			const uint32_t	 p_atomNb
+		)
+		{
+			const uint32_t localAtomIndex = blockIdx.x * blockDim.x + threadIdx.x;
+			if ( localAtomIndex >= p_atomNb )
+			{
+				return;
+			}
+
+			const uint32_t atomIndex		= p_atomOffset + p_atomIndices[ localAtomIndex ];
+			const uint32_t positionOffset = atomIndex * 3u;
+			const uint8_t  symbol		= p_symbols[ atomIndex ];
+			p_dst[ localAtomIndex ]		= make_float4(
+				 p_positions[ positionOffset ],
+				 p_positions[ positionOffset + 1u ],
+				 p_positions[ positionOffset + 2u ],
+				 p_vdwRadii[ symbol ]
+			 );
+		}
+
+		__global__ void _writeIndexedAtomIdsKernel(
+			uint32_t *		 p_dst,
+			const uint32_t * p_sortedLocalAtomIds,
+			const uint32_t * p_atomIndices,
+			const uint32_t	 p_rendererAtomOffset,
+			const uint32_t	 p_atomNb
+		)
+		{
+			const uint32_t atomIndex = blockIdx.x * blockDim.x + threadIdx.x;
+			if ( atomIndex >= p_atomNb )
+			{
+				return;
+			}
+
+			p_dst[ atomIndex ] = p_rendererAtomOffset + p_atomIndices[ p_sortedLocalAtomIds[ atomIndex ] ];
+		}
+
+		bcs::DeviceBuffer _uploadAtomIndices( const std::span<const Index> p_atomIndices )
+		{
+			std::vector<uint32_t> indices;
+			indices.reserve( p_atomIndices.size() );
+			for ( const Index atom : p_atomIndices )
+			{
+				indices.emplace_back( uint32_t( atom ) );
+			}
+
+			bcs::DeviceBuffer dAtomIndices = bcs::DeviceBuffer::Typed<uint32_t>( indices.size() );
+			_cudaCheck(
+				cudaMemcpy(
+					dAtomIndices.get<uint32_t>(),
+					indices.data(),
+					indices.size() * sizeof( uint32_t ),
+					cudaMemcpyHostToDevice
+				),
+				"SES indexed atom upload failed"
+			);
+
+			return dAtomIndices;
+		}
+
 		void _packRendererAtoms( const SesdfInputBuffers & p_inputs, float4 * const p_dst )
 		{
 			constexpr uint32_t threadNb = 256u;
@@ -189,6 +272,72 @@ namespace VTX::Renderer::Geometry::SESDetail
 			);
 			_cudaCheck( cudaGetLastError(), "SES atom input packing failed" );
 			_cudaCheck( cudaDeviceSynchronize(), "SES atom input packing synchronization failed" );
+		}
+
+		void _packRendererAtoms(
+			const SesdfInputBuffers & p_inputs,
+			const bcs::DeviceBuffer & p_atomIndices,
+			float4 * const			  p_dst
+		)
+		{
+			constexpr uint32_t threadNb = 256u;
+			const uint32_t	   blockNb	= ( p_inputs.atomNb + threadNb - 1u ) / threadNb;
+
+			bcs::DeviceBuffer dVdwRadii
+				= bcs::DeviceBuffer::Typed<float>( Core::ChemDB::Atom::SYMBOL_VDW_RADIUS.size() );
+			_cudaCheck(
+				cudaMemcpy(
+					dVdwRadii.get<float>(),
+					Core::ChemDB::Atom::SYMBOL_VDW_RADIUS.data(),
+					Core::ChemDB::Atom::SYMBOL_VDW_RADIUS.size() * sizeof( float ),
+					cudaMemcpyHostToDevice
+				),
+				"SES VDW radius upload failed"
+			);
+
+			const auto * positions = reinterpret_cast<const float *>(
+				static_cast<const uint8_t *>( p_inputs.positions.devicePtr ) + p_inputs.positions.offsetBytes
+			);
+			const auto * symbols = reinterpret_cast<const uint8_t *>(
+				static_cast<const uint8_t *>( p_inputs.symbols.devicePtr ) + p_inputs.symbols.offsetBytes
+			);
+
+			_packIndexedAtomsKernel<<<blockNb, threadNb>>>(
+				p_dst,
+				positions,
+				symbols,
+				p_atomIndices.get<uint32_t>(),
+				dVdwRadii.get<float>(),
+				p_inputs.atomOffset,
+				p_inputs.atomNb
+			);
+			_cudaCheck( cudaGetLastError(), "SES indexed atom input packing failed" );
+			_cudaCheck( cudaDeviceSynchronize(), "SES indexed atom input packing synchronization failed" );
+		}
+
+		void _writeIndexedAtomIds(
+			const SesdfInputBuffers & p_inputs,
+			const bcs::DeviceBuffer & p_atomIndices,
+			CudaConstruction &		 p_construction
+		)
+		{
+			uint32_t * const outputAtomIds = _optionalTargetAtomIds( p_inputs );
+			if ( outputAtomIds == nullptr )
+			{
+				return;
+			}
+
+			constexpr uint32_t threadNb = 256u;
+			const uint32_t	   blockNb	= ( p_inputs.atomNb + threadNb - 1u ) / threadNb;
+			_writeIndexedAtomIdsKernel<<<blockNb, threadNb>>>(
+				outputAtomIds,
+				p_construction.ses->getDAtomIndices().get<uint32_t>(),
+				p_atomIndices.get<uint32_t>(),
+				p_inputs.rendererAtomOffset,
+				p_inputs.atomNb
+			);
+			_cudaCheck( cudaGetLastError(), "SES indexed atom id write failed" );
+			_cudaCheck( cudaDeviceSynchronize(), "SES indexed atom id write synchronization failed" );
 		}
 	} // namespace
 
@@ -283,6 +432,78 @@ namespace VTX::Renderer::Geometry::SESDetail
 		construction->ses->build();
 		_cudaCheck( cudaGetLastError(), "SES construction failed" );
 		_cudaCheck( cudaDeviceSynchronize(), "SES construction synchronization failed" );
+
+		const bcs::sesdf::SesdfData data = construction->ses->getData();
+		construction->sectorNb			 = _getActualSectorNb( data );
+
+		result.atomNb		  = data.atomNb;
+		result.convexPatchNb  = data.convexPatchNb;
+		result.circlePatchNb  = data.circlePatchNb;
+		result.segmentPatchNb = data.segmentPatchNb;
+		result.probeNb		  = data.concavePatchNb;
+		result.sectorNb		  = construction->sectorNb;
+		result.concavePatchNb = data.concavePatchNb;
+
+		result.construction = CudaConstructionPtr( construction.release() );
+
+		return result;
+	}
+
+	CudaBuildResult buildCudaConstructionFromRendererBuffers(
+		const SesdfInputBuffers &	 p_inputs,
+		const std::span<const Vec3f> p_aabbPositions,
+		const std::span<const Index> p_atomIndices,
+		const float					 p_probeRadius
+	)
+	{
+		CudaBuildResult result;
+
+		if ( p_atomIndices.empty() )
+		{
+			return result;
+		}
+
+		if ( p_inputs.positions.devicePtr == nullptr || p_inputs.symbols.devicePtr == nullptr )
+		{
+			throw std::runtime_error( "Can not build SES: renderer atom input buffers are not mapped." );
+		}
+
+		Index maxAtomIndex = 0;
+		for ( const Index atom : p_atomIndices )
+		{
+			maxAtomIndex = std::max( maxAtomIndex, atom );
+		}
+
+		const size_t positionSize = ( p_inputs.atomOffset + maxAtomIndex + 1u ) * sizeof( Vec3f );
+		const size_t symbolSize
+			= ( p_inputs.atomOffset + maxAtomIndex + 1u ) * sizeof( Core::ChemDB::Atom::SYMBOL );
+		if ( p_inputs.positions.sizeBytes < positionSize || p_inputs.symbols.sizeBytes < symbolSize )
+		{
+			throw std::runtime_error( "Can not build SES: renderer atom input buffers are too small." );
+		}
+
+		auto construction = std::make_unique<CudaConstruction>();
+
+		const bcs::Aabb	 aabb		   = _computeAabb( p_aabbPositions, p_atomIndices );
+		float4 * const	 outputAtoms   = _optionalTargetAtoms( p_inputs );
+		uint32_t * const outputAtomIds = _optionalTargetAtomIds( p_inputs );
+		construction->ses			   = std::make_unique<bcs::Sesdf>(
+			 bcs::ConstSpan<bcs::Vec4f>( nullptr, p_inputs.atomNb ),
+			 aabb,
+			 p_probeRadius,
+			 false,
+			 false,
+			 outputAtoms,
+			 outputAtomIds,
+			 0
+		);
+
+		bcs::DeviceBuffer atomIndices = _uploadAtomIndices( p_atomIndices );
+		_packRendererAtoms( p_inputs, atomIndices, construction->ses->getDAtoms() );
+		construction->ses->build();
+		_cudaCheck( cudaGetLastError(), "SES construction failed" );
+		_cudaCheck( cudaDeviceSynchronize(), "SES construction synchronization failed" );
+		_writeIndexedAtomIds( p_inputs, atomIndices, *construction );
 
 		const bcs::sesdf::SesdfData data = construction->ses->getData();
 		construction->sectorNb			 = _getActualSectorNb( data );

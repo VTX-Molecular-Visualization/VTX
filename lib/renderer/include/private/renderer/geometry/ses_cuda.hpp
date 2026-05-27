@@ -99,6 +99,13 @@ namespace VTX::Renderer::Geometry::SESDetail
 		float					p_probeRadius
 	);
 
+	CudaBuildResult buildCudaConstructionFromRendererBuffers(
+		const SesdfInputBuffers & p_inputs,
+		std::span<const Vec3f>	p_aabbPositions,
+		std::span<const Index>	p_atomIndices,
+		float					p_probeRadius
+	);
+
 	void writeCudaConstruction( CudaConstruction &, const SesdfOutputBuffers & );
 } // namespace VTX::Renderer::Geometry::SESDetail
 

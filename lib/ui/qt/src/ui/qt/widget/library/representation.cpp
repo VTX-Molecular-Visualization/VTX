@@ -60,6 +60,12 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxSes = new HideableGroupBox( "SES", presetGroupBox() );
 		addWidget( _groupboxSes );
 
+		_comboBoxSesComputeMode = new QComboBox( _groupboxSes );
+		_groupboxSes->addWidget( new QLabel( "Compute mode", _groupboxSes ) );
+		_groupboxSes->addWidget( _comboBoxSesComputeMode );
+		_comboBoxSesComputeMode->addItem( "System" );
+		_comboBoxSesComputeMode->addItem( "Category" );
+
 		_sliderSesProbeRadius = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSes );
 		_groupboxSes->addWidget( new QLabel( "Probe radius", _groupboxSes ) );
 		_groupboxSes->addWidget( _sliderSesProbeRadius );
@@ -135,6 +141,17 @@ namespace VTX::UI::QT::Widget::Library
 		);
 
 		connect(
+			_comboBoxSesComputeMode,
+			QOverload<int>::of( &QComboBox::currentIndexChanged ),
+			[ this ]( const int p_index )
+			{
+				_changeValue<E_REPRESENTATION_VALUES::SES_COMPUTE_MODE, E_SES_COMPUTE_MODE>(
+					p_index == 0 ? E_SES_COMPUTE_MODE::SYSTEM : E_SES_COMPUTE_MODE::CATEGORY
+				);
+			}
+		);
+
+		connect(
 			_sliderSesProbeRadius,
 			&EditableSlider::valueChanged,
 			[ this ]( const float p_value )
@@ -156,7 +173,8 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker7( _groupboxRibbon );
 		const QSignalBlocker blocker8( _checkBoxRibbonColorBlending );
 		const QSignalBlocker blocker9( _groupboxSes );
-		const QSignalBlocker blocker10( _sliderSesProbeRadius );
+		const QSignalBlocker blocker10( _comboBoxSesComputeMode );
+		const QSignalBlocker blocker11( _sliderSesProbeRadius );
 
 		_groupboxSphere->setChecked( preset.hasSphere );
 		_comboBoxSphereRadiusType->setCurrentIndex( preset.isRadiusSphereFixed ? 1 : 0 );
@@ -168,6 +186,9 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxRibbon->setChecked( preset.hasRibbon );
 		_checkBoxRibbonColorBlending->setChecked( preset.ribbonColorBlending );
 		_groupboxSes->setChecked( preset.hasSes );
+		_comboBoxSesComputeMode->setCurrentIndex(
+			preset.sesComputeMode == Renderer::E_SES_COMPUTE_MODE::SYSTEM ? 0 : 1
+		);
 		_sliderSesProbeRadius->setValue( preset.sesProbeRadius );
 
 		_applyLogic( preset );

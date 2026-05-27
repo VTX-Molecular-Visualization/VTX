@@ -358,7 +358,9 @@ namespace VTX::Renderer::Builder
 			bool				requestedRibbon	  = false;
 			bool				visibleSes		  = false;
 			bool				hasSesProbeRadius = false;
+			bool				hasSesComputeMode = false;
 			float				sesProbeRadius	  = SES_PROBE_RADIUS_DEFAULT;
+			E_SES_COMPUTE_MODE	sesComputeMode	  = SES_COMPUTE_MODE_DEFAULT;
 			RepresentationIndex sesRepresentation = 0;
 
 			for ( const auto & [ preset, ranges ] : *systemCache.data.presetAtoms )
@@ -390,6 +392,7 @@ namespace VTX::Renderer::Builder
 					visibleSes = true;
 
 					const float representationProbeRadius = representation.data.rep->sesProbeRadius;
+					const E_SES_COMPUTE_MODE representationComputeMode = representation.data.rep->sesComputeMode;
 					if ( not hasSesProbeRadius )
 					{
 						sesProbeRadius	  = representationProbeRadius;
@@ -404,6 +407,15 @@ namespace VTX::Renderer::Builder
 							representationProbeRadius
 						);
 					}
+					if ( not hasSesComputeMode )
+					{
+						sesComputeMode	  = representationComputeMode;
+						hasSesComputeMode = true;
+					}
+					else if ( sesComputeMode != representationComputeMode )
+					{
+						VTX_WARNING( "Multiple visible SES compute modes on the same system. Using first one." );
+					}
 				}
 			}
 
@@ -412,17 +424,32 @@ namespace VTX::Renderer::Builder
 				constructRibbon( p_systems, p_layouts, p_geometries, p_handle );
 			}
 			if ( visibleSes && p_geometries.ses.built( p_handle )
-				 && std::abs( p_geometries.ses.probeRadius( p_handle ) - sesProbeRadius ) > EPSILON )
+				 && ( std::abs( p_geometries.ses.probeRadius( p_handle ) - sesProbeRadius ) > EPSILON
+					  || p_geometries.ses.computeMode( p_handle ) != sesComputeMode ) )
 			{
 				p_geometries.ses.invalidateForRecompute( p_handle );
 				constructSES(
-					p_context, p_systems, p_layouts, p_geometries, p_handle, sesProbeRadius, sesRepresentation
+					p_context,
+					p_systems,
+					p_layouts,
+					p_geometries,
+					p_handle,
+					sesProbeRadius,
+					sesComputeMode,
+					sesRepresentation
 				);
 			}
 			else if ( visibleSes && not p_geometries.ses.built( p_handle ) )
 			{
 				constructSES(
-					p_context, p_systems, p_layouts, p_geometries, p_handle, sesProbeRadius, sesRepresentation
+					p_context,
+					p_systems,
+					p_layouts,
+					p_geometries,
+					p_handle,
+					sesProbeRadius,
+					sesComputeMode,
+					sesRepresentation
 				);
 			}
 
@@ -461,6 +488,7 @@ namespace VTX::Renderer::Builder
 			Geometries &			  p_geometries,
 			const Desc::Handle		  p_handle,
 			const float				  p_probeRadius,
+			const E_SES_COMPUTE_MODE  p_computeMode,
 			const RepresentationIndex p_representation
 		)
 		{
@@ -468,7 +496,13 @@ namespace VTX::Renderer::Builder
 
 			const Cache::System & system = p_systems.get( p_handle );
 			p_geometries.constructSES(
-				p_context, p_handle, system, p_layouts.atoms.offset( p_handle ), p_probeRadius, p_representation
+				p_context,
+				p_handle,
+				system,
+				p_layouts.atoms.offset( p_handle ),
+				p_probeRadius,
+				p_computeMode,
+				p_representation
 			);
 		}
 

@@ -18,8 +18,13 @@ namespace bcs
 
 	inline KernelConfig KernelConfig::From( uint32_t n, uint32_t blockDim )
 	{
+		if ( n == 0u || blockDim == 0u )
+		{
+			return { 0u, 0u };
+		}
+
 		blockDim = std::min( blockDim, n );
-		return { n / blockDim + std::min( n / blockDim, 1u ), blockDim };
+		return { ( n + blockDim - 1u ) / blockDim, blockDim };
 	}
 
 	inline KernelConfig::operator std::tuple<dim3, dim3>() const { return { gridDim, blockDim }; }
