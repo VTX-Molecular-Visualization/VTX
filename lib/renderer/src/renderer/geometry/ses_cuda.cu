@@ -122,6 +122,22 @@ namespace VTX::Renderer::Geometry::SESDetail
 			throw std::runtime_error( std::string( p_context ) + ": " + cudaGetErrorString( p_error ) );
 		}
 
+		template<typename T>
+		std::vector<T> _copyDeviceBuffer( const T * const p_src, const uint32_t p_count, const char * const p_context )
+		{
+			std::vector<T> res( p_count );
+			if ( p_count == 0 )
+			{
+				return res;
+			}
+
+			_cudaCheck(
+				cudaMemcpy( res.data(), p_src, size_t( p_count ) * sizeof( T ), cudaMemcpyDeviceToHost ),
+				p_context
+			);
+			return res;
+		}
+
 		float4 * _optionalTargetAtoms( const SesdfInputBuffers & p_inputs )
 		{
 			if ( p_inputs.outputAtoms.devicePtr == nullptr )
@@ -559,5 +575,55 @@ namespace VTX::Renderer::Geometry::SESDetail
 		p_construction.ses->writeData( output );
 		_cudaCheck( cudaGetLastError(), "SES renderer buffer write failed" );
 		_cudaCheck( cudaDeviceSynchronize(), "SES renderer buffer write synchronization failed" );
+	}
+
+	std::vector<uint32_t> readAtomIds( const CudaBufferView & p_buffer, const uint32_t p_count )
+	{
+		const uint32_t * const atomIds = _targetPtr<uint32_t>( p_buffer, p_count * sizeof( uint32_t ), "AtomIds" );
+		return _copyDeviceBuffer( atomIds, p_count, "SES atom id read failed" );
+	}
+
+	void readConstructionVisibilityData( CudaConstruction & p_construction, SesdfVisibilityData & p_visibility )
+	{
+		bcs::sesdf::SesdfData data = p_construction.ses->getData();
+
+		p_visibility.circleAtoms.clear();
+		p_visibility.segmentAtoms.clear();
+		p_visibility.concaveAtoms.clear();
+
+		if ( data.circlePatchNb > 0 )
+		{
+			const std::vector<uint2> circleAtoms
+				= _copyDeviceBuffer( data.circlePatches, data.circlePatchNb, "SES circle visibility read failed" );
+			p_visibility.circleAtoms.resize( circleAtoms.size() );
+			for ( size_t i = 0; i < circleAtoms.size(); ++i )
+			{
+				p_visibility.circleAtoms[ i ] = UVec2 { circleAtoms[ i ].x, circleAtoms[ i ].y };
+			}
+		}
+
+		if ( data.segmentPatchNb > 0 )
+		{
+			const std::vector<uint4> segmentAtoms
+				= _copyDeviceBuffer( data.segmentPatches, data.segmentPatchNb, "SES segment visibility read failed" );
+			p_visibility.segmentAtoms.resize( segmentAtoms.size() );
+			for ( size_t i = 0; i < segmentAtoms.size(); ++i )
+			{
+				p_visibility.segmentAtoms[ i ] = UVec2 { segmentAtoms[ i ].x, segmentAtoms[ i ].y };
+			}
+		}
+
+		if ( data.concavePatchNb > 0 )
+		{
+			const std::vector<int4> concaveAtoms
+				= _copyDeviceBuffer( data.concavePatchesId, data.concavePatchNb, "SES concave visibility read failed" );
+			p_visibility.concaveAtoms.resize( concaveAtoms.size() );
+			for ( size_t i = 0; i < concaveAtoms.size(); ++i )
+			{
+				p_visibility.concaveAtoms[ i ] = IVec4 {
+					concaveAtoms[ i ].x, concaveAtoms[ i ].y, concaveAtoms[ i ].z, concaveAtoms[ i ].w
+				};
+			}
+		}
 	}
 } // namespace VTX::Renderer::Geometry::SESDetail

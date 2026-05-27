@@ -355,6 +355,7 @@ namespace VTX::Renderer::Builder
 			auto				visibleSpheres	  = *systemCache.data.visibility;
 			auto				visibleCylinders  = *systemCache.data.visibility;
 			auto				visibleRibbons	  = *systemCache.data.visibility;
+			auto				visibleSesAtoms	  = *systemCache.data.visibility;
 			bool				requestedRibbon	  = false;
 			bool				visibleSes		  = false;
 			bool				hasSesProbeRadius = false;
@@ -417,6 +418,10 @@ namespace VTX::Renderer::Builder
 						VTX_WARNING( "Multiple visible SES compute modes on the same system. Using first one." );
 					}
 				}
+				else
+				{
+					visibleSesAtoms.subtractInPlace( ranges );
+				}
 			}
 
 			if ( requestedRibbon && not p_geometries.ribbons.built( p_handle ) )
@@ -456,7 +461,7 @@ namespace VTX::Renderer::Builder
 			p_geometries.spheres.setVisibility( p_handle, visibleSpheres );
 			p_geometries.cylinders.setVisibility( p_handle, visibleCylinders );
 			p_geometries.ribbons.setVisibility( p_handle, visibleRibbons );
-			p_geometries.ses.setVisibility( p_handle, visibleSes );
+			p_geometries.ses.setVisibility( p_handle, visibleSesAtoms );
 		}
 
 		template<typename Systems>

@@ -4,6 +4,7 @@
 #include "renderer/representation.hpp"
 #include <algorithm>
 #include <array>
+#include <utility>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 #include <vector>
@@ -27,6 +28,14 @@ namespace VTX::Renderer::Geometry
 		SESDetail::CudaConstructionPtr cudaConstruction;
 #endif
 
+		struct VisibilityData
+		{
+			std::vector<uint32_t>				   atomIds;
+			std::vector<std::array<uint32_t, 2>> circleAtoms;
+			std::vector<std::array<uint32_t, 2>> segmentAtoms;
+			std::vector<std::array<int32_t, 4>>  concaveAtoms;
+		};
+
 		Surface			   surface;
 		State			   state			  = State::Empty;
 		uint32_t		   atomOffset		  = 0;
@@ -42,6 +51,7 @@ namespace VTX::Renderer::Geometry
 		uint32_t		   concavePatchNb	  = 0;
 		float			   probeRadius		  = SES_PROBE_RADIUS_DEFAULT;
 		E_SES_COMPUTE_MODE computeMode		  = SES_COMPUTE_MODE_DEFAULT;
+		VisibilityData	   visibility;
 
 		[[nodiscard]] bool pendingWrite() const
 		{
@@ -157,8 +167,45 @@ namespace VTX::Renderer::Geometry
 
 			return outputBuffers;
 		}
-
 #endif
+
+		bool _isSortedAtomVisible(
+			const SES::SurfaceConstruction & p_construction,
+			const uint32_t					 p_sortedAtom,
+			const Util::Math::BitSet &		 p_visibility
+		)
+		{
+			if ( p_sortedAtom >= p_construction.visibility.atomIds.size() )
+			{
+				return false;
+			}
+
+			const uint32_t rendererAtom = p_construction.visibility.atomIds[ p_sortedAtom ];
+			if ( rendererAtom < p_construction.rendererAtomOffset )
+			{
+				return false;
+			}
+
+			const uint32_t atom = rendererAtom - p_construction.rendererAtomOffset;
+			return atom < p_visibility.size() && p_visibility.test( atom );
+		}
+
+		template<typename Predicate>
+		std::vector<Indice> _filterPatchIndices( const uint32_t p_count, Predicate && p_predicate )
+		{
+			std::vector<Indice> indices;
+			indices.reserve( p_count );
+
+			for ( uint32_t i = 0; i < p_count; ++i )
+			{
+				if ( p_predicate( i ) )
+				{
+					indices.emplace_back( i );
+				}
+			}
+
+			return indices;
+		}
 	} // namespace
 
 	SES::SES()
@@ -384,6 +431,17 @@ namespace VTX::Renderer::Geometry
 						);
 					}
 
+					construction->visibility.atomIds = SESDetail::readAtomIds(
+						SESDetail::CudaBufferView { mappings[ 3 ].devicePtr, mappings[ 3 ].size, 0 }, result.atomNb
+					);
+					if ( result.construction != nullptr )
+					{
+						SESDetail::SesdfVisibilityData visibilityData;
+						SESDetail::readConstructionVisibilityData( *result.construction, visibilityData );
+						construction->visibility.circleAtoms	  = std::move( visibilityData.circleAtoms );
+						construction->visibility.segmentAtoms = std::move( visibilityData.segmentAtoms );
+						construction->visibility.concaveAtoms = std::move( visibilityData.concaveAtoms );
+					}
 					construction->cudaConstruction = std::move( result.construction );
 					construction->atomNb		   = result.atomNb;
 					construction->convexPatchNb	   = result.convexPatchNb;
@@ -687,6 +745,120 @@ namespace VTX::Renderer::Geometry
 			circlePatches.setVisibility( surface, p_visible );
 			segmentPatches.setVisibility( surface, p_visible );
 			concavePatches.setVisibility( surface, p_visible );
+		}
+	}
+
+	void SES::setVisibility( const Desc::Handle p_handle, const Util::Math::BitSet & p_visibility )
+	{
+		const auto it = _surfaces.bySystem.find( p_handle );
+		if ( it == _surfaces.bySystem.end() )
+		{
+			return;
+		}
+
+		for ( const SurfaceID surface : it->second )
+		{
+			if ( not convexPatches.contains( surface ) || not circlePatches.contains( surface )
+				 || not segmentPatches.contains( surface ) || not concavePatches.contains( surface ) )
+			{
+				continue;
+			}
+
+			const auto constructionIt = _constructions.find( surface );
+			if ( constructionIt == _constructions.end() )
+			{
+				continue;
+			}
+
+			const SurfaceConstruction & construction = *constructionIt->second;
+			if ( p_visibility.none() )
+			{
+				convexPatches.setVisibility( surface, false );
+				circlePatches.setVisibility( surface, false );
+				segmentPatches.setVisibility( surface, false );
+				concavePatches.setVisibility( surface, false );
+				continue;
+			}
+
+			if ( construction.visibility.atomIds.size() >= construction.convexPatchNb )
+			{
+				convexPatches.setIndices(
+					surface,
+					_filterPatchIndices(
+						construction.convexPatchNb,
+						[ & ]( const uint32_t p_patch )
+						{
+							return _isSortedAtomVisible( construction, p_patch, p_visibility );
+						}
+					)
+				);
+			}
+			else
+			{
+				convexPatches.setVisibility( surface, true );
+			}
+
+			if ( construction.visibility.circleAtoms.size() == construction.circlePatchNb )
+			{
+				circlePatches.setIndices(
+					surface,
+					_filterPatchIndices(
+						construction.circlePatchNb,
+						[ & ]( const uint32_t p_patch )
+						{
+							const auto & atoms = construction.visibility.circleAtoms[ p_patch ];
+							return _isSortedAtomVisible( construction, atoms[ 0 ], p_visibility )
+								   && _isSortedAtomVisible( construction, atoms[ 1 ], p_visibility );
+						}
+					)
+				);
+			}
+			else
+			{
+				circlePatches.setVisibility( surface, true );
+			}
+
+			if ( construction.visibility.segmentAtoms.size() == construction.segmentPatchNb )
+			{
+				segmentPatches.setIndices(
+					surface,
+					_filterPatchIndices(
+						construction.segmentPatchNb,
+						[ & ]( const uint32_t p_patch )
+						{
+							const auto & atoms = construction.visibility.segmentAtoms[ p_patch ];
+							return _isSortedAtomVisible( construction, atoms[ 0 ], p_visibility )
+								   && _isSortedAtomVisible( construction, atoms[ 1 ], p_visibility );
+						}
+					)
+				);
+			}
+			else
+			{
+				segmentPatches.setVisibility( surface, true );
+			}
+
+			if ( construction.visibility.concaveAtoms.size() == construction.concavePatchNb )
+			{
+				concavePatches.setIndices(
+					surface,
+					_filterPatchIndices(
+						construction.concavePatchNb,
+						[ & ]( const uint32_t p_patch )
+						{
+							const auto & atoms = construction.visibility.concaveAtoms[ p_patch ];
+							return atoms[ 0 ] >= 0 && atoms[ 1 ] >= 0 && atoms[ 2 ] >= 0
+								   && _isSortedAtomVisible( construction, uint32_t( atoms[ 0 ] ), p_visibility )
+								   && _isSortedAtomVisible( construction, uint32_t( atoms[ 1 ] ), p_visibility )
+								   && _isSortedAtomVisible( construction, uint32_t( atoms[ 2 ] ), p_visibility );
+						}
+					)
+				);
+			}
+			else
+			{
+				concavePatches.setVisibility( surface, true );
+			}
 		}
 	}
 

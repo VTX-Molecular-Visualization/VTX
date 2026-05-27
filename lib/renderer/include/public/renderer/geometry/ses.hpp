@@ -4,6 +4,7 @@
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
 #include "renderer/representation.hpp"
+#include "util/math/bitset.hpp"
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -11,6 +12,7 @@
 #include <memory>
 #include <numeric>
 #include <span>
+#include <utility>
 #include <vector>
 
 namespace VTX::Renderer::Geometry
@@ -173,6 +175,12 @@ namespace VTX::Renderer::Geometry
 				std::iota( indices.begin(), indices.end(), 0 );
 			}
 
+			void setIndices( const SurfaceID p_surface, std::vector<Indice> p_indices )
+			{
+				assert( _data().contains( p_surface ) );
+				_indices( p_surface ) = std::move( p_indices );
+			}
+
 			[[nodiscard]] std::vector<Desc::DrawIndexedIndirectRecord> toDrawIndexedIndirectCommands(
 				const SurfaceID p_surface
 			) const
@@ -285,6 +293,7 @@ namespace VTX::Renderer::Geometry
 		[[nodiscard]] E_SES_COMPUTE_MODE computeMode( Desc::Handle p_handle ) const;
 
 		void setVisibility( Desc::Handle p_handle, bool p_visible );
+		void setVisibility( Desc::Handle p_handle, const Util::Math::BitSet & p_visibility );
 
 		void compute( Context::ContextWrapper & p_context );
 
