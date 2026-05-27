@@ -64,7 +64,7 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxSes->addWidget( new QLabel( "Compute mode", _groupboxSes ) );
 		_groupboxSes->addWidget( _comboBoxSesComputeMode );
 		_comboBoxSesComputeMode->addItem( "System" );
-		_comboBoxSesComputeMode->addItem( "Category" );
+		_comboBoxSesComputeMode->addItem( "Polymer" );
 
 		_sliderSesProbeRadius = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSes );
 		_groupboxSes->addWidget( new QLabel( "Probe radius", _groupboxSes ) );

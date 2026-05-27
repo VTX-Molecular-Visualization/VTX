@@ -2,6 +2,7 @@
 #define __VTX_APP_EVENTS__
 
 #include "app/ecs.hpp"
+#include <span>
 #include <string>
 #include <thread>
 #include <util/types.hpp>
