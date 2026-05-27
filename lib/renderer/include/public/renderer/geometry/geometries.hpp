@@ -43,11 +43,11 @@ namespace VTX::Renderer
 			ribbons.clearRanges();
 		}
 
-		void removeSystemConstruction( const Desc::Handle p_handle )
+		void removeSystemConstruction( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
 		{
 			cylinders.removeConstruction( p_handle );
 			ribbons.removeConstruction( p_handle );
-			ses.invalidate( p_handle );
+			ses.remove( p_context, p_handle );
 		}
 
 		void registerSystem( const Desc::Handle p_handle, const Cache::System & p_data )

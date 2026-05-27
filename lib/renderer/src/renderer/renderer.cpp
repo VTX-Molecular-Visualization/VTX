@@ -189,7 +189,7 @@ namespace VTX::Renderer
 		{
 			for ( const Desc::Handle system : deletingSystems )
 			{
-				Builder::SystemRegistry::removeSystemConstruction( _geometries, system );
+				Builder::SystemRegistry::removeSystemConstruction( _context, _geometries, system );
 				_systems.erase( system );
 				dirtySystems.erase( system );
 			}
@@ -348,7 +348,7 @@ namespace VTX::Renderer
 					);
 					if ( _geometries.ses.built( system ) )
 					{
-						_geometries.ses.invalidate( system );
+						_geometries.ses.invalidateForRecompute( system );
 						geometryRefreshSystems.insert( system );
 					}
 				}

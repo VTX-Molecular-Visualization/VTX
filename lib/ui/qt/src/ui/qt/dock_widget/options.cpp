@@ -9,6 +9,7 @@
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/actionable_push_button.hpp"
 #include "ui/qt/widget/renderer.hpp"
+#include <QApplication>
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QGroupBox>
@@ -164,66 +165,53 @@ namespace VTX::UI::QT::DockWidget
 
 		layoutGraphics->addWidget( _checkBoxSavePower );
 
-		// Cache.
-		auto * groupBoxCache = new QGroupBox( "Data cache" );
-		auto * layoutCache	 = new QVBoxLayout( groupBoxCache );
-
-		auto * layoutCacheButton = new QHBoxLayout();
-
-		auto * buttonOpenCache
-			= new ActionablePushButton( UI_ACTIONS().getAction( Action::Option::Cache::OPEN ), this );
-		auto * buttonClearCache
-			= new ActionablePushButton( UI_ACTIONS().getAction( Action::Option::Cache::CLEAR ), this );
-
-		buttonOpenCache->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
-		buttonClearCache->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
-		buttonOpenCache->setMinimumWidth( 0 );
-		buttonClearCache->setMinimumWidth( 0 );
-
-		const FilePath cachePath = App::SESSION().getCacheDir();
-		connect(
-			buttonOpenCache,
-			&QPushButton::clicked,
-			[ this, cachePath ]()
-			{ QDesktopServices::openUrl( QUrl::fromLocalFile( QDir( cachePath ).absolutePath() ) ); }
+		auto * groupBoxCache
+			= _createFolderGroupBox( "Data cache", App::SESSION().getCacheDir(), _labelCacheCount, _labelCacheSize );
+		auto * groupBoxSnapshots = _createFolderGroupBox(
+			"Snapshots", App::SESSION().getSnapshotsDir(), _labelSnapshotsCount, _labelSnapshotsSize
 		);
-
-		connect(
-			buttonClearCache,
-			&QPushButton::clicked,
-			[ this, cachePath ]()
-			{
-				QDir( cachePath ).removeRecursively();
-				_refreshCacheInfos();
-			}
-		);
-
-		_labelCacheCount = new QLabel( this );
-		_labelCacheSize	 = new QLabel( this );
-
-		layoutCache->addWidget( _labelCacheCount );
-		layoutCache->addWidget( _labelCacheSize );
-		layoutCacheButton->addWidget( buttonOpenCache );
-		layoutCacheButton->addWidget( buttonClearCache );
-		layoutCacheButton->setStretch( 0, 1 );
-		layoutCacheButton->setStretch( 1, 1 );
-		layoutCacheButton->setStretch( 2, 1 );
-		layoutCache->addLayout( layoutCacheButton );
+		auto * groupBoxLogs
+			= _createFolderGroupBox( "Logs", App::SESSION().getLogsDir(), _labelLogsCount, _labelLogsSize );
 
 		_layout->addWidget( groupBoxDisplay );
 		_layout->addWidget( groupBoxInputs );
 		_layout->addWidget( groupBoxGraphics );
 		_layout->addWidget( groupBoxCache );
+		_layout->addWidget( groupBoxSnapshots );
+		_layout->addWidget( groupBoxLogs );
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 
-		_refreshCacheInfos();
+		_refreshFoldersInfos();
 
 		// Settings.
 		QSignalBlocker b( _checkBoxVSync ); // Do not emit, opengl widget already knows.
 		_checkBoxVSync->setChecked( SETTINGS().value( SETTING_KEY_VSYNC, Renderer::VSYNC_DEFAULT ).toBool() );
 		_checkBoxSavePower->setChecked( SETTINGS().value( SETTING_KEY_SAVE_POWER, SAVE_POWER_DEFAULT ).toBool() );
 
-		App::HUB().connect<App::Events::FileDownloaded, &Options::_refreshCacheInfos>( this );
+		connect(
+			this,
+			&QDockWidget::visibilityChanged,
+			[ this ]( const bool p_visible )
+			{
+				if ( p_visible )
+				{
+					_refreshFoldersInfos();
+				}
+			}
+		);
+
+		connect(
+			qApp,
+			&QApplication::focusChanged,
+			this,
+			[ this ]( QWidget *, QWidget * const p_now )
+			{
+				if ( isVisible() && p_now != nullptr && ( p_now == this || isAncestorOf( p_now ) ) )
+				{
+					_refreshFoldersInfos();
+				}
+			}
+		);
 	}
 
 	Options::~Options()
@@ -246,22 +234,80 @@ namespace VTX::UI::QT::DockWidget
 
 	void Options::_onThemeChanged( const Events::ThemeChanged & ) { _syncThemeComboBox(); }
 
-	void Options::_refreshCacheInfos()
+	QGroupBox * Options::_createFolderGroupBox(
+		const QString &	   p_title,
+		const FilePath &   p_path,
+		QPointer<QLabel> & p_labelCount,
+		QPointer<QLabel> & p_labelSize
+	)
 	{
-		const FilePath		cachePath = App::SESSION().getCacheDir();
-		const QDir			cacheDir( cachePath );
-		const uint			fileCount = cacheDir.entryList( QDir::Files ).size();
-		const QFileInfoList list	  = cacheDir.entryInfoList();
+		auto * groupBox = new QGroupBox( p_title );
+		auto * layout	= new QVBoxLayout( groupBox );
+
+		auto * layoutButton = new QHBoxLayout();
+		auto * buttonOpen	= new QPushButton( "Open", this );
+		auto * buttonClear	= new QPushButton( "Clear", this );
+
+		buttonOpen->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		buttonClear->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		buttonOpen->setMinimumWidth( 0 );
+		buttonClear->setMinimumWidth( 0 );
+
+		connect(
+			buttonOpen,
+			&QPushButton::clicked,
+			[ p_path ]() { QDesktopServices::openUrl( QUrl::fromLocalFile( QDir( p_path ).absolutePath() ) ); }
+		);
+
+		connect(
+			buttonClear,
+			&QPushButton::clicked,
+			[ this, p_path ]()
+			{
+				QDir( p_path ).removeRecursively();
+				_refreshFoldersInfos();
+			}
+		);
+
+		p_labelCount = new QLabel( this );
+		p_labelSize	 = new QLabel( this );
+
+		layout->addWidget( p_labelCount );
+		layout->addWidget( p_labelSize );
+		layoutButton->addWidget( buttonOpen );
+		layoutButton->addWidget( buttonClear );
+		layoutButton->setStretch( 0, 1 );
+		layoutButton->setStretch( 1, 1 );
+		layoutButton->setStretch( 2, 1 );
+		layout->addLayout( layoutButton );
+
+		return groupBox;
+	}
+
+	void Options::_refreshFolderInfos(
+		const FilePath & p_path,
+		QLabel * const	 p_labelCount,
+		QLabel * const	 p_labelSize
+	) const
+	{
+		const QDir			dir( p_path );
+		const uint			fileCount = dir.entryList( QDir::Files ).size();
+		const QFileInfoList list	  = dir.entryInfoList();
 		size_t				size	  = 0;
 		for ( const auto & info : list )
 		{
 			size += info.size();
 		}
 
-		_labelCacheCount->setText( _TEXT_CACHE_COUNT.arg( fileCount ) );
-		_labelCacheSize->setText(
-			_TEXT_CACHE_SIZE.arg( QString::fromStdString( Util::String::memSizeToStr( size ) ) )
-		);
+		p_labelCount->setText( _TEXT_CACHE_COUNT.arg( fileCount ) );
+		p_labelSize->setText( _TEXT_CACHE_SIZE.arg( QString::fromStdString( Util::String::memSizeToStr( size ) ) ) );
+	}
+
+	void Options::_refreshFoldersInfos()
+	{
+		_refreshFolderInfos( App::SESSION().getCacheDir(), _labelCacheCount, _labelCacheSize );
+		_refreshFolderInfos( App::SESSION().getSnapshotsDir(), _labelSnapshotsCount, _labelSnapshotsSize );
+		_refreshFolderInfos( App::SESSION().getLogsDir(), _labelLogsCount, _labelLogsSize );
 	}
 
 } // namespace VTX::UI::QT::DockWidget

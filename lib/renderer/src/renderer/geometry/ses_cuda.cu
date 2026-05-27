@@ -135,11 +135,11 @@ namespace VTX::Renderer::Geometry::SESDetail
 		}
 
 		__global__ void _packAtomsKernel(
-			float4 *	   p_dst,
-			const float *  p_positions,
+			float4 *		p_dst,
+			const float *	p_positions,
 			const uint8_t * p_symbols,
-			const float *  p_vdwRadii,
-			const uint32_t p_atomNb
+			const float *	p_vdwRadii,
+			const uint32_t	p_atomNb
 		)
 		{
 			const uint32_t atomIndex = blockIdx.x * blockDim.x + threadIdx.x;
@@ -149,23 +149,22 @@ namespace VTX::Renderer::Geometry::SESDetail
 			}
 
 			const uint32_t positionOffset = atomIndex * 3u;
-			const uint8_t  symbol		 = p_symbols[ atomIndex ];
-			p_dst[ atomIndex ]			 = make_float4(
-					   p_positions[ positionOffset ],
-					   p_positions[ positionOffset + 1u ],
-					   p_positions[ positionOffset + 2u ],
-					   p_vdwRadii[ symbol ]
-				   );
+			const uint8_t  symbol		  = p_symbols[ atomIndex ];
+			p_dst[ atomIndex ]			  = make_float4(
+				   p_positions[ positionOffset ],
+				   p_positions[ positionOffset + 1u ],
+				   p_positions[ positionOffset + 2u ],
+				   p_vdwRadii[ symbol ]
+			   );
 		}
 
 		void _packRendererAtoms( const SesdfInputBuffers & p_inputs, float4 * const p_dst )
 		{
 			constexpr uint32_t threadNb = 256u;
-			const uint32_t	  blockNb  = ( p_inputs.atomNb + threadNb - 1u ) / threadNb;
+			const uint32_t	   blockNb	= ( p_inputs.atomNb + threadNb - 1u ) / threadNb;
 
-			bcs::DeviceBuffer dVdwRadii = bcs::DeviceBuffer::Typed<float>(
-				Core::ChemDB::Atom::SYMBOL_VDW_RADIUS.size()
-			);
+			bcs::DeviceBuffer dVdwRadii
+				= bcs::DeviceBuffer::Typed<float>( Core::ChemDB::Atom::SYMBOL_VDW_RADIUS.size() );
 			_cudaCheck(
 				cudaMemcpy(
 					dVdwRadii.get<float>(),
@@ -177,13 +176,11 @@ namespace VTX::Renderer::Geometry::SESDetail
 			);
 
 			const auto * positions = reinterpret_cast<const float *>(
-				static_cast<const uint8_t *>( p_inputs.positions.devicePtr )
-				+ p_inputs.positions.offsetBytes
+				static_cast<const uint8_t *>( p_inputs.positions.devicePtr ) + p_inputs.positions.offsetBytes
 				+ p_inputs.atomOffset * sizeof( Vec3f )
 			);
 			const auto * symbols = reinterpret_cast<const uint8_t *>(
-				static_cast<const uint8_t *>( p_inputs.symbols.devicePtr )
-				+ p_inputs.symbols.offsetBytes
+				static_cast<const uint8_t *>( p_inputs.symbols.devicePtr ) + p_inputs.symbols.offsetBytes
 				+ p_inputs.atomOffset * sizeof( Core::ChemDB::Atom::SYMBOL )
 			);
 
@@ -243,7 +240,7 @@ namespace VTX::Renderer::Geometry::SESDetail
 	}
 
 	CudaBuildResult buildCudaConstructionFromRendererBuffers(
-		const SesdfInputBuffers & p_inputs,
+		const SesdfInputBuffers &	 p_inputs,
 		const std::span<const Vec3f> p_aabbPositions,
 		const float					 p_probeRadius
 	)
@@ -261,8 +258,7 @@ namespace VTX::Renderer::Geometry::SESDetail
 		}
 
 		const size_t positionSize = ( p_inputs.atomOffset + p_inputs.atomNb ) * sizeof( Vec3f );
-		const size_t symbolSize
-			= ( p_inputs.atomOffset + p_inputs.atomNb ) * sizeof( Core::ChemDB::Atom::SYMBOL );
+		const size_t symbolSize	  = ( p_inputs.atomOffset + p_inputs.atomNb ) * sizeof( Core::ChemDB::Atom::SYMBOL );
 		if ( p_inputs.positions.sizeBytes < positionSize || p_inputs.symbols.sizeBytes < symbolSize )
 		{
 			throw std::runtime_error( "Can not build SES: renderer atom input buffers are too small." );
@@ -270,21 +266,23 @@ namespace VTX::Renderer::Geometry::SESDetail
 
 		auto construction = std::make_unique<CudaConstruction>();
 
-		const bcs::Aabb aabb = _computeAabb( p_aabbPositions );
-		float4 * const outputAtoms = _optionalTargetAtoms( p_inputs );
+		const bcs::Aabb	 aabb		   = _computeAabb( p_aabbPositions );
+		float4 * const	 outputAtoms   = _optionalTargetAtoms( p_inputs );
 		uint32_t * const outputAtomIds = _optionalTargetAtomIds( p_inputs );
-		construction->ses	 = std::make_unique<bcs::Sesdf>(
-			   bcs::ConstSpan<bcs::Vec4f>( nullptr, p_inputs.atomNb ),
-			   aabb,
-			   p_probeRadius,
-			   false,
-			   false,
-			   outputAtoms,
-			   outputAtomIds,
-			   p_inputs.rendererAtomOffset
-		   );
+		construction->ses			   = std::make_unique<bcs::Sesdf>(
+			 bcs::ConstSpan<bcs::Vec4f>( nullptr, p_inputs.atomNb ),
+			 aabb,
+			 p_probeRadius,
+			 false,
+			 false,
+			 outputAtoms,
+			 outputAtomIds,
+			 p_inputs.rendererAtomOffset
+		);
 		_packRendererAtoms( p_inputs, construction->ses->getDAtoms() );
 		construction->ses->build();
+		_cudaCheck( cudaGetLastError(), "SES construction failed" );
+		_cudaCheck( cudaDeviceSynchronize(), "SES construction synchronization failed" );
 
 		const bcs::sesdf::SesdfData data = construction->ses->getData();
 		construction->sectorNb			 = _getActualSectorNb( data );
@@ -312,9 +310,8 @@ namespace VTX::Renderer::Geometry::SESDetail
 		}
 
 		bcs::sesdf::SesdfWriteBuffers output;
-		output.atoms = _optionalTargetPtr<float4>( p_targets.atoms, data.atomNb * sizeof( float4 ), "Atoms" );
-		output.atomIds
-			= _optionalTargetPtr<uint32_t>( p_targets.atomIds, data.atomNb * sizeof( uint32_t ), "AtomIds" );
+		output.atoms   = _optionalTargetPtr<float4>( p_targets.atoms, data.atomNb * sizeof( float4 ), "Atoms" );
+		output.atomIds = _optionalTargetPtr<uint32_t>( p_targets.atomIds, data.atomNb * sizeof( uint32_t ), "AtomIds" );
 		output.convexPatches
 			= _targetPtr<uint2>( p_targets.convexPatches, data.convexPatchNb * sizeof( uint2 ), "ConvexPatches" );
 		output.circlePatches
@@ -339,5 +336,7 @@ namespace VTX::Renderer::Geometry::SESDetail
 		output.maxConcaveNeighbors = p_targets.maxProbeNeighborNb;
 
 		p_construction.ses->writeData( output );
+		_cudaCheck( cudaGetLastError(), "SES renderer buffer write failed" );
+		_cudaCheck( cudaDeviceSynchronize(), "SES renderer buffer write synchronization failed" );
 	}
 } // namespace VTX::Renderer::Geometry::SESDetail

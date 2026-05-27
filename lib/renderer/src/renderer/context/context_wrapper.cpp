@@ -365,7 +365,7 @@ namespace VTX::Renderer::Context
 	}
 
 	std::vector<Desc::InteropBufferMapping> ContextWrapper::mapInteropBuffers(
-		const Desc::E_INTEROP_API		p_api,
+		const Desc::E_INTEROP_API		 p_api,
 		std::span<const Desc::BufferRef> p_refs
 	)
 	{
@@ -407,6 +407,21 @@ namespace VTX::Renderer::Context
 				if constexpr ( std::is_same_v<T, Backend::OpenGL> )
 				{
 					p_backend.unmapInteropBuffers( p_api, p_mappings );
+				}
+			},
+			_impl->backend
+		);
+	}
+
+	void ContextWrapper::unregisterInteropBuffer( const Desc::E_INTEROP_API p_api, const Desc::BufferRef & p_ref )
+	{
+		std::visit(
+			[ & ]( auto & p_backend )
+			{
+				using T = std::remove_cvref_t<decltype( p_backend )>;
+				if constexpr ( std::is_same_v<T, Backend::OpenGL> )
+				{
+					p_backend.unregisterInteropBuffer( p_api, p_ref );
 				}
 			},
 			_impl->backend

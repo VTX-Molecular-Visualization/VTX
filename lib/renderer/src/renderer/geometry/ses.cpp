@@ -4,6 +4,7 @@
 #include "renderer/representation.hpp"
 #include <algorithm>
 #include <array>
+#include <vector>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 #ifdef VTX_CUDA_ENABLED
@@ -71,30 +72,37 @@ namespace VTX::Renderer::Geometry
 		}
 
 #ifdef VTX_CUDA_ENABLED
-		constexpr size_t OUTPUT_CONVEX_PATCHES	   = 0;
-		constexpr size_t OUTPUT_CIRCLE_PATCHES	   = 1;
-		constexpr size_t OUTPUT_SEGMENT_PATCHES	   = 2;
-		constexpr size_t OUTPUT_PROBES			   = 3;
-		constexpr size_t OUTPUT_PROBE_ATOM_INDICES = 4;
-		constexpr size_t OUTPUT_PROBE_NEIGHBORS	   = 5;
-		constexpr size_t OUTPUT_SECTORS			   = 6;
-		constexpr size_t OUTPUT_BUFFER_NB		   = 7;
+		constexpr size_t OUTPUT_BUFFER_NB = 7;
 
-		std::array<Desc::BufferRef, OUTPUT_BUFFER_NB> _outputBufferRefs(
-			const SES::SurfaceConstruction & p_construction
-		)
+		std::vector<Desc::BufferRef> _outputBufferRefs( const SES::SurfaceConstruction & p_construction )
 		{
 			const uint32_t chunk = p_construction.surface.id;
+			std::vector<Desc::BufferRef> refs;
 
-			return {
-				Desc::BufferRef { SES::BUFFER_CONVEX_PATCH_ELEMENTS, chunk },
-				Desc::BufferRef { SES::BUFFER_CIRCLE_PATCH_ATOMS, chunk },
-				Desc::BufferRef { SES::BUFFER_SEGMENT_PATCH_IDS, chunk },
-				Desc::BufferRef { SES::BUFFER_PROBES, chunk },
-				Desc::BufferRef { SES::BUFFER_PROBE_ATOM_INDICES, chunk },
-				Desc::BufferRef { SES::BUFFER_PROBE_NEIGHBORS, chunk },
-				Desc::BufferRef { SES::BUFFER_SECTORS, chunk },
-			};
+			if ( p_construction.convexPatchNb > 0 )
+			{
+				refs.emplace_back( SES::BUFFER_CONVEX_PATCH_ELEMENTS, chunk );
+			}
+			if ( p_construction.circlePatchNb > 0 )
+			{
+				refs.emplace_back( SES::BUFFER_CIRCLE_PATCH_ATOMS, chunk );
+			}
+			if ( p_construction.segmentPatchNb > 0 )
+			{
+				refs.emplace_back( SES::BUFFER_SEGMENT_PATCH_IDS, chunk );
+			}
+			if ( p_construction.probeNb > 0 )
+			{
+				refs.emplace_back( SES::BUFFER_PROBES, chunk );
+				refs.emplace_back( SES::BUFFER_PROBE_ATOM_INDICES, chunk );
+				refs.emplace_back( SES::BUFFER_PROBE_NEIGHBORS, chunk );
+			}
+			if ( p_construction.sectorNb > 0 )
+			{
+				refs.emplace_back( SES::BUFFER_SECTORS, chunk );
+			}
+
+			return refs;
 		}
 
 		SESDetail::SesdfOutputBuffers _outputBuffers(
@@ -102,22 +110,37 @@ namespace VTX::Renderer::Geometry
 			const SES::SurfaceConstruction &			p_construction
 		)
 		{
-			assert( p_mappings.size() == OUTPUT_BUFFER_NB );
+			size_t mappingIndex = 0;
+			const auto nextBuffer = [ & ]()
+			{
+				const Desc::InteropBufferMapping & mapping = p_mappings[ mappingIndex++ ];
+				return SESDetail::CudaBufferView { mapping.devicePtr, mapping.size, 0 };
+			};
 
 			SESDetail::SesdfOutputBuffers outputBuffers;
-			outputBuffers.convexPatches
-				= { p_mappings[ OUTPUT_CONVEX_PATCHES ].devicePtr, p_mappings[ OUTPUT_CONVEX_PATCHES ].size, 0 };
-			outputBuffers.circlePatches
-				= { p_mappings[ OUTPUT_CIRCLE_PATCHES ].devicePtr, p_mappings[ OUTPUT_CIRCLE_PATCHES ].size, 0 };
-			outputBuffers.segmentPatches
-				= { p_mappings[ OUTPUT_SEGMENT_PATCHES ].devicePtr, p_mappings[ OUTPUT_SEGMENT_PATCHES ].size, 0 };
-			outputBuffers.probes = { p_mappings[ OUTPUT_PROBES ].devicePtr, p_mappings[ OUTPUT_PROBES ].size, 0 };
-			outputBuffers.probeAtomIndices = { p_mappings[ OUTPUT_PROBE_ATOM_INDICES ].devicePtr,
-											   p_mappings[ OUTPUT_PROBE_ATOM_INDICES ].size,
-											   0 };
-			outputBuffers.probeNeighbors
-				= { p_mappings[ OUTPUT_PROBE_NEIGHBORS ].devicePtr, p_mappings[ OUTPUT_PROBE_NEIGHBORS ].size, 0 };
-			outputBuffers.sectors = { p_mappings[ OUTPUT_SECTORS ].devicePtr, p_mappings[ OUTPUT_SECTORS ].size, 0 };
+			if ( p_construction.convexPatchNb > 0 )
+			{
+				outputBuffers.convexPatches = nextBuffer();
+			}
+			if ( p_construction.circlePatchNb > 0 )
+			{
+				outputBuffers.circlePatches = nextBuffer();
+			}
+			if ( p_construction.segmentPatchNb > 0 )
+			{
+				outputBuffers.segmentPatches = nextBuffer();
+			}
+			if ( p_construction.probeNb > 0 )
+			{
+				outputBuffers.probes			 = nextBuffer();
+				outputBuffers.probeAtomIndices = nextBuffer();
+				outputBuffers.probeNeighbors	 = nextBuffer();
+			}
+			if ( p_construction.sectorNb > 0 )
+			{
+				outputBuffers.sectors = nextBuffer();
+			}
+			assert( mappingIndex == p_mappings.size() );
 			outputBuffers.atomIndexOffset		  = p_construction.atomOffset;
 			outputBuffers.rendererAtomIndexOffset = p_construction.rendererAtomOffset;
 			outputBuffers.probeIndexOffset		  = 0;
@@ -162,7 +185,7 @@ namespace VTX::Renderer::Geometry
 		Util::ScopedChrono chrono( "SES construct" );
 
 		auto construction				 = std::make_unique<SurfaceConstruction>();
-		construction->surface			 = _createWholeSurface( p_handle );
+		construction->surface			 = _getOrCreateWholeSurface( p_handle );
 		construction->rendererAtomOffset = p_inputAtomOffset;
 		construction->atomOffset		 = 0;
 		construction->probeRadius		 = p_probeRadius;
@@ -269,6 +292,8 @@ namespace VTX::Renderer::Geometry
 				{
 					p_context.unmapInteropBuffers( Desc::E_INTEROP_API::CUDA, mappings );
 				}
+				_unregisterCudaInputSourceBuffers( p_context );
+				_unregisterCudaConstructionBuffers( p_context, construction->surface.id );
 			}
 #else
 			construction->markIncalculable();
@@ -377,6 +402,22 @@ namespace VTX::Renderer::Geometry
 		_surfaces.clear();
 	}
 
+	void SES::remove( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
+	{
+		const auto it = _surfaces.bySystem.find( p_handle );
+		if ( it == _surfaces.bySystem.end() )
+		{
+			return;
+		}
+
+		for ( const SurfaceID surface : it->second )
+		{
+			_releaseChunks( p_context, surface );
+		}
+
+		invalidate( p_handle );
+	}
+
 	void SES::invalidate( const Desc::Handle p_handle )
 	{
 		const auto it = _surfaces.bySystem.find( p_handle );
@@ -409,6 +450,24 @@ namespace VTX::Renderer::Geometry
 		_surfaces.bySystem.erase( it );
 	}
 
+	void SES::invalidateForRecompute( const Desc::Handle p_handle )
+	{
+		const auto it = _surfaces.bySystem.find( p_handle );
+		if ( it == _surfaces.bySystem.end() )
+		{
+			return;
+		}
+
+		for ( const SurfaceID surface : it->second )
+		{
+			convexPatches.remove( surface );
+			circlePatches.remove( surface );
+			segmentPatches.remove( surface );
+			concavePatches.remove( surface );
+			_constructions.erase( surface );
+		}
+	}
+
 	void SES::uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
 	{
 		const auto it = _surfaces.bySystem.find( p_handle );
@@ -419,6 +478,12 @@ namespace VTX::Renderer::Geometry
 
 		for ( const SurfaceID surface : it->second )
 		{
+			if ( not convexPatches.contains( surface ) || not circlePatches.contains( surface )
+				 || not segmentPatches.contains( surface ) || not concavePatches.contains( surface ) )
+			{
+				continue;
+			}
+
 			convexPatches.uploadIndexes( p_context, surface );
 			circlePatches.uploadIndexes( p_context, surface );
 			segmentPatches.uploadIndexes( p_context, surface );
@@ -426,7 +491,24 @@ namespace VTX::Renderer::Geometry
 		}
 	}
 
-	bool SES::built( const Desc::Handle p_handle ) const { return _surfaces.bySystem.contains( p_handle ); }
+	bool SES::built( const Desc::Handle p_handle ) const
+	{
+		const auto surfaceIt = _surfaces.bySystem.find( p_handle );
+		if ( surfaceIt == _surfaces.bySystem.end() )
+		{
+			return false;
+		}
+
+		for ( const SurfaceID surface : surfaceIt->second )
+		{
+			if ( _constructions.contains( surface ) )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	float SES::probeRadius( const Desc::Handle p_handle ) const
 	{
@@ -449,6 +531,12 @@ namespace VTX::Renderer::Geometry
 
 		for ( const SurfaceID surface : it->second )
 		{
+			if ( not convexPatches.contains( surface ) || not circlePatches.contains( surface )
+				 || not segmentPatches.contains( surface ) || not concavePatches.contains( surface ) )
+			{
+				continue;
+			}
+
 			convexPatches.setVisibility( surface, p_visible );
 			circlePatches.setVisibility( surface, p_visible );
 			segmentPatches.setVisibility( surface, p_visible );
@@ -472,18 +560,18 @@ namespace VTX::Renderer::Geometry
 			return;
 		}
 
-		std::vector<Desc::InteropBufferMapping> mappings;
-
-		try
+		for ( const auto & [ surfaceID, construction ] : _constructions )
 		{
-			for ( const auto & [ surfaceID, construction ] : _constructions )
+			if ( not construction->pendingWrite() )
 			{
-				if ( not construction->pendingWrite() )
-				{
-					continue;
-				}
+				continue;
+			}
 
-				const std::array<Desc::BufferRef, OUTPUT_BUFFER_NB> buffers = _outputBufferRefs( *construction );
+			std::vector<Desc::InteropBufferMapping> mappings;
+
+			try
+			{
+				const std::vector<Desc::BufferRef> buffers = _outputBufferRefs( *construction );
 				mappings = p_context.mapInteropBuffers( Desc::E_INTEROP_API::CUDA, buffers );
 				assert( mappings.size() == buffers.size() );
 
@@ -495,27 +583,32 @@ namespace VTX::Renderer::Geometry
 
 				construction->cudaConstruction.reset();
 				construction->state = SurfaceConstruction::State::Written;
+				_unregisterCudaSurfaceBuffers( p_context, surfaceID );
 			}
-		}
-		catch ( const std::exception & p_e )
-		{
-			if ( not mappings.empty() )
+			catch ( const std::exception & p_e )
 			{
-				p_context.unmapInteropBuffers( Desc::E_INTEROP_API::CUDA, mappings );
+				if ( not mappings.empty() )
+				{
+					p_context.unmapInteropBuffers( Desc::E_INTEROP_API::CUDA, mappings );
+				}
+
+				_unregisterCudaSurfaceBuffers( p_context, surfaceID );
+				_disableDraws( p_context, surfaceID );
+				construction->markIncalculable();
+				VTX_WARNING( "Can not write SES renderer buffers: {}", p_e.what() );
 			}
-			_discardPendingCompute( p_context );
-			VTX_WARNING( "Can not write SES renderer buffers: {}", p_e.what() );
-			return;
-		}
-		catch ( ... )
-		{
-			if ( not mappings.empty() )
+			catch ( ... )
 			{
-				p_context.unmapInteropBuffers( Desc::E_INTEROP_API::CUDA, mappings );
+				if ( not mappings.empty() )
+				{
+					p_context.unmapInteropBuffers( Desc::E_INTEROP_API::CUDA, mappings );
+				}
+
+				_unregisterCudaSurfaceBuffers( p_context, surfaceID );
+				_disableDraws( p_context, surfaceID );
+				construction->markIncalculable();
+				VTX_WARNING( "Can not write SES renderer buffers: unknown error." );
 			}
-			_discardPendingCompute( p_context );
-			VTX_WARNING( "Can not write SES renderer buffers: unknown error." );
-			return;
 		}
 
 #endif
@@ -540,6 +633,84 @@ namespace VTX::Renderer::Geometry
 	SES::Surface SES::_createWholeSurface( const Desc::Handle p_handle )
 	{
 		return _createSurface( SurfaceKey { p_handle, E_SURFACE_SCOPE::WHOLE, 0 } );
+	}
+
+	SES::Surface SES::_getOrCreateWholeSurface( const Desc::Handle p_handle )
+	{
+		const SurfaceKey key { p_handle, E_SURFACE_SCOPE::WHOLE, 0 };
+		const auto		 it = _surfaces.ids.find( key );
+		if ( it == _surfaces.ids.end() )
+		{
+			return _createSurface( key );
+		}
+
+		return Surface { it->second, p_handle, E_SURFACE_SCOPE::WHOLE, 0 };
+	}
+
+	void SES::_releaseChunks( Context::ContextWrapper & p_context, const SurfaceID p_surface )
+	{
+		const std::array<Desc::Key, 16> buffers {
+			BUFFER_ATOMS,
+			BUFFER_ATOM_IDS,
+			BUFFER_SECTORS,
+			BUFFER_PROBES,
+			BUFFER_PROBE_ATOM_INDICES,
+			BUFFER_PROBE_NEIGHBORS,
+			BUFFER_CONVEX_PATCH_ELEMENTS,
+			BUFFER_CIRCLE_PATCH_ATOMS,
+			BUFFER_SEGMENT_PATCH_IDS,
+			INDEX_CONVEX_PATCHES,
+			INDEX_CIRCLE_PATCHES,
+			INDEX_SEGMENT_PATCHES,
+			INDEX_CONCAVE_PATCHES,
+			INDIRECT_CONVEX_PATCHES,
+			INDIRECT_CIRCLE_PATCHES,
+			INDIRECT_SEGMENT_PATCHES,
+		};
+
+		for ( const Desc::Key & buffer : buffers )
+		{
+			p_context.releaseBufferChunk( { buffer, p_surface } );
+		}
+		p_context.releaseBufferChunk( { INDIRECT_CONCAVE_PATCHES, p_surface } );
+	}
+
+	void SES::_unregisterCudaInputSourceBuffers( Context::ContextWrapper & p_context )
+	{
+#ifdef VTX_CUDA_ENABLED
+		p_context.unregisterInteropBuffer( Desc::E_INTEROP_API::CUDA, { Layout::Atoms::ATOMS_POSITIONS } );
+		p_context.unregisterInteropBuffer( Desc::E_INTEROP_API::CUDA, { Layout::Atoms::ATOMS_SYMBOLS } );
+#endif
+	}
+
+	void SES::_unregisterCudaConstructionBuffers( Context::ContextWrapper & p_context, const SurfaceID p_surface )
+	{
+#ifdef VTX_CUDA_ENABLED
+		p_context.unregisterInteropBuffer( Desc::E_INTEROP_API::CUDA, { BUFFER_ATOMS, p_surface } );
+		p_context.unregisterInteropBuffer( Desc::E_INTEROP_API::CUDA, { BUFFER_ATOM_IDS, p_surface } );
+#endif
+	}
+
+	void SES::_unregisterCudaSurfaceBuffers( Context::ContextWrapper & p_context, const SurfaceID p_surface )
+	{
+#ifdef VTX_CUDA_ENABLED
+		const std::array<Desc::BufferRef, OUTPUT_BUFFER_NB + 2> buffers = {
+			Desc::BufferRef { BUFFER_ATOMS, p_surface },
+			Desc::BufferRef { BUFFER_ATOM_IDS, p_surface },
+			Desc::BufferRef { BUFFER_CONVEX_PATCH_ELEMENTS, p_surface },
+			Desc::BufferRef { BUFFER_CIRCLE_PATCH_ATOMS, p_surface },
+			Desc::BufferRef { BUFFER_SEGMENT_PATCH_IDS, p_surface },
+			Desc::BufferRef { BUFFER_PROBES, p_surface },
+			Desc::BufferRef { BUFFER_PROBE_ATOM_INDICES, p_surface },
+			Desc::BufferRef { BUFFER_PROBE_NEIGHBORS, p_surface },
+			Desc::BufferRef { BUFFER_SECTORS, p_surface },
+		};
+
+		for ( const Desc::BufferRef & buffer : buffers )
+		{
+			p_context.unregisterInteropBuffer( Desc::E_INTEROP_API::CUDA, buffer );
+		}
+#endif
 	}
 
 	void SES::_constructEmptyRanges( const Surface & p_surface )
@@ -572,17 +743,4 @@ namespace VTX::Renderer::Geometry
 		disable( INDIRECT_CONCAVE_PATCHES, concavePatches );
 	}
 
-	void SES::_discardPendingCompute( Context::ContextWrapper & p_context )
-	{
-		for ( auto & [ surfaceID, construction ] : _constructions )
-		{
-			if ( construction->state != SurfaceConstruction::State::PendingWrite )
-			{
-				continue;
-			}
-
-			_disableDraws( p_context, surfaceID );
-			construction->markIncalculable();
-		}
-	}
 } // namespace VTX::Renderer::Geometry

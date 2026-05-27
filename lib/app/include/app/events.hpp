@@ -128,12 +128,6 @@ namespace VTX::App::Events
 		bool			 manuallyStopped;
 	};
 
-	struct FileDownloaded
-	{
-		uint64_t id;
-		bool	 success;
-	};
-
 	struct PythonInitialized
 	{
 		std::string version;

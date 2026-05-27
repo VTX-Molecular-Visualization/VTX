@@ -49,11 +49,15 @@ namespace VTX::Renderer::Builder
 			p_geometryRefreshSystems.clear();
 		}
 
-		static void removeSystemConstruction( Geometries & p_geometries, const Desc::Handle p_handle )
+		static void removeSystemConstruction(
+			Context::ContextWrapper & p_context,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle
+		)
 		{
 			Util::ScopedChrono timer( "[BUILDER] SystemRegistry::removeSystemConstruction" );
 
-			p_geometries.removeSystemConstruction( p_handle );
+			p_geometries.removeSystemConstruction( p_context, p_handle );
 		}
 
 		template<typename Systems>
@@ -410,9 +414,12 @@ namespace VTX::Renderer::Builder
 			if ( visibleSes && p_geometries.ses.built( p_handle )
 				 && std::abs( p_geometries.ses.probeRadius( p_handle ) - sesProbeRadius ) > EPSILON )
 			{
-				p_geometries.ses.invalidate( p_handle );
+				p_geometries.ses.invalidateForRecompute( p_handle );
+				constructSES(
+					p_context, p_systems, p_layouts, p_geometries, p_handle, sesProbeRadius, sesRepresentation
+				);
 			}
-			if ( visibleSes && not p_geometries.ses.built( p_handle ) )
+			else if ( visibleSes && not p_geometries.ses.built( p_handle ) )
 			{
 				constructSES(
 					p_context, p_systems, p_layouts, p_geometries, p_handle, sesProbeRadius, sesRepresentation

@@ -103,6 +103,7 @@ namespace VTX::Renderer::Context::Backend
 		);
 		void unmapInteropBuffer( Desc::E_INTEROP_API, const Desc::InteropBufferMapping & );
 		void unmapInteropBuffers( Desc::E_INTEROP_API, std::span<const Desc::InteropBufferMapping> );
+		void unregisterInteropBuffer( Desc::E_INTEROP_API, const Desc::BufferRef & );
 
 		/**
 		 * @brief Query external API availability for graphics interop.

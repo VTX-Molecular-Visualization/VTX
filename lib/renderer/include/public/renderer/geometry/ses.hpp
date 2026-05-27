@@ -78,6 +78,11 @@ namespace VTX::Renderer::Geometry
 				const uint32_t			  p_dataOffset = 0
 			)
 			{
+				if ( contains( p_surface ) )
+				{
+					remove( p_surface );
+				}
+
 				_addRange( p_surface, p_count, p_count );
 				_systems.emplace( p_surface, p_system );
 				_representations.emplace( p_surface, p_representation );
@@ -117,6 +122,8 @@ namespace VTX::Renderer::Geometry
 				_dataOffsets.erase( p_surface );
 				chunks.erase( std::remove( chunks.begin(), chunks.end(), p_surface ), chunks.end() );
 			}
+
+			[[nodiscard]] bool contains( const SurfaceID p_surface ) const { return _hasRange( p_surface ); }
 
 			void resize( Context::ContextWrapper & p_context )
 			{
@@ -269,7 +276,9 @@ namespace VTX::Renderer::Geometry
 		void resize( Context::ContextWrapper & p_context );
 
 		void clear();
+		void remove( Context::ContextWrapper & p_context, Desc::Handle p_handle );
 		void invalidate( Desc::Handle p_handle );
+		void invalidateForRecompute( Desc::Handle p_handle );
 
 		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle );
 
@@ -288,9 +297,13 @@ namespace VTX::Renderer::Geometry
 	  private:
 		Surface _createSurface( const SurfaceKey & );
 		Surface _createWholeSurface( Desc::Handle );
+		Surface _getOrCreateWholeSurface( Desc::Handle );
+		void	_releaseChunks( Context::ContextWrapper &, SurfaceID );
+		void	_unregisterCudaInputSourceBuffers( Context::ContextWrapper & );
+		void	_unregisterCudaConstructionBuffers( Context::ContextWrapper &, SurfaceID );
+		void	_unregisterCudaSurfaceBuffers( Context::ContextWrapper &, SurfaceID );
 		void	_constructEmptyRanges( const Surface & );
 		void	_disableDraws( Context::ContextWrapper &, SurfaceID );
-		void	_discardPendingCompute( Context::ContextWrapper & );
 
 		SurfaceRegistry _surfaces;
 	};
