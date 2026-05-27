@@ -62,8 +62,11 @@ jobs:
         
     - uses: actions/checkout@v6.0.2
       with:
-        submodules: recursive   
-        
+        submodules: recursive
+
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@v5
+
     - name: Setup Conan
       uses: conan-io/setup-conan@v1.3.0
       with:
@@ -130,6 +133,10 @@ jobs:
 
         nvcc --version
 
+    - name: Setup MSVC environment
+      uses: ilammy/msvc-dev-cmd@v1
+      if: runner.os == 'Windows'
+
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
       shell: bash
@@ -146,6 +153,7 @@ jobs:
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_renderer/*:test=True \
           "${CUDA_ARCH_OPTION[@]}" \
+          -c tools.cmake.cmaketoolchain:generator=Ninja \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True \
           -c tools.cmake.cmaketoolchain:extra_variables="{\"CMAKE_CUDA_COMPILER\":\"$CUDACXX\",\"CUDAToolkit_ROOT\":\"$CUDAToolkit_ROOT\"}" 
