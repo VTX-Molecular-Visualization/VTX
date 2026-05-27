@@ -2,7 +2,6 @@
 #include <fmt/format.h>
 //
 #include <tool/mdprep/backends/gromacs/editconf.hpp>
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
 //
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include "tool/mdprep/backends/gromacs/util.hpp"

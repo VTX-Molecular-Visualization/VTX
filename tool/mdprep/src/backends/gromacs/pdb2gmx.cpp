@@ -1,5 +1,4 @@
 #include <fstream>
-#include <qprocess.h>
 #include <re2/re2.h>
 #include <regex>
 #include <set>
@@ -9,10 +8,7 @@
 #include <util/exceptions.hpp>
 #include <util/string.hpp>
 //
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
-// impl should come before inputs
 #include "tool/mdprep/backends/gromacs/job.hpp"
-#include <tool/mdprep/backends/gromacs/pdb2gmx.impl.hpp>
 #include <tool/mdprep/backends/gromacs/util.hpp>
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
@@ -379,39 +375,5 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		p_out.postJobRoutine = &postJobRoutine;
-	}
-	bool isWaitingForInput( const Pdb2gmxInputs &, const std::string_view & p_stdout ) noexcept
-	{
-		return isWaitingInputs( p_stdout );
-	}
-
-	bool enterInput(
-		const Pdb2gmxInputs & p_inputs,
-		QProcess &			  p_proc,
-		std::string &		  p_stdout,
-		std::string &		  p_stderr
-	) noexcept
-	{
-		Pdb2gmxInputId expectedId;
-		bool		   noProblemFoundWhileParsingGromacsOutput = parseExpectedKwArgument( p_stdout, expectedId );
-		if ( noProblemFoundWhileParsingGromacsOutput == false )
-		{
-			p_proc.kill();
-			p_stderr += "\nVTX error -- VTX didn't recognized gromacs expected value.";
-			return false;
-		}
-
-		const char * value = nullptr;
-		if ( p_inputs.kwValue.contains( expectedId ) )
-			value = p_inputs.kwValue.at( expectedId ).data();
-		else
-			value = getDefaultValue( expectedId.kw );
-		std::string bytesForGromacs { value };
-		bytesForGromacs += '\n';
-		p_proc.write( bytesForGromacs.data() );
-		p_stdout += bytesForGromacs;
-		p_proc.waitForBytesWritten();
-
-		return true;
 	}
 } // namespace VTX::Tool::Mdprep::backends::Gromacs

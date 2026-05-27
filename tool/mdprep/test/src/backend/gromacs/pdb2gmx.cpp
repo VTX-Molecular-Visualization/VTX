@@ -1,5 +1,3 @@
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
-//
 #include "fixture.hpp"
 #include <algorithm>
 #include <catch2/benchmark/catch_benchmark.hpp>
@@ -162,9 +160,6 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[conver
 		data.instructions.customParameter->kwValue.insert( { id, "0" } );
 
 		VTX::Tool::Mdprep::backends::Gromacs::convert( data.instructions, args );
-
-		// Protonation state selection is now handled via -batch file, not interactive stdin.
-		CHECK( args.interactiveSettings.has_value() == false );
 
 		// A -batch flag must always be present when customParameter is set.
 		auto batchIt = std::find( args.arguments.begin(), args.arguments.end(), "-batch" );
