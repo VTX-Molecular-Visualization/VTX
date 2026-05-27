@@ -16,8 +16,8 @@ on:
           - Release
         cuda_version:
           description: 'CUDA version'
-          required: true
-          default: '13.2.1'
+          required: false
+          default: '13.2.0'
         cuda_arch:
           description: 'Cuda architectures'
           required: false
@@ -26,7 +26,7 @@ on:
 env:
   LIB_DIR: ${{github.workspace}}/lib
   BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
-  CUDA_VERSION: ${{ inputs.cuda_version || '13.2.0' }}
+  CUDA_VERSION: ${{ inputs.cuda_version }}
   CUDA_ARCH: ${{ inputs.cuda_arch }}
 
 jobs:
@@ -76,10 +76,11 @@ jobs:
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
     - name: Install CUDA Toolkit
-      uses: Jimver/cuda-toolkit@v0.2.35
+      if: env.CUDA_VERSION != ''
+      uses: Jimver/cuda-toolkit@v0.2.32
       id: cuda-toolkit
       with:
-        cuda: ${{ inputs.cuda_version }}
+        cuda: ${{ env.CUDA_VERSION }}
         method: network
         linux-local-args: '["--toolkit"]'
 

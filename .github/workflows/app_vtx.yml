@@ -47,8 +47,8 @@ on:
         type: boolean
       cuda_version:
         description: 'CUDA version'
-        required: true
-        default: '13.2.1'
+        required: false
+        default: '13.2.0'
       cuda_arch:
         description: 'Cuda architectures'
         required: false
@@ -68,6 +68,7 @@ env:
   UI_QT: ${{ inputs.ui_qt == true && 'True' || 'False' }}
   VTX_RENDERER: ${{ inputs.renderer == true && 'True' || 'False' }}
   VTX_PYTHON_BINDING: ${{ inputs.python_binding == true && 'True' || 'False' }}
+  CUDA_VERSION: ${{ inputs.cuda_version }}
   CUDA_ARCH: ${{ inputs.cuda_arch }}
   PYTHON_VERSION: ${{ inputs.python_version }}
   RELEASE_DIR: ${{ github.workspace }}/release
@@ -128,13 +129,14 @@ jobs:
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
     
-#    - name: Install CUDA Toolkit
-#      uses: Jimver/cuda-toolkit@v0.2.35
-#      id: cuda-toolkit
-#      with:
-#        cuda: ${{ inputs.cuda_version }}
-#        method: network
-#        linux-local-args: '["--toolkit"]'
+    - name: Install CUDA Toolkit
+      if: env.CUDA_VERSION != ''
+      uses: Jimver/cuda-toolkit@v0.2.32
+      id: cuda-toolkit
+      with:
+        cuda: ${{ env.CUDA_VERSION }}
+        method: network
+        linux-local-args: '["--toolkit"]'
 
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}
