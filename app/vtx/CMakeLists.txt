@@ -60,7 +60,7 @@ endif()
 
 include(CheckLanguage)
 check_language(CUDA)
-if (CMAKE_CUDA_COMPILER)
+if (WIN32 AND CMAKE_CUDA_COMPILER)
 	find_package(CUDAToolkit REQUIRED)
 	file(GLOB CUDA_DLLS "${CUDAToolkit_BIN_DIR}/cudart*.dll")
 	if(CUDA_DLLS)
