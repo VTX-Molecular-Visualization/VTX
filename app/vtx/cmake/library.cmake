@@ -2,8 +2,6 @@ file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/../src/*)
 
 # Generate .rc file.
 if(MSVC)
-	
-
 	set(VERSION_STRING "${VTX_VERSION_MAJOR}.${VTX_VERSION_MINOR}.${VTX_VERSION_PATCH}.0")
 	string(REPLACE "." "," VERSION_COMMA "${VERSION_STRING}")
 	string(TIMESTAMP YEAR "%Y")
@@ -17,7 +15,7 @@ endif()
 
 add_executable(vtx ${SOURCES} ${RESOURCES})
 vtx_configure_target(vtx)
-vtx_link_cuda(vtx)
+
 
 if(UNIX AND NOT APPLE)
 	set_target_properties(vtx PROPERTIES BUILD_RPATH "$ORIGIN" INSTALL_RPATH "$ORIGIN")
