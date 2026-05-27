@@ -4,6 +4,7 @@
 #include "types.hpp"
 #include <string>
 #include <string_view>
+#include <typeinfo>
 #include <utility>
 
 namespace VTX
