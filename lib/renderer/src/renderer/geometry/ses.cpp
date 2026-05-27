@@ -4,9 +4,9 @@
 #include "renderer/representation.hpp"
 #include <algorithm>
 #include <array>
-#include <utility>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
+#include <utility>
 #include <vector>
 #ifdef VTX_CUDA_ENABLED
 #include "renderer/geometry/ses_cuda.hpp"
@@ -30,10 +30,10 @@ namespace VTX::Renderer::Geometry
 
 		struct VisibilityData
 		{
-			std::vector<uint32_t>				   atomIds;
+			std::vector<uint32_t>				 atomIds;
 			std::vector<std::array<uint32_t, 2>> circleAtoms;
 			std::vector<std::array<uint32_t, 2>> segmentAtoms;
-			std::vector<std::array<int32_t, 4>>  concaveAtoms;
+			std::vector<std::array<int32_t, 4>>	 concaveAtoms;
 		};
 
 		Surface			   surface;
@@ -84,9 +84,7 @@ namespace VTX::Renderer::Geometry
 
 		bool _isSesCategoryAllowed( const Core::ChemDB::Category::TYPE p_category )
 		{
-			return p_category == Core::ChemDB::Category::TYPE::POLYMER
-				   || p_category == Core::ChemDB::Category::TYPE::CARBOHYDRATE
-				   || p_category == Core::ChemDB::Category::TYPE::LIGAND;
+			return p_category == Core::ChemDB::Category::TYPE::POLYMER;
 		}
 
 #ifdef VTX_CUDA_ENABLED
@@ -255,10 +253,10 @@ namespace VTX::Renderer::Geometry
 		}
 
 		std::array<std::vector<Index>, size_t( Core::ChemDB::Category::TYPE::COUNT )> atomsByCategory;
-		const Core::Struct::Topology & topology = *p_data.data.topology;
+		const Core::Struct::Topology &												  topology = *p_data.data.topology;
 		for ( Index atom = 0; atom < topology.getAtomCount(); ++atom )
 		{
-			const Index residue = topology.getAtomResidueIndex( atom );
+			const Index						   residue	= topology.getAtomResidueIndex( atom );
 			const Core::ChemDB::Category::TYPE category = topology.residueCategories[ residue ];
 			if ( not _isSesCategoryAllowed( category ) )
 			{
@@ -275,9 +273,8 @@ namespace VTX::Renderer::Geometry
 				continue;
 			}
 
-			const Surface surface = _getOrCreateSurface(
-				SurfaceKey { p_handle, E_SES_COMPUTE_MODE::CATEGORY, uint32_t( category ) }
-			);
+			const Surface surface
+				= _getOrCreateSurface( SurfaceKey { p_handle, E_SES_COMPUTE_MODE::CATEGORY, uint32_t( category ) } );
 			VTX_DEBUG(
 				"SES category construction: {} surface={} atoms={} system={}",
 				Core::ChemDB::Category::TYPE_STR[ category ],
@@ -438,7 +435,7 @@ namespace VTX::Renderer::Geometry
 					{
 						SESDetail::SesdfVisibilityData visibilityData;
 						SESDetail::readConstructionVisibilityData( *result.construction, visibilityData );
-						construction->visibility.circleAtoms	  = std::move( visibilityData.circleAtoms );
+						construction->visibility.circleAtoms  = std::move( visibilityData.circleAtoms );
 						construction->visibility.segmentAtoms = std::move( visibilityData.segmentAtoms );
 						construction->visibility.concaveAtoms = std::move( visibilityData.concaveAtoms );
 					}
@@ -787,9 +784,7 @@ namespace VTX::Renderer::Geometry
 					_filterPatchIndices(
 						construction.convexPatchNb,
 						[ & ]( const uint32_t p_patch )
-						{
-							return _isSortedAtomVisible( construction, p_patch, p_visibility );
-						}
+						{ return _isSortedAtomVisible( construction, p_patch, p_visibility ); }
 					)
 				);
 			}
