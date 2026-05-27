@@ -128,7 +128,7 @@ jobs:
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
     
 #    - name: Install CUDA Toolkit
-#      uses: Jimver/cuda-toolkit@v0.2.30
+#      uses: Jimver/cuda-toolkit@v0.2.35
 #      id: cuda-toolkit
 #      with:
 #        cuda: ${{ inputs.cuda_version }}
