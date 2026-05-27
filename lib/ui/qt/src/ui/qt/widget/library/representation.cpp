@@ -160,7 +160,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		// Enable SES if available.
 		_refreshCUDAState();
-		App::RENDERER().onReady += [ this ]( const VTX::Renderer::StructInfos ) { _refreshCUDAState(); };
+		App::RENDERER().onReady += [ this ]( const VTX::Renderer::StructInfos & ) { _refreshCUDAState(); };
 	}
 
 	void Representation::_refreshCUDAState()

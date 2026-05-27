@@ -8,19 +8,20 @@
 #include <QGroupBox>
 #include <QLineEdit>
 #include <QPointer>
+#include <QPushButton>
 #include <QSignalBlocker>
 #include <QToolBar>
 #include <QToolButton>
-#include <QVariant>
 #include <QVBoxLayout>
+#include <QVariant>
 #include <algorithm>
 #include <app/action/preset.hpp>
 #include <app/ecs.hpp>
 #include <app/preset/name.hpp>
 #include <app/services.hpp>
 #include <optional>
-#include <utility>
 #include <util/event_hub.hpp>
+#include <utility>
 #include <vector>
 
 namespace VTX::UI::QT::Widget::Library
@@ -34,6 +35,7 @@ namespace VTX::UI::QT::Widget::Library
 
 	  public:
 		BasePresetSelector( QWidget * p_parent ) : QGroupBox( p_parent ) {}
+
 		virtual ~BasePresetSelector() = default;
 
 	  signals:
@@ -68,14 +70,21 @@ namespace VTX::UI::QT::Widget::Library
 			auto * toolbar = new QToolBar( this );
 			toolbar->setToolButtonStyle( Qt::ToolButtonIconOnly );
 			// toolbar->setIconSize( QSize( 12, 12 ) );
-			auto * bNew		  = _addButton( *toolbar, "New", Style::Icons::NEW, "Create a new empty preset" );
+			auto * bNew = _addButton( *toolbar, "New", Style::Icons::NEW, "Create a new empty preset" );
 			auto * bDuplicate
 				= _addButton( *toolbar, "Duplicate", Style::Icons::COPY, "Create a new preset from this one" );
-			auto * bApply	  = _addButton( *toolbar, "Apply", Style::Icons::APPLY, "Apply this preset" );
+
 			layout->addWidget( toolbar );
 
 			_lineRename = new QLineEdit( this );
 			layout->addWidget( _lineRename );
+
+			auto * bApply = new QPushButton( "Apply", this );
+			bApply->setIcon( STYLE().iconFromCodepoint( Style::Icons::APPLY ) );
+			bApply->setToolTip( "Apply this preset" );
+			bApply->setStatusTip( "Apply this preset to the whole scene" );
+
+			layout->addWidget( bApply );
 
 			connect(
 				_comboBox,
@@ -154,8 +163,10 @@ namespace VTX::UI::QT::Widget::Library
 		}
 
 		inline Entity getCurrentPreset() const { return _comboBox->currentData().value<Entity>(); }
-		inline void				refresh() { _refreshComboBox( App::REG(), Entity {} ); }
-		inline void				setCurrentPreset( const Entity p_preset )
+
+		inline void refresh() { _refreshComboBox( App::REG(), Entity {} ); }
+
+		inline void setCurrentPreset( const Entity p_preset )
 		{
 			if ( _comboBox->count() == 0 )
 			{
@@ -189,7 +200,10 @@ namespace VTX::UI::QT::Widget::Library
 		VTX::Util::EventHub::Connection _onPresetUpdateConnection;
 
 		QToolButton * _addButton(
-			QToolBar & p_toolbar, const QString & p_text, const Style::Codepoint p_icon, const QString & p_tip
+			QToolBar &			   p_toolbar,
+			const QString &		   p_text,
+			const Style::Codepoint p_icon,
+			const QString &		   p_tip
 		)
 		{
 			auto * const button = new QToolButton( &p_toolbar );
@@ -215,8 +229,8 @@ namespace VTX::UI::QT::Widget::Library
 			const Entity currentPreset = getCurrentPreset();
 			_comboBox->clear();
 
-			int											 indexToSelect = -1;
-			auto										 view		   = REG().view<Preset::Name, P>();
+			int										indexToSelect = -1;
+			auto									view		  = REG().view<Preset::Name, P>();
 			std::vector<std::pair<QString, Entity>> presets;
 			presets.reserve( view.size_hint() );
 			for ( const Entity entity : view )
