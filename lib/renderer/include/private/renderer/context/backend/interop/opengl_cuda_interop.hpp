@@ -24,7 +24,7 @@ namespace VTX::Renderer::Context::Backend::Interop
 		/**
 		 * @brief Availability.
 		 */
-		void					  refreshAvailability();
+		void					  refreshAvailability( uint p_probeBuffer );
 		Desc::InteropAvailability availability() const;
 
 		/**
