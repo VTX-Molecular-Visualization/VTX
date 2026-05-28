@@ -2,12 +2,17 @@ function(vtx_link_cuda p_target)
 	include(CheckLanguage)
 	check_language(CUDA)
 	if(CMAKE_CUDA_COMPILER)
+		enable_language(CUDA)
 		find_package(CUDAToolkit)
 		if(CUDAToolkit_FOUND)
 			target_link_libraries(${p_target} PRIVATE CUDA::cudart)
 			if(TARGET CUDA::cudadevrt)
 				target_link_libraries(${p_target} PRIVATE CUDA::cudadevrt)
 			endif()
+			set_target_properties(${p_target} PROPERTIES
+				LINKER_LANGUAGE CUDA
+				CUDA_STANDARD 20
+			)
 		else()
 			message(STATUS "CUDA toolkit not found")
 		endif()

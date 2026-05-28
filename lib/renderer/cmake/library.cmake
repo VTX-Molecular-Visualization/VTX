@@ -1,26 +1,11 @@
 include("${CMAKE_CURRENT_LIST_DIR}/vtx_link_cuda.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/vtx_renderer_copy_shaders.cmake")
 
-# Cuda.
-include(CheckLanguage)
-check_language(CUDA)
-set(VTX_CUDA_ENABLED OFF)
-if(CMAKE_CUDA_COMPILER)
-	enable_language(CUDA)
-	find_package(CUDAToolkit)
-	if(CUDAToolkit_FOUND)
-		set(VTX_CUDA_ENABLED ON)
-	else()
-		message(STATUS "CUDA toolkit not found")
-	endif()
-else()
-	message(STATUS "CUDA not found")
-endif()
-
 # Lib.
 add_library(vtx_renderer)
 add_library(vtx_renderer::vtx_renderer ALIAS vtx_renderer)
 vtx_configure_target(vtx_renderer)
+vtx_link_cuda(vtx_renderer)
 
 file(GLOB_RECURSE HEADERS_PUBLIC "${CMAKE_CURRENT_LIST_DIR}/../include/public/*")
 file(GLOB_RECURSE HEADERS_PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include/private/renderer/*")
@@ -45,10 +30,8 @@ target_sources(vtx_renderer
 	PRIVATE ${SHADERS}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include/public" FILES ${HEADERS_PUBLIC}
 	PRIVATE FILE_SET private_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include/private" FILES ${HEADERS_PRIVATE}
-	#PRIVATE FILE_SET vendors_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../vendor" FILES ${HEADERS_VENDORS}
+	PRIVATE FILE_SET vendors_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../vendor" FILES ${HEADERS_VENDORS}
 )
-
-target_include_directories(vtx_renderer	SYSTEM PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../vendor")
 
 # OpenGL.
 if(WIN32)
@@ -60,41 +43,44 @@ elseif(LINUX)
 endif()
 
 # Cuda.
-if(VTX_CUDA_ENABLED)
-	target_link_libraries(vtx_renderer PRIVATE CUDA::cudart)
-	if(TARGET CUDA::cudadevrt)
-		target_link_libraries(vtx_renderer PRIVATE CUDA::cudadevrt)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+	enable_language(CUDA)
+	find_package(CUDAToolkit)
+	if(CUDAToolkit_FOUND)
+		target_include_directories(vtx_renderer PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../vendor/cuda_helper")
+
+		set_target_properties(vtx_renderer PROPERTIES
+			CUDA_ARCHITECTURES "${VTX_CUDA_ARCH}"
+			CUDA_SEPARABLE_COMPILATION ON
+			CUDA_RESOLVE_DEVICE_SYMBOLS ON				
+		)
+
+		target_compile_options(vtx_renderer PRIVATE 
+	
+			$<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CONFIG:Debug>>:
+				--generate-line-info
+			>
+
+			$<$<COMPILE_LANGUAGE:CUDA>:
+				--use_fast_math
+				--extended-lambda
+				-Xcudafe
+				--diag_suppress=esa_on_defaulted_function_ignored
+				-Wno-deprecated-gpu-targets
+			>
+
+			$<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
+				-Xcompiler=-Wno-gnu-line-marker
+			>
+
+			$<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CXX_COMPILER_ID:MSVC>>:
+				-Xcompiler=/Zc:preprocessor
+			>
+		)
+
+		target_compile_definitions(vtx_renderer PRIVATE VTX_CUDA_ENABLED)
 	endif()
-	target_include_directories(vtx_renderer PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../vendor/cuda_helper")
-
-	set_target_properties(vtx_renderer PROPERTIES
-		CUDA_ARCHITECTURES "${VTX_CUDA_ARCH}"
-		CUDA_SEPARABLE_COMPILATION ON
-		CUDA_RESOLVE_DEVICE_SYMBOLS ON
-		CUDA_STANDARD 20
-	)
-	target_compile_options(vtx_renderer PRIVATE 
-    $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CONFIG:Debug>>:
-        --generate-line-info
-    >
-
-    $<$<COMPILE_LANGUAGE:CUDA>:
-        --use_fast_math
-        --extended-lambda
-        -Xcudafe
-        --diag_suppress=esa_on_defaulted_function_ignored
-        -Wno-deprecated-gpu-targets
-    >
-
-	$<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
-		-Xcompiler=-Wno-gnu-line-marker
-	>
-
-    $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CXX_COMPILER_ID:MSVC>>:
-        -Xcompiler=/Zc:preprocessor
-    >
-)
-	target_compile_definitions(vtx_renderer PRIVATE VTX_CUDA_ENABLED)
 endif()
 
 # Tests.
@@ -102,6 +88,7 @@ file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_renderer_test ${TESTS})
 set_property(TARGET vtx_renderer_test PROPERTY FOLDER "test")
 vtx_configure_target(vtx_renderer_test)
+vtx_link_cuda(vtx_renderer_test)
 
 target_link_libraries(vtx_renderer PUBLIC vtx_util::vtx_util)
 target_link_libraries(vtx_renderer PUBLIC vtx_core::vtx_core)
