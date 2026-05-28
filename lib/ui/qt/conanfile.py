@@ -15,13 +15,27 @@ def _cmake_path(path: str) -> str:
 def _linux_runtime_lib_patterns() -> tuple[str, ...]:
     return (
         "libQt6Core.so*",
-        "libQt6DBus.so*",
         "libQt6Gui.so*",
+        "libQt6Widgets.so*",
         "libQt6Network.so*",
         "libQt6OpenGL.so*",
-        "libQt6WaylandClient.so*",
-        "libQt6Widgets.so*",
+        "libQt6OpenGLWidgets.so*",
+
+        "libQt6DBus.so*",
         "libQt6XcbQpa.so*",
+        "libQt6WaylandClient.so*",
+        "libQt6WaylandCompositor.so*",
+
+        "libQt6Qml.so*",
+        "libQt6QmlMeta.so*",
+        "libQt6QmlModels.so*",
+        "libQt6QmlWorkerScript.so*",
+        "libQt6Quick.so*",
+
+        "libQt6Xml.so*",
+        "libQt6Concurrent.so*",
+        "libQt6PrintSupport.so*",
+        "libQt6Sql.so*",
     )
 
 
@@ -146,6 +160,7 @@ def config_options_qt(p_conanFile : ConanFile):
     if p_conanFile.settings.os == "Linux":
             p_conanFile.options["qt"].opengl = "desktop" # forced by egl.
             p_conanFile.options["qt"].qtwayland = True
+            p_conanFile.options["qt"].qtdeclarative = True
             p_conanFile.options["qt"].with_x11 = True
             p_conanFile.options["qt"].with_egl = True # forced by wayland.
             p_conanFile.options["qt"].with_dbus = True
