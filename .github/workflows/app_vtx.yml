@@ -53,11 +53,11 @@ on:
       cuda_version:
         description: 'CUDA version'
         required: false
-        default: '13.2.0'
+        default: '12.9.0'
       cuda_arch:
         description: 'Cuda architectures'
         required: false
-        default: "52;61;75;80;86;87;89;90;100;120"
+        default: "52;61;75;80;86;87;89;90"
       python_version:
         description: 'Python version (override)'
         required: false
