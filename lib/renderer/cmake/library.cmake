@@ -8,6 +8,7 @@ vtx_configure_target(vtx_renderer)
 
 # Cuda.
 set(VTX_CUDA_ENABLED OFF)
+include(CheckLanguage)
 check_language(CUDA)
 if(CMAKE_CUDA_COMPILER)
 	enable_language(CUDA)
