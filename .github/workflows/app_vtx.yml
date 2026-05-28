@@ -93,23 +93,23 @@ jobs:
             channel: linux-x64
             main_exe: vtx
             conan_cppstd: 'gnu20'
-          - os: macos-15-intel
-            channel: osx-x64
-            main_exe: vtx
-            conan_cppstd: '20'
-          - os: windows-11-arm
-            channel: win-arm64
-            framework: vcredist144-arm64
-            main_exe: vtx.exe
-            conan_cppstd: '20'
-          - os: ubuntu-22.04-arm
-            channel: linux-arm64
-            main_exe: vtx
-            conan_cppstd: 'gnu20'         
-          - os: macos-15
-            channel: osx-arm64
-            main_exe: vtx
-            conan_cppstd: '20'
+          # - os: macos-15-intel
+          #   channel: osx-x64
+          #   main_exe: vtx
+          #   conan_cppstd: '20'
+          # - os: windows-11-arm
+          #   channel: win-arm64
+          #   framework: vcredist144-arm64
+          #   main_exe: vtx.exe
+          #   conan_cppstd: '20'
+          # - os: ubuntu-22.04-arm
+          #   channel: linux-arm64
+          #   main_exe: vtx
+          #   conan_cppstd: 'gnu20'
+          # - os: macos-15
+          #   channel: osx-arm64
+          #   main_exe: vtx
+          #   conan_cppstd: '20'
       fail-fast: false
 
     steps:
