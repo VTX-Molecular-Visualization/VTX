@@ -17,6 +17,10 @@ add_executable(vtx ${SOURCES} ${RESOURCES})
 vtx_configure_target(vtx)
 
 if(UNIX AND NOT APPLE)
+    target_link_options(vtx PRIVATE "LINKER:--no-as-needed")
+endif()
+
+if(UNIX AND NOT APPLE)
 	set_target_properties(vtx PROPERTIES BUILD_RPATH "$ORIGIN" INSTALL_RPATH "$ORIGIN")
 endif()
 
