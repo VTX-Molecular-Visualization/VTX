@@ -40,13 +40,31 @@ endfunction()
 function(_vtx_qt_linux_runtime_lib_patterns out_var)
 	set(${out_var}
 		"libQt6Core.so*"
+		"libQt6Concurrent.so*"
 		"libQt6DBus.so*"
 		"libQt6Gui.so*"
 		"libQt6Network.so*"
 		"libQt6OpenGL.so*"
+		"libQt6OpenGLWidgets.so*"
+		"libQt6PrintSupport.so*"
+		"libQt6Qml.so*"
+		"libQt6QmlMeta.so*"
+		"libQt6QmlModels.so*"
+		"libQt6QmlWorkerScript.so*"
+		"libQt6Quick.so*"
+		"libQt6QuickControls2.so*"
+		"libQt6QuickShapes.so*"
+		"libQt6QuickTemplates2.so*"
+		"libQt6QuickTest.so*"
+		"libQt6QuickWidgets.so*"
+		"libQt6ShaderTools.so*"
+		"libQt6Sql.so*"
+		"libQt6Test.so*"
 		"libQt6WaylandClient.so*"
+		"libQt6WaylandCompositor.so*"
 		"libQt6Widgets.so*"
 		"libQt6XcbQpa.so*"
+		"libQt6Xml.so*"
 		PARENT_SCOPE
 	)
 endfunction()

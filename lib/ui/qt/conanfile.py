@@ -31,11 +31,18 @@ def _linux_runtime_lib_patterns() -> tuple[str, ...]:
         "libQt6QmlModels.so*",
         "libQt6QmlWorkerScript.so*",
         "libQt6Quick.so*",
+        "libQt6QuickControls2.so*",
+        "libQt6QuickShapes.so*",
+        "libQt6QuickTemplates2.so*",
+        "libQt6QuickTest.so*",
+        "libQt6QuickWidgets.so*",
+        "libQt6ShaderTools.so*",
 
         "libQt6Xml.so*",
         "libQt6Concurrent.so*",
         "libQt6PrintSupport.so*",
         "libQt6Sql.so*",
+        "libQt6Test.so*",
     )
 
 
@@ -161,6 +168,7 @@ def config_options_qt(p_conanFile : ConanFile):
             p_conanFile.options["qt"].opengl = "desktop" # forced by egl.
             p_conanFile.options["qt"].qtwayland = True
             p_conanFile.options["qt"].qtdeclarative = True
+            p_conanFile.options["qt"].qtshadertools = True
             p_conanFile.options["qt"].with_x11 = True
             p_conanFile.options["qt"].with_egl = True # forced by wayland.
             p_conanFile.options["qt"].with_dbus = True
