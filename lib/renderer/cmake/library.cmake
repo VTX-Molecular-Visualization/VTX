@@ -9,18 +9,12 @@ vtx_link_cuda(vtx_renderer)
 
 # Cuda.
 set(VTX_CUDA_ENABLED OFF)
-include(CheckLanguage)
 check_language(CUDA)
 if(CMAKE_CUDA_COMPILER)
 	enable_language(CUDA)
 	find_package(CUDAToolkit)
 	if(CUDAToolkit_FOUND)
 		set(VTX_CUDA_ENABLED ON)
-
-		target_link_libraries(vtx_renderer PUBLIC CUDA::cudart)
-		if(TARGET CUDA::cudadevrt)
-			target_link_libraries(vtx_renderer PUBLIC CUDA::cudadevrt)
-		endif()
 		target_include_directories(vtx_renderer PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../vendor/cuda_helper")
 
 		set_target_properties(vtx_renderer PROPERTIES
@@ -99,7 +93,6 @@ file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_renderer_test ${TESTS})
 set_property(TARGET vtx_renderer_test PROPERTY FOLDER "test")
 vtx_configure_target(vtx_renderer_test)
-vtx_link_cuda(vtx_renderer_test)
 
 target_link_libraries(vtx_renderer PUBLIC vtx_util::vtx_util)
 target_link_libraries(vtx_renderer PUBLIC vtx_core::vtx_core)
@@ -108,6 +101,8 @@ target_link_libraries(vtx_renderer_test PRIVATE vtx_core::vtx_core)
 
 target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer::vtx_renderer)
 target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
+
+vtx_link_cuda(vtx_renderer_test)
 
 include(CTest)
 include(Catch)

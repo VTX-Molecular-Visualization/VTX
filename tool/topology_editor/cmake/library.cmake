@@ -17,9 +17,6 @@ file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_tool_topology_editor_test ${SOURCES_TEST})
 set_property(TARGET vtx_tool_topology_editor_test PROPERTY FOLDER "test")
 vtx_configure_target(vtx_tool_topology_editor_test)
-if (VTX_RENDERER)
-	vtx_link_cuda(vtx_tool_topology_editor_test)
-endif()
 
 # Link internal dependencies.
 target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_util::vtx_util)
@@ -30,9 +27,15 @@ target_link_libraries(vtx_tool_topology_editor_test PRIVATE vtx_app::vtx_app)
 # Link tests.
 target_link_libraries(vtx_tool_topology_editor_test PRIVATE vtx_tool_topology_editor::vtx_tool_topology_editor)
 target_link_libraries(vtx_tool_topology_editor_test PRIVATE Catch2::Catch2WithMain)
+
+if (VTX_RENDERER)
+	vtx_link_cuda(vtx_tool_topology_editor_test)
+endif()
+
 if (VTX_PYTHON_BINDING)
 	vtx_python_binding_copy_runtime(vtx_tool_topology_editor_test)
 endif()
+
 vtx_qt_copy_runtime(vtx_tool_topology_editor_test)
 
 include(CTest)
