@@ -77,7 +77,7 @@ class VTXRecipe(ConanFile):
         self.requires("nlohmann_json/3.12.0")
         self.requires("cpr/1.14.2")
         self.requires("catch2/3.14.0")
-        self.requires("chemfiles/2026.02.4")
+        self.requires("chemfiles/2026.02.5")
         self.requires("argparse/3.2")
         if self.options.renderer:
             self.requires("sdl/3.4.0")
