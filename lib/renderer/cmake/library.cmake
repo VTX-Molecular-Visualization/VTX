@@ -5,7 +5,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/vtx_renderer_copy_shaders.cmake")
 add_library(vtx_renderer)
 add_library(vtx_renderer::vtx_renderer ALIAS vtx_renderer)
 vtx_configure_target(vtx_renderer)
-vtx_link_cuda(vtx_renderer)
 
 # Cuda.
 set(VTX_CUDA_ENABLED OFF)
@@ -102,6 +101,7 @@ target_link_libraries(vtx_renderer_test PRIVATE vtx_core::vtx_core)
 target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer::vtx_renderer)
 target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
 
+vtx_link_cuda(vtx_renderer)
 vtx_link_cuda(vtx_renderer_test)
 
 include(CTest)
