@@ -14,10 +14,19 @@
 #include <util/types.hpp>
 #include <vector>
 //
+#include <app/action/action_manager.hpp>
+#include <app/action/io.hpp>
+#include <app/services.hpp>
 #include <tool/mdprep/gateway/engine_job_manager.hpp>
+#include <util/filesystem.hpp>
 
-TEST_CASE( "VTX_TOOL_MdPrep - test", "[test]" )
+TEST_CASE( "VTX_TOOL_MdPrep - integration", "[integration]" )
 {
+	VTX::App::Fixture f;
+	VTX::App::ACTION().execute<VTX::App::Action::IO::LoadSystem>(
+		VTX::Util::Filesystem::getExecutableDir() / "data" / "2qwo.nolig.pdb"
+	);
+
 	/*
 	const VTX::FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
 	std::filesystem::create_directory( path );
