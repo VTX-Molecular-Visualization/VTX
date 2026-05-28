@@ -9,12 +9,18 @@ vtx_link_cuda(vtx_renderer)
 
 # Cuda.
 set(VTX_CUDA_ENABLED OFF)
+include(CheckLanguage)
 check_language(CUDA)
 if(CMAKE_CUDA_COMPILER)
 	enable_language(CUDA)
 	find_package(CUDAToolkit)
 	if(CUDAToolkit_FOUND)
 		set(VTX_CUDA_ENABLED ON)
+
+		target_link_libraries(vtx_renderer PUBLIC CUDA::cudart)
+		if(TARGET CUDA::cudadevrt)
+			target_link_libraries(vtx_renderer PUBLIC CUDA::cudadevrt)
+		endif()
 		target_include_directories(vtx_renderer PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../vendor/cuda_helper")
 
 		set_target_properties(vtx_renderer PROPERTIES
