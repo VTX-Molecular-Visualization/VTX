@@ -26,7 +26,7 @@ on:
         cuda_arch:
           description: 'Cuda architectures'
           required: false
-          default: "75;80;86;87;89;90;100;120"
+          default: "52;61;75;80;86;87;89;90;100;120"
 
 env:
   LIB_DIR: ${{github.workspace}}/lib
