@@ -117,7 +117,7 @@ namespace VTX::UI::QT::Widget
 			auto * groupBoxTransform = new QGroupBox( "Transform", this );
 			auto * layout			 = new QVBoxLayout( groupBoxTransform );
 
-			_transform = new Transform( this );
+			_transform = new Transform( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
 			_transform->setTransform( transform );
 
 			connect(

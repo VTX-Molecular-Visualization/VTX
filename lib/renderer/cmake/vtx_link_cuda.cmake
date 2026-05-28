@@ -9,12 +9,6 @@ function(vtx_link_cuda p_target)
 			if(TARGET CUDA::cudadevrt)
 				target_link_libraries(${p_target} PRIVATE CUDA::cudadevrt)
 			endif()
-			if(UNIX AND NOT APPLE)
-				set_target_properties(${p_target} PROPERTIES
-					LINKER_LANGUAGE CUDA
-					CUDA_STANDARD 20
-				)
-			endif()
 		else()
 			message(STATUS "CUDA toolkit not found")
 		endif()
