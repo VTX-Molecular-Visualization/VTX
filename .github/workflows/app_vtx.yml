@@ -290,7 +290,7 @@ jobs:
       run: |
         vpk pack \
           --packId VTX \
-          --packVersion "${{ env.PACKAGE_VERSION }}+${{ matrix.channel }}" \
+          --packVersion "${{ env.PACKAGE_VERSION }}-beta+${{ matrix.channel }}" \
           --packTitle "VTX" \
           --packAuthors "VTX Team" \
           --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
@@ -309,7 +309,7 @@ jobs:
       run: |
         vpk pack \
           --packId VTX \
-          --packVersion "${{ env.PACKAGE_VERSION }}+${{ matrix.channel }}" \
+          --packVersion "${{ env.PACKAGE_VERSION }}-beta+${{ matrix.channel }}" \
           --packTitle "VTX" \
           --packAuthors "VTX Team" \
           --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
