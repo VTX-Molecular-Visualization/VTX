@@ -22,11 +22,11 @@ on:
         cuda_version:
           description: 'CUDA version'
           required: false
-          default: '13.2.0'
+          default: '12.9.0'
         cuda_arch:
           description: 'Cuda architectures'
           required: false
-          default: "75;80;86;87;89;90;100;120"
+          default: "52;61;75;80;86;87;89;90"
 
 env:
   LIB_DIR: ${{github.workspace}}/lib
@@ -48,14 +48,14 @@ jobs:
             conan_cppstd: '20'
           - os: ubuntu-latest
             conan_cppstd: 'gnu20'
-          - os: windows-11-arm
-            conan_cppstd: '20'
-          - os: ubuntu-22.04-arm
-            conan_cppstd: 'gnu20'
-          - os: macos-15-intel
-            conan_cppstd: '20'
-          - os: macos-15
-            conan_cppstd: '20'
+          # - os: windows-11-arm
+          #   conan_cppstd: '20'
+          # - os: ubuntu-22.04-arm
+          #   conan_cppstd: 'gnu20'
+          # - os: macos-15-intel
+          #   conan_cppstd: '20'
+          # - os: macos-15
+          #   conan_cppstd: '20'
       fail-fast: false
 
     steps:

@@ -27,6 +27,7 @@ namespace VTX::App::System
 			std::shared_ptr<_Data> _ptr
 				= nullptr; // The shared ptr aims to allow the copy without actually copying the IO resource
 		};
+
 		struct TrajectoryFullBufferReader::_Data
 		{
 			TrajectoryFullBuffer * _dataPtr;
@@ -44,6 +45,7 @@ namespace VTX::App::System
 		) : _ptr( std::shared_ptr<_Data>( new _Data { &p_traj, std::move( reader ) }, Deleter() ) )
 		{
 		}
+
 		uint TrajectoryFullBufferReader::operator()(
 			VTX::Util::StopToken	p_stopToken,
 			Threading::BaseThread & p_thr
@@ -53,14 +55,16 @@ namespace VTX::App::System
 			_ptr->reader.set( p_stopToken );
 			const size_t frameCount = _ptr->reader.frameCount();
 
-			for ( size_t it_currentFrameIndex = 1; it_currentFrameIndex < frameCount; it_currentFrameIndex++ )
+			for ( uint it_currentFrameIndex = 1; it_currentFrameIndex < frameCount; it_currentFrameIndex++ )
 			{
 				_ptr->_dataPtr->frameCollection.emplace_back();
 				_ptr->reader.get( it_currentFrameIndex, _ptr->_dataPtr->frameCollection.back() );
 
 				_ptr->_dataPtr->lastFrameAvailable = it_currentFrameIndex;
 				if ( p_stopToken.stop_requested() )
+				{
 					break;
+				}
 			}
 			return 0;
 		}
@@ -77,10 +81,10 @@ namespace VTX::App::System
 		p_trajectory.genericData.currentFrameIndex = 0;
 		p_trajectory.lastFrameAvailable			   = 0;
 	}
+
 	void prepare( TrajectorySingleFrame & p_trajectory, IO::SystemReader && p_loader ) noexcept
-	{
-		p_loader.get( p_trajectory.atomPositions );
-	}
+	{ p_loader.get( p_trajectory.atomPositions ); }
+
 	void startAsyncTrajectoryWork( const Entity & p_entity, PendingSystem & p_pendingData ) noexcept
 	{
 		if ( auto traj = REG().try_get<TrajectoryFullBuffer>( p_entity ) )

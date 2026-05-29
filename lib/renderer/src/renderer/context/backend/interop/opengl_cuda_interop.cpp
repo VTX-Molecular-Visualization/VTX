@@ -52,7 +52,7 @@ namespace VTX::Renderer::Context::Backend::Interop
 
 	OpenGLCudaInterop::~OpenGLCudaInterop() { clear(); }
 
-	void OpenGLCudaInterop::refreshAvailability()
+	void OpenGLCudaInterop::refreshAvailability( const uint p_probeBuffer )
 	{
 #ifdef VTX_CUDA_ENABLED
 		_impl->availability = { true, false };
@@ -62,17 +62,30 @@ namespace VTX::Renderer::Context::Backend::Interop
 		{
 			return;
 		}
-		_impl->availability.runtime = true;
-
-		uint cudaGlDeviceCount = 0;
-		int	 cudaGlDevices[ 16 ] {};
-		if ( cudaGLGetDevices( &cudaGlDeviceCount, cudaGlDevices, 16, cudaGLDeviceListAll ) != cudaSuccess )
+		if ( p_probeBuffer == 0 )
 		{
 			return;
 		}
 
-		// No device with CUDA-OpenGL interop found.
-		_impl->availability.runtime = cudaGlDeviceCount > 0;
+		cudaGraphicsResource_t resource = nullptr;
+		if ( cudaGraphicsGLRegisterBuffer( &resource, p_probeBuffer, cudaGraphicsRegisterFlagsNone ) != cudaSuccess )
+		{
+			return;
+		}
+
+		void * devicePtr = nullptr;
+		size_t size		= 0;
+		const bool mapped = cudaGraphicsMapResources( 1, &resource ) == cudaSuccess;
+		if ( mapped && cudaGraphicsResourceGetMappedPointer( &devicePtr, &size, resource ) == cudaSuccess )
+		{
+			_impl->availability.runtime = devicePtr != nullptr && size > 0;
+		}
+		if ( mapped )
+		{
+			cudaGraphicsUnmapResources( 1, &resource );
+		}
+
+		cudaGraphicsUnregisterResource( resource );
 #else
 		_impl->availability = {};
 #endif

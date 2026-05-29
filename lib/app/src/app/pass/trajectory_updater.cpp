@@ -3,7 +3,7 @@
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/threading/thread_manager.hpp"
-#include <renderer/renderer.hpp>
+#include <algorithm>
 
 namespace VTX::App::Pass
 {
@@ -83,6 +83,14 @@ namespace VTX::App::Pass
 		{ return p_.genericData; }
 
 		/**
+		 * @brief Update the trajectory to request a realistic frame, using availability date
+		 * @param p_expectedNextStep Frame that should be used if requirements are met
+		 * @param p_traj trajectory to by modified
+		 */
+		inline void setRequestedFrameIndex( const uint & p_expectedNextStep, System::TrajectoryFullBuffer & p_traj )
+		{ p_traj.genericData.requestedFrameIndex = std::min( p_expectedNextStep, p_traj.lastFrameAvailable ); }
+
+		/**
 		 * @brief Update frame for every trajectory of the input type
 		 * @tparam TrajectoryT type of trajectory
 		 * @param p_elapsedTime Time since program start
@@ -124,7 +132,7 @@ namespace VTX::App::Pass
 						); // std::min is for the exhaustive algorithm. It means that if it is 0, no increment is made.
 						   // If >=1, only one increment is made. A predictive algorithm would be not using std::min
 
-						trajGenericData.requestedFrameIndex = nextStep;
+						setRequestedFrameIndex( nextStep, traj );
 						if ( tryUpdateFrame( it_entity, traj ) )
 						{
 							trajGenericData.currentFrameIndex	= trajGenericData.requestedFrameIndex;

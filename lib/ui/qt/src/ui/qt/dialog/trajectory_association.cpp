@@ -31,9 +31,13 @@ namespace VTX::UI::QT::Dialog
 
 		for ( auto & it_entity : App::REG().view<IO::Metadata>() )
 		{
-			auto &	metadata	  = App::REG().get<IO::Metadata>( it_entity );
-			QString displayString = QString::fromStdString( metadata.name );
-			_cbSystem->addItem( displayString, QVariant::fromValue( it_entity ) );
+			auto & metadata = App::REG().get<IO::Metadata>( it_entity );
+
+			QString systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
+									 ? QString::fromStdString( metadata.path.stem().string() )
+									 : QString::fromStdString( metadata.pdbIDCode );
+
+			_cbSystem->addItem( systemName, QVariant::fromValue( it_entity ) );
 		}
 		_cbSystem->addItem( "New structure", QVariant::fromValue( VTX::Entity( entt::null ) ) );
 
@@ -54,10 +58,13 @@ namespace VTX::UI::QT::Dialog
 			{
 				Entity entity = _cbSystem->currentData().value<Entity>();
 				if ( entity == entt::null )
-
+				{
 					App::ACTION().execute<App::Action::IO::LoadSystem>( _path );
+				}
 				else
+				{
 					App::ACTION().execute<App::Action::IO::AssociateTrajectory>( _path, entity );
+				}
 			}
 		);
 	}

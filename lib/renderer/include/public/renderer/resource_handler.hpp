@@ -194,7 +194,7 @@ namespace VTX::Renderer
 			for ( const Desc::Handle handle : _invalids )
 			{
 				erase( handle );
-				VTX_TRACE( "Purging resource handle {}", handle );
+				// VTX_TRACE( "Purging resource handle {}", handle );
 			}
 			_invalids.clear();
 		}

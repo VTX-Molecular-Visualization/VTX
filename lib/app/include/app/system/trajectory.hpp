@@ -15,6 +15,7 @@ namespace VTX::App::Threading
 {
 	class BaseThread;
 }
+
 namespace VTX::IO::Writer
 {
 	class TrajectoryFrameGetter;
@@ -67,8 +68,8 @@ namespace VTX::App::System
 	{
 		GenericTrajectory				genericData;
 		std::vector<std::vector<Vec3f>> frameCollection;
-		size_t lastFrameAvailable { TypeMax<size_t> }; // Updated by the filling thread. Value is MAX
-													   // when no frame are available.
+		uint lastFrameAvailable { TypeMax<uint> }; // Updated by the filling thread. Value is MAX
+												   // when no frame are available.
 		Threading::BaseThread::ID threadId;
 	};
 
@@ -80,6 +81,7 @@ namespace VTX::App::System
 		uint lowerBoundIndex  = 0;
 		uint higherBoundIndex = 0;
 	};
+
 	void get( const Entity &, AvailableFrames & ) noexcept;
 
 	/**

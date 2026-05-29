@@ -168,29 +168,29 @@ namespace VTX::Renderer
 
 		void _logDrawRanges( const Desc::BufferRef & p_ref, const std::vector<Desc::DrawIndirectRecord> & p_records )
 		{
-			if ( p_ref.chunk )
-			{
-				VTX_DEBUG( "[DRAW_RANGES] {} chunk={} count={}", p_ref.key, *p_ref.chunk, p_records.size() );
-			}
-			else
-			{
-				VTX_DEBUG( "[DRAW_RANGES] {} count={}", p_ref.key, p_records.size() );
-			}
-
-			for ( size_t i = 0; i < p_records.size(); ++i )
-			{
-				const Desc::DrawIndirectRecord & record = p_records[ i ];
-				VTX_TRACE(
-					"[DRAW_RANGES] {}[{}] vertexCount={} instanceCount={} firstVertex={} baseInstance={} idModel={}",
-					p_ref.key,
-					i,
-					record.command.vertexCount,
-					record.command.instanceCount,
-					record.command.firstVertex,
-					record.command.baseInstance,
-					record.idModel
-				);
-			}
+			// if ( p_ref.chunk )
+			// {
+			// 	VTX_DEBUG( "[DRAW_RANGES] {} chunk={} count={}", p_ref.key, *p_ref.chunk, p_records.size() );
+			// }
+			// else
+			// {
+			// 	VTX_DEBUG( "[DRAW_RANGES] {} count={}", p_ref.key, p_records.size() );
+			// }
+			//
+			// for ( size_t i = 0; i < p_records.size(); ++i )
+			// {
+			// 	const Desc::DrawIndirectRecord & record = p_records[ i ];
+			// 	VTX_TRACE(
+			// 		"[DRAW_RANGES] {}[{}] vertexCount={} instanceCount={} firstVertex={} baseInstance={} idModel={}",
+			// 		p_ref.key,
+			// 		i,
+			// 		record.command.vertexCount,
+			// 		record.command.instanceCount,
+			// 		record.command.firstVertex,
+			// 		record.command.baseInstance,
+			// 		record.idModel
+			// 	);
+			// }
 		}
 
 		void _logDrawRanges(
@@ -198,32 +198,32 @@ namespace VTX::Renderer
 			const std::vector<Desc::DrawIndexedIndirectRecord> & p_records
 		)
 		{
-			if ( p_ref.chunk )
-			{
-				VTX_DEBUG( "[DRAW_RANGES] {} chunk={} count={}", p_ref.key, *p_ref.chunk, p_records.size() );
-			}
-			else
-			{
-				VTX_DEBUG( "[DRAW_RANGES] {} count={}", p_ref.key, p_records.size() );
-			}
-
-			for ( size_t i = 0; i < p_records.size(); ++i )
-			{
-				const Desc::DrawIndexedIndirectRecord & record = p_records[ i ];
-				VTX_TRACE(
-					"[DRAW_RANGES] {}[{}] indexCount={} instanceCount={} firstIndex={} baseVertex={} "
-					"baseInstance={} idModel={} data0={}",
-					p_ref.key,
-					i,
-					record.command.indexCount,
-					record.command.instanceCount,
-					record.command.firstIndex,
-					record.command.baseVertex,
-					record.command.baseInstance,
-					record.idModel,
-					record.padding0
-				);
-			}
+			// if ( p_ref.chunk )
+			// {
+			// 	VTX_DEBUG( "[DRAW_RANGES] {} chunk={} count={}", p_ref.key, *p_ref.chunk, p_records.size() );
+			// }
+			// else
+			// {
+			// 	VTX_DEBUG( "[DRAW_RANGES] {} count={}", p_ref.key, p_records.size() );
+			// }
+			//
+			// for ( size_t i = 0; i < p_records.size(); ++i )
+			// {
+			// 	const Desc::DrawIndexedIndirectRecord & record = p_records[ i ];
+			// 	VTX_TRACE(
+			// 		"[DRAW_RANGES] {}[{}] indexCount={} instanceCount={} firstIndex={} baseVertex={} "
+			// 		"baseInstance={} idModel={} data0={}",
+			// 		p_ref.key,
+			// 		i,
+			// 		record.command.indexCount,
+			// 		record.command.instanceCount,
+			// 		record.command.firstIndex,
+			// 		record.command.baseVertex,
+			// 		record.command.baseInstance,
+			// 		record.idModel,
+			// 		record.padding0
+			// 	);
+			// }
 		}
 
 		[[nodiscard]] BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndirectRecord> & p_records )

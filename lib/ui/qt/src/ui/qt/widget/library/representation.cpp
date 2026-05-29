@@ -159,11 +159,21 @@ namespace VTX::UI::QT::Widget::Library
 		);
 
 		// Enable SES if available.
+		_refreshCUDAState();
+		App::RENDERER().onReady += [ this ]( const VTX::Renderer::StructInfos & ) { _refreshCUDAState(); };
+	}
+
+	void Representation::_refreshCUDAState()
+	{
 		const bool cudaAvailable = App::RENDERER().getInfos().cudaAvailable;
 		_groupboxSes->setEnabled( cudaAvailable );
 		if ( not cudaAvailable )
 		{
 			_groupboxSes->setTitle( "SES (CUDA not available)" );
+		}
+		else
+		{
+			_groupboxSes->setTitle( "SES" );
 		}
 	}
 

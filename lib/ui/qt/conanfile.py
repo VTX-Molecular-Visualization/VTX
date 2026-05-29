@@ -15,13 +15,34 @@ def _cmake_path(path: str) -> str:
 def _linux_runtime_lib_patterns() -> tuple[str, ...]:
     return (
         "libQt6Core.so*",
-        "libQt6DBus.so*",
         "libQt6Gui.so*",
+        "libQt6Widgets.so*",
         "libQt6Network.so*",
         "libQt6OpenGL.so*",
-        "libQt6WaylandClient.so*",
-        "libQt6Widgets.so*",
+        "libQt6OpenGLWidgets.so*",
+
+        "libQt6DBus.so*",
         "libQt6XcbQpa.so*",
+        "libQt6WaylandClient.so*",
+        "libQt6WaylandCompositor.so*",
+
+        "libQt6Qml.so*",
+        "libQt6QmlMeta.so*",
+        "libQt6QmlModels.so*",
+        "libQt6QmlWorkerScript.so*",
+        "libQt6Quick.so*",
+        "libQt6QuickControls2.so*",
+        "libQt6QuickShapes.so*",
+        "libQt6QuickTemplates2.so*",
+        "libQt6QuickTest.so*",
+        "libQt6QuickWidgets.so*",
+        "libQt6ShaderTools.so*",
+
+        "libQt6Xml.so*",
+        "libQt6Concurrent.so*",
+        "libQt6PrintSupport.so*",
+        "libQt6Sql.so*",
+        "libQt6Test.so*",
     )
 
 
@@ -146,6 +167,8 @@ def config_options_qt(p_conanFile : ConanFile):
     if p_conanFile.settings.os == "Linux":
             p_conanFile.options["qt"].opengl = "desktop" # forced by egl.
             p_conanFile.options["qt"].qtwayland = True
+            p_conanFile.options["qt"].qtdeclarative = True
+            p_conanFile.options["qt"].qtshadertools = True
             p_conanFile.options["qt"].with_x11 = True
             p_conanFile.options["qt"].with_egl = True # forced by wayland.
             p_conanFile.options["qt"].with_dbus = True
@@ -214,7 +237,7 @@ class VTXUiQtRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_io/1.0")
         self.requires("vtx_python_binding/1.0")
-        self.requires("qt/6.11.0", transitive_headers=True)
+        self.requires("qt/6.11.1", transitive_headers=True)
         if self.settings.os == "Linux":
             self.requires("fontconfig/2.17.1", override=True)
             self.requires("freetype/2.14.1", force=True)

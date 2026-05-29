@@ -256,7 +256,13 @@ namespace VTX::Renderer::Context::Backend
 
 		_getOpenglInfos();
 		_openglInfos.print();
-		_cudaInterop.refreshAvailability();
+
+		GLuint cudaInteropProbeBuffer = 0;
+		glCreateBuffers( 1, &cudaInteropProbeBuffer );
+		const uint32_t cudaInteropProbeData = 0;
+		glNamedBufferData( cudaInteropProbeBuffer, sizeof( cudaInteropProbeData ), &cudaInteropProbeData, GL_DYNAMIC_DRAW );
+		_cudaInterop.refreshAvailability( cudaInteropProbeBuffer );
+		glDeleteBuffers( 1, &cudaInteropProbeBuffer );
 
 		glViewport( 0, 0, int32_t( p_width ), int32_t( p_height ) );
 		glPatchParameteri( GL_PATCH_VERTICES, 4 );
