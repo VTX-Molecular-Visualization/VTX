@@ -13,13 +13,13 @@ namespace VTX::IO::Writer
 	 * @brief Used in the context of a structural data export. Return whether the atom shall be included in the result
 	 * or not.
 	 */
-	using AtomFilter = std::function<bool( const VTX::Core::Struct::Topology &, const size_t & )>;
+	using AtomFilter = std::function<bool( const size_t & )>;
 
 	/**
 	 * @brief Convenient function used to create the default AtomFilter callable.
 	 * @return true
 	 */
-	inline bool returnTrue( const VTX::Core::Struct::Topology &, const size_t & ) noexcept { return true; }
+	inline bool returnTrue( const size_t & ) noexcept { return true; }
 
 	const AtomFilter g_takeAllAtoms = AtomFilter( &returnTrue ); // default argument for the write atom filter
 

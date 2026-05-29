@@ -3,14 +3,12 @@
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/threading/thread_manager.hpp"
-#include <renderer/renderer.hpp>
+#include <algorithm>
 
 namespace VTX::App::Pass
 {
 	TrajectoryUpdater::TrajectoryUpdater()
-	{
-		REG().on_destroy<System::TrajectoryFullBuffer>().connect<&TrajectoryUpdater::_onDestroyTrajectory>( this );
-	}
+	{ REG().on_destroy<System::TrajectoryFullBuffer>().connect<&TrajectoryUpdater::_onDestroyTrajectory>( this ); }
 
 	bool TrajectoryUpdater::_tryUpdateFrame( const Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept
 	{
@@ -66,9 +64,7 @@ namespace VTX::App::Pass
 		}
 
 		uint autoplayNextFrameCount( const System::GenericTrajectory & p_traj, const float p_elapsedTime ) noexcept
-		{
-			return static_cast<uint>( ( p_elapsedTime - p_traj.lastFrameUpdateTime ) / p_traj.playingSpeed );
-		}
+		{ return static_cast<uint>( ( p_elapsedTime - p_traj.lastFrameUpdateTime ) / p_traj.playingSpeed ); }
 
 		/**
 		 * @brief Return true if the frame should be updated.
@@ -84,9 +80,15 @@ namespace VTX::App::Pass
 
 		template<typename TrajectoryT>
 		System::GenericTrajectory & genericData( TrajectoryT & p_ )
-		{
-			return p_.genericData;
-		}
+		{ return p_.genericData; }
+
+		/**
+		 * @brief Update the trajectory to request a realistic frame, using availability date
+		 * @param p_expectedNextStep Frame that should be used if requirements are met
+		 * @param p_traj trajectory to by modified
+		 */
+		inline void setRequestedFrameIndex( const uint & p_expectedNextStep, System::TrajectoryFullBuffer & p_traj )
+		{ p_traj.genericData.requestedFrameIndex = std::min( p_expectedNextStep, p_traj.lastFrameAvailable ); }
 
 		/**
 		 * @brief Update frame for every trajectory of the input type
@@ -98,7 +100,6 @@ namespace VTX::App::Pass
 		{
 			for ( Entity it_entity : REG().view<TrajectoryT>() )
 			{
-				const TrajectoryT &			traj		   = REG().get<TrajectoryT>( it_entity );
 				System::GenericTrajectory * genericTrajPtr = nullptr;
 				System::get( it_entity, genericTrajPtr );
 				if ( genericTrajPtr == nullptr )
@@ -131,7 +132,7 @@ namespace VTX::App::Pass
 						); // std::min is for the exhaustive algorithm. It means that if it is 0, no increment is made.
 						   // If >=1, only one increment is made. A predictive algorithm would be not using std::min
 
-						trajGenericData.requestedFrameIndex = nextStep;
+						setRequestedFrameIndex( nextStep, traj );
 						if ( tryUpdateFrame( it_entity, traj ) )
 						{
 							trajGenericData.currentFrameIndex	= trajGenericData.requestedFrameIndex;

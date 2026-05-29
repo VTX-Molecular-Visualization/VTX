@@ -231,9 +231,11 @@ namespace VTX::UI::QT::Widget
 							 == App::System::E_SELECTION_STATE::FULL )
 						{
 							countAtom++;
+							auto originalIndex = topology.getAtomOriginalIndex( atom );
 							_list->addItem(
 								systemName + "/" + chainName + "/" + residueName + "/"
 								+ QString::fromStdString( topology.getAtomName( atom ) )
+								+ ( originalIndex ? QString::asprintf( ":%i", originalIndex.value() ) : "" )
 							);
 						}
 					}
