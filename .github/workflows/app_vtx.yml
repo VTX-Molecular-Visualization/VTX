@@ -53,11 +53,11 @@ on:
       cuda_version:
         description: 'CUDA version'
         required: false
-        default: '13.2.0'
+        default: '12.9.0'
       cuda_arch:
         description: 'Cuda architectures'
         required: false
-        default: "75;80;86;87;89;90;100;120"
+        default: "52;61;75;80;86;87;89;90"
       python_version:
         description: 'Python version (override)'
         required: false
@@ -93,23 +93,23 @@ jobs:
             channel: linux-x64
             main_exe: vtx
             conan_cppstd: 'gnu20'
-          - os: macos-15-intel
-            channel: osx-x64
-            main_exe: vtx
-            conan_cppstd: '20'
-          - os: windows-11-arm
-            channel: win-arm64
-            framework: vcredist144-arm64
-            main_exe: vtx.exe
-            conan_cppstd: '20'
-          - os: ubuntu-22.04-arm
-            channel: linux-arm64
-            main_exe: vtx
-            conan_cppstd: 'gnu20'         
-          - os: macos-15
-            channel: osx-arm64
-            main_exe: vtx
-            conan_cppstd: '20'
+          # - os: macos-15-intel
+          #   channel: osx-x64
+          #   main_exe: vtx
+          #   conan_cppstd: '20'
+          # - os: windows-11-arm
+          #   channel: win-arm64
+          #   framework: vcredist144-arm64
+          #   main_exe: vtx.exe
+          #   conan_cppstd: '20'
+          # - os: ubuntu-22.04-arm
+          #   channel: linux-arm64
+          #   main_exe: vtx
+          #   conan_cppstd: 'gnu20'
+          # - os: macos-15
+          #   channel: osx-arm64
+          #   main_exe: vtx
+          #   conan_cppstd: '20'
       fail-fast: false
 
     steps:

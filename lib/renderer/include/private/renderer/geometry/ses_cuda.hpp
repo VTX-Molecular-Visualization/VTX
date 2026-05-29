@@ -119,6 +119,7 @@ namespace VTX::Renderer::Geometry::SESDetail
 	void writeCudaConstruction( CudaConstruction &, const SesdfOutputBuffers & );
 	std::vector<uint32_t> readAtomIds( const CudaBufferView &, uint32_t );
 	void				  readConstructionVisibilityData( CudaConstruction &, SesdfVisibilityData & );
+	void				  releaseCachedCudaMemory();
 } // namespace VTX::Renderer::Geometry::SESDetail
 
 #endif

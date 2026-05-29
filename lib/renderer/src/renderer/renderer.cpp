@@ -348,7 +348,7 @@ namespace VTX::Renderer
 					);
 					if ( _geometries.ses.built( system ) )
 					{
-						_geometries.ses.invalidateForRecompute( system );
+						_geometries.ses.invalidateForRecompute( _context, system );
 						geometryRefreshSystems.insert( system );
 					}
 				}

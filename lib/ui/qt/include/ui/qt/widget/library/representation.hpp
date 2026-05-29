@@ -52,6 +52,7 @@ namespace VTX::UI::QT::Widget::Library
 		}
 
 		void _applyLogic( const VTX::Renderer::Representation & );
+		void _refreshCUDAState();
 	};
 
 } // namespace VTX::UI::QT::Widget::Library

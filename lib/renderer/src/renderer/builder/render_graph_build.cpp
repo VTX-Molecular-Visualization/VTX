@@ -11,7 +11,7 @@ namespace VTX::Renderer::Builder
 		const Geometries &	   p_geometries
 	)
 	{
-		Util::ScopedChrono timer( "[BUILDER] DefaultRenderGraph::build" );
+		// Util::ScopedChrono timer( "[BUILDER] DefaultRenderGraph::build" );
 
 		using namespace Desc;
 		using CylinderGeometry = VTX::Renderer::Geometry::Cylinder;
@@ -657,7 +657,7 @@ namespace VTX::Renderer::Builder
 		const Geometries &				p_geometries
 	)
 	{
-		Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::refreshGraph" );
+		// Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::refreshGraph" );
 
 		const PipelineConfig config = pipelineConfig( p_config );
 
@@ -675,7 +675,7 @@ namespace VTX::Renderer::Builder
 
 	bool RenderGraphRuntime::syncGeometryChunks( RenderGraph & p_graph, const Geometries & p_geometries )
 	{
-		Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::syncGeometryChunks" );
+		// Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::syncGeometryChunks" );
 
 		bool changed = false;
 
@@ -703,7 +703,7 @@ namespace VTX::Renderer::Builder
 		const uintptr_t			  p_contextPtr
 	)
 	{
-		Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::bindExternalPasses" );
+		// Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::bindExternalPasses" );
 
 		if ( not p_context.containsPass( Geometry::SES::PASS_COMPUTE ) )
 		{
@@ -715,7 +715,7 @@ namespace VTX::Renderer::Builder
 
 	void RenderGraphRuntime::markSESDirty( Context::ContextWrapper & p_context, const Geometries & p_geometries )
 	{
-		Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::markSESDirty" );
+		// Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::markSESDirty" );
 
 		if ( p_context.containsPass( Geometry::SES::PASS_COMPUTE ) && p_geometries.ses.hasPendingCompute() )
 		{
@@ -731,7 +731,7 @@ namespace VTX::Renderer::Builder
 		const uintptr_t			  p_externalContext
 	)
 	{
-		Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::rebuildCommandBuffer" );
+		// Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::rebuildCommandBuffer" );
 
 		p_context.build( p_queue, p_resources );
 		bindExternalPasses( p_context, p_externalFunction, p_externalContext );

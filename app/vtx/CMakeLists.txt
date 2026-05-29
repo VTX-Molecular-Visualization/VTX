@@ -53,21 +53,31 @@ endif()
 #  PATTERN "install" EXCLUDE
 #)
 
-# Copy python and cuda dlls.
+# Copy python libs.
 if(WIN32 AND VTX_PYTHON_BINDING)
 	vtx_install_target_files(vtx PATTERNS PATTERN "python*.dll")
 endif()
 
+# Copy cuda libs.
 include(CheckLanguage)
 check_language(CUDA)
-if (CMAKE_CUDA_COMPILER)
-	find_package(CUDAToolkit REQUIRED)
-	file(GLOB CUDA_DLLS "${CUDAToolkit_BIN_DIR}/cudart*.dll")
-	if(CUDA_DLLS)
-		install(FILES ${CUDA_DLLS} DESTINATION .)
-	else()
-		message(WARNING "No Cuda DLL found in: ${CUDAToolkit_BIN_DIR}")
-	endif()
+if(CMAKE_CUDA_COMPILER)
+    find_package(CUDAToolkit REQUIRED)
+    if(WIN32)
+        set(CUDA_RUNTIME_PATTERN "${CUDAToolkit_BIN_DIR}/cudart*.dll")
+    elseif(UNIX AND NOT APPLE)
+        set(CUDA_RUNTIME_PATTERN "${CUDAToolkit_LIBRARY_DIR}/libcudart.so*")
+    endif()
+
+    if(CUDA_RUNTIME_PATTERN)
+        file(GLOB CUDA_RUNTIME_FILES "${CUDA_RUNTIME_PATTERN}")
+
+        if(CUDA_RUNTIME_FILES)
+            install(FILES ${CUDA_RUNTIME_FILES} DESTINATION .)
+        else()
+            message(WARNING "No CUDA runtime found for pattern: ${CUDA_RUNTIME_PATTERN}")
+        endif()
+    endif()
 endif()
 
 # Include a lot of files from system32.
@@ -89,4 +99,4 @@ endif()
 #  endif()
 #]])
 
-include(CPack)
+#include(CPack)
