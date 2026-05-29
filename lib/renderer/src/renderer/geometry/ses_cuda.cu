@@ -626,4 +626,25 @@ namespace VTX::Renderer::Geometry::SESDetail
 			}
 		}
 	}
+
+	void releaseCachedCudaMemory()
+	{
+		int deviceId = 0;
+		if ( cudaGetDevice( &deviceId ) != cudaSuccess )
+		{
+			return;
+		}
+
+		cudaMemPool_t memPool {};
+		if ( cudaDeviceGetDefaultMemPool( &memPool, deviceId ) != cudaSuccess )
+		{
+			return;
+		}
+		if ( cudaDeviceSynchronize() != cudaSuccess )
+		{
+			return;
+		}
+
+		cudaMemPoolTrimTo( memPool, 0 );
+	}
 } // namespace VTX::Renderer::Geometry::SESDetail

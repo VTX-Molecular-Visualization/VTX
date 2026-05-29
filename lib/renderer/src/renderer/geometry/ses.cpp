@@ -275,13 +275,13 @@ namespace VTX::Renderer::Geometry
 
 			const Surface surface
 				= _getOrCreateSurface( SurfaceKey { p_handle, E_SES_COMPUTE_MODE::CATEGORY, uint32_t( category ) } );
-			VTX_DEBUG(
-				"SES category construction: {} surface={} atoms={} system={}",
-				Core::ChemDB::Category::TYPE_STR[ category ],
-				surface.id,
-				atomsByCategory[ category ].size(),
-				p_handle
-			);
+			// VTX_DEBUG(
+			// 	"SES category construction: {} surface={} atoms={} system={}",
+			// 	Core::ChemDB::Category::TYPE_STR[ category ],
+			// 	surface.id,
+			// 	atomsByCategory[ category ].size(),
+			// 	p_handle
+			// );
 			_constructSurface(
 				p_context,
 				p_data,
@@ -306,7 +306,7 @@ namespace VTX::Renderer::Geometry
 		std::span<const Index>	  p_atomIndices
 	)
 	{
-		Util::ScopedChrono chrono( "SES construct" );
+		// Util::ScopedChrono chrono( "SES construct" );
 
 		auto construction				 = std::make_unique<SurfaceConstruction>();
 		construction->surface			 = p_surface;
@@ -454,11 +454,13 @@ namespace VTX::Renderer::Geometry
 				catch ( const std::exception & p_e )
 				{
 					construction->markIncalculable();
+					SESDetail::releaseCachedCudaMemory();
 					VTX_WARNING( "Can not build SES for system: {}", p_e.what() );
 				}
 				catch ( ... )
 				{
 					construction->markIncalculable();
+					SESDetail::releaseCachedCudaMemory();
 					VTX_WARNING( "Can not build SES for system: unknown error" );
 				}
 
@@ -622,9 +624,13 @@ namespace VTX::Renderer::Geometry
 		}
 
 		_surfaces.bySystem.erase( it );
+
+#ifdef VTX_CUDA_ENABLED
+		SESDetail::releaseCachedCudaMemory();
+#endif
 	}
 
-	void SES::invalidateForRecompute( const Desc::Handle p_handle )
+	void SES::invalidateForRecompute( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
 	{
 		const auto it = _surfaces.bySystem.find( p_handle );
 		if ( it == _surfaces.bySystem.end() )
@@ -634,12 +640,31 @@ namespace VTX::Renderer::Geometry
 
 		for ( const SurfaceID surface : it->second )
 		{
+			_releaseChunks( p_context, surface );
 			convexPatches.remove( surface );
 			circlePatches.remove( surface );
 			segmentPatches.remove( surface );
 			concavePatches.remove( surface );
 			_constructions.erase( surface );
 		}
+
+		for ( auto surfaceIt = _surfaces.ids.begin(); surfaceIt != _surfaces.ids.end(); )
+		{
+			if ( surfaceIt->first.system == p_handle )
+			{
+				surfaceIt = _surfaces.ids.erase( surfaceIt );
+			}
+			else
+			{
+				++surfaceIt;
+			}
+		}
+
+		_surfaces.bySystem.erase( it );
+
+#ifdef VTX_CUDA_ENABLED
+		SESDetail::releaseCachedCudaMemory();
+#endif
 	}
 
 	void SES::uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
@@ -873,6 +898,7 @@ namespace VTX::Renderer::Geometry
 			return;
 		}
 
+		bool releaseCachedCudaMemory = false;
 		for ( const auto & [ surfaceID, construction ] : _constructions )
 		{
 			if ( not construction->pendingWrite() )
@@ -895,6 +921,7 @@ namespace VTX::Renderer::Geometry
 				mappings.clear();
 
 				construction->cudaConstruction.reset();
+				releaseCachedCudaMemory = true;
 				construction->state = SurfaceConstruction::State::Written;
 				_unregisterCudaSurfaceBuffers( p_context, surfaceID );
 			}
@@ -908,6 +935,7 @@ namespace VTX::Renderer::Geometry
 				_unregisterCudaSurfaceBuffers( p_context, surfaceID );
 				_disableDraws( p_context, surfaceID );
 				construction->markIncalculable();
+				releaseCachedCudaMemory = true;
 				VTX_WARNING( "Can not write SES renderer buffers: {}", p_e.what() );
 			}
 			catch ( ... )
@@ -920,8 +948,14 @@ namespace VTX::Renderer::Geometry
 				_unregisterCudaSurfaceBuffers( p_context, surfaceID );
 				_disableDraws( p_context, surfaceID );
 				construction->markIncalculable();
+				releaseCachedCudaMemory = true;
 				VTX_WARNING( "Can not write SES renderer buffers: unknown error." );
 			}
+		}
+
+		if ( releaseCachedCudaMemory )
+		{
+			SESDetail::releaseCachedCudaMemory();
 		}
 
 #endif

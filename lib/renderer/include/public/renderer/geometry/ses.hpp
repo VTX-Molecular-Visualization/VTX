@@ -56,12 +56,12 @@ namespace VTX::Renderer::Geometry
 		{
 			void clear()
 			{
-				nextID = 0;
+				nextID = 1;
 				ids.clear();
 				bySystem.clear();
 			}
 
-			SurfaceID									   nextID = 0;
+			SurfaceID									   nextID = 1;
 			std::map<SurfaceKey, SurfaceID>				   ids;
 			std::map<Desc::Handle, std::vector<SurfaceID>> bySystem;
 		};
@@ -284,7 +284,7 @@ namespace VTX::Renderer::Geometry
 		void clear();
 		void remove( Context::ContextWrapper & p_context, Desc::Handle p_handle );
 		void invalidate( Desc::Handle p_handle );
-		void invalidateForRecompute( Desc::Handle p_handle );
+		void invalidateForRecompute( Context::ContextWrapper & p_context, Desc::Handle p_handle );
 
 		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle );
 

@@ -61,7 +61,7 @@ namespace VTX::Renderer
 	constexpr bool RIBBON_COLOR_BLENDING_DEFAULT = true;
 
 	constexpr bool				 HAS_SES_DEFAULT		  = false;
-	constexpr E_SES_COMPUTE_MODE SES_COMPUTE_MODE_DEFAULT = E_SES_COMPUTE_MODE::SYSTEM;
+	constexpr E_SES_COMPUTE_MODE SES_COMPUTE_MODE_DEFAULT = E_SES_COMPUTE_MODE::CATEGORY;
 	constexpr float				 SES_PROBE_RADIUS_DEFAULT = 1.4f;
 	constexpr float				 SES_PROBE_RADIUS_MIN	  = 0.f;
 	constexpr float				 SES_PROBE_RADIUS_MAX	  = 2.5f;
