@@ -53,6 +53,19 @@ float computeDepth( const vec3 v )
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
 
+float computeDepthOrtho( const vec3 v )
+{
+	// Computes 'v' NDC depth ([-1,1])
+	const float ndcDepth = ( v.z * uniformsCamera.matrixProjection[ 2 ].z + uniformsCamera.matrixProjection[ 3 ].z );
+	// Return depth according to depth range
+	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
+}
+
+float computeFragmentDepth( const vec3 v )
+{
+	return uniformsCamera.isCameraPerspective == 1 ? computeDepth( v ) : computeDepthOrtho( v );
+}
+
 bool isInSector( vec3 p, vec3 o, float r )
 {
 	// Reference: https://www.shadertoy.com/view/wsyyRh
@@ -88,7 +101,7 @@ void handleImpostor()
 	packData( gsData.viewImpPos, normal, gsPatchData.selection, outDataPacked );
 	outColor = vec4( gsPatchData.color.rgb, 32.f ); // w = specular shininess.
 
-	gl_FragDepth = computeDepth( gsData.viewImpPos );
+	gl_FragDepth = computeFragmentDepth( gsData.viewImpPos );
 #else
 	discard;
 #endif
@@ -97,7 +110,7 @@ void handleImpostor()
 void main()
 {
 	const vec3 ro = gsData.viewImpPos;
-	const vec3 rd = normalize( gsData.viewImpPos );
+	const vec3 rd = uniformsCamera.isCameraPerspective == 1 ? normalize( gsData.viewImpPos ) : vec3( 0.f, 0.f, -1.f );
 
 	const vec3	oc	 = ro - gsPatchData.vAtomData.xyz;
 	const float b	 = dot( oc, rd );
@@ -132,7 +145,7 @@ void main()
 			normal = mix( -normal, normal, float( dot( normal, rd ) < 0. ) );
 
 			// Fill depth buffer.
-			gl_FragDepth = computeDepth( hit );
+			gl_FragDepth = computeFragmentDepth( hit );
 
 			// Output data.
 			packData( hit, normal, gsPatchData.selection, outDataPacked );

@@ -135,28 +135,37 @@ void main()
 	vsTetrahedron.plane2 = Plane( n2, dot( p1, n2 ) );
 	vsTetrahedron.plane3 = Plane( n3, dot( p1, n3 ) );
 
-	// Impostor in front of the sphere.
 	vec3		vViewCenter		 = p1;
-	const float dotViewSpherePos = dot( vViewCenter, vViewCenter );
-	const float dSphereCenter	 = sqrt( dotViewSpherePos );
-	const vec3	view			 = vViewCenter / dSphereCenter;
 
 	const float sphereRad  = uniformsRepresentation[ representation ].SESProbeRadius;
-	const vec3	viewImpPos = vViewCenter - sphereRad * view;
+	if ( uniformsCamera.isCameraPerspective == 1 )
+	{
+		// Impostor in front of the sphere.
+		const float dotViewSpherePos = dot( vViewCenter, vViewCenter );
+		const float dSphereCenter	 = sqrt( dotViewSpherePos );
+		const vec3	view			 = vViewCenter / dSphereCenter;
+		const vec3	viewImpPos		 = vViewCenter - sphereRad * view;
 
-	// Compute impostor size.
-	const float sinAngle = sphereRad / dSphereCenter;
-	const float tanAngle = tan( asin( sinAngle ) );
-	const float impSize	 = tanAngle * length( viewImpPos );
+		// Compute impostor size.
+		const float sinAngle = sphereRad / dSphereCenter;
+		const float tanAngle = tan( asin( sinAngle ) );
+		const float impSize	 = tanAngle * length( viewImpPos );
 
-	// Compute impostor vectors.
-	// TODO: simplify normalize ? (vsData.vImpU.x == 0) but normalize should be hard optimized on GPU...
-	// But for cross always better doing no calculation.
-	// vsData.vImpU = normalize( cross( dir, vec3( 1.f, 0.f, 0.f ) ) ); becomes:
-	vsData.vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
-	// TODO: simplify cross ? (vsData.vImpU.x == 0) but cross should be hard optimized on GPU...
-	vsData.vImpV = cross( vsData.vImpU, view ) * impSize; // No need to normalize.
-	vsData.vImpU *= impSize;
+		// Compute impostor vectors.
+		// TODO: simplify normalize ? (vsData.vImpU.x == 0) but normalize should be hard optimized on GPU...
+		// But for cross always better doing no calculation.
+		// vsData.vImpU = normalize( cross( dir, vec3( 1.f, 0.f, 0.f ) ) ); becomes:
+		vsData.vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
+		// TODO: simplify cross ? (vsData.vImpU.x == 0) but cross should be hard optimized on GPU...
+		vsData.vImpV = cross( vsData.vImpU, view ) * impSize; // No need to normalize.
+		vsData.vImpU *= impSize;
 
-	gl_Position = vec4( viewImpPos, 1.f );
+		gl_Position = vec4( viewImpPos, 1.f );
+	}
+	else
+	{
+		vsData.vImpU = vec3( -1.f, 0.f, 0.f ) * sphereRad;
+		vsData.vImpV = vec3( 0.f, -1.f, 0.f ) * sphereRad;
+		gl_Position  = vec4( vViewCenter + vec3( 0.f, 0.f, sphereRad ), 1.f );
+	}
 }
