@@ -247,7 +247,7 @@ jobs:
 
     - name: Install Velopack CLI
       run: |
-        dotnet tool install -g vpk
+        dotnet tool install -g vpk --version 1.1.1
         echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
       shell: bash
 
@@ -290,7 +290,7 @@ jobs:
       run: |
         vpk pack \
           --packId VTX \
-          --packVersion "${{ env.PACKAGE_VERSION }}-beta+${{ matrix.channel }}" \
+          --packVersion "${{ env.PACKAGE_VERSION }}+${{ matrix.channel }}" \
           --packTitle "VTX" \
           --packAuthors "VTX Team" \
           --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
@@ -309,7 +309,7 @@ jobs:
       run: |
         vpk pack \
           --packId VTX \
-          --packVersion "${{ env.PACKAGE_VERSION }}-beta+${{ matrix.channel }}" \
+          --packVersion "${{ env.PACKAGE_VERSION }}+${{ matrix.channel }}" \
           --packTitle "VTX" \
           --packAuthors "VTX Team" \
           --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
