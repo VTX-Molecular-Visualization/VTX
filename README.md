@@ -8,9 +8,9 @@ Both user and developper manuals are [available online](https://vtx.drugdesign.f
 
 ## Bugs and crash reports
 
-- Report bugs, features, ideas or anything else by [creating a new issue](https://gitlab.com/VTX_mol/VTX/-/issues)
+- Report bugs, features, ideas or anything else by [creating a new issue](https://github.com/VTX-Molecular-Visualization/VTX/issues)
 - A log file is saved in the /logs folder, please attach this file with your ticket
 
 ## License
 
-Please look at the [license file]().
+Please look at the [license file](app/vtx/license.txt).
