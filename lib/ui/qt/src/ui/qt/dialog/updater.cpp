@@ -16,7 +16,7 @@ namespace VTX::UI::QT::Dialog
 	Updater::Updater( const App::Events::UpdateAvailable & p_e )
 	{
 		setWindowTitle( "Updater" );
-		setFixedSize( 600, 600 );
+		setFixedSize( 800, 600 );
 
 		// Layout.
 		auto * layout = new QVBoxLayout( this );

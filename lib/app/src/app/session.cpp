@@ -120,9 +120,8 @@ namespace VTX::App
 	{
 		try
 		{
-			auto src = std::make_unique<Velopack::GithubSource>( URL_UPDATE.data() );
+			auto src = std::make_unique<Velopack::GithubSource>( URL_UPDATE.data(), "", true );
 			_impl->manager.emplace( std::move( src ) );
-			//_impl->manager.emplace( URL_UPDATE.data() );
 		}
 		catch ( const std::exception & p_e )
 		{
