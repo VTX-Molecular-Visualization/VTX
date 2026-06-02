@@ -89,7 +89,28 @@ namespace VTX::Renderer
 
 		if ( hasDirty )
 		{
-			_flushDirty();
+			try
+			{
+				_flushDirty();
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Renderer update failed: {}", p_e.what() );
+				setDefault();
+				_dirtyRenderer = Cache::E_RENDERER_DIRTY::NONE;
+				_dirtySystems.clear();
+				_dirtyRepresentations.clear();
+				return false;
+			}
+			catch ( ... )
+			{
+				VTX_ERROR( "Unknown renderer update failure" );
+				setDefault();
+				_dirtyRenderer = Cache::E_RENDERER_DIRTY::NONE;
+				_dirtySystems.clear();
+				_dirtyRepresentations.clear();
+				return false;
+			}
 		}
 
 		if ( hasDirty || _forceUpdate )

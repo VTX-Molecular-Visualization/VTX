@@ -276,7 +276,7 @@ jobs:
     - name: Extract latest changelog
       shell: bash
       run: |
-        awk '/^## /{if(found) exit; found=1} found{print}' "${{ env.ROOT_DIR }}/CHANGELOG.md" > "$RUNNER_TEMP/latest_changelog.md"
+        awk '/^## /{if(found) exit; found=1; next} found{print}' "${{ env.ROOT_DIR }}/CHANGELOG.md" > "$RUNNER_TEMP/latest_changelog.md"
 
     - name: Remove Conan metadata from Velopack input
       shell: bash

@@ -13,7 +13,7 @@
 // Out.
 flat out StructCylinder vsCylinder;
 
-layout( std430, binding = 21 ) readonly buffer CylinderIndirectDraws
+layout( std430, binding = 10 ) readonly buffer CylinderIndirectDraws
 {
 	uint cylinderDrawCount;
 	uint cylinderDrawPadding0;

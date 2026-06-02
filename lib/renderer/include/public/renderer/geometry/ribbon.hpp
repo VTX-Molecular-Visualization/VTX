@@ -16,7 +16,7 @@ namespace VTX::Renderer::Geometry
 		inline static const Desc::Key		  GEOMETRY_RIBBONS		   = "Ribbons";
 		inline static const Desc::Key		  INDEX_RIBBONS			   = "Index.Ribbons";
 		inline static const Desc::Key		  INDIRECT_RIBBONS		   = "Indirect.Ribbons";
-		inline static constexpr Desc::Binding BINDING_INDIRECT_RIBBONS = 22;
+		inline static constexpr Desc::Binding BINDING_INDIRECT_RIBBONS = 10;
 
 		Ribbon()
 		{

@@ -24,7 +24,7 @@ layout( std430, binding = 9 ) readonly buffer AtomFlags { uint atomFlagWords[]; 
 flat out StructVertexShader vsData;
 flat out StructCircle		vsCircle;
 
-layout( std430, binding = 25 ) readonly buffer CirclePatchIndirectDraws
+layout( std430, binding = 10 ) readonly buffer CirclePatchIndirectDraws
 {
 	uint					  circlePatchDrawCount;
 	uint					  circlePatchDrawPadding0;

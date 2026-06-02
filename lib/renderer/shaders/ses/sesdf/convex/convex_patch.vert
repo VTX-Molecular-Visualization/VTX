@@ -23,7 +23,7 @@ layout( std430, binding = 9 ) readonly buffer AtomFlags { uint atomFlagWords[]; 
 flat out StructVertexShader vsData;
 flat out StructConvexPatch	vsPatchData;
 
-layout( std430, binding = 24 ) readonly buffer ConvexPatchIndirectDraws
+layout( std430, binding = 10 ) readonly buffer ConvexPatchIndirectDraws
 {
 	uint					  convexPatchDrawCount;
 	uint					  convexPatchDrawPadding0;

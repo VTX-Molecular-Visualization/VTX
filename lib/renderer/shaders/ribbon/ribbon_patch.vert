@@ -12,7 +12,7 @@ out
 #include "struct_vertex_shader.glsl"
 dataOut;
 
-layout( std430, binding = 22 ) readonly buffer RibbonIndirectDraws
+layout( std430, binding = 10 ) readonly buffer RibbonIndirectDraws
 {
 	uint ribbonDrawCount;
 	uint ribbonDrawPadding0;

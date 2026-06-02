@@ -26,7 +26,7 @@ layout( std140, binding = 3 ) readonly buffer Probes { vec4 probes[]; };
 flat out StructVertexShader vsData;
 flat out StructSegment		vsSegment;
 
-layout( std430, binding = 26 ) readonly buffer SegmentPatchIndirectDraws
+layout( std430, binding = 10 ) readonly buffer SegmentPatchIndirectDraws
 {
 	uint					  segmentPatchDrawCount;
 	uint					  segmentPatchDrawPadding0;
