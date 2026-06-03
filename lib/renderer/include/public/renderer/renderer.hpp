@@ -221,6 +221,7 @@ namespace VTX::Renderer
 		 * @brief Cached data to update.
 		 */
 		Cache::Camera						_camera;
+		Cache::Voxels						_voxels;
 		ResourcePool<Cache::System>			_systems;
 		ResourcePool<Cache::Representation> _representations;
 

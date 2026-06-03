@@ -77,6 +77,7 @@ namespace VTX::Renderer
 	{
 		_context.clear();
 		_graph.clear();
+		_voxels = {};
 		_dirtyRenderer = Cache::E_RENDERER_DIRTY::NONE;
 		_dirtySystems.clear();
 		_dirtyRepresentations.clear();
@@ -341,6 +342,20 @@ namespace VTX::Renderer
 		bool updateGeometryChunks = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::GEOMETRY_CHUNKS );
 		bool updateExternalPasses = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::EXTERNAL_PASSES );
 		bool updateCommandBuffer  = fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::COMMAND_BUFFER );
+		if ( fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::VOXELS ) )
+		{
+			_geometries.grid.setVoxelCount( _voxels.mins.size() );
+			_layouts.voxels.resizeStorage( _context, _geometries.grid.voxelCount() );
+
+			_layouts.voxels.upload<Layout::VOXEL_ATTR::MINS, Vec3f>(
+				_context, Desc::NO_HANDLE, std::span<const Vec3f> { _voxels.mins }
+			);
+			_layouts.voxels.upload<Layout::VOXEL_ATTR::MAXS, Vec3f>(
+				_context, Desc::NO_HANDLE, std::span<const Vec3f> { _voxels.maxs }
+			);
+
+			updateDrawRanges = true;
+		}
 		if ( fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::CAMERA ) )
 		{
 			Builder::CameraState::upload( _context, _camera, width(), height() );
@@ -666,13 +681,9 @@ namespace VTX::Renderer
 	{
 		assert( p_mins.size() == p_maxs.size() );
 
-		_geometries.grid.setVoxelCount( p_mins.size() );
-		_layouts.voxels.resizeStorage( _context, _geometries.grid.voxelCount() );
-
-		_layouts.voxels.upload<Layout::VOXEL_ATTR::MINS, Vec3f>( _context, Desc::NO_HANDLE, p_mins );
-		_layouts.voxels.upload<Layout::VOXEL_ATTR::MAXS, Vec3f>( _context, Desc::NO_HANDLE, p_maxs );
-
-		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::DRAW_RANGES;
+		_voxels.mins.assign( p_mins.begin(), p_mins.end() );
+		_voxels.maxs.assign( p_maxs.begin(), p_maxs.end() );
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::VOXELS;
 	}
 
 } // namespace VTX::Renderer
