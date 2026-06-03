@@ -1,7 +1,6 @@
 #ifndef __VTX_APP_ACTION_SELECTION__
 #define __VTX_APP_ACTION_SELECTION__
 
-#include "app/ecs.hpp"
 #include "app/helper/system.hpp"
 #include "app/system/selection.hpp"
 #include <core/struct/topology.hpp>
@@ -191,19 +190,24 @@ namespace VTX::App::Action::Selection
 		void execute();
 	};
 
-	struct ExtendSelectionSelecFirst
+	struct ExtendSelection
 	{
 		void execute( const float threshold );
 	};
 
-	struct ExtendSelectionNonSelecFirst
+	struct ExtendSelectionFromSelec
+	{
+		void execute( const float threshold );
+	};
+
+	struct ExtendSelectionFromNonSelec
 	{
 		void execute( const float threshold );
 	};
 
 	struct Mapping
 	{
-		void execute( const ECS::Entity system );
+		void execute( const Entity system );
 	};
 } // namespace VTX::App::Action::Selection
 
