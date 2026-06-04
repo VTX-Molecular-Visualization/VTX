@@ -82,7 +82,6 @@ jobs:
         conan upload magic_enum -r=vtx
         conan upload nlohmann_json -r=vtx
         conan upload entt -r=vtx
-        conan upload brotli -r=vtx
         conan upload cpr -r=vtx
         conan upload stb -r=vtx
         conan upload fmt -r=vtx
@@ -91,6 +90,12 @@ jobs:
         conan upload openssl -r=vtx
         conan upload platformfolders -r=vtx
         conan upload catch2 -r=vtx
+
+    - name: Upload Windows dependencies
+      if: runner.os == 'Windows'
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan upload brotli -r=vtx
 
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
