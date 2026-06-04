@@ -55,6 +55,12 @@ namespace VTX::Renderer::Cache
 		VTX::Renderer::GraphicsConfig data;
 	};
 
+	struct Voxels
+	{
+		std::vector<Vec3f> mins;
+		std::vector<Vec3f> maxs;
+	};
+
 	enum struct E_SYSTEM_DIRTY : uint16_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
@@ -94,8 +100,9 @@ namespace VTX::Renderer::Cache
 		MODELS			= 1 << 8,
 		COLOR_LAYOUT	= 1 << 9,
 		GRAPHICS_CONFIG = 1 << 10,
+		VOXELS			= 1 << 11,
 		ALL = DRAW_RANGES | GEOMETRY_CHUNKS | EXTERNAL_PASSES | COMMAND_BUFFER | NEED_UPDATE | GRAPH | REPRESENTATIONS
-			  | CAMERA | MODELS | COLOR_LAYOUT | GRAPHICS_CONFIG
+			  | CAMERA | MODELS | COLOR_LAYOUT | GRAPHICS_CONFIG | VOXELS
 	};
 
 	struct System

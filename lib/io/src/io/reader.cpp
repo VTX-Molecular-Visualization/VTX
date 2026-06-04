@@ -664,6 +664,12 @@ namespace VTX::IO
 
 				if ( not p_oldAtomToNewAtom.empty() )
 				{
+					if ( firstAtomIdx >= p_oldAtomToNewAtom.size() || secondAtomIdx >= p_oldAtomToNewAtom.size() )
+					{
+						VTX_WARNING( "Bond {} has an atom with invalid source index. Skipping.", bondIdx );
+						continue;
+					}
+
 					firstAtomIdx  = p_oldAtomToNewAtom[ firstAtomIdx ];
 					secondAtomIdx = p_oldAtomToNewAtom[ secondAtomIdx ];
 				}
@@ -766,11 +772,19 @@ namespace VTX::IO
 
 			if ( not p_oldAtomToNewAtom.empty() )
 			{
+				if ( firstAtom >= p_oldAtomToNewAtom.size() || secondAtom >= p_oldAtomToNewAtom.size() )
+				{
+					VTX_WARNING( "Bond {} has an atom with invalid source index. Skipping.", p_sourceBondIndex );
+					return;
+				}
+
 				firstAtom  = p_oldAtomToNewAtom[ firstAtom ];
 				secondAtom = p_oldAtomToNewAtom[ secondAtom ];
 			}
 
-			const Bond::ORDER bondOrder = Bond::ORDER( int( bondOrders[ p_sourceBondIndex ] ) );
+			const Bond::ORDER bondOrder = p_sourceBondIndex < bondOrders.size()
+											  ? Bond::ORDER( int( bondOrders[ p_sourceBondIndex ] ) )
+											  : Bond::ORDER::UNKNOWN;
 
 			p_topology.bondPairAtomIndexes[ p_targetBondIndex * 2 ]		= firstAtom;
 			p_topology.bondPairAtomIndexes[ p_targetBondIndex * 2 + 1 ] = secondAtom;

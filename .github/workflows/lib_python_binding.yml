@@ -66,7 +66,7 @@ jobs:
 
     - name: Add custom remote
       run: |
-        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }} --index 0
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
     - name: Export local packages
@@ -97,10 +97,33 @@ jobs:
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}
       run: |
+        conan upload bzip2 -r=vtx
         conan upload pybind11 -r=vtx
         conan upload cpython -r=vtx
+        conan upload expat -r=vtx
+        conan upload libffi -r=vtx
         conan upload mpdecimal -r=vtx
+        conan upload openssl -r=vtx
         conan upload sqlite3 -r=vtx
+        conan upload xz_utils -r=vtx
+        conan upload zlib -r=vtx
+
+    - name: Upload Windows Python dependencies
+      if: runner.os == 'Windows'
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan upload tcl -r=vtx
+        conan upload tk -r=vtx
+
+    - name: Upload Linux Python dependencies
+      if: runner.os == 'Linux'
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan upload fontconfig -r=vtx
+        conan upload freetype -r=vtx
+        conan upload libpng -r=vtx
+        conan upload tk -r=vtx
+        conan upload util-linux-libuuid -r=vtx
 
     - name: Create package
       working-directory: ${{env.LIB_DIR}}

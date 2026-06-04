@@ -16,7 +16,7 @@ namespace VTX::UI::QT::Dialog
 	Updater::Updater( const App::Events::UpdateAvailable & p_e )
 	{
 		setWindowTitle( "Updater" );
-		setFixedSize( 600, 600 );
+		setFixedSize( 800, 600 );
 
 		// Layout.
 		auto * layout = new QVBoxLayout( this );
@@ -34,7 +34,7 @@ namespace VTX::UI::QT::Dialog
 		// Changelog.
 		auto * browser = new QTextBrowser( this );
 		browser->document()->setDocumentMargin( 10 );
-		browser->setText( QString::fromStdString( p_e.changelog ) );
+		browser->setHtml( QString::fromStdString( p_e.changelog ) );
 		layout->addWidget( browser );
 
 		VTX_DEBUG( "Changelog: {}", p_e.changelog );

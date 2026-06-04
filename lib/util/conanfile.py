@@ -23,7 +23,7 @@ class VTXUtilRecipe(ConanFile):
         self.requires("nlohmann_json/3.12.0")
         self.requires("cpr/1.14.2")
         self.requires("stb/cci.20240531")
-        self.requires("catch2/3.14.0")
+        self.requires("catch2/3.15.0")
         self.requires("platformfolders/4.3.0")
         
     def config_options(self):

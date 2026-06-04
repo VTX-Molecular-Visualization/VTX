@@ -120,9 +120,8 @@ namespace VTX::App
 	{
 		try
 		{
-			// auto src = std::make_unique<Velopack::GithubSource>( URL_UPDATE.data() );
-			//_impl->manager.emplace( std::move( src ) );
-			_impl->manager.emplace( URL_UPDATE.data() );
+			auto src = std::make_unique<Velopack::GithubSource>( URL_UPDATE.data(), "", true );
+			_impl->manager.emplace( std::move( src ) );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -147,7 +146,7 @@ namespace VTX::App
 			return;
 		}
 
-		_impl->updateCheckReady = false;
+		_impl->updateCheckReady	 = false;
 		_impl->updateCheckFailed = false;
 		_impl->pendingUpdate.reset();
 
@@ -198,7 +197,7 @@ namespace VTX::App
 			VTX_INFO( "New version found: {}", release.Version );
 			VTX_DEBUG( "Release notes MD:\n{}", release.NotesMarkdown );
 			VTX_DEBUG( "Release notes HTML:\n{}", release.NotesHtml );
-			HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesMarkdown, release.Size );
+			HUB().trigger<Events::UpdateAvailable>( version(), release.Version, release.NotesHtml, release.Size );
 		}
 		else
 		{
@@ -450,15 +449,25 @@ namespace VTX::App
 	}
 
 	FilePath Session::getShadersDir() const { return Filesystem::getExecutableDir() / "shaders"; }
+
 	FilePath Session::getDataDir() const { return Filesystem::getExecutableDir() / "data"; }
+
 	FilePath Session::getLicenseFile() const { return Filesystem::getExecutableDir() / "license.txt"; }
+
 	FilePath Session::getLogsDir() const { return getDataHome() / "logs"; }
+
 	FilePath Session::getCacheDir() const { return getDataHome() / "cache"; }
+
 	FilePath Session::getSnapshotsDir() const { return getPicturesFolder() / "snapshots"; }
+
 	FilePath Session::getRepresentationsDir() const { return getDataHome() / "representations"; }
+
 	FilePath Session::getColorLayoutsDir() const { return getDataHome() / "colors"; }
+
 	FilePath Session::getEffectsDir() const { return getDataHome() / "effects"; }
+
 	FilePath Session::getConfigIniFile() const { return getDataHome() / "config.ini"; }
+
 	// const FilePath Session::getSettingJsonFile() const { return USER_DATA_DIR / "setting.json"; }
 
 	void Session::print() const

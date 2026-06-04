@@ -80,7 +80,7 @@ jobs:
 
     - name: Add custom remote
       run: |
-        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }} --index 0
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
     - name: Install CUDA Toolkit
@@ -162,3 +162,10 @@ jobs:
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True \
           -c tools.cmake.cmaketoolchain:extra_variables="{\"CMAKE_CUDA_COMPILER\":\"$CUDACXX\",\"CUDAToolkit_ROOT\":\"$CUDAToolkit_ROOT\"}" 
+
+    - name: Upload Linux dependencies
+      if: runner.os == 'Linux'
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan upload libffi -r=vtx
+        conan upload wayland -r=vtx

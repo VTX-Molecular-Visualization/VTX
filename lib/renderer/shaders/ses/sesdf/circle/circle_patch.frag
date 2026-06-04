@@ -31,15 +31,29 @@ float computeDepth( const vec3 v )
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
 
+float computeDepthOrtho( const vec3 v )
+{
+	// Computes 'v' NDC depth ([-1,1])
+	const float ndcDepth = ( v.z * uniformsCamera.matrixProjection[ 2 ].z + uniformsCamera.matrixProjection[ 3 ].z );
+	// Return depth according to depth range
+	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
+}
+
+float computeFragmentDepth( const vec3 v )
+{
+	return uniformsCamera.isCameraPerspective == 1 ? computeDepth( v ) : computeDepthOrtho( v );
+}
+
 void submit( in vec3 p, in vec3 n, in vec3 c )
 {
-	n = faceforward( n, gsData.viewImpPos, n );
+	const vec3 rd = uniformsCamera.isCameraPerspective == 1 ? gsData.viewImpPos : vec3( 0.f, 0.f, -1.f );
+	n			  = faceforward( n, rd, n );
 
 	// fill G-buffers.
 	packData( p, n, gsCircle.selection, outDataPacked );
 
 	// Output data.
-	gl_FragDepth = computeDepth( p );
+	gl_FragDepth = computeFragmentDepth( p );
 
 	outColor = vec4( c, 32.f ); // w = specular shininess.
 }
@@ -163,7 +177,7 @@ vec2 iOOBB( in vec3 ro, in vec3 rd, in vec3 p, in vec3 dim, in vec4 rot )
 void main()
 {
 	const vec3 ro = gsData.viewImpPos;
-	const vec3 rd = normalize( gsData.viewImpPos );
+	const vec3 rd = uniformsCamera.isCameraPerspective == 1 ? normalize( gsData.viewImpPos ) : vec3( 0.f, 0.f, -1.f );
 
 	vec2 dist  = iOOBB( ro, rd, gsCircle.bbPos, gsCircle.bbDim, gsCircle.rot );
 	vec2 sDist = iSphere( ro, rd, gsCircle.vSphere );

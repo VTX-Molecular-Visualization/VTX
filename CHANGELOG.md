@@ -1,5 +1,5 @@
 # Change Log
 
-## 2026.4.0
+## 2026.6.0
 
-- New VTX closed beta
+- New VTX beta

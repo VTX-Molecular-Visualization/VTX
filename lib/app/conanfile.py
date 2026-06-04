@@ -68,7 +68,7 @@ class VTXAppRecipe(ConanFile):
             self.requires("vtx_renderer/1.0")
         if self.options.python_binding:
             self.requires("vtx_python_binding/1.0")
-        self.requires("catch2/3.14.0")
+        self.requires("catch2/3.15.0")
         self.requires("argparse/3.2")
         
 

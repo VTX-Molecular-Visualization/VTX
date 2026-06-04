@@ -24,7 +24,7 @@ layout( std430, binding = 9 ) readonly buffer AtomFlags { uint atomFlagWords[]; 
 flat out StructVertexShader vsData;
 flat out StructCircle		vsCircle;
 
-layout( std430, binding = 25 ) readonly buffer CirclePatchIndirectDraws
+layout( std430, binding = 10 ) readonly buffer CirclePatchIndirectDraws
 {
 	uint					  circlePatchDrawCount;
 	uint					  circlePatchDrawPadding0;
@@ -161,11 +161,6 @@ void main()
 
 	vsCircle.bbPos = ( sCircle.xyz + sCircle2.xyz ) * .5 + ( sMax + sMin ) * .5;
 
-	// Compute normalized view vector.
-	const float dotViewSpherePos = dot( circleCenter, circleCenter );
-	const float dSphereCenter	 = sqrt( dotViewSpherePos );
-	const vec3	view			 = circleCenter / dSphereCenter;
-
 	vec3 p = x1p;
 	vec3 x = normalize( p - vsCircle.firstAtom.xyz ) * vsCircle.firstAtom.w;
 	vec3 c = ( length( p - vsCircle.firstAtom.xyz )
@@ -175,22 +170,36 @@ void main()
 	c				 = c + vsCircle.firstAtom.xyz;
 	vsCircle.vSphere = vec4( c, d );
 
-	// Impostor in front of the sphere.
-	const vec3 viewImpPos = vsCircle.vSphere.xyz - vsCircle.vSphere.w * view;
+	if ( uniformsCamera.isCameraPerspective == 1 )
+	{
+		// Compute normalized view vector.
+		const float dotViewSpherePos = dot( circleCenter, circleCenter );
+		const float dSphereCenter	 = sqrt( dotViewSpherePos );
+		const vec3	view			 = circleCenter / dSphereCenter;
 
-	// Compute impostor size.
-	const float sinAngle = vsCircle.vSphere.w / dSphereCenter;
-	const float tanAngle = tan( asin( sinAngle ) );
-	const float impSize	 = tanAngle * length( viewImpPos );
+		// Impostor in front of the sphere.
+		const vec3 viewImpPos = vsCircle.vSphere.xyz - vsCircle.vSphere.w * view;
 
-	// Compute impostor vectors.
-	// TODO: simplify normalize ? (vImpU.x == 0) but normalize should be hard optimized on GPU...
-	// But for cross always better doing no calculation.
-	// vImpU = normalize( cross( dir, vec3( 1.f, 0.f, 0.f ) ) ); becomes:
-	vsData.vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
-	// TODO: simplify cross ? (vImpU.x == 0) but cross should be hard optimized on GPU...
-	vsData.vImpV = cross( vsData.vImpU, view ) * impSize; // No need to normalize.
-	vsData.vImpU *= impSize;
+		// Compute impostor size.
+		const float sinAngle = vsCircle.vSphere.w / dSphereCenter;
+		const float tanAngle = tan( asin( sinAngle ) );
+		const float impSize	 = tanAngle * length( viewImpPos );
 
-	gl_Position = vec4( viewImpPos, 1.f );
+		// Compute impostor vectors.
+		// TODO: simplify normalize ? (vImpU.x == 0) but normalize should be hard optimized on GPU...
+		// But for cross always better doing no calculation.
+		// vImpU = normalize( cross( dir, vec3( 1.f, 0.f, 0.f ) ) ); becomes:
+		vsData.vImpU = normalize( vec3( 0.f, view.z, -view.y ) );
+		// TODO: simplify cross ? (vImpU.x == 0) but cross should be hard optimized on GPU...
+		vsData.vImpV = cross( vsData.vImpU, view ) * impSize; // No need to normalize.
+		vsData.vImpU *= impSize;
+
+		gl_Position = vec4( viewImpPos, 1.f );
+	}
+	else
+	{
+		vsData.vImpU = vec3( -1.f, 0.f, 0.f ) * vsCircle.vSphere.w;
+		vsData.vImpV = vec3( 0.f, -1.f, 0.f ) * vsCircle.vSphere.w;
+		gl_Position  = vec4( vsCircle.vSphere.xyz + vec3( 0.f, 0.f, vsCircle.vSphere.w ), 1.f );
+	}
 }

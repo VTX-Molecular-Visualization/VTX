@@ -134,7 +134,7 @@ jobs:
 
     - name: Add custom remote
       run: |
-        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }} --index 0
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
     
     - name: Install CUDA Toolkit
@@ -247,7 +247,7 @@ jobs:
 
     - name: Install Velopack CLI
       run: |
-        dotnet tool install -g vpk
+        dotnet tool install -g vpk --version 1.1.1
         echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
       shell: bash
 
@@ -276,7 +276,7 @@ jobs:
     - name: Extract latest changelog
       shell: bash
       run: |
-        awk '/^## /{if(found) exit; found=1} found{print}' "${{ env.ROOT_DIR }}/CHANGELOG.md" > "$RUNNER_TEMP/latest_changelog.md"
+        awk '/^## /{if(found) exit; found=1; next} found{print}' "${{ env.ROOT_DIR }}/CHANGELOG.md" > "$RUNNER_TEMP/latest_changelog.md"
 
     - name: Remove Conan metadata from Velopack input
       shell: bash

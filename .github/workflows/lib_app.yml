@@ -62,7 +62,7 @@ jobs:
 
     - name: Add custom remote
       run: |
-        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }}
+        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }} --index 0
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
     - name: Export local packages
@@ -88,6 +88,7 @@ jobs:
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}
       run: |
+        conan upload argparse -r=vtx
         conan upload entt -r=vtx
 
     - name: Create package

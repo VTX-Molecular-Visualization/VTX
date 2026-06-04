@@ -17,7 +17,7 @@
 flat out StructVertexShader vsData;
 flat out StructSphere vsSphere;
 
-layout( std430, binding = 20 ) readonly buffer SphereIndirectDraws
+layout( std430, binding = 10 ) readonly buffer SphereIndirectDraws
 {
 	uint sphereDrawCount;
 	uint sphereDrawPadding0;

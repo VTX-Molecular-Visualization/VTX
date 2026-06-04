@@ -35,6 +35,19 @@ float computeDepth( const vec3 v )
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
 
+float computeDepthOrtho( const vec3 v )
+{
+	// Computes 'v' NDC depth ([-1,1])
+	const float ndcDepth = ( v.z * uniformsCamera.matrixProjection[ 2 ].z + uniformsCamera.matrixProjection[ 3 ].z );
+	// Return depth according to depth range
+	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
+}
+
+float computeFragmentDepth( const vec3 v )
+{
+	return uniformsCamera.isCameraPerspective == 1 ? computeDepth( v ) : computeDepthOrtho( v );
+}
+
 void handleImpostor()
 {
 #ifdef SHOW_IMPOSTORS
@@ -47,7 +60,7 @@ void handleImpostor()
 	packData( gsData.viewImpPos, normal, gsTetrahedron.selection, outDataPacked );
 	outColor = vec4( gsTetrahedron.color.rgb, 32.f ); // w = specular shininess.
 
-	gl_FragDepth = computeDepth( gsData.viewImpPos );
+	gl_FragDepth = computeFragmentDepth( gsData.viewImpPos );
 #else
 	discard;
 #endif
@@ -96,7 +109,7 @@ void main()
 {
 	const float sensibility = length( gsData.viewImpPos );
 	const vec3	ro			= gsData.viewImpPos;
-	const vec3	rd			= normalize( gsData.viewImpPos );
+	const vec3	rd			= uniformsCamera.isCameraPerspective == 1 ? normalize( gsData.viewImpPos ) : vec3( 0.f, 0.f, -1.f );
 
 	const vec3	oc			= ro - gsTetrahedron.point.xyz;
 	const float b			= dot( oc, rd );
@@ -144,7 +157,7 @@ void main()
 		normal *= -sign( dot( normal, rd ) );
 
 		// Fill depth buffer.
-		gl_FragDepth = computeDepth( hit );
+		gl_FragDepth = computeFragmentDepth( hit );
 
 		// Output data.
 		packData( hit, normal, gsTetrahedron.selection, outDataPacked );

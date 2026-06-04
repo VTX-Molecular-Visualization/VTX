@@ -87,41 +87,51 @@ namespace VTX::UI::QT::Model
 			{
 			case E_SYSTEM_ITEM::SYSTEM:
 			{
-				const auto & metadata = App::REG().get<IO::Metadata>( _system );
+				const auto & metadata	= App::REG().get<IO::Metadata>( _system );
+				QString		 systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
+											  ? QString::fromStdString( metadata.path.stem().string() )
+											  : QString::fromStdString( metadata.pdbIDCode );
 
-				if ( not metadata.name.empty() )
-					return QString::fromStdString( metadata.name );
-				else if ( metadata.pdbIDCode != IO::PDB_ID_CODE_DEFAULT )
-					return QString::fromStdString( metadata.pdbIDCode );
-				else
-					return QString::fromStdString( metadata.path.stem().string() );
+				return systemName;
 			}
 			case E_SYSTEM_ITEM::CHAIN:
 			{
 				assert( index < data.getChainCount() );
 
 				if ( not data.chainNames[ index ].empty() )
+				{
 					return QString::fromStdString( data.chainNames[ index ] );
+				}
 				else
+				{
 					return "-";
+				}
 			}
 			case E_SYSTEM_ITEM::RESIDUE:
 			{
 				assert( index < data.getResidueCount() );
 
 				if ( not data.residueNames[ index ].empty() )
+				{
 					return QString::fromStdString( data.residueNames[ index ] );
+				}
 				else
+				{
 					return "-";
+				}
 			}
 			case E_SYSTEM_ITEM::ATOM:
 			{
 				assert( index < data.getAtomCount() );
 
 				if ( not data.atomNames[ index ].empty() )
+				{
 					return QString::fromStdString( data.atomNames[ index ] );
+				}
 				else
+				{
 					return "-";
+				}
 			}
 			}
 
@@ -149,12 +159,9 @@ namespace VTX::UI::QT::Model
 				return {};
 			}
 			}
-		case VisibleRole:
-			return toUnderlying( App::Helper::System::getVisibleState( { _system, item, index } ) );
-		case ColorSchemeRootRole:
-			return App::Helper::System::isColorSchemeRoot( { _system, item, index } );
-		case RepresentationRootRole:
-			return App::Helper::System::isRepresentationRoot( { _system, item, index } );
+		case VisibleRole: return toUnderlying( App::Helper::System::getVisibleState( { _system, item, index } ) );
+		case ColorSchemeRootRole: return App::Helper::System::isColorSchemeRoot( { _system, item, index } );
+		case RepresentationRootRole: return App::Helper::System::isRepresentationRoot( { _system, item, index } );
 		default: return {};
 		}
 	}
