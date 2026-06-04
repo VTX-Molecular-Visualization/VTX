@@ -55,12 +55,6 @@ class VTXToolExampleRecipe(ConanFile):
             if self.settings.os == "Linux":
                 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
                 os.environ.setdefault("LIBGL_ALWAYS_SOFTWARE", "1")
-                test_bin = os.path.join(self.build_folder, "vtx_tool_example_test")
-                self.run(
-                    f'bash -lc \'ldd -r "{test_bin}" | grep -E "not found|undefined symbol" || true; '
-                    f'set +e; "{test_bin}" --list-tests; code=$?; echo VTX_TEST_LIST_EXIT_CODE=$code; exit $code\'',
-                    env="conanrun",
-                )
             cmake.ctest(["--output-on-failure"])
 
     def package(self):
