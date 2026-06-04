@@ -72,6 +72,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - genion - convert", "[convert][genion]" )
 	CHECK( expectedOutput.arguments == actualOutput.arguments );
 	CHECK( expectedOutput.expectedOutputFilesIndexes == actualOutput.expectedOutputFilesIndexes );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - genion - convert - conc", "[convert][genion]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -143,5 +144,12 @@ TEST_CASE( "VTX_TOOL_MdPrep - genion - submitGromacsJob", "[submitGromacsJob][ge
 
 	checkJobResults( jobData );
 	CHECK( jobData.report.errorOccured == false );
+	if ( jobData.report.errorOccured )
+	{
+		std::string outputs;
+		outputs += jobData.channelsLocker.open()->stdout_;
+		outputs += jobData.channelsLocker.open()->stderr_;
+		INFO( outputs );
+	}
 	CHECK( jobData.report.finished == true );
 }
