@@ -1,7 +1,5 @@
-import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
-from conan.tools.env import VirtualRunEnv
 
 class VTXToolExampleRecipe(ConanFile):
     name = "vtx_tool_example"
@@ -45,7 +43,6 @@ class VTXToolExampleRecipe(ConanFile):
         tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")
         tc.cache_variables["VTX_PYTHON_BINDING"] = app_conf.get("user.app:python_binding")
         tc.generate()
-        VirtualRunEnv(self).generate()
 
     def build(self):
         cmake = CMake(self)

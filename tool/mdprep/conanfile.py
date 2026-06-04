@@ -3,7 +3,6 @@ from pathlib import Path
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
 from conan.tools.cmake import CMakeToolchain
-from conan.tools.env import VirtualRunEnv
 from conan.tools.files import copy
 
 _CONF_RUNTIME_ROOT = "user.tool_mdprep:runtime_root"
@@ -101,7 +100,6 @@ class VTXToolMdprepRecipe(ConanFile):
         tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")
         tc.cache_variables["VTX_PYTHON_BINDING"] = app_conf.get("user.app:python_binding")
         tc.generate()
-        VirtualRunEnv(self).generate()
         do_gromacs_copies(self)
         
     def config_options(self):
@@ -118,10 +116,6 @@ class VTXToolMdprepRecipe(ConanFile):
         cmake.configure()
         cmake.build()
         if self.options.test == True:
-            if self.settings.os == "Linux":
-                os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
-                os.environ.setdefault("LIBGL_ALWAYS_SOFTWARE", "1")
-                self.run(f'"{os.path.join(self.build_folder, "vtx_tool_mdprep_test")}" --list-tests', env="conanrun")
             cmake.ctest(["--output-on-failure"])
         
     def package(self):
