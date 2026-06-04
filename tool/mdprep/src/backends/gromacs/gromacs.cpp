@@ -91,7 +91,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	} // namespace
 
 	void prepareStructure(
-		Util::StopToken &	  p_token,
+		Util::StopToken		  p_token,
 		const fs::path &	  p_structurePdb,
 		GromacsInstructions & p_in
 	) noexcept

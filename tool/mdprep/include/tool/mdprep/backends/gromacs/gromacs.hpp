@@ -43,7 +43,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	 * @param p_structurePdb
 	 * @param
 	 */
-	void prepareStructure( Util::StopToken &, const fs::path & p_structurePdb, GromacsInstructions & ) noexcept;
+	void prepareStructure( Util::StopToken, const fs::path & p_structurePdb, GromacsInstructions & ) noexcept;
 
 	/**
 	 * @brief Use prepared structure to deliver a ready-to-use directory to start MD from

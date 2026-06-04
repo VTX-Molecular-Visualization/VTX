@@ -61,8 +61,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 1ubq", "[prepareStructure][1ubq]"
 	}
 	fs::create_directories( in.rootDir );
 
-	std::stop_token token;
-	prepareStructure( token, VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb", in );
+	prepareStructure( std::stop_token(), VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb", in );
 	int i = 0;
 	for ( auto & jobData : in.jobData )
 	{
