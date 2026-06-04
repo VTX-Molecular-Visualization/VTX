@@ -239,7 +239,7 @@ class VTXUiQtRecipe(ConanFile):
         self.requires("vtx_python_binding/1.0")
         self.requires("qt/6.11.1", transitive_headers=True)
         if self.settings.os == "Linux":
-            self.requires("fontconfig/2.17.1", override=True)
+            self.requires("fontconfig/2.17.1", force=True)
             self.requires("freetype/2.14.1", force=True)
             self.requires("libffi/3.4.8", force=True)
             self.requires("wayland/1.24.0", force=True)
