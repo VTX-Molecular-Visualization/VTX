@@ -22,6 +22,7 @@ namespace
 			outIndex( outDir / fmt::format( "{}.index.ndx", p_out_dir_name, p_pdb_code ) )
 		{
 		}
+
 		fs::path execPath = VTX::Tool::Mdprep::executableDirectory();
 		fs::path in;
 		fs::path outDir;
@@ -31,6 +32,7 @@ namespace
 		fs::path outClean;
 		fs::path outIndex;
 	};
+
 	struct TestContext
 	{
 		IoPaths												 paths;
@@ -47,10 +49,13 @@ namespace
 		{
 			std::string filename = file.path().filename().string();
 			if ( filename.starts_with( p_startingPattern ) && filename.ends_with( p_endingPattern ) )
+			{
 				return true;
+			}
 		}
 		return false;
 	}
+
 	bool check_file_as_pattern( const fs::path & p_filePatterned ) noexcept
 	{
 		fs::path	dir		 = p_filePatterned.parent_path();
@@ -65,7 +70,9 @@ namespace
 
 		fs::path & outDir = out.paths.outDir;
 		if ( fs::is_directory( outDir ) )
+		{
 			fs::remove_all( outDir );
+		}
 		fs::create_directories( outDir );
 
 		CHECK_NOFAIL( fs::is_regular_file( out.paths.in ) );
@@ -112,6 +119,7 @@ namespace
 	}
 
 } // namespace
+
 TEST_CASE( "VTX_TOOL_MdPrep - gmx pdb2gmx 1ubq", "[submitGromacsJob][pdb2gmx][1ubq]" )
 {
 	VTX::test::setup_env f;

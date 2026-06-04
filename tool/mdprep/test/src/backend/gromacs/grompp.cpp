@@ -228,6 +228,11 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - submitGromacsJob - ions", "[submitGromacs
 	submitGromacsJob( VTX::Tool::Mdprep::executableDirectory() / defaultGmxBinaryRelativePath(), jobData );
 
 	checkJobResults( jobData );
+
+	std::string outputs;
+	outputs += jobData.channelsLocker.open()->stdout_;
+	outputs += jobData.channelsLocker.open()->stderr_;
+	INFO( outputs );
 	CHECK( jobData.report.errorOccured == false );
 	CHECK( jobData.report.finished == true );
 }
@@ -256,6 +261,11 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - submitGromacsJob - em", "[submitGromacsJo
 	submitGromacsJob( VTX::Tool::Mdprep::executableDirectory() / defaultGmxBinaryRelativePath(), jobData );
 
 	checkJobResults( jobData );
+
+	std::string outputs;
+	outputs += jobData.channelsLocker.open()->stdout_;
+	outputs += jobData.channelsLocker.open()->stderr_;
+	INFO( outputs );
 	CHECK( jobData.report.errorOccured == false );
 	CHECK( jobData.report.finished == true );
 }

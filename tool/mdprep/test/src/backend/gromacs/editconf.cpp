@@ -35,6 +35,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob ", "[prepareJob][editconf][p
 	CHECK( in.out.parent_path() == f.jobDir );
 	CHECK( in.out.string().ends_with( "1ubq.pdb" ) );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob", "[prepareJob][editconf]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -64,6 +65,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][empty]" 
 namespace
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
+
 	void prepare( EditconfInstructions & p_in )
 	{
 		p_in.in	 = ".";
@@ -96,6 +98,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][distance
 	CHECK( out.arguments == expectedOutput.arguments );
 	CHECK( out.expectedOutputFilesIndexes == expectedOutput.expectedOutputFilesIndexes );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][dodecahedron]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -127,6 +130,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][do
 	CHECK( out.arguments == expectedOutput.arguments );
 	CHECK( out.expectedOutputFilesIndexes == expectedOutput.expectedOutputFilesIndexes );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][triclinic]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -164,6 +168,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][tr
 	CHECK( out.arguments == expectedOutput.arguments );
 	CHECK( out.expectedOutputFilesIndexes == expectedOutput.expectedOutputFilesIndexes );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][cubic]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -195,6 +200,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][cu
 	CHECK( out.arguments == expectedOutput.arguments );
 	CHECK( out.expectedOutputFilesIndexes == expectedOutput.expectedOutputFilesIndexes );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][octahedron]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -226,6 +232,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][oc
 	CHECK( out.arguments == expectedOutput.arguments );
 	CHECK( out.expectedOutputFilesIndexes == expectedOutput.expectedOutputFilesIndexes );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][producing_pdb]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -254,7 +261,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob", "[submitGromacsJob][editco
 	fs::path outputEditconfDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "editconf" / "submitGromacsJob";
 
 	if ( fs::exists( outputEditconfDir ) == false )
+	{
 		fs::create_directories( outputEditconfDir );
+	}
 
 	GromacsJobData jobData;
 	jobData.arguments.push_back( "editconf" );
@@ -272,9 +281,14 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob", "[submitGromacsJob][editco
 
 	checkJobResults( jobData );
 
+	std::string outputs;
+	outputs += jobData.channelsLocker.open()->stdout_;
+	outputs += jobData.channelsLocker.open()->stderr_;
+	INFO( outputs );
 	CHECK( jobData.report.errorOccured == false );
 	CHECK( jobData.report.finished == true );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob - producing_pdb", "[submitGromacsJob][editconf][producing_pdb]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -298,6 +312,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob - producing_pdb", "[submitGr
 
 	checkJobResults( jobData );
 
+	std::string outputs;
+	outputs += jobData.channelsLocker.open()->stdout_;
+	outputs += jobData.channelsLocker.open()->stderr_;
+	INFO( outputs );
 	CHECK( jobData.report.errorOccured == false );
 	CHECK( jobData.report.finished == true );
 }
