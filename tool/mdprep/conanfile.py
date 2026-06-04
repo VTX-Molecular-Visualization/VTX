@@ -121,7 +121,7 @@ class VTXToolMdprepRecipe(ConanFile):
         cmake.configure()
         cmake.build()
         if self.options.test == True:
-            cmake.ctest(["[SystemTester]", "--output-on-failure"])
+            cmake.ctest([ "--output-on-failure"])
         
     def package(self):
         cmake = CMake(self)
