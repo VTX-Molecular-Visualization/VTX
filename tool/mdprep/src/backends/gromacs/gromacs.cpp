@@ -20,18 +20,21 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				);
 			}
 		}
+
 		template<typename Instruction>
 		void fillOutputs( GromacsInstructions & p_in, Instruction & p_stepIn, GromacsJobData & p_currentJobData )
-		{
-			fillOutputsFromExpectations( p_in, p_currentJobData );
-		}
+		{ fillOutputsFromExpectations( p_in, p_currentJobData ); }
+
 		template<>
 		void fillOutputs( GromacsInstructions & p_in, GenionInstructions & p_stepIn, GromacsJobData & p_currentJobData )
 		{
 			fillOutputsFromExpectations( p_in, p_currentJobData );
 			if ( auto fileStrPtr = getFirstFileOfType( p_in.outputs, ".top" ) )
+			{
 				p_in.outputs.lastUncompiledTop = *fileStrPtr;
+			}
 		}
+
 		template<>
 		void fillOutputs(
 			GromacsInstructions & p_in,
@@ -41,8 +44,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			fillOutputsFromExpectations( p_in, p_currentJobData );
 			if ( auto fileStrPtr = getFirstFileOfType( p_in.outputs, ".top" ) )
+			{
 				p_in.outputs.lastUncompiledTop = *fileStrPtr;
+			}
 		}
+
 		template<>
 		void fillOutputs(
 			GromacsInstructions & p_in,
@@ -52,7 +58,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			fillOutputsFromExpectations( p_in, p_currentJobData );
 			if ( auto fileStrPtr = getFirstFileOfType( p_in.outputs, ".top" ) )
+			{
 				p_in.outputs.lastUncompiledTop = *fileStrPtr;
+			}
 		}
 
 		template<typename Instruction>
@@ -73,7 +81,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			currentJobData.postJobRoutine( p_in.rootDir / p_stepName, currentJobData, p_in.outputs );
 			checkJobResults( currentJobData );
 			if ( currentJobData.report.errorOccured )
+			{
 				return false;
+			}
 
 			fillOutputs( p_in, p_stepIn, currentJobData );
 			return true;
@@ -81,7 +91,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	} // namespace
 
 	void prepareStructure(
-		std::stop_token &	  p_token,
+		Util::StopToken &	  p_token,
 		const fs::path &	  p_structurePdb,
 		GromacsInstructions & p_in
 	) noexcept
@@ -93,34 +103,52 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		if ( carryPreparationStep( p_in, p_in.pdb2gmx, g_jobNames[ jobIdx ], jobIdx ) == false
 			 || p_token.stop_requested() )
+		{
 			return;
+		}
 		if ( carryPreparationStep( p_in, p_in.editconf1, g_jobNames[ jobIdx ], jobIdx ) == false
 			 || p_token.stop_requested() )
+		{
 			return;
+		}
 		if ( carryPreparationStep( p_in, p_in.solvate, g_jobNames[ jobIdx ], jobIdx ) == false
 			 || p_token.stop_requested() )
+		{
 			return;
+		}
 		if ( carryPreparationStep( p_in, p_in.trjconv, g_jobNames[ jobIdx ], jobIdx ) == false
 			 || p_token.stop_requested() )
+		{
 			return;
+		}
 		p_in.gromppIons.step = E_GROMPP_STEP::ions;
 		if ( carryPreparationStep( p_in, p_in.gromppIons, g_jobNames[ jobIdx ], jobIdx ) == false
 			 || p_token.stop_requested() )
+		{
 			return;
+		}
 		if ( carryPreparationStep( p_in, p_in.genion, g_jobNames[ jobIdx ], jobIdx ) == false
 			 || p_token.stop_requested() )
+		{
 			return;
+		}
 		p_in.gromppPosres.step = E_GROMPP_STEP::posres;
 		if ( carryPreparationStep( p_in, p_in.gromppPosres, g_jobNames[ jobIdx ], jobIdx ) == false
 			 || p_token.stop_requested() )
+		{
 			return;
+		}
 		p_in.gromppEm.step = E_GROMPP_STEP::em;
 		if ( carryPreparationStep( p_in, p_in.gromppEm, g_jobNames[ jobIdx ], jobIdx ) == false
 			 || p_token.stop_requested() )
+		{
 			return;
+		}
 		if ( carryPreparationStep( p_in, p_in.editconf2, g_jobNames[ jobIdx ], jobIdx ) == false
 			 || p_token.stop_requested() )
+		{
 			return;
+		}
 	}
 
 	void createMdDirectory( const GromacsInstructions &, const fs::path & p_dest ) noexcept {}
@@ -143,10 +171,13 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			{
 				out = base / std::to_string( i );
 				if ( fs::exists( out ) == false )
+				{
 					return out;
+				}
 			}
 			return base / "a"; // ragequit
 		}
+
 		static void test(
 			const fs::path &	  p_structurePdb,
 			const forcefield &	  p_ff,
@@ -159,7 +190,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			Pdb2gmxInstructions inst;
 			fs::path			rootDir = createRootDir();
 			if ( fs::exists( rootDir ) )
+			{
 				fs::remove_all( rootDir );
+			}
 			fs::create_directories( rootDir );
 			inst.forcefields	 = { p_ff };
 			inst.forcefieldIndex = 0;
@@ -203,22 +236,32 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			_thr( startTest( _structurePdb, _ff, _w, _finished, _systemOk, _why ) )
 		{
 		}
+
 		~_Impl()
 		{
 			if ( _thr.joinable() )
+			{
 				_thr.join();
+			}
 		}
+
 		bool isTestFinished() const noexcept { return _finished; }
+
 		bool isSystemOk() const noexcept
 		{
 			while ( _finished == false )
+			{
 				std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
+			}
 			return _systemOk;
 		}
+
 		const std::string_view why() const noexcept
 		{
 			if ( _finished == false || _systemOk == true )
+			{
 				return {};
+			}
 			return _why;
 		}
 	};

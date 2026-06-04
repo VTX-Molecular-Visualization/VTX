@@ -12,11 +12,7 @@
 #include <tool/mdprep/backends/gromacs/solvate.hpp>
 #include <tool/mdprep/backends/gromacs/trjconv.hpp>
 #include <tool/mdprep/backends/gromacs/util.hpp>
-
-namespace std
-{
-	class stop_token;
-}
+#include <util/thread.hpp>
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
@@ -47,7 +43,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	 * @param p_structurePdb
 	 * @param
 	 */
-	void prepareStructure( std::stop_token &, const fs::path & p_structurePdb, GromacsInstructions & ) noexcept;
+	void prepareStructure( Util::StopToken &, const fs::path & p_structurePdb, GromacsInstructions & ) noexcept;
 
 	/**
 	 * @brief Use prepared structure to deliver a ready-to-use directory to start MD from
