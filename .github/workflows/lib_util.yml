@@ -91,12 +91,6 @@ jobs:
         conan upload platformfolders -r=vtx
         conan upload catch2 -r=vtx
 
-    - name: Upload Windows dependencies
-      if: runner.os == 'Windows'
-      working-directory: ${{env.LIB_DIR}}
-      run: |
-        conan upload brotli -r=vtx
-
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
       shell: bash
