@@ -23,6 +23,7 @@ namespace std
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 	const uint8_t g_NUM_PREPARATION_JOBS = 9;
+
 	struct GromacsInstructions
 	{
 		Pdb2gmxInstructions	 pdb2gmx;
@@ -41,11 +42,18 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		fs::path										   rootDir = createNewEmptyTempDirectory();
 	};
 
-	// Use input structure and instuction to make the structure ready for MD simulations.
-	// Assumes gromacs context has been set beforehand
+	/**
+	 * @brief Use input structure and instuction to make the structure ready for MD simulations. Assumes gromacs context
+	 * has been set beforehand
+	 * @param
+	 * @param p_structurePdb
+	 * @param
+	 */
 	void prepareStructure( std::stop_token &, const fs::path & p_structurePdb, GromacsInstructions & ) noexcept;
 
-	// Use prepared structure to deliver a ready-to-use directory to start MD from
+	/**
+	 * @brief Use prepared structure to deliver a ready-to-use directory to start MD from
+	 */
 	void createMdDirectory( const GromacsInstructions &, const fs::path & p_dest ) noexcept;
 
 	// Class responsible for testing the system with gromacs asynchronously.
@@ -54,26 +62,36 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	  public:
 		SystemTester( const fs::path & p_structurePdb, const forcefield &, const E_WATER_MODEL & );
 
-		// Return if the asynchronous test is over. Usefull if you don't want to block the current thread waiting
+		/**
+		 * @brief  Check if the asynchronous test is over. Usefull if you don't want to block the current thread waiting
+		 */
 		bool isTestFinished() const noexcept;
 
-		// Return weither the system is accepted by gromacs or not. Wait for the test to finish before returning the
-		// value, potentially blocking the current thread.
-		bool isSystemOk() const noexcept;
-
-		// Return the reason why the system is not viable
+		/**
+		 * @brief Return the reason why the system is not viable, or empty if not finished or viable.
+		 */
 		const std::string_view why() const noexcept;
 
-		// Return weither the system is accepted by gromacs or not. Wait for the test to finish before returning the
-		// value, potentially blocking the current thread.
+		/**
+		 * @brief Return weither the system is accepted by gromacs or not. Wait for the test to finish before returning
+		 * the value, potentially blocking the current thread. Analogous to the isSystemOk method.
+		 */
 		operator bool() const noexcept;
+
+		/**
+		 * @brief Return weither the system is accepted by gromacs or not. Wait for the test to finish before returning
+		 * the value, potentially blocking the current thread.
+		 */
+		bool isSystemOk() const noexcept;
 
 	  private:
 		class _Impl;
+
 		struct Del
 		{
 			void operator()( const _Impl * p ) const;
 		};
+
 		std::unique_ptr<_Impl, Del> _pimpl = nullptr;
 	};
 
