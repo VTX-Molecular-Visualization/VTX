@@ -115,6 +115,16 @@ jobs:
         conan upload tcl -r=vtx
         conan upload tk -r=vtx
 
+    - name: Upload Linux Python dependencies
+      if: runner.os == 'Linux'
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan upload fontconfig -r=vtx
+        conan upload freetype -r=vtx
+        conan upload libpng -r=vtx
+        conan upload tk -r=vtx
+        conan upload util-linux-libuuid -r=vtx
+
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
       shell: bash
