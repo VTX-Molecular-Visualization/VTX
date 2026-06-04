@@ -52,14 +52,7 @@ class VTXToolExampleRecipe(ConanFile):
         cmake.configure()
         cmake.build()
         if self.options.test == True:
-            if self.settings.os == "Linux":
-                os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
-                os.environ.setdefault("LIBGL_ALWAYS_SOFTWARE", "1")
-            self.run(
-                f"ctest -C {self.settings.build_type} --parallel 4 --output-on-failure",
-                cwd=self.build_folder,
-                env="conanrun",
-            )
+            cmake.ctest(["--output-on-failure"])
 
     def package(self):
         cmake = CMake(self)

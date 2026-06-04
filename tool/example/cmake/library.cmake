@@ -43,6 +43,3 @@ vtx_qt_copy_runtime(vtx_tool_example_test)
 
 include(CTest)
 add_test(NAME vtx_tool_example_test COMMAND vtx_tool_example_test)
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	set_tests_properties(vtx_tool_example_test PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen;LIBGL_ALWAYS_SOFTWARE=1")
-endif()
