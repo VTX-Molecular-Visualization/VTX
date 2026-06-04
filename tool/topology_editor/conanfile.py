@@ -1,3 +1,4 @@
+import os
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 from conan.tools.env import VirtualRunEnv
@@ -51,6 +52,9 @@ class VTXToolTopologyEditorRecipe(ConanFile):
         cmake.configure()
         cmake.build()
         if self.options.test == True:
+            if self.settings.os == "Linux":
+                os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+                os.environ.setdefault("LIBGL_ALWAYS_SOFTWARE", "1")
             cmake.ctest(["--output-on-failure"])
 
     def package(self):

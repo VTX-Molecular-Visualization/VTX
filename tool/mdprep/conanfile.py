@@ -118,6 +118,9 @@ class VTXToolMdprepRecipe(ConanFile):
         cmake.configure()
         cmake.build()
         if self.options.test == True:
+            if self.settings.os == "Linux":
+                os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+                os.environ.setdefault("LIBGL_ALWAYS_SOFTWARE", "1")
             cmake.ctest(["--output-on-failure"])
         
     def package(self):
