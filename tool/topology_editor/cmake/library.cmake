@@ -21,6 +21,7 @@ vtx_configure_target(vtx_tool_topology_editor_test)
 # Link internal dependencies.
 target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_util::vtx_util)
 target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_app::vtx_app)
+target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_io::vtx_io)
 target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_ui_qt::vtx_ui_qt)
 target_link_libraries(vtx_tool_topology_editor_test PRIVATE vtx_app::vtx_app)
 
