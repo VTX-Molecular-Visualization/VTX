@@ -81,8 +81,6 @@ jobs:
       shell: bash
       run: |
         conan install tool/mdprep -b missing \
-          -r=vtx \
-          -r=conancenter \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -c tools.system.package_manager:mode=install \
@@ -101,8 +99,6 @@ jobs:
       shell: bash
       run: |
         conan create tool/mdprep -b missing \
-          -r=vtx \
-          -r=conancenter \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -c tools.system.package_manager:mode=install \
