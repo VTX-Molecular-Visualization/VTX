@@ -1,5 +1,4 @@
 #include <fstream>
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
 //
 #include "fixture.hpp"
 #include <algorithm>

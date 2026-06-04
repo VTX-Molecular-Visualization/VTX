@@ -83,8 +83,11 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_python_binding/1.0")
         self.requires("re2/20240702")
-        self.requires("gromacs/2026.0")
+        self.requires("gromacs/2026.1")
         self.requires("catch2/3.14.0")
+        if self.settings.os == "Linux":
+            self.requires("libffi/3.4.8", override=True)
+            self.requires("wayland/1.24.0", override=True)            
 
     def generate(self):
         tc = CMakeToolchain(self)
@@ -96,7 +99,7 @@ class VTXToolMdprepRecipe(ConanFile):
         tc.cache_variables["VTX_PYTHON_BINDING_RUNTIME_ROOT"] = python_binding_conf.get("user.python_binding:runtime_root")
         qt_conf = self.dependencies["vtx_ui_qt"].conf_info
         tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_conf.get("user.ui_qt:runtime_root")
-        tc.cache_variables["VTX_UI_QT"] = 1
+        tc.cache_variables["VTX_UI_QT"] = "1"
         tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = _cmake_path(executable_folder(self))
         tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")
         tc.cache_variables["VTX_PYTHON_BINDING"] = app_conf.get("user.app:python_binding")

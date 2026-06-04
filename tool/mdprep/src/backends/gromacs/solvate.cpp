@@ -1,4 +1,3 @@
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
 #include <tool/mdprep/backends/gromacs/solvate.hpp>
 //
 #include "tool/mdprep/backends/gromacs/job.hpp"

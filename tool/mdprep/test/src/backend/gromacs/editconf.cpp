@@ -3,8 +3,6 @@
 //
 #include <tool/mdprep/backends/gromacs/editconf.hpp>
 //
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
-//
 #include "fixture.hpp"
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include <tool/mdprep/backends/gromacs/util.hpp>

@@ -1,7 +1,4 @@
-#include <qprocess.h>
-#include <re2/re2.h>
 #include <tool/mdprep/backends/gromacs/genion.hpp>
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
 //
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include <tool/mdprep/backends/gromacs/util.hpp>
@@ -37,36 +34,6 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		p_instructions.outputGro = jobDir / ( p_instructions.fileStem + ".gro" );
 	}
 
-	bool isWaitingForInput( const GenionInputs &, const std::string_view & p_stdout ) noexcept
-	{
-		return p_stdout.ends_with( "Select a group: " );
-	}
-	bool enterInput(
-		GenionInputs & p_inputs,
-		QProcess &	   p_proc,
-		std::string &  p_stdout,
-		std::string &  p_stderr
-	) noexcept
-	{
-		std::string & gmxOutput = p_stderr;
-
-		const RE2	centeringPattern { "(Group(.|\r|\n)+)Select a group: " };
-		std::string groups;
-		if ( RE2::PartialMatch( { gmxOutput }, centeringPattern, &groups ) == false )
-			return false;
-
-		const RE2	SOLGroupPattern { "Group +(\\d+) *\\( *SOL *\\)+?" };
-		std::string groupNum;
-		if ( RE2::PartialMatch( groups, SOLGroupPattern, &groupNum ) == false )
-			return false;
-
-		groupNum += '\n';
-		gmxOutput += groupNum;
-		p_proc.write( groupNum.data() );
-		p_proc.waitForBytesWritten();
-		return true;
-	}
-
 	void convert( const GenionInstructions & p_in, GromacsJobData & p_out ) noexcept
 	{
 		p_out.arguments.push_back( "genion" );
@@ -92,6 +59,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			p_out.arguments.push_back( "-conc" );
 			p_out.arguments.push_back( std::to_string( p_in.conc.value() ) );
 		}
-		p_out.interactiveSettings = GenionInputs();
+		p_out.arguments.push_back( "-group" );
+		p_out.arguments.push_back( "SOL" );
 	}
 } // namespace VTX::Tool::Mdprep::backends::Gromacs

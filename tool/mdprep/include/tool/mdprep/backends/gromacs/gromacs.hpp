@@ -1,8 +1,6 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS__
 #define __VTX_TOOL_TOOLS_MDPREP_GROMACS__
 
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
-//
 #include <array>
 #include <cstdint>
 #include <tool/mdprep/backends/gromacs/editconf.hpp>

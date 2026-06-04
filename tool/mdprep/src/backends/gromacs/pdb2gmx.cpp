@@ -1,5 +1,4 @@
 #include <fstream>
-#include <qprocess.h>
 #include <re2/re2.h>
 #include <regex>
 #include <set>
@@ -9,10 +8,7 @@
 #include <util/exceptions.hpp>
 #include <util/string.hpp>
 //
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
-// impl should come before inputs
 #include "tool/mdprep/backends/gromacs/job.hpp"
-#include <tool/mdprep/backends/gromacs/pdb2gmx.impl.hpp>
 #include <tool/mdprep/backends/gromacs/util.hpp>
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
@@ -253,6 +249,37 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 #endif // !_WIN
 
+		// Returns the uppercase 3-letter residue name used in the GROMACS -batch file format,
+		// or nullptr for keywords that do not map to a titratable residue (ss, ter).
+		const char * batchKeyword( const E_INTERACTIVE_KEYWORD & p_kw ) noexcept
+		{
+			switch ( p_kw )
+			{
+			case E_INTERACTIVE_KEYWORD::his: return "HIS";
+			case E_INTERACTIVE_KEYWORD::lys: return "LYS";
+			case E_INTERACTIVE_KEYWORD::arg: return "ARG";
+			case E_INTERACTIVE_KEYWORD::asp: return "ASP";
+			case E_INTERACTIVE_KEYWORD::glu: return "GLU";
+			case E_INTERACTIVE_KEYWORD::gln: return "GLN";
+			default: return nullptr;
+			}
+		}
+
+		// Serialize p_inputs into a file readable by pdb2gmx -batch.
+		// Format per line: CHAIN TYPE+RESNUM VALUE  (e.g. "A HIS47 1")
+		// ss and ter entries are skipped (not handled by the -batch flag).
+		void writeBatchFile( const fs::path & p_batchFile, const Pdb2gmxInputs & p_inputs )
+		{
+			std::ofstream out( p_batchFile );
+			for ( const auto & [ id, value ] : p_inputs.kwValue )
+			{
+				const char * kw = batchKeyword( id.kw );
+				if ( kw == nullptr )
+					continue;
+				out << id.chain << ' ' << kw << id.num << ' ' << value << '\n';
+			}
+		}
+
 		void postJobRoutine( const fs::path & p_jobDir, GromacsJobData & p_jobData, CumulativeOuputFiles & p_outputs )
 		{
 			// The issue here is the .itp file. When the input structure has multiple chain, multiple itp files are
@@ -278,32 +305,22 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			if ( fs::exists( tmpFile ) )
 				fs::remove( tmpFile );
 			{
-				std::string fileStem = topFile.stem().string();
-				RE2			itpÎncludePattern { fmt::format( "#include +(\"|<)({}.*\\.\\w\\w\\w)(\"|>).*", fileStem ) };
+				std::string   fileStem	   = topFile.stem().string();
+				RE2			  itpÎncludePattern { fmt::format( "#include +(\"|<)({}.*\\.\\w\\w\\w)(\"|>).*", fileStem ) };
 				std::ifstream fileStrm { topFile };
 				std::ofstream outStrm { tmpFile };
-				const size_t  bufSize	   = 500; // should be way too much for a single line
 				std::string	  jobDirString = p_jobDir.string();
-				for ( std::array<char, bufSize> buf; fileStrm.getline( buf.data(), bufSize ); )
+				std::string	  line;
+				while ( std::getline( fileStrm, line ) )
 				{
 					std::string fileName;
-
-					if ( RE2::FullMatch( { buf.data() }, itpÎncludePattern, nullptr, &fileName, nullptr ) )
+					if ( RE2::FullMatch( line, itpÎncludePattern, nullptr, &fileName, nullptr ) )
 					{
-						char * cur = strstr( buf.data(), fileName.data() );
-						if ( cur >= buf.data() && cur <= ( buf.data() + bufSize ) )
-						{
-							strcpy_s( cur, bufSize - ( cur - buf.data() ), jobDirString.data() );
-							cur += jobDirString.size();
-							strcpy_s( cur, bufSize - ( cur - buf.data() ), "/" );
-							cur += 1;
-							strcpy_s( cur, bufSize - ( cur - buf.data() ), fileName.data() );
-							cur += fileName.size();
-							strcpy_s( cur, bufSize - ( cur - buf.data() ), "\"" );
-						}
+						auto pos = line.find( fileName );
+						if ( pos != std::string::npos )
+							line.replace( pos, fileName.size(), jobDirString + "/" + fileName );
 					}
-
-					outStrm << buf.data() << std::endl;
+					outStrm << line << '\n';
 				}
 			}
 			fs::remove( topFile );
@@ -351,51 +368,12 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		if ( p_in.customParameter.has_value() )
 		{
-			std::set<E_INTERACTIVE_KEYWORD> seen_kw;
-			p_out.interactiveSettings.emplace( Pdb2gmxInputs( *p_in.customParameter ) );
-			for ( auto & it : p_in.customParameter->kwValue )
-			{
-				if ( seen_kw.contains( it.first.kw ) )
-					continue;
-
-				p_out.arguments.push_back( std::string( "-" ) += string( it.first.kw ) );
-			}
+			fs::path batchFile = fs::temp_directory_path() / ( p_in.fileStem + "_pdb2gmx_batch.txt" );
+			writeBatchFile( batchFile, *p_in.customParameter );
+			p_out.arguments.push_back( "-batch" );
+			p_out.arguments.push_back( batchFile.make_preferred().string() );
 		}
 
 		p_out.postJobRoutine = &postJobRoutine;
-	}
-	bool isWaitingForInput( const Pdb2gmxInputs &, const std::string_view & p_stdout ) noexcept
-	{
-		return isWaitingInputs( p_stdout );
-	}
-
-	bool enterInput(
-		const Pdb2gmxInputs & p_inputs,
-		QProcess &			  p_proc,
-		std::string &		  p_stdout,
-		std::string &		  p_stderr
-	) noexcept
-	{
-		Pdb2gmxInputId expectedId;
-		bool		   noProblemFoundWhileParsingGromacsOutput = parseExpectedKwArgument( p_stdout, expectedId );
-		if ( noProblemFoundWhileParsingGromacsOutput == false )
-		{
-			p_proc.kill();
-			p_stderr += "\nVTX error -- VTX didn't recognized gromacs expected value.";
-			return false;
-		}
-
-		const char * value = nullptr;
-		if ( p_inputs.kwValue.contains( expectedId ) )
-			value = p_inputs.kwValue.at( expectedId ).data();
-		else
-			value = getDefaultValue( expectedId.kw );
-		std::string bytesForGromacs { value };
-		bytesForGromacs += '\n';
-		p_proc.write( bytesForGromacs.data() );
-		p_stdout += bytesForGromacs;
-		p_proc.waitForBytesWritten();
-
-		return true;
 	}
 } // namespace VTX::Tool::Mdprep::backends::Gromacs

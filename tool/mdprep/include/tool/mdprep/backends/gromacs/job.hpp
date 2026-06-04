@@ -3,7 +3,6 @@
 
 #include <filesystem>
 #include <functional>
-#include <optional>
 #include <string>
 #include <util/datalocker.hpp>
 #include <vector>
@@ -11,8 +10,6 @@ namespace fs = std::filesystem;
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
-	class Inputs;
-
 	struct Channels
 	{
 		std::string stdout_;
@@ -42,8 +39,6 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 														// path of output files to check
 		VTX::Util::DataLocker<Channels> channelsLocker;
 		JobReport						report;
-		std::optional<Inputs>
-			interactiveSettings; // If the Inputs class is instanciated, the process is expected to be interactive.
 		std::function<void( const fs::path &, GromacsJobData &, CumulativeOuputFiles & )> postJobRoutine
 			= []( const fs::path &, GromacsJobData &, CumulativeOuputFiles & ) {};
 		bool operator==( const GromacsJobData & ) const noexcept = default;
