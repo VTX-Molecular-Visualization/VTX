@@ -27,21 +27,29 @@ namespace VTX::App::Action::IO
 		// TODO: check file format to redirect to the correct loader.
 		std::string extension = p_path.extension().string();
 		if ( extension == ".py" || extension == ".vtx" )
+		{
 			ACTION().execute<RunPythonScript>( p_path );
+		}
 		else
+		{
 			ACTION().execute<LoadSystem>( p_path );
+		}
 	}
+
 	struct _SystemIo
 	{
 		Util::StopToken						   stopToken;
 		Threading::OptionalThreadReference	   threadRef;
 		std::latch							   extractorCreation { 1 };
 		std::optional<System::SystemExtractor> extractor;
-		inline void							   wait() noexcept
+
+		inline void wait() noexcept
 		{
 			this->extractorCreation.wait();
 			if ( this->extractor )
+			{
 				this->extractor->wait();
+			}
 		}
 
 		inline void start_extraction()
@@ -50,9 +58,11 @@ namespace VTX::App::Action::IO
 			extractor.value()( stopToken, threadRef );
 		}
 	};
+
 	void _SystemIoDel::operator()( _SystemIo * p_ ) noexcept { delete p_; }
 
 	LoadSystem::LoadSystem() : _data( new _SystemIo() ) {}
+
 	LoadSystem::LoadSystem( Util::StopToken p_token, Threading::OptionalThreadReference p_thr ) :
 		_data( new _SystemIo { std::move( p_token ), std::move( p_thr ) } )
 	{
@@ -65,6 +75,7 @@ namespace VTX::App::Action::IO
 
 		_data->start_extraction();
 	}
+
 	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
 	{
 		_data->extractor = System::SystemExtractor( std::move( p_path ), std::move( p_buffer ) );
@@ -72,6 +83,7 @@ namespace VTX::App::Action::IO
 
 		_data->start_extraction();
 	}
+
 	void LoadSystem::wait() noexcept { _data->wait(); }
 
 	struct WriteSelection::_WriterIo
@@ -85,14 +97,21 @@ namespace VTX::App::Action::IO
 		{
 			writerSync.wait();
 			if ( writer )
+			{
 				writer->wait();
+			}
 		}
 	};
+
+	void WriteSelection::_del::operator()( _WriterIo * p_ ) const noexcept { delete p_; }
+
 	WriteSelection::WriteSelection() : _data( new _WriterIo() ) {}
+
 	WriteSelection::WriteSelection( Util::StopToken p_stop, Threading::OptionalThreadReference p_thr ) :
 		_data( new _WriterIo( std::move( p_stop ), std::move( p_thr ) ) )
 	{
 	}
+
 	void WriteSelection::execute( FilePath p_path )
 	{
 		_data->writer.emplace( p_path );
@@ -103,7 +122,44 @@ namespace VTX::App::Action::IO
 
 	void WriteSelection::wait() noexcept { _data->wait(); }
 
+	struct WriteVisible::_WriterIo
+	{
+		Util::StopToken						 stopToken;
+		Threading::OptionalThreadReference	 threadRef;
+		std::optional<System::VisibleWriter> writer;
+		std::latch							 writerSync { 1 };
+
+		void wait() noexcept
+		{
+			writerSync.wait();
+			if ( writer )
+			{
+				writer->wait();
+			}
+		}
+	};
+
+	void WriteVisible::_del::operator()( _WriterIo * p_ ) const noexcept { delete p_; }
+
+	WriteVisible::WriteVisible() : _data( new _WriterIo() ) {}
+
+	WriteVisible::WriteVisible( Util::StopToken p_stop, Threading::OptionalThreadReference p_thr ) :
+		_data( new _WriterIo( std::move( p_stop ), std::move( p_thr ) ) )
+	{
+	}
+
+	void WriteVisible::execute( FilePath p_path )
+	{
+		_data->writer.emplace( p_path );
+		_data->writerSync.count_down();
+
+		_data->writer.value()( std::move( _data->stopToken ), _data->threadRef );
+	}
+
+	void WriteVisible::wait() noexcept { _data->wait(); }
+
 	AssociateTrajectory::AssociateTrajectory() : _data( new _SystemIo() ) {}
+
 	AssociateTrajectory::AssociateTrajectory( Util::StopToken p_token, Threading::OptionalThreadReference p_thr ) :
 		_data( new _SystemIo { std::move( p_token ), std::move( p_thr ) } )
 
@@ -122,8 +178,10 @@ namespace VTX::App::Action::IO
 		_data->extractorCreation.count_down();
 		_data->start_extraction();
 	}
+
 	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e )
 	{ execute( FilePath( p_path ), p_e ); }
+
 	void AssociateTrajectory::wait() noexcept { _data->wait(); }
 
 	void RunPythonScript::execute( const FilePath & p_path ) { INTERPRETOR().runScript( p_path ); }
@@ -183,5 +241,5 @@ namespace VTX::App::Action::IO
 			VTX_ERROR( "Snapshot failed: {}", p_e.what() );
 		}
 	}
-	void WriteSelection::_del::operator()( _WriterIo * p_ ) const noexcept { delete p_; }
+
 } // namespace VTX::App::Action::IO

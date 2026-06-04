@@ -36,6 +36,35 @@ namespace VTX::App::System
 		struct _impl;
 		std::shared_ptr<_impl> _ptr = nullptr;
 	};
+
+	/**
+	 * @brief Responsible for gathering visible atoms and writing it them into a file.
+	 */
+	class VisibleWriter
+	{
+	  public:
+		VisibleWriter() = delete;
+
+		/**
+		 * @brief Gather visibles.
+		 * @param
+		 */
+		VisibleWriter( FilePath );
+
+		/**
+		 * @brief Meant to be used as a thread callable. Actually write the file.
+		 */
+		uint operator()( Util::StopToken, Threading::OptionalThreadReference );
+
+		/**
+		 * @brief Stop the execution unit the selection is written
+		 */
+		void wait() noexcept;
+
+	  private:
+		struct _impl;
+		std::shared_ptr<_impl> _ptr = nullptr;
+	};
 } // namespace VTX::App::System
 
 #endif
