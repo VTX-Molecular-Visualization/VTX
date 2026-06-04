@@ -90,6 +90,7 @@ jobs:
     - name: Upload dependencies
       working-directory: ${{env.ROOT_DIR}}
       run: |
+        conan upload abseil -r=vtx
         conan upload gromacs -r=vtx
         conan upload re2 -r=vtx
 
