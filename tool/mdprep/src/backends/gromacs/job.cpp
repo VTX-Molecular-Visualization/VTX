@@ -9,6 +9,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	{
 
 		void fillMissingString( const QByteArray & from, std::string & to ) noexcept { to += from.toStdString(); }
+
 		void fillMissingString( Channels & channels, std::string & err, std::string & out )
 		{
 			channels.stderr_ += err;
@@ -18,21 +19,25 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			out.clear();
 		}
 
-		void simpleProcessManagement( QProcess & p_proc, bool & p_finished, GromacsJobData & p_args ) noexcept
+		void simpleProcessManagement( QProcess & p_proc, GromacsJobData & p_args ) noexcept
 		{
-			QByteArray bufErr, bufOut;
-
-			do
+			auto drain = [ & ]
 			{
-				p_proc.waitForReadyRead( 10 );
-				bufErr = p_proc.readAllStandardError();
-				bufOut = p_proc.readAllStandardOutput();
-
-				auto channels = p_args.channelsLocker.open();
+				QByteArray bufErr	= p_proc.readAllStandardError();
+				QByteArray bufOut	= p_proc.readAllStandardOutput();
+				auto	   channels = p_args.channelsLocker.open();
 				fillMissingString( bufErr, channels->stderr_ );
 				fillMissingString( bufOut, channels->stdout_ );
+			};
 
-			} while ( !p_finished );
+			// waitForFinished returns true once the process has actually exited;
+			// on timeout we drain accumulated output and loop again.
+			while ( !p_proc.waitForFinished( 50 ) && p_proc.state() != QProcess::NotRunning )
+			{
+				drain();
+			}
+
+			drain(); // flush whatever was buffered after exit
 		}
 	} // namespace
 
@@ -42,18 +47,18 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		QString		pgm { p_gmxExe.string().data() };
 		QStringList qtArgs;
 		for ( auto & arg : p_args.arguments )
+		{
 			qtArgs << QString( arg.c_str() );
+		}
 
-		bool	 finished = false;
 		QProcess proc;
 
-		proc.connect( &proc, &QProcess::finished, [ & ] { finished = true; } );
 		proc.setProgram( pgm );
 		proc.setArguments( qtArgs );
 		proc.start();
 		proc.waitForStarted( -1 );
 
-		simpleProcessManagement( proc, finished, p_args );
+		simpleProcessManagement( proc, p_args );
 		p_args.report.finished = true;
 	}
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
