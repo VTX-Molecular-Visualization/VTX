@@ -10,6 +10,7 @@ endif()
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_app CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
+find_package(vtx_io CONFIG REQUIRED)
 find_package(vtx_ui_qt CONFIG REQUIRED)
 
 # External dependencies.

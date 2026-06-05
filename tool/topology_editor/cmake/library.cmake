@@ -21,12 +21,13 @@ vtx_configure_target(vtx_tool_topology_editor_test)
 # Link internal dependencies.
 target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_util::vtx_util)
 target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_app::vtx_app)
+target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_io::vtx_io)
 target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_ui_qt::vtx_ui_qt)
 target_link_libraries(vtx_tool_topology_editor_test PRIVATE vtx_app::vtx_app)
 
 # Link tests.
 target_link_libraries(vtx_tool_topology_editor_test PRIVATE vtx_tool_topology_editor::vtx_tool_topology_editor)
-target_link_libraries(vtx_tool_topology_editor_test PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(vtx_tool_topology_editor_test PRIVATE Catch2::Catch2)
 
 if (VTX_RENDERER)
 	vtx_link_cuda(vtx_tool_topology_editor_test)
@@ -39,5 +40,4 @@ endif()
 vtx_qt_copy_runtime(vtx_tool_topology_editor_test)
 
 include(CTest)
-include(Catch)
-catch_discover_tests(vtx_tool_topology_editor_test DISCOVERY_MODE PRE_TEST)
+add_test(NAME vtx_tool_topology_editor_test COMMAND vtx_tool_topology_editor_test)

@@ -29,7 +29,7 @@ target_include_directories(vtx_tool_mdprep_test PRIVATE "${CMAKE_CURRENT_LIST_DI
 
 target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_app::vtx_app)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE vtx_tool_mdprep::vtx_tool_mdprep)
-target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(vtx_tool_mdprep_test PRIVATE Catch2::Catch2)
 target_link_libraries(vtx_tool_mdprep_test PRIVATE re2::re2)
 
 if (VTX_RENDERER)
@@ -44,7 +44,6 @@ vtx_qt_copy_runtime(vtx_tool_mdprep_test)
 vtx_tool_mdprep_copy_runtime(vtx_tool_mdprep_test)
 
 include(CTest)
-include(Catch)
-catch_discover_tests(vtx_tool_mdprep_test DISCOVERY_MODE PRE_TEST)
+add_test(NAME vtx_tool_mdprep_test COMMAND vtx_tool_mdprep_test)
 vtx_tool_mdprep_copy_data(vtx_tool_mdprep_test)
 vtx_copy_directory(vtx_tool_mdprep_test "${CMAKE_CURRENT_LIST_DIR}/../test/data" "$<TARGET_FILE_DIR:vtx_tool_mdprep_test>/data")

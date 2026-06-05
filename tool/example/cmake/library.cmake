@@ -29,7 +29,7 @@ target_link_libraries(vtx_tool_example_test PRIVATE vtx_app::vtx_app)
 
 # Link tests.
 target_link_libraries(vtx_tool_example_test PRIVATE vtx_tool_example::vtx_tool_example)
-target_link_libraries(vtx_tool_example_test PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(vtx_tool_example_test PRIVATE Catch2::Catch2)
 
 if (VTX_RENDERER)
 	vtx_link_cuda(vtx_tool_example_test)
@@ -42,5 +42,4 @@ endif()
 vtx_qt_copy_runtime(vtx_tool_example_test)
 
 include(CTest)
-include(Catch)
-catch_discover_tests(vtx_tool_example_test DISCOVERY_MODE PRE_TEST)
+add_test(NAME vtx_tool_example_test COMMAND vtx_tool_example_test)

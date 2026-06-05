@@ -1,6 +1,5 @@
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
-from conan.tools.env import VirtualRunEnv
 
 class VTXToolTopologyEditorRecipe(ConanFile):
     name = "vtx_tool_topology_editor"
@@ -19,6 +18,7 @@ class VTXToolTopologyEditorRecipe(ConanFile):
         self.requires("vtx_util/1.0")
         self.requires("vtx_app/1.0")
         self.requires("vtx_core/1.0")
+        self.requires("vtx_io/1.0")
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_python_binding/1.0")
         self.requires("catch2/3.15.0")
@@ -44,7 +44,6 @@ class VTXToolTopologyEditorRecipe(ConanFile):
         tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")
         tc.cache_variables["VTX_PYTHON_BINDING"] = app_conf.get("user.app:python_binding")
         tc.generate()
-        VirtualRunEnv(self).generate()
 
     def build(self):
         cmake = CMake(self)
