@@ -162,19 +162,15 @@ class VTXToolMdprepRecipe(ConanFile):
             except OSError as exc:
                 self.output.info(f"{indent}<cannot list: {exc}>")
                 return
-            for entry in entries[:max_items]:
+            for entry in entries:
                 if entry.name == "data" and entry.is_dir():
-                    self.output.info(f"Not going in {entry.name}/")
+                    self.output.info(f"{indent}Not going in {entry.name}/")
                     continue
                 if entry.is_dir(follow_symlinks=False):
                     self.output.info(f"{indent}{entry.name}/")
                     walk(entry.path, indent + "    ", max_items)
                 elif entry.name in targets:
                     self.output.info(f"{indent}>>>>> {entry.name}  <==== TEST EXECUTABLE")
-                else:
-                    self.output.info(f"{indent}{entry.name}")
-            if len(entries) > max_items:
-                self.output.info(f"{indent}... (+{len(entries) - max_items} more items)")
 
         roots = {
             "build_folder": self.build_folder,
