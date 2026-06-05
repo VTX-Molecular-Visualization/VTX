@@ -118,6 +118,12 @@ class VTXToolMdprepRecipe(ConanFile):
         cmake.configure()
         cmake.build()
         if self.options.test == True:
+            # TEMP diagnostic: CatchAddTests discovery runs the binary with --list-tests
+            # but only captures stdout, so any startup/registration error (printed to
+            # stderr) is lost and shows up as an empty "Output:". Run it directly here
+            # so stderr is visible in the CI log. Remove once the root cause is found.
+            exe = os.path.join(executable_folder(self), "vtx_tool_mdprep_test")
+            self.run(f'"{exe}" --list-tests', env="conanrun")
             cmake.ctest([ "--output-on-failure", "-V"])
         
     def package(self):

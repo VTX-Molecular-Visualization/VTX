@@ -65,6 +65,10 @@ jobs:
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }} --index 0
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
+    - name: Install xvfb (Linux)
+      if: runner.os == 'Linux'
+      run: sudo apt-get install -y xvfb
+
     - name: Export local packages
       working-directory: ${{env.ROOT_DIR}}
       run: |
@@ -98,7 +102,7 @@ jobs:
       working-directory: ${{env.ROOT_DIR}}
       shell: bash
       run: |
-        conan create tool/mdprep -b missing \
+        ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/mdprep -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -c tools.system.package_manager:mode=install \
