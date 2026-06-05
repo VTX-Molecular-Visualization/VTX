@@ -13,7 +13,8 @@
 namespace VTX::Tool::Mdprep
 {
 	std::optional<fs::path> g_executableDirectory;
-	const fs::path &		executableDirectory() noexcept
+
+	const fs::path & executableDirectory() noexcept
 	{
 		if ( !g_executableDirectory.has_value() )
 		{
@@ -32,7 +33,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	{
 		size_t out = 0;
 		while ( p_str[ out ] != '\0' && out < p_cnt )
+		{
 			out++;
+		}
 		return out;
 	}
 #endif
@@ -41,14 +44,22 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	{
 		size_t replPos = p_text.find( p_pattern );
 		if ( replPos != std::string::npos )
+		{
 			p_text.replace( replPos, strnlen_s( p_pattern, 0xff ), p_repl );
+		}
 	}
+
 	const fs::path g_defaultFfDirectoryRelativePath
 		= ( fs::path( "data" ) / "tools" / "mdprep" / "gromacs" / "top" ).make_preferred();
+
 	const fs::path & defaultFfDirectoryRelativePath() noexcept { return g_defaultFfDirectoryRelativePath; }
 
 	const fs::path g_defaultGmxBinaryRelativePath
-		= ( fs::path( "external" ) / "tools" / "mdprep" / "gromacs" / "gmx.exe" ).make_preferred();
+		= ( fs::path( "external" ) / "tools" / "mdprep" / "gromacs" / "gmx"
+#ifdef _WIN32
+			".exe"
+#endif
+			).make_preferred();
 	const fs::path & defaultGmxBinaryRelativePath() noexcept { return g_defaultGmxBinaryRelativePath; }
 
 	const fs::path g_defaultGmxTemplatesRelativePath
@@ -75,9 +86,13 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			while ( RE2::FindAndConsume( &txt_view, pattern, &hit ) )
 			{
 				while ( hit.starts_with( '\n' ) || hit.starts_with( '\r' ) || hit.starts_with( '\t' ) )
+				{
 					hit.erase( hit.begin() );
+				}
 				while ( hit.ends_with( '\n' ) || hit.ends_with( '\r' ) )
+				{
 					hit.pop_back();
+				}
 				p_report.errors.push_back( hit );
 			}
 		}
@@ -95,7 +110,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			fs::path f { p_in.arguments[ it ] };
 			if ( f.empty() )
+			{
 				continue;
+			}
 			if ( fs::exists( f ) == false || fs::is_regular_file( f ) == false )
 			{
 				p_in.report.errors.push_back(
@@ -105,7 +122,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			}
 			if ( fs::file_size( f ) == 0 )
 			{
-				p_in.report.errors.push_back( fmt::format( "Expected output file <{}> is empty.", p_in.arguments[ it ] )
+				p_in.report.errors.push_back(
+					fmt::format( "Expected output file <{}> is empty.", p_in.arguments[ it ] )
 				);
 				break;
 			}
@@ -114,9 +132,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	}
 
 	const std::string * getFirstFileOfType( const CumulativeOuputFiles & p_list, const char * extension ) noexcept
-	{
-		return getFileOfType( p_list, 1, extension );
-	}
+	{ return getFileOfType( p_list, 1, extension ); }
 
 	const std::string * getFileOfType(
 		const CumulativeOuputFiles & p_list,
@@ -128,9 +144,13 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		for ( auto & it_fileStrPtr : p_list.fileStringPtrs )
 		{
 			if ( it_fileStrPtr->ends_with( suffix ) )
+			{
 				suffixSeen++;
+			}
 			if ( suffixSeen == n )
+			{
 				return it_fileStrPtr;
+			}
 		}
 		return nullptr;
 	}
@@ -138,27 +158,27 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	std::string getFileContent( const fs::path & p_file ) noexcept
 	{
 		if ( fs::exists( p_file ) == false )
+		{
 			return {};
+		}
 		std::ifstream strm { p_file, std::ios::ate };
 		size_t		  fileSize = strm.tellg();
 		std::string	  out( fileSize, '\0' );
 		strm.seekg( 0 );
 		strm.read( out.data(), fileSize );
 		while ( out.back() == '\0' )
+		{
 			out.pop_back();
+		}
 
 		return out;
 	}
 
 	void writeIntoFile( const fs::path & p_file, const std::string & p_content ) noexcept
-	{
-		std::ofstream( p_file ) << p_content;
-	}
+	{ std::ofstream( p_file ) << p_content; }
 
 	void setLastArgumentAsExpectedOutputFile( GromacsJobData & p_ ) noexcept
-	{
-		p_.expectedOutputFilesIndexes.push_back( p_.arguments.size() - 1 );
-	}
+	{ p_.expectedOutputFilesIndexes.push_back( p_.arguments.size() - 1 ); }
 
 	fs::path createNewEmptyTempDirectory() noexcept
 	{
