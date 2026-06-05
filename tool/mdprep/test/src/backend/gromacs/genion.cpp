@@ -119,7 +119,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - genion - convert - conc", "[convert][genion]" )
 	CHECK( expectedOutput.expectedOutputFilesIndexes == actualOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - genion - submitGromacsJob", "[submitGromacsJob][genion]" )
+TEST_CASE( "VTX_TOOL_MdPrep - genion + submitGromacsJob", "[submitGromacsJob][genion]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GenionInstructions in;

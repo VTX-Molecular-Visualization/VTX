@@ -65,7 +65,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - trjconv - convert", "[convert][trjconv]" )
 	CHECK( actualOutput.expectedOutputFilesIndexes == expectedOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - trjconv - submitGromacsJob", "[submitGromacsJob][trjconv]" )
+TEST_CASE( "VTX_TOOL_MdPrep - trjconv + submitGromacsJob", "[submitGromacsJob][trjconv]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	TrjconvInstructions in;

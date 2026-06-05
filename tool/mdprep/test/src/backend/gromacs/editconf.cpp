@@ -255,7 +255,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][producin
 	CHECK( out.expectedOutputFilesIndexes == expectedOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob", "[submitGromacsJob][editconf]" )
+TEST_CASE( "VTX_TOOL_MdPrep - editconf + submitGromacsJob", "[submitGromacsJob][editconf]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	fs::path outputEditconfDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "editconf" / "submitGromacsJob";
@@ -289,7 +289,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob", "[submitGromacsJob][editco
 	CHECK( jobData.report.finished == true );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob - producing_pdb", "[submitGromacsJob][editconf][producing_pdb]" )
+TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob + submitGromacsJob", "[submitGromacsJob][editconf][producing_pdb]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 
