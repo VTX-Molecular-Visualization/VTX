@@ -12,7 +12,7 @@ namespace
 	using namespace VTX::Tool::Mdprep;
 } // namespace
 
-TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob ", "[prepareJob][editconf][producing_pdb]" )
+TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob - producing_pdb", "[prepareJob][editconf][producing_pdb]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 
@@ -36,7 +36,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob ", "[prepareJob][editconf][p
 	CHECK( in.out.string().ends_with( "1ubq.pdb" ) );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob", "[prepareJob][editconf]" )
+TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob - setup_box", "[prepareJob][editconf]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 
@@ -52,7 +52,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob", "[prepareJob][editconf]" )
 	CHECK( in.out.string().ends_with( "1ubq.gro" ) );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][empty]" )
+TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert - empty", "[convert][editconf][empty]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	EditconfInstructions in;
@@ -73,7 +73,7 @@ namespace
 	}
 } // namespace
 
-TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][distance]" )
+TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert - distance", "[convert][editconf][distance]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	EditconfInstructions in;
@@ -99,7 +99,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][distance
 	CHECK( out.expectedOutputFilesIndexes == expectedOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][dodecahedron]" )
+TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert - dodecahedron", "[convert][editconf][size][dodecahedron]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	EditconfInstructions in;
@@ -131,7 +131,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][do
 	CHECK( out.expectedOutputFilesIndexes == expectedOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][triclinic]" )
+TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert - triclinic", "[convert][editconf][size][triclinic]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	EditconfInstructions in;
@@ -169,7 +169,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][tr
 	CHECK( out.expectedOutputFilesIndexes == expectedOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][cubic]" )
+TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert - cubic", "[convert][editconf][size][cubic]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	EditconfInstructions in;
@@ -201,7 +201,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][cu
 	CHECK( out.expectedOutputFilesIndexes == expectedOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][octahedron]" )
+TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert - octahedron", "[convert][editconf][size][octahedron]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	EditconfInstructions in;
@@ -233,7 +233,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][size][oc
 	CHECK( out.expectedOutputFilesIndexes == expectedOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert", "[convert][editconf][producing_pdb]" )
+TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert - producing_pdb", "[convert][editconf][producing_pdb]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	EditconfInstructions in;

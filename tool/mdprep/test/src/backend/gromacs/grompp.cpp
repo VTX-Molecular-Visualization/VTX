@@ -79,7 +79,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - prepareJob - em", "[prepareJob][grompp]" 
 	CHECK( RE2::PartialMatch( { mdpContent }, patternNsteps ) );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert", "[convert][grompp][em]" )
+TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert - em", "[convert][grompp][em]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GromppInstructions in;
@@ -124,7 +124,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert", "[convert][grompp][em]" )
 	CHECK( expectedOutput.expectedOutputFilesIndexes == actualOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert", "[convert][grompp][ions]" )
+TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert - ions", "[convert][grompp][ions]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GromppInstructions in;
@@ -163,7 +163,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert", "[convert][grompp][ions]" )
 	CHECK( expectedOutput.expectedOutputFilesIndexes == actualOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert", "[convert][grompp][posres]" )
+TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert - posres", "[convert][grompp][posres]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GromppInstructions in;
