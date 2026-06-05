@@ -118,13 +118,48 @@ class VTXToolMdprepRecipe(ConanFile):
         cmake.configure()
         cmake.build()
         if self.options.test == True:
-            # TEMP diagnostic: CatchAddTests discovery runs the binary with --list-tests
-            # but only captures stdout, so any startup/registration error (printed to
-            # stderr) is lost and shows up as an empty "Output:". Run it directly here
-            # so stderr is visible in the CI log. Remove once the root cause is found.
-            exe = os.path.join(executable_folder(self), "vtx_tool_mdprep_test")
-            self.run(f'"{exe}" --list-tests', env="conanrun")
+            # TEMP diagnostic: dump the build tree to locate the test executable.
+            # Remove once the root cause is found.
+            self._dump_tree()
             cmake.ctest([ "--output-on-failure", "-V"])
+
+    def _dump_tree(self):
+        # TEMP diagnostic helper. Prints the directory architecture of the relevant
+        # roots, capped at 20 items per directory, and highlights the test executable.
+        target = "vtx_tool_mdprep_test"
+        targets = {target, target + ".exe"}
+
+        def walk(path, indent="", max_items=20):
+            try:
+                entries = sorted(
+                    os.scandir(path), key=lambda e: (not e.is_dir(), e.name.lower())
+                )
+            except OSError as exc:
+                self.output.info(f"{indent}<cannot list: {exc}>")
+                return
+            for entry in entries[:max_items]:
+                if entry.is_dir(follow_symlinks=False):
+                    self.output.info(f"{indent}{entry.name}/")
+                    walk(entry.path, indent + "    ", max_items)
+                elif entry.name in targets:
+                    self.output.info(f"{indent}>>>>> {entry.name}  <==== TEST EXECUTABLE")
+                else:
+                    self.output.info(f"{indent}{entry.name}")
+            if len(entries) > max_items:
+                self.output.info(f"{indent}... (+{len(entries) - max_items} more items)")
+
+        roots = {
+            "build_folder": self.build_folder,
+            "source_folder": self.source_folder,
+            "executable_folder()": executable_folder(self),
+        }
+        self.output.info("Starting points : " + str(roots))
+        for label, root in roots.items():
+            self.output.info(f"================ {label}: {root} ================")
+            if root and os.path.isdir(root):
+                walk(root)
+            else:
+                self.output.info(f"  <not a directory>")
         
     def package(self):
         cmake = CMake(self)
