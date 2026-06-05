@@ -262,7 +262,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp + submitGromacsJob - em", "[submitGromacsJo
 
 	checkJobResults( jobData );
 
-	std::string outputs;
+	std::string outputs { "Here is the stdout and stderr : \n" };
 	outputs += jobData.channelsLocker.open()->stdout_;
 	outputs += jobData.channelsLocker.open()->stderr_;
 	INFO( outputs );
