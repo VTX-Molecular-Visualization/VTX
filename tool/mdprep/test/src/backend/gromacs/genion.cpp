@@ -146,6 +146,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - genion + submitGromacsJob", "[submitGromacsJob][ge
 	std::string outputs { "Here is the stdout and stderr : \n" };
 	outputs += jobData.channelsLocker.open()->stdout_;
 	outputs += jobData.channelsLocker.open()->stderr_;
+	CAPTURE( outputs );
 	INFO( outputs );
 	CHECK( jobData.report.errorOccured == false );
 	CHECK( jobData.report.finished == true );
