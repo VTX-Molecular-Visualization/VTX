@@ -18,9 +18,12 @@
 #include <app/action/io.hpp>
 #include <app/services.hpp>
 #include <tool/mdprep/backends/gromacs/util.hpp>
-#include <tool/mdprep/gateway/backend_gromacs.hpp>
 #include <tool/mdprep/gateway/engine_job_manager.hpp>
+#include <tool/mdprep/gateway/form_data.hpp>
+#include <tool/mdprep/gateway/shared.hpp>
 #include <util/filesystem.hpp>
+//
+#include <tool/mdprep/gateway/backend_gromacs.hpp>
 
 namespace fs = std::filesystem;
 
