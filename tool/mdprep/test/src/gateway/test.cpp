@@ -17,8 +17,12 @@
 #include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <app/services.hpp>
+#include <tool/mdprep/backends/gromacs/util.hpp>
+#include <tool/mdprep/gateway/backend_gromacs.hpp>
 #include <tool/mdprep/gateway/engine_job_manager.hpp>
 #include <util/filesystem.hpp>
+
+namespace fs = std::filesystem;
 
 TEST_CASE( "VTX_TOOL_MdPrep - integration", "[integration]" )
 {
@@ -27,6 +31,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - integration", "[integration]" )
 		VTX::Util::Filesystem::getExecutableDir() / "data" / "2qwo.nolig.pdb"
 	);
 
+	VTX::Tool::Mdprep::Gateway::Gromacs::JobManager jobManager( VTX::Tool::Mdprep::Gateway::Gromacs::MdSettings() );
 	/*
 	const VTX::FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
 	std::filesystem::create_directory( path );

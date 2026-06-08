@@ -169,6 +169,10 @@ class VTXToolMdprepRecipe(ConanFile):
                     walk(entry.path, indent + "    ", max_items)
                 elif entry.name in targets:
                     self.output.info(f"{indent}>>>>> {entry.name}  <==== TEST EXECUTABLE")
+                else:
+                    self.output.info(f"{indent}{entry.name}")
+            if len(entries) > max_items:
+                self.output.info(f"{indent}... (+{len(entries) - max_items} more items)")
 
         roots = {
             "build_folder": self.build_folder,

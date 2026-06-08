@@ -73,6 +73,8 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		void fakeCheck( CheckReportCallback p_callback )
 		{
 			VTX::VTX_DEBUG( "Starting fake check" );
+
+
 			std::this_thread::sleep_for( std::chrono::seconds( 3 ) );
 			p_callback( CheckReport { .itemGeneric = E_REPORT_CHECKED_ITEM::systemWithForceField,
 									  .message	   = "Fakely checked up." } );
