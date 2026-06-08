@@ -111,6 +111,9 @@ namespace
 		VTX::Tool::Mdprep::backends::Gromacs::submitGromacsJob( full_gmx_exe_path, p_context.args );
 		// for topol and posre, gromacs do not necessarily output a file with the exact name, but divide chains and ions
 		// into multiple files. So we need to check its pattern for us to be sure everything worked.
+		auto channels = ( p_context.args.channelsLocker.open() );
+		INFO( channels->stdout_ );
+		INFO( channels->stderr_ );
 		CHECK( fs::exists( p_context.paths.outGro ) );
 		CHECK( check_file_as_pattern( p_context.paths.outTopol ) );
 		CHECK( check_file_as_pattern( p_context.paths.outPosre ) );
