@@ -21,6 +21,14 @@ namespace
 			outClean( outDir / fmt::format( "{}.clean.pdb", p_out_dir_name, p_pdb_code ) ),
 			outIndex( outDir / fmt::format( "{}.index.ndx", p_out_dir_name, p_pdb_code ) )
 		{
+			execPath.make_preferred();
+			in.make_preferred();
+			outDir.make_preferred();
+			outGro.make_preferred();
+			outTopol.make_preferred();
+			outPosre.make_preferred();
+			outClean.make_preferred();
+			outIndex.make_preferred();
 		}
 
 		fs::path execPath = VTX::Tool::Mdprep::executableDirectory();
@@ -106,8 +114,9 @@ namespace
 
 	void check_pdb( TestContext p_context )
 	{
-		fs::path full_gmx_exe_path = VTX::Tool::Mdprep::executableDirectory()
-									 / VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryRelativePath();
+		fs::path full_gmx_exe_path = ( VTX::Tool::Mdprep::executableDirectory()
+									   / VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryRelativePath() )
+										 .make_preferred();
 		VTX::Tool::Mdprep::backends::Gromacs::submitGromacsJob( full_gmx_exe_path, p_context.args );
 		// for topol and posre, gromacs do not necessarily output a file with the exact name, but divide chains and ions
 		// into multiple files. So we need to check its pattern for us to be sure everything worked.
