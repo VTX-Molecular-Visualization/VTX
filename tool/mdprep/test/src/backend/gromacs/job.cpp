@@ -14,7 +14,7 @@ namespace
 	struct IoPaths
 	{
 		IoPaths( const char * p_out_dir_name, const char * p_pdb_code ) :
-			in( execPath / fmt::format( "data\\{}.pdb", p_pdb_code ) ), outDir( execPath / "out" / p_pdb_code ),
+			in( execPath / "data" / fmt::format( "{}.pdb", p_pdb_code ) ), outDir( execPath / "out" / p_pdb_code ),
 			outGro( outDir / fmt::format( "{}.conf.gro", p_out_dir_name, p_pdb_code ) ),
 			outTopol( outDir / fmt::format( "{}.topol.top", p_out_dir_name, p_pdb_code ) ),
 			outPosre( outDir / fmt::format( "{}.posre.itp", p_out_dir_name, p_pdb_code ) ),
