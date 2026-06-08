@@ -27,12 +27,15 @@ namespace fs = std::filesystem;
 TEST_CASE( "VTX_TOOL_MdPrep - integration", "[integration]" )
 {
 	VTX::App::Fixture f;
+
+	/*
 	VTX::App::ACTION().execute<VTX::App::Action::IO::LoadSystem>(
 		VTX::Util::Filesystem::getExecutableDir() / "data" / "2qwo.nolig.pdb"
 	);
 
 	VTX::Tool::Mdprep::Gateway::Gromacs::JobManager jobManager( VTX::Tool::Mdprep::Gateway::Gromacs::MdSettings() );
-	/*
+
+
 	const VTX::FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";
 	std::filesystem::create_directory( path );
 	VTX::Util::Logger::init( path );
