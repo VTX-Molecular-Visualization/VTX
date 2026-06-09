@@ -208,7 +208,6 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 					jobData
 				);
 				checkJobResults( jobData );
-				p_testData._finishedLatch.count_down();
 				p_testData._systemOk = jobData.report.errorOccured == false;
 				for ( auto & err : jobData.report.errors )
 				{
@@ -218,6 +217,10 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			catch ( std::exception & e )
 			{
 				p_testData._why = e.what();
+			}
+			catch ( ... )
+			{
+				p_testData._why = "Unknown error.";
 			}
 			p_testData._finishedLatch.count_down();
 			fs::remove_all( rootDir );
@@ -230,7 +233,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	  public:
 		_Impl( const fs::path & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
-			_testData( TestData { p_structurePdb, p_ff, p_w } )
+			_testData( TestData { p_structurePdb, p_ff, p_w } ), _thr( startTest( _testData ) )
 		{
 		}
 
