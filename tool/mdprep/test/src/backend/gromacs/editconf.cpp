@@ -5,6 +5,7 @@
 //
 #include "fixture.hpp"
 #include "tool/mdprep/backends/gromacs/job.hpp"
+#include <iostream>
 #include <tool/mdprep/backends/gromacs/util.hpp>
 
 namespace
@@ -284,6 +285,11 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf + submitGromacsJob", "[submitGromacsJob][
 	std::string outputs;
 	outputs += jobData.channelsLocker.open()->stdout_;
 	outputs += jobData.channelsLocker.open()->stderr_;
+	for ( auto & err : jobData.report.errors )
+	{
+		outputs += err + "\n";
+	}
+	std::cout << "Here is the output from cout : \n" << ( outputs ) << "\n";
 	INFO( outputs );
 	CHECK( jobData.report.errorOccured == false );
 	CHECK( jobData.report.finished == true );
