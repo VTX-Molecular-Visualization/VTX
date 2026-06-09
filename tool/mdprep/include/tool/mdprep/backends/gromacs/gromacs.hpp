@@ -78,6 +78,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		 */
 		bool isSystemOk() const noexcept;
 
+		/**
+		 * @brief Wait for the test to finish
+		 */
+		void wait() const noexcept;
+
 	  private:
 		class _Impl;
 

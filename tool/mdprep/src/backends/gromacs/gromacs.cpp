@@ -261,6 +261,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			}
 			return _testData._why;
 		}
+
+		void wait() const noexcept { _testData._finishedLatch.wait(); }
 	};
 
 	SystemTester::SystemTester( const fs::path & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
@@ -273,6 +275,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	bool SystemTester::isSystemOk() const noexcept { return _pimpl->isSystemOk(); }
 
 	const std::string_view SystemTester::why() const noexcept { return _pimpl->why(); }
+
+	void SystemTester::wait() const noexcept { _pimpl->wait(); }
 
 	SystemTester::operator bool() const noexcept { return _pimpl->isSystemOk(); }
 

@@ -137,6 +137,12 @@ TEST_CASE( "VTX_TOOL_MdPrep - SystemTester", "[SystemTester]" )
 	SystemTester s_8hu4_nolig( dataDir / "8hu4.nolig.pdb", ffs[ 0 ], E_WATER_MODEL::tip3p );
 	SystemTester s_4nxo( dataDir / "4nxo.pdb", ffs[ 0 ], E_WATER_MODEL::tip3p );
 	SystemTester s_8hu4( dataDir / "8hu4.pdb", ffs[ 0 ], E_WATER_MODEL::tip3p );
+	s_4j6s.wait();
+	s_2wfv.wait();
+	s_8hu4_nolig.wait();
+	s_4nxo.wait();
+	s_8hu4.wait();
+
 	INFO( s_2wfv.why() );
 	CHECK( s_2wfv == true );
 	INFO( s_8hu4_nolig.why() );
