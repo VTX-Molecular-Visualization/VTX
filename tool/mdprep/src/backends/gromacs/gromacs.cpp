@@ -1,3 +1,4 @@
+#include <latch>
 #include <thread>
 //
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
@@ -155,12 +156,15 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	class SystemTester::_Impl
 	{
-		std::atomic_bool _finished = false;
-		std::atomic_bool _systemOk = false;
-		std::string		 _why;
-		fs::path		 _structurePdb;
-		forcefield		 _ff;
-		E_WATER_MODEL	 _w;
+		struct TestData
+		{
+			fs::path		 _structurePdb;
+			forcefield		 _ff;
+			E_WATER_MODEL	 _w;
+			std::latch		 _finishedLatch { 1 };
+			std::atomic_bool _systemOk = false;
+			std::string		 _why;
+		} _testData;
 
 		std::thread _thr;
 
@@ -178,62 +182,55 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			return base / "a"; // ragequit
 		}
 
-		static void test(
-			const fs::path &	  p_structurePdb,
-			const forcefield &	  p_ff,
-			const E_WATER_MODEL & p_w,
-			std::atomic_bool &	  p_finished,
-			std::atomic_bool &	  p_systemOk,
-			std ::string &		  p_why
-		)
+		static void test( TestData & p_testData )
 		{
-			Pdb2gmxInstructions inst;
-			fs::path			rootDir = createRootDir();
-			if ( fs::exists( rootDir ) )
+			fs::path rootDir = createRootDir();
+			try
 			{
-				fs::remove_all( rootDir );
+				Pdb2gmxInstructions inst;
+				if ( fs::exists( rootDir ) )
+				{
+					fs::remove_all( rootDir );
+				}
+				fs::create_directories( rootDir );
+				inst.forcefields	 = { p_testData._ff };
+				inst.forcefieldIndex = 0;
+				inst.water			 = p_testData._w;
+				inst.fileStem		 = p_testData._structurePdb.stem().string();
+				inst.inputPdb		 = p_testData._structurePdb;
+				prepareJob( {}, rootDir.parent_path(), "1", inst );
+				GromacsJobData jobData;
+				convert( inst, jobData );
+				declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
+				submitGromacsJob(
+					VTX::Tool::Mdprep::executableDirectory()
+						/ VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryRelativePath(),
+					jobData
+				);
+				checkJobResults( jobData );
+				p_testData._finishedLatch.count_down();
+				p_testData._systemOk = jobData.report.errorOccured == false;
+				for ( auto & err : jobData.report.errors )
+				{
+					p_testData._why += err + '\n';
+				}
 			}
-			fs::create_directories( rootDir );
-			inst.forcefields	 = { p_ff };
-			inst.forcefieldIndex = 0;
-			inst.water			 = p_w;
-			inst.fileStem		 = p_structurePdb.stem().string();
-			inst.inputPdb		 = p_structurePdb;
-			prepareJob( {}, rootDir.parent_path(), "1", inst );
-			GromacsJobData jobData;
-			convert( inst, jobData );
-			declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
-			submitGromacsJob(
-				VTX::Tool::Mdprep::executableDirectory()
-					/ VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryRelativePath(),
-				jobData
-			);
-			checkJobResults( jobData );
-			p_finished = jobData.report.finished;
-			p_systemOk = jobData.report.errorOccured == false;
-			for ( auto & err : jobData.report.errors )
+			catch ( std::exception & e )
 			{
-				p_why += err + '\n';
+				p_testData._why = e.what();
 			}
+			p_testData._finishedLatch.count_down();
 			fs::remove_all( rootDir );
 		}
 
-		static std::thread startTest(
-			const fs::path &	  p_structurePdb,
-			const forcefield &	  p_ff,
-			const E_WATER_MODEL & p_w,
-			std::atomic_bool &	  p_finished,
-			std::atomic_bool &	  p_systemOk,
-			std ::string &		  p_why
-		)
+		static std::thread startTest( TestData & p_testData )
 		{
-			return std::thread( [ & ]() { test( p_structurePdb, p_ff, p_w, p_finished, p_systemOk, p_why ); } );
+			return std::thread( [ & ]() { test( p_testData ); } );
 		}
 
 	  public:
 		_Impl( const fs::path & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
-			_structurePdb( p_structurePdb ), _ff( p_ff ), _w( p_w ),
-			_thr( startTest( _structurePdb, _ff, _w, _finished, _systemOk, _why ) )
+			_testData( TestData { p_structurePdb, p_ff, p_w } )
 		{
 		}
 
@@ -245,24 +242,21 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			}
 		}
 
-		bool isTestFinished() const noexcept { return _finished; }
+		bool isTestFinished() const noexcept { return _testData._finishedLatch.try_wait(); }
 
 		bool isSystemOk() const noexcept
 		{
-			while ( _finished == false )
-			{
-				std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
-			}
-			return _systemOk;
+			_testData._finishedLatch.wait();
+			return _testData._systemOk;
 		}
 
 		const std::string_view why() const noexcept
 		{
-			if ( _finished == false || _systemOk == true )
+			if ( isTestFinished() || _testData._systemOk == true )
 			{
 				return {};
 			}
-			return _why;
+			return _testData._why;
 		}
 	};
 
