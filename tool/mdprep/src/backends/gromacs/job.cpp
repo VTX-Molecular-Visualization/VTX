@@ -10,16 +10,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		void fillMissingString( const QByteArray & from, std::string & to ) noexcept { to += from.toStdString(); }
 
-		void fillMissingString( Channels & channels, std::string & err, std::string & out )
-		{
-			channels.stderr_ += err;
-			channels.stdout_ += out;
-
-			err.clear();
-			out.clear();
-		}
-
-		void simpleProcessManagement( QProcess & p_proc, GromacsJobData & p_args ) noexcept
+		void simpleProcessManagement( QProcess & p_proc, GromacsJobData & p_args )
 		{
 			auto drain = [ & ]
 			{
@@ -32,18 +23,16 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 			// waitForFinished returns true once the process has actually exited;
 			// on timeout we drain accumulated output and loop again.
-			while ( !p_proc.waitForFinished( 50 ) && p_proc.state() != QProcess::NotRunning )
+			while ( p_proc.waitForFinished( 50 ) == false && p_proc.state() != QProcess::ProcessState::NotRunning )
 			{
 				drain();
 			}
-
 			drain(); // flush whatever was buffered after exit
 		}
 	} // namespace
 
 	void submitGromacsJob( const fs::path & p_gmxExe, GromacsJobData & p_args )
 	{
-		auto		tmp = qgetenv( "GMXLIB" );
 		QString		pgm { p_gmxExe.string().data() };
 		QStringList qtArgs;
 		for ( auto & arg : p_args.arguments )
@@ -56,9 +45,19 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		proc.setProgram( pgm );
 		proc.setArguments( qtArgs );
 		proc.start();
-		proc.waitForStarted( -1 );
-
+		proc.closeWriteChannel();
+		if ( proc.waitForStarted( -1 ) == false )
+		{
+			p_args.report.errorOccured = true;
+			p_args.report.errors.emplace_back( "Process could not be started" );
+			return;
+		}
 		simpleProcessManagement( proc, p_args );
 		p_args.report.finished = true;
+		if ( proc.exitStatus() == QProcess::ExitStatus::CrashExit || proc.exitCode() != 0 )
+		{
+			p_args.report.errorOccured = true;
+			p_args.report.errors.emplace_back( fmt::format( "Process exited with code {}", proc.exitCode() ) );
+		}
 	}
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
