@@ -204,7 +204,6 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert - posres", "[convert][grompp][pos
 
 TEST_CASE( "VTX_TOOL_MdPrep - grompp + submitGromacsJob - ions", "[submitGromacsJob][grompp][ions]" )
 {
-	return; // TMP TODO : Put it back online
 
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GromppInstructions in;

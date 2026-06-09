@@ -33,7 +33,6 @@ namespace VTX::test
 
 TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 1ubq", "[prepareStructure][1ubq]" )
 {
-	return; // TMP TODO : Put it back online
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
 
