@@ -213,6 +213,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				{
 					p_testData._why += err + '\n';
 				}
+				auto channels = jobData.channelsLocker.open();
+				p_testData._why += channels->stdout_ + "\n";
+				p_testData._why += channels->stderr_ + "\n";
 			}
 			catch ( std::exception & e )
 			{
