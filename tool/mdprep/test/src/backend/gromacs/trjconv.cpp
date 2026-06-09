@@ -88,6 +88,11 @@ TEST_CASE( "VTX_TOOL_MdPrep - trjconv + submitGromacsJob", "[submitGromacsJob][t
 	std::string outputs { "Here is the stdout and stderr : \n" };
 	outputs += jobData.channelsLocker.open()->stdout_;
 	outputs += jobData.channelsLocker.open()->stderr_;
+	outputs += "trjconv job errors : \n";
+	for ( auto & err : jobData.report.errors )
+	{
+		outputs += err + "\n";
+	}
 	INFO( outputs );
 	CHECK( jobData.report.errorOccured == false );
 	CHECK( jobData.report.finished == true );
