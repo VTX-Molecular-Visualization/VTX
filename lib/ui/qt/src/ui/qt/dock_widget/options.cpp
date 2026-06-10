@@ -3,6 +3,7 @@
 #include "ui/qt/actions.hpp"
 #include "ui/qt/application.hpp"
 #include "ui/qt/events.hpp"
+#include "ui/qt/model/system_model.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/style/icons.hpp"
@@ -47,6 +48,36 @@ namespace VTX::UI::QT::DockWidget
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::OPTIONS ) );
 
 		using namespace Widget;
+
+		// Tree.
+		auto * groupBoxTree = new QGroupBox( "Tree" );
+		auto * layoutTree	= new QVBoxLayout( groupBoxTree );
+
+		_comboBoxTreeViewMode = new QComboBox( this );
+		_comboBoxTreeViewMode->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		_comboBoxTreeViewMode->setMinimumWidth( 0 );
+
+		_comboBoxTreeViewMode->addItem( "By chain", toUnderlying( Model::SystemModel::ViewMode::ByChain ) );
+		_comboBoxTreeViewMode->addItem( "By category", toUnderlying( Model::SystemModel::ViewMode::ByCategory ) );
+
+		const int treeViewMode
+			= SETTINGS()
+				  .value( SETTING_KEY_TREE_VIEW_MODE, toUnderlying( Model::SystemModel::ViewMode::ByChain ) )
+				  .toInt();
+		const int treeViewModeIndex = _comboBoxTreeViewMode->findData( treeViewMode );
+		if ( treeViewModeIndex != -1 )
+		{
+			_comboBoxTreeViewMode->setCurrentIndex( treeViewModeIndex );
+		}
+
+		connect(
+			_comboBoxTreeViewMode,
+			&QComboBox::currentIndexChanged,
+			[ this ]( const int )
+			{ SETTINGS().setValue( SETTING_KEY_TREE_VIEW_MODE, _comboBoxTreeViewMode->currentData().toInt() ); }
+		);
+
+		layoutTree->addWidget( _comboBoxTreeViewMode );
 
 		// Display.
 		// Theme.
@@ -166,6 +197,7 @@ namespace VTX::UI::QT::DockWidget
 
 		auto * groupBoxDiskUsage = _createDiskUsageGroupBox();
 
+		_layout->addWidget( groupBoxTree );
 		_layout->addWidget( groupBoxDisplay );
 		_layout->addWidget( groupBoxInputs );
 		_layout->addWidget( groupBoxGraphics );
@@ -207,6 +239,7 @@ namespace VTX::UI::QT::DockWidget
 
 	Options::~Options()
 	{
+		SETTINGS().setValue( SETTING_KEY_TREE_VIEW_MODE, _comboBoxTreeViewMode->currentData().toInt() );
 		SETTINGS().setValue( SETTING_KEY_KEYBOARD_LAYOUT, _comboBoxKBLayout->currentIndex() );
 		SETTINGS().setValue( SETTING_KEY_VSYNC, _checkBoxVSync->isChecked() );
 		SETTINGS().setValue( SETTING_KEY_SAVE_POWER, _checkBoxSavePower->isChecked() );

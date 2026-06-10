@@ -30,6 +30,7 @@ namespace VTX::UI::QT::DockWidget
 	  private:
 		QPointer<QComboBox> _comboBoxTheme;
 		QPointer<QComboBox> _comboBoxFont;
+		QPointer<QComboBox> _comboBoxTreeViewMode;
 		QPointer<QComboBox> _comboBoxKBLayout;
 		QPointer<QCheckBox> _checkBoxVSync;
 		QPointer<QCheckBox> _checkBoxSavePower;

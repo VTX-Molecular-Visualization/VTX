@@ -1,6 +1,7 @@
 #include "ui/qt/model/system_model.hpp"
 #include "app/system/uid.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/settings.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include <algorithm>
@@ -19,6 +20,9 @@ namespace VTX::UI::QT::Model
 	SystemModel::SystemModel( const Entity p_system, QObject * p_parent ) :
 		_system( p_system ), QAbstractItemModel( p_parent )
 	{
+		_viewMode = static_cast<ViewMode>(
+			SETTINGS().value( SETTING_KEY_TREE_VIEW_MODE, VTX::toUnderlying( ViewMode::ByChain ) ).toInt()
+		);
 	}
 
 	int SystemModel::columnCount( const QModelIndex & p_parent ) const { return 1; }

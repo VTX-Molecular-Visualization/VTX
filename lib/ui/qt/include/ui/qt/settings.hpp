@@ -24,6 +24,7 @@ namespace VTX::UI::QT
 	const QString SETTING_KEY_KEYBOARD_LAYOUT = "option/keyboard_layout";
 	const QString SETTING_KEY_SAVE_POWER	  = "option/save_power";
 	const QString SETTING_KEY_VSYNC			  = "option/vsync";
+	const QString SETTING_KEY_TREE_VIEW_MODE  = "option/tree_view_mode";
 
 	const QString SETTING_KEY_THEME = "style/theme";
 	const QString SETTING_KEY_FONT	= "style/font";
