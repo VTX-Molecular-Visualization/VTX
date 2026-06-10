@@ -17,7 +17,7 @@ namespace VTX::UI::QT::Model
 	class SystemModel : public QAbstractItemModel
 	{
 	  public:
-		enum struct ViewMode
+		enum struct ViewMode : int
 		{
 			ByChain,
 			ByCategory
