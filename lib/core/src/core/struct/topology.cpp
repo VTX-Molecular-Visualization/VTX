@@ -20,6 +20,11 @@ namespace VTX::Core::Struct
 
 	void Topology::initResidues( const Index p_count )
 	{
+		for ( auto & residues : categoryResidues )
+		{
+			residues.clear();
+		}
+
 		residueSymbols.resize( p_count, ChemDB::Residue::SYMBOL::UNKNOWN );
 		residueChainIndexes.resize( p_count, INVALID_INDEX );
 		residueFirstAtomIndexes.resize( p_count, INVALID_INDEX );
@@ -29,7 +34,6 @@ namespace VTX::Core::Struct
 		residueOriginalIds.resize( p_count, INVALID_INDEX );
 		residueSecondaryStructureTypes.resize( p_count, ChemDB::SecondaryStructure::TYPE::UNKNOWN );
 		residueNames.resize( p_count );
-		residueCategories.resize( p_count, ChemDB::Category::TYPE::UNKNOWN );
 	}
 
 	void Topology::initAtoms( const Index p_count )
@@ -58,6 +62,10 @@ namespace VTX::Core::Struct
 		out += p_sys.chainNames.size() * sizeof( std::string );
 		out += sizeof( size_t ) * p_sys.chainFirstResidues.size();
 		out += sizeof( size_t ) * p_sys.chainResidueCounts.size();
+		for ( const auto & residues : p_sys.categoryResidues )
+		{
+			out += sizeof( Index ) * residues.size();
+		}
 		out += sizeof( ChemDB::Residue::SYMBOL ) * p_sys.residueSymbols.size();
 		out += sizeof( size_t ) * p_sys.residueChainIndexes.size();
 		out += sizeof( Index ) * p_sys.residueFirstAtomIndexes.size();

@@ -268,23 +268,28 @@ namespace VTX::Renderer::Geometry
 		const Core::Struct::Topology &							  topology = *p_data.data.topology;
 		const bool isMixed = Util::Enum::hasAnyBit( p_computeMode, E_SES_COMPUTE_MODE::MIXED );
 
-		for ( Index atom = 0; atom < topology.getAtomCount(); ++atom )
+		for ( size_t category = 0; category < topology.categoryResidues.size(); ++category )
 		{
-			const Index						   residue	= topology.getAtomResidueIndex( atom );
-			const Core::ChemDB::Category::TYPE category = topology.residueCategories[ residue ];
-			const E_SES_COMPUTE_MODE		   flag		= _sesCategoryFlag( category );
+			const Core::ChemDB::Category::TYPE categoryType = Core::ChemDB::Category::TYPE( category );
+			const E_SES_COMPUTE_MODE		   flag		 = _sesCategoryFlag( categoryType );
 			if ( not Util::Enum::hasAnyBit( p_computeMode, flag ) )
 			{
 				continue;
 			}
 
-			if ( isMixed )
+			for ( const Index residue : topology.categoryResidues[ category ] )
 			{
-				mixedAtoms.emplace_back( atom );
-			}
-			else
-			{
-				atomsByCategory[ _sesCategoryIndex( category ) ].emplace_back( atom );
+				for ( const Index atom : topology.getResidueAtomRange( residue ) )
+				{
+					if ( isMixed )
+					{
+						mixedAtoms.emplace_back( atom );
+					}
+					else
+					{
+						atomsByCategory[ _sesCategoryIndex( categoryType ) ].emplace_back( atom );
+					}
+				}
 			}
 		}
 

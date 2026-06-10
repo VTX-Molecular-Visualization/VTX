@@ -255,18 +255,17 @@ namespace VTX::Core::ChemDB::Category
 		return out;
 	}
 
-	void get( const Dictionary & p_dict, const std::string & p_resname, TYPE & p_out )
+	TYPE get( const Dictionary & p_dict, const std::string & p_resname )
 	{
-		for ( uint it_type = 0; it_type < static_cast<uint>( TYPE::COUNT ); it_type++ )
+		for ( uint it_type = 0; it_type < toUnderlying( TYPE::COUNT ); it_type++ )
 		{
 			auto & voc = p_dict.vocabularies[ it_type ];
 			if ( voc.contains( p_resname ) )
 			{
-				p_out = static_cast<TYPE>( it_type );
-				return;
+				return static_cast<TYPE>( it_type );
 			}
 		}
-		p_out = p_dict.fallbackAttribution;
+		return p_dict.fallbackAttribution;
 	}
 
 } // namespace VTX::Core::ChemDB::Category
