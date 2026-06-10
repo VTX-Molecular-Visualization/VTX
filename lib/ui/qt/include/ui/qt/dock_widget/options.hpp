@@ -11,6 +11,7 @@
 #include <util/types.hpp>
 
 class QGroupBox;
+class QVBoxLayout;
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -32,26 +33,20 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<QComboBox> _comboBoxKBLayout;
 		QPointer<QCheckBox> _checkBoxVSync;
 		QPointer<QCheckBox> _checkBoxSavePower;
-		QPointer<QLabel>	_labelCacheCount;
 		QPointer<QLabel>	_labelCacheSize;
-		QPointer<QLabel>	_labelSnapshotsCount;
 		QPointer<QLabel>	_labelSnapshotsSize;
-		QPointer<QLabel>	_labelLogsCount;
 		QPointer<QLabel>	_labelLogsSize;
 
 		void		_syncThemeComboBox();
 		void		_onThemeChanged( const Events::ThemeChanged & );
-		QGroupBox * _createFolderGroupBox(
+		QGroupBox * _createDiskUsageGroupBox();
+		void		_addDiskUsageRow(
+			QVBoxLayout *	   p_layout,
 			const QString &	   p_title,
 			const FilePath &   p_path,
-			QPointer<QLabel> & p_labelCount,
 			QPointer<QLabel> & p_labelSize
 		);
-		void _refreshFolderInfos(
-			const FilePath & p_path,
-			QLabel * const	 p_labelCount,
-			QLabel * const	 p_labelSize
-		) const;
+		void _refreshFolderInfos( const FilePath & p_path, QLabel * const p_labelSize, const QString & p_title ) const;
 		void _refreshFoldersInfos();
 	};
 

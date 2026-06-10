@@ -28,8 +28,7 @@
 
 namespace
 {
-	const QString _TEXT_CACHE_COUNT = "Files : %1";
-	const QString _TEXT_CACHE_SIZE	= "Size : %1";
+	const QString _TEXT_DISK_USAGE = "%1 : %2";
 
 	VTX::UI::QT::ActionRegistry::ActionParams _themeParams( const VTX::UI::QT::Style::E_THEME p_theme )
 	{
@@ -165,20 +164,12 @@ namespace VTX::UI::QT::DockWidget
 
 		layoutGraphics->addWidget( _checkBoxSavePower );
 
-		auto * groupBoxCache
-			= _createFolderGroupBox( "Data cache", App::SESSION().getCacheDir(), _labelCacheCount, _labelCacheSize );
-		auto * groupBoxSnapshots = _createFolderGroupBox(
-			"Snapshots", App::SESSION().getSnapshotsDir(), _labelSnapshotsCount, _labelSnapshotsSize
-		);
-		auto * groupBoxLogs
-			= _createFolderGroupBox( "Logs", App::SESSION().getLogsDir(), _labelLogsCount, _labelLogsSize );
+		auto * groupBoxDiskUsage = _createDiskUsageGroupBox();
 
 		_layout->addWidget( groupBoxDisplay );
 		_layout->addWidget( groupBoxInputs );
 		_layout->addWidget( groupBoxGraphics );
-		_layout->addWidget( groupBoxCache );
-		_layout->addWidget( groupBoxSnapshots );
-		_layout->addWidget( groupBoxLogs );
+		_layout->addWidget( groupBoxDiskUsage );
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 
 		_refreshFoldersInfos();
@@ -234,24 +225,33 @@ namespace VTX::UI::QT::DockWidget
 
 	void Options::_onThemeChanged( const Events::ThemeChanged & ) { _syncThemeComboBox(); }
 
-	QGroupBox * Options::_createFolderGroupBox(
+	QGroupBox * Options::_createDiskUsageGroupBox()
+	{
+		auto * groupBox = new QGroupBox( "Disk usage" );
+		auto * layout	= new QVBoxLayout( groupBox );
+
+		_addDiskUsageRow( layout, "Data", App::SESSION().getCacheDir(), _labelCacheSize );
+		_addDiskUsageRow( layout, "Snapshots", App::SESSION().getSnapshotsDir(), _labelSnapshotsSize );
+		_addDiskUsageRow( layout, "Logs", App::SESSION().getLogsDir(), _labelLogsSize );
+
+		return groupBox;
+	}
+
+	void Options::_addDiskUsageRow(
+		QVBoxLayout *	   p_layout,
 		const QString &	   p_title,
 		const FilePath &   p_path,
-		QPointer<QLabel> & p_labelCount,
 		QPointer<QLabel> & p_labelSize
 	)
 	{
-		auto * groupBox = new QGroupBox( p_title );
-		auto * layout	= new QVBoxLayout( groupBox );
+		auto * layoutRow  = new QHBoxLayout();
+		auto * buttonOpen = new QPushButton( this );
 
-		auto * layoutButton = new QHBoxLayout();
-		auto * buttonOpen	= new QPushButton( "Open", this );
-		auto * buttonClear	= new QPushButton( "Clear", this );
-
-		buttonOpen->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
-		buttonClear->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		buttonOpen->setIcon( STYLE().iconFromCodepoint( Style::Icons::OPEN ) );
+		buttonOpen->setToolTip( QString( "Open %1 folder" ).arg( p_title.toLower() ) );
+		buttonOpen->setWhatsThis( buttonOpen->toolTip() );
+		buttonOpen->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Preferred );
 		buttonOpen->setMinimumWidth( 0 );
-		buttonClear->setMinimumWidth( 0 );
 
 		connect(
 			buttonOpen,
@@ -259,55 +259,39 @@ namespace VTX::UI::QT::DockWidget
 			[ p_path ]() { QDesktopServices::openUrl( QUrl::fromLocalFile( QDir( p_path ).absolutePath() ) ); }
 		);
 
-		connect(
-			buttonClear,
-			&QPushButton::clicked,
-			[ this, p_path ]()
-			{
-				QDir( p_path ).removeRecursively();
-				_refreshFoldersInfos();
-			}
-		);
+		p_labelSize = new QLabel( this );
+		p_labelSize->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		p_labelSize->setMinimumWidth( 0 );
 
-		p_labelCount = new QLabel( this );
-		p_labelSize	 = new QLabel( this );
-
-		layout->addWidget( p_labelCount );
-		layout->addWidget( p_labelSize );
-		layoutButton->addWidget( buttonOpen );
-		layoutButton->addWidget( buttonClear );
-		layoutButton->setStretch( 0, 1 );
-		layoutButton->setStretch( 1, 1 );
-		layoutButton->setStretch( 2, 1 );
-		layout->addLayout( layoutButton );
-
-		return groupBox;
+		layoutRow->addWidget( p_labelSize );
+		layoutRow->addWidget( buttonOpen );
+		p_layout->addLayout( layoutRow );
 	}
 
 	void Options::_refreshFolderInfos(
 		const FilePath & p_path,
-		QLabel * const	 p_labelCount,
-		QLabel * const	 p_labelSize
+		QLabel * const	 p_labelSize,
+		const QString &	 p_title
 	) const
 	{
 		const QDir			dir( p_path );
-		const uint			fileCount = dir.entryList( QDir::Files ).size();
-		const QFileInfoList list	  = dir.entryInfoList();
-		size_t				size	  = 0;
+		const QFileInfoList list = dir.entryInfoList();
+		size_t				size = 0;
 		for ( const auto & info : list )
 		{
 			size += info.size();
 		}
 
-		p_labelCount->setText( _TEXT_CACHE_COUNT.arg( fileCount ) );
-		p_labelSize->setText( _TEXT_CACHE_SIZE.arg( QString::fromStdString( Util::String::memSizeToStr( size ) ) ) );
+		p_labelSize->setText(
+			_TEXT_DISK_USAGE.arg( p_title, QString::fromStdString( Util::String::memSizeToStr( size ) ) )
+		);
 	}
 
 	void Options::_refreshFoldersInfos()
 	{
-		_refreshFolderInfos( App::SESSION().getCacheDir(), _labelCacheCount, _labelCacheSize );
-		_refreshFolderInfos( App::SESSION().getSnapshotsDir(), _labelSnapshotsCount, _labelSnapshotsSize );
-		_refreshFolderInfos( App::SESSION().getLogsDir(), _labelLogsCount, _labelLogsSize );
+		_refreshFolderInfos( App::SESSION().getCacheDir(), _labelCacheSize, "Data" );
+		_refreshFolderInfos( App::SESSION().getSnapshotsDir(), _labelSnapshotsSize, "Snapshots" );
+		_refreshFolderInfos( App::SESSION().getLogsDir(), _labelLogsSize, "Logs" );
 	}
 
 } // namespace VTX::UI::QT::DockWidget
