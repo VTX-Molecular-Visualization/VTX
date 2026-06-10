@@ -107,7 +107,7 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_python_binding/1.0")
         self.requires("re2/20240702")
-        self.requires("gromacs/2026.1")
+        self.requires("gromacs/2026.0.1")
         self.requires("catch2/3.15.0")
 
     def generate(self):

@@ -89,7 +89,7 @@ class VTXRecipe(ConanFile):
         if self.options.ui_qt:
             self.requires("qt/6.11.1")
         if self.options.tool_mdprep:
-            self.requires("gromacs/2026.1")
+            self.requires("gromacs/2026.0.1")
         self.requires("re2/20240702")
         if self.options.local_pdb100:
             self.requires("libarchive/3.7.9")
