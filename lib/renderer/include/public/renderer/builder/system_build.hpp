@@ -388,12 +388,14 @@ namespace VTX::Renderer::Builder
 				{
 					requestedRibbon = true;
 				}
-				if ( representation.showSes )
+				const E_SES_COMPUTE_MODE representationComputeMode = representation.data.rep->sesComputeMode;
+				const E_SES_COMPUTE_MODE representationCategories
+					= representationComputeMode & ~E_SES_COMPUTE_MODE::MIXED;
+				if ( representation.showSes && representationCategories != E_SES_COMPUTE_MODE::NONE )
 				{
 					requestedSes = true;
 
 					const float representationProbeRadius = representation.data.rep->sesProbeRadius;
-					const E_SES_COMPUTE_MODE representationComputeMode = representation.data.rep->sesComputeMode;
 					if ( not hasSesProbeRadius )
 					{
 						sesProbeRadius	  = representationProbeRadius;
@@ -415,7 +417,7 @@ namespace VTX::Renderer::Builder
 					}
 					else if ( sesComputeMode != representationComputeMode )
 					{
-						VTX_WARNING( "Multiple visible SES compute modes on the same system. Using first one." );
+						VTX_WARNING( "Multiple visible SES modes on the same system. Using first one." );
 					}
 				}
 				else

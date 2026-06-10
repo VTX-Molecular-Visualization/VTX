@@ -61,10 +61,20 @@ namespace VTX::UI::QT::Widget::Library
 		addWidget( _groupboxSes );
 
 		_comboBoxSesComputeMode = new QComboBox( _groupboxSes );
-		_groupboxSes->addWidget( new QLabel( "Compute mode", _groupboxSes ) );
+		_groupboxSes->addWidget( new QLabel( "Surface mode", _groupboxSes ) );
 		_groupboxSes->addWidget( _comboBoxSesComputeMode );
-		_comboBoxSesComputeMode->addItem( "System" );
-		_comboBoxSesComputeMode->addItem( "Polymer" );
+		_comboBoxSesComputeMode->addItem( "Separate surfaces" );
+		_comboBoxSesComputeMode->addItem( "Single surface" );
+
+		_groupboxSes->addWidget( new QLabel( "Categories", _groupboxSes ) );
+		_checkBoxSesPolymer = new QCheckBox( "Polymer", _groupboxSes );
+		_groupboxSes->addWidget( _checkBoxSesPolymer );
+		_checkBoxSesCarbohydrate = new QCheckBox( "Carbohydrate", _groupboxSes );
+		_groupboxSes->addWidget( _checkBoxSesCarbohydrate );
+		_checkBoxSesLigand = new QCheckBox( "Ligand", _groupboxSes );
+		_groupboxSes->addWidget( _checkBoxSesLigand );
+		_checkBoxSesOthers = new QCheckBox( "Others", _groupboxSes );
+		_groupboxSes->addWidget( _checkBoxSesOthers );
 
 		_sliderSesProbeRadius = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSes );
 		_groupboxSes->addWidget( new QLabel( "Probe radius", _groupboxSes ) );
@@ -143,12 +153,35 @@ namespace VTX::UI::QT::Widget::Library
 		connect(
 			_comboBoxSesComputeMode,
 			QOverload<int>::of( &QComboBox::currentIndexChanged ),
-			[ this ]( const int p_index )
-			{
-				_changeValue<E_REPRESENTATION_VALUES::SES_COMPUTE_MODE, E_SES_COMPUTE_MODE>(
-					p_index == 0 ? E_SES_COMPUTE_MODE::SYSTEM : E_SES_COMPUTE_MODE::CATEGORY
-				);
-			}
+			[ this ]( const int p_index ) { _setSesMixedMode( p_index == 1 ); }
+		);
+
+		connect(
+			_checkBoxSesPolymer,
+			&QCheckBox::toggled,
+			[ this ]( const bool p_checked )
+			{ _setSesCategoryEnabled( E_SES_COMPUTE_MODE::POLYMER, p_checked ); }
+		);
+
+		connect(
+			_checkBoxSesCarbohydrate,
+			&QCheckBox::toggled,
+			[ this ]( const bool p_checked )
+			{ _setSesCategoryEnabled( E_SES_COMPUTE_MODE::CARBOHYDRATE, p_checked ); }
+		);
+
+		connect(
+			_checkBoxSesLigand,
+			&QCheckBox::toggled,
+			[ this ]( const bool p_checked )
+			{ _setSesCategoryEnabled( E_SES_COMPUTE_MODE::LIGAND, p_checked ); }
+		);
+
+		connect(
+			_checkBoxSesOthers,
+			&QCheckBox::toggled,
+			[ this ]( const bool p_checked )
+			{ _setSesCategoryEnabled( E_SES_COMPUTE_MODE::OTHERS, p_checked ); }
 		);
 
 		connect(
@@ -192,7 +225,11 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker8( _checkBoxRibbonColorBlending );
 		const QSignalBlocker blocker9( _groupboxSes );
 		const QSignalBlocker blocker10( _comboBoxSesComputeMode );
-		const QSignalBlocker blocker11( _sliderSesProbeRadius );
+		const QSignalBlocker blocker11( _checkBoxSesPolymer );
+		const QSignalBlocker blocker12( _checkBoxSesCarbohydrate );
+		const QSignalBlocker blocker13( _checkBoxSesLigand );
+		const QSignalBlocker blocker14( _checkBoxSesOthers );
+		const QSignalBlocker blocker15( _sliderSesProbeRadius );
 
 		_groupboxSphere->setChecked( preset.hasSphere );
 		_comboBoxSphereRadiusType->setCurrentIndex( preset.isRadiusSphereFixed ? 1 : 0 );
@@ -205,7 +242,19 @@ namespace VTX::UI::QT::Widget::Library
 		_checkBoxRibbonColorBlending->setChecked( preset.ribbonColorBlending );
 		_groupboxSes->setChecked( preset.hasSes );
 		_comboBoxSesComputeMode->setCurrentIndex(
-			preset.sesComputeMode == Renderer::E_SES_COMPUTE_MODE::SYSTEM ? 0 : 1
+			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::MIXED ) ? 1 : 0
+		);
+		_checkBoxSesPolymer->setChecked(
+			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::POLYMER )
+		);
+		_checkBoxSesCarbohydrate->setChecked(
+			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::CARBOHYDRATE )
+		);
+		_checkBoxSesLigand->setChecked(
+			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::LIGAND )
+		);
+		_checkBoxSesOthers->setChecked(
+			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::OTHERS )
 		);
 		_sliderSesProbeRadius->setValue( preset.sesProbeRadius );
 
@@ -220,6 +269,43 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderSphereRadiusAdd->setVisible( not isFixed );
 		_labelSphereRadiusFixed->setVisible( isFixed );
 		_sliderSphereRadiusFixed->setVisible( isFixed );
+	}
+
+	void Representation::_setSesCategoryEnabled(
+		const Renderer::E_SES_COMPUTE_MODE p_category,
+		const bool						   p_enabled
+	)
+	{
+		Renderer::E_SES_COMPUTE_MODE mode
+			= App::REG().get<Renderer::Representation>( currentPreset() ).sesComputeMode;
+
+		if ( p_enabled )
+		{
+			mode = mode | p_category;
+		}
+		else
+		{
+			mode = mode & ~p_category;
+		}
+
+		_changeValue<Renderer::E_REPRESENTATION_VALUES::SES_COMPUTE_MODE, Renderer::E_SES_COMPUTE_MODE>( mode );
+	}
+
+	void Representation::_setSesMixedMode( const bool p_enabled )
+	{
+		Renderer::E_SES_COMPUTE_MODE mode
+			= App::REG().get<Renderer::Representation>( currentPreset() ).sesComputeMode;
+
+		if ( p_enabled )
+		{
+			mode = mode | Renderer::E_SES_COMPUTE_MODE::MIXED;
+		}
+		else
+		{
+			mode = mode & ~Renderer::E_SES_COMPUTE_MODE::MIXED;
+		}
+
+		_changeValue<Renderer::E_REPRESENTATION_VALUES::SES_COMPUTE_MODE, Renderer::E_SES_COMPUTE_MODE>( mode );
 	}
 
 } // namespace VTX::UI::QT::Widget::Library
