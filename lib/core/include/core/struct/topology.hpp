@@ -58,6 +58,10 @@ namespace VTX::Core::Struct
 		 */
 		std::array<std::vector<Index>, toUnderlying( ChemDB::Category::TYPE::COUNT )> categoryResidues;
 		/**
+		 * @brief Category of each residue.
+		 */
+		std::vector<ChemDB::Category::TYPE> residueCategories;
+		/**
 		 * @brief Residue symbols.
 		 */
 		std::vector<ChemDB::Residue::SYMBOL> residueSymbols;
@@ -270,6 +274,32 @@ namespace VTX::Core::Struct
 			const Index first = getResidueFirstAtom( p_residueIndex );
 			const Index count = getResidueAtomCount( p_residueIndex );
 			return IndexRange::fromFirstCount( first, count );
+		}
+
+		inline const std::vector<Index> & getCategoryResidues( const ChemDB::Category::TYPE p_category ) const
+		{
+			return categoryResidues[ toUnderlying( p_category ) ];
+		}
+
+		inline ChemDB::Category::TYPE getResidueCategory( const Index p_residueIndex ) const
+		{
+			return residueCategories[ p_residueIndex ];
+		}
+
+		inline IndexRangeList getCategoryAtomRangeList( const ChemDB::Category::TYPE p_category ) const
+		{
+			IndexRangeList atoms;
+
+			for ( const Index residue : getCategoryResidues( p_category ) )
+			{
+				atoms.addRange( getResidueAtomRange( residue ) );
+			}
+			return atoms;
+		}
+
+		inline IndexRangeList getCategoryAtomRangeList( const Index p_category ) const
+		{
+			return getCategoryAtomRangeList( static_cast<ChemDB::Category::TYPE>( p_category ) );
 		}
 
 		inline Index getResidueFirstBond( const Index p_residueIndex ) const

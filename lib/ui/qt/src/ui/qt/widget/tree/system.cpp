@@ -121,7 +121,7 @@ namespace VTX::UI::QT::Widget::Tree
 				std::optional<Renderer::E_COLOR_SCHEME> scheme
 					= App::Helper::System::getColorScheme( { _system, item, index } );
 
-				Menu::ColorScheme menu( this, scheme );
+				Menu::ColorScheme						   menu( this, scheme );
 				std::optional<Menu::ColorScheme::Selected> selected;
 				QObject::connect(
 					&menu,
@@ -154,7 +154,7 @@ namespace VTX::UI::QT::Widget::Tree
 				std::optional<Entity> representation
 					= App::Helper::System::getRepresentation( { _system, item, index } );
 
-				Menu::Representation menu( this, representation );
+				Menu::Representation  menu( this, representation );
 				std::optional<Entity> selected;
 				QObject::connect(
 					&menu,
@@ -169,6 +169,14 @@ namespace VTX::UI::QT::Widget::Tree
 				}
 			}
 		);
+
+		connect(
+			delegate,
+			&Delegate::SystemDelegate::displayModeClicked,
+			[ this ]( const QModelIndex & ) { _toggleViewMode(); }
+		);
+
+		_expandRoot();
 	}
 
 	void System::contextMenuEvent( QContextMenuEvent * p_e )
@@ -184,7 +192,7 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		const QModelIndex index = indexAt( p_e->pos() );
+		const QModelIndex index			  = indexAt( p_e->pos() );
 		const bool		  selectionButton = p_e->button() == Qt::LeftButton || p_e->button() == Qt::RightButton;
 		if ( index.isValid() && selectionButton )
 		{
@@ -211,7 +219,7 @@ namespace VTX::UI::QT::Widget::Tree
 						_applySelection( index, selected, append );
 						_anchor = index;
 
-						_dragging		 = true;
+						_dragging		  = true;
 						_lastDraggedIndex = index;
 					}
 				}
@@ -249,24 +257,24 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void System::mouseReleaseEvent( QMouseEvent * p_e )
 	{
-		_dragging		 = false;
+		_dragging		  = false;
 		_lastDraggedIndex = QPersistentModelIndex();
 		QTreeView::mouseReleaseEvent( p_e );
 	}
 
 	bool System::_shouldHandleSelectionClick(
-		QMouseEvent *				p_e,
-		const QModelIndex &			p_index,
-		QStyleOptionViewItem &		p_option
+		QMouseEvent *		   p_e,
+		const QModelIndex &	   p_index,
+		QStyleOptionViewItem & p_option
 	) const
 	{
 		initViewItemOption( &p_option );
-		p_option.rect			  = visualRect( p_index );
+		p_option.rect			 = visualRect( p_index );
 		const bool isBranchClick = p_e->pos().x() < p_option.rect.left();
 
 		const auto * delegate = static_cast<const Delegate::SystemDelegate *>( itemDelegateForIndex( p_index ) );
-		const bool	 actionButtonClick
-			= p_e->button() == Qt::LeftButton && delegate != nullptr && delegate->hitsButton( p_option, p_e->pos() );
+		const bool	 actionButtonClick = p_e->button() == Qt::LeftButton && delegate != nullptr
+										 && delegate->hitsButton( p_option, p_index, p_e->pos() );
 		return delegate != nullptr && isBranchClick == false && not actionButtonClick;
 	}
 
@@ -297,11 +305,18 @@ namespace VTX::UI::QT::Widget::Tree
 		case E_SYSTEM_ITEM::SYSTEM:
 			SELECTION().select<E_SYSTEM_ITEM::SYSTEM>( _system, Core::Struct::IndexRangeList(), p_selected, p_append );
 			break;
-		case E_SYSTEM_ITEM::CHAIN: SELECTION().select<E_SYSTEM_ITEM::CHAIN>( _system, itemIndex, p_selected, p_append ); break;
+		case E_SYSTEM_ITEM::CATEGORY:
+			SELECTION().select<E_SYSTEM_ITEM::CATEGORY>( _system, itemIndex, p_selected, p_append );
+			break;
+		case E_SYSTEM_ITEM::CHAIN:
+			SELECTION().select<E_SYSTEM_ITEM::CHAIN>( _system, itemIndex, p_selected, p_append );
+			break;
 		case E_SYSTEM_ITEM::RESIDUE:
 			SELECTION().select<E_SYSTEM_ITEM::RESIDUE>( _system, itemIndex, p_selected, p_append );
 			break;
-		case E_SYSTEM_ITEM::ATOM: SELECTION().select<E_SYSTEM_ITEM::ATOM>( _system, itemIndex, p_selected, p_append ); break;
+		case E_SYSTEM_ITEM::ATOM:
+			SELECTION().select<E_SYSTEM_ITEM::ATOM>( _system, itemIndex, p_selected, p_append );
+			break;
 		default: break;
 		}
 	}
@@ -323,6 +338,25 @@ namespace VTX::UI::QT::Widget::Tree
 			{
 				_applySelection( current, true, true );
 			}
+		}
+	}
+
+	void System::_toggleViewMode()
+	{
+		auto &	   model	= getSystemModel();
+		const auto nextMode = model.getViewMode() == Model::SystemModel::ViewMode::ByChain
+								  ? Model::SystemModel::ViewMode::ByCategory
+								  : Model::SystemModel::ViewMode::ByChain;
+		model.setViewMode( nextMode );
+		_expandRoot();
+	}
+
+	void System::_expandRoot()
+	{
+		const QModelIndex rootIndex = model()->index( 0, 0 );
+		if ( rootIndex.isValid() )
+		{
+			expand( rootIndex );
 		}
 	}
 

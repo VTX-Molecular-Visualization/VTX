@@ -34,6 +34,7 @@ namespace VTX::Core::Struct
 		residueOriginalIds.resize( p_count, INVALID_INDEX );
 		residueSecondaryStructureTypes.resize( p_count, ChemDB::SecondaryStructure::TYPE::UNKNOWN );
 		residueNames.resize( p_count );
+		residueCategories.resize( p_count, ChemDB::Category::TYPE::UNKNOWN );
 	}
 
 	void Topology::initAtoms( const Index p_count )
@@ -66,6 +67,7 @@ namespace VTX::Core::Struct
 		{
 			out += sizeof( Index ) * residues.size();
 		}
+		out += sizeof( ChemDB::Category::TYPE ) * p_sys.residueCategories.size();
 		out += sizeof( ChemDB::Residue::SYMBOL ) * p_sys.residueSymbols.size();
 		out += sizeof( size_t ) * p_sys.residueChainIndexes.size();
 		out += sizeof( Index ) * p_sys.residueFirstAtomIndexes.size();

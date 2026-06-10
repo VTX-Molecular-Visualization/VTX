@@ -577,6 +577,7 @@ namespace VTX::IO
 			p_topology.residueOriginalIds[ p_targetResidueIndex ] = INVALID_INDEX;
 			p_topology.residueSymbols[ p_targetResidueIndex ]	  = Residue::SYMBOL::UNKNOWN;
 			p_topology.residueNames[ p_targetResidueIndex ]		  = "";
+			p_topology.residueCategories[ p_targetResidueIndex ]  = Category::TYPE::UNKNOWN;
 			p_topology.categoryResidues[ toUnderlying( Category::TYPE::UNKNOWN ) ].push_back( p_targetResidueIndex );
 			p_topology.residueSecondaryStructureTypes[ p_targetResidueIndex ] = SecondaryStructure::TYPE::UNKNOWN;
 		}
@@ -598,9 +599,9 @@ namespace VTX::IO
 			p_topology.residueSymbols[ p_targetResidueIndex ]	  = Residue::getSymbolFromName( residueName );
 			p_topology.residueNames[ p_targetResidueIndex ]		  = residueName;
 
-			p_topology.categoryResidues[ toUnderlying( Category::get( p_categories, residueName ) ) ].push_back(
-				p_targetResidueIndex
-			);
+			const Category::TYPE category						 = Category::get( p_categories, residueName );
+			p_topology.residueCategories[ p_targetResidueIndex ] = category;
+			p_topology.categoryResidues[ toUnderlying( category ) ].push_back( p_targetResidueIndex );
 
 			const std::string ss = _residueStringProp( "secondary_structure" );
 			if ( not ss.empty() )

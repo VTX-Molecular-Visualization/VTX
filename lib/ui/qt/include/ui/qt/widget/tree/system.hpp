@@ -20,15 +20,15 @@ namespace VTX::UI::QT::Widget::Tree
 
 	  public:
 		System( const Entity, QWidget * );
-		void							  contextMenuEvent( QContextMenuEvent * p_e ) override;
-		void							  mousePressEvent( QMouseEvent * p_e ) override;
-		void							  mouseMoveEvent( QMouseEvent * p_e ) override;
-		void							  mouseReleaseEvent( QMouseEvent * p_e ) override;
-		inline const Model::SystemModel & getSystemModel() { return *static_cast<Model::SystemModel *>( model() ); }
+		void contextMenuEvent( QContextMenuEvent * p_e ) override;
+		void mousePressEvent( QMouseEvent * p_e ) override;
+		void mouseMoveEvent( QMouseEvent * p_e ) override;
+		void mouseReleaseEvent( QMouseEvent * p_e ) override;
+
+		inline Model::SystemModel & getSystemModel() { return *static_cast<Model::SystemModel *>( model() ); }
+
 		inline const Model::SystemModel & getSystemModel() const
-		{
-			return *static_cast<Model::SystemModel *>( model() );
-		}
+		{ return *static_cast<Model::SystemModel *>( model() ); }
 
 	  private:
 		/**
@@ -60,6 +60,8 @@ namespace VTX::UI::QT::Widget::Tree
 		bool _isFullySelected( const QModelIndex & ) const;
 		void _applySelection( const QModelIndex &, const bool = true, const bool = false );
 		void _selectVisibleRange( const QModelIndex &, const QModelIndex & );
+		void _toggleViewMode();
+		void _expandRoot();
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

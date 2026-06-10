@@ -74,6 +74,13 @@ namespace VTX::App::Helper::System
 				atoms.addRange( topology.getChainAtomRange( index ) );
 			}
 		}
+		else if constexpr ( ITEM == E_SYSTEM_ITEM::CATEGORY )
+		{
+			for ( const auto & index : p_ranges )
+			{
+				atoms.mergeInPlace( topology.getCategoryAtomRangeList( index ) );
+			}
+		}
 		else if constexpr ( ITEM == E_SYSTEM_ITEM::RESIDUE )
 		{
 			for ( const auto & index : p_ranges )

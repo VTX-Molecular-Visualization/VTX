@@ -105,9 +105,7 @@ namespace VTX::App::Action::Color
 			const Core::Struct::IndexRange &		  p_range,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
-		{
-			execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex );
-		}
+		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex ); }
 
 		void execute(
 			const Entity							  p_ent,
@@ -115,9 +113,7 @@ namespace VTX::App::Action::Color
 			const std::vector<Index> &				  p_values,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
-		{
-			execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex );
-		}
+		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex ); }
 
 		void execute(
 			const Entity							  p_ent,
@@ -125,9 +121,7 @@ namespace VTX::App::Action::Color
 			const Index								  p_value,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
-		{
-			execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_value ), p_colorIndex );
-		}
+		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_value ), p_colorIndex ); }
 	};
 
 	struct AddItem
@@ -144,6 +138,9 @@ namespace VTX::App::Action::Color
 			{
 			case Core::Struct::E_SYSTEM_ITEM::SYSTEM:
 				Add<Core::Struct::E_SYSTEM_ITEM::SYSTEM>().execute( p_ent, p_scheme, p_ranges, p_colorIndex );
+				break;
+			case Core::Struct::E_SYSTEM_ITEM::CATEGORY:
+				Add<Core::Struct::E_SYSTEM_ITEM::CATEGORY>().execute( p_ent, p_scheme, p_ranges, p_colorIndex );
 				break;
 			case Core::Struct::E_SYSTEM_ITEM::CHAIN:
 				Add<Core::Struct::E_SYSTEM_ITEM::CHAIN>().execute( p_ent, p_scheme, p_ranges, p_colorIndex );
@@ -165,9 +162,7 @@ namespace VTX::App::Action::Color
 			const Core::Struct::IndexRange &		  p_range,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
-		{
-			execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex );
-		}
+		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex ); }
 
 		void execute(
 			const Entity							  p_ent,
@@ -176,9 +171,7 @@ namespace VTX::App::Action::Color
 			const std::vector<Index> &				  p_values,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
-		{
-			execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex );
-		}
+		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex ); }
 
 		void execute(
 			const Entity							  p_ent,
@@ -187,9 +180,7 @@ namespace VTX::App::Action::Color
 			const Index								  p_value,
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
-		{
-			execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_value ), p_colorIndex );
-		}
+		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_value ), p_colorIndex ); }
 	};
 
 	struct AddSelected
