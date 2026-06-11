@@ -56,21 +56,27 @@ namespace VTX::UI::QT::Menu
 			};
 
 			addItem( "Atoms", { E_COLOR_SCHEME::ATOM }, p_scheme );
+			addItem( "Carbon by chain", { E_COLOR_SCHEME::CARBON_CHAIN }, p_scheme );
 			addItem( "Residues", { E_COLOR_SCHEME::RESIDUE }, p_scheme );
 			addItem( "Chains", { E_COLOR_SCHEME::CHAIN }, p_scheme );
 
-			auto * subMenu = QMenu::addMenu( "Custom" );
-			for ( ColorIndex i = 0; i < Color::LAYOUT_COUNT_CUSTOM; ++i )
+			auto addCustomSubMenu = [ this, &colorlayout ]( const QString & p_label, const E_COLOR_SCHEME p_scheme )
 			{
-				auto * wa	= new QWidgetAction( subMenu );
-				auto * item = new ColorItem( QT::Helper::toQColor( colorlayout.getCustomColor( i ) ) );
-				item->setMinimumSize( 120, 24 );
-				const Selected selected
-					= { E_COLOR_SCHEME::CUSTOM, static_cast<ColorIndex>( Color::LAYOUT_OFFSET_CUSTOM + i ) };
-				wa->setDefaultWidget( item );
-				connect( wa, &QAction::triggered, this, [ this, selected ]() { emit this->selected( selected ); } );
-				subMenu->addAction( wa );
-			}
+				auto * subMenu = QMenu::addMenu( p_label );
+				for ( ColorIndex i = 0; i < Color::LAYOUT_COUNT_CUSTOM; ++i )
+				{
+					auto * wa	= new QWidgetAction( subMenu );
+					auto * item = new ColorItem( QT::Helper::toQColor( colorlayout.getCustomColor( i ) ) );
+					item->setMinimumSize( 120, 24 );
+					const Selected selected = { p_scheme, static_cast<ColorIndex>( Color::LAYOUT_OFFSET_CUSTOM + i ) };
+					wa->setDefaultWidget( item );
+					connect( wa, &QAction::triggered, this, [ this, selected ]() { emit this->selected( selected ); } );
+					subMenu->addAction( wa );
+				}
+			};
+
+			addCustomSubMenu( "Custom", E_COLOR_SCHEME::CUSTOM );
+			addCustomSubMenu( "Carbon custom", E_COLOR_SCHEME::CARBON_CUSTOM );
 		}
 
 	  signals:
@@ -84,9 +90,7 @@ namespace VTX::UI::QT::Menu
 		{
 		  public:
 			ColorItem( const QColor & c, QWidget * parent = nullptr ) : QWidget( parent ), _color( c )
-			{
-				setMinimumHeight( 24 );
-			}
+			{ setMinimumHeight( 24 ); }
 
 		  protected:
 			void paintEvent( QPaintEvent * ) override

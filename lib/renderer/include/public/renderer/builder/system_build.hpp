@@ -126,6 +126,15 @@ namespace VTX::Renderer::Builder
 						atoms[ atom ] = Color::getColorIndex( data.getAtomSymbol( atom ) );
 					}
 				}
+				else if ( scheme == E_COLOR_SCHEME::CARBON_CHAIN )
+				{
+					for ( const Index atom : ranges )
+					{
+						const Index chain = data.getAtomChainIndex( atom );
+						atoms[ atom ]
+							= Color::getCarbonChainColorIndex( data.getAtomSymbol( atom ), data.getChainName( chain ) );
+					}
+				}
 				else if ( scheme == E_COLOR_SCHEME::RESIDUE )
 				{
 					for ( const Index atom : ranges )
@@ -154,6 +163,14 @@ namespace VTX::Renderer::Builder
 				for ( const Index atom : ranges )
 				{
 					atoms[ atom ] = colorIndex;
+				}
+				count += ranges.count();
+			}
+			for ( const auto & [ colorIndex, ranges ] : *p_system.data.carbonCustomColorAtoms )
+			{
+				for ( const Index atom : ranges )
+				{
+					atoms[ atom ] = Color::getCarbonCustomColorIndex( data.getAtomSymbol( atom ), colorIndex );
 				}
 				count += ranges.count();
 			}
@@ -434,9 +451,11 @@ namespace VTX::Renderer::Builder
 			{
 				p_geometries.ses.remove( p_context, p_handle );
 			}
-			else if ( p_geometries.ses.built( p_handle )
-				 && ( std::abs( p_geometries.ses.probeRadius( p_handle ) - sesProbeRadius ) > EPSILON
-					  || p_geometries.ses.computeMode( p_handle ) != sesComputeMode ) )
+			else if (
+				p_geometries.ses.built( p_handle )
+				&& ( std::abs( p_geometries.ses.probeRadius( p_handle ) - sesProbeRadius ) > EPSILON
+					 || p_geometries.ses.computeMode( p_handle ) != sesComputeMode )
+			)
 			{
 				p_geometries.ses.invalidateForRecompute( p_context, p_handle );
 				constructSES(

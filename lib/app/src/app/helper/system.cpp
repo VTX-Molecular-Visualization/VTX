@@ -203,6 +203,13 @@ namespace VTX::App::Helper::System
 				return Renderer::E_COLOR_SCHEME::CUSTOM;
 			}
 		}
+		for ( const auto & [ _, rangeList ] : color.carbonCustomColorAtoms )
+		{
+			if ( rangeList.contains( atoms ) )
+			{
+				return Renderer::E_COLOR_SCHEME::CARBON_CUSTOM;
+			}
+		}
 
 		return std::nullopt;
 	}
@@ -216,6 +223,10 @@ namespace VTX::App::Helper::System
 			count += rangeList.count();
 		}
 		for ( const auto & [ _, rangeList ] : p_color.customColorAtoms )
+		{
+			count += rangeList.count();
+		}
+		for ( const auto & [ _, rangeList ] : p_color.carbonCustomColorAtoms )
 		{
 			count += rangeList.count();
 		}
@@ -303,6 +314,13 @@ namespace VTX::App::Helper::System
 			}
 		}
 		for ( const auto & [ _, ranges ] : color.customColorAtoms )
+		{
+			if ( isRootForRanges( ranges ) )
+			{
+				return true;
+			}
+		}
+		for ( const auto & [ _, ranges ] : color.carbonCustomColorAtoms )
 		{
 			if ( isRootForRanges( ranges ) )
 			{

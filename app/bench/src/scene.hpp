@@ -54,6 +54,7 @@ namespace VTX::Bench
 			Util::Math::Range<UID32>											   residueUids;
 			std::unordered_map<Renderer::E_COLOR_SCHEME, Renderer::IndexRangeList> colorSchemeAtoms;
 			std::unordered_map<Renderer::ColorIndex, Renderer::IndexRangeList>	   customColorAtoms;
+			std::unordered_map<Renderer::ColorIndex, Renderer::IndexRangeList>	   carbonCustomColorAtoms;
 			std::unordered_map<Entity, Renderer::Desc::Handle>					   representationHandles;
 			std::unordered_map<Entity, Renderer::IndexRangeList>				   presetAtoms;
 			Util::Math::BitSet													   visibility;

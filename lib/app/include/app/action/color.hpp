@@ -25,17 +25,21 @@ namespace VTX::App::Action::Color
 			auto &						 reg	= REG();
 			const auto &				 system = reg.get<Core::Struct::Topology>( p_ent );
 			Core::Struct::IndexRangeList atoms	= Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
+			const bool					 isCustomScheme
+				= p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM || p_scheme == Renderer::E_COLOR_SCHEME::CARBON_CUSTOM;
 
 			assert(
-				( p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM && p_colorIndex.has_value() )
-				|| ( p_scheme != Renderer::E_COLOR_SCHEME::CUSTOM && not p_colorIndex.has_value() )
+				( isCustomScheme && p_colorIndex.has_value() ) || ( not isCustomScheme && not p_colorIndex.has_value() )
 			);
 
 			reg.patch<System::Color>(
 				p_ent,
 				[ &atoms, &system, p_scheme, p_colorIndex ]( System::Color & p_color )
 				{
-					if ( p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM )
+					const bool isCustomScheme = p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM
+												|| p_scheme == Renderer::E_COLOR_SCHEME::CARBON_CUSTOM;
+
+					if ( isCustomScheme )
 					{
 						assert( p_colorIndex.has_value() );
 						assert( *p_colorIndex >= Renderer::Color::LAYOUT_OFFSET_CUSTOM );
@@ -43,9 +47,13 @@ namespace VTX::App::Action::Color
 							*p_colorIndex < Renderer::Color::LAYOUT_OFFSET_CUSTOM + Renderer::Color::LAYOUT_COUNT_CUSTOM
 						);
 
-						if ( not p_color.customColorAtoms.contains( *p_colorIndex ) )
+						auto & targetColorAtoms = p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM
+													  ? p_color.customColorAtoms
+													  : p_color.carbonCustomColorAtoms;
+
+						if ( not targetColorAtoms.contains( *p_colorIndex ) )
 						{
-							p_color.customColorAtoms.emplace( *p_colorIndex, Core::Struct::IndexRangeList() );
+							targetColorAtoms.emplace( *p_colorIndex, Core::Struct::IndexRangeList() );
 						}
 
 						for ( auto & [ _, rangeList ] : p_color.colorSchemeAtoms )
@@ -55,7 +63,18 @@ namespace VTX::App::Action::Color
 
 						for ( auto & [ colorIndex, rangeList ] : p_color.customColorAtoms )
 						{
-							if ( colorIndex == *p_colorIndex )
+							if ( p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM && colorIndex == *p_colorIndex )
+							{
+								rangeList.mergeInPlace( atoms );
+							}
+							else
+							{
+								rangeList.substractInPlace( atoms );
+							}
+						}
+						for ( auto & [ colorIndex, rangeList ] : p_color.carbonCustomColorAtoms )
+						{
+							if ( p_scheme == Renderer::E_COLOR_SCHEME::CARBON_CUSTOM && colorIndex == *p_colorIndex )
 							{
 								rangeList.mergeInPlace( atoms );
 							}
@@ -89,6 +108,11 @@ namespace VTX::App::Action::Color
 						count += rangeList.count();
 					}
 					for ( auto & [ _, rangeList ] : p_color.customColorAtoms )
+					{
+						rangeList.substractInPlace( atoms );
+						count += rangeList.count();
+					}
+					for ( auto & [ _, rangeList ] : p_color.carbonCustomColorAtoms )
 					{
 						rangeList.substractInPlace( atoms );
 						count += rangeList.count();

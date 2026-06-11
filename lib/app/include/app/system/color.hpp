@@ -23,6 +23,12 @@ namespace VTX::App::System
 		 * @brief Associates custom renderer color indexes with lists of atom ranges.
 		 */
 		std::unordered_map<Renderer::ColorIndex, Core::Struct::IndexRangeList> customColorAtoms;
+
+		/**
+		 * @brief Associates custom renderer color indexes for carbon atoms with lists of atom ranges.
+
+		 */
+		std::unordered_map<Renderer::ColorIndex, Core::Struct::IndexRangeList> carbonCustomColorAtoms;
 	};
 
 } // namespace VTX::App::System

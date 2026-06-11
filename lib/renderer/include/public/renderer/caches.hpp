@@ -120,6 +120,7 @@ namespace VTX::Renderer::Cache
 			const Util::Math::Range<UID32> *						   residueUids;
 			const std::unordered_map<E_COLOR_SCHEME, IndexRangeList> * colorSchemeAtoms;
 			const std::unordered_map<ColorIndex, IndexRangeList> *	   customColorAtoms;
+			const std::unordered_map<ColorIndex, IndexRangeList> *	   carbonCustomColorAtoms;
 			// Ugly.
 			const std::unordered_map<Entity, Desc::Handle> *				 representationHandles;
 			const std::unordered_map<Entity, Core::Struct::IndexRangeList> * presetAtoms;
