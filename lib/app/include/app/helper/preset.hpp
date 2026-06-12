@@ -2,7 +2,7 @@
 #define __VTX_APP_HELPER_PRESET__
 
 #include "app/ecs.hpp"
-#include "app/preset/name.hpp"
+#include "app/generic/name.hpp"
 #include <optional>
 #include <util/types.hpp>
 
@@ -14,10 +14,10 @@ namespace VTX::App::Helper::Preset
 	template<typename T>
 	bool exists( const std::string_view p_name )
 	{
-		auto view = REG().view<App::Preset::Name, T>();
+		auto view = REG().view<App::Generic::Name, T>();
 		for ( const Entity entity : view )
 		{
-			const auto & presetName = view.template get<App::Preset::Name>( entity ).name;
+			const auto & presetName = view.template get<App::Generic::Name>( entity ).name;
 			if ( presetName == p_name )
 			{
 				return true;
@@ -33,10 +33,10 @@ namespace VTX::App::Helper::Preset
 	template<typename T>
 	std::optional<Entity> getByName( const std::string_view p_name )
 	{
-		auto view = REG().view<App::Preset::Name, T>();
+		auto view = REG().view<App::Generic::Name, T>();
 		for ( const Entity entity : view )
 		{
-			const auto & presetName = view.template get<App::Preset::Name>( entity ).name;
+			const auto & presetName = view.template get<App::Generic::Name>( entity ).name;
 			if ( presetName == p_name )
 			{
 				return entity;

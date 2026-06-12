@@ -5,8 +5,8 @@
 #include "app/action/representation.hpp"
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
+#include "app/generic/name.hpp"
 #include "app/helper/preset.hpp"
-#include "app/preset/name.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
 #include <optional>
@@ -22,6 +22,11 @@ namespace VTX::App::Action::Preset
 {
 
 	/**
+	 * @brief Default name for a preset when no name is provided.
+	 */
+	constexpr std::string_view DEFAULT_PRESET_NAME = "New preset";
+
+	/**
 	 * @brief Add a new preset to a library.
 	 */
 	template<typename T>
@@ -34,7 +39,7 @@ namespace VTX::App::Action::Preset
 		)
 		{
 			auto &		reg	 = REG();
-			std::string name = std::string { p_name.has_value() ? p_name.value() : "New preset" };
+			std::string name = std::string { p_name.has_value() ? p_name.value() : DEFAULT_PRESET_NAME };
 
 			while ( Helper::Preset::exists<T>( name ) )
 			{
@@ -42,7 +47,7 @@ namespace VTX::App::Action::Preset
 			}
 
 			auto e = reg.create();
-			reg.emplace<App::Preset::Name>( e, name );
+			reg.emplace<App::Generic::Name>( e, name );
 			if ( p_data )
 			{
 				reg.emplace<T>( e, *p_data );
@@ -76,7 +81,7 @@ namespace VTX::App::Action::Preset
 		{
 			std::string name { p_dest };
 
-			auto & src = REG().get<App::Preset::Name>( p_e );
+			auto & src = REG().get<App::Generic::Name>( p_e );
 			if ( src.name == p_dest )
 			{
 				return;
@@ -87,7 +92,7 @@ namespace VTX::App::Action::Preset
 				name += " (2)";
 			}
 
-			auto & nameComponent = REG().get<App::Preset::Name>( p_e );
+			auto & nameComponent = REG().get<App::Generic::Name>( p_e );
 			nameComponent.name	 = name;
 			HUB().trigger<App::Events::PresetRename<T>>( p_e, name );
 		}
@@ -102,7 +107,7 @@ namespace VTX::App::Action::Preset
 		void execute( const Entity p_e, const std::optional<std::string_view> p_dest = std::nullopt )
 		{
 			auto & reg = REG();
-			auto & src = reg.get<App::Preset::Name>( p_e );
+			auto & src = reg.get<App::Generic::Name>( p_e );
 
 			std::string name = std::string { p_dest.has_value() ? p_dest.value() : src.name + "_copy" };
 
@@ -112,7 +117,7 @@ namespace VTX::App::Action::Preset
 			}
 
 			auto e = reg.create();
-			reg.emplace<App::Preset::Name>( e, name );
+			reg.emplace<App::Generic::Name>( e, name );
 			reg.emplace<T>( e, reg.get<T>( p_e ) );
 		}
 	};
@@ -125,7 +130,7 @@ namespace VTX::App::Action::Preset
 	{
 		void execute( const Entity p_e )
 		{
-			auto view = REG().view<App::Preset::Name, T>();
+			auto view = REG().view<App::Generic::Name, T>();
 
 			if ( view.size_hint() == 1 )
 			{

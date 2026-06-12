@@ -186,6 +186,35 @@ namespace VTX::App::Action::Camera
 		}
 	};
 
+	/**
+	 * @brief Default viewpoint name.
+	 */
+	constexpr std::string_view DEFAULT_VIEWPOINT_NAME = "Viewpoint";
+
+	/**
+	 * @brief Save current camera position and orientation as a viewpoint.
+	 */
+	struct SaveViewpoint
+	{
+		void execute();
+	};
+
+	/**
+	 * @brief Delete a viewpoint.
+	 */
+	struct DeleteViewPoint
+	{
+		void execute( const Entity );
+	};
+
+	/**
+	 * @brief Move camera to a viewpoint.
+	 */
+	struct GoToViewPoint
+	{
+		void execute( const Entity );
+	};
+
 } // namespace VTX::App::Action::Camera
 
 #endif

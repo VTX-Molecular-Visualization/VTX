@@ -17,7 +17,7 @@
 #include <algorithm>
 #include <app/action/preset.hpp>
 #include <app/ecs.hpp>
-#include <app/preset/name.hpp>
+#include <app/generic/name.hpp>
 #include <app/services.hpp>
 #include <optional>
 #include <util/event_hub.hpp>
@@ -150,7 +150,7 @@ namespace VTX::UI::QT::Widget::Library
 			_onConstructConnection = reg.on_construct<P>().template connect<&PresetSelector::_refreshComboBox>( this );
 			_onDestroyConnection   = reg.on_destroy<P>().template connect<&PresetSelector::_refreshComboBox>( this );
 			_onNameUpdateConnection
-				= reg.on_update<App::Preset::Name>().template connect<&PresetSelector::_onPresetNameUpdated>( this );
+				= reg.on_update<App::Generic::Name>().template connect<&PresetSelector::_onPresetNameUpdated>( this );
 			_onPresetUpdateConnection = reg.on_update<P>().template connect<&PresetSelector::_onUpdatePreset>( this );
 		}
 
@@ -230,12 +230,12 @@ namespace VTX::UI::QT::Widget::Library
 			_comboBox->clear();
 
 			int										indexToSelect = -1;
-			auto									view		  = REG().view<Preset::Name, P>();
+			auto									view		  = REG().view<Generic::Name, P>();
 			std::vector<std::pair<QString, Entity>> presets;
 			presets.reserve( view.size_hint() );
 			for ( const Entity entity : view )
 			{
-				const auto & presetName = view.template get<Preset::Name>( entity ).name;
+				const auto & presetName = view.template get<Generic::Name>( entity ).name;
 				presets.emplace_back( QString::fromStdString( presetName ), entity );
 			}
 
@@ -278,7 +278,7 @@ namespace VTX::UI::QT::Widget::Library
 			}
 
 			const QSignalBlocker blocker( _comboBox );
-			const QString		 newName = QString::fromStdString( p_r.get<App::Preset::Name>( p_e ).name );
+			const QString		 newName = QString::fromStdString( p_r.get<App::Generic::Name>( p_e ).name );
 			const int			 index	 = _comboBox->findData( QVariant::fromValue<Entity>( p_e ) );
 			if ( index != -1 )
 			{

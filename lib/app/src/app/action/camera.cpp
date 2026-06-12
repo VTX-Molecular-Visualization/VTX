@@ -1,5 +1,6 @@
 #include "app/action/camera.hpp"
 #include "app/action/action_manager.hpp"
+#include "app/generic/name.hpp"
 #include "app/helper/system.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/system/selection.hpp"
@@ -94,14 +95,13 @@ namespace VTX::App::Action::Camera
 		Util::Math::AABB aabb;
 
 		// From selection.
-		auto view = REG()
-						.view<Core::Struct::Topology, Util::Math::AABB, Util::Math::Transform, System::Selection>();
+		auto view = REG().view<Core::Struct::Topology, Util::Math::AABB, Util::Math::Transform, System::Selection>();
 
 		if ( view.size_hint() )
 		{
 			view.each(
 				[ & ](
-					const Entity &			   p_e,
+					const Entity &				   p_e,
 					const Core::Struct::Topology & p_data,
 					const Util::Math::AABB &	   p_aabb,
 					const Util::Math::Transform &  p_transform,
@@ -165,4 +165,32 @@ namespace VTX::App::Action::Camera
 		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>( p_targetPosition, p_targetRotation, p_duration );
 	}
 
+	void SaveViewpoint::execute()
+	{
+		auto & reg = REG();
+
+		const auto [ _, camera, transform ]
+			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+
+		Entity e = reg.create();
+		reg.emplace<Util::Math::Transform>( e, transform );
+		reg.emplace<App::Generic::Name>( e, DEFAULT_VIEWPOINT_NAME.data() );
+
+		HUB().trigger<Events::ViewPointAdded>( e );
+	}
+
+	void DeleteViewPoint::execute( const Entity p_viewpoint )
+	{
+		REG().destroy( p_viewpoint );
+		HUB().trigger<Events::ViewPointDeleted>( p_viewpoint );
+	}
+
+	void GoToViewPoint::execute( const Entity p_viewpoint )
+	{
+		const auto & transform = REG().get<Util::Math::Transform>( p_viewpoint );
+
+		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(
+			transform.getPosition(), transform.getRotation()
+		);
+	}
 } // namespace VTX::App::Action::Camera

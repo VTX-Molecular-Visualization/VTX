@@ -6,7 +6,7 @@
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include <QMenu>
-#include <app/preset/name.hpp>
+#include <app/generic/name.hpp>
 #include <optional>
 #include <renderer/representation.hpp>
 
@@ -30,7 +30,7 @@ namespace VTX::UI::QT::Menu
 			for ( const auto ent : view )
 			{
 				const auto & representation = view.get<Renderer::Representation>( ent );
-				const auto & name			= App::REG().get<App::Preset::Name>( ent );
+				const auto & name			= App::REG().get<App::Generic::Name>( ent );
 
 				QAction * a = QMenu::addAction( QString::fromStdString( name.name ) );
 				if ( p_representation )
