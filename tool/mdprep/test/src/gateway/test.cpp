@@ -8,8 +8,8 @@
 */
 #include <app/fixture.hpp>
 #include <app/vtx_app.hpp>
-#include <string>
 #include <latch>
+#include <string>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
@@ -18,6 +18,8 @@
 #include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <app/services.hpp>
+#include <app/threading/base_thread.hpp>
+//
 #include <tool/mdprep/backends/gromacs/util.hpp>
 #include <tool/mdprep/gateway/engine_job_manager.hpp>
 #include <tool/mdprep/gateway/form_data.hpp>
@@ -40,9 +42,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - integration", "[integration]" )
 	VTX::Tool::Mdprep::Gateway::MdParameters		mdParams;
 	mdParams.system.forcefieldBio = "gromos54a7";
 
-	std::latch prepWait { 1 };
-	
-	jobManager.startPreparation( mdParams, VTX::Tool::Mdprep::Gateway::JobUpdateCallback() );
+	VTX::App::Threading::ThreadData thrData;
+	jobManager.startPreparation( mdParams, thrData );
 	/*
 
 

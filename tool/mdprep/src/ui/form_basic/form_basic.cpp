@@ -9,9 +9,12 @@
 #include <QValidator>
 #include <fmt/format.h>
 //
+#include "util/logger.hpp"
+#include "util/sentry.hpp"
+#include <util/event_hub.hpp>
+//
 #include "tool/mdprep/gateway/form_data.hpp"
 #include "tool/mdprep/ui/shared.hpp"
-#include <util/event_hub.hpp>
 //
 #include "tool/mdprep/ui/input_checker.hpp"
 #include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
@@ -23,8 +26,6 @@
 #include "tool/mdprep/ui/form_basic/event_manager.hpp"
 #include <app/services.hpp>
 //
-#include "util/logger.hpp"
-#include "util/sentry.hpp"
 #include <ui/qt/services.hpp>
 #include <ui/qt/style/icons.hpp>
 #include <ui/qt/style/style_manager.hpp>

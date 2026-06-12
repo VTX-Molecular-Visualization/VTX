@@ -97,10 +97,10 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			QPushButton * _buttonInputCheck					  = nullptr;
 		} _uiObjects;
 
-		Util::EventHub::Connection _checkReport;
-		std::unique_ptr<Data>	   _data = nullptr;
-		IonicFields				   _fieldsIons;
-		EventManager			   _eventManager;
+		VTX::Util::EventHub::Connection _checkReport;
+		std::unique_ptr<Data>			_data = nullptr;
+		IonicFields						_fieldsIons;
+		EventManager					_eventManager;
 
 		void _createAndPlaceUiItems( QWidget * p_container ) noexcept;
 		void _loadValues( const MdParameters & p_defaults ) noexcept;

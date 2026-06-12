@@ -80,9 +80,7 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 
 	JobManager::JobManager( MdSettings & p_data ) : _data( &p_data ) {}
 
-	void JobManager::checkInputs( const MdParameters & p_1, App::Threading::ThreadData & p_ ) noexcept {
-
-	}
+	void JobManager::checkInputs( const MdParameters & p_1, App::Threading::ThreadData & p_ ) noexcept {}
 
 	namespace
 	{

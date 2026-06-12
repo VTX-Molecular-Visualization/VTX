@@ -1,12 +1,20 @@
+#include <latch>
+//
 #include <QPointer>
 #include <QTimer>
+//
+#include <util/event_hub.hpp>
+#include <util/sentry.hpp>
+//
+#include <app/action/action_manager.hpp>
+#include <app/services.hpp>
+#include <app/threading/base_thread.hpp>
+#include <ui/qt/util.hpp>
 //
 #include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/input_checker.hpp"
 #include "tool/mdprep/ui/shared.hpp"
-#include <app/vtx_app.hpp>
-#include <ui/qt/util.hpp>
-#include <util/sentry.hpp>
+#include <tool/mdprep/gateway/form_data.hpp>
 //
 #include "tool/mdprep/ui/report.hpp"
 
@@ -26,6 +34,7 @@ namespace VTX::Tool::Mdprep::ui
 				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 			};
 		}
+
 		inline void createReportUi( ReportUi & p_reportUi )
 		{
 			if ( p_reportUi.report == Gateway::CheckReport() )
@@ -74,7 +83,9 @@ namespace VTX::Tool::Mdprep::ui
 			void operator()( Gateway::CheckReport p_report ) noexcept
 			{
 				if ( p_report.itemGeneric != Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField )
+				{
 					return;
+				}
 				_reportData->report = p_report;
 				QTimer::singleShot( 0, [ & ]() { ReportResultPoster( *_reportData, std::move( _sendReportUi ) ); } );
 			}
@@ -86,11 +97,46 @@ namespace VTX::Tool::Mdprep::ui
 	} // namespace
 
 	ReportManager::ReportManager( InputChecker p_inputChecker ) : _inputChecker( std::move( p_inputChecker ) ) {}
+
 	bool ReportManager::hasFirstCheckBeenDone() const noexcept { return firstCheckStarted; }
+
+	namespace
+	{
+		struct TriggerReportDisplay
+		{
+			void execute( const Mdprep::Gateway::CheckReport & p_report )
+			{ App::HUB().trigger<Mdprep::Gateway::CheckReport>( p_report ); }
+		};
+
+		struct CheckInputsAction
+		{
+			App::Threading::ThreadData thrData;
+			std::latch				   waiter { 1 };
+
+			CheckInputsAction() = default;
+
+			CheckInputsAction( App::Threading::ThreadData p_ ) : thrData( std::move( p_ ) ) {}
+
+			void wait() noexcept { waiter.wait(); }
+
+			void execute( InputChecker p_inputChecker, Gateway::MdParameters p_params )
+			{
+				p_inputChecker.checkInputs( p_params, thrData );
+				App::ACTION().subscribe(
+					App::Action::QueuedAction( TriggerReportDisplay(), p_inputChecker.lastResult() )
+				);
+
+				waiter.count_down();
+			}
+		};
+	} // namespace
+
 	void ReportManager::checkInputs( const Gateway::MdParameters & p_params ) noexcept
 	{
 		if ( _reportData.checkInProgress )
+		{
 			return;
+		}
 
 		firstCheckStarted			= true;
 		_reportData.report			= Gateway::CheckReport();
@@ -98,8 +144,7 @@ namespace VTX::Tool::Mdprep::ui
 
 		auto callback = _uiManager.produceCallback();
 		callback( { getWaitingMessage() } );
-
-		_inputChecker.checkInputs( p_params, ReportResultWaiter( _reportData, std::move( callback ) ) );
+		App::ACTION().execute<CheckInputsAction>( _inputChecker, p_params );
 	}
 
 	void ReportManager::relocate( QPointer<QVBoxLayout> p_ ) noexcept { _uiManager.relocate( std::move( p_ ) ); }
@@ -122,11 +167,14 @@ namespace VTX::Tool::Mdprep::ui
 			p_other._currentLayout = nullptr;
 
 			if ( not _currentLayout.isNull() )
+			{
 				_createContainer();
+			}
 
 			createReportUi( _lastUiReport );
 			_recreateUi();
 		}
+
 		void relocate( QPointer<QVBoxLayout> p_ ) noexcept
 		{
 			_removeContainerFromLayout();
@@ -134,18 +182,25 @@ namespace VTX::Tool::Mdprep::ui
 			_currentLayout = p_;
 
 			if ( not _lastUiReport.content.container.isNull() )
+			{
 				delete _lastUiReport.content.container;
+			}
 
 			if ( _currentLayout.isNull() )
+			{
 				return;
+			}
 
 			createReportUi( _lastUiReport );
 			_recreateUi();
 		}
+
 		void postReport( ReportUi p_uiReport ) noexcept
 		{
 			if ( not _lastUiReport.content.container.isNull() )
+			{
 				delete _lastUiReport.content.container;
+			}
 
 			_lastUiReport = std::move( p_uiReport );
 
@@ -160,28 +215,41 @@ namespace VTX::Tool::Mdprep::ui
 		void _recreateUi() noexcept
 		{
 			if ( _currentLayout.isNull() )
+			{
 				return;
+			}
 			_createContainer();
 
 			if ( not _lastUiReport.content.container.isNull() )
+			{
 				_container->layout()->addWidget( _lastUiReport.content );
+			}
 		}
 
 		inline void _removeContainerFromLayout() noexcept
 		{
 			if ( not _currentLayout.isNull() && not _container.isNull() )
+			{
 				_currentLayout->removeWidget( _container );
+			}
 		}
+
 		inline void _deleteLayout() noexcept
 		{
 			if ( not _currentLayout.isNull() )
+			{
 				delete _currentLayout.data();
+			}
 		}
+
 		inline void _deleteContainer() noexcept
 		{
 			if ( not _container.isNull() )
+			{
 				delete _container.data();
+			}
 		}
+
 		inline void _createContainer() noexcept
 		{
 			if ( _container.isNull() )
@@ -200,7 +268,9 @@ namespace VTX::Tool::Mdprep::ui
 	{
 	  public:
 		ReportPlacerCaller() = delete;
+
 		ReportPlacerCaller( std::shared_ptr<FramedReportManager> p_in ) : _manager( std::move( p_in ) ) {}
+
 		void operator()( ReportUi p_report ) noexcept { _manager->postReport( std::move( p_report ) ); }
 
 	  private:
@@ -211,12 +281,11 @@ namespace VTX::Tool::Mdprep::ui
 	{
 		void operator()( FramedReportManager * p_ ) noexcept { delete p_; }
 	};
+
 	UiReportManager::UiReportManager() : _manager( new FramedReportManager, FramedReportManagerDeleter() ) {}
 
 	void UiReportManager::relocate( QPointer<QVBoxLayout> p_layout ) noexcept
-	{
-		_manager->relocate( std::move( p_layout ) );
-	}
+	{ _manager->relocate( std::move( p_layout ) ); }
 
 	void UiReportManager::relocate( UiReportManager & p_other ) noexcept { _manager->relocate( *p_other._manager ); }
 

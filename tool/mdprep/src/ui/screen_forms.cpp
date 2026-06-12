@@ -2,14 +2,15 @@
 #include "util/sentry.hpp"
 #include <qpushbutton.h>
 #include <ui/qt/util.hpp>
+#include <util/event_hub.hpp>
 //
 #include "tool/mdprep/gateway/engine_job_manager.hpp"
 #include "tool/mdprep/gateway/form_data.hpp"
 #include "tool/mdprep/gateway/shared.hpp"
+#include "tool/mdprep/ui/input_checker.hpp"
 //
 #include "tool/mdprep/ui/form.hpp"
 #include "tool/mdprep/ui/form_switch_button.hpp"
-#include "tool/mdprep/ui/input_checker.hpp"
 #include "tool/mdprep/ui/md_engine.hpp"
 #include "tool/mdprep/ui/md_engine_field_placer.hpp"
 #include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
@@ -19,7 +20,6 @@
 #include "tool/mdprep/ui/form_basic/form_basic.hpp"
 #include <app/events.hpp>
 #include <app/services.hpp>
-#include <util/event_hub.hpp>
 //
 #include "tool/mdprep/ui/screen_forms.hpp"
 
@@ -210,7 +210,7 @@ namespace VTX::Tool::Mdprep::ui
 		_currentForm.get( param );
 
 		Gateway::JobUpdateIntermediate intermediate;
-		jobManager.startPreparation( param, intermediate.getUpdateCallback() );
+		// jobManager.startPreparation( param, intermediate.getUpdateCallback() ); //TODO
 
 		_validationSignaler.preparationStarted( std::move( intermediate ) );
 	}
@@ -221,7 +221,6 @@ namespace VTX::Tool::Mdprep::ui
 			_w_mdEngine, &QComboBox::currentIndexChanged, [ & ]( int p_newIdx ) { this->_updateMdEngine( p_newIdx ); }
 		);
 		QObject::connect( _buttonStart, &QPushButton::clicked, [ & ]() { this->_startPreparation(); } );
-
 	}
 
 	ValidationSignaler::ValidationSignaler( std::function<void( Gateway::JobUpdateIntermediate )> p_ ) :

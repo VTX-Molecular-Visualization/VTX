@@ -36,6 +36,17 @@ namespace VTX::Tool::Mdprep::Actions
 		}
 	}
 
+	namespace
+	{
+
+		class TriggerCheckReportEvent
+		{
+		  public:
+			inline void execute( const Mdprep::Gateway::CheckReport & p_ )
+			{ App::HUB().trigger<Mdprep::Gateway::CheckReport>( p_ ); }
+		};
+	} // namespace
+
 	struct CheckSystem::_Impl
 	{
 		VTX::App::Threading::ThreadData thrData;
@@ -59,10 +70,13 @@ namespace VTX::Tool::Mdprep::Actions
 		);
 		auto reason = tester.why();
 		App::ACTION().subscribe(
-			Mdprep::Gateway::CheckReport { Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField,
-										   0,
-										   tester.isSystemOk(),
-										   std::string( reason.begin(), reason.end() ) }
+			App::Action::QueuedAction(
+				TriggerCheckReportEvent(),
+				Mdprep::Gateway::CheckReport { Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField,
+											   0,
+											   tester.isSystemOk(),
+											   std::string( reason.begin(), reason.end() ) }
+			)
 		);
 		_impl->waiter.count_down();
 	}
