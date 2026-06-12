@@ -161,12 +161,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			fs::path		 _structurePdb;
 			forcefield		 _ff;
 			E_WATER_MODEL	 _w;
-			std::latch		 _finishedLatch { 1 };
 			std::atomic_bool _systemOk = false;
 			std::string		 _why;
 		} _testData;
-
-		std::thread _thr;
 
 		static fs::path createRootDir()
 		{
@@ -182,7 +179,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			return base / "a"; // ragequit
 		}
 
-		static void test( TestData & p_testData )
+		void test() {}
+
+	  public:
+		_Impl( const fs::path & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
+			_testData( TestData { p_structurePdb, p_ff, p_w } )
 		{
 			fs::path rootDir = createRootDir();
 			try
@@ -193,11 +194,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 					fs::remove_all( rootDir );
 				}
 				fs::create_directories( rootDir );
-				inst.forcefields	 = { p_testData._ff };
+				inst.forcefields	 = { _testData._ff };
 				inst.forcefieldIndex = 0;
-				inst.water			 = p_testData._w;
-				inst.fileStem		 = p_testData._structurePdb.stem().string();
-				inst.inputPdb		 = p_testData._structurePdb;
+				inst.water			 = _testData._w;
+				inst.fileStem		 = _testData._structurePdb.stem().string();
+				inst.inputPdb		 = _testData._structurePdb;
 				prepareJob( {}, rootDir.parent_path(), "1", inst );
 				GromacsJobData jobData;
 				convert( inst, jobData );
@@ -208,64 +209,29 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 					jobData
 				);
 				checkJobResults( jobData );
-				p_testData._systemOk = jobData.report.errorOccured == false;
+				_testData._systemOk = jobData.report.errorOccured == false;
 				for ( auto & err : jobData.report.errors )
 				{
-					p_testData._why += err + '\n';
+					_testData._why += err + '\n';
 				}
 				auto channels = jobData.channelsLocker.open();
-				p_testData._why += channels->stdout_ + "\n";
-				p_testData._why += channels->stderr_ + "\n";
+				_testData._why += channels->stdout_ + "\n";
+				_testData._why += channels->stderr_ + "\n";
 			}
 			catch ( std::exception & e )
 			{
-				p_testData._why = e.what();
+				_testData._why = e.what();
 			}
 			catch ( ... )
 			{
-				p_testData._why = "Unknown error.";
+				_testData._why = "Unknown error.";
 			}
-			p_testData._finishedLatch.count_down();
 			fs::remove_all( rootDir );
 		}
 
-		static std::thread startTest( TestData & p_testData )
-		{
-			return std::thread( [ & ]() { test( p_testData ); } );
-		}
+		bool isSystemOk() const noexcept { return _testData._systemOk; }
 
-	  public:
-		_Impl( const fs::path & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
-			_testData( TestData { p_structurePdb, p_ff, p_w } ), _thr( startTest( _testData ) )
-		{
-		}
-
-		~_Impl()
-		{
-			if ( _thr.joinable() )
-			{
-				_thr.join();
-			}
-		}
-
-		bool isTestFinished() const noexcept { return _testData._finishedLatch.try_wait(); }
-
-		bool isSystemOk() const noexcept
-		{
-			_testData._finishedLatch.wait();
-			return _testData._systemOk;
-		}
-
-		const std::string_view why() const noexcept
-		{
-			if ( isTestFinished() || _testData._systemOk == true )
-			{
-				return {};
-			}
-			return _testData._why;
-		}
-
-		void wait() const noexcept { _testData._finishedLatch.wait(); }
+		const std::string_view why() const noexcept { return _testData._why; }
 	};
 
 	SystemTester::SystemTester( const fs::path & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
@@ -273,13 +239,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	{
 	}
 
-	bool SystemTester::isTestFinished() const noexcept { return _pimpl->isTestFinished(); }
-
 	bool SystemTester::isSystemOk() const noexcept { return _pimpl->isSystemOk(); }
 
 	const std::string_view SystemTester::why() const noexcept { return _pimpl->why(); }
-
-	void SystemTester::wait() const noexcept { _pimpl->wait(); }
 
 	SystemTester::operator bool() const noexcept { return _pimpl->isSystemOk(); }
 

@@ -9,6 +9,7 @@
 #include <app/fixture.hpp>
 #include <app/vtx_app.hpp>
 #include <string>
+#include <latch>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
@@ -31,12 +32,18 @@ TEST_CASE( "VTX_TOOL_MdPrep - integration", "[integration]" )
 {
 	VTX::App::Fixture f;
 
-	/*
 	VTX::App::ACTION().execute<VTX::App::Action::IO::LoadSystem>(
 		VTX::Util::Filesystem::getExecutableDir() / "data" / "2qwo.nolig.pdb"
 	);
+	VTX::Tool::Mdprep::Gateway::Gromacs::MdSettings settings;
+	VTX::Tool::Mdprep::Gateway::Gromacs::JobManager jobManager( settings );
+	VTX::Tool::Mdprep::Gateway::MdParameters		mdParams;
+	mdParams.system.forcefieldBio = "gromos54a7";
 
-	VTX::Tool::Mdprep::Gateway::Gromacs::JobManager jobManager( VTX::Tool::Mdprep::Gateway::Gromacs::MdSettings() );
+	std::latch prepWait { 1 };
+	
+	jobManager.startPreparation( mdParams, VTX::Tool::Mdprep::Gateway::JobUpdateCallback() );
+	/*
 
 
 	const VTX::FilePath path = VTX::Util::Filesystem::getExecutableDir() / "logs";

@@ -5,12 +5,15 @@ namespace VTX::Tool::Mdprep::Gateway
 {
 	class EngineJobManager;
 } // namespace VTX::Tool::Mdprep::Gateway
+
 namespace VTX::Tool::Mdprep::ui
 {
 	class MdEngineFieldPlacer;
 	class MdEngineSpecificFieldPlacer;
 
-	// Class responsible for providing gromacs specific ui objects
+	/**
+	 * @brief Class responsible for providing gromacs specific ui objects
+	 */
 	class Gromacs
 	{
 	  public:
@@ -22,12 +25,15 @@ namespace VTX::Tool::Mdprep::ui
 
 	  private:
 		class _Impl;
+
 		struct Del
 		{
 			void operator()( _Impl * ) noexcept;
 		};
-		std::unique_ptr<_Impl, Del>	 _impl = nullptr;
+
+		std::unique_ptr<_Impl, Del> _impl = nullptr;
 	};
+
 	void get( const Gromacs &, Gateway::EngineSpecificCommonInformation & ) noexcept;
 } // namespace VTX::Tool::Mdprep::ui
 

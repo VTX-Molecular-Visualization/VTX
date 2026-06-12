@@ -21,6 +21,7 @@ namespace VTX::Util
 {
 	class SentryTarget;
 }
+
 namespace VTX::Tool::Mdprep::ui
 {
 	using namespace VTX::Tool::Mdprep::Gateway;
@@ -44,6 +45,16 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			const MdParameters & p_defaults,
 			ReportManager &		 p_reportManager
 		);
+
+		/**
+		 * @brief
+		 */
+		~FormBasic();
+
+		FormBasic( const FormBasic & )			   = delete;
+		FormBasic & operator=( const FormBasic & ) = delete;
+		FormBasic( FormBasic && )				   = default;
+		FormBasic & operator=( FormBasic && )	   = default;
 
 		/**
 		 * @brief Change information related to the current engine.
@@ -85,13 +96,16 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			QPushButton * _buttonProductionSettings			  = nullptr;
 			QPushButton * _buttonInputCheck					  = nullptr;
 		} _uiObjects;
-		std::unique_ptr<Data> _data = nullptr;
-		IonicFields			  _fieldsIons;
-		EventManager		  _eventManager;
+
+		Util::EventHub::Connection _checkReport;
+		std::unique_ptr<Data>	   _data = nullptr;
+		IonicFields				   _fieldsIons;
+		EventManager			   _eventManager;
 
 		void _createAndPlaceUiItems( QWidget * p_container ) noexcept;
 		void _loadValues( const MdParameters & p_defaults ) noexcept;
 		void _setupSlots() noexcept;
+		void _displayCheckResults( const Gateway::CheckReport & ) noexcept;
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic
 #endif

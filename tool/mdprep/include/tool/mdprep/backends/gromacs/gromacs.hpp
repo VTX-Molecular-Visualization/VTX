@@ -50,16 +50,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	 */
 	void createMdDirectory( const GromacsInstructions &, const fs::path & p_dest ) noexcept;
 
-	// Class responsible for testing the system with gromacs asynchronously.
+	// Class responsible for testing the system with gromacs synchonously.
 	class SystemTester
 	{
 	  public:
 		SystemTester( const fs::path & p_structurePdb, const forcefield &, const E_WATER_MODEL & );
-
-		/**
-		 * @brief  Check if the asynchronous test is over. Usefull if you don't want to block the current thread waiting
-		 */
-		bool isTestFinished() const noexcept;
 
 		/**
 		 * @brief Return the reason why the system is not viable, or empty if not finished or viable.
@@ -77,11 +72,6 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		 * the value, potentially blocking the current thread.
 		 */
 		bool isSystemOk() const noexcept;
-
-		/**
-		 * @brief Wait for the test to finish
-		 */
-		void wait() const noexcept;
 
 	  private:
 		class _Impl;

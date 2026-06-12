@@ -17,11 +17,15 @@
 //
 #include "tool/mdprep/ui/form_advanced/form_advanced.hpp"
 #include "tool/mdprep/ui/form_basic/form_basic.hpp"
+#include <app/events.hpp>
+#include <app/services.hpp>
+#include <util/event_hub.hpp>
 //
 #include "tool/mdprep/ui/screen_forms.hpp"
 
 namespace VTX::Tool::Mdprep::ui
 {
+
 	ScreenForms::ScreenForms( QWidget * p_parent, Gateway::MdParameters & p_data, ValidationSignaler p_validation ) :
 		_dataPtr( &p_data ), _validationSignaler( std::move( p_validation ) )
 	{
@@ -32,7 +36,9 @@ namespace VTX::Tool::Mdprep::ui
 	void ScreenForms::_setupUi( QWidget * p_parent ) noexcept
 	{
 		if ( p_parent->layout() )
+		{
 			p_parent->layout();
+		}
 		p_parent->setLayout( new QVBoxLayout );
 		QWidget * mainWidget = new QWidget( p_parent );
 		p_parent->layout()->addWidget( mainWidget );
@@ -48,7 +54,9 @@ namespace VTX::Tool::Mdprep::ui
 		// following content is meant to be moved eventually
 		_w_mdEngine = new QComboBox;
 		for ( auto & it : VTX::Tool::Mdprep::ui::mdEngineStrings() )
+		{
 			_w_mdEngine->addItem( QString( it ) );
+		}
 		_w_mdEngine->setCurrentIndex( _mdEngineCurrentIdx );
 
 		qLayoutCentering->addStretch( 1 );
@@ -84,14 +92,16 @@ namespace VTX::Tool::Mdprep::ui
 
 		QLabel *			qExplainatoryText = new QLabel;
 		static const char * buttonLabel		  = "Prepare system";
-		qExplainatoryText->setText( QString::asprintf(
-			"Pushing the <i>%s</i> button will use every <b>visible</b> object(s) of the system to "
-			"<b>prepare</b> a Molecular Dynamics Simulation using selected parameters.<br><u>Be wary :</u> <i>VTX "
-			"doesn't support "
-			"yet</i> automatic MD preparation for <b>small organic molecule</b>. Hence, any visible "
-			"non-biological entity is likely cause preparation failure. Please mind the automatic check result.",
-			buttonLabel
-		) );
+		qExplainatoryText->setText(
+			QString::asprintf(
+				"Pushing the <i>%s</i> button will use every <b>visible</b> object(s) of the system to "
+				"<b>prepare</b> a Molecular Dynamics Simulation using selected parameters.<br><u>Be wary :</u> <i>VTX "
+				"doesn't support "
+				"yet</i> automatic MD preparation for <b>small organic molecule</b>. Hence, any visible "
+				"non-biological entity is likely cause preparation failure. Please mind the automatic check result.",
+				buttonLabel
+			)
+		);
 		qExplainatoryText->setWordWrap( true );
 		qExplainatoryText->setContentsMargins( { 10, 10, 5, 5 } );
 		qLayoutWindow->addWidget( qExplainatoryText );
@@ -102,6 +112,7 @@ namespace VTX::Tool::Mdprep::ui
 		_buttonStart->setText( buttonLabel );
 		qLayoutWindow->addWidget( _buttonStart );
 	}
+
 	void ScreenForms::_updateMdEngine( int idx ) noexcept
 	{
 		_mdEngineCurrentIdx = idx;
@@ -121,7 +132,9 @@ namespace VTX::Tool::Mdprep::ui
 			// The form doesn't actually know if the report ui must be relocated. Therefore it is handled here.
 			ReportManager _newReportManager { _jobManager };
 			if ( _reportManager.has_value() )
+			{
 				_newReportManager.relocate( _reportManager.value() );
+			}
 			_reportManager.emplace( std::move( _newReportManager ) );
 
 			VTX::Tool::Mdprep::ui::FormLayouts layouts;
@@ -132,6 +145,7 @@ namespace VTX::Tool::Mdprep::ui
 
 		_updateForm();
 	}
+
 	std::function<VTX::Tool::Mdprep::ui::MdEngineSpecificFieldPlacer( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & )>
 	ScreenForms::_SpecificFieldPlacerGetter() noexcept
 	{
@@ -142,6 +156,7 @@ namespace VTX::Tool::Mdprep::ui
 			return p;
 		};
 	}
+
 	void ScreenForms::_updateForm() noexcept
 	{
 		if ( _mdEngines[ _mdEngineCurrentIdx ].has_value() )
@@ -151,6 +166,7 @@ namespace VTX::Tool::Mdprep::ui
 			_currentForm.update( engineSpecificData );
 		}
 	}
+
 	void ScreenForms::_setFormBasic() noexcept
 	{
 		_formEngine.deactivate();
@@ -167,6 +183,7 @@ namespace VTX::Tool::Mdprep::ui
 		_formEngine.activate();
 		_updateForm();
 	}
+
 	void ScreenForms::_setFormAdvanced() noexcept
 	{
 		_formEngine.deactivate();
@@ -183,6 +200,7 @@ namespace VTX::Tool::Mdprep::ui
 		_formEngine.activate();
 		_updateForm();
 	}
+
 	void ScreenForms::_startPreparation() noexcept
 	{
 		Gateway::EngineJobManager jobManager;
@@ -196,12 +214,14 @@ namespace VTX::Tool::Mdprep::ui
 
 		_validationSignaler.preparationStarted( std::move( intermediate ) );
 	}
+
 	void ScreenForms::_setupSlots() noexcept
 	{
 		QObject::connect(
 			_w_mdEngine, &QComboBox::currentIndexChanged, [ & ]( int p_newIdx ) { this->_updateMdEngine( p_newIdx ); }
 		);
 		QObject::connect( _buttonStart, &QPushButton::clicked, [ & ]() { this->_startPreparation(); } );
+
 	}
 
 	ValidationSignaler::ValidationSignaler( std::function<void( Gateway::JobUpdateIntermediate )> p_ ) :
@@ -210,8 +230,6 @@ namespace VTX::Tool::Mdprep::ui
 	}
 
 	void ValidationSignaler::preparationStarted( Gateway::JobUpdateIntermediate p_ ) noexcept
-	{
-		_callback( std::move( p_ ) );
-	}
+	{ _callback( std::move( p_ ) ); }
 
 } // namespace VTX::Tool::Mdprep::ui

@@ -14,6 +14,7 @@ namespace VTX::Tool::Mdprep::Gateway
 	class EngineJobManager;
 	class JobUpdateIntermediate;
 } // namespace VTX::Tool::Mdprep::Gateway
+
 namespace VTX::Tool::Mdprep::ui
 {
 	class FormSwitchButton;

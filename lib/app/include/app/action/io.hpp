@@ -43,7 +43,7 @@ namespace VTX::App::Action::IO
 	struct LoadSystem
 	{
 		LoadSystem();
-		LoadSystem( Util::StopToken, Threading::OptionalThreadReference );
+		LoadSystem( Threading::ThreadData );
 
 		void execute( FilePath p_path );
 		void execute( FilePath p_path, std::string && p_buffer );
@@ -59,7 +59,7 @@ namespace VTX::App::Action::IO
 	struct WriteSelection
 	{
 		WriteSelection();
-		WriteSelection( Util::StopToken, Threading::OptionalThreadReference );
+		WriteSelection( Threading::ThreadData );
 
 		void execute( FilePath p_path );
 		void wait() noexcept;
@@ -81,7 +81,7 @@ namespace VTX::App::Action::IO
 	struct WriteVisible
 	{
 		WriteVisible();
-		WriteVisible( Util::StopToken, Threading::OptionalThreadReference );
+		WriteVisible( Threading::ThreadData );
 
 		void execute( FilePath p_path );
 		void wait() noexcept;
@@ -104,7 +104,7 @@ namespace VTX::App::Action::IO
 	struct AssociateTrajectory
 	{
 		AssociateTrajectory();
-		AssociateTrajectory( Util::StopToken, Threading::OptionalThreadReference );
+		AssociateTrajectory( Threading::ThreadData );
 		void execute( const FilePath & p_path, const Entity & );
 		void execute( const std::string & p_path, const Entity & );
 		void wait() noexcept;

@@ -18,10 +18,9 @@ namespace VTX::App::Action
 	 * @brief Concept for action that can be threadable.
 	 */
 	template<typename T, typename... Args>
-	concept ThreadableAction
-		= requires( T t, Util::StopToken token, Threading::OptionalThreadReference thr, Args &&... args ) {
-			  { T( token, thr ) };
-		  };
+	concept ThreadableAction = requires( T t, Threading::ThreadData thrData, Args &&... args ) {
+		{ T( thrData ) };
+	};
 
 	class QueuedAction;
 
@@ -70,7 +69,7 @@ namespace VTX::App::Action
 					[... args
 					 = std::forward<Args>( p_args ) ]( Util::StopToken p_token, Threading::BaseThread & p_thr ) mutable
 					{
-						A action( std::move( p_token ), p_thr );
+						A action( Threading::ThreadData { std::move( p_token ), p_thr } );
 						action.execute( std::move( args )... );
 						return 0;
 					}
@@ -102,10 +101,12 @@ namespace VTX::App::Action
 
 	  private:
 		struct _Data;
+
 		struct Del
 		{
 			void operator()( _Data * ) noexcept;
 		};
+
 		std::unique_ptr<_Data, Del> _attributesPtr;
 		float						_skipTime = 0.f;
 
@@ -130,6 +131,7 @@ namespace VTX::App::Action
 	  public:
 		class Waiter;
 		QueuedAction() = default;
+
 		inline void execute() { _ptr->execute(); }
 
 		/**
@@ -150,6 +152,7 @@ namespace VTX::App::Action
 		struct _dummy
 		{
 		};
+
 		template<typename SomeAction, typename... Args>
 		class _wrapper final : public _interface
 		{
@@ -159,10 +162,12 @@ namespace VTX::App::Action
 
 		  public:
 			_wrapper() = delete;
+
 			_wrapper( SomeAction && p_action, Args &&... args ) :
 				_obj( std::forward<SomeAction>( p_action ) ), _args( std::forward<Args>( args )... )
 			{
 			}
+
 			void execute() override
 			{
 				if constexpr ( not std::same_as<SomeAction, _dummy> )
@@ -172,12 +177,16 @@ namespace VTX::App::Action
 					std::apply( exec, std::move( _args ) );
 				}
 			}
+
 			void wait() override
 			{
 				if constexpr ( Waitable<SomeAction> )
+				{
 					_obj.wait();
+				}
 			}
 		};
+
 		std::shared_ptr<_interface> _ptr = std::make_shared<_wrapper<_dummy>>( _dummy() );
 
 	  public:
@@ -188,16 +197,19 @@ namespace VTX::App::Action
 			)
 		{
 		}
+
 		~QueuedAction()									 = default;
 		QueuedAction( QueuedAction && )					 = default;
 		QueuedAction( const QueuedAction & )			 = delete;
 		QueuedAction & operator=( QueuedAction && )		 = default;
 		QueuedAction & operator=( const QueuedAction & ) = delete;
+
 		template<typename SomeAction>
 		QueuedAction( SomeAction && p_action ) :
 			_ptr( new _wrapper<SomeAction>( std::forward<SomeAction>( p_action ) ) )
 		{
 		}
+
 		/**
 		 * @brief Class meant to provide an interface to wait for the action to finish its execution.
 		 */
@@ -211,6 +223,7 @@ namespace VTX::App::Action
 
 		  private:
 			inline Waiter( std::shared_ptr<_interface> ptr ) : _ptr( ptr ) {}
+
 			friend QueuedAction;
 			std::shared_ptr<_interface> _ptr;
 		};
