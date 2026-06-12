@@ -119,11 +119,11 @@ namespace VTX::Tool::Mdprep::ui
 
 			void wait() noexcept { waiter.wait(); }
 
-			void execute( InputChecker p_inputChecker, Gateway::MdParameters p_params )
+			void execute( std::reference_wrapper<InputChecker> p_inputChecker, Gateway::MdParameters p_params )
 			{
-				p_inputChecker.checkInputs( p_params, thrData );
+				p_inputChecker.get().checkInputs( p_params, thrData );
 				App::ACTION().subscribe(
-					App::Action::QueuedAction( TriggerReportDisplay(), p_inputChecker.lastResult() )
+					App::Action::QueuedAction( TriggerReportDisplay(), p_inputChecker.get().lastResult() )
 				);
 
 				waiter.count_down();
@@ -144,7 +144,7 @@ namespace VTX::Tool::Mdprep::ui
 
 		auto callback = _uiManager.produceCallback();
 		callback( { getWaitingMessage() } );
-		App::ACTION().execute<CheckInputsAction>( _inputChecker, p_params );
+		App::ACTION().execute<CheckInputsAction>( std::reference_wrapper<InputChecker>( _inputChecker ), p_params );
 	}
 
 	void ReportManager::relocate( QPointer<QVBoxLayout> p_ ) noexcept { _uiManager.relocate( std::move( p_ ) ); }
