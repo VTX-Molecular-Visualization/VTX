@@ -47,16 +47,6 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		);
 
 		/**
-		 * @brief
-		 */
-		~FormBasic();
-
-		FormBasic( const FormBasic & )			   = delete;
-		FormBasic & operator=( const FormBasic & ) = delete;
-		FormBasic( FormBasic && )				   = default;
-		FormBasic & operator=( FormBasic && )	   = default;
-
-		/**
 		 * @brief Change information related to the current engine.
 		 * @param Data
 		 */
