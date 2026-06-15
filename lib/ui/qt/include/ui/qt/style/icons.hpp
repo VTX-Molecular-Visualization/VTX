@@ -19,6 +19,7 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint CAMERA_PERSPECTIVE	 = 0xf720;	// DEPLOYED_CODE
 	constexpr Codepoint CAMERA_RESET		 = 0xf481;	// RESET_FOCUS
 	constexpr Codepoint CANCEL				 = 0xe5c9;	// CANCEL
+	constexpr Codepoint CATEGORY			 = 0xe574;	// CATEGORY
 	constexpr Codepoint CHAIN				 = 0xe922;	// TIMELINE
 	constexpr Codepoint CONTROLLER_FREEFLY	 = 0xf71e;	// DRAG_PAN
 	constexpr Codepoint CONTROLLER_TRACKBALL = 0xe577;	// 360

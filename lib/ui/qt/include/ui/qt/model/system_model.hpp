@@ -17,6 +17,12 @@ namespace VTX::UI::QT::Model
 	class SystemModel : public QAbstractItemModel
 	{
 	  public:
+		enum struct ViewMode : int
+		{
+			ByChain,
+			ByCategory
+		};
+
 		/**
 		 * @brief Roles for data retrieval.
 		 */
@@ -64,6 +70,10 @@ namespace VTX::UI::QT::Model
 		 */
 		QModelIndex parent( const QModelIndex & p_index ) const override;
 
+		void setViewMode( const ViewMode p_mode );
+
+		inline ViewMode getViewMode() const { return _viewMode; }
+
 		/**
 		 * @brief Public index creation.
 		 */
@@ -84,6 +94,10 @@ namespace VTX::UI::QT::Model
 		 * @brief Entity of fetch data from.
 		 */
 		const Entity _system;
+		ViewMode	 _viewMode = ViewMode::ByChain;
+
+		Index _categoryFromRow( const int p_row ) const;
+		int	  _categoryRow( const Index p_category ) const;
 	};
 
 } // namespace VTX::UI::QT::Model

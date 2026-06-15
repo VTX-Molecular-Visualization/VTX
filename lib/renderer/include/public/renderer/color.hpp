@@ -23,7 +23,9 @@ namespace VTX::Renderer
 		CHAIN,
 		RESIDUE,
 		ATOM,
-		CUSTOM
+		CUSTOM,
+		CARBON_CHAIN,
+		CARBON_CUSTOM
 	};
 } // namespace VTX::Renderer
 
@@ -355,19 +357,42 @@ namespace VTX::Renderer::Color
 	};
 
 	inline ColorIndex getColorIndex( const Core::ChemDB::Atom::SYMBOL p_symbol )
+	{ return int( p_symbol ) + LAYOUT_OFFSET_ATOMS; }
+
+	inline ColorIndex getColorIndex( const std::string & p_chainId, const bool p_isHetAtm = false );
+
+	inline ColorIndex getCarbonChainColorIndex(
+		const Core::ChemDB::Atom::SYMBOL p_symbol,
+		const std::string &				 p_chainId
+	)
 	{
-		return int( p_symbol ) + LAYOUT_OFFSET_ATOMS;
+		using Core::ChemDB::Atom::SYMBOL;
+
+		if ( p_symbol == SYMBOL::A_C )
+		{
+			return getColorIndex( p_chainId );
+		}
+
+		return getColorIndex( p_symbol );
+	}
+
+	inline ColorIndex getCarbonCustomColorIndex(
+		const Core::ChemDB::Atom::SYMBOL p_symbol,
+		const ColorIndex				 p_colorIndex
+	)
+	{
+		using Core::ChemDB::Atom::SYMBOL;
+
+		return p_symbol == SYMBOL::A_C ? p_colorIndex : getColorIndex( p_symbol );
 	}
 
 	inline ColorIndex getColorIndex( const Core::ChemDB::Residue::SYMBOL p_symbol )
-	{
-		return int( p_symbol ) + LAYOUT_OFFSET_RESIDUES;
-	}
+	{ return int( p_symbol ) + LAYOUT_OFFSET_RESIDUES; }
 
 	inline ColorIndex getColorIndex(
 
 		const std::string & p_chainId,
-		const bool			p_isHetAtm = false
+		const bool			p_isHetAtm
 	)
 	{
 		if ( p_chainId.empty() )
@@ -388,9 +413,7 @@ namespace VTX::Renderer::Color
 	}
 
 	inline ColorIndex getColorIndex( const Core::ChemDB::SecondaryStructure::TYPE p_type )
-	{
-		return int( p_type ) + LAYOUT_OFFSET_RIBBONS;
-	}
+	{ return int( p_type ) + LAYOUT_OFFSET_RIBBONS; }
 
 	namespace
 	{

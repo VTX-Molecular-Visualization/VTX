@@ -8,7 +8,7 @@
 
 namespace VTX::Core::ChemDB::Category
 {
-	enum class TYPE : uchar
+	enum class TYPE : uint8_t
 	{
 		POLYMER,
 		CARBOHYDRATE,
@@ -41,7 +41,7 @@ namespace VTX::Core::ChemDB::Category
 	 * @param  Resname
 	 * @param  TYPE output
 	 */
-	void get( const Dictionary &, const std::string &, TYPE & );
+	TYPE get( const Dictionary &, const std::string & );
 
 	/**
 	 * @brief Create default dictionary based on static data compiled with VTX

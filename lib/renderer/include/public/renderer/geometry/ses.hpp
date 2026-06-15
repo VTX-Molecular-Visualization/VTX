@@ -26,14 +26,14 @@ namespace VTX::Renderer::Geometry
 		{
 			SurfaceID		   id	  = 0;
 			Desc::Handle	   system = Desc::NO_HANDLE;
-			E_SES_COMPUTE_MODE scope  = E_SES_COMPUTE_MODE::SYSTEM;
+			E_SES_COMPUTE_MODE scope  = E_SES_COMPUTE_MODE::NONE;
 			uint32_t		   index  = 0;
 		};
 
 		struct SurfaceKey
 		{
 			Desc::Handle	   system = Desc::NO_HANDLE;
-			E_SES_COMPUTE_MODE scope  = E_SES_COMPUTE_MODE::SYSTEM;
+			E_SES_COMPUTE_MODE scope  = E_SES_COMPUTE_MODE::NONE;
 			uint32_t		   index  = 0;
 
 			[[nodiscard]] bool operator<( const SurfaceKey & p_other ) const
@@ -305,8 +305,6 @@ namespace VTX::Renderer::Geometry
 	  private:
 		Surface _createSurface( const SurfaceKey & );
 		Surface _getOrCreateSurface( const SurfaceKey & );
-		Surface _createWholeSurface( Desc::Handle );
-		Surface _getOrCreateWholeSurface( Desc::Handle );
 		void	_constructSurface(
 			   Context::ContextWrapper & p_context,
 			   const Cache::System &	  p_data,

@@ -21,6 +21,7 @@ namespace VTX::UI::QT::Delegate
 			VISIBILITY = 0,
 			COLOR_SCHEME,
 			REPRESENTATION,
+			DISPLAY_MODE,
 			COUNT
 		};
 
@@ -63,7 +64,7 @@ namespace VTX::UI::QT::Delegate
 		/**
 		 * @brief Check if the given point overlaps an action button.
 		 */
-		bool hitsButton( const QStyleOptionViewItem &, const QPoint & ) const;
+		bool hitsButton( const QStyleOptionViewItem &, const QModelIndex &, const QPoint & ) const;
 
 	  signals:
 		/**
@@ -72,6 +73,7 @@ namespace VTX::UI::QT::Delegate
 		void visibilityClicked( const QModelIndex & );
 		void colorSchemeClicked( const QModelIndex & );
 		void representationClicked( const QModelIndex & );
+		void displayModeClicked( const QModelIndex & );
 		void doubleClicked( const QModelIndex & );
 
 	  private:
@@ -84,9 +86,12 @@ namespace VTX::UI::QT::Delegate
 		static constexpr int SPACING   = 4;
 		static constexpr int MARGIN_R  = 6;
 
-		QRect _buttonsRect( const QStyleOptionViewItem & ) const;
-		QRect _buttonRect( const QStyleOptionViewItem &, const int ) const;
-		int	  _hitTestButton( const QStyleOptionViewItem &, const QPoint & ) const;
+		QRect _buttonsRect( const QStyleOptionViewItem &, const QModelIndex & ) const;
+		QRect _buttonRect( const QStyleOptionViewItem &, const QModelIndex &, const int ) const;
+		int	  _hitTestButton( const QStyleOptionViewItem &, const QModelIndex &, const QPoint & ) const;
+		int	  _buttonCount( const QModelIndex & ) const;
+		bool  _isSystemItem( const QModelIndex & ) const;
+		QIcon _displayModeIcon( const QModelIndex & ) const;
 
 		std::array<QIcon, toUnderlying( ACTION::COUNT )> _icons;
 	};

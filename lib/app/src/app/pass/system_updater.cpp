@@ -62,6 +62,7 @@ namespace VTX::App::Pass
 					 &uid.residues,
 					 &color.colorSchemeAtoms,
 					 &color.customColorAtoms,
+					 &color.carbonCustomColorAtoms,
 					 &_representations,
 					 &representation.presetAtoms,
 					 &visibility.atoms,

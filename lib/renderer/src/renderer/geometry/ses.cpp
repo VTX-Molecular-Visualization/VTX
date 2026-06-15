@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <array>
 #include <util/chrono.hpp>
+#include <util/enum.hpp>
 #include <util/logger.hpp>
 #include <utility>
 #include <vector>
@@ -82,10 +83,35 @@ namespace VTX::Renderer::Geometry
 			return buffer;
 		}
 
-		bool _isSesCategoryAllowed( const Core::ChemDB::Category::TYPE p_category )
+		E_SES_COMPUTE_MODE _sesCategoryFlag( const Core::ChemDB::Category::TYPE p_category )
 		{
-			return p_category == Core::ChemDB::Category::TYPE::POLYMER;
+			switch ( p_category )
+			{
+			case Core::ChemDB::Category::TYPE::POLYMER: return E_SES_COMPUTE_MODE::POLYMER;
+			case Core::ChemDB::Category::TYPE::CARBOHYDRATE: return E_SES_COMPUTE_MODE::CARBOHYDRATE;
+			case Core::ChemDB::Category::TYPE::LIGAND: return E_SES_COMPUTE_MODE::LIGAND;
+			default: return E_SES_COMPUTE_MODE::OTHERS;
+			}
 		}
+
+		size_t _sesCategoryIndex( const Core::ChemDB::Category::TYPE p_category )
+		{
+			switch ( _sesCategoryFlag( p_category ) )
+			{
+			case E_SES_COMPUTE_MODE::POLYMER: return 0;
+			case E_SES_COMPUTE_MODE::CARBOHYDRATE: return 1;
+			case E_SES_COMPUTE_MODE::LIGAND: return 2;
+			case E_SES_COMPUTE_MODE::OTHERS: return 3;
+			default: assert( false && "Invalid SES category." ); return 0;
+			}
+		}
+
+		constexpr std::array<E_SES_COMPUTE_MODE, 4> SES_CATEGORY_FLAGS {
+			E_SES_COMPUTE_MODE::POLYMER,
+			E_SES_COMPUTE_MODE::CARBOHYDRATE,
+			E_SES_COMPUTE_MODE::LIGAND,
+			E_SES_COMPUTE_MODE::OTHERS,
+		};
 
 #ifdef VTX_CUDA_ENABLED
 		constexpr size_t OUTPUT_BUFFER_NB = 7;
@@ -237,8 +263,44 @@ namespace VTX::Renderer::Geometry
 		const RepresentationIndex p_representation
 	)
 	{
-		if ( p_computeMode == E_SES_COMPUTE_MODE::SYSTEM )
+		std::array<std::vector<Index>, SES_CATEGORY_FLAGS.size()> atomsByCategory;
+		std::vector<Index>										  mixedAtoms;
+		const Core::Struct::Topology &							  topology = *p_data.data.topology;
+		const bool isMixed = Util::Enum::hasAnyBit( p_computeMode, E_SES_COMPUTE_MODE::MIXED );
+
+		for ( size_t category = 0; category < topology.categoryResidues.size(); ++category )
 		{
+			const Core::ChemDB::Category::TYPE categoryType = Core::ChemDB::Category::TYPE( category );
+			const E_SES_COMPUTE_MODE		   flag		 = _sesCategoryFlag( categoryType );
+			if ( not Util::Enum::hasAnyBit( p_computeMode, flag ) )
+			{
+				continue;
+			}
+
+			for ( const Index residue : topology.categoryResidues[ category ] )
+			{
+				for ( const Index atom : topology.getResidueAtomRange( residue ) )
+				{
+					if ( isMixed )
+					{
+						mixedAtoms.emplace_back( atom );
+					}
+					else
+					{
+						atomsByCategory[ _sesCategoryIndex( categoryType ) ].emplace_back( atom );
+					}
+				}
+			}
+		}
+
+		if ( isMixed )
+		{
+			if ( mixedAtoms.empty() )
+			{
+				return;
+			}
+
+			const Surface surface = _getOrCreateSurface( SurfaceKey { p_handle, p_computeMode, 0 } );
 			_constructSurface(
 				p_context,
 				p_data,
@@ -246,24 +308,10 @@ namespace VTX::Renderer::Geometry
 				p_probeRadius,
 				p_computeMode,
 				p_representation,
-				_getOrCreateWholeSurface( p_handle ),
-				{}
+				surface,
+				mixedAtoms
 			);
 			return;
-		}
-
-		std::array<std::vector<Index>, size_t( Core::ChemDB::Category::TYPE::COUNT )> atomsByCategory;
-		const Core::Struct::Topology &												  topology = *p_data.data.topology;
-		for ( Index atom = 0; atom < topology.getAtomCount(); ++atom )
-		{
-			const Index						   residue	= topology.getAtomResidueIndex( atom );
-			const Core::ChemDB::Category::TYPE category = topology.residueCategories[ residue ];
-			if ( not _isSesCategoryAllowed( category ) )
-			{
-				continue;
-			}
-
-			atomsByCategory[ size_t( category ) ].emplace_back( atom );
 		}
 
 		for ( size_t category = 0; category < atomsByCategory.size(); ++category )
@@ -274,10 +322,10 @@ namespace VTX::Renderer::Geometry
 			}
 
 			const Surface surface
-				= _getOrCreateSurface( SurfaceKey { p_handle, E_SES_COMPUTE_MODE::CATEGORY, uint32_t( category ) } );
+				= _getOrCreateSurface( SurfaceKey { p_handle, SES_CATEGORY_FLAGS[ category ], uint32_t( category ) } );
 			// VTX_DEBUG(
 			// 	"SES category construction: {} surface={} atoms={} system={}",
-			// 	Core::ChemDB::Category::TYPE_STR[ category ],
+			// 	Util::Enum::enumName( SES_CATEGORY_FLAGS[ category ] ),
 			// 	surface.id,
 			// 	atomsByCategory[ category ].size(),
 			// 	p_handle
@@ -977,11 +1025,6 @@ namespace VTX::Renderer::Geometry
 		return surface;
 	}
 
-	SES::Surface SES::_createWholeSurface( const Desc::Handle p_handle )
-	{
-		return _createSurface( SurfaceKey { p_handle, E_SES_COMPUTE_MODE::SYSTEM, 0 } );
-	}
-
 	SES::Surface SES::_getOrCreateSurface( const SurfaceKey & p_key )
 	{
 		const auto it = _surfaces.ids.find( p_key );
@@ -991,11 +1034,6 @@ namespace VTX::Renderer::Geometry
 		}
 
 		return Surface { it->second, p_key.system, p_key.scope, p_key.index };
-	}
-
-	SES::Surface SES::_getOrCreateWholeSurface( const Desc::Handle p_handle )
-	{
-		return _getOrCreateSurface( SurfaceKey { p_handle, E_SES_COMPUTE_MODE::SYSTEM, 0 } );
 	}
 
 	void SES::_releaseChunks( Context::ContextWrapper & p_context, const SurfaceID p_surface )

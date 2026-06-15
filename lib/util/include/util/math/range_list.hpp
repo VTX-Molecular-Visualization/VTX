@@ -215,6 +215,26 @@ namespace VTX::Util::Math
 		}
 
 		/**
+		 * @brief Check if multiple ranges are contained.
+		 */
+		bool contains( const RangeList & p_ranges ) const
+		{
+			if ( p_ranges.isEmpty() )
+			{
+				return false;
+			}
+
+			for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); ++it )
+			{
+				if ( not contains( *it ) )
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		/**
 		 * @brief Check if a range intersects.
 		 */
 		bool intersects( const RangeType & p_other ) const
@@ -297,9 +317,7 @@ namespace VTX::Util::Math
 		 * @brief Check if a RangeList is equal to a single range.
 		 */
 		bool equals( const RangeType & p_r ) const
-		{
-			return sizeRange() == 1 && rangeBegin()->first == p_r.first && rangeBegin()->last == p_r.last;
-		}
+		{ return sizeRange() == 1 && rangeBegin()->first == p_r.first && rangeBegin()->last == p_r.last; }
 
 		/**
 		 * @brief Merge two RangeLists.
@@ -402,9 +420,7 @@ namespace VTX::Util::Math
 		 * @brief Exclusive two RangeLists.
 		 */
 		static RangeList exclusive( const RangeList & p_lhs, const RangeList & p_rhs )
-		{
-			return merge( substract( p_lhs, p_rhs ), substract( p_rhs, p_lhs ) );
-		}
+		{ return merge( substract( p_lhs, p_rhs ), substract( p_rhs, p_lhs ) ); }
 
 		/**
 		 * @brief Exclusive another RangeList with this one.
@@ -518,9 +534,12 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Iterators.
 		 */
-		std::vector<RangeType>::iterator	   rangeBegin() { return _ranges.begin(); }
-		std::vector<RangeType>::iterator	   rangeEnd() { return _ranges.end(); }
+		std::vector<RangeType>::iterator rangeBegin() { return _ranges.begin(); }
+
+		std::vector<RangeType>::iterator rangeEnd() { return _ranges.end(); }
+
 		std::vector<RangeType>::const_iterator rangeBegin() const { return _ranges.begin(); }
+
 		std::vector<RangeType>::const_iterator rangeEnd() const { return _ranges.end(); }
 
 		/**
@@ -553,9 +572,7 @@ namespace VTX::Util::Math
 
 			explicit iterator( const std::vector<RangeType> & p_ranges ) noexcept :
 				it( p_ranges.begin() ), end( p_ranges.end() ), cur {}
-			{
-				advanceToValid();
-			}
+			{ advanceToValid(); }
 
 			iterator & operator++() noexcept
 			{
@@ -573,12 +590,16 @@ namespace VTX::Util::Math
 			}
 
 			bool operator!=( sentinel ) const noexcept { return it != end; }
-			T	 operator*() const noexcept { return cur; }
+
+			T operator*() const noexcept { return cur; }
 		};
 
-		iterator		   begin() noexcept { return iterator( _ranges ); }
+		iterator begin() noexcept { return iterator( _ranges ); }
+
 		iterator::sentinel end() noexcept { return {}; }
-		iterator		   begin() const noexcept { return iterator( _ranges ); }
+
+		iterator begin() const noexcept { return iterator( _ranges ); }
+
 		iterator::sentinel end() const noexcept { return {}; }
 
 	  private:

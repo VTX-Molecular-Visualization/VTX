@@ -1,11 +1,15 @@
 #include "ui/qt/model/system_model.hpp"
 #include "app/system/uid.hpp"
 #include "ui/qt/services.hpp"
+#include "ui/qt/settings.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
+#include <algorithm>
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
 #include <io/reader.hpp>
+#include <iterator>
+#include <string_view>
 #include <util/enum.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
@@ -16,6 +20,9 @@ namespace VTX::UI::QT::Model
 	SystemModel::SystemModel( const Entity p_system, QObject * p_parent ) :
 		_system( p_system ), QAbstractItemModel( p_parent )
 	{
+		_viewMode = static_cast<ViewMode>(
+			SETTINGS().value( SETTING_KEY_TREE_VIEW_MODE, VTX::toUnderlying( ViewMode::ByChain ) ).toInt()
+		);
 	}
 
 	int SystemModel::columnCount( const QModelIndex & p_parent ) const { return 1; }
@@ -40,7 +47,29 @@ namespace VTX::UI::QT::Model
 		{
 		case E_SYSTEM_ITEM::SYSTEM:
 		{
+			if ( _viewMode == ViewMode::ByCategory )
+			{
+				int count = 0;
+				for ( const auto & residues : data.categoryResidues )
+				{
+					if ( not residues.empty() )
+					{
+						++count;
+					}
+				}
+				return count;
+			}
+
 			return data.getChainCount();
+		}
+		case E_SYSTEM_ITEM::CATEGORY:
+		{
+			if ( index >= data.categoryResidues.size() )
+			{
+				return 0;
+			}
+
+			return int( data.categoryResidues[ index ].size() );
 		}
 		case E_SYSTEM_ITEM::CHAIN:
 		{
@@ -107,6 +136,12 @@ namespace VTX::UI::QT::Model
 					return "-";
 				}
 			}
+			case E_SYSTEM_ITEM::CATEGORY:
+			{
+				assert( index < Core::ChemDB::Category::TYPE_STR.size() );
+				const std::string_view name = Core::ChemDB::Category::TYPE_STR[ index ];
+				return QString::fromUtf8( name.data(), int( name.size() ) );
+			}
 			case E_SYSTEM_ITEM::RESIDUE:
 			{
 				assert( index < data.getResidueCount() );
@@ -149,6 +184,10 @@ namespace VTX::UI::QT::Model
 			case E_SYSTEM_ITEM::CHAIN:
 			{
 				return STYLE().iconFromCodepoint( Icons::CHAIN );
+			}
+			case E_SYSTEM_ITEM::CATEGORY:
+			{
+				return STYLE().iconFromCodepoint( Icons::CATEGORY );
 			}
 			case E_SYSTEM_ITEM::RESIDUE:
 			{
@@ -197,12 +236,35 @@ namespace VTX::UI::QT::Model
 		// Chain.
 		case E_SYSTEM_ITEM::SYSTEM:
 		{
+			if ( _viewMode == ViewMode::ByCategory )
+			{
+				const Index category = _categoryFromRow( p_row );
+				if ( category >= toUnderlying( Core::ChemDB::Category::TYPE::COUNT ) )
+				{
+					return {};
+				}
+
+				return createIndex( p_row, p_column, pack( E_SYSTEM_ITEM::CATEGORY, category ) );
+			}
+
 			if ( p_row >= static_cast<int>( data.getChainCount() ) )
 			{
 				return {};
 			}
 
 			return createIndex( p_row, p_column, pack( E_SYSTEM_ITEM::CHAIN, p_row ) );
+		}
+		case E_SYSTEM_ITEM::CATEGORY:
+		{
+			if ( index >= data.categoryResidues.size()
+				 || p_row >= static_cast<int>( data.categoryResidues[ index ].size() ) )
+			{
+				return {};
+			}
+
+			return createIndex(
+				p_row, p_column, pack( E_SYSTEM_ITEM::RESIDUE, data.categoryResidues[ index ][ p_row ] )
+			);
 		}
 		// Residue.
 		case E_SYSTEM_ITEM::CHAIN:
@@ -255,6 +317,15 @@ namespace VTX::UI::QT::Model
 
 		switch ( item )
 		{
+		case E_SYSTEM_ITEM::CATEGORY:
+		{
+			if ( index >= data.categoryResidues.size() )
+			{
+				return {};
+			}
+
+			return createIndex( 0, 0, pack( E_SYSTEM_ITEM::SYSTEM, 0 ) );
+		}
 		case E_SYSTEM_ITEM::CHAIN:
 		{
 			if ( index >= data.getChainCount() )
@@ -271,6 +342,18 @@ namespace VTX::UI::QT::Model
 				return {};
 			}
 
+			if ( _viewMode == ViewMode::ByCategory )
+			{
+				const Index category = Index( toUnderlying( data.getResidueCategory( index ) ) );
+				const int	row		 = _categoryRow( category );
+				if ( row < 0 )
+				{
+					return {};
+				}
+
+				return createIndex( row, 0, pack( E_SYSTEM_ITEM::CATEGORY, category ) );
+			}
+
 			const Index chain		= data.residueChainIndexes[ index ];
 			const int	rowInSystem = int( chain );
 			return createIndex( rowInSystem, 0, pack( E_SYSTEM_ITEM::CHAIN, chain ) );
@@ -282,13 +365,88 @@ namespace VTX::UI::QT::Model
 				return {};
 			}
 
-			const Index residue	   = data.atomResidueIndexes[ index ];
+			const Index residue = data.atomResidueIndexes[ index ];
+			if ( _viewMode == ViewMode::ByCategory )
+			{
+				const Index category = Index( toUnderlying( data.getResidueCategory( residue ) ) );
+				if ( category >= data.categoryResidues.size() )
+				{
+					return {};
+				}
+
+				const auto & residues = data.categoryResidues[ category ];
+				const auto	 it		  = std::find( residues.begin(), residues.end(), residue );
+				if ( it == residues.end() )
+				{
+					return {};
+				}
+
+				return createIndex(
+					int( std::distance( residues.begin(), it ) ), 0, pack( E_SYSTEM_ITEM::RESIDUE, residue )
+				);
+			}
+
 			const Index chain	   = data.residueChainIndexes[ residue ];
 			const int	rowInChain = int( residue - data.chainFirstResidues[ chain ] );
 			return createIndex( rowInChain, 0, pack( E_SYSTEM_ITEM::RESIDUE, residue ) );
 		}
 		default: return {};
 		}
+	}
+
+	void SystemModel::setViewMode( const ViewMode p_mode )
+	{
+		if ( _viewMode == p_mode )
+		{
+			return;
+		}
+
+		beginResetModel();
+		_viewMode = p_mode;
+		endResetModel();
+	}
+
+	Index SystemModel::_categoryFromRow( const int p_row ) const
+	{
+		const auto & data = App::REG().get<Core::Struct::Topology>( _system );
+
+		int row = 0;
+		for ( Index category = 0; category < data.categoryResidues.size(); ++category )
+		{
+			if ( data.categoryResidues[ category ].empty() )
+			{
+				continue;
+			}
+
+			if ( row == p_row )
+			{
+				return category;
+			}
+
+			++row;
+		}
+
+		return Index( data.categoryResidues.size() );
+	}
+
+	int SystemModel::_categoryRow( const Index p_category ) const
+	{
+		const auto & data = App::REG().get<Core::Struct::Topology>( _system );
+		if ( p_category >= data.categoryResidues.size() || data.categoryResidues[ p_category ].empty() )
+		{
+			return -1;
+		}
+
+		int row = 0;
+		for ( Index category = 0; category < p_category; ++category )
+		{
+			if ( not data.categoryResidues[ category ].empty() )
+			{
+				++row;
+			}
+		}
+
+		return row;
 	}
 
 	QModelIndex SystemModel::makeIndex(

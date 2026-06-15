@@ -126,6 +126,15 @@ namespace VTX::Renderer::Builder
 						atoms[ atom ] = Color::getColorIndex( data.getAtomSymbol( atom ) );
 					}
 				}
+				else if ( scheme == E_COLOR_SCHEME::CARBON_CHAIN )
+				{
+					for ( const Index atom : ranges )
+					{
+						const Index chain = data.getAtomChainIndex( atom );
+						atoms[ atom ]
+							= Color::getCarbonChainColorIndex( data.getAtomSymbol( atom ), data.getChainName( chain ) );
+					}
+				}
 				else if ( scheme == E_COLOR_SCHEME::RESIDUE )
 				{
 					for ( const Index atom : ranges )
@@ -154,6 +163,14 @@ namespace VTX::Renderer::Builder
 				for ( const Index atom : ranges )
 				{
 					atoms[ atom ] = colorIndex;
+				}
+				count += ranges.count();
+			}
+			for ( const auto & [ colorIndex, ranges ] : *p_system.data.carbonCustomColorAtoms )
+			{
+				for ( const Index atom : ranges )
+				{
+					atoms[ atom ] = Color::getCarbonCustomColorIndex( data.getAtomSymbol( atom ), colorIndex );
 				}
 				count += ranges.count();
 			}
@@ -388,12 +405,14 @@ namespace VTX::Renderer::Builder
 				{
 					requestedRibbon = true;
 				}
-				if ( representation.showSes )
+				const E_SES_COMPUTE_MODE representationComputeMode = representation.data.rep->sesComputeMode;
+				const E_SES_COMPUTE_MODE representationCategories
+					= representationComputeMode & ~E_SES_COMPUTE_MODE::MIXED;
+				if ( representation.showSes && representationCategories != E_SES_COMPUTE_MODE::NONE )
 				{
 					requestedSes = true;
 
 					const float representationProbeRadius = representation.data.rep->sesProbeRadius;
-					const E_SES_COMPUTE_MODE representationComputeMode = representation.data.rep->sesComputeMode;
 					if ( not hasSesProbeRadius )
 					{
 						sesProbeRadius	  = representationProbeRadius;
@@ -415,7 +434,7 @@ namespace VTX::Renderer::Builder
 					}
 					else if ( sesComputeMode != representationComputeMode )
 					{
-						VTX_WARNING( "Multiple visible SES compute modes on the same system. Using first one." );
+						VTX_WARNING( "Multiple visible SES modes on the same system. Using first one." );
 					}
 				}
 				else
@@ -432,9 +451,11 @@ namespace VTX::Renderer::Builder
 			{
 				p_geometries.ses.remove( p_context, p_handle );
 			}
-			else if ( p_geometries.ses.built( p_handle )
-				 && ( std::abs( p_geometries.ses.probeRadius( p_handle ) - sesProbeRadius ) > EPSILON
-					  || p_geometries.ses.computeMode( p_handle ) != sesComputeMode ) )
+			else if (
+				p_geometries.ses.built( p_handle )
+				&& ( std::abs( p_geometries.ses.probeRadius( p_handle ) - sesProbeRadius ) > EPSILON
+					 || p_geometries.ses.computeMode( p_handle ) != sesComputeMode )
+			)
 			{
 				p_geometries.ses.invalidateForRecompute( p_context, p_handle );
 				constructSES(

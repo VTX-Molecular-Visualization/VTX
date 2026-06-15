@@ -43,6 +43,10 @@ namespace VTX::UI::QT::Widget::Library
 		// SES.
 		QPointer<HideableGroupBox> _groupboxSes;
 		QPointer<QComboBox>		   _comboBoxSesComputeMode;
+		QPointer<QCheckBox>		   _checkBoxSesPolymer;
+		QPointer<QCheckBox>		   _checkBoxSesCarbohydrate;
+		QPointer<QCheckBox>		   _checkBoxSesLigand;
+		QPointer<QCheckBox>		   _checkBoxSesOthers;
 		QPointer<EditableSlider>   _sliderSesProbeRadius;
 
 		template<VTX::Renderer::E_REPRESENTATION_VALUES S, typename T>
@@ -53,6 +57,8 @@ namespace VTX::UI::QT::Widget::Library
 
 		void _applyLogic( const VTX::Renderer::Representation & );
 		void _refreshCUDAState();
+		void _setSesCategoryEnabled( VTX::Renderer::E_SES_COMPUTE_MODE, bool );
+		void _setSesMixedMode( bool );
 	};
 
 } // namespace VTX::UI::QT::Widget::Library

@@ -27,18 +27,16 @@ namespace VTX::Renderer
 
 	enum struct E_SES_COMPUTE_MODE : uint8_t
 	{
-		SYSTEM,
-		CATEGORY
-		// VTX_ENUM_ENABLE_BITMASK,
-		// NONE		 = 0,
-		// POLYMER		 = 1u << 0,
-		// CARBOHYDRATE = 1u << 1,
-		// LIGAND		 = 1u << 2,
+		VTX_ENUM_ENABLE_BITMASK,
+		NONE		 = 0,
+		POLYMER		 = 1u << 0,
+		CARBOHYDRATE = 1u << 1,
+		LIGAND		 = 1u << 2,
 		//  ION, SOLVENT, WATER, UNKNOWN.
-		// OTHERS = 1u << 3,
+		OTHERS = 1u << 3,
 		//  Mixed means selected categories will build only one surface.
 		//  Otherwise, each category will build its own surface.
-		// MIXED = 1u << 4,
+		MIXED = 1u << 4,
 	};
 
 	// Default values.
@@ -61,7 +59,7 @@ namespace VTX::Renderer
 	constexpr bool RIBBON_COLOR_BLENDING_DEFAULT = true;
 
 	constexpr bool				 HAS_SES_DEFAULT		  = false;
-	constexpr E_SES_COMPUTE_MODE SES_COMPUTE_MODE_DEFAULT = E_SES_COMPUTE_MODE::CATEGORY;
+	constexpr E_SES_COMPUTE_MODE SES_COMPUTE_MODE_DEFAULT = E_SES_COMPUTE_MODE::POLYMER;
 	constexpr float				 SES_PROBE_RADIUS_DEFAULT = 1.4f;
 	constexpr float				 SES_PROBE_RADIUS_MIN	  = 0.f;
 	constexpr float				 SES_PROBE_RADIUS_MAX	  = 2.5f;
