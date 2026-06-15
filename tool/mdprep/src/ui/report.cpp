@@ -96,7 +96,9 @@ namespace VTX::Tool::Mdprep::ui
 		};
 	} // namespace
 
-	ReportManager::ReportManager( InputChecker p_inputChecker ) : _inputChecker( std::move( p_inputChecker ) ) {}
+	ReportManager::ReportManager( InputChecker p_inputChecker ) : _inputChecker( std::move( p_inputChecker ) ) {
+
+	}
 
 	bool ReportManager::hasFirstCheckBeenDone() const noexcept { return firstCheckStarted; }
 

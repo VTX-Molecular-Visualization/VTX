@@ -9,10 +9,12 @@ namespace VTX::UI::QT::Util
 {
 	class LabelWithHelper;
 }
+
 namespace VTX::Util
 {
 	class SentryTarget;
 } // namespace VTX::Util
+
 namespace VTX::Tool::Mdprep::Gateway
 {
 	struct CheckReport;
@@ -30,6 +32,7 @@ namespace VTX::Tool::Mdprep::ui
 		VTX::UI::QT::Util::LabelWithHelper content;
 		Gateway::CheckReport			   report;
 	};
+
 	using UiReportCallback = std::function<void( ReportUi )>;
 
 	/**
@@ -64,11 +67,18 @@ namespace VTX::Tool::Mdprep::ui
 		std::shared_ptr<FramedReportManager> _manager;
 	};
 
-	// class responsible for forwarding input checks and writing reports in set location
+	/**
+	 * @brief class responsible for forwarding input checks and writing reports in set location
+	 */
 	class ReportManager
 	{
 	  public:
 		ReportManager( InputChecker );
+		~ReportManager();
+		ReportManager( const ReportManager & )			   = delete;
+		ReportManager & operator=( const ReportManager & ) = delete;
+		ReportManager( ReportManager && )				   = default;
+		ReportManager & operator=( ReportManager && )	   = default;
 
 		/**
 		 * @brief Whether a check has already been started on the lifetime of the object.
