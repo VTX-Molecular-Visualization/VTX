@@ -8,6 +8,7 @@
 //
 #include <app/action/action_manager.hpp>
 #include <app/services.hpp>
+#include <app/system/visibility.hpp>
 #include <app/threading/base_thread.hpp>
 #include <ui/qt/util.hpp>
 //
@@ -52,9 +53,9 @@ namespace VTX::Tool::Mdprep::ui
 				{
 					content = getWaitingMessage();
 					return;
-				}
+				};
 				content = VTX::UI::QT::Util::LabelWithHelper(
-					getReportLabel( report.pass ),
+					getReportLabel( report ),
 					report.message.c_str(),
 					VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 				);
@@ -183,6 +184,9 @@ namespace VTX::Tool::Mdprep::ui
 	struct ReportManager::_Impl
 	{
 		InputChecker					 _inputChecker;
+		Util::EventHub::ScopedConnection _visibilityChanged {
+			App::REG().on_update<App::System::Visibility>().connect<&ReportManager::_Impl::visibilityChanged>( this )
+		};
 		Util::EventHub::ScopedConnection _reportReception {
 			App::HUB().connect<Gateway::CheckReport, &ReportManager::_Impl::_receiveReport>( this )
 		};
@@ -199,8 +203,9 @@ namespace VTX::Tool::Mdprep::ui
 				return;
 			}
 
-			firstCheckStarted			= true;
-			_reportData.report			= Gateway::CheckReport();
+			firstCheckStarted  = true;
+			_reportData.report = Gateway::CheckReport();
+			_manager.postReport( ReportUi( std::move( _reportData.report ) ) );
 			_reportData.checkInProgress = true;
 
 			_inputChecker.checkInputs( p_params );
@@ -215,6 +220,12 @@ namespace VTX::Tool::Mdprep::ui
 			_reportData.checkInProgress = false;
 			_reportData.report			= p_report;
 			_manager.postReport( ReportUi( std::move( p_report ) ) );
+		}
+
+		inline void visibilityChanged( Entity ) noexcept
+		{
+			_reportData.report.dirty = true;
+			_manager.postReport( ReportUi( _reportData.report ) );
 		}
 	};
 

@@ -14,15 +14,18 @@ namespace VTX::Tool::Mdprep::Gateway
 		none,
 		systemWithForceField
 	};
+
 	struct CheckReport
 	{
 		E_REPORT_CHECKED_ITEM itemGeneric = E_REPORT_CHECKED_ITEM::none;
 		int	 itemSpecific = 0; // Item specific to the MdEngine. 0 means none. In that case, refer to the generic item.
 		bool pass		  = false;
 		std::string message;
+		bool		dirty = false;
 
 		bool operator==( const CheckReport & ) const noexcept = default;
 	};
+
 	using CheckReportCallback = std::function<void( const CheckReport & )>;
 
 	/**
@@ -32,6 +35,7 @@ namespace VTX::Tool::Mdprep::Gateway
 	{
 		std::string tmp;
 	};
+
 	using JobUpdateCallback = std::function<void( const JobUpdate & )>;
 
 	/**
@@ -48,10 +52,12 @@ namespace VTX::Tool::Mdprep::Gateway
 
 	  private:
 		class Impl;
+
 		struct Del
 		{
 			void operator()( Impl * ) noexcept;
 		};
+
 		std::unique_ptr<Impl, Del> _impl;
 	};
 } // namespace VTX::Tool::Mdprep::Gateway

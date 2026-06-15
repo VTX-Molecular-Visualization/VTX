@@ -1,6 +1,7 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_UI_SHARED__
 #define __VTX_TOOL_TOOLS_MDPREP_UI_SHARED__
 
+#include <tool/mdprep/gateway/shared.hpp>
 #include <ui/qt/util.hpp>
 
 class QVBoxLayout;
@@ -48,6 +49,7 @@ namespace VTX::Tool::Mdprep::ui
 		waterModel,
 		COUNT
 	};
+
 	struct EngineSpecificCommonInformationFieldUpdate
 	{
 		E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD field	= E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD::bioForcefield;
@@ -94,6 +96,7 @@ namespace VTX::Tool::Mdprep::ui
 
 	  private:
 		VTX::UI::QT::Util::ObjectOwnership _toDelete;
+
 		struct UiObjects
 		{
 			QWidget *	container	 = nullptr;
@@ -108,10 +111,17 @@ namespace VTX::Tool::Mdprep::ui
 		void _setupUi( QVBoxLayout * p_target ) noexcept;
 		void _loadValues( const Gateway::SystemData & p_defaults ) noexcept;
 	};
-	inline const char * getReportLabel( const bool & p_success ) noexcept
+
+	inline const char * getReportLabel( const Gateway::CheckReport & p_report ) noexcept
 	{
-		if ( p_success )
+		if ( p_report.dirty )
+		{
+			return "System needs check.";
+		}
+		else if ( p_report.pass )
+		{
 			return "System compatible with MD Engine";
+		}
 		return "An incompatibility was found between the system and the MD Engine";
 	}
 
