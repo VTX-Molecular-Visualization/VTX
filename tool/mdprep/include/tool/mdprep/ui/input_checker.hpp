@@ -23,11 +23,11 @@ namespace VTX::Tool::Mdprep::ui
 	  public:
 		InputChecker() = default;
 
-		inline void checkInputs( const Gateway::MdParameters & p_1, App::Threading::ThreadData & p_2 ) const noexcept
+		inline void checkInputs( const Gateway::MdParameters & p_1 ) const noexcept
 		{
 			if ( _ptr )
 			{
-				_ptr->checkInputs( p_1, p_2 );
+				_ptr->checkInputs( p_1 );
 			}
 		}
 
@@ -54,10 +54,7 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			virtual ~_interface() = default;
 
-			virtual void checkInputs(
-				const Gateway::MdParameters & p_1,
-				App::Threading::ThreadData &  p_2
-			) const noexcept = 0;
+			virtual void checkInputs( const Gateway::MdParameters & p_1 ) const noexcept = 0;
 
 			virtual bool				 isResultAvailable() const noexcept = 0;
 			virtual Gateway::CheckReport lastResult() const noexcept		= 0;
@@ -70,11 +67,8 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
 
-			virtual void checkInputs(
-				const Gateway::MdParameters & p_1,
-				App::Threading::ThreadData &  p_2
-			) const noexcept override
-			{ _obj.checkInputs( p_1, p_2 ); }
+			virtual void checkInputs( const Gateway::MdParameters & p_1 ) const noexcept override
+			{ _obj.checkInputs( p_1 ); }
 
 			virtual bool isResultAvailable() const noexcept override { return _obj.isResultAvailable(); }
 
@@ -90,8 +84,8 @@ namespace VTX::Tool::Mdprep::ui
 		InputChecker( T && p_ ) : _ptr( new _wrapper<T>( std::forward<T>( p_ ) ) )
 		{
 			static_assert(
-				requires( T t, const Gateway::MdParameters & p_1, App::Threading::ThreadData & p_2 ) {
-					{ t.checkInputs( p_1, p_2 ) };
+				requires( T t, const Gateway::MdParameters & p_1 ) {
+					{ t.checkInputs( p_1 ) };
 				},
 				"You must implement 'void checkInputs( const Gateway::MdParameters & p_1, Gateway::CheckReportCallback "
 				"p_2 ) const noexcept' class method."

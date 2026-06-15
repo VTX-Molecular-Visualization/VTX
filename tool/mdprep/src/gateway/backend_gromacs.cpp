@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <string>
 #include <thread>
 #include <util/logger.hpp>
@@ -65,22 +66,33 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		}
 	}
 
+	namespace
+	{
+		void convert(
+			const std::vector<backends::Gromacs::forcefield> & p_in,
+			std::vector<std::string> &						   p_out
+		) noexcept
+		{
+			using namespace VTX::Tool::Mdprep::backends::Gromacs;
+			p_out.clear();
+			for ( auto & it_ff : p_in )
+			{
+				auto ffName = it_ff.getName();
+				p_out.push_back( { ffName.begin(), ffName.end() } );
+			}
+		}
+	} // namespace
+
 	void get( EngineSpecificCommonInformation & p_out ) noexcept
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
 		auto ffs = listForcefields( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
-		for ( auto & it_ff : ffs )
-		{
-			auto ffName = it_ff.getName();
-			p_out.bioForcefieldCollection.push_back( { ffName.begin(), ffName.end() } );
-		}
+		convert( ffs, p_out.bioForcefieldCollection );
 		boxShapeCollection( p_out.boxShapeCollection );
 		waterModelCollection( p_out.waterModels );
 	}
 
 	JobManager::JobManager( MdSettings & p_data ) : _data( &p_data ) {}
-
-	void JobManager::checkInputs( const MdParameters & p_1, App::Threading::ThreadData & p_ ) noexcept {}
 
 	namespace
 	{
@@ -108,10 +120,21 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 			p_out.pdb2gmx.forcefields = backends::Gromacs::listForcefields(
 				executableDirectory() / backends::Gromacs ::defaultFfDirectoryRelativePath()
 			);
+			std::vector<std::string> strFfs;
+			convert( p_out.pdb2gmx.forcefields, strFfs );
+			auto hit = std::find( strFfs.begin(), strFfs.end(), p_inGeneric.system.forcefieldBio );
+			if ( hit != strFfs.end() )
+			{
+				p_out.pdb2gmx.forcefieldIndex = std::distance( strFfs.begin(), hit );
+			}
+			else
+			{
+				p_out.pdb2gmx.forcefieldIndex = 0;
+			}
 		}
 	} // namespace
 
-	void JobManager::startPreparation( const MdParameters & p_1, App::Threading::ThreadData & p_ ) noexcept
+	void JobManager::startPreparation( const MdParameters & p_1 ) noexcept
 	{
 		VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions gmxInstructions;
 		convert( p_1, *_data, gmxInstructions );
@@ -121,5 +144,13 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 	bool JobManager::isResultAvailable() const noexcept { return _report != CheckReport(); }
 
 	CheckReport JobManager::lastResult() const noexcept { return _report; }
+
+	void JobManager::checkInputs( const MdParameters & p_1 ) noexcept
+	{
+		VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions gmxInstructions;
+		convert( p_1, *_data, gmxInstructions );
+
+		App::ACTION().execute<Actions::CheckSystem>( std::move( gmxInstructions ) );
+	}
 
 } // namespace VTX::Tool::Mdprep::Gateway::Gromacs

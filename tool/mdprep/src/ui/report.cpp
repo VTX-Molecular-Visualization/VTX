@@ -180,37 +180,6 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	};
 
-	namespace
-	{
-		struct TriggerReportDisplay
-		{
-			void execute( const Mdprep::Gateway::CheckReport & p_report )
-			{ App::HUB().trigger<Mdprep::Gateway::CheckReport>( p_report ); }
-		};
-
-		struct CheckInputsAction
-		{
-			App::Threading::ThreadData thrData;
-			std::latch				   waiter { 1 };
-
-			CheckInputsAction() = default;
-
-			CheckInputsAction( App::Threading::ThreadData p_ ) : thrData( std::move( p_ ) ) {}
-
-			void wait() noexcept { waiter.wait(); }
-
-			void execute( std::reference_wrapper<InputChecker> p_inputChecker, Gateway::MdParameters p_params )
-			{
-				p_inputChecker.get().checkInputs( p_params, thrData );
-				App::ACTION().subscribe(
-					App::Action::QueuedAction( TriggerReportDisplay(), p_inputChecker.get().lastResult() )
-				);
-
-				waiter.count_down();
-			}
-		};
-	} // namespace
-
 	struct ReportManager::_Impl
 	{
 		InputChecker					 _inputChecker;
@@ -234,7 +203,7 @@ namespace VTX::Tool::Mdprep::ui
 			_reportData.report			= Gateway::CheckReport();
 			_reportData.checkInProgress = true;
 
-			App::ACTION().execute<CheckInputsAction>( std::reference_wrapper<InputChecker>( _inputChecker ), p_params );
+			_inputChecker.checkInputs( p_params );
 		}
 
 		inline void relocate( QPointer<QVBoxLayout> p_ ) noexcept { _manager.relocate( p_ ); }
@@ -242,7 +211,11 @@ namespace VTX::Tool::Mdprep::ui
 		inline void relocate( ReportManager & p_ ) noexcept { _manager.relocate( p_._impl->_manager ); }
 
 		inline void _receiveReport( Gateway::CheckReport p_report ) noexcept
-		{ _manager.postReport( ReportUi( std::move( p_report ) ) ); }
+		{
+			_reportData.checkInProgress = false;
+			_reportData.report			= p_report;
+			_manager.postReport( ReportUi( std::move( p_report ) ) );
+		}
 	};
 
 	ReportManager::ReportManager( InputChecker p_inputChecker ) : _impl( new _Impl( std::move( p_inputChecker ) ) ) {}

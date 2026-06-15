@@ -81,8 +81,8 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		JobManager() = delete;
 		JobManager( MdSettings & );
 
-		void checkInputs( const MdParameters &, App::Threading::ThreadData & ) noexcept;
-		void startPreparation( const MdParameters &, App::Threading::ThreadData & ) noexcept;
+		void checkInputs( const MdParameters & ) noexcept;
+		void startPreparation( const MdParameters & ) noexcept;
 
 		bool		isResultAvailable() const noexcept;
 		CheckReport lastResult() const noexcept;

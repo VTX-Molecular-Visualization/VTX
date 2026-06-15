@@ -18,11 +18,11 @@ namespace VTX::Tool::Mdprep::Gateway
 		EngineJobManager() = default;
 
 		// Check weither the current inputs are reasonnable and send results via callback
-		inline void checkInputs( const MdParameters & p_1, App::Threading::ThreadData & p_2 ) noexcept
+		inline void checkInputs( const MdParameters & p_1 ) noexcept
 		{
 			if ( _ptr )
 			{
-				_ptr->checkInputs( p_1, p_2 );
+				_ptr->checkInputs( p_1 );
 			}
 		}
 
@@ -53,20 +53,20 @@ namespace VTX::Tool::Mdprep::Gateway
 		}
 
 		// Synchonously start preparation of the system and feed the callback with job progression
-		inline void startPreparation( const MdParameters & p_1, App::Threading::ThreadData & p_2 ) noexcept
+		inline void startPreparation( const MdParameters & p_1 ) noexcept
 		{
 			if ( _ptr )
 			{
-				_ptr->startPreparation( p_1, p_2 );
+				_ptr->startPreparation( p_1 );
 			}
 		}
 
 	  private:
 		struct _interface
 		{
-			~_interface()																					= default;
-			virtual void checkInputs( const MdParameters & p_1, App::Threading::ThreadData & p_3 ) noexcept = 0;
-			virtual void startPreparation( const MdParameters & p_1, App::Threading::ThreadData & p_3 ) noexcept = 0;
+			~_interface()													   = default;
+			virtual void checkInputs( const MdParameters & p_1 ) noexcept	   = 0;
+			virtual void startPreparation( const MdParameters & p_1 ) noexcept = 0;
 
 			virtual bool				 isResultAvailable() const noexcept = 0;
 			virtual Gateway::CheckReport lastResult() const noexcept		= 0;
@@ -79,14 +79,10 @@ namespace VTX::Tool::Mdprep::Gateway
 
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
 
-			virtual void checkInputs( const MdParameters & p_1, App::Threading::ThreadData & p_2 ) noexcept override
-			{ _obj.checkInputs( p_1, p_2 ); }
+			virtual void checkInputs( const MdParameters & p_1 ) noexcept override { _obj.checkInputs( p_1 ); }
 
-			virtual void startPreparation(
-				const MdParameters &		 p_1,
-				App::Threading::ThreadData & p_2
-			) noexcept override
-			{ _obj.startPreparation( p_1, p_2 ); }
+			virtual void startPreparation( const MdParameters & p_1 ) noexcept override
+			{ _obj.startPreparation( p_1 ); }
 
 			virtual bool isResultAvailable() const noexcept override { return _obj.isResultAvailable(); }
 
@@ -101,15 +97,15 @@ namespace VTX::Tool::Mdprep::Gateway
 		EngineJobManager( T && p_ ) : _ptr( new _wrapper<T>( std::forward<T>( p_ ) ) )
 		{
 			static_assert(
-				requires( T t, const Gateway::MdParameters & p_1, App::Threading::ThreadData & p_2 ) {
-					{ t.checkInputs( p_1, p_2 ) };
+				requires( T t, const Gateway::MdParameters & p_1 ) {
+					{ t.checkInputs( p_1 ) };
 				},
 				"You must implement 'void checkInputs( const Gateway::MdParameters & p_1, Gateway::CheckReportCallback "
 				"p_2 ) const noexcept' class method."
 			);
 			static_assert(
-				requires( T t, const MdParameters & p_1, App::Threading::ThreadData & p_2 ) {
-					{ t.startPreparation( p_1, p_2 ) };
+				requires( T t, const MdParameters & p_1 ) {
+					{ t.startPreparation( p_1 ) };
 				},
 				"You must implement 'void startPreparation( const MdParameters & p_1, JobUpdateCallback p_2 ) "
 				"noexcept' class method."

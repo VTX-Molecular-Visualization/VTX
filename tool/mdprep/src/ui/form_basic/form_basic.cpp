@@ -72,10 +72,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		SpecificFieldsPlacerCallback p_callback,
 		const MdParameters &		 p_defaults,
 		ReportManager &				 p_reportManager
-	) :
-		_data( std::make_unique<Data>( p_defaults, p_reportManager, std::move( p_callback ) ) ),
-		_eventManager( *_data ),
-		_checkReport( App::HUB().connect<Gateway::CheckReport, &FormBasic::_displayCheckResults>( this ) )
+	) : _data( std::make_unique<Data>( p_defaults, p_reportManager, std::move( p_callback ) ) ), _eventManager( *_data )
 	{
 		_createAndPlaceUiItems( p_container );
 		_loadValues( p_defaults );
@@ -297,8 +294,6 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			_uiObjects._fieldDurationUnitProduction
 		);
 	}
-
-	void FormBasic::_displayCheckResults( const Gateway::CheckReport & p_report ) noexcept {}
 
 	void FormBasic::_setupSlots() noexcept
 	{
