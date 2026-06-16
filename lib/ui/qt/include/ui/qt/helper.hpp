@@ -5,6 +5,7 @@
 #include <QLocale>
 #include <QString>
 #include <QtGlobal>
+#include <string_view>
 #include <type_traits>
 #include <util/color/rgba.hpp>
 
@@ -20,6 +21,7 @@ namespace VTX::UI::QT::Helper
 	 */
 	VTX::Util::Color::Rgba fromQColor( const QColor & );
 	QColor				   toQColor( const VTX::Util::Color::Rgba & );
+	QString				   toQString( const std::string_view );
 
 	/**
 	 * @brief Format number with current locale.
