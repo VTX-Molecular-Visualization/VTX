@@ -22,9 +22,21 @@ namespace VTX::Tool::Mdprep::Actions
 
 	StartPreparation::StartPreparation( VTX::App::Threading::ThreadData p_ ) : _impl( new _Impl { std::move( p_ ) } ) {}
 
-	void StartPreparation::execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions )
+	void StartPreparation::execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions p_instr )
 	{
+		VTX::FilePath dest { p_instr.rootDir / "init.pdb" };
+
+		App::Action::IO::WriteVisible a;
+		App::ACTION().execute( a, std::move( dest ) );
+		if ( _impl->thrData.stopToken.stop_requested() )
+		{
+			goto theEnd;
+		}
+		backends::Gromacs::prepareStructure( _impl->thrData.stopToken, dest, p_instr );
+
 		// TODO
+
+	theEnd:
 		_impl->waiter.count_down();
 	}
 
@@ -59,7 +71,7 @@ namespace VTX::Tool::Mdprep::Actions
 
 	void CheckSystem::execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions p_gmxIntructions )
 	{
-		VTX::FilePath				  dest { backends::Gromacs::createNewEmptyTempDirectory() / "test.pdb" };
+		VTX::FilePath				  dest { p_gmxIntructions.rootDir / "test.pdb" };
 		App::Action::IO::WriteVisible a;
 		App::ACTION().execute( a, std::move( dest ) );
 

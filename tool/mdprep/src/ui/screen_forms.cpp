@@ -209,10 +209,9 @@ namespace VTX::Tool::Mdprep::ui
 		Gateway::MdParameters param;
 		_currentForm.get( param );
 
-		Gateway::JobUpdateIntermediate intermediate;
-		// jobManager.startPreparation( param, intermediate.getUpdateCallback() ); //TODO
-
-		_validationSignaler.preparationStarted( std::move( intermediate ) );
+		// TODO
+		// Need to subscribe to some event for job updates and finish
+		_jobManager.startPreparation( param );
 	}
 
 	void ScreenForms::_setupSlots() noexcept

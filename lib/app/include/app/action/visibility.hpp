@@ -27,6 +27,11 @@ namespace VTX::App::Action::Visibility
 		);
 	}
 
+	struct HideEverything
+	{
+		void execute(); // TODO
+	};
+
 	/**
 	 * @brief Set item visibility.
 	 */
