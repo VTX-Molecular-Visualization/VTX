@@ -1,3 +1,4 @@
+#include <app/threading/base_thread.hpp>
 #include <latch>
 #include <thread>
 //
@@ -92,9 +93,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	} // namespace
 
 	void prepareStructure(
-		Util::StopToken		  p_token,
-		const fs::path &	  p_structurePdb,
-		GromacsInstructions & p_in
+		VTX::App::Threading::ThreadData & p_thrData,
+		const fs::path &				  p_structurePdb,
+		GromacsInstructions &			  p_in
 	) noexcept
 	{
 		p_in.fileStem		  = p_structurePdb.stem().string();
@@ -102,51 +103,60 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		int jobIdx = 0;
 
+		p_thrData.thrRef.value().get().setProgressText( "1 - pdb2gmx" );
 		if ( carryPreparationStep( p_in, p_in.pdb2gmx, g_jobNames[ jobIdx ], jobIdx ) == false
-			 || p_token.stop_requested() )
+			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
 		}
+		p_thrData.thrRef.value().get().setProgressText( "2 - editconf" );
 		if ( carryPreparationStep( p_in, p_in.editconf1, g_jobNames[ jobIdx ], jobIdx ) == false
-			 || p_token.stop_requested() )
+			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
 		}
+		p_thrData.thrRef.value().get().setProgressText( "3 - solvate" );
 		if ( carryPreparationStep( p_in, p_in.solvate, g_jobNames[ jobIdx ], jobIdx ) == false
-			 || p_token.stop_requested() )
+			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
 		}
+		p_thrData.thrRef.value().get().setProgressText( "4 - trjconv" );
 		if ( carryPreparationStep( p_in, p_in.trjconv, g_jobNames[ jobIdx ], jobIdx ) == false
-			 || p_token.stop_requested() )
+			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
 		}
+		p_thrData.thrRef.value().get().setProgressText( "5 - grompp ions" );
 		p_in.gromppIons.step = E_GROMPP_STEP::ions;
 		if ( carryPreparationStep( p_in, p_in.gromppIons, g_jobNames[ jobIdx ], jobIdx ) == false
-			 || p_token.stop_requested() )
+			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
 		}
+		p_thrData.thrRef.value().get().setProgressText( "6 - genion" );
 		if ( carryPreparationStep( p_in, p_in.genion, g_jobNames[ jobIdx ], jobIdx ) == false
-			 || p_token.stop_requested() )
+			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
 		}
+		p_thrData.thrRef.value().get().setProgressText( "6 - grompp posres" );
 		p_in.gromppPosres.step = E_GROMPP_STEP::posres;
 		if ( carryPreparationStep( p_in, p_in.gromppPosres, g_jobNames[ jobIdx ], jobIdx ) == false
-			 || p_token.stop_requested() )
+			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
 		}
+		p_thrData.thrRef.value().get().setProgressText( "7 - grompp em" );
 		p_in.gromppEm.step = E_GROMPP_STEP::em;
 		if ( carryPreparationStep( p_in, p_in.gromppEm, g_jobNames[ jobIdx ], jobIdx ) == false
-			 || p_token.stop_requested() )
+			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
 		}
+		p_thrData.thrRef.value().get().setProgressText( "8 - editconf" );
 		if ( carryPreparationStep( p_in, p_in.editconf2, g_jobNames[ jobIdx ], jobIdx ) == false
-			 || p_token.stop_requested() )
+			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
 		}

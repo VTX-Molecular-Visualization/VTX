@@ -1,5 +1,6 @@
 #include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
+#include <app/action/visibility.hpp>
 #include <app/services.hpp>
 #include <app/system/visibility.hpp>
 #include <latch>
@@ -8,6 +9,7 @@
 #include <tool/mdprep/backends/gromacs/util.hpp>
 #include <tool/mdprep/gateway/shared.hpp>
 #include <util/event_hub.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::Tool::Mdprep::Actions
 {
@@ -38,7 +40,22 @@ namespace VTX::Tool::Mdprep::Actions
 			{
 				goto theEnd;
 			}
-			backends::Gromacs::prepareStructure( _impl->thrData.stopToken, dest, p_instr );
+			backends::Gromacs::prepareStructure( _impl->thrData, dest, p_instr );
+
+			bool noErrors = true;
+			for ( auto & jobData : p_instr.jobData )
+			{
+				noErrors &= jobData.report.errorOccured;
+			}
+			if ( noErrors )
+			{
+				App::ACTION().execute<App::Action::Visibility::HideEverything>();
+				App::ACTION().execute<App::Action::IO::LoadSystem>( p_instr.editconf2.out );
+			}
+			else
+			{
+				VTX_ERROR( "Preparation failed." ); // TODO : do better.
+			}
 		}
 
 		// TODO

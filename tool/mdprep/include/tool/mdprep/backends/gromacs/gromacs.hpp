@@ -14,6 +14,11 @@
 #include <tool/mdprep/backends/gromacs/util.hpp>
 #include <util/thread.hpp>
 
+namespace VTX::App::Threading
+{
+	struct ThreadData;
+}
+
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 	const uint8_t g_NUM_PREPARATION_JOBS = 9;
@@ -43,7 +48,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	 * @param p_structurePdb
 	 * @param
 	 */
-	void prepareStructure( Util::StopToken, const fs::path & p_structurePdb, GromacsInstructions & ) noexcept;
+	void prepareStructure(
+		VTX::App::Threading::ThreadData &,
+		const fs::path & p_structurePdb,
+		GromacsInstructions &
+	) noexcept;
 
 	/**
 	 * @brief Use prepared structure to deliver a ready-to-use directory to start MD from
