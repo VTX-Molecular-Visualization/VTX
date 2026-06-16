@@ -30,6 +30,8 @@ namespace VTX::UI::QT::Widget::Tree
 		inline const Model::SystemModel & getSystemModel() const
 		{ return *static_cast<Model::SystemModel *>( model() ); }
 
+		void setViewMode( const Model::SystemModel::ViewMode p_mode );
+
 	  private:
 		/**
 		 * @brief Entity to display.
