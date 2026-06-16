@@ -20,7 +20,7 @@ namespace VTX::UI::QT::DockWidget
 		Inspector( QWidget * );
 
 	  private:
-		QPointer<QWidget> _filler;
+		QPointer<QWidget>						  _filler;
 		QPointer<Widget::Selection>				  _selectionListWidget;
 		QPointer<Widget::Library::GraphicsConfig> _graphicsConfigWidget;
 		QPointer<Widget::Library::ColorLayout>	  _colorLayoutWidget;

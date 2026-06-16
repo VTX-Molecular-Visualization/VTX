@@ -132,9 +132,7 @@ namespace VTX::App::Action::Camera
 			const Quatf & p_rotation,
 			const float	  p_duration = ANIMATION_DURATION_DEFAULT_MS
 		)
-		{
-			execute( App::Controller::AnimationData { p_position, p_rotation }, p_duration );
-		}
+		{ execute( App::Controller::AnimationData { p_position, p_rotation }, p_duration ); }
 
 		void execute(
 			const App::Controller::AnimationData & p_end,
@@ -222,6 +220,14 @@ namespace VTX::App::Action::Camera
 	struct UpdateViewPointFromCamera
 	{
 		void execute( const Entity );
+	};
+
+	/**
+	 * @brief Rename a viewpoint.
+	 */
+	struct RenameViewPoint
+	{
+		void execute( const Entity, const std::string_view );
 	};
 
 	/**

@@ -44,9 +44,9 @@ namespace VTX::UI::QT::DockWidget
 
 				const QModelIndex index
 					= p_selection.indexes().isEmpty() ? QModelIndex() : p_selection.indexes().first();
-				const QVariant		   data		 = index.data( Qt::UserRole );
-				const Entity preset	 = data.value<Entity>();
-				const bool			   hasPreset = data.isValid();
+				const QVariant data		 = index.data( Qt::UserRole );
+				const Entity   preset	 = data.value<Entity>();
+				const bool	   hasPreset = data.isValid();
 
 				// Insert widget.
 				switch ( p_group )

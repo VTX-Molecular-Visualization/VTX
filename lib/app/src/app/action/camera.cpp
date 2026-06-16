@@ -174,23 +174,23 @@ namespace VTX::App::Action::Camera
 
 		Entity e = reg.create();
 		reg.emplace<Util::Math::Transform>( e, transform );
-		reg.emplace<Scene::ViewPoint>( e, camera.target );
 		reg.emplace<App::Generic::Name>( e, DEFAULT_VIEWPOINT_NAME.data() );
-
-		HUB().trigger<Events::ViewPointAdded>( e );
+		reg.emplace<Scene::ViewPoint>( e, camera.target );
 	}
 
 	void SetViewPointPosition::execute( const Entity p_viewpoint, const Vec3f & p_position )
 	{
 		REG().patch<Util::Math::Transform>(
-			p_viewpoint, [ &p_position ]( Util::Math::Transform & p_transform ) { p_transform.setPosition( p_position ); }
+			p_viewpoint,
+			[ &p_position ]( Util::Math::Transform & p_transform ) { p_transform.setPosition( p_position ); }
 		);
 	}
 
 	void SetViewPointRotation::execute( const Entity p_viewpoint, const Quatf & p_rotation )
 	{
 		REG().patch<Util::Math::Transform>(
-			p_viewpoint, [ &p_rotation ]( Util::Math::Transform & p_transform ) { p_transform.setRotation( p_rotation ); }
+			p_viewpoint,
+			[ &p_rotation ]( Util::Math::Transform & p_transform ) { p_transform.setRotation( p_rotation ); }
 		);
 	}
 
@@ -207,11 +207,22 @@ namespace VTX::App::Action::Camera
 		);
 	}
 
-	void DeleteViewPoint::execute( const Entity p_viewpoint )
+	void RenameViewPoint::execute( const Entity p_viewpoint, const std::string_view p_name )
 	{
-		REG().destroy( p_viewpoint );
-		HUB().trigger<Events::ViewPointDeleted>( p_viewpoint );
+		auto & reg = REG();
+
+		const std::string newName { p_name };
+		auto &			  name = reg.get<App::Generic::Name>( p_viewpoint ).name;
+		if ( name == newName )
+		{
+			return;
+		}
+
+		name = newName;
+		HUB().trigger<Events::ViewPointRenamed>( p_viewpoint, name );
 	}
+
+	void DeleteViewPoint::execute( const Entity p_viewpoint ) { REG().destroy( p_viewpoint ); }
 
 	void GoToViewPoint::execute( const Entity p_viewpoint )
 	{

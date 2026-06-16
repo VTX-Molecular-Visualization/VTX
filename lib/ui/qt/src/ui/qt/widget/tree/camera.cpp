@@ -9,6 +9,7 @@
 #include <app/action/camera.hpp>
 #include <app/events.hpp>
 #include <app/generic/name.hpp>
+#include <app/scene/viewpoint.hpp>
 #include <app/services.hpp>
 #include <util/event_hub.hpp>
 
@@ -21,8 +22,11 @@ namespace VTX::UI::QT::Widget::Tree
 		addTopLevelItem( new QTreeWidgetItem( QStringList() << "Camera" ) );
 		topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::CAMERA ) );
 
-		App::HUB().connect<App::Events::ViewPointAdded, &Camera::_onViewPointAdded>( this );
-		App::HUB().connect<App::Events::ViewPointDeleted, &Camera::_onViewPointDeleted>( this );
+		_onConstructConnection
+			= App::REG().on_construct<App::Scene::ViewPoint>().connect<&Camera::_addViewPoint>( this );
+		_onDestroyConnection
+			= App::REG().on_destroy<App::Scene::ViewPoint>().connect<&Camera::_removeViewPoint>( this );
+		App::HUB().connect<App::Events::ViewPointRenamed, &Camera::_onViewPointRenamed>( this );
 
 		// Connect double click to move to viewpoint.
 		connect(
@@ -42,30 +46,35 @@ namespace VTX::UI::QT::Widget::Tree
 		);
 	}
 
-	Camera::~Camera() { App::HUB().disconnectAllOf( *this ); }
-
-	void Camera::_onViewPointAdded( const App::Events::ViewPointAdded & p_event )
+	Camera::~Camera()
 	{
-		if ( _entityToItemMap.contains( p_event.viewpoint ) )
+		_onConstructConnection.release();
+		_onDestroyConnection.release();
+		App::HUB().disconnectAllOf( *this );
+	}
+
+	void Camera::_addViewPoint( Registry & p_r, const Entity p_viewpoint )
+	{
+		if ( _entityToItemMap.contains( p_viewpoint ) )
 		{
 			return;
 		}
 
-		const auto & name = App::REG().get<App::Generic::Name>( p_event.viewpoint );
+		const auto & name = p_r.get<App::Generic::Name>( p_viewpoint );
 
 		QTreeWidgetItem * const item = new QTreeWidgetItem( QStringList() << QString::fromStdString( name.name ) );
-		item->setData( 0, Qt::UserRole, QVariant::fromValue( p_event.viewpoint ) );
+		item->setData( 0, Qt::UserRole, QVariant::fromValue( p_viewpoint ) );
 
 		topLevelItem( 0 )->addChild( item );
 		topLevelItem( 0 )->sortChildren( 0, Qt::AscendingOrder );
 		topLevelItem( 0 )->setExpanded( true );
-		_entityToItemMap.emplace( p_event.viewpoint, item );
+		_entityToItemMap.emplace( p_viewpoint, item );
 		updateGeometry();
 	}
 
-	void Camera::_onViewPointDeleted( const App::Events::ViewPointDeleted & p_event )
+	void Camera::_removeViewPoint( Registry &, const Entity p_viewpoint )
 	{
-		const auto it = _entityToItemMap.find( p_event.viewpoint );
+		const auto it = _entityToItemMap.find( p_viewpoint );
 		if ( it == _entityToItemMap.end() )
 		{
 			return;
@@ -74,5 +83,17 @@ namespace VTX::UI::QT::Widget::Tree
 		delete it->second;
 		_entityToItemMap.erase( it );
 		updateGeometry();
+	}
+
+	void Camera::_onViewPointRenamed( const App::Events::ViewPointRenamed & p_event )
+	{
+		const auto it = _entityToItemMap.find( p_event.viewpoint );
+		if ( it == _entityToItemMap.end() )
+		{
+			return;
+		}
+
+		it->second->setText( 0, QString::fromStdString( p_event.name ) );
+		topLevelItem( 0 )->sortChildren( 0, Qt::AscendingOrder );
 	}
 } // namespace VTX::UI::QT::Widget::Tree

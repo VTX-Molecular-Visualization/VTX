@@ -2,11 +2,17 @@
 #define __VTX_UI_QT_WIDGET_VIEWPOINT__
 
 #include "ui/qt/widget/transform.hpp"
+#include <QLineEdit>
 #include <QPointer>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <app/ecs.hpp>
 #include <util/event_hub.hpp>
+
+namespace VTX::App::Events
+{
+	struct ViewPointRenamed;
+}
 
 namespace VTX::UI::QT::Widget
 {
@@ -23,11 +29,14 @@ namespace VTX::UI::QT::Widget
 		const Entity _entity;
 
 		QPointer<QVBoxLayout> _layout;
-		QPointer<Transform>   _transform;
+		QPointer<QLineEdit>	  _lineName;
+		QPointer<Transform>	  _transform;
 
 		Util::EventHub::Connection _connTransformChanged;
 
+		void _setName();
 		void _setTransform();
+		void _onViewPointRenamed( const App::Events::ViewPointRenamed & );
 		void _transformUpdated( Registry &, Entity );
 	};
 } // namespace VTX::UI::QT::Widget

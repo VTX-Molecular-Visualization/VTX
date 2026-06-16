@@ -4,13 +4,13 @@
 #include "ui/qt/widget/tree/base_tree.hpp"
 #include <unordered_map>
 #include <util/ecs.hpp>
+#include <util/event_hub.hpp>
 
 class QTreeWidgetItem;
 
 namespace VTX::App::Events
 {
-	struct ViewPointAdded;
-	struct ViewPointDeleted;
+	struct ViewPointRenamed;
 } // namespace VTX::App::Events
 
 namespace VTX::UI::QT::Widget::Tree
@@ -39,14 +39,25 @@ namespace VTX::UI::QT::Widget::Tree
 		std::unordered_map<Entity, QTreeWidgetItem *> _entityToItemMap;
 
 		/**
+		 * @brief Connections to App.
+		 */
+		Util::EventHub::Connection _onConstructConnection;
+		Util::EventHub::Connection _onDestroyConnection;
+
+		/**
 		 * @brief Handle viewpoint addition to update the tree.
 		 */
-		void _onViewPointAdded( const App::Events::ViewPointAdded & p_event );
+		void _addViewPoint( Registry &, Entity );
 
 		/**
 		 * @brief Handle viewpoint deletion to update the tree.
 		 */
-		void _onViewPointDeleted( const App::Events::ViewPointDeleted & p_event );
+		void _removeViewPoint( Registry &, Entity );
+
+		/**
+		 * @brief Handle viewpoint rename to update the tree.
+		 */
+		void _onViewPointRenamed( const App::Events::ViewPointRenamed & p_event );
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

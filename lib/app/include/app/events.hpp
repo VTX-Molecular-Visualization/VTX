@@ -134,14 +134,10 @@ namespace VTX::App::Events
 		std::string version;
 	};
 
-	struct ViewPointAdded
+	struct ViewPointRenamed
 	{
-		Entity viewpoint;
-	};
-
-	struct ViewPointDeleted
-	{
-		Entity viewpoint;
+		Entity		viewpoint;
+		std::string name;
 	};
 
 } // namespace VTX::App::Events
