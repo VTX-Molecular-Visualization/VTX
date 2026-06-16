@@ -201,6 +201,30 @@ namespace VTX::App::Action::Camera
 	};
 
 	/**
+	 * @brief Set viewpoint position.
+	 */
+	struct SetViewPointPosition
+	{
+		void execute( const Entity, const Vec3f & );
+	};
+
+	/**
+	 * @brief Set viewpoint rotation.
+	 */
+	struct SetViewPointRotation
+	{
+		void execute( const Entity, const Quatf & );
+	};
+
+	/**
+	 * @brief Update viewpoint from current camera.
+	 */
+	struct UpdateViewPointFromCamera
+	{
+		void execute( const Entity );
+	};
+
+	/**
 	 * @brief Delete a viewpoint.
 	 */
 	struct DeleteViewPoint

@@ -6,6 +6,7 @@
 #include "ui/qt/widget/library/graphics_config.hpp"
 #include "ui/qt/widget/library/representation.hpp"
 #include "ui/qt/widget/selection.hpp"
+#include "ui/qt/widget/viewpoint.hpp"
 #include <QComboBox>
 
 namespace VTX::UI::QT::DockWidget
@@ -24,6 +25,7 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<Widget::Library::GraphicsConfig> _graphicsConfigWidget;
 		QPointer<Widget::Library::ColorLayout>	  _colorLayoutWidget;
 		QPointer<Widget::Library::Representation> _representationWidget;
+		QPointer<Widget::ViewPoint>				  _viewPointWidget;
 
 		/**
 		 * @brief Clear all widgets except the filler.

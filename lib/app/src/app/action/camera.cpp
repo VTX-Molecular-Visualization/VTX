@@ -180,6 +180,33 @@ namespace VTX::App::Action::Camera
 		HUB().trigger<Events::ViewPointAdded>( e );
 	}
 
+	void SetViewPointPosition::execute( const Entity p_viewpoint, const Vec3f & p_position )
+	{
+		REG().patch<Util::Math::Transform>(
+			p_viewpoint, [ &p_position ]( Util::Math::Transform & p_transform ) { p_transform.setPosition( p_position ); }
+		);
+	}
+
+	void SetViewPointRotation::execute( const Entity p_viewpoint, const Quatf & p_rotation )
+	{
+		REG().patch<Util::Math::Transform>(
+			p_viewpoint, [ &p_rotation ]( Util::Math::Transform & p_transform ) { p_transform.setRotation( p_rotation ); }
+		);
+	}
+
+	void UpdateViewPointFromCamera::execute( const Entity p_viewpoint )
+	{
+		const auto [ _, camera, transform ]
+			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+
+		REG().patch<Util::Math::Transform>(
+			p_viewpoint, [ &transform ]( Util::Math::Transform & p_transform ) { p_transform = transform; }
+		);
+		REG().patch<Scene::ViewPoint>(
+			p_viewpoint, [ &camera ]( Scene::ViewPoint & p_viewpointData ) { p_viewpointData.target = camera.target; }
+		);
+	}
+
 	void DeleteViewPoint::execute( const Entity p_viewpoint )
 	{
 		REG().destroy( p_viewpoint );

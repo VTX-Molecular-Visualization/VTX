@@ -54,9 +54,17 @@ namespace VTX::UI::QT::DockWidget
 				case E_SELECTION_GROUP::CAMERA:
 				{
 					_clear();
-					const auto [ ent, _ ] = App::ECS::getFirstEntityWithComponents<Renderer::Camera>();
-					auto * cameraWidget	  = new Widget::Camera( ent, this );
-					_layout->insertWidget( _layout->indexOf( _filler ), cameraWidget );
+					if ( hasPreset )
+					{
+						_viewPointWidget = new Widget::ViewPoint( preset, this );
+						_layout->insertWidget( _layout->indexOf( _filler ), _viewPointWidget );
+					}
+					else
+					{
+						const auto [ ent, _ ] = App::ECS::getFirstEntityWithComponents<Renderer::Camera>();
+						auto * cameraWidget	  = new Widget::Camera( ent, this );
+						_layout->insertWidget( _layout->indexOf( _filler ), cameraWidget );
+					}
 					break;
 				}
 				case E_SELECTION_GROUP::GRAPHICS_CONFIG:
@@ -174,6 +182,10 @@ namespace VTX::UI::QT::DockWidget
 				if ( w == _representationWidget )
 				{
 					_representationWidget = nullptr;
+				}
+				if ( w == _viewPointWidget )
+				{
+					_viewPointWidget = nullptr;
 				}
 				_layout->removeWidget( w );
 				w->deleteLater();
