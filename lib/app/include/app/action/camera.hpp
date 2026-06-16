@@ -7,6 +7,7 @@
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/pass/camera_updater.hpp"
+#include "app/scene/viewpoint.hpp"
 #include "app/services.hpp"
 #include <renderer/camera.hpp>
 #include <util/math/aabb.hpp>
@@ -162,7 +163,7 @@ namespace VTX::App::Action::Camera
 			if constexpr ( I == E_CAMERA_INTERPOLATOR::LINEAR )
 			{
 				interpPositionFunc = Math::lerp;
-				interpRotationFunc = Math::lerp;
+				interpRotationFunc = Math::slerp;
 			}
 			else if constexpr ( I == E_CAMERA_INTERPOLATOR::EASE_IN_OUT )
 			{

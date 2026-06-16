@@ -174,6 +174,7 @@ namespace VTX::App::Action::Camera
 
 		Entity e = reg.create();
 		reg.emplace<Util::Math::Transform>( e, transform );
+		reg.emplace<Scene::ViewPoint>( e, camera.target );
 		reg.emplace<App::Generic::Name>( e, DEFAULT_VIEWPOINT_NAME.data() );
 
 		HUB().trigger<Events::ViewPointAdded>( e );
@@ -188,6 +189,12 @@ namespace VTX::App::Action::Camera
 	void GoToViewPoint::execute( const Entity p_viewpoint )
 	{
 		const auto & transform = REG().get<Util::Math::Transform>( p_viewpoint );
+		const auto & viewpoint = REG().get<Scene::ViewPoint>( p_viewpoint );
+
+		const auto cameraEntity = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
+		REG().patch<Renderer::Camera>(
+			cameraEntity, [ &viewpoint ]( Renderer::Camera & p_camera ) { p_camera.target = viewpoint.target; }
+		);
 
 		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(
 			transform.getPosition(), transform.getRotation()

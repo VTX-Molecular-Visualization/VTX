@@ -17,6 +17,7 @@ namespace VTX::App::Pass
 		reg.on_update<Renderer::Camera>().connect<&CameraUpdater::_onUpdateCamera>( this );
 		HUB().connect<Events::CameraTransformChange, &CameraUpdater::_onUpdateCamera>( this );
 
+		// TODO: check if needed.
 		// Trigger initial settings.
 		reg.patch<Setting::Controller>( _entity, [ & ]( Setting::Controller & p_setting ) {} );
 	}
