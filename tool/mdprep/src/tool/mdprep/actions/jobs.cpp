@@ -45,7 +45,7 @@ namespace VTX::Tool::Mdprep::Actions
 			bool noErrors = true;
 			for ( auto & jobData : p_instr.jobData )
 			{
-				noErrors &= jobData.report.errorOccured;
+				noErrors &= not jobData.report.errorOccured;
 			}
 			if ( noErrors )
 			{

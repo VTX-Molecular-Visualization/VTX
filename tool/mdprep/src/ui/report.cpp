@@ -225,7 +225,7 @@ namespace VTX::Tool::Mdprep::ui
 		inline void visibilityChanged( Entity ) noexcept
 		{
 			_reportData.report.dirty = true;
-			_manager.postReport( ReportUi( _reportData.report ) );
+			QTimer::singleShot( 0, nullptr, [ & ] { _manager.postReport( ReportUi( _reportData.report ) ); } );
 		}
 	};
 
