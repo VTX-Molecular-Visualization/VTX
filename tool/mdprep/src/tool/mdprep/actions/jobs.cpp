@@ -1,6 +1,7 @@
 #include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <app/services.hpp>
+#include <app/system/visibility.hpp>
 #include <latch>
 #include <tool/mdprep/actions/jobs.hpp>
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
@@ -24,15 +25,21 @@ namespace VTX::Tool::Mdprep::Actions
 
 	void StartPreparation::execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions p_instr )
 	{
-		VTX::FilePath dest { p_instr.rootDir / "init.pdb" };
-
-		App::Action::IO::WriteVisible a;
-		App::ACTION().execute( a, std::move( dest ) );
-		if ( _impl->thrData.stopToken.stop_requested() )
+		if ( not App::System::isAnythingVisible() )
 		{
 			goto theEnd;
 		}
-		backends::Gromacs::prepareStructure( _impl->thrData.stopToken, dest, p_instr );
+		{
+			VTX::FilePath dest { p_instr.rootDir / "init.pdb" };
+
+			App::Action::IO::WriteVisible a;
+			App::ACTION().execute( a, VTX::FilePath( dest ) );
+			if ( _impl->thrData.stopToken.stop_requested() )
+			{
+				goto theEnd;
+			}
+			backends::Gromacs::prepareStructure( _impl->thrData.stopToken, dest, p_instr );
+		}
 
 		// TODO
 
@@ -71,25 +78,33 @@ namespace VTX::Tool::Mdprep::Actions
 
 	void CheckSystem::execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions p_gmxIntructions )
 	{
-		VTX::FilePath				  dest { p_gmxIntructions.rootDir / "test.pdb" };
-		App::Action::IO::WriteVisible a;
-		App::ACTION().execute( a, std::move( dest ) );
+		if ( not App::System::isAnythingVisible() )
+		{
+			goto theEnd;
+		}
+		{
+			VTX::FilePath				  dest { p_gmxIntructions.rootDir / "test.pdb" };
+			App::Action::IO::WriteVisible a;
+			App::ACTION().execute( a, std::move( dest ) );
 
-		backends::Gromacs::SystemTester tester(
-			dest,
-			p_gmxIntructions.pdb2gmx.forcefields[ p_gmxIntructions.pdb2gmx.forcefieldIndex ],
-			p_gmxIntructions.pdb2gmx.water
-		);
-		auto reason = tester.why();
-		App::ACTION().subscribe(
-			App::Action::QueuedAction(
-				TriggerCheckReportEvent(),
-				Mdprep::Gateway::CheckReport { Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField,
-											   0,
-											   tester.isSystemOk(),
-											   std::string( reason.begin(), reason.end() ) }
-			)
-		);
+			backends::Gromacs::SystemTester tester(
+				dest,
+				p_gmxIntructions.pdb2gmx.forcefields[ p_gmxIntructions.pdb2gmx.forcefieldIndex ],
+				p_gmxIntructions.pdb2gmx.water
+			);
+			auto reason = tester.why();
+			App::ACTION().subscribe(
+				App::Action::QueuedAction(
+					TriggerCheckReportEvent(),
+					Mdprep::Gateway::CheckReport { Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField,
+												   0,
+												   tester.isSystemOk(),
+												   std::string( reason.begin(), reason.end() ) }
+				)
+			);
+		}
+
+	theEnd:
 		_impl->waiter.count_down();
 	}
 
