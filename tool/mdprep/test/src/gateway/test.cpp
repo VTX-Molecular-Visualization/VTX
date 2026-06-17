@@ -43,7 +43,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - integration", "[integration]" )
 	mdParams.system.forcefieldBio = "gromos54a7";
 
 	VTX::App::Threading::ThreadData thrData;
-	jobManager.startPreparation( mdParams, thrData );
+	jobManager.startPreparation( mdParams );
 	/*
 
 
