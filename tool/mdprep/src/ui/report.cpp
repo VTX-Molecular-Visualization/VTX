@@ -205,7 +205,7 @@ namespace VTX::Tool::Mdprep::ui
 
 			firstCheckStarted  = true;
 			_reportData.report = Gateway::CheckReport();
-			_manager.postReport( ReportUi( std::move( _reportData.report ) ) );
+			_manager.postReport( ReportUi( _reportData.report ) );
 			_reportData.checkInProgress = true;
 
 			_inputChecker.checkInputs( p_params );

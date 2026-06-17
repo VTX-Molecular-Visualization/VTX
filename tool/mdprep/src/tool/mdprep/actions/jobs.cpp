@@ -43,6 +43,10 @@ namespace VTX::Tool::Mdprep::Actions
 			}
 			backends::Gromacs::prepareStructure( _impl->thrData, dest, p_instr );
 
+			if ( _impl->thrData.stopToken.stop_requested() )
+			{
+				goto theEnd;
+			}
 			bool noErrors = true;
 			for ( auto & jobData : p_instr.jobData )
 			{
@@ -50,8 +54,8 @@ namespace VTX::Tool::Mdprep::Actions
 			}
 			if ( noErrors )
 			{
-				App::ACTION().execute<App::Action::Visibility::HideEverything>();
 				App::ACTION().execute<App::Action::IO::LoadSystem>( p_instr.editconf2.out );
+				App::ACTION().execute<App::Action::Visibility::HideEverything>();
 				VTX_INFO(
 					"System written at : {}",
 					fmt::format( fmt::runtime( std::string( App::LOG_LINK_FORMAT ) ), p_instr.rootDir.string() )
@@ -103,6 +107,10 @@ namespace VTX::Tool::Mdprep::Actions
 		if ( not App::System::isAnythingVisible() )
 		{
 			goto theEnd;
+		}
+		if ( _impl->thrData.thrRef )
+		{
+			_impl->thrData.thrRef->get().setProgressText( "Checking system for MD" );
 		}
 		{
 			VTX::FilePath				  dest { p_gmxIntructions.rootDir / "test.pdb" };
