@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QFont>
 #include <QHoverEvent>
+#include <QPalette>
 #include <QPushButton>
 #include <QScreen>
 #include <QScrollArea>
@@ -55,7 +56,25 @@ namespace VTX::UI::QT::Util
 		{
 			setWindowFlag( Qt::ToolTip );
 			setObjectName( "questionMarkPopup" );
+
+			// The global stylesheet that used to give this overlay its themed, rounded, contrasted border was
+			// removed. Recreate the look here without a stylesheet file: a translucent top-level window holding
+			// an inner frame that fills with the theme background and is outlined with the theme foreground.
+			// Reading the palette keeps it following the OS theme (light/dark) automatically.
+			setAttribute( Qt::WA_TranslucentBackground );
+
+			auto * outerLayout = new QVBoxLayout( this );
+			outerLayout->setContentsMargins( { 0, 0, 0, 0 } );
+
+			_frame = new QWidget( this );
+			_frame->setObjectName( "questionMarkPopupFrame" );
+			outerLayout->addWidget( _frame );
+
+			_applyThemeStyle();
 		}
+
+		// Host widget for the popup content; lives inside the themed, rounded frame.
+		QWidget * contentHost() const noexcept { return _frame; }
 
 		bool isHovered() const { return _hovered; }
 
@@ -96,8 +115,30 @@ namespace VTX::UI::QT::Util
 			return QWidget::event( e );
 		}
 
+		// Refresh the themed border/background colours when the OS theme (and thus the palette) changes.
+		void changeEvent( QEvent * e ) override
+		{
+			if ( e->type() == QEvent::PaletteChange || e->type() == QEvent::ThemeChange )
+				_applyThemeStyle();
+			QWidget::changeEvent( e );
+		}
+
 	  private:
-		bool _hovered = false;
+		// Paint the inner frame with the theme background and a rounded border in the theme foreground.
+		void _applyThemeStyle() noexcept
+		{
+			const QColor background = palette().color( QPalette::Window );
+			const QColor foreground = palette().color( QPalette::WindowText );
+			_frame->setStyleSheet( QString( "#questionMarkPopupFrame{"
+											"background:%1;"
+											"border:1px solid %2;"
+											"border-radius:8px;"
+											"}" )
+									   .arg( background.name(), foreground.name() ) );
+		}
+
+		QWidget * _frame   = nullptr;
+		bool	  _hovered = false;
 	};
 
 	class QHoverableQuestionMark : public QPushButton
@@ -134,17 +175,20 @@ namespace VTX::UI::QT::Util
 			_label->setTextInteractionFlags( Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse );
 
 			// Large reports (e.g. raw gromacs output) used to grow the tooltip off-screen. Wrap the text in
-			// a scroll area so the popup stays bounded and the overflow is scrollable instead.
-			auto scrollArea = new QScrollArea( popup );
+			// a scroll area so the popup stays bounded and the overflow is scrollable instead. Keep the scroll
+			// area and label transparent so the popup's themed frame background shows through uniformly.
+			auto scrollArea = new QScrollArea( popup->contentHost() );
 			scrollArea->setWidget( _label );
 			scrollArea->setWidgetResizable( true );
 			scrollArea->setFrameShape( QFrame::NoFrame );
 			scrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
 			scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
-			scrollArea->setContentsMargins( { 5, 5, 5, 5 } );
+			scrollArea->setStyleSheet( "QScrollArea,QScrollArea>QWidget>QWidget{background:transparent;}" );
+			_label->setAttribute( Qt::WA_TranslucentBackground );
 
-			auto layout = new QVBoxLayout( popup );
-			layout->setContentsMargins( { 4, 4, 4, 4 } );
+			// Inset the content from the rounded border so text never overlaps the corners.
+			auto layout = new QVBoxLayout( popup->contentHost() );
+			layout->setContentsMargins( { 10, 8, 10, 8 } );
 			layout->addWidget( scrollArea );
 		}
 
