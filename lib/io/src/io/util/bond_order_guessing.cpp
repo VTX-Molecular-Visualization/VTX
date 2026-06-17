@@ -679,7 +679,7 @@ namespace VTX::IO::Util
 
 			const chemfiles::Residue & residue = firstResidue.value();
 
-			const std::vector<Struct::BondData> & bondsData = getResidueBonds( residue.name() );
+			// const std::vector<Struct::BondData> & bondsData = getResidueBonds( residue.name() );
 
 			if ( previousResidue != &residue )
 			{
@@ -694,6 +694,7 @@ namespace VTX::IO::Util
 			const std::string firstAtomName	 = p_frame[ firstAtomIndex ].name();
 			const std::string secondAtomName = p_frame[ secondAtomIndex ].name();
 
+			/*
 			for ( ; bondDataCurrentIndex < bondsData.size(); bondDataCurrentIndex++ )
 			{
 				const Struct::BondData & bondData = bondsData[ bondDataCurrentIndex ];
@@ -708,15 +709,18 @@ namespace VTX::IO::Util
 					break;
 				}
 			}
+			*/
 		}
 
 		return res;
 	}
 
+	/*
 	const std::vector<Struct::BondData> & BondOrderGuessing::getResidueBonds( const std::string & p_residueSymbol )
 	{
 		throw NotImplementedException();
 		// return Util::App::Old::System::getResidueBonds( p_residueSymbol );
 	}
+	*/
 
 } // namespace VTX::IO::Util
