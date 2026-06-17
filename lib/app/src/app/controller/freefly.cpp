@@ -19,15 +19,15 @@ namespace VTX::App::Controller
 		using namespace Util;
 		auto & input = INPUT();
 
+		const float rotationSpeed = p_settings.rotationSpeed * Setting::ROTATION_SPEED_MULTIPLIER;
+
 		//  Rotation.
 		Vec2i rotation		= input.rotate();
 		Vec3f localRotation = VEC3F_ZERO;
 		if ( rotation.x || rotation.y )
 		{
 			localRotation = Vec3f(
-				-p_settings.rotationSpeed * rotation.y * ( p_settings.invertY ? -1.f : 1.f ),
-				-p_settings.rotationSpeed * rotation.x,
-				0.f
+				-rotationSpeed * rotation.y * ( p_settings.invertY ? -1.f : 1.f ), -rotationSpeed * rotation.x, 0.f
 			);
 		}
 
@@ -35,7 +35,7 @@ namespace VTX::App::Controller
 		float rollRotation = 0.f;
 		if ( rotationAlt.x || rotationAlt.y )
 		{
-			rollRotation = -p_settings.rotationSpeed * rotationAlt.x;
+			rollRotation = -rotationSpeed * rotationAlt.x;
 		}
 
 		// Translation.
@@ -48,7 +48,7 @@ namespace VTX::App::Controller
 		if ( translation != VEC3F_ZERO )
 		{
 			translation *= p_settings.translationSpeed;
-			translation *= p_deltaTime * 1e-3f;
+			translation *= p_deltaTime * _MS_TO_S;
 
 			if ( input.accelerate() )
 			{

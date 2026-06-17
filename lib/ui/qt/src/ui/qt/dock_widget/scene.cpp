@@ -63,6 +63,7 @@ namespace VTX::UI::QT::DockWidget
 		App::REG().on_construct<App::System::TrajectoryFullBuffer>().connect<&Scene::_onTrajectoryCreated>( this );
 
 		App::HUB().connect<Events::SelectionLocked, &Scene::_onSelectionLocked>( this );
+		App::HUB().connect<Events::TreeViewModeChanged, &Scene::_onTreeViewModeChanged>( this );
 
 		App::HUB().connect<App::Events::ThreadProgress, &Scene::_onThreadProgress>( this );
 		App::HUB().connect<App::Events::ThreadTerminated, &Scene::_onThreadTerminated>( this );
@@ -132,6 +133,17 @@ namespace VTX::UI::QT::DockWidget
 		_setSelectionEnabled( _treeRepresentationPresets, selectionEnabled );
 		_setSelectionEnabled( _treeCamera, selectionEnabled );
 	}
+
+	void Scene::_onTreeViewModeChanged( const Events::TreeViewModeChanged & p_event )
+	{
+		const auto viewMode = static_cast<Model::SystemModel::ViewMode>( p_event.viewMode );
+		for ( const auto & [ _, tree ] : _mapSystemTreeWidgets )
+		{
+			assert( tree != nullptr );
+			tree->setViewMode( viewMode );
+		}
+	}
+
 	void Scene::_onTrajectoryCreated( Registry &, Entity p_entity )
 	{
 		if ( not _mapSystemTreeWidgets.contains( p_entity ) )

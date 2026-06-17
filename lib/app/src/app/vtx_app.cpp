@@ -171,11 +171,11 @@ namespace VTX::App
 
 		const Entity defaultGraphicsConfig
 			= Helper::Preset::getByName<Renderer::GraphicsConfig>( "Default" )
-				  .value_or( ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::GraphicsConfig>() );
+				  .value_or( ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::GraphicsConfig>() );
 		ACTION().execute<Action::Scene::SetGraphicsConfig>( defaultGraphicsConfig );
 
 		const Entity defaultColorLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" ).value_or(
-			ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Color::Layout>()
+			ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::Color::Layout>()
 		);
 		ACTION().execute<Action::Scene::SetColorLayout>( defaultColorLayout );
 

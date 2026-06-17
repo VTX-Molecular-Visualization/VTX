@@ -7,6 +7,7 @@
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/pass/camera_updater.hpp"
+#include "app/scene/viewpoint.hpp"
 #include "app/services.hpp"
 #include <renderer/camera.hpp>
 #include <util/math/aabb.hpp>
@@ -131,9 +132,7 @@ namespace VTX::App::Action::Camera
 			const Quatf & p_rotation,
 			const float	  p_duration = ANIMATION_DURATION_DEFAULT_MS
 		)
-		{
-			execute( App::Controller::AnimationData { p_position, p_rotation }, p_duration );
-		}
+		{ execute( App::Controller::AnimationData { p_position, p_rotation }, p_duration ); }
 
 		void execute(
 			const App::Controller::AnimationData & p_end,
@@ -162,7 +161,7 @@ namespace VTX::App::Action::Camera
 			if constexpr ( I == E_CAMERA_INTERPOLATOR::LINEAR )
 			{
 				interpPositionFunc = Math::lerp;
-				interpRotationFunc = Math::lerp;
+				interpRotationFunc = Math::slerp;
 			}
 			else if constexpr ( I == E_CAMERA_INTERPOLATOR::EASE_IN_OUT )
 			{
@@ -184,6 +183,67 @@ namespace VTX::App::Action::Camera
 				interpRotationFunc
 			);
 		}
+	};
+
+	/**
+	 * @brief Default viewpoint name.
+	 */
+	constexpr std::string_view DEFAULT_VIEWPOINT_NAME = "Viewpoint";
+
+	/**
+	 * @brief Save current camera position and orientation as a viewpoint.
+	 */
+	struct SaveViewpoint
+	{
+		void execute();
+	};
+
+	/**
+	 * @brief Set viewpoint position.
+	 */
+	struct SetViewPointPosition
+	{
+		void execute( const Entity, const Vec3f & );
+	};
+
+	/**
+	 * @brief Set viewpoint rotation.
+	 */
+	struct SetViewPointRotation
+	{
+		void execute( const Entity, const Quatf & );
+	};
+
+	/**
+	 * @brief Update viewpoint from current camera.
+	 */
+	struct UpdateViewPointFromCamera
+	{
+		void execute( const Entity );
+	};
+
+	/**
+	 * @brief Rename a viewpoint.
+	 */
+	struct RenameViewPoint
+	{
+		void execute( const Entity, const std::string_view );
+	};
+
+	/**
+	 * @brief Delete a viewpoint.
+	 */
+	struct DeleteViewPoint
+	{
+		void execute( const Entity );
+	};
+
+	/**
+	 * @brief Move camera to a viewpoint.
+	 */
+	struct GoToViewPoint
+	{
+		void execute( const Entity );
 	};
 
 } // namespace VTX::App::Action::Camera

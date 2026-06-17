@@ -106,6 +106,10 @@ namespace VTX::UI::QT::Action
 		p_registry.registerAction(
 			Camera::resetAction(), handler( []() { App::ACTION().execute<App::Action::Camera::Reset>(); } )
 		);
+		p_registry.registerAction(
+			Camera::saveViewpointAction(),
+			handler( []() { App::ACTION().execute<App::Action::Camera::SaveViewpoint>(); } )
+		);
 
 		p_registry.registerAction(
 			Snapshot::snapshotAction(),

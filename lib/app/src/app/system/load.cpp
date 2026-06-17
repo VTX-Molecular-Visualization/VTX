@@ -3,8 +3,8 @@
 #include "app/action/camera.hpp"
 #include "app/ecs.hpp"
 #include "app/events.hpp"
+#include "app/generic/name.hpp"
 #include "app/helper/preset.hpp"
-#include "app/preset/name.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/deleted.hpp"
@@ -214,7 +214,7 @@ namespace VTX::App::System
 		// TODO: configure default representation in settings?
 		representation.presetAtoms
 			[ Helper::Preset::getByName<Renderer::Representation>( "Sticks and Ribbons" )
-				  .value_or( ECS::getFirstEntityOnlyWithComponents<Preset::Name, Renderer::Representation>() ) ]
+				  .value_or( ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::Representation>() ) ]
 			= Core::Struct::IndexRangeList( data.getAtomRange() );
 
 		// Trigger system load.

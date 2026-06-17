@@ -90,6 +90,17 @@ namespace VTX::Util::Math
 
 	inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
 
+	inline Quatf slerp( const Quatf & p_lhs, const Quatf & p_rhs, const float p_value )
+	{
+		Quatf rhs = p_rhs;
+		if ( dot( p_lhs, p_rhs ) < 0.f )
+		{
+			rhs = Quatf( -p_rhs.w, { -p_rhs.x, -p_rhs.y, -p_rhs.z } );
+		}
+
+		return normalize( ::glm::slerp( p_lhs, rhs, p_value ) );
+	}
+
 	template<int L, typename T>
 	inline vec<L, T> directionToEuler( vec<L, T> & p_direction )
 	{
@@ -107,6 +118,12 @@ namespace VTX::Util::Math
 	{
 		const Q value = pow2( sin( PI_2f * p_value ) );
 		return lerp( p_lhs, p_rhs, value );
+	}
+
+	inline Quatf easeInOutInterpolation( const Quatf & p_lhs, const Quatf & p_rhs, const float p_value )
+	{
+		const float value = pow2( sin( PI_2f * p_value ) );
+		return slerp( p_lhs, p_rhs, value );
 	}
 
 	// Morton utils.

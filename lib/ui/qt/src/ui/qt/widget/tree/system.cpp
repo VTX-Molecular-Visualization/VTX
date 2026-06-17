@@ -343,11 +343,16 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void System::_toggleViewMode()
 	{
-		auto &	   model	= getSystemModel();
+		const auto & model	= getSystemModel();
 		const auto nextMode = model.getViewMode() == Model::SystemModel::ViewMode::ByChain
 								  ? Model::SystemModel::ViewMode::ByCategory
 								  : Model::SystemModel::ViewMode::ByChain;
-		model.setViewMode( nextMode );
+		setViewMode( nextMode );
+	}
+
+	void System::setViewMode( const Model::SystemModel::ViewMode p_mode )
+	{
+		getSystemModel().setViewMode( p_mode );
 		_expandRoot();
 	}
 

@@ -1,5 +1,6 @@
 #include "app/action/camera.hpp"
 #include "app/action/action_manager.hpp"
+#include "app/generic/name.hpp"
 #include "app/helper/system.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/system/selection.hpp"
@@ -94,14 +95,13 @@ namespace VTX::App::Action::Camera
 		Util::Math::AABB aabb;
 
 		// From selection.
-		auto view = REG()
-						.view<Core::Struct::Topology, Util::Math::AABB, Util::Math::Transform, System::Selection>();
+		auto view = REG().view<Core::Struct::Topology, Util::Math::AABB, Util::Math::Transform, System::Selection>();
 
 		if ( view.size_hint() )
 		{
 			view.each(
 				[ & ](
-					const Entity &			   p_e,
+					const Entity &				   p_e,
 					const Core::Struct::Topology & p_data,
 					const Util::Math::AABB &	   p_aabb,
 					const Util::Math::Transform &  p_transform,
@@ -165,4 +165,77 @@ namespace VTX::App::Action::Camera
 		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>( p_targetPosition, p_targetRotation, p_duration );
 	}
 
+	void SaveViewpoint::execute()
+	{
+		auto & reg = REG();
+
+		const auto [ _, camera, transform ]
+			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+
+		Entity e = reg.create();
+		reg.emplace<Util::Math::Transform>( e, transform );
+		reg.emplace<App::Generic::Name>( e, DEFAULT_VIEWPOINT_NAME.data() );
+		reg.emplace<Scene::ViewPoint>( e, camera.target );
+	}
+
+	void SetViewPointPosition::execute( const Entity p_viewpoint, const Vec3f & p_position )
+	{
+		REG().patch<Util::Math::Transform>(
+			p_viewpoint,
+			[ &p_position ]( Util::Math::Transform & p_transform ) { p_transform.setPosition( p_position ); }
+		);
+	}
+
+	void SetViewPointRotation::execute( const Entity p_viewpoint, const Quatf & p_rotation )
+	{
+		REG().patch<Util::Math::Transform>(
+			p_viewpoint,
+			[ &p_rotation ]( Util::Math::Transform & p_transform ) { p_transform.setRotation( p_rotation ); }
+		);
+	}
+
+	void UpdateViewPointFromCamera::execute( const Entity p_viewpoint )
+	{
+		const auto [ _, camera, transform ]
+			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+
+		REG().patch<Util::Math::Transform>(
+			p_viewpoint, [ &transform ]( Util::Math::Transform & p_transform ) { p_transform = transform; }
+		);
+		REG().patch<Scene::ViewPoint>(
+			p_viewpoint, [ &camera ]( Scene::ViewPoint & p_viewpointData ) { p_viewpointData.target = camera.target; }
+		);
+	}
+
+	void RenameViewPoint::execute( const Entity p_viewpoint, const std::string_view p_name )
+	{
+		auto & reg = REG();
+
+		const std::string newName { p_name };
+		auto &			  name = reg.get<App::Generic::Name>( p_viewpoint ).name;
+		if ( name == newName )
+		{
+			return;
+		}
+
+		name = newName;
+		HUB().trigger<Events::ViewPointRenamed>( p_viewpoint, name );
+	}
+
+	void DeleteViewPoint::execute( const Entity p_viewpoint ) { REG().destroy( p_viewpoint ); }
+
+	void GoToViewPoint::execute( const Entity p_viewpoint )
+	{
+		const auto & transform = REG().get<Util::Math::Transform>( p_viewpoint );
+		const auto & viewpoint = REG().get<Scene::ViewPoint>( p_viewpoint );
+
+		const auto cameraEntity = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
+		REG().patch<Renderer::Camera>(
+			cameraEntity, [ &viewpoint ]( Renderer::Camera & p_camera ) { p_camera.target = viewpoint.target; }
+		);
+
+		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(
+			transform.getPosition(), transform.getRotation()
+		);
+	}
 } // namespace VTX::App::Action::Camera

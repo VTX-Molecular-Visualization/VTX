@@ -1,10 +1,13 @@
 #ifndef __VTX_UI_QT_WIDGET_TREE_BASE_TREE_PRESETS__
 #define __VTX_UI_QT_WIDGET_TREE_BASE_TREE_PRESETS__
 
+#include "ui/qt/services.hpp"
+#include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/tree/base_tree.hpp"
 #include <QTreeWidget>
 #include <app/action/preset.hpp>
-#include <app/preset/name.hpp>
+#include <app/generic/name.hpp>
 #include <app/services.hpp>
 #include <util/event_hub.hpp>
 
@@ -69,7 +72,7 @@ namespace VTX::UI::QT::Widget::Tree
 		{
 			assert( not _entityToItemMap.contains( p_e ) );
 
-			const auto &			name = p_r.get<App::Preset::Name>( p_e );
+			const auto &			name = p_r.get<App::Generic::Name>( p_e );
 			QTreeWidgetItem * const presetItem
 				= new QTreeWidgetItem( QStringList() << QString::fromStdString( name.name ) );
 			presetItem->setData( 0, Qt::UserRole, QVariant::fromValue( p_e ) );

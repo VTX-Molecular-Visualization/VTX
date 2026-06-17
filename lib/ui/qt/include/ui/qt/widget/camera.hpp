@@ -8,6 +8,9 @@
 
 namespace VTX::UI::QT::Widget
 {
+	/**
+	 * @brief Display camera settings.
+	 */
 	class Camera : public QGroupBox
 	{
 	  public:

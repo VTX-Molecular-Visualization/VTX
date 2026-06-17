@@ -1,11 +1,17 @@
 #ifndef __VTX_UI_QT_WIDGET_TREE_CAMERA__
 #define __VTX_UI_QT_WIDGET_TREE_CAMERA__
 
-#include "ui/qt/services.hpp"
-#include "ui/qt/style/icons.hpp"
-#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/tree/base_tree.hpp"
-#include <QTreeWidget>
+#include <unordered_map>
+#include <util/ecs.hpp>
+#include <util/event_hub.hpp>
+
+class QTreeWidgetItem;
+
+namespace VTX::App::Events
+{
+	struct ViewPointRenamed;
+} // namespace VTX::App::Events
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -15,16 +21,43 @@ namespace VTX::UI::QT::Widget::Tree
 	class Camera : public Widget::Tree::BaseTree<Camera>
 	{
 	  public:
-		Camera( const Entity p_entity, QWidget * p_parent ) : BaseTree( p_parent ), _entity( p_entity )
-		{
-			setExpandsOnDoubleClick( true );
-
-			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Camera" ) );
-			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::CAMERA ) );
-		}
+		/**
+		 * @brief Constructor.
+		 */
+		Camera( const Entity p_entity, QWidget * p_parent );
+		~Camera() override;
 
 	  private:
+		/**
+		 * @brief Camera entitie.
+		 */
 		const Entity _entity;
+
+		/**
+		 * @brief Map viewpoint entities to tree items.
+		 */
+		std::unordered_map<Entity, QTreeWidgetItem *> _entityToItemMap;
+
+		/**
+		 * @brief Connections to App.
+		 */
+		Util::EventHub::Connection _onConstructConnection;
+		Util::EventHub::Connection _onDestroyConnection;
+
+		/**
+		 * @brief Handle viewpoint addition to update the tree.
+		 */
+		void _addViewPoint( Registry &, Entity );
+
+		/**
+		 * @brief Handle viewpoint deletion to update the tree.
+		 */
+		void _removeViewPoint( Registry &, Entity );
+
+		/**
+		 * @brief Handle viewpoint rename to update the tree.
+		 */
+		void _onViewPointRenamed( const App::Events::ViewPointRenamed & p_event );
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

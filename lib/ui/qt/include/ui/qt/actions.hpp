@@ -120,12 +120,13 @@ namespace VTX::UI::QT
 
 		namespace Camera
 		{
-			inline constexpr std::string_view ORTHOGRAPHIC = "camera.orthographic";
-			inline constexpr std::string_view PERSPECTIVE  = "camera.perspective";
-			inline constexpr std::string_view TRACKBALL	   = "camera.trackball";
-			inline constexpr std::string_view FREEFLY	   = "camera.freefly";
-			inline constexpr std::string_view ORIENT	   = "camera.orient";
-			inline constexpr std::string_view RESET		   = "camera.reset";
+			inline constexpr std::string_view ORTHOGRAPHIC	 = "camera.orthographic";
+			inline constexpr std::string_view PERSPECTIVE	 = "camera.perspective";
+			inline constexpr std::string_view TRACKBALL		 = "camera.trackball";
+			inline constexpr std::string_view FREEFLY		 = "camera.freefly";
+			inline constexpr std::string_view ORIENT		 = "camera.orient";
+			inline constexpr std::string_view RESET			 = "camera.reset";
+			inline constexpr std::string_view SAVE_VIEWPOINT = "camera.saveViewpoint";
 
 			inline App::UI::DescAction orthographicAction()
 			{
@@ -192,6 +193,16 @@ namespace VTX::UI::QT
 				action.name = "Reset";
 				action.tip	= "Reset camera";
 				action.icon = Style::Icons::CAMERA_RESET;
+				return action;
+			}
+
+			inline App::UI::DescAction saveViewpointAction()
+			{
+				App::UI::DescAction action;
+				action.key	= SAVE_VIEWPOINT;
+				action.name = "Save viewpoint";
+				action.tip	= "Save current camera position and orientation as a viewpoint";
+				action.icon = Style::Icons::CAMERA_SAVE_VIEWPOINT;
 				return action;
 			}
 		} // namespace Camera

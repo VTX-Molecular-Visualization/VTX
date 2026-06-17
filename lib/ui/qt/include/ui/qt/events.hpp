@@ -19,6 +19,11 @@ namespace VTX::UI::QT::Events
 		int granularity;
 	};
 
+	struct TreeViewModeChanged
+	{
+		int viewMode;
+	};
+
 	struct ThemeChanged
 	{
 		int theme;

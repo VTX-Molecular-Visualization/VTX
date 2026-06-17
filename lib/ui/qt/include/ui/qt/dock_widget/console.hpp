@@ -5,8 +5,8 @@
 #include "ui/qt/widget/command_launcher.hpp"
 #include <QColor>
 #include <QDockWidget>
-#include <QPlainTextEdit>
 #include <QMenu>
+#include <QTextBrowser>
 #include <QVBoxLayout>
 #include <app/vtx_app.hpp>
 #include <util/enum.hpp>
@@ -51,7 +51,7 @@ namespace VTX::UI::QT::DockWidget
 		/**
 		 * @brief Display logs.
 		 */
-		QPointer<QPlainTextEdit> _textEdit = nullptr;
+		QPointer<QTextBrowser> _textEdit = nullptr;
 
 		/**
 		 * @brief Python command launcher.

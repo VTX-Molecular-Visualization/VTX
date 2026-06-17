@@ -74,7 +74,11 @@ namespace VTX::UI::QT::DockWidget
 			_comboBoxTreeViewMode,
 			&QComboBox::currentIndexChanged,
 			[ this ]( const int )
-			{ SETTINGS().setValue( SETTING_KEY_TREE_VIEW_MODE, _comboBoxTreeViewMode->currentData().toInt() ); }
+			{
+				const int viewMode = _comboBoxTreeViewMode->currentData().toInt();
+				SETTINGS().setValue( SETTING_KEY_TREE_VIEW_MODE, viewMode );
+				App::HUB().trigger<Events::TreeViewModeChanged>( viewMode );
+			}
 		);
 
 		layoutTree->addWidget( _comboBoxTreeViewMode );

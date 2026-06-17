@@ -1,5 +1,8 @@
 #include "ui/qt/widget/camera.hpp"
+#include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
+#include "ui/qt/services.hpp"
+#include "ui/qt/widget/actionable_push_button.hpp"
 #include "ui/qt/widget/expandable_tool_bar.hpp"
 #include <QLabel>
 #include <app/action/action_manager.hpp>
@@ -9,15 +12,10 @@
 
 namespace VTX::UI::QT::Widget
 {
-	Camera::Camera( const Entity p_entity, QWidget * p_parent ) :
-		QGroupBox( "Camera", p_parent ), _entity( p_entity )
+	Camera::Camera( const Entity p_entity, QWidget * p_parent ) : QGroupBox( "Camera", p_parent ), _entity( p_entity )
 	{
 		// Layout.
 		auto * layout = new QVBoxLayout( this );
-
-		// Transform widget.
-		_transform = new Transform( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
-		layout->addWidget( _transform );
 
 		// Projection.
 		auto * labelProjection	 = new QLabel( "Projection", this );
@@ -26,14 +24,6 @@ namespace VTX::UI::QT::Widget
 		toolbarProjection->addAction( Action::Camera::ORTHOGRAPHIC );
 		layout->addWidget( labelProjection );
 		layout->addWidget( toolbarProjection );
-
-		// Controller.
-		auto * labelController	 = new QLabel( "Controller", this );
-		auto * toolbarController = new ExpandableToolBar( this );
-		toolbarController->addAction( Action::Camera::TRACKBALL );
-		toolbarController->addAction( Action::Camera::FREEFLY );
-		layout->addWidget( labelController );
-		layout->addWidget( toolbarController );
 
 		// Fov.
 		auto * labelFov = new QLabel( "Field of view", this );
@@ -58,6 +48,15 @@ namespace VTX::UI::QT::Widget
 		_sliderFar->setMaximum( Renderer::FAR_CLIP_MAX );
 		layout->addWidget( labelFar );
 		layout->addWidget( _sliderFar );
+
+		// Transform widget.
+		_transform = new Transform( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
+		layout->addWidget( _transform );
+
+		// Save viewpoint button.
+		auto * buttonSaveViewpoint
+			= new ActionablePushButton( UI_ACTIONS().getAction( Action::Camera::SAVE_VIEWPOINT ), this );
+		layout->addWidget( buttonSaveViewpoint );
 
 		// Connect.
 		connect(

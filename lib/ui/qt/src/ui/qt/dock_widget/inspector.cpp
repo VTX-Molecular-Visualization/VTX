@@ -6,6 +6,7 @@
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/camera.hpp"
+#include "ui/qt/widget/controller.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include "ui/qt/widget/selection.hpp"
 #include <QFontDatabase>
@@ -44,9 +45,9 @@ namespace VTX::UI::QT::DockWidget
 
 				const QModelIndex index
 					= p_selection.indexes().isEmpty() ? QModelIndex() : p_selection.indexes().first();
-				const QVariant		   data		 = index.data( Qt::UserRole );
-				const Entity preset	 = data.value<Entity>();
-				const bool			   hasPreset = data.isValid();
+				const QVariant data		 = index.data( Qt::UserRole );
+				const Entity   preset	 = data.value<Entity>();
+				const bool	   hasPreset = data.isValid();
 
 				// Insert widget.
 				switch ( p_group )
@@ -54,9 +55,19 @@ namespace VTX::UI::QT::DockWidget
 				case E_SELECTION_GROUP::CAMERA:
 				{
 					_clear();
-					const auto [ ent, _ ] = App::ECS::getFirstEntityWithComponents<Renderer::Camera>();
-					auto * cameraWidget	  = new Widget::Camera( ent, this );
-					_layout->insertWidget( _layout->indexOf( _filler ), cameraWidget );
+					if ( hasPreset )
+					{
+						_viewPointWidget = new Widget::ViewPoint( preset, this );
+						_layout->insertWidget( _layout->indexOf( _filler ), _viewPointWidget );
+					}
+					else
+					{
+						const auto [ ent, _ ]	= App::ECS::getFirstEntityWithComponents<Renderer::Camera>();
+						auto * cameraWidget		= new Widget::Camera( ent, this );
+						auto * controllerWidget = new Widget::Controller( ent, this );
+						_layout->insertWidget( _layout->indexOf( _filler ), cameraWidget );
+						_layout->insertWidget( _layout->indexOf( _filler ), controllerWidget );
+					}
 					break;
 				}
 				case E_SELECTION_GROUP::GRAPHICS_CONFIG:
@@ -174,6 +185,10 @@ namespace VTX::UI::QT::DockWidget
 				if ( w == _representationWidget )
 				{
 					_representationWidget = nullptr;
+				}
+				if ( w == _viewPointWidget )
+				{
+					_viewPointWidget = nullptr;
 				}
 				_layout->removeWidget( w );
 				w->deleteLater();

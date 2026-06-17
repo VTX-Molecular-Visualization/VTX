@@ -20,9 +20,16 @@ namespace VTX::App::Setting
 	 */
 	constexpr E_CONTROLLER CONTROLLER_DEFAULT = E_CONTROLLER::TRACKBALL;
 
+	constexpr bool INVERT_Y_DEFAULT = false;
+
 	constexpr float TRANSLATION_SPEED_DEFAULT = 150.f;
 	constexpr float TRANSLATION_SPEED_MIN	  = 50.f;
 	constexpr float TRANSLATION_SPEED_MAX	  = 300.f;
+
+	constexpr float ROTATION_SPEED_DEFAULT	  = 0.5f;
+	constexpr float ROTATION_SPEED_MIN		  = 0.1f;
+	constexpr float ROTATION_SPEED_MAX		  = 1.f;
+	constexpr float ROTATION_SPEED_MULTIPLIER = 0.01f;
 
 	constexpr float ACCELERATION_FACTOR_DEFAULT = 2.f;
 	constexpr float ACCELERATION_FACTOR_MIN		= 1.f;
@@ -31,12 +38,6 @@ namespace VTX::App::Setting
 	constexpr float DECELERATION_FACTOR_DEFAULT = 10.f;
 	constexpr float DECELERATION_FACTOR_MIN		= 1.f;
 	constexpr float DECELERATION_FACTOR_MAX		= 50.f;
-
-	constexpr float ROTATION_SPEED_DEFAULT = 0.005f;
-	constexpr float ROTATION_SPEED_MIN	   = 0.001f;
-	constexpr float ROTATION_SPEED_MAX	   = 0.01f;
-
-	constexpr bool INVERT_Y_DEFAULT = false;
 
 	constexpr bool ELASTICITY_ACTIVE_DEFAULT = true;
 
@@ -49,14 +50,18 @@ namespace VTX::App::Setting
 	 */
 	struct Controller
 	{
-		E_CONTROLLER current			= CONTROLLER_DEFAULT;
-		float		 translationSpeed	= TRANSLATION_SPEED_DEFAULT;
-		float		 accelerationFactor = ACCELERATION_FACTOR_DEFAULT;
-		float		 decelerationFactor = DECELERATION_FACTOR_DEFAULT;
-		float		 rotationSpeed		= ROTATION_SPEED_DEFAULT;
-		bool		 invertY			= INVERT_Y_DEFAULT;
-		bool		 elasticityActive	= ELASTICITY_ACTIVE_DEFAULT;
-		float		 elasticityFactor	= ELASTICITY_FACTOR_DEFAULT;
+		E_CONTROLLER current = CONTROLLER_DEFAULT;
+
+		bool invertY = INVERT_Y_DEFAULT;
+
+		float translationSpeed = TRANSLATION_SPEED_DEFAULT;
+		float rotationSpeed	   = ROTATION_SPEED_DEFAULT;
+
+		float accelerationFactor = ACCELERATION_FACTOR_DEFAULT;
+		float decelerationFactor = DECELERATION_FACTOR_DEFAULT;
+
+		bool  elasticityActive = ELASTICITY_ACTIVE_DEFAULT;
+		float elasticityFactor = ELASTICITY_FACTOR_DEFAULT;
 	};
 
 } // namespace VTX::App::Setting

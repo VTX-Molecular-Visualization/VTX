@@ -134,6 +134,12 @@ namespace VTX::App::Events
 		std::string version;
 	};
 
+	struct ViewPointRenamed
+	{
+		Entity		viewpoint;
+		std::string name;
+	};
+
 } // namespace VTX::App::Events
 
 #endif

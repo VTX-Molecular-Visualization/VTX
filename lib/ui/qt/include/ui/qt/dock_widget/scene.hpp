@@ -88,6 +88,11 @@ namespace VTX::UI::QT::DockWidget
 		void _onSelectionLocked( const Events::SelectionLocked & );
 
 		/**
+		 * @brief Update current system trees display mode.
+		 */
+		void _onTreeViewModeChanged( const Events::TreeViewModeChanged & );
+
+		/**
 		 * @brief Called when a trajectory is added to any system.
 		 */
 		void _onTrajectoryCreated( Registry &, Entity p_entity );

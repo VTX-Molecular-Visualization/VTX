@@ -2,6 +2,7 @@
 #define __VTX_APP_CONSTANTS__
 
 #include <string>
+#include <string_view>
 #include <util/types.hpp>
 
 namespace VTX::App
@@ -22,6 +23,10 @@ namespace VTX::App
 	constexpr std::string_view URL_WEBSITE		 = "https://vtx.drugdesign.fr";
 	constexpr std::string_view URL_DOCUMENTATION = "https://vtx.drugdesign.fr/doc";
 	constexpr std::string_view URL_REPORT		 = "https://github.com/VTX-Molecular-Visualization/VTX/issues";
+
+	// TODO: move.
+	constexpr std::string_view LOG_LINK_REGEX  = R"(//file=\[([^\]]+)\])";
+	constexpr std::string_view LOG_LINK_FORMAT = "//file=[{}]";
 
 } // namespace VTX::App
 
