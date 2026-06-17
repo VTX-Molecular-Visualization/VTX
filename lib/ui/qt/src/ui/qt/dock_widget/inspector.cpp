@@ -6,6 +6,7 @@
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/camera.hpp"
+#include "ui/qt/widget/controller.hpp"
 #include "ui/qt/widget/main_window.hpp"
 #include "ui/qt/widget/selection.hpp"
 #include <QFontDatabase>
@@ -61,9 +62,11 @@ namespace VTX::UI::QT::DockWidget
 					}
 					else
 					{
-						const auto [ ent, _ ] = App::ECS::getFirstEntityWithComponents<Renderer::Camera>();
-						auto * cameraWidget	  = new Widget::Camera( ent, this );
+						const auto [ ent, _ ]	= App::ECS::getFirstEntityWithComponents<Renderer::Camera>();
+						auto * cameraWidget		= new Widget::Camera( ent, this );
+						auto * controllerWidget = new Widget::Controller( ent, this );
 						_layout->insertWidget( _layout->indexOf( _filler ), cameraWidget );
+						_layout->insertWidget( _layout->indexOf( _filler ), controllerWidget );
 					}
 					break;
 				}

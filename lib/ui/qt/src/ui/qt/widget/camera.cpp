@@ -25,14 +25,6 @@ namespace VTX::UI::QT::Widget
 		layout->addWidget( labelProjection );
 		layout->addWidget( toolbarProjection );
 
-		// Controller.
-		auto * labelController	 = new QLabel( "Controller", this );
-		auto * toolbarController = new ExpandableToolBar( this );
-		toolbarController->addAction( Action::Camera::TRACKBALL );
-		toolbarController->addAction( Action::Camera::FREEFLY );
-		layout->addWidget( labelController );
-		layout->addWidget( toolbarController );
-
 		// Fov.
 		auto * labelFov = new QLabel( "Field of view", this );
 		_sliderFov		= new EditableSlider( Qt::Orientation::Horizontal, this );
