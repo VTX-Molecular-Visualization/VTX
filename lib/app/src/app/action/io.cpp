@@ -30,18 +30,17 @@ namespace VTX::App::Action::IO
 		std::string extension = p_path.extension().string();
 		if ( extension == ".py" || extension == ".vtx" )
 		{
-		{
-			ACTION().execute<RunPythonScript>( p_path );
-		}
+			{
+				ACTION().execute<RunPythonScript>( p_path );
+			}
 		}
 		else
 		{
-		{
-			ACTION().execute<LoadSystem>( p_path );
-		}
+			{
+				ACTION().execute<LoadSystem>( p_path );
+			}
 		}
 	}
-
 
 	struct _SystemIo
 	{
@@ -50,15 +49,13 @@ namespace VTX::App::Action::IO
 		std::optional<System::SystemExtractor> extractor;
 
 		inline void wait() noexcept
-
-		inline void wait() noexcept
 		{
 			this->extractorCreation.wait();
 			if ( this->extractor )
 			{
-			{
-				this->extractor->wait();
-			}
+				{
+					this->extractor->wait();
+				}
 			}
 		}
 
@@ -68,7 +65,6 @@ namespace VTX::App::Action::IO
 			extractor.value()( thrData.stopToken, thrData.thrRef );
 		}
 	};
-
 
 	void _SystemIoDel::operator()( _SystemIo * p_ ) noexcept { delete p_; }
 
@@ -84,7 +80,6 @@ namespace VTX::App::Action::IO
 		_data->start_extraction();
 	}
 
-
 	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
 	{
 		_data->extractor = System::SystemExtractor( std::move( p_path ), std::move( p_buffer ) );
@@ -92,7 +87,6 @@ namespace VTX::App::Action::IO
 
 		_data->start_extraction();
 	}
-
 
 	void LoadSystem::wait() noexcept { _data->wait(); }
 
@@ -107,9 +101,9 @@ namespace VTX::App::Action::IO
 			writerSync.wait();
 			if ( writer )
 			{
-			{
-				writer->wait();
-			}
+				{
+					writer->wait();
+				}
 			}
 		}
 	};
@@ -179,10 +173,8 @@ namespace VTX::App::Action::IO
 		_data->start_extraction();
 	}
 
-
 	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e )
 	{ execute( FilePath( p_path ), p_e ); }
-
 
 	void AssociateTrajectory::wait() noexcept { _data->wait(); }
 

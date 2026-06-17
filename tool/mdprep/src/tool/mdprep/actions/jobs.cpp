@@ -1,6 +1,7 @@
 #include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <app/action/visibility.hpp>
+#include <app/constants.hpp>
 #include <app/services.hpp>
 #include <app/system/visibility.hpp>
 #include <latch>
@@ -51,6 +52,10 @@ namespace VTX::Tool::Mdprep::Actions
 			{
 				App::ACTION().execute<App::Action::Visibility::HideEverything>();
 				App::ACTION().execute<App::Action::IO::LoadSystem>( p_instr.editconf2.out );
+				VTX_INFO(
+					"System written at : {}",
+					fmt::format( fmt::runtime( std::string( App::LOG_LINK_FORMAT ) ), p_instr.rootDir.string() )
+				);
 			}
 			else
 			{
@@ -102,7 +107,7 @@ namespace VTX::Tool::Mdprep::Actions
 		{
 			VTX::FilePath				  dest { p_gmxIntructions.rootDir / "test.pdb" };
 			App::Action::IO::WriteVisible a;
-			App::ACTION().execute( a, std::move( dest ) );
+			App::ACTION().execute( a, VTX::FilePath( dest ) );
 
 			backends::Gromacs::SystemTester tester(
 				dest,
