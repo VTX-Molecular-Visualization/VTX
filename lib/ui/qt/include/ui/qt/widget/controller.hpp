@@ -4,6 +4,7 @@
 #include "ui/qt/widget/editable_slider.hpp"
 #include <QCheckBox>
 #include <QGroupBox>
+#include <QLabel>
 #include <QPointer>
 #include <app/ecs.hpp>
 
@@ -23,6 +24,7 @@ namespace VTX::UI::QT::Widget
 
 		QPointer<QCheckBox>		 _checkBoxInvertY;
 		QPointer<QCheckBox>		 _checkBoxElasticityActive;
+		QPointer<QLabel>		 _labelElasticityFactor;
 		QPointer<EditableSlider> _sliderTranslationSpeed;
 		QPointer<EditableSlider> _sliderRotationSpeed;
 		QPointer<EditableSlider> _sliderAccelerationFactor;

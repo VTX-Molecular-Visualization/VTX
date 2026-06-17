@@ -24,7 +24,7 @@ namespace VTX::UI::QT::Widget
 		layout->addWidget( labelMode );
 		layout->addWidget( toolbarMode );
 
-		_checkBoxInvertY = new QCheckBox( "Invert Y", this );
+		_checkBoxInvertY = new QCheckBox( "Invert mouse Y", this );
 		layout->addWidget( _checkBoxInvertY );
 
 		auto * labelTranslationSpeed = new QLabel( "Translation speed", this );
@@ -66,13 +66,13 @@ namespace VTX::UI::QT::Widget
 		_checkBoxElasticityActive = new QCheckBox( "Elasticity", this );
 		layout->addWidget( _checkBoxElasticityActive );
 
-		auto * labelElasticityFactor = new QLabel( "Elasticity factor", this );
-		_sliderElasticityFactor		 = new EditableSlider( Qt::Orientation::Horizontal, this );
+		_labelElasticityFactor	= new QLabel( "Elasticity factor", this );
+		_sliderElasticityFactor = new EditableSlider( Qt::Orientation::Horizontal, this );
 		_sliderElasticityFactor->setMinimum( App::Setting::ELASTICITY_FACTOR_MIN );
 		_sliderElasticityFactor->setMaximum( App::Setting::ELASTICITY_FACTOR_MAX );
 		_sliderElasticityFactor->setStep( 0.1f );
 		_sliderElasticityFactor->setDecimals( 1 );
-		layout->addWidget( labelElasticityFactor );
+		layout->addWidget( _labelElasticityFactor );
 		layout->addWidget( _sliderElasticityFactor );
 
 		connect(
@@ -141,5 +141,10 @@ namespace VTX::UI::QT::Widget
 		_sliderAccelerationFactor->setValue( controller.accelerationFactor );
 		_sliderDecelerationFactor->setValue( controller.decelerationFactor );
 		_sliderElasticityFactor->setValue( controller.elasticityFactor );
+
+		const bool displayElasticity = controller.current == App::Setting::E_CONTROLLER::TRACKBALL;
+		_checkBoxElasticityActive->setVisible( displayElasticity );
+		_labelElasticityFactor->setVisible( displayElasticity );
+		_sliderElasticityFactor->setVisible( displayElasticity );
 	}
 } // namespace VTX::UI::QT::Widget
