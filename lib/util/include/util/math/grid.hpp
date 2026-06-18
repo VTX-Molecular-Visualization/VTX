@@ -23,6 +23,8 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Constructors.
 		 */
+		Grid() = default;
+
 		Grid( const Vec3f & p_worldOrigin, const Vec3f & p_cellSize, const Vec3u & p_size ) :
 			_worldOrigin( p_worldOrigin ), _cellSize( p_cellSize ), _size( p_size )
 		{

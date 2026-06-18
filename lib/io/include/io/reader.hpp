@@ -38,13 +38,16 @@ namespace VTX::IO
 
 		size_t frameCount() const;
 
+		/**
+		 * @brief Read topology and metadata.
+		 */
 		void get( const VTX::Core::ChemDB::Category::Dictionary &, VTX::Core::Struct::Topology &, Metadata & );
 
 		/**
-		 * @brief Always return Frame 0's positions.
+		 * @brief Read position-related data.
 		 */
-		void get( VTX::Core::Struct::Frame & );
-		void get( const FrameIndex &, VTX::Core::Struct::Frame & );
+		void get( VTX::Core::Struct::Frame &, const FrameIndex = 0 );
+
 		void set( VTX::Util::StopToken & ) noexcept;
 
 	  private:

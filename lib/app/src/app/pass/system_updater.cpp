@@ -8,13 +8,33 @@
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
+#include <core/chemdb/atom.hpp>
 #include <renderer/renderer.hpp>
+#include <span>
 #include <util/chrono.hpp>
+#include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Pass
 {
+	namespace
+	{
+		void _patchAABB( const Entity & p_entity, const std::span<const Vec3f> p_positions ) noexcept
+		{
+			REG().patch<Util::Math::AABB>(
+				p_entity,
+				[ p_positions ]( Util::Math::AABB & p_aabb )
+				{
+					p_aabb.invalidate();
+					for ( const Vec3f & atomPosition : p_positions )
+					{
+						p_aabb.extend( atomPosition, Core::ChemDB::Atom::VDW_RADIUS_MIN );
+					}
+				}
+			);
+		}
+	} // namespace
 
 	SystemUpdater::SystemUpdater()
 	{
@@ -139,6 +159,7 @@ namespace VTX::App::Pass
 	{
 		assert( not _systems.contains( p_event.system ) );
 
+		_patchAABB( p_event.system, System::getCurrentAtomPositions( p_event.system ) );
 		_systemAdded.emplace_back( p_event.system );
 	}
 
@@ -146,6 +167,7 @@ namespace VTX::App::Pass
 	{
 		assert( _systems.contains( p_event.system ) );
 
+		_patchAABB( p_event.system, p_event.frame );
 		RENDERER().setSystemPositions( _systems[ p_event.system ], p_event.frame );
 	}
 

@@ -7,14 +7,12 @@
 #include "app/helper/preset.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
-#include "app/system/deleted.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/trajectory_preparation.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
 #include "app/uid/uid_manager.hpp"
-#include <core/chemdb/atom.hpp>
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
 #include <renderer/representation.hpp>
@@ -71,9 +69,7 @@ namespace VTX::App::System
 
 	SystemExtractor::SystemExtractor( FilePath p_path, std::string && p_buffer, IO::READER_OPTION p_options ) :
 		SystemExtractor( std::move( p_path ), p_options )
-	{
-		_attributesPtr->data.buffer = std::move( p_buffer );
-	}
+	{ _attributesPtr->data.buffer = std::move( p_buffer ); }
 
 	SystemExtractor::SystemExtractor( Entity p_entity, FilePath p_path, IO::READER_OPTION p_options ) :
 		SystemExtractor( std::move( p_path ), p_options )
@@ -158,19 +154,6 @@ namespace VTX::App::System
 			std::move( p_data.trajectoryData )
 		);
 		startAsyncTrajectoryWork( p_entity, p_data );
-
-		std::span<const Vec3f> firstFrame = getCurrentAtomPositions( p_entity );
-		// AABB (trigger update function for scene aabb).
-		REG().patch<Util::Math::AABB>(
-			p_entity,
-			[ &firstFrame ]( Util::Math::AABB & p_aabb )
-			{
-				for ( auto & it_atomPos : firstFrame )
-				{
-					p_aabb.extend( it_atomPos, Core::ChemDB::Atom::VDW_RADIUS_MIN );
-				}
-			}
-		);
 	}
 
 	void create( PendingSystem & p_data ) noexcept
@@ -189,7 +172,6 @@ namespace VTX::App::System
 		auto & selection	  = reg.emplace<System::Selection>( p_entity );
 		auto & representation = reg.emplace<System::Representation>( p_entity );
 		auto & color		  = reg.emplace<System::Color>( p_entity );
-		auto & deleted		  = reg.emplace<System::Deleted>( p_entity );
 
 		// UIDs: get from UID manager.
 		auto & uidManager = App::UID();
@@ -203,9 +185,6 @@ namespace VTX::App::System
 
 		// Selection: nothing selected.
 		selection.atoms = Util::Math::BitSet( data.getAtomCount() );
-
-		// Deleted: nothing deleted.
-		deleted.atoms = {};
 
 		// Color: set default color scheme.
 		color.colorSchemeAtoms[ Renderer::E_COLOR_SCHEME::ATOM ] = Core::Struct::IndexRangeList( data.getAtomRange() );

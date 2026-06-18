@@ -292,7 +292,7 @@ namespace
 			for ( size_t it_fc = 0; it_fc < frameCount; it_fc++ )
 			{
 				traj.frames.push_back( {} );
-				systemReader.get( it_fc, traj.frames.back() );
+				systemReader.get( traj.frames.back(), it_fc );
 			}
 		}
 		size_t atomCount  = topology.getAtomCount();

@@ -852,9 +852,7 @@ namespace VTX::IO
 	void SystemReader::get( const Category::Dictionary & p_d, Topology & p_t, Metadata & p_m )
 	{ _impl->get( p_d, p_t, p_m ); }
 
-	void SystemReader::get( const FrameIndex & p_i, Frame & p_ ) { _impl->get( p_i, p_ ); }
-
-	void SystemReader::get( Frame & p_ ) { _impl->get( 0, p_ ); }
+	void SystemReader::get( Frame & p_f, const FrameIndex p_i ) { _impl->get( p_i, p_f ); }
 
 	void SystemReader::set( StopToken & p_ ) noexcept { _impl->set( p_ ); }
 
