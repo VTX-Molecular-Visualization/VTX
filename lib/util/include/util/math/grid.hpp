@@ -160,6 +160,17 @@ namespace VTX::Util::Math
 		inline size_t getCellCount() const { return _data.size(); }
 
 		/**
+		 * @brief Iterators.
+		 */
+		auto begin() { return _data.begin(); }
+
+		auto end() { return _data.end(); }
+
+		auto begin() const { return _data.begin(); }
+
+		auto end() const { return _data.end(); }
+
+		/**
 		 * @brief Get the grid size derived from occupied cells bounds.
 		 */
 		Vec3u getSize() const

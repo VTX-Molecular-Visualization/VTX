@@ -79,9 +79,8 @@ namespace VTX::IO::Util
 
 	  public:
 		static void recomputeBondOrders(
-			VTX::Core::Struct::Topology &	  p_topology,
-			const VTX::Core::Struct::Frame &  p_frame,
-			const std::unordered_set<Index> & p_bondIndexes
+			VTX::Core::Struct::Topology &	 p_topology,
+			const VTX::Core::Struct::Frame & p_frame
 		);
 		static void recomputeBondOrders( chemfiles::Frame & p_frame );
 		static bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );

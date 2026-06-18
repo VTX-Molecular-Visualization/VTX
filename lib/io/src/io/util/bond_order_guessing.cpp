@@ -10,13 +10,12 @@ namespace VTX::IO::Util
 	namespace ChemDB = VTX::Core::ChemDB;
 
 	void BondOrderGuessing::recomputeBondOrders(
-		VTX::Core::Struct::Topology &	  p_topology,
-		const VTX::Core::Struct::Frame &  p_frame,
-		const std::unordered_set<Index> & p_bondIndexes
+		VTX::Core::Struct::Topology &	 p_topology,
+		const VTX::Core::Struct::Frame & p_frame
 	)
 	{
 		// VTX::Util::ScopedChrono chrono( "BondOrderGuessing::recomputeBondOrders" );
-		// VTX_INFO( "Guessing {} bond orders...", p_bondIndexes.size() );
+		// VTX_INFO( "Guessing bond orders..." );
 
 		// TODO
 	}
@@ -189,8 +188,8 @@ namespace VTX::IO::Util
 								const size_t firstOxygenIndex  = neighbourData.oxygens[ 0 ].getIndex();
 								const size_t secondOxygenIndex = neighbourData.oxygens[ 1 ].getIndex();
 
-								const bool firstOxygenIsValid = neighbourData.oxygens[ 0 ].getDistance() < 1.38f
-																&& p_linkedAtomsVector[ firstOxygenIndex ].size() == 1;
+								const bool firstOxygenIsValid  = neighbourData.oxygens[ 0 ].getDistance() < 1.38f
+																 && p_linkedAtomsVector[ firstOxygenIndex ].size() == 1;
 								const bool secondOxygenIsValid = neighbourData.oxygens[ 0 ].getDistance() < 1.38f
 																 && p_linkedAtomsVector[ firstOxygenIndex ].size() == 1;
 
@@ -237,8 +236,8 @@ namespace VTX::IO::Util
 								const size_t firstOxygenIndex  = neighbourData.oxygens[ 0 ].getIndex();
 								const size_t secondOxygenIndex = neighbourData.oxygens[ 1 ].getIndex();
 
-								const bool firstOxygenIsValid = neighbourData.oxygens[ 0 ].getDistance() < 1.38f
-																&& p_linkedAtomsVector[ firstOxygenIndex ].size() == 1;
+								const bool firstOxygenIsValid  = neighbourData.oxygens[ 0 ].getDistance() < 1.38f
+																 && p_linkedAtomsVector[ firstOxygenIndex ].size() == 1;
 								const bool secondOxygenIsValid = neighbourData.oxygens[ 0 ].getDistance() < 1.38f
 																 && p_linkedAtomsVector[ firstOxygenIndex ].size() == 1;
 

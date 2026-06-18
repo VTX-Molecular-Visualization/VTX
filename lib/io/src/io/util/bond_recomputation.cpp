@@ -1,286 +1,19 @@
 #include "io/util/bond_recomputation.hpp"
-#include <core/chemdb/atom.hpp>
-#include <core/chemdb/residue.hpp>
-#include <iostream>
+#include <cassert>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
+#include <util/math/grid.hpp>
 
-namespace VTX::IO::Util
+namespace
 {
-	void BondRecomputation::CellList::addAtom( const size_t p_atomIndex, const chemfiles::Vector3D & p_position )
-	{
-		const size_t atomIndex = _getIndexFromPosition( p_position );
-		_cellList[ atomIndex ].emplace_back( p_atomIndex );
-	}
+	using namespace VTX;
+	using namespace VTX::Core::Struct;
+	using namespace VTX::Util;
+	using namespace VTX::Util::Math;
 
-	void BondRecomputation::CellList::addAtomFromNonStandardResidue(
-		const size_t				p_atomIndex,
-		const chemfiles::Vector3D & p_position
-	)
-	{
-		const size_t cellIndex = _getIndexFromPosition( p_position );
-		_cellList[ cellIndex ].emplace_back( p_atomIndex );
-		_nonStdAtoms[ cellIndex ].emplace_back( p_atomIndex );
-	}
+	constexpr double MAX_DISTANCE_FOR_DISULFIDE_BOND_SQR = 9.0;
 
-	void BondRecomputation::CellList::addCysteineSulfur(
-		const size_t				p_atomIndex,
-		const chemfiles::Vector3D & p_position
-	)
-	{
-		const size_t cellIndex = _getIndexFromPosition( p_position );
-		_cellList[ cellIndex ].emplace_back( p_atomIndex );
-		_cysteinSulfurIndexes[ cellIndex ].emplace_back( p_atomIndex );
-	}
-
-	const std::vector<size_t> & BondRecomputation::CellList::getNeighbours( const size_t & p_index ) const
-	{ return _neighbourList[ p_index ]; }
-
-	const std::vector<size_t> & BondRecomputation::CellList::getNeighbours(
-		const chemfiles::Vector3D & p_position
-	) const
-	{
-		const size_t cellIndex = _getIndexFromPosition( p_position );
-		return _neighbourList[ cellIndex ];
-	}
-
-	const std::vector<size_t> & BondRecomputation::CellList::getCysteineSulfurAtoms( const size_t p_cellIndex ) const
-	{ return _cysteinSulfurIndexes[ p_cellIndex ]; }
-
-	const std::vector<std::vector<size_t>> & BondRecomputation::CellList::getCysteineSulfurAtoms() const
-	{ return _cysteinSulfurIndexes; }
-
-	const std::vector<std::vector<size_t>> & BondRecomputation::CellList::getNonStdAtoms() const
-	{ return _nonStdAtoms; }
-
-	std::vector<std::vector<size_t>> & BondRecomputation::CellList::getNonStdAtoms() { return _nonStdAtoms; }
-
-	size_t BondRecomputation::CellList::_getIndexFromPosition( const chemfiles::Vector3D & p_position ) const
-	{
-		const size_t xIndex = int( ( p_position[ 0 ] - _xStart ) / _cubeSize );
-		const size_t yIndex = int( ( p_position[ 1 ] - _yStart ) / _cubeSize );
-		const size_t zIndex = int( ( p_position[ 2 ] - _zStart ) / _cubeSize );
-
-		return xIndex * _height * _depth + yIndex * _depth + zIndex;
-	}
-
-	void BondRecomputation::CellList::_generateNeighbourList()
-	{
-		_neighbourList = std::vector<std::vector<size_t>>();
-		_neighbourList.resize( _cellList.size() );
-
-		const size_t xOffset = _height * _depth;
-		const size_t yOffset = _depth;
-		const size_t zOffset = 1;
-
-		for ( uint i = 0; i < _width; i++ )
-		{
-			for ( uint j = 0; j < _height; j++ )
-			{
-				for ( uint k = 0; k < _depth; k++ )
-				{
-					const size_t index		= i * _height * _depth + j * _depth + k;
-					_neighbourList[ index ] = std::vector<size_t>();
-					_neighbourList[ index ].reserve( 27 );
-
-					_neighbourList[ index ].emplace_back( index );
-
-					const bool hasNeighbourAtLeft	  = i > 0;
-					const bool hasNeighbourAtRight	  = i < _width - 1;
-					const bool hasNeighbourAtBottom	  = j > 0;
-					const bool hasNeighbourAtTop	  = j < _height - 1;
-					const bool hasNeighbourAtBackward = k > 0;
-					const bool hasNeighbourAtForward  = k < _depth - 1;
-
-					if ( hasNeighbourAtLeft )
-					{
-						_neighbourList[ index ].emplace_back( index - xOffset );
-						if ( hasNeighbourAtBottom )
-						{
-							_neighbourList[ index ].emplace_back( index - xOffset - yOffset );
-
-							if ( hasNeighbourAtBackward )
-							{
-								_neighbourList[ index ].emplace_back( index - xOffset - yOffset - zOffset );
-							}
-							if ( hasNeighbourAtForward )
-							{
-								_neighbourList[ index ].emplace_back( index - xOffset - yOffset + zOffset );
-							}
-						}
-
-						if ( hasNeighbourAtTop )
-						{
-							_neighbourList[ index ].emplace_back( index - xOffset + yOffset );
-
-							if ( hasNeighbourAtBackward )
-							{
-								_neighbourList[ index ].emplace_back( index - xOffset + yOffset - zOffset );
-							}
-							if ( hasNeighbourAtForward )
-							{
-								_neighbourList[ index ].emplace_back( index - xOffset + yOffset + zOffset );
-							}
-						}
-
-						if ( hasNeighbourAtBackward )
-						{
-							_neighbourList[ index ].emplace_back( index - xOffset - zOffset );
-						}
-						if ( hasNeighbourAtForward )
-						{
-							_neighbourList[ index ].emplace_back( index - xOffset + zOffset );
-						}
-					}
-					if ( hasNeighbourAtRight )
-					{
-						_neighbourList[ index ].emplace_back( index + xOffset );
-						if ( hasNeighbourAtBottom )
-						{
-							_neighbourList[ index ].emplace_back( index + xOffset - yOffset );
-
-							if ( hasNeighbourAtBackward )
-							{
-								_neighbourList[ index ].emplace_back( index + xOffset - yOffset - zOffset );
-							}
-							if ( hasNeighbourAtForward )
-							{
-								_neighbourList[ index ].emplace_back( index + xOffset - yOffset + zOffset );
-							}
-						}
-
-						if ( hasNeighbourAtTop )
-						{
-							_neighbourList[ index ].emplace_back( index + xOffset + yOffset );
-
-							if ( hasNeighbourAtBackward )
-							{
-								_neighbourList[ index ].emplace_back( index + xOffset + yOffset - zOffset );
-							}
-							if ( hasNeighbourAtForward )
-							{
-								_neighbourList[ index ].emplace_back( index + xOffset + yOffset + zOffset );
-							}
-						}
-
-						if ( hasNeighbourAtBackward )
-						{
-							_neighbourList[ index ].emplace_back( index + xOffset - zOffset );
-						}
-						if ( hasNeighbourAtForward )
-						{
-							_neighbourList[ index ].emplace_back( index + xOffset + zOffset );
-						}
-					}
-
-					if ( hasNeighbourAtBottom )
-					{
-						_neighbourList[ index ].emplace_back( index - yOffset );
-
-						if ( hasNeighbourAtBackward )
-						{
-							_neighbourList[ index ].emplace_back( index - yOffset - zOffset );
-						}
-						if ( hasNeighbourAtForward )
-						{
-							_neighbourList[ index ].emplace_back( index - yOffset + zOffset );
-						}
-					}
-					if ( hasNeighbourAtTop )
-					{
-						_neighbourList[ index ].emplace_back( index + yOffset );
-
-						if ( hasNeighbourAtBackward )
-						{
-							_neighbourList[ index ].emplace_back( index + yOffset - zOffset );
-						}
-						if ( hasNeighbourAtForward )
-						{
-							_neighbourList[ index ].emplace_back( index + yOffset + zOffset );
-						}
-					}
-
-					if ( hasNeighbourAtBackward )
-					{
-						_neighbourList[ index ].emplace_back( index - zOffset );
-					}
-					if ( hasNeighbourAtForward )
-					{
-						_neighbourList[ index ].emplace_back( index + zOffset );
-					}
-
-					_neighbourList[ index ].shrink_to_fit();
-				}
-			}
-		}
-	}
-
-	void BondRecomputation::recomputeBonds(
-		VTX::Core::Struct::Topology &	  p_topology,
-		const VTX::Core::Struct::Frame &  p_frame,
-		const std::unordered_set<Index> & p_atomIndexes
-	)
-	{
-		// VTX::Util::ScopedChrono chrono( "BondRecomputation::recomputeBonds" );
-		// VTX_INFO( "Recomputing {} bonds...", p_atomIndexes.size() );
-
-		// TODO
-	}
-
-	void BondRecomputation::recomputeBonds( chemfiles::Frame & p_frame, const VTX::Util::Math::AABB & p_aabb )
-	{
-		CellList cellList = CellList( p_aabb, CELL_LIST_CUBE_SIZE );
-
-		std::unordered_set<size_t> sulfurAtoms = std::unordered_set<size_t>();
-
-		for ( const chemfiles::Residue & residue : p_frame.topology().residues() )
-		{
-			const bool isStandard = Core::ChemDB::Residue::checkIfStandardFromName( residue.name() );
-
-			if ( isStandard )
-			{
-				const bool isCysteine = residue.name() == "CYS";
-				for ( const size_t atomId : residue )
-				{
-					const chemfiles::Vector3D & atomPos			 = p_frame.positions()[ atomId ];
-					const bool					isCysteineSulfur = isCysteine && p_frame[ atomId ].name() == "SG";
-
-					if ( isCysteineSulfur )
-					{
-						cellList.addCysteineSulfur( atomId, atomPos );
-						sulfurAtoms.emplace( atomId );
-					}
-
-					cellList.addAtom( atomId, atomPos );
-				}
-			}
-			else
-			{
-				for ( const size_t atomId : residue )
-				{
-					const chemfiles::Vector3D & atomPos	 = p_frame.positions()[ atomId ];
-					const bool					isSulfur = p_frame[ atomId ].type() == "S";
-
-					if ( isSulfur )
-					{
-						cellList.addCysteineSulfur( atomId, atomPos );
-						sulfurAtoms.emplace( atomId );
-					}
-
-					cellList.addAtomFromNonStandardResidue( atomId, atomPos );
-				}
-			}
-		}
-
-		_recomputeDisulfides( p_frame, cellList, sulfurAtoms );
-		_recomputeBondsOfNonStandardResidues( p_frame, cellList );
-	}
-
-	void BondRecomputation::_recomputeDisulfides(
-		chemfiles::Frame &				   p_frame,
-		const CellList &				   p_cellList,
-		const std::unordered_set<size_t> & p_sulfurAtoms
-	)
+	void _recomputeDisulfides( Topology & p_topology, const Frame & p_frame, const Grid<Index> & p_cellList )
 	{
 		for ( const size_t sulfurAtom1 : p_sulfurAtoms )
 		{
@@ -309,6 +42,78 @@ namespace VTX::IO::Util
 		}
 	}
 
+} // namespace
+
+namespace VTX::IO::Util::BondRecomputation
+{
+
+	void recomputeBonds(
+		VTX::Core::Struct::Topology &	 p_topology,
+		const VTX::Core::Struct::Frame & p_frame,
+		const BondRecomputeFilter &		 p_filter
+	)
+	{
+		VTX::Util::ScopedChrono chrono( "BondRecomputation::recomputeBonds" );
+		VTX_INFO( "Recomputing bonds..." );
+
+		assert( p_frame.size() == p_topology.getAtomCount() );
+
+		VTX::Util::Math::Grid<Index> atomGrid;
+		VTX::Util::Math::Grid<Index> disulfideGrid;
+		std::vector<Index>			 candidateAtomIndexes;
+
+		const auto matches = []( const auto & p_values, const auto p_value )
+		{ return p_values.empty() || std::find( p_values.begin(), p_values.end(), p_value ) != p_values.end(); };
+
+		const bool acceptUnknownAtom
+			= std::find( p_filter.atomSymbols.begin(), p_filter.atomSymbols.end(), Core::ChemDB::Atom::SYMBOL::UNKNOWN )
+			  != p_filter.atomSymbols.end();
+
+		// Loop over atoms to find canditates.
+		for ( Index atomIndex = 0; atomIndex < p_frame.size(); ++atomIndex )
+		{
+			// Sort atoms in grid.
+			atomGrid.add( atomIndex, p_frame[ atomIndex ] );
+
+			const Index residueIndex = p_topology.atomResidueIndexes[ atomIndex ];
+			if ( residueIndex >= p_topology.getResidueCount() )
+			{
+				continue;
+			}
+
+			const Core::ChemDB::Atom::SYMBOL	atomSymbol		= p_topology.atomSymbols[ atomIndex ];
+			const Core::ChemDB::Residue::SYMBOL residueSymbol	= p_topology.residueSymbols[ residueIndex ];
+			const Core::ChemDB::Category::TYPE	residueCategory = p_topology.residueCategories[ residueIndex ];
+
+			// Check for disulfide bonds (CYS-SG).
+			if ( p_filter.includeDisulfides && residueSymbol == Core::ChemDB::Residue::SYMBOL::CYS
+				 && atomSymbol == Core::ChemDB::Atom::SYMBOL::A_S )
+			{
+				disulfideGrid.add( atomIndex, p_frame[ atomIndex ] );
+			}
+
+			if ( atomSymbol == Core::ChemDB::Atom::SYMBOL::UNKNOWN && not acceptUnknownAtom )
+			{
+				continue;
+			}
+
+			if ( matches( p_filter.atomSymbols, atomSymbol ) && matches( p_filter.residueSymbols, residueSymbol )
+				 && matches( p_filter.categories, residueCategory ) )
+			{
+				candidateAtomIndexes.emplace_back( atomIndex );
+			}
+		}
+
+		if ( candidateAtomIndexes.empty() && disulfideGrid.getCellCount() == 0 )
+		{
+			return;
+		}
+
+		_recomputeDisulfides( p_topology, p_frame, disulfideGrid );
+		//_recomputeBondsOfNonStandardResidues( p_frame, cellList );
+	}
+
+	/*
 	void BondRecomputation::_recomputeBondsOfNonStandardResidues(
 		chemfiles::Frame & frame,
 		const CellList &   p_cellList
@@ -371,10 +176,6 @@ namespace VTX::IO::Util
 			}
 		}
 	}
+	*/
 
-	double BondRecomputation::_sqrDistance( const chemfiles::Vector3D & p_lhs, const chemfiles::Vector3D & p_rhs )
-	{
-		const chemfiles::Vector3D vDiff = p_rhs - p_lhs;
-		return vDiff[ 0 ] * vDiff[ 0 ] + vDiff[ 1 ] * vDiff[ 1 ] + vDiff[ 2 ] * vDiff[ 2 ];
-	}
-} // namespace VTX::IO::Util
+} // namespace VTX::IO::Util::BondRecomputation
