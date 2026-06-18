@@ -1,9 +1,4 @@
-// Needed for io/reader.hpp
-#include <core/struct/topology.hpp>
-#include <util/thread.hpp>
-// !Needed for io/reader.hpp
 #include "io/reader.hpp"
-//
 #include "io/util/bond_order_guessing.hpp"
 #include "io/util/bond_recomputation.hpp"
 #include "io/util/secondary_structure.hpp"
@@ -15,7 +10,6 @@
 #include <core/chemdb/category.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
-#include <fstream>
 #include <map>
 #include <optional>
 #include <span>
@@ -24,6 +18,7 @@
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
+#include <util/thread.hpp>
 
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
@@ -51,7 +46,7 @@ namespace VTX::IO
 		int64_t									_currentAtomIndex	 = -1;
 		int64_t									_currentFrameIdx	 = -1;
 		std::vector<Index>						_atomOriginalIndexes = {};
-		AtomPositions							_firstFrame;
+		Frame									_firstFrame;
 
 		_Impl( const FilePath & p_path, const READER_OPTION p_options, StopToken & p_stopToken ) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
@@ -260,7 +255,7 @@ namespace VTX::IO
 			);
 		}
 
-		void get( const FrameIndex & p_frameIndex, AtomPositions & p_positions )
+		void get( const FrameIndex & p_frameIndex, VTX::Core::Struct::Frame & p_positions )
 		{
 			if ( _stopToken.get().stop_requested() )
 			{
@@ -803,7 +798,7 @@ namespace VTX::IO
 		void _recomputeMissingData(
 			Metadata &						  p_metadata,
 			Topology &						  p_topology,
-			const AtomPositions &			  p_positions,
+			const Frame &					  p_positions,
 			const std::unordered_set<Index> & p_recomputableAtomIndexes,
 			const std::unordered_set<Index> & p_recomputableBondOrderIndexes
 		)
@@ -857,9 +852,9 @@ namespace VTX::IO
 		_impl->get( p_d, p_t, p_m );
 	}
 
-	void SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) { _impl->get( p_i, p_ ); }
+	void SystemReader::get( const FrameIndex & p_i, Frame & p_ ) { _impl->get( p_i, p_ ); }
 
-	void SystemReader::get( AtomPositions & p_ ) { _impl->get( 0, p_ ); }
+	void SystemReader::get( Frame & p_ ) { _impl->get( 0, p_ ); }
 
 	void SystemReader::set( StopToken & p_ ) noexcept { _impl->set( p_ ); }
 

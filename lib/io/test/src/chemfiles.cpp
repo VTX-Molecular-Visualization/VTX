@@ -2,6 +2,7 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/topology.hpp>
+#include <core/struct/trajectory.hpp>
 #include <fstream>
 #include <io/writer/chemfiles.hpp>
 #include <io/writer/system.hpp>
@@ -180,7 +181,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 	VTX::IO::Metadata						metadata;
 	VTX::Util::StopToken					t;
 	VTX::IO::SystemReader					systemReader( waterPath, VTX::IO::READER_OPTION::ALL, t );
-	VTX::IO::AtomPositions					positions;
+	VTX::Core::Struct::Frame				positions;
 	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 	systemReader.get( dict, topology, metadata );
 	systemReader.get( positions );
@@ -259,7 +260,9 @@ namespace
 		inline std::span<const VTX::Vec3f> getCurrentAtomPositions() const { return frames[ 0 ]; }
 
 		inline std::span<const VTX::Vec3f> getAtomPositions( const VTX::uint & p_index ) const
-		{ return frames[ p_index ]; }
+		{
+			return frames[ p_index ];
+		}
 	};
 
 	/**
@@ -425,9 +428,9 @@ namespace
 	}
 
 	VTX::Core::Struct::Topology readBack(
-		const VTX::FilePath &	 dest,
-		VTX::IO::AtomPositions * positions	= nullptr,
-		size_t *				 frameCount = nullptr
+		const VTX::FilePath &	   dest,
+		VTX::Core::Struct::Frame * positions  = nullptr,
+		size_t *				   frameCount = nullptr
 	)
 	{
 		VTX::Core::Struct::Topology				top;
@@ -587,7 +590,7 @@ TEST_CASE(
 		}
 	);
 
-	VTX::IO::AtomPositions		positions;
+	VTX::Core::Struct::Frame	positions;
 	VTX::Core::Struct::Topology reread = readBack( dest, &positions );
 
 	REQUIRE( positions.size() == 4 );
@@ -639,7 +642,7 @@ TEST_CASE(
 		}
 	);
 
-	VTX::IO::AtomPositions		positions;
+	VTX::Core::Struct::Frame	positions;
 	VTX::Core::Struct::Topology reread = readBack( dest, &positions );
 
 	REQUIRE( reread.getAtomCount() == 2 );
@@ -709,7 +712,7 @@ TEST_CASE(
 		}
 	);
 
-	VTX::IO::AtomPositions		positions;
+	VTX::Core::Struct::Frame	positions;
 	VTX::Core::Struct::Topology reread = readBack( dest, &positions );
 
 	// 3 (sys1) + 2 (sys2 minus filtered N) = 5
