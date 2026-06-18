@@ -30,6 +30,11 @@ namespace VTX::Renderer
 		OUTLINE_SENSITIVITY,
 		OUTLINE_THICKNESS,
 
+		ACTIVE_CHROMAB,
+		CHROMAB_RED,
+		CHROMAB_GREEN,
+		CHROMAB_BLUE,
+
 		ACTIVE_SELECTION,
 		COLOR_SELECTION
 	};
@@ -87,6 +92,13 @@ namespace VTX::Renderer
 	constexpr float			FOG_DENSITY_MIN		= 0.f;
 	constexpr float			FOG_DENSITY_MAX		= 1.f;
 
+	constexpr bool	ACTIVE_CHROMAB_DEFAULT = false;
+	constexpr float CHROMAB_RED_DEFAULT	   = 0.f;
+	constexpr float CHROMAB_GREEN_DEFAULT  = -0.01f;
+	constexpr float CHROMAB_BLUE_DEFAULT   = -0.02f;
+	constexpr float CHROMAB_RGB_MIN		   = -0.05f;
+	constexpr float CHROMAB_RGB_MAX		   = 0.f;
+
 	constexpr bool			ACTIVE_SELECTION_DEFAULT = true;
 	const Util::Color::Rgba COLOR_SELECTION_DEFAULT	 = Util::Color::Rgba( 45, 243, 26 );
 
@@ -118,6 +130,12 @@ namespace VTX::Renderer
 		float			  fogFar;
 		float			  fogDensity;
 
+		// Chromatic aberration.
+		bool  activeChromaticAberration;
+		float chromaticAberrationRed;
+		float chromaticAberrationGreen;
+		float chromaticAberrationBlue;
+
 		// Selection.
 		bool			  activeSelection;
 		Util::Color::Rgba colorSelection;
@@ -147,6 +165,11 @@ namespace VTX::Renderer
 											  FOG_NEAR_DEFAULT,
 											  FOG_FAR_DEFAULT,
 											  FOG_DENSITY_DEFAULT,
+											  // Chromatic aberration.
+											  ACTIVE_CHROMAB_DEFAULT,
+											  CHROMAB_RED_DEFAULT,
+											  CHROMAB_GREEN_DEFAULT,
+											  CHROMAB_BLUE_DEFAULT,
 											  // Selection.
 											  ACTIVE_SELECTION_DEFAULT,
 											  COLOR_SELECTION_DEFAULT
@@ -174,6 +197,11 @@ namespace VTX::Renderer
 												   30.f,
 												   80.f,
 												   0.5f,
+												   // Chromatic aberration.
+												   ACTIVE_CHROMAB_DEFAULT,
+												   CHROMAB_RED_DEFAULT,
+												   CHROMAB_GREEN_DEFAULT,
+												   CHROMAB_BLUE_DEFAULT,
 												   // Selection.
 												   true,
 												   Util::Color::Rgba( 80, 255, 120 )
@@ -201,12 +229,17 @@ namespace VTX::Renderer
 												   30.f,
 												   80.f,
 												   0.5f,
+												   // Chromatic aberration.
+												   ACTIVE_CHROMAB_DEFAULT,
+												   CHROMAB_RED_DEFAULT,
+												   CHROMAB_GREEN_DEFAULT,
+												   CHROMAB_BLUE_DEFAULT,
 												   // Selection.
 												   true,
 												   Util::Color::Rgba( 255, 64, 64 )
 		};
 
-	};
+	}; // namespace GraphicsConfigs
 
 } // namespace VTX::Renderer
 

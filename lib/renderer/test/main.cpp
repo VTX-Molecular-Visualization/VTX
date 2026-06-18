@@ -159,9 +159,10 @@ TEST_CASE( "RenderGraph: add() merges builders and build() still works", "[rende
 TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[renderer][graph]" )
 {
 	Builder::PipelineConfig cfg;
-	cfg.enableSSAO		= true;
-	cfg.enableOutline	= true;
-	cfg.enableSelection = true;
+	cfg.enableSSAO				  = true;
+	cfg.enableOutline			  = true;
+	cfg.enableSelection			  = true;
+	cfg.enableChromaticAberration = true;
 
 	RenderGraph graph;
 	graph.set( Builder::DefaultRenderGraph::build( cfg, Layouts {}, Geometries {} ) );
@@ -192,6 +193,7 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	bool hasGeometric = false;
 	bool hasShading	  = false;
 	bool hasFXAA	  = false;
+	bool hasChromatic = false;
 
 	for ( const Pass * p : queue )
 	{
@@ -207,11 +209,17 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 		{
 			hasFXAA = true;
 		}
+		if ( p->name == "ChromaticAberration" )
+		{
+			hasChromatic = true;
+		}
 	}
 
 	CHECK( hasGeometric );
 	CHECK( hasShading );
 	CHECK( hasFXAA );
+	CHECK( hasChromatic );
+	CHECK( queue.back()->name == "FXAA" );
 }
 
 TEST_CASE( "GraphBuilder: compute dispatch pass builds", "[renderer][graph]" )

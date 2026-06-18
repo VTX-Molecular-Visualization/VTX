@@ -820,6 +820,15 @@ namespace VTX::Renderer::Builder
 				bufferOutline.close();
 				p_context.setBuffer( { "Outline" }, bufferOutline );
 			}
+			if ( p_config.activeChromaticAberration )
+			{
+				BinaryBuffer140 bufferChromaticAberration;
+				bufferChromaticAberration.write( p_config.chromaticAberrationRed );
+				bufferChromaticAberration.write( p_config.chromaticAberrationGreen );
+				bufferChromaticAberration.write( p_config.chromaticAberrationBlue );
+				bufferChromaticAberration.close();
+				p_context.setBuffer( { "ChromaticAberration" }, bufferChromaticAberration );
+			}
 			if ( p_config.activeSelection )
 			{
 				BinaryBuffer140 bufferSelection;

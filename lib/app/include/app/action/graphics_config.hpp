@@ -90,6 +90,22 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						p_config.outlineThickness = p_value;
 					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_CHROMAB )
+					{
+						p_config.activeChromaticAberration = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CHROMAB_RED )
+					{
+						p_config.chromaticAberrationRed = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CHROMAB_GREEN )
+					{
+						p_config.chromaticAberrationGreen = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CHROMAB_BLUE )
+					{
+						p_config.chromaticAberrationBlue = p_value;
+					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_SELECTION )
 					{
 						p_config.activeSelection = p_value;
@@ -98,9 +114,7 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						p_config.colorSelection = p_value;
 					}
-					else
-					{
-					}
+					else {}
 				}
 			);
 		}

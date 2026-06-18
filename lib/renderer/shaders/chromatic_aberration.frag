@@ -20,7 +20,7 @@ void main()
     const ivec2 texCoord = ivec2( gl_FragCoord.xy );
 	const vec2 texSize = textureSize( inTextureColor, 0 );
     const vec2 uv =  texCoord / texSize;
-    const vec2 direction = uv - uniformsCamera.mousePosition / texSize;
+    const vec2 direction = uv - vec2( 0.5f );
 
     outFragColor.r = texture( inTextureColor, uv + ( direction * vec2( uniforms.offsetRed ) ) ).r;
     outFragColor.g = texture( inTextureColor, uv + ( direction * vec2( uniforms.offsetGreen ) ) ).g;

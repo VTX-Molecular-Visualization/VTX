@@ -358,6 +358,11 @@ namespace VTX::Renderer::Builder
 
 		g.texture( "FXAA", E_FORMAT::RGBA16F );
 
+		if ( p_config.enableChromaticAberration )
+		{
+			g.texture( "ChromaticAberration", E_FORMAT::RGBA16F );
+		}
+
 		// Samplers.
 		g.defaultSampler();
 
@@ -515,11 +520,28 @@ namespace VTX::Renderer::Builder
 			.endProgram()
 			.endPass();
 
+		const Desc::Key postShading = p_config.enableChromaticAberration ? "ChromaticAberration" : "Shaded";
+
+		// Chromatic aberration.
+		if ( p_config.enableChromaticAberration )
+		{
+			g.pass( "ChromaticAberration" )
+				.in( "Shaded" )
+				.out( "ChromaticAberration" )
+				.program( "ChromaticAberration" )
+				.shaders( { "default.vert", "chromatic_aberration.frag" } )
+				.uniform( "Red", CHROMAB_RED_DEFAULT, std::pair { CHROMAB_RGB_MIN, CHROMAB_RGB_MAX } )
+				.uniform( "Green", CHROMAB_GREEN_DEFAULT, std::pair { CHROMAB_RGB_MIN, CHROMAB_RGB_MAX } )
+				.uniform( "Blue", CHROMAB_BLUE_DEFAULT, std::pair { CHROMAB_RGB_MIN, CHROMAB_RGB_MAX } )
+				.endProgram()
+				.endPass();
+		}
+
 		// Outline.
 		if ( p_config.enableOutline )
 		{
 			g.pass( "Outline" )
-				.in( "Shaded" )
+				.in( postShading )
 				.in( "Depth" )
 				.out( "Outline" )
 				.program( "Outline" )
@@ -542,7 +564,7 @@ namespace VTX::Renderer::Builder
 		{
 			g.pass( "Selection" )
 				.in( "Geometry" )
-				.in( p_config.enableOutline ? "Outline" : "Shaded" )
+				.in( p_config.enableOutline ? "Outline" : postShading )
 				.in( "Depth" )
 				.out( "Selection" )
 				.program( "Selection" )
@@ -556,7 +578,7 @@ namespace VTX::Renderer::Builder
 		g.pass( "FXAA" )
 			.in( p_config.enableSelection ? "Selection"
 				 : p_config.enableOutline ? "Outline"
-										  : "Shaded" )
+										  : postShading )
 			.out( "FXAA" )
 			.program( "FXAA" )
 			.shaders( { "default.vert", "fxaa.frag" } )
@@ -594,20 +616,6 @@ namespace VTX::Renderer::Builder
 			.endPass();
 			*/
 
-		// Chromatic aberration
-		/*
-		g.pass( "ChromaticAberration" )
-			.in( "CRT" )
-			.out( "ChromaticAberration" )
-			.program( "ChromaticAberration" )
-			.shaders( {  "default.vert" ,  "chromatic_aberration.frag"  } )
-			.uniform( "Red", 0.009f, std::pair { -0.05, 0.05 } )
-			.uniform( "Green", 0.006f, std::pair { -0.05, 0.05 } )
-			.uniform( "Blue", -0.006f, std::pair { -0.05, 0.05 } )
-			.endProgram()
-			.endPass();
-			*/
-
 		// Colorize
 		/*
 		g.pass( "Colorize" )
@@ -641,9 +649,10 @@ namespace VTX::Renderer::Builder
 	PipelineConfig RenderGraphRuntime::pipelineConfig( const GraphicsConfig & p_config )
 	{
 		PipelineConfig config;
-		config.enableSSAO	   = p_config.activeSSAO;
-		config.enableOutline   = p_config.activeOutline;
-		config.enableSelection = p_config.activeSelection;
+		config.enableSSAO				 = p_config.activeSSAO;
+		config.enableOutline			 = p_config.activeOutline;
+		config.enableSelection			 = p_config.activeSelection;
+		config.enableChromaticAberration = p_config.activeChromaticAberration;
 
 		return config;
 	}

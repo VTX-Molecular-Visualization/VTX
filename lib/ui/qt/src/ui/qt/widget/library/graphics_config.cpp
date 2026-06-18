@@ -4,6 +4,16 @@
 
 namespace VTX::UI::QT::Widget::Library
 {
+	namespace
+	{
+		constexpr float CHROMAB_UI_MIN = 0.f;
+		constexpr float CHROMAB_UI_MAX = 5.f;
+
+		float _chromaticAberrationToUi( const float p_value ) { return -p_value * 100.f; }
+
+		float _chromaticAberrationFromUi( const float p_value ) { return -p_value / 100.f; }
+	} // namespace
+
 	GraphicsConfig::GraphicsConfig( QWidget * p_parent ) : BasePresetWidget( p_parent )
 	{
 		using namespace Renderer;
@@ -115,6 +125,30 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxFog->addWidget( _sliderFogDensity );
 		_sliderFogDensity->setMinimum( FOG_DENSITY_MIN );
 		_sliderFogDensity->setMinimum( FOG_DENSITY_MAX );
+
+		// Chromatic aberration.
+		_groupboxChromaticAberration = new HideableGroupBox( "Chromatic aberration", presetGroupBox() );
+		addWidget( _groupboxChromaticAberration );
+
+		_sliderChromaticAberrationRed = new EditableSlider( Qt::Orientation::Horizontal, _groupboxChromaticAberration );
+		_groupboxChromaticAberration->addWidget( new QLabel( "Red", _groupboxChromaticAberration ) );
+		_groupboxChromaticAberration->addWidget( _sliderChromaticAberrationRed );
+		_sliderChromaticAberrationRed->setMinimum( CHROMAB_UI_MIN );
+		_sliderChromaticAberrationRed->setMaximum( CHROMAB_UI_MAX );
+
+		_sliderChromaticAberrationGreen
+			= new EditableSlider( Qt::Orientation::Horizontal, _groupboxChromaticAberration );
+		_groupboxChromaticAberration->addWidget( new QLabel( "Green", _groupboxChromaticAberration ) );
+		_groupboxChromaticAberration->addWidget( _sliderChromaticAberrationGreen );
+		_sliderChromaticAberrationGreen->setMinimum( CHROMAB_UI_MIN );
+		_sliderChromaticAberrationGreen->setMaximum( CHROMAB_UI_MAX );
+
+		_sliderChromaticAberrationBlue
+			= new EditableSlider( Qt::Orientation::Horizontal, _groupboxChromaticAberration );
+		_groupboxChromaticAberration->addWidget( new QLabel( "Blue", _groupboxChromaticAberration ) );
+		_groupboxChromaticAberration->addWidget( _sliderChromaticAberrationBlue );
+		_sliderChromaticAberrationBlue->setMinimum( CHROMAB_UI_MIN );
+		_sliderChromaticAberrationBlue->setMaximum( CHROMAB_UI_MAX );
 
 		// Selection.
 		_groupboxSelection = new HideableGroupBox( "Selection", presetGroupBox() );
@@ -231,6 +265,33 @@ namespace VTX::UI::QT::Widget::Library
 		);
 
 		connect(
+			_groupboxChromaticAberration,
+			&HideableGroupBox::toggled,
+			[ this ]( const bool p_state ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_CHROMAB, bool>( p_state ); }
+		);
+
+		connect(
+			_sliderChromaticAberrationRed,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::CHROMAB_RED, float>( _chromaticAberrationFromUi( p_value ) ); }
+		);
+
+		connect(
+			_sliderChromaticAberrationGreen,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::CHROMAB_GREEN, float>( _chromaticAberrationFromUi( p_value ) ); }
+		);
+
+		connect(
+			_sliderChromaticAberrationBlue,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::CHROMAB_BLUE, float>( _chromaticAberrationFromUi( p_value ) ); }
+		);
+
+		connect(
 			_groupboxSelection,
 			&HideableGroupBox::toggled,
 			[ this ]( const bool p_state )
@@ -265,8 +326,12 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker15( _sliderFogNear );
 		const QSignalBlocker blocker16( _sliderFogFar );
 		const QSignalBlocker blocker17( _sliderFogDensity );
-		const QSignalBlocker blocker18( _groupboxSelection );
-		const QSignalBlocker blocker19( _colorPickerSelection );
+		const QSignalBlocker blocker18( _groupboxChromaticAberration );
+		const QSignalBlocker blocker19( _sliderChromaticAberrationRed );
+		const QSignalBlocker blocker20( _sliderChromaticAberrationGreen );
+		const QSignalBlocker blocker21( _sliderChromaticAberrationBlue );
+		const QSignalBlocker blocker22( _groupboxSelection );
+		const QSignalBlocker blocker23( _colorPickerSelection );
 
 		_comboBoxShadingMode->setCurrentIndex( int( preset.shadingMode ) );
 		_colorPickerBackground->setColor( Helper::toQColor( preset.colorBackground ) );
@@ -286,6 +351,10 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderFogNear->setValue( preset.fogNear );
 		_sliderFogFar->setValue( preset.fogFar );
 		_sliderFogDensity->setValue( preset.fogDensity );
+		_groupboxChromaticAberration->setChecked( preset.activeChromaticAberration );
+		_sliderChromaticAberrationRed->setValue( _chromaticAberrationToUi( preset.chromaticAberrationRed ) );
+		_sliderChromaticAberrationGreen->setValue( _chromaticAberrationToUi( preset.chromaticAberrationGreen ) );
+		_sliderChromaticAberrationBlue->setValue( _chromaticAberrationToUi( preset.chromaticAberrationBlue ) );
 		_groupboxSelection->setChecked( preset.activeSelection );
 		_colorPickerSelection->setColor( Helper::toQColor( preset.colorSelection ) );
 

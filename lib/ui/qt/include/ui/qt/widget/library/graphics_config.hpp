@@ -49,6 +49,12 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<EditableSlider>   _sliderFogFar;
 		QPointer<EditableSlider>   _sliderFogDensity;
 
+		// Chromatic aberration.
+		QPointer<HideableGroupBox> _groupboxChromaticAberration;
+		QPointer<EditableSlider>   _sliderChromaticAberrationRed;
+		QPointer<EditableSlider>   _sliderChromaticAberrationGreen;
+		QPointer<EditableSlider>   _sliderChromaticAberrationBlue;
+
 		// Selection.
 		QPointer<HideableGroupBox> _groupboxSelection;
 		QPointer<ColorPicker>	   _colorPickerSelection;
