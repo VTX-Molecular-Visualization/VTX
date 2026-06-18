@@ -103,12 +103,12 @@ namespace
 
 	// Recompute bonds by checking all pairs of atoms in the candidate atom indexes.
 	void _recomputeCandidates(
-		Topology &				   p_topology,
-		std::span<const Vec3f>	   p_frame,
-		const Grid<Index> &		   p_atomGrid,
-		const std::vector<Index> & p_candidateAtomIndexes,
-		const std::vector<bool> &  p_isCandidateAtom,
-		size_t &				   p_recomputedBondCount
+		Topology &					 p_topology,
+		std::span<const Vec3f>		 p_frame,
+		const Grid<Index> &			 p_atomGrid,
+		const std::vector<Index> &	 p_candidateAtomIndexes,
+		const std::vector<uint8_t> & p_isCandidateAtom,
+		size_t &					 p_recomputedBondCount
 	)
 	{
 		constexpr float CANDIDATE_BOND_CUTOFF_SQR = 3.48f * 2.f * 3.48f * 2.f;
@@ -116,14 +116,18 @@ namespace
 
 		for ( const Index firstAtomIndex : p_candidateAtomIndexes )
 		{
-			const Core::ChemDB::Atom::SYMBOL firstAtomSymbol = p_topology.atomSymbols[ firstAtomIndex ];
+			const Core::ChemDB::Atom::SYMBOL firstAtomSymbol	 = p_topology.atomSymbols[ firstAtomIndex ];
+			const Vec3f &					 firstAtomPosition	 = p_frame[ firstAtomIndex ];
+			const bool						 firstAtomIsHydrogen = firstAtomSymbol == Core::ChemDB::Atom::SYMBOL::A_H;
+			const float firstAtomRadius = Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ toUnderlying( firstAtomSymbol ) ];
 
 			p_atomGrid.forEachNeighbourCellAt(
-				p_frame[ firstAtomIndex ],
+				firstAtomPosition,
 				[ & ]( const Grid<Index>::CellPosition &, const Grid<Index>::Cell & p_neighbourCell )
 				{
 					for ( const Index secondAtomIndex : p_neighbourCell )
 					{
+						// Avoid checking the same atom or already checked pairs.
 						if ( secondAtomIndex == firstAtomIndex )
 						{
 							continue;
@@ -133,30 +137,29 @@ namespace
 							continue;
 						}
 
-						const float sqrDistance = length2( p_frame[ firstAtomIndex ] - p_frame[ secondAtomIndex ] );
+						const Core::ChemDB::Atom::SYMBOL secondAtomSymbol = p_topology.atomSymbols[ secondAtomIndex ];
 
+						// Discard H-H.
+						if ( firstAtomIsHydrogen && secondAtomSymbol == Core::ChemDB::Atom::SYMBOL::A_H )
+						{
+							continue;
+						}
+
+						// Check distance.
+						const float sqrDistance = length2( p_frame[ firstAtomIndex ] - p_frame[ secondAtomIndex ] );
 						if ( sqrDistance > CANDIDATE_BOND_CUTOFF_SQR || sqrDistance < MIN_BOND_DISTANCE_SQR )
 						{
 							continue;
 						}
 
-						const Core::ChemDB::Atom::SYMBOL secondAtomSymbol = p_topology.atomSymbols[ secondAtomIndex ];
-
-						const float atom1Radius
-							= Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ toUnderlying( firstAtomSymbol ) ];
 						const float atom2Radius
 							= Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ toUnderlying( secondAtomSymbol ) ];
-						const float radiusDistance	  = atom1Radius > atom2Radius ? atom1Radius : atom2Radius;
+						const float radiusDistance	  = firstAtomRadius > atom2Radius ? firstAtomRadius : atom2Radius;
 						const float radiusSqrDistance = radiusDistance * radiusDistance;
 
 						if ( sqrDistance < radiusSqrDistance )
 						{
-							// Discard H-H.
-							if ( firstAtomSymbol != Core::ChemDB::Atom::SYMBOL::A_H
-								 || secondAtomSymbol != Core::ChemDB::Atom::SYMBOL::A_H )
-							{
-								_addBond( p_topology, firstAtomIndex, secondAtomIndex, p_recomputedBondCount );
-							}
+							_addBond( p_topology, firstAtomIndex, secondAtomIndex, p_recomputedBondCount );
 						}
 					}
 				}
@@ -183,7 +186,8 @@ namespace VTX::IO::Util::BondRecomputation
 		VTX::Util::Math::Grid<Index> atomGrid;
 		VTX::Util::Math::Grid<Index> disulfideGrid;
 		std::vector<Index>			 candidateAtomIndexes;
-		std::vector<bool>			 isCandidateAtom( p_frame.size(), false );
+		candidateAtomIndexes.reserve( p_frame.size() );
+		std::vector<uint8_t> isCandidateAtom( p_frame.size(), false );
 
 		const auto contains = []( const auto & p_values, const auto p_value )
 		{ return std::find( p_values.begin(), p_values.end(), p_value ) != p_values.end(); };
@@ -233,6 +237,11 @@ namespace VTX::IO::Util::BondRecomputation
 			VTX_INFO( "Recomputed 0 bonds" );
 			return;
 		}
+
+		p_topology.bondPairAtomIndexes.reserve(
+			p_topology.bondPairAtomIndexes.size() + candidateAtomIndexes.size() * 2
+		);
+		p_topology.bondOrders.reserve( p_topology.bondOrders.size() + candidateAtomIndexes.size() );
 
 		size_t recomputedBondCount = 0;
 		_recomputeDisulfides( p_topology, p_frame, disulfideGrid, recomputedBondCount );
