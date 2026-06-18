@@ -61,6 +61,17 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<EditableSlider>   _sliderPixelizeSize;
 		QPointer<QCheckBox>		   _checkBoxPixelizeBackground;
 
+		// CRT.
+		QPointer<HideableGroupBox> _groupboxCRT;
+		QPointer<EditableSlider>   _sliderCRTCurvatureX;
+		QPointer<EditableSlider>   _sliderCRTCurvatureY;
+		QPointer<EditableSlider>   _sliderCRTRatio;
+		QPointer<EditableSlider>   _sliderCRTGraninessX;
+		QPointer<EditableSlider>   _sliderCRTGraninessY;
+		QPointer<EditableSlider>   _sliderCRTVignetteRoundness;
+		QPointer<EditableSlider>   _sliderCRTVignetteIntensity;
+		QPointer<EditableSlider>   _sliderCRTBrightness;
+
 		// Selection.
 		QPointer<HideableGroupBox> _groupboxSelection;
 		QPointer<ColorPicker>	   _colorPickerSelection;

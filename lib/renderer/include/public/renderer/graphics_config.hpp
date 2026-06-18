@@ -39,6 +39,16 @@ namespace VTX::Renderer
 		PIXELIZE_SIZE,
 		PIXELIZE_BACKGROUND,
 
+		ACTIVE_CRT,
+		CRT_CURVATURE_X,
+		CRT_CURVATURE_Y,
+		CRT_RATIO,
+		CRT_GRANINESS_X,
+		CRT_GRANINESS_Y,
+		CRT_VIGNETTE_ROUNDNESS,
+		CRT_VIGNETTE_INTENSITY,
+		CRT_BRIGHTNESS,
+
 		ACTIVE_SELECTION,
 		COLOR_SELECTION
 	};
@@ -109,6 +119,28 @@ namespace VTX::Renderer
 	constexpr uint PIXELIZE_SIZE_MAX		   = 15;
 	constexpr bool PIXELIZE_BACKGROUND_DEFAULT = true;
 
+	constexpr bool	ACTIVE_CRT_DEFAULT			   = false;
+	constexpr float CRT_CURVATURE_X_DEFAULT		   = 1.8f;
+	constexpr float CRT_CURVATURE_Y_DEFAULT		   = 2.1f;
+	constexpr float CRT_CURVATURE_MIN			   = 1.f;
+	constexpr float CRT_CURVATURE_MAX			   = 10.f;
+	constexpr float CRT_RATIO_DEFAULT			   = 0.75f;
+	constexpr float CRT_RATIO_MIN				   = 0.1f;
+	constexpr float CRT_RATIO_MAX				   = 1.f;
+	constexpr float CRT_GRANINESS_X_DEFAULT		   = 1.35f;
+	constexpr float CRT_GRANINESS_Y_DEFAULT		   = 0.35f;
+	constexpr float CRT_GRANINESS_MIN			   = 0.f;
+	constexpr float CRT_GRANINESS_MAX			   = 5.f;
+	constexpr float CRT_VIGNETTE_ROUNDNESS_DEFAULT = 180.f;
+	constexpr float CRT_VIGNETTE_ROUNDNESS_MIN	   = 1.f;
+	constexpr float CRT_VIGNETTE_ROUNDNESS_MAX	   = 1000.f;
+	constexpr float CRT_VIGNETTE_INTENSITY_DEFAULT = 0.85f;
+	constexpr float CRT_VIGNETTE_INTENSITY_MIN	   = 0.f;
+	constexpr float CRT_VIGNETTE_INTENSITY_MAX	   = 5.f;
+	constexpr float CRT_BRIGHTNESS_DEFAULT		   = 2.f;
+	constexpr float CRT_BRIGHTNESS_MIN			   = 1.f;
+	constexpr float CRT_BRIGHTNESS_MAX			   = 10.f;
+
 	constexpr bool			ACTIVE_SELECTION_DEFAULT = true;
 	const Util::Color::Rgba COLOR_SELECTION_DEFAULT	 = Util::Color::Rgba( 45, 243, 26 );
 
@@ -151,6 +183,17 @@ namespace VTX::Renderer
 		uint pixelizeSize;
 		bool pixelizeBackground;
 
+		// CRT.
+		bool  activeCRT;
+		float crtCurvatureX;
+		float crtCurvatureY;
+		float crtRatio;
+		float crtGraninessX;
+		float crtGraninessY;
+		float crtVignetteRoundness;
+		float crtVignetteIntensity;
+		float crtBrightness;
+
 		// Selection.
 		bool			  activeSelection;
 		Util::Color::Rgba colorSelection;
@@ -189,6 +232,16 @@ namespace VTX::Renderer
 											  ACTIVE_PIXELIZE_DEFAULT,
 											  PIXELIZE_SIZE_DEFAULT,
 											  PIXELIZE_BACKGROUND_DEFAULT,
+											  // CRT.
+											  ACTIVE_CRT_DEFAULT,
+											  CRT_CURVATURE_X_DEFAULT,
+											  CRT_CURVATURE_Y_DEFAULT,
+											  CRT_RATIO_DEFAULT,
+											  CRT_GRANINESS_X_DEFAULT,
+											  CRT_GRANINESS_Y_DEFAULT,
+											  CRT_VIGNETTE_ROUNDNESS_DEFAULT,
+											  CRT_VIGNETTE_INTENSITY_DEFAULT,
+											  CRT_BRIGHTNESS_DEFAULT,
 											  // Selection.
 											  ACTIVE_SELECTION_DEFAULT,
 											  COLOR_SELECTION_DEFAULT
@@ -225,6 +278,16 @@ namespace VTX::Renderer
 												   ACTIVE_PIXELIZE_DEFAULT,
 												   PIXELIZE_SIZE_DEFAULT,
 												   PIXELIZE_BACKGROUND_DEFAULT,
+												   // CRT.
+												   ACTIVE_CRT_DEFAULT,
+												   CRT_CURVATURE_X_DEFAULT,
+												   CRT_CURVATURE_Y_DEFAULT,
+												   CRT_RATIO_DEFAULT,
+												   CRT_GRANINESS_X_DEFAULT,
+												   CRT_GRANINESS_Y_DEFAULT,
+												   CRT_VIGNETTE_ROUNDNESS_DEFAULT,
+												   CRT_VIGNETTE_INTENSITY_DEFAULT,
+												   CRT_BRIGHTNESS_DEFAULT,
 												   // Selection.
 												   true,
 												   Util::Color::Rgba( 80, 255, 120 )
@@ -261,6 +324,16 @@ namespace VTX::Renderer
 												   ACTIVE_PIXELIZE_DEFAULT,
 												   PIXELIZE_SIZE_DEFAULT,
 												   PIXELIZE_BACKGROUND_DEFAULT,
+												   // CRT.
+												   ACTIVE_CRT_DEFAULT,
+												   CRT_CURVATURE_X_DEFAULT,
+												   CRT_CURVATURE_Y_DEFAULT,
+												   CRT_RATIO_DEFAULT,
+												   CRT_GRANINESS_X_DEFAULT,
+												   CRT_GRANINESS_Y_DEFAULT,
+												   CRT_VIGNETTE_ROUNDNESS_DEFAULT,
+												   CRT_VIGNETTE_INTENSITY_DEFAULT,
+												   CRT_BRIGHTNESS_DEFAULT,
 												   // Selection.
 												   true,
 												   Util::Color::Rgba( 255, 64, 64 )

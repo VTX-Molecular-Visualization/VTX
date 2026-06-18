@@ -837,6 +837,19 @@ namespace VTX::Renderer::Builder
 				bufferPixelize.close();
 				p_context.setBuffer( { "Pixelize" }, bufferPixelize );
 			}
+			if ( p_config.activeCRT )
+			{
+				BinaryBuffer140 bufferCRT;
+				bufferCRT.write( Vec2f( p_config.crtCurvatureX, p_config.crtCurvatureY ) );
+				bufferCRT.write( p_config.crtRatio );
+				bufferCRT.write( p_config.crtGraninessX );
+				bufferCRT.write( p_config.crtGraninessY );
+				bufferCRT.write( p_config.crtVignetteRoundness );
+				bufferCRT.write( p_config.crtVignetteIntensity );
+				bufferCRT.write( p_config.crtBrightness );
+				bufferCRT.close();
+				p_context.setBuffer( { "CRT" }, bufferCRT );
+			}
 			if ( p_config.activeSelection )
 			{
 				BinaryBuffer140 bufferSelection;

@@ -21,6 +21,7 @@ namespace VTX::Renderer::Builder
 		bool enableSelection		   = false;
 		bool enableChromaticAberration = false;
 		bool enablePixelize			   = false;
+		bool enableCRT				   = false;
 
 		bool operator==( const PipelineConfig & ) const = default;
 	};

@@ -368,6 +368,11 @@ namespace VTX::Renderer::Builder
 			g.texture( "Pixelize", E_FORMAT::RGBA16F );
 		}
 
+		if ( p_config.enableCRT )
+		{
+			g.texture( "CRT", E_FORMAT::RGBA16F );
+		}
+
 		// Samplers.
 		g.defaultSampler();
 
@@ -610,23 +615,32 @@ namespace VTX::Renderer::Builder
 			.endProgram()
 			.endPass();
 
-		// CRT
-		/*
-		g.pass( "CRT" )
-			.in( "Pixelize" )
-			.out( "CRT" )
-			.program( "CRT" )
-			.shaders( {  "default.vert" ,  "crt.frag"  } )
-			.uniform( "Curvature", Vec2f( 3.f, 3.f ) )
-			.uniform( "Ratio", 0.25f, std::pair { 0.1, 1.0 } )
-			.uniform( "GraninessX", 0.5f, std::pair { 0.0, 5.0 } )
-			.uniform( "GraninessY", 0.5f, std::pair { 0.0, 5.0 } )
-			.uniform( "VignetteRoundness", 100.f, std::pair { 1.0, 1000.0 } )
-			.uniform( "VignetteIntensity", 0.5f, std::pair { 0.0, 5.0 } )
-			.uniform( "Brightness", 1.2f, std::pair { 1.0, 10.0 } )
-			.endProgram()
-			.endPass();
-			*/
+		// CRT.
+		if ( p_config.enableCRT )
+		{
+			g.pass( "CRT" )
+				.in( "FXAA" )
+				.out( "CRT" )
+				.program( "CRT" )
+				.shaders( { "default.vert", "crt.frag" } )
+				.uniform( "Curvature", Vec2f( CRT_CURVATURE_X_DEFAULT, CRT_CURVATURE_Y_DEFAULT ) )
+				.uniform( "Ratio", CRT_RATIO_DEFAULT, std::pair { CRT_RATIO_MIN, CRT_RATIO_MAX } )
+				.uniform( "GraninessX", CRT_GRANINESS_X_DEFAULT, std::pair { CRT_GRANINESS_MIN, CRT_GRANINESS_MAX } )
+				.uniform( "GraninessY", CRT_GRANINESS_Y_DEFAULT, std::pair { CRT_GRANINESS_MIN, CRT_GRANINESS_MAX } )
+				.uniform(
+					"VignetteRoundness",
+					CRT_VIGNETTE_ROUNDNESS_DEFAULT,
+					std::pair { CRT_VIGNETTE_ROUNDNESS_MIN, CRT_VIGNETTE_ROUNDNESS_MAX }
+				)
+				.uniform(
+					"VignetteIntensity",
+					CRT_VIGNETTE_INTENSITY_DEFAULT,
+					std::pair { CRT_VIGNETTE_INTENSITY_MIN, CRT_VIGNETTE_INTENSITY_MAX }
+				)
+				.uniform( "Brightness", CRT_BRIGHTNESS_DEFAULT, std::pair { CRT_BRIGHTNESS_MIN, CRT_BRIGHTNESS_MAX } )
+				.endProgram()
+				.endPass();
+		}
 
 		// Debug
 		/*
@@ -654,6 +668,7 @@ namespace VTX::Renderer::Builder
 		config.enableSelection			 = p_config.activeSelection;
 		config.enableChromaticAberration = p_config.activeChromaticAberration;
 		config.enablePixelize			 = p_config.activePixelize;
+		config.enableCRT				 = p_config.activeCRT;
 
 		return config;
 	}

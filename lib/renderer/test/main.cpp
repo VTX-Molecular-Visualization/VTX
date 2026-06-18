@@ -164,6 +164,7 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	cfg.enableSelection			  = true;
 	cfg.enableChromaticAberration = true;
 	cfg.enablePixelize			  = true;
+	cfg.enableCRT				  = true;
 
 	RenderGraph graph;
 	graph.set( Builder::DefaultRenderGraph::build( cfg, Layouts {}, Geometries {} ) );
@@ -196,6 +197,7 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	bool hasFXAA	  = false;
 	bool hasChromatic = false;
 	bool hasPixelize  = false;
+	bool hasCRT		  = false;
 
 	for ( const Pass * p : queue )
 	{
@@ -219,6 +221,10 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 		{
 			hasPixelize = true;
 		}
+		if ( p->name == "CRT" )
+		{
+			hasCRT = true;
+		}
 	}
 
 	CHECK( hasGeometric );
@@ -226,7 +232,8 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	CHECK( hasFXAA );
 	CHECK( hasChromatic );
 	CHECK( hasPixelize );
-	CHECK( queue.back()->name == "FXAA" );
+	CHECK( hasCRT );
+	CHECK( queue.back()->name == "CRT" );
 }
 
 TEST_CASE( "GraphBuilder: compute dispatch pass builds", "[renderer][graph]" )

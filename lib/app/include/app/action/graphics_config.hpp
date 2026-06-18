@@ -118,6 +118,42 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						p_config.pixelizeBackground = p_value;
 					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_CRT )
+					{
+						p_config.activeCRT = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_CURVATURE_X )
+					{
+						p_config.crtCurvatureX = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_CURVATURE_Y )
+					{
+						p_config.crtCurvatureY = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_RATIO )
+					{
+						p_config.crtRatio = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_GRANINESS_X )
+					{
+						p_config.crtGraninessX = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_GRANINESS_Y )
+					{
+						p_config.crtGraninessY = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_VIGNETTE_ROUNDNESS )
+					{
+						p_config.crtVignetteRoundness = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_VIGNETTE_INTENSITY )
+					{
+						p_config.crtVignetteIntensity = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_BRIGHTNESS )
+					{
+						p_config.crtBrightness = p_value;
+					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_SELECTION )
 					{
 						p_config.activeSelection = p_value;

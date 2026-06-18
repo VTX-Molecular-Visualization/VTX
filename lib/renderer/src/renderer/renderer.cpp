@@ -137,8 +137,9 @@ namespace VTX::Renderer
 		);
 		_render( 0.f, 0.f );
 
-		// TODO: get last pass instead of hardcoding FXAA.
-		std::vector<std::byte> data = _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
+		// TODO: get last pass instead of hardcoding post-process output.
+		const Desc::Key		   outputTexture = _graphicsConfig.data.activeCRT ? "CRT" : "FXAA";
+		std::vector<std::byte> data			 = _context.getTextureData( outputTexture, Desc::E_FORMAT::RGBA8UI );
 
 		_context.setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
 		Builder::RenderGraphRuntime::rebuildCommandBuffer(

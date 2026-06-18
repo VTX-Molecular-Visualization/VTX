@@ -172,6 +172,58 @@ namespace VTX::UI::QT::Widget::Library
 		_checkBoxPixelizeBackground = new QCheckBox( "Background", _groupboxPixelize );
 		_groupboxPixelize->addWidget( _checkBoxPixelizeBackground );
 
+		// CRT.
+		_groupboxCRT = new HideableGroupBox( "CRT", presetGroupBox() );
+		addWidget( _groupboxCRT );
+
+		_sliderCRTCurvatureX = new EditableSlider( Qt::Orientation::Horizontal, _groupboxCRT );
+		_groupboxCRT->addWidget( new QLabel( "Curvature X", _groupboxCRT ) );
+		_groupboxCRT->addWidget( _sliderCRTCurvatureX );
+		_sliderCRTCurvatureX->setMinimum( CRT_CURVATURE_MIN );
+		_sliderCRTCurvatureX->setMaximum( CRT_CURVATURE_MAX );
+
+		_sliderCRTCurvatureY = new EditableSlider( Qt::Orientation::Horizontal, _groupboxCRT );
+		_groupboxCRT->addWidget( new QLabel( "Curvature Y", _groupboxCRT ) );
+		_groupboxCRT->addWidget( _sliderCRTCurvatureY );
+		_sliderCRTCurvatureY->setMinimum( CRT_CURVATURE_MIN );
+		_sliderCRTCurvatureY->setMaximum( CRT_CURVATURE_MAX );
+
+		_sliderCRTRatio = new EditableSlider( Qt::Orientation::Horizontal, _groupboxCRT );
+		_groupboxCRT->addWidget( new QLabel( "Ratio", _groupboxCRT ) );
+		_groupboxCRT->addWidget( _sliderCRTRatio );
+		_sliderCRTRatio->setMinimum( CRT_RATIO_MIN );
+		_sliderCRTRatio->setMaximum( CRT_RATIO_MAX );
+
+		_sliderCRTGraninessX = new EditableSlider( Qt::Orientation::Horizontal, _groupboxCRT );
+		_groupboxCRT->addWidget( new QLabel( "Graniness X", _groupboxCRT ) );
+		_groupboxCRT->addWidget( _sliderCRTGraninessX );
+		_sliderCRTGraninessX->setMinimum( CRT_GRANINESS_MIN );
+		_sliderCRTGraninessX->setMaximum( CRT_GRANINESS_MAX );
+
+		_sliderCRTGraninessY = new EditableSlider( Qt::Orientation::Horizontal, _groupboxCRT );
+		_groupboxCRT->addWidget( new QLabel( "Graniness Y", _groupboxCRT ) );
+		_groupboxCRT->addWidget( _sliderCRTGraninessY );
+		_sliderCRTGraninessY->setMinimum( CRT_GRANINESS_MIN );
+		_sliderCRTGraninessY->setMaximum( CRT_GRANINESS_MAX );
+
+		_sliderCRTVignetteRoundness = new EditableSlider( Qt::Orientation::Horizontal, _groupboxCRT );
+		_groupboxCRT->addWidget( new QLabel( "Vignette roundness", _groupboxCRT ) );
+		_groupboxCRT->addWidget( _sliderCRTVignetteRoundness );
+		_sliderCRTVignetteRoundness->setMinimum( CRT_VIGNETTE_ROUNDNESS_MIN );
+		_sliderCRTVignetteRoundness->setMaximum( CRT_VIGNETTE_ROUNDNESS_MAX );
+
+		_sliderCRTVignetteIntensity = new EditableSlider( Qt::Orientation::Horizontal, _groupboxCRT );
+		_groupboxCRT->addWidget( new QLabel( "Vignette intensity", _groupboxCRT ) );
+		_groupboxCRT->addWidget( _sliderCRTVignetteIntensity );
+		_sliderCRTVignetteIntensity->setMinimum( CRT_VIGNETTE_INTENSITY_MIN );
+		_sliderCRTVignetteIntensity->setMaximum( CRT_VIGNETTE_INTENSITY_MAX );
+
+		_sliderCRTBrightness = new EditableSlider( Qt::Orientation::Horizontal, _groupboxCRT );
+		_groupboxCRT->addWidget( new QLabel( "Brightness", _groupboxCRT ) );
+		_groupboxCRT->addWidget( _sliderCRTBrightness );
+		_sliderCRTBrightness->setMinimum( CRT_BRIGHTNESS_MIN );
+		_sliderCRTBrightness->setMaximum( CRT_BRIGHTNESS_MAX );
+
 		// Connect widget callbacks.
 		using namespace Renderer;
 		connect(
@@ -327,6 +379,67 @@ namespace VTX::UI::QT::Widget::Library
 		);
 
 		connect(
+			_groupboxCRT,
+			&HideableGroupBox::toggled,
+			[ this ]( const bool p_state ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_CRT, bool>( p_state ); }
+		);
+
+		connect(
+			_sliderCRTCurvatureX,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::CRT_CURVATURE_X, float>( p_value ); }
+		);
+
+		connect(
+			_sliderCRTCurvatureY,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::CRT_CURVATURE_Y, float>( p_value ); }
+		);
+
+		connect(
+			_sliderCRTRatio,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::CRT_RATIO, float>( p_value ); }
+		);
+
+		connect(
+			_sliderCRTGraninessX,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::CRT_GRANINESS_X, float>( p_value ); }
+		);
+
+		connect(
+			_sliderCRTGraninessY,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::CRT_GRANINESS_Y, float>( p_value ); }
+		);
+
+		connect(
+			_sliderCRTVignetteRoundness,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::CRT_VIGNETTE_ROUNDNESS, float>( p_value ); }
+		);
+
+		connect(
+			_sliderCRTVignetteIntensity,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::CRT_VIGNETTE_INTENSITY, float>( p_value ); }
+		);
+
+		connect(
+			_sliderCRTBrightness,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::CRT_BRIGHTNESS, float>( p_value ); }
+		);
+
+		connect(
 			_groupboxSelection,
 			&HideableGroupBox::toggled,
 			[ this ]( const bool p_state )
@@ -368,8 +481,17 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker22( _groupboxPixelize );
 		const QSignalBlocker blocker23( _sliderPixelizeSize );
 		const QSignalBlocker blocker24( _checkBoxPixelizeBackground );
-		const QSignalBlocker blocker25( _groupboxSelection );
-		const QSignalBlocker blocker26( _colorPickerSelection );
+		const QSignalBlocker blocker25( _groupboxCRT );
+		const QSignalBlocker blocker26( _sliderCRTCurvatureX );
+		const QSignalBlocker blocker27( _sliderCRTCurvatureY );
+		const QSignalBlocker blocker28( _sliderCRTRatio );
+		const QSignalBlocker blocker29( _sliderCRTGraninessX );
+		const QSignalBlocker blocker30( _sliderCRTGraninessY );
+		const QSignalBlocker blocker31( _sliderCRTVignetteRoundness );
+		const QSignalBlocker blocker32( _sliderCRTVignetteIntensity );
+		const QSignalBlocker blocker33( _sliderCRTBrightness );
+		const QSignalBlocker blocker34( _groupboxSelection );
+		const QSignalBlocker blocker35( _colorPickerSelection );
 
 		_comboBoxShadingMode->setCurrentIndex( int( preset.shadingMode ) );
 		_colorPickerBackground->setColor( Helper::toQColor( preset.colorBackground ) );
@@ -396,6 +518,15 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxPixelize->setChecked( preset.activePixelize );
 		_sliderPixelizeSize->setValue( preset.pixelizeSize );
 		_checkBoxPixelizeBackground->setChecked( preset.pixelizeBackground );
+		_groupboxCRT->setChecked( preset.activeCRT );
+		_sliderCRTCurvatureX->setValue( preset.crtCurvatureX );
+		_sliderCRTCurvatureY->setValue( preset.crtCurvatureY );
+		_sliderCRTRatio->setValue( preset.crtRatio );
+		_sliderCRTGraninessX->setValue( preset.crtGraninessX );
+		_sliderCRTGraninessY->setValue( preset.crtGraninessY );
+		_sliderCRTVignetteRoundness->setValue( preset.crtVignetteRoundness );
+		_sliderCRTVignetteIntensity->setValue( preset.crtVignetteIntensity );
+		_sliderCRTBrightness->setValue( preset.crtBrightness );
 		_groupboxSelection->setChecked( preset.activeSelection );
 		_colorPickerSelection->setColor( Helper::toQColor( preset.colorSelection ) );
 
