@@ -2,6 +2,7 @@
 #include <cassert>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
+#include <util/math.hpp>
 #include <util/math/grid.hpp>
 
 namespace
@@ -11,34 +12,138 @@ namespace
 	using namespace VTX::Util;
 	using namespace VTX::Util::Math;
 
-	constexpr double MAX_DISTANCE_FOR_DISULFIDE_BOND_SQR = 9.0;
-
-	void _recomputeDisulfides( Topology & p_topology, const Frame & p_frame, const Grid<Index> & p_cellList )
+	// Add a bond to the topology.
+	void _addBond( Topology & p_topology, const Index p_firstAtomIndex, const Index p_secondAtomIndex )
 	{
-		for ( const size_t sulfurAtom1 : p_sulfurAtoms )
+		p_topology.bondPairAtomIndexes.emplace_back( p_firstAtomIndex );
+		p_topology.bondPairAtomIndexes.emplace_back( p_secondAtomIndex );
+		p_topology.bondOrders.emplace_back( Core::ChemDB::Bond::ORDER::SINGLE );
+	}
+
+	// Test if two atoms can form a disulfide bond (CYS-SG).
+	void _testDisulfideBond(
+		Topology &	  p_topology,
+		const Frame & p_frame,
+		const Index	  p_firstAtomIndex,
+		const Index	  p_secondAtomIndex
+	)
+	{
+		constexpr double MAX_DISTANCE_FOR_DISULFIDE_BOND_SQR = 9.0;
+
+		const float sqrDistance = length2( p_frame[ p_firstAtomIndex ] - p_frame[ p_secondAtomIndex ] );
+		if ( sqrDistance < MAX_DISTANCE_FOR_DISULFIDE_BOND_SQR )
 		{
-			const std::vector<size_t> & neighbours = p_cellList.getNeighbours( p_frame.positions()[ sulfurAtom1 ] );
+			_addBond( p_topology, p_firstAtomIndex, p_secondAtomIndex );
+		}
+	}
 
-			for ( const size_t neighbour : neighbours )
-			{
-				const std::vector<size_t> & sulfurVectorInNeighbour = p_cellList.getCysteineSulfurAtoms( neighbour );
+	// Recompute disulfide bonds by checking all pairs of atoms in the disulfide grid.
+	void _recomputeDisulfides( Topology & p_topology, const Frame & p_frame, const Grid<Index> & p_disulfideGrid )
+	{
+		for ( const auto & [ cellPosition, cell ] : p_disulfideGrid )
+		{
+			const size_t cellDenseIndex = p_disulfideGrid.denseIndex( cellPosition );
 
-				for ( const size_t sulfurAtom2 : sulfurVectorInNeighbour )
+			p_disulfideGrid.forEachNeighbourCell(
+				cellPosition,
+				[ & ](
+					const Grid<Index>::CellPosition & p_neighbourPosition, const Grid<Index>::Cell & p_neighbourCell
+				)
 				{
-					if ( sulfurAtom1 <= sulfurAtom2 )
+					// Current cell.
+					if ( cellPosition == p_neighbourPosition )
 					{
-						continue;
+						for ( size_t firstIndex = 0; firstIndex < cell.size(); ++firstIndex )
+						{
+							for ( size_t secondIndex = 0; secondIndex < firstIndex; ++secondIndex )
+							{
+								_testDisulfideBond( p_topology, p_frame, cell[ firstIndex ], cell[ secondIndex ] );
+							}
+						}
+
+						return;
 					}
 
-					const double sqrDist
-						= _sqrDistance( p_frame.positions()[ sulfurAtom1 ], p_frame.positions()[ sulfurAtom2 ] );
+					const size_t neighbourDenseIndex = p_disulfideGrid.denseIndex( p_neighbourPosition );
 
-					if ( sqrDist < MAX_SQR_DISTANCE_FOR_DISULFIDE_BOND )
+					// Avoid multiples checks.
+					if ( cellDenseIndex < neighbourDenseIndex )
 					{
-						p_frame.add_bond( sulfurAtom1, sulfurAtom2 );
+						return;
+					}
+
+					// Others cells.
+					for ( const Index firstAtomIndex : cell )
+					{
+						for ( const Index secondAtomIndex : p_neighbourCell )
+						{
+							_testDisulfideBond( p_topology, p_frame, firstAtomIndex, secondAtomIndex );
+						}
 					}
 				}
-			}
+			);
+		}
+	}
+
+	// Recompute bonds by checking all pairs of atoms in the candidate atom indexes.
+	void _recomputeCandidates(
+		Topology &				   p_topology,
+		const Frame &			   p_frame,
+		const Grid<Index> &		   p_atomGrid,
+		const std::vector<Index> & p_candidateAtomIndexes,
+		const std::vector<bool> &  p_isCandidateAtom
+	)
+	{
+		constexpr float CANDIDATE_BOND_CUTOFF_SQR = 3.48f * 2.f * 3.48f * 2.f;
+		constexpr float MIN_BOND_DISTANCE_SQR	  = 0.03f;
+
+		for ( const Index firstAtomIndex : p_candidateAtomIndexes )
+		{
+			const Core::ChemDB::Atom::SYMBOL firstAtomSymbol = p_topology.atomSymbols[ firstAtomIndex ];
+
+			p_atomGrid.forEachNeighbourCellAt(
+				p_frame[ firstAtomIndex ],
+				[ & ]( const Grid<Index>::CellPosition &, const Grid<Index>::Cell & p_neighbourCell )
+				{
+					for ( const Index secondAtomIndex : p_neighbourCell )
+					{
+						if ( secondAtomIndex == firstAtomIndex )
+						{
+							continue;
+						}
+						if ( p_isCandidateAtom[ secondAtomIndex ] && secondAtomIndex < firstAtomIndex )
+						{
+							continue;
+						}
+
+						const float sqrDistance = length2( p_frame[ firstAtomIndex ] - p_frame[ secondAtomIndex ] );
+
+						if ( sqrDistance > CANDIDATE_BOND_CUTOFF_SQR || sqrDistance < MIN_BOND_DISTANCE_SQR )
+						{
+							continue;
+						}
+
+						const Core::ChemDB::Atom::SYMBOL secondAtomSymbol = p_topology.atomSymbols[ secondAtomIndex ];
+
+						const float atom1Radius
+							= Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ toUnderlying( firstAtomSymbol ) ];
+						const float atom2Radius
+							= Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ toUnderlying( secondAtomSymbol ) ];
+						const float radiusDistance	  = atom1Radius > atom2Radius ? atom1Radius : atom2Radius;
+						const float radiusSqrDistance = radiusDistance * radiusDistance;
+
+						if ( sqrDistance < radiusSqrDistance )
+						{
+							// Discard H-H.
+							if ( firstAtomSymbol != Core::ChemDB::Atom::SYMBOL::A_H
+								 || secondAtomSymbol != Core::ChemDB::Atom::SYMBOL::A_H )
+							{
+								_addBond( p_topology, firstAtomIndex, secondAtomIndex );
+							}
+						}
+					}
+				}
+			);
 		}
 	}
 
@@ -61,13 +166,14 @@ namespace VTX::IO::Util::BondRecomputation
 		VTX::Util::Math::Grid<Index> atomGrid;
 		VTX::Util::Math::Grid<Index> disulfideGrid;
 		std::vector<Index>			 candidateAtomIndexes;
+		std::vector<bool>			 isCandidateAtom( p_frame.size(), false );
 
-		const auto matches = []( const auto & p_values, const auto p_value )
-		{ return p_values.empty() || std::find( p_values.begin(), p_values.end(), p_value ) != p_values.end(); };
+		const auto contains = []( const auto & p_values, const auto p_value )
+		{ return std::find( p_values.begin(), p_values.end(), p_value ) != p_values.end(); };
 
-		const bool acceptUnknownAtom
-			= std::find( p_filter.atomSymbols.begin(), p_filter.atomSymbols.end(), Core::ChemDB::Atom::SYMBOL::UNKNOWN )
-			  != p_filter.atomSymbols.end();
+		const bool acceptUnknownAtom   = contains( p_filter.atomSymbols, Core::ChemDB::Atom::SYMBOL::UNKNOWN );
+		const bool hasCandidateFilters = not p_filter.atomSymbols.empty() || not p_filter.residueSymbols.empty()
+										 || not p_filter.categories.empty();
 
 		// Loop over atoms to find canditates.
 		for ( Index atomIndex = 0; atomIndex < p_frame.size(); ++atomIndex )
@@ -92,15 +198,19 @@ namespace VTX::IO::Util::BondRecomputation
 				disulfideGrid.add( atomIndex, p_frame[ atomIndex ] );
 			}
 
-			if ( atomSymbol == Core::ChemDB::Atom::SYMBOL::UNKNOWN && not acceptUnknownAtom )
+			if ( hasCandidateFilters && atomSymbol == Core::ChemDB::Atom::SYMBOL::UNKNOWN && not acceptUnknownAtom )
 			{
 				continue;
 			}
 
-			if ( matches( p_filter.atomSymbols, atomSymbol ) && matches( p_filter.residueSymbols, residueSymbol )
-				 && matches( p_filter.categories, residueCategory ) )
+			const bool isCandidate = not hasCandidateFilters || contains( p_filter.atomSymbols, atomSymbol )
+									 || contains( p_filter.residueSymbols, residueSymbol )
+									 || contains( p_filter.categories, residueCategory );
+
+			if ( isCandidate )
 			{
 				candidateAtomIndexes.emplace_back( atomIndex );
+				isCandidateAtom[ atomIndex ] = true;
 			}
 		}
 
@@ -110,72 +220,7 @@ namespace VTX::IO::Util::BondRecomputation
 		}
 
 		_recomputeDisulfides( p_topology, p_frame, disulfideGrid );
-		//_recomputeBondsOfNonStandardResidues( p_frame, cellList );
+		_recomputeCandidates( p_topology, p_frame, atomGrid, candidateAtomIndexes, isCandidateAtom );
 	}
-
-	/*
-	void BondRecomputation::_recomputeBondsOfNonStandardResidues(
-		chemfiles::Frame & frame,
-		const CellList &   p_cellList
-	)
-	{
-		const double cutoff				 = 3.48 * 2.;
-		const double cutoffPow2			 = cutoff * cutoff;
-		const int	 hydrogenSymbolValue = int( VTX::Core::ChemDB::Atom::SYMBOL::A_H );
-
-		const std::vector<std::vector<size_t>> & atomsToCheck = p_cellList.getNonStdAtoms();
-
-		for ( size_t cellIndex = 0; cellIndex < atomsToCheck.size(); cellIndex++ )
-		{
-			const size_t atomsInCell = atomsToCheck[ cellIndex ].size();
-
-			for ( size_t nghb = 0; nghb < p_cellList.getNeighbourList()[ cellIndex ].size(); nghb++ )
-			{
-				const size_t neighborCellIndex = p_cellList.getNeighbourList()[ cellIndex ][ nghb ];
-				const size_t atomNumInCell	   = p_cellList.getCellList()[ neighborCellIndex ].size();
-
-				// const bool selfCell = ( cellIndex == neighborCellIndex );
-
-				for ( size_t i = 0; i < atomsInCell; i++ )
-				{
-					const size_t			indexAtom1	= atomsToCheck[ cellIndex ][ i ];
-					const chemfiles::Atom & atom1		= frame.topology()[ indexAtom1 ];
-					const int				symbolAtom1 = int( atom1.atomic_number().value_or( 0 ) );
-
-					for ( size_t j = 0; j < atomNumInCell; j++ )
-					{
-						const size_t indexAtom2 = p_cellList.getCellList()[ neighborCellIndex ][ j ];
-
-						const double interAtomicSqrDist
-							= _sqrDistance( frame.positions()[ indexAtom1 ], frame.positions()[ indexAtom2 ] );
-
-						// Perform distance test and ignore atoms with almost the same coordinates
-						if ( ( interAtomicSqrDist > cutoffPow2 ) || ( interAtomicSqrDist < 0.03 ) )
-						{
-							continue;
-						}
-
-						const chemfiles::Atom & atom2		= frame.topology()[ indexAtom2 ];
-						const int				symbolAtom2 = int( atom2.atomic_number().value_or( 0 ) );
-
-						const float atom1Radius		  = VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ symbolAtom1 ];
-						const float atom2Radius		  = VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ symbolAtom2 ];
-						const float radiusDistance	  = atom1Radius > atom2Radius ? atom1Radius : atom2Radius;
-						const float radiusSqrDistance = radiusDistance * radiusDistance;
-
-						if ( interAtomicSqrDist < radiusSqrDistance )
-						{
-							// Prevent hydrogen atoms from bonding with each other
-							if ( symbolAtom1 != hydrogenSymbolValue || symbolAtom2 != hydrogenSymbolValue )
-							{
-								frame.add_bond( indexAtom1, indexAtom2 );
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	*/
 
 } // namespace VTX::IO::Util::BondRecomputation

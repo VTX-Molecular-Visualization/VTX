@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <functional>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace VTX::Util::Math
@@ -24,7 +25,7 @@ namespace VTX::Util::Math
 		 */
 		DenseGrid(
 			const Vec3f & p_worldOrigin = Vec3f( 0.f ),
-			const Vec3f & p_cellSize	= Vec3f( 10.f ),
+			const Vec3f & p_cellSize	= Vec3f( 8.f ),
 			const Vec3u & p_size		= Vec3u( 0u )
 		) : _worldOrigin( p_worldOrigin ), _cellSize( p_cellSize ), _size( p_size )
 		{
@@ -169,6 +170,36 @@ namespace VTX::Util::Math
 		auto begin() const { return _data.begin(); }
 
 		auto end() const { return _data.end(); }
+
+		/**
+		 * @brief Visitor function to iterate over all neighbour cells.
+		 */
+		template<typename F>
+		void forEachNeighbourCell( const CellPosition & p_gridPosition, F && p_func ) const
+		{
+			for ( int z = -1; z <= 1; ++z )
+			{
+				for ( int y = -1; y <= 1; ++y )
+				{
+					for ( int x = -1; x <= 1; ++x )
+					{
+						const CellPosition neighbourPosition = p_gridPosition + CellPosition( x, y, z );
+						const auto		   it				 = _data.find( neighbourPosition );
+
+						if ( it != _data.end() )
+						{
+							p_func( it->first, it->second );
+						}
+					}
+				}
+			}
+		}
+
+		template<typename F>
+		void forEachNeighbourCellAt( const Vec3f & p_worldPosition, F && p_func ) const
+		{
+			forEachNeighbourCell( gridPosition( p_worldPosition ), std::forward<F>( p_func ) );
+		}
 
 		/**
 		 * @brief Get the grid size derived from occupied cells bounds.
