@@ -28,11 +28,11 @@ namespace
 
 	// Test if two atoms can form a disulfide bond (CYS-SG).
 	void _testDisulfideBond(
-		Topology &	  p_topology,
-		const Frame & p_frame,
-		const Index	  p_firstAtomIndex,
-		const Index	  p_secondAtomIndex,
-		size_t &	  p_recomputedBondCount
+		Topology &			   p_topology,
+		std::span<const Vec3f> p_frame,
+		const Index			   p_firstAtomIndex,
+		const Index			   p_secondAtomIndex,
+		size_t &			   p_recomputedBondCount
 	)
 	{
 		constexpr double MAX_DISTANCE_FOR_DISULFIDE_BOND_SQR = 9.0;
@@ -46,10 +46,10 @@ namespace
 
 	// Recompute disulfide bonds by checking all pairs of atoms in the disulfide grid.
 	void _recomputeDisulfides(
-		Topology &			p_topology,
-		const Frame &		p_frame,
-		const Grid<Index> & p_disulfideGrid,
-		size_t &			p_recomputedBondCount
+		Topology &			   p_topology,
+		std::span<const Vec3f> p_frame,
+		const Grid<Index> &	   p_disulfideGrid,
+		size_t &			   p_recomputedBondCount
 	)
 	{
 		for ( const auto & [ cellPosition, cell ] : p_disulfideGrid )
@@ -104,7 +104,7 @@ namespace
 	// Recompute bonds by checking all pairs of atoms in the candidate atom indexes.
 	void _recomputeCandidates(
 		Topology &				   p_topology,
-		const Frame &			   p_frame,
+		std::span<const Vec3f>	   p_frame,
 		const Grid<Index> &		   p_atomGrid,
 		const std::vector<Index> & p_candidateAtomIndexes,
 		const std::vector<bool> &  p_isCandidateAtom,
@@ -170,9 +170,9 @@ namespace VTX::IO::Util::BondRecomputation
 {
 
 	void recomputeBonds(
-		VTX::Core::Struct::Topology &	 p_topology,
-		const VTX::Core::Struct::Frame & p_frame,
-		const BondRecomputeFilter &		 p_filter
+		VTX::Core::Struct::Topology & p_topology,
+		std::span<const Vec3f>		  p_frame,
+		const BondRecomputeFilter &	  p_filter
 	)
 	{
 		VTX::Util::ScopedChrono chrono( "BondRecomputation::recomputeBonds" );
@@ -188,10 +188,7 @@ namespace VTX::IO::Util::BondRecomputation
 		const auto contains = []( const auto & p_values, const auto p_value )
 		{ return std::find( p_values.begin(), p_values.end(), p_value ) != p_values.end(); };
 
-		const bool acceptUnknownAtom   = contains( p_filter.atomSymbols, Core::ChemDB::Atom::SYMBOL::UNKNOWN );
-		const bool hasCandidateFilters = not p_filter.atomSymbols.empty() || not p_filter.residueSymbols.empty()
-										 || not p_filter.categories.empty();
-
+		const bool acceptUnknownAtom = contains( p_filter.atomSymbols, Core::ChemDB::Atom::SYMBOL::UNKNOWN );
 		// Loop over atoms to find canditates.
 		for ( Index atomIndex = 0; atomIndex < p_frame.size(); ++atomIndex )
 		{
@@ -215,12 +212,12 @@ namespace VTX::IO::Util::BondRecomputation
 				disulfideGrid.add( atomIndex, p_frame[ atomIndex ] );
 			}
 
-			if ( hasCandidateFilters && atomSymbol == Core::ChemDB::Atom::SYMBOL::UNKNOWN && not acceptUnknownAtom )
+			if ( atomSymbol == Core::ChemDB::Atom::SYMBOL::UNKNOWN && not acceptUnknownAtom )
 			{
 				continue;
 			}
 
-			const bool isCandidate = not hasCandidateFilters || contains( p_filter.atomSymbols, atomSymbol )
+			const bool isCandidate = contains( p_filter.atomSymbols, atomSymbol )
 									 || contains( p_filter.residueSymbols, residueSymbol )
 									 || contains( p_filter.categories, residueCategory );
 

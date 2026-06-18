@@ -25,7 +25,7 @@ namespace VTX::Util::Math
 		 */
 		DenseGrid(
 			const Vec3f & p_worldOrigin = Vec3f( 0.f ),
-			const Vec3f & p_cellSize	= Vec3f( 8.f ),
+			const Vec3f & p_cellSize	= Vec3f( 10.f ),
 			const Vec3u & p_size		= Vec3u( 0u )
 		) : _worldOrigin( p_worldOrigin ), _cellSize( p_cellSize ), _size( p_size )
 		{
@@ -123,7 +123,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Constructors.
 		 */
-		Grid( const Vec3f & p_worldOrigin = Vec3f( 0.f ), const Vec3f & p_cellSize = Vec3f( 10.f ) ) :
+		Grid( const Vec3f & p_worldOrigin = Vec3f( 0.f ), const Vec3f & p_cellSize = Vec3f( 8.f ) ) :
 			_worldOrigin( p_worldOrigin ), _cellSize( p_cellSize )
 		{
 		}

@@ -22,7 +22,7 @@ namespace VTX::IO::Util::BondRecomputation
 	 */
 	void recomputeBonds(
 		Core::Struct::Topology &	p_topology,
-		const Core::Struct::Frame & p_frame,
+		std::span<const Vec3f>		p_frame,
 		const BondRecomputeFilter & p_filter = BondRecomputeFilter {}
 	);
 

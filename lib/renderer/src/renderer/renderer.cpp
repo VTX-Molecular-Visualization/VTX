@@ -77,7 +77,7 @@ namespace VTX::Renderer
 	{
 		_context.clear();
 		_graph.clear();
-		_voxels = {};
+		_voxels		   = {};
 		_dirtyRenderer = Cache::E_RENDERER_DIRTY::NONE;
 		_dirtySystems.clear();
 		_dirtyRepresentations.clear();
@@ -226,6 +226,15 @@ namespace VTX::Renderer
 			}
 
 			dirtyRepresentations[ dirty.handle ] |= dirty.flags;
+		}
+
+		for ( const auto & [ system, flags ] : dirtySystems )
+		{
+			if ( hasDirty( flags, SystemDirty::STRUCTURE ) )
+			{
+				_dirtyRenderer |= RendererDirty::ALL;
+				break;
+			}
 		}
 
 		const bool fullRefresh				   = Util::Enum::hasAllBits( _dirtyRenderer, RendererDirty::ALL );
