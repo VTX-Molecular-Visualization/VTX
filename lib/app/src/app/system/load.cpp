@@ -28,6 +28,19 @@ namespace VTX::App::System
 
 	namespace
 	{
+		size_t _getCurrentAtomPositionCount( const TrajectorySingleFrame & p_trajectory ) noexcept
+		{ return p_trajectory.atomPositions.size(); }
+
+		size_t _getCurrentAtomPositionCount( const TrajectoryFullBuffer & p_trajectory ) noexcept
+		{
+			if ( p_trajectory.frameCollection.empty() )
+			{
+				return 0;
+			}
+
+			return p_trajectory.frameCollection[ p_trajectory.genericData.currentFrameIndex ].size();
+		}
+
 		/**
 		 * @brief Event triggered with the end of the deliver free function.
 		 */
@@ -107,9 +120,12 @@ namespace VTX::App::System
 		{
 			pendingData.reader.emplace( pendingData.sourcePath, pendingData.readerOption, p_stopToken );
 		}
-		pendingData.reader->get(
-			ECS::getCtx<Core::ChemDB::Category::Dictionary>(), pendingData.topology, pendingData.metadata
-		);
+		if ( not pendingData.onlyTrajectory )
+		{
+			pendingData.reader->get(
+				ECS::getCtx<Core::ChemDB::Category::Dictionary>(), pendingData.topology, pendingData.metadata
+			);
+		}
 
 		if ( p_stopToken.stop_requested() )
 		{
@@ -207,8 +223,13 @@ namespace VTX::App::System
 	{
 		if ( p_data.onlyTrajectory && p_data.entity )
 		{
-			auto topology = REG().try_get<Core::Struct::Topology>( p_data.entity.value() );
-			if ( topology && topology->getAtomCount() == p_data.topology.getAtomCount() )
+			auto &		 topology		  = REG().get<Core::Struct::Topology>( p_data.entity.value() );
+			const size_t pendingAtomCount = std::visit(
+				[]( const auto & p_trajectory ) { return _getCurrentAtomPositionCount( p_trajectory ); },
+				p_data.trajectoryData
+			);
+
+			if ( topology.getAtomCount() == pendingAtomCount )
 			{
 				addTrajectory( *p_data.entity, p_data );
 
@@ -224,8 +245,8 @@ namespace VTX::App::System
 				VTX::VTX_ERROR(
 					"File {} has different atom count. ({}/{})",
 					p_data.sourcePath.string(),
-					topology->getAtomCount(),
-					p_data.topology.getAtomCount()
+					topology.getAtomCount(),
+					pendingAtomCount
 				);
 			}
 		}

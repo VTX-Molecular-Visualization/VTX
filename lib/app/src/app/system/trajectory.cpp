@@ -23,9 +23,7 @@ namespace VTX::App::System
 	}
 
 	bool hasMultiFrameTrajectory( const Entity & p_entity ) noexcept
-	{
-		return REG().any_of<TrajectoryFullBuffer>( p_entity );
-	}
+	{ return REG().any_of<TrajectoryFullBuffer>( p_entity ); }
 
 	void get( const Entity & p_entity, GenericTrajectory *& p_trajPtr ) noexcept
 	{
@@ -85,14 +83,10 @@ namespace VTX::App::System
 		inline uint frameCount() const { return static_cast<uint>( _traj.get().lastFrameAvailable ); }
 
 		inline std::span<const Vec3f> getAtomPositions( const uint & p_ ) const
-		{
-			return _traj.get().frameCollection[ p_ ];
-		}
+		{ return _traj.get().frameCollection[ p_ ]; }
 
 		inline std::span<const Vec3f> getCurrentAtomPositions() const
-		{
-			return _traj.get().frameCollection[ _traj.get().genericData.currentFrameIndex ];
-		}
+		{ return _traj.get().frameCollection[ _traj.get().genericData.currentFrameIndex ]; }
 
 	  private:
 		std::reference_wrapper<const TrajectoryFullBuffer> _traj;
