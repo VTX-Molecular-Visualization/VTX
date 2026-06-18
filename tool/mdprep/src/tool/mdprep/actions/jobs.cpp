@@ -42,7 +42,9 @@ namespace VTX::Tool::Mdprep::Actions
 				goto theEnd;
 			}
 			backends::Gromacs::prepareStructure( _impl->thrData, dest, p_instr );
-
+			VTX::FilePath					  resultDir = p_instr.rootDir / "md_ready";
+			backends::Gromacs::MdInstructions packInstructions;
+			backends::Gromacs::pack( resultDir, p_instr.outputs, packInstructions );
 			if ( _impl->thrData.stopToken.stop_requested() )
 			{
 				goto theEnd;
@@ -58,7 +60,7 @@ namespace VTX::Tool::Mdprep::Actions
 				App::ACTION().execute<App::Action::Visibility::HideEverything>();
 				VTX_INFO(
 					"System written at : {}",
-					fmt::format( fmt::runtime( std::string( App::LOG_LINK_FORMAT ) ), p_instr.rootDir.string() )
+					fmt::format( fmt::runtime( std::string( App::LOG_LINK_FORMAT ) ), resultDir.string() )
 				);
 			}
 			else
@@ -106,6 +108,13 @@ namespace VTX::Tool::Mdprep::Actions
 	{
 		if ( not App::System::isAnythingVisible() )
 		{
+			App::ACTION().subscribe(
+				App::Action::QueuedAction(
+					TriggerCheckReportEvent(),
+					Mdprep::Gateway::CheckReport {
+						Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField, 0, true, "Nothing to check." }
+				)
+			);
 			goto theEnd;
 		}
 		if ( _impl->thrData.thrRef )

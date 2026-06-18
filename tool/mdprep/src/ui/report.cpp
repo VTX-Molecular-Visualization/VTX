@@ -187,6 +187,12 @@ namespace VTX::Tool::Mdprep::ui
 		Util::EventHub::ScopedConnection _visibilityChanged {
 			App::REG().on_update<App::System::Visibility>().connect<&ReportManager::_Impl::visibilityChanged>( this )
 		};
+		Util::EventHub::ScopedConnection _visibilityNew {
+			App::REG().on_construct<App::System::Visibility>().connect<&ReportManager::_Impl::visibilityChanged>( this )
+		};
+		Util::EventHub::ScopedConnection _visibilityDel {
+			App::REG().on_destroy<App::System::Visibility>().connect<&ReportManager::_Impl::visibilityChanged>( this )
+		};
 		Util::EventHub::ScopedConnection _reportReception {
 			App::HUB().connect<Gateway::CheckReport, &ReportManager::_Impl::_receiveReport>( this )
 		};
