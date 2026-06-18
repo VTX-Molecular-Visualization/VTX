@@ -51,9 +51,7 @@ namespace VTX::IO
 		_Impl( const FilePath & p_path, const READER_OPTION p_options, StopToken & p_stopToken ) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
 			_trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
-		{
-			_init();
-		}
+		{ _init(); }
 
 		_Impl(
 			MemoryBuffer &&		p_buffer,
@@ -69,9 +67,7 @@ namespace VTX::IO
 													  chemfiles::guess_format( p_path.string() )
 												  )
 											  )
-		{
-			_init();
-		}
+		{ _init(); }
 
 		size_t frameCount() const { return _trajectory.size(); }
 
@@ -134,11 +130,11 @@ namespace VTX::IO
 
 				_currentResidue = &( ( *_residues )[ residueIdx ] );
 
-				std::string		  chainName				= _residueStringProp( "chainname" );
-				const std::string residueName			= _currentResidue->name();
-				const bool		  isEmptyResidue		= _currentResidue->size() == 0;
-				Index			  residueFirstAtomIndex = isEmptyResidue ? static_cast<Index>( _currentFrame.size() )
-																		 : static_cast<Index>( *_currentResidue->begin() );
+				std::string		  chainName		 = _residueStringProp( "chainname" );
+				const std::string residueName	 = _currentResidue->name();
+				const bool		  isEmptyResidue = _currentResidue->size() == 0;
+				Index residueFirstAtomIndex		 = isEmptyResidue ? static_cast<Index>( _currentFrame.size() )
+																  : static_cast<Index>( *_currentResidue->begin() );
 				coveredAtomCount += static_cast<Index>( _currentResidue->size() );
 
 				if ( residueIdx > 0 && chainName != previousChainName && seenChainNames.contains( chainName ) )
@@ -249,7 +245,6 @@ namespace VTX::IO
 			}
 
 			_fillBonds( p_metadata, p_topology, recomputableAtomIndexes, recomputableBondOrderIndexes );
-			get( 0, _firstFrame );
 			_recomputeMissingData(
 				p_metadata, p_topology, _firstFrame, recomputableAtomIndexes, recomputableBondOrderIndexes
 			);
@@ -266,6 +261,7 @@ namespace VTX::IO
 			{
 				p_positions = std::move( _firstFrame );
 				_firstFrame.clear();
+				return;
 			}
 
 			_currentFrameIdx = p_frameIndex;
@@ -315,10 +311,10 @@ namespace VTX::IO
 				throw IOException( "Trajectory is empty" );
 			}
 
-			_currentFrame = _trajectory.read();
-			_topology	  = _currentFrame.topology();
-			_residues	  = &_topology.residues();
-			_bonds		  = &_topology.bonds();
+			get( 0, _firstFrame );
+			_topology = _currentFrame.topology();
+			_residues = &_topology.residues();
+			_bonds	  = &_topology.bonds();
 
 			if ( _stopToken.get().stop_requested() )
 			{
@@ -558,7 +554,15 @@ namespace VTX::IO
 			}
 
 			_fillBonds( p_metadata, topology, recomputableAtomIndexes, recomputableBondOrderIndexes, oldAtomToNewAtom );
-			get( 0, _firstFrame );
+			{
+				Frame remappedFirstFrame;
+				remappedFirstFrame.resize( _atomOriginalIndexes.size() );
+				for ( Index atomIndex = 0; atomIndex < static_cast<Index>( _atomOriginalIndexes.size() ); ++atomIndex )
+				{
+					remappedFirstFrame[ atomIndex ] = _firstFrame[ _atomOriginalIndexes[ atomIndex ] ];
+				}
+				_firstFrame = std::move( remappedFirstFrame );
+			}
 			_recomputeMissingData(
 				p_metadata, topology, _firstFrame, recomputableAtomIndexes, recomputableBondOrderIndexes
 			);
@@ -826,9 +830,7 @@ namespace VTX::IO
 		}
 
 		static Vec3f _toVec3f( const chemfiles::Vector3D & p_position )
-		{
-			return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] );
-		}
+		{ return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] ); }
 	};
 
 	void SystemReader::Del::operator()( _Impl * p_impl ) noexcept { delete p_impl; }
@@ -848,9 +850,7 @@ namespace VTX::IO
 	}
 
 	void SystemReader::get( const Category::Dictionary & p_d, Topology & p_t, Metadata & p_m )
-	{
-		_impl->get( p_d, p_t, p_m );
-	}
+	{ _impl->get( p_d, p_t, p_m ); }
 
 	void SystemReader::get( const FrameIndex & p_i, Frame & p_ ) { _impl->get( p_i, p_ ); }
 
