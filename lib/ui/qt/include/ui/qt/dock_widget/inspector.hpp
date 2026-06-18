@@ -7,7 +7,7 @@
 #include "ui/qt/widget/library/representation.hpp"
 #include "ui/qt/widget/selection.hpp"
 #include "ui/qt/widget/viewpoint.hpp"
-#include <QComboBox>
+#include <QToolButton>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -20,6 +20,7 @@ namespace VTX::UI::QT::DockWidget
 		Inspector( QWidget * );
 
 	  private:
+		QPointer<QToolButton>					  _lockButton;
 		QPointer<QWidget>						  _filler;
 		QPointer<Widget::Selection>				  _selectionListWidget;
 		QPointer<Widget::Library::GraphicsConfig> _graphicsConfigWidget;

@@ -17,19 +17,9 @@ namespace VTX::IO::Util::SecondaryStructure
 
 		std::vector<Core::ChemDB::SecondaryStructure::TYPE> & types = p_topology.residueSecondaryStructureTypes;
 
-		for ( uint chainIdx = 0; chainIdx < p_topology.getChainCount();
-			  ++chainIdx ) // Assume that chains are disjointed
+		// Assume that chains are disjointed.
+		for ( uint chainIdx = 0; chainIdx < p_topology.getChainCount(); ++chainIdx )
 		{
-			/*
-			const Model::Chain * const chainPtr = p_system.getChain( chainIdx );
-
-			if ( chainPtr == nullptr )
-				continue;
-
-
-			const Model::Chain & chain		  = *chainPtr;
-			*/
-
 			const size_t residueCount = p_topology.chainResidueCounts[ chainIdx ];
 
 			// Not enought atoms.
@@ -74,13 +64,6 @@ namespace VTX::IO::Util::SecondaryStructure
 			for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 			{
 				const size_t currentResidueIndex = idxFirstResidue + residueIdx;
-
-				/*
-				if ( residue0Ptr == nullptr || residue1Ptr == nullptr || residue2Ptr == nullptr )
-				{
-					continue;
-				}
-				*/
 
 				const size_t residue0 = currentResidueIndex - 1;
 				const size_t residue1 = currentResidueIndex;
@@ -193,13 +176,6 @@ namespace VTX::IO::Util::SecondaryStructure
 			for ( size_t residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 			{
 				const size_t currentResidueIndex = idxFirstResidue + residueIdx;
-
-				/*
-				if ( residue0Ptr == nullptr || residue1Ptr == nullptr || residue2Ptr == nullptr )
-				{
-					continue;
-				}
-				*/
 
 				const size_t residue0 = currentResidueIndex - 1;
 				const size_t residue1 = currentResidueIndex;

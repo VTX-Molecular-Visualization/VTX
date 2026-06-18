@@ -1,10 +1,10 @@
 #include "ui/qt/window/renderer.hpp"
 #include <QGuiApplication>
 #include <QStyleHints>
-#include <array>
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/services.hpp>
+#include <array>
 #include <util/event_hub.hpp>
 
 namespace
@@ -44,9 +44,7 @@ namespace
 namespace VTX::UI::QT::Window
 {
 	Renderer::Renderer() : QWindow(), _inputManager( App::INPUT() )
-	{
-		App::HUB().connect<Events::KeyboardLayoutChanged, &Renderer::_onKBLayoutChange>( this );
-	}
+	{ App::HUB().connect<Events::KeyboardLayoutChanged, &Renderer::_onKBLayoutChange>( this ); }
 
 	void Renderer::keyPressEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, true ); }
 
@@ -151,7 +149,7 @@ namespace VTX::UI::QT::Window
 	{
 		const Qt::KeyboardModifiers mods = QGuiApplication::queryKeyboardModifiers();
 		_inputManager.setAction( App::Input::InputManager::Action::Accelerate, mods & Qt::ShiftModifier );
-		_inputManager.setAction( App::Input::InputManager::Action::Decelerate, mods & Qt::ControlModifier );
+		_inputManager.setAction( App::Input::InputManager::Action::Decelerate, mods & Qt::AltModifier );
 	}
 
 	std::optional<App::Input::InputManager::Action> Renderer::_getKeyboardAction( const int p_key ) const
@@ -172,8 +170,6 @@ namespace VTX::UI::QT::Window
 	}
 
 	void Renderer::_onKBLayoutChange( const Events::KeyboardLayoutChanged & p_e )
-	{
-		_layout = static_cast<KB_LAYOUT>( p_e.layout );
-	}
+	{ _layout = static_cast<KB_LAYOUT>( p_e.layout ); }
 
 } // namespace VTX::UI::QT::Window

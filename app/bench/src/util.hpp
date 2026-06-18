@@ -2,6 +2,7 @@
 #define __VTX_BENCH_UTIL__
 
 #include <core/struct/topology.hpp>
+#include <core/struct/trajectory.hpp>
 #include <io/metadata.hpp>
 #include <util/types.hpp>
 
@@ -11,7 +12,7 @@ namespace VTX::Bench
 	{
 		Core::Struct::Topology topology;
 		IO::Metadata		   metadata;
-		std::vector<Vec3f>	   positions;
+		Core::Struct::Frame	   positions;
 	};
 
 	LoadedSystem loadSystem( const FilePath & p_filename );

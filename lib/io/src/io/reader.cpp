@@ -1,9 +1,4 @@
-// Needed for io/reader.hpp
-#include <core/struct/topology.hpp>
-#include <util/thread.hpp>
-// !Needed for io/reader.hpp
 #include "io/reader.hpp"
-//
 #include "io/util/bond_order_guessing.hpp"
 #include "io/util/bond_recomputation.hpp"
 #include "io/util/secondary_structure.hpp"
@@ -15,8 +10,6 @@
 #include <core/chemdb/category.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
-#include <fstream>
-#include <map>
 #include <optional>
 #include <span>
 #include <unordered_map>
@@ -24,6 +17,7 @@
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
+#include <util/thread.hpp>
 
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
@@ -51,14 +45,12 @@ namespace VTX::IO
 		int64_t									_currentAtomIndex	 = -1;
 		int64_t									_currentFrameIdx	 = -1;
 		std::vector<Index>						_atomOriginalIndexes = {};
-		AtomPositions							_firstFrame;
+		Frame									_firstFrame;
 
 		_Impl( const FilePath & p_path, const READER_OPTION p_options, StopToken & p_stopToken ) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
 			_trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
-		{
-			_init();
-		}
+		{ _init(); }
 
 		_Impl(
 			MemoryBuffer &&		p_buffer,
@@ -74,9 +66,7 @@ namespace VTX::IO
 													  chemfiles::guess_format( p_path.string() )
 												  )
 											  )
-		{
-			_init();
-		}
+		{ _init(); }
 
 		size_t frameCount() const { return _trajectory.size(); }
 
@@ -114,12 +104,10 @@ namespace VTX::IO
 				return;
 			}
 
-			Index					  currentChainIndex		   = INVALID_INDEX;
-			Index					  currentChainResidueCount = 0;
-			Index					  expectedNextAtomIndex	   = 0;
-			Index					  coveredAtomCount		   = 0;
-			std::unordered_set<Index> recomputableAtomIndexes;
-			std::unordered_set<Index> recomputableBondOrderIndexes;
+			Index currentChainIndex		   = INVALID_INDEX;
+			Index currentChainResidueCount = 0;
+			Index expectedNextAtomIndex	   = 0;
+			Index coveredAtomCount		   = 0;
 
 			std::unordered_set<std::string> seenChainNames;
 			std::string						previousChainName;
@@ -139,11 +127,11 @@ namespace VTX::IO
 
 				_currentResidue = &( ( *_residues )[ residueIdx ] );
 
-				std::string		  chainName				= _residueStringProp( "chainname" );
-				const std::string residueName			= _currentResidue->name();
-				const bool		  isEmptyResidue		= _currentResidue->size() == 0;
-				Index			  residueFirstAtomIndex = isEmptyResidue ? static_cast<Index>( _currentFrame.size() )
-																		 : static_cast<Index>( *_currentResidue->begin() );
+				std::string		  chainName		 = _residueStringProp( "chainname" );
+				const std::string residueName	 = _currentResidue->name();
+				const bool		  isEmptyResidue = _currentResidue->size() == 0;
+				Index residueFirstAtomIndex		 = isEmptyResidue ? static_cast<Index>( _currentFrame.size() )
+																  : static_cast<Index>( *_currentResidue->begin() );
 				coveredAtomCount += static_cast<Index>( _currentResidue->size() );
 
 				if ( residueIdx > 0 && chainName != previousChainName && seenChainNames.contains( chainName ) )
@@ -220,7 +208,7 @@ namespace VTX::IO
 						break;
 					}
 
-					_fillAtom( atomIndex, atomIndex, residueIdx, p_topology, recomputableAtomIndexes );
+					_fillAtom( atomIndex, atomIndex, residueIdx, p_topology );
 
 					previousAtomIndex	 = atomIndex;
 					isFirstAtomInResidue = false;
@@ -253,14 +241,11 @@ namespace VTX::IO
 				p_topology.chainResidueCounts[ currentChainIndex ] = currentChainResidueCount;
 			}
 
-			_fillBonds( p_metadata, p_topology, recomputableAtomIndexes, recomputableBondOrderIndexes );
-			get( 0, _firstFrame );
-			_recomputeMissingData(
-				p_metadata, p_topology, _firstFrame, recomputableAtomIndexes, recomputableBondOrderIndexes
-			);
+			_fillBonds( p_metadata, p_topology );
+			_recomputeMissingData( p_metadata, p_topology, _firstFrame );
 		}
 
-		void get( const FrameIndex & p_frameIndex, AtomPositions & p_positions )
+		void get( const FrameIndex & p_frameIndex, VTX::Core::Struct::Frame & p_positions )
 		{
 			if ( _stopToken.get().stop_requested() )
 			{
@@ -271,6 +256,7 @@ namespace VTX::IO
 			{
 				p_positions = std::move( _firstFrame );
 				_firstFrame.clear();
+				return;
 			}
 
 			_currentFrameIdx = p_frameIndex;
@@ -320,10 +306,10 @@ namespace VTX::IO
 				throw IOException( "Trajectory is empty" );
 			}
 
-			_currentFrame = _trajectory.read();
-			_topology	  = _currentFrame.topology();
-			_residues	  = &_topology.residues();
-			_bonds		  = &_topology.bonds();
+			get( 0, _firstFrame );
+			_topology = _currentFrame.topology();
+			_residues = &_topology.residues();
+			_bonds	  = &_topology.bonds();
 
 			if ( _stopToken.get().stop_requested() )
 			{
@@ -504,10 +490,8 @@ namespace VTX::IO
 			topology.initAtoms( static_cast<Index>( _currentFrame.size() ) );
 			_atomOriginalIndexes.resize( _currentFrame.size() );
 
-			Index					  targetResidueIndex = 0;
-			Index					  targetAtomIndex	 = 0;
-			std::unordered_set<Index> recomputableAtomIndexes;
-			std::unordered_set<Index> recomputableBondOrderIndexes;
+			Index targetResidueIndex = 0;
+			Index targetAtomIndex	 = 0;
 
 			// Fill contiguous topology.
 			for ( Index chainIndex = 0; chainIndex < static_cast<Index>( chains.size() ); ++chainIndex )
@@ -552,9 +536,7 @@ namespace VTX::IO
 						oldAtomToNewAtom[ sourceAtomIndex ]		= targetAtomIndex;
 						_atomOriginalIndexes[ targetAtomIndex ] = sourceAtomIndex;
 
-						_fillAtom(
-							sourceAtomIndex, targetAtomIndex, targetResidueIndex, topology, recomputableAtomIndexes
-						);
+						_fillAtom( sourceAtomIndex, targetAtomIndex, targetResidueIndex, topology );
 						targetAtomIndex++;
 					}
 
@@ -562,11 +544,17 @@ namespace VTX::IO
 				}
 			}
 
-			_fillBonds( p_metadata, topology, recomputableAtomIndexes, recomputableBondOrderIndexes, oldAtomToNewAtom );
-			get( 0, _firstFrame );
-			_recomputeMissingData(
-				p_metadata, topology, _firstFrame, recomputableAtomIndexes, recomputableBondOrderIndexes
-			);
+			_fillBonds( p_metadata, topology, oldAtomToNewAtom );
+			{
+				Frame remappedFirstFrame;
+				remappedFirstFrame.resize( _atomOriginalIndexes.size() );
+				for ( Index atomIndex = 0; atomIndex < static_cast<Index>( _atomOriginalIndexes.size() ); ++atomIndex )
+				{
+					remappedFirstFrame[ atomIndex ] = _firstFrame[ _atomOriginalIndexes[ atomIndex ] ];
+				}
+				_firstFrame = std::move( remappedFirstFrame );
+			}
+			_recomputeMissingData( p_metadata, topology, _firstFrame );
 			p_topology = std::move( topology );
 			// Keep track of original atom indexes for trajectory remapping.
 			p_topology.atomOriginalIndexes = _atomOriginalIndexes;
@@ -613,11 +601,10 @@ namespace VTX::IO
 		}
 
 		void _fillAtom(
-			const Index					p_sourceAtomIndex,
-			const Index					p_targetAtomIndex,
-			const Index					p_targetResidueIndex,
-			Topology &					p_topology,
-			std::unordered_set<Index> & p_recomputableAtomIndexes
+			const Index p_sourceAtomIndex,
+			const Index p_targetAtomIndex,
+			const Index p_targetResidueIndex,
+			Topology &	p_topology
 		)
 		{
 			_currentAtom	  = &_currentFrame[ p_sourceAtomIndex ];
@@ -628,32 +615,16 @@ namespace VTX::IO
 			p_topology.atomResidueIndexes[ p_targetAtomIndex ] = p_targetResidueIndex;
 			p_topology.atomNames[ p_targetAtomIndex ]		   = _currentAtom->name();
 			p_topology.atomSymbols[ p_targetAtomIndex ]		   = atomSymbol;
-
-			if ( atomSymbol == Atom::SYMBOL::A_N || atomSymbol == Atom::SYMBOL::A_C || atomSymbol == Atom::SYMBOL::A_S
-				 || atomSymbol == Atom::SYMBOL::A_P )
-			{
-				p_recomputableAtomIndexes.emplace( p_targetAtomIndex );
-			}
 		}
 
 		void _fillBonds(
 			Metadata &					 p_metadata,
 			Topology &					 p_topology,
-			std::unordered_set<Index> &	 p_recomputableAtomIndexes,
-			std::unordered_set<Index> &	 p_recomputableBondOrderIndexes,
 			const std::span<const Index> p_oldAtomToNewAtom = {}
 		)
 		{
-			std::map<Index, std::vector<Index>> mapResidueBonds;
-			std::map<Index, std::vector<Index>> mapResidueExtraBonds;
-
-			for ( Index residueIdx = 0; residueIdx < p_topology.getResidueCount(); ++residueIdx )
-			{
-				mapResidueBonds.emplace( residueIdx, std::vector<Index>() );
-				mapResidueExtraBonds.emplace( residueIdx, std::vector<Index>() );
-			}
-
-			Index counter = 0;
+			std::vector<Index> validBondIndexes;
+			validBondIndexes.reserve( _bonds->size() );
 
 			for ( Index bondIdx = 0; bondIdx < static_cast<Index>( _bonds->size() ); ++bondIdx )
 			{
@@ -684,88 +655,33 @@ namespace VTX::IO
 					continue;
 				}
 
-				p_recomputableAtomIndexes.erase( firstAtomIdx );
-				p_recomputableAtomIndexes.erase( secondAtomIdx );
-
-				const Index residueStart = p_topology.atomResidueIndexes[ firstAtomIdx ];
-				const Index residueEnd	 = p_topology.atomResidueIndexes[ secondAtomIdx ];
-
-				if ( residueStart >= p_topology.getResidueCount() || residueEnd >= p_topology.getResidueCount() )
-				{
-					VTX_WARNING(
-						"Bond {} has an atom with invalid residue index ({} or {}). Skipping.",
-						bondIdx,
-						residueStart,
-						residueEnd
-					);
-					continue;
-				}
-
-				if ( residueStart == residueEnd )
-				{
-					mapResidueBonds[ residueStart ].emplace_back( bondIdx );
-					counter++;
-				}
-				else
-				{
-					mapResidueExtraBonds[ residueStart ].emplace_back( bondIdx );
-					mapResidueExtraBonds[ residueEnd ].emplace_back( bondIdx );
-					counter += 2;
-				}
+				validBondIndexes.emplace_back( bondIdx );
 			}
 
-			p_topology.initBonds( counter );
+			p_topology.initBonds( static_cast<Index>( validBondIndexes.size() ) );
 
-			const Index counterOld = counter;
-			counter				   = 0;
-
-			for ( Index residueIdx = 0; residueIdx < p_topology.getResidueCount(); ++residueIdx )
+			for ( Index bondIdx = 0; bondIdx < static_cast<Index>( validBondIndexes.size() ); ++bondIdx )
 			{
 				if ( _stopToken.get().stop_requested() )
 				{
 					return;
 				}
 
-				const std::vector<Index> & intraBonds = mapResidueBonds[ residueIdx ];
-				const std::vector<Index> & extraBonds = mapResidueExtraBonds[ residueIdx ];
-
-				p_topology.residueFirstBondIndexes[ residueIdx ] = counter;
-				p_topology.residueBondCounts[ residueIdx ]
-					= static_cast<Index>( intraBonds.size() + extraBonds.size() );
-
-				for ( Index i = 0; i < intraBonds.size(); ++i, ++counter )
-				{
-					_fillBond(
-						intraBonds[ i ], counter, p_topology, p_recomputableBondOrderIndexes, p_oldAtomToNewAtom
-					);
-				}
-
-				for ( Index i = 0; i < extraBonds.size(); ++i, ++counter )
-				{
-					_fillBond(
-						extraBonds[ i ], counter, p_topology, p_recomputableBondOrderIndexes, p_oldAtomToNewAtom
-					);
-				}
+				_fillBond( validBondIndexes[ bondIdx ], bondIdx, p_topology, p_oldAtomToNewAtom );
 			}
 
-			if ( not p_recomputableBondOrderIndexes.empty() )
+			if ( _hasUnknownBondOrders( p_topology ) )
 			{
 				p_metadata.missingData |= MISSING_DATA::BOND_ORDERS;
 			}
 
-			if ( not p_recomputableAtomIndexes.empty() )
-			{
-				p_metadata.missingData |= MISSING_DATA::BONDS;
-			}
-
-			assert( counter == counterOld );
+			assert( p_topology.getBondCount() == static_cast<Index>( validBondIndexes.size() ) );
 		}
 
 		void _fillBond(
 			const Index					 p_sourceBondIndex,
 			const Index					 p_targetBondIndex,
 			Topology &					 p_topology,
-			std::unordered_set<Index> &	 p_recomputableBondOrderIndexes,
 			const std::span<const Index> p_oldAtomToNewAtom = {}
 		)
 		{
@@ -793,33 +709,36 @@ namespace VTX::IO
 			p_topology.bondPairAtomIndexes[ p_targetBondIndex * 2 ]		= firstAtom;
 			p_topology.bondPairAtomIndexes[ p_targetBondIndex * 2 + 1 ] = secondAtom;
 			p_topology.bondOrders[ p_targetBondIndex ]					= bondOrder;
-
-			if ( bondOrder == Bond::ORDER::UNKNOWN )
-			{
-				p_recomputableBondOrderIndexes.emplace( p_targetBondIndex );
-			}
 		}
 
-		void _recomputeMissingData(
-			Metadata &						  p_metadata,
-			Topology &						  p_topology,
-			const AtomPositions &			  p_positions,
-			const std::unordered_set<Index> & p_recomputableAtomIndexes,
-			const std::unordered_set<Index> & p_recomputableBondOrderIndexes
-		)
+		bool _hasUnknownBondOrders( const Topology & p_topology ) const
+		{
+			return std::any_of(
+				p_topology.bondOrders.begin(),
+				p_topology.bondOrders.end(),
+				[]( const Bond::ORDER p_bondOrder ) { return p_bondOrder == Bond::ORDER::UNKNOWN; }
+			);
+		}
+
+		void _recomputeMissingData( Metadata & p_metadata, Topology & p_topology, const Frame & p_positions )
 		{
 			assert( p_positions.size() == p_topology.getAtomCount() );
 
-			if ( Enum::hasAnyBit( _readerOption, READER_OPTION::RECOMPUTE_MISSING_BONDS )
-				 && Enum::hasAnyBit( p_metadata.missingData, MISSING_DATA::BONDS ) )
+			const bool recomputeMissingBonds = Enum::hasAnyBit( _readerOption, READER_OPTION::RECOMPUTE_MISSING_BONDS );
+
+			if ( recomputeMissingBonds )
 			{
-				Util::BondRecomputation::recomputeBonds( p_topology, p_positions, p_recomputableAtomIndexes );
+				Util::BondRecomputation::recomputeBonds( p_topology, p_positions );
 				p_metadata.performedReaderOption |= READER_OPTION::RECOMPUTE_MISSING_BONDS;
 			}
-			if ( Enum::hasAnyBit( _readerOption, READER_OPTION::GUESS_UNKNOWN_BOND_ORDERS )
-				 && Enum::hasAnyBit( p_metadata.missingData, MISSING_DATA::BOND_ORDERS ) )
+
+			const bool guessUnknownBondOrders
+				= Enum::hasAnyBit( _readerOption, READER_OPTION::GUESS_UNKNOWN_BOND_ORDERS )
+				  && _hasUnknownBondOrders( p_topology );
+			if ( guessUnknownBondOrders )
 			{
-				Util::BondOrderGuessing::recomputeBondOrders( p_topology, p_positions, p_recomputableBondOrderIndexes );
+				p_metadata.missingData |= MISSING_DATA::BOND_ORDERS;
+				Util::BondOrderGuessing::recomputeBondOrders( p_topology, p_positions );
 				p_metadata.performedReaderOption |= READER_OPTION::GUESS_UNKNOWN_BOND_ORDERS;
 			}
 			if ( Enum::hasAnyBit( _readerOption, READER_OPTION::COMPUTE_MISSING_SECONDARY_STRUCTURE )
@@ -831,9 +750,7 @@ namespace VTX::IO
 		}
 
 		static Vec3f _toVec3f( const chemfiles::Vector3D & p_position )
-		{
-			return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] );
-		}
+		{ return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] ); }
 	};
 
 	void SystemReader::Del::operator()( _Impl * p_impl ) noexcept { delete p_impl; }
@@ -853,13 +770,9 @@ namespace VTX::IO
 	}
 
 	void SystemReader::get( const Category::Dictionary & p_d, Topology & p_t, Metadata & p_m )
-	{
-		_impl->get( p_d, p_t, p_m );
-	}
+	{ _impl->get( p_d, p_t, p_m ); }
 
-	void SystemReader::get( const FrameIndex & p_i, AtomPositions & p_ ) { _impl->get( p_i, p_ ); }
-
-	void SystemReader::get( AtomPositions & p_ ) { _impl->get( 0, p_ ); }
+	void SystemReader::get( Frame & p_f, const FrameIndex p_i ) { _impl->get( p_i, p_f ); }
 
 	void SystemReader::set( StopToken & p_ ) noexcept { _impl->set( p_ ); }
 

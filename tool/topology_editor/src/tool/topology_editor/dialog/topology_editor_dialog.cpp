@@ -690,7 +690,6 @@ namespace VTX::Tool::TopologyEditor::Dialog
 				1, "Residues", UI::QT::Helper::formatNumber( topology.getChainResidueCount( p_index ) )
 			);
 			_setInspectorProperty( 2, "Atoms", UI::QT::Helper::formatNumber( topology.getChainAtomCount( p_index ) ) );
-			_setInspectorProperty( 3, "Bonds", UI::QT::Helper::formatNumber( topology.getChainBondCount( p_index ) ) );
 			break;
 		case Core::Struct::E_SYSTEM_ITEM::RESIDUE:
 		{
@@ -708,9 +707,6 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			);
 			_setInspectorProperty(
 				3, "Atoms", UI::QT::Helper::formatNumber( topology.getResidueAtomCount( p_index ) )
-			);
-			_setInspectorProperty(
-				4, "Bonds", UI::QT::Helper::formatNumber( topology.getResidueBondCount( p_index ) )
 			);
 			break;
 		}

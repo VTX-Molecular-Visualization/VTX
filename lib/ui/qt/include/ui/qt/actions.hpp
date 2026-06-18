@@ -359,6 +359,7 @@ namespace VTX::UI::QT
 				action.name		 = "Lock";
 				action.tip		 = "Lock the current selection";
 				action.icon		 = Style::Icons::LOCK;
+				action.shortcut	 = "L";
 				action.checkable = true;
 				return action;
 			}

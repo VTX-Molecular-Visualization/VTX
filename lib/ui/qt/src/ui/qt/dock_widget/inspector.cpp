@@ -1,4 +1,6 @@
 ﻿#include "ui/qt/dock_widget/inspector.hpp"
+#include "ui/qt/action_registry.hpp"
+#include "ui/qt/actions.hpp"
 #include "ui/qt/events.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
@@ -11,7 +13,6 @@
 #include "ui/qt/widget/selection.hpp"
 #include <QFontDatabase>
 #include <QLabel>
-#include <QToolBar>
 #include <QToolButton>
 #include <app/action/selection.hpp>
 #include <app/services.hpp>
@@ -26,6 +27,12 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SELECTION ) );
+
+		_lockButton = new QToolButton( this );
+		_lockButton->setDefaultAction( UI_ACTIONS().getAction( Action::Selection::LOCK ) );
+		_lockButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+		_lockButton->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
+		_layout->addWidget( _lockButton );
 
 		_filler = new QWidget( this );
 		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
@@ -167,7 +174,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		for ( int i = _layout->count() - 1; i >= 0; --i )
 		{
-			if ( _layout->itemAt( i )->widget() != _filler )
+			if ( _layout->itemAt( i )->widget() != _filler && _layout->itemAt( i )->widget() != _lockButton )
 			{
 				QWidget * w = _layout->itemAt( i )->widget();
 				if ( w == _selectionListWidget )

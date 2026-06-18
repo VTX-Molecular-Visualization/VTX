@@ -3,7 +3,6 @@
 
 #include "io/constants.hpp"
 #include "io/metadata.hpp"
-#include <core/struct/trajectory.hpp>
 #include <memory>
 #include <string>
 #include <util/types.hpp>
@@ -16,6 +15,7 @@ namespace VTX::Util
 
 namespace VTX::Core::Struct
 {
+	using Frame = std::vector<Vec3f>;
 	struct Topology;
 } // namespace VTX::Core::Struct
 
@@ -26,9 +26,8 @@ namespace VTX::Core::ChemDB::Category
 
 namespace VTX::IO
 {
-	using MemoryBuffer	= std::string;
-	using AtomPositions = VTX::Core::Struct::Frame;
-	using FrameIndex	= size_t;
+	using MemoryBuffer = std::string;
+	using FrameIndex   = size_t;
 
 	class SystemReader
 	{
@@ -39,13 +38,16 @@ namespace VTX::IO
 
 		size_t frameCount() const;
 
-		void get( const VTX::Core::ChemDB::Category::Dictionary &, VTX::Core::Struct ::Topology &, Metadata & );
+		/**
+		 * @brief Read topology and metadata.
+		 */
+		void get( const VTX::Core::ChemDB::Category::Dictionary &, VTX::Core::Struct::Topology &, Metadata & );
 
 		/**
-		 * @brief Always return Frame 0's positions.
+		 * @brief Read position-related data.
 		 */
-		void get( AtomPositions & );
-		void get( const FrameIndex &, AtomPositions & );
+		void get( VTX::Core::Struct::Frame &, const FrameIndex = 0 );
+
 		void set( VTX::Util::StopToken & ) noexcept;
 
 	  private:

@@ -55,6 +55,7 @@ namespace VTX::App::Pass
 		 * @brief Update system data in renderer when components are updated.
 		 */
 		void _onUpdateTransform( Registry &, Entity );
+		void _onUpdateTopology( Registry &, Entity );
 		void _onUpdateVisibility( Registry &, Entity );
 		void _onUpdateSelection( Registry &, Entity );
 		void _onUpdateRepresentation( Registry &, Entity );

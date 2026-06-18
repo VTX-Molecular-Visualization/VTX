@@ -1,7 +1,6 @@
 #include "app/helper/chemistry.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
-#include <io/reader/residue_data_reader.hpp>
 
 namespace VTX::App::Helper::Chemistry
 {

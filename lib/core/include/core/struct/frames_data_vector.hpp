@@ -16,12 +16,13 @@ namespace VTX::Core::Struct
 	{
 	  public:
 		FramesDataVector() {}
+
 		~FramesDataVector() {}
 
 		/**
 		 * @brief Copy input frame into vector member at the given input index
 		 */
-		void fillFrame( const size_t p_systemFrameIndex, const std::vector<Vec3f> & p_atomPositions )
+		void fillFrame( const size_t p_systemFrameIndex, const Frame & p_atomPositions )
 		{
 			_framesVector[ p_systemFrameIndex ].resize( p_atomPositions.size() );
 			std::copy( p_atomPositions.begin(), p_atomPositions.end(), _framesVector[ p_systemFrameIndex ].begin() );
@@ -31,16 +32,20 @@ namespace VTX::Core::Struct
 		const std::vector<Frame> & getFramesVector() const { return _framesVector; }
 
 		const Frame & getCurrentFrame() const { return _framesVector[ _currentFrameIndex ]; }
-		Frame &		  getCurrentFrame() { return _framesVector[ _currentFrameIndex ]; }
 
-		void		 setCurrentFrameIndex( size_t p_currentFrameIdx ) { _currentFrameIndex = p_currentFrameIdx; }
+		Frame & getCurrentFrame() { return _framesVector[ _currentFrameIndex ]; }
+
+		void setCurrentFrameIndex( size_t p_currentFrameIdx ) { _currentFrameIndex = p_currentFrameIdx; }
+
 		const size_t getCurrentFrameIndex( void ) const { return _currentFrameIndex; }
 
 		const Frame & getFrameFromIndex( size_t p_index ) const { return _framesVector[ p_index ]; }
-		Frame &		  getFrameFromIndex( size_t p_index ) { return _framesVector[ p_index ]; }
+
+		Frame & getFrameFromIndex( size_t p_index ) { return _framesVector[ p_index ]; }
 
 		size_t getTotalElements() const { return _framesVector.size(); }
-		void   setTotalElements( const size_t size ) { _framesVector.resize( size ); }
+
+		void setTotalElements( const size_t size ) { _framesVector.resize( size ); }
 
 		/**
 		 * @brief Erase potential empty frame(s) at the end of the vector member.

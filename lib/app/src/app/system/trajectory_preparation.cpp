@@ -58,7 +58,7 @@ namespace VTX::App::System
 			for ( uint it_currentFrameIndex = 1; it_currentFrameIndex < frameCount; it_currentFrameIndex++ )
 			{
 				_ptr->_dataPtr->frameCollection.emplace_back();
-				_ptr->reader.get( it_currentFrameIndex, _ptr->_dataPtr->frameCollection.back() );
+				_ptr->reader.get( _ptr->_dataPtr->frameCollection.back(), it_currentFrameIndex );
 
 				_ptr->_dataPtr->lastFrameAvailable = it_currentFrameIndex;
 				if ( p_stopToken.stop_requested() )
@@ -75,7 +75,7 @@ namespace VTX::App::System
 		p_trajectory.genericData.trajectorySize = static_cast<uint>( p_loader.frameCount() );
 		p_trajectory.frameCollection.resize( 1 );
 		p_trajectory.frameCollection.reserve( p_trajectory.genericData.trajectorySize );
-		p_loader.get( p_trajectory.frameCollection.back() );
+		p_loader.get( p_trajectory.frameCollection.back(), 0 );
 		p_trajectory.genericData.playMode = TrajectoryPlayMode::pingpong;
 		p_trajectory.genericData.player	  = Util::Players::PingPong( p_trajectory.genericData.trajectorySize - 1 );
 		p_trajectory.genericData.currentFrameIndex = 0;
@@ -83,7 +83,7 @@ namespace VTX::App::System
 	}
 
 	void prepare( TrajectorySingleFrame & p_trajectory, IO::SystemReader && p_loader ) noexcept
-	{ p_loader.get( p_trajectory.atomPositions ); }
+	{ p_loader.get( p_trajectory.atomPositions, 0 ); }
 
 	void startAsyncTrajectoryWork( const Entity & p_entity, PendingSystem & p_pendingData ) noexcept
 	{

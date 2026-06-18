@@ -29,8 +29,6 @@ namespace VTX::Core::Struct
 		residueChainIndexes.resize( p_count, INVALID_INDEX );
 		residueFirstAtomIndexes.resize( p_count, INVALID_INDEX );
 		residueAtomCounts.resize( p_count, 0 );
-		residueFirstBondIndexes.resize( p_count, INVALID_INDEX );
-		residueBondCounts.resize( p_count, 0 );
 		residueOriginalIds.resize( p_count, INVALID_INDEX );
 		residueSecondaryStructureTypes.resize( p_count, ChemDB::SecondaryStructure::TYPE::UNKNOWN );
 		residueNames.resize( p_count );
@@ -72,8 +70,6 @@ namespace VTX::Core::Struct
 		out += sizeof( size_t ) * p_sys.residueChainIndexes.size();
 		out += sizeof( Index ) * p_sys.residueFirstAtomIndexes.size();
 		out += sizeof( Index ) * p_sys.residueAtomCounts.size();
-		out += sizeof( size_t ) * p_sys.residueFirstBondIndexes.size();
-		out += sizeof( size_t ) * p_sys.residueBondCounts.size();
 		out += sizeof( size_t ) * p_sys.residueOriginalIds.size();
 		out += sizeof( ChemDB::SecondaryStructure::TYPE ) * p_sys.residueSecondaryStructureTypes.size();
 		out += sizeof( std::string ) * p_sys.residueNames.size();
