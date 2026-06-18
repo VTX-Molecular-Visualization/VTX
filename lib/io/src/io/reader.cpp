@@ -10,7 +10,6 @@
 #include <core/chemdb/category.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/chemdb/secondary_structure.hpp>
-#include <map>
 #include <optional>
 #include <span>
 #include <unordered_map>
@@ -643,16 +642,8 @@ namespace VTX::IO
 			const std::span<const Index> p_oldAtomToNewAtom = {}
 		)
 		{
-			std::map<Index, std::vector<Index>> mapResidueBonds;
-			std::map<Index, std::vector<Index>> mapResidueExtraBonds;
-
-			for ( Index residueIdx = 0; residueIdx < p_topology.getResidueCount(); ++residueIdx )
-			{
-				mapResidueBonds.emplace( residueIdx, std::vector<Index>() );
-				mapResidueExtraBonds.emplace( residueIdx, std::vector<Index>() );
-			}
-
-			Index counter = 0;
+			std::vector<Index> validBondIndexes;
+			validBondIndexes.reserve( _bonds->size() );
 
 			for ( Index bondIdx = 0; bondIdx < static_cast<Index>( _bonds->size() ); ++bondIdx )
 			{
@@ -686,65 +677,21 @@ namespace VTX::IO
 				p_recomputableAtomIndexes.erase( firstAtomIdx );
 				p_recomputableAtomIndexes.erase( secondAtomIdx );
 
-				const Index residueStart = p_topology.atomResidueIndexes[ firstAtomIdx ];
-				const Index residueEnd	 = p_topology.atomResidueIndexes[ secondAtomIdx ];
-
-				if ( residueStart >= p_topology.getResidueCount() || residueEnd >= p_topology.getResidueCount() )
-				{
-					VTX_WARNING(
-						"Bond {} has an atom with invalid residue index ({} or {}). Skipping.",
-						bondIdx,
-						residueStart,
-						residueEnd
-					);
-					continue;
-				}
-
-				if ( residueStart == residueEnd )
-				{
-					mapResidueBonds[ residueStart ].emplace_back( bondIdx );
-					counter++;
-				}
-				else
-				{
-					mapResidueExtraBonds[ residueStart ].emplace_back( bondIdx );
-					mapResidueExtraBonds[ residueEnd ].emplace_back( bondIdx );
-					counter += 2;
-				}
+				validBondIndexes.emplace_back( bondIdx );
 			}
 
-			p_topology.initBonds( counter );
+			p_topology.initBonds( static_cast<Index>( validBondIndexes.size() ) );
 
-			const Index counterOld = counter;
-			counter				   = 0;
-
-			for ( Index residueIdx = 0; residueIdx < p_topology.getResidueCount(); ++residueIdx )
+			for ( Index bondIdx = 0; bondIdx < static_cast<Index>( validBondIndexes.size() ); ++bondIdx )
 			{
 				if ( _stopToken.get().stop_requested() )
 				{
 					return;
 				}
 
-				const std::vector<Index> & intraBonds = mapResidueBonds[ residueIdx ];
-				const std::vector<Index> & extraBonds = mapResidueExtraBonds[ residueIdx ];
-
-				p_topology.residueFirstBondIndexes[ residueIdx ] = counter;
-				p_topology.residueBondCounts[ residueIdx ]
-					= static_cast<Index>( intraBonds.size() + extraBonds.size() );
-
-				for ( Index i = 0; i < intraBonds.size(); ++i, ++counter )
-				{
-					_fillBond(
-						intraBonds[ i ], counter, p_topology, p_recomputableBondOrderIndexes, p_oldAtomToNewAtom
-					);
-				}
-
-				for ( Index i = 0; i < extraBonds.size(); ++i, ++counter )
-				{
-					_fillBond(
-						extraBonds[ i ], counter, p_topology, p_recomputableBondOrderIndexes, p_oldAtomToNewAtom
-					);
-				}
+				_fillBond(
+					validBondIndexes[ bondIdx ], bondIdx, p_topology, p_recomputableBondOrderIndexes, p_oldAtomToNewAtom
+				);
 			}
 
 			if ( not p_recomputableBondOrderIndexes.empty() )
@@ -757,7 +704,7 @@ namespace VTX::IO
 				p_metadata.missingData |= MISSING_DATA::BONDS;
 			}
 
-			assert( counter == counterOld );
+			assert( p_topology.getBondCount() == static_cast<Index>( validBondIndexes.size() ) );
 		}
 
 		void _fillBond(

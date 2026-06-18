@@ -260,7 +260,7 @@ namespace VTX::IO::Writer
 			const SystemIndexManager &			p_indexManager
 		)
 		{
-			for ( size_t bondIdx = 0; bondIdx < p_mol.getBondCount(); bondIdx += 2 )
+			for ( size_t bondIdx = 0; bondIdx < p_mol.getBondCount() * 2; bondIdx += 2 )
 			{
 				size_t atomIdx1 = p_mol.bondPairAtomIndexes[ bondIdx ],
 					   atomIdx2 = p_mol.bondPairAtomIndexes[ bondIdx + 1 ];

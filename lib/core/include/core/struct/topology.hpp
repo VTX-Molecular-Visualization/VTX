@@ -87,15 +87,6 @@ namespace VTX::Core::Struct
 		 */
 		std::vector<Index> residueAtomCounts;
 		/**
-		 * @brief Indexes of the first of the bond that compose each residues. All bonds with index between vector[N]
-		 * and vector[N+1] are considered part of the residue N
-		 */
-		std::vector<Index> residueFirstBondIndexes;
-		/**
-		 * @brief Number of bonds in each residue.
-		 */
-		std::vector<Index> residueBondCounts;
-		/**
 		 * @brief Secondary structure types for residues.
 		 */
 		std::vector<ChemDB::SecondaryStructure::TYPE> residueSecondaryStructureTypes;
@@ -115,25 +106,6 @@ namespace VTX::Core::Struct
 		 * @brief Mapping from current atom index to original source atom index after retopology.
 		 */
 		std::optional<std::vector<Index>> atomOriginalIndexes;
-
-		/**
-		 * @brief Bond informations.
-		 */
-		struct BondInfo
-		{
-			Index				atom;
-			ChemDB::Bond::ORDER order;
-		};
-
-		/**
-		 * @brief List of adjacent atoms.
-		 */
-		std::vector<BondInfo> atomAdjacencyList;
-
-		/**
-		 * @brief For each atom, the range to read in the atomAdjacencyList.
-		 */
-		std::vector<IndexRange> atomBondRanges;
 
 		std::vector<Index>				 bondPairAtomIndexes;
 		std::vector<ChemDB::Bond::ORDER> bondOrders;
@@ -169,14 +141,10 @@ namespace VTX::Core::Struct
 		inline IndexRange getChainRange() const { return IndexRange::fromFirstCount( 0, getChainCount() ); }
 
 		inline Index getChainFirstResidue( const Index p_chainIndex ) const
-		{
-			return chainFirstResidues[ p_chainIndex ];
-		}
+		{ return chainFirstResidues[ p_chainIndex ]; }
 
 		inline Index getChainResidueCount( const Index p_chainIndex ) const
-		{
-			return chainResidueCounts[ p_chainIndex ];
-		}
+		{ return chainResidueCounts[ p_chainIndex ]; }
 
 		inline IndexRange getChainResidueRange( const Index p_chainIndex ) const
 		{
@@ -212,62 +180,23 @@ namespace VTX::Core::Struct
 			return IndexRange::fromFirstCount( firstAtom, count );
 		}
 
-		inline Index getChainFirstBond( const Index p_chainIndex ) const
-		{
-			const Index firstResidue = getChainFirstResidue( p_chainIndex );
-			return residueFirstBondIndexes[ firstResidue ];
-		}
-
-		inline Index getChainBondCount( const Index p_chainIndex ) const
-		{
-			const Index firstResidue = getChainFirstResidue( p_chainIndex );
-			const Index residueCount = getChainResidueCount( p_chainIndex );
-			Index		bondCount	 = 0;
-
-			for ( Index r = firstResidue; r < firstResidue + residueCount; ++r )
-			{
-				bondCount += residueBondCounts[ r ];
-			}
-
-			return bondCount;
-		}
-
-		inline IndexRange getChainBondRange( const Index p_chainIndex ) const
-		{
-			const Index firstBond = getChainFirstBond( p_chainIndex );
-			const Index count	  = getChainBondCount( p_chainIndex );
-			return IndexRange::fromFirstCount( firstBond, count );
-		}
-
 		inline ChemDB::Residue::SYMBOL getResidueSymbol( const Index p_residueIndex ) const
-		{
-			return residueSymbols[ p_residueIndex ];
-		}
+		{ return residueSymbols[ p_residueIndex ]; }
 
 		inline const std::string & getResidueName( const Index p_residueIndex ) const
-		{
-			return residueNames[ p_residueIndex ];
-		}
+		{ return residueNames[ p_residueIndex ]; }
 
 		inline Index getResidueChainIndex( const Index p_residueIndex ) const
-		{
-			return residueChainIndexes[ p_residueIndex ];
-		}
+		{ return residueChainIndexes[ p_residueIndex ]; }
 
 		inline Index getResidueOriginalId( const Index p_residueIndex ) const
-		{
-			return residueOriginalIds[ p_residueIndex ];
-		}
+		{ return residueOriginalIds[ p_residueIndex ]; }
 
 		inline Index getResidueFirstAtom( const Index p_residueIndex ) const
-		{
-			return residueFirstAtomIndexes[ p_residueIndex ];
-		}
+		{ return residueFirstAtomIndexes[ p_residueIndex ]; }
 
 		inline Index getResidueAtomCount( const Index p_residueIndex ) const
-		{
-			return residueAtomCounts[ p_residueIndex ];
-		}
+		{ return residueAtomCounts[ p_residueIndex ]; }
 
 		inline IndexRange getResidueAtomRange( const Index p_residueIndex ) const
 		{
@@ -277,14 +206,10 @@ namespace VTX::Core::Struct
 		}
 
 		inline const std::vector<Index> & getCategoryResidues( const ChemDB::Category::TYPE p_category ) const
-		{
-			return categoryResidues[ toUnderlying( p_category ) ];
-		}
+		{ return categoryResidues[ toUnderlying( p_category ) ]; }
 
 		inline ChemDB::Category::TYPE getResidueCategory( const Index p_residueIndex ) const
-		{
-			return residueCategories[ p_residueIndex ];
-		}
+		{ return residueCategories[ p_residueIndex ]; }
 
 		inline IndexRangeList getCategoryAtomRangeList( const ChemDB::Category::TYPE p_category ) const
 		{
@@ -298,36 +223,13 @@ namespace VTX::Core::Struct
 		}
 
 		inline IndexRangeList getCategoryAtomRangeList( const Index p_category ) const
-		{
-			return getCategoryAtomRangeList( static_cast<ChemDB::Category::TYPE>( p_category ) );
-		}
-
-		inline Index getResidueFirstBond( const Index p_residueIndex ) const
-		{
-			return residueFirstBondIndexes[ p_residueIndex ];
-		}
-
-		inline Index getResidueBondCount( const Index p_residueIndex ) const
-		{
-			return residueBondCounts[ p_residueIndex ];
-		}
-
-		inline IndexRange getResidueBondRange( const Index p_residueIndex ) const
-		{
-			const Index first = getResidueFirstBond( p_residueIndex );
-			const Index count = getResidueBondCount( p_residueIndex );
-			return IndexRange::fromFirstCount( first, count );
-		}
+		{ return getCategoryAtomRangeList( static_cast<ChemDB::Category::TYPE>( p_category ) ); }
 
 		inline ChemDB::SecondaryStructure::TYPE getResidueSecondaryStructureType( const Index p_residueIndex ) const
-		{
-			return residueSecondaryStructureTypes[ p_residueIndex ];
-		}
+		{ return residueSecondaryStructureTypes[ p_residueIndex ]; }
 
 		inline ChemDB::Atom::SYMBOL getAtomSymbol( const Index p_atomIndex ) const
-		{
-			return atomSymbols[ p_atomIndex ];
-		}
+		{ return atomSymbols[ p_atomIndex ]; }
 
 		inline const std::string & getAtomName( const Index p_atomIndex ) const { return atomNames[ p_atomIndex ]; }
 
@@ -351,14 +253,10 @@ namespace VTX::Core::Struct
 		inline ChemDB::Bond::ORDER getBondOrder( const Index p_bondIndex ) const { return bondOrders[ p_bondIndex ]; }
 
 		inline Index getBondFirstAtom( const Index p_bondIndex ) const
-		{
-			return bondPairAtomIndexes[ p_bondIndex * 2 ];
-		}
+		{ return bondPairAtomIndexes[ p_bondIndex * 2 ]; }
 
 		inline Index getBondSecondAtom( const Index p_bondIndex ) const
-		{
-			return bondPairAtomIndexes[ p_bondIndex * 2 + 1 ];
-		}
+		{ return bondPairAtomIndexes[ p_bondIndex * 2 + 1 ]; }
 
 		inline std::optional<Index> findFirstAtomByName(
 			const Index			   p_residueIndex,

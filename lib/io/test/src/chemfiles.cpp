@@ -260,9 +260,7 @@ namespace
 		inline std::span<const VTX::Vec3f> getCurrentAtomPositions() const { return frames[ 0 ]; }
 
 		inline std::span<const VTX::Vec3f> getAtomPositions( const VTX::uint & p_index ) const
-		{
-			return frames[ p_index ];
-		}
+		{ return frames[ p_index ]; }
 	};
 
 	/**
@@ -398,8 +396,6 @@ namespace
 			top.residueOriginalIds.push_back( VTX::Index( id ) );
 			top.residueFirstAtomIndexes.push_back( top.getAtomCount() );
 			top.residueAtomCounts.push_back( 0 );
-			top.residueFirstBondIndexes.push_back( 0 );
-			top.residueBondCounts.push_back( 0 );
 			top.residueSecondaryStructureTypes.push_back( VTX::Core::ChemDB::SecondaryStructure::TYPE::UNKNOWN );
 			top.chainResidueCounts.back()++;
 			return *this;
