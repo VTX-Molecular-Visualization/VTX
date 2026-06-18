@@ -163,6 +163,7 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	cfg.enableOutline			  = true;
 	cfg.enableSelection			  = true;
 	cfg.enableChromaticAberration = true;
+	cfg.enablePixelize			  = true;
 
 	RenderGraph graph;
 	graph.set( Builder::DefaultRenderGraph::build( cfg, Layouts {}, Geometries {} ) );
@@ -194,6 +195,7 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	bool hasShading	  = false;
 	bool hasFXAA	  = false;
 	bool hasChromatic = false;
+	bool hasPixelize  = false;
 
 	for ( const Pass * p : queue )
 	{
@@ -213,12 +215,17 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 		{
 			hasChromatic = true;
 		}
+		if ( p->name == "Pixelize" )
+		{
+			hasPixelize = true;
+		}
 	}
 
 	CHECK( hasGeometric );
 	CHECK( hasShading );
 	CHECK( hasFXAA );
 	CHECK( hasChromatic );
+	CHECK( hasPixelize );
 	CHECK( queue.back()->name == "FXAA" );
 }
 

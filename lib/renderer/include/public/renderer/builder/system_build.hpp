@@ -829,6 +829,14 @@ namespace VTX::Renderer::Builder
 				bufferChromaticAberration.close();
 				p_context.setBuffer( { "ChromaticAberration" }, bufferChromaticAberration );
 			}
+			if ( p_config.activePixelize )
+			{
+				BinaryBuffer140 bufferPixelize;
+				bufferPixelize.write( p_config.pixelizeSize );
+				bufferPixelize.write( uint32_t( p_config.pixelizeBackground ) );
+				bufferPixelize.close();
+				p_context.setBuffer( { "Pixelize" }, bufferPixelize );
+			}
 			if ( p_config.activeSelection )
 			{
 				BinaryBuffer140 bufferSelection;

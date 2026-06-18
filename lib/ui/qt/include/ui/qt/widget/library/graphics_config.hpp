@@ -5,6 +5,7 @@
 #include "ui/qt/widget/color_picker.hpp"
 #include "ui/qt/widget/editable_slider.hpp"
 #include "ui/qt/widget/hideable_goupe_box.hpp"
+#include <QCheckBox>
 #include <QLabel>
 #include <app/action/graphics_config.hpp>
 
@@ -54,6 +55,11 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<EditableSlider>   _sliderChromaticAberrationRed;
 		QPointer<EditableSlider>   _sliderChromaticAberrationGreen;
 		QPointer<EditableSlider>   _sliderChromaticAberrationBlue;
+
+		// Pixelize.
+		QPointer<HideableGroupBox> _groupboxPixelize;
+		QPointer<EditableSlider>   _sliderPixelizeSize;
+		QPointer<QCheckBox>		   _checkBoxPixelizeBackground;
 
 		// Selection.
 		QPointer<HideableGroupBox> _groupboxSelection;

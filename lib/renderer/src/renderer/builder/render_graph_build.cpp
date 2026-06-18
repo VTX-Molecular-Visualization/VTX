@@ -363,6 +363,11 @@ namespace VTX::Renderer::Builder
 			g.texture( "ChromaticAberration", E_FORMAT::RGBA16F );
 		}
 
+		if ( p_config.enablePixelize )
+		{
+			g.texture( "Pixelize", E_FORMAT::RGBA16F );
+		}
+
 		// Samplers.
 		g.defaultSampler();
 
@@ -520,7 +525,8 @@ namespace VTX::Renderer::Builder
 			.endProgram()
 			.endPass();
 
-		const Desc::Key postShading = p_config.enableChromaticAberration ? "ChromaticAberration" : "Shaded";
+		const Desc::Key postChromatic = p_config.enableChromaticAberration ? "ChromaticAberration" : "Shaded";
+		const Desc::Key postEffects	  = p_config.enablePixelize ? "Pixelize" : postChromatic;
 
 		// Chromatic aberration.
 		if ( p_config.enableChromaticAberration )
@@ -537,11 +543,30 @@ namespace VTX::Renderer::Builder
 				.endPass();
 		}
 
+		// Pixelize.
+		if ( p_config.enablePixelize )
+		{
+			g.pass( "Pixelize" )
+				.in( "Geometry" )
+				.in( postChromatic )
+				.out( "Pixelize" )
+				.program( "Pixelize" )
+				.shaders( { "default.vert", "pixelize.frag" } )
+				.uniform(
+					"Size",
+					PIXELIZE_SIZE_DEFAULT,
+					std::pair { static_cast<double>( PIXELIZE_SIZE_MIN ), static_cast<double>( PIXELIZE_SIZE_MAX ) }
+				)
+				.uniform( "Background", uint( PIXELIZE_BACKGROUND_DEFAULT ) )
+				.endProgram()
+				.endPass();
+		}
+
 		// Outline.
 		if ( p_config.enableOutline )
 		{
 			g.pass( "Outline" )
-				.in( postShading )
+				.in( postEffects )
 				.in( "Depth" )
 				.out( "Outline" )
 				.program( "Outline" )
@@ -564,7 +589,7 @@ namespace VTX::Renderer::Builder
 		{
 			g.pass( "Selection" )
 				.in( "Geometry" )
-				.in( p_config.enableOutline ? "Outline" : postShading )
+				.in( p_config.enableOutline ? "Outline" : postEffects )
 				.in( "Depth" )
 				.out( "Selection" )
 				.program( "Selection" )
@@ -578,25 +603,12 @@ namespace VTX::Renderer::Builder
 		g.pass( "FXAA" )
 			.in( p_config.enableSelection ? "Selection"
 				 : p_config.enableOutline ? "Outline"
-										  : postShading )
+										  : postEffects )
 			.out( "FXAA" )
 			.program( "FXAA" )
 			.shaders( { "default.vert", "fxaa.frag" } )
 			.endProgram()
 			.endPass();
-
-		// Pixelize
-		/*
-		g.pass( "Pixelize" )
-			.in( "FXAA" )
-			.out( "Pixelize" )
-			.program( "Pixelize" )
-			.shaders( {  "default.vert" ,  "pixelize.frag"  } )
-			.uniform( "Size", static_cast<std::uint32_t>( 5 ), std::pair { 1.0, 15.0 } )
-			.uniform( "Background", true )
-			.endProgram()
-			.endPass();
-			*/
 
 		// CRT
 		/*
@@ -616,22 +628,10 @@ namespace VTX::Renderer::Builder
 			.endPass();
 			*/
 
-		// Colorize
-		/*
-		g.pass( "Colorize" )
-			.in( "ChromaticAberration" )
-			.out( "Colorize" )
-			.program( "Colorize" )
-			.shaders( {  "default.vert" ,  "colorize.frag"  } )
-			.uniform( "Color", COLOR_YELLOW )
-			.endProgram()
-			.endPass();
-			*/
-
 		// Debug
 		/*
 		g.pass( "Debug" )
-			.in( "Colorize" )
+			.in( "FXAA" )
 			.out( "Debug" )
 			.program( "Debug" )
 			.shaders( {  "default.vert" ,  "debug.frag"  } )
@@ -653,6 +653,7 @@ namespace VTX::Renderer::Builder
 		config.enableOutline			 = p_config.activeOutline;
 		config.enableSelection			 = p_config.activeSelection;
 		config.enableChromaticAberration = p_config.activeChromaticAberration;
+		config.enablePixelize			 = p_config.activePixelize;
 
 		return config;
 	}

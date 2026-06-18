@@ -80,6 +80,13 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderBlurSize->setMinimum( BLUR_SIZE_MIN );
 		_sliderBlurSize->setMaximum( BLUR_SIZE_MAX );
 
+		// Selection.
+		_groupboxSelection = new HideableGroupBox( "Selection", presetGroupBox() );
+		addWidget( _groupboxSelection );
+
+		_colorPickerSelection = new ColorPicker( _groupboxSelection );
+		_groupboxSelection->addWidget( _colorPickerSelection );
+
 		// Outline.
 		_groupboxOutline = new HideableGroupBox( "Outline", presetGroupBox() );
 		addWidget( _groupboxOutline );
@@ -150,12 +157,20 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderChromaticAberrationBlue->setMinimum( CHROMAB_UI_MIN );
 		_sliderChromaticAberrationBlue->setMaximum( CHROMAB_UI_MAX );
 
-		// Selection.
-		_groupboxSelection = new HideableGroupBox( "Selection", presetGroupBox() );
-		addWidget( _groupboxSelection );
+		// Pixelize.
+		_groupboxPixelize = new HideableGroupBox( "Pixelize", presetGroupBox() );
+		addWidget( _groupboxPixelize );
 
-		_colorPickerSelection = new ColorPicker( _groupboxSelection );
-		_groupboxSelection->addWidget( _colorPickerSelection );
+		_sliderPixelizeSize = new EditableSlider( Qt::Orientation::Horizontal, _groupboxPixelize );
+		_groupboxPixelize->addWidget( new QLabel( "Size", _groupboxPixelize ) );
+		_groupboxPixelize->addWidget( _sliderPixelizeSize );
+		_sliderPixelizeSize->setMinimum( PIXELIZE_SIZE_MIN );
+		_sliderPixelizeSize->setMaximum( PIXELIZE_SIZE_MAX );
+		_sliderPixelizeSize->setStep( 1 );
+		_sliderPixelizeSize->setDecimals( 0 );
+
+		_checkBoxPixelizeBackground = new QCheckBox( "Background", _groupboxPixelize );
+		_groupboxPixelize->addWidget( _checkBoxPixelizeBackground );
 
 		// Connect widget callbacks.
 		using namespace Renderer;
@@ -292,6 +307,26 @@ namespace VTX::UI::QT::Widget::Library
 		);
 
 		connect(
+			_groupboxPixelize,
+			&HideableGroupBox::toggled,
+			[ this ]( const bool p_state ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_PIXELIZE, bool>( p_state ); }
+		);
+
+		connect(
+			_sliderPixelizeSize,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::PIXELIZE_SIZE, uint>( static_cast<uint>( p_value ) ); }
+		);
+
+		connect(
+			_checkBoxPixelizeBackground,
+			&QCheckBox::toggled,
+			[ this ]( const bool p_state )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::PIXELIZE_BACKGROUND, bool>( p_state ); }
+		);
+
+		connect(
 			_groupboxSelection,
 			&HideableGroupBox::toggled,
 			[ this ]( const bool p_state )
@@ -330,8 +365,11 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker19( _sliderChromaticAberrationRed );
 		const QSignalBlocker blocker20( _sliderChromaticAberrationGreen );
 		const QSignalBlocker blocker21( _sliderChromaticAberrationBlue );
-		const QSignalBlocker blocker22( _groupboxSelection );
-		const QSignalBlocker blocker23( _colorPickerSelection );
+		const QSignalBlocker blocker22( _groupboxPixelize );
+		const QSignalBlocker blocker23( _sliderPixelizeSize );
+		const QSignalBlocker blocker24( _checkBoxPixelizeBackground );
+		const QSignalBlocker blocker25( _groupboxSelection );
+		const QSignalBlocker blocker26( _colorPickerSelection );
 
 		_comboBoxShadingMode->setCurrentIndex( int( preset.shadingMode ) );
 		_colorPickerBackground->setColor( Helper::toQColor( preset.colorBackground ) );
@@ -355,6 +393,9 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderChromaticAberrationRed->setValue( _chromaticAberrationToUi( preset.chromaticAberrationRed ) );
 		_sliderChromaticAberrationGreen->setValue( _chromaticAberrationToUi( preset.chromaticAberrationGreen ) );
 		_sliderChromaticAberrationBlue->setValue( _chromaticAberrationToUi( preset.chromaticAberrationBlue ) );
+		_groupboxPixelize->setChecked( preset.activePixelize );
+		_sliderPixelizeSize->setValue( preset.pixelizeSize );
+		_checkBoxPixelizeBackground->setChecked( preset.pixelizeBackground );
 		_groupboxSelection->setChecked( preset.activeSelection );
 		_colorPickerSelection->setColor( Helper::toQColor( preset.colorSelection ) );
 

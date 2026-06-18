@@ -106,6 +106,18 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						p_config.chromaticAberrationBlue = p_value;
 					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_PIXELIZE )
+					{
+						p_config.activePixelize = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::PIXELIZE_SIZE )
+					{
+						p_config.pixelizeSize = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::PIXELIZE_BACKGROUND )
+					{
+						p_config.pixelizeBackground = p_value;
+					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_SELECTION )
 					{
 						p_config.activeSelection = p_value;
@@ -114,7 +126,9 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						p_config.colorSelection = p_value;
 					}
-					else {}
+					else
+					{
+					}
 				}
 			);
 		}

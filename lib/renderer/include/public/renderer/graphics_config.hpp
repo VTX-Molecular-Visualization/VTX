@@ -35,6 +35,10 @@ namespace VTX::Renderer
 		CHROMAB_GREEN,
 		CHROMAB_BLUE,
 
+		ACTIVE_PIXELIZE,
+		PIXELIZE_SIZE,
+		PIXELIZE_BACKGROUND,
+
 		ACTIVE_SELECTION,
 		COLOR_SELECTION
 	};
@@ -99,6 +103,12 @@ namespace VTX::Renderer
 	constexpr float CHROMAB_RGB_MIN		   = -0.05f;
 	constexpr float CHROMAB_RGB_MAX		   = 0.f;
 
+	constexpr bool ACTIVE_PIXELIZE_DEFAULT	   = false;
+	constexpr uint PIXELIZE_SIZE_DEFAULT	   = 5;
+	constexpr uint PIXELIZE_SIZE_MIN		   = 1;
+	constexpr uint PIXELIZE_SIZE_MAX		   = 15;
+	constexpr bool PIXELIZE_BACKGROUND_DEFAULT = true;
+
 	constexpr bool			ACTIVE_SELECTION_DEFAULT = true;
 	const Util::Color::Rgba COLOR_SELECTION_DEFAULT	 = Util::Color::Rgba( 45, 243, 26 );
 
@@ -136,6 +146,11 @@ namespace VTX::Renderer
 		float chromaticAberrationGreen;
 		float chromaticAberrationBlue;
 
+		// Pixelize.
+		bool activePixelize;
+		uint pixelizeSize;
+		bool pixelizeBackground;
+
 		// Selection.
 		bool			  activeSelection;
 		Util::Color::Rgba colorSelection;
@@ -170,6 +185,10 @@ namespace VTX::Renderer
 											  CHROMAB_RED_DEFAULT,
 											  CHROMAB_GREEN_DEFAULT,
 											  CHROMAB_BLUE_DEFAULT,
+											  // Pixelize.
+											  ACTIVE_PIXELIZE_DEFAULT,
+											  PIXELIZE_SIZE_DEFAULT,
+											  PIXELIZE_BACKGROUND_DEFAULT,
 											  // Selection.
 											  ACTIVE_SELECTION_DEFAULT,
 											  COLOR_SELECTION_DEFAULT
@@ -202,6 +221,10 @@ namespace VTX::Renderer
 												   CHROMAB_RED_DEFAULT,
 												   CHROMAB_GREEN_DEFAULT,
 												   CHROMAB_BLUE_DEFAULT,
+												   // Pixelize.
+												   ACTIVE_PIXELIZE_DEFAULT,
+												   PIXELIZE_SIZE_DEFAULT,
+												   PIXELIZE_BACKGROUND_DEFAULT,
 												   // Selection.
 												   true,
 												   Util::Color::Rgba( 80, 255, 120 )
@@ -234,6 +257,10 @@ namespace VTX::Renderer
 												   CHROMAB_RED_DEFAULT,
 												   CHROMAB_GREEN_DEFAULT,
 												   CHROMAB_BLUE_DEFAULT,
+												   // Pixelize.
+												   ACTIVE_PIXELIZE_DEFAULT,
+												   PIXELIZE_SIZE_DEFAULT,
+												   PIXELIZE_BACKGROUND_DEFAULT,
 												   // Selection.
 												   true,
 												   Util::Color::Rgba( 255, 64, 64 )
