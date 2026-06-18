@@ -21,11 +21,17 @@ TEST_CASE( "VTX_APP - Action - Io - WriteSelection", "[integration][visibility][
 
 	VTX::FilePath outPath { VTX::Util::Filesystem::getExecutableDir() / "out" / "1aga.bcif" };
 
-	VTX::App::ACTION().execute<VTX::App::Action::IO::WriteVisible>( outPath );
+	{
+		VTX::App::Action::IO::WriteVisible a;
+		VTX::App::ACTION().execute( a, outPath );
+	}
 
-	VTX::App::ACTION().execute<VTX::App::Action::IO::LoadSystem>( outPath );
+	{
+		VTX::App::Action::IO::LoadSystem a;
+		VTX::App::ACTION().execute( a, outPath );
+	}
 
-	for ( auto entt : VTX::App::REG().view<VTX::Core::Struct::Topology, VTX::App::System::Visibility>() )
+	for ( auto entt : VTX::App::REG().view<VTX::Core::Struct::Topology>() )
 	{
 		if ( entt == ent )
 		{
