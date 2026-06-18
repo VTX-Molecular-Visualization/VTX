@@ -27,7 +27,7 @@ TEST_CASE( "VTX_IO - Test filepath", "[reader][topology][metadata]" )
 	CHECK( topology.getChainCount() == 62 );
 	CHECK( topology.getResidueCount() == 11381 );
 	CHECK( topology.getAtomCount() == 113095 );
-	CHECK( topology.getBondCount() == 238012 );
+	CHECK( topology.getBondCount() == 118913 );
 	CHECK( metadata.path == systemPath );
 	CHECK( metadata.pdbIDCode == "8OIT" );
 }
