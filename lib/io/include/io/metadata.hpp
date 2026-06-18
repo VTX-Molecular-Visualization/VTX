@@ -12,12 +12,10 @@ namespace VTX::IO
 	struct Metadata
 	{
 		FilePath	   path;
-		std::string	   pdbIDCode			 = std::string( PDB_ID_CODE_DEFAULT );
-		std::string	   name					 = "";
-		READER_OPTION  readerOption			 = READER_OPTION::ALL;
-		READER_OPTION  performedReaderOption = READER_OPTION::NONE;
-		MISSING_DATA   missingData			 = MISSING_DATA::NONE;
-		TOPOLOGY_STATE topologyState		 = TOPOLOGY_STATE::OK;
+		std::string	   pdbIDCode	 = std::string( PDB_ID_CODE_DEFAULT );
+		std::string	   name			 = "";
+		READER_OPTION  readerOption	 = READER_OPTION::ALL;
+		TOPOLOGY_STATE topologyState = TOPOLOGY_STATE::OK;
 
 		/*
 		std::set<uint>		  solventAtomIds		= std::set<uint>();

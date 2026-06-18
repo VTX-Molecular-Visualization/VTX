@@ -26,18 +26,6 @@ namespace VTX::IO
 	};
 
 	/**
-	 * @brief Missing data in the loaded topology.
-	 */
-	enum struct MISSING_DATA : uint8_t
-	{
-		VTX_ENUM_ENABLE_BITMASK,
-		NONE				= 0,
-		SECONDARY_STRUCTURE = 1 << 0,
-		BONDS				= 1 << 1,
-		BOND_ORDERS			= 1 << 2
-	};
-
-	/**
 	 * @brief State of the loaded topology.
 	 */
 	enum struct TOPOLOGY_STATE : uint8_t
