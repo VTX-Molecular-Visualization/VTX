@@ -44,6 +44,7 @@ namespace VTX::App::Pass
 		// System.
 		hub.connect<Events::SystemLoad, &SystemUpdater::_onSystemLoad>( this );
 		hub.connect<Events::TrajectoryLoad, &SystemUpdater::_onTrajectoryLoad>( this );
+		reg.on_update<Core::Struct::Topology>().connect<&SystemUpdater::_onUpdateTopology>( this );
 		reg.on_update<Util::Math::Transform>().connect<&SystemUpdater::_onUpdateTransform>( this );
 		reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateVisibility>( this );
 		reg.on_update<System::Selection>().connect<&SystemUpdater::_onUpdateSelection>( this );
@@ -152,6 +153,14 @@ namespace VTX::App::Pass
 		{
 			const auto & transform = p_r.get<Util::Math::Transform>( p_e );
 			RENDERER().setSystemTransform( _systems[ p_e ], transform.computeMatrix() );
+		}
+	}
+
+	void SystemUpdater::_onUpdateTopology( Registry &, Entity p_e )
+	{
+		if ( _systems.contains( p_e ) )
+		{
+			RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::STRUCTURE );
 		}
 	}
 

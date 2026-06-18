@@ -13,11 +13,17 @@ namespace
 	using namespace VTX::Util::Math;
 
 	// Add a bond to the topology.
-	void _addBond( Topology & p_topology, const Index p_firstAtomIndex, const Index p_secondAtomIndex )
+	void _addBond(
+		Topology &	p_topology,
+		const Index p_firstAtomIndex,
+		const Index p_secondAtomIndex,
+		size_t &	p_recomputedBondCount
+	)
 	{
 		p_topology.bondPairAtomIndexes.emplace_back( p_firstAtomIndex );
 		p_topology.bondPairAtomIndexes.emplace_back( p_secondAtomIndex );
 		p_topology.bondOrders.emplace_back( Core::ChemDB::Bond::ORDER::SINGLE );
+		p_recomputedBondCount++;
 	}
 
 	// Test if two atoms can form a disulfide bond (CYS-SG).
@@ -25,7 +31,8 @@ namespace
 		Topology &	  p_topology,
 		const Frame & p_frame,
 		const Index	  p_firstAtomIndex,
-		const Index	  p_secondAtomIndex
+		const Index	  p_secondAtomIndex,
+		size_t &	  p_recomputedBondCount
 	)
 	{
 		constexpr double MAX_DISTANCE_FOR_DISULFIDE_BOND_SQR = 9.0;
@@ -33,12 +40,17 @@ namespace
 		const float sqrDistance = length2( p_frame[ p_firstAtomIndex ] - p_frame[ p_secondAtomIndex ] );
 		if ( sqrDistance < MAX_DISTANCE_FOR_DISULFIDE_BOND_SQR )
 		{
-			_addBond( p_topology, p_firstAtomIndex, p_secondAtomIndex );
+			_addBond( p_topology, p_firstAtomIndex, p_secondAtomIndex, p_recomputedBondCount );
 		}
 	}
 
 	// Recompute disulfide bonds by checking all pairs of atoms in the disulfide grid.
-	void _recomputeDisulfides( Topology & p_topology, const Frame & p_frame, const Grid<Index> & p_disulfideGrid )
+	void _recomputeDisulfides(
+		Topology &			p_topology,
+		const Frame &		p_frame,
+		const Grid<Index> & p_disulfideGrid,
+		size_t &			p_recomputedBondCount
+	)
 	{
 		for ( const auto & [ cellPosition, cell ] : p_disulfideGrid )
 		{
@@ -57,7 +69,9 @@ namespace
 						{
 							for ( size_t secondIndex = 0; secondIndex < firstIndex; ++secondIndex )
 							{
-								_testDisulfideBond( p_topology, p_frame, cell[ firstIndex ], cell[ secondIndex ] );
+								_testDisulfideBond(
+									p_topology, p_frame, cell[ firstIndex ], cell[ secondIndex ], p_recomputedBondCount
+								);
 							}
 						}
 
@@ -77,7 +91,9 @@ namespace
 					{
 						for ( const Index secondAtomIndex : p_neighbourCell )
 						{
-							_testDisulfideBond( p_topology, p_frame, firstAtomIndex, secondAtomIndex );
+							_testDisulfideBond(
+								p_topology, p_frame, firstAtomIndex, secondAtomIndex, p_recomputedBondCount
+							);
 						}
 					}
 				}
@@ -91,7 +107,8 @@ namespace
 		const Frame &			   p_frame,
 		const Grid<Index> &		   p_atomGrid,
 		const std::vector<Index> & p_candidateAtomIndexes,
-		const std::vector<bool> &  p_isCandidateAtom
+		const std::vector<bool> &  p_isCandidateAtom,
+		size_t &				   p_recomputedBondCount
 	)
 	{
 		constexpr float CANDIDATE_BOND_CUTOFF_SQR = 3.48f * 2.f * 3.48f * 2.f;
@@ -138,7 +155,7 @@ namespace
 							if ( firstAtomSymbol != Core::ChemDB::Atom::SYMBOL::A_H
 								 || secondAtomSymbol != Core::ChemDB::Atom::SYMBOL::A_H )
 							{
-								_addBond( p_topology, firstAtomIndex, secondAtomIndex );
+								_addBond( p_topology, firstAtomIndex, secondAtomIndex, p_recomputedBondCount );
 							}
 						}
 					}
@@ -216,11 +233,17 @@ namespace VTX::IO::Util::BondRecomputation
 
 		if ( candidateAtomIndexes.empty() && disulfideGrid.getCellCount() == 0 )
 		{
+			VTX_INFO( "Recomputed 0 bonds" );
 			return;
 		}
 
-		_recomputeDisulfides( p_topology, p_frame, disulfideGrid );
-		_recomputeCandidates( p_topology, p_frame, atomGrid, candidateAtomIndexes, isCandidateAtom );
+		size_t recomputedBondCount = 0;
+		_recomputeDisulfides( p_topology, p_frame, disulfideGrid, recomputedBondCount );
+		_recomputeCandidates(
+			p_topology, p_frame, atomGrid, candidateAtomIndexes, isCandidateAtom, recomputedBondCount
+		);
+
+		VTX_INFO( "Recomputed {} bonds", recomputedBondCount );
 	}
 
 } // namespace VTX::IO::Util::BondRecomputation

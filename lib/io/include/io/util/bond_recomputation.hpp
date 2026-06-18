@@ -13,7 +13,7 @@ namespace VTX::IO::Util::BondRecomputation
 	{
 		std::vector<Core::ChemDB::Atom::SYMBOL>	   atomSymbols;
 		std::vector<Core::ChemDB::Residue::SYMBOL> residueSymbols;
-		std::vector<Core::ChemDB::Category::TYPE>  categories;
+		std::vector<Core::ChemDB::Category::TYPE>  categories		 = { Core::ChemDB::Category::TYPE::UNKNOWN };
 		bool									   includeDisulfides = true;
 	};
 
