@@ -84,6 +84,7 @@ jobs:
         conan upload entt -r=vtx
         conan upload cpr -r=vtx
         conan upload stb -r=vtx
+        conan upload tinyexr -r=vtx
         conan upload fmt -r=vtx
         conan upload zlib -r=vtx
         conan upload libcurl -r=vtx
