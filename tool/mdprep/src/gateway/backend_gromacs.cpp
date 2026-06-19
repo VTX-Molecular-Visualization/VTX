@@ -111,6 +111,39 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		}
 
 		void convert(
+			const MdParameters &				p_param,
+			const Gromacs::MdSettings &			p_gmxParam,
+			backends::Gromacs::MdInstructions & p_out
+		) noexcept
+		{
+			p_out.nvt.nsteps	= p_param.nvt.nsteps;
+			p_out.nvt.dt		= p_param.nvt.dt;
+			p_out.nvt.nstxout	= p_param.nvt.saveInterval;
+			p_out.nvt.nstvout	= p_gmxParam.nvt.nstvout;
+			p_out.nvt.nstenergy = p_gmxParam.nvt.nstenergy;
+			p_out.nvt.nstlog	= p_gmxParam.nvt.nstlog;
+
+			p_out.npt.nsteps	= p_param.npt.nsteps;
+			p_out.npt.dt		= p_param.npt.dt;
+			p_out.npt.nstxout	= p_param.npt.saveInterval;
+			p_out.npt.nstvout	= p_gmxParam.npt.nstvout;
+			p_out.npt.nstenergy = p_gmxParam.npt.nstenergy;
+			p_out.npt.nstlog	= p_gmxParam.npt.nstlog;
+
+			p_out.prod.nsteps			  = p_param.prod.nsteps;
+			p_out.prod.dt				  = p_param.prod.dt;
+			p_out.prod.nstxout			  = p_param.prod.saveInterval;
+			p_out.prod.nstvout			  = p_gmxParam.prod.nstvout;
+			p_out.prod.nstenergy		  = p_gmxParam.prod.nstenergy;
+			p_out.prod.nstlog			  = p_gmxParam.prod.nstlog;
+			p_out.prod.nstxout_compressed = p_gmxParam.prod.nstxout_compressed
+												? p_gmxParam.prod.nstxout_compressed.value()
+												: p_param.prod.saveInterval;
+
+			p_out.fileStem = "your_system"; // TODO bad design
+		}
+
+		void convert(
 			const MdParameters &										p_inGeneric,
 			const Gromacs::MdSettings &									p_inGromacs,
 			VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions & p_out
@@ -131,6 +164,7 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 			{
 				p_out.pdb2gmx.forcefieldIndex = 0;
 			}
+			convert( p_inGeneric, p_inGromacs, p_out.mdInstructions );
 		}
 	} // namespace
 

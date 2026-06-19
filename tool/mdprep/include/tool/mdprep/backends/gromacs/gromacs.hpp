@@ -39,6 +39,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		std::array<GromacsJobData, g_NUM_PREPARATION_JOBS> jobData;
 		CumulativeOuputFiles							   outputs;
 		fs::path										   rootDir = createNewEmptyTempDirectory();
+		MdInstructions									   mdInstructions;
 	};
 
 	/**

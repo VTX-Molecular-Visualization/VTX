@@ -33,7 +33,8 @@ namespace VTX::Tool::Mdprep::Actions
 			goto theEnd;
 		}
 		{
-			VTX::FilePath dest { p_instr.rootDir / "init.pdb" };
+			VTX::FilePath dest { p_instr.rootDir
+								 / "your_system.pdb" }; // TODO bad design (see backend_gromacs.cpp:convert)
 
 			App::Action::IO::WriteVisible a;
 			App::ACTION().execute( a, VTX::FilePath( dest ) );
