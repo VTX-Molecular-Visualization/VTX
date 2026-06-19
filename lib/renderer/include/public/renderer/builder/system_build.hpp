@@ -4,6 +4,7 @@
 #include "renderer/binary_buffer.hpp"
 #include "renderer/builder/post_process/blur.hpp"
 #include "renderer/builder/post_process/chromatic_aberration.hpp"
+#include "renderer/builder/post_process/colorize.hpp"
 #include "renderer/builder/post_process/crt.hpp"
 #include "renderer/builder/post_process/outline.hpp"
 #include "renderer/builder/post_process/pixelize.hpp"
@@ -797,6 +798,10 @@ namespace VTX::Renderer::Builder
 			if ( p_config.outline )
 			{
 				PostProcess::Outline::upload( p_context, *p_config.outline );
+			}
+			if ( p_config.colorize )
+			{
+				PostProcess::Colorize::upload( p_context, *p_config.colorize );
 			}
 			if ( p_config.chromaticAberration )
 			{

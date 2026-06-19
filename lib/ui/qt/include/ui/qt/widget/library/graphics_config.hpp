@@ -6,6 +6,7 @@
 #include "ui/qt/widget/editable_slider.hpp"
 #include "ui/qt/widget/hideable_goupe_box.hpp"
 #include <QCheckBox>
+#include <QComboBox>
 #include <QLabel>
 #include <app/action/graphics_config.hpp>
 
@@ -34,6 +35,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		// SSAO.
 		QPointer<HideableGroupBox> _groupboxSSAO;
+		QPointer<QComboBox>		   _comboBoxSSAOMethod;
 		QPointer<EditableSlider>   _sliderSSAOIntensity;
 		QPointer<EditableSlider>   _sliderBlurSize;
 
@@ -49,6 +51,10 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<EditableSlider>   _sliderFogNear;
 		QPointer<EditableSlider>   _sliderFogFar;
 		QPointer<EditableSlider>   _sliderFogDensity;
+
+		// Colorize.
+		QPointer<HideableGroupBox> _groupboxColorize;
+		QPointer<ColorPicker>	   _colorPickerColorize;
 
 		// Chromatic aberration.
 		QPointer<HideableGroupBox> _groupboxChromaticAberration;
@@ -78,9 +84,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		template<VTX::Renderer::E_GRAPHICS_CONFIG_VALUES S, typename T>
 		void _changeValue( const T p_value )
-		{
-			App::ACTION().execute<App::Action::GraphicsConfig::Change<S, T>>( currentPreset(), p_value );
-		}
+		{ App::ACTION().execute<App::Action::GraphicsConfig::Change<S, T>>( currentPreset(), p_value ); }
 
 		void _applyLogic( const VTX::Renderer::GraphicsConfig & );
 	};

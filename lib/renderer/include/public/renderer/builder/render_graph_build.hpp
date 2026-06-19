@@ -16,12 +16,14 @@ namespace VTX::Renderer::Builder
 	 */
 	struct PipelineConfig
 	{
-		bool enableSSAO				   = false;
-		bool enableOutline			   = false;
-		bool enableSelection		   = false;
-		bool enableChromaticAberration = false;
-		bool enablePixelize			   = false;
-		bool enableCRT				   = false;
+		bool		  enableSSAO				= false;
+		E_SSAO_METHOD ssaoMethod				= SSAO_METHOD_DEFAULT;
+		bool		  enableOutline				= false;
+		bool		  enableSelection			= false;
+		bool		  enableColorize			= false;
+		bool		  enableChromaticAberration = false;
+		bool		  enablePixelize			= false;
+		bool		  enableCRT					= false;
 
 		bool operator==( const PipelineConfig & ) const = default;
 	};

@@ -162,6 +162,7 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	cfg.enableSSAO				  = true;
 	cfg.enableOutline			  = true;
 	cfg.enableSelection			  = true;
+	cfg.enableColorize			  = true;
 	cfg.enableChromaticAberration = true;
 	cfg.enablePixelize			  = true;
 	cfg.enableCRT				  = true;
@@ -195,6 +196,7 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	bool hasGeometric = false;
 	bool hasShading	  = false;
 	bool hasFXAA	  = false;
+	bool hasColorize  = false;
 	bool hasChromatic = false;
 	bool hasPixelize  = false;
 	bool hasCRT		  = false;
@@ -213,6 +215,10 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 		{
 			hasFXAA = true;
 		}
+		if ( p->name == "Colorize" )
+		{
+			hasColorize = true;
+		}
 		if ( p->name == "ChromaticAberration" )
 		{
 			hasChromatic = true;
@@ -230,6 +236,7 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	CHECK( hasGeometric );
 	CHECK( hasShading );
 	CHECK( hasFXAA );
+	CHECK( hasColorize );
 	CHECK( hasChromatic );
 	CHECK( hasPixelize );
 	CHECK( hasCRT );
@@ -519,9 +526,7 @@ namespace VTX::Renderer::Desc
 {
 	template<>
 	inline Hash hashDesc<FakeDesc>( const FakeDesc & p_text )
-	{
-		return Util::hash( p_text.a ) + Util::hash( p_text.b );
-	}
+	{ return Util::hash( p_text.a ) + Util::hash( p_text.b ); }
 } // namespace VTX::Renderer::Desc
 
 TEST_CASE( "ResourceHandler: emplace creates new handles sequentially", "[ResourceHandler]" )

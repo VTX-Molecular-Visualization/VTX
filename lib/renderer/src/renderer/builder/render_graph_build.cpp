@@ -1,6 +1,7 @@
 #include "renderer/builder/render_graph_build.hpp"
 #include "renderer/builder/post_process/blur.hpp"
 #include "renderer/builder/post_process/chromatic_aberration.hpp"
+#include "renderer/builder/post_process/colorize.hpp"
 #include "renderer/builder/post_process/crt.hpp"
 #include "renderer/builder/post_process/fxaa.hpp"
 #include "renderer/builder/post_process/linearize_depth.hpp"
@@ -356,6 +357,11 @@ namespace VTX::Renderer::Builder
 
 		g.texture( "Shaded", E_FORMAT::RGBA16F );
 
+		if ( p_config.enableColorize )
+		{
+			g.texture( "Colorize", E_FORMAT::RGBA16F );
+		}
+
 		if ( p_config.enableOutline )
 		{
 			g.texture( "Outline", E_FORMAT::RGBA16F );
@@ -470,19 +476,27 @@ namespace VTX::Renderer::Builder
 
 		if ( p_config.enableSSAO )
 		{
-			PostProcess::SSAO::build( g );
+			PostProcess::SSAO::build( g, p_config.ssaoMethod );
 			PostProcess::BlurX::build( g, PostProcess::SSAO::PASS );
 			PostProcess::BlurY::build( g, PostProcess::BlurX::PASS );
 		}
 
 		PostProcess::Shading::build( g, p_config.enableSSAO );
 
-		const Desc::Key postChromatic = p_config.enableChromaticAberration ? PostProcess::ChromaticAberration::PASS
-																		   : PostProcess::Shading::OUTPUT;
+		const Desc::Key postColorize
+			= p_config.enableColorize ? PostProcess::Colorize::PASS : PostProcess::Shading::OUTPUT;
+
+		if ( p_config.enableColorize )
+		{
+			PostProcess::Colorize::build( g, PostProcess::Shading::OUTPUT );
+		}
+
+		const Desc::Key postChromatic
+			= p_config.enableChromaticAberration ? PostProcess::ChromaticAberration::PASS : postColorize;
 
 		if ( p_config.enableChromaticAberration )
 		{
-			PostProcess::ChromaticAberration::build( g, PostProcess::Shading::OUTPUT );
+			PostProcess::ChromaticAberration::build( g, postColorize );
 		}
 
 		const Desc::Key postEffects = p_config.enablePixelize ? PostProcess::Pixelize::PASS : postChromatic;
@@ -535,8 +549,10 @@ namespace VTX::Renderer::Builder
 	{
 		PipelineConfig config;
 		config.enableSSAO				 = p_config.ssao.has_value();
+		config.ssaoMethod				 = p_config.ssao ? p_config.ssao->method : SSAO_METHOD_DEFAULT;
 		config.enableOutline			 = p_config.outline.has_value();
 		config.enableSelection			 = p_config.selection.has_value();
+		config.enableColorize			 = p_config.colorize.has_value();
 		config.enableChromaticAberration = p_config.chromaticAberration.has_value();
 		config.enablePixelize			 = p_config.pixelize.has_value();
 		config.enableCRT				 = p_config.crt.has_value();
