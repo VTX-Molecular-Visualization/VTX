@@ -18,6 +18,23 @@
 
 namespace VTX::UI::QT::Widget
 {
+	namespace
+	{
+		constexpr Index MAX_SELECTION_LIST_LINE_NB = 100;
+
+		void _addSelectionLine( QListWidget & p_list, const QString & p_text )
+		{
+			if ( p_list.count() < MAX_SELECTION_LIST_LINE_NB )
+			{
+				p_list.addItem( p_text );
+			}
+			else if ( p_list.count() == MAX_SELECTION_LIST_LINE_NB )
+			{
+				p_list.item( MAX_SELECTION_LIST_LINE_NB - 1 )->setText( "..." );
+			}
+		}
+	} // namespace
+
 	Selection::Selection( QWidget * const p_parent ) : QWidget( p_parent )
 	{
 		Util::ScopedChrono timer( "QT::Widget::Selection::Selection" );
@@ -175,7 +192,7 @@ namespace VTX::UI::QT::Widget
 				countResidue += topology.getResidueCount();
 				countAtom += topology.getAtomCount();
 
-				_list->addItem( systemName );
+				_addSelectionLine( *_list, systemName );
 
 				continue;
 			}
@@ -196,7 +213,7 @@ namespace VTX::UI::QT::Widget
 					countChain++;
 					countResidue += topology.getChainResidueCount( chain );
 					countAtom += topology.getChainAtomCount( chain );
-					_list->addItem( systemName + "/" + chainName );
+					_addSelectionLine( *_list, systemName + "/" + chainName );
 					continue;
 				}
 				else if ( chainState == App::System::E_SELECTION_STATE::NONE )
@@ -215,7 +232,7 @@ namespace VTX::UI::QT::Widget
 					{
 						countResidue++;
 						countAtom += topology.getResidueAtomCount( residue );
-						_list->addItem( systemName + "/" + chainName + "/" + residueName );
+						_addSelectionLine( *_list, systemName + "/" + chainName + "/" + residueName );
 						continue;
 					}
 					else if ( residueState == App::System::E_SELECTION_STATE::NONE )
@@ -232,10 +249,11 @@ namespace VTX::UI::QT::Widget
 						{
 							countAtom++;
 							auto originalIndex = topology.getAtomOriginalIndex( atom );
-							_list->addItem(
+							_addSelectionLine(
+								*_list,
 								systemName + "/" + chainName + "/" + residueName + "/"
-								+ QString::fromStdString( topology.getAtomName( atom ) )
-								+ ( originalIndex ? QString::asprintf( ":%i", originalIndex.value() ) : "" )
+									+ QString::fromStdString( topology.getAtomName( atom ) )
+									+ ( originalIndex ? QString::asprintf( ":%i", originalIndex.value() ) : "" )
 							);
 						}
 					}

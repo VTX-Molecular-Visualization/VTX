@@ -46,6 +46,7 @@ namespace VTX::IO
 		int64_t									_currentFrameIdx	 = -1;
 		std::vector<Index>						_atomOriginalIndexes = {};
 		Frame									_firstFrame;
+		bool									_hasSecondaryStructureData = false;
 
 		_Impl( const FilePath & p_path, const READER_OPTION p_options, StopToken & p_stopToken ) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
@@ -87,9 +88,8 @@ namespace VTX::IO
 			p_metadata.pdbIDCode	= _currentFrame.get( "pdb_idcode" ) ? _currentFrame.get( "pdb_idcode" )->as_string()
 																		: PDB_ID_CODE_DEFAULT;
 			p_metadata.name			= _currentFrame.get( "name" ) ? _currentFrame.get( "name" )->as_string() : "";
-			p_metadata.performedReaderOption = READER_OPTION::NONE;
-			p_metadata.missingData			 = MISSING_DATA::SECONDARY_STRUCTURE;
-			p_metadata.topologyState		 = TOPOLOGY_STATE::OK;
+			p_metadata.topologyState   = TOPOLOGY_STATE::OK;
+			_hasSecondaryStructureData = false;
 
 			// Strip leading dot from extension (e.g. ".pdb" -> "pdb")
 			std::string ext = _filePath.extension().string();
@@ -191,7 +191,7 @@ namespace VTX::IO
 				p_topology.residueChainIndexes[ residueIdx ]	 = currentChainIndex;
 				p_topology.residueFirstAtomIndexes[ residueIdx ] = residueFirstAtomIndex;
 				p_topology.residueAtomCounts[ residueIdx ]		 = static_cast<Index>( _currentResidue->size() );
-				_fillResidue( p_categories, residueIdx, residueIdx, p_topology, p_metadata );
+				_fillResidue( p_categories, residueIdx, residueIdx, p_topology );
 
 				bool  isFirstAtomInResidue = true;
 				Index previousAtomIndex	   = INVALID_INDEX;
@@ -241,8 +241,8 @@ namespace VTX::IO
 				p_topology.chainResidueCounts[ currentChainIndex ] = currentChainResidueCount;
 			}
 
-			_fillBonds( p_metadata, p_topology );
-			_recomputeMissingData( p_metadata, p_topology, _firstFrame );
+			_fillBonds( p_topology );
+			_recomputeMissingData( p_topology, _firstFrame );
 		}
 
 		void get( const FrameIndex & p_frameIndex, VTX::Core::Struct::Frame & p_positions )
@@ -346,7 +346,8 @@ namespace VTX::IO
 			VTX_INFO( "Retopologizing structure" );
 
 			// Clean previous data.
-			p_topology = Topology();
+			p_topology				   = Topology();
+			_hasSecondaryStructureData = false;
 
 			// Temporary structures.
 			struct Residue
@@ -526,9 +527,7 @@ namespace VTX::IO
 					}
 					else
 					{
-						_fillResidue(
-							p_categories, residue.sourceResidueIndex, targetResidueIndex, topology, p_metadata
-						);
+						_fillResidue( p_categories, residue.sourceResidueIndex, targetResidueIndex, topology );
 					}
 
 					for ( const Index sourceAtomIndex : residue.atomIndexes )
@@ -544,7 +543,7 @@ namespace VTX::IO
 				}
 			}
 
-			_fillBonds( p_metadata, topology, oldAtomToNewAtom );
+			_fillBonds( topology, oldAtomToNewAtom );
 			{
 				Frame remappedFirstFrame;
 				remappedFirstFrame.resize( _atomOriginalIndexes.size() );
@@ -554,7 +553,7 @@ namespace VTX::IO
 				}
 				_firstFrame = std::move( remappedFirstFrame );
 			}
-			_recomputeMissingData( p_metadata, topology, _firstFrame );
+			_recomputeMissingData( topology, _firstFrame );
 			p_topology = std::move( topology );
 			// Keep track of original atom indexes for trajectory remapping.
 			p_topology.atomOriginalIndexes = _atomOriginalIndexes;
@@ -574,8 +573,7 @@ namespace VTX::IO
 			const Category::Dictionary & p_categories,
 			const Index					 p_sourceResidueIndex,
 			const Index					 p_targetResidueIndex,
-			Topology &					 p_topology,
-			Metadata &					 p_metadata
+			Topology &					 p_topology
 		)
 		{
 			_currentResidue = &( ( *_residues )[ p_sourceResidueIndex ] );
@@ -596,7 +594,7 @@ namespace VTX::IO
 			{
 				p_topology.residueSecondaryStructureTypes[ p_targetResidueIndex ]
 					= SecondaryStructure::pdbFormattedToEnum( ss );
-				p_metadata.missingData &= ~MISSING_DATA::SECONDARY_STRUCTURE;
+				_hasSecondaryStructureData = true;
 			}
 		}
 
@@ -617,11 +615,7 @@ namespace VTX::IO
 			p_topology.atomSymbols[ p_targetAtomIndex ]		   = atomSymbol;
 		}
 
-		void _fillBonds(
-			Metadata &					 p_metadata,
-			Topology &					 p_topology,
-			const std::span<const Index> p_oldAtomToNewAtom = {}
-		)
+		void _fillBonds( Topology & p_topology, const std::span<const Index> p_oldAtomToNewAtom = {} )
 		{
 			std::vector<Index> validBondIndexes;
 			validBondIndexes.reserve( _bonds->size() );
@@ -670,11 +664,6 @@ namespace VTX::IO
 				_fillBond( validBondIndexes[ bondIdx ], bondIdx, p_topology, p_oldAtomToNewAtom );
 			}
 
-			if ( _hasUnknownBondOrders( p_topology ) )
-			{
-				p_metadata.missingData |= MISSING_DATA::BOND_ORDERS;
-			}
-
 			assert( p_topology.getBondCount() == static_cast<Index>( validBondIndexes.size() ) );
 		}
 
@@ -711,16 +700,7 @@ namespace VTX::IO
 			p_topology.bondOrders[ p_targetBondIndex ]					= bondOrder;
 		}
 
-		bool _hasUnknownBondOrders( const Topology & p_topology ) const
-		{
-			return std::any_of(
-				p_topology.bondOrders.begin(),
-				p_topology.bondOrders.end(),
-				[]( const Bond::ORDER p_bondOrder ) { return p_bondOrder == Bond::ORDER::UNKNOWN; }
-			);
-		}
-
-		void _recomputeMissingData( Metadata & p_metadata, Topology & p_topology, const Frame & p_positions )
+		void _recomputeMissingData( Topology & p_topology, const Frame & p_positions )
 		{
 			assert( p_positions.size() == p_topology.getAtomCount() );
 
@@ -729,23 +709,16 @@ namespace VTX::IO
 			if ( recomputeMissingBonds )
 			{
 				Util::BondRecomputation::recomputeBonds( p_topology, p_positions );
-				p_metadata.performedReaderOption |= READER_OPTION::RECOMPUTE_MISSING_BONDS;
 			}
 
-			const bool guessUnknownBondOrders
-				= Enum::hasAnyBit( _readerOption, READER_OPTION::GUESS_UNKNOWN_BOND_ORDERS )
-				  && _hasUnknownBondOrders( p_topology );
-			if ( guessUnknownBondOrders )
+			if ( Enum::hasAnyBit( _readerOption, READER_OPTION::GUESS_UNKNOWN_BOND_ORDERS ) )
 			{
-				p_metadata.missingData |= MISSING_DATA::BOND_ORDERS;
-				Util::BondOrderGuessing::recomputeBondOrders( p_topology, p_positions );
-				p_metadata.performedReaderOption |= READER_OPTION::GUESS_UNKNOWN_BOND_ORDERS;
+				Util::recomputeBondOrders( p_topology, p_positions );
 			}
 			if ( Enum::hasAnyBit( _readerOption, READER_OPTION::COMPUTE_MISSING_SECONDARY_STRUCTURE )
-				 && Enum::hasAnyBit( p_metadata.missingData, MISSING_DATA::SECONDARY_STRUCTURE ) )
+				 && not _hasSecondaryStructureData )
 			{
 				Util::SecondaryStructure::assignSecondaryStructure( p_topology, p_positions );
-				p_metadata.performedReaderOption |= READER_OPTION::COMPUTE_MISSING_SECONDARY_STRUCTURE;
 			}
 		}
 

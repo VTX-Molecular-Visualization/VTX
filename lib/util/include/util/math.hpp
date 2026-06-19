@@ -74,17 +74,20 @@ namespace VTX::Util::Math
 		p_value = normalize( p_value );
 	}
 
-	template<int L, typename T>
-	inline std::vector<T> toStdVector( const vec<L, T> & p_value )
+	template<typename T>
+	inline T safeNormalize( const T & p_value )
 	{
-		return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L );
+		const auto valueLength = length( p_value );
+		return valueLength == 0.f ? T( 0.f ) : p_value / valueLength;
 	}
 
 	template<int L, typename T>
+	inline std::vector<T> toStdVector( const vec<L, T> & p_value )
+	{ return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L ); }
+
+	template<int L, typename T>
 	inline std::vector<T> toStdVector( const mat<L, L, T> & p_value )
-	{
-		return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L * L );
-	}
+	{ return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L * L ); }
 
 	inline float randomFloat() { return dis( gen ); }
 
@@ -178,6 +181,7 @@ namespace VTX::Util::Math
 
 		return angle( p, q );
 	}
+
 	template<typename T>
 	inline float torsionalAngle( const T & p_point0, const T & p_point1, const T & p_point2, const T & p_point3 )
 	{
@@ -223,9 +227,7 @@ namespace VTX::Util::Math
 		const float	  p_scalar1,
 		const Vec3f & p_vector1
 	) noexcept
-	{
-		return p_scalar0 * p_vector0 + p_scalar1 * p_vector1;
-	}
+	{ return p_scalar0 * p_vector0 + p_scalar1 * p_vector1; }
 
 	constexpr uint nextPowerOfTwoValue( const uint p_baseNumber ) noexcept
 	{
