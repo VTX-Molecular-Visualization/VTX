@@ -18,6 +18,7 @@ namespace VTX::Renderer::Builder
 	{
 		bool		  enableSSAO				= false;
 		E_SSAO_METHOD ssaoMethod				= SSAO_METHOD_DEFAULT;
+		float		  ssaoScale					= SSAO_SCALE_DEFAULT;
 		bool		  enableOutline				= false;
 		bool		  enableSelection			= false;
 		bool		  enableColorize			= false;

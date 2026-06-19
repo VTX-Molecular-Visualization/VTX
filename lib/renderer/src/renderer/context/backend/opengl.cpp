@@ -361,16 +361,29 @@ namespace VTX::Renderer::Context::Backend
 				const Handle hFramebuffer = _getOrCreateFramebuffer( pass, p_resources, isLastPass );
 				_attachTexturesToFramebuffer( pass, p_resources.textures );
 
+				uint32_t passWidth	= _width;
+				uint32_t passHeight = _height;
+				for ( const ResourceBinding & output : pass.outputs )
+				{
+					if ( output.type == E_RESOURCE_TYPE::TEXTURE )
+					{
+						const GL::Texture2D & texture = _textures.get( output.primary );
+						passWidth					  = static_cast<uint32_t>( texture.getWidth() );
+						passHeight					  = static_cast<uint32_t>( texture.getHeight() );
+						break;
+					}
+				}
+
 				// Push BEGIN_PASS/BIND_OUTPUT.
 				uint32_t flags = _toSettingFlags( pass.settings );
 				if ( not isLastPass )
 				{
-					PayloadBeginPass pBeginPass { hFramebuffer, flags };
+					PayloadBeginPass pBeginPass { hFramebuffer, flags, passWidth, passHeight };
 					p_commands.push<E_COMMAND::BEGIN_PASS>( pBeginPass );
 				}
 				else
 				{
-					PayloadBindOutput pBindOutput { _target };
+					PayloadBindOutput pBindOutput { _target, _width, _height };
 					p_commands.push<E_COMMAND::BIND_OUTPUT>( pBindOutput );
 				}
 
@@ -619,9 +632,6 @@ namespace VTX::Renderer::Context::Backend
 		_glContext.resize( _width, _height );
 		glViewport( 0, 0, static_cast<GLsizei>( _width ), static_cast<GLsizei>( _height ) );
 
-		uint32_t texWidth  = p_width;
-		uint32_t texHeight = p_height;
-
 		for ( const auto & [ key, tex ] : p_textures )
 		{
 			const Size2D & size = tex.size;
@@ -631,7 +641,11 @@ namespace VTX::Renderer::Context::Backend
 			{
 				continue;
 			}
-			else if ( auto * sizePtr = std::get_if<Size2DRelative>( &tex.size ) )
+
+			uint32_t texWidth  = p_width;
+			uint32_t texHeight = p_height;
+
+			if ( auto * sizePtr = std::get_if<Size2DRelative>( &tex.size ) )
 			{
 				texWidth  = static_cast<uint32_t>( static_cast<float>( _width ) * sizePtr->width );
 				texHeight = static_cast<uint32_t>( static_cast<float>( _height ) * sizePtr->height );

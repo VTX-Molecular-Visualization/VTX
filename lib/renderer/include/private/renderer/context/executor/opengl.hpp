@@ -36,6 +36,7 @@ namespace VTX::Renderer::Context::Executor
 
 			// Bind framebuffer.
 			_backend.framebuffer( p_payload.framebuffer ).bind();
+			glViewport( 0, 0, static_cast<GLsizei>( p_payload.width ), static_cast<GLsizei>( p_payload.height ) );
 
 			// Setting flags.
 			const uint32_t flags = p_payload.flags;
@@ -282,6 +283,7 @@ namespace VTX::Renderer::Context::Executor
 		{
 			// Bind output framebuffer.
 			_backend.framebuffer( p_payload.framebuffer ).bind();
+			glViewport( 0, 0, static_cast<GLsizei>( p_payload.width ), static_cast<GLsizei>( p_payload.height ) );
 
 			_dumpGLError();
 		}

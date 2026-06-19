@@ -12,7 +12,12 @@ layout( binding = 0 ) uniform usampler2D inTexturePackedData;
 layout( binding = 1 ) uniform sampler2D inTextureNoise;
 layout( binding = 2 ) uniform sampler2D inTextureDepth;
 
-layout( std140, binding = 3 ) uniform Uniforms { float intensity; }
+layout( std140, binding = 3 ) uniform Uniforms
+{
+	float intensity;
+	float radius;
+	float scale;
+}
 
 uniforms;
 
@@ -32,10 +37,13 @@ const vec2[ 4 ] dXs = vec2[ 4 ]( vec2( 1.f, 0.f ), vec2( -1.f, 0.f ), vec2( 0.f,
 // different radii to sample
 const float[ 4 ] radii = float[ 4 ]( 5.f, 10.f, 15.f, 20.f );
 
+ivec2 depthTexCoord( const vec2 p_texCoord )
+{ return clamp( ivec2( p_texCoord ), ivec2( 0 ), textureSize( inTextureDepth, 0 ) - ivec2( 1 ) ); }
+
 void main()
 {
 	// Get current pixel, screen space coordinates
-	ivec2 texPos = ivec2( gl_FragCoord.xy );
+	ivec2 texPos = depthTexCoord( gl_FragCoord.xy * uniforms.scale );
 
 	// get depth current pixel
 	float depth = -texelFetch( inTextureDepth, texPos, 0 ).x;
@@ -60,9 +68,10 @@ void main()
 		// get very close sample in screen space
 		vec2 dX = rot * dXs[ i ];
 
-		float depthdX = -texelFetch( inTextureDepth, ivec2( position.xy + dX ), 0 ).x;
+		const ivec2 tangentTexPos = depthTexCoord( position.xy + dX );
+		float		depthdX		  = -texelFetch( inTextureDepth, tangentTexPos, 0 ).x;
 		// tangent vector
-		vec3 dXPosVec3 = vec3( dX.x, dX.y, depthdX - depth );
+		vec3 dXPosVec3 = vec3( vec2( tangentTexPos ) - position.xy, depthdX - depth );
 
 		float angleTan = atan( dXPosVec3.z / length( dXPosVec3.xy ) );
 		float sinTan   = sin( angleTan + BIAS );
@@ -73,10 +82,9 @@ void main()
 		for ( int j = 0; j < NUM_SAMPLE; j++ )
 		{
 			// get sample position in screen space
-			vec2 samplePos	  = radius * radii[ j ] * dX + position.xy;
-			samplePos		  = max( samplePos, vec2( 0.f ) );
-			samplePos		  = min( samplePos, vec2( 1024.f, 2048.f ) ); // TODO replace with screen size
-			float depthSample = -texelFetch( inTextureDepth, ivec2( samplePos ), 0 ).x;
+			const ivec2 sampleTexPos = depthTexCoord( radius * radii[ j ] * dX + position.xy );
+			const vec2	samplePos	 = vec2( sampleTexPos );
+			float		depthSample	 = -texelFetch( inTextureDepth, sampleTexPos, 0 ).x;
 
 			vec3 samplePosVec3 = vec3( ( samplePos.x ), ( samplePos.y ), depthSample ) - position;
 

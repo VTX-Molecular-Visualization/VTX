@@ -20,6 +20,7 @@ layout( std140, binding = 4 ) uniform Uniforms
 {
 	float intensity;
 	float radius; // 10 is a pretty good value
+	float scale;
 }
 
 uniforms;
@@ -58,7 +59,7 @@ void main()
 {
 	localIllumination = vec4( 0.0f );
 	// Get the texture position from the fragment coordinates
-	const ivec2 texPos	   = ivec2( gl_FragCoord.xy );
+	const ivec2 texPos	   = ivec2( gl_FragCoord.xy * uniforms.scale );
 	globalOccludedBitfield = 0u;
 	// Get view position from data
 	UnpackedData data;

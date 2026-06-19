@@ -23,6 +23,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.shaders( { "default.vert", "blur.frag" } )
 				.uniform( "Direction", Vec2i( 1, 0 ) )
 				.uniform( "Size", BLUR_SIZE_DEFAULT, std::pair { BLUR_SIZE_MIN, BLUR_SIZE_MAX } )
+				.uniform( "Scale", SSAO_SCALE_DEFAULT, std::pair { SSAO_SCALE_MIN, SSAO_SCALE_MAX } )
 				.endProgram()
 				.endPass();
 
@@ -34,6 +35,7 @@ namespace VTX::Renderer::Builder::PostProcess
 			BinaryBuffer140 buffer;
 			buffer.write( Vec2i( 1, 0 ) );
 			buffer.write( p_config.blurSize );
+			buffer.write( p_config.scale );
 			buffer.close();
 
 			p_context.setBuffer( { PASS }, buffer );
@@ -54,6 +56,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.shaders( { "default.vert", "blur.frag" } )
 				.uniform( "Direction", Vec2i( 0, 1 ) )
 				.uniform( "Size", BLUR_SIZE_DEFAULT, std::pair { BLUR_SIZE_MIN, BLUR_SIZE_MAX } )
+				.uniform( "Scale", SSAO_SCALE_DEFAULT, std::pair { SSAO_SCALE_MIN, SSAO_SCALE_MAX } )
 				.endProgram()
 				.endPass();
 
@@ -65,6 +68,7 @@ namespace VTX::Renderer::Builder::PostProcess
 			BinaryBuffer140 buffer;
 			buffer.write( Vec2i( 0, 1 ) );
 			buffer.write( p_config.blurSize );
+			buffer.write( p_config.scale );
 			buffer.close();
 
 			p_context.setBuffer( { PASS }, buffer );

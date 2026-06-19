@@ -72,6 +72,10 @@ namespace VTX::App::Action::GraphicsConfig
 						ensure( p_config.ssao, Renderer::GraphicsConfigs::SSAO_DEFAULT ).method
 							= static_cast<Renderer::E_SSAO_METHOD>( p_value );
 					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::SSAO_SCALE )
+					{
+						ensure( p_config.ssao, Renderer::GraphicsConfigs::SSAO_DEFAULT ).scale = p_value;
+					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::BLUR_SIZE )
 					{
 						ensure( p_config.ssao, Renderer::GraphicsConfigs::SSAO_DEFAULT ).blurSize = p_value;

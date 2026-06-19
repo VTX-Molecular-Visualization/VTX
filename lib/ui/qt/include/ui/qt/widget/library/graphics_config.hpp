@@ -36,6 +36,7 @@ namespace VTX::UI::QT::Widget::Library
 		// SSAO.
 		QPointer<HideableGroupBox> _groupboxSSAO;
 		QPointer<QComboBox>		   _comboBoxSSAOMethod;
+		QPointer<QComboBox>		   _comboBoxSSAOScale;
 		QPointer<EditableSlider>   _sliderSSAOIntensity;
 		QPointer<EditableSlider>   _sliderBlurSize;
 

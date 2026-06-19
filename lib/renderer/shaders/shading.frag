@@ -7,20 +7,24 @@
 layout( binding = 0 ) uniform usampler2D inTexturePackedData;
 layout( binding = 1 ) uniform sampler2D inTextureColor;
 layout( binding = 2 ) uniform sampler2D inTextureAmbientOcclusion;
+layout( binding = 3 ) uniform sampler2D inTextureDepth;
 
-layout ( std140, binding = 3 ) uniform Uniforms
+layout( std140, binding = 4 ) uniform Uniforms
 {
-	vec4 colorBackground;
+	vec4  colorBackground;
 	vec4 colorLight;	
 	vec4 colorFog;	
 	int shadingMode;
-	float specularFactor;	
+	float specularFactor;
 	float shininess;
 	uint toonSteps;
 	float fogNear;
 	float fogFar;
 	float fogDensity;
-} uniforms;
+	float ssaoScale;
+}
+
+uniforms;
 
 // Out.
 layout( location = 0 ) out vec4 outFragColor;
@@ -39,6 +43,56 @@ return c;
     vec3  low  = 12.92 * c;
     vec3  high = 1.055 * pow(c, vec3(1.0/2.4)) - 0.055;
     return mix(high, low, vec3(lo));
+}
+
+float sampleAmbientOcclusion( const ivec2 p_texCoord, const float p_viewDepth )
+{
+	const ivec2 aoTextureSize = textureSize( inTextureAmbientOcclusion, 0 );
+	// No reconstruction is needed when AO and shading have the same resolution.
+	if ( uniforms.ssaoScale <= 1.f )
+	{
+		return texelFetch( inTextureAmbientOcclusion, clamp( p_texCoord, ivec2( 0 ), aoTextureSize - 1 ), 0 ).x;
+	}
+
+	// Locate the full-resolution pixel within the four surrounding low-resolution AO texels.
+	const vec2	aoPosition		 = ( vec2( p_texCoord ) + 0.5f ) / uniforms.ssaoScale - 0.5f;
+	const ivec2 aoBase			 = ivec2( floor( aoPosition ) );
+	const vec2	fraction		 = fract( aoPosition );
+	const ivec2 depthTextureSize = textureSize( inTextureDepth, 0 );
+	const float sharpness		 = max( 1.f, 64.f / max( -p_viewDepth, 0.0001f ) );
+
+	float weightedAO  = 0.f;
+	float totalWeight = 0.f;
+	for ( int y = 0; y < 2; ++y )
+	{
+		for ( int x = 0; x < 2; ++x )
+		{
+			const ivec2 offset	= ivec2( x, y );
+			const ivec2 aoCoord = clamp( aoBase + offset, ivec2( 0 ), aoTextureSize - 1 );
+			// Preserve bilinear interpolation away from depth discontinuities.
+			const vec2	axisWeight	  = mix( vec2( 1.f ) - fraction, fraction, vec2( offset ) );
+			const float spatialWeight = axisWeight.x * axisWeight.y;
+
+			// Match the representative full-resolution depth used to compute this AO texel.
+			const ivec2 depthCoord
+				= clamp( ivec2( ( vec2( aoCoord ) + 0.5f ) * uniforms.ssaoScale ), ivec2( 0 ), depthTextureSize - 1 );
+			const float sampleViewDepth = -texelFetch( inTextureDepth, depthCoord, 0 ).x;
+			// Reject AO from another surface while smoothly blending nearby depths.
+			const float depthWeight = exp2( -abs( sampleViewDepth - p_viewDepth ) * sharpness );
+			const float weight		= spatialWeight * depthWeight;
+			weightedAO += texelFetch( inTextureAmbientOcclusion, aoCoord, 0 ).x * weight;
+			totalWeight += weight;
+		}
+	}
+
+	if ( totalWeight > 0.0001f )
+	{
+		return weightedAO / totalWeight;
+	}
+
+	// Thin geometry may have no matching low-resolution depth sample.
+	const ivec2 nearestCoord = clamp( ivec2( round( aoPosition ) ), ivec2( 0 ), aoTextureSize - 1 );
+	return texelFetch( inTextureAmbientOcclusion, nearestCoord, 0 ).x;
 }
 
 void main()
@@ -110,10 +164,7 @@ void main()
 		lighting = ( diffuse + specular ) * cosTheta;
 	}
 
-	const ivec2 ambientOcclusionTextureSize = textureSize( inTextureAmbientOcclusion, 0 );
-	const vec2 normalizedTexCoord = gl_FragCoord.xy / vec2( ambientOcclusionTextureSize );
-	const float ambientOcclusion = texture( inTextureAmbientOcclusion, normalizedTexCoord ).x;
-	//const float ambientOcclusion = texelFetch( inTextureAmbientOcclusion, texCoord, 0 ).x;
+	const float ambientOcclusion = sampleAmbientOcclusion( texCoord, data.viewPosition.z );
 
 	const float fogFactor = smoothstep( uniforms.fogNear, uniforms.fogFar, -data.viewPosition.z ) * uniforms.fogDensity;
 	const vec3	color	  = texelFetch( inTextureColor, texCoord, 0 ).xyz * ambientOcclusion * lighting;

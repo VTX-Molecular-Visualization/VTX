@@ -787,7 +787,7 @@ namespace VTX::Renderer::Builder
 		{
 			// Util::ScopedChrono timer( "[BUILDER] GraphicsConfigState::upload" );
 
-			PostProcess::Shading::upload( p_context, p_config.shading, p_config.fog );
+			PostProcess::Shading::upload( p_context, p_config.shading, p_config.fog, p_config.ssao );
 
 			if ( p_config.ssao )
 			{

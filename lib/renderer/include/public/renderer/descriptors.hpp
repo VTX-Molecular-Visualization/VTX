@@ -568,7 +568,23 @@ namespace VTX::Renderer::Desc
 	template<>
 	inline Hash hashDesc<Texture>( const Texture & p_text )
 	{
-		return Util::hash( toUnderlying( p_text.format ) ) + p_text.data.size();
+		Hash	   hash = Util::hash( toUnderlying( p_text.format ) ) + p_text.data.size();
+		const auto combine
+			= [ &hash ]( const Hash p_value ) { hash ^= p_value + 0x9e3779b9u + ( hash << 6 ) + ( hash >> 2 ); };
+
+		combine( p_text.size.index() );
+		if ( const auto * size = std::get_if<Size2DAbsolute>( &p_text.size ) )
+		{
+			combine( Util::hash( size->width ) );
+			combine( Util::hash( size->height ) );
+		}
+		else if ( const auto * size = std::get_if<Size2DRelative>( &p_text.size ) )
+		{
+			combine( Util::hash( size->width ) );
+			combine( Util::hash( size->height ) );
+		}
+
+		return hash;
 	}
 
 	/**

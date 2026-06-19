@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_BUILDER_POST_PROCESS_SHADING__
 
 #include "renderer/binary_buffer.hpp"
+#include "renderer/builder/post_process/ssao.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
 #include <optional>
@@ -88,7 +89,8 @@ namespace VTX::Renderer::Builder::PostProcess
 			p_graph.pass( PASS )
 				.in( "Geometry" )
 				.in( "Color" )
-				.in( "BlurY", p_enableSSAO ? "Default" : "NearestRepeat" )
+				.in( "BlurY", p_enableSSAO ? "NearestClamp" : "NearestRepeat" )
+				.in( "Depth" )
 				.out( OUTPUT )
 				.program( PASS )
 				.shaders( { "default.vert", "shading.frag" } )
@@ -109,6 +111,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.uniform( "FogNear", FOG_NEAR_DEFAULT, std::pair { FOG_NEAR_MIN, FOG_NEAR_MAX } )
 				.uniform( "FogFar", FOG_FAR_DEFAULT, std::pair { FOG_FAR_MIN, FOG_FAR_MAX } )
 				.uniform( "FogDensity", FOG_DENSITY_DEFAULT, std::pair { FOG_DENSITY_MIN, FOG_DENSITY_MAX } )
+				.uniform( "SSAOScale", SSAO_SCALE_DEFAULT, std::pair { SSAO_SCALE_MIN, SSAO_SCALE_MAX } )
 				.endProgram()
 				.endPass();
 
@@ -116,9 +119,10 @@ namespace VTX::Renderer::Builder::PostProcess
 		}
 
 		static void upload(
-			Context::ContextWrapper &		 p_context,
-			const ShadingConfig &			 p_config,
-			const std::optional<FogConfig> & p_fog
+			Context::ContextWrapper &		  p_context,
+			const ShadingConfig &			  p_config,
+			const std::optional<FogConfig> &  p_fog,
+			const std::optional<SSAOConfig> & p_ssao
 		)
 		{
 			BinaryBuffer140	  buffer;
@@ -134,6 +138,7 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( fog.near );
 			buffer.write( fog.far );
 			buffer.write( p_fog ? fog.density : 0.f );
+			buffer.write( p_ssao ? p_ssao->scale : SSAO_SCALE_DEFAULT );
 			buffer.close();
 
 			p_context.setBuffer( { PASS }, buffer );

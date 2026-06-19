@@ -14,6 +14,7 @@ layout( std140, binding = 3 ) uniform Uniforms
 {
 	float intensity;
 	float radius;
+	float scale;
 }
 
 uniforms;
@@ -47,10 +48,6 @@ void defProjInfo()
 	);
 }
 
-vec3 reconstructCSFaceNormal( vec3 C ) { return normalize( cross( dFdy( C ), dFdx( C ) ) ); }
-
-// Reconstruct screen space unitary face normal
-
 float reconstructZDepth( float z )
 {
 	const vec4 nf = uniformsCamera.cameraClipInfos;
@@ -72,24 +69,13 @@ vec2 tapLocation( int index, float angleSpin )
 	return vec2( cos( angle ), sin( angle ) );
 } // get rotation unitary vector
 
-vec3 positionP( ivec2 fragCoords )
-{
-	vec3  pos;
-	float z = texelFetch( inTextureDepth, fragCoords, 0 ).x;
-
-	float x = float( fragCoords.x ) + 0.5f;
-	float y = float( fragCoords.y ) + 0.5f;
-
-	pos = reconstructCSPosition( vec2( x, y ), z );
-	return pos;
-} // get clip space position of vector on given fragment
-
 vec3 offset( ivec2 ssC, vec2 offsetVect, float ssR )
 {
 	ivec2 ssP = ivec2( ssR * offsetVect ) + ssC;
-	vec3  offsetPos;
+	ssP		  = clamp( ssP, ivec2( 0 ), textureSize( inTextureDepth, 0 ) - ivec2( 1 ) );
+	vec3 offsetPos;
 
-	offsetPos.z = texelFetch( inTextureDepth, ssP, 0 ).x;
+	offsetPos.z = -texelFetch( inTextureDepth, ssP, 0 ).x;
 
 	offsetPos = reconstructCSPosition( vec2( ssP ) + vec2( 0.5f, 0.5f ), offsetPos.z );
 
@@ -122,20 +108,24 @@ void main()
 	radius = uniforms.radius;
 	defProjInfo();
 
-	const ivec2 texPos = ivec2( gl_FragCoord.xy );
+	const ivec2 texPos = ivec2( gl_FragCoord.xy * uniforms.scale );
 
-	vec3		 pos = positionP( texPos );
 	UnpackedData data;
-	unpackData( inTexturePackedData, data, texPos ).x;
-	// const vec3 pos = data.viewPosition;
+	unpackData( inTexturePackedData, data, texPos );
 
-	const vec3 normal_pos = reconstructCSFaceNormal( pos );
+	const vec3 pos = data.viewPosition;
+	if ( pos.z == 0.f )
+	{
+		outAmbientOcclusion = 1.f;
+		return;
+	}
+	const vec3 normal_pos = normalize( data.normal );
 
 	vec2		randomAngle	   = normalize( texture( inTextureNoise, texPos / float( noiseTextureSize ) ).xy );
 	const float rotation_angle = 2.0 * 3.1415 * randomAngle.x + randomAngle.y * texPos.x;
 
-	float projScale = 400.f;
-	float radiusSS	= projScale * radius * randomAngle.y / pos.z;
+	const float projScale = 400.f;
+	const float radiusSS  = -projScale * radius / pos.z;
 
 	float ao = 0.f;
 
@@ -147,9 +137,9 @@ void main()
 
 	ao /= temp * temp;
 
-	ao = clamp( 400.f * ao, 0.f, 1.f );
+	ao = max( 400.f * ao, 0.f );
 
 	// sigma = scale intensity
 	const float SIGMA	= 5.0f;
-	outAmbientOcclusion = max( 0.0, 1.f - ao * uniforms.intensity * SIGMA / kernelSize );
+	outAmbientOcclusion = exp( -ao * uniforms.intensity * SIGMA / kernelSize );
 }

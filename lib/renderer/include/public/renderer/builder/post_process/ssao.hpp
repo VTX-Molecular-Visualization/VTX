@@ -15,6 +15,9 @@ namespace VTX::Renderer
 	constexpr float SSAO_RADIUS_DEFAULT	   = 0.5f;
 	constexpr float SSAO_RADIUS_MIN		   = 0.1f;
 	constexpr float SSAO_RADIUS_MAX		   = 20.f;
+	constexpr float SSAO_SCALE_DEFAULT	   = 1.f;
+	constexpr float SSAO_SCALE_MIN		   = 0.25f;
+	constexpr float SSAO_SCALE_MAX		   = 4.f;
 	constexpr float BLUR_SIZE_DEFAULT	   = 17.f;
 	constexpr float BLUR_SIZE_MIN		   = 1.f;
 	constexpr float BLUR_SIZE_MAX		   = 99.f;
@@ -36,6 +39,7 @@ namespace VTX::Renderer
 		E_SSAO_METHOD method;
 		float		  intensity;
 		float		  radius;
+		float		  scale;
 		float		  blurSize;
 	};
 
@@ -44,6 +48,7 @@ namespace VTX::Renderer
 		inline const SSAOConfig SSAO_DEFAULT { SSAO_METHOD_DEFAULT,
 											   SSAO_INTENSITY_DEFAULT,
 											   SSAO_RADIUS_DEFAULT,
+											   SSAO_SCALE_DEFAULT,
 											   BLUR_SIZE_DEFAULT };
 	} // namespace GraphicsConfigs
 } // namespace VTX::Renderer
@@ -95,12 +100,9 @@ namespace VTX::Renderer::Builder::PostProcess
 					  .shaders( { "default.vert", shader } )
 					  .uniform(
 						  "Intensity", SSAO_INTENSITY_DEFAULT, std::pair { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX }
-					  );
-
-			if ( p_method == E_SSAO_METHOD::SAO || p_method == E_SSAO_METHOD::BMGTAO )
-			{
-				program.uniform( "Radius", SSAO_RADIUS_DEFAULT, std::pair { SSAO_RADIUS_MIN, SSAO_RADIUS_MAX } );
-			}
+					  )
+					  .uniform( "Radius", SSAO_RADIUS_DEFAULT, std::pair { SSAO_RADIUS_MIN, SSAO_RADIUS_MAX } )
+					  .uniform( "Scale", SSAO_SCALE_DEFAULT, std::pair { SSAO_SCALE_MIN, SSAO_SCALE_MAX } );
 
 			program.endProgram().endPass();
 
@@ -111,10 +113,8 @@ namespace VTX::Renderer::Builder::PostProcess
 		{
 			BinaryBuffer140 buffer;
 			buffer.write( p_config.intensity );
-			if ( p_config.method == E_SSAO_METHOD::SAO || p_config.method == E_SSAO_METHOD::BMGTAO )
-			{
-				buffer.write( p_config.radius );
-			}
+			buffer.write( p_config.radius );
+			buffer.write( p_config.scale );
 			buffer.close();
 
 			p_context.setBuffer( { programKey( p_config.method ) }, buffer );

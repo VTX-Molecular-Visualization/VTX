@@ -13,7 +13,8 @@ layout( binding = 2 ) uniform sampler2D inTextureDepth;
 layout( std140, binding = 3 ) uniform Uniforms
 {
 	float intensity;
-	// float radius;
+	float radius;
+	float scale;
 }
 
 uniforms;
@@ -111,7 +112,7 @@ const float centerWeight = 0.04378792;
 void main()
 {
 	// Get current pixel, screen space coordinates
-	ivec2 texPos = ivec2( gl_FragCoord.xy );
+	ivec2 texPos = ivec2( gl_FragCoord.xy * uniforms.scale );
 
 	// get depth current pixel
 	float depth = texelFetch( inTextureDepth, texPos, 0 ).x;

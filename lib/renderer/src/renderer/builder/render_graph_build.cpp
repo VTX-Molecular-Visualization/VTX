@@ -341,11 +341,12 @@ namespace VTX::Renderer::Builder
 		{
 			constexpr size_t   noiseTextureSize = 64;
 			std::vector<Vec3f> noiseData		= Util::Math::randomUniVectors( noiseTextureSize * noiseTextureSize );
+			const float		   ssaoSize			= 1.f / p_config.ssaoScale;
 
-			g.texture( "SSAO", E_FORMAT::R8UI );
+			g.texture( "SSAO", E_FORMAT::R8UI, Size2DRelative { ssaoSize, ssaoSize } );
 			g.texture( "Noise", E_FORMAT::RGB16F, noiseData, Size2DAbsolute { noiseTextureSize, noiseTextureSize } );
-			g.texture( "BlurX", E_FORMAT::R16F );
-			g.texture( "BlurY", E_FORMAT::R16F );
+			g.texture( "BlurX", E_FORMAT::R16F, Size2DRelative { ssaoSize, ssaoSize } );
+			g.texture( "BlurY", E_FORMAT::R16F, Size2DRelative { ssaoSize, ssaoSize } );
 		}
 		else
 		{
@@ -550,6 +551,7 @@ namespace VTX::Renderer::Builder
 		PipelineConfig config;
 		config.enableSSAO				 = p_config.ssao.has_value();
 		config.ssaoMethod				 = p_config.ssao ? p_config.ssao->method : SSAO_METHOD_DEFAULT;
+		config.ssaoScale				 = p_config.ssao ? p_config.ssao->scale : SSAO_SCALE_DEFAULT;
 		config.enableOutline			 = p_config.outline.has_value();
 		config.enableSelection			 = p_config.selection.has_value();
 		config.enableColorize			 = p_config.colorize.has_value();

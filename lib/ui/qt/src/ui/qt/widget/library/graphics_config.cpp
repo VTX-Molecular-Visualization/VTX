@@ -12,6 +12,25 @@ namespace VTX::UI::QT::Widget::Library
 		float _chromaticAberrationToUi( const float p_value ) { return -p_value * 100.f; }
 
 		float _chromaticAberrationFromUi( const float p_value ) { return -p_value / 100.f; }
+
+		float _ssaoScaleFromUi( const int p_index )
+		{
+			switch ( p_index )
+			{
+			case 1: return 2.f;
+			case 0:
+			default: return 1.f;
+			}
+		}
+
+		int _ssaoScaleToUi( const float p_value )
+		{
+			if ( p_value == 2.f )
+			{
+				return 1;
+			}
+			return 0;
+		}
 	} // namespace
 
 	GraphicsConfig::GraphicsConfig( QWidget * p_parent ) : BasePresetWidget( p_parent )
@@ -79,6 +98,11 @@ namespace VTX::UI::QT::Widget::Library
 		{
 			_comboBoxSSAOMethod->addItem( SSAO_METHOD_STR[ i ].data() );
 		}
+
+		_comboBoxSSAOScale = new QComboBox( _groupboxSSAO );
+		_groupboxSSAO->addWidget( _comboBoxSSAOScale );
+		_comboBoxSSAOScale->addItem( "Normal" );
+		_comboBoxSSAOScale->addItem( "Downscale" );
 
 		_sliderSSAOIntensity = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSSAO );
 		_groupboxSSAO->addWidget( new QLabel( "Intensity", _groupboxSSAO ) );
@@ -295,6 +319,13 @@ namespace VTX::UI::QT::Widget::Library
 		);
 
 		connect(
+			_comboBoxSSAOScale,
+			QOverload<int>::of( &QComboBox::currentIndexChanged ),
+			[ this ]( const int p_index )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::SSAO_SCALE, float>( _ssaoScaleFromUi( p_index ) ); }
+		);
+
+		connect(
 			_sliderSSAOIntensity,
 			&EditableSlider::valueChanged,
 			[ this ]( const float p_value )
@@ -499,17 +530,18 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker5( _sliderToonSteps );
 		const QSignalBlocker blocker6( _groupboxSSAO );
 		const QSignalBlocker blocker7( _comboBoxSSAOMethod );
-		const QSignalBlocker blocker8( _sliderSSAOIntensity );
-		const QSignalBlocker blocker9( _sliderBlurSize );
-		const QSignalBlocker blocker10( _groupboxOutline );
-		const QSignalBlocker blocker11( _colorPickerOutline );
-		const QSignalBlocker blocker12( _sliderOutlineSensitivity );
-		const QSignalBlocker blocker13( _sliderOutlineThickness );
-		const QSignalBlocker blocker14( _groupboxFog );
-		const QSignalBlocker blocker15( _colorPickerFog );
-		const QSignalBlocker blocker16( _sliderFogNear );
-		const QSignalBlocker blocker17( _sliderFogFar );
-		const QSignalBlocker blocker18( _sliderFogDensity );
+		const QSignalBlocker blocker8( _comboBoxSSAOScale );
+		const QSignalBlocker blocker9( _sliderSSAOIntensity );
+		const QSignalBlocker blocker10( _sliderBlurSize );
+		const QSignalBlocker blocker11( _groupboxOutline );
+		const QSignalBlocker blocker12( _colorPickerOutline );
+		const QSignalBlocker blocker13( _sliderOutlineSensitivity );
+		const QSignalBlocker blocker14( _sliderOutlineThickness );
+		const QSignalBlocker blocker15( _groupboxFog );
+		const QSignalBlocker blocker16( _colorPickerFog );
+		const QSignalBlocker blocker17( _sliderFogNear );
+		const QSignalBlocker blocker18( _sliderFogFar );
+		const QSignalBlocker blocker36( _sliderFogDensity );
 		const QSignalBlocker blockerColorizeGroup( _groupboxColorize );
 		const QSignalBlocker blockerColorizeColor( _colorPickerColorize );
 		const QSignalBlocker blockerChromaticGroup( _groupboxChromaticAberration );
@@ -552,6 +584,7 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderToonSteps->setValue( preset.shading.toonSteps );
 		_groupboxSSAO->setChecked( preset.ssao.has_value() );
 		_comboBoxSSAOMethod->setCurrentIndex( int( ssao.method ) );
+		_comboBoxSSAOScale->setCurrentIndex( _ssaoScaleToUi( ssao.scale ) );
 		_sliderSSAOIntensity->setValue( ssao.intensity );
 		_sliderBlurSize->setValue( ssao.blurSize );
 		_groupboxOutline->setChecked( preset.outline.has_value() );

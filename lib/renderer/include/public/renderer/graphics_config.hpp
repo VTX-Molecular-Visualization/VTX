@@ -17,6 +17,7 @@ namespace VTX::Renderer
 	{
 		ACTIVE_SSAO,
 		SSAO_METHOD,
+		SSAO_SCALE,
 		SSAO_INTENSITY,
 		BLUR_SIZE,
 
@@ -99,7 +100,7 @@ namespace VTX::Renderer
 							0.55f,
 							56.f,
 							TOON_STEPS_DEFAULT },
-			SSAOConfig { SSAO_METHOD_DEFAULT, 4.f, SSAO_RADIUS_DEFAULT, 21.f },
+			SSAOConfig { SSAO_METHOD_DEFAULT, 4.f, SSAO_RADIUS_DEFAULT, SSAO_SCALE_DEFAULT, 21.f },
 			std::nullopt,
 			std::nullopt,
 			ACTIVE_COLORIZE_DEFAULT ? std::optional<ColorizeConfig> { COLORIZE_DEFAULT } : std::nullopt,
@@ -117,7 +118,7 @@ namespace VTX::Renderer
 							0.f,
 							0.f,
 							4 },
-			SSAOConfig { SSAO_METHOD_DEFAULT, 2.5f, SSAO_RADIUS_DEFAULT, 11.f },
+			SSAOConfig { SSAO_METHOD_DEFAULT, 2.5f, SSAO_RADIUS_DEFAULT, SSAO_SCALE_DEFAULT, 11.f },
 			OutlineConfig { Util::Color::Rgba( 28, 28, 28 ), 0.35f, 2 },
 			std::nullopt,
 			ACTIVE_COLORIZE_DEFAULT ? std::optional<ColorizeConfig> { COLORIZE_DEFAULT } : std::nullopt,
