@@ -35,7 +35,7 @@ const float[ 4 ] radii = float[ 4 ]( 5.f, 10.f, 15.f, 20.f );
 void main()
 {
 	// Get current pixel, screen space coordinates
-	ivec2 texPos = ivec2( 2 * gl_FragCoord.xy );
+	ivec2 texPos = ivec2( gl_FragCoord.xy );
 
 	// get depth current pixel
 	float depth = -texelFetch( inTextureDepth, texPos, 0 ).x;

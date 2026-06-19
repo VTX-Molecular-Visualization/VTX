@@ -60,17 +60,14 @@ void main()
 	// Get the texture position from the fragment coordinates
 	const ivec2 texPos	   = ivec2( gl_FragCoord.xy );
 	globalOccludedBitfield = 0u;
-	// Scale the texture position for the noise texture
-	const ivec2 smallerTexPos = ivec2( texPos.x * 2, texPos.y * 2 );
-
 	// Get view position from data
 	UnpackedData data;
-	unpackData( inTexturePackedData, data, smallerTexPos );
+	unpackData( inTexturePackedData, data, texPos );
 	const vec3 pos	  = data.viewPosition;
 	const vec3 normal = normalize( data.normal );
 
 	// Get a random vector from the noise texture
-	const vec3 randomVec = normalize( texture( inTextureNoise, smallerTexPos / float( noiseTextureSize ) ).xyz );
+	const vec3 randomVec = normalize( texture( inTextureNoise, texPos / float( noiseTextureSize ) ).xyz );
 
 	float integral = 0.f;
 	// TBN with gram schmidt

@@ -122,7 +122,7 @@ void main()
 	radius = uniforms.radius;
 	defProjInfo();
 
-	const ivec2 texPos = ivec2( 2 * gl_FragCoord.xy ); // multiplie par largeur et longueur
+	const ivec2 texPos = ivec2( gl_FragCoord.xy );
 
 	vec3		 pos = positionP( texPos );
 	UnpackedData data;

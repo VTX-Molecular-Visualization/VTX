@@ -113,9 +113,6 @@ void main()
 	// Get current pixel, screen space coordinates
 	ivec2 texPos = ivec2( gl_FragCoord.xy );
 
-	// downsample
-	texPos *= 2;
-
 	// get depth current pixel
 	float depth = texelFetch( inTextureDepth, texPos, 0 ).x;
 
