@@ -1,4 +1,14 @@
 #include "renderer/builder/render_graph_build.hpp"
+#include "renderer/builder/post_process/blur.hpp"
+#include "renderer/builder/post_process/chromatic_aberration.hpp"
+#include "renderer/builder/post_process/crt.hpp"
+#include "renderer/builder/post_process/fxaa.hpp"
+#include "renderer/builder/post_process/linearize_depth.hpp"
+#include "renderer/builder/post_process/outline.hpp"
+#include "renderer/builder/post_process/pixelize.hpp"
+#include "renderer/builder/post_process/selection.hpp"
+#include "renderer/builder/post_process/shading.hpp"
+#include "renderer/builder/post_process/ssao.hpp"
 #include "renderer/graphics_config.hpp"
 #include "renderer/representation.hpp"
 #include <util/chrono.hpp>
@@ -456,190 +466,51 @@ namespace VTX::Renderer::Builder
 			.endProgram()
 			.endPass();
 
-		// Linearize depth.
-		g.pass( "LinearizeDepth" )
-			.in( "DepthRaw" )
-			.out( "Depth" )
-			.program( "LinearizeDepth" )
-			.shaders( { "default.vert", "linearize_depth.frag" } )
-			.endProgram()
-			.endPass();
+		PostProcess::LinearizeDepth::build( g );
 
 		if ( p_config.enableSSAO )
 		{
-			// SSAO.
-			g.pass( "SSAO" )
-				.in( "Geometry" )
-				.in( "Noise", "NearestRepeat" )
-				.in( "Depth" )
-				.out( "SSAO" )
-				.program( "SSAO" )
-				.shaders( { "default.vert", "ssao.frag" } )
-				.uniform( "Intensity", SSAO_INTENSITY_DEFAULT, std::pair { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX } )
-				.endProgram()
-				.endPass();
-
-			// BlurX.
-			g.pass( "BlurX" )
-				.in( "SSAO" )
-				.in( "Depth" )
-				.out( "BlurX" )
-				.program( "BlurX" )
-				.shaders( { "default.vert", "blur.frag" } )
-				.uniform( "Direction", Vec2i( 1, 0 ) )
-				.uniform( "Size", BLUR_SIZE_DEFAULT, std::pair { BLUR_SIZE_MIN, BLUR_SIZE_MAX } )
-				.endProgram()
-				.endPass();
-			// BlurY.
-			g.pass( "BlurY" )
-				.in( "BlurX" )
-				.in( "Depth" )
-				.out( "BlurY" )
-				.program( "BlurY" )
-				.shaders( { "default.vert", "blur.frag" } )
-				.uniform( "Direction", Vec2i( 0, 1 ) )
-				.uniform( "Size", BLUR_SIZE_DEFAULT, std::pair { BLUR_SIZE_MIN, BLUR_SIZE_MAX } )
-				.endProgram()
-				.endPass();
+			PostProcess::SSAO::build( g );
+			PostProcess::BlurX::build( g, PostProcess::SSAO::PASS );
+			PostProcess::BlurY::build( g, PostProcess::BlurX::PASS );
 		}
 
-		// Shading.
-		g.pass( "Shading" )
-			.in( "Geometry" )
-			.in( "Color" )
-			.in( "BlurY", p_config.enableSSAO ? "Default" : "NearestRepeat" ) // Repeat empty texture 1x1 if not SSAO.
-			.out( "Shaded" )
-			.program( "Shading" )
-			.shaders( { "default.vert", "shading.frag" } )
-			.uniform( "BackgroundColor", COLOR_BACKGROUND_DEFAULT )
-			.uniform( "LightColor", COLOR_LIGHT_DEFAULT )
-			.uniform( "FogColor", COLOR_FOG_DEFAULT )
-			.uniform(
-				"Mode",
-				static_cast<uint>( SHADING_MODE_DEFAULT ),
-				std::pair { static_cast<uint>( E_SHADING::DIFFUSE ), static_cast<uint>( E_SHADING::COUNT ) - 1.0 }
-			)
-			.uniform(
-				"SpecularFactor", SPECULAR_FACTOR_DEFAULT, std::pair { SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX }
-			)
-			.uniform( "Shininess", SHININESS_DEFAULT, std::pair { SHININESS_MIN, SHININESS_MAX } )
-			.uniform( "ToonSteps", TOON_STEPS_DEFAULT, std::pair { TOON_STEPS_MIN, TOON_STEPS_MAX } )
-			.uniform( "FogNear", FOG_NEAR_DEFAULT, std::pair { FOG_NEAR_MIN, FOG_NEAR_MAX } )
-			.uniform( "FogFar", FOG_FAR_DEFAULT, std::pair { FOG_FAR_MIN, FOG_FAR_MAX } )
-			.uniform( "FogDensity", FOG_DENSITY_DEFAULT, std::pair { FOG_DENSITY_MIN, FOG_DENSITY_MAX } )
-			.endProgram()
-			.endPass();
+		PostProcess::Shading::build( g, p_config.enableSSAO );
 
-		const Desc::Key postChromatic = p_config.enableChromaticAberration ? "ChromaticAberration" : "Shaded";
-		const Desc::Key postEffects	  = p_config.enablePixelize ? "Pixelize" : postChromatic;
+		const Desc::Key postChromatic = p_config.enableChromaticAberration ? PostProcess::ChromaticAberration::PASS
+																		   : PostProcess::Shading::OUTPUT;
 
-		// Chromatic aberration.
 		if ( p_config.enableChromaticAberration )
 		{
-			g.pass( "ChromaticAberration" )
-				.in( "Shaded" )
-				.out( "ChromaticAberration" )
-				.program( "ChromaticAberration" )
-				.shaders( { "default.vert", "chromatic_aberration.frag" } )
-				.uniform( "Red", CHROMAB_RED_DEFAULT, std::pair { CHROMAB_RGB_MIN, CHROMAB_RGB_MAX } )
-				.uniform( "Green", CHROMAB_GREEN_DEFAULT, std::pair { CHROMAB_RGB_MIN, CHROMAB_RGB_MAX } )
-				.uniform( "Blue", CHROMAB_BLUE_DEFAULT, std::pair { CHROMAB_RGB_MIN, CHROMAB_RGB_MAX } )
-				.endProgram()
-				.endPass();
+			PostProcess::ChromaticAberration::build( g, PostProcess::Shading::OUTPUT );
 		}
 
-		// Pixelize.
+		const Desc::Key postEffects = p_config.enablePixelize ? PostProcess::Pixelize::PASS : postChromatic;
+
 		if ( p_config.enablePixelize )
 		{
-			g.pass( "Pixelize" )
-				.in( "Geometry" )
-				.in( postChromatic )
-				.out( "Pixelize" )
-				.program( "Pixelize" )
-				.shaders( { "default.vert", "pixelize.frag" } )
-				.uniform(
-					"Size",
-					PIXELIZE_SIZE_DEFAULT,
-					std::pair { static_cast<double>( PIXELIZE_SIZE_MIN ), static_cast<double>( PIXELIZE_SIZE_MAX ) }
-				)
-				.uniform( "Background", uint( PIXELIZE_BACKGROUND_DEFAULT ) )
-				.endProgram()
-				.endPass();
+			PostProcess::Pixelize::build( g, postChromatic );
 		}
 
-		// Outline.
 		if ( p_config.enableOutline )
 		{
-			g.pass( "Outline" )
-				.in( postEffects )
-				.in( "Depth" )
-				.out( "Outline" )
-				.program( "Outline" )
-				.shaders( { "default.vert", "outline.frag" } )
-				.uniform( "Color", COLOR_WHITE )
-				.uniform(
-					"Sensitivity",
-					OUTLINE_SENSITIVITY_DEFAULT,
-					std::pair { OUTLINE_SENSITIVITY_MIN, OUTLINE_SENSITIVITY_MAX }
-				)
-				.uniform(
-					"Thickness", OUTLINE_THICKNESS_DEFAULT, std::pair { OUTLINE_THICKNESS_MIN, OUTLINE_THICKNESS_MAX }
-				)
-				.endProgram()
-				.endPass();
+			PostProcess::Outline::build( g, postEffects );
 		}
 
-		// Selection.
 		if ( p_config.enableSelection )
 		{
-			g.pass( "Selection" )
-				.in( "Geometry" )
-				.in( p_config.enableOutline ? "Outline" : postEffects )
-				.in( "Depth" )
-				.out( "Selection" )
-				.program( "Selection" )
-				.shaders( { "default.vert", "selection.frag" } )
-				.uniform( "Color", COLOR_SELECTION_DEFAULT )
-				.endProgram()
-				.endPass();
+			PostProcess::Selection::build( g, p_config.enableOutline ? PostProcess::Outline::PASS : postEffects );
 		}
 
-		// FXAA.
-		g.pass( "FXAA" )
-			.in( p_config.enableSelection ? "Selection"
-				 : p_config.enableOutline ? "Outline"
-										  : postEffects )
-			.out( "FXAA" )
-			.program( "FXAA" )
-			.shaders( { "default.vert", "fxaa.frag" } )
-			.endProgram()
-			.endPass();
+		const Desc::Key postSelection = p_config.enableSelection ? PostProcess::Selection::PASS
+										: p_config.enableOutline ? PostProcess::Outline::PASS
+																 : postEffects;
 
-		// CRT.
+		PostProcess::FXAA::build( g, postSelection );
+
 		if ( p_config.enableCRT )
 		{
-			g.pass( "CRT" )
-				.in( "FXAA" )
-				.out( "CRT" )
-				.program( "CRT" )
-				.shaders( { "default.vert", "crt.frag" } )
-				.uniform( "Curvature", Vec2f( CRT_CURVATURE_X_DEFAULT, CRT_CURVATURE_Y_DEFAULT ) )
-				.uniform( "Ratio", CRT_RATIO_DEFAULT, std::pair { CRT_RATIO_MIN, CRT_RATIO_MAX } )
-				.uniform( "GraninessX", CRT_GRANINESS_X_DEFAULT, std::pair { CRT_GRANINESS_MIN, CRT_GRANINESS_MAX } )
-				.uniform( "GraninessY", CRT_GRANINESS_Y_DEFAULT, std::pair { CRT_GRANINESS_MIN, CRT_GRANINESS_MAX } )
-				.uniform(
-					"VignetteRoundness",
-					CRT_VIGNETTE_ROUNDNESS_DEFAULT,
-					std::pair { CRT_VIGNETTE_ROUNDNESS_MIN, CRT_VIGNETTE_ROUNDNESS_MAX }
-				)
-				.uniform(
-					"VignetteIntensity",
-					CRT_VIGNETTE_INTENSITY_DEFAULT,
-					std::pair { CRT_VIGNETTE_INTENSITY_MIN, CRT_VIGNETTE_INTENSITY_MAX }
-				)
-				.uniform( "Brightness", CRT_BRIGHTNESS_DEFAULT, std::pair { CRT_BRIGHTNESS_MIN, CRT_BRIGHTNESS_MAX } )
-				.endProgram()
-				.endPass();
+			PostProcess::CRT::build( g, PostProcess::FXAA::PASS );
 		}
 
 		// Debug
@@ -663,12 +534,12 @@ namespace VTX::Renderer::Builder
 	PipelineConfig RenderGraphRuntime::pipelineConfig( const GraphicsConfig & p_config )
 	{
 		PipelineConfig config;
-		config.enableSSAO				 = p_config.activeSSAO;
-		config.enableOutline			 = p_config.activeOutline;
-		config.enableSelection			 = p_config.activeSelection;
-		config.enableChromaticAberration = p_config.activeChromaticAberration;
-		config.enablePixelize			 = p_config.activePixelize;
-		config.enableCRT				 = p_config.activeCRT;
+		config.enableSSAO				 = p_config.ssao.has_value();
+		config.enableOutline			 = p_config.outline.has_value();
+		config.enableSelection			 = p_config.selection.has_value();
+		config.enableChromaticAberration = p_config.chromaticAberration.has_value();
+		config.enablePixelize			 = p_config.pixelize.has_value();
+		config.enableCRT				 = p_config.crt.has_value();
 
 		return config;
 	}

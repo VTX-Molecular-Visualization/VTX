@@ -28,6 +28,8 @@ namespace VTX::UI::QT::Widget::Library
 
 		_comboBoxShadingMode = new QComboBox( _groupboxShading );
 		_groupboxShading->addWidget( _comboBoxShadingMode );
+
+		constexpr std::string_view SHADING_STR[ int( E_SHADING::COUNT ) ] = { "Diffuse", "Glossy", "Toon", "Flat" };
 		for ( int i = 0; i < int( E_SHADING::COUNT ); ++i )
 		{
 			_comboBoxShadingMode->addItem( SHADING_STR[ i ].data() );
@@ -493,42 +495,53 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker34( _groupboxSelection );
 		const QSignalBlocker blocker35( _colorPickerSelection );
 
-		_comboBoxShadingMode->setCurrentIndex( int( preset.shadingMode ) );
-		_colorPickerBackground->setColor( Helper::toQColor( preset.colorBackground ) );
-		_colorPickerLight->setColor( Helper::toQColor( preset.colorLight ) );
-		_sliderSpecularFactor->setValue( preset.specularFactor );
-		_sliderShininess->setValue( preset.shininess );
-		_sliderToonSteps->setValue( preset.toonSteps );
-		_groupboxSSAO->setChecked( preset.activeSSAO );
-		_sliderSSAOIntensity->setValue( preset.ssaoIntensity );
-		_sliderBlurSize->setValue( preset.blurSize );
-		_groupboxOutline->setChecked( preset.activeOutline );
-		_colorPickerOutline->setColor( Helper::toQColor( preset.colorOutline ) );
-		_sliderOutlineSensitivity->setValue( preset.outlineSensitivity );
-		_sliderOutlineThickness->setValue( preset.outlineThickness );
-		_groupboxFog->setChecked( preset.activeFog );
-		_colorPickerFog->setColor( Helper::toQColor( preset.colorFog ) );
-		_sliderFogNear->setValue( preset.fogNear );
-		_sliderFogFar->setValue( preset.fogFar );
-		_sliderFogDensity->setValue( preset.fogDensity );
-		_groupboxChromaticAberration->setChecked( preset.activeChromaticAberration );
-		_sliderChromaticAberrationRed->setValue( _chromaticAberrationToUi( preset.chromaticAberrationRed ) );
-		_sliderChromaticAberrationGreen->setValue( _chromaticAberrationToUi( preset.chromaticAberrationGreen ) );
-		_sliderChromaticAberrationBlue->setValue( _chromaticAberrationToUi( preset.chromaticAberrationBlue ) );
-		_groupboxPixelize->setChecked( preset.activePixelize );
-		_sliderPixelizeSize->setValue( preset.pixelizeSize );
-		_checkBoxPixelizeBackground->setChecked( preset.pixelizeBackground );
-		_groupboxCRT->setChecked( preset.activeCRT );
-		_sliderCRTCurvatureX->setValue( preset.crtCurvatureX );
-		_sliderCRTCurvatureY->setValue( preset.crtCurvatureY );
-		_sliderCRTRatio->setValue( preset.crtRatio );
-		_sliderCRTGraninessX->setValue( preset.crtGraninessX );
-		_sliderCRTGraninessY->setValue( preset.crtGraninessY );
-		_sliderCRTVignetteRoundness->setValue( preset.crtVignetteRoundness );
-		_sliderCRTVignetteIntensity->setValue( preset.crtVignetteIntensity );
-		_sliderCRTBrightness->setValue( preset.crtBrightness );
-		_groupboxSelection->setChecked( preset.activeSelection );
-		_colorPickerSelection->setColor( Helper::toQColor( preset.colorSelection ) );
+		const Renderer::SSAOConfig	  ssao	  = preset.ssao.value_or( Renderer::GraphicsConfigs::SSAO_DEFAULT );
+		const Renderer::OutlineConfig outline = preset.outline.value_or( Renderer::GraphicsConfigs::OUTLINE_DEFAULT );
+		const Renderer::FogConfig	  fog	  = preset.fog.value_or( Renderer::GraphicsConfigs::FOG_DEFAULT );
+		const Renderer::ChromaticAberrationConfig chromatic
+			= preset.chromaticAberration.value_or( Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT );
+		const Renderer::PixelizeConfig pixelize
+			= preset.pixelize.value_or( Renderer::GraphicsConfigs::PIXELIZE_DEFAULT );
+		const Renderer::CRTConfig		crt = preset.crt.value_or( Renderer::GraphicsConfigs::CRT_DEFAULT );
+		const Renderer::SelectionConfig selection
+			= preset.selection.value_or( Renderer::GraphicsConfigs::SELECTION_DEFAULT );
+
+		_comboBoxShadingMode->setCurrentIndex( int( preset.shading.mode ) );
+		_colorPickerBackground->setColor( Helper::toQColor( preset.shading.colorBackground ) );
+		_colorPickerLight->setColor( Helper::toQColor( preset.shading.colorLight ) );
+		_sliderSpecularFactor->setValue( preset.shading.specularFactor );
+		_sliderShininess->setValue( preset.shading.shininess );
+		_sliderToonSteps->setValue( preset.shading.toonSteps );
+		_groupboxSSAO->setChecked( preset.ssao.has_value() );
+		_sliderSSAOIntensity->setValue( ssao.intensity );
+		_sliderBlurSize->setValue( ssao.blurSize );
+		_groupboxOutline->setChecked( preset.outline.has_value() );
+		_colorPickerOutline->setColor( Helper::toQColor( outline.color ) );
+		_sliderOutlineSensitivity->setValue( outline.sensitivity );
+		_sliderOutlineThickness->setValue( outline.thickness );
+		_groupboxFog->setChecked( preset.fog.has_value() );
+		_colorPickerFog->setColor( Helper::toQColor( fog.color ) );
+		_sliderFogNear->setValue( fog.near );
+		_sliderFogFar->setValue( fog.far );
+		_sliderFogDensity->setValue( fog.density );
+		_groupboxChromaticAberration->setChecked( preset.chromaticAberration.has_value() );
+		_sliderChromaticAberrationRed->setValue( _chromaticAberrationToUi( chromatic.red ) );
+		_sliderChromaticAberrationGreen->setValue( _chromaticAberrationToUi( chromatic.green ) );
+		_sliderChromaticAberrationBlue->setValue( _chromaticAberrationToUi( chromatic.blue ) );
+		_groupboxPixelize->setChecked( preset.pixelize.has_value() );
+		_sliderPixelizeSize->setValue( pixelize.size );
+		_checkBoxPixelizeBackground->setChecked( pixelize.background );
+		_groupboxCRT->setChecked( preset.crt.has_value() );
+		_sliderCRTCurvatureX->setValue( crt.curvatureX );
+		_sliderCRTCurvatureY->setValue( crt.curvatureY );
+		_sliderCRTRatio->setValue( crt.ratio );
+		_sliderCRTGraninessX->setValue( crt.graninessX );
+		_sliderCRTGraninessY->setValue( crt.graninessY );
+		_sliderCRTVignetteRoundness->setValue( crt.vignetteRoundness );
+		_sliderCRTVignetteIntensity->setValue( crt.vignetteIntensity );
+		_sliderCRTBrightness->setValue( crt.brightness );
+		_groupboxSelection->setChecked( preset.selection.has_value() );
+		_colorPickerSelection->setColor( Helper::toQColor( selection.color ) );
 
 		_applyLogic( preset );
 	}
@@ -537,7 +550,7 @@ namespace VTX::UI::QT::Widget::Library
 	{
 		using namespace Renderer;
 
-		switch ( p_preset.shadingMode )
+		switch ( p_preset.shading.mode )
 		{
 		case E_SHADING::DIFFUSE:
 			_labelSpecularFactor->setVisible( false );

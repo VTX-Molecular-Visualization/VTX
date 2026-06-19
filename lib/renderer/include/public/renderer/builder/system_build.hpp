@@ -2,6 +2,14 @@
 #define __VTX_RENDERER_BUILDER_SYSTEM_BUILD__
 
 #include "renderer/binary_buffer.hpp"
+#include "renderer/builder/post_process/blur.hpp"
+#include "renderer/builder/post_process/chromatic_aberration.hpp"
+#include "renderer/builder/post_process/crt.hpp"
+#include "renderer/builder/post_process/outline.hpp"
+#include "renderer/builder/post_process/pixelize.hpp"
+#include "renderer/builder/post_process/selection.hpp"
+#include "renderer/builder/post_process/shading.hpp"
+#include "renderer/builder/post_process/ssao.hpp"
 #include "renderer/caches.hpp"
 #include "renderer/color.hpp"
 #include "renderer/context/context_wrapper.hpp"
@@ -778,84 +786,33 @@ namespace VTX::Renderer::Builder
 		{
 			// Util::ScopedChrono timer( "[BUILDER] GraphicsConfigState::upload" );
 
-			BinaryBuffer140 bufferShading;
-			bufferShading.write( p_config.colorBackground );
-			bufferShading.write( p_config.colorLight );
-			bufferShading.write( p_config.colorFog );
-			bufferShading.write( uint32_t( p_config.shadingMode ) );
-			bufferShading.write( p_config.specularFactor );
-			bufferShading.write( p_config.shininess );
-			bufferShading.write( p_config.toonSteps );
-			bufferShading.write( p_config.fogNear );
-			bufferShading.write( p_config.fogFar );
-			bufferShading.write( p_config.activeFog ? p_config.fogDensity : 0.f );
-			bufferShading.close();
-			p_context.setBuffer( { "Shading" }, bufferShading );
+			PostProcess::Shading::upload( p_context, p_config.shading, p_config.fog );
 
-			if ( p_config.activeSSAO )
+			if ( p_config.ssao )
 			{
-				BinaryBuffer140 bufferSSAO;
-				bufferSSAO.write( p_config.ssaoIntensity );
-				bufferSSAO.close();
-				p_context.setBuffer( { "SSAO" }, bufferSSAO );
-
-				BinaryBuffer140 bufferBlurX;
-				bufferBlurX.write( Vec2i( 1, 0 ) );
-				bufferBlurX.write( p_config.blurSize );
-				bufferBlurX.close();
-				p_context.setBuffer( { "BlurX" }, bufferBlurX );
-
-				BinaryBuffer140 bufferBlurY;
-				bufferBlurY.write( Vec2i( 0, 1 ) );
-				bufferBlurY.write( p_config.blurSize );
-				bufferBlurY.close();
-				p_context.setBuffer( { "BlurY" }, bufferBlurY );
+				PostProcess::SSAO::upload( p_context, *p_config.ssao );
+				PostProcess::BlurX::upload( p_context, *p_config.ssao );
+				PostProcess::BlurY::upload( p_context, *p_config.ssao );
 			}
-			if ( p_config.activeOutline )
+			if ( p_config.outline )
 			{
-				BinaryBuffer140 bufferOutline;
-				bufferOutline.write( p_config.colorOutline );
-				bufferOutline.write( p_config.outlineSensitivity );
-				bufferOutline.write( p_config.outlineThickness );
-				bufferOutline.close();
-				p_context.setBuffer( { "Outline" }, bufferOutline );
+				PostProcess::Outline::upload( p_context, *p_config.outline );
 			}
-			if ( p_config.activeChromaticAberration )
+			if ( p_config.chromaticAberration )
 			{
-				BinaryBuffer140 bufferChromaticAberration;
-				bufferChromaticAberration.write( p_config.chromaticAberrationRed );
-				bufferChromaticAberration.write( p_config.chromaticAberrationGreen );
-				bufferChromaticAberration.write( p_config.chromaticAberrationBlue );
-				bufferChromaticAberration.close();
-				p_context.setBuffer( { "ChromaticAberration" }, bufferChromaticAberration );
+				PostProcess::ChromaticAberration::upload( p_context, *p_config.chromaticAberration );
 			}
-			if ( p_config.activePixelize )
+			if ( p_config.pixelize )
 			{
-				BinaryBuffer140 bufferPixelize;
-				bufferPixelize.write( p_config.pixelizeSize );
-				bufferPixelize.write( uint32_t( p_config.pixelizeBackground ) );
-				bufferPixelize.close();
-				p_context.setBuffer( { "Pixelize" }, bufferPixelize );
+				PostProcess::Pixelize::upload( p_context, *p_config.pixelize );
 			}
-			if ( p_config.activeCRT )
+			if ( p_config.crt )
 			{
-				BinaryBuffer140 bufferCRT;
-				bufferCRT.write( Vec2f( p_config.crtCurvatureX, p_config.crtCurvatureY ) );
-				bufferCRT.write( p_config.crtRatio );
-				bufferCRT.write( p_config.crtGraninessX );
-				bufferCRT.write( p_config.crtGraninessY );
-				bufferCRT.write( p_config.crtVignetteRoundness );
-				bufferCRT.write( p_config.crtVignetteIntensity );
-				bufferCRT.write( p_config.crtBrightness );
-				bufferCRT.close();
-				p_context.setBuffer( { "CRT" }, bufferCRT );
+				PostProcess::CRT::upload( p_context, *p_config.crt );
 			}
-			if ( p_config.activeSelection )
+			if ( p_config.selection )
 			{
-				BinaryBuffer140 bufferSelection;
-				bufferSelection.write( p_config.colorSelection );
-				bufferSelection.close();
-				p_context.setBuffer( { "Selection" }, bufferSelection );
+				PostProcess::Selection::upload( p_context, *p_config.selection );
 			}
 		}
 	};
