@@ -16,6 +16,8 @@ TEST_CASE( "VTX_APP - Action - Io - WriteSelection", "[integration][visibility][
 	const auto [ ent, topology, visibility ]
 		= App::ECS::getFirstEntityWithComponents<VTX::Core::Struct::Topology, VTX::App::System::Visibility>();
 
+	VTX::App::Action::Visibility::SetVisible setVisible;
+	VTX::App::ACTION().execute( setVisible, ent, Core::Struct::IndexRangeList { { 0, 0 } }, false );
 	visibility.atoms.set( 0, false );
 	uint initialAtomCount = topology.getAtomCount(), rewriteAtomCount = 0;
 
