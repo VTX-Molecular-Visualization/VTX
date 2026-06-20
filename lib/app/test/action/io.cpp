@@ -16,12 +16,13 @@ TEST_CASE( "VTX_APP - Action - Io - WriteSelection", "[integration][visibility][
 	const auto [ ent, topology, visibility ]
 		= App::ECS::getFirstEntityWithComponents<VTX::Core::Struct::Topology, VTX::App::System::Visibility>();
 
-	VTX::App::Action::Visibility::SetVisible setVisible;
-	VTX::App::ACTION().execute( setVisible, ent, Core::Struct::IndexRangeList { { 0, 0 } }, false );
-	visibility.atoms.set( 0, false );
+	VTX::App::Action::Visibility::SetVisible<Core::Struct::E_SYSTEM_ITEM::ATOM> setVisible;
+	VTX::App::ACTION().execute( setVisible, ent, Core::Struct::IndexRangeList { { 0, 1 } }, false );
 	uint initialAtomCount = topology.getAtomCount(), rewriteAtomCount = 0;
 
-	VTX::FilePath outPath { VTX::Util::Filesystem::getExecutableDir() / "out" / "1aga.bcif" };
+	VTX::FilePath outDir = VTX::Util::Filesystem::getExecutableDir() / "out";
+	std::filesystem::create_directories( outDir );
+	VTX::FilePath outPath { outDir / "1aga.bcif" };
 
 	{
 		VTX::App::Action::IO::WriteVisible a;
