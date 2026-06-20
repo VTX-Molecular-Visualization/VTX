@@ -1,5 +1,7 @@
 #include "ui/qt/widget/library/graphics_config.hpp"
 #include "ui/qt/helper.hpp"
+#include <QFileDialog>
+#include <QHBoxLayout>
 #include <app/action/graphics_config.hpp>
 
 namespace VTX::UI::QT::Widget::Library
@@ -61,6 +63,19 @@ namespace VTX::UI::QT::Widget::Library
 		_colorPickerLight = new ColorPicker( _groupboxShading );
 		_groupboxShading->addWidget( _colorPickerLight );
 		_colorPickerLight->setText( "Light" );
+
+		_groupboxShading->addWidget( new QLabel( "Environment map", _groupboxShading ) );
+		auto * const environmentPathWidget = new QWidget( _groupboxShading );
+		auto * const environmentPathLayout = new QHBoxLayout( environmentPathWidget );
+		environmentPathLayout->setContentsMargins( 0, 0, 0, 0 );
+		_lineEnvironmentPath = new QLineEdit( environmentPathWidget );
+		_lineEnvironmentPath->setReadOnly( true );
+		_buttonEnvironmentBrowse = new QPushButton( "Browse...", environmentPathWidget );
+		_buttonEnvironmentClear	 = new QPushButton( "Clear", environmentPathWidget );
+		environmentPathLayout->addWidget( _lineEnvironmentPath );
+		environmentPathLayout->addWidget( _buttonEnvironmentBrowse );
+		environmentPathLayout->addWidget( _buttonEnvironmentClear );
+		_groupboxShading->addWidget( environmentPathWidget );
 
 		_sliderSpecularFactor = new EditableSlider( Qt::Orientation::Horizontal, _groupboxShading );
 		_labelSpecularFactor  = new QLabel( "Specular factor", _groupboxShading );
@@ -303,6 +318,34 @@ namespace VTX::UI::QT::Widget::Library
 			_sliderToonSteps,
 			&EditableSlider::valueChanged,
 			[ this ]( const uint p_value ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::TOON_STEPS, uint>( p_value ); }
+		);
+
+		connect(
+			_buttonEnvironmentBrowse,
+			&QPushButton::clicked,
+			[ this ]
+			{
+				const auto &  config = App::REG().get<VTX::Renderer::GraphicsConfig>( currentPreset() );
+				const QString initialPath
+					= config.shading.environmentPath
+						  ? QString::fromStdString( config.shading.environmentPath->parent_path().string() )
+						  : QString {};
+				const QString selectedPath = QFileDialog::getOpenFileName(
+					this, "Select environment map", initialPath, "HDR environment maps (*.exr *.EXR *.hdr *.HDR)"
+				);
+				if ( not selectedPath.isEmpty() )
+				{
+					_changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH, FilePath>(
+						FilePath( selectedPath.toStdString() )
+					);
+				}
+			}
+		);
+
+		connect(
+			_buttonEnvironmentClear,
+			&QPushButton::clicked,
+			[ this ] { _changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH, FilePath>( FilePath {} ); }
 		);
 
 		connect(
@@ -582,6 +625,12 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderSpecularFactor->setValue( preset.shading.specularFactor );
 		_sliderShininess->setValue( preset.shading.shininess );
 		_sliderToonSteps->setValue( preset.shading.toonSteps );
+		const QString environmentPath = preset.shading.environmentPath
+											? QString::fromStdString( preset.shading.environmentPath->string() )
+											: QString {};
+		_lineEnvironmentPath->setText( environmentPath );
+		_lineEnvironmentPath->setToolTip( environmentPath );
+		_buttonEnvironmentClear->setEnabled( preset.shading.environmentPath.has_value() );
 		_groupboxSSAO->setChecked( preset.ssao.has_value() );
 		_comboBoxSSAOMethod->setCurrentIndex( int( ssao.method ) );
 		_comboBoxSSAOScale->setCurrentIndex( _ssaoScaleToUi( ssao.scale ) );

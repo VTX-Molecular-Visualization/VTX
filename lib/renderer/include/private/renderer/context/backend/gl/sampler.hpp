@@ -20,11 +20,12 @@ namespace VTX::Renderer::Context::Backend::GL
 			glCreateSamplers( 1, &_id );
 			glSamplerParameteri( _id, GL_TEXTURE_WRAP_S, p_wrappingS );
 			glSamplerParameteri( _id, GL_TEXTURE_WRAP_T, p_wrappingT );
+			glSamplerParameteri( _id, GL_TEXTURE_WRAP_R, p_wrappingT );
 			glSamplerParameteri( _id, GL_TEXTURE_MIN_FILTER, p_minFilter );
 			glSamplerParameteri( _id, GL_TEXTURE_MAG_FILTER, p_magFilter );
 		}
 
-		Sampler( const Sampler & )			 = delete;
+		Sampler( const Sampler & )			   = delete;
 		Sampler & operator=( const Sampler & ) = delete;
 
 		Sampler( Sampler && p_other ) noexcept : _id( std::exchange( p_other._id, GL_INVALID_INDEX ) ) {}
@@ -50,6 +51,7 @@ namespace VTX::Renderer::Context::Backend::GL
 				_id = GL_INVALID_INDEX;
 			}
 		}
+
 		inline GLuint getId() const noexcept { return _id; }
 
 		void bindToUnit( const GLuint p_unit ) const noexcept { glBindSampler( p_unit, _id ); }
@@ -60,6 +62,6 @@ namespace VTX::Renderer::Context::Backend::GL
 		GLuint _id = GL_INVALID_INDEX;
 	};
 
-} // namespace VTX::Renderer::Context::GL
+} // namespace VTX::Renderer::Context::Backend::GL
 
 #endif

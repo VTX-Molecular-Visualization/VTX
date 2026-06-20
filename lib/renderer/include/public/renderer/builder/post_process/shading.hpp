@@ -48,12 +48,16 @@ namespace VTX::Renderer
 
 	struct ShadingConfig
 	{
-		E_SHADING		  mode;
-		Util::Color::Rgba colorLight;
-		Util::Color::Rgba colorBackground;
-		float			  specularFactor;
-		float			  shininess;
-		uint			  toonSteps;
+		E_SHADING				mode;
+		Util::Color::Rgba		colorLight;
+		Util::Color::Rgba		colorBackground;
+		float					specularFactor;
+		float					shininess;
+		uint					toonSteps;
+		std::optional<FilePath> environmentPath;
+		uint32_t				environmentFaceSize = 1024;
+		float					environmentExposure = 1.f;
+		float					environmentRotation = 0.f;
 	};
 
 	struct FogConfig
@@ -81,8 +85,10 @@ namespace VTX::Renderer::Builder::PostProcess
 {
 	struct Shading
 	{
-		inline static const Desc::Key PASS	 = "Shading";
-		inline static const Desc::Key OUTPUT = "Shaded";
+		inline static const Desc::Key PASS				  = "Shading";
+		inline static const Desc::Key OUTPUT			  = "Shaded";
+		inline static const Desc::Key ENVIRONMENT_TEXTURE = "EnvMap";
+		inline static const Desc::Key ENVIRONMENT_SAMPLER = "EnvMapSampler";
 
 		static Desc::Key build( GraphBuilder & p_graph, const bool p_enableSSAO )
 		{
@@ -91,9 +97,10 @@ namespace VTX::Renderer::Builder::PostProcess
 				.in( "Color" )
 				.in( "BlurY", p_enableSSAO ? "NearestClamp" : "NearestRepeat" )
 				.in( "Depth" )
+				.in( ENVIRONMENT_TEXTURE, ENVIRONMENT_SAMPLER )
 				.out( OUTPUT )
 				.program( PASS )
-				.shaders( { "default.vert", "shading.frag" } )
+				.shaders( { "shading.vert", "shading.frag" } )
 				.uniform( "BackgroundColor", COLOR_BACKGROUND_DEFAULT )
 				.uniform( "LightColor", COLOR_LIGHT_DEFAULT )
 				.uniform( "FogColor", COLOR_FOG_DEFAULT )
@@ -112,6 +119,9 @@ namespace VTX::Renderer::Builder::PostProcess
 				.uniform( "FogFar", FOG_FAR_DEFAULT, std::pair { FOG_FAR_MIN, FOG_FAR_MAX } )
 				.uniform( "FogDensity", FOG_DENSITY_DEFAULT, std::pair { FOG_DENSITY_MIN, FOG_DENSITY_MAX } )
 				.uniform( "SSAOScale", SSAO_SCALE_DEFAULT, std::pair { SSAO_SCALE_MIN, SSAO_SCALE_MAX } )
+				.uniform( "EnvironmentEnabled", uint32_t( 0 ) )
+				.uniform( "EnvironmentExposure", 1.f )
+				.uniform( "EnvironmentRotation", 0.f )
 				.endProgram()
 				.endPass();
 
@@ -139,10 +149,15 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( fog.far );
 			buffer.write( p_fog ? fog.density : 0.f );
 			buffer.write( p_ssao ? p_ssao->scale : SSAO_SCALE_DEFAULT );
+			buffer.write( uint32_t( p_config.environmentPath.has_value() ) );
+			buffer.write( p_config.environmentExposure );
+			buffer.write( p_config.environmentRotation );
 			buffer.close();
 
 			p_context.setBuffer( { PASS }, buffer );
 		}
+
+		static void loadEnvironment( Context::ContextWrapper &, const ShadingConfig & );
 	};
 } // namespace VTX::Renderer::Builder::PostProcess
 

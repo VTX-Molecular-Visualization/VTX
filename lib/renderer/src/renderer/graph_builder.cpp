@@ -52,12 +52,17 @@ namespace VTX::Renderer
 	}
 
 	GraphBuilder & GraphBuilder::texture(
-		const Desc::Key &	 p_name,
-		const Desc::E_FORMAT p_format,
-		const Desc::Size2D & p_size
+		const Desc::Key &			 p_name,
+		const Desc::E_FORMAT		 p_format,
+		const Desc::Size2D &		 p_size,
+		const Desc::E_TEXTURE_TARGET p_target,
+		const bool					 p_external
 	)
 	{
-		resources.textures[ p_name ] = Desc::Texture { p_format, p_size };
+		Desc::Texture texture { p_format, p_size };
+		texture.target				 = p_target;
+		texture.external			 = p_external;
+		resources.textures[ p_name ] = std::move( texture );
 		return *this;
 	}
 
@@ -185,19 +190,13 @@ namespace VTX::Renderer
 		const Desc::E_PASS_TYPE		 p_type,
 		const Desc::E_PASS_EXECUTION p_execution
 	)
-	{
-		return PassBuilder( *this, p_name, p_type, p_execution );
-	}
+	{ return PassBuilder( *this, p_name, p_type, p_execution ); }
 
 	PassBuilder GraphBuilder::computePass( const Desc::Key & p_name, const Desc::E_PASS_EXECUTION p_execution )
-	{
-		return pass( p_name, Desc::E_PASS_TYPE::COMPUTE, p_execution );
-	}
+	{ return pass( p_name, Desc::E_PASS_TYPE::COMPUTE, p_execution ); }
 
 	PassBuilder GraphBuilder::externalPass( const Desc::Key & p_name, const Desc::E_PASS_EXECUTION p_execution )
-	{
-		return pass( p_name, Desc::E_PASS_TYPE::EXTERNAL, p_execution );
-	}
+	{ return pass( p_name, Desc::E_PASS_TYPE::EXTERNAL, p_execution ); }
 
 	ProgramBuilder::ProgramBuilder( PassBuilder & p_p, Desc::Program & p_prog ) : parent( p_p ), program( p_prog ) {}
 
@@ -220,9 +219,7 @@ namespace VTX::Renderer
 	}
 
 	ProgramBuilder & ProgramBuilder::draw( const Desc::Key & p_geometry, const Desc::E_PRIMITIVE p_primitive )
-	{
-		return draw( p_geometry, p_primitive, Desc::DrawCall::Indirect {} );
-	}
+	{ return draw( p_geometry, p_primitive, Desc::DrawCall::Indirect {} ); }
 
 	ProgramBuilder & ProgramBuilder::draw(
 		const Desc::Key &					  p_geometry,
@@ -251,9 +248,9 @@ namespace VTX::Renderer
 	}
 
 	ProgramBuilder & ProgramBuilder::dispatch(
-		const uint32_t p_groupX,
-		const uint32_t p_groupY,
-		const uint32_t p_groupZ,
+		const uint32_t				 p_groupX,
+		const uint32_t				 p_groupY,
+		const uint32_t				 p_groupZ,
 		const Desc::E_MEMORY_BARRIER p_barriers
 	)
 	{
@@ -263,8 +260,8 @@ namespace VTX::Renderer
 	}
 
 	ProgramBuilder & ProgramBuilder::dispatchIndirect(
-		const Desc::Key &			  p_indirectBuffer,
-		const uint32_t				  p_offset,
+		const Desc::Key &			 p_indirectBuffer,
+		const uint32_t				 p_offset,
 		const Desc::E_MEMORY_BARRIER p_barriers
 	)
 	{
@@ -318,9 +315,7 @@ namespace VTX::Renderer
 	}
 
 	PassBuilder & PassBuilder::in( const Desc::Key & p_texture, const std::optional<Desc::Key> & p_sampler )
-	{
-		return in( Desc::E_RESOURCE_TYPE::TEXTURE, p_texture, p_sampler ? *p_sampler : DEFAULT_SAMPLER_NAME );
-	}
+	{ return in( Desc::E_RESOURCE_TYPE::TEXTURE, p_texture, p_sampler ? *p_sampler : DEFAULT_SAMPLER_NAME ); }
 
 	PassBuilder & PassBuilder::out(
 		const Desc::E_RESOURCE_TYPE	   p_type,
@@ -333,9 +328,7 @@ namespace VTX::Renderer
 	}
 
 	PassBuilder & PassBuilder::out( const Desc::Key & p_texture )
-	{
-		return out( Desc::E_RESOURCE_TYPE::TEXTURE, p_texture );
-	}
+	{ return out( Desc::E_RESOURCE_TYPE::TEXTURE, p_texture ); }
 
 	PassBuilder & PassBuilder::settings( const std::initializer_list<Desc::E_SETTING> p_settings )
 	{

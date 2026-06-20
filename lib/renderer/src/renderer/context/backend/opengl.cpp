@@ -61,6 +61,18 @@ namespace
 		}
 	}
 
+	constexpr GLenum _toGL( const Desc::E_TEXTURE_TARGET p_target ) noexcept
+	{
+		using namespace Desc;
+
+		switch ( p_target )
+		{
+		case E_TEXTURE_TARGET::TEXTURE_2D: return GL_TEXTURE_2D;
+		case E_TEXTURE_TARGET::CUBEMAP: return GL_TEXTURE_CUBE_MAP;
+		default: assert( false ); return GL_INVALID_INDEX;
+		}
+	}
+
 	constexpr GLenum _toGL( const Desc::E_FILTERING p_filtering ) noexcept
 	{
 		using namespace Desc;
@@ -260,7 +272,9 @@ namespace VTX::Renderer::Context::Backend
 		GLuint cudaInteropProbeBuffer = 0;
 		glCreateBuffers( 1, &cudaInteropProbeBuffer );
 		const uint32_t cudaInteropProbeData = 0;
-		glNamedBufferData( cudaInteropProbeBuffer, sizeof( cudaInteropProbeData ), &cudaInteropProbeData, GL_DYNAMIC_DRAW );
+		glNamedBufferData(
+			cudaInteropProbeBuffer, sizeof( cudaInteropProbeData ), &cudaInteropProbeData, GL_DYNAMIC_DRAW
+		);
 		_cudaInterop.refreshAvailability( cudaInteropProbeBuffer );
 		glDeleteBuffers( 1, &cudaInteropProbeBuffer );
 
@@ -367,9 +381,9 @@ namespace VTX::Renderer::Context::Backend
 				{
 					if ( output.type == E_RESOURCE_TYPE::TEXTURE )
 					{
-						const GL::Texture2D & texture = _textures.get( output.primary );
-						passWidth					  = static_cast<uint32_t>( texture.getWidth() );
-						passHeight					  = static_cast<uint32_t>( texture.getHeight() );
+						const GL::Texture & texture = _textures.get( output.primary );
+						passWidth					= static_cast<uint32_t>( texture.getWidth() );
+						passHeight					= static_cast<uint32_t>( texture.getHeight() );
 						break;
 					}
 				}
@@ -774,8 +788,9 @@ namespace VTX::Renderer::Context::Backend
 
 		GLPixelFormat glFormat = _toGL( p_text.format );
 
-		const Handle h
-			= _textures.emplace( p_key, p_text, GLsizei( width ), GLsizei( height ), glFormat.internalFormat );
+		const Handle h = _textures.emplace(
+			p_key, p_text, GLsizei( width ), GLsizei( height ), glFormat.internalFormat, _toGL( p_text.target )
+		);
 
 		if ( not p_text.data.empty() )
 		{
@@ -1174,7 +1189,7 @@ namespace VTX::Renderer::Context::Backend
 				continue;
 			}
 
-			const GL::Texture2D & texture = _textures.get( output.primary );
+			const GL::Texture & texture = _textures.get( output.primary );
 
 			const auto it = p_textures.find( output.primary );
 			assert( it != p_textures.end() );
@@ -1314,9 +1329,7 @@ namespace VTX::Renderer::Context::Backend
 	}
 
 	void OpenGL::setBufferData( const Desc::BufferRef & p_ref, SpanBytes p_bytes, const size_t p_offset )
-	{
-		_setBufferData( _physicalBufferKey( p_ref ), p_bytes, p_offset );
-	}
+	{ _setBufferData( _physicalBufferKey( p_ref ), p_bytes, p_offset ); }
 
 	bool OpenGL::ensureBufferChunk( const Desc::BufferRef & p_ref )
 	{
@@ -1542,6 +1555,13 @@ namespace VTX::Renderer::Context::Backend
 		const auto &		textureProp = _textures.descriptor( p_key );
 		const GLPixelFormat glFormat	= _toGL( textureProp.format );
 		const auto &		texture		= _textures.get( h );
+		const size_t		faceCount	= textureProp.target == E_TEXTURE_TARGET::CUBEMAP ? 6 : 1;
+		const size_t		expectedSize
+			= size_t( texture.getWidth() ) * size_t( texture.getHeight() ) * faceCount * glFormat.bytesPerPixel;
+		if ( p_bytes.size() != expectedSize )
+		{
+			throw GraphicException( "Texture '{}': expected {} bytes, got {}", p_key, expectedSize, p_bytes.size() );
+		}
 
 		texture.fill( p_bytes.data(), glFormat.uploadFormat, glFormat.uploadType );
 	}

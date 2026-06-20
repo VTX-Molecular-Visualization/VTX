@@ -16,63 +16,43 @@ namespace VTX::Renderer
 
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<bool>()
-	{
-		return Desc::E_TYPE::BOOL;
-	}
+	{ return Desc::E_TYPE::BOOL; }
 
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<float>()
-	{
-		return Desc::E_TYPE::FLOAT;
-	}
+	{ return Desc::E_TYPE::FLOAT; }
 
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<unsigned int>()
-	{
-		return Desc::E_TYPE::UINT;
-	}
+	{ return Desc::E_TYPE::UINT; }
 
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Vec2i>()
-	{
-		return Desc::E_TYPE::VEC2I;
-	}
+	{ return Desc::E_TYPE::VEC2I; }
 
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Vec2f>()
-	{
-		return Desc::E_TYPE::VEC2F;
-	}
+	{ return Desc::E_TYPE::VEC2F; }
 
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Vec3f>()
-	{
-		return Desc::E_TYPE::VEC3F;
-	}
+	{ return Desc::E_TYPE::VEC3F; }
 
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Vec4f>()
-	{
-		return Desc::E_TYPE::VEC4F;
-	}
+	{ return Desc::E_TYPE::VEC4F; }
 
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Mat3f>()
-	{
-		return Desc::E_TYPE::MAT3F;
-	}
+	{ return Desc::E_TYPE::MAT3F; }
 
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Mat4f>()
-	{
-		return Desc::E_TYPE::MAT4F;
-	}
+	{ return Desc::E_TYPE::MAT4F; }
 
 	template<>
 	constexpr Desc::E_TYPE uniformTypeOf<Util::Color::Rgba>()
-	{
-		return Desc::E_TYPE::VEC4F;
-	}
+	{ return Desc::E_TYPE::VEC4F; }
 
 	/**
 	 * @brief Create a uniform value.
@@ -139,7 +119,13 @@ namespace VTX::Renderer
 		/**
 		 * @brief texture().
 		 */
-		GraphBuilder & texture( const Desc::Key &, const Desc::E_FORMAT, const Desc::Size2D & = std::monostate {} );
+		GraphBuilder & texture(
+			const Desc::Key &,
+			const Desc::E_FORMAT,
+			const Desc::Size2D &		 = std::monostate {},
+			const Desc::E_TEXTURE_TARGET = Desc::E_TEXTURE_TARGET::TEXTURE_2D,
+			const bool					 = false
+		);
 
 		/**
 		 * @brief texture().
@@ -182,9 +168,7 @@ namespace VTX::Renderer
 			const Desc::E_FILTERING p_minFilter = Desc::E_FILTERING::NEAREST,
 			const Desc::E_FILTERING p_magFilter = Desc::E_FILTERING::NEAREST
 		)
-		{
-			return sampler( DEFAULT_SAMPLER_NAME, p_wrapS, p_wrapT, p_minFilter, p_magFilter );
-		}
+		{ return sampler( DEFAULT_SAMPLER_NAME, p_wrapS, p_wrapT, p_minFilter, p_magFilter ); }
 
 		/**
 		 * @brief vertexStream().
@@ -285,13 +269,13 @@ namespace VTX::Renderer
 		ProgramBuilder & dispatch( const Desc::Dispatch & );
 		ProgramBuilder & dispatch(
 			const uint32_t,
-			const uint32_t				   = 1,
-			const uint32_t				   = 1,
+			const uint32_t				 = 1,
+			const uint32_t				 = 1,
 			const Desc::E_MEMORY_BARRIER = Desc::E_MEMORY_BARRIER::NONE
 		);
 		ProgramBuilder & dispatchIndirect(
 			const Desc::Key &,
-			const uint32_t				   = 0,
+			const uint32_t				 = 0,
 			const Desc::E_MEMORY_BARRIER = Desc::E_MEMORY_BARRIER::NONE
 		);
 

@@ -1,37 +1,35 @@
-#ifndef __VTX_RENDERER_CONTEXT_GL_TEXTURE_2D__
-#define __VTX_RENDERER_CONTEXT_GL_TEXTURE_2D__
+#ifndef __VTX_RENDERER_CONTEXT_GL_TEXTURE__
+#define __VTX_RENDERER_CONTEXT_GL_TEXTURE__
 
 #include "include_opengl.hpp"
 #include <cassert>
+#include <optional>
 #include <utility>
 
 namespace VTX::Renderer::Context::Backend::GL
 {
-	class Texture2D
+	class Texture
 	{
 	  public:
-		Texture2D( const GLsizei p_width, const GLsizei p_height, const GLenum p_format ) noexcept
+		Texture( const GLsizei p_width, const GLsizei p_height, const GLenum p_format, const GLenum p_target ) noexcept
+			: _width( p_width ), _height( p_height ), _format( p_format ), _target( p_target )
 		{
 			assert( p_width > 0 && p_height > 0 );
-
-			_width	= p_width;
-			_height = p_height;
-			_format = p_format;
-
+			assert( p_target == GL_TEXTURE_2D || p_target == GL_TEXTURE_CUBE_MAP );
 			_create();
 		}
 
-		Texture2D( const Texture2D & )			 = delete;
-		Texture2D & operator=( const Texture2D & ) = delete;
+		Texture( const Texture & )			   = delete;
+		Texture & operator=( const Texture & ) = delete;
 
-		Texture2D( Texture2D && p_other ) noexcept
-			: _id( std::exchange( p_other._id, GL_INVALID_INDEX ) ),
-			  _width( std::exchange( p_other._width, 0 ) ), _height( std::exchange( p_other._height, 0 ) ),
-			  _format( std::exchange( p_other._format, GL_RGBA32F ) )
+		Texture( Texture && p_other ) noexcept :
+			_id( std::exchange( p_other._id, GL_INVALID_INDEX ) ), _width( std::exchange( p_other._width, 0 ) ),
+			_height( std::exchange( p_other._height, 0 ) ), _format( std::exchange( p_other._format, GL_RGBA32F ) ),
+			_target( std::exchange( p_other._target, GL_TEXTURE_2D ) )
 		{
 		}
 
-		Texture2D & operator=( Texture2D && p_other ) noexcept
+		Texture & operator=( Texture && p_other ) noexcept
 		{
 			if ( this != &p_other )
 			{
@@ -40,12 +38,13 @@ namespace VTX::Renderer::Context::Backend::GL
 				_width	= std::exchange( p_other._width, 0 );
 				_height = std::exchange( p_other._height, 0 );
 				_format = std::exchange( p_other._format, GL_RGBA32F );
+				_target = std::exchange( p_other._target, GL_TEXTURE_2D );
 			}
 
 			return *this;
 		}
 
-		~Texture2D() noexcept { _destroy(); }
+		~Texture() noexcept { _destroy(); }
 
 		inline GLuint getId() const noexcept { return _id; }
 
@@ -55,9 +54,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			const GLenum p_type,
 			const GLint	 p_level = 0
 		) const noexcept
-		{
-			glClearTexImage( _id, p_level, p_format, p_type, p_data );
-		}
+		{ glClearTexImage( _id, p_level, p_format, p_type, p_data ); }
 
 		inline void resize( const GLsizei p_width, const GLsizei p_height ) noexcept
 		{
@@ -85,7 +82,16 @@ namespace VTX::Renderer::Context::Backend::GL
 			const GLsizei width	 = p_width.has_value() ? *p_width : _width;
 			const GLsizei height = p_height.has_value() ? *p_height : _height;
 
-			glTextureSubImage2D( _id, p_level, p_offsetX, p_offsetY, width, height, p_format, p_type, p_pixels );
+			if ( _target == GL_TEXTURE_CUBE_MAP )
+			{
+				glTextureSubImage3D(
+					_id, p_level, p_offsetX, p_offsetY, 0, width, height, 6, p_format, p_type, p_pixels
+				);
+			}
+			else
+			{
+				glTextureSubImage2D( _id, p_level, p_offsetX, p_offsetY, width, height, p_format, p_type, p_pixels );
+			}
 		}
 
 		inline void bindToUnit( const GLuint p_index ) const noexcept { glBindTextureUnit( p_index, _id ); }
@@ -99,9 +105,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			const GLsizei p_bufSize,
 			void * const  p_pixels
 		) const noexcept
-		{
-			glGetTextureImage( _id, p_level, p_format, p_type, p_bufSize, p_pixels );
-		}
+		{ glGetTextureImage( _id, p_level, p_format, p_type, p_bufSize, p_pixels ); }
 
 		inline void getSubImage(
 			const GLint	  p_level,
@@ -115,30 +119,37 @@ namespace VTX::Renderer::Context::Backend::GL
 			void * const  p_pixels
 		) const noexcept
 		{
-			GLint prev;
-			glGetIntegerv( GL_PACK_ALIGNMENT, &prev );
+			assert( _target == GL_TEXTURE_2D );
+
+			GLint previousAlignment;
+			glGetIntegerv( GL_PACK_ALIGNMENT, &previousAlignment );
 			glPixelStorei( GL_PACK_ALIGNMENT, 1 );
 			glGetTextureSubImage(
 				_id, p_level, p_xOffset, p_yOffset, 0, p_width, p_height, 1, p_format, p_type, p_bufSize, p_pixels
 			);
-			glPixelStorei( GL_PACK_ALIGNMENT, prev );
+			glPixelStorei( GL_PACK_ALIGNMENT, previousAlignment );
 		}
 
 		inline GLsizei getWidth() const noexcept { return _width; }
+
 		inline GLsizei getHeight() const noexcept { return _height; }
-		inline GLenum  getFormat() const noexcept { return _format; }
+
+		inline GLenum getFormat() const noexcept { return _format; }
+
+		inline GLenum getTarget() const noexcept { return _target; }
 
 	  private:
 		GLuint	_id		= GL_INVALID_INDEX;
 		GLsizei _width	= 0;
 		GLsizei _height = 0;
 		GLenum	_format = GL_RGBA32F;
+		GLenum	_target = GL_TEXTURE_2D;
 
 		inline void _create() noexcept
 		{
 			assert( _width > 0 && _height > 0 );
 
-			glCreateTextures( GL_TEXTURE_2D, 1, &_id );
+			glCreateTextures( _target, 1, &_id );
 			glTextureStorage2D( _id, 1, _format, _width, _height );
 		}
 
@@ -151,6 +162,6 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 	};
-} // namespace VTX::Renderer::Context::GL
+} // namespace VTX::Renderer::Context::Backend::GL
 
-#endif // __VTX_GL_TEXTURE_2D__
+#endif // __VTX_RENDERER_CONTEXT_GL_TEXTURE__

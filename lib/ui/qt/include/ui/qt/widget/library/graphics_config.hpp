@@ -8,6 +8,8 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
 #include <app/action/graphics_config.hpp>
 
 namespace VTX::UI::QT::Widget::Library
@@ -32,6 +34,9 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<EditableSlider>   _sliderShininess;
 		QPointer<QLabel>		   _labelToonSteps;
 		QPointer<EditableSlider>   _sliderToonSteps;
+		QPointer<QLineEdit>		   _lineEnvironmentPath;
+		QPointer<QPushButton>	   _buttonEnvironmentBrowse;
+		QPointer<QPushButton>	   _buttonEnvironmentClear;
 
 		// SSAO.
 		QPointer<HideableGroupBox> _groupboxSSAO;

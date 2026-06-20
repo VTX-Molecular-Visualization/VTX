@@ -57,6 +57,11 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						p_config.shading.toonSteps = p_value;
 					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH )
+					{
+						p_config.shading.environmentPath
+							= p_value.empty() ? std::nullopt : std::optional<FilePath> { p_value };
+					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_SSAO )
 					{
 						p_config.ssao

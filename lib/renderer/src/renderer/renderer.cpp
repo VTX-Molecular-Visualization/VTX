@@ -45,6 +45,7 @@ namespace VTX::Renderer
 				reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
 				reinterpret_cast<uintptr_t>( this )
 			);
+			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ENVIRONMENT;
 			_context.fillInfos( _infos );
 			onReady( _infos );
 		}
@@ -71,6 +72,7 @@ namespace VTX::Renderer
 			_graph.getPasses(),
 			_graph.getResources().textures
 		);
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COMMAND_BUFFER | Cache::E_RENDERER_DIRTY::NEED_UPDATE;
 	}
 
 	void Renderer::clear()
@@ -497,6 +499,10 @@ namespace VTX::Renderer
 				reinterpret_cast<uintptr_t>( this )
 			);
 		}
+		if ( hasDirty( _dirtyRenderer, RendererDirty::ENVIRONMENT ) && _graphicsConfig.data.shading.environmentPath )
+		{
+			Builder::PostProcess::Shading::loadEnvironment( _context, _graphicsConfig.data.shading );
+		}
 		if ( updateRepresentations )
 		{
 			Builder::RepresentationState::upload( _context, _representations );
@@ -550,6 +556,9 @@ namespace VTX::Renderer
 
 	void Renderer::setGraphicsConfig( const GraphicsConfig & p_config )
 	{
+		const ShadingConfig & currentShading = _graphicsConfig.data.shading;
+		const bool environmentChanged = currentShading.environmentPath != p_config.shading.environmentPath
+										|| currentShading.environmentFaceSize != p_config.shading.environmentFaceSize;
 		const Builder::PipelineConfig pipelineConfig = Builder::RenderGraphRuntime::pipelineConfig( p_config );
 		const bool					  graphReady	 = _config.has_value();
 		const bool					  graphChanged	 = not graphReady || *_config != pipelineConfig;
@@ -559,6 +568,10 @@ namespace VTX::Renderer
 		if ( graphChanged )
 		{
 			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::GRAPH | Cache::E_RENDERER_DIRTY::COMMAND_BUFFER;
+		}
+		if ( environmentChanged )
+		{
+			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ENVIRONMENT;
 		}
 	}
 

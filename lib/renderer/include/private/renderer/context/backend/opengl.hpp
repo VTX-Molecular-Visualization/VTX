@@ -10,7 +10,7 @@
 #include "renderer/context/backend/gl/program.hpp"
 #include "renderer/context/backend/gl/sampler.hpp"
 #include "renderer/context/backend/gl/struct_opengl_infos.hpp"
-#include "renderer/context/backend/gl/texture_2d.hpp"
+#include "renderer/context/backend/gl/texture.hpp"
 #include "renderer/context/backend/gl/vertex_array.hpp"
 #include "renderer/context/backend/interop/opengl_cuda_interop.hpp"
 #include "renderer/context/command_buffer.hpp"
@@ -144,39 +144,25 @@ namespace VTX::Renderer::Context::Backend
 		 * @brief Resources accessors.
 		 */
 		inline const ResourceTable & resourceTable( const Desc::Handle p_handle ) const noexcept
-		{
-			return _resourceTables.get( p_handle );
-		}
+		{ return _resourceTables.get( p_handle ); }
 
 		inline const GL::Framebuffer & framebuffer( const Desc::Handle p_handle ) const noexcept
-		{
-			return _framebuffers.get( p_handle );
-		}
+		{ return _framebuffers.get( p_handle ); }
 
-		inline const GL::Texture2D & texture( const Desc::Handle p_handle ) const noexcept
-		{
-			return _textures.get( p_handle );
-		}
+		inline const GL::Texture & texture( const Desc::Handle p_handle ) const noexcept
+		{ return _textures.get( p_handle ); }
 
 		inline const GL::Sampler & sampler( const Desc::Handle p_handle ) const noexcept
-		{
-			return _samplers.get( p_handle );
-		}
+		{ return _samplers.get( p_handle ); }
 
 		inline const GL::Program & program( const Desc::Handle p_handle ) const noexcept
-		{
-			return _programs.get( p_handle );
-		}
+		{ return _programs.get( p_handle ); }
 
 		inline const GL::Buffer & buffer( const Desc::Handle p_handle ) const noexcept
-		{
-			return _buffers.get( p_handle );
-		}
+		{ return _buffers.get( p_handle ); }
 
 		inline const GL::VertexArray & vertexArray( const Desc::Handle p_handle ) const noexcept
-		{
-			return _vertexArrays.get( p_handle );
-		}
+		{ return _vertexArrays.get( p_handle ); }
 
 	  private:
 		/**
@@ -215,7 +201,7 @@ namespace VTX::Renderer::Context::Backend
 		ResourceHandler<ResourceTable>									_resourceTables;
 		ResourceHandler<GL::VertexArray, Desc::Key, Desc::VertexLayout> _vertexArrays;
 		ResourceHandler<GL::Buffer, Desc::Key, Desc::Buffer>			_buffers;
-		ResourceHandler<GL::Texture2D, Desc::Key, Desc::Texture>		_textures;
+		ResourceHandler<GL::Texture, Desc::Key, Desc::Texture>			_textures;
 		ResourceHandler<GL::Sampler, Desc::Key, Desc::Sampler>			_samplers;
 		ResourceHandler<GL::Program, Desc::Key, Desc::Program>			_programs;
 

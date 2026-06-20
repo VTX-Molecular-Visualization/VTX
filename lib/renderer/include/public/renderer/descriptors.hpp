@@ -76,6 +76,15 @@ namespace VTX::Renderer::Desc
 	};
 
 	/**
+	 * @brief All texture targets.
+	 */
+	enum struct E_TEXTURE_TARGET : uint8_t
+	{
+		TEXTURE_2D,
+		CUBEMAP
+	};
+
+	/**
 	 * @brief All data formats.
 	 */
 	enum struct E_FORMAT : uint32_t
@@ -317,6 +326,8 @@ namespace VTX::Renderer::Desc
 		E_FORMAT			   format;
 		Size2D				   size;
 		std::vector<std::byte> data;
+		E_TEXTURE_TARGET	   target	= E_TEXTURE_TARGET::TEXTURE_2D;
+		bool				   external = false;
 	};
 
 	struct Sampler
@@ -573,6 +584,7 @@ namespace VTX::Renderer::Desc
 			= [ &hash ]( const Hash p_value ) { hash ^= p_value + 0x9e3779b9u + ( hash << 6 ) + ( hash >> 2 ); };
 
 		combine( p_text.size.index() );
+		combine( Util::hash( toUnderlying( p_text.target ) ) );
 		if ( const auto * size = std::get_if<Size2DAbsolute>( &p_text.size ) )
 		{
 			combine( Util::hash( size->width ) );

@@ -33,6 +33,11 @@ namespace VTX::Renderer
 
 		auto isExternalResource = [ this ]( const Key & name ) -> bool
 		{
+			if ( const auto texture = _resources.textures.find( name );
+				 texture != _resources.textures.end() && texture->second.external )
+			{
+				return true;
+			}
 			if ( _resources.geometries.contains( name ) )
 			{
 				return true;

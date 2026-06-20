@@ -358,6 +358,15 @@ namespace VTX::Renderer::Builder
 
 		g.texture( "Shaded", E_FORMAT::RGBA16F );
 
+		const uint32_t environmentFaceSize = p_config.enableEnvironment ? p_config.environmentFaceSize : 1;
+		g.texture(
+			PostProcess::Shading::ENVIRONMENT_TEXTURE,
+			E_FORMAT::RGBA16F,
+			Size2DAbsolute { environmentFaceSize, environmentFaceSize },
+			E_TEXTURE_TARGET::CUBEMAP,
+			true
+		);
+
 		if ( p_config.enableColorize )
 		{
 			g.texture( "Colorize", E_FORMAT::RGBA16F );
@@ -407,6 +416,14 @@ namespace VTX::Renderer::Builder
 
 		g.sampler(
 			"LinearClamp",
+			E_WRAPPING::CLAMP_TO_EDGE,
+			E_WRAPPING::CLAMP_TO_EDGE,
+			E_FILTERING::LINEAR,
+			E_FILTERING::LINEAR
+		);
+
+		g.sampler(
+			PostProcess::Shading::ENVIRONMENT_SAMPLER,
 			E_WRAPPING::CLAMP_TO_EDGE,
 			E_WRAPPING::CLAMP_TO_EDGE,
 			E_FILTERING::LINEAR,
@@ -558,6 +575,8 @@ namespace VTX::Renderer::Builder
 		config.enableChromaticAberration = p_config.chromaticAberration.has_value();
 		config.enablePixelize			 = p_config.pixelize.has_value();
 		config.enableCRT				 = p_config.crt.has_value();
+		config.enableEnvironment		 = p_config.shading.environmentPath.has_value();
+		config.environmentFaceSize		 = config.enableEnvironment ? p_config.shading.environmentFaceSize : 1;
 
 		return config;
 	}

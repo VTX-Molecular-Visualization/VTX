@@ -2,7 +2,7 @@
 #define __VTX_RENDERER_CONTEXT_GL_FRAMEBUFFER__
 
 #include "include_opengl.hpp"
-#include "texture_2d.hpp"
+#include "texture.hpp"
 #include <cassert>
 #include <utility>
 #include <vector>
@@ -28,7 +28,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			_id = p_id;
 		}
 
-		Framebuffer( const Framebuffer & )			 = delete;
+		Framebuffer( const Framebuffer & )			   = delete;
 		Framebuffer & operator=( const Framebuffer & ) = delete;
 
 		Framebuffer( Framebuffer && p_other ) noexcept : _id( std::exchange( p_other._id, GL_INVALID_INDEX ) ) {}
@@ -69,13 +69,14 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 
 		inline void attachTexture(
-			const Texture2D & p_texture,
-			const GLenum	  p_attachment,
-			const GLint		  p_level = 0
+			const Texture & p_texture,
+			const GLenum	p_attachment,
+			const GLint		p_level = 0
 		) const noexcept
 		{
 			assert( glIsFramebuffer( _id ) );
 			assert( glIsTexture( static_cast<GLuint>( p_texture.getId() ) ) );
+			assert( p_texture.getTarget() == GL_TEXTURE_2D );
 
 			glNamedFramebufferTexture( _id, p_attachment, static_cast<GLuint>( p_texture.getId() ), p_level );
 		}
@@ -96,13 +97,11 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		inline bool checkStatus() const noexcept
 
-		{
-			return glCheckNamedFramebufferStatus( _id, GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE;
-		}
+		{ return glCheckNamedFramebufferStatus( _id, GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE; }
 
 	  private:
 		GLuint _id = GL_INVALID_INDEX;
 	};
-} // namespace VTX::Renderer::Context::GL
+} // namespace VTX::Renderer::Context::Backend::GL
 
 #endif // __VTX_GL_FRAMEBUFFER__

@@ -79,9 +79,9 @@ namespace VTX::Renderer::Context::Executor
 			// Textures / samplers.
 			for ( const auto & textureBinding : rt.textures )
 			{
-				const Backend::GL::Texture2D & texture = _backend.texture( textureBinding.texture );
-				const Backend::GL::Sampler &   sampler = _backend.sampler( textureBinding.sampler );
-				const Binding				   unit	   = textureBinding.unit;
+				const Backend::GL::Texture & texture = _backend.texture( textureBinding.texture );
+				const Backend::GL::Sampler & sampler = _backend.sampler( textureBinding.sampler );
+				const Binding				 unit	 = textureBinding.unit;
 
 				texture.bindToUnit( unit );
 				sampler.bindToUnit( unit );

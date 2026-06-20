@@ -4,12 +4,14 @@
 #include "struct_data_packed.glsl"
 
 // In.
+in vec3 worldDirection;
 layout( binding = 0 ) uniform usampler2D inTexturePackedData;
 layout( binding = 1 ) uniform sampler2D inTextureColor;
 layout( binding = 2 ) uniform sampler2D inTextureAmbientOcclusion;
 layout( binding = 3 ) uniform sampler2D inTextureDepth;
+layout( binding = 4 ) uniform samplerCube inTextureEnvironment;
 
-layout( std140, binding = 4 ) uniform Uniforms
+layout( std140, binding = 5 ) uniform Uniforms
 {
 	vec4  colorBackground;
 	vec4 colorLight;	
@@ -22,6 +24,9 @@ layout( std140, binding = 4 ) uniform Uniforms
 	float fogFar;
 	float fogDensity;
 	float ssaoScale;
+	uint environmentEnabled;
+	float environmentExposure;
+	float environmentRotation;
 }
 
 uniforms;
@@ -104,7 +109,15 @@ void main()
 
 	if ( data.viewPosition.z == 0.f )
 	{
-		if ( uniforms.fogDensity != 0.f )
+		if ( uniforms.environmentEnabled != 0u )
+		{
+			vec3 direction = normalize( worldDirection );
+			const float cosine = cos( uniforms.environmentRotation );
+			const float sine = sin( uniforms.environmentRotation );
+			direction.xz = mat2( cosine, -sine, sine, cosine ) * direction.xz;
+			outFragColor = vec4( texture( inTextureEnvironment, direction ).rgb * uniforms.environmentExposure, 1.f );
+		}
+		else if ( uniforms.fogDensity != 0.f )
 		{
 			outFragColor = vec4( linearToSrgb(mix( vec3( uniforms.colorBackground ),  vec3( uniforms.colorFog ), uniforms.fogDensity ) *  vec3( uniforms.colorLight )), uniforms.colorBackground.w );
 		}
