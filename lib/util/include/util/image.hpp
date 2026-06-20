@@ -29,7 +29,7 @@ namespace VTX::Util::Image
 	);
 
 	/**
-	 * @brief EXR image representation.
+	 * @brief Floating-point image representation.
 	 */
 	struct FloatImage
 	{
@@ -39,9 +39,9 @@ namespace VTX::Util::Image
 	};
 
 	/**
-	 * @brief Read EXR image from disk.
+	 * @brief Read an HDR image from disk.
 	 */
-	FloatImage readEXR( const FilePath & );
+	FloatImage readFloatImage( const FilePath & );
 
 } // namespace VTX::Util::Image
 

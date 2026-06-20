@@ -1,10 +1,13 @@
+#define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define TINYEXR_IMPLEMENTATION
 
 #include "util/image.hpp"
-// #include <stb_image.h>
+#include <algorithm>
+#include <cctype>
 #include <cstdlib>
 #include <memory>
+#include <stb_image.h>
 #include <stb_image_write.h>
 #include <stdexcept>
 #include <string>
@@ -12,6 +15,59 @@
 
 namespace VTX::Util::Image
 {
+	namespace
+	{
+		FloatImage _readEXR( const FilePath & p_path )
+		{
+			float *		 pixels = nullptr;
+			int			 width	= 0;
+			int			 height = 0;
+			const char * error	= nullptr;
+
+			const int result = LoadEXR( &pixels, &width, &height, p_path.string().c_str(), &error );
+			if ( result != TINYEXR_SUCCESS )
+			{
+				const std::string message = error != nullptr ? error : "unknown TinyEXR error";
+				if ( error != nullptr )
+				{
+					FreeEXRErrorMessage( error );
+				}
+				throw std::runtime_error( "Unable to load EXR '" + p_path.string() + "': " + message );
+			}
+
+			FloatImage image;
+			image.width	 = static_cast<size_t>( width );
+			image.height = static_cast<size_t>( height );
+			const std::unique_ptr<float, decltype( &std::free )> pixelsOwner( pixels, &std::free );
+			image.pixels.assign( pixelsOwner.get(), pixelsOwner.get() + image.width * image.height * 4 );
+
+			return image;
+		}
+
+		FloatImage _readRadianceHDR( const FilePath & p_path )
+		{
+			int			  width		 = 0;
+			int			  height	 = 0;
+			int			  components = 0;
+			float * const pixels	 = stbi_loadf( p_path.string().c_str(), &width, &height, &components, 4 );
+			if ( pixels == nullptr )
+			{
+				const char * const error = stbi_failure_reason();
+				throw std::runtime_error(
+					"Unable to load HDR '" + p_path.string()
+					+ "': " + ( error != nullptr ? error : "unknown stb_image error" )
+				);
+			}
+
+			FloatImage image;
+			image.width	 = static_cast<size_t>( width );
+			image.height = static_cast<size_t>( height );
+			const std::unique_ptr<float, decltype( &stbi_image_free )> pixelsOwner( pixels, &stbi_image_free );
+			image.pixels.assign( pixelsOwner.get(), pixelsOwner.get() + image.width * image.height * 4 );
+
+			return image;
+		}
+	} // namespace
 
 	FilePath write(
 		const FilePath &		p_path,
@@ -48,31 +104,26 @@ namespace VTX::Util::Image
 		return path;
 	}
 
-	FloatImage readEXR( const FilePath & p_path )
+	FloatImage readFloatImage( const FilePath & p_path )
 	{
-		float *		 pixels = nullptr;
-		int			 width	= 0;
-		int			 height = 0;
-		const char * error	= nullptr;
+		std::string extension = p_path.extension().string();
+		std::transform(
+			extension.begin(),
+			extension.end(),
+			extension.begin(),
+			[]( const unsigned char p_char ) { return static_cast<char>( std::tolower( p_char ) ); }
+		);
 
-		const int result = LoadEXR( &pixels, &width, &height, p_path.string().c_str(), &error );
-		if ( result != TINYEXR_SUCCESS )
+		if ( extension == ".exr" )
 		{
-			const std::string message = error != nullptr ? error : "unknown TinyEXR error";
-			if ( error != nullptr )
-			{
-				FreeEXRErrorMessage( error );
-			}
-			throw std::runtime_error( "Unable to load EXR '" + p_path.string() + "': " + message );
+			return _readEXR( p_path );
+		}
+		if ( extension == ".hdr" )
+		{
+			return _readRadianceHDR( p_path );
 		}
 
-		FloatImage image;
-		image.width	 = static_cast<size_t>( width );
-		image.height = static_cast<size_t>( height );
-		const std::unique_ptr<float, decltype( &std::free )> pixelsOwner( pixels, &std::free );
-		image.pixels.assign( pixelsOwner.get(), pixelsOwner.get() + image.width * image.height * 4 );
-
-		return image;
+		throw std::runtime_error( "Unsupported HDR image format: '" + p_path.string() + "'" );
 	}
 
 } // namespace VTX::Util::Image
