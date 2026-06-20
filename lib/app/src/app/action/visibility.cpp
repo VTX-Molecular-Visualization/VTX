@@ -28,7 +28,7 @@ namespace VTX::App::Action::Visibility
 		}
 	}
 
-	void SetVisibleSelected::execute( const bool p_visible = true )
+	void SetVisibleSelected::execute( const bool p_visible )
 	{
 		REG().view<System::Selection, System::Visibility>().each(
 			[ p_visible ](
@@ -53,11 +53,11 @@ namespace VTX::App::Action::Visibility
 		);
 	}
 
-	 void SetVisibleItem::execute(
+	void SetVisibleItem::execute(
 		const Entity						 p_ent,
 		const Core::Struct::E_SYSTEM_ITEM	 p_item,
-		const Core::Struct::IndexRangeList & p_ranges  = {},
-		const bool							 p_visible = true
+		const Core::Struct::IndexRangeList & p_ranges,
+		const bool							 p_visible
 	)
 	{
 		switch ( p_item )
