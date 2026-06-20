@@ -8,6 +8,14 @@
 namespace VTX::Tool::Mdprep::Actions
 {
 	/**
+	 * @brief Used as an event for when a preparation ends.
+	 */
+	struct PreparationFinished
+	{
+		bool success = false;
+	};
+
+	/**
 	 * @brief Use current settings and currently visible system to create an out-of-the-box system for MD
 	 */
 	class StartPreparation

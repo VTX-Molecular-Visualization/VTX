@@ -4,6 +4,7 @@
 #include <app/constants.hpp>
 #include <app/services.hpp>
 #include <app/system/visibility.hpp>
+#include <app/threading/trigger_event.hpp>
 #include <latch>
 #include <tool/mdprep/actions/jobs.hpp>
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
@@ -19,6 +20,10 @@ namespace VTX::Tool::Mdprep::Actions
 		VTX::App::Threading::ThreadData thrData;
 		std::latch						waiter { 1 };
 	};
+
+	namespace
+	{
+	}
 
 	void StartPreparation::_Del::operator()( _Impl * _ptr ) const noexcept { delete _ptr; }
 
@@ -45,7 +50,7 @@ namespace VTX::Tool::Mdprep::Actions
 			backends::Gromacs::prepareStructure( _impl->thrData, dest, p_instr );
 			VTX::FilePath					  resultDir = p_instr.rootDir / "md_ready";
 			backends::Gromacs::MdInstructions packInstructions;
-			backends::Gromacs::pack( resultDir, p_instr.outputs, packInstructions );
+			backends::Gromacs::pack( resultDir, p_instr.outputs, p_instr.mdInstructions );
 			if ( _impl->thrData.stopToken.stop_requested() )
 			{
 				goto theEnd;
@@ -63,6 +68,7 @@ namespace VTX::Tool::Mdprep::Actions
 					"System written at : {}",
 					fmt::format( fmt::runtime( std::string( App::LOG_LINK_FORMAT ) ), resultDir.string() )
 				);
+				App::HUB().trigger( PreparationFinished { true } );
 			}
 			else
 			{
@@ -70,9 +76,10 @@ namespace VTX::Tool::Mdprep::Actions
 			}
 		}
 
-		// TODO
-
 	theEnd:
+		/**/ {
+			App::Threading::TiggerEvent t { PreparationFinished() };
+		}
 		_impl->waiter.count_down();
 	}
 

@@ -1,5 +1,5 @@
-
 #include "util/sentry.hpp"
+#include <QTimer>
 #include <qpushbutton.h>
 #include <ui/qt/util.hpp>
 #include <util/event_hub.hpp>
@@ -8,6 +8,7 @@
 #include "tool/mdprep/gateway/form_data.hpp"
 #include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/input_checker.hpp"
+#include <tool/mdprep/actions/jobs.hpp>
 //
 #include "tool/mdprep/ui/form.hpp"
 #include "tool/mdprep/ui/form_switch_button.hpp"
@@ -26,8 +27,7 @@
 namespace VTX::Tool::Mdprep::ui
 {
 
-	ScreenForms::ScreenForms( QWidget * p_parent, Gateway::MdParameters & p_data, ValidationSignaler p_validation ) :
-		_dataPtr( &p_data ), _validationSignaler( std::move( p_validation ) )
+	ScreenForms::ScreenForms( QWidget * p_parent, Gateway::MdParameters & p_data ) : _dataPtr( &p_data )
 	{
 		_setupUi( p_parent );
 		_setupSlots();
@@ -212,6 +212,12 @@ namespace VTX::Tool::Mdprep::ui
 		// TODO
 		// Need to subscribe to some event for job updates and finish
 		_jobManager.startPreparation( param );
+		_buttonStart->setDisabled( true );
+	}
+
+	void ScreenForms::_preparationEnd() noexcept
+	{
+		QTimer::singleShot( 0, _buttonStart, [ & ] { _buttonStart->setDisabled( false ); } );
 	}
 
 	void ScreenForms::_setupSlots() noexcept
@@ -220,14 +226,7 @@ namespace VTX::Tool::Mdprep::ui
 			_w_mdEngine, &QComboBox::currentIndexChanged, [ & ]( int p_newIdx ) { this->_updateMdEngine( p_newIdx ); }
 		);
 		QObject::connect( _buttonStart, &QPushButton::clicked, [ & ]() { this->_startPreparation(); } );
+		_preparationEndConnection
+			= App::HUB().connect<Actions::PreparationFinished, &ScreenForms::_preparationEnd>( this );
 	}
-
-	ValidationSignaler::ValidationSignaler( std::function<void( Gateway::JobUpdateIntermediate )> p_ ) :
-		_callback( std::move( p_ ) )
-	{
-	}
-
-	void ValidationSignaler::preparationStarted( Gateway::JobUpdateIntermediate p_ ) noexcept
-	{ _callback( std::move( p_ ) ); }
-
 } // namespace VTX::Tool::Mdprep::ui

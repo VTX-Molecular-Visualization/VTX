@@ -4,6 +4,7 @@
 #include "tool/mdprep/ui/md_engine_factory.hpp"
 #include <functional>
 #include <optional>
+#include <util/event_hub.hpp>
 
 class QComboBox;
 class QWidget;
@@ -12,7 +13,6 @@ namespace VTX::Tool::Mdprep::Gateway
 {
 	struct MdParameters;
 	class EngineJobManager;
-	class JobUpdateIntermediate;
 } // namespace VTX::Tool::Mdprep::Gateway
 
 namespace VTX::Tool::Mdprep::ui
@@ -24,18 +24,6 @@ namespace VTX::Tool::Mdprep::ui
 	class MdEngineSpecificFieldPlacer;
 	enum class E_FIELD_SECTION;
 
-	// Class responsible for signaling that a form is validated
-	class ValidationSignaler
-	{
-	  public:
-		ValidationSignaler( std::function<void( Gateway::JobUpdateIntermediate )> );
-
-		void preparationStarted( Gateway::JobUpdateIntermediate ) noexcept;
-
-	  private:
-		std::function<void( Gateway::JobUpdateIntermediate )> _callback;
-	};
-
 	// Class responsible for setting up the form screens, allowing user to fill it and start the processing
 	class ScreenForms
 	{
@@ -43,14 +31,13 @@ namespace VTX::Tool::Mdprep::ui
 
 	  public:
 		ScreenForms() = delete;
-		ScreenForms( QWidget * p_parent, Gateway::MdParameters &, ValidationSignaler );
+		ScreenForms( QWidget * p_parent, Gateway::MdParameters & );
 
 	  private:
 		using EngineCollection
 			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
 
 		Gateway::MdParameters * _dataPtr = nullptr;
-		ValidationSignaler		_validationSignaler;
 
 		QComboBox *	  _w_mdEngine	 = nullptr;
 		QWidget *	  _formContainer = nullptr;
@@ -64,6 +51,7 @@ namespace VTX::Tool::Mdprep::ui
 		VTX::Tool::Mdprep::Gateway::EngineJobManager		_jobManager;
 		std::optional<VTX::Tool::Mdprep::ui::ReportManager> _reportManager;
 		VTX::Tool::Mdprep::ui::MdEngineFieldPlacer			_formEngine;
+		Util::EventHub::ScopedConnection					_preparationEndConnection;
 
 		void _updateMdEngine( int idx ) noexcept;
 		void _setupUi( QWidget * p_parent ) noexcept;
@@ -71,6 +59,7 @@ namespace VTX::Tool::Mdprep::ui
 		void _setFormBasic() noexcept;
 		void _setFormAdvanced() noexcept;
 		void _startPreparation() noexcept;
+		void _preparationEnd() noexcept;
 		void _setupSlots() noexcept;
 
 		std::function<MdEngineSpecificFieldPlacer( const E_FIELD_SECTION & )> _SpecificFieldPlacerGetter() noexcept;

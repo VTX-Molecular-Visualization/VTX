@@ -1,7 +1,6 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_GATEWAY_SHARED__
 #define __VTX_TOOL_TOOLS_MDPREP_GATEWAY_SHARED__
 
-#include <functional>
 #include <memory>
 #include <string>
 
@@ -26,40 +25,6 @@ namespace VTX::Tool::Mdprep::Gateway
 		bool operator==( const CheckReport & ) const noexcept = default;
 	};
 
-	using CheckReportCallback = std::function<void( const CheckReport & )>;
-
-	/**
-	 * @brief Pack of information from the job output feed.
-	 */
-	struct JobUpdate
-	{
-		std::string tmp;
-	};
-
-	using JobUpdateCallback = std::function<void( const JobUpdate & )>;
-
-	/**
-	 * @brief Class responsible for hoarding job updates and giving them to the subscriber. Can be moved around.
-	 */
-	class JobUpdateIntermediate
-	{
-	  public:
-		JobUpdateIntermediate();
-
-		void subscribe( JobUpdateCallback ) noexcept;
-
-		JobUpdateCallback getUpdateCallback() noexcept;
-
-	  private:
-		class Impl;
-
-		struct Del
-		{
-			void operator()( Impl * ) noexcept;
-		};
-
-		std::unique_ptr<Impl, Del> _impl;
-	};
 } // namespace VTX::Tool::Mdprep::Gateway
 
 #endif

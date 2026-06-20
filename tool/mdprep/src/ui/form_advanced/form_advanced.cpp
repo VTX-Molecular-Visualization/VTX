@@ -28,6 +28,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 
 	using namespace VTX::UI::QT::Util;
 	using namespace VTX::Tool::Mdprep::Gateway;
+
 	namespace
 	{
 		QDoubleSpinBox * addDoubleTextbox(
@@ -50,6 +51,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 			return out;
 		}
 	} // namespace
+
 	FormAdvanced::FormAdvanced(
 		QWidget *					 p_container,
 		SpecificFieldsPlacerCallback p_specificFieldGenerator,
@@ -61,6 +63,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_loadValues( p_defaults );
 		_eventManager.performFirstInputCheck( p_defaults );
 	}
+
 	namespace
 	{
 		template<typename T>
@@ -71,6 +74,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 			VTX::UI::QT::Util::get( p_fields.saveInterval, p_out.saveInterval );
 		}
 	} // namespace
+
 	void FormAdvanced::get( MdParameters & p_out ) const noexcept
 	{
 		p_out.system.boxShapeIdx			= _uiObjects._fieldSystemBoxShape->currentIndex();
@@ -84,8 +88,11 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		extractResultsFromFields( _uiObjects._production, p_out.prod );
 		_fieldsIons.get( p_out.system );
 		for ( auto & it_mdFieldPlacer : _eventManager.fieldPlacers )
+		{
 			it_mdFieldPlacer.apply();
+		}
 	}
+
 	void FormAdvanced::get( FormLayouts & p_out ) const noexcept
 	{
 		p_out.advancedParametersEquilibrationNvt = _uiObjects._equilibrationNvt.layout;
@@ -94,11 +101,13 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		p_out.advancedParametersMinimization	 = _uiObjects._layoutMinimization;
 		p_out.advancedParametersSystemPrepartion = _uiObjects._layoutSystemPreparation;
 	}
+
 	void FormAdvanced::update( const EngineSpecificCommonInformation & p_data ) noexcept
 	{
 		_lastUpdateData = p_data;
 		_fillEngineSpecificData();
 	}
+
 	QWidget * FormAdvanced::_uiSetupContainer( QWidget * p_container ) noexcept
 	{
 		{
@@ -122,6 +131,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 
 		return qInnerScroll;
 	}
+
 	void FormAdvanced::_uiAddSystem( QVBoxLayout * p_target ) noexcept
 	{
 		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, "System Preparation" );
@@ -165,6 +175,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_uiObjects._layoutSystemPreparation = new QFormLayout;
 		p_target->addLayout( _uiObjects._layoutSystemPreparation );
 	}
+
 	void FormAdvanced::_uiAddExpertButton( QVBoxLayout * p_target ) noexcept
 	{
 		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, "" );
@@ -183,6 +194,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_uiObjects._buttonOpenExpertOptions = new QPushButton( "Expert Parameters" );
 		layout->addWidget( _uiObjects._buttonOpenExpertOptions );
 	}
+
 	void FormAdvanced::_uiAddMinimization( QVBoxLayout * p_target ) noexcept
 	{
 		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, "Minimization" );
@@ -208,6 +220,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_fieldPlacer( 1 ) = _specificFieldGenerator( E_FIELD_SECTION::minimization );
 		_fieldPlacer( 1 ).placeFields( _uiObjects._layoutMinimization );
 	}
+
 	void FormAdvanced::_uiAddStep( QVBoxLayout * p_target, const char * p_header, UiData::FieldSet & p_field ) noexcept
 	{
 		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, p_header );
@@ -223,10 +236,10 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		VTX::Tool::Mdprep::ui::get( E_COMMON_FIELDS_UINT64::coordinateSaveInterval, label, p_field.saveInterval );
 		p_field.layout->addRow( label, p_field.saveInterval );
 	}
+
 	MdEngineSpecificFieldPlacer & FormAdvanced::_fieldPlacer( const size_t & p_idx ) noexcept
-	{
-		return _eventManager.fieldPlacers.at( p_idx );
-	}
+	{ return _eventManager.fieldPlacers.at( p_idx ); }
+
 	void FormAdvanced::_createAndPlaceUiItems( QWidget * p_container ) noexcept
 	{
 		QVBoxLayout * qLayoutMain = new QVBoxLayout( _uiSetupContainer( p_container ) );
@@ -245,8 +258,10 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_fieldPlacer( 4 ) = _specificFieldGenerator( E_FIELD_SECTION::production );
 		_fieldPlacer( 4 ).placeFields( _uiObjects._production.layout );
 
+		return; // TODO implement expert button (just open the template ?)
 		_uiAddExpertButton( qLayoutMain );
 	}
+
 	namespace
 
 	{
@@ -258,10 +273,12 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 			p_ui.saveInterval->setText( QString::number( p_data.saveInterval ) );
 		}
 	} // namespace
+
 	void FormAdvanced::_loadValues( const MdParameters & p_defaults ) noexcept
 	{
 		_uiObjects._fieldMinimizationStepNumber->setText( QString::number( p_defaults.minimization.stepNumber ) );
-		_uiObjects._fieldMinimizationStopThreshold->setValue( p_defaults.minimization.energyBreakpoint
+		_uiObjects._fieldMinimizationStopThreshold->setValue(
+			p_defaults.minimization.energyBreakpoint
 
 		);
 		_uiObjects._fieldMinimizationStepSize->setValue( p_defaults.minimization.stepSize );
@@ -269,40 +286,55 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		loadStepValue( _uiObjects._equilibrationNpt, p_defaults.npt );
 		loadStepValue( _uiObjects._production, p_defaults.prod );
 	}
+
 	namespace
 	{
 		void setMatchingValue( QComboBox * p_field, const std::string & p_value )
 		{
 			auto idx = p_field->findText( QString::fromStdString( p_value ) );
 			if ( idx >= 0 )
+			{
 				p_field->setCurrentIndex( idx );
+			}
 		}
+
 		void setMatchingValue( QComboBox * p_field, const int & p_value )
 		{
 			if ( p_value < p_field->count() )
+			{
 				p_field->setCurrentIndex( p_value );
+			}
 		}
 	} // namespace
+
 	void FormAdvanced::_fillEngineSpecificData() noexcept
 	{
 		_uiObjects._fieldSystemBoxShape->clear();
 		for ( auto & it_shapeStr : _lastUpdateData.boxShapeCollection )
+		{
 			_uiObjects._fieldSystemBoxShape->addItem( QString::fromStdString( it_shapeStr ) );
+		}
 		setMatchingValue( _uiObjects._fieldSystemBoxShape, static_cast<int>( _parameters().system.boxShapeIdx ) );
 
 		_uiObjects._fieldSystemBioForceField->clear();
 		for ( auto & it_bioFfStr : _lastUpdateData.bioForcefieldCollection )
+		{
 			_uiObjects._fieldSystemBioForceField->addItem( QString::fromStdString( it_bioFfStr ) );
+		}
 		setMatchingValue( _uiObjects._fieldSystemBioForceField, _parameters().system.forcefieldBio );
 
 		_uiObjects._fieldSystemWaterModel->clear();
 		for ( auto & it_waterModelStr : _lastUpdateData.waterModels )
+		{
 			_uiObjects._fieldSystemWaterModel->addItem( QString::fromStdString( it_waterModelStr ) );
+		}
 		setMatchingValue( _uiObjects._fieldSystemWaterModel, _parameters().system.waterModel );
 
-		_fieldPlacer( 0 ).update( EngineSpecificCommonInformationFieldUpdate {
-			.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD::boxShape,
-			.newValue = static_cast<size_t>( _uiObjects._fieldSystemBoxShape->currentIndex() ) } );
+		_fieldPlacer( 0 ).update(
+			EngineSpecificCommonInformationFieldUpdate {
+				.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD::boxShape,
+				.newValue = static_cast<size_t>( _uiObjects._fieldSystemBoxShape->currentIndex() ) }
+		);
 
 		_eventManager.connectBioForceField( _uiObjects._fieldSystemBioForceField, _uiObjects._systemReportLayout );
 		_eventManager.connectBoxShape( _uiObjects._fieldSystemBoxShape );

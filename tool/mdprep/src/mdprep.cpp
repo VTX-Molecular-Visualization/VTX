@@ -66,13 +66,6 @@ namespace VTX::Tool::Mdprep
 
 		VTX::Tool::Mdprep::Gateway::MdParameters		  _paramaeters;
 		std::optional<VTX::Tool::Mdprep::ui::ScreenForms> _screen;
-		std::optional<VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate>
-			__tmp; // Once the job progress view screen is done, it should be removed
-
-		void _preparationStarted( VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate p_ )
-		{
-			__tmp.emplace( std::move( p_ ) ); // TMP
-		}
 
 	  public:
 		MainWindow( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Molecular Dynamics Preparation" )
@@ -86,13 +79,7 @@ namespace VTX::Tool::Mdprep
 
 			setWindowState( Qt::WindowState::WindowActive );
 			resize( PREFERRED_SIZE );
-			_screen.emplace(
-				screenWidget,
-				_paramaeters,
-				VTX::Tool::Mdprep::ui::ValidationSignaler {
-					[ & ]( VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate p_ )
-					{ this->_preparationStarted( std::move( p_ ) ); } }
-			);
+			_screen.emplace( screenWidget, _paramaeters );
 		}
 	};
 
