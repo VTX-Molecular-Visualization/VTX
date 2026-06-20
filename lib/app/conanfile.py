@@ -65,7 +65,7 @@ class VTXAppRecipe(ConanFile):
         self.requires("vtx_io/1.0")
         self.requires("vtx_core/1.0")
         if self.options.renderer:
-            self.requires("vtx_renderer/1.0")
+            self.requires("vtx_renderer/1.0", transitive_header=True) # Need for transitive header as action/visibility ends up including renderer stuff
         if self.options.python_binding:
             self.requires("vtx_python_binding/1.0")
         self.requires("catch2/3.15.0")
