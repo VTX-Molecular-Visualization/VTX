@@ -45,7 +45,7 @@ class VTXRecipe(ConanFile):
     default_options = {
         "version": "0.0.0",
         "tool_example": False,
-        "tool_mdprep": False,
+        "tool_mdprep": True,
         "tool_topology_editor": True,
         "local_pdb100": False,
         "ui_qt": True,

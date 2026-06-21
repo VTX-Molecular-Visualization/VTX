@@ -19,7 +19,7 @@ on:
       tool_mdprep:
         description: 'Include tool Mdprep'
         required: false
-        default: false
+        default: true
         type: boolean
       tool_topology_editor:
         description: 'Include tool Topology Editor'
