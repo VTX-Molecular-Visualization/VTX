@@ -118,7 +118,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.uniform( "FogNear", FOG_NEAR_DEFAULT, std::pair { FOG_NEAR_MIN, FOG_NEAR_MAX } )
 				.uniform( "FogFar", FOG_FAR_DEFAULT, std::pair { FOG_FAR_MIN, FOG_FAR_MAX } )
 				.uniform( "FogDensity", FOG_DENSITY_DEFAULT, std::pair { FOG_DENSITY_MIN, FOG_DENSITY_MAX } )
-				.uniform( "SSAOScale", SSAO_SCALE_DEFAULT, std::pair { SSAO_SCALE_MIN, SSAO_SCALE_MAX } )
+				.uniform( "SSAOScale", 1.f, std::pair { SSAO_SCALE_MIN, SSAO_SCALE_MAX } )
 				.uniform( "EnvironmentEnabled", uint32_t( 0 ) )
 				.uniform( "EnvironmentExposure", 1.f )
 				.uniform( "EnvironmentRotation", 0.f )
@@ -148,7 +148,7 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( fog.near );
 			buffer.write( fog.far );
 			buffer.write( p_fog ? fog.density : 0.f );
-			buffer.write( p_ssao ? p_ssao->scale : SSAO_SCALE_DEFAULT );
+			buffer.write( p_ssao ? p_ssao->scale : 1.f );
 			buffer.write( uint32_t( p_config.environmentPath.has_value() ) );
 			buffer.write( p_config.environmentExposure );
 			buffer.write( p_config.environmentRotation );

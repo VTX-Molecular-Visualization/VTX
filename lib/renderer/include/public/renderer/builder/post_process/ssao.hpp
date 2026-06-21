@@ -15,7 +15,7 @@ namespace VTX::Renderer
 	constexpr float SSAO_RADIUS_DEFAULT	   = 0.5f;
 	constexpr float SSAO_RADIUS_MIN		   = 0.1f;
 	constexpr float SSAO_RADIUS_MAX		   = 20.f;
-	constexpr float SSAO_SCALE_DEFAULT	   = 1.f;
+	constexpr float SSAO_SCALE_DEFAULT	   = 2.f;
 	constexpr float SSAO_SCALE_MIN		   = 0.25f;
 	constexpr float SSAO_SCALE_MAX		   = 4.f;
 	constexpr float BLUR_SIZE_DEFAULT	   = 17.f;
