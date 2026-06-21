@@ -775,6 +775,7 @@ namespace VTX::Renderer::Builder
 			buffer.write( Vec2i( int( p_width ), int( p_height ) ) );
 			buffer.write( Vec2i() );
 			buffer.write( uint( p_camera.camera.projection == PROJECTION::PERSPECTIVE ) );
+			buffer.write( std::tan( Util::Math::radians( p_camera.camera.fov ) * 0.5f ) );
 			buffer.close();
 
 			p_context.setBuffer( { "Camera" }, buffer );

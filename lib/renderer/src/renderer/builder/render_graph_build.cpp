@@ -50,7 +50,8 @@ namespace VTX::Renderer::Builder
 			  makeUniform( "ClipInfos", Vec4f( VEC4F_ZERO ) ),
 			  makeUniform( "Resolution", Vec2i { 0, 0 } ),
 			  makeUniform( "MousePosition", Vec2i { 0, 0 } ),
-			  makeUniform( "IsPerspective", uint32_t( 1 ) ) }
+			  makeUniform( "IsPerspective", uint32_t( 1 ) ),
+			  makeUniform( "TanHalfFov", 1.f ) }
 		);
 
 		g.buffer(

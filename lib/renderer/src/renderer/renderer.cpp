@@ -72,7 +72,8 @@ namespace VTX::Renderer
 			_graph.getPasses(),
 			_graph.getResources().textures
 		);
-		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COMMAND_BUFFER | Cache::E_RENDERER_DIRTY::NEED_UPDATE;
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COMMAND_BUFFER | Cache::E_RENDERER_DIRTY::CAMERA
+						  | Cache::E_RENDERER_DIRTY::NEED_UPDATE;
 	}
 
 	void Renderer::clear()

@@ -23,6 +23,9 @@ namespace VTX::UI::QT::Widget::Library
 		void _update( Entity ) override;
 
 	  private:
+		// Background.
+		QPointer<HideableGroupBox> _groupboxBackground;
+
 		// Shading.
 		QPointer<HideableGroupBox> _groupboxShading;
 		QPointer<QComboBox>		   _comboBoxShadingMode;

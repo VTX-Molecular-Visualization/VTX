@@ -1,5 +1,7 @@
 #include "ui/qt/widget/library/graphics_config.hpp"
 #include "ui/qt/helper.hpp"
+#include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <app/action/graphics_config.hpp>
@@ -41,6 +43,37 @@ namespace VTX::UI::QT::Widget::Library
 
 		setTitle( "Edit render settings" );
 
+		// Background.
+		_groupboxBackground = new HideableGroupBox( "Background", presetGroupBox() );
+		_groupboxBackground->setChecked( true );
+		_groupboxBackground->freeze( true );
+		addWidget( _groupboxBackground );
+
+		_colorPickerBackground = new ColorPicker( _groupboxBackground );
+		_groupboxBackground->addWidget( _colorPickerBackground );
+		_colorPickerBackground->setText( "Color" );
+
+		_groupboxBackground->addWidget( new QLabel( "Environment map", _groupboxBackground ) );
+		auto * const environmentPathWidget = new QWidget( _groupboxBackground );
+		auto * const environmentPathLayout = new QHBoxLayout( environmentPathWidget );
+		environmentPathLayout->setContentsMargins( 0, 0, 0, 0 );
+		_lineEnvironmentPath = new QLineEdit( environmentPathWidget );
+		_lineEnvironmentPath->setReadOnly( true );
+		_buttonEnvironmentBrowse = new QPushButton( environmentPathWidget );
+		_buttonEnvironmentBrowse->setIcon( STYLE().iconFromCodepoint( Style::Icons::OPEN ) );
+		_buttonEnvironmentBrowse->setToolTip( "Open environment map" );
+		_buttonEnvironmentBrowse->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Preferred );
+		_buttonEnvironmentBrowse->setMinimumWidth( 0 );
+		_buttonEnvironmentClear = new QPushButton( environmentPathWidget );
+		_buttonEnvironmentClear->setIcon( STYLE().iconFromCodepoint( Style::Icons::DELETE ) );
+		_buttonEnvironmentClear->setToolTip( "Remove environment map" );
+		_buttonEnvironmentClear->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Preferred );
+		_buttonEnvironmentClear->setMinimumWidth( 0 );
+		environmentPathLayout->addWidget( _lineEnvironmentPath );
+		environmentPathLayout->addWidget( _buttonEnvironmentBrowse );
+		environmentPathLayout->addWidget( _buttonEnvironmentClear );
+		_groupboxBackground->addWidget( environmentPathWidget );
+
 		// Shading.
 		_groupboxShading = new HideableGroupBox( "Lighting", presetGroupBox() );
 		_groupboxShading->setChecked( true );
@@ -56,26 +89,9 @@ namespace VTX::UI::QT::Widget::Library
 			_comboBoxShadingMode->addItem( SHADING_STR[ i ].data() );
 		}
 
-		_colorPickerBackground = new ColorPicker( _groupboxShading );
-		_groupboxShading->addWidget( _colorPickerBackground );
-		_colorPickerBackground->setText( "Background" );
-
 		_colorPickerLight = new ColorPicker( _groupboxShading );
 		_groupboxShading->addWidget( _colorPickerLight );
 		_colorPickerLight->setText( "Light" );
-
-		_groupboxShading->addWidget( new QLabel( "Environment map", _groupboxShading ) );
-		auto * const environmentPathWidget = new QWidget( _groupboxShading );
-		auto * const environmentPathLayout = new QHBoxLayout( environmentPathWidget );
-		environmentPathLayout->setContentsMargins( 0, 0, 0, 0 );
-		_lineEnvironmentPath = new QLineEdit( environmentPathWidget );
-		_lineEnvironmentPath->setReadOnly( true );
-		_buttonEnvironmentBrowse = new QPushButton( "Browse...", environmentPathWidget );
-		_buttonEnvironmentClear	 = new QPushButton( "Clear", environmentPathWidget );
-		environmentPathLayout->addWidget( _lineEnvironmentPath );
-		environmentPathLayout->addWidget( _buttonEnvironmentBrowse );
-		environmentPathLayout->addWidget( _buttonEnvironmentClear );
-		_groupboxShading->addWidget( environmentPathWidget );
 
 		_sliderSpecularFactor = new EditableSlider( Qt::Orientation::Horizontal, _groupboxShading );
 		_labelSpecularFactor  = new QLabel( "Specular factor", _groupboxShading );

@@ -9,6 +9,7 @@ struct Camera
     ivec2 resolution;
     ivec2 mousePosition;    
     uint isCameraPerspective;
+    float cameraTanHalfFov;
 };
 
 layout( std140, binding = 15 ) uniform UniformsCamera
