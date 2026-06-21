@@ -53,29 +53,30 @@ namespace VTX::App::Threading
 		void wait();
 		void stop();
 
-		bool	  isFinished() const { return _finished.load( std::memory_order_relaxed ); }
-		bool	  isManuallyStopped() const { return _stopped; }
+		bool isFinished() const { return _finished.load( std::memory_order_relaxed ); }
+
+		bool isManuallyStopped() const { return _stopped; }
+
 		inline ID getId() const { return _thread.get_id(); }
 
 		inline float getProgress() const { return _progress.load( std::memory_order_relaxed ); }
-		void		 setProgress( const float p_value );
+
+		void setProgress( const float p_value );
 
 		std::string getProgressText() const;
 		void		setProgressText( const std::string & p_text );
 
 		inline bool silent() const { return _silent; }
+
 		inline void setSilent( const bool p_silent ) { _silent = p_silent; }
 
 		template<typename T>
 		T get() const
-		{
-			return std::any_cast<T>( _data );
-		}
+		{ return std::any_cast<T>( _data ); }
+
 		template<typename T>
 		void set( const T & p_data )
-		{
-			_data = p_data;
-		}
+		{ _data = p_data; }
 
 	  private:
 		ThreadManager & _manager;
@@ -97,5 +98,14 @@ namespace VTX::App::Threading
 	};
 
 	using OptionalThreadReference = std::optional<std::reference_wrapper<BaseThread>>;
+
+	/**
+	 * @brief Short-hand for types that are usually used together
+	 */
+	struct ThreadData
+	{
+		Util::StopToken			stopToken;
+		OptionalThreadReference thrRef;
+	};
 } // namespace VTX::App::Threading
 #endif

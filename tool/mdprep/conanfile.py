@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
@@ -35,6 +36,29 @@ def _packaged_runtime_root(p_conanFile: ConanFile) -> Path | None:
     return None
 
 
+def _flatten_gmx_config_subdir(dest_root: str) -> None:
+    # MSVC multi-config generators stage the gmx binary under an extra <config>
+    # subdirectory (Release/Debug/...); single-config generators (Linux) don't.
+    # Flatten it so the packaged runtime layout is identical across platforms and
+    # matches the path hardcoded in the tool (external/tools/mdprep/gromacs/gmx.exe).
+    gromacs_bin_dir = Path(dest_root) / "external" / "tools" / "mdprep" / "gromacs"
+    if not gromacs_bin_dir.is_dir():
+        return
+    for config in ("Release", "Debug", "RelWithDebInfo", "MinSizeRel"):
+        config_dir = gromacs_bin_dir / config
+        if not config_dir.is_dir():
+            continue
+        for entry in config_dir.iterdir():
+            target = gromacs_bin_dir / entry.name
+            if target.exists():
+                if target.is_dir():
+                    shutil.rmtree(target)
+                else:
+                    target.unlink()
+            shutil.move(str(entry), str(target))
+        config_dir.rmdir()
+
+
 def _copy_gromacs_runtime(p_conanFile: ConanFile, dest_root: str) -> None:
     gromacs_root = p_conanFile.dependencies["gromacs"].package_folder
     copy(
@@ -49,6 +73,7 @@ def _copy_gromacs_runtime(p_conanFile: ConanFile, dest_root: str) -> None:
         os.path.join(gromacs_root, "data", "tools", "mdprep", "gromacs", "top"),
         os.path.join(dest_root, "data", "tools", "mdprep", "gromacs", "top"),
     )
+    _flatten_gmx_config_subdir(dest_root)
 
 
 def do_gromacs_copies(p_conanFile: ConanFile) -> None:
@@ -82,7 +107,7 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_python_binding/1.0")
         self.requires("re2/20240702")
-        self.requires("gromacs/2026.0")
+        self.requires("gromacs/2026.0.1")
         self.requires("catch2/3.15.0")
 
     def generate(self):
@@ -95,7 +120,7 @@ class VTXToolMdprepRecipe(ConanFile):
         tc.cache_variables["VTX_PYTHON_BINDING_RUNTIME_ROOT"] = python_binding_conf.get("user.python_binding:runtime_root")
         qt_conf = self.dependencies["vtx_ui_qt"].conf_info
         tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_conf.get("user.ui_qt:runtime_root")
-        tc.cache_variables["VTX_UI_QT"] = 1
+        tc.cache_variables["VTX_UI_QT"] = "1"
         tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = _cmake_path(executable_folder(self))
         tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")
         tc.cache_variables["VTX_PYTHON_BINDING"] = app_conf.get("user.app:python_binding")
@@ -116,8 +141,8 @@ class VTXToolMdprepRecipe(ConanFile):
         cmake.configure()
         cmake.build()
         if self.options.test == True:
-            cmake.ctest(["--output-on-failure"])
-        
+            cmake.ctest([ "--output-on-failure"])
+
     def package(self):
         cmake = CMake(self)
         cmake.install()

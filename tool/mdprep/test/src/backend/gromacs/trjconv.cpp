@@ -3,8 +3,6 @@
 //
 #include <tool/mdprep/backends/gromacs/trjconv.hpp>
 //
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
-//
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include <tool/mdprep/backends/gromacs/util.hpp>
 //
@@ -31,7 +29,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - trjconv - prepareJob", "[prepareJob][trjconv]" )
 	CHECK( in.outputGro.parent_path() == f.jobDir );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - trjconv - prepareJob", "[convert][trjconv]" )
+TEST_CASE( "VTX_TOOL_MdPrep - trjconv - convert", "[convert][trjconv]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	TrjconvInstructions in;
@@ -52,6 +50,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - trjconv - prepareJob", "[convert][trjconv]" )
 	expectedOutput.arguments.push_back( in.outputGro.string() );
 	expectedOutput.expectedOutputFilesIndexes.push_back( expectedOutput.arguments.size() - 1 );
 	expectedOutput.arguments.push_back( "-center" );
+	expectedOutput.arguments.push_back( "-center-group" );
+	expectedOutput.arguments.push_back( "Protein" );
+	expectedOutput.arguments.push_back( "-output-group" );
+	expectedOutput.arguments.push_back( "System" );
 	expectedOutput.arguments.push_back( "-pbc" );
 	expectedOutput.arguments.push_back( "res" );
 	expectedOutput.arguments.push_back( "-ur" );
@@ -63,7 +65,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - trjconv - prepareJob", "[convert][trjconv]" )
 	CHECK( actualOutput.expectedOutputFilesIndexes == expectedOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - trjconv - prepareJob", "[submitGromacsJob][trjconv][interactive]" )
+TEST_CASE( "VTX_TOOL_MdPrep - trjconv + submitGromacsJob", "[submitGromacsJob][trjconv]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	TrjconvInstructions in;
@@ -83,6 +85,15 @@ TEST_CASE( "VTX_TOOL_MdPrep - trjconv - prepareJob", "[submitGromacsJob][trjconv
 	submitGromacsJob( VTX::Tool::Mdprep::executableDirectory() / defaultGmxBinaryRelativePath(), jobData );
 
 	checkJobResults( jobData );
+	std::string outputs { "Here is the stdout and stderr : \n" };
+	outputs += jobData.channelsLocker.open()->stdout_;
+	outputs += jobData.channelsLocker.open()->stderr_;
+	outputs += "trjconv job errors : \n";
+	for ( auto & err : jobData.report.errors )
+	{
+		outputs += err + "\n";
+	}
+	INFO( outputs );
 	CHECK( jobData.report.errorOccured == false );
 	CHECK( jobData.report.finished == true );
 }

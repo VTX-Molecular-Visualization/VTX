@@ -3,7 +3,6 @@
 
 #include <filesystem>
 #include <functional>
-#include <optional>
 #include <string>
 #include <util/datalocker.hpp>
 #include <vector>
@@ -11,13 +10,12 @@ namespace fs = std::filesystem;
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
-	class Inputs;
-
 	struct Channels
 	{
 		std::string stdout_;
 		std::string stderr_;
 	};
+
 	struct JobReport
 	{
 		bool					 finished	  = false;
@@ -40,20 +38,21 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		std::vector<std::string> arguments;
 		std::vector<size_t> expectedOutputFilesIndexes; // Meant to point toward specific argument indexes that hold
 														// path of output files to check
-		VTX::Util::DataLocker<Channels> channelsLocker;
-		JobReport						report;
-		std::optional<Inputs>
-			interactiveSettings; // If the Inputs class is instanciated, the process is expected to be interactive.
+		VTX::Util::DataLocker<Channels>													  channelsLocker;
+		JobReport																		  report;
 		std::function<void( const fs::path &, GromacsJobData &, CumulativeOuputFiles & )> postJobRoutine
 			= []( const fs::path &, GromacsJobData &, CumulativeOuputFiles & ) {};
 		bool operator==( const GromacsJobData & ) const noexcept = default;
 	};
 
-	// Execute gromacs with input arguments then check if job issued and error
-	//   Assumes relevant arguments have been provided and checked beforehand.
-	//   Assumes gromacs have been instructed on where to find data files (env. var. GMXLIB) as well.
-	//   Error issued by the job can be a specific string in output channels or if expected output files doesn't exists
-	//   or are empty.
+	/**
+	 * @brief Execute gromacs with input arguments then check if job issued and error
+	  Assumes relevant arguments have been provided and checked beforehand.
+	  Assumes gromacs have been instructed on where to find data files (env. var. GMXLIB) as well.
+	  Error issued by the job can be a specific string in output channels or if expected output files doesn't exists
+	  or are empty.
+	  Suspends the execution until the job is finished or if the job failed to start.
+	 */
 	void submitGromacsJob( const fs::path & p_gmx_exe, GromacsJobData & p_args );
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 

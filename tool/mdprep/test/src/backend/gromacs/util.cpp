@@ -1,5 +1,4 @@
 #include <fstream>
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
 //
 #include "fixture.hpp"
 #include <algorithm>
@@ -19,6 +18,15 @@ TEST_CASE( "VTX_TOOL_MdPrep - executableDirectory", "[executableDirectory]" )
 
 	const fs::path dir = VTX::Tool::Mdprep::executableDirectory();
 	CHECK( fs::is_directory( dir ) );
+}
+
+TEST_CASE( "VTX_TOOL_MdPrep - executable", "[executable]" )
+{
+	VTX::test::setup_env f;
+
+	const fs::path exe = VTX::Tool::Mdprep::executableDirectory()
+						 / VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryRelativePath();
+	CHECK( fs::exists( exe ) );
 }
 
 TEST_CASE( "VTX_TOOL_MdPrep - listForcefields empty_dir", "[listForcefields][empty_dir]" )
@@ -49,7 +57,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - listForcefields top_dir", "[listForcefields][top_d
 	//  this test is designed to be still true if gromacs maintainers add forcefields.
 	//  therefore,the size of the collection shall not be tested
 	auto ffs = VTX::Tool::Mdprep::backends::Gromacs::listForcefields(
-		VTX::Tool::Mdprep::executableDirectory() / VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryRelativePath()
+		VTX::Tool::Mdprep::executableDirectory()
+		/ VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryRelativePath()
 	);
 	CHECK( !ffs.empty() );
 	CHECK( is_ff_in_list( ffs, "amber03" ) );
@@ -112,13 +121,18 @@ TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript", "[pdb2gmx][Pdb2gmxInputId
 				set.insert( id );
 			}
 			if ( duplicateFound )
+			{
 				break;
+			}
 		}
 		if ( duplicateFound )
+		{
 			break;
+		}
 	}
 	CHECK( duplicateFound == false );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - empty", "[pdb2gmx][parsePdb2gmxUserScript][empty]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -196,6 +210,7 @@ TEST_CASE(
 
 	CHECK( args == expectedArgs );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - value_lower", "[pdb2gmx][parsePdb2gmxUserScript][value_lower]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -207,6 +222,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - value_lower", "[pdb2gmx][
 
 	CHECK( args == expectedArgs );
 }
+
 void data_each( const char *& s, VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputs & args ) noexcept
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -256,6 +272,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - error 1", "[pdb2gmx][pars
 	CHECK( report.error );
 	CHECK( report.message.empty() == false );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - error 2", "[pdb2gmx][parsePdb2gmxUserScript][error]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -267,6 +284,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - error 2", "[pdb2gmx][pars
 	CHECK( report.error );
 	CHECK( report.message.empty() == false );
 }
+
 TEST_CASE(
 	"VTX_TOOL_MdPrep - parsePdb2gmxUserScript - error bad residue name",
 	"[pdb2gmx][parsePdb2gmxUserScript][error]"
@@ -283,6 +301,7 @@ TEST_CASE(
 	CHECK( report.error );
 	CHECK( report.message.empty() == false );
 }
+
 TEST_CASE(
 	"VTX_TOOL_MdPrep - parsePdb2gmxUserScript - chain name too long",
 	"[pdb2gmx][parsePdb2gmxUserScript][error]"
@@ -299,20 +318,25 @@ TEST_CASE(
 	CHECK( report.error );
 	CHECK( report.message.empty() == false );
 }
+
 namespace
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
+
 	void add_file( GromacsJobData & p_jd, const char * p_name ) noexcept
 	{
 		fs::path dir = VTX::Tool::Mdprep::executableDirectory() / "data" / "mdprep" / "checkJobResults";
 		if ( fs::is_directory( dir ) == false )
+		{
 			fs::create_directories( dir );
+		}
 		fs::path file = dir / p_name;
 		std::ofstream( file.string() ) << "Some data\n";
 		p_jd.arguments.push_back( file.string() );
 		p_jd.expectedOutputFilesIndexes.push_back( p_jd.arguments.size() - 1 );
 	}
 } // namespace
+
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - empty", "[checkJobResults]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -322,6 +346,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - empty", "[checkJobResults]" )
 	CHECK( jd.report.errorOccured == false );
 	CHECK( jd.report.errors.empty() == !jd.report.errorOccured );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - all ok", "[checkJobResults][files]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -333,6 +358,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - all ok", "[checkJobResults][file
 	CHECK( jd.report.errorOccured == false );
 	CHECK( jd.report.errors.empty() == !jd.report.errorOccured );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - one file missing", "[checkJobResults][files]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -346,6 +372,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - one file missing", "[checkJobRes
 	CHECK( jd.report.errorOccured == true );
 	CHECK( jd.report.errors.size() == 1 );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no expected output", "[checkJobResults][files]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -359,6 +386,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no expected output", "[checkJobR
 	CHECK( jd.report.errorOccured == false );
 	CHECK( jd.report.errors.empty() == !jd.report.errorOccured );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no error in channel", "[checkJobResults][channels]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -372,6 +400,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no error in channel", "[checkJob
 	CHECK( jd.report.errorOccured == false );
 	CHECK( jd.report.errors.empty() == !jd.report.errorOccured );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no error in channel but trap", "[checkJobResults][channels]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -385,6 +414,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no error in channel but trap", "
 	CHECK( jd.report.errorOccured == false );
 	CHECK( jd.report.errors.empty() == !jd.report.errorOccured );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - error in channel", "[checkJobResults][channels]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -400,6 +430,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - error in channel", "[checkJobRes
 	CHECK( jd.report.errorOccured == true );
 	CHECK( jd.report.errors.empty() == !jd.report.errorOccured );
 }
+
 namespace
 {
 	std::string cleanErrMsg( const char * p_str )
@@ -407,12 +438,17 @@ namespace
 		std::string out( p_str );
 
 		while ( out.starts_with( '\n' ) || out.starts_with( '\r' ) || out.starts_with( '\t' ) )
+		{
 			out.erase( out.begin() );
+		}
 		while ( out.ends_with( '\n' ) || out.ends_with( '\r' ) )
+		{
 			out.pop_back();
+		}
 		return out;
 	}
 } // namespace
+
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving err msg", "[checkJobResults][channels][errormsg]" )
 {
 	const char * preFiller	= "Some stuff blablaa\nMore stuff\n";
@@ -433,6 +469,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving err msg", "[checkJobR
 	REQUIRE( jd.report.errors.empty() == !jd.report.errorOccured );
 	CHECK( jd.report.errors[ 0 ] == cleanErrMsg( errMsg ) );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - retrieving multiple err msg", "[checkJobResults][channels][errormsg]" )
 {
 	const char * preFiller_1  = "Some stuff blablaa\nMore stuff\n";

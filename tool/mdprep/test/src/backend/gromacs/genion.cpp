@@ -1,10 +1,7 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <re2/re2.h>
 //
 #include <tool/mdprep/backends/gromacs/genion.hpp>
-//
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
 //
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include <tool/mdprep/backends/gromacs/util.hpp>
@@ -67,12 +64,15 @@ TEST_CASE( "VTX_TOOL_MdPrep - genion - convert", "[convert][genion]" )
 	expectedOutput.arguments.push_back( "-nq" );
 	expectedOutput.arguments.push_back( std::to_string( in.nq ) );
 	expectedOutput.arguments.push_back( "-neutral" );
+	expectedOutput.arguments.push_back( "-group" );
+	expectedOutput.arguments.push_back( "SOL" );
 
 	convert( in, actualOutput );
 
 	CHECK( expectedOutput.arguments == actualOutput.arguments );
 	CHECK( expectedOutput.expectedOutputFilesIndexes == actualOutput.expectedOutputFilesIndexes );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - genion - convert - conc", "[convert][genion]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -110,6 +110,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - genion - convert - conc", "[convert][genion]" )
 	expectedOutput.arguments.push_back( "-neutral" );
 	expectedOutput.arguments.push_back( "-conc" );
 	expectedOutput.arguments.push_back( std::to_string( in.conc.value() ) );
+	expectedOutput.arguments.push_back( "-group" );
+	expectedOutput.arguments.push_back( "SOL" );
 
 	convert( in, actualOutput );
 
@@ -117,7 +119,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - genion - convert - conc", "[convert][genion]" )
 	CHECK( expectedOutput.expectedOutputFilesIndexes == actualOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - genion - submitGromacsJob", "[submitGromacsJob][genion]" )
+TEST_CASE( "VTX_TOOL_MdPrep - genion + submitGromacsJob", "[submitGromacsJob][genion]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GenionInstructions in;
@@ -141,6 +143,11 @@ TEST_CASE( "VTX_TOOL_MdPrep - genion - submitGromacsJob", "[submitGromacsJob][ge
 	submitGromacsJob( VTX::Tool::Mdprep::executableDirectory() / defaultGmxBinaryRelativePath(), jobData );
 
 	checkJobResults( jobData );
+	std::string outputs { "Here is the stdout and stderr : \n" };
+	outputs += jobData.channelsLocker.open()->stdout_;
+	outputs += jobData.channelsLocker.open()->stderr_;
+	CAPTURE( outputs );
+	INFO( outputs );
 	CHECK( jobData.report.errorOccured == false );
 	CHECK( jobData.report.finished == true );
 }

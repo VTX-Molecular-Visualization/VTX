@@ -5,8 +5,8 @@
 #include <array>
 #include <optional>
 #include <string>
-#include <vector>
 #include <util/types.hpp>
+#include <vector>
 
 class QFormLayout;
 
@@ -50,14 +50,20 @@ namespace VTX::Tool::Mdprep::Gateway
 		double	 dt			  = 0.002;
 		uint64_t saveInterval = 100;
 	};
-	// Hold parameters for minimization step
+
+	/**
+	 * @brief Hold parameters for minimization step
+	 */
 	struct MinimizationData
 	{
 		double	 energyBreakpoint = 1000.0;
 		double	 stepSize		  = 0.01;
 		uint64_t stepNumber		  = 50000;
 	};
-	// Hold data used to prepare the system
+
+	/**
+	 * @brief Hold data used to prepare the system
+	 */
 	struct SystemData
 	{
 		std::string forcefieldBio;
@@ -71,7 +77,9 @@ namespace VTX::Tool::Mdprep::Gateway
 		int8_t		cationCharge = +1;
 	};
 
-	// Datastructure needed for backend communication
+	/**
+	 * @brief Datastructure needed for backend communication. Meant to be MD-engine agnostic.
+	 */
 	struct MdParameters
 	{
 		SystemData			 system;
@@ -80,6 +88,7 @@ namespace VTX::Tool::Mdprep::Gateway
 		MdParametersStepData npt;
 		MdParametersStepData prod { .nsteps = 250000000 };
 	};
+
 	struct MdBasicDataSample
 	{
 		double			   durationEquilibrationNvt = 100.0;
@@ -89,6 +98,7 @@ namespace VTX::Tool::Mdprep::Gateway
 		double			   durationProduction		= 500.0;
 		E_MD_DURATION_UNIT unitProduction			= E_MD_DURATION_UNIT::nanoSeconds;
 	};
+
 	// Data structure meant to update basic parameters form static informations using data from advanced parameters
 	struct MdAdvancedDataSample
 	{

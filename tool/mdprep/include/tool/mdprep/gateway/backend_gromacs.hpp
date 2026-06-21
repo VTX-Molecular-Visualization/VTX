@@ -1,6 +1,7 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_GATEWAY_BACKEND_GROMACS__
 #define __VTX_TOOL_TOOLS_MDPREP_GATEWAY_BACKEND_GROMACS__
 
+#include <app/threading/base_thread.hpp>
 #include <array>
 #include <optional>
 #include <stack>
@@ -13,10 +14,12 @@ namespace std
 {
 	class thread;
 }
+
 namespace VTX::Tool::Mdprep::Gateway
 {
 	struct EngineSpecificCommonInformation;
 }
+
 namespace VTX::Tool::Mdprep::Gateway::Gromacs
 {
 	enum class E_BOX_SHAPE
@@ -44,6 +47,7 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		uint64_t				nstlog	  = 1000;
 		std::optional<uint64_t> nstxout_compressed;
 	};
+
 	// Hold data used for system preparation
 	struct SystemSettings
 	{
@@ -54,6 +58,7 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 
 		double saltConcentration = 0.15;
 	};
+
 	// Hold all MDprep data specific to gromacs
 	struct MdSettings
 	{
@@ -76,18 +81,16 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		JobManager() = delete;
 		JobManager( MdSettings & );
 
-		void checkInputs( const MdParameters &, CheckReportCallback ) noexcept;
-		void startPreparation( const MdParameters &, JobUpdateCallback ) noexcept;
+		void checkInputs( const MdParameters & ) noexcept;
+		void startPreparation( const MdParameters & ) noexcept;
 
 		bool		isResultAvailable() const noexcept;
 		CheckReport lastResult() const noexcept;
 
 	  private:
-		std::thread				 _thr;
-		std::stack<std::jthread> _threadStack;
-		CheckReport				 _report;
-		MdSettings *			 _data;
-		VTX::Util::SentryTarget	 _sentryTarget;
+		CheckReport				_report;
+		MdSettings *			_data;
+		VTX::Util::SentryTarget _sentryTarget;
 	};
 
 } // namespace VTX::Tool::Mdprep::Gateway::Gromacs

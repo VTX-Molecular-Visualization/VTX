@@ -1,37 +1,38 @@
 #include <QComboBox>
+#include <QDockWidget>
 #include <QFormLayout>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTextDocument>
-//
 #include <qtoolbar.h>
+//
+#include "util/sentry.hpp"
+#include <util/event_hub.hpp>
+#include <util/logger.hpp>
 //
 #include "tool/mdprep/gateway/engine_job_manager.hpp"
 #include "tool/mdprep/gateway/form_data.hpp"
 #include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/input_checker.hpp"
 #include "tool/mdprep/ui/shared.hpp"
-#include "util/sentry.hpp"
 //
 #include "tool/mdprep/ui/report.hpp"
 //
-#include "tool/mdprep/mdprep.hpp"
-#include "tool/mdprep/ui/md_engine.hpp"
-#include "tool/mdprep/ui/md_engine_factory.hpp"
-#include "tool/mdprep/ui/md_engine_field_placer.hpp"
-#include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
-//
-#include "tool/mdprep/ui/form_switch_button.hpp"
-#include <QDockWidget>
 #include <app/tool/base_tool.hpp>
+#include <string_view>
 #include <ui/qt/action_registry.hpp>
 #include <ui/qt/application.hpp>
 #include <ui/qt/dock_widget/base_dock_widget.hpp>
 #include <ui/qt/services.hpp>
 #include <ui/qt/util.hpp>
 #include <ui/qt/widget/main_window.hpp>
-#include <string_view>
-#include <util/logger.hpp>
+//
+#include "tool/mdprep/mdprep.hpp"
+#include "tool/mdprep/ui/form_switch_button.hpp"
+#include "tool/mdprep/ui/md_engine.hpp"
+#include "tool/mdprep/ui/md_engine_factory.hpp"
+#include "tool/mdprep/ui/md_engine_field_placer.hpp"
+#include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
 //
 #include "tool/mdprep/ui/form.hpp"
 #include "tool/mdprep/ui/form_advanced/event_manager.hpp"
@@ -40,6 +41,7 @@
 #include "tool/mdprep/ui/screen_forms.hpp"
 //
 #include "tool/mdprep/ui/form.hpp"
+
 //
 
 namespace VTX::Tool::Mdprep
@@ -64,13 +66,6 @@ namespace VTX::Tool::Mdprep
 
 		VTX::Tool::Mdprep::Gateway::MdParameters		  _paramaeters;
 		std::optional<VTX::Tool::Mdprep::ui::ScreenForms> _screen;
-		std::optional<VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate>
-			__tmp; // Once the job progress view screen is done, it should be removed
-
-		void _preparationStarted( VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate p_ )
-		{
-			__tmp.emplace( std::move( p_ ) ); // TMP
-		}
 
 	  public:
 		MainWindow( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Molecular Dynamics Preparation" )
@@ -84,18 +79,13 @@ namespace VTX::Tool::Mdprep
 
 			setWindowState( Qt::WindowState::WindowActive );
 			resize( PREFERRED_SIZE );
-			_screen.emplace(
-				screenWidget,
-				_paramaeters,
-				VTX::Tool::Mdprep::ui::ValidationSignaler {
-					[ & ]( VTX::Tool::Mdprep::Gateway::JobUpdateIntermediate p_ )
-					{ this->_preparationStarted( std::move( p_ ) ); } }
-			);
+			_screen.emplace( screenWidget, _paramaeters );
 		}
 	};
 
 	MainWindow * g_win = nullptr;
-	void		 get( MainWindow *& p_out ) noexcept
+
+	void get( MainWindow *& p_out ) noexcept
 	{
 		if ( g_win )
 		{
@@ -130,7 +120,9 @@ namespace VTX::Tool::Mdprep
 			win->raise();
 		}
 		else
+		{
 			win->hide();
+		}
 	}
 
 	MdPrep::MdPrep() = default;

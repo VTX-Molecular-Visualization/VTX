@@ -4,8 +4,6 @@
 //
 #include <tool/mdprep/backends/gromacs/grompp.hpp>
 //
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
-//
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include <tool/mdprep/backends/gromacs/util.hpp>
 //
@@ -81,7 +79,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - prepareJob - em", "[prepareJob][grompp]" 
 	CHECK( RE2::PartialMatch( { mdpContent }, patternNsteps ) );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert", "[convert][grompp][em]" )
+TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert - em", "[convert][grompp][em]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GromppInstructions in;
@@ -126,7 +124,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert", "[convert][grompp][em]" )
 	CHECK( expectedOutput.expectedOutputFilesIndexes == actualOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert", "[convert][grompp][ions]" )
+TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert - ions", "[convert][grompp][ions]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GromppInstructions in;
@@ -165,7 +163,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert", "[convert][grompp][ions]" )
 	CHECK( expectedOutput.expectedOutputFilesIndexes == actualOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert", "[convert][grompp][posres]" )
+TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert - posres", "[convert][grompp][posres]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GromppInstructions in;
@@ -204,9 +202,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert", "[convert][grompp][posres]" )
 	CHECK( expectedOutput.expectedOutputFilesIndexes == actualOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - grompp - submitGromacsJob - ions", "[submitGromacsJob][grompp][ions]" )
+TEST_CASE( "VTX_TOOL_MdPrep - grompp + submitGromacsJob - ions", "[submitGromacsJob][grompp][ions]" )
 {
-	return; // TMP TODO : Put it back online
 
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GromppInstructions in;
@@ -230,11 +227,16 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - submitGromacsJob - ions", "[submitGromacs
 	submitGromacsJob( VTX::Tool::Mdprep::executableDirectory() / defaultGmxBinaryRelativePath(), jobData );
 
 	checkJobResults( jobData );
+
+	std::string outputs;
+	outputs += jobData.channelsLocker.open()->stdout_;
+	outputs += jobData.channelsLocker.open()->stderr_;
+	INFO( outputs );
 	CHECK( jobData.report.errorOccured == false );
 	CHECK( jobData.report.finished == true );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - grompp - submitGromacsJob - em", "[submitGromacsJob][grompp]" )
+TEST_CASE( "VTX_TOOL_MdPrep - grompp + submitGromacsJob - em", "[submitGromacsJob][grompp]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GromppInstructions in;
@@ -258,6 +260,12 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - submitGromacsJob - em", "[submitGromacsJo
 	submitGromacsJob( VTX::Tool::Mdprep::executableDirectory() / defaultGmxBinaryRelativePath(), jobData );
 
 	checkJobResults( jobData );
+
+	std::string outputs { "Here is the stdout and stderr : \n" };
+	outputs += jobData.channelsLocker.open()->stdout_;
+	outputs += jobData.channelsLocker.open()->stderr_;
+	CAPTURE( outputs );
+	INFO( outputs );
 	CHECK( jobData.report.errorOccured == false );
 	CHECK( jobData.report.finished == true );
 }

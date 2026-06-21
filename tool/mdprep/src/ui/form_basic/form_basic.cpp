@@ -9,9 +9,12 @@
 #include <QValidator>
 #include <fmt/format.h>
 //
+#include "util/logger.hpp"
+#include "util/sentry.hpp"
+#include <util/event_hub.hpp>
+//
 #include "tool/mdprep/gateway/form_data.hpp"
 #include "tool/mdprep/ui/shared.hpp"
-#include <util/sentry.hpp>
 //
 #include "tool/mdprep/ui/input_checker.hpp"
 #include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
@@ -21,9 +24,11 @@
 //
 #include "app/vtx_app.hpp"
 #include "tool/mdprep/ui/form_basic/event_manager.hpp"
+#include <app/services.hpp>
 //
-#include "util/logger.hpp"
-#include "util/sentry.hpp"
+#include <ui/qt/services.hpp>
+#include <ui/qt/style/icons.hpp>
+#include <ui/qt/style/style_manager.hpp>
 #include <ui/qt/util.hpp>
 #include <ui/qt/validator.hpp>
 //
@@ -33,6 +38,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 {
 	using namespace VTX::Tool::Mdprep::Gateway;
 	using namespace VTX::UI::QT::Util;
+
 	namespace
 	{
 
@@ -45,17 +51,22 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			virtual QValidator::State validate( QString & input, int & pos ) const override
 			{
 				if ( input.size() > 2 )
+				{
 					return QValidator::State::Invalid;
+				}
 				for ( auto & it_char : input )
 				{
 					if ( it_char < 'A' || ( it_char > 'Z' && it_char < 'a' ) || it_char > 'z' )
+					{
 						return QValidator::State::Invalid;
+					}
 				}
 				return State::Acceptable;
 			}
 		};
 
 	} // namespace
+
 	FormBasic::FormBasic(
 		QWidget *					 p_container,
 		SpecificFieldsPlacerCallback p_callback,
@@ -67,6 +78,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_loadValues( p_defaults );
 		_setupSlots();
 	}
+
 	void FormBasic::update( const EngineSpecificCommonInformation & p_data ) noexcept
 	{
 		Gateway::EngineSpecificCommonInformation * info = nullptr;
@@ -74,6 +86,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		*info = p_data;
 		_eventManager.performFirstInputCheck();
 	}
+
 	namespace
 	{
 		void createSettingButton( QPushButton ** p_out_buttonSettings )
@@ -81,7 +94,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			*p_out_buttonSettings = new QPushButton;
 			( *p_out_buttonSettings )->setFlat( true );
 			( *p_out_buttonSettings )->setCursor( Qt::CursorShape::PointingHandCursor );
-			( *p_out_buttonSettings )->setIcon( QIcon( ":/sprite/settings_icon.png" ) );
+			( *p_out_buttonSettings )->setIcon( UI::QT::STYLE().iconFromCodepoint( UI::QT::Style::Icons::OPTIONS ) );
 		}
 
 		void addDurationRow(
@@ -102,7 +115,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			*p_out_durationUnit = new QComboBox;
 			qLayoutRightCell->addWidget( *p_out_durationUnit );
 			for ( auto it_idxUnit = 0; it_idxUnit < static_cast<int>( E_MD_DURATION_UNIT::COUNT ); it_idxUnit++ )
+			{
 				( *p_out_durationUnit )->addItem( string( static_cast<E_MD_DURATION_UNIT>( it_idxUnit ) ) );
+			}
 			createSettingButton( p_out_buttonSettings );
 			qLayoutRightCell->addWidget( *p_out_buttonSettings );
 		}
@@ -256,6 +271,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 		qMainLayout->addStretch( 1 );
 	}
+
 	void FormBasic::_loadValues( const MdParameters & p_defaults ) noexcept
 	{
 		_uiObjects._fieldStepNumberMinimization->setText( QString::number( p_defaults.minimization.stepNumber ) );
@@ -278,6 +294,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			_uiObjects._fieldDurationUnitProduction
 		);
 	}
+
 	void FormBasic::_setupSlots() noexcept
 	{
 		_eventManager.setMinimizationSettings( _uiObjects._buttonMinimizationSettings );
@@ -286,20 +303,30 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_eventManager.setProductionSettings( _uiObjects._buttonProductionSettings );
 		_eventManager.setSystemSettings( _uiObjects._buttonSystemSettings );
 	}
+
 	namespace
 	{
 		inline double multiplierPs( const std::string_view p_unit )
 		{
 			if ( p_unit == "fs" )
+			{
 				return 1e-3;
+			}
 			if ( p_unit == "ps" )
+			{
 				return 1e0;
+			}
 			if ( p_unit == "ns" )
+			{
 				return 1e3;
+			}
 			if ( p_unit == "\xc2\xb5s" )
+			{
 				return 1e6;
+			}
 			return 0.;
 		}
+
 		inline void figureNumStep(
 			Gateway::MdParametersStepData & p_data,
 			QComboBox *						p_unitField,
@@ -312,6 +339,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		}
 
 	} // namespace
+
 	void FormBasic::get( MdParameters & p_in ) const noexcept
 	{
 		Gateway::MdParameters * params = nullptr;
@@ -329,6 +357,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		);
 		figureNumStep( p_in.prod, _uiObjects._fieldDurationUnitProduction, _uiObjects._fieldDurationValueProduction );
 	}
+
 	void FormBasic::get( FormLayouts & p_out ) const noexcept { p_out.baseParametersIon = _uiObjects._layoutIons; }
 
 } // namespace VTX::Tool::Mdprep::ui::form_basic

@@ -29,7 +29,9 @@ namespace VTX::App::Action::IO
 		const std::string extension = p_path.extension().string();
 		if ( extension == ".py" || extension == ".vtx" )
 		{
-			ACTION().execute<RunPythonScript>( p_path );
+			{
+				ACTION().execute<RunPythonScript>( p_path );
+			}
 		}
 		else if ( VTX::IO::isMeshFileFormat( p_path ) )
 		{
@@ -37,30 +39,33 @@ namespace VTX::App::Action::IO
 		}
 		else
 		{
-			ACTION().execute<LoadSystem>( p_path );
+			{
+				ACTION().execute<LoadSystem>( p_path );
+			}
 		}
 	}
 
 	struct _SystemIo
 	{
-		Util::StopToken					   stopToken;
-		Threading::OptionalThreadReference threadRef;
-		std::latch						   extractorCreation { 1 };
-		std::optional<Extractor::System>   extractor;
+		Threading::ThreadData			 thrData;
+		std::latch						 extractorCreation { 1 };
+		std::optional<Extractor::System> extractor;
 
 		inline void wait() noexcept
 		{
 			this->extractorCreation.wait();
 			if ( this->extractor )
 			{
-				this->extractor->wait();
+				{
+					this->extractor->wait();
+				}
 			}
 		}
 
 		inline void start_extraction()
 		{
 			assert( extractor );
-			extractor.value()( stopToken, threadRef );
+			extractor.value()( thrData.stopToken, thrData.thrRef );
 		}
 	};
 
@@ -68,10 +73,7 @@ namespace VTX::App::Action::IO
 
 	LoadSystem::LoadSystem() : _data( new _SystemIo() ) {}
 
-	LoadSystem::LoadSystem( Util::StopToken p_token, Threading::OptionalThreadReference p_thr ) :
-		_data( new _SystemIo { std::move( p_token ), std::move( p_thr ) } )
-	{
-	}
+	LoadSystem::LoadSystem( Threading::ThreadData p_ ) : _data( new _SystemIo { std::move( p_ ) } ) {}
 
 	void LoadSystem::execute( FilePath p_path )
 	{
@@ -101,10 +103,43 @@ namespace VTX::App::Action::IO
 
 	struct WriteSelection::_WriterIo
 	{
-		Util::StopToken						   stopToken;
-		Threading::OptionalThreadReference	   threadRef;
+		Threading::ThreadData				   thrData;
 		std::optional<System::SelectionWriter> writer;
 		std::latch							   writerSync { 1 };
+
+		void wait() noexcept
+		{
+			writerSync.wait();
+			if ( writer )
+			{
+				{
+					writer->wait();
+				}
+			}
+		}
+	};
+
+	void WriteSelection::_del::operator()( _WriterIo * p_ ) const noexcept { delete p_; }
+
+	WriteSelection::WriteSelection() : _data( new _WriterIo() ) {}
+
+	WriteSelection::WriteSelection( Threading::ThreadData p_ ) : _data( new _WriterIo { std::move( p_ ) } ) {}
+
+	void WriteSelection::execute( FilePath p_path )
+	{
+		_data->writer.emplace( p_path );
+		_data->writerSync.count_down();
+
+		_data->writer.value()( std::move( _data->thrData.stopToken ), _data->thrData.thrRef );
+	}
+
+	void WriteSelection::wait() noexcept { _data->wait(); }
+
+	struct WriteVisible::_WriterIo
+	{
+		Threading::ThreadData				 thrData;
+		std::optional<System::VisibleWriter> writer;
+		std::latch							 writerSync { 1 };
 
 		void wait() noexcept
 		{
@@ -116,30 +151,25 @@ namespace VTX::App::Action::IO
 		}
 	};
 
-	WriteSelection::WriteSelection() : _data( new _WriterIo() ) {}
+	void WriteVisible::_del::operator()( _WriterIo * p_ ) const noexcept { delete p_; }
 
-	WriteSelection::WriteSelection( Util::StopToken p_stop, Threading::OptionalThreadReference p_thr ) :
-		_data( new _WriterIo( std::move( p_stop ), std::move( p_thr ) ) )
-	{
-	}
+	WriteVisible::WriteVisible() : _data( new _WriterIo() ) {}
 
-	void WriteSelection::execute( FilePath p_path )
+	WriteVisible::WriteVisible( Threading::ThreadData p_ ) : _data( new _WriterIo( std::move( p_ ) ) ) {}
+
+	void WriteVisible::execute( FilePath p_path )
 	{
 		_data->writer.emplace( p_path );
 		_data->writerSync.count_down();
 
-		_data->writer.value()( std::move( _data->stopToken ), _data->threadRef );
+		_data->writer.value()( std::move( _data->thrData.stopToken ), _data->thrData.thrRef );
 	}
 
-	void WriteSelection::wait() noexcept { _data->wait(); }
+	void WriteVisible::wait() noexcept { _data->wait(); }
 
 	AssociateTrajectory::AssociateTrajectory() : _data( new _SystemIo() ) {}
 
-	AssociateTrajectory::AssociateTrajectory( Util::StopToken p_token, Threading::OptionalThreadReference p_thr ) :
-		_data( new _SystemIo { std::move( p_token ), std::move( p_thr ) } )
-
-	{
-	}
+	AssociateTrajectory::AssociateTrajectory( Threading::ThreadData p_ ) : _data( new _SystemIo { std::move( p_ ) } ) {}
 
 	void AssociateTrajectory::execute( const FilePath & p_path, const Entity & p_entity )
 	{
@@ -217,5 +247,4 @@ namespace VTX::App::Action::IO
 		}
 	}
 
-	void WriteSelection::_del::operator()( _WriterIo * p_ ) const noexcept { delete p_; }
 } // namespace VTX::App::Action::IO

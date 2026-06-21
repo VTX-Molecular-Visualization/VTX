@@ -3,8 +3,6 @@
 //
 #include <tool/mdprep/backends/gromacs/solvate.hpp>
 //
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
-//
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include <tool/mdprep/backends/gromacs/util.hpp>
 //
@@ -60,7 +58,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - solvate - convert", "[convert][solvate]" )
 	CHECK( expectedOutput.expectedOutputFilesIndexes == actualOutput.expectedOutputFilesIndexes );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - solvate - submitGromacsJob", "[submitGromacsJob][solvate]" )
+TEST_CASE( "VTX_TOOL_MdPrep - solvate + submitGromacsJob", "[submitGromacsJob][solvate]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	SolvateInstructions in;

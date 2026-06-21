@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <string>
 #include <thread>
 #include <util/logger.hpp>
@@ -8,7 +9,10 @@
 //
 #include "tool/mdprep/gateway/backend_gromacs.hpp"
 //
+#include "tool/mdprep/actions/jobs.hpp"
 #include "tool/mdprep/backends/gromacs/gromacs.hpp"
+#include <app/action/action_manager.hpp>
+#include <app/services.hpp>
 
 namespace VTX::Tool::Mdprep::Gateway::Gromacs
 {
@@ -24,11 +28,14 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		default: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::dodecahedron;
 		}
 	}
+
 	void boxShapeCollection( std::vector<std::string> & p_out ) noexcept
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
 		for ( int it_idx = 0; it_idx < static_cast<int>( E_BOX_SHAPE::COUNT ); it_idx++ )
+		{
 			p_out.push_back( string( translate( static_cast<E_BOX_SHAPE>( it_idx ) ) ) );
+		}
 	}
 
 	backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE translate( const E_BOX_DIMENSION_MODE & p_ ) noexcept
@@ -45,23 +52,42 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
 		for ( int it_idx = 0; it_idx < static_cast<int>( E_BOX_DIMENSION_MODE::COUNT ); it_idx++ )
+		{
 			p_.push_back( string( translate( static_cast<E_BOX_DIMENSION_MODE>( it_idx ) ) ) );
+		}
 	}
+
 	void waterModelCollection( std::vector<std::string> & p_out ) noexcept
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
 		for ( int it_idx = 0; it_idx < static_cast<int>( E_WATER_MODEL::COUNT ); it_idx++ )
+		{
 			p_out.push_back( string( static_cast<E_WATER_MODEL>( it_idx ) ) );
+		}
 	}
+
+	namespace
+	{
+		void convert(
+			const std::vector<backends::Gromacs::forcefield> & p_in,
+			std::vector<std::string> &						   p_out
+		) noexcept
+		{
+			using namespace VTX::Tool::Mdprep::backends::Gromacs;
+			p_out.clear();
+			for ( auto & it_ff : p_in )
+			{
+				auto ffName = it_ff.getName();
+				p_out.push_back( { ffName.begin(), ffName.end() } );
+			}
+		}
+	} // namespace
+
 	void get( EngineSpecificCommonInformation & p_out ) noexcept
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
 		auto ffs = listForcefields( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
-		for ( auto & it_ff : ffs )
-		{
-			auto ffName = it_ff.getName();
-			p_out.bioForcefieldCollection.push_back( { ffName.begin(), ffName.end() } );
-		}
+		convert( ffs, p_out.bioForcefieldCollection );
 		boxShapeCollection( p_out.boxShapeCollection );
 		waterModelCollection( p_out.waterModels );
 	}
@@ -70,98 +96,95 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 
 	namespace
 	{
-		void fakeCheck( CheckReportCallback p_callback )
-		{
-			VTX::VTX_DEBUG( "Starting fake check" );
-			std::this_thread::sleep_for( std::chrono::seconds( 3 ) );
-			p_callback( CheckReport { .itemGeneric = E_REPORT_CHECKED_ITEM::systemWithForceField,
-									  .message	   = "Fakely checked up." } );
-			VTX::VTX_DEBUG( "Fake check finished" );
-		}
-	} // namespace
-
-	void JobManager::checkInputs( const MdParameters & p_1, CheckReportCallback p_2 )  noexcept
-	{
-		auto wrappedCallback = [ reportCallback = std::move( p_2 ),
-								 sentry			= _sentryTarget.newSentry(),
-								 report			= &_report ]( const CheckReport & p_ )
-		{
-			if ( sentry )
-				*report = p_;
-			reportCallback( p_ );
-		};
-		_threadStack.push( std::jthread( [ callback = std::move( wrappedCallback ) ]()
-										 { fakeCheck( std::move( callback ) ); } ) );
-	}
-
-	namespace
-	{
-		void fakePreparation( const MdParameters & p_1, JobUpdateCallback p_2 )
-		{
-			VTX::VTX_DEBUG( "Starting fake Prepartion" );
-			std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
-			p_2( { "Starting ..." } );
-
-			VTX::VTX_DEBUG( "Fake Prepartion - step 1" );
-			std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
-			p_2( { "Step 1 done" } );
-
-			VTX::VTX_DEBUG( "Fake Prepartion - step 2" );
-			std::this_thread::sleep_for( std::chrono::seconds( 3 ) );
-			p_2( { "Step 2 done" } );
-
-			VTX::VTX_DEBUG( "Fake Prepartion - step 3" );
-			std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-			p_2( { "Step 3 done" } );
-
-			VTX::VTX_DEBUG( "Fake Prepartion - step 5" );
-			std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
-			p_2( { "Step 4 done" } );
-
-			VTX::VTX_DEBUG( "Fake Prepartion - step 6" );
-			std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-			p_2( { "Step 5 done" } );
-
-			VTX::VTX_DEBUG( "Fake Prepartion - step 7" );
-			std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
-			p_2( { "Step 6 done" } );
-
-			VTX::VTX_DEBUG( "Finishing fake Prepartion" );
-			p_2( { "Preparation finished" } );
-		}
-
-		backends::Gromacs::E_WATER_MODEL toWaterModel( const std::string_view & p_in ) noexcept
+		void convert( const std::string_view & p_in, backends::Gromacs::E_WATER_MODEL & out ) noexcept
 		{
 			using namespace backends::Gromacs;
 			for ( int idx = 0; idx < static_cast<int>( E_WATER_MODEL::COUNT ); idx++ )
 			{
 				E_WATER_MODEL it = static_cast<E_WATER_MODEL>( idx );
 				if ( string( it ) == p_in )
-					return it;
+				{
+					out = it;
+					return;
+				}
 			}
 		}
 
 		void convert(
+			const MdParameters &				p_param,
+			const Gromacs::MdSettings &			p_gmxParam,
+			backends::Gromacs::MdInstructions & p_out
+		) noexcept
+		{
+			p_out.nvt.nsteps	= p_param.nvt.nsteps;
+			p_out.nvt.dt		= p_param.nvt.dt;
+			p_out.nvt.nstxout	= p_param.nvt.saveInterval;
+			p_out.nvt.nstvout	= p_gmxParam.nvt.nstvout;
+			p_out.nvt.nstenergy = p_gmxParam.nvt.nstenergy;
+			p_out.nvt.nstlog	= p_gmxParam.nvt.nstlog;
+
+			p_out.npt.nsteps	= p_param.npt.nsteps;
+			p_out.npt.dt		= p_param.npt.dt;
+			p_out.npt.nstxout	= p_param.npt.saveInterval;
+			p_out.npt.nstvout	= p_gmxParam.npt.nstvout;
+			p_out.npt.nstenergy = p_gmxParam.npt.nstenergy;
+			p_out.npt.nstlog	= p_gmxParam.npt.nstlog;
+
+			p_out.prod.nsteps			  = p_param.prod.nsteps;
+			p_out.prod.dt				  = p_param.prod.dt;
+			p_out.prod.nstxout			  = p_param.prod.saveInterval;
+			p_out.prod.nstvout			  = p_gmxParam.prod.nstvout;
+			p_out.prod.nstenergy		  = p_gmxParam.prod.nstenergy;
+			p_out.prod.nstlog			  = p_gmxParam.prod.nstlog;
+			p_out.prod.nstxout_compressed = p_gmxParam.prod.nstxout_compressed
+												? p_gmxParam.prod.nstxout_compressed.value()
+												: p_param.prod.saveInterval;
+
+			p_out.fileStem = "your_system"; // TODO bad design
+		}
+
+		void convert(
 			const MdParameters &										p_inGeneric,
-			const MdSettings &											p_inGromacs,
+			const Gromacs::MdSettings &									p_inGromacs,
 			VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions & p_out
 		) noexcept
 		{
-			p_out.pdb2gmx.water		  = toWaterModel( p_inGeneric.system.waterModel );
+			convert( p_inGeneric.system.waterModel, p_out.pdb2gmx.water );
 			p_out.pdb2gmx.forcefields = backends::Gromacs::listForcefields(
 				executableDirectory() / backends::Gromacs ::defaultFfDirectoryRelativePath()
 			);
+			std::vector<std::string> strFfs;
+			convert( p_out.pdb2gmx.forcefields, strFfs );
+			auto hit = std::find( strFfs.begin(), strFfs.end(), p_inGeneric.system.forcefieldBio );
+			if ( hit != strFfs.end() )
+			{
+				p_out.pdb2gmx.forcefieldIndex = std::distance( strFfs.begin(), hit );
+			}
+			else
+			{
+				p_out.pdb2gmx.forcefieldIndex = 0;
+			}
+			convert( p_inGeneric, p_inGromacs, p_out.mdInstructions );
 		}
 	} // namespace
 
-	void JobManager::startPreparation( const MdParameters & p_1, JobUpdateCallback p_3 ) noexcept
+	void JobManager::startPreparation( const MdParameters & p_1 ) noexcept
 	{
-		_threadStack.push( std::jthread { [ &params = p_1, callback = std::move( p_3 ) ]
-										  { fakePreparation( params, std::move( callback ) ); } } );
+		VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions gmxInstructions;
+		convert( p_1, *_data, gmxInstructions );
+		App::ACTION().execute<Actions::StartPreparation>( std::move( gmxInstructions ) );
 	}
 
 	bool JobManager::isResultAvailable() const noexcept { return _report != CheckReport(); }
 
 	CheckReport JobManager::lastResult() const noexcept { return _report; }
+
+	void JobManager::checkInputs( const MdParameters & p_1 ) noexcept
+	{
+		VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions gmxInstructions;
+		convert( p_1, *_data, gmxInstructions );
+
+		App::ACTION().execute<Actions::CheckSystem>( std::move( gmxInstructions ) );
+	}
 
 } // namespace VTX::Tool::Mdprep::Gateway::Gromacs

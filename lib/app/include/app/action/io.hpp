@@ -43,7 +43,7 @@ namespace VTX::App::Action::IO
 	struct LoadSystem
 	{
 		LoadSystem();
-		LoadSystem( Util::StopToken, Threading::OptionalThreadReference );
+		LoadSystem( Threading::ThreadData );
 
 		void execute( FilePath p_path );
 		void execute( FilePath p_path, std::string && p_buffer );
@@ -74,7 +74,7 @@ namespace VTX::App::Action::IO
 	struct WriteSelection
 	{
 		WriteSelection();
-		WriteSelection( Util::StopToken, Threading::OptionalThreadReference );
+		WriteSelection( Threading::ThreadData );
 
 		void execute( FilePath p_path );
 		void wait() noexcept;
@@ -87,6 +87,31 @@ namespace VTX::App::Action::IO
 			void operator()( _WriterIo * ) const noexcept;
 		};
 
+<<<<<<< HEAD
+=======
+		std::unique_ptr<_WriterIo, _del> _data = nullptr;
+	};
+
+	/**
+	 * @brief Write a file containing atoms from selection
+	 */
+	struct WriteVisible
+	{
+		WriteVisible();
+		WriteVisible( Threading::ThreadData );
+
+		void execute( FilePath p_path );
+		void wait() noexcept;
+
+	  private:
+		struct _WriterIo;
+
+		struct _del
+		{
+			void operator()( _WriterIo * ) const noexcept;
+		};
+
+>>>>>>> origin/dev
 		std::unique_ptr<_WriterIo, _del> _data = nullptr;
 	};
 
@@ -97,7 +122,7 @@ namespace VTX::App::Action::IO
 	struct AssociateTrajectory
 	{
 		AssociateTrajectory();
-		AssociateTrajectory( Util::StopToken, Threading::OptionalThreadReference );
+		AssociateTrajectory( Threading::ThreadData );
 		void execute( const FilePath & p_path, const Entity & );
 		void execute( const std::string & p_path, const Entity & );
 		void wait() noexcept;

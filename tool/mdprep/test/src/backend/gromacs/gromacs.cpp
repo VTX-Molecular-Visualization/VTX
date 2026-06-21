@@ -3,13 +3,12 @@
 #include <re2/re2.h>
 #include <thread>
 //
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
+#include <app/threading/base_thread.hpp>
 //
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include <tool/mdprep/backends/gromacs/util.hpp>
 //
 #include "fixture.hpp"
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
 //
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
 
@@ -36,7 +35,6 @@ namespace VTX::test
 
 TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 1ubq", "[prepareStructure][1ubq]" )
 {
-	return; // TMP TODO : Put it back online
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
 
@@ -63,9 +61,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 1ubq", "[prepareStructure][1ubq]"
 		fs::remove_all( in.rootDir );
 	}
 	fs::create_directories( in.rootDir );
-
-	std::stop_token token;
-	prepareStructure( token, VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb", in );
+	VTX::App::Threading::ThreadData dummy;
+	prepareStructure( dummy, VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb", in );
 	int i = 0;
 	for ( auto & jobData : in.jobData )
 	{
@@ -109,8 +106,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 2wfv", "[prepareStructure][2wfv]"
 	}
 	fs::create_directories( in.rootDir );
 
-	std::stop_token token;
-	prepareStructure( token, VTX::Tool::Mdprep::executableDirectory() / "data" / "2wfv.pdb", in );
+	VTX::App::Threading::ThreadData dummy;
+
+	prepareStructure( dummy, VTX::Tool::Mdprep::executableDirectory() / "data" / "2wfv.pdb", in );
 	int i = 0;
 	for ( auto & jobData : in.jobData )
 	{
@@ -141,10 +139,16 @@ TEST_CASE( "VTX_TOOL_MdPrep - SystemTester", "[SystemTester]" )
 	SystemTester s_8hu4_nolig( dataDir / "8hu4.nolig.pdb", ffs[ 0 ], E_WATER_MODEL::tip3p );
 	SystemTester s_4nxo( dataDir / "4nxo.pdb", ffs[ 0 ], E_WATER_MODEL::tip3p );
 	SystemTester s_8hu4( dataDir / "8hu4.pdb", ffs[ 0 ], E_WATER_MODEL::tip3p );
+
+	INFO( s_2wfv.why() );
 	CHECK( s_2wfv == true );
+	INFO( s_8hu4_nolig.why() );
 	CHECK( s_8hu4_nolig == true );
+	INFO( s_4j6s.why() );
 	CHECK( s_4j6s == false );
+	INFO( s_4nxo.why() );
 	CHECK( s_4nxo == false );
+	INFO( s_8hu4.why() );
 	CHECK( s_8hu4 == false );
 }
 
@@ -178,8 +182,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepPy", "[prepPy]" ) // temporary UT meant to gen
 	}
 	fs::create_directories( in.rootDir );
 
-	std::stop_token token;
-	prepareStructure( token, VTX::Tool::Mdprep::executableDirectory() / "data" / "1gcn.pdb", in );
+	VTX::App::Threading::ThreadData dummy;
+	prepareStructure( dummy, VTX::Tool::Mdprep::executableDirectory() / "data" / "1gcn.pdb", in );
 	int i = 0;
 	for ( auto & jobData : in.jobData )
 	{

@@ -21,6 +21,7 @@ namespace VTX::Util
 {
 	class SentryTarget;
 }
+
 namespace VTX::Tool::Mdprep::ui
 {
 	using namespace VTX::Tool::Mdprep::Gateway;
@@ -85,6 +86,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			QPushButton * _buttonProductionSettings			  = nullptr;
 			QPushButton * _buttonInputCheck					  = nullptr;
 		} _uiObjects;
+
 		std::unique_ptr<Data> _data = nullptr;
 		IonicFields			  _fieldsIons;
 		EventManager		  _eventManager;

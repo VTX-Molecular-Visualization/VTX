@@ -4,8 +4,6 @@
 //
 #include <tool/mdprep/backends/gromacs/genion.hpp>
 //
-#include <tool/mdprep/backends/gromacs/inputs.hpp>
-//
 #include "tool/mdprep/backends/gromacs/pack.hpp"
 #include <tool/mdprep/backends/gromacs/util.hpp>
 //
