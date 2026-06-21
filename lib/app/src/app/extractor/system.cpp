@@ -253,7 +253,7 @@ namespace VTX::App::Extractor
 				{
 					// Trigger trajectory event.
 					HUB().trigger<Events::TrajectoryLoad>( { *p_data.entity,
-															 getCurrentAtomPositions( *p_data.entity ) } );
+															 App::System::getCurrentAtomPositions( *p_data.entity ) } );
 				}
 			}
 			else
