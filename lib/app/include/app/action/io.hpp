@@ -87,8 +87,6 @@ namespace VTX::App::Action::IO
 			void operator()( _WriterIo * ) const noexcept;
 		};
 
-<<<<<<< HEAD
-=======
 		std::unique_ptr<_WriterIo, _del> _data = nullptr;
 	};
 
@@ -111,7 +109,6 @@ namespace VTX::App::Action::IO
 			void operator()( _WriterIo * ) const noexcept;
 		};
 
->>>>>>> origin/dev
 		std::unique_ptr<_WriterIo, _del> _data = nullptr;
 	};
 
