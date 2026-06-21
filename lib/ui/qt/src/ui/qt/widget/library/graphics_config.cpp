@@ -5,6 +5,8 @@
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <app/action/graphics_config.hpp>
+#include <app/arguments.hpp>
+#include <app/services.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
@@ -134,6 +136,10 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxSSAO->addWidget( _comboBoxSSAOScale );
 		_comboBoxSSAOScale->addItem( "Normal" );
 		_comboBoxSSAOScale->addItem( "Downscale" );
+
+		const bool showDebugSSAOSettings = App::ARGS().debug;
+		_comboBoxSSAOMethod->setVisible( showDebugSSAOSettings );
+		_comboBoxSSAOScale->setVisible( showDebugSSAOSettings );
 
 		_sliderSSAOIntensity = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSSAO );
 		_groupboxSSAO->addWidget( new QLabel( "Intensity", _groupboxSSAO ) );
