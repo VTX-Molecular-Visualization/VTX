@@ -1,4 +1,4 @@
-#include "app/system/load.hpp"
+#include "app/extractor/system.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/camera.hpp"
 #include "app/ecs.hpp"
@@ -15,23 +15,40 @@
 #include "app/uid/uid_manager.hpp"
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
+#include <io/reader.hpp>
+#include <latch>
+#include <optional>
 #include <renderer/representation.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/range_list.hpp>
 #include <util/math/transform.hpp>
+#include <variant>
 
-namespace VTX::App::System
+namespace VTX::App::Extractor
 {
-	void deliver( PendingSystem && p_data ) noexcept;
+	struct Pending
+	{
+		std::optional<Entity>																entity;
+		bool																				onlyTrajectory = false;
+		FilePath																			sourcePath;
+		IO::READER_OPTION																	readerOption;
+		std::optional<std::string>															buffer;
+		std::optional<IO::SystemReader>														reader;
+		Core::Struct::Topology																topology;
+		IO::Metadata																		metadata;
+		std::variant<App::System::TrajectorySingleFrame, App::System::TrajectoryFullBuffer> trajectoryData;
+	};
+
+	void deliver( Pending && p_data ) noexcept;
 
 	namespace
 	{
-		size_t _getCurrentAtomPositionCount( const TrajectorySingleFrame & p_trajectory ) noexcept
+		size_t _getCurrentAtomPositionCount( const App::System::TrajectorySingleFrame & p_trajectory ) noexcept
 		{ return p_trajectory.atomPositions.size(); }
 
-		size_t _getCurrentAtomPositionCount( const TrajectoryFullBuffer & p_trajectory ) noexcept
+		size_t _getCurrentAtomPositionCount( const App::System::TrajectoryFullBuffer & p_trajectory ) noexcept
 		{
 			if ( p_trajectory.frameCollection.empty() )
 			{
@@ -51,10 +68,10 @@ namespace VTX::App::System
 
 	} // namespace
 
-	struct SystemExtractor::_Data
+	struct System::_Data
 	{
-		PendingSystem data;
-		std::latch	  synchronizer { 1 };
+		Pending	   data;
+		std::latch synchronizer { 1 };
 
 		_Data() = default;
 
@@ -62,7 +79,7 @@ namespace VTX::App::System
 	};
 
 	template<typename JobFinishSignaler>
-	struct DeliverSytem
+	struct DeliverSystem
 	{
 		void execute( JobFinishSignaler jobFinishedPtr )
 		{
@@ -71,29 +88,28 @@ namespace VTX::App::System
 		}
 	};
 
-	void SystemExtractor::_clean() { _attributesPtr->synchronizer.count_down(); }
+	void System::_clean() { _attributesPtr->synchronizer.count_down(); }
 
-	SystemExtractor::SystemExtractor( FilePath p_path, IO::READER_OPTION p_options ) :
-		_attributesPtr( std::make_shared<_Data>() )
+	System::System( FilePath p_path, IO::READER_OPTION p_options ) : _attributesPtr( std::make_shared<_Data>() )
 	{
 		_attributesPtr->data.sourcePath	  = std::move( p_path );
 		_attributesPtr->data.readerOption = p_options;
 	}
 
-	SystemExtractor::SystemExtractor( FilePath p_path, std::string && p_buffer, IO::READER_OPTION p_options ) :
-		SystemExtractor( std::move( p_path ), p_options )
+	System::System( FilePath p_path, std::string && p_buffer, IO::READER_OPTION p_options ) :
+		System( std::move( p_path ), p_options )
 	{ _attributesPtr->data.buffer = std::move( p_buffer ); }
 
-	SystemExtractor::SystemExtractor( Entity p_entity, FilePath p_path, IO::READER_OPTION p_options ) :
-		SystemExtractor( std::move( p_path ), p_options )
+	System::System( Entity p_entity, FilePath p_path, IO::READER_OPTION p_options ) :
+		System( std::move( p_path ), p_options )
 	{
 		_attributesPtr->data.entity			= p_entity;
 		_attributesPtr->data.onlyTrajectory = true;
 	}
 
-	void SystemExtractor::wait() noexcept { _attributesPtr->synchronizer.wait(); }
+	void System::wait() noexcept { _attributesPtr->synchronizer.wait(); }
 
-	uint SystemExtractor::operator()( Util::StopToken p_stopToken, Threading::OptionalThreadReference p_thread )
+	uint System::operator()( Util::StopToken p_stopToken, Threading::OptionalThreadReference p_thread )
 	{
 		auto & pendingData = _attributesPtr->data;
 
@@ -135,15 +151,15 @@ namespace VTX::App::System
 
 		if ( pendingData.reader->frameCount() > 1 )
 		{
-			pendingData.trajectoryData.emplace<System::TrajectoryFullBuffer>();
+			pendingData.trajectoryData.emplace<App::System::TrajectoryFullBuffer>();
 		}
 		else
 		{
-			pendingData.trajectoryData.emplace<System::TrajectorySingleFrame>();
+			pendingData.trajectoryData.emplace<App::System::TrajectorySingleFrame>();
 		}
 
 		auto visitor = [ reader = &pendingData.reader.value() ]( auto && traj )
-		{ System::prepare( traj, std::move( *reader ) ); };
+		{ App::System::prepare( traj, std::move( *reader ) ); };
 		std::visit( visitor, pendingData.trajectoryData );
 
 		if ( p_stopToken.stop_requested() )
@@ -152,14 +168,14 @@ namespace VTX::App::System
 			return 0;
 		}
 
-		// ACTION().execute<Action::QueueAction<DeliverSytem<std::shared_ptr<_Data>>>>( _attributesPtr );
+		// ACTION().execute<Action::QueueAction<DeliverSystem<std::shared_ptr<_Data>>>>( _attributesPtr );
 		ACTION().subscribe(
-			Action::QueuedAction( DeliverSytem<std::shared_ptr<_Data>>(), std::move( _attributesPtr ) )
+			Action::QueuedAction( DeliverSystem<std::shared_ptr<_Data>>(), std::move( _attributesPtr ) )
 		);
 		return 0;
 	}
 
-	void addTrajectory( const Entity & p_entity, PendingSystem & p_data ) noexcept
+	void addTrajectory( const Entity & p_entity, Pending & p_data ) noexcept
 	{
 		std::visit(
 			[ &p_entity ]( auto && traj ) mutable
@@ -169,10 +185,10 @@ namespace VTX::App::System
 			},
 			std::move( p_data.trajectoryData )
 		);
-		startAsyncTrajectoryWork( p_entity, p_data );
+		App::System::startAsyncTrajectoryWork( p_entity, std::move( p_data.reader.value() ) );
 	}
 
-	void create( PendingSystem & p_data ) noexcept
+	void create( Pending & p_data ) noexcept
 	{
 		auto & reg = REG();
 
@@ -182,12 +198,12 @@ namespace VTX::App::System
 		auto & metadata	 = reg.emplace<IO::Metadata>( p_entity, std::move( p_data.metadata ) );
 		auto & transform = reg.emplace<Util::Math::Transform>( p_entity );
 		auto & aabb		 = reg.emplace<Util::Math::AABB>( p_entity );
-		auto & uid		 = reg.emplace<System::UID>( p_entity );
+		auto & uid		 = reg.emplace<App::System::UID>( p_entity );
 
-		auto & visibility	  = reg.emplace<System::Visibility>( p_entity );
-		auto & selection	  = reg.emplace<System::Selection>( p_entity );
-		auto & representation = reg.emplace<System::Representation>( p_entity );
-		auto & color		  = reg.emplace<System::Color>( p_entity );
+		auto & visibility	  = reg.emplace<App::System::Visibility>( p_entity );
+		auto & selection	  = reg.emplace<App::System::Selection>( p_entity );
+		auto & representation = reg.emplace<App::System::Representation>( p_entity );
+		auto & color		  = reg.emplace<App::System::Color>( p_entity );
 
 		// UIDs: get from UID manager.
 		auto & uidManager = App::UID();
@@ -219,7 +235,7 @@ namespace VTX::App::System
 		ACTION().execute<Action::Camera::Orient>( aabb );
 	}
 
-	void deliver( PendingSystem && p_data ) noexcept
+	void deliver( Pending && p_data ) noexcept
 	{
 		if ( p_data.onlyTrajectory && p_data.entity )
 		{
@@ -233,7 +249,7 @@ namespace VTX::App::System
 			{
 				addTrajectory( *p_data.entity, p_data );
 
-				if ( auto uid = REG().try_get<System::UID>( *p_data.entity ) )
+				if ( auto uid = REG().try_get<App::System::UID>( *p_data.entity ) )
 				{
 					// Trigger trajectory event.
 					HUB().trigger<Events::TrajectoryLoad>( { *p_data.entity,
@@ -256,4 +272,4 @@ namespace VTX::App::System
 		}
 	}
 
-} // namespace VTX::App::System
+} // namespace VTX::App::Extractor

@@ -17,7 +17,8 @@ namespace VTX
 	constexpr size_t TypeCount = size_t { 1 } << std::numeric_limits<T>::digits;
 
 	constexpr float EPSILON	 = 1e-4f;
-	constexpr float _MS_TO_S = 1e-3f;
+	constexpr float EPSILON2 = EPSILON * EPSILON;
+	constexpr float MS_TO_S	 = 1e-3f;
 
 	constexpr Vec2i VEC2I_ZERO	 = Vec2i( 0, 0 );
 	constexpr Vec3i VEC3I_ZERO	 = Vec3i( 0, 0, 0 );

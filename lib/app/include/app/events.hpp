@@ -103,6 +103,11 @@ namespace VTX::App::Events
 		Entity system;
 	};
 
+	struct MeshLoad
+	{
+		Entity mesh;
+	};
+
 	struct TrajectoryLoad
 	{
 		Entity				   system;

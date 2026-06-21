@@ -33,12 +33,12 @@ namespace VTX::App::Pass
 		void _onUpdateTransform( Registry &, Entity );
 
 		/**
-		 * @brief Recompute the scene AABB when a system is removed.
+		 * @brief Recompute the scene AABB when a scene item is removed.
 		 */
-		void _onSystemDestroy( Registry &, Entity );
+		void _onSceneItemDestroy( Registry &, Entity );
 
 		/**
-		 * @brief Recompute scene AABB from all systems.
+		 * @brief Recompute scene AABB from all scene items.
 		 */
 		void _recomputeSceneAABB( Registry &, Entity p_excluded = InvalidEntity );
 

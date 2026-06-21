@@ -3,21 +3,21 @@
 #include "app/action/application.hpp"
 #include "app/action/scene.hpp"
 #include "app/constants.hpp"
-#include "app/events.hpp"
+#include "app/extractor/mesh.hpp"
+#include "app/extractor/system.hpp"
 #include "app/network/network_manager.hpp"
 #include "app/python_binding/interpretor.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
-#include "app/system/load.hpp"
 #include "app/system/trajectory_preparation.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/writer.hpp"
 #include "app/threading/thread_manager.hpp"
 #include <fmt/format.h>
+#include <io/mesh_reader.hpp>
 #include <renderer/camera.hpp>
 #include <renderer/renderer.hpp>
 #include <util/chrono.hpp>
-#include <util/event_hub.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Action::IO
@@ -26,11 +26,14 @@ namespace VTX::App::Action::IO
 
 	void Open::execute( const FilePath & p_path )
 	{
-		// TODO: check file format to redirect to the correct loader.
-		std::string extension = p_path.extension().string();
+		const std::string extension = p_path.extension().string();
 		if ( extension == ".py" || extension == ".vtx" )
 		{
 			ACTION().execute<RunPythonScript>( p_path );
+		}
+		else if ( VTX::IO::isMeshFileFormat( p_path ) )
+		{
+			ACTION().execute<LoadMesh>( p_path );
 		}
 		else
 		{
@@ -40,10 +43,10 @@ namespace VTX::App::Action::IO
 
 	struct _SystemIo
 	{
-		Util::StopToken						   stopToken;
-		Threading::OptionalThreadReference	   threadRef;
-		std::latch							   extractorCreation { 1 };
-		std::optional<System::SystemExtractor> extractor;
+		Util::StopToken					   stopToken;
+		Threading::OptionalThreadReference threadRef;
+		std::latch						   extractorCreation { 1 };
+		std::optional<Extractor::System>   extractor;
 
 		inline void wait() noexcept
 		{
@@ -72,7 +75,7 @@ namespace VTX::App::Action::IO
 
 	void LoadSystem::execute( FilePath p_path )
 	{
-		_data->extractor = System::SystemExtractor( std::move( p_path ) );
+		_data->extractor = Extractor::System( std::move( p_path ) );
 		_data->extractorCreation.count_down();
 
 		_data->start_extraction();
@@ -80,13 +83,21 @@ namespace VTX::App::Action::IO
 
 	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
 	{
-		_data->extractor = System::SystemExtractor( std::move( p_path ), std::move( p_buffer ) );
+		_data->extractor = Extractor::System( std::move( p_path ), std::move( p_buffer ) );
 		_data->extractorCreation.count_down();
 
 		_data->start_extraction();
 	}
 
 	void LoadSystem::wait() noexcept { _data->wait(); }
+
+	LoadMesh::LoadMesh( Util::StopToken p_stopToken, Threading::OptionalThreadReference p_threadRef ) :
+		_stopToken( std::move( p_stopToken ) ), _threadRef( std::move( p_threadRef ) )
+	{
+	}
+
+	void LoadMesh::execute( FilePath p_path )
+	{ Extractor::Mesh( std::move( p_path ) )( std::move( _stopToken ), _threadRef ); }
 
 	struct WriteSelection::_WriterIo
 	{
@@ -138,7 +149,7 @@ namespace VTX::App::Action::IO
 			return;
 		}
 
-		_data->extractor = System::SystemExtractor( p_entity, p_path );
+		_data->extractor = Extractor::System( p_entity, p_path );
 		_data->extractorCreation.count_down();
 		_data->start_extraction();
 	}

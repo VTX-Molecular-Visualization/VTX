@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_SYSTEM_TRAJECTORY_PREPARATION__
 #define __VTX_APP_SYSTEM_TRAJECTORY_PREPARATION__
 
-#include "app/system/load.hpp"
 #include "app/system/trajectory.hpp"
+#include <io/reader.hpp>
 
 namespace VTX::App::System
 {
@@ -21,6 +21,6 @@ namespace VTX::App::System
 	 * @param
 	 * @param
 	 */
-	void startAsyncTrajectoryWork( const Entity &, PendingSystem & ) noexcept;
+	void startAsyncTrajectoryWork( const Entity &, IO::SystemReader && ) noexcept;
 } // namespace VTX::App::System
 #endif

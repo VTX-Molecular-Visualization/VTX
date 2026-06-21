@@ -48,7 +48,7 @@ namespace VTX::App::Controller
 		if ( translation != VEC3F_ZERO )
 		{
 			translation *= p_settings.translationSpeed;
-			translation *= p_deltaTime * _MS_TO_S;
+			translation *= p_deltaTime * MS_TO_S;
 
 			if ( input.accelerate() )
 			{

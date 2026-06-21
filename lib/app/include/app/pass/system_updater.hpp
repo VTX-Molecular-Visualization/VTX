@@ -9,7 +9,6 @@
 
 namespace VTX::App::System
 {
-	struct PendingSystem;
 	struct Color;
 	struct Representation;
 	struct Selection;

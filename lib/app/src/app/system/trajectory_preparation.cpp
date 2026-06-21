@@ -85,16 +85,12 @@ namespace VTX::App::System
 	void prepare( TrajectorySingleFrame & p_trajectory, IO::SystemReader && p_loader ) noexcept
 	{ p_loader.get( p_trajectory.atomPositions, 0 ); }
 
-	void startAsyncTrajectoryWork( const Entity & p_entity, PendingSystem & p_pendingData ) noexcept
+	void startAsyncTrajectoryWork( const Entity & p_entity, IO::SystemReader && p_reader ) noexcept
 	{
 		if ( auto traj = REG().try_get<TrajectoryFullBuffer>( p_entity ) )
 		{
 			traj->threadId
-				= THREAD()
-					  .createThread(
-						  System::TrajectoryFullBufferReader( *traj, std::move( p_pendingData.reader.value() ) )
-					  )
-					  .getId();
+				= THREAD().createThread( System::TrajectoryFullBufferReader( *traj, std::move( p_reader ) ) ).getId();
 		}
 	}
 

@@ -2,7 +2,6 @@
 #include "app/events.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
-#include "app/system/load.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/trajectory.hpp"

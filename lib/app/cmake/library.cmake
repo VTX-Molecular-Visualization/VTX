@@ -13,7 +13,7 @@ target_sources(vtx_app
 )
 
 # Tests.
-file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
+file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*.cpp")
 add_executable(vtx_app_test ${SOURCES_TEST})
 set_property(TARGET vtx_app_test PROPERTY FOLDER "test")
 vtx_configure_target(vtx_app_test)

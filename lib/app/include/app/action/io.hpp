@@ -29,10 +29,12 @@ namespace VTX::App::Action::IO
 	};
 
 	struct _SystemIo;
+
 	struct _SystemIoDel
 	{
 		void operator()( _SystemIo * ) noexcept;
 	};
+
 	using _SystemIoPtr = std::unique_ptr<_SystemIo, _SystemIoDel>;
 
 	/**
@@ -52,6 +54,21 @@ namespace VTX::App::Action::IO
 	};
 
 	/**
+	 * @brief Load a triangle mesh from disk.
+	 */
+	struct LoadMesh
+	{
+		LoadMesh() = default;
+		LoadMesh( Util::StopToken, Threading::OptionalThreadReference );
+
+		void execute( FilePath p_path );
+
+	  private:
+		Util::StopToken					   _stopToken;
+		Threading::OptionalThreadReference _threadRef;
+	};
+
+	/**
 	 * @brief Write a file containing atoms from selection
 	 */
 	struct WriteSelection
@@ -64,10 +81,12 @@ namespace VTX::App::Action::IO
 
 	  private:
 		struct _WriterIo;
+
 		struct _del
 		{
 			void operator()( _WriterIo * ) const noexcept;
 		};
+
 		std::unique_ptr<_WriterIo, _del> _data = nullptr;
 	};
 

@@ -9,12 +9,11 @@ namespace VTX::Core::Struct
 
 	struct Mesh
 	{
-		std::vector<Vec4f> vertices;
-		std::vector<Vec4f> normales;
-		std::vector<uint>  indices;
+		std::vector<Vec3f> vertices;
+		std::vector<Vec3f> normals;
+		std::vector<Index> indices;
 
-		// TODO: move.
-		void computeNormales();
+		void computeNormals();
 		void toIndexed();
 		void toNonIndexed();
 	};

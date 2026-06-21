@@ -82,9 +82,10 @@ class VTXRecipe(ConanFile):
         if self.options.renderer:
             self.requires("sdl/3.4.0")
             self.requires("imgui/1.92.7")
-        self.requires("stb/cci.20240531")
+        self.requires("stb/cci.20240531", force=True)
         self.requires("tinyexr/1.0.7")
         self.requires("entt/3.16.0")
+        self.requires("assimp/6.0.2")
         if self.options.python_binding:
             self.requires("pybind11/3.0.1")
         if self.options.ui_qt:

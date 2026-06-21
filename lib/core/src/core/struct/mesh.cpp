@@ -1,11 +1,13 @@
 #include "core/struct/mesh.hpp"
 #include <numeric>
+#include <util/constants.hpp>
 #include <util/math.hpp>
+#include <utility>
 
 namespace VTX::Core::Struct
 {
 
-	void Mesh::computeNormales()
+	void Mesh::computeNormals()
 	{
 		if ( indices.size() % 3 != 0 )
 		{
@@ -13,71 +15,102 @@ namespace VTX::Core::Struct
 			return;
 		}
 
-		normales.resize( vertices.size(), VEC4F_ZERO );
+		normals.assign( vertices.size(), Vec3f( 0.f ) );
 
-		for ( uint i = 0; i < indices.size() - 2; i += 3 )
+		for ( size_t i = 0; i < indices.size(); i += 3 )
 		{
+			assert( indices[ i ] < vertices.size() );
+			assert( indices[ i + 1 ] < vertices.size() );
+			assert( indices[ i + 2 ] < vertices.size() );
+
 			Vec3f normal = Util::Math::cross(
-				Vec3f( vertices[ indices[ i + 1 ] ] - vertices[ indices[ i + 2 ] ] ),
-				Vec3f( vertices[ indices[ i + 1 ] ] - vertices[ indices[ i + 0 ] ] )
+				vertices[ indices[ i + 1 ] ] - vertices[ indices[ i ] ],
+				vertices[ indices[ i + 2 ] ] - vertices[ indices[ i ] ]
 			);
 
-			assert( Util::Math::length( normal ) != 0.f );
+			if ( Util::Math::length2( normal ) == 0.f )
+			{
+				continue;
+			}
 			Util::Math::normalizeSelf( normal );
 
-			for ( uint j = 0; j < 3; ++j )
+			for ( size_t j = 0; j < 3; ++j )
 			{
-				normales[ indices[ i + j ] ].x += normal.x;
-				normales[ indices[ i + j ] ].y += normal.y;
-				normales[ indices[ i + j ] ].z += normal.z;
+				normals[ indices[ i + j ] ] += normal;
 			}
 		}
 
-		for ( uint i = 0; i < normales.size(); ++i )
+		for ( Vec3f & normal : normals )
 		{
-			Util::Math::normalizeSelf( normales[ i ] );
+			if ( Util::Math::length2( normal ) != 0.f )
+			{
+				Util::Math::normalizeSelf( normal );
+			}
 		}
-
-		normales.shrink_to_fit();
 	}
 
 	void Mesh::toIndexed()
 	{
-		const float		   epsilon2 = EPSILON * EPSILON;
-		std::vector<Vec4f> vertices = std::vector<Vec4f>();
-		std::vector<uint>  indices( indices.size() );
+		std::vector<Vec3f> indexedVertices;
+		std::vector<Vec3f> indexedNormals;
+		std::vector<Index> indexedIndices;
+		indexedVertices.reserve( vertices.size() );
+		indexedNormals.reserve( normals.size() );
+		indexedIndices.reserve( vertices.size() );
 
-		for ( uint i = 0; i < vertices.size(); ++i )
+		const bool hasNormals = normals.size() == vertices.size();
+		for ( size_t i = 0; i < vertices.size(); ++i )
 		{
 			bool found = false;
-			for ( uint j = 0; j < vertices.size() && found == false; ++j )
+			for ( size_t j = 0; j < indexedVertices.size(); ++j )
 			{
-				if ( Util::Math::length2( vertices[ j ] - vertices[ i ] ) < epsilon2 )
+				const bool samePosition = Util::Math::length2( indexedVertices[ j ] - vertices[ i ] ) < EPSILON2;
+				const bool sameNormal
+					= not hasNormals || Util::Math::length2( indexedNormals[ j ] - normals[ i ] ) < EPSILON2;
+				if ( samePosition && sameNormal )
 				{
-					indices[ i ] = j;
-					found		 = true;
+					indexedIndices.emplace_back( static_cast<Index>( j ) );
+					found = true;
 					break;
 				}
 			}
-			if ( found == false )
+			if ( not found )
 			{
-				vertices.push_back( vertices[ i ] );
-				indices[ i ] = uint( vertices.size() ) - 1;
+				indexedVertices.emplace_back( vertices[ i ] );
+				if ( hasNormals )
+				{
+					indexedNormals.emplace_back( normals[ i ] );
+				}
+				indexedIndices.emplace_back( static_cast<Index>( indexedVertices.size() - 1 ) );
 			}
 		}
 
-		vertices = vertices;
-		indices	 = indices;
+		vertices = std::move( indexedVertices );
+		normals	 = std::move( indexedNormals );
+		indices	 = std::move( indexedIndices );
 	}
 
 	void Mesh::toNonIndexed()
 	{
-		std::vector<Vec4f> vertices( indices.size() );
-		for ( uint i = 0; i < indices.size(); ++i )
+		std::vector<Vec3f> nonIndexedVertices;
+		std::vector<Vec3f> nonIndexedNormals;
+		nonIndexedVertices.reserve( indices.size() );
+		nonIndexedNormals.reserve( indices.size() );
+
+		const bool hasNormals = normals.size() == vertices.size();
+		for ( const Index index : indices )
 		{
-			vertices[ i ] = vertices[ indices[ i ] ];
+			assert( index < vertices.size() );
+			nonIndexedVertices.emplace_back( vertices[ index ] );
+			if ( hasNormals )
+			{
+				nonIndexedNormals.emplace_back( normals[ index ] );
+			}
 		}
-		vertices = vertices;
+
+		vertices = std::move( nonIndexedVertices );
+		normals	 = std::move( nonIndexedNormals );
+		indices.resize( vertices.size() );
 		std::iota( indices.begin(), indices.end(), 0 );
 	}
 } // namespace VTX::Core::Struct

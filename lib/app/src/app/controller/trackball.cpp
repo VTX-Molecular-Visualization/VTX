@@ -32,7 +32,7 @@ namespace VTX::App::Controller
 		using namespace Util;
 		auto & input = INPUT();
 
-		const float deltaTime	  = p_delta * _MS_TO_S;
+		const float deltaTime	  = p_delta * MS_TO_S;
 		const float rotationSpeed = p_settings.rotationSpeed * Setting::ROTATION_SPEED_MULTIPLIER;
 
 		// Wheel.

@@ -2,6 +2,7 @@
 #include "app/scene/color_layout.hpp"
 #include "app/scene/graphics_config.hpp"
 #include "app/services.hpp"
+#include <core/struct/mesh.hpp>
 #include <core/struct/topology.hpp>
 #include <renderer/renderer.hpp>
 #include <util/math/aabb.hpp>
@@ -16,7 +17,8 @@ namespace VTX::App::Pass
 		// Update functions.
 		reg.on_update<Util::Math::AABB>().connect<&SceneUpdater::_onUpdateAABB>( this );
 		reg.on_update<Util::Math::Transform>().connect<&SceneUpdater::_onUpdateTransform>( this );
-		reg.on_destroy<Core::Struct::Topology>().connect<&SceneUpdater::_onSystemDestroy>( this );
+		reg.on_destroy<Core::Struct::Topology>().connect<&SceneUpdater::_onSceneItemDestroy>( this );
+		reg.on_destroy<Core::Struct::Mesh>().connect<&SceneUpdater::_onSceneItemDestroy>( this );
 		// TODO: Keep only construct and use custom event to update each value at once.
 		reg.on_construct<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
 		reg.on_update<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
@@ -40,8 +42,10 @@ namespace VTX::App::Pass
 
 	void SceneUpdater::_onUpdateTransform( Registry & p_r, Entity p_e )
 	{
-		auto systems = p_r.view<Core::Struct::Topology, Util::Math::AABB>();
-		if ( not systems.contains( p_e ) )
+		const bool isSceneItem
+			= p_r.all_of<Util::Math::AABB>( p_e )
+			  && ( p_r.all_of<Core::Struct::Topology>( p_e ) || p_r.all_of<Core::Struct::Mesh>( p_e ) );
+		if ( not isSceneItem )
 		{
 			return;
 		}
@@ -49,10 +53,7 @@ namespace VTX::App::Pass
 		_recomputeSceneAABB( p_r );
 	}
 
-	void SceneUpdater::_onSystemDestroy( Registry & p_r, Entity p_e )
-	{
-		_recomputeSceneAABB( p_r, p_e );
-	}
+	void SceneUpdater::_onSceneItemDestroy( Registry & p_r, Entity p_e ) { _recomputeSceneAABB( p_r, p_e ); }
 
 	void SceneUpdater::_recomputeSceneAABB( Registry & p_r, Entity p_excluded )
 	{
@@ -71,6 +72,18 @@ namespace VTX::App::Pass
 					}
 
 					const auto & [ aabb, transform ] = systems.get<Util::Math::AABB, Util::Math::Transform>( system );
+					p_sceneAABB.extend( aabb.transformed( transform ) );
+				}
+
+				auto meshes = p_r.view<Core::Struct::Mesh, Util::Math::AABB, Util::Math::Transform>();
+				for ( const Entity mesh : meshes )
+				{
+					if ( mesh == p_excluded )
+					{
+						continue;
+					}
+
+					const auto & [ aabb, transform ] = meshes.get<Util::Math::AABB, Util::Math::Transform>( mesh );
 					p_sceneAABB.extend( aabb.transformed( transform ) );
 				}
 			}
