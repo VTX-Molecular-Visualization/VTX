@@ -1,12 +1,12 @@
 #version 460 core
 
-#include "../constant.glsl"
 #include "../chemdb/atoms.glsl"
+#include "../constant.glsl"
+#include "../layout_indexed_indirect_draws.glsl"
 #include "../layout_uniforms_camera.glsl"
 #include "../layout_uniforms_color.glsl"
 #include "../layout_uniforms_model.glsl"
 #include "../layout_uniforms_representation.glsl"
-#include "../struct/draw_indexed_indirect.glsl"
 #include "struct_sphere.glsl"
 #include "struct_vertex_shader.glsl"
 
@@ -15,33 +15,26 @@
 
 // Out.
 flat out StructVertexShader vsData;
-flat out StructSphere vsSphere;
-
-layout( std430, binding = 10 ) readonly buffer SphereIndirectDraws
-{
-	uint sphereDrawCount;
-	uint sphereDrawPadding0;
-	uint sphereDrawPadding1;
-	uint sphereDrawPadding2;
-	DrawIndexedIndirectRecord sphereDraws[];
-};
+flat out StructSphere		vsSphere;
 
 void main()
 {
-	const uint idModel = sphereDraws[ gl_DrawID ].idModel;
+	const uint idModel = indexedDraws[ gl_DrawID ].idModel;
 
-	vsSphere.viewPos	 = vec3( uniformsModel[ idModel ].matrixModelView * vec4( inAtomPosition, 1.f ) );
-	vsSphere.color		 = uniformsColor[ inAtomColor ];
-	//vsSphere.sphereColor		 = vec4( 1.f, 1.f, 1.f, 1.f );
+	vsSphere.viewPos = vec3( uniformsModel[ idModel ].matrixModelView * vec4( inAtomPosition, 1.f ) );
+	vsSphere.color	 = uniformsColor[ inAtomColor ];
+	// vsSphere.sphereColor		 = vec4( 1.f, 1.f, 1.f, 1.f );
 	Representation representation = uniformsRepresentation[ inAtomRepresentation ];
-	vsSphere.radius	 = bool( representation.isRadiusSphereFixed ) ? representation.radiusSphereFixed : getVdwRadius( inAtomSymbol ) + representation.radiusSphereAdd;
-	vsSphere.id		 = inAtomId;
-	vsSphere.isSelected	 = int( inAtomFlag ) & ( 1 << FLAG_SELECTION );	
+	vsSphere.radius				  = bool( representation.isRadiusSphereFixed )
+										? representation.radiusSphereFixed
+										: getVdwRadius( inAtomSymbol ) + representation.radiusSphereAdd;
+	vsSphere.id					  = inAtomId;
+	vsSphere.isSelected			  = int( inAtomFlag ) & ( 1 << FLAG_SELECTION );
 
 	if ( uniformsCamera.isCameraPerspective == 1 )
 	{
 		// Compute normalized view vector.
-		vsSphere.dotViewPos  = dot( vsSphere.viewPos, vsSphere.viewPos );
+		vsSphere.dotViewPos		  = dot( vsSphere.viewPos, vsSphere.viewPos );
 		const float dSphereCenter = sqrt( vsSphere.dotViewPos );
 		const vec3	view		  = vsSphere.viewPos / dSphereCenter;
 
@@ -66,9 +59,9 @@ void main()
 	}
 	else // Orthographic
 	{
-		vsData.vImpU = vec3(-1, 0, 0) * vsSphere.radius;
-		vsData.vImpV = vec3(0, -1, 0) * vsSphere.radius;
+		vsData.vImpU = vec3( -1, 0, 0 ) * vsSphere.radius;
+		vsData.vImpV = vec3( 0, -1, 0 ) * vsSphere.radius;
 
-		gl_Position = vec4( vsSphere.viewPos + vec3(0, 0, vsSphere.radius), 1.f );
+		gl_Position = vec4( vsSphere.viewPos + vec3( 0, 0, vsSphere.radius ), 1.f );
 	}
 }

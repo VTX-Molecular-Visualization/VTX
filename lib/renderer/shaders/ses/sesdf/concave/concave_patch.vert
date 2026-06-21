@@ -1,11 +1,11 @@
 #version 460 core
 
 #include "../../../constant.glsl"
+#include "../../../layout_indexed_indirect_draws.glsl"
 #include "../../../layout_uniforms_camera.glsl"
 #include "../../../layout_uniforms_color.glsl"
 #include "../../../layout_uniforms_model.glsl"
 #include "../../../layout_uniforms_representation.glsl"
-#include "../../../struct/draw_indexed_indirect.glsl"
 #include "struct_plane.glsl"
 #include "struct_tetrahedron.glsl"
 #include "struct_vertex_shader.glsl"
@@ -27,15 +27,6 @@ layout( std430, binding = 9 ) readonly buffer AtomFlags { uint atomFlagWords[]; 
 flat out StructVertexShader vsData;
 flat out StructTetrahedron	vsTetrahedron;
 
-layout( std430, binding = 10 ) readonly buffer ConcavePatchIndirectDraws
-{
-	uint					  concavePatchDrawCount;
-	uint					  concavePatchDrawPadding0;
-	uint					  concavePatchDrawPadding1;
-	uint					  concavePatchDrawPadding2;
-	DrawIndexedIndirectRecord concavePatchDraws[];
-};
-
 uint readPackedAtomColor( const uint p_index )
 {
 	const uint word = atomColorWords[ p_index >> 2 ];
@@ -56,7 +47,7 @@ uint baseHash( uint p )
 	const uint PRIME32_2 = 2246822519U, PRIME32_3 = 3266489917U;
 	const uint PRIME32_4 = 668265263U, PRIME32_5 = 374761393U;
 	uint	   h32 = p + PRIME32_5;
-	h32			   = PRIME32_4
+	h32 = PRIME32_4
 		  * ( ( h32 << 17 )
 			  | ( h32 >> ( 32 - 17 ) ) ); // Initial testing suggests this line could be omitted for extra perf
 	h32 = PRIME32_2 * ( h32 ^ ( h32 >> 15 ) );
@@ -75,7 +66,7 @@ float length2( vec3 v ) { return dot( v, v ); }
 
 void main()
 {
-	const DrawIndexedIndirectRecord draw		   = concavePatchDraws[ gl_DrawID ];
+	const DrawIndexedIndirectRecord draw		   = indexedDraws[ gl_DrawID ];
 	const uint						idModel		   = draw.idModel;
 	const uint						representation = draw.padding1;
 	const uint						probeId		   = draw.padding0 + uint( gl_VertexID );
@@ -103,8 +94,8 @@ void main()
 	const uint rendererAtomId3 = rendererAtomIds[ uint( intersectionIndices.z ) ];
 	vsTetrahedron.selection	   = ( readPackedAtomFlag( rendererAtomId1 ) | readPackedAtomFlag( rendererAtomId2 )
 								   | readPackedAtomFlag( rendererAtomId3 ) )
-							  & ( 1u << FLAG_SELECTION );
-	vsTetrahedron.color = sesColor(
+								 & ( 1u << FLAG_SELECTION );
+	vsTetrahedron.color		   = sesColor(
 		( uniformsColor[ readPackedAtomColor( rendererAtomId1 ) ]
 		  + uniformsColor[ readPackedAtomColor( rendererAtomId2 ) ]
 		  + uniformsColor[ readPackedAtomColor( rendererAtomId3 ) ] )
@@ -135,9 +126,9 @@ void main()
 	vsTetrahedron.plane2 = Plane( n2, dot( p1, n2 ) );
 	vsTetrahedron.plane3 = Plane( n3, dot( p1, n3 ) );
 
-	vec3		vViewCenter		 = p1;
+	vec3 vViewCenter = p1;
 
-	const float sphereRad  = uniformsRepresentation[ representation ].SESProbeRadius;
+	const float sphereRad = uniformsRepresentation[ representation ].SESProbeRadius;
 	if ( uniformsCamera.isCameraPerspective == 1 )
 	{
 		// Impostor in front of the sphere.
@@ -166,6 +157,6 @@ void main()
 	{
 		vsData.vImpU = vec3( -1.f, 0.f, 0.f ) * sphereRad;
 		vsData.vImpV = vec3( 0.f, -1.f, 0.f ) * sphereRad;
-		gl_Position  = vec4( vViewCenter + vec3( 0.f, 0.f, sphereRad ), 1.f );
+		gl_Position	 = vec4( vViewCenter + vec3( 0.f, 0.f, sphereRad ), 1.f );
 	}
 }

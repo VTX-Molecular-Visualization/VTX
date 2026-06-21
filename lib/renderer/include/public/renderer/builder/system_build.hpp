@@ -1042,51 +1042,6 @@ namespace VTX::Renderer::Builder
 		}
 	};
 
-	struct SystemModels
-	{
-		template<typename Systems>
-		static void upload( Context::ContextWrapper & p_context, Systems & p_systems, const Cache::Camera & p_camera )
-		{
-			if ( p_systems.empty() )
-			{
-				return;
-			}
-
-			BinaryBuffer430 buffer;
-			uint32_t		modelIndex = 0;
-			for ( auto entry : p_systems.entries() )
-			{
-				Cache::System & system = entry.resource;
-				system.modelIndex	   = modelIndex++;
-
-				const Mat4f matrixModelView	   = p_camera.matView * system.transform;
-				const Mat4f matrixModelViewInv = Util::Math::inverse( matrixModelView );
-				const Mat4f matrixNormal	   = Util::Math::transpose( matrixModelViewInv );
-
-				buffer.write( matrixModelView );
-				buffer.write( matrixModelViewInv );
-				buffer.write( matrixNormal );
-			}
-
-			buffer.close();
-			p_context.setBuffer( { "Models" }, buffer );
-		}
-	};
-
-	struct DrawRanges
-	{
-		template<typename Systems>
-		static void buildDrawRanges(
-			Context::ContextWrapper & p_context,
-			Geometries &			  p_geometries,
-			Systems &				  p_systems
-		)
-		{
-			// Util::ScopedChrono timer( "[BUILDER] DrawRanges::buildDrawRanges" );
-
-			p_geometries.buildDrawRanges( p_context, p_systems );
-		}
-	};
 } // namespace VTX::Renderer::Builder
 
 #endif

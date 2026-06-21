@@ -1,11 +1,11 @@
 #version 460 core
 
 #include "../../../constant.glsl"
+#include "../../../layout_indexed_indirect_draws.glsl"
 #include "../../../layout_uniforms_camera.glsl"
 #include "../../../layout_uniforms_color.glsl"
 #include "../../../layout_uniforms_model.glsl"
 #include "../../../layout_uniforms_representation.glsl"
-#include "../../../struct/draw_indexed_indirect.glsl"
 #include "struct_circle.glsl"
 #include "struct_vertex_shader.glsl"
 
@@ -23,15 +23,6 @@ layout( std430, binding = 9 ) readonly buffer AtomFlags { uint atomFlagWords[]; 
 // Out.
 flat out StructVertexShader vsData;
 flat out StructCircle		vsCircle;
-
-layout( std430, binding = 10 ) readonly buffer CirclePatchIndirectDraws
-{
-	uint					  circlePatchDrawCount;
-	uint					  circlePatchDrawPadding0;
-	uint					  circlePatchDrawPadding1;
-	uint					  circlePatchDrawPadding2;
-	DrawIndexedIndirectRecord circlePatchDraws[];
-};
 
 uint readPackedAtomColor( const uint p_index )
 {
@@ -112,7 +103,7 @@ Bound getCircleBoundingBox( vec3 n )
 
 void main()
 {
-	const DrawIndexedIndirectRecord draw			= circlePatchDraws[ gl_DrawID ];
+	const DrawIndexedIndirectRecord draw			= indexedDraws[ gl_DrawID ];
 	const uint						idModel			= draw.idModel;
 	const uint						representation	= draw.padding1;
 	const uint						rendererAtomId1 = rendererAtomIds[ atomsId.x ];
@@ -161,11 +152,11 @@ void main()
 
 	vsCircle.bbPos = ( sCircle.xyz + sCircle2.xyz ) * .5 + ( sMax + sMin ) * .5;
 
-	vec3 p = x1p;
-	vec3 x = normalize( p - vsCircle.firstAtom.xyz ) * vsCircle.firstAtom.w;
-	vec3 c = ( length( p - vsCircle.firstAtom.xyz )
-			   / ( length( p - vsCircle.secondAtom.xyz ) + length( p - vsCircle.firstAtom.xyz ) ) )
-			 * ( vsCircle.secondAtom.xyz - vsCircle.firstAtom.xyz );
+	vec3  p			 = x1p;
+	vec3  x			 = normalize( p - vsCircle.firstAtom.xyz ) * vsCircle.firstAtom.w;
+	vec3  c			 = ( length( p - vsCircle.firstAtom.xyz )
+						 / ( length( p - vsCircle.secondAtom.xyz ) + length( p - vsCircle.firstAtom.xyz ) ) )
+					   * ( vsCircle.secondAtom.xyz - vsCircle.firstAtom.xyz );
 	float d			 = length( x - c );
 	c				 = c + vsCircle.firstAtom.xyz;
 	vsCircle.vSphere = vec4( c, d );
@@ -200,6 +191,6 @@ void main()
 	{
 		vsData.vImpU = vec3( -1.f, 0.f, 0.f ) * vsCircle.vSphere.w;
 		vsData.vImpV = vec3( 0.f, -1.f, 0.f ) * vsCircle.vSphere.w;
-		gl_Position  = vec4( vsCircle.vSphere.xyz + vec3( 0.f, 0.f, vsCircle.vSphere.w ), 1.f );
+		gl_Position	 = vec4( vsCircle.vSphere.xyz + vec3( 0.f, 0.f, vsCircle.vSphere.w ), 1.f );
 	}
 }

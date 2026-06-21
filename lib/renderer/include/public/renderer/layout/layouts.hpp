@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_LAYOUTS__
 
 #include "renderer/layout/atoms.hpp"
+#include "renderer/layout/meshes.hpp"
 #include "renderer/layout/residues.hpp"
 #include "renderer/layout/voxels.hpp"
 
@@ -11,12 +12,14 @@ namespace VTX::Renderer
 	{
 	  public:
 		Layout::Atoms	 atoms;
+		Layout::Meshes	 meshes;
 		Layout::Residues residues;
 		Layout::Voxels	 voxels;
 
 		void clear()
 		{
 			atoms.clear();
+			meshes.clear();
 			residues.clear();
 			voxels.clear();
 		}
@@ -30,6 +33,7 @@ namespace VTX::Renderer
 		void resize( Context::ContextWrapper & p_context )
 		{
 			atoms.resize( p_context );
+			meshes.resize( p_context );
 			residues.resize( p_context );
 			voxels.resize( p_context );
 		}

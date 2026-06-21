@@ -6,6 +6,7 @@
 #include "renderer/descriptors.hpp"
 #include "renderer/graphics_config.hpp"
 #include "renderer/representation.hpp"
+#include <core/struct/mesh.hpp>
 #include <core/struct/topology.hpp>
 #include <cstdint>
 #include <span>
@@ -132,6 +133,15 @@ namespace VTX::Renderer::Cache
 		Data data;
 
 		// Computed.
+		uint32_t modelIndex = 0;
+	};
+
+	struct Mesh
+	{
+		Mat4f transform;
+
+		const Core::Struct::Mesh * data = nullptr;
+
 		uint32_t modelIndex = 0;
 	};
 

@@ -42,19 +42,20 @@ namespace VTX::App::Pass
 
 	void SceneUpdater::_onUpdateTransform( Registry & p_r, Entity p_e )
 	{
+		// TODO: maybe be used custom event instead of this.
 		const bool isSceneItem
 			= p_r.all_of<Util::Math::AABB>( p_e )
 			  && ( p_r.all_of<Core::Struct::Topology>( p_e ) || p_r.all_of<Core::Struct::Mesh>( p_e ) );
-		if ( not isSceneItem )
-		{
-			return;
-		}
 
-		_recomputeSceneAABB( p_r );
+		if ( isSceneItem )
+		{
+			_recomputeSceneAABB( p_r );
+		}
 	}
 
 	void SceneUpdater::_onSceneItemDestroy( Registry & p_r, Entity p_e ) { _recomputeSceneAABB( p_r, p_e ); }
 
+	// TODO: remove p_excluded and use custom event to trigger after deletion.
 	void SceneUpdater::_recomputeSceneAABB( Registry & p_r, Entity p_excluded )
 	{
 		p_r.patch<Util::Math::AABB>(

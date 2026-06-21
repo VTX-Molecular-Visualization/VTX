@@ -21,7 +21,7 @@ namespace VTX::IO
 	{
 	}
 
-	void MeshReader::get( VTX::Core::Struct::Mesh & p_mesh )
+	void MeshReader::get( std::vector<VTX::Core::Struct::Mesh> & p_meshes )
 	{
 		if ( not isMeshFileFormat( _filePath ) )
 		{
@@ -40,25 +40,8 @@ namespace VTX::IO
 			throw IOException( "Cannot load mesh '{}': {}", _filePath.string(), importer.GetErrorString() );
 		}
 
-		Core::Struct::Mesh mesh;
-		size_t			   vertexCount = 0;
-		size_t			   indexCount  = 0;
-		for ( unsigned int meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex )
-		{
-			const aiMesh & sourceMesh = *scene->mMeshes[ meshIndex ];
-			vertexCount += sourceMesh.mNumVertices;
-			indexCount += static_cast<size_t>( sourceMesh.mNumFaces ) * 3;
-		}
-
-		if ( vertexCount > TypeMax<Index> )
-		{
-			throw IOException( "Mesh '{}' has too many vertices", _filePath.string() );
-		}
-
-		mesh.vertices.reserve( vertexCount );
-		mesh.normals.reserve( vertexCount );
-		mesh.indices.reserve( indexCount );
-		bool hasMissingNormals = false;
+		std::vector<Core::Struct::Mesh> meshes;
+		meshes.reserve( scene->mNumMeshes );
 
 		for ( unsigned int meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex )
 		{
@@ -67,8 +50,23 @@ namespace VTX::IO
 				return;
 			}
 
-			const aiMesh & sourceMesh	= *scene->mMeshes[ meshIndex ];
-			const Index	   vertexOffset = static_cast<Index>( mesh.vertices.size() );
+			const aiMesh & sourceMesh  = *scene->mMeshes[ meshIndex ];
+			const size_t   vertexCount = sourceMesh.mNumVertices;
+			const size_t   indexCount  = static_cast<size_t>( sourceMesh.mNumFaces ) * 3;
+			if ( vertexCount > TypeMax<Index> )
+			{
+				throw IOException( "Mesh '{}' has too many vertices", _filePath.string() );
+			}
+			if ( indexCount > TypeMax<Index> )
+			{
+				throw IOException( "Mesh '{}' has too many indices", _filePath.string() );
+			}
+
+			Core::Struct::Mesh mesh;
+			mesh.vertices.reserve( vertexCount );
+			mesh.normals.reserve( vertexCount );
+			mesh.indices.reserve( indexCount );
+			bool hasMissingNormals = false;
 
 			for ( unsigned int vertexIndex = 0; vertexIndex < sourceMesh.mNumVertices; ++vertexIndex )
 			{
@@ -96,21 +94,32 @@ namespace VTX::IO
 
 				for ( unsigned int index = 0; index < face.mNumIndices; ++index )
 				{
-					mesh.indices.emplace_back( vertexOffset + static_cast<Index>( face.mIndices[ index ] ) );
+					if ( face.mIndices[ index ] >= sourceMesh.mNumVertices )
+					{
+						throw IOException( "Mesh '{}' contains an invalid vertex index", _filePath.string() );
+					}
+					mesh.indices.emplace_back( static_cast<Index>( face.mIndices[ index ] ) );
 				}
 			}
+
+			if ( mesh.indices.empty() )
+			{
+				continue;
+			}
+			if ( hasMissingNormals )
+			{
+				// mesh.computeNormals();
+			}
+
+			meshes.emplace_back( std::move( mesh ) );
 		}
 
-		if ( mesh.indices.empty() )
+		if ( meshes.empty() )
 		{
 			throw IOException( "Mesh '{}' contains no triangles", _filePath.string() );
 		}
-		if ( hasMissingNormals )
-		{
-			mesh.computeNormals();
-		}
 
-		p_mesh = std::move( mesh );
+		p_meshes = std::move( meshes );
 	}
 
 	bool isMeshFileFormat( const FilePath & p_path )

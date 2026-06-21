@@ -1,4 +1,6 @@
 #include "renderer/renderer.hpp"
+#include "renderer/builder/mesh_build.hpp"
+#include "renderer/builder/model_build.hpp"
 #include "renderer/builder/render_graph_build.hpp"
 #include "renderer/builder/system_build.hpp"
 #include <unordered_map>
@@ -247,11 +249,16 @@ namespace VTX::Renderer
 		if ( fullRefresh )
 		{
 			Builder::SystemRegistry::clearSystemRanges( _layouts, _geometries, geometryRefreshSystems );
+			Builder::MeshRegistry::clear( _layouts, _geometries );
 
 			for ( const auto entry : _systems.entries() )
 			{
 				Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, entry.handle );
 				geometryRefreshSystems.insert( entry.handle );
+			}
+			for ( const auto entry : _meshes.entries() )
+			{
+				Builder::MeshRegistry::registerMesh( _meshes, _geometries, _layouts, entry.handle );
 			}
 		}
 
@@ -347,7 +354,9 @@ namespace VTX::Renderer
 			}
 			geometryIndexesUploaded = true;
 
-			Builder::SystemModels::upload( _context, _systems, _camera );
+			Builder::MeshRegistry::upload( _context, _meshes, _geometries, _layouts );
+
+			Builder::Models::upload( _context, _camera, _systems, _meshes );
 		}
 
 		bool updateModels		  = fullRefresh;
@@ -434,7 +443,7 @@ namespace VTX::Renderer
 
 		if ( updateModels )
 		{
-			Builder::SystemModels::upload( _context, _systems, _camera );
+			Builder::Models::upload( _context, _camera, _systems, _meshes );
 		}
 
 		if ( not geometryVisibilityRefreshed )
@@ -484,7 +493,7 @@ namespace VTX::Renderer
 
 		if ( updateDrawRanges )
 		{
-			Builder::DrawRanges::buildDrawRanges( _context, _geometries, _systems );
+			_geometries.buildDrawRanges( _context, _systems, _meshes );
 		}
 		if ( updateGeometryChunks && Builder::RenderGraphRuntime::syncGeometryChunks( _graph, _geometries ) )
 		{
@@ -638,6 +647,33 @@ namespace VTX::Renderer
 		assert( _systems.contains( p_handle ) );
 
 		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::DELETING );
+	}
+
+	Desc::Handle Renderer::addMesh( Cache::Mesh && p_mesh )
+	{
+		const Desc::Handle handle = _meshes.emplace( std::move( p_mesh ) );
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ALL;
+		return handle;
+	}
+
+	void Renderer::patchMesh( const Desc::Handle p_handle, const Core::Struct::Mesh & p_mesh )
+	{
+		assert( _meshes.contains( p_handle ) );
+		_meshes.get( p_handle ).data = &p_mesh;
+	}
+
+	void Renderer::removeMesh( const Desc::Handle p_handle )
+	{
+		assert( _meshes.contains( p_handle ) );
+		_meshes.erase( p_handle );
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ALL;
+	}
+
+	void Renderer::setMeshTransform( const Desc::Handle p_handle, const Mat4f & p_transform )
+	{
+		assert( _meshes.contains( p_handle ) );
+		_meshes.get( p_handle ).transform = p_transform;
+		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::MODELS;
 	}
 
 	bool Renderer::ensureBufferChunk( const Desc::BufferRef & p_ref )

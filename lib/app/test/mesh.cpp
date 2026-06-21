@@ -18,15 +18,26 @@ TEST_CASE( "VTX_APP - Mesh - Load", "[mesh][load]" )
 	App::ACTION().execute<App::Action::IO::Open>( meshPath );
 
 	auto meshes = App::REG().view<Core::Struct::Mesh, App::Generic::Name, Util::Math::AABB, Util::Math::Transform>();
-	REQUIRE( std::distance( meshes.begin(), meshes.end() ) == 1 );
+	REQUIRE( meshes.begin() != meshes.end() );
 
-	const Entity entity = *meshes.begin();
-	const auto & mesh	= meshes.get<Core::Struct::Mesh>( entity );
-	const auto & name	= meshes.get<App::Generic::Name>( entity );
-	const auto & aabb	= meshes.get<Util::Math::AABB>( entity );
-	CHECK( mesh.vertices.size() == 6 );
-	CHECK( mesh.indices.size() == 6 );
-	CHECK( name.name == "two_triangles" );
+	size_t			 vertexCount = 0;
+	size_t			 indexCount	 = 0;
+	Util::Math::AABB aabb;
+	for ( const Entity entity : meshes )
+	{
+		const auto & mesh = meshes.get<Core::Struct::Mesh>( entity );
+		const auto & name = meshes.get<App::Generic::Name>( entity );
+		CHECK( name.name.starts_with( "two_triangles" ) );
+		vertexCount += mesh.vertices.size();
+		indexCount += mesh.indices.size();
+		for ( const Vec3f & vertex : mesh.vertices )
+		{
+			aabb.extend( vertex );
+		}
+	}
+
+	CHECK( vertexCount == 6 );
+	CHECK( indexCount == 6 );
 	CHECK( aabb.getMin() == Vec3f( 0.f, 0.f, 0.f ) );
 	CHECK( aabb.getMax() == Vec3f( 3.f, 1.f, 0.f ) );
 }

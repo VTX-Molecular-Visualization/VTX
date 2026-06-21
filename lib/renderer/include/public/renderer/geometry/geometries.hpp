@@ -9,6 +9,7 @@
 #include "renderer/geometry/ribbon.hpp"
 #include "renderer/geometry/ses.hpp"
 #include "renderer/geometry/sphere.hpp"
+#include "renderer/geometry/triangle.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::Renderer
@@ -17,6 +18,7 @@ namespace VTX::Renderer
 	{
 	  public:
 		Geometry::Sphere   spheres;
+		Geometry::Triangle triangles;
 		Geometry::Cylinder cylinders;
 		Geometry::Ribbon   ribbons;
 		Geometry::Grid	   grid;
@@ -25,6 +27,7 @@ namespace VTX::Renderer
 		void clear()
 		{
 			clearSystems();
+			triangles.clear();
 			grid.clear();
 		}
 
@@ -82,7 +85,11 @@ namespace VTX::Renderer
 			ses.uploadIndexes( p_context, p_handle );
 		}
 
-		void resize( Context::ContextWrapper & p_context ) { resizeSystems( p_context ); }
+		void resize( Context::ContextWrapper & p_context )
+		{
+			resizeSystems( p_context );
+			triangles.resize( p_context );
+		}
 
 		void resizeSystems( Context::ContextWrapper & p_context )
 		{
@@ -92,8 +99,8 @@ namespace VTX::Renderer
 			ses.resize( p_context );
 		}
 
-		template<typename Systems>
-		void buildDrawRanges( Context::ContextWrapper & p_context, Systems & p_systems )
+		template<typename Systems, typename Meshes>
+		void buildDrawRanges( Context::ContextWrapper & p_context, Systems & p_systems, Meshes & p_meshes )
 		{
 			auto sphereDraws = spheres.toDrawIndexedIndirectCommands();
 			_setModelIndices( sphereDraws, p_systems );
@@ -109,6 +116,11 @@ namespace VTX::Renderer
 			_setModelIndices( ribbonDraws, p_systems );
 			_logDrawRanges( { Geometry::Ribbon::INDIRECT_RIBBONS }, ribbonDraws );
 			p_context.setBuffer( { Geometry::Ribbon::INDIRECT_RIBBONS }, _toBuffer( ribbonDraws ) );
+
+			auto triangleDraws = triangles.toDrawIndexedIndirectCommands();
+			_setModelIndices( triangleDraws, p_meshes );
+			_logDrawRanges( { Geometry::Triangle::INDIRECT_TRIANGLES }, triangleDraws );
+			p_context.setBuffer( { Geometry::Triangle::INDIRECT_TRIANGLES }, _toBuffer( triangleDraws ) );
 
 			const auto gridDraws = grid.toDrawIndirectCommands();
 			_logDrawRanges( { Geometry::Grid::INDIRECT_GRID }, gridDraws );

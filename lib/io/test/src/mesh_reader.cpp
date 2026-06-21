@@ -11,22 +11,28 @@ TEST_CASE( "VTX_IO - Read OBJ mesh", "[reader][mesh]" )
 
 	const FilePath meshPath = Util::Filesystem::getExecutableDir() / "data" / "two_triangles.obj";
 
-	Core::Struct::Mesh mesh;
-	Util::StopToken	   stopToken;
-	IO::MeshReader	   reader( meshPath, stopToken );
-	reader.get( mesh );
+	std::vector<Core::Struct::Mesh> meshes;
+	Util::StopToken					stopToken;
+	IO::MeshReader					reader( meshPath, stopToken );
+	reader.get( meshes );
 
-	CHECK( mesh.vertices.size() == 6 );
-	CHECK( mesh.normals.size() == mesh.vertices.size() );
-	CHECK( mesh.indices.size() == 6 );
+	REQUIRE( not meshes.empty() );
+	size_t vertexCount = 0;
+	size_t indexCount  = 0;
 
-	Index maxIndex = 0;
-	for ( const Index index : mesh.indices )
+	for ( const Core::Struct::Mesh & mesh : meshes )
 	{
-		CHECK( index < mesh.vertices.size() );
-		maxIndex = std::max( maxIndex, index );
+		CHECK( mesh.normals.size() == mesh.vertices.size() );
+		for ( const Index index : mesh.indices )
+		{
+			CHECK( index < mesh.vertices.size() );
+		}
+		vertexCount += mesh.vertices.size();
+		indexCount += mesh.indices.size();
 	}
-	CHECK( maxIndex >= 3 );
+
+	CHECK( vertexCount == 6 );
+	CHECK( indexCount == 6 );
 }
 
 TEST_CASE( "VTX_IO - Detect Assimp mesh formats", "[reader][mesh]" )

@@ -1,11 +1,11 @@
 #version 460
 
 #include "../../../constant.glsl"
+#include "../../../layout_indexed_indirect_draws.glsl"
 #include "../../../layout_uniforms_camera.glsl"
 #include "../../../layout_uniforms_color.glsl"
 #include "../../../layout_uniforms_model.glsl"
 #include "../../../layout_uniforms_representation.glsl"
-#include "../../../struct/draw_indexed_indirect.glsl"
 #include "struct_segment.glsl"
 #include "struct_vertex_shader.glsl"
 
@@ -25,15 +25,6 @@ layout( std140, binding = 3 ) readonly buffer Probes { vec4 probes[]; };
 // Out.
 flat out StructVertexShader vsData;
 flat out StructSegment		vsSegment;
-
-layout( std430, binding = 10 ) readonly buffer SegmentPatchIndirectDraws
-{
-	uint					  segmentPatchDrawCount;
-	uint					  segmentPatchDrawPadding0;
-	uint					  segmentPatchDrawPadding1;
-	uint					  segmentPatchDrawPadding2;
-	DrawIndexedIndirectRecord segmentPatchDraws[];
-};
 
 uint readPackedAtomColor( const uint p_index )
 {
@@ -77,7 +68,7 @@ uint baseHash( uint p )
 	const uint PRIME32_2 = 2246822519U, PRIME32_3 = 3266489917U;
 	const uint PRIME32_4 = 668265263U, PRIME32_5 = 374761393U;
 	uint	   h32 = p + PRIME32_5;
-	h32			   = PRIME32_4
+	h32 = PRIME32_4
 		  * ( ( h32 << 17 )
 			  | ( h32 >> ( 32 - 17 ) ) ); // Initial testing suggests this line could be omitted for extra perf
 	h32 = PRIME32_2 * ( h32 ^ ( h32 >> 15 ) );
@@ -169,7 +160,7 @@ vec3 orthogonalVector( vec3 normal )
 
 void main()
 {
-	const DrawIndexedIndirectRecord draw		   = segmentPatchDraws[ gl_DrawID ];
+	const DrawIndexedIndirectRecord draw		   = indexedDraws[ gl_DrawID ];
 	const uint						idModel		   = draw.idModel;
 	const uint						representation = draw.padding1;
 	const float						probeRadius	   = uniformsRepresentation[ representation ].SESProbeRadius;
@@ -214,8 +205,8 @@ void main()
 
 	vsSegment.rot = toLocalSpaceTransform( vsSegment.normal.xyz );
 	Bound bound	  = getArcBoundingBox(
-		  quatMult( vsSegment.rot, vsSegment.v1 ), quatMult( vsSegment.rot, vsSegment.v2 ), vec3( 0., 0., 1. ), maxAngle
-	  );
+		quatMult( vsSegment.rot, vsSegment.v1 ), quatMult( vsSegment.rot, vsSegment.v2 ), vec3( 0., 0., 1. ), maxAngle
+	);
 
 	float rad  = max( sCircle.w, sCircle2.w );
 	vec3  sMin = min( bound.pMin * rad, bound.pMin * max( 0., vsSegment.circle.w - probeRadius ) );
@@ -229,11 +220,11 @@ void main()
 
 	vsSegment.bbPos = ( sCircle.xyz + sCircle2.xyz ) * .5 + ( sMax + sMin ) * .5;
 
-	vec3 p = x1p;
-	vec3 x = normalize( p - vsSegment.startAtom.xyz ) * vsSegment.startAtom.w;
-	vec3 c = ( length( p - vsSegment.startAtom.xyz )
-			   / ( length( p - endAtom.xyz ) + length( p - vsSegment.startAtom.xyz ) ) )
-			 * ( endAtom.xyz - vsSegment.startAtom.xyz );
+	vec3  p			  = x1p;
+	vec3  x			  = normalize( p - vsSegment.startAtom.xyz ) * vsSegment.startAtom.w;
+	vec3  c			  = ( length( p - vsSegment.startAtom.xyz )
+						  / ( length( p - endAtom.xyz ) + length( p - vsSegment.startAtom.xyz ) ) )
+						* ( endAtom.xyz - vsSegment.startAtom.xyz );
 	float d			  = length( x - c );
 	c				  = c + vsSegment.startAtom.xyz;
 	vsSegment.vSphere = vec4( c, d );
@@ -271,6 +262,6 @@ void main()
 	{
 		vsData.vImpU = vec3( -1.f, 0.f, 0.f ) * boundingSphere.w;
 		vsData.vImpV = vec3( 0.f, -1.f, 0.f ) * boundingSphere.w;
-		gl_Position  = vec4( boundingSphere.xyz + vec3( 0.f, 0.f, boundingSphere.w ), 1.f );
+		gl_Position	 = vec4( boundingSphere.xyz + vec3( 0.f, 0.f, boundingSphere.w ), 1.f );
 	}
 }

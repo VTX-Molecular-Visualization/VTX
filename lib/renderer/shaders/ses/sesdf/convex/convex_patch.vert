@@ -1,10 +1,10 @@
 #version 460 core
 
 #include "../../../constant.glsl"
+#include "../../../layout_indexed_indirect_draws.glsl"
 #include "../../../layout_uniforms_camera.glsl"
 #include "../../../layout_uniforms_color.glsl"
 #include "../../../layout_uniforms_model.glsl"
-#include "../../../struct/draw_indexed_indirect.glsl"
 #include "struct_convex_patch.glsl"
 #include "struct_vertex_shader.glsl"
 
@@ -23,15 +23,6 @@ layout( std430, binding = 9 ) readonly buffer AtomFlags { uint atomFlagWords[]; 
 flat out StructVertexShader vsData;
 flat out StructConvexPatch	vsPatchData;
 
-layout( std430, binding = 10 ) readonly buffer ConvexPatchIndirectDraws
-{
-	uint					  convexPatchDrawCount;
-	uint					  convexPatchDrawPadding0;
-	uint					  convexPatchDrawPadding1;
-	uint					  convexPatchDrawPadding2;
-	DrawIndexedIndirectRecord convexPatchDraws[];
-};
-
 uint readPackedAtomColor( const uint p_index )
 {
 	const uint word = atomColorWords[ p_index >> 2 ];
@@ -48,7 +39,7 @@ vec4 sesColor( const vec4 p_atomColor ) { return vec4( p_atomColor.rgb, 1.f ); }
 
 void main()
 {
-	const DrawIndexedIndirectRecord draw			 = convexPatchDraws[ gl_DrawID ];
+	const DrawIndexedIndirectRecord draw			 = indexedDraws[ gl_DrawID ];
 	const uint						idModel			 = draw.idModel;
 	const uint						representationId = draw.padding1;
 	const uint						atomId			 = draw.padding0 + uint( gl_VertexID );
@@ -96,6 +87,6 @@ void main()
 	{
 		vsData.vImpU = vec3( -1.f, 0.f, 0.f ) * ithData.w;
 		vsData.vImpV = vec3( 0.f, -1.f, 0.f ) * ithData.w;
-		gl_Position  = vec4( vsPatchData.vAtomData.xyz + vec3( 0.f, 0.f, ithData.w ), 1.f );
+		gl_Position	 = vec4( vsPatchData.vAtomData.xyz + vec3( 0.f, 0.f, ithData.w ), 1.f );
 	}
 }

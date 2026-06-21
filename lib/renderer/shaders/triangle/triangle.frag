@@ -1,10 +1,10 @@
 #version 460 core
 
 #include "../struct_data_packed.glsl"
+#include "struct_vertex_shader.glsl"
 
 // In.
-flat out StructVertexShaderFlat vsDataFlat; 
-smooth out StructVertexShaderSmooth vsDataSmooth;
+smooth in StructVertexShaderSmooth vsDataSmooth;
 
 // Out.
 layout( location = 0 ) out PackedData outDataPacked;
@@ -13,7 +13,7 @@ layout( location = 2 ) out uvec2 outId;
 
 void main()
 {
-	packData( vsDataSmooth.viewPosition, vsDataSmooth.normal, vsDataFlat.selected, outDataPacked );
-	outColor = vsDataSmooth.color;
-	outId    = uvec2( vsDataFlat.id, 0 );
+	packData( vsDataSmooth.viewPosition, vsDataSmooth.normal, 0u, outDataPacked );
+	outColor = vec4( 0.8f, 0.8f, 0.8f, 1.f );
+	outId	 = uvec2( 0u );
 }

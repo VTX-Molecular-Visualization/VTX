@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <util/filesystem.hpp>
+#include <vector>
 
 namespace VTX::Util
 {
@@ -16,19 +17,28 @@ namespace VTX::Core::Struct
 
 namespace VTX::IO
 {
+	/**
+	 * @brief Load a mesh file using Assimp.
+	 */
 	class MeshReader
 	{
 	  public:
 		MeshReader() = delete;
 		MeshReader( FilePath, VTX::Util::StopToken & );
 
-		void get( VTX::Core::Struct::Mesh & );
+		/**
+		 * @brief Read mesh structure.
+		 */
+		void get( std::vector<VTX::Core::Struct::Mesh> & );
 
 	  private:
 		FilePath									 _filePath;
 		std::reference_wrapper<VTX::Util::StopToken> _stopToken;
 	};
 
+	/**
+	 * @brief Check available extensions.
+	 */
 	bool isMeshFileFormat( const FilePath & );
 } // namespace VTX::IO
 

@@ -14,6 +14,7 @@
 #include "app/input/input_manager.hpp"
 #include "app/network/network_manager.hpp"
 #include "app/pass/camera_updater.hpp"
+#include "app/pass/mesh_updater.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/pass/scene_updater.hpp"
 #include "app/pass/system_updater.hpp"
@@ -152,6 +153,7 @@ namespace VTX::App
 		PASS().addPass<Pass::SceneUpdater>( sceneEnt );
 		PASS().addPass<Pass::CameraUpdater>( cameraEnt );
 		PASS().addPass<Pass::SystemUpdater>();
+		PASS().addPass<Pass::MeshUpdater>();
 		PASS().addPass<Pass::TrajectoryUpdater>();
 
 		// Default presets.

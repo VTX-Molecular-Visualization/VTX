@@ -30,6 +30,7 @@ namespace VTX::Renderer::Builder
 		using RibbonGeometry   = VTX::Renderer::Geometry::Ribbon;
 		using SESGeometry	   = VTX::Renderer::Geometry::SES;
 		using SphereGeometry   = VTX::Renderer::Geometry::Sphere;
+		using TriangleGeometry = VTX::Renderer::Geometry::Triangle;
 
 		GraphBuilder g;
 
@@ -120,6 +121,7 @@ namespace VTX::Renderer::Builder
 		);
 		g.vertexLayout( RibbonGeometry::VERTEX_LAYOUT_RESIDUES, p_layouts.residues );
 		g.vertexLayout( GridGeometry::VERTEX_LAYOUT_VOXELS, p_layouts.voxels );
+		g.vertexLayout( TriangleGeometry::VERTEX_LAYOUT_MESHES, p_layouts.meshes );
 		g.buffer(
 			SphereGeometry::INDIRECT_SPHERES,
 			E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
@@ -155,6 +157,15 @@ namespace VTX::Renderer::Builder
 			E_BUFFER_MUTABILITY::MUTABLE,
 			E_BUFFER_ACCESS::NONE,
 			GridGeometry::BINDING_INDIRECT_GRID
+		);
+		g.buffer(
+			TriangleGeometry::INDIRECT_TRIANGLES,
+			E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
+			E_UPDATE_FREQUENCY::DYNAMIC,
+			E_BUFFER_ALLOCATION::SINGLE,
+			E_BUFFER_MUTABILITY::MUTABLE,
+			E_BUFFER_ACCESS::NONE,
+			TriangleGeometry::BINDING_INDIRECT_TRIANGLES
 		);
 		g.buffer(
 			SESGeometry::BUFFER_ATOMS,
@@ -325,6 +336,7 @@ namespace VTX::Renderer::Builder
 		g.geometry( CylinderGeometry::GEOMETRY_CYLINDERS, p_geometries.cylinders );
 		g.geometry( RibbonGeometry::GEOMETRY_RIBBONS, p_geometries.ribbons );
 		g.geometry( GridGeometry::GEOMETRY_GRID, p_geometries.grid );
+		g.geometry( TriangleGeometry::GEOMETRY_TRIANGLES, p_geometries.triangles );
 		g.geometry( SESGeometry::GEOMETRY_CONVEX_PATCHES, p_geometries.ses.convexPatches );
 		g.geometry( SESGeometry::GEOMETRY_CIRCLE_PATCHES, p_geometries.ses.circlePatches );
 		g.geometry( SESGeometry::GEOMETRY_SEGMENT_PATCHES, p_geometries.ses.segmentPatches );
@@ -441,6 +453,7 @@ namespace VTX::Renderer::Builder
 			.in( E_RESOURCE_TYPE::GEOMETRY, CylinderGeometry::GEOMETRY_CYLINDERS )
 			.in( E_RESOURCE_TYPE::GEOMETRY, RibbonGeometry::GEOMETRY_RIBBONS )
 			.in( E_RESOURCE_TYPE::GEOMETRY, GridGeometry::GEOMETRY_GRID )
+			.in( E_RESOURCE_TYPE::GEOMETRY, TriangleGeometry::GEOMETRY_TRIANGLES )
 			.in( E_RESOURCE_TYPE::GEOMETRY, SESGeometry::GEOMETRY_CONVEX_PATCHES )
 			.in( E_RESOURCE_TYPE::GEOMETRY, SESGeometry::GEOMETRY_CIRCLE_PATCHES )
 			.in( E_RESOURCE_TYPE::GEOMETRY, SESGeometry::GEOMETRY_SEGMENT_PATCHES )
@@ -449,6 +462,7 @@ namespace VTX::Renderer::Builder
 			.in( E_RESOURCE_TYPE::BUFFER, CylinderGeometry::INDIRECT_CYLINDERS )
 			.in( E_RESOURCE_TYPE::BUFFER, RibbonGeometry::INDIRECT_RIBBONS )
 			.in( E_RESOURCE_TYPE::BUFFER, GridGeometry::INDIRECT_GRID )
+			.in( E_RESOURCE_TYPE::BUFFER, TriangleGeometry::INDIRECT_TRIANGLES )
 			.in( E_RESOURCE_TYPE::BUFFER, SESGeometry::INDIRECT_CONVEX_PATCHES )
 			.in( E_RESOURCE_TYPE::BUFFER, SESGeometry::INDIRECT_CIRCLE_PATCHES )
 			.in( E_RESOURCE_TYPE::BUFFER, SESGeometry::INDIRECT_SEGMENT_PATCHES )
@@ -472,6 +486,10 @@ namespace VTX::Renderer::Builder
 			.program( "Voxel" )
 			.shadersDir( "voxel" )
 			.draw( GridGeometry::GEOMETRY_GRID, E_PRIMITIVE::POINTS )
+			.endProgram()
+			.program( "Triangle" )
+			.shadersDir( "triangle" )
+			.draw( TriangleGeometry::GEOMETRY_TRIANGLES, E_PRIMITIVE::TRIANGLES )
 			.endProgram()
 			.program( "SES.ConvexPatch" )
 			.shadersDir( "ses/sesdf/convex" )

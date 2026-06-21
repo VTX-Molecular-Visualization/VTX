@@ -76,7 +76,7 @@ namespace VTX::App::Action::Selection
 		// Get renderer picking info at mouse position.
 		Vec2i picked = RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y );
 
-		const UID32 first	= picked.x;
+		const UID32 first  = picked.x;
 		const UID32 second = picked.y;
 
 		// None.
@@ -102,7 +102,7 @@ namespace VTX::App::Action::Selection
 
 		if ( firstEntOpt )
 		{
-			Entity	 firstEnt  = *firstEntOpt;
+			Entity		 firstEnt  = *firstEntOpt;
 			const auto & topology  = REG().get<Core::Struct::Topology>( firstEnt );
 			const auto & uid	   = REG().get<System::UID>( firstEnt );
 			const auto & selection = REG().get<System::Selection>( firstEnt );

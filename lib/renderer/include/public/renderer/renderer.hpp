@@ -79,6 +79,14 @@ namespace VTX::Renderer
 		void		 removeSystem( const Desc::Handle );
 
 		/**
+		 * @brief Add/remove triangle meshes.
+		 */
+		Desc::Handle addMesh( Cache::Mesh && );
+		void		 patchMesh( const Desc::Handle, const Core::Struct::Mesh & );
+		void		 removeMesh( const Desc::Handle );
+		void		 setMeshTransform( const Desc::Handle, const Mat4f & );
+
+		/**
 		 * @brief Add/remove representation presets.
 		 */
 		Desc::Handle addRepresentation( const Representation & );
@@ -223,6 +231,7 @@ namespace VTX::Renderer
 		Cache::Camera						_camera;
 		Cache::Voxels						_voxels;
 		ResourcePool<Cache::System>			_systems;
+		ResourcePool<Cache::Mesh>			_meshes;
 		ResourcePool<Cache::Representation> _representations;
 
 		/**
