@@ -112,12 +112,17 @@ endfunction()
 
 # Install a runtime directory from a target output tree.
 function(vtx_install_target_directory target relative_path)
-	set(options OPTIONAL)
+	set(options OPTIONAL USE_SOURCE_PERMISSIONS)
 	set(oneValueArgs DESTINATION)
 	cmake_parse_arguments(VTX_INSTALL_DIR "${options}" "${oneValueArgs}" "" ${ARGN})
 
 	if(NOT VTX_INSTALL_DIR_DESTINATION)
 		set(VTX_INSTALL_DIR_DESTINATION ".")
+	endif()
+	if(VTX_INSTALL_DIR_USE_SOURCE_PERMISSIONS)
+		set(source_permissions_arg USE_SOURCE_PERMISSIONS)
+	else()
+		set(source_permissions_arg)
 	endif()
 
 	if(VTX_INSTALL_DIR_OPTIONAL)
@@ -125,11 +130,13 @@ function(vtx_install_target_directory target relative_path)
 			DIRECTORY "$<TARGET_FILE_DIR:${target}>/${relative_path}"
 			DESTINATION "${VTX_INSTALL_DIR_DESTINATION}"
 			OPTIONAL
+			${source_permissions_arg}
 		)
 	else()
 		install(
 			DIRECTORY "$<TARGET_FILE_DIR:${target}>/${relative_path}"
 			DESTINATION "${VTX_INSTALL_DIR_DESTINATION}"
+			${source_permissions_arg}
 		)
 	endif()
 endfunction()
