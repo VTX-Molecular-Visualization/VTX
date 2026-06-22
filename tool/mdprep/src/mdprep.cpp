@@ -134,11 +134,6 @@ namespace VTX::Tool::Mdprep
 	void MdPrep::buildUI()
 	{
 		auto & mainWindow = UI::QT::MAIN_WINDOW();
-
-		MainWindow * win;
-		get( win );
-		win->hide();
-
 		mainWindow.addMenuAction( "Tool", ACTION_OPEN_MDPREP );
 		mainWindow.addToolBarAction( "Tool", ACTION_OPEN_MDPREP );
 	}
