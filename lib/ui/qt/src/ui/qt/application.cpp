@@ -177,6 +177,8 @@ namespace VTX::UI::QT
 				tool->buildUI();
 			}
 
+			MAIN_WINDOW().restoreLayout();
+
 			App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
 			_app.createInitialEntities();
 

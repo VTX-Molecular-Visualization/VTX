@@ -4,7 +4,6 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTextDocument>
-#include <qtoolbar.h>
 //
 #include "util/sentry.hpp"
 #include <util/event_hub.hpp>
@@ -71,8 +70,6 @@ namespace VTX::Tool::Mdprep
 		MainWindow( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Molecular Dynamics Preparation" )
 		{
 			this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
-
-			_layout->addWidget( new QToolBar );
 
 			QWidget * screenWidget = new QWidget;
 			_layout->addWidget( screenWidget );

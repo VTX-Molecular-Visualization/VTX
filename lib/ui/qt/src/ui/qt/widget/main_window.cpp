@@ -120,14 +120,6 @@ namespace VTX::UI::QT::Widget
 		// Focus central widgetrend to enable shortcuts.
 		centralWidget()->setFocus();
 
-		// Backup default geometry and state.
-		_defaultGeometry = saveGeometry();
-		_defaultState	 = saveState();
-
-		// Restore geometry and state.
-		restoreGeometry( SETTINGS().value( SETTING_KEY_GEOMETRY ).toByteArray() );
-		restoreState( SETTINGS().value( SETTING_KEY_STATE ).toByteArray() );
-
 		// Connect events.
 		App::HUB().connect<App::Events::ApplicationError, &MainWindow::_onApplicationError>( this );
 		App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
@@ -192,8 +184,18 @@ namespace VTX::UI::QT::Widget
 		}
 
 		QToolBar * const toolbar = new QToolBar( p_toolbar.data(), this );
+		toolbar->setObjectName( toolbar->windowTitle() );
 		addToolBar( toolbar );
 		UI_ACTIONS().addTo( *toolbar, p_actionId );
+	}
+
+	void MainWindow::restoreLayout()
+	{
+		_defaultGeometry = saveGeometry();
+		_defaultState	 = saveState();
+
+		restoreGeometry( SETTINGS().value( SETTING_KEY_GEOMETRY ).toByteArray() );
+		restoreState( SETTINGS().value( SETTING_KEY_STATE ).toByteArray() );
 	}
 
 	void MainWindow::resetLayout()

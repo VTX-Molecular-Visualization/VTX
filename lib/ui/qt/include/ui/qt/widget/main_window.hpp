@@ -50,6 +50,11 @@ namespace VTX::UI::QT::Widget
 		void addToolBarAction( const App::UI::WidgetId & p_toolbar, const std::string_view p_actionId );
 
 		/**
+		 * @brief Restore the persisted layout after all tool UI hooks are built.
+		 */
+		void restoreLayout();
+
+		/**
 		 * @brief Reset layout to default state.
 		 */
 		void resetLayout();
@@ -116,6 +121,11 @@ namespace VTX::UI::QT::Widget
 			}
 
 			DW * const dockWidget = new DW( this );
+			if ( restoreDockWidget( dockWidget ) )
+			{
+				return dockWidget;
+			}
+
 			addDockWidget( p_area, dockWidget );
 
 			// Tabify.

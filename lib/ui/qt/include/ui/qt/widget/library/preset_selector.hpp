@@ -68,6 +68,8 @@ namespace VTX::UI::QT::Widget::Library
 			layout->addWidget( _comboBox );
 
 			auto * toolbar = new QToolBar( this );
+			toolbar->setMovable( false );
+			toolbar->setFloatable( false );
 			toolbar->setToolButtonStyle( Qt::ToolButtonIconOnly );
 			// toolbar->setIconSize( QSize( 12, 12 ) );
 			auto * bNew = _addButton( *toolbar, "New", Style::Icons::NEW, "Create a new empty preset" );
