@@ -248,7 +248,9 @@ namespace VTX::UI::QT::Widget
 
 		const QSize scaledSize = size * _window->devicePixelRatio();
 		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height(), false );
+#ifdef _WIN32
 		_focusRenderer();
+#endif
 	}
 
 	void Renderer::_focusRenderer()
