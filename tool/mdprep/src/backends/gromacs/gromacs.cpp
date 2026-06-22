@@ -3,6 +3,7 @@
 #include <app/threading/base_thread.hpp>
 #include <latch>
 #include <thread>
+#include <util/logger.hpp>
 //
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
 
@@ -75,6 +76,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			int &				  stepNum
 		) noexcept
 		{
+			VTX_INFO(
+				"[MDPREP] Starting preparation step <{}> in <{}>.", p_stepName, ( p_in.rootDir / p_stepName ).string()
+			);
 			p_stepIn.fileStem = p_in.fileStem;
 			prepareJob( p_in.outputs, p_in.rootDir, p_stepName, p_stepIn );
 			auto & currentJobData = p_in.jobData[ stepNum ];
@@ -86,9 +90,28 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			checkJobResults( currentJobData );
 			if ( currentJobData.report.errorOccured )
 			{
+				VTX_ERROR(
+					"[MDPREP] Preparation step <{}> failed with {} error(s).",
+					p_stepName,
+					currentJobData.report.errors.size()
+				);
+				for ( const std::string & error : currentJobData.report.errors )
+				{
+					VTX_ERROR( "[MDPREP] Step <{}>: {}", p_stepName, error );
+				}
+				auto channels = currentJobData.channelsLocker.open();
+				if ( not channels->stderr_.empty() )
+				{
+					VTX_ERROR( "[MDPREP] Step <{}> stderr:\n{}", p_stepName, channels->stderr_ );
+				}
+				if ( not channels->stdout_.empty() )
+				{
+					VTX_ERROR( "[MDPREP] Step <{}> stdout:\n{}", p_stepName, channels->stdout_ );
+				}
 				return false;
 			}
 
+			VTX_INFO( "[MDPREP] Preparation step <{}> completed.", p_stepName );
 			fillOutputs( p_in, p_stepIn, currentJobData );
 			return true;
 		}

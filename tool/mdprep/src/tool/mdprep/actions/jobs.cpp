@@ -49,17 +49,36 @@ namespace VTX::Tool::Mdprep::Actions
 				goto theEnd;
 			}
 			backends::Gromacs::prepareStructure( _impl->thrData, dest, p_instr );
-			FilePath						  resultDir = p_instr.rootDir / "md_ready";
-			backends::Gromacs::MdInstructions packInstructions;
-			backends::Gromacs::pack( resultDir, p_instr.outputs, p_instr.mdInstructions );
+			FilePath							 resultDir = p_instr.rootDir / "md_ready";
+			backends::Gromacs::MdInstructions	 packInstructions;
+			const backends::Gromacs::ErrorReport packReport
+				= backends::Gromacs::pack( resultDir, p_instr.outputs, p_instr.mdInstructions );
+			if ( packReport.error )
+			{
+				VTX_ERROR( "[MDPREP] Packing failed: {}", packReport.message );
+			}
 			if ( _impl->thrData.stopToken.stop_requested() )
 			{
 				goto theEnd;
 			}
 			bool noErrors = true;
-			for ( auto & jobData : p_instr.jobData )
+			for ( size_t jobIndex = 0; jobIndex < p_instr.jobData.size(); jobIndex++ )
 			{
+				auto & jobData = p_instr.jobData[ jobIndex ];
 				noErrors &= not jobData.report.errorOccured;
+				if ( jobData.report.errorOccured )
+				{
+					VTX_ERROR(
+						"[MDPREP] Job {} failed (finished: {}, errors: {}).",
+						jobIndex,
+						jobData.report.finished,
+						jobData.report.errors.size()
+					);
+					for ( const std::string & error : jobData.report.errors )
+					{
+						VTX_ERROR( "[MDPREP] Job {}: {}", jobIndex, error );
+					}
+				}
 			}
 			if ( noErrors )
 			{

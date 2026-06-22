@@ -35,10 +35,13 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	{
 		QString		pgm { p_gmxExe.string().data() };
 		QStringList qtArgs;
+		std::string command = p_gmxExe.string();
 		for ( auto & arg : p_args.arguments )
 		{
 			qtArgs << QString( arg.c_str() );
+			command += fmt::format( " \"{}\"", arg );
 		}
+		VTX_INFO( "[MDPREP] Running Gromacs command: {}", command );
 
 		QProcess proc;
 
@@ -49,15 +52,29 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		if ( proc.waitForStarted( -1 ) == false )
 		{
 			p_args.report.errorOccured = true;
-			p_args.report.errors.emplace_back( "Process could not be started" );
+			p_args.report.errors.emplace_back(
+				fmt::format( "Process could not be started: {}", proc.errorString().toStdString() )
+			);
+			VTX_ERROR(
+				"[MDPREP] Unable to start Gromacs executable <{}> (exists: {}): {}",
+				p_gmxExe.string(),
+				fs::exists( p_gmxExe ),
+				proc.errorString().toStdString()
+			);
 			return;
 		}
 		simpleProcessManagement( proc, p_args );
 		p_args.report.finished = true;
+		VTX_DEBUG(
+			"[MDPREP] Gromacs process finished with exit code {} and status {}.",
+			proc.exitCode(),
+			static_cast<int>( proc.exitStatus() )
+		);
 		if ( proc.exitStatus() == QProcess::ExitStatus::CrashExit || proc.exitCode() != 0 )
 		{
 			p_args.report.errorOccured = true;
 			p_args.report.errors.emplace_back( fmt::format( "Process exited with code {}", proc.exitCode() ) );
+			VTX_ERROR( "[MDPREP] Gromacs process failed with exit code {}.", proc.exitCode() );
 		}
 	}
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
