@@ -55,7 +55,7 @@ namespace VTX::Tool::Mdprep::Actions
 				= backends::Gromacs::pack( resultDir, p_instr.outputs, p_instr.mdInstructions );
 			if ( packReport.error )
 			{
-				VTX_ERROR( "[MDPREP] Packing failed: {}", packReport.message );
+				VTX_ERROR( "[MDPREP] Packing failed: {}", packReport.errMsg );
 			}
 			if ( _impl->thrData.stopToken.stop_requested() )
 			{
