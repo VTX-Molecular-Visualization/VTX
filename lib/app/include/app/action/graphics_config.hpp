@@ -107,17 +107,6 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						ensure( p_config.fog, Renderer::GraphicsConfigs::FOG_DEFAULT ).density = p_value;
 					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_COLORIZE )
-					{
-						p_config.colorize
-							= p_value ? std::optional<
-											Renderer::ColorizeConfig> { Renderer::GraphicsConfigs::COLORIZE_DEFAULT }
-									  : std::nullopt;
-					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::COLOR_COLORIZE )
-					{
-						ensure( p_config.colorize, Renderer::GraphicsConfigs::COLORIZE_DEFAULT ).color = p_value;
-					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_OUTLINE )
 					{
 						p_config.outline

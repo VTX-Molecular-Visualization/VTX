@@ -206,13 +206,6 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderFogDensity->setMinimum( FOG_DENSITY_MIN );
 		_sliderFogDensity->setMinimum( FOG_DENSITY_MAX );
 
-		// Colorize.
-		_groupboxColorize = new HideableGroupBox( "Colorize", presetGroupBox() );
-		addWidget( _groupboxColorize );
-
-		_colorPickerColorize = new ColorPicker( _groupboxColorize );
-		_groupboxColorize->addWidget( _colorPickerColorize );
-
 		// Chromatic aberration.
 		_groupboxChromaticAberration = new HideableGroupBox( "Chromatic aberration", presetGroupBox() );
 		addWidget( _groupboxChromaticAberration );
@@ -454,15 +447,6 @@ namespace VTX::UI::QT::Widget::Library
 		);
 
 		connect(
-			_groupboxColorize,
-			&HideableGroupBox::toggled,
-			[ this ]( const bool p_state ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_COLORIZE, bool>( p_state ); }
-		);
-
-		_colorPickerColorize->onColorChanged += [ this ]( const QColor & p_color )
-		{ _changeValue<E_GRAPHICS_CONFIG_VALUES::COLOR_COLORIZE, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
-
-		connect(
 			_groupboxChromaticAberration,
 			&HideableGroupBox::toggled,
 			[ this ]( const bool p_state ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_CHROMAB, bool>( p_state ); }
@@ -607,8 +591,6 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker17( _sliderFogNear );
 		const QSignalBlocker blocker18( _sliderFogFar );
 		const QSignalBlocker blocker36( _sliderFogDensity );
-		const QSignalBlocker blockerColorizeGroup( _groupboxColorize );
-		const QSignalBlocker blockerColorizeColor( _colorPickerColorize );
 		const QSignalBlocker blockerChromaticGroup( _groupboxChromaticAberration );
 		const QSignalBlocker blocker19( _sliderChromaticAberrationRed );
 		const QSignalBlocker blocker20( _sliderChromaticAberrationGreen );
@@ -628,11 +610,9 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker34( _groupboxSelection );
 		const QSignalBlocker blocker35( _colorPickerSelection );
 
-		const Renderer::SSAOConfig	   ssao	   = preset.ssao.value_or( Renderer::GraphicsConfigs::SSAO_DEFAULT );
-		const Renderer::OutlineConfig  outline = preset.outline.value_or( Renderer::GraphicsConfigs::OUTLINE_DEFAULT );
-		const Renderer::FogConfig	   fog	   = preset.fog.value_or( Renderer::GraphicsConfigs::FOG_DEFAULT );
-		const Renderer::ColorizeConfig colorize
-			= preset.colorize.value_or( Renderer::GraphicsConfigs::COLORIZE_DEFAULT );
+		const Renderer::SSAOConfig	  ssao	  = preset.ssao.value_or( Renderer::GraphicsConfigs::SSAO_DEFAULT );
+		const Renderer::OutlineConfig outline = preset.outline.value_or( Renderer::GraphicsConfigs::OUTLINE_DEFAULT );
+		const Renderer::FogConfig	  fog	  = preset.fog.value_or( Renderer::GraphicsConfigs::FOG_DEFAULT );
 		const Renderer::ChromaticAberrationConfig chromatic
 			= preset.chromaticAberration.value_or( Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT );
 		const Renderer::PixelizeConfig pixelize
@@ -667,8 +647,6 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderFogNear->setValue( fog.near );
 		_sliderFogFar->setValue( fog.far );
 		_sliderFogDensity->setValue( fog.density );
-		_groupboxColorize->setChecked( preset.colorize.has_value() );
-		_colorPickerColorize->setColor( Helper::toQColor( colorize.color ) );
 		_groupboxChromaticAberration->setChecked( preset.chromaticAberration.has_value() );
 		_sliderChromaticAberrationRed->setValue( _chromaticAberrationToUi( chromatic.red ) );
 		_sliderChromaticAberrationGreen->setValue( _chromaticAberrationToUi( chromatic.green ) );

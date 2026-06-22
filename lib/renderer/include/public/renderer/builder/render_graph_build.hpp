@@ -21,7 +21,6 @@ namespace VTX::Renderer::Builder
 		float		  ssaoScale					= SSAO_SCALE_DEFAULT;
 		bool		  enableOutline				= false;
 		bool		  enableSelection			= false;
-		bool		  enableColorize			= false;
 		bool		  enableChromaticAberration = false;
 		bool		  enablePixelize			= false;
 		bool		  enableCRT					= false;

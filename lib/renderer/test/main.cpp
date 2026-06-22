@@ -162,7 +162,6 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	cfg.enableSSAO				  = true;
 	cfg.enableOutline			  = true;
 	cfg.enableSelection			  = true;
-	cfg.enableColorize			  = true;
 	cfg.enableChromaticAberration = true;
 	cfg.enablePixelize			  = true;
 	cfg.enableCRT				  = true;
@@ -193,13 +192,13 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 
 	REQUIRE_FALSE( queue.empty() );
 
-	bool hasGeometric = false;
-	bool hasShading	  = false;
-	bool hasFXAA	  = false;
-	bool hasColorize  = false;
-	bool hasChromatic = false;
-	bool hasPixelize  = false;
-	bool hasCRT		  = false;
+	bool hasGeometric	= false;
+	bool hasShading		= false;
+	bool hasFXAA		= false;
+	bool hasToneMapping = false;
+	bool hasChromatic	= false;
+	bool hasPixelize	= false;
+	bool hasCRT			= false;
 
 	for ( const Pass * p : queue )
 	{
@@ -215,9 +214,9 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 		{
 			hasFXAA = true;
 		}
-		if ( p->name == "Colorize" )
+		if ( p->name == "ToneMapping" )
 		{
-			hasColorize = true;
+			hasToneMapping = true;
 		}
 		if ( p->name == "ChromaticAberration" )
 		{
@@ -236,11 +235,13 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	CHECK( hasGeometric );
 	CHECK( hasShading );
 	CHECK( hasFXAA );
-	CHECK( hasColorize );
+	CHECK( hasToneMapping );
 	CHECK( hasChromatic );
 	CHECK( hasPixelize );
 	CHECK( hasCRT );
-	CHECK( queue.back()->name == "CRT" );
+	REQUIRE( queue.size() >= 2 );
+	CHECK( queue[ queue.size() - 2 ]->name == "ToneMapping" );
+	CHECK( queue.back()->name == "FXAA" );
 }
 
 TEST_CASE( "GraphBuilder: compute dispatch pass builds", "[renderer][graph]" )

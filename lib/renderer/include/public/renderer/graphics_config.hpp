@@ -2,7 +2,6 @@
 #define __VTX_RENDERER_GRAPHICS_CONFIG__
 
 #include "renderer/builder/post_process/chromatic_aberration.hpp"
-#include "renderer/builder/post_process/colorize.hpp"
 #include "renderer/builder/post_process/crt.hpp"
 #include "renderer/builder/post_process/outline.hpp"
 #include "renderer/builder/post_process/pixelize.hpp"
@@ -34,9 +33,6 @@ namespace VTX::Renderer
 		FOG_NEAR,
 		FOG_FAR,
 		FOG_DENSITY,
-
-		ACTIVE_COLORIZE,
-		COLOR_COLORIZE,
 
 		ACTIVE_OUTLINE,
 		COLOR_OUTLINE,
@@ -72,7 +68,6 @@ namespace VTX::Renderer
 		std::optional<SSAOConfig>				 ssao;
 		std::optional<OutlineConfig>			 outline;
 		std::optional<FogConfig>				 fog;
-		std::optional<ColorizeConfig>			 colorize;
 		std::optional<ChromaticAberrationConfig> chromaticAberration;
 		std::optional<PixelizeConfig>			 pixelize;
 		std::optional<CRTConfig>				 crt;
@@ -86,7 +81,6 @@ namespace VTX::Renderer
 			ACTIVE_SSAO_DEFAULT ? std::optional<SSAOConfig> { SSAO_DEFAULT } : std::nullopt,
 			ACTIVE_OUTLINE_DEFAULT ? std::optional<OutlineConfig> { OUTLINE_DEFAULT } : std::nullopt,
 			ACTIVE_FOG_DEFAULT ? std::optional<FogConfig> { FOG_DEFAULT } : std::nullopt,
-			ACTIVE_COLORIZE_DEFAULT ? std::optional<ColorizeConfig> { COLORIZE_DEFAULT } : std::nullopt,
 			ACTIVE_CHROMAB_DEFAULT ? std::optional<ChromaticAberrationConfig> { CHROMATIC_ABERRATION_DEFAULT }
 								   : std::nullopt,
 			ACTIVE_PIXELIZE_DEFAULT ? std::optional<PixelizeConfig> { PIXELIZE_DEFAULT } : std::nullopt,
@@ -104,7 +98,6 @@ namespace VTX::Renderer
 			SSAOConfig { SSAO_METHOD_DEFAULT, 4.f, SSAO_RADIUS_DEFAULT, SSAO_SCALE_DEFAULT, 21.f },
 			std::nullopt,
 			std::nullopt,
-			ACTIVE_COLORIZE_DEFAULT ? std::optional<ColorizeConfig> { COLORIZE_DEFAULT } : std::nullopt,
 			ACTIVE_CHROMAB_DEFAULT ? std::optional<ChromaticAberrationConfig> { CHROMATIC_ABERRATION_DEFAULT }
 								   : std::nullopt,
 			ACTIVE_PIXELIZE_DEFAULT ? std::optional<PixelizeConfig> { PIXELIZE_DEFAULT } : std::nullopt,
@@ -122,7 +115,6 @@ namespace VTX::Renderer
 			SSAOConfig { SSAO_METHOD_DEFAULT, 2.5f, SSAO_RADIUS_DEFAULT, SSAO_SCALE_DEFAULT, 11.f },
 			OutlineConfig { Util::Color::Rgba( 28, 28, 28 ), 0.35f, 2 },
 			std::nullopt,
-			ACTIVE_COLORIZE_DEFAULT ? std::optional<ColorizeConfig> { COLORIZE_DEFAULT } : std::nullopt,
 			ACTIVE_CHROMAB_DEFAULT ? std::optional<ChromaticAberrationConfig> { CHROMATIC_ABERRATION_DEFAULT }
 								   : std::nullopt,
 			ACTIVE_PIXELIZE_DEFAULT ? std::optional<PixelizeConfig> { PIXELIZE_DEFAULT } : std::nullopt,

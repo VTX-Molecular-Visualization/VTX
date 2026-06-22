@@ -1,7 +1,6 @@
 #include "renderer/builder/render_graph_build.hpp"
 #include "renderer/builder/post_process/blur.hpp"
 #include "renderer/builder/post_process/chromatic_aberration.hpp"
-#include "renderer/builder/post_process/colorize.hpp"
 #include "renderer/builder/post_process/crt.hpp"
 #include "renderer/builder/post_process/fxaa.hpp"
 #include "renderer/builder/post_process/linearize_depth.hpp"
@@ -10,6 +9,7 @@
 #include "renderer/builder/post_process/selection.hpp"
 #include "renderer/builder/post_process/shading.hpp"
 #include "renderer/builder/post_process/ssao.hpp"
+#include "renderer/builder/post_process/tone_mapping.hpp"
 #include "renderer/graphics_config.hpp"
 #include "renderer/representation.hpp"
 #include <util/chrono.hpp>
@@ -380,10 +380,7 @@ namespace VTX::Renderer::Builder
 			true
 		);
 
-		if ( p_config.enableColorize )
-		{
-			g.texture( "Colorize", E_FORMAT::RGBA16F );
-		}
+		g.texture( PostProcess::ToneMapping::PASS, E_FORMAT::RGBA16F );
 
 		if ( p_config.enableOutline )
 		{
@@ -520,20 +517,12 @@ namespace VTX::Renderer::Builder
 
 		PostProcess::Shading::build( g, p_config.enableSSAO );
 
-		const Desc::Key postColorize
-			= p_config.enableColorize ? PostProcess::Colorize::PASS : PostProcess::Shading::OUTPUT;
-
-		if ( p_config.enableColorize )
-		{
-			PostProcess::Colorize::build( g, PostProcess::Shading::OUTPUT );
-		}
-
-		const Desc::Key postChromatic
-			= p_config.enableChromaticAberration ? PostProcess::ChromaticAberration::PASS : postColorize;
+		const Desc::Key postChromatic = p_config.enableChromaticAberration ? PostProcess::ChromaticAberration::PASS
+																		   : PostProcess::Shading::OUTPUT;
 
 		if ( p_config.enableChromaticAberration )
 		{
-			PostProcess::ChromaticAberration::build( g, postColorize );
+			PostProcess::ChromaticAberration::build( g, PostProcess::Shading::OUTPUT );
 		}
 
 		const Desc::Key postEffects = p_config.enablePixelize ? PostProcess::Pixelize::PASS : postChromatic;
@@ -562,7 +551,8 @@ namespace VTX::Renderer::Builder
 			PostProcess::CRT::build( g, postSelection );
 		}
 
-		PostProcess::FXAA::build( g, p_config.enableCRT ? PostProcess::CRT::PASS : postSelection );
+		PostProcess::ToneMapping::build( g, p_config.enableCRT ? PostProcess::CRT::PASS : postSelection );
+		PostProcess::FXAA::build( g, PostProcess::ToneMapping::PASS );
 
 		// Debug
 		/*
@@ -590,7 +580,6 @@ namespace VTX::Renderer::Builder
 		config.ssaoScale				 = p_config.ssao ? p_config.ssao->scale : SSAO_SCALE_DEFAULT;
 		config.enableOutline			 = p_config.outline.has_value();
 		config.enableSelection			 = p_config.selection.has_value();
-		config.enableColorize			 = p_config.colorize.has_value();
 		config.enableChromaticAberration = p_config.chromaticAberration.has_value();
 		config.enablePixelize			 = p_config.pixelize.has_value();
 		config.enableCRT				 = p_config.crt.has_value();
