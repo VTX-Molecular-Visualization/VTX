@@ -214,38 +214,20 @@ namespace VTX::UI::QT::Widget
 
 		if ( _window != nullptr && _container != nullptr )
 		{
-#ifdef _WIN32
-			_container->setVisible( false );
+			_container->resize( 1, 1 );
+			_window->resize( 1, 1 );
 			update();
-#else
-			const bool isInteractiveShrink = QGuiApplication::mouseButtons() != Qt::NoButton
-											 && ( p_event->size().width() < p_event->oldSize().width()
-												  || p_event->size().height() < p_event->oldSize().height() );
-			if ( isInteractiveShrink )
-			{
-				_container->setFixedSize( 1, 1 );
-				_window->resize( 1, 1 );
-				update();
-			}
-			else
-			{
-				_window->resize( p_event->size() );
-				_container->resize( p_event->size() );
-			}
-#endif
 		}
 		_resizeTimer.start( 40 );
 	}
 
 	void Renderer::onResizeFinished()
 	{
-		// #ifndef _WIN32
 		if ( QGuiApplication::mouseButtons() != Qt::NoButton )
 		{
 			_resizeTimer.start( 40 );
 			return;
 		}
-		// #endif
 		if ( _ignoreResizeEvents )
 		{
 			return;
@@ -263,16 +245,11 @@ namespace VTX::UI::QT::Widget
 		_container->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
 		_window->resize( size );
 		_container->resize( size );
-#ifdef _WIN32
-		_container->setVisible( true );
-#endif
 		//_syncHUDWidgets();
 
 		const QSize scaledSize = size * _window->devicePixelRatio();
 		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height(), false );
-#ifdef _WIN32
 		_focusRenderer();
-#endif
 	}
 
 	void Renderer::_focusRenderer()
@@ -346,10 +323,6 @@ namespace VTX::UI::QT::Widget
 		{
 			_container->resize( appliedSize );
 		}
-#ifdef _WIN32
-		_container->setVisible( true );
-#endif
-
 		QTimer::singleShot(
 			0,
 			this,
@@ -372,9 +345,6 @@ namespace VTX::UI::QT::Widget
 				{
 					_container->resize( size );
 				}
-#ifdef _WIN32
-				_container->setVisible( true );
-#endif
 			}
 		);
 	}
