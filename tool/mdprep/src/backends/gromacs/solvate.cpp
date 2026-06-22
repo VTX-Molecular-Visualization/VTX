@@ -60,7 +60,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			}
 			else
 			{
-				VTX_INFO(
+				VTX_DEBUG(
 					"[MDPREP] Solvate topology copied from <{}> to <{}> ({} bytes).",
 					sourceTop.string(),
 					p_instructions.inputTop.string(),

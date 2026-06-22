@@ -77,7 +77,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		) noexcept
 		{
 			const FilePath jobDir = p_in.rootDir / p_stepName;
-			VTX_INFO( "[MDPREP] Starting preparation step <{}> in <{}>.", p_stepName, jobDir.string() );
+			VTX_DEBUG( "[MDPREP] Starting preparation step <{}> in <{}>.", p_stepName, jobDir.string() );
 			p_stepIn.fileStem = p_in.fileStem;
 			prepareJob( p_in.outputs, p_in.rootDir, p_stepName, p_stepIn );
 			auto & currentJobData = p_in.jobData[ stepNum ];
@@ -110,7 +110,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				return false;
 			}
 
-			VTX_INFO( "[MDPREP] Preparation step <{}> completed.", p_stepName );
+			VTX_DEBUG( "[MDPREP] Preparation step <{}> completed.", p_stepName );
 			fillOutputs( p_in, p_stepIn, currentJobData );
 			return true;
 		}

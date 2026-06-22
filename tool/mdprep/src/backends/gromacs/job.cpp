@@ -41,7 +41,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			qtArgs << QString( arg.c_str() );
 			command += fmt::format( " \"{}\"", arg );
 		}
-		VTX_INFO( "[MDPREP] Running Gromacs command: {}", command );
+		VTX_DEBUG( "[MDPREP] Running Gromacs command: {}", command );
 
 		QProcess proc;
 
@@ -49,7 +49,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		proc.setArguments( qtArgs );
 		const FilePath absoluteWorkingDirectory = fs::absolute( p_workingDirectory );
 		proc.setWorkingDirectory( QString::fromStdString( absoluteWorkingDirectory.string() ) );
-		VTX_INFO( "[MDPREP] Gromacs working directory: {}", absoluteWorkingDirectory.string() );
+		VTX_DEBUG( "[MDPREP] Gromacs working directory: {}", absoluteWorkingDirectory.string() );
 		proc.start();
 		proc.closeWriteChannel();
 		if ( proc.waitForStarted( -1 ) == false )
