@@ -488,6 +488,7 @@ namespace VTX::App
 		VTX_DEBUG( "Executable dir: {}", getApplicationDir().string() );
 		VTX_DEBUG( "Data home: {}", getDataHome().string() );
 		VTX_DEBUG( "Pictures folder: {}", getPicturesFolder().string() );
+		VTX_DEBUG( "Tmp folder: {}", getAppTmpFolder().string() );
 	}
 
 } // namespace VTX::App
