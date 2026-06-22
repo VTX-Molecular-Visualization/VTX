@@ -227,6 +227,13 @@ namespace VTX::UI::QT::Widget
 
 	void Renderer::onResizeFinished()
 	{
+		// #ifndef _WIN32
+		if ( QGuiApplication::mouseButtons() != Qt::NoButton )
+		{
+			_resizeTimer.start( 40 );
+			return;
+		}
+		// #endif
 		if ( _ignoreResizeEvents )
 		{
 			return;
