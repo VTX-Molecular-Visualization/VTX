@@ -12,11 +12,11 @@
 #include <tool/mdprep/backends/gromacs/pdb2gmx.hpp>
 #include <tool/mdprep/backends/gromacs/util.hpp>
 
-TEST_CASE( "VTX_TOOL_MdPrep - executableDirectory", "[executableDirectory]" )
+TEST_CASE( "VTX_TOOL_MdPrep - application directory", "[applicationDirectory]" )
 {
 	VTX::test::setup_env f;
 
-	const fs::path dir = VTX::Tool::Mdprep::executableDirectory();
+	const FilePath dir = VTX::App::SESSION().getApplicationDir();
 	CHECK( fs::is_directory( dir ) );
 }
 
@@ -24,8 +24,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - executable", "[executable]" )
 {
 	VTX::test::setup_env f;
 
-	const fs::path exe = VTX::Tool::Mdprep::executableDirectory()
-						 / VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryRelativePath();
+	const FilePath exe = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath();
 	CHECK( fs::exists( exe ) );
 }
 
@@ -34,7 +33,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - listForcefields empty_dir", "[listForcefields][emp
 	VTX::test::setup_env f;
 
 	// tests empty directory scenario
-	const fs::path dir = fs::temp_directory_path();
+	const FilePath dir = VTX::App::SESSION().getAppTmpFolder();
 	fs::create_directories( dir );
 	CHECK( VTX::Tool::Mdprep::backends::Gromacs::listForcefields( dir ).empty() );
 }
@@ -57,8 +56,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - listForcefields top_dir", "[listForcefields][top_d
 	//  this test is designed to be still true if gromacs maintainers add forcefields.
 	//  therefore,the size of the collection shall not be tested
 	auto ffs = VTX::Tool::Mdprep::backends::Gromacs::listForcefields(
-		VTX::Tool::Mdprep::executableDirectory()
-		/ VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryRelativePath()
+		VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath()
 	);
 	CHECK( !ffs.empty() );
 	CHECK( is_ff_in_list( ffs, "amber03" ) );
@@ -86,9 +84,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - Test", "[listForcefields][some_dir]" )
 	VTX::test::setup_env f;
 
 	// tests directory with something else than forcefield in it
-	CHECK( !fs::is_empty( VTX::Tool::Mdprep::executableDirectory() ) );
+	CHECK( !fs::is_empty( VTX::App::SESSION().getApplicationDir() ) );
 
-	auto ffs = VTX::Tool::Mdprep::backends::Gromacs::listForcefields( VTX::Tool::Mdprep::executableDirectory() );
+	auto ffs = VTX::Tool::Mdprep::backends::Gromacs::listForcefields( VTX::App::SESSION().getApplicationDir() );
 	CHECK( ffs.empty() );
 }
 
@@ -325,12 +323,12 @@ namespace
 
 	void add_file( GromacsJobData & p_jd, const char * p_name ) noexcept
 	{
-		fs::path dir = VTX::Tool::Mdprep::executableDirectory() / "data" / "mdprep" / "checkJobResults";
+		FilePath dir = VTX::App::SESSION().getDataDir() / "mdprep" / "checkJobResults";
 		if ( fs::is_directory( dir ) == false )
 		{
 			fs::create_directories( dir );
 		}
-		fs::path file = dir / p_name;
+		FilePath file = dir / p_name;
 		std::ofstream( file.string() ) << "Some data\n";
 		p_jd.arguments.push_back( file.string() );
 		p_jd.expectedOutputFilesIndexes.push_back( p_jd.arguments.size() - 1 );
@@ -349,6 +347,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - empty", "[checkJobResults]" )
 
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - all ok", "[checkJobResults][files]" )
 {
+	VTX::test::setup_env f;
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GromacsJobData jd;
 
@@ -361,13 +360,14 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - all ok", "[checkJobResults][file
 
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - one file missing", "[checkJobResults][files]" )
 {
+	VTX::test::setup_env f;
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GromacsJobData jd;
 
 	add_file( jd, "f1.tpr" );
 	add_file( jd, "f1.gro" );
 	add_file( jd, "f1.pdb" );
-	fs::remove( fs::path( jd.arguments.back() ) ); // one file is missing !
+	fs::remove( FilePath( jd.arguments.back() ) ); // one file is missing !
 	checkJobResults( jd );
 	CHECK( jd.report.errorOccured == true );
 	CHECK( jd.report.errors.size() == 1 );
@@ -375,6 +375,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - one file missing", "[checkJobRes
 
 TEST_CASE( "VTX_TOOL_MdPrep - checkJobResults - no expected output", "[checkJobResults][files]" )
 {
+	VTX::test::setup_env f;
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GromacsJobData jd;
 

@@ -40,17 +40,16 @@ namespace VTX::Tool::Mdprep::Actions
 			goto theEnd;
 		}
 		{
-			VTX::FilePath dest { p_instr.rootDir
-								 / "your_system.pdb" }; // TODO bad design (see backend_gromacs.cpp:convert)
+			FilePath dest { p_instr.rootDir / "your_system.pdb" }; // TODO bad design (see backend_gromacs.cpp:convert)
 
 			App::Action::IO::WriteVisible a;
-			App::ACTION().execute( a, VTX::FilePath( dest ) );
+			App::ACTION().execute( a, FilePath( dest ) );
 			if ( _impl->thrData.stopToken.stop_requested() )
 			{
 				goto theEnd;
 			}
 			backends::Gromacs::prepareStructure( _impl->thrData, dest, p_instr );
-			VTX::FilePath					  resultDir = p_instr.rootDir / "md_ready";
+			FilePath						  resultDir = p_instr.rootDir / "md_ready";
 			backends::Gromacs::MdInstructions packInstructions;
 			backends::Gromacs::pack( resultDir, p_instr.outputs, p_instr.mdInstructions );
 			if ( _impl->thrData.stopToken.stop_requested() )
@@ -132,9 +131,9 @@ namespace VTX::Tool::Mdprep::Actions
 			_impl->thrData.thrRef->get().setProgressText( "Checking system for MD" );
 		}
 		{
-			VTX::FilePath				  dest { p_gmxIntructions.rootDir / "test.pdb" };
+			FilePath					  dest { p_gmxIntructions.rootDir / "test.pdb" };
 			App::Action::IO::WriteVisible a;
-			App::ACTION().execute( a, VTX::FilePath( dest ) );
+			App::ACTION().execute( a, FilePath( dest ) );
 
 			backends::Gromacs::SystemTester tester(
 				dest,

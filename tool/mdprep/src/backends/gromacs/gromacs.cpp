@@ -1,3 +1,5 @@
+#include <app/services.hpp>
+#include <app/session.hpp>
 #include <app/threading/base_thread.hpp>
 #include <latch>
 #include <thread>
@@ -78,7 +80,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			auto & currentJobData = p_in.jobData[ stepNum ];
 			stepNum++;
 			convert( p_stepIn, currentJobData );
-			fs::path gmxExe = executableDirectory() / defaultGmxBinaryRelativePath();
+			FilePath gmxExe = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath();
 			submitGromacsJob( gmxExe, currentJobData );
 			currentJobData.postJobRoutine( p_in.rootDir / p_stepName, currentJobData, p_in.outputs );
 			checkJobResults( currentJobData );
@@ -94,7 +96,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	void prepareStructure(
 		VTX::App::Threading::ThreadData & p_thrData,
-		const fs::path &				  p_structurePdb,
+		const FilePath &				  p_structurePdb,
 		GromacsInstructions &			  p_in
 	) noexcept
 	{
@@ -189,22 +191,22 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	}
 
-	void createMdDirectory( const GromacsInstructions &, const fs::path & p_dest ) noexcept {}
+	void createMdDirectory( const GromacsInstructions &, const FilePath & p_dest ) noexcept {}
 
 	class SystemTester::_Impl
 	{
 		struct TestData
 		{
-			fs::path		 _structurePdb;
+			FilePath		 _structurePdb;
 			forcefield		 _ff;
 			E_WATER_MODEL	 _w;
 			std::atomic_bool _systemOk = false;
 			std::string		 _why;
 		} _testData;
 
-		static fs::path createRootDir()
+		static FilePath createRootDir()
 		{
-			fs ::path base = fs::temp_directory_path() / "VTX" / "tools" / "mdprep" / "test", out;
+			FilePath base = App::SESSION().getAppTmpFolder() / "tools" / "mdprep" / "test", out;
 			for ( uint32_t i = 0; i != 0xffffffff; i++ )
 			{
 				out = base / std::to_string( i );
@@ -219,10 +221,10 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		void test() {}
 
 	  public:
-		_Impl( const fs::path & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
+		_Impl( const FilePath & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
 			_testData( TestData { p_structurePdb, p_ff, p_w } )
 		{
-			fs::path rootDir = createRootDir();
+			FilePath rootDir = createRootDir();
 			try
 			{
 				Pdb2gmxInstructions inst;
@@ -239,12 +241,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				prepareJob( {}, rootDir.parent_path(), "1", inst );
 				GromacsJobData jobData;
 				convert( inst, jobData );
-				declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
-				submitGromacsJob(
-					VTX::Tool::Mdprep::executableDirectory()
-						/ VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryRelativePath(),
-					jobData
-				);
+				declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
+				submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobData );
 				checkJobResults( jobData );
 				_testData._systemOk = jobData.report.errorOccured == false;
 				for ( auto & err : jobData.report.errors )
@@ -271,7 +269,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		const std::string_view why() const noexcept { return _testData._why; }
 	};
 
-	SystemTester::SystemTester( const fs::path & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
+	SystemTester::SystemTester( const FilePath & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
 		_pimpl( new _Impl( p_structurePdb, p_ff, p_w ) )
 	{
 	}

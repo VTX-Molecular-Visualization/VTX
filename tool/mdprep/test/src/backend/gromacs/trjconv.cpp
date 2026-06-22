@@ -15,9 +15,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - trjconv - prepareJob", "[prepareJob][trjconv]" )
 	in.fileStem = "1ubq";
 	VTX::test::PrepareJobSetup f( "trjconv", "4_trjconv" );
 	CumulativeOuputFiles	   previousOutputs;
-	VTX::test::fill( VTX::test::Solvate::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Editconf::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Pdb2gmx::g_fileList, previousOutputs );
+	VTX::test::fill( VTX::test::Solvate::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Editconf::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Pdb2gmx::fileList(), previousOutputs );
 
 	prepareJob( { previousOutputs }, f.rootDir, f.jobName, in );
 	CHECK( fs::exists( f.jobDir ) );
@@ -36,9 +36,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - trjconv - convert", "[convert][trjconv]" )
 	in.fileStem = "1ubq";
 	VTX::test::PrepareJobSetup f( "trjconv", "4_trjconv" );
 	CumulativeOuputFiles	   previousOutputs;
-	VTX::test::fill( VTX::test::Solvate::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Editconf::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Pdb2gmx::g_fileList, previousOutputs );
+	VTX::test::fill( VTX::test::Solvate::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Editconf::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Pdb2gmx::fileList(), previousOutputs );
 
 	GromacsJobData expectedOutput, actualOutput;
 	expectedOutput.arguments.push_back( "trjconv" );
@@ -72,17 +72,17 @@ TEST_CASE( "VTX_TOOL_MdPrep - trjconv + submitGromacsJob", "[submitGromacsJob][t
 	in.fileStem = "1ubq";
 	VTX::test::PrepareJobSetup f( "trjconv", "4_trjconv" );
 	CumulativeOuputFiles	   previousOutputs;
-	VTX::test::fill( VTX::test::Solvate::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Editconf::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Pdb2gmx::g_fileList, previousOutputs );
+	VTX::test::fill( VTX::test::Solvate::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Editconf::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Pdb2gmx::fileList(), previousOutputs );
 
 	prepareJob( { previousOutputs }, f.rootDir, f.jobName, in );
 	GromacsJobData jobData;
 
 	convert( in, jobData );
 
-	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
-	submitGromacsJob( VTX::Tool::Mdprep::executableDirectory() / defaultGmxBinaryRelativePath(), jobData );
+	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
+	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobData );
 
 	checkJobResults( jobData );
 	std::string outputs { "Here is the stdout and stderr : \n" };

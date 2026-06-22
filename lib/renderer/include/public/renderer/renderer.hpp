@@ -9,6 +9,7 @@
 #include "renderer/geometry/geometries.hpp"
 #include "renderer/graphics_config.hpp"
 #include "renderer/layout/layouts.hpp"
+#include "renderer/material.hpp"
 #include "renderer/render_graph.hpp"
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
@@ -45,7 +46,7 @@ namespace VTX::Renderer
 		 * @brief Set graphic context.
 		 */
 		void setDefault();
-		void setOpenGL( const Desc::NativeContextInfo &, const FilePath & p_shaderDir );
+		void setOpenGL( const Desc::NativeContextInfo &, const FilePath & p_applicationDir );
 
 		/**
 		 * @brief Resize the renderer.
@@ -154,6 +155,11 @@ namespace VTX::Renderer
 		 * TODO: use event hub?
 		 */
 		Util::Callback<const StructInfos &> onReady;
+
+		/**
+		 * @brief Resolve shaders dir.
+		 */
+		static FilePath getShadersDir( const FilePath & p_applicationDir );
 
 	  private:
 		/**

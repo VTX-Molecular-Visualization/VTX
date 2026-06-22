@@ -67,7 +67,8 @@ namespace VTX::App
 		FilePath getDataHome() const;
 		FilePath getPicturesFolder() const;
 
-		FilePath getShadersDir() const;
+		FilePath getApplicationDir() const;
+		FilePath getAppTmpFolder() const;
 		FilePath getLicenseFile() const;
 		FilePath getReadmeFile() const;
 		FilePath getChangelogFile() const;

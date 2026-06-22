@@ -26,6 +26,11 @@ namespace VTX::Util::Filesystem
 	FilePath getExecutable();
 
 	/**
+	 * @brief Return path to the system temporary folder.
+	 */
+	FilePath getSystemTmpFolder();
+
+	/**
 	 * @brief Get local directories.
 	 */
 	FilePath getConfigHome();

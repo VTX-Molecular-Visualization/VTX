@@ -5,6 +5,7 @@
 - Added tool: molecular dynamics preparation with GROMACS
 - Added camera viewpoint saving
 - Added environment map support (.hdr, .exr)
+- Added gamma-correct rendering
 - Improved bond recomputation
 - Improved various UI components
 

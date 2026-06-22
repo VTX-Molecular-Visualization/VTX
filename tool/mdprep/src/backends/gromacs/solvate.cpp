@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <tool/mdprep/backends/gromacs/solvate.hpp>
 //
 #include "tool/mdprep/backends/gromacs/job.hpp"
@@ -7,7 +8,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 	void prepareJob(
 		const CumulativeOuputFiles & p_previousJobsOutputs,
-		const fs::path &			 p_root,
+		const FilePath &			 p_root,
 		const std::string_view &	 p_folderName,
 		SolvateInstructions &		 p_instructions
 	) noexcept
@@ -16,7 +17,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			return; // This scenario shouldn't happen
 		}
-		fs::path jobDir = p_root / p_folderName;
+		FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
 		auto lastGroFile = std::find_if(
@@ -25,7 +26,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			[]( const std::string * p_ ) { return p_->ends_with( ".gro" ); }
 		);
 		if ( lastGroFile != std::end( p_previousJobsOutputs.fileStringPtrs ) )
+		{
 			p_instructions.inputGro = *lastGroFile.operator*();
+		}
 		auto lastTopFile = std::find_if(
 			p_previousJobsOutputs.fileStringPtrs.begin(),
 			p_previousJobsOutputs.fileStringPtrs.end(),
@@ -34,7 +37,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		p_instructions.inputTop = jobDir / ( p_instructions.fileStem + ".top" );
 
 		if ( lastTopFile != std::end( p_previousJobsOutputs.fileStringPtrs ) )
-			fs::copy_file( fs::path( *lastTopFile.operator*() ), p_instructions.inputTop );
+		{
+			fs::copy_file( FilePath( *lastTopFile.operator*() ), p_instructions.inputTop );
+		}
 
 		p_instructions.outputGro = jobDir / ( p_instructions.fileStem + ".gro" );
 	}

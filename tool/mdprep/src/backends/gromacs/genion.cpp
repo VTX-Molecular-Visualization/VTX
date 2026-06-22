@@ -7,7 +7,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 	void prepareJob(
 		const CumulativeOuputFiles & p_previousJobsOutputs,
-		const fs::path &			 p_root,
+		const FilePath &			 p_root,
 		const std::string_view &	 p_folderName,
 		GenionInstructions &		 p_instructions
 	) noexcept
@@ -16,7 +16,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			return; // This scenario shouldn't happen
 		}
-		fs::path jobDir = p_root / p_folderName;
+		FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
 		if ( auto fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".tpr" ) )
@@ -25,11 +25,13 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 		if ( auto fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".top" ) )
 		{
-			fs::path topFile		= *fileStrPtr;
+			FilePath topFile		= *fileStrPtr;
 			p_instructions.inputTop = jobDir / ( p_instructions.fileStem + ".top" );
 
 			if ( fs::exists( topFile ) )
+			{
 				fs::copy( topFile, p_instructions.inputTop );
+			}
 		}
 		p_instructions.outputGro = jobDir / ( p_instructions.fileStem + ".gro" );
 	}

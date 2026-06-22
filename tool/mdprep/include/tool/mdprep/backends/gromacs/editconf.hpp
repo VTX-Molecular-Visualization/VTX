@@ -4,6 +4,8 @@
 #include <array>
 #include <filesystem>
 #include <string_view>
+#include <util/filesystem.hpp>
+
 namespace fs = std::filesystem;
 
 class QProcess;
@@ -36,10 +38,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		setup_box,
 		producing_pdb
 	};
+
 	struct EditconfInstructions
 	{
-		fs::path					  in;
-		fs::path					  out;
+		FilePath					  in;
+		FilePath					  out;
 		std::string					  fileStem;
 		E_EDITCONF_BOX_SHAPE		  bt			= E_EDITCONF_BOX_SHAPE::dodecahedron;
 		E_EDITCONF_BOX_DIMENSION_MODE dimensionMode = E_EDITCONF_BOX_DIMENSION_MODE::distance;
@@ -50,8 +53,12 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	};
 
 	// Setup job folder and place input files as the job need them
-	void
-	prepareJob( const CumulativeOuputFiles &, const fs::path & p_root, const std::string_view & p_folderName, EditconfInstructions & ) noexcept;
+	void prepareJob(
+		const CumulativeOuputFiles &,
+		const FilePath &		 p_root,
+		const std::string_view & p_folderName,
+		EditconfInstructions &
+	) noexcept;
 
 	// Convert editconf instructions to gromacs command
 	//  Do not perform filesystem check

@@ -12,6 +12,7 @@
 #include <tool/mdprep/backends/gromacs/solvate.hpp>
 #include <tool/mdprep/backends/gromacs/trjconv.hpp>
 #include <tool/mdprep/backends/gromacs/util.hpp>
+#include <util/filesystem.hpp>
 #include <util/thread.hpp>
 
 namespace VTX::App::Threading
@@ -38,7 +39,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		std::string										   fileStem;
 		std::array<GromacsJobData, g_NUM_PREPARATION_JOBS> jobData;
 		CumulativeOuputFiles							   outputs;
-		fs::path										   rootDir = createNewEmptyTempDirectory();
+		FilePath										   rootDir = createNewEmptyTempDirectory();
 		MdInstructions									   mdInstructions;
 	};
 
@@ -51,20 +52,20 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	 */
 	void prepareStructure(
 		VTX::App::Threading::ThreadData &,
-		const fs::path & p_structurePdb,
+		const FilePath & p_structurePdb,
 		GromacsInstructions &
 	) noexcept;
 
 	/**
 	 * @brief Use prepared structure to deliver a ready-to-use directory to start MD from
 	 */
-	void createMdDirectory( const GromacsInstructions &, const fs::path & p_dest ) noexcept;
+	void createMdDirectory( const GromacsInstructions &, const FilePath & p_dest ) noexcept;
 
 	// Class responsible for testing the system with gromacs synchonously.
 	class SystemTester
 	{
 	  public:
-		SystemTester( const fs::path & p_structurePdb, const forcefield &, const E_WATER_MODEL & );
+		SystemTester( const FilePath & p_structurePdb, const forcefield &, const E_WATER_MODEL & );
 
 		/**
 		 * @brief Return the reason why the system is not viable, or empty if not finished or viable.

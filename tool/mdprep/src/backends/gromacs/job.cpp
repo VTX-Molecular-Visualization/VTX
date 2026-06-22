@@ -31,7 +31,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	} // namespace
 
-	void submitGromacsJob( const fs::path & p_gmxExe, GromacsJobData & p_args )
+	void submitGromacsJob( const FilePath & p_gmxExe, GromacsJobData & p_args )
 	{
 		QString		pgm { p_gmxExe.string().data() };
 		QStringList qtArgs;

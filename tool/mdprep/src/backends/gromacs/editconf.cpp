@@ -35,7 +35,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	void prepareJob(
 		const CumulativeOuputFiles & p_previousJobsOutputs,
-		const fs::path &			 p_root,
+		const FilePath &			 p_root,
 		const std::string_view &	 p_folderName,
 		EditconfInstructions &		 p_instructions
 	) noexcept
@@ -44,7 +44,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			return; // This scenario shouldn't happen
 		}
-		fs::path jobDir = p_root / p_folderName;
+		FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
 		if ( p_instructions.purpose == E_EDITCONF_PURPOSE::setup_box )
@@ -55,7 +55,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				[]( const std::string * p_ ) { return p_->ends_with( ".gro" ); }
 			);
 			if ( lastGroFile != std::end( p_previousJobsOutputs.fileStringPtrs ) )
+			{
 				p_instructions.in = *lastGroFile.operator*();
+			}
 			p_instructions.out = jobDir / ( p_instructions.fileStem + ".gro" );
 		}
 		else
@@ -71,13 +73,15 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	void convert( const EditconfInstructions & in, GromacsJobData & out ) noexcept
 	{
 		if ( in.in.empty() || in.out.empty() )
+		{
 			return;
+		}
 
 		out.arguments.push_back( "editconf" );
 		out.arguments.push_back( "-f" );
-		out.arguments.push_back( fs::path( in.in ).make_preferred().string() );
+		out.arguments.push_back( FilePath( in.in ).make_preferred().string() );
 		out.arguments.push_back( "-o" );
-		out.arguments.push_back( fs::path( in.out ).make_preferred().string() );
+		out.arguments.push_back( FilePath( in.out ).make_preferred().string() );
 		setLastArgumentAsExpectedOutputFile( out );
 		if ( in.purpose == E_EDITCONF_PURPOSE::setup_box )
 		{

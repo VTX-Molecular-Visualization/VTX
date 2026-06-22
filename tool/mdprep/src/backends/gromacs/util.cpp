@@ -4,27 +4,12 @@
 //
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include "tool/mdprep/backends/gromacs/util.hpp"
+#include <app/services.hpp>
+#include <app/session.hpp>
 #include <qapplication.h>
 #include <util/exceptions.hpp>
-#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
-
-namespace VTX::Tool::Mdprep
-{
-	std::optional<fs::path> g_executableDirectory;
-
-	const fs::path & executableDirectory() noexcept
-	{
-		if ( !g_executableDirectory.has_value() )
-		{
-			g_executableDirectory = VTX::Util::Filesystem::getExecutableDir();
-			g_executableDirectory->make_preferred();
-		}
-		return g_executableDirectory.value();
-	}
-
-} // namespace VTX::Tool::Mdprep
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
@@ -40,6 +25,21 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	}
 #endif
 
+	FilePath defaultFfDirectoryPath() { return App::SESSION().getDataDir() / "tools" / "mdprep" / "gromacs" / "top"; }
+
+	FilePath defaultGmxBinaryPath()
+	{
+		return App::SESSION().getApplicationDir() / "external" / "tools" / "mdprep" / "gromacs"
+#ifdef _WIN32
+			   / "gmx.exe";
+#else
+			   / "gmx";
+#endif
+	}
+
+	FilePath defaultGmxTemplatesPath()
+	{ return App::SESSION().getDataDir() / "tools" / "mdprep" / "gromacs" / "templates"; }
+
 	void replace( std::string & p_text, const char * p_pattern, const std::string & p_repl ) noexcept
 	{
 		size_t replPos = p_text.find( p_pattern );
@@ -49,25 +49,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	}
 
-	const fs::path g_defaultFfDirectoryRelativePath
-		= ( fs::path( "data" ) / "tools" / "mdprep" / "gromacs" / "top" ).make_preferred();
-
-	const fs::path & defaultFfDirectoryRelativePath() noexcept { return g_defaultFfDirectoryRelativePath; }
-
-	const fs::path g_defaultGmxBinaryRelativePath
-		= ( fs::path( "external" ) / "tools" / "mdprep" / "gromacs" / "gmx"
-#ifdef _WIN32
-			".exe"
-#endif
-			).make_preferred();
-	const fs::path & defaultGmxBinaryRelativePath() noexcept { return g_defaultGmxBinaryRelativePath; }
-
-	const fs::path g_defaultGmxTemplatesRelativePath
-		= fs::path { "data" } / "tools" / "mdprep" / "gromacs" / "templates";
-
-	const fs::path & defaultGmxTemplatesRelativePath() noexcept { return g_defaultGmxTemplatesRelativePath; }
-
-	void declareFfDirectory( const std::filesystem::path & p_path ) noexcept
+	void declareFfDirectory( const FilePath & p_path ) noexcept
 	{
 		std::string	   pathStr = p_path.string();
 		QByteArrayView env_arg( pathStr.data(), pathStr.data() + pathStr.size() );
@@ -108,7 +90,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		for ( auto & it : p_in.expectedOutputFilesIndexes )
 		{
-			fs::path f { p_in.arguments[ it ] };
+			FilePath f { p_in.arguments[ it ] };
 			if ( f.empty() )
 			{
 				continue;
@@ -155,7 +137,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		return nullptr;
 	}
 
-	std::string getFileContent( const fs::path & p_file ) noexcept
+	std::string getFileContent( const FilePath & p_file ) noexcept
 	{
 		if ( fs::exists( p_file ) == false )
 		{
@@ -174,15 +156,15 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		return out;
 	}
 
-	void writeIntoFile( const fs::path & p_file, const std::string & p_content ) noexcept
+	void writeIntoFile( const FilePath & p_file, const std::string & p_content ) noexcept
 	{ std::ofstream( p_file ) << p_content; }
 
 	void setLastArgumentAsExpectedOutputFile( GromacsJobData & p_ ) noexcept
 	{ p_.expectedOutputFilesIndexes.push_back( p_.arguments.size() - 1 ); }
 
-	fs::path createNewEmptyTempDirectory() noexcept
+	FilePath createNewEmptyTempDirectory() noexcept
 	{
-		fs::path out = fs::temp_directory_path() / "VTX" / "tools" / "mdprep";
+		FilePath out = App::SESSION().getAppTmpFolder() / "tools" / "mdprep";
 		fs::create_directories( out );
 		std::random_device						rd;
 		std::mt19937							gen( rd() );

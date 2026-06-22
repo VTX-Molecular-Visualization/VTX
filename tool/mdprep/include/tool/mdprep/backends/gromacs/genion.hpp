@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <optional>
+#include <util/filesystem.hpp>
 namespace fs = std::filesystem;
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
@@ -10,12 +11,13 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	struct GromacsJobData;
 	struct CumulativeOuputFiles;
+
 	struct GenionInstructions
 	{
 		std::string			  fileStem;
-		fs::path			  inputTpr;
-		fs::path			  inputTop;
-		fs::path			  outputGro;
+		FilePath			  inputTpr;
+		FilePath			  inputTop;
+		FilePath			  outputGro;
 		std::string			  pname { "NA" };
 		int8_t				  pq = 1;
 		std::string			  nname { "CL" };
@@ -24,8 +26,12 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	};
 
 	// Setup job folder and place input files as the job need them
-	void
-	prepareJob( const CumulativeOuputFiles &, const fs::path & p_root, const std::string_view & p_folderName, GenionInstructions & ) noexcept;
+	void prepareJob(
+		const CumulativeOuputFiles &,
+		const FilePath &		 p_root,
+		const std::string_view & p_folderName,
+		GenionInstructions &
+	) noexcept;
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.

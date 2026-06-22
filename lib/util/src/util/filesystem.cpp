@@ -2,8 +2,8 @@
 #include "util/exceptions.hpp"
 #include <filesystem>
 #include <fstream>
-#include <string>
 #include <sago/platform_folders.h>
+#include <string>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -23,6 +23,7 @@ namespace VTX::Util::Filesystem
 		return getExecutable().parent_path()
 			   / ""; // We want to finish the path with a [back]slash, for *some* reason ? context wanted
 	}
+
 	FilePath getExecutable()
 	{
 #ifdef _WIN32
@@ -69,17 +70,30 @@ namespace VTX::Util::Filesystem
 #endif
 	}
 
+	FilePath getSystemTmpFolder() { return std::filesystem::temp_directory_path(); }
+
 	FilePath getConfigHome() { return FilePath( sago::getConfigHome() ); }
+
 	FilePath getDataHome() { return FilePath( sago::getDataHome() ); }
+
 	FilePath getStateDir() { return FilePath( sago::getStateDir() ); }
+
 	FilePath getCacheDir() { return FilePath( sago::getCacheDir() ); }
+
 	FilePath getDocumentsFolder() { return FilePath( sago::getDocumentsFolder() ); }
+
 	FilePath getDesktopFolder() { return FilePath( sago::getDesktopFolder() ); }
+
 	FilePath getPicturesFolder() { return FilePath( sago::getPicturesFolder() ); }
+
 	FilePath getMusicFolder() { return FilePath( sago::getMusicFolder() ); }
+
 	FilePath getVideoFolder() { return FilePath( sago::getVideoFolder() ); }
+
 	FilePath getDownloadFolder() { return FilePath( sago::getDownloadFolder() ); }
+
 	FilePath getSaveGamesFolder1() { return FilePath( sago::getSaveGamesFolder1() ); }
+
 	FilePath getSaveGamesFolder2() { return FilePath( sago::getSaveGamesFolder2() ); }
 
 	const std::string readPath( const FilePath & p_filePath )

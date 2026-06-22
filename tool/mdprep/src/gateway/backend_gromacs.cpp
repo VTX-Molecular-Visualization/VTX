@@ -86,7 +86,7 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 	void get( EngineSpecificCommonInformation & p_out ) noexcept
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
-		auto ffs = listForcefields( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
+		auto ffs = listForcefields( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
 		convert( ffs, p_out.bioForcefieldCollection );
 		boxShapeCollection( p_out.boxShapeCollection );
 		waterModelCollection( p_out.waterModels );
@@ -150,9 +150,8 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		) noexcept
 		{
 			convert( p_inGeneric.system.waterModel, p_out.pdb2gmx.water );
-			p_out.pdb2gmx.forcefields = backends::Gromacs::listForcefields(
-				executableDirectory() / backends::Gromacs ::defaultFfDirectoryRelativePath()
-			);
+			p_out.pdb2gmx.forcefields
+				= backends::Gromacs::listForcefields( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
 			std::vector<std::string> strFfs;
 			convert( p_out.pdb2gmx.forcefields, strFfs );
 			auto hit = std::find( strFfs.begin(), strFfs.end(), p_inGeneric.system.forcefieldBio );

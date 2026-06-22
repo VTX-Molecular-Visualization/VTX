@@ -20,10 +20,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - prepareJob - ions", "[prepareJob][grompp]
 	in.fileStem	  = "1ubq";
 	VTX::test::PrepareJobSetup f( "grompp", "5_grompp" );
 	CumulativeOuputFiles	   previousOutputs;
-	VTX::test::fill( VTX::test::TrjConv::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Solvate::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Editconf::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Pdb2gmx::g_fileList, previousOutputs );
+	VTX::test::fill( VTX::test::TrjConv::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Solvate::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Editconf::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Pdb2gmx::fileList(), previousOutputs );
 
 	prepareJob( { previousOutputs }, f.rootDir, f.jobName, in );
 
@@ -51,12 +51,12 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - prepareJob - em", "[prepareJob][grompp]" 
 	in.fileStem	  = "1ubq";
 	VTX::test::PrepareJobSetup f( "grompp", "7_grompp" );
 	CumulativeOuputFiles	   previousOutputs;
-	VTX::test::fill( VTX::test::Genion::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Grompp::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::TrjConv::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Solvate::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Editconf::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Pdb2gmx::g_fileList, previousOutputs );
+	VTX::test::fill( VTX::test::Genion::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Grompp::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::TrjConv::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Solvate::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Editconf::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Pdb2gmx::fileList(), previousOutputs );
 
 	prepareJob( { previousOutputs }, f.rootDir, f.jobName, in );
 
@@ -87,12 +87,12 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert - em", "[convert][grompp][em]" )
 	in.fileStem = "1ubq";
 	VTX::test::PrepareJobSetup f( "grompp", "5_grompp" );
 	CumulativeOuputFiles	   previousOutputs;
-	VTX::test::fill( VTX::test::Genion::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Grompp::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::TrjConv::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Solvate::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Editconf::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Pdb2gmx::g_fileList, previousOutputs );
+	VTX::test::fill( VTX::test::Genion::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Grompp::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::TrjConv::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Solvate::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Editconf::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Pdb2gmx::fileList(), previousOutputs );
 
 	prepareJob( previousOutputs, f.rootDir, f.jobName, in );
 
@@ -132,10 +132,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert - ions", "[convert][grompp][ions]
 	in.fileStem = "1ubq";
 	VTX::test::PrepareJobSetup f( "grompp", "5_grompp" );
 	CumulativeOuputFiles	   previousOutputs;
-	VTX::test::fill( VTX::test::TrjConv::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Solvate::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Editconf::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Pdb2gmx::g_fileList, previousOutputs );
+	VTX::test::fill( VTX::test::TrjConv::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Solvate::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Editconf::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Pdb2gmx::fileList(), previousOutputs );
 
 	prepareJob( previousOutputs, f.rootDir, f.jobName, in );
 
@@ -171,10 +171,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert - posres", "[convert][grompp][pos
 	in.fileStem = "1ubq";
 	VTX::test::PrepareJobSetup f( "grompp", "5_grompp" );
 	CumulativeOuputFiles	   previousOutputs;
-	VTX::test::fill( VTX::test::TrjConv::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Solvate::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Editconf::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Pdb2gmx::g_fileList, previousOutputs );
+	VTX::test::fill( VTX::test::TrjConv::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Solvate::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Editconf::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Pdb2gmx::fileList(), previousOutputs );
 
 	GromacsJobData expectedOutput, actualOutput;
 	expectedOutput.arguments.push_back( "grompp" );
@@ -204,7 +204,6 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp - convert - posres", "[convert][grompp][pos
 
 TEST_CASE( "VTX_TOOL_MdPrep - grompp + submitGromacsJob - ions", "[submitGromacsJob][grompp][ions]" )
 {
-
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	GromppInstructions in;
 	in.step		  = E_GROMPP_STEP::ions;
@@ -214,17 +213,17 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp + submitGromacsJob - ions", "[submitGromacs
 	in.fileStem	  = "1ubq";
 	VTX::test::PrepareJobSetup f( "grompp", "5_grompp" );
 	CumulativeOuputFiles	   previousOutputs;
-	VTX::test::fill( VTX::test::TrjConv::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Solvate::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Editconf::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Pdb2gmx::g_fileList, previousOutputs );
+	VTX::test::fill( VTX::test::TrjConv::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Solvate::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Editconf::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Pdb2gmx::fileList(), previousOutputs );
 
 	prepareJob( { previousOutputs }, f.rootDir, f.jobName, in );
 	GromacsJobData jobData;
 	convert( in, jobData );
 
-	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
-	submitGromacsJob( VTX::Tool::Mdprep::executableDirectory() / defaultGmxBinaryRelativePath(), jobData );
+	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
+	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobData );
 
 	checkJobResults( jobData );
 
@@ -244,20 +243,20 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp + submitGromacsJob - em", "[submitGromacsJo
 	in.step		= E_GROMPP_STEP::em;
 	VTX::test::PrepareJobSetup f( "grompp", "7_grompp" );
 	CumulativeOuputFiles	   previousOutputs;
-	VTX::test::fill( VTX::test::Genion::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Grompp::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::TrjConv::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Solvate::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Editconf::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Pdb2gmx::g_fileList, previousOutputs );
+	VTX::test::fill( VTX::test::Genion::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Grompp::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::TrjConv::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Solvate::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Editconf::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Pdb2gmx::fileList(), previousOutputs );
 
 	prepareJob( { previousOutputs }, f.rootDir, f.jobName, in );
 
 	GromacsJobData jobData;
 	convert( in, jobData );
 
-	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
-	submitGromacsJob( VTX::Tool::Mdprep::executableDirectory() / defaultGmxBinaryRelativePath(), jobData );
+	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
+	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobData );
 
 	checkJobResults( jobData );
 

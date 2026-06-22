@@ -2,6 +2,7 @@
 #define __VTX_TOOL_TOOLS_MDPREP_GROMACS_TRJCONV__
 
 #include <filesystem>
+#include <util/filesystem.hpp>
 namespace fs = std::filesystem;
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
@@ -13,13 +14,17 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	struct TrjconvInstructions
 	{
 		std::string fileStem;
-		fs::path	inputGro;
-		fs::path	outputGro;
+		FilePath	inputGro;
+		FilePath	outputGro;
 	};
 
 	// Setup job folder and place input files as the job need them
-	void
-	prepareJob( const CumulativeOuputFiles &, const fs::path & p_root, const std::string_view & p_folderName, TrjconvInstructions & ) noexcept;
+	void prepareJob(
+		const CumulativeOuputFiles &,
+		const FilePath &		 p_root,
+		const std::string_view & p_folderName,
+		TrjconvInstructions &
+	) noexcept;
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.

@@ -21,8 +21,8 @@
 namespace VTX::UI::QT
 {
 
-	Application::Application( int & p_argc, char ** p_argv, App::Arguments && p_args )
-		: QApplication( p_argc, p_argv ), _app( std::move( p_args ) )
+	Application::Application( int & p_argc, char ** p_argv, App::Arguments && p_args ) :
+		QApplication( p_argc, p_argv ), _app( std::move( p_args ) )
 	{
 		using namespace Resources;
 		using namespace App;
@@ -194,7 +194,7 @@ namespace VTX::UI::QT
 				contextInfo.plateform
 					= static_cast<Renderer::Desc::E_NATIVE_PLATEFORM>( MAIN_WINDOW().getNativePlatform() );
 
-				App::RENDERER().setOpenGL( contextInfo, App::SESSION().getShadersDir() );
+				App::RENDERER().setOpenGL( contextInfo, App::SESSION().getApplicationDir() );
 			}
 			catch ( const std::exception & p_e )
 			{

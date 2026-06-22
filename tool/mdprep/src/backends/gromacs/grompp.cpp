@@ -8,7 +8,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	void prepareJob(
 		const CumulativeOuputFiles & p_previousJobsOutputs,
-		const fs::path &			 p_root,
+		const FilePath &			 p_root,
 		const std::string_view &	 p_folderName,
 		GromppInstructions &		 p_instructions
 	) noexcept
@@ -17,7 +17,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			return; // This scenario shouldn't happen
 		}
-		fs::path jobDir = p_root / p_folderName;
+		FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
 		if ( auto fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".gro" ) )
@@ -32,7 +32,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 		case E_GROMPP_STEP::em:
 		{
-			fs::path	mdpTemplate = executableDirectory() / defaultGmxTemplatesRelativePath() / "minim.mdp";
+			FilePath	mdpTemplate = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "minim.mdp";
 			std::string mdpContent	= getFileContent( mdpTemplate );
 			replace( mdpContent, "${emtol}", fmt::format( "{:0.01f}", p_instructions.min.emtol ) );
 			replace( mdpContent, "${emstep}", fmt::format( "{:0.03f}", p_instructions.min.emstep ) );
@@ -43,9 +43,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 		case E_GROMPP_STEP::ions:
 		{
-			fs::path mdpTemplate = executableDirectory() / defaultGmxTemplatesRelativePath() / "ions.mdp";
+			FilePath mdpTemplate = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "ions.mdp";
 			if ( fs::exists( mdpTemplate ) == false )
+			{
 				return;
+			}
 
 			p_instructions.inputMdp = jobDir / ( p_instructions.fileStem + "_in.mdp" );
 			fs::copy_file( mdpTemplate, p_instructions.inputMdp );
@@ -53,9 +55,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 		case E_GROMPP_STEP::posres:
 		{
-			fs::path mdpTemplate = executableDirectory() / defaultGmxTemplatesRelativePath() / "posres.mdp";
+			FilePath mdpTemplate = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "posres.mdp";
 			if ( fs::exists( mdpTemplate ) == false )
+			{
 				return;
+			}
 
 			p_instructions.inputMdp = jobDir / ( p_instructions.fileStem + "_in.mdp" );
 			fs::copy_file( mdpTemplate, p_instructions.inputMdp );
@@ -66,6 +70,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		// grompp takes .top as strict input and doesn't touch it, I believe. So no need to copy it
 		p_instructions.inputTop = p_previousJobsOutputs.lastUncompiledTop;
 	}
+
 	void convert( const GromppInstructions & p_in, GromacsJobData & p_out ) noexcept
 	{
 		p_out.arguments.push_back( "grompp" );
@@ -80,7 +85,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		p_out.arguments.push_back( "-po" );
 		p_out.arguments.push_back( p_in.outputMdp.string() );
 		if ( p_in.step == E_GROMPP_STEP::em ) // When in posres mode, we don't want anything else than the .top file
+		{
 			setLastArgumentAsExpectedOutputFile( p_out );
+		}
 		if ( p_in.step == E_GROMPP_STEP::em || p_in.step == E_GROMPP_STEP::posres )
 		{
 			p_out.arguments.push_back( "-pp" );
@@ -90,7 +97,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		p_out.arguments.push_back( "-o" );
 		p_out.arguments.push_back( p_in.outputTpr.string() );
 		if ( p_in.step != E_GROMPP_STEP::posres ) // When in posres mode, we don't want anything else than the .top file
+		{
 			setLastArgumentAsExpectedOutputFile( p_out );
+		}
 		p_out.arguments.push_back( "-maxwarn" );
 		p_out.arguments.push_back( "1" );
 	}

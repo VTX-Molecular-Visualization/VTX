@@ -6,6 +6,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <util/filesystem.hpp>
 #include <vector>
 
 namespace fs = std::filesystem;
@@ -27,7 +28,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	//    Forcefields will be detected by checking child directories with pattern [forcefield name].ff
 	//    Therefore, if there is some folders with this pattern in the input directory, this function will return
 	//    misleading forcefield object
-	std::vector<forcefield> listForcefields( const fs::path & );
+	std::vector<forcefield> listForcefields( const FilePath & );
 
 	enum class E_WATER_MODEL
 	{
@@ -85,6 +86,7 @@ namespace std
 		}
 	};
 } // namespace std
+
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 
@@ -99,9 +101,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	{
 		std::vector<forcefield>		 forcefields;
 		size_t						 forcefieldIndex = SIZE_MAX; // position of the forcefield to use for
-		fs::path					 outputDir;
+		FilePath					 outputDir;
 		std::string					 fileStem;
-		fs::path					 inputPdb;
+		FilePath					 inputPdb;
 		std::optional<Pdb2gmxInputs> customParameter; // needed for adding -his ...
 
 		E_WATER_MODEL water = E_WATER_MODEL::tip3p;
@@ -129,8 +131,12 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	// Setup job folder and place input files as the job need them
 	// The root is assumed not to be an existing file path.
-	void
-	prepareJob( const CumulativeOuputFiles &, const fs::path & p_root, const std::string_view & p_folderName, Pdb2gmxInstructions & ) noexcept;
+	void prepareJob(
+		const CumulativeOuputFiles &,
+		const FilePath &		 p_root,
+		const std::string_view & p_folderName,
+		Pdb2gmxInstructions &
+	) noexcept;
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.

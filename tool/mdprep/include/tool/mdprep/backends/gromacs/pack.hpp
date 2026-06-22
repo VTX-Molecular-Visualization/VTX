@@ -2,12 +2,14 @@
 #define __VTX_TOOL_TOOLS_MDPREP_GROMACS_PACK__
 
 #include <filesystem>
+#include <util/filesystem.hpp>
 namespace fs = std::filesystem;
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 
 	struct CumulativeOuputFiles;
+
 	struct MdInstructions
 	{
 		struct Equil
@@ -19,6 +21,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			uint64_t nstenergy = 1000;
 			uint64_t nstlog	   = 1000;
 		};
+
 		struct Prod
 		{
 			uint64_t nsteps	   = 50000; // with dt = 2fs => 100ns nvt duration
@@ -37,6 +40,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		Prod		prod;
 		std::string fileStem;
 	};
+
 	struct ErrorReport
 	{
 		bool		error = false;
@@ -45,22 +49,22 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	// Create mdp file from template at location.
 	// Return false if the creation failed (the template file is probably not found)
-	ErrorReport createNvtMdp( const fs::path & p_dest, MdInstructions & ) noexcept;
+	ErrorReport createNvtMdp( const FilePath & p_dest, MdInstructions & ) noexcept;
 
 	// Create mdp file from template at location
 	// Return false if the creation failed (the template file is probably not found)
-	ErrorReport createNptMdp( const fs::path & p_dest, MdInstructions & ) noexcept;
+	ErrorReport createNptMdp( const FilePath & p_dest, MdInstructions & ) noexcept;
 
 	// Create mdp file from template at location
 	// Return false if the creation failed (the template file is probably not found)
-	ErrorReport createProdMdp( const fs::path & p_dest, MdInstructions & ) noexcept;
+	ErrorReport createProdMdp( const FilePath & p_dest, MdInstructions & ) noexcept;
 
 	// Create .py file responsible for running min-nvt-npt-prod from template
-	ErrorReport createWorkflowPy( const fs::path & p_dest, MdInstructions & ) noexcept;
+	ErrorReport createWorkflowPy( const FilePath & p_dest, MdInstructions & ) noexcept;
 
 	// Pack everything needed to run MD
 	// Assumes the destination directory is empty
-	ErrorReport pack( const fs::path & p_dest, const CumulativeOuputFiles &, MdInstructions & ) noexcept;
+	ErrorReport pack( const FilePath & p_dest, const CumulativeOuputFiles &, MdInstructions & ) noexcept;
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 

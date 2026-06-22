@@ -5,6 +5,7 @@
 #include <functional>
 #include <string>
 #include <util/datalocker.hpp>
+#include <util/filesystem.hpp>
 #include <vector>
 namespace fs = std::filesystem;
 
@@ -30,7 +31,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	struct CumulativeOuputFiles
 	{
 		std::vector<const std::string *> fileStringPtrs;
-		fs::path						 lastUncompiledTop;
+		FilePath						 lastUncompiledTop;
 	};
 
 	struct GromacsJobData
@@ -40,8 +41,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 														// path of output files to check
 		VTX::Util::DataLocker<Channels>													  channelsLocker;
 		JobReport																		  report;
-		std::function<void( const fs::path &, GromacsJobData &, CumulativeOuputFiles & )> postJobRoutine
-			= []( const fs::path &, GromacsJobData &, CumulativeOuputFiles & ) {};
+		std::function<void( const FilePath &, GromacsJobData &, CumulativeOuputFiles & )> postJobRoutine
+			= []( const FilePath &, GromacsJobData &, CumulativeOuputFiles & ) {};
 		bool operator==( const GromacsJobData & ) const noexcept = default;
 	};
 
@@ -53,7 +54,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	  or are empty.
 	  Suspends the execution until the job is finished or if the job failed to start.
 	 */
-	void submitGromacsJob( const fs::path & p_gmx_exe, GromacsJobData & p_args );
+	void submitGromacsJob( const FilePath & p_gmx_exe, GromacsJobData & p_args );
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 
 #endif

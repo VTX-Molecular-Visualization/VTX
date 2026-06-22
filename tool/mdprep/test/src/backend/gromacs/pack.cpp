@@ -11,7 +11,7 @@
 
 namespace
 {
-	bool checkAssignmentPattern( const fs::path & p_file, const char * p_varName, const std::string & p_value )
+	bool checkAssignmentPattern( const FilePath & p_file, const char * p_varName, const std::string & p_value )
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
 		REQUIRE( fs::exists( p_file ) );
@@ -22,6 +22,7 @@ namespace
 
 		return RE2::PartialMatch( fileContent, pattern );
 	}
+
 	bool checkKv( const std::string & p_fileContent, const std::string & p_key, const std::string & p_value )
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
@@ -35,10 +36,13 @@ namespace
 
 TEST_CASE( "VTX_TOOL_MdPrep - createNvtMdp", "[pack][createNvtMdp]" )
 {
+	VTX::test::setup_env f;
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
-	fs::path outDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "createNvtMdp";
+	FilePath outDir = VTX::App::SESSION().getApplicationDir() / "out" / "createNvtMdp";
 	if ( fs::exists( outDir ) )
+	{
 		fs::remove_all( outDir );
+	}
 	fs::create_directories( outDir );
 
 	MdInstructions in;
@@ -59,12 +63,16 @@ TEST_CASE( "VTX_TOOL_MdPrep - createNvtMdp", "[pack][createNvtMdp]" )
 	CHECK( checkKv( fileContent, "nstenergy", std::to_string( in.nvt.nstenergy ) ) );
 	CHECK( checkKv( fileContent, "nstlog", std::to_string( in.nvt.nstlog ) ) );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - createNptMdp", "[pack][createNptMdp]" )
 {
+	VTX::test::setup_env f;
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
-	fs::path outDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "createNptMdp";
+	FilePath outDir = VTX::App::SESSION().getApplicationDir() / "out" / "createNptMdp";
 	if ( fs::exists( outDir ) )
+	{
 		fs::remove_all( outDir );
+	}
 	fs::create_directories( outDir );
 
 	MdInstructions in;
@@ -86,12 +94,16 @@ TEST_CASE( "VTX_TOOL_MdPrep - createNptMdp", "[pack][createNptMdp]" )
 	CHECK( checkKv( fileContent, "nstlog", std::to_string( in.npt.nstlog ) ) );
 	CHECK( fileContent.find( '\0' ) == std::string::npos );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - createProdMdp", "[pack][createProdMdp]" )
 {
+	VTX::test::setup_env f;
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
-	fs::path outDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "createProdMdp";
+	FilePath outDir = VTX::App::SESSION().getApplicationDir() / "out" / "createProdMdp";
 	if ( fs::exists( outDir ) )
+	{
 		fs::remove_all( outDir );
+	}
 	fs::create_directories( outDir );
 
 	MdInstructions in;
@@ -115,12 +127,16 @@ TEST_CASE( "VTX_TOOL_MdPrep - createProdMdp", "[pack][createProdMdp]" )
 	CHECK( checkKv( fileContent, "nstxout-compressed", std::to_string( in.prod.nstxout_compressed ) ) );
 	CHECK( fileContent.find( '\0' ) == std::string::npos );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - createWorkflowPy", "[pack][createWorkflowPy]" )
 {
+	VTX::test::setup_env f;
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
-	fs::path outDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "createWorkflowPy";
+	FilePath outDir = VTX::App::SESSION().getApplicationDir() / "out" / "createWorkflowPy";
 	if ( fs::exists( outDir ) )
+	{
 		fs::remove_all( outDir );
+	}
 	fs::create_directories( outDir );
 
 	MdInstructions in;
@@ -131,23 +147,27 @@ TEST_CASE( "VTX_TOOL_MdPrep - createWorkflowPy", "[pack][createWorkflowPy]" )
 	CHECK( checkAssignmentPattern( outDir / "runMD.py", "fileStem", in.fileStem ) );
 	CHECK( getFileContent( outDir / "runMD.py" ).find( '\0' ) == std::string::npos );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - pack", "[pack]" )
 {
+	VTX::test::setup_env f;
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
-	fs::path outDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "pack" / "all";
+	FilePath outDir = VTX::App::SESSION().getApplicationDir() / "out" / "pack" / "all";
 	if ( fs::exists( outDir ) )
+	{
 		fs::remove_all( outDir );
+	}
 	fs::create_directories( outDir );
 
 	CumulativeOuputFiles previousOutputs;
 
-	VTX::test::fill( VTX::test::Grompp2::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Genion::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Grompp::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::TrjConv::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Solvate::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Editconf::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Pdb2gmx::g_fileList, previousOutputs );
+	VTX::test::fill( VTX::test::Grompp2::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Genion::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Grompp::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::TrjConv::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Solvate::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Editconf::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Pdb2gmx::fileList(), previousOutputs );
 
 	MdInstructions in;
 	in.fileStem				   = "1ubq";

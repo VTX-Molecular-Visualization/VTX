@@ -31,14 +31,14 @@ namespace
 			outIndex.make_preferred();
 		}
 
-		fs::path execPath = VTX::Tool::Mdprep::executableDirectory();
-		fs::path in;
-		fs::path outDir;
-		fs::path outGro;
-		fs::path outTopol;
-		fs::path outPosre;
-		fs::path outClean;
-		fs::path outIndex;
+		FilePath execPath = VTX::App::SESSION().getApplicationDir();
+		FilePath in;
+		FilePath outDir;
+		FilePath outGro;
+		FilePath outTopol;
+		FilePath outPosre;
+		FilePath outClean;
+		FilePath outIndex;
 	};
 
 	struct TestContext
@@ -48,7 +48,7 @@ namespace
 	};
 
 	bool checkIfExists(
-		const fs::path & p_directory,
+		const FilePath & p_directory,
 		const char *	 p_startingPattern,
 		const char *	 p_endingPattern
 	) noexcept
@@ -64,9 +64,9 @@ namespace
 		return false;
 	}
 
-	bool check_file_as_pattern( const fs::path & p_filePatterned ) noexcept
+	bool check_file_as_pattern( const FilePath & p_filePatterned ) noexcept
 	{
-		fs::path	dir		 = p_filePatterned.parent_path();
+		FilePath	dir		 = p_filePatterned.parent_path();
 		std::string filename = p_filePatterned.stem().string().data();
 		std::string ext		 = p_filePatterned.extension().string().data();
 		return checkIfExists( dir, filename.data(), ext.data() );
@@ -76,7 +76,7 @@ namespace
 	{
 		TestContext out { { p_pdbCode, p_pdbCode }, {} };
 
-		fs::path & outDir = out.paths.outDir;
+		FilePath & outDir = out.paths.outDir;
 		if ( fs::is_directory( outDir ) )
 		{
 			fs::remove_all( outDir );
@@ -105,8 +105,7 @@ namespace
 			"tip3p",
 		} };
 		VTX::Tool::Mdprep::backends::Gromacs::declareFfDirectory(
-			VTX::Tool::Mdprep::executableDirectory()
-			/ VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryRelativePath()
+			VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath()
 		);
 
 		return out;
@@ -114,9 +113,7 @@ namespace
 
 	void check_pdb( TestContext p_context )
 	{
-		fs::path full_gmx_exe_path = ( VTX::Tool::Mdprep::executableDirectory()
-									   / VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryRelativePath() )
-										 .make_preferred();
+		FilePath full_gmx_exe_path = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath();
 		VTX::Tool::Mdprep::backends::Gromacs::submitGromacsJob( full_gmx_exe_path, p_context.args );
 		// for topol and posre, gromacs do not necessarily output a file with the exact name, but divide chains and ions
 		// into multiple files. So we need to check its pattern for us to be sure everything worked.

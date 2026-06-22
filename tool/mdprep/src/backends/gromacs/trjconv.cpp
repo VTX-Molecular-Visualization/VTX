@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <tool/mdprep/backends/gromacs/trjconv.hpp>
 //
 #include "tool/mdprep/backends/gromacs/job.hpp"
@@ -8,7 +9,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	void prepareJob(
 		const CumulativeOuputFiles & p_previousJobsOutputs,
-		const fs::path &			 p_root,
+		const FilePath &			 p_root,
 		const std::string_view &	 p_folderName,
 		TrjconvInstructions &		 p_instructions
 	) noexcept
@@ -17,7 +18,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			return; // This scenario shouldn't happen
 		}
-		fs::path jobDir = p_root / p_folderName;
+		FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
 		auto lastGroFile = std::find_if(
@@ -26,7 +27,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			[]( const std::string * p_ ) { return p_->ends_with( ".gro" ); }
 		);
 		if ( lastGroFile != std::end( p_previousJobsOutputs.fileStringPtrs ) )
+		{
 			p_instructions.inputGro = *lastGroFile.operator*();
+		}
 		p_instructions.outputGro = jobDir / ( p_instructions.fileStem + ".gro" );
 	}
 

@@ -2,6 +2,7 @@
 #define __VTX_TOOL_TOOLS_MDPREP_GROMACS_GROMPP__
 
 #include <filesystem>
+#include <util/filesystem.hpp>
 namespace fs = std::filesystem;
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
@@ -26,12 +27,12 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	struct GromppInstructions
 	{
 		std::string fileStem;
-		fs::path	inputGro;
-		fs::path	inputMdp;
-		fs::path	inputTop;
-		fs::path	outputTpr;
-		fs::path	outputMdp;
-		fs::path	outputTop;
+		FilePath	inputGro;
+		FilePath	inputMdp;
+		FilePath	inputTop;
+		FilePath	outputTpr;
+		FilePath	outputMdp;
+		FilePath	outputTop;
 
 		E_GROMPP_STEP				   step = E_GROMPP_STEP::ions;
 		GromppInstructionsMinimization min;
@@ -40,8 +41,12 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	// Setup job folder and place input files as the job need them
 	// Generate the .mdp file from template based on the user inputs in GromppInstructionsMinimization
 	// if .mdp found in previous output files, will use it instead
-	void
-	prepareJob( const CumulativeOuputFiles &, const fs::path & p_root, const std::string_view & p_folderName, GromppInstructions & ) noexcept;
+	void prepareJob(
+		const CumulativeOuputFiles &,
+		const FilePath &		 p_root,
+		const std::string_view & p_folderName,
+		GromppInstructions &
+	) noexcept;
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.

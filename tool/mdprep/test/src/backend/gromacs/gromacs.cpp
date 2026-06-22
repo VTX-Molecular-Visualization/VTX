@@ -17,11 +17,8 @@ namespace VTX::test
 	void setForcefield( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions & in, const char * p_ffName ) noexcept
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
-		in.pdb2gmx.forcefields = listForcefields(
-			VTX::Tool::Mdprep::executableDirectory()
-			/ VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryRelativePath()
-		);
-		auto it = std::find_if(
+		in.pdb2gmx.forcefields = listForcefields( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
+		auto it				   = std::find_if(
 			in.pdb2gmx.forcefields.begin(),
 			in.pdb2gmx.forcefields.end(),
 			[ & ]( const forcefield & p_ ) { return p_.getName() == p_ffName; }
@@ -35,8 +32,9 @@ namespace VTX::test
 
 TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 1ubq", "[prepareStructure][1ubq]" )
 {
+	VTX::test::setup_env f;
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
-	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
+	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
 
 	GromacsInstructions in;
 
@@ -55,14 +53,14 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 1ubq", "[prepareStructure][1ubq]"
 	in.genion.nname			   = "CL";
 	in.genion.nq			   = -1;
 
-	in.rootDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "prepareStructure" / "1ubq";
+	in.rootDir = VTX::App::SESSION().getApplicationDir() / "out" / "prepareStructure" / "1ubq";
 	if ( fs::exists( in.rootDir ) )
 	{
 		fs::remove_all( in.rootDir );
 	}
 	fs::create_directories( in.rootDir );
 	VTX::App::Threading::ThreadData dummy;
-	prepareStructure( dummy, VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb", in );
+	prepareStructure( dummy, VTX::App::SESSION().getDataDir() / "1ubq.pdb", in );
 	int i = 0;
 	for ( auto & jobData : in.jobData )
 	{
@@ -72,15 +70,16 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 1ubq", "[prepareStructure][1ubq]"
 	}
 	for ( auto & outputFileStrPtr : in.outputs.fileStringPtrs )
 	{
-		CHECK( fs::exists( fs::path( *outputFileStrPtr ) ) );
+		CHECK( fs::exists( FilePath( *outputFileStrPtr ) ) );
 	}
 }
 
 TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 2wfv", "[prepareStructure][2wfv]" )
 {
+	VTX::test::setup_env f;
 	return; // TMP TODO : Put it back online
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
-	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
+	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
 
 	GromacsInstructions in;
 
@@ -99,7 +98,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 2wfv", "[prepareStructure][2wfv]"
 	in.genion.nname			   = "CL";
 	in.genion.nq			   = -1;
 
-	in.rootDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "prepareStructure" / "2wfv";
+	in.rootDir = VTX::App::SESSION().getApplicationDir() / "out" / "prepareStructure" / "2wfv";
 	if ( fs::exists( in.rootDir ) )
 	{
 		fs::remove_all( in.rootDir );
@@ -108,7 +107,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 2wfv", "[prepareStructure][2wfv]"
 
 	VTX::App::Threading::ThreadData dummy;
 
-	prepareStructure( dummy, VTX::Tool::Mdprep::executableDirectory() / "data" / "2wfv.pdb", in );
+	prepareStructure( dummy, VTX::App::SESSION().getDataDir() / "2wfv.pdb", in );
 	int i = 0;
 	for ( auto & jobData : in.jobData )
 	{
@@ -118,20 +117,20 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 2wfv", "[prepareStructure][2wfv]"
 	}
 	for ( auto & outputFileStrPtr : in.outputs.fileStringPtrs )
 	{
-		CHECK( fs::exists( fs::path( *outputFileStrPtr ) ) );
+		CHECK( fs::exists( FilePath( *outputFileStrPtr ) ) );
 	}
 }
 
 TEST_CASE( "VTX_TOOL_MdPrep - SystemTester", "[SystemTester]" )
 {
+	VTX::test::setup_env f;
 	// Passing ones : 4j6s 2wfv 8hu4.nolig
 	// Not Passing ones : 4nxo 8hu4
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
-	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
+	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
 
-	fs::path				dataDir = VTX::Tool::Mdprep::executableDirectory() / "data";
-	std::vector<forcefield> ffs
-		= listForcefields( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
+	FilePath				dataDir = VTX::App::SESSION().getDataDir();
+	std::vector<forcefield> ffs		= listForcefields( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
 
 	REQUIRE( ffs.size() > 0 );
 	SystemTester s_4j6s( dataDir / "4j6s.pdb", ffs[ 0 ], E_WATER_MODEL::tip3p );
@@ -154,9 +153,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - SystemTester", "[SystemTester]" )
 
 TEST_CASE( "VTX_TOOL_MdPrep - prepPy", "[prepPy]" ) // temporary UT meant to generate runMD.py test env
 {
+	VTX::test::setup_env f;
 	return; // TMP TODO : Put it back online
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
-	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
+	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
 
 	GromacsInstructions in;
 
@@ -175,7 +175,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepPy", "[prepPy]" ) // temporary UT meant to gen
 	in.genion.nname			   = "CL";
 	in.genion.nq			   = -1;
 
-	in.rootDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "prepareStructure" / "1gcn";
+	in.rootDir = VTX::App::SESSION().getApplicationDir() / "out" / "prepareStructure" / "1gcn";
 	if ( fs::exists( in.rootDir ) )
 	{
 		fs::remove_all( in.rootDir );
@@ -183,7 +183,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepPy", "[prepPy]" ) // temporary UT meant to gen
 	fs::create_directories( in.rootDir );
 
 	VTX::App::Threading::ThreadData dummy;
-	prepareStructure( dummy, VTX::Tool::Mdprep::executableDirectory() / "data" / "1gcn.pdb", in );
+	prepareStructure( dummy, VTX::App::SESSION().getDataDir() / "1gcn.pdb", in );
 	int i = 0;
 	for ( auto & jobData : in.jobData )
 	{
@@ -194,7 +194,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepPy", "[prepPy]" ) // temporary UT meant to gen
 	}
 	for ( auto & outputFileStrPtr : in.outputs.fileStringPtrs )
 	{
-		REQUIRE( fs::exists( fs::path( *outputFileStrPtr ) ) );
+		REQUIRE( fs::exists( FilePath( *outputFileStrPtr ) ) );
 	}
 
 	MdInstructions md;
@@ -218,11 +218,11 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepPy", "[prepPy]" ) // temporary UT meant to gen
 	md.prod.nstenergy		   = 0;
 	md.prod.nstlog			   = 5000;
 	md.prod.nstxout_compressed = 1;
-	fs::path outDir			   = VTX::Tool::Mdprep::executableDirectory() / "out" / "packed" / "1gcn";
+	FilePath outDir			   = VTX::App::SESSION().getApplicationDir() / "out" / "packed" / "1gcn";
 	if ( fs::exists( outDir ) )
 	{
 		fs::remove_all( outDir );
 	}
 	fs::create_directories( outDir );
-	pack( VTX::Tool::Mdprep::executableDirectory() / "out" / "packed" / "1gcn", in.outputs, md );
+	pack( VTX::App::SESSION().getApplicationDir() / "out" / "packed" / "1gcn", in.outputs, md );
 }

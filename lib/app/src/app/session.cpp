@@ -418,7 +418,7 @@ namespace VTX::App
 	{
 		if ( not hasManager() )
 		{
-			return Filesystem::getExecutableDir();
+			return getApplicationDir();
 		}
 
 #if defined( _WIN32 )
@@ -435,7 +435,7 @@ namespace VTX::App
 	{
 		if ( not hasManager() )
 		{
-			return Filesystem::getExecutableDir();
+			return getApplicationDir();
 		}
 
 #if defined( _WIN32 )
@@ -448,11 +448,13 @@ namespace VTX::App
 		return _getDefaultBaseDir( SessionPathRoot::Pictures ) / APP_FOLDER_NAME;
 	}
 
-	FilePath Session::getShadersDir() const { return Filesystem::getExecutableDir() / "shaders"; }
+	FilePath Session::getApplicationDir() const { return Filesystem::getExecutableDir(); }
 
-	FilePath Session::getDataDir() const { return Filesystem::getExecutableDir() / "data"; }
+	FilePath Session::getAppTmpFolder() const { return Filesystem::getSystemTmpFolder() / APP_FOLDER_NAME; }
 
-	FilePath Session::getLicenseFile() const { return Filesystem::getExecutableDir() / "license.txt"; }
+	FilePath Session::getDataDir() const { return getApplicationDir() / "data"; }
+
+	FilePath Session::getLicenseFile() const { return getApplicationDir() / "license.txt"; }
 
 	FilePath Session::getLogsDir() const { return getDataHome() / "logs"; }
 
@@ -483,7 +485,7 @@ namespace VTX::App
 		{
 			VTX_DEBUG( "No app manager available" );
 		}
-		VTX_DEBUG( "Executable dir: {}", Filesystem::getExecutableDir().string() );
+		VTX_DEBUG( "Executable dir: {}", getApplicationDir().string() );
 		VTX_DEBUG( "Data home: {}", getDataHome().string() );
 		VTX_DEBUG( "Pictures folder: {}", getPicturesFolder().string() );
 	}

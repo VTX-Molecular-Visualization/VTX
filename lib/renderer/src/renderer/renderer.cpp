@@ -33,11 +33,13 @@ namespace VTX::Renderer
 		}
 	}
 
-	void Renderer::setOpenGL( const Desc::NativeContextInfo & p_contextInfo, const FilePath & p_shaderDir )
+	FilePath Renderer::getShadersDir( const FilePath & p_applicationDir ) { return p_applicationDir / "shaders"; }
+
+	void Renderer::setOpenGL( const Desc::NativeContextInfo & p_contextInfo, const FilePath & p_applicationDir )
 	{
 		Util::ScopedChrono timer( "[RENDERER] setOpenGL46 / surface: " + std::to_string( p_contextInfo.surface ) );
 
-		_context.setOpenGL( _width, _height, p_contextInfo, p_shaderDir );
+		_context.setOpenGL( _width, _height, p_contextInfo, getShadersDir( p_applicationDir ) );
 		try
 		{
 			Builder::RenderGraphRuntime::rebuildCommandBuffer(
@@ -565,8 +567,8 @@ namespace VTX::Renderer
 
 	void Renderer::setGraphicsConfig( const GraphicsConfig & p_config )
 	{
-		const ShadingConfig & currentShading	 = _graphicsConfig.data.shading;
-		const bool			  environmentChanged = currentShading.environmentPath != p_config.shading.environmentPath
+		const ShadingConfig & currentShading = _graphicsConfig.data.shading;
+		const bool environmentChanged = currentShading.environmentPath != p_config.shading.environmentPath
 										|| currentShading.environmentFaceSize != p_config.shading.environmentFaceSize;
 		const Builder::PipelineConfig pipelineConfig = Builder::RenderGraphRuntime::pipelineConfig( p_config );
 		const bool					  graphReady	 = _config.has_value();

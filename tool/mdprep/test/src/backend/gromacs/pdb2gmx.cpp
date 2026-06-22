@@ -19,7 +19,13 @@ namespace VTX::test
 		VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInstructions instructions;
 		VTX::Tool::Mdprep::backends::Gromacs::GromacsJobData	  expectedArgs;
 	};
-	const fs::path			g_outputDirName = VTX::Tool::Mdprep::executableDirectory() / "out" / "pdb2gmx";
+
+	const FilePath & outputDirName()
+	{
+		static const FilePath outputDirName = VTX::App::SESSION().getApplicationDir() / "out" / "pdb2gmx";
+		return outputDirName;
+	}
+
 	fixture_convert_pdb2gmx create_correct_in_out()
 	{
 		fixture_convert_pdb2gmx f;
@@ -29,8 +35,8 @@ namespace VTX::test
 		f.instructions.forcefields.emplace_back( "./data/poney.ff" );
 		f.instructions.forcefieldIndex = 1;
 		f.instructions.water		   = VTX::Tool::Mdprep::backends::Gromacs::E_WATER_MODEL::spce;
-		f.instructions.outputDir	   = g_outputDirName;
-		f.instructions.inputPdb		   = VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb";
+		f.instructions.outputDir	   = outputDirName();
+		f.instructions.inputPdb		   = VTX::App::SESSION().getDataDir() / "1ubq.pdb";
 		f.instructions.fileStem		   = f.instructions.inputPdb.filename().string();
 
 		// I kind of re-do the implementation of convert here, but I guess that if I do it twice, it is half the chance
@@ -62,22 +68,26 @@ namespace VTX::test
 
 TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - prepareJob - empty", "[prepareJob][pdb2gmx]" )
 {
+	VTX::test::setup_env f;
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	Pdb2gmxInstructions instr;
-	instr.inputPdb		 = VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb";
+	instr.inputPdb		 = VTX::App::SESSION().getDataDir() / "1ubq.pdb";
 	instr.fileStem		 = "1ubq";
-	fs::path	 rootDir = VTX::test::g_outputDirName / "prepareJob";
+	FilePath	 rootDir = VTX::test::outputDirName() / "prepareJob";
 	const char * jobName = "1-pdb2gmx";
 	if ( fs::exists( rootDir / jobName ) )
+	{
 		fs::remove_all( rootDir / jobName );
+	}
 
 	prepareJob( {}, rootDir, jobName, instr );
 
 	CHECK( ( fs::exists( rootDir / jobName ) && fs::is_directory( rootDir / jobName ) ) );
-	CHECK( instr.inputPdb == ( VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb" ) );
-	CHECK( fs::exists( VTX::Tool::Mdprep::executableDirectory() / "data" / "1ubq.pdb" ) );
+	CHECK( instr.inputPdb == ( VTX::App::SESSION().getDataDir() / "1ubq.pdb" ) );
+	CHECK( fs::exists( VTX::App::SESSION().getDataDir() / "1ubq.pdb" ) );
 	CHECK( instr.outputDir == ( rootDir / jobName ) );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - empty", "[convert][pdb2gmx][empty]" )
 {
 	VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInstructions instructions;
@@ -112,7 +122,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - no_input", "[convert][pdb2gmx]
 	CHECK( args.arguments.empty() );
 }
 
-bool share_same_parent( const fs::path & l, const fs::path & r ) { return l.parent_path() == r.parent_path(); }
+bool share_same_parent( const FilePath & l, const FilePath & r ) { return l.parent_path() == r.parent_path(); }
 
 TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - no_output", "[convert][pdb2gmx][no_output]" )
 {
@@ -141,6 +151,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - correct_instruction", "[conver
 
 	CHECK( data.expectedArgs.arguments == args.arguments );
 }
+
 TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[convert][pdb2gmx][each_interactive_kw]" )
 {
 	VTX::test::fixture_convert_pdb2gmx					 data = VTX::test::create_correct_in_out();
@@ -166,6 +177,6 @@ TEST_CASE( "VTX_TOOL_MdPrep - pdb2gmx - convert - each_interactive_kw", "[conver
 		REQUIRE( batchIt != args.arguments.end() );
 		auto batchPathIt = std::next( batchIt );
 		REQUIRE( batchPathIt != args.arguments.end() );
-		CHECK( fs::exists( fs::path( *batchPathIt ) ) );
+		CHECK( fs::exists( FilePath( *batchPathIt ) ) );
 	}
 }

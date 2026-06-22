@@ -19,12 +19,12 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob - producing_pdb", "[prepareJ
 
 	VTX::test::PrepareJobSetup f( "editconf", "8_editconf" );
 	CumulativeOuputFiles	   previousOutputs;
-	VTX::test::fill( VTX::test::Genion::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Grompp::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::TrjConv::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Solvate::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Editconf::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Pdb2gmx::g_fileList, previousOutputs );
+	VTX::test::fill( VTX::test::Genion::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Grompp::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::TrjConv::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Solvate::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Editconf::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Pdb2gmx::fileList(), previousOutputs );
 	EditconfInstructions in;
 	in.fileStem = "1ubq";
 	in.purpose	= E_EDITCONF_PURPOSE::producing_pdb;
@@ -44,7 +44,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob - setup_box", "[prepareJob][
 	EditconfInstructions in;
 	in.fileStem = "1ubq";
 	VTX::test::PrepareJobSetup f( "editconf", "2_editconf" );
-	prepareJob( { VTX::test::getPtrVectFromVect( VTX::test::Pdb2gmx::g_fileList ) }, f.rootDir, f.jobName, in );
+	prepareJob( { VTX::test::getPtrVectFromVect( VTX::test::Pdb2gmx::fileList() ) }, f.rootDir, f.jobName, in );
 
 	CHECK( fs::exists( f.jobDir ) );
 	CHECK( in.in.empty() == false );
@@ -258,8 +258,9 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - convert - producing_pdb", "[convert][ed
 
 TEST_CASE( "VTX_TOOL_MdPrep - editconf + submitGromacsJob", "[submitGromacsJob][editconf]" )
 {
+	VTX::test::setup_env f;
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
-	fs::path outputEditconfDir = VTX::Tool::Mdprep::executableDirectory() / "out" / "editconf" / "submitGromacsJob";
+	FilePath outputEditconfDir = VTX::App::SESSION().getApplicationDir() / "out" / "editconf" / "submitGromacsJob";
 
 	if ( fs::exists( outputEditconfDir ) == false )
 	{
@@ -269,7 +270,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf + submitGromacsJob", "[submitGromacsJob][
 	GromacsJobData jobData;
 	jobData.arguments.push_back( "editconf" );
 	jobData.arguments.push_back( "-f" );
-	jobData.arguments.push_back( ( VTX::test::Pdb2gmx::g_outputDir / "1ubq.gro" ).string() );
+	jobData.arguments.push_back( ( VTX::test::Pdb2gmx::outputDir() / "1ubq.gro" ).string() );
 	jobData.arguments.push_back( "-o" );
 	jobData.arguments.push_back( ( outputEditconfDir / "1ubq.gro" ).string() );
 	setLastArgumentAsExpectedOutputFile( jobData );
@@ -277,8 +278,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf + submitGromacsJob", "[submitGromacsJob][
 	jobData.arguments.push_back( "dodecahedron" );
 	jobData.arguments.push_back( "-d" );
 	jobData.arguments.push_back( "1.2" );
-	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
-	submitGromacsJob( VTX::Tool::Mdprep::executableDirectory() / defaultGmxBinaryRelativePath(), jobData );
+	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
+	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobData );
 
 	checkJobResults( jobData );
 
@@ -301,20 +302,20 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob + submitGromacsJob", "[submi
 
 	VTX::test::PrepareJobSetup f( "editconf", "8_editconf" );
 	CumulativeOuputFiles	   previousOutputs;
-	VTX::test::fill( VTX::test::Genion::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Grompp::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::TrjConv::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Solvate::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Editconf::g_fileList, previousOutputs );
-	VTX::test::fill( VTX::test::Pdb2gmx::g_fileList, previousOutputs );
+	VTX::test::fill( VTX::test::Genion::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Grompp::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::TrjConv::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Solvate::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Editconf::fileList(), previousOutputs );
+	VTX::test::fill( VTX::test::Pdb2gmx::fileList(), previousOutputs );
 	EditconfInstructions in;
 	in.fileStem = "1ubq";
 	in.purpose	= E_EDITCONF_PURPOSE::producing_pdb;
 	prepareJob( { previousOutputs }, f.rootDir, f.jobName, in );
 	GromacsJobData jobData;
 	convert( in, jobData );
-	declareFfDirectory( VTX::Tool::Mdprep::executableDirectory() / defaultFfDirectoryRelativePath() );
-	submitGromacsJob( VTX::Tool::Mdprep::executableDirectory() / defaultGmxBinaryRelativePath(), jobData );
+	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
+	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobData );
 
 	checkJobResults( jobData );
 

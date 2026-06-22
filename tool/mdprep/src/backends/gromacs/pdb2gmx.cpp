@@ -4,12 +4,15 @@
 #include <set>
 #include <string.h>
 //
+#include <app/services.hpp>
+#include <app/session.hpp>
 #include <tool/mdprep/backends/gromacs/pdb2gmx.hpp>
 #include <util/exceptions.hpp>
 #include <util/string.hpp>
 //
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include <tool/mdprep/backends/gromacs/util.hpp>
+
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 
@@ -18,7 +21,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		const char g_ff_suffix[] = ".ff";
 	}
 
-	std::vector<forcefield> listForcefields( const fs::path & p_dataDir )
+	std::vector<forcefield> listForcefields( const FilePath & p_dataDir )
 	{
 		if ( !fs::is_directory( p_dataDir ) )
 		{
@@ -30,7 +33,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		for ( auto & fsElement : fs::directory_iterator( p_dataDir ) )
 		{
 			if ( !fsElement.is_directory() )
+			{
 				continue;
+			}
 
 			auto filename = fsElement.path().filename().string();
 			if ( filename.ends_with( g_ff_suffix ) )
@@ -58,6 +63,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 		return "";
 	}
+
 	const char * string( const E_INTERACTIVE_KEYWORD & p_kw ) noexcept
 	{
 		switch ( p_kw )
@@ -78,11 +84,12 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	std::string_view forcefield::getName() const
 	{
 		size_t filenamePos
-			= this->forcefieldFolderPath.find( fs::path( this->forcefieldFolderPath ).filename().string() );
+			= this->forcefieldFolderPath.find( FilePath( this->forcefieldFolderPath ).filename().string() );
 		size_t extensionPos = this->forcefieldFolderPath.size() - ( sizeof( g_ff_suffix ) - 1 );
 		return std::string_view { std::next( this->forcefieldFolderPath.begin(), filenamePos ),
 								  std::next( this->forcefieldFolderPath.begin(), extensionPos ) };
 	}
+
 	void parse( const std::string & p_user_str, E_INTERACTIVE_KEYWORD & p_out ) noexcept
 	{
 		if ( p_user_str == "HIS" )
@@ -135,12 +142,16 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		p_args.kwValue.clear();
 		if ( p_script.empty() )
+		{
 			return out;
+		}
 
 		std::string_view::const_iterator currentPos		= p_script.begin(),
 										 nextNewlinePos = std::find( p_script.begin(), p_script.end(), '\n' );
 		if ( nextNewlinePos != p_script.end() )
+		{
 			nextNewlinePos++;
+		}
 		// The interval looked into is [first, last ) so we need to increment it
 		// in order to include the newline into the line
 		const std::regex lineRegex { "([a-zA-Z]+) ([a-zA-Z]+)([0-9]+) (([a-zA-Z0-9]+ )?[0-9a-zA-Z]+)\r?\n?" };
@@ -209,14 +220,17 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			currentPos	   = nextNewlinePos;
 			nextNewlinePos = std::find( currentPos, p_script.end(), '\n' );
 			if ( nextNewlinePos != p_script.end() )
+			{
 				nextNewlinePos++;
+			}
 		}
 
 		return out;
 	}
+
 	void prepareJob(
 		const CumulativeOuputFiles &,
-		const fs::path &		 p_root,
+		const FilePath &		 p_root,
 		const std::string_view & p_folderName,
 		Pdb2gmxInstructions &	 p_instructions
 	) noexcept
@@ -225,11 +239,12 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			return; // This scenario shouldn't happen
 		}
-		fs::path jobDir = p_root / p_folderName;
+		FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
 		p_instructions.outputDir = jobDir.string();
 	}
+
 	namespace
 	{
 #ifndef _WINDOWS
@@ -237,9 +252,13 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			size_t srcNumChar = 0;
 			while ( p_src[ srcNumChar ] != '\0' && srcNumChar < p_size )
+			{
 				srcNumChar++;
+			}
 			if ( srcNumChar == p_size )
+			{
 				return 1;
+			}
 
 			for ( size_t idx = 0; idx < p_size; idx++ )
 			{
@@ -268,26 +287,28 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		// Serialize p_inputs into a file readable by pdb2gmx -batch.
 		// Format per line: CHAIN TYPE+RESNUM VALUE  (e.g. "A HIS47 1")
 		// ss and ter entries are skipped (not handled by the -batch flag).
-		void writeBatchFile( const fs::path & p_batchFile, const Pdb2gmxInputs & p_inputs )
+		void writeBatchFile( const FilePath & p_batchFile, const Pdb2gmxInputs & p_inputs )
 		{
 			std::ofstream out( p_batchFile );
 			for ( const auto & [ id, value ] : p_inputs.kwValue )
 			{
 				const char * kw = batchKeyword( id.kw );
 				if ( kw == nullptr )
+				{
 					continue;
+				}
 				out << id.chain << ' ' << kw << id.num << ' ' << value << '\n';
 			}
 		}
 
-		void postJobRoutine( const fs::path & p_jobDir, GromacsJobData & p_jobData, CumulativeOuputFiles & p_outputs )
+		void postJobRoutine( const FilePath & p_jobDir, GromacsJobData & p_jobData, CumulativeOuputFiles & p_outputs )
 		{
 			// The issue here is the .itp file. When the input structure has multiple chain, multiple itp files are
 			// created and referenced into the .top file using relative path.
 			// So we are going to edit the top file and replace any relative path file that start with our fileStem by
 			// their absolute path version. This will cover both multi-chain and single chain scenarios, and maybe even
 			// some scenarios that we didn't anticipate
-			fs::path topFile;
+			FilePath topFile;
 			for ( auto & outputFileIdx : p_jobData.expectedOutputFilesIndexes )
 			{
 				auto & fileStr = p_jobData.arguments.at( outputFileIdx );
@@ -301,12 +322,15 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			{
 				return; // if no top file is found it's the checkRslt's responsibility to report it
 			}
-			fs::path tmpFile = fs::temp_directory_path() / "vtxgmxtopfiletmp";
+			FilePath tmpFile = App::SESSION().getAppTmpFolder() / "vtxgmxtopfiletmp";
+			fs::create_directories( tmpFile.parent_path() );
 			if ( fs::exists( tmpFile ) )
-				fs::remove( tmpFile );
 			{
-				std::string   fileStem	   = topFile.stem().string();
-				RE2			  itpÎncludePattern { fmt::format( "#include +(\"|<)({}.*\\.\\w\\w\\w)(\"|>).*", fileStem ) };
+				fs::remove( tmpFile );
+			}
+			{
+				std::string fileStem = topFile.stem().string();
+				RE2			itpÎncludePattern { fmt::format( "#include +(\"|<)({}.*\\.\\w\\w\\w)(\"|>).*", fileStem ) };
 				std::ifstream fileStrm { topFile };
 				std::ofstream outStrm { tmpFile };
 				std::string	  jobDirString = p_jobDir.string();
@@ -318,7 +342,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 					{
 						auto pos = line.find( fileName );
 						if ( pos != std::string::npos )
+						{
 							line.replace( pos, fileName.size(), jobDirString + "/" + fileName );
+						}
 					}
 					outStrm << line << '\n';
 				}
@@ -327,20 +353,31 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			fs::rename( tmpFile, topFile );
 		}
 	} // namespace
+
 	void convert( const Pdb2gmxInstructions & p_in, GromacsJobData & p_out ) noexcept
 	{
 		if ( p_in.forcefields.empty() )
+		{
 			return;
+		}
 		if ( p_in.forcefieldIndex >= p_in.forcefields.size() )
+		{
 			return;
+		}
 		if ( p_in.inputPdb.empty() )
+		{
 			return;
+		}
 		if ( !p_in.inputPdb.has_filename() )
+		{
 			return;
+		}
 
-		fs::path outputDir = p_in.outputDir;
+		FilePath outputDir = p_in.outputDir;
 		if ( outputDir.empty() )
+		{
 			outputDir = p_in.inputPdb.parent_path();
+		}
 		fs::create_directories( outputDir );
 		p_out.arguments.clear();
 
@@ -368,7 +405,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		if ( p_in.customParameter.has_value() )
 		{
-			fs::path batchFile = fs::temp_directory_path() / ( p_in.fileStem + "_pdb2gmx_batch.txt" );
+			FilePath batchFile = App::SESSION().getAppTmpFolder() / ( p_in.fileStem + "_pdb2gmx_batch.txt" );
+			fs::create_directories( batchFile.parent_path() );
 			writeBatchFile( batchFile, *p_in.customParameter );
 			p_out.arguments.push_back( "-batch" );
 			p_out.arguments.push_back( batchFile.make_preferred().string() );
