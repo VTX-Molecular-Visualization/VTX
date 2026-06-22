@@ -47,7 +47,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.out( PASS )
 				.program( PASS )
 				.shaders( { "default.vert", "outline.frag" } )
-				.uniform( "Color", COLOR_WHITE )
+				.uniform( "Color", COLOR_WHITE.toLinear() )
 				.uniform(
 					"Sensitivity",
 					OUTLINE_SENSITIVITY_DEFAULT,
@@ -65,7 +65,7 @@ namespace VTX::Renderer::Builder::PostProcess
 		static void upload( Context::ContextWrapper & p_context, const OutlineConfig & p_config )
 		{
 			BinaryBuffer140 buffer;
-			buffer.write( p_config.color );
+			buffer.write( p_config.color.toLinear() );
 			buffer.write( p_config.sensitivity );
 			buffer.write( p_config.thickness );
 			buffer.close();

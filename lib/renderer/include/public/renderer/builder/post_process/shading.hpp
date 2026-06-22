@@ -101,9 +101,9 @@ namespace VTX::Renderer::Builder::PostProcess
 				.out( OUTPUT )
 				.program( PASS )
 				.shaders( { "shading.vert", "shading.frag" } )
-				.uniform( "BackgroundColor", COLOR_BACKGROUND_DEFAULT )
-				.uniform( "LightColor", COLOR_LIGHT_DEFAULT )
-				.uniform( "FogColor", COLOR_FOG_DEFAULT )
+				.uniform( "BackgroundColor", COLOR_BACKGROUND_DEFAULT.toLinear() )
+				.uniform( "LightColor", COLOR_LIGHT_DEFAULT.toLinear() )
+				.uniform( "FogColor", COLOR_FOG_DEFAULT.toLinear() )
 				.uniform(
 					"Mode",
 					static_cast<unsigned int>( SHADING_MODE_DEFAULT ),
@@ -138,9 +138,9 @@ namespace VTX::Renderer::Builder::PostProcess
 			BinaryBuffer140	  buffer;
 			const FogConfig & fog = p_fog.value_or( GraphicsConfigs::FOG_DEFAULT );
 
-			buffer.write( p_config.colorBackground );
-			buffer.write( p_config.colorLight );
-			buffer.write( fog.color );
+			buffer.write( p_config.colorBackground.toLinear() );
+			buffer.write( p_config.colorLight.toLinear() );
+			buffer.write( fog.color.toLinear() );
 			buffer.write( uint32_t( p_config.mode ) );
 			buffer.write( p_config.specularFactor );
 			buffer.write( p_config.shininess );

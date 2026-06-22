@@ -45,6 +45,7 @@ namespace VTX::Util::Math
 	using ::glm::ortho;
 	using ::glm::packHalf1x16;
 	using ::glm::perspective;
+	using ::glm::pow;
 	using ::glm::pow2;
 	using ::glm::quat;
 	using ::glm::quatLookAt;

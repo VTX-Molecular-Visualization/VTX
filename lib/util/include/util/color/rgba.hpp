@@ -228,6 +228,8 @@ namespace VTX::Util::Color
 		Rgba mixedWith( const Rgba &, const float ) const;
 		Rgba withMinBrightness( const float ) const;
 		Rgba withSaturation( const float ) const;
+		Rgba toLinear() const;
+		Rgba toSRGB() const;
 		Rgba toHighContrast() const;
 		Rgba toColorblind() const;
 

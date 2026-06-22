@@ -829,7 +829,13 @@ namespace VTX::Renderer::Builder
 		{
 			// Util::ScopedChrono timer( "[BUILDER] ColorLayoutState::upload" );
 
-			p_context.setBuffer<Util::Color::Rgba>( { "ColorLayout" }, p_layout.colors );
+			Color::LayoutArray linearColors = p_layout.colors;
+			for ( Util::Color::Rgba & color : linearColors )
+			{
+				color = color.toLinear();
+			}
+
+			p_context.setBuffer<Util::Color::Rgba>( { "ColorLayout" }, linearColors );
 		}
 	};
 

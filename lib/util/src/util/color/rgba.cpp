@@ -15,6 +15,18 @@ namespace VTX::Util::Color
 			const float db = p_a.b() - p_b.b();
 			return dr * dr + dg * dg + db * db;
 		}
+
+		float _srgbToLinear( const float p_channel )
+		{
+			return p_channel <= 0.04045f ? p_channel / 12.92f
+										 : Util::Math::pow( ( p_channel + 0.055f ) / 1.055f, 2.4f );
+		}
+
+		float _linearToSrgb( const float p_channel )
+		{
+			return p_channel <= 0.0031308f ? p_channel * 12.92f
+										   : 1.055f * Util::Math::pow( p_channel, 1.f / 2.4f ) - 0.055f;
+		}
 	} // namespace
 
 	std::ostream & operator<<( std::ostream & p_os, const Rgba & p_c )
@@ -33,6 +45,13 @@ namespace VTX::Util::Color
 			a()
 		);
 	}
+
+	Rgba Rgba::toLinear() const
+	{
+		return Rgba( _srgbToLinear( r() ), _srgbToLinear( g() ), _srgbToLinear( b() ), a() );
+	}
+
+	Rgba Rgba::toSRGB() const { return Rgba( _linearToSrgb( r() ), _linearToSrgb( g() ), _linearToSrgb( b() ), a() ); }
 
 	Rgba Rgba::withMinBrightness( const float p_minBrightness ) const
 	{
@@ -128,9 +147,9 @@ namespace VTX::Util::Color
 
 	void Rgba::applyGamma( const float & p_gamma )
 	{
-		_v.x = powf( _v.x, p_gamma );
-		_v.y = powf( _v.y, p_gamma );
-		_v.z = powf( _v.z, p_gamma );
+		_v.x = Util::Math::pow( _v.x, p_gamma );
+		_v.y = Util::Math::pow( _v.y, p_gamma );
+		_v.z = Util::Math::pow( _v.z, p_gamma );
 	}
 
 	void Rgba::oppose()

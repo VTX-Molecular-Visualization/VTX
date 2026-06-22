@@ -37,7 +37,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.out( PASS )
 				.program( PASS )
 				.shaders( { "default.vert", "selection.frag" } )
-				.uniform( "Color", COLOR_SELECTION_DEFAULT )
+				.uniform( "Color", COLOR_SELECTION_DEFAULT.toLinear() )
 				.endProgram()
 				.endPass();
 
@@ -47,7 +47,7 @@ namespace VTX::Renderer::Builder::PostProcess
 		static void upload( Context::ContextWrapper & p_context, const SelectionConfig & p_config )
 		{
 			BinaryBuffer140 buffer;
-			buffer.write( p_config.color );
+			buffer.write( p_config.color.toLinear() );
 			buffer.close();
 
 			p_context.setBuffer( { PASS }, buffer );

@@ -35,7 +35,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.out( PASS )
 				.program( PASS )
 				.shaders( { "default.vert", "colorize.frag" } )
-				.uniform( "Color", COLORIZE_COLOR_DEFAULT )
+				.uniform( "Color", COLORIZE_COLOR_DEFAULT.toLinear() )
 				.endProgram()
 				.endPass();
 
@@ -45,7 +45,7 @@ namespace VTX::Renderer::Builder::PostProcess
 		static void upload( Context::ContextWrapper & p_context, const ColorizeConfig & p_config )
 		{
 			BinaryBuffer140 buffer;
-			buffer.write( p_config.color );
+			buffer.write( p_config.color.toLinear() );
 			buffer.close();
 
 			p_context.setBuffer( { PASS }, buffer );
