@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <tool/mdprep/backends/gromacs/solvate.hpp>
+#include <util/logger.hpp>
 //
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include "tool/mdprep/backends/gromacs/util.hpp"
@@ -29,16 +30,43 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			p_instructions.inputGro = *lastGroFile.operator*();
 		}
-		auto lastTopFile = std::find_if(
-			p_previousJobsOutputs.fileStringPtrs.begin(),
-			p_previousJobsOutputs.fileStringPtrs.end(),
-			[]( const std::string * p_ ) { return p_->ends_with( ".top" ); }
-		);
-		p_instructions.inputTop = jobDir / ( p_instructions.fileStem + ".top" );
-
-		if ( lastTopFile != std::end( p_previousJobsOutputs.fileStringPtrs ) )
+		else
 		{
-			fs::copy_file( FilePath( *lastTopFile.operator*() ), p_instructions.inputTop );
+			VTX_ERROR( "[MDPREP] Solvate input structure was not found in previous job outputs." );
+		}
+
+		p_instructions.inputTop	   = jobDir / ( p_instructions.fileStem + ".top" );
+		const FilePath & sourceTop = p_previousJobsOutputs.lastUncompiledTop;
+
+		if ( sourceTop.empty() || fs::is_regular_file( sourceTop ) == false )
+		{
+			VTX_ERROR(
+				"[MDPREP] Solvate input topology <{}> is missing before copy.",
+				sourceTop.empty() ? "<empty>" : sourceTop.string()
+			);
+		}
+		else
+		{
+			std::error_code copyError;
+			fs::copy_file( sourceTop, p_instructions.inputTop, fs::copy_options::overwrite_existing, copyError );
+			if ( copyError )
+			{
+				VTX_ERROR(
+					"[MDPREP] Unable to copy solvate topology from <{}> to <{}>: {}",
+					sourceTop.string(),
+					p_instructions.inputTop.string(),
+					copyError.message()
+				);
+			}
+			else
+			{
+				VTX_INFO(
+					"[MDPREP] Solvate topology copied from <{}> to <{}> ({} bytes).",
+					sourceTop.string(),
+					p_instructions.inputTop.string(),
+					fs::file_size( p_instructions.inputTop )
+				);
+			}
 		}
 
 		p_instructions.outputGro = jobDir / ( p_instructions.fileStem + ".gro" );
