@@ -76,7 +76,7 @@ void main()
 	// threshold is clamped to EDGE_THRESHOLD_MIN to avoid AA in really dark areas
 	if ( lumaRange < max( EDGE_THRESHOLD_MIN, lumaMax * EDGE_THRESHOLD ) )
 	{
-		outFragColor = texture( inTexture, texCoord );
+		outFragColor = vec4( texture( inTexture, texCoord ).rgb, 1.f );
 		return;
 	}
 	// =====================================================================================
@@ -255,9 +255,9 @@ void main()
 
 	vec4 color = texture( inTexture, aaTexCoord );
 
-	#ifdef MANUAL_SRGB
-		color.rgb = linearToSrgb( color.rgb );
-	#endif
+#ifdef MANUAL_SRGB
+	color.rgb = linearToSrgb( color.rgb );
+#endif
 
-	outFragColor = color;
+	outFragColor = vec4( color.rgb, 1.f );
 }
