@@ -218,8 +218,20 @@ namespace VTX::UI::QT::Widget
 			_container->setVisible( false );
 			update();
 #else
-			_window->resize( p_event->size() );
-			_container->resize( p_event->size() );
+			const bool isInteractiveShrink = QGuiApplication::mouseButtons() != Qt::NoButton
+											 && ( p_event->size().width() < p_event->oldSize().width()
+												  || p_event->size().height() < p_event->oldSize().height() );
+			if ( isInteractiveShrink )
+			{
+				_container->setFixedSize( 1, 1 );
+				_window->resize( 1, 1 );
+				update();
+			}
+			else
+			{
+				_window->resize( p_event->size() );
+				_container->resize( p_event->size() );
+			}
 #endif
 		}
 		_resizeTimer.start( 40 );
