@@ -72,7 +72,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - solvate + submitGromacsJob", "[submitGromacsJob][s
 	convert( in, jobData );
 
 	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
-	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobData );
+	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), f.jobDir, jobData );
 
 	checkJobResults( jobData );
 	CHECK( jobData.report.errorOccured == false );

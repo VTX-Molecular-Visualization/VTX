@@ -82,7 +82,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - trjconv + submitGromacsJob", "[submitGromacsJob][t
 	convert( in, jobData );
 
 	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
-	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobData );
+	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), f.jobDir, jobData );
 
 	checkJobResults( jobData );
 	std::string outputs { "Here is the stdout and stderr : \n" };

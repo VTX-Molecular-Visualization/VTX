@@ -223,7 +223,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp + submitGromacsJob - ions", "[submitGromacs
 	convert( in, jobData );
 
 	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
-	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobData );
+	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), f.jobDir, jobData );
 
 	checkJobResults( jobData );
 
@@ -256,7 +256,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - grompp + submitGromacsJob - em", "[submitGromacsJo
 	convert( in, jobData );
 
 	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
-	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobData );
+	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), f.jobDir, jobData );
 
 	checkJobResults( jobData );
 

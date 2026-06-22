@@ -31,7 +31,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	} // namespace
 
-	void submitGromacsJob( const FilePath & p_gmxExe, GromacsJobData & p_args )
+	void submitGromacsJob( const FilePath & p_gmxExe, const FilePath & p_workingDirectory, GromacsJobData & p_args )
 	{
 		QString		pgm { p_gmxExe.string().data() };
 		QStringList qtArgs;
@@ -47,6 +47,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		proc.setProgram( pgm );
 		proc.setArguments( qtArgs );
+		const FilePath absoluteWorkingDirectory = fs::absolute( p_workingDirectory );
+		proc.setWorkingDirectory( QString::fromStdString( absoluteWorkingDirectory.string() ) );
+		VTX_INFO( "[MDPREP] Gromacs working directory: {}", absoluteWorkingDirectory.string() );
 		proc.start();
 		proc.closeWriteChannel();
 		if ( proc.waitForStarted( -1 ) == false )

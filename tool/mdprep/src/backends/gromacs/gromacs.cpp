@@ -76,17 +76,16 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			int &				  stepNum
 		) noexcept
 		{
-			VTX_INFO(
-				"[MDPREP] Starting preparation step <{}> in <{}>.", p_stepName, ( p_in.rootDir / p_stepName ).string()
-			);
+			const FilePath jobDir = p_in.rootDir / p_stepName;
+			VTX_INFO( "[MDPREP] Starting preparation step <{}> in <{}>.", p_stepName, jobDir.string() );
 			p_stepIn.fileStem = p_in.fileStem;
 			prepareJob( p_in.outputs, p_in.rootDir, p_stepName, p_stepIn );
 			auto & currentJobData = p_in.jobData[ stepNum ];
 			stepNum++;
 			convert( p_stepIn, currentJobData );
 			FilePath gmxExe = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath();
-			submitGromacsJob( gmxExe, currentJobData );
-			currentJobData.postJobRoutine( p_in.rootDir / p_stepName, currentJobData, p_in.outputs );
+			submitGromacsJob( gmxExe, jobDir, currentJobData );
+			currentJobData.postJobRoutine( jobDir, currentJobData, p_in.outputs );
 			checkJobResults( currentJobData );
 			if ( currentJobData.report.errorOccured )
 			{
@@ -256,16 +255,17 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 					fs::remove_all( rootDir );
 				}
 				fs::create_directories( rootDir );
-				inst.forcefields	 = { _testData._ff };
-				inst.forcefieldIndex = 0;
-				inst.water			 = _testData._w;
-				inst.fileStem		 = _testData._structurePdb.stem().string();
-				inst.inputPdb		 = _testData._structurePdb;
+				inst.forcefields	  = { _testData._ff };
+				inst.forcefieldIndex  = 0;
+				inst.water			  = _testData._w;
+				inst.fileStem		  = _testData._structurePdb.stem().string();
+				inst.inputPdb		  = _testData._structurePdb;
+				const FilePath jobDir = rootDir.parent_path() / "1";
 				prepareJob( {}, rootDir.parent_path(), "1", inst );
 				GromacsJobData jobData;
 				convert( inst, jobData );
 				declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
-				submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobData );
+				submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobDir, jobData );
 				checkJobResults( jobData );
 				_testData._systemOk = jobData.report.errorOccured == false;
 				for ( auto & err : jobData.report.errors )

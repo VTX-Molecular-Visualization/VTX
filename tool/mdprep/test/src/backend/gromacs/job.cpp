@@ -114,7 +114,9 @@ namespace
 	void check_pdb( TestContext p_context )
 	{
 		FilePath full_gmx_exe_path = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath();
-		VTX::Tool::Mdprep::backends::Gromacs::submitGromacsJob( full_gmx_exe_path, p_context.args );
+		VTX::Tool::Mdprep::backends::Gromacs::submitGromacsJob(
+			full_gmx_exe_path, p_context.paths.outDir, p_context.args
+		);
 		// for topol and posre, gromacs do not necessarily output a file with the exact name, but divide chains and ions
 		// into multiple files. So we need to check its pattern for us to be sure everything worked.
 		auto channels = ( p_context.args.channelsLocker.open() );

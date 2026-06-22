@@ -279,7 +279,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf + submitGromacsJob", "[submitGromacsJob][
 	jobData.arguments.push_back( "-d" );
 	jobData.arguments.push_back( "1.2" );
 	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
-	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobData );
+	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), outputEditconfDir, jobData );
 
 	checkJobResults( jobData );
 
@@ -315,7 +315,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - editconf - prepareJob + submitGromacsJob", "[submi
 	GromacsJobData jobData;
 	convert( in, jobData );
 	declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
-	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobData );
+	submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), f.jobDir, jobData );
 
 	checkJobResults( jobData );
 

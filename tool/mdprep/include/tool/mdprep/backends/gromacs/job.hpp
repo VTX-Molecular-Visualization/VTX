@@ -48,13 +48,15 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	/**
 	 * @brief Execute gromacs with input arguments then check if job issued and error
-	  Assumes relevant arguments have been provided and checked beforehand.
-	  Assumes gromacs have been instructed on where to find data files (env. var. GMXLIB) as well.
-	  Error issued by the job can be a specific string in output channels or if expected output files doesn't exists
-	  or are empty.
-	  Suspends the execution until the job is finished or if the job failed to start.
+	  Runs Gromacs from the provided
+	 working directory so temporary and output files share the same filesystem.
+	  Assumes relevant arguments have
+	 been provided and checked beforehand.
+	  Assumes gromacs have been instructed on where to find data files (env.
+	 var. GMXLIB) as well. Error issued by the job can be a specific string in output channels or if expected output
+	 files doesn't exists or are empty. Suspends the execution until the job is finished or if the job failed to start.
 	 */
-	void submitGromacsJob( const FilePath & p_gmx_exe, GromacsJobData & p_args );
+	void submitGromacsJob( const FilePath & p_gmxExe, const FilePath & p_workingDirectory, GromacsJobData & p_args );
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 
 #endif
