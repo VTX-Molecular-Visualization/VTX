@@ -50,6 +50,10 @@ namespace VTX::Renderer::Context::Executor
 			{
 				glEnable( GL_DEPTH_TEST );
 			}
+			if ( flags & toUnderlying( E_SETTING::SRGB ) )
+			{
+				glEnable( GL_FRAMEBUFFER_SRGB );
+			}
 
 			// Clear buffers.
 			GLbitfield clearMask = 0;
@@ -279,15 +283,6 @@ namespace VTX::Renderer::Context::Executor
 			function( p_payload.context );
 		}
 
-		void execute( const PayloadBindOutput & p_payload ) const noexcept
-		{
-			// Bind output framebuffer.
-			_backend.framebuffer( p_payload.framebuffer ).bind();
-			glViewport( 0, 0, static_cast<GLsizei>( p_payload.width ), static_cast<GLsizei>( p_payload.height ) );
-
-			_dumpGLError();
-		}
-
 		void execute( const PayloadEndPass & p_payload ) const noexcept
 		{
 			using namespace Desc;
@@ -296,6 +291,10 @@ namespace VTX::Renderer::Context::Executor
 			if ( p_payload.flags & toUnderlying( E_SETTING::ENABLE_DEPTH ) )
 			{
 				glDisable( GL_DEPTH_TEST );
+			}
+			if ( p_payload.flags & toUnderlying( E_SETTING::SRGB ) )
+			{
+				glDisable( GL_FRAMEBUFFER_SRGB );
 			}
 
 			_dumpGLError();

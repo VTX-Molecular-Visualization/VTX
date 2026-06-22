@@ -43,6 +43,32 @@ namespace VTX::Core::Struct
 		void toNonIndexed();
 	};
 
+	/*
+	struct TextureRef
+	{
+		std::string path;
+	};
+
+	struct Material
+	{
+		std::string name;
+
+		Vec4f baseColor;
+		Vec3f emissive;
+
+		float metallic;
+		float roughness;
+		float opacity;
+
+		TextureRef baseColorTexture;
+		TextureRef normalTexture;
+		TextureRef metallicRoughnessTexture;
+		TextureRef emissiveTexture;
+
+		bool doubleSided = false;
+	};
+	*/
+
 } // namespace VTX::Core::Struct
 
 #endif

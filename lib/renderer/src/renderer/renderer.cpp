@@ -143,8 +143,7 @@ namespace VTX::Renderer
 		_render( 0.f, 0.f );
 
 		// TODO: get last pass instead of hardcoding post-process output.
-		const Desc::Key		   outputTexture = _graphicsConfig.data.crt ? "CRT" : "FXAA";
-		std::vector<std::byte> data			 = _context.getTextureData( outputTexture, Desc::E_FORMAT::RGBA8UI );
+		std::vector<std::byte> data = _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
 
 		_context.setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
 		Builder::RenderGraphRuntime::rebuildCommandBuffer(
@@ -566,8 +565,8 @@ namespace VTX::Renderer
 
 	void Renderer::setGraphicsConfig( const GraphicsConfig & p_config )
 	{
-		const ShadingConfig & currentShading = _graphicsConfig.data.shading;
-		const bool environmentChanged = currentShading.environmentPath != p_config.shading.environmentPath
+		const ShadingConfig & currentShading	 = _graphicsConfig.data.shading;
+		const bool			  environmentChanged = currentShading.environmentPath != p_config.shading.environmentPath
 										|| currentShading.environmentFaceSize != p_config.shading.environmentFaceSize;
 		const Builder::PipelineConfig pipelineConfig = Builder::RenderGraphRuntime::pipelineConfig( p_config );
 		const bool					  graphReady	 = _config.has_value();
@@ -653,18 +652,21 @@ namespace VTX::Renderer
 	{
 		const Desc::Handle handle = _meshes.emplace( std::move( p_mesh ) );
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ALL;
+
 		return handle;
 	}
 
 	void Renderer::patchMesh( const Desc::Handle p_handle, const Core::Struct::Mesh & p_mesh )
 	{
 		assert( _meshes.contains( p_handle ) );
+
 		_meshes.get( p_handle ).data = &p_mesh;
 	}
 
 	void Renderer::removeMesh( const Desc::Handle p_handle )
 	{
 		assert( _meshes.contains( p_handle ) );
+
 		_meshes.erase( p_handle );
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ALL;
 	}
@@ -672,6 +674,7 @@ namespace VTX::Renderer
 	void Renderer::setMeshTransform( const Desc::Handle p_handle, const Mat4f & p_transform )
 	{
 		assert( _meshes.contains( p_handle ) );
+
 		_meshes.get( p_handle ).transform = p_transform;
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::MODELS;
 	}

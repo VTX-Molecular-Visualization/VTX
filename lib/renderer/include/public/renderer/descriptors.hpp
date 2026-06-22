@@ -201,6 +201,7 @@ namespace VTX::Renderer::Desc
 		CLEAR_COLOR	 = 1u << 0,
 		CLEAR_DEPTH	 = 1u << 1,
 		ENABLE_DEPTH = 1u << 2,
+		SRGB		 = 1u << 3
 	};
 
 	/**

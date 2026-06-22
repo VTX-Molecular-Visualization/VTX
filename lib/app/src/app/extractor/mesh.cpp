@@ -23,8 +23,10 @@ namespace VTX::App::Extractor
 
 		void deliver( Pending && p_data ) noexcept
 		{
+			auto & reg = REG();
+
 			Util::Math::AABB sceneAabb;
-			auto &			 reg = REG();
+
 			for ( size_t meshIndex = 0; meshIndex < p_data.meshes.size(); ++meshIndex )
 			{
 				Core::Struct::Mesh & mesh = p_data.meshes[ meshIndex ];
@@ -44,6 +46,8 @@ namespace VTX::App::Extractor
 				reg.emplace<Util::Math::Transform>( entity );
 				reg.emplace<Util::Math::AABB>( entity, aabb );
 				reg.patch<Util::Math::AABB>( entity, []( Util::Math::AABB & _ ) {} );
+
+				// Trigger mesh load.
 				HUB().trigger<Events::MeshLoad>( { entity } );
 			}
 

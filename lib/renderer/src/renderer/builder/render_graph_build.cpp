@@ -557,12 +557,12 @@ namespace VTX::Renderer::Builder
 										: p_config.enableOutline ? PostProcess::Outline::PASS
 																 : postEffects;
 
-		PostProcess::FXAA::build( g, postSelection );
-
 		if ( p_config.enableCRT )
 		{
-			PostProcess::CRT::build( g, PostProcess::FXAA::PASS );
+			PostProcess::CRT::build( g, postSelection );
 		}
+
+		PostProcess::FXAA::build( g, p_config.enableCRT ? PostProcess::CRT::PASS : postSelection );
 
 		// Debug
 		/*

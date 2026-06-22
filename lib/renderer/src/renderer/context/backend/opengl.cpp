@@ -388,18 +388,14 @@ namespace VTX::Renderer::Context::Backend
 					}
 				}
 
-				// Push BEGIN_PASS/BIND_OUTPUT.
-				uint32_t flags = _toSettingFlags( pass.settings );
-				if ( not isLastPass )
-				{
-					PayloadBeginPass pBeginPass { hFramebuffer, flags, passWidth, passHeight };
-					p_commands.push<E_COMMAND::BEGIN_PASS>( pBeginPass );
-				}
-				else
-				{
-					PayloadBindOutput pBindOutput { _target, _width, _height };
-					p_commands.push<E_COMMAND::BIND_OUTPUT>( pBindOutput );
-				}
+				// Push BEGIN_PASS.
+				const uint32_t flags			 = _toSettingFlags( pass.settings );
+				const Handle   targetFramebuffer = isLastPass ? _target : hFramebuffer;
+				const uint32_t targetWidth		 = isLastPass ? _width : passWidth;
+				const uint32_t targetHeight		 = isLastPass ? _height : passHeight;
+
+				PayloadBeginPass pBeginPass { targetFramebuffer, flags, targetWidth, targetHeight };
+				p_commands.push<E_COMMAND::BEGIN_PASS>( pBeginPass );
 
 				// Push BIND_RESOURCES.
 				PayloadBindResources pBindResources { hResourceTable };
@@ -1329,7 +1325,9 @@ namespace VTX::Renderer::Context::Backend
 	}
 
 	void OpenGL::setBufferData( const Desc::BufferRef & p_ref, SpanBytes p_bytes, const size_t p_offset )
-	{ _setBufferData( _physicalBufferKey( p_ref ), p_bytes, p_offset ); }
+	{
+		_setBufferData( _physicalBufferKey( p_ref ), p_bytes, p_offset );
+	}
 
 	bool OpenGL::ensureBufferChunk( const Desc::BufferRef & p_ref )
 	{

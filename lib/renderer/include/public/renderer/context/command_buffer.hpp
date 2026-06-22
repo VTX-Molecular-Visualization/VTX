@@ -34,7 +34,6 @@ namespace VTX::Renderer::Context
 		DISPATCH,
 		DISPATCH_INDIRECT,
 		EXTERNAL,
-		BIND_OUTPUT,
 		END_PASS,
 		PRESENT
 	};
@@ -137,13 +136,6 @@ namespace VTX::Renderer::Context
 		uintptr_t context  = 0;
 	};
 
-	struct PayloadBindOutput
-	{
-		uint32_t framebuffer;
-		uint32_t width;
-		uint32_t height;
-	};
-
 	struct PayloadEndPass
 	{
 		uint32_t framebuffer;
@@ -224,12 +216,6 @@ namespace VTX::Renderer::Context
 	struct CommandPayload<E_COMMAND::EXTERNAL>
 	{
 		using type = PayloadExternal;
-	};
-
-	template<>
-	struct CommandPayload<E_COMMAND::BIND_OUTPUT>
-	{
-		using type = PayloadBindOutput;
 	};
 
 	template<>

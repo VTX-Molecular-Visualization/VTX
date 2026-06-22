@@ -2,12 +2,10 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
-#include <glm/geometric.hpp>
-#include <glm/gtc/packing.hpp>
-#include <numbers>
 #include <span>
 #include <stdexcept>
 #include <util/image.hpp>
+#include <util/math.hpp>
 
 namespace VTX::Renderer::Builder::PostProcess
 {
@@ -19,30 +17,32 @@ namespace VTX::Renderer::Builder::PostProcess
 			const Vec3f &					p_direction
 		)
 		{
-			constexpr float pi = std::numbers::pi_v<float>;
-			const float		u  = std::atan2( p_direction.z, p_direction.x ) / ( 2.f * pi ) + 0.5f;
-			const float		v  = 0.5f - std::asin( std::clamp( p_direction.y, -1.f, 1.f ) ) / pi;
+			using namespace VTX::Util::Math;
+
+			constexpr float pi = PIf;
+			const float		u  = atan2( p_direction.z, p_direction.x ) / ( 2.f * pi ) + 0.5f;
+			const float		v  = 0.5f - asin( clamp( p_direction.y, -1.f, 1.f ) ) / pi;
 
 			const float x  = u * float( p_image.width ) - 0.5f;
 			const float y  = v * float( p_image.height ) - 0.5f;
-			const int	x0 = static_cast<int>( std::floor( x ) );
-			const int	y0 = static_cast<int>( std::floor( y ) );
+			const int	x0 = static_cast<int>( floor( x ) );
+			const int	y0 = static_cast<int>( floor( y ) );
 			const float tx = x - float( x0 );
 			const float ty = y - float( y0 );
 
 			auto pixel = [ & ]( const int p_x, const int p_y, const size_t p_channel )
 			{
 				const int wrappedX = ( p_x % int( p_image.width ) + int( p_image.width ) ) % int( p_image.width );
-				const int clampedY = std::clamp( p_y, 0, int( p_image.height ) - 1 );
+				const int clampedY = clamp( p_y, 0, int( p_image.height ) - 1 );
 				return p_image.pixels[ ( size_t( clampedY ) * p_image.width + size_t( wrappedX ) ) * 4 + p_channel ];
 			};
 
 			std::array<float, 4> result;
 			for ( size_t channel = 0; channel < result.size(); ++channel )
 			{
-				const float top	   = std::lerp( pixel( x0, y0, channel ), pixel( x0 + 1, y0, channel ), tx );
-				const float bottom = std::lerp( pixel( x0, y0 + 1, channel ), pixel( x0 + 1, y0 + 1, channel ), tx );
-				result[ channel ]  = std::lerp( top, bottom, ty );
+				const float top	   = lerp( pixel( x0, y0, channel ), pixel( x0 + 1, y0, channel ), tx );
+				const float bottom = lerp( pixel( x0, y0 + 1, channel ), pixel( x0 + 1, y0 + 1, channel ), tx );
+				result[ channel ]  = lerp( top, bottom, ty );
 			}
 			return result;
 		}
@@ -94,7 +94,7 @@ namespace VTX::Renderer::Builder::PostProcess
 							= ( face * facePixelCount + size_t( y ) * p_config.environmentFaceSize + x ) * 4;
 						for ( size_t channel = 0; channel < sample.size(); ++channel )
 						{
-							cubemap[ offset + channel ] = glm::packHalf1x16( sample[ channel ] );
+							cubemap[ offset + channel ] = Util::Math::packHalf1x16( sample[ channel ] );
 						}
 					}
 				}

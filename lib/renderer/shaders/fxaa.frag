@@ -1,5 +1,7 @@
 #version 460 core
 
+//#define MANUAL_SRGB
+
 // FXAA : Fast Approximated Anti-Aliasing
 // adapted from: http://developer.download.nvidia.com/assets/gamedev/files/sdk/11/FXAA_WhitePaper.pdf
 // and Timothy Lottes' code (NVidia)
@@ -38,6 +40,15 @@ const float AA_QUALITY[ 12 ] = { 1.f, 1.f, 1.f, 1.f, 1.f, 1.5f, 2.f, 2.f, 2.f, 2
 // FXAA requires non-linear color input
 const vec3 luma = vec3( 0.299f, 0.587f, 0.114f );
 float	   rgb2luma( const vec3 rgb ) { return dot( rgb, luma ); }
+
+vec3 linearToSrgb(vec3 c)
+{
+    c = max(c, vec3(0.0));
+    bvec3 lo = lessThanEqual(c, vec3(0.0031308));
+    vec3  low  = 12.92 * c;
+    vec3  high = 1.055 * pow(c, vec3(1.0/2.4)) - 0.055;
+    return mix(high, low, vec3(lo));
+}
 
 void main()
 {
@@ -242,5 +253,11 @@ void main()
 	}
 	// =====================================================================================
 
-	outFragColor = vec4( texture( inTexture, aaTexCoord ) );
+	vec4 color = texture( inTexture, aaTexCoord );
+
+	#ifdef MANUAL_SRGB
+		color.rgb = linearToSrgb( color.rgb );
+	#endif
+
+	outFragColor = color;
 }

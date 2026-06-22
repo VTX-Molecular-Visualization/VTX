@@ -123,9 +123,6 @@ namespace VTX::Renderer::Context
 				_executePayload<E_COMMAND::DISPATCH_INDIRECT>( p_executor, p_commands, p_command );
 				break;
 			case E_COMMAND::EXTERNAL: _executePayload<E_COMMAND::EXTERNAL>( p_executor, p_commands, p_command ); break;
-			case E_COMMAND::BIND_OUTPUT:
-				_executePayload<E_COMMAND::BIND_OUTPUT>( p_executor, p_commands, p_command );
-				break;
 			case E_COMMAND::END_PASS: _executePayload<E_COMMAND::END_PASS>( p_executor, p_commands, p_command ); break;
 			case E_COMMAND::PRESENT: _executePayload<E_COMMAND::PRESENT>( p_executor, p_commands, p_command ); break;
 			default: break;
