@@ -217,6 +217,9 @@ namespace VTX::UI::QT::Widget
 #ifdef _WIN32
 			_container->setVisible( false );
 			update();
+#else
+			_window->resize( p_event->size() );
+			_container->resize( p_event->size() );
 #endif
 		}
 		_resizeTimer.start( 40 );
