@@ -95,9 +95,7 @@ namespace VTX::Renderer::Context
 		 */
 		template<typename T>
 		inline void setBuffer( const Desc::BufferRef & p_ref, std::span<const T> p_data, const size_t p_offset = 0 )
-		{
-			setBuffer( p_ref, asBytes( p_data ), p_offset * sizeof( T ) );
-		}
+		{ setBuffer( p_ref, asBytes( p_data ), p_offset * sizeof( T ) ); }
 
 		template<typename T>
 		inline void setBuffer( const Desc::BufferRef & p_ref, const size_t p_size )
@@ -140,11 +138,27 @@ namespace VTX::Renderer::Context
 		 */
 		template<typename T>
 		void setTextureData( const Desc::Key & p_key, std::span<const T> p_data )
+		{ setTextureData( p_key, asBytes( p_data ) ); }
+
+		template<typename T>
+		void setTextureData(
+			const Desc::Key &  p_key,
+			std::span<const T> p_data,
+			const size_t	   p_width,
+			const size_t	   p_height
+		)
 		{
-			setTextureData( p_key, asBytes( p_data ) );
+			setTextureData(
+				p_key, asBytes( p_data ), std::optional<size_t> { p_width }, std::optional<size_t> { p_height }
+			);
 		}
 
-		void setTextureData( const Desc::Key & p_key, SpanBytes p_data );
+		void setTextureData(
+			const Desc::Key &	  p_key,
+			SpanBytes			  p_data,
+			std::optional<size_t> p_width  = {},
+			std::optional<size_t> p_height = {}
+		);
 
 		/**
 		 * @brief Set the render target.

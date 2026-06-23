@@ -8,8 +8,14 @@ layout( binding = 1 ) uniform sampler2D inTextureColor;
 layout( binding = 2 ) uniform sampler2D inTextureAmbientOcclusion;
 layout( binding = 3 ) uniform sampler2D inTextureDepth;
 layout( binding = 4 ) uniform samplerCube inTextureEnvironment;
+layout( binding = 5 ) uniform sampler2D inTextureMaterialAlbedo;
+layout( binding = 6 ) uniform sampler2D inTextureMaterialNormal;
+layout( binding = 7 ) uniform sampler2D inTextureMaterialMetallic;
+layout( binding = 8 ) uniform sampler2D inTextureMaterialRoughness;
+layout( binding = 9 ) uniform sampler2D inTextureMaterialAmbientOcclusion;
+layout( binding = 10 ) uniform sampler2D inTextureMaterialEmissive;
 
-layout( std140, binding = 5 ) uniform Uniforms
+layout( std140, binding = 11 ) uniform Uniforms
 {
 	vec4  colorBackground;
 	vec4  colorLight;
@@ -22,14 +28,17 @@ layout( std140, binding = 5 ) uniform Uniforms
 	float fogDensity;
 	float ssaoScale;
 	uint  environmentEnabled;
-	float environmentExposure;
+	float skyboxIntensity;
+	float iblIntensity;
 	float environmentRotation;
 	float lightIntensity;
 	float ambientIntensity;
+	uint  materialTextureMask;
 	vec4  materialEmissive;
 	float materialMetallic;
 	float materialRoughness;
 	float materialOpacity;
+	float materialTextureScale;
 }
 
 uniforms;
@@ -109,7 +118,7 @@ bool shadeBackground( const UnpackedData p_data )
 	if ( uniforms.environmentEnabled != 0u )
 	{
 		const vec3 direction = rotateEnvironmentDirection( normalize( worldDirection ) );
-		outFragColor = vec4( texture( inTextureEnvironment, direction ).rgb * uniforms.environmentExposure, 1.f );
+		outFragColor = vec4( texture( inTextureEnvironment, direction ).rgb * uniforms.skyboxIntensity, 1.f );
 	}
 	else if ( uniforms.fogDensity != 0.f )
 	{

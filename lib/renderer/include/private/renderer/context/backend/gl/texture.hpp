@@ -11,8 +11,14 @@ namespace VTX::Renderer::Context::Backend::GL
 	class Texture
 	{
 	  public:
-		Texture( const GLsizei p_width, const GLsizei p_height, const GLenum p_format, const GLenum p_target ) noexcept
-			: _width( p_width ), _height( p_height ), _format( p_format ), _target( p_target )
+		Texture(
+			const GLsizei p_width,
+			const GLsizei p_height,
+			const GLenum  p_format,
+			const GLenum  p_target,
+			const bool	  p_mipmapped
+		) noexcept :
+			_width( p_width ), _height( p_height ), _format( p_format ), _target( p_target ), _mipmapped( p_mipmapped )
 		{
 			assert( p_width > 0 && p_height > 0 );
 			assert( p_target == GL_TEXTURE_2D || p_target == GL_TEXTURE_CUBE_MAP );
@@ -25,7 +31,8 @@ namespace VTX::Renderer::Context::Backend::GL
 		Texture( Texture && p_other ) noexcept :
 			_id( std::exchange( p_other._id, GL_INVALID_INDEX ) ), _width( std::exchange( p_other._width, 0 ) ),
 			_height( std::exchange( p_other._height, 0 ) ), _format( std::exchange( p_other._format, GL_RGBA32F ) ),
-			_target( std::exchange( p_other._target, GL_TEXTURE_2D ) )
+			_target( std::exchange( p_other._target, GL_TEXTURE_2D ) ),
+			_mipmapped( std::exchange( p_other._mipmapped, false ) )
 		{
 		}
 
@@ -34,11 +41,12 @@ namespace VTX::Renderer::Context::Backend::GL
 			if ( this != &p_other )
 			{
 				_destroy();
-				_id		= std::exchange( p_other._id, GL_INVALID_INDEX );
-				_width	= std::exchange( p_other._width, 0 );
-				_height = std::exchange( p_other._height, 0 );
-				_format = std::exchange( p_other._format, GL_RGBA32F );
-				_target = std::exchange( p_other._target, GL_TEXTURE_2D );
+				_id		   = std::exchange( p_other._id, GL_INVALID_INDEX );
+				_width	   = std::exchange( p_other._width, 0 );
+				_height	   = std::exchange( p_other._height, 0 );
+				_format	   = std::exchange( p_other._format, GL_RGBA32F );
+				_target	   = std::exchange( p_other._target, GL_TEXTURE_2D );
+				_mipmapped = std::exchange( p_other._mipmapped, false );
 			}
 
 			return *this;
@@ -141,18 +149,19 @@ namespace VTX::Renderer::Context::Backend::GL
 		inline GLenum getTarget() const noexcept { return _target; }
 
 	  private:
-		GLuint	_id		= GL_INVALID_INDEX;
-		GLsizei _width	= 0;
-		GLsizei _height = 0;
-		GLenum	_format = GL_RGBA32F;
-		GLenum	_target = GL_TEXTURE_2D;
+		GLuint	_id		   = GL_INVALID_INDEX;
+		GLsizei _width	   = 0;
+		GLsizei _height	   = 0;
+		GLenum	_format	   = GL_RGBA32F;
+		GLenum	_target	   = GL_TEXTURE_2D;
+		bool	_mipmapped = false;
 
 		inline void _create() noexcept
 		{
 			assert( _width > 0 && _height > 0 );
 
 			GLsizei levels = 1;
-			if ( _target == GL_TEXTURE_CUBE_MAP )
+			if ( _mipmapped )
 			{
 				for ( GLsizei size = _width > _height ? _width : _height; size > 1; size /= 2 )
 				{

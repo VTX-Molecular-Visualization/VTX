@@ -67,7 +67,8 @@ namespace VTX::Renderer
 		float					ambientIntensity = AMBIENT_INTENSITY_DEFAULT;
 		std::optional<FilePath> environmentPath;
 		uint32_t				environmentFaceSize = 1024;
-		float					environmentExposure = 1.f;
+		float					skyboxIntensity		= 1.f;
+		float					iblIntensity			= 1.f;
 		float					environmentRotation = 0.f;
 		Material				material			= Materials::DEFAULT;
 	};
@@ -108,6 +109,7 @@ namespace VTX::Renderer::Builder::PostProcess
 		inline static const Desc::Key MATERIAL_ROUGHNESS_TEXTURE = "MaterialRoughnessMap";
 		inline static const Desc::Key MATERIAL_AO_TEXTURE		 = "MaterialAmbientOcclusionMap";
 		inline static const Desc::Key MATERIAL_EMISSIVE_TEXTURE	 = "MaterialEmissiveMap";
+		inline static const Desc::Key MATERIAL_TEXTURE_SAMPLER	 = "MaterialMapSampler";
 
 		static Desc::Key programName( const E_SHADING p_mode )
 		{
@@ -145,6 +147,12 @@ namespace VTX::Renderer::Builder::PostProcess
 				.in( "BlurY", p_enableSSAO ? "NearestClamp" : "NearestRepeat" )
 				.in( "Depth" )
 				.in( ENVIRONMENT_TEXTURE, ENVIRONMENT_SAMPLER )
+				.in( MATERIAL_ALBEDO_TEXTURE, MATERIAL_TEXTURE_SAMPLER )
+				.in( MATERIAL_NORMAL_TEXTURE, MATERIAL_TEXTURE_SAMPLER )
+				.in( MATERIAL_METALLIC_TEXTURE, MATERIAL_TEXTURE_SAMPLER )
+				.in( MATERIAL_ROUGHNESS_TEXTURE, MATERIAL_TEXTURE_SAMPLER )
+				.in( MATERIAL_AO_TEXTURE, MATERIAL_TEXTURE_SAMPLER )
+				.in( MATERIAL_EMISSIVE_TEXTURE, MATERIAL_TEXTURE_SAMPLER )
 				.out( OUTPUT )
 				.program( program )
 				.shaders( { "shading/shading.vert", fragmentShader( p_mode ) } )
@@ -161,7 +169,8 @@ namespace VTX::Renderer::Builder::PostProcess
 				.uniform( "FogDensity", FOG_DENSITY_DEFAULT, std::pair { FOG_DENSITY_MIN, FOG_DENSITY_MAX } )
 				.uniform( "SSAOScale", 1.f, std::pair { SSAO_SCALE_MIN, SSAO_SCALE_MAX } )
 				.uniform( "EnvironmentEnabled", uint32_t( 0 ) )
-				.uniform( "EnvironmentExposure", 1.f )
+				.uniform( "SkyboxIntensity", 1.f )
+				.uniform( "IblIntensity", 1.f )
 				.uniform( "EnvironmentRotation", 0.f )
 				.uniform(
 					"LightIntensity", LIGHT_INTENSITY_DEFAULT, std::pair { LIGHT_INTENSITY_MIN, LIGHT_INTENSITY_MAX }
@@ -171,10 +180,16 @@ namespace VTX::Renderer::Builder::PostProcess
 					AMBIENT_INTENSITY_DEFAULT,
 					std::pair { AMBIENT_INTENSITY_MIN, AMBIENT_INTENSITY_MAX }
 				)
+				.uniform( "MaterialTextureMask", uint32_t( 0 ) )
 				.uniform( "MaterialEmissive", Vec4f( 0.f, 0.f, 0.f, MATERIAL_EMISSIVE_INTENSITY_DEFAULT ) )
 				.uniform( "MaterialMetallic", MATERIAL_METALLIC_DEFAULT, std::pair { 0.0, 1.0 } )
 				.uniform( "MaterialRoughness", MATERIAL_ROUGHNESS_DEFAULT, std::pair { 0.0, 1.0 } )
 				.uniform( "MaterialOpacity", MATERIAL_OPACITY_DEFAULT, std::pair { 0.0, 1.0 } )
+				.uniform(
+					"MaterialTextureScale",
+					MATERIAL_TEXTURE_SCALE_DEFAULT,
+					std::pair { MATERIAL_TEXTURE_SCALE_MIN, MATERIAL_TEXTURE_SCALE_MAX }
+				)
 				.endProgram()
 				.endPass();
 
@@ -202,10 +217,12 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( p_fog ? fog.density : 0.f );
 			buffer.write( p_ssao ? p_ssao->scale : 1.f );
 			buffer.write( uint32_t( p_config.environmentPath.has_value() ) );
-			buffer.write( p_config.environmentExposure );
+			buffer.write( p_config.skyboxIntensity );
+			buffer.write( p_config.iblIntensity );
 			buffer.write( p_config.environmentRotation );
 			buffer.write( p_config.lightIntensity );
 			buffer.write( p_config.ambientIntensity );
+			buffer.write( p_config.material.textureMask() );
 			const Util::Color::Rgba emissiveColor(
 				p_config.material.emissiveColor.x, p_config.material.emissiveColor.y, p_config.material.emissiveColor.z
 			);
@@ -216,12 +233,14 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( p_config.material.metallic );
 			buffer.write( p_config.material.roughness );
 			buffer.write( p_config.material.opacity );
+			buffer.write( p_config.material.textureScale );
 			buffer.close();
 
 			p_context.setBuffer( { programName( p_config.mode ) }, buffer );
 		}
 
 		static void loadEnvironment( Context::ContextWrapper &, const ShadingConfig & );
+		static void loadMaterialTextures( Context::ContextWrapper &, const ShadingConfig & );
 	};
 } // namespace VTX::Renderer::Builder::PostProcess
 

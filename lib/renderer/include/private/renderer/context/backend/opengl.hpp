@@ -123,7 +123,12 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Set texture data.
 		 */
-		void setTextureData( const Desc::Key & p_key, SpanBytes );
+		void setTextureData(
+			const Desc::Key &,
+			SpanBytes,
+			std::optional<size_t> p_width  = {},
+			std::optional<size_t> p_height = {}
+		);
 
 		/**
 		 * @brief Set render target.

@@ -514,6 +514,10 @@ namespace VTX::Renderer
 		{
 			Builder::PostProcess::Shading::loadEnvironment( _context, _graphicsConfig.data.shading );
 		}
+		if ( hasDirty( _dirtyRenderer, RendererDirty::MATERIAL_TEXTURES ) )
+		{
+			Builder::PostProcess::Shading::loadMaterialTextures( _context, _graphicsConfig.data.shading );
+		}
 		if ( updateRepresentations )
 		{
 			Builder::RepresentationState::upload( _context, _representations );
@@ -570,6 +574,15 @@ namespace VTX::Renderer
 		const ShadingConfig & currentShading = _graphicsConfig.data.shading;
 		const bool environmentChanged = currentShading.environmentPath != p_config.shading.environmentPath
 										|| currentShading.environmentFaceSize != p_config.shading.environmentFaceSize;
+		const Material & currentMaterial = currentShading.material;
+		const Material & material		 = p_config.shading.material;
+		const bool		 materialTexturesChanged
+			= currentMaterial.albedoTexture != material.albedoTexture
+			  || currentMaterial.normalTexture != material.normalTexture
+			  || currentMaterial.metallicTexture != material.metallicTexture
+			  || currentMaterial.roughnessTexture != material.roughnessTexture
+			  || currentMaterial.ambientOcclusionTexture != material.ambientOcclusionTexture
+			  || currentMaterial.emissiveTexture != material.emissiveTexture;
 		const Builder::PipelineConfig pipelineConfig = Builder::RenderGraphRuntime::pipelineConfig( p_config );
 		const bool					  graphReady	 = _config.has_value();
 		const bool					  graphChanged	 = not graphReady || *_config != pipelineConfig;
@@ -583,6 +596,10 @@ namespace VTX::Renderer
 		if ( environmentChanged )
 		{
 			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ENVIRONMENT;
+		}
+		if ( materialTexturesChanged )
+		{
+			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::MATERIAL_TEXTURES;
 		}
 	}
 

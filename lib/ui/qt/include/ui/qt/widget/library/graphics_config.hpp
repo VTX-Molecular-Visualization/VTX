@@ -63,14 +63,18 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<EditableSlider>   _sliderMaterialRoughness;
 		QPointer<QLabel>		   _labelMaterialEmissiveIntensity;
 		QPointer<EditableSlider>   _sliderMaterialEmissiveIntensity;
+		QPointer<QLabel>		   _labelMaterialTextureScale;
+		QPointer<EditableSlider>   _sliderMaterialTextureScale;
 
 		std::array<MaterialTextureWidgets, size_t( VTX::Renderer::Material::E_TEXTURE::COUNT )> _materialTextureWidgets;
 
 		QPointer<QLineEdit>		 _lineEnvironmentPath;
 		QPointer<QPushButton>	 _buttonEnvironmentBrowse;
 		QPointer<QPushButton>	 _buttonEnvironmentClear;
-		QPointer<QLabel>		 _labelEnvironmentExposure;
-		QPointer<EditableSlider> _sliderEnvironmentExposure;
+		QPointer<QLabel>		 _labelSkyboxIntensity;
+		QPointer<EditableSlider> _sliderSkyboxIntensity;
+		QPointer<QLabel>		 _labelIblIntensity;
+		QPointer<EditableSlider> _sliderIblIntensity;
 		QPointer<QLabel>		 _labelEnvironmentRotation;
 		QPointer<EditableSlider> _sliderEnvironmentRotation;
 

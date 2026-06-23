@@ -484,6 +484,13 @@ namespace VTX::Renderer::Builder
 			E_FILTERING::LINEAR_MIPMAP_LINEAR,
 			E_FILTERING::LINEAR
 		);
+		g.sampler(
+			PostProcess::Shading::MATERIAL_TEXTURE_SAMPLER,
+			E_WRAPPING::REPEAT,
+			E_WRAPPING::REPEAT,
+			E_FILTERING::LINEAR_MIPMAP_LINEAR,
+			E_FILTERING::LINEAR
+		);
 
 		// Passes.
 		g.externalPass( SESGeometry::PASS_COMPUTE ).endPass();

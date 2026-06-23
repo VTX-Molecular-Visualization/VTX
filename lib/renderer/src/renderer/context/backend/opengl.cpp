@@ -796,7 +796,13 @@ namespace VTX::Renderer::Context::Backend
 		GLPixelFormat glFormat = _toGL( p_text.format );
 
 		const Handle h = _textures.emplace(
-			p_key, p_text, GLsizei( width ), GLsizei( height ), glFormat.internalFormat, _toGL( p_text.target )
+			p_key,
+			p_text,
+			GLsizei( width ),
+			GLsizei( height ),
+			glFormat.internalFormat,
+			_toGL( p_text.target ),
+			p_text.external
 		);
 
 		if ( not p_text.data.empty() )
@@ -1556,24 +1562,45 @@ namespace VTX::Renderer::Context::Backend
 		return data;
 	}
 
-	void OpenGL::setTextureData( const Desc::Key & p_key, SpanBytes p_bytes )
+	void OpenGL::setTextureData(
+		const Desc::Key &	  p_key,
+		SpanBytes			  p_bytes,
+		std::optional<size_t> p_width,
+		std::optional<size_t> p_height
+	)
 	{
 		using namespace Desc;
 
 		const Handle		h			= _textures.handle( p_key );
 		const auto &		textureProp = _textures.descriptor( p_key );
 		const GLPixelFormat glFormat	= _toGL( textureProp.format );
-		const auto &		texture		= _textures.get( h );
+		auto &				texture		= _textures.get( h );
 		const size_t		faceCount	= textureProp.target == E_TEXTURE_TARGET::CUBEMAP ? 6 : 1;
-		const size_t		expectedSize
-			= size_t( texture.getWidth() ) * size_t( texture.getHeight() ) * faceCount * glFormat.bytesPerPixel;
+
+		if ( p_width.has_value() != p_height.has_value() )
+		{
+			throw GraphicException( "Texture '{}': width and height must be specified together", p_key );
+		}
+
+		const size_t width	= p_width.value_or( size_t( texture.getWidth() ) );
+		const size_t height = p_height.value_or( size_t( texture.getHeight() ) );
+		if ( width == 0 || height == 0 || width > size_t( TypeMax<GLsizei> ) || height > size_t( TypeMax<GLsizei> ) )
+		{
+			throw GraphicException( "Texture '{}': invalid dimensions {}x{}", p_key, width, height );
+		}
+
+		const size_t expectedSize = width * height * faceCount * glFormat.bytesPerPixel;
 		if ( p_bytes.size() != expectedSize )
 		{
 			throw GraphicException( "Texture '{}': expected {} bytes, got {}", p_key, expectedSize, p_bytes.size() );
 		}
+		if ( p_width && ( size_t( texture.getWidth() ) != width || size_t( texture.getHeight() ) != height ) )
+		{
+			texture.resize( GLsizei( width ), GLsizei( height ) );
+		}
 
 		texture.fill( p_bytes.data(), glFormat.uploadFormat, glFormat.uploadType );
-		if ( textureProp.target == E_TEXTURE_TARGET::CUBEMAP )
+		if ( textureProp.external )
 		{
 			texture.generateMipmaps();
 		}

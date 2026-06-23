@@ -2,6 +2,7 @@
 #define __VTX_UTIL_IMAGE__
 
 #include "types.hpp"
+#include <cstdint>
 #include <optional>
 #include <util/filesystem.hpp>
 #include <vector>
@@ -37,6 +38,19 @@ namespace VTX::Util::Image
 		size_t			   height = 0;
 		std::vector<float> pixels;
 	};
+
+	struct ByteImage
+	{
+		size_t				 width	  = 0;
+		size_t				 height	  = 0;
+		uint8_t				 channels = 0;
+		std::vector<uint8_t> pixels;
+	};
+
+	/**
+	 * @brief Read an image with the requested number of 8-bit channels.
+	 */
+	ByteImage readByteImage( const FilePath &, const uint8_t p_channels = 4 );
 
 	/**
 	 * @brief Read an HDR image from disk.

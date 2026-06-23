@@ -87,6 +87,10 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						p_config.shading.material.emissiveIntensity = p_value;
 					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_TEXTURE_SCALE )
+					{
+						p_config.shading.material.textureScale = p_value;
+					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_ALBEDO_TEXTURE )
 					{
 						setMaterialTexture( p_config.shading.material.albedoTexture, p_value );
@@ -116,9 +120,13 @@ namespace VTX::App::Action::GraphicsConfig
 						p_config.shading.environmentPath
 							= p_value.empty() ? std::nullopt : std::optional<FilePath> { p_value };
 					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_EXPOSURE )
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::SKYBOX_INTENSITY )
 					{
-						p_config.shading.environmentExposure = p_value;
+						p_config.shading.skyboxIntensity = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::IBL_INTENSITY )
+					{
+						p_config.shading.iblIntensity = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_ROTATION )
 					{

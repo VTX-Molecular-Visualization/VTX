@@ -67,6 +67,39 @@ namespace VTX::Util::Image
 
 			return image;
 		}
+
+		ByteImage _readByteImage( const FilePath & p_path, const uint8_t p_channels )
+		{
+			if ( p_channels == 0 || p_channels > 4 )
+			{
+				throw std::runtime_error( "Invalid requested channel count" );
+			}
+
+			int		  width			 = 0;
+			int		  height		 = 0;
+			int		  sourceChannels = 0;
+			stbi_uc * pixels
+				= stbi_load( p_path.string().c_str(), &width, &height, &sourceChannels, int( p_channels ) );
+			if ( pixels == nullptr )
+			{
+				const char * const error = stbi_failure_reason();
+				throw std::runtime_error(
+					"Unable to load image '" + p_path.string()
+					+ "': " + ( error != nullptr ? error : "unknown stb_image error" )
+				);
+			}
+
+			ByteImage image;
+			image.width	   = static_cast<size_t>( width );
+			image.height   = static_cast<size_t>( height );
+			image.channels = p_channels;
+			const std::unique_ptr<stbi_uc, decltype( &stbi_image_free )> pixelsOwner( pixels, &stbi_image_free );
+			image.pixels.assign(
+				pixelsOwner.get(), pixelsOwner.get() + image.width * image.height * size_t( image.channels )
+			);
+
+			return image;
+		}
 	} // namespace
 
 	FilePath write(
@@ -103,6 +136,9 @@ namespace VTX::Util::Image
 
 		return path;
 	}
+
+	ByteImage readByteImage( const FilePath & p_path, const uint8_t p_channels )
+	{ return _readByteImage( p_path, p_channels ); }
 
 	FloatImage readFloatImage( const FilePath & p_path )
 	{

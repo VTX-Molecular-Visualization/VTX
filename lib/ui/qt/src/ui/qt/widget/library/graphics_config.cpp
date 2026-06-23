@@ -17,8 +17,8 @@ namespace VTX::UI::QT::Widget::Library
 		constexpr float CHROMAB_UI_MAX				= 5.f;
 		constexpr float ENVIRONMENT_ROTATION_UI_MIN = 0.f;
 		constexpr float ENVIRONMENT_ROTATION_UI_MAX = 360.f;
-		constexpr float ENVIRONMENT_EXPOSURE_EV_MIN = -10.f;
-		constexpr float ENVIRONMENT_EXPOSURE_EV_MAX = 10.f;
+		constexpr float ENVIRONMENT_INTENSITY_EV_MIN = -10.f;
+		constexpr float ENVIRONMENT_INTENSITY_EV_MAX = 10.f;
 
 		float _chromaticAberrationToUi( const float p_value ) { return -p_value * 100.f; }
 
@@ -99,15 +99,25 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderEnvironmentRotation->setDecimals( 1 );
 		_sliderEnvironmentRotation->setSuffix( "°" );
 
-		_labelEnvironmentExposure = new QLabel( "Environment exposure", _groupboxBackground );
-		_groupboxBackground->addWidget( _labelEnvironmentExposure );
-		_sliderEnvironmentExposure = new EditableSlider( Qt::Orientation::Horizontal, _groupboxBackground );
-		_groupboxBackground->addWidget( _sliderEnvironmentExposure );
-		_sliderEnvironmentExposure->setMinimum( ENVIRONMENT_EXPOSURE_EV_MIN );
-		_sliderEnvironmentExposure->setMaximum( ENVIRONMENT_EXPOSURE_EV_MAX );
-		_sliderEnvironmentExposure->setStep( 0.1f );
-		_sliderEnvironmentExposure->setDecimals( 2 );
-		_sliderEnvironmentExposure->setSuffix( "EV" );
+		_labelSkyboxIntensity = new QLabel( "Intensity", _groupboxBackground );
+		_groupboxBackground->addWidget( _labelSkyboxIntensity );
+		_sliderSkyboxIntensity = new EditableSlider( Qt::Orientation::Horizontal, _groupboxBackground );
+		_groupboxBackground->addWidget( _sliderSkyboxIntensity );
+		_sliderSkyboxIntensity->setMinimum( ENVIRONMENT_INTENSITY_EV_MIN );
+		_sliderSkyboxIntensity->setMaximum( ENVIRONMENT_INTENSITY_EV_MAX );
+		_sliderSkyboxIntensity->setStep( 0.1f );
+		_sliderSkyboxIntensity->setDecimals( 2 );
+		_sliderSkyboxIntensity->setSuffix( "EV" );
+
+		_labelIblIntensity = new QLabel( "Reflections", _groupboxBackground );
+		_groupboxBackground->addWidget( _labelIblIntensity );
+		_sliderIblIntensity = new EditableSlider( Qt::Orientation::Horizontal, _groupboxBackground );
+		_groupboxBackground->addWidget( _sliderIblIntensity );
+		_sliderIblIntensity->setMinimum( ENVIRONMENT_INTENSITY_EV_MIN );
+		_sliderIblIntensity->setMaximum( ENVIRONMENT_INTENSITY_EV_MAX );
+		_sliderIblIntensity->setStep( 0.1f );
+		_sliderIblIntensity->setDecimals( 2 );
+		_sliderIblIntensity->setSuffix( "EV" );
 
 		// Shading.
 		_groupboxShading = new HideableGroupBox( "Lighting", presetGroupBox() );
@@ -224,6 +234,13 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderMaterialEmissiveIntensity->setMinimum( MATERIAL_EMISSIVE_INTENSITY_MIN );
 		_sliderMaterialEmissiveIntensity->setMaximum( MATERIAL_EMISSIVE_INTENSITY_MAX );
 
+		_labelMaterialTextureScale = new QLabel( "Texture scale", _groupboxShading );
+		_groupboxShading->addWidget( _labelMaterialTextureScale );
+		_sliderMaterialTextureScale = new EditableSlider( Qt::Orientation::Horizontal, _groupboxShading );
+		_groupboxShading->addWidget( _sliderMaterialTextureScale );
+		_sliderMaterialTextureScale->setMinimum( MATERIAL_TEXTURE_SCALE_MIN );
+		_sliderMaterialTextureScale->setMaximum( MATERIAL_TEXTURE_SCALE_MAX );
+
 		constexpr std::array<std::string_view, size_t( VTX::Renderer::Material::E_TEXTURE::COUNT )>
 			MATERIAL_TEXTURE_LABELS {
 				"Albedo map", "Normal map", "Metallic map", "Roughness map", "Ambient occlusion map", "Emissive map"
@@ -271,8 +288,7 @@ namespace VTX::UI::QT::Widget::Library
 						this,
 						"Select " + label.toLower(),
 						initialPath,
-						"Image maps (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.tga *.TGA *.exr *.EXR *.hdr "
-						"*.HDR)"
+						"Image maps (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.tga *.TGA)"
 					);
 					if ( not selectedPath.isEmpty() )
 					{
@@ -571,6 +587,13 @@ namespace VTX::UI::QT::Widget::Library
 		);
 
 		connect(
+			_sliderMaterialTextureScale,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_TEXTURE_SCALE, float>( p_value ); }
+		);
+
+		connect(
 			_buttonEnvironmentBrowse,
 			&QPushButton::clicked,
 			[ this ]
@@ -606,11 +629,22 @@ namespace VTX::UI::QT::Widget::Library
 		);
 
 		connect(
-			_sliderEnvironmentExposure,
+			_sliderSkyboxIntensity,
 			&EditableSlider::valueChanged,
 			[ this ]( const float p_value )
 			{
-				_changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_EXPOSURE, float>(
+				_changeValue<E_GRAPHICS_CONFIG_VALUES::SKYBOX_INTENSITY, float>(
+					_exposureMultiplierFromEv( p_value )
+				);
+			}
+		);
+
+		connect(
+			_sliderIblIntensity,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{
+				_changeValue<E_GRAPHICS_CONFIG_VALUES::IBL_INTENSITY, float>(
 					_exposureMultiplierFromEv( p_value )
 				);
 			}
@@ -884,7 +918,9 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blockerMaterialMetallic( _sliderMaterialMetallic );
 		const QSignalBlocker blockerMaterialRoughness( _sliderMaterialRoughness );
 		const QSignalBlocker blockerMaterialEmissiveIntensity( _sliderMaterialEmissiveIntensity );
-		const QSignalBlocker blockerEnvironmentExposure( _sliderEnvironmentExposure );
+		const QSignalBlocker blockerMaterialTextureScale( _sliderMaterialTextureScale );
+		const QSignalBlocker blockerSkyboxIntensity( _sliderSkyboxIntensity );
+		const QSignalBlocker blockerIblIntensity( _sliderIblIntensity );
 		const QSignalBlocker blockerEnvironmentRotation( _sliderEnvironmentRotation );
 		const QSignalBlocker blocker6( _groupboxSSAO );
 		const QSignalBlocker blocker7( _comboBoxSSAOMethod );
@@ -955,6 +991,7 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderMaterialMetallic->setValue( preset.shading.material.metallic );
 		_sliderMaterialRoughness->setValue( preset.shading.material.roughness );
 		_sliderMaterialEmissiveIntensity->setValue( preset.shading.material.emissiveIntensity );
+		_sliderMaterialTextureScale->setValue( preset.shading.material.textureScale );
 		for ( size_t i = 0; i < _materialTextureWidgets.size(); ++i )
 		{
 			const auto & texture = _materialTexture( preset.shading.material, VTX::Renderer::Material::E_TEXTURE( i ) );
@@ -970,8 +1007,11 @@ namespace VTX::UI::QT::Widget::Library
 		_lineEnvironmentPath->setText( environmentPath );
 		_lineEnvironmentPath->setToolTip( environmentPath );
 		_buttonEnvironmentClear->setEnabled( preset.shading.environmentPath.has_value() );
-		_sliderEnvironmentExposure->setValue(
-			_exposureEvFromMultiplier( preset.shading.environmentExposure, ENVIRONMENT_EXPOSURE_EV_MIN )
+		_sliderSkyboxIntensity->setValue(
+			_exposureEvFromMultiplier( preset.shading.skyboxIntensity, ENVIRONMENT_INTENSITY_EV_MIN )
+		);
+		_sliderIblIntensity->setValue(
+			_exposureEvFromMultiplier( preset.shading.iblIntensity, ENVIRONMENT_INTENSITY_EV_MIN )
 		);
 		_sliderEnvironmentRotation->setValue( Util::Math::degrees( preset.shading.environmentRotation ) );
 		_groupboxSSAO->setChecked( preset.ssao.has_value() );
@@ -1015,8 +1055,10 @@ namespace VTX::UI::QT::Widget::Library
 		using namespace Renderer;
 		const bool pbr			  = p_preset.shading.mode == E_SHADING::PBR;
 		const bool hasEnvironment = p_preset.shading.environmentPath.has_value();
-		_labelEnvironmentExposure->setVisible( hasEnvironment );
-		_sliderEnvironmentExposure->setVisible( hasEnvironment );
+		_labelSkyboxIntensity->setVisible( hasEnvironment );
+		_sliderSkyboxIntensity->setVisible( hasEnvironment );
+		_labelIblIntensity->setVisible( hasEnvironment && pbr );
+		_sliderIblIntensity->setVisible( hasEnvironment && pbr );
 		_labelEnvironmentRotation->setVisible( hasEnvironment );
 		_sliderEnvironmentRotation->setVisible( hasEnvironment );
 		_labelLightIntensity->setVisible( pbr );
@@ -1035,6 +1077,8 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderMaterialRoughness->setVisible( pbr );
 		_labelMaterialEmissiveIntensity->setVisible( pbr );
 		_sliderMaterialEmissiveIntensity->setVisible( pbr );
+		_labelMaterialTextureScale->setVisible( pbr );
+		_sliderMaterialTextureScale->setVisible( pbr );
 		for ( MaterialTextureWidgets & widgets : _materialTextureWidgets )
 		{
 			widgets.label->setVisible( pbr );
