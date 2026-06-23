@@ -32,6 +32,7 @@ namespace
 		switch ( p_format )
 		{
 		case E_FORMAT::RGBA8UI: return { GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, 4, false, false };
+		case E_FORMAT::SRGB8_ALPHA8: return { GL_SRGB8_ALPHA8, GL_RGBA, GL_UNSIGNED_BYTE, 4, false, false };
 		case E_FORMAT::RGB16F: return { GL_RGB16F, GL_RGB, GL_HALF_FLOAT, 6, false, false };
 		case E_FORMAT::RGBA16F: return { GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT, 8, false, false };
 		case E_FORMAT::RGBA32F: return { GL_RGBA32F, GL_RGBA, GL_FLOAT, 16, false, false };

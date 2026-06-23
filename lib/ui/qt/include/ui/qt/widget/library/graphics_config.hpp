@@ -48,6 +48,12 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<EditableSlider>   _sliderToonSteps;
 		QPointer<QLabel>		   _labelMaterial;
 		QPointer<QListWidget>	   _listMaterials;
+		QPointer<QLabel>		   _labelMaterialMetallic;
+		QPointer<EditableSlider>   _sliderMaterialMetallic;
+		QPointer<QLabel>		   _labelMaterialRoughness;
+		QPointer<EditableSlider>   _sliderMaterialRoughness;
+		QPointer<QLabel>		   _labelMaterialEmissiveIntensity;
+		QPointer<EditableSlider>   _sliderMaterialEmissiveIntensity;
 		QPointer<QLineEdit>		   _lineEnvironmentPath;
 		QPointer<QPushButton>	   _buttonEnvironmentBrowse;
 		QPointer<QPushButton>	   _buttonEnvironmentClear;

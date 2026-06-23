@@ -180,6 +180,27 @@ namespace VTX::UI::QT::Widget::Library
 			item->setData( Qt::UserRole, QVariant::fromValue<Entity>( entity ) );
 		}
 
+		_labelMaterialMetallic = new QLabel( "Metallic", _groupboxShading );
+		_groupboxShading->addWidget( _labelMaterialMetallic );
+		_sliderMaterialMetallic = new EditableSlider( Qt::Orientation::Horizontal, _groupboxShading );
+		_groupboxShading->addWidget( _sliderMaterialMetallic );
+		_sliderMaterialMetallic->setMinimum( 0.f );
+		_sliderMaterialMetallic->setMaximum( 1.f );
+
+		_labelMaterialRoughness = new QLabel( "Roughness", _groupboxShading );
+		_groupboxShading->addWidget( _labelMaterialRoughness );
+		_sliderMaterialRoughness = new EditableSlider( Qt::Orientation::Horizontal, _groupboxShading );
+		_groupboxShading->addWidget( _sliderMaterialRoughness );
+		_sliderMaterialRoughness->setMinimum( 0.f );
+		_sliderMaterialRoughness->setMaximum( 1.f );
+
+		_labelMaterialEmissiveIntensity = new QLabel( "Emissive intensity", _groupboxShading );
+		_groupboxShading->addWidget( _labelMaterialEmissiveIntensity );
+		_sliderMaterialEmissiveIntensity = new EditableSlider( Qt::Orientation::Horizontal, _groupboxShading );
+		_groupboxShading->addWidget( _sliderMaterialEmissiveIntensity );
+		_sliderMaterialEmissiveIntensity->setMinimum( MATERIAL_EMISSIVE_INTENSITY_MIN );
+		_sliderMaterialEmissiveIntensity->setMaximum( MATERIAL_EMISSIVE_INTENSITY_MAX );
+
 		// SSAO.
 		_groupboxSSAO = new HideableGroupBox( "Shadows", presetGroupBox() );
 		addWidget( _groupboxSSAO );
@@ -438,6 +459,27 @@ namespace VTX::UI::QT::Widget::Library
 		);
 
 		connect(
+			_sliderMaterialMetallic,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_METALLIC, float>( p_value ); }
+		);
+
+		connect(
+			_sliderMaterialRoughness,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_ROUGHNESS, float>( p_value ); }
+		);
+
+		connect(
+			_sliderMaterialEmissiveIntensity,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_EMISSIVE_INTENSITY, float>( p_value ); }
+		);
+
+		connect(
 			_buttonEnvironmentBrowse,
 			&QPushButton::clicked,
 			[ this ]
@@ -691,6 +733,10 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker4( _sliderShininess );
 		const QSignalBlocker blocker5( _sliderToonSteps );
 		const QSignalBlocker blockerMaterial( _listMaterials );
+		const QSignalBlocker blockerMaterialMetallic( _sliderMaterialMetallic );
+		const QSignalBlocker blockerMaterialRoughness( _sliderMaterialRoughness );
+		const QSignalBlocker blockerMaterialEmissiveIntensity( _sliderMaterialEmissiveIntensity );
+		const QSignalBlocker blockerEnvironmentRotation( _sliderEnvironmentRotation );
 		const QSignalBlocker blocker6( _groupboxSSAO );
 		const QSignalBlocker blocker7( _comboBoxSSAOMethod );
 		const QSignalBlocker blocker8( _comboBoxSSAOScale );
@@ -755,6 +801,9 @@ namespace VTX::UI::QT::Widget::Library
 				break;
 			}
 		}
+		_sliderMaterialMetallic->setValue( preset.shading.material.metallic );
+		_sliderMaterialRoughness->setValue( preset.shading.material.roughness );
+		_sliderMaterialEmissiveIntensity->setValue( preset.shading.material.emissiveIntensity );
 		const QString environmentPath = preset.shading.environmentPath
 											? QString::fromStdString( preset.shading.environmentPath->string() )
 											: QString {};
@@ -815,6 +864,12 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderToneMappingExposure->setVisible( pbr );
 		_labelMaterial->setVisible( pbr );
 		_listMaterials->setVisible( pbr );
+		_labelMaterialMetallic->setVisible( pbr );
+		_sliderMaterialMetallic->setVisible( pbr );
+		_labelMaterialRoughness->setVisible( pbr );
+		_sliderMaterialRoughness->setVisible( pbr );
+		_labelMaterialEmissiveIntensity->setVisible( pbr );
+		_sliderMaterialEmissiveIntensity->setVisible( pbr );
 
 		switch ( p_preset.shading.mode )
 		{

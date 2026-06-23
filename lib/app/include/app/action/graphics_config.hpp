@@ -69,6 +69,18 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						p_config.shading.material = p_value;
 					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_METALLIC )
+					{
+						p_config.shading.material.metallic = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_ROUGHNESS )
+					{
+						p_config.shading.material.roughness = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_EMISSIVE_INTENSITY )
+					{
+						p_config.shading.material.emissiveIntensity = p_value;
+					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH )
 					{
 						p_config.shading.environmentPath

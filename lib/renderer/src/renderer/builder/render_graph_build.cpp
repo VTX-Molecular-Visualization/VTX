@@ -395,7 +395,7 @@ namespace VTX::Renderer::Builder
 			g.texture( "Selection", E_FORMAT::RGBA16F );
 		}
 
-		g.texture( "FXAA", E_FORMAT::RGBA16F );
+		g.texture( "FXAA", E_FORMAT::SRGB8_ALPHA8 );
 
 		if ( p_config.enableChromaticAberration )
 		{

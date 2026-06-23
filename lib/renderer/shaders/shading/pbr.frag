@@ -98,7 +98,7 @@ void main()
 	const vec3	lightRadiance		= uniforms.colorLight.rgb * uniforms.lightIntensity;
 	const vec3	directLighting		= computePBR( data, lightDirection, albedo ) * lightRadiance;
 	const vec3	environmentLighting = computeEnvironmentLighting( data, albedo );
-	const vec3	emissive			= uniforms.materialEmissive.rgb * uniforms.materialEmissive.a;
+	const vec3	emissive			= albedo * uniforms.materialEmissive.a;
 	const float fogFactor = smoothstep( uniforms.fogNear, uniforms.fogFar, -data.viewPosition.z ) * uniforms.fogDensity;
 
 	const vec3 ambientLighting = albedo * uniforms.ambientIntensity;
