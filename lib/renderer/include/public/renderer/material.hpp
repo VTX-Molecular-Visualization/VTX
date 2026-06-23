@@ -3,7 +3,6 @@
 
 #include <optional>
 #include <string>
-#include <util/color/rgba.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer
@@ -20,19 +19,17 @@ namespace VTX::Renderer
 	};
 
 	/**
-	 * @brief Material descriptor matching Assimp's common PBR metallic/roughness properties.
+	 * @brief PBR metallic/roughness material descriptor.
 	 */
 	struct Material
 	{
-		std::string		  name;
-		Util::Color::Rgba baseColor { 1.f, 1.f, 1.f, 1.f };
-		Vec3f			  emissiveColor { 0.f };
-		float			  emissiveIntensity = MATERIAL_EMISSIVE_INTENSITY_DEFAULT;
-		float			  metallic			= MATERIAL_METALLIC_DEFAULT;
-		float			  roughness			= MATERIAL_ROUGHNESS_DEFAULT;
-		float			  opacity			= MATERIAL_OPACITY_DEFAULT;
+		std::string name;
+		Vec3f		emissiveColor { 0.f };
+		float		emissiveIntensity = MATERIAL_EMISSIVE_INTENSITY_DEFAULT;
+		float		metallic		  = MATERIAL_METALLIC_DEFAULT;
+		float		roughness		  = MATERIAL_ROUGHNESS_DEFAULT;
+		float		opacity			  = MATERIAL_OPACITY_DEFAULT;
 
-		std::optional<MaterialTexture> baseColorTexture;
 		std::optional<MaterialTexture> normalTexture;
 		std::optional<MaterialTexture> metallicTexture;
 		std::optional<MaterialTexture> roughnessTexture;
@@ -41,6 +38,15 @@ namespace VTX::Renderer
 
 		bool doubleSided = false;
 	};
+
+	namespace Materials
+	{
+		inline const Material DEFAULT { .name = "Default" };
+		inline const Material MATTE { .name = "Matte", .metallic = 0.f, .roughness = 0.9f };
+		inline const Material PLASTIC { .name = "Plastic", .metallic = 0.f, .roughness = 0.35f };
+		inline const Material POLISHED_METAL { .name = "Polished metal", .metallic = 1.f, .roughness = 0.1f };
+		inline const Material BRUSHED_METAL { .name = "Brushed metal", .metallic = 1.f, .roughness = 0.45f };
+	} // namespace Materials
 } // namespace VTX::Renderer
 
 #endif

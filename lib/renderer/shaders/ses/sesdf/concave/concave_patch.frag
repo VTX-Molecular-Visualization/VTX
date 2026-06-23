@@ -58,7 +58,7 @@ void handleImpostor()
 
 	// Output data.
 	packData( gsData.viewImpPos, normal, gsTetrahedron.selection, outDataPacked );
-	outColor = vec4( gsTetrahedron.color.rgb, 32.f ); // w = specular shininess.
+	outColor = vec4( gsTetrahedron.color.rgb, 1.f );
 
 	gl_FragDepth = computeFragmentDepth( gsData.viewImpPos );
 #else
@@ -161,6 +161,6 @@ void main()
 
 		// Output data.
 		packData( hit, normal, gsTetrahedron.selection, outDataPacked );
-		outColor = vec4( gsTetrahedron.color.rgb, 32.f ); // w = specular shininess.
+		outColor = vec4( gsTetrahedron.color.rgb, 1.f );
 	}
 }

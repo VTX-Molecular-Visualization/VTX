@@ -10,6 +10,7 @@
 #include "renderer/builder/post_process/selection.hpp"
 #include "renderer/builder/post_process/shading.hpp"
 #include "renderer/builder/post_process/ssao.hpp"
+#include "renderer/builder/post_process/tone_mapping.hpp"
 #include "renderer/caches.hpp"
 #include "renderer/color.hpp"
 #include "renderer/context/context_wrapper.hpp"
@@ -788,6 +789,7 @@ namespace VTX::Renderer::Builder
 			// Util::ScopedChrono timer( "[BUILDER] GraphicsConfigState::upload" );
 
 			PostProcess::Shading::upload( p_context, p_config.shading, p_config.fog, p_config.ssao );
+			PostProcess::ToneMapping::upload( p_context, p_config.shading.mode == E_SHADING::PBR );
 
 			if ( p_config.ssao )
 			{

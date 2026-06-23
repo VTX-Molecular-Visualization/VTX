@@ -99,7 +99,7 @@ void handleImpostor()
 
 	// Output data.
 	packData( gsData.viewImpPos, normal, gsPatchData.selection, outDataPacked );
-	outColor = vec4( gsPatchData.color.rgb, 32.f ); // w = specular shininess.
+	outColor = vec4( gsPatchData.color.rgb, 1.f );
 
 	gl_FragDepth = computeFragmentDepth( gsData.viewImpPos );
 #else
@@ -149,7 +149,7 @@ void main()
 
 			// Output data.
 			packData( hit, normal, gsPatchData.selection, outDataPacked );
-			outColor = vec4( gsPatchData.color.rgb, 32.f ); // w = specular shininess.
+			outColor = vec4( gsPatchData.color.rgb, 1.f );
 		}
 	}
 }

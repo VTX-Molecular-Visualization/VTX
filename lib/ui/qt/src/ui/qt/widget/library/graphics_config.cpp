@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <app/action/graphics_config.hpp>
 #include <app/arguments.hpp>
+#include <app/generic/name.hpp>
 #include <app/services.hpp>
 
 namespace VTX::UI::QT::Widget::Library
@@ -85,7 +86,8 @@ namespace VTX::UI::QT::Widget::Library
 		_comboBoxShadingMode = new QComboBox( _groupboxShading );
 		_groupboxShading->addWidget( _comboBoxShadingMode );
 
-		constexpr std::string_view SHADING_STR[ int( E_SHADING::COUNT ) ] = { "Diffuse", "Glossy", "Toon", "Flat" };
+		constexpr std::string_view SHADING_STR[ int( E_SHADING::COUNT ) ]
+			= { "Diffuse", "Glossy", "Toon", "Flat", "PBR" };
 		for ( int i = 0; i < int( E_SHADING::COUNT ); ++i )
 		{
 			_comboBoxShadingMode->addItem( SHADING_STR[ i ].data() );
@@ -117,6 +119,22 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderToonSteps->setMaximum( TOON_STEPS_MAX );
 		_sliderToonSteps->setStep( 1 );
 		_sliderToonSteps->setDecimals( 0 );
+
+		_labelMaterial = new QLabel( "Material", _groupboxShading );
+		_groupboxShading->addWidget( _labelMaterial );
+		_listMaterials = new QListWidget( _groupboxShading );
+		_listMaterials->setSelectionMode( QAbstractItemView::SingleSelection );
+		_listMaterials->setSortingEnabled( true );
+		_groupboxShading->addWidget( _listMaterials );
+
+		auto materialPresets = App::REG().view<App::Generic::Name, Material>();
+		for ( const Entity entity : materialPresets )
+		{
+			auto * const item = new QListWidgetItem(
+				QString::fromStdString( materialPresets.get<App::Generic::Name>( entity ).name ), _listMaterials
+			);
+			item->setData( Qt::UserRole, QVariant::fromValue<Entity>( entity ) );
+		}
 
 		// SSAO.
 		_groupboxSSAO = new HideableGroupBox( "Shadows", presetGroupBox() );
@@ -333,6 +351,18 @@ namespace VTX::UI::QT::Widget::Library
 			_sliderToonSteps,
 			&EditableSlider::valueChanged,
 			[ this ]( const uint p_value ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::TOON_STEPS, uint>( p_value ); }
+		);
+
+		connect(
+			_listMaterials,
+			&QListWidget::itemClicked,
+			[ this ]( QListWidgetItem * const p_item )
+			{
+				const Entity materialPreset = p_item->data( Qt::UserRole ).value<Entity>();
+				_changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL, Material>(
+					App::REG().get<Material>( materialPreset )
+				);
+			}
 		);
 
 		connect(
@@ -577,6 +607,7 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker3( _sliderSpecularFactor );
 		const QSignalBlocker blocker4( _sliderShininess );
 		const QSignalBlocker blocker5( _sliderToonSteps );
+		const QSignalBlocker blockerMaterial( _listMaterials );
 		const QSignalBlocker blocker6( _groupboxSSAO );
 		const QSignalBlocker blocker7( _comboBoxSSAOMethod );
 		const QSignalBlocker blocker8( _comboBoxSSAOScale );
@@ -627,6 +658,16 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderSpecularFactor->setValue( preset.shading.specularFactor );
 		_sliderShininess->setValue( preset.shading.shininess );
 		_sliderToonSteps->setValue( preset.shading.toonSteps );
+		_listMaterials->setCurrentRow( -1 );
+		for ( int i = 0; i < _listMaterials->count(); ++i )
+		{
+			const Entity materialPreset = _listMaterials->item( i )->data( Qt::UserRole ).value<Entity>();
+			if ( App::REG().get<Renderer::Material>( materialPreset ).name == preset.shading.material.name )
+			{
+				_listMaterials->setCurrentRow( i );
+				break;
+			}
+		}
 		const QString environmentPath = preset.shading.environmentPath
 											? QString::fromStdString( preset.shading.environmentPath->string() )
 											: QString {};
@@ -672,6 +713,9 @@ namespace VTX::UI::QT::Widget::Library
 	void GraphicsConfig::_applyLogic( const Renderer::GraphicsConfig & p_preset )
 	{
 		using namespace Renderer;
+		const bool pbr = p_preset.shading.mode == E_SHADING::PBR;
+		_labelMaterial->setVisible( pbr );
+		_listMaterials->setVisible( pbr );
 
 		switch ( p_preset.shading.mode )
 		{
@@ -700,12 +744,13 @@ namespace VTX::UI::QT::Widget::Library
 			_sliderToonSteps->setVisible( true );
 			break;
 		case E_SHADING::FLAT:
-			_labelSpecularFactor->setEnabled( false );
-			_sliderSpecularFactor->setEnabled( false );
-			_labelShininess->setEnabled( false );
-			_sliderShininess->setEnabled( false );
-			_labelToonSteps->setEnabled( false );
-			_sliderToonSteps->setEnabled( false );
+		case E_SHADING::PBR:
+			_labelSpecularFactor->setVisible( false );
+			_sliderSpecularFactor->setVisible( false );
+			_labelShininess->setVisible( false );
+			_sliderShininess->setVisible( false );
+			_labelToonSteps->setVisible( false );
+			_sliderToonSteps->setVisible( false );
 			break;
 		}
 	}

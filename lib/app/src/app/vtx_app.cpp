@@ -159,6 +159,7 @@ namespace VTX::App
 		// Default presets.
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
+		ACTION().execute<Action::Preset::CreateDefault<Renderer::Material>>();
 		ACTION().execute<Action::Preset::CreateDefault<Renderer::GraphicsConfig>>();
 	}
 

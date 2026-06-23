@@ -12,6 +12,7 @@
 #include <optional>
 #include <renderer/color.hpp>
 #include <renderer/graphics_config.hpp>
+#include <renderer/material.hpp>
 #include <renderer/renderer.hpp>
 #include <renderer/representation.hpp>
 #include <util/event_hub.hpp>
@@ -63,6 +64,10 @@ namespace VTX::App::Action::Preset
 			else if constexpr ( std::is_same_v<T, Renderer::Representation> )
 			{
 				reg.emplace<T>( e, Renderer::Representations::STICKS_AND_RIBBONS );
+			}
+			else if constexpr ( std::is_same_v<T, Renderer::Material> )
+			{
+				reg.emplace<T>( e, Renderer::Materials::DEFAULT );
 			}
 			else
 			{
@@ -236,6 +241,19 @@ namespace VTX::App::Action::Preset
 			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Default", Renderer::GraphicsConfigs::DEFAULT );
 			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Presentation", Renderer::GraphicsConfigs::PRESENTATION );
 			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Illustration", Renderer::GraphicsConfigs::ILLUSTRATION );
+		}
+	};
+
+	template<>
+	struct CreateDefault<Renderer::Material>
+	{
+		void execute()
+		{
+			ACTION().execute<Add<Renderer::Material>>( "Default", Renderer::Materials::DEFAULT );
+			ACTION().execute<Add<Renderer::Material>>( "Matte", Renderer::Materials::MATTE );
+			ACTION().execute<Add<Renderer::Material>>( "Plastic", Renderer::Materials::PLASTIC );
+			ACTION().execute<Add<Renderer::Material>>( "Polished metal", Renderer::Materials::POLISHED_METAL );
+			ACTION().execute<Add<Renderer::Material>>( "Brushed metal", Renderer::Materials::BRUSHED_METAL );
 		}
 	};
 } // namespace VTX::App::Action::Preset

@@ -50,7 +50,7 @@ void main()
 			// Show impostors for debugging purpose.
 			uvec4 colorNormal = uvec4( 0 );
 			packData( gsData.viewImpPos, -gsSphere.viewPos, gsSphere.isSelected, outDataPacked );
-			outColor			  = vec4( 1.f, 0.f, 0.f, 1.f ); // w = specular shininess.
+			outColor			  = vec4( 1.f, 0.f, 0.f, 1.f );
 
 			gl_FragDepth = computeDepth( gsData.viewImpPos );
 	#else

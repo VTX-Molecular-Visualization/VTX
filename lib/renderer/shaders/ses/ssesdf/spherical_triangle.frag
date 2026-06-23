@@ -84,7 +84,7 @@ void main()
 
 		// Output data.
 		outViewPositionNormal = viewPositionNormalCompressed;
-		outColor			  = vec4( 1.f, 0.f, 0.f, 32.f ); // w = specular shininess.
+		outColor			  = vec4( 1.f, 0.f, 0.f, 1.f );
 
 		gl_FragDepth = computeDepth( viewImpPos );
 #else
@@ -130,6 +130,6 @@ void main()
 
 	    // Output data.
 	    outViewPositionNormal = viewPositionNormalCompressed;
-        outColor			  = vec4(1., 1., 1., 32.f ); // w = specular shininess.
+        outColor			  = vec4(1., 1., 1., 1.f );
     }
 }

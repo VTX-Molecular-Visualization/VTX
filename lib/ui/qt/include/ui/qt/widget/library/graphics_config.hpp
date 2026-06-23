@@ -9,6 +9,7 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QLineEdit>
+#include <QListWidget>
 #include <QPushButton>
 #include <app/action/graphics_config.hpp>
 
@@ -37,6 +38,8 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<EditableSlider>   _sliderShininess;
 		QPointer<QLabel>		   _labelToonSteps;
 		QPointer<EditableSlider>   _sliderToonSteps;
+		QPointer<QLabel>		   _labelMaterial;
+		QPointer<QListWidget>	   _listMaterials;
 		QPointer<QLineEdit>		   _lineEnvironmentPath;
 		QPointer<QPushButton>	   _buttonEnvironmentBrowse;
 		QPointer<QPushButton>	   _buttonEnvironmentClear;

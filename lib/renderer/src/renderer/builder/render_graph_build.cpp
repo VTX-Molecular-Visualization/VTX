@@ -515,7 +515,7 @@ namespace VTX::Renderer::Builder
 			PostProcess::BlurY::build( g, PostProcess::BlurX::PASS );
 		}
 
-		PostProcess::Shading::build( g, p_config.enableSSAO );
+		PostProcess::Shading::build( g, p_config.enableSSAO, p_config.shadingMode );
 
 		const Desc::Key postChromatic = p_config.enableChromaticAberration ? PostProcess::ChromaticAberration::PASS
 																		   : PostProcess::Shading::OUTPUT;
@@ -578,6 +578,7 @@ namespace VTX::Renderer::Builder
 		config.enableSSAO				 = p_config.ssao.has_value();
 		config.ssaoMethod				 = p_config.ssao ? p_config.ssao->method : SSAO_METHOD_DEFAULT;
 		config.ssaoScale				 = p_config.ssao ? p_config.ssao->scale : SSAO_SCALE_DEFAULT;
+		config.shadingMode				 = p_config.shading.mode;
 		config.enableOutline			 = p_config.outline.has_value();
 		config.enableSelection			 = p_config.selection.has_value();
 		config.enableChromaticAberration = p_config.chromaticAberration.has_value();

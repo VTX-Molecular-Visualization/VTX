@@ -179,6 +179,8 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		void swapBuffers() const { SwapBuffers( _hdc ); }
 
+		bool isDefaultFramebufferSrgb() const { return _defaultFramebufferSrgb; }
+
 		void setSwapInterval( const int p_interval )
 		{
 			auto wglSwapIntervalEXT
@@ -235,37 +237,49 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			if ( p_choosePixelFormat )
 			{
-				const int pixelAttribs[] = { WGL_DRAW_TO_WINDOW_ARB,
-											 1,
-											 WGL_SUPPORT_OPENGL_ARB,
-											 1,
-											 WGL_DOUBLE_BUFFER_ARB,
-											 1,
-											 WGL_PIXEL_TYPE_ARB,
-											 WGL_TYPE_RGBA_ARB,
-											 WGL_COLOR_BITS_ARB,
-											 32,
-											 WGL_DEPTH_BITS_ARB,
-											 24,
-											 WGL_STENCIL_BITS_ARB,
-											 8,
-											 0 };
+				int pixelAttribs[ 17 ] = { WGL_DRAW_TO_WINDOW_ARB, 1,  WGL_SUPPORT_OPENGL_ARB, 1,
+										   WGL_DOUBLE_BUFFER_ARB,  1,  WGL_PIXEL_TYPE_ARB,	   WGL_TYPE_RGBA_ARB,
+										   WGL_COLOR_BITS_ARB,	   32, WGL_DEPTH_BITS_ARB,	   24,
+										   WGL_STENCIL_BITS_ARB,   8 };
 
-				UINT numFormats = 0;
-				if ( p_choosePixelFormat( _hdc, pixelAttribs, nullptr, 1, &pixelFormat, &numFormats )
-					 && numFormats > 0 )
+				const auto chooseFormat = [ & ]( const int * const p_attributes )
+				{
+					UINT numFormats = 0;
+					pixelFormat		= 0;
+					return p_choosePixelFormat( _hdc, p_attributes, nullptr, 1, &pixelFormat, &numFormats )
+						   && numFormats > 0;
+				};
+
+				pixelAttribs[ 14 ]		= WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB;
+				pixelAttribs[ 15 ]		= 1;
+				const bool selectedSrgb = chooseFormat( pixelAttribs );
+				pixelAttribs[ 14 ]		= 0;
+				pixelAttribs[ 15 ]		= 0;
+				if ( not selectedSrgb )
+				{
+					VTX_WARNING( "[WGL] No sRGB pixel format available, falling back to a linear format" );
+				}
+
+				if ( selectedSrgb || chooseFormat( pixelAttribs ) )
 				{
 					PIXELFORMATDESCRIPTOR chosen = {};
 					if ( DescribePixelFormat( _hdc, pixelFormat, sizeof( chosen ), &chosen ) != 0 )
 					{
-						p_pfd = chosen;
+						p_pfd					= chosen;
+						_defaultFramebufferSrgb = selectedSrgb;
+						if ( selectedSrgb )
+						{
+							VTX_INFO( "[WGL] Using sRGB pixel format {}", pixelFormat );
+						}
 						VTX_TRACE(
-							"[WGL] Using ARB pixel format {} (color={}, depth={}, stencil={}, double_buffer={})",
+							"[WGL] Using ARB pixel format {} (color={}, depth={}, stencil={}, double_buffer={}, "
+							"srgb={})",
 							pixelFormat,
 							int( p_pfd.cColorBits ),
 							int( p_pfd.cDepthBits ),
 							int( p_pfd.cStencilBits ),
-							( p_pfd.dwFlags & PFD_DOUBLEBUFFER ) != 0
+							( p_pfd.dwFlags & PFD_DOUBLEBUFFER ) != 0,
+							selectedSrgb
 						);
 						return pixelFormat;
 					}
@@ -285,9 +299,10 @@ namespace VTX::Renderer::Context::Backend::GL
 			return pixelFormat;
 		}
 
-		HWND  _hwnd	   = nullptr;
-		HDC	  _hdc	   = nullptr;
-		HGLRC _context = nullptr;
+		HWND  _hwnd					  = nullptr;
+		HDC	  _hdc					  = nullptr;
+		HGLRC _context				  = nullptr;
+		bool  _defaultFramebufferSrgb = false;
 	};
 
 	using GLContextWrapper = WGLContextWrapper;
@@ -320,6 +335,8 @@ namespace VTX::Renderer::Context::Backend::GL
 		void makeCurrent() const { throw std::runtime_error( "macOS OpenGL context is not initialized" ); }
 
 		void swapBuffers() const {}
+
+		bool isDefaultFramebufferSrgb() const { return false; }
 
 		void setSwapInterval( int ) {}
 
@@ -473,9 +490,8 @@ namespace VTX::Renderer::Context::Backend::GL
 					throw std::runtime_error( "EGL: Wayland platform requires a native surface" );
 				}
 
-				_waylandWindow = wl_egl_window_create(
-					waylandSurface, static_cast<int>( p_width ), static_cast<int>( p_height )
-				);
+				_waylandWindow
+					= wl_egl_window_create( waylandSurface, static_cast<int>( p_width ), static_cast<int>( p_height ) );
 				if ( _waylandWindow == nullptr )
 				{
 					throw std::runtime_error( "EGL: Failed to create Wayland EGL window" );
@@ -488,7 +504,21 @@ namespace VTX::Renderer::Context::Backend::GL
 			VTX_TRACE(
 				"[EGL] Calling eglCreateWindowSurface for native window {}", reinterpret_cast<uintptr_t>( nativeWindow )
 			);
-			_surface = eglCreateWindowSurface( _display, _config, nativeWindow, nullptr );
+			const EGLint srgbSurfaceAttribs[] = { EGL_GL_COLORSPACE_KHR, EGL_GL_COLORSPACE_SRGB_KHR, EGL_NONE };
+			_surface				= eglCreateWindowSurface( _display, _config, nativeWindow, srgbSurfaceAttribs );
+			_defaultFramebufferSrgb = _surface != EGL_NO_SURFACE;
+			if ( _surface == EGL_NO_SURFACE )
+			{
+				const EGLint srgbError = eglGetError();
+				VTX_WARNING(
+					"[EGL] Failed to create an sRGB surface (error 0x{:X}), falling back to a linear surface", srgbError
+				);
+				_surface = eglCreateWindowSurface( _display, _config, nativeWindow, nullptr );
+			}
+			else
+			{
+				VTX_INFO( "[EGL] Using an sRGB window surface" );
+			}
 			VTX_TRACE( "[EGL] eglCreateWindowSurface -> {}", reinterpret_cast<uintptr_t>( _surface ) );
 
 			if ( _surface == EGL_NO_SURFACE )
@@ -550,6 +580,8 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		void swapBuffers() const { eglSwapBuffers( _display, _surface ); }
 
+		bool isDefaultFramebufferSrgb() const { return _defaultFramebufferSrgb; }
+
 		void setSwapInterval( const int p_interval )
 		{
 			if ( not eglSwapInterval( _display, p_interval ) )
@@ -562,9 +594,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		{
 			if ( _waylandWindow != nullptr )
 			{
-				wl_egl_window_resize(
-					_waylandWindow, static_cast<int>( p_width ), static_cast<int>( p_height ), 0, 0
-				);
+				wl_egl_window_resize( _waylandWindow, static_cast<int>( p_width ), static_cast<int>( p_height ), 0, 0 );
 			}
 		}
 
@@ -607,13 +637,14 @@ namespace VTX::Renderer::Context::Backend::GL
 			Wayland
 		};
 
-		EGLDisplay		_display	   = EGL_NO_DISPLAY;
-		EGLSurface		_surface	   = EGL_NO_SURFACE;
-		EGLContext		_context	   = EGL_NO_CONTEXT;
-		EGLConfig		_config		   = nullptr;
-		Platform		_platform	   = Platform::Default;
-		void *			_nativeDisplay = nullptr;
-		wl_egl_window * _waylandWindow = nullptr;
+		EGLDisplay		_display				= EGL_NO_DISPLAY;
+		EGLSurface		_surface				= EGL_NO_SURFACE;
+		EGLContext		_context				= EGL_NO_CONTEXT;
+		EGLConfig		_config					= nullptr;
+		Platform		_platform				= Platform::Default;
+		void *			_nativeDisplay			= nullptr;
+		wl_egl_window * _waylandWindow			= nullptr;
+		bool			_defaultFramebufferSrgb = false;
 
 		int _major = 0;
 		int _minor = 0;

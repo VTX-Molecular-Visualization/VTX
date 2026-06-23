@@ -5,6 +5,8 @@
 #include "renderer/builder/post_process/ssao.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
+#include "renderer/material.hpp"
+#include <cassert>
 #include <optional>
 #include <string_view>
 #include <util/constants.hpp>
@@ -18,6 +20,7 @@ namespace VTX::Renderer
 		GLOSSY,
 		TOON,
 		FLAT,
+		PBR,
 		COUNT
 	};
 
@@ -58,6 +61,7 @@ namespace VTX::Renderer
 		uint32_t				environmentFaceSize = 1024;
 		float					environmentExposure = 1.f;
 		float					environmentRotation = 0.f;
+		Material				material			= Materials::DEFAULT;
 	};
 
 	struct FogConfig
@@ -90,8 +94,36 @@ namespace VTX::Renderer::Builder::PostProcess
 		inline static const Desc::Key ENVIRONMENT_TEXTURE = "EnvMap";
 		inline static const Desc::Key ENVIRONMENT_SAMPLER = "EnvMapSampler";
 
-		static Desc::Key build( GraphBuilder & p_graph, const bool p_enableSSAO )
+		static Desc::Key programName( const E_SHADING p_mode )
 		{
+			switch ( p_mode )
+			{
+			case E_SHADING::DIFFUSE: return "Shading.Diffuse";
+			case E_SHADING::GLOSSY: return "Shading.Glossy";
+			case E_SHADING::TOON: return "Shading.Toon";
+			case E_SHADING::FLAT: return "Shading.Flat";
+			case E_SHADING::PBR: return "Shading.PBR";
+			default: assert( false ); return "Shading.Invalid";
+			}
+		}
+
+		static FilePath fragmentShader( const E_SHADING p_mode )
+		{
+			switch ( p_mode )
+			{
+			case E_SHADING::DIFFUSE: return "shading/diffuse.frag";
+			case E_SHADING::GLOSSY: return "shading/glossy.frag";
+			case E_SHADING::TOON: return "shading/toon.frag";
+			case E_SHADING::FLAT: return "shading/flat.frag";
+			case E_SHADING::PBR: return "shading/pbr.frag";
+			default: assert( false ); return {};
+			}
+		}
+
+		static Desc::Key build( GraphBuilder & p_graph, const bool p_enableSSAO, const E_SHADING p_mode )
+		{
+			const Desc::Key program = programName( p_mode );
+
 			p_graph.pass( PASS )
 				.in( "Geometry" )
 				.in( "Color" )
@@ -99,17 +131,11 @@ namespace VTX::Renderer::Builder::PostProcess
 				.in( "Depth" )
 				.in( ENVIRONMENT_TEXTURE, ENVIRONMENT_SAMPLER )
 				.out( OUTPUT )
-				.program( PASS )
-				.shaders( { "shading.vert", "shading.frag" } )
+				.program( program )
+				.shaders( { "shading/shading.vert", fragmentShader( p_mode ) } )
 				.uniform( "BackgroundColor", COLOR_BACKGROUND_DEFAULT.toLinear() )
 				.uniform( "LightColor", COLOR_LIGHT_DEFAULT.toLinear() )
 				.uniform( "FogColor", COLOR_FOG_DEFAULT.toLinear() )
-				.uniform(
-					"Mode",
-					static_cast<unsigned int>( SHADING_MODE_DEFAULT ),
-					std::pair { static_cast<unsigned int>( E_SHADING::DIFFUSE ),
-								static_cast<unsigned int>( E_SHADING::COUNT ) - 1.0 }
-				)
 				.uniform(
 					"SpecularFactor", SPECULAR_FACTOR_DEFAULT, std::pair { SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX }
 				)
@@ -122,6 +148,10 @@ namespace VTX::Renderer::Builder::PostProcess
 				.uniform( "EnvironmentEnabled", uint32_t( 0 ) )
 				.uniform( "EnvironmentExposure", 1.f )
 				.uniform( "EnvironmentRotation", 0.f )
+				.uniform( "MaterialEmissive", Vec4f( 0.f, 0.f, 0.f, MATERIAL_EMISSIVE_INTENSITY_DEFAULT ) )
+				.uniform( "MaterialMetallic", MATERIAL_METALLIC_DEFAULT, std::pair { 0.0, 1.0 } )
+				.uniform( "MaterialRoughness", MATERIAL_ROUGHNESS_DEFAULT, std::pair { 0.0, 1.0 } )
+				.uniform( "MaterialOpacity", MATERIAL_OPACITY_DEFAULT, std::pair { 0.0, 1.0 } )
 				.endProgram()
 				.endPass();
 
@@ -141,7 +171,6 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( p_config.colorBackground.toLinear() );
 			buffer.write( p_config.colorLight.toLinear() );
 			buffer.write( fog.color.toLinear() );
-			buffer.write( uint32_t( p_config.mode ) );
 			buffer.write( p_config.specularFactor );
 			buffer.write( p_config.shininess );
 			buffer.write( p_config.toonSteps );
@@ -152,9 +181,19 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( uint32_t( p_config.environmentPath.has_value() ) );
 			buffer.write( p_config.environmentExposure );
 			buffer.write( p_config.environmentRotation );
+			const Util::Color::Rgba emissiveColor(
+				p_config.material.emissiveColor.x, p_config.material.emissiveColor.y, p_config.material.emissiveColor.z
+			);
+			const Util::Color::Rgba emissiveLinear = emissiveColor.toLinear();
+			buffer.write(
+				Vec4f( emissiveLinear.r(), emissiveLinear.g(), emissiveLinear.b(), p_config.material.emissiveIntensity )
+			);
+			buffer.write( p_config.material.metallic );
+			buffer.write( p_config.material.roughness );
+			buffer.write( p_config.material.opacity );
 			buffer.close();
 
-			p_context.setBuffer( { PASS }, buffer );
+			p_context.setBuffer( { programName( p_config.mode ) }, buffer );
 		}
 
 		static void loadEnvironment( Context::ContextWrapper &, const ShadingConfig & );

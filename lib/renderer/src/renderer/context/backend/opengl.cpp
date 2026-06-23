@@ -269,6 +269,15 @@ namespace VTX::Renderer::Context::Backend
 		_getOpenglInfos();
 		_openglInfos.print();
 
+		if ( _glContext.isDefaultFramebufferSrgb() )
+		{
+			VTX_INFO( "Default framebuffer color encoding: sRGB" );
+		}
+		else
+		{
+			VTX_WARNING( "Default framebuffer color encoding is linear; GL_FRAMEBUFFER_SRGB has no effect" );
+		}
+
 		GLuint cudaInteropProbeBuffer = 0;
 		glCreateBuffers( 1, &cudaInteropProbeBuffer );
 		const uint32_t cudaInteropProbeData = 0;
