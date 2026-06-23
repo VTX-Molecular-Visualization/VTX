@@ -789,7 +789,10 @@ namespace VTX::Renderer::Builder
 			// Util::ScopedChrono timer( "[BUILDER] GraphicsConfigState::upload" );
 
 			PostProcess::Shading::upload( p_context, p_config.shading, p_config.fog, p_config.ssao );
-			PostProcess::ToneMapping::upload( p_context, p_config.shading.mode == E_SHADING::PBR );
+			if ( p_config.shading.mode == E_SHADING::PBR )
+			{
+				PostProcess::ToneMapping::upload( p_context, p_config.toneMapping );
+			}
 
 			if ( p_config.ssao )
 			{

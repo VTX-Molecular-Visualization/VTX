@@ -73,12 +73,14 @@ void main()
 		= uniformsCamera.isCameraPerspective == 1 ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
 	const vec3	albedo			 = texelFetch( inTextureColor, texCoord, 0 ).rgb;
 	const float ambientOcclusion = sampleAmbientOcclusion( texCoord, data.viewPosition.z );
-	const vec3 lightRadiance = uniforms.colorLight.rgb * 2.f; // LIGHT INTENSITY
-	const vec3 directLighting = computePBR( data, lightDirection, albedo ) * lightRadiance;
-	const vec3 emissive		  = uniforms.materialEmissive.rgb * uniforms.materialEmissive.a;
+	const vec3	lightRadiance	 = uniforms.colorLight.rgb * uniforms.lightIntensity;
+	const vec3	directLighting	 = computePBR( data, lightDirection, albedo ) * lightRadiance;
+	const vec3	emissive		 = uniforms.materialEmissive.rgb * uniforms.materialEmissive.a;
 	const float fogFactor = smoothstep( uniforms.fogNear, uniforms.fogFar, -data.viewPosition.z ) * uniforms.fogDensity;
 
-	const vec3 ambientLighting = albedo * 0.01f; // AMBIENT INTENSITY
+	const vec3 ambientLighting = albedo * uniforms.ambientIntensity;
 
-	outFragColor = vec4( mix( directLighting + ( ambientLighting * ambientOcclusion ) + emissive, uniforms.colorFog.rgb, fogFactor ), 1.f );
+	outFragColor = vec4(
+		mix( directLighting + ( ambientLighting * ambientOcclusion ) + emissive, uniforms.colorFog.rgb, fogFactor ), 1.f
+	);
 }

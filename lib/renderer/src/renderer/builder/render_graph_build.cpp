@@ -380,7 +380,10 @@ namespace VTX::Renderer::Builder
 			true
 		);
 
-		g.texture( PostProcess::ToneMapping::PASS, E_FORMAT::RGBA16F );
+		if ( p_config.shadingMode == E_SHADING::PBR )
+		{
+			g.texture( PostProcess::ToneMapping::PASS, E_FORMAT::RGBA16F );
+		}
 
 		if ( p_config.enableOutline )
 		{
@@ -551,8 +554,14 @@ namespace VTX::Renderer::Builder
 			PostProcess::CRT::build( g, postSelection );
 		}
 
-		PostProcess::ToneMapping::build( g, p_config.enableCRT ? PostProcess::CRT::PASS : postSelection );
-		PostProcess::FXAA::build( g, PostProcess::ToneMapping::PASS );
+		const Desc::Key postCRT = p_config.enableCRT ? PostProcess::CRT::PASS : postSelection;
+		if ( p_config.shadingMode == E_SHADING::PBR )
+		{
+			PostProcess::ToneMapping::build( g, postCRT );
+		}
+		PostProcess::FXAA::build(
+			g, p_config.shadingMode == E_SHADING::PBR ? PostProcess::ToneMapping::PASS : postCRT
+		);
 
 		// Debug
 		/*

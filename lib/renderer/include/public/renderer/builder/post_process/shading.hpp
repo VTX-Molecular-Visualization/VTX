@@ -24,18 +24,24 @@ namespace VTX::Renderer
 		COUNT
 	};
 
-	constexpr E_SHADING		SHADING_MODE_DEFAULT	 = E_SHADING::DIFFUSE;
-	const Util::Color::Rgba COLOR_LIGHT_DEFAULT		 = COLOR_WHITE;
-	const Util::Color::Rgba COLOR_BACKGROUND_DEFAULT = COLOR_BLACK;
-	constexpr float			SPECULAR_FACTOR_DEFAULT	 = 0.4f;
-	constexpr float			SPECULAR_FACTOR_MIN		 = 0.f;
-	constexpr float			SPECULAR_FACTOR_MAX		 = 1.f;
-	constexpr float			SHININESS_DEFAULT		 = 32.f;
-	constexpr float			SHININESS_MIN			 = 0.f;
-	constexpr float			SHININESS_MAX			 = 128.f;
-	constexpr uint			TOON_STEPS_DEFAULT		 = 4;
-	constexpr uint			TOON_STEPS_MIN			 = 1;
-	constexpr uint			TOON_STEPS_MAX			 = 15;
+	constexpr E_SHADING		SHADING_MODE_DEFAULT	  = E_SHADING::DIFFUSE;
+	const Util::Color::Rgba COLOR_LIGHT_DEFAULT		  = COLOR_WHITE;
+	const Util::Color::Rgba COLOR_BACKGROUND_DEFAULT  = COLOR_BLACK;
+	constexpr float			SPECULAR_FACTOR_DEFAULT	  = 0.4f;
+	constexpr float			SPECULAR_FACTOR_MIN		  = 0.f;
+	constexpr float			SPECULAR_FACTOR_MAX		  = 1.f;
+	constexpr float			SHININESS_DEFAULT		  = 32.f;
+	constexpr float			SHININESS_MIN			  = 0.f;
+	constexpr float			SHININESS_MAX			  = 128.f;
+	constexpr uint			TOON_STEPS_DEFAULT		  = 4;
+	constexpr uint			TOON_STEPS_MIN			  = 1;
+	constexpr uint			TOON_STEPS_MAX			  = 15;
+	constexpr float			LIGHT_INTENSITY_DEFAULT	  = 2.f;
+	constexpr float			LIGHT_INTENSITY_MIN		  = 0.f;
+	constexpr float			LIGHT_INTENSITY_MAX		  = 10.f;
+	constexpr float			AMBIENT_INTENSITY_DEFAULT = 0.01f;
+	constexpr float			AMBIENT_INTENSITY_MIN	  = 0.f;
+	constexpr float			AMBIENT_INTENSITY_MAX	  = 10.f;
 
 	constexpr bool			ACTIVE_FOG_DEFAULT	= false;
 	const Util::Color::Rgba COLOR_FOG_DEFAULT	= COLOR_GREY;
@@ -57,6 +63,8 @@ namespace VTX::Renderer
 		float					specularFactor;
 		float					shininess;
 		uint					toonSteps;
+		float					lightIntensity	 = LIGHT_INTENSITY_DEFAULT;
+		float					ambientIntensity = AMBIENT_INTENSITY_DEFAULT;
 		std::optional<FilePath> environmentPath;
 		uint32_t				environmentFaceSize = 1024;
 		float					environmentExposure = 1.f;
@@ -148,6 +156,14 @@ namespace VTX::Renderer::Builder::PostProcess
 				.uniform( "EnvironmentEnabled", uint32_t( 0 ) )
 				.uniform( "EnvironmentExposure", 1.f )
 				.uniform( "EnvironmentRotation", 0.f )
+				.uniform(
+					"LightIntensity", LIGHT_INTENSITY_DEFAULT, std::pair { LIGHT_INTENSITY_MIN, LIGHT_INTENSITY_MAX }
+				)
+				.uniform(
+					"AmbientIntensity",
+					AMBIENT_INTENSITY_DEFAULT,
+					std::pair { AMBIENT_INTENSITY_MIN, AMBIENT_INTENSITY_MAX }
+				)
 				.uniform( "MaterialEmissive", Vec4f( 0.f, 0.f, 0.f, MATERIAL_EMISSIVE_INTENSITY_DEFAULT ) )
 				.uniform( "MaterialMetallic", MATERIAL_METALLIC_DEFAULT, std::pair { 0.0, 1.0 } )
 				.uniform( "MaterialRoughness", MATERIAL_ROUGHNESS_DEFAULT, std::pair { 0.0, 1.0 } )
@@ -181,6 +197,8 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( uint32_t( p_config.environmentPath.has_value() ) );
 			buffer.write( p_config.environmentExposure );
 			buffer.write( p_config.environmentRotation );
+			buffer.write( p_config.lightIntensity );
+			buffer.write( p_config.ambientIntensity );
 			const Util::Color::Rgba emissiveColor(
 				p_config.material.emissiveColor.x, p_config.material.emissiveColor.y, p_config.material.emissiveColor.z
 			);

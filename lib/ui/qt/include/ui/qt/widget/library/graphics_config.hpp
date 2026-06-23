@@ -32,6 +32,14 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<QComboBox>		   _comboBoxShadingMode;
 		QPointer<ColorPicker>	   _colorPickerBackground;
 		QPointer<ColorPicker>	   _colorPickerLight;
+		QPointer<QLabel>		   _labelLightIntensity;
+		QPointer<EditableSlider>   _sliderLightIntensity;
+		QPointer<QLabel>		   _labelAmbientIntensity;
+		QPointer<EditableSlider>   _sliderAmbientIntensity;
+		QPointer<QLabel>		   _labelToneMappingMode;
+		QPointer<QComboBox>		   _comboBoxToneMappingMode;
+		QPointer<QLabel>		   _labelToneMappingExposure;
+		QPointer<EditableSlider>   _sliderToneMappingExposure;
 		QPointer<QLabel>		   _labelSpecularFactor;
 		QPointer<EditableSlider>   _sliderSpecularFactor;
 		QPointer<QLabel>		   _labelShininess;

@@ -13,16 +13,33 @@ namespace VTX::Renderer
 	{
 		NONE,
 		REINHARD,
+		ACES_FILM,
 		COUNT
 	};
+
+	constexpr E_TONE_MAPPING TONE_MAPPING_MODE_DEFAULT	   = E_TONE_MAPPING::REINHARD;
+	constexpr float			 TONE_MAPPING_EXPOSURE_DEFAULT = 2.f;
+	constexpr float			 TONE_MAPPING_EXPOSURE_MIN	   = 0.f;
+	constexpr float			 TONE_MAPPING_EXPOSURE_MAX	   = 10.f;
+
+	struct ToneMappingConfig
+	{
+		E_TONE_MAPPING mode;
+		float		   exposure;
+	};
+
+	namespace GraphicsConfigs
+	{
+		inline const ToneMappingConfig TONE_MAPPING_DEFAULT { TONE_MAPPING_MODE_DEFAULT,
+															  TONE_MAPPING_EXPOSURE_DEFAULT };
+	} // namespace GraphicsConfigs
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess
 {
 	struct ToneMapping
 	{
-		inline static const Desc::Key		   PASS		= "ToneMapping";
-		inline static constexpr E_TONE_MAPPING HDR_MODE = E_TONE_MAPPING::REINHARD;
+		inline static const Desc::Key PASS = "ToneMapping";
 
 		static Desc::Key build( GraphBuilder & p_graph, const Desc::Key & p_input )
 		{
@@ -32,7 +49,14 @@ namespace VTX::Renderer::Builder::PostProcess
 				.program( PASS )
 				.shaders( { "default.vert", "tone_mapping.frag" } )
 				.uniform(
-					"Mode", uint32_t( E_TONE_MAPPING::NONE ), std::pair { 0u, uint32_t( E_TONE_MAPPING::COUNT ) - 1u }
+					"Mode",
+					uint32_t( TONE_MAPPING_MODE_DEFAULT ),
+					std::pair { 0u, uint32_t( E_TONE_MAPPING::COUNT ) - 1u }
+				)
+				.uniform(
+					"Exposure",
+					TONE_MAPPING_EXPOSURE_DEFAULT,
+					std::pair { TONE_MAPPING_EXPOSURE_MIN, TONE_MAPPING_EXPOSURE_MAX }
 				)
 				.endProgram()
 				.endPass();
@@ -40,10 +64,11 @@ namespace VTX::Renderer::Builder::PostProcess
 			return PASS;
 		}
 
-		static void upload( Context::ContextWrapper & p_context, const bool p_hdr )
+		static void upload( Context::ContextWrapper & p_context, const ToneMappingConfig & p_config )
 		{
 			BinaryBuffer140 buffer;
-			buffer.write( uint32_t( p_hdr ? HDR_MODE : E_TONE_MAPPING::NONE ) );
+			buffer.write( uint32_t( p_config.mode ) );
+			buffer.write( p_config.exposure );
 			buffer.close();
 
 			p_context.setBuffer( { PASS }, buffer );

@@ -41,6 +41,14 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						p_config.shading.colorLight = p_value;
 					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::LIGHT_INTENSITY )
+					{
+						p_config.shading.lightIntensity = p_value;
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::AMBIENT_INTENSITY )
+					{
+						p_config.shading.ambientIntensity = p_value;
+					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::COLOR_BACKGROUND )
 					{
 						p_config.shading.colorBackground = p_value;
@@ -65,6 +73,14 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						p_config.shading.environmentPath
 							= p_value.empty() ? std::nullopt : std::optional<FilePath> { p_value };
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::TONE_MAPPING_MODE )
+					{
+						p_config.toneMapping.mode = static_cast<Renderer::E_TONE_MAPPING>( p_value );
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::TONE_MAPPING_EXPOSURE )
+					{
+						p_config.toneMapping.exposure = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_SSAO )
 					{

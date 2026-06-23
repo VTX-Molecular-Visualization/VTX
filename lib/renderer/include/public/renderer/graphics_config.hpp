@@ -8,6 +8,7 @@
 #include "renderer/builder/post_process/selection.hpp"
 #include "renderer/builder/post_process/shading.hpp"
 #include "renderer/builder/post_process/ssao.hpp"
+#include "renderer/builder/post_process/tone_mapping.hpp"
 #include <optional>
 
 namespace VTX::Renderer
@@ -22,12 +23,16 @@ namespace VTX::Renderer
 
 		SHADING_MODE,
 		COLOR_LIGHT,
+		LIGHT_INTENSITY,
+		AMBIENT_INTENSITY,
 		COLOR_BACKGROUND,
 		SPECULAR_FACTOR,
 		SHININESS,
 		TOON_STEPS,
 		MATERIAL,
 		ENVIRONMENT_PATH,
+		TONE_MAPPING_MODE,
+		TONE_MAPPING_EXPOSURE,
 
 		ACTIVE_FOG,
 		COLOR_FOG,
@@ -73,6 +78,7 @@ namespace VTX::Renderer
 		std::optional<PixelizeConfig>			 pixelize;
 		std::optional<CRTConfig>				 crt;
 		std::optional<SelectionConfig>			 selection;
+		ToneMappingConfig						 toneMapping = GraphicsConfigs::TONE_MAPPING_DEFAULT;
 	};
 
 	namespace GraphicsConfigs
@@ -121,6 +127,26 @@ namespace VTX::Renderer
 			ACTIVE_PIXELIZE_DEFAULT ? std::optional<PixelizeConfig> { PIXELIZE_DEFAULT } : std::nullopt,
 			ACTIVE_CRT_DEFAULT ? std::optional<CRTConfig> { CRT_DEFAULT } : std::nullopt,
 			SelectionConfig { Util::Color::Rgba( 255, 64, 64 ) }
+		};
+
+		inline const GraphicsConfig PBR_METALLIC {
+			.shading = ShadingConfig { .mode			 = E_SHADING::PBR,
+									   .colorLight		 = Util::Color::Rgba( 255, 255, 255 ),
+									   .colorBackground	 = Util::Color::Rgba( 18, 20, 24 ),
+									   .specularFactor	 = SPECULAR_FACTOR_DEFAULT,
+									   .shininess		 = SHININESS_DEFAULT,
+									   .toonSteps		 = TOON_STEPS_DEFAULT,
+									   .lightIntensity	 = 5.f,
+									   .ambientIntensity = 0.08f,
+									   .material		 = Materials::BRUSHED_METAL },
+			.ssao	 = SSAOConfig { SSAO_METHOD_DEFAULT, 2.5f, SSAO_RADIUS_DEFAULT, SSAO_SCALE_DEFAULT, 11.f },
+			.outline = std::nullopt,
+			.fog	 = std::nullopt,
+			.chromaticAberration = std::nullopt,
+			.pixelize			 = std::nullopt,
+			.crt				 = std::nullopt,
+			.selection			 = SelectionConfig { Util::Color::Rgba( 80, 255, 120 ) },
+			.toneMapping		 = ToneMappingConfig { E_TONE_MAPPING::ACES_FILM, 1.5f }
 		};
 
 	}; // namespace GraphicsConfigs

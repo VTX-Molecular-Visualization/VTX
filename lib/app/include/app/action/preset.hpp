@@ -241,6 +241,7 @@ namespace VTX::App::Action::Preset
 			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Default", Renderer::GraphicsConfigs::DEFAULT );
 			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Presentation", Renderer::GraphicsConfigs::PRESENTATION );
 			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Illustration", Renderer::GraphicsConfigs::ILLUSTRATION );
+			ACTION().execute<Add<Renderer::GraphicsConfig>>( "PBR Metallic", Renderer::GraphicsConfigs::PBR_METALLIC );
 		}
 	};
 

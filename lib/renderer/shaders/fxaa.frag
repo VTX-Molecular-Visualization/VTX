@@ -1,6 +1,6 @@
 #version 460 core
 
-//#define MANUAL_SRGB
+// #define MANUAL_SRGB
 
 // FXAA : Fast Approximated Anti-Aliasing
 // adapted from: http://developer.download.nvidia.com/assets/gamedev/files/sdk/11/FXAA_WhitePaper.pdf
@@ -42,18 +42,17 @@ const vec3 luma = vec3( 0.299f, 0.587f, 0.114f );
 
 float rgb2lumaSrgb( const vec3 p_srgb ) { return dot( p_srgb, luma ); }
 
-vec3 linearToSrgb(const vec3 p_c )
+vec3 linearToSrgb( const vec3 p_c )
 {
-     vec3 c = max( p_c, vec3( 0.f ) );
-	 //vec3 c = clamp( p_c, vec3( 0.0 ), vec3( 1.0 ) );
-     bvec3 lo = lessThanEqual( c, vec3( 0.0031308f ) );
-     vec3 low = 12.92f * c;
-     vec3 high = 1.055f * pow( c, vec3( 1.f / 2.4f ) ) - 0.055f;
-     return mix( high, low, vec3( lo ) );
+	vec3 c = max( p_c, vec3( 0.f ) );
+	// vec3 c = clamp( p_c, vec3( 0.0 ), vec3( 1.0 ) );
+	bvec3 lo   = lessThanEqual( c, vec3( 0.0031308f ) );
+	vec3  low  = 12.92f * c;
+	vec3  high = 1.055f * pow( c, vec3( 1.f / 2.4f ) ) - 0.055f;
+	return mix( high, low, vec3( lo ) );
 }
 
 float rgb2lumaLinear( const vec3 p_linear ) { return rgb2lumaSrgb( linearToSrgb( p_linear ) ); }
-
 
 void main()
 {
@@ -65,7 +64,7 @@ void main()
 	// =====================================================================================
 	// get current pixel and compute its luma
 	const vec4 colorC = texture( inTexture, texCoord );
-	float	   lumaC  = colorC.a;
+	float	   lumaC  = rgb2lumaLinear( colorC.rgb );
 	// compute luma in north, south, east, west directions
 	float lumaN = rgb2lumaLinear( textureOffset( inTexture, texCoord, ivec2( 0, -1 ) ).xyz );
 	float lumaS = rgb2lumaLinear( textureOffset( inTexture, texCoord, ivec2( 0, 1 ) ).xyz );
@@ -90,10 +89,10 @@ void main()
 	// vertical/horizontal edge test
 	// =====================================================================================
 	// compute luma in the corners
-	float lumaNW = textureOffset( inTexture, texCoord, ivec2( -1, -1 ) ).a;
-	float lumaSE = textureOffset( inTexture, texCoord, ivec2( 1, 1 ) ).a;
-	float lumaNE = textureOffset( inTexture, texCoord, ivec2( 1, -1 ) ).a;
-	float lumaSW = textureOffset( inTexture, texCoord, ivec2( -1, 1 ) ).a;
+	float lumaNW = rgb2lumaLinear( textureOffset( inTexture, texCoord, ivec2( -1, -1 ) ).xyz );
+	float lumaSE = rgb2lumaLinear( textureOffset( inTexture, texCoord, ivec2( 1, 1 ) ).xyz );
+	float lumaNE = rgb2lumaLinear( textureOffset( inTexture, texCoord, ivec2( 1, -1 ) ).xyz );
+	float lumaSW = rgb2lumaLinear( textureOffset( inTexture, texCoord, ivec2( -1, 1 ) ).xyz );
 
 	// combine lumas
 	float lumaNS   = lumaN + lumaS;
@@ -171,8 +170,8 @@ void main()
 	vec2 texCoord1 = currentTexCoord - offset * AA_QUALITY[ 0 ];
 	vec2 texCoord2 = currentTexCoord + offset * AA_QUALITY[ 0 ];
 	// compute luma variation
-	float lumaVar1 = texture( inTexture, texCoord1 ).a - lumaAvg;
-	float lumaVar2 = texture( inTexture, texCoord2 ).a - lumaAvg;
+	float lumaVar1 = rgb2lumaLinear( texture( inTexture, texCoord1 ).xyz ) - lumaAvg;
+	float lumaVar2 = rgb2lumaLinear( texture( inTexture, texCoord2 ).xyz ) - lumaAvg;
 	// stop when variation is higher than gradient
 	bool isDone1 = abs( lumaVar1 ) >= gradientScaled;
 	bool isDone2 = abs( lumaVar2 ) >= gradientScaled;
@@ -191,11 +190,11 @@ void main()
 		// compute luma variation with previous step
 		if ( !isDone1 )
 		{
-			lumaVar1 = texture( inTexture, texCoord1.xy ).a - lumaAvg;
+			lumaVar1 = rgb2lumaLinear( texture( inTexture, texCoord1.xy ).xyz ) - lumaAvg;
 		}
 		if ( !isDone2 )
 		{
-			lumaVar2 = texture( inTexture, texCoord2.xy ).a - lumaAvg;
+			lumaVar2 = rgb2lumaLinear( texture( inTexture, texCoord2.xy ).xyz ) - lumaAvg;
 		}
 		isDone1 = abs( lumaVar1 ) >= gradientScaled;
 		isDone2 = abs( lumaVar2 ) >= gradientScaled;
@@ -260,9 +259,9 @@ void main()
 
 	vec4 color = texture( inTexture, aaTexCoord );
 
-	#ifdef MANUAL_SRGB
+#ifdef MANUAL_SRGB
 	color.rgb = linearToSrgb( color.rgb );
-	#endif
+#endif
 
 	outFragColor = vec4( color.rgb, 1.f );
 }

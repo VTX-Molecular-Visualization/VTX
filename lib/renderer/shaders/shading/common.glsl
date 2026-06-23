@@ -24,6 +24,8 @@ layout( std140, binding = 5 ) uniform Uniforms
 	uint  environmentEnabled;
 	float environmentExposure;
 	float environmentRotation;
+	float lightIntensity;
+	float ambientIntensity;
 	vec4  materialEmissive;
 	float materialMetallic;
 	float materialRoughness;

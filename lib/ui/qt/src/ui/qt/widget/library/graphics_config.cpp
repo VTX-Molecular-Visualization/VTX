@@ -97,6 +97,38 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxShading->addWidget( _colorPickerLight );
 		_colorPickerLight->setText( "Light" );
 
+		_sliderLightIntensity = new EditableSlider( Qt::Orientation::Horizontal, _groupboxShading );
+		_labelLightIntensity  = new QLabel( "Light intensity", _groupboxShading );
+		_groupboxShading->addWidget( _labelLightIntensity );
+		_groupboxShading->addWidget( _sliderLightIntensity );
+		_sliderLightIntensity->setMinimum( LIGHT_INTENSITY_MIN );
+		_sliderLightIntensity->setMaximum( LIGHT_INTENSITY_MAX );
+
+		_sliderAmbientIntensity = new EditableSlider( Qt::Orientation::Horizontal, _groupboxShading );
+		_labelAmbientIntensity	= new QLabel( "Ambient light intensity", _groupboxShading );
+		_groupboxShading->addWidget( _labelAmbientIntensity );
+		_groupboxShading->addWidget( _sliderAmbientIntensity );
+		_sliderAmbientIntensity->setMinimum( AMBIENT_INTENSITY_MIN );
+		_sliderAmbientIntensity->setMaximum( AMBIENT_INTENSITY_MAX );
+
+		_labelToneMappingMode = new QLabel( "Tone mapping", _groupboxShading );
+		_groupboxShading->addWidget( _labelToneMappingMode );
+		_comboBoxToneMappingMode = new QComboBox( _groupboxShading );
+		_groupboxShading->addWidget( _comboBoxToneMappingMode );
+		constexpr std::string_view TONE_MAPPING_STR[ int( E_TONE_MAPPING::COUNT ) ]
+			= { "None", "Reinhard", "ACES Film" };
+		for ( int i = 0; i < int( E_TONE_MAPPING::COUNT ); ++i )
+		{
+			_comboBoxToneMappingMode->addItem( TONE_MAPPING_STR[ i ].data() );
+		}
+
+		_sliderToneMappingExposure = new EditableSlider( Qt::Orientation::Horizontal, _groupboxShading );
+		_labelToneMappingExposure  = new QLabel( "Exposure", _groupboxShading );
+		_groupboxShading->addWidget( _labelToneMappingExposure );
+		_groupboxShading->addWidget( _sliderToneMappingExposure );
+		_sliderToneMappingExposure->setMinimum( TONE_MAPPING_EXPOSURE_MIN );
+		_sliderToneMappingExposure->setMaximum( TONE_MAPPING_EXPOSURE_MAX );
+
 		_sliderSpecularFactor = new EditableSlider( Qt::Orientation::Horizontal, _groupboxShading );
 		_labelSpecularFactor  = new QLabel( "Specular factor", _groupboxShading );
 		_groupboxShading->addWidget( _labelSpecularFactor );
@@ -333,6 +365,34 @@ namespace VTX::UI::QT::Widget::Library
 
 		_colorPickerLight->onColorChanged += [ this ]( const QColor & p_color )
 		{ _changeValue<E_GRAPHICS_CONFIG_VALUES::COLOR_LIGHT, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
+
+		connect(
+			_sliderLightIntensity,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::LIGHT_INTENSITY, float>( p_value ); }
+		);
+
+		connect(
+			_sliderAmbientIntensity,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::AMBIENT_INTENSITY, float>( p_value ); }
+		);
+
+		connect(
+			_comboBoxToneMappingMode,
+			QOverload<int>::of( &QComboBox::currentIndexChanged ),
+			[ this ]( const int p_index )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::TONE_MAPPING_MODE, E_TONE_MAPPING>( E_TONE_MAPPING( p_index ) ); }
+		);
+
+		connect(
+			_sliderToneMappingExposure,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::TONE_MAPPING_EXPOSURE, float>( p_value ); }
+		);
 
 		connect(
 			_sliderSpecularFactor,
@@ -604,6 +664,10 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blocker0( _comboBoxShadingMode );
 		const QSignalBlocker blocker1( _colorPickerBackground );
 		const QSignalBlocker blocker2( _colorPickerLight );
+		const QSignalBlocker blockerLightIntensity( _sliderLightIntensity );
+		const QSignalBlocker blockerAmbientIntensity( _sliderAmbientIntensity );
+		const QSignalBlocker blockerToneMappingMode( _comboBoxToneMappingMode );
+		const QSignalBlocker blockerToneMappingExposure( _sliderToneMappingExposure );
 		const QSignalBlocker blocker3( _sliderSpecularFactor );
 		const QSignalBlocker blocker4( _sliderShininess );
 		const QSignalBlocker blocker5( _sliderToonSteps );
@@ -655,6 +719,10 @@ namespace VTX::UI::QT::Widget::Library
 		_comboBoxShadingMode->setCurrentIndex( int( preset.shading.mode ) );
 		_colorPickerBackground->setColor( Helper::toQColor( preset.shading.colorBackground ) );
 		_colorPickerLight->setColor( Helper::toQColor( preset.shading.colorLight ) );
+		_sliderLightIntensity->setValue( preset.shading.lightIntensity );
+		_sliderAmbientIntensity->setValue( preset.shading.ambientIntensity );
+		_comboBoxToneMappingMode->setCurrentIndex( int( preset.toneMapping.mode ) );
+		_sliderToneMappingExposure->setValue( preset.toneMapping.exposure );
 		_sliderSpecularFactor->setValue( preset.shading.specularFactor );
 		_sliderShininess->setValue( preset.shading.shininess );
 		_sliderToonSteps->setValue( preset.shading.toonSteps );
@@ -714,6 +782,14 @@ namespace VTX::UI::QT::Widget::Library
 	{
 		using namespace Renderer;
 		const bool pbr = p_preset.shading.mode == E_SHADING::PBR;
+		_labelLightIntensity->setVisible( pbr );
+		_sliderLightIntensity->setVisible( pbr );
+		_labelAmbientIntensity->setVisible( pbr );
+		_sliderAmbientIntensity->setVisible( pbr );
+		_labelToneMappingMode->setVisible( pbr );
+		_comboBoxToneMappingMode->setVisible( pbr );
+		_labelToneMappingExposure->setVisible( pbr );
+		_sliderToneMappingExposure->setVisible( pbr );
 		_labelMaterial->setVisible( pbr );
 		_listMaterials->setVisible( pbr );
 

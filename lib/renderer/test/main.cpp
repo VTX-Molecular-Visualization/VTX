@@ -165,6 +165,7 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	cfg.enableChromaticAberration = true;
 	cfg.enablePixelize			  = true;
 	cfg.enableCRT				  = true;
+	cfg.shadingMode				  = E_SHADING::PBR;
 
 	RenderGraph graph;
 	graph.set( Builder::DefaultRenderGraph::build( cfg, Layouts {}, Geometries {} ) );
