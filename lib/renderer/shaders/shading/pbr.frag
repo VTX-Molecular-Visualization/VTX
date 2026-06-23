@@ -58,6 +58,28 @@ vec3 computePBR( const UnpackedData p_data, const vec3 p_lightDirection, const v
 	return ( diffuseWeight * p_albedo / PI + specular ) * nDotL;
 }
 
+vec3 computeEnvironmentLighting( const UnpackedData p_data, const vec3 p_albedo )
+{
+	if ( uniforms.environmentEnabled == 0u )
+	{
+		return vec3( 0.f );
+	}
+
+	const vec3 normal			   = normalize( p_data.normal );
+	const vec3 viewDirection	   = normalize( -p_data.viewPosition );
+	const vec3 reflectionDirection = rotateEnvironmentDirection(
+		normalize( mat3( uniformsCamera.matrixViewInv ) * reflect( -viewDirection, normal ) )
+	);
+	const float roughness		 = clamp( uniforms.materialRoughness, 0.04f, 1.f );
+	const float metallic		 = clamp( uniforms.materialMetallic, 0.f, 1.f );
+	const vec3	f0				 = mix( vec3( 0.04f ), p_albedo, metallic );
+	const vec3	fresnel			 = fresnelSchlick( max( dot( normal, viewDirection ), 0.f ), f0 );
+	const float maxMipLevel		 = float( max( textureQueryLevels( inTextureEnvironment ) - 1, 0 ) );
+	const vec3	environmentColor = textureLod( inTextureEnvironment, reflectionDirection, roughness * maxMipLevel ).rgb;
+
+	return environmentColor * uniforms.environmentExposure * fresnel;
+}
+
 void main()
 {
 	const ivec2 texCoord = ivec2( gl_FragCoord.xy );
@@ -71,16 +93,20 @@ void main()
 
 	const vec3 lightDirection
 		= uniformsCamera.isCameraPerspective == 1 ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
-	const vec3	albedo			 = texelFetch( inTextureColor, texCoord, 0 ).rgb;
-	const float ambientOcclusion = sampleAmbientOcclusion( texCoord, data.viewPosition.z );
-	const vec3	lightRadiance	 = uniforms.colorLight.rgb * uniforms.lightIntensity;
-	const vec3	directLighting	 = computePBR( data, lightDirection, albedo ) * lightRadiance;
-	const vec3	emissive		 = uniforms.materialEmissive.rgb * uniforms.materialEmissive.a;
+	const vec3	albedo				= texelFetch( inTextureColor, texCoord, 0 ).rgb;
+	const float ambientOcclusion	= sampleAmbientOcclusion( texCoord, data.viewPosition.z );
+	const vec3	lightRadiance		= uniforms.colorLight.rgb * uniforms.lightIntensity;
+	const vec3	directLighting		= computePBR( data, lightDirection, albedo ) * lightRadiance;
+	const vec3	environmentLighting = computeEnvironmentLighting( data, albedo );
+	const vec3	emissive			= uniforms.materialEmissive.rgb * uniforms.materialEmissive.a;
 	const float fogFactor = smoothstep( uniforms.fogNear, uniforms.fogFar, -data.viewPosition.z ) * uniforms.fogDensity;
 
 	const vec3 ambientLighting = albedo * uniforms.ambientIntensity;
 
 	outFragColor = vec4(
-		mix( directLighting + ( ambientLighting * ambientOcclusion ) + emissive, uniforms.colorFog.rgb, fogFactor ), 1.f
+		mix( directLighting + ( ( ambientLighting + environmentLighting ) * ambientOcclusion ) + emissive,
+			 uniforms.colorFog.rgb,
+			 fogFactor ),
+		1.f
 	);
 }

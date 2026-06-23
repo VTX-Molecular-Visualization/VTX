@@ -74,6 +74,10 @@ namespace VTX::App::Action::GraphicsConfig
 						p_config.shading.environmentPath
 							= p_value.empty() ? std::nullopt : std::optional<FilePath> { p_value };
 					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_ROTATION )
+					{
+						p_config.shading.environmentRotation = p_value;
+					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::TONE_MAPPING_MODE )
 					{
 						p_config.toneMapping.mode = static_cast<Renderer::E_TONE_MAPPING>( p_value );

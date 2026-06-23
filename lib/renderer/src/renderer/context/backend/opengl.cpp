@@ -289,6 +289,7 @@ namespace VTX::Renderer::Context::Backend
 
 		glViewport( 0, 0, int32_t( p_width ), int32_t( p_height ) );
 		glPatchParameteri( GL_PATCH_VERTICES, 4 );
+		glEnable( GL_TEXTURE_CUBE_MAP_SEAMLESS );
 
 		// TODO: set from graph.
 		// glEnable( GL_CLIP_DISTANCE0 );
@@ -1571,6 +1572,10 @@ namespace VTX::Renderer::Context::Backend
 		}
 
 		texture.fill( p_bytes.data(), glFormat.uploadFormat, glFormat.uploadType );
+		if ( textureProp.target == E_TEXTURE_TARGET::CUBEMAP )
+		{
+			texture.generateMipmaps();
+		}
 	}
 
 	void OpenGL::setRenderTarget( const Desc::E_RENDER_TARGET p_target )

@@ -89,6 +89,15 @@ float sampleAmbientOcclusion( const ivec2 p_texCoord, const float p_viewDepth )
 	return texelFetch( inTextureAmbientOcclusion, nearestCoord, 0 ).x;
 }
 
+vec3 rotateEnvironmentDirection( vec3 p_direction )
+{
+	const float cosine = cos( uniforms.environmentRotation );
+	const float sine   = sin( uniforms.environmentRotation );
+	p_direction.xz	   = mat2( cosine, -sine, sine, cosine ) * p_direction.xz;
+
+	return p_direction;
+}
+
 // Shade the background with either the environment map, fog, or a solid color.
 bool shadeBackground( const UnpackedData p_data )
 {
@@ -99,10 +108,7 @@ bool shadeBackground( const UnpackedData p_data )
 
 	if ( uniforms.environmentEnabled != 0u )
 	{
-		vec3		direction = normalize( worldDirection );
-		const float cosine	  = cos( uniforms.environmentRotation );
-		const float sine	  = sin( uniforms.environmentRotation );
-		direction.xz		  = mat2( cosine, -sine, sine, cosine ) * direction.xz;
+		const vec3 direction = rotateEnvironmentDirection( normalize( worldDirection ) );
 		outFragColor = vec4( texture( inTextureEnvironment, direction ).rgb * uniforms.environmentExposure, 1.f );
 	}
 	else if ( uniforms.fogDensity != 0.f )

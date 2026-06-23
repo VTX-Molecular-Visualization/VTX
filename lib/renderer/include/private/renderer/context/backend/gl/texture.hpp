@@ -98,6 +98,8 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		inline void unbindFromUnit( const GLuint p_index ) const noexcept { glBindTextureUnit( p_index, 0 ); }
 
+		inline void generateMipmaps() const noexcept { glGenerateTextureMipmap( _id ); }
+
 		inline void getImage(
 			const GLint	  p_level,
 			const GLenum  p_format,
@@ -149,8 +151,17 @@ namespace VTX::Renderer::Context::Backend::GL
 		{
 			assert( _width > 0 && _height > 0 );
 
+			GLsizei levels = 1;
+			if ( _target == GL_TEXTURE_CUBE_MAP )
+			{
+				for ( GLsizei size = _width > _height ? _width : _height; size > 1; size /= 2 )
+				{
+					levels++;
+				}
+			}
+
 			glCreateTextures( _target, 1, &_id );
-			glTextureStorage2D( _id, 1, _format, _width, _height );
+			glTextureStorage2D( _id, levels, _format, _width, _height );
 		}
 
 		inline void _destroy() noexcept

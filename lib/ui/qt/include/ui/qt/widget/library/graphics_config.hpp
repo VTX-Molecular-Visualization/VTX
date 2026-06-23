@@ -51,6 +51,8 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<QLineEdit>		   _lineEnvironmentPath;
 		QPointer<QPushButton>	   _buttonEnvironmentBrowse;
 		QPointer<QPushButton>	   _buttonEnvironmentClear;
+		QPointer<QLabel>		   _labelEnvironmentRotation;
+		QPointer<EditableSlider>   _sliderEnvironmentRotation;
 
 		// SSAO.
 		QPointer<HideableGroupBox> _groupboxSSAO;

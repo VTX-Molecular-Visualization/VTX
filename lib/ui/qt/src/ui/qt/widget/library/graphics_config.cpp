@@ -13,8 +13,10 @@ namespace VTX::UI::QT::Widget::Library
 {
 	namespace
 	{
-		constexpr float CHROMAB_UI_MIN = 0.f;
-		constexpr float CHROMAB_UI_MAX = 5.f;
+		constexpr float CHROMAB_UI_MIN				= 0.f;
+		constexpr float CHROMAB_UI_MAX				= 5.f;
+		constexpr float ENVIRONMENT_ROTATION_UI_MIN = 0.f;
+		constexpr float ENVIRONMENT_ROTATION_UI_MAX = 360.f;
 
 		float _chromaticAberrationToUi( const float p_value ) { return -p_value * 100.f; }
 
@@ -76,6 +78,16 @@ namespace VTX::UI::QT::Widget::Library
 		environmentPathLayout->addWidget( _buttonEnvironmentBrowse );
 		environmentPathLayout->addWidget( _buttonEnvironmentClear );
 		_groupboxBackground->addWidget( environmentPathWidget );
+
+		_labelEnvironmentRotation = new QLabel( "Environment rotation", _groupboxBackground );
+		_groupboxBackground->addWidget( _labelEnvironmentRotation );
+		_sliderEnvironmentRotation = new EditableSlider( Qt::Orientation::Horizontal, _groupboxBackground );
+		_groupboxBackground->addWidget( _sliderEnvironmentRotation );
+		_sliderEnvironmentRotation->setMinimum( ENVIRONMENT_ROTATION_UI_MIN );
+		_sliderEnvironmentRotation->setMaximum( ENVIRONMENT_ROTATION_UI_MAX );
+		_sliderEnvironmentRotation->setStep( 1.f );
+		_sliderEnvironmentRotation->setDecimals( 1 );
+		_sliderEnvironmentRotation->setSuffix( "°" );
 
 		// Shading.
 		_groupboxShading = new HideableGroupBox( "Lighting", presetGroupBox() );
@@ -454,6 +466,13 @@ namespace VTX::UI::QT::Widget::Library
 		);
 
 		connect(
+			_sliderEnvironmentRotation,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_ROTATION, float>( Util::Math::radians( p_value ) ); }
+		);
+
+		connect(
 			_groupboxSSAO,
 			&HideableGroupBox::toggled,
 			[ this ]( const bool p_state ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_SSAO, bool>( p_state ); }
@@ -742,6 +761,7 @@ namespace VTX::UI::QT::Widget::Library
 		_lineEnvironmentPath->setText( environmentPath );
 		_lineEnvironmentPath->setToolTip( environmentPath );
 		_buttonEnvironmentClear->setEnabled( preset.shading.environmentPath.has_value() );
+		_sliderEnvironmentRotation->setValue( Util::Math::degrees( preset.shading.environmentRotation ) );
 		_groupboxSSAO->setChecked( preset.ssao.has_value() );
 		_comboBoxSSAOMethod->setCurrentIndex( int( ssao.method ) );
 		_comboBoxSSAOScale->setCurrentIndex( _ssaoScaleToUi( ssao.scale ) );
@@ -781,7 +801,10 @@ namespace VTX::UI::QT::Widget::Library
 	void GraphicsConfig::_applyLogic( const Renderer::GraphicsConfig & p_preset )
 	{
 		using namespace Renderer;
-		const bool pbr = p_preset.shading.mode == E_SHADING::PBR;
+		const bool pbr			  = p_preset.shading.mode == E_SHADING::PBR;
+		const bool hasEnvironment = p_preset.shading.environmentPath.has_value();
+		_labelEnvironmentRotation->setVisible( hasEnvironment );
+		_sliderEnvironmentRotation->setVisible( hasEnvironment );
 		_labelLightIntensity->setVisible( pbr );
 		_sliderLightIntensity->setVisible( pbr );
 		_labelAmbientIntensity->setVisible( pbr );
