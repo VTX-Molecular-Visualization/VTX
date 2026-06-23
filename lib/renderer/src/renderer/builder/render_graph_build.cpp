@@ -379,6 +379,48 @@ namespace VTX::Renderer::Builder
 			E_TEXTURE_TARGET::CUBEMAP,
 			true
 		);
+		g.texture(
+			 PostProcess::Shading::MATERIAL_ALBEDO_TEXTURE,
+			 E_FORMAT::SRGB8_ALPHA8,
+			 Size2DAbsolute { 1, 1 },
+			 E_TEXTURE_TARGET::TEXTURE_2D,
+			 true
+		)
+			.texture(
+				PostProcess::Shading::MATERIAL_NORMAL_TEXTURE,
+				E_FORMAT::RGBA8UI,
+				Size2DAbsolute { 1, 1 },
+				E_TEXTURE_TARGET::TEXTURE_2D,
+				true
+			)
+			.texture(
+				PostProcess::Shading::MATERIAL_METALLIC_TEXTURE,
+				E_FORMAT::R8UI,
+				Size2DAbsolute { 1, 1 },
+				E_TEXTURE_TARGET::TEXTURE_2D,
+				true
+			)
+			.texture(
+				PostProcess::Shading::MATERIAL_ROUGHNESS_TEXTURE,
+				E_FORMAT::R8UI,
+				Size2DAbsolute { 1, 1 },
+				E_TEXTURE_TARGET::TEXTURE_2D,
+				true
+			)
+			.texture(
+				PostProcess::Shading::MATERIAL_AO_TEXTURE,
+				E_FORMAT::R8UI,
+				Size2DAbsolute { 1, 1 },
+				E_TEXTURE_TARGET::TEXTURE_2D,
+				true
+			)
+			.texture(
+				PostProcess::Shading::MATERIAL_EMISSIVE_TEXTURE,
+				E_FORMAT::SRGB8_ALPHA8,
+				Size2DAbsolute { 1, 1 },
+				E_TEXTURE_TARGET::TEXTURE_2D,
+				true
+			);
 
 		if ( p_config.shadingMode == E_SHADING::PBR )
 		{

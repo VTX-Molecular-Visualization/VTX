@@ -12,6 +12,7 @@
 #include <QListWidget>
 #include <QPushButton>
 #include <app/action/graphics_config.hpp>
+#include <array>
 
 namespace VTX::UI::QT::Widget::Library
 {
@@ -24,6 +25,14 @@ namespace VTX::UI::QT::Widget::Library
 		void _update( Entity ) override;
 
 	  private:
+		struct MaterialTextureWidgets
+		{
+			QPointer<QLabel>	  label;
+			QPointer<QWidget>	  pathWidget;
+			QPointer<QLineEdit>	  linePath;
+			QPointer<QPushButton> buttonClear;
+		};
+
 		// Background.
 		QPointer<HideableGroupBox> _groupboxBackground;
 
@@ -54,11 +63,16 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<EditableSlider>   _sliderMaterialRoughness;
 		QPointer<QLabel>		   _labelMaterialEmissiveIntensity;
 		QPointer<EditableSlider>   _sliderMaterialEmissiveIntensity;
-		QPointer<QLineEdit>		   _lineEnvironmentPath;
-		QPointer<QPushButton>	   _buttonEnvironmentBrowse;
-		QPointer<QPushButton>	   _buttonEnvironmentClear;
-		QPointer<QLabel>		   _labelEnvironmentRotation;
-		QPointer<EditableSlider>   _sliderEnvironmentRotation;
+
+		std::array<MaterialTextureWidgets, size_t( VTX::Renderer::Material::E_TEXTURE::COUNT )> _materialTextureWidgets;
+
+		QPointer<QLineEdit>		 _lineEnvironmentPath;
+		QPointer<QPushButton>	 _buttonEnvironmentBrowse;
+		QPointer<QPushButton>	 _buttonEnvironmentClear;
+		QPointer<QLabel>		 _labelEnvironmentExposure;
+		QPointer<EditableSlider> _sliderEnvironmentExposure;
+		QPointer<QLabel>		 _labelEnvironmentRotation;
+		QPointer<EditableSlider> _sliderEnvironmentRotation;
 
 		// SSAO.
 		QPointer<HideableGroupBox> _groupboxSSAO;
@@ -109,6 +123,12 @@ namespace VTX::UI::QT::Widget::Library
 		template<VTX::Renderer::E_GRAPHICS_CONFIG_VALUES S, typename T>
 		void _changeValue( const T p_value )
 		{ App::ACTION().execute<App::Action::GraphicsConfig::Change<S, T>>( currentPreset(), p_value ); }
+
+		static const std::optional<VTX::Renderer::MaterialTexture> & _materialTexture(
+			const VTX::Renderer::Material &,
+			const VTX::Renderer::Material::E_TEXTURE
+		);
+		void _changeMaterialTexture( VTX::Renderer::Material::E_TEXTURE, const FilePath & );
 
 		void _applyLogic( const VTX::Renderer::GraphicsConfig & );
 	};

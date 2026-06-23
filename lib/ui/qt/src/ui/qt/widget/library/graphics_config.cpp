@@ -17,10 +17,20 @@ namespace VTX::UI::QT::Widget::Library
 		constexpr float CHROMAB_UI_MAX				= 5.f;
 		constexpr float ENVIRONMENT_ROTATION_UI_MIN = 0.f;
 		constexpr float ENVIRONMENT_ROTATION_UI_MAX = 360.f;
+		constexpr float ENVIRONMENT_EXPOSURE_EV_MIN = -10.f;
+		constexpr float ENVIRONMENT_EXPOSURE_EV_MAX = 10.f;
 
 		float _chromaticAberrationToUi( const float p_value ) { return -p_value * 100.f; }
 
 		float _chromaticAberrationFromUi( const float p_value ) { return -p_value / 100.f; }
+
+		float _exposureMultiplierFromEv( const float p_value ) { return Util::Math::exp2( p_value ); }
+
+		float _exposureEvFromMultiplier( const float p_value, const float p_minimumEv )
+		{
+			const float minimumExposure = Util::Math::exp2( p_minimumEv );
+			return Util::Math::log2( Util::Math::max( p_value, minimumExposure ) );
+		}
 
 		float _ssaoScaleFromUi( const int p_index )
 		{
@@ -89,6 +99,16 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderEnvironmentRotation->setDecimals( 1 );
 		_sliderEnvironmentRotation->setSuffix( "°" );
 
+		_labelEnvironmentExposure = new QLabel( "Environment exposure", _groupboxBackground );
+		_groupboxBackground->addWidget( _labelEnvironmentExposure );
+		_sliderEnvironmentExposure = new EditableSlider( Qt::Orientation::Horizontal, _groupboxBackground );
+		_groupboxBackground->addWidget( _sliderEnvironmentExposure );
+		_sliderEnvironmentExposure->setMinimum( ENVIRONMENT_EXPOSURE_EV_MIN );
+		_sliderEnvironmentExposure->setMaximum( ENVIRONMENT_EXPOSURE_EV_MAX );
+		_sliderEnvironmentExposure->setStep( 0.1f );
+		_sliderEnvironmentExposure->setDecimals( 2 );
+		_sliderEnvironmentExposure->setSuffix( "EV" );
+
 		// Shading.
 		_groupboxShading = new HideableGroupBox( "Lighting", presetGroupBox() );
 		_groupboxShading->setChecked( true );
@@ -138,8 +158,11 @@ namespace VTX::UI::QT::Widget::Library
 		_labelToneMappingExposure  = new QLabel( "Exposure", _groupboxShading );
 		_groupboxShading->addWidget( _labelToneMappingExposure );
 		_groupboxShading->addWidget( _sliderToneMappingExposure );
-		_sliderToneMappingExposure->setMinimum( TONE_MAPPING_EXPOSURE_MIN );
-		_sliderToneMappingExposure->setMaximum( TONE_MAPPING_EXPOSURE_MAX );
+		_sliderToneMappingExposure->setMinimum( VTX::Renderer::TONE_MAPPING_EXPOSURE_EV_MIN );
+		_sliderToneMappingExposure->setMaximum( VTX::Renderer::TONE_MAPPING_EXPOSURE_EV_MAX );
+		_sliderToneMappingExposure->setStep( 0.1f );
+		_sliderToneMappingExposure->setDecimals( 2 );
+		_sliderToneMappingExposure->setSuffix( "EV" );
 
 		_sliderSpecularFactor = new EditableSlider( Qt::Orientation::Horizontal, _groupboxShading );
 		_labelSpecularFactor  = new QLabel( "Specular factor", _groupboxShading );
@@ -200,6 +223,70 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxShading->addWidget( _sliderMaterialEmissiveIntensity );
 		_sliderMaterialEmissiveIntensity->setMinimum( MATERIAL_EMISSIVE_INTENSITY_MIN );
 		_sliderMaterialEmissiveIntensity->setMaximum( MATERIAL_EMISSIVE_INTENSITY_MAX );
+
+		constexpr std::array<std::string_view, size_t( VTX::Renderer::Material::E_TEXTURE::COUNT )>
+			MATERIAL_TEXTURE_LABELS {
+				"Albedo map", "Normal map", "Metallic map", "Roughness map", "Ambient occlusion map", "Emissive map"
+			};
+		for ( size_t i = 0; i < _materialTextureWidgets.size(); ++i )
+		{
+			const VTX::Renderer::Material::E_TEXTURE textureType = VTX::Renderer::Material::E_TEXTURE( i );
+			auto &									 widgets	 = _materialTextureWidgets[ i ];
+			const QString							 label = QString::fromUtf8( MATERIAL_TEXTURE_LABELS[ i ].data() );
+
+			widgets.label = new QLabel( label, _groupboxShading );
+			_groupboxShading->addWidget( widgets.label );
+
+			widgets.pathWidget		= new QWidget( _groupboxShading );
+			auto * const pathLayout = new QHBoxLayout( widgets.pathWidget );
+			pathLayout->setContentsMargins( 0, 0, 0, 0 );
+			widgets.linePath = new QLineEdit( widgets.pathWidget );
+			widgets.linePath->setReadOnly( true );
+			auto * const buttonBrowse = new QPushButton( widgets.pathWidget );
+			buttonBrowse->setIcon( STYLE().iconFromCodepoint( Style::Icons::OPEN ) );
+			buttonBrowse->setToolTip( "Open " + label.toLower() );
+			buttonBrowse->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Preferred );
+			buttonBrowse->setMinimumWidth( 0 );
+			widgets.buttonClear = new QPushButton( widgets.pathWidget );
+			widgets.buttonClear->setIcon( STYLE().iconFromCodepoint( Style::Icons::DELETE ) );
+			widgets.buttonClear->setToolTip( "Remove " + label.toLower() );
+			widgets.buttonClear->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Preferred );
+			widgets.buttonClear->setMinimumWidth( 0 );
+			pathLayout->addWidget( widgets.linePath );
+			pathLayout->addWidget( buttonBrowse );
+			pathLayout->addWidget( widgets.buttonClear );
+			_groupboxShading->addWidget( widgets.pathWidget );
+
+			connect(
+				buttonBrowse,
+				&QPushButton::clicked,
+				[ this, textureType, label ]
+				{
+					const auto &  config  = App::REG().get<VTX::Renderer::GraphicsConfig>( currentPreset() );
+					const auto &  texture = _materialTexture( config.shading.material, textureType );
+					const QString initialPath
+						= texture ? QString::fromStdString( FilePath( texture->path ).parent_path().string() )
+								  : QString {};
+					const QString selectedPath = QFileDialog::getOpenFileName(
+						this,
+						"Select " + label.toLower(),
+						initialPath,
+						"Image maps (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.tga *.TGA *.exr *.EXR *.hdr "
+						"*.HDR)"
+					);
+					if ( not selectedPath.isEmpty() )
+					{
+						_changeMaterialTexture( textureType, FilePath( selectedPath.toStdString() ) );
+					}
+				}
+			);
+
+			connect(
+				widgets.buttonClear,
+				&QPushButton::clicked,
+				[ this, textureType ] { _changeMaterialTexture( textureType, FilePath {} ); }
+			);
+		}
 
 		// SSAO.
 		_groupboxSSAO = new HideableGroupBox( "Shadows", presetGroupBox() );
@@ -424,7 +511,11 @@ namespace VTX::UI::QT::Widget::Library
 			_sliderToneMappingExposure,
 			&EditableSlider::valueChanged,
 			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::TONE_MAPPING_EXPOSURE, float>( p_value ); }
+			{
+				_changeValue<E_GRAPHICS_CONFIG_VALUES::TONE_MAPPING_EXPOSURE, float>(
+					_exposureMultiplierFromEv( p_value )
+				);
+			}
 		);
 
 		connect(
@@ -512,6 +603,17 @@ namespace VTX::UI::QT::Widget::Library
 			&EditableSlider::valueChanged,
 			[ this ]( const float p_value )
 			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_ROTATION, float>( Util::Math::radians( p_value ) ); }
+		);
+
+		connect(
+			_sliderEnvironmentExposure,
+			&EditableSlider::valueChanged,
+			[ this ]( const float p_value )
+			{
+				_changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_EXPOSURE, float>(
+					_exposureMultiplierFromEv( p_value )
+				);
+			}
 		);
 
 		connect(
@@ -718,6 +820,52 @@ namespace VTX::UI::QT::Widget::Library
 		};
 	}
 
+	const std::optional<VTX::Renderer::MaterialTexture> & GraphicsConfig::_materialTexture(
+		const VTX::Renderer::Material &			 p_material,
+		const VTX::Renderer::Material::E_TEXTURE p_texture
+	)
+	{
+		using TextureMember = std::optional<VTX::Renderer::MaterialTexture> VTX::Renderer::Material::*;
+		static constexpr std::array<TextureMember, size_t( VTX::Renderer::Material::E_TEXTURE::COUNT )> MEMBERS {
+			&VTX::Renderer::Material::albedoTexture,		   &VTX::Renderer::Material::normalTexture,
+			&VTX::Renderer::Material::metallicTexture,		   &VTX::Renderer::Material::roughnessTexture,
+			&VTX::Renderer::Material::ambientOcclusionTexture, &VTX::Renderer::Material::emissiveTexture
+		};
+
+		return p_material.*MEMBERS[ size_t( p_texture ) ];
+	}
+
+	void GraphicsConfig::_changeMaterialTexture(
+		const VTX::Renderer::Material::E_TEXTURE p_texture,
+		const FilePath &						 p_path
+	)
+	{
+		switch ( p_texture )
+		{
+		case VTX::Renderer::Material::E_TEXTURE::ALBEDO:
+			_changeValue<VTX::Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_ALBEDO_TEXTURE, FilePath>( p_path );
+			break;
+		case VTX::Renderer::Material::E_TEXTURE::NORMAL:
+			_changeValue<VTX::Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_NORMAL_TEXTURE, FilePath>( p_path );
+			break;
+		case VTX::Renderer::Material::E_TEXTURE::METALLIC:
+			_changeValue<VTX::Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_METALLIC_TEXTURE, FilePath>( p_path );
+			break;
+		case VTX::Renderer::Material::E_TEXTURE::ROUGHNESS:
+			_changeValue<VTX::Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_ROUGHNESS_TEXTURE, FilePath>( p_path );
+			break;
+		case VTX::Renderer::Material::E_TEXTURE::AMBIENT_OCCLUSION:
+			_changeValue<VTX::Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_AMBIENT_OCCLUSION_TEXTURE, FilePath>(
+				p_path
+			);
+			break;
+		case VTX::Renderer::Material::E_TEXTURE::EMISSIVE:
+			_changeValue<VTX::Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_EMISSIVE_TEXTURE, FilePath>( p_path );
+			break;
+		case VTX::Renderer::Material::E_TEXTURE::COUNT: break;
+		}
+	}
+
 	void GraphicsConfig::_update( Entity p_e )
 	{
 		auto & preset = App::REG().get<Renderer::GraphicsConfig>( p_e );
@@ -736,6 +884,7 @@ namespace VTX::UI::QT::Widget::Library
 		const QSignalBlocker blockerMaterialMetallic( _sliderMaterialMetallic );
 		const QSignalBlocker blockerMaterialRoughness( _sliderMaterialRoughness );
 		const QSignalBlocker blockerMaterialEmissiveIntensity( _sliderMaterialEmissiveIntensity );
+		const QSignalBlocker blockerEnvironmentExposure( _sliderEnvironmentExposure );
 		const QSignalBlocker blockerEnvironmentRotation( _sliderEnvironmentRotation );
 		const QSignalBlocker blocker6( _groupboxSSAO );
 		const QSignalBlocker blocker7( _comboBoxSSAOMethod );
@@ -787,7 +936,9 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderLightIntensity->setValue( preset.shading.lightIntensity );
 		_sliderAmbientIntensity->setValue( preset.shading.ambientIntensity );
 		_comboBoxToneMappingMode->setCurrentIndex( int( preset.toneMapping.mode ) );
-		_sliderToneMappingExposure->setValue( preset.toneMapping.exposure );
+		_sliderToneMappingExposure->setValue(
+			_exposureEvFromMultiplier( preset.toneMapping.exposure, VTX::Renderer::TONE_MAPPING_EXPOSURE_EV_MIN )
+		);
 		_sliderSpecularFactor->setValue( preset.shading.specularFactor );
 		_sliderShininess->setValue( preset.shading.shininess );
 		_sliderToonSteps->setValue( preset.shading.toonSteps );
@@ -804,12 +955,24 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderMaterialMetallic->setValue( preset.shading.material.metallic );
 		_sliderMaterialRoughness->setValue( preset.shading.material.roughness );
 		_sliderMaterialEmissiveIntensity->setValue( preset.shading.material.emissiveIntensity );
+		for ( size_t i = 0; i < _materialTextureWidgets.size(); ++i )
+		{
+			const auto & texture = _materialTexture( preset.shading.material, VTX::Renderer::Material::E_TEXTURE( i ) );
+			const QString path	 = texture ? QString::fromStdString( texture->path ) : QString {};
+			auto &		  widgets = _materialTextureWidgets[ i ];
+			widgets.linePath->setText( path );
+			widgets.linePath->setToolTip( path );
+			widgets.buttonClear->setEnabled( texture.has_value() );
+		}
 		const QString environmentPath = preset.shading.environmentPath
 											? QString::fromStdString( preset.shading.environmentPath->string() )
 											: QString {};
 		_lineEnvironmentPath->setText( environmentPath );
 		_lineEnvironmentPath->setToolTip( environmentPath );
 		_buttonEnvironmentClear->setEnabled( preset.shading.environmentPath.has_value() );
+		_sliderEnvironmentExposure->setValue(
+			_exposureEvFromMultiplier( preset.shading.environmentExposure, ENVIRONMENT_EXPOSURE_EV_MIN )
+		);
 		_sliderEnvironmentRotation->setValue( Util::Math::degrees( preset.shading.environmentRotation ) );
 		_groupboxSSAO->setChecked( preset.ssao.has_value() );
 		_comboBoxSSAOMethod->setCurrentIndex( int( ssao.method ) );
@@ -852,6 +1015,8 @@ namespace VTX::UI::QT::Widget::Library
 		using namespace Renderer;
 		const bool pbr			  = p_preset.shading.mode == E_SHADING::PBR;
 		const bool hasEnvironment = p_preset.shading.environmentPath.has_value();
+		_labelEnvironmentExposure->setVisible( hasEnvironment );
+		_sliderEnvironmentExposure->setVisible( hasEnvironment );
 		_labelEnvironmentRotation->setVisible( hasEnvironment );
 		_sliderEnvironmentRotation->setVisible( hasEnvironment );
 		_labelLightIntensity->setVisible( pbr );
@@ -870,6 +1035,11 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderMaterialRoughness->setVisible( pbr );
 		_labelMaterialEmissiveIntensity->setVisible( pbr );
 		_sliderMaterialEmissiveIntensity->setVisible( pbr );
+		for ( MaterialTextureWidgets & widgets : _materialTextureWidgets )
+		{
+			widgets.label->setVisible( pbr );
+			widgets.pathWidget->setVisible( pbr );
+		}
 
 		switch ( p_preset.shading.mode )
 		{

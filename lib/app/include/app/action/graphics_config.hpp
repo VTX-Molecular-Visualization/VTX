@@ -19,6 +19,12 @@ namespace VTX::App::Action::GraphicsConfig
 
 			return *p_config;
 		}
+
+		inline void setMaterialTexture( std::optional<Renderer::MaterialTexture> & p_texture, const FilePath & p_path )
+		{
+			p_texture
+				= p_path.empty() ? std::nullopt : std::optional<Renderer::MaterialTexture> { { p_path.string(), 0 } };
+		}
 	} // namespace
 
 	/**
@@ -81,10 +87,38 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						p_config.shading.material.emissiveIntensity = p_value;
 					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_ALBEDO_TEXTURE )
+					{
+						setMaterialTexture( p_config.shading.material.albedoTexture, p_value );
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_NORMAL_TEXTURE )
+					{
+						setMaterialTexture( p_config.shading.material.normalTexture, p_value );
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_METALLIC_TEXTURE )
+					{
+						setMaterialTexture( p_config.shading.material.metallicTexture, p_value );
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_ROUGHNESS_TEXTURE )
+					{
+						setMaterialTexture( p_config.shading.material.roughnessTexture, p_value );
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_AMBIENT_OCCLUSION_TEXTURE )
+					{
+						setMaterialTexture( p_config.shading.material.ambientOcclusionTexture, p_value );
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_EMISSIVE_TEXTURE )
+					{
+						setMaterialTexture( p_config.shading.material.emissiveTexture, p_value );
+					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH )
 					{
 						p_config.shading.environmentPath
 							= p_value.empty() ? std::nullopt : std::optional<FilePath> { p_value };
+					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_EXPOSURE )
+					{
+						p_config.shading.environmentExposure = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_ROTATION )
 					{

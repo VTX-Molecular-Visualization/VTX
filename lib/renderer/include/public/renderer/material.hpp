@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_MATERIAL__
 #define __VTX_RENDERER_MATERIAL__
 
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <util/types.hpp>
@@ -25,6 +26,17 @@ namespace VTX::Renderer
 	 */
 	struct Material
 	{
+		enum struct E_TEXTURE : uint8_t
+		{
+			ALBEDO,
+			NORMAL,
+			METALLIC,
+			ROUGHNESS,
+			AMBIENT_OCCLUSION,
+			EMISSIVE,
+			COUNT
+		};
+
 		std::string name;
 		Vec3f		emissiveColor { 0.f };
 		float		emissiveIntensity = MATERIAL_EMISSIVE_INTENSITY_DEFAULT;
@@ -32,6 +44,7 @@ namespace VTX::Renderer
 		float		roughness		  = MATERIAL_ROUGHNESS_DEFAULT;
 		float		opacity			  = MATERIAL_OPACITY_DEFAULT;
 
+		std::optional<MaterialTexture> albedoTexture;
 		std::optional<MaterialTexture> normalTexture;
 		std::optional<MaterialTexture> metallicTexture;
 		std::optional<MaterialTexture> roughnessTexture;

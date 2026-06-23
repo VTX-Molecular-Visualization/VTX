@@ -18,9 +18,11 @@ namespace VTX::Renderer
 	};
 
 	constexpr E_TONE_MAPPING TONE_MAPPING_MODE_DEFAULT	   = E_TONE_MAPPING::REINHARD;
-	constexpr float			 TONE_MAPPING_EXPOSURE_DEFAULT = 2.f;
-	constexpr float			 TONE_MAPPING_EXPOSURE_MIN	   = 0.f;
-	constexpr float			 TONE_MAPPING_EXPOSURE_MAX	   = 10.f;
+	constexpr float			 TONE_MAPPING_EXPOSURE_DEFAULT = 1.f;
+	constexpr float			 TONE_MAPPING_EXPOSURE_MIN	   = 1.f / 1024.f;
+	constexpr float			 TONE_MAPPING_EXPOSURE_MAX	   = 1024.f;
+	constexpr float			 TONE_MAPPING_EXPOSURE_EV_MIN  = -10.f;
+	constexpr float			 TONE_MAPPING_EXPOSURE_EV_MAX  = 10.f;
 
 	struct ToneMappingConfig
 	{

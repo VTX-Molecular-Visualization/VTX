@@ -32,11 +32,13 @@ namespace VTX::Util::Math
 	using ::glm::distance;
 	using ::glm::dot;
 	using ::glm::eulerAngles;
+	using ::glm::exp2;
 	using ::glm::inverse;
 	using ::glm::length;
 	using ::glm::length2;
 	using ::glm::lerp;
 	using ::glm::lessThan;
+	using ::glm::log2;
 	using ::glm::lookAt;
 	using ::glm::mat;
 	using ::glm::max;
@@ -86,15 +88,11 @@ namespace VTX::Util::Math
 
 	template<int L, typename T>
 	inline std::vector<T> toStdVector( const vec<L, T> & p_value )
-	{
-		return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L );
-	}
+	{ return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L ); }
 
 	template<int L, typename T>
 	inline std::vector<T> toStdVector( const mat<L, L, T> & p_value )
-	{
-		return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L * L );
-	}
+	{ return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L * L ); }
 
 	inline float randomFloat() { return dis( gen ); }
 
@@ -234,9 +232,7 @@ namespace VTX::Util::Math
 		const float	  p_scalar1,
 		const Vec3f & p_vector1
 	) noexcept
-	{
-		return p_scalar0 * p_vector0 + p_scalar1 * p_vector1;
-	}
+	{ return p_scalar0 * p_vector0 + p_scalar1 * p_vector1; }
 
 	constexpr uint nextPowerOfTwoValue( const uint p_baseNumber ) noexcept
 	{

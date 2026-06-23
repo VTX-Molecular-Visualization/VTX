@@ -102,6 +102,13 @@ namespace VTX::Renderer::Builder::PostProcess
 		inline static const Desc::Key ENVIRONMENT_TEXTURE = "EnvMap";
 		inline static const Desc::Key ENVIRONMENT_SAMPLER = "EnvMapSampler";
 
+		inline static const Desc::Key MATERIAL_ALBEDO_TEXTURE	 = "MaterialAlbedoMap";
+		inline static const Desc::Key MATERIAL_NORMAL_TEXTURE	 = "MaterialNormalMap";
+		inline static const Desc::Key MATERIAL_METALLIC_TEXTURE	 = "MaterialMetallicMap";
+		inline static const Desc::Key MATERIAL_ROUGHNESS_TEXTURE = "MaterialRoughnessMap";
+		inline static const Desc::Key MATERIAL_AO_TEXTURE		 = "MaterialAmbientOcclusionMap";
+		inline static const Desc::Key MATERIAL_EMISSIVE_TEXTURE	 = "MaterialEmissiveMap";
+
 		static Desc::Key programName( const E_SHADING p_mode )
 		{
 			switch ( p_mode )
