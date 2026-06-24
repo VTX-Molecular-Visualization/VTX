@@ -71,11 +71,13 @@ namespace VTX::UI::QT::Delegate
 		// Paint buttons.
 		for ( int i = 0; i < _buttonCount( p_index ); ++i )
 		{
-			const ACTION action = static_cast<ACTION>( i );
-			if ( pinButtons[ i ] || action == ACTION::DISPLAY_MODE || option.state & QStyle::State_MouseOver )
+			const ACTION action = _buttonAction( p_index, i );
+			if ( pinButtons[ toUnderlying( action ) ] || action == ACTION::DISPLAY_MODE
+				 || option.state & QStyle::State_MouseOver )
 			{
-				const QRect r	 = _buttonRect( option, p_index, i );
-				const QIcon icon = action == ACTION::DISPLAY_MODE ? _displayModeIcon( p_index ) : _icons[ i ];
+				const QRect r = _buttonRect( option, p_index, i );
+				const QIcon icon
+					= action == ACTION::DISPLAY_MODE ? _displayModeIcon( p_index ) : _icons[ toUnderlying( action ) ];
 				icon.paint( p_painter, r, Qt::AlignCenter, QIcon::Normal );
 			}
 		}
@@ -180,6 +182,16 @@ namespace VTX::UI::QT::Delegate
 		return QRect( br.left() + p_i * ( ICON_SIZE + SPACING ), br.top(), ICON_SIZE, ICON_SIZE );
 	}
 
+	SystemDelegate::ACTION SystemDelegate::_buttonAction( const QModelIndex & p_index, const int p_i ) const
+	{
+		if ( not _isSystemItem( p_index ) )
+		{
+			return static_cast<ACTION>( p_i );
+		}
+
+		return p_i == 0 ? ACTION::DISPLAY_MODE : static_cast<ACTION>( p_i - 1 );
+	}
+
 	int SystemDelegate::_hitTestButton(
 		const QStyleOptionViewItem & p_option,
 		const QModelIndex &			 p_index,
@@ -190,7 +202,7 @@ namespace VTX::UI::QT::Delegate
 		{
 			if ( _buttonRect( p_option, p_index, i ).contains( p_pos ) )
 			{
-				return i;
+				return toUnderlying( _buttonAction( p_index, i ) );
 			}
 		}
 

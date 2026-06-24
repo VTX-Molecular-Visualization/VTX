@@ -390,7 +390,7 @@ namespace VTX::UI::QT::Widget::Library
 		_groupboxFog->addWidget( new QLabel( "Density", _groupboxFog ) );
 		_groupboxFog->addWidget( _sliderFogDensity );
 		_sliderFogDensity->setMinimum( FOG_DENSITY_MIN );
-		_sliderFogDensity->setMinimum( FOG_DENSITY_MAX );
+		_sliderFogDensity->setMaximum( FOG_DENSITY_MAX );
 
 		// Chromatic aberration.
 		_groupboxChromaticAberration = new HideableGroupBox( "Chromatic aberration", presetGroupBox() );
@@ -1063,8 +1063,8 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderEnvironmentRotation->setVisible( hasEnvironment );
 		_labelLightIntensity->setVisible( pbr );
 		_sliderLightIntensity->setVisible( pbr );
-		_labelAmbientIntensity->setVisible( pbr );
-		_sliderAmbientIntensity->setVisible( pbr );
+		_labelAmbientIntensity->setVisible( pbr && not hasEnvironment );
+		_sliderAmbientIntensity->setVisible( pbr && not hasEnvironment );
 		_labelToneMappingMode->setVisible( pbr );
 		_comboBoxToneMappingMode->setVisible( pbr );
 		_labelToneMappingExposure->setVisible( pbr );

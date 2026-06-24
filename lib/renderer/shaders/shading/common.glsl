@@ -98,6 +98,7 @@ float sampleAmbientOcclusion( const ivec2 p_texCoord, const float p_viewDepth )
 	return texelFetch( inTextureAmbientOcclusion, nearestCoord, 0 ).x;
 }
 
+// Rotate env.
 vec3 rotateEnvironmentDirection( vec3 p_direction )
 {
 	const float cosine = cos( uniforms.environmentRotation );
@@ -107,26 +108,38 @@ vec3 rotateEnvironmentDirection( vec3 p_direction )
 	return p_direction;
 }
 
+float computeFogFactor( const float p_viewDepth )
+{
+	const float fogFar = max( uniforms.fogFar, uniforms.fogNear + 0.0001f );
+	return smoothstep( uniforms.fogNear, fogFar, p_viewDepth ) * uniforms.fogDensity;
+}
+
 // Shade the background with either the environment map, fog, or a solid color.
 bool shadeBackground( const UnpackedData p_data )
 {
+	// Hit something, no background.
 	if ( p_data.viewPosition.z != 0.f )
 	{
 		return false;
 	}
 
+	// Cubemap.
 	if ( uniforms.environmentEnabled != 0u )
 	{
 		const vec3 direction = rotateEnvironmentDirection( normalize( worldDirection ) );
 		outFragColor = vec4( texture( inTextureEnvironment, direction ).rgb * uniforms.skyboxIntensity, 1.f );
 	}
+
+	// Fog.
 	else if ( uniforms.fogDensity != 0.f )
 	{
 		outFragColor = vec4(
-			mix( uniforms.colorBackground.rgb, uniforms.colorFog.rgb, uniforms.fogDensity ) * uniforms.colorLight.rgb,
+			mix( uniforms.colorBackground.rgb, uniforms.colorFog.rgb, uniforms.fogDensity ),
 			uniforms.colorBackground.a
 		);
 	}
+
+	// Background.
 	else
 	{
 		outFragColor = vec4( uniforms.colorBackground.rgb, 1.f );

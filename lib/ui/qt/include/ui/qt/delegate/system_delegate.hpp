@@ -86,12 +86,13 @@ namespace VTX::UI::QT::Delegate
 		static constexpr int SPACING   = 4;
 		static constexpr int MARGIN_R  = 6;
 
-		QRect _buttonsRect( const QStyleOptionViewItem &, const QModelIndex & ) const;
-		QRect _buttonRect( const QStyleOptionViewItem &, const QModelIndex &, const int ) const;
-		int	  _hitTestButton( const QStyleOptionViewItem &, const QModelIndex &, const QPoint & ) const;
-		int	  _buttonCount( const QModelIndex & ) const;
-		bool  _isSystemItem( const QModelIndex & ) const;
-		QIcon _displayModeIcon( const QModelIndex & ) const;
+		QRect  _buttonsRect( const QStyleOptionViewItem &, const QModelIndex & ) const;
+		QRect  _buttonRect( const QStyleOptionViewItem &, const QModelIndex &, const int ) const;
+		ACTION _buttonAction( const QModelIndex &, const int ) const;
+		int	   _hitTestButton( const QStyleOptionViewItem &, const QModelIndex &, const QPoint & ) const;
+		int	   _buttonCount( const QModelIndex & ) const;
+		bool   _isSystemItem( const QModelIndex & ) const;
+		QIcon  _displayModeIcon( const QModelIndex & ) const;
 
 		std::array<QIcon, toUnderlying( ACTION::COUNT )> _icons;
 	};
