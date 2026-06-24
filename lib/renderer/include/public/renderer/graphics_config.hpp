@@ -145,12 +145,12 @@ namespace VTX::Renderer
 		inline const GraphicsConfig PBR_METALLIC {
 			.shading = ShadingConfig { .mode			 = E_SHADING::PBR,
 									   .colorLight		 = Util::Color::Rgba( 255, 255, 255 ),
-									   .colorBackground	 = Util::Color::Rgba( 18, 20, 24 ),
+									   .colorBackground	 = Util::Color::Rgba( 0, 0, 0 ),
 									   .specularFactor	 = SPECULAR_FACTOR_DEFAULT,
 									   .shininess		 = SHININESS_DEFAULT,
 									   .toonSteps		 = TOON_STEPS_DEFAULT,
-									   .lightIntensity	 = 5.f,
-									   .ambientIntensity = 0.08f,
+									   .lightIntensity	 = 2.5f,
+									   .ambientIntensity = 0.05f,
 									   .material		 = Materials::BRUSHED_METAL },
 			.ssao	 = SSAOConfig { SSAO_METHOD_DEFAULT, 2.5f, SSAO_RADIUS_DEFAULT, SSAO_SCALE_DEFAULT, 11.f },
 			.outline = std::nullopt,
@@ -159,7 +159,7 @@ namespace VTX::Renderer
 			.pixelize			 = std::nullopt,
 			.crt				 = std::nullopt,
 			.selection			 = SelectionConfig { Util::Color::Rgba( 80, 255, 120 ) },
-			.toneMapping		 = ToneMappingConfig { E_TONE_MAPPING::UNCHARTED, 1.5f }
+			.toneMapping		 = ToneMappingConfig { E_TONE_MAPPING::UNCHARTED, TONE_MAPPING_EXPOSURE_DEFAULT }
 		};
 
 	}; // namespace GraphicsConfigs
