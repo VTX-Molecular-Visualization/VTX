@@ -93,7 +93,7 @@ namespace VTX::UI::QT::DockWidget
 					}
 
 					_clear();
-					_graphicsConfigWidget = new Widget::Library::GraphicsConfig( this );
+					_graphicsConfigWidget = new Widget::Library::GraphicsConfigWidget( this );
 					if ( hasPreset )
 					{
 						_graphicsConfigWidget->setCurrentPreset( preset );

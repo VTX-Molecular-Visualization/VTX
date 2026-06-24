@@ -201,6 +201,7 @@ vec3 computeEnvironmentLighting( const vec3 p_viewPosition, const SampledMateria
 		return p_material.albedo * uniforms.ambientIntensity;
 	}
 
+	// Approximated IBL, using the reflection vector to sample the environment map.
 	const vec3 normal			   = normalize( p_material.normal );
 	const vec3 viewDirection	   = normalize( -p_viewPosition );
 	const vec3 reflectionDirection = rotateEnvironmentDirection(
@@ -261,7 +262,7 @@ void main()
 	vec3 sceneColor = directLighting + indirectLighting + material.emissive;
 	
 	// Apply fog.
-	sceneColor = mix(sceneColor, uniforms.colorFog.rgb, fogFactor);
+	sceneColor = mix( sceneColor, uniforms.colorFog.rgb, fogFactor );
 
 	outFragColor = vec4( sceneColor, 1.0 );
 }

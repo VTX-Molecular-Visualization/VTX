@@ -9,8 +9,14 @@
 namespace VTX::Renderer
 {
 	constexpr float MATERIAL_METALLIC_DEFAULT			= 0.f;
+	constexpr float MATERIAL_METALLIC_MIN				= 0.f;
+	constexpr float MATERIAL_METALLIC_MAX				= 1.f;
 	constexpr float MATERIAL_ROUGHNESS_DEFAULT			= 1.f;
+	constexpr float MATERIAL_ROUGHNESS_MIN				= 0.f;
+	constexpr float MATERIAL_ROUGHNESS_MAX				= 1.f;
 	constexpr float MATERIAL_OPACITY_DEFAULT			= 1.f;
+	constexpr float MATERIAL_OPACITY_MIN				= 0.f;
+	constexpr float MATERIAL_OPACITY_MAX				= 1.f;
 	constexpr float MATERIAL_EMISSIVE_INTENSITY_DEFAULT = 0.f;
 	constexpr float MATERIAL_EMISSIVE_INTENSITY_MIN		= 0.f;
 	constexpr float MATERIAL_EMISSIVE_INTENSITY_MAX		= 10.f;

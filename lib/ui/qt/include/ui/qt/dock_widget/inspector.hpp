@@ -3,7 +3,7 @@
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/widget/library/color_layout.hpp"
-#include "ui/qt/widget/library/graphics_config.hpp"
+#include "ui/qt/widget/library/graphics_config_widget.hpp"
 #include "ui/qt/widget/library/representation.hpp"
 #include "ui/qt/widget/selection.hpp"
 #include "ui/qt/widget/viewpoint.hpp"
@@ -20,13 +20,13 @@ namespace VTX::UI::QT::DockWidget
 		Inspector( QWidget * );
 
 	  private:
-		QPointer<QToolButton>					  _lockButton;
-		QPointer<QWidget>						  _filler;
-		QPointer<Widget::Selection>				  _selectionListWidget;
-		QPointer<Widget::Library::GraphicsConfig> _graphicsConfigWidget;
-		QPointer<Widget::Library::ColorLayout>	  _colorLayoutWidget;
-		QPointer<Widget::Library::Representation> _representationWidget;
-		QPointer<Widget::ViewPoint>				  _viewPointWidget;
+		QPointer<QToolButton>							_lockButton;
+		QPointer<QWidget>								_filler;
+		QPointer<Widget::Selection>						_selectionListWidget;
+		QPointer<Widget::Library::GraphicsConfigWidget> _graphicsConfigWidget;
+		QPointer<Widget::Library::ColorLayout>			_colorLayoutWidget;
+		QPointer<Widget::Library::Representation>		_representationWidget;
+		QPointer<Widget::ViewPoint>						_viewPointWidget;
 
 		/**
 		 * @brief Clear all widgets except the filler.

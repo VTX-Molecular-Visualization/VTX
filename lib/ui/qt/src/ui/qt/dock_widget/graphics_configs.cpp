@@ -2,7 +2,7 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
-#include "ui/qt/widget/library/graphics_config.hpp"
+#include "ui/qt/widget/library/graphics_config_widget.hpp"
 #include <util/factories.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -13,7 +13,7 @@ namespace VTX::UI::QT::DockWidget
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::GRAPHICS_CONFIG ) );
 
-		auto * const graphicsConfigWidget = new Widget::Library::GraphicsConfig( this );
+		auto * const graphicsConfigWidget = new Widget::Library::GraphicsConfigWidget( this );
 		_layout->addWidget( graphicsConfigWidget );
 		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 	}

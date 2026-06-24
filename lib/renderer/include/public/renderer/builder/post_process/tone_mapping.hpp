@@ -12,8 +12,11 @@ namespace VTX::Renderer
 	enum struct E_TONE_MAPPING : uint32_t
 	{
 		NONE,
+		LDR,
 		REINHARD,
-		ACES_FILM,
+		ACES,
+		UNCHARTED,
+
 		COUNT
 	};
 

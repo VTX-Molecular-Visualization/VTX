@@ -159,7 +159,7 @@ namespace VTX::Renderer
 			.pixelize			 = std::nullopt,
 			.crt				 = std::nullopt,
 			.selection			 = SelectionConfig { Util::Color::Rgba( 80, 255, 120 ) },
-			.toneMapping		 = ToneMappingConfig { E_TONE_MAPPING::ACES_FILM, 1.5f }
+			.toneMapping		 = ToneMappingConfig { E_TONE_MAPPING::UNCHARTED, 1.5f }
 		};
 
 	}; // namespace GraphicsConfigs
