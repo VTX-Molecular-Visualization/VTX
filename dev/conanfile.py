@@ -73,6 +73,7 @@ class VTXRecipe(ConanFile):
     def requirements(self):
         self.requires("glm/1.0.1")
         self.requires("spdlog/1.17.0")
+        self.requires("fmt/12.1.0", force=True)
         self.requires("magic_enum/0.9.7")
         self.requires("nlohmann_json/3.12.0")
         self.requires("cpr/1.14.2")
@@ -82,6 +83,7 @@ class VTXRecipe(ConanFile):
         if self.options.renderer:
             self.requires("sdl/3.4.0")
             self.requires("imgui/1.92.7")
+            self.requires("ktx/4.4.2")
         self.requires("stb/cci.20240531", force=True)
         self.requires("tinyexr/1.0.7")
         self.requires("entt/3.16.0")
@@ -115,6 +117,8 @@ class VTXRecipe(ConanFile):
             qt_module.install_system_dependencies(self)
 
     def config_options(self):
+        if self.options.renderer:
+            renderer_module.config_options_ktx(self)
         if self.options.ui_qt:
             qt_module.config_options_qt(self)
         if self.options.python_binding:

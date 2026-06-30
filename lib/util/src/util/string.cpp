@@ -38,7 +38,7 @@ namespace VTX::Util::String
 		return splittedStr;
 	}
 
-	std::string & replaceAll( std::string & p_str, const std::string & p_toReplace, const std::string & p_replacement )
+	void replaceAll( std::string & p_str, const std::string & p_toReplace, const std::string & p_replacement )
 	{
 		size_t		 currentIndex				 = p_str.find( p_toReplace, 0 );
 		const size_t toReplaceLength			 = p_toReplace.length();
@@ -51,8 +51,18 @@ namespace VTX::Util::String
 
 			currentIndex = p_str.find( p_toReplace, currentIndex );
 		}
+	}
 
-		return p_str;
+	std::string replaceAll(
+		const std::string & p_str,
+		const std::string & p_toReplace,
+		const std::string & p_replacement
+	)
+	{
+		std::string replacedStr = std::string( p_str.begin(), p_str.end() );
+		Util::String::replaceAll( replacedStr, p_toReplace, p_replacement );
+
+		return replacedStr;
 	}
 
 	std::string floatToStr( const float p_value, const int p_nbDecimals )
@@ -75,6 +85,24 @@ namespace VTX::Util::String
 		Util::String::toUpper( upcasedStr );
 
 		return upcasedStr;
+	}
+
+	void toLower( std::string & p_str )
+	{
+		std::transform(
+			p_str.begin(),
+			p_str.end(),
+			p_str.begin(),
+			[]( const unsigned char p_char ) { return static_cast<char>( std::tolower( p_char ) ); }
+		);
+	}
+
+	std::string toLower( const std::string & p_str )
+	{
+		std::string lowercasedStr = std::string( p_str.begin(), p_str.end() );
+		Util::String::toLower( lowercasedStr );
+
+		return lowercasedStr;
 	}
 
 	std::string memSizeToStr( const size_t p_size, const bool p_isBase10 )

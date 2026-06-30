@@ -20,6 +20,8 @@ TEST_CASE( "Util::String", "[unit]" )
 	str = "a string with characters to replace";
 	VTX::Util::String::replaceAll( str, "r", "t" );
 	CHECK( str == "a stting with chatactets to teplace" );
+	const std::string strToReplace = "a string";
+	CHECK( VTX::Util::String::replaceAll( strToReplace, "r", "t" ) == "a stting" );
 
 	const float f = 3.14159;
 	CHECK( VTX::Util::String::floatToStr( f, 0 ) == "3" );

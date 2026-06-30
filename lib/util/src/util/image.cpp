@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <string>
 #include <tinyexr.h>
+#include <util/string.hpp>
 
 namespace VTX::Util::Image
 {
@@ -142,13 +143,7 @@ namespace VTX::Util::Image
 
 	FloatImage readFloatImage( const FilePath & p_path )
 	{
-		std::string extension = p_path.extension().string();
-		std::transform(
-			extension.begin(),
-			extension.end(),
-			extension.begin(),
-			[]( const unsigned char p_char ) { return static_cast<char>( std::tolower( p_char ) ); }
-		);
+		const std::string extension = Util::String::toLower( p_path.extension().string() );
 
 		if ( extension == ".exr" )
 		{

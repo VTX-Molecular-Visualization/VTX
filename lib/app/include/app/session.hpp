@@ -79,6 +79,8 @@ namespace VTX::App
 		FilePath getRepresentationsDir() const;
 		FilePath getColorLayoutsDir() const;
 		FilePath getEffectsDir() const;
+		FilePath getHdriDir() const;
+		FilePath getMaterialDir() const;
 		FilePath getConfigIniFile() const;
 		// const FilePath getSettingJsonFile() const;
 

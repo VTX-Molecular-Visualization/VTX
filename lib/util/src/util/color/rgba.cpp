@@ -16,12 +16,14 @@ namespace VTX::Util::Color
 			return dr * dr + dg * dg + db * db;
 		}
 
+		// IEC 61966-2-1.
 		float _srgbToLinear( const float p_channel )
 		{
 			return p_channel <= 0.04045f ? p_channel / 12.92f
 										 : Util::Math::pow( ( p_channel + 0.055f ) / 1.055f, 2.4f );
 		}
 
+		// IEC 61966-2-1.
 		float _linearToSrgb( const float p_channel )
 		{
 			return p_channel <= 0.0031308f ? p_channel * 12.92f

@@ -468,6 +468,10 @@ namespace VTX::App
 
 	FilePath Session::getEffectsDir() const { return getDataHome() / "effects"; }
 
+	FilePath Session::getHdriDir() const { return getDataHome() / "hdri"; }
+
+	FilePath Session::getMaterialDir() const { return getDataHome() / "material"; }
+
 	FilePath Session::getConfigIniFile() const { return getDataHome() / "config.ini"; }
 
 	// const FilePath Session::getSettingJsonFile() const { return USER_DATA_DIR / "setting.json"; }

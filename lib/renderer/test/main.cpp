@@ -171,6 +171,18 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	graph.set( Builder::DefaultRenderGraph::build( cfg, Layouts {}, Geometries {} ) );
 
 	const Resources & resources = graph.getResources();
+	CHECK( resources.textures.at( "Color" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "Depth" ).format == E_FORMAT::R32F );
+	CHECK( resources.textures.at( "Shaded" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "ToneMapping" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "ChromaticAberration" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "Pixelize" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "Outline" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "Selection" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "CRT" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "BlurX" ).format == E_FORMAT::R16F );
+	CHECK( resources.textures.at( "BlurY" ).format == E_FORMAT::R16F );
+	CHECK( resources.textures.at( "FXAA" ).format == E_FORMAT::SRGB8_ALPHA8 );
 	CHECK(
 		resources.buffers.at( VTX::Renderer::Geometry::SES::BUFFER_CONVEX_PATCH_ELEMENTS ).allocation
 		== E_BUFFER_ALLOCATION::CHUNKED

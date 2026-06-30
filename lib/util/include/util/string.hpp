@@ -8,27 +8,79 @@
 
 namespace VTX::Util::String
 {
-	// Trim empty chars at start and end
+	/**
+	 * Trim empty characters at the start and end.
+	 */
 	void trim( std::string & p_str );
-	// Trim empty chars at start
+
+	/**
+	 * Trim empty characters at the start.
+	 */
 	void trimStart( std::string & p_str );
-	// Trim empty chars at end
+
+	/**
+	 * Trim empty characters at the end.
+	 */
 	void trimEnd( std::string & p_str );
-	// Split p_str in a vector of string using char separator
-	std::vector<std::string> split( const std::string & p_str, const char p_separator );
-	// Replace string p_toReplace in p_str with p_replacement
-	std::string & replaceAll( std::string & p_str, const std::string & p_toReplace, const std::string & p_replacement );
-	// cast float to string with p_nbDecimals decimals
-	std::string floatToStr( const float p_value, const int p_nbDecimals );
-	// cast string to uint
-	uint strToUint( const std::string & p_str );
-	// uppercase all characters of p_str
-	void		toUpper( std::string & p_str );
-	std::string toUpper( const std::string & p_str );
-	// Memory size to string.
-	std::string memSizeToStr( const size_t p_size, const bool p_isBase10 = true );
-	// Duration to string.
-	std::string durationToStr( const float p_durationInMS );
+
+	/**
+	 * Split a string using a character separator.
+	 */
+	[[nodiscard]] std::vector<std::string> split( const std::string & p_str, const char p_separator );
+
+	/**
+	 * Replace all occurrences of a string in place.
+	 */
+	void replaceAll( std::string & p_str, const std::string & p_toReplace, const std::string & p_replacement );
+
+	/**
+	 * Replace all occurrences of a string and return the result.
+	 */
+	[[nodiscard]] std::string replaceAll(
+		const std::string & p_str,
+		const std::string & p_toReplace,
+		const std::string & p_replacement
+	);
+
+	/**
+	 * Convert a float to a string with a fixed number of decimals.
+	 */
+	[[nodiscard]] std::string floatToStr( const float p_value, const int p_nbDecimals );
+
+	/**
+	 * Convert a string to an unsigned integer.
+	 */
+	[[nodiscard]] uint strToUint( const std::string & p_str );
+
+	/**
+	 * Convert all characters to uppercase in place.
+	 */
+	void toUpper( std::string & p_str );
+
+	/**
+	 * Convert all characters to uppercase and return the result.
+	 */
+	[[nodiscard]] std::string toUpper( const std::string & p_str );
+
+	/**
+	 * Convert all characters to lowercase in place.
+	 */
+	void toLower( std::string & p_str );
+
+	/**
+	 * Convert all characters to lowercase and return the result.
+	 */
+	[[nodiscard]] std::string toLower( const std::string & p_str );
+
+	/**
+	 * Convert a memory size to a string.
+	 */
+	[[nodiscard]] std::string memSizeToStr( const size_t p_size, const bool p_isBase10 = true );
+
+	/**
+	 * Convert a duration to a string.
+	 */
+	[[nodiscard]] std::string durationToStr( const float p_durationInMS );
 
 } // namespace VTX::Util::String
 

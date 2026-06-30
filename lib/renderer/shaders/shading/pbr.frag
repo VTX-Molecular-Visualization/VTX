@@ -175,16 +175,16 @@ vec3 computePBR( const vec3 p_viewPosition, const vec3 p_lightDirection, const S
 	const vec3	halfway		  = normalize( viewDirection + p_lightDirection );
 
 	const float roughness	  = p_material.roughness;
-	const float metallic	  = p_material.metallic;
-
-	const float nDotV		  = max( dot( normal, viewDirection ), 0.f );
-	const float nDotL		  = max( dot( normal, p_lightDirection ), 0.f );
+	const float metallic	  = p_material.metallic;	
 
 	const vec3	f0			  = mix( vec3( 0.04f ), p_material.albedo, metallic );
 	const vec3	fresnel		  = fresnelSchlick( max( dot( halfway, viewDirection ), 0.f ), f0 );
 
-	const float distribution  = distributionGGX( normal, halfway, roughness );
+	const float nDotV		  = max( dot( normal, viewDirection ), 0.f );
+	const float nDotL		  = max( dot( normal, p_lightDirection ), 0.f );
+
 	const float geometry	  = geometrySmith( nDotV, nDotL, roughness );
+	const float distribution  = distributionGGX( normal, halfway, roughness );
 
 	const vec3	specular	  = distribution * geometry * fresnel / max( 4.f * nDotV * nDotL, 0.0001f );
 	const vec3	diffuseWeight = ( vec3( 1.f ) - fresnel ) * ( 1.f - metallic );
@@ -231,8 +231,7 @@ void main()
 	}
 
 	// Use camera as light.
-	const vec3 lightDirection
-		= uniformsCamera.isCameraPerspective == 1 ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
+	const vec3 lightDirection = uniformsCamera.isCameraPerspective == 1 ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
 
 	// Albedo from previous pass.
 	const vec3 baseAlbedo = texelFetch( inTextureColor, texCoord, 0 ).rgb;

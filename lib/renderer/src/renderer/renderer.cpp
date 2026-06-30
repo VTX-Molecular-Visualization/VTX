@@ -280,7 +280,7 @@ namespace VTX::Renderer
 				);
 			}
 		}
-		const bool updateGraphicsConfig
+		bool updateGraphicsConfig
 			= fullRefresh || graphChanged || hasDirty( _dirtyRenderer, RendererDirty::GRAPHICS_CONFIG );
 		const bool updateColorLayout
 			= fullRefresh || graphChanged || hasDirty( _dirtyRenderer, RendererDirty::COLOR_LAYOUT );
@@ -512,7 +512,16 @@ namespace VTX::Renderer
 		}
 		if ( hasDirty( _dirtyRenderer, RendererDirty::ENVIRONMENT ) && _graphicsConfig.data.shading.environmentPath )
 		{
-			Builder::PostProcess::Shading::loadEnvironment( _context, _graphicsConfig.data.shading );
+			try
+			{
+				Builder::PostProcess::Shading::loadEnvironment( _context, _graphicsConfig.data.shading );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Environment update failed: {}", p_e.what() );
+				_graphicsConfig.data.shading.environmentPath.reset();
+				updateGraphicsConfig = true;
+			}
 		}
 		if ( hasDirty( _dirtyRenderer, RendererDirty::MATERIAL_TEXTURES ) )
 		{

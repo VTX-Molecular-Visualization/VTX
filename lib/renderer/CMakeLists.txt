@@ -7,6 +7,7 @@ if(LINUX)
 endif()
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
+find_package(Ktx CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")

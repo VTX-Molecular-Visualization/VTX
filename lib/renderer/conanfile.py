@@ -10,6 +10,11 @@ def install_system_dependencies(conanfile):
         apt = Apt(conanfile)
         apt.install(["libegl-dev", "libgl-dev", "libopengl-dev", "libwayland-dev"], update=True)
 
+
+def config_options_ktx(conanfile):
+    conanfile.options["ktx"].tools = False
+
+
 class VTXRendererRecipe(ConanFile):
     name = "vtx_renderer"
     version = "1.0"
@@ -21,11 +26,13 @@ class VTXRendererRecipe(ConanFile):
     
     generators = "CMakeDeps"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "vendor/*", "shaders/*", "cmake/*", "test/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "vendor/*", "shaders/*", "cmake/*", "test/*", "baker/*"
     
     def requirements(self):
         self.requires("vtx_util/1.0")
         self.requires("vtx_core/1.0")
+        self.requires("ktx/4.4.2")
+        self.requires("fmt/12.1.0", force=True)
         self.requires("catch2/3.15.0")
         if self.settings.os == "Linux":
             self.requires("libffi/3.4.8", force=True)
@@ -37,6 +44,7 @@ class VTXRendererRecipe(ConanFile):
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
+        config_options_ktx(self)
 
     def generate(self):
         tc = CMakeToolchain(self)

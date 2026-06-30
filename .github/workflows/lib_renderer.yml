@@ -169,3 +169,4 @@ jobs:
       run: |
         conan upload libffi -r=vtx
         conan upload wayland -r=vtx
+        conan upload ktx -r=vtx

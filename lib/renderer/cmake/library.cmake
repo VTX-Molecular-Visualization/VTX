@@ -96,6 +96,14 @@ vtx_configure_target(vtx_renderer_test)
 
 target_link_libraries(vtx_renderer PUBLIC vtx_util::vtx_util)
 target_link_libraries(vtx_renderer PUBLIC vtx_core::vtx_core)
+
+target_link_libraries(vtx_renderer PRIVATE KTX::ktx)
+
+# Baker CLI.
+add_executable(baker-cli "${CMAKE_CURRENT_LIST_DIR}/../baker/main.cpp")
+vtx_configure_target(baker-cli)
+target_link_libraries(baker-cli PRIVATE vtx_renderer::vtx_renderer)
+
 target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_renderer_test PRIVATE vtx_core::vtx_core)
 
