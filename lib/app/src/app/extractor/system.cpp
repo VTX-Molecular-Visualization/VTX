@@ -9,7 +9,7 @@
 #include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
-#include "app/system/gridAtomList.hpp"
+#include "app/system/grid.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/uid.hpp"
@@ -26,6 +26,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <renderer/graphics_config.hpp>
 #include <renderer/representation.hpp>
 #include <stdexcept>
 #include <util/event_hub.hpp>

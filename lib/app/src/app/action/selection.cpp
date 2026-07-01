@@ -265,6 +265,8 @@ namespace VTX::App::Action::Selection
 
 	VTX::App::System::GridCoord getCell( const Vec3f & p, float cellSize )
 	{
+		// Returns the grid coordinates (i, j, k) of the voxel containing the atom p based on it's coordinates and the
+		// voxel size
 		return { int( std::floor( p.x / cellSize ) ),
 				 int( std::floor( p.y / cellSize ) ),
 				 int( std::floor( p.z / cellSize ) ) };
@@ -272,6 +274,7 @@ namespace VTX::App::Action::Selection
 
 	struct SystemData
 	{
+		// Holds all data associated with a loaded system
 		Entity																		entity;
 		std::span<const Vec3f>														positions;
 		App::System::Selection *													selection;
@@ -283,29 +286,33 @@ namespace VTX::App::Action::Selection
 
 	void unselecMaskedItems()
 	{
+		// Remove masked items from selection
+		// System loop
 		for ( const Entity system : REG().view<Core::Struct::Topology>() )
 		{
-			auto const visibility = &REG().get<App::System::Visibility>( system );
+			const auto & visibility = REG().get<App::System::Visibility>( system );
+			// update selection
 			REG().patch<System::Selection>(
-				system, [ & ]( System::Selection & p_selection ) { p_selection.atoms &= visibility->atoms; }
+				system, [ & ]( System::Selection & p_selection ) { p_selection.atoms &= visibility.atoms; }
 			);
 		}
 	}
 
 	void ExtendSelection::execute( const float threshold )
 	{
+		// Selects the most efficient extension strategy depending on selection density.
 		unselecMaskedItems();
 		int selec { 0 };
 		int tot { 0 };
+		// System loop
 		for ( const Entity system : REG().view<App::System::Selection>() )
 		{
 			auto & selection = REG().get<App::System::Selection>( system );
-			for ( size_t i : selection.atoms )
-			{
-				selec++;
-			}
+
 			tot += selection.atoms.size();
+			selec += selection.atoms.count();
 		}
+
 		if ( selec > tot / 2 )
 		{
 			ACTION().execute<App::Action::Selection::ExtendSelectionFromNonSelec>( threshold );
@@ -318,6 +325,8 @@ namespace VTX::App::Action::Selection
 
 	void ExtendSelectionFromNonSelec::execute( const float threshold )
 	{
+		// Adds to the selection all atoms within threshold Å of a selected atom
+		// strategy : for each unselected atom, look through neighbor voxels for a selected atom
 		VTX::Util::Chrono chrono;
 		chrono.start();
 
@@ -435,6 +444,8 @@ namespace VTX::App::Action::Selection
 
 	void ExtendSelectionFromSelec::execute( const float threshold )
 	{
+		// Adds to the selection all atoms within threshold Å of a selected atom
+		// strategy : for each selected atom, look through neighbor voxels for an unselected atom
 		VTX::Util::Chrono chrono;
 		chrono.start();
 

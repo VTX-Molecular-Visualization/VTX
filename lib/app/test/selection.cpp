@@ -64,7 +64,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to 4 angstrom", "[extendSelec
 
 	for ( int i = 0; i < 3; i++ )
 	{
-		App::ACTION().execute<App::Action::Selection::ExtendSelectionSelecFirst>( 4.0 );
+		App::ACTION().execute<App::Action::Selection::ExtendSelectionFromSelec>( 4.0 );
 		int count { 0 };
 		int size { 0 };
 		for ( auto system : App::REG().view<Core::Struct::Topology>() )
