@@ -8,7 +8,7 @@
 #include "app/helper/preset.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
-#include "app/system/gridAtomList.hpp"
+#include "app/system/grid.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/trajectory_preparation.hpp"
@@ -20,6 +20,7 @@
 #include <io/reader.hpp>
 #include <latch>
 #include <optional>
+#include <renderer/graphics_config.hpp>
 #include <renderer/representation.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>

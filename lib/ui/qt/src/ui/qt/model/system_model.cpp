@@ -116,12 +116,20 @@ namespace VTX::UI::QT::Model
 			{
 			case E_SYSTEM_ITEM::SYSTEM:
 			{
-				const auto & metadata	= App::REG().get<IO::Metadata>( _system );
-				QString		 systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
-											  ? QString::fromStdString( metadata.path.stem().string() )
-											  : QString::fromStdString( metadata.pdbIDCode );
+				const auto & metadata = App::REG().get<IO::Metadata>( _system );
 
-				return systemName;
+				if ( not metadata.name.empty() )
+				{
+					return QString::fromStdString( metadata.name );
+				}
+				else if ( metadata.pdbIDCode != IO::PDB_ID_CODE_DEFAULT )
+				{
+					return QString::fromStdString( metadata.pdbIDCode );
+				}
+				else
+				{
+					return QString::fromStdString( metadata.path.stem().string() );
+				}
 			}
 			case E_SYSTEM_ITEM::CHAIN:
 			{
@@ -394,6 +402,7 @@ namespace VTX::UI::QT::Model
 		}
 	}
 
+<<<<<<< HEAD
 	void SystemModel::setViewMode( const ViewMode p_mode )
 	{
 		if ( _viewMode == p_mode )
@@ -454,6 +463,10 @@ namespace VTX::UI::QT::Model
 		const Core::Struct::E_SYSTEM_ITEM p_type,
 		const Index						  p_index
 	) const
+=======
+	QModelIndex SystemModel::makeIndex( const int p_row, const Core::Struct::E_SYSTEM_ITEM p_type, const Index p_index )
+		const
+>>>>>>> 20ec1d900 (WIP)
 	{
 		quintptr id = pack( p_type, p_index );
 		return createIndex( p_row, 0, id );

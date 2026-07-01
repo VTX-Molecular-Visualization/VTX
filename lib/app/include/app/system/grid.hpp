@@ -9,8 +9,6 @@ namespace VTX::App::System
 	struct Voxel
 	{
 		std::vector<size_t> atoms;
-		int					selectedCount { 0 };
-		bool				viewed = false;
 	};
 
 	struct GridCoord
