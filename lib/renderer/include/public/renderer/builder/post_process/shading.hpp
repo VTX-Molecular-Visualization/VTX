@@ -69,7 +69,7 @@ namespace VTX::Renderer
 		float					lightIntensity	 = LIGHT_INTENSITY_DEFAULT;
 		float					ambientIntensity = AMBIENT_INTENSITY_DEFAULT;
 		std::optional<FilePath> environmentPath;
-		uint32_t				environmentFaceSize = 1024;
+		uint					environmentFaceSize = 1024;
 		float					skyboxIntensity		= 1.f;
 		float					iblIntensity		= 1.f;
 		float					environmentRotation = ENVIRONMENT_ROTATION_DEFAULT;

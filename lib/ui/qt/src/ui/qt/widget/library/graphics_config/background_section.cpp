@@ -6,12 +6,18 @@
 #include <QHBoxLayout>
 #include <QSignalBlocker>
 #include <app/services.hpp>
+#include <app/session.hpp>
+#include <filesystem>
 #include <util/math.hpp>
+#include <util/string.hpp>
 
 namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 {
 	namespace
 	{
+		std::string _normalizedPathString( const FilePath & p_path )
+		{ return std::filesystem::absolute( p_path ).lexically_normal().string(); }
+
 		float _exposureMultiplierFromEv( const float p_value ) { return Util::Math::exp2( p_value ); }
 
 		float _exposureEvFromMultiplier( const float p_value )
@@ -33,6 +39,11 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_colorPicker->setText( "Color" );
 
 		addWidget( new QLabel( "Environment map", this ) );
+		_listEnvironmentMaps = new QListWidget( this );
+		_listEnvironmentMaps->setSelectionMode( QAbstractItemView::SingleSelection );
+		_listEnvironmentMaps->setSortingEnabled( true );
+		addWidget( _listEnvironmentMaps );
+
 		auto * const environmentPathWidget = new QWidget( this );
 		auto * const environmentPathLayout = new QHBoxLayout( environmentPathWidget );
 		environmentPathLayout->setContentsMargins( 0, 0, 0, 0 );
@@ -91,6 +102,16 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		};
 
 		connect(
+			_listEnvironmentMaps,
+			&QListWidget::itemClicked,
+			[ this ]( QListWidgetItem * const p_item )
+			{
+				_changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH, FilePath>(
+					FilePath( p_item->data( Qt::UserRole ).toString().toStdString() )
+				);
+			}
+		);
+		connect(
 			_buttonEnvironmentBrowse,
 			&QPushButton::clicked,
 			[ this ]
@@ -99,9 +120,12 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 				const QString initialPath
 					= config.shading.environmentPath
 						  ? QString::fromStdString( config.shading.environmentPath->parent_path().string() )
-						  : QString {};
+						  : QString::fromStdString( App::SESSION().getHdriDir().string() );
 				const QString selectedPath = QFileDialog::getOpenFileName(
-					this, "Select environment map", initialPath, "HDR environment maps (*.exr *.EXR *.hdr *.HDR)"
+					this,
+					"Select environment map",
+					initialPath,
+					"Environment maps (*.ktx2 *.KTX2 *.exr *.EXR *.hdr *.HDR)"
 				);
 				if ( not selectedPath.isEmpty() )
 				{
@@ -137,10 +161,41 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		);
 	}
 
+	void BackgroundSection::_refreshEnvironmentMaps()
+	{
+		_listEnvironmentMaps->clear();
+
+		const FilePath hdriDir = App::SESSION().getHdriDir();
+		if ( not std::filesystem::is_directory( hdriDir ) )
+		{
+			return;
+		}
+
+		for ( const std::filesystem::directory_entry & entry :
+			  std::filesystem::recursive_directory_iterator( hdriDir ) )
+		{
+			if ( not entry.is_regular_file() || Util::String::toLower( entry.path().extension().string() ) != ".ktx2" )
+			{
+				continue;
+			}
+
+			FilePath displayPath = std::filesystem::relative( entry.path(), hdriDir );
+			displayPath.replace_extension();
+
+			const QString path = QString::fromStdString( _normalizedPathString( entry.path() ) );
+			auto * const  item
+				= new QListWidgetItem( QString::fromStdString( displayPath.string() ), _listEnvironmentMaps );
+			item->setData( Qt::UserRole, path );
+			item->setToolTip( path );
+		}
+	}
+
 	void BackgroundSection::setConfig( const Entity p_preset, const VTX::Renderer::GraphicsConfig & p_config )
 	{
 		_setCurrentPreset( p_preset );
+		_refreshEnvironmentMaps();
 		const QSignalBlocker blockerColor( _colorPicker );
+		const QSignalBlocker blockerEnvironmentMaps( _listEnvironmentMaps );
 		const QSignalBlocker blockerRotation( _sliderEnvironmentRotation );
 		const QSignalBlocker blockerSkyboxIntensity( _sliderSkyboxIntensity );
 		const QSignalBlocker blockerIblIntensity( _sliderIblIntensity );
@@ -152,6 +207,20 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_lineEnvironmentPath->setText( environmentPath );
 		_lineEnvironmentPath->setToolTip( environmentPath );
 		_buttonEnvironmentClear->setEnabled( p_config.shading.environmentPath.has_value() );
+		_listEnvironmentMaps->setCurrentRow( -1 );
+		if ( p_config.shading.environmentPath )
+		{
+			const QString currentPath
+				= QString::fromStdString( _normalizedPathString( *p_config.shading.environmentPath ) );
+			for ( int i = 0; i < _listEnvironmentMaps->count(); ++i )
+			{
+				if ( _listEnvironmentMaps->item( i )->data( Qt::UserRole ).toString() == currentPath )
+				{
+					_listEnvironmentMaps->setCurrentRow( i );
+					break;
+				}
+			}
+		}
 		_sliderSkyboxIntensity->setValue( _exposureEvFromMultiplier( p_config.shading.skyboxIntensity ) );
 		_sliderIblIntensity->setValue( _exposureEvFromMultiplier( p_config.shading.iblIntensity ) );
 		_sliderEnvironmentRotation->setValue( Util::Math::degrees( p_config.shading.environmentRotation ) );

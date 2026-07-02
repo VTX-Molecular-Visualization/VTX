@@ -2,8 +2,14 @@
 #define __VTX_APP_ACTION_GRAPHICS_CONFIG__
 
 #include "app/ecs.hpp"
+#include "app/services.hpp"
+#include "app/session.hpp"
+#include <filesystem>
 #include <optional>
+#include <renderer/baker.hpp>
 #include <renderer/graphics_config.hpp>
+#include <util/string.hpp>
+#include <util/types.hpp>
 
 namespace VTX::App::Action::GraphicsConfig
 {
@@ -24,6 +30,34 @@ namespace VTX::App::Action::GraphicsConfig
 		{
 			p_texture
 				= p_path.empty() ? std::nullopt : std::optional<Renderer::MaterialTexture> { { p_path.string(), 0 } };
+		}
+
+		inline std::optional<FilePath> prepareEnvironmentPath( const FilePath & p_path, const uint p_faceSize )
+		{
+			if ( p_path.empty() || not std::filesystem::exists( p_path ) )
+			{
+				return std::nullopt;
+			}
+
+			if ( Util::String::toLower( p_path.extension().string() ) == ".ktx2" )
+			{
+				return p_path;
+			}
+			if ( not Renderer::Baker::isEnvironmentMapFile( p_path ) )
+			{
+				return std::nullopt;
+			}
+
+			const FilePath ktxPath
+				= SESSION().getHdriDir() / FilePath( p_path.filename() ).replace_extension( ".ktx2" );
+			if ( ( not std::filesystem::exists( ktxPath )
+				   || std::filesystem::last_write_time( p_path ) > std::filesystem::last_write_time( ktxPath ) )
+				 && not Renderer::Baker::bakeEnvironmentMapToKtx( p_path, ktxPath, p_faceSize ) )
+			{
+				return std::nullopt;
+			}
+
+			return ktxPath;
 		}
 	} // namespace
 
@@ -118,7 +152,7 @@ namespace VTX::App::Action::GraphicsConfig
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH )
 					{
 						p_config.shading.environmentPath
-							= p_value.empty() ? std::nullopt : std::optional<FilePath> { p_value };
+							= prepareEnvironmentPath( p_value, p_config.shading.environmentFaceSize );
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::SKYBOX_INTENSITY )
 					{

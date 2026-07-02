@@ -162,19 +162,18 @@ namespace VTX::App::Extractor
 		{ App::System::prepare( traj, std::move( *reader ) ); };
 		std::visit( visitor, pendingData.trajectoryData );
 
-				if ( p_stopToken.stop_requested() )
-				{
-					_clean();
-					return 0;
-				}
+		if ( p_stopToken.stop_requested() )
+		{
+			_clean();
+			return 0;
+		}
 
-				// ACTION().execute<Action::QueueAction<DeliverSystem<std::shared_ptr<_Data>>>>( _attributesPtr );
-				auto attributesCopy = _attributesPtr; // Keep a copy so wait() can still access the latch
-				ACTION().subscribe(
-					Action::QueuedAction( DeliverSystem<std::shared_ptr<_Data>>(), std::move( attributesCopy ) )
-				);
-				return 0;
-			}
+		auto attributesCopy = _attributesPtr; // Keep a copy so wait() can still access the latch.
+		ACTION().subscribe(
+			Action::QueuedAction( DeliverSystem<std::shared_ptr<_Data>>(), std::move( attributesCopy ) )
+		);
+		return 0;
+	}
 
 	void addTrajectory( const Entity & p_entity, Pending & p_data ) noexcept
 	{

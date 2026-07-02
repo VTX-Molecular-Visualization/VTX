@@ -35,6 +35,7 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<QCheckBox> _checkBoxVSync;
 		QPointer<QCheckBox> _checkBoxSavePower;
 		QPointer<QLabel>	_labelCacheSize;
+		QPointer<QLabel>	_labelHdriSize;
 		QPointer<QLabel>	_labelSnapshotsSize;
 		QPointer<QLabel>	_labelLogsSize;
 

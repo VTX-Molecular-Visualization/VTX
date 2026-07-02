@@ -8,6 +8,7 @@
 #include "renderer/layout/layouts.hpp"
 #include "renderer/render_graph.hpp"
 #include <optional>
+#include <util/types.hpp>
 
 namespace VTX::Renderer::Builder
 {
@@ -26,7 +27,7 @@ namespace VTX::Renderer::Builder
 		bool		  enablePixelize			= false;
 		bool		  enableCRT					= false;
 		bool		  enableEnvironment			= false;
-		uint32_t	  environmentFaceSize		= 1;
+		uint		  environmentFaceSize		= 1;
 
 		bool operator==( const PipelineConfig & ) const = default;
 	};

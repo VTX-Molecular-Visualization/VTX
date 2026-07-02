@@ -8,14 +8,14 @@ namespace VTX::Renderer::Builder::PostProcess
 {
 	namespace
 	{
-		std::vector<uint16_t> _buildCubemap( const ShadingConfig & p_config )
+		std::vector<Baker::EnvironmentTexel> _buildCubemap( const ShadingConfig & p_config )
 		{
 			if ( not p_config.environmentPath )
 			{
 				return {};
 			}
 
-			return Baker::buildEnvironmentCubemap( *p_config.environmentPath, p_config.environmentFaceSize );
+			return Baker::loadEnvironmentCubemapKtx( *p_config.environmentPath, p_config.environmentFaceSize );
 		}
 
 		const std::optional<MaterialTexture> & _materialTexture(
@@ -62,10 +62,12 @@ namespace VTX::Renderer::Builder::PostProcess
 
 	void Shading::loadEnvironment( Context::ContextWrapper & p_context, const ShadingConfig & p_config )
 	{
-		const std::vector<uint16_t> pixels = _buildCubemap( p_config );
+		const std::vector<Baker::EnvironmentTexel> pixels = _buildCubemap( p_config );
 		if ( not pixels.empty() )
 		{
-			p_context.setTextureData<uint16_t>( ENVIRONMENT_TEXTURE, std::span<const uint16_t> { pixels } );
+			p_context.setTextureData<Baker::EnvironmentTexel>(
+				ENVIRONMENT_TEXTURE, std::span<const Baker::EnvironmentTexel> { pixels }
+			);
 		}
 	}
 

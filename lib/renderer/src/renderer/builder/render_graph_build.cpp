@@ -371,7 +371,7 @@ namespace VTX::Renderer::Builder
 
 		g.texture( "Shaded", E_FORMAT::RGBA16F );
 
-		const uint32_t environmentFaceSize = p_config.enableEnvironment ? p_config.environmentFaceSize : 1;
+		const uint environmentFaceSize = p_config.enableEnvironment ? p_config.environmentFaceSize : 1;
 		g.texture(
 			PostProcess::Shading::ENVIRONMENT_TEXTURE,
 			E_FORMAT::RGBA16F,

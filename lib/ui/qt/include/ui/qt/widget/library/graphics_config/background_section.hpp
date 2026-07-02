@@ -6,6 +6,7 @@
 #include "ui/qt/widget/library/graphics_config/section.hpp"
 #include <QLabel>
 #include <QLineEdit>
+#include <QListWidget>
 #include <QPushButton>
 
 namespace VTX::UI::QT::Widget::Library::GraphicsConfig
@@ -19,6 +20,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 
 	  private:
 		QPointer<ColorPicker>	 _colorPicker;
+		QPointer<QListWidget>	 _listEnvironmentMaps;
 		QPointer<QLineEdit>		 _lineEnvironmentPath;
 		QPointer<QPushButton>	 _buttonEnvironmentBrowse;
 		QPointer<QPushButton>	 _buttonEnvironmentClear;
@@ -28,6 +30,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		QPointer<EditableSlider> _sliderIblIntensity;
 		QPointer<QLabel>		 _labelEnvironmentRotation;
 		QPointer<EditableSlider> _sliderEnvironmentRotation;
+
+		void _refreshEnvironmentMaps();
 	};
 } // namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 
