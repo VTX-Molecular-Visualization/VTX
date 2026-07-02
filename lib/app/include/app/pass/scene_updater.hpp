@@ -53,6 +53,11 @@ namespace VTX::App::Pass
 		 */
 		void _onUpdateGraphicsConfigPreset( Registry &, Entity );
 		void _onUpdateColorLayoutPreset( Registry &, Entity );
+
+		/**
+		 * @brief Update renderer when global accessibility settings are updated.
+		 */
+		void _onUpdateAccessibility( Registry &, Entity );
 	};
 } // namespace VTX::App::Pass
 #endif

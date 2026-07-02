@@ -24,6 +24,7 @@ namespace VTX::UI::QT::Resources
 	constexpr std::string_view FONT_LIBERATION_MONO_FAMILY = "Liberation Mono";
 	constexpr std::string_view FONT_CASCADIA_MONO_FAMILY   = "Cascadia Mono";
 	constexpr std::string_view FONT_CASCADIA_CODE_FAMILY   = "Cascadia Code";
+	constexpr std::string_view FONT_OPEN_DYSLEXIC_FAMILY   = "OpenDyslexic";
 
 } // namespace VTX::UI::QT::Resources
 

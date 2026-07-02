@@ -2,6 +2,7 @@
 #include "app/scene/color_layout.hpp"
 #include "app/scene/graphics_config.hpp"
 #include "app/services.hpp"
+#include "app/setting/accessibility.hpp"
 #include <core/struct/mesh.hpp>
 #include <core/struct/topology.hpp>
 #include <renderer/renderer.hpp>
@@ -27,6 +28,7 @@ namespace VTX::App::Pass
 
 		reg.on_update<Renderer::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfigPreset>( this );
 		reg.on_update<Renderer::Color::Layout>().connect<&SceneUpdater::_onUpdateColorLayoutPreset>( this );
+		reg.on_update<Setting::Accessibility>().connect<&SceneUpdater::_onUpdateAccessibility>( this );
 	}
 
 	void SceneUpdater::_onUpdateAABB( Registry & p_r, Entity p_e )
@@ -103,7 +105,18 @@ namespace VTX::App::Pass
 	{
 		auto &		 renderer = RENDERER();
 		const auto & instance = p_r.get<Scene::ColorLayout>( _entity );
-		const auto & preset	  = p_r.get<Renderer::Color::Layout>( instance.preset );
+		auto		 preset	  = p_r.get<Renderer::Color::Layout>( instance.preset );
+
+		const auto & accessibility = ECS::getFirstComponent<Setting::Accessibility>();
+		switch ( accessibility.colorMode )
+		{
+		case Setting::E_COLOR_ACCESSIBILITY_MODE::STANDARD: break;
+		case Setting::E_COLOR_ACCESSIBILITY_MODE::HIGH_CONTRAST:
+			preset = Renderer::Color::toHighContrast( preset );
+			break;
+		case Setting::E_COLOR_ACCESSIBILITY_MODE::COLORBLIND: preset = Renderer::Color::toColorblind( preset ); break;
+		}
+
 		renderer.setColorLayout( preset );
 	}
 
@@ -120,6 +133,14 @@ namespace VTX::App::Pass
 	{
 		auto & instance = p_r.get<Scene::ColorLayout>( _entity );
 		if ( instance.preset == p_e )
+		{
+			_onUpdateColorLayout( p_r, _entity );
+		}
+	}
+
+	void SceneUpdater::_onUpdateAccessibility( Registry & p_r, Entity )
+	{
+		if ( p_r.all_of<Scene::ColorLayout>( _entity ) )
 		{
 			_onUpdateColorLayout( p_r, _entity );
 		}

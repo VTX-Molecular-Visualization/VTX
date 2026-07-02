@@ -3,6 +3,8 @@
 #include "ui/qt/resources.hpp"
 #include "ui/qt/services.hpp"
 #include <QIcon>
+#include <app/ecs.hpp>
+#include <app/setting/accessibility.hpp>
 #include <util/enum.hpp>
 #include <util/logger.hpp>
 
@@ -90,7 +92,9 @@ namespace VTX::UI::QT::Style
 			QString		  themeName = SETTINGS().value( SETTING_KEY_THEME, "" ).toString();
 			const E_THEME theme
 				= themeName.isEmpty() ? DEFAULT_THEME : Util::Enum::enumCast<E_THEME>( themeName.toStdString() );
-			QString fontName = SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
+			const bool forceDyslexicFont = App::ECS::getFirstComponent<App::Setting::Accessibility>().forceDyslexicFont;
+			QString fontName = forceDyslexicFont ? DYSLEXIC_FONT_FAMILY
+												 : SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
 			setFontFamily( fontName );
 			setTheme( theme );
 		}
@@ -106,7 +110,10 @@ namespace VTX::UI::QT::Style
 	{
 		const QString themeName = Util::Enum::enumName( _currentTheme ).data();
 		SETTINGS().setValue( SETTING_KEY_THEME, themeName );
-		SETTINGS().setValue( SETTING_KEY_FONT, getCurrentFontFamily() );
+		if ( not App::ECS::getFirstComponent<App::Setting::Accessibility>().forceDyslexicFont )
+		{
+			SETTINGS().setValue( SETTING_KEY_FONT, getCurrentFontFamily() );
+		}
 	}
 
 	void StyleManager::setTheme( const E_THEME p_theme )

@@ -15,11 +15,13 @@
 #include <QFileDialog>
 #include <QGroupBox>
 #include <QPushButton>
+#include <app/action/accessibility.hpp>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/network/network_manager.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
+#include <app/setting/accessibility.hpp>
 #include <string>
 #include <util/enum.hpp>
 #include <util/event_hub.hpp>
@@ -123,12 +125,24 @@ namespace VTX::UI::QT::DockWidget
 		}
 
 		QSignalBlocker blocker( _comboBoxFont );
-		_comboBoxFont->setCurrentText( STYLE().getCurrentFontFamily() );
+		const auto &   accessibility	 = App::ECS::getFirstComponent<App::Setting::Accessibility>();
+		const bool	   forceDyslexicFont = accessibility.forceDyslexicFont;
+		_comboBoxFont->setCurrentText(
+			forceDyslexicFont ? SETTINGS().value( SETTING_KEY_FONT, Style::DEFAULT_FONT_FAMILY ).toString()
+							  : STYLE().getCurrentFontFamily()
+		);
 
 		connect(
 			_comboBoxFont,
 			&QComboBox::currentTextChanged,
-			[ this ]( const QString & p_fontName ) { STYLE().setFontFamily( p_fontName ); }
+			[ this ]( const QString & p_fontName )
+			{
+				SETTINGS().setValue( SETTING_KEY_FONT, p_fontName );
+				if ( not _checkBoxForceDyslexicFont->isChecked() )
+				{
+					STYLE().setFontFamily( p_fontName );
+				}
+			}
 		);
 
 		layoutDisplay->addWidget( _comboBoxFont );
@@ -139,6 +153,64 @@ namespace VTX::UI::QT::DockWidget
 		buttonResetLayout->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		buttonResetLayout->setMinimumWidth( 0 );
 		layoutDisplay->addWidget( buttonResetLayout );
+
+		// Accessibility.
+		auto * groupBoxAccessibility = new QGroupBox( "Accessibility" );
+		auto * layoutAccessibility	 = new QVBoxLayout( groupBoxAccessibility );
+
+		layoutAccessibility->addWidget( new QLabel( "Color", this ) );
+
+		_comboBoxColorAccessibilityMode = new QComboBox( this );
+		_comboBoxColorAccessibilityMode->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		_comboBoxColorAccessibilityMode->setMinimumWidth( 0 );
+		_comboBoxColorAccessibilityMode->addItem(
+			"Standard", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::STANDARD )
+		);
+		_comboBoxColorAccessibilityMode->addItem(
+			"High contrast", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::HIGH_CONTRAST )
+		);
+		_comboBoxColorAccessibilityMode->addItem(
+			"Color blind", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::COLORBLIND )
+		);
+
+		const int colorModeIndex = _comboBoxColorAccessibilityMode->findData( toUnderlying( accessibility.colorMode ) );
+		if ( colorModeIndex != -1 )
+		{
+			_comboBoxColorAccessibilityMode->setCurrentIndex( colorModeIndex );
+		}
+
+		connect(
+			_comboBoxColorAccessibilityMode,
+			&QComboBox::currentIndexChanged,
+			[ this ]( const int )
+			{
+				const auto colorMode = static_cast<App::Setting::E_COLOR_ACCESSIBILITY_MODE>(
+					_comboBoxColorAccessibilityMode->currentData().toUInt()
+				);
+				App::ACTION().execute<App::Action::Accessibility::SetColorMode>( colorMode );
+			}
+		);
+
+		_checkBoxForceDyslexicFont = new QCheckBox( "Force OpenDyslexic font", this );
+		_checkBoxForceDyslexicFont->setToolTip( "Use OpenDyslexic as the application font" );
+		_checkBoxForceDyslexicFont->setWhatsThis( _checkBoxForceDyslexicFont->toolTip() );
+		_checkBoxForceDyslexicFont->setChecked( forceDyslexicFont );
+		_comboBoxFont->setEnabled( not forceDyslexicFont );
+
+		connect(
+			_checkBoxForceDyslexicFont,
+			&QCheckBox::checkStateChanged,
+			[ this ]( const int p_state )
+			{
+				const bool forceDyslexicFont = p_state == Qt::Checked;
+				App::ACTION().execute<App::Action::Accessibility::SetForceDyslexicFont>( forceDyslexicFont );
+				_comboBoxFont->setEnabled( not forceDyslexicFont );
+				STYLE().setFontFamily( forceDyslexicFont ? Style::DYSLEXIC_FONT_FAMILY : _comboBoxFont->currentText() );
+			}
+		);
+
+		layoutAccessibility->addWidget( _comboBoxColorAccessibilityMode );
+		layoutAccessibility->addWidget( _checkBoxForceDyslexicFont );
 
 		// Inputs.
 		auto * groupBoxInputs = new QGroupBox( "Inputs" );
@@ -203,6 +275,7 @@ namespace VTX::UI::QT::DockWidget
 
 		_layout->addWidget( groupBoxTree );
 		_layout->addWidget( groupBoxDisplay );
+		_layout->addWidget( groupBoxAccessibility );
 		_layout->addWidget( groupBoxInputs );
 		_layout->addWidget( groupBoxGraphics );
 		_layout->addWidget( groupBoxDiskUsage );

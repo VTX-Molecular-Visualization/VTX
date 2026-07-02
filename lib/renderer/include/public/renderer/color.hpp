@@ -357,9 +357,7 @@ namespace VTX::Renderer::Color
 	};
 
 	inline ColorIndex getColorIndex( const Core::ChemDB::Atom::SYMBOL p_symbol )
-	{
-		return int( p_symbol ) + LAYOUT_OFFSET_ATOMS;
-	}
+	{ return int( p_symbol ) + LAYOUT_OFFSET_ATOMS; }
 
 	inline ColorIndex getColorIndex( const std::string & p_chainId, const bool p_isHetAtm = false );
 
@@ -389,9 +387,7 @@ namespace VTX::Renderer::Color
 	}
 
 	inline ColorIndex getColorIndex( const Core::ChemDB::Residue::SYMBOL p_symbol )
-	{
-		return int( p_symbol ) + LAYOUT_OFFSET_RESIDUES;
-	}
+	{ return int( p_symbol ) + LAYOUT_OFFSET_RESIDUES; }
 
 	inline ColorIndex getColorIndex(
 
@@ -417,32 +413,201 @@ namespace VTX::Renderer::Color
 	}
 
 	inline ColorIndex getColorIndex( const Core::ChemDB::SecondaryStructure::TYPE p_type )
+	{ return int( p_type ) + LAYOUT_OFFSET_RIBBONS; }
+
+	inline Layout toHighContrast( const Layout & p_source )
 	{
-		return int( p_type ) + LAYOUT_OFFSET_RIBBONS;
+		Layout result = p_source;
+		for ( Util::Color::Rgba & color : result.colors )
+		{
+			color = color.toHighContrast();
+		}
+		return result;
 	}
 
-	namespace
+	inline Layout toColorblind( const Layout & p_source )
 	{
-		inline Layout _toHighContrast( const Layout & p_source )
+		Layout result = p_source;
+		for ( Util::Color::Rgba & color : result.colors )
 		{
-			Layout result = p_source;
-			for ( Util::Color::Rgba & color : result.colors )
-			{
-				color = color.toHighContrast();
-			}
-			return result;
+			color = color.toColorblind();
+		}
+		return result;
+	}
+
+	inline Layout toCpk( const Layout & p_source )
+	{
+		using I = E_LAYOUT_COLOR_INDEX;
+
+		constexpr Util::Color::Rgba PINK		= { 255, 192, 203 };
+		constexpr Util::Color::Rgba BEIGE		= { 245, 245, 220 };
+		constexpr Util::Color::Rgba ORANGE		= { 255, 165, 0 };
+		constexpr Util::Color::Rgba VIOLET		= { 148, 0, 211 };
+		constexpr Util::Color::Rgba DARK_GREEN	= { 0, 100, 0 };
+		constexpr Util::Color::Rgba DARK_RED	= { 139, 0, 0 };
+		constexpr Util::Color::Rgba DARK_VIOLET = { 75, 0, 130 };
+		constexpr Util::Color::Rgba DARK_ORANGE = { 255, 140, 0 };
+
+		Layout result = p_source;
+		for ( int i = LAYOUT_OFFSET_ATOMS; i < LAYOUT_OFFSET_ATOMS + LAYOUT_COUNT_ATOMS; ++i )
+		{
+			result.colors[ i ] = PINK;
 		}
 
-		inline Layout _toColorblind( const Layout & p_source )
+		const auto set = [ & ]( const I p_index, const Util::Color::Rgba & p_color )
+		{ result.colors[ ColorIndex( p_index ) ] = p_color; };
+
+		set( I::ATOM_H, COLOR_WHITE );
+		set( I::ATOM_C, COLOR_BLACK );
+		set( I::ATOM_N, COLOR_BLUE );
+		set( I::ATOM_O, COLOR_RED );
+		set( I::ATOM_F, COLOR_GREEN );
+		set( I::ATOM_CL, COLOR_GREEN );
+		set( I::ATOM_BR, DARK_RED );
+		set( I::ATOM_I, DARK_VIOLET );
+		set( I::ATOM_HE, COLOR_CYAN );
+		set( I::ATOM_NE, COLOR_CYAN );
+		set( I::ATOM_AR, COLOR_CYAN );
+		set( I::ATOM_KR, COLOR_CYAN );
+		set( I::ATOM_XE, COLOR_CYAN );
+		set( I::ATOM_RN, COLOR_CYAN );
+		set( I::ATOM_P, ORANGE );
+		set( I::ATOM_S, COLOR_YELLOW );
+		set( I::ATOM_B, BEIGE );
+		set( I::ATOM_LI, VIOLET );
+		set( I::ATOM_NA, VIOLET );
+		set( I::ATOM_K, VIOLET );
+		set( I::ATOM_RB, VIOLET );
+		set( I::ATOM_CS, VIOLET );
+		set( I::ATOM_FR, VIOLET );
+		set( I::ATOM_BE, DARK_GREEN );
+		set( I::ATOM_MG, DARK_GREEN );
+		set( I::ATOM_CA, DARK_GREEN );
+		set( I::ATOM_SR, DARK_GREEN );
+		set( I::ATOM_BA, DARK_GREEN );
+		set( I::ATOM_RA, DARK_GREEN );
+		set( I::ATOM_TI, COLOR_GREY );
+		set( I::ATOM_FE, DARK_ORANGE );
+
+		set( I::ATOM_SC, BEIGE );
+		set( I::ATOM_V, BEIGE );
+		set( I::ATOM_CR, BEIGE );
+		set( I::ATOM_MN, BEIGE );
+		set( I::ATOM_CO, BEIGE );
+		set( I::ATOM_NI, BEIGE );
+		set( I::ATOM_CU, BEIGE );
+		set( I::ATOM_ZN, BEIGE );
+		set( I::ATOM_Y, BEIGE );
+		set( I::ATOM_ZR, BEIGE );
+		set( I::ATOM_NB, BEIGE );
+		set( I::ATOM_MO, BEIGE );
+		set( I::ATOM_TC, BEIGE );
+		set( I::ATOM_RU, BEIGE );
+		set( I::ATOM_RH, BEIGE );
+		set( I::ATOM_PD, BEIGE );
+		set( I::ATOM_AG, BEIGE );
+		set( I::ATOM_CD, BEIGE );
+		set( I::ATOM_HF, BEIGE );
+		set( I::ATOM_TA, BEIGE );
+		set( I::ATOM_W, BEIGE );
+		set( I::ATOM_RE, BEIGE );
+		set( I::ATOM_OS, BEIGE );
+		set( I::ATOM_IR, BEIGE );
+		set( I::ATOM_PT, BEIGE );
+		set( I::ATOM_AU, BEIGE );
+		set( I::ATOM_HG, BEIGE );
+
+		return result;
+	}
+
+	inline Layout toRasmol( const Layout & p_source )
+	{
+		using I = E_LAYOUT_COLOR_INDEX;
+
+		constexpr Util::Color::Rgba LIGHT_GREY	 = { 200, 200, 200 };
+		constexpr Util::Color::Rgba SKY_BLUE	 = { 143, 143, 255 };
+		constexpr Util::Color::Rgba RED			 = { 240, 0, 0 };
+		constexpr Util::Color::Rgba YELLOW		 = { 255, 200, 50 };
+		constexpr Util::Color::Rgba PINK		 = { 255, 192, 203 };
+		constexpr Util::Color::Rgba GOLDEN_ROD	 = { 218, 165, 32 };
+		constexpr Util::Color::Rgba ORANGE		 = { 255, 165, 0 };
+		constexpr Util::Color::Rgba DARK_GREY	 = { 128, 128, 144 };
+		constexpr Util::Color::Rgba BROWN		 = { 165, 42, 42 };
+		constexpr Util::Color::Rgba PURPLE		 = { 160, 32, 240 };
+		constexpr Util::Color::Rgba DEEP_PINK	 = { 255, 20, 147 };
+		constexpr Util::Color::Rgba FIRE_BRICK	 = { 178, 34, 34 };
+		constexpr Util::Color::Rgba FOREST_GREEN = { 34, 139, 34 };
+
+		Layout result = p_source;
+		for ( int i = LAYOUT_OFFSET_ATOMS; i < LAYOUT_OFFSET_ATOMS + LAYOUT_COUNT_ATOMS; ++i )
 		{
-			Layout result = p_source;
-			for ( Util::Color::Rgba & color : result.colors )
-			{
-				color = color.toColorblind();
-			}
-			return result;
+			result.colors[ i ] = DEEP_PINK;
 		}
-	} // namespace
+
+		const auto set = [ & ]( const I p_index, const Util::Color::Rgba & p_color )
+		{ result.colors[ ColorIndex( p_index ) ] = p_color; };
+
+		set( I::ATOM_H, COLOR_WHITE );
+		set( I::ATOM_HE, PINK );
+		set( I::ATOM_LI, FIRE_BRICK );
+		set( I::ATOM_BE, DEEP_PINK );
+		set( I::ATOM_B, COLOR_GREEN );
+		set( I::ATOM_C, LIGHT_GREY );
+		set( I::ATOM_N, SKY_BLUE );
+		set( I::ATOM_O, RED );
+		set( I::ATOM_F, GOLDEN_ROD );
+		set( I::ATOM_NE, DEEP_PINK );
+		set( I::ATOM_NA, COLOR_BLUE );
+		set( I::ATOM_MG, FOREST_GREEN );
+		set( I::ATOM_AL, DARK_GREY );
+		set( I::ATOM_SI, GOLDEN_ROD );
+		set( I::ATOM_P, ORANGE );
+		set( I::ATOM_S, YELLOW );
+		set( I::ATOM_CL, COLOR_GREEN );
+		set( I::ATOM_AR, DEEP_PINK );
+		set( I::ATOM_K, DEEP_PINK );
+		set( I::ATOM_CA, DARK_GREY );
+		set( I::ATOM_SC, DEEP_PINK );
+		set( I::ATOM_TI, DARK_GREY );
+		set( I::ATOM_V, DEEP_PINK );
+		set( I::ATOM_CR, DARK_GREY );
+		set( I::ATOM_MN, DARK_GREY );
+		set( I::ATOM_FE, ORANGE );
+		set( I::ATOM_CO, DEEP_PINK );
+		set( I::ATOM_NI, BROWN );
+		set( I::ATOM_CU, BROWN );
+		set( I::ATOM_ZN, BROWN );
+		set( I::ATOM_GA, DEEP_PINK );
+		set( I::ATOM_GE, DEEP_PINK );
+		set( I::ATOM_AS, DEEP_PINK );
+		set( I::ATOM_SE, DEEP_PINK );
+		set( I::ATOM_BR, BROWN );
+		set( I::ATOM_KR, DEEP_PINK );
+		set( I::ATOM_RB, DEEP_PINK );
+		set( I::ATOM_SR, DEEP_PINK );
+		set( I::ATOM_Y, DEEP_PINK );
+		set( I::ATOM_ZR, DEEP_PINK );
+		set( I::ATOM_NB, DEEP_PINK );
+		set( I::ATOM_MO, DEEP_PINK );
+		set( I::ATOM_TC, DEEP_PINK );
+		set( I::ATOM_RU, DEEP_PINK );
+		set( I::ATOM_RH, DEEP_PINK );
+		set( I::ATOM_PD, DEEP_PINK );
+		set( I::ATOM_AG, DARK_GREY );
+		set( I::ATOM_CD, DEEP_PINK );
+		set( I::ATOM_IN, DEEP_PINK );
+		set( I::ATOM_SN, DEEP_PINK );
+		set( I::ATOM_SB, DEEP_PINK );
+		set( I::ATOM_TE, DEEP_PINK );
+		set( I::ATOM_I, PURPLE );
+		set( I::ATOM_XE, DEEP_PINK );
+		set( I::ATOM_CS, DEEP_PINK );
+		set( I::ATOM_BA, ORANGE );
+		set( I::ATOM_LA, DEEP_PINK );
+		set( I::ATOM_AU, GOLDEN_ROD );
+
+		return result;
+	}
 
 	namespace Layouts
 	{
@@ -707,10 +872,12 @@ namespace VTX::Renderer::Color
 												 COLOR_WHITE,
 												 COLOR_WHITE } };
 
-		inline const Layout HIGH_CONTRAST = _toHighContrast( JMOL );
-		inline const Layout COLORBLIND	  = _toColorblind( JMOL );
+		inline const Layout CPK	   = toCpk( JMOL );
+		inline const Layout RASMOL = toRasmol( JMOL );
+
 	} // namespace Layouts
 
+	// clang-format off
 	/*
 enum class COLOR_MODE : int
 {
@@ -746,6 +913,7 @@ inline static const std::vector<std::string> SECONDARY_STRUCTURE_COLOR_MODE_STRI
 																					 "Residue",
 																					 "Custom" };
 																					 */
+	// clang-format on
 } // namespace VTX::Renderer::Color
 
 #endif

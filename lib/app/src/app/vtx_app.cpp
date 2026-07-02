@@ -25,6 +25,7 @@
 #include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
+#include "app/setting/accessibility.hpp"
 #include "app/setting/controller.hpp"
 #include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
@@ -115,6 +116,9 @@ namespace VTX::App
 		ECS::setCtx<Uid::UIDManager>();
 		ECS::setCtx<Pass::PassManager>();
 		ECS::setCtx<Core::ChemDB::Category::Dictionary>( Core::ChemDB::Category::createDefaultDictionary() );
+
+		const Entity accessibilityEnt = _registry.create();
+		_registry.emplace<Setting::Accessibility>( accessibilityEnt );
 
 		try
 		{

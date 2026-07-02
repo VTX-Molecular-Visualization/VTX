@@ -206,10 +206,8 @@ namespace VTX::App::Action::Preset
 		void execute()
 		{
 			ACTION().execute<Add<Renderer::Color::Layout>>( "JMol", Renderer::Color::Layouts::JMOL );
-			ACTION().execute<Add<Renderer::Color::Layout>>(
-				"JMol High Contrast", Renderer::Color::Layouts::HIGH_CONTRAST
-			);
-			ACTION().execute<Add<Renderer::Color::Layout>>( "JMol Colorblind", Renderer::Color::Layouts::COLORBLIND );
+			ACTION().execute<Add<Renderer::Color::Layout>>( "CPK", Renderer::Color::Layouts::CPK );
+			ACTION().execute<Add<Renderer::Color::Layout>>( "Rasmol", Renderer::Color::Layouts::RASMOL );
 		}
 	};
 
