@@ -89,6 +89,10 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						p_config.shading.ambientIntensity = p_value;
 					}
+					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::BACKGROUND_MODE )
+					{
+						p_config.shading.backgroundMode = static_cast<Renderer::E_BACKGROUND_MODE>( p_value );
+					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::COLOR_BACKGROUND )
 					{
 						p_config.shading.colorBackground = p_value;

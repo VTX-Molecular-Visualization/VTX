@@ -510,7 +510,9 @@ namespace VTX::Renderer
 				reinterpret_cast<uintptr_t>( this )
 			);
 		}
-		if ( hasDirty( _dirtyRenderer, RendererDirty::ENVIRONMENT ) && _graphicsConfig.data.shading.environmentPath )
+		if ( hasDirty( _dirtyRenderer, RendererDirty::ENVIRONMENT )
+			 && _graphicsConfig.data.shading.backgroundMode == E_BACKGROUND_MODE::ENVIRONMENT
+			 && _graphicsConfig.data.shading.environmentPath )
 		{
 			try
 			{
@@ -582,6 +584,7 @@ namespace VTX::Renderer
 	{
 		const ShadingConfig & currentShading = _graphicsConfig.data.shading;
 		const bool environmentChanged = currentShading.environmentPath != p_config.shading.environmentPath
+										|| currentShading.backgroundMode != p_config.shading.backgroundMode
 										|| currentShading.environmentFaceSize != p_config.shading.environmentFaceSize;
 		const Material & currentMaterial = currentShading.material;
 		const Material & material		 = p_config.shading.material;

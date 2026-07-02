@@ -176,7 +176,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_sliderToonSteps->setValue( p_config.shading.toonSteps );
 		using namespace Renderer;
 		const bool pbr			  = p_config.shading.mode == E_SHADING::PBR;
-		const bool hasEnvironment = p_config.shading.environmentPath.has_value();
+		const bool hasEnvironment = p_config.shading.backgroundMode == E_BACKGROUND_MODE::ENVIRONMENT
+									&& p_config.shading.environmentPath.has_value();
 		_labelLightIntensity->setVisible( pbr );
 		_sliderLightIntensity->setVisible( pbr );
 		_labelAmbientIntensity->setVisible( pbr && not hasEnvironment );

@@ -642,7 +642,8 @@ namespace VTX::Renderer::Builder
 		config.enableChromaticAberration = p_config.chromaticAberration.has_value();
 		config.enablePixelize			 = p_config.pixelize.has_value();
 		config.enableCRT				 = p_config.crt.has_value();
-		config.enableEnvironment		 = p_config.shading.environmentPath.has_value();
+		config.enableEnvironment		 = p_config.shading.backgroundMode == E_BACKGROUND_MODE::ENVIRONMENT
+										   && p_config.shading.environmentPath.has_value();
 		config.environmentFaceSize		 = config.enableEnvironment ? p_config.shading.environmentFaceSize : 1;
 
 		return config;

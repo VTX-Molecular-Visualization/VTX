@@ -24,27 +24,35 @@ namespace VTX::Renderer
 		COUNT
 	};
 
-	constexpr E_SHADING		SHADING_MODE_DEFAULT		 = E_SHADING::DIFFUSE;
-	const Util::Color::Rgba COLOR_LIGHT_DEFAULT			 = COLOR_WHITE;
-	const Util::Color::Rgba COLOR_BACKGROUND_DEFAULT	 = COLOR_BLACK;
-	constexpr float			SPECULAR_FACTOR_DEFAULT		 = 0.4f;
-	constexpr float			SPECULAR_FACTOR_MIN			 = 0.f;
-	constexpr float			SPECULAR_FACTOR_MAX			 = 1.f;
-	constexpr float			SHININESS_DEFAULT			 = 32.f;
-	constexpr float			SHININESS_MIN				 = 0.f;
-	constexpr float			SHININESS_MAX				 = 128.f;
-	constexpr uint			TOON_STEPS_DEFAULT			 = 4;
-	constexpr uint			TOON_STEPS_MIN				 = 1;
-	constexpr uint			TOON_STEPS_MAX				 = 15;
-	constexpr float			LIGHT_INTENSITY_DEFAULT		 = 2.f;
-	constexpr float			LIGHT_INTENSITY_MIN			 = 0.f;
-	constexpr float			LIGHT_INTENSITY_MAX			 = 10.f;
-	constexpr float			AMBIENT_INTENSITY_DEFAULT	 = 0.01f;
-	constexpr float			AMBIENT_INTENSITY_MIN		 = 0.f;
-	constexpr float			AMBIENT_INTENSITY_MAX		 = 10.f;
-	constexpr float			ENVIRONMENT_ROTATION_DEFAULT = 0.f;
-	constexpr float			ENVIRONMENT_ROTATION_MIN	 = 0.f;
-	constexpr float			ENVIRONMENT_ROTATION_MAX	 = TWO_PIf;
+	enum struct E_BACKGROUND_MODE
+	{
+		COLOR,
+		ENVIRONMENT,
+		COUNT
+	};
+
+	constexpr E_SHADING			SHADING_MODE_DEFAULT		 = E_SHADING::DIFFUSE;
+	constexpr E_BACKGROUND_MODE BACKGROUND_MODE_DEFAULT		 = E_BACKGROUND_MODE::COLOR;
+	const Util::Color::Rgba		COLOR_LIGHT_DEFAULT			 = COLOR_WHITE;
+	const Util::Color::Rgba		COLOR_BACKGROUND_DEFAULT	 = COLOR_BLACK;
+	constexpr float				SPECULAR_FACTOR_DEFAULT		 = 0.4f;
+	constexpr float				SPECULAR_FACTOR_MIN			 = 0.f;
+	constexpr float				SPECULAR_FACTOR_MAX			 = 1.f;
+	constexpr float				SHININESS_DEFAULT			 = 32.f;
+	constexpr float				SHININESS_MIN				 = 0.f;
+	constexpr float				SHININESS_MAX				 = 128.f;
+	constexpr uint				TOON_STEPS_DEFAULT			 = 4;
+	constexpr uint				TOON_STEPS_MIN				 = 1;
+	constexpr uint				TOON_STEPS_MAX				 = 15;
+	constexpr float				LIGHT_INTENSITY_DEFAULT		 = 2.f;
+	constexpr float				LIGHT_INTENSITY_MIN			 = 0.f;
+	constexpr float				LIGHT_INTENSITY_MAX			 = 10.f;
+	constexpr float				AMBIENT_INTENSITY_DEFAULT	 = 0.01f;
+	constexpr float				AMBIENT_INTENSITY_MIN		 = 0.f;
+	constexpr float				AMBIENT_INTENSITY_MAX		 = 10.f;
+	constexpr float				ENVIRONMENT_ROTATION_DEFAULT = 0.f;
+	constexpr float				ENVIRONMENT_ROTATION_MIN	 = 0.f;
+	constexpr float				ENVIRONMENT_ROTATION_MAX	 = TWO_PIf;
 
 	constexpr bool			ACTIVE_FOG_DEFAULT	= false;
 	const Util::Color::Rgba COLOR_FOG_DEFAULT	= COLOR_GREY;
@@ -68,6 +76,7 @@ namespace VTX::Renderer
 		uint					toonSteps;
 		float					lightIntensity	 = LIGHT_INTENSITY_DEFAULT;
 		float					ambientIntensity = AMBIENT_INTENSITY_DEFAULT;
+		E_BACKGROUND_MODE		backgroundMode	 = BACKGROUND_MODE_DEFAULT;
 		std::optional<FilePath> environmentPath;
 		uint					environmentFaceSize = 1024;
 		float					skyboxIntensity		= 1.f;
@@ -235,7 +244,9 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( fog.far );
 			buffer.write( p_fog ? fog.density : 0.f );
 			buffer.write( p_ssao ? p_ssao->scale : 1.f );
-			buffer.write( uint32_t( p_config.environmentPath.has_value() ) );
+			buffer.write( uint32_t(
+				p_config.backgroundMode == E_BACKGROUND_MODE::ENVIRONMENT && p_config.environmentPath.has_value()
+			) );
 			buffer.write( p_config.skyboxIntensity );
 			buffer.write( p_config.iblIntensity );
 			buffer.write( p_config.environmentRotation );

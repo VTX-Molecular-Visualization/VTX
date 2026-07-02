@@ -1,5 +1,7 @@
 #include "renderer/baker.hpp"
 #include <array>
+#include <cmath>
+#include <cstddef>
 #include <cstring>
 #include <filesystem>
 #include <ktx.h>
@@ -16,6 +18,8 @@ namespace VTX::Renderer::Baker
 	{
 		constexpr ktx_uint32_t VK_FORMAT_R16G16B16A16_SFLOAT = 97;
 		constexpr uint		   KTX_ZSTD_COMPRESSION_LEVEL	 = 10;
+		constexpr size_t	   THUMBNAIL_WIDTH				 = 256;
+		constexpr size_t	   THUMBNAIL_HEIGHT				 = 128;
 		constexpr size_t	   ENVIRONMENT_FACE_COUNT		 = 6;
 		constexpr size_t	   ENVIRONMENT_CHANNEL_COUNT	 = 4;
 
@@ -105,6 +109,54 @@ namespace VTX::Renderer::Baker
 			}
 
 			return cubemap;
+		}
+
+		uint8_t _toThumbnailChannel( const float p_value )
+		{
+			using namespace Util::Math;
+
+			const float mapped = p_value / ( p_value + 1.f );
+			return uint8_t( clamp( std::pow( mapped, 1.f / 2.2f ) * 255.f, 0.f, 255.f ) );
+		}
+
+		bool _writeThumbnail( const FilePath & p_outputPath, const Util::Image::FloatImage & p_image )
+		{
+			std::vector<std::byte> pixels( THUMBNAIL_WIDTH * THUMBNAIL_HEIGHT * ENVIRONMENT_CHANNEL_COUNT );
+
+			for ( size_t y = 0; y < THUMBNAIL_HEIGHT; ++y )
+			{
+				for ( size_t x = 0; x < THUMBNAIL_WIDTH; ++x )
+				{
+					const size_t sourceX = x * p_image.width / THUMBNAIL_WIDTH;
+					const size_t sourceY = y * p_image.height / THUMBNAIL_HEIGHT;
+					const size_t src	 = ( sourceY * p_image.width + sourceX ) * ENVIRONMENT_CHANNEL_COUNT;
+					const size_t dstY	 = THUMBNAIL_HEIGHT - 1 - y;
+					const size_t dst	 = ( dstY * THUMBNAIL_WIDTH + x ) * ENVIRONMENT_CHANNEL_COUNT;
+
+					pixels[ dst + 0 ] = std::byte { _toThumbnailChannel( p_image.pixels[ src + 0 ] ) };
+					pixels[ dst + 1 ] = std::byte { _toThumbnailChannel( p_image.pixels[ src + 1 ] ) };
+					pixels[ dst + 2 ] = std::byte { _toThumbnailChannel( p_image.pixels[ src + 2 ] ) };
+					pixels[ dst + 3 ] = std::byte { 255 };
+				}
+			}
+
+			try
+			{
+				Util::Image::write(
+					FilePath( p_outputPath ).replace_extension( ".png" ),
+					Util::Image::E_FORMAT::PNG,
+					THUMBNAIL_WIDTH,
+					THUMBNAIL_HEIGHT,
+					pixels.data()
+				);
+			}
+			catch ( const std::exception & error )
+			{
+				VTX_ERROR( "Failed to export environment thumbnail: {}", error.what() );
+				return false;
+			}
+
+			return true;
 		}
 
 		bool _writeCubemapToKtx(
@@ -242,10 +294,12 @@ namespace VTX::Renderer::Baker
 
 	bool bakeEnvironmentMapToKtx( const FilePath & p_path, const FilePath & p_outputPath, const uint p_faceSize )
 	{
+		Util::Image::FloatImage		  image;
 		std::vector<EnvironmentTexel> cubemap;
 		try
 		{
-			cubemap = buildEnvironmentCubemap( p_path, p_faceSize );
+			image	= Util::Image::readFloatImage( p_path );
+			cubemap = _buildCubemap( image, p_faceSize );
 		}
 		catch ( const std::exception & error )
 		{
@@ -259,6 +313,11 @@ namespace VTX::Renderer::Baker
 		}
 
 		if ( not _writeCubemapToKtx( p_outputPath, cubemap, p_faceSize ) )
+		{
+			return false;
+		}
+
+		if ( not _writeThumbnail( p_outputPath, image ) )
 		{
 			return false;
 		}

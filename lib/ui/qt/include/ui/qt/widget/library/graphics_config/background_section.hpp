@@ -8,6 +8,7 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QPushButton>
+#include <QRadioButton>
 
 namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 {
@@ -19,7 +20,10 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		void setConfig( Entity, const VTX::Renderer::GraphicsConfig & );
 
 	  private:
+		QPointer<QRadioButton>	 _radioBackgroundColor;
+		QPointer<QRadioButton>	 _radioBackgroundEnvironment;
 		QPointer<ColorPicker>	 _colorPicker;
+		QPointer<QLabel>		 _labelEnvironmentMap;
 		QPointer<QListWidget>	 _listEnvironmentMaps;
 		QPointer<QLineEdit>		 _lineEnvironmentPath;
 		QPointer<QPushButton>	 _buttonEnvironmentBrowse;

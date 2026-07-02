@@ -4,7 +4,9 @@
 #include "ui/qt/style/style_manager.hpp"
 #include <QFileDialog>
 #include <QHBoxLayout>
+#include <QIcon>
 #include <QSignalBlocker>
+#include <QSize>
 #include <app/services.hpp>
 #include <app/session.hpp>
 #include <filesystem>
@@ -34,14 +36,27 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		setChecked( true );
 		freeze( true );
 
+		auto * const backgroundModeWidget = new QWidget( this );
+		auto * const backgroundModeLayout = new QHBoxLayout( backgroundModeWidget );
+		backgroundModeLayout->setContentsMargins( 0, 0, 0, 0 );
+		_radioBackgroundColor		= new QRadioButton( "Color", backgroundModeWidget );
+		_radioBackgroundEnvironment = new QRadioButton( "Environment map", backgroundModeWidget );
+		backgroundModeLayout->addWidget( _radioBackgroundColor );
+		backgroundModeLayout->addWidget( _radioBackgroundEnvironment );
+		addWidget( backgroundModeWidget );
+
 		_colorPicker = new ColorPicker( this );
 		addWidget( _colorPicker );
 		_colorPicker->setText( "Color" );
 
-		addWidget( new QLabel( "Environment map", this ) );
+		_labelEnvironmentMap = new QLabel( "Environment map", this );
+		addWidget( _labelEnvironmentMap );
 		_listEnvironmentMaps = new QListWidget( this );
 		_listEnvironmentMaps->setSelectionMode( QAbstractItemView::SingleSelection );
 		_listEnvironmentMaps->setSortingEnabled( true );
+		_listEnvironmentMaps->setIconSize( QSize( 192, 96 ) );
+		_listEnvironmentMaps->setFixedHeight( 220 );
+		_listEnvironmentMaps->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 		addWidget( _listEnvironmentMaps );
 
 		auto * const environmentPathWidget = new QWidget( this );
@@ -101,6 +116,32 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 			);
 		};
 
+		connect(
+			_radioBackgroundColor,
+			&QRadioButton::toggled,
+			[ this ]( const bool p_checked )
+			{
+				if ( p_checked )
+				{
+					_changeValue<E_GRAPHICS_CONFIG_VALUES::BACKGROUND_MODE, E_BACKGROUND_MODE>(
+						E_BACKGROUND_MODE::COLOR
+					);
+				}
+			}
+		);
+		connect(
+			_radioBackgroundEnvironment,
+			&QRadioButton::toggled,
+			[ this ]( const bool p_checked )
+			{
+				if ( p_checked )
+				{
+					_changeValue<E_GRAPHICS_CONFIG_VALUES::BACKGROUND_MODE, E_BACKGROUND_MODE>(
+						E_BACKGROUND_MODE::ENVIRONMENT
+					);
+				}
+			}
+		);
 		connect(
 			_listEnvironmentMaps,
 			&QListWidget::itemClicked,
@@ -182,11 +223,14 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 			FilePath displayPath = std::filesystem::relative( entry.path(), hdriDir );
 			displayPath.replace_extension();
 
-			const QString path = QString::fromStdString( _normalizedPathString( entry.path() ) );
-			auto * const  item
-				= new QListWidgetItem( QString::fromStdString( displayPath.string() ), _listEnvironmentMaps );
+			const QString  path			 = QString::fromStdString( _normalizedPathString( entry.path() ) );
+			const FilePath thumbnailPath = FilePath( entry.path() ).replace_extension( ".png" );
+			auto * const   item			 = new QListWidgetItem(
+				QIcon( QString::fromStdString( thumbnailPath.string() ) ), QString {}, _listEnvironmentMaps
+			);
 			item->setData( Qt::UserRole, path );
-			item->setToolTip( path );
+			item->setSizeHint( QSize( 208, 104 ) );
+			item->setToolTip( QString::fromStdString( displayPath.string() ) + "\n" + path );
 		}
 	}
 
@@ -194,12 +238,18 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	{
 		_setCurrentPreset( p_preset );
 		_refreshEnvironmentMaps();
+		const QSignalBlocker blockerBackgroundColor( _radioBackgroundColor );
+		const QSignalBlocker blockerBackgroundEnvironment( _radioBackgroundEnvironment );
 		const QSignalBlocker blockerColor( _colorPicker );
 		const QSignalBlocker blockerEnvironmentMaps( _listEnvironmentMaps );
 		const QSignalBlocker blockerRotation( _sliderEnvironmentRotation );
 		const QSignalBlocker blockerSkyboxIntensity( _sliderSkyboxIntensity );
 		const QSignalBlocker blockerIblIntensity( _sliderIblIntensity );
 
+		_radioBackgroundColor->setChecked( p_config.shading.backgroundMode == VTX::Renderer::E_BACKGROUND_MODE::COLOR );
+		_radioBackgroundEnvironment->setChecked(
+			p_config.shading.backgroundMode == VTX::Renderer::E_BACKGROUND_MODE::ENVIRONMENT
+		);
 		_colorPicker->setColor( Helper::toQColor( p_config.shading.colorBackground ) );
 		const QString environmentPath = p_config.shading.environmentPath
 											? QString::fromStdString( p_config.shading.environmentPath->string() )
@@ -224,8 +274,13 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_sliderSkyboxIntensity->setValue( _exposureEvFromMultiplier( p_config.shading.skyboxIntensity ) );
 		_sliderIblIntensity->setValue( _exposureEvFromMultiplier( p_config.shading.iblIntensity ) );
 		_sliderEnvironmentRotation->setValue( Util::Math::degrees( p_config.shading.environmentRotation ) );
-		const bool hasEnvironment = p_config.shading.environmentPath.has_value();
-		const bool pbr			  = p_config.shading.mode == VTX::Renderer::E_SHADING::PBR;
+		const bool environmentMode = p_config.shading.backgroundMode == VTX::Renderer::E_BACKGROUND_MODE::ENVIRONMENT;
+		const bool hasEnvironment  = environmentMode && p_config.shading.environmentPath.has_value();
+		const bool pbr			   = p_config.shading.mode == VTX::Renderer::E_SHADING::PBR;
+		_colorPicker->setVisible( p_config.shading.backgroundMode == VTX::Renderer::E_BACKGROUND_MODE::COLOR );
+		_labelEnvironmentMap->setVisible( environmentMode );
+		_listEnvironmentMaps->setVisible( environmentMode );
+		_lineEnvironmentPath->parentWidget()->setVisible( environmentMode );
 		_labelSkyboxIntensity->setVisible( hasEnvironment );
 		_sliderSkyboxIntensity->setVisible( hasEnvironment );
 		_labelIblIntensity->setVisible( hasEnvironment && pbr );
