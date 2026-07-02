@@ -27,6 +27,14 @@ namespace VTX::Renderer
 		CARBON_CHAIN,
 		CARBON_CUSTOM
 	};
+
+	enum struct E_COLOR_SCHEME_SECONDARY_STRUCTURE : uint8_t
+	{
+		STRUCTURE,
+		CHAIN,
+		RESIDUE,
+		CUSTOM
+	};
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Color
@@ -357,7 +365,9 @@ namespace VTX::Renderer::Color
 	};
 
 	inline ColorIndex getColorIndex( const Core::ChemDB::Atom::SYMBOL p_symbol )
-	{ return int( p_symbol ) + LAYOUT_OFFSET_ATOMS; }
+	{
+		return int( p_symbol ) + LAYOUT_OFFSET_ATOMS;
+	}
 
 	inline ColorIndex getColorIndex( const std::string & p_chainId, const bool p_isHetAtm = false );
 
@@ -387,7 +397,9 @@ namespace VTX::Renderer::Color
 	}
 
 	inline ColorIndex getColorIndex( const Core::ChemDB::Residue::SYMBOL p_symbol )
-	{ return int( p_symbol ) + LAYOUT_OFFSET_RESIDUES; }
+	{
+		return int( p_symbol ) + LAYOUT_OFFSET_RESIDUES;
+	}
 
 	inline ColorIndex getColorIndex(
 
@@ -413,7 +425,9 @@ namespace VTX::Renderer::Color
 	}
 
 	inline ColorIndex getColorIndex( const Core::ChemDB::SecondaryStructure::TYPE p_type )
-	{ return int( p_type ) + LAYOUT_OFFSET_RIBBONS; }
+	{
+		return int( p_type ) + LAYOUT_OFFSET_RIBBONS;
+	}
 
 	inline Layout toHighContrast( const Layout & p_source )
 	{
@@ -877,43 +891,6 @@ namespace VTX::Renderer::Color
 
 	} // namespace Layouts
 
-	// clang-format off
-	/*
-enum class COLOR_MODE : int
-{
-	ATOM_CHAIN,
-	ATOM_PROTEIN,
-	ATOM_CUSTOM,
-	RESIDUE,
-	CHAIN,
-	PROTEIN,
-	CUSTOM,
-	INHERITED
-};
-static const std::vector<std::string> COLOR_MODE_STRING { "Atom-Chain", "Atom-Object", "Atom-Custom", "Residue",
-														  "Chain",		"System",	   "Custom",	  "Inherited" };
-enum class COLOR_BLENDING_MODE : int
-{
-	HARD,
-	SOFT
-};
-inline static const std::vector<std::string> COLOR_BLENDING_MODE_STRING { "Hard", "Soft" };
-
-enum class SECONDARY_STRUCTURE_COLOR_MODE : int
-{
-	JMOL,
-	PROTEIN,
-	CHAIN,
-	RESIDUE,
-	CUSTOM
-};
-inline static const std::vector<std::string> SECONDARY_STRUCTURE_COLOR_MODE_STRING { "JMOL",
-																					 "System",
-																					 "Chain",
-																					 "Residue",
-																					 "Custom" };
-																					 */
-	// clang-format on
 } // namespace VTX::Renderer::Color
 
 #endif

@@ -5,6 +5,9 @@
 
 namespace VTX::App::Setting
 {
+	/**
+	 * @brief Color modes.
+	 */
 	enum struct E_COLOR_ACCESSIBILITY_MODE : uint
 	{
 		STANDARD,
@@ -12,9 +15,15 @@ namespace VTX::App::Setting
 		COLORBLIND
 	};
 
+	/**
+	 * @brief Default values.
+	 */
 	constexpr E_COLOR_ACCESSIBILITY_MODE COLOR_ACCESSIBILITY_MODE_DEFAULT = E_COLOR_ACCESSIBILITY_MODE::STANDARD;
 	constexpr bool						 FORCE_DYSLEXIC_FONT_DEFAULT	  = false;
 
+	/**
+	 * @brief Accessibility settings.
+	 */
 	struct Accessibility
 	{
 		E_COLOR_ACCESSIBILITY_MODE colorMode		 = COLOR_ACCESSIBILITY_MODE_DEFAULT;

@@ -64,6 +64,12 @@ namespace VTX::Bench
 		system.colorSchemeAtoms.emplace(
 			Renderer::E_COLOR_SCHEME::ATOM, Core::Struct::IndexRangeList( system.topology->getAtomRange() )
 		);
+		system.colorSchemeSecondaryStructureResidues.emplace(
+			Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE,
+			Core::Struct::IndexRangeList(
+				Core::Struct::IndexRange::fromFirstCount( 0, static_cast<Index>( residueCount ) )
+			)
+		);
 		system.representationHandles.emplace( Entity( 0 ), Renderer::Desc::Handle( 0 ) );
 		system.presetAtoms.emplace( Entity( 0 ), Core::Struct::IndexRangeList( system.topology->getAtomRange() ) );
 		system.visibility = Util::Math::BitSet( atomCount, true );
@@ -84,6 +90,8 @@ namespace VTX::Bench
 										 &p_system.colorSchemeAtoms,
 										 &p_system.customColorAtoms,
 										 &p_system.carbonCustomColorAtoms,
+										 &p_system.colorSchemeSecondaryStructureResidues,
+										 &p_system.customSecondaryStructureColorResidues,
 										 &p_system.representationHandles,
 										 &p_system.presetAtoms,
 										 &p_system.visibility,

@@ -214,6 +214,63 @@ namespace VTX::App::Helper::System
 		return std::nullopt;
 	}
 
+	std::optional<Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE> getSecondaryStructureColorScheme(
+		const SystemItemView & p_system
+	)
+	{
+		using namespace Core::Struct;
+
+		const auto &   reg		= REG();
+		const auto &   topology = reg.get<Core::Struct::Topology>( p_system.entity );
+		const auto &   color	= reg.get<App::System::Color>( p_system.entity );
+		IndexRangeList residues;
+
+		switch ( p_system.item )
+		{
+		case E_SYSTEM_ITEM::SYSTEM:
+			residues.addRange( IndexRange::fromFirstCount( 0, topology.getResidueCount() ) );
+			break;
+		case E_SYSTEM_ITEM::CATEGORY:
+			assert( p_system.index );
+			for ( const Index residue :
+				  topology.getCategoryResidues( static_cast<Core::ChemDB::Category::TYPE>( *p_system.index ) ) )
+			{
+				residues.addRange( IndexRange( residue ) );
+			}
+			break;
+		case E_SYSTEM_ITEM::CHAIN:
+			assert( p_system.index );
+			residues.addRange( topology.getChainResidueRange( *p_system.index ) );
+			break;
+		case E_SYSTEM_ITEM::RESIDUE:
+			assert( p_system.index );
+			residues.addRange( IndexRange( *p_system.index ) );
+			break;
+		case E_SYSTEM_ITEM::ATOM:
+			assert( p_system.index );
+			residues.addRange( IndexRange( topology.getAtomResidueIndex( *p_system.index ) ) );
+			break;
+		default: break;
+		}
+
+		for ( const auto & [ scheme, rangeList ] : color.colorSchemeSecondaryStructureResidues )
+		{
+			if ( rangeList.contains( residues ) )
+			{
+				return scheme;
+			}
+		}
+		for ( const auto & [ _, rangeList ] : color.customSecondaryStructureColorResidues )
+		{
+			if ( rangeList.contains( residues ) )
+			{
+				return Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::CUSTOM;
+			}
+		}
+
+		return std::nullopt;
+	}
+
 	size_t countAssignedColorAtoms( const App::System::Color & p_color )
 	{
 		size_t count = 0;
@@ -227,6 +284,22 @@ namespace VTX::App::Helper::System
 			count += rangeList.count();
 		}
 		for ( const auto & [ _, rangeList ] : p_color.carbonCustomColorAtoms )
+		{
+			count += rangeList.count();
+		}
+
+		return count;
+	}
+
+	size_t countAssignedSecondaryStructureResidues( const App::System::Color & p_color )
+	{
+		size_t count = 0;
+
+		for ( const auto & [ _, rangeList ] : p_color.colorSchemeSecondaryStructureResidues )
+		{
+			count += rangeList.count();
+		}
+		for ( const auto & [ _, rangeList ] : p_color.customSecondaryStructureColorResidues )
 		{
 			count += rangeList.count();
 		}
@@ -323,6 +396,89 @@ namespace VTX::App::Helper::System
 		for ( const auto & [ _, ranges ] : color.carbonCustomColorAtoms )
 		{
 			if ( isRootForRanges( ranges ) )
+			{
+				return true;
+			}
+		}
+
+		auto isRootForResidueRanges = [ & ]( const Core::Struct::IndexRangeList & ranges )
+		{
+			switch ( p_system.item )
+			{
+			case E_SYSTEM_ITEM::SYSTEM:
+				if ( ranges.count() == topology.getResidueCount() )
+				{
+					return true;
+				}
+				break;
+			case E_SYSTEM_ITEM::CATEGORY:
+			{
+				assert( p_system.index );
+				Core::Struct::IndexRangeList categoryResidues;
+				for ( const Index residue :
+					  topology.getCategoryResidues( static_cast<Core::ChemDB::Category::TYPE>( *p_system.index ) ) )
+				{
+					categoryResidues.addRange( Core::Struct::IndexRange( residue ) );
+				}
+				const Core::Struct::IndexRange systemRange
+					= Core::Struct::IndexRange::fromFirstCount( 0, topology.getResidueCount() );
+				if ( ranges.contains( categoryResidues ) && not ranges.contains( systemRange ) )
+				{
+					return true;
+				}
+			}
+			break;
+			case E_SYSTEM_ITEM::CHAIN:
+			{
+				assert( p_system.index );
+				const Core::Struct::IndexRange systemRange
+					= Core::Struct::IndexRange::fromFirstCount( 0, topology.getResidueCount() );
+				if ( ranges.contains( topology.getChainResidueRange( *p_system.index ) )
+					 && not ranges.contains( systemRange ) )
+				{
+					return true;
+				}
+			}
+			break;
+			case E_SYSTEM_ITEM::RESIDUE:
+			{
+				assert( p_system.index );
+				const Core::Struct::IndexRange chainRange
+					= topology.getChainResidueRange( topology.getResidueChainIndex( *p_system.index ) );
+				if ( ranges.contains( *p_system.index ) && not ranges.contains( chainRange ) )
+				{
+					return true;
+				}
+			}
+			break;
+			case E_SYSTEM_ITEM::ATOM:
+			{
+				assert( p_system.index );
+				const Index					   residueIndex = topology.getAtomResidueIndex( *p_system.index );
+				const Core::Struct::IndexRange chainRange
+					= topology.getChainResidueRange( topology.getResidueChainIndex( residueIndex ) );
+				if ( ranges.contains( residueIndex ) && not ranges.contains( chainRange ) )
+				{
+					return true;
+				}
+				break;
+			}
+			default: break;
+			}
+
+			return false;
+		};
+
+		for ( const auto & [ _, ranges ] : color.colorSchemeSecondaryStructureResidues )
+		{
+			if ( isRootForResidueRanges( ranges ) )
+			{
+				return true;
+			}
+		}
+		for ( const auto & [ _, ranges ] : color.customSecondaryStructureColorResidues )
+		{
+			if ( isRootForResidueRanges( ranges ) )
 			{
 				return true;
 			}

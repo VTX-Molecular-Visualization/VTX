@@ -89,20 +89,20 @@ namespace VTX::Renderer::Cache
 	enum struct E_RENDERER_DIRTY : uint16_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
-		NONE			= 0,
-		DRAW_RANGES		= 1 << 0,
-		GEOMETRY_CHUNKS = 1 << 1,
-		EXTERNAL_PASSES = 1 << 2,
-		COMMAND_BUFFER	= 1 << 3,
-		NEED_UPDATE		= 1 << 4,
-		GRAPH			= 1 << 5,
-		REPRESENTATIONS = 1 << 6,
-		CAMERA			= 1 << 7,
-		MODELS			= 1 << 8,
-		COLOR_LAYOUT	= 1 << 9,
-		GRAPHICS_CONFIG = 1 << 10,
-		VOXELS			= 1 << 11,
-		ENVIRONMENT		= 1 << 12,
+		NONE			  = 0,
+		DRAW_RANGES		  = 1 << 0,
+		GEOMETRY_CHUNKS	  = 1 << 1,
+		EXTERNAL_PASSES	  = 1 << 2,
+		COMMAND_BUFFER	  = 1 << 3,
+		NEED_UPDATE		  = 1 << 4,
+		GRAPH			  = 1 << 5,
+		REPRESENTATIONS	  = 1 << 6,
+		CAMERA			  = 1 << 7,
+		MODELS			  = 1 << 8,
+		COLOR_LAYOUT	  = 1 << 9,
+		GRAPHICS_CONFIG	  = 1 << 10,
+		VOXELS			  = 1 << 11,
+		ENVIRONMENT		  = 1 << 12,
 		MATERIAL_TEXTURES = 1 << 13,
 		ALL = DRAW_RANGES | GEOMETRY_CHUNKS | EXTERNAL_PASSES | COMMAND_BUFFER | NEED_UPDATE | GRAPH | REPRESENTATIONS
 			  | CAMERA | MODELS | COLOR_LAYOUT | GRAPHICS_CONFIG | VOXELS | ENVIRONMENT | MATERIAL_TEXTURES
@@ -124,6 +124,9 @@ namespace VTX::Renderer::Cache
 			const std::unordered_map<E_COLOR_SCHEME, IndexRangeList> * colorSchemeAtoms;
 			const std::unordered_map<ColorIndex, IndexRangeList> *	   customColorAtoms;
 			const std::unordered_map<ColorIndex, IndexRangeList> *	   carbonCustomColorAtoms;
+			const std::unordered_map<E_COLOR_SCHEME_SECONDARY_STRUCTURE, IndexRangeList> *
+																   colorSchemeSecondaryStructureResidues;
+			const std::unordered_map<ColorIndex, IndexRangeList> * customSecondaryStructureColorResidues;
 			// Ugly.
 			const std::unordered_map<Entity, Desc::Handle> *				 representationHandles;
 			const std::unordered_map<Entity, Core::Struct::IndexRangeList> * presetAtoms;

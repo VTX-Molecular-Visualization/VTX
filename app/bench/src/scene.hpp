@@ -53,12 +53,15 @@ namespace VTX::Bench
 			Util::Math::Range<UID32>											   atomUids;
 			Util::Math::Range<UID32>											   residueUids;
 			std::unordered_map<Renderer::E_COLOR_SCHEME, Renderer::IndexRangeList> colorSchemeAtoms;
-			std::unordered_map<Renderer::ColorIndex, Renderer::IndexRangeList>	   customColorAtoms;
-			std::unordered_map<Renderer::ColorIndex, Renderer::IndexRangeList>	   carbonCustomColorAtoms;
-			std::unordered_map<Entity, Renderer::Desc::Handle>					   representationHandles;
-			std::unordered_map<Entity, Renderer::IndexRangeList>				   presetAtoms;
-			Util::Math::BitSet													   visibility;
-			Util::Math::BitSet													   selection;
+			std::unordered_map<Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE, Renderer::IndexRangeList>
+																			   colorSchemeSecondaryStructureResidues;
+			std::unordered_map<Renderer::ColorIndex, Renderer::IndexRangeList> customColorAtoms;
+			std::unordered_map<Renderer::ColorIndex, Renderer::IndexRangeList> carbonCustomColorAtoms;
+			std::unordered_map<Renderer::ColorIndex, Renderer::IndexRangeList> customSecondaryStructureColorResidues;
+			std::unordered_map<Entity, Renderer::Desc::Handle>				   representationHandles;
+			std::unordered_map<Entity, Renderer::IndexRangeList>			   presetAtoms;
+			Util::Math::BitSet												   visibility;
+			Util::Math::BitSet												   selection;
 		};
 
 		[[nodiscard]] Renderer::Cache::System _buildRendererSystem( const SystemEntry & ) const;

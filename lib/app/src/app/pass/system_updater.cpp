@@ -83,6 +83,8 @@ namespace VTX::App::Pass
 					 &color.colorSchemeAtoms,
 					 &color.customColorAtoms,
 					 &color.carbonCustomColorAtoms,
+					 &color.colorSchemeSecondaryStructureResidues,
+					 &color.customSecondaryStructureColorResidues,
 					 &_representations,
 					 &representation.presetAtoms,
 					 &visibility.atoms,

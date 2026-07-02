@@ -30,6 +30,61 @@
 
 namespace VTX::Renderer::Builder
 {
+	namespace
+	{
+		std::vector<ColorIndex> _buildResidueColors( const Cache::System & p_system )
+		{
+			const Core::Struct::Topology & topology = *p_system.data.topology;
+			std::vector<ColorIndex>		   residues( topology.getResidueCount() );
+			size_t						   count = 0;
+
+			for ( const auto & [ scheme, ranges ] : *p_system.data.colorSchemeSecondaryStructureResidues )
+			{
+				if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE )
+				{
+					for ( const Index residue : ranges )
+					{
+						residues[ residue ]
+							= Color::getColorIndex( topology.getResidueSecondaryStructureType( residue ) );
+					}
+				}
+				else if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::CHAIN )
+				{
+					for ( const Index residue : ranges )
+					{
+						const Index chain	= topology.getResidueChainIndex( residue );
+						residues[ residue ] = Color::getColorIndex( topology.getChainName( chain ) );
+					}
+				}
+				else if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::RESIDUE )
+				{
+					for ( const Index residue : ranges )
+					{
+						residues[ residue ] = Color::getColorIndex( topology.getResidueSymbol( residue ) );
+					}
+				}
+				else
+				{
+					assert( false && "Unsupported secondary structure color scheme." );
+				}
+
+				count += ranges.count();
+			}
+			for ( const auto & [ colorIndex, ranges ] : *p_system.data.customSecondaryStructureColorResidues )
+			{
+				for ( const Index residue : ranges )
+				{
+					residues[ residue ] = colorIndex;
+				}
+				count += ranges.count();
+			}
+
+			assert( count == topology.getResidueCount() );
+
+			return residues;
+		}
+	} // namespace
+
 	struct SystemRegistry
 	{
 		static void clear(
@@ -559,6 +614,7 @@ namespace VTX::Renderer::Builder
 			const Index						 countResidues		 = p_layouts.residues.size( p_handle );
 			const auto						 atomRepresentations = AtomLayout::buildAtomRepresentations( p_system );
 			const auto						 atomFlags			 = AtomLayout::buildAtomFlags( p_system );
+			const auto						 residueColorIndexes = _buildResidueColors( p_system );
 			std::vector<UID32>				 residueIds( countResidues );
 			std::vector<uint8_t>			 residueTypes( countResidues );
 			std::vector<ColorIndex>			 residueColors( countResidues );
@@ -573,7 +629,7 @@ namespace VTX::Renderer::Builder
 
 				residueIds[ i ]				= p_system.data.residueUids->first + residueIndex;
 				residueTypes[ i ]			= toUnderlying( ss );
-				residueColors[ i ]			= Color::getColorIndex( ss );
+				residueColors[ i ]			= residueColorIndexes[ residueIndex ];
 				residueRepresentations[ i ] = atomRepresentations[ atomIndex ];
 
 				if ( atomFlags[ atomIndex ] & toUnderlying( E_ELEMENT_FLAGS::SELECTION ) )
@@ -973,8 +1029,9 @@ namespace VTX::Renderer::Builder
 		{
 			using namespace Layout;
 
-			const auto &			construction  = p_geometries.ribbons.construction( p_handle );
-			const Index				countResidues = p_layouts.residues.size( p_handle );
+			const auto &			construction		= p_geometries.ribbons.construction( p_handle );
+			const Index				countResidues		= p_layouts.residues.size( p_handle );
+			const auto				residueColorIndexes = _buildResidueColors( p_system );
 			std::vector<uint8_t>	residueTypes( countResidues );
 			std::vector<ColorIndex> residueColors( countResidues );
 
@@ -983,7 +1040,7 @@ namespace VTX::Renderer::Builder
 				const Index residueIndex = construction.residues[ i ].index;
 				auto		ss			 = p_system.data.topology->residueSecondaryStructureTypes[ residueIndex ];
 				residueTypes[ i ]		 = toUnderlying( ss );
-				residueColors[ i ]		 = Color::getColorIndex( ss );
+				residueColors[ i ]		 = residueColorIndexes[ residueIndex ];
 			}
 
 			p_layouts.residues.upload<RESIDUE_ATTR::TYPE, uint8_t>( p_context, p_handle, residueTypes );

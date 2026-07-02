@@ -87,11 +87,25 @@ namespace VTX::UI::QT::Widget::Tree
 			);
 		}
 
+		void _setAppliedPreset( const Entity p_preset )
+		{
+			if ( _appliedPreset == p_preset )
+			{
+				return;
+			}
+
+			_setPresetApplied( _appliedPreset, false );
+			_appliedPreset = p_preset;
+			_setPresetApplied( _appliedPreset, true );
+			W::updateGeometry();
+		}
+
 	  private:
 		/**
 		 * @brief Map entities to tree items.
 		 */
 		std::unordered_map<Entity, QTreeWidgetItem *> _entityToItemMap;
+		Entity										  _appliedPreset = InvalidEntity;
 
 		/**
 		 * @brief Connections to App.
@@ -110,6 +124,7 @@ namespace VTX::UI::QT::Widget::Tree
 			QTreeWidgetItem * const presetItem
 				= new QTreeWidgetItem( QStringList() << QString::fromStdString( name.name ) );
 			presetItem->setData( 0, Qt::UserRole, QVariant::fromValue( p_e ) );
+			_setPresetItemApplied( presetItem, p_e == _appliedPreset );
 			W::topLevelItem( 0 )->addChild( presetItem );
 			W::topLevelItem( 0 )->sortChildren( 0, Qt::AscendingOrder );
 			_entityToItemMap.emplace( p_e, presetItem );
@@ -126,6 +141,10 @@ namespace VTX::UI::QT::Widget::Tree
 			QTreeWidgetItem * const presetItem = _entityToItemMap.at( p_e );
 			delete presetItem;
 			_entityToItemMap.erase( p_e );
+			if ( _appliedPreset == p_e )
+			{
+				_appliedPreset = InvalidEntity;
+			}
 			W::updateGeometry();
 		}
 
@@ -139,6 +158,28 @@ namespace VTX::UI::QT::Widget::Tree
 			QTreeWidgetItem * const presetItem = _entityToItemMap.at( p_event.preset );
 			presetItem->setText( 0, QString::fromStdString( p_event.name ) );
 			W::topLevelItem( 0 )->sortChildren( 0, Qt::AscendingOrder );
+		}
+
+		/**
+		 * @brief Set the applied state.
+		 */
+		void _setPresetApplied( const Entity p_preset, const bool p_applied )
+		{
+			const auto itemIt = _entityToItemMap.find( p_preset );
+			if ( itemIt != _entityToItemMap.end() )
+			{
+				_setPresetItemApplied( itemIt->second, p_applied );
+			}
+		}
+
+		/**
+		 * @brief Set current preset bold.
+		 */
+		void _setPresetItemApplied( QTreeWidgetItem * const p_item, const bool p_applied )
+		{
+			QFont font = p_item->font( 0 );
+			font.setBold( p_applied );
+			p_item->setFont( 0, font );
 		}
 	};
 

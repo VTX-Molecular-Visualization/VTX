@@ -220,6 +220,8 @@ namespace VTX::App::Extractor
 
 		// Color: set default color scheme.
 		color.colorSchemeAtoms[ Renderer::E_COLOR_SCHEME::ATOM ] = Core::Struct::IndexRangeList( data.getAtomRange() );
+		color.colorSchemeSecondaryStructureResidues[ Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE ]
+			= Core::Struct::IndexRangeList( Core::Struct::IndexRange::fromFirstCount( 0, data.getResidueCount() ) );
 
 		// Representation: set default representation.
 		// TODO: configure default representation in settings?

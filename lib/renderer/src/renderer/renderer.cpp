@@ -414,6 +414,7 @@ namespace VTX::Renderer
 				if ( hasDirty( flags, SystemDirty::COLOR ) )
 				{
 					Builder::AtomLayout::refreshColors( _context, _systems, _layouts, system );
+					Builder::ResidueLayout::uploadInput( _context, _layouts, _geometries, system, cache );
 				}
 				if ( hasDirty( flags, SystemDirty::REPRESENTATION ) )
 				{

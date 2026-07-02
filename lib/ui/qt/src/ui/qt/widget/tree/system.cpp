@@ -120,20 +120,41 @@ namespace VTX::UI::QT::Widget::Tree
 				// Get current scheme.
 				std::optional<Renderer::E_COLOR_SCHEME> scheme
 					= App::Helper::System::getColorScheme( { _system, item, index } );
+				const auto secondaryStructureScheme
+					= App::Helper::System::getSecondaryStructureColorScheme( { _system, item, index } );
 
-				Menu::ColorScheme						   menu( this, scheme );
+				Menu::ColorScheme						   menu( this, scheme, secondaryStructureScheme );
 				std::optional<Menu::ColorScheme::Selected> selected;
+				std::optional<Menu::ColorScheme::SecondaryStructureSelected> secondaryStructureSelected;
 				QObject::connect(
 					&menu,
 					&Menu::ColorScheme::selected,
 					&menu,
 					[ &selected ]( const Menu::ColorScheme::Selected & p_selected ) { selected = p_selected; }
 				);
+				QObject::connect(
+					&menu,
+					&Menu::ColorScheme::secondaryStructureSelected,
+					&menu,
+					[ &secondaryStructureSelected ]( const Menu::ColorScheme::SecondaryStructureSelected & p_selected )
+					{ secondaryStructureSelected = p_selected; }
+				);
 
-				if ( menu.exec( QCursor::pos() ) && selected )
+				if ( menu.exec( QCursor::pos() ) == nullptr )
+				{
+					return;
+				}
+
+				if ( selected )
 				{
 					App::ACTION().execute<App::Action::Color::AddItem>(
 						_system, item, selected->scheme, index, selected->index
+					);
+				}
+				else if ( secondaryStructureSelected )
+				{
+					App::ACTION().execute<App::Action::Color::AddSecondaryStructureItem>(
+						_system, item, secondaryStructureSelected->scheme, index, secondaryStructureSelected->index
 					);
 				}
 			}
@@ -343,10 +364,10 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void System::_toggleViewMode()
 	{
-		const auto & model	= getSystemModel();
-		const auto nextMode = model.getViewMode() == Model::SystemModel::ViewMode::ByChain
-								  ? Model::SystemModel::ViewMode::ByCategory
-								  : Model::SystemModel::ViewMode::ByChain;
+		const auto & model	  = getSystemModel();
+		const auto	 nextMode = model.getViewMode() == Model::SystemModel::ViewMode::ByChain
+									? Model::SystemModel::ViewMode::ByCategory
+									: Model::SystemModel::ViewMode::ByChain;
 		setViewMode( nextMode );
 	}
 
