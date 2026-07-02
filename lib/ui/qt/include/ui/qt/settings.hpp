@@ -26,6 +26,10 @@ namespace VTX::UI::QT
 	const QString SETTING_KEY_VSYNC			  = "option/vsync";
 	const QString SETTING_KEY_TREE_VIEW_MODE  = "option/tree_view_mode";
 
+	const QString SETTING_KEY_GRAPHICS_CONFIG_PRESETS_EXPANDED = "tree/presets/graphics_config/expanded";
+	const QString SETTING_KEY_COLOR_LAYOUT_PRESETS_EXPANDED	   = "tree/presets/color_layout/expanded";
+	const QString SETTING_KEY_REPRESENTATION_PRESETS_EXPANDED  = "tree/presets/representation/expanded";
+
 	const QString SETTING_KEY_THEME = "style/theme";
 	const QString SETTING_KEY_FONT	= "style/font";
 

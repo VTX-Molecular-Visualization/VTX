@@ -14,6 +14,7 @@ namespace VTX::UI::QT::Widget::Tree
 		{
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Representations" ) );
 			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::REPRESENTATION ) );
+			_restoreExpansionState( SETTING_KEY_REPRESENTATION_PRESETS_EXPANDED );
 		}
 	};
 

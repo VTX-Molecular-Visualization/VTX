@@ -14,6 +14,7 @@ namespace VTX::UI::QT::Widget::Tree
 		{
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Color layouts" ) );
 			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::COLOR_LAYOUT ) );
+			_restoreExpansionState( SETTING_KEY_COLOR_LAYOUT_PRESETS_EXPANDED );
 		}
 	};
 

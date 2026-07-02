@@ -14,6 +14,7 @@ namespace VTX::UI::QT::Widget::Tree
 		{
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Graphics" ) );
 			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::GRAPHICS_CONFIG ) );
+			_restoreExpansionState( SETTING_KEY_GRAPHICS_CONFIG_PRESETS_EXPANDED );
 		}
 	};
 

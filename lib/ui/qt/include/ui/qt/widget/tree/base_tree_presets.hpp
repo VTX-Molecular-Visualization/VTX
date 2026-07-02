@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_WIDGET_TREE_BASE_TREE_PRESETS__
 
 #include "ui/qt/services.hpp"
+#include "ui/qt/settings.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/tree/base_tree.hpp"
@@ -51,6 +52,39 @@ namespace VTX::UI::QT::Widget::Tree
 			_onConstructConnection.release();
 			_onDestroyConnection.release();
 			App::HUB().disconnectAllOf( *this );
+		}
+
+	  protected:
+		void _restoreExpansionState( const QString & p_settingKey )
+		{
+			assert( W::topLevelItem( 0 ) != nullptr );
+
+			W::topLevelItem( 0 )->setExpanded( SETTINGS().value( p_settingKey, true ).toBool() );
+
+			W::connect(
+				this,
+				&QTreeView::expanded,
+				this,
+				[ p_settingKey ]( const QModelIndex & p_index )
+				{
+					if ( not p_index.parent().isValid() )
+					{
+						SETTINGS().setValue( p_settingKey, true );
+					}
+				}
+			);
+			W::connect(
+				this,
+				&QTreeView::collapsed,
+				this,
+				[ p_settingKey ]( const QModelIndex & p_index )
+				{
+					if ( not p_index.parent().isValid() )
+					{
+						SETTINGS().setValue( p_settingKey, false );
+					}
+				}
+			);
 		}
 
 	  private:
