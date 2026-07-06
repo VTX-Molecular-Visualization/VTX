@@ -20,7 +20,7 @@ class VTXToolExampleRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_python_binding/1.0")
-        self.requires("catch2/3.15.0")
+        self.requires("catch2/3.15.1")
 
     def config_options(self):
         if self.settings.os == "Windows":

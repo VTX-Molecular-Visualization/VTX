@@ -71,23 +71,23 @@ class VTXRecipe(ConanFile):
             raise ConanInvalidConfiguration("tool_topology_editor currently requires Qt UI. Disable tool_topology_editor or enable ui_qt.")
 
     def requirements(self):
-        self.requires("glm/1.0.1")
+        self.requires("glm/1.0.3")
         self.requires("spdlog/1.17.0")
         self.requires("fmt/12.1.0", force=True)
         self.requires("magic_enum/0.9.7")
         self.requires("nlohmann_json/3.12.0")
         self.requires("cpr/1.14.2")
-        self.requires("catch2/3.15.0")
+        self.requires("catch2/3.15.1")
         self.requires("chemfiles/2026.02.5")
         self.requires("argparse/3.2")
         if self.options.renderer:
-            self.requires("sdl/3.4.0")
-            self.requires("imgui/1.92.7")
+            self.requires("sdl/3.4.8")
+            self.requires("imgui/1.92.8")
             self.requires("ktx/4.4.2")
         self.requires("stb/cci.20240531", force=True)
         self.requires("tinyexr/1.0.7")
         self.requires("entt/3.16.0")
-        self.requires("assimp/6.0.2")
+        self.requires("assimp/6.0.5")
         self.requires("minizip/1.3.2", force=True)
         if self.options.python_binding:
             self.requires("pybind11/3.0.1")
@@ -95,9 +95,9 @@ class VTXRecipe(ConanFile):
             self.requires("qt/6.11.1")
         if self.options.tool_mdprep:
             self.requires("gromacs/2026.0.1")
-        self.requires("re2/20240702")
+        self.requires("re2/20251105")
         if self.options.local_pdb100:
-            self.requires("libarchive/3.7.9")
+            self.requires("libarchive/3.8.7")
             self.requires("boost/1.87.0") # 1.88 version break process package on windows
         self.requires("platformfolders/4.3.0")
         if self.options.python_binding:
@@ -106,7 +106,7 @@ class VTXRecipe(ConanFile):
         if self.settings.os == "Linux":
             self.requires("xkbcommon/1.13.1", force=True)
             self.requires("fontconfig/2.17.1", override=True)
-            self.requires("freetype/2.14.1", force=True)
+            self.requires("freetype/2.14.3", force=True)
             self.requires("libffi/3.4.8", force=True)
             self.requires("wayland/1.24.0", force=True)
 

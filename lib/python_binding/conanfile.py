@@ -118,13 +118,13 @@ class VTXPythonBindingRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_io/1.0")
         self.requires("pybind11/3.0.1", transitive_headers=True)
-        self.requires("catch2/3.15.0")
+        self.requires("catch2/3.15.1")
         self.requires("cpython/{}".format(str(self._python_version())))
         self.requires("mpdecimal/4.0.0", force=True)
         if self.settings.os == "Linux":
             self.requires("expat/2.8.1", force=True)
             self.requires("fontconfig/2.17.1", force=True)
-            self.requires("freetype/2.14.1", force=True)
+            self.requires("freetype/2.14.3", force=True)
             self.requires("libffi/3.4.8", force=True)
 
     def config_options(self):
