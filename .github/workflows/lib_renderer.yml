@@ -163,10 +163,14 @@ jobs:
           -c tools.system.package_manager:sudo=True \
           -c tools.cmake.cmaketoolchain:extra_variables="{\"CMAKE_CUDA_COMPILER\":\"$CUDACXX\",\"CUDAToolkit_ROOT\":\"$CUDAToolkit_ROOT\"}" 
 
+    - name: Upload dependencies
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan upload ktx -r=vtx
+
     - name: Upload Linux dependencies
       if: runner.os == 'Linux'
       working-directory: ${{env.LIB_DIR}}
       run: |
         conan upload libffi -r=vtx
         conan upload wayland -r=vtx
-        conan upload ktx -r=vtx
