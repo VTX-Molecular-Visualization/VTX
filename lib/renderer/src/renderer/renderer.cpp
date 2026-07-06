@@ -92,8 +92,8 @@ namespace VTX::Renderer
 
 	bool Renderer::render( const float p_deltaTime, const float p_elapsedTime ) noexcept
 	{
-		bool hasDirty = _dirtyRenderer != Cache::E_RENDERER_DIRTY::NONE || not _dirtySystems.empty()
-						|| not _dirtyRepresentations.empty();
+		const bool hasDirty = _dirtyRenderer != Cache::E_RENDERER_DIRTY::NONE || not _dirtySystems.empty()
+							  || not _dirtyRepresentations.empty();
 
 		if ( hasDirty )
 		{
@@ -130,34 +130,101 @@ namespace VTX::Renderer
 		return false;
 	}
 
-	std::vector<std::byte> Renderer::snapshot()
+	std::vector<std::byte> Renderer::snapshot(
+		const std::optional<Util::Resolution> p_resolution,
+		const std::optional<float>			  p_backgroundOpacity
+	)
 	{
 		Util::ScopedChrono timer( "[RENDERER] snapshot" );
 
-		_context.setRenderTarget( Desc::E_RENDER_TARGET::OFFSCREEN );
-		Builder::RenderGraphRuntime::rebuildCommandBuffer(
-			_context,
-			_queue,
-			_graph.getResources(),
-			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
-			reinterpret_cast<uintptr_t>( this )
-		);
-		_render( 0.f, 0.f );
+		const size_t				currentWidth		  = width();
+		const size_t				currentHeight		  = height();
+		const Cache::Camera			currentCamera		  = _camera;
+		const Cache::GraphicsConfig currentGraphicsConfig = _graphicsConfig;
 
-		// TODO: get last pass instead of hardcoding post-process output.
-		std::vector<std::byte> data = _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
+		const auto snapshotOffscreen = [ this ]()
+		{
+			_context.setRenderTarget( Desc::E_RENDER_TARGET::OFFSCREEN );
+			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COMMAND_BUFFER;
+			_flushDirty();
+			_render( 0.f, 0.f );
 
-		_context.setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
-		Builder::RenderGraphRuntime::rebuildCommandBuffer(
-			_context,
-			_queue,
-			_graph.getResources(),
-			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
-			reinterpret_cast<uintptr_t>( this )
-		);
-		_render( 0.f, 0.f );
+			// TODO: get last pass instead of hardcoding post-process output.
+			return _context.getTextureData( "FXAA", Desc::E_FORMAT::RGBA8UI );
+		};
 
-		return data;
+		const auto restoreScreenRenderTarget = [ this ]()
+		{
+			_context.setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
+			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COMMAND_BUFFER;
+			_flushDirty();
+			_render( 0.f, 0.f );
+		};
+
+		const auto restoreCurrentState = [ this, currentWidth, currentHeight, currentCamera ]()
+		{
+			_camera = currentCamera;
+			resize( currentWidth, currentHeight );
+		};
+
+		const auto restoreGraphicsConfig = [ this, currentGraphicsConfig ]()
+		{
+			_graphicsConfig = currentGraphicsConfig;
+			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::GRAPHICS_CONFIG;
+		};
+
+		if ( p_backgroundOpacity.has_value() )
+		{
+			_graphicsConfig.data.shading.colorBackground.a() = *p_backgroundOpacity;
+			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::GRAPHICS_CONFIG;
+		}
+
+		const bool hasTargetSize = p_resolution.has_value()
+								   && ( p_resolution->width != currentWidth || p_resolution->height != currentHeight );
+
+		try
+		{
+			if ( not hasTargetSize )
+			{
+				std::vector<std::byte> data = snapshotOffscreen();
+				if ( p_backgroundOpacity.has_value() )
+				{
+					restoreGraphicsConfig();
+				}
+				restoreScreenRenderTarget();
+
+				return data;
+			}
+
+			resize( p_resolution->width, p_resolution->height );
+			_camera.camera.screenWidth	= p_resolution->width;
+			_camera.camera.screenHeight = p_resolution->height;
+			_camera.matProj				= _camera.camera.computeProjectionMatrix( _camera.position );
+			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::CAMERA;
+
+			std::vector<std::byte> data = snapshotOffscreen();
+			restoreCurrentState();
+			if ( p_backgroundOpacity.has_value() )
+			{
+				restoreGraphicsConfig();
+			}
+			restoreScreenRenderTarget();
+
+			return data;
+		}
+		catch ( ... )
+		{
+			if ( hasTargetSize )
+			{
+				restoreCurrentState();
+			}
+			if ( p_backgroundOpacity.has_value() )
+			{
+				restoreGraphicsConfig();
+			}
+			restoreScreenRenderTarget();
+			throw;
+		}
 	}
 
 	Vec2i Renderer::getPickedIds( const size_t p_x, const size_t p_y ) const

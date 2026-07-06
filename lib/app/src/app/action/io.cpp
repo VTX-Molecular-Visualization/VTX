@@ -1,6 +1,5 @@
 #include "app/action/io.hpp"
 #include "app/action/action_manager.hpp"
-#include "app/action/application.hpp"
 #include "app/action/scene.hpp"
 #include "app/constants.hpp"
 #include "app/extractor/mesh.hpp"
@@ -17,11 +16,28 @@
 #include <io/mesh_reader.hpp>
 #include <renderer/camera.hpp>
 #include <renderer/renderer.hpp>
+#include <string>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
+#include <util/resolution.hpp>
 
 namespace VTX::App::Action::IO
 {
+	namespace
+	{
+		void _writeSnapshotMetadata( const FilePath & p_path )
+		{
+			try
+			{
+				Util::Image::writeSoftwareMetadata( p_path, APPLICATION_NAME );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_WARNING( "Unable to write image metadata: {}", p_e.what() );
+			}
+		}
+	} // namespace
+
 	void Open::execute( const std::string & p_path ) { execute( FilePath( p_path ) ); }
 
 	void Open::execute( const FilePath & p_path )
@@ -225,19 +241,16 @@ namespace VTX::App::Action::IO
 		const FilePath				p_path,
 		const Util::Image::E_FORMAT p_format,
 		const size_t				p_width,
-		const size_t				p_height
+		const size_t				p_height,
+		const std::optional<float>	p_backgroundOpacity
 	)
 	{
 		try
 		{
-			const size_t currentWidth  = RENDERER().width();
-			const size_t currentHeight = RENDERER().height();
-
-			ACTION().execute<Application::Resize>( p_width, p_height, false );
-			std::vector<std::byte> image = RENDERER().snapshot();
-			ACTION().execute<Application::Resize>( currentWidth, currentHeight, false );
-
-			FilePath path = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
+			const Util::Resolution resolution = { "Export", p_width, p_height };
+			std::vector<std::byte> image	  = RENDERER().snapshot( resolution, p_backgroundOpacity );
+			FilePath			   path		  = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
+			_writeSnapshotMetadata( path );
 
 			VTX_INFO( "Image saved: {}", fmt::format( fmt::runtime( std::string( LOG_LINK_FORMAT ) ), path.string() ) );
 		}

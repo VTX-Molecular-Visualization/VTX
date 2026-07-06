@@ -4,6 +4,7 @@
 #include "types.hpp"
 #include <cstdint>
 #include <optional>
+#include <string_view>
 #include <util/filesystem.hpp>
 #include <vector>
 
@@ -28,6 +29,11 @@ namespace VTX::Util::Image
 		const size_t			p_height,
 		const std::byte * const p_data
 	);
+
+	/**
+	 * @brief Write software metadata to an existing image.
+	 */
+	void writeSoftwareMetadata( const FilePath & p_path, const std::string_view p_software );
 
 	/**
 	 * @brief Floating-point image representation.

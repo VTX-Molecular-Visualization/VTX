@@ -27,6 +27,7 @@ target_link_libraries(vtx_util PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(vtx_util PRIVATE cpr::cpr)
 target_link_libraries(vtx_util PRIVATE stb::stb)
 target_link_libraries(vtx_util PRIVATE tinyexr::tinyexr)
+target_link_libraries(vtx_util PRIVATE exiv2::exiv2)
 target_link_libraries(vtx_util PRIVATE sago::platform_folders)
 
 target_link_libraries(vtx_util_test PRIVATE vtx_util::vtx_util)

@@ -77,7 +77,8 @@ vec3 toneMap( const vec3 p_color )
 void main()
 {
 	const ivec2 texCoord = ivec2( gl_FragCoord.xy );
-	vec3		color	 = texelFetch( inTextureColor, texCoord, 0 ).rgb;
+	const vec4	inputColor = texelFetch( inTextureColor, texCoord, 0 );
+	vec3		color	   = inputColor.rgb;
 	
 	
 	if ( uniforms.mode != TONE_MAPPING_NONE )
@@ -87,5 +88,5 @@ void main()
 		color = toneMap( color );
 	}
 
-	outFragColor = vec4( color, 1.f );
+	outFragColor = vec4( color, inputColor.a );
 }

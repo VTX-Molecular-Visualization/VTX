@@ -1640,8 +1640,9 @@ namespace VTX::Renderer::Context::Backend
 
 	void OpenGL::fillInfos( StructInfos & p_infos ) const
 	{
-		p_infos.renderer	  = _openglInfos.glRenderer;
-		p_infos.cudaAvailable = _cudaInterop.availability().available();
+		p_infos.renderer	   = _openglInfos.glRenderer;
+		p_infos.cudaAvailable  = _cudaInterop.availability().available();
+		p_infos.maxTextureSize = size_t( _openglInfos.glMaxTextureSize );
 
 // NVX_gpu_memory_info
 #if ( GL_NVX_gpu_memory_info == 1 )

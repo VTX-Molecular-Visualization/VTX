@@ -13,9 +13,11 @@
 #include "renderer/render_graph.hpp"
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
+#include <optional>
 #include <unordered_set>
 #include <util/callback.hpp>
 #include <util/math/bitset.hpp>
+#include <util/resolution.hpp>
 #include <vector>
 
 namespace VTX::Renderer
@@ -122,11 +124,15 @@ namespace VTX::Renderer
 		/**
 		 * @brief Exports the renderer to an array of pixels.
 		 */
-		std::vector<std::byte> snapshot();
+		std::vector<std::byte> snapshot(
+			const std::optional<Util::Resolution> p_resolution		  = std::nullopt,
+			const std::optional<float>			  p_backgroundOpacity = std::nullopt
+		);
 
 		/**
 		 * @brief Get the id of the the data stored in the given pixel.
-		 * @return ( AtomId, 0 ) for an atom, ( AtomId1, AtomId2 ) for a bond.
+		 * @return ( AtomId, 0 ) for
+		 * an atom, ( AtomId1, AtomId2 ) for a bond.
 		 */
 		Vec2i getPickedIds( const size_t, const size_t ) const;
 

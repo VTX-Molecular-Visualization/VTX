@@ -6,11 +6,13 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
+#include <exiv2/exiv2.hpp>
 #include <memory>
 #include <stb_image.h>
 #include <stb_image_write.h>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <tinyexr.h>
 #include <util/string.hpp>
 
@@ -136,6 +138,32 @@ namespace VTX::Util::Image
 		}
 
 		return path;
+	}
+
+	void writeSoftwareMetadata( const FilePath & p_path, const std::string_view p_software )
+	{
+		if ( p_software.empty() )
+		{
+			return;
+		}
+
+		auto image = Exiv2::ImageFactory::open( p_path.string() );
+		if ( image == nullptr )
+		{
+			throw std::runtime_error( "Unable to open image '" + p_path.string() + "' for metadata writing" );
+		}
+
+		image->readMetadata();
+
+		Exiv2::ExifData & exifData		  = image->exifData();
+		exifData[ "Exif.Image.Software" ] = std::string( p_software );
+		image->setExifData( exifData );
+
+		Exiv2::XmpData & xmpData		 = image->xmpData();
+		xmpData[ "Xmp.xmp.CreatorTool" ] = std::string( p_software );
+		image->setXmpData( xmpData );
+
+		image->writeMetadata();
 	}
 
 	ByteImage readByteImage( const FilePath & p_path, const uint8_t p_channels )

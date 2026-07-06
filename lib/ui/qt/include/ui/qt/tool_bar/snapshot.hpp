@@ -23,7 +23,7 @@ namespace VTX::UI::QT::ToolBar
 			setWindowTitle( "Snapshot" );
 
 			UI_ACTIONS().addTo( *this, Action::Snapshot::SNAPSHOT );
-			// UI_ACTIONS().addTo( *this, Action::Snapshot::EXPORT );
+			UI_ACTIONS().addTo( *this, Action::Snapshot::EXPORT );
 
 			return;
 			auto * btn = new QToolButton;

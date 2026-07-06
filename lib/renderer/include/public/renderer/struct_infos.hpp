@@ -2,6 +2,7 @@
 #define __VTX_STRUCT_INFOS__
 
 #include <array>
+#include <cstddef>
 #include <string>
 
 namespace VTX::Renderer
@@ -12,7 +13,8 @@ namespace VTX::Renderer
 	struct StructInfos
 	{
 		std::string renderer;
-		bool		cudaAvailable = false;
+		bool		cudaAvailable  = false;
+		size_t		maxTextureSize = 0;
 
 		// Can be undefined.
 		long long gpuMemoryInfoDedicated;

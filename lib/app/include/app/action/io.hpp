@@ -4,6 +4,7 @@
 #include "app/ecs.hpp"
 #include "app/threading/base_thread.hpp"
 #include <app/action/action_manager.hpp>
+#include <optional>
 #include <util/image.hpp>
 #include <util/thread.hpp>
 #include <util/types.hpp>
@@ -152,13 +153,13 @@ namespace VTX::App::Action::IO
 	{
 	  public:
 		void execute();
-		void execute( const FilePath, const Util::Image::E_FORMAT, const size_t, const size_t );
-
-	  private:
-		FilePath			  _path;
-		Util::Image::E_FORMAT _format;
-		size_t				  _width;
-		size_t				  _height;
+		void execute(
+			const FilePath,
+			const Util::Image::E_FORMAT,
+			const size_t,
+			const size_t,
+			const std::optional<float> = std::nullopt
+		);
 	};
 
 } // namespace VTX::App::Action::IO

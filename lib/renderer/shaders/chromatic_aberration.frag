@@ -25,5 +25,5 @@ void main()
     outFragColor.r = texture( inTextureColor, uv + ( direction * vec2( uniforms.offsetRed ) ) ).r;
     outFragColor.g = texture( inTextureColor, uv + ( direction * vec2( uniforms.offsetGreen ) ) ).g;
     outFragColor.b = texture( inTextureColor, uv + ( direction * vec2( uniforms.offsetBlue ) ) ).b;
-    outFragColor.a = 1.f;
+    outFragColor.a = texture( inTextureColor, uv ).a;
 }

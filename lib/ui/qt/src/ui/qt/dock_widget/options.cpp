@@ -170,7 +170,7 @@ namespace VTX::UI::QT::DockWidget
 			"High contrast", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::HIGH_CONTRAST )
 		);
 		_comboBoxColorAccessibilityMode->addItem(
-			" Colorblind-friendly", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::COLORBLIND )
+			"Colorblind-friendly", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::COLORBLIND )
 		);
 
 		const int colorModeIndex = _comboBoxColorAccessibilityMode->findData( toUnderlying( accessibility.colorMode ) );

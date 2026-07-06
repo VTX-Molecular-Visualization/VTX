@@ -142,7 +142,7 @@ bool shadeBackground( const UnpackedData p_data )
 	// Background.
 	else
 	{
-		outFragColor = vec4( uniforms.colorBackground.rgb, 1.f );
+		outFragColor = uniforms.colorBackground;
 	}
 
 	return true;

@@ -26,6 +26,7 @@ class VTXUtilRecipe(ConanFile):
         self.requires("cpr/1.14.2")
         self.requires("stb/cci.20240531", force=True)
         self.requires("tinyexr/1.0.7")
+        self.requires("exiv2/0.28.3")
         self.requires("catch2/3.15.1")
         self.requires("platformfolders/4.3.0")
         
