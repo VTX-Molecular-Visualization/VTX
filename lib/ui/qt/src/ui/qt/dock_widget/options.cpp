@@ -52,7 +52,7 @@ namespace VTX::UI::QT::DockWidget
 		using namespace Widget;
 
 		// Tree.
-		auto * groupBoxTree = new QGroupBox( "Tree" );
+		auto * groupBoxTree = new QGroupBox( "System tree" );
 		auto * layoutTree	= new QVBoxLayout( groupBoxTree );
 
 		_comboBoxTreeViewMode = new QComboBox( this );
@@ -164,13 +164,13 @@ namespace VTX::UI::QT::DockWidget
 		_comboBoxColorAccessibilityMode->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxColorAccessibilityMode->setMinimumWidth( 0 );
 		_comboBoxColorAccessibilityMode->addItem(
-			"Standard", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::STANDARD )
+			"Default", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::DEFAULT )
 		);
 		_comboBoxColorAccessibilityMode->addItem(
 			"High contrast", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::HIGH_CONTRAST )
 		);
 		_comboBoxColorAccessibilityMode->addItem(
-			"Color blind", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::COLORBLIND )
+			" Colorblind-friendly", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::COLORBLIND )
 		);
 
 		const int colorModeIndex = _comboBoxColorAccessibilityMode->findData( toUnderlying( accessibility.colorMode ) );
@@ -191,7 +191,7 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
-		_checkBoxForceDyslexicFont = new QCheckBox( "Force OpenDyslexic font", this );
+		_checkBoxForceDyslexicFont = new QCheckBox( "Dyslexia-friendly font", this );
 		_checkBoxForceDyslexicFont->setToolTip( "Use OpenDyslexic as the application font" );
 		_checkBoxForceDyslexicFont->setWhatsThis( _checkBoxForceDyslexicFont->toolTip() );
 		_checkBoxForceDyslexicFont->setChecked( forceDyslexicFont );

@@ -18,7 +18,9 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	namespace
 	{
 		std::string _normalizedPathString( const FilePath & p_path )
-		{ return std::filesystem::absolute( p_path ).lexically_normal().string(); }
+		{
+			return std::filesystem::absolute( p_path ).lexically_normal().string();
+		}
 
 		float _exposureMultiplierFromEv( const float p_value ) { return Util::Math::exp2( p_value ); }
 
@@ -49,8 +51,6 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		addWidget( _colorPicker );
 		_colorPicker->setText( "Color" );
 
-		_labelEnvironmentMap = new QLabel( "Environment map", this );
-		addWidget( _labelEnvironmentMap );
 		_listEnvironmentMaps = new QListWidget( this );
 		_listEnvironmentMaps->setSelectionMode( QAbstractItemView::SingleSelection );
 		_listEnvironmentMaps->setSortingEnabled( true );
@@ -226,8 +226,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 			const QString  path			 = QString::fromStdString( _normalizedPathString( entry.path() ) );
 			const FilePath thumbnailPath = FilePath( entry.path() ).replace_extension( ".png" );
 			auto * const   item			 = new QListWidgetItem(
-				QIcon( QString::fromStdString( thumbnailPath.string() ) ), QString {}, _listEnvironmentMaps
-			);
+				   QIcon( QString::fromStdString( thumbnailPath.string() ) ), QString {}, _listEnvironmentMaps
+			   );
 			item->setData( Qt::UserRole, path );
 			item->setSizeHint( QSize( 208, 104 ) );
 			item->setToolTip( QString::fromStdString( displayPath.string() ) + "\n" + path );
@@ -278,7 +278,6 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		const bool hasEnvironment  = environmentMode && p_config.shading.environmentPath.has_value();
 		const bool pbr			   = p_config.shading.mode == VTX::Renderer::E_SHADING::PBR;
 		_colorPicker->setVisible( p_config.shading.backgroundMode == VTX::Renderer::E_BACKGROUND_MODE::COLOR );
-		_labelEnvironmentMap->setVisible( environmentMode );
 		_listEnvironmentMaps->setVisible( environmentMode );
 		_lineEnvironmentPath->parentWidget()->setVisible( environmentMode );
 		_labelSkyboxIntensity->setVisible( hasEnvironment );

@@ -117,7 +117,7 @@ namespace VTX::UI::QT::Menu
 				};
 
 				addSecondaryStructureSubItem(
-					"Secondary structure", E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE, p_secondaryStructureScheme
+					"Types", E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE, p_secondaryStructureScheme
 				);
 				addSecondaryStructureSubItem(
 					"Chains", E_COLOR_SCHEME_SECONDARY_STRUCTURE::CHAIN, p_secondaryStructureScheme
@@ -159,7 +159,9 @@ namespace VTX::UI::QT::Menu
 		{
 		  public:
 			ColorItem( const QColor & c, QWidget * parent = nullptr ) : QWidget( parent ), _color( c )
-			{ setMinimumHeight( 24 ); }
+			{
+				setMinimumHeight( 24 );
+			}
 
 		  protected:
 			void paintEvent( QPaintEvent * ) override

@@ -110,7 +110,7 @@ namespace VTX::App::Pass
 		const auto & accessibility = ECS::getFirstComponent<Setting::Accessibility>();
 		switch ( accessibility.colorMode )
 		{
-		case Setting::E_COLOR_ACCESSIBILITY_MODE::STANDARD: break;
+		case Setting::E_COLOR_ACCESSIBILITY_MODE::DEFAULT: break;
 		case Setting::E_COLOR_ACCESSIBILITY_MODE::HIGH_CONTRAST:
 			preset = Renderer::Color::toHighContrast( preset );
 			break;

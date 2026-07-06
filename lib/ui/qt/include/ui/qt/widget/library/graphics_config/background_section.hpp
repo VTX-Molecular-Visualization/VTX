@@ -23,7 +23,6 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		QPointer<QRadioButton>	 _radioBackgroundColor;
 		QPointer<QRadioButton>	 _radioBackgroundEnvironment;
 		QPointer<ColorPicker>	 _colorPicker;
-		QPointer<QLabel>		 _labelEnvironmentMap;
 		QPointer<QListWidget>	 _listEnvironmentMaps;
 		QPointer<QLineEdit>		 _lineEnvironmentPath;
 		QPointer<QPushButton>	 _buttonEnvironmentBrowse;
