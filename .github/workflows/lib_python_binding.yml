@@ -121,9 +121,11 @@ jobs:
       run: |
         conan upload fontconfig -r=vtx
         conan upload freetype -r=vtx
+        conan upload libxcrypt -r=vtx
         conan upload libpng -r=vtx
         conan upload tk -r=vtx
         conan upload util-linux-libuuid -r=vtx
+        conan upload xorg/system -r=vtx
 
     - name: Create package
       working-directory: ${{env.LIB_DIR}}

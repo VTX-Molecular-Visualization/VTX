@@ -110,6 +110,7 @@ jobs:
         conan upload libiconv -r=vtx
         conan upload libxml2 -r=vtx
         conan upload wayland -r=vtx
+        conan upload xorg/system -r=vtx
         conan upload xkbcommon -r=vtx
 
     - name: Create package

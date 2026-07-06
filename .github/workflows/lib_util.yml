@@ -98,6 +98,8 @@ jobs:
         conan upload openddl-parser -r=vtx
         conan upload poly2tri -r=vtx
         conan upload pugixml -r=vtx
+        conan upload rapidjson -r=vtx
+        conan upload utfcpp -r=vtx
         conan upload minizip -r=vtx
         conan upload exiv2 -r=vtx
         conan upload inih -r=vtx

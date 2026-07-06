@@ -85,6 +85,11 @@ jobs:
         conan upload sdl -r=vtx
         conan upload imgui -r=vtx
 
+    - name: Upload Linux dependencies
+      if: runner.os == 'Linux'
+      run: |
+        conan upload xorg/system -r=vtx
+
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}
       shell: bash
