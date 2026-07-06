@@ -91,6 +91,7 @@ jobs:
         conan upload openssl -r=vtx
         conan upload platformfolders -r=vtx
         conan upload assimp -r=vtx
+        conan upload minizip -r=vtx
         conan upload exiv2 -r=vtx
         conan upload catch2 -r=vtx
 
