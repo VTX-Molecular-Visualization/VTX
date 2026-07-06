@@ -85,14 +85,22 @@ jobs:
         conan upload cpr -r=vtx
         conan upload stb -r=vtx
         conan upload tinyexr -r=vtx
+        conan upload miniz -r=vtx
         conan upload fmt -r=vtx
         conan upload zlib -r=vtx
         conan upload libcurl -r=vtx
         conan upload openssl -r=vtx
         conan upload platformfolders -r=vtx
         conan upload assimp -r=vtx
+        conan upload clipper -r=vtx
+        conan upload draco -r=vtx
+        conan upload kuba-zip -r=vtx
+        conan upload openddl-parser -r=vtx
+        conan upload poly2tri -r=vtx
+        conan upload pugixml -r=vtx
         conan upload minizip -r=vtx
         conan upload exiv2 -r=vtx
+        conan upload inih -r=vtx
         conan upload catch2 -r=vtx
 
     - name: Create package
