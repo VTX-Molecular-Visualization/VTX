@@ -87,6 +87,7 @@ jobs:
         conan upload tinyexr -r=vtx
         conan upload miniz -r=vtx
         conan upload fmt -r=vtx
+        conan upload bzip2 -r=vtx
         conan upload zlib -r=vtx
         conan upload libcurl -r=vtx
         conan upload openssl -r=vtx

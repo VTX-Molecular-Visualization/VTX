@@ -89,28 +89,18 @@ jobs:
       working-directory: ${{env.LIB_DIR}}
       run: |
         conan upload brotli -r=vtx
-        conan upload bzip2 -r=vtx
         conan upload double-conversion -r=vtx
-        conan upload freetype -r=vtx
         conan upload libjpeg -r=vtx
-        conan upload libpng -r=vtx
-        conan upload openssl -r=vtx
         conan upload pcre2 -r=vtx
         conan upload qt -r=vtx
-        conan upload zlib -r=vtx
 
     - name: Upload Linux dependencies
       if: runner.os == 'Linux'
       working-directory: ${{env.LIB_DIR}}
       run: |
         conan upload dbus -r=vtx
-        conan upload expat -r=vtx
-        conan upload fontconfig -r=vtx
-        conan upload libffi -r=vtx
         conan upload libiconv -r=vtx
         conan upload libxml2 -r=vtx
-        conan upload wayland -r=vtx
-        conan upload xorg/system -r=vtx
         conan upload xkbcommon -r=vtx
 
     - name: Create package

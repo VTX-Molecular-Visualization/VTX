@@ -89,7 +89,6 @@ jobs:
       working-directory: ${{env.LIB_DIR}}
       run: |
         conan upload argparse -r=vtx
-        conan upload entt -r=vtx
 
     - name: Create package
       working-directory: ${{env.LIB_DIR}}

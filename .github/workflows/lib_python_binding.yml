@@ -97,16 +97,12 @@ jobs:
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}
       run: |
-        conan upload bzip2 -r=vtx
         conan upload pybind11 -r=vtx
         conan upload cpython -r=vtx
         conan upload expat -r=vtx
-        conan upload libffi -r=vtx
         conan upload mpdecimal -r=vtx
-        conan upload openssl -r=vtx
         conan upload sqlite3 -r=vtx
         conan upload xz_utils -r=vtx
-        conan upload zlib -r=vtx
 
     - name: Upload Windows Python dependencies
       if: runner.os == 'Windows'
