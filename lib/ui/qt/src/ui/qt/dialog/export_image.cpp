@@ -7,7 +7,33 @@
 #include <QPushButton>
 #include <QToolTip>
 #include <QVBoxLayout>
+#include <array>
 #include <renderer/renderer.hpp>
+#include <util/resolution.hpp>
+
+namespace
+{
+	constexpr VTX::Util::Resolution CURRENT_RESOLUTION_PRESET = { "Current", 0, 0 };
+
+	std::array<VTX::Util::Resolution, 16> IMAGE_EXPORT_RESOLUTION_PRESETS = {
+		CURRENT_RESOLUTION_PRESET,
+		VTX::Util::ResolutionPreset::SVGA,
+		VTX::Util::ResolutionPreset::XGA,
+		VTX::Util::ResolutionPreset::HD,
+		VTX::Util::ResolutionPreset::WXGA,
+		VTX::Util::ResolutionPreset::SXGA,
+		VTX::Util::ResolutionPreset::WXGA_PLUS,
+		VTX::Util::ResolutionPreset::HD_PLUS,
+		VTX::Util::ResolutionPreset::WSXGA_PLUS,
+		VTX::Util::ResolutionPreset::FULL_HD,
+		VTX::Util::ResolutionPreset::WUXGA,
+		VTX::Util::ResolutionPreset::QHD,
+		VTX::Util::ResolutionPreset::WQXGA,
+		VTX::Util::ResolutionPreset::UHD_4K,
+		VTX::Util::ResolutionPreset::UHD_8K,
+		VTX::Util::ResolutionPreset::UHD_16K,
+	};
+} // namespace
 
 namespace VTX::UI::QT::Dialog
 {
@@ -33,12 +59,14 @@ namespace VTX::UI::QT::Dialog
 		_comboBoxResolution->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
 
 		return;
+		// clang-format off
 		/*
-		auto & camera			 = App::SCENE().getCamera();
-		_RESOLUTIONS[ 0 ].width	 = camera.getScreenWidth();
-		_RESOLUTIONS[ 0 ].height = camera.getScreenHeight();
+		auto & camera			= App::SCENE().getCamera();
+		auto & currentResolution = IMAGE_EXPORT_RESOLUTION_PRESETS[ 0 ];
+		currentResolution.width	= camera.getScreenWidth();
+		currentResolution.height = camera.getScreenHeight();
 
-		for ( const auto & resolution : _RESOLUTIONS )
+		for ( const auto & resolution : IMAGE_EXPORT_RESOLUTION_PRESETS )
 		{
 			if ( resolution.width > _MAX_TEXTURE_SIZE || resolution.height > _MAX_TEXTURE_SIZE )
 			{
@@ -207,6 +235,7 @@ namespace VTX::UI::QT::Dialog
 
 		QTimer::singleShot( 0, this, &ExportImage::_updatePreview );
 		*/
+		// clang-format on
 	}
 
 	void ExportImage::_onResolution( const int p_resolutionIndex )
@@ -216,7 +245,7 @@ namespace VTX::UI::QT::Dialog
 			return;
 		}
 
-		const auto & resolution = _RESOLUTIONS[ p_resolutionIndex - 1 ];
+		const auto & resolution = IMAGE_EXPORT_RESOLUTION_PRESETS[ p_resolutionIndex - 1 ];
 
 		// Update size.
 		QSignalBlocker blockerWidth( _spinBoxWidth );
@@ -287,8 +316,8 @@ namespace VTX::UI::QT::Dialog
 		int height = _spinBoxHeight->value();
 
 		// Preview size.
-		const int widgetWidth = _preview->size().width() - _preview->parentWidget()->layout()->contentsMargins().left()
-								- _preview->parentWidget()->layout()->contentsMargins().right();
+		const int widgetWidth  = _preview->size().width() - _preview->parentWidget()->layout()->contentsMargins().left()
+								 - _preview->parentWidget()->layout()->contentsMargins().right();
 		const int widgetHeight = _preview->size().height() - _preview->parentWidget()->layout()->contentsMargins().top()
 								 - _preview->parentWidget()->layout()->contentsMargins().bottom();
 

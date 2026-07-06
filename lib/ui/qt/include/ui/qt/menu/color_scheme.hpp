@@ -66,10 +66,10 @@ namespace VTX::UI::QT::Menu
 				connect( a, &QAction::triggered, this, [ this, p_data ]() { emit selected( p_data ); } );
 			};
 
-			addItem( "Atoms", { E_COLOR_SCHEME::ATOM }, p_scheme );
+			addItem( "Atom", { E_COLOR_SCHEME::ATOM }, p_scheme );
 			addItem( "Carbon by chain", { E_COLOR_SCHEME::CARBON_CHAIN }, p_scheme );
-			addItem( "Residues", { E_COLOR_SCHEME::RESIDUE }, p_scheme );
-			addItem( "Chains", { E_COLOR_SCHEME::CHAIN }, p_scheme );
+			addItem( "Residue", { E_COLOR_SCHEME::RESIDUE }, p_scheme );
+			addItem( "Chain", { E_COLOR_SCHEME::CHAIN }, p_scheme );
 
 			auto addCustomSubMenu = [ this, &colorlayout ]( const QString & p_label, const E_COLOR_SCHEME p_scheme )
 			{
@@ -117,13 +117,13 @@ namespace VTX::UI::QT::Menu
 				};
 
 				addSecondaryStructureSubItem(
-					"Types", E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE, p_secondaryStructureScheme
+					"Type", E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE, p_secondaryStructureScheme
 				);
 				addSecondaryStructureSubItem(
-					"Chains", E_COLOR_SCHEME_SECONDARY_STRUCTURE::CHAIN, p_secondaryStructureScheme
+					"Chain", E_COLOR_SCHEME_SECONDARY_STRUCTURE::CHAIN, p_secondaryStructureScheme
 				);
 				addSecondaryStructureSubItem(
-					"Residues", E_COLOR_SCHEME_SECONDARY_STRUCTURE::RESIDUE, p_secondaryStructureScheme
+					"Residue", E_COLOR_SCHEME_SECONDARY_STRUCTURE::RESIDUE, p_secondaryStructureScheme
 				);
 
 				auto * const customSecondaryStructureMenu = QMenu::addMenu( "Custom" );
