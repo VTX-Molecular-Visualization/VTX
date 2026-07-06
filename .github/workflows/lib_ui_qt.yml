@@ -99,8 +99,10 @@ jobs:
       working-directory: ${{env.LIB_DIR}}
       run: |
         conan upload dbus -r=vtx
+        conan upload egl/system -r=vtx
         conan upload libiconv -r=vtx
         conan upload libxml2 -r=vtx
+        conan upload opengl/system -r=vtx
         conan upload xkbcommon -r=vtx
 
     - name: Create package

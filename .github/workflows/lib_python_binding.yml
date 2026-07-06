@@ -119,6 +119,8 @@ jobs:
         conan upload freetype -r=vtx
         conan upload libxcrypt -r=vtx
         conan upload libpng -r=vtx
+        conan upload ncurses -r=vtx
+        conan upload tcl -r=vtx
         conan upload tk -r=vtx
         conan upload util-linux-libuuid -r=vtx
         conan upload xorg/system -r=vtx
