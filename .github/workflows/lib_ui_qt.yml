@@ -103,6 +103,7 @@ jobs:
         conan upload libiconv -r=vtx
         conan upload libxml2 -r=vtx
         conan upload opengl/system -r=vtx
+        conan upload xkeyboard-config/system -r=vtx
         conan upload xkbcommon -r=vtx
 
     - name: Create package
