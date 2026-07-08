@@ -31,10 +31,13 @@ namespace VTX::App::PythonBinding
 		{
 			_thread->setSilent( true );
 		}
+
 		~_Impl()
 		{
 			while ( not _threadedLoopStarted )
+			{
 				std::this_thread::sleep_for( _inactivitySleepTime.load() );
+			}
 			_thread->stop();
 			_thread->wait();
 		}
@@ -44,6 +47,7 @@ namespace VTX::App::PythonBinding
 			auto queue = _lockedCmdQueue.open();
 			queue->push( { p_command } );
 		}
+
 		inline void runCommand(
 			const std::string &							  p_command,
 			std::shared_ptr<std::promise<AsyncJobResult>> p_ret
@@ -67,10 +71,13 @@ namespace VTX::App::PythonBinding
 				_actuallyRunScript( p_path, p_promise );
 			}
 		}
+
 		inline void runScript( const FilePath & p_path ) { runScript( p_path, nullptr ); }
 
 		inline void slowerResponseTime() noexcept { _inactivitySleepTime = std::chrono::milliseconds( 1000 ); }
+
 		inline void fasterResponseTime() noexcept { _inactivitySleepTime = std::chrono::milliseconds( 100 ); }
+
 		inline void subscribe( InterpretorInstructionsOneShot p_instruction ) noexcept
 		{
 			_instructions += std::move( p_instruction );
@@ -122,9 +129,12 @@ namespace VTX::App::PythonBinding
 
 				std::this_thread::sleep_for( _inactivitySleepTime.load() );
 				if ( _stopToken.stop_requested() )
+				{
 					break;
+				}
 			}
 		}
+
 		inline void _actuallyRunCommand( WaitingPythonCommand & p_command )
 		{
 			AsyncJobResult jobResult;
@@ -134,7 +144,9 @@ namespace VTX::App::PythonBinding
 				jobResult.resultStr = _interpretor->runCommand( p_command.commandStr );
 				jobResult.success	= true;
 				if ( not jobResult.resultStr.empty() )
+				{
 					VTX_PYTHON_OUT( "{}", jobResult.resultStr );
+				}
 			}
 			catch ( CommandException & p_e )
 			{
@@ -148,8 +160,11 @@ namespace VTX::App::PythonBinding
 			}
 
 			if ( p_command.promise )
+			{
 				p_command.promise->set_value( std::move( jobResult ) );
+			}
 		}
+
 		inline void _actuallyRunScript(
 			const FilePath &							  p_path,
 			std::shared_ptr<std::promise<AsyncJobResult>> p_promise
@@ -165,10 +180,15 @@ namespace VTX::App::PythonBinding
 			{
 				jobResult.success	= false;
 				jobResult.resultStr = e.what();
-				VTX_ERROR( "Error while running script : {}", e.what() );
+				if ( not p_promise )
+				{
+					VTX_ERROR( "Error while running script : {}", e.what() );
+				}
 			}
 			if ( p_promise )
+			{
 				p_promise->set_value( std::move( jobResult ) );
+			}
 		}
 
 		std::atomic<std::chrono::milliseconds> _inactivitySleepTime { std::chrono::milliseconds( 100 ) };
@@ -182,7 +202,9 @@ namespace VTX::App::PythonBinding
 	};
 
 	Interpretor::Interpretor() : _impl( new _Impl() ) {}
+
 	void Interpretor::runCommand( const std::string & p_ ) noexcept { _impl->runCommand( p_ ); }
+
 	void Interpretor::runCommand(
 		const std::string &							  p_cmd,
 		std::shared_ptr<std::promise<AsyncJobResult>> p_ret
@@ -190,7 +212,9 @@ namespace VTX::App::PythonBinding
 	{
 		_impl->runCommand( p_cmd, std::move( p_ret ) );
 	}
+
 	void Interpretor::runScript( const FilePath & p_path ) noexcept { _impl->runScript( p_path ); }
+
 	void Interpretor::runScript(
 		const FilePath &							  p_path,
 		std::shared_ptr<std::promise<AsyncJobResult>> p_future
@@ -198,6 +222,7 @@ namespace VTX::App::PythonBinding
 	{
 		_impl->runScript( p_path, std::move( p_future ) );
 	}
+
 	std::string Interpretor::getRuntimePythonVersion() noexcept
 	{
 		auto promise = std::make_shared<std::promise<AsyncJobResult>>();
@@ -206,9 +231,13 @@ namespace VTX::App::PythonBinding
 		const AsyncJobResult result = future.get();
 		return result.resultStr.substr( 1, result.resultStr.size() - 2 );
 	}
+
 	// bool Interpretor::lastScriptFailed() const { return _impl->lastScriptFailed(); }
 	void Interpretor::slowerResponseTime() noexcept { _impl->slowerResponseTime(); }
+
 	void Interpretor::fasterResponseTime() noexcept { _impl->fasterResponseTime(); }
+
 	void Interpretor::subscribe( InterpretorInstructionsOneShot _ ) noexcept { _impl->subscribe( std::move( _ ) ); }
+
 	void Interpretor::Del::operator()( Interpretor::_Impl * p_ ) noexcept { delete p_; }
 } // namespace VTX::App::PythonBinding
