@@ -17,6 +17,7 @@ namespace VTX::App
 		bool debug		= false;
 		bool noGui		= false;
 		bool noGraphics = false;
+		bool noPython	= false;
 		bool noUpdates	= false;
 
 		std::vector<std::string> positionalFiles;
@@ -37,10 +38,12 @@ namespace VTX::App
 
 	  private:
 		struct _data;
+
 		struct _del
 		{
 			void operator()( _data * ) const noexcept;
 		};
+
 		std::unique_ptr<_data, _del> _impl;
 	};
 

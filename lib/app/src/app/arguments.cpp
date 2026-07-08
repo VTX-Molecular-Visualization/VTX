@@ -14,6 +14,7 @@ namespace VTX::App
 		bool					 needHelp  = false;
 		argparse::ArgumentParser parser { std::string( "VTX" ), Session::version(), argparse::default_arguments::none };
 	};
+
 	ArgumentParser::ArgumentParser( int p_argc, const char * const * p_argv ) noexcept :
 		_impl( new _data { Arguments { p_argc, p_argv } } )
 	{
@@ -31,36 +32,44 @@ namespace VTX::App
 		// Bools
 		_impl->parser.add_argument( "-h", "--help" )
 			.help( "Print the help message and exit." )
-			.default_value( false )
+			.default_value( _impl->needHelp )
 			.implicit_value( true )
 			.nargs( 0 )
 			.store_into( _impl->needHelp );
 		_impl->parser.add_argument( "--debug" )
 			.help( "Enable debug mode. This opens a console and print a ton of debug messages." )
-			.default_value( false )
+			.default_value( _impl->args.debug )
 			.implicit_value( true )
 			.nargs( 0 )
 			.store_into( _impl->args.debug );
 		_impl->parser.add_argument( "--no-gui" )
 			.help( "Turn the gui off. Usefull for executing scripts in batch." )
-			.default_value( false )
+			.default_value( _impl->args.noGui )
 			.implicit_value( true )
 			.nargs( 0 )
 			.store_into( _impl->args.noGui );
 		_impl->parser.add_argument( "--no-graphics" )
 			.help( "Disable the rendering panel. Intended for debug purposes." )
-			.default_value( false )
+			.default_value( _impl->args.noGraphics )
 			.implicit_value( true )
 			.nargs( 0 )
 			.store_into( _impl->args.noGraphics );
+		_impl->parser.add_argument( "--no-python" )
+			.help( "Disable the embedded Python backend." )
+			.default_value( _impl->args.noPython )
+			.implicit_value( true )
+			.nargs( 0 )
+			.store_into( _impl->args.noPython );
 		_impl->parser.add_argument( "--no-updates" )
 			.help( "Disable automatic updating." )
-			.default_value( false )
+			.default_value( _impl->args.noUpdates )
 			.implicit_value( true )
 			.nargs( 0 )
 			.store_into( _impl->args.noUpdates );
 	}
-	bool		ArgumentParser::needHelp() const { return _impl->needHelp; }
+
+	bool ArgumentParser::needHelp() const { return _impl->needHelp; }
+
 	std::string ArgumentParser::help() const
 	{
 		std::stringstream ss;
@@ -69,6 +78,7 @@ namespace VTX::App
 		auto s = ss.str();
 		return s;
 	}
+
 	void ArgumentParser::get( Arguments & p_args ) noexcept
 	{
 		assert( _impl->args_gone == false );
@@ -76,6 +86,7 @@ namespace VTX::App
 		p_args			 = std::move( _impl->args );
 		_impl->args_gone = true;
 	}
+
 	void ArgumentParser::parse() { _impl->parser.parse_args( _impl->args.argc, _impl->args.argv ); }
 
 	std::string toString( const Arguments & p_args ) noexcept
