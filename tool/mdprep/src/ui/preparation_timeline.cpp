@@ -1,6 +1,7 @@
 #include <array>
 #include <functional>
 //
+#include <QColor>
 #include <QDesktopServices>
 #include <QDir>
 #include <QFont>
@@ -9,6 +10,7 @@
 #include <QIcon>
 #include <QLabel>
 #include <QMouseEvent>
+#include <QPalette>
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QString>
@@ -23,6 +25,7 @@
 #include <util/event_hub.hpp>
 //
 #include <tool/mdprep/actions/jobs.hpp>
+#include <tool/mdprep/gateway/shared.hpp>
 //
 #include <tool/mdprep/ui/preparation_timeline.hpp>
 
@@ -38,21 +41,24 @@ namespace VTX::Tool::Mdprep::ui
 			failed
 		};
 
+		// A step state maps to a fixed, semantic status color (not a theme palette role) and a label. The color is
+		// used both for the rounded dot/card accent (through QSS, the only way to get rounded geometry) and for the
+		// state label text (through the palette).
 		struct StateStyle
 		{
-			const char * color;
-			const char * label;
+			QColor	color;
+			QString label;
 		};
 
 		StateStyle stateStyle( E_STEP_STATE p_state ) noexcept
 		{
 			switch ( p_state )
 			{
-			case E_STEP_STATE::running: return { "#4c9aff", "Running…" };
-			case E_STEP_STATE::done: return { "#57d38c", "Done" };
-			case E_STEP_STATE::failed: return { "#ff6b6b", "Failed" };
+			case E_STEP_STATE::running: return { QColor( 0x4c, 0x9a, 0xff ), QStringLiteral( "Running…" ) };
+			case E_STEP_STATE::done: return { QColor( 0x57, 0xd3, 0x8c ), QStringLiteral( "Done" ) };
+			case E_STEP_STATE::failed: return { QColor( 0xff, 0x6b, 0x6b ), QStringLiteral( "Failed" ) };
 			case E_STEP_STATE::pending:
-			default: return { "#8a9099", "Pending" };
+			default: return { QColor( 0x8a, 0x90, 0x99 ), QStringLiteral( "Pending" ) };
 			}
 		}
 
@@ -153,25 +159,25 @@ namespace VTX::Tool::Mdprep::ui
 
 			_whyLabel = new QLabel( p_why );
 			_whyLabel->setWordWrap( true );
-			_whyLabel->setStyleSheet( "color:#9aa0a6;" );
+			_whyLabel->setForegroundRole( QPalette::PlaceholderText ); // theme-aware muted text
 			detLay->addWidget( _whyLabel );
 
 			_errorsLabel = new QLabel;
 			_errorsLabel->setWordWrap( true );
-			_errorsLabel->setStyleSheet( "color:#ff6b6b;" );
+			{
+				QPalette pal = _errorsLabel->palette();
+				pal.setColor( _errorsLabel->foregroundRole(), stateStyle( E_STEP_STATE::failed ).color );
+				_errorsLabel->setPalette( pal );
+			}
 			_errorsLabel->hide();
 			detLay->addWidget( _errorsLabel );
 
-			_stdoutHeading = new QLabel( QStringLiteral( "Standard output" ) );
-			_stdoutHeading->setStyleSheet( "color:#8a9099; font-size:11px;" );
-			_stdoutHeading->hide();
+			_stdoutHeading = _makeHeading( QStringLiteral( "Standard output" ) );
 			detLay->addWidget( _stdoutHeading );
 			_stdout = _makeOutputBox();
 			detLay->addWidget( _stdout );
 
-			_stderrHeading = new QLabel( QStringLiteral( "Standard error" ) );
-			_stderrHeading->setStyleSheet( "color:#8a9099; font-size:11px;" );
-			_stderrHeading->hide();
+			_stderrHeading = _makeHeading( QStringLiteral( "Standard error" ) );
 			detLay->addWidget( _stderrHeading );
 			_stderr = _makeOutputBox();
 			detLay->addWidget( _stderr );
@@ -232,20 +238,37 @@ namespace VTX::Tool::Mdprep::ui
 		}
 
 	  private:
-		E_STEP_STATE   _state	 = E_STEP_STATE::pending;
-		bool		   _expanded = false;
-		ClickableRow * _header	 = nullptr;
-		QLabel *	   _dot		 = nullptr;
-		QLabel *	   _titleLabel = nullptr;
-		QLabel *	   _stateLabel = nullptr;
-		QLabel *	   _arrow	 = nullptr;
-		QWidget *	   _details	 = nullptr;
-		QLabel *	   _whyLabel = nullptr;
-		QLabel *	   _errorsLabel	   = nullptr;
-		QLabel *	   _stdoutHeading  = nullptr;
-		QLabel *	   _stderrHeading  = nullptr;
-		QPlainTextEdit * _stdout = nullptr;
-		QPlainTextEdit * _stderr = nullptr;
+		E_STEP_STATE	 _state			= E_STEP_STATE::pending;
+		bool			 _expanded		= false;
+		ClickableRow *	 _header		= nullptr;
+		QLabel *		 _dot			= nullptr;
+		QLabel *		 _titleLabel	= nullptr;
+		QLabel *		 _stateLabel	= nullptr;
+		QLabel *		 _arrow			= nullptr;
+		QWidget *		 _details		= nullptr;
+		QLabel *		 _whyLabel		= nullptr;
+		QLabel *		 _errorsLabel	= nullptr;
+		QLabel *		 _stdoutHeading = nullptr;
+		QLabel *		 _stderrHeading = nullptr;
+		QPlainTextEdit * _stdout		= nullptr;
+		QPlainTextEdit * _stderr		= nullptr;
+
+		// A dimmed, slightly smaller section heading. Color comes from the theme (palette role) and the size from the
+		// font API, so nothing here needs a stylesheet.
+		static QLabel * _makeHeading( const QString & p_text ) noexcept
+		{
+			QLabel * label = new QLabel( p_text );
+			label->setForegroundRole( QPalette::PlaceholderText );
+			QFont	  f	 = label->font();
+			const int pt = f.pointSize();
+			if ( pt > 1 )
+			{
+				f.setPointSize( pt - 1 );
+			}
+			label->setFont( f );
+			label->hide();
+			return label;
+		}
 
 		static QPlainTextEdit * _makeOutputBox() noexcept
 		{
@@ -263,18 +286,20 @@ namespace VTX::Tool::Mdprep::ui
 		void _applyState() noexcept
 		{
 			const StateStyle style = stateStyle( _state );
+
+			// QSS is kept strictly for the rounded geometry that the widget API cannot express: the dot circle and the
+			// card corners / left accent. The injected color is a fixed semantic status color, not a theme role.
 			_dot->setStyleSheet(
-				QStringLiteral( "background-color:%1; border-radius:6px;" ).arg( QString( style.color ) )
+				QStringLiteral( "background-color:%1; border-radius:6px;" ).arg( style.color.name() )
 			);
-			_stateLabel->setText( QString( style.label ) );
-			_stateLabel->setStyleSheet( QStringLiteral( "color:%1;" ).arg( QString( style.color ) ) );
-			setStyleSheet(
-				QStringLiteral(
-					"QFrame#mdprepStepNode { border-left:3px solid %1; border-radius:4px; "
-					"background-color:rgba(127,127,127,0.06); }"
-				)
-					.arg( QString( style.color ) )
-			);
+			setStyleSheet( QStringLiteral( "QFrame#mdprepStepNode { border-left:3px solid %1; border-radius:4px; }" )
+							   .arg( style.color.name() ) );
+
+			// State label text color goes through the palette, like the rest of VTX.
+			_stateLabel->setText( style.label );
+			QPalette pal = _stateLabel->palette();
+			pal.setColor( _stateLabel->foregroundRole(), style.color );
+			_stateLabel->setPalette( pal );
 		}
 	};
 
@@ -285,11 +310,11 @@ namespace VTX::Tool::Mdprep::ui
 		_setupUi();
 
 		_stepStartedConnection
-			= App::HUB().connect<Actions::PreparationStepStarted, &PreparationTimeline::_onStepStarted>( this );
+			= App::HUB().connect<Gateway::PreparationStepStarted, &PreparationTimeline::_onStepStarted>( this );
 		_stepFinishedConnection
-			= App::HUB().connect<Actions::PreparationStepFinished, &PreparationTimeline::_onStepFinished>( this );
+			= App::HUB().connect<Gateway::PreparationStepFinished, &PreparationTimeline::_onStepFinished>( this );
 		_systemPackedConnection
-			= App::HUB().connect<Actions::SystemPacked, &PreparationTimeline::_onSystemPacked>( this );
+			= App::HUB().connect<Gateway::SystemPacked, &PreparationTimeline::_onSystemPacked>( this );
 	}
 
 	void PreparationTimeline::_setupUi() noexcept
@@ -361,7 +386,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	void PreparationTimeline::_onStepStarted( const Actions::PreparationStepStarted & p_ev ) noexcept
+	void PreparationTimeline::_onStepStarted( const Gateway::PreparationStepStarted & p_ev ) noexcept
 	{
 		if ( p_ev.index < 0 || static_cast<size_t>( p_ev.index ) >= _nodes.size() )
 		{
@@ -370,7 +395,7 @@ namespace VTX::Tool::Mdprep::ui
 		_nodes[ p_ev.index ]->setState( E_STEP_STATE::running );
 	}
 
-	void PreparationTimeline::_onStepFinished( const Actions::PreparationStepFinished & p_ev ) noexcept
+	void PreparationTimeline::_onStepFinished( const Gateway::PreparationStepFinished & p_ev ) noexcept
 	{
 		if ( p_ev.index < 0 || static_cast<size_t>( p_ev.index ) >= _nodes.size() )
 		{
@@ -383,9 +408,7 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			errors << QString::fromStdString( e );
 		}
-		node->setOutputs(
-			QString::fromStdString( p_ev.stdOut ), QString::fromStdString( p_ev.stdErr ), errors
-		);
+		node->setOutputs( QString::fromStdString( p_ev.stdOut ), QString::fromStdString( p_ev.stdErr ), errors );
 		node->setState( p_ev.success ? E_STEP_STATE::done : E_STEP_STATE::failed );
 		if ( not p_ev.success )
 		{
@@ -393,7 +416,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	void PreparationTimeline::_onSystemPacked( const Actions::SystemPacked & p_ev ) noexcept
+	void PreparationTimeline::_onSystemPacked( const Gateway::SystemPacked & p_ev ) noexcept
 	{
 		if ( _packNode )
 		{

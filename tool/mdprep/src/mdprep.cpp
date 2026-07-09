@@ -84,13 +84,11 @@ namespace VTX::Tool::Mdprep
 
 	void get( MainWindow *& p_out ) noexcept
 	{
-		if ( g_win )
+		if ( g_win == nullptr )
 		{
-			p_out = g_win;
-			return;
+			auto & mainWindow = UI::QT::MAIN_WINDOW();
+			g_win			  = mainWindow.createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
 		}
-		auto & mainWindow = UI::QT::MAIN_WINDOW();
-		g_win			  = mainWindow.createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
 		p_out			  = g_win;
 	}
 

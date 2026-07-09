@@ -2,19 +2,12 @@
 #define __VTX_TOOL_TOOLS_MDPREP_UI_PREPARATION_TIMELINE__
 
 #include <string>
+#include <tool/mdprep/gateway/shared.hpp>
 #include <ui/qt/dock_widget/base_dock_widget.hpp>
 #include <util/event_hub.hpp>
 #include <vector>
 
 class QPushButton;
-
-namespace VTX::Tool::Mdprep::Actions
-{
-	struct PreparationStepStarted;
-	struct PreparationStepFinished;
-	struct SystemPacked;
-	struct PreparationFinished;
-} // namespace VTX::Tool::Mdprep::Actions
 
 namespace VTX::Tool::Mdprep::ui
 {
@@ -44,7 +37,7 @@ namespace VTX::Tool::Mdprep::ui
 
 	  private:
 		std::vector<StepNode *> _nodes;
-		StepNode *				_packNode	  = nullptr;
+		StepNode *				_packNode	   = nullptr;
 		QPushButton *			_openFolderBtn = nullptr;
 		std::string				_packedPath;
 
@@ -54,9 +47,9 @@ namespace VTX::Tool::Mdprep::ui
 
 		void _setupUi() noexcept;
 
-		void _onStepStarted( const Actions::PreparationStepStarted & ) noexcept;
-		void _onStepFinished( const Actions::PreparationStepFinished & ) noexcept;
-		void _onSystemPacked( const Actions::SystemPacked & ) noexcept;
+		void _onStepStarted( const Gateway::PreparationStepStarted & ) noexcept;
+		void _onStepFinished( const Gateway::PreparationStepFinished & ) noexcept;
+		void _onSystemPacked( const Gateway::SystemPacked & ) noexcept;
 	};
 
 	/**

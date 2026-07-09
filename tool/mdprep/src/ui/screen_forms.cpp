@@ -230,6 +230,6 @@ namespace VTX::Tool::Mdprep::ui
 		);
 		QObject::connect( _buttonStart, &QPushButton::clicked, [ & ]() { this->_startPreparation(); } );
 		_preparationEndConnection
-			= App::HUB().connect<Actions::PreparationFinished, &ScreenForms::_preparationEnd>( this );
+			= App::HUB().connect<Gateway::PreparationFinished, &ScreenForms::_preparationEnd>( this );
 	}
 } // namespace VTX::Tool::Mdprep::ui

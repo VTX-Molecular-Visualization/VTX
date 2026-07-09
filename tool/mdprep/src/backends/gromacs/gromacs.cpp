@@ -6,8 +6,8 @@
 #include <thread>
 #include <util/logger.hpp>
 //
-#include <tool/mdprep/actions/jobs.hpp>
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
+#include <tool/mdprep/gateway/shared.hpp>
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
@@ -79,7 +79,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		) noexcept
 		{
 			const int displayIndex = stepNum;
-			App::Threading::TiggerEvent { Actions::PreparationStepStarted { displayIndex, p_stepName } };
+			App::Threading::TiggerEvent { Gateway::PreparationStepStarted { displayIndex, p_stepName } };
 
 			const FilePath jobDir = p_in.rootDir / p_stepName;
 			VTX_DEBUG( "[MDPREP] Starting preparation step <{}> in <{}>.", p_stepName, jobDir.string() );
@@ -97,7 +97,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			// thread through the event. Done in a closed scope to release the channels lock before firing.
 			const auto fireStepFinished = [ & ]( bool p_success )
 			{
-				Actions::PreparationStepFinished ev;
+				Gateway::PreparationStepFinished ev;
 				ev.index   = displayIndex;
 				ev.success = p_success;
 				ev.errors  = currentJobData.report.errors;
