@@ -3,13 +3,25 @@ def require(condition, message):
         raise RuntimeError(message)
 
 
+def almost_equal(left, right, tolerance=1e-6):
+    return abs(left - right) <= tolerance
+
+
 vec2 = vtx.Vec2f(1.0, 2.0)
 vec3 = vtx.Vec3f(1.0, 2.0, 3.0)
 vec4 = vtx.Vec4f(1.0, 2.0, 3.0, 4.0)
-require(vec2.x == 1.0 and vec2.y == 2.0, "Unexpected Vec2f")
-require(vec3.x == 1.0 and vec3.y == 2.0 and vec3.z == 3.0, "Unexpected Vec3f")
+require(almost_equal(vec2.x, 1.0) and almost_equal(vec2.y, 2.0), "Unexpected Vec2f")
 require(
-    vec4.x == 1.0 and vec4.y == 2.0 and vec4.z == 3.0 and vec4.w == 4.0,
+    almost_equal(vec3.x, 1.0)
+    and almost_equal(vec3.y, 2.0)
+    and almost_equal(vec3.z, 3.0),
+    "Unexpected Vec3f",
+)
+require(
+    almost_equal(vec4.x, 1.0)
+    and almost_equal(vec4.y, 2.0)
+    and almost_equal(vec4.z, 3.0)
+    and almost_equal(vec4.w, 4.0),
     "Unexpected Vec4f",
 )
 
@@ -18,9 +30,9 @@ transform.position = vec3
 transform.rotation = vtx.Quatf(0.0, 0.0, 0.0)
 transform.scale = vtx.Vec3f(2.0, 2.0, 2.0)
 require(
-    transform.position.z == 3.0
-    and transform.rotation.w == 1.0
-    and transform.scale.x == 2.0,
+    almost_equal(transform.position.z, 3.0)
+    and almost_equal(transform.rotation.w, 1.0)
+    and almost_equal(transform.scale.x, 2.0),
     "Unexpected transform",
 )
 
@@ -38,10 +50,10 @@ vtx.setGraphicsConfig("default")
 color = vtx.Rgba(0.1, 0.2, 0.3)
 color.a = 0.4
 require(
-    abs(color.r - 0.1) < 1e-6
-    and abs(color.g - 0.2) < 1e-6
-    and abs(color.b - 0.3) < 1e-6
-    and abs(color.a - 0.4) < 1e-6,
+    almost_equal(color.r, 0.1)
+    and almost_equal(color.g, 0.2)
+    and almost_equal(color.b, 0.3)
+    and almost_equal(color.a, 0.4),
     "Unexpected RGBA",
 )
 
@@ -70,10 +82,10 @@ point_box = vtx.AABB(vtx.Vec3f(1.0, 2.0, 3.0))
 sphere_box = vtx.AABB(vtx.Vec3f(0.0, 0.0, 0.0), 2.0)
 require(
     bounding_box.valid
-    and bounding_box.min.x == 0.0
-    and bounding_box.max.x == 2.0
-    and bounding_box.center.x == 1.0
-    and point_box.radius == 0.0
+    and almost_equal(bounding_box.min.x, 0.0)
+    and almost_equal(bounding_box.max.x, 2.0)
+    and almost_equal(bounding_box.center.x, 1.0)
+    and almost_equal(point_box.radius, 0.0)
     and sphere_box.radius > 0.0,
     "Unexpected AABB",
 )
@@ -101,10 +113,12 @@ vtx.setCameraProjectionPerspective()
 
 camera_position = vtx.getCameraPosition()
 camera_rotation = vtx.getCameraRotation()
-require(camera_position.x == position.x, "Unexpected camera position x")
-require(camera_position.y == position.y, "Unexpected camera position y")
-require(camera_position.z == position.z, "Unexpected camera position z")
-require(camera_rotation.w == rotation.w, "Unexpected camera rotation w")
+require(almost_equal(camera_position.x, position.x), "Unexpected camera position x")
+require(almost_equal(camera_position.y, position.y), "Unexpected camera position y")
+require(almost_equal(camera_position.z, position.z), "Unexpected camera position z")
+require(
+    almost_equal(camera_rotation.w, rotation.w), "Unexpected camera rotation w"
+)
 
 try:
     from pathlib import Path
