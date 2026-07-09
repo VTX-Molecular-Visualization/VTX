@@ -51,7 +51,7 @@ namespace
 		p.setColor( QPalette::ButtonText, Qt::white );
 		p.setColor( QPalette::BrightText, Qt::red );
 
-		p.setColor( QPalette::Highlight, QColor( 90, 122, 190 ) );
+		p.setColor( QPalette::Highlight, QColor( 100, 100, 100 ) );
 		p.setColor( QPalette::HighlightedText, Qt::white );
 
 		p.setColor( QPalette::Disabled, QPalette::Text, QColor( 127, 127, 127 ) );

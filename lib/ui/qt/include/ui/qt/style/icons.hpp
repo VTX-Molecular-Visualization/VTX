@@ -46,6 +46,7 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint SAVE_AS				  = 0xeb60;	 // SAVE_AS
 	constexpr Codepoint SCENE				  = 0xe4fd;	 // SCHEMA
 	constexpr Codepoint SCREEN_RESOLUTION	  = 0xec08;	 // SCHEMA_ARROW_UP
+	constexpr Codepoint SCRIPT				  = 0xf84d;	 // CODE_BLOCKS
 	constexpr Codepoint SELECTION			  = 0xf772;	 // FRAME_INSPECT
 	constexpr Codepoint SNAPSHOT			  = 0xe3f4;	 // IMAGE
 	constexpr Codepoint SNAPSHOT_EXPORT		  = 0xf317;	 // IMAGE_ARROW_UP

@@ -12,6 +12,7 @@
 #include "ui/qt/dock_widget/graphics_configs.hpp"
 #include "ui/qt/dock_widget/inspector.hpp"
 #include "ui/qt/dock_widget/options.hpp"
+#include "ui/qt/dock_widget/python_editor.hpp"
 #include "ui/qt/dock_widget/representations.hpp"
 #include "ui/qt/dock_widget/scene.hpp"
 #include "ui/qt/dock_widget/sequences.hpp"
@@ -104,6 +105,8 @@ namespace VTX::UI::QT::Widget
 		dwInspector->raise();
 
 		auto * console = createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
+		createDockWidget<DockWidget::PythonEditor>( Qt::BottomDockWidgetArea );
+		console->raise();
 
 		// Resize.
 		resizeDocks(
@@ -312,9 +315,7 @@ namespace VTX::UI::QT::Widget
 	}
 
 	void MainWindow::_onBlockingOperationProgress( const App::Events::BlockingOperationProgress & p_e )
-	{
-		_progressDialog->setValue( p_e.progress );
-	}
+	{ _progressDialog->setValue( p_e.progress ); }
 
 	void MainWindow::_onBlockingOperationEnd( const App::Events::BlockingOperationEnd & )
 	{
