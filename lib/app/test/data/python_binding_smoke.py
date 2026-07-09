@@ -80,7 +80,6 @@ require(
 
 for function_name in (
     "newScene",
-    "clear",
     "deleteSystem",
     "deleteSystemSelected",
     "makeSnapshot",
