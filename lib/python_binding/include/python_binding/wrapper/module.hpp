@@ -36,8 +36,11 @@ namespace VTX::PythonBinding
 			template<typename Action, typename... ActionArgs, typename... Extras>
 			void bindAction( const std::string & p_name, const std::string & p_desc = "", Extras &&... p_extras )
 			{
-				std::function<void( ActionArgs... )> runActionFunc
-					= static_cast<void ( * )( ActionArgs... )>( &Module::runAction<Action, ActionArgs...> );
+				std::function<void( ActionArgs... )> runActionFunc = []( ActionArgs... p_args )
+				{
+					Action action;
+					action.execute( p_args... );
+				};
 				def( p_name.c_str(), runActionFunc, p_desc.c_str(), std::forward<Extras>( p_extras )... );
 			}
 
@@ -90,13 +93,6 @@ namespace VTX::PythonBinding
 
 			pybind11::module_ _pyModule;
 			std::string		  _modulePath;
-
-			template<typename Action, typename... Args>
-			static void runAction( Args... p_args )
-			{
-				Action action;
-				action.execute( p_args... );
-			}
 		};
 	} // namespace Wrapper
 }; // namespace VTX::PythonBinding
