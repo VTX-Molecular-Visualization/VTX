@@ -36,7 +36,8 @@ namespace VTX::PythonBinding
 			template<typename Action, typename... ActionArgs, typename... Extras>
 			void bindAction( const std::string & p_name, const std::string & p_desc = "", Extras &&... p_extras )
 			{
-				std::function runActionFunc = &Module::runAction<Action, ActionArgs...>;
+				std::function<void( ActionArgs... )> runActionFunc
+					= static_cast<void ( * )( ActionArgs... )>( &Module::runAction<Action, ActionArgs...> );
 				def( p_name.c_str(), runActionFunc, p_desc.c_str(), std::forward<Extras>( p_extras )... );
 			}
 
