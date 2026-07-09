@@ -5,7 +5,6 @@
 #include <optional>
 #include <python_binding/interpretor.hpp>
 #include <queue>
-#include <util/callback.hpp>
 #include <util/datalocker.hpp>
 #include <util/logger.hpp>
 
@@ -28,9 +27,7 @@ namespace VTX::App::PythonBinding
 				&THREAD().createThread( [ this ]( Util::StopToken p_stopToken, App::Threading::BaseThread & p_thread )
 										{ return runPythonThread( p_stopToken, p_thread ); } )
 			)
-		{
-			_thread->setSilent( true );
-		}
+		{ _thread->setSilent( true ); }
 
 		~_Impl()
 		{
@@ -80,7 +77,8 @@ namespace VTX::App::PythonBinding
 
 		inline void subscribe( InterpretorInstructionsOneShot p_instruction ) noexcept
 		{
-			_instructions += std::move( p_instruction );
+			auto instructions = _lockedInstructions.open();
+			instructions->push( std::move( p_instruction ) );
 		}
 
 		inline int runPythonThread( Util::StopToken p_stopToken, App::Threading::BaseThread & _ )
@@ -105,13 +103,26 @@ namespace VTX::App::PythonBinding
 	  private:
 		inline void _listenQueue()
 		{
-			WaitingPythonCommand command;
+			WaitingPythonCommand		   command;
+			InterpretorInstructionsOneShot instruction;
 			while ( true )
 			{
 			loop_beginning:
-				command = WaitingPythonCommand();
-				_instructions( *_interpretor );
-				_instructions.clear();
+				command		= WaitingPythonCommand();
+				instruction = InterpretorInstructionsOneShot();
+				{
+					auto instructions = _lockedInstructions.open();
+					if ( not instructions->empty() )
+					{
+						instruction = std::move( instructions->front() );
+						instructions->pop();
+					}
+				}
+				if ( instruction )
+				{
+					instruction( *_interpretor );
+					goto loop_beginning;
+				}
 				{
 					auto queue = _lockedCmdQueue.open();
 					if ( not queue->empty() )
@@ -195,10 +206,10 @@ namespace VTX::App::PythonBinding
 		std::atomic_bool					   _threadedLoopStarted = false;
 		std::optional<VTX::PythonBinding::Interpretor>
 			_interpretor; // Optional because it will be created and destroyed in the python thread
-		Util::DataLocker<std::queue<WaitingPythonCommand>> _lockedCmdQueue;
-		App::Threading::BaseThread *					   _thread = nullptr;
-		Util::StopToken									   _stopToken;
-		Util::Callback<VTX::PythonBinding::Interpretor &>  _instructions;
+		Util::DataLocker<std::queue<InterpretorInstructionsOneShot>> _lockedInstructions;
+		Util::DataLocker<std::queue<WaitingPythonCommand>>			 _lockedCmdQueue;
+		App::Threading::BaseThread *								 _thread = nullptr;
+		Util::StopToken												 _stopToken;
 	};
 
 	Interpretor::Interpretor() : _impl( new _Impl() ) {}
@@ -209,9 +220,7 @@ namespace VTX::App::PythonBinding
 		const std::string &							  p_cmd,
 		std::shared_ptr<std::promise<AsyncJobResult>> p_ret
 	) noexcept
-	{
-		_impl->runCommand( p_cmd, std::move( p_ret ) );
-	}
+	{ _impl->runCommand( p_cmd, std::move( p_ret ) ); }
 
 	void Interpretor::runScript( const FilePath & p_path ) noexcept { _impl->runScript( p_path ); }
 
@@ -219,9 +228,7 @@ namespace VTX::App::PythonBinding
 		const FilePath &							  p_path,
 		std::shared_ptr<std::promise<AsyncJobResult>> p_future
 	) noexcept
-	{
-		_impl->runScript( p_path, std::move( p_future ) );
-	}
+	{ _impl->runScript( p_path, std::move( p_future ) ); }
 
 	std::string Interpretor::getRuntimePythonVersion() noexcept
 	{
