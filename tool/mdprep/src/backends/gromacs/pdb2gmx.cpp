@@ -178,7 +178,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 			new_id.chain	= match[ 1 ].str()[ 0 ];
 			std::string buf = match[ 2 ].str();
-			Util::String::toUpper( buf );
+			buf				= Util::String::toUpper( buf );
 			parse( buf, new_id.kw );
 			if ( new_id.kw == E_INTERACTIVE_KEYWORD::none )
 			{

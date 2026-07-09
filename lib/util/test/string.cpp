@@ -6,19 +6,19 @@
 TEST_CASE( "Util::String", "[unit]" )
 {
 	std::string str = "   test   ";
-	VTX::Util::String::trimStart( str );
+	str				= VTX::Util::String::trimStart( str );
 	CHECK( str == "test   " );
 
 	str = "   test   ";
-	VTX::Util::String::trimEnd( str );
+	str = VTX::Util::String::trimEnd( str );
 	CHECK( str == "   test" );
 
 	str = "   test   ";
-	VTX::Util::String::trim( str );
+	str = VTX::Util::String::trim( str );
 	CHECK( str == "test" );
 
 	str = "a string with characters to replace";
-	VTX::Util::String::replaceAll( str, "r", "t" );
+	str = VTX::Util::String::replaceAll( str, "r", "t" );
 	CHECK( str == "a stting with chatactets to teplace" );
 	const std::string strToReplace = "a string";
 	CHECK( VTX::Util::String::replaceAll( strToReplace, "r", "t" ) == "a stting" );
@@ -32,6 +32,6 @@ TEST_CASE( "Util::String", "[unit]" )
 	CHECK( VTX::Util::String::strToUint( str ) == 3 );
 
 	str = "123 abcDefghijklmnopqrstuvwxyZ.()+";
-	VTX::Util::String::toUpper( str );
+	str = VTX::Util::String::toUpper( str );
 	CHECK( str == "123 ABCDEFGHIJKLMNOPQRSTUVWXYZ.()+" );
 }

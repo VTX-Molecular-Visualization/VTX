@@ -24,6 +24,7 @@ namespace std
 namespace VTX::IO::Writer
 {
 	using PropertyCollection = std::unordered_map<std::string, PropertyValue>;
+
 	// All struct starting with an underscore are private to this .obj
 
 	/**
@@ -41,6 +42,7 @@ namespace VTX::IO::Writer
 		std::string name;
 		std::string symbol;
 	};
+
 	using AtomCollection			= std::map<AtomId, _Atom>;
 	using AtomCoordinatesCollection = std::unordered_map<const _Atom *, AtomCoordinates>;
 	using AtomPtrCollection			= std::list<const _Atom *>;
@@ -52,6 +54,7 @@ namespace VTX::IO::Writer
 		PropertyCollection properties;
 		AtomPtrCollection  atoms;
 	};
+
 	using ResidueCollection = std::list<_Residue>;
 
 	struct _Chain
@@ -61,10 +64,12 @@ namespace VTX::IO::Writer
 	};
 
 	using ChainCollection = std::list<_Chain>; // Used for constant time insertion and memory efficiency
+
 	struct _Frame
 	{
 		AtomCoordinatesCollection coordinates;
 	};
+
 	using FrameCollection = std::list<_Frame>; // Used for constant time insertion and memory efficiency
 
 	struct _Bond
@@ -73,6 +78,7 @@ namespace VTX::IO::Writer
 		AtomId		 a2;
 		E_BOND_ORDER bondOrder;
 	};
+
 	using BondCollection = std::list<_Bond>; // Used for constant time insertion and memory efficiency
 
 	struct _System
@@ -90,51 +96,94 @@ namespace VTX::IO::Writer
 		void figureFormat( const FilePath & dest, E_FILE_FORMATS & format )
 		{
 			if ( not dest.has_extension() )
+			{
 				return;
+			}
 			std::string extension = dest.extension().string();
-			VTX::Util::String::toUpper( extension );
+			extension			  = VTX::Util::String::toUpper( extension );
 
 			if ( extension == ".MMCIF" )
+			{
 				format = E_FILE_FORMATS::mmcif;
+			}
 			else if ( extension == ".PDB" )
+			{
 				format = E_FILE_FORMATS::pdb;
+			}
 			else if ( extension == ".MMTF" )
+			{
 				format = E_FILE_FORMATS::mmtf;
+			}
 			else if ( extension == ".MOLDEN" )
+			{
 				format = E_FILE_FORMATS::molden;
+			}
 			else if ( extension == ".CIF" )
+			{
 				format = E_FILE_FORMATS::cif;
+			}
 			else if ( extension == ".GRO" )
+			{
 				format = E_FILE_FORMATS::gro;
+			}
 			else if ( extension == ".MOL2" )
+			{
 				format = E_FILE_FORMATS::mol2;
+			}
 			else if ( extension == ".SDf" )
+			{
 				format = E_FILE_FORMATS::sdf;
+			}
 			else if ( extension == ".SMI" )
+			{
 				format = E_FILE_FORMATS::smi;
+			}
 			else if ( extension == ".XYZ" )
+			{
 				format = E_FILE_FORMATS::xyz;
+			}
 			else if ( extension == ".CML" )
+			{
 				format = E_FILE_FORMATS::cml;
+			}
 			else if ( extension == ".CSSR" )
+			{
 				format = E_FILE_FORMATS::cssr;
+			}
 			else if ( extension == ".NC" )
+			{
 				format = E_FILE_FORMATS::nc;
+			}
 			else if ( extension == ".DCD" )
+			{
 				format = E_FILE_FORMATS::nc;
+			}
 			else if ( extension == ".LAMMPSTRJ" )
+			{
 				format = E_FILE_FORMATS::lammpstrj;
+			}
 			else if ( extension == ".ARC" )
+			{
 				format = E_FILE_FORMATS::arc;
+			}
 			else if ( extension == ".TRR" )
+			{
 				format = E_FILE_FORMATS::trr;
+			}
 			else if ( extension == ".XTC" )
+			{
 				format = E_FILE_FORMATS::xtc;
+			}
 			else if ( extension == ".TNG" )
+			{
 				format = E_FILE_FORMATS::tng;
+			}
 			else if ( extension == ".TRJ" )
+			{
 				format = E_FILE_FORMATS::trj;
+			}
 		}
+
 		const char * string( const E_FILE_FORMATS & format ) noexcept
 		{
 			switch ( format )
@@ -167,20 +216,27 @@ namespace VTX::IO::Writer
 		template<typename T>
 		inline void setProperty( T & cf, const std::string & key, const std::string & value )
 		{ cf.set( key, value ); }
+
 		template<typename T>
 		inline void setProperty( T & cf, const std::string & key, const double & value )
 		{ cf.set( key, value ); }
+
 		template<typename T>
 		inline void setProperty( T & cf, const std::string & key, const bool & value )
 		{ cf.set( key, value ); }
+
 		template<typename T>
 		void transferProperties( T & cf, const PropertyCollection & props ) noexcept
 		{
 			for ( auto & prop : props )
+			{
 				std::visit( [ & ]( auto v ) { setProperty<T>( cf, prop.first, v ); }, prop.second );
+			}
 		}
+
 		inline void convert( const AtomCoordinates & in, ::chemfiles::Vector3D & out ) noexcept
 		{ out = ::chemfiles::Vector3D( in.x, in.y, in.z ); }
+
 		inline void convert( const E_BOND_ORDER & in, ::chemfiles::Bond::BondOrder & out ) noexcept
 		{
 			switch ( in )
@@ -200,6 +256,7 @@ namespace VTX::IO::Writer
 			default: out = ::chemfiles ::Bond ::BondOrder ::UNKNOWN; break;
 			}
 		}
+
 		void writeFile( const FilePath & dest, const E_FILE_FORMATS & format, _System & system )
 		{
 			// TODO I disabled the format things as chemfiles has a format guessing adequat enough
@@ -234,7 +291,9 @@ namespace VTX::IO::Writer
 						if ( firstFrameWritten )
 						{
 							if ( not atomIdCorrespondaceTable.contains( it_atom->externalId ) )
+							{
 								atomIdCorrespondaceTable.insert( { it_atom->externalId, atomResidueCounter } );
+							}
 						}
 						cf_residue.add_atom( atomResidueCounter++ );
 					}
@@ -267,20 +326,28 @@ namespace VTX::IO::Writer
 		_System		   _system;
 
 	  public:
-		inline void	  setWriteDestination( FilePath && p_ ) noexcept { _dest = std::move( p_ ); }
-		inline void	  setWriteFormat( E_FILE_FORMATS && p_ ) noexcept { _format = std::move( p_ ); }
+		inline void setWriteDestination( FilePath && p_ ) noexcept { _dest = std::move( p_ ); }
+
+		inline void setWriteFormat( E_FILE_FORMATS && p_ ) noexcept { _format = std::move( p_ ); }
+
 		inline System system() noexcept { return _system; }
+
 		_Impl()							   = default;
 		_Impl( const _Impl & )			   = delete;
 		_Impl( _Impl && )				   = delete;
 		_Impl & operator=( const _Impl & ) = delete;
 		_Impl & operator=( _Impl && )	   = delete;
+
 		~_Impl()
 		{
 			if ( _system.frames.empty() )
+			{
 				return;
+			}
 			if ( _dest.empty() )
+			{
 				return;
+			}
 			// TODO I disabled the format things as chemfiles has a format guessing adequat enough
 			// if ( _format == E_FILE_FORMATS::none )
 			//	figureFormat( _dest, _format );
@@ -293,39 +360,53 @@ namespace VTX::IO::Writer
 
 	// Atom
 	Atom::Atom( _Atom & p_ ) : _data( &p_ ) {}
+
 	void Atom::get( _AtomInfo & p_out ) const noexcept { p_out = _AtomInfo { .dataPtr = _data }; }
 
 	void Atom::setName( std::string name ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return;
+		}
 		_data->name = std::move( name );
 	}
 
 	void Atom::setSymbol( std::string symbol ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return;
+		}
 		_data->symbol = std::move( symbol );
 	}
 
 	// Residue
 	Residue::Residue( _Residue & p_ ) : _data( &p_ ) {}
+
 	void Residue::set( Property p_ ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return;
+		}
 
 		if ( _data->properties.contains( p_.key ) )
+		{
 			_data->properties.at( p_.key ) = p_.value;
+		}
 		else
+		{
 			_data->properties.emplace( std::make_pair( p_.key, p_.value ) );
+		}
 	}
 
 	void Residue::setResId( int p_ ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return;
+		}
 
 		_data->resid = std::move( p_ );
 	}
@@ -333,7 +414,9 @@ namespace VTX::IO::Writer
 	void Residue::setSymbol( std::string p_symbol ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return;
+		}
 
 		_data->symbol = std::move( p_symbol );
 	}
@@ -341,7 +424,9 @@ namespace VTX::IO::Writer
 	void Residue::add( Atom & p_ ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return;
+		}
 
 		_AtomInfo atomInfo;
 		p_.get( atomInfo );
@@ -351,22 +436,31 @@ namespace VTX::IO::Writer
 
 	// Chain
 	Chain::Chain( _Chain & p_ ) : _data( &p_ ) {}
+
 	void Chain::setName( std::string p_ ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return;
+		}
 		_data->name = std::move( p_ );
 	}
+
 	void Chain::setId( std::string p_ ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return;
+		}
 		_data->id = std::move( p_ );
 	}
+
 	void Chain::add( Residue & p_res ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return;
+		}
 
 		p_res.set( { "chainname", _data->name } );
 		p_res.set( { "chainid", _data->id } );
@@ -374,37 +468,56 @@ namespace VTX::IO::Writer
 
 	// Frame
 	Frame::Frame( _Frame & p_ ) : _data( &p_ ) {}
+
 	void Frame::set( const Atom & p_atom, AtomCoordinates p_atomCoordinates ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return;
+		}
 
 		_AtomInfo atomInfo;
 		p_atom.get( atomInfo );
 		if ( atomInfo.dataPtr == nullptr )
+		{
 			return;
+		}
 
 		if ( not _data->coordinates.contains( atomInfo.dataPtr ) )
+		{
 			_data->coordinates.emplace( std::make_pair( atomInfo.dataPtr, std::move( p_atomCoordinates ) ) );
+		}
 		else
+		{
 			_data->coordinates.at( atomInfo.dataPtr ) = std::move( p_atomCoordinates );
+		}
 	}
 
 	// System
 	System::System( _System & p_ ) : _data( &p_ ) {}
+
 	void System::set( Property p_ ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return;
+		}
 		if ( _data->properties.contains( p_.key ) )
+		{
 			_data->properties.at( p_.key ) = std::move( p_.value );
+		}
 		else
+		{
 			_data->properties.emplace( std::make_pair( std::move( p_.key ), std::move( p_.value ) ) );
+		}
 	}
+
 	Atom System::newAtom( AtomId p_atomId ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return {};
+		}
 		if ( not _data->atoms.contains( p_atomId ) )
 		{
 			_data->atoms.emplace( std::make_pair( p_atomId, _Atom { .externalId = p_atomId } ) );
@@ -412,42 +525,59 @@ namespace VTX::IO::Writer
 
 		return Atom( _data->atoms.at( p_atomId ) );
 	}
+
 	namespace
 	{
 		void vtxBondThrow( const AtomId & atom )
 		{ throw VTXException( "Couldn't create bond because atom <{}> wasn't declared", atom.value ); }
 	} // namespace
+
 	void System::bind( const AtomId & p_l, const AtomId & p_r, E_BOND_ORDER p_bondOrder )
 	{
 		if ( _data == nullptr )
+		{
 			return;
+		}
 
 		// First we check if the provided AtomId point toward an actual atom.
 		if ( not _data->atoms.contains( p_l ) )
+		{
 			vtxBondThrow( p_l );
+		}
 		if ( not _data->atoms.contains( p_r ) )
+		{
 			vtxBondThrow( p_r );
+		}
 
 		_data->bonds.emplace_back( _Bond { .a1 = p_l, .a2 = p_r, .bondOrder = std::move( p_bondOrder ) } );
 	}
+
 	Chain System::newChain() noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return {};
+		}
 		_data->chains.emplace_back();
 		return Chain( _data->chains.back() );
 	}
+
 	Residue System::newResidue() noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return {};
+		}
 		_data->residues.emplace_back();
 		return Residue( _data->residues.back() );
 	}
+
 	Frame System::newFrame() noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return {};
+		}
 
 		_data->frames.emplace_back();
 		return Frame( _data->frames.back() );
@@ -456,7 +586,9 @@ namespace VTX::IO::Writer
 	bool System::fetch( Atom & p_out, const AtomId & id ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return false;
+		}
 
 		if ( _data->atoms.contains( id ) )
 		{
@@ -465,10 +597,13 @@ namespace VTX::IO::Writer
 		}
 		return false;
 	}
+
 	bool System::fetch( Frame & p_out, const size_t & p_index ) noexcept
 	{
 		if ( _data == nullptr )
+		{
 			return false;
+		}
 
 		if ( _data->frames.size() > p_index )
 		{
@@ -482,6 +617,7 @@ namespace VTX::IO::Writer
 	// Pimpl pattern method forwarding vv
 
 	void ChemfilesTrajectory::Del::operator()( ChemfilesTrajectory::_Impl * p_ ) noexcept { delete p_; }
+
 	ChemfilesTrajectory::ChemfilesTrajectory() : _( new _Impl ) {}
 
 	void ChemfilesTrajectory::setWriteDestination( FilePath p_ ) noexcept { _->setWriteDestination( std::move( p_ ) ); }
