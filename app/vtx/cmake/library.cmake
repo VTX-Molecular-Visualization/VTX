@@ -62,3 +62,9 @@ if (VTX_TOOL_MDPREP)
 	vtx_tool_mdprep_copy_data(vtx)
 	vtx_tool_mdprep_copy_runtime(vtx)
 endif()
+
+vtx_copy_directory(
+	vtx
+	"${CMAKE_CURRENT_LIST_DIR}/../default_user_data"
+	"$<TARGET_FILE_DIR:vtx>/default_user_data"
+)
