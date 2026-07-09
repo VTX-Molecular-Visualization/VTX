@@ -12,17 +12,33 @@ namespace VTX::App
 	class Fixture
 	{
 	  public:
-		inline Fixture()
+		inline static Arguments getDefaultArguments()
 		{
+			static const char * argv[] = { "" };
+
 			Arguments args;
 			args.argc		= 1;
-			const char * _	= "";
-			args.argv		= &_;
+			args.argv		= argv;
 			args.noGraphics = true;
 			args.noUpdates	= true;
+			args.noPython	= true;
 			args.noGui		= true;
 			args.debug		= true;
-			_app			= std::make_unique<VTXApp>( std::move( args ) );
+			return args;
+		}
+
+		inline Fixture() : Fixture( getDefaultArguments() ) {}
+
+		inline explicit Fixture( Arguments p_args )
+		{
+			if ( p_args.argv == nullptr )
+			{
+				static const char * argv[] = { "" };
+				p_args.argc				   = 1;
+				p_args.argv				   = argv;
+			}
+
+			_app = std::make_unique<VTXApp>( std::move( p_args ) );
 			_app->start();
 		}
 
@@ -33,11 +49,10 @@ namespace VTX::App
 		}
 
 		inline void loadSystem( const std::string_view p_filename = "1AGA.mmtf" )
-		{
-			loadSystem( Util::Filesystem::getExecutableDir() / "data" / p_filename );
-		}
+		{ loadSystem( Util::Filesystem::getExecutableDir() / "data" / p_filename ); }
 
 		inline VTXApp * const get() { return _app.get(); }
+
 		inline ~Fixture() { _app.reset(); }
 
 	  private:

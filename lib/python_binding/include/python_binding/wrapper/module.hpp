@@ -9,6 +9,7 @@
 #include <pybind11/pybind11.h>
 #include <string>
 #include <util/exceptions.hpp>
+#include <utility>
 #include <vector>
 
 namespace VTX::PythonBinding
@@ -33,23 +34,22 @@ namespace VTX::PythonBinding
 			Module getSubmodule( const std::string & p_submoduleName );
 
 			template<typename Action, typename... ActionArgs, typename... Extras>
-			void bindAction( const std::string & p_name, const std::string & p_desc = "", Extras... p_extras )
+			void bindAction( const std::string & p_name, const std::string & p_desc = "", Extras &&... p_extras )
 			{
 				std::function runActionFunc = &Module::runAction<Action, ActionArgs...>;
-				def( p_name.c_str(), runActionFunc, p_desc.c_str(), p_extras... );
+				def( p_name.c_str(), runActionFunc, p_desc.c_str(), std::forward<Extras>( p_extras )... );
 			}
 
 			template<typename Func>
-			void def( const std::string & p_name, Func p_function, const std::string & p_desc )
-			{
-				_pyModule.def( p_name.c_str(), p_function, p_desc.c_str() );
-			}
+			void def( const std::string & p_name, Func && p_function, const std::string & p_desc )
+			{ _pyModule.def( p_name.c_str(), std::forward<Func>( p_function ), p_desc.c_str() ); }
+
 			template<typename Func, typename... Extra>
-			void def( const std::string & p_name, Func p_function, const std::string & p_desc, Extra... p_extra )
+			void def( const std::string & p_name, Func && p_function, const std::string & p_desc, Extra &&... p_extra )
 			{
 				_pyModule.def(
 					p_name.c_str(),
-					p_function,
+					std::forward<Func>( p_function ),
 					p_desc.c_str(),
 					convertToPybind11Extra( std::forward<Extra>( p_extra ) )...
 				);
@@ -60,6 +60,7 @@ namespace VTX::PythonBinding
 				Wrapper::Function funcWrapper = Wrapper::Function( *this, p_funcName );
 				funcWrapper.run();
 			}
+
 			template<typename T, typename... Args>
 			T runFunction( const std::string & p_funcName, Args... p_args ) const
 			{
@@ -67,10 +68,13 @@ namespace VTX::PythonBinding
 				funcWrapper.run( p_args... );
 
 				if constexpr ( !std::is_void_v<T> )
+				{
 					return funcWrapper.getReturnValue<T>();
+				}
 			}
 
-			void				displayInfo() const;
+			void displayInfo() const;
+
 			const std::string & getModulePath() const { return _modulePath; }
 
 			std::vector<std::string> getFunctionList() const;
@@ -82,6 +86,7 @@ namespace VTX::PythonBinding
 				_pyModule( p_module ), _modulePath( p_modulePath )
 			{
 			}
+
 			pybind11::module_ _pyModule;
 			std::string		  _modulePath;
 
