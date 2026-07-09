@@ -30,7 +30,7 @@ namespace VTX::UI::QT::DockWidget
 
 			p_view->setSelectionMode( p_enabled ? QAbstractItemView::SingleSelection : QAbstractItemView::NoSelection );
 		}
-	}
+	} // namespace
 
 	Scene::Scene( QWidget * p_parent ) : BaseDockWidget( p_parent, "Scene" )
 	{
@@ -40,10 +40,12 @@ namespace VTX::UI::QT::DockWidget
 		_treeGraphicsConfigPresets = new Widget::Tree::GraphicsConfigPresets( this );
 		_treeColorLayoutPresets	   = new Widget::Tree::ColorLayoutPresets( this );
 		_treeRepresentationPresets = new Widget::Tree::RepresentationPresets( this );
+		_treeScripts			   = new Widget::Tree::Scripts( this );
 
 		_layout->addWidget( _treeGraphicsConfigPresets );
 		_layout->addWidget( _treeColorLayoutPresets );
 		_layout->addWidget( _treeRepresentationPresets );
+		_layout->addWidget( _treeScripts );
 
 		auto & selection = SELECTION();
 		selection.add( _treeGraphicsConfigPresets->selectionModel(), E_SELECTION_GROUP::GRAPHICS_CONFIG );
@@ -91,7 +93,9 @@ namespace VTX::UI::QT::DockWidget
 		_layout->insertWidget( _layout->indexOf( _filler ), tree );
 
 		if ( App::System::hasMultiFrameTrajectory( p_e.system ) )
+		{
 			_onTrajectoryCreated( App::REG(), p_e.system );
+		}
 	}
 
 	void Scene::_onSystemDestroy( Registry &, Entity p_e )
@@ -147,10 +151,14 @@ namespace VTX::UI::QT::DockWidget
 	void Scene::_onTrajectoryCreated( Registry &, Entity p_entity )
 	{
 		if ( not _mapSystemTreeWidgets.contains( p_entity ) )
+		{
 			return;
+		}
 
 		if ( _mapTrajTreeWidgets.contains( p_entity ) )
+		{
 			_mapTrajTreeWidgets.erase( p_entity );
+		}
 		auto * player = new Widget::Tree::TrajectoryPlayer( p_entity, this );
 		_mapTrajTreeWidgets.emplace( p_entity, player );
 		_layout->insertWidget( _layout->indexOf( _mapSystemTreeWidgets[ p_entity ] ), player );

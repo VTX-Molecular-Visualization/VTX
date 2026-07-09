@@ -29,6 +29,7 @@ namespace VTX::UI::QT
 	const QString SETTING_KEY_GRAPHICS_CONFIG_PRESETS_EXPANDED = "tree/presets/graphics_config/expanded";
 	const QString SETTING_KEY_COLOR_LAYOUT_PRESETS_EXPANDED	   = "tree/presets/color_layout/expanded";
 	const QString SETTING_KEY_REPRESENTATION_PRESETS_EXPANDED  = "tree/presets/representation/expanded";
+	const QString SETTING_KEY_SCRIPTS_EXPANDED				   = "tree/scripts/expanded";
 
 	const QString SETTING_KEY_THEME = "style/theme";
 	const QString SETTING_KEY_FONT	= "style/font";

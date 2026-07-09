@@ -19,9 +19,11 @@
 #include "app/pass/scene_updater.hpp"
 #include "app/pass/system_updater.hpp"
 #include "app/pass/trajectory_updater.hpp"
+#if VTX_PYTHON_BINDING
+#include "app/python_binding/app_binder.hpp"
 #include "app/python_binding/interpretor.hpp"
-#include "app/python_binding/python_binding.hpp"
 #include "app/python_binding/run_script.hpp"
+#endif
 #include "app/scene/tag_root.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
@@ -30,7 +32,9 @@
 #include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
 #include <exception>
+#if VTX_PYTHON_BINDING
 #include <python_binding/interpretor.hpp>
+#endif
 #include <renderer/renderer.hpp>
 #include <util/logger.hpp>
 #include <util/math/aabb.hpp>
@@ -64,9 +68,13 @@ namespace VTX::App
 
 	VTXApp::~VTXApp()
 	{
+#if VTX_PYTHON_BINDING
 		try
 		{
-			ECS::removeCtx<PythonBinding::Interpretor>();
+			if ( ECS::hasCtx<PythonBinding::Interpretor>() )
+			{
+				ECS::removeCtx<PythonBinding::Interpretor>();
+			}
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -76,6 +84,7 @@ namespace VTX::App
 		{
 			VTX_ERROR( "Unknown exception during interpretor cleanup" );
 		}
+#endif
 		LOGGER().flush();
 	}
 
@@ -120,20 +129,29 @@ namespace VTX::App
 		const Entity accessibilityEnt = _registry.create();
 		_registry.emplace<Setting::Accessibility>( accessibilityEnt );
 
-		try
+#if VTX_PYTHON_BINDING
+		if ( not ARGS().noPython )
 		{
-			ECS::setCtx<PythonBinding::Interpretor>();
-			INTERPRETOR().subscribe(
-				[]( VTX::PythonBinding::Interpretor & p_interpretor )
-				{
-					p_interpretor.add( VTX::App::PythonBinding::VTXAppBinder() );
-					p_interpretor.add( VTX::App::PythonBinding::RunScript() );
-				}
-			);
+			try
+			{
+				ECS::setCtx<PythonBinding::Interpretor>();
+				INTERPRETOR().subscribe(
+					[]( VTX::PythonBinding::Interpretor & p_interpretor )
+					{
+						p_interpretor.add( VTX::App::PythonBinding::AppBinder() );
+						p_interpretor.add( VTX::App::PythonBinding::RunScript() );
+					}
+				);
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Failed to initialize python interpretor: {}", p_e.what() );
+			}
 		}
-		catch ( const std::exception & p_e )
+		else
+#endif
 		{
-			VTX_ERROR( "Failed to initialize python interpretor: {}", p_e.what() );
+			VTX_INFO( "Python interpretor disabled" );
 		}
 	}
 
@@ -169,12 +187,17 @@ namespace VTX::App
 
 	void VTXApp::finishStartup()
 	{
-		const std::string runtimePythonVersion = INTERPRETOR().getRuntimePythonVersion();
-		if ( not runtimePythonVersion.empty() )
+#if VTX_PYTHON_BINDING
+		if ( not ARGS().noPython )
 		{
-			HUB().trigger<Events::PythonInitialized>( runtimePythonVersion );
-			VTX_INFO( "Python interpretor initialized" );
+			const std::string runtimePythonVersion = INTERPRETOR().getRuntimePythonVersion();
+			if ( not runtimePythonVersion.empty() )
+			{
+				HUB().trigger<Events::PythonInitialized>( runtimePythonVersion );
+				VTX_INFO( "Python interpretor initialized" );
+			}
 		}
+#endif
 
 		const Entity defaultGraphicsConfig
 			= Helper::Preset::getByName<Renderer::GraphicsConfig>( "Default" )

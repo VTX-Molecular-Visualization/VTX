@@ -166,6 +166,8 @@ class VTXPythonBindingRecipe(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["vtx_python_binding"]
+        if self.settings.os == "Linux":
+            self.cpp_info.exelinkflags.append("-Wl,--export-dynamic")
         self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_python_binding_copy_runtime.cmake"])
         define_python_binding_conf(
             self.conf_info,

@@ -20,11 +20,12 @@ namespace VTX::App::Action::Visibility
 		);
 	}
 
-	void HideEverything::execute()
+	void SetVisibleAll::execute( const bool p_visible )
 	{
 		for ( auto entity : App::REG().view<System::Visibility>() )
 		{
-			App::REG().patch<System::Visibility>( entity, []( System::Visibility & p_vis ) { p_vis.atoms.clear(); } );
+			const auto & visibility = REG().get<System::Visibility>( entity );
+			patchVisibility( entity, Util::Math::BitSet( visibility.atoms.size(), p_visible ) );
 		}
 	}
 

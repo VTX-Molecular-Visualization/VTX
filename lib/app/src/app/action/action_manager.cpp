@@ -16,9 +16,12 @@ namespace VTX::App::Action
 		std::queue<QueuedAction> actions;
 		std::mutex				 mutex;
 	};
+
 	void ActionManager::Del::operator()( ActionManager::_Data * p_ ) noexcept { delete p_; }
 
 	ActionManager::ActionManager() : _attributesPtr( new _Data { ARGS().noGui } ) {}
+
+	QueuedAction::QueuedAction() : _ptr( new _wrapper<_dummy>( _state, _dummy() ) ) {}
 
 	void ActionManager::update( const float p_delta, const float )
 	{
@@ -29,7 +32,9 @@ namespace VTX::App::Action
 		}
 		std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
 		if ( _attributesPtr->actions.empty() )
+		{
 			return;
+		}
 
 		while ( not _attributesPtr->actions.empty() )
 		{
@@ -41,7 +46,7 @@ namespace VTX::App::Action
 
 	void ActionManager::subscribe( QueuedAction p_action ) noexcept
 	{
-		if ( _attributesPtr->mainThreadId == std::this_thread::get_id() )
+		if ( _noThread() || _attributesPtr->mainThreadId == std::this_thread::get_id() )
 		{
 			p_action.execute();
 			return;
@@ -49,7 +54,8 @@ namespace VTX::App::Action
 		std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
 		_attributesPtr->actions.push( std::move( p_action ) );
 	}
+
 	bool ActionManager::_noThread() const noexcept { return _attributesPtr->noThread; }
 
-	QueuedAction::Waiter QueuedAction::getWaiter() { return Waiter( _ptr ); }
+	QueuedAction::Waiter QueuedAction::getWaiter() { return Waiter( _ptr, _state ); }
 } // namespace VTX::App::Action

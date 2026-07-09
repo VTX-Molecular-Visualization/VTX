@@ -37,7 +37,7 @@ namespace VTX::App::Action::Selection
 	struct SetSelected
 	{
 		void execute(
-			const Entity					 p_ent,
+			const Entity						 p_ent,
 			const Core::Struct::IndexRangeList & p_ranges	= {},
 			const bool							 p_selected = true,
 			const bool							 p_append	= false
@@ -66,7 +66,7 @@ namespace VTX::App::Action::Selection
 		}
 
 		inline void execute(
-			const Entity				 p_ent,
+			const Entity					 p_ent,
 			const Core::Struct::IndexRange & p_range,
 			const bool						 p_selected = true,
 			const bool						 p_append	= false
@@ -74,7 +74,7 @@ namespace VTX::App::Action::Selection
 		{ execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_selected, p_append ); }
 
 		inline void execute(
-			const Entity		   p_ent,
+			const Entity			   p_ent,
 			const std::vector<Index> & p_values,
 			const bool				   p_selected = true,
 			const bool				   p_append	  = false
@@ -83,11 +83,49 @@ namespace VTX::App::Action::Selection
 
 		inline void execute(
 			const Entity p_ent,
-			const Index		  p_value,
-			const bool		  p_selected = true,
-			const bool		  p_append	 = false
+			const Index	 p_value,
+			const bool	 p_selected = true,
+			const bool	 p_append	= false
 		)
 		{ execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_selected, p_append ); }
+	};
+
+	struct SetSelectedItem
+	{
+		void execute(
+			const Entity,
+			const Core::Struct::E_SYSTEM_ITEM,
+			const Core::Struct::IndexRangeList & = {},
+			const bool							 = true,
+			const bool							 = false
+		);
+
+		inline void execute(
+			const Entity					  p_ent,
+			const Core::Struct::E_SYSTEM_ITEM p_item,
+			const std::vector<Index> &		  p_values,
+			const bool						  p_selected = true,
+			const bool						  p_append	 = false
+		)
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_selected, p_append ); }
+
+		inline void execute(
+			const Entity					  p_ent,
+			const Core::Struct::E_SYSTEM_ITEM p_item,
+			const Core::Struct::IndexRange &  p_range,
+			const bool						  p_selected = true,
+			const bool						  p_append	 = false
+		)
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_selected, p_append ); }
+
+		inline void execute(
+			const Entity					  p_ent,
+			const Core::Struct::E_SYSTEM_ITEM p_item,
+			const Index						  p_value,
+			const bool						  p_selected = true,
+			const bool						  p_append	 = false
+		)
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_selected, p_append ); }
 	};
 
 	struct SelectAll

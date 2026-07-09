@@ -7,6 +7,7 @@
 #include "ui/qt/widget/tree/color_layout_presets.hpp"
 #include "ui/qt/widget/tree/graphics_config_presets.hpp"
 #include "ui/qt/widget/tree/representation_presets.hpp"
+#include "ui/qt/widget/tree/scripts.hpp"
 #include "ui/qt/widget/tree/system.hpp"
 #include "ui/qt/widget/tree/trajectory_player.hpp"
 #include <QComboBox>
@@ -40,6 +41,7 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<Widget::Tree::GraphicsConfigPresets> _treeGraphicsConfigPresets;
 		QPointer<Widget::Tree::ColorLayoutPresets>	  _treeColorLayoutPresets;
 		QPointer<Widget::Tree::RepresentationPresets> _treeRepresentationPresets;
+		QPointer<Widget::Tree::Scripts>				  _treeScripts;
 		QPointer<Widget::Tree::Camera>				  _treeCamera;
 
 		/**

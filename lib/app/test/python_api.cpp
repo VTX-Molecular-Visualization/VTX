@@ -21,11 +21,18 @@ namespace Test
 		VTX::App::Action::IO::LoadSystem openAction;
 		openAction.execute( systemPath );
 	}
+
 	std::string string( std::source_location p_ )
+	{ return fmt::format( "file : <{}> at line <{}>", p_.file_name(), p_.line() ); }
+
+	VTX::App::Arguments pythonArguments()
 	{
-		return fmt::format( "file : <{}> at line <{}>", p_.file_name(), p_.line() );
+		VTX::App::Arguments args = VTX::App::Fixture::getDefaultArguments();
+		args.noPython			 = false;
+		return args;
 	}
 } // namespace Test
+
 using AsyncJobResult = VTX::App::PythonBinding::Interpretor::AsyncJobResult;
 
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python][integration][types][random]" )
@@ -37,7 +44,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	using namespace VTX;
 	using SelectionUtil				   = App::Test::Util::Selection;
 	const uint32_t NUMBER_OF_ITERATION = 20;
-	App::Fixture   app;
+	App::Fixture   app( Test::pythonArguments() );
 
 	Test::loadSystem( "1AGA.mmtf" );
 	for ( uint32_t it_idx = 0; it_idx < NUMBER_OF_ITERATION; it_idx++ )
@@ -82,6 +89,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	}
 	*/
 }
+
 TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python][integration][types]" )
 {
 	/**
@@ -93,7 +101,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 	using namespace VTX;
 	using namespace VTX::App;
 	using SelectionUtil = App::Test::Util::Selection;
-	App::Fixture app;
+	App::Fixture app( Test::pythonArguments() );
 
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
 	std::future<AsyncJobResult>					  _future = promise->get_future();
@@ -203,7 +211,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Collection crash", "[app][python][integ
 	using namespace VTX;
 	using namespace VTX::App;
 	using SelectionUtil = App::Test::Util::Selection;
-	App::Fixture app;
+	App::Fixture app( Test::pythonArguments() );
 
 	::Test::loadSystem( "1AGA.mmtf" );
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
@@ -247,7 +255,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection Tests", "[app][python][integr
 	using namespace VTX;
 	using namespace VTX::App;
 	using SelectionUtil = App::Test::Util::Selection;
-	App::Fixture app;
+	App::Fixture app( Test::pythonArguments() );
 
 	::Test::loadSystem( "1AGA.mmtf" );
 	::Test::loadSystem( "4HHB.pdb" );
@@ -461,7 +469,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	 */
 	using namespace VTX;
 	using namespace VTX::App;
-	App::Fixture app;
+	App::Fixture app( Test::pythonArguments() );
 
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
 	const FilePath scriptPath	   = internalDataDir / "script_test.py";
@@ -471,9 +479,13 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	App::INTERPRETOR().runScript( scriptPath, promise );
 	_future.wait();
 	if ( _future.valid() )
+	{
 		CHECK( _future.get().success == true );
+	}
 	else
+	{
 		CHECK( false );
+	}
 	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
 
 	promise = std::make_shared<std::promise<AsyncJobResult>>();
@@ -482,23 +494,50 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	_future.wait();
 
 	if ( _future.valid() )
+	{
 		CHECK( _future.get().success == false );
+	}
 	else
+	{
 		CHECK( false );
+	}
 }
+
+TEST_CASE( "VTX_PYTHON_BINDING - Python binding smoke test", "[python][binding][smoke]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+	App::Fixture app( Test::pythonArguments() );
+
+	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
+	const FilePath scriptPath	   = internalDataDir / "python_binding_smoke.py";
+
+	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
+	std::future<AsyncJobResult>					  _future = promise->get_future();
+	App::INTERPRETOR().runScript( scriptPath, promise );
+	_future.wait();
+
+	REQUIRE( _future.valid() );
+	const AsyncJobResult result = _future.get();
+	INFO( result.resultStr );
+	CHECK( result.success == true );
+}
+
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][nothing]" )
 {
 	/**
-	 * @brief We test one of the most basic python (i.e. assigning an int to a named var) command to make sure it works
+	 * @brief We test one of the most basic python (i.e. assigning an int to a named var) command to make sure
+	 * it works
 	 */
 	using namespace VTX;
 	using namespace VTX::App;
-	App::Fixture								  app;
+	App::Fixture								  app( Test::pythonArguments() );
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
 	std::future<AsyncJobResult>					  _future = promise->get_future();
 	App::INTERPRETOR().runCommand( "s = 1", promise );
 	_future.wait();
 }
+
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][binding][command][script]" )
 {
 	/**
@@ -507,7 +546,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][bindin
 	 */
 	using namespace VTX;
 	using namespace VTX::App;
-	App::Fixture app;
+	App::Fixture app( Test::pythonArguments() );
 
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
 	const FilePath scriptPath	   = internalDataDir / "script_test.py";
@@ -519,16 +558,24 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][bindin
 	App::INTERPRETOR().runCommand( ssCommandRun.str(), promise );
 	_future.wait();
 	if ( _future.valid() )
+	{
 		CHECK( _future.get().success == true );
+	}
 	else
+	{
 		CHECK( false );
+	}
 
 	promise = std::make_shared<std::promise<AsyncJobResult>>();
 	_future = promise->get_future();
 	App::INTERPRETOR().runCommand( "vtx.runScript('bzzzz')", promise );
 	_future.wait();
 	if ( _future.valid() )
+	{
 		CHECK( _future.get().success == false );
+	}
 	else
+	{
 		CHECK( false );
+	}
 }

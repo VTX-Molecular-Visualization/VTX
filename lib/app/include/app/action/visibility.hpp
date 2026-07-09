@@ -15,9 +15,9 @@ namespace VTX::App::Action::Visibility
 {
 	void patchVisibility( const Entity p_ent, Util::Math::BitSet p_atoms );
 
-	struct HideEverything
+	struct SetVisibleAll
 	{
-		void execute();
+		void execute( const bool p_visible );
 	};
 
 	/**

@@ -73,6 +73,13 @@ namespace VTX::App
 		FilePath getReadmeFile() const;
 		FilePath getChangelogFile() const;
 		FilePath getDataDir() const;
+		FilePath getDefaultUserData() const;
+		FilePath getDefaultRepresentationsDir() const;
+		FilePath getDefaultColorLayoutsDir() const;
+		FilePath getDefaultEffectsDir() const;
+		FilePath getDefaultHdriDir() const;
+		FilePath getDefaultMaterialsDir() const;
+		FilePath getDefaultScriptsDir() const;
 		FilePath getLogsDir() const;
 		FilePath getCacheDir() const;
 		FilePath getSnapshotsDir() const;
@@ -80,7 +87,8 @@ namespace VTX::App
 		FilePath getColorLayoutsDir() const;
 		FilePath getEffectsDir() const;
 		FilePath getHdriDir() const;
-		FilePath getMaterialDir() const;
+		FilePath getMaterialsDir() const;
+		FilePath getScriptsDir() const;
 		FilePath getConfigIniFile() const;
 		// const FilePath getSettingJsonFile() const;
 

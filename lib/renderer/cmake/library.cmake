@@ -34,6 +34,7 @@ if(CMAKE_CUDA_COMPILER)
 			$<$<COMPILE_LANGUAGE:CUDA>:
 				--use_fast_math
 				--extended-lambda
+				--expt-relaxed-constexpr
 				-Xcudafe
 				--diag_suppress=esa_on_defaulted_function_ignored
 				-Wno-deprecated-gpu-targets

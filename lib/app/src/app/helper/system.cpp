@@ -3,6 +3,7 @@
 #include "app/system/representation.hpp"
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
+#include <util/string.hpp>
 
 namespace
 {
@@ -36,11 +37,13 @@ namespace VTX::App::Helper::System
 {
 	Entity getSystemByName( const std::string_view p_name )
 	{
+		const std::string name = Util::String::toLower( std::string( p_name ) );
+
 		for ( auto e : REG().view<IO::Metadata>() )
 		{
 			auto & metadata = REG().get<IO::Metadata>( e );
 
-			if ( metadata.name == p_name )
+			if ( Util::String::toLower( metadata.name ) == name )
 			{
 				return e;
 			}
@@ -51,11 +54,13 @@ namespace VTX::App::Helper::System
 
 	Entity getSystemByPdb( const std::string_view p_pdb )
 	{
+		const std::string pdb = Util::String::toLower( std::string( p_pdb ) );
+
 		for ( auto e : REG().view<IO::Metadata>() )
 		{
 			auto & metadata = REG().get<IO::Metadata>( e );
 
-			if ( metadata.pdbIDCode == p_pdb )
+			if ( Util::String::toLower( metadata.pdbIDCode ) == pdb )
 			{
 				return e;
 			}
@@ -66,10 +71,12 @@ namespace VTX::App::Helper::System
 
 	Entity getSystemByFileName( const std::string_view p_fileName )
 	{
+		const std::string fileName = Util::String::toLower( std::string( p_fileName ) );
+
 		for ( auto e : REG().view<IO::Metadata>() )
 		{
 			auto & metadata = REG().get<IO::Metadata>( e );
-			if ( metadata.path.filename() == p_fileName )
+			if ( Util::String::toLower( metadata.path.filename().string() ) == fileName )
 			{
 				return e;
 			}

@@ -9,6 +9,34 @@
 
 namespace VTX::App::Action::Selection
 {
+	void SetSelectedItem::execute(
+		const Entity						 p_ent,
+		const Core::Struct::E_SYSTEM_ITEM	 p_item,
+		const Core::Struct::IndexRangeList & p_ranges,
+		const bool							 p_selected,
+		const bool							 p_append
+	)
+	{
+		switch ( p_item )
+		{
+		case Core::Struct::E_SYSTEM_ITEM::SYSTEM:
+			SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>().execute( p_ent, p_ranges, p_selected, p_append );
+			break;
+		case Core::Struct::E_SYSTEM_ITEM::CATEGORY:
+			SetSelected<Core::Struct::E_SYSTEM_ITEM::CATEGORY>().execute( p_ent, p_ranges, p_selected, p_append );
+			break;
+		case Core::Struct::E_SYSTEM_ITEM::CHAIN:
+			SetSelected<Core::Struct::E_SYSTEM_ITEM::CHAIN>().execute( p_ent, p_ranges, p_selected, p_append );
+			break;
+		case Core::Struct::E_SYSTEM_ITEM::RESIDUE:
+			SetSelected<Core::Struct::E_SYSTEM_ITEM::RESIDUE>().execute( p_ent, p_ranges, p_selected, p_append );
+			break;
+		case Core::Struct::E_SYSTEM_ITEM::ATOM:
+			SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>().execute( p_ent, p_ranges, p_selected, p_append );
+			break;
+		default: assert( false && "Unhandled E_SYSTEM_ITEM type in SetSelectedItem action." ); break;
+		}
+	}
 
 	void SelectAll::execute()
 	{

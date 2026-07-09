@@ -84,7 +84,7 @@ namespace VTX::Tool::Mdprep::Actions
 			if ( noErrors )
 			{
 				App::ACTION().execute<App::Action::IO::LoadSystem>( p_instr.editconf2.out );
-				App::ACTION().execute<App::Action::Visibility::HideEverything>();
+				App::ACTION().execute<App::Action::Visibility::SetVisibleAll>( false );
 				VTX_INFO(
 					"System written at : {}",
 					fmt::format( fmt::runtime( std::string( App::LOG_LINK_FORMAT ) ), resultDir.string() )
@@ -119,7 +119,9 @@ namespace VTX::Tool::Mdprep::Actions
 		{
 		  public:
 			inline void execute( const Mdprep::Gateway::CheckReport & p_ )
-			{ App::HUB().trigger<Mdprep::Gateway::CheckReport>( p_ ); }
+			{
+				App::HUB().trigger<Mdprep::Gateway::CheckReport>( p_ );
+			}
 		};
 	} // namespace
 

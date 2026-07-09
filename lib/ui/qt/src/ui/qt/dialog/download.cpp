@@ -13,10 +13,10 @@
 
 namespace
 {
-	const QString _PDB_ID_TEMPLATE = VTX::Util::Url::systemReplacementToken();
-	const QString _DEFAULT_URL	   = QString( VTX::Util::Url::rcsbPdbDownloadBaseUrl() ) + _PDB_ID_TEMPLATE
-								 + VTX::Util::Url::rcsbPdbDownloadFileExtension();
-	const uint _MAX_HISTORY_SIZE = 10;
+	const QString _PDB_ID_TEMPLATE	= VTX::Util::Url::systemReplacementToken();
+	const QString _DEFAULT_URL		= QString( VTX::Util::Url::rcsbPdbDownloadBaseUrl() ) + _PDB_ID_TEMPLATE
+									  + VTX::Util::Url::rcsbPdbDownloadFileExtension();
+	const uint	  _MAX_HISTORY_SIZE = 10;
 } // namespace
 
 namespace VTX::UI::QT::Dialog
@@ -76,7 +76,7 @@ namespace VTX::UI::QT::Dialog
 			[ this ]( const QString & )
 			{
 				auto pdb = _comboBoxPDB->currentText().toStdString();
-				Util::String::trim( pdb );
+				pdb		 = Util::String::trim( pdb );
 				if ( pdb.length() == 4 )
 				{
 					FilePath path

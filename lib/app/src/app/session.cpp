@@ -454,6 +454,20 @@ namespace VTX::App
 
 	FilePath Session::getDataDir() const { return getApplicationDir() / "data"; }
 
+	FilePath Session::getDefaultUserData() const { return getApplicationDir() / "default_user_data"; }
+
+	FilePath Session::getDefaultRepresentationsDir() const { return getDefaultUserData() / "representations"; }
+
+	FilePath Session::getDefaultColorLayoutsDir() const { return getDefaultUserData() / "colors"; }
+
+	FilePath Session::getDefaultEffectsDir() const { return getDefaultUserData() / "effects"; }
+
+	FilePath Session::getDefaultHdriDir() const { return getDefaultUserData() / "hdri"; }
+
+	FilePath Session::getDefaultMaterialsDir() const { return getDefaultUserData() / "materials"; }
+
+	FilePath Session::getDefaultScriptsDir() const { return getDefaultUserData() / "scripts"; }
+
 	FilePath Session::getLicenseFile() const { return getApplicationDir() / "license.txt"; }
 
 	FilePath Session::getLogsDir() const { return getDataHome() / "logs"; }
@@ -470,7 +484,9 @@ namespace VTX::App
 
 	FilePath Session::getHdriDir() const { return getDataHome() / "hdri"; }
 
-	FilePath Session::getMaterialDir() const { return getDataHome() / "material"; }
+	FilePath Session::getMaterialsDir() const { return getDataHome() / "materials"; }
+
+	FilePath Session::getScriptsDir() const { return getDataHome() / "scripts"; }
 
 	FilePath Session::getConfigIniFile() const { return getDataHome() / "config.ini"; }
 

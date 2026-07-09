@@ -111,68 +111,79 @@ namespace VTX::App::Extractor
 
 	uint System::operator()( Util::StopToken p_stopToken, Threading::OptionalThreadReference p_thread )
 	{
-		auto & pendingData = _attributesPtr->data;
-
-		if ( p_thread )
+		try
 		{
-			p_thread.value().get().setProgressText(
-				fmt::format( "Reading {}...", pendingData.sourcePath.filename().string() )
+			auto & pendingData = _attributesPtr->data;
+
+			if ( p_thread )
+			{
+				p_thread.value().get().setProgressText(
+					fmt::format( "Reading {}...", pendingData.sourcePath.filename().string() )
+				);
+			}
+
+			if ( p_stopToken.stop_requested() )
+			{
+				_clean();
+				return 0;
+			}
+
+			if ( pendingData.buffer )
+			{
+				pendingData.reader.emplace(
+					std::move( pendingData.buffer.value() ),
+					pendingData.sourcePath,
+					pendingData.readerOption,
+					p_stopToken
+				);
+			}
+			else
+			{
+				pendingData.reader.emplace( pendingData.sourcePath, pendingData.readerOption, p_stopToken );
+			}
+			if ( not pendingData.onlyTrajectory )
+			{
+				pendingData.reader->get(
+					ECS::getCtx<Core::ChemDB::Category::Dictionary>(), pendingData.topology, pendingData.metadata
+				);
+			}
+
+			if ( p_stopToken.stop_requested() )
+			{
+				_clean();
+				return 0;
+			}
+
+			if ( pendingData.reader->frameCount() > 1 )
+			{
+				pendingData.trajectoryData.emplace<App::System::TrajectoryFullBuffer>();
+			}
+			else
+			{
+				pendingData.trajectoryData.emplace<App::System::TrajectorySingleFrame>();
+			}
+
+			auto visitor = [ reader = &pendingData.reader.value() ]( auto && traj )
+			{ App::System::prepare( traj, std::move( *reader ) ); };
+			std::visit( visitor, pendingData.trajectoryData );
+
+			if ( p_stopToken.stop_requested() )
+			{
+				_clean();
+				return 0;
+			}
+
+			auto attributesCopy = _attributesPtr; // Keep a copy so wait() can still access the latch.
+			ACTION().subscribe(
+				Action::QueuedAction( DeliverSystem<std::shared_ptr<_Data>>(), std::move( attributesCopy ) )
 			);
-		}
-
-		if ( p_stopToken.stop_requested() )
-		{
-			_clean();
 			return 0;
 		}
-
-		if ( pendingData.buffer )
-		{
-			pendingData.reader.emplace(
-				std::move( pendingData.buffer.value() ), pendingData.sourcePath, pendingData.readerOption, p_stopToken
-			);
-		}
-		else
-		{
-			pendingData.reader.emplace( pendingData.sourcePath, pendingData.readerOption, p_stopToken );
-		}
-		if ( not pendingData.onlyTrajectory )
-		{
-			pendingData.reader->get(
-				ECS::getCtx<Core::ChemDB::Category::Dictionary>(), pendingData.topology, pendingData.metadata
-			);
-		}
-
-		if ( p_stopToken.stop_requested() )
+		catch ( ... )
 		{
 			_clean();
-			return 0;
+			throw;
 		}
-
-		if ( pendingData.reader->frameCount() > 1 )
-		{
-			pendingData.trajectoryData.emplace<App::System::TrajectoryFullBuffer>();
-		}
-		else
-		{
-			pendingData.trajectoryData.emplace<App::System::TrajectorySingleFrame>();
-		}
-
-		auto visitor = [ reader = &pendingData.reader.value() ]( auto && traj )
-		{ App::System::prepare( traj, std::move( *reader ) ); };
-		std::visit( visitor, pendingData.trajectoryData );
-
-		if ( p_stopToken.stop_requested() )
-		{
-			_clean();
-			return 0;
-		}
-
-		auto attributesCopy = _attributesPtr; // Keep a copy so wait() can still access the latch.
-		ACTION().subscribe(
-			Action::QueuedAction( DeliverSystem<std::shared_ptr<_Data>>(), std::move( attributesCopy ) )
-		);
-		return 0;
 	}
 
 	void addTrajectory( const Entity & p_entity, Pending & p_data ) noexcept

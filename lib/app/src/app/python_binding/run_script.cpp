@@ -20,8 +20,11 @@ namespace VTX::App::PythonBinding
 					= std::make_shared<std::promise<Interpretor::AsyncJobResult>>();
 				std::future<Interpretor::AsyncJobResult> _future = promise->get_future();
 				INTERPRETOR().runScript( p_path, promise );
-				if ( _future.get().success == false )
-					throw pybind11::value_error( _future.get().resultStr );
+				const Interpretor::AsyncJobResult result = _future.get();
+				if ( result.success == false )
+				{
+					throw pybind11::value_error( result.resultStr );
+				}
 			}
 		};
 	} // namespace

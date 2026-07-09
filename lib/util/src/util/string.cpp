@@ -8,15 +8,27 @@ namespace VTX::Util::String
 {
 	inline const char * WHITESPACES = " \n\t\r\f\v";
 
-	void trim( std::string & p_str )
+	std::string trim( const std::string & p_str )
 	{
-		trimStart( p_str );
-		trimEnd( p_str );
+		std::string result = p_str;
+		result.erase( 0, result.find_first_not_of( WHITESPACES ) );
+		result.erase( result.find_last_not_of( WHITESPACES ) + 1 );
+		return result;
 	}
 
-	void trimStart( std::string & p_str ) { p_str.erase( 0, p_str.find_first_not_of( WHITESPACES ) ); }
+	std::string trimStart( const std::string & p_str )
+	{
+		std::string result = p_str;
+		result.erase( 0, result.find_first_not_of( WHITESPACES ) );
+		return result;
+	}
 
-	void trimEnd( std::string & p_str ) { p_str.erase( p_str.find_last_not_of( WHITESPACES ) + 1 ); }
+	std::string trimEnd( const std::string & p_str )
+	{
+		std::string result = p_str;
+		result.erase( result.find_last_not_of( WHITESPACES ) + 1 );
+		return result;
+	}
 
 	std::vector<std::string> split( const std::string & p_str, const char p_separator )
 	{
@@ -38,31 +50,26 @@ namespace VTX::Util::String
 		return splittedStr;
 	}
 
-	void replaceAll( std::string & p_str, const std::string & p_toReplace, const std::string & p_replacement )
-	{
-		size_t		 currentIndex				 = p_str.find( p_toReplace, 0 );
-		const size_t toReplaceLength			 = p_toReplace.length();
-		const size_t indexOffsetAfterReplacement = p_replacement.length() - toReplaceLength;
-
-		while ( currentIndex < p_str.length() )
-		{
-			p_str.replace( currentIndex, toReplaceLength, p_replacement );
-			currentIndex += indexOffsetAfterReplacement;
-
-			currentIndex = p_str.find( p_toReplace, currentIndex );
-		}
-	}
-
 	std::string replaceAll(
 		const std::string & p_str,
 		const std::string & p_toReplace,
 		const std::string & p_replacement
 	)
 	{
-		std::string replacedStr = std::string( p_str.begin(), p_str.end() );
-		Util::String::replaceAll( replacedStr, p_toReplace, p_replacement );
+		std::string	 result						 = p_str;
+		size_t		 currentIndex				 = result.find( p_toReplace, 0 );
+		const size_t toReplaceLength			 = p_toReplace.length();
+		const size_t indexOffsetAfterReplacement = p_replacement.length() - toReplaceLength;
 
-		return replacedStr;
+		while ( currentIndex < result.length() )
+		{
+			result.replace( currentIndex, toReplaceLength, p_replacement );
+			currentIndex += indexOffsetAfterReplacement;
+
+			currentIndex = result.find( p_toReplace, currentIndex );
+		}
+
+		return result;
 	}
 
 	std::string floatToStr( const float p_value, const int p_nbDecimals )
@@ -74,35 +81,32 @@ namespace VTX::Util::String
 
 	uint strToUint( const std::string & p_str ) { return atoi( p_str.c_str() ); }
 
-	void toUpper( std::string & p_str )
-	{
-		std::transform( p_str.begin(), p_str.end(), p_str.begin(), []( char & c ) { return std::toupper( c ); } );
-	}
-
 	std::string toUpper( const std::string & p_str )
 	{
-		std::string upcasedStr = std::string( p_str.begin(), p_str.end() );
-		Util::String::toUpper( upcasedStr );
+		std::string result = p_str;
 
-		return upcasedStr;
-	}
-
-	void toLower( std::string & p_str )
-	{
 		std::transform(
-			p_str.begin(),
-			p_str.end(),
-			p_str.begin(),
-			[]( const unsigned char p_char ) { return static_cast<char>( std::tolower( p_char ) ); }
+			result.begin(),
+			result.end(),
+			result.begin(),
+			[]( const unsigned char p_char ) { return static_cast<char>( std::toupper( p_char ) ); }
 		);
+
+		return result;
 	}
 
 	std::string toLower( const std::string & p_str )
 	{
-		std::string lowercasedStr = std::string( p_str.begin(), p_str.end() );
-		Util::String::toLower( lowercasedStr );
+		std::string result = p_str;
 
-		return lowercasedStr;
+		std::transform(
+			result.begin(),
+			result.end(),
+			result.begin(),
+			[]( const unsigned char p_char ) { return static_cast<char>( std::tolower( p_char ) ); }
+		);
+
+		return result;
 	}
 
 	std::string memSizeToStr( const size_t p_size, const bool p_isBase10 )

@@ -36,8 +36,8 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint NEW					  = 0xf710;	 // NEW_WINDOW
 	constexpr Codepoint OPEN				  = 0xe2c8;	 // FOLDER_OPEN
 	constexpr Codepoint OPTIONS				  = 0xe8b8;	 // SETTINGS
-	constexpr Codepoint PAUSE				  = 0xe034;	 // PAUSE_SHALLOW
-	constexpr Codepoint PLAY				  = 0xe037;	 // PLAY_SHALLOW
+	constexpr Codepoint PAUSE				  = 0xe034;	 // PAUSE
+	constexpr Codepoint PLAY				  = 0xe037;	 // PLAY_ARROW
 	constexpr Codepoint PYTHON				  = 0xfff8e; // TERMINAL2
 	constexpr Codepoint QUIT				  = 0xe879;	 // EXIT_TO_APP
 	constexpr Codepoint REPRESENTATION		  = 0xe429;	 // TUNE
@@ -46,6 +46,8 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint SAVE_AS				  = 0xeb60;	 // SAVE_AS
 	constexpr Codepoint SCENE				  = 0xe4fd;	 // SCHEMA
 	constexpr Codepoint SCREEN_RESOLUTION	  = 0xec08;	 // SCHEMA_ARROW_UP
+	constexpr Codepoint SCRIPT				  = 0xf84d;	 // CODE_BLOCKS
+	constexpr Codepoint SCRIPT_RUN			  = 0xe1c4;	 // PLAY_CIRCLE
 	constexpr Codepoint SELECTION			  = 0xf772;	 // FRAME_INSPECT
 	constexpr Codepoint SNAPSHOT			  = 0xe3f4;	 // IMAGE
 	constexpr Codepoint SNAPSHOT_EXPORT		  = 0xf317;	 // IMAGE_ARROW_UP

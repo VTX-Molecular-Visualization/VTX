@@ -12,6 +12,7 @@
 #include "ui/qt/dock_widget/graphics_configs.hpp"
 #include "ui/qt/dock_widget/inspector.hpp"
 #include "ui/qt/dock_widget/options.hpp"
+#include "ui/qt/dock_widget/python_editor.hpp"
 #include "ui/qt/dock_widget/representations.hpp"
 #include "ui/qt/dock_widget/scene.hpp"
 #include "ui/qt/dock_widget/sequences.hpp"
@@ -91,7 +92,10 @@ namespace VTX::UI::QT::Widget
 		setCentralWidget( renderer );
 
 		// Dock widgets.
-		createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );
+		auto * dwSequence = createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );
+		auto * dwPython	  = createDockWidget<DockWidget::PythonEditor>( Qt::TopDockWidgetArea );
+		dwPython->hide();
+		dwSequence->raise();
 
 		auto * dwScene = createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
 		createDockWidget<DockWidget::Representations>( Qt::LeftDockWidgetArea )->hide();
@@ -103,7 +107,7 @@ namespace VTX::UI::QT::Widget
 		auto * dwOptions = createDockWidget<DockWidget::Options>( Qt::RightDockWidgetArea );
 		dwInspector->raise();
 
-		auto * console = createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
+		auto * dwConsole = createDockWidget<DockWidget::Console>( Qt::BottomDockWidgetArea );
 
 		// Resize.
 		resizeDocks(
@@ -111,7 +115,7 @@ namespace VTX::UI::QT::Widget
 			{ Style::DEFAULT_LATERAL_DOCK_WIDTH, Style::DEFAULT_LATERAL_DOCK_WIDTH, Style::DEFAULT_LATERAL_DOCK_WIDTH },
 			Qt::Horizontal
 		);
-		resizeDocks( { console }, { Style::DEFAULT_CONSOLE_HEIGHT }, Qt::Vertical );
+		resizeDocks( { dwConsole }, { Style::DEFAULT_CONSOLE_HEIGHT }, Qt::Vertical );
 
 		// Status bar.
 		_statusBar = new StatusBar( this );

@@ -5,8 +5,10 @@
 #include "app/services.hpp"
 #include "app/threading/thread_manager.hpp"
 #include <concepts>
+#include <condition_variable>
 #include <latch>
 #include <memory>
+#include <mutex>
 #include <util/chrono.hpp>
 #include <util/hashing.hpp>
 #include <util/logger.hpp>
@@ -130,7 +132,7 @@ namespace VTX::App::Action
 	{
 	  public:
 		class Waiter;
-		QueuedAction() = default;
+		QueuedAction();
 
 		inline void execute() { _ptr->execute(); }
 
@@ -149,6 +151,13 @@ namespace VTX::App::Action
 			virtual void wait()	   = 0;
 		};
 
+		struct _State
+		{
+			std::mutex				mutex;
+			std::condition_variable conditionVariable;
+			bool					executed = false;
+		};
+
 		struct _dummy
 		{
 		};
@@ -159,12 +168,14 @@ namespace VTX::App::Action
 			SomeAction _obj;
 
 			std::tuple<std::remove_reference_t<Args>...> _args;
+			std::shared_ptr<_State>						 _state;
 
 		  public:
 			_wrapper() = delete;
 
-			_wrapper( SomeAction && p_action, Args &&... args ) :
-				_obj( std::forward<SomeAction>( p_action ) ), _args( std::forward<Args>( args )... )
+			_wrapper( std::shared_ptr<_State> p_state, SomeAction && p_action, Args &&... args ) :
+				_obj( std::forward<SomeAction>( p_action ) ), _args( std::forward<Args>( args )... ),
+				_state( std::move( p_state ) )
 			{
 			}
 
@@ -172,10 +183,16 @@ namespace VTX::App::Action
 			{
 				if constexpr ( not std::same_as<SomeAction, _dummy> )
 				{
-					auto exec = [ this ]( Args &&... args ) mutable
-					{ ACTION().execute<SomeAction>( _obj, std::forward<Args>( args )... ); };
+					auto exec = [ this ]( auto &&... args ) mutable
+					{ ACTION().execute<SomeAction>( _obj, std::forward<decltype( args )>( args )... ); };
 					std::apply( exec, std::move( _args ) );
 				}
+
+				{
+					std::scoped_lock<std::mutex> lock( _state->mutex );
+					_state->executed = true;
+				}
+				_state->conditionVariable.notify_all();
 			}
 
 			void wait() override
@@ -187,14 +204,17 @@ namespace VTX::App::Action
 			}
 		};
 
-		std::shared_ptr<_interface> _ptr = std::make_shared<_wrapper<_dummy>>( _dummy() );
+		std::shared_ptr<_State>		_state = std::make_shared<_State>();
+		std::shared_ptr<_interface> _ptr;
 
 	  public:
 		template<typename SomeAction, typename... Args>
 		QueuedAction( SomeAction && p_action, Args &&... args ) :
-			_ptr(
-				new _wrapper<SomeAction, Args...>( std::forward<SomeAction>( p_action ), std::forward<Args>( args )... )
-			)
+			_ptr( new _wrapper<SomeAction, Args...>(
+				_state,
+				std::forward<SomeAction>( p_action ),
+				std::forward<Args>( args )...
+			) )
 		{
 		}
 
@@ -206,7 +226,7 @@ namespace VTX::App::Action
 
 		template<typename SomeAction>
 		QueuedAction( SomeAction && p_action ) :
-			_ptr( new _wrapper<SomeAction>( std::forward<SomeAction>( p_action ) ) )
+			_ptr( new _wrapper<SomeAction>( _state, std::forward<SomeAction>( p_action ) ) )
 		{
 		}
 
@@ -217,15 +237,28 @@ namespace VTX::App::Action
 		{
 		  public:
 			/**
-			 * @brief Stop the execution until the linked action is finished. Please do not wait on the main thread.
+			 * @brief Stop the execution until the linked action is finished. Please do not wait on the
+			 * main thread.
 			 */
-			inline void wait() noexcept { this->_ptr->wait(); }
+			inline void wait() noexcept
+			{
+				{
+					_State *					 state = _statePtr.get();
+					std::unique_lock<std::mutex> lock( state->mutex );
+					state->conditionVariable.wait( lock, [ state ]() { return state->executed; } );
+				}
+				this->_ptr->wait();
+			}
 
 		  private:
-			inline Waiter( std::shared_ptr<_interface> ptr ) : _ptr( ptr ) {}
+			inline Waiter( std::shared_ptr<_interface> ptr, std::shared_ptr<_State> p_state ) :
+				_ptr( ptr ), _statePtr( std::move( p_state ) )
+			{
+			}
 
 			friend QueuedAction;
 			std::shared_ptr<_interface> _ptr;
+			std::shared_ptr<_State>		_statePtr;
 		};
 	};
 
