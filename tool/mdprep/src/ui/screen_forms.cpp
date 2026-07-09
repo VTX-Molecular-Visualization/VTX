@@ -15,6 +15,7 @@
 #include "tool/mdprep/ui/md_engine.hpp"
 #include "tool/mdprep/ui/md_engine_field_placer.hpp"
 #include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
+#include "tool/mdprep/ui/preparation_timeline.hpp"
 #include "tool/mdprep/ui/report.hpp"
 //
 #include "tool/mdprep/ui/form_advanced/form_advanced.hpp"
@@ -209,8 +210,10 @@ namespace VTX::Tool::Mdprep::ui
 		Gateway::MdParameters param;
 		_currentForm.get( param );
 
-		// TODO
-		// Need to subscribe to some event for job updates and finish
+		// Open (and reset) the timeline dock so the user can follow the job step by step. It listens to the
+		// preparation events fired from prepareStructure / the packing step.
+		showPreparationTimeline();
+
 		_jobManager.startPreparation( param );
 		_buttonStart->setDisabled( true );
 	}

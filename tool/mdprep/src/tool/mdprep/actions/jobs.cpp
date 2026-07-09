@@ -57,6 +57,7 @@ namespace VTX::Tool::Mdprep::Actions
 			{
 				VTX_ERROR( "[MDPREP] Packing failed: {}", packReport.errMsg );
 			}
+			App::Threading::TiggerEvent { SystemPacked { not packReport.error, resultDir.string() } };
 			if ( _impl->thrData.stopToken.stop_requested() )
 			{
 				goto theEnd;
