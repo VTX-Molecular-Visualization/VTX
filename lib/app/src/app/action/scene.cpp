@@ -1,10 +1,14 @@
 #include "app/action/scene.hpp"
+#include "app/helper/preset.hpp"
 #include "app/helper/system.hpp"
 #include "app/scene/color_layout.hpp"
 #include "app/scene/graphics_config.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/system/selection.hpp"
 #include <io/metadata.hpp>
+#include <renderer/color.hpp>
+#include <renderer/graphics_config.hpp>
+#include <util/exceptions.hpp>
 
 namespace VTX::App::Action::Scene
 {
@@ -43,6 +47,16 @@ namespace VTX::App::Action::Scene
 		reg.emplace<CL>( scene, p_e );
 	}
 
+	void SetColorLayout::execute( const std::string_view p_name )
+	{
+		const std::optional<Entity> preset = Helper::Preset::getByName<Renderer::Color::Layout>( p_name );
+		if ( not preset )
+		{
+			throw VTXException( "Color layout preset not found: " + std::string( p_name ) );
+		}
+		execute( *preset );
+	}
+
 	void SetGraphicsConfig::execute( const Entity p_e )
 	{
 		using GC = App::Scene::GraphicsConfig;
@@ -55,6 +69,16 @@ namespace VTX::App::Action::Scene
 
 		reg.remove<GC>( scene );
 		reg.emplace<GC>( scene, p_e );
+	}
+
+	void SetGraphicsConfig::execute( const std::string_view p_name )
+	{
+		const std::optional<Entity> preset = Helper::Preset::getByName<Renderer::GraphicsConfig>( p_name );
+		if ( not preset )
+		{
+			throw VTXException( "Graphics config preset not found: " + std::string( p_name ) );
+		}
+		execute( *preset );
 	}
 
 } // namespace VTX::App::Action::Scene

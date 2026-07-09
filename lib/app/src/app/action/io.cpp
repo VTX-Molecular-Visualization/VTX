@@ -5,7 +5,10 @@
 #include "app/extractor/mesh.hpp"
 #include "app/extractor/system.hpp"
 #include "app/network/network_manager.hpp"
+#if VTX_PYTHON_BINDING
 #include "app/python_binding/interpretor.hpp"
+#endif
+#include "app/arguments.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
 #include "app/system/trajectory_preparation.hpp"
@@ -45,9 +48,13 @@ namespace VTX::App::Action::IO
 		const std::string extension = p_path.extension().string();
 		if ( extension == ".py" || extension == ".vtx" )
 		{
+			if ( ARGS().noPython )
 			{
-				ACTION().execute<RunPythonScript>( p_path );
+				VTX_WARNING( "Python is disabled. VTX will skip script <{}>.", p_path.string() );
+				return;
 			}
+
+			ACTION().execute<RunPythonScript>( p_path );
 		}
 		else if ( VTX::IO::isMeshFileFormat( p_path ) )
 		{
@@ -115,7 +122,9 @@ namespace VTX::App::Action::IO
 	}
 
 	void LoadMesh::execute( FilePath p_path )
-	{ Extractor::Mesh( std::move( p_path ) )( std::move( _stopToken ), _threadRef ); }
+	{
+		Extractor::Mesh( std::move( p_path ) )( std::move( _stopToken ), _threadRef );
+	}
 
 	struct WriteSelection::_WriterIo
 	{
@@ -201,20 +210,35 @@ namespace VTX::App::Action::IO
 	}
 
 	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e )
-	{ execute( FilePath( p_path ), p_e ); }
+	{
+		execute( FilePath( p_path ), p_e );
+	}
 
 	void AssociateTrajectory::wait() noexcept { _data->wait(); }
 
-	void RunPythonScript::execute( const FilePath & p_path ) { INTERPRETOR().runScript( p_path ); }
+	void RunPythonScript::execute( const FilePath & p_path )
+	{
+#if VTX_PYTHON_BINDING
+		INTERPRETOR().runScript( p_path );
+#else
+		VTX_WARNING( "Python is disabled. VTX will skip script <{}>.", p_path.string() );
+#endif
+	}
 
 	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id )
-	{ execute( p_id, p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() ); }
+	{
+		execute( p_id, p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() );
+	}
 
 	void DownloadSystem::execute( const std::string & p_systemId )
-	{ execute( Util::Url::SystemId( p_systemId.data() ) ); }
+	{
+		execute( Util::Url::SystemId( p_systemId.data() ) );
+	}
 
 	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id, FilePath p_path )
-	{ execute( VTX::Util::Url::UrlFull( p_id ), p_path ); }
+	{
+		execute( VTX::Util::Url::UrlFull( p_id ), p_path );
+	}
 
 	void DownloadSystem::execute( VTX::Util::Url::UrlFull p_url, FilePath p_path )
 	{
