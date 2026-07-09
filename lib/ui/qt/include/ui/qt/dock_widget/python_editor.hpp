@@ -3,6 +3,7 @@
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/events.hpp"
+#include <QAction>
 #include <QPlainTextEdit>
 #include <QPointer>
 #include <QRegularExpression>
@@ -80,7 +81,18 @@ namespace VTX::UI::QT::DockWidget
 		 */
 		QPointer<PythonHighlighter> _highlighter;
 
+		/**
+		 * @brief Run action.
+		 */
+		QPointer<QAction> _runAction;
+
+		/**
+		 * @brief Path of the currently edited script.
+		 */
+		FilePath _currentPath;
+
 		void _onScriptSelected( const Events::ScriptSelected & p_event );
+		void _saveAndRun();
 	};
 } // namespace VTX::UI::QT::DockWidget
 
