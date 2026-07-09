@@ -7,6 +7,7 @@
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
+#include <algorithm>
 #include <core/chemdb/atom.hpp>
 #include <renderer/renderer.hpp>
 #include <span>
@@ -33,6 +34,7 @@ namespace VTX::App::Pass
 				}
 			);
 		}
+
 	} // namespace
 
 	SystemUpdater::SystemUpdater()
@@ -191,30 +193,50 @@ namespace VTX::App::Pass
 
 	void SystemUpdater::_onUpdateVisibility( Registry & p_r, Entity p_e )
 	{
-		assert( _systems.contains( p_e ) );
-
-		RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::VISIBILITY );
+		if ( _systems.contains( p_e ) )
+		{
+			RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::VISIBILITY );
+		}
+		else
+		{
+			assert( std::ranges::find( _systemAdded, p_e ) != _systemAdded.end() );
+		}
 	}
 
 	void SystemUpdater::_onUpdateSelection( Registry & p_r, Entity p_e )
 	{
-		assert( _systems.contains( p_e ) );
-
-		RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::SELECTION );
+		if ( _systems.contains( p_e ) )
+		{
+			RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::SELECTION );
+		}
+		else
+		{
+			assert( std::ranges::find( _systemAdded, p_e ) != _systemAdded.end() );
+		}
 	}
 
 	void SystemUpdater::_onUpdateRepresentation( Registry & p_r, Entity p_e )
 	{
-		assert( _systems.contains( p_e ) );
-
-		RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::REPRESENTATION );
+		if ( _systems.contains( p_e ) )
+		{
+			RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::REPRESENTATION );
+		}
+		else
+		{
+			assert( std::ranges::find( _systemAdded, p_e ) != _systemAdded.end() );
+		}
 	}
 
 	void SystemUpdater::_onUpdateColor( Registry & p_r, Entity p_e )
 	{
-		assert( _systems.contains( p_e ) );
-
-		RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::COLOR );
+		if ( _systems.contains( p_e ) )
+		{
+			RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::COLOR );
+		}
+		else
+		{
+			assert( std::ranges::find( _systemAdded, p_e ) != _systemAdded.end() );
+		}
 	}
 
 	void SystemUpdater::_onConstructRepresentationPreset( Registry &, Entity p_e )
