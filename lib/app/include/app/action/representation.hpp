@@ -7,7 +7,6 @@
 #include "app/system/selection.hpp"
 #include <core/struct/topology.hpp>
 #include <renderer/representation.hpp>
-#include <string_view>
 #include <util/type_traits.hpp>
 
 namespace VTX::App::Action::Representation
@@ -67,13 +66,6 @@ namespace VTX::App::Action::Representation
 
 	struct AddItem
 	{
-		void execute(
-			const Entity						 p_ent,
-			const Core::Struct::E_SYSTEM_ITEM	 p_item,
-			const std::string_view				 p_presetName,
-			const Core::Struct::IndexRangeList & p_ranges = {}
-		);
-
 		void execute(
 			const Entity						 p_ent,
 			const Core::Struct::E_SYSTEM_ITEM	 p_item,
@@ -198,8 +190,6 @@ namespace VTX::App::Action::Representation
 
 	struct AddSelected
 	{
-		void execute( const std::string_view p_presetName );
-
 		void execute( const Entity p_e )
 		{
 			REG().view<System::Selection, System::Representation>().each(
