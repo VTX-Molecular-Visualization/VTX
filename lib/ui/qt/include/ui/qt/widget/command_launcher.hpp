@@ -26,8 +26,6 @@ namespace VTX::UI::QT::Widget
 
 	  protected:
 		virtual void keyPressEvent( QKeyEvent * event ) override;
-		virtual void focusInEvent( QFocusEvent * event ) override;
-		virtual void focusOutEvent( QFocusEvent * event ) override;
 
 	  private:
 		void _setupCompleter();

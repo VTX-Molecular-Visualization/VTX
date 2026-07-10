@@ -46,10 +46,6 @@ namespace VTX::UI::QT::Widget
 		return;
 	}
 
-	void CommandLauncher::focusInEvent( QFocusEvent * event ) {}
-
-	void CommandLauncher::focusOutEvent( QFocusEvent * event ) {}
-
 	void CommandLauncher::_launchCommand()
 	{
 		if ( text().isEmpty() )
@@ -61,7 +57,9 @@ namespace VTX::UI::QT::Widget
 		// work from the user perspective.
 		std::string command = text().toStdString();
 		if ( _history.empty() || command != _history.last() )
+		{
 			_history.add( text().toStdString() );
+		}
 
 		clear();
 		_executeLastHistoryEntry();
