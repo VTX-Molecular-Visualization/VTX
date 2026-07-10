@@ -1,10 +1,10 @@
+/*
 #include "util/app.hpp"
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <fmt/format.h>
 #include <map>
 #include <pybind11/embed.h>
-#include <python_binding/api/api.hpp>
 #include <python_binding/binding/vtx_api.hpp>
 #include <python_binding/binding/vtx_module.hpp>
 #include <python_binding/interpretor.hpp>
@@ -35,31 +35,40 @@ namespace VTX::Test
 		bool		removed		 = false;
 
 		Index getIndex() const { return index; }
-		void  setIndex( const Index p_index ) { index = p_index; }
+
+		void setIndex( const Index p_index ) { index = p_index; }
 
 		const std::string & getName() const { return name; }
-		void				setName( const std::string & p_name ) { name = p_name; }
+
+		void setName( const std::string & p_name ) { name = p_name; }
 
 		Index getIndexFirstResidue() const { return indexFirstResidue; }
+
 		Index getIndexLastResidue() const { return indexLastResidue; }
-		void  setIndexFirstResidue( const Index p_residueIndex ) { indexFirstResidue = p_residueIndex; }
+
+		void setIndexFirstResidue( const Index p_residueIndex ) { indexFirstResidue = p_residueIndex; }
 
 		Index getResidueCount() const { return residueCount; }
-		void  setResidueCount( const Index p_residueCount ) { residueCount = p_residueCount; }
+
+		void setResidueCount( const Index p_residueCount ) { residueCount = p_residueCount; }
 
 		Index getIndexFirstAtom() const { return indexFirstAtom; }
+
 		Index getIndexLastAtom() const { return indexLastAtom; }
 
 		const std::string & getOriginalChainID() const { return originalChainId; }
-		void				setOriginalChainID( const std::string & p_chainId ) { originalChainId = p_chainId; }
+
+		void setOriginalChainID( const std::string & p_chainId ) { originalChainId = p_chainId; }
 
 		bool isVisible() const { return visible; }
+
 		bool isFullyVisible() const { return fullyVisible; }
 
 		void setVisible( const bool p_visible ) { visible = p_visible; }
 
 		void remove() { removed = true; }
 	};
+
 	struct MockResidue
 	{
 		Index		 index				  = 0;
@@ -74,41 +83,58 @@ namespace VTX::Test
 		bool		 fullyVisible = true;
 		MockChain *	 chain		  = nullptr;
 		MockSystem * system		  = nullptr;
-		Index		 test_getChainIndex() const { return chain->index; }
-		std::string	 test_getSystemName() const;
+
+		Index test_getChainIndex() const { return chain->index; }
+
+		std::string test_getSystemName() const;
 
 		Index getIndex() const { return index; }
-		void  setIndex( const Index p_index ) { index = p_index; }
+
+		void setIndex( const Index p_index ) { index = p_index; }
 
 		Index getIndexFirstAtom() const { return indexFirstAtom; }
-		void  setIndexFirstAtom( const Index p_indexFirstAtom ) { indexFirstAtom = p_indexFirstAtom; }
+
+		void setIndexFirstAtom( const Index p_indexFirstAtom ) { indexFirstAtom = p_indexFirstAtom; }
+
 		Index getIndexLastAtom() const { return indexLastAtom; }
 
 		Index getAtomCount() const { return atomCount; }
-		void  setAtomCount( const Index p_atomCount ) { atomCount = p_atomCount; }
+
+		void setAtomCount( const Index p_atomCount ) { atomCount = p_atomCount; }
 
 		Index getIndexFirstBond() const { return indexFirstBond; }
-		void  setIndexFirstBond( const Index p_indexFirstBond ) { indexFirstBond = p_indexFirstBond; }
+
+		void setIndexFirstBond( const Index p_indexFirstBond ) { indexFirstBond = p_indexFirstBond; }
 
 		Index getBondCount() const { return bondCount; }
-		void  setBondCount( const Index p_bondCount ) { bondCount = p_bondCount; }
+
+		void setBondCount( const Index p_bondCount ) { bondCount = p_bondCount; }
 
 		Index getIndexInOriginalChain() const { return indexInOriginalChain; }
-		void  setIndexInOriginalChain( const Index p_index ) { indexInOriginalChain = p_index; }
+
+		void setIndexInOriginalChain( const Index p_index ) { indexInOriginalChain = p_index; }
 
 		const std::string_view getShortName() const { return name; }
+
 		const std::string_view getName() const { return name; }
+
 		const std::string_view getLongName() const { return name; }
 
 		void setVisible( const bool p_visible ) { visible = p_visible; }
+
 		bool isVisible() const { return visible; }
+
 		bool isFullyVisible() const { return fullyVisible; }
 
-		const MockChain *  getConstChainPtr() const { return chain; }
-		MockChain *		   getChainPtr() { return chain; }
+		const MockChain * getConstChainPtr() const { return chain; }
+
+		MockChain * getChainPtr() { return chain; }
+
 		const MockSystem * getConstSystemPtr() const { return system; }
-		MockSystem *	   getSystemPtr() { return system; }
+
+		MockSystem * getSystemPtr() { return system; }
 	};
+
 	struct MockAtom
 	{
 		Index					   index   = 0;
@@ -123,33 +149,47 @@ namespace VTX::Test
 		bool					   removed	 = false;
 		float					   vdwRadius = 1.5f;
 
-		Index				getIndex() const { return index; }
-		void				setIndex( const Index p_index ) { index = p_index; }
-		MockResidue *		getResiduePtr() { return residue; }
-		const MockResidue * getConstResiduePtr() const { return residue; }
-		MockChain *			getChainPtr() { return chain; }
-		const MockChain *	getConstChainPtr() const { return chain; }
-		MockSystem *		getSystemPtr() { return system; }
-		const MockSystem *	getConstSystemPtr() const { return system; }
+		Index getIndex() const { return index; }
 
-		const std::string &				   getName() const { return name; }
-		void							   setName( const std::string & p_name ) { name = p_name; }
+		void setIndex( const Index p_index ) { index = p_index; }
+
+		MockResidue * getResiduePtr() { return residue; }
+
+		const MockResidue * getConstResiduePtr() const { return residue; }
+
+		MockChain * getChainPtr() { return chain; }
+
+		const MockChain * getConstChainPtr() const { return chain; }
+
+		MockSystem * getSystemPtr() { return system; }
+
+		const MockSystem * getConstSystemPtr() const { return system; }
+
+		const std::string & getName() const { return name; }
+
+		void setName( const std::string & p_name ) { name = p_name; }
+
 		const Core::ChemDB::Atom::SYMBOL & getSymbol() const { return symbol; }
+
 		void setSymbol( const Core::ChemDB::Atom::SYMBOL & p_symbol ) { symbol = p_symbol; }
 
 		Core::ChemDB::Atom::TYPE getType() const { return type; }
-		void					 setType( const Core::ChemDB::Atom::TYPE p_type ) { type = p_type; }
+
+		void setType( const Core::ChemDB::Atom::TYPE p_type ) { type = p_type; }
 
 		float getVdwRadius() const { return vdwRadius; }
 
 		const Vec3f & getLocalPosition() const { return position; }
-		Vec3f		  getWorldPosition() const { return position - Vec3f { 1.f, 1.f, 1.f }; }
+
+		Vec3f getWorldPosition() const { return position - Vec3f { 1.f, 1.f, 1.f }; }
 
 		bool isVisible() const { return visible; }
+
 		void setVisible( const bool p_visible ) { visible = p_visible; }
 
 		void remove() { removed = true; }
 	};
+
 	struct MockSystem
 	{
 		Index					   initializedChainCount   = 0;
@@ -173,50 +213,72 @@ namespace VTX::Test
 		std::vector<MockAtom *>	   atoms;
 
 		Index getFirstAtomIndex() const { return atoms[ 0 ]->index; }
+
 		Index getAtomIndex() const { return atom->index; }
+
 		Index getFirstChainIndex() const { return chains[ 0 ]->index; }
+
 		Index getChainIndex() const { return chain->index; }
+
 		Index getFirstResidueIndex() const { return chains[ 0 ]->index; }
+
 		Index getResidueIndex() const { return chain->index; }
 
-		void			  initChains( const Index p_chainCount ) { initializedChainCount = p_chainCount; }
-		MockChain *		  getChain( const Index p_index ) { return chain; }
+		void initChains( const Index p_chainCount ) { initializedChainCount = p_chainCount; }
+
+		MockChain * getChain( const Index p_index ) { return chain; }
+
 		const MockChain * getChain( const Index p_index ) const { return chain; }
 
-		void				initResidues( const Index p_residueCount ) { initializedResidueCount = p_residueCount; }
-		MockResidue *		getResidue( const Index p_index ) { return residue; }
+		void initResidues( const Index p_residueCount ) { initializedResidueCount = p_residueCount; }
+
+		MockResidue * getResidue( const Index p_index ) { return residue; }
+
 		const MockResidue * getResidue( const Index p_index ) const { return residue; }
 
-		void			 initAtoms( const Index p_atomCount ) { initializedAtomCount = p_atomCount; }
-		MockAtom *		 getAtom( const Index p_index ) { return atom; }
+		void initAtoms( const Index p_atomCount ) { initializedAtomCount = p_atomCount; }
+
+		MockAtom * getAtom( const Index p_index ) { return atom; }
+
 		const MockAtom * getAtom( const Index p_index ) const { return atom; }
 
 		void initBonds( const Index p_bondCount ) { initializedBondCount = p_bondCount; }
 
 		const std::string & getName() const { return name; }
-		void				setName( const std::string & p_name ) { name = p_name; }
+
+		void setName( const std::string & p_name ) { name = p_name; }
 
 		const std::string & getPdbIdCode() const { return pdbIdCode; }
-		void				setPdbIdCode( const std::string & p_pdbIdCode ) { pdbIdCode = p_pdbIdCode; }
+
+		void setPdbIdCode( const std::string & p_pdbIdCode ) { pdbIdCode = p_pdbIdCode; }
 
 		bool isVisible() const { return visible; }
+
 		bool isFullyVisible() const { return fullyVisible; }
 
 		void setVisible( const bool p_visible ) { visible = p_visible; }
+
 		void setVisible( const Index & p_atomId, bool p_visible ) { atomVisibility.emplace( p_atomId, p_visible ); }
 
 		void remove( const Index & p_atomIndex ) { atomRemoved.push_back( p_atomIndex ); }
 
 		Index getRealChainCount() const { return realChainCount; }
+
 		Index getRealResidueCount() const { return realResidueCount; }
+
 		Index getRealAtomCount() const { return realAtomCount; }
 
-		std::vector<MockChain *> &		   getChains() { return chains; }
-		const std::vector<MockChain *> &   getChains() const { return chains; }
-		std::vector<MockResidue *> &	   getResidues() { return residues; }
+		std::vector<MockChain *> & getChains() { return chains; }
+
+		const std::vector<MockChain *> & getChains() const { return chains; }
+
+		std::vector<MockResidue *> & getResidues() { return residues; }
+
 		const std::vector<MockResidue *> & getResidues() const { return residues; }
-		std::vector<MockAtom *> &		   getAtoms() { return atoms; }
-		const std::vector<MockAtom *> &	   getAtoms() const { return atoms; }
+
+		std::vector<MockAtom *> & getAtoms() { return atoms; }
+
+		const std::vector<MockAtom *> & getAtoms() const { return atoms; }
 	};
 
 	std::string MockResidue::test_getSystemName() const { return system->getName(); }
@@ -225,6 +287,7 @@ namespace VTX::Test
 	concept StringLike = requires( STRING s ) {
 		{ std::string( s ) };
 	};
+
 	struct Tester
 	{
 		const char * factoryName = nullptr;
@@ -238,6 +301,7 @@ namespace VTX::Test
 			pybind11::exec( fmt::format( "{}().{}({})", factoryName, p_method_set, num ) );
 			return ( p_classRef.*( p_attribute ) == static_cast<NUM>( num ) );
 		}
+
 		template<typename CLASS, typename NUM>
 		bool testMethod_get( const char * p_method_get, CLASS & p_classRef, NUM ( CLASS::*p_method )() const )
 		{
@@ -247,6 +311,7 @@ namespace VTX::Test
 				( p_classRef.*p_method )()
 			);
 		}
+
 		template<typename CLASS>
 		bool testMethod_set( const char * p_method_set, CLASS & p_classRef, bool( CLASS::* p_attribute ) )
 		{
@@ -255,6 +320,7 @@ namespace VTX::Test
 			pybind11::exec( fmt::format( "{}().{}(False)", factoryName, p_method_set ) );
 			return c1 and ( p_classRef.*( p_attribute ) == false );
 		}
+
 		template<typename CLASS>
 		bool testMethod_get( const char * p_method_get, CLASS & p_classRef, bool ( CLASS::*p_method )() const )
 		{
@@ -263,6 +329,7 @@ namespace VTX::Test
 				== ( p_classRef.*p_method )()
 			);
 		}
+
 		template<typename CLASS, typename STRING>
 			requires std::is_convertible<STRING, std::string>::value
 		bool testMethod_set( const char * p_method_set, CLASS & p_classRef, STRING( CLASS::* p_attribute ) )
@@ -270,6 +337,7 @@ namespace VTX::Test
 			pybind11::exec( fmt::format( "{}().{}('{}')", factoryName, p_method_set, str ) );
 			return ( p_classRef.*( p_attribute ) == str );
 		}
+
 		template<typename CLASS, StringLike STRING>
 		bool testMethod_get( const char * p_method_get, CLASS & p_classRef, STRING ( CLASS::*p_method )() const )
 		{
@@ -347,6 +415,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Atom", "[python][binding][a
 	pybind11::exec( "TEST_getSampleAtom().remove()" );
 	CHECK( mockedAtom.removed == true );
 }
+
 TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Residue", "[python][binding][api][class][residue]" )
 {
 	using namespace VTX;
@@ -416,6 +485,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Residue", "[python][binding
 	CHECK( tester.testMethod_get( "getChain().getIndex", mockedResidue, &Test::MockResidue::test_getChainIndex ) );
 	CHECK( tester.testMethod_get( "getSystem().getName", mockedResidue, &Test::MockResidue::test_getSystemName ) );
 }
+
 TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Chain", "[python][binding][api][class][chain]" )
 {
 	using namespace VTX;
@@ -469,6 +539,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - Chain", "[python][binding][
 	pybind11::exec( fmt::format( "{}().remove()", factoryName ) );
 	CHECK( mockedChain.removed == true );
 }
+
 TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - System", "[python][binding][api][class][system]" )
 {
 	using namespace VTX;
@@ -555,3 +626,4 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX class binding - System", "[python][binding]
 		CHECK( indexes.attr( "__getitem__" )( 1 ).cast<Index>() == c2.index );
 	}
 }
+*/

@@ -11,18 +11,22 @@ namespace
 	  public:
 		int i = 0;
 	};
+
 	class ElementWrapper
 	{
 		Element * _ptr = nullptr;
 
 	  public:
 		ElementWrapper() = default;
+
 		ElementWrapper( Element & p_ ) : _ptr( &p_ ) {}
 
 		inline int geti() const
 		{
 			if ( _ptr )
+			{
 				return _ptr->i;
+			}
 			return 0;
 		}
 	};

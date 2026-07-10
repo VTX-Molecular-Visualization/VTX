@@ -76,13 +76,19 @@ namespace VTX::App::Action::Visibility
 		}
 
 		void execute( const Entity p_ent, const Core::Struct::IndexRange & p_range, const bool p_visible = true )
-		{ execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_visible ); }
+		{
+			execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_visible );
+		}
 
 		void execute( const Entity p_ent, const std::vector<Index> & p_values, const bool p_visible = true )
-		{ execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_visible ); }
+		{
+			execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_visible );
+		}
 
 		void execute( const Entity p_ent, const Index p_value, const bool p_visible = true )
-		{ execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_visible ); }
+		{
+			execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_visible );
+		}
 	};
 
 	struct SetVisibleSelected
@@ -105,7 +111,9 @@ namespace VTX::App::Action::Visibility
 			const Core::Struct::IndexRange &  p_range,
 			const bool						  p_visible = true
 		)
-		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_visible ); }
+		{
+			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_visible );
+		}
 
 		inline void execute(
 			const Entity					  p_ent,
@@ -113,7 +121,9 @@ namespace VTX::App::Action::Visibility
 			const std::vector<Index> &		  p_values,
 			const bool						  p_visible = true
 		)
-		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_visible ); }
+		{
+			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_visible );
+		}
 
 		inline void execute(
 			const Entity					  p_ent,
@@ -121,7 +131,9 @@ namespace VTX::App::Action::Visibility
 			const Index						  p_value,
 			const bool						  p_visible = true
 		)
-		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_visible ); }
+		{
+			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_visible );
+		}
 	};
 
 } // namespace VTX::App::Action::Visibility

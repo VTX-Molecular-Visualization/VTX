@@ -38,15 +38,14 @@ namespace VTX::App::PythonBinding
 
 	void SelectionBinder::bind( Module & p_vtxModule )
 	{
-		pybind11::module_ * module = nullptr;
-		p_vtxModule.getPythonModule( &module );
+		pybind11::module_ & module = p_vtxModule.pyModule();
 
-		VTX::PythonBinding::Helper::declareEnum<SystemItem>( *module, "SYSTEM_ITEM" );
+		VTX::PythonBinding::Helper::declareEnum<SystemItem>( module, "SYSTEM_ITEM" );
 		VTX::PythonBinding::Helper::declareEnum<App::Action::Selection::E_GRANULARITY>(
-			*module, "SELECTION_GRANULARITY"
+			module, "SELECTION_GRANULARITY"
 		);
-		VTX::PythonBinding::Helper::declareEnum<SelectionMode>( *module, "SELECTION_CLEAR_MODE" );
-		VTX::PythonBinding::Helper::declareEnum<App::System::E_SELECTION_STATE>( *module, "SELECTION_STATE" );
+		VTX::PythonBinding::Helper::declareEnum<SelectionMode>( module, "SELECTION_CLEAR_MODE" );
+		VTX::PythonBinding::Helper::declareEnum<App::System::E_SELECTION_STATE>( module, "SELECTION_STATE" );
 
 		p_vtxModule.bindAction<App::Action::Selection::SelectAll>( "selectAll", "Select all loaded systems." );
 		p_vtxModule.bindAction<App::Action::Selection::Clear>(

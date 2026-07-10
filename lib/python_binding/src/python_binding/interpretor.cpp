@@ -6,7 +6,6 @@
 #include "python_binding/log_redirection.hpp"
 #include "python_binding/wrapper/module.hpp"
 #include <algorithm>
-#include <io/internal/filesystem.hpp>
 #include <pybind11/embed.h>
 #include <pybind11/eval.h>
 #include <source_location>
@@ -111,6 +110,7 @@ namespace VTX::PythonBinding
 			return std::move( interpetor.value() );
 		}
 	} // namespace
+
 	struct Interpretor::Impl
 	{
 	  public:
@@ -125,7 +125,9 @@ namespace VTX::PythonBinding
 
 			// The file should be at the right place but users always find a way ...
 			if ( not std::filesystem::exists( initCommandsFile ) )
+			{
 				throw VTX::IOException( "Required file {} not found.", initCommandsFile.string() );
+			}
 			pybind11::eval_file( initCommandsFile.string() );
 		}
 
@@ -143,6 +145,7 @@ namespace VTX::PythonBinding
 			_binders.clear();
 			_binders.shrink_to_fit();
 		}
+
 		void getPythonModule( pybind11::module_ ** p_modulePtr ) { *p_modulePtr = &_vtxModule; }
 
 	  private:
@@ -168,14 +171,18 @@ namespace VTX::PythonBinding
 		// that the command isn't viable at all.
 
 		if ( FilterResult isHarmful = filter( p_line ) )
+		{
 			return isHarmful.why();
+		}
 
 		try
 		{
 			VTX_DEBUG( "Run Python Command : {}", p_line );
 			auto result = pybind11::eval<pybind11::eval_expr>( p_line );
 			if ( not result.is_none() )
+			{
 				return result.attr( "__repr__" )().cast<std::string>();
+			}
 		}
 		catch ( const pybind11::error_already_set & )
 		{
@@ -198,6 +205,7 @@ namespace VTX::PythonBinding
 		}
 		return {};
 	}
+
 	void Interpretor::runScript( const FilePath & p_path ) const
 	{
 		try
@@ -205,7 +213,9 @@ namespace VTX::PythonBinding
 			// The following line's purpose is to force pybind11 to set the __file__ variable to the path of the new
 			// script being used.
 			if ( pybind11::globals().contains( "__file__" ) )
+			{
 				pybind11::globals().attr( "pop" )( "__file__" );
+			}
 
 			pybind11::eval_file( p_path.string() );
 		}
@@ -218,6 +228,7 @@ namespace VTX::PythonBinding
 			throw( VTX::ScriptException( p_path.filename().string(), e.what() ) );
 		}
 	}
+
 	Wrapper::Module Interpretor::loadModule( const FilePath & p_path ) const
 	{
 		runScript( p_path );

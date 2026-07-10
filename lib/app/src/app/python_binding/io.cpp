@@ -12,10 +12,9 @@ namespace VTX::App::PythonBinding
 {
 	void IOBinder::bind( Module & p_vtxModule )
 	{
-		pybind11::module_ * module = nullptr;
-		p_vtxModule.getPythonModule( &module );
+		pybind11::module_ & module = p_vtxModule.pyModule();
 
-		VTX::PythonBinding::Helper::declareEnum<Util::Image::E_FORMAT>( *module, "IMAGE_FORMAT" );
+		VTX::PythonBinding::Helper::declareEnum<Util::Image::E_FORMAT>( module, "IMAGE_FORMAT" );
 		p_vtxModule.bindAction<
 			App::Action::IO::Snapshot,
 			const std::string &,

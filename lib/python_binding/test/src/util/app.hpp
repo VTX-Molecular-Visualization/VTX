@@ -1,7 +1,6 @@
 #ifndef __VTX_APP_TEST_UTIL_APP__
 #define __VTX_APP_TEST_UTIL_APP__
 
-#include <io/internal/filesystem.hpp>
 #include <memory>
 #include <python_binding/interpretor.hpp>
 #include <string>

@@ -25,12 +25,8 @@ vtx_configure_target(vtx_python_binding_test)
 
 
 target_link_libraries(vtx_python_binding PUBLIC vtx_util::vtx_util)
-target_link_libraries(vtx_python_binding PUBLIC vtx_core::vtx_core)
-target_link_libraries(vtx_python_binding PUBLIC vtx_io::vtx_io)
 
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_util::vtx_util)
-target_link_libraries(vtx_python_binding_test PRIVATE vtx_core::vtx_core)
-target_link_libraries(vtx_python_binding_test PRIVATE vtx_io::vtx_io)
 
 target_link_libraries(vtx_python_binding PUBLIC pybind11::module)
 target_link_libraries(vtx_python_binding_test PRIVATE Python3::Python)

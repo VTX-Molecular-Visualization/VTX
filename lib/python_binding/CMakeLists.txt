@@ -21,8 +21,6 @@ set(PYTHON_INCLUDE_DIR ${Python3_INCLUDE_DIRS})
 set(PYTHON_LIBRARY ${Python3_LIBRARIES})
 
 find_package(vtx_util CONFIG REQUIRED)
-find_package(vtx_core CONFIG REQUIRED)
-find_package(vtx_io CONFIG REQUIRED)
 find_package(pybind11 CONFIG REQUIRED)
 
 include(cmake/library.cmake)

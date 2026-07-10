@@ -138,10 +138,124 @@ require(
     "System name lookup should ignore case",
 )
 
+topology_system = vtx.getSystem("1aga")
+require(topology_system.id == system, "Unexpected topology system id")
+require(
+    topology_system.name.lower()
+    == "the agarose double helix and its function in agarose gel structure",
+    "Unexpected topology system name",
+)
+require("1aga" in topology_system.path.lower(), "Unexpected topology system path")
+require(topology_system.pdbIdCode.lower() == "1aga", "Unexpected topology system PDB id")
+require(
+    topology_system.chainCount == len(topology_system.getChains())
+    and topology_system.residueCount == len(topology_system.getResidues())
+    and topology_system.atomCount == len(topology_system.getAtoms())
+    and topology_system.bondCount == len(topology_system.getBonds())
+    and topology_system.categoryCount == len(topology_system.getCategories()),
+    "Unexpected topology system counts",
+)
+require(
+    topology_system.indexFirstChain == 0
+    and topology_system.indexLastChain == topology_system.chainCount
+    and topology_system.indexFirstResidue == 0
+    and topology_system.indexLastResidue == topology_system.residueCount
+    and topology_system.indexFirstAtom == 0
+    and topology_system.indexLastAtom == topology_system.atomCount
+    and topology_system.indexFirstBond == 0
+    and topology_system.indexLastBond == topology_system.bondCount,
+    "Unexpected topology system ranges",
+)
+
+topology_chains = topology_system.getChains()
+topology_residues = topology_system.getResidues()
+topology_atoms = topology_system.getAtoms()
+topology_bonds = topology_system.getBonds()
+topology_categories = topology_system.getCategories()
+require(topology_chains[0].name != "", "Unexpected chain collection item")
+require(topology_residues[0].shortName != "", "Unexpected residue collection item")
+require(topology_atoms[0].vdwRadius >= 0.0, "Unexpected atom collection item")
+require(topology_bonds[0].order != "", "Unexpected bond collection item")
+require(topology_categories[0].name != "", "Unexpected category collection item")
+require(len(topology_chains[0:1]) == 1, "Unexpected chain collection slice")
+require(len(topology_residues[0:1]) == 1, "Unexpected residue collection slice")
+require(len(topology_atoms[0:1]) == 1, "Unexpected atom collection slice")
+require(len(topology_bonds[0:1]) == 1, "Unexpected bond collection slice")
+require(len(topology_categories[0:1]) == 1, "Unexpected category collection slice")
+
+topology_chain = topology_system.getChain(0)
+require(topology_chain.name != "", "Unexpected chain name")
+require(topology_chain.getSystem().id == system, "Unexpected chain system")
+require(
+    topology_chain.residueCount == len(topology_chain.getResidues())
+    and topology_chain.atomCount == len(topology_chain.getAtoms()),
+    "Unexpected chain counts",
+)
+require(
+    topology_chain.indexLastResidue
+    == topology_chain.indexFirstResidue + topology_chain.residueCount
+    and topology_chain.indexLastAtom
+    == topology_chain.indexFirstAtom + topology_chain.atomCount,
+    "Unexpected chain ranges",
+)
+
+topology_residue = topology_chain.getResidue(0)
+require(
+    topology_residue.name != ""
+    and topology_residue.symbol is not None
+    and topology_residue.shortName != ""
+    and topology_residue.longName != ""
+    and topology_residue.atomCount == len(topology_residue.getAtoms()),
+    "Unexpected residue metadata",
+)
+require(
+    topology_residue.indexLastAtom
+    == topology_residue.indexFirstAtom + topology_residue.atomCount,
+    "Unexpected residue ranges",
+)
+topology_residue_category = topology_residue.getCategory()
+require(topology_residue_category.index >= 0, "Unexpected residue category")
+require(topology_residue.getSystem().id == system, "Unexpected residue system")
+
+topology_atom = topology_residue.getAtom(0)
+require(
+    topology_atom.name != ""
+    and topology_atom.symbol is not None
+    and topology_atom.symbolName != "",
+    "Unexpected atom metadata",
+)
+require(
+    topology_atom.type is not None and topology_atom.vdwRadius >= 0.0,
+    "Unexpected atom type metadata",
+)
+topology_atom_category = topology_atom.getCategory()
+require(topology_atom_category.index >= 0, "Unexpected atom category")
+require(topology_atom.getSystem().id == system, "Unexpected atom system")
+
+topology_category = topology_system.getCategory(0)
+require(
+    topology_category.name != ""
+    and topology_category.residueCount == len(topology_category.getResidues())
+    and topology_category.atomCount == len(topology_category.getAtoms()),
+    "Unexpected category metadata",
+)
+require(topology_category.getSystem().id == system, "Unexpected category system")
+
+topology_bond = topology_system.getBond(0)
+require(topology_bond.getSystem().id == system, "Unexpected bond system")
+
 vtx.selectAll()
 require(vtx.getSelectionState(system) == vtx.SELECTION_STATE.FULL, "System should be selected")
+require(
+    topology_system.isSelected() and topology_system.isFullySelected(),
+    "Topology system should be selected",
+)
 vtx.clearSelection(system)
 require(vtx.getSelectionState(system) == vtx.SELECTION_STATE.NONE, "System selection should be cleared")
+require(
+    not topology_system.isSelected() and not topology_system.isFullySelected(),
+    "Topology system selection should be cleared",
+)
 
 vtx.select(system, vtx.SYSTEM_ITEM.RESIDUE, [0, 1, 2], True, False)
 require(
@@ -151,6 +265,10 @@ require(
 require(
     vtx.getSelectionState(system, vtx.SYSTEM_ITEM.RESIDUE, 3) == vtx.SELECTION_STATE.NONE,
     "Residue 3 should not be selected",
+)
+require(
+    topology_residue.isSelected() and topology_residue.isFullySelected(),
+    "Topology residue should be selected",
 )
 
 vtx.setColorScheme(system, vtx.COLOR_SCHEME.CHAIN)
@@ -180,6 +298,10 @@ require(
     "Selected residue should be hidden",
 )
 require(
+    not topology_residue.isVisible() and not topology_residue.isFullyVisible(),
+    "Topology residue should be hidden",
+)
+require(
     vtx.getVisibleState(system, vtx.SYSTEM_ITEM.RESIDUE, 3) == vtx.VISIBLE_STATE.VISIBLE,
     "Unselected residue should remain visible",
 )
@@ -192,8 +314,16 @@ require(
 
 vtx.hideAll()
 require(vtx.getVisibleState(system) == vtx.VISIBLE_STATE.HIDDEN, "System should be hidden")
+require(
+    not topology_system.isVisible() and not topology_system.isFullyVisible(),
+    "Topology system should be hidden",
+)
 vtx.showAll()
 require(vtx.getVisibleState(system) == vtx.VISIBLE_STATE.VISIBLE, "System should be visible")
+require(
+    topology_system.isVisible() and topology_system.isFullyVisible(),
+    "Topology system should be visible",
+)
 
 vtx.orientCamera()
 vtx.straightTravelCamera(position, rotation, 500.0)

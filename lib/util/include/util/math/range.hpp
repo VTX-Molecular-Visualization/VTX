@@ -45,9 +45,7 @@ namespace VTX::Util::Math
 		 * @brief Constructs a range containing a single value.
 		 */
 		constexpr Range( const T p_first ) noexcept : first( p_first ), last( static_cast<T>( p_first + 1 ) )
-		{
-			assert( p_first < TypeMax<T> );
-		}
+		{ assert( p_first < TypeMax<T> ); }
 
 		/**
 		 * @brief Constructs a range from first (inclusive) to last (exclusive).
@@ -80,12 +78,24 @@ namespace VTX::Util::Math
 		 * @brief Get first or last value.
 		 */
 		constexpr T getFirst() const noexcept { return first; }
+
 		constexpr T getLast() const noexcept { return last; }
 
 		/**
 		 * @brief Get count of values in the range.
 		 */
 		constexpr Count getCount() const noexcept { return last - first; }
+
+		/**
+		 * @brief Get a sub-range by offset and count.
+		 */
+		[[nodiscard]] constexpr Range subRange( const Count p_firstOffset, const Count p_count ) const noexcept
+		{
+			assert( p_firstOffset <= getCount() );
+			assert( p_count <= getCount() - p_firstOffset );
+
+			return fromFirstCount( static_cast<T>( first + static_cast<T>( p_firstOffset ) ), p_count );
+		}
 
 		/**
 		 * @brief Checks the range validity (first <= last).
@@ -106,9 +116,7 @@ namespace VTX::Util::Math
 		 * @brief Checks if the range contains another range.
 		 */
 		constexpr bool contains( const Range & p_other ) const noexcept
-		{
-			return p_other.first >= first && p_other.last <= last;
-		}
+		{ return p_other.first >= first && p_other.last <= last; }
 
 		/**
 		 * @brief Checks if the range contains all values in a vector.
@@ -161,17 +169,13 @@ namespace VTX::Util::Math
 		 * @brief Checks if the range intersects another range.
 		 */
 		constexpr bool intersects( const Range & p_other ) const noexcept
-		{
-			return not( last <= p_other.first || p_other.last <= first );
-		}
+		{ return not( last <= p_other.first || p_other.last <= first ); }
 
 		/**
 		 * @brief Checks if the range touches another range (i.e. edges are contiguous).
 		 */
 		constexpr bool touches( const Range & p_other ) const noexcept
-		{
-			return last == p_other.first || p_other.last == first;
-		}
+		{ return last == p_other.first || p_other.last == first; }
 
 		/**
 		 * @brief Computes the intersection of this range with another range.
@@ -373,8 +377,11 @@ namespace VTX::Util::Math
 		 * @brief Convenience expand/shrink functions.
 		 */
 		constexpr void expandFirst( const Count p_n ) noexcept { expand( p_n, E_EDGE::FIRST ); }
+
 		constexpr void expandLast( const Count p_n ) noexcept { expand( p_n, E_EDGE::LAST ); }
+
 		constexpr void shrinkFirst( const Count p_n ) noexcept { shrink( p_n, E_EDGE::FIRST ); }
+
 		constexpr void shrinkLast( const Count p_n ) noexcept { shrink( p_n, E_EDGE::LAST ); }
 
 		/**
@@ -427,16 +434,19 @@ namespace VTX::Util::Math
 		{
 			T cur {};
 
-			constexpr T			 operator*() const noexcept { return cur; }
+			constexpr T operator*() const noexcept { return cur; }
+
 			constexpr iterator & operator++() noexcept
 			{
 				++cur;
 				return *this;
 			}
+
 			constexpr bool operator!=( const iterator & other ) const noexcept { return cur != other.cur; }
 		};
 
 		constexpr iterator begin() const noexcept { return iterator { first }; }
+
 		constexpr iterator end() const noexcept { return iterator { last }; }
 	};
 

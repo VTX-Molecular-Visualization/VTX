@@ -36,10 +36,9 @@ namespace VTX::App::PythonBinding
 
 	void VisibilityBinder::bind( Module & p_vtxModule )
 	{
-		pybind11::module_ * module = nullptr;
-		p_vtxModule.getPythonModule( &module );
+		pybind11::module_ & module = p_vtxModule.pyModule();
 
-		VTX::PythonBinding::Helper::declareEnum<App::System::E_VISIBLE_STATE>( *module, "VISIBLE_STATE" );
+		VTX::PythonBinding::Helper::declareEnum<App::System::E_VISIBLE_STATE>( module, "VISIBLE_STATE" );
 
 		p_vtxModule.def(
 			"showAll",
