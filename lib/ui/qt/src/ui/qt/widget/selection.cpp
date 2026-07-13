@@ -225,7 +225,9 @@ namespace VTX::UI::QT::Widget
 				// Residues.
 				for ( Index residue : topology.getChainResidueRange( chain ) )
 				{
-					QString	   residueName = QString::fromStdString( topology.getResidueName( residue ) );
+					Index	   originalResidueId = topology.getResidueOriginalId( residue );
+					QString	   residueName		 = QString::fromStdString( topology.getResidueName( residue ) )
+												   + QString::asprintf( "%i", originalResidueId );
 					const auto residueState
 						= App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::RESIDUE, residue } );
 					if ( residueState == App::System::E_SELECTION_STATE::FULL )

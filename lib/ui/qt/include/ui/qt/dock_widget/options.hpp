@@ -31,6 +31,7 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<QComboBox> _comboBoxTheme;
 		QPointer<QComboBox> _comboBoxFont;
 		QPointer<QComboBox> _comboBoxTreeViewMode;
+		QPointer<QComboBox> _comboBoxSeqViewMode;
 		QPointer<QComboBox> _comboBoxKBLayout;
 		QPointer<QComboBox> _comboBoxColorAccessibilityMode;
 		QPointer<QCheckBox> _checkBoxForceDyslexicFont;

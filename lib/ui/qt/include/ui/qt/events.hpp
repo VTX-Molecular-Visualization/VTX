@@ -26,6 +26,11 @@ namespace VTX::UI::QT::Events
 		int viewMode;
 	};
 
+	struct SequenceResIdChanged
+	{
+		int residUsed;
+	};
+
 	struct ThemeChanged
 	{
 		int theme;
