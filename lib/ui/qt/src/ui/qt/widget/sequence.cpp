@@ -44,8 +44,10 @@ namespace VTX::UI::QT::Widget
 		Index  currentIndex = 0;
 		for ( auto & it_originalResId : topol.residueOriginalIds )
 		{
-			_originalIndex2VtxIndexMapping[ it_originalResId ] = currentIndex;
-			_lastResidueOriginalIndex = std::max( _lastResidueOriginalIndex, it_originalResId );
+			_originalIndex2VtxIndexMapping[ it_originalResId ]
+				= currentIndex; // doesn't work as there is duplicates in it_originalResId leading to different residues
+								// from different chains
+			_lastResidueOriginalIndex = std::max( _lastResidueOriginalIndex, it_originalResId ); // issue here
 			currentIndex++;
 		}
 	}
@@ -61,6 +63,7 @@ namespace VTX::UI::QT::Widget
 		{
 			return [ & ]( const Index & p_index )
 			{
+				// This one is bound to fail because of potential duplicates resid among different chains
 				if ( _originalIndex2VtxIndexMapping.contains( p_index ) )
 				{
 					return std::optional<Index>( _originalIndex2VtxIndexMapping.at( p_index ) );
