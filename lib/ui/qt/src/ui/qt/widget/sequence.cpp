@@ -379,13 +379,13 @@ namespace VTX::UI::QT::Widget
 		const int labelWidth = painter.fontMetrics().horizontalAdvance( headerLabel );
 
 		// Draw the residue sequence.
-		Index lastChain = firstChain;
+		Index lastChain		  = firstChain;
+		int	  labelChainWidth = 0;
 		for ( ; residue != end; ++residue )
 		{
 			painter.setPen( Helper::toQColor( colorlayout.getChainColor( size_t( residue->chainIndex + 1 ) ) ) );
 
 			// Chain labels.
-			int labelChainWidth = 0;
 			if ( residue->chainIndex != lastChain )
 			{
 				if ( x > labelWidth )
@@ -399,13 +399,14 @@ namespace VTX::UI::QT::Widget
 					painter.fillRect( cellRect, palette().base() );
 
 					painter.drawText( x, SEQ_CHAR_HEIGHT, chainLabel );
-					labelChainWidth = painter.fontMetrics().horizontalAdvance( chainLabel );
+					labelChainWidth += painter.fontMetrics().horizontalAdvance( chainLabel );
 				}
 				lastChain = residue->chainIndex;
 			}
 
 			// Rule.
-			if ( x > labelWidth && x > labelChainWidth && residue->ruleDrawNumber % SEQ_RULE_STEP == 0 )
+			if ( labelChainWidth == 0 and x > labelWidth and x > labelChainWidth
+				 and residue->ruleDrawNumber % SEQ_RULE_STEP == 0 )
 			{
 				painter.drawText( x, SEQ_CHAR_HEIGHT, QString::number( residue->ruleDrawNumber ) );
 			}
@@ -425,6 +426,7 @@ namespace VTX::UI::QT::Widget
 			painter.drawText( x, SEQ_CHAR_HEIGHT * 2, QString( residue->oneLetterSymbol ) );
 
 			x += SEQ_CHAR_WIDTH;
+			labelChainWidth = std::max( 0, labelChainWidth - SEQ_CHAR_WIDTH );
 		}
 	}
 
