@@ -66,6 +66,7 @@ namespace VTX::UI::QT::Dialog
 		auto * groupResolution		 = new QGroupBox( "Resolution" );
 		auto * layoutGroupResolution = new QVBoxLayout();
 		groupResolution->setLayout( layoutGroupResolution );
+		groupResolution->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Maximum );
 		auto * layoutPresetSize = new QHBoxLayout();
 
 		layoutPresetSize->setAlignment( Qt::AlignmentFlag::AlignLeft );
@@ -148,6 +149,7 @@ namespace VTX::UI::QT::Dialog
 		auto * groupFormat	= new QGroupBox( "Format" );
 		auto * layoutFormat = new QVBoxLayout( this );
 		groupFormat->setLayout( layoutFormat );
+		groupFormat->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Maximum );
 
 		_comboBoxFormat = new QComboBox( this );
 		_comboBoxFormat->addItem( FORMATS[ 0 ].data() );
@@ -181,6 +183,7 @@ namespace VTX::UI::QT::Dialog
 		auto * layoutPreview = new QHBoxLayout( this );
 		layoutPreview->setAlignment( Qt::AlignmentFlag::AlignCenter );
 		groupPreview->setLayout( layoutPreview );
+		groupPreview->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Expanding );
 		_previewContainer = groupPreview;
 
 		_preview = new QLabel( this );
@@ -201,7 +204,7 @@ namespace VTX::UI::QT::Dialog
 		// Layout.
 		layout->addWidget( groupResolution );
 		layout->addWidget( groupFormat );
-		layout->addWidget( groupPreview );
+		layout->addWidget( groupPreview, 1 );
 		layout->addWidget( buttonBox );
 
 		_onResolution( 1 );
