@@ -31,81 +31,257 @@ namespace VTX::UI::QT::Widget
 	constexpr int SEQ_CHAR_HEIGHT = 18;
 	constexpr int SEQ_RULE_STEP	  = 5;
 
+	namespace
+	{
+		struct Residue
+		{
+			std::string_view chainName;
+			Index			 chainIndex		 = 0;
+			Index			 ruleDrawNumber	 = 0;
+			bool			 selected		 = false;
+			char			 oneLetterSymbol = '-';
+		};
+
+		class ResidueIterator
+		{
+		  public:
+			using iterator_category = std::contiguous_iterator_tag;
+			using difference_type	= std::ptrdiff_t;
+			using value_type		= Residue;
+			using pointer			= value_type *; // or also value_type*
+			using reference			= value_type &; // or also value_type&
+
+			ResidueIterator( std::function<Residue( Index )> p_residueGetter, Index p_idx ) :
+				_getter( std::move( p_residueGetter ) ), _idx( p_idx )
+			{
+			}
+
+			reference operator*()
+			{
+				if ( not _obj.has_value() )
+				{
+					_obj = _getter( _idx );
+				}
+				return *_obj;
+			}
+
+			pointer operator->()
+			{
+				if ( not _obj.has_value() )
+				{
+					_obj = _getter( _idx );
+				}
+				return &_obj.value();
+			}
+
+			// Prefix increment
+			ResidueIterator & operator++()
+			{
+				_idx++;
+				if ( _obj.has_value() )
+				{
+					_obj.reset();
+				}
+				return *this;
+			}
+
+			// Postfix increment
+			ResidueIterator operator++( int )
+			{
+				ResidueIterator tmp = *this;
+				++( *this );
+				return tmp;
+			}
+
+			Index operator-( const ResidueIterator & p_other ) const noexcept { return _idx - p_other._idx; }
+
+			friend bool operator<( const ResidueIterator & a, const ResidueIterator & b ) { return a._idx < b._idx; };
+
+			friend bool operator>( const ResidueIterator & a, const ResidueIterator & b ) { return a._idx > b._idx; };
+
+			friend bool operator<=( const ResidueIterator & a, const ResidueIterator & b ) { return a._idx <= b._idx; };
+
+			friend bool operator>=( const ResidueIterator & a, const ResidueIterator & b ) { return a._idx >= b._idx; };
+
+			friend bool operator==( const ResidueIterator & a, const ResidueIterator & b ) { return a._idx == b._idx; };
+
+			friend bool operator!=( const ResidueIterator & a, const ResidueIterator & b ) { return a._idx != b._idx; };
+
+		  private:
+			Index							_idx = 0;
+			std::function<Residue( Index )> _getter;
+			std::optional<Residue>			_obj;
+		};
+
+	} // namespace
+
+	/**
+	 * @brief Class responsible for providing iterator over residues who's behavior follow the current Mode.
+	 */
+	class Sequence::ResidueSequencer
+	{
+	  public:
+		ResidueSequencer( Entity p_entity ) :
+			_entity( std::move( p_entity ) ),
+			_mode( static_cast<Sequence::Mode>( SETTINGS().value( SETTING_KEY_SEQUENCE_VTX_RESID ).toInt() ) )
+		{
+			auto & topology = App::REG().get<Core::Struct::Topology>( _entity );
+
+			for ( Index it_vtxResIdx = 0; it_vtxResIdx < topology.getResidueCount(); it_vtxResIdx++ )
+			{
+				if ( it_vtxResIdx > 0
+					 and topology.residueOriginalIds[ it_vtxResIdx ]
+							 > topology
+								   .residueOriginalIds[ it_vtxResIdx - 1 ] ) // case where the resid restart. Either
+																			 // from a new chain, or some other reason.
+				{
+					_oIdData.ruleSize += topology.residueOriginalIds[ it_vtxResIdx ]
+										 - topology.residueOriginalIds[ it_vtxResIdx - 1 ];
+				}
+				else
+				{
+					_oIdData.ruleSize += topology.residueOriginalIds[ it_vtxResIdx ];
+				}
+
+				_oIdData.ruleIndex2residueIndex[ _oIdData.ruleSize ]
+					= std::make_pair( topology.residueChainIndexes[ it_vtxResIdx ], it_vtxResIdx );
+			}
+		}
+
+		void set( Sequence::Mode p_mode ) { _mode = std::move( p_mode ); }
+
+		Index residuesNumber() const { return App::REG().get<Core::Struct::Topology>( _entity ).getResidueCount(); }
+
+		Index ruleSize() const
+		{
+			switch ( _mode )
+			{
+			case Sequence::Mode::contiguousResId: return residuesNumber();
+			default: return _oIdData.ruleSize;
+			}
+		}
+
+		ResidueIterator begin( Index p_startIndex )
+		{
+			return ResidueIterator( [ this ]( Index p_ ) { return this->residueAt( p_ ); }, p_startIndex );
+		}
+
+		ResidueIterator end( Index p_lastIndex )
+		{
+			return ResidueIterator( [ this ]( Index p_ ) { return this->residueAt( p_ ); }, p_lastIndex );
+		}
+
+		std::optional<Index> residueIndexfromRuleIndex( Index p_ruleIndex ) const
+		{
+			switch ( _mode )
+			{
+			case Sequence::Mode::contiguousResId: return p_ruleIndex;
+			default:
+				if ( _oIdData.ruleIndex2residueIndex.contains( p_ruleIndex ) )
+				{
+					return _oIdData.ruleIndex2residueIndex.at( p_ruleIndex ).second;
+				}
+				else
+				{
+					return std::nullopt;
+				}
+			}
+		}
+
+		Residue residueAt( Index p_index ) const
+		{
+			Residue out;
+			auto &	topology = App::REG().get<Core::Struct::Topology>( _entity );
+
+			switch ( _mode )
+			{
+			case Sequence::Mode::contiguousResId:
+			{
+				out.selected = App::Helper::System::getSelectionState(
+								   { _entity, Core::Struct::E_SYSTEM_ITEM::RESIDUE, p_index }
+							   )
+							   != App::System::E_SELECTION_STATE::NONE;
+
+				if ( p_index < topology.residueSymbols.size() )
+				{
+					const auto symbol	= topology.residueSymbols[ p_index ];
+					const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
+					out.oneLetterSymbol = name.at( 0 );
+				}
+				if ( p_index < topology.residueChainIndexes.size() )
+				{
+					out.chainIndex = topology.residueChainIndexes[ p_index ];
+				}
+				if ( out.chainIndex < topology.chainNames.size() )
+				{
+					auto & chainName = topology.chainNames[ out.chainIndex ];
+					out.chainName	 = std::string_view( chainName.data(), chainName.size() );
+				}
+			}
+			default:
+			{
+				out.ruleDrawNumber = p_index;
+				if ( _oIdData.ruleIndex2residueIndex.contains( p_index ) )
+				{
+					auto & pair		 = _oIdData.ruleIndex2residueIndex.at( p_index );
+					out.chainIndex	 = pair.first;
+					auto & chainName = topology.chainNames[ out.chainIndex ];
+					out.chainName	 = std::string_view( chainName.data(), chainName.size() );
+					if ( pair.second < topology.residueSymbols.size() )
+					{
+						const auto symbol	= topology.residueSymbols[ pair.second ];
+						const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
+						out.oneLetterSymbol = name.at( 0 );
+					}
+					out.selected = App::Helper::System::getSelectionState(
+									   { _entity, Core::Struct::E_SYSTEM_ITEM::RESIDUE, p_index }
+								   )
+								   != App::System::E_SELECTION_STATE::NONE;
+				}
+				else
+				{
+					// Case of a filler residue, noted '-' and owned by the chain of the previous residue
+					Index currentIndex = p_index;
+					while ( currentIndex > 0 and not _oIdData.ruleIndex2residueIndex.contains( currentIndex ) )
+					{
+						currentIndex--;
+					}
+					if ( _oIdData.ruleIndex2residueIndex.contains( currentIndex ) )
+					{
+						auto & pair		 = _oIdData.ruleIndex2residueIndex.at( currentIndex );
+						out.chainIndex	 = pair.first;
+						auto & chainName = topology.chainNames[ out.chainIndex ];
+						out.chainName	 = std::string_view( chainName.data(), chainName.size() );
+					}
+				}
+			}
+			}
+			return out;
+		}
+
+	  private:
+		Entity		   _entity;
+		Sequence::Mode _mode;
+
+		struct OriginalResidData
+		{
+			/**
+			 * @brief Link the index used as the ruler for the original resid mode
+			 Key : rule index
+			 Value : pair<chain id, vtx resid>
+			 */
+			std::unordered_map<Index, std::pair<Index, Index>> ruleIndex2residueIndex;
+			Index											   ruleSize = 0;
+		} _oIdData;
+	};
+
 	Sequence::Sequence( const Entity p_system, QWidget * p_parent ) :
-		QAbstractScrollArea( p_parent ), _system( p_system ),
-		_changeModeConnection( App::HUB().connect<Events::SequenceResIdChanged, &Sequence::_onModeChanged>( this ) )
+		QAbstractScrollArea( p_parent ), _system( p_system ), _sequencer( new ResidueSequencer( p_system ) )
 	{
 		QFont f( Style::DEFAULT_FONT_FAMILY_SEQUENCE, 10 );
 		f.setStyleHint( QFont::Monospace );
 		setFont( f );
 		setMouseTracking( true );
-
-		auto & topol		= App::REG().get<Core::Struct::Topology>( p_system );
-		Index  currentIndex = 0;
-		for ( auto & it_originalResId : topol.residueOriginalIds )
-		{
-			_originalIndex2VtxIndexMapping[ it_originalResId ]
-				= currentIndex; // doesn't work as there is duplicates in it_originalResId leading to different residues
-								// from different chains
-			_lastResidueOriginalIndex = std::max( _lastResidueOriginalIndex, it_originalResId ); // issue here
-			currentIndex++;
-		}
-	}
-
-	std::function<std::optional<Index>( const Index & )> Sequence::_residueIndexConverter() const
-	{
-		if ( SETTINGS().value( SETTING_KEY_SEQUENCE_VTX_RESID ).toInt()
-			 == toUnderlying( Sequence::Mode::contiguousResId ) )
-		{
-			return [ & ]( const Index & p_index ) { return std::optional<Index>( p_index ); };
-		}
-		else
-		{
-			return [ & ]( const Index & p_index )
-			{
-				// This one is bound to fail because of potential duplicates resid among different chains
-				if ( _originalIndex2VtxIndexMapping.contains( p_index ) )
-				{
-					return std::optional<Index>( _originalIndex2VtxIndexMapping.at( p_index ) );
-				}
-				return std::optional<Index>( std::nullopt );
-			};
-		}
-	}
-
-	std::function<Index( const Core::Struct::Topology &, const Index & )> Sequence::_residueChainResolver() const
-	{
-		if ( SETTINGS().value( SETTING_KEY_SEQUENCE_VTX_RESID ).toInt()
-			 == toUnderlying( Sequence::Mode::contiguousResId ) )
-		{
-			return [ & ]( const Core::Struct::Topology & p_topol, const Index & p_index ) -> Index { return p_index; };
-		}
-		else
-		{
-			return [ &, conv = _residueIndexConverter() ](
-					   const Core::Struct::Topology & p_topol, const Index & p_index
-				   ) -> Index
-			{
-				if ( p_index > 0 )
-				{
-					Index				 closestExistingStartIndex = p_index;
-					std::optional<Index> contiguousIndex		   = conv( closestExistingStartIndex );
-					while ( closestExistingStartIndex > 0
-							&& ( ( not contiguousIndex.has_value() ) || contiguousIndex.value() > 0 ) )
-					{
-						closestExistingStartIndex--;
-						contiguousIndex = conv( closestExistingStartIndex );
-					}
-					if ( contiguousIndex.has_value() )
-					{
-						return p_topol.residueChainIndexes.size() > contiguousIndex.value()
-								   ? p_topol.residueChainIndexes[ contiguousIndex.value() ]
-								   : 0;
-					}
-				}
-				return p_topol.residueChainIndexes.size() > 0 ? p_topol.residueChainIndexes[ 0 ] : 0;
-			};
-		}
 	}
 
 	void Sequence::paintEvent( QPaintEvent * p_event )
@@ -117,22 +293,17 @@ namespace VTX::UI::QT::Widget
 		using namespace Core::Struct;
 
 		auto & reg				  = REG();
-		auto & topology			  = reg.get<Core::Struct::Topology>( _system );
 		auto & metadata			  = reg.get<IO::Metadata>( _system );
-		auto & uid				  = reg.get<App::System::UID>( _system );
 		auto & colorLayoutIntance = ECS::getFirstComponent<Scene::ColorLayout>();
 		auto & colorlayout		  = reg.get<Renderer::Color::Layout>( colorLayoutIntance.preset );
-		auto & selection		  = reg.get<App::System::Selection>( _system );
 
-		const int											 xOffset	= horizontalScrollBar()->value();
-		const Index											 startIndex = xOffset / SEQ_CHAR_WIDTH;
-		std::function<std::optional<Index>( const Index & )> screenIndexToTopologyResIndex = _residueIndexConverter();
-		auto												 chainResolver				   = _residueChainResolver();
+		const int xOffset = horizontalScrollBar()->value();
 
-		Index endIndex
-			= Util::Math::min( startIndex + ( viewport()->width() / SEQ_CHAR_WIDTH ) + 2, _lastResidueIndex() );
+		const Index			  startIndex = xOffset / SEQ_CHAR_WIDTH;
+		ResidueIterator		  residue	 = _sequencer->begin( startIndex );
+		const ResidueIterator end		 = _sequencer->end( startIndex + ( viewport()->width() / SEQ_CHAR_WIDTH ) + 2 );
 
-		if ( endIndex <= startIndex )
+		if ( end <= residue )
 		{
 			return;
 		}
@@ -140,12 +311,10 @@ namespace VTX::UI::QT::Widget
 		int x = -( xOffset % SEQ_CHAR_WIDTH );
 
 		// Label with current chain.
-		// We need to get the first chain to draw its name. But if the screen resid doesn't exists as a contiguous
-		// resid, we need to get back in number until we find one.
-		const Index firstChain = chainResolver( topology, startIndex );
-
+		const Index	  firstChain  = residue->chainIndex;
 		const QString headerLabel = QString( "%1/%2" ).arg(
-			QString::fromStdString( metadata.pdbIDCode ), QString::fromStdString( topology.chainNames[ firstChain ] )
+			QString::fromStdString( metadata.pdbIDCode ),
+			QString::fromStdString( std::string( residue->chainName.data(), residue->chainName.size() ) )
 		);
 		painter.setPen( Helper::toQColor( colorlayout.getChainColor( firstChain + 1 ) ) );
 		painter.drawText( 0, SEQ_CHAR_HEIGHT, headerLabel );
@@ -153,28 +322,27 @@ namespace VTX::UI::QT::Widget
 
 		// Draw the residue sequence.
 		Index lastChain = firstChain;
-		for ( Index residue = startIndex; residue < endIndex; ++residue )
+		for ( ; residue != end; ++residue )
 		{
-			const std::optional<Index> contiguousResId = screenIndexToTopologyResIndex( residue );
-			const Index				   chain		   = chainResolver( topology, residue );
-			painter.setPen( Helper::toQColor( colorlayout.getChainColor( size_t( chain + 1 ) ) ) );
+			painter.setPen( Helper::toQColor( colorlayout.getChainColor( size_t( residue->chainIndex + 1 ) ) ) );
 
 			// Chain labels.
 			int labelChainWidth = 0;
-			if ( chain != lastChain )
+			if ( residue->chainIndex != lastChain )
 			{
 				if ( x > labelWidth )
 				{
-					QString chainLabel = QString( "/%1" ).arg( QString::fromStdString( topology.chainNames[ chain ] ) );
+					QString chainLabel = QString( "/%1" ).arg(
+						QString::fromStdString( std::string( residue->chainName.data(), residue->chainName.size() ) )
+					);
 					painter.drawText( x, SEQ_CHAR_HEIGHT, chainLabel );
 					labelChainWidth = painter.fontMetrics().horizontalAdvance( chainLabel );
 				}
-				lastChain = chain;
+				lastChain = residue->chainIndex;
 			}
 
 			// Rule.
-			const size_t indexInChain
-				= residue - topology.residueOriginalIds[ topology.chainFirstResidues[ chain ] + 1 ];
+			const size_t indexInChain = residue->ruleDrawNumber;
 			if ( x > labelWidth && x > labelChainWidth && indexInChain % SEQ_RULE_STEP == 0 )
 			{
 				painter.drawText( x, SEQ_CHAR_HEIGHT, QString::number( indexInChain ) );
@@ -182,11 +350,7 @@ namespace VTX::UI::QT::Widget
 
 			// Selection.
 			const QRect cellRect( x - 2, SEQ_CHAR_HEIGHT + 5, SEQ_CHAR_WIDTH, SEQ_CHAR_HEIGHT );
-			const bool	selected = contiguousResId.has_value()
-								   && App::Helper::System::getSelectionState(
-										  { _system, E_SYSTEM_ITEM::RESIDUE, contiguousResId.value() }
-									  ) != App::System::E_SELECTION_STATE::NONE;
-			if ( selected )
+			if ( residue->selected )
 			{
 				painter.fillRect( cellRect, palette().highlight() );
 			}
@@ -196,14 +360,7 @@ namespace VTX::UI::QT::Widget
 			}
 
 			// Residue symbol.
-			char oneLetterResidueSymbol = '-';
-			if ( contiguousResId.has_value() )
-			{
-				const auto symbol	   = topology.residueSymbols[ contiguousResId.value() ];
-				const auto name		   = Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
-				oneLetterResidueSymbol = name.at( 0 );
-			}
-			painter.drawText( x, SEQ_CHAR_HEIGHT * 2, QString( oneLetterResidueSymbol ) );
+			painter.drawText( x, SEQ_CHAR_HEIGHT * 2, QString( residue->oneLetterSymbol ) );
 
 			x += SEQ_CHAR_WIDTH;
 		}
@@ -214,6 +371,8 @@ namespace VTX::UI::QT::Widget
 		Menu::Selection menu( this );
 		menu.exec( p_e->globalPos() );
 	}
+
+	void Sequence::Del::operator()( ResidueSequencer * p_ ) const noexcept { delete p_; }
 
 	void Sequence::mousePressEvent( QMouseEvent * p_e )
 	{
@@ -351,8 +510,6 @@ namespace VTX::UI::QT::Widget
 
 	void Sequence::resizeEvent( QResizeEvent * p_event ) { _updateScrollBars(); }
 
-	void Sequence::_onModeChanged( const Events::SequenceResIdChanged & ) { this->repaint(); }
-
 	void Sequence::mouseDoubleClickEvent( QMouseEvent * p_e )
 	{
 		auto opt = _indexFromPos( p_e->pos() );
@@ -367,16 +524,9 @@ namespace VTX::UI::QT::Widget
 	void Sequence::_updateScrollBars()
 	{
 		auto &	   topology		= App::REG().get<Core::Struct::Topology>( _system );
-		const uint contentWidth = uint( _lastResidueIndex() ) * SEQ_CHAR_WIDTH;
+		const uint contentWidth = uint( _sequencer->ruleSize() ) * SEQ_CHAR_WIDTH;
 		horizontalScrollBar()->setRange( 0, contentWidth - viewport()->width() );
 		horizontalScrollBar()->setPageStep( viewport()->width() );
-	}
-
-	Index Sequence::_lastResidueIndex() const
-	{
-		return SETTINGS().value( SETTING_KEY_SEQUENCE_VTX_RESID ).toInt() == toUnderlying( Mode::contiguousResId )
-				   ? _lastResidueOriginalIndex
-				   : App::REG().get<Core::Struct::Topology>( _system ).getResidueCount();
 	}
 
 	std::optional<Index> Sequence::_indexFromPos( const QPoint & p )
@@ -386,7 +536,7 @@ namespace VTX::UI::QT::Widget
 		auto &	  topology = App::REG().get<Core::Struct::Topology>( _system );
 
 		Index index = clickX / SEQ_CHAR_WIDTH;
-		if ( index > _lastResidueIndex() )
+		if ( index > _sequencer->ruleSize() )
 		{
 			return std::nullopt;
 		}
@@ -399,6 +549,6 @@ namespace VTX::UI::QT::Widget
 			return std::nullopt;
 		}
 
-		return index;
+		return _sequencer->residueIndexfromRuleIndex( index );
 	}
 } // namespace VTX::UI::QT::Widget

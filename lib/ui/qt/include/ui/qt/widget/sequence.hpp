@@ -12,6 +12,7 @@
 
 namespace VTX::UI::QT::Widget
 {
+
 	/**
 	 * @brief Custom widget for sequence that paint only the displayed area.
 	 */
@@ -42,20 +43,6 @@ namespace VTX::UI::QT::Widget
 		const Entity _system;
 
 		/**
-		 * @brief Sequence viewer are able to display the author res id. Since this number is usually higher than the
-		 * number of residues, we need to hold that value to compute the window width
-		 */
-		Index _lastResidueOriginalIndex;
-
-		/**
-		 * @brief When the sequence viewer displays the author resid, it needs a table to quickly access the vtx resid
-		 * during paint
-		 */
-		std::unordered_map<Index, Index> _originalIndex2VtxIndexMapping;
-
-		Util::EventHub::ScopedConnection _changeModeConnection;
-
-		/**
 		 * @brief UI controls.
 		 */
 		Index _anchor		  = INVALID_INDEX;
@@ -64,23 +51,15 @@ namespace VTX::UI::QT::Widget
 		bool  _dragAddMode	  = false;
 		Index _dragStartIndex = INVALID_INDEX;
 
-		Index _lastResidueIndex() const;
+		class ResidueSequencer;
 
-		/**
-		 * @brief During the paint event, we can use either the author resid or the contiguous resid. Either way, the
-		 * data we fetch from the topology uses the contiguous resid. Therefore, we need a way to get the contiguous
-		 * resid regardless of the currently used resid.
-		 * @return
-		 */
-		std::function<std::optional<Index>( const Index & )> _residueIndexConverter() const;
+		struct Del
+		{
+			void operator()( ResidueSequencer * p_ ) const noexcept;
+		};
 
-		/**
-		 * @brief returns a getter to a chain index from the screen Index, regardless of the mode.
-		 * @return
-		 */
-		std::function<Index( const Core::Struct::Topology &, const Index & )> _residueChainResolver() const;
+		std::unique_ptr<ResidueSequencer, Del> _sequencer;
 
-		void _onModeChanged( const Events::SequenceResIdChanged & );
 		void _updateScrollBars();
 
 		/**
