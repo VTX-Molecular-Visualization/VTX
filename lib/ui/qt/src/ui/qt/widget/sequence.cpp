@@ -127,21 +127,20 @@ namespace VTX::UI::QT::Widget
 
 			for ( Index it_vtxResIdx = 0; it_vtxResIdx < topology.getResidueCount(); it_vtxResIdx++ )
 			{
+				auto & residueOriginalId = topology.residueOriginalIds[ it_vtxResIdx ];
 				if ( it_vtxResIdx > 0
-					 and topology.residueOriginalIds[ it_vtxResIdx ]
-							 > topology
-								   .residueOriginalIds[ it_vtxResIdx - 1 ] ) // case where the resid restart. Either
-																			 // from a new chain, or some other reason.
+					 // case where the resid restart. Either
+					 // from a new chain, or some other reason.
+					 and residueOriginalId > topology.residueOriginalIds[ it_vtxResIdx - 1 ] )
 				{
-					_oIdData.ruleSize += topology.residueOriginalIds[ it_vtxResIdx ]
-										 - topology.residueOriginalIds[ it_vtxResIdx - 1 ];
+					_oIdData.ruleSize += residueOriginalId - topology.residueOriginalIds[ it_vtxResIdx - 1 ];
 				}
 				else
 				{
-					_oIdData.ruleSize += topology.residueOriginalIds[ it_vtxResIdx ];
+					_oIdData.ruleSize += std::max( 1ui32, residueOriginalId );
 				}
 
-				_oIdData.ruleIndex2residueIndex[ _oIdData.ruleSize ]
+				_oIdData.ruleIndex2residueIndex[ _oIdData.ruleSize - 1 ]
 					= std::make_pair( topology.residueChainIndexes[ it_vtxResIdx ], it_vtxResIdx );
 			}
 		}
