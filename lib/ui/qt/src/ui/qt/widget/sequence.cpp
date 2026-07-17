@@ -233,8 +233,12 @@ namespace VTX::UI::QT::Widget
 						const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
 						out.oneLetterSymbol = name.at( 0 );
 					}
+					else
+					{
+						out.oneLetterSymbol = 'X';
+					}
 					out.selected = App::Helper::System::getSelectionState(
-									   { _entity, Core::Struct::E_SYSTEM_ITEM::RESIDUE, p_index }
+									   { _entity, Core::Struct::E_SYSTEM_ITEM::RESIDUE, pair.second }
 								   )
 								   != App::System::E_SELECTION_STATE::NONE;
 				}
@@ -276,12 +280,19 @@ namespace VTX::UI::QT::Widget
 	};
 
 	Sequence::Sequence( const Entity p_system, QWidget * p_parent ) :
-		QAbstractScrollArea( p_parent ), _system( p_system ), _sequencer( new ResidueSequencer( p_system ) )
+		QAbstractScrollArea( p_parent ), _system( p_system ), _sequencer( new ResidueSequencer( p_system ) ),
+		_modeChange( App::HUB().connect<Events::SequenceResIdChanged, &Sequence::_sequenceModeChange>( this ) )
 	{
 		QFont f( Style::DEFAULT_FONT_FAMILY_SEQUENCE, 10 );
 		f.setStyleHint( QFont::Monospace );
 		setFont( f );
 		setMouseTracking( true );
+	}
+
+	void Sequence::_sequenceModeChange( const Events::SequenceResIdChanged & p_ )
+	{
+		_sequencer->set( static_cast<Sequence::Mode>( p_.residUsed ) );
+		viewport()->update();
 	}
 
 	void Sequence::paintEvent( QPaintEvent * p_event )
@@ -342,10 +353,9 @@ namespace VTX::UI::QT::Widget
 			}
 
 			// Rule.
-			const size_t indexInChain = residue->ruleDrawNumber;
-			if ( x > labelWidth && x > labelChainWidth && indexInChain % SEQ_RULE_STEP == 0 )
+			if ( x > labelWidth && x > labelChainWidth && residue->ruleDrawNumber % SEQ_RULE_STEP == 0 )
 			{
-				painter.drawText( x, SEQ_CHAR_HEIGHT, QString::number( indexInChain ) );
+				painter.drawText( x, SEQ_CHAR_HEIGHT, QString::number( residue->ruleDrawNumber ) );
 			}
 
 			// Selection.
