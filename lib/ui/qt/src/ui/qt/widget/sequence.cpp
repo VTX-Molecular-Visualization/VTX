@@ -284,7 +284,7 @@ namespace VTX::UI::QT::Widget
 			p_chainIndex = 0;
 			p_chainName	 = topology.chainNames[ 0 ];
 
-			Index it_searchIndex   = 0;
+			Index it_searchIndex   = p_ruleIndex;
 			bool  beginningReached = it_searchIndex == 0;
 			// First we try to backtrack toward a previous viable residue.
 			while ( not _oIdData.ruleIndex2residueIndex.contains( it_searchIndex ) and not beginningReached )
