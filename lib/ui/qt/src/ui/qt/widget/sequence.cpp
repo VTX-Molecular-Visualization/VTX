@@ -78,10 +78,7 @@ namespace VTX::UI::QT::Widget
 			ResidueIterator & operator++()
 			{
 				_idx++;
-				if ( _obj.has_value() )
-				{
-					_obj.reset();
-				}
+				_obj.reset();
 				return *this;
 			}
 
@@ -89,6 +86,7 @@ namespace VTX::UI::QT::Widget
 			ResidueIterator operator++( int )
 			{
 				ResidueIterator tmp = *this;
+				tmp._obj.reset();
 				++( *this );
 				return tmp;
 			}
@@ -150,25 +148,27 @@ namespace VTX::UI::QT::Widget
 
 		void set( Sequence::Mode p_mode ) { _mode = std::move( p_mode ); }
 
-		Index residuesNumber() const { return App::REG().get<Core::Struct::Topology>( _entity ).getResidueCount(); }
+		Index residuesCount() const { return App::REG().get<Core::Struct::Topology>( _entity ).getResidueCount(); }
 
 		Index ruleSize() const
 		{
 			switch ( _mode )
 			{
-			case Sequence::Mode::contiguousResId: return residuesNumber();
+			case Sequence::Mode::contiguousResId: return residuesCount();
 			default: return _oIdData.ruleSize;
 			}
 		}
 
 		ResidueIterator begin( Index p_startIndex )
 		{
-			return ResidueIterator( [ this ]( Index p_ ) { return this->residueAt( p_ ); }, p_startIndex );
+			return ResidueIterator( [ this ]( Index p_ ) { return this->residueAtRuleIndex( p_ ); }, p_startIndex );
 		}
 
 		ResidueIterator end( Index p_lastIndex )
 		{
-			return ResidueIterator( [ this ]( Index p_ ) { return this->residueAt( p_ ); }, p_lastIndex );
+			return ResidueIterator(
+				[ this ]( Index p_ ) { return this->residueAtRuleIndex( p_ ); }, std::min( p_lastIndex, ruleSize() )
+			);
 		}
 
 		std::optional<Index> residueIndexfromRuleIndex( Index p_ruleIndex ) const
@@ -181,6 +181,7 @@ namespace VTX::UI::QT::Widget
 				{
 					return _oIdData.ruleIndex2residueIndex.at( p_ruleIndex ).second;
 				}
+
 				else
 				{
 					return std::nullopt;
@@ -188,15 +189,20 @@ namespace VTX::UI::QT::Widget
 			}
 		}
 
-		Residue residueAt( Index p_index ) const
+		Residue residueAtRuleIndex( Index p_index ) const
 		{
 			Residue out;
-			auto &	topology = App::REG().get<Core::Struct::Topology>( _entity );
+			out.ruleDrawNumber = p_index;
+			auto & topology	   = App::REG().get<Core::Struct::Topology>( _entity );
 
 			switch ( _mode )
 			{
 			case Sequence::Mode::contiguousResId:
 			{
+				if ( p_index >= topology.getResidueCount() )
+				{
+					break;
+				}
 				out.selected = App::Helper::System::getSelectionState(
 								   { _entity, Core::Struct::E_SYSTEM_ITEM::RESIDUE, p_index }
 							   )
@@ -204,9 +210,16 @@ namespace VTX::UI::QT::Widget
 
 				if ( p_index < topology.residueSymbols.size() )
 				{
-					const auto symbol	= topology.residueSymbols[ p_index ];
-					const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
-					out.oneLetterSymbol = name.at( 0 );
+					const auto symbol = topology.residueSymbols[ p_index ];
+					if ( symbol == Core::ChemDB::Residue::SYMBOL::UNKNOWN )
+					{
+						out.oneLetterSymbol = 'X';
+					}
+					else
+					{
+						const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
+						out.oneLetterSymbol = name.at( 0 );
+					}
 				}
 				if ( p_index < topology.residueChainIndexes.size() )
 				{
@@ -218,27 +231,30 @@ namespace VTX::UI::QT::Widget
 					out.chainName	 = std::string_view( chainName.data(), chainName.size() );
 				}
 			}
+			break;
 			default:
 			{
-				out.ruleDrawNumber = p_index;
 				if ( _oIdData.ruleIndex2residueIndex.contains( p_index ) )
 				{
-					auto & pair		 = _oIdData.ruleIndex2residueIndex.at( p_index );
-					out.chainIndex	 = pair.first;
-					auto & chainName = topology.chainNames[ out.chainIndex ];
-					out.chainName	 = std::string_view( chainName.data(), chainName.size() );
-					if ( pair.second < topology.residueSymbols.size() )
+					auto & [ chainId, resIdx ] = _oIdData.ruleIndex2residueIndex.at( p_index );
+					out.chainIndex			   = chainId;
+					auto & chainName		   = topology.chainNames[ out.chainIndex ];
+					out.chainName			   = std::string_view( chainName.data(), chainName.size() );
+					if ( resIdx < topology.residueSymbols.size() )
 					{
-						const auto symbol	= topology.residueSymbols[ pair.second ];
-						const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
-						out.oneLetterSymbol = name.at( 0 );
-					}
-					else
-					{
-						out.oneLetterSymbol = 'X';
+						const auto symbol = topology.residueSymbols[ resIdx ];
+						if ( symbol == Core::ChemDB::Residue::SYMBOL::UNKNOWN )
+						{
+							out.oneLetterSymbol = 'X';
+						}
+						else
+						{
+							const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
+							out.oneLetterSymbol = name.at( 0 );
+						}
 					}
 					out.selected = App::Helper::System::getSelectionState(
-									   { _entity, Core::Struct::E_SYSTEM_ITEM::RESIDUE, pair.second }
+									   { _entity, Core::Struct::E_SYSTEM_ITEM::RESIDUE, resIdx }
 								   )
 								   != App::System::E_SELECTION_STATE::NONE;
 				}
@@ -250,13 +266,7 @@ namespace VTX::UI::QT::Widget
 					{
 						currentIndex--;
 					}
-					if ( _oIdData.ruleIndex2residueIndex.contains( currentIndex ) )
-					{
-						auto & pair		 = _oIdData.ruleIndex2residueIndex.at( currentIndex );
-						out.chainIndex	 = pair.first;
-						auto & chainName = topology.chainNames[ out.chainIndex ];
-						out.chainName	 = std::string_view( chainName.data(), chainName.size() );
-					}
+					_findOwningChain( p_index, out.chainIndex, out.chainName );
 				}
 			}
 			}
@@ -264,6 +274,44 @@ namespace VTX::UI::QT::Widget
 		}
 
 	  private:
+		/**
+		 * @brief The goal is to find a viable option for a chain to a input ruleIndex with no associated residue
+		 */
+		void _findOwningChain( const Index & p_ruleIndex, Index & p_chainIndex, std::string_view & p_chainName ) const
+		{
+			auto & topology = App::REG().get<Core::Struct::Topology>( _entity );
+			// Some default values in case we can't find anything
+			p_chainIndex = 0;
+			p_chainName	 = topology.chainNames[ 0 ];
+
+			Index it_searchIndex   = 0;
+			bool  beginningReached = it_searchIndex == 0;
+			// First we try to backtrack toward a previous viable residue.
+			while ( not _oIdData.ruleIndex2residueIndex.contains( it_searchIndex ) and not beginningReached )
+			{
+				it_searchIndex--;
+				beginningReached = it_searchIndex == 0;
+			}
+			if ( not _oIdData.ruleIndex2residueIndex.contains( it_searchIndex ) )
+			{
+				// If there is not previous viable residue, we look forward.
+				const Index ruleSize_ = ruleSize();
+
+				while ( not _oIdData.ruleIndex2residueIndex.contains( it_searchIndex ) and it_searchIndex < ruleSize_ )
+				{
+					it_searchIndex++;
+				}
+			}
+
+			if ( _oIdData.ruleIndex2residueIndex.contains( it_searchIndex ) )
+			{
+				auto & [ chainId, resIdx ] = _oIdData.ruleIndex2residueIndex.at( it_searchIndex );
+				p_chainIndex			   = chainId;
+				auto & chainName		   = topology.chainNames[ chainId ];
+				p_chainName				   = std::string_view( chainName.data(), chainName.size() );
+			}
+		}
+
 		Entity		   _entity;
 		Sequence::Mode _mode;
 
