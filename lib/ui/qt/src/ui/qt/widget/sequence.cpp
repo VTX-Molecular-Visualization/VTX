@@ -137,7 +137,7 @@ namespace VTX::UI::QT::Widget
 				}
 				else
 				{
-					_oIdData.ruleSize += std::max( 1ui32, residueOriginalId );
+					_oIdData.ruleSize += std::max( static_cast<Index>( 1 ), residueOriginalId );
 				}
 
 				_oIdData.ruleIndex2residueIndex[ _oIdData.ruleSize - 1 ]
@@ -595,9 +595,8 @@ namespace VTX::UI::QT::Widget
 
 	std::optional<Index> Sequence::_indexFromPos( const QPoint & p )
 	{
-		const int xOffset  = horizontalScrollBar()->value();
-		const int clickX   = p.x() + xOffset;
-		auto &	  topology = App::REG().get<Core::Struct::Topology>( _system );
+		const int xOffset = horizontalScrollBar()->value();
+		const int clickX  = p.x() + xOffset;
 
 		Index index = clickX / SEQ_CHAR_WIDTH;
 		if ( index > _sequencer->ruleSize() )
