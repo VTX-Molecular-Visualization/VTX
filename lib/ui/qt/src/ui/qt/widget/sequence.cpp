@@ -394,6 +394,11 @@ namespace VTX::UI::QT::Widget
 					QString chainLabel = QString( "/%1" ).arg(
 						QString::fromStdString( std::string( residue->chainName.data(), residue->chainName.size() ) )
 					);
+					// First we draw a background rectangle so edge cases where previous rule label is to wide it
+					// collide with this very label is prevented.
+					const QRect cellRect( x - 2, 0, SEQ_CHAR_WIDTH * chainLabel.size(), SEQ_CHAR_HEIGHT );
+					painter.fillRect( cellRect, palette().base() );
+
 					painter.drawText( x, SEQ_CHAR_HEIGHT, chainLabel );
 					labelChainWidth = painter.fontMetrics().horizontalAdvance( chainLabel );
 				}
