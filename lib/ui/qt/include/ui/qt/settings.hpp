@@ -31,6 +31,11 @@ namespace VTX::UI::QT
 	const QString SETTING_KEY_REPRESENTATION_PRESETS_EXPANDED  = "tree/presets/representation/expanded";
 	const QString SETTING_KEY_SCRIPTS_EXPANDED				   = "tree/scripts/expanded";
 
+	/**
+	 * @brief Which resid to use to generate the sequence viewer
+	 */
+	const QString SETTING_KEY_SEQUENCE_VTX_RESID = "sequence/resid";
+
 	const QString SETTING_KEY_THEME = "style/theme";
 	const QString SETTING_KEY_FONT	= "style/font";
 

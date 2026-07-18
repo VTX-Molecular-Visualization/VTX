@@ -57,6 +57,7 @@ namespace VTX::Tool::Mdprep::Actions
 			{
 				VTX_ERROR( "[MDPREP] Packing failed: {}", packReport.errMsg );
 			}
+			App::Threading::TiggerEvent { Gateway::SystemPacked { not packReport.error, resultDir.string() } };
 			if ( _impl->thrData.stopToken.stop_requested() )
 			{
 				goto theEnd;
@@ -88,7 +89,7 @@ namespace VTX::Tool::Mdprep::Actions
 					"System written at : {}",
 					fmt::format( fmt::runtime( std::string( App::LOG_LINK_FORMAT ) ), resultDir.string() )
 				);
-				App::HUB().trigger( PreparationFinished { true } );
+				App::HUB().trigger( Gateway::PreparationFinished { true } );
 			}
 			else
 			{
@@ -98,7 +99,7 @@ namespace VTX::Tool::Mdprep::Actions
 
 	theEnd:
 		/**/ {
-			App::Threading::TiggerEvent t { PreparationFinished() };
+			App::Threading::TiggerEvent t { Gateway::PreparationFinished() };
 		}
 		_impl->waiter.count_down();
 	}

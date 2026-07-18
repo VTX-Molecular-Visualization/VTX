@@ -6,9 +6,13 @@
 #include <app/ecs.hpp>
 #include <core/struct/topology.hpp>
 #include <optional>
+#include <ui/qt/events.hpp>
+#include <unordered_map>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
+
 	/**
 	 * @brief Custom widget for sequence that paint only the displayed area.
 	 */
@@ -16,6 +20,12 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		Sequence( const Entity, QWidget * );
+
+		enum struct Mode : int
+		{
+			OriginalResId	= 0,
+			contiguousResId = 1,
+		};
 
 	  protected:
 		void paintEvent( QPaintEvent * ) override;
@@ -40,6 +50,18 @@ namespace VTX::UI::QT::Widget
 		bool  _dragging		  = false;
 		bool  _dragAddMode	  = false;
 		Index _dragStartIndex = INVALID_INDEX;
+
+		class ResidueSequencer;
+
+		struct Del
+		{
+			void operator()( ResidueSequencer * p_ ) const noexcept;
+		};
+
+		std::unique_ptr<ResidueSequencer, Del> _sequencer;
+		Util::EventHub::ScopedConnection	   _modeChange;
+
+		void _sequenceModeChange( const Events::SequenceResIdChanged & );
 
 		void _updateScrollBars();
 

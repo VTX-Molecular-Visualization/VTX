@@ -23,6 +23,7 @@
 #include <app/session.hpp>
 #include <app/setting/accessibility.hpp>
 #include <string>
+#include <ui/qt/widget/sequence.hpp>
 #include <util/enum.hpp>
 #include <util/event_hub.hpp>
 #include <util/string.hpp>
@@ -84,6 +85,40 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		layoutTree->addWidget( _comboBoxTreeViewMode );
+
+		// Sequence.
+		auto * groupBoxSeq = new QGroupBox( "Sequence viewer" );
+		auto * layoutSeq   = new QVBoxLayout( groupBoxSeq );
+
+		_comboBoxSeqViewMode = new QComboBox( this );
+		_comboBoxSeqViewMode->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		_comboBoxSeqViewMode->setMinimumWidth( 0 );
+
+		_comboBoxSeqViewMode->addItem( "Author Residue IDs", toUnderlying( Model::SystemModel::ViewMode::ByChain ) );
+		_comboBoxSeqViewMode->addItem( "Contiguous IDs", toUnderlying( Model::SystemModel::ViewMode::ByCategory ) );
+
+		const int seqViewMode
+			= SETTINGS()
+				  .value( SETTING_KEY_SEQUENCE_VTX_RESID, toUnderlying( Widget::Sequence::Mode::OriginalResId ) )
+				  .toInt();
+		const int seqViewModeIndex = _comboBoxSeqViewMode->findData( seqViewMode );
+		if ( seqViewModeIndex != -1 )
+		{
+			_comboBoxSeqViewMode->setCurrentIndex( seqViewModeIndex );
+		}
+
+		connect(
+			_comboBoxSeqViewMode,
+			&QComboBox::currentIndexChanged,
+			[ this ]( const int )
+			{
+				const int viewMode = _comboBoxSeqViewMode->currentData().toInt();
+				SETTINGS().setValue( SETTING_KEY_SEQUENCE_VTX_RESID, viewMode );
+				App::HUB().trigger<Events::SequenceResIdChanged>( viewMode );
+			}
+		);
+
+		layoutSeq->addWidget( _comboBoxSeqViewMode );
 
 		// Display.
 		// Theme.
@@ -274,6 +309,7 @@ namespace VTX::UI::QT::DockWidget
 		auto * groupBoxDiskUsage = _createDiskUsageGroupBox();
 
 		_layout->addWidget( groupBoxTree );
+		_layout->addWidget( groupBoxSeq );
 		_layout->addWidget( groupBoxDisplay );
 		_layout->addWidget( groupBoxAccessibility );
 		_layout->addWidget( groupBoxInputs );

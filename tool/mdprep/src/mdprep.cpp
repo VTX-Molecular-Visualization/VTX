@@ -80,20 +80,6 @@ namespace VTX::Tool::Mdprep
 		}
 	};
 
-	MainWindow * g_win = nullptr;
-
-	void get( MainWindow *& p_out ) noexcept
-	{
-		if ( g_win )
-		{
-			p_out = g_win;
-			return;
-		}
-		auto & mainWindow = UI::QT::MAIN_WINDOW();
-		g_win			  = mainWindow.createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
-		p_out			  = g_win;
-	}
-
 	App::UI::DescAction openMdPrepAction()
 	{
 		App::UI::DescAction action;
@@ -107,14 +93,23 @@ namespace VTX::Tool::Mdprep
 
 	void openMdPrep()
 	{
-		MainWindow * win;
-		get( win );
+		static MainWindow * win			= nullptr;
+		bool				justCreated = false;
+		if ( win == nullptr )
+		{
+			auto & mainWindow = UI::QT::MAIN_WINDOW();
+			win				  = mainWindow.createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
+			justCreated		  = true;
+		}
 
-		if ( win->isHidden() )
+		if ( win->isHidden() or justCreated ) // A justCreated window is not hidden but we need to size it and show
+		// it properly
 		{
 			win->resize( win->PREFERRED_SIZE );
 			win->show();
-			win->raise();
+			QTimer::singleShot(
+				0, [ win = win ] { win->raise(); }
+			); // The widget is not raised consistently on the same loop
 		}
 		else
 		{

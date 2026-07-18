@@ -1,11 +1,13 @@
 #include <app/services.hpp>
 #include <app/session.hpp>
 #include <app/threading/base_thread.hpp>
+#include <app/threading/trigger_event.hpp>
 #include <latch>
 #include <thread>
 #include <util/logger.hpp>
 //
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
+#include <tool/mdprep/gateway/shared.hpp>
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
@@ -76,6 +78,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			int &				  stepNum
 		) noexcept
 		{
+			const int displayIndex = stepNum;
+			App::Threading::TiggerEvent { Gateway::PreparationStepStarted { displayIndex, p_stepName } };
+
 			const FilePath jobDir = p_in.rootDir / p_stepName;
 			VTX_DEBUG( "[MDPREP] Starting preparation step <{}> in <{}>.", p_stepName, jobDir.string() );
 			p_stepIn.fileStem = p_in.fileStem;
@@ -87,6 +92,23 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			submitGromacsJob( gmxExe, jobDir, currentJobData );
 			currentJobData.postJobRoutine( jobDir, currentJobData, p_in.outputs );
 			checkJobResults( currentJobData );
+
+			// Snapshot the gromacs output channels so the UI can display them, then hand the snapshot to the main
+			// thread through the event. Done in a closed scope to release the channels lock before firing.
+			const auto fireStepFinished = [ & ]( bool p_success )
+			{
+				Gateway::PreparationStepFinished ev;
+				ev.index   = displayIndex;
+				ev.success = p_success;
+				ev.errors  = currentJobData.report.errors;
+				{
+					auto channels = currentJobData.channelsLocker.open();
+					ev.stdOut	  = channels->stdout_;
+					ev.stdErr	  = channels->stderr_;
+				}
+				App::Threading::TiggerEvent { std::move( ev ) };
+			};
+
 			if ( currentJobData.report.errorOccured )
 			{
 				VTX_ERROR(
@@ -98,20 +120,24 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				{
 					VTX_ERROR( "[MDPREP] Step <{}>: {}", p_stepName, error );
 				}
-				auto channels = currentJobData.channelsLocker.open();
-				if ( not channels->stderr_.empty() )
 				{
-					VTX_ERROR( "[MDPREP] Step <{}> stderr:\n{}", p_stepName, channels->stderr_ );
+					auto channels = currentJobData.channelsLocker.open();
+					if ( not channels->stderr_.empty() )
+					{
+						VTX_ERROR( "[MDPREP] Step <{}> stderr:\n{}", p_stepName, channels->stderr_ );
+					}
+					if ( not channels->stdout_.empty() )
+					{
+						VTX_ERROR( "[MDPREP] Step <{}> stdout:\n{}", p_stepName, channels->stdout_ );
+					}
 				}
-				if ( not channels->stdout_.empty() )
-				{
-					VTX_ERROR( "[MDPREP] Step <{}> stdout:\n{}", p_stepName, channels->stdout_ );
-				}
+				fireStepFinished( false );
 				return false;
 			}
 
 			VTX_DEBUG( "[MDPREP] Preparation step <{}> completed.", p_stepName );
 			fillOutputs( p_in, p_stepIn, currentJobData );
+			fireStepFinished( true );
 			return true;
 		}
 	} // namespace
