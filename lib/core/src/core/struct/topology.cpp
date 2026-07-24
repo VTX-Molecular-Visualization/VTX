@@ -83,11 +83,6 @@ namespace VTX::Core::Struct
 		out += sizeof( ChemDB::Bond::ORDER ) * p_sys.bondOrders.size();
 		out += sizeof( Index ) * p_sys.bondPairAtomIndexes.size();
 
-		// Util::Math::RangeList<T> objects have built in static + dynamic size measurement method. So to get dynamic
-		// size, we need to remove the static one.
-		out += p_sys.atomSolvents.currentSize() - sizeof( Util::Math::RangeList<Index> );
-		out += p_sys.atomIons.currentSize() - sizeof( Util::Math::RangeList<Index> );
-
 		return out;
 	}
 

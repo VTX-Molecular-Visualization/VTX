@@ -43,22 +43,6 @@ namespace VTX::App::PythonBinding::Topology
 				}
 			)
 			.def_property_readonly(
-				"type",
-				[]( const Atom & p_atom )
-				{
-					const auto & topology = getTopology( p_atom.entity );
-					if ( topology.atomIons.contains( p_atom.index ) )
-					{
-						return Core::ChemDB::Atom::TYPE::ION;
-					}
-					if ( topology.atomSolvents.contains( p_atom.index ) )
-					{
-						return Core::ChemDB::Atom::TYPE::SOLVENT;
-					}
-					return Core::ChemDB::Atom::TYPE::NORMAL;
-				}
-			)
-			.def_property_readonly(
 				"vdwRadius",
 				[]( const Atom & p_atom )
 				{

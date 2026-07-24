@@ -107,13 +107,14 @@ namespace VTX::Core::Struct
 		 * @brief Mapping from current atom index to original source atom index after retopology.
 		 */
 		std::optional<std::vector<Index>> atomOriginalIndexes;
-
-		std::vector<Index>				 bondPairAtomIndexes;
+		/**
+		 * @brief Two consecutive atom indexes in this vector represent a bond.
+		 */
+		std::vector<Index> bondPairAtomIndexes;
+		/**
+		 * @brief Bond orders for each bond index.
+		 */
 		std::vector<ChemDB::Bond::ORDER> bondOrders;
-
-		// TODO Manage Atom types and residue types with sparse_set
-		Util::Math::RangeList<Index> atomSolvents;
-		Util::Math::RangeList<Index> atomIons;
 
 		/**
 		 * @brief Convenient methods to reserve data vectors.
