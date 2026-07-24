@@ -270,6 +270,13 @@ require(
     topology_residue.isSelected() and topology_residue.isFullySelected(),
     "Topology residue should be selected",
 )
+selected_systems = vtx.selection.getSystems()
+require(len(selected_systems) >= 1, "Unexpected selected system collection")
+require(not vtx.selection.isEmpty(topology_system), "System selection should not be empty")
+require(len(vtx.selection.getResidues(topology_system)) == 3, "Unexpected selected residue collection")
+require(len(vtx.selection.getAtoms(topology_system)) > 0, "Unexpected selected atom collection")
+require(len(vtx.selection.getChains(topology_system)) > 0, "Unexpected selected chain collection")
+require(len(vtx.selection.getCategories(topology_system)) > 0, "Unexpected selected category collection")
 
 vtx.setColorScheme(system, vtx.COLOR_SCHEME.CHAIN)
 vtx.setColorScheme(
