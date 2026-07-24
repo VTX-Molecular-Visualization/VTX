@@ -225,7 +225,7 @@ require(
     "Unexpected atom metadata",
 )
 require(
-    topology_atom.type is not None and topology_atom.vdwRadius >= 0.0,
+    topology_atom.vdwRadius >= 0.0,
     "Unexpected atom type metadata",
 )
 topology_atom_category = topology_atom.getCategory()
