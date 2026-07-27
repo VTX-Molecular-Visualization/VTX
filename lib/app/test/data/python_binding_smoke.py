@@ -103,22 +103,35 @@ for function_name in (
 position = vtx.Vec3f(1.0, 2.0, 3.0)
 rotation = vtx.Quatf(0.0, 0.0, 0.0)
 
-vtx.setCameraPosition(position)
-vtx.setCameraRotation(rotation)
-vtx.setCameraFov(45.0)
-vtx.setCameraNearClip(0.1)
-vtx.setCameraFarClip(1000.0)
-vtx.setCameraProjectionOrthographic()
-vtx.setCameraProjectionPerspective()
+vtx.camera.setPosition(position)
+vtx.camera.setRotation(rotation)
+vtx.camera.setFov(45.0)
+vtx.camera.setNearClip(0.1)
+vtx.camera.setFarClip(1000.0)
+vtx.camera.setProjectionOrthographic()
+require(
+    vtx.camera.projection == vtx.CAMERA_PROJECTION.ORTHOGRAPHIC
+    and vtx.camera.isOrthographic(),
+    "Camera should use orthographic projection",
+)
+vtx.camera.setProjectionPerspective()
+require(
+    vtx.camera.projection == vtx.CAMERA_PROJECTION.PERSPECTIVE
+    and vtx.camera.isPerspective(),
+    "Camera should use perspective projection",
+)
 
-camera_position = vtx.getCameraPosition()
-camera_rotation = vtx.getCameraRotation()
+camera_position = vtx.camera.position
+camera_rotation = vtx.camera.rotation
 require(almost_equal(camera_position.x, position.x), "Unexpected camera position x")
 require(almost_equal(camera_position.y, position.y), "Unexpected camera position y")
 require(almost_equal(camera_position.z, position.z), "Unexpected camera position z")
 require(
     almost_equal(camera_rotation.w, rotation.w), "Unexpected camera rotation w"
 )
+require(almost_equal(vtx.camera.fov, 45.0), "Unexpected camera field of view")
+require(almost_equal(vtx.camera.nearClip, 0.1), "Unexpected camera near clipping plane")
+require(almost_equal(vtx.camera.farClip, 1000.0), "Unexpected camera far clipping plane")
 
 try:
     from pathlib import Path
@@ -250,12 +263,21 @@ require(
     topology_system.isSelected() and topology_system.isFullySelected(),
     "Topology system should be selected",
 )
+require(
+    len(vtx.selection.getSystems()) == 1
+    and len(vtx.selection.getChains(topology_system)) == topology_system.chainCount
+    and len(vtx.selection.getResidues(topology_system)) == topology_system.residueCount
+    and len(vtx.selection.getAtoms(topology_system)) == topology_system.atomCount,
+    "Unexpected complete selection",
+)
 vtx.clearSelection(system)
 require(vtx.getSelectionState(system) == vtx.SELECTION_STATE.NONE, "System selection should be cleared")
 require(
     not topology_system.isSelected() and not topology_system.isFullySelected(),
     "Topology system selection should be cleared",
 )
+require(vtx.selection.isEmpty(topology_system), "System selection should be empty")
+require(len(vtx.selection.getSystems()) == 0, "Selected system collection should be empty")
 
 vtx.select(system, vtx.SYSTEM_ITEM.RESIDUE, [0, 1, 2], True, False)
 require(
@@ -270,13 +292,50 @@ require(
     topology_residue.isSelected() and topology_residue.isFullySelected(),
     "Topology residue should be selected",
 )
+
 selected_systems = vtx.selection.getSystems()
-require(len(selected_systems) >= 1, "Unexpected selected system collection")
+selected_residues = vtx.selection.getResidues(topology_system)
+selected_atoms = vtx.selection.getAtoms(topology_system)
+selected_chains = vtx.selection.getChains(topology_system)
+selected_categories = vtx.selection.getCategories(topology_system)
+
+expected_atom_indices = [
+    atom.index
+    for residue_index in range(3)
+    for atom in topology_system.getResidue(residue_index).getAtoms()
+]
+expected_chain_indices = sorted(
+    {topology_system.getAtom(index).getChain().index for index in expected_atom_indices}
+)
+expected_category_indices = sorted(
+    {topology_system.getAtom(index).getCategory().index for index in expected_atom_indices}
+)
+
+require(
+    len(selected_systems) == 1 and selected_systems[0].id == system,
+    "Unexpected selected system collection",
+)
 require(not vtx.selection.isEmpty(topology_system), "System selection should not be empty")
-require(len(vtx.selection.getResidues(topology_system)) == 3, "Unexpected selected residue collection")
-require(len(vtx.selection.getAtoms(topology_system)) > 0, "Unexpected selected atom collection")
-require(len(vtx.selection.getChains(topology_system)) > 0, "Unexpected selected chain collection")
-require(len(vtx.selection.getCategories(topology_system)) > 0, "Unexpected selected category collection")
+require(
+    [residue.index for residue in selected_residues] == [0, 1, 2],
+    "Unexpected selected residue collection",
+)
+require(
+    [atom.index for atom in selected_atoms] == expected_atom_indices,
+    "Unexpected selected atom collection",
+)
+require(
+    [chain.index for chain in selected_chains] == expected_chain_indices,
+    "Unexpected selected chain collection",
+)
+require(
+    [category.index for category in selected_categories] == expected_category_indices,
+    "Unexpected selected category collection",
+)
+require(
+    selected_residues[0].index == 0 and len(selected_residues[0:2]) == 2,
+    "Unexpected selected residue collection access",
+)
 
 vtx.setColorScheme(system, vtx.COLOR_SCHEME.CHAIN)
 vtx.setColorScheme(
@@ -332,12 +391,18 @@ require(
     "Topology system should be visible",
 )
 
-vtx.orientCamera()
-vtx.straightTravelCamera(position, rotation, 500.0)
-vtx.resetCamera()
+vtx.camera.orient()
+vtx.camera.straightTravel(position, rotation, 500.0)
+vtx.camera.reset()
 
 vtx.clearSelection()
 require(vtx.getSelectionState(system) == vtx.SELECTION_STATE.NONE, "Selection should be cleared")
+require(vtx.selection.isEmpty(topology_system), "System selection should be empty")
+require(len(vtx.selection.getSystems()) == 0, "Selected system collection should be empty")
+require(len(vtx.selection.getAtoms(topology_system)) == 0, "Selected atom collection should be empty")
+require(len(vtx.selection.getResidues(topology_system)) == 0, "Selected residue collection should be empty")
+require(len(vtx.selection.getChains(topology_system)) == 0, "Selected chain collection should be empty")
+require(len(vtx.selection.getCategories(topology_system)) == 0, "Selected category collection should be empty")
 
 vtx.quit()
 

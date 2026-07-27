@@ -2,14 +2,109 @@
 #include "app/action/action_manager.hpp"
 #include "app/action/camera.hpp"
 #include "app/ecs.hpp"
+#include <pybind11/pybind11.h>
+#include <python_binding/binding/helper.hpp>
 #include <python_binding/wrapper/arg.hpp>
 #include <renderer/camera.hpp>
 #include <util/math/transform.hpp>
 
 namespace VTX::App::PythonBinding
 {
+	namespace
+	{
+		struct CameraView
+		{
+		};
+
+		const Renderer::Camera & _getCamera()
+		{
+			const Entity entity = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
+			return REG().get<Renderer::Camera>( entity );
+		}
+
+		const Util::Math::Transform & _getCameraTransform()
+		{
+			const Entity entity = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
+			return REG().get<Util::Math::Transform>( entity );
+		}
+	} // namespace
+
 	void CameraBinder::bind( Module & p_vtxModule )
 	{
+		pybind11::module_ & module = p_vtxModule.pyModule();
+
+		VTX::PythonBinding::Helper::declareEnum<Renderer::PROJECTION>( module, "CAMERA_PROJECTION" );
+
+		pybind11::class_<CameraView>( module, "Camera", pybind11::module_local() )
+			.def_property_readonly(
+				"position", []( const CameraView & ) { return _getCameraTransform().getPosition(); }
+			)
+			.def_property_readonly(
+				"rotation", []( const CameraView & ) { return _getCameraTransform().getRotation(); }
+			)
+			.def_property_readonly( "fov", []( const CameraView & ) { return _getCamera().fov; } )
+			.def_property_readonly( "nearClip", []( const CameraView & ) { return _getCamera().near; } )
+			.def_property_readonly( "farClip", []( const CameraView & ) { return _getCamera().far; } )
+			.def_property_readonly( "projection", []( const CameraView & ) { return _getCamera().projection; } )
+			.def(
+				"isPerspective",
+				[]( const CameraView & ) { return _getCamera().projection == Renderer::PROJECTION::PERSPECTIVE; }
+			)
+			.def(
+				"isOrthographic",
+				[]( const CameraView & ) { return _getCamera().projection == Renderer::PROJECTION::ORTHOGRAPHIC; }
+			)
+			.def(
+				"setPosition",
+				[]( const CameraView &, const Vec3f & p_position )
+				{ executeAction<App::Action::Camera::SetPosition>( p_position ); },
+				pybind11::arg( "position" )
+			)
+			.def(
+				"setRotation",
+				[]( const CameraView &, const Quatf & p_rotation )
+				{ executeAction<App::Action::Camera::SetRotation>( p_rotation ); },
+				pybind11::arg( "rotation" )
+			)
+			.def(
+				"setFov",
+				[]( const CameraView &, const float p_fov ) { executeAction<App::Action::Camera::SetFov>( p_fov ); },
+				pybind11::arg( "fov" )
+			)
+			.def(
+				"setNearClip",
+				[]( const CameraView &, const float p_near )
+				{ executeAction<App::Action::Camera::SetNearClip>( p_near ); },
+				pybind11::arg( "near" )
+			)
+			.def(
+				"setFarClip",
+				[]( const CameraView &, const float p_far )
+				{ executeAction<App::Action::Camera::SetFarClip>( p_far ); },
+				pybind11::arg( "far" )
+			)
+			.def(
+				"setProjectionOrthographic",
+				[]( const CameraView & )
+				{ executeAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>(); }
+			)
+			.def(
+				"setProjectionPerspective",
+				[]( const CameraView & )
+				{ executeAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>(); }
+			)
+			.def( "reset", []( const CameraView & ) { executeAction<App::Action::Camera::Reset>(); } )
+			.def( "orient", []( const CameraView & ) { executeAction<App::Action::Camera::Orient>(); } )
+			.def(
+				"straightTravel",
+				[]( const CameraView &, const Vec3f & p_position, const Quatf & p_rotation, const float p_duration )
+				{ executeAction<App::Action::Camera::StraightTravel>( p_position, p_rotation, p_duration ); },
+				pybind11::arg( "position" ),
+				pybind11::arg( "rotation" ),
+				pybind11::arg( "duration" )
+			);
+		module.attr( "camera" ) = CameraView {};
+
 		p_vtxModule.bindAction<App::Action::Camera::SetPosition, const Vec3f &>(
 			"setCameraPosition", "Set camera position.", VTX::PythonBinding::Wrapper::Arg( "position" )
 		);
@@ -46,22 +141,12 @@ namespace VTX::App::PythonBinding
 		);
 		p_vtxModule.def(
 			"getCameraPosition",
-			[]()
-			{
-				const auto [ ent, _, transform ]
-					= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
-				return transform.getPosition();
-			},
+			[]() { return _getCameraTransform().getPosition(); },
 			"Return current camera position vector"
 		);
 		p_vtxModule.def(
 			"getCameraRotation",
-			[]()
-			{
-				const auto [ ent, _, transform ]
-					= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
-				return transform.getRotation();
-			},
+			[]() { return _getCameraTransform().getRotation(); },
 			"Return current camera rotation vector"
 		);
 	}

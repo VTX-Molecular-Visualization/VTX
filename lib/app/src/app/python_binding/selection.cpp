@@ -24,6 +24,12 @@ namespace VTX::App::PythonBinding
 
 		struct SelectionView
 		{
+			pybind11::list				 getSystems() const;
+			Topology::AtomCollection	 getAtoms( const Topology::System & p_system ) const;
+			Topology::ResidueCollection	 getResidues( const Topology::System & p_system ) const;
+			Topology::ChainCollection	 getChains( const Topology::System & p_system ) const;
+			Topology::CategoryCollection getCategories( const Topology::System & p_system ) const;
+			bool						 isEmpty( const Topology::System & p_system ) const;
 		};
 
 		const App::System::Selection & _getSelection( const Topology::System & p_system )
@@ -36,7 +42,7 @@ namespace VTX::App::PythonBinding
 			return REG().get<App::System::Selection>( p_system.entity );
 		}
 
-		pybind11::list _getSelectedSystems( const SelectionView & )
+		pybind11::list SelectionView::getSystems() const
 		{
 			pybind11::list systems;
 
@@ -55,13 +61,13 @@ namespace VTX::App::PythonBinding
 			return systems;
 		}
 
-		Topology::AtomCollection _getSelectedAtoms( const SelectionView &, const Topology::System & p_system )
+		Topology::AtomCollection SelectionView::getAtoms( const Topology::System & p_system ) const
 		{
 			const App::System::Selection & selection = _getSelection( p_system );
 			return { p_system.entity, selection.atoms.toRangeList<Index>() };
 		}
 
-		Topology::ResidueCollection _getSelectedResidues( const SelectionView &, const Topology::System & p_system )
+		Topology::ResidueCollection SelectionView::getResidues( const Topology::System & p_system ) const
 		{
 			const App::System::Selection & selection = _getSelection( p_system );
 			const Core::Struct::Topology & topology	 = REG().get<Core::Struct::Topology>( p_system.entity );
@@ -75,7 +81,7 @@ namespace VTX::App::PythonBinding
 			return { p_system.entity, residues };
 		}
 
-		Topology::ChainCollection _getSelectedChains( const SelectionView &, const Topology::System & p_system )
+		Topology::ChainCollection SelectionView::getChains( const Topology::System & p_system ) const
 		{
 			const App::System::Selection & selection = _getSelection( p_system );
 			const Core::Struct::Topology & topology	 = REG().get<Core::Struct::Topology>( p_system.entity );
@@ -89,7 +95,7 @@ namespace VTX::App::PythonBinding
 			return { p_system.entity, chains };
 		}
 
-		Topology::CategoryCollection _getSelectedCategories( const SelectionView &, const Topology::System & p_system )
+		Topology::CategoryCollection SelectionView::getCategories( const Topology::System & p_system ) const
 		{
 			const App::System::Selection & selection = _getSelection( p_system );
 			const Core::Struct::Topology & topology	 = REG().get<Core::Struct::Topology>( p_system.entity );
@@ -104,7 +110,7 @@ namespace VTX::App::PythonBinding
 			return { p_system.entity, categories };
 		}
 
-		bool _isSelectionEmpty( const SelectionView &, const Topology::System & p_system )
+		bool SelectionView::isEmpty( const Topology::System & p_system ) const
 		{ return _getSelection( p_system ).atoms.none(); }
 
 		App::System::E_SELECTION_STATE _getSelectionState(
@@ -134,12 +140,12 @@ namespace VTX::App::PythonBinding
 		VTX::PythonBinding::Helper::declareEnum<App::System::E_SELECTION_STATE>( module, "SELECTION_STATE" );
 
 		pybind11::class_<SelectionView>( module, "Selection", pybind11::module_local() )
-			.def( "getSystems", &_getSelectedSystems )
-			.def( "getAtoms", &_getSelectedAtoms, pybind11::arg( "system" ) )
-			.def( "getResidues", &_getSelectedResidues, pybind11::arg( "system" ) )
-			.def( "getChains", &_getSelectedChains, pybind11::arg( "system" ) )
-			.def( "getCategories", &_getSelectedCategories, pybind11::arg( "system" ) )
-			.def( "isEmpty", &_isSelectionEmpty, pybind11::arg( "system" ) );
+			.def( "getSystems", &SelectionView::getSystems )
+			.def( "getAtoms", &SelectionView::getAtoms, pybind11::arg( "system" ) )
+			.def( "getResidues", &SelectionView::getResidues, pybind11::arg( "system" ) )
+			.def( "getChains", &SelectionView::getChains, pybind11::arg( "system" ) )
+			.def( "getCategories", &SelectionView::getCategories, pybind11::arg( "system" ) )
+			.def( "isEmpty", &SelectionView::isEmpty, pybind11::arg( "system" ) );
 		module.attr( "selection" ) = SelectionView {};
 
 		p_vtxModule.bindAction<App::Action::Selection::SelectAll>( "selectAll", "Select all loaded systems." );
