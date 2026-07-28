@@ -5,6 +5,8 @@
 #include "io/metadata.hpp"
 #include <memory>
 #include <string>
+#include <util/math/aabb.hpp>
+#include <util/math/grid.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -42,6 +44,13 @@ namespace VTX::IO
 		 * @brief Read topology and metadata.
 		 */
 		void get( const VTX::Core::ChemDB::Category::Dictionary &, VTX::Core::Struct::Topology &, Metadata & );
+		void get(
+			const VTX::Core::ChemDB::Category::Dictionary &,
+			VTX::Core::Struct::Topology &,
+			Metadata &,
+			VTX::Util::Math::AABB &,
+			VTX::Util::Math::Grid<Index> &
+		);
 
 		/**
 		 * @brief Read position-related data.

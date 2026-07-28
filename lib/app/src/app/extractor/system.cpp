@@ -22,6 +22,7 @@
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <util/math/aabb.hpp>
+#include <util/math/grid.hpp>
 #include <util/math/range_list.hpp>
 #include <util/math/transform.hpp>
 #include <variant>
@@ -38,6 +39,8 @@ namespace VTX::App::Extractor
 		std::optional<IO::SystemReader>														reader;
 		Core::Struct::Topology																topology;
 		IO::Metadata																		metadata;
+		Util::Math::AABB																	aabb;
+		Util::Math::Grid<Index>																atomGrid;
 		std::variant<App::System::TrajectorySingleFrame, App::System::TrajectoryFullBuffer> trajectoryData;
 	};
 
@@ -144,7 +147,11 @@ namespace VTX::App::Extractor
 			if ( not pendingData.onlyTrajectory )
 			{
 				pendingData.reader->get(
-					ECS::getCtx<Core::ChemDB::Category::Dictionary>(), pendingData.topology, pendingData.metadata
+					ECS::getCtx<Core::ChemDB::Category::Dictionary>(),
+					pendingData.topology,
+					pendingData.metadata,
+					pendingData.aabb,
+					pendingData.atomGrid
 				);
 			}
 
@@ -208,8 +215,9 @@ namespace VTX::App::Extractor
 		auto & data		 = reg.emplace<Core::Struct::Topology>( p_entity, std::move( p_data.topology ) );
 		auto & metadata	 = reg.emplace<IO::Metadata>( p_entity, std::move( p_data.metadata ) );
 		auto & transform = reg.emplace<Util::Math::Transform>( p_entity );
-		auto & aabb		 = reg.emplace<Util::Math::AABB>( p_entity );
-		auto & uid		 = reg.emplace<App::System::UID>( p_entity );
+		auto & aabb		 = reg.emplace<Util::Math::AABB>( p_entity, std::move( p_data.aabb ) );
+		reg.emplace<Util::Math::Grid<Index>>( p_entity, std::move( p_data.atomGrid ) );
+		auto & uid = reg.emplace<App::System::UID>( p_entity );
 
 		auto & visibility	  = reg.emplace<App::System::Visibility>( p_entity );
 		auto & selection	  = reg.emplace<App::System::Selection>( p_entity );

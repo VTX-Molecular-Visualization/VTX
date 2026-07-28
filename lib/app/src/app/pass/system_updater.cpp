@@ -1,6 +1,5 @@
 #include "app/pass/system_updater.hpp"
 #include "app/events.hpp"
-#include "app/helper/aabb.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
@@ -9,27 +8,18 @@
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
 #include <algorithm>
+#include <core/chemdb/atom.hpp>
 #include <renderer/renderer.hpp>
 #include <span>
 #include <util/chrono.hpp>
 #include <util/math/aabb.hpp>
+#include <util/math/grid.hpp>
 #include <util/math/transform.hpp>
 #include <util/types.hpp>
+#include <utility>
 
 namespace VTX::App::Pass
 {
-	namespace
-	{
-		void _patchAABB( const Entity & p_entity, const std::span<const Vec3f> p_positions ) noexcept
-		{
-			REG().patch<Util::Math::AABB>(
-				p_entity,
-				[ p_positions ]( Util::Math::AABB & p_aabb ) { p_aabb = Helper::AABB::compute( p_positions ); }
-			);
-		}
-
-	} // namespace
-
 	SystemUpdater::SystemUpdater()
 	{
 		auto & reg = REG();
@@ -164,7 +154,7 @@ namespace VTX::App::Pass
 	{
 		assert( not _systems.contains( p_event.system ) );
 
-		_patchAABB( p_event.system, System::getCurrentAtomPositions( p_event.system ) );
+		REG().patch<Util::Math::AABB>( p_event.system, []( Util::Math::AABB & _ ) {} );
 		_systemAdded.emplace_back( p_event.system );
 	}
 
@@ -172,7 +162,24 @@ namespace VTX::App::Pass
 	{
 		assert( _systems.contains( p_event.system ) );
 
-		_patchAABB( p_event.system, p_event.frame );
+		Util::Math::AABB		aabb;
+		Util::Math::Grid<Index> atomGrid;
+		for ( Index atomIndex = 0; atomIndex < static_cast<Index>( p_event.frame.size() ); ++atomIndex )
+		{
+			const Vec3f & position = p_event.frame[ atomIndex ];
+			aabb.extend( position, Core::ChemDB::Atom::VDW_RADIUS_MIN );
+			atomGrid.add( atomIndex, position );
+		}
+
+		REG().patch<Util::Math::Grid<Index>>(
+			p_event.system,
+			[ atomGrid = std::move( atomGrid ) ]( Util::Math::Grid<Index> & p_atomGrid ) mutable
+			{ p_atomGrid = std::move( atomGrid ); }
+		);
+		REG().patch<Util::Math::AABB>(
+			p_event.system,
+			[ aabb = std::move( aabb ) ]( Util::Math::AABB & p_aabb ) mutable { p_aabb = std::move( aabb ); }
+		);
 		RENDERER().setSystemPositions( _systems[ p_event.system ], p_event.frame );
 	}
 

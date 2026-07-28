@@ -173,9 +173,10 @@ namespace VTX::IO::Util::BondRecomputation
 {
 
 	void recomputeBonds(
-		VTX::Core::Struct::Topology & p_topology,
-		std::span<const Vec3f>		  p_frame,
-		const BondRecomputeFilter &	  p_filter
+		VTX::Core::Struct::Topology &		 p_topology,
+		std::span<const Vec3f>				 p_frame,
+		const VTX::Util::Math::Grid<Index> & p_atomGrid,
+		const BondRecomputeFilter &			 p_filter
 	)
 	{
 		VTX::Util::ScopedChrono chrono( "BondRecomputation::recomputeBonds" );
@@ -183,7 +184,6 @@ namespace VTX::IO::Util::BondRecomputation
 
 		assert( p_frame.size() == p_topology.getAtomCount() );
 
-		VTX::Util::Math::Grid<Index> atomGrid;
 		VTX::Util::Math::Grid<Index> disulfideGrid;
 		std::vector<Index>			 candidateAtomIndexes;
 		candidateAtomIndexes.reserve( p_frame.size() );
@@ -196,9 +196,6 @@ namespace VTX::IO::Util::BondRecomputation
 		// Loop over atoms to find canditates.
 		for ( Index atomIndex = 0; atomIndex < p_frame.size(); ++atomIndex )
 		{
-			// Sort atoms in grid.
-			atomGrid.add( atomIndex, p_frame[ atomIndex ] );
-
 			const Index residueIndex = p_topology.atomResidueIndexes[ atomIndex ];
 			if ( residueIndex >= p_topology.getResidueCount() )
 			{
@@ -246,7 +243,7 @@ namespace VTX::IO::Util::BondRecomputation
 		size_t recomputedBondCount = 0;
 		_recomputeDisulfides( p_topology, p_frame, disulfideGrid, recomputedBondCount );
 		_recomputeCandidates(
-			p_topology, p_frame, atomGrid, candidateAtomIndexes, isCandidateAtom, recomputedBondCount
+			p_topology, p_frame, p_atomGrid, candidateAtomIndexes, isCandidateAtom, recomputedBondCount
 		);
 
 		VTX_INFO( "Recomputed {} bonds", recomputedBondCount );

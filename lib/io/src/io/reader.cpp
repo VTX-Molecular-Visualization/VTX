@@ -29,6 +29,26 @@ namespace VTX::IO
 	using namespace VTX::Core::Struct;
 	using namespace VTX::Util;
 
+	namespace
+	{
+		void _computeSpatialData(
+			const std::span<const Vec3f>   p_positions,
+			VTX::Util::Math::AABB &		   p_aabb,
+			VTX::Util::Math::Grid<Index> & p_atomGrid
+		)
+		{
+			p_aabb	   = {};
+			p_atomGrid = {};
+
+			for ( Index atomIndex = 0; atomIndex < static_cast<Index>( p_positions.size() ); ++atomIndex )
+			{
+				const Vec3f & position = p_positions[ atomIndex ];
+				p_aabb.extend( position, Core::ChemDB::Atom::VDW_RADIUS_MIN );
+				p_atomGrid.add( atomIndex, position );
+			}
+		}
+	} // namespace
+
 	struct SystemReader::_Impl
 	{
 		FilePath								_filePath;
@@ -71,7 +91,13 @@ namespace VTX::IO
 
 		size_t frameCount() const { return _trajectory.size(); }
 
-		void get( const Category::Dictionary & p_categories, Topology & p_topology, Metadata & p_metadata )
+		void get(
+			const Category::Dictionary &   p_categories,
+			Topology &					   p_topology,
+			Metadata &					   p_metadata,
+			VTX::Util::Math::AABB &		   p_aabb,
+			VTX::Util::Math::Grid<Index> & p_atomGrid
+		)
 		{
 			ScopedChrono chrono( "SystemReader::_Impl::get" );
 			VTX_INFO( "Reading topology" );
@@ -100,7 +126,7 @@ namespace VTX::IO
 			{
 				p_metadata.topologyState |= TOPOLOGY_STATE::MISSING_RESIDUES;
 				VTX_WARNING( "No residues found" );
-				_retopologize( p_categories, p_topology, p_metadata );
+				_retopologize( p_categories, p_topology, p_metadata, p_aabb, p_atomGrid );
 				return;
 			}
 
@@ -223,7 +249,7 @@ namespace VTX::IO
 
 			if ( p_metadata.topologyState != TOPOLOGY_STATE::OK )
 			{
-				_retopologize( p_categories, p_topology, p_metadata );
+				_retopologize( p_categories, p_topology, p_metadata, p_aabb, p_atomGrid );
 				return;
 			}
 
@@ -232,7 +258,7 @@ namespace VTX::IO
 				p_metadata.topologyState |= TOPOLOGY_STATE::ATOM_RESIDUE_MEMBERSHIP;
 				VTX_WARNING( "Some atoms are not assigned to any residue" );
 
-				_retopologize( p_categories, p_topology, p_metadata );
+				_retopologize( p_categories, p_topology, p_metadata, p_aabb, p_atomGrid );
 				return;
 			}
 
@@ -242,7 +268,8 @@ namespace VTX::IO
 			}
 
 			_fillBonds( p_topology );
-			_recomputeMissingData( p_topology, _firstFrame );
+			_computeSpatialData( _firstFrame, p_aabb, p_atomGrid );
+			_recomputeMissingData( p_topology, _firstFrame, p_atomGrid );
 		}
 
 		void get( const FrameIndex & p_frameIndex, VTX::Core::Struct::Frame & p_positions )
@@ -340,7 +367,13 @@ namespace VTX::IO
 			return Category::TYPE::POLYMER;
 		}
 
-		void _retopologize( const Category::Dictionary & p_categories, Topology & p_topology, Metadata & p_metadata )
+		void _retopologize(
+			const Category::Dictionary &   p_categories,
+			Topology &					   p_topology,
+			Metadata &					   p_metadata,
+			VTX::Util::Math::AABB &		   p_aabb,
+			VTX::Util::Math::Grid<Index> & p_atomGrid
+		)
 		{
 			ScopedChrono chrono( "SystemReader::_Impl::_retopologize" );
 			VTX_INFO( "Retopologizing structure" );
@@ -553,7 +586,8 @@ namespace VTX::IO
 				}
 				_firstFrame = std::move( remappedFirstFrame );
 			}
-			_recomputeMissingData( topology, _firstFrame );
+			_computeSpatialData( _firstFrame, p_aabb, p_atomGrid );
+			_recomputeMissingData( topology, _firstFrame, p_atomGrid );
 			p_topology = std::move( topology );
 			// Keep track of original atom indexes for trajectory remapping.
 			p_topology.atomOriginalIndexes = _atomOriginalIndexes;
@@ -700,7 +734,11 @@ namespace VTX::IO
 			p_topology.bondOrders[ p_targetBondIndex ]					= bondOrder;
 		}
 
-		void _recomputeMissingData( Topology & p_topology, const Frame & p_positions )
+		void _recomputeMissingData(
+			Topology &							 p_topology,
+			const Frame &						 p_positions,
+			const VTX::Util::Math::Grid<Index> & p_atomGrid
+		)
 		{
 			assert( p_positions.size() == p_topology.getAtomCount() );
 
@@ -708,7 +746,7 @@ namespace VTX::IO
 
 			if ( recomputeMissingBonds )
 			{
-				Util::BondRecomputation::recomputeBonds( p_topology, p_positions );
+				Util::BondRecomputation::recomputeBonds( p_topology, p_positions, p_atomGrid );
 			}
 
 			if ( Enum::hasAnyBit( _readerOption, READER_OPTION::GUESS_UNKNOWN_BOND_ORDERS ) )
@@ -743,7 +781,20 @@ namespace VTX::IO
 	}
 
 	void SystemReader::get( const Category::Dictionary & p_d, Topology & p_t, Metadata & p_m )
-	{ _impl->get( p_d, p_t, p_m ); }
+	{
+		VTX::Util::Math::AABB		 aabb;
+		VTX::Util::Math::Grid<Index> atomGrid;
+		_impl->get( p_d, p_t, p_m, aabb, atomGrid );
+	}
+
+	void SystemReader::get(
+		const Category::Dictionary &   p_d,
+		Topology &					   p_t,
+		Metadata &					   p_m,
+		VTX::Util::Math::AABB &		   p_a,
+		VTX::Util::Math::Grid<Index> & p_g
+	)
+	{ _impl->get( p_d, p_t, p_m, p_a, p_g ); }
 
 	void SystemReader::get( Frame & p_f, const FrameIndex p_i ) { _impl->get( p_i, p_f ); }
 
