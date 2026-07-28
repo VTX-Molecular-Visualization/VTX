@@ -411,6 +411,11 @@ require(
 )
 
 vtx.camera.orient()
+vtx.camera.orient(topology_system.aabb)
+vtx.camera.orient(topology_system)
+vtx.camera.orient(topology_chain)
+vtx.camera.orient(topology_residues)
+vtx.orientCamera(topology_system.aabb)
 vtx.camera.straightTravel(position, rotation, 500.0)
 vtx.camera.reset()
 

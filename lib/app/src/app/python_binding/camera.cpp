@@ -2,10 +2,13 @@
 #include "app/action/action_manager.hpp"
 #include "app/action/camera.hpp"
 #include "app/ecs.hpp"
+#include "app/helper/aabb.hpp"
+#include "app/python_binding/topology/types.hpp"
 #include <pybind11/pybind11.h>
 #include <python_binding/binding/helper.hpp>
 #include <python_binding/wrapper/arg.hpp>
 #include <renderer/camera.hpp>
+#include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
 
 namespace VTX::App::PythonBinding
@@ -96,6 +99,118 @@ namespace VTX::App::PythonBinding
 			.def( "reset", []( const CameraView & ) { executeAction<App::Action::Camera::Reset>(); } )
 			.def( "orient", []( const CameraView & ) { executeAction<App::Action::Camera::Orient>(); } )
 			.def(
+				"orient",
+				[]( const CameraView &, const Util::Math::AABB & p_target )
+				{ executeAction<App::Action::Camera::Orient>( p_target ); },
+				pybind11::arg( "target" )
+			)
+			.def(
+				"orient",
+				[]( const CameraView &, const Topology::System & p_target )
+				{ executeAction<App::Action::Camera::Orient>( Helper::AABB::get( p_target.entity ) ); },
+				pybind11::arg( "target" )
+			)
+			.def(
+				"orient",
+				[]( const CameraView &, const Topology::Chain & p_target )
+				{
+					executeAction<App::Action::Camera::Orient>( Helper::AABB::get(
+						p_target.entity, Topology::SystemItem::CHAIN, Topology::RangeList( p_target.index )
+					) );
+				},
+				pybind11::arg( "target" )
+			)
+			.def(
+				"orient",
+				[]( const CameraView &, const Topology::Residue & p_target )
+				{
+					executeAction<App::Action::Camera::Orient>( Helper::AABB::get(
+						p_target.entity, Topology::SystemItem::RESIDUE, Topology::RangeList( p_target.index )
+					) );
+				},
+				pybind11::arg( "target" )
+			)
+			.def(
+				"orient",
+				[]( const CameraView &, const Topology::Atom & p_target )
+				{
+					executeAction<App::Action::Camera::Orient>( Helper::AABB::get(
+						p_target.entity, Topology::SystemItem::ATOM, Topology::RangeList( p_target.index )
+					) );
+				},
+				pybind11::arg( "target" )
+			)
+			.def(
+				"orient",
+				[]( const CameraView &, const Topology::Bond & p_target )
+				{
+					executeAction<App::Action::Camera::Orient>(
+						Helper::AABB::getBonds( p_target.entity, Topology::RangeList( p_target.index ) )
+					);
+				},
+				pybind11::arg( "target" )
+			)
+			.def(
+				"orient",
+				[]( const CameraView &, const Topology::Category & p_target )
+				{
+					executeAction<App::Action::Camera::Orient>( Helper::AABB::get(
+						p_target.entity, Topology::SystemItem::CATEGORY, Topology::RangeList( p_target.index )
+					) );
+				},
+				pybind11::arg( "target" )
+			)
+			.def(
+				"orient",
+				[]( const CameraView &, const Topology::ChainCollection & p_target )
+				{
+					executeAction<App::Action::Camera::Orient>(
+						Helper::AABB::get( p_target.entity, Topology::SystemItem::CHAIN, p_target.ranges )
+					);
+				},
+				pybind11::arg( "target" )
+			)
+			.def(
+				"orient",
+				[]( const CameraView &, const Topology::ResidueCollection & p_target )
+				{
+					executeAction<App::Action::Camera::Orient>(
+						Helper::AABB::get( p_target.entity, Topology::SystemItem::RESIDUE, p_target.ranges )
+					);
+				},
+				pybind11::arg( "target" )
+			)
+			.def(
+				"orient",
+				[]( const CameraView &, const Topology::AtomCollection & p_target )
+				{
+					executeAction<App::Action::Camera::Orient>(
+						Helper::AABB::get( p_target.entity, Topology::SystemItem::ATOM, p_target.ranges )
+					);
+				},
+				pybind11::arg( "target" )
+			)
+			.def(
+				"orient",
+				[]( const CameraView &, const Topology::BondCollection & p_target )
+				{
+					executeAction<App::Action::Camera::Orient>(
+						Helper::AABB::getBonds( p_target.entity, p_target.ranges )
+					);
+				},
+				pybind11::arg( "target" )
+			)
+			.def(
+				"orient",
+				[]( const CameraView &, const Topology::CategoryCollection & p_target )
+				{
+					executeAction<App::Action::Camera::Orient>(
+						Helper::AABB::get( p_target.entity, Topology::SystemItem::CATEGORY, p_target.ranges )
+					);
+				},
+				pybind11::arg( "target" )
+			)
+			.def(
 				"straightTravel",
 				[]( const CameraView &, const Vec3f & p_position, const Quatf & p_rotation, const float p_duration )
 				{ executeAction<App::Action::Camera::StraightTravel>( p_position, p_rotation, p_duration ); },
@@ -131,6 +246,9 @@ namespace VTX::App::PythonBinding
 		);
 		p_vtxModule.bindAction<App::Action::Camera::Orient>(
 			"orientCamera", "Orient camera to fit the current selection, or the scene if no selection is active."
+		);
+		p_vtxModule.bindAction<App::Action::Camera::Orient, const Util::Math::AABB &>(
+			"orientCamera", "Orient camera to fit the target.", VTX::PythonBinding::Wrapper::Arg( "target" )
 		);
 		p_vtxModule.bindAction<App::Action::Camera::StraightTravel, const Vec3f &, const Quatf &, const float>(
 			"straightTravelCamera",
