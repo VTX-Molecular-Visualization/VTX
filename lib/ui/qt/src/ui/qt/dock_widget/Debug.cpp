@@ -1,10 +1,10 @@
 #include "ui/qt/dock_widget/debug.hpp"
+#include "app/ecs.hpp"
 #include "ui/qt/actions.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/actionable_push_button.hpp"
-#include "app/ecs.hpp"
 #include <QGroupBox>
 #include <QPushButton>
 #include <app/action/action_manager.hpp>
@@ -32,7 +32,7 @@ namespace VTX::UI::QT::DockWidget
 		connect(
 			buttonExtendSelection,
 			&QPushButton::clicked,
-			[ this ]() { App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.0 ); }
+			[ this ]() { App::ACTION().execute<App::Action::Selection::ExtendSelection>( 5.0 ); }
 		);
 
 		// Bouton ExtendSelection to residues
