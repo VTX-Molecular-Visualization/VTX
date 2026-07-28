@@ -263,13 +263,13 @@ namespace VTX::App::Action::Selection
 		}
 	}
 
-	VTX::App::System::GridCoord getCell( const Vec3f & p, float cellSize )
+	VTX::App::System::GridCoord getCell( const Vec3f & p_point, float p_cellSize )
 	{
 		// Returns the grid coordinates (i, j, k) of the voxel containing the atom p based on it's coordinates and the
 		// voxel size
-		return { int( std::floor( p.x / cellSize ) ),
-				 int( std::floor( p.y / cellSize ) ),
-				 int( std::floor( p.z / cellSize ) ) };
+		return { int( std::floor( p_point.x / p_cellSize ) ),
+				 int( std::floor( p_point.y / p_cellSize ) ),
+				 int( std::floor( p_point.z / p_cellSize ) ) };
 	}
 
 	struct SystemData
@@ -298,7 +298,7 @@ namespace VTX::App::Action::Selection
 		}
 	}
 
-	void ExtendSelection::execute( const float threshold )
+	void ExtendSelection::execute( const float p_threshold )
 	{
 		// Selects the most efficient extension strategy depending on selection density.
 		unselecMaskedItems();
@@ -315,15 +315,15 @@ namespace VTX::App::Action::Selection
 
 		if ( selec > tot / 2 )
 		{
-			ACTION().execute<App::Action::Selection::ExtendSelectionFromNonSelec>( threshold );
+			ACTION().execute<App::Action::Selection::ExtendSelectionFromNonSelec>( p_threshold );
 		}
 		else
 		{
-			ACTION().execute<App::Action::Selection::ExtendSelectionFromSelec>( threshold );
+			ACTION().execute<App::Action::Selection::ExtendSelectionFromSelec>( p_threshold );
 		}
 	}
 
-	void ExtendSelectionFromNonSelec::execute( const float threshold )
+	void ExtendSelectionFromNonSelec::execute( const float p_threshold )
 	{
 		// Adds to the selection all atoms within threshold Å of a selected atom
 		// strategy : for each unselected atom, look through neighbor voxels for a selected atom
@@ -345,9 +345,9 @@ namespace VTX::App::Action::Selection
 			);
 		}
 
-		const float threshold2 = threshold * threshold;
+		const float threshold2 = p_threshold * p_threshold;
 		// distance of neighbor voxels to check
-		const int vd = int( std::floor( threshold / 4.0f ) );
+		const int vd = int( std::floor( p_threshold / 4.0f ) );
 
 		// system loop
 		for ( const SystemData & testedSystem : systems )
@@ -380,51 +380,47 @@ namespace VTX::App::Action::Selection
 									// neighbor voxel coord
 									VTX::App::System::GridCoord neighborCoord { cell.x + dx, cell.y + dy, cell.z + dz };
 									// neighbor voxel
-									auto neighbor = gridAtomList.grid.find( neighborCoord );
-									// skip loop if voxel is empty or contains no selected atoms
-									if ( neighbor == gridAtomList.grid.end() )
+									auto it = testingSystem.gridList->grid.find( neighborCoord );
+									if ( it != testingSystem.gridList->grid.end() )
 									{
-										continue;
-									}
-									// neighbor voxel's atoms loop
-									for ( const size_t j : neighbor->second.atoms )
-									{
-										if ( !testingSystem.visibility->atoms.test( j ) )
+										// neighbor voxel's atoms loop
+										for ( const size_t j : it->second.atoms )
 										{
-											continue;
-										}
-										bool status = testingSystem.selection->atoms.test( j );
-										if ( status )
-										{
-											// coord atom j
-											const Vec3f & p2 = testingSystem.positions[ j ];
-
-											// checking distance on axes before calculating distance i - j
-											const float dx = p1.x - p2.x;
-											if ( dx > threshold || dx < -threshold )
+											if ( testedSystem.visibility->atoms.test( i ) )
 											{
-												continue;
-											}
+												if ( testingSystem.selection->atoms.test( j ) )
+												{
+													// coord atom j
+													const Vec3f & p2 = testingSystem.positions[ j ];
 
-											const float dy = p1.y - p2.y;
-											if ( dy > threshold || dy < -threshold )
-											{
-												continue;
-											}
+													// checking distance on axes before calculating distance i - j
+													const float dx = p1.x - p2.x;
+													if ( dx > p_threshold || dx < -p_threshold )
+													{
+														continue;
+													}
 
-											const float dz = p1.z - p2.z;
-											if ( dz > threshold || dz < -threshold )
-											{
-												continue;
-											}
+													const float dy = p1.y - p2.y;
+													if ( dy > p_threshold || dy < -p_threshold )
+													{
+														continue;
+													}
 
-											const float dist2 = dx * dx + dy * dy + dz * dz;
+													const float dz = p1.z - p2.z;
+													if ( dz > p_threshold || dz < -p_threshold )
+													{
+														continue;
+													}
 
-											if ( dist2 <= threshold2 )
-											{
-												toSelect.addRange( i );
-												found = true;
-												break;
+													const float dist2 = dx * dx + dy * dy + dz * dz;
+
+													if ( dist2 <= threshold2 )
+													{
+														toSelect.addRange( i );
+														found = true;
+														break;
+													}
+												}
 											}
 										}
 									}
@@ -442,7 +438,7 @@ namespace VTX::App::Action::Selection
 		VTX::VTX_INFO( "Temps écoulé: {}", chrono.elapsedTime() );
 	}
 
-	void ExtendSelectionFromSelec::execute( const float threshold )
+	void ExtendSelectionFromSelec::execute( const float p_threshold )
 	{
 		// Adds to the selection all atoms within threshold Å of a selected atom
 		// strategy : for each selected atom, look through neighbor voxels for an unselected atom
@@ -464,8 +460,8 @@ namespace VTX::App::Action::Selection
 			);
 		}
 
-		const float threshold2 = threshold * threshold;
-		const int	vd		   = int( std::floor( threshold / 4.0f ) );
+		const float threshold2 = p_threshold * p_threshold;
+		const int	vd		   = int( std::floor( p_threshold / 4.0f ) );
 
 		// systems loop
 		for ( const SystemData & testedSystem : systems )
@@ -490,50 +486,47 @@ namespace VTX::App::Action::Selection
 								// neighbor voxel coord
 								VTX::App::System::GridCoord neighborCoord { cell.x + dx, cell.y + dy, cell.z + dz };
 								// neighbor voxel
-								auto neighbor = testingSystem.gridList->grid.find( neighborCoord );
-								// skip loop if voxel empty or contains only selected atoms
-								if ( neighbor == testingSystem.gridList->grid.end() )
+								auto it = testingSystem.gridList->grid.find( neighborCoord );
+								if ( it != testingSystem.gridList->grid.end() )
 								{
-									continue;
-								}
-
-								// neighbor voxel's atoms loop
-								for ( const size_t j : neighbor->second.atoms )
-								{
-									if ( !testingSystem.visibility->atoms.test( j ) )
+									// neighbor voxel's atoms loop
+									for ( const size_t j : it->second.atoms )
 									{
-										continue;
-									}
-									bool status = testingSystem.selection->atoms.test( j );
-									if ( !status )
-									{
-										// coord atom j
-										const Vec3f & p2 = testingSystem.positions[ j ];
-
-										// checking distance on axes before calculating distance i - j
-										const float dx = p1.x - p2.x;
-										if ( dx > threshold || dx < -threshold )
+										if ( !testingSystem.visibility->atoms.test( j ) )
 										{
 											continue;
 										}
-
-										const float dy = p1.y - p2.y;
-										if ( dy > threshold || dy < -threshold )
+										bool status = testingSystem.selection->atoms.test( j );
+										if ( !status )
 										{
-											continue;
-										}
+											// coord atom j
+											const Vec3f & p2 = testingSystem.positions[ j ];
 
-										const float dz = p1.z - p2.z;
-										if ( dz > threshold || dz < -threshold )
-										{
-											continue;
-										}
+											// checking distance on axes before calculating distance i - j
+											const float dx = p1.x - p2.x;
+											if ( dx > p_threshold || dx < -p_threshold )
+											{
+												continue;
+											}
 
-										const float dist2 = dx * dx + dy * dy + dz * dz;
+											const float dy = p1.y - p2.y;
+											if ( dy > p_threshold || dy < -p_threshold )
+											{
+												continue;
+											}
 
-										if ( dist2 <= threshold2 )
-										{
-											testingSystem.toSelect.addRange( j );
+											const float dz = p1.z - p2.z;
+											if ( dz > p_threshold || dz < -p_threshold )
+											{
+												continue;
+											}
+
+											const float dist2 = dx * dx + dy * dy + dz * dz;
+
+											if ( dist2 <= threshold2 )
+											{
+												testingSystem.toSelect.addRange( j );
+											}
 										}
 									}
 								}
@@ -584,8 +577,7 @@ namespace VTX::App::Action::Selection
 		// system loop
 		for ( const Entity system : REG().view<Core::Struct::Topology>() )
 		{
-			auto & currentSelection = REG().get<App::System::Selection>( system );
-			auto & visibility		= REG().get<App::System::Visibility>( system );
+			auto & visibility = REG().get<App::System::Visibility>( system );
 			REG().patch<System::Selection>(
 				system,
 				[ & ]( System::Selection & p_selection )
@@ -594,11 +586,11 @@ namespace VTX::App::Action::Selection
 		}
 	}
 
-	void Mapping::execute( const Entity system )
+	void Mapping::execute( const Entity p_system )
 	{
 		int					   count { 0 };
-		auto &				   gridAtomList = REG().get<VTX::App::System::GridAtomList>( system );
-		std::span<const Vec3f> positions	= VTX::App::System::getCurrentAtomPositions( system );
+		auto &				   gridAtomList = REG().get<VTX::App::System::GridAtomList>( p_system );
+		std::span<const Vec3f> positions	= VTX::App::System::getCurrentAtomPositions( p_system );
 		// atoms loop
 		for ( size_t i = 0; i < positions.size(); ++i )
 		{

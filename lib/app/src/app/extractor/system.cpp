@@ -226,11 +226,11 @@ namespace VTX::App::Extractor
 		reg.emplace<Util::Math::Grid<Index>>( p_entity, std::move( p_data.atomGrid ) );
 		auto & uid = reg.emplace<App::System::UID>( p_entity );
 
-		auto & visibility	  = reg.emplace<System::Visibility>( p_entity );
-		auto & selection	  = reg.emplace<System::Selection>( p_entity );
-		auto & representation = reg.emplace<System::Representation>( p_entity );
-		auto & color		  = reg.emplace<System::Color>( p_entity );
-		auto & gridAtomList	  = reg.emplace<System::GridAtomList>( p_entity );
+		auto & visibility	  = reg.emplace<VTX::App::System::Visibility>( p_entity );
+		auto & selection	  = reg.emplace<VTX::App::System::Selection>( p_entity );
+		auto & representation = reg.emplace<VTX::App::System::Representation>( p_entity );
+		auto & color		  = reg.emplace<VTX::App::System::Color>( p_entity );
+		auto & gridAtomList	  = reg.emplace<VTX::App::System::GridAtomList>( p_entity );
 
 		// UIDs: get from UID manager.
 		auto & uidManager = App::UID();

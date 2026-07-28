@@ -402,7 +402,6 @@ namespace VTX::UI::QT::Model
 		}
 	}
 
-<<<<<<< HEAD
 	void SystemModel::setViewMode( const ViewMode p_mode )
 	{
 		if ( _viewMode == p_mode )
@@ -458,15 +457,8 @@ namespace VTX::UI::QT::Model
 		return row;
 	}
 
-	QModelIndex SystemModel::makeIndex(
-		const int						  p_row,
-		const Core::Struct::E_SYSTEM_ITEM p_type,
-		const Index						  p_index
-	) const
-=======
 	QModelIndex SystemModel::makeIndex( const int p_row, const Core::Struct::E_SYSTEM_ITEM p_type, const Index p_index )
 		const
->>>>>>> 20ec1d900 (WIP)
 	{
 		quintptr id = pack( p_type, p_index );
 		return createIndex( p_row, 0, id );

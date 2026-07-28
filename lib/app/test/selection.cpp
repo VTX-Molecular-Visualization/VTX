@@ -1,6 +1,7 @@
 #include "app/action/action_manager.hpp"
 #include "app/services.hpp"
 #include <app/action/selection.hpp>
+#include <app/action/visibility.hpp>
 #include <app/fixture.hpp>
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
@@ -16,6 +17,7 @@ namespace
 	using namespace Core::Struct;
 	using namespace App;
 	using namespace App::Action::Selection;
+	using namespace App::Action::Visibility;
 	using namespace App::Helper::System;
 	using namespace App::System;
 
@@ -48,50 +50,96 @@ namespace
 	}
 } // namespace
 
-TEST_CASE( "VTX_APP - Selection - Extend selection to 4 angstrom", "[extendSelection]" )
+TEST_CASE( "VTX_APP - Selection - Extend selection to 4 angstrom", "[extendSelection][selection]" )
 {
 	using namespace VTX;
 	App::Fixture app;
-	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "6fxo.bcif.gz" ) );
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "1AGA.mmtf" ) );
+	Entity		 system1	= getSystemByFileName( "1AGA.mmtf" );
+	const auto & selection1 = App::REG().get<App::System::Selection>( system1 );
+
+	// Testing extendSelectionFromSelec
+	Index toMask { 120 };
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask, false );
+
+	const Index toSelect { 125 };
+	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system1, toSelect );
+
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "2qwo.pdb" ) );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.0 );
+
+	int count { 0 };
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
 	{
-		const Index toSelect { 1667 };
-		App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system, toSelect );
-	}
-	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "4hhb.bcif.gz" ) );
-
-	const std::vector<int> refValue { 7, 28, 83 };
-
-	for ( int i = 0; i < 3; i++ )
-	{
-		App::ACTION().execute<App::Action::Selection::ExtendSelectionFromSelec>( 4.0 );
-		int count { 0 };
-		int size { 0 };
-		for ( auto system : App::REG().view<Core::Struct::Topology>() )
+		const auto & selection = App::REG().get<App::System::Selection>( system );
+		for ( size_t j : selection.atoms )
 		{
-			const auto & selection = App::REG().get<App::System::Selection>( system );
-			size += selection.atoms.size();
-
-			for ( size_t j : selection.atoms )
-				count++;
+			count++;
 		}
-		CHECK( count == refValue[ i ] );
 	}
+	CHECK( count == 13 );
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask );
+
+	App::ACTION().execute<Clear>();
+
+	// Testing extendSelectionFromNonSelec
+	Entity					 system2	= getSystemByFileName( "2qwo.pdb" );
+	const auto &			 selection2 = App::REG().get<App::System::Selection>( system2 );
+	Core::Struct::IndexRange range { 1, selection2.atoms.size() };
+	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system2, range );
+
+	toMask = 46;
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask, false );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 5.0 );
+
+	count = 0;
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		const auto & selection = App::REG().get<App::System::Selection>( system );
+		for ( size_t j : selection.atoms )
+		{
+			count++;
+		}
+	}
+	CHECK( count == 4171 );
+
+	App::ACTION().execute<Clear>();
+
+	range = { 1, selection1.atoms.size() };
+	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system1, range );
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, range, false );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.0 );
+
+	count = 0;
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		const auto & selection = App::REG().get<App::System::Selection>( system );
+		for ( size_t j : selection.atoms )
+		{
+			count++;
+		}
+	}
+	CHECK( count == 0 );
 }
 
-TEST_CASE( "VTX_APP - Selection - Extend selection to residues", "[extendSelection]" )
+TEST_CASE( "VTX_APP - Selection - Extend selection to residues", "[extendSelectionResidue][selection]" )
 {
 	using namespace VTX;
 	App::Fixture app;
-	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "6fxo.bcif.gz" ) );
-	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "4hhb.bcif.gz" ) );
-	for ( auto system : App::REG().view<Core::Struct::Topology>() )
-	{
-		Core::Struct::IndexRangeList toSelect;
-		toSelect.addRange( 0 );
-		toSelect.addRange( 1758 );
-		App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system, toSelect );
-	}
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "1AGA.mmtf" ) );
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "2qwo.pdb" ) );
+	Entity system1 = getSystemByFileName( "1AGA.mmtf" );
+	Entity system2 = getSystemByFileName( "2qwo.pdb" );
+
+	Index toSelect { 118 };
+	Index toMask { 119 };
+	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system1, toSelect );
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask, false );
+
+	toSelect = 1802;
+	toMask	 = 1799;
+	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system2, toSelect );
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system2, toMask, false );
 
 	App::ACTION().execute<App::Action::Selection::ExtendSelectionRes>();
 
@@ -100,53 +148,44 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to residues", "[extendSelecti
 	{
 		const auto & selection = App::REG().get<App::System::Selection>( system );
 		for ( size_t j : selection.atoms )
+		{
 			count++;
+		}
 	}
-	CHECK( count == 35 );
+	CHECK( count == 19 );
 }
 
-TEST_CASE( "VTX_APP - Selection - RevertSelection", "[extendSelection]" )
+TEST_CASE( "VTX_APP - Selection - RevertSelection", "[revertSelection][selection]" )
 {
 	using namespace VTX;
 	App::Fixture app;
-	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "6fxo.bcif.gz" ) );
-	for ( auto system : App::REG().view<Core::Struct::Topology>() )
-	{
-		Index toSelect { 0 };
-		App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system, toSelect );
-	}
-	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "4hhb.bcif.gz" ) );
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "1AGA.mmtf" ) );
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "2qwo.pdb" ) );
+	Entity		 system1	= getSystemByFileName( "1AGA.mmtf" );
+	Entity		 system2	= getSystemByFileName( "2qwo.pdb" );
+	const auto & selection1 = App::REG().get<App::System::Selection>( system1 );
+
+	Core::Struct::IndexRange range { 1, selection1.atoms.size() - 10 };
+	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system1, range );
+
+	Index toMask { 1 };
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system2, toMask, false );
+
+	toMask = selection1.atoms.size() - 1;
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask, false );
 
 	App::ACTION().execute<App::Action::Selection::RevertSelection>();
 
 	int count { 0 };
-	int L { 0 };
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
 	{
-		auto & selection = App::REG().get<App::System::Selection>( system );
-		L += selection.atoms.size();
+		const auto & selection = App::REG().get<App::System::Selection>( system );
 		for ( size_t j : selection.atoms )
+		{
 			count++;
+		}
 	}
-	CHECK( count == L - 1 );
-
-	App::ACTION().execute<Clear>();
-	for ( auto system : App::REG().view<Core::Struct::Topology>() )
-	{
-		Core::Struct::IndexRange toSelect { 0, 1200 };
-		App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system, toSelect );
-	}
-
-	App::ACTION().execute<App::Action::Selection::RevertSelection>();
-
-	count = 0;
-	for ( auto system : App::REG().view<Core::Struct::Topology>() )
-	{
-		auto & selection = App::REG().get<App::System::Selection>( system );
-		for ( size_t j : selection.atoms )
-			count++;
-	}
-	CHECK( count == L - 2400 );
+	CHECK( count == 4153 );
 }
 
 TEST_CASE( "VTX_APP - Selection - Loaded system starts empty", "[integration][selection]" )
