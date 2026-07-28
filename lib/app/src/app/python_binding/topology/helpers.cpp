@@ -1,4 +1,5 @@
 #include "app/python_binding/topology/helpers.hpp"
+#include "app/helper/scene.hpp"
 #include "app/helper/system.hpp"
 #include <pybind11/pybind11.h>
 
@@ -18,14 +19,14 @@ namespace VTX::App::PythonBinding::Topology
 
 	System getSystem( const std::string_view p_name )
 	{
-		Entity entity = Helper::System::getSystemByName( p_name );
+		Entity entity = Helper::Scene::getSystemByName( p_name );
 		if ( entity == InvalidEntity )
 		{
-			entity = Helper::System::getSystemByPdb( p_name );
+			entity = Helper::Scene::getSystemByPdb( p_name );
 		}
 		if ( entity == InvalidEntity )
 		{
-			entity = Helper::System::getSystemByFileName( p_name );
+			entity = Helper::Scene::getSystemByFileName( p_name );
 		}
 
 		getTopology( entity );

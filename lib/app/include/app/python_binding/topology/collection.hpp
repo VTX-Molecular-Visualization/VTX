@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_PYTHON_BINDING_TOPOLOGY_COLLECTION__
 #define __VTX_APP_PYTHON_BINDING_TOPOLOGY_COLLECTION__
 
+#include "app/helper/aabb.hpp"
 #include "app/python_binding/topology/actions.hpp"
 #include <optional>
 #include <pybind11/pybind11.h>
@@ -12,9 +13,7 @@ namespace VTX::App::PythonBinding::Topology
 	 */
 	template<typename T>
 	T makeHandle( const Entity p_entity, const Index p_index )
-	{
-		return { p_entity, p_index };
-	}
+	{ return { p_entity, p_index }; }
 
 	/**
 	 * @brief Get index at a specific position in a RangeList.
@@ -104,6 +103,14 @@ namespace VTX::App::PythonBinding::Topology
 		auto cls = py::class_<CollectionType>( p_module, p_name, py::module_local() );
 
 		cls.def( "__len__", []( const CollectionType & p_collection ) { return p_collection.ranges.size(); } )
+			.def_property_readonly(
+				"aabb",
+				[ p_item ]( const CollectionType & p_collection )
+				{
+					return p_item ? Helper::AABB::get( p_collection.entity, *p_item, p_collection.ranges )
+								  : Helper::AABB::getBonds( p_collection.entity, p_collection.ranges );
+				}
+			)
 			.def(
 				"__iter__",
 				[]( const CollectionType & p_collection )

@@ -1,8 +1,11 @@
 #include "app/helper/system.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
+#include "app/system/trajectory.hpp"
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
+#include <span>
+#include <stdexcept>
 #include <util/string.hpp>
 
 namespace
@@ -35,53 +38,15 @@ namespace
 
 namespace VTX::App::Helper::System
 {
-	Entity getSystemByName( const std::string_view p_name )
+	Vec3f getAtomPosition( const Entity p_entity, const Index p_atom )
 	{
-		const std::string name = Util::String::toLower( std::string( p_name ) );
-
-		for ( auto e : REG().view<IO::Metadata>() )
+		const std::span<const Vec3f> positions = App::System::getCurrentAtomPositions( p_entity );
+		if ( p_atom >= positions.size() )
 		{
-			auto & metadata = REG().get<IO::Metadata>( e );
-
-			if ( Util::String::toLower( metadata.name ) == name )
-			{
-				return e;
-			}
+			throw std::out_of_range( "Atom position is unavailable." );
 		}
 
-		return InvalidEntity;
-	}
-
-	Entity getSystemByPdb( const std::string_view p_pdb )
-	{
-		const std::string pdb = Util::String::toLower( std::string( p_pdb ) );
-
-		for ( auto e : REG().view<IO::Metadata>() )
-		{
-			auto & metadata = REG().get<IO::Metadata>( e );
-
-			if ( Util::String::toLower( metadata.pdbIDCode ) == pdb )
-			{
-				return e;
-			}
-		}
-
-		return InvalidEntity;
-	}
-
-	Entity getSystemByFileName( const std::string_view p_fileName )
-	{
-		const std::string fileName = Util::String::toLower( std::string( p_fileName ) );
-
-		for ( auto e : REG().view<IO::Metadata>() )
-		{
-			auto & metadata = REG().get<IO::Metadata>( e );
-			if ( Util::String::toLower( metadata.path.filename().string() ) == fileName )
-			{
-				return e;
-			}
-		}
-		return InvalidEntity;
+		return positions[ p_atom ];
 	}
 
 	App::System::E_VISIBLE_STATE getVisibleState( const SystemItemView & p_system )

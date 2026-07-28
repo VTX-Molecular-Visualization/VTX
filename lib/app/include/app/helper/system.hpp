@@ -166,6 +166,11 @@ namespace VTX::App::Helper::System
 	};
 
 	/**
+	 * @brief Get current atom position in system-local coordinates.
+	 */
+	Vec3f getAtomPosition( const Entity p_entity, const Index p_atom );
+
+	/**
 	 * @brief Get the visibility state of an item.
 	 */
 	App::System::E_VISIBLE_STATE getVisibleState( const SystemItemView & );
@@ -211,21 +216,6 @@ namespace VTX::App::Helper::System
 	 * @brief Check if an item is a representation root.
 	 */
 	bool isRepresentationRoot( const SystemItemView & );
-
-	/**
-	 * @brief Retrieve a system with the corresponding name. Initially meant to be used for scripting purposes.
-	 */
-	Entity getSystemByName( const std::string_view );
-
-	/**
-	 * @brief Retrieve a system with the corresponding pdb.
-	 */
-	Entity getSystemByPdb( const std::string_view );
-
-	/**
-	 * @brief Retrieve a system with the corresponding file name.
-	 */
-	Entity getSystemByFileName( const std::string_view );
 
 } // namespace VTX::App::Helper::System
 

@@ -1,5 +1,6 @@
 #include "app/pass/system_updater.hpp"
 #include "app/events.hpp"
+#include "app/helper/aabb.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
@@ -8,7 +9,6 @@
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
 #include <algorithm>
-#include <core/chemdb/atom.hpp>
 #include <renderer/renderer.hpp>
 #include <span>
 #include <util/chrono.hpp>
@@ -24,14 +24,7 @@ namespace VTX::App::Pass
 		{
 			REG().patch<Util::Math::AABB>(
 				p_entity,
-				[ p_positions ]( Util::Math::AABB & p_aabb )
-				{
-					p_aabb.invalidate();
-					for ( const Vec3f & atomPosition : p_positions )
-					{
-						p_aabb.extend( atomPosition, Core::ChemDB::Atom::VDW_RADIUS_MIN );
-					}
-				}
+				[ p_positions ]( Util::Math::AABB & p_aabb ) { p_aabb = Helper::AABB::compute( p_positions ); }
 			);
 		}
 

@@ -244,6 +244,15 @@ require(
 topology_atom_category = topology_atom.getCategory()
 require(topology_atom_category.index >= 0, "Unexpected atom category")
 require(topology_atom.getSystem().id == system, "Unexpected atom system")
+topology_atom_position = topology_atom.position
+topology_atom_aabb = topology_residue.getAtoms()[0:1].aabb
+require(
+    topology_atom_aabb.valid
+    and topology_atom_aabb.min.x <= topology_atom_position.x <= topology_atom_aabb.max.x
+    and topology_atom_aabb.min.y <= topology_atom_position.y <= topology_atom_aabb.max.y
+    and topology_atom_aabb.min.z <= topology_atom_position.z <= topology_atom_aabb.max.z,
+    "Unexpected atom position or AABB",
+)
 
 topology_category = topology_system.getCategory(0)
 require(
@@ -256,6 +265,16 @@ require(topology_category.getSystem().id == system, "Unexpected category system"
 
 topology_bond = topology_system.getBond(0)
 require(topology_bond.getSystem().id == system, "Unexpected bond system")
+
+for topology_item in (
+    topology_system,
+    topology_chains,
+    topology_residues,
+    topology_atoms,
+    topology_bonds,
+    topology_categories,
+):
+    require(topology_item.aabb.valid, "Unexpected topology AABB")
 
 vtx.selectAll()
 require(vtx.getSelectionState(system) == vtx.SELECTION_STATE.FULL, "System should be selected")

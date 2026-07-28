@@ -1,10 +1,10 @@
 #include "app/action/camera.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/generic/name.hpp"
+#include "app/helper/aabb.hpp"
 #include "app/helper/system.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/system/selection.hpp"
-#include "app/system/trajectory.hpp"
 #include <algorithm>
 #include <cmath>
 #include <core/struct/topology.hpp>
@@ -116,13 +116,7 @@ namespace VTX::App::Action::Camera
 					// TODO: not recompute each time: cache values?
 					else
 					{
-						Util::Math::AABB	   localAABB;
-						std::span<const Vec3f> atomPositions = System::getCurrentAtomPositions( p_e );
-
-						for ( auto atomIndex : p_selection.atoms )
-						{
-							localAABB.extend( atomPositions[ atomIndex ], Core::ChemDB::Atom::VDW_RADIUS_MIN );
-						}
+						const Util::Math::AABB localAABB = Helper::AABB::get( p_e, p_selection.atoms );
 
 						if ( localAABB.isValid() )
 						{

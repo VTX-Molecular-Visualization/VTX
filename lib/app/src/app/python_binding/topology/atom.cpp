@@ -1,3 +1,4 @@
+#include "app/helper/system.hpp"
 #include "app/python_binding/topology/actions.hpp"
 #include "app/python_binding/topology/binding.hpp"
 #include "app/python_binding/topology/helpers.hpp"
@@ -53,6 +54,10 @@ namespace VTX::App::PythonBinding::Topology
 			.def_property_readonly(
 				"originalIndex",
 				[]( const Atom & p_atom ) { return getTopology( p_atom.entity ).getAtomOriginalIndex( p_atom.index ); }
+			)
+			.def_property_readonly(
+				"position",
+				[]( const Atom & p_atom ) { return Helper::System::getAtomPosition( p_atom.entity, p_atom.index ); }
 			)
 			.def( "getSystem", &Atom::getSystem )
 			.def( "getResidue", &Atom::getResidue )

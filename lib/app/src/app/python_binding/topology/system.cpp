@@ -1,3 +1,4 @@
+#include "app/helper/aabb.hpp"
 #include "app/python_binding/topology/actions.hpp"
 #include "app/python_binding/topology/binding.hpp"
 #include "app/python_binding/topology/helpers.hpp"
@@ -137,6 +138,9 @@ namespace VTX::App::PythonBinding::Topology
 					getTopology( p_system.entity );
 					return toUnderlying( Core::ChemDB::Category::TYPE::COUNT );
 				}
+			)
+			.def_property_readonly(
+				"aabb", []( const System & p_system ) { return Helper::AABB::get( p_system.entity ); }
 			)
 			.def_property_readonly(
 				"indexFirstChain",
