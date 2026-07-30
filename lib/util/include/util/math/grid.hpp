@@ -175,13 +175,14 @@ namespace VTX::Util::Math
 		 * @brief Visitor function to iterate over all neighbour cells.
 		 */
 		template<typename F>
-		void forEachNeighbourCell( const CellPosition & p_gridPosition, F && p_func ) const
+		void forEachNeighbourCell( const CellPosition & p_gridPosition, F && p_func, const int p_neighbourDist = 1 )
+			const
 		{
-			for ( int z = -1; z <= 1; ++z )
+			for ( int z = -p_neighbourDist; z <= p_neighbourDist; ++z )
 			{
-				for ( int y = -1; y <= 1; ++y )
+				for ( int y = -p_neighbourDist; y <= p_neighbourDist; ++y )
 				{
-					for ( int x = -1; x <= 1; ++x )
+					for ( int x = -p_neighbourDist; x <= p_neighbourDist; ++x )
 					{
 						const CellPosition neighbourPosition = p_gridPosition + CellPosition( x, y, z );
 						const auto		   it				 = _data.find( neighbourPosition );
