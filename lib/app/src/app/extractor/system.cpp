@@ -8,7 +8,6 @@
 #include "app/helper/preset.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
-#include "app/system/grid.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/trajectory_preparation.hpp"
@@ -230,7 +229,6 @@ namespace VTX::App::Extractor
 		auto & selection	  = reg.emplace<VTX::App::System::Selection>( p_entity );
 		auto & representation = reg.emplace<VTX::App::System::Representation>( p_entity );
 		auto & color		  = reg.emplace<VTX::App::System::Color>( p_entity );
-		auto & gridAtomList	  = reg.emplace<VTX::App::System::GridAtomList>( p_entity );
 
 		// UIDs: get from UID manager.
 		auto & uidManager = App::UID();
@@ -263,8 +261,6 @@ namespace VTX::App::Extractor
 
 		// Orient.
 		ACTION().execute<Action::Camera::Orient>( aabb );
-
-		ACTION().execute<Action::Selection::Mapping>( p_entity );
 	}
 
 	void deliver( Pending && p_data ) noexcept

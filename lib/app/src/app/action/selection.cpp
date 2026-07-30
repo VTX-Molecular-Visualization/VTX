@@ -4,10 +4,10 @@
 #include "app/helper/system.hpp"
 #include "app/input/input_manager.hpp"
 #include "app/services.hpp"
-#include "app/system/grid.hpp"
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
+#include "util/math/grid.hpp"
 #include "util/math/range_list.hpp"
 #include <optional>
 #include <renderer/renderer.hpp>
@@ -263,25 +263,15 @@ namespace VTX::App::Action::Selection
 		}
 	}
 
-	VTX::App::System::GridCoord getCell( const Vec3f & p_point, float p_cellSize )
-	{
-		// Returns the grid coordinates (i, j, k) of the voxel containing the atom p based on it's coordinates and the
-		// voxel size
-		return { int( std::floor( p_point.x / p_cellSize ) ),
-				 int( std::floor( p_point.y / p_cellSize ) ),
-				 int( std::floor( p_point.z / p_cellSize ) ) };
-	}
-
 	struct SystemData
 	{
 		// Holds all data associated with a loaded system
-		Entity																		entity;
-		std::span<const Vec3f>														positions;
-		App::System::Selection *													selection;
-		App::System::GridAtomList *													gridList;
-		Core::Struct::IndexRangeList												toSelect;
-		std::unordered_map<App::System::GridCoord, int, App::System::GridCoordHash> selectedCount;
-		App::System::Visibility *													visibility;
+		Entity						 entity;
+		std::span<const Vec3f>		 positions;
+		App::System::Selection *	 selection;
+		Util::Math::Grid<Index> *	 grid;
+		App::System::Visibility *	 visibility;
+		Core::Struct::IndexRangeList toSelect;
 	};
 
 	void unselecMaskedItems()
@@ -327,8 +317,6 @@ namespace VTX::App::Action::Selection
 	{
 		// Adds to the selection all atoms within threshold Å of a selected atom
 		// strategy : for each unselected atom, look through neighbor voxels for a selected atom
-		VTX::Util::Chrono chrono;
-		chrono.start();
 
 		// storing systems info
 		std::vector<SystemData> systems;
@@ -338,16 +326,15 @@ namespace VTX::App::Action::Selection
 				system,
 				VTX::App::System::getCurrentAtomPositions( system ),
 				&REG().get<App::System::Selection>( system ),
-				&REG().get<App::System::GridAtomList>( system ),
-				Core::Struct::IndexRangeList {},
-				std::unordered_map<App::System::GridCoord, int, App::System::GridCoordHash> {},
+				&REG().get<Util::Math::Grid<Index>>( system ),
 				&REG().get<App::System::Visibility>( system )
 			);
 		}
 
+		// square to avoid using square root during distance calculation
 		const float threshold2 = p_threshold * p_threshold;
 		// distance of neighbor voxels to check
-		const int vd = int( std::floor( p_threshold / 4.0f ) );
+		const int vd = static_cast<int>( std::ceil( p_threshold / 4.0f ) );
 
 		// system loop
 		for ( const SystemData & testedSystem : systems )
@@ -357,149 +344,37 @@ namespace VTX::App::Action::Selection
 			// system's atoms loop
 			for ( size_t i = 0; i < testedSystem.selection->atoms.size(); ++i )
 			{
-				bool status = testedSystem.selection->atoms.test( i );
-				if ( !status )
+				if ( testedSystem.visibility->atoms.test( i ) )
 				{
-					// coord atom i
-					const Vec3f & p1 = testedSystem.positions[ i ];
-					// voxel atom i
-					VTX::App::System::GridCoord cell = getCell( testedSystem.positions[ i ], 4.0f );
-					// system loop
-					for ( SystemData & testingSystem : systems )
+					if ( !testedSystem.selection->atoms.test( i ) )
 					{
-						// voxels
-						auto & gridAtomList = REG().get<VTX::App::System::GridAtomList>( testingSystem.entity );
-						bool   found		= false;
-						// neighbor voxels loop
-						for ( int dx = -vd; dx <= vd && !found; ++dx )
+						// coord atom i
+						const Vec3f & p1 = testedSystem.positions[ i ];
+
+						bool found = false;
+						// system loop
+						for ( SystemData & testingSystem : systems )
 						{
-							for ( int dy = -vd; dy <= vd && !found; ++dy )
-							{
-								for ( int dz = -vd; dz <= vd && !found; ++dz )
+							// atom i voxel
+							Util::Math::Grid<Index>::CellPosition cell = testingSystem.grid->gridPosition( p1 );
+							// neighbor voxels loop
+							testingSystem.grid->forEachNeighbourCell(
+								cell,
+								[ & ](
+									const Util::Math::Grid<Index>::CellPosition &,
+									const Util::Math::Grid<Index>::Cell & p_neighborCell
+								)
 								{
-									// neighbor voxel coord
-									VTX::App::System::GridCoord neighborCoord { cell.x + dx, cell.y + dy, cell.z + dz };
-									// neighbor voxel
-									auto it = testingSystem.gridList->grid.find( neighborCoord );
-									if ( it != testingSystem.gridList->grid.end() )
+									// stop looking for a selected atom since we already found one
+									if ( found )
 									{
-										// neighbor voxel's atoms loop
-										for ( const size_t j : it->second.atoms )
-										{
-											if ( testedSystem.visibility->atoms.test( i ) )
-											{
-												if ( testingSystem.selection->atoms.test( j ) )
-												{
-													// coord atom j
-													const Vec3f & p2 = testingSystem.positions[ j ];
-
-													// checking distance on axes before calculating distance i - j
-													const float dx = p1.x - p2.x;
-													if ( dx > p_threshold || dx < -p_threshold )
-													{
-														continue;
-													}
-
-													const float dy = p1.y - p2.y;
-													if ( dy > p_threshold || dy < -p_threshold )
-													{
-														continue;
-													}
-
-													const float dz = p1.z - p2.z;
-													if ( dz > p_threshold || dz < -p_threshold )
-													{
-														continue;
-													}
-
-													const float dist2 = dx * dx + dy * dy + dz * dz;
-
-													if ( dist2 <= threshold2 )
-													{
-														toSelect.addRange( i );
-														found = true;
-														break;
-													}
-												}
-											}
-										}
+										return;
 									}
-								}
-							}
-						}
-					}
-				}
-			}
-			ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>(
-				testedSystem.entity, toSelect, true, true
-			);
-		}
-		VTX_INFO( "From non selec :" );
-		VTX::VTX_INFO( "Temps écoulé: {}", chrono.elapsedTime() );
-	}
 
-	void ExtendSelectionFromSelec::execute( const float p_threshold )
-	{
-		// Adds to the selection all atoms within threshold Å of a selected atom
-		// strategy : for each selected atom, look through neighbor voxels for an unselected atom
-		VTX::Util::Chrono chrono;
-		chrono.start();
-
-		// storing systems info
-		std::vector<SystemData> systems;
-		for ( const Entity system : REG().view<Core::Struct::Topology>() )
-		{
-			systems.emplace_back(
-				system,
-				VTX::App::System::getCurrentAtomPositions( system ),
-				&REG().get<App::System::Selection>( system ),
-				&REG().get<App::System::GridAtomList>( system ),
-				Core::Struct::IndexRangeList {},
-				std::unordered_map<App::System::GridCoord, int, App::System::GridCoordHash> {},
-				&REG().get<App::System::Visibility>( system )
-			);
-		}
-
-		const float threshold2 = p_threshold * p_threshold;
-		const int	vd		   = int( std::floor( p_threshold / 4.0f ) );
-
-		// systems loop
-		for ( const SystemData & testedSystem : systems )
-		{
-			// selected atoms loop
-			for ( size_t i : testedSystem.selection->atoms )
-			{
-				// coord atom i
-				const Vec3f & p1 = testedSystem.positions[ i ];
-				// voxel atom i
-				VTX::App::System::GridCoord cell = getCell( testedSystem.positions[ i ], 4.0f );
-				// systems loop
-				for ( SystemData & testingSystem : systems )
-				{
-					// neighbor voxels loop
-					for ( int dx = -1 * vd; dx <= 1 * vd; ++dx )
-					{
-						for ( int dy = -1 * vd; dy <= 1 * vd; ++dy )
-						{
-							for ( int dz = -1 * vd; dz <= 1 * vd; ++dz )
-							{
-								// neighbor voxel coord
-								VTX::App::System::GridCoord neighborCoord { cell.x + dx, cell.y + dy, cell.z + dz };
-								// neighbor voxel
-								auto it = testingSystem.gridList->grid.find( neighborCoord );
-								if ( it != testingSystem.gridList->grid.end() )
-								{
-									// neighbor voxel's atoms loop
-									for ( const size_t j : it->second.atoms )
+									for ( const size_t j : p_neighborCell )
 									{
-										if ( !testingSystem.visibility->atoms.test( j ) )
+										if ( testingSystem.selection->atoms.test( j ) )
 										{
-											continue;
-										}
-										bool status = testingSystem.selection->atoms.test( j );
-										if ( !status )
-										{
-											// coord atom j
 											const Vec3f & p2 = testingSystem.positions[ j ];
 
 											// checking distance on axes before calculating distance i - j
@@ -525,14 +400,117 @@ namespace VTX::App::Action::Selection
 
 											if ( dist2 <= threshold2 )
 											{
-												testingSystem.toSelect.addRange( j );
+												toSelect.addRange( i );
+												found = true;
+												break;
 											}
 										}
 									}
-								}
+								},
+								vd
+							);
+							// stop looking for a selected atom since we already found one
+							if ( found )
+							{
+								break;
 							}
 						}
 					}
+				}
+			}
+			ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>(
+				testedSystem.entity, toSelect, true, true
+			);
+		}
+	}
+
+	void ExtendSelectionFromSelec::execute( const float p_threshold )
+	{
+		// Adds to the selection all atoms within threshold Å of a selected atom
+		// strategy : for each selected atom, look through neighbor voxels for an unselected atom
+
+		// storing systems info
+		std::vector<SystemData> systems;
+		for ( const Entity system : REG().view<Core::Struct::Topology>() )
+		{
+			systems.emplace_back(
+				system,
+				VTX::App::System::getCurrentAtomPositions( system ),
+				&REG().get<App::System::Selection>( system ),
+				&REG().get<Util::Math::Grid<Index>>( system ),
+				&REG().get<App::System::Visibility>( system ),
+				Core::Struct::IndexRangeList {}
+			);
+		}
+
+		// square to avoid using square root during distance calculation
+		const float threshold2 = p_threshold * p_threshold;
+		// distance of neighbor voxels to check
+		const int vd = static_cast<int>( std::ceil( p_threshold / 4.0f ) );
+
+		// systems loop
+		for ( const SystemData & testingSystem : systems )
+		{
+			// selected atoms loop
+			for ( size_t i : testingSystem.selection->atoms )
+			{
+				// coord atom i
+				const Vec3f & p1 = testingSystem.positions[ i ];
+
+				// systems loop
+				for ( SystemData & testedSystem : systems )
+				{
+					// atom i voxel
+					Util::Math::Grid<Index>::CellPosition cell = testedSystem.grid->gridPosition( p1 );
+					// neighbor voxels loop
+					testedSystem.grid->forEachNeighbourCell(
+						cell,
+						[ & ](
+							const Util::Math::Grid<Index>::CellPosition & p_cellPos,
+							const Util::Math::Grid<Index>::Cell &		  p_neighborCell
+						)
+						{
+							for ( const size_t j : p_neighborCell )
+							{
+								if ( !testedSystem.visibility->atoms.test( j ) )
+								{
+									continue;
+								}
+								if ( !testedSystem.selection->atoms.test( j ) )
+								{
+									// coord atom j
+									const Vec3f & p2 = testedSystem.positions[ j ];
+
+									// checking distance on axes before calculating distance i - j
+									const float dx = p1.x - p2.x;
+									if ( dx > p_threshold || dx < -p_threshold )
+									{
+										continue;
+									}
+
+									const float dy = p1.y - p2.y;
+									if ( dy > p_threshold || dy < -p_threshold )
+									{
+										continue;
+									}
+
+									const float dz = p1.z - p2.z;
+									if ( dz > p_threshold || dz < -p_threshold )
+									{
+										continue;
+									}
+
+									const float dist2 = dx * dx + dy * dy + dz * dz;
+
+									if ( dist2 <= threshold2 )
+									{
+										testedSystem.toSelect.addRange( j );
+									}
+								}
+							}
+						},
+						vd
+					);
 				}
 			}
 		}
@@ -540,8 +518,6 @@ namespace VTX::App::Action::Selection
 		{
 			ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>( v.entity, v.toSelect, true, true );
 		}
-		VTX_INFO( "From selec :" );
-		VTX::VTX_INFO( "Temps écoulé: {}", chrono.elapsedTime() );
 	}
 
 	void ExtendSelectionRes::execute()
@@ -583,19 +559,6 @@ namespace VTX::App::Action::Selection
 				[ & ]( System::Selection & p_selection )
 				{ p_selection.atoms = ( ~p_selection.atoms ) & visibility.atoms; }
 			);
-		}
-	}
-
-	void Mapping::execute( const Entity p_system )
-	{
-		int					   count { 0 };
-		auto &				   gridAtomList = REG().get<VTX::App::System::GridAtomList>( p_system );
-		std::span<const Vec3f> positions	= VTX::App::System::getCurrentAtomPositions( p_system );
-		// atoms loop
-		for ( size_t i = 0; i < positions.size(); ++i )
-		{
-			VTX::App::System::GridCoord cell = getCell( positions[ i ], 4.0f );
-			gridAtomList.grid[ cell ].atoms.push_back( i );
 		}
 	}
 
