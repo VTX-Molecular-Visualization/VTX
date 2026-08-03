@@ -1,7 +1,9 @@
 #include "app/helper/aabb.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/python_binding/topology/actions.hpp"
 #include "app/python_binding/topology/binding.hpp"
 #include "app/python_binding/topology/helpers.hpp"
+#include "app/python_binding/trajectory.hpp"
 #include <core/chemdb/category.hpp>
 #include <io/metadata.hpp>
 #include <python_binding/binding/entity_caster.hpp>
@@ -106,6 +108,18 @@ namespace VTX::App::PythonBinding::Topology
 	{
 		py::class_<System>( p_module, "System", py::module_local() )
 			.def_property_readonly( "id", []( const System & p_system ) { return p_system.entity; } )
+			.def(
+				"getTrajectory",
+				[]( const System & p_system )
+				{
+					if ( not App::Helper::Trajectory::hasTrajectory( p_system.entity ) )
+					{
+						throw py::value_error( "System has no trajectory." );
+					}
+
+					return VTX::App::PythonBinding::Trajectory { p_system.entity };
+				}
+			)
 			.def_property_readonly(
 				"name",
 				[]( const System & p_system ) -> const std::string & { return getMetadata( p_system.entity ).name; }

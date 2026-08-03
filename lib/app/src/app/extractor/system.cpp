@@ -5,6 +5,7 @@
 #include "app/events.hpp"
 #include "app/generic/name.hpp"
 #include "app/helper/preset.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
@@ -273,8 +274,9 @@ namespace VTX::App::Extractor
 				if ( auto uid = REG().try_get<App::System::UID>( *p_data.entity ) )
 				{
 					// Trigger trajectory event.
-					HUB().trigger<Events::TrajectoryLoad>( { *p_data.entity,
-															 App::System::getCurrentAtomPositions( *p_data.entity ) } );
+					HUB().trigger<Events::TrajectoryLoad>(
+						{ *p_data.entity, App::Helper::Trajectory::getCurrentAtomPositions( *p_data.entity ) }
+					);
 				}
 			}
 			else

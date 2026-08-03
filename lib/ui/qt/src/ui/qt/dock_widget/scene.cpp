@@ -10,9 +10,9 @@
 #include <app/action/application.hpp>
 #include <app/ecs.hpp>
 #include <app/events.hpp>
+#include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
 #include <app/system/selection.hpp>
-#include <app/system/trajectory.hpp>
 #include <app/system/visibility.hpp>
 #include <renderer/camera.hpp>
 #include <util/event_hub.hpp>
@@ -92,7 +92,7 @@ namespace VTX::UI::QT::DockWidget
 		_mapSystemTreeWidgets.emplace( entity, tree );
 		_layout->insertWidget( _layout->indexOf( _filler ), tree );
 
-		if ( App::System::hasMultiFrameTrajectory( p_e.system ) )
+		if ( App::Helper::Trajectory::hasMultiFrameTrajectory( p_e.system ) )
 		{
 			_onTrajectoryCreated( App::REG(), p_e.system );
 		}

@@ -1,6 +1,6 @@
 #include "app/helper/aabb.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
-#include "app/system/trajectory.hpp"
 #include <core/chemdb/atom.hpp>
 #include <cstddef>
 #include <stdexcept>
@@ -66,7 +66,7 @@ namespace VTX::App::Helper::AABB
 
 	Util::Math::AABB get( const Entity p_entity, const Util::Math::BitSet & p_atoms )
 	{
-		const std::span<const Vec3f> positions = App::System::getCurrentAtomPositions( p_entity );
+		const std::span<const Vec3f> positions = App::Helper::Trajectory::getCurrentAtomPositions( p_entity );
 		Util::Math::AABB			 aabb;
 
 		for ( const std::size_t atom : p_atoms )
@@ -84,7 +84,7 @@ namespace VTX::App::Helper::AABB
 	)
 	{
 		const Core::Struct::Topology & topology	 = REG().get<Core::Struct::Topology>( p_entity );
-		const std::span<const Vec3f>   positions = App::System::getCurrentAtomPositions( p_entity );
+		const std::span<const Vec3f>   positions = App::Helper::Trajectory::getCurrentAtomPositions( p_entity );
 		Util::Math::AABB			   aabb;
 
 		switch ( p_item )
@@ -118,7 +118,7 @@ namespace VTX::App::Helper::AABB
 	Util::Math::AABB getBonds( const Entity p_entity, const Core::Struct::IndexRangeList & p_ranges )
 	{
 		const Core::Struct::Topology & topology	 = REG().get<Core::Struct::Topology>( p_entity );
-		const std::span<const Vec3f>   positions = App::System::getCurrentAtomPositions( p_entity );
+		const std::span<const Vec3f>   positions = App::Helper::Trajectory::getCurrentAtomPositions( p_entity );
 		Util::Math::AABB			   aabb;
 
 		for ( const Index bond : p_ranges )

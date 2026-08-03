@@ -1,8 +1,8 @@
 #include "app/system/writer.hpp"
 #include "app/ecs.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
 #include "app/system/selection.hpp"
-#include "app/system/trajectory.hpp"
 #include "app/system/visibility.hpp"
 #include <io/writer/system.hpp>
 #include <latch>
@@ -39,7 +39,7 @@ namespace VTX::App::System
 					.topology	= &REG().get<Core::Struct::Topology>( it_selectionEntt ),
 					.atomFilter = SelectedAtomFilter( REG().get<System::Selection>( it_selectionEntt ) ) }
 			);
-			VTX::App::System::get( it_selectionEntt, _ptr->systems.back().trajectory );
+			VTX::App::Helper::Trajectory::get( it_selectionEntt, _ptr->systems.back().trajectory );
 		}
 	}
 
@@ -93,7 +93,7 @@ namespace VTX::App::System
 					.topology	= &REG().get<Core::Struct::Topology>( it_selectionEntt ),
 					.atomFilter = VisibleAtomFilter( REG().get<System::Visibility>( it_selectionEntt ) ) }
 			);
-			VTX::App::System::get( it_selectionEntt, _ptr->systems.back().trajectory );
+			VTX::App::Helper::Trajectory::get( it_selectionEntt, _ptr->systems.back().trajectory );
 		}
 	}
 

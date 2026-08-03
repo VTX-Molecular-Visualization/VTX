@@ -254,6 +254,42 @@ require(
     "Unexpected atom position or AABB",
 )
 
+trajectory = topology_system.getTrajectory()
+for play_mode in (
+    vtx.TRAJECTORY_PLAY_MODE.NONE,
+    vtx.TRAJECTORY_PLAY_MODE.FORWARD,
+    vtx.TRAJECTORY_PLAY_MODE.FORWARD_LOOP,
+    vtx.TRAJECTORY_PLAY_MODE.BACKWARD_LOOP,
+    vtx.TRAJECTORY_PLAY_MODE.BACKWARD,
+    vtx.TRAJECTORY_PLAY_MODE.PING_PONG,
+):
+    require(isinstance(play_mode, vtx.TRAJECTORY_PLAY_MODE), "Unexpected trajectory play mode")
+require(not trajectory.isMultiFrame(), "Unexpected multi-frame trajectory")
+require(
+    trajectory.frameCount == 1
+    and len(trajectory) == 1
+    and trajectory.currentFrameIndex == 0,
+    "Unexpected single-frame trajectory",
+)
+frame = trajectory.getCurrentFrame()
+require(frame.index == 0 and len(frame) == topology_system.atomCount, "Unexpected frame")
+frame_atom_position = frame[topology_atom.index]
+direct_frame_atom_position = frame.getAtomPosition(topology_atom.index)
+require(
+    almost_equal(frame_atom_position.x, topology_atom_position.x)
+    and almost_equal(frame_atom_position.y, topology_atom_position.y)
+    and almost_equal(frame_atom_position.z, topology_atom_position.z),
+    "Unexpected frame atom position",
+)
+require(
+    almost_equal(direct_frame_atom_position.x, topology_atom_position.x),
+    "Unexpected direct frame atom position",
+)
+require(
+    trajectory.getFrame(0).index == 0 and trajectory[0].index == 0,
+    "Unexpected trajectory indexing",
+)
+
 topology_category = topology_system.getCategory(0)
 require(
     topology_category.name != ""

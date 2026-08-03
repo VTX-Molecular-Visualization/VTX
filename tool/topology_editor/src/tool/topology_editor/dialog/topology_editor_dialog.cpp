@@ -11,8 +11,8 @@
 #include <QTabWidget>
 #include <QTableWidget>
 #include <QVBoxLayout>
+#include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
-#include <app/system/trajectory.hpp>
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/bond.hpp>
 #include <core/chemdb/residue.hpp>
@@ -545,7 +545,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 	void TopologyEditorDialog::_populateAtomsTable()
 	{
 		const auto & topology  = App::REG().get<Core::Struct::Topology>( _system );
-		const auto	 positions = App::System::getCurrentAtomPositions( _system );
+		const auto	 positions = App::Helper::Trajectory::getCurrentAtomPositions( _system );
 		_atomsTable->setRowCount( int( topology.getAtomCount() ) );
 		for ( Index atom = 0; atom < topology.getAtomCount(); ++atom )
 		{
@@ -600,7 +600,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 	void TopologyEditorDialog::_populateValidationTable()
 	{
 		const auto & topology  = App::REG().get<Core::Struct::Topology>( _system );
-		const auto	 positions = App::System::getCurrentAtomPositions( _system );
+		const auto	 positions = App::Helper::Trajectory::getCurrentAtomPositions( _system );
 
 		_validationTable->setRowCount( 0 );
 		auto addIssue = [ this ]( const QString & p_severity, const QString & p_item, const QString & p_message )
@@ -668,7 +668,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 	)
 	{
 		const auto & topology  = App::REG().get<Core::Struct::Topology>( _system );
-		const auto	 positions = App::System::getCurrentAtomPositions( _system );
+		const auto	 positions = App::Helper::Trajectory::getCurrentAtomPositions( _system );
 
 		_clearSelectionInspector();
 

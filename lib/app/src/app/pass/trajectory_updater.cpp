@@ -1,4 +1,5 @@
 #include "app/pass/trajectory_updater.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
@@ -100,13 +101,12 @@ namespace VTX::App::Pass
 		{
 			for ( Entity it_entity : REG().view<TrajectoryT>() )
 			{
-				System::GenericTrajectory * genericTrajPtr = nullptr;
-				System::get( it_entity, genericTrajPtr );
+				const System::GenericTrajectory * const genericTrajPtr = Helper::Trajectory::getGeneric( it_entity );
 				if ( genericTrajPtr == nullptr )
 				{
 					continue;
 				}
-				auto & player = genericTrajPtr->player;
+				const auto & player = genericTrajPtr->player;
 
 				uint nextStep				  = genericTrajPtr->requestedFrameIndex;
 				uint autoplayUpdateIncrNumber = 0;

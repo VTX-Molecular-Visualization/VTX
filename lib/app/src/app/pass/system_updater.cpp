@@ -1,5 +1,6 @@
 #include "app/pass/system_updater.hpp"
 #include "app/events.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
@@ -58,7 +59,7 @@ namespace VTX::App::Pass
 			const auto & visibility		= reg.get<System::Visibility>( p_ent );
 			const auto & selection		= reg.get<System::Selection>( p_ent );
 
-			std::span<const Vec3f> positions = System::getCurrentAtomPositions( p_ent );
+			std::span<const Vec3f> positions = Helper::Trajectory::getCurrentAtomPositions( p_ent );
 			assert( topology.getAtomCount() > 0 );
 
 			return { &topology,

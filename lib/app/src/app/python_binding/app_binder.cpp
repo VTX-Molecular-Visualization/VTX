@@ -8,6 +8,7 @@
 #include "app/python_binding/selection.hpp"
 #include "app/python_binding/system.hpp"
 #include "app/python_binding/topology/binder.hpp"
+#include "app/python_binding/trajectory.hpp"
 #include "app/python_binding/visibility.hpp"
 #include <util/logger.hpp>
 
@@ -22,6 +23,7 @@ namespace VTX::App::PythonBinding
 		SceneBinder().bind( appModule );
 		IOBinder().bind( appModule );
 		SystemBinder().bind( appModule );
+		TrajectoryBinder().bind( appModule );
 		TopologyBinder().bind( appModule );
 		CameraBinder().bind( appModule );
 		SelectionBinder().bind( appModule );

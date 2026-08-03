@@ -76,7 +76,7 @@ namespace VTX::App::System
 		p_trajectory.frameCollection.resize( 1 );
 		p_trajectory.frameCollection.reserve( p_trajectory.genericData.trajectorySize );
 		p_loader.get( p_trajectory.frameCollection.back(), 0 );
-		p_trajectory.genericData.playMode = TrajectoryPlayMode::pingpong;
+		p_trajectory.genericData.playMode = TRAJECTORY_PLAY_MODE::PING_PONG;
 		p_trajectory.genericData.player	  = Util::Players::PingPong( p_trajectory.genericData.trajectorySize - 1 );
 		p_trajectory.genericData.currentFrameIndex = 0;
 		p_trajectory.lastFrameAvailable			   = 0;

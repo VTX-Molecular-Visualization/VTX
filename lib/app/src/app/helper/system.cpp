@@ -1,7 +1,7 @@
 #include "app/helper/system.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
-#include "app/system/trajectory.hpp"
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
 #include <span>
@@ -40,7 +40,7 @@ namespace VTX::App::Helper::System
 {
 	Vec3f getAtomPosition( const Entity p_entity, const Index p_atom )
 	{
-		const std::span<const Vec3f> positions = App::System::getCurrentAtomPositions( p_entity );
+		const std::span<const Vec3f> positions = App::Helper::Trajectory::getCurrentAtomPositions( p_entity );
 		if ( p_atom >= positions.size() )
 		{
 			throw std::out_of_range( "Atom position is unavailable." );

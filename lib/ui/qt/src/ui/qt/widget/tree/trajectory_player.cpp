@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include <app/action/action_manager.hpp>
 #include <app/action/trajectory.hpp>
+#include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
 #include <app/system/trajectory.hpp>
 
@@ -112,8 +113,7 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( _system, trajPtr );
+		const App::System::GenericTrajectory * const trajPtr = App::Helper::Trajectory::getGeneric( _system );
 
 		if ( trajPtr && trajPtr->trajectorySize > 0 )
 		{
@@ -132,8 +132,7 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectoryPlayer::_refresh()
 	{
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( _system, trajPtr );
+		const App::System::GenericTrajectory * const trajPtr = App::Helper::Trajectory::getGeneric( _system );
 
 		if ( trajPtr == nullptr )
 		{
@@ -162,9 +161,11 @@ namespace VTX::UI::QT::Widget::Tree
 		_isRefreshing = false;
 
 		// Update loaded range overlay
-		App::System::AvailableFrames availableFrames;
-		App::System::get( _system, availableFrames );
-		_slider->setLoadedRange( int( availableFrames.lowerBoundIndex ), int( availableFrames.higherBoundIndex ) );
+		const App::Helper::Trajectory::FrameRange availableFrames
+			= App::Helper::Trajectory::getAvailableFrames( _system );
+		_slider->setLoadedRange(
+			int( availableFrames.getFirst() ), availableFrames.isEmpty() ? 0 : int( availableFrames.getLast() - 1 )
+		);
 
 		// Update frame label
 		_frameLabel->setText( QString( "%1/%2" ).arg( currentFrame ).arg( totalFrames > 0 ? totalFrames - 1 : 0 ) );
@@ -175,8 +176,7 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectoryPlayer::_updatePlayPauseIcon()
 	{
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( _system, trajPtr );
+		const App::System::GenericTrajectory * const trajPtr = App::Helper::Trajectory::getGeneric( _system );
 
 		bool isPlaying = trajPtr && !trajPtr->paused;
 

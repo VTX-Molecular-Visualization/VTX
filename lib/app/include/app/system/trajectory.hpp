@@ -2,38 +2,24 @@
 #define __VTX_APP_SYSTEM_TRAJECTORY__
 
 #include "app/threading/base_thread.hpp"
-#include <app/ecs.hpp>
-#include <atomic>
-#include <functional>
-#include <memory>
-#include <span>
 #include <util/constants.hpp>
 #include <util/players.hpp>
 #include <util/types.hpp>
-
-namespace VTX::App::Threading
-{
-	class BaseThread;
-}
-
-namespace VTX::IO::Writer
-{
-	class TrajectoryFrameGetter;
-}
+#include <vector>
 
 namespace VTX::App::System
 {
 	/**
 	 * @brief Enumerates playing mode for a trajectory
 	 */
-	enum class TrajectoryPlayMode : uint8_t
+	enum struct TRAJECTORY_PLAY_MODE : uint8_t
 	{
-		none, // only one frame
-		forward,
-		forwardLoop,  // loop at the begining upon reaching the last
-		backwardLoop, // loop at the end upon reaching the first
-		backward,
-		pingpong // forward then backward when end is reached
+		NONE, // only one frame
+		FORWARD,
+		FORWARD_LOOP,  // loop at the begining upon reaching the last
+		BACKWARD_LOOP, // loop at the end upon reaching the first
+		BACKWARD,
+		PING_PONG // forward then backward when end is reached
 	};
 
 	/**
@@ -41,23 +27,16 @@ namespace VTX::App::System
 	 */
 	struct GenericTrajectory
 	{
-		TrajectoryPlayMode playMode = TrajectoryPlayMode::none; // Help the trajectory reader to schedule frame reading.
-		bool			   paused	= false;
-		Util::Player	   player;
-		float			   playingSpeed		   = 35; // Time in milliseconds between each frame update
-		float			   lastFrameUpdateTime = 0;	 // last elapsed time where the trajectory has been changed
-		uint			   requestedFrameIndex = 0;	 // Here lies the Frame index that is requested.
-		uint			   currentFrameIndex   = TypeMax<uint>; // Here is the actual index related to the positions.
-		uint			   trajectorySize	   = TypeMax<uint>;
+		TRAJECTORY_PLAY_MODE playMode
+			= TRAJECTORY_PLAY_MODE::NONE; // Help the trajectory reader to schedule frame reading.
+		bool		 paused = false;
+		Util::Player player;
+		float		 playingSpeed		 = 35;			  // Time in milliseconds between each frame update
+		float		 lastFrameUpdateTime = 0;			  // last elapsed time where the trajectory has been changed
+		uint		 requestedFrameIndex = 0;			  // Here lies the Frame index that is requested.
+		uint		 currentFrameIndex	 = TypeMax<uint>; // Here is the actual index related to the positions.
+		uint		 trajectorySize		 = TypeMax<uint>;
 	};
-
-	/**
-	 * @brief Apply a patch on a generic trajectory, regardless of the specific higher level multiframe trajectory that
-	 * the entity has.
-	 * @param entity
-	 * @param patching callable
-	 */
-	void patchGenericTrajectories( Entity, std::function<void( GenericTrajectory & )> ) noexcept;
 
 	struct TrajectorySingleFrame
 	{
@@ -72,28 +51,6 @@ namespace VTX::App::System
 												   // when no frame are available.
 		Threading::BaseThread::ID threadId;
 	};
-
-	/**
-	 * @brief Used to communicate the frames data that are imediately available.
-	 */
-	struct AvailableFrames
-	{
-		uint lowerBoundIndex  = 0;
-		uint higherBoundIndex = 0;
-	};
-
-	void get( const Entity &, AvailableFrames & ) noexcept;
-
-	/**
-	 * @brief Obtains the atom position of a system. Be it single frame or multiframe trajectory
-	 * @param
-	 * @return
-	 */
-	std::span<const Vec3f> getCurrentAtomPositions( const Entity & ) noexcept;
-	bool				   hasMultiFrameTrajectory( const Entity & ) noexcept;
-	void				   eraseTrajectory( const Entity & ) noexcept;
-	void				   get( const Entity &, GenericTrajectory *& ) noexcept;
-	void				   get( const Entity &, VTX::IO::Writer::TrajectoryFrameGetter & ) noexcept;
 
 } // namespace VTX::App::System
 

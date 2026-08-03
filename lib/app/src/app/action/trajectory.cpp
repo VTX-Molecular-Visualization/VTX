@@ -1,16 +1,35 @@
 #include "app/action/trajectory.hpp"
 #include "app/services.hpp"
-#include "app/system/trajectory.hpp"
+#include <functional>
 
 namespace VTX::App::Action::Trajectory
 {
+	namespace
+	{
+		void _patch(
+			const Entity											   p_entity,
+			const std::function<void( System::GenericTrajectory & )> & p_function
+		) noexcept
+		{
+			if ( REG().all_of<System::TrajectoryFullBuffer>( p_entity ) )
+			{
+				REG().patch<System::TrajectoryFullBuffer>(
+					p_entity,
+					[ &p_function ]( System::TrajectoryFullBuffer & p_trajectory )
+					{ p_function( p_trajectory.genericData ); }
+				);
+			}
+		}
+	} // namespace
+
 	void ToggleStartPause::execute( Entity p_entity ) noexcept
 	{
-		System::patchGenericTrajectories( p_entity, []( System::GenericTrajectory & traj ) { traj.paused ^= 1; } );
+		_patch( p_entity, []( System::GenericTrajectory & traj ) { traj.paused ^= 1; } );
 	}
+
 	void Stop::execute( Entity p_entity ) noexcept
 	{
-		System::patchGenericTrajectories(
+		_patch(
 			p_entity,
 			[]( System::GenericTrajectory & traj )
 			{
@@ -23,7 +42,7 @@ namespace VTX::App::Action::Trajectory
 
 	void JumpTo::execute( Entity p_entity, uint p_step ) noexcept
 	{
-		System::patchGenericTrajectories(
+		_patch(
 			p_entity,
 			[ &p_step ]( System::GenericTrajectory & traj )
 			{
@@ -36,28 +55,28 @@ namespace VTX::App::Action::Trajectory
 		);
 	}
 
-	void ChangePlayer::execute( Entity p_entity, System::TrajectoryPlayMode p_playerType ) noexcept
+	void ChangePlayer::execute( Entity p_entity, System::TRAJECTORY_PLAY_MODE p_playerType ) noexcept
 	{
-		System::patchGenericTrajectories(
+		_patch(
 			p_entity,
 			[ &p_playerType ]( System::GenericTrajectory & traj )
 			{
 				traj.playMode = p_playerType;
 				switch ( p_playerType )
 				{
-				case System::TrajectoryPlayMode::pingpong:
+				case System::TRAJECTORY_PLAY_MODE::PING_PONG:
 					traj.player = Util::Players::PingPong( traj.trajectorySize, traj.currentFrameIndex );
 					break;
-				case System::TrajectoryPlayMode::forward:
+				case System::TRAJECTORY_PLAY_MODE::FORWARD:
 					traj.player = Util::Players::Forward( traj.trajectorySize, traj.currentFrameIndex );
 					break;
-				case System::TrajectoryPlayMode::forwardLoop:
+				case System::TRAJECTORY_PLAY_MODE::FORWARD_LOOP:
 					traj.player = Util::Players::ForwardLoop( traj.trajectorySize, traj.currentFrameIndex );
 					break;
-				case System::TrajectoryPlayMode::backward:
+				case System::TRAJECTORY_PLAY_MODE::BACKWARD:
 					traj.player = Util::Players::Backward( traj.trajectorySize, traj.currentFrameIndex );
 					break;
-				case System::TrajectoryPlayMode::backwardLoop:
+				case System::TRAJECTORY_PLAY_MODE::BACKWARD_LOOP:
 					traj.player = Util::Players::BackwardLoop( traj.trajectorySize, traj.currentFrameIndex );
 					break;
 				default: traj.player = Util::Players::PingPong( traj.trajectorySize, traj.currentFrameIndex );
@@ -68,9 +87,7 @@ namespace VTX::App::Action::Trajectory
 
 	void ChangeSpeed::execute( Entity p_entity, float p_speed ) noexcept
 	{
-		System::patchGenericTrajectories(
-			p_entity, [ &p_speed ]( System::GenericTrajectory & traj ) { traj.playingSpeed = p_speed; }
-		);
+		_patch( p_entity, [ &p_speed ]( System::GenericTrajectory & traj ) { traj.playingSpeed = p_speed; } );
 	}
 
 } // namespace VTX::App::Action::Trajectory

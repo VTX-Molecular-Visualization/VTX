@@ -11,21 +11,25 @@ namespace VTX::App::Action::Trajectory
 	  public:
 		void execute( Entity ) noexcept;
 	};
+
 	struct Stop
 	{
 	  public:
 		void execute( Entity ) noexcept;
 	};
+
 	struct JumpTo
 	{
 	  public:
 		void execute( Entity, uint ) noexcept;
 	};
+
 	struct ChangePlayer
 	{
 	  public:
-		void execute( Entity, System::TrajectoryPlayMode ) noexcept;
+		void execute( Entity, System::TRAJECTORY_PLAY_MODE ) noexcept;
 	};
+
 	struct ChangeSpeed
 	{
 	  public:

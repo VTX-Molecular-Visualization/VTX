@@ -4,6 +4,7 @@
 #include <QHBoxLayout>
 #include <app/action/action_manager.hpp>
 #include <app/action/trajectory.hpp>
+#include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
 #include <app/system/trajectory.hpp>
 
@@ -19,11 +20,11 @@ namespace VTX::UI::QT::Widget::Tree
 
 		// Player mode combobox
 		_playerModeCombo = new QComboBox( this );
-		_playerModeCombo->addItem( tr( "Forward" ), int( App::System::TrajectoryPlayMode::forward ) );
-		_playerModeCombo->addItem( tr( "Forward Loop" ), int( App::System::TrajectoryPlayMode::forwardLoop ) );
-		_playerModeCombo->addItem( tr( "Backward" ), int( App::System::TrajectoryPlayMode::backward ) );
-		_playerModeCombo->addItem( tr( "Backward Loop" ), int( App::System::TrajectoryPlayMode::backwardLoop ) );
-		_playerModeCombo->addItem( tr( "Ping Pong" ), int( App::System::TrajectoryPlayMode::pingpong ) );
+		_playerModeCombo->addItem( tr( "Forward" ), int( App::System::TRAJECTORY_PLAY_MODE::FORWARD ) );
+		_playerModeCombo->addItem( tr( "Forward Loop" ), int( App::System::TRAJECTORY_PLAY_MODE::FORWARD_LOOP ) );
+		_playerModeCombo->addItem( tr( "Backward" ), int( App::System::TRAJECTORY_PLAY_MODE::BACKWARD ) );
+		_playerModeCombo->addItem( tr( "Backward Loop" ), int( App::System::TRAJECTORY_PLAY_MODE::BACKWARD_LOOP ) );
+		_playerModeCombo->addItem( tr( "Ping Pong" ), int( App::System::TRAJECTORY_PLAY_MODE::PING_PONG ) );
 		formLayout->addRow( tr( "Mode" ), _playerModeCombo );
 
 		// Speed control: slider + spinbox in a horizontal layout
@@ -77,7 +78,7 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		auto mode = static_cast<App::System::TrajectoryPlayMode>( _playerModeCombo->itemData( p_index ).toInt() );
+		auto mode = static_cast<App::System::TRAJECTORY_PLAY_MODE>( _playerModeCombo->itemData( p_index ).toInt() );
 		App::ACTION().execute<App::Action::Trajectory::ChangePlayer>( _system, mode );
 	}
 
@@ -138,8 +139,7 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectorySettings::_onFrameSpinBoxFocused()
 	{
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( _system, trajPtr );
+		const App::System::GenericTrajectory * const trajPtr = App::Helper::Trajectory::getGeneric( _system );
 
 		if ( trajPtr && !trajPtr->paused )
 		{
@@ -149,8 +149,7 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectorySettings::_refresh()
 	{
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( _system, trajPtr );
+		const App::System::GenericTrajectory * const trajPtr = App::Helper::Trajectory::getGeneric( _system );
 
 		if ( trajPtr == nullptr )
 		{

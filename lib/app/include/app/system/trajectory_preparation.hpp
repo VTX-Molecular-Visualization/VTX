@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_SYSTEM_TRAJECTORY_PREPARATION__
 #define __VTX_APP_SYSTEM_TRAJECTORY_PREPARATION__
 
+#include "app/ecs.hpp"
 #include "app/system/trajectory.hpp"
 #include <io/reader.hpp>
 
