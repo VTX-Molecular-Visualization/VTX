@@ -1,8 +1,8 @@
 #include "app/python_binding/trajectory.hpp"
+#include "app/action/trajectory.hpp"
 #include "app/helper/trajectory.hpp"
 #include <pybind11/pybind11.h>
 #include <python_binding/binding/helper.hpp>
-#include <span>
 #include <stdexcept>
 #include <util/constants.hpp>
 
@@ -12,7 +12,9 @@ namespace VTX::App::PythonBinding
 
 	namespace
 	{
-		std::span<const Vec3f> _getFramePositions( const Frame & p_frame )
+		using FrameView = App::Helper::Trajectory::FrameView;
+
+		FrameView _getFramePositions( const Frame & p_frame )
 		{
 			if ( not App::Helper::Trajectory::isFrameAvailable( p_frame.entity, static_cast<uint>( p_frame.index ) ) )
 			{
@@ -50,7 +52,7 @@ namespace VTX::App::PythonBinding
 				"getAtomPosition",
 				[]( const Frame & p_frame, const std::size_t p_atom )
 				{
-					const std::span<const Vec3f> positions = _getFramePositions( p_frame );
+					const FrameView positions = _getFramePositions( p_frame );
 					if ( p_atom >= positions.size() )
 					{
 						throw py::index_error( "Atom index is unavailable." );
@@ -65,7 +67,7 @@ namespace VTX::App::PythonBinding
 				"__getitem__",
 				[]( const Frame & p_frame, const py::ssize_t p_index )
 				{
-					const std::span<const Vec3f> positions = _getFramePositions( p_frame );
+					const FrameView positions = _getFramePositions( p_frame );
 					return positions[ _resolveIndex( p_index, positions.size() ) ];
 				}
 			);
@@ -75,6 +77,16 @@ namespace VTX::App::PythonBinding
 				"frameCount",
 				[]( const Trajectory & p_trajectory )
 				{ return App::Helper::Trajectory::getFrameCount( p_trajectory.entity ); }
+			)
+			.def_property_readonly(
+				"loadedFrameCount",
+				[]( const Trajectory & p_trajectory )
+				{ return App::Helper::Trajectory::getLoadedFrameCount( p_trajectory.entity ); }
+			)
+			.def_property_readonly(
+				"availableFrames",
+				[]( const Trajectory & p_trajectory )
+				{ return App::Helper::Trajectory::getAvailableFrames( p_trajectory.entity ); }
 			)
 			.def_property_readonly(
 				"currentFrameIndex",
@@ -88,6 +100,34 @@ namespace VTX::App::PythonBinding
 
 					return index;
 				}
+			)
+			.def_property_readonly(
+				"requestedFrameIndex",
+				[]( const Trajectory & p_trajectory )
+				{
+					const uint index = App::Helper::Trajectory::getRequestedFrameIndex( p_trajectory.entity );
+					if ( index == TypeMax<uint> )
+					{
+						throw std::runtime_error( "Trajectory has no requested frame." );
+					}
+
+					return index;
+				}
+			)
+			.def_property_readonly(
+				"playMode",
+				[]( const Trajectory & p_trajectory )
+				{ return App::Helper::Trajectory::getPlayMode( p_trajectory.entity ); }
+			)
+			.def_property_readonly(
+				"paused",
+				[]( const Trajectory & p_trajectory )
+				{ return App::Helper::Trajectory::isPaused( p_trajectory.entity ); }
+			)
+			.def_property_readonly(
+				"speed",
+				[]( const Trajectory & p_trajectory )
+				{ return App::Helper::Trajectory::getPlayingSpeed( p_trajectory.entity ); }
 			)
 			.def(
 				"isMultiFrame",
@@ -126,14 +166,14 @@ namespace VTX::App::PythonBinding
 			.def(
 				"__len__",
 				[]( const Trajectory & p_trajectory )
-				{ return App::Helper::Trajectory::getFrameCount( p_trajectory.entity ); }
+				{ return App::Helper::Trajectory::getLoadedFrameCount( p_trajectory.entity ); }
 			)
 			.def(
 				"__getitem__",
 				[]( const Trajectory & p_trajectory, const py::ssize_t p_index )
 				{
 					const std::size_t index
-						= _resolveIndex( p_index, App::Helper::Trajectory::getFrameCount( p_trajectory.entity ) );
+						= _resolveIndex( p_index, App::Helper::Trajectory::getLoadedFrameCount( p_trajectory.entity ) );
 					if ( index > TypeMax<uint>
 						 || not App::Helper::Trajectory::isFrameAvailable(
 							 p_trajectory.entity, static_cast<uint>( index )
@@ -144,6 +184,44 @@ namespace VTX::App::PythonBinding
 
 					return Frame { p_trajectory.entity, index };
 				}
+			)
+			.def(
+				"toggleStartPause",
+				[]( const Trajectory & p_trajectory )
+				{ executeAction<App::Action::Trajectory::ToggleStartPause>( p_trajectory.entity ); }
+			)
+			.def(
+				"play",
+				[]( const Trajectory & p_trajectory )
+				{ executeAction<App::Action::Trajectory::SetPaused>( p_trajectory.entity, false ); }
+			)
+			.def(
+				"pause",
+				[]( const Trajectory & p_trajectory )
+				{ executeAction<App::Action::Trajectory::SetPaused>( p_trajectory.entity, true ); }
+			)
+			.def(
+				"stop",
+				[]( const Trajectory & p_trajectory )
+				{ executeAction<App::Action::Trajectory::Stop>( p_trajectory.entity ); }
+			)
+			.def(
+				"jumpTo",
+				[]( const Trajectory & p_trajectory, const uint p_index )
+				{ executeAction<App::Action::Trajectory::JumpTo>( p_trajectory.entity, p_index ); },
+				py::arg( "index" )
+			)
+			.def(
+				"setPlayMode",
+				[]( const Trajectory & p_trajectory, const App::System::TRAJECTORY_PLAY_MODE p_mode )
+				{ executeAction<App::Action::Trajectory::ChangePlayer>( p_trajectory.entity, p_mode ); },
+				py::arg( "mode" )
+			)
+			.def(
+				"setSpeed",
+				[]( const Trajectory & p_trajectory, const float p_speed )
+				{ executeAction<App::Action::Trajectory::ChangeSpeed>( p_trajectory.entity, p_speed ); },
+				py::arg( "speed" )
 			);
 	}
 } // namespace VTX::App::PythonBinding

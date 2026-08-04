@@ -9,31 +9,37 @@ namespace VTX::App::Action::Trajectory
 	struct ToggleStartPause
 	{
 	  public:
-		void execute( Entity ) noexcept;
+		void execute( Entity );
+	};
+
+	struct SetPaused
+	{
+	  public:
+		void execute( Entity, const bool );
 	};
 
 	struct Stop
 	{
 	  public:
-		void execute( Entity ) noexcept;
+		void execute( Entity );
 	};
 
 	struct JumpTo
 	{
 	  public:
-		void execute( Entity, uint ) noexcept;
+		void execute( Entity, uint );
 	};
 
 	struct ChangePlayer
 	{
 	  public:
-		void execute( Entity, System::TRAJECTORY_PLAY_MODE ) noexcept;
+		void execute( Entity, System::TRAJECTORY_PLAY_MODE );
 	};
 
 	struct ChangeSpeed
 	{
 	  public:
-		void execute( Entity, float ) noexcept;
+		void execute( Entity, float );
 	};
 } // namespace VTX::App::Action::Trajectory
 

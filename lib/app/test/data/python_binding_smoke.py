@@ -143,6 +143,7 @@ except NameError:
 vtx.openFile(system_path)
 system = vtx.getSystemIdByPdb("1aga")
 require(system == vtx.getSystemIdByFileName("1aga.MMTF"), "File name lookup should ignore case")
+require(system == vtx.getSystemIdByFileName("1AGA"), "File stem lookup should ignore case")
 require(
     system
     == vtx.getSystemIdByName(
@@ -267,9 +268,23 @@ for play_mode in (
 require(not trajectory.isMultiFrame(), "Unexpected multi-frame trajectory")
 require(
     trajectory.frameCount == 1
+    and trajectory.loadedFrameCount == 1
     and len(trajectory) == 1
     and trajectory.currentFrameIndex == 0,
     "Unexpected single-frame trajectory",
+)
+require(
+    trajectory.availableFrames.first == 0
+    and trajectory.availableFrames.last == 1
+    and trajectory.availableFrames.count == 1,
+    "Unexpected available frames",
+)
+require(
+    trajectory.requestedFrameIndex == 0
+    and trajectory.playMode == vtx.TRAJECTORY_PLAY_MODE.NONE
+    and trajectory.paused
+    and almost_equal(trajectory.speed, 0.0),
+    "Unexpected single-frame player state",
 )
 frame = trajectory.getCurrentFrame()
 require(frame.index == 0 and len(frame) == topology_system.atomCount, "Unexpected frame")
@@ -289,6 +304,13 @@ require(
     trajectory.getFrame(0).index == 0 and trajectory[0].index == 0,
     "Unexpected trajectory indexing",
 )
+trajectory.toggleStartPause()
+trajectory.play()
+trajectory.pause()
+trajectory.stop()
+trajectory.jumpTo(0)
+trajectory.setPlayMode(vtx.TRAJECTORY_PLAY_MODE.NONE)
+trajectory.setSpeed(35.0)
 
 topology_category = topology_system.getCategory(0)
 require(

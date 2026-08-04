@@ -1,5 +1,4 @@
 #include "app/pass/trajectory_updater.hpp"
-#include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
 #include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
@@ -45,6 +44,7 @@ namespace VTX::App::Pass
 	{
 		/**
 		 * @brief Returns whether the new positions has been set to the requestedFrameIndex
+		 *
 		 * @param entity
 		 * @param p_traj
 		 * @return
@@ -64,20 +64,8 @@ namespace VTX::App::Pass
 			return true;
 		}
 
-		uint autoplayNextFrameCount( const System::GenericTrajectory & p_traj, const float p_elapsedTime ) noexcept
-		{ return static_cast<uint>( ( p_elapsedTime - p_traj.lastFrameUpdateTime ) / p_traj.playingSpeed ); }
-
-		/**
-		 * @brief Return true if the frame should be updated.
-		 * @param p_traj trajectory data
-		 * @param p_elapsedTime elapsed time since software start
-		 * @return
-		 */
-		bool shouldUpdateFrame( const System::GenericTrajectory & p_traj, const float & p_elapsedTime )
-		{
-			return p_traj.currentFrameIndex != p_traj.requestedFrameIndex
-				   && p_traj.lastFrameUpdateTime + p_traj.playingSpeed > p_elapsedTime;
-		}
+		uint autoplayNextFrameCount( const System::GenericTrajectory & p_traj ) noexcept
+		{ return static_cast<uint>( p_traj.frameElapsedTime / p_traj.playingSpeed ); }
 
 		template<typename TrajectoryT>
 		System::GenericTrajectory & genericData( TrajectoryT & p_ )
@@ -93,50 +81,48 @@ namespace VTX::App::Pass
 
 		/**
 		 * @brief Update frame for every trajectory of the input type
-		 * @tparam TrajectoryT type of trajectory
-		 * @param p_elapsedTime Time since program start
+		 * @tparam TrajectoryT
+		 *
+		 * @param p_delta Time since the previous update
 		 */
 		template<typename TrajectoryT>
-		void updateTrajectoresPosition( const float p_elapsedTime )
+		void updateTrajectoresPosition( const float p_delta )
 		{
 			for ( Entity it_entity : REG().view<TrajectoryT>() )
 			{
-				const System::GenericTrajectory * const genericTrajPtr = Helper::Trajectory::getGeneric( it_entity );
-				if ( genericTrajPtr == nullptr )
-				{
-					continue;
-				}
-				const auto & player = genericTrajPtr->player;
+				System::GenericTrajectory & genericTraj = genericData( REG().get<TrajectoryT>( it_entity ) );
+				const auto &				player		= genericTraj.player;
 
-				uint nextStep				  = genericTrajPtr->requestedFrameIndex;
+				uint nextStep				  = genericTraj.requestedFrameIndex;
 				uint autoplayUpdateIncrNumber = 0;
-				if ( nextStep == genericTrajPtr->currentFrameIndex
-					 && not genericTrajPtr->paused ) // If there is no outside demand on setting the
-													 // current frame, we use the autoplay
+				if ( nextStep == genericTraj.currentFrameIndex
+					 && not genericTraj.paused ) // If there is no outside demand on setting the
+												 // current frame, we use the autoplay.
 				{
-					autoplayUpdateIncrNumber = autoplayNextFrameCount( *genericTrajPtr, p_elapsedTime );
+					genericTraj.frameElapsedTime += p_delta;
+					autoplayUpdateIncrNumber = autoplayNextFrameCount( genericTraj );
 					player.next( autoplayUpdateIncrNumber, nextStep );
 				}
-				if ( nextStep == genericTrajPtr->currentFrameIndex )
+				if ( nextStep == genericTraj.currentFrameIndex )
 				{
 					continue;
 				}
 
 				REG().patch<TrajectoryT>(
 					it_entity,
-					[ &nextStep, &it_entity, &p_elapsedTime, &autoplayUpdateIncrNumber ]( TrajectoryT & traj )
+					[ &nextStep, &it_entity, &autoplayUpdateIncrNumber ]( TrajectoryT & traj )
 					{
 						System::GenericTrajectory & trajGenericData = genericData( traj );
-						trajGenericData.player.increment(
-							autoplayUpdateIncrNumber
-						); // std::min is for the exhaustive algorithm. It means that if it is 0, no increment is made.
-						   // If >=1, only one increment is made. A predictive algorithm would be not using std::min
+						if ( autoplayUpdateIncrNumber > 0 )
+						{
+							trajGenericData.player.increment( autoplayUpdateIncrNumber );
+						}
 
 						setRequestedFrameIndex( nextStep, traj );
 						if ( tryUpdateFrame( it_entity, traj ) )
 						{
-							trajGenericData.currentFrameIndex	= trajGenericData.requestedFrameIndex;
-							trajGenericData.lastFrameUpdateTime = p_elapsedTime;
+							trajGenericData.currentFrameIndex = trajGenericData.requestedFrameIndex;
+							trajGenericData.frameElapsedTime  = 0;
 						}
 					}
 				);
@@ -144,30 +130,25 @@ namespace VTX::App::Pass
 		}
 	} // namespace
 
-	void TrajectoryUpdater::update( const float p_delta, const float p_elapsedTime )
+	void TrajectoryUpdater::update( const float p_delta, const float )
 	{
-		/*
-		There is multiple ways to implement trajectory frame update. Each comes with pros and cons.
-		The way currently implemented will be referred as "exhaustive".
-		It governs how the autoplay will decide what the nextframe is :
-			We check if
+		// There are multiple ways to update trajectory playback, each with different tradeoffs.
+		//
+		// The current predictive implementation accumulates only unpaused application time:
+		//
+		//     frameElapsedTime += deltaTime
+		//     frameCount = frameElapsedTime / playingSpeed
+		//
+		// When at least one frame interval has elapsed, the player advances by frameCount. This keeps playback
+		// synchronized when an application update takes longer than the requested playing speed. After the frame is
+		// applied, the accumulated time is reset.
+		//
+		// An exhaustive implementation would advance by at most one frame per application update. It would guarantee
+		// that every frame is displayed, but playback could fall behind real time.
+		//
+		// Paused time is never accumulated, so resuming cannot skip frames to catch up with the pause duration.
 
-				elapsedTime > lastUpdateTime + playingSpeed
-
-			If it is : the next frame
-			is called. What it means is that if the delta between updates is multiple time bigger than the playing
-		speed, this algorithm won't try to catch up but will display every single frame.
-
-		Another implementation would be "predictive" where we skip N frames for
-
-			lastUpdateTime + (N - 1) * playingSpeed < elapsedTime < lastUpdateTime + N * playingSpeed
-
-		The predictive algorithm would enforce trajectory synchronisation if applicable, while the exhaustive algorithm
-		makes sure every step is displayed.
-
-		*/
-
-		updateTrajectoresPosition<System::TrajectoryFullBuffer>( p_elapsedTime );
+		updateTrajectoresPosition<System::TrajectoryFullBuffer>( p_delta );
 	}
 
 } // namespace VTX::App::Pass

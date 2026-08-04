@@ -6,10 +6,7 @@ namespace VTX::App::Action::Trajectory
 {
 	namespace
 	{
-		void _patch(
-			const Entity											   p_entity,
-			const std::function<void( System::GenericTrajectory & )> & p_function
-		) noexcept
+		void _patch( const Entity p_entity, const std::function<void( System::GenericTrajectory & )> & p_function )
 		{
 			if ( REG().all_of<System::TrajectoryFullBuffer>( p_entity ) )
 			{
@@ -22,12 +19,17 @@ namespace VTX::App::Action::Trajectory
 		}
 	} // namespace
 
-	void ToggleStartPause::execute( Entity p_entity ) noexcept
+	void ToggleStartPause::execute( Entity p_entity )
 	{
 		_patch( p_entity, []( System::GenericTrajectory & traj ) { traj.paused ^= 1; } );
 	}
 
-	void Stop::execute( Entity p_entity ) noexcept
+	void SetPaused::execute( Entity p_entity, const bool p_paused )
+	{
+		_patch( p_entity, [ p_paused ]( System::GenericTrajectory & traj ) { traj.paused = p_paused; } );
+	}
+
+	void Stop::execute( Entity p_entity )
 	{
 		_patch(
 			p_entity,
@@ -40,11 +42,11 @@ namespace VTX::App::Action::Trajectory
 		);
 	}
 
-	void JumpTo::execute( Entity p_entity, uint p_step ) noexcept
+	void JumpTo::execute( Entity p_entity, uint p_step )
 	{
 		_patch(
 			p_entity,
-			[ &p_step ]( System::GenericTrajectory & traj )
+			[ p_step ]( System::GenericTrajectory & traj )
 			{
 				if ( p_step < traj.trajectorySize )
 				{
@@ -55,11 +57,11 @@ namespace VTX::App::Action::Trajectory
 		);
 	}
 
-	void ChangePlayer::execute( Entity p_entity, System::TRAJECTORY_PLAY_MODE p_playerType ) noexcept
+	void ChangePlayer::execute( Entity p_entity, System::TRAJECTORY_PLAY_MODE p_playerType )
 	{
 		_patch(
 			p_entity,
-			[ &p_playerType ]( System::GenericTrajectory & traj )
+			[ p_playerType ]( System::GenericTrajectory & traj )
 			{
 				traj.playMode = p_playerType;
 				switch ( p_playerType )
@@ -85,9 +87,9 @@ namespace VTX::App::Action::Trajectory
 		);
 	}
 
-	void ChangeSpeed::execute( Entity p_entity, float p_speed ) noexcept
+	void ChangeSpeed::execute( Entity p_entity, float p_speed )
 	{
-		_patch( p_entity, [ &p_speed ]( System::GenericTrajectory & traj ) { traj.playingSpeed = p_speed; } );
+		_patch( p_entity, [ p_speed ]( System::GenericTrajectory & traj ) { traj.playingSpeed = p_speed; } );
 	}
 
 } // namespace VTX::App::Action::Trajectory

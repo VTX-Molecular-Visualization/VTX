@@ -122,9 +122,7 @@ namespace VTX::App::Action::IO
 	}
 
 	void LoadMesh::execute( FilePath p_path )
-	{
-		Extractor::Mesh( std::move( p_path ) )( std::move( _stopToken ), _threadRef );
-	}
+	{ Extractor::Mesh( std::move( p_path ) )( std::move( _stopToken ), _threadRef ); }
 
 	struct WriteSelection::_WriterIo
 	{
@@ -210,9 +208,7 @@ namespace VTX::App::Action::IO
 	}
 
 	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e )
-	{
-		execute( FilePath( p_path ), p_e );
-	}
+	{ execute( FilePath( p_path ), p_e ); }
 
 	void AssociateTrajectory::wait() noexcept { _data->wait(); }
 
@@ -226,19 +222,13 @@ namespace VTX::App::Action::IO
 	}
 
 	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id )
-	{
-		execute( p_id, p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() );
-	}
+	{ execute( p_id, p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() ); }
 
 	void DownloadSystem::execute( const std::string & p_systemId )
-	{
-		execute( Util::Url::SystemId( p_systemId.data() ) );
-	}
+	{ execute( Util::Url::SystemId( p_systemId.data() ) ); }
 
 	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id, FilePath p_path )
-	{
-		execute( VTX::Util::Url::UrlFull( p_id ), p_path );
-	}
+	{ execute( VTX::Util::Url::UrlFull( p_id ), p_path ); }
 
 	void DownloadSystem::execute( VTX::Util::Url::UrlFull p_url, FilePath p_path )
 	{
@@ -252,12 +242,26 @@ namespace VTX::App::Action::IO
 	}
 
 	void Snapshot::execute()
+	{ execute( std::nullopt, std::nullopt, Util::Image::E_FORMAT::PNG, std::nullopt, std::nullopt, std::nullopt ); }
+
+	void Snapshot::execute(
+		const std::optional<FilePath> p_path,
+		const std::optional<FilePath> p_filename,
+		const Util::Image::E_FORMAT	  p_format,
+		const std::optional<size_t>	  p_width,
+		const std::optional<size_t>	  p_height,
+		const std::optional<float>	  p_backgroundOpacity
+	)
 	{
+		const FilePath directory = p_path.value_or( SESSION().getSnapshotsDir() );
+		const FilePath filename	 = p_filename.value_or( FilePath( std::to_string( Util::Chrono::getTimestamp() ) ) );
+
 		execute(
-			SESSION().getSnapshotsDir() / std::to_string( Util::Chrono::getTimestamp() ),
-			Util::Image::E_FORMAT::PNG,
-			RENDERER().width(),
-			RENDERER().height()
+			directory / filename,
+			p_format,
+			p_width.value_or( RENDERER().width() ),
+			p_height.value_or( RENDERER().height() ),
+			p_backgroundOpacity
 		);
 	}
 

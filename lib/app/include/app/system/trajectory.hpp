@@ -32,7 +32,7 @@ namespace VTX::App::System
 		bool		 paused = false;
 		Util::Player player;
 		float		 playingSpeed		 = 35;			  // Time in milliseconds between each frame update
-		float		 lastFrameUpdateTime = 0;			  // last elapsed time where the trajectory has been changed
+		float		 frameElapsedTime	 = 0;			  // Unpaused time accumulated since the last frame update
 		uint		 requestedFrameIndex = 0;			  // Here lies the Frame index that is requested.
 		uint		 currentFrameIndex	 = TypeMax<uint>; // Here is the actual index related to the positions.
 		uint		 trajectorySize		 = TypeMax<uint>;
