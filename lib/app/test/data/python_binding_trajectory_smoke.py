@@ -43,4 +43,6 @@ require(
     "Trajectory should be stopped at its first frame",
 )
 
+vtx.deleteSystem(trajectory_system.id)
+
 print("Python trajectory binding smoke test completed")
