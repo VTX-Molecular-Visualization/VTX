@@ -14,14 +14,14 @@ namespace VTX::App::System
 	 * @param p_trajectory
 	 * @param p_loader
 	 */
-	void prepare( TrajectoryFullBuffer & p_trajectory, IO::SystemReader && p_loader ) noexcept;
-	void prepare( TrajectorySingleFrame & p_trajectory, IO::SystemReader && p_loader ) noexcept;
+	void prepare( TrajectoryFullBuffer & p_trajectory, IO::SystemReader && p_loader );
+	void prepare( TrajectorySingleFrame & p_trajectory, IO::SystemReader && p_loader );
 
 	/**
 	 * @brief Lauch asynchronous work related to the trajectory, if any.
 	 * @param
 	 * @param
 	 */
-	void startAsyncTrajectoryWork( const Entity &, IO::SystemReader && ) noexcept;
+	void startAsyncTrajectoryWork( const Entity &, IO::SystemReader && );
 } // namespace VTX::App::System
 #endif

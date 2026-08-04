@@ -19,7 +19,7 @@ namespace VTX::App::System
 		  public:
 			TrajectoryFullBufferReader( TrajectoryFullBuffer &, IO::SystemReader && reader );
 
-			uint operator()( VTX::Util::StopToken, Threading::BaseThread & ) noexcept;
+			uint operator()( VTX::Util::StopToken, Threading::BaseThread & );
 
 			struct _Data;
 
@@ -46,10 +46,7 @@ namespace VTX::App::System
 		{
 		}
 
-		uint TrajectoryFullBufferReader::operator()(
-			VTX::Util::StopToken	p_stopToken,
-			Threading::BaseThread & p_thr
-		) noexcept
+		uint TrajectoryFullBufferReader::operator()( VTX::Util::StopToken p_stopToken, Threading::BaseThread & p_thr )
 		{
 			p_thr.setProgressText( "Reading trajectory ..." );
 			_ptr->reader.set( p_stopToken );
@@ -70,22 +67,22 @@ namespace VTX::App::System
 		}
 	} // namespace
 
-	void prepare( TrajectoryFullBuffer & p_trajectory, IO::SystemReader && p_loader ) noexcept
+	void prepare( TrajectoryFullBuffer & p_trajectory, IO::SystemReader && p_loader )
 	{
 		p_trajectory.genericData.trajectorySize = static_cast<uint>( p_loader.frameCount() );
 		p_trajectory.frameCollection.resize( 1 );
 		p_trajectory.frameCollection.reserve( p_trajectory.genericData.trajectorySize );
 		p_loader.get( p_trajectory.frameCollection.back(), 0 );
-		p_trajectory.genericData.playMode = TRAJECTORY_PLAY_MODE::PING_PONG;
-		p_trajectory.genericData.player	  = Util::Players::PingPong( p_trajectory.genericData.trajectorySize - 1 );
+		p_trajectory.genericData.playMode		   = TRAJECTORY_PLAY_MODE::PING_PONG;
+		p_trajectory.genericData.player			   = Util::Players::PingPong( p_trajectory.genericData.trajectorySize );
 		p_trajectory.genericData.currentFrameIndex = 0;
 		p_trajectory.lastFrameAvailable			   = 0;
 	}
 
-	void prepare( TrajectorySingleFrame & p_trajectory, IO::SystemReader && p_loader ) noexcept
+	void prepare( TrajectorySingleFrame & p_trajectory, IO::SystemReader && p_loader )
 	{ p_loader.get( p_trajectory.atomPositions, 0 ); }
 
-	void startAsyncTrajectoryWork( const Entity & p_entity, IO::SystemReader && p_reader ) noexcept
+	void startAsyncTrajectoryWork( const Entity & p_entity, IO::SystemReader && p_reader )
 	{
 		if ( auto traj = REG().try_get<TrajectoryFullBuffer>( p_entity ) )
 		{
