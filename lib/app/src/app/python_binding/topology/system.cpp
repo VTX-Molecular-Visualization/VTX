@@ -1,3 +1,4 @@
+#include "app/action/io.hpp"
 #include "app/helper/aabb.hpp"
 #include "app/helper/trajectory.hpp"
 #include "app/python_binding/topology/actions.hpp"
@@ -6,6 +7,7 @@
 #include "app/python_binding/trajectory.hpp"
 #include <core/chemdb/category.hpp>
 #include <io/metadata.hpp>
+#include <pybind11/stl/filesystem.h>
 #include <python_binding/binding/entity_caster.hpp>
 #include <python_binding/wrapper/arg.hpp>
 
@@ -108,6 +110,12 @@ namespace VTX::App::PythonBinding::Topology
 	{
 		py::class_<System>( p_module, "System", py::module_local() )
 			.def_property_readonly( "id", []( const System & p_system ) { return p_system.entity; } )
+			.def(
+				"associateTrajectory",
+				[]( const System & p_system, const FilePath & p_path )
+				{ executeAction<App::Action::IO::AssociateTrajectory>( p_path, p_system.entity ); },
+				py::arg( "path" )
+			)
 			.def(
 				"getTrajectory",
 				[]( const System & p_system )

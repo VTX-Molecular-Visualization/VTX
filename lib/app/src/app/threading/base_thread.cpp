@@ -8,7 +8,10 @@ namespace VTX::App::Threading
 	BaseThread::~BaseThread()
 	{
 		if ( _thread.joinable() )
-			_thread.detach();
+		{
+			_thread.request_stop();
+			_thread.join();
+		}
 	}
 
 	void BaseThread::start( const AsyncOp & p_function )
@@ -28,6 +31,7 @@ namespace VTX::App::Threading
 			}
 		);
 	}
+
 	void BaseThread::start( const StoppableAsyncOp & p_function )
 	{
 		_thread = std::jthread(
@@ -45,6 +49,7 @@ namespace VTX::App::Threading
 			}
 		);
 	}
+
 	void BaseThread::start( const AsyncOp & p_function, const EndCallback & p_callback )
 	{
 		_thread = std::jthread(
@@ -90,12 +95,17 @@ namespace VTX::App::Threading
 	void BaseThread::wait()
 	{
 		if ( _thread.joinable() )
+		{
 			_thread.join();
+		}
 	}
+
 	void BaseThread::stop()
 	{
 		if ( _thread.joinable() )
+		{
 			_thread.request_stop();
+		}
 
 		_stopped = true;
 	}
