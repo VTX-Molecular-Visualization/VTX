@@ -55,11 +55,10 @@ namespace VTX::App::System
 
 			for ( uint it_currentFrameIndex = 1; it_currentFrameIndex < frameCount; it_currentFrameIndex++ )
 			{
-				_ptr->_dataPtr->frameCollection.emplace_back();
-				_ptr->reader.get( _ptr->_dataPtr->frameCollection.back(), it_currentFrameIndex );
+				_ptr->reader.get( _ptr->_dataPtr->frameCollection[ it_currentFrameIndex ], it_currentFrameIndex );
 				VTX_DEBUG( "Trajectory frame {} loaded", it_currentFrameIndex );
 
-				_ptr->_dataPtr->lastFrameAvailable = it_currentFrameIndex;
+				_ptr->_dataPtr->lastFrameAvailable.store( it_currentFrameIndex, std::memory_order_release );
 				if ( p_stopToken.stop_requested() )
 				{
 					break;
@@ -72,13 +71,12 @@ namespace VTX::App::System
 	void prepare( TrajectoryFullBuffer & p_trajectory, IO::SystemReader && p_loader )
 	{
 		p_trajectory.genericData.trajectorySize = static_cast<uint>( p_loader.frameCount() );
-		p_trajectory.frameCollection.resize( 1 );
-		p_trajectory.frameCollection.reserve( p_trajectory.genericData.trajectorySize );
-		p_loader.get( p_trajectory.frameCollection.back(), 0 );
+		p_trajectory.frameCollection.resize( p_trajectory.genericData.trajectorySize );
+		p_loader.get( p_trajectory.frameCollection[ 0 ], 0 );
 		p_trajectory.genericData.playMode		   = TRAJECTORY_PLAY_MODE::PING_PONG;
 		p_trajectory.genericData.player			   = Util::Players::PingPong( p_trajectory.genericData.trajectorySize );
 		p_trajectory.genericData.currentFrameIndex = 0;
-		p_trajectory.lastFrameAvailable			   = 0;
+		p_trajectory.lastFrameAvailable.store( 0, std::memory_order_release );
 	}
 
 	void prepare( TrajectorySingleFrame & p_trajectory, IO::SystemReader && p_loader )

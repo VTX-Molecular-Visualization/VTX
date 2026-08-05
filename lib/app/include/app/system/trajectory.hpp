@@ -5,6 +5,7 @@
 #include <atomic>
 #include <util/players.hpp>
 #include <util/types.hpp>
+#include <utility>
 #include <vector>
 
 namespace VTX::App::System
@@ -38,13 +39,40 @@ namespace VTX::App::System
 		uint		 trajectorySize		 = 1;
 	};
 
+	/**
+	 * @brief Single frame trajectory.
+	 */
 	struct TrajectorySingleFrame
 	{
 		std::vector<Vec3f> atomPositions;
 	};
 
+	/**
+	 * @brief Multi-frame trajectory.
+	 */
 	struct TrajectoryFullBuffer
 	{
+		TrajectoryFullBuffer() = default;
+
+		// Move needed because atomic.
+		TrajectoryFullBuffer( TrajectoryFullBuffer && p_other ) noexcept :
+			genericData( std::move( p_other.genericData ) ), frameCollection( std::move( p_other.frameCollection ) ),
+			lastFrameAvailable( p_other.lastFrameAvailable.load() ), threadId( p_other.threadId )
+		{
+		}
+
+		TrajectoryFullBuffer & operator=( TrajectoryFullBuffer && p_other ) noexcept
+		{
+			if ( this != &p_other )
+			{
+				genericData		   = std::move( p_other.genericData );
+				frameCollection	   = std::move( p_other.frameCollection );
+				lastFrameAvailable = p_other.lastFrameAvailable.load();
+				threadId		   = p_other.threadId;
+			}
+			return *this;
+		}
+
 		GenericTrajectory				genericData;
 		std::vector<std::vector<Vec3f>> frameCollection;
 		std::atomic<uint>				lastFrameAvailable { 0 };

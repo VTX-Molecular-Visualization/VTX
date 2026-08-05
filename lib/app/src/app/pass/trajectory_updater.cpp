@@ -12,7 +12,7 @@ namespace VTX::App::Pass
 
 	bool TrajectoryUpdater::_tryUpdateFrame( const Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept
 	{
-		if ( p_traj.lastFrameAvailable < p_traj.genericData.requestedFrameIndex )
+		if ( p_traj.lastFrameAvailable.load( std::memory_order_acquire ) < p_traj.genericData.requestedFrameIndex )
 		{
 			return false;
 		}
@@ -51,7 +51,7 @@ namespace VTX::App::Pass
 		 */
 		bool tryUpdateFrame( const Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept
 		{
-			if ( p_traj.lastFrameAvailable < p_traj.genericData.requestedFrameIndex )
+			if ( p_traj.lastFrameAvailable.load( std::memory_order_acquire ) < p_traj.genericData.requestedFrameIndex )
 			{
 				return false;
 			}
@@ -77,7 +77,10 @@ namespace VTX::App::Pass
 		 * @param p_traj trajectory to by modified
 		 */
 		inline void setRequestedFrameIndex( const uint & p_expectedNextStep, System::TrajectoryFullBuffer & p_traj )
-		{ p_traj.genericData.requestedFrameIndex = std::min( p_expectedNextStep, p_traj.lastFrameAvailable ); }
+		{
+			const uint lastFrameAvailable		   = p_traj.lastFrameAvailable.load( std::memory_order_acquire );
+			p_traj.genericData.requestedFrameIndex = std::min( p_expectedNextStep, lastFrameAvailable );
+		}
 
 		/**
 		 * @brief Update frame for every trajectory of the input type
