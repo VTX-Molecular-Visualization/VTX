@@ -30,6 +30,7 @@ namespace VTX::App::Threading
 				_finish();
 			}
 		);
+		_id = _thread.get_id();
 	}
 
 	void BaseThread::start( const StoppableAsyncOp & p_function )
@@ -48,6 +49,7 @@ namespace VTX::App::Threading
 				_finish();
 			}
 		);
+		_id = _thread.get_id();
 	}
 
 	void BaseThread::start( const AsyncOp & p_function, const EndCallback & p_callback )
@@ -69,6 +71,7 @@ namespace VTX::App::Threading
 				_finish();
 			}
 		);
+		_id = _thread.get_id();
 	}
 
 	void BaseThread::start( const StoppableAsyncOp & p_function, const EndCallback & p_callback )
@@ -90,6 +93,7 @@ namespace VTX::App::Threading
 				_finish();
 			}
 		);
+		_id = _thread.get_id();
 	}
 
 	void BaseThread::wait()

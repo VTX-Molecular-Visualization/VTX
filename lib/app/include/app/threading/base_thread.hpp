@@ -57,7 +57,7 @@ namespace VTX::App::Threading
 
 		bool isManuallyStopped() const { return _stopped; }
 
-		inline ID getId() const { return _thread.get_id(); }
+		inline ID getId() const { return _id; }
 
 		inline float getProgress() const { return _progress.load( std::memory_order_relaxed ); }
 
@@ -82,6 +82,7 @@ namespace VTX::App::Threading
 		ThreadManager & _manager;
 
 		std::jthread	   _thread;
+		ID				   _id;
 		std::atomic<float> _progress = 0.f;
 		std::atomic<bool>  _finished = false;
 		bool			   _stopped	 = false;
