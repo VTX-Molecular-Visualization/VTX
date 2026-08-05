@@ -93,8 +93,10 @@ namespace VTX::App::Pass
 		{
 			for ( Entity it_entity : REG().view<TrajectoryT>() )
 			{
-				System::GenericTrajectory & genericTraj = genericData( REG().get<TrajectoryT>( it_entity ) );
-				const auto &				player		= genericTraj.player;
+				TrajectoryT &				trajectory	= REG().get<TrajectoryT>( it_entity );
+				System::GenericTrajectory & genericTraj = genericData( trajectory );
+				auto &						player		= genericTraj.player;
+				player.setStepCount( trajectory.lastFrameAvailable.load( std::memory_order_acquire ) + 1 );
 
 				uint nextStep				  = genericTraj.requestedFrameIndex;
 				uint autoplayUpdateIncrNumber = 0;
