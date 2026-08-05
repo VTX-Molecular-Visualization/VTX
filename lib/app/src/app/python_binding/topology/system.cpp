@@ -120,11 +120,7 @@ namespace VTX::App::PythonBinding::Topology
 				"getTrajectory",
 				[]( const System & p_system )
 				{
-					if ( not App::Helper::Trajectory::hasTrajectory( p_system.entity ) )
-					{
-						throw py::value_error( "System has no trajectory." );
-					}
-
+					getTopology( p_system.entity );
 					return VTX::App::PythonBinding::Trajectory { p_system.entity };
 				}
 			)

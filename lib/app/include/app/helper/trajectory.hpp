@@ -74,11 +74,6 @@ namespace VTX::App::Helper::Trajectory
 	bool isFrameAvailable( const Entity, const uint );
 
 	/**
-	 * @brief Check if a system has a trajectory.
-	 */
-	bool hasTrajectory( const Entity ) noexcept;
-
-	/**
 	 * @brief Check if a system has a multi-frame trajectory.
 	 */
 	bool hasMultiFrameTrajectory( const Entity ) noexcept;

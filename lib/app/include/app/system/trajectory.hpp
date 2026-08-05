@@ -2,7 +2,7 @@
 #define __VTX_APP_SYSTEM_TRAJECTORY__
 
 #include "app/threading/base_thread.hpp"
-#include <util/constants.hpp>
+#include <atomic>
 #include <util/players.hpp>
 #include <util/types.hpp>
 #include <vector>
@@ -31,11 +31,11 @@ namespace VTX::App::System
 			= TRAJECTORY_PLAY_MODE::NONE; // Help the trajectory reader to schedule frame reading.
 		bool		 paused = false;
 		Util::Player player;
-		float		 playingSpeed		 = 35;			  // Time in milliseconds between each frame update
-		float		 frameElapsedTime	 = 0;			  // Unpaused time accumulated since the last frame update
-		uint		 requestedFrameIndex = 0;			  // Here lies the Frame index that is requested.
-		uint		 currentFrameIndex	 = TypeMax<uint>; // Here is the actual index related to the positions.
-		uint		 trajectorySize		 = TypeMax<uint>;
+		float		 playingSpeed		 = 35; // Time in milliseconds between each frame update
+		float		 frameElapsedTime	 = 0;  // Unpaused time accumulated since the last frame update
+		uint		 requestedFrameIndex = 0;  // Here lies the Frame index that is requested.
+		uint		 currentFrameIndex	 = 0;  // Here is the actual index related to the positions.
+		uint		 trajectorySize		 = 1;
 	};
 
 	struct TrajectorySingleFrame
@@ -47,9 +47,8 @@ namespace VTX::App::System
 	{
 		GenericTrajectory				genericData;
 		std::vector<std::vector<Vec3f>> frameCollection;
-		uint lastFrameAvailable { TypeMax<uint> }; // Updated by the filling thread. Value is MAX
-												   // when no frame are available.
-		Threading::BaseThread::ID threadId;
+		std::atomic<uint>				lastFrameAvailable { 0 };
+		Threading::BaseThread::ID		threadId;
 	};
 
 } // namespace VTX::App::System

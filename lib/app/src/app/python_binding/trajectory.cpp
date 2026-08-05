@@ -3,7 +3,6 @@
 #include "app/helper/trajectory.hpp"
 #include <pybind11/pybind11.h>
 #include <python_binding/binding/helper.hpp>
-#include <stdexcept>
 #include <util/constants.hpp>
 
 namespace VTX::App::PythonBinding
@@ -91,28 +90,12 @@ namespace VTX::App::PythonBinding
 			.def_property_readonly(
 				"currentFrameIndex",
 				[]( const Trajectory & p_trajectory )
-				{
-					const uint index = App::Helper::Trajectory::getCurrentFrameIndex( p_trajectory.entity );
-					if ( index == TypeMax<uint> )
-					{
-						throw std::runtime_error( "Trajectory has no current frame." );
-					}
-
-					return index;
-				}
+				{ return App::Helper::Trajectory::getCurrentFrameIndex( p_trajectory.entity ); }
 			)
 			.def_property_readonly(
 				"requestedFrameIndex",
 				[]( const Trajectory & p_trajectory )
-				{
-					const uint index = App::Helper::Trajectory::getRequestedFrameIndex( p_trajectory.entity );
-					if ( index == TypeMax<uint> )
-					{
-						throw std::runtime_error( "Trajectory has no requested frame." );
-					}
-
-					return index;
-				}
+				{ return App::Helper::Trajectory::getRequestedFrameIndex( p_trajectory.entity ); }
 			)
 			.def_property_readonly(
 				"playMode",
@@ -139,11 +122,6 @@ namespace VTX::App::PythonBinding
 				[]( const Trajectory & p_trajectory )
 				{
 					const uint index = App::Helper::Trajectory::getCurrentFrameIndex( p_trajectory.entity );
-					if ( index == TypeMax<uint> )
-					{
-						throw std::runtime_error( "Trajectory has no current frame." );
-					}
-
 					return Frame { p_trajectory.entity, index };
 				}
 			)

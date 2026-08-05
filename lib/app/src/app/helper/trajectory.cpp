@@ -21,12 +21,7 @@ namespace VTX::App::Helper::Trajectory
 	uint getFrameCount( const Entity p_entity ) noexcept
 	{
 		const VTX::App::System::GenericTrajectory * const trajectory = getGeneric( p_entity );
-		if ( trajectory )
-		{
-			return trajectory->trajectorySize == TypeMax<uint> ? 0 : trajectory->trajectorySize;
-		}
-
-		return hasTrajectory( p_entity ) ? 1 : 0;
+		return trajectory ? trajectory->trajectorySize : 1;
 	}
 
 	uint getLoadedFrameCount( const Entity p_entity )
@@ -39,13 +34,13 @@ namespace VTX::App::Helper::Trajectory
 	uint getCurrentFrameIndex( const Entity p_entity ) noexcept
 	{
 		const VTX::App::System::GenericTrajectory * const trajectory = getGeneric( p_entity );
-		return trajectory ? trajectory->currentFrameIndex : hasTrajectory( p_entity ) ? 0 : TypeMax<uint>;
+		return trajectory ? trajectory->currentFrameIndex : 0;
 	}
 
 	uint getRequestedFrameIndex( const Entity p_entity ) noexcept
 	{
 		const VTX::App::System::GenericTrajectory * const trajectory = getGeneric( p_entity );
-		return trajectory ? trajectory->requestedFrameIndex : hasTrajectory( p_entity ) ? 0 : TypeMax<uint>;
+		return trajectory ? trajectory->requestedFrameIndex : 0;
 	}
 
 	VTX::App::System::TRAJECTORY_PLAY_MODE getPlayMode( const Entity p_entity ) noexcept
@@ -68,13 +63,6 @@ namespace VTX::App::Helper::Trajectory
 
 	bool isFrameAvailable( const Entity p_entity, const uint p_frame )
 	{ return p_frame < getLoadedFrameCount( p_entity ); }
-
-	bool hasTrajectory( const Entity p_entity ) noexcept
-	{
-		return REG().any_of<VTX::App::System::TrajectorySingleFrame, VTX::App::System::TrajectoryFullBuffer>(
-			p_entity
-		);
-	}
 
 	bool hasMultiFrameTrajectory( const Entity p_entity ) noexcept
 	{ return REG().any_of<VTX::App::System::TrajectoryFullBuffer>( p_entity ); }
@@ -116,8 +104,8 @@ namespace VTX::App::Helper::Trajectory
 
 		inline uint frameCount() const
 		{
-			const uint lastFrameAvailable = _trajectory.get().lastFrameAvailable;
-			return lastFrameAvailable == TypeMax<uint> ? 0 : lastFrameAvailable + 1;
+			const uint lastFrameAvailable = _trajectory.get().lastFrameAvailable.load( std::memory_order_acquire );
+			return lastFrameAvailable + 1;
 		}
 
 		inline FrameView getAtomPositions( const uint & p_index ) const
