@@ -5,11 +5,13 @@
 #include "ui/qt/style/style_manager.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <algorithm>
 #include <app/action/action_manager.hpp>
 #include <app/action/trajectory.hpp>
 #include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
 #include <app/system/trajectory.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -78,9 +80,18 @@ namespace VTX::UI::QT::Widget::Tree
 		App::REG().on_update<App::System::TrajectoryFullBuffer>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>(
 			this
 		);
+		App::HUB().connect<App::Events::ThreadProgress, &TrajectoryPlayer::_onTrajectoryLoadingProgress>( this );
 
 		// Initial state
 		_refresh();
+	}
+
+	TrajectoryPlayer::~TrajectoryPlayer()
+	{
+		App::HUB().disconnectAllOf( *this );
+		App::REG().on_update<App::System::TrajectoryFullBuffer>().disconnect<&TrajectoryPlayer::_onTrajectoryUpdated>(
+			this
+		);
 	}
 
 	std::array<QIcon, 4> TrajectoryPlayer::_getIcons()
@@ -128,6 +139,26 @@ namespace VTX::UI::QT::Widget::Tree
 		{
 			_refresh();
 		}
+	}
+
+	void TrajectoryPlayer::_onTrajectoryLoadingProgress( const App::Events::ThreadProgress & p_event )
+	{
+		const App::System::TrajectoryFullBuffer * const trajectory
+			= App::REG().try_get<App::System::TrajectoryFullBuffer>( _system );
+		if ( trajectory == nullptr || p_event.id != trajectory->threadId )
+		{
+			return;
+		}
+
+		const uint totalFrameCount = trajectory->genericData.trajectorySize;
+		if ( totalFrameCount == 0 )
+		{
+			return;
+		}
+
+		const uint loadedFrameCount
+			= std::clamp( static_cast<uint>( p_event.progress * totalFrameCount + 0.5f ), 1u, totalFrameCount );
+		_slider->setLoadedRange( 0, int( loadedFrameCount - 1 ) );
 	}
 
 	void TrajectoryPlayer::_refresh()
