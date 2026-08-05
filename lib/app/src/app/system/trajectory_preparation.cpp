@@ -52,17 +52,20 @@ namespace VTX::App::System
 			p_thr.setProgressText( "Reading trajectory ..." );
 			_ptr->reader.set( p_stopToken );
 			const size_t frameCount = _ptr->reader.frameCount();
+			p_thr.setProgress( 1.f / static_cast<float>( frameCount ) );
 
 			for ( uint it_currentFrameIndex = 1; it_currentFrameIndex < frameCount; it_currentFrameIndex++ )
 			{
 				_ptr->reader.get( _ptr->_dataPtr->frameCollection[ it_currentFrameIndex ], it_currentFrameIndex );
-				VTX_DEBUG( "Trajectory frame {} loaded", it_currentFrameIndex );
-
-				_ptr->_dataPtr->lastFrameAvailable.store( it_currentFrameIndex, std::memory_order_release );
 				if ( p_stopToken.stop_requested() )
 				{
 					break;
 				}
+
+				VTX_DEBUG( "Trajectory frame {} loaded", it_currentFrameIndex );
+
+				_ptr->_dataPtr->lastFrameAvailable.store( it_currentFrameIndex, std::memory_order_release );
+				p_thr.setProgress( static_cast<float>( it_currentFrameIndex + 1 ) / static_cast<float>( frameCount ) );
 			}
 			return 0;
 		}
