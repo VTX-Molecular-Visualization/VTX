@@ -101,12 +101,12 @@ namespace VTX::UI::QT::DockWidget
 	void Scene::_onSystemDestroy( Registry &, Entity p_e )
 	{
 		assert( _mapSystemTreeWidgets.contains( p_e ) );
-		_mapSystemTreeWidgets[ p_e ]->deleteLater();
+		delete _mapSystemTreeWidgets[ p_e ];
 		_mapSystemTreeWidgets.erase( p_e );
 
 		if ( _mapTrajTreeWidgets.contains( p_e ) )
 		{
-			_mapTrajTreeWidgets[ p_e ]->deleteLater();
+			delete _mapTrajTreeWidgets[ p_e ];
 			_mapTrajTreeWidgets.erase( p_e );
 		}
 	}
