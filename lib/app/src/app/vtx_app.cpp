@@ -68,6 +68,10 @@ namespace VTX::App
 
 	VTXApp::~VTXApp()
 	{
+		if ( ECS::hasCtx<Action::ActionManager>() )
+		{
+			ACTION().shutdown();
+		}
 #if VTX_PYTHON_BINDING
 		try
 		{
@@ -85,6 +89,22 @@ namespace VTX::App
 			VTX_ERROR( "Unknown exception during interpretor cleanup" );
 		}
 #endif
+		try
+		{
+			if ( ECS::hasCtx<Threading::ThreadManager>() )
+			{
+				ECS::removeCtx<Threading::ThreadManager>();
+			}
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Exception during thread manager cleanup: {}", p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Unknown exception during thread manager cleanup" );
+		}
+
 		LOGGER().flush();
 	}
 

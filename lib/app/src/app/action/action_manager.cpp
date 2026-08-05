@@ -12,6 +12,7 @@ namespace VTX::App::Action
 	struct ActionManager::_Data
 	{
 		bool					 noThread	  = false;
+		std::atomic_bool		 shuttingDown = false;
 		std::thread::id			 mainThreadId = std::this_thread::get_id();
 		std::queue<QueuedAction> actions;
 		std::mutex				 mutex;
@@ -22,6 +23,16 @@ namespace VTX::App::Action
 	ActionManager::ActionManager() : _attributesPtr( new _Data { ARGS().noGui } ) {}
 
 	QueuedAction::QueuedAction() : _ptr( new _wrapper<_dummy>( _state, _dummy() ) ) {}
+
+	QueuedAction::~QueuedAction()
+	{
+		if ( _state )
+		{
+			std::scoped_lock<std::mutex> lock( _state->mutex );
+			_state->cancelled = true;
+			_state->conditionVariable.notify_all();
+		}
+	}
 
 	void ActionManager::update( const float p_delta, const float )
 	{
@@ -48,11 +59,29 @@ namespace VTX::App::Action
 	{
 		if ( _noThread() || _attributesPtr->mainThreadId == std::this_thread::get_id() )
 		{
+			if ( _attributesPtr->shuttingDown )
+			{
+				return;
+			}
 			p_action.execute();
 			return;
 		}
 		std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
+		if ( _attributesPtr->shuttingDown )
+		{
+			return;
+		}
 		_attributesPtr->actions.push( std::move( p_action ) );
+	}
+
+	void ActionManager::shutdown() noexcept
+	{
+		_attributesPtr->shuttingDown = true;
+		std::queue<QueuedAction> actions;
+		{
+			std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
+			std::swap( actions, _attributesPtr->actions );
+		}
 	}
 
 	bool ActionManager::_noThread() const noexcept { return _attributesPtr->noThread; }

@@ -4,6 +4,7 @@
 #include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
 #include <io/reader.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::App::System
 {
@@ -56,6 +57,7 @@ namespace VTX::App::System
 			{
 				_ptr->_dataPtr->frameCollection.emplace_back();
 				_ptr->reader.get( _ptr->_dataPtr->frameCollection.back(), it_currentFrameIndex );
+				VTX_DEBUG( "Trajectory frame {} loaded", it_currentFrameIndex );
 
 				_ptr->_dataPtr->lastFrameAvailable = it_currentFrameIndex;
 				if ( p_stopToken.stop_requested() )
