@@ -1,10 +1,10 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_ACTIONS_JOBS__
 #define __VTX_TOOL_TOOLS_MDPREP_ACTIONS_JOBS__
 
-#include <app/threading/base_thread.hpp>
 #include <memory>
 #include <string>
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
+#include <util/thread/base_thread.hpp>
 #include <vector>
 
 namespace VTX::Tool::Mdprep::Actions
@@ -17,7 +17,7 @@ namespace VTX::Tool::Mdprep::Actions
 	{
 	  public:
 		StartPreparation();
-		StartPreparation( VTX::App::Threading::ThreadData );
+		StartPreparation( VTX::Util::Thread::ThreadData );
 
 		void execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions );
 		void wait() noexcept;
@@ -40,7 +40,7 @@ namespace VTX::Tool::Mdprep::Actions
 	{
 	  public:
 		CheckSystem();
-		CheckSystem( VTX::App::Threading::ThreadData );
+		CheckSystem( VTX::Util::Thread::ThreadData );
 
 		void execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions );
 		void wait() noexcept;

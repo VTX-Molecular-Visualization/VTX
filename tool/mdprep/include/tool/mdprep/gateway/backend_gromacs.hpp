@@ -1,13 +1,13 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_GATEWAY_BACKEND_GROMACS__
 #define __VTX_TOOL_TOOLS_MDPREP_GATEWAY_BACKEND_GROMACS__
 
-#include <app/threading/base_thread.hpp>
 #include <array>
 #include <optional>
 #include <stack>
 #include <string>
 #include <thread>
 #include <util/sentry.hpp>
+#include <util/thread/base_thread.hpp>
 #include <vector>
 
 namespace std

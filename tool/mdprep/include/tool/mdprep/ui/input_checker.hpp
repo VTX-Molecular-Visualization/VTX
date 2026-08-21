@@ -5,11 +5,6 @@
 #include <memory>
 #include <util/concepts.hpp>
 
-namespace VTX::App::Threading
-{
-	struct ThreadData;
-}
-
 namespace VTX::Tool::Mdprep::Gateway
 {
 	struct MdParameters;

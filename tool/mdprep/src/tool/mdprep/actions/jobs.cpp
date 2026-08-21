@@ -6,7 +6,7 @@
 #include <app/constants.hpp>
 #include <app/services.hpp>
 #include <app/system/visibility.hpp>
-#include <app/threading/trigger_event.hpp>
+#include <app/thread/trigger_event.hpp>
 //
 #include <tool/mdprep/actions/jobs.hpp>
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
@@ -19,8 +19,8 @@ namespace VTX::Tool::Mdprep::Actions
 {
 	struct StartPreparation::_Impl
 	{
-		VTX::App::Threading::ThreadData thrData;
-		std::latch						waiter { 1 };
+		VTX::Util::Thread::ThreadData thrData;
+		std::latch					  waiter { 1 };
 	};
 
 	namespace
@@ -31,7 +31,7 @@ namespace VTX::Tool::Mdprep::Actions
 
 	StartPreparation::StartPreparation() : _impl( new _Impl ) {}
 
-	StartPreparation::StartPreparation( VTX::App::Threading::ThreadData p_ ) : _impl( new _Impl { std::move( p_ ) } ) {}
+	StartPreparation::StartPreparation( VTX::Util::Thread::ThreadData p_ ) : _impl( new _Impl { std::move( p_ ) } ) {}
 
 	void StartPreparation::execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions p_instr )
 	{
@@ -57,7 +57,7 @@ namespace VTX::Tool::Mdprep::Actions
 			{
 				VTX_ERROR( "[MDPREP] Packing failed: {}", packReport.errMsg );
 			}
-			App::Threading::TiggerEvent { Gateway::SystemPacked { not packReport.error, resultDir.string() } };
+			App::Thread::TiggerEvent { Gateway::SystemPacked { not packReport.error, resultDir.string() } };
 			if ( _impl->thrData.stopToken.stop_requested() )
 			{
 				goto theEnd;
@@ -99,7 +99,7 @@ namespace VTX::Tool::Mdprep::Actions
 
 	theEnd:
 		/**/ {
-			App::Threading::TiggerEvent t { Gateway::PreparationFinished() };
+			App::Thread::TiggerEvent t { Gateway::PreparationFinished() };
 		}
 		_impl->waiter.count_down();
 	}
@@ -119,21 +119,19 @@ namespace VTX::Tool::Mdprep::Actions
 		{
 		  public:
 			inline void execute( const Mdprep::Gateway::CheckReport & p_ )
-			{
-				App::HUB().trigger<Mdprep::Gateway::CheckReport>( p_ );
-			}
+			{ App::HUB().trigger<Mdprep::Gateway::CheckReport>( p_ ); }
 		};
 	} // namespace
 
 	struct CheckSystem::_Impl
 	{
-		VTX::App::Threading::ThreadData thrData;
-		std::latch						waiter { 1 };
+		VTX::Util::Thread::ThreadData thrData;
+		std::latch					  waiter { 1 };
 	};
 
 	CheckSystem::CheckSystem() : _impl( new _Impl ) {}
 
-	CheckSystem::CheckSystem( VTX::App::Threading::ThreadData p_ ) : _impl( new _Impl { std::move( p_ ) } ) {}
+	CheckSystem::CheckSystem( VTX::Util::Thread::ThreadData p_ ) : _impl( new _Impl { std::move( p_ ) } ) {}
 
 	void CheckSystem::execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions p_gmxIntructions )
 	{

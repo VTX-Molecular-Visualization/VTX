@@ -19,7 +19,7 @@
 #include <app/action/io.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
-#include <app/threading/base_thread.hpp>
+#include <util/thread/base_thread.hpp>
 //
 #include <tool/mdprep/backends/gromacs/util.hpp>
 #include <tool/mdprep/gateway/engine_job_manager.hpp>
@@ -42,7 +42,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - integration", "[integration]" )
 	VTX::Tool::Mdprep::Gateway::MdParameters		mdParams;
 	mdParams.system.forcefieldBio = "gromos54a7";
 
-	VTX::App::Threading::ThreadData thrData;
+	VTX::Util::Thread::ThreadData thrData;
 	jobManager.startPreparation( mdParams );
 	/*
 

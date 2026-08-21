@@ -9,8 +9,8 @@
 #include <app/action/action_manager.hpp>
 #include <app/services.hpp>
 #include <app/system/visibility.hpp>
-#include <app/threading/base_thread.hpp>
 #include <ui/qt/util.hpp>
+#include <util/thread/base_thread.hpp>
 //
 #include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/input_checker.hpp"
