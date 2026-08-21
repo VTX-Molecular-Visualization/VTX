@@ -26,6 +26,7 @@ namespace VTX::App::Pass
 		virtual ~IPass() = default;
 
 		inline void setPaused( const bool p_paused ) { _paused = p_paused; }
+
 		inline void setDeleteNextFrame( const bool p_deleted ) { _deleted = p_deleted; }
 
 	  protected:
@@ -93,25 +94,28 @@ namespace VTX::App::Pass
 		 */
 		template<ConceptPass T>
 		bool hasPass() const
-		{
-			return _passes.has<T>();
-		}
+		{ return _passes.has<T>(); }
 
+		// This is no more needed: use event instead.
 		/**
 		 * @brief Gets a pass.
 		 */
+		/*
 		template<ConceptPass T>
 		T * const getPass() const
 		{
 			assert( _passes.has<T>() );
-			return _passes.get<T>();
+
+		 * return _passes.get<T>();
 		}
 
 		template<ConceptPass T>
 		T * const tryGetPass() const
-		{
+
+		 * {
 			return _passes.tryGet<T>();
 		}
+		*/
 
 		/**
 		 * @brief Updates all passes.
