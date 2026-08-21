@@ -87,9 +87,9 @@ namespace VTX::App::Thread
 		/**
 		 * @brief Mutex.
 		 */
-		std::mutex				_readerMutex;
-		mutable std::mutex		_frameMutex;
-		std::condition_variable _frameRequestCondition;
+		std::mutex					_readerMutex;
+		mutable std::mutex			_frameMutex;
+		std::condition_variable_any _frameRequestCondition;
 
 		/**
 		 * @brief Current request.

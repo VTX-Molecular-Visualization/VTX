@@ -1,5 +1,4 @@
 #include "app/thread/trajectory_loader.hpp"
-#include <chrono>
 #include <fmt/format.h>
 #include <util/logger.hpp>
 #include <utility>
@@ -161,11 +160,7 @@ namespace VTX::App::Thread
 			uint64_t							  currentRequestVersion = 0;
 			{
 				std::unique_lock lock( _frameMutex );
-				_frameRequestCondition.wait_for(
-					lock,
-					std::chrono::milliseconds( 50 ),
-					[ & ] { return p_stopToken.stop_requested() || _requestedFrames.has_value(); }
-				);
+				_frameRequestCondition.wait( lock, p_stopToken, [ & ] { return _requestedFrames.has_value(); } );
 				if ( p_stopToken.stop_requested() )
 				{
 					break;
