@@ -6,7 +6,6 @@
 #include <optional>
 #include <util/image.hpp>
 #include <util/thread/base_thread.hpp>
-#include <util/thread/stop_token.hpp>
 #include <util/types.hpp>
 #include <util/url.hpp>
 

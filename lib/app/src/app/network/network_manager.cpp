@@ -83,7 +83,7 @@ namespace VTX::App::Network
 
 	void NetworkManager::stopDownload( const DownloadId p_id )
 	{
-		Util::Thread::BaseThread::ID threadId;
+		Util::Thread::ID threadId;
 		{
 			std::lock_guard lock( _mutex );
 			const auto		it = _activeDownload.find( p_id );

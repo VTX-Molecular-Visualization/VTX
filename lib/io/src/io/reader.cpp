@@ -17,7 +17,6 @@
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
-#include <util/thread/stop_token.hpp>
 
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
@@ -72,7 +71,9 @@ namespace VTX::IO
 		_Impl( const FilePath & p_path, const READER_OPTION p_options, const StopToken p_stopToken ) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
 			_trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
-		{ _init(); }
+		{
+			_init();
+		}
 
 		_Impl(
 			MemoryBuffer &&		p_buffer,
@@ -88,7 +89,9 @@ namespace VTX::IO
 													  chemfiles::guess_format( p_path.string() )
 												  )
 											  )
-		{ _init(); }
+		{
+			_init();
+		}
 
 		size_t frameCount() const { return _trajectory.size(); }
 
@@ -154,11 +157,11 @@ namespace VTX::IO
 
 				_currentResidue = &( ( *_residues )[ residueIdx ] );
 
-				std::string		  chainName		 = _residueStringProp( "chainname" );
-				const std::string residueName	 = _currentResidue->name();
-				const bool		  isEmptyResidue = _currentResidue->size() == 0;
-				Index residueFirstAtomIndex		 = isEmptyResidue ? static_cast<Index>( _currentFrame.size() )
-																  : static_cast<Index>( *_currentResidue->begin() );
+				std::string		  chainName				= _residueStringProp( "chainname" );
+				const std::string residueName			= _currentResidue->name();
+				const bool		  isEmptyResidue		= _currentResidue->size() == 0;
+				Index			  residueFirstAtomIndex = isEmptyResidue ? static_cast<Index>( _currentFrame.size() )
+																		 : static_cast<Index>( *_currentResidue->begin() );
 				coveredAtomCount += static_cast<Index>( _currentResidue->size() );
 
 				if ( residueIdx > 0 && chainName != previousChainName && seenChainNames.contains( chainName ) )
@@ -776,7 +779,9 @@ namespace VTX::IO
 		}
 
 		static Vec3f _toVec3f( const chemfiles::Vector3D & p_position )
-		{ return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] ); }
+		{
+			return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] );
+		}
 	};
 
 	void SystemReader::Del::operator()( _Impl * p_impl ) noexcept { delete p_impl; }
@@ -809,7 +814,9 @@ namespace VTX::IO
 		VTX::Util::Math::AABB &		   p_a,
 		VTX::Util::Math::Grid<Index> & p_g
 	)
-	{ _impl->get( p_d, p_t, p_m, p_a, p_g ); }
+	{
+		_impl->get( p_d, p_t, p_m, p_a, p_g );
+	}
 
 	void SystemReader::get( Frame & p_f, const FrameIndex p_i ) { _impl->get( p_i, p_f ); }
 

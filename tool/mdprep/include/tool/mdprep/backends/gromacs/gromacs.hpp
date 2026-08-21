@@ -13,7 +13,6 @@
 #include <tool/mdprep/backends/gromacs/trjconv.hpp>
 #include <tool/mdprep/backends/gromacs/util.hpp>
 #include <util/filesystem.hpp>
-#include <util/thread/stop_token.hpp>
 
 namespace VTX::Util::Thread
 {

@@ -63,7 +63,7 @@ namespace VTX::App::Network
 		/**
 		 * @brief Map from DownloadId to thread ID for cancellation.
 		 */
-		std::unordered_map<DownloadId, Util::Thread::BaseThread::ID> _activeDownload;
+		std::unordered_map<DownloadId, Util::Thread::ID> _activeDownload;
 
 		/**
 		 * @brief Completed downloads.

@@ -8,7 +8,7 @@
 #include <string>
 #include <util/math/aabb.hpp>
 #include <util/math/grid.hpp>
-#include <util/thread/stop_token.hpp>
+#include <util/thread/base_thread.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -26,13 +26,14 @@ namespace VTX::IO
 {
 	using MemoryBuffer = std::string;
 	using FrameIndex   = size_t;
+	using StopToken	   = VTX::Util::Thread::StopToken;
 
 	class SystemReader
 	{
 	  public:
 		SystemReader() = delete;
-		SystemReader( const FilePath &, const READER_OPTION, const Util::Thread::StopToken );
-		SystemReader( MemoryBuffer &&, const VTX::FilePath &, const READER_OPTION, const Util::Thread::StopToken );
+		SystemReader( const FilePath &, const READER_OPTION, const StopToken );
+		SystemReader( MemoryBuffer &&, const VTX::FilePath &, const READER_OPTION, const StopToken );
 
 		size_t frameCount() const;
 
@@ -61,7 +62,7 @@ namespace VTX::IO
 		/**
 		 * @brief Stop token.
 		 */
-		void set( const Util::Thread::StopToken ) noexcept;
+		void set( const StopToken ) noexcept;
 
 	  private:
 		struct _Impl;

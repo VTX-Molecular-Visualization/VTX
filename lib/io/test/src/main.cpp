@@ -6,7 +6,7 @@
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/network.hpp>
-#include <util/thread/stop_token.hpp>
+#include <util/thread/base_thread.hpp>
 
 TEST_CASE( "VTX_IO - Benchmark", "[.] [integration]" )
 {

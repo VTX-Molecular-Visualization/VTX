@@ -37,6 +37,6 @@ namespace VTX::App::Action::Application
 
 	void SetSavePower::execute( const bool p_enable ) { RENDERER().setForceUpdate( not p_enable ); }
 
-	void StopThread::execute( const Util::Thread::BaseThread::ID & p_id ) { THREAD().stop( p_id ); }
+	void StopThread::execute( const Util::Thread::ID & p_id ) { THREAD().stop( p_id ); }
 
 } // namespace VTX::App::Action::Application

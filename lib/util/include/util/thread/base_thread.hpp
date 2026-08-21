@@ -8,11 +8,15 @@
 #include <optional>
 #include <string>
 #include <thread>
-#include <util/thread/stop_token.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Util::Thread
 {
+	/**
+	 * @brief Types.
+	 */
+	using ID		= std::jthread::id;
+	using StopToken = std::stop_token;
 
 	class ThreadManager;
 
@@ -28,10 +32,9 @@ namespace VTX::Util::Thread
 		 * @brief Types.
 		 */
 		using AsyncOp			 = std::function<uint( StopToken, BaseThread & )>;
-		using EndCallback		 = std::function<void( BaseThread &, uint, bool p_manuallyStopped )>;
+		using EndCallback		 = std::function<void( BaseThread &, uint, bool )>;
 		using ProgressCallback	 = std::function<void( const BaseThread & )>;
 		using TerminatedCallback = std::function<void( const BaseThread & )>;
-		using ID				 = std::jthread::id;
 
 		/**
 		 * @brief Wait for the thread to finish and destroy it.

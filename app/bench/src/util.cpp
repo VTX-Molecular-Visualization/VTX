@@ -3,7 +3,7 @@
 #include <io/reader.hpp>
 #include <util/filesystem.hpp>
 #include <util/network.hpp>
-#include <util/thread/stop_token.hpp>
+#include <util/thread/base_thread.hpp>
 
 namespace VTX::Bench
 {
@@ -11,8 +11,8 @@ namespace VTX::Bench
 	{
 		Util::Thread::StopToken t;
 		IO::SystemReader		reader(
-			VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename, IO::READER_OPTION::ALL, t
-		);
+			   VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename, IO::READER_OPTION::ALL, t
+		   );
 		LoadedSystem system;
 		auto		 d = Core::ChemDB::Category::createDefaultDictionary();
 		reader.get( d, system.topology, system.metadata );

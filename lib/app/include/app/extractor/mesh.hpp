@@ -3,7 +3,6 @@
 
 #include <util/filesystem.hpp>
 #include <util/thread/base_thread.hpp>
-#include <util/thread/stop_token.hpp>
 
 namespace VTX::App::Extractor
 {

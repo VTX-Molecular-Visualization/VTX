@@ -6,7 +6,7 @@
 #include <functional>
 #include <io/writer/shared.hpp>
 #include <util/filesystem.hpp>
-#include <util/thread/stop_token.hpp>
+#include <util/thread/base_thread.hpp>
 
 namespace VTX::IO::Writer
 {
@@ -41,7 +41,9 @@ namespace VTX::IO::Writer
 		inline uint frameCount() const { return _ptr->frameCount(); }
 
 		inline bool visitAtomPositions( const uint p_index, const FrameVisitor & p_visitor ) const
-		{ return _ptr->visitAtomPositions( p_index, p_visitor ); }
+		{
+			return _ptr->visitAtomPositions( p_index, p_visitor );
+		}
 
 	  private:
 		struct _interface

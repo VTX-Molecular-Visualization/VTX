@@ -78,8 +78,8 @@ namespace VTX::Util::Thread
 			using Function = std::decay_t<Func>;
 			using Result   = std::invoke_result_t<Function &>;
 
-			Function			 function( std::forward<Func>( p_function ) );
-			const BaseThread::ID caller = std::this_thread::get_id();
+			Function function( std::forward<Func>( p_function ) );
+			const ID caller = std::this_thread::get_id();
 			if ( caller == _ownerThreadId )
 			{
 				return std::invoke( function );
@@ -127,12 +127,12 @@ namespace VTX::Util::Thread
 		/**
 		 * @brief Returns the thread with the given id.
 		 */
-		BaseThread * get( const BaseThread::ID & ) noexcept;
+		BaseThread * get( const ID & ) noexcept;
 
 		/**
 		 * @brief Stops the thread with the given id.
 		 */
-		void stop( const BaseThread::ID & );
+		void stop( const ID & );
 
 	  private:
 		/**
@@ -140,12 +140,12 @@ namespace VTX::Util::Thread
 		 */
 		struct _SynchronizedCall
 		{
-			_SynchronizedCall( const BaseThread::ID p_caller, std::packaged_task<void()> p_task ) :
+			_SynchronizedCall( const ID p_caller, std::packaged_task<void()> p_task ) :
 				caller( p_caller ), task( std::move( p_task ) )
 			{
 			}
 
-			BaseThread::ID			   caller;
+			ID						   caller;
 			std::packaged_task<void()> task;
 		};
 
@@ -198,7 +198,7 @@ namespace VTX::Util::Thread
 		/**
 		 * @brief Set of thread ids that have been cancelled.
 		 */
-		std::unordered_set<BaseThread::ID> _cancelledCallers;
+		std::unordered_set<ID> _cancelledCallers;
 
 		/**
 		 * @brief Is shutting down?
@@ -214,7 +214,7 @@ namespace VTX::Util::Thread
 		/**
 		 * @brief Cancels the synchronized calls for the given thread id.
 		 */
-		void _cancelSynchronizedCalls( const BaseThread::ID );
+		void _cancelSynchronizedCalls( const ID );
 
 		/**
 		 * @brief Cancels all synchronized calls.

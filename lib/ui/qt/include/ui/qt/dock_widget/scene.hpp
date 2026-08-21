@@ -52,7 +52,7 @@ namespace VTX::UI::QT::DockWidget
 		/**
 		 * @brief Thread widgets.
 		 */
-		std::unordered_map<Util::Thread::BaseThread::ID, QPointer<Widget::Thread>> _mapThreadWidgets;
+		std::unordered_map<Util::Thread::ID, QPointer<Widget::Thread>> _mapThreadWidgets;
 
 		/**
 		 * @brief Custom spacer to fill empty space.

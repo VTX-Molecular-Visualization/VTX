@@ -7,7 +7,6 @@
 #include <thread>
 #include <util/chrono.hpp>
 #include <util/thread/base_thread.hpp>
-#include <util/thread/stop_token.hpp>
 #include <util/thread/thread_manager.hpp>
 #include <util/types.hpp>
 
@@ -171,20 +170,20 @@ TEST_CASE( "VTX_UTIL - Threading - Cancel synchronization", "[threading][synchro
 	std::atomic_bool		   waiting	 = false;
 	bool					   cancelled = false;
 	Util::Thread::BaseThread & thread	 = threadManager.createThread(
-		[ &waiting, &cancelled, &threadManager ]( Util::Thread::StopToken, Util::Thread::BaseThread & )
-		{
-			waiting = true;
-			try
-			{
-				threadManager.synchronize( [] { return 42; } );
-			}
-			catch ( const std::future_error & )
-			{
-				cancelled = true;
-			}
-			return 0u;
-		}
-	);
+		   [ &waiting, &cancelled, &threadManager ]( Util::Thread::StopToken, Util::Thread::BaseThread & )
+		   {
+			   waiting = true;
+			   try
+			   {
+				   threadManager.synchronize( [] { return 42; } );
+			   }
+			   catch ( const std::future_error & )
+			   {
+				   cancelled = true;
+			   }
+			   return 0u;
+		   }
+	   );
 
 	while ( not waiting )
 	{
@@ -210,13 +209,13 @@ TEST_CASE( "VTX_UTIL - Threading - Dispatch", "[threading][dispatch]" )
 	int						   workerResult = 0;
 	std::atomic_bool		   workerQueued = false;
 	Util::Thread::BaseThread & thread		= threadManager.createThread(
-		[ &threadManager, &workerResult, &workerQueued ]( Util::Thread::StopToken, Util::Thread::BaseThread & )
-		{
-			threadManager.dispatch( [ &workerResult ] { workerResult = 42; } );
-			workerQueued = true;
-			return 0u;
-		}
-	);
+		  [ &threadManager, &workerResult, &workerQueued ]( Util::Thread::StopToken, Util::Thread::BaseThread & )
+		  {
+			  threadManager.dispatch( [ &workerResult ] { workerResult = 42; } );
+			  workerQueued = true;
+			  return 0u;
+		  }
+	  );
 	while ( not workerQueued )
 	{
 		std::this_thread::yield();
@@ -234,13 +233,13 @@ TEST_CASE( "VTX_UTIL - Threading - Progress", "[threading][progress]" )
 {
 	using namespace VTX;
 
-	bool						 callbackCalled		= false;
-	bool						 callbackStopped	= false;
-	uint						 callbackThreadData = 0;
-	int							 onProgressCallNum	= 0;
-	float						 lastProgress		= 0.f;
-	bool						 terminated			= false;
-	Util::Thread::BaseThread::ID threadId {};
+	bool			 callbackCalled		= false;
+	bool			 callbackStopped	= false;
+	uint			 callbackThreadData = 0;
+	int				 onProgressCallNum	= 0;
+	float			 lastProgress		= 0.f;
+	bool			 terminated			= false;
+	Util::Thread::ID threadId {};
 
 	Util::Thread::ThreadManager threadManager;
 	threadManager.setDefaultProgressCallback(
@@ -295,12 +294,12 @@ TEST_CASE( "VTX_UTIL - Threading - Non-stoppable operation", "[threading][operat
 	Util::Thread::ThreadManager threadManager;
 	std::atomic_bool			executed = false;
 	Util::Thread::BaseThread &	thread	 = threadManager.createThread(
-		[ &executed ]( Util::Thread::StopToken, Util::Thread::BaseThread & )
-		{
-			executed = true;
-			return 0u;
-		}
-	);
+		   [ &executed ]( Util::Thread::StopToken, Util::Thread::BaseThread & )
+		   {
+			   executed = true;
+			   return 0u;
+		   }
+	   );
 
 	thread.wait();
 
@@ -333,11 +332,11 @@ TEST_CASE( "VTX_UTIL - Threading - Manager lookup and stop", "[threading][stop]"
 	);
 
 	REQUIRE( waitFor( started ) );
-	const Util::Thread::BaseThread::ID id		   = thread.getId();
-	Util::Thread::BaseThread *		   foundThread = threadManager.get( id );
+	const Util::Thread::ID	   id		   = thread.getId();
+	Util::Thread::BaseThread * foundThread = threadManager.get( id );
 	CHECK( foundThread == &thread );
 
-	Util::Thread::BaseThread * missingThread = threadManager.get( Util::Thread::BaseThread::ID {} );
+	Util::Thread::BaseThread * missingThread = threadManager.get( Util::Thread::ID {} );
 	CHECK( missingThread == nullptr );
 
 	threadManager.stop( id );
@@ -408,15 +407,15 @@ TEST_CASE( "VTX_UTIL - Threading - Thread state", "[threading][state]" )
 	Util::Thread::ThreadManager threadManager;
 	std::atomic_bool			release = false;
 	Util::Thread::BaseThread &	thread	= threadManager.createThread(
-		[ &release ]( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & )
-		{
-			while ( not release && not p_stopToken.stop_requested() )
-			{
-				std::this_thread::yield();
-			}
-			return 0u;
-		}
-	);
+		  [ &release ]( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & )
+		  {
+			  while ( not release && not p_stopToken.stop_requested() )
+			  {
+				  std::this_thread::yield();
+			  }
+			  return 0u;
+		  }
+	  );
 
 	thread.setProgress( -1.f );
 	CHECK( thread.getProgress() == 0.f );
@@ -505,7 +504,7 @@ TEST_CASE( "VTX_UTIL - Threading - Callback failure", "[threading][failure]" )
 
 	Util::Thread::BaseThread & thread
 		= threadManager.createThread( []( Util::Thread::StopToken, Util::Thread::BaseThread & ) { return 0u; } );
-	const Util::Thread::BaseThread::ID threadId = thread.getId();
+	const Util::Thread::ID threadId = thread.getId();
 	thread.wait();
 
 	CHECK_NOTHROW( threadManager.update() );

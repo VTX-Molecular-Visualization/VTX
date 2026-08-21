@@ -71,7 +71,7 @@ namespace VTX::App
 		/**
 		 * @brief Download worker thread id.
 		 */
-		Util::Thread::BaseThread::ID updateDownloadThreadId {};
+		Util::Thread::ID updateDownloadThreadId {};
 
 		/**
 		 * @brief Last error message produced during the download phase.

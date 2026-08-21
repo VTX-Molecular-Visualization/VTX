@@ -69,7 +69,7 @@ namespace VTX::App::Action::Application
 	 */
 	struct StopThread
 	{
-		void execute( const Util::Thread::BaseThread::ID & );
+		void execute( const Util::Thread::ID & );
 	};
 
 } // namespace VTX::App::Action::Application

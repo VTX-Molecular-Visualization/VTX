@@ -8,10 +8,14 @@ namespace VTX::Util::Thread
 	ThreadManager::ThreadManager() : _ownerThreadId( std::this_thread::get_id() ) {}
 
 	void ThreadManager::setDefaultProgressCallback( BaseThread::ProgressCallback p_callback )
-	{ _progressCallback = std::move( p_callback ); }
+	{
+		_progressCallback = std::move( p_callback );
+	}
 
 	void ThreadManager::setDefaultTerminatedCallback( BaseThread::TerminatedCallback p_callback )
-	{ _terminatedCallback = std::move( p_callback ); }
+	{
+		_terminatedCallback = std::move( p_callback );
+	}
 
 	ThreadManager::~ThreadManager()
 	{
@@ -126,7 +130,7 @@ namespace VTX::Util::Thread
 		return *thread;
 	}
 
-	BaseThread * ThreadManager::get( const BaseThread::ID & p_id ) noexcept
+	BaseThread * ThreadManager::get( const ID & p_id ) noexcept
 	{
 		for ( auto & it_thrptr : _threads )
 		{
@@ -138,7 +142,7 @@ namespace VTX::Util::Thread
 		return nullptr;
 	}
 
-	void ThreadManager::stop( const BaseThread::ID & p_id )
+	void ThreadManager::stop( const ID & p_id )
 	{
 		BaseThread * thread = get( p_id );
 		if ( thread != nullptr )
@@ -147,7 +151,7 @@ namespace VTX::Util::Thread
 		}
 	}
 
-	void ThreadManager::_cancelSynchronizedCalls( const BaseThread::ID p_caller )
+	void ThreadManager::_cancelSynchronizedCalls( const ID p_caller )
 	{
 		const std::scoped_lock lock( _synchronizedCallsMutex );
 		if ( _shuttingDown )
