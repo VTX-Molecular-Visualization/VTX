@@ -9,6 +9,7 @@
 #include "app/scene/viewpoint.hpp"
 #include "app/services.hpp"
 #include <renderer/camera.hpp>
+#include <util/event_hub.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
 #include <util/type_traits.hpp>
