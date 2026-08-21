@@ -1,8 +1,9 @@
 #ifndef __VTX_APP_EVENTS__
 #define __VTX_APP_EVENTS__
 
+#include "app/controller/animation.hpp"
 #include "app/ecs.hpp"
-#include <span>
+#include <core/struct/trajectory.hpp>
 #include <string>
 #include <thread>
 #include <util/types.hpp>
@@ -95,6 +96,18 @@ namespace VTX::App::Events
 	};
 
 	/**
+	 * @brief Start a camera animation.
+	 */
+	struct CameraAnimationStart
+	{
+		Controller::AnimationData	   start;
+		Controller::AnimationData	   end;
+		float						   duration;
+		Controller::InterpPositionFunc interpPosition;
+		Controller::InterpRotationFunc interpRotation;
+	};
+
+	/**
 	 * @brief System.
 	 * Used instead of on_construct to avoid component creation order problems.
 	 */
@@ -110,8 +123,8 @@ namespace VTX::App::Events
 
 	struct TrajectoryLoad
 	{
-		Entity				   system;
-		std::span<const Vec3f> frame;
+		Entity					system;
+		Core::Struct::FrameView frame;
 	};
 
 	template<typename P>

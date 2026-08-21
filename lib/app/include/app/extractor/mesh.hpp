@@ -1,9 +1,9 @@
 #ifndef __VTX_APP_EXTRACTOR_MESH__
 #define __VTX_APP_EXTRACTOR_MESH__
 
-#include "app/threading/base_thread.hpp"
 #include <util/filesystem.hpp>
-#include <util/thread.hpp>
+#include <util/thread/base_thread.hpp>
+#include <util/thread/stop_token.hpp>
 
 namespace VTX::App::Extractor
 {
@@ -19,7 +19,7 @@ namespace VTX::App::Extractor
 		/**
 		 * @brief Stop current execution until the system is extracted.
 		 */
-		uint operator()( Util::StopToken, Threading::OptionalThreadReference );
+		uint operator()( Util::Thread::StopToken, Util::Thread::OptionalThreadReference );
 
 	  private:
 		/**

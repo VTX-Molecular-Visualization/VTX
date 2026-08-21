@@ -3,6 +3,7 @@
 
 #include "app/ecs.hpp"
 #include "app/python_binding/module.hpp"
+#include <core/struct/trajectory.hpp>
 #include <cstddef>
 #include <util/constants.hpp>
 
@@ -13,8 +14,8 @@ namespace VTX::App::PythonBinding
 	 */
 	struct Frame
 	{
-		Entity		entity = InvalidEntity;
-		std::size_t index  = INVALID_INDEX;
+		std::size_t			index = INVALID_INDEX;
+		Core::Struct::Frame positions;
 	};
 
 	/**

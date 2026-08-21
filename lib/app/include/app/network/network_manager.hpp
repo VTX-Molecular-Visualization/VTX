@@ -2,7 +2,6 @@
 #define __VTX_APP_CORE_NETWORK_NETWORK_SYSTEM__
 
 #include "app/events.hpp"
-#include "app/threading/base_thread.hpp"
 #include <atomic>
 #include <mutex>
 #include <string>
@@ -10,6 +9,7 @@
 #include <unordered_map>
 #include <util/event_hub.hpp>
 #include <util/network.hpp>
+#include <util/thread/base_thread.hpp>
 #include <vector>
 
 namespace VTX::App::Network
@@ -63,7 +63,7 @@ namespace VTX::App::Network
 		/**
 		 * @brief Map from DownloadId to thread ID for cancellation.
 		 */
-		std::unordered_map<DownloadId, Threading::BaseThread::ID> _activeDownload;
+		std::unordered_map<DownloadId, Util::Thread::BaseThread::ID> _activeDownload;
 
 		/**
 		 * @brief Completed downloads.

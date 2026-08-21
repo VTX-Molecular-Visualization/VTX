@@ -29,9 +29,9 @@
 #include "app/session.hpp"
 #include "app/setting/accessibility.hpp"
 #include "app/setting/controller.hpp"
-#include "app/threading/thread_manager.hpp"
 #include "app/uid/uid_manager.hpp"
 #include <exception>
+#include <util/thread/thread_manager.hpp>
 #if VTX_PYTHON_BINDING
 #include <python_binding/interpretor.hpp>
 #endif
@@ -89,11 +89,15 @@ namespace VTX::App
 			VTX_ERROR( "Unknown exception during interpretor cleanup" );
 		}
 #endif
+		if ( ECS::hasCtx<Pass::PassManager>() )
+		{
+			ECS::removeCtx<Pass::PassManager>();
+		}
 		try
 		{
-			if ( ECS::hasCtx<Threading::ThreadManager>() )
+			if ( ECS::hasCtx<Util::Thread::ThreadManager>() )
 			{
-				ECS::removeCtx<Threading::ThreadManager>();
+				ECS::removeCtx<Util::Thread::ThreadManager>();
 			}
 		}
 		catch ( const std::exception & p_e )
@@ -141,7 +145,19 @@ namespace VTX::App
 		ECS::setCtx<Action::ActionManager>();
 		ECS::setCtx<Input::InputManager>();
 		ECS::setCtx<Network::NetworkManager>();
-		ECS::setCtx<Threading::ThreadManager>();
+		ECS::setCtx<Util::Thread::ThreadManager>();
+		THREAD().setDefaultProgressCallback(
+			[]( const Util::Thread::BaseThread & p_thread )
+			{
+				HUB().trigger<Events::ThreadProgress>(
+					p_thread.getId(), p_thread.getProgress(), p_thread.getProgressText()
+				);
+			}
+		);
+		THREAD().setDefaultTerminatedCallback(
+			[]( const Util::Thread::BaseThread & p_thread )
+			{ HUB().trigger<Events::ThreadTerminated>( p_thread.getId(), p_thread.isManuallyStopped() ); }
+		);
 		ECS::setCtx<Uid::UIDManager>();
 		ECS::setCtx<Pass::PassManager>();
 		ECS::setCtx<Core::ChemDB::Category::Dictionary>( Core::ChemDB::Category::createDefaultDictionary() );

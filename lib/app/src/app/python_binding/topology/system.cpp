@@ -5,11 +5,14 @@
 #include "app/python_binding/topology/binding.hpp"
 #include "app/python_binding/topology/helpers.hpp"
 #include "app/python_binding/trajectory.hpp"
+#include "app/services.hpp"
+#include "app/system/trajectory_player.hpp"
 #include <core/chemdb/category.hpp>
 #include <io/metadata.hpp>
 #include <pybind11/stl/filesystem.h>
 #include <python_binding/binding/entity_caster.hpp>
 #include <python_binding/wrapper/arg.hpp>
+#include <util/thread/thread_manager.hpp>
 
 namespace VTX::App::PythonBinding::Topology
 {
@@ -65,6 +68,25 @@ namespace VTX::App::PythonBinding::Topology
 
 			return REG().get<IO::Metadata>( p_entity );
 		}
+
+		Frame getCurrentFrame( const System & p_system )
+		{
+			return THREAD().synchronize(
+				[ entity = p_system.entity ]
+				{
+					getTopology( entity );
+					const auto * const player = REG().try_get<App::System::TrajectoryPlayer>( entity );
+					const uint		   index  = player ? player->currentFrameIndex : 0;
+					return Frame { index, App::Helper::Trajectory::getFrame( entity, index ) };
+				}
+			);
+		}
+
+		VTX::App::PythonBinding::Trajectory getTrajectory( const System & p_system )
+		{
+			getTopology( p_system.entity );
+			return { p_system.entity };
+		}
 	} // namespace
 
 	Chain System::getChain( const Index p_index ) const
@@ -116,14 +138,8 @@ namespace VTX::App::PythonBinding::Topology
 				{ executeAction<App::Action::IO::AssociateTrajectory>( p_path, p_system.entity ); },
 				py::arg( "path" )
 			)
-			.def(
-				"getTrajectory",
-				[]( const System & p_system )
-				{
-					getTopology( p_system.entity );
-					return VTX::App::PythonBinding::Trajectory { p_system.entity };
-				}
-			)
+			.def_property_readonly( "trajectory", &getTrajectory )
+			.def_property_readonly( "currentFrame", &getCurrentFrame )
 			.def_property_readonly(
 				"name",
 				[]( const System & p_system ) -> const std::string & { return getMetadata( p_system.entity ).name; }

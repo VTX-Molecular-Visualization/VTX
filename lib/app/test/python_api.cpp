@@ -8,6 +8,8 @@
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <chrono>
+#include <future>
 #include <python_binding/interpretor.hpp>
 #include <source_location>
 #include <util/math/range_list.hpp>
@@ -499,6 +501,10 @@ TEST_CASE( "VTX_PYTHON_BINDING - Python binding smoke test", "[python][binding][
 	std::future<AsyncJobResult>					  future  = promise->get_future();
 	App::INTERPRETOR().runScript( scriptPath, promise );
 
+	while ( future.wait_for( std::chrono::milliseconds( 1 ) ) != std::future_status::ready )
+	{
+		THREAD().update();
+	}
 	const AsyncJobResult result = future.get();
 	INFO( result.resultStr );
 	CHECK( result.success == true );
@@ -518,6 +524,10 @@ TEST_CASE( "VTX_PYTHON_BINDING - Python trajectory binding smoke test", "[python
 	std::future<AsyncJobResult>					  future  = promise->get_future();
 	App::INTERPRETOR().runScript( scriptPath, promise );
 
+	while ( future.wait_for( std::chrono::milliseconds( 1 ) ) != std::future_status::ready )
+	{
+		THREAD().update();
+	}
 	const AsyncJobResult result = future.get();
 	INFO( result.resultStr );
 	CHECK( result.success == true );

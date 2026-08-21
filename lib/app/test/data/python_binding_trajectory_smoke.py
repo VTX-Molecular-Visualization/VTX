@@ -16,14 +16,19 @@ except NameError:
 
 trajectory_system = vtx.getSystem("1gcn")
 trajectory_system.associateTrajectory(trajectory_path)
-trajectory = trajectory_system.getTrajectory()
-require(trajectory.isMultiFrame(), "Expected a multi-frame trajectory")
+trajectory = trajectory_system.trajectory
 require(trajectory.frameCount > 1, "Unexpected trajectory frame count")
 require(trajectory.loadedFrameCount >= 1, "No trajectory frame is available")
 require(trajectory.availableFrames.first == 0, "Unexpected available frame range")
+first_frame = trajectory.getFrame(0)
 require(
-    len(trajectory.getFrame(0)) == trajectory_system.atomCount,
+    len(first_frame) == trajectory_system.atomCount,
     "Trajectory frame atom count does not match its system",
+)
+require(len(trajectory) == trajectory.frameCount, "Unexpected trajectory length")
+require(
+    len(trajectory[-1]) == trajectory_system.atomCount,
+    "Last trajectory frame atom count does not match its system",
 )
 
 trajectory.setPlayMode(vtx.TRAJECTORY_PLAY_MODE.FORWARD_LOOP)
@@ -44,5 +49,6 @@ require(
 )
 
 vtx.deleteSystem(trajectory_system.id)
+require(len(first_frame) > 0, "Copied trajectory frame became unavailable")
 
 print("Python trajectory binding smoke test completed")

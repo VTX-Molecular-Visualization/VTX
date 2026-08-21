@@ -3,10 +3,10 @@
 #include "app/events.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/services.hpp"
-#include "app/threading/thread_manager.hpp"
 #include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
 #include <util/monitoring/stats.hpp>
+#include <util/thread/thread_manager.hpp>
 
 namespace VTX::App
 {
@@ -21,6 +21,8 @@ namespace VTX::App
 		bool					rendered = false;
 
 		c.start();
+
+		VTX::App::THREAD().update();
 
 		// Trigger enqueued events.
 		hub.update();
@@ -43,7 +45,6 @@ namespace VTX::App
 		hub.trigger<PostRender>( p_delta, p_elapsed, rendered );
 		frame.set( POST_RENDER, c.elapsedTime() );
 
-		VTX::App::THREAD().lateUpdate();
 		frame.set( LATE, c.elapsedTime() );
 	}
 } // namespace VTX::App

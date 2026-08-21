@@ -2,12 +2,13 @@
 #define __VTX_APP_EXTRACTOR_SYSTEM__
 
 #include "app/ecs.hpp"
-#include "app/threading/base_thread.hpp"
+#include "app/extractor/trajectory_buffer.hpp"
 #include <io/constants.hpp>
 #include <memory>
 #include <string>
 #include <util/filesystem.hpp>
-#include <util/thread.hpp>
+#include <util/thread/base_thread.hpp>
+#include <util/thread/stop_token.hpp>
 
 namespace VTX::App::Extractor
 {
@@ -22,22 +23,22 @@ namespace VTX::App::Extractor
 		 * @brief Extract a system into a new entity
 		 * @param p_path
 		 */
-		System( FilePath p_path, IO::READER_OPTION = IO::READER_OPTION::ALL );
+		System( FilePath, IO::READER_OPTION = IO::READER_OPTION::ALL, TrajectoryBufferSettings = {} );
 		/**
 		 * @brief Extract a system into a new entity from memory
 		 * @param p_path
 		 */
-		System( FilePath p_path, std::string && p_buffer, IO::READER_OPTION = IO::READER_OPTION::ALL );
+		System( FilePath, std::string &&, IO::READER_OPTION = IO::READER_OPTION::ALL, TrajectoryBufferSettings = {} );
 		/**
 		 * @brief Associate a trajectory to an existing system
 		 * @param p_path
 		 */
-		System( Entity p_entity, FilePath p_path, IO::READER_OPTION = IO::READER_OPTION::ALL );
+		System( Entity, FilePath, IO::READER_OPTION = IO::READER_OPTION::ALL, TrajectoryBufferSettings = {} );
 
 		/**
 		 * @brief Meant to be used as a thread callable. Actually perform the extraction
 		 */
-		uint operator()( Util::StopToken, Threading::OptionalThreadReference );
+		uint operator()( Util::Thread::StopToken, Util::Thread::OptionalThreadReference );
 
 		/**
 		 * @brief Stop current execution until the system is extracted.
