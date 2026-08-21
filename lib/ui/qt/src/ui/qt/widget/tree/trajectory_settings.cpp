@@ -4,7 +4,6 @@
 #include <QHBoxLayout>
 #include <app/action/action_manager.hpp>
 #include <app/action/trajectory.hpp>
-#include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
 #include <app/trajectory/player.hpp>
 #include <core/struct/trajectory.hpp>
@@ -141,9 +140,9 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectorySettings::_onFrameSpinBoxFocused()
 	{
-		const App::Trajectory::Player * const player = App::Helper::Trajectory::getPlayer( _system );
+		const App::Trajectory::Player & player = App::REG().get<App::Trajectory::Player>( _system );
 
-		if ( player && not player->paused )
+		if ( not player.paused )
 		{
 			App::ACTION().execute<App::Action::Trajectory::ToggleStartPause>( _system );
 		}
@@ -151,23 +150,18 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectorySettings::_refresh()
 	{
-		const App::Trajectory::Player * const player = App::Helper::Trajectory::getPlayer( _system );
-
-		if ( player == nullptr )
-		{
-			return;
-		}
+		const App::Trajectory::Player & player = App::REG().get<App::Trajectory::Player>( _system );
 
 		_isRefreshing = true;
 
 		const uint totalFrames	= static_cast<uint>( App::REG().get<Core::Struct::Trajectory>( _system ).frameCount );
-		const uint currentFrame = player->currentFrameIndex;
+		const uint currentFrame = player.currentFrameIndex;
 
-		_playerModeCombo->setCurrentIndex( _playerModeCombo->findData( int( player->playMode ) ) );
+		_playerModeCombo->setCurrentIndex( _playerModeCombo->findData( int( player.playMode ) ) );
 
 		// Speed
-		_speedSlider->setValue( int( player->playingSpeed ) );
-		_speedSpinBox->setValue( double( player->playingSpeed ) );
+		_speedSlider->setValue( int( player.playingSpeed ) );
+		_speedSpinBox->setValue( double( player.playingSpeed ) );
 
 		// Frame
 		_frameSpinBox->setMaximum( int( totalFrames - 1 ) );

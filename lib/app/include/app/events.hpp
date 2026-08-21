@@ -121,7 +121,7 @@ namespace VTX::App::Events
 		Entity mesh;
 	};
 
-	struct TrajectoryLoad
+	struct TrajectoryCurrentFrameChange
 	{
 		Entity					system;
 		Core::Struct::FrameView frame;

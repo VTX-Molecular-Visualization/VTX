@@ -124,12 +124,7 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		const App::Trajectory::Player * const player = App::Helper::Trajectory::getPlayer( _system );
-
-		if ( player )
-		{
-			App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, uint( p_value ) );
-		}
+		App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, uint( p_value ) );
 	}
 
 	void TrajectoryPlayer::_onTrajectoryUpdated( Registry &, Entity p_entity )
@@ -144,9 +139,8 @@ namespace VTX::UI::QT::Widget::Tree
 	void TrajectoryPlayer::_onTrajectoryLoadingProgress( const App::Events::ThreadProgress & p_event )
 	{
 		const App::Trajectory::Loader * const loader		 = App::REG().try_get<App::Trajectory::Loader>( _system );
-		const App::Trajectory::Player * const player		 = App::Helper::Trajectory::getPlayer( _system );
 		Util::Thread::BaseThread *			  progressThread = App::THREAD().get( p_event.id );
-		if ( loader == nullptr || player == nullptr || progressThread != loader->thread.get() )
+		if ( loader == nullptr || progressThread != loader->thread.get() )
 		{
 			return;
 		}
@@ -159,17 +153,10 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectoryPlayer::_refresh()
 	{
-		const App::Trajectory::Player * const player = App::Helper::Trajectory::getPlayer( _system );
-
-		if ( player == nullptr )
-		{
-			_slider->setMaximum( 0 );
-			_frameLabel->setText( "0/0" );
-			return;
-		}
+		const App::Trajectory::Player & player = App::REG().get<App::Trajectory::Player>( _system );
 
 		const uint totalFrames	= static_cast<uint>( App::REG().get<Core::Struct::Trajectory>( _system ).frameCount );
-		const uint currentFrame = player->currentFrameIndex;
+		const uint currentFrame = player.currentFrameIndex;
 
 		// Guard to prevent valueChanged from triggering JumpTo during programmatic updates
 		_isRefreshing = true;
@@ -192,9 +179,9 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectoryPlayer::_updatePlayPauseIcon()
 	{
-		const App::Trajectory::Player * const player = App::Helper::Trajectory::getPlayer( _system );
+		const App::Trajectory::Player & player = App::REG().get<App::Trajectory::Player>( _system );
 
-		const bool isPlaying = player && not player->paused;
+		const bool isPlaying = not player.paused;
 
 		// Use unicode symbols for now (can be replaced with icons)
 		_btnPlayPause->setIcon( isPlaying ? _icons[ 1 ] : _icons[ 0 ] );

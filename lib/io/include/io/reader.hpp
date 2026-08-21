@@ -31,8 +31,8 @@ namespace VTX::IO
 	{
 	  public:
 		SystemReader() = delete;
-		SystemReader( const FilePath &, const READER_OPTION, Util::Thread::StopToken & );
-		SystemReader( MemoryBuffer &&, const VTX::FilePath &, const READER_OPTION, Util::Thread::StopToken & );
+		SystemReader( const FilePath &, const READER_OPTION, const Util::Thread::StopToken );
+		SystemReader( MemoryBuffer &&, const VTX::FilePath &, const READER_OPTION, const Util::Thread::StopToken );
 
 		size_t frameCount() const;
 
@@ -53,7 +53,7 @@ namespace VTX::IO
 		 */
 		void get( VTX::Core::Struct::Frame &, const FrameIndex = 0 );
 
-		void set( Util::Thread::StopToken & ) noexcept;
+		void set( const Util::Thread::StopToken ) noexcept;
 
 	  private:
 		struct _Impl;

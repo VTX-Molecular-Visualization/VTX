@@ -2,6 +2,7 @@
 #include <app/session.hpp>
 #include <latch>
 #include <thread>
+#include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <util/thread/base_thread.hpp>
 #include <util/thread/thread_manager.hpp>
@@ -30,7 +31,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		template<typename Instruction>
 		void fillOutputs( GromacsInstructions & p_in, Instruction & p_stepIn, GromacsJobData & p_currentJobData )
-		{ fillOutputsFromExpectations( p_in, p_currentJobData ); }
+		{
+			fillOutputsFromExpectations( p_in, p_currentJobData );
+		}
 
 		template<>
 		void fillOutputs( GromacsInstructions & p_in, GenionInstructions & p_stepIn, GromacsJobData & p_currentJobData )

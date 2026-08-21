@@ -4,6 +4,8 @@
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/pass/pass_manager.hpp"
+#include <core/struct/trajectory.hpp>
+#include <renderer/caches.hpp>
 #include <renderer/descriptors.hpp>
 #include <vector>
 
@@ -45,6 +47,11 @@ namespace VTX::App::Pass
 		std::vector<Renderer::Desc::Handle> _representationRemoved;
 
 		/**
+		 * @brief Compute renderer-ready data.
+		 */
+		Renderer::Cache::System::Data _getSystemData( const Entity, const Core::Struct::FrameView ) const;
+
+		/**
 		 * @brief Push system data to renderer.
 		 */
 		void _onSystemLoad( const Events::SystemLoad & );
@@ -63,7 +70,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Push trajectory frame to renderer.
 		 */
-		void _onTrajectoryLoad( const Events::TrajectoryLoad & );
+		void _onTrajectoryCurrentFrameChange( const Events::TrajectoryCurrentFrameChange & );
 
 		/**
 		 * @brief Push representation preset data to renderer.

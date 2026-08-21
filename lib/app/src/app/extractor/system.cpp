@@ -330,7 +330,7 @@ namespace VTX::App::Extractor
 					App::Helper::Trajectory::visitCurrentFrame(
 						*p_data.entity,
 						[ entity = *p_data.entity ]( const Core::Struct::FrameView p_frame )
-						{ HUB().trigger<Events::TrajectoryLoad>( { entity, p_frame } ); }
+						{ HUB().trigger<Events::TrajectoryCurrentFrameChange>( { entity, p_frame } ); }
 					);
 				}
 			}

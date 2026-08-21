@@ -1,137 +1,162 @@
 #include "app/pass/trajectory_updater.hpp"
+#include "app/events.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
-#include "app/system/trajectory.hpp"
-#include "app/system/uid.hpp"
-#include "app/threading/thread_manager.hpp"
-#include <algorithm>
+#include "app/trajectory/loader.hpp"
+#include "app/trajectory/player.hpp"
+#include <cmath>
+#include <core/struct/trajectory.hpp>
+#include <optional>
+#include <utility>
 
 namespace VTX::App::Pass
 {
 	TrajectoryUpdater::TrajectoryUpdater()
-	{ REG().on_destroy<System::TrajectoryFullBuffer>().connect<&TrajectoryUpdater::_onDestroyTrajectory>( this ); }
-
-	bool TrajectoryUpdater::_tryUpdateFrame( const Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept
 	{
-		if ( p_traj.lastFrameAvailable.load( std::memory_order_acquire ) < p_traj.genericData.requestedFrameIndex )
-		{
-			return false;
-		}
-
-		// Trigger trajectory event.
-		HUB().trigger<Events::TrajectoryLoad>( { entity,
-												 p_traj.frameCollection[ p_traj.genericData.requestedFrameIndex ] } );
-
-		return true;
+		REG().on_destroy<Trajectory::Loader>().connect<&TrajectoryUpdater::_onDestroyLoader>( this );
 	}
 
-	void TrajectoryUpdater::_onDestroyTrajectory( Registry &, Entity p_entity )
+	TrajectoryUpdater::~TrajectoryUpdater()
 	{
-		if ( auto traj = REG().try_get<System::TrajectoryFullBuffer>( p_entity ) )
+		REG().on_destroy<Trajectory::Loader>().disconnect<&TrajectoryUpdater::_onDestroyLoader>( this );
+		for ( const Entity entity : REG().view<Trajectory::Loader>() )
 		{
-			// If the trajectory worker is still doing stuff, stop it and join the thread before destroying the
-			// component.
-			Threading::BaseThread * thr = nullptr;
-			THREAD().get( traj->threadId, thr );
-			if ( thr )
-			{
-				thr->stop();
-				thr->wait();
-			}
+			_stopLoader( entity );
+		}
+	}
+
+	void TrajectoryUpdater::_onDestroyLoader( Registry &, const Entity p_entity ) { _stopLoader( p_entity ); }
+
+	void TrajectoryUpdater::_stopLoader( const Entity p_entity )
+	{
+		if ( const auto * const loader = REG().try_get<Trajectory::Loader>( p_entity ) )
+		{
+			loader->thread->stop();
 		}
 	}
 
 	namespace
 	{
 		/**
-		 * @brief Returns whether the new positions has been set to the requestedFrameIndex
-		 *
-		 * @param entity
-		 * @param p_traj
-		 * @return
+		 * @brief Check if a loaded frame is in the frame window.
 		 */
-		bool tryUpdateFrame( const Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept
+		bool isLoadedFrameBatchCurrent(
+			const Trajectory::LoadedFrameBatch &	 p_batch,
+			const Trajectory::TRAJECTORY_BUFFER_MODE p_mode,
+			const uint								 p_requestedFrame
+		) noexcept
 		{
-			if ( p_traj.lastFrameAvailable.load( std::memory_order_acquire ) < p_traj.genericData.requestedFrameIndex )
+			return p_mode == Trajectory::TRAJECTORY_BUFFER_MODE::FULL
+				   || p_batch.availableFrames.contains( p_requestedFrame );
+		}
+
+		/**
+		 * @brief Add loaded frame to storage.
+		 */
+		void applyLoadedFrames(
+			const Entity			   p_entity,
+			Core::Struct::Trajectory & p_trajectory,
+			Trajectory::Loader &	   p_loader,
+			const Trajectory::Player & p_player
+		)
+		{
+			std::optional<Trajectory::LoadedFrameBatch> batch = p_loader.thread->takeLoadedFrames();
+			if ( not batch )
 			{
-				return false;
+				return;
+			}
+			if ( not isLoadedFrameBatchCurrent( *batch, p_loader.mode, p_player.requestedFrameIndex ) )
+			{
+				return;
 			}
 
-			// Trigger trajectory event.
-			HUB().trigger<Events::TrajectoryLoad>(
-				{ entity, p_traj.frameCollection[ p_traj.genericData.requestedFrameIndex ] }
+			for ( Trajectory::LoadedFrame & loadedFrame : batch->frames )
+			{
+				if ( p_trajectory.frames.empty() )
+				{
+					break;
+				}
+
+				const size_t storageFrameIndex
+					= p_loader.mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR
+						  ? static_cast<size_t>( loadedFrame.index ) % p_trajectory.frames.size()
+						  : static_cast<size_t>( loadedFrame.index );
+				if ( storageFrameIndex < p_trajectory.frames.size() )
+				{
+					p_trajectory.frames[ storageFrameIndex ] = std::move( loadedFrame.positions );
+				}
+			}
+
+			REG().patch<Trajectory::Loader>(
+				p_entity,
+				[ availableFrames = batch->availableFrames ]( Trajectory::Loader & p_component )
+				{ p_component.availableFrames = availableFrames; }
 			);
-
-			return true;
-		}
-
-		uint autoplayNextFrameCount( const System::GenericTrajectory & p_traj ) noexcept
-		{ return static_cast<uint>( p_traj.frameElapsedTime / p_traj.playingSpeed ); }
-
-		template<typename TrajectoryT>
-		System::GenericTrajectory & genericData( TrajectoryT & p_ )
-		{ return p_.genericData; }
-
-		/**
-		 * @brief Update the trajectory to request a realistic frame, using availability date
-		 * @param p_expectedNextStep Frame that should be used if requirements are met
-		 * @param p_traj trajectory to by modified
-		 */
-		inline void setRequestedFrameIndex( const uint & p_expectedNextStep, System::TrajectoryFullBuffer & p_traj )
-		{
-			const uint lastFrameAvailable		   = p_traj.lastFrameAvailable.load( std::memory_order_acquire );
-			p_traj.genericData.requestedFrameIndex = std::min( p_expectedNextStep, lastFrameAvailable );
 		}
 
 		/**
-		 * @brief Update frame for every trajectory of the input type
-		 * @tparam TrajectoryT
-		 *
-		 * @param p_delta Time since the previous update
+		 * @brief Set current frame.
 		 */
-		template<typename TrajectoryT>
-		void updateTrajectoresPosition( const float p_delta )
+		bool tryUpdateFrame( const Entity p_entity, const Trajectory::Player & p_player )
 		{
-			for ( Entity it_entity : REG().view<TrajectoryT>() )
+			return Helper::Trajectory::visitFrame(
+				p_entity,
+				p_player.requestedFrameIndex,
+				[ p_entity ]( const Core::Struct::FrameView p_frame )
+				{ HUB().trigger<Events::TrajectoryCurrentFrameChange>( { p_entity, p_frame } ); }
+			);
+		}
+
+		/**
+		 * @brief Get next frame index.
+		 */
+		uint autoplayNextFrameCount( const Trajectory::Player & p_player ) noexcept
+		{
+			if ( not std::isfinite( p_player.playingSpeed ) || p_player.playingSpeed <= 0.f )
 			{
-				TrajectoryT &				trajectory	= REG().get<TrajectoryT>( it_entity );
-				System::GenericTrajectory & genericTraj = genericData( trajectory );
-				auto &						player		= genericTraj.player;
-				player.setStepCount( trajectory.lastFrameAvailable.load( std::memory_order_acquire ) + 1 );
-
-				uint nextStep				  = genericTraj.requestedFrameIndex;
-				uint autoplayUpdateIncrNumber = 0;
-				if ( nextStep == genericTraj.currentFrameIndex
-					 && not genericTraj.paused ) // If there is no outside demand on setting the
-												 // current frame, we use the autoplay.
-				{
-					genericTraj.frameElapsedTime += p_delta;
-					autoplayUpdateIncrNumber = autoplayNextFrameCount( genericTraj );
-					player.next( autoplayUpdateIncrNumber, nextStep );
-				}
-				if ( nextStep == genericTraj.currentFrameIndex )
-				{
-					continue;
-				}
-
-				REG().patch<TrajectoryT>(
-					it_entity,
-					[ &nextStep, &it_entity, &autoplayUpdateIncrNumber ]( TrajectoryT & traj )
-					{
-						System::GenericTrajectory & trajGenericData = genericData( traj );
-						if ( autoplayUpdateIncrNumber > 0 )
-						{
-							trajGenericData.player.increment( autoplayUpdateIncrNumber );
-						}
-
-						setRequestedFrameIndex( nextStep, traj );
-						if ( tryUpdateFrame( it_entity, traj ) )
-						{
-							trajGenericData.currentFrameIndex = trajGenericData.requestedFrameIndex;
-							trajGenericData.frameElapsedTime  = 0;
-						}
-					}
-				);
+				return 0;
 			}
+			return static_cast<uint>( p_player.frameElapsedTime / p_player.playingSpeed );
+		}
+
+		/**
+		 * @brief Get buffer reading direction.
+		 */
+		Trajectory::TRAJECTORY_READ_DIRECTION getReadDirection(
+			const Trajectory::Player & p_player,
+			const uint				   p_targetFrame
+		) noexcept
+		{
+			if ( p_targetFrame != p_player.currentFrameIndex )
+			{
+				return p_targetFrame < p_player.currentFrameIndex ? Trajectory::TRAJECTORY_READ_DIRECTION::BACKWARD
+																  : Trajectory::TRAJECTORY_READ_DIRECTION::FORWARD;
+			}
+
+			uint nextFrame = p_targetFrame;
+			p_player.player.next( nextFrame );
+			return nextFrame < p_targetFrame ? Trajectory::TRAJECTORY_READ_DIRECTION::BACKWARD
+											 : Trajectory::TRAJECTORY_READ_DIRECTION::FORWARD;
+		}
+
+		/**
+		 * @brief Ask a frame window to the loader.
+		 */
+		void requestFrameWindow(
+			Trajectory::Loader &			 loader,
+			const Core::Struct::Trajectory & p_trajectory,
+			const Trajectory::Player &		 p_player,
+			const uint						 p_targetFrame
+		)
+		{
+			const Trajectory::TRAJECTORY_READ_DIRECTION direction = getReadDirection( p_player, p_targetFrame );
+			loader.thread->requestFrameWindow(
+				Helper::Trajectory::getFrameWindow(
+					p_targetFrame, static_cast<uint>( p_trajectory.frameCount ), p_trajectory.frames.size(), direction
+				),
+				direction,
+				loader.availableFrames
+			);
 		}
 	} // namespace
 
@@ -153,7 +178,77 @@ namespace VTX::App::Pass
 		//
 		// Paused time is never accumulated, so resuming cannot skip frames to catch up with the pause duration.
 
-		updateTrajectoresPosition<System::TrajectoryFullBuffer>( p_delta );
+		for ( const Entity entity : REG().view<Core::Struct::Trajectory, Trajectory::Player, Trajectory::Loader>() )
+		{
+			auto & player	  = REG().get<Trajectory::Player>( entity );
+			auto & loader	  = REG().get<Trajectory::Loader>( entity );
+			auto & trajectory = REG().get<Core::Struct::Trajectory>( entity );
+
+			if ( loader.mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR
+				 || loader.availableFrames.getCount() < trajectory.frameCount )
+			{
+				applyLoadedFrames( entity, trajectory, loader, player );
+			}
+
+			const Trajectory::FrameRange			 availableFrames = loader.availableFrames;
+			const Trajectory::TRAJECTORY_BUFFER_MODE mode			 = loader.mode;
+
+			// Nothing available.
+			assert( not availableFrames.isEmpty() );
+
+			uint nextStep			 = player.requestedFrameIndex;
+			uint autoplayUpdateCount = 0;
+
+			// Run autoplay.
+			if ( nextStep == player.currentFrameIndex && not player.paused )
+			{
+				player.frameElapsedTime += p_delta;
+				autoplayUpdateCount = autoplayNextFrameCount( player );
+				player.player.next( autoplayUpdateCount, nextStep );
+				if ( autoplayUpdateCount > 0 )
+				{
+					player.player.increment( autoplayUpdateCount );
+					player.requestedFrameIndex = nextStep;
+				}
+			}
+
+			// Patch and load next if needed.
+			if ( nextStep != player.currentFrameIndex )
+			{
+				if ( not availableFrames.contains( nextStep ) )
+				{
+					if ( mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR )
+					{
+						requestFrameWindow( loader, trajectory, player, nextStep );
+					}
+					continue;
+				}
+
+				REG().patch<Trajectory::Player>(
+					entity,
+					[ entity ]( Trajectory::Player & p_player )
+					{
+						if ( tryUpdateFrame( entity, p_player ) )
+						{
+							p_player.currentFrameIndex = p_player.requestedFrameIndex;
+							p_player.frameElapsedTime  = 0;
+						}
+					}
+				);
+				continue;
+			}
+
+			// Load other frames if circular.
+			if ( mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR && not player.paused )
+			{
+				requestFrameWindow( loader, trajectory, player, player.currentFrameIndex );
+			}
+			// Stop.
+			else if ( mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR )
+			{
+				loader.thread->cancelFrameRequest();
+			}
+		}
 	}
 
 } // namespace VTX::App::Pass

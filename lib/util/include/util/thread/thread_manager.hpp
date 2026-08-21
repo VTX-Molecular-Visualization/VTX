@@ -51,11 +51,10 @@ namespace VTX::Util::Thread
 		/**
 		 * @brief Creates a thread of type T.
 		 */
-		template<typename T, typename... Args>
-			requires std::derived_from<T, BaseThread>
+		template<ManagedThread T, typename... Args>
 		std::shared_ptr<T> createThread( Args &&... p_args )
 		{
-			std::shared_ptr<T> thread = std::make_shared<T>( *this, std::forward<Args>( p_args )... );
+			std::shared_ptr<T> thread( new T( *this, std::forward<Args>( p_args )... ) );
 			_threads.emplace_back( thread );
 			try
 			{

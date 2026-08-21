@@ -8,6 +8,7 @@
 
 namespace VTX::App::Helper::Trajectory
 {
+
 	App::Trajectory::FrameRange getFrameWindow(
 		const uint										 p_frame,
 		const uint										 p_frameCount,
@@ -31,6 +32,28 @@ namespace VTX::App::Helper::Trajectory
 
 		const uint lastFrame = std::max( p_frame + 1, windowFrameCount );
 		return App::Trajectory::FrameRange( lastFrame - windowFrameCount, lastFrame );
+	}
+
+	std::optional<size_t> resolveStorageFrameIndex(
+		const uint									  p_frame,
+		const size_t								  p_frameStorageCount,
+		const App::Trajectory::TRAJECTORY_BUFFER_MODE p_mode,
+		const uint									  p_firstFrameAvailable,
+		const uint									  p_loadedFrameCount
+	) noexcept
+	{
+		if ( p_frameStorageCount == 0 || p_frame < p_firstFrameAvailable
+			 || p_frame >= p_firstFrameAvailable + p_loadedFrameCount )
+		{
+			return std::nullopt;
+		}
+
+		if ( p_mode == App::Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR )
+		{
+			return static_cast<size_t>( p_frame ) % p_frameStorageCount;
+		}
+
+		return p_frame < p_frameStorageCount ? std::optional<size_t>( p_frame ) : std::nullopt;
 	}
 
 	bool isFrameAvailable( const Entity p_entity, const uint p_frame )
@@ -58,7 +81,7 @@ namespace VTX::App::Helper::Trajectory
 
 		if ( const auto * const loader = REG().try_get<App::Trajectory::Loader>( p_entity ) )
 		{
-			const std::optional<size_t> storageFrameIndex = App::Trajectory::resolveStorageFrameIndex(
+			const std::optional<size_t> storageFrameIndex = resolveStorageFrameIndex(
 				p_frame,
 				trajectory->frames.size(),
 				loader->mode,
@@ -128,9 +151,6 @@ namespace VTX::App::Helper::Trajectory
 	}
 
 	bool hasMultiFrameTrajectory( const Entity p_entity ) { return REG().any_of<App::Trajectory::Player>( p_entity ); }
-
-	const App::Trajectory::Player * getPlayer( const Entity p_entity )
-	{ return REG().try_get<App::Trajectory::Player>( p_entity ); }
 
 	App::Trajectory::FrameRange getAvailableFrames( const Entity p_entity )
 	{

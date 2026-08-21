@@ -141,7 +141,7 @@ TEST_CASE( "VTX_APP - Trajectory loader circular mapping", "[unit][trajectory]" 
 	uint	   loadedFrameCount		= 1;
 	const auto getStorageFrameIndex = [ & ]( const uint p_frame, const size_t p_storageCount )
 	{
-		return resolveStorageFrameIndex(
+		return VTX::App::Helper::Trajectory::resolveStorageFrameIndex(
 			p_frame, p_storageCount, TRAJECTORY_BUFFER_MODE::CIRCULAR, firstFrameAvailable, loadedFrameCount
 		);
 	};
@@ -217,21 +217,11 @@ TEST_CASE( "VTX_APP - Trajectory loader full mapping", "[unit][trajectory]" )
 {
 	using namespace VTX::App::Trajectory;
 
-	CHECK( resolveStorageFrameIndex( 0, 10, TRAJECTORY_BUFFER_MODE::FULL, 0, 3 ) == 0 );
-	CHECK( resolveStorageFrameIndex( 2, 10, TRAJECTORY_BUFFER_MODE::FULL, 0, 3 ) == 2 );
-	CHECK_FALSE( resolveStorageFrameIndex( 3, 10, TRAJECTORY_BUFFER_MODE::FULL, 0, 3 ).has_value() );
-}
-
-TEST_CASE( "VTX_APP - Loaded trajectory batch validity", "[unit][trajectory]" )
-{
-	using namespace VTX::App::Trajectory;
-
-	LoadedFrameBatch batch;
-	batch.availableFrames = FrameRange( 7, 10 );
-
-	CHECK( isLoadedFrameBatchCurrent( batch, TRAJECTORY_BUFFER_MODE::FULL, 0 ) );
-	CHECK( isLoadedFrameBatchCurrent( batch, TRAJECTORY_BUFFER_MODE::CIRCULAR, 8 ) );
-	CHECK_FALSE( isLoadedFrameBatchCurrent( batch, TRAJECTORY_BUFFER_MODE::CIRCULAR, 0 ) );
+	CHECK( VTX::App::Helper::Trajectory::resolveStorageFrameIndex( 0, 10, TRAJECTORY_BUFFER_MODE::FULL, 0, 3 ) == 0 );
+	CHECK( VTX::App::Helper::Trajectory::resolveStorageFrameIndex( 2, 10, TRAJECTORY_BUFFER_MODE::FULL, 0, 3 ) == 2 );
+	CHECK_FALSE(
+		VTX::App::Helper::Trajectory::resolveStorageFrameIndex( 3, 10, TRAJECTORY_BUFFER_MODE::FULL, 0, 3 ).has_value()
+	);
 }
 
 TEST_CASE( "VTX_APP - Trajectory player replacement lifecycle", "[integration][trajectory]" )

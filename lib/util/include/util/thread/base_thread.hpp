@@ -2,6 +2,7 @@
 #define __VTX_UTIL_THREAD_BASE_THREAD__
 
 #include <atomic>
+#include <concepts>
 #include <functional>
 #include <mutex>
 #include <optional>
@@ -47,7 +48,7 @@ namespace VTX::Util::Thread
 		 * @brief Stops the thread.
 		 * If the thread is not joinable, does nothing.
 		 */
-		void stop();
+		virtual void stop();
 
 		/**
 		 * @brief Checks if the thread has ended.
@@ -88,19 +89,18 @@ namespace VTX::Util::Thread
 
 	  protected:
 		/**
-		 * @brief Starts the content of the function in a new thread.
-		 * Once the function returns
-
-		 * * p_callback is called.
-		 */
-		void _start( const AsyncOp & p_function, const EndCallback & p_callback = {} );
-
-		/**
 		 * @brief Never used directly.
 		 * ThreadManager is responsible of the creation of BaseThread
 		 * object.
 		 */
 		BaseThread( ThreadManager & p_manager );
+
+		/**
+		 * @brief Starts the content of the function in a new thread.
+		 * Once the function returns
+		 * p_callback is called.
+		 */
+		void _start( const AsyncOp & p_function, const EndCallback & p_callback = {} );
 
 	  private:
 		/**
@@ -148,6 +148,14 @@ namespace VTX::Util::Thread
 		 */
 		ProgressCallback   _progressCallback;
 		TerminatedCallback _terminatedCallback;
+	};
+
+	/**
+	 * @brief Concept for derived threads.
+	 */
+	template<typename T>
+	concept ManagedThread = std::derived_from<T, BaseThread> && requires( T & p_thread ) {
+		{ p_thread.start() } -> std::same_as<void>;
 	};
 
 	using OptionalThreadReference = std::optional<std::reference_wrapper<BaseThread>>;

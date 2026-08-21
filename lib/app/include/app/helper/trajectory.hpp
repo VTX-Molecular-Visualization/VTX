@@ -6,6 +6,7 @@
 #include "app/trajectory/types.hpp"
 #include <core/struct/trajectory.hpp>
 #include <functional>
+#include <optional>
 
 namespace VTX::IO::Writer
 {
@@ -27,6 +28,17 @@ namespace VTX::App::Helper::Trajectory
 	) noexcept;
 
 	/**
+	 * @brief Compute the frame storage index.
+	 */
+	std::optional<size_t> resolveStorageFrameIndex(
+		const uint,
+		const size_t,
+		const App::Trajectory::TRAJECTORY_BUFFER_MODE,
+		const uint,
+		const uint
+	) noexcept;
+
+	/**
 	 * @brief Check whether a trajectory frame is currently available.
 	 */
 	bool isFrameAvailable( const Entity, const uint );
@@ -41,17 +53,15 @@ namespace VTX::App::Helper::Trajectory
 	 */
 	bool visitCurrentFrame( const Entity, const FrameVisitor & );
 
+	/**
+	 * @brief Get a copy of a frame (blocking thread), for python usage.
+	 */
 	Core::Struct::Frame getFrame( const Entity, const uint );
 
 	/**
 	 * @brief Check if a system has a multi-frame trajectory.
 	 */
 	bool hasMultiFrameTrajectory( const Entity );
-
-	/**
-	 * @brief Get the player data of a multi-frame trajectory.
-	 */
-	const App::Trajectory::Player * getPlayer( const Entity );
 
 	/**
 	 * @brief Get the range of currently available frames.
