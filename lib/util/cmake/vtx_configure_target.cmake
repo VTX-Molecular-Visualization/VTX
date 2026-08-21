@@ -2,7 +2,11 @@ option(VTX_ENABLE_NATIVE_OPTIMIZATIONS "Enable CPU-specific release optimization
 option(VTX_ENABLE_INTERPROCEDURAL_OPTIMIZATION "Enable interprocedural optimization for VTX targets." OFF)
 
 function(vtx_configure_target p_target)
-	if(CMAKE_COMPILER_IS_GNUCC)
+	if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+		target_compile_options(${p_target} PRIVATE
+			$<$<COMPILE_LANGUAGE:CXX>:-fexperimental-library>
+		)
+	elseif(CMAKE_COMPILER_IS_GNUCC)
 		target_compile_options(${p_target} PRIVATE -Wpedantic -Wall)
 		target_compile_options(${p_target} PRIVATE
         	$<$<CONFIG:Release>:-O2 -ffast-math>
