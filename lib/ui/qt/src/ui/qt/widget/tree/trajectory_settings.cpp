@@ -6,7 +6,7 @@
 #include <app/action/trajectory.hpp>
 #include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
-#include <app/system/trajectory_player.hpp>
+#include <app/trajectory/player.hpp>
 #include <core/struct/trajectory.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
@@ -21,11 +21,11 @@ namespace VTX::UI::QT::Widget::Tree
 
 		// Player mode combobox
 		_playerModeCombo = new QComboBox( this );
-		_playerModeCombo->addItem( tr( "Forward" ), int( App::System::TRAJECTORY_PLAY_MODE::FORWARD ) );
-		_playerModeCombo->addItem( tr( "Forward Loop" ), int( App::System::TRAJECTORY_PLAY_MODE::FORWARD_LOOP ) );
-		_playerModeCombo->addItem( tr( "Backward" ), int( App::System::TRAJECTORY_PLAY_MODE::BACKWARD ) );
-		_playerModeCombo->addItem( tr( "Backward Loop" ), int( App::System::TRAJECTORY_PLAY_MODE::BACKWARD_LOOP ) );
-		_playerModeCombo->addItem( tr( "Ping Pong" ), int( App::System::TRAJECTORY_PLAY_MODE::PING_PONG ) );
+		_playerModeCombo->addItem( tr( "Forward" ), int( App::Trajectory::PLAY_MODE::FORWARD ) );
+		_playerModeCombo->addItem( tr( "Forward Loop" ), int( App::Trajectory::PLAY_MODE::FORWARD_LOOP ) );
+		_playerModeCombo->addItem( tr( "Backward" ), int( App::Trajectory::PLAY_MODE::BACKWARD ) );
+		_playerModeCombo->addItem( tr( "Backward Loop" ), int( App::Trajectory::PLAY_MODE::BACKWARD_LOOP ) );
+		_playerModeCombo->addItem( tr( "Ping Pong" ), int( App::Trajectory::PLAY_MODE::PING_PONG ) );
 		formLayout->addRow( tr( "Mode" ), _playerModeCombo );
 
 		// Speed control: slider + spinbox in a horizontal layout
@@ -65,19 +65,13 @@ namespace VTX::UI::QT::Widget::Tree
 		_frameSpinBox->installEventFilter( this );
 
 		// Connect to trajectory updates
-		App::REG().on_update<App::System::TrajectoryPlayer>().connect<&TrajectorySettings::_onTrajectoryUpdated>(
-			this
-		);
+		App::REG().on_update<App::Trajectory::Player>().connect<&TrajectorySettings::_onTrajectoryUpdated>( this );
 
 		_refresh();
 	}
 
 	TrajectorySettings::~TrajectorySettings()
-	{
-		App::REG().on_update<App::System::TrajectoryPlayer>().disconnect<&TrajectorySettings::_onTrajectoryUpdated>(
-			this
-		);
-	}
+	{ App::REG().on_update<App::Trajectory::Player>().disconnect<&TrajectorySettings::_onTrajectoryUpdated>( this ); }
 
 	void TrajectorySettings::_onPlayerModeChanged( int p_index )
 	{
@@ -86,7 +80,7 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		auto mode = static_cast<App::System::TRAJECTORY_PLAY_MODE>( _playerModeCombo->itemData( p_index ).toInt() );
+		auto mode = static_cast<App::Trajectory::PLAY_MODE>( _playerModeCombo->itemData( p_index ).toInt() );
 		App::ACTION().execute<App::Action::Trajectory::ChangePlayer>( _system, mode );
 	}
 
@@ -147,7 +141,7 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectorySettings::_onFrameSpinBoxFocused()
 	{
-		const App::System::TrajectoryPlayer * const player = App::Helper::Trajectory::getPlayer( _system );
+		const App::Trajectory::Player * const player = App::Helper::Trajectory::getPlayer( _system );
 
 		if ( player && not player->paused )
 		{
@@ -157,7 +151,7 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectorySettings::_refresh()
 	{
-		const App::System::TrajectoryPlayer * const player = App::Helper::Trajectory::getPlayer( _system );
+		const App::Trajectory::Player * const player = App::Helper::Trajectory::getPlayer( _system );
 
 		if ( player == nullptr )
 		{

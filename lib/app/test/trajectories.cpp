@@ -4,8 +4,8 @@
 #include <app/helper/trajectory.hpp>
 #include <app/pass/pass_manager.hpp>
 #include <app/services.hpp>
-#include <app/system/trajectory_loader.hpp>
-#include <app/system/trajectory_player.hpp>
+#include <app/trajectory/loader.hpp>
+#include <app/trajectory/player.hpp>
 #include <app/trajectory/types.hpp>
 #include <array>
 #include <catch2/catch_test_macros.hpp>
@@ -30,22 +30,22 @@ namespace
 	{
 		TrajectoryPlayerLifecycleObserver()
 		{
-			App::REG()
-				.on_construct<App::System::TrajectoryPlayer>()
-				.connect<&TrajectoryPlayerLifecycleObserver::onConstruct>( this );
-			App::REG()
-				.on_destroy<App::System::TrajectoryPlayer>()
-				.connect<&TrajectoryPlayerLifecycleObserver::onDestroy>( this );
+			App::REG().on_construct<App::Trajectory::Player>().connect<&TrajectoryPlayerLifecycleObserver::onConstruct>(
+				this
+			);
+			App::REG().on_destroy<App::Trajectory::Player>().connect<&TrajectoryPlayerLifecycleObserver::onDestroy>(
+				this
+			);
 		}
 
 		~TrajectoryPlayerLifecycleObserver()
 		{
 			App::REG()
-				.on_construct<App::System::TrajectoryPlayer>()
+				.on_construct<App::Trajectory::Player>()
 				.disconnect<&TrajectoryPlayerLifecycleObserver::onConstruct>( this );
-			App::REG()
-				.on_destroy<App::System::TrajectoryPlayer>()
-				.disconnect<&TrajectoryPlayerLifecycleObserver::onDestroy>( this );
+			App::REG().on_destroy<App::Trajectory::Player>().disconnect<&TrajectoryPlayerLifecycleObserver::onDestroy>(
+				this
+			);
 		}
 
 		void onConstruct( Registry &, const Entity ) { constructCount++; }
@@ -251,17 +251,17 @@ TEST_CASE( "VTX_APP - Trajectory player replacement lifecycle", "[integration][t
 	associateTrajectory( entity, dataDirectory / "1gcn_traj.xtc" );
 	CHECK( observer.constructCount == 1 );
 	CHECK( observer.destroyCount == 0 );
-	CHECK( REG().all_of<System::TrajectoryPlayer, System::TrajectoryLoader>( entity ) );
+	CHECK( REG().all_of<Trajectory::Player, Trajectory::Loader>( entity ) );
 
 	associateTrajectory( entity, dataDirectory / "1gcn_traj.xtc" );
 	CHECK( observer.constructCount == 2 );
 	CHECK( observer.destroyCount == 1 );
-	CHECK( REG().all_of<System::TrajectoryPlayer, System::TrajectoryLoader>( entity ) );
+	CHECK( REG().all_of<Trajectory::Player, Trajectory::Loader>( entity ) );
 
 	associateTrajectory( entity, dataDirectory / "1gcn.pdb" );
 	CHECK( observer.constructCount == 2 );
 	CHECK( observer.destroyCount == 2 );
-	CHECK_FALSE( REG().any_of<System::TrajectoryPlayer, System::TrajectoryLoader>( entity ) );
+	CHECK_FALSE( REG().any_of<Trajectory::Player, Trajectory::Loader>( entity ) );
 }
 
 TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" )
@@ -293,7 +293,7 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 	PASS().update( 0.f, 0.f );
 	extractor->wait();
 
-	const auto & loader = REG().get<System::TrajectoryLoader>( entity );
+	const auto & loader = REG().get<Trajectory::Loader>( entity );
 	CHECK( loader.mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR );
 
 	const auto & trajectory = REG().get<Core::Struct::Trajectory>( entity );
@@ -339,7 +339,7 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 			{ CHECK( p_frame.size() == topology.getAtomCount() ); }
 		)
 	);
-	CHECK( REG().get<System::TrajectoryPlayer>( entity ).currentFrameIndex == lastFrame );
+	CHECK( REG().get<Trajectory::Player>( entity ).currentFrameIndex == lastFrame );
 
 	Action::Trajectory::JumpTo().execute( entity, 0 );
 	PASS().update( 0.f, 0.f );
@@ -362,7 +362,7 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 			{ CHECK( p_frame.size() == topology.getAtomCount() ); }
 		)
 	);
-	CHECK( REG().get<System::TrajectoryPlayer>( entity ).currentFrameIndex == 0 );
+	CHECK( REG().get<Trajectory::Player>( entity ).currentFrameIndex == 0 );
 
 	const uint64_t requestVersion = loader.thread->getRequestVersion();
 	PASS().update( 1000.f, 0.f );

@@ -2,7 +2,7 @@
 #define __VTX_APP_ACTION_TRAJECTORY__
 
 #include "app/ecs.hpp"
-#include "app/system/trajectory_player.hpp"
+#include "app/trajectory/player.hpp"
 
 namespace VTX::App::Action::Trajectory
 {
@@ -33,7 +33,7 @@ namespace VTX::App::Action::Trajectory
 	struct ChangePlayer
 	{
 	  public:
-		void execute( const Entity, const System::TRAJECTORY_PLAY_MODE );
+		void execute( const Entity, const App::Trajectory::PLAY_MODE );
 	};
 
 	struct ChangeSpeed

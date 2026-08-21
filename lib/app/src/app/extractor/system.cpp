@@ -10,10 +10,10 @@
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
-#include "app/system/trajectory_loader.hpp"
-#include "app/system/trajectory_player.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
+#include "app/trajectory/loader.hpp"
+#include "app/trajectory/player.hpp"
 #include "app/trajectory/types.hpp"
 #include "app/uid/uid_manager.hpp"
 #include <core/struct/topology.hpp>
@@ -51,7 +51,7 @@ namespace VTX::App::Extractor
 		Util::Math::AABB									   aabb;
 		Util::Math::Grid<Index>								   atomGrid;
 		Core::Struct::Trajectory							   trajectory;
-		std::optional<App::System::TrajectoryPlayer>		   trajectoryPlayer;
+		std::optional<App::Trajectory::Player>				   trajectoryPlayer;
 		std::optional<App::Trajectory::TRAJECTORY_BUFFER_MODE> trajectoryBufferMode;
 	};
 
@@ -242,16 +242,16 @@ namespace VTX::App::Extractor
 	void addTrajectory( const Entity & p_entity, Pending & p_data )
 	{
 		auto & registry = REG();
-		registry.remove<App::System::TrajectoryLoader>( p_entity );
-		registry.remove<App::System::TrajectoryPlayer>( p_entity );
+		registry.remove<App::Trajectory::Loader>( p_entity );
+		registry.remove<App::Trajectory::Player>( p_entity );
 		registry.emplace_or_replace<Core::Struct::Trajectory>( p_entity, std::move( p_data.trajectory ) );
 
 		if ( p_data.trajectoryBufferMode && p_data.trajectoryPlayer )
 		{
-			registry.emplace<App::System::TrajectoryPlayer>( p_entity, std::move( *p_data.trajectoryPlayer ) );
-			registry.emplace<App::System::TrajectoryLoader>(
+			registry.emplace<App::Trajectory::Player>( p_entity, std::move( *p_data.trajectoryPlayer ) );
+			registry.emplace<App::Trajectory::Loader>(
 				p_entity,
-				THREAD().createThread<App::Trajectory::LoaderThread>(
+				THREAD().createThread<App::Thread::TrajectoryLoader>(
 					std::move( p_data.reader.value() ), *p_data.trajectoryBufferMode
 				),
 				*p_data.trajectoryBufferMode

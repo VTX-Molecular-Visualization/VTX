@@ -6,7 +6,6 @@
 #include <app/constants.hpp>
 #include <app/services.hpp>
 #include <app/system/visibility.hpp>
-#include <app/thread/trigger_event.hpp>
 //
 #include <tool/mdprep/actions/jobs.hpp>
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
@@ -14,6 +13,7 @@
 #include <tool/mdprep/gateway/shared.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
+#include <util/thread/thread_manager.hpp>
 
 namespace VTX::Tool::Mdprep::Actions
 {
@@ -57,7 +57,9 @@ namespace VTX::Tool::Mdprep::Actions
 			{
 				VTX_ERROR( "[MDPREP] Packing failed: {}", packReport.errMsg );
 			}
-			App::Thread::TiggerEvent { Gateway::SystemPacked { not packReport.error, resultDir.string() } };
+			App::THREAD().dispatch( [ event
+									  = Gateway::SystemPacked { not packReport.error, resultDir.string() } ]() mutable
+									{ App::HUB().trigger( std::move( event ) ); } );
 			if ( _impl->thrData.stopToken.stop_requested() )
 			{
 				goto theEnd;
@@ -89,7 +91,8 @@ namespace VTX::Tool::Mdprep::Actions
 					"System written at : {}",
 					fmt::format( fmt::runtime( std::string( App::LOG_LINK_FORMAT ) ), resultDir.string() )
 				);
-				App::HUB().trigger( Gateway::PreparationFinished { true } );
+				App::THREAD().dispatch( [ event = Gateway::PreparationFinished { true } ]() mutable
+										{ App::HUB().trigger( std::move( event ) ); } );
 			}
 			else
 			{
@@ -98,9 +101,8 @@ namespace VTX::Tool::Mdprep::Actions
 		}
 
 	theEnd:
-		/**/ {
-			App::Thread::TiggerEvent t { Gateway::PreparationFinished() };
-		}
+		/**/ App::THREAD().dispatch( [ event = Gateway::PreparationFinished() ]() mutable
+									 { App::HUB().trigger( std::move( event ) ); } );
 		_impl->waiter.count_down();
 	}
 
@@ -111,17 +113,6 @@ namespace VTX::Tool::Mdprep::Actions
 			_impl->waiter.wait();
 		}
 	}
-
-	namespace
-	{
-
-		class TriggerCheckReportEvent
-		{
-		  public:
-			inline void execute( const Mdprep::Gateway::CheckReport & p_ )
-			{ App::HUB().trigger<Mdprep::Gateway::CheckReport>( p_ ); }
-		};
-	} // namespace
 
 	struct CheckSystem::_Impl
 	{
@@ -137,12 +128,12 @@ namespace VTX::Tool::Mdprep::Actions
 	{
 		if ( not App::System::isAnythingVisible() )
 		{
-			App::ACTION().subscribe(
-				App::Action::QueuedAction(
-					TriggerCheckReportEvent(),
-					Mdprep::Gateway::CheckReport {
-						Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField, 0, true, "Nothing to check." }
-				)
+			App::THREAD().dispatch(
+				[ event = Mdprep::Gateway::CheckReport { Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField,
+														 0,
+														 true,
+														 "Nothing to check." } ]() mutable
+				{ App::HUB().trigger( std::move( event ) ); }
 			);
 			goto theEnd;
 		}
@@ -161,14 +152,12 @@ namespace VTX::Tool::Mdprep::Actions
 				p_gmxIntructions.pdb2gmx.water
 			);
 			auto reason = tester.why();
-			App::ACTION().subscribe(
-				App::Action::QueuedAction(
-					TriggerCheckReportEvent(),
-					Mdprep::Gateway::CheckReport { Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField,
-												   0,
-												   tester.isSystemOk(),
-												   std::string( reason.begin(), reason.end() ) }
-				)
+			App::THREAD().dispatch(
+				[ event = Mdprep::Gateway::CheckReport { Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField,
+														 0,
+														 tester.isSystemOk(),
+														 std::string( reason.begin(), reason.end() ) } ]() mutable
+				{ App::HUB().trigger( std::move( event ) ); }
 			);
 		}
 

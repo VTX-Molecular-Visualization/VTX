@@ -1,6 +1,6 @@
 #include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
-#include "app/system/trajectory_loader.hpp"
+#include "app/trajectory/loader.hpp"
 #include <algorithm>
 #include <io/writer/system.hpp>
 #include <stdexcept>
@@ -35,7 +35,7 @@ namespace VTX::App::Helper::Trajectory
 
 	bool isFrameAvailable( const Entity p_entity, const uint p_frame )
 	{
-		if ( const auto * const loader = REG().try_get<System::TrajectoryLoader>( p_entity ) )
+		if ( const auto * const loader = REG().try_get<App::Trajectory::Loader>( p_entity ) )
 		{
 			return loader->availableFrames.contains( p_frame );
 		}
@@ -56,7 +56,7 @@ namespace VTX::App::Helper::Trajectory
 			return false;
 		}
 
-		if ( const auto * const loader = REG().try_get<System::TrajectoryLoader>( p_entity ) )
+		if ( const auto * const loader = REG().try_get<App::Trajectory::Loader>( p_entity ) )
 		{
 			const std::optional<size_t> storageFrameIndex = App::Trajectory::resolveStorageFrameIndex(
 				p_frame,
@@ -85,7 +85,7 @@ namespace VTX::App::Helper::Trajectory
 
 	bool visitCurrentFrame( const Entity p_entity, const FrameVisitor & p_visitor )
 	{
-		const auto * const player = REG().try_get<App::System::TrajectoryPlayer>( p_entity );
+		const auto * const player = REG().try_get<App::Trajectory::Player>( p_entity );
 		return visitFrame( p_entity, player ? player->currentFrameIndex : 0, p_visitor );
 	}
 
@@ -116,7 +116,7 @@ namespace VTX::App::Helper::Trajectory
 					return frame;
 				}
 
-				const auto * const loader = REG().try_get<System::TrajectoryLoader>( p_entity );
+				const auto * const loader = REG().try_get<App::Trajectory::Loader>( p_entity );
 				if ( loader == nullptr )
 				{
 					throw std::runtime_error( "Trajectory frame is unavailable." );
@@ -127,14 +127,14 @@ namespace VTX::App::Helper::Trajectory
 		);
 	}
 
-	bool hasMultiFrameTrajectory( const Entity p_entity ) { return REG().any_of<System::TrajectoryPlayer>( p_entity ); }
+	bool hasMultiFrameTrajectory( const Entity p_entity ) { return REG().any_of<App::Trajectory::Player>( p_entity ); }
 
-	const System::TrajectoryPlayer * getPlayer( const Entity p_entity )
-	{ return REG().try_get<System::TrajectoryPlayer>( p_entity ); }
+	const App::Trajectory::Player * getPlayer( const Entity p_entity )
+	{ return REG().try_get<App::Trajectory::Player>( p_entity ); }
 
 	App::Trajectory::FrameRange getAvailableFrames( const Entity p_entity )
 	{
-		if ( const auto * const loader = REG().try_get<System::TrajectoryLoader>( p_entity ) )
+		if ( const auto * const loader = REG().try_get<App::Trajectory::Loader>( p_entity ) )
 		{
 			return loader->availableFrames;
 		}

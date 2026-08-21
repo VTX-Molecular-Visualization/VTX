@@ -71,6 +71,7 @@ namespace VTX::Util::Thread
 
 		/**
 		 * @brief Synchronizes the execution of a function in the context of the thread that owns the ThreadManager.
+		 * Called from another thread, this function will block until the function has been executed.
 		 */
 		template<typename Func>
 		auto synchronize( Func && p_function ) -> std::invoke_result_t<std::decay_t<Func> &>
@@ -100,6 +101,22 @@ namespace VTX::Util::Thread
 			}
 
 			return future.get();
+		}
+
+		/**
+		 * @brief Dispatches a function to be executed in the context of the thread that owns the ThreadManager.
+		 * Called from another thread, this function will return immediately.
+		 */
+		template<typename Func>
+			requires std::invocable<std::decay_t<Func> &>
+		void dispatch( Func && p_function )
+		{
+			_DispatchedCall		   call( std::forward<Func>( p_function ) );
+			const std::scoped_lock lock( _synchronizedCallsMutex );
+			if ( not _shuttingDown )
+			{
+				_dispatchedCalls.emplace_back( std::move( call ) );
+			}
 		}
 
 		/**
@@ -134,6 +151,27 @@ namespace VTX::Util::Thread
 		};
 
 		/**
+		 * @brief Struct to store a dispatched call.
+		 */
+		struct _DispatchedCall
+		{
+			template<typename Func>
+			_DispatchedCall( Func && p_function ) :
+				task( std::forward<Func>( p_function ) ), result( task.get_future() )
+			{
+			}
+
+			void execute()
+			{
+				task();
+				result.get();
+			}
+
+			std::packaged_task<void()> task;
+			std::future<void>		   result;
+		};
+
+		/**
 		 * @brief List of threads.
 		 */
 		std::list<std::shared_ptr<BaseThread>> _threads;
@@ -149,9 +187,14 @@ namespace VTX::Util::Thread
 		std::mutex _synchronizedCallsMutex;
 
 		/**
-		 * @brief List of synchronized calls to be executed in the context of the thread that owns the ThreadManager.
+		 * @brief List of synchronized calls to be executed.
 		 */
 		std::list<_SynchronizedCall> _synchronizedCalls;
+
+		/**
+		 * @brief List of dispatched calls to be executed.
+		 */
+		std::list<_DispatchedCall> _dispatchedCalls;
 
 		/**
 		 * @brief Set of thread ids that have been cancelled.

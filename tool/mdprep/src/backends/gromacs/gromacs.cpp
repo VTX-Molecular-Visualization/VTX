@@ -1,10 +1,10 @@
 #include <app/services.hpp>
 #include <app/session.hpp>
-#include <app/thread/trigger_event.hpp>
 #include <latch>
 #include <thread>
 #include <util/logger.hpp>
 #include <util/thread/base_thread.hpp>
+#include <util/thread/thread_manager.hpp>
 //
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
 #include <tool/mdprep/gateway/shared.hpp>
@@ -79,7 +79,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		) noexcept
 		{
 			const int displayIndex = stepNum;
-			App::Thread::TiggerEvent { Gateway::PreparationStepStarted { displayIndex, p_stepName } };
+			App::THREAD().dispatch( [ event = Gateway::PreparationStepStarted { displayIndex, p_stepName } ]() mutable
+									{ App::HUB().trigger( std::move( event ) ); } );
 
 			const FilePath jobDir = p_in.rootDir / p_stepName;
 			VTX_DEBUG( "[MDPREP] Starting preparation step <{}> in <{}>.", p_stepName, jobDir.string() );
@@ -106,7 +107,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 					ev.stdOut	  = channels->stdout_;
 					ev.stdErr	  = channels->stderr_;
 				}
-				App::Thread::TiggerEvent { std::move( ev ) };
+				App::THREAD().dispatch( [ event = std::move( ev ) ]() mutable
+										{ App::HUB().trigger( std::move( event ) ); } );
 			};
 
 			if ( currentJobData.report.errorOccured )

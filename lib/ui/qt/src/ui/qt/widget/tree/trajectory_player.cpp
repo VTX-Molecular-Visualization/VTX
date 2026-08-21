@@ -9,8 +9,8 @@
 #include <app/action/trajectory.hpp>
 #include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
-#include <app/system/trajectory_loader.hpp>
-#include <app/system/trajectory_player.hpp>
+#include <app/trajectory/loader.hpp>
+#include <app/trajectory/player.hpp>
 #include <core/struct/trajectory.hpp>
 #include <util/event_hub.hpp>
 #include <util/thread/thread_manager.hpp>
@@ -79,8 +79,8 @@ namespace VTX::UI::QT::Widget::Tree
 		connect( _btnSettings, &QPushButton::clicked, this, &TrajectoryPlayer::_onSettingsClicked );
 
 		// Connect to trajectory updates
-		App::REG().on_update<App::System::TrajectoryPlayer>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
-		App::REG().on_update<App::System::TrajectoryLoader>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
+		App::REG().on_update<App::Trajectory::Player>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
+		App::REG().on_update<App::Trajectory::Loader>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
 		App::HUB().connect<App::Events::ThreadProgress, &TrajectoryPlayer::_onTrajectoryLoadingProgress>( this );
 
 		// Initial state
@@ -90,12 +90,8 @@ namespace VTX::UI::QT::Widget::Tree
 	TrajectoryPlayer::~TrajectoryPlayer()
 	{
 		App::HUB().disconnectAllOf( *this );
-		App::REG().on_update<App::System::TrajectoryPlayer>().disconnect<&TrajectoryPlayer::_onTrajectoryUpdated>(
-			this
-		);
-		App::REG().on_update<App::System::TrajectoryLoader>().disconnect<&TrajectoryPlayer::_onTrajectoryUpdated>(
-			this
-		);
+		App::REG().on_update<App::Trajectory::Player>().disconnect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
+		App::REG().on_update<App::Trajectory::Loader>().disconnect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
 	}
 
 	std::array<QIcon, 4> TrajectoryPlayer::_getIcons()
@@ -128,7 +124,7 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		const App::System::TrajectoryPlayer * const player = App::Helper::Trajectory::getPlayer( _system );
+		const App::Trajectory::Player * const player = App::Helper::Trajectory::getPlayer( _system );
 
 		if ( player )
 		{
@@ -147,10 +143,9 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectoryPlayer::_onTrajectoryLoadingProgress( const App::Events::ThreadProgress & p_event )
 	{
-		const App::System::TrajectoryLoader * const loader
-			= App::REG().try_get<App::System::TrajectoryLoader>( _system );
-		const App::System::TrajectoryPlayer * const player		   = App::Helper::Trajectory::getPlayer( _system );
-		Util::Thread::BaseThread *					progressThread = App::THREAD().get( p_event.id );
+		const App::Trajectory::Loader * const loader		 = App::REG().try_get<App::Trajectory::Loader>( _system );
+		const App::Trajectory::Player * const player		 = App::Helper::Trajectory::getPlayer( _system );
+		Util::Thread::BaseThread *			  progressThread = App::THREAD().get( p_event.id );
 		if ( loader == nullptr || player == nullptr || progressThread != loader->thread.get() )
 		{
 			return;
@@ -164,7 +159,7 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectoryPlayer::_refresh()
 	{
-		const App::System::TrajectoryPlayer * const player = App::Helper::Trajectory::getPlayer( _system );
+		const App::Trajectory::Player * const player = App::Helper::Trajectory::getPlayer( _system );
 
 		if ( player == nullptr )
 		{
@@ -197,7 +192,7 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectoryPlayer::_updatePlayPauseIcon()
 	{
-		const App::System::TrajectoryPlayer * const player = App::Helper::Trajectory::getPlayer( _system );
+		const App::Trajectory::Player * const player = App::Helper::Trajectory::getPlayer( _system );
 
 		const bool isPlaying = player && not player->paused;
 

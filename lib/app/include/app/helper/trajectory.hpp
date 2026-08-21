@@ -2,7 +2,7 @@
 #define __VTX_APP_HELPER_TRAJECTORY__
 
 #include "app/ecs.hpp"
-#include "app/system/trajectory_player.hpp"
+#include "app/trajectory/player.hpp"
 #include "app/trajectory/types.hpp"
 #include <core/struct/trajectory.hpp>
 #include <functional>
@@ -51,7 +51,7 @@ namespace VTX::App::Helper::Trajectory
 	/**
 	 * @brief Get the player data of a multi-frame trajectory.
 	 */
-	const App::System::TrajectoryPlayer * getPlayer( const Entity );
+	const App::Trajectory::Player * getPlayer( const Entity );
 
 	/**
 	 * @brief Get the range of currently available frames.

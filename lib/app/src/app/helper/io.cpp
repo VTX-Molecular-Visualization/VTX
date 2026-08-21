@@ -1,7 +1,7 @@
 #include "app/helper/io.hpp"
 #include "app/ecs.hpp"
 #include "app/services.hpp"
-#include "app/system/trajectory_player.hpp"
+#include "app/trajectory/player.hpp"
 #include <core/struct/trajectory.hpp>
 #include <io/metadata.hpp>
 #include <io/reader.hpp>
@@ -15,7 +15,7 @@ namespace VTX::App::Helper::IO
 		{
 			for ( const Entity entity : REG().view<Core::Struct::Trajectory, VTX::IO::Metadata>() )
 			{
-				if ( not REG().all_of<System::TrajectoryPlayer>( entity ) )
+				if ( not REG().all_of<App::Trajectory::Player>( entity ) )
 				{
 					return FileDropHandling::associateTrajectory;
 				}

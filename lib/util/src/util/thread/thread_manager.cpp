@@ -51,14 +51,31 @@ namespace VTX::Util::Thread
 		};
 
 		std::list<_SynchronizedCall> calls;
+		std::list<_DispatchedCall>	 dispatchedCalls;
 		{
 			const std::scoped_lock lock( _synchronizedCallsMutex );
 			calls.splice( calls.end(), _synchronizedCalls );
+			dispatchedCalls.splice( dispatchedCalls.end(), _dispatchedCalls );
 		}
 
 		for ( _SynchronizedCall & call : calls )
 		{
 			call.task();
+		}
+		for ( _DispatchedCall & call : dispatchedCalls )
+		{
+			try
+			{
+				call.execute();
+			}
+			catch ( const std::exception & p_exception )
+			{
+				VTX_ERROR( "Unhandled exception in dispatched call: {}", p_exception.what() );
+			}
+			catch ( ... )
+			{
+				VTX_ERROR( "Unhandled unknown exception in dispatched call" );
+			}
 		}
 
 		/**
@@ -147,5 +164,6 @@ namespace VTX::Util::Thread
 		const std::scoped_lock lock( _synchronizedCallsMutex );
 		_shuttingDown = true;
 		_synchronizedCalls.clear();
+		_dispatchedCalls.clear();
 	}
 } // namespace VTX::Util::Thread

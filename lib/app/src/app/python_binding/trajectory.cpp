@@ -17,13 +17,13 @@ namespace VTX::App::PythonBinding
 	{
 		struct TrajectoryState
 		{
-			std::size_t						  frameCount = 0;
-			App::Trajectory::FrameRange		  availableFrames;
-			uint							  currentFrameIndex	  = 0;
-			uint							  requestedFrameIndex = 0;
-			App::System::TRAJECTORY_PLAY_MODE playMode			  = App::System::TRAJECTORY_PLAY_MODE::NONE;
-			bool							  paused			  = true;
-			float							  speed				  = 0.f;
+			std::size_t					frameCount = 0;
+			App::Trajectory::FrameRange availableFrames;
+			uint						currentFrameIndex	= 0;
+			uint						requestedFrameIndex = 0;
+			App::Trajectory::PLAY_MODE	playMode			= App::Trajectory::PLAY_MODE::NONE;
+			bool						paused				= true;
+			float						speed				= 0.f;
 		};
 
 		TrajectoryState _getTrajectoryState( const Entity p_entity )
@@ -42,7 +42,7 @@ namespace VTX::App::PythonBinding
 						TrajectoryState					 state;
 						state.frameCount	  = trajectory.frameCount;
 						state.availableFrames = App::Helper::Trajectory::getAvailableFrames( p_entity );
-						if ( const auto * const player = REG().try_get<App::System::TrajectoryPlayer>( p_entity ) )
+						if ( const auto * const player = REG().try_get<App::Trajectory::Player>( p_entity ) )
 						{
 							state.currentFrameIndex	  = player->currentFrameIndex;
 							state.requestedFrameIndex = player->requestedFrameIndex;
@@ -103,7 +103,7 @@ namespace VTX::App::PythonBinding
 	void TrajectoryBinder::bind( Module & p_vtxModule )
 	{
 		py::module_ & module = p_vtxModule.pyModule();
-		VTX::PythonBinding::Helper::declareEnum<App::System::TRAJECTORY_PLAY_MODE>( module, "TRAJECTORY_PLAY_MODE" );
+		VTX::PythonBinding::Helper::declareEnum<App::Trajectory::PLAY_MODE>( module, "TRAJECTORY_PLAY_MODE" );
 
 		py::class_<Frame>( module, "Frame", py::module_local() )
 			.def_property_readonly( "index", []( const Frame & p_frame ) { return p_frame.index; } )
@@ -212,7 +212,7 @@ namespace VTX::App::PythonBinding
 			)
 			.def(
 				"setPlayMode",
-				[]( const Trajectory & p_trajectory, const App::System::TRAJECTORY_PLAY_MODE p_mode )
+				[]( const Trajectory & p_trajectory, const App::Trajectory::PLAY_MODE p_mode )
 				{ executeAction<App::Action::Trajectory::ChangePlayer>( p_trajectory.entity, p_mode ); },
 				py::arg( "mode" )
 			)

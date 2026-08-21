@@ -6,7 +6,7 @@
 #include "app/python_binding/topology/helpers.hpp"
 #include "app/python_binding/trajectory.hpp"
 #include "app/services.hpp"
-#include "app/system/trajectory_player.hpp"
+#include "app/trajectory/player.hpp"
 #include <core/chemdb/category.hpp>
 #include <io/metadata.hpp>
 #include <pybind11/stl/filesystem.h>
@@ -75,7 +75,7 @@ namespace VTX::App::PythonBinding::Topology
 				[ entity = p_system.entity ]
 				{
 					getTopology( entity );
-					const auto * const player = REG().try_get<App::System::TrajectoryPlayer>( entity );
+					const auto * const player = REG().try_get<App::Trajectory::Player>( entity );
 					const uint		   index  = player ? player->currentFrameIndex : 0;
 					return Frame { index, App::Helper::Trajectory::getFrame( entity, index ) };
 				}

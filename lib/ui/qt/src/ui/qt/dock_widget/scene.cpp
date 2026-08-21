@@ -13,8 +13,8 @@
 #include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
 #include <app/system/selection.hpp>
-#include <app/system/trajectory_player.hpp>
 #include <app/system/visibility.hpp>
+#include <app/trajectory/player.hpp>
 #include <renderer/camera.hpp>
 #include <util/event_hub.hpp>
 
@@ -63,8 +63,8 @@ namespace VTX::UI::QT::DockWidget
 		App::REG().on_destroy<Core::Struct::Topology>().connect<&Scene::_onSystemDestroy>( this );
 		App::REG().on_update<App::System::Visibility>().connect<&Scene::_onUpdateVisibility>( this );
 		App::REG().on_update<App::System::Selection>().connect<&Scene::_onUpdateSelection>( this );
-		App::REG().on_construct<App::System::TrajectoryPlayer>().connect<&Scene::_onTrajectoryCreated>( this );
-		App::REG().on_destroy<App::System::TrajectoryPlayer>().connect<&Scene::_onTrajectoryDestroyed>( this );
+		App::REG().on_construct<App::Trajectory::Player>().connect<&Scene::_onTrajectoryCreated>( this );
+		App::REG().on_destroy<App::Trajectory::Player>().connect<&Scene::_onTrajectoryDestroyed>( this );
 
 		App::HUB().connect<Events::SelectionLocked, &Scene::_onSelectionLocked>( this );
 		App::HUB().connect<Events::TreeViewModeChanged, &Scene::_onTreeViewModeChanged>( this );

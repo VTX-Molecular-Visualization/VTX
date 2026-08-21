@@ -196,6 +196,40 @@ TEST_CASE( "VTX_UTIL - Threading - Cancel synchronization", "[threading][synchro
 	CHECK( cancelled );
 }
 
+TEST_CASE( "VTX_UTIL - Threading - Dispatch", "[threading][dispatch]" )
+{
+	using namespace VTX;
+	Util::Thread::ThreadManager threadManager;
+
+	bool dispatched = false;
+	threadManager.dispatch( [ &dispatched ] { dispatched = true; } );
+	CHECK_FALSE( dispatched );
+	threadManager.update();
+	CHECK( dispatched );
+
+	int						   workerResult = 0;
+	std::atomic_bool		   workerQueued = false;
+	Util::Thread::BaseThread & thread		= threadManager.createThread(
+		[ &threadManager, &workerResult, &workerQueued ]( Util::Thread::StopToken, Util::Thread::BaseThread & )
+		{
+			threadManager.dispatch( [ &workerResult ] { workerResult = 42; } );
+			workerQueued = true;
+			return 0u;
+		}
+	);
+	while ( not workerQueued )
+	{
+		std::this_thread::yield();
+	}
+	thread.wait();
+	CHECK( workerResult == 0 );
+	threadManager.update();
+	CHECK( workerResult == 42 );
+
+	threadManager.dispatch( [] { throw std::runtime_error( "Expected exception." ); } );
+	CHECK_NOTHROW( threadManager.update() );
+}
+
 TEST_CASE( "VTX_UTIL - Threading - Progress", "[threading][progress]" )
 {
 	using namespace VTX;

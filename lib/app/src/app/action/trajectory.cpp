@@ -12,28 +12,28 @@ namespace VTX::App::Action::Trajectory
 		template<typename Func>
 		void _patch( const Entity p_entity, Func && p_function )
 		{
-			if ( REG().all_of<System::TrajectoryPlayer>( p_entity ) )
+			if ( REG().all_of<App::Trajectory::Player>( p_entity ) )
 			{
-				REG().patch<System::TrajectoryPlayer>( p_entity, std::forward<Func>( p_function ) );
+				REG().patch<App::Trajectory::Player>( p_entity, std::forward<Func>( p_function ) );
 			}
 		}
 	} // namespace
 
 	void ToggleStartPause::execute( const Entity p_entity )
 	{
-		_patch( p_entity, []( System::TrajectoryPlayer & traj ) { traj.paused ^= 1; } );
+		_patch( p_entity, []( App::Trajectory::Player & traj ) { traj.paused ^= 1; } );
 	}
 
 	void SetPaused::execute( const Entity p_entity, const bool p_paused )
 	{
-		_patch( p_entity, [ p_paused ]( System::TrajectoryPlayer & traj ) { traj.paused = p_paused; } );
+		_patch( p_entity, [ p_paused ]( App::Trajectory::Player & traj ) { traj.paused = p_paused; } );
 	}
 
 	void Stop::execute( const Entity p_entity )
 	{
 		_patch(
 			p_entity,
-			[]( System::TrajectoryPlayer & traj )
+			[]( App::Trajectory::Player & traj )
 			{
 				traj.player.jumpTo( 0 );
 				traj.requestedFrameIndex = 0;
@@ -52,7 +52,7 @@ namespace VTX::App::Action::Trajectory
 
 		_patch(
 			p_entity,
-			[ p_step, frameCount = trajectory->frameCount ]( System::TrajectoryPlayer & traj )
+			[ p_step, frameCount = trajectory->frameCount ]( App::Trajectory::Player & traj )
 			{
 				if ( p_step < frameCount )
 				{
@@ -63,7 +63,7 @@ namespace VTX::App::Action::Trajectory
 		);
 	}
 
-	void ChangePlayer::execute( const Entity p_entity, const System::TRAJECTORY_PLAY_MODE p_playerType )
+	void ChangePlayer::execute( const Entity p_entity, const App::Trajectory::PLAY_MODE p_playerType )
 	{
 		const auto * const trajectory = REG().try_get<Core::Struct::Trajectory>( p_entity );
 		if ( trajectory == nullptr )
@@ -74,24 +74,24 @@ namespace VTX::App::Action::Trajectory
 
 		_patch(
 			p_entity,
-			[ p_playerType, frameCount ]( System::TrajectoryPlayer & traj )
+			[ p_playerType, frameCount ]( App::Trajectory::Player & traj )
 			{
 				traj.playMode = p_playerType;
 				switch ( p_playerType )
 				{
-				case System::TRAJECTORY_PLAY_MODE::PING_PONG:
+				case App::Trajectory::PLAY_MODE::PING_PONG:
 					traj.player = Util::Players::PingPong( frameCount, traj.requestedFrameIndex );
 					break;
-				case System::TRAJECTORY_PLAY_MODE::FORWARD:
+				case App::Trajectory::PLAY_MODE::FORWARD:
 					traj.player = Util::Players::Forward( frameCount, traj.requestedFrameIndex );
 					break;
-				case System::TRAJECTORY_PLAY_MODE::FORWARD_LOOP:
+				case App::Trajectory::PLAY_MODE::FORWARD_LOOP:
 					traj.player = Util::Players::ForwardLoop( frameCount, traj.requestedFrameIndex );
 					break;
-				case System::TRAJECTORY_PLAY_MODE::BACKWARD:
+				case App::Trajectory::PLAY_MODE::BACKWARD:
 					traj.player = Util::Players::Backward( frameCount, traj.requestedFrameIndex );
 					break;
-				case System::TRAJECTORY_PLAY_MODE::BACKWARD_LOOP:
+				case App::Trajectory::PLAY_MODE::BACKWARD_LOOP:
 					traj.player = Util::Players::BackwardLoop( frameCount, traj.requestedFrameIndex );
 					break;
 				default: traj.player = Util::Players::PingPong( frameCount, traj.requestedFrameIndex );
@@ -108,7 +108,7 @@ namespace VTX::App::Action::Trajectory
 		}
 
 		const float speed = std::max( 1.f, p_speed );
-		_patch( p_entity, [ speed ]( System::TrajectoryPlayer & traj ) { traj.playingSpeed = speed; } );
+		_patch( p_entity, [ speed ]( App::Trajectory::Player & traj ) { traj.playingSpeed = speed; } );
 	}
 
 } // namespace VTX::App::Action::Trajectory
