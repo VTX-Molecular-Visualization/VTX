@@ -53,6 +53,14 @@ namespace VTX::IO
 		 */
 		void get( VTX::Core::Struct::Frame &, const FrameIndex = 0 );
 
+		/**
+		 * @brief Free memory.
+		 */
+		void releaseTopologyData();
+
+		/**
+		 * @brief Stop token.
+		 */
 		void set( const Util::Thread::StopToken ) noexcept;
 
 	  private:

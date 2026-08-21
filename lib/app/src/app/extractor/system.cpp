@@ -198,6 +198,7 @@ namespace VTX::App::Extractor
 			}
 			Core::Struct::Frame firstFrame;
 			pendingData.reader->get( firstFrame, 0 );
+			pendingData.reader->releaseTopologyData();
 			if ( pendingData.trajectory.frameCount > 1 )
 			{
 				pendingData.trajectoryBufferMode.emplace( pendingData.trajectoryBufferSettings.selectMode(

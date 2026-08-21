@@ -319,6 +319,20 @@ namespace VTX::IO
 
 		void set( const StopToken p_ ) noexcept { _stopToken = p_; }
 
+		void releaseTopologyData()
+		{
+			_currentFrame			   = chemfiles::Frame {};
+			_topology				   = chemfiles::Topology {};
+			_residues				   = nullptr;
+			_bonds					   = nullptr;
+			_currentResidue			   = nullptr;
+			_currentAtom			   = nullptr;
+			_currentAtomIndex		   = -1;
+			_currentFrameIdx		   = -1;
+			_firstFrame				   = Frame {};
+			_hasSecondaryStructureData = false;
+		}
+
 	  private:
 		void _init()
 		{
@@ -798,6 +812,8 @@ namespace VTX::IO
 	{ _impl->get( p_d, p_t, p_m, p_a, p_g ); }
 
 	void SystemReader::get( Frame & p_f, const FrameIndex p_i ) { _impl->get( p_i, p_f ); }
+
+	void SystemReader::releaseTopologyData() { _impl->releaseTopologyData(); }
 
 	void SystemReader::set( const StopToken p_ ) noexcept { _impl->set( p_ ); }
 
