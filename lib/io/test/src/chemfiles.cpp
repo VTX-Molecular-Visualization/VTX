@@ -8,7 +8,7 @@
 #include <io/writer/system.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
-#include <util/thread.hpp>
+#include <util/thread/stop_token.hpp>
 #include <util/types.hpp>
 #include <vector>
 //
@@ -16,6 +16,7 @@
 
 namespace
 {
+	using StopToken = VTX::Util::Thread::StopToken;
 	using namespace VTX::IO::Writer;
 
 	void twoWaterSystems1frame( ChemfilesTrajectory & trajWriter )
@@ -179,7 +180,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 
 	VTX::Core::Struct::Topology				topology;
 	VTX::IO::Metadata						metadata;
-	VTX::Util::StopToken					t;
+	StopToken								t;
 	VTX::IO::SystemReader					systemReader( waterPath, VTX::IO::READER_OPTION::ALL, t );
 	VTX::Core::Struct::Frame				positions;
 	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
@@ -214,7 +215,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 	}
 
 	VTX::Core::Struct::Topology				topology;
-	VTX::Util::StopToken					t;
+	StopToken								t;
 	VTX::IO::SystemReader					systemReader( waterPath, VTX::IO::READER_OPTION::ALL, t );
 	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 	VTX::IO::Metadata						metadata;
@@ -257,10 +258,18 @@ namespace
 
 		inline VTX::uint frameCount() const { return static_cast<VTX::uint>( frames.size() ); }
 
-		inline std::span<const VTX::Vec3f> getCurrentAtomPositions() const { return frames[ 0 ]; }
-
-		inline std::span<const VTX::Vec3f> getAtomPositions( const VTX::uint & p_index ) const
-		{ return frames[ p_index ]; }
+		inline bool visitAtomPositions(
+			const VTX::uint												 p_index,
+			const VTX::IO::Writer::TrajectoryFrameGetter::FrameVisitor & p_visitor
+		) const
+		{
+			if ( p_index >= frames.size() )
+			{
+				return false;
+			}
+			p_visitor( frames[ p_index ] );
+			return true;
+		}
 	};
 
 	/**
@@ -282,7 +291,7 @@ namespace
 		VTX::Core::Struct::Topology topology;
 		LazyTrajectory				traj;
 		{
-			VTX::Util::StopToken  t;
+			StopToken			  t;
 			VTX::IO::SystemReader systemReader( systemPath, VTX::IO::READER_OPTION::ALL, t );
 			VTX::IO::Metadata	  metadata;
 			systemReader.get( dict, topology, metadata );
@@ -321,7 +330,7 @@ namespace
 		}
 
 		VTX::Core::Struct::Topology system_reread;
-		VTX::Util::StopToken		t;
+		StopToken					t;
 		VTX::IO::SystemReader		systemReader( destination, VTX::IO::READER_OPTION::ALL, t );
 		VTX::IO::Metadata			metadata;
 		systemReader.get( dict, system_reread, metadata );
@@ -369,9 +378,14 @@ namespace
 
 		VTX::uint frameCount() const { return frame.empty() ? 0u : 1u; }
 
-		std::span<const VTX::Vec3f> getCurrentAtomPositions() const { return frame; }
-
-		std::span<const VTX::Vec3f> getAtomPositions( const VTX::uint & ) const { return frame; }
+		bool visitAtomPositions(
+			const VTX::uint,
+			const VTX::IO::Writer::TrajectoryFrameGetter::FrameVisitor & p_visitor
+		) const
+		{
+			p_visitor( frame );
+			return true;
+		}
 	};
 
 	// Builds the Topology fields that writeFile actually reads.
@@ -416,7 +430,7 @@ namespace
 	VTX::FilePath multiOutDir()
 	{
 		VTX::FilePath path = VTX::Util::Filesystem::getExecutableDir() / "out" / "writeFile_multi";
-		if ( !std::filesystem::exists( path ) )
+		if ( not std::filesystem::exists( path ) )
 		{
 			std::filesystem::create_directories( path );
 		}
@@ -430,7 +444,7 @@ namespace
 	)
 	{
 		VTX::Core::Struct::Topology				top;
-		VTX::Util::StopToken					stop;
+		StopToken								stop;
 		VTX::IO::SystemReader					reader( dest, VTX::IO::READER_OPTION::ALL, stop );
 		VTX::IO::Metadata						meta;
 		VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();

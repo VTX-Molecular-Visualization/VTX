@@ -3,7 +3,7 @@
 #include <core/struct/mesh.hpp>
 #include <io/mesh_reader.hpp>
 #include <util/filesystem.hpp>
-#include <util/thread.hpp>
+#include <util/thread/stop_token.hpp>
 
 TEST_CASE( "VTX_IO - Read OBJ mesh", "[reader][mesh]" )
 {
@@ -12,7 +12,7 @@ TEST_CASE( "VTX_IO - Read OBJ mesh", "[reader][mesh]" )
 	const FilePath meshPath = Util::Filesystem::getExecutableDir() / "data" / "two_triangles.obj";
 
 	std::vector<Core::Struct::Mesh> meshes;
-	Util::StopToken					stopToken;
+	Util::Thread::StopToken			stopToken;
 	IO::MeshReader					reader( meshPath, stopToken );
 	reader.get( meshes );
 

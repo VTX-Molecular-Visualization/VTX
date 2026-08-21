@@ -17,7 +17,7 @@
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
-#include <util/thread.hpp>
+#include <util/thread/stop_token.hpp>
 
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
@@ -28,6 +28,7 @@ namespace VTX::IO
 	using namespace VTX::Core::ChemDB;
 	using namespace VTX::Core::Struct;
 	using namespace VTX::Util;
+	using VTX::Util::Thread::StopToken;
 
 	namespace
 	{
@@ -802,7 +803,7 @@ namespace VTX::IO
 
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }
 
-	bool isTrajectoryFileFormat( const FilePath & p_path ) noexcept
+	bool isTrajectoryFileFormat( const FilePath & p_path )
 	{
 		std::string extension = p_path.extension().string();
 		std::transform( extension.begin(), extension.end(), extension.begin(), tolower );

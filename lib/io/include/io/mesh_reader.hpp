@@ -3,12 +3,8 @@
 
 #include <functional>
 #include <util/filesystem.hpp>
+#include <util/thread/stop_token.hpp>
 #include <vector>
-
-namespace VTX::Util
-{
-	class StopToken;
-}
 
 namespace VTX::Core::Struct
 {
@@ -24,7 +20,7 @@ namespace VTX::IO
 	{
 	  public:
 		MeshReader() = delete;
-		MeshReader( FilePath, VTX::Util::StopToken & );
+		MeshReader( FilePath, Util::Thread::StopToken & );
 
 		/**
 		 * @brief Read mesh structure.
@@ -32,8 +28,8 @@ namespace VTX::IO
 		void get( std::vector<VTX::Core::Struct::Mesh> & );
 
 	  private:
-		FilePath									 _filePath;
-		std::reference_wrapper<VTX::Util::StopToken> _stopToken;
+		FilePath										_filePath;
+		std::reference_wrapper<Util::Thread::StopToken> _stopToken;
 	};
 
 	/**
