@@ -5,7 +5,6 @@ add_library(vtx_tool_mdprep::vtx_tool_mdprep ALIAS vtx_tool_mdprep)
 vtx_configure_target(vtx_tool_mdprep)
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
-message("mdprep headers : <${HEADERS}>")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 
 target_sources(vtx_tool_mdprep
