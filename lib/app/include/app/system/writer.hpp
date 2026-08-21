@@ -26,7 +26,7 @@ namespace VTX::App::System
 
 	  private:
 		struct _impl;
-		std::unique_ptr<_impl> _ptr = nullptr;
+		std::unique_ptr<_impl> _ptr;
 	};
 
 	/**
@@ -48,7 +48,7 @@ namespace VTX::App::System
 
 	  private:
 		struct _impl;
-		std::unique_ptr<_impl> _ptr = nullptr;
+		std::unique_ptr<_impl> _ptr;
 	};
 } // namespace VTX::App::System
 
