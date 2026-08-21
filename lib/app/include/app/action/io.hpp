@@ -2,11 +2,11 @@
 #define __VTX_APP_ACTION_IO__
 
 #include "app/ecs.hpp"
-#include "app/threading/base_thread.hpp"
 #include <app/action/action_manager.hpp>
 #include <optional>
 #include <util/image.hpp>
-#include <util/thread.hpp>
+#include <util/thread/base_thread.hpp>
+#include <util/thread/stop_token.hpp>
 #include <util/types.hpp>
 #include <util/url.hpp>
 
@@ -44,7 +44,7 @@ namespace VTX::App::Action::IO
 	struct LoadSystem
 	{
 		LoadSystem();
-		LoadSystem( Threading::ThreadData );
+		LoadSystem( Util::Thread::ThreadData );
 
 		void execute( FilePath p_path );
 		void execute( FilePath p_path, std::string && p_buffer );
@@ -60,13 +60,13 @@ namespace VTX::App::Action::IO
 	struct LoadMesh
 	{
 		LoadMesh() = default;
-		LoadMesh( Util::StopToken, Threading::OptionalThreadReference );
+		LoadMesh( Util::Thread::StopToken, Util::Thread::OptionalThreadReference );
 
 		void execute( FilePath p_path );
 
 	  private:
-		Util::StopToken					   _stopToken;
-		Threading::OptionalThreadReference _threadRef;
+		Util::Thread::StopToken				  _stopToken;
+		Util::Thread::OptionalThreadReference _threadRef;
 	};
 
 	/**
@@ -74,21 +74,7 @@ namespace VTX::App::Action::IO
 	 */
 	struct WriteSelection
 	{
-		WriteSelection();
-		WriteSelection( Threading::ThreadData );
-
 		void execute( FilePath p_path );
-		void wait() noexcept;
-
-	  private:
-		struct _WriterIo;
-
-		struct _del
-		{
-			void operator()( _WriterIo * ) const noexcept;
-		};
-
-		std::unique_ptr<_WriterIo, _del> _data = nullptr;
 	};
 
 	/**
@@ -96,21 +82,7 @@ namespace VTX::App::Action::IO
 	 */
 	struct WriteVisible
 	{
-		WriteVisible();
-		WriteVisible( Threading::ThreadData );
-
 		void execute( FilePath p_path );
-		void wait() noexcept;
-
-	  private:
-		struct _WriterIo;
-
-		struct _del
-		{
-			void operator()( _WriterIo * ) const noexcept;
-		};
-
-		std::unique_ptr<_WriterIo, _del> _data = nullptr;
 	};
 
 	/**
@@ -120,7 +92,7 @@ namespace VTX::App::Action::IO
 	struct AssociateTrajectory
 	{
 		AssociateTrajectory();
-		AssociateTrajectory( Threading::ThreadData );
+		AssociateTrajectory( Util::Thread::ThreadData );
 		void execute( const FilePath & p_path, const Entity & );
 		void execute( const std::string & p_path, const Entity & );
 		void wait() noexcept;

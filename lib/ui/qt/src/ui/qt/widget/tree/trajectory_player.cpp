@@ -5,13 +5,15 @@
 #include "ui/qt/style/style_manager.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <algorithm>
 #include <app/action/action_manager.hpp>
 #include <app/action/trajectory.hpp>
 #include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
-#include <app/system/trajectory.hpp>
+#include <app/system/trajectory_loader.hpp>
+#include <app/system/trajectory_player.hpp>
+#include <core/struct/trajectory.hpp>
 #include <util/event_hub.hpp>
+#include <util/thread/thread_manager.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -77,9 +79,8 @@ namespace VTX::UI::QT::Widget::Tree
 		connect( _btnSettings, &QPushButton::clicked, this, &TrajectoryPlayer::_onSettingsClicked );
 
 		// Connect to trajectory updates
-		App::REG().on_update<App::System::TrajectoryFullBuffer>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>(
-			this
-		);
+		App::REG().on_update<App::System::TrajectoryPlayer>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
+		App::REG().on_update<App::System::TrajectoryLoader>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
 		App::HUB().connect<App::Events::ThreadProgress, &TrajectoryPlayer::_onTrajectoryLoadingProgress>( this );
 
 		// Initial state
@@ -89,7 +90,10 @@ namespace VTX::UI::QT::Widget::Tree
 	TrajectoryPlayer::~TrajectoryPlayer()
 	{
 		App::HUB().disconnectAllOf( *this );
-		App::REG().on_update<App::System::TrajectoryFullBuffer>().disconnect<&TrajectoryPlayer::_onTrajectoryUpdated>(
+		App::REG().on_update<App::System::TrajectoryPlayer>().disconnect<&TrajectoryPlayer::_onTrajectoryUpdated>(
+			this
+		);
+		App::REG().on_update<App::System::TrajectoryLoader>().disconnect<&TrajectoryPlayer::_onTrajectoryUpdated>(
 			this
 		);
 	}
@@ -124,9 +128,9 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		const App::System::GenericTrajectory * const trajPtr = App::Helper::Trajectory::getGeneric( _system );
+		const App::System::TrajectoryPlayer * const player = App::Helper::Trajectory::getPlayer( _system );
 
-		if ( trajPtr && trajPtr->trajectorySize > 0 )
+		if ( player )
 		{
 			App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, uint( p_value ) );
 		}
@@ -143,63 +147,49 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectoryPlayer::_onTrajectoryLoadingProgress( const App::Events::ThreadProgress & p_event )
 	{
-		const App::System::TrajectoryFullBuffer * const trajectory
-			= App::REG().try_get<App::System::TrajectoryFullBuffer>( _system );
-		if ( trajectory == nullptr || p_event.id != trajectory->threadId )
+		const App::System::TrajectoryLoader * const loader
+			= App::REG().try_get<App::System::TrajectoryLoader>( _system );
+		const App::System::TrajectoryPlayer * const player		   = App::Helper::Trajectory::getPlayer( _system );
+		Util::Thread::BaseThread *					progressThread = App::THREAD().get( p_event.id );
+		if ( loader == nullptr || player == nullptr || progressThread != loader->thread.get() )
 		{
 			return;
 		}
 
-		const uint totalFrameCount = trajectory->genericData.trajectorySize;
-		if ( totalFrameCount == 0 )
-		{
-			return;
-		}
-
-		const uint loadedFrameCount
-			= std::clamp( static_cast<uint>( p_event.progress * totalFrameCount + 0.5f ), 1u, totalFrameCount );
-		_slider->setLoadedRange( 0, int( loadedFrameCount - 1 ) );
+		const App::Trajectory::FrameRange availableFrames = loader->availableFrames;
+		_slider->setLoadedRange(
+			int( availableFrames.getFirst() ), availableFrames.isEmpty() ? 0 : int( availableFrames.getLast() - 1 )
+		);
 	}
 
 	void TrajectoryPlayer::_refresh()
 	{
-		const App::System::GenericTrajectory * const trajPtr = App::Helper::Trajectory::getGeneric( _system );
+		const App::System::TrajectoryPlayer * const player = App::Helper::Trajectory::getPlayer( _system );
 
-		if ( trajPtr == nullptr )
+		if ( player == nullptr )
 		{
 			_slider->setMaximum( 0 );
 			_frameLabel->setText( "0/0" );
 			return;
 		}
 
-		uint totalFrames  = trajPtr->trajectorySize;
-		uint currentFrame = trajPtr->currentFrameIndex;
-
-		// Handle max values
-		if ( totalFrames == std::numeric_limits<uint>::max() )
-		{
-			totalFrames = 0;
-		}
-		if ( currentFrame == std::numeric_limits<uint>::max() )
-		{
-			currentFrame = 0;
-		}
+		const uint totalFrames	= static_cast<uint>( App::REG().get<Core::Struct::Trajectory>( _system ).frameCount );
+		const uint currentFrame = player->currentFrameIndex;
 
 		// Guard to prevent valueChanged from triggering JumpTo during programmatic updates
 		_isRefreshing = true;
-		_slider->setMaximum( totalFrames > 0 ? int( totalFrames - 1 ) : 0 );
+		_slider->setMaximum( int( totalFrames - 1 ) );
 		_slider->setValue( int( currentFrame ) );
 		_isRefreshing = false;
 
 		// Update loaded range overlay
-		const App::Helper::Trajectory::FrameRange availableFrames
-			= App::Helper::Trajectory::getAvailableFrames( _system );
+		const App::Trajectory::FrameRange availableFrames = App::Helper::Trajectory::getAvailableFrames( _system );
 		_slider->setLoadedRange(
 			int( availableFrames.getFirst() ), availableFrames.isEmpty() ? 0 : int( availableFrames.getLast() - 1 )
 		);
 
 		// Update frame label
-		_frameLabel->setText( QString( "%1/%2" ).arg( currentFrame ).arg( totalFrames > 0 ? totalFrames - 1 : 0 ) );
+		_frameLabel->setText( QString( "%1/%2" ).arg( currentFrame ).arg( totalFrames - 1 ) );
 
 		// Update play/pause icon
 		_updatePlayPauseIcon();
@@ -207,9 +197,9 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectoryPlayer::_updatePlayPauseIcon()
 	{
-		const App::System::GenericTrajectory * const trajPtr = App::Helper::Trajectory::getGeneric( _system );
+		const App::System::TrajectoryPlayer * const player = App::Helper::Trajectory::getPlayer( _system );
 
-		bool isPlaying = trajPtr && !trajPtr->paused;
+		const bool isPlaying = player && not player->paused;
 
 		// Use unicode symbols for now (can be replaced with icons)
 		_btnPlayPause->setIcon( isPlaying ? _icons[ 1 ] : _icons[ 0 ] );

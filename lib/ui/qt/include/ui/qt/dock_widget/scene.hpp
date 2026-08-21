@@ -13,8 +13,8 @@
 #include <QComboBox>
 #include <QPointer>
 #include <QTimer>
-#include <app/threading/base_thread.hpp>
 #include <ui/qt/widget/thread.hpp>
+#include <util/thread/base_thread.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -52,7 +52,7 @@ namespace VTX::UI::QT::DockWidget
 		/**
 		 * @brief Thread widgets.
 		 */
-		std::unordered_map<App::Threading::BaseThread::ID, QPointer<Widget::Thread>> _mapThreadWidgets;
+		std::unordered_map<Util::Thread::BaseThread::ID, QPointer<Widget::Thread>> _mapThreadWidgets;
 
 		/**
 		 * @brief Custom spacer to fill empty space.
@@ -60,7 +60,7 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<QWidget> _filler;
 
 		/**
-		 * @brief Remove tree when system is removed.
+		 * @brief Add tree when camera is constructed.
 		 */
 		void _onCameraConstruct( Registry &, Entity );
 
@@ -75,7 +75,7 @@ namespace VTX::UI::QT::DockWidget
 		void _onSystemDestroy( Registry &, Entity );
 
 		/**
-		 * @brief Update selection.
+		 * @brief Update visibility.
 		 */
 		void _onUpdateVisibility( Registry &, Entity p_e );
 
@@ -98,6 +98,11 @@ namespace VTX::UI::QT::DockWidget
 		 * @brief Called when a trajectory is added to any system.
 		 */
 		void _onTrajectoryCreated( Registry &, Entity p_entity );
+
+		/**
+		 * @brief Called when a trajectory is removed from any system.
+		 */
+		void _onTrajectoryDestroyed( Registry &, Entity p_entity );
 
 		/**
 		 * @brief Add or update thread widget.

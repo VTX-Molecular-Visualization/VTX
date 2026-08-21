@@ -25,6 +25,7 @@
 #include <app/constants.hpp>
 #include <app/system/selection.hpp>
 #include <string>
+#include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 #include <utility>

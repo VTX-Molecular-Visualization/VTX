@@ -8,7 +8,6 @@
 #include <app/ecs.hpp>
 #include <app/events.hpp>
 #include <app/services.hpp>
-#include <app/system/trajectory.hpp>
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
 #include <qboxlayout.h>

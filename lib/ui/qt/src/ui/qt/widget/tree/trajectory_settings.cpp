@@ -6,7 +6,8 @@
 #include <app/action/trajectory.hpp>
 #include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
-#include <app/system/trajectory.hpp>
+#include <app/system/trajectory_player.hpp>
+#include <core/struct/trajectory.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -64,11 +65,18 @@ namespace VTX::UI::QT::Widget::Tree
 		_frameSpinBox->installEventFilter( this );
 
 		// Connect to trajectory updates
-		App::REG().on_update<App::System::TrajectoryFullBuffer>().connect<&TrajectorySettings::_onTrajectoryUpdated>(
+		App::REG().on_update<App::System::TrajectoryPlayer>().connect<&TrajectorySettings::_onTrajectoryUpdated>(
 			this
 		);
 
 		_refresh();
+	}
+
+	TrajectorySettings::~TrajectorySettings()
+	{
+		App::REG().on_update<App::System::TrajectoryPlayer>().disconnect<&TrajectorySettings::_onTrajectoryUpdated>(
+			this
+		);
 	}
 
 	void TrajectorySettings::_onPlayerModeChanged( int p_index )
@@ -139,9 +147,9 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectorySettings::_onFrameSpinBoxFocused()
 	{
-		const App::System::GenericTrajectory * const trajPtr = App::Helper::Trajectory::getGeneric( _system );
+		const App::System::TrajectoryPlayer * const player = App::Helper::Trajectory::getPlayer( _system );
 
-		if ( trajPtr && !trajPtr->paused )
+		if ( player && not player->paused )
 		{
 			App::ACTION().execute<App::Action::Trajectory::ToggleStartPause>( _system );
 		}
@@ -149,38 +157,29 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectorySettings::_refresh()
 	{
-		const App::System::GenericTrajectory * const trajPtr = App::Helper::Trajectory::getGeneric( _system );
+		const App::System::TrajectoryPlayer * const player = App::Helper::Trajectory::getPlayer( _system );
 
-		if ( trajPtr == nullptr )
+		if ( player == nullptr )
 		{
 			return;
 		}
 
 		_isRefreshing = true;
 
-		uint totalFrames  = trajPtr->trajectorySize;
-		uint currentFrame = trajPtr->currentFrameIndex;
+		const uint totalFrames	= static_cast<uint>( App::REG().get<Core::Struct::Trajectory>( _system ).frameCount );
+		const uint currentFrame = player->currentFrameIndex;
 
-		if ( totalFrames == std::numeric_limits<uint>::max() )
-		{
-			totalFrames = 0;
-		}
-		if ( currentFrame == std::numeric_limits<uint>::max() )
-		{
-			currentFrame = 0;
-		}
-
-		_playerModeCombo->setCurrentIndex( _playerModeCombo->findData( int( trajPtr->playMode ) ) );
+		_playerModeCombo->setCurrentIndex( _playerModeCombo->findData( int( player->playMode ) ) );
 
 		// Speed
-		_speedSlider->setValue( int( trajPtr->playingSpeed ) );
-		_speedSpinBox->setValue( double( trajPtr->playingSpeed ) );
+		_speedSlider->setValue( int( player->playingSpeed ) );
+		_speedSpinBox->setValue( double( player->playingSpeed ) );
 
 		// Frame
-		_frameSpinBox->setMaximum( totalFrames > 0 ? int( totalFrames - 1 ) : 0 );
+		_frameSpinBox->setMaximum( int( totalFrames - 1 ) );
 
 		// Only update frame value if the spinbox doesn't have focus (user might be typing)
-		if ( !_frameSpinBox->hasFocus() )
+		if ( not _frameSpinBox->hasFocus() )
 		{
 			_frameSpinBox->setValue( int( currentFrame ) );
 		}

@@ -15,7 +15,6 @@
 #include <app/action/visibility.hpp>
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
-#include <app/system/trajectory.hpp>
 #include <optional>
 
 namespace VTX::UI::QT::Widget::Tree

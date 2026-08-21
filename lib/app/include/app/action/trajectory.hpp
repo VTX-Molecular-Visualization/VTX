@@ -2,44 +2,44 @@
 #define __VTX_APP_ACTION_TRAJECTORY__
 
 #include "app/ecs.hpp"
-#include "app/system/trajectory.hpp"
+#include "app/system/trajectory_player.hpp"
 
 namespace VTX::App::Action::Trajectory
 {
 	struct ToggleStartPause
 	{
 	  public:
-		void execute( Entity );
+		void execute( const Entity );
 	};
 
 	struct SetPaused
 	{
 	  public:
-		void execute( Entity, const bool );
+		void execute( const Entity, const bool );
 	};
 
 	struct Stop
 	{
 	  public:
-		void execute( Entity );
+		void execute( const Entity );
 	};
 
 	struct JumpTo
 	{
 	  public:
-		void execute( Entity, uint );
+		void execute( const Entity, const uint );
 	};
 
 	struct ChangePlayer
 	{
 	  public:
-		void execute( Entity, System::TRAJECTORY_PLAY_MODE );
+		void execute( const Entity, const System::TRAJECTORY_PLAY_MODE );
 	};
 
 	struct ChangeSpeed
 	{
 	  public:
-		void execute( Entity, float );
+		void execute( const Entity, const float );
 	};
 } // namespace VTX::App::Action::Trajectory
 
