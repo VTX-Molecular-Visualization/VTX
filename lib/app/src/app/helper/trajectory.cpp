@@ -1,132 +1,171 @@
 #include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
+#include "app/system/trajectory_loader.hpp"
+#include <algorithm>
 #include <io/writer/system.hpp>
+#include <stdexcept>
+#include <util/thread/thread_manager.hpp>
 
 namespace VTX::App::Helper::Trajectory
 {
-	FrameView getCurrentAtomPositions( const Entity p_entity )
+	App::Trajectory::FrameRange getFrameWindow(
+		const uint										 p_frame,
+		const uint										 p_frameCount,
+		const size_t									 p_windowFrameCount,
+		const App::Trajectory::TRAJECTORY_READ_DIRECTION p_direction
+	) noexcept
 	{
-		VTX::IO::Writer::TrajectoryFrameGetter trajectory;
-		get( p_entity, trajectory );
-		return trajectory.getCurrentAtomPositions();
-	}
+		if ( p_frameCount == 0 || p_frame >= p_frameCount )
+		{
+			return {};
+		}
 
-	FrameView getAtomPositions( const Entity p_entity, const uint p_frame )
-	{
-		VTX::IO::Writer::TrajectoryFrameGetter trajectory;
-		get( p_entity, trajectory );
-		return p_frame < trajectory.frameCount() ? trajectory.getAtomPositions( p_frame ) : FrameView();
-	}
+		const uint windowFrameCount = static_cast<uint>(
+			std::min( static_cast<size_t>( p_frameCount ), std::max( size_t( 1 ), p_windowFrameCount ) )
+		);
+		if ( p_direction == App::Trajectory::TRAJECTORY_READ_DIRECTION::FORWARD )
+		{
+			const uint firstFrame = std::min( p_frame, p_frameCount - windowFrameCount );
+			return App::Trajectory::FrameRange::fromFirstCount( firstFrame, windowFrameCount );
+		}
 
-	uint getFrameCount( const Entity p_entity ) noexcept
-	{
-		const VTX::App::System::GenericTrajectory * const trajectory = getGeneric( p_entity );
-		return trajectory ? trajectory->trajectorySize : 1;
-	}
-
-	uint getLoadedFrameCount( const Entity p_entity )
-	{
-		VTX::IO::Writer::TrajectoryFrameGetter trajectory;
-		get( p_entity, trajectory );
-		return trajectory.frameCount();
-	}
-
-	uint getCurrentFrameIndex( const Entity p_entity ) noexcept
-	{
-		const VTX::App::System::GenericTrajectory * const trajectory = getGeneric( p_entity );
-		return trajectory ? trajectory->currentFrameIndex : 0;
-	}
-
-	uint getRequestedFrameIndex( const Entity p_entity ) noexcept
-	{
-		const VTX::App::System::GenericTrajectory * const trajectory = getGeneric( p_entity );
-		return trajectory ? trajectory->requestedFrameIndex : 0;
-	}
-
-	VTX::App::System::TRAJECTORY_PLAY_MODE getPlayMode( const Entity p_entity ) noexcept
-	{
-		const VTX::App::System::GenericTrajectory * const trajectory = getGeneric( p_entity );
-		return trajectory ? trajectory->playMode : VTX::App::System::TRAJECTORY_PLAY_MODE::NONE;
-	}
-
-	bool isPaused( const Entity p_entity ) noexcept
-	{
-		const VTX::App::System::GenericTrajectory * const trajectory = getGeneric( p_entity );
-		return trajectory ? trajectory->paused : true;
-	}
-
-	float getPlayingSpeed( const Entity p_entity ) noexcept
-	{
-		const VTX::App::System::GenericTrajectory * const trajectory = getGeneric( p_entity );
-		return trajectory ? trajectory->playingSpeed : 0.f;
+		const uint lastFrame = std::max( p_frame + 1, windowFrameCount );
+		return App::Trajectory::FrameRange( lastFrame - windowFrameCount, lastFrame );
 	}
 
 	bool isFrameAvailable( const Entity p_entity, const uint p_frame )
-	{ return p_frame < getLoadedFrameCount( p_entity ); }
-
-	bool hasMultiFrameTrajectory( const Entity p_entity ) noexcept
-	{ return REG().any_of<VTX::App::System::TrajectoryFullBuffer>( p_entity ); }
-
-	FrameRange getAvailableFrames( const Entity p_entity )
-	{ return FrameRange::fromFirstCount( 0, static_cast<FrameRange::Count>( getLoadedFrameCount( p_entity ) ) ); }
-
-	const VTX::App::System::GenericTrajectory * getGeneric( const Entity p_entity ) noexcept
 	{
-		if ( const auto * const trajectory = REG().try_get<VTX::App::System::TrajectoryFullBuffer>( p_entity ) )
+		if ( const auto * const loader = REG().try_get<System::TrajectoryLoader>( p_entity ) )
 		{
-			return &trajectory->genericData;
+			return loader->availableFrames.contains( p_frame );
 		}
 
-		return nullptr;
+		const auto * const trajectory = REG().try_get<Core::Struct::Trajectory>( p_entity );
+		if ( trajectory == nullptr || trajectory->frames.empty() )
+		{
+			return false;
+		}
+		return p_frame == 0;
 	}
 
-	class SingleFrameGetter
+	bool visitFrame( const Entity p_entity, const uint p_frame, const FrameVisitor & p_visitor )
 	{
-	  public:
-		SingleFrameGetter( const VTX::App::System::TrajectorySingleFrame & p_trajectory ) : _trajectory( p_trajectory )
+		const auto * const trajectory = REG().try_get<Core::Struct::Trajectory>( p_entity );
+		if ( trajectory == nullptr )
 		{
+			return false;
 		}
 
-		inline uint frameCount() const { return 1u; }
-
-		inline FrameView getAtomPositions( const uint & ) const { return _trajectory.get().atomPositions; }
-
-		inline FrameView getCurrentAtomPositions() const { return _trajectory.get().atomPositions; }
-
-	  private:
-		std::reference_wrapper<const VTX::App::System::TrajectorySingleFrame> _trajectory;
-	};
-
-	class FullBufferGetter
-	{
-	  public:
-		FullBufferGetter( const VTX::App::System::TrajectoryFullBuffer & p_trajectory ) : _trajectory( p_trajectory ) {}
-
-		inline uint frameCount() const
+		if ( const auto * const loader = REG().try_get<System::TrajectoryLoader>( p_entity ) )
 		{
-			const uint lastFrameAvailable = _trajectory.get().lastFrameAvailable.load( std::memory_order_acquire );
-			return lastFrameAvailable + 1;
+			const std::optional<size_t> storageFrameIndex = App::Trajectory::resolveStorageFrameIndex(
+				p_frame,
+				trajectory->frames.size(),
+				loader->mode,
+				loader->availableFrames.getFirst(),
+				static_cast<uint>( loader->availableFrames.getCount() )
+			);
+			if ( not storageFrameIndex )
+			{
+				return false;
+			}
+
+			p_visitor( trajectory->frames[ *storageFrameIndex ] );
+			return true;
 		}
 
-		inline FrameView getAtomPositions( const uint & p_index ) const
-		{ return _trajectory.get().frameCollection[ p_index ]; }
+		if ( p_frame != 0 || trajectory->frames.empty() )
+		{
+			return false;
+		}
 
-		inline FrameView getCurrentAtomPositions() const
-		{ return _trajectory.get().frameCollection[ _trajectory.get().genericData.currentFrameIndex ]; }
+		p_visitor( trajectory->frames[ 0 ] );
+		return true;
+	}
+
+	bool visitCurrentFrame( const Entity p_entity, const FrameVisitor & p_visitor )
+	{
+		const auto * const player = REG().try_get<App::System::TrajectoryPlayer>( p_entity );
+		return visitFrame( p_entity, player ? player->currentFrameIndex : 0, p_visitor );
+	}
+
+	Core::Struct::Frame getFrame( const Entity p_entity, const uint p_frame )
+	{
+		return THREAD().synchronize(
+			[ p_entity, p_frame ]
+			{
+				if ( not REG().valid( p_entity ) )
+				{
+					throw std::invalid_argument( "Invalid trajectory entity." );
+				}
+
+				const auto * const trajectory = REG().try_get<Core::Struct::Trajectory>( p_entity );
+				if ( trajectory == nullptr || p_frame >= trajectory->frameCount )
+				{
+					throw std::out_of_range( "Trajectory frame index out of range." );
+				}
+
+				Core::Struct::Frame frame;
+				if ( visitFrame(
+						 p_entity,
+						 p_frame,
+						 [ &frame ]( const Core::Struct::FrameView p_positions )
+						 { frame.assign( p_positions.begin(), p_positions.end() ); }
+					 ) )
+				{
+					return frame;
+				}
+
+				const auto * const loader = REG().try_get<System::TrajectoryLoader>( p_entity );
+				if ( loader == nullptr )
+				{
+					throw std::runtime_error( "Trajectory frame is unavailable." );
+				}
+
+				return loader->thread->readFrame( p_frame );
+			}
+		);
+	}
+
+	bool hasMultiFrameTrajectory( const Entity p_entity ) { return REG().any_of<System::TrajectoryPlayer>( p_entity ); }
+
+	const System::TrajectoryPlayer * getPlayer( const Entity p_entity )
+	{ return REG().try_get<System::TrajectoryPlayer>( p_entity ); }
+
+	App::Trajectory::FrameRange getAvailableFrames( const Entity p_entity )
+	{
+		if ( const auto * const loader = REG().try_get<System::TrajectoryLoader>( p_entity ) )
+		{
+			return loader->availableFrames;
+		}
+
+		const auto * const trajectory = REG().try_get<Core::Struct::Trajectory>( p_entity );
+		return trajectory != nullptr && not trajectory->frames.empty()
+				   ? App::Trajectory::FrameRange::fromFirstCount( 0, 1 )
+				   : App::Trajectory::FrameRange {};
+	}
+
+	class FrameGetter
+	{
+	  public:
+		FrameGetter( const Entity p_entity ) : _entity( p_entity ), _frames( getAvailableFrames( p_entity ) ) {}
+
+		inline uint frameCount() const { return static_cast<uint>( _frames.getCount() ); }
+
+		inline bool visitAtomPositions(
+			const uint													 p_index,
+			const VTX::IO::Writer::TrajectoryFrameGetter::FrameVisitor & p_visitor
+		) const
+		{
+			return p_index < _frames.getCount()
+				   && visitFrame( _entity, static_cast<uint>( _frames.getFirst() + p_index ), p_visitor );
+		}
 
 	  private:
-		std::reference_wrapper<const VTX::App::System::TrajectoryFullBuffer> _trajectory;
+		Entity						_entity;
+		App::Trajectory::FrameRange _frames;
 	};
 
 	void get( const Entity p_entity, VTX::IO::Writer::TrajectoryFrameGetter & p_trajectory )
-	{
-		if ( const auto * const trajectory = REG().try_get<VTX::App::System::TrajectorySingleFrame>( p_entity ) )
-		{
-			p_trajectory = SingleFrameGetter( *trajectory );
-		}
-		if ( const auto * const trajectory = REG().try_get<VTX::App::System::TrajectoryFullBuffer>( p_entity ) )
-		{
-			p_trajectory = FullBufferGetter( *trajectory );
-		}
-	}
+	{ p_trajectory = FrameGetter( p_entity ); }
 } // namespace VTX::App::Helper::Trajectory

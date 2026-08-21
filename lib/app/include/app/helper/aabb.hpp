@@ -3,7 +3,7 @@
 
 #include "app/ecs.hpp"
 #include <core/struct/topology.hpp>
-#include <span>
+#include <core/struct/trajectory.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/bitset.hpp>
 
@@ -12,7 +12,7 @@ namespace VTX::App::Helper::AABB
 	/**
 	 * @brief Compute an atom AABB from positions.
 	 */
-	Util::Math::AABB compute( const std::span<const Vec3f> p_positions ) noexcept;
+	Util::Math::AABB compute( const Core::Struct::FrameView p_positions ) noexcept;
 
 	/**
 	 * @brief Get cached system AABB.

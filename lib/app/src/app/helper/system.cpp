@@ -40,13 +40,24 @@ namespace VTX::App::Helper::System
 {
 	Vec3f getAtomPosition( const Entity p_entity, const Index p_atom )
 	{
-		const std::span<const Vec3f> positions = App::Helper::Trajectory::getCurrentAtomPositions( p_entity );
-		if ( p_atom >= positions.size() )
+		Vec3f	   position;
+		const bool available = App::Helper::Trajectory::visitCurrentFrame(
+			p_entity,
+			[ & ]( const Core::Struct::FrameView p_positions )
+			{
+				if ( p_atom >= p_positions.size() )
+				{
+					throw std::out_of_range( "Atom position is unavailable." );
+				}
+				position = p_positions[ p_atom ];
+			}
+		);
+		if ( not available )
 		{
 			throw std::out_of_range( "Atom position is unavailable." );
 		}
 
-		return positions[ p_atom ];
+		return position;
 	}
 
 	App::System::E_VISIBLE_STATE getVisibleState( const SystemItemView & p_system )
