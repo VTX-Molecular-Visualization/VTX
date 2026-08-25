@@ -52,7 +52,7 @@ namespace
 	}
 } // namespace
 
-TEST_CASE( "VTX_APP - Selection - Extend selection to 4 angstrom", "[extendSelection][selection]" )
+TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelection][selection]" )
 {
 	using namespace VTX;
 	App::Fixture app;
