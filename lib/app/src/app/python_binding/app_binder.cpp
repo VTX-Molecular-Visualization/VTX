@@ -3,6 +3,7 @@
 #include "app/python_binding/camera.hpp"
 #include "app/python_binding/color.hpp"
 #include "app/python_binding/io.hpp"
+#include "app/python_binding/preset.hpp"
 #include "app/python_binding/representation.hpp"
 #include "app/python_binding/scene.hpp"
 #include "app/python_binding/selection.hpp"
@@ -28,6 +29,7 @@ namespace VTX::App::PythonBinding
 		CameraBinder().bind( appModule );
 		SelectionBinder().bind( appModule );
 		VisibilityBinder().bind( appModule );
+		PresetBinder().bind( appModule );
 		ColorBinder().bind( appModule );
 		RepresentationBinder().bind( appModule );
 		ApplicationBinder().bind( appModule );

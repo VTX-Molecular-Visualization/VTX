@@ -29,10 +29,13 @@ namespace VTX::App::System
 		inline Index getAtomIndex( const UID32 p_uid ) const { return static_cast<Index>( p_uid - atoms.getFirst() ); }
 
 		/**
-		 * @brief Check if the system contains the given UID.
+		 * @brief Check if the system contains the given residue UID.
 		 */
 		inline bool containsResidueUID( const UID32 p_uid ) const { return residues.contains( p_uid ); }
 
+		/**
+		 * @brief Check if the system contains the given atom UID.
+		 */
 		inline bool containsAtomUID( const UID32 p_uid ) const { return atoms.contains( p_uid ); }
 	};
 } // namespace VTX::App::System
