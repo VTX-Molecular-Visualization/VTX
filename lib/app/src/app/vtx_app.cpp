@@ -89,6 +89,7 @@ namespace VTX::App
 			VTX_ERROR( "Unknown exception during interpretor cleanup" );
 		}
 #endif
+		// Destroy component users before entt registry destruction.
 		if ( ECS::hasCtx<Pass::PassManager>() )
 		{
 			ECS::removeCtx<Pass::PassManager>();

@@ -128,10 +128,17 @@ namespace VTX::UI::QT::Widget
 			for ( Index it_vtxResIdx = 0; it_vtxResIdx < topology.getResidueCount(); it_vtxResIdx++ )
 			{
 				auto & residueOriginalId = topology.residueOriginalIds[ it_vtxResIdx ];
-				if ( it_vtxResIdx > 0
-					 // case where the resid restart. Either
-					 // from a new chain, or some other reason.
-					 and residueOriginalId > topology.residueOriginalIds[ it_vtxResIdx - 1 ] )
+				if ( residueOriginalId == INVALID_INDEX )
+				{
+					_oIdData.ruleSize++;
+				}
+				else if (
+					it_vtxResIdx > 0
+					// case where the resid restart. Either
+					// from a new chain, or some other reason.
+					and topology.residueOriginalIds[ it_vtxResIdx - 1 ] != INVALID_INDEX
+					and residueOriginalId > topology.residueOriginalIds[ it_vtxResIdx - 1 ]
+				)
 				{
 					_oIdData.ruleSize += residueOriginalId - topology.residueOriginalIds[ it_vtxResIdx - 1 ];
 				}
