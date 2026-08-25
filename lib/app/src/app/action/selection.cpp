@@ -331,12 +331,12 @@ namespace VTX::App::Action::Selection
 			);
 		}
 
-		const Vec3u	 voxel_size = systems[ 0 ].grid->getSize();
-		const size_t min_side	= std::min( { voxel_size.x, voxel_size.y, voxel_size.z } );
+		const Vec3u	 voxelSize = systems[ 0 ].grid->getSize();
+		const size_t minSide   = std::min( { voxelSize.x, voxelSize.y, voxelSize.z } );
 		// square to avoid using square root during distance calculation
 		const float threshold2 = p_threshold * p_threshold;
 		// distance of neighbor voxels to check
-		const int vd = static_cast<int>( std::ceil( p_threshold / min_side ) );
+		const int vd = static_cast<int>( std::ceil( p_threshold / minSide ) );
 
 		// system loop
 		for ( const SystemData & testedSystem : systems )
@@ -445,11 +445,11 @@ namespace VTX::App::Action::Selection
 			);
 		}
 
-		const Vec3u voxel_size = systems[ 0 ].grid->getSize();
+		const Vec3u voxelSize = systems[ 0 ].grid->getSize();
 		// square to avoid using square root during distance calculation
 		const float threshold2 = p_threshold * p_threshold;
 		// distance of neighbor voxels to check
-		const int vd = static_cast<int>( std::ceil( p_threshold / voxel_size.x ) );
+		const int vd = static_cast<int>( std::ceil( p_threshold / voxelSize.x ) );
 
 		// systems loop
 		for ( const SystemData & testingSystem : systems )
