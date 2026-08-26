@@ -116,19 +116,6 @@ int main( int p_argc, char * p_argv[] )
 #if VTX_UI_QT
 		if ( not argss.noGui )
 		{
-#ifdef __linux__
-			if ( qEnvironmentVariableIsEmpty( "QT_QPA_PLATFORM" ) )
-			{
-				if ( not qEnvironmentVariableIsEmpty( "DISPLAY" ) )
-				{
-					qputenv( "QT_QPA_PLATFORM", QByteArrayLiteral( "wayland-egl;xcb" ) );
-				}
-				else if ( not qEnvironmentVariableIsEmpty( "WAYLAND_DISPLAY" ) )
-				{
-					qputenv( "QT_QPA_PLATFORM", QByteArrayLiteral( "wayland-egl" ) );
-				}
-			}
-#endif
 			// To set before QApplication construction.
 			QCoreApplication::setAttribute( Qt::AA_CompressHighFrequencyEvents );
 

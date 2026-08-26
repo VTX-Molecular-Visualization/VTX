@@ -357,7 +357,6 @@ namespace VTX::Renderer::Context::Backend::GL
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include <renderer/descriptors.hpp>
 #include <util/logger.hpp>
 #include <wayland-egl.h>
@@ -452,22 +451,6 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 			VTX_TRACE( "[EGL] eglBindAPI(EGL_OPENGL_API) succeeded" );
 
-			EGLint nativeVisualId = EGL_DONT_CARE;
-			if ( _platform == Platform::X11 )
-			{
-				XWindowAttributes windowAttributes;
-				if ( not XGetWindowAttributes(
-						 reinterpret_cast<Display *>( _nativeDisplay ),
-						 static_cast<Window>( p_contextInfo.surface ),
-						 &windowAttributes
-					 ) )
-				{
-					throw std::runtime_error( "EGL: Failed to query X11 window attributes" );
-				}
-				nativeVisualId = static_cast<EGLint>( XVisualIDFromVisual( windowAttributes.visual ) );
-				VTX_TRACE( "[EGL] X11 native visual ID: {}", nativeVisualId );
-			}
-
 			const EGLint configAttribs[] = { EGL_SURFACE_TYPE,
 											 EGL_WINDOW_BIT,
 											 EGL_RENDERABLE_TYPE,
@@ -486,8 +469,6 @@ namespace VTX::Renderer::Context::Backend::GL
 											 24,
 											 EGL_STENCIL_SIZE,
 											 8,
-											 EGL_NATIVE_VISUAL_ID,
-											 nativeVisualId,
 
 											 EGL_NONE };
 
