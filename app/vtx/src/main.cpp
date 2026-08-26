@@ -121,7 +121,7 @@ int main( int p_argc, char * p_argv[] )
 			{
 				if ( not qEnvironmentVariableIsEmpty( "DISPLAY" ) )
 				{
-					qputenv( "QT_QPA_PLATFORM", QByteArrayLiteral( "xcb;wayland-egl" ) );
+					qputenv( "QT_QPA_PLATFORM", QByteArrayLiteral( "wayland-egl;xcb" ) );
 				}
 				else if ( not qEnvironmentVariableIsEmpty( "WAYLAND_DISPLAY" ) )
 				{
