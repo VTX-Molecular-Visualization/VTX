@@ -13,6 +13,7 @@
 #include <QPainter>
 #include <QPalette>
 #include <QScopedValueRollback>
+#include <QSurfaceFormat>
 #include <algorithm>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
@@ -28,6 +29,16 @@ namespace VTX::UI::QT::Widget
 		_backgroundLogo = QPixmap( Resources::SPRITE_LOGO.data() );
 
 		_window = new Window::Renderer();
+		QSurfaceFormat surfaceFormat;
+		surfaceFormat.setRenderableType( QSurfaceFormat::OpenGL );
+		surfaceFormat.setRedBufferSize( 8 );
+		surfaceFormat.setGreenBufferSize( 8 );
+		surfaceFormat.setBlueBufferSize( 8 );
+		surfaceFormat.setAlphaBufferSize( 8 );
+		surfaceFormat.setDepthBufferSize( 24 );
+		surfaceFormat.setStencilBufferSize( 8 );
+		_window->setFormat( surfaceFormat );
+		_window->setSurfaceType( QSurface::OpenGLSurface );
 		_window->setFlags( Qt::FramelessWindowHint );
 		_window->create();
 
