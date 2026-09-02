@@ -100,6 +100,11 @@ if (VTX_UI_QT AND VTX_TOOL_MDPREP)
 	include("${DIR_TOOLS}/mdprep/cmake/library.cmake")
 endif()
 
+# Tool StructAlign
+if (VTX_UI_QT AND VTX_TOOL_STRUCTALIGN)
+	include("${DIR_TOOLS}/structalign/cmake/library.cmake")
+endif()
+
 # Tool Topology Editor
 if (VTX_UI_QT AND VTX_TOOL_TOPOLOGY_EDITOR)
 	include("${DIR_TOOLS}/topology_editor/cmake/library.cmake")

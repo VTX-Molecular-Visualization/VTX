@@ -13,6 +13,7 @@ class VTXRecipe(ConanFile):
         "version": ["ANY"],
         "tool_example": [True, False],
         "tool_mdprep": [True, False],
+        "tool_structalign": [True, False],
         "tool_topology_editor": [True, False],
         "ui_qt": [True, False],
         "renderer": [True, False],
@@ -22,6 +23,7 @@ class VTXRecipe(ConanFile):
         "version": "0.0.0",
         "tool_example": False,
         "tool_mdprep": True,
+        "tool_structalign": True,
         "tool_topology_editor": False,
         "ui_qt": True,
         "renderer": True,
@@ -54,6 +56,8 @@ class VTXRecipe(ConanFile):
             self.requires("vtx_tool_example/1.0")
         if self.options.tool_mdprep:
             self.requires("vtx_tool_mdprep/1.0")
+        if self.options.tool_structalign:
+            self.requires("vtx_tool_structalign/1.0")
         if self.options.tool_topology_editor:
             self.requires("vtx_tool_topology_editor/1.0")
 
@@ -69,6 +73,7 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
         tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
         tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
+        tc.cache_variables["TOOL_STRUCTALIGN"] = 1 if self.options.tool_structalign else 0
         tc.cache_variables["VTX_TOOL_TOPOLOGY_EDITOR"] = 1 if self.options.tool_topology_editor else 0
         tc.cache_variables["VTX_UI_QT"] = 1 if self.options.ui_qt else 0
         tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")

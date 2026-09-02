@@ -19,6 +19,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include <random>
+#include <span>
 
 namespace VTX::Util::Math
 {
@@ -305,6 +306,39 @@ namespace VTX::Util::Math
 
 	// TODO:  std::fabsf.
 	Vec3f orthogonalVector( const Vec3f & normal );
+
+	/**
+	 * @brief Compute rsmd between position 1 and 2 after applying transform
+	 * @param p_pos1
+	 * @param p_pos2
+	 * @param p_transform1 applied to p_pos1
+	 * @param p_transform2 applied to p_pos2
+	 * @return
+	 */
+	inline float computeRmsd(
+		const std::span<Vec3f> p_pos1,
+		const std::span<Vec3f> p_pos2,
+		const Mat4f &		   p_transform1,
+		const Mat4f &		   p_transform2
+	) noexcept
+	{
+		const size_t minAtomLength = std::min( p_pos1.size(), p_pos2.size() );
+
+		double rmsd = 0.;
+
+		for ( uint i = 0; i < minAtomLength; i++ )
+		{
+			const Vec4f point1Vec4f = p_transform1 * Vec4f( p_pos1[ i ], 1 );
+			const Vec4f point2Vec4f = p_transform2 * Vec4f( p_pos2[ i ], 1 );
+
+			const Vec3f point1Vec3f = { point1Vec4f.x, point1Vec4f.y, point1Vec4f.z };
+			const Vec3f point2Vec3f = { point2Vec4f.x, point2Vec4f.y, point2Vec4f.z };
+
+			rmsd += Util::Math::distance( point1Vec3f, point2Vec3f );
+		}
+
+		return sqrt( rmsd / minAtomLength );
+	}
 
 } // namespace VTX::Util::Math
 

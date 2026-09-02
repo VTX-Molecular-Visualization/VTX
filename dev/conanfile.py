@@ -23,6 +23,7 @@ def import_module_from_file(file_path):
 python_binding_module = import_module_from_file( Path("..") / "lib" / "python_binding" / "conanfile.py" )
 qt_module = import_module_from_file( Path("..") / "lib" / "ui"/ "qt" / "conanfile.py" )
 mdprep_module = import_module_from_file( Path("..") / "tool" / "mdprep"/ "conanfile.py" )
+structalign_module = import_module_from_file( Path("..") / "tool" / "structalign"/ "conanfile.py" )
 renderer_module = import_module_from_file( Path("..") / "lib" / "renderer" / "conanfile.py" )
 app_module = import_module_from_file( Path("..") / "lib" / "app" / "conanfile.py" )
 
@@ -34,6 +35,7 @@ class VTXRecipe(ConanFile):
         "version": ["ANY"],
         "tool_example": [True, False],
         "tool_mdprep": [True, False],
+        "tool_structalign": [True, False],
         "tool_topology_editor": [True, False],
         "local_pdb100": [True, False],
         "ui_qt": [True, False],
@@ -46,6 +48,7 @@ class VTXRecipe(ConanFile):
         "version": "0.0.0",
         "tool_example": False,
         "tool_mdprep": True,
+        "tool_structalign": True,
         "tool_topology_editor": True,
         "local_pdb100": False,
         "ui_qt": True,
@@ -96,6 +99,8 @@ class VTXRecipe(ConanFile):
             self.requires("qt/6.11.1")
         if self.options.tool_mdprep:
             self.requires("gromacs/2026.0.1")
+        if self.options.tool_structalign:
+            None
         self.requires("re2/20251105")
         if self.options.local_pdb100:
             self.requires("libarchive/3.8.7")
@@ -137,6 +142,7 @@ class VTXRecipe(ConanFile):
         tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
         tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
         tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
+        tc.cache_variables["VTX_TOOL_STRUCTALIGN"] = 1 if self.options.tool_structalign else 0
         tc.cache_variables["VTX_TOOL_TOPOLOGY_EDITOR"] = 1 if self.options.tool_topology_editor else 0
         tc.cache_variables["VTX_UI_QT"] = 1 if self.options.ui_qt else 0
         tc.cache_variables["VTX_RENDERER"] = 1 if self.options.renderer else 0
