@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_ACTION_APPLICATION__
 #define __VTX_APP_ACTION_APPLICATION__
 
-#include "app/threading/base_thread.hpp"
+#include <util/thread/base_thread.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -69,7 +69,7 @@ namespace VTX::App::Action::Application
 	 */
 	struct StopThread
 	{
-		void execute( const Threading::BaseThread::ID & );
+		void execute( const Util::Thread::ID & );
 	};
 
 } // namespace VTX::App::Action::Application

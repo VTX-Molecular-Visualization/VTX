@@ -1,16 +1,15 @@
 #include "app/pass/system_updater.hpp"
 #include "app/events.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
-#include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
 #include <algorithm>
 #include <core/chemdb/atom.hpp>
 #include <renderer/renderer.hpp>
-#include <span>
 #include <util/chrono.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/grid.hpp>
@@ -27,7 +26,7 @@ namespace VTX::App::Pass
 
 		// System.
 		hub.connect<Events::SystemLoad, &SystemUpdater::_onSystemLoad>( this );
-		hub.connect<Events::TrajectoryLoad, &SystemUpdater::_onTrajectoryLoad>( this );
+		hub.connect<Events::TrajectoryCurrentFrameChange, &SystemUpdater::_onTrajectoryCurrentFrameChange>( this );
 		reg.on_update<Core::Struct::Topology>().connect<&SystemUpdater::_onUpdateTopology>( this );
 		reg.on_update<Util::Math::Transform>().connect<&SystemUpdater::_onUpdateTransform>( this );
 		reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateVisibility>( this );
@@ -42,39 +41,41 @@ namespace VTX::App::Pass
 		reg.on_destroy<Renderer::Representation>().connect<&SystemUpdater::_onDestroyRepresentationPreset>( this );
 	}
 
+	Renderer::Cache::System::Data SystemUpdater::_getSystemData(
+		const Entity				  p_entity,
+		const Core::Struct::FrameView p_positions
+	) const
+	{
+		const auto & topology		= REG().get<Core::Struct::Topology>( p_entity );
+		const auto & uid			= REG().get<System::UID>( p_entity );
+		const auto & color			= REG().get<System::Color>( p_entity );
+		const auto & representation = REG().get<System::Representation>( p_entity );
+		const auto & visibility		= REG().get<System::Visibility>( p_entity );
+		const auto & selection		= REG().get<System::Selection>( p_entity );
+
+		assert( topology.getAtomCount() > 0 );
+
+		return { &topology,
+				 p_positions,
+				 &uid.atoms,
+				 &uid.residues,
+				 &color.colorSchemeAtoms,
+				 &color.customColorAtoms,
+				 &color.carbonCustomColorAtoms,
+				 &color.colorSchemeSecondaryStructureResidues,
+				 &color.customSecondaryStructureColorResidues,
+				 &_representations,
+				 &representation.presetAtoms,
+				 &visibility.atoms,
+				 &selection.atoms };
+	}
+
 	void SystemUpdater::update( const float, const float )
 	{
 		auto & reg = REG();
 
 		const bool systemChanged		 = not _systemAdded.empty() || not _systemRemoved.empty();
 		const bool representationChanged = not _representationAdded.empty() || not _representationRemoved.empty();
-
-		const auto getSystemData = [ & ]( const Entity p_ent ) -> Renderer::Cache::System::Data
-		{
-			const auto & topology		= reg.get<Core::Struct::Topology>( p_ent );
-			const auto & uid			= reg.get<System::UID>( p_ent );
-			const auto & color			= reg.get<System::Color>( p_ent );
-			const auto & representation = reg.get<System::Representation>( p_ent );
-			const auto & visibility		= reg.get<System::Visibility>( p_ent );
-			const auto & selection		= reg.get<System::Selection>( p_ent );
-
-			std::span<const Vec3f> positions = System::getCurrentAtomPositions( p_ent );
-			assert( topology.getAtomCount() > 0 );
-
-			return { &topology,
-					 positions,
-					 &uid.atoms,
-					 &uid.residues,
-					 &color.colorSchemeAtoms,
-					 &color.customColorAtoms,
-					 &color.carbonCustomColorAtoms,
-					 &color.colorSchemeSecondaryStructureResidues,
-					 &color.customSecondaryStructureColorResidues,
-					 &_representations,
-					 &representation.presetAtoms,
-					 &visibility.atoms,
-					 &selection.atoms };
-		};
 
 		// Add pending.
 		for ( const auto system : _systemAdded )
@@ -83,10 +84,17 @@ namespace VTX::App::Pass
 
 			const auto & transform = reg.get<Util::Math::Transform>( system );
 
-			const Renderer::Desc::Handle systemHandle
-				= RENDERER().addSystem( { transform.computeMatrix(), getSystemData( system ) } );
-
-			_systems.emplace( system, systemHandle );
+			const bool currentFrameVisited = Helper::Trajectory::visitCurrentFrame(
+				system,
+				[ this, system, &transform ]( const Core::Struct::FrameView p_positions )
+				{
+					_systems.emplace(
+						system,
+						RENDERER().addSystem( { transform.computeMatrix(), _getSystemData( system, p_positions ) } )
+					);
+				}
+			);
+			assert( currentFrameVisited );
 		}
 		for ( const auto representation : _representationAdded )
 		{
@@ -113,7 +121,11 @@ namespace VTX::App::Pass
 		{
 			for ( const auto & pair : _systems )
 			{
-				RENDERER().patchSystem( pair.second, getSystemData( pair.first ) );
+				Helper::Trajectory::visitCurrentFrame(
+					pair.first,
+					[ this, entity = pair.first, handle = pair.second ]( const Core::Struct::FrameView p_positions )
+					{ RENDERER().patchSystem( handle, _getSystemData( entity, p_positions ) ); }
+				);
 			}
 		}
 		if ( representationChanged )
@@ -158,7 +170,7 @@ namespace VTX::App::Pass
 		_systemAdded.emplace_back( p_event.system );
 	}
 
-	void SystemUpdater::_onTrajectoryLoad( const Events::TrajectoryLoad & p_event )
+	void SystemUpdater::_onTrajectoryCurrentFrameChange( const Events::TrajectoryCurrentFrameChange & p_event )
 	{
 		assert( _systems.contains( p_event.system ) );
 

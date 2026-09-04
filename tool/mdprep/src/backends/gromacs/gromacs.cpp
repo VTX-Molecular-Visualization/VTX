@@ -1,10 +1,11 @@
 #include <app/services.hpp>
 #include <app/session.hpp>
-#include <app/threading/base_thread.hpp>
-#include <app/threading/trigger_event.hpp>
 #include <latch>
 #include <thread>
+#include <util/event_hub.hpp>
 #include <util/logger.hpp>
+#include <util/thread/base_thread.hpp>
+#include <util/thread/thread_manager.hpp>
 //
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
 #include <tool/mdprep/gateway/shared.hpp>
@@ -30,7 +31,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		template<typename Instruction>
 		void fillOutputs( GromacsInstructions & p_in, Instruction & p_stepIn, GromacsJobData & p_currentJobData )
-		{ fillOutputsFromExpectations( p_in, p_currentJobData ); }
+		{
+			fillOutputsFromExpectations( p_in, p_currentJobData );
+		}
 
 		template<>
 		void fillOutputs( GromacsInstructions & p_in, GenionInstructions & p_stepIn, GromacsJobData & p_currentJobData )
@@ -79,7 +82,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		) noexcept
 		{
 			const int displayIndex = stepNum;
-			App::Threading::TiggerEvent { Gateway::PreparationStepStarted { displayIndex, p_stepName } };
+			App::THREAD().dispatch( [ event = Gateway::PreparationStepStarted { displayIndex, p_stepName } ]() mutable
+									{ App::HUB().trigger( std::move( event ) ); } );
 
 			const FilePath jobDir = p_in.rootDir / p_stepName;
 			VTX_DEBUG( "[MDPREP] Starting preparation step <{}> in <{}>.", p_stepName, jobDir.string() );
@@ -106,7 +110,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 					ev.stdOut	  = channels->stdout_;
 					ev.stdErr	  = channels->stderr_;
 				}
-				App::Threading::TiggerEvent { std::move( ev ) };
+				App::THREAD().dispatch( [ event = std::move( ev ) ]() mutable
+										{ App::HUB().trigger( std::move( event ) ); } );
 			};
 
 			if ( currentJobData.report.errorOccured )
@@ -143,9 +148,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	} // namespace
 
 	void prepareStructure(
-		VTX::App::Threading::ThreadData & p_thrData,
-		const FilePath &				  p_structurePdb,
-		GromacsInstructions &			  p_in
+		VTX::Util::Thread::ThreadData & p_thrData,
+		const FilePath &				p_structurePdb,
+		GromacsInstructions &			p_in
 	) noexcept
 	{
 		p_in.fileStem		  = p_structurePdb.stem().string();

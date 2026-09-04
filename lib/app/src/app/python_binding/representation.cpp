@@ -1,4 +1,5 @@
 #include "app/python_binding/representation.hpp"
+#include "app/action/preset.hpp"
 #include "app/action/representation.hpp"
 #include "app/ecs.hpp"
 #include "app/helper/preset.hpp"
@@ -57,10 +58,25 @@ namespace VTX::App::PythonBinding
 			void execute( const std::string & p_presetName )
 			{ App::Action::Representation::AddSelected().execute( _getRepresentationPreset( p_presetName ) ); }
 		};
+
+		struct SetRepresentationAllByName
+		{
+			void execute( const std::string & p_presetName )
+			{
+				App::Action::Preset::Apply<Renderer::Representation>().execute(
+					_getRepresentationPreset( p_presetName )
+				);
+			}
+		};
 	} // namespace
 
 	void RepresentationBinder::bind( Module & p_vtxModule )
 	{
+		p_vtxModule.bindAction<SetRepresentationAllByName, const std::string &>(
+			"setRepresentation",
+			"Set the representation preset of all systems.",
+			VTX::PythonBinding::Wrapper::Arg( "presetName" )
+		);
 		p_vtxModule.bindAction<
 			SetRepresentationByName,
 			const Entity,

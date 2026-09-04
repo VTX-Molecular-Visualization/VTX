@@ -293,19 +293,30 @@ namespace VTX::IO::Writer
 					w_frame = p_system.newFrame();
 				}
 
-				std::span<const Vec3f> currentAtomPositions = p_traj.getAtomPositions( static_cast<uint>( frameIdx ) );
-				for ( size_t it_atomIdx = 0; it_atomIdx < currentAtomPositions.size(); it_atomIdx++ )
-				{
-					Atom w_atom;
-
-					// if the atom doesn't exist for some reason, we skip to the next
-					if ( p_system.fetch(
-							 w_atom, AtomId { p_indexManager.getAtomIdx( static_cast<uint>( it_atomIdx ) ) }
-						 ) )
+				const bool frameAvailable = p_traj.visitAtomPositions(
+					static_cast<uint>( frameIdx ),
+					[ & ]( const Core::Struct::FrameView p_positions )
 					{
-						const VTX::Vec3f & coords = currentAtomPositions[ it_atomIdx ];
-						w_frame.set( w_atom, AtomCoordinates { .x = coords[ 0 ], .y = coords[ 1 ], .z = coords[ 2 ] } );
+						for ( size_t atomIndex = 0; atomIndex < p_positions.size(); atomIndex++ )
+						{
+							Atom atom;
+
+							// If the atom doesn't exist for some reason, skip to the next one.
+							if ( p_system.fetch(
+									 atom, AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIndex ) ) }
+								 ) )
+							{
+								const Vec3f & position = p_positions[ atomIndex ];
+								w_frame.set(
+									atom, AtomCoordinates { .x = position.x, .y = position.y, .z = position.z }
+								);
+							}
+						}
 					}
+				);
+				if ( not frameAvailable )
+				{
+					throw IOException( "Trajectory frame {} became unavailable during export.", frameIdx );
 				}
 			}
 		}

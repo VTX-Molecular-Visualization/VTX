@@ -5,7 +5,8 @@
 #include <app/action/action_manager.hpp>
 #include <app/action/trajectory.hpp>
 #include <app/services.hpp>
-#include <app/system/trajectory.hpp>
+#include <app/trajectory/player.hpp>
+#include <core/struct/trajectory.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -19,11 +20,11 @@ namespace VTX::UI::QT::Widget::Tree
 
 		// Player mode combobox
 		_playerModeCombo = new QComboBox( this );
-		_playerModeCombo->addItem( tr( "Forward" ), int( App::System::TrajectoryPlayMode::forward ) );
-		_playerModeCombo->addItem( tr( "Forward Loop" ), int( App::System::TrajectoryPlayMode::forwardLoop ) );
-		_playerModeCombo->addItem( tr( "Backward" ), int( App::System::TrajectoryPlayMode::backward ) );
-		_playerModeCombo->addItem( tr( "Backward Loop" ), int( App::System::TrajectoryPlayMode::backwardLoop ) );
-		_playerModeCombo->addItem( tr( "Ping Pong" ), int( App::System::TrajectoryPlayMode::pingpong ) );
+		_playerModeCombo->addItem( tr( "Forward" ), int( App::Trajectory::PLAY_MODE::FORWARD ) );
+		_playerModeCombo->addItem( tr( "Forward Loop" ), int( App::Trajectory::PLAY_MODE::FORWARD_LOOP ) );
+		_playerModeCombo->addItem( tr( "Backward" ), int( App::Trajectory::PLAY_MODE::BACKWARD ) );
+		_playerModeCombo->addItem( tr( "Backward Loop" ), int( App::Trajectory::PLAY_MODE::BACKWARD_LOOP ) );
+		_playerModeCombo->addItem( tr( "Ping Pong" ), int( App::Trajectory::PLAY_MODE::PING_PONG ) );
 		formLayout->addRow( tr( "Mode" ), _playerModeCombo );
 
 		// Speed control: slider + spinbox in a horizontal layout
@@ -63,12 +64,13 @@ namespace VTX::UI::QT::Widget::Tree
 		_frameSpinBox->installEventFilter( this );
 
 		// Connect to trajectory updates
-		App::REG().on_update<App::System::TrajectoryFullBuffer>().connect<&TrajectorySettings::_onTrajectoryUpdated>(
-			this
-		);
+		App::REG().on_update<App::Trajectory::Player>().connect<&TrajectorySettings::_onTrajectoryUpdated>( this );
 
 		_refresh();
 	}
+
+	TrajectorySettings::~TrajectorySettings()
+	{ App::REG().on_update<App::Trajectory::Player>().disconnect<&TrajectorySettings::_onTrajectoryUpdated>( this ); }
 
 	void TrajectorySettings::_onPlayerModeChanged( int p_index )
 	{
@@ -77,7 +79,7 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		auto mode = static_cast<App::System::TrajectoryPlayMode>( _playerModeCombo->itemData( p_index ).toInt() );
+		auto mode = static_cast<App::Trajectory::PLAY_MODE>( _playerModeCombo->itemData( p_index ).toInt() );
 		App::ACTION().execute<App::Action::Trajectory::ChangePlayer>( _system, mode );
 	}
 
@@ -138,10 +140,9 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectorySettings::_onFrameSpinBoxFocused()
 	{
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( _system, trajPtr );
+		const App::Trajectory::Player & player = App::REG().get<App::Trajectory::Player>( _system );
 
-		if ( trajPtr && !trajPtr->paused )
+		if ( not player.paused )
 		{
 			App::ACTION().execute<App::Action::Trajectory::ToggleStartPause>( _system );
 		}
@@ -149,39 +150,24 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectorySettings::_refresh()
 	{
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( _system, trajPtr );
-
-		if ( trajPtr == nullptr )
-		{
-			return;
-		}
+		const App::Trajectory::Player & player = App::REG().get<App::Trajectory::Player>( _system );
 
 		_isRefreshing = true;
 
-		uint totalFrames  = trajPtr->trajectorySize;
-		uint currentFrame = trajPtr->currentFrameIndex;
+		const uint totalFrames	= static_cast<uint>( App::REG().get<Core::Struct::Trajectory>( _system ).frameCount );
+		const uint currentFrame = player.currentFrameIndex;
 
-		if ( totalFrames == std::numeric_limits<uint>::max() )
-		{
-			totalFrames = 0;
-		}
-		if ( currentFrame == std::numeric_limits<uint>::max() )
-		{
-			currentFrame = 0;
-		}
-
-		_playerModeCombo->setCurrentIndex( _playerModeCombo->findData( int( trajPtr->playMode ) ) );
+		_playerModeCombo->setCurrentIndex( _playerModeCombo->findData( int( player.playMode ) ) );
 
 		// Speed
-		_speedSlider->setValue( int( trajPtr->playingSpeed ) );
-		_speedSpinBox->setValue( double( trajPtr->playingSpeed ) );
+		_speedSlider->setValue( int( player.playingSpeed ) );
+		_speedSpinBox->setValue( double( player.playingSpeed ) );
 
 		// Frame
-		_frameSpinBox->setMaximum( totalFrames > 0 ? int( totalFrames - 1 ) : 0 );
+		_frameSpinBox->setMaximum( int( totalFrames - 1 ) );
 
 		// Only update frame value if the spinbox doesn't have focus (user might be typing)
-		if ( !_frameSpinBox->hasFocus() )
+		if ( not _frameSpinBox->hasFocus() )
 		{
 			_frameSpinBox->setValue( int( currentFrame ) );
 		}

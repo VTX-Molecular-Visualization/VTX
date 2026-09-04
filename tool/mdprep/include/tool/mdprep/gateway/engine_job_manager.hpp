@@ -2,10 +2,10 @@
 #define __VTX_TOOL_TOOLS_MDPREP_GATEWAY_ENGINE_JOB_MANAGER__
 
 #include "tool/mdprep/gateway/shared.hpp"
-#include <app/threading/base_thread.hpp>
 #include <functional>
 #include <memory>
 #include <util/concepts.hpp>
+#include <util/thread/base_thread.hpp>
 
 namespace VTX::Tool::Mdprep::Gateway
 {

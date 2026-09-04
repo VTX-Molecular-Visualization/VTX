@@ -3,7 +3,7 @@
 
 #include "app/events.hpp"
 #include "app/services.hpp"
-#include "app/threading/thread_manager.hpp"
+#include <atomic>
 #include <concepts>
 #include <condition_variable>
 #include <latch>
@@ -13,6 +13,7 @@
 #include <util/hashing.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
+#include <util/thread/thread_manager.hpp>
 
 namespace VTX::App::Action
 {
@@ -20,7 +21,7 @@ namespace VTX::App::Action
 	 * @brief Concept for action that can be threadable.
 	 */
 	template<typename T, typename... Args>
-	concept ThreadableAction = requires( T t, Threading::ThreadData thrData, Args &&... args ) {
+	concept ThreadableAction = requires( T t, Util::Thread::ThreadData thrData, Args &&... args ) {
 		{ T( thrData ) };
 	};
 
@@ -35,6 +36,7 @@ namespace VTX::App::Action
 		ActionManager();
 
 		void update( const float, const float );
+		void shutdown() noexcept;
 
 		/**
 		 * @brief Thread safe. Subscribe an action to be executed later on the main thread.
@@ -68,10 +70,11 @@ namespace VTX::App::Action
 			else
 			{
 				THREAD().createThread(
-					[... args
-					 = std::forward<Args>( p_args ) ]( Util::StopToken p_token, Threading::BaseThread & p_thr ) mutable
+					[... args = std::forward<Args>( p_args ) ](
+						Util::Thread::StopToken p_token, Util::Thread::BaseThread & p_thr
+					) mutable
 					{
-						A action( Threading::ThreadData { std::move( p_token ), p_thr } );
+						A action( Util::Thread::ThreadData { std::move( p_token ), p_thr } );
 						action.execute( std::move( args )... );
 						return 0;
 					}
@@ -133,6 +136,7 @@ namespace VTX::App::Action
 	  public:
 		class Waiter;
 		QueuedAction();
+		~QueuedAction();
 
 		inline void execute() { _ptr->execute(); }
 
@@ -155,7 +159,8 @@ namespace VTX::App::Action
 		{
 			std::mutex				mutex;
 			std::condition_variable conditionVariable;
-			bool					executed = false;
+			bool					executed  = false;
+			bool					cancelled = false;
 		};
 
 		struct _dummy
@@ -218,7 +223,6 @@ namespace VTX::App::Action
 		{
 		}
 
-		~QueuedAction()									 = default;
 		QueuedAction( QueuedAction && )					 = default;
 		QueuedAction( const QueuedAction & )			 = delete;
 		QueuedAction & operator=( QueuedAction && )		 = default;
@@ -242,12 +246,17 @@ namespace VTX::App::Action
 			 */
 			inline void wait() noexcept
 			{
+				bool executed = false;
 				{
 					_State *					 state = _statePtr.get();
 					std::unique_lock<std::mutex> lock( state->mutex );
-					state->conditionVariable.wait( lock, [ state ]() { return state->executed; } );
+					state->conditionVariable.wait( lock, [ state ]() { return state->executed || state->cancelled; } );
+					executed = state->executed;
 				}
-				this->_ptr->wait();
+				if ( executed )
+				{
+					this->_ptr->wait();
+				}
 			}
 
 		  private:

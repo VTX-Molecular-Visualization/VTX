@@ -2,25 +2,34 @@
 #define __VTX_APP_PASS_TRAJECTORY_UPDATER__
 
 #include "app/ecs.hpp"
-#include "app/events.hpp"
 #include "app/pass/pass_manager.hpp"
-#include "app/system/trajectory.hpp"
-#include <unordered_map>
-#include <util/players.hpp>
 
 namespace VTX::App::Pass
 {
+	/**
+	 * @brief System that updates the trajectory buffer and handle loading threads.
+	 */
 	class TrajectoryUpdater final : public IPass
 	{
 	  public:
+		/**
+		 * @brief Contructors.
+		 */
 		TrajectoryUpdater();
+		~TrajectoryUpdater() override;
+
 		void update( const float, const float );
 
 	  private:
-		bool _tryUpdateFrame( const Entity & entity, System::TrajectoryFullBuffer & p_traj ) noexcept;
+		/**
+		 * @brief On loader destroyed.
+		 */
+		void _onDestroyLoader( Registry &, const Entity );
 
-		void _onTrajectoryFullBufferCreation( Entity );
-		void _onDestroyTrajectory( Registry &, Entity );
+		/**
+		 * @brief Stop threaded loader.
+		 */
+		void _stopLoader( const Entity );
 	};
 } // namespace VTX::App::Pass
 #endif

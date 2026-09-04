@@ -31,6 +31,7 @@ namespace VTX::App::Pass
 		 * @brief Constructor.
 		 */
 		CameraUpdater( const Entity & );
+		~CameraUpdater() override;
 
 		/**
 		 * @brief Update each frame.
@@ -39,7 +40,7 @@ namespace VTX::App::Pass
 		{
 			if ( not _controllers.empty() )
 			{
-				const auto & settings = REG().get<Setting::Controller>( _entity );
+				const auto & settings  = REG().get<Setting::Controller>( _entity );
 				auto &		 transform = REG().get<Util::Math::Transform>( _entity );
 				auto &		 target	   = REG().get<Renderer::Camera>( _entity ).target;
 
@@ -144,6 +145,11 @@ namespace VTX::App::Pass
 		 * @brief On update controller setting.
 		 */
 		void _onControllerSetting();
+
+		/**
+		 * @brief On camera animation start.
+		 */
+		void _onCameraAnimationStart( const Events::CameraAnimationStart & );
 
 		/**
 		 * @brief On update camera.

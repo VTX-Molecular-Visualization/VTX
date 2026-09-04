@@ -40,7 +40,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		// Remove from map and delete widget.
 		assert( _mapSequenceWidgets.contains( p_e ) );
-		_mapSequenceWidgets[ p_e ]->deleteLater();
+		delete _mapSequenceWidgets[ p_e ];
 		_mapSequenceWidgets.erase( p_e );
 	}
 

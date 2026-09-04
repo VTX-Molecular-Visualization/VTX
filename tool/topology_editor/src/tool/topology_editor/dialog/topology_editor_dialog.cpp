@@ -11,8 +11,8 @@
 #include <QTabWidget>
 #include <QTableWidget>
 #include <QVBoxLayout>
+#include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
-#include <app/system/trajectory.hpp>
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/bond.hpp>
 #include <core/chemdb/residue.hpp>
@@ -528,9 +528,11 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			_residuesTable->setItem(
 				int( residue ),
 				5,
-				_readonlyItem( QString::fromStdString(
-					std::string( Util::Enum::enumName( topology.getResidueSecondaryStructureType( residue ) ) )
-				) )
+				_readonlyItem(
+					QString::fromStdString(
+						std::string( Util::Enum::enumName( topology.getResidueSecondaryStructureType( residue ) ) )
+					)
+				)
 			);
 			_residuesTable->setItem(
 				int( residue ),
@@ -544,34 +546,40 @@ namespace VTX::Tool::TopologyEditor::Dialog
 
 	void TopologyEditorDialog::_populateAtomsTable()
 	{
-		const auto & topology  = App::REG().get<Core::Struct::Topology>( _system );
-		const auto	 positions = App::System::getCurrentAtomPositions( _system );
+		const auto & topology = App::REG().get<Core::Struct::Topology>( _system );
 		_atomsTable->setRowCount( int( topology.getAtomCount() ) );
-		for ( Index atom = 0; atom < topology.getAtomCount(); ++atom )
+		const auto populate = [ & ]( const Core::Struct::FrameView p_positions )
 		{
-			const Index residue		  = topology.getAtomResidueIndex( atom );
-			const Index atomInResidue = atom - topology.getResidueFirstAtom( residue ) + 1;
-			_atomsTable->setItem( int( atom ), 0, _readonlyItem( UI::QT::Helper::formatNumber( atom ) ) );
-			_atomsTable->setItem( int( atom ), 1, _readonlyItem( _textOrDash( topology.getResidueName( residue ) ) ) );
-			_atomsTable->setItem( int( atom ), 2, _readonlyItem( UI::QT::Helper::formatNumber( atomInResidue ) ) );
-			_atomsTable->setItem( int( atom ), 3, _item( _textOrDash( topology.getAtomName( atom ) ) ) );
-			const auto originalAtomIndex = topology.getAtomOriginalIndex( atom );
-			_atomsTable->setItem(
-				int( atom ),
-				4,
-				_item( originalAtomIndex ? QString::number( *originalAtomIndex ) : "-" )
-			);
-			_atomsTable->setItem(
-				int( atom ),
-				5,
-				_item( QString::fromStdString( std::string( _atomSymbol( topology.getAtomSymbol( atom ) ) ) ) )
-			);
+			for ( Index atom = 0; atom < topology.getAtomCount(); ++atom )
+			{
+				const Index residue		  = topology.getAtomResidueIndex( atom );
+				const Index atomInResidue = atom - topology.getResidueFirstAtom( residue ) + 1;
+				_atomsTable->setItem( int( atom ), 0, _readonlyItem( UI::QT::Helper::formatNumber( atom ) ) );
+				_atomsTable->setItem(
+					int( atom ), 1, _readonlyItem( _textOrDash( topology.getResidueName( residue ) ) )
+				);
+				_atomsTable->setItem( int( atom ), 2, _readonlyItem( UI::QT::Helper::formatNumber( atomInResidue ) ) );
+				_atomsTable->setItem( int( atom ), 3, _item( _textOrDash( topology.getAtomName( atom ) ) ) );
+				const auto originalAtomIndex = topology.getAtomOriginalIndex( atom );
+				_atomsTable->setItem(
+					int( atom ), 4, _item( originalAtomIndex ? QString::number( *originalAtomIndex ) : "-" )
+				);
+				_atomsTable->setItem(
+					int( atom ),
+					5,
+					_item( QString::fromStdString( std::string( _atomSymbol( topology.getAtomSymbol( atom ) ) ) ) )
+				);
 
-			const bool	hasPosition = atom < positions.size();
-			const Vec3f position	= hasPosition ? positions[ atom ] : Vec3f {};
-			_atomsTable->setItem( int( atom ), 6, _item( hasPosition ? QString::number( position.x ) : "-" ) );
-			_atomsTable->setItem( int( atom ), 7, _item( hasPosition ? QString::number( position.y ) : "-" ) );
-			_atomsTable->setItem( int( atom ), 8, _item( hasPosition ? QString::number( position.z ) : "-" ) );
+				const bool	hasPosition = atom < p_positions.size();
+				const Vec3f position	= hasPosition ? p_positions[ atom ] : Vec3f {};
+				_atomsTable->setItem( int( atom ), 6, _item( hasPosition ? QString::number( position.x ) : "-" ) );
+				_atomsTable->setItem( int( atom ), 7, _item( hasPosition ? QString::number( position.y ) : "-" ) );
+				_atomsTable->setItem( int( atom ), 8, _item( hasPosition ? QString::number( position.z ) : "-" ) );
+			}
+		};
+		if ( not App::Helper::Trajectory::visitCurrentFrame( _system, populate ) )
+		{
+			populate( {} );
 		}
 		_resizeTableColumns( *_atomsTable );
 		_applyTableFilter( *_atomsTable, _atomsFilter ? _atomsFilter->text() : QString() );
@@ -599,8 +607,12 @@ namespace VTX::Tool::TopologyEditor::Dialog
 
 	void TopologyEditorDialog::_populateValidationTable()
 	{
-		const auto & topology  = App::REG().get<Core::Struct::Topology>( _system );
-		const auto	 positions = App::System::getCurrentAtomPositions( _system );
+		const auto & topology	   = App::REG().get<Core::Struct::Topology>( _system );
+		size_t		 positionCount = 0;
+		App::Helper::Trajectory::visitCurrentFrame(
+			_system,
+			[ &positionCount ]( const Core::Struct::FrameView p_positions ) { positionCount = p_positions.size(); }
+		);
 
 		_validationTable->setRowCount( 0 );
 		auto addIssue = [ this ]( const QString & p_severity, const QString & p_item, const QString & p_message )
@@ -616,7 +628,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		{
 			addIssue( "Error", "System", "Empty topology" );
 		}
-		if ( positions.size() != topology.getAtomCount() )
+		if ( positionCount != topology.getAtomCount() )
 		{
 			addIssue( "Error", "Positions", "Atom count mismatch" );
 		}
@@ -667,8 +679,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		const Index						  p_index
 	)
 	{
-		const auto & topology  = App::REG().get<Core::Struct::Topology>( _system );
-		const auto	 positions = App::System::getCurrentAtomPositions( _system );
+		const auto & topology = App::REG().get<Core::Struct::Topology>( _system );
 
 		_clearSelectionInspector();
 
@@ -721,13 +732,19 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			_setInspectorProperty(
 				2, "Element", QString::fromStdString( std::string( _atomSymbol( topology.getAtomSymbol( p_index ) ) ) )
 			);
-			if ( p_index < positions.size() )
-			{
-				const Vec3f position = positions[ p_index ];
-				_setInspectorProperty( 3, "X", UI::QT::Helper::formatNumber( position.x, 'f', 3 ) );
-				_setInspectorProperty( 4, "Y", UI::QT::Helper::formatNumber( position.y, 'f', 3 ) );
-				_setInspectorProperty( 5, "Z", UI::QT::Helper::formatNumber( position.z, 'f', 3 ) );
-			}
+			App::Helper::Trajectory::visitCurrentFrame(
+				_system,
+				[ & ]( const Core::Struct::FrameView p_positions )
+				{
+					if ( p_index < p_positions.size() )
+					{
+						const Vec3f & position = p_positions[ p_index ];
+						_setInspectorProperty( 3, "X", UI::QT::Helper::formatNumber( position.x, 'f', 3 ) );
+						_setInspectorProperty( 4, "Y", UI::QT::Helper::formatNumber( position.y, 'f', 3 ) );
+						_setInspectorProperty( 5, "Z", UI::QT::Helper::formatNumber( position.z, 'f', 3 ) );
+					}
+				}
+			);
 			break;
 		}
 		}

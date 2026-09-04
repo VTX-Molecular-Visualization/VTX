@@ -29,6 +29,8 @@ namespace VTX::Util
 
 		inline void current( uint & p_out ) const noexcept { _ptr->current( p_out ); }
 
+		inline void setStepCount( const uint p_stepCount ) noexcept { _ptr->setStepCount( p_stepCount ); }
+
 		/**
 		 * @brief Move to the next step.
 		 */
@@ -47,6 +49,7 @@ namespace VTX::Util
 			virtual void next( uint & ) const noexcept							  = 0;
 			virtual void next( const uint & p_incr, uint & p_out ) const noexcept = 0;
 			virtual void current( uint & ) const noexcept						  = 0;
+			virtual void setStepCount( const uint p_stepCount ) noexcept		  = 0;
 			virtual void increment() noexcept									  = 0;
 			virtual void increment( const uint & p_N ) noexcept					  = 0;
 		};
@@ -95,6 +98,14 @@ namespace VTX::Util
 				}
 			}
 
+			virtual void setStepCount( const uint p_stepCount ) noexcept override
+			{
+				if constexpr ( not std::same_as<T, _dummy> )
+				{
+					_obj.setStepCount( p_stepCount );
+				}
+			}
+
 			virtual void increment() noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
@@ -133,6 +144,7 @@ namespace VTX::Util
 			void next( uint & p_out ) const noexcept;
 			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void current( uint & p_out ) const noexcept;
+			void setStepCount( uint p_stepCount ) noexcept;
 			void increment() noexcept;
 			void increment( const uint & ) noexcept;
 
@@ -149,6 +161,7 @@ namespace VTX::Util
 			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void next( uint & p_out ) const noexcept;
 			void current( uint & p_out ) const noexcept;
+			void setStepCount( uint p_stepCount ) noexcept;
 			void increment() noexcept;
 			void increment( const uint & ) noexcept;
 
@@ -165,6 +178,7 @@ namespace VTX::Util
 			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void next( uint & p_out ) const noexcept;
 			void current( uint & p_out ) const noexcept;
+			void setStepCount( uint p_stepCount ) noexcept;
 			void increment() noexcept;
 			void increment( const uint & ) noexcept;
 
@@ -181,6 +195,7 @@ namespace VTX::Util
 			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void next( uint & p_out ) const noexcept;
 			void current( uint & p_out ) const noexcept;
+			void setStepCount( uint p_stepCount ) noexcept;
 			void increment() noexcept;
 			void increment( const uint & ) noexcept;
 
@@ -197,6 +212,7 @@ namespace VTX::Util
 			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void next( uint & p_out ) const noexcept;
 			void current( uint & p_out ) const noexcept;
+			void setStepCount( uint p_stepCount ) noexcept;
 			void increment() noexcept;
 			void increment( const uint & ) noexcept;
 

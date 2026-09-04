@@ -13,9 +13,8 @@
 #include <tool/mdprep/backends/gromacs/trjconv.hpp>
 #include <tool/mdprep/backends/gromacs/util.hpp>
 #include <util/filesystem.hpp>
-#include <util/thread.hpp>
 
-namespace VTX::App::Threading
+namespace VTX::Util::Thread
 {
 	struct ThreadData;
 }
@@ -51,7 +50,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	 * @param
 	 */
 	void prepareStructure(
-		VTX::App::Threading::ThreadData &,
+		VTX::Util::Thread::ThreadData &,
 		const FilePath & p_structurePdb,
 		GromacsInstructions &
 	) noexcept;

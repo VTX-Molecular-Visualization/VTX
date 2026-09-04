@@ -3,21 +3,17 @@
 
 #include "io/constants.hpp"
 #include "io/metadata.hpp"
+#include <core/struct/trajectory.hpp>
 #include <memory>
 #include <string>
 #include <util/math/aabb.hpp>
 #include <util/math/grid.hpp>
+#include <util/thread/base_thread.hpp>
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::Util
-{
-	class StopToken;
-} // namespace VTX::Util
-
 namespace VTX::Core::Struct
 {
-	using Frame = std::vector<Vec3f>;
 	struct Topology;
 } // namespace VTX::Core::Struct
 
@@ -30,13 +26,14 @@ namespace VTX::IO
 {
 	using MemoryBuffer = std::string;
 	using FrameIndex   = size_t;
+	using StopToken	   = VTX::Util::Thread::StopToken;
 
 	class SystemReader
 	{
 	  public:
 		SystemReader() = delete;
-		SystemReader( const FilePath &, const READER_OPTION, VTX::Util::StopToken & );
-		SystemReader( MemoryBuffer &&, const VTX::FilePath &, const READER_OPTION, VTX::Util::StopToken & );
+		SystemReader( const FilePath &, const READER_OPTION, const StopToken );
+		SystemReader( MemoryBuffer &&, const VTX::FilePath &, const READER_OPTION, const StopToken );
 
 		size_t frameCount() const;
 
@@ -57,7 +54,15 @@ namespace VTX::IO
 		 */
 		void get( VTX::Core::Struct::Frame &, const FrameIndex = 0 );
 
-		void set( VTX::Util::StopToken & ) noexcept;
+		/**
+		 * @brief Free memory.
+		 */
+		void releaseTopologyData();
+
+		/**
+		 * @brief Stop token.
+		 */
+		void set( const StopToken ) noexcept;
 
 	  private:
 		struct _Impl;
@@ -70,7 +75,7 @@ namespace VTX::IO
 		std::unique_ptr<_Impl, Del> _impl = nullptr;
 	};
 
-	bool isTrajectoryFileFormat( const FilePath & p_path ) noexcept;
+	bool isTrajectoryFileFormat( const FilePath & p_path );
 
 } // namespace VTX::IO
 

@@ -8,6 +8,8 @@
 #include <app/vtx_app.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <chrono>
+#include <future>
 #include <python_binding/interpretor.hpp>
 #include <source_location>
 #include <util/math/range_list.hpp>
@@ -475,32 +477,15 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	const FilePath scriptPath	   = internalDataDir / "script_test.py";
 
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
-	std::future<AsyncJobResult>					  _future = promise->get_future();
+	std::future<AsyncJobResult>					  future  = promise->get_future();
 	App::INTERPRETOR().runScript( scriptPath, promise );
-	_future.wait();
-	if ( _future.valid() )
-	{
-		CHECK( _future.get().success == true );
-	}
-	else
-	{
-		CHECK( false );
-	}
+	CHECK( future.get().success == true );
 	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
 
-	promise = std::make_shared<std::promise<AsyncJobResult>>();
-	_future = promise->get_future();
+	promise										= std::make_shared<std::promise<AsyncJobResult>>();
+	std::future<AsyncJobResult> badScriptFuture = promise->get_future();
 	App::INTERPRETOR().runScript( badScriptPath, promise );
-	_future.wait();
-
-	if ( _future.valid() )
-	{
-		CHECK( _future.get().success == false );
-	}
-	else
-	{
-		CHECK( false );
-	}
+	CHECK( badScriptFuture.get().success == false );
 }
 
 TEST_CASE( "VTX_PYTHON_BINDING - Python binding smoke test", "[python][binding][smoke]" )
@@ -513,12 +498,37 @@ TEST_CASE( "VTX_PYTHON_BINDING - Python binding smoke test", "[python][binding][
 	const FilePath scriptPath	   = internalDataDir / "python_binding_smoke.py";
 
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
-	std::future<AsyncJobResult>					  _future = promise->get_future();
+	std::future<AsyncJobResult>					  future  = promise->get_future();
 	App::INTERPRETOR().runScript( scriptPath, promise );
-	_future.wait();
 
-	REQUIRE( _future.valid() );
-	const AsyncJobResult result = _future.get();
+	while ( future.wait_for( std::chrono::milliseconds( 1 ) ) != std::future_status::ready )
+	{
+		THREAD().update();
+	}
+	const AsyncJobResult result = future.get();
+	INFO( result.resultStr );
+	CHECK( result.success == true );
+}
+
+TEST_CASE( "VTX_PYTHON_BINDING - Python trajectory binding smoke test", "[python][binding][smoke][trajectory]" )
+{
+	using namespace VTX;
+	using namespace VTX::App;
+	App::Fixture app( Test::pythonArguments() );
+	app.loadSystem( std::string_view( "1gcn.pdb" ) );
+
+	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
+	const FilePath scriptPath	   = internalDataDir / "python_binding_trajectory_smoke.py";
+
+	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
+	std::future<AsyncJobResult>					  future  = promise->get_future();
+	App::INTERPRETOR().runScript( scriptPath, promise );
+
+	while ( future.wait_for( std::chrono::milliseconds( 1 ) ) != std::future_status::ready )
+	{
+		THREAD().update();
+	}
+	const AsyncJobResult result = future.get();
 	INFO( result.resultStr );
 	CHECK( result.success == true );
 }
@@ -533,9 +543,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][nothin
 	using namespace VTX::App;
 	App::Fixture								  app( Test::pythonArguments() );
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
-	std::future<AsyncJobResult>					  _future = promise->get_future();
+	std::future<AsyncJobResult>					  future  = promise->get_future();
 	App::INTERPRETOR().runCommand( "s = 1", promise );
-	_future.wait();
+	CHECK( future.get().success == true );
 }
 
 TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][binding][command][script]" )
@@ -552,30 +562,14 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][bindin
 	const FilePath scriptPath	   = internalDataDir / "script_test.py";
 
 	std::shared_ptr<std::promise<AsyncJobResult>> promise	   = std::make_shared<std::promise<AsyncJobResult>>();
-	std::future<AsyncJobResult>					  _future	   = promise->get_future();
+	std::future<AsyncJobResult>					  future	   = promise->get_future();
 	std::stringstream							  ssCommandRun = std::stringstream();
 	ssCommandRun << "vtx.runScript(" << scriptPath << " )";
 	App::INTERPRETOR().runCommand( ssCommandRun.str(), promise );
-	_future.wait();
-	if ( _future.valid() )
-	{
-		CHECK( _future.get().success == true );
-	}
-	else
-	{
-		CHECK( false );
-	}
+	CHECK( future.get().success == true );
 
-	promise = std::make_shared<std::promise<AsyncJobResult>>();
-	_future = promise->get_future();
+	promise										= std::make_shared<std::promise<AsyncJobResult>>();
+	std::future<AsyncJobResult> badScriptFuture = promise->get_future();
 	App::INTERPRETOR().runCommand( "vtx.runScript('bzzzz')", promise );
-	_future.wait();
-	if ( _future.valid() )
-	{
-		CHECK( _future.get().success == false );
-	}
-	else
-	{
-		CHECK( false );
-	}
+	CHECK( badScriptFuture.get().success == false );
 }

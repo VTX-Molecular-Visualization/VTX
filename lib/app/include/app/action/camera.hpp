@@ -6,10 +6,10 @@
 #include "app/controller/trackball.hpp"
 #include "app/ecs.hpp"
 #include "app/events.hpp"
-#include "app/pass/camera_updater.hpp"
 #include "app/scene/viewpoint.hpp"
 #include "app/services.hpp"
 #include <renderer/camera.hpp>
+#include <util/event_hub.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
 #include <util/type_traits.hpp>
@@ -25,7 +25,7 @@ namespace VTX::App::Action::Camera
 	};
 
 	/**
-	 * @brief Set camera rotation (euler angles).
+	 * @brief Set camera rotation.
 	 */
 	struct SetRotation
 	{
@@ -174,13 +174,8 @@ namespace VTX::App::Action::Camera
 			}
 
 			// Run animation.
-			PASS().getPass<Pass::CameraUpdater>()->addController<Animation>(
-				Pass::CameraUpdater::CTRL_INSERTION_MODE::FRONT,
-				start,
-				p_end,
-				p_duration,
-				interpPositionFunc,
-				interpRotationFunc
+			HUB().trigger<Events::CameraAnimationStart>(
+				start, p_end, p_duration, interpPositionFunc, interpRotationFunc
 			);
 		}
 	};

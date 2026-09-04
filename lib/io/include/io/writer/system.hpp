@@ -2,10 +2,11 @@
 #define __VTX_IO_WRITER_SYSTEM__
 
 #include <core/struct/topology.hpp>
+#include <core/struct/trajectory.hpp>
 #include <functional>
 #include <io/writer/shared.hpp>
 #include <util/filesystem.hpp>
-#include <util/thread.hpp>
+#include <util/thread/base_thread.hpp>
 
 namespace VTX::IO::Writer
 {
@@ -29,6 +30,8 @@ namespace VTX::IO::Writer
 	class TrajectoryFrameGetter
 	{
 	  public:
+		using FrameVisitor = std::function<void( Core::Struct::FrameView )>;
+
 		TrajectoryFrameGetter() = default;
 
 		/**
@@ -37,21 +40,17 @@ namespace VTX::IO::Writer
 		 */
 		inline uint frameCount() const { return _ptr->frameCount(); }
 
-		/**
-		 * @brief Returns the n-th frame
-		 * @return
-		 */
-		inline std::span<const Vec3f> getAtomPositions( const uint & p_ ) const { return _ptr->getAtomPositions( p_ ); }
-
-		inline std::span<const Vec3f> getCurrentAtomPositions() const { return _ptr->getCurrentAtomPositions(); }
+		inline bool visitAtomPositions( const uint p_index, const FrameVisitor & p_visitor ) const
+		{
+			return _ptr->visitAtomPositions( p_index, p_visitor );
+		}
 
 	  private:
 		struct _interface
 		{
-			virtual ~_interface()												  = default;
-			virtual uint				   frameCount() const					  = 0;
-			virtual std::span<const Vec3f> getAtomPositions( const uint & ) const = 0;
-			virtual std::span<const Vec3f> getCurrentAtomPositions() const		  = 0;
+			virtual ~_interface()												= default;
+			virtual uint frameCount() const										= 0;
+			virtual bool visitAtomPositions( uint, const FrameVisitor & ) const = 0;
 		};
 
 		struct _dummy
@@ -75,27 +74,15 @@ namespace VTX::IO::Writer
 				}
 			}
 
-			virtual std::span<const Vec3f> getAtomPositions( const uint & p_index ) const override
+			virtual bool visitAtomPositions( const uint p_index, const FrameVisitor & p_visitor ) const override
 			{
 				if constexpr ( std::same_as<T, _dummy> )
 				{
-					return {};
+					return false;
 				}
 				else
 				{
-					return _obj.getAtomPositions( p_index );
-				}
-			}
-
-			virtual std::span<const Vec3f> getCurrentAtomPositions() const override
-			{
-				if constexpr ( std::same_as<T, _dummy> )
-				{
-					return {};
-				}
-				else
-				{
-					return _obj.getCurrentAtomPositions();
+					return _obj.visitAtomPositions( p_index, p_visitor );
 				}
 			}
 
@@ -129,7 +116,7 @@ namespace VTX::IO::Writer
 		std::vector<System> topologies;
 		E_WRITE_TYPE writeType = E_WRITE_TYPE::trajectory; // Placeholder because at some point we will probably need to
 														   // write docking results and stuff
-		Util::StopToken stopToken;
+		Util::Thread::StopToken stopToken;
 	};
 
 	void writeFile( WriteArgs );

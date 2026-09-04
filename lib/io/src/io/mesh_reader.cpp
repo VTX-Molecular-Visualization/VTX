@@ -5,7 +5,6 @@
 #include <core/struct/mesh.hpp>
 #include <util/constants.hpp>
 #include <util/exceptions.hpp>
-#include <util/thread.hpp>
 #include <utility>
 
 namespace VTX::IO
@@ -16,7 +15,7 @@ namespace VTX::IO
 											  | aiProcess_GenSmoothNormals | aiProcess_PreTransformVertices;
 	}
 
-	MeshReader::MeshReader( FilePath p_filePath, VTX::Util::StopToken & p_stopToken ) :
+	MeshReader::MeshReader( FilePath p_filePath, const Util::Thread::StopToken p_stopToken ) :
 		_filePath( std::move( p_filePath ) ), _stopToken( p_stopToken )
 	{
 	}
@@ -28,7 +27,7 @@ namespace VTX::IO
 			throw IOException( "Unsupported mesh format: {}", _filePath.extension().string() );
 		}
 
-		if ( _stopToken.get().stop_requested() )
+		if ( _stopToken.stop_requested() )
 		{
 			return;
 		}
@@ -45,7 +44,7 @@ namespace VTX::IO
 
 		for ( unsigned int meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex )
 		{
-			if ( _stopToken.get().stop_requested() )
+			if ( _stopToken.stop_requested() )
 			{
 				return;
 			}

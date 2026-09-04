@@ -11,10 +11,8 @@
 #include "app/arguments.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
-#include "app/system/trajectory_preparation.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/writer.hpp"
-#include "app/threading/thread_manager.hpp"
 #include <fmt/format.h>
 #include <io/mesh_reader.hpp>
 #include <renderer/camera.hpp>
@@ -23,6 +21,7 @@
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 #include <util/resolution.hpp>
+#include <util/thread/thread_manager.hpp>
 
 namespace VTX::App::Action::IO
 {
@@ -70,7 +69,7 @@ namespace VTX::App::Action::IO
 
 	struct _SystemIo
 	{
-		Threading::ThreadData			 thrData;
+		Util::Thread::ThreadData		 thrData;
 		std::latch						 extractorCreation { 1 };
 		std::optional<Extractor::System> extractor;
 
@@ -96,7 +95,7 @@ namespace VTX::App::Action::IO
 
 	LoadSystem::LoadSystem() : _data( new _SystemIo() ) {}
 
-	LoadSystem::LoadSystem( Threading::ThreadData p_ ) : _data( new _SystemIo { std::move( p_ ) } ) {}
+	LoadSystem::LoadSystem( Util::Thread::ThreadData p_ ) : _data( new _SystemIo { std::move( p_ ) } ) {}
 
 	void LoadSystem::execute( FilePath p_path )
 	{
@@ -116,85 +115,31 @@ namespace VTX::App::Action::IO
 
 	void LoadSystem::wait() noexcept { _data->wait(); }
 
-	LoadMesh::LoadMesh( Util::StopToken p_stopToken, Threading::OptionalThreadReference p_threadRef ) :
+	LoadMesh::LoadMesh( Util::Thread::StopToken p_stopToken, Util::Thread::OptionalThreadReference p_threadRef ) :
 		_stopToken( std::move( p_stopToken ) ), _threadRef( std::move( p_threadRef ) )
 	{
 	}
 
 	void LoadMesh::execute( FilePath p_path )
-	{
-		Extractor::Mesh( std::move( p_path ) )( std::move( _stopToken ), _threadRef );
-	}
-
-	struct WriteSelection::_WriterIo
-	{
-		Threading::ThreadData				   thrData;
-		std::optional<System::SelectionWriter> writer;
-		std::latch							   writerSync { 1 };
-
-		void wait() noexcept
-		{
-			writerSync.wait();
-			if ( writer )
-			{
-				{
-					writer->wait();
-				}
-			}
-		}
-	};
-
-	void WriteSelection::_del::operator()( _WriterIo * p_ ) const noexcept { delete p_; }
-
-	WriteSelection::WriteSelection() : _data( new _WriterIo() ) {}
-
-	WriteSelection::WriteSelection( Threading::ThreadData p_ ) : _data( new _WriterIo { std::move( p_ ) } ) {}
+	{ Extractor::Mesh( std::move( p_path ) )( std::move( _stopToken ), _threadRef ); }
 
 	void WriteSelection::execute( FilePath p_path )
 	{
-		_data->writer.emplace( p_path );
-		_data->writerSync.count_down();
-
-		_data->writer.value()( std::move( _data->thrData.stopToken ), _data->thrData.thrRef );
+		System::SelectionWriter writer( std::move( p_path ) );
+		writer();
 	}
-
-	void WriteSelection::wait() noexcept { _data->wait(); }
-
-	struct WriteVisible::_WriterIo
-	{
-		Threading::ThreadData				 thrData;
-		std::optional<System::VisibleWriter> writer;
-		std::latch							 writerSync { 1 };
-
-		void wait() noexcept
-		{
-			writerSync.wait();
-			if ( writer )
-			{
-				writer->wait();
-			}
-		}
-	};
-
-	void WriteVisible::_del::operator()( _WriterIo * p_ ) const noexcept { delete p_; }
-
-	WriteVisible::WriteVisible() : _data( new _WriterIo() ) {}
-
-	WriteVisible::WriteVisible( Threading::ThreadData p_ ) : _data( new _WriterIo( std::move( p_ ) ) ) {}
 
 	void WriteVisible::execute( FilePath p_path )
 	{
-		_data->writer.emplace( p_path );
-		_data->writerSync.count_down();
-
-		_data->writer.value()( std::move( _data->thrData.stopToken ), _data->thrData.thrRef );
+		System::VisibleWriter writer( std::move( p_path ) );
+		writer();
 	}
-
-	void WriteVisible::wait() noexcept { _data->wait(); }
 
 	AssociateTrajectory::AssociateTrajectory() : _data( new _SystemIo() ) {}
 
-	AssociateTrajectory::AssociateTrajectory( Threading::ThreadData p_ ) : _data( new _SystemIo { std::move( p_ ) } ) {}
+	AssociateTrajectory::AssociateTrajectory( Util::Thread::ThreadData p_ ) : _data( new _SystemIo { std::move( p_ ) } )
+	{
+	}
 
 	void AssociateTrajectory::execute( const FilePath & p_path, const Entity & p_entity )
 	{
@@ -210,9 +155,7 @@ namespace VTX::App::Action::IO
 	}
 
 	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e )
-	{
-		execute( FilePath( p_path ), p_e );
-	}
+	{ execute( FilePath( p_path ), p_e ); }
 
 	void AssociateTrajectory::wait() noexcept { _data->wait(); }
 
@@ -226,19 +169,13 @@ namespace VTX::App::Action::IO
 	}
 
 	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id )
-	{
-		execute( p_id, p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() );
-	}
+	{ execute( p_id, p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() ); }
 
 	void DownloadSystem::execute( const std::string & p_systemId )
-	{
-		execute( Util::Url::SystemId( p_systemId.data() ) );
-	}
+	{ execute( Util::Url::SystemId( p_systemId.data() ) ); }
 
 	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id, FilePath p_path )
-	{
-		execute( VTX::Util::Url::UrlFull( p_id ), p_path );
-	}
+	{ execute( VTX::Util::Url::UrlFull( p_id ), p_path ); }
 
 	void DownloadSystem::execute( VTX::Util::Url::UrlFull p_url, FilePath p_path )
 	{
@@ -252,12 +189,26 @@ namespace VTX::App::Action::IO
 	}
 
 	void Snapshot::execute()
+	{ execute( std::nullopt, std::nullopt, Util::Image::E_FORMAT::PNG, std::nullopt, std::nullopt, std::nullopt ); }
+
+	void Snapshot::execute(
+		const std::optional<FilePath> p_path,
+		const std::optional<FilePath> p_filename,
+		const Util::Image::E_FORMAT	  p_format,
+		const std::optional<size_t>	  p_width,
+		const std::optional<size_t>	  p_height,
+		const std::optional<float>	  p_backgroundOpacity
+	)
 	{
+		const FilePath directory = p_path.value_or( SESSION().getSnapshotsDir() );
+		const FilePath filename	 = p_filename.value_or( FilePath( std::to_string( Util::Chrono::getTimestamp() ) ) );
+
 		execute(
-			SESSION().getSnapshotsDir() / std::to_string( Util::Chrono::getTimestamp() ),
-			Util::Image::E_FORMAT::PNG,
-			RENDERER().width(),
-			RENDERER().height()
+			directory / filename,
+			p_format,
+			p_width.value_or( RENDERER().width() ),
+			p_height.value_or( RENDERER().height() ),
+			p_backgroundOpacity
 		);
 	}
 

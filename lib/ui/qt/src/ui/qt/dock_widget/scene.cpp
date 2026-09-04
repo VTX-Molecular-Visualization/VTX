@@ -10,10 +10,11 @@
 #include <app/action/application.hpp>
 #include <app/ecs.hpp>
 #include <app/events.hpp>
+#include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
 #include <app/system/selection.hpp>
-#include <app/system/trajectory.hpp>
 #include <app/system/visibility.hpp>
+#include <app/trajectory/player.hpp>
 #include <renderer/camera.hpp>
 #include <util/event_hub.hpp>
 
@@ -62,7 +63,8 @@ namespace VTX::UI::QT::DockWidget
 		App::REG().on_destroy<Core::Struct::Topology>().connect<&Scene::_onSystemDestroy>( this );
 		App::REG().on_update<App::System::Visibility>().connect<&Scene::_onUpdateVisibility>( this );
 		App::REG().on_update<App::System::Selection>().connect<&Scene::_onUpdateSelection>( this );
-		App::REG().on_construct<App::System::TrajectoryFullBuffer>().connect<&Scene::_onTrajectoryCreated>( this );
+		App::REG().on_construct<App::Trajectory::Player>().connect<&Scene::_onTrajectoryCreated>( this );
+		App::REG().on_destroy<App::Trajectory::Player>().connect<&Scene::_onTrajectoryDestroyed>( this );
 
 		App::HUB().connect<Events::SelectionLocked, &Scene::_onSelectionLocked>( this );
 		App::HUB().connect<Events::TreeViewModeChanged, &Scene::_onTreeViewModeChanged>( this );
@@ -92,7 +94,7 @@ namespace VTX::UI::QT::DockWidget
 		_mapSystemTreeWidgets.emplace( entity, tree );
 		_layout->insertWidget( _layout->indexOf( _filler ), tree );
 
-		if ( App::System::hasMultiFrameTrajectory( p_e.system ) )
+		if ( App::Helper::Trajectory::hasMultiFrameTrajectory( p_e.system ) )
 		{
 			_onTrajectoryCreated( App::REG(), p_e.system );
 		}
@@ -101,12 +103,12 @@ namespace VTX::UI::QT::DockWidget
 	void Scene::_onSystemDestroy( Registry &, Entity p_e )
 	{
 		assert( _mapSystemTreeWidgets.contains( p_e ) );
-		_mapSystemTreeWidgets[ p_e ]->deleteLater();
+		delete _mapSystemTreeWidgets[ p_e ];
 		_mapSystemTreeWidgets.erase( p_e );
 
 		if ( _mapTrajTreeWidgets.contains( p_e ) )
 		{
-			_mapTrajTreeWidgets[ p_e ]->deleteLater();
+			delete _mapTrajTreeWidgets[ p_e ];
 			_mapTrajTreeWidgets.erase( p_e );
 		}
 	}
@@ -157,11 +159,23 @@ namespace VTX::UI::QT::DockWidget
 
 		if ( _mapTrajTreeWidgets.contains( p_entity ) )
 		{
+			delete _mapTrajTreeWidgets[ p_entity ];
 			_mapTrajTreeWidgets.erase( p_entity );
 		}
 		auto * player = new Widget::Tree::TrajectoryPlayer( p_entity, this );
 		_mapTrajTreeWidgets.emplace( p_entity, player );
 		_layout->insertWidget( _layout->indexOf( _mapSystemTreeWidgets[ p_entity ] ), player );
+	}
+
+	void Scene::_onTrajectoryDestroyed( Registry &, const Entity p_entity )
+	{
+		if ( not _mapTrajTreeWidgets.contains( p_entity ) )
+		{
+			return;
+		}
+
+		delete _mapTrajTreeWidgets[ p_entity ];
+		_mapTrajTreeWidgets.erase( p_entity );
 	}
 
 	void Scene::_onThreadProgress( const App::Events::ThreadProgress & p_event )

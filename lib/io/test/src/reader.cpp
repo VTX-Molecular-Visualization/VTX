@@ -3,7 +3,7 @@
 //
 #include <core/struct/topology.hpp>
 #include <util/filesystem.hpp>
-#include <util/thread.hpp>
+#include <util/thread/base_thread.hpp>
 //
 #include <io/reader.hpp>
 
@@ -18,7 +18,7 @@ TEST_CASE( "VTX_IO - Test filepath", "[reader][topology][metadata]" )
 
 	VTX::Core::Struct::Topology				topology;
 	VTX::IO::Metadata						metadata;
-	Util::StopToken							t;
+	Util::Thread::StopToken					t;
 	IO::SystemReader						systemReader( systemPath, IO::READER_OPTION::ALL, t );
 	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 
@@ -42,7 +42,7 @@ TEST_CASE( "VTX_IO - Test filepath", "[reader][positions]" )
 	const FilePath	  systemPath	 = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
 	std::vector<VTX::Vec3f> pos;
-	Util::StopToken			t;
+	Util::Thread::StopToken t;
 	IO::SystemReader		systemReader( systemPath, IO::READER_OPTION::ALL, t );
 
 	systemReader.get( pos );

@@ -17,7 +17,6 @@
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
-#include <util/thread.hpp>
 
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
@@ -28,6 +27,7 @@ namespace VTX::IO
 	using namespace VTX::Core::ChemDB;
 	using namespace VTX::Core::Struct;
 	using namespace VTX::Util;
+	using VTX::Util::Thread::StopToken;
 
 	namespace
 	{
@@ -53,7 +53,7 @@ namespace VTX::IO
 	{
 		FilePath								_filePath;
 		READER_OPTION							_readerOption;
-		std::reference_wrapper<StopToken>		_stopToken;
+		StopToken								_stopToken;
 		std::optional<std::string>				_buffer; // kept alive for memory_reader
 		chemfiles::Trajectory					_trajectory;
 		chemfiles::Frame						_currentFrame;
@@ -68,16 +68,18 @@ namespace VTX::IO
 		Frame									_firstFrame;
 		bool									_hasSecondaryStructureData = false;
 
-		_Impl( const FilePath & p_path, const READER_OPTION p_options, StopToken & p_stopToken ) :
+		_Impl( const FilePath & p_path, const READER_OPTION p_options, const StopToken p_stopToken ) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
 			_trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
-		{ _init(); }
+		{
+			_init();
+		}
 
 		_Impl(
 			MemoryBuffer &&		p_buffer,
 			const FilePath &	p_path,
 			const READER_OPTION p_options,
-			StopToken &			p_stopToken
+			const StopToken		p_stopToken
 		) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
 			_buffer( std::move( p_buffer ) ), _trajectory(
@@ -87,7 +89,9 @@ namespace VTX::IO
 													  chemfiles::guess_format( p_path.string() )
 												  )
 											  )
-		{ _init(); }
+		{
+			_init();
+		}
 
 		size_t frameCount() const { return _trajectory.size(); }
 
@@ -102,7 +106,7 @@ namespace VTX::IO
 			ScopedChrono chrono( "SystemReader::_Impl::get" );
 			VTX_INFO( "Reading topology" );
 
-			if ( _stopToken.get().stop_requested() )
+			if ( _stopToken.stop_requested() )
 			{
 				return;
 			}
@@ -146,18 +150,18 @@ namespace VTX::IO
 
 			for ( Index residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 			{
-				if ( _stopToken.get().stop_requested() )
+				if ( _stopToken.stop_requested() )
 				{
 					return;
 				}
 
 				_currentResidue = &( ( *_residues )[ residueIdx ] );
 
-				std::string		  chainName		 = _residueStringProp( "chainname" );
-				const std::string residueName	 = _currentResidue->name();
-				const bool		  isEmptyResidue = _currentResidue->size() == 0;
-				Index residueFirstAtomIndex		 = isEmptyResidue ? static_cast<Index>( _currentFrame.size() )
-																  : static_cast<Index>( *_currentResidue->begin() );
+				std::string		  chainName				= _residueStringProp( "chainname" );
+				const std::string residueName			= _currentResidue->name();
+				const bool		  isEmptyResidue		= _currentResidue->size() == 0;
+				Index			  residueFirstAtomIndex = isEmptyResidue ? static_cast<Index>( _currentFrame.size() )
+																		 : static_cast<Index>( *_currentResidue->begin() );
 				coveredAtomCount += static_cast<Index>( _currentResidue->size() );
 
 				if ( residueIdx > 0 && chainName != previousChainName && seenChainNames.contains( chainName ) )
@@ -274,7 +278,7 @@ namespace VTX::IO
 
 		void get( const FrameIndex & p_frameIndex, VTX::Core::Struct::Frame & p_positions )
 		{
-			if ( _stopToken.get().stop_requested() )
+			if ( _stopToken.stop_requested() )
 			{
 				return;
 			}
@@ -289,7 +293,7 @@ namespace VTX::IO
 			_currentFrameIdx = p_frameIndex;
 			_currentFrame	 = _trajectory.read_at( p_frameIndex );
 
-			if ( _stopToken.get().stop_requested() )
+			if ( _stopToken.stop_requested() )
 			{
 				return;
 			}
@@ -316,14 +320,28 @@ namespace VTX::IO
 			}
 		}
 
-		void set( StopToken & p_ ) noexcept { _stopToken = p_; }
+		void set( const StopToken p_ ) noexcept { _stopToken = p_; }
+
+		void releaseTopologyData()
+		{
+			_currentFrame			   = chemfiles::Frame {};
+			_topology				   = chemfiles::Topology {};
+			_residues				   = nullptr;
+			_bonds					   = nullptr;
+			_currentResidue			   = nullptr;
+			_currentAtom			   = nullptr;
+			_currentAtomIndex		   = -1;
+			_currentFrameIdx		   = -1;
+			_firstFrame				   = Frame {};
+			_hasSecondaryStructureData = false;
+		}
 
 	  private:
 		void _init()
 		{
 			chemfiles::set_warning_callback( []( const std::string & ) {} );
 
-			if ( _stopToken.get().stop_requested() )
+			if ( _stopToken.stop_requested() )
 			{
 				return;
 			}
@@ -338,7 +356,7 @@ namespace VTX::IO
 			_residues = &_topology.residues();
 			_bonds	  = &_topology.bonds();
 
-			if ( _stopToken.get().stop_requested() )
+			if ( _stopToken.stop_requested() )
 			{
 				return;
 			}
@@ -411,7 +429,7 @@ namespace VTX::IO
 			for ( Index sourceResidueIndex = 0; sourceResidueIndex < static_cast<Index>( _residues->size() );
 				  ++sourceResidueIndex )
 			{
-				if ( _stopToken.get().stop_requested() )
+				if ( _stopToken.stop_requested() )
 				{
 					return;
 				}
@@ -530,7 +548,7 @@ namespace VTX::IO
 			// Fill contiguous topology.
 			for ( Index chainIndex = 0; chainIndex < static_cast<Index>( chains.size() ); ++chainIndex )
 			{
-				if ( _stopToken.get().stop_requested() )
+				if ( _stopToken.stop_requested() )
 				{
 					return;
 				}
@@ -543,7 +561,7 @@ namespace VTX::IO
 
 				for ( const Index residueIndex : chain.residueIndexes )
 				{
-					if ( _stopToken.get().stop_requested() )
+					if ( _stopToken.stop_requested() )
 					{
 						return;
 					}
@@ -656,7 +674,7 @@ namespace VTX::IO
 
 			for ( Index bondIdx = 0; bondIdx < static_cast<Index>( _bonds->size() ); ++bondIdx )
 			{
-				if ( _stopToken.get().stop_requested() )
+				if ( _stopToken.stop_requested() )
 				{
 					return;
 				}
@@ -690,7 +708,7 @@ namespace VTX::IO
 
 			for ( Index bondIdx = 0; bondIdx < static_cast<Index>( validBondIndexes.size() ); ++bondIdx )
 			{
-				if ( _stopToken.get().stop_requested() )
+				if ( _stopToken.stop_requested() )
 				{
 					return;
 				}
@@ -761,12 +779,14 @@ namespace VTX::IO
 		}
 
 		static Vec3f _toVec3f( const chemfiles::Vector3D & p_position )
-		{ return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] ); }
+		{
+			return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] );
+		}
 	};
 
 	void SystemReader::Del::operator()( _Impl * p_impl ) noexcept { delete p_impl; }
 
-	SystemReader::SystemReader( const FilePath & p_path, const READER_OPTION p_options, StopToken & p_stopToken ) :
+	SystemReader::SystemReader( const FilePath & p_path, const READER_OPTION p_options, const StopToken p_stopToken ) :
 		_impl( new _Impl( p_path, p_options, p_stopToken ) )
 	{
 	}
@@ -775,7 +795,7 @@ namespace VTX::IO
 		MemoryBuffer &&		p_buffer,
 		const FilePath &	p_path,
 		const READER_OPTION p_options,
-		StopToken &			p_stopToken
+		const StopToken		p_stopToken
 	) : _impl( new _Impl( std::move( p_buffer ), p_path, p_options, p_stopToken ) )
 	{
 	}
@@ -794,15 +814,19 @@ namespace VTX::IO
 		VTX::Util::Math::AABB &		   p_a,
 		VTX::Util::Math::Grid<Index> & p_g
 	)
-	{ _impl->get( p_d, p_t, p_m, p_a, p_g ); }
+	{
+		_impl->get( p_d, p_t, p_m, p_a, p_g );
+	}
 
 	void SystemReader::get( Frame & p_f, const FrameIndex p_i ) { _impl->get( p_i, p_f ); }
 
-	void SystemReader::set( StopToken & p_ ) noexcept { _impl->set( p_ ); }
+	void SystemReader::releaseTopologyData() { _impl->releaseTopologyData(); }
+
+	void SystemReader::set( const StopToken p_ ) noexcept { _impl->set( p_ ); }
 
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }
 
-	bool isTrajectoryFileFormat( const FilePath & p_path ) noexcept
+	bool isTrajectoryFileFormat( const FilePath & p_path )
 	{
 		std::string extension = p_path.extension().string();
 		std::transform( extension.begin(), extension.end(), extension.begin(), tolower );

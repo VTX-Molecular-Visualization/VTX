@@ -18,9 +18,9 @@ namespace VTX::App::PythonBinding
 			{
 				std::shared_ptr<std::promise<Interpretor::AsyncJobResult>> promise
 					= std::make_shared<std::promise<Interpretor::AsyncJobResult>>();
-				std::future<Interpretor::AsyncJobResult> _future = promise->get_future();
+				std::future<Interpretor::AsyncJobResult> future = promise->get_future();
 				INTERPRETOR().runScript( p_path, promise );
-				const Interpretor::AsyncJobResult result = _future.get();
+				const Interpretor::AsyncJobResult result = future.get();
 				if ( result.success == false )
 				{
 					throw pybind11::value_error( result.resultStr );

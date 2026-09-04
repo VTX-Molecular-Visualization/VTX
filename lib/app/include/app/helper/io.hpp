@@ -11,7 +11,7 @@ namespace VTX::App::Helper::IO
 		associateTrajectory
 	};
 
-	FileDropHandling whatToDoWithThisFile( const FilePath & ) noexcept;
+	FileDropHandling whatToDoWithThisFile( const FilePath & );
 } // namespace VTX::App::Helper::IO
 
 #endif

@@ -51,8 +51,10 @@ namespace VTX::App::Helper::Scene
 
 		for ( auto e : REG().view<IO::Metadata>() )
 		{
-			auto & metadata = REG().get<IO::Metadata>( e );
-			if ( Util::String::toLower( metadata.path.filename().string() ) == fileName )
+			const auto &   metadata = REG().get<IO::Metadata>( e );
+			const FilePath filename = metadata.path.filename();
+			if ( Util::String::toLower( filename.string() ) == fileName
+				 || Util::String::toLower( filename.stem().string() ) == fileName )
 			{
 				return e;
 			}

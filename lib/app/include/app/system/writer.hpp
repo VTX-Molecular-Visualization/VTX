@@ -1,9 +1,8 @@
 #ifndef __VTX_APP_SYSTEM_WRITER__
 #define __VTX_APP_SYSTEM_WRITER__
 
-#include "app/threading/base_thread.hpp"
+#include <memory>
 #include <util/filesystem.hpp>
-#include <util/thread.hpp>
 
 namespace VTX::App::System
 {
@@ -21,20 +20,13 @@ namespace VTX::App::System
 		 * @param
 		 */
 		SelectionWriter( FilePath );
+		~SelectionWriter();
 
-		/**
-		 * @brief Meant to be used as a thread callable. Actually write the file.
-		 */
-		uint operator()( Util::StopToken, Threading::OptionalThreadReference );
-
-		/**
-		 * @brief Stop the execution unit the selection is written
-		 */
-		void wait() noexcept;
+		void operator()();
 
 	  private:
 		struct _impl;
-		std::shared_ptr<_impl> _ptr = nullptr;
+		std::unique_ptr<_impl> _ptr;
 	};
 
 	/**
@@ -50,20 +42,13 @@ namespace VTX::App::System
 		 * @param
 		 */
 		VisibleWriter( FilePath );
+		~VisibleWriter();
 
-		/**
-		 * @brief Meant to be used as a thread callable. Actually write the file.
-		 */
-		uint operator()( Util::StopToken, Threading::OptionalThreadReference );
-
-		/**
-		 * @brief Stop the execution unit the selection is written
-		 */
-		void wait() noexcept;
+		void operator()();
 
 	  private:
 		struct _impl;
-		std::shared_ptr<_impl> _ptr = nullptr;
+		std::unique_ptr<_impl> _ptr;
 	};
 } // namespace VTX::App::System
 

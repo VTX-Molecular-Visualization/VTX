@@ -1,10 +1,10 @@
 #include "app/network/network_manager.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
-#include "app/threading/thread_manager.hpp"
 #include <util/event_hub.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
+#include <util/thread/thread_manager.hpp>
 
 namespace VTX::App::Network
 {
@@ -24,9 +24,9 @@ namespace VTX::App::Network
 		const std::string url	   = std::string( p_url );
 		const std::string filename = std::string( p_filename );
 
-		Threading::BaseThread & thread = THREAD().createThread(
+		Util::Thread::BaseThread & thread = THREAD().createThread(
 			[ this, id, url, filename, p_callback ](
-				Util::StopToken p_stopToken, App::Threading::BaseThread & p_thread
+				Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread
 			) -> uint
 			{
 				std::string data;
@@ -83,7 +83,7 @@ namespace VTX::App::Network
 
 	void NetworkManager::stopDownload( const DownloadId p_id )
 	{
-		Threading::BaseThread::ID threadId;
+		Util::Thread::ID threadId;
 		{
 			std::lock_guard lock( _mutex );
 			const auto		it = _activeDownload.find( p_id );
@@ -94,8 +94,7 @@ namespace VTX::App::Network
 			threadId = it->second;
 		}
 
-		Threading::BaseThread * thread = nullptr;
-		THREAD().get( threadId, thread );
+		Util::Thread::BaseThread * thread = THREAD().get( threadId );
 		if ( thread != nullptr )
 		{
 			thread->stop();

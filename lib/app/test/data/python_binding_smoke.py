@@ -7,6 +7,27 @@ def almost_equal(left, right, tolerance=1e-6):
     return abs(left - right) <= tolerance
 
 
+def rgba_equal(left, right):
+    return (
+        almost_equal(left.r, right.r)
+        and almost_equal(left.g, right.g)
+        and almost_equal(left.b, right.b)
+        and almost_equal(left.a, right.a)
+    )
+
+
+def set_and_require_properties(value, properties, label):
+    for property_name, expected in properties:
+        setattr(value, property_name, expected)
+        actual = getattr(value, property_name)
+        matches = (
+            almost_equal(actual, expected)
+            if isinstance(expected, float)
+            else actual == expected
+        )
+        require(matches, f"Unexpected {label} property: {property_name}")
+
+
 vec2 = vtx.Vec2f(1.0, 2.0)
 vec3 = vtx.Vec3f(1.0, 2.0, 3.0)
 vec4 = vtx.Vec4f(1.0, 2.0, 3.0, 4.0)
@@ -46,6 +67,8 @@ require(
 
 vtx.setColorLayout("jmol")
 vtx.setGraphicsConfig("default")
+vtx.getColorLayoutPreset("jmol").apply()
+vtx.getGraphicsConfigPreset("default").apply()
 
 color = vtx.Rgba(0.1, 0.2, 0.3)
 color.a = 0.4
@@ -100,6 +123,192 @@ for function_name in (
 ):
     require(callable(getattr(vtx, function_name)), f"Missing binding: {function_name}")
 
+for enum_name in (
+    "REPRESENTATION_VALUE",
+    "SES_COMPUTE_MODE",
+    "COLOR_LAYOUT_INDEX",
+    "GRAPHICS_CONFIG_VALUE",
+    "SHADING_MODE",
+    "BACKGROUND_MODE",
+    "SSAO_METHOD",
+    "TONE_MAPPING",
+):
+    require(hasattr(vtx, enum_name), f"Missing preset enum: {enum_name}")
+
+representation_name = "Python smoke representation"
+vtx.createRepresentationPreset(representation_name)
+representation = vtx.getRepresentationPreset(representation_name.lower())
+representation_id = representation.id
+require(
+    representation.name == representation_name
+    and any(
+        preset.id == representation.id for preset in vtx.getRepresentationPresets()
+    ),
+    "Unexpected representation preset creation",
+)
+set_and_require_properties(
+    representation,
+    (
+        ("hasSphere", False),
+        ("radiusSphereFixed", 0.75),
+        ("radiusSphereAdd", 0.25),
+        ("isRadiusSphereFixed", True),
+        ("hasCylinder", True),
+        ("radiusCylinder", 0.2),
+        ("cylinderColorBlending", True),
+        ("hasRibbon", True),
+        ("ribbonColorBlending", False),
+        ("hasSes", True),
+        ("sesComputeMode", vtx.SES_COMPUTE_MODE.POLYMER),
+        ("sesProbeRadius", 1.5),
+    ),
+    "representation preset",
+)
+representation_renamed = representation_name + " renamed"
+representation.rename(representation_renamed)
+require(representation.name == representation_renamed, "Unexpected representation rename")
+representation.duplicate()
+representation_copy = vtx.getRepresentationPreset(representation_renamed + "_copy")
+require(
+    almost_equal(representation_copy.radiusCylinder, representation.radiusCylinder),
+    "Unexpected representation duplicate",
+)
+representation_copy.delete()
+
+color_layout_name = "Python smoke color layout"
+vtx.createColorLayoutPreset(color_layout_name)
+color_layout = vtx.getColorLayoutPreset(color_layout_name.lower())
+color_layout_id = color_layout.id
+require(
+    color_layout.name == color_layout_name
+    and color_layout.colorCount == len(color_layout)
+    and any(preset.id == color_layout.id for preset in vtx.getColorLayoutPresets()),
+    "Unexpected color layout preset creation",
+)
+layout_color = vtx.Rgba(0.15, 0.25, 0.35, 0.45)
+color_layout[0] = layout_color
+require(
+    rgba_equal(color_layout.getColor(0), layout_color)
+    and rgba_equal(color_layout[-color_layout.colorCount], layout_color),
+    "Unexpected color layout item update",
+)
+layout_colors = color_layout.colors
+layout_colors[-1] = vtx.Rgba(0.55, 0.65, 0.75, 0.85)
+color_layout.colors = layout_colors
+require(
+    rgba_equal(color_layout[-1], layout_colors[-1]),
+    "Unexpected complete color layout update",
+)
+color_layout.randomize()
+require(len(color_layout.colors) == color_layout.colorCount, "Unexpected randomized color layout")
+color_layout_renamed = color_layout_name + " renamed"
+color_layout.rename(color_layout_renamed)
+require(color_layout.name == color_layout_renamed, "Unexpected color layout rename")
+color_layout_copy_name = color_layout_name + " duplicate"
+color_layout.duplicate(color_layout_copy_name)
+color_layout_copy = vtx.getColorLayoutPreset(color_layout_copy_name)
+require(
+    color_layout_copy.colorCount == color_layout.colorCount,
+    "Unexpected color layout duplicate",
+)
+color_layout_copy.delete()
+
+graphics_config_name = "Python smoke graphics config"
+vtx.createGraphicsConfigPreset(graphics_config_name)
+graphics_config = vtx.getGraphicsConfigPreset(graphics_config_name.lower())
+graphics_config_id = graphics_config.id
+require(
+    graphics_config.name == graphics_config_name
+    and any(
+        preset.id == graphics_config.id for preset in vtx.getGraphicsConfigPresets()
+    ),
+    "Unexpected graphics config preset creation",
+)
+set_and_require_properties(
+    graphics_config,
+    (
+        ("shadingMode", vtx.SHADING_MODE.FLAT),
+        ("lightIntensity", 1.5),
+        ("ambientIntensity", 0.2),
+        ("backgroundMode", vtx.BACKGROUND_MODE.COLOR),
+        ("specularFactor", 0.3),
+        ("shininess", 24.0),
+        ("toonSteps", 5),
+        ("environmentPath", None),
+        ("skyboxIntensity", 0.8),
+        ("iblIntensity", 0.7),
+        ("environmentRotation", 0.5),
+        ("toneMappingMode", vtx.TONE_MAPPING.ACES),
+        ("toneMappingExposure", 1.25),
+        ("activeSsao", True),
+        ("ssaoMethod", vtx.SSAO_METHOD.SAO),
+        ("ssaoIntensity", 2.0),
+        ("ssaoScale", 1.0),
+        ("blurSize", 9.0),
+        ("activeFog", True),
+        ("fogNear", 10.0),
+        ("fogFar", 100.0),
+        ("fogDensity", 0.05),
+        ("activeOutline", True),
+        ("outlineSensitivity", 0.4),
+        ("outlineThickness", 2),
+        ("activeChromaticAberration", True),
+        ("chromaticAberrationRed", 0.1),
+        ("chromaticAberrationGreen", 0.2),
+        ("chromaticAberrationBlue", 0.3),
+        ("activePixelize", True),
+        ("pixelizeSize", 4),
+        ("pixelizeBackground", True),
+        ("activeCrt", True),
+        ("crtCurvatureX", 0.1),
+        ("crtCurvatureY", 0.2),
+        ("crtRatio", 1.1),
+        ("crtGraninessX", 0.3),
+        ("crtGraninessY", 0.4),
+        ("crtVignetteRoundness", 0.5),
+        ("crtVignetteIntensity", 0.6),
+        ("crtBrightness", 0.9),
+        ("activeSelection", True),
+    ),
+    "graphics config preset",
+)
+for property_name, expected in (
+    ("colorLight", vtx.Rgba(0.1, 0.2, 0.3, 1.0)),
+    ("colorBackground", vtx.Rgba(0.2, 0.3, 0.4, 1.0)),
+    ("colorFog", vtx.Rgba(0.3, 0.4, 0.5, 1.0)),
+    ("colorOutline", vtx.Rgba(0.4, 0.5, 0.6, 1.0)),
+    ("colorSelection", vtx.Rgba(0.5, 0.6, 0.7, 1.0)),
+):
+    setattr(graphics_config, property_name, expected)
+    require(
+        rgba_equal(getattr(graphics_config, property_name), expected),
+        f"Unexpected graphics config color: {property_name}",
+    )
+graphics_config_renamed = graphics_config_name + " renamed"
+graphics_config.rename(graphics_config_renamed)
+require(
+    graphics_config.name == graphics_config_renamed,
+    "Unexpected graphics config rename",
+)
+graphics_config_copy_name = graphics_config_name + " duplicate"
+graphics_config.duplicate(graphics_config_copy_name)
+graphics_config_copy = vtx.getGraphicsConfigPreset(graphics_config_copy_name)
+require(
+    graphics_config_copy.shadingMode == graphics_config.shadingMode,
+    "Unexpected graphics config duplicate",
+)
+graphics_config_copy.delete()
+
+representation.delete()
+color_layout.delete()
+graphics_config.delete()
+require(
+    all(preset.id != representation_id for preset in vtx.getRepresentationPresets())
+    and all(preset.id != color_layout_id for preset in vtx.getColorLayoutPresets())
+    and all(preset.id != graphics_config_id for preset in vtx.getGraphicsConfigPresets()),
+    "Unexpected preset deletion",
+)
+
 position = vtx.Vec3f(1.0, 2.0, 3.0)
 rotation = vtx.Quatf(0.0, 0.0, 0.0)
 
@@ -143,6 +352,7 @@ except NameError:
 vtx.openFile(system_path)
 system = vtx.getSystemIdByPdb("1aga")
 require(system == vtx.getSystemIdByFileName("1aga.MMTF"), "File name lookup should ignore case")
+require(system == vtx.getSystemIdByFileName("1AGA"), "File stem lookup should ignore case")
 require(
     system
     == vtx.getSystemIdByName(
@@ -254,6 +464,59 @@ require(
     "Unexpected atom position or AABB",
 )
 
+for play_mode in (
+    vtx.TRAJECTORY_PLAY_MODE.NONE,
+    vtx.TRAJECTORY_PLAY_MODE.FORWARD,
+    vtx.TRAJECTORY_PLAY_MODE.FORWARD_LOOP,
+    vtx.TRAJECTORY_PLAY_MODE.BACKWARD_LOOP,
+    vtx.TRAJECTORY_PLAY_MODE.BACKWARD,
+    vtx.TRAJECTORY_PLAY_MODE.PING_PONG,
+):
+    require(isinstance(play_mode, vtx.TRAJECTORY_PLAY_MODE), "Unexpected trajectory play mode")
+trajectory = topology_system.trajectory
+require(
+    trajectory.frameCount == 1
+    and trajectory.loadedFrameCount == 1
+    and len(trajectory) == 1
+    and trajectory.currentFrameIndex == 0,
+    "Unexpected single-frame trajectory",
+)
+require(
+    trajectory.availableFrames.first == 0
+    and trajectory.availableFrames.last == 1
+    and trajectory.availableFrames.count == 1,
+    "Unexpected available frames",
+)
+require(
+    trajectory.requestedFrameIndex == 0
+    and trajectory.playMode == vtx.TRAJECTORY_PLAY_MODE.NONE
+    and trajectory.paused
+    and almost_equal(trajectory.speed, 0.0),
+    "Unexpected single-frame player state",
+)
+frame = topology_system.currentFrame
+require(frame.index == 0 and len(frame) == topology_system.atomCount, "Unexpected frame")
+require(trajectory.currentFrame.index == 0, "Unexpected trajectory current frame")
+require(trajectory.getFrame(0).index == 0 and trajectory[0].index == 0, "Unexpected trajectory indexing")
+trajectory.toggleStartPause()
+trajectory.play()
+trajectory.pause()
+trajectory.stop()
+trajectory.jumpTo(0)
+trajectory.setPlayMode(vtx.TRAJECTORY_PLAY_MODE.NONE)
+trajectory.setSpeed(35.0)
+frame_atom_position = frame[topology_atom.index]
+direct_frame_atom_position = frame.getAtomPosition(topology_atom.index)
+require(
+    almost_equal(frame_atom_position.x, topology_atom_position.x)
+    and almost_equal(frame_atom_position.y, topology_atom_position.y)
+    and almost_equal(frame_atom_position.z, topology_atom_position.z),
+    "Unexpected frame atom position",
+)
+require(
+    almost_equal(direct_frame_atom_position.x, topology_atom_position.x),
+    "Unexpected direct frame atom position",
+)
 topology_category = topology_system.getCategory(0)
 require(
     topology_category.name != ""
@@ -368,6 +631,7 @@ vtx.setColorSchemeSelected(vtx.COLOR_SCHEME.RESIDUE)
 vtx.setSecondaryStructureColorScheme(
     system, vtx.SECONDARY_STRUCTURE_COLOR_SCHEME.STRUCTURE
 )
+vtx.setRepresentation("sticks")
 vtx.setRepresentation(system, "sticks and ribbons")
 vtx.setRepresentation(
     system,
@@ -376,6 +640,17 @@ vtx.setRepresentation(
     vtx.RangeList(vtx.Range(0, 2)),
 )
 vtx.setRepresentationSelected("sticks")
+representation_preset = vtx.getRepresentationPreset("sticks")
+representation_preset.apply(topology_system)
+representation_preset.apply(
+    topology_system,
+    vtx.SYSTEM_ITEM.RESIDUE,
+    vtx.RangeList(vtx.Range(0, 2)),
+)
+vtx.selection.setRepresentation("sticks")
+vtx.selection.setRepresentation(representation_preset)
+vtx.selection.show()
+vtx.selection.hide()
 
 vtx.setVisibleSelected(False)
 require(

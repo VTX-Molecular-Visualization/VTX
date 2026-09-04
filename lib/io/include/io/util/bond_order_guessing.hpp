@@ -2,6 +2,7 @@
 #define __VTX_IO_UTIL_BOND_ORDER_GUESSING__
 
 #include <core/struct/topology.hpp>
+#include <core/struct/trajectory.hpp>
 
 namespace VTX::IO::Util
 {

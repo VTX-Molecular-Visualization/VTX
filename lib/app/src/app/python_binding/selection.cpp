@@ -1,7 +1,12 @@
 #include "app/python_binding/selection.hpp"
 #include "app/action/action_manager.hpp"
+#include "app/action/representation.hpp"
 #include "app/action/selection.hpp"
+#include "app/action/visibility.hpp"
+#include "app/helper/preset.hpp"
 #include "app/helper/system.hpp"
+#include "app/python_binding/preset/helpers.hpp"
+#include "app/python_binding/preset/types.hpp"
 #include "app/python_binding/topology/types.hpp"
 #include "app/services.hpp"
 #include "app/system/selection.hpp"
@@ -12,6 +17,8 @@
 #include <python_binding/binding/entity_caster.hpp>
 #include <python_binding/binding/helper.hpp>
 #include <python_binding/wrapper/arg.hpp>
+#include <renderer/representation.hpp>
+#include <string>
 #include <vector>
 
 namespace VTX::App::PythonBinding
@@ -30,6 +37,10 @@ namespace VTX::App::PythonBinding
 			Topology::ChainCollection	 getChains( const Topology::System & p_system ) const;
 			Topology::CategoryCollection getCategories( const Topology::System & p_system ) const;
 			bool						 isEmpty( const Topology::System & p_system ) const;
+			void						 show() const;
+			void						 hide() const;
+			void						 setRepresentation( const std::string & p_name ) const;
+			void						 setRepresentation( const Preset::RepresentationHandle & p_preset ) const;
 		};
 
 		const App::System::Selection & _getSelection( const Topology::System & p_system )
@@ -113,6 +124,27 @@ namespace VTX::App::PythonBinding
 		bool SelectionView::isEmpty( const Topology::System & p_system ) const
 		{ return _getSelection( p_system ).atoms.none(); }
 
+		void SelectionView::show() const { executeAction<App::Action::Visibility::SetVisibleSelected>( true ); }
+
+		void SelectionView::hide() const { executeAction<App::Action::Visibility::SetVisibleSelected>( false ); }
+
+		void SelectionView::setRepresentation( const std::string & p_name ) const
+		{
+			const std::optional<Entity> preset = Helper::Preset::getByName<Renderer::Representation>( p_name );
+			if ( not preset )
+			{
+				throw pybind11::value_error( "Representation preset not found: " + p_name );
+			}
+
+			setRepresentation( Preset::RepresentationHandle { *preset } );
+		}
+
+		void SelectionView::setRepresentation( const Preset::RepresentationHandle & p_preset ) const
+		{
+			Preset::validate( p_preset );
+			executeAction<App::Action::Representation::AddSelected>( Entity( p_preset.entity ) );
+		}
+
 		App::System::E_SELECTION_STATE _getSelectionState(
 			const Entity			   p_ent,
 			const SystemItem		   p_item,
@@ -145,7 +177,23 @@ namespace VTX::App::PythonBinding
 			.def( "getResidues", &SelectionView::getResidues, pybind11::arg( "system" ) )
 			.def( "getChains", &SelectionView::getChains, pybind11::arg( "system" ) )
 			.def( "getCategories", &SelectionView::getCategories, pybind11::arg( "system" ) )
-			.def( "isEmpty", &SelectionView::isEmpty, pybind11::arg( "system" ) );
+			.def( "isEmpty", &SelectionView::isEmpty, pybind11::arg( "system" ) )
+			.def( "show", &SelectionView::show, "Show the current selection." )
+			.def( "hide", &SelectionView::hide, "Hide the current selection." )
+			.def(
+				"setRepresentation",
+				pybind11::overload_cast<const std::string &>( &SelectionView::setRepresentation, pybind11::const_ ),
+				"Set the representation preset of the current selection.",
+				pybind11::arg( "name" )
+			)
+			.def(
+				"setRepresentation",
+				pybind11::overload_cast<const Preset::RepresentationHandle &>(
+					&SelectionView::setRepresentation, pybind11::const_
+				),
+				"Set the representation preset of the current selection.",
+				pybind11::arg( "preset" )
+			);
 		module.attr( "selection" ) = SelectionView {};
 
 		p_vtxModule.bindAction<App::Action::Selection::SelectAll>( "selectAll", "Select all loaded systems." );

@@ -1,4 +1,5 @@
 #include "app/pass/camera_updater.hpp"
+#include "app/controller/animation.hpp"
 #include "app/controller/freefly.hpp"
 #include "app/controller/trackball.hpp"
 #include "app/services.hpp"
@@ -15,11 +16,19 @@ namespace VTX::App::Pass
 		// Update functions.
 		reg.on_update<Setting::Controller>().connect<&CameraUpdater::_onControllerSetting>( this );
 		reg.on_update<Renderer::Camera>().connect<&CameraUpdater::_onUpdateCamera>( this );
+		HUB().connect<Events::CameraAnimationStart, &CameraUpdater::_onCameraAnimationStart>( this );
 		HUB().connect<Events::CameraTransformChange, &CameraUpdater::_onUpdateCamera>( this );
 
 		// TODO: check if needed.
 		// Trigger initial settings.
 		reg.patch<Setting::Controller>( _entity, [ & ]( Setting::Controller & p_setting ) {} );
+	}
+
+	CameraUpdater::~CameraUpdater()
+	{
+		REG().on_update<Setting::Controller>().disconnect<&CameraUpdater::_onControllerSetting>( this );
+		REG().on_update<Renderer::Camera>().disconnect<&CameraUpdater::_onUpdateCamera>( this );
+		HUB().disconnectAllOf( *this );
 	}
 
 	void CameraUpdater::_onControllerSetting()
@@ -37,6 +46,18 @@ namespace VTX::App::Pass
 			default: break;
 			}
 		}
+	}
+
+	void CameraUpdater::_onCameraAnimationStart( const Events::CameraAnimationStart & p_event )
+	{
+		addController<Controller::Animation>(
+			CTRL_INSERTION_MODE::FRONT,
+			p_event.start,
+			p_event.end,
+			p_event.duration,
+			p_event.interpPosition,
+			p_event.interpRotation
+		);
 	}
 
 	void CameraUpdater::_onUpdateCamera()

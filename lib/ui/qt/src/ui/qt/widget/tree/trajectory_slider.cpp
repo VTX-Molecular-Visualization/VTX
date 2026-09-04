@@ -2,6 +2,8 @@
 #include "ui/qt/widget/tree/trajectory_slider.hpp"
 #include <QPainter>
 #include <QStyleOptionSlider>
+#include <algorithm>
+#include <cmath>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -26,8 +28,8 @@ namespace VTX::UI::QT::Widget::Tree
 		// Draw the base slider first.
 		QSlider::paintEvent( p_event );
 
-		int range = maximum() - minimum();
-		if ( range <= 0 || _loadedUpper <= _loadedLower )
+		const int valueCount = maximum() - minimum() + 1;
+		if ( valueCount <= 0 || _loadedUpper < _loadedLower )
 		{
 			return;
 		}
@@ -37,14 +39,14 @@ namespace VTX::UI::QT::Widget::Tree
 		initStyleOption( &opt );
 		QRect grooveRect = style()->subControlRect( QStyle::CC_Slider, &opt, QStyle::SC_SliderGroove, this );
 
-		// Map frame indices to pixel positions within the groove.
-		double pixelPerUnit = static_cast<double>( grooveRect.width() ) / range;
-		int	   xStart		= grooveRect.x() + static_cast<int>( ( _loadedLower - minimum() ) * pixelPerUnit );
-		int	   xEnd			= grooveRect.x() + static_cast<int>( ( _loadedUpper - minimum() ) * pixelPerUnit );
+		// Map frame ranges to segments so a single loaded frame remains visible.
+		const double pixelPerValue = static_cast<double>( grooveRect.width() ) / valueCount;
+		int xStart = grooveRect.x() + static_cast<int>( std::floor( ( _loadedLower - minimum() ) * pixelPerValue ) );
+		int xEnd   = grooveRect.x() + static_cast<int>( std::ceil( ( _loadedUpper - minimum() + 1 ) * pixelPerValue ) );
 
 		// Clamp to groove bounds.
 		xStart = std::max( xStart, grooveRect.x() );
-		xEnd   = std::min( xEnd, grooveRect.right() );
+		xEnd   = std::min( xEnd, grooveRect.x() + grooveRect.width() );
 
 		// Paint the overlay.
 		QRect overlay( xStart, grooveRect.y(), xEnd - xStart, grooveRect.height() );

@@ -9,6 +9,7 @@
 #include <QPushButton>
 #include <QWidget>
 #include <app/ecs.hpp>
+#include <app/events.hpp>
 #include <array>
 
 namespace VTX::UI::QT::Widget::Tree
@@ -25,6 +26,7 @@ namespace VTX::UI::QT::Widget::Tree
 
 	  public:
 		explicit TrajectoryPlayer( Entity p_system, QWidget * p_parent = nullptr );
+		~TrajectoryPlayer() override;
 
 	  private:
 		static std::array<QIcon, 4> _getIcons();
@@ -46,6 +48,7 @@ namespace VTX::UI::QT::Widget::Tree
 		void _onSettingsClicked();
 		void _onSliderValueChanged( int p_value );
 		void _onTrajectoryUpdated( Registry &, Entity p_entity );
+		void _onTrajectoryLoadingProgress( const App::Events::ThreadProgress & p_event );
 
 		void _refresh();
 		void _updatePlayPauseIcon();

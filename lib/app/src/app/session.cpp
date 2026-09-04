@@ -4,11 +4,11 @@
 #include "app/arguments.hpp"
 #include "app/constants.hpp"
 #include "app/services.hpp"
-#include "app/threading/thread_manager.hpp"
 #include <atomic>
 #include <util/event_hub.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
+#include <util/thread/thread_manager.hpp>
 #include <velopack/include/Velopack.hpp>
 
 using namespace VTX::Util;
@@ -71,7 +71,7 @@ namespace VTX::App
 		/**
 		 * @brief Download worker thread id.
 		 */
-		Threading::BaseThread::ID updateDownloadThreadId {};
+		Util::Thread::ID updateDownloadThreadId {};
 
 		/**
 		 * @brief Last error message produced during the download phase.
@@ -151,7 +151,7 @@ namespace VTX::App
 		_impl->pendingUpdate.reset();
 
 		THREAD().createThread(
-			[ this ]( App::Threading::BaseThread & p_thread ) -> uint
+			[ this ]( Util::Thread::StopToken, Util::Thread::BaseThread & p_thread ) -> uint
 			{
 				p_thread.setProgressText( "Checking for updates..." );
 				try
@@ -241,8 +241,8 @@ namespace VTX::App
 			_impl->updateDownloadError.clear();
 
 			VTX_TRACE( "downloadUpdate: starting update to {}", release.Version );
-			Threading::BaseThread & downloadThread = THREAD().createThread(
-				[ this, pendingUpdate ]( App::Threading::BaseThread & p_thread ) -> uint
+			Util::Thread::BaseThread & downloadThread = THREAD().createThread(
+				[ this, pendingUpdate ]( Util::Thread::StopToken, Util::Thread::BaseThread & p_thread ) -> uint
 				{
 					p_thread.setProgressText( "Downloading update..." );
 					try
@@ -253,8 +253,8 @@ namespace VTX::App
 								pendingUpdate,
 								[]( void * p_userData, size_t p_progress )
 								{
-									App::Threading::BaseThread * thread
-										= reinterpret_cast<App::Threading::BaseThread *>( p_userData );
+									Util::Thread::BaseThread * thread
+										= reinterpret_cast<Util::Thread::BaseThread *>( p_userData );
 									thread->setProgress( float( p_progress ) / 100.f );
 								},
 								&p_thread
@@ -329,8 +329,7 @@ namespace VTX::App
 			return;
 		}
 
-		Threading::BaseThread * downloadThread = nullptr;
-		THREAD().get( _impl->updateDownloadThreadId, downloadThread );
+		Util::Thread::BaseThread * downloadThread = THREAD().get( _impl->updateDownloadThreadId );
 		if ( downloadThread == nullptr )
 		{
 			return;
