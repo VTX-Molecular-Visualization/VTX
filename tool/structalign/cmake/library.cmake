@@ -26,6 +26,8 @@ vtx_configure_target(vtx_tool_structalign_test)
 
 target_include_directories(vtx_tool_structalign_test PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include")
 
+target_link_libraries(vtx_tool_structalign_test PRIVATE vtx_util::vtx_util)
+target_link_libraries(vtx_tool_structalign_test PRIVATE vtx_core::vtx_core)
 target_link_libraries(vtx_tool_structalign_test PRIVATE vtx_app::vtx_app)
 target_link_libraries(vtx_tool_structalign_test PRIVATE vtx_tool_structalign::vtx_tool_structalign)
 target_link_libraries(vtx_tool_structalign_test PRIVATE Catch2::Catch2)

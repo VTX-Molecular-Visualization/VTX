@@ -334,7 +334,7 @@ namespace VTX::Util::Math
 			rmsd += Util::Math::distance( point1Vec3f, point2Vec3f );
 		}
 
-		return sqrt( rmsd / minAtomLength );
+		return static_cast<float>( sqrt( rmsd / minAtomLength ) );
 	}
 
 } // namespace VTX::Util::Math
