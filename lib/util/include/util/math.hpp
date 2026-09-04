@@ -318,8 +318,8 @@ namespace VTX::Util::Math
 	inline float computeRmsd(
 		const std::span<Vec3f> p_pos1,
 		const std::span<Vec3f> p_pos2,
-		const Mat4f &		   p_transform1,
-		const Mat4f &		   p_transform2
+		const Mat3f &		   p_transform1,
+		const Mat3f &		   p_transform2
 	) noexcept
 	{
 		const size_t minAtomLength = std::min( p_pos1.size(), p_pos2.size() );
@@ -328,11 +328,8 @@ namespace VTX::Util::Math
 
 		for ( uint i = 0; i < minAtomLength; i++ )
 		{
-			const Vec4f point1Vec4f = p_transform1 * Vec4f( p_pos1[ i ], 1 );
-			const Vec4f point2Vec4f = p_transform2 * Vec4f( p_pos2[ i ], 1 );
-
-			const Vec3f point1Vec3f = { point1Vec4f.x, point1Vec4f.y, point1Vec4f.z };
-			const Vec3f point2Vec3f = { point2Vec4f.x, point2Vec4f.y, point2Vec4f.z };
+			const Vec3f point1Vec3f = p_transform1 * p_pos1[ i ];
+			const Vec3f point2Vec3f = p_transform2 * p_pos2[ i ];
 
 			rmsd += Util::Math::distance( point1Vec3f, point2Vec3f );
 		}
