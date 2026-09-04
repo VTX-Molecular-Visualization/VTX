@@ -26,8 +26,10 @@ namespace VTX::Tool::Structalign::backend
 
 	struct CEAlignResults
 	{
-		Mat4f transformMatrix;
+		Mat3f transformMatrix;
 		float rmsd = -1.f;
 	};
+
+	void align( const CEAlignParameters & p_params, CEAlignResults & p_results );
 } // namespace VTX::Tool::Structalign::backend
 #endif

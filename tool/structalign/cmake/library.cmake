@@ -14,6 +14,7 @@ target_sources(vtx_tool_structalign
 vtx_qt_add_resources(vtx_tool_structalign ${CMAKE_CURRENT_LIST_DIR}/../asset vtx_qt_resources_tool_mdprep)
 
 target_link_libraries(vtx_tool_structalign PUBLIC vtx_util::vtx_util)
+target_link_libraries(vtx_tool_structalign PUBLIC vtx_core::vtx_core)
 target_link_libraries(vtx_tool_structalign PUBLIC vtx_app::vtx_app)
 target_link_libraries(vtx_tool_structalign PUBLIC vtx_ui_qt::vtx_ui_qt)
 
