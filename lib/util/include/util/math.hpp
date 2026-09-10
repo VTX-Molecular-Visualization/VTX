@@ -316,10 +316,10 @@ namespace VTX::Util::Math
 	 * @return
 	 */
 	inline float computeRmsd(
-		const std::span<Vec3f> p_pos1,
-		const std::span<Vec3f> p_pos2,
-		const Mat3f &		   p_transform1,
-		const Mat3f &		   p_transform2
+		const std::span<const Vec3f> p_pos1,
+		const std::span<const Vec3f> p_pos2,
+		const Mat3f &				 p_transform1,
+		const Mat3f &				 p_transform2
 	) noexcept
 	{
 		const size_t minAtomLength = std::min( p_pos1.size(), p_pos2.size() );

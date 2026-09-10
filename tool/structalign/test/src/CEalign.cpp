@@ -7,12 +7,24 @@
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
+#include <tool/structalign/backend/align.hpp>
+#include <util/math.hpp>
 
 struct Structure
 {
 	const VTX::Core::Struct::Topology *	  topology	 = nullptr;
 	const VTX::Core::Struct::Trajectory * trajectory = nullptr;
+
+	operator VTX::Tool::Structalign::backend::Structure() const
+
+	{
+		assert( topology != nullptr );
+		assert( trajectory != nullptr );
+		return VTX::Tool::Structalign::backend::Structure { *topology, trajectory->frames.back() };
+	}
 };
+
+const float RSMD_TOLERANCE = 2.f; // idk which value to take
 
 TEST_CASE( "structalign - CEAlign", "[align][CEalign][1nav_over_8rqo]" )
 {
@@ -57,4 +69,17 @@ TEST_CASE( "structalign - CEAlign", "[align][CEalign][1nav_over_8rqo]" )
 	REQUIRE( staticStruct.trajectory != nullptr );
 	REQUIRE( controlStruct.topology != nullptr );
 	REQUIRE( controlStruct.trajectory != nullptr );
+
+	VTX::Tool::Structalign::backend::CEAlignParameters params { .staticStructure = staticStruct,
+																.mobileStructure = mobileStruct };
+	VTX::Tool::Structalign::backend::CEAlignResults	   results;
+	VTX::Tool::Structalign::backend::align( params, results );
+
+	float controlVsMobileRmsd = VTX::Util::Math::computeRmsd(
+		mobileStruct.trajectory->frames.back(),
+		controlStruct.trajectory->frames.back(),
+		results.transformMatrix,
+		VTX::MAT3F_ID
+	);
+	CHECK( controlVsMobileRmsd < RSMD_TOLERANCE );
 }

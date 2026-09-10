@@ -1,6 +1,7 @@
 #ifndef __VTX_TOOL_TOOL_STRUCTALIGN_BACKEND_ALIGN__
 #define __VTX_TOOL_TOOL_STRUCTALIGN_BACKEND_ALIGN__
 
+#include <app/system/visibility.hpp>
 #include <core/struct/topology.hpp>
 #include <util/types.hpp>
 
@@ -11,8 +12,10 @@ namespace VTX::Tool::Structalign::backend
 	 */
 	struct Structure
 	{
-		std::reference_wrapper<Core::Struct::Topology> topology;
-		std::span<Index>							   positions;
+		std::reference_wrapper<const Core::Struct::Topology> topology;
+		const std::span<const Vec3f>						 positions;
+		std::optional<App::System::Visibility>				 visibility;
+		bool												 includeSolvent = false;
 	};
 
 	struct CEAlignParameters
