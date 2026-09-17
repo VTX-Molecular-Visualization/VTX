@@ -25,12 +25,14 @@ namespace VTX::Tool::Structalign::backend
 		float	  d1		 = 4.f;
 		uint32_t  windowSize = 8;
 		uint32_t  maxGap	 = 30;
+		uint32_t  maxPath	 = 20;
 	};
 
 	struct CEAlignResults
 	{
-		Mat3f transformMatrix;
-		float rmsd = -1.f;
+		Mat3f	 transformMatrix;
+		float	 rmsd				= -1.f;
+		uint32_t alignResidueNumber = 0;
 	};
 
 	void align( const CEAlignParameters & p_params, CEAlignResults & p_results );
