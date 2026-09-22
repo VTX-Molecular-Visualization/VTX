@@ -18,7 +18,7 @@ class VTXUtilRecipe(ConanFile):
     def requirements(self):
         self.requires("glm/1.0.3", transitive_headers=True)
         self.requires("spdlog/1.17.0", transitive_headers=True)
-        self.requires("magic_enum/0.9.7", transitive_headers=True)
+        self.requires("magic_enum/0.9.8", transitive_headers=True)
         self.requires("entt/3.16.0", transitive_headers=True)
         self.requires("assimp/6.0.5", transitive_headers=True)
         self.requires("minizip/1.3.2", force=True)
@@ -27,7 +27,7 @@ class VTXUtilRecipe(ConanFile):
         self.requires("stb/cci.20240531", force=True)
         self.requires("tinyexr/1.0.7")
         self.requires("exiv2/0.28.3")
-        self.requires("catch2/3.15.1")
+        self.requires("catch2/3.16.0")
         self.requires("platformfolders/4.3.0")
         
     def config_options(self):
