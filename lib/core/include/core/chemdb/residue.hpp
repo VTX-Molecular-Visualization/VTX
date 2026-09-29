@@ -2,7 +2,9 @@
 #define __VTX_CORE_CHEMDB_RESIDUE__
 
 #include <array>
+#include <cstdint>
 #include <string>
+#include <string_view>
 
 namespace VTX::Core::ChemDB::Residue
 {
