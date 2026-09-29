@@ -22,8 +22,8 @@ namespace VTX::App::Extractor
 		// Window size.
 		size_t circularBufferFrameCount = DEFAULT_CIRCULAR_BUFFER_FRAME_COUNT;
 
-		Trajectory::TRAJECTORY_BUFFER_MODE selectMode( const size_t, const size_t ) const noexcept;
-		size_t getStorageFrameCount( const Trajectory::TRAJECTORY_BUFFER_MODE, const size_t ) const noexcept;
+		Trajectory::TRAJECTORY_BUFFER_MODE selectMode( size_t, size_t ) const noexcept;
+		size_t getStorageFrameCount( Trajectory::TRAJECTORY_BUFFER_MODE, size_t ) const noexcept;
 	};
 } // namespace VTX::App::Extractor
 

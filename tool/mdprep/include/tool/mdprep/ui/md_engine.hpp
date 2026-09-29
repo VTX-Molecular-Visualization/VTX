@@ -26,7 +26,7 @@ namespace VTX::Tool::Mdprep::ui
 	  public:
 		MdEngine() = default;
 
-		inline void get( MdEngineFieldPlacer & p_out ) noexcept
+		void get( MdEngineFieldPlacer & p_out ) noexcept
 		{
 			if ( _ptr )
 			{
@@ -34,7 +34,7 @@ namespace VTX::Tool::Mdprep::ui
 			}
 		}
 
-		inline void get( const E_FIELD_SECTION & p_section, MdEngineSpecificFieldPlacer & p_out ) noexcept
+		void get( const E_FIELD_SECTION & p_section, MdEngineSpecificFieldPlacer & p_out ) noexcept
 		{
 			if ( _ptr )
 			{
@@ -42,7 +42,7 @@ namespace VTX::Tool::Mdprep::ui
 			}
 		}
 
-		inline void get( Gateway::EngineJobManager & p_out ) noexcept
+		void get( Gateway::EngineJobManager & p_out ) noexcept
 		{
 			if ( _ptr )
 			{

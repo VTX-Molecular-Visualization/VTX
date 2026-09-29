@@ -4,6 +4,7 @@
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
+#include <string_view>
 #include <util/types.hpp>
 #include <utility>
 
@@ -31,15 +32,15 @@ namespace VTX::Renderer::Builder::PostProcess
 {
 	struct Pixelize
 	{
-		inline static const Desc::Key PASS = "Pixelize";
+		static constexpr std::string_view PASS = "Pixelize";
 
 		static Desc::Key build( GraphBuilder & p_graph, const Desc::Key & p_input )
 		{
-			p_graph.pass( PASS )
+			p_graph.pass( Desc::Key { PASS } )
 				.in( "Geometry" )
 				.in( p_input )
-				.out( PASS )
-				.program( PASS )
+				.out( Desc::Key { PASS } )
+				.program( Desc::Key { PASS } )
 				.shaders( { "default.vert", "pixelize.frag" } )
 				.uniform(
 					"Size",
@@ -50,7 +51,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.endProgram()
 				.endPass();
 
-			return PASS;
+			return Desc::Key { PASS };
 		}
 
 		static void upload( Context::ContextWrapper & p_context, const PixelizeConfig & p_config )
@@ -60,7 +61,7 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( uint32_t( p_config.background ) );
 			buffer.close();
 
-			p_context.setBuffer( { PASS }, buffer );
+			p_context.setBuffer( { Desc::Key { PASS } }, buffer.bytes() );
 		}
 	};
 } // namespace VTX::Renderer::Builder::PostProcess

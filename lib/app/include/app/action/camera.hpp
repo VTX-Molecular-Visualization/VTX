@@ -37,7 +37,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct SetFov
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -45,7 +45,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct SetNearClip
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -53,7 +53,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct SetFarClip
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -99,7 +99,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct StraightTravel
 	{
-		void execute( const Vec3f & p_position, const Quatf & p_rotation, const float p_duration );
+		void execute( const Vec3f & p_position, const Quatf & p_rotation, float p_duration );
 	};
 
 	/**
@@ -145,7 +145,7 @@ namespace VTX::App::Action::Camera
 			const auto [ entCamera, _, transform ]
 				= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
-			AnimationData	   start { transform.getPosition(), transform.getRotation() };
+			const AnimationData start { transform.getPosition(), transform.getRotation() };
 			InterpPositionFunc interpPositionFunc = nullptr;
 			InterpRotationFunc interpRotationFunc = nullptr;
 
@@ -198,7 +198,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct SetViewPointPosition
 	{
-		void execute( const Entity, const Vec3f & );
+		void execute( Entity, const Vec3f & );
 	};
 
 	/**
@@ -206,7 +206,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct SetViewPointRotation
 	{
-		void execute( const Entity, const Quatf & );
+		void execute( Entity, const Quatf & );
 	};
 
 	/**
@@ -214,7 +214,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct UpdateViewPointFromCamera
 	{
-		void execute( const Entity );
+		void execute( Entity );
 	};
 
 	/**
@@ -222,7 +222,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct RenameViewPoint
 	{
-		void execute( const Entity, const std::string_view );
+		void execute( Entity, std::string_view );
 	};
 
 	/**
@@ -230,7 +230,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct DeleteViewPoint
 	{
-		void execute( const Entity );
+		void execute( Entity );
 	};
 
 	/**
@@ -238,7 +238,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct GoToViewPoint
 	{
-		void execute( const Entity );
+		void execute( Entity );
 	};
 
 } // namespace VTX::App::Action::Camera

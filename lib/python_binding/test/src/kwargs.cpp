@@ -42,7 +42,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 		"test_kwargs",
 		[ & ]( const pybind11::kwargs & p_kwargs )
 		{
-			VTX::PythonBinding::API::PythonKwargs kwargs( p_kwargs );
+			const VTX::PythonBinding::API::PythonKwargs kwargs( p_kwargs );
 			test.size		 = kwargs.size();
 			test.containShit = kwargs.contains( "Shit" );
 			kwargs.get( "names", test.strings );

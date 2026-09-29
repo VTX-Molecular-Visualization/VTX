@@ -44,21 +44,21 @@ namespace VTX::Tool::Mdprep::ui
 		MdEngineSpecificFieldPlacer() = default;
 
 		// Adds fields to the input layout
-		inline void placeFields( QFormLayout * p_ ) noexcept
+		void placeFields( QFormLayout * p_ ) noexcept
 		{
 			if ( _ptr )
 				_ptr->placeFields( p_ );
 		}
 
 		// Apply changes to the fields values into data that'll be send to the backend.
-		inline void apply() noexcept
+		void apply() noexcept
 		{
 			if ( _ptr )
 				_ptr->apply();
 		}
 		// OPTIONAL : Inform the field placer that a value has changed.
 		// DO nothing if the method isn't implemented
-		inline void update( const EngineSpecificCommonInformationFieldUpdate & p_ ) noexcept
+		void update( const EngineSpecificCommonInformationFieldUpdate & p_ ) noexcept
 		{
 			if ( _ptr )
 				_ptr->update( p_ );

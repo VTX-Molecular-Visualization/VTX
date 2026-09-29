@@ -72,13 +72,14 @@ namespace VTX::PythonBinding::API
 			_interface * _incr = nullptr;
 		};
 
-		inline Iterator begin()
+		Iterator begin()
 		{
 			if ( _ptr )
 				return _ptr->begin();
 			return {};
 		}
-		inline Iterator end()
+
+		Iterator end()
 		{
 			if ( _ptr )
 				return _ptr->end();
@@ -89,7 +90,7 @@ namespace VTX::PythonBinding::API
 		 * @brief Return the size of the collection or the max uint64 value if the collection is defaulted
 		 * @return
 		 */
-		inline size_t size()
+		size_t size()
 		{
 			if ( _ptr )
 				return _ptr->size();

@@ -2,6 +2,7 @@
 #include <array>
 #include <fmt/format.h>
 #include <string>
+
 namespace VTX::Util::Url
 {
 	namespace
@@ -12,45 +13,51 @@ namespace VTX::Util::Url
 		constexpr const size_t g_urlSize
 			= sizeof( g_rcsbUrl ) - 1 + sizeof( g_systemReplacementToken ) - 1 + sizeof( g_systemExtension );
 
-		constexpr const std::array<char, g_urlSize> _compileUrl() noexcept
+		constexpr std::array<char, g_urlSize> _compileUrl() noexcept
 		{
 			using namespace std;
 			array<char, g_urlSize> ret { '\0' };
-			size_t				   idx = 0, offset = 0;
+			size_t				   idx	  = 0;
+			size_t				   offset = 0;
 
 			for ( ; idx < sizeof( g_rcsbUrl ) - 1; idx++ )
+			{
 				ret[ idx ] = g_rcsbUrl[ idx ];
+			}
 			offset = idx;
 			for ( ; idx - offset < sizeof( g_systemReplacementToken ) - 1; idx++ )
+			{
 				ret[ idx ] = g_systemReplacementToken[ idx - offset ];
+			}
 			offset = idx;
 			for ( ; idx - offset < sizeof( g_systemExtension ) - 1; idx++ )
+			{
 				ret[ idx ] = g_systemExtension[ idx - offset ];
+			}
 
 			return ret;
 		}
+
 		constexpr const std::array<char, g_urlSize> g_fullRcsbUrl { _compileUrl() };
 
 		inline void replace( std::string & p_base, const std::string & p_pattern, const std::string & subst )
-		{
-			p_base.replace( p_base.find( p_pattern ), p_pattern.size(), subst );
-		}
+		{ p_base.replace( p_base.find( p_pattern ), p_pattern.size(), subst ); }
 	} // namespace
 
 	const char * systemReplacementToken() { return g_systemReplacementToken; }
+
 	const char * rcsbPdbDownloadUrlTemplate() { return g_fullRcsbUrl.data(); }
+
 	const char * rcsbPdbDownloadBaseUrl() { return g_rcsbUrl; }
+
 	const char * rcsbPdbDownloadFileExtension() { return g_systemExtension; }
 
 	bool UrlTemplate::hasReplacementToken() const noexcept
-	{
-		return str.find( g_systemReplacementToken ) != std::string::npos;
-	}
+	{ return str.find( g_systemReplacementToken ) != std::string::npos; }
 
-	UrlFull::UrlFull( const SystemId & p_systemId ) { replace( str, g_systemReplacementToken, p_systemId ); }
+	UrlFull::UrlFull( const SystemId & p_systemId ) { replace( str, g_systemReplacementToken, p_systemId.str ); }
+
 	UrlFull::UrlFull( const UrlTemplate & p_template, const SystemId & p_systemId ) : str( p_template )
-	{
-		replace( str, g_systemReplacementToken, p_systemId );
-	}
+	{ replace( str, g_systemReplacementToken, p_systemId.str ); }
 
 } // namespace VTX::Util::Url

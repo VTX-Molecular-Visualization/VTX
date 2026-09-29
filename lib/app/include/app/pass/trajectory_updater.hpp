@@ -18,18 +18,18 @@ namespace VTX::App::Pass
 		TrajectoryUpdater();
 		~TrajectoryUpdater() override;
 
-		void update( const float, const float );
+		void update( float, float );
 
 	  private:
 		/**
 		 * @brief On loader destroyed.
 		 */
-		void _onDestroyLoader( Registry &, const Entity );
+		void _onDestroyLoader( Registry &, Entity );
 
 		/**
 		 * @brief Stop threaded loader.
 		 */
-		void _stopLoader( const Entity );
+		void _stopLoader( Entity );
 	};
 } // namespace VTX::App::Pass
 #endif

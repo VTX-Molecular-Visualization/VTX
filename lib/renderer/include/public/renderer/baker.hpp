@@ -19,17 +19,17 @@ namespace VTX::Renderer::Baker
 	/**
 	 * @brief Build a cubemap from an equirectangular environment map.
 	 */
-	std::vector<EnvironmentTexel> buildEnvironmentCubemap( const FilePath & p_path, const uint p_faceSize );
+	std::vector<EnvironmentTexel> buildEnvironmentCubemap( const FilePath & p_path, uint p_faceSize );
 
 	/**
 	 * @brief Load a cubemap from a KTX file.
 	 */
-	std::vector<EnvironmentTexel> loadEnvironmentCubemapKtx( const FilePath & p_path, const uint p_faceSize );
+	std::vector<EnvironmentTexel> loadEnvironmentCubemapKtx( const FilePath & p_path, uint p_faceSize );
 
 	/**
 	 * @brief Bake an environment map to a KTX file.
 	 */
-	bool bakeEnvironmentMapToKtx( const FilePath & p_path, const FilePath & p_outputPath, const uint p_faceSize );
+	bool bakeEnvironmentMapToKtx( const FilePath & p_path, const FilePath & p_outputPath, uint p_faceSize );
 } // namespace VTX::Renderer::Baker
 
 #endif

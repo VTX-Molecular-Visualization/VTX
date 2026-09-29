@@ -39,7 +39,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			);
 		}
 
-		inline void applied() noexcept
+		void applied() noexcept
 		{
 			if ( _ptr )
 				_ptr->applied();

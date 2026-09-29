@@ -17,9 +17,9 @@ namespace VTX::Renderer
 		/**
 		 * @brief Accessors.
 		 */
-		inline const Desc::Resources & getResources() const { return _resources; }
+		const Desc::Resources & getResources() const { return _resources; }
 
-		inline const Desc::PassList & getPasses() const { return _passes; }
+		const Desc::PassList & getPasses() const { return _passes; }
 
 		/**
 		 * @brief Update the active physical chunks for a geometry resource.
@@ -30,7 +30,7 @@ namespace VTX::Renderer
 		 * @brief Validate graph and build render queue.
 		 * @return
 		 */
-		const Desc::RenderQueue build();
+		Desc::RenderQueue build();
 
 		/**
 		 * @brief Add data from builder.

@@ -45,13 +45,9 @@ namespace VTX::Util::Color
 
 		constexpr const Vec4f & vec() const { return _v; }
 
-		constexpr operator Vec4f &() { return _v; }
+		std::vector<float> toStdVector() const { return { _v.x, _v.y, _v.z }; }
 
-		constexpr operator const Vec4f &() const { return _v; }
-
-		inline std::vector<float> toStdVector() const { return { _v.x, _v.y, _v.z }; }
-
-		inline std::string toHexaString() const
+		[[nodiscard]] std::string toHexaString() const
 		{
 			std::stringstream ss;
 			ss << "#";
@@ -61,7 +57,7 @@ namespace VTX::Util::Color
 			return ss.str();
 		}
 
-		inline std::string toHexaStringAlpha() const
+		std::string toHexaStringAlpha() const
 		{
 			std::stringstream ss;
 			ss << "#";
@@ -72,7 +68,7 @@ namespace VTX::Util::Color
 			return ss.str();
 		}
 
-		inline void setSingleChannelHexaInStream( float v, std::stringstream & ss ) const
+		static void setSingleChannelHexaInStream( float v, std::stringstream & ss )
 		{ ss << std::hex << std::setw( 2 ) << std::setfill( '0' ) << (int)( v * 255 ); }
 
 		constexpr Rgba & operator=( const Rgba & ) = default;
@@ -187,6 +183,12 @@ namespace VTX::Util::Color
 
 		constexpr bool operator!=( const Rgba & p ) const { return !( *this == p ); }
 
+		friend std::ostream & operator<<( std::ostream & p_os, const Rgba & p_c )
+		{
+			p_os << p_c.x() << " - " << p_c.y() << " - " << p_c.z() << " - " << p_c.w() << std::endl;
+			return p_os;
+		}
+
 		constexpr float & x() { return _v.x; }
 
 		constexpr float & y() { return _v.y; }
@@ -225,9 +227,9 @@ namespace VTX::Util::Color
 
 		static Rgba random();
 
-		Rgba mixedWith( const Rgba &, const float ) const;
-		Rgba withMinBrightness( const float ) const;
-		Rgba withSaturation( const float ) const;
+		Rgba mixedWith( const Rgba &, float ) const;
+		Rgba withMinBrightness( float ) const;
+		Rgba withSaturation( float ) const;
 		Rgba toLinear() const;
 		Rgba toSRGB() const;
 		Rgba toHighContrast() const;

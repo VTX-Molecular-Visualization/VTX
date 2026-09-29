@@ -21,13 +21,13 @@ namespace VTX::UI::QT::ToolButton
 		/**
 		 * @brief Set the resolution text of the button.
 		 */
-		void setResolution( const size_t, const size_t );
+		void setResolution( size_t, size_t );
 
 	  signals:
 		/**
 		 * @brief User changed resolution.
 		 */
-		void resolutionChanged( const size_t, const size_t );
+		void resolutionChanged( size_t, size_t );
 
 	  private:
 	};

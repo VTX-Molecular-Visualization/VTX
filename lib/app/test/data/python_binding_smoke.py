@@ -57,13 +57,21 @@ require(
     "Unexpected transform",
 )
 
-resolution = vtx.Resolution("HD", 1280, 720)
+resolution = vtx.Resolution(width=1280, height=720)
 require(
-    resolution.name == "HD"
+    resolution.name == "Custom"
     and resolution.width == 1280
     and resolution.height == 720,
     "Unexpected resolution",
 )
+
+for attribute, value in (("name", "HD"), ("width", 1920), ("height", 1080)):
+    try:
+        setattr(resolution, attribute, value)
+    except AttributeError:
+        pass
+    else:
+        raise AssertionError(f"Resolution.{attribute} must be read-only")
 
 vtx.setColorLayout("jmol")
 vtx.setGraphicsConfig("default")

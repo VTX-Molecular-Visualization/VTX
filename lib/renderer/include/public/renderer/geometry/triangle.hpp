@@ -3,21 +3,22 @@
 
 #include "base_geometry.hpp"
 #include <core/struct/mesh.hpp>
+#include <string_view>
 
 namespace VTX::Renderer::Geometry
 {
 	class Triangle : public BaseGeometry
 	{
 	  public:
-		inline static const Desc::Key		  VERTEX_LAYOUT_MESHES		 = "Meshes";
-		inline static const Desc::Key		  GEOMETRY_TRIANGLES		 = "Triangles";
-		inline static const Desc::Key		  INDEX_TRIANGLES			 = "Index.Triangles";
-		inline static const Desc::Key		  INDIRECT_TRIANGLES		 = "Indirect.Triangles";
-		inline static constexpr Desc::Binding BINDING_INDIRECT_TRIANGLES = 10;
+		static constexpr std::string_view VERTEX_LAYOUT_MESHES		 = "Meshes";
+		static constexpr std::string_view GEOMETRY_TRIANGLES		 = "Triangles";
+		static constexpr std::string_view INDEX_TRIANGLES			 = "Index.Triangles";
+		static constexpr std::string_view INDIRECT_TRIANGLES		 = "Indirect.Triangles";
+		static constexpr Desc::Binding	  BINDING_INDIRECT_TRIANGLES = 10;
 
 		Triangle()
 		{
-			vertexLayout   = VERTEX_LAYOUT_MESHES;
+			vertexLayout   = Desc::Key { VERTEX_LAYOUT_MESHES };
 			indiceBuffer   = INDEX_TRIANGLES;
 			indirectBuffer = INDIRECT_TRIANGLES;
 		}

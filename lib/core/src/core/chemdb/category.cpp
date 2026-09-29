@@ -259,7 +259,7 @@ namespace VTX::Core::ChemDB::Category
 	{
 		for ( uint it_type = 0; it_type < toUnderlying( TYPE::COUNT ); it_type++ )
 		{
-			auto & voc = p_dict.vocabularies[ it_type ];
+			const auto & voc = p_dict.vocabularies[ it_type ];
 			if ( voc.contains( p_resname ) )
 			{
 				return static_cast<TYPE>( it_type );

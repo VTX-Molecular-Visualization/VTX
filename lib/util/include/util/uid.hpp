@@ -36,7 +36,7 @@ namespace VTX::Util::Uid
 		 */
 		UID registerValue()
 		{
-			std::lock_guard<std::mutex> guard( _mutex );
+			const std::scoped_lock guard( _mutex );
 
 			if ( _available.isEmpty() )
 			{
@@ -53,7 +53,7 @@ namespace VTX::Util::Uid
 		 */
 		UIDRange registerRange( UID p_count )
 		{
-			std::lock_guard<std::mutex> guard( _mutex );
+			const std::scoped_lock guard( _mutex );
 
 			auto it = _available.rangeBegin();
 			while ( it != _available.rangeEnd() )
@@ -75,7 +75,7 @@ namespace VTX::Util::Uid
 		 */
 		void unregister( const UID p_value )
 		{
-			std::lock_guard<std::mutex> guard( _mutex );
+			const std::scoped_lock guard( _mutex );
 			_available.addValue( p_value );
 		}
 
@@ -84,7 +84,7 @@ namespace VTX::Util::Uid
 		 */
 		void unregister( const UIDRange & p_range )
 		{
-			std::lock_guard<std::mutex> guard( _mutex );
+			const std::scoped_lock guard( _mutex );
 			_available.addRange( p_range );
 		}
 
@@ -93,7 +93,7 @@ namespace VTX::Util::Uid
 		 */
 		void clear()
 		{
-			std::lock_guard<std::mutex> guard( _mutex );
+			const std::scoped_lock guard( _mutex );
 			_available = UIDRangeList( { Math::Range<UID>( UID( 1 ), std::numeric_limits<UID>::max() ) } );
 			_available.removeValue( UID( INVALID_UID ) );
 		}

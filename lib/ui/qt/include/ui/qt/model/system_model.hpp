@@ -70,24 +70,24 @@ namespace VTX::UI::QT::Model
 		 */
 		QModelIndex parent( const QModelIndex & p_index ) const override;
 
-		void setViewMode( const ViewMode p_mode );
+		void setViewMode( ViewMode p_mode );
 
-		inline ViewMode getViewMode() const { return _viewMode; }
+		ViewMode getViewMode() const { return _viewMode; }
 
 		/**
 		 * @brief Public index creation.
 		 */
-		QModelIndex makeIndex( const int p_row, const Core::Struct::E_SYSTEM_ITEM, const Index ) const;
+		QModelIndex makeIndex( int p_row, Core::Struct::E_SYSTEM_ITEM, Index ) const;
 
 		/**
 		 * @brief Pack minimum information to identify an item in the model into a single uint64.
 		 */
-		static quintptr pack( const Core::Struct::E_SYSTEM_ITEM, const Index );
+		static quintptr pack( Core::Struct::E_SYSTEM_ITEM, Index );
 
 		/**
 		 * @brief Unpack quintptr.
 		 */
-		static void unpack( const quintptr, Core::Struct::E_SYSTEM_ITEM &, Index & );
+		static void unpack( quintptr, Core::Struct::E_SYSTEM_ITEM &, Index & );
 
 	  private:
 		/**
@@ -96,8 +96,8 @@ namespace VTX::UI::QT::Model
 		const Entity _system;
 		ViewMode	 _viewMode = ViewMode::ByChain;
 
-		Index _categoryFromRow( const int p_row ) const;
-		int	  _categoryRow( const Index p_category ) const;
+		Index _categoryFromRow( int p_row ) const;
+		int	  _categoryRow( Index p_category ) const;
 	};
 
 } // namespace VTX::UI::QT::Model

@@ -12,9 +12,7 @@ template<>
 struct fmt::formatter<VTX::Util::Color::Rgba> : fmt::formatter<VTX::Vec4f>
 {
 	auto format( const VTX::Util::Color::Rgba & p_color, fmt::format_context & p_ctx ) const
-	{
-		return formatter<VTX::Vec4f>::format( p_color, p_ctx );
-	}
+	{ return formatter<VTX::Vec4f>::format( p_color.vec(), p_ctx ); }
 };
 
 #endif

@@ -68,9 +68,12 @@ namespace VTX::Util::Math
 	constexpr bool RANDOM = true;
 #endif
 
-	inline std::random_device					 rd;
-	inline std::mt19937							 gen( RANDOM ? rd() : 7937 );
-	inline std::uniform_real_distribution<float> dis( 0.f, 1.f );
+	inline float randomFloat()
+	{
+		static thread_local std::mt19937	  generator( RANDOM ? std::random_device {}() : 7937u );
+		std::uniform_real_distribution<float> distribution( 0.f, 1.f );
+		return distribution( generator );
+	}
 
 	template<typename T>
 	inline void normalizeSelf( T & p_value )
@@ -93,8 +96,6 @@ namespace VTX::Util::Math
 	template<int L, typename T>
 	inline std::vector<T> toStdVector( const mat<L, L, T> & p_value )
 	{ return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L * L ); }
-
-	inline float randomFloat() { return dis( gen ); }
 
 	inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
 
@@ -201,7 +202,7 @@ namespace VTX::Util::Math
 		float u = dot( q, q );
 		float v = dot( r, r );
 
-		float angle;
+		float angle = 0.f;
 		if ( u <= 0.f || v <= 0.f )
 		{
 			angle = TWO_PIf;
@@ -289,9 +290,9 @@ namespace VTX::Util::Math
 	std::vector<Vec3f> inline randomUniVectors( const size_t p_size )
 	{
 		std::vector<Vec3f> noiseData( p_size );
-		std::generate(
-			noiseData.begin(),
-			noiseData.end(),
+
+		std::ranges::generate(
+			noiseData,
 			[]
 			{
 				return Util::Math::normalize(

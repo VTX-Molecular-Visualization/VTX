@@ -18,7 +18,7 @@ namespace VTX::Tool::Mdprep::ui
 	  public:
 		InputChecker() = default;
 
-		inline void checkInputs( const Gateway::MdParameters & p_1 ) const noexcept
+		void checkInputs( const Gateway::MdParameters & p_1 ) const noexcept
 		{
 			if ( _ptr )
 			{
@@ -26,7 +26,7 @@ namespace VTX::Tool::Mdprep::ui
 			}
 		}
 
-		inline bool isResultAvailable() const noexcept
+		bool isResultAvailable() const noexcept
 		{
 			if ( _ptr )
 			{
@@ -35,7 +35,7 @@ namespace VTX::Tool::Mdprep::ui
 			return false;
 		}
 
-		inline Gateway::CheckReport lastResult() const noexcept
+		Gateway::CheckReport lastResult() const noexcept
 		{
 			if ( _ptr )
 			{

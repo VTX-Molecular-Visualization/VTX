@@ -13,11 +13,11 @@
 
 namespace VTX::App::Action::Visibility
 {
-	void patchVisibility( const Entity p_ent, Util::Math::BitSet p_atoms );
+	void patchVisibility( Entity p_ent, Util::Math::BitSet p_atoms );
 
 	struct SetVisibleAll
 	{
-		void execute( const bool p_visible );
+		void execute( bool p_visible );
 	};
 
 	/**
@@ -32,7 +32,7 @@ namespace VTX::App::Action::Visibility
 			const bool							 p_visible = true
 		)
 		{
-			Util::ScopedChrono timer( "App::Action::SetVisible" );
+			const Util::ScopedChrono timer( "App::Action::SetVisible" );
 
 			const auto & visibility = REG().get<System::Visibility>( p_ent );
 
@@ -59,7 +59,7 @@ namespace VTX::App::Action::Visibility
 			}
 			else
 			{
-				Core::Struct::IndexRangeList atoms	 = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
+				const Core::Struct::IndexRangeList atoms   = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 				Util::Math::BitSet			 current = visibility.atoms;
 
 				if ( p_visible )
@@ -93,7 +93,7 @@ namespace VTX::App::Action::Visibility
 
 	struct SetVisibleSelected
 	{
-		void execute( const bool p_visible = true );
+		void execute( bool p_visible = true );
 	};
 
 	struct SetVisibleItem
@@ -105,7 +105,7 @@ namespace VTX::App::Action::Visibility
 			const bool							 p_visible = true
 		);
 
-		inline void execute(
+		void execute(
 			const Entity					  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM p_item,
 			const Core::Struct::IndexRange &  p_range,
@@ -115,7 +115,7 @@ namespace VTX::App::Action::Visibility
 			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_visible );
 		}
 
-		inline void execute(
+		void execute(
 			const Entity					  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM p_item,
 			const std::vector<Index> &		  p_values,
@@ -125,7 +125,7 @@ namespace VTX::App::Action::Visibility
 			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_visible );
 		}
 
-		inline void execute(
+		void execute(
 			const Entity					  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM p_item,
 			const Index						  p_value,

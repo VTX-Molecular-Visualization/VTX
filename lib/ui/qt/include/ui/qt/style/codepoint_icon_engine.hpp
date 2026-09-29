@@ -29,7 +29,7 @@ namespace VTX::UI::QT::Style
 		/**
 		 * @brief Override: clone the engine.
 		 */
-		inline QIconEngine * clone() const override { return new CodepointIconEngine( _codepoint ); }
+		QIconEngine * clone() const override { return new CodepointIconEngine( _codepoint ); }
 
 		/**
 		 * @brief Override: paint the icon using the current theme color.

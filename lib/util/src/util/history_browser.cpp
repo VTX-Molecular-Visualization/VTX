@@ -12,6 +12,7 @@ namespace VTX::Util
 			_historyIdx = _historyIdx == 0 ? 0 : _historyIdx - 1;
 		}
 	}
+
 	void HistoryBrowser::tryMoveBackward() noexcept
 	{
 		if ( _browsingHistory )
@@ -20,15 +21,19 @@ namespace VTX::Util
 		}
 		_browsingHistory = true;
 	}
+
 	void HistoryBrowser::resetBrowsing() noexcept
 	{
 		_historyIdx		 = 0;
 		_browsingHistory = false;
 	}
+
 	std::string HistoryBrowser::currentString() const noexcept
 	{
 		if ( _browsingHistory )
+		{
 			return _history[ _history.size() - 1 - _historyIdx ];
+		}
 		return {};
 	}
 

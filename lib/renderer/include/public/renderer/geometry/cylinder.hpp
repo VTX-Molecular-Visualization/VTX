@@ -3,6 +3,7 @@
 
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
+#include <string_view>
 
 namespace VTX::Renderer::Geometry
 {
@@ -10,20 +11,20 @@ namespace VTX::Renderer::Geometry
 	class Cylinder : public BaseGeometry
 	{
 	  public:
-		inline static const Desc::Key		  VERTEX_LAYOUT_ATOMS		 = "Atoms";
-		inline static const Desc::Key		  GEOMETRY_CYLINDERS		 = "Cylinders";
-		inline static const Desc::Key		  INDEX_BONDS				 = "Index.Bonds";
-		inline static const Desc::Key		  INDIRECT_CYLINDERS		 = "Indirect.Cylinders";
-		inline static constexpr Desc::Binding BINDING_INDIRECT_CYLINDERS = 10;
+		static constexpr std::string_view VERTEX_LAYOUT_ATOMS		 = "Atoms";
+		static constexpr std::string_view GEOMETRY_CYLINDERS		 = "Cylinders";
+		static constexpr std::string_view INDEX_BONDS				 = "Index.Bonds";
+		static constexpr std::string_view INDIRECT_CYLINDERS		 = "Indirect.Cylinders";
+		static constexpr Desc::Binding	  BINDING_INDIRECT_CYLINDERS = 10;
 
 		Cylinder()
 		{
-			vertexLayout   = VERTEX_LAYOUT_ATOMS;
+			vertexLayout   = Desc::Key { VERTEX_LAYOUT_ATOMS };
 			indiceBuffer   = INDEX_BONDS;
 			indirectBuffer = INDIRECT_CYLINDERS;
 		}
 
-		void clear()
+		void clear() override
 		{
 			BaseGeometry::clear();
 			_construction.clear();

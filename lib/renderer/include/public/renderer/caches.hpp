@@ -62,7 +62,7 @@ namespace VTX::Renderer::Cache
 		std::vector<Vec3f> maxs;
 	};
 
-	enum struct E_SYSTEM_DIRTY : uint16_t
+	enum struct E_SYSTEM_DIRTY : uint8_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
 		NONE		   = 0,

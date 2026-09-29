@@ -32,9 +32,9 @@ namespace VTX::App::PythonBinding
 		void def( const std::string & p_name, Func && p_function, const std::string & p_desc, Extra &&... p_extra )
 		{ _module.def( p_name, std::forward<Func>( p_function ), p_desc, std::forward<Extra>( p_extra )... ); }
 
-		inline pybind11::module_ & pyModule() noexcept { return _module.pyModule(); }
+		pybind11::module_ & pyModule() noexcept { return _module.pyModule(); }
 
-		inline void getPythonModule( pybind11::module_ ** p_in ) noexcept { _module.getPythonModule( p_in ); }
+		void getPythonModule( pybind11::module_ ** p_in ) noexcept { _module.getPythonModule( p_in ); }
 
 	  private:
 		VTX::PythonBinding::Wrapper::Module & _module;

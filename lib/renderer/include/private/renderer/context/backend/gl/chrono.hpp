@@ -23,9 +23,9 @@ namespace VTX::Renderer::Context::Backend::GL
 			glDeleteQueries( 1, &_queryEnd );
 		}
 
-		inline void start() { glQueryCounter( _queryStart, GL_TIMESTAMP ); }
+		void start() const { glQueryCounter( _queryStart, GL_TIMESTAMP ); }
 
-		inline double stop()
+		double stop() const
 		{
 			glQueryCounter( _queryEnd, GL_TIMESTAMP );
 
@@ -35,11 +35,12 @@ namespace VTX::Renderer::Context::Backend::GL
 				glGetQueryObjectiv( _queryEnd, GL_QUERY_RESULT_AVAILABLE, &available );
 			}
 
-			uint64_t startTime, endTime;
+			uint64_t startTime = 0;
+			uint64_t endTime   = 0;
 			glGetQueryObjectui64v( _queryStart, GL_QUERY_RESULT, &startTime );
 			glGetQueryObjectui64v( _queryEnd, GL_QUERY_RESULT, &endTime );
 
-			return ( endTime - startTime ) * 1e-6;
+			return static_cast<double>( endTime - startTime ) * 1e-6;
 		}
 
 	  private:
@@ -51,11 +52,11 @@ namespace VTX::Renderer::Context::Backend::GL
 		requires( std::is_void_v<std::invoke_result_t<F, Args...>> )
 	inline float CHRONO_GPU( F && p_f, Args &&... p_args )
 	{
-		Chrono c;
+		const Chrono c;
 		c.start();
 		std::invoke( std::forward<F>( p_f ), std::forward<Args>( p_args )... );
 		return float( c.stop() );
 	}
-} // namespace VTX::Renderer::Context::GL
+} // namespace VTX::Renderer::Context::Backend::GL
 
 #endif

@@ -81,7 +81,6 @@ jobs:
         conan upload glm -r=vtx
         conan upload spdlog -r=vtx
         conan upload magic_enum -r=vtx
-        conan upload nlohmann_json -r=vtx
         conan upload entt -r=vtx
         conan upload cpr -r=vtx
         conan upload stb -r=vtx

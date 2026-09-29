@@ -36,7 +36,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Update each frame.
 		 */
-		inline void update( const float p_delta, const float )
+		void update( const float p_delta, const float )
 		{
 			if ( not _controllers.empty() )
 			{
@@ -78,7 +78,7 @@ namespace VTX::App::Pass
 
 			// Remove previous instance of same type.
 			// TODO: make this facultative.
-			Hash hash = Util::hash<C>();
+			const Hash hash = Util::hash<C>();
 			std::erase_if( _controllers, [ hash ]( const Entry & e ) { return e.hash == hash; } );
 
 			// Push.
@@ -112,7 +112,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Go to next controller.
 		 */
-		inline void nextController()
+		void nextController()
 		{
 			if ( not _controllers.empty() )
 			{

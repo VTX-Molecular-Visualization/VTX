@@ -51,7 +51,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Add a view to the manager.
 		 */
-		void add( QItemSelectionModel *, const E_SELECTION_GROUP );
+		void add( QItemSelectionModel *, E_SELECTION_GROUP );
 
 		/**
 		 * @brief Clear all selection.
@@ -66,12 +66,12 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Clear selection of a group.
 		 */
-		void clear( const E_SELECTION_GROUP );
+		void clear( E_SELECTION_GROUP );
 
 		/**
 		 * @brief Clear selection of all group except the given one.
 		 */
-		void clearBut( const E_SELECTION_GROUP );
+		void clearBut( E_SELECTION_GROUP );
 
 		/**
 		 * @brief Select item.
@@ -99,7 +99,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Pick item at position and add it to the selection.
 		 */
-		void pick( const Vec2i &, const bool );
+		void pick( const Vec2i &, bool );
 
 		/**
 		 * @brief Get current selection.
@@ -111,7 +111,7 @@ namespace VTX::UI::QT
 		 * @brief UI selection changed signal. Empty selection means no item is selected in the group.
 
 		 */
-		void selectionChanged( const E_SELECTION_GROUP, const QItemSelection & p_selection );
+		void selectionChanged( E_SELECTION_GROUP, const QItemSelection & p_selection );
 
 	  private:
 		/**

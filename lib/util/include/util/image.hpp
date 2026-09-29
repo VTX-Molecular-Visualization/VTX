@@ -13,7 +13,7 @@ namespace VTX::Util::Image
 	/**
 	 * @brief Available image formats.
 	 */
-	enum struct E_FORMAT
+	enum struct E_FORMAT : uint8_t
 	{
 		PNG,
 		JPEG
@@ -23,17 +23,17 @@ namespace VTX::Util::Image
 	 * @brief Write image to disk.
 	 */
 	FilePath write(
-		const FilePath &		p_path,
-		const E_FORMAT			p_format,
-		const size_t			p_width,
-		const size_t			p_height,
-		const std::byte * const p_data
+		const FilePath &  p_path,
+		E_FORMAT		  p_format,
+		size_t			  p_width,
+		size_t			  p_height,
+		const std::byte * p_data
 	);
 
 	/**
 	 * @brief Write software metadata to an existing image.
 	 */
-	void writeSoftwareMetadata( const FilePath & p_path, const std::string_view p_software );
+	void writeSoftwareMetadata( const FilePath & p_path, std::string_view p_software );
 
 	/**
 	 * @brief Floating-point image representation.
@@ -56,7 +56,7 @@ namespace VTX::Util::Image
 	/**
 	 * @brief Read an image with the requested number of 8-bit channels.
 	 */
-	ByteImage readByteImage( const FilePath &, const uint8_t p_channels = 4 );
+	ByteImage readByteImage( const FilePath &, uint8_t p_channels = 4 );
 
 	/**
 	 * @brief Read an HDR image from disk.

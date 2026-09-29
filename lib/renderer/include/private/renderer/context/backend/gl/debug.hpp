@@ -7,13 +7,13 @@
 namespace VTX::Renderer::Context::Backend::GL::Debug
 {
 	inline void _debugMessageCallback(
-		const GLenum   p_source,
-		const GLenum   p_type,
-		const GLuint   p_id,
-		const GLenum   p_severity,
-		const GLsizei  p_length,
+		const GLenum p_source,
+		const GLenum p_type,
+		const GLuint,
+		const GLenum p_severity,
+		const GLsizei,
 		const GLchar * p_msg,
-		const void *   p_data
+		const void *
 	) noexcept
 	{
 		std::string source;
@@ -68,38 +68,38 @@ namespace VTX::Renderer::Context::Backend::GL::Debug
 
 	inline void dumpGLError() noexcept
 	{
-		GLenum err;
+		GLenum err {};
 		while ( ( err = glGetError() ) != GL_NO_ERROR )
 		{
-			fprintf( stderr, "[GL ERROR] 0x%X\n", err );
+			std::cerr << "[GL ERROR] 0x" << std::hex << err << std::dec << std::endl;
 			assert( false );
 		}
 	};
 
 	inline std::string getProgramErrors( const GLuint p_id )
 	{
-		GLint length;
+		GLint length {};
 		glGetProgramiv( p_id, GL_INFO_LOG_LENGTH, &length );
 		if ( length == 0 )
 		{
 			return "";
 		}
 		std::vector<char> log( length );
-		glGetProgramInfoLog( p_id, length, &length, &log[ 0 ] );
+		glGetProgramInfoLog( p_id, length, &length, log.data() );
 
 		return std::string( log.begin(), log.end() );
 	}
 
 	inline std::string getShaderErrors( const GLuint p_id )
 	{
-		GLint length;
+		GLint length {};
 		glGetShaderiv( p_id, GL_INFO_LOG_LENGTH, &length );
 		if ( length == 0 )
 		{
 			return "";
 		}
 		std::vector<char> log( length );
-		glGetShaderInfoLog( p_id, length, &length, &log[ 0 ] );
+		glGetShaderInfoLog( p_id, length, &length, log.data() );
 
 		return std::string( log.begin(), log.end() );
 	}

@@ -23,7 +23,7 @@ namespace VTX::Bench
 			throw std::runtime_error( "Failed to init SDL: " + std::string( SDL_GetError() ) );
 		}
 
-		SDL_PropertiesID windowProps = SDL_CreateProperties();
+		const SDL_PropertiesID windowProps = SDL_CreateProperties();
 		if ( windowProps == 0 )
 		{
 			throw std::runtime_error( "Failed to create SDL window properties" );
@@ -379,7 +379,8 @@ namespace VTX::Bench
 	{
 		if ( ImGui::Begin( "Renderer" ) )
 		{
-			size_t sizeAtoms = 0, sizeBonds = 0, sizeRibbons = 0, sizeVoxels = 0;
+			const size_t sizeAtoms = 0;
+			size_t		 sizeBonds = 0, sizeRibbons = 0, sizeVoxels = 0;
 			/*
 			for ( auto count : p_renderer->drawRangeSpheres.counts )
 			{
@@ -502,8 +503,8 @@ namespace VTX::Bench
 				// p_scene->removeAllSystems( p_renderer );
 			}
 
-			size_t idSystem = 0;
-			int	   toDelete = -1;
+			const size_t idSystem = 0;
+			const int	 toDelete = -1;
 
 			/*
 			for ( auto & proxySystem : p_scene->getProxiesSystems() )

@@ -18,7 +18,7 @@ namespace VTX::App::Controller
 		/**
 		 * @brief Called each frame.
 		 */
-		bool update( const float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
+		bool update( float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
 
 		/**
 		 * @brief Stop movement.
@@ -39,7 +39,7 @@ namespace VTX::App::Controller
 		/**
 		 * @brief Update velocity from elasticity.
 		 */
-		void _updateVelocity( const float, const float );
+		void _updateVelocity( float, float );
 	};
 
 } // namespace VTX::App::Controller

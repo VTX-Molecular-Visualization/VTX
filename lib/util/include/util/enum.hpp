@@ -24,7 +24,7 @@ namespace VTX::Util::Enum
 	 * @brief Checks if all specified bits are set in an enumeration value (must contain VTX_ENUM_ENABLE_BITMASK).
 	 */
 	template<Concept E>
-	inline constexpr bool hasAllBits( const E p_e, const E p_bits ) noexcept
+	constexpr bool hasAllBits( const E p_e, const E p_bits ) noexcept
 	{
 		return ( p_e & p_bits ) == p_bits;
 	}
@@ -33,7 +33,7 @@ namespace VTX::Util::Enum
 	 * @brief Checks if a specific bit is set in an enumeration value (must contain VTX_ENUM_ENABLE_BITMASK).
 	 */
 	template<Concept E>
-	inline constexpr bool hasAnyBit( const E p_e, const E p_bit ) noexcept
+	constexpr bool hasAnyBit( const E p_e, const E p_bit ) noexcept
 	{
 		return ( p_e & p_bit ) != E( 0 );
 	}
@@ -42,7 +42,7 @@ namespace VTX::Util::Enum
 	 * @brief Returns the name of an enumeration value as a string view.
 	 */
 	template<Concept E>
-	inline constexpr std::string_view enumName( const E & p_enum )
+	constexpr std::string_view enumName( const E & p_enum )
 	{
 		return magic_enum::enum_name( p_enum );
 	}
@@ -51,7 +51,7 @@ namespace VTX::Util::Enum
 	 * @brief Converts a string to its corresponding enumeration value of type E.
 	 */
 	template<Concept E>
-	inline constexpr E enumCast( const std::string & p_name )
+	constexpr E enumCast( const std::string & p_name )
 	{
 		auto value = magic_enum::enum_cast<E>( p_name );
 
@@ -69,7 +69,7 @@ namespace VTX::Util::Enum
 	 * @brief Returns the underlying integer value of an enumeration constant.
 	 */
 	template<Concept E>
-	inline constexpr uint enumInteger( const E & p_enum )
+	constexpr uint enumInteger( const E & p_enum )
 	{
 		return magic_enum::enum_integer( p_enum );
 	}
@@ -78,7 +78,7 @@ namespace VTX::Util::Enum
 	 * @brief Returns the enumeration value of type E at the specified index.
 	 */
 	template<Concept E>
-	inline constexpr E enumValue( const size_t p_index )
+	constexpr E enumValue( const size_t p_index )
 	{
 		return magic_enum::enum_value<E>( p_index );
 	}
@@ -87,7 +87,7 @@ namespace VTX::Util::Enum
 	 * @brief Converts an enumeration value of one type to another enumeration type using the enumeration's name.
 	 */
 	template<Concept E1, Concept E2>
-	inline constexpr E2 enumToAnother( const E1 & p_enum )
+	constexpr E2 enumToAnother( const E1 & p_enum )
 	{
 		auto name = enumName( p_enum );
 		return enumCast<E2>( std::string( name ) );

@@ -26,8 +26,8 @@ namespace bcs
         ConstSpan() = default;
         ConstSpan( const Type * ptr, std::size_t size );
         ConstSpan( const std::vector<Type> & data );
-        ConstSpan( const Span<Type> data );
-    };
+		ConstSpan( Span<Type> data );
+	};
 
     template<class HandleType>
     struct HandleSpan

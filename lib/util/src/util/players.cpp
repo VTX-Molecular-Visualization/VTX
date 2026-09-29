@@ -1,5 +1,5 @@
 #include "util/players.hpp"
-#include <math.h>
+#include <cmath>
 
 namespace VTX::Util::Players
 {

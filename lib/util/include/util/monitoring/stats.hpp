@@ -28,7 +28,7 @@ namespace VTX::Util::Monitoring
 		/**
 		 * @brief Returns a reference to the current (most recent) frame.
 		 */
-		inline FrameInfo & currentFrame() { return _frames.back(); }
+		FrameInfo & currentFrame() { return _frames.back(); }
 
 		/**
 		 * @brief Calculates the average elapsed time between recorded frames.
@@ -41,7 +41,7 @@ namespace VTX::Util::Monitoring
 		template<typename T>
 		T average( const Hash & p_hashedKey ) const
 		{
-			if ( _frames.size() == 0 )
+			if ( _frames.empty() )
 			{
 				return 0;
 			}

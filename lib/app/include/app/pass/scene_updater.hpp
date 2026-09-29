@@ -14,7 +14,7 @@ namespace VTX::App::Pass
 	  public:
 		SceneUpdater( const Entity & );
 
-		inline void update( const float, const float ) noexcept {}
+		void update( const float, const float ) noexcept {}
 
 	  private:
 		/**

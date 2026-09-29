@@ -24,8 +24,9 @@ namespace VTX::Util
 		 * @brief Assumes there is at least one element in the history
 		 * @return
 		 */
-		inline std::string &	   last() noexcept { return _history.back(); }
-		inline const std::string & last() const noexcept { return _history.back(); }
+		std::string & last() noexcept { return _history.back(); }
+
+		const std::string & last() const noexcept { return _history.back(); }
 
 		/**
 		 * @brief Move forward in the history if possible. Does not activate browsing by itself and does nothing if
@@ -54,7 +55,7 @@ namespace VTX::Util
 		 * @brief Returns whether the history is empty or not.
 		 * @return
 		 */
-		inline bool empty() const noexcept { return _history.empty(); }
+		bool empty() const noexcept { return _history.empty(); }
 
 	  private:
 		std::vector<std::string> _history;

@@ -38,9 +38,9 @@ namespace VTX::IO::Writer
 		 * @brief Return number of available frames
 		 * @return
 		 */
-		inline uint frameCount() const { return _ptr->frameCount(); }
+		uint frameCount() const { return _ptr->frameCount(); }
 
-		inline bool visitAtomPositions( const uint p_index, const FrameVisitor & p_visitor ) const
+		bool visitAtomPositions( const uint p_index, const FrameVisitor & p_visitor ) const
 		{
 			return _ptr->visitAtomPositions( p_index, p_visitor );
 		}

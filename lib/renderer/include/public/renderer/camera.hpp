@@ -8,7 +8,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief Projection types.
 	 */
-	enum struct PROJECTION
+	enum struct PROJECTION : uint8_t
 	{
 		PERSPECTIVE,
 		ORTHOGRAPHIC,
@@ -71,13 +71,13 @@ namespace VTX::Renderer
 		/**
 		 * @brief Compute projection matrix.
 		 */
-		inline Mat4f computeProjectionMatrix( const Vec3f & p_position ) const
+		Mat4f computeProjectionMatrix( const Vec3f & p_position ) const
 		{
 			using namespace Util;
 
 			assert( screenWidth > 0.f && screenHeight > 0.f );
 
-			float aspectRatio = float( screenWidth ) / float( screenHeight );
+			const float aspectRatio = float( screenWidth ) / float( screenHeight );
 
 			switch ( projection )
 			{
@@ -87,11 +87,11 @@ namespace VTX::Renderer
 			}
 			case PROJECTION::ORTHOGRAPHIC:
 			{
-				float top = tanf( Math::radians( fov ) * 0.5f ) * Math::distance( target, p_position );
+				const float top = tanf( Math::radians( fov ) * 0.5f ) * Math::distance( target, p_position );
 
-				float bottom = -top;
-				float right	 = top * aspectRatio;
-				float left	 = -top * aspectRatio;
+				const float bottom = -top;
+				const float right  = top * aspectRatio;
+				const float left   = -top * aspectRatio;
 
 				return Math::ortho( left, right, bottom, top, near, far );
 			}

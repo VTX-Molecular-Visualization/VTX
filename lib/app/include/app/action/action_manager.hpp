@@ -35,7 +35,7 @@ namespace VTX::App::Action
 	  public:
 		ActionManager();
 
-		void update( const float, const float );
+		void update( float, float );
 		void shutdown() noexcept;
 
 		/**
@@ -138,7 +138,7 @@ namespace VTX::App::Action
 		QueuedAction();
 		~QueuedAction();
 
-		inline void execute() { _ptr->execute(); }
+		void execute() { _ptr->execute(); }
 
 		/**
 		 * @brief Returns an object that allow to wait for the action to finish its execution. Please to not wait on the
@@ -194,7 +194,7 @@ namespace VTX::App::Action
 				}
 
 				{
-					std::scoped_lock<std::mutex> lock( _state->mutex );
+					const std::scoped_lock<std::mutex> lock( _state->mutex );
 					_state->executed = true;
 				}
 				_state->conditionVariable.notify_all();
@@ -244,7 +244,7 @@ namespace VTX::App::Action
 			 * @brief Stop the execution until the linked action is finished. Please do not wait on the
 			 * main thread.
 			 */
-			inline void wait() noexcept
+			void wait() noexcept
 			{
 				bool executed = false;
 				{
@@ -260,7 +260,7 @@ namespace VTX::App::Action
 			}
 
 		  private:
-			inline Waiter( std::shared_ptr<_interface> ptr, std::shared_ptr<_State> p_state ) :
+			Waiter( std::shared_ptr<_interface> ptr, std::shared_ptr<_State> p_state ) :
 				_ptr( ptr ), _statePtr( std::move( p_state ) )
 			{
 			}
@@ -281,7 +281,7 @@ namespace VTX::App::Action
 	{
 	  public:
 		template<typename... Args>
-		inline void execute( Args &&... args )
+		void execute( Args &&... args )
 		{
 			QueuedAction action( SomeAction(), std::forward<Args>( args )... );
 			auto		 waiter = action.getWaiter();

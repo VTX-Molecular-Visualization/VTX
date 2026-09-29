@@ -25,7 +25,7 @@ namespace VTX::UI::QT::Dialog
 		QString				   _pdb;
 
 		void _saveHistory( const QString & p_key, const QString & p_value );
-		void _loadHistory( const QString & p_key, QComboBox * const p_comboBox );
+		void _loadHistory( const QString & p_key, QComboBox * p_comboBox );
 	};
 
 } // namespace VTX::UI::QT::Dialog

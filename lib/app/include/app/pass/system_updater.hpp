@@ -29,7 +29,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Update the renderer with pending changes.
 		 */
-		void update( const float, const float );
+		void update( float, float );
 
 	  private:
 		/**
@@ -49,7 +49,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Compute renderer-ready data.
 		 */
-		Renderer::Cache::System::Data _getSystemData( const Entity, const Core::Struct::FrameView ) const;
+		Renderer::Cache::System::Data _getSystemData( Entity, Core::Struct::FrameView ) const;
 
 		/**
 		 * @brief Push system data to renderer.

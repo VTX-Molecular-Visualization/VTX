@@ -15,7 +15,7 @@ namespace VTX::UI::QT::Widget::Tree
 	class Scripts : public Widget::Tree::BaseTree<Scripts, QTreeView>
 	{
 	  public:
-		Scripts( QWidget * const p_parent );
+		Scripts( QWidget * p_parent );
 
 	  private:
 		QPointer<QFileSystemModel>		_fileModel;

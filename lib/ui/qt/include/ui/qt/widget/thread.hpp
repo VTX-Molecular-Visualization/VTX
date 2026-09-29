@@ -66,6 +66,7 @@ namespace VTX::UI::QT::Widget
 		  public:
 			using QProgressBar::QProgressBar;
 
+		  protected:
 			void paintEvent( QPaintEvent * p_event ) override
 			{
 				QProgressBar::paintEvent( p_event );

@@ -16,7 +16,7 @@ namespace VTX
 		/**
 		 * @brief Log levels mapped to spdlog levels.
 		 */
-		enum class LOG_LEVEL : uint
+		enum class LOG_LEVEL : uint8_t
 		{
 			LOG_TRACE	 = spdlog::level::trace,
 			LOG_DEBUG	 = spdlog::level::debug,
@@ -29,7 +29,7 @@ namespace VTX
 		/**
 		 * @brief Log categories for hints.
 		 */
-		enum class LOG_HINT : uint
+		enum class LOG_HINT : uint8_t
 		{
 			STD,
 			PY_IN,
@@ -53,8 +53,8 @@ namespace VTX
 		class Logger final
 		{
 		  public:
-			static void			init( const FilePath & p_logPath, const bool p_debug = false );
-			static const char * toSpdlogHint( const LOG_HINT p_hint );
+			static void			init( const FilePath & p_logDir, bool p_debug = false );
+			static const char * toSpdlogHint( LOG_HINT p_hint );
 
 			static void log( const LOG_LEVEL p_lvl, const LOG_HINT p_hint, std::string_view p_msg )
 			{
@@ -94,9 +94,7 @@ namespace VTX
 	using LOGGER = Util::Logger;
 
 	inline void VTX_LOG( const Util::LOG_LEVEL p_level, const Util::LOG_HINT p_hint, std::string_view p_msg )
-	{
-		LOGGER::log( p_level, p_hint, p_msg );
-	}
+	{ LOGGER::log( p_level, p_hint, p_msg ); }
 
 	template<typename... Args>
 	inline void VTX_LOG(
@@ -105,97 +103,63 @@ namespace VTX
 		const fmt::format_string<Args...> p_fmt,
 		Args &&... p_args
 	)
-	{
-		LOGGER::log( p_level, p_hint, p_fmt, std::forward<Args>( p_args )... );
-	}
+	{ LOGGER::log( p_level, p_hint, p_fmt, std::forward<Args>( p_args )... ); }
 
 	inline void VTX_TRACE( const std::string_view p_msg )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_TRACE, Util::LOG_HINT::STD, p_msg );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_TRACE, Util::LOG_HINT::STD, p_msg ); }
 
 	template<typename... Args>
 	inline void VTX_TRACE( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_TRACE, Util::LOG_HINT::STD, p_fmt, std::forward<Args>( p_args )... );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_TRACE, Util::LOG_HINT::STD, p_fmt, std::forward<Args>( p_args )... ); }
 
 	inline void VTX_DEBUG( const std::string_view p_msg )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_DEBUG, Util::LOG_HINT::STD, p_msg );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_DEBUG, Util::LOG_HINT::STD, p_msg ); }
 
 	template<typename... Args>
 	inline void VTX_DEBUG( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_DEBUG, Util::LOG_HINT::STD, p_fmt, std::forward<Args>( p_args )... );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_DEBUG, Util::LOG_HINT::STD, p_fmt, std::forward<Args>( p_args )... ); }
 
 	inline void VTX_INFO( const std::string_view p_msg )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::STD, p_msg );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::STD, p_msg ); }
 
 	template<typename... Args>
 	inline void VTX_INFO( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::STD, p_fmt, std::forward<Args>( p_args )... );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::STD, p_fmt, std::forward<Args>( p_args )... ); }
 
 	inline void VTX_WARNING( const std::string_view p_msg )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_WARNING, Util::LOG_HINT::STD, p_msg );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_WARNING, Util::LOG_HINT::STD, p_msg ); }
 
 	template<typename... Args>
 	inline void VTX_WARNING( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_WARNING, Util::LOG_HINT::STD, p_fmt, std::forward<Args>( p_args )... );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_WARNING, Util::LOG_HINT::STD, p_fmt, std::forward<Args>( p_args )... ); }
 
 	inline void VTX_ERROR( const std::string_view p_msg )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_ERROR, Util::LOG_HINT::STD, p_msg );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_ERROR, Util::LOG_HINT::STD, p_msg ); }
 
 	template<typename... Args>
 	inline void VTX_ERROR( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_ERROR, Util::LOG_HINT::STD, p_fmt, std::forward<Args>( p_args )... );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_ERROR, Util::LOG_HINT::STD, p_fmt, std::forward<Args>( p_args )... ); }
 
 	inline void VTX_CRITICAL( const std::string_view p_msg )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_CRITICAL, Util::LOG_HINT::STD, p_msg );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_CRITICAL, Util::LOG_HINT::STD, p_msg ); }
 
 	template<typename... Args>
 	inline void VTX_CRITICAL( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_CRITICAL, Util::LOG_HINT::STD, p_fmt, std::forward<Args>( p_args )... );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_CRITICAL, Util::LOG_HINT::STD, p_fmt, std::forward<Args>( p_args )... ); }
 
 	inline void VTX_PYTHON_IN( const std::string_view p_msg )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::PY_IN, p_msg );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::PY_IN, p_msg ); }
 
 	template<typename... Args>
 	inline void VTX_PYTHON_IN( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::PY_IN, p_fmt, std::forward<Args>( p_args )... );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::PY_IN, p_fmt, std::forward<Args>( p_args )... ); }
 
 	inline void VTX_PYTHON_OUT( const std::string_view p_msg )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::PY_OUT, p_msg );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::PY_OUT, p_msg ); }
 
 	template<typename... Args>
 	inline void VTX_PYTHON_OUT( const fmt::format_string<Args...> p_fmt, Args &&... p_args )
-	{
-		LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::PY_OUT, p_fmt, std::forward<Args>( p_args )... );
-	}
+	{ LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::PY_OUT, p_fmt, std::forward<Args>( p_args )... ); }
 
 } // namespace VTX
 

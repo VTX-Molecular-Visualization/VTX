@@ -49,7 +49,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		void _buildUi();
 		void _clearSystemViews();
 		void _clearSelectionInspector();
-		void _setInspectorProperty( const int p_index, const QString & p_label, const QString & p_value );
+		void _setInspectorProperty( int p_index, const QString & p_label, const QString & p_value );
 		void _populateTables();
 		void _populateChainsTable();
 		void _populateResiduesTable();
@@ -57,8 +57,8 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		void _populateBondsTable();
 		void _populateValidationTable();
 		void _applyTableFilter( QTableWidget & p_table, const QString & p_filter );
-		void _updateSelectionInspector( const Core::Struct::E_SYSTEM_ITEM p_item, const Index p_index );
-		void _updateBondInspector( const Index p_index );
+		void _updateSelectionInspector( Core::Struct::E_SYSTEM_ITEM p_item, Index p_index );
+		void _updateBondInspector( Index p_index );
 	};
 } // namespace VTX::Tool::TopologyEditor::Dialog
 

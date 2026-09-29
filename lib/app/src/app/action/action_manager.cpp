@@ -28,7 +28,7 @@ namespace VTX::App::Action
 	{
 		if ( _state )
 		{
-			std::scoped_lock<std::mutex> lock( _state->mutex );
+			const std::scoped_lock<std::mutex> lock( _state->mutex );
 			_state->cancelled = true;
 			_state->conditionVariable.notify_all();
 		}
@@ -41,7 +41,7 @@ namespace VTX::App::Action
 		{ // We do not want to do that every frame.
 			return;
 		}
-		std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
+		const std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
 		if ( _attributesPtr->actions.empty() )
 		{
 			return;
@@ -66,7 +66,7 @@ namespace VTX::App::Action
 			p_action.execute();
 			return;
 		}
-		std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
+		const std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
 		if ( _attributesPtr->shuttingDown )
 		{
 			return;
@@ -79,7 +79,7 @@ namespace VTX::App::Action
 		_attributesPtr->shuttingDown = true;
 		std::queue<QueuedAction> actions;
 		{
-			std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
+			const std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
 			std::swap( actions, _attributesPtr->actions );
 		}
 	}

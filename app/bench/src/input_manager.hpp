@@ -38,11 +38,11 @@ namespace VTX::Bench
 	class InputManager
 	{
 	  public:
-		inline bool isKeyPressed( const SDL_Scancode p_key ) const { return _keys[ p_key ]; }
+		bool isKeyPressed( const SDL_Scancode p_key ) const { return _keys[ p_key ]; }
 
-		inline bool isMouseButtonPressed( const size_t p_button ) const { return _mouseButtons[ p_button ]; }
+		bool isMouseButtonPressed( const size_t p_button ) const { return _mouseButtons[ p_button ]; }
 
-		inline void handle( const SDL_Event & p_event )
+		void handle( const SDL_Event & p_event )
 		{
 			switch ( p_event.type )
 			{
@@ -81,7 +81,7 @@ namespace VTX::Bench
 			}
 		}
 
-		inline void update()
+		void update()
 		{
 			if ( _keys[ SDL_SCANCODE_W ] )
 			{
@@ -113,7 +113,7 @@ namespace VTX::Bench
 			}
 		}
 
-		inline FrameInputs consumeInputs()
+		FrameInputs consumeInputs()
 		{
 			_frame.translation = _deltaMoveInputs;
 			_frame.rotation	   = _deltaMouse;

@@ -27,8 +27,8 @@ namespace VTX::App::Network
 		 * @brief Download a file from a URL and save it to a specified filename.
 		 */
 		DownloadId downloadFile(
-			const std::string_view				   p_url,
-			const std::string_view				   p_filename,
+			std::string_view					   p_url,
+			std::string_view					   p_filename,
 			const Util::Network::CallbackHttpGet & p_callback
 		);
 

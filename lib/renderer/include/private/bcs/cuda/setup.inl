@@ -1,4 +1,5 @@
 #include "bcs/cuda/setup.cuh"
+#include <iostream>
 
 namespace bcs
 {
@@ -7,13 +8,17 @@ namespace bcs
 	inline void cudaCheck( std::string_view msg, cudaError_t err )
 	{
 		if ( err != cudaSuccess )
+		{
 			std::cerr << msg << ": " << cudaGetErrorString( err ) << std::endl;
+		}
 	}
 
 	inline void cudaCheck( cudaError_t err )
 	{
 		if ( err != cudaSuccess )
+		{
 			std::cerr << cudaGetErrorString( err ) << std::endl;
+		}
 	}
 
 	inline KernelConfig KernelConfig::From( uint32_t n, uint32_t blockDim )

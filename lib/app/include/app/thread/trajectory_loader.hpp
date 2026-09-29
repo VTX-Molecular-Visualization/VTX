@@ -32,9 +32,9 @@ namespace VTX::App::Thread
 		 * @brief Update frame request.
 		 */
 		void requestFrameWindow(
-			const Trajectory::FrameRange,
-			const Trajectory::TRAJECTORY_READ_DIRECTION,
-			const Trajectory::FrameRange
+			Trajectory::FrameRange,
+			Trajectory::TRAJECTORY_READ_DIRECTION,
+			Trajectory::FrameRange
 		);
 
 		/**
@@ -55,17 +55,13 @@ namespace VTX::App::Thread
 		/**
 		 * @brief Read a specific frame (sync!).
 		 */
-		Core::Struct::Frame readFrame( const uint );
+		Core::Struct::Frame readFrame( uint );
 
 	  private:
 		/**
 		 * @brief Constructor.
 		 */
-		TrajectoryLoader(
-			Util::Thread::ThreadManager &,
-			IO::SystemReader &&,
-			const Trajectory::TRAJECTORY_BUFFER_MODE
-		);
+		TrajectoryLoader( Util::Thread::ThreadManager &, IO::SystemReader &&, Trajectory::TRAJECTORY_BUFFER_MODE );
 
 		/**
 		 * @brief Threaded work.

@@ -22,7 +22,7 @@ namespace VTX::UI::QT::Widget
 	class ViewPoint : public QWidget
 	{
 	  public:
-		ViewPoint( const Entity, QWidget * const p_parent = nullptr );
+		ViewPoint( Entity, QWidget * p_parent = nullptr );
 		~ViewPoint();
 
 	  private:

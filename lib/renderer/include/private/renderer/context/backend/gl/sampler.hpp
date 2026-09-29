@@ -52,7 +52,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 
-		inline GLuint getId() const noexcept { return _id; }
+		GLuint getId() const noexcept { return _id; }
 
 		void bindToUnit( const GLuint p_unit ) const noexcept { glBindSampler( p_unit, _id ); }
 

@@ -79,6 +79,7 @@ jobs:
       shell: bash
       run: |
         conan install app -b missing \
+          -c tools.cmake.cmaketoolchain:extra_variables='{"VTX_ENABLE_CLANG_TIDY":False}' \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_app/*:test=True \
@@ -95,6 +96,7 @@ jobs:
       shell: bash
       run: |
         conan create app -b missing \
+          -c tools.cmake.cmaketoolchain:extra_variables='{"VTX_ENABLE_CLANG_TIDY":False}' \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_app/*:test=True \

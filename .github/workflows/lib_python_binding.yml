@@ -87,6 +87,7 @@ jobs:
         fi
 
         conan install python_binding -b missing \
+          -c tools.cmake.cmaketoolchain:extra_variables='{"VTX_ENABLE_CLANG_TIDY":False}' \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_python_binding/*:test=True \
@@ -135,6 +136,7 @@ jobs:
         fi
 
         conan create python_binding -b missing \
+          -c tools.cmake.cmaketoolchain:extra_variables='{"VTX_ENABLE_CLANG_TIDY":False}' \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_python_binding/*:test=True \

@@ -71,5 +71,6 @@ jobs:
       run: |
         conan export util
         conan create core -b missing \
+          -c tools.cmake.cmaketoolchain:extra_variables='{"VTX_ENABLE_CLANG_TIDY":False}' \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }}

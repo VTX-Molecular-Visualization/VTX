@@ -26,7 +26,7 @@ namespace VTX::UI::QT::Menu
 		std::array<QPointer<QAction>, static_cast<std::size_t>( toUnderlying( Style::E_THEME::COUNT ) )>
 			_themeActions;
 
-		void _addThemeAction( const QString &, const Style::E_THEME );
+		void _addThemeAction( const QString &, Style::E_THEME );
 		void _syncTheme();
 		void _onThemeChanged( const Events::ThemeChanged & );
 	};

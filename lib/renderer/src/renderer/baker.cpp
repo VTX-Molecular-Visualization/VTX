@@ -47,7 +47,7 @@ namespace VTX::Renderer::Baker
 				return p_image.pixels[ ( size_t( clampedY ) * p_image.width + size_t( wrappedX ) ) * 4 + p_channel ];
 			};
 
-			std::array<float, 4> result;
+			std::array<float, 4> result { 0.f };
 			for ( size_t channel = 0; channel < result.size(); ++channel )
 			{
 				const float top	   = lerp( pixel( x0, y0, channel ), pixel( x0 + 1, y0, channel ), tx );
@@ -252,8 +252,8 @@ namespace VTX::Renderer::Baker
 				facePixelCount * ENVIRONMENT_FACE_COUNT * ENVIRONMENT_CHANNEL_COUNT
 			);
 
-			ktxTexture * const	baseTexture = ktxTexture( texture );
-			ktx_uint8_t * const data		= ktxTexture_GetData( baseTexture );
+			ktxTexture * const		  baseTexture = ktxTexture( texture );
+			const ktx_uint8_t * const data		  = ktxTexture_GetData( baseTexture );
 			for ( ktx_uint32_t face = 0; face < ENVIRONMENT_FACE_COUNT; ++face )
 			{
 				ktx_size_t offset = 0;

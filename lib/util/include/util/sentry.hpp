@@ -35,7 +35,7 @@ namespace VTX::Util
 		Sentry() = delete;
 
 		// Returns wether the target still exists
-		operator bool() const noexcept;
+		explicit operator bool() const noexcept;
 
 	  private:
 		Sentry( std::shared_ptr<std::atomic_bool> p_ ) noexcept;

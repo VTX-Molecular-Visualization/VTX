@@ -17,29 +17,29 @@ namespace VTX::Util
 		 * @brief Set a new current step. Jump to last step if input > num step.
 		 * @param p_step New current step
 		 */
-		inline void jumpTo( const uint & p_step ) noexcept { _ptr->jumpTo( p_step ); }
+		void jumpTo( const uint & p_step ) noexcept { _ptr->jumpTo( p_step ); }
 
 		/**
 		 * @brief Returns the next step. Does not change internal state.
 		 * @param p_out
 		 */
-		inline void next( uint & p_out ) const noexcept { _ptr->next( p_out ); }
+		void next( uint & p_out ) const noexcept { _ptr->next( p_out ); }
 
-		inline void next( const uint & p_incr, uint & p_out ) const noexcept { _ptr->next( p_incr, p_out ); }
+		void next( const uint & p_incr, uint & p_out ) const noexcept { _ptr->next( p_incr, p_out ); }
 
-		inline void current( uint & p_out ) const noexcept { _ptr->current( p_out ); }
+		void current( uint & p_out ) const noexcept { _ptr->current( p_out ); }
 
-		inline void setStepCount( const uint p_stepCount ) noexcept { _ptr->setStepCount( p_stepCount ); }
+		void setStepCount( const uint p_stepCount ) noexcept { _ptr->setStepCount( p_stepCount ); }
 
 		/**
 		 * @brief Move to the next step.
 		 */
-		inline void increment() noexcept { _ptr->increment(); }
+		void increment() noexcept { _ptr->increment(); }
 
 		/**
 		 * @brief Skip N steps.
 		 */
-		inline void increment( const uint & p_N ) noexcept { _ptr->increment( p_N ); }
+		void increment( const uint & p_N ) noexcept { _ptr->increment( p_N ); }
 
 	  private:
 		struct _interface
@@ -49,7 +49,7 @@ namespace VTX::Util
 			virtual void next( uint & ) const noexcept							  = 0;
 			virtual void next( const uint & p_incr, uint & p_out ) const noexcept = 0;
 			virtual void current( uint & ) const noexcept						  = 0;
-			virtual void setStepCount( const uint p_stepCount ) noexcept		  = 0;
+			virtual void setStepCount( uint p_stepCount ) noexcept				  = 0;
 			virtual void increment() noexcept									  = 0;
 			virtual void increment( const uint & p_N ) noexcept					  = 0;
 		};
@@ -66,7 +66,7 @@ namespace VTX::Util
 		  public:
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
 
-			virtual void jumpTo( const uint & p_step ) noexcept override
+			void jumpTo( const uint & p_step ) noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
 				{
@@ -74,7 +74,7 @@ namespace VTX::Util
 				}
 			}
 
-			virtual void next( uint & p_out ) const noexcept override
+			void next( uint & p_out ) const noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
 				{
@@ -82,7 +82,7 @@ namespace VTX::Util
 				}
 			}
 
-			virtual void next( const uint & p_incr, uint & p_out ) const noexcept override
+			void next( const uint & p_incr, uint & p_out ) const noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
 				{
@@ -90,7 +90,7 @@ namespace VTX::Util
 				}
 			}
 
-			virtual void current( uint & p_out ) const noexcept override
+			void current( uint & p_out ) const noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
 				{
@@ -98,7 +98,7 @@ namespace VTX::Util
 				}
 			}
 
-			virtual void setStepCount( const uint p_stepCount ) noexcept override
+			void setStepCount( const uint p_stepCount ) noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
 				{
@@ -106,7 +106,7 @@ namespace VTX::Util
 				}
 			}
 
-			virtual void increment() noexcept override
+			void increment() noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
 				{
@@ -114,7 +114,7 @@ namespace VTX::Util
 				}
 			}
 
-			virtual void increment( const uint & p_N ) noexcept override
+			void increment( const uint & p_N ) noexcept override
 			{
 				if constexpr ( not std::same_as<T, _dummy> )
 				{

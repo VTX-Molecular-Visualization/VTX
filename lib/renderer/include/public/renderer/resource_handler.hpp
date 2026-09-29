@@ -30,7 +30,7 @@ namespace VTX::Renderer
 			_Slot( const _Slot & )			   = delete;
 			_Slot & operator=( const _Slot & ) = delete;
 
-			_Slot( _Slot && p_other )
+			_Slot( _Slot && p_other ) noexcept( std::is_nothrow_move_constructible_v<T> )
 			{
 				if ( p_other.alive )
 				{
@@ -50,7 +50,7 @@ namespace VTX::Renderer
 				return *data;
 			}
 
-			void destroy() noexcept
+			void destroy() noexcept( std::is_nothrow_destructible_v<T> )
 			{
 				if ( alive )
 				{
@@ -89,7 +89,7 @@ namespace VTX::Renderer
 		template<typename... Args>
 		Desc::Handle emplace( Args &&... p_args )
 		{
-			Desc::Handle handle;
+			Desc::Handle handle = Desc::NO_HANDLE;
 			if ( not _availables.empty() )
 			{
 				handle = _availables.back();
@@ -131,12 +131,10 @@ namespace VTX::Renderer
 			_invalids.clear();
 		}
 
-		inline bool contains( const Desc::Handle p_handle ) const noexcept
-		{
-			return p_handle < _resources.size() && _resources[ p_handle ].alive;
-		}
+		bool contains( const Desc::Handle p_handle ) const noexcept
+		{ return p_handle < _resources.size() && _resources[ p_handle ].alive; }
 
-		inline bool validate( const Desc::Handle p_handle ) noexcept
+		bool validate( const Desc::Handle p_handle ) noexcept
 		{
 			std::erase( _invalids, p_handle );
 
@@ -146,26 +144,26 @@ namespace VTX::Renderer
 		/**
 		 * @brief Get the number of valid resources.
 		 */
-		inline size_t size() const { return _resources.size() - _availables.size(); }
+		size_t size() const { return _resources.size() - _availables.size(); }
 
-		inline bool empty() const { return size() == 0; }
+		bool empty() const { return size() == 0; }
 
 		/**
 		 * @brief Access resource by handle.
 		 */
-		inline const T & get( const Desc::Handle p_handle ) const noexcept
+		const T & get( const Desc::Handle p_handle ) const noexcept
 		{
 			assert( p_handle < _resources.size() );
-			assert( std::find( _availables.begin(), _availables.end(), p_handle ) == _availables.end() );
+			assert( std::ranges::find( _availables, p_handle ) == _availables.end() );
 			assert( _resources[ p_handle ].alive );
 
 			return _resources[ p_handle ].get();
 		}
 
-		inline T & get( const Desc::Handle p_handle ) noexcept
+		T & get( const Desc::Handle p_handle ) noexcept
 		{
 			assert( p_handle < _resources.size() );
-			assert( std::find( _availables.begin(), _availables.end(), p_handle ) == _availables.end() );
+			assert( std::ranges::find( _availables, p_handle ) == _availables.end() );
 			assert( _resources[ p_handle ].alive );
 
 			return _resources[ p_handle ].get();
@@ -217,7 +215,7 @@ namespace VTX::Renderer
 		class iterator
 		{
 		  public:
-			using VecIter = typename std::vector<_Slot>::iterator;
+			using VecIter = std::vector<_Slot>::iterator;
 
 			iterator( ResourcePool * p_pool, VecIter p_it ) : _pool( p_pool ), _it( p_it ) { skipInvalid(); }
 
@@ -248,12 +246,10 @@ namespace VTX::Renderer
 		class const_iterator
 		{
 		  public:
-			using VecIter = typename std::vector<_Slot>::const_iterator;
+			using VecIter = std::vector<_Slot>::const_iterator;
 
 			const_iterator( const ResourcePool * p_pool, VecIter p_it ) : _pool( p_pool ), _it( p_it )
-			{
-				skipInvalid();
-			}
+			{ skipInvalid(); }
 
 			const_iterator & operator++()
 			{
@@ -303,9 +299,7 @@ namespace VTX::Renderer
 		{
 		  public:
 			entry_iterator( ResourcePool * p_pool, const Desc::Handle p_handle ) : _pool( p_pool ), _handle( p_handle )
-			{
-				skipInvalid();
-			}
+			{ skipInvalid(); }
 
 			entry_iterator & operator++()
 			{
@@ -336,9 +330,7 @@ namespace VTX::Renderer
 		  public:
 			const_entry_iterator( const ResourcePool * p_pool, const Desc::Handle p_handle ) :
 				_pool( p_pool ), _handle( p_handle )
-			{
-				skipInvalid();
-			}
+			{ skipInvalid(); }
 
 			const_entry_iterator & operator++()
 			{
@@ -371,9 +363,7 @@ namespace VTX::Renderer
 			entry_iterator begin() { return entry_iterator( pool, 0 ); }
 
 			entry_iterator end()
-			{
-				return entry_iterator( pool, static_cast<Desc::Handle>( pool->_resources.size() ) );
-			}
+			{ return entry_iterator( pool, static_cast<Desc::Handle>( pool->_resources.size() ) ); }
 		};
 
 		struct ConstEntries
@@ -383,9 +373,7 @@ namespace VTX::Renderer
 			const_entry_iterator begin() const { return const_entry_iterator( pool, 0 ); }
 
 			const_entry_iterator end() const
-			{
-				return const_entry_iterator( pool, static_cast<Desc::Handle>( pool->_resources.size() ) );
-			}
+			{ return const_entry_iterator( pool, static_cast<Desc::Handle>( pool->_resources.size() ) ); }
 		};
 
 		Entries entries() { return Entries { this }; }
@@ -450,7 +438,7 @@ namespace VTX::Renderer
 		Desc::Handle emplace( const K & p_key, Args &&... p_args )
 			requires std::is_same_v<D, void>
 		{
-			Desc::Handle handle;
+			Desc::Handle handle = Desc::NO_HANDLE;
 			if ( _cache.contains( p_key ) )
 			{
 				handle = _cache[ p_key ].handle;
@@ -475,7 +463,7 @@ namespace VTX::Renderer
 		Desc::Handle emplace( const K & p_key, const _D & p_desc, Args &&... p_args )
 			requires( not std::is_same_v<_D, void> )
 		{
-			Desc::Handle handle;
+			Desc::Handle handle = Desc::NO_HANDLE;
 			if ( _cache.contains( p_key ) )
 			{
 				handle = _cache[ p_key ].handle;
@@ -538,7 +526,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Check if a resource exists from key.
 		 */
-		inline bool contains( const K & p_key ) const
+		bool contains( const K & p_key ) const
 		{
 			if ( not _cache.contains( p_key ) )
 			{
@@ -548,13 +536,13 @@ namespace VTX::Renderer
 			return Pool::contains( handle( p_key ) );
 		}
 
-		inline bool contains( const Desc::Handle p_handle ) const noexcept { return Pool::contains( p_handle ); }
+		bool contains( const Desc::Handle p_handle ) const noexcept { return Pool::contains( p_handle ); }
 
 		/**
 		 * @brief Check if a resource exists from key and remove from invalids if present.
 		 */
 		template<typename _D = D>
-		inline bool validate( const K p_key, const _D p_desc )
+		bool validate( const K & p_key, const _D & p_desc )
 			requires( not std::is_same_v<_D, void> )
 		{
 			if ( not _cache.contains( p_key ) )
@@ -570,7 +558,7 @@ namespace VTX::Renderer
 			return Pool::validate( handle( p_key ) );
 		}
 
-		inline bool validate( const K p_key )
+		bool validate( const K & p_key )
 			requires std::is_same_v<D, void>
 		{
 			if ( not _cache.contains( p_key ) )
@@ -581,12 +569,12 @@ namespace VTX::Renderer
 			return Pool::validate( handle( p_key ) );
 		}
 
-		inline bool validate( const Desc::Handle p_handle ) noexcept { return Pool::validate( p_handle ); }
+		bool validate( const Desc::Handle p_handle ) noexcept { return Pool::validate( p_handle ); }
 
 		/**
 		 * @brief Access handle by key.
 		 */
-		inline Desc::Handle handle( const K & p_key ) const
+		Desc::Handle handle( const K & p_key ) const
 		{
 			const auto it = _cache.find( p_key );
 			assert( it != _cache.end() );
@@ -597,7 +585,7 @@ namespace VTX::Renderer
 		 * @brief Access descriptor by key.
 		 */
 		template<typename _D = D>
-		inline const _D & descriptor( const K & p_key ) const
+		const _D & descriptor( const K & p_key ) const
 			requires( not std::is_same_v<_D, void> )
 		{
 			const auto it = _cache.find( p_key );
@@ -608,9 +596,9 @@ namespace VTX::Renderer
 		/**
 		 * @brief Access resource by key.
 		 */
-		inline const T & get( const K & p_key ) const { return Pool::get( handle( p_key ) ); }
+		const T & get( const K & p_key ) const { return Pool::get( handle( p_key ) ); }
 
-		inline T & get( const K & p_key ) { return Pool::get( handle( p_key ) ); }
+		T & get( const K & p_key ) { return Pool::get( handle( p_key ) ); }
 
 		/**
 		 * @brief Get all keys.

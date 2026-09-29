@@ -14,7 +14,7 @@
 
 namespace VTX::Renderer
 {
-	enum struct E_SHADING
+	enum struct E_SHADING : uint8_t
 	{
 		DIFFUSE,
 		GLOSSY,
@@ -24,7 +24,7 @@ namespace VTX::Renderer
 		COUNT
 	};
 
-	enum struct E_BACKGROUND_MODE
+	enum struct E_BACKGROUND_MODE : uint8_t
 	{
 		COLOR,
 		ENVIRONMENT,
@@ -82,7 +82,7 @@ namespace VTX::Renderer
 		float					skyboxIntensity		= 1.f;
 		float					iblIntensity		= 1.f;
 		float					environmentRotation = ENVIRONMENT_ROTATION_DEFAULT;
-		Material				material			= Materials::DEFAULT;
+		Material				material			= Materials::DEFAULT();
 	};
 
 	struct FogConfig
@@ -95,9 +95,11 @@ namespace VTX::Renderer
 
 	namespace GraphicsConfigs
 	{
-		inline const ShadingConfig SHADING_DEFAULT { SHADING_MODE_DEFAULT,	   COLOR_LIGHT_DEFAULT,
-													 COLOR_BACKGROUND_DEFAULT, SPECULAR_FACTOR_DEFAULT,
-													 SHININESS_DEFAULT,		   TOON_STEPS_DEFAULT };
+		inline constexpr auto SHADING_DEFAULT = []
+		{
+			return ShadingConfig { SHADING_MODE_DEFAULT,	COLOR_LIGHT_DEFAULT, COLOR_BACKGROUND_DEFAULT,
+								   SPECULAR_FACTOR_DEFAULT, SHININESS_DEFAULT,	 TOON_STEPS_DEFAULT };
+		};
 
 		inline const FogConfig FOG_DEFAULT { COLOR_FOG_DEFAULT,
 											 FOG_NEAR_DEFAULT,
@@ -110,18 +112,18 @@ namespace VTX::Renderer::Builder::PostProcess
 {
 	struct Shading
 	{
-		inline static const Desc::Key PASS				  = "Shading";
-		inline static const Desc::Key OUTPUT			  = "Shaded";
-		inline static const Desc::Key ENVIRONMENT_TEXTURE = "EnvMap";
-		inline static const Desc::Key ENVIRONMENT_SAMPLER = "EnvMapSampler";
+		static constexpr std::string_view PASS				  = "Shading";
+		static constexpr std::string_view OUTPUT			  = "Shaded";
+		static constexpr std::string_view ENVIRONMENT_TEXTURE = "EnvMap";
+		static constexpr std::string_view ENVIRONMENT_SAMPLER = "EnvMapSampler";
 
-		inline static const Desc::Key MATERIAL_ALBEDO_TEXTURE	 = "MaterialAlbedoMap";
-		inline static const Desc::Key MATERIAL_NORMAL_TEXTURE	 = "MaterialNormalMap";
-		inline static const Desc::Key MATERIAL_METALLIC_TEXTURE	 = "MaterialMetallicMap";
-		inline static const Desc::Key MATERIAL_ROUGHNESS_TEXTURE = "MaterialRoughnessMap";
-		inline static const Desc::Key MATERIAL_AO_TEXTURE		 = "MaterialAmbientOcclusionMap";
-		inline static const Desc::Key MATERIAL_EMISSIVE_TEXTURE	 = "MaterialEmissiveMap";
-		inline static const Desc::Key MATERIAL_TEXTURE_SAMPLER	 = "MaterialMapSampler";
+		static constexpr std::string_view MATERIAL_ALBEDO_TEXTURE	 = "MaterialAlbedoMap";
+		static constexpr std::string_view MATERIAL_NORMAL_TEXTURE	 = "MaterialNormalMap";
+		static constexpr std::string_view MATERIAL_METALLIC_TEXTURE	 = "MaterialMetallicMap";
+		static constexpr std::string_view MATERIAL_ROUGHNESS_TEXTURE = "MaterialRoughnessMap";
+		static constexpr std::string_view MATERIAL_AO_TEXTURE		 = "MaterialAmbientOcclusionMap";
+		static constexpr std::string_view MATERIAL_EMISSIVE_TEXTURE	 = "MaterialEmissiveMap";
+		static constexpr std::string_view MATERIAL_TEXTURE_SAMPLER	 = "MaterialMapSampler";
 
 		static Desc::Key programName( const E_SHADING p_mode )
 		{
@@ -153,19 +155,19 @@ namespace VTX::Renderer::Builder::PostProcess
 		{
 			const Desc::Key program = programName( p_mode );
 
-			p_graph.pass( PASS )
+			p_graph.pass( Desc::Key { PASS } )
 				.in( "Geometry" )
 				.in( "Color" )
 				.in( "BlurY", p_enableSSAO ? "NearestClamp" : "NearestRepeat" )
 				.in( "Depth" )
-				.in( ENVIRONMENT_TEXTURE, ENVIRONMENT_SAMPLER )
-				.in( MATERIAL_ALBEDO_TEXTURE, MATERIAL_TEXTURE_SAMPLER )
-				.in( MATERIAL_NORMAL_TEXTURE, MATERIAL_TEXTURE_SAMPLER )
-				.in( MATERIAL_METALLIC_TEXTURE, MATERIAL_TEXTURE_SAMPLER )
-				.in( MATERIAL_ROUGHNESS_TEXTURE, MATERIAL_TEXTURE_SAMPLER )
-				.in( MATERIAL_AO_TEXTURE, MATERIAL_TEXTURE_SAMPLER )
-				.in( MATERIAL_EMISSIVE_TEXTURE, MATERIAL_TEXTURE_SAMPLER )
-				.out( OUTPUT )
+				.in( Desc::Key { ENVIRONMENT_TEXTURE }, Desc::Key { ENVIRONMENT_SAMPLER } )
+				.in( Desc::Key { MATERIAL_ALBEDO_TEXTURE }, Desc::Key { MATERIAL_TEXTURE_SAMPLER } )
+				.in( Desc::Key { MATERIAL_NORMAL_TEXTURE }, Desc::Key { MATERIAL_TEXTURE_SAMPLER } )
+				.in( Desc::Key { MATERIAL_METALLIC_TEXTURE }, Desc::Key { MATERIAL_TEXTURE_SAMPLER } )
+				.in( Desc::Key { MATERIAL_ROUGHNESS_TEXTURE }, Desc::Key { MATERIAL_TEXTURE_SAMPLER } )
+				.in( Desc::Key { MATERIAL_AO_TEXTURE }, Desc::Key { MATERIAL_TEXTURE_SAMPLER } )
+				.in( Desc::Key { MATERIAL_EMISSIVE_TEXTURE }, Desc::Key { MATERIAL_TEXTURE_SAMPLER } )
+				.out( Desc::Key { OUTPUT } )
 				.program( program )
 				.shaders( { "shading/shading.vert", fragmentShader( p_mode ) } )
 				.uniform( "BackgroundColor", COLOR_BACKGROUND_DEFAULT.toLinear() )
@@ -221,7 +223,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.endProgram()
 				.endPass();
 
-			return OUTPUT;
+			return Desc::Key { OUTPUT };
 		}
 
 		static void upload(
@@ -266,7 +268,7 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( p_config.material.textureScale );
 			buffer.close();
 
-			p_context.setBuffer( { programName( p_config.mode ) }, buffer );
+			p_context.setBuffer( { programName( p_config.mode ) }, buffer.bytes() );
 		}
 
 		static void loadEnvironment( Context::ContextWrapper &, const ShadingConfig & );

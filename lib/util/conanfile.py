@@ -22,7 +22,6 @@ class VTXUtilRecipe(ConanFile):
         self.requires("entt/3.16.0", transitive_headers=True)
         self.requires("assimp/6.0.5", transitive_headers=True)
         self.requires("minizip/1.3.2", force=True)
-        self.requires("nlohmann_json/3.12.0")
         self.requires("cpr/1.14.2")
         self.requires("stb/cci.20240531", force=True)
         self.requires("tinyexr/1.0.7")

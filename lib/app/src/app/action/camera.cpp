@@ -166,7 +166,7 @@ namespace VTX::App::Action::Camera
 		const auto [ _, camera, transform ]
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
-		Entity e = reg.create();
+		const Entity e = reg.create();
 		reg.emplace<Util::Math::Transform>( e, transform );
 		reg.emplace<App::Generic::Name>( e, DEFAULT_VIEWPOINT_NAME.data() );
 		reg.emplace<Scene::ViewPoint>( e, camera.target );

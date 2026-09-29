@@ -125,20 +125,14 @@ namespace VTX::App::Action::IO
 	  public:
 		void execute();
 		void execute(
-			const std::optional<FilePath> p_path,
-			const std::optional<FilePath> p_filename,
-			const Util::Image::E_FORMAT	  p_format,
-			const std::optional<size_t>	  p_width,
-			const std::optional<size_t>	  p_height,
-			const std::optional<float>	  p_backgroundOpacity
+			std::optional<FilePath> p_path,
+			std::optional<FilePath> p_filename,
+			Util::Image::E_FORMAT	p_format,
+			std::optional<size_t>	p_width,
+			std::optional<size_t>	p_height,
+			std::optional<float>	p_backgroundOpacity
 		);
-		void execute(
-			const FilePath,
-			const Util::Image::E_FORMAT,
-			const size_t,
-			const size_t,
-			const std::optional<float> = std::nullopt
-		);
+		void execute( FilePath, Util::Image::E_FORMAT, size_t, size_t, std::optional<float> = std::nullopt );
 	};
 
 } // namespace VTX::App::Action::IO

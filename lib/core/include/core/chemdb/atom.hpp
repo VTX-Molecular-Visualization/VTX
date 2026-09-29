@@ -522,7 +522,7 @@ namespace VTX::Core::ChemDB::Atom
 	constexpr float minNonZero( std::span<const float> p_r ) noexcept
 	{
 		float m = 0.f;
-		for ( float r : p_r )
+		for ( const float r : p_r )
 		{
 			if ( r == 0.f )
 			{

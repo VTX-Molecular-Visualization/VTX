@@ -17,7 +17,7 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Show/hide non usual color buttons.
 		 */
-		void refreshVisibility( const bool p_hide );
+		void refreshVisibility( bool p_hide );
 
 	  protected:
 		/**
@@ -42,17 +42,17 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Update app from widget.
 		 */
-		void _changeColor( const size_t, const QColor & );
+		void _changeColor( size_t, const QColor & );
 
 		/**
 		 * @brief Update widget from app.
 		 */
-		void _updateColor( const size_t, const Util::Color::Rgba & );
+		void _updateColor( size_t, const Util::Color::Rgba & );
 
 		void _refreshButtonVisibility(
-			const bool			  p_hide,
-			const size_t		  p_start,
-			const size_t		  p_count,
+			bool				  p_hide,
+			size_t				  p_start,
+			size_t				  p_count,
 			std::span<const bool> p_isCommonValues
 		);
 

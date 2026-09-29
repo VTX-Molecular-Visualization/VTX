@@ -54,9 +54,9 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		~Texture() noexcept { _destroy(); }
 
-		inline GLuint getId() const noexcept { return _id; }
+		GLuint getId() const noexcept { return _id; }
 
-		inline void clear(
+		void clear(
 			const void * p_data,
 			const GLenum p_format,
 			const GLenum p_type,
@@ -64,7 +64,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		) const noexcept
 		{ glClearTexImage( _id, p_level, p_format, p_type, p_data ); }
 
-		inline void resize( const GLsizei p_width, const GLsizei p_height ) noexcept
+		void resize( const GLsizei p_width, const GLsizei p_height ) noexcept
 		{
 			assert( p_width > 0 && p_height > 0 );
 
@@ -74,7 +74,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			_create();
 		}
 
-		inline void fill(
+		void fill(
 			const void *				 p_pixels,
 			const GLenum				 p_format,
 			const GLenum				 p_type,
@@ -102,13 +102,13 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 
-		inline void bindToUnit( const GLuint p_index ) const noexcept { glBindTextureUnit( p_index, _id ); }
+		void bindToUnit( const GLuint p_index ) const noexcept { glBindTextureUnit( p_index, _id ); }
 
-		inline void unbindFromUnit( const GLuint p_index ) const noexcept { glBindTextureUnit( p_index, 0 ); }
+		static void unbindFromUnit( const GLuint p_index ) noexcept { glBindTextureUnit( p_index, 0 ); }
 
-		inline void generateMipmaps() const noexcept { glGenerateTextureMipmap( _id ); }
+		void generateMipmaps() const noexcept { glGenerateTextureMipmap( _id ); }
 
-		inline void getImage(
+		void getImage(
 			const GLint	  p_level,
 			const GLenum  p_format,
 			const GLenum  p_type,
@@ -117,7 +117,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		) const noexcept
 		{ glGetTextureImage( _id, p_level, p_format, p_type, p_bufSize, p_pixels ); }
 
-		inline void getSubImage(
+		void getSubImage(
 			const GLint	  p_level,
 			const GLint	  p_xOffset,
 			const GLint	  p_yOffset,
@@ -131,7 +131,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		{
 			assert( _target == GL_TEXTURE_2D );
 
-			GLint previousAlignment;
+			GLint previousAlignment {};
 			glGetIntegerv( GL_PACK_ALIGNMENT, &previousAlignment );
 			glPixelStorei( GL_PACK_ALIGNMENT, 1 );
 			glGetTextureSubImage(
@@ -140,13 +140,13 @@ namespace VTX::Renderer::Context::Backend::GL
 			glPixelStorei( GL_PACK_ALIGNMENT, previousAlignment );
 		}
 
-		inline GLsizei getWidth() const noexcept { return _width; }
+		GLsizei getWidth() const noexcept { return _width; }
 
-		inline GLsizei getHeight() const noexcept { return _height; }
+		GLsizei getHeight() const noexcept { return _height; }
 
-		inline GLenum getFormat() const noexcept { return _format; }
+		GLenum getFormat() const noexcept { return _format; }
 
-		inline GLenum getTarget() const noexcept { return _target; }
+		GLenum getTarget() const noexcept { return _target; }
 
 	  private:
 		GLuint	_id		   = GL_INVALID_INDEX;
@@ -156,7 +156,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		GLenum	_target	   = GL_TEXTURE_2D;
 		bool	_mipmapped = false;
 
-		inline void _create() noexcept
+		void _create() noexcept
 		{
 			assert( _width > 0 && _height > 0 );
 
@@ -173,7 +173,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			glTextureStorage2D( _id, levels, _format, _width, _height );
 		}
 
-		inline void _destroy() noexcept
+		void _destroy() noexcept
 		{
 			if ( _id != GL_INVALID_INDEX )
 			{

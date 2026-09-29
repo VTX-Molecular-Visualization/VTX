@@ -4,6 +4,7 @@
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
+#include <string_view>
 #include <util/constants.hpp>
 #include <utility>
 
@@ -37,15 +38,15 @@ namespace VTX::Renderer::Builder::PostProcess
 {
 	struct Outline
 	{
-		inline static const Desc::Key PASS = "Outline";
+		static constexpr std::string_view PASS = "Outline";
 
 		static Desc::Key build( GraphBuilder & p_graph, const Desc::Key & p_input )
 		{
-			p_graph.pass( PASS )
+			p_graph.pass( Desc::Key { PASS } )
 				.in( p_input )
 				.in( "Depth" )
-				.out( PASS )
-				.program( PASS )
+				.out( Desc::Key { PASS } )
+				.program( Desc::Key { PASS } )
 				.shaders( { "default.vert", "outline.frag" } )
 				.uniform( "Color", COLOR_WHITE.toLinear() )
 				.uniform(
@@ -59,7 +60,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.endProgram()
 				.endPass();
 
-			return PASS;
+			return Desc::Key { PASS };
 		}
 
 		static void upload( Context::ContextWrapper & p_context, const OutlineConfig & p_config )
@@ -70,7 +71,7 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( p_config.thickness );
 			buffer.close();
 
-			p_context.setBuffer( { PASS }, buffer );
+			p_context.setBuffer( { Desc::Key { PASS } }, buffer.bytes() );
 		}
 	};
 } // namespace VTX::Renderer::Builder::PostProcess

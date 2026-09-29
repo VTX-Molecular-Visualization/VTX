@@ -35,7 +35,7 @@ namespace VTX::PythonBinding
 			template<typename Action, typename... ActionArgs, typename... Extras>
 			void bindAction( const std::string & p_name, const std::string & p_desc = "", Extras &&... p_extras )
 			{
-				std::function<void( ActionArgs... )> runActionFunc = []( ActionArgs... p_args )
+				const std::function<void( ActionArgs... )> runActionFunc = []( ActionArgs... p_args )
 				{
 					Action action;
 					action.execute( p_args... );
@@ -82,9 +82,9 @@ namespace VTX::PythonBinding
 
 			std::vector<std::string> getFunctionList() const;
 
-			inline pybind11::module_ & pyModule() noexcept { return _pyModule; }
+			pybind11::module_ & pyModule() noexcept { return _pyModule; }
 
-			inline void getPythonModule( pybind11::module_ ** p_in ) noexcept { *p_in = &_pyModule; }
+			void getPythonModule( pybind11::module_ ** p_in ) noexcept { *p_in = &_pyModule; }
 
 		  private:
 			Module( pybind11::module_ & p_module, const std::string & p_modulePath ) :

@@ -3,6 +3,7 @@
 
 #include "renderer/descriptors.hpp"
 #include <limits>
+#include <string_view>
 #include <util/exceptions.hpp>
 
 namespace VTX::Renderer::Geometry
@@ -10,14 +11,14 @@ namespace VTX::Renderer::Geometry
 	class Grid : public Desc::Geometry
 	{
 	  public:
-		inline static const Desc::Key VERTEX_LAYOUT_VOXELS = "Voxels";
-		inline static const Desc::Key GEOMETRY_GRID		   = "Grid";
-		inline static const Desc::Key INDIRECT_GRID		   = "Indirect.Grid";
-		inline static constexpr Desc::Binding BINDING_INDIRECT_GRID = 10;
+		static constexpr std::string_view VERTEX_LAYOUT_VOXELS	= "Voxels";
+		static constexpr std::string_view GEOMETRY_GRID			= "Grid";
+		static constexpr std::string_view INDIRECT_GRID			= "Indirect.Grid";
+		static constexpr Desc::Binding	  BINDING_INDIRECT_GRID = 10;
 
 		Grid()
 		{
-			vertexLayout   = VERTEX_LAYOUT_VOXELS;
+			vertexLayout   = Desc::Key { VERTEX_LAYOUT_VOXELS };
 			indirectBuffer = INDIRECT_GRID;
 		}
 

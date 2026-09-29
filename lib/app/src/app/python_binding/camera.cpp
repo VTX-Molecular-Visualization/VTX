@@ -34,7 +34,7 @@ namespace VTX::App::PythonBinding
 
 	void CameraBinder::bind( Module & p_vtxModule )
 	{
-		pybind11::module_ & module = p_vtxModule.pyModule();
+		const pybind11::module_ & module = p_vtxModule.pyModule();
 
 		VTX::PythonBinding::Helper::declareEnum<Renderer::PROJECTION>( module, "CAMERA_PROJECTION" );
 

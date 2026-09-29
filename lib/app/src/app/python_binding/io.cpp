@@ -15,7 +15,7 @@ namespace VTX::App::PythonBinding
 {
 	void IOBinder::bind( Module & p_vtxModule )
 	{
-		pybind11::module_ & module = p_vtxModule.pyModule();
+		const pybind11::module_ & module = p_vtxModule.pyModule();
 
 		VTX::PythonBinding::Helper::declareEnum<Util::Image::E_FORMAT>( module, "IMAGE_FORMAT" );
 		p_vtxModule.bindAction<

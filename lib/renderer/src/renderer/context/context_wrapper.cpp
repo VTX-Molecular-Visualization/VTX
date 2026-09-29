@@ -66,7 +66,7 @@ namespace VTX::Renderer::Context
 		{
 			if constexpr ( std::is_same_v<E, Executor::OpenGL> )
 			{
-				if ( auto * backend = std::get_if<Backend::OpenGL>( &p_backend ) )
+				if ( const auto * backend = std::get_if<Backend::OpenGL>( &p_backend ) )
 				{
 					p_executor.emplace<Executor::OpenGL>( *backend );
 					return;
@@ -257,7 +257,7 @@ namespace VTX::Renderer::Context
 
 		assert( commands.count == 1 );
 
-		Command & command = _impl->commands.commands[ commands.first ];
+		const Command & command = _impl->commands.commands[ commands.first ];
 		assert( command.type == E_COMMAND::EXTERNAL );
 
 		PayloadExternal & payload = _impl->commands.getPayload<PayloadExternal>( command.payloadOffset );
@@ -266,9 +266,7 @@ namespace VTX::Renderer::Context
 	}
 
 	bool ContextWrapper::containsPass( const Desc::Key & p_pass ) const
-	{
-		return _impl->commands.containsPass( p_pass );
-	}
+	{ return _impl->commands.containsPass( p_pass ); }
 
 	void ContextWrapper::markPassDirty( const Desc::Key & p_pass ) { _impl->commands.markPassDirty( p_pass ); }
 
@@ -294,7 +292,7 @@ namespace VTX::Renderer::Context
 
 	void ContextWrapper::setBuffer( const Desc::BufferRef & p_ref, SpanBytes p_bytes, const size_t p_offset )
 	{
-		if ( p_bytes.size() == 0 )
+		if ( p_bytes.empty() )
 		{
 			return;
 		}
@@ -445,9 +443,7 @@ namespace VTX::Renderer::Context
 	}
 
 	bool ContextWrapper::isInteropAvailable( const Desc::E_INTEROP_API p_api ) const
-	{
-		return interopAvailability( p_api ).available();
-	}
+	{ return interopAvailability( p_api ).available(); }
 
 	std::vector<std::byte> ContextWrapper::getTextureData(
 		const Desc::Key &			  p_key,
@@ -472,7 +468,7 @@ namespace VTX::Renderer::Context
 
 	void ContextWrapper::setTextureData(
 		const Desc::Key &	  p_key,
-		SpanBytes			  p_bytes,
+		SpanBytes			  p_data,
 		std::optional<size_t> p_width,
 		std::optional<size_t> p_height
 	)
@@ -483,7 +479,7 @@ namespace VTX::Renderer::Context
 				using T = std::remove_cvref_t<decltype( p_backend )>;
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
-					p_backend.setTextureData( p_key, p_bytes, p_width, p_height );
+					p_backend.setTextureData( p_key, p_data, p_width, p_height );
 				}
 			},
 			_impl->backend

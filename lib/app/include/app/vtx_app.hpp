@@ -35,7 +35,7 @@ namespace VTX::App
 		/**
 		 * @brief Main loop update function (called from gui thread).
 		 */
-		inline void update( const float p_deltaTime, const float p_elapsedTime )
+		void update( const float p_deltaTime, const float p_elapsedTime )
 		{
 			_pipeline.process( ECS::getCtx<Util::Monitoring::Stats>(), p_deltaTime, p_elapsedTime );
 		}
@@ -44,7 +44,7 @@ namespace VTX::App
 		 * @brief Add a tool.
 		 */
 		template<typename T>
-		inline void addTool()
+		void addTool()
 		{
 			_tools.emplace_back( std::make_unique<T>() );
 		}
@@ -73,7 +73,7 @@ namespace VTX::App
 		/**
 		 * @brief Get instantiated tools.
 		 */
-		inline std::vector<std::unique_ptr<Tool::BaseTool>> & getTools() { return _tools; }
+		std::vector<std::unique_ptr<Tool::BaseTool>> & getTools() { return _tools; }
 
 	  private:
 		/**

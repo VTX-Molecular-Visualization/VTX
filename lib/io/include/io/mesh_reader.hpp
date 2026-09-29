@@ -8,7 +8,7 @@
 namespace VTX::Core::Struct
 {
 	struct Mesh;
-}
+} // namespace VTX::Core::Struct
 
 namespace VTX::IO
 {
@@ -19,22 +19,23 @@ namespace VTX::IO
 	{
 	  public:
 		MeshReader() = delete;
-		MeshReader( FilePath, const Util::Thread::StopToken );
+		MeshReader( const FilePath &, const Util::Thread::StopToken & );
 
 		/**
 		 * @brief Read mesh structure.
 		 */
 		void get( std::vector<VTX::Core::Struct::Mesh> & );
 
+		/**
+		 * @brief Check available extensions.
+		 */
+		static bool isMeshFileFormat( const FilePath & );
+
 	  private:
 		FilePath				_filePath;
 		Util::Thread::StopToken _stopToken;
 	};
 
-	/**
-	 * @brief Check available extensions.
-	 */
-	bool isMeshFileFormat( const FilePath & );
 } // namespace VTX::IO
 
-#endif // !__VTX_IO_MESH_READER__
+#endif

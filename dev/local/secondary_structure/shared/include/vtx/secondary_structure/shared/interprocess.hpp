@@ -71,8 +71,9 @@ namespace pdb100
 	class LazyLock
 	{
 	  public:
-		inline LazyLock() { lock( ml, MUTEX_NAME ); }
-		inline ~LazyLock()
+		LazyLock() { lock( ml, MUTEX_NAME ); }
+
+		~LazyLock()
 		{
 			if ( ml.lock )
 				ml.lock->unlock();

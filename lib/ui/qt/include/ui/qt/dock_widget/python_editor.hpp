@@ -67,7 +67,7 @@ namespace VTX::UI::QT::DockWidget
 	class PythonEditor : public BaseDockWidget<PythonEditor, 1, 1>
 	{
 	  public:
-		PythonEditor( QWidget * const p_parent );
+		PythonEditor( QWidget * p_parent );
 		~PythonEditor() override;
 
 	  private:

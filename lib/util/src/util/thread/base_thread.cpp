@@ -71,13 +71,13 @@ namespace VTX::Util::Thread
 
 	std::string BaseThread::getProgressText() const
 	{
-		std::lock_guard lock( _progressTextMutex );
+		const std::scoped_lock lock( _progressTextMutex );
 		return _progressText;
 	}
 
 	void BaseThread::setProgressText( const std::string & p_text )
 	{
-		std::lock_guard lock( _progressTextMutex );
+		const std::scoped_lock lock( _progressTextMutex );
 		_progressText = p_text;
 	}
 

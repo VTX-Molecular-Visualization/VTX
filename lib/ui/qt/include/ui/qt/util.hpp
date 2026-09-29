@@ -30,25 +30,26 @@ namespace VTX::UI::QT::Util
 
 	  public:
 		EventEater( QEvent::Type p_type, QWidget * p_parent = nullptr ) : QObject( p_parent )
-		{
-			_filteredTypes.emplace( p_type );
-		}
+		{ _filteredTypes.emplace( p_type ); }
+
 		EventEater( std::set<QEvent::Type> p_types, QWidget * p_parent = nullptr ) :
 			QObject( p_parent ), _filteredTypes( p_types )
 		{
 		}
 
-	  protected:
 		bool eventFilter( QObject * p_obj, QEvent * p_event ) override
 		{
-			if ( _filteredTypes.find( p_event->type() ) != _filteredTypes.end() )
+			if ( _filteredTypes.contains( p_event->type() ) )
+			{
 				return true;
+			}
 			return QObject::eventFilter( p_obj, p_event );
 		}
 
 	  private:
 		std::set<QEvent::Type> _filteredTypes = std::set<QEvent::Type>();
 	};
+
 	/*
 	static QVariant widgetKeyToQVariant( const UI::Core::WidgetKey & p_key )
 	{
@@ -60,13 +61,13 @@ namespace VTX::UI::QT::Util
 	}
 	*/
 
-	void fillComboBox( QComboBox * const p_comboBox, const std::vector<std::string> & p_values );
-	void fillComboBox( QComboBox * const p_comboBox, const std::vector<QString> & p_values );
+	void fillComboBox( QComboBox * p_comboBox, const std::vector<std::string> & p_values );
+	void fillComboBox( QComboBox * p_comboBox, const std::vector<QString> & p_values );
 	void fillMenu(
 		QMenu &							 p_menu,
-		const int						 p_enumSize,
+		int								 p_enumSize,
 		const std::vector<std::string> & p_names,
-		const bool						 p_actionCheckable = false
+		bool							 p_actionCheckable = false
 	);
 
 	static void appendColorHtmlTag( QString & p_txt, const VTX::Util::Color::Rgba & p_color )
@@ -76,6 +77,7 @@ namespace VTX::UI::QT::Util
 
 		p_txt.append( tag );
 	}
+
 	static void appendEndColorHtmlTag( QString & p_txt ) { p_txt.append( "</font>" ); }
 
 	static void setDynamicProperty( QWidget * const p_widget, const char * const p_property, const QVariant & p_value )
@@ -86,21 +88,19 @@ namespace VTX::UI::QT::Util
 		p_widget->style()->unpolish( p_widget );
 		p_widget->style()->polish( p_widget );
 	}
+
 	static void setDynamicProperty( QWidget * const p_widget, const char * const p_property )
-	{
-		setDynamicProperty( p_widget, p_property, true );
-	}
+	{ setDynamicProperty( p_widget, p_property, true ); }
 
 	static Qt::CheckState getCheckState( const bool p_boolValue )
-	{
-		return p_boolValue ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
-	}
+	{ return p_boolValue ? Qt::CheckState::Checked : Qt::CheckState::Unchecked; }
 
 	static void filterEventOnWidget( QWidget * const p_widget, const QEvent::Type & p_eventType )
 	{
 		EventEater * const eater = new EventEater( p_eventType, p_widget );
 		p_widget->installEventFilter( eater );
 	}
+
 	static void filterEventOnWidget( QWidget * const p_widget, const std::set<QEvent::Type> & p_eventTypes )
 	{
 		EventEater * const eater = new EventEater( p_eventTypes, p_widget );
@@ -108,14 +108,10 @@ namespace VTX::UI::QT::Util
 	}
 
 	static QColor RgbToQColor( const VTX::Util::Color::Rgba & p_rgb )
-	{
-		return QColor( p_rgb.r() * 255, p_rgb.g() * 255, p_rgb.b() * 255 );
-	}
+	{ return QColor( p_rgb.r() * 255, p_rgb.g() * 255, p_rgb.b() * 255 ); }
 
 	static QBitmap generateAlphaMask( const QString & p_filepath )
-	{
-		return QBitmap::fromPixmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) );
-	}
+	{ return QBitmap::fromPixmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) ); }
 
 	// Class responsible for creating a label with tooltip as a question mark ? button next to it.
 	// Implicitly convert in QWidget pointer which refers to the container of both the label and the question mark.

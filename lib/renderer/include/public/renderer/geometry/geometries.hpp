@@ -104,38 +104,46 @@ namespace VTX::Renderer
 		{
 			auto sphereDraws = spheres.toDrawIndexedIndirectCommands();
 			_setModelIndices( sphereDraws, p_systems );
-			_logDrawRanges( { Geometry::Sphere::INDIRECT_SPHERES }, sphereDraws );
-			p_context.setBuffer( { Geometry::Sphere::INDIRECT_SPHERES }, _toBuffer( sphereDraws ) );
+			_logDrawRanges( { Desc::Key { Geometry::Sphere::INDIRECT_SPHERES } }, sphereDraws );
+			p_context.setBuffer(
+				{ Desc::Key { Geometry::Sphere::INDIRECT_SPHERES } }, _toBuffer( sphereDraws ).bytes()
+			);
 
 			auto cylinderDraws = cylinders.toDrawIndexedIndirectCommands();
 			_setModelIndices( cylinderDraws, p_systems );
-			_logDrawRanges( { Geometry::Cylinder::INDIRECT_CYLINDERS }, cylinderDraws );
-			p_context.setBuffer( { Geometry::Cylinder::INDIRECT_CYLINDERS }, _toBuffer( cylinderDraws ) );
+			_logDrawRanges( { Desc::Key { Geometry::Cylinder::INDIRECT_CYLINDERS } }, cylinderDraws );
+			p_context.setBuffer(
+				{ Desc::Key { Geometry::Cylinder::INDIRECT_CYLINDERS } }, _toBuffer( cylinderDraws ).bytes()
+			);
 
 			auto ribbonDraws = ribbons.toDrawIndexedIndirectCommands();
 			_setModelIndices( ribbonDraws, p_systems );
-			_logDrawRanges( { Geometry::Ribbon::INDIRECT_RIBBONS }, ribbonDraws );
-			p_context.setBuffer( { Geometry::Ribbon::INDIRECT_RIBBONS }, _toBuffer( ribbonDraws ) );
+			_logDrawRanges( { Desc::Key { Geometry::Ribbon::INDIRECT_RIBBONS } }, ribbonDraws );
+			p_context.setBuffer(
+				{ Desc::Key { Geometry::Ribbon::INDIRECT_RIBBONS } }, _toBuffer( ribbonDraws ).bytes()
+			);
 
 			auto triangleDraws = triangles.toDrawIndexedIndirectCommands();
 			_setModelIndices( triangleDraws, p_meshes );
-			_logDrawRanges( { Geometry::Triangle::INDIRECT_TRIANGLES }, triangleDraws );
-			p_context.setBuffer( { Geometry::Triangle::INDIRECT_TRIANGLES }, _toBuffer( triangleDraws ) );
+			_logDrawRanges( { Desc::Key { Geometry::Triangle::INDIRECT_TRIANGLES } }, triangleDraws );
+			p_context.setBuffer(
+				{ Desc::Key { Geometry::Triangle::INDIRECT_TRIANGLES } }, _toBuffer( triangleDraws ).bytes()
+			);
 
 			const auto gridDraws = grid.toDrawIndirectCommands();
-			_logDrawRanges( { Geometry::Grid::INDIRECT_GRID }, gridDraws );
-			p_context.setBuffer( { Geometry::Grid::INDIRECT_GRID }, _toBuffer( gridDraws ) );
+			_logDrawRanges( { Desc::Key { Geometry::Grid::INDIRECT_GRID } }, gridDraws );
+			p_context.setBuffer( { Desc::Key { Geometry::Grid::INDIRECT_GRID } }, _toBuffer( gridDraws ).bytes() );
 			_uploadPatchDrawCommands(
-				p_context, p_systems, { Geometry::SES::INDIRECT_CONVEX_PATCHES }, ses.convexPatches
+				p_context, p_systems, { Desc::Key { Geometry::SES::INDIRECT_CONVEX_PATCHES } }, ses.convexPatches
 			);
 			_uploadPatchDrawCommands(
-				p_context, p_systems, { Geometry::SES::INDIRECT_CIRCLE_PATCHES }, ses.circlePatches
+				p_context, p_systems, { Desc::Key { Geometry::SES::INDIRECT_CIRCLE_PATCHES } }, ses.circlePatches
 			);
 			_uploadPatchDrawCommands(
-				p_context, p_systems, { Geometry::SES::INDIRECT_SEGMENT_PATCHES }, ses.segmentPatches
+				p_context, p_systems, { Desc::Key { Geometry::SES::INDIRECT_SEGMENT_PATCHES } }, ses.segmentPatches
 			);
 			_uploadPatchDrawCommands(
-				p_context, p_systems, { Geometry::SES::INDIRECT_CONCAVE_PATCHES }, ses.concavePatches
+				p_context, p_systems, { Desc::Key { Geometry::SES::INDIRECT_CONCAVE_PATCHES } }, ses.concavePatches
 			);
 		}
 
@@ -163,7 +171,9 @@ namespace VTX::Renderer
 			{
 				const std::vector<Desc::DrawIndexedIndirectRecord> records;
 				_logDrawRanges( { p_indirectBuffer, uint32_t( 0 ) }, records );
-				p_context.setBuffer( Desc::BufferRef { p_indirectBuffer, uint32_t( 0 ) }, _toBuffer( records ) );
+				p_context.setBuffer(
+					Desc::BufferRef { p_indirectBuffer, uint32_t( 0 ) }, _toBuffer( records ).bytes()
+				);
 				return;
 			}
 
@@ -174,7 +184,7 @@ namespace VTX::Renderer
 				_setModelIndices( records, p_systems );
 				_logDrawRanges( ref, records );
 				p_context.ensureBufferChunk( ref );
-				p_context.setBuffer( ref, _toBuffer( records ) );
+				p_context.setBuffer( ref, _toBuffer( records ).bytes() );
 			}
 		}
 
@@ -238,7 +248,7 @@ namespace VTX::Renderer
 			// }
 		}
 
-		[[nodiscard]] BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndirectRecord> & p_records )
+		[[nodiscard]] static BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndirectRecord> & p_records )
 		{
 			BinaryBuffer430 buffer;
 
@@ -261,7 +271,7 @@ namespace VTX::Renderer
 			return buffer;
 		}
 
-		[[nodiscard]] BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndexedIndirectRecord> & p_records )
+		[[nodiscard]] static BinaryBuffer430 _toBuffer( const std::vector<Desc::DrawIndexedIndirectRecord> & p_records )
 		{
 			BinaryBuffer430 buffer;
 

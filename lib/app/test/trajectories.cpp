@@ -235,7 +235,7 @@ TEST_CASE( "VTX_APP - Trajectory player replacement lifecycle", "[integration][t
 	REQUIRE( systems.begin() != systems.end() );
 	const Entity entity = *systems.begin();
 
-	TrajectoryPlayerLifecycleObserver observer;
+	const TrajectoryPlayerLifecycleObserver observer;
 	const FilePath					  dataDirectory = Util::Filesystem::getExecutableDir() / "data";
 
 	associateTrajectory( entity, dataDirectory / "1gcn_traj.xtc" );

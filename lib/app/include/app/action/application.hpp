@@ -13,7 +13,7 @@ namespace VTX::App::Action::Application
 	 */
 	struct Resize
 	{
-		void execute( const size_t p_width, const size_t p_height, const bool p_resizeMainWindow = true );
+		void execute( size_t p_width, size_t p_height, bool p_resizeMainWindow = true );
 	};
 
 	/**
@@ -53,7 +53,7 @@ namespace VTX::App::Action::Application
 	 */
 	struct SetVSync
 	{
-		void execute( const bool p_enable );
+		void execute( bool p_enable );
 	};
 
 	/**
@@ -61,7 +61,7 @@ namespace VTX::App::Action::Application
 	 */
 	struct SetSavePower
 	{
-		void execute( const bool p_enable );
+		void execute( bool p_enable );
 	};
 
 	/**

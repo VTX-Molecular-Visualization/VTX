@@ -7,33 +7,61 @@ namespace VTX::Core::ChemDB::SecondaryStructure
 		TYPE res = TYPE::UNKNOWN;
 
 		if ( p_str == "extended" )
+		{
 			res = TYPE::STRAND;
+		}
 		else if ( p_str == "turn" )
+		{
 			res = TYPE::TURN;
+		}
 		else if ( p_str == "coil" )
+		{
 			res = TYPE::COIL;
+		}
 		else if ( p_str == "right-handed alpha helix" )
+		{
 			res = TYPE::HELIX_ALPHA_RIGHT;
+		}
 		else if ( p_str == "left-handed alpha helix" )
+		{
 			res = TYPE::HELIX_ALPHA_LEFT;
+		}
 		else if ( p_str == "right-handed 3-10 helix" )
+		{
 			res = TYPE::HELIX_3_10_RIGHT;
+		}
 		else if ( p_str == "left-handed 3-10 helix" )
+		{
 			res = TYPE::HELIX_3_10_LEFT;
+		}
 		else if ( p_str == "pi helix" )
+		{
 			res = TYPE::HELIX_PI;
+		}
 		else if ( p_str == "right-handed omega helix" ) // ?
+		{
 			res = TYPE::UNKNOWN;
+		}
 		else if ( p_str == "left-handed omega helix" ) // ?
+		{
 			res = TYPE::UNKNOWN;
+		}
 		else if ( p_str == "right-handed gamma helix" ) // ?
+		{
 			res = TYPE::UNKNOWN;
+		}
 		else if ( p_str == "left-handed gamma helix" ) // ?
+		{
 			res = TYPE::UNKNOWN;
+		}
 		else if ( p_str == "2 - 7 ribbon / helix" ) // ?
+		{
 			res = TYPE::UNKNOWN;
+		}
 		else if ( p_str == "polyproline" ) // ?
+		{
 			res = TYPE::UNKNOWN;
+		}
 
 		return res;
 	}

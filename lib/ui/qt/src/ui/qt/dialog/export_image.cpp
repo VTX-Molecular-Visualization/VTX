@@ -30,9 +30,9 @@ namespace
 	constexpr std::array<std::string_view, 2> FORMATS
 		= { "PNG - Portable Network Graphics", "JPEG - Joint Photographic Experts Group" };
 
-	const VTX::Util::Resolution CURRENT_RESOLUTION_PRESET = { "Current", 0, 0 };
+	constexpr VTX::Util::Resolution CURRENT_RESOLUTION_PRESET = { "Current", 0, 0 };
 
-	std::array<VTX::Util::Resolution, 16> IMAGE_EXPORT_RESOLUTION_PRESETS = {
+	constexpr std::array<VTX::Util::Resolution, 16> IMAGE_EXPORT_RESOLUTION_PRESETS = {
 		CURRENT_RESOLUTION_PRESET,
 		VTX::Util::ResolutionPreset::SVGA,
 		VTX::Util::ResolutionPreset::XGA,
@@ -76,20 +76,22 @@ namespace VTX::UI::QT::Dialog
 		_comboBoxResolution->addItem( "-select-" );
 		_comboBoxResolution->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
 
-		auto & currentResolution = IMAGE_EXPORT_RESOLUTION_PRESETS[ 0 ];
+		auto   resolutionPresets = IMAGE_EXPORT_RESOLUTION_PRESETS;
+		auto & currentResolution = resolutionPresets[ 0 ];
 		currentResolution.width	 = App::RENDERER().width();
 		currentResolution.height = App::RENDERER().height();
 
 		const int maxTextureSize = int( App::RENDERER().getInfos().maxTextureSize );
 
-		for ( const auto & resolution : IMAGE_EXPORT_RESOLUTION_PRESETS )
+		for ( const auto & resolution : resolutionPresets )
 		{
 			if ( resolution.width > size_t( maxTextureSize ) || resolution.height > size_t( maxTextureSize ) )
 			{
 				continue;
 			}
 
-			QString text = QString::fromStdString( resolution.name );
+			QString text
+				= QString::fromUtf8( resolution.name.data(), static_cast<qsizetype>( resolution.name.size() ) );
 			text += QString( " (%1x%2)" ).arg( resolution.width ).arg( resolution.height );
 			_comboBoxResolution->addItem( text );
 			const int itemIndex = _comboBoxResolution->count() - 1;

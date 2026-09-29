@@ -26,7 +26,7 @@ namespace VTX::PythonBinding
 		 * @brief Method to implement to bind actions to commands.
 		 * @param p_pytxModule Module provided by the interpretor to bind actions into.
 		 */
-		inline void bind( Wrapper::Module & p_ )
+		void bind( Wrapper::Module & p_ )
 		{
 			if ( _ptr )
 				_ptr->bind( p_ );
@@ -36,7 +36,7 @@ namespace VTX::PythonBinding
 		 * @brief [Optional] Submitted class can optionally re-implement this method to add module import instructions
 		 * (e.g. when dealing with package dependancies )
 		 */
-		inline void importHeaders()
+		void importHeaders()
 		{
 			if ( _ptr )
 				_ptr->importHeaders();

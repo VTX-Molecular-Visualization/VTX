@@ -42,12 +42,12 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Hook a registered action to the given menu.
 		 */
-		void addMenuAction( const App::UI::WidgetId & p_menu, const std::string_view p_actionId );
+		void addMenuAction( const App::UI::WidgetId & p_menu, std::string_view p_actionId );
 
 		/**
 		 * @brief Hook a registered action to the given toolbar.
 		 */
-		void addToolBarAction( const App::UI::WidgetId & p_toolbar, const std::string_view p_actionId );
+		void addToolBarAction( const App::UI::WidgetId & p_toolbar, std::string_view p_actionId );
 
 		/**
 		 * @brief Restore the persisted layout after all tool UI hooks are built.
@@ -62,17 +62,12 @@ namespace VTX::UI::QT::Widget
 		uintptr_t getNativeSurface() const;
 		uintptr_t getNativeDisplay() const;
 		uint8_t	  getNativePlatform() const;
-		void populateViewMenu( QMenu & );
+		void	  populateViewMenu( QMenu & );
 
 		/**
 		 * @brief Override "view" context menu.
 		 */
 		QMenu * createPopupMenu() override;
-
-		/**
-		 * @brief Catch close event to quit application.
-		 */
-		void closeEvent( QCloseEvent * ) override;
 
 		/**
 		 * @brief Create a menu from type.
@@ -138,11 +133,11 @@ namespace VTX::UI::QT::Widget
 		}
 
 	  protected:
-		bool event( QEvent * ) override;
-
 		/**
-		 * @brief Drag and drop events.
+		 * @brief Events.
 		 */
+		bool event( QEvent * ) override;
+		void closeEvent( QCloseEvent * ) override;
 		void dragEnterEvent( QDragEnterEvent * );
 		void dropEvent( QDropEvent * );
 

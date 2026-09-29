@@ -6,13 +6,13 @@
 
 namespace VTX::Core::ChemDB::Residue
 {
-	enum class TYPE : int
+	enum class TYPE : uint8_t
 	{
 		STANDARD,
 		NON_STANDARD
 	};
 
-	enum class SYMBOL_DISPLAY_MODE : int
+	enum class SYMBOL_DISPLAY_MODE : uint8_t
 	{
 		SHORT,
 		LONG,
@@ -20,7 +20,7 @@ namespace VTX::Core::ChemDB::Residue
 		COUNT
 	};
 
-	enum class SYMBOL : int
+	enum class SYMBOL : uint8_t
 	{
 		UNKNOWN,
 		ALA,
@@ -238,10 +238,10 @@ namespace VTX::Core::ChemDB::Residue
 
 	};
 
-	const SYMBOL getSymbolFromShortName( const std::string & p_residueName );
-	const SYMBOL getSymbolFromName( const std::string & p_residueName );
-	const SYMBOL getSymbolFromLongName( const std::string & p_residueName );
-	const SYMBOL getSymbolFromAnyName( const std::string & p_residueName );
+	SYMBOL getSymbolFromShortName( const std::string & p_residueName );
+	SYMBOL getSymbolFromName( const std::string & p_residueName );
+	SYMBOL getSymbolFromLongName( const std::string & p_residueName );
+	SYMBOL getSymbolFromAnyName( const std::string & p_residueName );
 
 	bool checkIfStandardFromName( const std::string & p_residueSymbol );
 

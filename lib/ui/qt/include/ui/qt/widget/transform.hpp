@@ -23,7 +23,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Flags to enable/disable component.
 		 */
-		enum struct E_FLAG : uint8_t
+		enum struct E_FLAG : uint16_t
 		{
 			VTX_ENUM_ENABLE_BITMASK,
 			NONE	 = 0,
@@ -89,14 +89,14 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Accessors and mutators.
 		 */
-		inline void setPosition( const Vec3f & p_position )
+		void setPosition( const Vec3f & p_position )
 		{
 			assert( _position );
 			QSignalBlocker blocker( _position );
 			_position->setValue( p_position );
 		}
 
-		inline void setRotation( const Quatd & p_rotation )
+		void setRotation( const Quatd & p_rotation )
 		{
 			using namespace VTX::Util::Math;
 			assert( _rotation );
@@ -104,41 +104,59 @@ namespace VTX::UI::QT::Widget
 			_rotation->setValue( degrees( eulerAngles( p_rotation ) ) );
 		}
 
-		inline void setScale( const Vec3f & p_scale )
+		void setScale( const Vec3f & p_scale )
 		{
 			assert( _scale );
 			QSignalBlocker blocker( _scale );
 			_scale->setValue( p_scale );
 		}
 
-		inline void setTransform( const VTX::Util::Math::Transform & p_transform )
+		void setTransform( const VTX::Util::Math::Transform & p_transform )
 		{
 			if ( _position )
+			{
 				setPosition( p_transform.getPosition() );
+			}
 			if ( _rotation )
+			{
 				setRotation( p_transform.getRotation() );
+			}
 			if ( _scale )
+			{
 				setScale( p_transform.getScale() );
+			}
 		}
 
-		inline void setReadOnly( const bool p_readOnly, const E_FLAG p_flags = E_FLAG::ALL )
+		void setReadOnly( const bool p_readOnly, const E_FLAG p_flags = E_FLAG::ALL )
 		{
 			if ( _position && ( p_flags & E_FLAG::ROTATION ) != E_FLAG::NONE )
+			{
 				_position->setReadOnly( p_readOnly );
+			}
 			if ( _rotation && ( p_flags & E_FLAG::ROTATION ) != E_FLAG::NONE )
+			{
 				_rotation->setReadOnly( p_readOnly );
+			}
 			if ( _scale && ( p_flags & E_FLAG::SCALE ) != E_FLAG::NONE )
+			{
 				_scale->setReadOnly( p_readOnly );
+			}
 		}
 
-		inline void setEnabled( const bool p_enabled, const E_FLAG p_flags = E_FLAG::ALL )
+		void setEnabled( const bool p_enabled, const E_FLAG p_flags = E_FLAG::ALL )
 		{
 			if ( _position && ( p_flags & E_FLAG::ROTATION ) != E_FLAG::NONE )
+			{
 				_position->setEnabled( p_enabled );
+			}
 			if ( _rotation && ( p_flags & E_FLAG::ROTATION ) != E_FLAG::NONE )
+			{
 				_rotation->setEnabled( p_enabled );
+			}
 			if ( _scale && ( p_flags & E_FLAG::SCALE ) != E_FLAG::NONE )
+			{
 				_scale->setEnabled( p_enabled );
+			}
 		}
 
 	  signals:

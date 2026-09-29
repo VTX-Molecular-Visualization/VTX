@@ -102,7 +102,7 @@ namespace VTX::App::PythonBinding
 
 	void TrajectoryBinder::bind( Module & p_vtxModule )
 	{
-		py::module_ & module = p_vtxModule.pyModule();
+		const py::module_ & module = p_vtxModule.pyModule();
 		VTX::PythonBinding::Helper::declareEnum<App::Trajectory::PLAY_MODE>( module, "TRAJECTORY_PLAY_MODE" );
 
 		py::class_<Frame>( module, "Frame", py::module_local() )

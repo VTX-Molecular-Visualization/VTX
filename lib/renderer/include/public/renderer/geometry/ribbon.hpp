@@ -4,6 +4,7 @@
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
 #include <core/struct/topology.hpp>
+#include <string_view>
 #include <util/math.hpp>
 
 namespace VTX::Renderer::Geometry
@@ -12,20 +13,20 @@ namespace VTX::Renderer::Geometry
 	class Ribbon : public BaseGeometry
 	{
 	  public:
-		inline static const Desc::Key		  VERTEX_LAYOUT_RESIDUES   = "Residues";
-		inline static const Desc::Key		  GEOMETRY_RIBBONS		   = "Ribbons";
-		inline static const Desc::Key		  INDEX_RIBBONS			   = "Index.Ribbons";
-		inline static const Desc::Key		  INDIRECT_RIBBONS		   = "Indirect.Ribbons";
-		inline static constexpr Desc::Binding BINDING_INDIRECT_RIBBONS = 10;
+		static constexpr std::string_view VERTEX_LAYOUT_RESIDUES   = "Residues";
+		static constexpr std::string_view GEOMETRY_RIBBONS		   = "Ribbons";
+		static constexpr std::string_view INDEX_RIBBONS			   = "Index.Ribbons";
+		static constexpr std::string_view INDIRECT_RIBBONS		   = "Indirect.Ribbons";
+		static constexpr Desc::Binding	  BINDING_INDIRECT_RIBBONS = 10;
 
 		Ribbon()
 		{
-			vertexLayout   = VERTEX_LAYOUT_RESIDUES;
+			vertexLayout   = Desc::Key { VERTEX_LAYOUT_RESIDUES };
 			indiceBuffer   = INDEX_RIBBONS;
 			indirectBuffer = INDIRECT_RIBBONS;
 		}
 
-		void clear()
+		void clear() override
 		{
 			BaseGeometry::clear();
 			_construction.clear();
@@ -117,7 +118,7 @@ namespace VTX::Renderer::Geometry
 			std::unordered_map<Index, Index> & residueToIndices	  = cache.residueToIndices;
 			std::unordered_map<Index, Index> & residueToPositions = cache.residueToPositions;
 
-			for ( Index chainIdx : p_data.data.topology->getChainRange() )
+			for ( const Index chainIdx : p_data.data.topology->getChainRange() )
 			{
 				if ( p_data.data.topology->getChainResidueCount( chainIdx ) < 4 )
 				{
@@ -127,7 +128,7 @@ namespace VTX::Renderer::Geometry
 				std::vector<Construction::Data> usedResidues;
 				usedResidues.reserve( p_data.data.topology->getChainResidueCount( chainIdx ) );
 
-				for ( Index residueIdx : p_data.data.topology->getChainResidueRange( chainIdx ) )
+				for ( const Index residueIdx : p_data.data.topology->getChainResidueRange( chainIdx ) )
 				{
 					const auto optCA = p_data.data.topology->findFirstAtomByName( residueIdx, "CA" );
 					if ( not optCA )

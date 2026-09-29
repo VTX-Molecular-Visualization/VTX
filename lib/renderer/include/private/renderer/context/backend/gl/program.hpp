@@ -2,6 +2,9 @@
 #define __VTX_RENDERER_CONTEXT_GL_PROGRAM__
 
 #include "renderer/context/backend/gl/debug.hpp"
+#include <array>
+#include <ranges>
+#include <string_view>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/types.hpp>
@@ -10,7 +13,7 @@
 
 namespace VTX::Renderer::Context::Backend::GL
 {
-	enum struct ENUM_SHADER_TYPE : GLenum
+	enum struct ENUM_SHADER_TYPE : uint16_t
 	{
 		VERTEX			= GL_VERTEX_SHADER,
 		FRAGMENT		= GL_FRAGMENT_SHADER,
@@ -56,7 +59,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			for ( const FilePath & shader : paths )
 			{
-				GLuint id = _createShader( p_rootPath / shader, p_toInject, p_suffix );
+				const GLuint id = _createShader( p_rootPath / shader, p_toInject, p_suffix );
 				if ( id != GL_INVALID_INDEX )
 				{
 					attachShader( id );
@@ -70,12 +73,12 @@ namespace VTX::Renderer::Context::Backend::GL
 			VTX_TRACE( "Program {} created: {}", _id, p_name );
 		}
 
-		Program( const Program & )			 = delete;
+		Program( const Program & )			   = delete;
 		Program & operator=( const Program & ) = delete;
 
-		Program( Program && p_other ) noexcept
-			: _id( std::exchange( p_other._id, GL_INVALID_INDEX ) ), _name( std::move( p_other._name ) ),
-			  _toInject( std::move( p_other._toInject ) )
+		Program( Program && p_other ) noexcept :
+			_id( std::exchange( p_other._id, GL_INVALID_INDEX ) ), _name( std::move( p_other._name ) ),
+			_toInject( std::move( p_other._toInject ) )
 		{
 		}
 
@@ -104,7 +107,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 
-		inline void use() const noexcept { glUseProgram( _id ); }
+		void use() const noexcept { glUseProgram( _id ); }
 
 		void create( const std::string & p_name )
 		{
@@ -116,7 +119,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			assert( _id != GL_INVALID_INDEX );
 		}
 
-		void attachShader( const GLuint p_shaderId )
+		void attachShader( const GLuint p_shaderId ) const
 		{
 			assert( _id != GL_INVALID_INDEX );
 
@@ -127,7 +130,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		{
 			assert( _id != GL_INVALID_INDEX );
 
-			GLint linked;
+			GLint linked {};
 			glLinkProgram( _id );
 			glGetProgramiv( _id, GL_LINK_STATUS, &linked );
 			if ( linked == GL_FALSE )
@@ -141,7 +144,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 
-		void detachShaders()
+		void detachShaders() const
 		{
 			assert( _id != GL_INVALID_INDEX );
 
@@ -149,20 +152,20 @@ namespace VTX::Renderer::Context::Backend::GL
 			glGetProgramiv( _id, GL_ATTACHED_SHADERS, &nbShaders );
 			std::vector<GLuint> shaders( nbShaders );
 			glGetAttachedShaders( _id, nbShaders, nullptr, shaders.data() );
-			for ( GLuint shader : shaders )
+			for ( const GLuint shader : shaders )
 			{
 				glDetachShader( _id, shader );
 			}
 		}
 
-		void deleteShaders()
+		void deleteShaders() const
 		{
 			assert( _id != GL_INVALID_INDEX );
 			GLint nbShaders = 0;
 			glGetProgramiv( _id, GL_ATTACHED_SHADERS, &nbShaders );
 			std::vector<GLuint> shaders( nbShaders );
 			glGetAttachedShaders( _id, nbShaders, nullptr, shaders.data() );
-			for ( GLuint shader : shaders )
+			for ( const GLuint shader : shaders )
 			{
 				glDeleteShader( shader );
 			}
@@ -170,27 +173,36 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		static ENUM_SHADER_TYPE getShaderType( const FilePath & p_name )
 		{
-			std::string extension = p_name.extension().string();
-			const auto	it = _EXTENSIONS.find( extension );
-			if ( it != _EXTENSIONS.end() )
+			const std::string extension = p_name.extension().string();
+			for ( const auto & [ suffix, type ] : _EXTENSIONS )
 			{
-				return it->second;
+				if ( extension == suffix )
+				{
+					return type;
+				}
 			}
 
 			return ENUM_SHADER_TYPE::INVALID;
 		}
 
 	  private:
-		inline static const std::map<std::string, ENUM_SHADER_TYPE> _EXTENSIONS
-			= { { ".vert", ENUM_SHADER_TYPE::VERTEX },		 { ".geom", ENUM_SHADER_TYPE::GEOMETRY },
-				{ ".frag", ENUM_SHADER_TYPE::FRAGMENT },	 { ".comp", ENUM_SHADER_TYPE::COMPUTE },
-				{ ".tesc", ENUM_SHADER_TYPE::TESS_CONTROL }, { ".tese", ENUM_SHADER_TYPE::TESS_EVALUATION } };
+		static constexpr std::array<std::pair<std::string_view, ENUM_SHADER_TYPE>, 6> _EXTENSIONS
+			= { { { ".vert", ENUM_SHADER_TYPE::VERTEX },
+				  { ".geom", ENUM_SHADER_TYPE::GEOMETRY },
+				  { ".frag", ENUM_SHADER_TYPE::FRAGMENT },
+				  { ".comp", ENUM_SHADER_TYPE::COMPUTE },
+				  { ".tesc", ENUM_SHADER_TYPE::TESS_CONTROL },
+				  { ".tese", ENUM_SHADER_TYPE::TESS_EVALUATION } } };
 
-		GLuint		_id		  = GL_INVALID_INDEX;
-		std::string _name	  = "";
-		std::string _toInject = "";
+		GLuint		_id = GL_INVALID_INDEX;
+		std::string _name;
+		std::string _toInject;
 
-		GLuint _createShader( const FilePath & p_path, const std::string & p_toInject, const std::string & p_suffix )
+		static GLuint _createShader(
+			const FilePath &	p_path,
+			const std::string & p_toInject,
+			const std::string & p_suffix
+		)
 		{
 			const std::string name = p_path.filename().string() + p_suffix;
 
@@ -207,11 +219,11 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 
 			// Handle injection (after #version).
-			if ( p_toInject != "" )
+			if ( not p_toInject.empty() )
 			{
-				size_t startPosVersion = src.find( "#version" );
+				const size_t startPosVersion = src.find( "#version" );
 				assert( startPosVersion != std::string::npos );
-				size_t endPosVersion = src.find( "\n", startPosVersion );
+				const size_t endPosVersion = src.find( '\n', startPosVersion );
 				src.insert( endPosVersion + 1, p_toInject );
 			}
 
@@ -221,9 +233,9 @@ namespace VTX::Renderer::Context::Backend::GL
 			// VTX_DEBUG( "{}", src );
 
 			const char * shaderCode = src.c_str();
-			glShaderSource( shaderId, 1, &shaderCode, 0 );
+			glShaderSource( shaderId, 1, &shaderCode, nullptr );
 			glCompileShader( shaderId );
-			GLint compiled;
+			GLint compiled = GL_FALSE;
 			glGetShaderiv( shaderId, GL_COMPILE_STATUS, &compiled );
 			if ( compiled == GL_FALSE )
 			{
@@ -242,25 +254,25 @@ namespace VTX::Renderer::Context::Backend::GL
 			return shaderId;
 		}
 
-		void _handleInclude( std::string & p_src, const FilePath & p_path )
+		static void _handleInclude( std::string & p_src, const FilePath & p_path )
 		{
 			std::vector<std::string> included;
 			while ( true )
 			{
-				size_t startPosInclude = p_src.find( "#include" );
+				const size_t startPosInclude = p_src.find( "#include" );
 				if ( startPosInclude == std::string::npos )
 				{
 					break;
 				}
 
-				size_t		endPosInclude		= p_src.find( "\n", startPosInclude );
-				std::string includeRelativePath = p_src.substr( startPosInclude, endPosInclude - startPosInclude );
-				size_t		startPosPath		= includeRelativePath.find( '"' );
-				size_t		endPosPath			= includeRelativePath.find( '"', startPosPath + 1 );
+				const size_t endPosInclude		 = p_src.find( '\n', startPosInclude );
+				std::string	 includeRelativePath = p_src.substr( startPosInclude, endPosInclude - startPosInclude );
+				const size_t startPosPath		 = includeRelativePath.find( '"' );
+				const size_t endPosPath			 = includeRelativePath.find( '"', startPosPath + 1 );
 				includeRelativePath = includeRelativePath.substr( startPosPath + 1, endPosPath - startPosPath - 1 );
 
 				// Check if already included.
-				if ( std::find( included.begin(), included.end(), includeRelativePath ) != included.end() )
+				if ( std::ranges::find( included, includeRelativePath ) != included.end() )
 				{
 					p_src.erase( startPosInclude, endPosInclude - startPosInclude );
 					continue;
@@ -272,6 +284,6 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 	};
-} // namespace VTX::Renderer::Context::GL
+} // namespace VTX::Renderer::Context::Backend::GL
 
 #endif

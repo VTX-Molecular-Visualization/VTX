@@ -119,15 +119,14 @@ namespace VTX::PythonBinding::Binding
 
 		pybind11::class_<Util::Resolution>( p_apiModule, "Resolution", pybind11::module_local() )
 			.def(
-				pybind11::init( []( const std::string & p_name, const size_t p_width, const size_t p_height )
-								{ return Util::Resolution { p_name, p_width, p_height }; } ),
-				pybind11::arg( "name" ),
+				pybind11::init( []( const size_t p_width, const size_t p_height )
+								{ return Util::Resolution { "Custom", p_width, p_height }; } ),
 				pybind11::arg( "width" ),
 				pybind11::arg( "height" )
 			)
-			.def_readwrite( "name", &Util::Resolution::name )
-			.def_readwrite( "width", &Util::Resolution::width )
-			.def_readwrite( "height", &Util::Resolution::height );
+			.def_readonly( "name", &Util::Resolution::name )
+			.def_readonly( "width", &Util::Resolution::width )
+			.def_readonly( "height", &Util::Resolution::height );
 
 		pybind11::class_<Util::Color::Rgba>( p_apiModule, "Rgba", pybind11::module_local() )
 			.def( pybind11::init<>() )

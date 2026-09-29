@@ -8,14 +8,10 @@ namespace VTX::Util::Thread
 	ThreadManager::ThreadManager() : _ownerThreadId( std::this_thread::get_id() ) {}
 
 	void ThreadManager::setDefaultProgressCallback( BaseThread::ProgressCallback p_callback )
-	{
-		_progressCallback = std::move( p_callback );
-	}
+	{ _progressCallback = std::move( p_callback ); }
 
 	void ThreadManager::setDefaultTerminatedCallback( BaseThread::TerminatedCallback p_callback )
-	{
-		_terminatedCallback = std::move( p_callback );
-	}
+	{ _terminatedCallback = std::move( p_callback ); }
 
 	ThreadManager::~ThreadManager()
 	{
@@ -116,7 +112,7 @@ namespace VTX::Util::Thread
 		const BaseThread::EndCallback & p_callback
 	)
 	{
-		std::shared_ptr<BaseThread> thread( new BaseThread( *this ) );
+		const std::shared_ptr<BaseThread> thread( new BaseThread( *this ) );
 		_threads.emplace_back( thread );
 		try
 		{

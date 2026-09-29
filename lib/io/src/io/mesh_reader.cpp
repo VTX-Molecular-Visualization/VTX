@@ -15,8 +15,8 @@ namespace VTX::IO
 											  | aiProcess_GenSmoothNormals | aiProcess_PreTransformVertices;
 	}
 
-	MeshReader::MeshReader( FilePath p_filePath, const Util::Thread::StopToken p_stopToken ) :
-		_filePath( std::move( p_filePath ) ), _stopToken( p_stopToken )
+	MeshReader::MeshReader( const FilePath & p_filePath, const Util::Thread::StopToken & p_stopToken ) :
+		_filePath( p_filePath ), _stopToken( p_stopToken )
 	{
 	}
 
@@ -121,9 +121,11 @@ namespace VTX::IO
 		p_meshes = std::move( meshes );
 	}
 
-	bool isMeshFileFormat( const FilePath & p_path )
+	bool MeshReader::isMeshFileFormat( const FilePath & p_path )
 	{
-		Assimp::Importer importer;
+		const Assimp::Importer importer;
+
 		return importer.IsExtensionSupported( p_path.extension().string() );
 	}
+
 } // namespace VTX::IO

@@ -10,7 +10,7 @@ TEST_CASE( "Util::Math::RangeList", "[unit]" )
 
 	RangeList<size_t> rangeList = { Range<size_t>( 5, 8 ), Range<size_t>( 12, 20 ), Range<size_t>( 50, 51 ) };
 
-	RangeList<size_t> test = { { 1, 2 }, { 1, 2 } };
+	const RangeList<size_t> test = { { 1, 2 }, { 1, 2 } };
 
 	rangeList.addRange( Range<size_t>( 9, 10 ) );
 	rangeList.addRange( Range<size_t>( 8, 14 ) );
@@ -18,8 +18,10 @@ TEST_CASE( "Util::Math::RangeList", "[unit]" )
 	rangeList.addRange( Range<size_t>( 6, 7 ) );
 
 	int itemCount = 0;
-	for ( size_t index : rangeList )
+	for ( const size_t index : rangeList )
+	{
 		itemCount++;
+	}
 
 	CHECK( itemCount == 20 );
 
@@ -30,8 +32,10 @@ TEST_CASE( "Util::Math::RangeList", "[unit]" )
 	rangeList.removeRange( Range<size_t>( 1, 18 ) );
 
 	itemCount = 0;
-	for ( size_t index : rangeList )
+	for ( const size_t index : rangeList )
+	{
 		itemCount++;
+	}
 
 	CHECK( itemCount == 2 );
 
@@ -56,13 +60,13 @@ TEST_CASE( "Util::Math::RangeList - Operators", "[unit]" )
 	using namespace VTX;
 	using namespace Util::Math;
 
-	RangeList<size_t> rangeListA = { { 5, 8 }, Range<size_t>( 12, 20 ), Range<size_t>( 50, 50 ) };
+	const RangeList<size_t> rangeListA = { { 5, 8 }, Range<size_t>( 12, 20 ), Range<size_t>( 50, 50 ) };
 
-	RangeList<size_t> rangeListB = { Range<size_t>( 0, 2 ),
-									 Range<size_t>( 4, 6 ),
-									 Range<size_t>( 7, 14 ),
-									 Range<size_t>( 18, 22 ),
-									 Range<size_t>( 50, 51 ) };
+	const RangeList<size_t> rangeListB = { Range<size_t>( 0, 2 ),
+										   Range<size_t>( 4, 6 ),
+										   Range<size_t>( 7, 14 ),
+										   Range<size_t>( 18, 22 ),
+										   Range<size_t>( 50, 51 ) };
 
 	// Check Merges
 	RangeList<size_t> rangeListRes1 = RangeList<size_t>::merge( rangeListA, rangeListB );

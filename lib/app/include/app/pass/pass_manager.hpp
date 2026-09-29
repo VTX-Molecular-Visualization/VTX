@@ -25,9 +25,9 @@ namespace VTX::App::Pass
 
 		virtual ~IPass() = default;
 
-		inline void setPaused( const bool p_paused ) { _paused = p_paused; }
+		void setPaused( const bool p_paused ) { _paused = p_paused; }
 
-		inline void setDeleteNextFrame( const bool p_deleted ) { _deleted = p_deleted; }
+		void setDeleteNextFrame( const bool p_deleted ) { _deleted = p_deleted; }
 
 	  protected:
 		bool _paused  = false;
@@ -120,7 +120,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Updates all passes.
 		 */
-		inline void update( const float p_delta, const float p_elapsed )
+		void update( const float p_delta, const float p_elapsed )
 		{
 			// Update delegates.
 			for ( const auto & delegate : _delegates )

@@ -37,16 +37,16 @@ namespace VTX::Renderer::Builder::PostProcess
 			throw std::runtime_error( "Invalid material texture" );
 		}
 
-		const Desc::Key & _materialTextureKey( const Material::E_TEXTURE p_texture )
+		Desc::Key _materialTextureKey( const Material::E_TEXTURE p_texture )
 		{
 			switch ( p_texture )
 			{
-			case Material::E_TEXTURE::ALBEDO: return Shading::MATERIAL_ALBEDO_TEXTURE;
-			case Material::E_TEXTURE::NORMAL: return Shading::MATERIAL_NORMAL_TEXTURE;
-			case Material::E_TEXTURE::METALLIC: return Shading::MATERIAL_METALLIC_TEXTURE;
-			case Material::E_TEXTURE::ROUGHNESS: return Shading::MATERIAL_ROUGHNESS_TEXTURE;
-			case Material::E_TEXTURE::AMBIENT_OCCLUSION: return Shading::MATERIAL_AO_TEXTURE;
-			case Material::E_TEXTURE::EMISSIVE: return Shading::MATERIAL_EMISSIVE_TEXTURE;
+			case Material::E_TEXTURE::ALBEDO: return Desc::Key { Shading::MATERIAL_ALBEDO_TEXTURE };
+			case Material::E_TEXTURE::NORMAL: return Desc::Key { Shading::MATERIAL_NORMAL_TEXTURE };
+			case Material::E_TEXTURE::METALLIC: return Desc::Key { Shading::MATERIAL_METALLIC_TEXTURE };
+			case Material::E_TEXTURE::ROUGHNESS: return Desc::Key { Shading::MATERIAL_ROUGHNESS_TEXTURE };
+			case Material::E_TEXTURE::AMBIENT_OCCLUSION: return Desc::Key { Shading::MATERIAL_AO_TEXTURE };
+			case Material::E_TEXTURE::EMISSIVE: return Desc::Key { Shading::MATERIAL_EMISSIVE_TEXTURE };
 			case Material::E_TEXTURE::COUNT: break;
 			}
 
@@ -66,7 +66,7 @@ namespace VTX::Renderer::Builder::PostProcess
 		if ( not pixels.empty() )
 		{
 			p_context.setTextureData<Baker::EnvironmentTexel>(
-				ENVIRONMENT_TEXTURE, std::span<const Baker::EnvironmentTexel> { pixels }
+				Desc::Key { ENVIRONMENT_TEXTURE }, std::span<const Baker::EnvironmentTexel> { pixels }
 			);
 		}
 	}

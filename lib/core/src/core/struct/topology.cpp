@@ -46,7 +46,7 @@ namespace VTX::Core::Struct
 	void Topology::initBonds( const Index p_count )
 	{
 		bondOrders.resize( p_count, ChemDB::Bond::ORDER::UNKNOWN );
-		bondPairAtomIndexes.resize( p_count * 2, INVALID_INDEX );
+		bondPairAtomIndexes.resize( static_cast<size_t>( p_count ) * 2, INVALID_INDEX );
 	}
 
 	size_t dynamicMemoryUsage( const Topology & p_sys ) noexcept
@@ -54,7 +54,7 @@ namespace VTX::Core::Struct
 		size_t out = 0;
 		// Mat4f should have dynamic allocation, right ?
 		// out += dynamicMemoryUsage( p_sys.trajectory );
-		for ( auto & it_str : p_sys.chainNames )
+		for ( const auto & it_str : p_sys.chainNames )
 		{
 			out += it_str.capacity();
 		}

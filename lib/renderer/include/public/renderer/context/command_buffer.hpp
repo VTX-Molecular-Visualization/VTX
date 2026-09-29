@@ -5,13 +5,16 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <iostream>
+#include <memory>
 #include <new>
+#include <stdexcept>
 #include <type_traits>
 #include <unordered_map>
 #include <util/constants.hpp>
 #include <util/enum.hpp>
-#include <util/math.hpp>
+#include <utility>
 #include <vector>
 
 namespace VTX::Renderer::Context
@@ -20,7 +23,7 @@ namespace VTX::Renderer::Context
 	/**
 	 * @brief All command types.
 	 */
-	enum struct E_COMMAND : uint32_t
+	enum struct E_COMMAND : uint8_t
 	{
 
 		BEGIN_PASS,
@@ -231,7 +234,7 @@ namespace VTX::Renderer::Context
 	};
 
 	template<E_COMMAND C>
-	using PayloadT = typename CommandPayload<C>::type;
+	using PayloadT = CommandPayload<C>::type;
 
 	/**
 	 * @brief Command structure.
@@ -246,12 +249,87 @@ namespace VTX::Renderer::Context
 	 * @brief Aliases.
 	 */
 	using CommandList	= std::vector<Command>;
-	using PayloadBuffer = std::vector<std::byte>;
 	using PayloadOffset = uint32_t;
 	using CommandID		= uint32_t;
 	using CommandIDList = std::vector<CommandID>;
 	using PassID		= uint32_t;
 	using PassIDList	= std::vector<PassID>;
+
+	/**
+	 * @brief Buffer that can grow dynamically and store contiguous payloads.
+	 */
+	class PayloadBuffer
+	{
+	  public:
+		static constexpr std::size_t ALIGNMENT = 16;
+		static constexpr std::size_t MAX_SIZE  = TypeMax<PayloadOffset>;
+
+		PayloadBuffer() = default;
+
+		std::size_t size() const { return _size; }
+
+		bool empty() const { return _size == 0; }
+
+		std::byte * data() { return _data.get(); }
+
+		const std::byte * data() const { return _data.get(); }
+
+		std::byte operator[]( const std::size_t p_index ) const
+		{
+			assert( p_index < _size );
+			return _data[ p_index ];
+		}
+
+		void clear() { _size = 0; }
+
+	  private:
+		friend struct CommandBuffer;
+
+		struct Deleter
+		{
+			void operator()( std::byte * const p_data ) const noexcept
+			{ ::operator delete( p_data, std::align_val_t( ALIGNMENT ) ); }
+		};
+
+		using Storage = std::unique_ptr<std::byte[], Deleter>;
+
+		/**
+		 * @brief Double size or given size.
+		 */
+		void grow( const std::size_t p_size )
+		{
+			if ( p_size > MAX_SIZE )
+			{
+				throw std::length_error( "Command payload buffer is too large." );
+			}
+			assert( p_size >= _size );
+			if ( p_size > _capacity )
+			{
+				const std::size_t doubled  = _capacity > MAX_SIZE - _capacity ? MAX_SIZE : _capacity * 2;
+				const std::size_t capacity = p_size > doubled ? p_size : doubled;
+				auto			  data = Storage( ::new ( ::operator new( capacity, std::align_val_t( ALIGNMENT ) ) )
+													  std::byte[ capacity ] );
+				if ( _size != 0 )
+				{
+					std::memcpy( data.get(), _data.get(), _size );
+				}
+				_data	  = std::move( data );
+				_capacity = capacity;
+			}
+			_size = p_size;
+		}
+
+		/**
+		 * @brief Payload data.
+		 */
+		Storage _data;
+
+		/**
+		 * @brief Current size and capacity of the buffer.
+		 */
+		std::size_t _size	  = 0;
+		std::size_t _capacity = 0;
+	};
 
 	struct CommandRange
 	{
@@ -292,7 +370,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Clear all.
 		 */
-		inline void clear()
+		void clear()
 		{
 			commands.clear();
 			payload.clear();
@@ -305,17 +383,17 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Check if empty.
 		 */
-		inline bool empty() const { return commands.empty(); }
+		bool empty() const { return commands.empty(); }
 
 		/**
 		 * @brief Get current command ID.
 		 */
-		inline CommandID currentCommandID() const { return static_cast<CommandID>( commands.size() ); }
+		CommandID currentCommandID() const { return static_cast<CommandID>( commands.size() ); }
 
 		/**
 		 * @brief Begin a pass command range.
 		 */
-		inline PassID beginPass( const Desc::Pass & p_pass )
+		PassID beginPass( const Desc::Pass & p_pass )
 		{
 			const PassID id = static_cast<PassID>( passes.size() );
 
@@ -336,7 +414,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief End a pass command range.
 		 */
-		inline void endPass( const PassID p_passID )
+		void endPass( const PassID p_passID )
 		{
 			assert( p_passID < passes.size() );
 
@@ -356,30 +434,27 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Get pass command range info.
 		 */
-		inline PassID passID( const Desc::Key & p_pass ) const
+		PassID passID( const Desc::Key & p_pass ) const
 		{
 			const auto it = passIDByName.find( p_pass );
 			assert( it != passIDByName.end() );
 			return it->second;
 		}
 
-		inline bool containsPass( const Desc::Key & p_pass ) const { return passIDByName.contains( p_pass ); }
+		bool containsPass( const Desc::Key & p_pass ) const { return passIDByName.contains( p_pass ); }
 
-		inline const PassCommandRange & passRange( const PassID p_passID ) const
+		const PassCommandRange & passRange( const PassID p_passID ) const
 		{
 			assert( p_passID < passes.size() );
 			return passes[ p_passID ];
 		}
 
-		inline const PassCommandRange & passRange( const Desc::Key & p_pass ) const
-		{
-			return passRange( passID( p_pass ) );
-		}
+		const PassCommandRange & passRange( const Desc::Key & p_pass ) const { return passRange( passID( p_pass ) ); }
 
 		/**
 		 * @brief Mark an ON_DIRTY pass for execution.
 		 */
-		inline bool markPassDirty( const Desc::Key & p_pass )
+		bool markPassDirty( const Desc::Key & p_pass )
 		{
 			const PassID id = passID( p_pass );
 
@@ -400,7 +475,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Clear current dirty pass list.
 		 */
-		inline void clearDirtyPasses() { onDirtyPassIDs.clear(); }
+		void clearDirtyPasses() { onDirtyPassIDs.clear(); }
 
 		/**
 		 * @brief Get a payload from its offset.
@@ -408,23 +483,27 @@ namespace VTX::Renderer::Context
 		template<typename T>
 		T & getPayload( const PayloadOffset p_offset )
 		{
+			static_assert( std::is_trivially_copyable_v<T> and std::is_trivially_copy_constructible_v<T> );
+			static_assert( alignof( T ) <= PayloadBuffer::ALIGNMENT );
 			assert( p_offset != NO_PAYLOAD );
-			assert( p_offset + sizeof( T ) <= payload.size() );
+			assert( p_offset <= payload.size() );
+			assert( sizeof( T ) <= payload.size() - p_offset );
 			assert( ( p_offset % alignof( T ) ) == 0 );
-			assert( ( reinterpret_cast<uintptr_t>( payload.data() + p_offset ) % alignof( T ) ) == 0 );
 
-			return *reinterpret_cast<T *>( payload.data() + p_offset );
+			return *std::launder( reinterpret_cast<T *>( payload.data() + p_offset ) );
 		}
 
 		template<typename T>
 		const T & getPayload( const PayloadOffset p_offset ) const
 		{
+			static_assert( std::is_trivially_copyable_v<T> and std::is_trivially_copy_constructible_v<T> );
+			static_assert( alignof( T ) <= PayloadBuffer::ALIGNMENT );
 			assert( p_offset != NO_PAYLOAD );
-			assert( p_offset + sizeof( T ) <= payload.size() );
+			assert( p_offset <= payload.size() );
+			assert( sizeof( T ) <= payload.size() - p_offset );
 			assert( ( p_offset % alignof( T ) ) == 0 );
-			assert( ( reinterpret_cast<uintptr_t>( payload.data() + p_offset ) % alignof( T ) ) == 0 );
 
-			return *reinterpret_cast<const T *>( payload.data() + p_offset );
+			return *std::launder( reinterpret_cast<const T *>( payload.data() + p_offset ) );
 		}
 
 		/**
@@ -462,25 +541,29 @@ namespace VTX::Renderer::Context
 		template<typename T>
 		PayloadOffset pushPayload( const T & p_data )
 		{
-			static_assert( std::is_trivially_copyable_v<T> );
-			static_assert( alignof( T ) <= __STDCPP_DEFAULT_NEW_ALIGNMENT__ );
+			static_assert( std::is_trivially_copyable_v<T> and std::is_trivially_copy_constructible_v<T> );
+			static_assert( std::is_same_v<T, std::remove_cv_t<T>> );
+			static_assert( alignof( T ) <= PayloadBuffer::ALIGNMENT );
 
-			constexpr PayloadOffset A		= static_cast<PayloadOffset>( alignof( T ) );
-			PayloadOffset			offset	= static_cast<PayloadOffset>( payload.size() );
-			PayloadOffset			aligned = Util::Math::alignUp( offset, A );
+			const std::size_t size	  = payload.size();
+			const std::size_t padding = ( alignof( T ) - size % alignof( T ) ) % alignof( T );
+			if ( padding > PayloadBuffer::MAX_SIZE - size || sizeof( T ) > PayloadBuffer::MAX_SIZE - size - padding )
+			{
+				throw std::length_error( "Command payload offset is out of range." );
+			}
+			const std::size_t offset = size + padding;
+			const T			  data	 = p_data;
+			payload.grow( offset + sizeof( T ) );
 
 			// Add padding.
-			if ( aligned != offset )
+			if ( padding != 0 )
 			{
-				payload.insert( payload.end(), aligned - offset, std::byte { 0 } );
+				std::memset( payload.data() + size, 0, padding );
 			}
 
-			offset = aligned;
+			std::construct_at( reinterpret_cast<T *>( payload.data() + offset ), data );
 
-			const auto * src = reinterpret_cast<const std::byte *>( &p_data );
-			payload.insert( payload.end(), src, src + sizeof( T ) );
-
-			return offset;
+			return static_cast<PayloadOffset>( offset );
 		}
 
 		/**

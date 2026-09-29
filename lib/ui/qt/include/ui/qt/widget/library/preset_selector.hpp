@@ -42,12 +42,12 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Signal emitted when the selected preset is changed from the widget.
 		 */
-		void presetChanged( const Entity );
+		void presetChanged( Entity );
 
 		/**
 		 * @brief Signal emitted when the current preset is updated from App.
 		 */
-		void currentPresetUpdated( const Entity );
+		void currentPresetUpdated( Entity );
 	};
 
 	/**
@@ -164,11 +164,11 @@ namespace VTX::UI::QT::Widget::Library
 			_onPresetUpdateConnection.release();
 		}
 
-		inline Entity getCurrentPreset() const { return _comboBox->currentData().value<Entity>(); }
+		Entity getCurrentPreset() const { return _comboBox->currentData().value<Entity>(); }
 
-		inline void refresh() { _refreshComboBox( App::REG(), Entity {} ); }
+		void refresh() { _refreshComboBox( App::REG(), Entity {} ); }
 
-		inline void setCurrentPreset( const Entity p_preset )
+		void setCurrentPreset( const Entity p_preset )
 		{
 			if ( _comboBox->count() == 0 )
 			{

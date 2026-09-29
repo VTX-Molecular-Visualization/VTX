@@ -19,6 +19,7 @@
 #include "renderer/struct_infos.hpp"
 #include <memory>
 #include <span>
+#include <string_view>
 #include <vector>
 
 namespace VTX::Renderer::Context::Backend
@@ -63,12 +64,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Default constructor.
 		 */
-		OpenGL(
-			const size_t p_width,
-			const size_t p_height,
-			const Desc::NativeContextInfo &,
-			const FilePath & p_shaderDir
-		);
+		OpenGL( size_t p_width, size_t p_height, const Desc::NativeContextInfo &, const FilePath & p_shaderDir );
 		~OpenGL();
 
 		/**
@@ -79,17 +75,17 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Resize textures.
 		 */
-		void resize( const uint32_t, const uint32_t, const Desc::PassList &, const Desc::ResourceMap<Desc::Texture> & );
+		void resize( uint32_t, uint32_t, const Desc::PassList &, const Desc::ResourceMap<Desc::Texture> & );
 
 		/**
 		 * @brief Swap buffers.
 		 */
-		inline void swap() const { _glContext.swapBuffers(); }
+		void swap() const { _glContext.swapBuffers(); }
 
 		/**
 		 * @brief Set data to a buffer.
 		 */
-		void setBufferData( const Desc::BufferRef &, SpanBytes, const size_t );
+		void setBufferData( const Desc::BufferRef &, SpanBytes, size_t );
 		bool ensureBufferChunk( const Desc::BufferRef & );
 		bool releaseBufferChunk( const Desc::BufferRef & );
 
@@ -133,12 +129,12 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Set render target.
 		 */
-		void setRenderTarget( const Desc::E_RENDER_TARGET );
+		void setRenderTarget( Desc::E_RENDER_TARGET );
 
 		/**
 		 * @brief Set options.
 		 */
-		void setOption( const Desc::E_OPTION, const bool );
+		void setOption( Desc::E_OPTION, bool );
 
 		/**
 		 * @brief Fill backend infos.
@@ -148,25 +144,21 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Resources accessors.
 		 */
-		inline const ResourceTable & resourceTable( const Desc::Handle p_handle ) const noexcept
+		const ResourceTable & resourceTable( const Desc::Handle p_handle ) const noexcept
 		{ return _resourceTables.get( p_handle ); }
 
-		inline const GL::Framebuffer & framebuffer( const Desc::Handle p_handle ) const noexcept
+		const GL::Framebuffer & framebuffer( const Desc::Handle p_handle ) const noexcept
 		{ return _framebuffers.get( p_handle ); }
 
-		inline const GL::Texture & texture( const Desc::Handle p_handle ) const noexcept
-		{ return _textures.get( p_handle ); }
+		const GL::Texture & texture( const Desc::Handle p_handle ) const noexcept { return _textures.get( p_handle ); }
 
-		inline const GL::Sampler & sampler( const Desc::Handle p_handle ) const noexcept
-		{ return _samplers.get( p_handle ); }
+		const GL::Sampler & sampler( const Desc::Handle p_handle ) const noexcept { return _samplers.get( p_handle ); }
 
-		inline const GL::Program & program( const Desc::Handle p_handle ) const noexcept
-		{ return _programs.get( p_handle ); }
+		const GL::Program & program( const Desc::Handle p_handle ) const noexcept { return _programs.get( p_handle ); }
 
-		inline const GL::Buffer & buffer( const Desc::Handle p_handle ) const noexcept
-		{ return _buffers.get( p_handle ); }
+		const GL::Buffer & buffer( const Desc::Handle p_handle ) const noexcept { return _buffers.get( p_handle ); }
 
-		inline const GL::VertexArray & vertexArray( const Desc::Handle p_handle ) const noexcept
+		const GL::VertexArray & vertexArray( const Desc::Handle p_handle ) const noexcept
 		{ return _vertexArrays.get( p_handle ); }
 
 	  private:
@@ -214,7 +206,7 @@ namespace VTX::Renderer::Context::Backend
 		 * @brief Get or create resources.
 		 */
 		Desc::Handle _getOrCreateQuad();
-		Desc::Handle _getOrCreateFramebuffer( const Desc::Pass &, const Desc::Resources &, const bool = false );
+		Desc::Handle _getOrCreateFramebuffer( const Desc::Pass &, const Desc::Resources &, bool = false );
 		Desc::Handle _getOrCreateResourceTable( const Desc::Pass &, const Desc::Resources & );
 		Desc::Handle _getOrCreateChunkResourceTable( const Desc::Pass &, Desc::BufferChunk );
 		Desc::Handle _getOrCreateTexture( const Desc::Key &, const Desc::Texture & );
@@ -223,14 +215,14 @@ namespace VTX::Renderer::Context::Backend
 		Desc::Handle _getOrCreateGeometryVertexArray(
 			const Desc::Geometry &,
 			const Desc::Resources &,
-			const Desc::BufferChunk
+			Desc::BufferChunk
 		);
 		Desc::Handle _getOrCreateBuffer( const Desc::Key &, const Desc::Buffer & );
-		Desc::Handle _getOrCreateBufferChunk( const Desc::Key &, const Desc::Buffer &, const Desc::BufferChunk );
+		Desc::Handle _getOrCreateBufferChunk( const Desc::Key &, const Desc::Buffer &, Desc::BufferChunk );
 		Desc::Handle _getOrCreateProgram( const Desc::Program & );
-		Desc::Handle _bufferHandle( const Desc::Key &, const Desc::Resources &, const Desc::BufferChunk );
+		Desc::Handle _bufferHandle( const Desc::Key &, const Desc::Resources &, Desc::BufferChunk );
 		Desc::Key	 _physicalBufferKey( const Desc::BufferRef & );
-		void		 _setBufferData( const Desc::Key &, SpanBytes, const size_t );
+		void		 _setBufferData( const Desc::Key &, SpanBytes, size_t );
 		std::vector<Desc::InteropBufferMapping> _mapPhysicalInteropBuffers(
 			Desc::E_INTEROP_API,
 			std::span<const Desc::Key>
@@ -253,15 +245,15 @@ namespace VTX::Renderer::Context::Backend
 			const Desc::Key &,
 			const Desc::Geometry &,
 			const Desc::Resources &,
-			const Desc::BufferChunk
+			Desc::BufferChunk
 		);
 
 		/**
 		 * @brief Create the screen quad.
 		 */
-		inline static const Desc::Key _QUAD		   = "Quad";
-		inline static const Desc::Key _QUAD_VBO	   = _QUAD + ".Position";
-		inline static const Desc::Key _DEFAULT_FBO = "Default";
+		static constexpr std::string_view _QUAD		   = "Quad";
+		static constexpr std::string_view _QUAD_VBO	   = "Quad.Position";
+		static constexpr std::string_view _DEFAULT_FBO = "Default";
 
 		/**
 		 * @brief Specs.

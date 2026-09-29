@@ -21,7 +21,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Update the renderer with pending changes.
 		 */
-		void update( const float, const float );
+		void update( float, float );
 
 	  private:
 		/**
@@ -39,8 +39,8 @@ namespace VTX::App::Pass
 		 * @brief Push mesh data to renderer.
 		 */
 		void _onMeshLoad( const Events::MeshLoad & );
-		void _onUpdateTransform( Registry &, const Entity );
-		void _onDestroyMesh( Registry &, const Entity );
+		void _onUpdateTransform( Registry &, Entity );
+		void _onDestroyMesh( Registry &, Entity );
 	};
 } // namespace VTX::App::Pass
 

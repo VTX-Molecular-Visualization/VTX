@@ -31,7 +31,7 @@ namespace VTX::Core::ChemDB::SecondaryStructure
 																				  "Coil" };
 
 	TYPE		pdbFormattedToEnum( const std::string & p_str );
-	std::string enumToPdbFormatted( const TYPE p_enum );
+	std::string enumToPdbFormatted( TYPE p_enum );
 
 } // namespace VTX::Core::ChemDB::SecondaryStructure
 

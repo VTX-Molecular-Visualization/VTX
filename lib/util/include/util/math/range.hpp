@@ -20,7 +20,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Enum to specify range edge.
 		 */
-		enum class E_EDGE
+		enum class E_EDGE : uint8_t
 		{
 			FIRST,
 			LAST

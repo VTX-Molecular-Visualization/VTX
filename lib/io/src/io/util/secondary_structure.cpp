@@ -8,7 +8,7 @@ namespace VTX::IO::Util::SecondaryStructure
 
 	void assignSecondaryStructure( Core::Struct::Topology & p_topology, const VTX::Core::Struct::Frame & p_positions )
 	{
-		VTX::Util::ScopedChrono chrono( "SecondaryStructure::assignSecondaryStructure" );
+		const VTX::Util::ScopedChrono chrono( "SecondaryStructure::assignSecondaryStructure" );
 		VTX_INFO( "Computing secondary structure with stride algorithm..." );
 
 		using namespace VTX::Util;

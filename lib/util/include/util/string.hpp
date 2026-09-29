@@ -3,7 +3,11 @@
 
 #include "types.hpp"
 #include <algorithm>
+#include <charconv>
+#include <stdexcept>
 #include <string>
+#include <system_error>
+#include <type_traits>
 #include <vector>
 
 namespace VTX::Util::String
@@ -26,7 +30,7 @@ namespace VTX::Util::String
 	/**
 	 * Split a string using a character separator.
 	 */
-	[[nodiscard]] std::vector<std::string> split( const std::string & p_str, const char p_separator );
+	[[nodiscard]] std::vector<std::string> split( const std::string & p_str, char p_separator );
 
 	/**
 	 * Replace all occurrences of a string and return the result.
@@ -40,12 +44,27 @@ namespace VTX::Util::String
 	/**
 	 * Convert a float to a string with a fixed number of decimals.
 	 */
-	[[nodiscard]] std::string floatToStr( const float p_value, const int p_nbDecimals );
+	[[nodiscard]] std::string floatToStr( float p_value, int p_nbDecimals );
 
 	/**
 	 * Convert a string to an unsigned integer.
 	 */
-	[[nodiscard]] uint strToUint( const std::string & p_str );
+	template<typename T>
+	[[nodiscard]] T strToNumber( const std::string & p_str )
+	{
+		static_assert( std::is_integral_v<T> );
+
+		T value {};
+
+		const auto [ ptr, ec ] = std::from_chars( p_str.data(), p_str.data() + p_str.size(), value );
+
+		if ( ec != std::errc {} || ptr != p_str.data() + p_str.size() )
+		{
+			throw std::invalid_argument( "Invalid numeric value: " + p_str );
+		}
+
+		return value;
+	}
 
 	/**
 	 * Convert all characters to uppercase and return the result.
@@ -60,12 +79,12 @@ namespace VTX::Util::String
 	/**
 	 * Convert a memory size to a string.
 	 */
-	[[nodiscard]] std::string memSizeToStr( const size_t p_size, const bool p_isBase10 = true );
+	[[nodiscard]] std::string memSizeToStr( size_t p_size, bool p_isBase10 = true );
 
 	/**
 	 * Convert a duration to a string.
 	 */
-	[[nodiscard]] std::string durationToStr( const float p_durationInMS );
+	[[nodiscard]] std::string durationToStr( float p_durationInMS );
 
 } // namespace VTX::Util::String
 

@@ -17,19 +17,19 @@ namespace VTX::Tool::Mdprep::ui
 	{
 	  public:
 		// Inform or update the field placer where to put its fields
-		inline void assign( FormLayouts p_layouts ) noexcept
+		void assign( FormLayouts p_layouts ) noexcept
 		{
 			if ( _ptr )
 				_ptr->assign( std::move( p_layouts ) );
 		}
 		// Add the engine-specific field in the right place.
-		inline void activate() noexcept
+		void activate() noexcept
 		{
 			if ( _ptr )
 				_ptr->activate();
 		}
 		// Remove the engine-specific field.
-		inline void deactivate() noexcept
+		void deactivate() noexcept
 		{
 			if ( _ptr )
 				_ptr->deactivate();

@@ -39,8 +39,9 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Override size hints to adapt height to content.
 		 */
-		inline QSize minimumSizeHint() const override { return QSize( 0, 0 ); }
-		inline QSize sizeHint() const override { return QSize( QWidget::sizeHint().width(), _contentHeight() ); }
+		QSize minimumSizeHint() const override { return QSize( 0, 0 ); }
+
+		QSize sizeHint() const override { return QSize( QWidget::sizeHint().width(), _contentHeight() ); }
 
 	  private:
 		/**

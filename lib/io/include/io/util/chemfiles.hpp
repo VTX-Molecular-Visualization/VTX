@@ -13,7 +13,7 @@
 
 namespace VTX::IO::Util::Chemfiles
 {
-	chemfiles::Bond::BondOrder convertBondOrder( const VTX::Core::ChemDB::Bond::ORDER p_bondOrder );
+	chemfiles::Bond::BondOrder convertBondOrder( VTX::Core::ChemDB::Bond::ORDER p_bondOrder );
 
 } // namespace VTX::IO::Util::Chemfiles
 

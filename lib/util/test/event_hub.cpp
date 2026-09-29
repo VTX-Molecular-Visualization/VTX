@@ -35,7 +35,7 @@ TEST_CASE( "VTX_UTIL - EVENT HUB", "[unit]" )
 	hub.connect<TestEvent>( lambda );
 
 	// Trigger event.
-	TestEvent event;
+	const TestEvent event;
 	hub.trigger<TestEvent>( event );
 
 	CHECK( value == 3 );
@@ -72,7 +72,7 @@ TEST_CASE( "VTX_UTIL - EVENT HUB", "[unit]" )
 	CHECK( value == 11 );
 
 	{
-		EventHub::ScopedConnection c = hub.connect<TestEvent, &ClassTest::memberFunction>( classTest );
+		const EventHub::ScopedConnection c = hub.connect<TestEvent, &ClassTest::memberFunction>( classTest );
 		hub.trigger<TestEvent>();
 
 		CHECK( value == 13 );

@@ -38,10 +38,10 @@ namespace VTX::UI::QT::Dialog
 		QString _lastExportFolder;
 
 		// Events.
-		void _onResolution( const int );
+		void _onResolution( int );
 		void _onSize();
 		void _onRatio();
-		void _onFormat( const int );
+		void _onFormat( int );
 		void _onBackgroundOpacity();
 		void _schedulePreviewUpdate();
 		void _updatePreviewSize();

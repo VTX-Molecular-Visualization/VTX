@@ -25,7 +25,7 @@ namespace VTX::App
 		/**
 		 * @brief Process each step and log their duration.
 		 */
-		void process( Util::Monitoring::Stats &, const float p_delta, const float p_elapsed );
+		void process( Util::Monitoring::Stats &, float p_delta, float p_elapsed );
 	};
 
 } // namespace VTX::App

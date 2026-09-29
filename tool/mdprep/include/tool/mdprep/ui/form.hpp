@@ -42,26 +42,26 @@ namespace VTX::Tool::Mdprep::ui
 		Form() = default;
 
 		// Inform the form on new engine-dependant data.
-		inline void update( const Gateway::EngineSpecificCommonInformation & p_data ) noexcept
+		void update( const Gateway::EngineSpecificCommonInformation & p_data ) noexcept
 		{
 			if ( _ptr )
 				_ptr->update( p_data );
 		}
 
 		// Get MD parameters entered by the user
-		inline void get( Gateway::MdParameters & p_ ) const noexcept
+		void get( Gateway::MdParameters & p_ ) const noexcept
 		{
 			if ( _ptr )
 				_ptr->get( p_ );
 		}
 		// Retrieve layouts for field placing
-		inline void get( FormLayouts & p_ ) const noexcept
+		void get( FormLayouts & p_ ) const noexcept
 		{
 			if ( _ptr )
 				_ptr->get( p_ );
 		}
 		// Restore default empty form.
-		inline void close() noexcept
+		void close() noexcept
 		{
 			if ( _ptr )
 				_ptr.reset();

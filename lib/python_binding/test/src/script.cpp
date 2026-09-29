@@ -39,9 +39,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )
 {
 	using namespace VTX;
 
-	App::Test::Util::PythonFixture f;
+	const App::Test::Util::PythonFixture f;
 
-	PythonBinding::Interpretor & interpretor = f.interpretor;
+	const PythonBinding::Interpretor & interpretor = f.interpretor;
 
 	const FilePath scriptPath
 		= VTX::Util::Filesystem::getExecutableDir()

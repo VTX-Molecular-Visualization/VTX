@@ -5,11 +5,12 @@
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
 #include <cstdint>
+#include <string_view>
 #include <utility>
 
 namespace VTX::Renderer
 {
-	enum struct E_TONE_MAPPING : uint32_t
+	enum struct E_TONE_MAPPING : uint8_t
 	{
 		NONE,
 		LDR,
@@ -44,14 +45,14 @@ namespace VTX::Renderer::Builder::PostProcess
 {
 	struct ToneMapping
 	{
-		inline static const Desc::Key PASS = "ToneMapping";
+		static constexpr std::string_view PASS = "ToneMapping";
 
 		static Desc::Key build( GraphBuilder & p_graph, const Desc::Key & p_input )
 		{
-			p_graph.pass( PASS )
+			p_graph.pass( Desc::Key { PASS } )
 				.in( p_input )
-				.out( PASS )
-				.program( PASS )
+				.out( Desc::Key { PASS } )
+				.program( Desc::Key { PASS } )
 				.shaders( { "default.vert", "tone_mapping.frag" } )
 				.uniform(
 					"Mode",
@@ -66,7 +67,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.endProgram()
 				.endPass();
 
-			return PASS;
+			return Desc::Key { PASS };
 		}
 
 		static void upload( Context::ContextWrapper & p_context, const ToneMappingConfig & p_config )
@@ -76,7 +77,7 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( p_config.exposure );
 			buffer.close();
 
-			p_context.setBuffer( { PASS }, buffer );
+			p_context.setBuffer( { Desc::Key { PASS } }, buffer.bytes() );
 		}
 	};
 } // namespace VTX::Renderer::Builder::PostProcess

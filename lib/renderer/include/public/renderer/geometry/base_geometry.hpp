@@ -22,10 +22,12 @@ namespace VTX::Renderer::Geometry
 	class BaseGeometry : public Desc::Geometry
 	{
 	  public:
+		virtual ~BaseGeometry() = default;
+
 		/**
 		 * @brief Resize whole layout.
 		 */
-		inline void resize( Context::ContextWrapper & p_context )
+		virtual void resize( Context::ContextWrapper & p_context )
 		{
 			Index size = 0;
 			for ( const auto & [ uid, data ] : _resources )
@@ -42,7 +44,7 @@ namespace VTX::Renderer::Geometry
 		/**
 		 * @brief Clear all geometry ranges and cached indices.
 		 */
-		void clear()
+		virtual void clear()
 		{
 			clearRanges();
 			chunks.clear();
@@ -58,7 +60,7 @@ namespace VTX::Renderer::Geometry
 		/**
 		 * @brief Upload index buffer data.
 		 */
-		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
+		virtual void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
 		{
 			assert( indiceBuffer );
 
@@ -73,16 +75,20 @@ namespace VTX::Renderer::Geometry
 		 */
 		[[nodiscard]] std::vector<Desc::DrawIndirectRecord> toDrawIndirectCommands()
 		{
-			std::vector<Desc::DrawIndirectRecord> records;
+			std::vector<Desc::DrawIndirectRecord> records( _resources.size() );
 
-			for ( const auto & [ uid, data ] : _resources )
-			{
-				records.emplace_back(
-					Desc::DrawIndirectRecord {
-						Desc::DrawIndirectCommand { data.range.getCount(), 1, data.range.getFirst(), 0 },
-						static_cast<uint32_t>( uid ) }
-				);
-			}
+			std::ranges::transform(
+				_resources,
+				records.begin(),
+				[]( const auto & p_entry )
+				{
+					const auto & [ uid, data ] = p_entry;
+
+					return Desc::DrawIndirectRecord { Desc::DrawIndirectCommand {
+														  data.range.getCount(), 1, data.range.getFirst(), 0 },
+													  static_cast<uint32_t>( uid ) };
+				}
+			);
 
 			return records;
 		}
@@ -92,20 +98,24 @@ namespace VTX::Renderer::Geometry
 		 */
 		[[nodiscard]] std::vector<Desc::DrawIndexedIndirectRecord> toDrawIndexedIndirectCommands()
 		{
-			std::vector<Desc::DrawIndexedIndirectRecord> records;
+			std::vector<Desc::DrawIndexedIndirectRecord> records( _resources.size() );
 
-			for ( const auto & [ uid, data ] : _resources )
-			{
-				records.emplace_back(
-					Desc::DrawIndexedIndirectRecord {
-						Desc::DrawIndexedIndirectCommand { static_cast<uint32_t>( data.indices.size() ),
-														   1,
-														   data.range.getFirst(),
-														   static_cast<int32_t>( data.vertexFirst ),
-														   0 },
-						static_cast<uint32_t>( uid ) }
-				);
-			}
+			std::ranges::transform(
+				_resources,
+				records.begin(),
+				[]( const auto & p_entry )
+				{
+					const auto & [ uid, data ] = p_entry;
+
+					return Desc::DrawIndexedIndirectRecord { Desc::DrawIndexedIndirectCommand {
+																 static_cast<uint32_t>( data.indices.size() ),
+																 1,
+																 data.range.getFirst(),
+																 static_cast<int32_t>( data.vertexFirst ),
+																 0 },
+															 static_cast<uint32_t>( uid ) };
+				}
+			);
 
 			return records;
 		}
@@ -145,13 +155,13 @@ namespace VTX::Renderer::Geometry
 		 */
 		void _addRange( const Desc::Handle p_handle, const Index p_countIndices, const Index p_countVertex )
 		{
-			size_t count = _size + p_countIndices;
+			const size_t count = _size + p_countIndices;
 			if ( count > TypeMax<Index> )
 			{
 				throw GraphicException( "Total geometry count exceeds maximum supported value." );
 			}
 
-			Index countIndex = static_cast<Index>( count );
+			const Index countIndex = static_cast<Index>( count );
 			const auto [ it, inserted ]
 				= _resources.emplace( p_handle, Data { IndexRange { _size, countIndex }, _vertexSize, p_countVertex } );
 			assert( inserted );

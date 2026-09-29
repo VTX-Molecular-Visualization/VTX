@@ -34,7 +34,7 @@ namespace VTX::App::Controller
 		Animation(
 			const AnimationData &,
 			const AnimationData &,
-			const float,
+			float,
 			const InterpPositionFunc &,
 			const InterpRotationFunc &
 		);
@@ -42,7 +42,7 @@ namespace VTX::App::Controller
 		/**
 		 * @brief Called each frame.
 		 */
-		bool update( const float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
+		bool update( float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
 
 		/**
 		 * @brief Stop camera movement.

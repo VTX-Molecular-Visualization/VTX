@@ -24,7 +24,7 @@ namespace VTX::Util
 		/**
 		 * @brief Returns the current timestamp.
 		 */
-		inline static long long getTimestamp() noexcept
+		static long long getTimestamp() noexcept
 		{
 			return std::chrono::duration_cast<TimeUnit>( now().time_since_epoch() ).count();
 		}
@@ -32,12 +32,12 @@ namespace VTX::Util
 		/**
 		 * @brief Returns the current time point.
 		 */
-		inline static TimePoint now() noexcept { return Clock::now(); }
+		static TimePoint now() noexcept { return Clock::now(); }
 
 		/**
 		 * @brief Calculates the elapsed time between two time points.
 		 */
-		inline static float elapsedTime( const TimePoint p_start, const TimePoint p_end = now() ) noexcept
+		static float elapsedTime( const TimePoint p_start, const TimePoint p_end = now() ) noexcept
 		{
 			return std::chrono::duration_cast<Duration>( p_end - p_start ).count();
 		}
@@ -45,19 +45,19 @@ namespace VTX::Util
 		/**
 		 * @brief Start or restart the chrono.
 		 */
-		inline void start() noexcept { _begin = _interval = now(); }
+		void start() noexcept { _begin = _interval = now(); }
 
 		/**
 		 * @brief Time since start.
 		 */
-		inline float elapsedTime() const noexcept { return elapsedTime( _begin ); }
+		float elapsedTime() const noexcept { return elapsedTime( _begin ); }
 
 		/**
 		 * @brief Time since last call.
 		 */
-		inline float intervalTime() noexcept
+		float intervalTime() noexcept
 		{
-			float intervalTime = elapsedTime( _interval );
+			const float intervalTime = elapsedTime( _interval );
 			_interval		   = now();
 			return intervalTime;
 		}

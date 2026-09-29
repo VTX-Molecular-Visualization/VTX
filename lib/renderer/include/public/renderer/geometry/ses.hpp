@@ -12,6 +12,7 @@
 #include <memory>
 #include <numeric>
 #include <span>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -98,7 +99,7 @@ namespace VTX::Renderer::Geometry
 				std::iota( indices.begin(), indices.end(), 0 );
 			}
 
-			void clear()
+			void clear() override
 			{
 				BaseGeometry::clear();
 				_systems.clear();
@@ -119,12 +120,12 @@ namespace VTX::Renderer::Geometry
 				_systems.erase( p_surface );
 				_representations.erase( p_surface );
 				_dataOffsets.erase( p_surface );
-				chunks.erase( std::remove( chunks.begin(), chunks.end(), p_surface ), chunks.end() );
+				std::erase( chunks, p_surface );
 			}
 
 			[[nodiscard]] bool contains( const SurfaceID p_surface ) const { return _hasRange( p_surface ); }
 
-			void resize( Context::ContextWrapper & p_context )
+			void resize( Context::ContextWrapper & p_context ) override
 			{
 				assert( indiceBuffer );
 
@@ -141,7 +142,7 @@ namespace VTX::Renderer::Geometry
 				}
 			}
 
-			void uploadIndexes( Context::ContextWrapper & p_context, const SurfaceID p_surface )
+			void uploadIndexes( Context::ContextWrapper & p_context, const SurfaceID p_surface ) override
 			{
 				assert( indiceBuffer );
 
@@ -234,33 +235,33 @@ namespace VTX::Renderer::Geometry
 
 		static constexpr uint32_t MAX_PROBE_NEIGHBOR_NB = 32u;
 
-		inline static const Desc::Key BUFFER_ATOMS				   = "SES.Atoms";
-		inline static const Desc::Key BUFFER_ATOM_IDS			   = "SES.AtomIds";
-		inline static const Desc::Key BUFFER_SECTORS			   = "SES.Sectors";
-		inline static const Desc::Key BUFFER_PROBES				   = "SES.Probes";
-		inline static const Desc::Key BUFFER_PROBE_ATOM_INDICES	   = "SES.ProbesAtomIndices";
-		inline static const Desc::Key BUFFER_PROBE_NEIGHBORS	   = "SES.ProbeNeighbors";
-		inline static const Desc::Key BUFFER_CONVEX_PATCH_ELEMENTS = "SES.ConvexPatches.Elements";
-		inline static const Desc::Key BUFFER_CIRCLE_PATCH_ATOMS	   = "SES.CirclePatches.Atoms";
-		inline static const Desc::Key BUFFER_SEGMENT_PATCH_IDS	   = "SES.SegmentPatches.Ids";
+		static constexpr std::string_view BUFFER_ATOMS				   = "SES.Atoms";
+		static constexpr std::string_view BUFFER_ATOM_IDS			   = "SES.AtomIds";
+		static constexpr std::string_view BUFFER_SECTORS			   = "SES.Sectors";
+		static constexpr std::string_view BUFFER_PROBES				   = "SES.Probes";
+		static constexpr std::string_view BUFFER_PROBE_ATOM_INDICES	   = "SES.ProbesAtomIndices";
+		static constexpr std::string_view BUFFER_PROBE_NEIGHBORS	   = "SES.ProbeNeighbors";
+		static constexpr std::string_view BUFFER_CONVEX_PATCH_ELEMENTS = "SES.ConvexPatches.Elements";
+		static constexpr std::string_view BUFFER_CIRCLE_PATCH_ATOMS	   = "SES.CirclePatches.Atoms";
+		static constexpr std::string_view BUFFER_SEGMENT_PATCH_IDS	   = "SES.SegmentPatches.Ids";
 
-		inline static const Desc::Key		  GEOMETRY_CONVEX_PATCHES		   = "SES.ConvexPatches";
-		inline static const Desc::Key		  GEOMETRY_CIRCLE_PATCHES		   = "SES.CirclePatches";
-		inline static const Desc::Key		  GEOMETRY_SEGMENT_PATCHES		   = "SES.SegmentPatches";
-		inline static const Desc::Key		  GEOMETRY_CONCAVE_PATCHES		   = "SES.ConcavePatches";
-		inline static const Desc::Key		  INDIRECT_CONVEX_PATCHES		   = "Indirect.SES.ConvexPatches";
-		inline static const Desc::Key		  INDIRECT_CIRCLE_PATCHES		   = "Indirect.SES.CirclePatches";
-		inline static const Desc::Key		  INDIRECT_SEGMENT_PATCHES		   = "Indirect.SES.SegmentPatches";
-		inline static const Desc::Key		  INDIRECT_CONCAVE_PATCHES		   = "Indirect.SES.ConcavePatches";
-		inline static constexpr Desc::Binding BINDING_INDIRECT_CONVEX_PATCHES  = 10;
-		inline static constexpr Desc::Binding BINDING_INDIRECT_CIRCLE_PATCHES  = 10;
-		inline static constexpr Desc::Binding BINDING_INDIRECT_SEGMENT_PATCHES = 10;
-		inline static constexpr Desc::Binding BINDING_INDIRECT_CONCAVE_PATCHES = 10;
-		inline static const Desc::Key		  INDEX_CONVEX_PATCHES			   = "Index.SES.ConvexPatches";
-		inline static const Desc::Key		  INDEX_CIRCLE_PATCHES			   = "Index.SES.CirclePatches";
-		inline static const Desc::Key		  INDEX_SEGMENT_PATCHES			   = "Index.SES.SegmentPatches";
-		inline static const Desc::Key		  INDEX_CONCAVE_PATCHES			   = "Index.SES.ConcavePatches";
-		inline static const Desc::Key		  PASS_COMPUTE					   = "SES.Compute";
+		static constexpr std::string_view GEOMETRY_CONVEX_PATCHES		   = "SES.ConvexPatches";
+		static constexpr std::string_view GEOMETRY_CIRCLE_PATCHES		   = "SES.CirclePatches";
+		static constexpr std::string_view GEOMETRY_SEGMENT_PATCHES		   = "SES.SegmentPatches";
+		static constexpr std::string_view GEOMETRY_CONCAVE_PATCHES		   = "SES.ConcavePatches";
+		static constexpr std::string_view INDIRECT_CONVEX_PATCHES		   = "Indirect.SES.ConvexPatches";
+		static constexpr std::string_view INDIRECT_CIRCLE_PATCHES		   = "Indirect.SES.CirclePatches";
+		static constexpr std::string_view INDIRECT_SEGMENT_PATCHES		   = "Indirect.SES.SegmentPatches";
+		static constexpr std::string_view INDIRECT_CONCAVE_PATCHES		   = "Indirect.SES.ConcavePatches";
+		static constexpr Desc::Binding	  BINDING_INDIRECT_CONVEX_PATCHES  = 10;
+		static constexpr Desc::Binding	  BINDING_INDIRECT_CIRCLE_PATCHES  = 10;
+		static constexpr Desc::Binding	  BINDING_INDIRECT_SEGMENT_PATCHES = 10;
+		static constexpr Desc::Binding	  BINDING_INDIRECT_CONCAVE_PATCHES = 10;
+		static constexpr std::string_view INDEX_CONVEX_PATCHES			   = "Index.SES.ConvexPatches";
+		static constexpr std::string_view INDEX_CIRCLE_PATCHES			   = "Index.SES.CirclePatches";
+		static constexpr std::string_view INDEX_SEGMENT_PATCHES			   = "Index.SES.SegmentPatches";
+		static constexpr std::string_view INDEX_CONCAVE_PATCHES			   = "Index.SES.ConcavePatches";
+		static constexpr std::string_view PASS_COMPUTE					   = "SES.Compute";
 
 		PatchGeometry convexPatches;
 		PatchGeometry circlePatches;
@@ -286,10 +287,10 @@ namespace VTX::Renderer::Geometry
 		void invalidate( Desc::Handle p_handle );
 		void invalidateForRecompute( Context::ContextWrapper & p_context, Desc::Handle p_handle );
 
-		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle );
+		void uploadIndexes( Context::ContextWrapper & p_context, Desc::Handle p_handle );
 
-		[[nodiscard]] bool	built( Desc::Handle p_handle ) const;
-		[[nodiscard]] float probeRadius( Desc::Handle p_handle ) const;
+		[[nodiscard]] bool				 built( Desc::Handle p_handle ) const;
+		[[nodiscard]] float				 probeRadius( Desc::Handle p_handle ) const;
 		[[nodiscard]] E_SES_COMPUTE_MODE computeMode( Desc::Handle p_handle ) const;
 
 		void setVisibility( Desc::Handle p_handle, bool p_visible );
@@ -306,21 +307,21 @@ namespace VTX::Renderer::Geometry
 		Surface _createSurface( const SurfaceKey & );
 		Surface _getOrCreateSurface( const SurfaceKey & );
 		void	_constructSurface(
-			   Context::ContextWrapper & p_context,
-			   const Cache::System &	  p_data,
-			   uint32_t				  p_inputAtomOffset,
-			   float					  p_probeRadius,
-			   E_SES_COMPUTE_MODE		  p_computeMode,
-			   RepresentationIndex		  p_representation,
-			   const Surface &			  p_surface,
-			   std::span<const Index>	  p_atomIndices
-		   );
-		void	_releaseChunks( Context::ContextWrapper &, SurfaceID );
-		void	_unregisterCudaInputSourceBuffers( Context::ContextWrapper & );
-		void	_unregisterCudaConstructionBuffers( Context::ContextWrapper &, SurfaceID );
-		void	_unregisterCudaSurfaceBuffers( Context::ContextWrapper &, SurfaceID );
-		void	_constructEmptyRanges( const Surface & );
-		void	_disableDraws( Context::ContextWrapper &, SurfaceID );
+			Context::ContextWrapper & p_context,
+			const Cache::System &	  p_data,
+			uint32_t				  p_inputAtomOffset,
+			float					  p_probeRadius,
+			E_SES_COMPUTE_MODE		  p_computeMode,
+			RepresentationIndex		  p_representation,
+			const Surface &			  p_surface,
+			std::span<const Index>	  p_atomIndices
+		);
+		static void _releaseChunks( Context::ContextWrapper &, SurfaceID );
+		static void _unregisterCudaInputSourceBuffers( Context::ContextWrapper & );
+		static void _unregisterCudaConstructionBuffers( Context::ContextWrapper &, SurfaceID );
+		static void _unregisterCudaSurfaceBuffers( Context::ContextWrapper &, SurfaceID );
+		void		_constructEmptyRanges( const Surface & );
+		void		_disableDraws( Context::ContextWrapper &, SurfaceID ) const;
 
 		SurfaceRegistry _surfaces;
 	};

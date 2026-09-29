@@ -25,7 +25,7 @@ namespace VTX::Util
 
 		static DataType lock_and_copy( const DataType & p_data, std::mutex & p_mutex )
 		{
-			std::scoped_lock<std::mutex> lock { p_mutex };
+			const std::scoped_lock<std::mutex> lock { p_mutex };
 			return DataType( p_data );
 		}
 
@@ -45,16 +45,19 @@ namespace VTX::Util
 		}
 		~DataLocker() = default;
 
-		inline DataLocker( DataLocker<DataType> && p_ ) : _data( std::move( p_._data ) ) {}
-		inline DataLocker( const DataLocker<DataType> & p_ ) : _data( lock_and_copy( p_._data, p_._mutex ) ) {}
-		inline DataLocker & operator=( DataLocker<DataType> && p_ )
+		DataLocker( DataLocker<DataType> && p_ ) : _data( std::move( p_._data ) ) {}
+
+		DataLocker( const DataLocker<DataType> & p_ ) : _data( lock_and_copy( p_._data, p_._mutex ) ) {}
+
+		DataLocker & operator=( DataLocker<DataType> && p_ )
 		{
 			if ( &p_ != this )
 				_data = std::move( p_._data );
 
 			return *this;
 		}
-		inline DataLocker & operator=( const DataLocker<DataType> & p_ )
+
+		DataLocker & operator=( const DataLocker<DataType> & p_ )
 		{
 			std::scoped_lock<std::mutex> lock { p_._mutex };
 

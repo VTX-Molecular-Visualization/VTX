@@ -4,6 +4,7 @@
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
+#include <string_view>
 #include <utility>
 
 namespace VTX::Renderer
@@ -34,14 +35,14 @@ namespace VTX::Renderer::Builder::PostProcess
 {
 	struct ChromaticAberration
 	{
-		inline static const Desc::Key PASS = "ChromaticAberration";
+		static constexpr std::string_view PASS = "ChromaticAberration";
 
 		static Desc::Key build( GraphBuilder & p_graph, const Desc::Key & p_input )
 		{
-			p_graph.pass( PASS )
+			p_graph.pass( Desc::Key { PASS } )
 				.in( p_input )
-				.out( PASS )
-				.program( PASS )
+				.out( Desc::Key { PASS } )
+				.program( Desc::Key { PASS } )
 				.shaders( { "default.vert", "chromatic_aberration.frag" } )
 				.uniform( "Red", CHROMAB_RED_DEFAULT, std::pair { CHROMAB_RGB_MIN, CHROMAB_RGB_MAX } )
 				.uniform( "Green", CHROMAB_GREEN_DEFAULT, std::pair { CHROMAB_RGB_MIN, CHROMAB_RGB_MAX } )
@@ -49,7 +50,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.endProgram()
 				.endPass();
 
-			return PASS;
+			return Desc::Key { PASS };
 		}
 
 		static void upload( Context::ContextWrapper & p_context, const ChromaticAberrationConfig & p_config )
@@ -60,7 +61,7 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( p_config.blue );
 			buffer.close();
 
-			p_context.setBuffer( { PASS }, buffer );
+			p_context.setBuffer( { Desc::Key { PASS } }, buffer.bytes() );
 		}
 	};
 } // namespace VTX::Renderer::Builder::PostProcess

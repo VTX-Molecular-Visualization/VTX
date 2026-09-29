@@ -47,14 +47,14 @@ namespace VTX::PythonBinding
 			config.module_search_paths.length = 0;
 			config.module_search_paths.items  = nullptr;
 #ifdef _WIN32
-			std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
-			std::wstring platlibdir	 = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
-			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "python"
+			const std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
+			const std::wstring platlibdir  = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
+			const std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "python"
 #ifdef _DEBUG
 			"_d"
 #endif // _DEBUG
 				".exe" ).wstring();
-			std::wstring pythonExecDir = p_pythonHomePath;
+			const std::wstring pythonExecDir = p_pythonHomePath;
 #else
 			std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "lib"
 										 / "python" CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR )
@@ -69,15 +69,15 @@ namespace VTX::PythonBinding
 			PyConfig_SetString( &config, &config.platlibdir, platlibdir.c_str() );
 			PyConfig_SetString( &config, &config.home, p_pythonHomePath.c_str() );
 			PyConfig_SetString( &config, &config.prefix, p_pythonHomePath.c_str() );
-			std::wstring execDirPath = VTX::Util::Filesystem::getExecutableDir().wstring();
+			const std::wstring execDirPath = VTX::Util::Filesystem::getExecutableDir().wstring();
 
 			PyConfig_SetString( &config, &config.exec_prefix, p_pythonHomePath.c_str() );
 
-			VTX::FilePath pythonArchivePath
+			const VTX::FilePath pythonArchivePath
 				= VTX::FilePath( p_pythonHomePath ) / "python" CPYTHON_VERSION_MAJOR CPYTHON_VERSION_MINOR ".zip";
-			std::wstring pythonArchivePathStr( pythonArchivePath.wstring() );
+			const std::wstring pythonArchivePathStr( pythonArchivePath.wstring() );
 
-			std::string execDirPath_string = VTX::Util::Filesystem::getExecutableDir().string();
+			const std::string execDirPath_string = VTX::Util::Filesystem::getExecutableDir().string();
 
 			PyWideStringList_Append( &config.module_search_paths, pyScriptDir.c_str() );
 			PyWideStringList_Append( &config.module_search_paths, pythonArchivePathStr.c_str() );
@@ -120,8 +120,8 @@ namespace VTX::PythonBinding
 			// Allow the python "print" function to be funneled into our log system
 			_vtxModule.import( "sys" ).attr( "stdout" ) = _vtxModule.attr( "LogRedirection" );
 
-			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
-			FilePath initCommandsFile = initScriptDir / vtx_initialization_script_name();
+			const FilePath initScriptDir	= Util::Filesystem::getExecutableDir() / "python_script";
+			const FilePath initCommandsFile = initScriptDir / vtx_initialization_script_name();
 
 			// The file should be at the right place but users always find a way ...
 			if ( not std::filesystem::exists( initCommandsFile ) )
@@ -170,7 +170,7 @@ namespace VTX::PythonBinding
 		// it might mean that we shouldn't expect a return value. So we execute it as is. If it crashes again, it means
 		// that the command isn't viable at all.
 
-		if ( FilterResult isHarmful = filter( p_line ) )
+		if ( const FilterResult isHarmful = filter( p_line ) )
 		{
 			return isHarmful.why();
 		}

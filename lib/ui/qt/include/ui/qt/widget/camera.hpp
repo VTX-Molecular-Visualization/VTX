@@ -14,7 +14,7 @@ namespace VTX::UI::QT::Widget
 	class Camera : public QGroupBox
 	{
 	  public:
-		Camera( const Entity, QWidget * );
+		Camera( Entity, QWidget * );
 		~Camera();
 
 	  private:

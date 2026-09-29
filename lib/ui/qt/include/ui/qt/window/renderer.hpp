@@ -37,21 +37,21 @@ namespace VTX::UI::QT::Window
 		/**
 		 * @brief On click.
 		 */
-		void clicked( const Qt::MouseButton, const QPoint );
+		void clicked( Qt::MouseButton, QPoint );
 
 	  protected:
 		/**
 		 * @brief Override events.
 		 */
-		void keyPressEvent( QKeyEvent * const ) override;
-		void keyReleaseEvent( QKeyEvent * const ) override;
+		void keyPressEvent( QKeyEvent * ) override;
+		void keyReleaseEvent( QKeyEvent * ) override;
 		void focusInEvent( QFocusEvent * ) override;
 		void focusOutEvent( QFocusEvent * ) override;
 		void mousePressEvent( QMouseEvent * ) override;
 		void mouseMoveEvent( QMouseEvent * ) override;
 		void mouseReleaseEvent( QMouseEvent * ) override;
-		void mouseDoubleClickEvent( QMouseEvent * const ) override;
-		void wheelEvent( QWheelEvent * const ) override;
+		void mouseDoubleClickEvent( QMouseEvent * ) override;
+		void wheelEvent( QWheelEvent * ) override;
 
 	  private:
 		App::Input::InputManager & _inputManager;
@@ -62,9 +62,9 @@ namespace VTX::UI::QT::Window
 		QPointF			_lastPos	   = {};
 		bool			_dragging	   = false;
 
-		void											_handleKeyboard( QKeyEvent * const, const bool p_enable );
+		void											_handleKeyboard( QKeyEvent *, bool p_enable );
 		void											_handleModifiers();
-		std::optional<App::Input::InputManager::Action> _getKeyboardAction( const int ) const;
+		std::optional<App::Input::InputManager::Action> _getKeyboardAction( int ) const;
 		QPoint											_toDevicePixels( const QPointF & ) const;
 		void											_onKBLayoutChange( const Events::KeyboardLayoutChanged & );
 	};

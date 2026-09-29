@@ -19,18 +19,19 @@ namespace VTX::UI::QT::Widget::Tree
 		Q_OBJECT
 
 	  public:
-		System( const Entity, QWidget * );
+		System( Entity, QWidget * );
+
+		Model::SystemModel & getSystemModel() { return *static_cast<Model::SystemModel *>( model() ); }
+
+		const Model::SystemModel & getSystemModel() const { return *static_cast<Model::SystemModel *>( model() ); }
+
+		void setViewMode( Model::SystemModel::ViewMode p_mode );
+
+	  protected:
 		void contextMenuEvent( QContextMenuEvent * p_e ) override;
 		void mousePressEvent( QMouseEvent * p_e ) override;
 		void mouseMoveEvent( QMouseEvent * p_e ) override;
 		void mouseReleaseEvent( QMouseEvent * p_e ) override;
-
-		inline Model::SystemModel & getSystemModel() { return *static_cast<Model::SystemModel *>( model() ); }
-
-		inline const Model::SystemModel & getSystemModel() const
-		{ return *static_cast<Model::SystemModel *>( model() ); }
-
-		void setViewMode( const Model::SystemModel::ViewMode p_mode );
 
 	  private:
 		/**
@@ -60,7 +61,7 @@ namespace VTX::UI::QT::Widget::Tree
 
 		bool _shouldHandleSelectionClick( QMouseEvent *, const QModelIndex &, QStyleOptionViewItem & ) const;
 		bool _isFullySelected( const QModelIndex & ) const;
-		void _applySelection( const QModelIndex &, const bool = true, const bool = false );
+		void _applySelection( const QModelIndex &, bool = true, bool = false );
 		void _selectVisibleRange( const QModelIndex &, const QModelIndex & );
 		void _toggleViewMode();
 		void _expandRoot();

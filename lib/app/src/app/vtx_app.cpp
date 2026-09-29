@@ -53,13 +53,15 @@ namespace VTX::App
 
 	VTXApp::VTXApp( Arguments && p_args )
 	{
-		bool debug = p_args.debug;
+		const bool debug = p_args.debug;
 
 		// Set global registry.
 		ECS::setRegistry( _registry );
 
 		// Store args.
 		ECS::setCtx<Arguments>( std::move( p_args ) );
+		// Event hub.
+		ECS::setCtx<Util::EventHub>();
 		// Session.
 		ECS::setCtx<Session>();
 		// Logger.
@@ -140,7 +142,6 @@ namespace VTX::App
 		VTX_INFO( toString( ARGS() ) );
 		SESSION().print();
 
-		ECS::setCtx<Util::EventHub>();
 		ECS::setCtx<Util::Monitoring::Stats>();
 		ECS::setCtx<Renderer::Renderer>();
 		ECS::setCtx<Action::ActionManager>();

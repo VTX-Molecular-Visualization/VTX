@@ -23,7 +23,8 @@ namespace
 	VTX::Util::LOG_HINT _toLogHint( const spdlog::source_loc & p_source )
 	{
 		const std::string_view hint = p_source.funcname != nullptr ? p_source.funcname : "";
-		return hint.empty() ? VTX::Util::LOG_HINT::STD : VTX::Util::Enum::enumCast<VTX::Util::LOG_HINT>( std::string( hint ) );
+		return hint.empty() ? VTX::Util::LOG_HINT::STD
+							: VTX::Util::Enum::enumCast<VTX::Util::LOG_HINT>( std::string( hint ) );
 	}
 
 	VTX::Util::LogInfo _toLogInfo( const spdlog::details::log_msg & p_msg )
@@ -38,12 +39,9 @@ namespace
 
 namespace VTX::Util
 {
-	const char * Logger::toSpdlogHint( const LOG_HINT p_hint )
-	{
-		return Enum::enumName( p_hint ).data();
-	}
+	const char * Logger::toSpdlogHint( const LOG_HINT p_hint ) { return Enum::enumName( p_hint ).data(); }
 
-	void Logger::init( const std::filesystem::path & p_logDir, const bool p_debug )
+	void Logger::init( const FilePath & p_logDir, const bool p_debug )
 	{
 		try
 		{
@@ -92,7 +90,7 @@ namespace VTX::Util
 
 	void Logger::flush()
 	{
-		if ( auto logger = spdlog::get( NAME.data() ) )
+		if ( auto logger = spdlog::get( std::string( NAME ) ) )
 		{
 			logger->flush();
 		}

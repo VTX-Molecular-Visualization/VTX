@@ -19,7 +19,7 @@ namespace VTX::UI::QT::Widget
 	class Sequence : public QAbstractScrollArea
 	{
 	  public:
-		Sequence( const Entity, QWidget * );
+		Sequence( Entity, QWidget * );
 
 		enum struct Mode : int
 		{

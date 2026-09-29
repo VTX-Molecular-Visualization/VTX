@@ -21,7 +21,7 @@ namespace VTX::App::Action::Trajectory
 
 	void ToggleStartPause::execute( const Entity p_entity )
 	{
-		_patch( p_entity, []( App::Trajectory::Player & traj ) { traj.paused ^= 1; } );
+		_patch( p_entity, []( App::Trajectory::Player & traj ) { traj.paused = not traj.paused; } );
 	}
 
 	void SetPaused::execute( const Entity p_entity, const bool p_paused )

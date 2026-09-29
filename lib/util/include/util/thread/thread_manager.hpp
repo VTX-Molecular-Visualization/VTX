@@ -214,7 +214,7 @@ namespace VTX::Util::Thread
 		/**
 		 * @brief Cancels the synchronized calls for the given thread id.
 		 */
-		void _cancelSynchronizedCalls( const ID );
+		void _cancelSynchronizedCalls( ID );
 
 		/**
 		 * @brief Cancels all synchronized calls.

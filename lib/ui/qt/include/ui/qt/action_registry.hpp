@@ -63,7 +63,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Get a registered action.
 		 */
-		QAction * getAction( const std::string_view ) const;
+		QAction * getAction( std::string_view ) const;
 
 		/**
 		 * @brief Trigger by key.
@@ -73,12 +73,12 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Get the checked state.
 		 */
-		bool isChecked( const std::string_view ) const;
+		bool isChecked( std::string_view ) const;
 
 		/**
 		 * @brief Set the checked state.
 		 */
-		void setChecked( const std::string_view, const bool ) const;
+		void setChecked( std::string_view, bool ) const;
 
 		/**
 		 * @brief Attach all action shortcuts to a widget.
@@ -88,17 +88,17 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Add a registered action to a widget.
 		 */
-		QAction * addTo( QWidget &, const std::string_view );
+		QAction * addTo( QWidget &, std::string_view );
 
 		/**
 		 * @brief Add a registered action to a menu.
 		 */
-		QAction * addTo( QMenu &, const std::string_view );
+		QAction * addTo( QMenu &, std::string_view );
 
 		/**
 		 * @brief Add a registered action to a toolbar.
 		 */
-		QAction * addTo( QToolBar &, const std::string_view );
+		QAction * addTo( QToolBar &, std::string_view );
 
 	  private:
 		/**
@@ -109,12 +109,12 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Create a QAction from an action description and register its handler.
 		 */
-		QAction * _createAction( const App::UI::DescAction &, const std::string_view );
+		QAction * _createAction( const App::UI::DescAction &, std::string_view );
 
 		/**
 		 * @brief Bind the trigger signal to the registry method.
 		 */
-		void _bindTrigger( QAction &, const std::string_view );
+		void _bindTrigger( QAction &, std::string_view );
 	};
 } // namespace VTX::UI::QT
 

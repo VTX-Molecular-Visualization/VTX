@@ -24,7 +24,7 @@ namespace VTX::Renderer
 		return true;
 	}
 
-	const Desc::RenderQueue RenderGraph::build()
+	Desc::RenderQueue RenderGraph::build()
 	{
 		using namespace Desc;
 
@@ -154,7 +154,7 @@ namespace VTX::Renderer
 		}
 
 		// Check last pass = no output (going to fbo).
-		if ( queue.back()->outputs.size() > 0 )
+		if ( not queue.back()->outputs.empty() )
 		{
 			// throw GraphicException( "Last pass '{}' must have exactly one output", queue.back()->name );
 		}

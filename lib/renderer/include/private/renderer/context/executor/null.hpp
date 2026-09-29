@@ -15,7 +15,7 @@ namespace VTX::Renderer::Context::Executor
 		 * @brief Execute a single command.
 		 */
 		template<typename PayLoad>
-		inline void execute( const PayLoad & ) const noexcept
+		void execute( const PayLoad & ) const noexcept
 		{
 			// Do nothing.
 		}

@@ -78,11 +78,14 @@ namespace VTX::Renderer
 
 	namespace Materials
 	{
-		inline const Material DEFAULT { .name = "Default" };
-		inline const Material MATTE { .name = "Matte", .metallic = 0.f, .roughness = 0.9f };
-		inline const Material PLASTIC { .name = "Plastic", .metallic = 0.f, .roughness = 0.35f };
-		inline const Material POLISHED_METAL { .name = "Polished metal", .metallic = 1.f, .roughness = 0.1f };
-		inline const Material BRUSHED_METAL { .name = "Brushed metal", .metallic = 1.f, .roughness = 0.55f };
+		inline constexpr auto DEFAULT = [] { return Material { .name = "Default" }; };
+		inline constexpr auto MATTE	  = [] { return Material { .name = "Matte", .metallic = 0.f, .roughness = 0.9f }; };
+		inline constexpr auto PLASTIC
+			= [] { return Material { .name = "Plastic", .metallic = 0.f, .roughness = 0.35f }; };
+		inline constexpr auto POLISHED_METAL
+			= [] { return Material { .name = "Polished metal", .metallic = 1.f, .roughness = 0.1f }; };
+		inline constexpr auto BRUSHED_METAL
+			= [] { return Material { .name = "Brushed metal", .metallic = 1.f, .roughness = 0.55f }; };
 	} // namespace Materials
 } // namespace VTX::Renderer
 

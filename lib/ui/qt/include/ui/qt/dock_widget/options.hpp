@@ -51,7 +51,7 @@ namespace VTX::UI::QT::DockWidget
 			const FilePath &   p_path,
 			QPointer<QLabel> & p_labelSize
 		);
-		void _refreshFolderInfos( const FilePath & p_path, QLabel * const p_labelSize, const QString & p_title ) const;
+		void _refreshFolderInfos( const FilePath & p_path, QLabel * p_labelSize, const QString & p_title ) const;
 		void _refreshFoldersInfos();
 	};
 

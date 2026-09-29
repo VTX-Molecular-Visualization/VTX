@@ -3,6 +3,7 @@
 
 #include <pybind11/pybind11.h>
 #include <string>
+#include <type_traits>
 #include <util/exceptions.hpp>
 
 namespace VTX::PythonBinding::Wrapper
@@ -40,7 +41,7 @@ namespace VTX::PythonBinding::Wrapper
 		{
 			if constexpr ( std::is_same_v<T, Object> )
 			{
-				return _getReturnValue();
+				return T( _returnObj );
 			}
 			else
 			{
@@ -78,8 +79,6 @@ namespace VTX::PythonBinding::Wrapper
 				) );
 			}
 		}
-
-		Object _getReturnValue();
 	};
 }; // namespace VTX::PythonBinding::Wrapper
 

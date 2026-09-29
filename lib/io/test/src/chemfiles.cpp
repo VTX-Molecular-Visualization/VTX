@@ -32,21 +32,21 @@ namespace
 		res.setSymbol( "SOL" );
 
 		uint64_t i = 0;
-		AtomId	 id_wat1_O { i++ };
+		const AtomId id_wat1_O { i++ };
 		Atom	 wat1_O = system.newAtom( id_wat1_O );
 		wat1_O.setName( "OW" );
 		wat1_O.setSymbol( "O" );
 		res.add( wat1_O );
 		frame.set( wat1_O, { 42.019, 41.914, 16.013 } );
 
-		AtomId id_wat1_H1 { i++ };
+		const AtomId id_wat1_H1 { i++ };
 		Atom   wat1_H1 = system.newAtom( id_wat1_H1 );
 		wat1_H1.setName( "HW1" );
 		wat1_H1.setSymbol( "H" );
 		res.add( wat1_H1 );
 		frame.set( wat1_H1, { 41.159, 41.984, 15.603 } );
 
-		AtomId id_wat1_H2 { i++ };
+		const AtomId id_wat1_H2 { i++ };
 		Atom   wat1_H2 = system.newAtom( id_wat1_H2 );
 		wat1_H2.setName( "HW2" );
 		wat1_H2.setSymbol( "H" );
@@ -58,21 +58,21 @@ namespace
 		res.setSymbol( "SOL" );
 		chain.add( res );
 
-		AtomId id_wat2_O { i++ };
+		const AtomId id_wat2_O { i++ };
 		Atom   wat2_O = system.newAtom( id_wat2_O );
 		wat2_O.setName( "OW" );
 		wat2_O.setSymbol( "O" );
 		res.add( wat2_O );
 		frame.set( wat2_O, { 36.731, 18.181, 36.460 } );
 
-		AtomId id_wat2_H1 { i++ };
+		const AtomId id_wat2_H1 { i++ };
 		Atom   wat2_H1 = system.newAtom( id_wat2_H1 );
 		wat2_H1.setName( "HW1" );
 		wat2_H1.setSymbol( "H" );
 		res.add( wat2_H1 );
 		frame.set( wat2_H1, { 35.841, 17.911, 36.230 } );
 
-		AtomId id_wat2_H2 { i++ };
+		const AtomId id_wat2_H2 { i++ };
 		Atom   wat2_H2 = system.newAtom( id_wat2_H2 );
 		wat2_H2.setName( "HW2" );
 		wat2_H2.setSymbol( "H" );
@@ -99,7 +99,7 @@ namespace
 		res.setSymbol( "SOL" );
 
 		uint64_t i = 0;
-		AtomId	 id_wat1_O { i++ };
+		const AtomId id_wat1_O { i++ };
 		Atom	 wat1_O = system.newAtom( id_wat1_O );
 		wat1_O.setName( "OW" );
 		wat1_O.setSymbol( "O" );
@@ -107,7 +107,7 @@ namespace
 		frame1.set( wat1_O, { 42.019, 41.914, 16.013 } );
 		frame2.set( wat1_O, { 43.019, 41.914, 16.013 } );
 
-		AtomId id_wat1_H1 { i++ };
+		const AtomId id_wat1_H1 { i++ };
 		Atom   wat1_H1 = system.newAtom( id_wat1_H1 );
 		wat1_H1.setName( "HW1" );
 		wat1_H1.setSymbol( "H" );
@@ -115,7 +115,7 @@ namespace
 		frame1.set( wat1_H1, { 41.159, 41.984, 15.603 } );
 		frame2.set( wat1_H1, { 42.159, 41.984, 15.603 } );
 
-		AtomId id_wat1_H2 { i++ };
+		const AtomId id_wat1_H2 { i++ };
 		Atom   wat1_H2 = system.newAtom( id_wat1_H2 );
 		wat1_H2.setName( "HW2" );
 		wat1_H2.setSymbol( "H" );
@@ -128,7 +128,7 @@ namespace
 		res.setSymbol( "SOL" );
 		chain.add( res );
 
-		AtomId id_wat2_O { i++ };
+		const AtomId id_wat2_O { i++ };
 		Atom   wat2_O = system.newAtom( id_wat2_O );
 		wat2_O.setName( "OW" );
 		wat2_O.setSymbol( "O" );
@@ -136,7 +136,7 @@ namespace
 		frame1.set( wat2_O, { 36.731, 18.181, 36.460 } );
 		frame2.set( wat2_O, { 37.731, 18.181, 36.460 } );
 
-		AtomId id_wat2_H1 { i++ };
+		const AtomId id_wat2_H1 { i++ };
 		Atom   wat2_H1 = system.newAtom( id_wat2_H1 );
 		wat2_H1.setName( "HW1" );
 		wat2_H1.setSymbol( "H" );
@@ -144,7 +144,7 @@ namespace
 		frame1.set( wat2_H1, { 35.841, 17.911, 36.230 } );
 		frame2.set( wat2_H1, { 36.841, 17.911, 36.230 } );
 
-		AtomId id_wat2_H2 { i++ };
+		const AtomId id_wat2_H2 { i++ };
 		Atom   wat2_H2 = system.newAtom( id_wat2_H2 );
 		wat2_H2.setName( "HW2" );
 		wat2_H2.setSymbol( "H" );
@@ -180,10 +180,10 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 
 	VTX::Core::Struct::Topology				topology;
 	VTX::IO::Metadata						metadata;
-	StopToken								t;
+	const StopToken								  t;
 	VTX::IO::SystemReader					systemReader( waterPath, VTX::IO::READER_OPTION::ALL, t );
 	VTX::Core::Struct::Frame				positions;
-	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
+	const VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 	systemReader.get( dict, topology, metadata );
 	systemReader.get( positions );
 
@@ -215,9 +215,9 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 	}
 
 	VTX::Core::Struct::Topology				topology;
-	StopToken								t;
+	const StopToken								  t;
 	VTX::IO::SystemReader					systemReader( waterPath, VTX::IO::READER_OPTION::ALL, t );
-	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
+	const VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 	VTX::IO::Metadata						metadata;
 	systemReader.get( dict, topology, metadata );
 
@@ -281,7 +281,7 @@ namespace
 		using namespace VTX;
 		using namespace VTX::IO;
 		using namespace VTX::IO::Writer;
-		VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
+		const VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 
 		const std::string systemName	 = p_args.systemName;
 		const std::string systemPathname = systemName + p_args.extension;
@@ -291,7 +291,7 @@ namespace
 		VTX::Core::Struct::Topology topology;
 		LazyTrajectory				traj;
 		{
-			StopToken			  t;
+			const StopToken		  t;
 			VTX::IO::SystemReader systemReader( systemPath, VTX::IO::READER_OPTION::ALL, t );
 			VTX::IO::Metadata	  metadata;
 			systemReader.get( dict, topology, metadata );
@@ -302,10 +302,10 @@ namespace
 				systemReader.get( traj.frames.back(), it_fc );
 			}
 		}
-		size_t atomCount  = topology.getAtomCount();
-		size_t chainCount = topology.getChainCount();
-		size_t bondCount  = topology.getBondCount();
-		size_t resCount	  = topology.getResidueCount();
+		const size_t atomCount	= topology.getAtomCount();
+		const size_t chainCount = topology.getChainCount();
+		const size_t bondCount	= topology.getBondCount();
+		const size_t resCount	= topology.getResidueCount();
 
 		p_out.firstRead.atLeastOneFrame = ( frameCount > 0 );
 
@@ -330,7 +330,7 @@ namespace
 		}
 
 		VTX::Core::Struct::Topology system_reread;
-		StopToken					t;
+		const StopToken				t;
 		VTX::IO::SystemReader		systemReader( destination, VTX::IO::READER_OPTION::ALL, t );
 		VTX::IO::Metadata			metadata;
 		systemReader.get( dict, system_reread, metadata );
@@ -444,10 +444,10 @@ namespace
 	)
 	{
 		VTX::Core::Struct::Topology				top;
-		StopToken								stop;
+		const StopToken								  stop;
 		VTX::IO::SystemReader					reader( dest, VTX::IO::READER_OPTION::ALL, stop );
 		VTX::IO::Metadata						meta;
-		VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
+		const VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 		reader.get( dict, top, meta );
 		if ( positions )
 		{
@@ -505,7 +505,7 @@ TEST_CASE(
 	);
 
 	size_t						fc;
-	VTX::Core::Struct::Topology reread = readBack( dest, nullptr, &fc );
+	const VTX::Core::Struct::Topology reread = readBack( dest, nullptr, &fc );
 
 	CHECK( reread.getAtomCount() == 8 ); // 3 + 5
 	CHECK( reread.getChainCount() == 2 );
@@ -554,7 +554,7 @@ TEST_CASE(
 		}
 	);
 
-	VTX::Core::Struct::Topology reread = readBack( dest );
+	const VTX::Core::Struct::Topology reread = readBack( dest );
 
 	// A shared name must not cause one atom to overwrite another: all 6 must survive
 	CHECK( reread.getAtomCount() == 6 );
@@ -601,7 +601,7 @@ TEST_CASE(
 	);
 
 	VTX::Core::Struct::Frame	positions;
-	VTX::Core::Struct::Topology reread = readBack( dest, &positions );
+	const VTX::Core::Struct::Topology reread = readBack( dest, &positions );
 
 	REQUIRE( positions.size() == 4 );
 
@@ -639,7 +639,7 @@ TEST_CASE(
 	FixedTrajectory traj;
 	traj.frame = { { 1.f, 0.f, 0.f }, { 99.f, 0.f, 0.f }, { 3.f, 0.f, 0.f } };
 
-	AtomFilter keepNonN = [ &top ]( const size_t & i ) -> bool { return top.atomNames[ i ] != "N"; };
+	const AtomFilter keepNonN = [ &top ]( const size_t & i ) -> bool { return top.atomNames[ i ] != "N"; };
 
 	const VTX::FilePath			   dest = multiOutDir() / "filter_single.pdb";
 	std::vector<WriteArgs::System> topologies;
@@ -653,7 +653,7 @@ TEST_CASE(
 	);
 
 	VTX::Core::Struct::Frame	positions;
-	VTX::Core::Struct::Topology reread = readBack( dest, &positions );
+	const VTX::Core::Struct::Topology reread = readBack( dest, &positions );
 
 	REQUIRE( reread.getAtomCount() == 2 );
 	REQUIRE( positions.size() == 2 );
@@ -699,7 +699,7 @@ TEST_CASE(
 					.atom( "O2", VTX::Core::ChemDB::Atom::SYMBOL::A_O ) // index 2 – kept
 					.finish();
 
-	AtomFilter keepNonN = [ &sys2 ]( const size_t & i ) -> bool
+	const AtomFilter keepNonN = [ &sys2 ]( const size_t & i ) -> bool
 	{
 		//
 		return sys2.atomNames[ i ] != "N";

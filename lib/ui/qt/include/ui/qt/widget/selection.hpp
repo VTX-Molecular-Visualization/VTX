@@ -21,7 +21,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Constructor.
 		 */
-		Selection( QWidget * const p_parent = nullptr );
+		Selection( QWidget * p_parent = nullptr );
 		~Selection();
 
 	  private:

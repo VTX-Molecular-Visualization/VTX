@@ -27,7 +27,7 @@ namespace VTX::Renderer::Builder
 			( _append( buffer, p_resources, p_camera, modelIndex ), ... );
 
 			buffer.close();
-			p_context.setBuffer( { "Models" }, buffer );
+			p_context.setBuffer( { "Models" }, buffer.bytes() );
 		}
 
 	  private:

@@ -91,7 +91,7 @@ namespace VTX::Renderer
 
 	GraphBuilder & GraphBuilder::vertexLayout( const Desc::Key & p_name, const Desc::VertexLayout & p_layout )
 	{
-		for ( auto & attr : p_layout.attributes )
+		for ( const auto & attr : p_layout.attributes )
 		{
 			if ( not resources.buffers.contains( attr.name ) )
 			{
@@ -130,7 +130,7 @@ namespace VTX::Renderer
 			desc.binding = *p_binding;
 		}
 
-		if ( p_values.size() > 0 )
+		if ( not p_values.empty() )
 		{
 			desc.values.assign( p_values.begin(), p_values.end() );
 		}
@@ -139,10 +139,10 @@ namespace VTX::Renderer
 	}
 
 	GraphBuilder & GraphBuilder::geometry(
-		const Desc::Key &			   p_name,
-		const Desc::Key &			   p_vertexLayout,
-		const std::optional<Desc::Key> p_indiceBuffer,
-		const std::optional<Desc::Key> p_indirectBuffer
+		const Desc::Key &				 p_name,
+		const Desc::Key &				 p_vertexLayout,
+		const std::optional<Desc::Key> & p_indiceBuffer,
+		const std::optional<Desc::Key> & p_indirectBuffer
 	)
 	{
 		if ( p_indiceBuffer && not resources.buffers.contains( *p_indiceBuffer ) )
@@ -305,9 +305,9 @@ namespace VTX::Renderer
 	}
 
 	PassBuilder & PassBuilder::in(
-		const Desc::E_RESOURCE_TYPE	   p_type,
-		const Desc::Key &			   p_primary,
-		const std::optional<Desc::Key> p_secondary
+		const Desc::E_RESOURCE_TYPE		 p_type,
+		const Desc::Key &				 p_primary,
+		const std::optional<Desc::Key> & p_secondary
 	)
 	{
 		pass.inputs.push_back( { p_type, p_primary, p_secondary } );
@@ -315,12 +315,16 @@ namespace VTX::Renderer
 	}
 
 	PassBuilder & PassBuilder::in( const Desc::Key & p_texture, const std::optional<Desc::Key> & p_sampler )
-	{ return in( Desc::E_RESOURCE_TYPE::TEXTURE, p_texture, p_sampler ? *p_sampler : DEFAULT_SAMPLER_NAME ); }
+	{
+		return in(
+			Desc::E_RESOURCE_TYPE::TEXTURE, p_texture, p_sampler ? *p_sampler : Desc::Key { DEFAULT_SAMPLER_NAME }
+		);
+	}
 
 	PassBuilder & PassBuilder::out(
-		const Desc::E_RESOURCE_TYPE	   p_type,
-		const Desc::Key &			   p_primary,
-		const std::optional<Desc::Key> p_secondary
+		const Desc::E_RESOURCE_TYPE		 p_type,
+		const Desc::Key &				 p_primary,
+		const std::optional<Desc::Key> & p_secondary
 	)
 	{
 		pass.outputs.push_back( { p_type, p_primary, p_secondary } );

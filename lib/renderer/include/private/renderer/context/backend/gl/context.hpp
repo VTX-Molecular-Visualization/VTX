@@ -167,7 +167,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			return p;
 		}
 
-		void * getProcAddress() { return reinterpret_cast<void *>( &_wglLoader ); }
+		static void * getProcAddress() { return reinterpret_cast<void *>( &_wglLoader ); }
 
 		void makeCurrent() const
 		{
@@ -181,7 +181,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		bool isDefaultFramebufferSrgb() const { return _defaultFramebufferSrgb; }
 
-		void setSwapInterval( const int p_interval )
+		static void setSwapInterval( const int p_interval )
 		{
 			auto wglSwapIntervalEXT
 				= reinterpret_cast<PFNWGLSWAPINTERVALEXTPROC>( wglGetProcAddress( "wglSwapIntervalEXT" ) );
@@ -326,9 +326,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		~MacOSGLContextWrapper() { destroy(); }
 
 		void init( const Desc::NativeContextInfo &, const uint32_t, const uint32_t )
-		{
-			throw std::runtime_error( "macOS OpenGL context creation is not implemented yet" );
-		}
+		{ throw std::runtime_error( "macOS OpenGL context creation is not implemented yet" ); }
 
 		void * getProcAddress() { return nullptr; }
 
@@ -562,9 +560,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 
 		static void * _eglLoader( const char * p_name )
-		{
-			return reinterpret_cast<void *>( eglGetProcAddress( p_name ) );
-		}
+		{ return reinterpret_cast<void *>( eglGetProcAddress( p_name ) ); }
 
 		void * getProcAddress() { return reinterpret_cast<void *>( &_eglLoader ); }
 

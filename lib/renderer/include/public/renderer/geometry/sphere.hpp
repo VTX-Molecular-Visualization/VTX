@@ -3,6 +3,7 @@
 
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
+#include <string_view>
 
 namespace VTX::Renderer::Geometry
 {
@@ -10,15 +11,15 @@ namespace VTX::Renderer::Geometry
 	class Sphere : public BaseGeometry
 	{
 	  public:
-		inline static const Desc::Key		  VERTEX_LAYOUT_ATOMS	   = "Atoms";
-		inline static const Desc::Key		  GEOMETRY_SPHERES		   = "Spheres";
-		inline static const Desc::Key		  INDEX_ATOMS			   = "Index.Atoms";
-		inline static const Desc::Key		  INDIRECT_SPHERES		   = "Indirect.Spheres";
-		inline static constexpr Desc::Binding BINDING_INDIRECT_SPHERES = 10;
+		static constexpr std::string_view VERTEX_LAYOUT_ATOMS	   = "Atoms";
+		static constexpr std::string_view GEOMETRY_SPHERES		   = "Spheres";
+		static constexpr std::string_view INDEX_ATOMS			   = "Index.Atoms";
+		static constexpr std::string_view INDIRECT_SPHERES		   = "Indirect.Spheres";
+		static constexpr Desc::Binding	  BINDING_INDIRECT_SPHERES = 10;
 
 		Sphere()
 		{
-			vertexLayout   = VERTEX_LAYOUT_ATOMS;
+			vertexLayout   = Desc::Key { VERTEX_LAYOUT_ATOMS };
 			indiceBuffer   = INDEX_ATOMS;
 			indirectBuffer = INDIRECT_SPHERES;
 		}

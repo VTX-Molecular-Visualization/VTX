@@ -13,7 +13,7 @@ namespace VTX::Renderer
 
 	void Renderer::setDefault()
 	{
-		Util::ScopedChrono timer( "[RENDERER] setDefault" );
+		const Util::ScopedChrono timer( "[RENDERER] setDefault" );
 
 		_context.setNull();
 		try
@@ -37,7 +37,9 @@ namespace VTX::Renderer
 
 	void Renderer::setOpenGL( const Desc::NativeContextInfo & p_contextInfo, const FilePath & p_applicationDir )
 	{
-		Util::ScopedChrono timer( "[RENDERER] setOpenGL46 / surface: " + std::to_string( p_contextInfo.surface ) );
+		const Util::ScopedChrono timer(
+			"[RENDERER] setOpenGL46 / surface: " + std::to_string( p_contextInfo.surface )
+		);
 
 		_context.setOpenGL( _width, _height, p_contextInfo, getShadersDir( p_applicationDir ) );
 		try
@@ -63,7 +65,7 @@ namespace VTX::Renderer
 
 	void Renderer::resize( const size_t p_width, const size_t p_height )
 	{
-		Util::ScopedChrono timer( "[RENDERER] resize" );
+		const Util::ScopedChrono timer( "[RENDERER] resize" );
 
 		VTX_TRACE( "Resizing renderer to {}x{}", p_width, p_height );
 
@@ -131,11 +133,11 @@ namespace VTX::Renderer
 	}
 
 	std::vector<std::byte> Renderer::snapshot(
-		const std::optional<Util::Resolution> p_resolution,
-		const std::optional<float>			  p_backgroundOpacity
+		const std::optional<Util::Resolution> & p_resolution,
+		const std::optional<float>				p_backgroundOpacity
 	)
 	{
-		Util::ScopedChrono timer( "[RENDERER] snapshot" );
+		const Util::ScopedChrono timer( "[RENDERER] snapshot" );
 
 		const size_t				currentWidth		  = width();
 		const size_t				currentHeight		  = height();
@@ -699,11 +701,14 @@ namespace VTX::Renderer
 		return handle;
 	}
 
-	void Renderer::patchRepresentation( const Desc::Handle p_handle, Cache::Representation::Data && p_representation )
+	void Renderer::patchRepresentation(
+		const Desc::Handle					p_handle,
+		const Cache::Representation::Data & p_representation
+	)
 	{
 		assert( _representations.contains( p_handle ) );
 
-		_representations.get( p_handle ).data = std::move( p_representation );
+		_representations.get( p_handle ).data = p_representation;
 	}
 
 	void Renderer::removeRepresentation( const Desc::Handle p_handle )
@@ -722,9 +727,9 @@ namespace VTX::Renderer
 		_dirtyRepresentations.emplace_back( p_handle, p_flags );
 	}
 
-	Desc::Handle Renderer::addSystem( Cache::System && p_system )
+	Desc::Handle Renderer::addSystem( const Cache::System & p_system )
 	{
-		const Desc::Handle handle = _systems.emplace( std::move( p_system ) );
+		const Desc::Handle handle = _systems.emplace( p_system );
 		Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, handle );
 
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ALL;
@@ -733,11 +738,11 @@ namespace VTX::Renderer
 		return handle;
 	}
 
-	void Renderer::patchSystem( const Desc::Handle p_handle, Cache::System::Data && p_system )
+	void Renderer::patchSystem( const Desc::Handle p_handle, const Cache::System::Data & p_system )
 	{
 		assert( _systems.contains( p_handle ) );
 
-		_systems.get( p_handle ).data = std::move( p_system );
+		_systems.get( p_handle ).data = p_system;
 	}
 
 	void Renderer::removeSystem( const Desc::Handle p_handle )
@@ -747,9 +752,9 @@ namespace VTX::Renderer
 		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::DELETING );
 	}
 
-	Desc::Handle Renderer::addMesh( Cache::Mesh && p_mesh )
+	Desc::Handle Renderer::addMesh( const Cache::Mesh & p_mesh )
 	{
-		const Desc::Handle handle = _meshes.emplace( std::move( p_mesh ) );
+		const Desc::Handle handle = _meshes.emplace( p_mesh );
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ALL;
 
 		return handle;

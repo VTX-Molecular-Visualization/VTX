@@ -168,7 +168,7 @@ namespace VTX::App::Helper::System
 	/**
 	 * @brief Get current atom position in system-local coordinates.
 	 */
-	Vec3f getAtomPosition( const Entity p_entity, const Index p_atom );
+	Vec3f getAtomPosition( Entity p_entity, Index p_atom );
 
 	/**
 	 * @brief Get the visibility state of an item.

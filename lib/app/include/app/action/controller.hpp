@@ -25,7 +25,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetInvertY
 	{
-		void execute( const bool );
+		void execute( bool );
 	};
 
 	/**
@@ -33,7 +33,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetTranslationSpeed
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -41,7 +41,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetRotationSpeed
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -49,7 +49,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetAccelerationFactor
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -57,7 +57,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetDecelerationFactor
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -65,7 +65,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetElasticityActive
 	{
-		void execute( const bool );
+		void execute( bool );
 	};
 
 	/**
@@ -73,7 +73,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetElasticityFactor
 	{
-		void execute( const float );
+		void execute( float );
 	};
 } // namespace VTX::App::Action::Controller
 

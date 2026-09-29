@@ -51,15 +51,15 @@ namespace VTX::UI::QT::Widget
 			);
 		}
 
-		inline void setChecked( const bool p_checked ) { _toggleButton->setChecked( p_checked ); }
+		void setChecked( const bool p_checked ) { _toggleButton->setChecked( p_checked ); }
 
-		inline bool isChecked() const { return _toggleButton->isChecked(); }
+		bool isChecked() const { return _toggleButton->isChecked(); }
 
-		inline void addWidget( QWidget * widget ) { _groupbox->layout()->addWidget( widget ); }
+		void addWidget( QWidget * widget ) { _groupbox->layout()->addWidget( widget ); }
 
-		inline void freeze( const bool p_freeze ) { _toggleButton->blockSignals( p_freeze ); }
+		void freeze( const bool p_freeze ) { _toggleButton->blockSignals( p_freeze ); }
 
-		inline void setTitle( const QString & p_title ) { _toggleButton->setText( p_title ); }
+		void setTitle( const QString & p_title ) { _toggleButton->setText( p_title ); }
 
 	  signals:
 		void toggled( bool );

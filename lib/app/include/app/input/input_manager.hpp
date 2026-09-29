@@ -39,12 +39,9 @@ namespace VTX::App::Input
 		/**
 		 * @brief Accessors and mutators.
 		 */
-		inline bool hasAction( const Action p_action ) const
-		{
-			return _actions[ static_cast<std::size_t>( p_action ) ];
-		}
+		bool hasAction( const Action p_action ) const { return _actions[ static_cast<std::size_t>( p_action ) ]; }
 
-		inline Vec3i translationAxis() const
+		Vec3i translationAxis() const
 		{
 			return Vec3i(
 				static_cast<int>( hasAction( Action::MoveRight ) ) - static_cast<int>( hasAction( Action::MoveLeft ) ),
@@ -53,34 +50,41 @@ namespace VTX::App::Input
 			);
 		}
 
-		inline int rotationAxis() const
+		int rotationAxis() const
 		{
 			return static_cast<int>( hasAction( Action::RotateRight ) )
 				   - static_cast<int>( hasAction( Action::RotateLeft ) );
 		}
 
-		inline bool accelerate() const { return hasAction( Action::Accelerate ); }
-		inline bool decelerate() const { return hasAction( Action::Decelerate ); }
+		bool accelerate() const { return hasAction( Action::Accelerate ); }
 
-		inline const Vec2i & rotate() const { return _rotate; }
-		inline const Vec2i & rotateAlt() const { return _rotateAlt; }
-		inline const Vec2i & pan() const { return _pan; }
-		inline int			 zoom() const { return _zoom; }
+		bool decelerate() const { return hasAction( Action::Decelerate ); }
+
+		const Vec2i & rotate() const { return _rotate; }
+
+		const Vec2i & rotateAlt() const { return _rotateAlt; }
+
+		const Vec2i & pan() const { return _pan; }
+
+		int zoom() const { return _zoom; }
 
 		/**
 		 * @brief Mutators.
 		 */
-		inline void setAction( const Action p_action, const bool p_value )
+		void setAction( const Action p_action, const bool p_value )
 		{
 			_actions[ static_cast<std::size_t>( p_action ) ] = p_value;
 		}
 
-		inline void clearActions() { _actions.fill( false ); }
+		void clearActions() { _actions.fill( false ); }
 
-		inline void rotateBy( const Vec2i & p_delta ) { _rotate += p_delta; }
-		inline void rotateAltBy( const Vec2i & p_delta ) { _rotateAlt += p_delta; }
-		inline void panBy( const Vec2i & p_delta ) { _pan += p_delta; }
-		inline void zoomBy( const int p_delta ) { _zoom += p_delta; }
+		void rotateBy( const Vec2i & p_delta ) { _rotate += p_delta; }
+
+		void rotateAltBy( const Vec2i & p_delta ) { _rotateAlt += p_delta; }
+
+		void panBy( const Vec2i & p_delta ) { _pan += p_delta; }
+
+		void zoomBy( const int p_delta ) { _zoom += p_delta; }
 
 		/**
 		 * @brief Consume data (reset to zero).

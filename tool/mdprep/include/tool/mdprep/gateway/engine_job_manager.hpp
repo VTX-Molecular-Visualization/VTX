@@ -18,7 +18,7 @@ namespace VTX::Tool::Mdprep::Gateway
 		EngineJobManager() = default;
 
 		// Check weither the current inputs are reasonnable and send results via callback
-		inline void checkInputs( const MdParameters & p_1 ) noexcept
+		void checkInputs( const MdParameters & p_1 ) noexcept
 		{
 			if ( _ptr )
 			{
@@ -30,7 +30,7 @@ namespace VTX::Tool::Mdprep::Gateway
 		 * @brief Returns the last checkInputs result. Doesn't restart a check.
 		 * @return Returns default constructed Gateway::CheckReport if no results are available
 		 */
-		inline Gateway::CheckReport lastResult() const noexcept
+		Gateway::CheckReport lastResult() const noexcept
 		{
 			if ( _ptr )
 			{
@@ -43,7 +43,7 @@ namespace VTX::Tool::Mdprep::Gateway
 		 * @brief Tells if a check result is available.
 		 * @return true if there is.
 		 */
-		inline bool isResultAvailable() const noexcept
+		bool isResultAvailable() const noexcept
 		{
 			if ( _ptr )
 			{
@@ -53,7 +53,7 @@ namespace VTX::Tool::Mdprep::Gateway
 		}
 
 		// Synchonously start preparation of the system and feed the callback with job progression
-		inline void startPreparation( const MdParameters & p_1 ) noexcept
+		void startPreparation( const MdParameters & p_1 ) noexcept
 		{
 			if ( _ptr )
 			{

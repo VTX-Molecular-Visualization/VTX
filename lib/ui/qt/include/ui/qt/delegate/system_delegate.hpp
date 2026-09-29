@@ -28,7 +28,7 @@ namespace VTX::UI::QT::Delegate
 		/**
 		 * @brief Constructor.
 		 */
-		SystemDelegate( const Entity, QObject * );
+		SystemDelegate( Entity, QObject * );
 
 		/**
 		 * @brief Override: paint the system item with custom visuals.
@@ -39,11 +39,6 @@ namespace VTX::UI::QT::Delegate
 		 * @brief Override: provide custom size hint for system items.
 		 */
 		QSize sizeHint( const QStyleOptionViewItem &, const QModelIndex & ) const override;
-
-		/**
-		 * @brief Override: handle mouse events for the buttons in the system item.
-		 */
-		bool editorEvent( QEvent *, QAbstractItemModel *, const QStyleOptionViewItem &, const QModelIndex & ) override;
 
 		/**
 		 * @brief Override: create custom editor widget for system items (if needed).
@@ -76,6 +71,12 @@ namespace VTX::UI::QT::Delegate
 		void displayModeClicked( const QModelIndex & );
 		void doubleClicked( const QModelIndex & );
 
+	  protected:
+		/**
+		 * @brief Override: handle mouse events for the buttons in the system item.
+		 */
+		bool editorEvent( QEvent *, QAbstractItemModel *, const QStyleOptionViewItem &, const QModelIndex & ) override;
+
 	  private:
 		/**
 		 * @brief Entity to display.
@@ -87,8 +88,8 @@ namespace VTX::UI::QT::Delegate
 		static constexpr int MARGIN_R  = 6;
 
 		QRect  _buttonsRect( const QStyleOptionViewItem &, const QModelIndex & ) const;
-		QRect  _buttonRect( const QStyleOptionViewItem &, const QModelIndex &, const int ) const;
-		ACTION _buttonAction( const QModelIndex &, const int ) const;
+		QRect  _buttonRect( const QStyleOptionViewItem &, const QModelIndex &, int ) const;
+		ACTION _buttonAction( const QModelIndex &, int ) const;
 		int	   _hitTestButton( const QStyleOptionViewItem &, const QModelIndex &, const QPoint & ) const;
 		int	   _buttonCount( const QModelIndex & ) const;
 		bool   _isSystemItem( const QModelIndex & ) const;

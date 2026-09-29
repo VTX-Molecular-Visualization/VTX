@@ -30,13 +30,19 @@ namespace VTX::UI::QT::Widget::Library
 			connect( _presetSelector, &PresetSelector<P>::presetChanged, this, &BasePresetWidget::_update );
 		}
 
-		inline Entity	 currentPreset() const { return _presetSelector->getCurrentPreset(); }
-		inline QGroupBox * const presetGroupBox() const { return _groupboxPreset; }
-		inline void addWidget( QWidget * const p_widget ) { _groupboxPreset->layout()->addWidget( p_widget ); }
-		inline void setTitle( const QString & p_title ) { _groupboxPreset->setTitle( p_title ); }
-		inline void refresh() { _presetSelector->refresh(); }
-		inline void setCurrentPreset( const Entity p_preset ) { _presetSelector->setCurrentPreset( p_preset ); }
+		Entity currentPreset() const { return _presetSelector->getCurrentPreset(); }
 
+		QGroupBox * const presetGroupBox() const { return _groupboxPreset; }
+
+		void addWidget( QWidget * const p_widget ) { _groupboxPreset->layout()->addWidget( p_widget ); }
+
+		void setTitle( const QString & p_title ) { _groupboxPreset->setTitle( p_title ); }
+
+		void refresh() { _presetSelector->refresh(); }
+
+		void setCurrentPreset( const Entity p_preset ) { _presetSelector->setCurrentPreset( p_preset ); }
+
+	  protected:
 		/**
 		 * @brief Update the widget when the preset is updated.
 		 */

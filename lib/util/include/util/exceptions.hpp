@@ -16,16 +16,15 @@ namespace VTX
 			std::runtime_error( formatMessage( p_prepend, fmt::vformat( p_fmt, fmt::make_format_args( p_args... ) ) ) )
 		{
 		}
+
 		explicit Exception( const std::string & p_prepend, const std::string & p_err ) :
 			std::runtime_error( formatMessage( p_prepend, p_err ) )
 		{
 		}
 
 	  private:
-		std::string formatMessage( const std::string & p_prepend, const std::string & p_err )
-		{
-			return fmt::vformat( "[{}] {}", fmt::make_format_args( p_prepend, p_err ) );
-		}
+		static std::string formatMessage( const std::string & p_prepend, const std::string & p_err )
+		{ return fmt::vformat( "[{}] {}", fmt::make_format_args( p_prepend, p_err ) ); }
 	};
 
 	class VTXException : public Exception
@@ -36,6 +35,7 @@ namespace VTX
 			Exception( "VTX", p_fmt, std::forward<Args>( p_args )... )
 		{
 		}
+
 		explicit VTXException( const std::string & p_err ) : Exception( "VTX", p_err ) {}
 	};
 
@@ -48,6 +48,7 @@ namespace VTX
 
 		{
 		}
+
 		explicit GraphicException( const std::string & p_err ) : Exception( "3D", p_err ) {}
 	};
 
@@ -60,6 +61,7 @@ namespace VTX
 
 		{
 		}
+
 		explicit HTTPException( const std::string & p_err ) : Exception( "HTTP", p_err ) {}
 	};
 
@@ -72,6 +74,7 @@ namespace VTX
 
 		{
 		}
+
 		explicit IOException( const std::string & p_err ) : Exception( "IO", p_err ) {}
 	};
 
@@ -84,6 +87,7 @@ namespace VTX
 
 		{
 		}
+
 		explicit MathException( const std::string & p_err ) : Exception( "MATH", p_err ) {}
 	};
 
@@ -96,6 +100,7 @@ namespace VTX
 
 		{
 		}
+
 		explicit LibException( const std::string & p_err ) : Exception( "LIB", p_err ) {}
 	};
 
@@ -108,8 +113,10 @@ namespace VTX
 
 		{
 		}
+
 		explicit PythonWrapperException( const std::string & p_err ) : Exception( "WRAPPER", p_err ) {}
 	};
+
 	class CommandException : public Exception
 	{
 	  public:
@@ -122,17 +129,17 @@ namespace VTX
 
 		{
 		}
+
 		explicit CommandException( const std::string & p_command, const std::string & p_err ) :
 			Exception( "COMMAND", formatMessage( p_command, p_err ) )
 		{
 		}
 
 	  private:
-		std::string formatMessage( const std::string & p_command, const std::string & p_err )
-		{
-			return fmt::vformat( "{} : {}", fmt::make_format_args( p_command, p_err ) );
-		}
+		static std::string formatMessage( const std::string & p_command, const std::string & p_err )
+		{ return fmt::vformat( "{} : {}", fmt::make_format_args( p_command, p_err ) ); }
 	};
+
 	class ScriptException : public Exception
 	{
 	  public:
@@ -148,16 +155,15 @@ namespace VTX
 			)
 		{
 		}
+
 		explicit ScriptException( const std::string & p_scriptPath, const std::string & p_err ) :
 			Exception( "SCRIPT", formatMessage( p_scriptPath, p_err ) )
 		{
 		}
 
 	  private:
-		std::string formatMessage( const std::string & p_scriptPath, const std::string & p_err )
-		{
-			return fmt::vformat( "{} : {}", fmt::make_format_args( p_scriptPath, p_err ) );
-		}
+		static std::string formatMessage( const std::string & p_scriptPath, const std::string & p_err )
+		{ return fmt::vformat( "{} : {}", fmt::make_format_args( p_scriptPath, p_err ) ); }
 	};
 
 	class NotImplementedException : public VTXException

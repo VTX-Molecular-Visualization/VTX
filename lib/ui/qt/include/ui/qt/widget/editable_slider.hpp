@@ -58,32 +58,32 @@ namespace VTX::UI::QT::Widget
 			);
 		}
 
-		inline void setValue( const float p_value ) { _spinbox->setValue( p_value ); }
+		void setValue( const float p_value ) { _spinbox->setValue( p_value ); }
 
-		inline void setMinimum( const float p_min )
+		void setMinimum( const float p_min )
 		{
 			_slider->setMinimum( std::lround( p_min * 100.0f ) );
 			_spinbox->setMinimum( p_min );
 		}
 
-		inline void setMaximum( const float p_max )
+		void setMaximum( const float p_max )
 		{
 			_slider->setMaximum( std::lround( p_max * 100.0f ) );
 			_spinbox->setMaximum( p_max );
 		}
 
-		inline void setStep( const float p_step )
+		void setStep( const float p_step )
 		{
 			_slider->setSingleStep( std::lround( p_step * 100.0f ) );
 			_spinbox->setSingleStep( p_step );
 		}
 
-		inline void setDecimals( const int p_decimals ) { _spinbox->setDecimals( p_decimals ); }
+		void setDecimals( const int p_decimals ) { _spinbox->setDecimals( p_decimals ); }
 
-		inline void setSuffix( const QString & p_suffix ) { _spinbox->setSuffix( " " + p_suffix ); }
+		void setSuffix( const QString & p_suffix ) { _spinbox->setSuffix( " " + p_suffix ); }
 
 	  signals:
-		void valueChanged( const float value );
+		void valueChanged( float value );
 
 	  private:
 		QPointer<QSlider>		 _slider;

@@ -31,18 +31,18 @@ namespace VTX::Renderer
 		/**
 		 * @brief Constructor.
 		 */
-		Renderer( const size_t p_width = 0, const size_t p_height = 0 );
+		Renderer( size_t p_width = 0, size_t p_height = 0 );
 		Renderer( const Renderer & )			 = delete;
 		Renderer & operator=( const Renderer & ) = delete;
 
 		/**
 		 * @brief Accessors.
 		 */
-		inline size_t width() const { return _width; }
+		size_t width() const { return _width; }
 
-		inline size_t height() const { return _height; }
+		size_t height() const { return _height; }
 
-		inline RenderGraph & graph() { return _graph; }
+		RenderGraph & graph() { return _graph; }
 
 		/**
 		 * @brief Set graphic context.
@@ -53,7 +53,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Resize the renderer.
 		 */
-		void resize( const size_t, const size_t );
+		void resize( size_t, size_t );
 
 		/**
 		 * @brief Clean all.
@@ -64,7 +64,7 @@ namespace VTX::Renderer
 		 * @brief The main render loop.
 		 * @return true if rendered, false if nothing updated.
 		 */
-		bool render( const float = 0, const float = 0 ) noexcept;
+		bool render( float = 0, float = 0 ) noexcept;
 
 		/**
 		 * @brief Push data to the renderer.
@@ -77,26 +77,26 @@ namespace VTX::Renderer
 		/**
 		 * @brief Add/remove systems.
 		 */
-		Desc::Handle addSystem( Cache::System && );
-		void		 patchSystem( const Desc::Handle, Cache::System::Data && );
-		void		 removeSystem( const Desc::Handle );
+		Desc::Handle addSystem( const Cache::System & );
+		void		 patchSystem( Desc::Handle, const Cache::System::Data & );
+		void		 removeSystem( Desc::Handle );
 
 		/**
 		 * @brief Add/remove triangle meshes.
 		 */
-		Desc::Handle addMesh( Cache::Mesh && );
-		void		 patchMesh( const Desc::Handle, const Core::Struct::Mesh & );
-		void		 removeMesh( const Desc::Handle );
-		void		 setMeshTransform( const Desc::Handle, const Mat4f & );
+		Desc::Handle addMesh( const Cache::Mesh & );
+		void		 patchMesh( Desc::Handle, const Core::Struct::Mesh & );
+		void		 removeMesh( Desc::Handle );
+		void		 setMeshTransform( Desc::Handle, const Mat4f & );
 
 		/**
 		 * @brief Add/remove representation presets.
 		 */
 		Desc::Handle addRepresentation( const Representation & );
-		void		 patchRepresentation( const Desc::Handle, Cache::Representation::Data && );
-		void		 removeRepresentation( const Desc::Handle );
+		void		 patchRepresentation( Desc::Handle, const Cache::Representation::Data & );
+		void		 removeRepresentation( Desc::Handle );
 
-		void setRepresentationDirty( const Desc::Handle, const Cache::E_REPRESENTATION_DIRTY );
+		void setRepresentationDirty( Desc::Handle, Cache::E_REPRESENTATION_DIRTY );
 
 		/**
 		 * @brief Ensure a physical chunk exists for a chunked render graph buffer.
@@ -109,24 +109,24 @@ namespace VTX::Renderer
 		/**
 		 * @brief Push system data.
 		 */
-		void setSystemTransform( const Desc::Handle, const Mat4f & );
+		void setSystemTransform( Desc::Handle, const Mat4f & );
 
 		/**
 		 * @brief Push frame.
 		 */
-		void setSystemPositions( const Desc::Handle, std::span<const Vec3f> );
+		void setSystemPositions( Desc::Handle, std::span<const Vec3f> );
 
 		/**
 		 * @brief Update system data.
 		 */
-		void setSystemDirty( const Desc::Handle, const Cache::E_SYSTEM_DIRTY );
+		void setSystemDirty( Desc::Handle, Cache::E_SYSTEM_DIRTY );
 
 		/**
 		 * @brief Exports the renderer to an array of pixels.
 		 */
 		std::vector<std::byte> snapshot(
-			const std::optional<Util::Resolution> p_resolution		  = std::nullopt,
-			const std::optional<float>			  p_backgroundOpacity = std::nullopt
+			const std::optional<Util::Resolution> & p_resolution		= std::nullopt,
+			std::optional<float>					p_backgroundOpacity = std::nullopt
 		);
 
 		/**
@@ -134,27 +134,27 @@ namespace VTX::Renderer
 		 * @return ( AtomId, 0 ) for
 		 * an atom, ( AtomId1, AtomId2 ) for a bond.
 		 */
-		Vec2i getPickedIds( const size_t, const size_t ) const;
+		Vec2i getPickedIds( size_t, size_t ) const;
 
 		/**
 		 * @brief Ask for a render update.
 		 */
-		void setNeedUpdate( const bool p_value ) { _dirtyRenderer |= Cache::E_RENDERER_DIRTY::NEED_UPDATE; }
+		void setNeedUpdate( const bool ) { _dirtyRenderer |= Cache::E_RENDERER_DIRTY::NEED_UPDATE; }
 
 		/**
 		 * @brief Force update each frame.
 		 */
-		inline void setForceUpdate( const bool p_value ) { _forceUpdate = p_value; }
+		void setForceUpdate( const bool p_value ) { _forceUpdate = p_value; }
 
 		/**
 		 * @brief Force update each frame.
 		 */
-		inline void setVSync( const bool p_value ) { _context.setOption( Desc::E_OPTION::VSYNC, p_value ); }
+		void setVSync( const bool p_value ) { _context.setOption( Desc::E_OPTION::VSYNC, p_value ); }
 
 		/**
 		 * @brief Get the current renderer infos.
 		 */
-		const StructInfos & getInfos( const bool = false );
+		const StructInfos & getInfos( bool = false );
 
 		/**
 		 * @brief Callback when ready.
@@ -256,7 +256,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief The main render loop that call each generated instruction.
 		 */
-		inline void _render( const float p_deltaTime, const float p_elapsedTime ) const noexcept { _context.execute(); }
+		void _render( const float, const float ) const noexcept { _context.execute(); }
 	};
 } // namespace VTX::Renderer
 #endif

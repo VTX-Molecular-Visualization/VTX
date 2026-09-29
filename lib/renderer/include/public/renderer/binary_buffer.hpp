@@ -31,36 +31,43 @@ namespace VTX::Renderer
 	{
 		static constexpr size_t align = 4, size = 4;
 	};
+
 	template<>
 	struct LayoutTraitsBase<int>
 	{
 		static constexpr size_t align = 4, size = 4;
 	};
+
 	template<>
 	struct LayoutTraitsBase<uint>
 	{
 		static constexpr size_t align = 4, size = 4;
 	};
+
 	template<>
 	struct LayoutTraitsBase<Vec2f>
 	{
 		static constexpr size_t align = 8, size = 8;
 	};
+
 	template<>
 	struct LayoutTraitsBase<Vec2i>
 	{
 		static constexpr size_t align = 8, size = 8;
 	};
+
 	template<>
 	struct LayoutTraitsBase<Vec4f>
 	{
 		static constexpr size_t align = 16, size = 16;
 	};
+
 	template<>
 	struct LayoutTraitsBase<Mat3f>
 	{
 		static constexpr size_t align = 16, size = 48;
 	};
+
 	template<>
 	struct LayoutTraitsBase<Mat4f>
 	{
@@ -72,6 +79,7 @@ namespace VTX::Renderer
 	static_assert( std::is_standard_layout_v<VTX::Util::Color::Rgba> );
 	static_assert( sizeof( VTX::Util::Color::Rgba ) == sizeof( Vec4f ) );
 	static_assert( alignof( VTX::Util::Color::Rgba ) == alignof( Vec4f ) );
+
 	template<>
 	struct LayoutTraitsBase<VTX::Util::Color::Rgba> : LayoutTraitsBase<Vec4f>
 	{
@@ -354,11 +362,15 @@ namespace VTX::Renderer
 		/**
 		 * @brief Accessors.
 		 */
-		inline const value_type * data() const { return _data.data(); }
-		inline value_type *		  data() { return _data.data(); }
-		inline size_t			  size() const { return _data.size(); }
-		inline size_t			  offset() const { return _offset; }
-		inline bool				  empty() const { return _data.empty(); }
+		const value_type * data() const { return _data.data(); }
+
+		value_type * data() { return _data.data(); }
+
+		size_t size() const { return _data.size(); }
+
+		size_t offset() const { return _offset; }
+
+		bool empty() const { return _data.empty(); }
 
 		/**
 		 * @brief Iterators.
@@ -373,7 +385,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Conversion to span of bytes.
 		 */
-		operator std::span<const std::byte>() const noexcept { return { _data.data(), _data.size() }; }
+		SpanBytes bytes() const noexcept { return { _data.data(), _data.size() }; }
 
 	  private:
 		/**

@@ -14,8 +14,9 @@ namespace VTX::UI::QT::Widget
 		ColorPicker( QWidget * );
 		ColorPicker( const QColor &, QWidget * );
 
-		inline const QColor & getColor() const { return _color; }
-		inline QColor		  getColor() { return _color; }
+		const QColor & getColor() const { return _color; }
+
+		QColor				  getColor() { return _color; }
 		void				  setColor( const QColor & );
 
 		Util::Callback<QColor> onColorChanged;

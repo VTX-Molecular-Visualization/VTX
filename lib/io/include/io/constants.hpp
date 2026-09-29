@@ -15,7 +15,7 @@ namespace VTX::IO
 	/**
 	 * @brief Extra computation when missing informations.
 	 */
-	enum struct READER_OPTION : uint8_t
+	enum struct READER_OPTION : uint16_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
 		NONE								= 0,
@@ -28,7 +28,7 @@ namespace VTX::IO
 	/**
 	 * @brief State of the loaded topology.
 	 */
-	enum struct TOPOLOGY_STATE : uint8_t
+	enum struct TOPOLOGY_STATE : uint16_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
 		OK = 0,

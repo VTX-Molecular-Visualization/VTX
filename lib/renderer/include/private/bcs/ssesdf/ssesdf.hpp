@@ -17,7 +17,7 @@ namespace bcs
 		Ssesdf(
 			ConstSpan<Vec4f> molecule,
 			const Aabb &	 aabb,
-			const float		 probeRadius  = 1.4f,
+			float			 probeRadius  = 1.4f,
 			bool			 buildSurface = true,
 			bool			 graphics	  = true
 		);

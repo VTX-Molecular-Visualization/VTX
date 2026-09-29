@@ -21,7 +21,7 @@ namespace VTX::Util::Math
 		AABB() = default;
 		AABB( const Vec3f & p_point );
 		AABB( const Vec3f & p_min, const Vec3f & p_max );
-		AABB( const Vec3f & p_center, const float p_radius );
+		AABB( const Vec3f & p_center, float p_radius );
 
 		/**
 		 * @brief Reset min and max points to invalid values.
@@ -31,13 +31,14 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Check if the AABB is valid.
 		 */
-		inline bool isValid() const { return ( ( _min.x <= _max.x ) && ( _min.y <= _max.y ) && ( _min.z <= _max.z ) ); }
+		bool isValid() const { return ( ( _min.x <= _max.x ) && ( _min.y <= _max.y ) && ( _min.z <= _max.z ) ); }
 
 		/**
 		 * @brief Getters.
 		 */
-		inline const Vec3f & getMin() const { return _min; }
-		inline const Vec3f & getMax() const { return _max; }
+		const Vec3f & getMin() const { return _min; }
+
+		const Vec3f & getMax() const { return _max; }
 
 		/**
 		 * @brief Get all 8 summits of the AABB.
@@ -47,7 +48,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Extend to include the given point.
 		 */
-		inline void extend( const Vec3f & p_point )
+		void extend( const Vec3f & p_point )
 		{
 			_min = Util::Math::min( p_point, _min );
 			_max = Util::Math::max( p_point, _max );
@@ -56,7 +57,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Extend to include the given AABB.
 		 */
-		inline void extend( const AABB & p_aabb )
+		void extend( const AABB & p_aabb )
 		{
 			_min = Util::Math::min( _min, p_aabb._min );
 			_max = Util::Math::max( _max, p_aabb._max );
@@ -65,7 +66,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Extend to include the given sphere.
 		 */
-		inline void extend( const Vec3f & p_center, const float p_radius )
+		void extend( const Vec3f & p_center, const float p_radius )
 		{
 			extend( p_center - p_radius );
 			extend( p_center + p_radius );
@@ -74,7 +75,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Translate the AABB by the given vector.
 		 */
-		inline void translate( const Vec3f & p_translation )
+		void translate( const Vec3f & p_translation )
 		{
 			_min += p_translation;
 			_max += p_translation;
@@ -88,14 +89,17 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Compute properties of the AABB.
 		 */
-		inline Vec3f diagonal() const { return _max - _min; }
-		inline float diameter() const { return isValid() ? Util::Math::length( diagonal() ) : 0.f; }
-		inline float radius() const { return isValid() ? diameter() * 0.5f : 0.f; }
-		inline Vec3f centroid() const { return ( _min + _max ) * 0.5f; }
+		Vec3f diagonal() const { return _max - _min; }
+
+		float diameter() const { return isValid() ? Util::Math::length( diagonal() ) : 0.f; }
+
+		float radius() const { return isValid() ? diameter() * 0.5f : 0.f; }
+
+		Vec3f		 centroid() const { return ( _min + _max ) * 0.5f; }
 		uint		 largestAxis() const;
 		float		 area() const;
 		Vec3f		 offset( const Vec3f & p_pt ) const;
-		float		 offset( const Vec3f & p_pt, const uint p_dim ) const;
+		float		 offset( const Vec3f & p_pt, uint p_dim ) const;
 
 		/*
 		bool intersect(

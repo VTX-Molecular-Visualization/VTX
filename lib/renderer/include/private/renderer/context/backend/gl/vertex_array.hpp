@@ -17,7 +17,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			glCreateVertexArrays( 1, &_id );
 		}
 
-		VertexArray( const VertexArray & )			 = delete;
+		VertexArray( const VertexArray & )			   = delete;
 		VertexArray & operator=( const VertexArray & ) = delete;
 
 		VertexArray( VertexArray && p_other ) noexcept : _id( std::exchange( p_other._id, GL_INVALID_INDEX ) ) {}
@@ -46,18 +46,18 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		// int drawCalls = 0;
 
-		inline GLuint getId() const noexcept { return _id; }
+		GLuint getId() const noexcept { return _id; }
 
-		inline void bind() const noexcept
+		void bind() const noexcept
 		{
 			assert( glIsVertexArray( _id ) );
 
 			glBindVertexArray( _id );
 		}
 
-		inline void unbind() const noexcept { glBindVertexArray( 0 ); }
+		static void unbind() noexcept { glBindVertexArray( 0 ); }
 
-		inline void bindElementBuffer( const Buffer & p_elementBuffer ) const noexcept
+		void bindElementBuffer( const Buffer & p_elementBuffer ) const noexcept
 		{
 			const GLuint id = p_elementBuffer.getId();
 
@@ -68,7 +68,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			glVertexArrayElementBuffer( _id, p_elementBuffer.getId() );
 		}
 
-		inline void unbindElementBuffer() const noexcept
+		void unbindElementBuffer() const noexcept
 		{
 			assert( glIsVertexArray( _id ) );
 
@@ -76,14 +76,14 @@ namespace VTX::Renderer::Context::Backend::GL
 			// glVertexArrayElementBuffer( _id, 0 );
 		}
 
-		inline void enableAttribute( const GLuint p_bindingIndex ) const noexcept
+		void enableAttribute( const GLuint p_bindingIndex ) const noexcept
 		{
 			assert( glIsVertexArray( _id ) );
 
 			glEnableVertexArrayAttrib( _id, p_bindingIndex );
 		}
 
-		inline void setVertexBuffer(
+		void setVertexBuffer(
 			const GLuint   p_bindingIndex,
 			const Buffer & p_vertexBuffer,
 			const GLintptr p_offset,
@@ -101,7 +101,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			glVertexArrayVertexBuffer( _id, p_bindingIndex, bid, p_offset, p_stride );
 		}
 
-		inline void setAttributeFormat(
+		void setAttributeFormat(
 			const GLuint	p_attributeIndex,
 			const GLint		p_size,
 			const GLenum	p_type,
@@ -134,94 +134,78 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 
-		inline void setAttributeBinding( const GLuint p_attributeIndex, const GLuint p_bindingIndex ) const noexcept
+		void setAttributeBinding( const GLuint p_attributeIndex, const GLuint p_bindingIndex ) const noexcept
 		{
 			assert( glIsVertexArray( _id ) );
 
 			glVertexArrayAttribBinding( _id, p_attributeIndex, p_bindingIndex );
 		}
 
-		inline void drawArrays( const GLenum p_mode, const GLint p_first, const GLsizei p_count ) const noexcept
-		{
-			glDrawArrays( p_mode, p_first, p_count );
-		}
+		static void drawArrays( const GLenum p_mode, const GLint p_first, const GLsizei p_count ) noexcept
+		{ glDrawArrays( p_mode, p_first, p_count ); }
 
-		inline void multiDrawArrays(
+		static void multiDrawArrays(
 			const GLenum		  p_mode,
 			const GLint * const	  p_first,
 			const GLsizei * const p_count,
 			const GLsizei		  p_primcount
-		) const noexcept
-		{
-			glMultiDrawArrays( p_mode, p_first, p_count, p_primcount );
-		}
+		) noexcept
+		{ glMultiDrawArrays( p_mode, p_first, p_count, p_primcount ); }
 
-		inline void multiDrawArraysIndirect(
+		static void multiDrawArraysIndirect(
 			const GLenum		 p_mode,
 			const GLvoid * const p_indirect,
 			const GLsizei		 p_drawCount,
 			const GLsizei		 p_stride
-		) const noexcept
-		{
-			glMultiDrawArraysIndirect( p_mode, p_indirect, p_drawCount, p_stride );
-		}
+		) noexcept
+		{ glMultiDrawArraysIndirect( p_mode, p_indirect, p_drawCount, p_stride ); }
 
-		inline void multiDrawArraysIndirectCount(
+		static void multiDrawArraysIndirectCount(
 			const GLenum		 p_mode,
 			const GLvoid * const p_indirect,
 			const GLintptr		 p_drawCountOffset,
 			const GLsizei		 p_drawCapacity,
 			const GLsizei		 p_stride
-		) const noexcept
-		{
-			glMultiDrawArraysIndirectCount( p_mode, p_indirect, p_drawCountOffset, p_drawCapacity, p_stride );
-		}
+		) noexcept
+		{ glMultiDrawArraysIndirectCount( p_mode, p_indirect, p_drawCountOffset, p_drawCapacity, p_stride ); }
 
-		inline void drawElements(
+		static void drawElements(
 			const GLenum		 p_mode,
 			const GLsizei		 p_count,
 			const GLenum		 p_type,
-			const GLvoid * const p_offset = 0
-		) const noexcept
-		{
-			glDrawElements( p_mode, p_count, p_type, p_offset );
-		}
+			const GLvoid * const p_offset = nullptr
+		) noexcept
+		{ glDrawElements( p_mode, p_count, p_type, p_offset ); }
 
-		inline void multiDrawElements(
+		static void multiDrawElements(
 			const GLenum				 p_mode,
 			const GLsizei * const		 p_count,
 			const GLenum				 p_type,
 			const GLvoid * const * const p_offset,
 			const GLsizei				 p_primcount
-		) const noexcept
-		{
-			glMultiDrawElements( p_mode, p_count, p_type, p_offset, p_primcount );
-		}
+		) noexcept
+		{ glMultiDrawElements( p_mode, p_count, p_type, p_offset, p_primcount ); }
 
-		inline void multiDrawElementsIndirect(
+		static void multiDrawElementsIndirect(
 			const GLenum		 p_mode,
 			const GLenum		 p_type,
 			const GLvoid * const p_indirect,
 			const GLsizei		 p_drawCount,
 			const GLsizei		 p_stride
-		) const noexcept
-		{
-			glMultiDrawElementsIndirect( p_mode, p_type, p_indirect, p_drawCount, p_stride );
-		}
+		) noexcept
+		{ glMultiDrawElementsIndirect( p_mode, p_type, p_indirect, p_drawCount, p_stride ); }
 
-		inline void multiDrawElementsIndirectCount(
+		static void multiDrawElementsIndirectCount(
 			const GLenum		 p_mode,
 			const GLenum		 p_type,
 			const GLvoid * const p_indirect,
 			const GLintptr		 p_drawCountOffset,
 			const GLsizei		 p_drawCapacity,
 			const GLsizei		 p_stride
-		) const noexcept
-		{
-			glMultiDrawElementsIndirectCount( p_mode, p_type, p_indirect, p_drawCountOffset, p_drawCapacity, p_stride );
-		}
+		) noexcept
+		{ glMultiDrawElementsIndirectCount( p_mode, p_type, p_indirect, p_drawCountOffset, p_drawCapacity, p_stride ); }
 
-		inline bool hasEbo() const noexcept
+		bool hasEbo() const noexcept
 		{
 			GLint ebo = 0;
 			glGetVertexArrayiv( _id, GL_ELEMENT_ARRAY_BUFFER_BINDING, &ebo );

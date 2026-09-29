@@ -471,7 +471,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	 */
 	using namespace VTX;
 	using namespace VTX::App;
-	App::Fixture app( Test::pythonArguments() );
+	const App::Fixture app( Test::pythonArguments() );
 
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
 	const FilePath scriptPath	   = internalDataDir / "script_test.py";
@@ -492,7 +492,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Python binding smoke test", "[python][binding][
 {
 	using namespace VTX;
 	using namespace VTX::App;
-	App::Fixture app( Test::pythonArguments() );
+	const App::Fixture app( Test::pythonArguments() );
 
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
 	const FilePath scriptPath	   = internalDataDir / "python_binding_smoke.py";
@@ -541,7 +541,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][nothin
 	 */
 	using namespace VTX;
 	using namespace VTX::App;
-	App::Fixture								  app( Test::pythonArguments() );
+	const App::Fixture							  app( Test::pythonArguments() );
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
 	std::future<AsyncJobResult>					  future  = promise->get_future();
 	App::INTERPRETOR().runCommand( "s = 1", promise );
@@ -556,7 +556,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][bindin
 	 */
 	using namespace VTX;
 	using namespace VTX::App;
-	App::Fixture app( Test::pythonArguments() );
+	const App::Fixture app( Test::pythonArguments() );
 
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
 	const FilePath scriptPath	   = internalDataDir / "script_test.py";

@@ -24,7 +24,7 @@ namespace VTX::App::Network
 		const std::string url	   = std::string( p_url );
 		const std::string filename = std::string( p_filename );
 
-		Util::Thread::BaseThread & thread = THREAD().createThread(
+		const Util::Thread::BaseThread & thread = THREAD().createThread(
 			[ this, id, url, filename, p_callback ](
 				Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread
 			) -> uint
@@ -61,7 +61,7 @@ namespace VTX::App::Network
 				}
 
 				{
-					std::lock_guard lock( _mutex );
+					const std::lock_guard lock( _mutex );
 					_activeDownload.erase( id );
 					if ( not p_stopToken.stop_requested() )
 					{
@@ -74,7 +74,7 @@ namespace VTX::App::Network
 		);
 
 		{
-			std::lock_guard lock( _mutex );
+			const std::lock_guard lock( _mutex );
 			_activeDownload[ id ] = thread.getId();
 		}
 
@@ -85,7 +85,7 @@ namespace VTX::App::Network
 	{
 		Util::Thread::ID threadId;
 		{
-			std::lock_guard lock( _mutex );
+			const std::lock_guard lock( _mutex );
 			const auto		it = _activeDownload.find( p_id );
 			if ( it == _activeDownload.end() )
 			{
@@ -105,7 +105,7 @@ namespace VTX::App::Network
 	{
 		std::vector<DownloadResult> completed;
 		{
-			std::lock_guard lock( _mutex );
+			const std::lock_guard lock( _mutex );
 			if ( _completedDownloads.empty() )
 			{
 				return;

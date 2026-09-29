@@ -179,7 +179,7 @@ namespace VTX::IO::Util::BondRecomputation
 		const BondRecomputeFilter &			 p_filter
 	)
 	{
-		VTX::Util::ScopedChrono chrono( "BondRecomputation::recomputeBonds" );
+		const VTX::Util::ScopedChrono chrono( "BondRecomputation::recomputeBonds" );
 		VTX_INFO( "Recomputing bonds..." );
 
 		assert( p_frame.size() == p_topology.getAtomCount() );

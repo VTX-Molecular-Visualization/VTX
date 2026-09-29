@@ -241,7 +241,7 @@ namespace VTX::App
 			_impl->updateDownloadError.clear();
 
 			VTX_TRACE( "downloadUpdate: starting update to {}", release.Version );
-			Util::Thread::BaseThread & downloadThread = THREAD().createThread(
+			const Util::Thread::BaseThread & downloadThread = THREAD().createThread(
 				[ this, pendingUpdate ]( Util::Thread::StopToken, Util::Thread::BaseThread & p_thread ) -> uint
 				{
 					p_thread.setProgressText( "Downloading update..." );

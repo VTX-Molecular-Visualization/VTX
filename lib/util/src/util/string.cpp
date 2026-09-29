@@ -6,7 +6,7 @@
 
 namespace VTX::Util::String
 {
-	inline const char * WHITESPACES = " \n\t\r\f\v";
+	inline constexpr std::string_view WHITESPACES = " \n\t\r\f\v";
 
 	std::string trim( const std::string & p_str )
 	{
@@ -79,15 +79,12 @@ namespace VTX::Util::String
 		return strStream.str();
 	}
 
-	uint strToUint( const std::string & p_str ) { return atoi( p_str.c_str() ); }
-
 	std::string toUpper( const std::string & p_str )
 	{
 		std::string result = p_str;
 
-		std::transform(
-			result.begin(),
-			result.end(),
+		std::ranges::transform(
+			result,
 			result.begin(),
 			[]( const unsigned char p_char ) { return static_cast<char>( std::toupper( p_char ) ); }
 		);
@@ -99,9 +96,8 @@ namespace VTX::Util::String
 	{
 		std::string result = p_str;
 
-		std::transform(
-			result.begin(),
-			result.end(),
+		std::ranges::transform(
+			result,
 			result.begin(),
 			[]( const unsigned char p_char ) { return static_cast<char>( std::tolower( p_char ) ); }
 		);
@@ -111,7 +107,7 @@ namespace VTX::Util::String
 
 	std::string memSizeToStr( const size_t p_size, const bool p_isBase10 )
 	{
-		double			   size = static_cast<double>( p_size );
+		const double	   size = static_cast<double>( p_size );
 		std::ostringstream oss;
 
 		const uint base = p_isBase10 ? 1000 : 1024;
@@ -120,11 +116,11 @@ namespace VTX::Util::String
 		{
 			oss << size << " B";
 		}
-		else if ( p_size < base * base )
+		else if ( p_size < static_cast<size_t>( base ) * base )
 		{
 			oss << std::fixed << std::setprecision( 2 ) << ( size / base ) << " KB";
 		}
-		else if ( p_size < base * base * base )
+		else if ( p_size < static_cast<size_t>( base ) * base * base )
 		{
 			oss << std::fixed << std::setprecision( 2 ) << ( size / ( base * base ) ) << " MB";
 		}
@@ -141,14 +137,14 @@ namespace VTX::Util::String
 		std::ostringstream oss;
 		int				   totalMilliseconds = int( p_durationInMs );
 
-		int hours = totalMilliseconds / 3600000;
+		const int hours = totalMilliseconds / 3600000;
 		totalMilliseconds %= 3600000;
 
-		int minutes = totalMilliseconds / 60000;
+		const int minutes = totalMilliseconds / 60000;
 		totalMilliseconds %= 60000;
 
-		int seconds		 = totalMilliseconds / 1000;
-		int milliseconds = totalMilliseconds % 1000;
+		const int seconds	   = totalMilliseconds / 1000;
+		const int milliseconds = totalMilliseconds % 1000;
 
 		if ( hours > 0 )
 		{

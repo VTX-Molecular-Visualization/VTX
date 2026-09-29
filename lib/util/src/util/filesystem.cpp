@@ -30,7 +30,7 @@ namespace VTX::Util::Filesystem
 		// Windows specific
 		// Partly copied from https://stackoverflow.com/questions/50889647/best-way-to-get-exe-folder-path
 		wchar_t szPath[ MAX_PATH ];
-		GetModuleFileNameW( NULL, szPath, MAX_PATH );
+		GetModuleFileNameW( nullptr, szPath, MAX_PATH );
 
 		return std::filesystem::path { szPath }; // to finish the folder path with (back)slash
 #elif defined( __APPLE__ )
@@ -96,7 +96,7 @@ namespace VTX::Util::Filesystem
 
 	FilePath getSaveGamesFolder2() { return FilePath( sago::getSaveGamesFolder2() ); }
 
-	const std::string readPath( const FilePath & p_filePath )
+	std::string readPath( const FilePath & p_filePath )
 	{
 		std::ifstream inputFile( p_filePath );
 
@@ -131,8 +131,8 @@ namespace VTX::Util::Filesystem
 
 	void generateUniqueFileName( FilePath & p_filePath )
 	{
-		FilePath parentPath = p_filePath.parent_path();
-		uint	 counter	= 2;
+		const FilePath parentPath = p_filePath.parent_path();
+		uint		   counter	  = 2;
 		while ( std::filesystem::exists( p_filePath ) )
 		{
 			p_filePath = parentPath

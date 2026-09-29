@@ -23,15 +23,15 @@ namespace VTX::Bench
 	{
 	  public:
 		Scene() = delete;
-		Scene( const size_t p_width, const size_t p_height );
+		Scene( size_t p_width, size_t p_height );
 
-		inline CameraController & getCamera() { return _camera; }
+		CameraController & getCamera() { return _camera; }
 
 		void addSystem( const std::string & p_name );
-		void removeSystem( const size_t p_index );
+		void removeSystem( size_t p_index );
 		void syncRenderer( Renderer::Renderer & p_renderer ) const;
 
-		inline void update( const float p_deltaTime )
+		void update( const float p_deltaTime )
 		{
 			if ( not isUpdate )
 			{

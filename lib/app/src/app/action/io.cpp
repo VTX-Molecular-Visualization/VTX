@@ -55,7 +55,7 @@ namespace VTX::App::Action::IO
 
 			ACTION().execute<RunPythonScript>( p_path );
 		}
-		else if ( VTX::IO::isMeshFileFormat( p_path ) )
+		else if ( VTX::IO::MeshReader::isMeshFileFormat( p_path ) )
 		{
 			ACTION().execute<LoadMesh>( p_path );
 		}
@@ -179,7 +179,7 @@ namespace VTX::App::Action::IO
 
 	void DownloadSystem::execute( VTX::Util::Url::UrlFull p_url, FilePath p_path )
 	{
-		FilePath filepath = p_path;
+		const FilePath filepath = p_path;
 		NETWORK().downloadFile(
 			p_url.str.data(),
 			filepath.string(),
@@ -224,7 +224,7 @@ namespace VTX::App::Action::IO
 		{
 			const Util::Resolution resolution = { "Export", p_width, p_height };
 			std::vector<std::byte> image	  = RENDERER().snapshot( resolution, p_backgroundOpacity );
-			FilePath			   path		  = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
+			const FilePath		   path		  = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
 			_writeSnapshotMetadata( path );
 
 			VTX_INFO( "Image saved: {}", fmt::format( fmt::runtime( std::string( LOG_LINK_FORMAT ) ), path.string() ) );

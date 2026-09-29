@@ -366,7 +366,7 @@ namespace VTX::IO::Util
 					const Vec3f & nextAtomPosition = p_frame[ nextAtomIndex ];
 					const float	  atomDistance	   = length( nextAtomPosition - atomPosition );
 
-					AtomData atomData { nextAtomIndex, nextAtomPosition, atomDistance };
+					const AtomData atomData { nextAtomIndex, nextAtomPosition, atomDistance };
 
 					const SYMBOL nextAtomSymbol = p_topology.getAtomSymbol( nextAtomIndex );
 					if ( nextAtomSymbol == SYMBOL::A_C )
@@ -680,7 +680,7 @@ namespace VTX::IO::Util
 
 	void recomputeBondOrders( VTX::Core::Struct::Topology & p_topology, const VTX::Core::Struct::Frame & p_frame )
 	{
-		VTX::Util::ScopedChrono chrono( "BondOrderGuessing::recomputeBondOrders" );
+		const VTX::Util::ScopedChrono chrono( "BondOrderGuessing::recomputeBondOrders" );
 		VTX_INFO( "Guessing bond orders..." );
 
 		if ( p_frame.size() != p_topology.getAtomCount() )

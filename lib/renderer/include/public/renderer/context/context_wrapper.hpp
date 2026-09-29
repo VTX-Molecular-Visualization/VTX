@@ -28,8 +28,8 @@ namespace VTX::Renderer::Context
 		 * @brief Set OpenGL 4.5 graphic context backkend and executor.
 		 */
 		void setOpenGL(
-			const size_t p_width,
-			const size_t p_height,
+			size_t p_width,
+			size_t p_height,
 			const Desc::NativeContextInfo &,
 			const FilePath & p_shaderDir
 		);
@@ -72,12 +72,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Resize backend resources.
 		 */
-		void resize(
-			const uint32_t,
-			const uint32_t,
-			const Desc::PassList &,
-			const std::unordered_map<Desc::Key, Desc::Texture> &
-		);
+		void resize( uint32_t, uint32_t, const Desc::PassList &, const std::unordered_map<Desc::Key, Desc::Texture> & );
 
 		/**
 		 * @brief Convert a span of T to a span of bytes.
@@ -94,17 +89,17 @@ namespace VTX::Renderer::Context
 		 * @brief Set buffer data.
 		 */
 		template<typename T>
-		inline void setBuffer( const Desc::BufferRef & p_ref, std::span<const T> p_data, const size_t p_offset = 0 )
+		void setBuffer( const Desc::BufferRef & p_ref, std::span<const T> p_data, const size_t p_offset = 0 )
 		{ setBuffer( p_ref, asBytes( p_data ), p_offset * sizeof( T ) ); }
 
 		template<typename T>
-		inline void setBuffer( const Desc::BufferRef & p_ref, const size_t p_size )
+		void setBuffer( const Desc::BufferRef & p_ref, const size_t p_size )
 		{
 			auto span = SpanBytes { static_cast<std::byte *>( nullptr ), p_size * sizeof( T ) };
 			setBuffer( p_ref, span, 0 );
 		}
 
-		void setBuffer( const Desc::BufferRef &, SpanBytes, const size_t p_offset = 0 );
+		void setBuffer( const Desc::BufferRef &, SpanBytes, size_t p_offset = 0 );
 
 		/**
 		 * @brief Ensure a physical chunk exists for a chunked logical buffer.
@@ -163,12 +158,12 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Set the render target.
 		 */
-		void setRenderTarget( const Desc::E_RENDER_TARGET p_target );
+		void setRenderTarget( Desc::E_RENDER_TARGET p_target );
 
 		/**
 		 * @brief Set options.
 		 */
-		void setOption( const Desc::E_OPTION p_option, const bool p_value );
+		void setOption( Desc::E_OPTION p_option, bool p_value );
 
 		/**
 		 * @brief Fill renderer infos.
@@ -178,13 +173,13 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Map graphics buffers to an external compute backend pointer.
 		 */
-		[[nodiscard]] Desc::InteropBufferMapping mapInteropBuffer( const Desc::E_INTEROP_API, const Desc::BufferRef & );
+		[[nodiscard]] Desc::InteropBufferMapping mapInteropBuffer( Desc::E_INTEROP_API, const Desc::BufferRef & );
 		[[nodiscard]] std::vector<Desc::InteropBufferMapping> mapInteropBuffers(
-			const Desc::E_INTEROP_API,
+			Desc::E_INTEROP_API,
 			std::span<const Desc::BufferRef>
 		);
-		void unmapInteropBuffer( const Desc::E_INTEROP_API, const Desc::InteropBufferMapping & );
-		void unmapInteropBuffers( const Desc::E_INTEROP_API, std::span<const Desc::InteropBufferMapping> );
+		void unmapInteropBuffer( Desc::E_INTEROP_API, const Desc::InteropBufferMapping & );
+		void unmapInteropBuffers( Desc::E_INTEROP_API, std::span<const Desc::InteropBufferMapping> );
 		void unregisterInteropBuffer( Desc::E_INTEROP_API, const Desc::BufferRef & );
 
 		/**

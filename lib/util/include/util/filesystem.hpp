@@ -49,7 +49,7 @@ namespace VTX::Util::Filesystem
 	/**
 	 * @brief Read content of file at path.
 	 */
-	const std::string readPath( const FilePath & p_filePath );
+	std::string readPath( const FilePath & p_filePath );
 
 	/**
 	 * @brief Write content to file at path (override if exist).

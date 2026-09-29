@@ -10,17 +10,17 @@ namespace VTX::App::Helper::Scene
 	/**
 	 * @brief Retrieve a system with the corresponding name. Initially meant to be used for scripting purposes.
 	 */
-	Entity getSystemByName( const std::string_view );
+	Entity getSystemByName( std::string_view );
 
 	/**
 	 * @brief Retrieve a system with the corresponding pdb.
 	 */
-	Entity getSystemByPdb( const std::string_view );
+	Entity getSystemByPdb( std::string_view );
 
 	/**
 	 * @brief Retrieve a system with the corresponding file name.
 	 */
-	Entity getSystemByFileName( const std::string_view );
+	Entity getSystemByFileName( std::string_view );
 
 	/**
 	 * @brief Get all system entities.
@@ -30,8 +30,8 @@ namespace VTX::App::Helper::Scene
 	/**
 	 * @brief Find system by element UID.
 	 */
-	std::optional<Entity> findSystemByAtomUID( const UID32 );
-	std::optional<Entity> findSystemByResidueUID( const UID32 );
+	std::optional<Entity> findSystemByAtomUID( UID32 );
+	std::optional<Entity> findSystemByResidueUID( UID32 );
 
 } // namespace VTX::App::Helper::Scene
 

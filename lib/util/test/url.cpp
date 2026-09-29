@@ -15,7 +15,7 @@ TEST_CASE( "Util::Url", "[url]" )
 	CHECK( templat.str == t );
 	CHECK( templat.hasReplacementToken() );
 
-	UrlTemplate badTemplat { "poney" };
+	const UrlTemplate badTemplat { "poney" };
 	CHECK( not badTemplat.hasReplacementToken() );
 
 	UrlFull full { id };

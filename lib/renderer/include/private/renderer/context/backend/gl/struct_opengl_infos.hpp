@@ -1,10 +1,13 @@
+#ifndef __VTX_RENDERER_CONTEXT_BACKEND_GL_STRUCT_OPENGL_INFOS__
+#define __VTX_RENDERER_CONTEXT_BACKEND_GL_STRUCT_OPENGL_INFOS__
+
 #include <array>
 #include <util/logger.hpp>
 #include <util/string.hpp>
 
 namespace VTX::Renderer::Context::Backend::GL
 {
-	enum E_GL_EXTENSIONS
+	enum struct E_GL_EXTENSIONS : uint8_t
 	{
 		NVX_gpu_memory_info = 0,
 		ATI_meminfo,
@@ -29,7 +32,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		int glMaxComputeWorkGroupSize[ 3 ];
 		int glMaxComputeWorkGroupInvocations;
 
-		std::array<bool, E_GL_EXTENSIONS::EXTENSIONS_COUNT> glExtensions = { false };
+		std::array<bool, toUnderlying( E_GL_EXTENSIONS::EXTENSIONS_COUNT )> glExtensions = { false };
 
 		void print()
 		{
@@ -60,3 +63,5 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 	};
 } // namespace VTX::Renderer::Context::Backend::GL
+
+#endif

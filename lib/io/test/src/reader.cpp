@@ -18,9 +18,9 @@ TEST_CASE( "VTX_IO - Test filepath", "[reader][topology][metadata]" )
 
 	VTX::Core::Struct::Topology				topology;
 	VTX::IO::Metadata						metadata;
-	Util::Thread::StopToken					t;
+	const Util::Thread::StopToken				  t;
 	IO::SystemReader						systemReader( systemPath, IO::READER_OPTION::ALL, t );
-	VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
+	const VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 
 	systemReader.get( dict, topology, metadata );
 
@@ -42,7 +42,7 @@ TEST_CASE( "VTX_IO - Test filepath", "[reader][positions]" )
 	const FilePath	  systemPath	 = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
 	std::vector<VTX::Vec3f> pos;
-	Util::Thread::StopToken t;
+	const Util::Thread::StopToken t;
 	IO::SystemReader		systemReader( systemPath, IO::READER_OPTION::ALL, t );
 
 	systemReader.get( pos );

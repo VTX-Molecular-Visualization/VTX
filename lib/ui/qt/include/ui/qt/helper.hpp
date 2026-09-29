@@ -21,7 +21,7 @@ namespace VTX::UI::QT::Helper
 	 */
 	VTX::Util::Color::Rgba fromQColor( const QColor & );
 	QColor				   toQColor( const VTX::Util::Color::Rgba & );
-	QString				   toQString( const std::string_view );
+	QString				   toQString( std::string_view );
 
 	/**
 	 * @brief Format number with current locale.

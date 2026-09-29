@@ -73,9 +73,9 @@ namespace VTX::Renderer::Context::Backend::Interop
 			return;
 		}
 
-		void * devicePtr = nullptr;
-		size_t size		= 0;
-		const bool mapped = cudaGraphicsMapResources( 1, &resource ) == cudaSuccess;
+		void *	   devicePtr = nullptr;
+		size_t	   size		 = 0;
+		const bool mapped	 = cudaGraphicsMapResources( 1, &resource ) == cudaSuccess;
 		if ( mapped && cudaGraphicsResourceGetMappedPointer( &devicePtr, &size, resource ) == cudaSuccess )
 		{
 			_impl->availability.runtime = devicePtr != nullptr && size > 0;
@@ -143,8 +143,10 @@ namespace VTX::Renderer::Context::Backend::Interop
 			{
 				flags = cudaGraphicsRegisterFlagsReadOnly;
 			}
-			else if ( not Util::Enum::hasAnyBit( request.usage, Desc::E_BUFFER_USAGE::CUDA_READ )
-					  && Util::Enum::hasAnyBit( request.usage, Desc::E_BUFFER_USAGE::CUDA_WRITE ) )
+			else if (
+				not Util::Enum::hasAnyBit( request.usage, Desc::E_BUFFER_USAGE::CUDA_READ )
+				&& Util::Enum::hasAnyBit( request.usage, Desc::E_BUFFER_USAGE::CUDA_WRITE )
+			)
 			{
 				flags = cudaGraphicsRegisterFlagsWriteDiscard;
 			}
@@ -159,7 +161,7 @@ namespace VTX::Renderer::Context::Backend::Interop
 		resourcesToMap.reserve( p_requests.size() );
 		for ( const BufferRequest & request : p_requests )
 		{
-			Impl::Registration & registration = _impl->registrations[ request.key ];
+			const Impl::Registration & registration = _impl->registrations[ request.key ];
 			if ( not registration.mapped )
 			{
 				resourcesToMap.emplace_back( registration.resource );

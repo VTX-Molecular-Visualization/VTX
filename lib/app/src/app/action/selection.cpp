@@ -102,7 +102,7 @@ namespace VTX::App::Action::Selection
 	void Pick::execute( const Vec2i & p_mousePos, const E_GRANULARITY p_granularity, const bool p_append )
 	{
 		// Get renderer picking info at mouse position.
-		Vec2i picked = RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y );
+		const Vec2i picked = RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y );
 
 		const UID32 first  = picked.x;
 		const UID32 second = picked.y;

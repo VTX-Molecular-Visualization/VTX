@@ -31,12 +31,6 @@ namespace VTX::Util::Color
 		}
 	} // namespace
 
-	std::ostream & operator<<( std::ostream & p_os, const Rgba & p_c )
-	{
-		p_os << p_c.x() << " - " << p_c.y() << " - " << p_c.z() << " - " << p_c.w() << std::endl;
-		return p_os;
-	}
-
 	Rgba Rgba::mixedWith( const Rgba & p_other, const float p_factor ) const
 	{
 		const float factor = Util::Math::clamp( p_factor, 0.f, 1.f );
@@ -49,9 +43,7 @@ namespace VTX::Util::Color
 	}
 
 	Rgba Rgba::toLinear() const
-	{
-		return Rgba( _srgbToLinear( r() ), _srgbToLinear( g() ), _srgbToLinear( b() ), a() );
-	}
+	{ return Rgba( _srgbToLinear( r() ), _srgbToLinear( g() ), _srgbToLinear( b() ), a() ); }
 
 	Rgba Rgba::toSRGB() const { return Rgba( _linearToSrgb( r() ), _linearToSrgb( g() ), _linearToSrgb( b() ), a() ); }
 
@@ -73,8 +65,8 @@ namespace VTX::Util::Color
 	{
 		const float grey = brightness();
 		Rgba		result(
-			   grey + ( r() - grey ) * p_factor, grey + ( g() - grey ) * p_factor, grey + ( b() - grey ) * p_factor, a()
-		   );
+			grey + ( r() - grey ) * p_factor, grey + ( g() - grey ) * p_factor, grey + ( b() - grey ) * p_factor, a()
+		);
 		result.saturate();
 		return result;
 	}
@@ -162,8 +154,6 @@ namespace VTX::Util::Color
 	}
 
 	Rgba Rgba::random()
-	{
-		return Rgba( Util::Math::randomFloat(), Util::Math::randomFloat(), Util::Math::randomFloat() );
-	}
+	{ return Rgba( Util::Math::randomFloat(), Util::Math::randomFloat(), Util::Math::randomFloat() ); }
 
 } // namespace VTX::Util::Color

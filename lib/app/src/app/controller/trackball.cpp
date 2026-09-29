@@ -46,20 +46,20 @@ namespace VTX::App::Controller
 		// Mouse left.
 		Vec3f deltaVelocity = VEC3F_ZERO;
 
-		Vec2i deltaRotate = input.rotate();
+		const Vec2i deltaRotate = input.rotate();
 		deltaVelocity.x	  = -deltaRotate.x * _MOUSE_ROTATION_FACTOR;
 		deltaVelocity.y	  = -deltaRotate.y * _MOUSE_ROTATION_FACTOR;
 
 		// Mouse right.
-		Vec2i deltaRotateAlt = input.rotateAlt();
+		const Vec2i deltaRotateAlt = input.rotateAlt();
 		deltaVelocity.z		 = deltaRotateAlt.x * _MOUSE_ROTATION_FACTOR;
 
 		// Pan target with wheel button.
-		Vec2i deltaPan = input.pan();
+		const Vec2i deltaPan = input.pan();
 		if ( deltaPan != VEC2I_ZERO )
 		{
-			float deltaX = -deltaPan.x * _PAN_FACTOR;
-			float deltaY = deltaPan.y * _PAN_FACTOR;
+			const float deltaX = -deltaPan.x * _PAN_FACTOR;
+			const float deltaY = deltaPan.y * _PAN_FACTOR;
 			p_target += p_transform.getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
 			_needUpdate = true;
 		}
@@ -155,7 +155,8 @@ namespace VTX::App::Controller
 		{
 			_velocity = Util::Math::lerp( _velocity, VEC3F_ZERO, p_deltaTime * p_elasticityFactor );
 
-			Vec3f::bool_type res = Util::Math::lessThan( Util::Math::abs( _velocity ), Vec3f( _ELASTICITY_THRESHOLD ) );
+			const Vec3f::bool_type res
+				= Util::Math::lessThan( Util::Math::abs( _velocity ), Vec3f( _ELASTICITY_THRESHOLD ) );
 
 			if ( Util::Math::all( res ) )
 			{

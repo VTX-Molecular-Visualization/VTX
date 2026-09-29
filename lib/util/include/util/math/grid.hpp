@@ -61,8 +61,8 @@ namespace VTX::Util::Math
 		 */
 		CellPosition gridPosition( const size_t p_denseIndex ) const
 		{
-			const size_t z = p_denseIndex / ( _size.x * _size.y );
-			const size_t r = p_denseIndex % ( _size.x * _size.y );
+			const size_t z = p_denseIndex / ( static_cast<size_t>( _size.x ) * _size.y );
+			const size_t r = p_denseIndex % ( static_cast<size_t>( _size.x ) * _size.y );
 			const size_t y = r / _size.x;
 			const size_t x = r % _size.x;
 
@@ -74,18 +74,17 @@ namespace VTX::Util::Math
 		 */
 		size_t denseIndex( const CellPosition & p_gridPosition ) const
 		{
-			return p_gridPosition.z * _size.x * _size.y + p_gridPosition.y * _size.x + p_gridPosition.x;
+			return static_cast<size_t>( p_gridPosition.z ) * _size.x * _size.y
+				   + static_cast<size_t>( p_gridPosition.y ) * _size.x + p_gridPosition.x;
 		}
 
 		size_t denseIndex( const uint p_x, const uint p_y, const uint p_z ) const
-		{
-			return denseIndex( CellPosition( p_x, p_y, p_z ) );
-		}
+		{ return denseIndex( CellPosition( p_x, p_y, p_z ) ); }
 
 		/**
 		 * @brief Get the number of cells in the grid (fixed).
 		 */
-		size_t getCellCount() const { return _size.x * _size.y * _size.z; }
+		size_t getCellCount() const { return static_cast<size_t>( _size.x ) * _size.y * _size.z; }
 
 		/**
 		 * @brief Grid size.
@@ -158,7 +157,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the number of occupied cells.
 		 */
-		inline size_t getCellCount() const { return _data.size(); }
+		size_t getCellCount() const { return _data.size(); }
 
 		/**
 		 * @brief Iterators.
@@ -197,9 +196,7 @@ namespace VTX::Util::Math
 
 		template<typename F>
 		void forEachNeighbourCellAt( const Vec3f & p_worldPosition, F && p_func ) const
-		{
-			forEachNeighbourCell( gridPosition( p_worldPosition ), std::forward<F>( p_func ) );
-		}
+		{ forEachNeighbourCell( gridPosition( p_worldPosition ), std::forward<F>( p_func ) ); }
 
 		/**
 		 * @brief Get the grid size derived from occupied cells bounds.
@@ -239,9 +236,7 @@ namespace VTX::Util::Math
 		 * @brief Add a value to the grid at the given world position.
 		 */
 		void add( const T & p_value, const Vec3f & p_worldPosition )
-		{
-			add( p_value, gridPosition( p_worldPosition ) );
-		}
+		{ add( p_value, gridPosition( p_worldPosition ) ); }
 
 		void add( const T & p_value, const CellPosition & p_gridPosition )
 		{

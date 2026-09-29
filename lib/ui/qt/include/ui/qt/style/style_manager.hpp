@@ -52,17 +52,17 @@ namespace VTX::UI::QT::Style
 		/**
 		 * @brief Get current theme.
 		 */
-		inline E_THEME getCurrentTheme() const { return _currentTheme; }
+		E_THEME getCurrentTheme() const { return _currentTheme; }
 
 		/**
 		 * @brief Get current font family.
 		 */
-		inline QString getCurrentFontFamily() const { return Q_APP()->font().family(); }
+		QString getCurrentFontFamily() const { return Q_APP()->font().family(); }
 
 		/**
 		 * @brief Switch application theme.
 		 */
-		void setTheme( const E_THEME p_theme );
+		void setTheme( E_THEME p_theme );
 
 		/**
 		 * @brief Set font.
@@ -72,12 +72,12 @@ namespace VTX::UI::QT::Style
 		/**
 		 * @brief Get an icon from a font.
 		 */
-		QIcon iconFromCodepoint( const Codepoint );
+		QIcon iconFromCodepoint( Codepoint );
 
 		/**
 		 * @brief Get the available fonts.
 		 */
-		inline static QStringList getAvailableFonts() { return QFontDatabase::families(); }
+		static QStringList getAvailableFonts() { return QFontDatabase::families(); }
 
 	  private:
 		/**

@@ -38,12 +38,12 @@ namespace VTX::Util::Monitoring
 		/**
 		 * @brief Checks if the specified hashed key exists.
 		 */
-		inline bool has( const Hash & p_hashedKey ) const { return _metricsMap.contains( p_hashedKey ); }
+		bool has( const Hash & p_hashedKey ) const { return _metricsMap.contains( p_hashedKey ); }
 
 		/**
 		 * @brief Get the frame start time point.
 		 */
-		inline Util::Chrono::TimePoint getTimepoint() const { return _timepoint; }
+		Util::Chrono::TimePoint getTimepoint() const { return _timepoint; }
 
 	  private:
 		/**

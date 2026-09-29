@@ -147,7 +147,7 @@ namespace VTX::Util::Math
 					continue;
 				}
 
-				RangeType right { p_r.last, it->last };
+				const RangeType right { p_r.last, it->last };
 				it->last = p_r.first;
 				it		 = _ranges.insert( std::next( it ), right );
 				++it;
@@ -472,9 +472,9 @@ namespace VTX::Util::Math
 		}
 		*/
 
-		inline size_t sizeRange() const { return _ranges.size(); }
+		size_t sizeRange() const { return _ranges.size(); }
 
-		inline size_t size() const
+		size_t size() const
 		{
 			size_t count = 0;
 			for ( const auto & r : _ranges )
@@ -547,7 +547,7 @@ namespace VTX::Util::Math
 		 */
 		struct iterator
 		{
-			using ListIt = typename std::vector<RangeType>::const_iterator;
+			using ListIt = std::vector<RangeType>::const_iterator;
 
 			ListIt it {};
 			ListIt end {};
@@ -571,7 +571,7 @@ namespace VTX::Util::Math
 			}
 
 			explicit iterator( const std::vector<RangeType> & p_ranges ) noexcept :
-				it( p_ranges.begin() ), end( p_ranges.end() ), cur {}
+				it( p_ranges.begin() ), end( p_ranges.end() )
 			{ advanceToValid(); }
 
 			iterator & operator++() noexcept

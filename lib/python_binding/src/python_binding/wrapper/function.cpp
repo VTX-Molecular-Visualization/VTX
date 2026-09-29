@@ -15,14 +15,10 @@ namespace VTX::PythonBinding::Wrapper
 	{
 	}
 
-	Object Function::_getReturnValue()
-	{
-		Object res = Object( _returnObj );
-		return res;
-	}
-
-	pybind11::detail::str_attr_accessor Function::_getFunctionAccessor( const Module &		p_module,
-																		const std::string & p_funcName ) const
+	pybind11::detail::str_attr_accessor Function::_getFunctionAccessor(
+		const Module &		p_module,
+		const std::string & p_funcName
+	) const
 	{
 		const pybind11::detail::str_attr_accessor funcHandle = p_module._pyModule.attr( p_funcName.c_str() );
 

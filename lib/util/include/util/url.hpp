@@ -2,6 +2,7 @@
 #define __VTX_UTIL_URL__
 
 #include <string>
+#include <string_view>
 
 namespace VTX::Util::Url
 {
@@ -16,11 +17,13 @@ namespace VTX::Util::Url
 	class SystemId
 	{
 	  public:
-		/*explicit*/ inline SystemId( const char * p_ ) : str( p_ ) {}
+		/*explicit*/ SystemId( const char * p_ ) : str( p_ ) {}
 
 		std::string str;
-		inline		operator std::string() noexcept { return str; }
-		inline		operator const std::string() const noexcept { return str; }
+
+		explicit operator std::string() const noexcept { return str; }
+
+		explicit operator const std::string &() const noexcept { return str; }
 	};
 
 	/**
@@ -29,15 +32,19 @@ namespace VTX::Util::Url
 	class UrlTemplate
 	{
 	  public:
-		explicit inline UrlTemplate( const char * p_ ) : str( p_ ) {}
+		explicit UrlTemplate( const char * p_ ) : str( p_ ) {}
 
 		std::string str;
-		inline		operator std::string() noexcept { return str; }
-		inline		operator const std::string() const noexcept { return str; }
+
+		explicit operator std::string() const noexcept { return str; }
+
+		explicit operator const std::string &() const noexcept { return str; }
 
 		bool hasReplacementToken() const noexcept;
 	};
-	inline const UrlTemplate g_DEFAULT_SYSTEM_DOWNLOAD_TEMPLATE { rcsbPdbDownloadUrlTemplate() };
+
+	static constexpr std::string_view g_DEFAULT_SYSTEM_DOWNLOAD_TEMPLATE
+		= "https://models.rcsb.org/[SYSTEM_ID].bcif.gz";
 
 	/**
 	 * @brief URL that is ready to be used.
@@ -56,8 +63,10 @@ namespace VTX::Util::Url
 		UrlFull( const UrlTemplate &, const SystemId & );
 
 		std::string str { g_DEFAULT_SYSTEM_DOWNLOAD_TEMPLATE };
-		inline		operator std::string() noexcept { return str; }
-		inline		operator const std::string() const noexcept { return str; }
+
+		explicit operator std::string() const noexcept { return str; }
+
+		explicit operator const std::string &() const noexcept { return str; }
 	};
 } // namespace VTX::Util::Url
 

@@ -1,4 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
+#include <limits>
+#include <stdexcept>
 #include <string>
 #include <util/string.hpp>
 
@@ -28,8 +30,15 @@ TEST_CASE( "Util::String", "[unit]" )
 	CHECK( VTX::Util::String::floatToStr( f, 2 ) == "3.14" );
 	CHECK( VTX::Util::String::floatToStr( f, 5 ) == "3.14159" );
 
-	str = "3.14159";
-	CHECK( VTX::Util::String::strToUint( str ) == 3 );
+	CHECK( VTX::Util::String::strToNumber<VTX::uint>( "3" ) == 3u );
+	CHECK( VTX::Util::String::strToNumber<int>( "-3" ) == -3 );
+	CHECK_THROWS_AS( VTX::Util::String::strToNumber<VTX::uint>( "3.14159" ), std::invalid_argument );
+	CHECK_THROWS_AS( VTX::Util::String::strToNumber<VTX::uint>( "" ), std::invalid_argument );
+	CHECK_THROWS_AS( VTX::Util::String::strToNumber<VTX::uint>( "-1" ), std::invalid_argument );
+	CHECK_THROWS_AS(
+		VTX::Util::String::strToNumber<VTX::uint>( std::to_string( std::numeric_limits<VTX::uint>::max() ) + "0" ),
+		std::invalid_argument
+	);
 
 	str = "123 abcDefghijklmnopqrstuvwxyZ.()+";
 	str = VTX::Util::String::toUpper( str );

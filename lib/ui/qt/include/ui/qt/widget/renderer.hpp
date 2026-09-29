@@ -85,11 +85,12 @@ namespace VTX::UI::QT::Widget
 		 * @brief Override resize.
 		 */
 		bool eventFilter( QObject *, QEvent * ) override;
+
+	  protected:
 		void paintEvent( QPaintEvent * ) override;
 		void showEvent( QShowEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
 
-	  protected:
 		/**
 		 * @brief Debounce callback.
 		 */

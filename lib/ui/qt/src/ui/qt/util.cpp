@@ -78,13 +78,6 @@ namespace VTX::UI::QT::Util
 
 		bool isHovered() const { return _hovered; }
 
-		void leaveEvent( QEvent * event )
-		{
-			_hovered = false;
-			QWidget::leaveEvent( event );
-			hide();
-		}
-
 		void hoverLeave( QEvent * event )
 		{
 			_hovered = false;
@@ -98,6 +91,7 @@ namespace VTX::UI::QT::Util
 			QWidget::event( p_event );
 		}
 
+	  protected:
 		bool event( QEvent * e )
 		{
 			switch ( e->type() )
@@ -119,8 +113,17 @@ namespace VTX::UI::QT::Util
 		void changeEvent( QEvent * e ) override
 		{
 			if ( e->type() == QEvent::PaletteChange || e->type() == QEvent::ThemeChange )
+			{
 				_applyThemeStyle();
+			}
 			QWidget::changeEvent( e );
+		}
+
+		void leaveEvent( QEvent * event ) override
+		{
+			_hovered = false;
+			QWidget::leaveEvent( event );
+			hide();
 		}
 
 	  private:
@@ -129,11 +132,13 @@ namespace VTX::UI::QT::Util
 		{
 			const QColor background = palette().color( QPalette::Window );
 			const QColor foreground = palette().color( QPalette::WindowText );
-			_frame->setStyleSheet( QString( "#questionMarkPopupFrame{"
-											"background:%1;"
-											"border:1px solid %2;"
-											"border-radius:8px;"
-											"}" )
+			_frame->setStyleSheet( QString(
+									   "#questionMarkPopupFrame{"
+									   "background:%1;"
+									   "border:1px solid %2;"
+									   "border-radius:8px;"
+									   "}"
+			)
 									   .arg( background.name(), foreground.name() ) );
 		}
 
@@ -221,6 +226,17 @@ namespace VTX::UI::QT::Util
 			}
 		}
 
+	  protected:
+		bool event( QEvent * e )
+		{
+			switch ( e->type() )
+			{
+			case QEvent::MouseButtonRelease: mouseClicked( reinterpret_cast<QMouseEvent *>( e ) ); break;
+			default: break;
+			}
+			return QWidget::event( e );
+		}
+
 	  private:
 		// Show the popup, capped to a fraction of the current screen and repositioned so it always stays
 		// fully visible even when the report is very long.
@@ -253,17 +269,6 @@ namespace VTX::UI::QT::Util
 
 			popup->move( pos );
 			popup->show();
-		}
-
-	  public:
-		bool event( QEvent * e )
-		{
-			switch ( e->type() )
-			{
-			case QEvent::MouseButtonRelease: mouseClicked( reinterpret_cast<QMouseEvent *>( e ) ); break;
-			default: break;
-			}
-			return QWidget::event( e );
 		}
 	};
 

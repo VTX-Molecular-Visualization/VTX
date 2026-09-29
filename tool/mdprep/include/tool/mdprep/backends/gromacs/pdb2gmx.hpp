@@ -77,7 +77,7 @@ namespace std
 	template<>
 	struct hash<VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId>
 	{
-		inline uint64_t operator()( const VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId & p_arg ) const noexcept
+		uint64_t operator()( const VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId & p_arg ) const noexcept
 		{
 			uint64_t out = 0;
 			out			 = static_cast<uint64_t>( p_arg.kw ) << 32;

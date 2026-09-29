@@ -4,8 +4,6 @@
 
 namespace
 {
-	cpr::SslOptions sslOpts = cpr::Ssl( cpr::ssl::MaxTLSVersion {} );
-
 	void checkResponse( cpr::Response & p_response )
 	{
 		if ( p_response.status_code != 200 )
@@ -18,11 +16,7 @@ namespace
 
 namespace VTX::Util::Network
 {
-	void httpRequestGet(
-		const std::string_view & p_url,
-		std::string &			 p_text,
-		const ProgressCallback & p_progress
-	)
+	void httpRequestGet( const std::string_view & p_url, std::string & p_text, const ProgressCallback & p_progress )
 	{
 		cpr::Response response = cpr::Get(
 			cpr::Url { p_url },
@@ -32,7 +26,8 @@ namespace VTX::Util::Network
 					cpr::cpr_off_t p_downloadNow,
 					cpr::cpr_off_t,
 					cpr::cpr_off_t,
-					intptr_t ) -> bool
+					intptr_t
+				) -> bool
 				{
 					if ( p_progress )
 					{
@@ -43,7 +38,7 @@ namespace VTX::Util::Network
 					return true;
 				}
 			),
-			sslOpts
+			cpr::Ssl( cpr::ssl::MaxTLSVersion {} )
 		);
 
 		checkResponse( response );

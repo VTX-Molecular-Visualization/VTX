@@ -46,7 +46,7 @@ int main( int, char ** )
 		contextInfo.plateform = static_cast<Renderer::Desc::E_NATIVE_PLATEFORM>( ui.getNativePlatform() );
 
 		renderer.setOpenGL( contextInfo, Filesystem::getExecutableDir() );
-		renderer.setGraphicsConfig( Renderer::GraphicsConfigs::DEFAULT );
+		renderer.setGraphicsConfig( Renderer::GraphicsConfigs::DEFAULT() );
 		renderer.setColorLayout( Renderer::Color::Layouts::JMOL );
 		const auto rep = Renderer::Representations::STICKS_AND_RIBBONS;
 		renderer.addRepresentation( { rep } );

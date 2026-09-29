@@ -16,7 +16,7 @@ namespace VTX::UI::QT::Widget
 	class Controller : public QGroupBox
 	{
 	  public:
-		Controller( const Entity, QWidget * );
+		Controller( Entity, QWidget * );
 		~Controller();
 
 	  private:

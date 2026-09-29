@@ -162,7 +162,7 @@ namespace VTX::App::PythonBinding
 
 	void SelectionBinder::bind( Module & p_vtxModule )
 	{
-		pybind11::module_ & module = p_vtxModule.pyModule();
+		const pybind11::module_ & module = p_vtxModule.pyModule();
 
 		VTX::PythonBinding::Helper::declareEnum<SystemItem>( module, "SYSTEM_ITEM" );
 		VTX::PythonBinding::Helper::declareEnum<App::Action::Selection::E_GRANULARITY>(

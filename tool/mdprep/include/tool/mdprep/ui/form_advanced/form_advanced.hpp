@@ -77,7 +77,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		IonicFields										  _fieldsIons;
 		mutable EventManager							  _eventManager;
 
-		inline MdParameters &		  _parameters() { return _eventManager.parameters; }
+		MdParameters &				  _parameters() { return _eventManager.parameters; }
 		MdEngineSpecificFieldPlacer & _fieldPlacer( const size_t & ) noexcept;
 		void						  _createAndPlaceUiItems( QWidget * p_container ) noexcept;
 		QWidget *					  _uiSetupContainer( QWidget * p_container ) noexcept;

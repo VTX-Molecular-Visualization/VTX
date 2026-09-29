@@ -695,14 +695,12 @@ namespace VTX::Renderer::Builder
 	{
 		static Cache::Representation buildCache( const Representation & p_representation )
 		{
-			bool showSphere	  = p_representation.hasSphere;
-			bool showCylinder = p_representation.hasCylinder;
-			bool showRibbon	  = p_representation.hasRibbon;
-			bool showSes	  = p_representation.hasSes;
+			bool	   showSphere	= p_representation.hasSphere;
+			bool	   showCylinder = p_representation.hasCylinder;
+			bool	   showRibbon	= p_representation.hasRibbon;
+			const bool showSes		= p_representation.hasSes;
 
-			const bool	isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
-			const float cylinderRadius		= p_representation.radiusCylinder;
-			float		sphereRadiusFixed	= p_representation.radiusSphereFixed;
+			const bool isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
 
 			if ( showSes )
 			{
@@ -714,13 +712,6 @@ namespace VTX::Renderer::Builder
 			{
 				showCylinder = false;
 				showRibbon	 = false;
-			}
-			else if ( showSphere && showCylinder )
-			{
-				if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
-				{
-					sphereRadiusFixed = cylinderRadius;
-				}
 			}
 			else if ( not showSphere && showCylinder )
 			{
@@ -770,15 +761,15 @@ namespace VTX::Renderer::Builder
 			}
 
 			buffer.close();
-			p_context.setBuffer( { "Representations" }, buffer );
+			p_context.setBuffer( { "Representations" }, buffer.bytes() );
 		}
 
 	  private:
 		static void _write( BinaryBuffer<E_LAYOUT_TYPE::Std140> & p_buffer, const Representation & p_representation )
 		{
-			bool  isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
-			float cylinderRadius	  = p_representation.radiusCylinder;
-			float sphereRadiusFixed	  = p_representation.radiusSphereFixed;
+			bool		isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
+			const float cylinderRadius		= p_representation.radiusCylinder;
+			float		sphereRadiusFixed	= p_representation.radiusSphereFixed;
 
 			if ( p_representation.hasSphere && p_representation.hasCylinder )
 			{
@@ -798,7 +789,7 @@ namespace VTX::Renderer::Builder
 			p_buffer.write( uint( isSphereRadiusFixed ) );
 			p_buffer.write( p_representation.radiusCylinder );
 			p_buffer.write( uint( p_representation.cylinderColorBlending ) );
-			p_buffer.write( uint( p_representation.ribbonColorBlending ) );
+			p_buffer.write( p_representation.ribbonColorBlending );
 			p_buffer.write( p_representation.sesProbeRadius );
 			p_buffer.write( Geometry::SES::MAX_PROBE_NEIGHBOR_NB );
 		}
@@ -834,7 +825,7 @@ namespace VTX::Renderer::Builder
 			buffer.write( std::tan( Util::Math::radians( p_camera.camera.fov ) * 0.5f ) );
 			buffer.close();
 
-			p_context.setBuffer( { "Camera" }, buffer );
+			p_context.setBuffer( { "Camera" }, buffer.bytes() );
 		}
 	};
 

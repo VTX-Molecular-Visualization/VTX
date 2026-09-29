@@ -24,7 +24,7 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Constructor.
 		 */
-		Camera( const Entity p_entity, QWidget * p_parent );
+		Camera( Entity p_entity, QWidget * p_parent );
 		~Camera() override;
 
 	  private:

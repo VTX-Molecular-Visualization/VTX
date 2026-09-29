@@ -23,7 +23,6 @@ namespace VTX::UI::QT::Widget::Tree
 		explicit TrajectorySettings( Entity p_system, QWidget * p_parent = nullptr );
 		~TrajectorySettings() override;
 
-	  protected:
 		bool eventFilter( QObject * p_watched, QEvent * p_event ) override;
 
 	  private:

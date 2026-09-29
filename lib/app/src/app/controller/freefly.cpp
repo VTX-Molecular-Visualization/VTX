@@ -22,7 +22,7 @@ namespace VTX::App::Controller
 		const float rotationSpeed = p_settings.rotationSpeed * Setting::ROTATION_SPEED_MULTIPLIER;
 
 		//  Rotation.
-		Vec2i rotation		= input.rotate();
+		const Vec2i rotation	  = input.rotate();
 		Vec3f localRotation = VEC3F_ZERO;
 		if ( rotation.x || rotation.y )
 		{
@@ -31,7 +31,7 @@ namespace VTX::App::Controller
 			);
 		}
 
-		Vec2i rotationAlt  = input.rotateAlt();
+		const Vec2i rotationAlt	 = input.rotateAlt();
 		float rollRotation = 0.f;
 		if ( rotationAlt.x || rotationAlt.y )
 		{

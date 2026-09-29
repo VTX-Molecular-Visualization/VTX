@@ -262,7 +262,7 @@ TEST_CASE( "VTX_UTIL - Threading - Progress", "[threading][progress]" )
 		}
 	);
 
-	Util::Thread::BaseThread & thread = threadManager.createThread(
+	const Util::Thread::BaseThread & thread = threadManager.createThread(
 		asyncOp,
 		[ &callbackCalled,
 		  &callbackStopped,
