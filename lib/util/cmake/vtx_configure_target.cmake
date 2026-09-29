@@ -1,7 +1,38 @@
 option(VTX_ENABLE_NATIVE_OPTIMIZATIONS "Enable CPU-specific release optimizations for local builds." OFF)
 option(VTX_ENABLE_INTERPROCEDURAL_OPTIMIZATION "Enable interprocedural optimization for VTX targets." OFF)
+option(VTX_ENABLE_CLANG_TIDY "Enable clang-tidy analysis for VTX targets." ON)
 
+# Exclude vendor sources from linting.
+function(_vtx_exclude_vendor_sources_from_linting p_target)
+	get_target_property(srcs ${p_target} SOURCES)
+	foreach(src IN LISTS srcs)
+		file(TO_CMAKE_PATH "${src}" src_patch)
+		if(src_patch MATCHES "(^|/)vendor/")
+			set_source_files_properties("${src}" TARGET_DIRECTORY ${p_target} PROPERTIES SKIP_LINTING ON)
+		endif()
+	endforeach()
+endfunction()
+
+# Configure a target with VTX-specific settings.
 function(vtx_configure_target p_target)
+	# Static analysis.
+	if(VTX_ENABLE_CLANG_TIDY)
+		get_filename_component(_vtx_compiler_dir "${CMAKE_CXX_COMPILER}" DIRECTORY)
+		# TODO: remove hardcoded path.
+		find_program(VTX_CLANG_TIDY_EXECUTABLE NAMES clang-tidy
+			HINTS "${_vtx_compiler_dir}/../../../../../Llvm/x64/bin"
+			REQUIRED
+		)
+		set_property(TARGET ${p_target} PROPERTY CXX_CLANG_TIDY "${VTX_CLANG_TIDY_EXECUTABLE}")
+		if(MSVC)
+			set_property(TARGET ${p_target} APPEND PROPERTY CXX_CLANG_TIDY "--extra-arg=/EHsc")
+		endif()
+		# Defer function call to the end of the configuration to ensure that all sources have been added to the target.
+		cmake_language(EVAL CODE "cmake_language(DEFER CALL _vtx_exclude_vendor_sources_from_linting [[${p_target}]])"
+		)
+	endif()
+
+	# Compiler-specific options.
 	if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 		target_compile_options(${p_target} PRIVATE
 			$<$<COMPILE_LANGUAGE:CXX>:-fexperimental-library>
