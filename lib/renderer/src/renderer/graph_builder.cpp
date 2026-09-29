@@ -130,7 +130,7 @@ namespace VTX::Renderer
 			desc.binding = *p_binding;
 		}
 
-		if ( not p_values.empty() )
+		if ( p_values.size() != 0 )
 		{
 			desc.values.assign( p_values.begin(), p_values.end() );
 		}

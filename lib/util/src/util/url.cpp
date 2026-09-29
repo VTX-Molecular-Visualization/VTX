@@ -57,7 +57,7 @@ namespace VTX::Util::Url
 
 	UrlFull::UrlFull( const SystemId & p_systemId ) { replace( str, g_systemReplacementToken, p_systemId.str ); }
 
-	UrlFull::UrlFull( const UrlTemplate & p_template, const SystemId & p_systemId ) : str( p_template )
+	UrlFull::UrlFull( const UrlTemplate & p_template, const SystemId & p_systemId ) : str( p_template.str )
 	{ replace( str, g_systemReplacementToken, p_systemId.str ); }
 
 } // namespace VTX::Util::Url
