@@ -70,6 +70,7 @@ jobs:
       shell: bash
       run: |
         conan install util -b missing \
+          -c tools.cmake.cmaketoolchain:extra_variables='{"VTX_ENABLE_CLANG_TIDY":false}' \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_util/*:test=True
@@ -111,6 +112,7 @@ jobs:
       shell: bash
       run: |
         conan create util -b missing \
+          -c tools.cmake.cmaketoolchain:extra_variables='{"VTX_ENABLE_CLANG_TIDY":false}' \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_util/*:test=True
