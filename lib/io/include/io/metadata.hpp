@@ -3,6 +3,7 @@
 
 #include "io/constants.hpp"
 #include <string>
+#include <util/filesystem.hpp>
 
 namespace VTX::IO
 {

@@ -3,7 +3,6 @@
 
 #include <string_view>
 #include <util/enum.hpp>
-#include <util/types.hpp>
 
 namespace VTX::IO
 {

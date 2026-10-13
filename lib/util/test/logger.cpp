@@ -10,23 +10,25 @@
 // logger.hpp
 TEST_CASE( "Util::Logger", "[unit]" )
 {
-	VTX::LOGGER::init( VTX::Util::Filesystem::getExecutableDir() / "logs_tests", false );
-
 	struct LogState
 	{
-		std::mutex							   mutex;
-		std::condition_variable				   cv;
+		std::mutex								   mutex;
+		std::condition_variable					   cv;
 		std::map<std::string, VTX::Util::LOG_HINT> received;
 	};
 
 	auto state = std::make_shared<LogState>();
-	const auto callbackId = VTX::LOGGER::onLog.add( [ state ]( const VTX::Util::LogInfo & p_log ) {
+	VTX::LOGGER::init( VTX::Util::Filesystem::getExecutableDir() / "logs_tests", false );
+	VTX::LOGGER::setCallback(
+		[ state ]( const VTX::Util::LogInfo & p_log )
 		{
-			const std::lock_guard<std::mutex> lock( state->mutex );
-			state->received[ p_log.message ] = p_log.hint;
+			{
+				const std::lock_guard<std::mutex> lock( state->mutex );
+				state->received[ p_log.message ] = p_log.hint;
+			}
+			state->cv.notify_one();
 		}
-		state->cv.notify_one();
-	} );
+	);
 
 	VTX::VTX_INFO( "info without args" );
 	VTX::VTX_INFO( "info with args: {} {}", "test", 42 );
@@ -37,10 +39,16 @@ TEST_CASE( "Util::Logger", "[unit]" )
 
 	{
 		std::unique_lock<std::mutex> lock( state->mutex );
-		REQUIRE( state->cv.wait_for( lock, std::chrono::seconds( 2 ), [ & ]() {
-			return state->received.contains( "info without args" ) && state->received.contains( "info with args: test 42" )
-				   && state->received.contains( "python in" ) && state->received.contains( "python out" );
-		} ) );
+		REQUIRE( state->cv.wait_for(
+			lock,
+			std::chrono::seconds( 2 ),
+			[ & ]()
+			{
+				return state->received.contains( "info without args" )
+					   && state->received.contains( "info with args: test 42" )
+					   && state->received.contains( "python in" ) && state->received.contains( "python out" );
+			}
+		) );
 		CHECK( state->received.at( "info without args" ) == VTX::Util::LOG_HINT::STD );
 		CHECK( state->received.at( "info with args: test 42" ) == VTX::Util::LOG_HINT::STD );
 		CHECK( state->received.at( "python in" ) == VTX::Util::LOG_HINT::PY_IN );

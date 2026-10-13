@@ -2,7 +2,7 @@
 #define __VTX_UTIL_ENUM__
 
 #include "exceptions.hpp"
-#include "logger.hpp"
+#include "types.hpp"
 #include <entt/core/enum.hpp>
 #include <magic_enum/magic_enum.hpp>
 #include <type_traits>
@@ -25,27 +25,21 @@ namespace VTX::Util::Enum
 	 */
 	template<Concept E>
 	constexpr bool hasAllBits( const E p_e, const E p_bits ) noexcept
-	{
-		return ( p_e & p_bits ) == p_bits;
-	}
+	{ return ( p_e & p_bits ) == p_bits; }
 
 	/**
 	 * @brief Checks if a specific bit is set in an enumeration value (must contain VTX_ENUM_ENABLE_BITMASK).
 	 */
 	template<Concept E>
 	constexpr bool hasAnyBit( const E p_e, const E p_bit ) noexcept
-	{
-		return ( p_e & p_bit ) != E( 0 );
-	}
+	{ return ( p_e & p_bit ) != E( 0 ); }
 
 	/**
 	 * @brief Returns the name of an enumeration value as a string view.
 	 */
 	template<Concept E>
 	constexpr std::string_view enumName( const E & p_enum )
-	{
-		return magic_enum::enum_name( p_enum );
-	}
+	{ return magic_enum::enum_name( p_enum ); }
 
 	/**
 	 * @brief Converts a string to its corresponding enumeration value of type E.
@@ -70,18 +64,14 @@ namespace VTX::Util::Enum
 	 */
 	template<Concept E>
 	constexpr uint enumInteger( const E & p_enum )
-	{
-		return magic_enum::enum_integer( p_enum );
-	}
+	{ return magic_enum::enum_integer( p_enum ); }
 
 	/**
 	 * @brief Returns the enumeration value of type E at the specified index.
 	 */
 	template<Concept E>
 	constexpr E enumValue( const size_t p_index )
-	{
-		return magic_enum::enum_value<E>( p_index );
-	}
+	{ return magic_enum::enum_value<E>( p_index ); }
 
 	/**
 	 * @brief Converts an enumeration value of one type to another enumeration type using the enumeration's name.

@@ -1,6 +1,9 @@
+#include <atomic>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <thread>
 #include <util/event_hub.hpp>
+#include <vector>
 
 int value = 0;
 
@@ -92,4 +95,93 @@ TEST_CASE( "VTX_UTIL - EVENT HUB", "[unit]" )
 
 	// Cant connect multiple times.
 	CHECK( value == 15 );
+}
+
+TEST_CASE( "EventHub concurrent enqueue", "[unit]" )
+{
+	struct Event
+	{
+		int id;
+	};
+
+	VTX::Util::EventHub hub;
+	constexpr int		producerCount	  = 4;
+	constexpr int		eventsPerProducer = 256;
+	std::vector<int>	received( producerCount * eventsPerProducer, 0 );
+	const auto			mainThread	 = std::this_thread::get_id();
+	bool				onMainThread = true;
+	auto				listener	 = [ & ]( const Event & p_event )
+	{
+		onMainThread = onMainThread && std::this_thread::get_id() == mainThread;
+		++received.at( p_event.id );
+	};
+	hub.connect<Event>( listener );
+	std::atomic<bool>		  start		= false;
+	std::atomic<int>		  completed = 0;
+	std::vector<std::jthread> producers;
+	for ( int producer = 0; producer < producerCount; ++producer )
+	{
+		producers.emplace_back(
+			[ &, producer ]
+			{
+				while ( not start.load() )
+				{
+					std::this_thread::yield();
+				}
+				for ( int index = 0; index < eventsPerProducer; ++index )
+				{
+					hub.enqueue<Event>( producer * eventsPerProducer + index );
+				}
+				++completed;
+			}
+		);
+	}
+	start = true;
+	while ( completed.load() != producerCount )
+	{
+		hub.update();
+		std::this_thread::yield();
+	}
+	producers.clear();
+	hub.update();
+	CHECK( onMainThread );
+	for ( const int count : received )
+	{
+		CHECK( count == 1 );
+	}
+}
+
+TEST_CASE( "EventHub defers reentrant enqueue and clears by type", "[unit]" )
+{
+	struct Event
+	{
+	};
+
+	struct OtherEvent
+	{
+	};
+
+	VTX::Util::EventHub hub;
+	int					received	  = 0;
+	int					otherReceived = 0;
+	auto				listener	  = [ & ]( const Event & )
+	{
+		++received;
+		hub.enqueue<OtherEvent>();
+	};
+	auto otherListener = [ & ]( const OtherEvent & ) { ++otherReceived; };
+	hub.connect<Event>( listener );
+	hub.connect<OtherEvent>( otherListener );
+	hub.enqueue<Event>();
+	hub.update();
+	CHECK( received == 1 );
+	CHECK( otherReceived == 0 );
+	hub.update();
+	CHECK( otherReceived == 1 );
+	hub.enqueue<Event>();
+	hub.enqueue<OtherEvent>();
+	hub.clear<Event>();
+	hub.update();
+	CHECK( received == 1 );
+	CHECK( otherReceived == 2 );
 }

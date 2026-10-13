@@ -10,6 +10,7 @@
 #include <QVBoxLayout>
 #include <app/vtx_app.hpp>
 #include <util/enum.hpp>
+#include <util/event_hub.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -46,7 +47,7 @@ namespace VTX::UI::QT::DockWidget
 		 * @brief Callback id for log printing, to disconnect on destruction.
 		 * Useful because logs can be printed after deletion.
 		 */
-		VTX::Util::CallbackId _callbackId;
+		VTX::Util::EventHub::Connection _logConnection;
 
 		/**
 		 * @brief Display logs.

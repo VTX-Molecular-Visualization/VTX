@@ -17,6 +17,7 @@
 #include <renderer/renderer.hpp>
 #include <ui/qt/actions.hpp>
 #include <util/event_hub.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::UI::QT
 {
@@ -75,6 +76,8 @@ namespace VTX::UI::QT
 			&QTimer::timeout,
 			[ this ] { _app.update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); }
 		);
+		LOGGER::setCallback( [ &hub = App::HUB() ]( const Util::LogInfo & p_logInfo )
+							 { hub.enqueue<Util::LogInfo>( p_logInfo ); } );
 	}
 
 	Application::~Application()

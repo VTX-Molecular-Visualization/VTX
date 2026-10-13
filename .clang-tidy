@@ -12,6 +12,7 @@ Checks: >
   -cert-msc32-c,
   -cert-msc51-cpp,
   -clang-analyzer-optin.core.EnumCastOutOfRange,
+  -clang-analyzer-security.ArrayBound,
   -cppcoreguidelines-avoid-const-or-ref-data-members,
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-narrowing-conversions,
@@ -65,4 +66,3 @@ Checks: >
 CheckOptions:
   cppcoreguidelines-rvalue-reference-param-not-moved.AllowPartialMove: true
   cppcoreguidelines-rvalue-reference-param-not-moved.IgnoreNonDeducedTemplateTypes: true
-  

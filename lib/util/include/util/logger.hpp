@@ -1,12 +1,13 @@
 #ifndef __VTX_UTIL_LOGGER__
 #define __VTX_UTIL_LOGGER__
 
+#include "util/enum.hpp"
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <string_view>
-#include <util/callback.hpp>
 #include <util/filesystem.hpp>
 
 namespace VTX
@@ -53,16 +54,26 @@ namespace VTX
 		class Logger final
 		{
 		  public:
-			static void			init( const FilePath & p_logDir, bool p_debug = false );
-			static const char * toSpdlogHint( LOG_HINT p_hint );
+			/**
+			 * @brief Initialize the logger with a log directory and debug mode.
+			 */
+			static void init( const FilePath & p_logDir, bool p_debug = false );
 
+			/**
+			 * @brief Log a message with a specific log level and hint.
+			 */
 			static void log( const LOG_LEVEL p_lvl, const LOG_HINT p_hint, std::string_view p_msg )
 			{
 				spdlog::log(
-					spdlog::source_loc { "", 0, toSpdlogHint( p_hint ) }, spdlog::level::level_enum( p_lvl ), p_msg
+					spdlog::source_loc { "", 0, _toSpdlogHint( p_hint ).data() },
+					spdlog::level::level_enum( p_lvl ),
+					p_msg
 				);
 			}
 
+			/**
+			 * @brief Log a formatted message with a specific log level and hint.
+			 */
 			template<typename... Args>
 			static void log(
 				const LOG_LEVEL					  p_lvl,
@@ -72,25 +83,40 @@ namespace VTX
 			)
 			{
 				spdlog::log(
-					spdlog::source_loc { "", 0, toSpdlogHint( p_hint ) },
+					spdlog::source_loc { "", 0, _toSpdlogHint( p_hint ).data() },
 					spdlog::level::level_enum( p_lvl ),
 					p_fmt,
 					std::forward<Args>( p_args )...
 				);
 			}
 
+			/**
+			 * @brief Flush the logger (async).
+			 */
 			static void flush();
 
+			/**
+			 * @brief Stop the logger and flush all logs.
+			 */
 			static void stop();
 
 			/**
 			 * @brief Triggered by spdlog (async).
 			 */
-			inline static Util::Callback<const LogInfo &> onLog;
+			static void setCallback( std::function<void( const LogInfo & )> p_callback );
+
+		  private:
+			/**
+			 * @brief Convert a LOG_HINT to a spdlog hint string.
+			 */
+			static constexpr std::string_view _toSpdlogHint( LOG_HINT p_hint ) { return Enum::enumName( p_hint ); }
 		};
 
 	} // namespace Util
 
+	/**
+	 * @brief Aliases.
+	 */
 	using LOGGER = Util::Logger;
 
 	inline void VTX_LOG( const Util::LOG_LEVEL p_level, const Util::LOG_HINT p_hint, std::string_view p_msg )

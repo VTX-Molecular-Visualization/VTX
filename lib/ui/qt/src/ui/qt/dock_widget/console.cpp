@@ -6,6 +6,7 @@
 #include <QToolBar>
 #include <QUrl>
 #include <app/constants.hpp>
+#include <app/services.hpp>
 #include <filesystem>
 #include <string>
 #include <system_error>
@@ -142,8 +143,7 @@ namespace VTX::UI::QT::DockWidget
 		);
 
 		// Get logs and push to main thread.
-		_callbackId = LOGGER::onLog += [ this ]( const ::VTX::Util::LogInfo & p_logInfo )
-		{ QMetaObject::invokeMethod( this, [ this, p_logInfo ]() { log( p_logInfo ); }, Qt::QueuedConnection ); };
+		_logConnection = App::HUB().connect<Util::LogInfo, &Console::log>( this );
 
 		// Command launcher.
 		_commandLauncher = new UI::QT::Widget::CommandLauncher( this );
@@ -152,7 +152,7 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( _commandLauncher );
 	}
 
-	Console::~Console() { LOGGER::onLog -= _callbackId; }
+	Console::~Console() { _logConnection.release(); }
 
 	void Console::log( const VTX::Util::LogInfo & p_logInfo )
 	{

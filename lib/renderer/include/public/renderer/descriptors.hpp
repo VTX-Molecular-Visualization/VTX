@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <util/constants.hpp>
 #include <util/enum.hpp>
+#include <util/filesystem.hpp>
 #include <util/hashing.hpp>
 #include <util/types.hpp>
 #include <utility>

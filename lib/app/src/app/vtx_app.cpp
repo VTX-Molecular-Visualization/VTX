@@ -112,7 +112,7 @@ namespace VTX::App
 			VTX_ERROR( "Unknown exception during thread manager cleanup" );
 		}
 
-		LOGGER().flush();
+		LOGGER::stop();
 	}
 
 	void VTXApp::start()
