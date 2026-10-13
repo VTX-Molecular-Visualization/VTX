@@ -44,7 +44,7 @@ namespace VTX::Renderer
 			T & construct( Args &&... p_args )
 			{
 				destroy();
-				T * data = std::construct_at( _data(), std::forward<Args>( p_args )... );
+				T * data = std::construct_at( reinterpret_cast<T *>( _storage ), std::forward<Args>( p_args )... );
 				alive	 = true;
 
 				return *data;

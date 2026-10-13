@@ -254,7 +254,7 @@ namespace VTX::App
 								[]( void * p_userData, size_t p_progress )
 								{
 									Util::Thread::BaseThread * thread
-										= reinterpret_cast<Util::Thread::BaseThread *>( p_userData );
+										= static_cast<Util::Thread::BaseThread *>( p_userData );
 									thread->setProgress( float( p_progress ) / 100.f );
 								},
 								&p_thread

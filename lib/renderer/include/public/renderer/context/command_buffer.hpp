@@ -493,6 +493,9 @@ namespace VTX::Renderer::Context
 			return *std::launder( reinterpret_cast<T *>( payload.data() + p_offset ) );
 		}
 
+		/**
+		 * @brief Get a const payload from its offset.
+		 */
 		template<typename T>
 		const T & getPayload( const PayloadOffset p_offset ) const
 		{

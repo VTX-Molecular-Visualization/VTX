@@ -97,11 +97,11 @@ namespace VTX::UI::QT::Util
 			switch ( e->type() )
 			{
 			case QEvent::HoverEnter:
-				hoverEnter( reinterpret_cast<QHoverEvent *>( e ) );
+				hoverEnter( static_cast<QHoverEvent *>( e ) );
 				return true;
 				break;
 			case QEvent::HoverLeave:
-				hoverLeave( reinterpret_cast<QHoverEvent *>( e ) );
+				hoverLeave( e );
 				return true;
 				break;
 			default: break;
@@ -231,7 +231,7 @@ namespace VTX::UI::QT::Util
 		{
 			switch ( e->type() )
 			{
-			case QEvent::MouseButtonRelease: mouseClicked( reinterpret_cast<QMouseEvent *>( e ) ); break;
+			case QEvent::MouseButtonRelease: mouseClicked( static_cast<QMouseEvent *>( e ) ); break;
 			default: break;
 			}
 			return QWidget::event( e );
