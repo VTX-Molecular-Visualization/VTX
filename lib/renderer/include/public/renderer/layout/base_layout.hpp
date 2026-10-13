@@ -11,6 +11,8 @@ namespace VTX::Renderer::Layout
 	class BaseLayout : public Desc::VertexLayout
 	{
 	  public:
+		virtual ~BaseLayout() = default;
+
 		/**
 		 * @brief Push a range.
 		 */
