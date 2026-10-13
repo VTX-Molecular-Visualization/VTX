@@ -21,16 +21,16 @@ namespace VTX::Renderer::Context::Backend::GL
 		std::string glVersion;
 		std::string glslVersion;
 
-		int glMaxUniformBlockSize;
-		int glMaxUniformBufferBindings;
-		int glMaxShaderStorageBlockSize;
-		int glMaxShaderStorageBufferBindings;
-		int glMaxTextureSize;
-		int glMaxPatchVertices;
-		int glMaxTessGenLevel;
-		int glMaxComputeWorkGroupCount[ 3 ];
-		int glMaxComputeWorkGroupSize[ 3 ];
-		int glMaxComputeWorkGroupInvocations;
+		int glMaxUniformBlockSize			 = 0;
+		int glMaxUniformBufferBindings		 = 0;
+		int glMaxShaderStorageBlockSize		 = 0;
+		int glMaxShaderStorageBufferBindings = 0;
+		int glMaxTextureSize				 = 0;
+		int glMaxPatchVertices				 = 0;
+		int glMaxTessGenLevel				 = 0;
+		int glMaxComputeWorkGroupCount[ 3 ] {};
+		int glMaxComputeWorkGroupSize[ 3 ] {};
+		int glMaxComputeWorkGroupInvocations = 0;
 
 		std::array<bool, toUnderlying( E_GL_EXTENSIONS::EXTENSIONS_COUNT )> glExtensions = { false };
 

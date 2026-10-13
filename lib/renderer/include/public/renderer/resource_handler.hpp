@@ -78,7 +78,7 @@ namespace VTX::Renderer
 
 			const T * _data() const noexcept { return std::launder( reinterpret_cast<const T *>( _storage ) ); }
 
-			alignas( T ) std::byte _storage[ sizeof( T ) ];
+			alignas( T ) std::byte _storage[ sizeof( T ) ] {};
 		};
 
 	  public:
@@ -399,14 +399,14 @@ namespace VTX::Renderer
 	template<typename D>
 	struct ResourceHandlerEntry
 	{
-		Desc::Handle handle;
+		Desc::Handle handle = Desc::NO_HANDLE;
 		D			 descriptor;
 	};
 
 	template<>
 	struct ResourceHandlerEntry<void>
 	{
-		Desc::Handle handle;
+		Desc::Handle handle = Desc::NO_HANDLE;
 	};
 
 	/**

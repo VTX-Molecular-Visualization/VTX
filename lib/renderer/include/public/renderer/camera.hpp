@@ -60,13 +60,13 @@ namespace VTX::Renderer
 		/**
 		 * @brief Screen size.
 		 */
-		size_t screenWidth;
-		size_t screenHeight;
+		size_t screenWidth	= 0;
+		size_t screenHeight = 0;
 
 		/**
 		 * @brief Target.
 		 */
-		Vec3f target;
+		Vec3f target { 0.f };
 
 		/**
 		 * @brief Compute projection matrix.

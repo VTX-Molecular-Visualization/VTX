@@ -68,12 +68,12 @@ namespace VTX::Renderer
 
 	struct ShadingConfig
 	{
-		E_SHADING				mode;
+		E_SHADING				mode = SHADING_MODE_DEFAULT;
 		Util::Color::Rgba		colorLight;
 		Util::Color::Rgba		colorBackground;
-		float					specularFactor;
-		float					shininess;
-		uint					toonSteps;
+		float					specularFactor	 = SPECULAR_FACTOR_DEFAULT;
+		float					shininess		 = SHININESS_DEFAULT;
+		uint					toonSteps		 = TOON_STEPS_DEFAULT;
 		float					lightIntensity	 = LIGHT_INTENSITY_DEFAULT;
 		float					ambientIntensity = AMBIENT_INTENSITY_DEFAULT;
 		E_BACKGROUND_MODE		backgroundMode	 = BACKGROUND_MODE_DEFAULT;

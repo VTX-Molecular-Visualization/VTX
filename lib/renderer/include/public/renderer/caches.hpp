@@ -41,9 +41,9 @@ namespace VTX::Renderer::Cache
 	struct Camera
 	{
 		VTX::Renderer::Camera camera;
-		Vec3f				  position;
-		Mat4f				  matView;
-		Mat4f				  matProj;
+		Vec3f				  position { 0.f };
+		Mat4f				  matView { 1.f };
+		Mat4f				  matProj { 1.f };
 	};
 
 	struct ColorLayout
@@ -111,27 +111,27 @@ namespace VTX::Renderer::Cache
 	struct System
 	{
 		// Owned.
-		Mat4f transform;
+		Mat4f transform { 1.f };
 
 		// Views.
 		struct Data
 		{
-			const Core::Struct::Topology * topology;
+			const Core::Struct::Topology * topology = nullptr;
 			std::span<const Vec3f>		   trajectory;
 			// TODO: delete and use gpu buffer?
-			const Util::Math::Range<UID32> *						   atomUids;
-			const Util::Math::Range<UID32> *						   residueUids;
-			const std::unordered_map<E_COLOR_SCHEME, IndexRangeList> * colorSchemeAtoms;
-			const std::unordered_map<ColorIndex, IndexRangeList> *	   customColorAtoms;
-			const std::unordered_map<ColorIndex, IndexRangeList> *	   carbonCustomColorAtoms;
+			const Util::Math::Range<UID32> *						   atomUids				  = nullptr;
+			const Util::Math::Range<UID32> *						   residueUids			  = nullptr;
+			const std::unordered_map<E_COLOR_SCHEME, IndexRangeList> * colorSchemeAtoms		  = nullptr;
+			const std::unordered_map<ColorIndex, IndexRangeList> *	   customColorAtoms		  = nullptr;
+			const std::unordered_map<ColorIndex, IndexRangeList> *	   carbonCustomColorAtoms = nullptr;
 			const std::unordered_map<E_COLOR_SCHEME_SECONDARY_STRUCTURE, IndexRangeList> *
-																   colorSchemeSecondaryStructureResidues;
-			const std::unordered_map<ColorIndex, IndexRangeList> * customSecondaryStructureColorResidues;
+																   colorSchemeSecondaryStructureResidues = nullptr;
+			const std::unordered_map<ColorIndex, IndexRangeList> * customSecondaryStructureColorResidues = nullptr;
 			// Ugly.
-			const std::unordered_map<Entity, Desc::Handle> *				 representationHandles;
-			const std::unordered_map<Entity, Core::Struct::IndexRangeList> * presetAtoms;
-			const Util::Math::BitSet *										 visibility;
-			const Util::Math::BitSet *										 selection;
+			const std::unordered_map<Entity, Desc::Handle> *				 representationHandles = nullptr;
+			const std::unordered_map<Entity, Core::Struct::IndexRangeList> * presetAtoms		   = nullptr;
+			const Util::Math::BitSet *										 visibility			   = nullptr;
+			const Util::Math::BitSet *										 selection			   = nullptr;
 		};
 
 		Data data;
@@ -142,7 +142,7 @@ namespace VTX::Renderer::Cache
 
 	struct Mesh
 	{
-		Mat4f transform;
+		Mat4f transform { 1.f };
 
 		const Core::Struct::Mesh * data = nullptr;
 

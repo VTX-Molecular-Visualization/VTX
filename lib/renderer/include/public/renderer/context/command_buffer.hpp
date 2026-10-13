@@ -51,10 +51,10 @@ namespace VTX::Renderer::Context
 	 */
 	struct PayloadBeginPass
 	{
-		uint32_t framebuffer;
-		uint32_t flags	= 0;
-		uint32_t width	= 0;
-		uint32_t height = 0;
+		uint32_t framebuffer = 0;
+		uint32_t flags		 = 0;
+		uint32_t width		 = 0;
+		uint32_t height		 = 0;
 	};
 
 	struct PayloadBindResources
@@ -141,8 +141,8 @@ namespace VTX::Renderer::Context
 
 	struct PayloadEndPass
 	{
-		uint32_t framebuffer;
-		uint32_t flags = 0;
+		uint32_t framebuffer = 0;
+		uint32_t flags		 = 0;
 	};
 
 	struct PayloadPresent

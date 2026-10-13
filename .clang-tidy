@@ -1,4 +1,4 @@
-WarningsAsErrors: ''
+WarningsAsErrors: '*'
 
 Checks: >
   *,
@@ -8,11 +8,15 @@ Checks: >
   -bugprone-branch-clone,
   -bugprone-narrowing-conversions,
   -bugprone-random-generator-seed,
+  -bugprone-reserved-identifier,
+  -cert-dcl37-c,
+  -cert-dcl51-cpp,
   -cert-int09-c,
   -cert-msc32-c,
   -cert-msc51-cpp,
   -clang-analyzer-optin.core.EnumCastOutOfRange,
   -clang-analyzer-security.ArrayBound,
+  -cppcoreguidelines-avoid-c-arrays,
   -cppcoreguidelines-avoid-const-or-ref-data-members,
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-narrowing-conversions,
@@ -54,6 +58,7 @@ Checks: >
   -llvmlibc-*,
   -misc-include-cleaner,
   -misc-non-private-member-variables-in-classes,
+  -modernize-avoid-c-arrays,
   -modernize-pass-by-value,
   -modernize-use-auto,
   -modernize-use-designated-initializers,

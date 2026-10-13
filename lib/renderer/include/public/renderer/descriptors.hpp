@@ -326,7 +326,7 @@ namespace VTX::Renderer::Desc
 	 */
 	struct Texture
 	{
-		E_FORMAT			   format;
+		E_FORMAT			   format = E_FORMAT::RGBA8UI;
 		Size2D				   size;
 		std::vector<std::byte> data;
 		E_TEXTURE_TARGET	   target	= E_TEXTURE_TARGET::TEXTURE_2D;
@@ -441,7 +441,7 @@ namespace VTX::Renderer::Desc
 
 	struct DrawIndirectRecord
 	{
-		DrawIndirectCommand command;
+		DrawIndirectCommand command {};
 		uint32_t			idModel	 = 0;
 		uint32_t			padding0 = 0;
 		uint32_t			padding1 = 0;
@@ -459,7 +459,7 @@ namespace VTX::Renderer::Desc
 
 	struct DrawIndexedIndirectRecord
 	{
-		DrawIndexedIndirectCommand command;
+		DrawIndexedIndirectCommand command {};
 		uint32_t				   idModel	= 0;
 		uint32_t				   padding0 = 0;
 		uint32_t				   padding1 = 0;
@@ -479,7 +479,7 @@ namespace VTX::Renderer::Desc
 	struct DrawCall
 	{
 		Key			geometry;
-		E_PRIMITIVE primitive;
+		E_PRIMITIVE primitive = E_PRIMITIVE::POINTS;
 
 		struct Range
 		{
