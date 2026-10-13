@@ -29,61 +29,58 @@
 #include <util/math.hpp>
 
 namespace VTX::Renderer::Builder
-{
-	namespace
+{ // namespace
+
+	inline std::vector<ColorIndex> _buildResidueColors( const Cache::System & p_system )
 	{
-		std::vector<ColorIndex> _buildResidueColors( const Cache::System & p_system )
+		const Core::Struct::Topology & topology = *p_system.data.topology;
+		std::vector<ColorIndex>		   residues( topology.getResidueCount() );
+		size_t						   count = 0;
+
+		for ( const auto & [ scheme, ranges ] : *p_system.data.colorSchemeSecondaryStructureResidues )
 		{
-			const Core::Struct::Topology & topology = *p_system.data.topology;
-			std::vector<ColorIndex>		   residues( topology.getResidueCount() );
-			size_t						   count = 0;
-
-			for ( const auto & [ scheme, ranges ] : *p_system.data.colorSchemeSecondaryStructureResidues )
-			{
-				if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE )
-				{
-					for ( const Index residue : ranges )
-					{
-						residues[ residue ]
-							= Color::getColorIndex( topology.getResidueSecondaryStructureType( residue ) );
-					}
-				}
-				else if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::CHAIN )
-				{
-					for ( const Index residue : ranges )
-					{
-						const Index chain	= topology.getResidueChainIndex( residue );
-						residues[ residue ] = Color::getColorIndex( topology.getChainName( chain ) );
-					}
-				}
-				else if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::RESIDUE )
-				{
-					for ( const Index residue : ranges )
-					{
-						residues[ residue ] = Color::getColorIndex( topology.getResidueSymbol( residue ) );
-					}
-				}
-				else
-				{
-					assert( false && "Unsupported secondary structure color scheme." );
-				}
-
-				count += ranges.count();
-			}
-			for ( const auto & [ colorIndex, ranges ] : *p_system.data.customSecondaryStructureColorResidues )
+			if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE )
 			{
 				for ( const Index residue : ranges )
 				{
-					residues[ residue ] = colorIndex;
+					residues[ residue ] = Color::getColorIndex( topology.getResidueSecondaryStructureType( residue ) );
 				}
-				count += ranges.count();
+			}
+			else if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::CHAIN )
+			{
+				for ( const Index residue : ranges )
+				{
+					const Index chain	= topology.getResidueChainIndex( residue );
+					residues[ residue ] = Color::getColorIndex( topology.getChainName( chain ) );
+				}
+			}
+			else if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::RESIDUE )
+			{
+				for ( const Index residue : ranges )
+				{
+					residues[ residue ] = Color::getColorIndex( topology.getResidueSymbol( residue ) );
+				}
+			}
+			else
+			{
+				assert( false && "Unsupported secondary structure color scheme." );
 			}
 
-			assert( count == topology.getResidueCount() );
-
-			return residues;
+			count += ranges.count();
 		}
-	} // namespace
+		for ( const auto & [ colorIndex, ranges ] : *p_system.data.customSecondaryStructureColorResidues )
+		{
+			for ( const Index residue : ranges )
+			{
+				residues[ residue ] = colorIndex;
+			}
+			count += ranges.count();
+		}
+
+		assert( count == topology.getResidueCount() );
+
+		return residues;
+	}
 
 	struct SystemRegistry
 	{
