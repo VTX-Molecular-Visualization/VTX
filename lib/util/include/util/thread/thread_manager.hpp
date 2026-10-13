@@ -155,6 +155,7 @@ namespace VTX::Util::Thread
 		struct _DispatchedCall
 		{
 			template<typename Func>
+				requires( not std::same_as<std::remove_cvref_t<Func>, _DispatchedCall> )
 			_DispatchedCall( Func && p_function ) :
 				task( std::forward<Func>( p_function ) ), result( task.get_future() )
 			{

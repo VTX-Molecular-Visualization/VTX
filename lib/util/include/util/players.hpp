@@ -4,6 +4,7 @@
 #include "util/types.hpp"
 #include <concepts>
 #include <memory>
+#include <type_traits>
 
 namespace VTX::Util
 {
@@ -127,6 +128,7 @@ namespace VTX::Util
 
 	  public:
 		template<typename PlayerT>
+			requires( not std::same_as<std::remove_cvref_t<PlayerT>, Player> )
 		Player( PlayerT && p_ ) : _ptr( new _wrapper<PlayerT>( std::forward<PlayerT>( p_ ) ) )
 		{
 		}
