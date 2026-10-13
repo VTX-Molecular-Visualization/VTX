@@ -65,7 +65,8 @@ namespace VTX
 			static void log( const LOG_LEVEL p_lvl, const LOG_HINT p_hint, std::string_view p_msg )
 			{
 				spdlog::log(
-					spdlog::source_loc { "", 0, _toSpdlogHint( p_hint ).data() },
+					spdlog::source_loc {
+						"", 0, _toSpdlogHint( p_hint ).data() }, // NOLINT(bugprone-suspicious-stringview-data-usage)
 					spdlog::level::level_enum( p_lvl ),
 					p_msg
 				);
@@ -83,7 +84,8 @@ namespace VTX
 			)
 			{
 				spdlog::log(
-					spdlog::source_loc { "", 0, _toSpdlogHint( p_hint ).data() },
+					spdlog::source_loc {
+						"", 0, _toSpdlogHint( p_hint ).data() }, // NOLINT(bugprone-suspicious-stringview-data-usage)
 					spdlog::level::level_enum( p_lvl ),
 					p_fmt,
 					std::forward<Args>( p_args )...

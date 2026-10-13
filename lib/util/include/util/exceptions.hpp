@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace VTX
 {
@@ -13,7 +14,9 @@ namespace VTX
 	  protected:
 		template<typename... Args>
 		explicit Exception( const std::string & p_prepend, const std::string_view & p_fmt, Args &&... p_args ) :
-			std::runtime_error( formatMessage( p_prepend, fmt::vformat( p_fmt, fmt::make_format_args( p_args... ) ) ) )
+			std::runtime_error(
+				formatMessage( p_prepend, fmt::format( fmt::runtime( p_fmt ), std::forward<Args>( p_args )... ) )
+			)
 		{
 		}
 
@@ -124,7 +127,7 @@ namespace VTX
 		explicit CommandException( const std::string & p_command, const std::string_view & p_fmt, Args &&... p_args ) :
 			Exception(
 				"COMMAND",
-				formatMessage( p_command, fmt::vformat( p_fmt, fmt::make_format_args( p_args... ) ) )
+				formatMessage( p_command, fmt::format( fmt::runtime( p_fmt ), std::forward<Args>( p_args )... ) )
 			)
 
 		{
@@ -151,7 +154,7 @@ namespace VTX
 		) :
 			Exception(
 				"SCRIPT",
-				formatMessage( p_scriptPath, fmt::vformat( p_fmt, fmt::make_format_args( p_args... ) ) )
+				formatMessage( p_scriptPath, fmt::format( fmt::runtime( p_fmt ), std::forward<Args>( p_args )... ) )
 			)
 		{
 		}

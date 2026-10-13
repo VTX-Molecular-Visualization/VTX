@@ -215,7 +215,7 @@ namespace VTX::Renderer::Geometry
 		}
 
 		template<typename Predicate>
-		std::vector<Indice> _filterPatchIndices( const uint32_t p_count, Predicate && p_predicate )
+		std::vector<Indice> _filterPatchIndices( const uint32_t p_count, const Predicate & p_predicate )
 		{
 			std::vector<Indice> indices;
 			indices.reserve( p_count );
