@@ -1,4 +1,5 @@
 #include "renderer/graph_builder.hpp"
+#include <iterator>
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
 
@@ -130,7 +131,7 @@ namespace VTX::Renderer
 			desc.binding = *p_binding;
 		}
 
-		if ( not p_values.empty() )
+		if ( not std::empty( p_values ) )
 		{
 			desc.values.assign( p_values.begin(), p_values.end() );
 		}
