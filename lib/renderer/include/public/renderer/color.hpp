@@ -50,9 +50,9 @@ namespace VTX::Renderer::Color
 	 * @brief Layout offsets and counts.
 	 */
 	constexpr int LAYOUT_OFFSET_ATOMS	 = 0;
-	constexpr int LAYOUT_COUNT_ATOMS	 = int( Core::ChemDB::Atom::SYMBOL::COUNT );
+	constexpr int LAYOUT_COUNT_ATOMS	 = static_cast<int>( Core::ChemDB::Atom::SYMBOL::COUNT );
 	constexpr int LAYOUT_OFFSET_RESIDUES = 121;
-	constexpr int LAYOUT_COUNT_RESIDUES	 = int( Core::ChemDB::Residue::SYMBOL::COUNT );
+	constexpr int LAYOUT_COUNT_RESIDUES	 = static_cast<int>( Core::ChemDB::Residue::SYMBOL::COUNT );
 	constexpr int LAYOUT_OFFSET_CHAINS	 = 163;
 	constexpr int LAYOUT_COUNT_CHAINS	 = 53;
 	constexpr int LAYOUT_OFFSET_RIBBONS	 = 218;
@@ -365,7 +365,7 @@ namespace VTX::Renderer::Color
 	};
 
 	inline ColorIndex getColorIndex( const Core::ChemDB::Atom::SYMBOL p_symbol )
-	{ return int( p_symbol ) + LAYOUT_OFFSET_ATOMS; }
+	{ return static_cast<int>( p_symbol ) + LAYOUT_OFFSET_ATOMS; }
 
 	inline ColorIndex getColorIndex( const std::string & p_chainId, bool p_isHetAtm = false );
 
@@ -395,7 +395,7 @@ namespace VTX::Renderer::Color
 	}
 
 	inline ColorIndex getColorIndex( const Core::ChemDB::Residue::SYMBOL p_symbol )
-	{ return int( p_symbol ) + LAYOUT_OFFSET_RESIDUES; }
+	{ return static_cast<int>( p_symbol ) + LAYOUT_OFFSET_RESIDUES; }
 
 	inline ColorIndex getColorIndex(
 
@@ -405,23 +405,23 @@ namespace VTX::Renderer::Color
 	{
 		if ( p_chainId.empty() )
 		{
-			return char( E_LAYOUT_COLOR_INDEX::CHAIN_UNKNOWM );
+			return static_cast<char>( E_LAYOUT_COLOR_INDEX::CHAIN_UNKNOWM );
 		}
 
 		// chain id should be defined by one char
 		const char c = static_cast<char>( std::toupper( static_cast<unsigned char>( p_chainId[ 0 ] ) ) );
 
-		const int id = int( c ) - 65; // 65 is A
+		const int id = static_cast<int>( c ) - 65; // 65 is A
 		if ( id < 0 || id > 26 )
 		{
-			return char( E_LAYOUT_COLOR_INDEX::CHAIN_UNKNOWM );
+			return static_cast<char>( E_LAYOUT_COLOR_INDEX::CHAIN_UNKNOWM );
 		}
 
 		return p_isHetAtm ? id + LAYOUT_OFFSET_CHAINS + 1 + 26 : id + LAYOUT_OFFSET_CHAINS + 1;
 	}
 
 	inline ColorIndex getColorIndex( const Core::ChemDB::SecondaryStructure::TYPE p_type )
-	{ return int( p_type ) + LAYOUT_OFFSET_RIBBONS; }
+	{ return static_cast<int>( p_type ) + LAYOUT_OFFSET_RIBBONS; }
 
 	inline Layout toHighContrast( const Layout & p_source )
 	{
@@ -463,7 +463,7 @@ namespace VTX::Renderer::Color
 		}
 
 		const auto set = [ & ]( const I p_index, const Util::Color::Rgba & p_color )
-		{ result.colors[ ColorIndex( p_index ) ] = p_color; };
+		{ result.colors[ static_cast<ColorIndex>( p_index ) ] = p_color; };
 
 		set( I::ATOM_H, COLOR_WHITE );
 		set( I::ATOM_C, COLOR_BLACK );
@@ -553,7 +553,7 @@ namespace VTX::Renderer::Color
 		}
 
 		const auto set = [ & ]( const I p_index, const Util::Color::Rgba & p_color )
-		{ result.colors[ ColorIndex( p_index ) ] = p_color; };
+		{ result.colors[ static_cast<ColorIndex>( p_index ) ] = p_color; };
 
 		set( I::ATOM_H, COLOR_WHITE );
 		set( I::ATOM_HE, PINK );

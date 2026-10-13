@@ -783,9 +783,9 @@ namespace VTX::Renderer::Builder
 
 			p_buffer.write( sphereRadiusFixed );
 			p_buffer.write( p_representation.radiusSphereAdd );
-			p_buffer.write( uint( isSphereRadiusFixed ) );
+			p_buffer.write( static_cast<uint>( isSphereRadiusFixed ) );
 			p_buffer.write( p_representation.radiusCylinder );
-			p_buffer.write( uint( p_representation.cylinderColorBlending ) );
+			p_buffer.write( static_cast<uint>( p_representation.cylinderColorBlending ) );
 			p_buffer.write( p_representation.ribbonColorBlending );
 			p_buffer.write( p_representation.sesProbeRadius );
 			p_buffer.write( Geometry::SES::MAX_PROBE_NEIGHBOR_NB );
@@ -816,9 +816,9 @@ namespace VTX::Renderer::Builder
 				p_camera.camera.far - p_camera.camera.near,
 				p_camera.camera.near
 			) );
-			buffer.write( Vec2i( int( p_width ), int( p_height ) ) );
+			buffer.write( Vec2i( static_cast<int>( p_width ), static_cast<int>( p_height ) ) );
 			buffer.write( Vec2i() );
-			buffer.write( uint( p_camera.camera.projection == PROJECTION::PERSPECTIVE ) );
+			buffer.write( static_cast<uint>( p_camera.camera.projection == PROJECTION::PERSPECTIVE ) );
 			buffer.write( std::tan( Util::Math::radians( p_camera.camera.fov ) * 0.5f ) );
 			buffer.close();
 

@@ -18,8 +18,6 @@ namespace VTX::Core::ChemDB::Residue
 	{
 		SHORT,
 		LONG,
-
-		COUNT
 	};
 
 	enum class SYMBOL : uint8_t
@@ -67,7 +65,7 @@ namespace VTX::Core::ChemDB::Residue
 		COUNT
 	};
 
-	constexpr std::array<std::string_view, size_t( SYMBOL::COUNT )> SYMBOL_STR = {
+	constexpr auto SYMBOL_STR = std::to_array<std::string_view>( {
 		"---", // UNKNOWN
 		"ALA", // ALA
 		"ARG", // ARG
@@ -108,9 +106,10 @@ namespace VTX::Core::ChemDB::Residue
 		"WAT", // WAT
 		"HOH", // HOH
 		"SOL", // SOL
-	};
+	} );
+	static_assert( SYMBOL_STR.size() == static_cast<size_t>( SYMBOL::COUNT ) );
 
-	constexpr std::array<std::string_view, size_t( SYMBOL::COUNT )> SYMBOL_SHORT_STR {
+	constexpr auto SYMBOL_SHORT_STR = std::to_array<std::string_view>( {
 		"-",  // UNKNOWN
 		"A",  // ALA
 		"R",  // ARG
@@ -151,9 +150,10 @@ namespace VTX::Core::ChemDB::Residue
 		"O",  // WAT
 		"O",  // HOH
 		"S",  // SOL
-	};
+	} );
+	static_assert( SYMBOL_SHORT_STR.size() == static_cast<size_t>( SYMBOL::COUNT ) );
 
-	constexpr std::array<std::string_view, size_t( SYMBOL::COUNT )> SYMBOL_NAME = {
+	constexpr auto SYMBOL_NAME = std::to_array<std::string_view>( {
 		"Unknown",		  // UNKNOWN
 		"Alanine",		  // ALA
 		"Arginine",		  // ARG
@@ -194,9 +194,10 @@ namespace VTX::Core::ChemDB::Residue
 		"Water",		  // WAT
 		"Water",		  // HOH
 		"Solvent",		  // SOL
-	};
+	} );
+	static_assert( SYMBOL_NAME.size() == static_cast<size_t>( SYMBOL::COUNT ) );
 
-	constexpr std::array<bool, size_t( SYMBOL::COUNT )> SYMBOL_IS_COMMON = {
+	constexpr auto SYMBOL_IS_COMMON = std::to_array<bool>( {
 		true,  // UNKNOWN
 		true,  // ALA
 		true,  // ARG
@@ -238,7 +239,8 @@ namespace VTX::Core::ChemDB::Residue
 		true,  // HOH
 		true,  // SOL
 
-	};
+	} );
+	static_assert( SYMBOL_IS_COMMON.size() == static_cast<size_t>( SYMBOL::COUNT ) );
 
 	SYMBOL getSymbolFromShortName( const std::string & p_residueName );
 	SYMBOL getSymbolFromName( const std::string & p_residueName );

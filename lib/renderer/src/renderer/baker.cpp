@@ -33,18 +33,21 @@ namespace VTX::Renderer::Baker
 			const float u = atan2( p_direction.z, p_direction.x ) / TWO_PIf + 0.5f;
 			const float v = 0.5f - asin( clamp( p_direction.y, -1.f, 1.f ) ) / PIf;
 
-			const float x  = u * float( p_image.width ) - 0.5f;
-			const float y  = v * float( p_image.height ) - 0.5f;
+			const float x  = u * static_cast<float>( p_image.width ) - 0.5f;
+			const float y  = v * static_cast<float>( p_image.height ) - 0.5f;
 			const int	x0 = static_cast<int>( floor( x ) );
 			const int	y0 = static_cast<int>( floor( y ) );
-			const float tx = x - float( x0 );
-			const float ty = y - float( y0 );
+			const float tx = x - static_cast<float>( x0 );
+			const float ty = y - static_cast<float>( y0 );
 
 			auto pixel = [ & ]( const int p_x, const int p_y, const size_t p_channel )
 			{
-				const int wrappedX = ( p_x % int( p_image.width ) + int( p_image.width ) ) % int( p_image.width );
-				const int clampedY = clamp( p_y, 0, int( p_image.height ) - 1 );
-				return p_image.pixels[ ( size_t( clampedY ) * p_image.width + size_t( wrappedX ) ) * 4 + p_channel ];
+				const int wrappedX = ( p_x % static_cast<int>( p_image.width ) + static_cast<int>( p_image.width ) )
+									 % static_cast<int>( p_image.width );
+				const int clampedY = clamp( p_y, 0, static_cast<int>( p_image.height ) - 1 );
+				return p_image.pixels
+					[ ( static_cast<size_t>( clampedY ) * p_image.width + static_cast<size_t>( wrappedX ) ) * 4
+					  + p_channel ];
 			};
 
 			std::array<float, 4> result { 0.f };
@@ -85,7 +88,7 @@ namespace VTX::Renderer::Baker
 				throw std::runtime_error( "Environment cubemap face size must be greater than zero" );
 			}
 
-			const size_t				  facePixelCount = size_t( p_faceSize ) * size_t( p_faceSize );
+			const size_t facePixelCount = static_cast<size_t>( p_faceSize ) * static_cast<size_t>( p_faceSize );
 			std::vector<EnvironmentTexel> cubemap(
 				facePixelCount * ENVIRONMENT_FACE_COUNT * ENVIRONMENT_CHANNEL_COUNT
 			);
@@ -95,11 +98,13 @@ namespace VTX::Renderer::Baker
 				{
 					for ( uint x = 0; x < p_faceSize; ++x )
 					{
-						const float	 u		= 2.f * ( float( x ) + 0.5f ) / float( p_faceSize ) - 1.f;
-						const float	 v		= 2.f * ( float( y ) + 0.5f ) / float( p_faceSize ) - 1.f;
+						const float u
+							= 2.f * ( static_cast<float>( x ) + 0.5f ) / static_cast<float>( p_faceSize ) - 1.f;
+						const float v
+							= 2.f * ( static_cast<float>( y ) + 0.5f ) / static_cast<float>( p_faceSize ) - 1.f;
 						const auto	 sample = _sampleEquirectangular( p_image, _cubemapDirection( face, u, v ) );
-						const size_t offset
-							= ( face * facePixelCount + size_t( y ) * p_faceSize + x ) * ENVIRONMENT_CHANNEL_COUNT;
+						const size_t offset = ( face * facePixelCount + static_cast<size_t>( y ) * p_faceSize + x )
+											  * ENVIRONMENT_CHANNEL_COUNT;
 						for ( size_t channel = 0; channel < ENVIRONMENT_CHANNEL_COUNT; ++channel )
 						{
 							cubemap[ offset + channel ] = Util::Math::packHalf1x16( sample[ channel ] );
@@ -116,7 +121,7 @@ namespace VTX::Renderer::Baker
 			using namespace Util::Math;
 
 			const float mapped = p_value / ( p_value + 1.f );
-			return uint8_t( clamp( std::pow( mapped, 1.f / 2.2f ) * 255.f, 0.f, 255.f ) );
+			return static_cast<uint8_t>( clamp( std::pow( mapped, 1.f / 2.2f ) * 255.f, 0.f, 255.f ) );
 		}
 
 		bool _writeThumbnail( const FilePath & p_outputPath, const Util::Image::FloatImage & p_image )
@@ -190,12 +195,12 @@ namespace VTX::Renderer::Baker
 			}
 			if ( result == KTX_SUCCESS )
 			{
-				const size_t facePixelCount = size_t( p_faceSize ) * p_faceSize;
+				const size_t facePixelCount = static_cast<size_t>( p_faceSize ) * p_faceSize;
 				const size_t faceDataSize	= facePixelCount * ENVIRONMENT_CHANNEL_COUNT * sizeof( EnvironmentTexel );
 				for ( ktx_uint32_t face = 0; face < ENVIRONMENT_FACE_COUNT && result == KTX_SUCCESS; ++face )
 				{
 					const EnvironmentTexel * const faceData
-						= p_cubemap.data() + size_t( face ) * facePixelCount * ENVIRONMENT_CHANNEL_COUNT;
+						= p_cubemap.data() + static_cast<size_t>( face ) * facePixelCount * ENVIRONMENT_CHANNEL_COUNT;
 					result = ktxTexture_SetImageFromMemory(
 						baseTexture, 0, 0, face, reinterpret_cast<const ktx_uint8_t *>( faceData ), faceDataSize
 					);
@@ -246,7 +251,7 @@ namespace VTX::Renderer::Baker
 				throw std::runtime_error( "Invalid environment KTX texture: '" + p_path.string() + "'" );
 			}
 
-			const size_t facePixelCount = size_t( p_faceSize ) * p_faceSize;
+			const size_t facePixelCount = static_cast<size_t>( p_faceSize ) * p_faceSize;
 			const size_t faceDataSize	= facePixelCount * ENVIRONMENT_CHANNEL_COUNT * sizeof( EnvironmentTexel );
 			std::vector<EnvironmentTexel> cubemap(
 				facePixelCount * ENVIRONMENT_FACE_COUNT * ENVIRONMENT_CHANNEL_COUNT
@@ -268,7 +273,7 @@ namespace VTX::Renderer::Baker
 				}
 
 				std::memcpy(
-					cubemap.data() + size_t( face ) * facePixelCount * ENVIRONMENT_CHANNEL_COUNT,
+					cubemap.data() + static_cast<size_t>( face ) * facePixelCount * ENVIRONMENT_CHANNEL_COUNT,
 					data + offset,
 					faceDataSize
 				);

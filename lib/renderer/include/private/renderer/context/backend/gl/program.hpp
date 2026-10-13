@@ -186,13 +186,14 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 
 	  private:
-		static constexpr std::array<std::pair<std::string_view, ENUM_SHADER_TYPE>, 6> _EXTENSIONS
-			= { { { ".vert", ENUM_SHADER_TYPE::VERTEX },
-				  { ".geom", ENUM_SHADER_TYPE::GEOMETRY },
-				  { ".frag", ENUM_SHADER_TYPE::FRAGMENT },
-				  { ".comp", ENUM_SHADER_TYPE::COMPUTE },
-				  { ".tesc", ENUM_SHADER_TYPE::TESS_CONTROL },
-				  { ".tese", ENUM_SHADER_TYPE::TESS_EVALUATION } } };
+		static constexpr auto _EXTENSIONS = std::to_array<std::pair<std::string_view, ENUM_SHADER_TYPE>>(
+			{ { ".vert", ENUM_SHADER_TYPE::VERTEX },
+			  { ".geom", ENUM_SHADER_TYPE::GEOMETRY },
+			  { ".frag", ENUM_SHADER_TYPE::FRAGMENT },
+			  { ".comp", ENUM_SHADER_TYPE::COMPUTE },
+			  { ".tesc", ENUM_SHADER_TYPE::TESS_CONTROL },
+			  { ".tese", ENUM_SHADER_TYPE::TESS_EVALUATION } }
+		);
 
 		GLuint		_id = GL_INVALID_INDEX;
 		std::string _name;
@@ -210,7 +211,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			VTX_TRACE( "Creating shader: {}", name );
 
-			GLuint		shaderId = glCreateShader( (GLenum)type );
+			GLuint		shaderId = glCreateShader( static_cast<GLenum>( type ) );
 			std::string src		 = Util::Filesystem::readPath( p_path );
 			if ( src.empty() )
 			{

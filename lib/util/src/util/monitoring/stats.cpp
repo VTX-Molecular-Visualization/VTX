@@ -26,6 +26,6 @@ namespace VTX::Util::Monitoring
 
 		const float res = Util::Chrono::elapsedTime( _frames.front().getTimepoint(), _frames.back().getTimepoint() );
 
-		return res / float( _frames.size() - 1 );
+		return res / static_cast<float>( _frames.size() - 1 );
 	}
 } // namespace VTX::Util::Monitoring

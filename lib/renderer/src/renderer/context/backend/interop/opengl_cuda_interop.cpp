@@ -171,7 +171,7 @@ namespace VTX::Renderer::Context::Backend::Interop
 		if ( not resourcesToMap.empty() )
 		{
 			_cudaCheck(
-				cudaGraphicsMapResources( int( resourcesToMap.size() ), resourcesToMap.data() ),
+				cudaGraphicsMapResources( static_cast<int>( resourcesToMap.size() ), resourcesToMap.data() ),
 				"Could not map CUDA interop buffers"
 			);
 		}
@@ -205,10 +205,10 @@ namespace VTX::Renderer::Context::Backend::Interop
 		const Desc::E_BUFFER_USAGE p_usage
 	)
 	{
-		const std::array<BufferRequest, 1> requests {
+		const auto requests = std::to_array<BufferRequest>( {
 			BufferRequest { p_key, p_graphicsBufferId, p_usage },
-		};
-		auto mappings = mapBuffers( requests );
+		} );
+		auto	   mappings = mapBuffers( requests );
 		assert( mappings.size() == 1 );
 
 		return std::move( mappings.front() );

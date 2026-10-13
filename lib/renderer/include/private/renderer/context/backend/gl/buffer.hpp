@@ -103,7 +103,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			assert( glIsBuffer( _id ) );
 			assert( p_size > 0 );
 
-			const GLsizei requiredSize = GLsizei( p_offset + p_size );
+			const GLsizei requiredSize = static_cast<GLsizei>( p_offset + p_size );
 			if ( requiredSize > _size )
 			{
 				_size = requiredSize;

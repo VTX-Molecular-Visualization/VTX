@@ -146,7 +146,7 @@ namespace VTX::Util::String
 	std::string durationToStr( const float p_durationInMs )
 	{
 		std::ostringstream oss;
-		int				   totalMilliseconds = int( p_durationInMs );
+		int				   totalMilliseconds = static_cast<int>( p_durationInMs );
 
 		const int hours = totalMilliseconds / 3600000;
 		totalMilliseconds %= 3600000;

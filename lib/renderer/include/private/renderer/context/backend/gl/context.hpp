@@ -275,9 +275,9 @@ namespace VTX::Renderer::Context::Backend::GL
 							"[WGL] Using ARB pixel format {} (color={}, depth={}, stencil={}, double_buffer={}, "
 							"srgb={})",
 							pixelFormat,
-							int( p_pfd.cColorBits ),
-							int( p_pfd.cDepthBits ),
-							int( p_pfd.cStencilBits ),
+							static_cast<int>( p_pfd.cColorBits ),
+							static_cast<int>( p_pfd.cDepthBits ),
+							static_cast<int>( p_pfd.cStencilBits ),
 							( p_pfd.dwFlags & PFD_DOUBLEBUFFER ) != 0,
 							selectedSrgb
 						);

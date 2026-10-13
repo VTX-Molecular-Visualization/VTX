@@ -77,7 +77,7 @@ namespace VTX::Renderer
 
 			assert( screenWidth > 0.f && screenHeight > 0.f );
 
-			const float aspectRatio = float( screenWidth ) / float( screenHeight );
+			const float aspectRatio = static_cast<float>( screenWidth ) / static_cast<float>( screenHeight );
 
 			switch ( projection )
 			{

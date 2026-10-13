@@ -73,7 +73,7 @@ namespace VTX::Renderer::Builder::PostProcess
 
 	void Shading::loadMaterialTextures( Context::ContextWrapper & p_context, const ShadingConfig & p_config )
 	{
-		for ( uint8_t index = 0; index < uint8_t( Material::E_TEXTURE::COUNT ); ++index )
+		for ( uint8_t index = 0; index < static_cast<uint8_t>( Material::E_TEXTURE::COUNT ); ++index )
 		{
 			const Material::E_TEXTURE textureType = Material::E_TEXTURE( index );
 			const auto &			  texture	  = _materialTexture( p_config.material, textureType );

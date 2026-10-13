@@ -14,10 +14,18 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 	namespace
 	{
-		std::array<const char *, g_NUM_PREPARATION_JOBS> g_jobNames {
-			"1_pdb2gmx", "2_editconf", "3_solvate", "4_trjconv",  "5_grompp",
-			"6_genion",	 "7_grompp",   "8_grompp",	"9_editconf",
-		};
+		auto g_jobNames = std::to_array<const char *>( {
+			"1_pdb2gmx",
+			"2_editconf",
+			"3_solvate",
+			"4_trjconv",
+			"5_grompp",
+			"6_genion",
+			"7_grompp",
+			"8_grompp",
+			"9_editconf",
+		} );
+		static_assert( g_jobNames.size() == g_NUM_PREPARATION_JOBS );
 
 		void fillOutputsFromExpectations( GromacsInstructions & p_in, GromacsJobData & p_currentJobData )
 		{
@@ -31,9 +39,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		template<typename Instruction>
 		void fillOutputs( GromacsInstructions & p_in, Instruction & p_stepIn, GromacsJobData & p_currentJobData )
-		{
-			fillOutputsFromExpectations( p_in, p_currentJobData );
-		}
+		{ fillOutputsFromExpectations( p_in, p_currentJobData ); }
 
 		template<>
 		void fillOutputs( GromacsInstructions & p_in, GenionInstructions & p_stepIn, GromacsJobData & p_currentJobData )

@@ -58,7 +58,7 @@ namespace VTX::Renderer::Builder::PostProcess
 		{
 			BinaryBuffer140 buffer;
 			buffer.write( p_config.size );
-			buffer.write( uint32_t( p_config.background ) );
+			buffer.write( static_cast<uint32_t>( p_config.background ) );
 			buffer.close();
 
 			p_context.setBuffer( { Desc::Key { PASS } }, buffer.bytes() );

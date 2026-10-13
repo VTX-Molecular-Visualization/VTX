@@ -97,9 +97,14 @@ namespace VTX::Util::Color
 			return *this;
 		}
 
-		constexpr std::array<Rgba, 8> palette
-			= { Rgba( 0, 114, 178 ),  Rgba( 230, 159, 0 ), Rgba( 0, 158, 115 ),	 Rgba( 204, 121, 167 ),
-				Rgba( 86, 180, 233 ), Rgba( 213, 94, 0 ),  Rgba( 240, 228, 66 ), Rgba( 153, 153, 153 ) };
+		constexpr auto palette = std::to_array<Rgba>( { Rgba( 0, 114, 178 ),
+														Rgba( 230, 159, 0 ),
+														Rgba( 0, 158, 115 ),
+														Rgba( 204, 121, 167 ),
+														Rgba( 86, 180, 233 ),
+														Rgba( 213, 94, 0 ),
+														Rgba( 240, 228, 66 ),
+														Rgba( 153, 153, 153 ) } );
 
 		const float brightnessValue = brightness();
 		if ( brightnessValue < 0.08f )

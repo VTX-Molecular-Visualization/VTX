@@ -52,7 +52,8 @@ namespace VTX::UI::QT::Delegate
 			p_painter->drawRect( option.rect.adjusted( 0, 0, -1, -1 ) );
 		}
 
-		std::array<bool, toUnderlying( ACTION::COUNT )> pinButtons { false, false, false };
+		auto pinButtons = std::to_array<bool>( { false, false, false } );
+		static_assert( pinButtons.size() == static_cast<size_t>( ACTION::COUNT ) );
 
 		// Visibility.
 		const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(

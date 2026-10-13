@@ -156,8 +156,8 @@ namespace VTX::Util::Math
 		assert( p_v.x >= 0 );
 		assert( p_v.y >= 0 );
 		assert( p_v.z >= 0 );
-		return ( leftShift3( uint( p_v.z ) ) << 2 ) | ( leftShift3( uint( p_v.y ) ) << 1 )
-			   | leftShift3( uint( p_v.x ) );
+		return ( leftShift3( static_cast<uint>( p_v.z ) ) << 2 ) | ( leftShift3( static_cast<uint>( p_v.y ) ) << 1 )
+			   | leftShift3( static_cast<uint>( p_v.x ) );
 	}
 
 	// p_n (normal) must be normalized.

@@ -9,11 +9,15 @@
 
 namespace
 {
-	constexpr std::array<VTX::Util::Resolution, 7> SCREEN_RESOLUTION_PRESETS = {
-		VTX::Util::ResolutionPreset::HD,	  VTX::Util::ResolutionPreset::WXGA,  VTX::Util::ResolutionPreset::HD_PLUS,
-		VTX::Util::ResolutionPreset::FULL_HD, VTX::Util::ResolutionPreset::WUXGA, VTX::Util::ResolutionPreset::WQHD,
+	constexpr auto SCREEN_RESOLUTION_PRESETS = std::to_array<VTX::Util::Resolution>( {
+		VTX::Util::ResolutionPreset::HD,
+		VTX::Util::ResolutionPreset::WXGA,
+		VTX::Util::ResolutionPreset::HD_PLUS,
+		VTX::Util::ResolutionPreset::FULL_HD,
+		VTX::Util::ResolutionPreset::WUXGA,
+		VTX::Util::ResolutionPreset::WQHD,
 		VTX::Util::ResolutionPreset::UHD_4K,
-	};
+	} );
 
 	constexpr size_t CUSTOM_RESOLUTION_MAX_WIDTH  = 3840;
 	constexpr size_t CUSTOM_RESOLUTION_MAX_HEIGHT = 2160;

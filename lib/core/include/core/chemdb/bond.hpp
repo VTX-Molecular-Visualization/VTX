@@ -16,7 +16,6 @@ namespace VTX::Core::ChemDB::Bond
 		QUADRUPLE  = 4, ///< Quadruplet bond
 		QUINTUPLET = 5, ///< Quintuplet bond
 		AROMATIC   = 6, ///< Aromatic bond
-		COUNT,
 
 		// space for more bond types if needed
 		// DOWN = 250, ///< Single bond direction from first atom to second is 'down'. Used for cis-trans
@@ -27,8 +26,9 @@ namespace VTX::Core::ChemDB::Bond
 		// AROMATIC = 255, ///< Aromatic bond (for example the ring bonds in benzene)
 	};
 
-	constexpr std::array<std::string_view, size_t( ORDER::COUNT )> ORDER_STR
-		= { "Unknown", "Simple", "Double", "Triple", "Quadruple", "Quintuple", "Aromatique" };
+	constexpr auto ORDER_STR = std::to_array<std::string_view>(
+		{ "Unknown", "Simple", "Double", "Triple", "Quadruple", "Quintuple", "Aromatique" }
+	);
 } // namespace VTX::Core::ChemDB::Bond
 
 #endif

@@ -27,6 +27,7 @@ Checks: >
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-pro-type-reinterpret-cast,
   -cppcoreguidelines-pro-type-union-access,
+  -cppcoreguidelines-special-member-functions,
   -fuchsia-*,
   -google-build-using-namespace,
   -google-explicit-constructor,

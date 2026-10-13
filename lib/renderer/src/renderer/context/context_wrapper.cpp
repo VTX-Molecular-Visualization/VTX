@@ -353,8 +353,8 @@ namespace VTX::Renderer::Context
 		const Desc::BufferRef &	  p_ref
 	)
 	{
-		std::array<Desc::BufferRef, 1> refs { p_ref };
-		auto						   mappings = mapInteropBuffers( p_api, refs );
+		auto refs	  = std::to_array<Desc::BufferRef>( { p_ref } );
+		auto mappings = mapInteropBuffers( p_api, refs );
 		assert( mappings.size() == 1 );
 		return std::move( mappings.front() );
 	}
@@ -386,7 +386,7 @@ namespace VTX::Renderer::Context
 		const Desc::InteropBufferMapping & p_mapping
 	)
 	{
-		std::array<Desc::InteropBufferMapping, 1> mappings { p_mapping };
+		auto mappings = std::to_array<Desc::InteropBufferMapping>( { p_mapping } );
 		unmapInteropBuffers( p_api, mappings );
 	}
 

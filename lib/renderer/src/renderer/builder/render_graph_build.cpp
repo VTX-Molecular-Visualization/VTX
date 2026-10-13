@@ -51,7 +51,7 @@ namespace VTX::Renderer::Builder
 			  makeUniform( "ClipInfos", Vec4f( VEC4F_ZERO ) ),
 			  makeUniform( "Resolution", Vec2i { 0, 0 } ),
 			  makeUniform( "MousePosition", Vec2i { 0, 0 } ),
-			  makeUniform( "IsPerspective", uint32_t( 1 ) ),
+			  makeUniform( "IsPerspective", static_cast<uint32_t>( 1 ) ),
 			  makeUniform( "TanHalfFov", 1.f ) }
 		);
 
@@ -89,10 +89,10 @@ namespace VTX::Renderer::Builder
 			12,
 			{ makeUniform( "SphereRadiusFixed", 0.0f ),
 			  makeUniform( "SphereRadiusAdd", 0.0f ),
-			  makeUniform( "IsSphereRadiusFixed", uint32_t( 0 ) ),
+			  makeUniform( "IsSphereRadiusFixed", static_cast<uint32_t>( 0 ) ),
 			  makeUniform( "CylinderRadius", 0.0f ),
-			  makeUniform( "CylinderColorBlending", uint32_t( 0 ) ),
-			  makeUniform( "RibbonColorBlending", uint32_t( 0 ) ),
+			  makeUniform( "CylinderColorBlending", static_cast<uint32_t>( 0 ) ),
+			  makeUniform( "RibbonColorBlending", static_cast<uint32_t>( 0 ) ),
 			  makeUniform( "SESProbeRadius", 0.0f ),
 			  makeUniform( "SESMaxProbeNeighborNb", SESGeometry::MAX_PROBE_NEIGHBOR_NB ) }
 		);

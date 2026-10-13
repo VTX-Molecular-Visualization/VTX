@@ -170,9 +170,9 @@ namespace VTX::Renderer
 			if ( p_geometry.chunks.empty() )
 			{
 				const std::vector<Desc::DrawIndexedIndirectRecord> records;
-				_logDrawRanges( { p_indirectBuffer, uint32_t( 0 ) }, records );
+				_logDrawRanges( { p_indirectBuffer, static_cast<uint32_t>( 0 ) }, records );
 				p_context.setBuffer(
-					Desc::BufferRef { p_indirectBuffer, uint32_t( 0 ) }, _toBuffer( records ).bytes()
+					Desc::BufferRef { p_indirectBuffer, static_cast<uint32_t>( 0 ) }, _toBuffer( records ).bytes()
 				);
 				return;
 			}

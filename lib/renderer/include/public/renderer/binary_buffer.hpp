@@ -214,7 +214,7 @@ namespace VTX::Renderer
 
 			for ( uint32_t i = 0; i < count; ++i )
 			{
-				const size_t byteOffset = size_t( i ) * elemRaw;
+				const size_t byteOffset = static_cast<size_t>( i ) * elemRaw;
 				size_t		 off		= 0;
 
 				switch ( p_type )
@@ -335,7 +335,7 @@ namespace VTX::Renderer
 
 			if constexpr ( L == E_LAYOUT_TYPE::Std140 )
 			{
-				return ( S + 15 ) & ~size_t( 15 ); // Round to 16.
+				return ( S + 15 ) & ~static_cast<size_t>( 15 ); // Round to 16.
 			}
 			else if constexpr ( L == E_LAYOUT_TYPE::Std430 )
 			{

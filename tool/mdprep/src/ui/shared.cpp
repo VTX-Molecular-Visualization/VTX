@@ -52,6 +52,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 		p_field = new QComboBox;
 	}
+
 	void get( const E_COMMON_FIELDS_DOUBLE & p_enum, QWidget *& p_label, QDoubleSpinBox *& field ) noexcept
 	{
 		switch ( p_enum )
@@ -100,6 +101,7 @@ namespace VTX::Tool::Mdprep::ui
 		default: break;
 		}
 	}
+
 	void get( const E_COMMON_FIELDS_UINT64 & p_enum, QWidget *& p_label, QLineEdit *& p_field ) noexcept
 	{
 		switch ( p_enum )
@@ -134,15 +136,19 @@ namespace VTX::Tool::Mdprep::ui
 		p_field = new QLineEdit;
 		p_field->setValidator( new VTX::UI::QT::QUInt64Validator( p_field ) );
 	}
+
 	IonicFields::IonicFields( QVBoxLayout * p_target, const Gateway::SystemData & p_defaults )
 	{
 		_setupUi( p_target );
 		_loadValues( p_defaults );
 	}
+
 	void IonicFields::get( Gateway::SystemData & p_out ) const noexcept
 	{
 		if ( _isDefault() )
+		{
 			return;
+		}
 		p_out.anionCharge  = static_cast<int8_t>( _uiObjects.anionCharge->currentText().toInt() );
 		p_out.cationCharge = static_cast<int8_t>( _uiObjects.cationCharge->currentText().toInt() );
 		p_out.anionName	   = _uiObjects.anionName->text().toStdString();
@@ -151,7 +157,7 @@ namespace VTX::Tool::Mdprep::ui
 
 	namespace
 	{
-		std::array<std::string_view, 4> g_IonicChargeValues { "-2", "-1", "+1", "+2" };
+		auto g_IonicChargeValues = std::to_array<std::string_view>( { "-2", "-1", "+1", "+2" } );
 
 		// Validator class that enforce Chemical symbol user input
 		class QChemicalSymbolValidator : public QValidator
@@ -162,18 +168,24 @@ namespace VTX::Tool::Mdprep::ui
 			virtual QValidator::State validate( QString & input, int & pos ) const override
 			{
 				if ( input.size() > 2 )
+				{
 					return QValidator::State::Invalid;
+				}
 				for ( auto & it_char : input )
 				{
 					if ( it_char < 'A' || ( it_char > 'Z' && it_char < 'a' ) || it_char > 'z' )
+					{
 						return QValidator::State::Invalid;
+					}
 				}
 				return State::Acceptable;
 			}
 		};
 
 	} // namespace
+
 	bool IonicFields::_isDefault() const noexcept { return _uiObjects.container == nullptr; }
+
 	void IonicFields::_setupUi( QVBoxLayout * p_target ) noexcept
 	{
 		_uiObjects.container = new QWidget;
@@ -225,10 +237,14 @@ namespace VTX::Tool::Mdprep::ui
 		for ( auto & it_chrgStr : g_IonicChargeValues )
 		{
 			if ( std::stol( it_chrgStr.data() ) > 0 )
+			{
 				_uiObjects.cationCharge->addItem( QString( it_chrgStr.data() ) );
+			}
 
 			if ( std::stol( it_chrgStr.data() ) < 0 )
+			{
 				_uiObjects.anionCharge->addItem( QString( it_chrgStr.data() ) );
+			}
 		}
 
 		qLayoutIons->addWidget( _uiObjects.anionCharge, 0, 3 );
@@ -244,6 +260,7 @@ namespace VTX::Tool::Mdprep::ui
 		);
 		qLayoutIons->addWidget( _uiObjects.cationCharge, 1, 3 );
 	}
+
 	void IonicFields::_loadValues( const Gateway::SystemData & p_defaults ) noexcept
 	{
 		_uiObjects.anionName->setText( QString::fromStdString( p_defaults.anionName ) );
@@ -253,9 +270,13 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			auto & it_chrgStr = g_IonicChargeValues[ it_idx ];
 			if ( std::stol( it_chrgStr.data() ) == p_defaults.anionCharge )
+			{
 				_uiObjects.anionCharge->setCurrentText( g_IonicChargeValues[ it_idx ].data() );
+			}
 			if ( std::stol( it_chrgStr.data() ) == p_defaults.cationCharge )
+			{
 				_uiObjects.cationCharge->setCurrentText( g_IonicChargeValues[ it_idx ].data() );
+			}
 		}
 	}
 

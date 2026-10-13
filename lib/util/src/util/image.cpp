@@ -81,8 +81,9 @@ namespace VTX::Util::Image
 			int		  width			 = 0;
 			int		  height		 = 0;
 			int		  sourceChannels = 0;
-			stbi_uc * pixels
-				= stbi_load( p_path.string().c_str(), &width, &height, &sourceChannels, int( p_channels ) );
+			stbi_uc * pixels		 = stbi_load(
+				p_path.string().c_str(), &width, &height, &sourceChannels, static_cast<int>( p_channels )
+			);
 			if ( pixels == nullptr )
 			{
 				const char * const error = stbi_failure_reason();
@@ -98,7 +99,8 @@ namespace VTX::Util::Image
 			image.channels = p_channels;
 			const std::unique_ptr<stbi_uc, decltype( &stbi_image_free )> pixelsOwner( pixels, &stbi_image_free );
 			image.pixels.assign(
-				pixelsOwner.get(), pixelsOwner.get() + image.width * image.height * size_t( image.channels )
+				pixelsOwner.get(),
+				pixelsOwner.get() + image.width * image.height * static_cast<size_t>( image.channels )
 			);
 
 			return image;
@@ -127,11 +129,15 @@ namespace VTX::Util::Image
 		case E_FORMAT::PNG:
 			path += ".png";
 			stbi_write_png_compression_level = 0;
-			stbi_write_png( path.string().c_str(), int( p_width ), int( p_height ), 4, p_data, 0 );
+			stbi_write_png(
+				path.string().c_str(), static_cast<int>( p_width ), static_cast<int>( p_height ), 4, p_data, 0
+			);
 			break;
 		case E_FORMAT::JPEG:
 			path += ".jpg";
-			stbi_write_jpg( path.string().c_str(), int( p_width ), int( p_height ), 4, p_data, 100 );
+			stbi_write_jpg(
+				path.string().c_str(), static_cast<int>( p_width ), static_cast<int>( p_height ), 4, p_data, 100
+			);
 			break;
 
 		default: assert( 1 ); ;

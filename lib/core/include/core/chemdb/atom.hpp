@@ -153,7 +153,7 @@ namespace VTX::Core::ChemDB::Atom
 		COUNT
 	};
 
-	constexpr std::array<std::string_view, size_t( SYMBOL::COUNT )> SYMBOL_STR = {
+	constexpr auto SYMBOL_STR = std::to_array<std::string_view>( {
 		"-",   // UNKNOWN = 0,
 		"H",   // H			= 1,
 		"HE",  // HE		= 2,
@@ -273,9 +273,10 @@ namespace VTX::Core::ChemDB::Atom
 		"UUH", // UUH		= 116,
 		"UUS", // UUS		= 117,
 		"UUO"  // UUO		= 118,
-	};
+	} );
+	static_assert( SYMBOL_STR.size() == static_cast<size_t>( SYMBOL::COUNT ) );
 
-	constexpr std::array<std::string_view, size_t( SYMBOL::COUNT )> SYMBOL_NAME = {
+	constexpr auto SYMBOL_NAME = std::to_array<std::string_view>( {
 		"Unknown",		 // UNKNOWN = 0,
 		"Hydrogen",		 // H		= 1,
 		"Helium",		 // HE		= 2,
@@ -395,9 +396,10 @@ namespace VTX::Core::ChemDB::Atom
 		"Ununhexium",	 // UUH		= 116,
 		"Ununseptium",	 // UUS		= 117,
 		"Ununoctium"	 // UUO		= 118,
-	};
+	} );
+	static_assert( SYMBOL_NAME.size() == static_cast<size_t>( SYMBOL::COUNT ) );
 
-	constexpr std::array<float, size_t( SYMBOL::COUNT )> SYMBOL_VDW_RADIUS = {
+	constexpr auto SYMBOL_VDW_RADIUS = std::to_array<float>( {
 		1.20f, // UNKNOWN	= 0,
 		1.20f, // H			= 1,
 		1.43f, // HE		= 2,
@@ -517,7 +519,8 @@ namespace VTX::Core::ChemDB::Atom
 		0.00f, // UUH		= 116,
 		0.00f, // UUS		= 117,
 		0.00f  // UUO		= 118,
-	};
+	} );
+	static_assert( SYMBOL_VDW_RADIUS.size() == static_cast<size_t>( SYMBOL::COUNT ) );
 
 	constexpr float minNonZero( std::span<const float> p_r ) noexcept
 	{
@@ -538,7 +541,7 @@ namespace VTX::Core::ChemDB::Atom
 
 	constexpr float VDW_RADIUS_MIN = minNonZero( SYMBOL_VDW_RADIUS );
 
-	constexpr std::array<bool, size_t( SYMBOL::COUNT )> SYMBOL_IS_COMMON = {
+	constexpr auto SYMBOL_IS_COMMON = std::to_array<bool>( {
 		true,  // UNKNOWN	= 0,
 		true,  // H			= 1,
 		false, // HE		= 2,
@@ -658,7 +661,8 @@ namespace VTX::Core::ChemDB::Atom
 		false, // UUH		= 116,
 		false, // UUS		= 117,
 		false  // UUO		= 118,
-	};
+	} );
+	static_assert( SYMBOL_IS_COMMON.size() == static_cast<size_t>( SYMBOL::COUNT ) );
 
 	SYMBOL getSymbolFromString( const std::string & p_symbolStr );
 } // namespace VTX::Core::ChemDB::Atom

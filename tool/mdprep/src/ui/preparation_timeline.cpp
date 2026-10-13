@@ -71,7 +71,7 @@ namespace VTX::Tool::Mdprep::ui
 			const char * why;
 		};
 
-		const std::array<StepInfo, 10> g_steps { {
+		const auto g_steps = std::to_array<StepInfo>( {
 			{ "pdb2gmx — topology",
 			  "Converts the input structure into a GROMACS topology and coordinate file, assigning the selected force "
 			  "field and adding hydrogens." },
@@ -89,7 +89,7 @@ namespace VTX::Tool::Mdprep::ui
 			{ "Pack system",
 			  "Gathers every file needed to run the MD simulation (topology, coordinates, .mdp run parameters and "
 			  "workflow script) into the output directory." },
-		} };
+		} );
 
 		// A widget row that reports clicks through a callback, avoiding a dedicated moc-compiled subclass.
 		class ClickableRow : public QWidget

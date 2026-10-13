@@ -139,7 +139,7 @@ namespace VTX::Renderer::Context::Executor
 					_toGL( p_payload.primitive ),
 					static_cast<GLsizei>( p_payload.count ),
 					GL_UNSIGNED_INT,
-					reinterpret_cast<const void *>( uintptr_t( p_payload.first * sizeof( uint32_t ) ) )
+					reinterpret_cast<const void *>( static_cast<uintptr_t>( p_payload.first * sizeof( uint32_t ) ) )
 				);
 
 			_dumpGLError();
@@ -163,7 +163,7 @@ namespace VTX::Renderer::Context::Executor
 			_backend.vertexArray( p_payload.pipeline )
 				.multiDrawArraysIndirectCount(
 					_toGL( p_payload.primitive ),
-					reinterpret_cast<const void *>( uintptr_t( p_payload.commandOffset ) ),
+					reinterpret_cast<const void *>( static_cast<uintptr_t>( p_payload.commandOffset ) ),
 					p_payload.countOffset,
 					drawCapacity,
 					static_cast<GLsizei>( p_payload.commandStride )
@@ -191,7 +191,7 @@ namespace VTX::Renderer::Context::Executor
 			_backend.vertexArray( p_payload.pipeline )
 				.multiDrawArraysIndirectCount(
 					_toGL( p_payload.primitive ),
-					reinterpret_cast<const void *>( uintptr_t( p_payload.commandOffset ) ),
+					reinterpret_cast<const void *>( static_cast<uintptr_t>( p_payload.commandOffset ) ),
 					p_payload.countOffset,
 					drawCapacity,
 					static_cast<GLsizei>( p_payload.commandStride )
@@ -221,7 +221,7 @@ namespace VTX::Renderer::Context::Executor
 				.multiDrawElementsIndirectCount(
 					_toGL( p_payload.primitive ),
 					GL_UNSIGNED_INT,
-					reinterpret_cast<const void *>( uintptr_t( p_payload.commandOffset ) ),
+					reinterpret_cast<const void *>( static_cast<uintptr_t>( p_payload.commandOffset ) ),
 					p_payload.countOffset,
 					drawCapacity,
 					static_cast<GLsizei>( p_payload.commandStride )
@@ -252,7 +252,7 @@ namespace VTX::Renderer::Context::Executor
 				.multiDrawElementsIndirectCount(
 					_toGL( p_payload.primitive ),
 					GL_UNSIGNED_INT,
-					reinterpret_cast<const void *>( uintptr_t( p_payload.commandOffset ) ),
+					reinterpret_cast<const void *>( static_cast<uintptr_t>( p_payload.commandOffset ) ),
 					p_payload.countOffset,
 					drawCapacity,
 					static_cast<GLsizei>( p_payload.commandStride )

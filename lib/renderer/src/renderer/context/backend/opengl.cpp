@@ -811,8 +811,8 @@ namespace VTX::Renderer::Context::Backend
 		const Handle h = _textures.emplace(
 			p_key,
 			p_text,
-			GLsizei( width ),
-			GLsizei( height ),
+			static_cast<GLsizei>( width ),
+			static_cast<GLsizei>( height ),
 			glFormat.internalFormat,
 			_toGL( p_text.target ),
 			p_text.external
@@ -870,7 +870,7 @@ namespace VTX::Renderer::Context::Backend
 			{
 				const GLuint attribIndex  = location;
 				const GLuint bindingIndex = location; // planar : 1 binding per attribute
-				const GLuint relOffset	  = GLuint( col * ga.components * ga.bytesPerComp );
+				const GLuint relOffset	  = static_cast<GLuint>( col * ga.components * ga.bytesPerComp );
 
 				vao.enableAttribute( attribIndex );
 				vao.setAttributeFormat(
@@ -1275,7 +1275,7 @@ namespace VTX::Renderer::Context::Backend
 			const Handle	   hBuffer	 = _bufferHandle( bufferKey, p_resources, p_chunk );
 			const GL::Buffer & vbo		 = _buffers.get( hBuffer );
 
-			const GLsizei stride = GLsizei( ga.columns * ga.components * ga.bytesPerComp );
+			const GLsizei stride = static_cast<GLsizei>( ga.columns * ga.components * ga.bytesPerComp );
 			for ( uint8_t col = 0; col < ga.columns; ++col )
 			{
 				const GLuint bindingIndex = location;
@@ -1306,8 +1306,9 @@ namespace VTX::Renderer::Context::Backend
 			return _vertexArrays.handle( quadLayoutKey );
 		}
 
-		const std::array<Vec2f, 4> quad
-			= { Vec2f { -1.f, 1.f }, Vec2f { -1.f, -1.f }, Vec2f { 1.f, 1.f }, Vec2f { 1.f, -1.f } };
+		const auto quad = std::to_array<Vec2f>(
+			{ Vec2f { -1.f, 1.f }, Vec2f { -1.f, -1.f }, Vec2f { 1.f, 1.f }, Vec2f { 1.f, -1.f } }
+		);
 
 		Geometry quadGeo;
 		quadGeo.vertexLayout = quadLayoutKey;
@@ -1323,7 +1324,7 @@ namespace VTX::Renderer::Context::Backend
 
 		_bindGeometryToVao( quadLayoutKey, quadGeo, fakeRes, 0 );
 
-		_buffers.get( quadVboKey ).setStorage( quad.data(), GLsizei( sizeof( quad ) ) );
+		_buffers.get( quadVboKey ).setStorage( quad.data(), static_cast<GLsizei>( sizeof( quad ) ) );
 
 		return h;
 	}
@@ -1423,8 +1424,8 @@ namespace VTX::Renderer::Context::Backend
 		const Desc::BufferRef &	  p_ref
 	)
 	{
-		std::array<Desc::BufferRef, 1> refs { p_ref };
-		auto						   mappings = mapInteropBuffers( p_api, refs );
+		auto refs	  = std::to_array<Desc::BufferRef>( { p_ref } );
+		auto mappings = mapInteropBuffers( p_api, refs );
 		assert( mappings.size() == 1 );
 
 		return std::move( mappings.front() );
@@ -1504,7 +1505,7 @@ namespace VTX::Renderer::Context::Backend
 
 	void OpenGL::unmapInteropBuffer( const Desc::E_INTEROP_API p_api, const Desc::InteropBufferMapping & p_mapping )
 	{
-		std::array<Desc::InteropBufferMapping, 1> mappings { p_mapping };
+		auto mappings = std::to_array<Desc::InteropBufferMapping>( { p_mapping } );
 		unmapInteropBuffers( p_api, mappings );
 	}
 
@@ -1566,13 +1567,13 @@ namespace VTX::Renderer::Context::Backend
 
 		texture.getSubImage(
 			0,
-			single ? GLint( *p_x ) : 0,
-			single ? GLint( *p_y ) : 0,
-			GLsizei( w ),
-			GLsizei( h ),
+			single ? static_cast<GLint>( *p_x ) : 0,
+			single ? static_cast<GLint>( *p_y ) : 0,
+			static_cast<GLsizei>( w ),
+			static_cast<GLsizei>( h ),
 			glFormat.uploadFormat,
 			glFormat.uploadType,
-			GLsizei( data.size() ),
+			static_cast<GLsizei>( data.size() ),
 			data.data()
 		);
 
@@ -1599,9 +1600,10 @@ namespace VTX::Renderer::Context::Backend
 			throw GraphicException( "Texture '{}': width and height must be specified together", p_key );
 		}
 
-		const size_t width	= p_width.value_or( size_t( texture.getWidth() ) );
-		const size_t height = p_height.value_or( size_t( texture.getHeight() ) );
-		if ( width == 0 || height == 0 || width > size_t( TypeMax<GLsizei> ) || height > size_t( TypeMax<GLsizei> ) )
+		const size_t width	= p_width.value_or( static_cast<size_t>( texture.getWidth() ) );
+		const size_t height = p_height.value_or( static_cast<size_t>( texture.getHeight() ) );
+		if ( width == 0 || height == 0 || width > static_cast<size_t>( TypeMax<GLsizei> )
+			 || height > static_cast<size_t>( TypeMax<GLsizei> ) )
 		{
 			throw GraphicException( "Texture '{}': invalid dimensions {}x{}", p_key, width, height );
 		}
@@ -1615,7 +1617,7 @@ namespace VTX::Renderer::Context::Backend
 			 && ( std::cmp_not_equal( texture.getWidth(), width )
 				  || std::cmp_not_equal( texture.getHeight(), height ) ) )
 		{
-			texture.resize( GLsizei( width ), GLsizei( height ) );
+			texture.resize( static_cast<GLsizei>( width ), static_cast<GLsizei>( height ) );
 		}
 
 		texture.fill( p_bytes.data(), glFormat.uploadFormat, glFormat.uploadType );
@@ -1661,7 +1663,7 @@ namespace VTX::Renderer::Context::Backend
 	{
 		p_infos.renderer	   = _openglInfos.glRenderer;
 		p_infos.cudaAvailable  = _cudaInterop.availability().available();
-		p_infos.maxTextureSize = size_t( _openglInfos.glMaxTextureSize );
+		p_infos.maxTextureSize = static_cast<size_t>( _openglInfos.glMaxTextureSize );
 
 // NVX_gpu_memory_info
 #if ( GL_NVX_gpu_memory_info == 1 )

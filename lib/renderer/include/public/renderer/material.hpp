@@ -67,12 +67,16 @@ namespace VTX::Renderer
 
 		uint32_t textureMask() const noexcept
 		{
-			return ( uint32_t( albedoTexture.has_value() ) << uint8_t( E_TEXTURE::ALBEDO ) )
-				   | ( uint32_t( normalTexture.has_value() ) << uint8_t( E_TEXTURE::NORMAL ) )
-				   | ( uint32_t( metallicTexture.has_value() ) << uint8_t( E_TEXTURE::METALLIC ) )
-				   | ( uint32_t( roughnessTexture.has_value() ) << uint8_t( E_TEXTURE::ROUGHNESS ) )
-				   | ( uint32_t( ambientOcclusionTexture.has_value() ) << uint8_t( E_TEXTURE::AMBIENT_OCCLUSION ) )
-				   | ( uint32_t( emissiveTexture.has_value() ) << uint8_t( E_TEXTURE::EMISSIVE ) );
+			return ( static_cast<uint32_t>( albedoTexture.has_value() ) << static_cast<uint8_t>( E_TEXTURE::ALBEDO ) )
+				   | ( static_cast<uint32_t>( normalTexture.has_value() ) << static_cast<uint8_t>( E_TEXTURE::NORMAL ) )
+				   | ( static_cast<uint32_t>( metallicTexture.has_value() )
+					   << static_cast<uint8_t>( E_TEXTURE::METALLIC ) )
+				   | ( static_cast<uint32_t>( roughnessTexture.has_value() )
+					   << static_cast<uint8_t>( E_TEXTURE::ROUGHNESS ) )
+				   | ( static_cast<uint32_t>( ambientOcclusionTexture.has_value() )
+					   << static_cast<uint8_t>( E_TEXTURE::AMBIENT_OCCLUSION ) )
+				   | ( static_cast<uint32_t>( emissiveTexture.has_value() )
+					   << static_cast<uint8_t>( E_TEXTURE::EMISSIVE ) );
 		}
 	};
 

@@ -739,9 +739,10 @@ namespace VTX::IO
 				secondAtom = p_oldAtomToNewAtom[ secondAtom ];
 			}
 
-			const Bond::ORDER bondOrder = p_sourceBondIndex < bondOrders.size()
-											  ? Bond::ORDER( int( bondOrders[ p_sourceBondIndex ] ) )
-											  : Bond::ORDER::UNKNOWN;
+			const Bond::ORDER bondOrder
+				= p_sourceBondIndex < bondOrders.size()
+					  ? static_cast<Bond::ORDER>( static_cast<int>( bondOrders[ p_sourceBondIndex ] ) )
+					  : Bond::ORDER::UNKNOWN;
 
 			p_topology.bondPairAtomIndexes[ static_cast<size_t>( p_targetBondIndex ) * 2 ]	   = firstAtom;
 			p_topology.bondPairAtomIndexes[ static_cast<size_t>( p_targetBondIndex ) * 2 + 1 ] = secondAtom;
@@ -823,8 +824,9 @@ namespace VTX::IO
 
 	bool isTrajectoryFileFormat( const FilePath & p_path )
 	{
-		const std::string					  extension = VTX::Util::String::toLower( p_path.extension().string() );
-		const std::array<std::string_view, 4> trajectoryFileFormatList { ".xtc", ".dcd", ".lammpstrj", ".trj" };
+		const std::string extension = VTX::Util::String::toLower( p_path.extension().string() );
+		const auto		  trajectoryFileFormatList
+			= std::to_array<std::string_view>( { ".xtc", ".dcd", ".lammpstrj", ".trj" } );
 
 		return std::ranges::any_of(
 			trajectoryFileFormatList, [ &extension ]( const std::string_view & v ) { return v == extension; }

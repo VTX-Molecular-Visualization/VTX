@@ -55,7 +55,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		const Chrono c;
 		c.start();
 		std::invoke( std::forward<F>( p_f ), std::forward<Args>( p_args )... );
-		return float( c.stop() );
+		return static_cast<float>( c.stop() );
 	}
 } // namespace VTX::Renderer::Context::Backend::GL
 

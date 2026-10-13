@@ -69,7 +69,7 @@ namespace VTX::Util::Color
 		}
 
 		static void setSingleChannelHexaInStream( float v, std::stringstream & ss )
-		{ ss << std::hex << std::setw( 2 ) << std::setfill( '0' ) << (int)( v * 255 ); }
+		{ ss << std::hex << std::setw( 2 ) << std::setfill( '0' ) << static_cast<int>( v * 255 ); }
 
 		constexpr Rgba & operator=( const Rgba & ) = default;
 

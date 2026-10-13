@@ -57,9 +57,10 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_sliderTextureScale->setMinimum( MATERIAL_TEXTURE_SCALE_MIN );
 		_sliderTextureScale->setMaximum( MATERIAL_TEXTURE_SCALE_MAX );
 
-		constexpr std::array<std::string_view, size_t( Material::E_TEXTURE::COUNT )> TEXTURE_LABELS {
-			"Albedo map", "Normal map", "Metallic map", "Roughness map", "Ambient occlusion map", "Emissive map"
-		};
+		constexpr auto TEXTURE_LABELS = std::to_array<std::string_view>(
+			{ "Albedo map", "Normal map", "Metallic map", "Roughness map", "Ambient occlusion map", "Emissive map" }
+		);
+		static_assert( TEXTURE_LABELS.size() == static_cast<size_t>( Material::E_TEXTURE::COUNT ) );
 		for ( size_t i = 0; i < _textureWidgets.size(); ++i )
 		{
 			const Material::E_TEXTURE textureType = Material::E_TEXTURE( i );
@@ -160,11 +161,14 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	)
 	{
 		using TextureMember = std::optional<VTX::Renderer::MaterialTexture> VTX::Renderer::Material::*;
-		static constexpr std::array<TextureMember, size_t( VTX::Renderer::Material::E_TEXTURE::COUNT )> MEMBERS {
-			&VTX::Renderer::Material::albedoTexture,		   &VTX::Renderer::Material::normalTexture,
-			&VTX::Renderer::Material::metallicTexture,		   &VTX::Renderer::Material::roughnessTexture,
-			&VTX::Renderer::Material::ambientOcclusionTexture, &VTX::Renderer::Material::emissiveTexture
-		};
+		static constexpr auto												MEMBERS
+			= std::to_array<TextureMember>( { &VTX::Renderer::Material::albedoTexture,
+											  &VTX::Renderer::Material::normalTexture,
+											  &VTX::Renderer::Material::metallicTexture,
+											  &VTX::Renderer::Material::roughnessTexture,
+											  &VTX::Renderer::Material::ambientOcclusionTexture,
+											  &VTX::Renderer::Material::emissiveTexture } );
+		static_assert( MEMBERS.size() == static_cast<size_t>( VTX::Renderer::Material::E_TEXTURE::COUNT ) );
 
 		return p_material.*MEMBERS[ size_t( p_texture ) ];
 	}

@@ -27,12 +27,12 @@ namespace
 	constexpr int	 PREVIEW_FALLBACK_HEIGHT = 220;
 	constexpr int	 PREVIEW_DEBOUNCE_MS	 = 200;
 
-	constexpr std::array<std::string_view, 2> FORMATS
-		= { "PNG - Portable Network Graphics", "JPEG - Joint Photographic Experts Group" };
+	constexpr auto FORMATS = std::to_array<std::string_view>( { "PNG - Portable Network Graphics",
+																"JPEG - Joint Photographic Experts Group" } );
 
 	constexpr VTX::Util::Resolution CURRENT_RESOLUTION_PRESET = { "Current", 0, 0 };
 
-	constexpr std::array<VTX::Util::Resolution, 16> IMAGE_EXPORT_RESOLUTION_PRESETS = {
+	constexpr auto IMAGE_EXPORT_RESOLUTION_PRESETS = std::to_array<VTX::Util::Resolution>( {
 		CURRENT_RESOLUTION_PRESET,
 		VTX::Util::ResolutionPreset::SVGA,
 		VTX::Util::ResolutionPreset::XGA,
@@ -49,7 +49,7 @@ namespace
 		VTX::Util::ResolutionPreset::UHD_4K,
 		VTX::Util::ResolutionPreset::UHD_8K,
 		VTX::Util::ResolutionPreset::UHD_16K,
-	};
+	} );
 } // namespace
 
 namespace VTX::UI::QT::Dialog

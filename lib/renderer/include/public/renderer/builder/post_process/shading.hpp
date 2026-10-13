@@ -182,7 +182,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.uniform( "FogFar", FOG_FAR_DEFAULT, std::pair { FOG_FAR_MIN, FOG_FAR_MAX } )
 				.uniform( "FogDensity", FOG_DENSITY_DEFAULT, std::pair { FOG_DENSITY_MIN, FOG_DENSITY_MAX } )
 				.uniform( "SSAOScale", 1.f, std::pair { SSAO_SCALE_MIN, SSAO_SCALE_MAX } )
-				.uniform( "EnvironmentEnabled", uint32_t( 0 ) )
+				.uniform( "EnvironmentEnabled", static_cast<uint32_t>( 0 ) )
 				.uniform( "SkyboxIntensity", 1.f )
 				.uniform( "IblIntensity", 1.f )
 				.uniform(
@@ -198,7 +198,7 @@ namespace VTX::Renderer::Builder::PostProcess
 					AMBIENT_INTENSITY_DEFAULT,
 					std::pair { AMBIENT_INTENSITY_MIN, AMBIENT_INTENSITY_MAX }
 				)
-				.uniform( "MaterialTextureMask", uint32_t( 0 ) )
+				.uniform( "MaterialTextureMask", static_cast<uint32_t>( 0 ) )
 				.uniform( "MaterialEmissive", Vec4f( 0.f, 0.f, 0.f, MATERIAL_EMISSIVE_INTENSITY_DEFAULT ) )
 				.uniform(
 					"MaterialMetallic",
@@ -246,9 +246,11 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( fog.far );
 			buffer.write( p_fog ? fog.density : 0.f );
 			buffer.write( p_ssao ? p_ssao->scale : 1.f );
-			buffer.write( uint32_t(
-				p_config.backgroundMode == E_BACKGROUND_MODE::ENVIRONMENT && p_config.environmentPath.has_value()
-			) );
+			buffer.write(
+				static_cast<uint32_t>(
+					p_config.backgroundMode == E_BACKGROUND_MODE::ENVIRONMENT && p_config.environmentPath.has_value()
+				)
+			);
 			buffer.write( p_config.skyboxIntensity );
 			buffer.write( p_config.iblIntensity );
 			buffer.write( p_config.environmentRotation );

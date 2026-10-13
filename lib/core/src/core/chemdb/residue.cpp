@@ -12,7 +12,7 @@ namespace VTX::Core::ChemDB::Residue
 		// Upcase residue name
 		const std::string upcasedName = Util::String::toUpper( p_residueName );
 
-		for ( int i = 0; i < int( SYMBOL::COUNT ); i++ )
+		for ( int i = 0; i < static_cast<int>( SYMBOL::COUNT ); i++ )
 		{
 			if ( SYMBOL_SHORT_STR[ i ] == upcasedName )
 			{
@@ -46,7 +46,7 @@ namespace VTX::Core::ChemDB::Residue
 			[]( unsigned char c ) { return std::tolower( c ); }
 		);
 
-		for ( int i = 0; i < int( SYMBOL::COUNT ); i++ )
+		for ( int i = 0; i < static_cast<int>( SYMBOL::COUNT ); i++ )
 		{
 			if ( SYMBOL_NAME[ i ] == formattedName )
 			{

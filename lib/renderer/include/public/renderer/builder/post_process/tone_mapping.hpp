@@ -56,8 +56,8 @@ namespace VTX::Renderer::Builder::PostProcess
 				.shaders( { "default.vert", "tone_mapping.frag" } )
 				.uniform(
 					"Mode",
-					uint32_t( TONE_MAPPING_MODE_DEFAULT ),
-					std::pair { 0u, uint32_t( E_TONE_MAPPING::COUNT ) - 1u }
+					static_cast<uint32_t>( TONE_MAPPING_MODE_DEFAULT ),
+					std::pair { 0u, static_cast<uint32_t>( E_TONE_MAPPING::COUNT ) - 1u }
 				)
 				.uniform(
 					"Exposure",
@@ -73,7 +73,7 @@ namespace VTX::Renderer::Builder::PostProcess
 		static void upload( Context::ContextWrapper & p_context, const ToneMappingConfig & p_config )
 		{
 			BinaryBuffer140 buffer;
-			buffer.write( uint32_t( p_config.mode ) );
+			buffer.write( static_cast<uint32_t>( p_config.mode ) );
 			buffer.write( p_config.exposure );
 			buffer.close();
 

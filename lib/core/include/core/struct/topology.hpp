@@ -127,13 +127,13 @@ namespace VTX::Core::Struct
 		/**
 		 * @brief All needed getters.
 		 */
-		Index getChainCount() const { return Index( chainNames.size() ); }
+		Index getChainCount() const { return static_cast<Index>( chainNames.size() ); }
 
-		Index getResidueCount() const { return Index( residueSymbols.size() ); }
+		Index getResidueCount() const { return static_cast<Index>( residueSymbols.size() ); }
 
-		Index getAtomCount() const { return Index( atomSymbols.size() ); }
+		Index getAtomCount() const { return static_cast<Index>( atomSymbols.size() ); }
 
-		Index getBondCount() const { return Index( bondOrders.size() ); }
+		Index getBondCount() const { return static_cast<Index>( bondOrders.size() ); }
 
 		IndexRange getAtomRange() const { return IndexRange::fromFirstCount( 0, getAtomCount() ); }
 
