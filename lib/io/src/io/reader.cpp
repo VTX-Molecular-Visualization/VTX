@@ -59,13 +59,13 @@ namespace VTX::IO
 		chemfiles::Trajectory					_trajectory;
 		chemfiles::Frame						_currentFrame;
 		chemfiles::Topology						_topology;
-		const std::vector<chemfiles::Residue> * _residues			 = nullptr;
-		const std::vector<chemfiles::Bond> *	_bonds				 = nullptr;
-		const chemfiles::Residue *				_currentResidue		 = nullptr;
-		const chemfiles::Atom *					_currentAtom		 = nullptr;
-		int64_t									_currentAtomIndex	 = -1;
-		int64_t									_currentFrameIdx	 = -1;
-		std::vector<Index>						_atomOriginalIndexes = {};
+		const std::vector<chemfiles::Residue> * _residues		  = nullptr;
+		const std::vector<chemfiles::Bond> *	_bonds			  = nullptr;
+		const chemfiles::Residue *				_currentResidue	  = nullptr;
+		const chemfiles::Atom *					_currentAtom	  = nullptr;
+		int64_t									_currentAtomIndex = -1;
+		int64_t									_currentFrameIdx  = -1;
+		std::vector<Index>						_atomOriginalIndexes;
 		Frame									_firstFrame;
 		bool									_hasSecondaryStructureData = false;
 
@@ -607,7 +607,7 @@ namespace VTX::IO
 			p_topology.atomOriginalIndexes = _atomOriginalIndexes;
 		}
 
-		void _fillArtificialResidue( const Index p_targetResidueIndex, Topology & p_topology )
+		static void _fillArtificialResidue( const Index p_targetResidueIndex, Topology & p_topology )
 		{
 			p_topology.residueOriginalIds[ p_targetResidueIndex ] = INVALID_INDEX;
 			p_topology.residueSymbols[ p_targetResidueIndex ]	  = Residue::SYMBOL::UNKNOWN;
@@ -720,7 +720,7 @@ namespace VTX::IO
 			const Index					 p_targetBondIndex,
 			Topology &					 p_topology,
 			const std::span<const Index> p_oldAtomToNewAtom = {}
-		)
+		) const
 		{
 			const std::vector<chemfiles::Bond::BondOrder> & bondOrders = _topology.bond_orders();
 			const chemfiles::Bond &							bond	   = ( *_bonds )[ p_sourceBondIndex ];
@@ -752,7 +752,7 @@ namespace VTX::IO
 			Topology &							 p_topology,
 			const Frame &						 p_positions,
 			const VTX::Util::Math::Grid<Index> & p_atomGrid
-		)
+		) const
 		{
 			assert( p_positions.size() == p_topology.getAtomCount() );
 
