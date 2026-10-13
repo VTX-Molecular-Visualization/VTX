@@ -49,21 +49,21 @@ namespace VTX::PythonBinding
 #ifdef _WIN32
 			const std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
 			const std::wstring platlibdir  = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
-			const std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "python"
-#ifdef _DEBUG
-			"_d"
-#endif // _DEBUG
-				".exe" ).wstring();
-			const std::wstring pythonExecDir = p_pythonHomePath;
+
+			// const std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "python"
+			// #ifdef _DEBUG
+			// "_d"
+			// #endif // _DEBUG
+			// ".exe" ).wstring();
+			// const std::wstring pythonExecDir = p_pythonHomePath;
 #else
 			std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "lib"
 										 / "python" CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR )
 										   .wstring();
-			std::wstring platlibdir		  = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
-			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin"
-											  / "python" CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR )
-												.wstring();
-			std::wstring pythonExecDir = ( VTX::FilePath( p_pythonHomePath ) / "bin" ).wstring();
+			std::wstring platlibdir	 = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
+			// std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin"
+			// / "python" CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR ).wstring();
+			// std::wstring pythonExecDir = ( VTX::FilePath( p_pythonHomePath ) / "bin" ).wstring();
 
 #endif
 			PyConfig_SetString( &config, &config.platlibdir, platlibdir.c_str() );
@@ -77,7 +77,7 @@ namespace VTX::PythonBinding
 				= VTX::FilePath( p_pythonHomePath ) / "python" CPYTHON_VERSION_MAJOR CPYTHON_VERSION_MINOR ".zip";
 			const std::wstring pythonArchivePathStr( pythonArchivePath.wstring() );
 
-			const std::string execDirPath_string = VTX::Util::Filesystem::getExecutableDir().string();
+			// const std::string execDirPath_string = VTX::Util::Filesystem::getExecutableDir().string();
 
 			PyWideStringList_Append( &config.module_search_paths, pyScriptDir.c_str() );
 			PyWideStringList_Append( &config.module_search_paths, pythonArchivePathStr.c_str() );
@@ -88,7 +88,7 @@ namespace VTX::PythonBinding
 			PyWideStringList_Append( &config.module_search_paths, platlibdir.c_str() );
 			PyWideStringList_Append( &config.module_search_paths, execDirPath.c_str() );
 
-			auto pythonExecutable_string = std::filesystem::path( pythonExecutable ).string();
+			// auto pythonExecutable_string = std::filesystem::path( pythonExecutable ).string();
 
 			std::optional<pybind11::scoped_interpreter> interpetor;
 			try

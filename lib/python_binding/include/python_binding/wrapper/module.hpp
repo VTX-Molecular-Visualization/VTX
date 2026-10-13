@@ -65,7 +65,7 @@ namespace VTX::PythonBinding
 			}
 
 			template<typename T, typename... Args>
-			T runFunction( const std::string & p_funcName, Args... p_args ) const
+			T runFunction( const std::string & p_funcName, const Args &... p_args ) const
 			{
 				Wrapper::Function funcWrapper = Wrapper::Function( *this, p_funcName );
 				funcWrapper.run( p_args... );

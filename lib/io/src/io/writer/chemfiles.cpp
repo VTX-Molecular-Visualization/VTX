@@ -230,7 +230,7 @@ namespace VTX::IO::Writer
 		{
 			for ( auto & prop : props )
 			{
-				std::visit( [ & ]( auto v ) { setProperty<T>( cf, prop.first, v ); }, prop.second );
+				std::visit( [ & ]( const auto & v ) { setProperty<T>( cf, prop.first, v ); }, prop.second );
 			}
 		}
 
@@ -284,7 +284,7 @@ namespace VTX::IO::Writer
 
 					for ( auto & it_atom : it_residue.atoms )
 					{
-						AtomCoordinates		  coords = it_frame.coordinates.at( it_atom );
+						const AtomCoordinates coords = it_frame.coordinates.at( it_atom );
 						::chemfiles::Vector3D cf_coords;
 						convert( coords, cf_coords );
 						cf_frame.add_atom( ::chemfiles::Atom( it_atom->name, it_atom->symbol ), cf_coords );
@@ -384,7 +384,7 @@ namespace VTX::IO::Writer
 	// Residue
 	Residue::Residue( _Residue & p_ ) : _data( &p_ ) {}
 
-	void Residue::set( Property p_ ) noexcept
+	void Residue::set( const Property & p_ ) noexcept
 	{
 		if ( _data == nullptr )
 		{
@@ -421,14 +421,14 @@ namespace VTX::IO::Writer
 		_data->symbol = std::move( p_symbol );
 	}
 
-	void Residue::add( Atom & p_ ) noexcept
+	void Residue::add( Atom & p_ )
 	{
 		if ( _data == nullptr )
 		{
 			return;
 		}
 
-		_AtomInfo atomInfo;
+		_AtomInfo atomInfo {};
 		p_.get( atomInfo );
 
 		_data->atoms.emplace_back( atomInfo.dataPtr );
@@ -469,14 +469,14 @@ namespace VTX::IO::Writer
 	// Frame
 	Frame::Frame( _Frame & p_ ) : _data( &p_ ) {}
 
-	void Frame::set( const Atom & p_atom, AtomCoordinates p_atomCoordinates ) noexcept
+	void Frame::set( const Atom & p_atom, AtomCoordinates p_atomCoordinates )
 	{
 		if ( _data == nullptr )
 		{
 			return;
 		}
 
-		_AtomInfo atomInfo;
+		_AtomInfo atomInfo {};
 		p_atom.get( atomInfo );
 		if ( atomInfo.dataPtr == nullptr )
 		{

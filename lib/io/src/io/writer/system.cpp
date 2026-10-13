@@ -202,7 +202,7 @@ namespace VTX::IO::Writer
 			auto & constSymbol
 				= VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>( p_topology
 																				.residueSymbols[ p_residueIdx ] ) ];
-			std::string residueSymbol
+			const std::string residueSymbol
 				= p_topology.residueSymbols[ p_residueIdx ] == VTX::Core::ChemDB::Residue::SYMBOL::UNKNOWN
 					  ? p_topology.residueNames[ p_residueIdx ]
 					  : std::string( constSymbol.begin(), constSymbol.end() );
@@ -262,8 +262,8 @@ namespace VTX::IO::Writer
 		{
 			for ( size_t bondIdx = 0; bondIdx < p_mol.getBondCount() * 2; bondIdx += 2 )
 			{
-				size_t atomIdx1 = p_mol.bondPairAtomIndexes[ bondIdx ],
-					   atomIdx2 = p_mol.bondPairAtomIndexes[ bondIdx + 1 ];
+				const size_t atomIdx1 = p_mol.bondPairAtomIndexes[ bondIdx ],
+							 atomIdx2 = p_mol.bondPairAtomIndexes[ bondIdx + 1 ];
 				if ( p_atomFilter( atomIdx1 ) && p_atomFilter( atomIdx2 ) )
 				{
 					E_BOND_ORDER w_bondOrder = E_BOND_ORDER::unknown;
@@ -287,7 +287,7 @@ namespace VTX::IO::Writer
 		{
 			for ( size_t frameIdx = 0; frameIdx < p_traj.frameCount(); frameIdx++ )
 			{
-				Frame w_frame;
+				Frame w_frame {};
 				if ( not p_system.fetch( w_frame, frameIdx ) )
 				{
 					w_frame = p_system.newFrame();
@@ -299,7 +299,7 @@ namespace VTX::IO::Writer
 					{
 						for ( size_t atomIndex = 0; atomIndex < p_positions.size(); atomIndex++ )
 						{
-							Atom atom;
+							Atom atom {};
 
 							// If the atom doesn't exist for some reason, skip to the next one.
 							if ( p_system.fetch(
@@ -334,7 +334,7 @@ namespace VTX::IO::Writer
 				{
 					continue;
 				}
-				uint atomWritten = 0;
+
 				for ( size_t chainIdx = 0; chainIdx < system.topology->getChainCount(); chainIdx++ )
 				{
 					addChain( *system.topology, chainIdx, w_system, system.atomFilter, indexManager );

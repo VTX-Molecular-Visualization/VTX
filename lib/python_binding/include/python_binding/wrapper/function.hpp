@@ -22,7 +22,7 @@ namespace VTX::PythonBinding::Wrapper
 		~Function() = default;
 
 		template<typename... Args>
-		void run( Args... p_args )
+		void run( const Args &... p_args )
 		{
 			try
 			{

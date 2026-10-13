@@ -3,7 +3,7 @@ WarningsAsErrors: '*'
 Checks: >
   *,
   -abseil-*,
-  -altera-unroll-loops,
+  -altera-*,
   -boost-use-ranges,
   -bugprone-branch-clone,
   -bugprone-narrowing-conversions,
@@ -61,6 +61,7 @@ Checks: >
   -misc-non-private-member-variables-in-classes,
   -modernize-avoid-c-arrays,
   -modernize-pass-by-value,
+  -modernize-return-braced-init-list,
   -modernize-use-auto,
   -modernize-use-designated-initializers,
   -modernize-use-nodiscard,
@@ -74,6 +75,7 @@ Checks: >
   -readability-implicit-bool-conversion,
   -readability-magic-numbers,
   -readability-math-missing-parentheses,
+  -readability-named-parameter,
   -readability-static-accessed-through-instance,
   -readability-uppercase-literal-suffix
 

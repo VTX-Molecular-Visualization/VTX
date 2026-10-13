@@ -80,12 +80,12 @@ namespace VTX::IO::Writer
 		/**
 		 * @brief Inform the chain that the input atom is a part of it.
 		 */
-		void add( Atom & ) noexcept;
+		void add( Atom & );
 
 		/**
 		 * @brief Set or replace a property for the chain.
 		 */
-		void set( Property ) noexcept;
+		void set( const Property & ) noexcept;
 		void setResId( int ) noexcept;
 		void setSymbol( std::string ) noexcept;
 
@@ -132,7 +132,7 @@ namespace VTX::IO::Writer
 		/**
 		 * @brief Give the coordinate of the atom for this frame.
 		 */
-		void set( const Atom &, AtomCoordinates ) noexcept;
+		void set( const Atom &, AtomCoordinates );
 
 	  private:
 		_Frame * _data;

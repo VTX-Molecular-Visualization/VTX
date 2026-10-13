@@ -13,7 +13,7 @@ namespace VTX::PythonBinding::Wrapper
 	{
 	  public:
 		Arg( const std::string & p_parameterName ) : _parameterName( p_parameterName ) {};
-		virtual ~Arg() {}
+		virtual ~Arg() = default;
 
 		pybind11::arg toPybind11Extra() const { return pybind11::arg( _parameterName.c_str() ); }
 
@@ -33,6 +33,7 @@ namespace VTX::PythonBinding::Wrapper
 			Arg( p_parameterName ), _value( p_defaultValue )
 		{
 		}
+
 		pybind11::arg_v toPybind11Extra() const { return pybind11::arg_v( _parameterName.c_str(), _value ); }
 
 	  private:
