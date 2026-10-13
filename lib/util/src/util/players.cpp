@@ -1,5 +1,6 @@
 #include "util/players.hpp"
 #include <cmath>
+#include <utility>
 
 namespace VTX::Util::Players
 {
@@ -233,7 +234,7 @@ namespace VTX::Util::Players
 
 		int64_t outOfBoundNewStep = 0;
 		_currentStep			  = pingpongNstepfurther( _forward, _lastIndex, _currentStep, p_N, outOfBoundNewStep );
-		_forward				  = outOfBoundNewStep < 0 || outOfBoundNewStep > _lastIndex ? not _forward : _forward;
+		_forward = outOfBoundNewStep < 0 || std::cmp_greater( outOfBoundNewStep, _lastIndex ) ? not _forward : _forward;
 	}
 
 	void PingPong::current( uint & p_out ) const noexcept { p_out = _currentStep; }

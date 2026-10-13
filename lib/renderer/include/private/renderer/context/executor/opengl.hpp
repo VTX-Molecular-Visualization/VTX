@@ -7,6 +7,7 @@
 #include <util/constants.hpp>
 #include <util/hashing.hpp>
 #include <util/type_traits.hpp>
+#include <utility>
 
 namespace VTX::Renderer::Context::Executor
 {
@@ -446,7 +447,7 @@ namespace VTX::Renderer::Context::Executor
 			assert( p_commandStride > 0 );
 
 			const GLsizei bufferSize = p_indirectBuffer.size();
-			if ( p_commandOffset >= static_cast<uint32_t>( bufferSize ) )
+			if ( std::cmp_greater_equal( p_commandOffset, bufferSize ) )
 			{
 				return 0;
 			}

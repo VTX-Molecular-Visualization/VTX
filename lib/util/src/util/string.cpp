@@ -37,7 +37,7 @@ namespace VTX::Util::String
 		size_t startIndex = 0;
 		size_t endIndex	  = p_str.find( p_separator );
 
-		while ( endIndex != size_t( -1 ) )
+		while ( endIndex != std::string::npos )
 		{
 			splittedStr.emplace_back( p_str.substr( startIndex, endIndex - startIndex ) );
 			startIndex = endIndex + 1;

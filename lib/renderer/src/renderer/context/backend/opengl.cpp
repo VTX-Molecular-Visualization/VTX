@@ -8,6 +8,7 @@
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
 #include <util/type_traits.hpp>
+#include <utility>
 
 namespace
 {
@@ -1610,7 +1611,9 @@ namespace VTX::Renderer::Context::Backend
 		{
 			throw GraphicException( "Texture '{}': expected {} bytes, got {}", p_key, expectedSize, p_bytes.size() );
 		}
-		if ( p_width && ( size_t( texture.getWidth() ) != width || size_t( texture.getHeight() ) != height ) )
+		if ( p_width
+			 && ( std::cmp_not_equal( texture.getWidth(), width )
+				  || std::cmp_not_equal( texture.getHeight(), height ) ) )
 		{
 			texture.resize( GLsizei( width ), GLsizei( height ) );
 		}

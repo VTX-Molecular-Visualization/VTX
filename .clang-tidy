@@ -65,6 +65,7 @@ Checks: >
   -modernize-use-nodiscard,
   -modernize-use-trailing-return-type,
   -performance-no-int-to-ptr,
+  -readability-avoid-nested-conditional-operator,
   -readability-else-after-return,
   -readability-enum-initial-value,
   -readability-function-cognitive-complexity,
