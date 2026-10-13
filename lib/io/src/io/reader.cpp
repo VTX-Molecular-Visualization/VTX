@@ -69,7 +69,7 @@ namespace VTX::IO
 		Frame									_firstFrame;
 		bool									_hasSecondaryStructureData = false;
 
-		_Impl( const FilePath & p_path, const READER_OPTION p_options, const StopToken p_stopToken ) :
+		_Impl( const FilePath & p_path, const READER_OPTION p_options, const StopToken & p_stopToken ) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
 			_trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
 		{ _init(); }
@@ -78,7 +78,7 @@ namespace VTX::IO
 			MemoryBuffer &&		p_buffer,
 			const FilePath &	p_path,
 			const READER_OPTION p_options,
-			const StopToken		p_stopToken
+			const StopToken &	p_stopToken
 		) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
 			_buffer( std::move( p_buffer ) ), _trajectory(
@@ -317,7 +317,7 @@ namespace VTX::IO
 			}
 		}
 
-		void set( const StopToken p_ ) noexcept { _stopToken = p_; }
+		void set( const StopToken & p_ ) noexcept { _stopToken = p_; }
 
 		void releaseTopologyData()
 		{
@@ -504,8 +504,8 @@ namespace VTX::IO
 					VTX_WARNING( "Some atoms are not assigned to any residue, wrapping them in an artificial residue" );
 				}
 
-				const std::string artificialChainName = "";
-				auto			  chainIt			  = chainNameToIndex.find( artificialChainName );
+				const std::string artificialChainName;
+				auto			  chainIt = chainNameToIndex.find( artificialChainName );
 				if ( chainIt == chainNameToIndex.end() )
 				{
 					const Index chainIndex = static_cast<Index>( chains.size() );
@@ -780,8 +780,11 @@ namespace VTX::IO
 
 	void SystemReader::Del::operator()( _Impl * p_impl ) noexcept { delete p_impl; }
 
-	SystemReader::SystemReader( const FilePath & p_path, const READER_OPTION p_options, const StopToken p_stopToken ) :
-		_impl( new _Impl( p_path, p_options, p_stopToken ) )
+	SystemReader::SystemReader(
+		const FilePath &	p_path,
+		const READER_OPTION p_options,
+		const StopToken &	p_stopToken
+	) : _impl( new _Impl( p_path, p_options, p_stopToken ) )
 	{
 	}
 
@@ -789,7 +792,7 @@ namespace VTX::IO
 		MemoryBuffer &&		p_buffer,
 		const FilePath &	p_path,
 		const READER_OPTION p_options,
-		const StopToken		p_stopToken
+		const StopToken &	p_stopToken
 	) : _impl( new _Impl( std::move( p_buffer ), p_path, p_options, p_stopToken ) )
 	{
 	}
@@ -814,7 +817,7 @@ namespace VTX::IO
 
 	void SystemReader::releaseTopologyData() { _impl->releaseTopologyData(); }
 
-	void SystemReader::set( const StopToken p_ ) noexcept { _impl->set( p_ ); }
+	void SystemReader::set( const StopToken & p_ ) noexcept { _impl->set( p_ ); }
 
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }
 

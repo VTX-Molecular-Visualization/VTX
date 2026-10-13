@@ -32,8 +32,8 @@ namespace VTX::IO
 	{
 	  public:
 		SystemReader() = delete;
-		SystemReader( const FilePath &, READER_OPTION, StopToken );
-		SystemReader( MemoryBuffer &&, const VTX::FilePath &, READER_OPTION, StopToken );
+		SystemReader( const FilePath &, READER_OPTION, const StopToken & );
+		SystemReader( MemoryBuffer &&, const VTX::FilePath &, READER_OPTION, const StopToken & );
 
 		size_t frameCount() const;
 
@@ -62,7 +62,7 @@ namespace VTX::IO
 		/**
 		 * @brief Stop token.
 		 */
-		void set( StopToken ) noexcept;
+		void set( const StopToken & ) noexcept;
 
 	  private:
 		struct _Impl;
