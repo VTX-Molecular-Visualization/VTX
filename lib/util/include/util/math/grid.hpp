@@ -127,7 +127,7 @@ namespace VTX::Util::Math
 		{
 		}
 
-		Grid( const Vec3f & p_worldOrigin ) : _worldOrigin( p_worldOrigin ) {}
+		Grid( const Vec3f & p_worldOrigin ) : Grid( p_worldOrigin, Vec3f( 8.f ) ) {}
 
 		/**
 		 * @brief Get the center of a cell in world position.
@@ -187,7 +187,7 @@ namespace VTX::Util::Math
 
 						if ( it != _data.end() )
 						{
-							p_func( it->first, it->second );
+							std::forward<F>( p_func )( it->first, it->second );
 						}
 					}
 				}

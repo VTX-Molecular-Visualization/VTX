@@ -400,7 +400,7 @@ namespace VTX::Renderer
 	struct ResourceHandlerEntry
 	{
 		Desc::Handle handle = Desc::NO_HANDLE;
-		D			 descriptor;
+		D			 descriptor {};
 	};
 
 	template<>

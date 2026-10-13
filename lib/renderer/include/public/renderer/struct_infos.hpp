@@ -17,9 +17,9 @@ namespace VTX::Renderer
 		size_t		maxTextureSize = 0;
 
 		// Can be undefined.
-		long long gpuMemoryInfoDedicated		= 0;
-		long long gpuMemoryInfoTotalAvailable	= 0;
-		long long gpuMemoryInfoCurrentAvailable = 0;
+		int64_t gpuMemoryInfoDedicated		  = 0;
+		int64_t gpuMemoryInfoTotalAvailable	  = 0;
+		int64_t gpuMemoryInfoCurrentAvailable = 0;
 		//
 
 		// size_t currentCountBuffers;

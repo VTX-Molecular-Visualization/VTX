@@ -24,10 +24,8 @@ namespace VTX::Util
 		/**
 		 * @brief Returns the current timestamp.
 		 */
-		static long long getTimestamp() noexcept
-		{
-			return std::chrono::duration_cast<TimeUnit>( now().time_since_epoch() ).count();
-		}
+		static uint64_t getTimestamp() noexcept
+		{ return std::chrono::duration_cast<TimeUnit>( now().time_since_epoch() ).count(); }
 
 		/**
 		 * @brief Returns the current time point.
@@ -38,9 +36,7 @@ namespace VTX::Util
 		 * @brief Calculates the elapsed time between two time points.
 		 */
 		static float elapsedTime( const TimePoint p_start, const TimePoint p_end = now() ) noexcept
-		{
-			return std::chrono::duration_cast<Duration>( p_end - p_start ).count();
-		}
+		{ return std::chrono::duration_cast<Duration>( p_end - p_start ).count(); }
 
 		/**
 		 * @brief Start or restart the chrono.
@@ -58,7 +54,7 @@ namespace VTX::Util
 		float intervalTime() noexcept
 		{
 			const float intervalTime = elapsedTime( _interval );
-			_interval		   = now();
+			_interval				 = now();
 			return intervalTime;
 		}
 
@@ -88,13 +84,10 @@ namespace VTX::Util
 	  public:
 		ScopedChrono( const std::string & p_name, const Util::LOG_LEVEL p_level = Util::LOG_LEVEL::LOG_TRACE ) :
 			_name( p_name ), _level( p_level )
-		{
-			start();
-		}
+		{ start(); }
+
 		~ScopedChrono()
-		{
-			VTX_LOG( _level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() ) );
-		}
+		{ VTX_LOG( _level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() ) ); }
 
 	  private:
 		std::string		_name;
