@@ -17,6 +17,12 @@ namespace VTX::Util::String
 	 */
 	[[nodiscard]] std::string trim( const std::string & p_str );
 
+	[[nodiscard]] std::string replaceFirst(
+		const std::string & p_str,
+		const std::string & p_toReplace,
+		const std::string & p_replacement
+	);
+
 	/**
 	 * Trim empty characters at the start and return the result.
 	 */

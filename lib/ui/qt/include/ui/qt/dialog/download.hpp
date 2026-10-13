@@ -7,7 +7,6 @@
 #include <QPointer>
 #include <QRadioButton>
 #include <util/string.hpp>
-#include <util/url.hpp>
 
 namespace VTX::UI::QT::Dialog
 {

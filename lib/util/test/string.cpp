@@ -25,6 +25,12 @@ TEST_CASE( "Util::String", "[unit]" )
 	const std::string strToReplace = "a string";
 	CHECK( VTX::Util::String::replaceAll( strToReplace, "r", "t" ) == "a stting" );
 
+	CHECK( VTX::Util::String::replaceFirst( "a[token]z", "[token]", "id" ) == "aidz" );
+	CHECK( VTX::Util::String::replaceFirst( "[token][token]", "[token]", "id" ) == "id[token]" );
+	CHECK( VTX::Util::String::replaceFirst( "abc", "b", "long" ) == "alongc" );
+	CHECK( VTX::Util::String::replaceFirst( "abc", "b", "" ) == "ac" );
+	CHECK_THROWS_AS( VTX::Util::String::replaceFirst( "abc", "missing", "id" ), std::out_of_range );
+
 	const float f = 3.14159;
 	CHECK( VTX::Util::String::floatToStr( f, 0 ) == "3" );
 	CHECK( VTX::Util::String::floatToStr( f, 2 ) == "3.14" );

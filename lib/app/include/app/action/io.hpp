@@ -7,14 +7,6 @@
 #include <util/image.hpp>
 #include <util/thread/base_thread.hpp>
 #include <util/types.hpp>
-#include <util/url.hpp>
-
-namespace VTX::Util::Url
-{
-
-	class SystemId;
-	class UrlFull;
-} // namespace VTX::Util::Url
 
 namespace VTX::App::Action::IO
 {
@@ -111,9 +103,7 @@ namespace VTX::App::Action::IO
 	struct DownloadSystem
 	{
 	  public:
-		void execute( VTX::Util::Url::SystemId );
-		void execute( VTX::Util::Url::SystemId, FilePath );
-		void execute( VTX::Util::Url::UrlFull, FilePath );
+		void execute( const std::string & p_url, FilePath p_path );
 		void execute( const std::string & p_systemId );
 	};
 

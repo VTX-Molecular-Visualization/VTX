@@ -50,6 +50,17 @@ namespace VTX::Util::String
 		return splittedStr;
 	}
 
+	std::string replaceFirst(
+		const std::string & p_str,
+		const std::string & p_toReplace,
+		const std::string & p_replacement
+	)
+	{
+		std::string result = p_str;
+		result.replace( result.find( p_toReplace ), p_toReplace.size(), p_replacement );
+		return result;
+	}
+
 	std::string replaceAll(
 		const std::string & p_str,
 		const std::string & p_toReplace,

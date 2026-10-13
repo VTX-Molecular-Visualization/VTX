@@ -21,6 +21,7 @@
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 #include <util/resolution.hpp>
+#include <util/string.hpp>
 #include <util/thread/thread_manager.hpp>
 
 namespace VTX::App::Action::IO
@@ -168,20 +169,21 @@ namespace VTX::App::Action::IO
 #endif
 	}
 
-	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id )
-	{ execute( p_id, p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() ); }
-
 	void DownloadSystem::execute( const std::string & p_systemId )
-	{ execute( Util::Url::SystemId( p_systemId.data() ) ); }
+	{
+		execute(
+			Util::String::replaceFirst(
+				std::string( RCSB_PDB_DOWNLOAD_URL_TEMPLATE ), std::string( SYSTEM_REPLACEMENT_TOKEN ), p_systemId
+			),
+			p_systemId + std::string( RCSB_PDB_DOWNLOAD_FILE_EXTENSION )
+		);
+	}
 
-	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id, FilePath p_path )
-	{ execute( VTX::Util::Url::UrlFull( p_id ), p_path ); }
-
-	void DownloadSystem::execute( VTX::Util::Url::UrlFull p_url, FilePath p_path )
+	void DownloadSystem::execute( const std::string & p_url, const FilePath p_path )
 	{
 		const FilePath filepath = p_path;
 		NETWORK().downloadFile(
-			p_url.str.data(),
+			p_url.data(),
 			filepath.string(),
 			[ filepath ]( std::string && p_text )
 			{ ACTION().execute<Action::IO::LoadSystem>( filepath, std::move( p_text ) ); }
