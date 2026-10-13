@@ -575,11 +575,11 @@ namespace VTX::Renderer::Context
 		friend std::ostream & operator<<( std::ostream &, const CommandBuffer & p_cb )
 		{
 			std::ostream & os = std::cout;
-			os << "CommandBuffer: " << std::endl;
+			os << "CommandBuffer: " << '\n';
 			for ( const Command & cmd : p_cb.commands )
 			{
 				os << "  Command Type: " << Util::Enum::enumName( cmd.type )
-				   << ", Payload Offset: " << cmd.payloadOffset << std::endl;
+				   << ", Payload Offset: " << cmd.payloadOffset << '\n';
 			}
 
 			return os;

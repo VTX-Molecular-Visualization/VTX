@@ -71,7 +71,7 @@ namespace VTX::Renderer::Context::Backend::GL::Debug
 		GLenum err {};
 		while ( ( err = glGetError() ) != GL_NO_ERROR )
 		{
-			std::cerr << "[GL ERROR] 0x" << std::hex << err << std::dec << std::endl;
+			std::cerr << "[GL ERROR] 0x" << std::hex << err << std::dec << '\n';
 			assert( false );
 		}
 	};

@@ -185,7 +185,7 @@ namespace VTX::Util::Color
 
 		friend std::ostream & operator<<( std::ostream & p_os, const Rgba & p_c )
 		{
-			p_os << p_c.x() << " - " << p_c.y() << " - " << p_c.z() << " - " << p_c.w() << std::endl;
+			p_os << p_c.x() << " - " << p_c.y() << " - " << p_c.z() << " - " << p_c.w() << '\n';
 			return p_os;
 		}
 
