@@ -72,12 +72,15 @@ namespace VTX::IO::Writer
 
 	using FrameCollection = std::list<_Frame>; // Used for constant time insertion and memory efficiency
 
-	struct _Bond
+	namespace
 	{
-		AtomId		 a1;
-		AtomId		 a2;
-		E_BOND_ORDER bondOrder;
-	};
+		struct _Bond
+		{
+			AtomId		 a1;
+			AtomId		 a2;
+			E_BOND_ORDER bondOrder;
+		};
+	}
 
 	using BondCollection = std::list<_Bond>; // Used for constant time insertion and memory efficiency
 
