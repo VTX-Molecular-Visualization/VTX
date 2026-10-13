@@ -249,7 +249,7 @@ namespace VTX::Renderer::Context::Backend
 
 		// Load OpenGL 4.6 functions.
 		// With external loader.
-		if ( gladLoadGL( (GLADloadfunc)_glContext.getProcAddress() ) == 0 )
+		if ( gladLoadGL( reinterpret_cast<GLADloadfunc>( _glContext.getProcAddress() ) ) == 0 )
 		{
 			throw GraphicException( "Failed to load OpenGL functions" );
 		}
@@ -1688,10 +1688,11 @@ namespace VTX::Renderer::Context::Backend
 
 	void OpenGL::_getOpenglInfos()
 	{
-		_openglInfos.glVendor	 = std::string( (const char *)glGetString( GL_VENDOR ) );
-		_openglInfos.glRenderer	 = std::string( (const char *)glGetString( GL_RENDERER ) );
-		_openglInfos.glVersion	 = std::string( (const char *)glGetString( GL_VERSION ) );
-		_openglInfos.glslVersion = std::string( (const char *)glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+		_openglInfos.glVendor	= std::string( reinterpret_cast<const char *>( glGetString( GL_VENDOR ) ) );
+		_openglInfos.glRenderer = std::string( reinterpret_cast<const char *>( glGetString( GL_RENDERER ) ) );
+		_openglInfos.glVersion	= std::string( reinterpret_cast<const char *>( glGetString( GL_VERSION ) ) );
+		_openglInfos.glslVersion
+			= std::string( reinterpret_cast<const char *>( glGetString( GL_SHADING_LANGUAGE_VERSION ) ) );
 
 		glGetIntegerv( GL_MAX_UNIFORM_BLOCK_SIZE, &_openglInfos.glMaxUniformBlockSize );
 		glGetIntegerv( GL_MAX_UNIFORM_BUFFER_BINDINGS, &_openglInfos.glMaxUniformBufferBindings );
@@ -1713,7 +1714,7 @@ namespace VTX::Renderer::Context::Backend
 		glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
 		for ( int32_t i = 0; i < numExtensions; ++i )
 		{
-			const char * extension = (const char *)glGetStringi( GL_EXTENSIONS, i );
+			const char * extension = reinterpret_cast<const char *>( glGetStringi( GL_EXTENSIONS, i ) );
 			if ( strcmp( "GL_NVX_gpu_memory_info", extension ) == 0 )
 			{
 				_openglInfos.glExtensions[ toUnderlying( GL::E_GL_EXTENSIONS::NVX_gpu_memory_info ) ] = true;
