@@ -12,7 +12,9 @@ namespace VTX::PythonBinding::API
 		std::vector<T2> res = std::vector<T2>();
 
 		if ( p_param.is_none() )
+		{
 			return res;
+		}
 
 		// If param is a single string, return a vector of size 1 with this string
 		if ( pybind11::isinstance<T1>( p_param ) )
@@ -40,8 +42,10 @@ namespace VTX::PythonBinding::API
 	PythonKwargs::PythonKwargs( const pybind11::kwargs & p_ ) : _ptr( new pybind11::kwargs( p_ ) ) {}
 
 	size_t PythonKwargs::size() const { return pybind11::len( *_ptr ); }
-	bool   PythonKwargs::contains( const char * p_ ) const { return _ptr->contains( p_ ); }
-	void   PythonKwargs::get( const char * p_key, std::string & p_value ) const
+
+	bool PythonKwargs::contains( const char * p_ ) const { return _ptr->contains( p_ ); }
+
+	void PythonKwargs::get( const char * p_key, std::string & p_value ) const
 	{
 		if ( !_ptr->contains( p_key ) )
 		{
@@ -50,6 +54,7 @@ namespace VTX::PythonBinding::API
 		}
 		p_value = _ptr->operator[]( p_key ).cast<std::string>();
 	}
+
 	void PythonKwargs::get( const char * p_key, std::vector<std::string> & p_value ) const
 	{
 		if ( !_ptr->contains( p_key ) )
@@ -71,6 +76,7 @@ namespace VTX::PythonBinding::API
 
 		p_value = _getListFromParam<pybind11::int_, size_t>( _ptr->operator[]( p_key ) );
 	}
+
 	void PythonKwargs::get( const char * p_key, std::vector<uint32_t> & p_value ) const
 	{
 		if ( !_ptr->contains( p_key ) )

@@ -80,7 +80,7 @@ namespace VTX::PythonBinding
 
 			const std::string & getModulePath() const { return _modulePath; }
 
-			std::vector<std::string> getFunctionList() const;
+			static std::vector<std::string> getFunctionList();
 
 			pybind11::module_ & pyModule() noexcept { return _pyModule; }
 

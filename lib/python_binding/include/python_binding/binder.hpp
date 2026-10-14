@@ -29,7 +29,9 @@ namespace VTX::PythonBinding
 		void bind( Wrapper::Module & p_ )
 		{
 			if ( _ptr )
+			{
 				_ptr->bind( p_ );
+			}
 		}
 
 		/**
@@ -39,7 +41,9 @@ namespace VTX::PythonBinding
 		void importHeaders()
 		{
 			if ( _ptr )
+			{
 				_ptr->importHeaders();
+			}
 		}
 
 	  private:
@@ -49,6 +53,7 @@ namespace VTX::PythonBinding
 			virtual void bind( Wrapper::Module & p_ ) = 0;
 			virtual void importHeaders()			  = 0;
 		};
+
 		template<typename T>
 		class _wrapper final : public _interface
 		{
@@ -56,15 +61,20 @@ namespace VTX::PythonBinding
 
 		  public:
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
+
 			virtual void bind( Wrapper::Module & p_ ) override { _obj.bind( p_ ); }
-			virtual void importHeaders()
+
+			virtual void importHeaders() override
 			{
 				if constexpr ( requires( T & o ) {
 								   { o.importHeaders() };
 							   } )
+				{
 					_obj.importHeaders();
+				}
 			}
 		};
+
 		std::unique_ptr<_interface> _ptr = nullptr;
 
 	  public:
@@ -74,6 +84,7 @@ namespace VTX::PythonBinding
 		{
 		}
 	};
+
 	void importFullModule( const std::string & p_moduleName ) noexcept;
 	void importObject( const std::string & p_moduleName, const std::string & p_objectName ) noexcept;
 } // namespace VTX::PythonBinding

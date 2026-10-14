@@ -164,7 +164,7 @@ namespace VTX::PythonBinding
 
 	void Interpretor::clearBinders() { _impl->clearBinders(); }
 
-	std::string Interpretor::runCommand( const std::string & p_line ) const
+	std::string Interpretor::runCommand( const std::string & p_line )
 	{
 		// The idea is to try to execute the command as if we expected a return value. If an exception is thrown, then
 		// it might mean that we shouldn't expect a return value. So we execute it as is. If it crashes again, it means
@@ -206,7 +206,7 @@ namespace VTX::PythonBinding
 		return {};
 	}
 
-	void Interpretor::runScript( const FilePath & p_path ) const
+	void Interpretor::runScript( const FilePath & p_path )
 	{
 		try
 		{
@@ -245,7 +245,7 @@ namespace VTX::PythonBinding
 		catch ( const pybind11::error_already_set & e )
 		{
 			VTX_ERROR( "{}", e.what() );
-			throw( e );
+			throw e;
 		}
 
 		return Wrapper::Module( loadedModule, filename );
@@ -258,7 +258,7 @@ namespace VTX::PythonBinding
 
 	void Interpretor::Del::operator()( Interpretor::Impl * p_ptr ) const noexcept { delete p_ptr; }
 
-	void Interpretor::print( const std::string & p_line ) const { pybind11::print( p_line ); }
+	void Interpretor::print( const std::string & p_line ) { pybind11::print( p_line ); }
 
 	void Interpretor::getPythonModule( pybind11::module_ ** p_modulePtr ) { _impl->getPythonModule( p_modulePtr ); }
 

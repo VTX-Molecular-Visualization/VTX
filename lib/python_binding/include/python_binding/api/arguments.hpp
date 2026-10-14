@@ -60,7 +60,9 @@ namespace VTX::PythonBinding::API
 			p_value.clear();
 			p_value.reserve( strValues.size() );
 			for ( auto & strValue : strValues )
+			{
 				p_value.push_back( ( *p_conversionFunction )( strValue ) );
+			}
 		}
 
 	  private:
@@ -68,6 +70,7 @@ namespace VTX::PythonBinding::API
 		{
 			void operator()( pybind11::kwargs * ) noexcept;
 		};
+
 		std::unique_ptr<pybind11::kwargs, Del> _ptr = nullptr;
 	};
 

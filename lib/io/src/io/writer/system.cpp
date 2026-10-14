@@ -260,10 +260,11 @@ namespace VTX::IO::Writer
 			const SystemIndexManager &			p_indexManager
 		)
 		{
-			for ( size_t bondIdx = 0; bondIdx < p_mol.getBondCount() * 2; bondIdx += 2 )
+			for ( Index bondIdx = 0; bondIdx < p_mol.getBondCount() * 2; bondIdx += 2 )
 			{
-				const size_t atomIdx1 = p_mol.bondPairAtomIndexes[ bondIdx ],
-							 atomIdx2 = p_mol.bondPairAtomIndexes[ bondIdx + 1 ];
+				const Index atomIdx1 = p_mol.bondPairAtomIndexes[ bondIdx ];
+				const Index atomIdx2 = p_mol.bondPairAtomIndexes[ bondIdx + 1 ];
+
 				if ( p_atomFilter( atomIdx1 ) && p_atomFilter( atomIdx2 ) )
 				{
 					E_BOND_ORDER w_bondOrder = E_BOND_ORDER::unknown;
@@ -278,10 +279,9 @@ namespace VTX::IO::Writer
 		}
 
 		inline void fillFrames(
-			const TrajectoryFrameGetter &  p_traj,
-			const Core::Struct::Topology & p_topology,
-			System &					   p_system,
-			SystemIndexManager &		   p_indexManager
+			const TrajectoryFrameGetter & p_traj,
+			System &					  p_system,
+			SystemIndexManager &		  p_indexManager
 
 		)
 		{
@@ -356,13 +356,13 @@ namespace VTX::IO::Writer
 					return;
 				}
 
-				fillFrames( system.trajectory, *topology, w_system, indexManager );
+				fillFrames( system.trajectory, w_system, indexManager );
 				indexManager.nextSystem();
 			}
 
 			// We fill the write destination at the very end so if we stopped due to the stoptoken, nothing get written
 			writer.setWriteDestination( std::move( p_args.destination ) );
-			writer.setWriteFormat( std::move( p_args.format ) );
+			writer.setWriteFormat( p_args.format );
 		}
 	} // namespace
 

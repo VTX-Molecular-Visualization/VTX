@@ -80,7 +80,7 @@ namespace VTX::IO::Writer
 			AtomId		 a2;
 			E_BOND_ORDER bondOrder;
 		};
-	}
+	} // namespace
 
 	using BondCollection = std::list<_Bond>; // Used for constant time insertion and memory efficiency
 
@@ -260,7 +260,7 @@ namespace VTX::IO::Writer
 			}
 		}
 
-		void writeFile( const FilePath & dest, const E_FILE_FORMATS & format, _System & system )
+		void writeFile( const FilePath & dest, _System & system )
 		{
 			// TODO I disabled the format things as chemfiles has a format guessing adequat enough
 			::chemfiles::Trajectory cf_traj( dest.string(), 'w' /*, string( format )*/ );
@@ -329,11 +329,11 @@ namespace VTX::IO::Writer
 		_System		   _system;
 
 	  public:
-		inline void setWriteDestination( FilePath && p_ ) noexcept { _dest = std::move( p_ ); }
+		void setWriteDestination( FilePath && p_ ) noexcept { _dest = std::move( p_ ); }
 
-		inline void setWriteFormat( E_FILE_FORMATS && p_ ) noexcept { _format = std::move( p_ ); }
+		void setWriteFormat( const E_FILE_FORMATS p_ ) noexcept { _format = p_; }
 
-		inline System system() noexcept { return _system; }
+		System system() noexcept { return _system; }
 
 		_Impl()							   = default;
 		_Impl( const _Impl & )			   = delete;
@@ -357,7 +357,7 @@ namespace VTX::IO::Writer
 			// if ( _format == E_FILE_FORMATS::none )
 			//	return;
 
-			writeFile( _dest, _format, _system );
+			writeFile( _dest, _system );
 		}
 	};
 
@@ -411,7 +411,7 @@ namespace VTX::IO::Writer
 			return;
 		}
 
-		_data->resid = std::move( p_ );
+		_data->resid = p_;
 	}
 
 	void Residue::setSymbol( std::string p_symbol ) noexcept
@@ -488,18 +488,18 @@ namespace VTX::IO::Writer
 
 		if ( not _data->coordinates.contains( atomInfo.dataPtr ) )
 		{
-			_data->coordinates.emplace( std::make_pair( atomInfo.dataPtr, std::move( p_atomCoordinates ) ) );
+			_data->coordinates.emplace( std::make_pair( atomInfo.dataPtr, p_atomCoordinates ) );
 		}
 		else
 		{
-			_data->coordinates.at( atomInfo.dataPtr ) = std::move( p_atomCoordinates );
+			_data->coordinates.at( atomInfo.dataPtr ) = p_atomCoordinates;
 		}
 	}
 
 	// System
 	System::System( _System & p_ ) : _data( &p_ ) {}
 
-	void System::set( Property p_ ) noexcept
+	void System::set( Property p_ ) const noexcept
 	{
 		if ( _data == nullptr )
 		{
@@ -515,7 +515,7 @@ namespace VTX::IO::Writer
 		}
 	}
 
-	Atom System::newAtom( AtomId p_atomId ) noexcept
+	Atom System::newAtom( const AtomId p_atomId ) const noexcept
 	{
 		if ( _data == nullptr )
 		{
@@ -535,7 +535,7 @@ namespace VTX::IO::Writer
 		{ throw VTXException( "Couldn't create bond because atom <{}> wasn't declared", atom.value ); }
 	} // namespace
 
-	void System::bind( const AtomId & p_l, const AtomId & p_r, E_BOND_ORDER p_bondOrder )
+	void System::bind( const AtomId & p_l, const AtomId & p_r, const E_BOND_ORDER p_bondOrder ) const
 	{
 		if ( _data == nullptr )
 		{
@@ -552,10 +552,10 @@ namespace VTX::IO::Writer
 			vtxBondThrow( p_r );
 		}
 
-		_data->bonds.emplace_back( _Bond { .a1 = p_l, .a2 = p_r, .bondOrder = std::move( p_bondOrder ) } );
+		_data->bonds.emplace_back( _Bond { .a1 = p_l, .a2 = p_r, .bondOrder = p_bondOrder } );
 	}
 
-	Chain System::newChain() noexcept
+	Chain System::newChain() const noexcept
 	{
 		if ( _data == nullptr )
 		{
@@ -565,7 +565,7 @@ namespace VTX::IO::Writer
 		return Chain( _data->chains.back() );
 	}
 
-	Residue System::newResidue() noexcept
+	Residue System::newResidue() const noexcept
 	{
 		if ( _data == nullptr )
 		{
@@ -575,7 +575,7 @@ namespace VTX::IO::Writer
 		return Residue( _data->residues.back() );
 	}
 
-	Frame System::newFrame() noexcept
+	Frame System::newFrame() const noexcept
 	{
 		if ( _data == nullptr )
 		{
@@ -586,7 +586,7 @@ namespace VTX::IO::Writer
 		return Frame( _data->frames.back() );
 	}
 
-	bool System::fetch( Atom & p_out, const AtomId & id ) noexcept
+	bool System::fetch( Atom & p_out, const AtomId & id ) const noexcept
 	{
 		if ( _data == nullptr )
 		{
@@ -601,7 +601,7 @@ namespace VTX::IO::Writer
 		return false;
 	}
 
-	bool System::fetch( Frame & p_out, const size_t & p_index ) noexcept
+	bool System::fetch( Frame & p_out, const size_t & p_index ) const noexcept
 	{
 		if ( _data == nullptr )
 		{
@@ -625,7 +625,7 @@ namespace VTX::IO::Writer
 
 	void ChemfilesTrajectory::setWriteDestination( FilePath p_ ) noexcept { _->setWriteDestination( std::move( p_ ) ); }
 
-	void ChemfilesTrajectory::setWriteFormat( E_FILE_FORMATS p_ ) noexcept { _->setWriteFormat( std::move( p_ ) ); }
+	void ChemfilesTrajectory::setWriteFormat( const E_FILE_FORMATS p_ ) noexcept { _->setWriteFormat( p_ ); }
 
 	System ChemfilesTrajectory::system() noexcept { return _->system(); }
 

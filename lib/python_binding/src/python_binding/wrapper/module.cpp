@@ -13,9 +13,10 @@ namespace VTX::PythonBinding::Wrapper
 
 		return Module( module, modulePath );
 	}
+
 	Module Module::getSubmodule( const std::string & p_submoduleName )
 	{
-		const std::string submodulePath = _modulePath + "." + std::string( p_submoduleName.c_str() );
+		const std::string submodulePath = _modulePath + "." + p_submoduleName;
 		pybind11::module_ module		= _pyModule.import( submodulePath.c_str() );
 
 		return Module( module, submodulePath );
@@ -33,7 +34,7 @@ namespace VTX::PythonBinding::Wrapper
 		}
 	}
 
-	std::vector<std::string> Module::getFunctionList() const
+	std::vector<std::string> Module::getFunctionList()
 	{
 		std::vector<std::string> res = std::vector<std::string>();
 

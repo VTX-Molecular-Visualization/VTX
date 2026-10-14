@@ -33,6 +33,7 @@ namespace VTX::PythonBinding
 				Function func = Function( _pyObject, p_function );
 				func.run( p_args... );
 			}
+
 			template<typename T, typename... Args>
 			T call( const std::string & p_function, Args... p_args )
 			{
@@ -44,16 +45,14 @@ namespace VTX::PythonBinding
 
 			template<typename T>
 			T getMember( const std::string & p_memberName )
-			{
-				return _pyObject.attr( p_memberName.c_str() ).cast<T>();
-			}
+			{ return _pyObject.attr( p_memberName.c_str() ).cast<T>(); }
 
 			template<typename T, std::enable_if<std::is_same_v<T, Object>>>
 			void setMember( const std::string & p_memberName, const Object & p_value )
 			{
 				try
 				{
-					return _pyObject.attr( p_memberName.c_str() ) = p_value._pyObject;
+					_pyObject.attr( p_memberName.c_str() ) = p_value._pyObject;
 				}
 				catch ( const pybind11::error_already_set & e )
 				{
@@ -63,6 +62,7 @@ namespace VTX::PythonBinding
 					);
 				}
 			}
+
 			template<typename T>
 			void setMember( const std::string & p_memberName, const T & p_value )
 			{
@@ -83,6 +83,7 @@ namespace VTX::PythonBinding
 
 		  private:
 			Object( pybind11::object & p_object ) : _pyObject( p_object ) {}
+
 			pybind11::object _pyObject;
 		};
 	}; // namespace Wrapper

@@ -10,33 +10,34 @@ namespace VTX::PythonBinding
 	 */
 	class FilterResult
 	{
-	public:
+	  public:
 		FilterResult( bool, std::string );
 		FilterResult( bool );
 
 		/**
-		 * @brief Returns true if the command is harmful to VTX. It has been done like that to enable the if(auto rslt = filter) syntax.
+		 * @brief Returns true if the command is harmful to VTX. It has been done like that to enable the if(auto rslt =
+		 * filter) syntax.
 		 */
-		operator bool() const noexcept;
+			 operator bool() const noexcept;
 		bool isHarmful() const noexcept;
 
 		/**
 		 * @brief Returns why the command is harmful or nothing if the command shouldn't be filtered
-		 * @return 
+		 * @return
 		 */
 		const std::string & why() const noexcept;
 
-	private:
-		bool _harmful = false;
+	  private:
+		bool		_harmful = false;
 		std::string _why;
 	};
-	
+
 	/**
 	 * @brief Function responsible for filtering commands that are harmful to VTX
-	 * @param  
-	 * @return 
+	 * @param
+	 * @return
 	 */
-	FilterResult filter( const std::string & )  noexcept;
-}
+	FilterResult filter( const std::string & ) noexcept;
+} // namespace VTX::PythonBinding
 
 #endif

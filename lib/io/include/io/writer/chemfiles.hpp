@@ -152,34 +152,34 @@ namespace VTX::IO::Writer
 		/**
 		 * @brief Set or replace a property for the frame.
 		 */
-		void set( Property ) noexcept;
+		void set( Property ) const noexcept;
 
 		/**
 		 * @brief  Create a new atom
 		 * @param  Id of the atom. Used as an external key to indentify the atom afterward.
 		 */
-		Atom newAtom( AtomId ) noexcept;
+		Atom newAtom( AtomId ) const noexcept;
 
 		/**
 		 * @brief  Bind two atoms together. Atoms are identified by the external key provided during their creation.
 		 * Throws if the provided IDs aren't valid.
 		 */
-		void bind( const AtomId &, const AtomId &, E_BOND_ORDER );
+		void bind( const AtomId &, const AtomId &, E_BOND_ORDER ) const;
 
 		/**
 		 * @brief Create a new chain.
 		 */
-		Chain newChain() noexcept;
+		Chain newChain() const noexcept;
 
 		/**
 		 * @brief Create a new residue.
 		 */
-		Residue newResidue() noexcept;
+		Residue newResidue() const noexcept;
 
 		/**
 		 * @brief Create a new frame. A healthy system should get at least one frame.
 		 */
-		Frame newFrame() noexcept;
+		Frame newFrame() const noexcept;
 
 		/**
 		 * @brief Set the input Atom to the one corresponding to the input AtomId
@@ -187,7 +187,7 @@ namespace VTX::IO::Writer
 		 * @param  ID corresponding to the atom
 		 * @return  Wether the fetch was succesful or not
 		 */
-		bool fetch( Atom &, const AtomId & ) noexcept;
+		bool fetch( Atom &, const AtomId & ) const noexcept;
 
 		/**
 		 * @brief Return the frame with the right index
@@ -195,9 +195,8 @@ namespace VTX::IO::Writer
 		 * @param frame number
 		 * @return Wether the fetch was succesful or not
 		 */
-		bool fetch( Frame &, const size_t & ) noexcept;
+		bool fetch( Frame &, const size_t & ) const noexcept;
 
-	  public:
 		_System * _data = nullptr;
 	};
 
