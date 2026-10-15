@@ -1,5 +1,6 @@
 #include "app/action/color_layout.hpp"
 #include "app/scene/tag_root.hpp"
+#include <algorithm>
 
 namespace VTX::App::Action::ColorLayout
 {
@@ -28,11 +29,7 @@ namespace VTX::App::Action::ColorLayout
 		REG().patch<Renderer::Color::Layout>(
 			p_e,
 			[]( Renderer::Color::Layout & p_layout )
-			{
-				std::generate(
-					p_layout.colors.begin(), p_layout.colors.end(), [] { return Util::Color::Rgba::random(); }
-				);
-			}
+			{ std::ranges::generate( p_layout.colors, [] { return Util::Color::Rgba::random(); } ); }
 		);
 	}
 

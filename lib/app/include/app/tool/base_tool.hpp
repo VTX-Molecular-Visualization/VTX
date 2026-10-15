@@ -20,17 +20,19 @@ namespace VTX::App::Tool
 		/**
 		 * @brief Destroyed with the app.
 		 */
-		virtual ~BaseTool() {}
+		virtual ~BaseTool() = default;
 
 		/**
 		 * @brief Register optional UI actions for this tool.
-		 * Called only by the Qt application path before UI hooks are built.
+		 * Called only by the Qt application
+		   path before UI hooks are built.
 		 */
 		virtual void registerActions() {}
 
 		/**
 		 * @brief Build optional UI hooks for this tool.
-		 * Called only by the Qt application path once the main window exists.
+		 * Called only by the Qt application path
+		 * once the main window exists.
 		 */
 		virtual void buildUI() {}
 

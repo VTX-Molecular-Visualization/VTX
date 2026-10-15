@@ -50,7 +50,7 @@ namespace VTX::IO::Util::SecondaryStructure
 				const Index atomCount	 = p_topology.residueAtomCounts[ p_residueIdx ];
 				const Index idxFirstAtom = p_topology.residueFirstAtomIndexes[ p_residueIdx ];
 
-				for ( int i = idxFirstAtom; i < int( idxFirstAtom + atomCount ); ++i )
+				for ( int i = idxFirstAtom; i < static_cast<int>( idxFirstAtom + atomCount ); ++i )
 				{
 					if ( p_topology.atomNames[ i ] == p_name )
 					{

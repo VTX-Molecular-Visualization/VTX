@@ -134,7 +134,7 @@ namespace VTX::IO::Util
 				avg += dot( crossProducts[ i ], crossProducts[ i + 1 ] );
 			}
 
-			return avg / float( atomCount - 1 );
+			return avg / static_cast<float>( atomCount - 1 );
 		}
 
 		// Estimate ring planarity from consecutive cross-product alignment.
@@ -182,7 +182,7 @@ namespace VTX::IO::Util
 				avg += dot( crossProducts[ i ], crossProducts[ i + 1 ] );
 			}
 
-			return avg / float( p_atomCount );
+			return avg / static_cast<float>( p_atomCount );
 		}
 
 		// Check that ring bonds stay close to the candidate aromatic plane.

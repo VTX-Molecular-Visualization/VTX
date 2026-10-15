@@ -1,7 +1,7 @@
 #ifndef __VTX_IO_INTERNAL_FILESYSTEM__
 #define __VTX_IO_INTERNAL_FILESYSTEM__
 
-#include <string>
+#include <string_view>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/types.hpp>
@@ -10,8 +10,8 @@
 namespace VTX::IO::Internal::Filesystem
 {
 	// JSon save fail when size > 192
-	static const int		 MAX_FILE_LENGTH	  = 180;
-	static const std::string REGEX_VALID_FILENAME = "[^\\\\/:*?\"<>|]*";
+	static constexpr int			  MAX_FILE_LENGTH	   = 180;
+	static constexpr std::string_view REGEX_VALID_FILENAME = "[^\\\\/:*?\"<>|]*";
 
 	enum class FILE_TYPE_ENUM : int
 	{
@@ -72,12 +72,12 @@ namespace VTX::IO::Internal::Filesystem
 		std::vector<std::vector<FilePath>> & p_filepathPerMode
 	)
 	{
-		p_filepathPerMode.resize( int( FILE_TYPE_ENUM::COUNT ) );
+		p_filepathPerMode.resize( static_cast<int>( FILE_TYPE_ENUM::COUNT ) );
 
 		for ( const FilePath & path : p_filepaths )
 		{
 			const FILE_TYPE_ENUM filetype = getFileTypeFromFilePath( path );
-			p_filepathPerMode[ int( filetype ) ].emplace_back( path );
+			p_filepathPerMode[ static_cast<int>( filetype ) ].emplace_back( path );
 		}
 	}
 

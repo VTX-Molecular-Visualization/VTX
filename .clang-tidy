@@ -6,6 +6,7 @@ Checks: >
   -altera-*,
   -boost-use-ranges,
   -bugprone-branch-clone,
+  -bugprone-easily-swappable-parameters,
   -bugprone-narrowing-conversions,
   -bugprone-random-generator-seed,
   -bugprone-reserved-identifier,

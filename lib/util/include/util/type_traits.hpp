@@ -20,6 +20,9 @@ namespace VTX
 	template<typename T>
 	using is_color4 = std::is_same<std::remove_cvref_t<T>, Util::Color::Rgba>;
 
+	template<typename T>
+	using NoRefNoConst = std::remove_cvref_t<T>;
+
 	template<class T>
 	constexpr bool is_vec2f_v = is_vec2f<T>::value;
 	template<class T>
