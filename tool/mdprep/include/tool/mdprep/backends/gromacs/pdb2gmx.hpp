@@ -127,7 +127,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	//    B ARG1 0
 	//  one line = one argument (arguments separated with a newline)
 	//  space between num and value can be any number of white space or tab
-	parseReport parsePdb2gmxUserScript( const std::string_view &, Pdb2gmxInputs & ) noexcept;
+	parseReport parsePdb2gmxUserScript( const std::string_view &, Pdb2gmxInputs & );
 
 	// Setup job folder and place input files as the job need them
 	// The root is assumed not to be an existing file path.

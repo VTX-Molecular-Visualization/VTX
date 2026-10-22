@@ -296,7 +296,7 @@ namespace VTX::UI::QT::Util
 
 	LabelWithHelper::operator QWidget *() { return container; }
 
-	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label ) noexcept
+	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label )
 	{
 		QHBoxLayout * qLilLayout = new QHBoxLayout;
 		p_dest->addLayout( qLilLayout );
@@ -311,7 +311,7 @@ namespace VTX::UI::QT::Util
 		qLilLayout->addWidget( qLine, 1 );
 	}
 
-	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip ) noexcept
+	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip )
 	{
 		QLineEdit * out = new QLineEdit();
 		out->setValidator( new VTX::UI::QT::QUInt64Validator( out ) );

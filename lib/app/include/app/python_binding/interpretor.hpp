@@ -35,29 +35,29 @@ namespace VTX::App::PythonBinding
 		 * @brief Run input python command asynchronously.
 		 * @param
 		 */
-		void runCommand( const std::string & ) noexcept;
+		void runCommand( const std::string & );
 
 		/**
 		 * @brief Run input python command asynchronously and fill the future value with its result.
 		 */
-		void runCommand( const std::string &, std::shared_ptr<std::promise<AsyncJobResult>> ) noexcept;
+		void runCommand( const std::string &, std::shared_ptr<std::promise<AsyncJobResult>> );
 
 		/**
 		 * @brief Run python script located in the input file asynchronously.
 		 */
-		void runScript( const FilePath & ) noexcept;
+		void runScript( const FilePath & );
 
 		/**
 		 * @brief Run python script located in the input file asynchronously and fill the future with success status
 		 * @param
 		 * @param  Will be true if the script was successfuly executed
 		 */
-		void runScript( const FilePath &, std::shared_ptr<std::promise<AsyncJobResult>> ) noexcept;
+		void runScript( const FilePath &, const std::shared_ptr<std::promise<AsyncJobResult>> & );
 
 		/**
 		 * @brief Query the currently loaded Python runtime version and return it as "x.y.z".
 		 */
-		std::string getRuntimePythonVersion() noexcept;
+		std::string getRuntimePythonVersion();
 
 		/**
 		 * @brief Slow the response time down. Python command are not actually executed right away. They are queue up
@@ -76,14 +76,16 @@ namespace VTX::App::PythonBinding
 		 * @brief Give instructions to execute code on the python thread
 		 * @param
 		 */
-		void subscribe( InterpretorInstructionsOneShot ) noexcept;
+		void subscribe( InterpretorInstructionsOneShot );
 
 	  private:
 		class _Impl;
+
 		struct Del
 		{
 			void operator()( _Impl * ) noexcept;
 		};
+
 		std::unique_ptr<_Impl, Del> _impl = nullptr;
 	};
 } // namespace VTX::App::PythonBinding

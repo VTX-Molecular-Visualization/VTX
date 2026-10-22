@@ -13,7 +13,7 @@ namespace VTX::App::Extractor
 	{
 		// Default threshold to switch between strategies.
 		// TODO:
-		static constexpr size_t DEFAULT_MAX_FULL_BUFFER_BYTE_SIZE = size_t( 1024 ) * 1024 * 1024;
+		static constexpr size_t DEFAULT_MAX_FULL_BUFFER_BYTE_SIZE = static_cast<size_t>( 1024 ) * 1024 * 1024;
 		// Window default size.
 		static constexpr size_t DEFAULT_CIRCULAR_BUFFER_FRAME_COUNT = 20;
 

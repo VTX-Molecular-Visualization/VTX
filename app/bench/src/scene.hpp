@@ -31,7 +31,7 @@ namespace VTX::Bench
 		void removeSystem( size_t p_index );
 		void syncRenderer( Renderer::Renderer & p_renderer ) const;
 
-		void update( const float p_deltaTime )
+		void update( const float p_deltaTime ) const
 		{
 			if ( not isUpdate )
 			{

@@ -4,40 +4,47 @@
 
 namespace VTX::PythonBinding::API
 {
-
-	// Function that manage a param that can be a single T1 or a list of T1 and convert it into a vector of str
-	template<typename T1, typename T2>
-	static std::vector<T2> _getListFromParam( const pybind11::detail::item_accessor & p_param )
+	namespace
 	{
-		std::vector<T2> res = std::vector<T2>();
 
-		if ( p_param.is_none() )
+		// Function that manage a param that can be a single T1 or a list of T1 and convert it into a vector of str
+		template<typename T1, typename T2>
+		std::vector<T2> _getListFromParam( const pybind11::detail::item_accessor & p_param )
 		{
+			std::vector<T2> res = std::vector<T2>();
+
+			if ( p_param.is_none() )
+			{
+				return res;
+			}
+
+			// If param is a single string, return a vector of size 1 with this string
+			if ( pybind11::isinstance<T1>( p_param ) )
+			{
+				const T2 singleStr = p_param.cast<T2>();
+				res.emplace_back( singleStr );
+			}
+			else if ( pybind11::isinstance<pybind11::iterable>( p_param ) ) // If it's a set, add values in res
+			{
+				// pybind11::list strSet = p_param.cast<pybind11::list>();
+				res.reserve( pybind11::len( p_param ) );
+
+				for ( const auto & item : p_param )
+				{
+					const T2 str = item.cast<T2>();
+					res.emplace_back( str );
+				}
+			}
+
 			return res;
 		}
+	} // namespace
 
-		// If param is a single string, return a vector of size 1 with this string
-		if ( pybind11::isinstance<T1>( p_param ) )
-		{
-			const T2 singleStr = p_param.cast<T2>();
-			res.emplace_back( singleStr );
-		}
-		else if ( pybind11::isinstance<pybind11::iterable>( p_param ) ) // If it's a set, add values in res
-		{
-			// pybind11::list strSet = p_param.cast<pybind11::list>();
-			res.reserve( pybind11::len( p_param ) );
-
-			for ( const auto & item : p_param )
-			{
-				const T2 str = item.cast<T2>();
-				res.emplace_back( str );
-			}
-		}
-
-		return res;
+	void PythonKwargs::Del::operator()( pybind11::kwargs * const p ) noexcept
+	{
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		delete p;
 	}
-
-	void PythonKwargs::Del::operator()( pybind11::kwargs * p ) noexcept { delete p; }
 
 	PythonKwargs::PythonKwargs( const pybind11::kwargs & p_ ) : _ptr( new pybind11::kwargs( p_ ) ) {}
 

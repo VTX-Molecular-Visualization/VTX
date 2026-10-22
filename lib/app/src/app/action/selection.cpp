@@ -221,11 +221,10 @@ namespace VTX::App::Action::Selection
 			const auto & uid		  = REG().get<System::UID>( firstEnt );
 			const Index	 residueIndex = uid.getResidueIndex( first );
 
-			bool select = not(
-				Helper::System::getSelectionState( { firstEnt, Core::Struct::E_SYSTEM_ITEM::RESIDUE, residueIndex } )
-					== App::System::E_SELECTION_STATE::FULL
-				&& p_append
-			);
+			bool select
+				= Helper::System::getSelectionState( { firstEnt, Core::Struct::E_SYSTEM_ITEM::RESIDUE, residueIndex } )
+					  != App::System::E_SELECTION_STATE::FULL
+				  || not p_append;
 
 			switch ( granularity )
 			{

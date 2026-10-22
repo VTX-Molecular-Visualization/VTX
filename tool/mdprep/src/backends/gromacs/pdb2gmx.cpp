@@ -2,6 +2,7 @@
 #include <re2/re2.h>
 #include <regex>
 #include <set>
+#include <stdexcept>
 #include <string.h>
 //
 #include <app/services.hpp>
@@ -136,7 +137,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		return;
 	}
 
-	parseReport parsePdb2gmxUserScript( const std::string_view & p_script, Pdb2gmxInputs & p_args ) noexcept
+	parseReport parsePdb2gmxUserScript( const std::string_view & p_script, Pdb2gmxInputs & p_args )
 	{
 		parseReport out;
 
@@ -201,7 +202,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			{
 				new_id.num = std::stoul( buf );
 			}
-			catch ( std::invalid_argument & )
+			catch ( const std::logic_error & )
 			{
 				out.error	= true;
 				out.message = fmt::format( "Number <{}> isn't a correct value.", buf );

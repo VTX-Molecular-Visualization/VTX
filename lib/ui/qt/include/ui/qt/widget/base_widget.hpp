@@ -33,16 +33,24 @@ namespace VTX::UI::QT::Widget
 			VTX_TRACE( "Widget created: {}", name );
 		}
 
-		virtual ~BaseWidget() { VTX_TRACE( "Widget deleted: {}", W::objectName().toStdString() ); }
+		virtual ~BaseWidget()
+		{
+			try
+			{
+				VTX_TRACE( "Widget deleted: {}", W::objectName().toStdString() );
+			}
+			catch ( ... )
+			{
+				VTX_TRACE( "Widget deleted" );
+			}
+		}
 
 		/**
 		 * @brief Check if widget is of type T.
 		 */
 		template<typename Type>
 		bool is() const
-		{
-			return W::objectName() == VTX::Util::typeName<Type>();
-		}
+		{ return W::objectName() == VTX::Util::typeName<Type>(); }
 	};
 
 } // namespace VTX::UI::QT::Widget

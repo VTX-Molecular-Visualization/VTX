@@ -2,8 +2,9 @@
 
 namespace
 {
+	// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 	VTX::Registry * _reg = nullptr;
-}
+} // namespace
 
 namespace VTX::App::ECS
 {

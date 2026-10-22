@@ -8,7 +8,7 @@ namespace VTX::App::Setting
 	/**
 	 * @brief Color modes.
 	 */
-	enum struct E_COLOR_ACCESSIBILITY_MODE : uint
+	enum struct E_COLOR_ACCESSIBILITY_MODE : uint8_t
 	{
 		DEFAULT,
 		HIGH_CONTRAST,

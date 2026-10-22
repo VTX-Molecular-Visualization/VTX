@@ -15,7 +15,7 @@ namespace VTX::App
 		argparse::ArgumentParser parser { std::string( "VTX" ), Session::version(), argparse::default_arguments::none };
 	};
 
-	ArgumentParser::ArgumentParser( int p_argc, const char * const * p_argv ) noexcept :
+	ArgumentParser::ArgumentParser( int p_argc, const char * const * p_argv ) :
 		_impl( new _data { Arguments { p_argc, p_argv } } )
 	{
 		_impl->parser.add_description( "Start VTX with command line arguments." );
@@ -74,7 +74,7 @@ namespace VTX::App
 	{
 		std::stringstream ss;
 
-		ss << _impl->parser << std::endl;
+		ss << _impl->parser << '\n';
 		auto s = ss.str();
 		return s;
 	}
@@ -89,7 +89,7 @@ namespace VTX::App
 
 	void ArgumentParser::parse() { _impl->parser.parse_args( _impl->args.argc, _impl->args.argv ); }
 
-	std::string toString( const Arguments & p_args ) noexcept
+	std::string toString( const Arguments & p_args )
 	{
 		assert( p_args.argv != nullptr );
 		assert( p_args.argc > 0 );
@@ -103,18 +103,22 @@ namespace VTX::App
 		return out;
 	}
 
-	std::vector<std::string> toStringVector( const Arguments & p_args ) noexcept
+	std::vector<std::string> toStringVector( const Arguments & p_args )
 	{
 		assert( p_args.argv != nullptr );
 		assert( p_args.argc > 0 );
-		std::vector<std::string> out;
+		std::vector<std::string> out( p_args.argc );
 		for ( int i = 0; i < p_args.argc; i++ )
 		{
-			out.emplace_back( p_args.argv[ i ] );
+			out[ i ] = std::string( p_args.argv[ i ] );
 		}
 		return out;
 	}
 
-	void ArgumentParser::_del::operator()( _data * p_ ) const noexcept { delete p_; }
+	void ArgumentParser::_del::operator()( _data * const p_ ) const noexcept
+	{
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		delete p_;
+	}
 
 } // namespace VTX::App

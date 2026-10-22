@@ -3,6 +3,7 @@
 
 #include "app/ecs.hpp"
 #include "app/generic/name.hpp"
+#include <algorithm>
 #include <optional>
 #include <util/string.hpp>
 #include <util/types.hpp>
@@ -17,15 +18,14 @@ namespace VTX::App::Helper::Preset
 	{
 		const std::string name = Util::String::toLower( std::string( p_name ) );
 		auto			  view = REG().view<App::Generic::Name, T>();
-		for ( const Entity entity : view )
-		{
-			const auto & presetName = view.template get<App::Generic::Name>( entity ).name;
-			if ( Util::String::toLower( presetName ) == name )
+		return std::ranges::any_of(
+			view,
+			[ &view, &name ]( const Entity entity )
 			{
-				return true;
+				const auto & presetName = view.template get<App::Generic::Name>( entity ).name;
+				return Util::String::toLower( presetName ) == name;
 			}
-		}
-		return false;
+		);
 
 	} // namespace VTX::App::Helper::Scene
 

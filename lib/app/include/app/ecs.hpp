@@ -41,27 +41,21 @@ namespace VTX::App::ECS
 	 */
 	template<class T>
 	T & getCtx()
-	{
-		return registry().ctx().get<T>();
-	}
+	{ return registry().ctx().get<T>(); }
 
 	/**
 	 * @brief Check for existence of a global service in the registry context.
 	 */
 	template<class T>
 	bool hasCtx()
-	{
-		return registry().ctx().contains<T>();
-	}
+	{ return registry().ctx().contains<T>(); }
 
 	/**
 	 * @brief Remove a global service from the registry context.
 	 */
 	template<class T>
 	void removeCtx()
-	{
-		registry().ctx().erase<T>();
-	}
+	{ registry().ctx().erase<T>(); }
 
 	/**
 	 * @brief Get the first entity with components (references) of type in the registry.
@@ -107,9 +101,7 @@ namespace VTX::App::ECS
 	 */
 	template<typename T>
 	T & getFirstComponent()
-	{
-		return registry().get<T>( getFirstEntityOnlyWithComponents<T>() );
-	}
+	{ return registry().get<T>( getFirstEntityOnlyWithComponents<T>() ); }
 
 	/**
 	 * @brief Debug infos.
@@ -118,7 +110,7 @@ namespace VTX::App::ECS
 	{
 		for ( const entt::entity e : registry().view<entt::entity>() )
 		{
-			std::cout << "entity " << int( e ) << '\n';
+			std::cout << "entity " << static_cast<int>( e ) << '\n';
 
 			for ( auto && [ id, storage ] : registry().storage() )
 			{

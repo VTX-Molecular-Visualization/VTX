@@ -112,7 +112,7 @@ namespace VTX::App
 		catch ( const std::exception & p_e )
 		{
 			// Logger not initialized.
-			std::cout << "Velopack startup hook: " << p_e.what() << std::endl;
+			std::cout << "Velopack startup hook: " << p_e.what() << '\n';
 		}
 	}
 
@@ -126,7 +126,7 @@ namespace VTX::App
 		catch ( const std::exception & p_e )
 		{
 			// Logger not initialized yet.
-			std::cerr << "Velopack update manager error: " << p_e.what() << std::endl;
+			std::cerr << "Velopack update manager error: " << p_e.what() << '\n';
 		}
 	}
 
@@ -151,7 +151,7 @@ namespace VTX::App
 		_impl->pendingUpdate.reset();
 
 		THREAD().createThread(
-			[ this ]( Util::Thread::StopToken, Util::Thread::BaseThread & p_thread ) -> uint
+			[ this ]( const Util::Thread::StopToken &, Util::Thread::BaseThread & p_thread ) -> uint
 			{
 				p_thread.setProgressText( "Checking for updates..." );
 				try
@@ -242,7 +242,7 @@ namespace VTX::App
 
 			VTX_TRACE( "downloadUpdate: starting update to {}", release.Version );
 			const Util::Thread::BaseThread & downloadThread = THREAD().createThread(
-				[ this, pendingUpdate ]( Util::Thread::StopToken, Util::Thread::BaseThread & p_thread ) -> uint
+				[ this, pendingUpdate ]( const Util::Thread::StopToken &, Util::Thread::BaseThread & p_thread ) -> uint
 				{
 					p_thread.setProgressText( "Downloading update..." );
 					try
@@ -255,7 +255,7 @@ namespace VTX::App
 								{
 									Util::Thread::BaseThread * thread
 										= static_cast<Util::Thread::BaseThread *>( p_userData );
-									thread->setProgress( float( p_progress ) / 100.f );
+									thread->setProgress( static_cast<float>( p_progress ) / 100.f );
 								},
 								&p_thread
 							);
@@ -329,13 +329,13 @@ namespace VTX::App
 			return;
 		}
 
-		Util::Thread::BaseThread * downloadThread = THREAD().get( _impl->updateDownloadThreadId );
+		const Util::Thread::BaseThread * downloadThread = THREAD().get( _impl->updateDownloadThreadId );
 		if ( downloadThread == nullptr )
 		{
 			return;
 		}
 
-		const uint progress = uint( downloadThread->getProgress() * 100.f );
+		const uint progress = static_cast<uint>( downloadThread->getProgress() * 100.f );
 		HUB().trigger<Events::UpdateDownloadProgress>( progress );
 	}
 
@@ -381,7 +381,7 @@ namespace VTX::App
 
 	namespace
 	{
-		enum class SessionPathRoot
+		enum class SessionPathRoot : uint8_t
 		{
 			Data,
 			Pictures
@@ -401,8 +401,8 @@ namespace VTX::App
 		FilePath _getPortableWindowsRoot()
 		{
 			const FilePath executablePath = Filesystem::getExecutable();
-			const FilePath executableDir  = executablePath.parent_path();
-			const FilePath parentDir	  = executableDir.parent_path();
+			FilePath	   executableDir  = executablePath.parent_path();
+			FilePath	   parentDir	  = executableDir.parent_path();
 
 			if ( not parentDir.empty() )
 			{
@@ -420,7 +420,7 @@ namespace VTX::App
 			return getApplicationDir();
 		}
 
-#if defined( _WIN32 )
+#ifdef _WIN32
 		if ( isPortable() )
 		{
 			return _getPortableWindowsRoot();
@@ -437,7 +437,7 @@ namespace VTX::App
 			return getApplicationDir();
 		}
 
-#if defined( _WIN32 )
+#ifdef _WIN32
 		if ( isPortable() )
 		{
 			return _getPortableWindowsRoot();

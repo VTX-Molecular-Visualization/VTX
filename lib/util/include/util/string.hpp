@@ -6,6 +6,7 @@
 #include <charconv>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <system_error>
 #include <type_traits>
 #include <vector>
@@ -13,39 +14,104 @@
 namespace VTX::Util::String
 {
 	/**
-	 * Trim empty characters at the start and end and return the result.
+	 * @brief Whitespace chars.
 	 */
-	[[nodiscard]] std::string trim( const std::string & p_str );
+	constexpr std::string_view WHITESPACES = " \n\t\r\f\v";
 
-	[[nodiscard]] std::string replaceFirst(
+	/**
+	 * Trim empty characters at the start and end.
+	 */
+	[[nodiscard]] constexpr std::string trim( const std::string & p_str )
+	{
+		std::string result = p_str;
+		result.erase( 0, result.find_first_not_of( WHITESPACES ) );
+		result.erase( result.find_last_not_of( WHITESPACES ) + 1 );
+		return result;
+	}
+
+	/**
+	 * @brief Replace first occurrence.
+	 */
+	[[nodiscard]] constexpr std::string replaceFirst(
 		const std::string & p_str,
 		const std::string & p_toReplace,
 		const std::string & p_replacement
-	);
+	)
+	{
+		std::string result = p_str;
+		result.replace( result.find( p_toReplace ), p_toReplace.size(), p_replacement );
+		return result;
+	}
 
 	/**
 	 * Trim empty characters at the start and return the result.
 	 */
-	[[nodiscard]] std::string trimStart( const std::string & p_str );
+	[[nodiscard]] constexpr std::string trimStart( const std::string & p_str )
+	{
+		std::string result = p_str;
+		result.erase( 0, result.find_first_not_of( WHITESPACES ) );
+		return result;
+	}
 
 	/**
 	 * Trim empty characters at the end and return the result.
 	 */
-	[[nodiscard]] std::string trimEnd( const std::string & p_str );
+	[[nodiscard]] constexpr std::string trimEnd( const std::string & p_str )
+	{
+		std::string result = p_str;
+		result.erase( result.find_last_not_of( WHITESPACES ) + 1 );
+		return result;
+	}
 
 	/**
 	 * Split a string using a character separator.
 	 */
-	[[nodiscard]] std::vector<std::string> split( const std::string & p_str, char p_separator );
+	[[nodiscard]] constexpr std::vector<std::string> split( const std::string & p_str, const char p_separator )
+	{
+		std::vector<std::string> splittedStr = std::vector<std::string>();
+
+		size_t startIndex = 0;
+		size_t endIndex	  = p_str.find( p_separator );
+
+		while ( endIndex != std::string::npos )
+		{
+			splittedStr.emplace_back( p_str.substr( startIndex, endIndex - startIndex ) );
+			startIndex = endIndex + 1;
+			endIndex   = p_str.find( p_separator, startIndex );
+		}
+
+		splittedStr.emplace_back( p_str.substr( startIndex ) );
+		splittedStr.shrink_to_fit();
+
+		return splittedStr;
+	}
 
 	/**
 	 * Replace all occurrences of a string and return the result.
 	 */
-	[[nodiscard]] std::string replaceAll(
+	[[nodiscard]] constexpr std::string replaceAll(
 		const std::string & p_str,
 		const std::string & p_toReplace,
 		const std::string & p_replacement
-	);
+	)
+	{
+		std::string result = p_str;
+		if ( p_toReplace.empty() )
+		{
+			return result;
+		}
+		size_t currentIndex = result.find( p_toReplace );
+
+		while ( currentIndex != std::string::npos )
+		{
+			result.replace( currentIndex, p_toReplace.size(), p_replacement );
+			currentIndex += p_replacement.size();
+
+			currentIndex = result.find( p_toReplace, currentIndex );
+		}
+
+		return result;
+	}
 
 	/**
 	 * Convert a float to a string with a fixed number of decimals.

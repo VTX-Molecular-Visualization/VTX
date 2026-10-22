@@ -258,7 +258,7 @@ namespace VTX::App
 	void VTXApp::handleArgs()
 	{
 		const Arguments & args = ARGS();
-		for ( auto & it_file : args.positionalFiles )
+		for ( const auto & it_file : args.positionalFiles )
 		{
 			if ( it_file.empty() )
 			{

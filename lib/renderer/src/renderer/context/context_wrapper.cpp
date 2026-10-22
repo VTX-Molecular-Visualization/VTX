@@ -77,7 +77,11 @@ namespace VTX::Renderer::Context
 		}
 
 		template<E_COMMAND C, typename Executor>
-		void _executePayload( const Executor & p_executor, const CommandBuffer & p_commands, const Command & p_command )
+		void _executePayload(
+			const Executor &	  p_executor,
+			const CommandBuffer & p_commands,
+			const Command &		  p_command
+		) noexcept
 		{
 			using Payload = PayloadT<C>;
 
@@ -92,7 +96,11 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename Executor>
-		void _executeCommand( const Executor & p_executor, const CommandBuffer & p_commands, const Command & p_command )
+		void _executeCommand(
+			const Executor &	  p_executor,
+			const CommandBuffer & p_commands,
+			const Command &		  p_command
+		) noexcept
 		{
 			switch ( p_command.type )
 			{
@@ -134,7 +142,7 @@ namespace VTX::Renderer::Context
 			const Executor &	  p_executor,
 			const CommandBuffer & p_commands,
 			const CommandRange &  p_range
-		)
+		) noexcept
 		{
 			const CommandID end = p_range.first + p_range.count;
 			assert( end <= p_commands.commands.size() );

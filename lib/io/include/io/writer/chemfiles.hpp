@@ -85,7 +85,7 @@ namespace VTX::IO::Writer
 		/**
 		 * @brief Set or replace a property for the chain.
 		 */
-		void set( const Property & ) noexcept;
+		void set( const Property & );
 		void setResId( int ) noexcept;
 		void setSymbol( std::string ) noexcept;
 
@@ -111,7 +111,7 @@ namespace VTX::IO::Writer
 		 * @brief Inform the chain that the input residue is a part of it. Does nothing however, if the chain info are
 		 * not provided in the first place
 		 */
-		void add( Residue & ) noexcept;
+		void add( Residue & );
 
 	  private:
 		_Chain * _data = nullptr;
@@ -152,13 +152,13 @@ namespace VTX::IO::Writer
 		/**
 		 * @brief Set or replace a property for the frame.
 		 */
-		void set( Property ) const noexcept;
+		void set( Property ) const;
 
 		/**
 		 * @brief  Create a new atom
 		 * @param  Id of the atom. Used as an external key to indentify the atom afterward.
 		 */
-		Atom newAtom( AtomId ) const noexcept;
+		Atom newAtom( AtomId ) const;
 
 		/**
 		 * @brief  Bind two atoms together. Atoms are identified by the external key provided during their creation.
@@ -169,17 +169,17 @@ namespace VTX::IO::Writer
 		/**
 		 * @brief Create a new chain.
 		 */
-		Chain newChain() const noexcept;
+		Chain newChain() const;
 
 		/**
 		 * @brief Create a new residue.
 		 */
-		Residue newResidue() const noexcept;
+		Residue newResidue() const;
 
 		/**
 		 * @brief Create a new frame. A healthy system should get at least one frame.
 		 */
-		Frame newFrame() const noexcept;
+		Frame newFrame() const;
 
 		/**
 		 * @brief Set the input Atom to the one corresponding to the input AtomId
@@ -209,6 +209,8 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		ChemfilesTrajectory();
+
+		void close();
 
 		/**
 		 * @brief Mandatory to write something. Can be set empty so no files end up being saved at all.

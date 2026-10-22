@@ -13,7 +13,7 @@ target_sources(vtx_io
 file(GLOB_RECURSE TEST_SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/src/*")
 add_executable(vtx_io_test ${TEST_SOURCES})
 set_property(TARGET vtx_io_test PROPERTY FOLDER "test")
-vtx_configure_target(vtx_io_test)
+vtx_configure_target(vtx_io_test NO_LINTER)
 
 target_link_libraries(vtx_io PUBLIC vtx_util::vtx_util)
 target_link_libraries(vtx_io PUBLIC vtx_core::vtx_core)

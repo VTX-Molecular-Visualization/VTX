@@ -101,11 +101,11 @@ namespace VTX::App::Action::Camera
 		{
 			view.each(
 				[ & ](
-					const Entity &				   p_e,
-					const Core::Struct::Topology & p_data,
-					const Util::Math::AABB &	   p_aabb,
-					const Util::Math::Transform &  p_transform,
-					const System::Selection &	   p_selection
+					const Entity & p_e,
+					const Core::Struct::Topology &,
+					const Util::Math::AABB &	  p_aabb,
+					const Util::Math::Transform & p_transform,
+					const System::Selection &	  p_selection
 				)
 				{
 					if ( Helper::System::getSelectionState( { p_e, Core::Struct::E_SYSTEM_ITEM::SYSTEM } )
@@ -149,14 +149,10 @@ namespace VTX::App::Action::Camera
 		);
 	}
 
-	void StraightTravel::execute(
-		const Vec3f & p_targetPosition,
-		const Quatf & p_targetRotation,
-		const float	  p_duration
-	)
+	void StraightTravel::execute( const Vec3f & p_position, const Quatf & p_rotation, const float p_duration )
 	{
 		// TODO: controller target?
-		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>( p_targetPosition, p_targetRotation, p_duration );
+		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>( p_position, p_rotation, p_duration );
 	}
 
 	void SaveViewpoint::execute()

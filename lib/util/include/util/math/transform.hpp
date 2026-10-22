@@ -15,11 +15,11 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Accessors.
 		 */
-		const Vec3f & getPosition() const noexcept { return _position; };
+		constexpr const Vec3f & getPosition() const noexcept { return _position; };
 
-		const Quatf & getRotation() const noexcept { return _rotation; };
+		constexpr const Quatf & getRotation() const noexcept { return _rotation; };
 
-		const Vec3f & getScale() const noexcept { return _scale; };
+		constexpr const Vec3f & getScale() const noexcept { return _scale; };
 
 		/**
 		 * @brief Get local axes.
@@ -33,7 +33,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Reset transformation to identity.
 		 */
-		void reset() noexcept
+		constexpr void reset() noexcept
 		{
 			_position = VEC3F_ZERO;
 			_rotation = QUATF_ID;
@@ -45,10 +45,10 @@ namespace VTX::Util::Math
 		 */
 		void translate( const Vec3f & p_vec ) noexcept { _position += _rotation * p_vec; }
 
-		void setPosition( const float p_x, const float p_y, const float p_z ) noexcept
+		constexpr void setPosition( const float p_x, const float p_y, const float p_z ) noexcept
 		{ _position = Vec3f( p_x, p_y, p_z ); }
 
-		void setPosition( const Vec3f & p_vec ) noexcept { _position = p_vec; }
+		constexpr void setPosition( const Vec3f & p_vec ) noexcept { _position = p_vec; }
 
 		/**
 		 * @brief Rotation.
@@ -99,11 +99,11 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Scale.
 		 */
-		void scale( const Vec3f & p_vec ) noexcept { _scale = _scale * p_vec; }
+		constexpr void scale( const Vec3f & p_vec ) noexcept { _scale = _scale * p_vec; }
 
-		void setScale( const Vec3f & p_scale ) noexcept { _scale = p_scale; }
+		constexpr void setScale( const Vec3f & p_scale ) noexcept { _scale = p_scale; }
 
-		void setScale( const float p_scale ) noexcept { _scale = Vec3f( p_scale ); }
+		constexpr void setScale( const float p_scale ) noexcept { _scale = Vec3f( p_scale ); }
 
 		/**
 		 * @brief Compute transformation matrix.
@@ -115,9 +115,7 @@ namespace VTX::Util::Math
 		 * @brief Compute Euler angles in degrees.
 		 */
 		[[nodiscard]] Vec3f computeEulerAngles() const noexcept
-		{
-			return Math::degrees( Math::eulerAngles( _rotation ) );
-		};
+		{ return Math::degrees( Math::eulerAngles( _rotation ) ); };
 
 	  private:
 		/**

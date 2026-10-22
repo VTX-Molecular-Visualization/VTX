@@ -112,8 +112,8 @@ namespace VTX::UI::QT::Widget::Tree
 			[ this ]( const QModelIndex & p_index )
 			{
 				const auto &				model = getSystemModel();
-				Core::Struct::E_SYSTEM_ITEM item;
-				Index						index;
+				Core::Struct::E_SYSTEM_ITEM item {};
+				Index						index {};
 				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
 				// Get current scheme.

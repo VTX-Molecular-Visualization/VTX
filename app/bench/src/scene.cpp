@@ -54,12 +54,12 @@ namespace VTX::Bench
 		system.uid		 = _nextSystemUID++;
 
 		const size_t residueCount = system.topology->getResidueCount();
-		system.residueUids		  = Util::Math::Range<UID32>::fromFirstCount( _nextUID32, UID32( residueCount ) );
-		_nextUID32 += UID32( residueCount );
+		system.residueUids = Util::Math::Range<UID32>::fromFirstCount( _nextUID32, static_cast<UID32>( residueCount ) );
+		_nextUID32 += static_cast<UID32>( residueCount );
 
 		const size_t atomCount = system.topology->getAtomCount();
-		system.atomUids		   = Util::Math::Range<UID32>::fromFirstCount( _nextUID32, UID32( atomCount ) );
-		_nextUID32 += UID32( atomCount );
+		system.atomUids = Util::Math::Range<UID32>::fromFirstCount( _nextUID32, static_cast<UID32>( atomCount ) );
+		_nextUID32 += static_cast<UID32>( atomCount );
 
 		system.colorSchemeAtoms.emplace(
 			Renderer::E_COLOR_SCHEME::ATOM, Core::Struct::IndexRangeList( system.topology->getAtomRange() )
@@ -70,7 +70,7 @@ namespace VTX::Bench
 				Core::Struct::IndexRange::fromFirstCount( 0, static_cast<Index>( residueCount ) )
 			)
 		);
-		system.representationHandles.emplace( Entity( 0 ), Renderer::Desc::Handle( 0 ) );
+		system.representationHandles.emplace( Entity( 0 ), static_cast<Renderer::Desc::Handle>( 0 ) );
 		system.presetAtoms.emplace( Entity( 0 ), Core::Struct::IndexRangeList( system.topology->getAtomRange() ) );
 		system.visibility = Util::Math::BitSet( atomCount, true );
 		system.selection  = Util::Math::BitSet( atomCount, false );

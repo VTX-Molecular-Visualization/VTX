@@ -2,6 +2,7 @@
 #include "app/helper/trajectory.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
+#include <algorithm>
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
 #include <span>
@@ -459,15 +460,10 @@ namespace VTX::App::Helper::System
 				return true;
 			}
 		}
-		for ( const auto & [ _, ranges ] : color.customSecondaryStructureColorResidues )
-		{
-			if ( isRootForResidueRanges( ranges ) )
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return std::ranges::any_of(
+			color.customSecondaryStructureColorResidues,
+			[ &isRootForResidueRanges ]( const auto & entry ) { return isRootForResidueRanges( entry.second ); }
+		);
 	}
 
 	std::optional<Entity> getRepresentation( const SystemItemView & p_system )

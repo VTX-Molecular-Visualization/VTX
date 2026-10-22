@@ -1,7 +1,7 @@
 #include "python_binding/command_filter.hpp"
 #include <algorithm>
+#include <array>
 #include <string_view>
-#include <vector>
 
 namespace VTX::PythonBinding
 {
@@ -27,12 +27,12 @@ namespace VTX::PythonBinding
 			bool operator==( const std::string_view & p_ ) const { return str == p_; }
 		};
 
-		const std::vector<UnwantedCommand> g_FILTERED_COMMANDS {
-			{ "help", "Interactive helper disabled in VTX. Please use help() to know what's available." }
+		constexpr std::array<UnwantedCommand, 1> g_FILTERED_COMMANDS {
+			{ { "help", "Interactive helper disabled in VTX. Please use help() to know what's available." } }
 		};
 	} // namespace
 
-	FilterResult filter( const std::string & p_command ) noexcept
+	FilterResult filter( const std::string & p_command )
 	{
 		const auto findResult = std::ranges::find_if(
 			g_FILTERED_COMMANDS, [ &p_command ]( const UnwantedCommand & p_ ) { return p_ == p_command; }

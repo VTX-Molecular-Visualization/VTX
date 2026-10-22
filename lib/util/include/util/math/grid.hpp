@@ -23,7 +23,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Constructor.
 		 */
-		DenseGrid(
+		constexpr DenseGrid(
 			const Vec3f & p_worldOrigin = Vec3f( 0.f ),
 			const Vec3f & p_cellSize	= Vec3f( 10.f ),
 			const Vec3u & p_size		= Vec3u( 0u )
@@ -34,7 +34,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the center of a cell in world position.
 		 */
-		Vec3f worldPosition( const CellPosition & p_gridPosition ) const
+		constexpr Vec3f worldPosition( const CellPosition & p_gridPosition ) const
 		{
 			Vec3f position = _worldOrigin;
 			position += ( Vec3f( p_gridPosition ) + 0.5f ) * _cellSize;
@@ -59,7 +59,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the grid position of a dense index in the grid.
 		 */
-		CellPosition gridPosition( const size_t p_denseIndex ) const
+		constexpr CellPosition gridPosition( const size_t p_denseIndex ) const
 		{
 			const size_t z = p_denseIndex / ( static_cast<size_t>( _size.x ) * _size.y );
 			const size_t r = p_denseIndex % ( static_cast<size_t>( _size.x ) * _size.y );
@@ -72,24 +72,24 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the dense index of a cell position in the grid.
 		 */
-		size_t denseIndex( const CellPosition & p_gridPosition ) const
+		constexpr size_t denseIndex( const CellPosition & p_gridPosition ) const
 		{
 			return static_cast<size_t>( p_gridPosition.z ) * _size.x * _size.y
 				   + static_cast<size_t>( p_gridPosition.y ) * _size.x + p_gridPosition.x;
 		}
 
-		size_t denseIndex( const uint p_x, const uint p_y, const uint p_z ) const
+		constexpr size_t denseIndex( const uint p_x, const uint p_y, const uint p_z ) const
 		{ return denseIndex( CellPosition( p_x, p_y, p_z ) ); }
 
 		/**
 		 * @brief Get the number of cells in the grid (fixed).
 		 */
-		size_t getCellCount() const { return static_cast<size_t>( _size.x ) * _size.y * _size.z; }
+		constexpr size_t getCellCount() const { return static_cast<size_t>( _size.x ) * _size.y * _size.z; }
 
 		/**
 		 * @brief Grid size.
 		 */
-		const Vec3u & getSize() const { return _size; }
+		constexpr const Vec3u & getSize() const { return _size; }
 
 	  private:
 		/**
@@ -176,6 +176,8 @@ namespace VTX::Util::Math
 		template<typename F>
 		void forEachNeighbourCell( const CellPosition & p_gridPosition, F && p_func ) const
 		{
+			auto && func = std::forward<F>( p_func );
+
 			for ( int z = -1; z <= 1; ++z )
 			{
 				for ( int y = -1; y <= 1; ++y )
@@ -187,7 +189,7 @@ namespace VTX::Util::Math
 
 						if ( it != _data.end() )
 						{
-							std::forward<F>( p_func )( it->first, it->second );
+							func( it->first, it->second );
 						}
 					}
 				}

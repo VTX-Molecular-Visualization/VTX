@@ -12,7 +12,7 @@ namespace VTX::App::Input
 		/**
 		 * @brief Available input actions.
 		 */
-		enum struct Action : int
+		enum struct Action : uint8_t
 		{
 			MoveFront = 0,
 			MoveBack,
@@ -72,9 +72,7 @@ namespace VTX::App::Input
 		 * @brief Mutators.
 		 */
 		void setAction( const Action p_action, const bool p_value )
-		{
-			_actions[ static_cast<std::size_t>( p_action ) ] = p_value;
-		}
+		{ _actions[ static_cast<std::size_t>( p_action ) ] = p_value; }
 
 		void clearActions() { _actions.fill( false ); }
 
@@ -106,23 +104,23 @@ namespace VTX::App::Input
 		/**
 		 * @brief Mouse left drag action.
 		 */
-		Vec2i _rotate;
+		Vec2i _rotate = Vec2i( 0 );
 
 		/**
 		 * @brief Mouse right drag action.
 		 */
-		Vec2i _rotateAlt;
+		Vec2i _rotateAlt = Vec2i( 0 );
 
 		/**
 		 * @brief Mouse middle drag action.
 		 */
-		Vec2i _pan;
+		Vec2i _pan = Vec2i( 0 );
 
 		/**
 		 * @brief Wheel action.
 		 *
 		 */
-		int _zoom;
+		int _zoom {};
 	};
 } // namespace VTX::App::Input
 

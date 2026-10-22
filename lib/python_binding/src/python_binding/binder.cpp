@@ -3,12 +3,13 @@
 
 namespace VTX::PythonBinding
 {
-	void importFullModule( const std::string & p_moduleName ) noexcept
+	void importFullModule( const std::string & p_moduleName )
 	{
 		const std::string command = "from " + p_moduleName + " import *";
 		pybind11::exec( command );
 	}
-	void importObject( const std::string & p_moduleName, const std::string & p_objectName ) noexcept
+
+	void importObject( const std::string & p_moduleName, const std::string & p_objectName )
 	{
 		const std::string command = "from " + p_moduleName + " import " + p_objectName;
 		pybind11::exec( command );

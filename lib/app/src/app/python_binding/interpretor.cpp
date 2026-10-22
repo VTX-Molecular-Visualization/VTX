@@ -24,7 +24,7 @@ namespace VTX::App::PythonBinding
 	  public:
 		_Impl() :
 			_thread( &THREAD().createThread(
-				[ this ]( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread )
+				[ this ]( const Util::Thread::StopToken & p_stopToken, Util::Thread::BaseThread & p_thread )
 				{ return runPythonThread( p_stopToken, p_thread ); }
 			) )
 		{
@@ -42,22 +42,19 @@ namespace VTX::App::PythonBinding
 			_thread->wait();
 		}
 
-		inline void runCommand( const std::string & p_command ) noexcept
+		void runCommand( const std::string & p_command )
 		{
 			auto queue = _lockedCmdQueue.open();
 			queue->push( { p_command } );
 		}
 
-		inline void runCommand(
-			const std::string &							  p_command,
-			std::shared_ptr<std::promise<AsyncJobResult>> p_ret
-		) noexcept
+		void runCommand( const std::string & p_command, std::shared_ptr<std::promise<AsyncJobResult>> p_ret )
 		{
 			auto queue = _lockedCmdQueue.open();
 			queue->push( { p_command, std::move( p_ret ) } );
 		}
 
-		inline void runScript( const FilePath & p_path, std::shared_ptr<std::promise<AsyncJobResult>> p_promise )
+		void runScript( const FilePath & p_path, const std::shared_ptr<std::promise<AsyncJobResult>> & p_promise )
 		{
 			// This method can be called from python thread directly. In this specific scenario, we don't need to use
 			// the subscription/callback infrastructure.
@@ -72,19 +69,19 @@ namespace VTX::App::PythonBinding
 			}
 		}
 
-		inline void runScript( const FilePath & p_path ) { runScript( p_path, nullptr ); }
+		void runScript( const FilePath & p_path ) { runScript( p_path, nullptr ); }
 
-		inline void slowerResponseTime() noexcept { _inactivitySleepTime = std::chrono::milliseconds( 1000 ); }
+		void slowerResponseTime() noexcept { _inactivitySleepTime = std::chrono::milliseconds( 1000 ); }
 
-		inline void fasterResponseTime() noexcept { _inactivitySleepTime = std::chrono::milliseconds( 100 ); }
+		void fasterResponseTime() noexcept { _inactivitySleepTime = std::chrono::milliseconds( 100 ); }
 
-		inline void subscribe( InterpretorInstructionsOneShot p_instruction ) noexcept
+		void subscribe( InterpretorInstructionsOneShot p_instruction )
 		{
 			auto instructions = _lockedInstructions.open();
 			instructions->push( std::move( p_instruction ) );
 		}
 
-		inline int runPythonThread( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & _ )
+		int runPythonThread( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & _ )
 		{
 			_stopToken = std::move( p_stopToken );
 			_thread	   = &_;
@@ -100,11 +97,16 @@ namespace VTX::App::PythonBinding
 				VTX_ERROR( "Unhandled exception in python thread: {}", p_e.what() );
 				_threadedLoopStarted = true;
 			}
+			catch ( ... )
+			{
+				VTX_ERROR( "Unhandled unknown exception in python thread" );
+				_threadedLoopStarted = true;
+			}
 			return 0;
 		}
 
 	  private:
-		inline void _listenQueue()
+		void _listenQueue()
 		{
 			WaitingPythonCommand		   command;
 			InterpretorInstructionsOneShot instruction;
@@ -137,8 +139,9 @@ namespace VTX::App::PythonBinding
 				if ( not command.commandStr.empty() )
 				{
 					_actuallyRunCommand( command );
-					goto loop_beginning; // If there was a command in the queue, maybe there is others as well so we
-										 // don't want to wait the time interval before executing it.
+					// If there was a command in the queue, maybe there is others as well so we
+					// don't want to wait the time interval before executing it.
+					goto loop_beginning;
 				}
 
 				std::this_thread::sleep_for( _inactivitySleepTime.load() );
@@ -149,12 +152,16 @@ namespace VTX::App::PythonBinding
 			}
 		}
 
-		inline void _actuallyRunCommand( WaitingPythonCommand & p_command )
+		void _actuallyRunCommand( WaitingPythonCommand & p_command )
 		{
 			AsyncJobResult jobResult;
 			try
 			{
 				VTX_PYTHON_IN( "{}", p_command.commandStr );
+				if ( not _interpretor.has_value() )
+				{
+					throw std::bad_optional_access();
+				}
 				jobResult.resultStr = _interpretor->runCommand( p_command.commandStr );
 				jobResult.success	= true;
 				if ( not jobResult.resultStr.empty() )
@@ -179,14 +186,18 @@ namespace VTX::App::PythonBinding
 			}
 		}
 
-		inline void _actuallyRunScript(
-			const FilePath &							  p_path,
-			std::shared_ptr<std::promise<AsyncJobResult>> p_promise
+		void _actuallyRunScript(
+			const FilePath &									  p_path,
+			const std::shared_ptr<std::promise<AsyncJobResult>> & p_promise
 		)
 		{
 			AsyncJobResult jobResult;
 			try
 			{
+				if ( not _interpretor.has_value() )
+				{
+					throw std::bad_optional_access();
+				}
 				_interpretor->runScript( p_path );
 				jobResult.success = true;
 			}
@@ -217,23 +228,20 @@ namespace VTX::App::PythonBinding
 
 	Interpretor::Interpretor() : _impl( new _Impl() ) {}
 
-	void Interpretor::runCommand( const std::string & p_ ) noexcept { _impl->runCommand( p_ ); }
+	void Interpretor::runCommand( const std::string & p_ ) { _impl->runCommand( p_ ); }
 
-	void Interpretor::runCommand(
-		const std::string &							  p_cmd,
-		std::shared_ptr<std::promise<AsyncJobResult>> p_ret
-	) noexcept
+	void Interpretor::runCommand( const std::string & p_cmd, std::shared_ptr<std::promise<AsyncJobResult>> p_ret )
 	{ _impl->runCommand( p_cmd, std::move( p_ret ) ); }
 
-	void Interpretor::runScript( const FilePath & p_path ) noexcept { _impl->runScript( p_path ); }
+	void Interpretor::runScript( const FilePath & p_path ) { _impl->runScript( p_path ); }
 
 	void Interpretor::runScript(
-		const FilePath &							  p_path,
-		std::shared_ptr<std::promise<AsyncJobResult>> p_future
-	) noexcept
-	{ _impl->runScript( p_path, std::move( p_future ) ); }
+		const FilePath &									  p_path,
+		const std::shared_ptr<std::promise<AsyncJobResult>> & p_future
+	)
+	{ _impl->runScript( p_path, p_future ); }
 
-	std::string Interpretor::getRuntimePythonVersion() noexcept
+	std::string Interpretor::getRuntimePythonVersion()
 	{
 		auto promise = std::make_shared<std::promise<AsyncJobResult>>();
 		auto future	 = promise->get_future();
@@ -247,7 +255,11 @@ namespace VTX::App::PythonBinding
 
 	void Interpretor::fasterResponseTime() noexcept { _impl->fasterResponseTime(); }
 
-	void Interpretor::subscribe( InterpretorInstructionsOneShot _ ) noexcept { _impl->subscribe( std::move( _ ) ); }
+	void Interpretor::subscribe( InterpretorInstructionsOneShot _ ) { _impl->subscribe( std::move( _ ) ); }
 
-	void Interpretor::Del::operator()( Interpretor::_Impl * p_ ) noexcept { delete p_; }
+	void Interpretor::Del::operator()( Interpretor::_Impl * const p_ ) noexcept
+	{
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		delete p_;
+	}
 } // namespace VTX::App::PythonBinding

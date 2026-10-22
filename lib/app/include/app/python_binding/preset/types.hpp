@@ -12,7 +12,7 @@ namespace VTX::Renderer
 	{
 		struct Layout;
 	}
-}
+} // namespace VTX::Renderer
 
 namespace VTX::App::PythonBinding::Preset
 {
@@ -25,6 +25,6 @@ namespace VTX::App::PythonBinding::Preset
 	using ColorLayoutHandle	   = Handle<Renderer::Color::Layout>;
 	using GraphicsConfigHandle = Handle<Renderer::GraphicsConfig>;
 	using RepresentationHandle = Handle<Renderer::Representation>;
-}
+} // namespace VTX::App::PythonBinding::Preset
 
 #endif

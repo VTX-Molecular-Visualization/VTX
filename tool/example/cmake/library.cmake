@@ -19,7 +19,7 @@ vtx_qt_add_resources(vtx_tool_example ${CMAKE_CURRENT_LIST_DIR}/../asset vtx_qt_
 file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_tool_example_test ${SOURCES_TEST})
 set_property(TARGET vtx_tool_example_test PROPERTY FOLDER "test")
-vtx_configure_target(vtx_tool_example_test)
+vtx_configure_target(vtx_tool_example_test NO_LINTER)
 
 # Link internal dependencies.
 target_link_libraries(vtx_tool_example PUBLIC vtx_util::vtx_util)

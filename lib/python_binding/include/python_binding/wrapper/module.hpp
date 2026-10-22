@@ -35,12 +35,12 @@ namespace VTX::PythonBinding
 			template<typename Action, typename... ActionArgs, typename... Extras>
 			void bindAction( const std::string & p_name, const std::string & p_desc = "", Extras &&... p_extras )
 			{
-				const std::function<void( ActionArgs... )> runActionFunc = []( ActionArgs... p_args )
+				const std::function<void( const ActionArgs &... )> runActionFunc = []( const ActionArgs &... p_args )
 				{
 					Action action;
 					action.execute( p_args... );
 				};
-				def( p_name.c_str(), runActionFunc, p_desc.c_str(), std::forward<Extras>( p_extras )... );
+				def( p_name, runActionFunc, p_desc, std::forward<Extras>( p_extras )... );
 			}
 
 			template<typename Func>

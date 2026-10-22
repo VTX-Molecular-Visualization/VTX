@@ -15,8 +15,10 @@ endfunction()
 
 # Configure a target with VTX-specific settings.
 function(vtx_configure_target p_target)
+	cmake_parse_arguments(PARSE_ARGV 1 arg "NO_LINTER" "" "")
+
 	# Static analysis.
-	if(VTX_ENABLE_CLANG_TIDY)
+	if(VTX_ENABLE_CLANG_TIDY AND NOT arg_NO_LINTER)
 		get_filename_component(_vtx_compiler_dir "${CMAKE_CXX_COMPILER}" DIRECTORY)
 		# TODO: remove hardcoded path.
 		find_program(VTX_CLANG_TIDY_EXECUTABLE NAMES clang-tidy

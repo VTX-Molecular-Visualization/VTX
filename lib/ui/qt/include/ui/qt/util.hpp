@@ -131,10 +131,10 @@ namespace VTX::UI::QT::Util
 	};
 
 	// Create a standardized separator with a slightly larger label on its left. Aim to split form sections.
-	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label ) noexcept;
+	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label );
 
 	// The idea is to create a lineEdit field with a validator that enforce the UInt64 size input
-	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip ) noexcept;
+	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip );
 
 	// Class responsible for deleting a widget on deletion. This class will follow ownership transfer for move
 	// sementics and won't be copyable.

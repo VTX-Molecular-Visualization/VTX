@@ -15,8 +15,10 @@ namespace pybind11::detail
 		bool load( handle src, bool )
 		{
 			PyObject * tmp = PyNumber_Long( src.ptr() );
-			if ( !tmp )
+			if ( not tmp )
+			{
 				return false;
+			}
 
 			value = static_cast<entt::entity>( PyLong_AsUnsignedLong( tmp ) );
 			Py_DECREF( tmp );
@@ -25,9 +27,7 @@ namespace pybind11::detail
 
 		// entt::entity -> Python int
 		static handle cast( entt::entity src, return_value_policy, handle )
-		{
-			return PyLong_FromUnsignedLong( static_cast<std::uint32_t>( src ) );
-		}
+		{ return PyLong_FromUnsignedLong( static_cast<std::uint32_t>( src ) ); }
 	};
 } // namespace pybind11::detail
 

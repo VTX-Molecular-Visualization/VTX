@@ -29,34 +29,31 @@ namespace VTX::App::Helper::Chemistry
 		std::vector<Index>			  res;
 		const ChemDB::Residue::SYMBOL residueSymbol = ChemDB::Residue::getSymbolFromAnyName( p_residueName );
 
-		/*
 		if ( residueSymbol != ChemDB::Residue::SYMBOL::UNKNOWN )
 		{
-			for ( Index iRes = p_chain.getIndexFirstResidue(); iRes <= p_chain.getIndexLastResidue(); iRes++ )
+			for ( Index iRes = 0; iRes < p_topology.getResidueCount(); ++iRes )
 			{
-				Component::Chemistry::Residue * const residue = system.getResidue( iRes );
-
-				if ( residue != nullptr && residue->getSymbol() == residueSymbol )
-					res.emplace_back( residue );
+				if ( p_topology.getResidueSymbol( iRes ) == residueSymbol )
+				{
+					res.emplace_back( iRes );
+				}
 			}
 		}
 		else // Unknown symbol => check names
 		{
-			for ( Index iRes = p_chain.getIndexFirstResidue(); iRes <= p_chain.getIndexLastResidue(); iRes++ )
+			for ( Index iRes = 0; iRes < p_topology.getResidueCount(); ++iRes )
 			{
-				Component::Chemistry::Residue * const residue = system.getResidue( iRes );
-
-				if ( residue == nullptr || residue->getSymbol() != ChemDB::Residue::SYMBOL::UNKNOWN )
-					continue;
-
-				if ( residue->getName() == p_residueName || residue->getShortName() == p_residueName
-					 || residue->getLongName() == p_residueName )
+				if ( p_topology.getResidueSymbol( iRes ) != ChemDB::Residue::SYMBOL::UNKNOWN )
 				{
-					res.emplace_back( residue );
+					continue;
+				}
+
+				if ( p_topology.getResidueName( iRes ) == p_residueName )
+				{
+					res.emplace_back( iRes );
 				}
 			}
 		}
-		*/
 
 		return res;
 	}

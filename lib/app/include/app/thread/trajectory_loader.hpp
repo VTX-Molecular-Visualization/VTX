@@ -66,9 +66,9 @@ namespace VTX::App::Thread
 		/**
 		 * @brief Threaded work.
 		 */
-		uint _run( Util::Thread::StopToken, Util::Thread::BaseThread & );
-		uint _loadFullBuffer( Util::Thread::StopToken, Util::Thread::BaseThread & );
-		uint _loadCircularBuffer( Util::Thread::StopToken, Util::Thread::BaseThread & );
+		uint _run( const Util::Thread::StopToken &, Util::Thread::BaseThread & );
+		uint _loadFullBuffer( const Util::Thread::StopToken &, Util::Thread::BaseThread & );
+		uint _loadCircularBuffer( const Util::Thread::StopToken &, Util::Thread::BaseThread & );
 
 		/**
 		 * @brief Reader.

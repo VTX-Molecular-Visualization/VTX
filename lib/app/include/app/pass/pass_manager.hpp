@@ -42,14 +42,14 @@ namespace VTX::App::Pass
 	  public:
 		using UpdateDelegate = Util::EventHub::Delegate<void( const float, const float )>;
 
-		PassManager()				  = default;
-		PassManager( PassManager && ) = default;
+		PassManager()						   = default;
+		PassManager( PassManager && ) noexcept = default;
 
 		/**
 		 * @brief Instantiates a pass.
 		 */
 		template<ConceptPass T, typename... Args>
-		T * const addPass( Args &&... p_args )
+		T * addPass( Args &&... p_args )
 		{
 			assert( not _passes.has<T>() );
 
@@ -58,7 +58,7 @@ namespace VTX::App::Pass
 			// Register update delegate.
 			UpdateDelegate d;
 			d.template connect<&T::update>( p );
-			_delegates.push_back( std::move( d ) );
+			_delegates.push_back( d );
 
 			return p;
 		}

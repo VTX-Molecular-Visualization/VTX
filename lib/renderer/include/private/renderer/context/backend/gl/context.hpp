@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <sstream>
 #include <stdexcept>
+#include <type_traits>
 
 // ============================================================
 // WGL (Windows)
@@ -229,8 +230,8 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 
 		int _choosePixelFormat(
-			const PFNWGLCHOOSEPIXELFORMATARBPROC p_choosePixelFormat,
-			PIXELFORMATDESCRIPTOR &				 p_pfd
+			std::remove_pointer_t<PFNWGLCHOOSEPIXELFORMATARBPROC> * const p_choosePixelFormat,
+			PIXELFORMATDESCRIPTOR &										  p_pfd
 		)
 		{
 			int pixelFormat = 0;

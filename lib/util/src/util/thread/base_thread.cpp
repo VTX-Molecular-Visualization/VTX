@@ -24,12 +24,12 @@ namespace VTX::Util::Thread
 	void BaseThread::_start( const AsyncOp & p_function, const EndCallback & p_callback )
 	{
 		_thread = std::jthread(
-			[ this, p_function, p_callback ]( std::stop_token p_stopToken )
+			[ this, p_function, p_callback ]( const std::stop_token & p_stopToken )
 			{
 				uint res = 0;
 				try
 				{
-					res = p_function( std::move( p_stopToken ), *this );
+					res = p_function( p_stopToken, *this );
 					if ( p_callback )
 					{
 						p_callback( *this, res, _stopped.load() );
@@ -38,6 +38,10 @@ namespace VTX::Util::Thread
 				catch ( const std::exception & p_e )
 				{
 					VTX_ERROR( "Unhandled exception in thread: {}", p_e.what() );
+				}
+				catch ( ... )
+				{
+					VTX_ERROR( "Unhandled unknown exception in thread" );
 				}
 				_finished.store( true, std::memory_order_release );
 			}

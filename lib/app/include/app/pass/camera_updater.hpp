@@ -8,6 +8,7 @@
 #include "app/pass/pass_manager.hpp"
 #include "app/services.hpp"
 #include "app/setting/controller.hpp"
+#include <deque>
 #include <renderer/camera.hpp>
 #include <util/constants.hpp>
 #include <util/math/transform.hpp>
@@ -57,7 +58,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Controller insertion mode.
 		 */
-		enum struct CTRL_INSERTION_MODE
+		enum struct CTRL_INSERTION_MODE : uint8_t
 		{
 			FRONT,
 			BACK

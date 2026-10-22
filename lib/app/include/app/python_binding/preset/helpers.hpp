@@ -22,6 +22,6 @@ namespace VTX::App::PythonBinding::Preset
 		validate( p_preset );
 		return REG().get<T>( p_preset.entity );
 	}
-}
+} // namespace VTX::App::PythonBinding::Preset
 
 #endif

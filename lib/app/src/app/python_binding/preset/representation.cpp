@@ -6,6 +6,7 @@
 #include <pybind11/native_enum.h>
 #include <python_binding/binding/helper.hpp>
 #include <renderer/representation.hpp>
+#include <string>
 #include <util/enum.hpp>
 
 namespace VTX::App::PythonBinding::Preset
@@ -48,7 +49,8 @@ namespace VTX::App::PythonBinding::Preset
 		);
 		for ( const Renderer::E_SES_COMPUTE_MODE value : magic_enum::enum_values<Renderer::E_SES_COMPUTE_MODE>() )
 		{
-			computeMode.value( Util::Enum::enumName( value ).data(), value );
+			const std::string enumName( Util::Enum::enumName( value ) );
+			computeMode.value( enumName.c_str(), value );
 		}
 		computeMode.finalize();
 

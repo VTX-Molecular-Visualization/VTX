@@ -62,9 +62,9 @@ namespace VTX::PythonBinding
 		  public:
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
 
-			virtual void bind( Wrapper::Module & p_ ) override { _obj.bind( p_ ); }
+			void bind( Wrapper::Module & p_ ) override { _obj.bind( p_ ); }
 
-			virtual void importHeaders() override
+			void importHeaders() override
 			{
 				if constexpr ( requires( T & o ) {
 								   { o.importHeaders() };
@@ -85,8 +85,8 @@ namespace VTX::PythonBinding
 		}
 	};
 
-	void importFullModule( const std::string & p_moduleName ) noexcept;
-	void importObject( const std::string & p_moduleName, const std::string & p_objectName ) noexcept;
+	void importFullModule( const std::string & p_moduleName );
+	void importObject( const std::string & p_moduleName, const std::string & p_objectName );
 } // namespace VTX::PythonBinding
 
 #endif

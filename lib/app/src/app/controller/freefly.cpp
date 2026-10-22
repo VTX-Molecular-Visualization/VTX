@@ -23,7 +23,7 @@ namespace VTX::App::Controller
 
 		//  Rotation.
 		const Vec2i rotation	  = input.rotate();
-		Vec3f localRotation = VEC3F_ZERO;
+		Vec3f		localRotation = VEC3F_ZERO;
 		if ( rotation.x || rotation.y )
 		{
 			localRotation = Vec3f(
@@ -32,7 +32,7 @@ namespace VTX::App::Controller
 		}
 
 		const Vec2i rotationAlt	 = input.rotateAlt();
-		float rollRotation = 0.f;
+		float		rollRotation = 0.f;
 		if ( rotationAlt.x || rotationAlt.y )
 		{
 			rollRotation = -rotationSpeed * rotationAlt.x;
@@ -41,9 +41,9 @@ namespace VTX::App::Controller
 		// Translation.
 		const Vec3i translationAxis = input.translationAxis();
 		Vec3f		translation		= VEC3F_ZERO;
-		translation.x				= float( translationAxis.x );
-		translation.y				= float( translationAxis.y );
-		translation.z				= float( translationAxis.z );
+		translation.x				= static_cast<float>( translationAxis.x );
+		translation.y				= static_cast<float>( translationAxis.y );
+		translation.z				= static_cast<float>( translationAxis.z );
 
 		if ( translation != VEC3F_ZERO )
 		{

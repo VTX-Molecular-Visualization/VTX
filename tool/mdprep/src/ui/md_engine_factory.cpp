@@ -22,15 +22,6 @@
 namespace VTX::Tool::Mdprep::ui
 {
 
-	constexpr const char * string( const E_MD_ENGINE & p_ ) noexcept
-	{
-		switch ( p_ )
-		{
-		case E_MD_ENGINE::gromacs: return { "Gromacs" };
-		default: break;
-		}
-		return "DEBUUUG"; // For developers that add new MD Engine support
-	}
 	namespace
 	{
 		constexpr std::array<const char *, MD_ENGINE_NUMBER> createMdEngineStringList()
@@ -43,10 +34,12 @@ namespace VTX::Tool::Mdprep::ui
 			return out;
 		}
 	} // namespace
+
 	constexpr const std::array<const char *, MD_ENGINE_NUMBER> g_mdEngineStrings = createMdEngineStringList();
 
 	const std::array<const char *, MD_ENGINE_NUMBER> & mdEngineStrings() { return g_mdEngineStrings; }
-	void											   get( const E_MD_ENGINE & p_engine, MdEngine & p_out ) noexcept
+
+	void get( const E_MD_ENGINE & p_engine, MdEngine & p_out )
 	{
 		switch ( p_engine )
 		{

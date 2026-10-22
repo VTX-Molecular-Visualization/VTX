@@ -19,6 +19,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include <random>
+#include <stdexcept>
 
 namespace VTX::Util::Math
 {
@@ -202,7 +203,7 @@ namespace VTX::Util::Math
 		float u = dot( q, q );
 		float v = dot( r, r );
 
-		float angle = 0.f;
+		float angle {};
 		if ( u <= 0.f || v <= 0.f )
 		{
 			angle = TWO_PIf;
@@ -235,8 +236,12 @@ namespace VTX::Util::Math
 	) noexcept
 	{ return p_scalar0 * p_vector0 + p_scalar1 * p_vector1; }
 
-	constexpr uint nextPowerOfTwoValue( const uint p_baseNumber ) noexcept
+	constexpr uint nextPowerOfTwoValue( const uint p_baseNumber )
 	{
+		if ( p_baseNumber > ( uint { 1 } << ( std::numeric_limits<uint>::digits - 1 ) ) )
+		{
+			throw std::overflow_error( "Next power of two is not representable" );
+		}
 		uint i = 1;
 		while ( p_baseNumber > i )
 		{
@@ -265,7 +270,7 @@ namespace VTX::Util::Math
 		return Vec3f( cosf( phi ) * sinTheta, sinf( phi ) * sinTheta, cosTheta );
 	}
 
-	inline float uniformHemispherePdf() { return INV_2PIf; }
+	constexpr float uniformHemispherePdf() { return INV_2PIf; }
 
 	// Cosine weighted hemisphere samping: z is up.
 	inline Vec3f cosineWeightedHemisphere( const float p_u = randomFloat(), const float p_v = randomFloat() )
@@ -276,7 +281,7 @@ namespace VTX::Util::Math
 		return Vec3f( cosf( phi ) * sinTheta, sinf( phi ) * sinTheta, cosTheta );
 	}
 
-	inline float cosineWeightedHemispherePdf( const float p_cosTheta ) { return p_cosTheta * INV_PIf; }
+	constexpr float cosineWeightedHemispherePdf( const float p_cosTheta ) { return p_cosTheta * INV_PIf; }
 
 	// Compute alignment of p_v to p_a (must be power of two).
 	template<typename T>

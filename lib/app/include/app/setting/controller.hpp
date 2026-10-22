@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_SETTING_CONTROLLER__
 #define __VTX_APP_SETTING_CONTROLLER__
 
+#include <cstdint>
 #include <string>
 #include <util/types.hpp>
 
@@ -9,7 +10,7 @@ namespace VTX::App::Setting
 	/**
 	 * @brief Available camera controllers.
 	 */
-	enum struct E_CONTROLLER : uint
+	enum struct E_CONTROLLER : uint8_t
 	{
 		TRACKBALL,
 		FREEFLY

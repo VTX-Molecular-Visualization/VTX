@@ -779,7 +779,11 @@ namespace VTX::IO
 		{ return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] ); }
 	};
 
-	void SystemReader::Del::operator()( _Impl * const p_impl ) noexcept { std::default_delete<_Impl> {}( p_impl ); }
+	void SystemReader::Del::operator()( _Impl * const p_impl ) noexcept
+	{
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		delete p_impl;
+	}
 
 	SystemReader::SystemReader(
 		const FilePath &	p_path,

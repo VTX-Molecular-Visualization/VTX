@@ -256,7 +256,11 @@ namespace VTX::PythonBinding
 
 	Wrapper::Module & Interpretor::getModule() { return _impl->getVTXModule(); }
 
-	void Interpretor::Del::operator()( Interpretor::Impl * p_ptr ) const noexcept { delete p_ptr; }
+	void Interpretor::Del::operator()( Interpretor::Impl * const p_ptr ) const noexcept
+	{
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		delete p_ptr;
+	}
 
 	void Interpretor::print( const std::string & p_line ) { pybind11::print( p_line ); }
 

@@ -10,7 +10,7 @@ namespace VTX::App::Network
 {
 	NetworkManager::NetworkManager() { HUB().connect<Events::Update, &NetworkManager::_onUpdate>( this ); }
 
-	NetworkManager::~NetworkManager() {}
+	NetworkManager::~NetworkManager() = default;
 
 	NetworkManager::DownloadId NetworkManager::downloadFile(
 		const std::string_view				   p_url,
@@ -61,7 +61,7 @@ namespace VTX::App::Network
 				}
 
 				{
-					const std::lock_guard lock( _mutex );
+					const std::scoped_lock lock( _mutex );
 					_activeDownload.erase( id );
 					if ( not p_stopToken.stop_requested() )
 					{
@@ -74,7 +74,7 @@ namespace VTX::App::Network
 		);
 
 		{
-			const std::lock_guard lock( _mutex );
+			const std::scoped_lock lock( _mutex );
 			_activeDownload[ id ] = thread.getId();
 		}
 
@@ -85,8 +85,8 @@ namespace VTX::App::Network
 	{
 		Util::Thread::ID threadId;
 		{
-			const std::lock_guard lock( _mutex );
-			const auto		it = _activeDownload.find( p_id );
+			const std::scoped_lock lock( _mutex );
+			const auto			   it = _activeDownload.find( p_id );
 			if ( it == _activeDownload.end() )
 			{
 				return;
@@ -105,7 +105,7 @@ namespace VTX::App::Network
 	{
 		std::vector<DownloadResult> completed;
 		{
-			const std::lock_guard lock( _mutex );
+			const std::scoped_lock lock( _mutex );
 			if ( _completedDownloads.empty() )
 			{
 				return;

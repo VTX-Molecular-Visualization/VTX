@@ -9,11 +9,14 @@
 #include <latch>
 #include <memory>
 #include <mutex>
+#include <tuple>
+#include <type_traits>
 #include <util/chrono.hpp>
 #include <util/hashing.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
 #include <util/thread/thread_manager.hpp>
+#include <utility>
 
 namespace VTX::App::Action
 {
@@ -33,16 +36,26 @@ namespace VTX::App::Action
 	class ActionManager
 	{
 	  public:
+		/**
+		 * @brief Constructor.
+		 */
 		ActionManager();
 
+		/**
+		 * @brief Handle queued actions.
+		 */
 		void update( float, float );
-		void shutdown() noexcept;
+
+		/**
+		 * @brief Clear pending actions.
+		 */
+		void shutdown();
 
 		/**
 		 * @brief Thread safe. Subscribe an action to be executed later on the main thread.
 		 * @param
 		 */
-		void subscribe( QueuedAction ) noexcept;
+		void subscribe( QueuedAction );
 
 		/**
 		 * @brief Execute an action of type A with the given arguments.
@@ -172,8 +185,8 @@ namespace VTX::App::Action
 		{
 			SomeAction _obj;
 
-			std::tuple<std::remove_reference_t<Args>...> _args;
-			std::shared_ptr<_State>						 _state;
+			std::tuple<std::remove_cvref_t<Args>...> _args;
+			std::shared_ptr<_State>					 _state;
 
 		  public:
 			_wrapper() = delete;
@@ -214,6 +227,7 @@ namespace VTX::App::Action
 
 	  public:
 		template<typename SomeAction, typename... Args>
+			requires( not std::same_as<std::remove_cvref_t<SomeAction>, QueuedAction> )
 		QueuedAction( SomeAction && p_action, Args &&... args ) :
 			_ptr( new _wrapper<SomeAction, Args...>(
 				_state,
@@ -229,6 +243,7 @@ namespace VTX::App::Action
 		QueuedAction & operator=( const QueuedAction & ) = delete;
 
 		template<typename SomeAction>
+			requires( not std::same_as<std::remove_cvref_t<SomeAction>, QueuedAction> )
 		QueuedAction( SomeAction && p_action ) :
 			_ptr( new _wrapper<SomeAction>( _state, std::forward<SomeAction>( p_action ) ) )
 		{
@@ -244,7 +259,7 @@ namespace VTX::App::Action
 			 * @brief Stop the execution until the linked action is finished. Please do not wait on the
 			 * main thread.
 			 */
-			void wait() noexcept
+			void wait()
 			{
 				bool executed = false;
 				{
@@ -261,7 +276,7 @@ namespace VTX::App::Action
 
 		  private:
 			Waiter( std::shared_ptr<_interface> ptr, std::shared_ptr<_State> p_state ) :
-				_ptr( ptr ), _statePtr( std::move( p_state ) )
+				_ptr( std::move( ptr ) ), _statePtr( std::move( p_state ) )
 			{
 			}
 

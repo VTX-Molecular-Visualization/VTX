@@ -18,7 +18,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Constructors.
 		 */
-		AABB() = default;
+		constexpr AABB() = default;
 		AABB( const Vec3f & p_point );
 		AABB( const Vec3f & p_min, const Vec3f & p_max );
 		AABB( const Vec3f & p_center, float p_radius );
@@ -31,14 +31,15 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Check if the AABB is valid.
 		 */
-		bool isValid() const { return ( ( _min.x <= _max.x ) && ( _min.y <= _max.y ) && ( _min.z <= _max.z ) ); }
+		constexpr bool isValid() const
+		{ return ( ( _min.x <= _max.x ) && ( _min.y <= _max.y ) && ( _min.z <= _max.z ) ); }
 
 		/**
 		 * @brief Getters.
 		 */
-		const Vec3f & getMin() const { return _min; }
+		constexpr const Vec3f & getMin() const { return _min; }
 
-		const Vec3f & getMax() const { return _max; }
+		constexpr const Vec3f & getMax() const { return _max; }
 
 		/**
 		 * @brief Get all 8 summits of the AABB.
@@ -75,7 +76,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Translate the AABB by the given vector.
 		 */
-		void translate( const Vec3f & p_translation )
+		constexpr void translate( const Vec3f & p_translation )
 		{
 			_min += p_translation;
 			_max += p_translation;
@@ -89,17 +90,18 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Compute properties of the AABB.
 		 */
-		Vec3f diagonal() const { return _max - _min; }
+		constexpr Vec3f diagonal() const { return _max - _min; }
 
 		float diameter() const { return isValid() ? Util::Math::length( diagonal() ) : 0.f; }
 
 		float radius() const { return isValid() ? diameter() * 0.5f : 0.f; }
 
-		Vec3f		 centroid() const { return ( _min + _max ) * 0.5f; }
-		uint		 largestAxis() const;
-		float		 area() const;
-		Vec3f		 offset( const Vec3f & p_pt ) const;
-		float		 offset( const Vec3f & p_pt, uint p_dim ) const;
+		constexpr Vec3f centroid() const { return ( _min + _max ) * 0.5f; }
+
+		uint  largestAxis() const;
+		float area() const;
+		Vec3f offset( const Vec3f & p_pt ) const;
+		float offset( const Vec3f & p_pt, uint p_dim ) const;
 
 		/*
 		bool intersect(

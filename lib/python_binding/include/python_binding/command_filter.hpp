@@ -37,7 +37,7 @@ namespace VTX::PythonBinding
 	 * @param
 	 * @return
 	 */
-	FilterResult filter( const std::string & ) noexcept;
+	FilterResult filter( const std::string & );
 } // namespace VTX::PythonBinding
 
 #endif

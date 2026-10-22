@@ -1,9 +1,11 @@
 #ifndef __VTX_IO_WRITER_SHARED__
 #define __VTX_IO_WRITER_SHARED__
 
+#include <cstdint>
+
 namespace VTX::IO::Writer
 {
-	enum class E_FILE_FORMATS
+	enum class E_FILE_FORMATS : uint8_t
 	{
 		none,
 		pdb,
@@ -29,7 +31,7 @@ namespace VTX::IO::Writer
 		COUNT
 	};
 
-	enum class E_BOND_ORDER
+	enum class E_BOND_ORDER : uint8_t
 	{
 		unknown,
 		single,
@@ -49,7 +51,7 @@ namespace VTX::IO::Writer
 	 * @brief Helps to know what type of structural data to write. In the future we will probably support docking
 	 * results for instance
 	 */
-	enum class E_WRITE_TYPE
+	enum class E_WRITE_TYPE : uint8_t
 	{
 		trajectory
 	};

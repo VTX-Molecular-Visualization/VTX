@@ -37,12 +37,12 @@ namespace VTX::App::Extractor
 		/**
 		 * @brief Meant to be used as a thread callable. Actually perform the extraction
 		 */
-		uint operator()( Util::Thread::StopToken, Util::Thread::OptionalThreadReference );
+		uint operator()( const Util::Thread::StopToken &, Util::Thread::OptionalThreadReference );
 
 		/**
 		 * @brief Stop current execution until the system is extracted.
 		 */
-		void wait() noexcept;
+		void wait();
 
 	  private:
 		struct _Data;

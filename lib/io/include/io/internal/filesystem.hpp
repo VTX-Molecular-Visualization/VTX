@@ -1,6 +1,7 @@
 #ifndef __VTX_IO_INTERNAL_FILESYSTEM__
 #define __VTX_IO_INTERNAL_FILESYSTEM__
 
+#include <cstdint>
 #include <string_view>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
@@ -11,9 +12,9 @@ namespace VTX::IO::Internal::Filesystem
 {
 	// JSon save fail when size > 192
 	static constexpr int			  MAX_FILE_LENGTH	   = 180;
-	static constexpr std::string_view REGEX_VALID_FILENAME = "[^\\\\/:*?\"<>|]*";
+	static constexpr std::string_view REGEX_VALID_FILENAME = R"([^\\/:*?"<>|]*)";
 
-	enum class FILE_TYPE_ENUM : int
+	enum class FILE_TYPE_ENUM : uint8_t
 	{
 		SCENE,
 		CONFIGURATION,

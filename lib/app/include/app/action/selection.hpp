@@ -45,9 +45,9 @@ namespace VTX::App::Action::Selection
 		{
 			const Util::ScopedChrono timer( "App::Action::SetSelected" );
 
-			const auto &				 selection = REG().get<System::Selection>( p_ent );
+			const auto &					   selection = REG().get<System::Selection>( p_ent );
 			const Core::Struct::IndexRangeList atoms	 = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
-			Util::Math::BitSet			 current   = selection.atoms;
+			Util::Math::BitSet				   current	 = selection.atoms;
 
 			if ( not p_append )
 			{
@@ -93,11 +93,11 @@ namespace VTX::App::Action::Selection
 	struct SetSelectedItem
 	{
 		void execute(
-			const Entity,
-			const Core::Struct::E_SYSTEM_ITEM,
+			Entity,
+			Core::Struct::E_SYSTEM_ITEM,
 			const Core::Struct::IndexRangeList & = {},
-			const bool							 = true,
-			const bool							 = false
+			bool								 = true,
+			bool								 = false
 		);
 
 		void execute(
@@ -147,7 +147,7 @@ namespace VTX::App::Action::Selection
 		/**
 		 * @brief Clear mode.
 		 */
-		enum struct E_MODE : uint
+		enum struct E_MODE : uint8_t
 		{
 			THIS,
 			OTHERS
@@ -159,7 +159,7 @@ namespace VTX::App::Action::Selection
 		void execute( Entity, E_MODE );
 	};
 
-	enum struct E_GRANULARITY : uint
+	enum struct E_GRANULARITY : uint8_t
 	{
 		ATOM,
 		RESIDUE,

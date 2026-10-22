@@ -8,7 +8,7 @@ include("${DIR_LIBS}/renderer/cmake/vtx_link_cuda.cmake")
 set(PYBIND11_FINDPYTHON ON)
 
 message("vtx")
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.28)
 
 project(vtx)
 

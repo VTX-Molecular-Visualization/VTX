@@ -23,7 +23,7 @@ file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../test/src/*")
 
 add_executable(vtx_tool_mdprep_test ${SOURCES} )
 set_property(TARGET vtx_tool_mdprep_test PROPERTY FOLDER "test")
-vtx_configure_target(vtx_tool_mdprep_test)
+vtx_configure_target(vtx_tool_mdprep_test NO_LINTER)
 
 target_include_directories(vtx_tool_mdprep_test PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../include")
 

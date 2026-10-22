@@ -237,7 +237,7 @@ namespace VTX::IO::Util
 			const NeighbourIndexes &  p_linkedAtomsVector,
 			std::vector<CycleState> & p_cycleStatePerAtoms,
 			std::vector<Index> &	  p_cycleIndexes,
-			const short				  p_counter
+			const int				  p_counter
 		)
 		{
 			const Index currentAtomIndex = p_cycleIndexes[ p_counter - 1 ];

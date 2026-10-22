@@ -3,7 +3,7 @@
 
 namespace VTX::Util
 {
-	void HistoryBrowser::add( std::string p_newHistory ) noexcept { _history.push_back( std::move( p_newHistory ) ); }
+	void HistoryBrowser::add( std::string p_newHistory ) { _history.push_back( std::move( p_newHistory ) ); }
 
 	void HistoryBrowser::tryMoveForward() noexcept
 	{
@@ -28,7 +28,7 @@ namespace VTX::Util
 		_browsingHistory = false;
 	}
 
-	std::string HistoryBrowser::currentString() const noexcept
+	std::string HistoryBrowser::currentString() const
 	{
 		if ( _browsingHistory )
 		{

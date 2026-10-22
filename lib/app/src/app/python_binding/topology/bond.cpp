@@ -27,8 +27,8 @@ namespace VTX::App::PythonBinding::Topology
 				"order",
 				[]( const Bond & p_bond )
 				{
-					return Core::ChemDB::Bond::ORDER_STR[ size_t( getTopology( p_bond.entity )
-																	  .getBondOrder( p_bond.index ) ) ];
+					return Core::ChemDB::Bond::ORDER_STR[ static_cast<size_t>( getTopology( p_bond.entity )
+																				   .getBondOrder( p_bond.index ) ) ];
 				}
 			);
 	}

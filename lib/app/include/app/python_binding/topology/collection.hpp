@@ -40,7 +40,7 @@ namespace VTX::App::PythonBinding::Topology
 	inline size_t resolveIndex( const pybind11::ssize_t p_index, const size_t p_size )
 	{
 		// Python can use negative indices to access elements from the end of a collection.
-		const pybind11::ssize_t signedSize = pybind11::ssize_t( p_size );
+		const pybind11::ssize_t signedSize = static_cast<pybind11::ssize_t>( p_size );
 		const pybind11::ssize_t index	   = p_index < 0 ? signedSize + p_index : p_index;
 
 		if ( index < 0 || index >= signedSize )
@@ -48,7 +48,7 @@ namespace VTX::App::PythonBinding::Topology
 			throw pybind11::index_error( "Index out of bounds" );
 		}
 
-		return size_t( index );
+		return static_cast<size_t>( index );
 	}
 
 	/**

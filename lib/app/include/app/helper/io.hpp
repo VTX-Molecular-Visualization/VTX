@@ -5,7 +5,7 @@
 
 namespace VTX::App::Helper::IO
 {
-	enum class FileDropHandling
+	enum class FileDropHandling : uint8_t
 	{
 		actionOpen,
 		associateTrajectory

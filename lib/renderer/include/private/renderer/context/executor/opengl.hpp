@@ -289,7 +289,14 @@ namespace VTX::Renderer::Context::Executor
 
 			using ExternalFunction = void ( * )( uintptr_t );
 			auto function		   = reinterpret_cast<ExternalFunction>( p_payload.function );
-			function( p_payload.context );
+			try
+			{
+				function( p_payload.context );
+			}
+			catch ( ... )
+			{
+				VTX_ERROR( "External render pass failed" );
+			}
 		}
 
 		static void execute( const PayloadEndPass & p_payload ) noexcept

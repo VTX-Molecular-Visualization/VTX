@@ -11,7 +11,6 @@
 namespace VTX::Bench
 {
 	class Scene;
-	class Camera;
 
 	class UserInterface
 	{
@@ -19,7 +18,7 @@ namespace VTX::Bench
 		UserInterface( size_t p_width, size_t p_height );
 		~UserInterface();
 
-		double getTime() const { return double( SDL_GetTicks() ); }
+		double getTime() const { return static_cast<double>( SDL_GetTicks() ); }
 
 		float getDeltaTime() const { return ImGui::GetIO().DeltaTime; }
 
@@ -29,7 +28,7 @@ namespace VTX::Bench
 		uintptr_t getNativeDisplay() const;
 		uint8_t	  getNativePlatform() const;
 
-		void draw( CameraController * p_camera, Scene * p_scene, Renderer::Renderer * p_renderer );
+		void draw( CameraController * p_camera, Scene * p_scene, Renderer::Renderer * p_renderer ) const;
 
 		bool getEvent( SDL_Event & p_event ) const
 		{

@@ -18,7 +18,7 @@ namespace VTX::Util
 		 * @brief Adds a new string to the history
 		 * @param p_newHistory
 		 */
-		void add( std::string p_newHistory ) noexcept;
+		void add( std::string p_newHistory );
 
 		/**
 		 * @brief Assumes there is at least one element in the history
@@ -49,7 +49,7 @@ namespace VTX::Util
 		 * @brief Returns the string currently being browsed.
 		 * @return
 		 */
-		std::string currentString() const noexcept;
+		std::string currentString() const;
 
 		/**
 		 * @brief Returns whether the history is empty or not.

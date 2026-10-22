@@ -415,7 +415,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief To std vector.
 		 */
-		std::vector<T> toStdVector() const
+		constexpr std::vector<T> toStdVector() const
 		{
 			const size_t   count = static_cast<size_t>( getCount() );
 			std::vector<T> vec( count );

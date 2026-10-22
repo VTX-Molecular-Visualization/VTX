@@ -60,7 +60,7 @@ namespace VTX::App::Action::Visibility
 			else
 			{
 				const Core::Struct::IndexRangeList atoms   = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
-				Util::Math::BitSet			 current = visibility.atoms;
+				Util::Math::BitSet				   current = visibility.atoms;
 
 				if ( p_visible )
 				{
@@ -76,19 +76,13 @@ namespace VTX::App::Action::Visibility
 		}
 
 		void execute( const Entity p_ent, const Core::Struct::IndexRange & p_range, const bool p_visible = true )
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_visible );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_visible ); }
 
 		void execute( const Entity p_ent, const std::vector<Index> & p_values, const bool p_visible = true )
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_visible );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_visible ); }
 
 		void execute( const Entity p_ent, const Index p_value, const bool p_visible = true )
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_visible );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_visible ); }
 	};
 
 	struct SetVisibleSelected
@@ -99,10 +93,10 @@ namespace VTX::App::Action::Visibility
 	struct SetVisibleItem
 	{
 		void execute(
-			const Entity						 p_ent,
-			const Core::Struct::E_SYSTEM_ITEM	 p_item,
+			Entity								 p_ent,
+			Core::Struct::E_SYSTEM_ITEM			 p_item,
 			const Core::Struct::IndexRangeList & p_ranges  = {},
-			const bool							 p_visible = true
+			bool								 p_visible = true
 		);
 
 		void execute(
@@ -111,9 +105,7 @@ namespace VTX::App::Action::Visibility
 			const Core::Struct::IndexRange &  p_range,
 			const bool						  p_visible = true
 		)
-		{
-			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_visible );
-		}
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_visible ); }
 
 		void execute(
 			const Entity					  p_ent,
@@ -121,9 +113,7 @@ namespace VTX::App::Action::Visibility
 			const std::vector<Index> &		  p_values,
 			const bool						  p_visible = true
 		)
-		{
-			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_visible );
-		}
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_visible ); }
 
 		void execute(
 			const Entity					  p_ent,
@@ -131,9 +121,7 @@ namespace VTX::App::Action::Visibility
 			const Index						  p_value,
 			const bool						  p_visible = true
 		)
-		{
-			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_visible );
-		}
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_visible ); }
 	};
 
 } // namespace VTX::App::Action::Visibility

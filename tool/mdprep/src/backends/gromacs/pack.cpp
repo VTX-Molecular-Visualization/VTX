@@ -8,7 +8,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 	namespace
 	{
-		std::vector<std::pair<const char *, std::string>> generateKeyValues( const MdInstructions::Equil & p_ ) noexcept
+		std::vector<std::pair<const char *, std::string>> generateKeyValues( const MdInstructions::Equil & p_ )
 		{
 			return {
 				{ "${nsteps}", std::to_string( p_.nsteps ) },		{ "${dt}", std::to_string( p_.dt ) },
@@ -17,7 +17,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			};
 		}
 
-		std::vector<std::pair<const char *, std::string>> generateKeyValues( const MdInstructions::Prod & p_ ) noexcept
+		std::vector<std::pair<const char *, std::string>> generateKeyValues( const MdInstructions::Prod & p_ )
 		{
 			return {
 				{ "${nsteps}", std::to_string( p_.nsteps ) },
@@ -34,7 +34,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			const FilePath &										  p_template,
 			const FilePath &										  p_dest,
 			const std::vector<std::pair<const char *, std::string>> & p_replaceText
-		) noexcept
+		)
 		{
 			FilePath templateFile = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "nvt.mdp";
 			if ( fs::exists( p_template ) )
@@ -52,7 +52,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	} // namespace
 
-	ErrorReport createNvtMdp( const FilePath & p_dest, MdInstructions & p_in ) noexcept
+	ErrorReport createNvtMdp( const FilePath & p_dest, MdInstructions & p_in )
 	{
 		if ( fs::exists( p_dest ) == false )
 		{
@@ -65,7 +65,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		);
 	}
 
-	ErrorReport createNptMdp( const FilePath & p_dest, MdInstructions & p_in ) noexcept
+	ErrorReport createNptMdp( const FilePath & p_dest, MdInstructions & p_in )
 	{
 		if ( fs::exists( p_dest ) == false )
 		{
@@ -78,7 +78,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		);
 	}
 
-	ErrorReport createProdMdp( const FilePath & p_dest, MdInstructions & p_in ) noexcept
+	ErrorReport createProdMdp( const FilePath & p_dest, MdInstructions & p_in )
 	{
 		if ( fs::exists( p_dest ) == false )
 		{
@@ -91,7 +91,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		);
 	}
 
-	ErrorReport createWorkflowPy( const FilePath & p_dest, MdInstructions & p_in ) noexcept
+	ErrorReport createWorkflowPy( const FilePath & p_dest, MdInstructions & p_in )
 	{
 		if ( fs::exists( p_dest ) == false )
 		{
@@ -114,7 +114,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		const FilePath &			 p_dest,
 		const CumulativeOuputFiles & p_prepareOutputs,
 		MdInstructions &			 p_instructions
-	) noexcept
+	)
 	{
 		ErrorReport err = createNvtMdp( p_dest, p_instructions );
 		if ( err.error )

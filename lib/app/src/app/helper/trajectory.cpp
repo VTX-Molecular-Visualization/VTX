@@ -22,7 +22,7 @@ namespace VTX::App::Helper::Trajectory
 		}
 
 		const uint windowFrameCount = static_cast<uint>(
-			std::min( static_cast<size_t>( p_frameCount ), std::max( size_t( 1 ), p_windowFrameCount ) )
+			std::min( static_cast<size_t>( p_frameCount ), std::max( static_cast<size_t>( 1 ), p_windowFrameCount ) )
 		);
 		if ( p_direction == App::Trajectory::TRAJECTORY_READ_DIRECTION::FORWARD )
 		{
@@ -165,26 +165,29 @@ namespace VTX::App::Helper::Trajectory
 				   : App::Trajectory::FrameRange {};
 	}
 
-	class FrameGetter
+	namespace
 	{
-	  public:
-		FrameGetter( const Entity p_entity ) : _entity( p_entity ), _frames( getAvailableFrames( p_entity ) ) {}
-
-		inline uint frameCount() const { return static_cast<uint>( _frames.getCount() ); }
-
-		inline bool visitAtomPositions(
-			const uint													 p_index,
-			const VTX::IO::Writer::TrajectoryFrameGetter::FrameVisitor & p_visitor
-		) const
+		class FrameGetter
 		{
-			return p_index < _frames.getCount()
-				   && visitFrame( _entity, static_cast<uint>( _frames.getFirst() + p_index ), p_visitor );
-		}
+		  public:
+			FrameGetter( const Entity p_entity ) : _entity( p_entity ), _frames( getAvailableFrames( p_entity ) ) {}
 
-	  private:
-		Entity						_entity;
-		App::Trajectory::FrameRange _frames;
-	};
+			uint frameCount() const { return static_cast<uint>( _frames.getCount() ); }
+
+			bool visitAtomPositions(
+				const uint													 p_index,
+				const VTX::IO::Writer::TrajectoryFrameGetter::FrameVisitor & p_visitor
+			) const
+			{
+				return p_index < _frames.getCount()
+					   && visitFrame( _entity, static_cast<uint>( _frames.getFirst() + p_index ), p_visitor );
+			}
+
+		  private:
+			Entity						_entity;
+			App::Trajectory::FrameRange _frames;
+		};
+	} // namespace
 
 	void get( const Entity p_entity, VTX::IO::Writer::TrajectoryFrameGetter & p_trajectory )
 	{ p_trajectory = FrameGetter( p_entity ); }

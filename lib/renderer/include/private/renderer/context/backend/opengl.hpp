@@ -45,9 +45,9 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		struct BufferBinding
 		{
-			Desc::Handle		 buffer		 = Desc::NO_HANDLE;
-			Desc::E_BUFFER_USAGE usage		 = Desc::E_BUFFER_USAGE::NONE;
-			Desc::Binding		 binding	 = 0;
+			Desc::Handle		 buffer = Desc::NO_HANDLE;
+			Desc::E_BUFFER_USAGE usage {};
+			Desc::Binding		 binding {};
 			uint32_t			 offsetBytes = 0;
 			uint32_t			 sizeBytes	 = 0;
 		};

@@ -123,14 +123,14 @@ namespace VTX::App::Events
 
 	struct TrajectoryCurrentFrameChange
 	{
-		Entity					system;
+		Entity					system = InvalidEntity;
 		Core::Struct::FrameView frame;
 	};
 
 	template<typename P>
 	struct PresetRename
 	{
-		Entity		preset;
+		Entity		preset = InvalidEntity;
 		std::string name;
 	};
 
@@ -144,7 +144,7 @@ namespace VTX::App::Events
 	struct ThreadTerminated
 	{
 		std::jthread::id id;
-		bool			 manuallyStopped;
+		bool			 manuallyStopped {};
 	};
 
 	struct PythonInitialized

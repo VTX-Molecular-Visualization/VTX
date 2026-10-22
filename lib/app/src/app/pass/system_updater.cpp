@@ -187,9 +187,7 @@ namespace VTX::App::Pass
 			p_event.system,
 			[ &atomGrid ]( Util::Math::Grid<Index> & p_atomGrid ) { p_atomGrid = std::move( atomGrid ); }
 		);
-		REG().patch<Util::Math::AABB>(
-			p_event.system, [ &aabb ]( Util::Math::AABB & p_aabb ) { p_aabb = std::move( aabb ); }
-		);
+		REG().patch<Util::Math::AABB>( p_event.system, [ &aabb ]( Util::Math::AABB & p_aabb ) { p_aabb = aabb; } );
 		RENDERER().setSystemPositions( _systems[ p_event.system ], p_event.frame );
 	}
 

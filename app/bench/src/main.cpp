@@ -36,7 +36,7 @@ int main( int, char ** )
 		CameraController & camera = scene.getCamera();
 
 		// UI.
-		UserInterface ui( WIDTH, HEIGHT );
+		const UserInterface ui( WIDTH, HEIGHT );
 
 		// Renderer.
 		Renderer::Renderer				  renderer( WIDTH, HEIGHT );
@@ -62,12 +62,13 @@ int main( int, char ** )
 		// std::vector<Vec3f> maxs		   = { aabb.getMax() };
 
 		// Generate grid with mins and maxs.
-		std::vector<Vec3f> mins, maxs;
-		for ( float x = -100.f; x <= 100.f; x += 50.f )
+		std::vector<Vec3f> mins;
+		std::vector<Vec3f> maxs;
+		for ( int x = -100; x <= 100; x += 50 )
 		{
-			for ( float y = -100.f; y <= 100.f; y += 50.f )
+			for ( int y = -100; y <= 100; y += 50 )
 			{
-				for ( float z = -100.f; z <= 100.f; z += 50.f )
+				for ( int z = -100; z <= 100; z += 50 )
 				{
 					mins.emplace_back( x, y, z );
 					maxs.emplace_back( x + 50.f, y + 50.f, z + 50.f );
@@ -76,7 +77,7 @@ int main( int, char ** )
 		}
 		renderer.setVoxels( mins, maxs );
 
-		float previousTime = float( ui.getTime() ) * 1e-3f;
+		float previousTime = static_cast<float>( ui.getTime() ) * 1e-3f;
 
 		// Main loop.
 		while ( isRunning )
@@ -87,7 +88,7 @@ int main( int, char ** )
 				inputManager.handle( event );
 			}
 
-			const float time	  = float( ui.getTime() ) * 1e-3f;
+			const float time	  = static_cast<float>( ui.getTime() ) * 1e-3f;
 			const float deltaTime = time - previousTime;
 			previousTime		  = time;
 
@@ -116,7 +117,7 @@ int main( int, char ** )
 			}
 			if ( frameInputs.zoom != 0 )
 			{
-				camera.zoom( -float( frameInputs.zoom ) * deltaTime );
+				camera.zoom( -static_cast<float>( frameInputs.zoom ) * deltaTime );
 			}
 
 			if ( frameInputs.mousePick.has_value() )

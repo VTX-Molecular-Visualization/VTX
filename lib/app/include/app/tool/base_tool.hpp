@@ -15,7 +15,7 @@ namespace VTX::App::Tool
 		/**
 		 * @brief Constructed after the app.
 		 */
-		BaseTool() {}
+		BaseTool() = default;
 
 		/**
 		 * @brief Destroyed with the app.

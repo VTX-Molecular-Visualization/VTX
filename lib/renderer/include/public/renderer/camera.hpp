@@ -60,8 +60,8 @@ namespace VTX::Renderer
 		/**
 		 * @brief Screen size.
 		 */
-		size_t screenWidth	= 0;
-		size_t screenHeight = 0;
+		size_t screenWidth {};
+		size_t screenHeight {};
 
 		/**
 		 * @brief Target.

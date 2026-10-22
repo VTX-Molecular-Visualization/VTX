@@ -47,12 +47,12 @@ namespace VTX::App::Controller
 		Vec3f deltaVelocity = VEC3F_ZERO;
 
 		const Vec2i deltaRotate = input.rotate();
-		deltaVelocity.x	  = -deltaRotate.x * _MOUSE_ROTATION_FACTOR;
-		deltaVelocity.y	  = -deltaRotate.y * _MOUSE_ROTATION_FACTOR;
+		deltaVelocity.x			= -deltaRotate.x * _MOUSE_ROTATION_FACTOR;
+		deltaVelocity.y			= -deltaRotate.y * _MOUSE_ROTATION_FACTOR;
 
 		// Mouse right.
 		const Vec2i deltaRotateAlt = input.rotateAlt();
-		deltaVelocity.z		 = deltaRotateAlt.x * _MOUSE_ROTATION_FACTOR;
+		deltaVelocity.z			   = deltaRotateAlt.x * _MOUSE_ROTATION_FACTOR;
 
 		// Pan target with wheel button.
 		const Vec2i deltaPan = input.pan();
@@ -69,19 +69,19 @@ namespace VTX::App::Controller
 		const int	rotationAxis	= input.rotationAxis();
 		if ( translationAxis.z != 0 )
 		{
-			deltaDistance = -_KEYBOARD_DISTANCE_FACTOR * deltaTime * float( translationAxis.z );
+			deltaDistance = -_KEYBOARD_DISTANCE_FACTOR * deltaTime * static_cast<float>( translationAxis.z );
 		}
 		if ( translationAxis.x != 0 )
 		{
-			deltaVelocity.x = -_KEYBOARD_ROTATION_FACTOR * deltaTime * float( translationAxis.x );
+			deltaVelocity.x = -_KEYBOARD_ROTATION_FACTOR * deltaTime * static_cast<float>( translationAxis.x );
 		}
 		if ( translationAxis.y != 0 )
 		{
-			deltaVelocity.y = _KEYBOARD_ROTATION_FACTOR * deltaTime * float( translationAxis.y );
+			deltaVelocity.y = _KEYBOARD_ROTATION_FACTOR * deltaTime * static_cast<float>( translationAxis.y );
 		}
 		if ( rotationAxis != 0 )
 		{
-			deltaVelocity.z = _KEYBOARD_ROTATION_FACTOR * deltaTime * float( rotationAxis );
+			deltaVelocity.z = _KEYBOARD_ROTATION_FACTOR * deltaTime * static_cast<float>( rotationAxis );
 		}
 
 		// Set values from settings.

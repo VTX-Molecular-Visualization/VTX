@@ -25,7 +25,7 @@ namespace VTX::App::Extractor
 	) const noexcept
 	{
 		return p_mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR
-				   ? std::min( p_frameCount, std::max( size_t( 1 ), circularBufferFrameCount ) )
+				   ? std::min( p_frameCount, std::max( static_cast<size_t>( 1 ), circularBufferFrameCount ) )
 				   : p_frameCount;
 	}
 } // namespace VTX::App::Extractor

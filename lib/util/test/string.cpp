@@ -4,6 +4,19 @@
 #include <string>
 #include <util/string.hpp>
 
+static_assert(
+	[]
+	{
+		using namespace VTX::Util::String;
+		return trim( " \talpha \n" ) == "alpha" && trim( " \t" ).empty() && trimStart( "  alpha " ) == "alpha "
+			   && trimEnd( " alpha  " ) == " alpha"
+			   && split( "a,,b,", ',' ) == std::vector<std::string> { "a", "", "b", "" }
+			   && replaceFirst( "aaa", "a", "b" ) == "baa" && replaceAll( "aaaa", "aa", "b" ) == "bb"
+			   && replaceAll( "aa", "a", "aa" ) == "aaaa" && replaceAll( "aaa", "a", "a" ) == "aaa"
+			   && replaceAll( "aaa", "a", "" ).empty() && replaceAll( "abc", "", "x" ) == "abc";
+	}()
+);
+
 // string.hpp
 TEST_CASE( "Util::String", "[unit]" )
 {

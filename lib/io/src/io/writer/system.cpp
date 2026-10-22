@@ -36,7 +36,7 @@ namespace VTX::IO::Writer
 			 * @param p_currentSystemAtomIdx
 			 * @return
 			 */
-			inline uint newAtomIdx( const uint & p_currentSystemAtomIdx )
+			uint newAtomIdx( const uint & p_currentSystemAtomIdx )
 			{
 				if ( _multiSystem )
 				{
@@ -59,7 +59,7 @@ namespace VTX::IO::Writer
 			 * @param p_currentSystemAtomIdx
 			 * @return
 			 */
-			inline const uint & getAtomIdx( const uint & p_currentSystemAtomIdx ) const
+			uint getAtomIdx( const uint & p_currentSystemAtomIdx ) const
 			{
 				if ( _multiSystem )
 				{
@@ -76,7 +76,7 @@ namespace VTX::IO::Writer
 				}
 			}
 
-			inline uint newResIdx( const uint & p_currentSystemResIdx )
+			uint newResIdx( const uint & p_currentSystemResIdx )
 			{
 				if ( _multiSystem )
 				{
@@ -88,7 +88,7 @@ namespace VTX::IO::Writer
 				}
 			}
 
-			inline const uint & getResIdx( const uint & p_currentSystemResIdx ) const
+			const uint & getResIdx( const uint & p_currentSystemResIdx ) const
 			{
 				if ( _multiSystem )
 				{
@@ -110,7 +110,7 @@ namespace VTX::IO::Writer
 				_currentSystemResIdxMap.clear();
 			}
 
-			inline bool multiSystem() const { return _multiSystem; }
+			bool multiSystem() const { return _multiSystem; }
 
 		  private:
 			std::reference_wrapper<const std::vector<WriteArgs::System>> _topologies;
@@ -181,7 +181,7 @@ namespace VTX::IO::Writer
 			Atom w_atom = p_system.newAtom( AtomId { p_indexManager.newAtomIdx( static_cast<uint>( p_atomIdx ) ) } );
 			p_residue.add( w_atom );
 			w_atom.setName( p_topology.atomNames[ p_atomIdx ] );
-			auto & constSymbol
+			const auto & constSymbol
 				= VTX::Core::ChemDB::Atom ::SYMBOL_STR[ static_cast<int>( p_topology.atomSymbols[ p_atomIdx ] ) ];
 			w_atom.setSymbol( std::string( constSymbol.begin(), constSymbol.end() ) );
 		}
@@ -199,7 +199,7 @@ namespace VTX::IO::Writer
 			Residue w_residue = p_system.newResidue();
 			p_chain.add( w_residue );
 			w_residue.setResId( static_cast<int>( p_indexManager.newResIdx( static_cast<uint>( p_residueIdx ) ) ) );
-			auto & constSymbol
+			const auto & constSymbol
 				= VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>( p_topology
 																				.residueSymbols[ p_residueIdx ] ) ];
 			const std::string residueSymbol
@@ -363,6 +363,7 @@ namespace VTX::IO::Writer
 			// We fill the write destination at the very end so if we stopped due to the stoptoken, nothing get written
 			writer.setWriteDestination( std::move( p_args.destination ) );
 			writer.setWriteFormat( p_args.format );
+			writer.close();
 		}
 	} // namespace
 

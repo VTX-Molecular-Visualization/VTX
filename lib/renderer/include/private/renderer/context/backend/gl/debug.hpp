@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_CONTEXT_GL_DEBUG__
 
 #include "renderer/context/backend/gl/include_opengl.hpp"
+#include <iostream>
 #include <util/logger.hpp>
 
 namespace VTX::Renderer::Context::Backend::GL::Debug
@@ -15,6 +16,7 @@ namespace VTX::Renderer::Context::Backend::GL::Debug
 		const GLchar * p_msg,
 		const void *
 	) noexcept
+	try
 	{
 		std::string source;
 		std::string type;
@@ -66,12 +68,22 @@ namespace VTX::Renderer::Context::Backend::GL::Debug
 		}
 	}
 
+	catch ( ... ) // NOLINT(bugprone-empty-catch)
+	{
+	}
+
 	inline void dumpGLError() noexcept
 	{
 		GLenum err {};
 		while ( ( err = glGetError() ) != GL_NO_ERROR )
 		{
-			std::cerr << "[GL ERROR] 0x" << std::hex << err << std::dec << '\n';
+			try
+			{
+				std::cerr << "[GL ERROR] 0x" << std::hex << err << std::dec << '\n';
+			}
+			catch ( ... ) // NOLINT(bugprone-empty-catch)
+			{
+			}
 			assert( false );
 		}
 	};

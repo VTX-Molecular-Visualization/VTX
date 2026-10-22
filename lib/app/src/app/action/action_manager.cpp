@@ -18,7 +18,11 @@ namespace VTX::App::Action
 		std::mutex				 mutex;
 	};
 
-	void ActionManager::Del::operator()( ActionManager::_Data * p_ ) noexcept { delete p_; }
+	void ActionManager::Del::operator()( ActionManager::_Data * const p_ ) noexcept
+	{
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		delete p_;
+	}
 
 	ActionManager::ActionManager() : _attributesPtr( new _Data { ARGS().noGui } ) {}
 
@@ -38,7 +42,9 @@ namespace VTX::App::Action
 	{
 		_skipTime += p_delta;
 		if ( _skipTime < 100.f )
-		{ // We do not want to do that every frame.
+		{
+			// We do not want to do that every frame.
+			// TODO: why not?
 			return;
 		}
 		const std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
@@ -55,7 +61,7 @@ namespace VTX::App::Action
 		}
 	};
 
-	void ActionManager::subscribe( QueuedAction p_action ) noexcept
+	void ActionManager::subscribe( QueuedAction p_action )
 	{
 		if ( _noThread() || _attributesPtr->mainThreadId == std::this_thread::get_id() )
 		{
@@ -74,7 +80,7 @@ namespace VTX::App::Action
 		_attributesPtr->actions.push( std::move( p_action ) );
 	}
 
-	void ActionManager::shutdown() noexcept
+	void ActionManager::shutdown()
 	{
 		_attributesPtr->shuttingDown = true;
 		std::queue<QueuedAction> actions;

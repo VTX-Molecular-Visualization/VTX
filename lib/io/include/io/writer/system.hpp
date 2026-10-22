@@ -1,10 +1,12 @@
 #ifndef __VTX_IO_WRITER_SYSTEM__
 #define __VTX_IO_WRITER_SYSTEM__
 
+#include <concepts>
 #include <core/struct/topology.hpp>
 #include <core/struct/trajectory.hpp>
 #include <functional>
 #include <io/writer/shared.hpp>
+#include <type_traits>
 #include <util/filesystem.hpp>
 #include <util/thread/base_thread.hpp>
 
@@ -22,7 +24,7 @@ namespace VTX::IO::Writer
 	 */
 	inline bool returnTrue( const size_t & ) noexcept { return true; }
 
-	const AtomFilter g_takeAllAtoms = AtomFilter( &returnTrue ); // default argument for the write atom filter
+	constexpr auto g_takeAllAtoms = &returnTrue; // default argument for the write atom filter
 
 	/**
 	 * @brief Class responsible for providing atom positions of each frame of a trajectory
@@ -41,9 +43,7 @@ namespace VTX::IO::Writer
 		uint frameCount() const { return _ptr->frameCount(); }
 
 		bool visitAtomPositions( const uint p_index, const FrameVisitor & p_visitor ) const
-		{
-			return _ptr->visitAtomPositions( p_index, p_visitor );
-		}
+		{ return _ptr->visitAtomPositions( p_index, p_visitor ); }
 
 	  private:
 		struct _interface
@@ -62,7 +62,7 @@ namespace VTX::IO::Writer
 		{
 			_wrapper( T && p_obj ) : _obj( std::forward<T>( p_obj ) ) {}
 
-			virtual uint frameCount() const override
+			uint frameCount() const override
 			{
 				if constexpr ( std::same_as<T, _dummy> )
 				{
@@ -74,7 +74,7 @@ namespace VTX::IO::Writer
 				}
 			}
 
-			virtual bool visitAtomPositions( const uint p_index, const FrameVisitor & p_visitor ) const override
+			bool visitAtomPositions( const uint p_index, const FrameVisitor & p_visitor ) const override
 			{
 				if constexpr ( std::same_as<T, _dummy> )
 				{
@@ -94,6 +94,7 @@ namespace VTX::IO::Writer
 
 	  public:
 		template<typename T>
+			requires( not std::same_as<std::remove_cvref_t<T>, TrajectoryFrameGetter> )
 		TrajectoryFrameGetter( T && p_ ) : _ptr( new _wrapper<T>( std::forward<T>( p_ ) ) )
 		{
 		}

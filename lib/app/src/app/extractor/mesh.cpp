@@ -21,7 +21,7 @@ namespace VTX::App::Extractor
 			std::vector<Core::Struct::Mesh> meshes;
 		};
 
-		void deliver( Pending && p_data ) noexcept
+		void deliver( Pending & p_data )
 		{
 			auto & reg = REG();
 
@@ -56,13 +56,16 @@ namespace VTX::App::Extractor
 
 		struct Deliver
 		{
-			void execute( Pending p_data ) { deliver( std::move( p_data ) ); }
+			void execute( Pending p_data ) { deliver( p_data ); }
 		};
 	} // namespace
 
 	Mesh::Mesh( FilePath p_path ) : _sourcePath( std::move( p_path ) ) {}
 
-	uint Mesh::operator()( Util::Thread::StopToken p_stopToken, Util::Thread::OptionalThreadReference p_thread )
+	uint Mesh::operator()(
+		const Util::Thread::StopToken &				p_stopToken,
+		const Util::Thread::OptionalThreadReference p_thread
+	)
 	{
 		if ( p_thread )
 		{

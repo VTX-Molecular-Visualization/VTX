@@ -18,7 +18,7 @@ namespace VTX::App::Extractor
 		/**
 		 * @brief Stop current execution until the system is extracted.
 		 */
-		uint operator()( Util::Thread::StopToken, Util::Thread::OptionalThreadReference );
+		uint operator()( const Util::Thread::StopToken &, Util::Thread::OptionalThreadReference );
 
 	  private:
 		/**

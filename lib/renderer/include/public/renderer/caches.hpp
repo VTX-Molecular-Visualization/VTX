@@ -116,22 +116,22 @@ namespace VTX::Renderer::Cache
 		// Views.
 		struct Data
 		{
-			const Core::Struct::Topology * topology = nullptr;
+			const Core::Struct::Topology * topology {};
 			std::span<const Vec3f>		   trajectory;
 			// TODO: delete and use gpu buffer?
-			const Util::Math::Range<UID32> *						   atomUids				  = nullptr;
-			const Util::Math::Range<UID32> *						   residueUids			  = nullptr;
-			const std::unordered_map<E_COLOR_SCHEME, IndexRangeList> * colorSchemeAtoms		  = nullptr;
-			const std::unordered_map<ColorIndex, IndexRangeList> *	   customColorAtoms		  = nullptr;
-			const std::unordered_map<ColorIndex, IndexRangeList> *	   carbonCustomColorAtoms = nullptr;
+			const Util::Math::Range<UID32> *						   atomUids {};
+			const Util::Math::Range<UID32> *						   residueUids {};
+			const std::unordered_map<E_COLOR_SCHEME, IndexRangeList> * colorSchemeAtoms {};
+			const std::unordered_map<ColorIndex, IndexRangeList> *	   customColorAtoms {};
+			const std::unordered_map<ColorIndex, IndexRangeList> *	   carbonCustomColorAtoms {};
 			const std::unordered_map<E_COLOR_SCHEME_SECONDARY_STRUCTURE, IndexRangeList> *
-																   colorSchemeSecondaryStructureResidues = nullptr;
-			const std::unordered_map<ColorIndex, IndexRangeList> * customSecondaryStructureColorResidues = nullptr;
+																   colorSchemeSecondaryStructureResidues {};
+			const std::unordered_map<ColorIndex, IndexRangeList> * customSecondaryStructureColorResidues {};
 			// Ugly.
-			const std::unordered_map<Entity, Desc::Handle> *				 representationHandles = nullptr;
-			const std::unordered_map<Entity, Core::Struct::IndexRangeList> * presetAtoms		   = nullptr;
-			const Util::Math::BitSet *										 visibility			   = nullptr;
-			const Util::Math::BitSet *										 selection			   = nullptr;
+			const std::unordered_map<Entity, Desc::Handle> *				 representationHandles {};
+			const std::unordered_map<Entity, Core::Struct::IndexRangeList> * presetAtoms {};
+			const Util::Math::BitSet *										 visibility {};
+			const Util::Math::BitSet *										 selection {};
 		};
 
 		Data data;

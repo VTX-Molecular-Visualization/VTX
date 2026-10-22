@@ -97,7 +97,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		~Program() { destroy(); }
 
-		void destroy()
+		void destroy() noexcept
 		{
 			if ( _id != GL_INVALID_INDEX )
 			{
@@ -158,16 +158,23 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 
-		void deleteShaders() const
+		void deleteShaders() const noexcept
 		{
 			assert( _id != GL_INVALID_INDEX );
-			GLint nbShaders = 0;
-			glGetProgramiv( _id, GL_ATTACHED_SHADERS, &nbShaders );
-			std::vector<GLuint> shaders( nbShaders );
-			glGetAttachedShaders( _id, nbShaders, nullptr, shaders.data() );
-			for ( const GLuint shader : shaders )
+			std::array<GLuint, 8> shaders {};
+			while ( true )
 			{
-				glDeleteShader( shader );
+				GLsizei count = 0;
+				glGetAttachedShaders( _id, static_cast<GLsizei>( shaders.size() ), &count, shaders.data() );
+				if ( count == 0 )
+				{
+					break;
+				}
+				for ( GLsizei i = 0; i < count; ++i )
+				{
+					glDetachShader( _id, shaders[ i ] );
+					glDeleteShader( shaders[ i ] );
+				}
 			}
 		}
 
@@ -236,7 +243,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			const char * shaderCode = src.c_str();
 			glShaderSource( shaderId, 1, &shaderCode, nullptr );
 			glCompileShader( shaderId );
-			GLint compiled = GL_FALSE;
+			GLint compiled {};
 			glGetShaderiv( shaderId, GL_COMPILE_STATUS, &compiled );
 			if ( compiled == GL_FALSE )
 			{

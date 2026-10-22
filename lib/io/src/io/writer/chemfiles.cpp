@@ -49,7 +49,7 @@ namespace VTX::IO::Writer
 
 	struct _Residue
 	{
-		int				   resid;
+		int				   resid {};
 		std::string		   symbol;
 		PropertyCollection properties;
 		AtomPtrCollection  atoms;
@@ -229,9 +229,9 @@ namespace VTX::IO::Writer
 		{ cf.set( key, value ); }
 
 		template<typename T>
-		void transferProperties( T & cf, const PropertyCollection & props ) noexcept
+		void transferProperties( T & cf, const PropertyCollection & props )
 		{
-			for ( auto & prop : props )
+			for ( const auto & prop : props )
 			{
 				std::visit( [ & ]( const auto & v ) { setProperty<T>( cf, prop.first, v ); }, prop.second );
 			}
@@ -341,7 +341,7 @@ namespace VTX::IO::Writer
 		_Impl & operator=( const _Impl & ) = delete;
 		_Impl & operator=( _Impl && )	   = delete;
 
-		~_Impl()
+		void close()
 		{
 			if ( _system.frames.empty() )
 			{
@@ -358,6 +358,7 @@ namespace VTX::IO::Writer
 			//	return;
 
 			writeFile( _dest, _system );
+			_dest.clear();
 		}
 	};
 
@@ -387,7 +388,7 @@ namespace VTX::IO::Writer
 	// Residue
 	Residue::Residue( _Residue & p_ ) : _data( &p_ ) {}
 
-	void Residue::set( const Property & p_ ) noexcept
+	void Residue::set( const Property & p_ )
 	{
 		if ( _data == nullptr )
 		{
@@ -458,7 +459,7 @@ namespace VTX::IO::Writer
 		_data->id = std::move( p_ );
 	}
 
-	void Chain::add( Residue & p_res ) noexcept
+	void Chain::add( Residue & p_res )
 	{
 		if ( _data == nullptr )
 		{
@@ -499,7 +500,7 @@ namespace VTX::IO::Writer
 	// System
 	System::System( _System & p_ ) : _data( &p_ ) {}
 
-	void System::set( Property p_ ) const noexcept
+	void System::set( Property p_ ) const
 	{
 		if ( _data == nullptr )
 		{
@@ -515,7 +516,7 @@ namespace VTX::IO::Writer
 		}
 	}
 
-	Atom System::newAtom( const AtomId p_atomId ) const noexcept
+	Atom System::newAtom( const AtomId p_atomId ) const
 	{
 		if ( _data == nullptr )
 		{
@@ -555,7 +556,7 @@ namespace VTX::IO::Writer
 		_data->bonds.emplace_back( _Bond { .a1 = p_l, .a2 = p_r, .bondOrder = p_bondOrder } );
 	}
 
-	Chain System::newChain() const noexcept
+	Chain System::newChain() const
 	{
 		if ( _data == nullptr )
 		{
@@ -565,7 +566,7 @@ namespace VTX::IO::Writer
 		return Chain( _data->chains.back() );
 	}
 
-	Residue System::newResidue() const noexcept
+	Residue System::newResidue() const
 	{
 		if ( _data == nullptr )
 		{
@@ -575,7 +576,7 @@ namespace VTX::IO::Writer
 		return Residue( _data->residues.back() );
 	}
 
-	Frame System::newFrame() const noexcept
+	Frame System::newFrame() const
 	{
 		if ( _data == nullptr )
 		{
@@ -619,9 +620,15 @@ namespace VTX::IO::Writer
 
 	// Pimpl pattern method forwarding vv
 
-	void ChemfilesTrajectory::Del::operator()( ChemfilesTrajectory::_Impl * p_ ) noexcept { delete p_; }
+	void ChemfilesTrajectory::Del::operator()( ChemfilesTrajectory::_Impl * const p_ ) noexcept
+	{
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		delete p_;
+	}
 
 	ChemfilesTrajectory::ChemfilesTrajectory() : _( new _Impl ) {}
+
+	void ChemfilesTrajectory::close() { _->close(); }
 
 	void ChemfilesTrajectory::setWriteDestination( FilePath p_ ) noexcept { _->setWriteDestination( std::move( p_ ) ); }
 

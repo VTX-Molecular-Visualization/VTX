@@ -1,9 +1,22 @@
 #include <catch2/catch_test_macros.hpp>
 #include <util/math.hpp>
 
+template<typename T>
+concept HasTypeCount = requires { VTX::TypeCount<T>; };
+
+static_assert( VTX::TypeCount<uint8_t> == 256 );
+static_assert( not HasTypeCount<size_t> && not HasTypeCount<float> && not HasTypeCount<int> );
+static_assert( VTX::Util::Math::nextPowerOfTwoValue( 0 ) == 1 );
+static_assert( VTX::Util::Math::nextPowerOfTwoValue( 3 ) == 4 );
+static_assert( VTX::Util::Math::nextPowerOfTwoValue( 0x80000000u ) == 0x80000000u );
+
+TEST_CASE( "Next power of two rejects overflow", "[math][constexpr-audit]" )
+{ CHECK_THROWS_AS( VTX::Util::Math::nextPowerOfTwoValue( 0x80000001u ), std::overflow_error ); }
+
 namespace
 {
 	bool closeEnough( const float & v1, const float & v2 ) { return std::abs( v1 - v2 ) < 0.001f; }
+
 	bool checkTorsion(
 		const VTX::Vec3f & p1,
 		const VTX::Vec3f & p2,

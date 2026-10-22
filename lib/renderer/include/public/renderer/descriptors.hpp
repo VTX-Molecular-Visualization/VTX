@@ -479,7 +479,7 @@ namespace VTX::Renderer::Desc
 	struct DrawCall
 	{
 		Key			geometry;
-		E_PRIMITIVE primitive = E_PRIMITIVE::POINTS;
+		E_PRIMITIVE primitive {};
 
 		struct Range
 		{

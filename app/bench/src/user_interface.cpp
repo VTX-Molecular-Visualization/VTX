@@ -3,6 +3,7 @@
 #include "user_interface.hpp"
 #include "camera_controller.hpp"
 #include "scene.hpp"
+#include <algorithm>
 #include <cstring>
 #include <imgui.h>
 #include <imnodes/imnodes.h>
@@ -30,8 +31,8 @@ namespace VTX::Bench
 		}
 
 		SDL_SetStringProperty( windowProps, SDL_PROP_WINDOW_CREATE_TITLE_STRING, "VTX_RENDERER_BENCH" );
-		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, Sint64( p_width ) );
-		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, Sint64( p_height ) );
+		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, static_cast<Sint64>( p_width ) );
+		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, static_cast<Sint64>( p_height ) );
 		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_X_NUMBER, SDL_WINDOWPOS_CENTERED );
 		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDL_WINDOWPOS_CENTERED );
 		SDL_SetBooleanProperty( windowProps, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true );
@@ -85,7 +86,7 @@ namespace VTX::Bench
 		CameraController * const   p_camera,
 		Scene * const			   p_scene,
 		Renderer::Renderer * const p_renderer
-	)
+	) const
 	{
 		// ImGui_ImplSDL3_NewFrame();
 		// ImGui::NewFrame();
@@ -181,20 +182,20 @@ namespace VTX::Bench
 	uint8_t UserInterface::getNativePlatform() const
 	{
 #ifdef _WIN32
-		return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WINDOWS );
+		return static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::WINDOWS );
 #elif defined( __linux__ )
 		const char * const videoDriver = SDL_GetCurrentVideoDriver();
 		if ( videoDriver != nullptr && std::strcmp( videoDriver, "wayland" ) == 0 )
 		{
-			return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND );
+			return static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND );
 		}
 		if ( videoDriver != nullptr && std::strcmp( videoDriver, "x11" ) == 0 )
 		{
-			return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::X11 );
+			return static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::X11 );
 		}
-		return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::UNKNOWN );
+		return static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::UNKNOWN );
 #else
-		return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::UNKNOWN );
+		return static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::UNKNOWN );
 #endif
 	}
 
@@ -245,19 +246,13 @@ namespace VTX::Bench
 				if ( ImGui::MenuItem( "Random" ) )
 				{
 					Renderer::Color::Layout colorLayout;
-					std::generate(
-						colorLayout.colors.begin(), colorLayout.colors.end(), [] { return Util::Color::Rgba::random(); }
-					);
+					std::ranges::generate( colorLayout.colors, [] { return Util::Color::Rgba::random(); } );
 					// p_scene->setColorLayout( colorLayout );
 				}
 				if ( ImGui::MenuItem( "Random pastel" ) )
 				{
 					Renderer::Color::Layout colorLayout;
-					std::generate(
-						colorLayout.colors.begin(),
-						colorLayout.colors.end(),
-						[] { return Util::Color::Rgba::randomPastel(); }
-					);
+					std::ranges::generate( colorLayout.colors, [] { return Util::Color::Rgba::randomPastel(); } );
 					// p_scene->setColorLayout( colorLayout );
 				}
 
@@ -314,7 +309,7 @@ namespace VTX::Bench
 
 			// ImGui::Checkbox( "Force update", &p_renderer->forceUpdate );
 
-			ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
+			ImGui::Text( fmt::format( "{} FPS", static_cast<int>( ImGui::GetIO().Framerate ) ).c_str() );
 
 			ImGui::EndMainMenuBar();
 		}
@@ -379,8 +374,8 @@ namespace VTX::Bench
 	{
 		if ( ImGui::Begin( "Renderer" ) )
 		{
-			const size_t sizeAtoms = 0;
-			size_t		 sizeBonds = 0, sizeRibbons = 0, sizeVoxels = 0;
+			// const size_t sizeAtoms = 0;
+			// const size_t		 sizeBonds = 0, sizeRibbons = 0, sizeVoxels = 0;
 			/*
 			for ( auto count : p_renderer->drawRangeSpheres.counts )
 			{

@@ -181,7 +181,7 @@ namespace VTX::App::PythonBinding::Topology
 				[]( const System & p_system )
 				{
 					getTopology( p_system.entity );
-					return Index( 0 );
+					return static_cast<Index>( 0 );
 				}
 			)
 			.def_property_readonly(
@@ -197,7 +197,7 @@ namespace VTX::App::PythonBinding::Topology
 				[]( const System & p_system )
 				{
 					getTopology( p_system.entity );
-					return Index( 0 );
+					return static_cast<Index>( 0 );
 				}
 			)
 			.def_property_readonly(
@@ -213,7 +213,7 @@ namespace VTX::App::PythonBinding::Topology
 				[]( const System & p_system )
 				{
 					getTopology( p_system.entity );
-					return Index( 0 );
+					return static_cast<Index>( 0 );
 				}
 			)
 			.def_property_readonly(
@@ -229,7 +229,7 @@ namespace VTX::App::PythonBinding::Topology
 				[]( const System & p_system )
 				{
 					getTopology( p_system.entity );
-					return Index( 0 );
+					return static_cast<Index>( 0 );
 				}
 			)
 			.def_property_readonly(

@@ -160,9 +160,9 @@ namespace VTX::App::Helper::System
 	 */
 	struct SystemItemView
 	{
-		Entity						entity;
-		Core::Struct::E_SYSTEM_ITEM item  = Core::Struct::E_SYSTEM_ITEM::SYSTEM;
-		std::optional<Index>		index = std::nullopt;
+		Entity						entity = InvalidEntity;
+		Core::Struct::E_SYSTEM_ITEM item   = Core::Struct::E_SYSTEM_ITEM::SYSTEM;
+		std::optional<Index>		index  = std::nullopt;
 	};
 
 	/**

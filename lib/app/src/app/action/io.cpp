@@ -43,7 +43,7 @@ namespace VTX::App::Action::IO
 
 	void Open::execute( const std::string & p_path ) { execute( FilePath( p_path ) ); }
 
-	void Open::execute( const FilePath & p_path )
+	void Open::execute( FilePath p_path )
 	{
 		const std::string extension = p_path.extension().string();
 		if ( extension == ".py" || extension == ".vtx" )
@@ -54,27 +54,35 @@ namespace VTX::App::Action::IO
 				return;
 			}
 
-			ACTION().execute<RunPythonScript>( p_path );
+			ACTION().execute<RunPythonScript>( std::move( p_path ) );
 		}
 		else if ( VTX::IO::MeshReader::isMeshFileFormat( p_path ) )
 		{
-			ACTION().execute<LoadMesh>( p_path );
+			ACTION().execute<LoadMesh>( std::move( p_path ) );
 		}
 		else
 		{
 			{
-				ACTION().execute<LoadSystem>( p_path );
+				ACTION().execute<LoadSystem>( std::move( p_path ) );
 			}
 		}
 	}
 
 	struct _SystemIo
 	{
+		// RAII guard.
+		struct CreationGuard
+		{
+			std::latch & latch;
+
+			~CreationGuard() { latch.count_down(); }
+		};
+
 		Util::Thread::ThreadData		 thrData;
 		std::latch						 extractorCreation { 1 };
 		std::optional<Extractor::System> extractor;
 
-		inline void wait() noexcept
+		void wait()
 		{
 			this->extractorCreation.wait();
 			if ( this->extractor )
@@ -85,14 +93,22 @@ namespace VTX::App::Action::IO
 			}
 		}
 
-		inline void start_extraction()
+		void startExtraction()
 		{
 			assert( extractor );
+			if ( not extractor )
+			{
+				throw std::bad_optional_access();
+			}
 			extractor.value()( thrData.stopToken, thrData.thrRef );
 		}
 	};
 
-	void _SystemIoDel::operator()( _SystemIo * p_ ) noexcept { delete p_; }
+	void _SystemIoDel::operator()( _SystemIo * const p_ ) noexcept
+	{
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		delete p_;
+	}
 
 	LoadSystem::LoadSystem() : _data( new _SystemIo() ) {}
 
@@ -100,29 +116,26 @@ namespace VTX::App::Action::IO
 
 	void LoadSystem::execute( FilePath p_path )
 	{
-		_data->extractor = Extractor::System( std::move( p_path ) );
-		_data->extractorCreation.count_down();
-
-		_data->start_extraction();
+		const _SystemIo::CreationGuard guard { _data->extractorCreation };
+		_data->extractor.emplace( std::move( p_path ) );
+		_data->startExtraction();
 	}
 
 	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
 	{
-		_data->extractor = Extractor::System( std::move( p_path ), std::move( p_buffer ) );
-		_data->extractorCreation.count_down();
-
-		_data->start_extraction();
+		const _SystemIo::CreationGuard guard { _data->extractorCreation };
+		_data->extractor.emplace( std::move( p_path ), std::move( p_buffer ) );
+		_data->startExtraction();
 	}
 
-	void LoadSystem::wait() noexcept { _data->wait(); }
+	void LoadSystem::wait() { _data->wait(); }
 
-	LoadMesh::LoadMesh( Util::Thread::StopToken p_stopToken, Util::Thread::OptionalThreadReference p_threadRef ) :
-		_stopToken( std::move( p_stopToken ) ), _threadRef( std::move( p_threadRef ) )
+	LoadMesh::LoadMesh( Util::Thread::StopToken p_stopToken, const Util::Thread::OptionalThreadReference p_threadRef ) :
+		_stopToken( std::move( p_stopToken ) ), _threadRef( p_threadRef )
 	{
 	}
 
-	void LoadMesh::execute( FilePath p_path )
-	{ Extractor::Mesh( std::move( p_path ) )( std::move( _stopToken ), _threadRef ); }
+	void LoadMesh::execute( FilePath p_path ) { Extractor::Mesh( std::move( p_path ) )( _stopToken, _threadRef ); }
 
 	void WriteSelection::execute( FilePath p_path )
 	{
@@ -142,23 +155,32 @@ namespace VTX::App::Action::IO
 	{
 	}
 
-	void AssociateTrajectory::execute( const FilePath & p_path, const Entity & p_entity )
+	void AssociateTrajectory::execute( FilePath p_path, const Entity & p_entity )
 	{
-		if ( p_entity == entt::null )
+		const _SystemIo::CreationGuard guard { _data->extractorCreation };
+		if ( p_entity == InvalidEntity )
 		{
 			VTX_ERROR( "System entity null." );
 			return;
 		}
 
-		_data->extractor = Extractor::System( p_entity, p_path );
-		_data->extractorCreation.count_down();
-		_data->start_extraction();
+		_data->extractor.emplace( p_entity, std::move( p_path ) );
+		_data->startExtraction();
 	}
 
 	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e )
-	{ execute( FilePath( p_path ), p_e ); }
+	{
+		const _SystemIo::CreationGuard guard { _data->extractorCreation };
+		if ( p_e == InvalidEntity )
+		{
+			VTX_ERROR( "System entity null." );
+			return;
+		}
+		_data->extractor.emplace( p_e, p_path );
+		_data->startExtraction();
+	}
 
-	void AssociateTrajectory::wait() noexcept { _data->wait(); }
+	void AssociateTrajectory::wait() { _data->wait(); }
 
 	void RunPythonScript::execute( const FilePath & p_path )
 	{
@@ -179,14 +201,14 @@ namespace VTX::App::Action::IO
 		);
 	}
 
-	void DownloadSystem::execute( const std::string & p_url, const FilePath p_path )
+	void DownloadSystem::execute( const std::string & p_url, FilePath p_path )
 	{
-		const FilePath filepath = p_path;
+		const std::string filename = p_path.string();
 		NETWORK().downloadFile(
-			p_url.data(),
-			filepath.string(),
-			[ filepath ]( std::string && p_text )
-			{ ACTION().execute<Action::IO::LoadSystem>( filepath, std::move( p_text ) ); }
+			p_url,
+			filename,
+			[ path = std::move( p_path ) ]( std::string && p_text ) mutable
+			{ ACTION().execute<Action::IO::LoadSystem>( std::move( path ), std::move( p_text ) ); }
 		);
 	}
 
@@ -194,12 +216,12 @@ namespace VTX::App::Action::IO
 	{ execute( std::nullopt, std::nullopt, Util::Image::E_FORMAT::PNG, std::nullopt, std::nullopt, std::nullopt ); }
 
 	void Snapshot::execute(
-		const std::optional<FilePath> p_path,
-		const std::optional<FilePath> p_filename,
-		const Util::Image::E_FORMAT	  p_format,
-		const std::optional<size_t>	  p_width,
-		const std::optional<size_t>	  p_height,
-		const std::optional<float>	  p_backgroundOpacity
+		const std::optional<FilePath> & p_path,
+		const std::optional<FilePath> & p_filename,
+		const Util::Image::E_FORMAT		p_format,
+		const std::optional<size_t>		p_width,
+		const std::optional<size_t>		p_height,
+		const std::optional<float>		p_backgroundOpacity
 	)
 	{
 		const FilePath directory = p_path.value_or( SESSION().getSnapshotsDir() );
@@ -215,7 +237,7 @@ namespace VTX::App::Action::IO
 	}
 
 	void Snapshot::execute(
-		const FilePath				p_path,
+		const FilePath &			p_path,
 		const Util::Image::E_FORMAT p_format,
 		const size_t				p_width,
 		const size_t				p_height,

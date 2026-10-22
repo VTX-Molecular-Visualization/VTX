@@ -16,7 +16,7 @@ namespace VTX::App::Action::IO
 	 */
 	struct Open
 	{
-		void execute( const FilePath & p_path );
+		void execute( FilePath p_path );
 		void execute( const std::string & p_path );
 	};
 
@@ -39,7 +39,7 @@ namespace VTX::App::Action::IO
 
 		void execute( FilePath p_path );
 		void execute( FilePath p_path, std::string && p_buffer );
-		void wait() noexcept;
+		void wait();
 
 	  private:
 		_SystemIoPtr _data;
@@ -84,9 +84,9 @@ namespace VTX::App::Action::IO
 	{
 		AssociateTrajectory();
 		AssociateTrajectory( Util::Thread::ThreadData );
-		void execute( const FilePath & p_path, const Entity & );
+		void execute( FilePath p_path, const Entity & );
 		void execute( const std::string & p_path, const Entity & );
-		void wait() noexcept;
+		void wait();
 
 	  private:
 		_SystemIoPtr _data;
@@ -115,14 +115,14 @@ namespace VTX::App::Action::IO
 	  public:
 		void execute();
 		void execute(
-			std::optional<FilePath> p_path,
-			std::optional<FilePath> p_filename,
-			Util::Image::E_FORMAT	p_format,
-			std::optional<size_t>	p_width,
-			std::optional<size_t>	p_height,
-			std::optional<float>	p_backgroundOpacity
+			const std::optional<FilePath> & p_path,
+			const std::optional<FilePath> & p_filename,
+			Util::Image::E_FORMAT			p_format,
+			std::optional<size_t>			p_width,
+			std::optional<size_t>			p_height,
+			std::optional<float>			p_backgroundOpacity
 		);
-		void execute( FilePath, Util::Image::E_FORMAT, size_t, size_t, std::optional<float> = std::nullopt );
+		void execute( const FilePath &, Util::Image::E_FORMAT, size_t, size_t, std::optional<float> = std::nullopt );
 	};
 
 } // namespace VTX::App::Action::IO

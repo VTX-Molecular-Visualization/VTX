@@ -93,6 +93,7 @@ namespace VTX::Renderer
 	}
 
 	bool Renderer::render( const float p_deltaTime, const float p_elapsedTime ) noexcept
+	try
 	{
 		const bool hasDirty = _dirtyRenderer != Cache::E_RENDERER_DIRTY::NONE || not _dirtySystems.empty()
 							  || not _dirtyRepresentations.empty();
@@ -129,6 +130,11 @@ namespace VTX::Renderer
 			return true;
 		}
 
+		return false;
+	}
+	catch ( ... )
+	{
+		VTX_ERROR( "Renderer execution or recovery failed" );
 		return false;
 	}
 

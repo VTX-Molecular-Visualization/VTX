@@ -70,7 +70,7 @@ namespace VTX::App::PythonBinding
 		{
 			Preset::validate( p_preset );
 			executeAction<Action::Preset::Duplicate<T>>(
-				Entity( p_preset.entity ), std::optional<std::string_view>( p_name )
+				Entity( p_preset.entity ), std::optional<std::string>( p_name )
 			);
 		}
 
@@ -110,7 +110,7 @@ namespace VTX::App::PythonBinding
 			p_vtxModule.def(
 				p_createFunctionName,
 				[]( const std::optional<std::string_view> p_name )
-				{ executeAction<Action::Preset::Add<T>>( std::optional<std::string_view>( p_name ) ); },
+				{ executeAction<Action::Preset::Add<T>>( std::optional<std::string>( p_name ) ); },
 				"Create a preset.",
 				VTX::PythonBinding::Wrapper::VArg<std::optional<std::string_view>>(
 					"name", std::optional<std::string_view>()
@@ -118,7 +118,7 @@ namespace VTX::App::PythonBinding
 			);
 			return binding;
 		}
-	}
+	} // namespace
 
 	void PresetBinder::bind( Module & p_vtxModule )
 	{
@@ -152,4 +152,4 @@ namespace VTX::App::PythonBinding
 		);
 		Preset::bindGraphicsConfig( p_vtxModule, graphicsConfig );
 	}
-}
+} // namespace VTX::App::PythonBinding

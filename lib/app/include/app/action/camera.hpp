@@ -8,6 +8,7 @@
 #include "app/events.hpp"
 #include "app/scene/viewpoint.hpp"
 #include "app/services.hpp"
+#include <cstdint>
 #include <renderer/camera.hpp>
 #include <util/event_hub.hpp>
 #include <util/math/aabb.hpp>
@@ -115,7 +116,7 @@ namespace VTX::App::Action::Camera
 	/**
 	 * @brief Available camera interpolators.
 	 */
-	enum struct E_CAMERA_INTERPOLATOR
+	enum struct E_CAMERA_INTERPOLATOR : uint8_t
 	{
 		LINEAR,
 		EASE_IN_OUT
@@ -146,8 +147,8 @@ namespace VTX::App::Action::Camera
 				= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
 			const AnimationData start { transform.getPosition(), transform.getRotation() };
-			InterpPositionFunc interpPositionFunc = nullptr;
-			InterpRotationFunc interpRotationFunc = nullptr;
+			InterpPositionFunc	interpPositionFunc = nullptr;
+			InterpRotationFunc	interpRotationFunc = nullptr;
 
 			// Check if animation is needed.
 			if ( Math::distance( start.position, p_end.position ) < ANIMATION_TRANSLATION_THRESHOLD

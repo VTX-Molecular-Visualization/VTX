@@ -43,16 +43,19 @@ namespace VTX::Util
 		DataLocker( Args... args ) : _data( std::forward<Args>( args )... )
 		{
 		}
+
 		~DataLocker() = default;
 
-		DataLocker( DataLocker<DataType> && p_ ) : _data( std::move( p_._data ) ) {}
+		DataLocker( DataLocker<DataType> && p_ ) noexcept : _data( std::move( p_._data ) ) {}
 
 		DataLocker( const DataLocker<DataType> & p_ ) : _data( lock_and_copy( p_._data, p_._mutex ) ) {}
 
-		DataLocker & operator=( DataLocker<DataType> && p_ )
+		DataLocker & operator=( DataLocker<DataType> && p_ ) noexcept
 		{
 			if ( &p_ != this )
+			{
 				_data = std::move( p_._data );
+			}
 
 			return *this;
 		}
@@ -62,14 +65,17 @@ namespace VTX::Util
 			std::scoped_lock<std::mutex> lock { p_._mutex };
 
 			if ( &p_ != this )
+			{
 				_data = DataType( p_._data );
+			}
 
 			return *this;
 		}
 
 		// Open the datalocker to be granted an exclusive scoped usage of the datastruct inside
-		ReservedData<DataType>		 open() noexcept { return ReservedData( _data, _mutex ); }
-		ReservedData<const DataType> open() const noexcept { return ReservedData<const DataType>( _data, _mutex ); }
+		ReservedData<DataType> open() { return ReservedData( _data, _mutex ); }
+
+		ReservedData<const DataType> open() const { return ReservedData<const DataType>( _data, _mutex ); }
 
 		bool isDataAvailable() const noexcept
 		{
@@ -91,7 +97,6 @@ namespace VTX::Util
 		std::optional<std::unique_lock<std::mutex>> _lock;
 
 		ReservedData( ReservedDataType & d, std::mutex & m ) : _dataPtr( &d ), _lock( m ) {}
-		ReservedData() = delete;
 
 		friend DataLocker<ReservedDataType>;
 		friend DataLocker<typename std::remove_cvref_t<ReservedDataType>>; // Very nice trick to befriend a
@@ -99,9 +104,14 @@ namespace VTX::Util
 																		   // while being a const data
 
 	  public:
-		ReservedDataType *		 operator->() { return _dataPtr; }
+		ReservedData() = delete;
+
+		ReservedDataType * operator->() { return _dataPtr; }
+
 		const ReservedDataType * operator->() const { return _dataPtr; }
-		ReservedDataType &		 operator*() { return *_dataPtr; }
+
+		ReservedDataType & operator*() { return *_dataPtr; }
+
 		const ReservedDataType & operator*() const { return *_dataPtr; }
 	};
 } // namespace VTX::Util

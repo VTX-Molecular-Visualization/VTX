@@ -9,8 +9,6 @@ namespace VTX::PythonBinding::Wrapper
 
 	template<typename V>
 	pybind11::arg_v convertToPybind11Extra( const Wrapper::VArg<V> & p_arg )
-	{
-		return p_arg.toPybind11Extra();
-	}
+	{ return p_arg.toPybind11ExtraWithDefault(); }
 }; // namespace VTX::PythonBinding::Wrapper
 #endif

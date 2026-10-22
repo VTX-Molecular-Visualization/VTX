@@ -14,13 +14,13 @@ namespace VTX::App::PythonBinding::Preset
 	{
 		Index _resolveColorIndex( const py::ssize_t p_index )
 		{
-			const py::ssize_t size	= py::ssize_t( Renderer::Color::COLOR_LAYOUT_SIZE );
+			const py::ssize_t size	= static_cast<py::ssize_t>( Renderer::Color::COLOR_LAYOUT_SIZE );
 			const py::ssize_t index = p_index < 0 ? size + p_index : p_index;
 			if ( index < 0 || index >= size )
 			{
 				throw py::index_error( "Color index is outside of the layout." );
 			}
-			return Index( index );
+			return static_cast<Index>( index );
 		}
 
 		Util::Color::Rgba _getColor( const ColorLayoutHandle & p_preset, const py::ssize_t p_index )

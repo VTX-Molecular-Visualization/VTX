@@ -23,20 +23,16 @@ namespace VTX::Util
 	  public:
 		template<typename T>
 		bool has() const
-		{
-			return has( hash<T>() );
-		}
+		{ return has( hash<T>() ); }
 
 		bool has( const Hash & p_hash ) const { return _map.contains( p_hash ); }
 
 		template<typename T>
-		T * const get() const
-		{
-			return get<T>( hash<T>() );
-		}
+		T * get() const
+		{ return get<T>( hash<T>() ); }
 
 		template<typename T>
-		T * const tryGet() const
+		T * tryGet() const
 		{
 			if ( has<T>() )
 			{
@@ -49,7 +45,7 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		T * const getOrCreate()
+		T * getOrCreate()
 		{
 			if ( has<T>() )
 			{
@@ -62,7 +58,7 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		T * const getOrCreateWithHash( const Hash & p_hash )
+		T * getOrCreateWithHash( const Hash & p_hash )
 		{
 			if ( has( p_hash ) )
 			{
@@ -75,12 +71,12 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		T * const get( const Hash & p_hash ) const
+		T * get( const Hash & p_hash ) const
 		{
 			assert( _map.contains( p_hash ) );
 
 			// Raw pointer.
-			if constexpr ( std::is_pointer<C>::value )
+			if constexpr ( std::is_pointer_v<C> )
 			{
 				return static_cast<T *>( _map[ p_hash ] );
 			}
@@ -103,27 +99,19 @@ namespace VTX::Util
 
 		template<typename T>
 		T & getRef() const
-		{
-			return *get<T>();
-		}
+		{ return *get<T>(); }
 
 		template<typename T, typename... Args>
-		T * const create( Args &&... p_args )
-		{
-			return _create<T, Args...>( hash<T>(), std::forward<Args>( p_args )... );
-		}
+		T * create( Args &&... p_args )
+		{ return _create<T, Args...>( hash<T>(), std::forward<Args>( p_args )... ); }
 
 		template<typename T, typename... Args>
-		T * const createWithHash( const Hash & p_hash, Args &&... p_args )
-		{
-			return _create<T, Args...>( p_hash, std::forward<Args>( p_args )... );
-		}
+		T * createWithHash( const Hash & p_hash, Args &&... p_args )
+		{ return _create<T, Args...>( p_hash, std::forward<Args>( p_args )... ); }
 
 		template<typename T, typename V>
 		void set( V * const p_value )
-		{
-			set<T>( hash<T>(), p_value );
-		}
+		{ set<T>( hash<T>(), p_value ); }
 
 		template<typename T>
 		void set( const Hash & p_hash, T * const p_value )
@@ -134,7 +122,7 @@ namespace VTX::Util
 			}
 
 			// Only raw pointer.
-			if constexpr ( std::is_pointer<C>::value )
+			if constexpr ( std::is_pointer_v<C> )
 			{
 				_map[ p_hash ] = static_cast<C>( p_value );
 			}
@@ -157,9 +145,7 @@ namespace VTX::Util
 
 		template<typename T>
 		void remove()
-		{
-			remove( hash<T>() );
-		}
+		{ remove( hash<T>() ); }
 
 		void remove( const Hash & p_hash )
 		{
@@ -173,7 +159,7 @@ namespace VTX::Util
 		void clear() { _map.clear(); }
 
 		template<typename T>
-		static constexpr Hash hash()
+		static Hash hash()
 		{
 #if DEBUG_HASH
 			VTX_DEBUG( "Hash: {}", Util::typeName<T>() );
@@ -182,15 +168,18 @@ namespace VTX::Util
 		}
 
 		auto begin() noexcept { return _map.begin(); }
+
 		auto end() noexcept { return _map.end(); }
 
 		auto begin() const noexcept { return _map.begin(); }
+
 		auto end() const noexcept { return _map.end(); }
 
 		auto cbegin() const noexcept { return _map.cbegin(); }
+
 		auto cend() const noexcept { return _map.cend(); }
 
-		using iterator = typename std::unordered_map<Hash, C>::iterator;
+		using iterator = std::unordered_map<Hash, C>::iterator;
 
 		auto erase( const iterator & p_it ) { return _map.erase( p_it ); }
 
@@ -198,12 +187,12 @@ namespace VTX::Util
 		mutable std::unordered_map<Hash, C> _map;
 
 		template<typename T, typename... Args>
-		T * const _create( const Hash & p_hash, Args &&... p_args )
+		T * _create( const Hash & p_hash, Args &&... p_args )
 		{
 			assert( not _map.contains( p_hash ) );
 
 			// Raw pointer.
-			if constexpr ( std::is_pointer<C>::value )
+			if constexpr ( std::is_pointer_v<C> )
 			{
 				_map.emplace( p_hash, new T( std::forward<Args>( p_args )... ) );
 			}
@@ -228,9 +217,7 @@ namespace VTX::Util
 
 		template<typename T>
 		static void _createHelper( Collection * const p_collection )
-		{
-			p_collection->create<T>();
-		}
+		{ p_collection->create<T>(); }
 	};
 
 } // namespace VTX::Util

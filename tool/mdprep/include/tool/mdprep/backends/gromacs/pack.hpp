@@ -49,22 +49,22 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	// Create mdp file from template at location.
 	// Return false if the creation failed (the template file is probably not found)
-	ErrorReport createNvtMdp( const FilePath & p_dest, MdInstructions & ) noexcept;
+	ErrorReport createNvtMdp( const FilePath & p_dest, MdInstructions & );
 
 	// Create mdp file from template at location
 	// Return false if the creation failed (the template file is probably not found)
-	ErrorReport createNptMdp( const FilePath & p_dest, MdInstructions & ) noexcept;
+	ErrorReport createNptMdp( const FilePath & p_dest, MdInstructions & );
 
 	// Create mdp file from template at location
 	// Return false if the creation failed (the template file is probably not found)
-	ErrorReport createProdMdp( const FilePath & p_dest, MdInstructions & ) noexcept;
+	ErrorReport createProdMdp( const FilePath & p_dest, MdInstructions & );
 
 	// Create .py file responsible for running min-nvt-npt-prod from template
-	ErrorReport createWorkflowPy( const FilePath & p_dest, MdInstructions & ) noexcept;
+	ErrorReport createWorkflowPy( const FilePath & p_dest, MdInstructions & );
 
 	// Pack everything needed to run MD
 	// Assumes the destination directory is empty
-	ErrorReport pack( const FilePath & p_dest, const CumulativeOuputFiles &, MdInstructions & ) noexcept;
+	ErrorReport pack( const FilePath & p_dest, const CumulativeOuputFiles &, MdInstructions & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 

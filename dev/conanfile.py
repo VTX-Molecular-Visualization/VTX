@@ -86,7 +86,7 @@ class VTXRecipe(ConanFile):
         self.requires("stb/cci.20240531", force=True)
         self.requires("tinyexr/1.0.7")
         self.requires("exiv2/0.28.3")
-        self.requires("entt/3.16.0")
+        self.requires("entt/4.0.0")
         self.requires("assimp/6.0.5")
         self.requires("minizip/1.3.2", force=True)
         if self.options.python_binding:

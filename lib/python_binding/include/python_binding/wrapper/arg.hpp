@@ -34,7 +34,7 @@ namespace VTX::PythonBinding::Wrapper
 		{
 		}
 
-		pybind11::arg_v toPybind11Extra() const { return pybind11::arg_v( _parameterName.c_str(), _value ); }
+		pybind11::arg_v toPybind11ExtraWithDefault() const { return pybind11::arg_v( _parameterName.c_str(), _value ); }
 
 	  private:
 		T _value;

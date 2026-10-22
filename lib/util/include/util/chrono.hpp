@@ -35,7 +35,7 @@ namespace VTX::Util
 		/**
 		 * @brief Calculates the elapsed time between two time points.
 		 */
-		static float elapsedTime( const TimePoint p_start, const TimePoint p_end = now() ) noexcept
+		static constexpr float elapsedTime( const TimePoint p_start, const TimePoint p_end = now() ) noexcept
 		{ return std::chrono::duration_cast<Duration>( p_end - p_start ).count(); }
 
 		/**
@@ -86,8 +86,18 @@ namespace VTX::Util
 			_name( p_name ), _level( p_level )
 		{ start(); }
 
-		~ScopedChrono()
-		{ VTX_LOG( _level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() ) ); }
+		~ScopedChrono() noexcept
+		{
+			try
+			{
+				VTX_LOG(
+					_level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() )
+				);
+			}
+			catch ( ... ) // NOLINT(bugprone-empty-catch)
+			{
+			}
+		}
 
 	  private:
 		std::string		_name;

@@ -12,16 +12,16 @@ namespace VTX::App::PythonBinding
 		class RunScriptAction
 		{
 		  public:
-			RunScriptAction() {}
+			RunScriptAction() = default;
 
-			void execute( std::string p_path )
+			void execute( const std::string & p_path )
 			{
-				std::shared_ptr<std::promise<Interpretor::AsyncJobResult>> promise
+				const std::shared_ptr<std::promise<Interpretor::AsyncJobResult>> promise
 					= std::make_shared<std::promise<Interpretor::AsyncJobResult>>();
 				std::future<Interpretor::AsyncJobResult> future = promise->get_future();
 				INTERPRETOR().runScript( p_path, promise );
 				const Interpretor::AsyncJobResult result = future.get();
-				if ( result.success == false )
+				if ( not result.success )
 				{
 					throw pybind11::value_error( result.resultStr );
 				}

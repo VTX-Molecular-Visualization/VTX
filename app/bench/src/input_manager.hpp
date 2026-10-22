@@ -59,20 +59,22 @@ namespace VTX::Bench
 				_mouseButtons[ p_event.button.button - 1 ] = true;
 				if ( p_event.button.button == SDL_BUTTON_LEFT )
 				{
-					_frame.mousePick = MousePick { uint( p_event.button.x ), uint( p_event.button.y ) };
+					_frame.mousePick
+						= MousePick { static_cast<uint>( p_event.button.x ), static_cast<uint>( p_event.button.y ) };
 				}
 				break;
 			case SDL_EVENT_MOUSE_BUTTON_UP: _mouseButtons[ p_event.button.button - 1 ] = false; break;
 			case SDL_EVENT_MOUSE_MOTION:
 				if ( _mouseButtons[ 2 ] )
 				{
-					_deltaMouse.x += int( p_event.motion.xrel );
-					_deltaMouse.y += int( p_event.motion.yrel );
+					_deltaMouse.x += static_cast<int>( p_event.motion.xrel );
+					_deltaMouse.y += static_cast<int>( p_event.motion.yrel );
 				}
 				break;
-			case SDL_EVENT_MOUSE_WHEEL: _deltaWheel -= int( p_event.wheel.y ); break;
+			case SDL_EVENT_MOUSE_WHEEL: _deltaWheel -= static_cast<int>( p_event.wheel.y ); break;
 			case SDL_EVENT_WINDOW_RESIZED:
-				_frame.resize = WindowSize { size_t( p_event.window.data1 ), size_t( p_event.window.data2 ) };
+				_frame.resize = WindowSize { static_cast<size_t>( p_event.window.data1 ),
+											 static_cast<size_t>( p_event.window.data2 ) };
 				break;
 			case SDL_EVENT_WINDOW_RESTORED: _frame.restoreRequested = true; break;
 			case SDL_EVENT_DROP_FILE: _frame.droppedFiles.emplace_back( p_event.drop.data ); break;

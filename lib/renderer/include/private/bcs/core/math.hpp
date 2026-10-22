@@ -6,20 +6,20 @@
 
 namespace bcs
 {
-    constexpr float Pif    = 3.141592654f;
-    constexpr float TwoPif = 6.283185307f;
+	constexpr float Pif	   = 3.141592654f;
+	constexpr float TwoPif = 6.283185307f;
 
-	constexpr std::size_t nextPowerOfTwoValue( std::size_t baseNumber ) noexcept;
+	constexpr std::size_t nextPowerOfTwoValue( std::size_t baseNumber );
 	constexpr std::size_t nextPowerOfTwoExponent( std::size_t baseNumber ) noexcept;
 
-    using Vec4f = glm::vec4;
-    using Vec3f = glm::vec3;
+	using Vec4f = glm::vec4;
+	using Vec3f = glm::vec3;
 
-    struct Aabb
-    {
-        Vec3f min;
-        Vec3f max;
-    };
+	struct Aabb
+	{
+		Vec3f min;
+		Vec3f max;
+	};
 
 } // namespace bcs
 

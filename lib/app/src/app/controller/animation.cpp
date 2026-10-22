@@ -14,7 +14,7 @@ namespace VTX::App::Controller
 		const InterpRotationFunc & p_interRotation
 	) :
 		_animationDataStart( p_dataStart ), _animationDataEnd( p_dataEnd ), _duration( p_duration ),
-		_interpPosition( p_interpPosition ), _interpRotation( p_interRotation ), _time( 0.f )
+		_interpPosition( p_interpPosition ), _interpRotation( p_interRotation )
 	{
 	}
 
