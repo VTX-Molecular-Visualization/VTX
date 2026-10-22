@@ -30,7 +30,7 @@ namespace VTX::Util::Color
 
 		constexpr Rgba( const Rgba & ) = default;
 
-		constexpr explicit Rgba( const std::vector<float> & p_c )
+		explicit Rgba( const std::vector<float> & p_c )
 		{
 			assert( p_c.size() == 4 );
 			_v.x = p_c[ 0 ];
@@ -45,7 +45,7 @@ namespace VTX::Util::Color
 
 		constexpr const Vec4f & vec() const { return _v; }
 
-		constexpr std::vector<float> toStdVector() const { return { _v.x, _v.y, _v.z }; }
+		std::vector<float> toStdVector() const { return { _v.x, _v.y, _v.z }; }
 
 		[[nodiscard]] std::string toHexaString() const
 		{

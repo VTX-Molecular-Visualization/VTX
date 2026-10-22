@@ -254,11 +254,16 @@ namespace VTX::App::Pass
 		_representationAdded.emplace_back( p_e );
 	}
 
-	void SystemUpdater::_onUpdateRepresentationPreset( Registry & p_r, Entity p_e )
+	void SystemUpdater::_onUpdateRepresentationPreset( Registry &, const Entity p_e )
 	{
-		assert( _representations.contains( p_e ) );
-
-		RENDERER().setRepresentationDirty( _representations[ p_e ], Renderer::Cache::E_REPRESENTATION_DIRTY::ALL );
+		if ( const auto it = _representations.find( p_e ); it != _representations.end() )
+		{
+			RENDERER().setRepresentationDirty( it->second, Renderer::Cache::E_REPRESENTATION_DIRTY::ALL );
+		}
+		else
+		{
+			assert( std::ranges::find( _representationAdded, p_e ) != _representationAdded.end() );
+		}
 	}
 
 	void SystemUpdater::_onDestroyRepresentationPreset( Registry &, Entity p_e )
