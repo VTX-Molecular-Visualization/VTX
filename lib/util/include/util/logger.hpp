@@ -66,7 +66,12 @@ namespace VTX
 			{
 				try
 				{
-					spdlog::log(
+					const auto logger = spdlog::default_logger();
+					if ( not logger )
+					{
+						return;
+					}
+					logger->log(
 						spdlog::source_loc {
 							"",
 							0,
@@ -94,7 +99,12 @@ namespace VTX
 			{
 				try
 				{
-					spdlog::log(
+					const auto logger = spdlog::default_logger();
+					if ( not logger )
+					{
+						return;
+					}
+					logger->log(
 						spdlog::source_loc {
 							"",
 							0,

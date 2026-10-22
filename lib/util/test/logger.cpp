@@ -56,4 +56,7 @@ TEST_CASE( "Util::Logger", "[unit]" )
 	}
 
 	VTX::LOGGER::stop();
+	REQUIRE( not spdlog::default_logger() );
+	CHECK_NOTHROW( VTX::VTX_INFO( "info after stop" ) );
+	CHECK_NOTHROW( VTX::VTX_INFO( "info after stop: {}", 42 ) );
 }
