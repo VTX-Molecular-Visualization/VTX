@@ -4,18 +4,21 @@
 #include <string>
 #include <util/string.hpp>
 
-static_assert(
-	[]
-	{
-		using namespace VTX::Util::String;
-		return trim( " \talpha \n" ) == "alpha" && trim( " \t" ).empty() && trimStart( "  alpha " ) == "alpha "
-			   && trimEnd( " alpha  " ) == " alpha"
-			   && split( "a,,b,", ',' ) == std::vector<std::string> { "a", "", "b", "" }
-			   && replaceFirst( "aaa", "a", "b" ) == "baa" && replaceAll( "aaaa", "aa", "b" ) == "bb"
-			   && replaceAll( "aa", "a", "aa" ) == "aaaa" && replaceAll( "aaa", "a", "a" ) == "aaa"
-			   && replaceAll( "aaa", "a", "" ).empty() && replaceAll( "abc", "", "x" ) == "abc";
-	}()
-);
+TEST_CASE( "Util::String edge cases", "[unit]" )
+{
+	using namespace VTX::Util::String;
+	CHECK( trim( " \talpha \n" ) == "alpha" );
+	CHECK( trim( " \t" ).empty() );
+	CHECK( trimStart( "  alpha " ) == "alpha " );
+	CHECK( trimEnd( " alpha  " ) == " alpha" );
+	CHECK( ( split( "a,,b,", ',' ) == std::vector<std::string> { "a", "", "b", "" } ) );
+	CHECK( replaceFirst( "aaa", "a", "b" ) == "baa" );
+	CHECK( replaceAll( "aaaa", "aa", "b" ) == "bb" );
+	CHECK( replaceAll( "aa", "a", "aa" ) == "aaaa" );
+	CHECK( replaceAll( "aaa", "a", "a" ) == "aaa" );
+	CHECK( replaceAll( "aaa", "a", "" ).empty() );
+	CHECK( replaceAll( "abc", "", "x" ) == "abc" );
+}
 
 // string.hpp
 TEST_CASE( "Util::String", "[unit]" )
