@@ -36,7 +36,7 @@ namespace VTX::UI::QT::Widget::Library
 	  public:
 		BasePresetSelector( QWidget * p_parent ) : QGroupBox( p_parent ) {}
 
-		virtual ~BasePresetSelector() = default;
+		~BasePresetSelector() override = default;
 
 	  signals:
 		/**
@@ -156,7 +156,7 @@ namespace VTX::UI::QT::Widget::Library
 			_onPresetUpdateConnection = reg.on_update<P>().template connect<&PresetSelector::_onUpdatePreset>( this );
 		}
 
-		virtual ~PresetSelector()
+		~PresetSelector() override
 		{
 			_onConstructConnection.release();
 			_onDestroyConnection.release();

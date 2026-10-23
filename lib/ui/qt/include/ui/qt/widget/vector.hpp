@@ -15,7 +15,8 @@ namespace VTX::UI::QT::Widget
 
 	  public:
 		IVector( QWidget * p_parent ) : QWidget( p_parent ) {}
-		virtual ~IVector() = default;
+
+		~IVector() override = default;
 
 	  signals:
 		void valueEdited();
@@ -25,7 +26,7 @@ namespace VTX::UI::QT::Widget
 	class Vector : public IVector
 	{
 	  public:
-		using Scalar							 = typename V::value_type;
+		using Scalar							 = V::value_type;
 		static constexpr int			  N		 = V::length();
 		static constexpr std::string_view PREFIX = "xyzw";
 

@@ -1,9 +1,9 @@
+#include <cstring>
 #include <fstream>
 #include <re2/re2.h>
 #include <regex>
 #include <set>
 #include <stdexcept>
-#include <string.h>
 //
 #include <app/services.hpp>
 #include <app/session.hpp>
@@ -31,7 +31,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 		std::vector<forcefield> out;
 
-		for ( auto & fsElement : fs::directory_iterator( p_dataDir ) )
+		for ( const auto & fsElement : fs::directory_iterator( p_dataDir ) )
 		{
 			if ( !fsElement.is_directory() )
 			{
@@ -134,7 +134,6 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			return;
 		};
 		p_out = E_INTERACTIVE_KEYWORD::none;
-		return;
 	}
 
 	parseReport parsePdb2gmxUserScript( const std::string_view & p_script, Pdb2gmxInputs & p_args )
@@ -147,8 +146,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			return out;
 		}
 
-		std::string_view::const_iterator currentPos		= p_script.begin(),
-										 nextNewlinePos = std::find( p_script.begin(), p_script.end(), '\n' );
+		std::string_view::const_iterator currentPos		= p_script.begin();
+		std::string_view::const_iterator nextNewlinePos = std::find( p_script.begin(), p_script.end(), '\n' );
 		if ( nextNewlinePos != p_script.end() )
 		{
 			nextNewlinePos++;
@@ -331,7 +330,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			}
 			{
 				std::string fileStem = topFile.stem().string();
-				RE2			itpÎncludePattern { fmt::format( "#include +(\"|<)({}.*\\.\\w\\w\\w)(\"|>).*", fileStem ) };
+				RE2			  itpÎncludePattern { fmt::format( R"(#include +("|<)({}.*\.\w\w\w)("|>).*)", fileStem ) };
 				std::ifstream fileStrm { topFile };
 				std::ofstream outStrm { tmpFile };
 				std::string	  jobDirString = p_jobDir.string();

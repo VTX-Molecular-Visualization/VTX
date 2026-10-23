@@ -47,7 +47,7 @@ namespace VTX::UI::QT::Widget::Tree
 			);
 		}
 
-		virtual ~BaseTreePreset()
+		~BaseTreePreset() override
 		{
 			_onConstructConnection.release();
 			_onDestroyConnection.release();

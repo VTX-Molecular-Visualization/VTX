@@ -45,7 +45,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		void fillOutputs( GromacsInstructions & p_in, GenionInstructions & p_stepIn, GromacsJobData & p_currentJobData )
 		{
 			fillOutputsFromExpectations( p_in, p_currentJobData );
-			if ( auto fileStrPtr = getFirstFileOfType( p_in.outputs, ".top" ) )
+			if ( const auto * const fileStrPtr = getFirstFileOfType( p_in.outputs, ".top" ) )
 			{
 				p_in.outputs.lastUncompiledTop = *fileStrPtr;
 			}
@@ -59,7 +59,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		)
 		{
 			fillOutputsFromExpectations( p_in, p_currentJobData );
-			if ( auto fileStrPtr = getFirstFileOfType( p_in.outputs, ".top" ) )
+			if ( const auto * const fileStrPtr = getFirstFileOfType( p_in.outputs, ".top" ) )
 			{
 				p_in.outputs.lastUncompiledTop = *fileStrPtr;
 			}
@@ -73,7 +73,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		)
 		{
 			fillOutputsFromExpectations( p_in, p_currentJobData );
-			if ( auto fileStrPtr = getFirstFileOfType( p_in.outputs, ".top" ) )
+			if ( const auto * const fileStrPtr = getFirstFileOfType( p_in.outputs, ".top" ) )
 			{
 				p_in.outputs.lastUncompiledTop = *fileStrPtr;
 			}
@@ -265,7 +265,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		static FilePath createRootDir()
 		{
-			FilePath base = App::SESSION().getAppTmpFolder() / "tools" / "mdprep" / "test", out;
+			const FilePath base = App::SESSION().getAppTmpFolder() / "tools" / "mdprep" / "test";
+			FilePath	   out;
 			for ( uint32_t i = 0; i != 0xffffffff; i++ )
 			{
 				out = base / std::to_string( i );

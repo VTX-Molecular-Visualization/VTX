@@ -47,7 +47,7 @@ namespace VTX::UI::QT::Util
 		}
 
 	  private:
-		std::set<QEvent::Type> _filteredTypes = std::set<QEvent::Type>();
+		std::set<QEvent::Type> _filteredTypes;
 	};
 
 	/*

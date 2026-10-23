@@ -13,7 +13,7 @@ namespace VTX::UI::QT::DockWidget
 	 * @brief Display residues sequence for each loaded system.
 	 * // TODO handle selection and color layout.
 	 */
-	class Sequences : public BaseDockWidget<Sequences, 1, 1>
+	class Sequences : public BaseDockWidget<Sequences, true, true>
 	{
 	  public:
 		Sequences( QWidget * );

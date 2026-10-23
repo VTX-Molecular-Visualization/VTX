@@ -56,7 +56,9 @@ namespace VTX::Tool::Mdprep::ui
 		_data->nstenergy = _field_nstenergy->text().toUInt();
 		_data->nstlog	 = _field_nstlog->text().toUInt();
 		if ( _data->nstxout_compressed.has_value() )
+		{
 			_data->nstxout_compressed = _field_nstxout_compressed->text().toUInt();
+		}
 	}
 
 	GromacsSystemFieldPlacer::GromacsSystemFieldPlacer( Gateway::Gromacs::SystemSettings & p_ ) : _data( &p_ ) {}
@@ -80,14 +82,17 @@ namespace VTX::Tool::Mdprep::ui
 			std::vector<std::string> values;
 			Gateway::Gromacs::boxDimensionModeCollection( values );
 			for ( auto & it_str : values )
+			{
 				_boxFields.fieldBoxSizeMode->addItem( QString::fromStdString( it_str ) );
+			}
 
 			if ( _data->boxSizeMode < static_cast<size_t>( _boxFields.fieldBoxSizeMode->count() ) )
+			{
 				_boxFields.fieldBoxSizeMode->setCurrentIndex( static_cast<int>( _data->boxSizeMode ) );
+			}
 		}
 		QObject::connect(
-			_boxFields.fieldBoxSizeMode, &QComboBox::currentIndexChanged, [ & ] { this->_updateBoxSizeMode(); }
-		);
+			_boxFields.fieldBoxSizeMode, &QComboBox::currentIndexChanged, [ & ] { this->_updateBoxSizeMode(); } );
 
 		_boxFields.fieldDistance = new QDoubleSpinBox( _targetLayout->parentWidget() );
 		_boxFields.fieldDistance->setMinimum( 0. );
@@ -119,7 +124,9 @@ namespace VTX::Tool::Mdprep::ui
 	{
 		if ( p_info.field != E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape
 			 && p_info.field != E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxDimensionMode )
+		{
 			return;
+		}
 
 		_removeFields();
 
@@ -162,7 +169,9 @@ namespace VTX::Tool::Mdprep::ui
 			QFormLayout::ItemRole _tmp;
 			p_from->getWidgetPosition( p_what, &rowToTakeOutIndex, &_tmp );
 			if ( rowToTakeOutIndex == INT32_MAX || rowToTakeOutIndex == -1 )
+			{
 				return;
+			}
 			auto stuffTakenOut = p_from->takeRow( rowToTakeOutIndex );
 			stuffTakenOut.fieldItem->widget()->hide();
 			stuffTakenOut.labelItem->widget()->hide();

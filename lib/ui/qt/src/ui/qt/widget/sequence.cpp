@@ -242,8 +242,8 @@ namespace VTX::UI::QT::Widget
 			{
 				if ( _oIdData.ruleIndex2residueIndex.contains( p_index ) )
 				{
-					auto & [ chainId, resIdx ] = _oIdData.ruleIndex2residueIndex.at( p_index );
-					out.chainIndex			   = chainId;
+					const auto & [ chainId, resIdx ] = _oIdData.ruleIndex2residueIndex.at( p_index );
+					out.chainIndex					 = chainId;
 					auto & chainName		   = topology.chainNames[ out.chainIndex ];
 					out.chainName			   = std::string_view( chainName.data(), chainName.size() );
 					if ( resIdx < topology.residueSymbols.size() )
@@ -311,8 +311,8 @@ namespace VTX::UI::QT::Widget
 
 			if ( _oIdData.ruleIndex2residueIndex.contains( it_searchIndex ) )
 			{
-				auto & [ chainId, resIdx ] = _oIdData.ruleIndex2residueIndex.at( it_searchIndex );
-				p_chainIndex			   = chainId;
+				const auto & [ chainId, resIdx ] = _oIdData.ruleIndex2residueIndex.at( it_searchIndex );
+				p_chainIndex					 = chainId;
 				auto & chainName		   = topology.chainNames[ chainId ];
 				p_chainName				   = std::string_view( chainName.data(), chainName.size() );
 			}

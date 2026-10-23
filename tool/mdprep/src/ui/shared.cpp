@@ -165,7 +165,7 @@ namespace VTX::Tool::Mdprep::ui
 		  public:
 			QChemicalSymbolValidator( QObject * p_parent ) : QValidator( p_parent ) {}
 
-			virtual QValidator::State validate( QString & input, int & pos ) const override
+			QValidator::State validate( QString & input, int & pos ) const override
 			{
 				if ( input.size() > 2 )
 				{

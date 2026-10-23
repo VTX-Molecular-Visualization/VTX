@@ -17,7 +17,7 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		Controller( Entity, QWidget * );
-		~Controller();
+		~Controller() override;
 
 	  private:
 		const Entity _entity;

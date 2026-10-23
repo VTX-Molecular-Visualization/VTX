@@ -62,12 +62,11 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
 
-			virtual void checkInputs( const Gateway::MdParameters & p_1 ) const noexcept override
-			{ _obj.checkInputs( p_1 ); }
+			void checkInputs( const Gateway::MdParameters & p_1 ) const noexcept override { _obj.checkInputs( p_1 ); }
 
-			virtual bool isResultAvailable() const noexcept override { return _obj.isResultAvailable(); }
+			bool isResultAvailable() const noexcept override { return _obj.isResultAvailable(); }
 
-			virtual Gateway::CheckReport lastResult() const noexcept override { return _obj.lastResult(); }
+			Gateway::CheckReport lastResult() const noexcept override { return _obj.lastResult(); }
 
 		  private:
 			T _obj;

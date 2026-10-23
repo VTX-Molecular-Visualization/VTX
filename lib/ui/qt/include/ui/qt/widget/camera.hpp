@@ -15,7 +15,7 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		Camera( Entity, QWidget * );
-		~Camera();
+		~Camera() override;
 
 	  private:
 		const Entity _entity;

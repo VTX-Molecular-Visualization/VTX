@@ -33,7 +33,7 @@ namespace VTX::UI::QT::Widget
 			VTX_TRACE( "Widget created: {}", name );
 		}
 
-		virtual ~BaseWidget()
+		~BaseWidget() override
 		{
 			try
 			{

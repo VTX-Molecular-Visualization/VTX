@@ -70,18 +70,14 @@ namespace VTX::Tool::Mdprep::ui
 
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
 
-			virtual void _get( Gateway::EngineSpecificCommonInformation & p_ ) const noexcept override
-			{ ui::get( _obj, p_ ); }
+			void _get( Gateway::EngineSpecificCommonInformation & p_ ) const noexcept override { ui::get( _obj, p_ ); }
 
-			virtual void _get(
-				const E_FIELD_SECTION &		  p_section,
-				MdEngineSpecificFieldPlacer & p_out
-			) noexcept override
+			void _get( const E_FIELD_SECTION & p_section, MdEngineSpecificFieldPlacer & p_out ) noexcept override
 			{ _obj.get( p_section, p_out ); }
 
-			virtual void _get( MdEngineFieldPlacer & p_out ) noexcept override { _obj.get( p_out ); }
+			void _get( MdEngineFieldPlacer & p_out ) noexcept override { _obj.get( p_out ); }
 
-			virtual void _get( Gateway::EngineJobManager & p_out ) noexcept override { _obj.get( p_out ); }
+			void _get( Gateway::EngineJobManager & p_out ) noexcept override { _obj.get( p_out ); }
 		};
 
 	  public:

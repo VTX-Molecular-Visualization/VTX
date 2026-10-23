@@ -21,7 +21,7 @@ namespace VTX::Util::String
 	/**
 	 * Trim empty characters at the start and end.
 	 */
-	[[nodiscard]] inline std::string trim( const std::string & p_str )
+	[[nodiscard]] constexpr std::string trim( const std::string & p_str )
 	{
 		std::string result = p_str;
 		result.erase( 0, result.find_first_not_of( WHITESPACES ) );
@@ -32,7 +32,7 @@ namespace VTX::Util::String
 	/**
 	 * @brief Replace first occurrence.
 	 */
-	[[nodiscard]] inline std::string replaceFirst(
+	[[nodiscard]] constexpr std::string replaceFirst(
 		const std::string & p_str,
 		const std::string & p_toReplace,
 		const std::string & p_replacement
@@ -46,7 +46,7 @@ namespace VTX::Util::String
 	/**
 	 * Trim empty characters at the start and return the result.
 	 */
-	[[nodiscard]] inline std::string trimStart( const std::string & p_str )
+	[[nodiscard]] constexpr std::string trimStart( const std::string & p_str )
 	{
 		std::string result = p_str;
 		result.erase( 0, result.find_first_not_of( WHITESPACES ) );
@@ -56,7 +56,7 @@ namespace VTX::Util::String
 	/**
 	 * Trim empty characters at the end and return the result.
 	 */
-	[[nodiscard]] inline std::string trimEnd( const std::string & p_str )
+	[[nodiscard]] constexpr std::string trimEnd( const std::string & p_str )
 	{
 		std::string result = p_str;
 		result.erase( result.find_last_not_of( WHITESPACES ) + 1 );
@@ -66,7 +66,7 @@ namespace VTX::Util::String
 	/**
 	 * Split a string using a character separator.
 	 */
-	[[nodiscard]] inline std::vector<std::string> split( const std::string & p_str, const char p_separator )
+	[[nodiscard]] constexpr std::vector<std::string> split( const std::string & p_str, const char p_separator )
 	{
 		std::vector<std::string> splittedStr = std::vector<std::string>();
 
@@ -89,7 +89,7 @@ namespace VTX::Util::String
 	/**
 	 * Replace all occurrences of a string and return the result.
 	 */
-	[[nodiscard]] inline std::string replaceAll(
+	[[nodiscard]] constexpr std::string replaceAll(
 		const std::string & p_str,
 		const std::string & p_toReplace,
 		const std::string & p_replacement

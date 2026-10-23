@@ -58,7 +58,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Register an action.
 		 */
-		QAction * registerAction( const App::UI::DescAction &, const ActionHandler = {} );
+		QAction * registerAction( const App::UI::DescAction &, ActionHandler = {} );
 
 		/**
 		 * @brief Get a registered action.
@@ -68,7 +68,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Trigger by key.
 		 */
-		void trigger( const std::string_view, ActionParams = {} ) const;
+		void trigger( std::string_view, ActionParams = {} ) const;
 
 		/**
 		 * @brief Get the checked state.

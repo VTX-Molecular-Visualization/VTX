@@ -22,7 +22,7 @@ namespace VTX::UI::QT::Widget
 		 * @brief Constructor.
 		 */
 		Selection( QWidget * p_parent = nullptr );
-		~Selection();
+		~Selection() override;
 
 	  private:
 		/**

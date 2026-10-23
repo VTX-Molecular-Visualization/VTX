@@ -37,7 +37,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Destructor.
 		 */
-		~MainWindow();
+		~MainWindow() override;
 
 		/**
 		 * @brief Hook a registered action to the given menu.
@@ -138,8 +138,8 @@ namespace VTX::UI::QT::Widget
 		 */
 		bool event( QEvent * ) override;
 		void closeEvent( QCloseEvent * ) override;
-		void dragEnterEvent( QDragEnterEvent * );
-		void dropEvent( QDropEvent * );
+		void dragEnterEvent( QDragEnterEvent * ) override;
+		void dropEvent( QDropEvent * ) override;
 
 	  private:
 		/**

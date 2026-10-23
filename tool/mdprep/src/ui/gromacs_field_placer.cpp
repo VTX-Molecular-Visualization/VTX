@@ -32,7 +32,9 @@ namespace VTX::Tool::Mdprep::ui
 			QFormLayout::ItemRole _tmp;
 			p_dest->getWidgetPosition( p_field, &rowToTakeOut, &_tmp );
 			if ( rowToTakeOut > -1 )
+			{
 				p_dest->takeRow( rowToTakeOut );
+			}
 			p_field->setParent( nullptr );
 			p_field->hide();
 			p_label->setParent( nullptr );
@@ -62,28 +64,38 @@ namespace VTX::Tool::Mdprep::ui
 	void GromacsFieldPlacer::activate() noexcept
 	{
 		if ( not _layouts )
+		{
 			return;
+		}
 
 		if ( _layouts->baseParametersIon )
+		{
 			setWidgetRowVisibility( _layouts->baseParametersIon, _uiObjects._labelConc, _uiObjects._fieldConc, true );
+		}
 
 		if ( _layouts->advancedParametersSystemPrepartion )
+		{
 			setWidgetRowVisibility(
-				_layouts->advancedParametersSystemPrepartion, _uiObjects._labelConc, _uiObjects._fieldConc, true
-			);
+				_layouts->advancedParametersSystemPrepartion, _uiObjects._labelConc, _uiObjects._fieldConc, true );
+		}
 	}
 	void GromacsFieldPlacer::deactivate() noexcept
 	{
 		if ( not _layouts )
+		{
 			return;
+		}
 
 		if ( _layouts->baseParametersIon )
+		{
 			setWidgetRowVisibility( _layouts->baseParametersIon, _uiObjects._labelConc, _uiObjects._fieldConc, false );
+		}
 
 		if ( _layouts->advancedParametersSystemPrepartion )
+		{
 			setWidgetRowVisibility(
-				_layouts->advancedParametersSystemPrepartion, _uiObjects._labelConc, _uiObjects._fieldConc, false
-			);
+				_layouts->advancedParametersSystemPrepartion, _uiObjects._labelConc, _uiObjects._fieldConc, false );
+		}
 	}
 	void get( const GromacsFieldPlacer &, EngineSpecificCommonInformation & p_out ) noexcept
 	{

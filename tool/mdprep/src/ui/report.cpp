@@ -146,7 +146,7 @@ namespace VTX::Tool::Mdprep::ui
 			}
 		}
 
-		inline void _removeContainerFromLayout() noexcept
+		void _removeContainerFromLayout() noexcept
 		{
 			if ( not _currentLayout.isNull() && not _container.isNull() )
 			{
@@ -154,7 +154,7 @@ namespace VTX::Tool::Mdprep::ui
 			}
 		}
 
-		inline void _deleteLayout() noexcept
+		void _deleteLayout() noexcept
 		{
 			if ( not _currentLayout.isNull() )
 			{
@@ -162,7 +162,7 @@ namespace VTX::Tool::Mdprep::ui
 			}
 		}
 
-		inline void _deleteContainer() noexcept
+		void _deleteContainer() noexcept
 		{
 			if ( not _container.isNull() )
 			{
@@ -170,7 +170,7 @@ namespace VTX::Tool::Mdprep::ui
 			}
 		}
 
-		inline void _createContainer() noexcept
+		void _createContainer() noexcept
 		{
 			if ( _container.isNull() )
 			{
@@ -200,9 +200,9 @@ namespace VTX::Tool::Mdprep::ui
 		Data				_reportData;
 		bool				firstCheckStarted = false;
 
-		inline bool hasFirstCheckBeenDone() const noexcept { return firstCheckStarted; }
+		bool hasFirstCheckBeenDone() const noexcept { return firstCheckStarted; }
 
-		inline void checkInputs( const Gateway::MdParameters & p_params ) noexcept
+		void checkInputs( const Gateway::MdParameters & p_params ) noexcept
 		{
 			if ( _reportData.checkInProgress )
 			{
@@ -217,18 +217,18 @@ namespace VTX::Tool::Mdprep::ui
 			_inputChecker.checkInputs( p_params );
 		}
 
-		inline void relocate( QPointer<QVBoxLayout> p_ ) noexcept { _manager.relocate( p_ ); }
+		void relocate( const QPointer<QVBoxLayout> p_ ) noexcept { _manager.relocate( p_ ); }
 
-		inline void relocate( ReportManager & p_ ) noexcept { _manager.relocate( p_._impl->_manager ); }
+		void relocate( ReportManager & p_ ) noexcept { _manager.relocate( p_._impl->_manager ); }
 
-		inline void _receiveReport( Gateway::CheckReport p_report ) noexcept
+		void _receiveReport( Gateway::CheckReport p_report ) noexcept
 		{
 			_reportData.checkInProgress = false;
 			_reportData.report			= p_report;
 			_manager.postReport( ReportUi( std::move( p_report ) ) );
 		}
 
-		inline void visibilityChanged( Entity ) noexcept
+		void visibilityChanged( const Entity ) noexcept
 		{
 			_reportData.report.dirty = true;
 			QTimer::singleShot( 0, nullptr, [ & ] { _manager.postReport( ReportUi( _reportData.report ) ); } );

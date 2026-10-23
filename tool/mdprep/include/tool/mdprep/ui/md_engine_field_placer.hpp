@@ -20,19 +20,27 @@ namespace VTX::Tool::Mdprep::ui
 		void assign( FormLayouts p_layouts ) noexcept
 		{
 			if ( _ptr )
+			{
 				_ptr->assign( std::move( p_layouts ) );
+			}
 		}
+
 		// Add the engine-specific field in the right place.
 		void activate() noexcept
 		{
 			if ( _ptr )
+			{
 				_ptr->activate();
+			}
 		}
+
 		// Remove the engine-specific field.
 		void deactivate() noexcept
 		{
 			if ( _ptr )
+			{
 				_ptr->deactivate();
+			}
 		}
 
 		MdEngineFieldPlacer() = default;
@@ -56,10 +64,9 @@ namespace VTX::Tool::Mdprep::ui
 				}, "You must implement 'void deactivate() noexcept' class method."
 			);
 			static_assert(
-				not std::is_trivially_destructible<T>::value,
+				not std::is_trivially_destructible_v<T>,
 				"You must implement a destructor class method, as the responsability of the MdEngineFieldPlacer is "
-				"also to cleanup his widget(s) on destruction."
-			);
+				"also to cleanup his widget(s) on destruction." );
 		}
 
 	  private:
@@ -76,9 +83,12 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			T _t;
 			wrapper( T && p_in ) : _t( std::forward<T>( p_in ) ) {}
-			virtual void assign( FormLayouts p_layouts ) noexcept { _t.assign( std::move( p_layouts ) ); }
-			virtual void activate() noexcept override { _t.activate(); }
-			virtual void deactivate() noexcept override { _t.deactivate(); }
+
+			void assign( FormLayouts p_layouts ) noexcept override { _t.assign( std::move( p_layouts ) ); }
+
+			void activate() noexcept override { _t.activate(); }
+
+			void deactivate() noexcept override { _t.deactivate(); }
 		};
 
 		std::unique_ptr<_interface> _ptr = nullptr;

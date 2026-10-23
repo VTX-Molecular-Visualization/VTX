@@ -11,11 +11,15 @@ namespace VTX::UI::QT
 	QValidator::State QUInt64Validator::validate( QString & input, int & pos ) const
 	{
 		if ( input.isEmpty() )
+		{
 			return State::Acceptable;
+		}
 		for ( auto & char_it : input )
 		{
 			if ( char_it < '0' || char_it > '9' )
+			{
 				return State::Invalid;
+			}
 		}
 		std::string str = input.toStdString();
 		try

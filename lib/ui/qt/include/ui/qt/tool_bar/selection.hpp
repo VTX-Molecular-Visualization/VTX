@@ -7,8 +7,8 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/widget/base_widget.hpp"
-#include <QPointer>
 #include <QMenu>
+#include <QPointer>
 #include <QToolBar>
 #include <QToolButton>
 #include <app/action/selection.hpp>

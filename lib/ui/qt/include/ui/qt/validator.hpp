@@ -15,7 +15,7 @@ namespace VTX::UI::QT
 		QUInt64Validator( uint64_t p_min, uint64_t p_max, QObject * p_parent ); // Allows to set min and max
 		QUInt64Validator( QObject * p_parent );									// Min is 0, max is UINT64_MAX
 
-		virtual QValidator::State validate( QString & input, int & pos ) const override;
+		QValidator::State validate( QString & input, int & pos ) const override;
 	};
 } // namespace VTX::UI::QT
 

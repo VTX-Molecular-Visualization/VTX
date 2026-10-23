@@ -19,7 +19,7 @@ namespace VTX::UI::QT::Widget::Tree
 			_connectAppliedPresetUpdates( App::REG() );
 		}
 
-		~ColorLayoutPresets() { _disconnectAppliedPresetUpdates( App::REG() ); }
+		~ColorLayoutPresets() override { _disconnectAppliedPresetUpdates( App::REG() ); }
 
 	  private:
 		void _connectAppliedPresetUpdates( Registry & p_reg )

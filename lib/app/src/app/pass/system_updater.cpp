@@ -266,8 +266,13 @@ namespace VTX::App::Pass
 		}
 	}
 
-	void SystemUpdater::_onDestroyRepresentationPreset( Registry &, Entity p_e )
+	void SystemUpdater::_onDestroyRepresentationPreset( Registry &, const Entity p_e )
 	{
+		if ( std::erase( _representationAdded, p_e ) > 0 )
+		{
+			return;
+		}
+
 		assert( _representations.contains( p_e ) );
 
 		_representationRemoved.emplace_back( _representations[ p_e ] );

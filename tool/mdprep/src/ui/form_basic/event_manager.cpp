@@ -15,7 +15,6 @@
 #include <util/sentry.hpp>
 //
 #include "tool/mdprep/ui/form_basic/settings_dialog.hpp"
-#include "tool/mdprep/ui/report.hpp"
 //
 #include "tool/mdprep/ui/form_basic/event_manager.hpp"
 
@@ -41,7 +40,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	EventManager & EventManager::operator=( EventManager && p_ ) noexcept
 	{
 		if ( &p_ == this )
+		{
 			return *this;
+		}
 
 		_data			= p_._data;
 		_settingsDialog = std::move( p_._settingsDialog );
@@ -104,16 +105,27 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	void EventManager::_disconnectAll( UiObjects & p_uiObjects ) noexcept
 	{
 		if ( p_uiObjects._buttonMinimizationSettings )
+		{
 			p_uiObjects._buttonMinimizationSettings->disconnect( p_uiObjects._buttonMinimizationSettings );
+		}
 		if ( p_uiObjects._buttonEquilibrationNvtSettings )
+		{
 			p_uiObjects._buttonEquilibrationNvtSettings->disconnect( p_uiObjects._buttonEquilibrationNvtSettings );
+		}
 		if ( p_uiObjects._buttonEquilibrationNptSettings )
+		{
 			p_uiObjects._buttonEquilibrationNptSettings->disconnect( p_uiObjects._buttonEquilibrationNptSettings );
+		}
 		if ( p_uiObjects._buttonProductionSettings )
+		{
 			p_uiObjects._buttonProductionSettings->disconnect( p_uiObjects._buttonProductionSettings );
+		}
 		if ( p_uiObjects._buttonSystemSettings )
+		{
 			p_uiObjects._buttonSystemSettings->disconnect( p_uiObjects._buttonSystemSettings );
+		}
 	}
+
 	void EventManager::_connectSettingsMinimization() noexcept
 	{
 		QPushButton::connect(
@@ -238,7 +250,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		ReportManager * reportManager = nullptr;
 		_data->get( reportManager );
 		if ( reportManager->hasFirstCheckBeenDone() )
+		{
 			return;
+		}
 
 		_startInputCheck();
 	}

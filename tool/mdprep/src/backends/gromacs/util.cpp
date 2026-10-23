@@ -64,7 +64,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 			absl::string_view txt_view( p_text );
 			std::string		  hit;
-			std::string		  b1, b2;
+			std::string		  b1;
+			std::string		  b2;
 			while ( RE2::FindAndConsume( &txt_view, pattern, &hit ) )
 			{
 				while ( hit.starts_with( '\n' ) || hit.starts_with( '\r' ) || hit.starts_with( '\t' ) )
@@ -123,7 +124,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	) noexcept
 	{
 		size_t suffixSeen = 0;
-		for ( auto & it_fileStrPtr : p_list.fileStringPtrs )
+		for ( const auto & it_fileStrPtr : p_list.fileStringPtrs )
 		{
 			if ( it_fileStrPtr->ends_with( suffix ) )
 			{

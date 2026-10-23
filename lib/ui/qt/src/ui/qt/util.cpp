@@ -92,7 +92,7 @@ namespace VTX::UI::QT::Util
 		}
 
 	  protected:
-		bool event( QEvent * e )
+		bool event( QEvent * const e ) override
 		{
 			switch ( e->type() )
 			{
@@ -155,7 +155,7 @@ namespace VTX::UI::QT::Util
 		QLabel * _label = nullptr;
 
 	  public:
-		QHoverableQuestionMark( const char * p_popupText ) : QPushButton()
+		QHoverableQuestionMark( const char * const p_popupText )
 		{
 			// Render the help affordance as a bold "?" glyph rather than an icon. The old resource
 			// ":/sprite/citations_icon_hovered.png" was removed (turning this flat button invisible), and a
@@ -182,7 +182,7 @@ namespace VTX::UI::QT::Util
 			// Large reports (e.g. raw gromacs output) used to grow the tooltip off-screen. Wrap the text in
 			// a scroll area so the popup stays bounded and the overflow is scrollable instead. Keep the scroll
 			// area and label transparent so the popup's themed frame background shows through uniformly.
-			auto scrollArea = new QScrollArea( popup->contentHost() );
+			auto * const scrollArea = new QScrollArea( popup->contentHost() );
 			scrollArea->setWidget( _label );
 			scrollArea->setWidgetResizable( true );
 			scrollArea->setFrameShape( QFrame::NoFrame );
@@ -192,18 +192,12 @@ namespace VTX::UI::QT::Util
 			_label->setAttribute( Qt::WA_TranslucentBackground );
 
 			// Inset the content from the rounded border so text never overlaps the corners.
-			auto layout = new QVBoxLayout( popup->contentHost() );
+			auto * const layout = new QVBoxLayout( popup->contentHost() );
 			layout->setContentsMargins( { 10, 8, 10, 8 } );
 			layout->addWidget( scrollArea );
 		}
 
-		~QHoverableQuestionMark()
-		{
-			if ( popup )
-			{
-				delete popup;
-			}
-		}
+		~QHoverableQuestionMark() override { delete popup; }
 
 		QHoverableQuestionMark( QHoverableQuestionMark && )					 = delete;
 		QHoverableQuestionMark( const QHoverableQuestionMark & )			 = delete;
@@ -227,7 +221,7 @@ namespace VTX::UI::QT::Util
 		}
 
 	  protected:
-		bool event( QEvent * e )
+		bool event( QEvent * const e ) override
 		{
 			switch ( e->type() )
 			{
@@ -304,7 +298,7 @@ namespace VTX::UI::QT::Util
 		QFont	 font	= qlabel->font();
 		font.setPointSize( font.pointSize() + 4 );
 		qlabel->setFont( font );
-		auto qLine = new QFrame;
+		auto * const qLine = new QFrame;
 		qLine->setFrameShape( QFrame::HLine );
 		qLine->setFrameShadow( QFrame::Sunken );
 		qLilLayout->addWidget( qlabel );

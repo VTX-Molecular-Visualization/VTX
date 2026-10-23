@@ -25,7 +25,7 @@ namespace VTX::UI::QT::Dialog
 		{
 		}
 
-		virtual ~BaseDialog() = default;
+		~BaseDialog() override = default;
 	};
 } // namespace VTX::UI::QT::Dialog
 

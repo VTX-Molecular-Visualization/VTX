@@ -54,7 +54,7 @@ namespace VTX::Tool::Mdprep::ui
 
 		// following content is meant to be moved eventually
 		_w_mdEngine = new QComboBox;
-		for ( auto & it : VTX::Tool::Mdprep::ui::mdEngineStrings() )
+		for ( const auto & it : VTX::Tool::Mdprep::ui::mdEngineStrings() )
 		{
 			_w_mdEngine->addItem( QString( it ) );
 		}

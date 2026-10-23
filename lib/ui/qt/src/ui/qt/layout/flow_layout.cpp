@@ -98,7 +98,10 @@ namespace VTX::UI::QT::Layout
 
 	int FlowLayout::_doLayout( const QRect & p_rect, bool p_testOnly ) const
 	{
-		int left, top, right, bottom;
+		int left;
+		int top;
+		int right;
+		int bottom;
 		getContentsMargins( &left, &top, &right, &bottom );
 		QRect effectiveRect = p_rect.adjusted( +left, +top, -right, -bottom );
 		int	  x				= effectiveRect.x();

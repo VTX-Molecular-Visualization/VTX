@@ -25,7 +25,7 @@ namespace VTX::UI::QT::DockWidget
 
 	  public:
 		Options( QWidget * p_parent );
-		~Options();
+		~Options() override;
 
 	  private:
 		QPointer<QComboBox> _comboBoxTheme;

@@ -34,7 +34,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	SettingsDialog::~SettingsDialog() noexcept
 	{
 		if ( _uiObjects.container )
+		{
 			_uiObjects.container->close();
+		}
 	}
 
 	namespace
@@ -87,7 +89,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			{
 				p_uiObjects.fieldForceFieldBio->addItem( QString::fromStdString( it_bioFf ) );
 				if ( it_bioFf == p_data->forcefieldBio )
+				{
 					p_uiObjects.fieldForceFieldBio->setCurrentIndex( p_uiObjects.fieldForceFieldBio->count() - 1 );
+				}
 			}
 			qLayout->addRow( w, p_uiObjects.fieldForceFieldBio );
 
@@ -101,7 +105,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 				p_uiObjects.fieldBoxShape->addItem( QString::fromStdString( it_shapeStr ) );
 			}
 			if ( p_data->boxShapeIdx < static_cast<size_t>( p_uiObjects.fieldBoxShape->count() ) )
+			{
 				p_uiObjects.fieldBoxShape->setCurrentIndex( static_cast<int>( p_data->boxShapeIdx ) );
+			}
 			qLayout->addRow( w, p_uiObjects.fieldBoxShape );
 
 			get( E_COMMON_FIELDS_COMBOBOX ::waterModel, w, p_uiObjects.fieldWaterModel );
@@ -109,7 +115,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			{
 				p_uiObjects.fieldWaterModel->addItem( QString::fromStdString( it_waterModelsStr ) );
 				if ( it_waterModelsStr == p_data->waterModel )
+				{
 					p_uiObjects.fieldWaterModel->setCurrentIndex( p_uiObjects.fieldWaterModel->count() - 1 );
+				}
 			}
 			qLayout->addRow( w, p_uiObjects.fieldWaterModel );
 		}

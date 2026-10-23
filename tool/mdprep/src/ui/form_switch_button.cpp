@@ -55,9 +55,13 @@ namespace VTX::Tool::Mdprep::ui
 	void FormSwitchButton::switchFormMode() noexcept
 	{
 		if ( _mode == E_FORM_MODE::basic )
+		{
 			_changeModeAdvanced();
+		}
 		else
+		{
 			_changeModeBasic();
+		}
 	}
 
 	void FormSwitchButton::_changeModeBasic() noexcept
@@ -68,7 +72,9 @@ namespace VTX::Tool::Mdprep::ui
 		_buttonToBasic->setChecked( true );
 
 		if ( _mode == E_FORM_MODE::basic )
+		{
 			return;
+		}
 
 		_mode = E_FORM_MODE::basic;
 		_switchToBasic();
@@ -80,7 +86,9 @@ namespace VTX::Tool::Mdprep::ui
 		_buttonToAdvanced->setChecked( true );
 
 		if ( _mode == E_FORM_MODE::advanced )
+		{
 			return;
+		}
 
 		_mode = E_FORM_MODE::advanced;
 		_switchToAdvanced();

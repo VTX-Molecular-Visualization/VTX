@@ -45,26 +45,36 @@ namespace VTX::Tool::Mdprep::ui
 		void update( const Gateway::EngineSpecificCommonInformation & p_data ) noexcept
 		{
 			if ( _ptr )
+			{
 				_ptr->update( p_data );
+			}
 		}
 
 		// Get MD parameters entered by the user
 		void get( Gateway::MdParameters & p_ ) const noexcept
 		{
 			if ( _ptr )
+			{
 				_ptr->get( p_ );
+			}
 		}
+
 		// Retrieve layouts for field placing
 		void get( FormLayouts & p_ ) const noexcept
 		{
 			if ( _ptr )
+			{
 				_ptr->get( p_ );
+			}
 		}
+
 		// Restore default empty form.
 		void close() noexcept
 		{
 			if ( _ptr )
+			{
 				_ptr.reset();
+			}
 		}
 
 	  private:
@@ -84,12 +94,13 @@ namespace VTX::Tool::Mdprep::ui
 
 		  public:
 			_wrapper( T && t ) : _obj( std::forward<T>( t ) ) {}
-			virtual void update( const Gateway::EngineSpecificCommonInformation & p_data ) noexcept override
-			{
-				_obj.update( p_data );
-			}
-			virtual void get( Gateway::MdParameters & p_ ) const noexcept override { _obj.get( p_ ); }
-			virtual void get( FormLayouts & p_ ) const noexcept override { _obj.get( p_ ); }
+
+			void update( const Gateway::EngineSpecificCommonInformation & p_data ) noexcept override
+			{ _obj.update( p_data ); }
+
+			void get( Gateway::MdParameters & p_ ) const noexcept override { _obj.get( p_ ); }
+
+			void get( FormLayouts & p_ ) const noexcept override { _obj.get( p_ ); }
 		};
 
 		std::unique_ptr<_interface> _ptr = nullptr;

@@ -3,8 +3,8 @@
 
 #include <QPointer>
 #include <app/ecs.hpp>
-#include <core/struct/topology.hpp>
 #include <array>
+#include <core/struct/topology.hpp>
 #include <memory>
 #include <ui/qt/dialog/base_dialog.hpp>
 

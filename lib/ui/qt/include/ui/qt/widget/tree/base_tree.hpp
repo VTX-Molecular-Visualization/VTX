@@ -34,7 +34,7 @@ namespace VTX::UI::QT::Widget::Tree
 			W::connect( this, &QTreeView::collapsed, this, [ this ]( const QModelIndex & ) { W::updateGeometry(); } );
 		}
 
-		virtual ~BaseTree() = default;
+		~BaseTree() override = default;
 
 		/**
 		 * @brief Override size hints to adapt height to content.

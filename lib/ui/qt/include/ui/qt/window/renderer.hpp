@@ -2,9 +2,9 @@
 #define __VTX_UI_QT_WINDOW_RENDERER__
 
 #include "ui/qt/events.hpp"
+#include <QFocusEvent>
 #include <QKeyEvent>
 #include <QMouseEvent>
-#include <QFocusEvent>
 #include <QWheelEvent>
 #include <QWindow>
 #include <app/input/input_manager.hpp>

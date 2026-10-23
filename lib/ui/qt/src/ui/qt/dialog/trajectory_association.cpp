@@ -28,7 +28,7 @@ namespace VTX::UI::QT::Dialog
 		_cbSystem->setEditable( true );
 		_cbSystem->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
 
-		for ( auto & it_entity : App::REG().view<IO::Metadata>() )
+		for ( const auto & it_entity : App::REG().view<IO::Metadata>() )
 		{
 			auto & metadata = App::REG().get<IO::Metadata>( it_entity );
 

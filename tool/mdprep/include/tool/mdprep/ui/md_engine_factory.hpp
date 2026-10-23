@@ -17,7 +17,7 @@ namespace VTX::Tool::Mdprep::ui
 	{
 		switch ( p_ )
 		{
-		case E_MD_ENGINE::gromacs: return { "Gromacs" };
+		case E_MD_ENGINE::gromacs: return "Gromacs";
 		default: break;
 		}
 		return "DEBUUUG"; // For developers that add new MD Engine support

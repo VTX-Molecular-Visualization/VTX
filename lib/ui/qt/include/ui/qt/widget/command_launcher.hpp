@@ -25,7 +25,7 @@ namespace VTX::UI::QT::Widget
 		void launchCommand( std::string );
 
 	  protected:
-		virtual void keyPressEvent( QKeyEvent * event ) override;
+		void keyPressEvent( QKeyEvent * event ) override;
 
 	  private:
 		void _setupCompleter();

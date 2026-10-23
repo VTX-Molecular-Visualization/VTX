@@ -41,7 +41,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			{
 				std::string templateFileContent = getFileContent( p_template );
 
-				for ( auto & pair : p_replaceText )
+				for ( const auto & pair : p_replaceText )
 				{
 					replace( templateFileContent, pair.first, pair.second );
 				}
@@ -137,7 +137,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			return err;
 		}
 
-		auto fileStrPtr = getFirstFileOfType( p_prepareOutputs, ".tpr" );
+		const auto * fileStrPtr = getFirstFileOfType( p_prepareOutputs, ".tpr" );
 		if ( fileStrPtr == nullptr )
 		{
 			return { true, "Preparation failed. Please check preparation step in red to learn more." };

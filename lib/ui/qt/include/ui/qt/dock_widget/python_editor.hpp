@@ -64,7 +64,7 @@ namespace VTX::UI::QT::DockWidget
 	/**
 	 * @brief Python script editor.
 	 */
-	class PythonEditor : public BaseDockWidget<PythonEditor, 1, 1>
+	class PythonEditor : public BaseDockWidget<PythonEditor, true, true>
 	{
 	  public:
 		PythonEditor( QWidget * p_parent );

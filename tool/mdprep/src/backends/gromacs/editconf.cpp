@@ -62,7 +62,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 		else
 		{
-			if ( auto fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".tpr" ) )
+			if ( const auto * const fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".tpr" ) )
 			{
 				p_instructions.in = *fileStrPtr;
 			}

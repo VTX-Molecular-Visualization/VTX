@@ -19,11 +19,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
-		if ( auto fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".tpr" ) )
+		if ( const auto * const fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".tpr" ) )
 		{
 			p_instructions.inputTpr = *fileStrPtr;
 		}
-		if ( auto fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".top" ) )
+		if ( const auto * const fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".top" ) )
 		{
 			FilePath topFile		= *fileStrPtr;
 			p_instructions.inputTop = jobDir / ( p_instructions.fileStem + ".top" );

@@ -52,7 +52,7 @@ namespace VTX::UI::QT::Widget::Tree
 		setSelectionBehavior( QAbstractItemView::SelectRows );
 
 		// Delegate.
-		const auto delegate = new Delegate::SystemDelegate( p_system, this );
+		auto * const delegate = new Delegate::SystemDelegate( p_system, this );
 		setItemDelegate( delegate );
 
 		// One expanded at a time.

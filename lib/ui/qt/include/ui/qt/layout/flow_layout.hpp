@@ -16,7 +16,7 @@ namespace VTX::UI::QT::Layout
 	  public:
 		explicit FlowLayout( QWidget *, int = -1, int = -1, int = -1 );
 		explicit FlowLayout( int = -1, int = -1, int = -1 );
-		~FlowLayout();
+		~FlowLayout() override;
 
 		void			 addItem( QLayoutItem * ) override;
 		int				 horizontalSpacing() const;

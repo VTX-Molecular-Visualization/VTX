@@ -75,7 +75,7 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		{
 			using namespace VTX::Tool::Mdprep::backends::Gromacs;
 			p_out.clear();
-			for ( auto & it_ff : p_in )
+			for ( const auto & it_ff : p_in )
 			{
 				auto ffName = it_ff.getName();
 				p_out.push_back( { ffName.begin(), ffName.end() } );

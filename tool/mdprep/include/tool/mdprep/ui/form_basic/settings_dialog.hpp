@@ -42,7 +42,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void applied() noexcept
 		{
 			if ( _ptr )
+			{
 				_ptr->applied();
+			}
 		}
 
 	  private:
@@ -59,7 +61,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		{
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
 
-			virtual void applied() noexcept { _obj.applied(); }
+			void applied() noexcept override { _obj.applied(); }
 
 		  private:
 			T _obj;

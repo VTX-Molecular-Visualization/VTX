@@ -27,7 +27,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Destructor.
 		 */
-		~Application();
+		~Application() override;
 
 		/**
 		 * @brief Run the main loop.

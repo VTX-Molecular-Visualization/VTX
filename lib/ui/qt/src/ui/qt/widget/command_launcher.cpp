@@ -43,7 +43,6 @@ namespace VTX::UI::QT::Widget
 		}
 
 		BaseWidget::keyPressEvent( event );
-		return;
 	}
 
 	void CommandLauncher::_launchCommand()

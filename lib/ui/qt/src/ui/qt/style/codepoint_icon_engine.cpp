@@ -16,7 +16,9 @@ namespace VTX::UI::QT::Style
 	)
 	{
 		if ( p_painter == nullptr || p_rect.isEmpty() )
+		{
 			return;
+		}
 
 		p_painter->save();
 		p_painter->setRenderHint( QPainter::Antialiasing, true );

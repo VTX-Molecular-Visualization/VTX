@@ -43,7 +43,7 @@ namespace VTX::UI::QT::Model
 		/**
 		 * @brief Constructor.
 		 */
-		SystemModel( const Entity, QObject * = nullptr );
+		SystemModel( Entity, QObject * = nullptr );
 
 		/**
 		 * @brief Number of columns is always 1.

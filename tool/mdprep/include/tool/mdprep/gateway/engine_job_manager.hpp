@@ -79,14 +79,13 @@ namespace VTX::Tool::Mdprep::Gateway
 
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
 
-			virtual void checkInputs( const MdParameters & p_1 ) noexcept override { _obj.checkInputs( p_1 ); }
+			void checkInputs( const MdParameters & p_1 ) noexcept override { _obj.checkInputs( p_1 ); }
 
-			virtual void startPreparation( const MdParameters & p_1 ) noexcept override
-			{ _obj.startPreparation( p_1 ); }
+			void startPreparation( const MdParameters & p_1 ) noexcept override { _obj.startPreparation( p_1 ); }
 
-			virtual bool isResultAvailable() const noexcept override { return _obj.isResultAvailable(); }
+			bool isResultAvailable() const noexcept override { return _obj.isResultAvailable(); }
 
-			virtual Gateway::CheckReport lastResult() const noexcept override { return _obj.lastResult(); }
+			Gateway::CheckReport lastResult() const noexcept override { return _obj.lastResult(); }
 		};
 
 		std::unique_ptr<_interface> _ptr = nullptr;

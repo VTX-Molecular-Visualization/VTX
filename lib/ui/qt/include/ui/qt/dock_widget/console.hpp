@@ -23,14 +23,14 @@ namespace VTX::UI::QT::DockWidget
 	/**
 	 * @brief Class responsible for docking a console and its prompt.
 	 */
-	class Console : public BaseDockWidget<Console, 0, 0>
+	class Console : public BaseDockWidget<Console, false, false>
 	{
 	  public:
 		/**
 		 * @brief Constructor.
 		 */
 		Console( QWidget * p_parent );
-		~Console();
+		~Console() override;
 
 		/**
 		 * @brief Add a log row.

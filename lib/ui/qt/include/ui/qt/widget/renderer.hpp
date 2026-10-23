@@ -54,7 +54,7 @@ namespace VTX::UI::QT::Widget
 		 * @brief Constructor.
 		 */
 		Renderer( QWidget * );
-		~Renderer();
+		~Renderer() override;
 
 		/**
 		 * @brief Get native surface, display and platform for graphic context creation.

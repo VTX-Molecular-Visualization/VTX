@@ -23,7 +23,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	// TODO Integrate this function on other prepareJob
 	// Return the first string with matching ending from the list.
-	const std::string * getFirstFileOfType( const CumulativeOuputFiles &, const char * suffix ) noexcept;
+	const std::string * getFirstFileOfType( const CumulativeOuputFiles &, const char * extension ) noexcept;
 
 	// Return the n-th string with matching ending from the list.
 	const std::string * getFileOfType( const CumulativeOuputFiles &, const size_t & n, const char * suffix ) noexcept;

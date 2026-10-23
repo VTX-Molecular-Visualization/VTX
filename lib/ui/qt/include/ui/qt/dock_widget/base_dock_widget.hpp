@@ -74,7 +74,7 @@ namespace VTX::UI::QT::DockWidget
 			_layout->setSpacing( 0 );
 		}
 
-		virtual ~BaseDockWidget() = default;
+		~BaseDockWidget() override = default;
 
 	  protected:
 		QPointer<QScrollArea> _scrollArea;

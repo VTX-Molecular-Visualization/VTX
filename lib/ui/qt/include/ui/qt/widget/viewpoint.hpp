@@ -23,7 +23,7 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		ViewPoint( Entity, QWidget * p_parent = nullptr );
-		~ViewPoint();
+		~ViewPoint() override;
 
 	  private:
 		const Entity _entity;

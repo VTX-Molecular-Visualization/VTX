@@ -20,7 +20,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
-		if ( auto fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".gro" ) )
+		if ( const auto * const fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".gro" ) )
 		{
 			p_instructions.inputGro = *fileStrPtr;
 		}

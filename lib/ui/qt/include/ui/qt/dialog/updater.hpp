@@ -16,7 +16,7 @@ namespace VTX::UI::QT::Dialog
 	{
 	  public:
 		Updater( const App::Events::UpdateAvailable & );
-		~Updater();
+		~Updater() override;
 
 	  private:
 		void _onUpdateDownloadProgress( const App::Events::UpdateDownloadProgress & );
