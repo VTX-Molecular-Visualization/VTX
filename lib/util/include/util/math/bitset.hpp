@@ -26,17 +26,17 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Default constructor creates an empty bitset.
 		 */
-		constexpr BitSet() = default;
+		BitSet() = default;
 
 		/**
 		 * @brief Constructs a bitset of p_size bits, all initialized to 0.
 		 */
-		constexpr explicit BitSet( const size_t p_size ) : _size( p_size ), _data( ( p_size + 63 ) >> 6, 0ull ) {}
+		explicit BitSet( const size_t p_size ) : _size( p_size ), _data( ( p_size + 63 ) >> 6, 0ull ) {}
 
 		/**
 		 * @brief Constructs a bitset of p_size bits, all initialized to p_value.
 		 */
-		constexpr BitSet( const size_t p_size, const bool p_value ) : BitSet( p_size )
+		BitSet( const size_t p_size, const bool p_value ) : BitSet( p_size )
 		{
 			if ( p_value )
 			{
@@ -47,7 +47,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Sets bit p_i to 1.
 		 */
-		constexpr void set( const size_t p_i ) noexcept
+		void set( const size_t p_i ) noexcept
 		{
 			assert( p_i < _size );
 			_data[ p_i >> 6 ] |= ( 1ull << ( p_i & 63 ) );
@@ -56,7 +56,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Sets bit p_i to p_value.
 		 */
-		constexpr void set( const size_t p_i, const bool p_value ) noexcept
+		void set( const size_t p_i, const bool p_value ) noexcept
 		{
 			assert( p_i < _size );
 			p_value ? set( p_i ) : reset( p_i );
@@ -66,7 +66,7 @@ namespace VTX::Util::Math
 		 * @brief Sets all bits in the range to 1.
 		 */
 		template<typename T>
-		constexpr void set( const Range<T> & p_range ) noexcept
+		void set( const Range<T> & p_range ) noexcept
 		{
 			const Word first = p_range.first;
 			const Word last	 = p_range.last;
@@ -99,7 +99,7 @@ namespace VTX::Util::Math
 		 * @brief Sets all bits in each range to 1.
 		 */
 		template<typename T>
-		constexpr void set( const RangeList<T> & p_ranges ) noexcept
+		void set( const RangeList<T> & p_ranges ) noexcept
 		{
 			for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); ++it )
 			{
@@ -110,7 +110,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Sets bit p_i to 0.
 		 */
-		constexpr void reset( const size_t p_i ) noexcept
+		void reset( const size_t p_i ) noexcept
 		{
 			assert( p_i < _size );
 			_data[ p_i >> 6 ] &= ~( 1ull << ( p_i & 63 ) );
@@ -120,7 +120,7 @@ namespace VTX::Util::Math
 		 * @brief Sets all bits in the range to 0.
 		 */
 		template<typename T>
-		constexpr void reset( const Range<T> & p_range ) noexcept
+		void reset( const Range<T> & p_range ) noexcept
 		{
 			const Word first = p_range.first;
 			const Word last	 = p_range.last;
@@ -153,7 +153,7 @@ namespace VTX::Util::Math
 		 * @brief Sets all bits in each range to 0.
 		 */
 		template<typename T>
-		constexpr void reset( const RangeList<T> & p_ranges ) noexcept
+		void reset( const RangeList<T> & p_ranges ) noexcept
 		{
 			for ( auto it = p_ranges.rangeBegin(); it != p_ranges.rangeEnd(); ++it )
 			{
@@ -164,7 +164,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Returns true if bit p_i is set.
 		 */
-		[[nodiscard]] constexpr bool test( const size_t p_i ) const noexcept
+		[[nodiscard]] bool test( const size_t p_i ) const noexcept
 		{
 			assert( p_i < _size );
 			return ( _data[ p_i >> 6 ] & ( 1ull << ( p_i & 63 ) ) ) != 0ull;
@@ -174,7 +174,7 @@ namespace VTX::Util::Math
 		 * @brief Returns true if all bits in the range are set.
 		 */
 		template<typename T>
-		[[nodiscard]] constexpr bool test( const Range<T> & p_range ) const noexcept
+		[[nodiscard]] bool test( const Range<T> & p_range ) const noexcept
 		{
 			const Word first = p_range.first;
 			const Word last	 = p_range.last;
@@ -218,7 +218,7 @@ namespace VTX::Util::Math
 		 * @brief Returns true if all bits in all ranges are set.
 		 */
 		template<typename T>
-		[[nodiscard]] constexpr bool test( const RangeList<T> & p_ranges ) const noexcept
+		[[nodiscard]] bool test( const RangeList<T> & p_ranges ) const noexcept
 		{
 			return std::ranges::all_of(
 				p_ranges.rangeBegin(), p_ranges.rangeEnd(), [ this ]( const Range<T> & range ) { return test( range ); }
@@ -228,7 +228,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Returns true if at least one bit is set.
 		 */
-		[[nodiscard]] constexpr bool any() const noexcept
+		[[nodiscard]] bool any() const noexcept
 		{
 			return std::ranges::any_of( _data, []( const Word word ) { return word != 0; } );
 		}
@@ -237,7 +237,7 @@ namespace VTX::Util::Math
 		 * @brief Returns true if at least one bit in the range is set.
 		 */
 		template<typename T>
-		[[nodiscard]] constexpr bool any( const Range<T> & p_range ) const noexcept
+		[[nodiscard]] bool any( const Range<T> & p_range ) const noexcept
 		{
 			const Word first = p_range.first;
 			const Word last	 = p_range.last;
@@ -281,7 +281,7 @@ namespace VTX::Util::Math
 		 * @brief Returns true if at least one bit in any of the ranges is set.
 		 */
 		template<typename T>
-		[[nodiscard]] constexpr bool any( const RangeList<T> & p_ranges ) const noexcept
+		[[nodiscard]] bool any( const RangeList<T> & p_ranges ) const noexcept
 		{
 			return std::ranges::any_of(
 				p_ranges.rangeBegin(),
@@ -293,12 +293,12 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Returns true if no bit is set.
 		 */
-		[[nodiscard]] constexpr bool none() const noexcept { return not any(); }
+		[[nodiscard]] bool none() const noexcept { return not any(); }
 
 		/**
 		 * @brief Returns true if all bits are set.
 		 */
-		[[nodiscard]] constexpr bool all() const noexcept
+		[[nodiscard]] bool all() const noexcept
 		{
 			if ( _data.empty() )
 			{
@@ -327,7 +327,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Returns the number of set bits.
 		 */
-		[[nodiscard]] constexpr size_t count() const noexcept
+		[[nodiscard]] size_t count() const noexcept
 		{
 			size_t res = 0;
 			for ( const Word word : _data )
@@ -340,7 +340,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Returns true if both bitsets have the same size and content.
 		 */
-		[[nodiscard]] constexpr bool equals( const BitSet & p_other ) const noexcept
+		[[nodiscard]] bool equals( const BitSet & p_other ) const noexcept
 		{ return _size == p_other._size && _data == p_other._data; }
 
 		/**
@@ -356,17 +356,17 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Returns the number of 64-bit words in the internal storage.
 		 */
-		[[nodiscard]] constexpr size_t dataSize() const noexcept { return _data.size(); }
+		[[nodiscard]] size_t dataSize() const noexcept { return _data.size(); }
 
 		/**
 		 * @brief Sets all bits to 0.
 		 */
-		constexpr void clear() noexcept { std::ranges::fill( _data, 0ull ); }
+		void clear() noexcept { std::ranges::fill( _data, 0ull ); }
 
 		/**
 		 * @brief Sets all bits to 1.
 		 */
-		constexpr void fill() noexcept
+		void fill() noexcept
 		{
 			std::ranges::fill( _data, ~0ull );
 			_maskUnusedBits();
@@ -375,7 +375,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Flips all bits in place.
 		 */
-		constexpr void flipInPlace() noexcept
+		void flipInPlace() noexcept
 		{
 			for ( Word & w : _data )
 			{
@@ -387,7 +387,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Returns a new bitset with all bits flipped.
 		 */
-		[[nodiscard]] constexpr BitSet operator~() const
+		[[nodiscard]] BitSet operator~() const
 		{
 			BitSet res( _size );
 			for ( size_t i = 0; i < _data.size(); ++i )
@@ -401,7 +401,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Returns the union of this bitset and p_other.
 		 */
-		[[nodiscard]] constexpr BitSet merge( const BitSet & p_other ) const
+		[[nodiscard]] BitSet merge( const BitSet & p_other ) const
 		{
 			assert( _size == p_other._size );
 
@@ -413,7 +413,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Sets this bitset to the union with p_other.
 		 */
-		constexpr BitSet & mergeInPlace( const BitSet & p_other ) noexcept
+		BitSet & mergeInPlace( const BitSet & p_other ) noexcept
 		{
 			assert( _size == p_other._size );
 
@@ -429,7 +429,7 @@ namespace VTX::Util::Math
 		 * @brief Returns a copy of this bitset with all bits in the range set.
 		 */
 		template<typename T>
-		[[nodiscard]] constexpr BitSet merge( const Range<T> & p_range ) const
+		[[nodiscard]] BitSet merge( const Range<T> & p_range ) const
 		{
 			BitSet res( *this );
 			res.mergeInPlace( p_range );
@@ -440,7 +440,7 @@ namespace VTX::Util::Math
 		 * @brief Sets all bits in the range.
 		 */
 		template<typename T>
-		constexpr BitSet & mergeInPlace( const Range<T> & p_range ) noexcept
+		BitSet & mergeInPlace( const Range<T> & p_range ) noexcept
 		{
 			set( p_range );
 			return *this;
@@ -450,7 +450,7 @@ namespace VTX::Util::Math
 		 * @brief Returns a copy of this bitset with all bits in each range set.
 		 */
 		template<typename T>
-		[[nodiscard]] constexpr BitSet merge( const RangeList<T> & p_ranges ) const
+		[[nodiscard]] BitSet merge( const RangeList<T> & p_ranges ) const
 		{
 			BitSet res( *this );
 			res.mergeInPlace( p_ranges );
@@ -461,7 +461,7 @@ namespace VTX::Util::Math
 		 * @brief Sets all bits in each range.
 		 */
 		template<typename T>
-		constexpr BitSet & mergeInPlace( const RangeList<T> & p_ranges ) noexcept
+		BitSet & mergeInPlace( const RangeList<T> & p_ranges ) noexcept
 		{
 			set( p_ranges );
 			return *this;
@@ -470,7 +470,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Returns the intersection of this bitset and p_other.
 		 */
-		[[nodiscard]] constexpr BitSet intersect( const BitSet & p_other ) const
+		[[nodiscard]] BitSet intersect( const BitSet & p_other ) const
 		{
 			assert( _size == p_other._size );
 
@@ -482,7 +482,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Sets this bitset to the intersection with p_other.
 		 */
-		constexpr BitSet & intersectInPlace( const BitSet & p_other ) noexcept
+		BitSet & intersectInPlace( const BitSet & p_other ) noexcept
 		{
 			assert( _size == p_other._size );
 
@@ -498,7 +498,7 @@ namespace VTX::Util::Math
 		 * @brief Returns a copy of this bitset keeping only bits within the range.
 		 */
 		template<typename T>
-		[[nodiscard]] constexpr BitSet intersect( const Range<T> & p_range ) const
+		[[nodiscard]] BitSet intersect( const Range<T> & p_range ) const
 		{
 			BitSet res( *this );
 			res.intersectInPlace( p_range );
@@ -509,7 +509,7 @@ namespace VTX::Util::Math
 		 * @brief Clears all bits outside the range.
 		 */
 		template<typename T>
-		constexpr BitSet & intersectInPlace( const Range<T> & p_range ) noexcept
+		BitSet & intersectInPlace( const Range<T> & p_range ) noexcept
 		{
 			const size_t first = static_cast<size_t>( p_range.first );
 			const size_t last  = static_cast<size_t>( p_range.last );
@@ -537,7 +537,7 @@ namespace VTX::Util::Math
 		 * @brief Returns a copy of this bitset keeping only bits within any of the ranges.
 		 */
 		template<typename T>
-		[[nodiscard]] constexpr BitSet intersect( const RangeList<T> & p_ranges ) const
+		[[nodiscard]] BitSet intersect( const RangeList<T> & p_ranges ) const
 		{
 			BitSet res( *this );
 			res.intersectInPlace( p_ranges );
@@ -548,7 +548,7 @@ namespace VTX::Util::Math
 		 * @brief Clears all bits that do not fall within any of the ranges.
 		 */
 		template<typename T>
-		constexpr BitSet & intersectInPlace( const RangeList<T> & p_ranges )
+		BitSet & intersectInPlace( const RangeList<T> & p_ranges )
 		{
 			BitSet mask( _size );
 			mask.set( p_ranges );
@@ -559,7 +559,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Returns this bitset minus the bits set in p_other.
 		 */
-		[[nodiscard]] constexpr BitSet subtract( const BitSet & p_other ) const
+		[[nodiscard]] BitSet subtract( const BitSet & p_other ) const
 		{
 			assert( _size == p_other._size );
 
@@ -571,7 +571,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Removes from this bitset all bits set in p_other.
 		 */
-		constexpr BitSet & subtractInPlace( const BitSet & p_other ) noexcept
+		BitSet & subtractInPlace( const BitSet & p_other ) noexcept
 		{
 			assert( _size == p_other._size );
 
@@ -587,7 +587,7 @@ namespace VTX::Util::Math
 		 * @brief Returns a copy of this bitset with all bits in the range cleared.
 		 */
 		template<typename T>
-		[[nodiscard]] constexpr BitSet subtract( const Range<T> & p_range ) const
+		[[nodiscard]] BitSet subtract( const Range<T> & p_range ) const
 		{
 			BitSet res( *this );
 			res.subtractInPlace( p_range );
@@ -598,7 +598,7 @@ namespace VTX::Util::Math
 		 * @brief Clears all bits in the range.
 		 */
 		template<typename T>
-		constexpr BitSet & subtractInPlace( const Range<T> & p_range ) noexcept
+		BitSet & subtractInPlace( const Range<T> & p_range ) noexcept
 		{
 			reset( p_range );
 			return *this;
@@ -608,7 +608,7 @@ namespace VTX::Util::Math
 		 * @brief Returns a copy of this bitset with all bits in each range cleared.
 		 */
 		template<typename T>
-		[[nodiscard]] constexpr BitSet subtract( const RangeList<T> & p_ranges ) const
+		[[nodiscard]] BitSet subtract( const RangeList<T> & p_ranges ) const
 		{
 			BitSet res( *this );
 			res.subtractInPlace( p_ranges );
@@ -619,7 +619,7 @@ namespace VTX::Util::Math
 		 * @brief Clears all bits in each range.
 		 */
 		template<typename T>
-		constexpr BitSet & subtractInPlace( const RangeList<T> & p_ranges ) noexcept
+		BitSet & subtractInPlace( const RangeList<T> & p_ranges ) noexcept
 		{
 			reset( p_ranges );
 			return *this;
@@ -628,7 +628,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Returns the symmetric difference of this bitset and p_other.
 		 */
-		[[nodiscard]] constexpr BitSet xorWith( const BitSet & p_other ) const
+		[[nodiscard]] BitSet xorWith( const BitSet & p_other ) const
 		{
 			assert( _size == p_other._size );
 
@@ -640,7 +640,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Sets this bitset to the symmetric difference with p_other.
 		 */
-		constexpr BitSet & xorInPlace( const BitSet & p_other ) noexcept
+		BitSet & xorInPlace( const BitSet & p_other ) noexcept
 		{
 			assert( _size == p_other._size );
 
@@ -656,62 +656,59 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Union operator.
 		 */
-		[[nodiscard]] constexpr BitSet operator|( const BitSet & p_other ) const { return merge( p_other ); }
+		[[nodiscard]] BitSet operator|( const BitSet & p_other ) const { return merge( p_other ); }
 
 		/**
 		 * @brief Intersection operator.
 		 */
-		[[nodiscard]] constexpr BitSet operator&( const BitSet & p_other ) const { return intersect( p_other ); }
+		[[nodiscard]] BitSet operator&( const BitSet & p_other ) const { return intersect( p_other ); }
 
 		/**
 		 * @brief Subtraction operator.
 		 */
-		[[nodiscard]] constexpr BitSet operator-( const BitSet & p_other ) const { return subtract( p_other ); }
+		[[nodiscard]] BitSet operator-( const BitSet & p_other ) const { return subtract( p_other ); }
 
 		/**
 		 * @brief Symmetric difference operator.
 		 */
-		[[nodiscard]] constexpr BitSet operator^( const BitSet & p_other ) const { return xorWith( p_other ); }
+		[[nodiscard]] BitSet operator^( const BitSet & p_other ) const { return xorWith( p_other ); }
 
 		/**
 		 * @brief In-place union operator.
 		 */
-		constexpr BitSet & operator|=( const BitSet & p_other ) noexcept { return mergeInPlace( p_other ); }
+		BitSet & operator|=( const BitSet & p_other ) noexcept { return mergeInPlace( p_other ); }
 
 		/**
 		 * @brief In-place intersection operator.
 		 */
-		constexpr BitSet & operator&=( const BitSet & p_other ) noexcept { return intersectInPlace( p_other ); }
+		BitSet & operator&=( const BitSet & p_other ) noexcept { return intersectInPlace( p_other ); }
 
 		/**
 		 * @brief In-place subtraction operator.
 		 */
-		constexpr BitSet & operator-=( const BitSet & p_other ) noexcept { return subtractInPlace( p_other ); }
+		BitSet & operator-=( const BitSet & p_other ) noexcept { return subtractInPlace( p_other ); }
 
 		/**
 		 * @brief In-place symmetric difference operator.
 		 */
-		constexpr BitSet & operator^=( const BitSet & p_other ) noexcept { return xorInPlace( p_other ); }
+		BitSet & operator^=( const BitSet & p_other ) noexcept { return xorInPlace( p_other ); }
 
 		/**
 		 * @brief Equality operator.
 		 */
-		[[nodiscard]] constexpr bool operator==( const BitSet & p_other ) const noexcept { return equals( p_other ); }
+		[[nodiscard]] bool operator==( const BitSet & p_other ) const noexcept { return equals( p_other ); }
 
 		/**
 		 * @brief Inequality operator.
 		 */
-		[[nodiscard]] constexpr bool operator!=( const BitSet & p_other ) const noexcept
-		{ return not equals( p_other ); }
+		[[nodiscard]] bool operator!=( const BitSet & p_other ) const noexcept { return not equals( p_other ); }
 
 		/**
 		 * @brief Calls p_func with the index of each set bit, in ascending order.
 		 * Propagate noexcept from p_func.
 		 */
 		template<typename Func>
-		constexpr void forEachSetBit( Func p_func ) const noexcept(
-			noexcept( p_func( std::declval<const size_t &>() ) )
-		)
+		void forEachSetBit( Func p_func ) const noexcept( noexcept( p_func( std::declval<const size_t &>() ) ) )
 		{
 			for ( size_t wordIndex = 0; wordIndex < _data.size(); ++wordIndex )
 			{
@@ -739,7 +736,7 @@ namespace VTX::Util::Math
 		 * @brief Convert to range list.
 		 */
 		template<std::integral T = size_t>
-		[[nodiscard]] constexpr RangeList<T> toRangeList() const
+		[[nodiscard]] RangeList<T> toRangeList() const
 		{
 			RangeList<T> ranges;
 			bool		 hasRange = false;
@@ -798,7 +795,7 @@ namespace VTX::Util::Math
 			using value_type		= size_t;
 			using difference_type	= std::ptrdiff_t;
 
-			constexpr Iterator( const std::vector<Word> & p_data, const size_t p_wordIndex ) :
+			Iterator( const std::vector<Word> & p_data, const size_t p_wordIndex ) :
 				_data( &p_data ), _wordIndex( p_wordIndex )
 			{
 				if ( _wordIndex < _data->size() )
@@ -810,7 +807,7 @@ namespace VTX::Util::Math
 
 			constexpr size_t operator*() const noexcept { return _wordIndex * 64 + std::countr_zero( _bits ); }
 
-			constexpr Iterator & operator++() noexcept
+			Iterator & operator++() noexcept
 			{
 				_bits &= _bits - 1;
 				_skipEmpty();
@@ -824,7 +821,7 @@ namespace VTX::Util::Math
 			{ return _wordIndex != p_other._wordIndex; }
 
 		  private:
-			constexpr void _skipEmpty() noexcept
+			void _skipEmpty() noexcept
 			{
 				while ( _bits == 0ull )
 				{
@@ -845,18 +842,18 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Returns an iterator to the first set bit.
 		 */
-		[[nodiscard]] constexpr Iterator begin() const noexcept { return Iterator( _data, 0 ); }
+		[[nodiscard]] Iterator begin() const noexcept { return Iterator( _data, 0 ); }
 
 		/**
 		 * @brief Returns a past-the-end iterator.
 		 */
-		[[nodiscard]] constexpr Iterator end() const noexcept { return Iterator( _data, _data.size() ); }
+		[[nodiscard]] Iterator end() const noexcept { return Iterator( _data, _data.size() ); }
 
 	  private:
 		/**
 		 * @brief Clears the unused bits in the last word.
 		 */
-		constexpr void _maskUnusedBits() noexcept
+		void _maskUnusedBits() noexcept
 		{
 			if ( _data.empty() )
 			{

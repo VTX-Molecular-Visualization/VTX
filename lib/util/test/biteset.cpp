@@ -5,67 +5,74 @@
 
 using namespace VTX::Util::Math;
 
-static_assert(
-	[]
-	{
-		using R = Range<size_t>;
-		using L = RangeList<size_t>;
-		L ranges { R( 1, 4 ), R( 63, 67 ) };
-		ranges.removeValue( 2 );
-		BitSet a( 130 );
-		a.set( ranges );
-		BitSet b( 130 );
-		b.set( R( 64, 70 ) );
-		if ( ( a | b ).count() != 9 || ( a & b ).count() != 3 || ( a - b ).count() != 3 || ( a ^ b ).count() != 6 )
+TEST_CASE( "BitSet range operations", "[util][math][bitset]" )
+{
+	CHECK( (
+		[]
 		{
-			return false;
-		}
-		a.intersectInPlace( L { R( 3, 65 ) } );
-		if ( a.toRangeList() != L { R( 3, 4 ), R( 63, 65 ) } )
-		{
-			return false;
-		}
-		a.mergeInPlace( R( 128, 130 ) );
-		a.subtractInPlace( L { R( 63, 65 ) } );
-		return a.test( R( 128, 130 ) ) && a.count() == 3 && a.any( L { R( 129, 130 ) } );
-	}()
-);
+			using R = Range<size_t>;
+			using L = RangeList<size_t>;
+			L ranges { R( 1, 4 ), R( 63, 67 ) };
+			ranges.removeValue( 2 );
+			BitSet a( 130 );
+			a.set( ranges );
+			BitSet b( 130 );
+			b.set( R( 64, 70 ) );
+			if ( ( a | b ).count() != 9 || ( a & b ).count() != 3 || ( a - b ).count() != 3 || ( a ^ b ).count() != 6 )
+			{
+				return false;
+			}
+			a.intersectInPlace( L { R( 3, 65 ) } );
+			if ( a.toRangeList() != L { R( 3, 4 ), R( 63, 65 ) } )
+			{
+				return false;
+			}
+			a.mergeInPlace( R( 128, 130 ) );
+			a.subtractInPlace( L { R( 63, 65 ) } );
+			return a.test( R( 128, 130 ) ) && a.count() == 3 && a.any( L { R( 129, 130 ) } );
+		}()
+	) );
+}
 
-static_assert(
-	[]
-	{
-		BitSet bits( 130, true );
-		if ( bits.count() != 130 || not bits.all() || bits.data().back() != 3 )
+TEST_CASE( "BitSet storage and iteration", "[util][math][bitset]" )
+{
+	CHECK( (
+		[]
 		{
-			return false;
-		}
-		bits.clear();
-		bits.set( 0 );
-		bits.set( 64, true );
-		bits.set( 129 );
-		size_t count = 0;
-		size_t sum	 = 0;
-		for ( const size_t index : bits )
-		{
-			++count;
-			sum += index;
-		}
-		if ( count != 3 || sum != 193 || not bits.test( 129 ) )
-		{
-			return false;
-		}
-		const BitSet inverted = ~bits;
-		bits.flipInPlace();
-		if ( bits != inverted || bits.count() != 127 )
-		{
-			return false;
-		}
-		bits.fill();
-		bits.reset( 64 );
-		bits.set( 0, false );
-		return bits.count() == 128 && not bits.test( 64 ) && not bits.test( 0 ) && BitSet().empty() && BitSet().none();
-	}()
-);
+			BitSet bits( 130, true );
+			if ( bits.count() != 130 || not bits.all() || bits.data().back() != 3 )
+			{
+				return false;
+			}
+			bits.clear();
+			bits.set( 0 );
+			bits.set( 64, true );
+			bits.set( 129 );
+			size_t count = 0;
+			size_t sum	 = 0;
+			for ( const size_t index : bits )
+			{
+				++count;
+				sum += index;
+			}
+			if ( count != 3 || sum != 193 || not bits.test( 129 ) )
+			{
+				return false;
+			}
+			const BitSet inverted = ~bits;
+			bits.flipInPlace();
+			if ( bits != inverted || bits.count() != 127 )
+			{
+				return false;
+			}
+			bits.fill();
+			bits.reset( 64 );
+			bits.set( 0, false );
+			return bits.count() == 128 && not bits.test( 64 ) && not bits.test( 0 ) && BitSet().empty()
+				   && BitSet().none();
+		}()
+	) );
+}
 
 TEST_CASE( "BitSet construct empty", "[util][math][bitset]" )
 {
