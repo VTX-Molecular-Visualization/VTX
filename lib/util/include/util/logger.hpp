@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <util/filesystem.hpp>
+#include <utility>
 
 namespace VTX
 {
@@ -64,26 +65,12 @@ namespace VTX
 			 */
 			static void log( const LOG_LEVEL p_lvl, const LOG_HINT p_hint, const std::string_view p_msg ) noexcept
 			{
-				try
-				{
-					const auto logger = spdlog::default_logger();
-					if ( not logger )
-					{
-						return;
-					}
-					logger->log(
-						spdlog::source_loc {
-							"",
-							0,
-							_toSpdlogHint( p_hint ).data() }, // NOLINT(bugprone-suspicious-stringview-data-usage)
-						spdlog::level::level_enum( p_lvl ),
-						p_msg
-					);
-				}
-				catch ( ... )
-				{
-					return;
-				}
+				_log(
+					spdlog::source_loc {
+						"", 0, _toSpdlogHint( p_hint ).data() }, // NOLINT(bugprone-suspicious-stringview-data-usage)
+					spdlog::level::level_enum( p_lvl ),
+					p_msg
+				);
 			}
 
 			/**
@@ -97,27 +84,13 @@ namespace VTX
 				Args &&... p_args
 			) noexcept
 			{
-				try
-				{
-					const auto logger = spdlog::default_logger();
-					if ( not logger )
-					{
-						return;
-					}
-					logger->log(
-						spdlog::source_loc {
-							"",
-							0,
-							_toSpdlogHint( p_hint ).data() }, // NOLINT(bugprone-suspicious-stringview-data-usage)
-						spdlog::level::level_enum( p_lvl ),
-						p_fmt,
-						std::forward<Args>( p_args )...
-					);
-				}
-				catch ( ... )
-				{
-					return;
-				}
+				_log(
+					spdlog::source_loc {
+						"", 0, _toSpdlogHint( p_hint ).data() }, // NOLINT(bugprone-suspicious-stringview-data-usage)
+					spdlog::level::level_enum( p_lvl ),
+					p_fmt,
+					std::forward<Args>( p_args )...
+				);
 			}
 
 			/**
@@ -136,10 +109,33 @@ namespace VTX
 			static void setCallback( std::function<void( const LogInfo & )> p_callback );
 
 		  private:
+			template<typename... Args>
+			static void _log(
+				const spdlog::source_loc		p_source,
+				const spdlog::level::level_enum p_level,
+				Args &&... p_args
+			) noexcept
+			{
+				try
+				{
+					const auto logger = spdlog::default_logger();
+					if ( not logger )
+					{
+						return;
+					}
+					logger->log( p_source, p_level, std::forward<Args>( p_args )... );
+				}
+				catch ( ... )
+				{
+					return;
+				}
+			}
+
 			/**
 			 * @brief Convert a LOG_HINT to a spdlog hint string.
 			 */
-			static constexpr std::string_view _toSpdlogHint( LOG_HINT p_hint ) { return Enum::enumName( p_hint ); }
+			static constexpr std::string_view _toSpdlogHint( const LOG_HINT p_hint )
+			{ return Enum::enumName( p_hint ); }
 		};
 
 	} // namespace Util
