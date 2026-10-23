@@ -145,6 +145,8 @@ jobs:
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
       shell: bash
+      env:
+        CUDAFLAGS: ${{ runner.os == 'Windows' && '-allow-unsupported-compiler' || '' }}
       run: |
         CUDA_ARCH_OPTION=()
         if [ -n "${CUDA_ARCH}" ]; then
