@@ -3,30 +3,33 @@
 #include <util/math/range_list.hpp>
 #include <vector>
 
-static_assert(
-	[]
-	{
-		using R = VTX::Util::Math::Range<int>;
-		using L = VTX::Util::Math::RangeList<int>;
-		L a { R( 1, 5 ), R( 8, 10 ) };
-		a.addRange( R( 4, 9 ) );
-		a.removeRange( R( 3, 7 ) );
-		const L b { R( 2, 8 ) };
-		if ( L::intersect( a, b ) != L { R( 2, 3 ), R( 7, 8 ) } || L::merge( a, b ) != L( R( 1, 10 ) )
-			 || L::substract( a, b ) != L { R( 1, 2 ), R( 8, 10 ) }
-			 || L::exclusive( a, b ) != L { R( 1, 2 ), R( 3, 7 ), R( 8, 10 ) } || a.invert() != L( R( 3, 7 ) ) )
+TEST_CASE( "Util::Math::RangeList operations", "[unit]" )
+{
+	CHECK( (
+		[]
 		{
-			return false;
-		}
-		int sum = 0;
-		for ( const int value : a )
-		{
-			sum += value;
-		}
-		return sum == 27 && a.toVector<int>() == std::vector<int> { 1, 2, 7, 8, 9 }
-			   && R( 1, 4 ).toStdVector() == std::vector<int> { 1, 2, 3 };
-	}()
-);
+			using R = VTX::Util::Math::Range<int>;
+			using L = VTX::Util::Math::RangeList<int>;
+			L a { R( 1, 5 ), R( 8, 10 ) };
+			a.addRange( R( 4, 9 ) );
+			a.removeRange( R( 3, 7 ) );
+			const L b { R( 2, 8 ) };
+			if ( L::intersect( a, b ) != L { R( 2, 3 ), R( 7, 8 ) } || L::merge( a, b ) != L( R( 1, 10 ) )
+				 || L::substract( a, b ) != L { R( 1, 2 ), R( 8, 10 ) }
+				 || L::exclusive( a, b ) != L { R( 1, 2 ), R( 3, 7 ), R( 8, 10 ) } || a.invert() != L( R( 3, 7 ) ) )
+			{
+				return false;
+			}
+			int sum = 0;
+			for ( const int value : a )
+			{
+				sum += value;
+			}
+			return sum == 27 && a.toVector<int>() == std::vector<int> { 1, 2, 7, 8, 9 }
+				   && R( 1, 4 ).toStdVector() == std::vector<int> { 1, 2, 3 };
+		}()
+	) );
+}
 
 TEST_CASE( "Util::Math::RangeList", "[unit]" )
 {
