@@ -37,6 +37,7 @@ namespace VTX::UI::QT::Widget
 		{
 			try
 			{
+				// toStdString() can throw.
 				VTX_TRACE( "Widget deleted: {}", W::objectName().toStdString() );
 			}
 			catch ( ... )

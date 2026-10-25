@@ -156,14 +156,6 @@ namespace VTX::UI::QT::Widget::Library
 			_onPresetUpdateConnection = reg.on_update<P>().template connect<&PresetSelector::_onUpdatePreset>( this );
 		}
 
-		~PresetSelector() override
-		{
-			_onConstructConnection.release();
-			_onDestroyConnection.release();
-			_onNameUpdateConnection.release();
-			_onPresetUpdateConnection.release();
-		}
-
 		Entity getCurrentPreset() const { return _comboBox->currentData().value<Entity>(); }
 
 		void refresh() { _refreshComboBox( App::REG(), Entity {} ); }
@@ -196,10 +188,10 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Connections to App.
 		 */
-		VTX::Util::EventHub::Connection _onConstructConnection;
-		VTX::Util::EventHub::Connection _onDestroyConnection;
-		VTX::Util::EventHub::Connection _onNameUpdateConnection;
-		VTX::Util::EventHub::Connection _onPresetUpdateConnection;
+		VTX::Util::EventHub::ScopedConnection _onConstructConnection;
+		VTX::Util::EventHub::ScopedConnection _onDestroyConnection;
+		VTX::Util::EventHub::ScopedConnection _onNameUpdateConnection;
+		VTX::Util::EventHub::ScopedConnection _onPresetUpdateConnection;
 
 		QToolButton * _addButton(
 			QToolBar &			   p_toolbar,

@@ -182,7 +182,7 @@ namespace VTX::UI::QT
 
 			MAIN_WINDOW().restoreLayout();
 
-			App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
+			_applicationStopConnection = App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
 			_app.createInitialEntities();
 
 			// Show the native window before creating the OpenGL context.

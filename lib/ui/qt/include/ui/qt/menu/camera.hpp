@@ -32,8 +32,10 @@ namespace VTX::UI::QT::Menu
 			UI_ACTIONS().addTo( *this, Action::Camera::RESET );
 
 			// Connect.
-			App::REG().on_update<Renderer::Camera>().connect<&Camera::_onProjectionChanged>( this );
-			App::REG().on_update<App::Setting::Controller>().connect<&Camera::_onControllerChanged>( this );
+			_projectionChangedConnection
+				= App::REG().on_update<Renderer::Camera>().connect<&Camera::_onProjectionChanged>( this );
+			_controllerChangedConnection
+				= App::REG().on_update<App::Setting::Controller>().connect<&Camera::_onControllerChanged>( this );
 		}
 
 	  private:
@@ -71,6 +73,9 @@ namespace VTX::UI::QT::Menu
 			default: break;
 			}
 		}
+
+		VTX::Util::EventHub::ScopedConnection _projectionChangedConnection;
+		VTX::Util::EventHub::ScopedConnection _controllerChangedConnection;
 	};
 
 } // namespace VTX::UI::QT::Menu

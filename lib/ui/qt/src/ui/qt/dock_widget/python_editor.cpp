@@ -29,10 +29,9 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( _textEdit );
 
 		connect( _runAction, &QAction::triggered, this, &PythonEditor::_saveAndRun );
-		App::HUB().connect<Events::ScriptSelected, &PythonEditor::_onScriptSelected>( this );
+		_scriptSelectedConnection
+			= App::HUB().connect<Events::ScriptSelected, &PythonEditor::_onScriptSelected>( this );
 	}
-
-	PythonEditor::~PythonEditor() { App::HUB().disconnectAllOf( *this ); }
 
 	void PythonEditor::_onScriptSelected( const Events::ScriptSelected & p_event )
 	{

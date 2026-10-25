@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QPointer>
 #include <QString>
+#include <util/event_hub.hpp>
 #include <util/types.hpp>
 
 class QGroupBox;
@@ -53,6 +54,8 @@ namespace VTX::UI::QT::DockWidget
 		);
 		void _refreshFolderInfos( const FilePath & p_path, QLabel * p_labelSize, const QString & p_title ) const;
 		void _refreshFoldersInfos();
+
+		VTX::Util::EventHub::ScopedConnection _themeChangedConnection;
 	};
 
 } // namespace VTX::UI::QT::DockWidget

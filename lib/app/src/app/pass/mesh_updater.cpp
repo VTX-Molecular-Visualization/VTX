@@ -10,9 +10,10 @@ namespace VTX::App::Pass
 	{
 		auto & reg = REG();
 
-		HUB().connect<Events::MeshLoad, &MeshUpdater::_onMeshLoad>( this );
-		reg.on_update<Util::Math::Transform>().connect<&MeshUpdater::_onUpdateTransform>( this );
-		reg.on_destroy<Core::Struct::Mesh>().connect<&MeshUpdater::_onDestroyMesh>( this );
+		_meshLoadConnection = HUB().connect<Events::MeshLoad, &MeshUpdater::_onMeshLoad>( this );
+		_transformUpdatedConnection
+			= reg.on_update<Util::Math::Transform>().connect<&MeshUpdater::_onUpdateTransform>( this );
+		_meshDestroyedConnection = reg.on_destroy<Core::Struct::Mesh>().connect<&MeshUpdater::_onDestroyMesh>( this );
 	}
 
 	void MeshUpdater::update( const float, const float )

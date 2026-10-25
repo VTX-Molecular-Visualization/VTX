@@ -12,6 +12,7 @@
 #include <app/events.hpp>
 #include <app/ui/concepts.hpp>
 #include <string_view>
+#include <util/event_hub.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Dialog
@@ -171,6 +172,13 @@ namespace VTX::UI::QT::Widget
 		void _onBlockingOperationEnd( const App::Events::BlockingOperationEnd & );
 		void _onUpdateAvailable( const App::Events::UpdateAvailable & );
 		void _onRendererResize( const App::Events::RendererResize & );
+
+		VTX::Util::EventHub::ScopedConnection _applicationErrorConnection;
+		VTX::Util::EventHub::ScopedConnection _blockingOperationStartConnection;
+		VTX::Util::EventHub::ScopedConnection _blockingOperationProgressConnection;
+		VTX::Util::EventHub::ScopedConnection _blockingOperationEndConnection;
+		VTX::Util::EventHub::ScopedConnection _updateAvailableConnection;
+		VTX::Util::EventHub::ScopedConnection _rendererResizeConnection;
 	};
 
 } // namespace VTX::UI::QT::Widget

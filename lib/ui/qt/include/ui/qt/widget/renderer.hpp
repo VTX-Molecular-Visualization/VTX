@@ -16,6 +16,7 @@
 #include <QToolButton>
 #include <app/events.hpp>
 #include <optional>
+#include <util/event_hub.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Widget
@@ -169,6 +170,8 @@ namespace VTX::UI::QT::Widget
 		 * @brief Synchronize widget size after an App renderer resize.
 		 */
 		void _onRendererResize( const App::Events::RendererResize & );
+
+		VTX::Util::EventHub::ScopedConnection _rendererResizeConnection;
 	};
 } // namespace VTX::UI::QT::Widget
 

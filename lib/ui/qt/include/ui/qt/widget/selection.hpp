@@ -22,7 +22,6 @@ namespace VTX::UI::QT::Widget
 		 * @brief Constructor.
 		 */
 		Selection( QWidget * p_parent = nullptr );
-		~Selection() override;
 
 	  private:
 		/**
@@ -46,12 +45,6 @@ namespace VTX::UI::QT::Widget
 		QPointer<QPlainTextEdit> _textName;
 
 		/**
-		 * @brief Refresh from app.
-		 */
-		Util::EventHub::Connection _connTransformChanged;
-		Util::EventHub::Connection _connMetadataChanged;
-
-		/**
 		 * @brief Currently selected entities.
 		 */
 		std::vector<Entity> _entities;
@@ -65,6 +58,12 @@ namespace VTX::UI::QT::Widget
 		 * @brief Metadata updated.
 		 */
 		void _metadataUpdated( Registry &, Entity );
+
+		/**
+		 * @brief Refresh from app.
+		 */
+		VTX::Util::EventHub::ScopedConnection _connTransformChanged;
+		VTX::Util::EventHub::ScopedConnection _connMetadataChanged;
 	};
 } // namespace VTX::UI::QT::Widget
 

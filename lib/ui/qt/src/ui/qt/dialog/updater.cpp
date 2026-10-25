@@ -89,14 +89,15 @@ namespace VTX::UI::QT::Dialog
 			}
 		);
 
-		App::HUB().connect<App::Events::UpdateDownloadProgress, &Updater::_onUpdateDownloadProgress>( this );
-		App::HUB().connect<App::Events::UpdateReadyToRestart, &Updater::_onUpdateReadyToRestart>( this );
-		App::HUB().connect<App::Events::UpdateDownloadFailed, &Updater::_onUpdateDownloadFailed>( this );
+		_downloadProgressConnection
+			= App::HUB().connect<App::Events::UpdateDownloadProgress, &Updater::_onUpdateDownloadProgress>( this );
+		_readyToRestartConnection
+			= App::HUB().connect<App::Events::UpdateReadyToRestart, &Updater::_onUpdateReadyToRestart>( this );
+		_downloadFailedConnection
+			= App::HUB().connect<App::Events::UpdateDownloadFailed, &Updater::_onUpdateDownloadFailed>( this );
 
 		_setIdleState();
 	}
-
-	Updater::~Updater() { App::HUB().disconnectAllOf( *this ); }
 
 	void Updater::_onUpdateDownloadProgress( const App::Events::UpdateDownloadProgress & p_e )
 	{

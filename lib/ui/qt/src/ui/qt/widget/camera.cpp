@@ -88,20 +88,15 @@ namespace VTX::UI::QT::Widget
 		);
 
 		// Connect app.
-		App::HUB().connect<App::Events::CameraTransformChange, &Camera::_setTransform>( this );
-		App::REG().on_update<Renderer::Camera>().connect<&Camera::_setCamera>( this );
+		_transformChangedConnection
+			= App::HUB().connect<App::Events::CameraTransformChange, &Camera::_setTransform>( this );
+		_cameraUpdatedConnection = App::REG().on_update<Renderer::Camera>().connect<&Camera::_setCamera>( this );
 
 		// Set values.
 		const auto [ _, camera, transform ]
 			= App::ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 		_setTransform();
 		_setCamera();
-	}
-
-	Camera::~Camera()
-	{
-		App::HUB().disconnectAllOf( *this );
-		App::REG().on_update<Renderer::Camera>().disconnect<&Camera::_setCamera>( this );
 	}
 
 	void Camera::_setTransform()

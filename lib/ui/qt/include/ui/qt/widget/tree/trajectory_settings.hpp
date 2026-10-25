@@ -7,6 +7,7 @@
 #include <QSpinBox>
 #include <QWidget>
 #include <app/ecs.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -21,7 +22,6 @@ namespace VTX::UI::QT::Widget::Tree
 
 	  public:
 		explicit TrajectorySettings( Entity p_system, QWidget * p_parent = nullptr );
-		~TrajectorySettings() override;
 
 		bool eventFilter( QObject * p_watched, QEvent * p_event ) override;
 
@@ -43,6 +43,8 @@ namespace VTX::UI::QT::Widget::Tree
 		void _onTrajectoryUpdated( Registry &, Entity p_entity );
 
 		void _refresh();
+
+		VTX::Util::EventHub::ScopedConnection _trajectoryUpdatedConnection;
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

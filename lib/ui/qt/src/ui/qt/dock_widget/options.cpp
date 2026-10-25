@@ -143,7 +143,7 @@ namespace VTX::UI::QT::DockWidget
 				UI_ACTIONS().trigger( Action::Theme::SET, _themeParams( theme ) );
 			}
 		);
-		App::HUB().connect<Events::ThemeChanged, &Options::_onThemeChanged>( this );
+		_themeChangedConnection = App::HUB().connect<Events::ThemeChanged, &Options::_onThemeChanged>( this );
 
 		layoutDisplay->addWidget( _comboBoxTheme );
 

@@ -16,19 +16,29 @@ namespace VTX::App::Pass
 		auto & reg = REG();
 
 		// Update functions.
-		reg.on_update<Util::Math::AABB>().connect<&SceneUpdater::_onUpdateAABB>( this );
-		reg.on_update<Util::Math::Transform>().connect<&SceneUpdater::_onUpdateTransform>( this );
-		reg.on_destroy<Core::Struct::Topology>().connect<&SceneUpdater::_onSceneItemDestroy>( this );
-		reg.on_destroy<Core::Struct::Mesh>().connect<&SceneUpdater::_onSceneItemDestroy>( this );
+		_aabbUpdatedConnection = reg.on_update<Util::Math::AABB>().connect<&SceneUpdater::_onUpdateAABB>( this );
+		_transformUpdatedConnection
+			= reg.on_update<Util::Math::Transform>().connect<&SceneUpdater::_onUpdateTransform>( this );
+		_systemDestroyedConnection
+			= reg.on_destroy<Core::Struct::Topology>().connect<&SceneUpdater::_onSceneItemDestroy>( this );
+		_meshDestroyedConnection
+			= reg.on_destroy<Core::Struct::Mesh>().connect<&SceneUpdater::_onSceneItemDestroy>( this );
 		// TODO: Keep only construct and use custom event to update each value at once.
-		reg.on_construct<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
-		reg.on_update<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
-		reg.on_construct<Scene::ColorLayout>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
-		reg.on_update<Scene::ColorLayout>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
+		_graphicsConfigConstructedConnection
+			= reg.on_construct<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
+		_graphicsConfigUpdatedConnection
+			= reg.on_update<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
+		_colorLayoutConstructedConnection
+			= reg.on_construct<Scene::ColorLayout>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
+		_colorLayoutUpdatedConnection
+			= reg.on_update<Scene::ColorLayout>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
 
-		reg.on_update<Renderer::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfigPreset>( this );
-		reg.on_update<Renderer::Color::Layout>().connect<&SceneUpdater::_onUpdateColorLayoutPreset>( this );
-		reg.on_update<Setting::Accessibility>().connect<&SceneUpdater::_onUpdateAccessibility>( this );
+		_graphicsConfigPresetUpdatedConnection
+			= reg.on_update<Renderer::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfigPreset>( this );
+		_colorLayoutPresetUpdatedConnection
+			= reg.on_update<Renderer::Color::Layout>().connect<&SceneUpdater::_onUpdateColorLayoutPreset>( this );
+		_accessibilityUpdatedConnection
+			= reg.on_update<Setting::Accessibility>().connect<&SceneUpdater::_onUpdateAccessibility>( this );
 	}
 
 	void SceneUpdater::_onUpdateAABB( Registry & p_r, Entity p_e )

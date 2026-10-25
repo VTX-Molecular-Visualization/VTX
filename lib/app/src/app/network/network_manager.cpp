@@ -8,9 +8,8 @@
 
 namespace VTX::App::Network
 {
-	NetworkManager::NetworkManager() { HUB().connect<Events::Update, &NetworkManager::_onUpdate>( this ); }
-
-	NetworkManager::~NetworkManager() = default;
+	NetworkManager::NetworkManager()
+	{ _updateConnection = HUB().connect<Events::Update, &NetworkManager::_onUpdate>( this ); }
 
 	NetworkManager::DownloadId NetworkManager::downloadFile(
 		const std::string_view				   p_url,

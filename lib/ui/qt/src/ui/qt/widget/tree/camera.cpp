@@ -26,7 +26,8 @@ namespace VTX::UI::QT::Widget::Tree
 			= App::REG().on_construct<App::Scene::ViewPoint>().connect<&Camera::_addViewPoint>( this );
 		_onDestroyConnection
 			= App::REG().on_destroy<App::Scene::ViewPoint>().connect<&Camera::_removeViewPoint>( this );
-		App::HUB().connect<App::Events::ViewPointRenamed, &Camera::_onViewPointRenamed>( this );
+		_viewPointRenamedConnection
+			= App::HUB().connect<App::Events::ViewPointRenamed, &Camera::_onViewPointRenamed>( this );
 
 		// Connect double click to move to viewpoint.
 		connect(
@@ -44,13 +45,6 @@ namespace VTX::UI::QT::Widget::Tree
 				App::ACTION().execute<App::Action::Camera::GoToViewPoint>( entity );
 			}
 		);
-	}
-
-	Camera::~Camera()
-	{
-		_onConstructConnection.release();
-		_onDestroyConnection.release();
-		App::HUB().disconnectAllOf( *this );
 	}
 
 	void Camera::_addViewPoint( Registry & p_r, const Entity p_viewpoint )

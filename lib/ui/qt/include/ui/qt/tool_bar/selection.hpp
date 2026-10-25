@@ -14,6 +14,7 @@
 #include <app/action/selection.hpp>
 #include <app/services.hpp>
 #include <string_view>
+#include <util/event_hub.hpp>
 #include <util/types.hpp>
 
 namespace VTX::UI::QT::ToolBar
@@ -50,7 +51,8 @@ namespace VTX::UI::QT::ToolBar
 			_granularityButton->setMenu( menu );
 			addWidget( _granularityButton );
 			_syncGranularityButton();
-			App::HUB().connect<Events::SelectionGranularityChanged, &Selection::_onGranularityChanged>( this );
+			_granularityChangedConnection
+				= App::HUB().connect<Events::SelectionGranularityChanged, &Selection::_onGranularityChanged>( this );
 
 			// Lock selection.
 			UI_ACTIONS().addTo( *this, Action::Selection::LOCK );
@@ -89,6 +91,8 @@ namespace VTX::UI::QT::ToolBar
 			syncAction( Action::Selection::SET_GRANULARITY_RESIDUE, Granularity::RESIDUE );
 			syncAction( Action::Selection::SET_GRANULARITY_ATOM, Granularity::ATOM );
 		}
+
+		VTX::Util::EventHub::ScopedConnection _granularityChangedConnection;
 	};
 
 } // namespace VTX::UI::QT::ToolBar

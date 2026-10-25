@@ -13,12 +13,13 @@ namespace VTX::App::Pass
 {
 	TrajectoryUpdater::TrajectoryUpdater()
 	{
-		REG().on_destroy<Trajectory::Loader>().connect<&TrajectoryUpdater::_onDestroyLoader>( this );
+		_loaderDestroyedConnection
+			= REG().on_destroy<Trajectory::Loader>().connect<&TrajectoryUpdater::_onDestroyLoader>( this );
 	}
 
 	TrajectoryUpdater::~TrajectoryUpdater()
 	{
-		REG().on_destroy<Trajectory::Loader>().disconnect<&TrajectoryUpdater::_onDestroyLoader>( this );
+		_loaderDestroyedConnection.release();
 		for ( const Entity entity : REG().view<Trajectory::Loader>() )
 		{
 			_stopLoader( entity );

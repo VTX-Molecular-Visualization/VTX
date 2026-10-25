@@ -7,6 +7,7 @@
 #include <core/struct/trajectory.hpp>
 #include <renderer/caches.hpp>
 #include <renderer/descriptors.hpp>
+#include <util/event_hub.hpp>
 #include <vector>
 
 namespace VTX::App::System
@@ -79,6 +80,19 @@ namespace VTX::App::Pass
 		void _onUpdateRepresentationPreset( Registry &, Entity );
 		void _onDestroyRepresentationPreset( Registry &, Entity );
 		void _setRepresentations();
+
+		Util::EventHub::ScopedConnection _systemLoadConnection;
+		Util::EventHub::ScopedConnection _trajectoryFrameChangedConnection;
+		Util::EventHub::ScopedConnection _topologyUpdatedConnection;
+		Util::EventHub::ScopedConnection _transformUpdatedConnection;
+		Util::EventHub::ScopedConnection _visibilityUpdatedConnection;
+		Util::EventHub::ScopedConnection _selectionUpdatedConnection;
+		Util::EventHub::ScopedConnection _representationUpdatedConnection;
+		Util::EventHub::ScopedConnection _colorUpdatedConnection;
+		Util::EventHub::ScopedConnection _systemDestroyedConnection;
+		Util::EventHub::ScopedConnection _representationPresetConstructedConnection;
+		Util::EventHub::ScopedConnection _representationPresetUpdatedConnection;
+		Util::EventHub::ScopedConnection _representationPresetDestroyedConnection;
 	};
 } // namespace VTX::App::Pass
 

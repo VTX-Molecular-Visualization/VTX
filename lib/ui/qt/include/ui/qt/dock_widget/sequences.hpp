@@ -5,6 +5,7 @@
 #include "ui/qt/widget/sequence.hpp"
 #include <app/ecs.hpp>
 #include <app/events.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -26,6 +27,13 @@ namespace VTX::UI::QT::DockWidget
 		void _onUpdateSelection( Registry &, Entity );
 		void _onColorsChanged( Registry &, Entity );
 		void _onColorsPresetChanged( Registry &, Entity );
+
+		VTX::Util::EventHub::ScopedConnection _systemLoadConnection;
+		VTX::Util::EventHub::ScopedConnection _systemDestroyedConnection;
+		VTX::Util::EventHub::ScopedConnection _selectionUpdatedConnection;
+		VTX::Util::EventHub::ScopedConnection _colorLayoutConstructedConnection;
+		VTX::Util::EventHub::ScopedConnection _colorLayoutUpdatedConnection;
+		VTX::Util::EventHub::ScopedConnection _colorPresetUpdatedConnection;
 	};
 
 } // namespace VTX::UI::QT::DockWidget

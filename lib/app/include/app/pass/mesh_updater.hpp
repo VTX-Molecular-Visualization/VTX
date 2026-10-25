@@ -6,6 +6,7 @@
 #include "app/pass/pass_manager.hpp"
 #include <renderer/descriptors.hpp>
 #include <unordered_map>
+#include <util/event_hub.hpp>
 #include <vector>
 
 namespace VTX::App::Pass
@@ -41,6 +42,10 @@ namespace VTX::App::Pass
 		void _onMeshLoad( const Events::MeshLoad & );
 		void _onUpdateTransform( Registry &, Entity );
 		void _onDestroyMesh( Registry &, Entity );
+
+		Util::EventHub::ScopedConnection _meshLoadConnection;
+		Util::EventHub::ScopedConnection _transformUpdatedConnection;
+		Util::EventHub::ScopedConnection _meshDestroyedConnection;
 	};
 } // namespace VTX::App::Pass
 

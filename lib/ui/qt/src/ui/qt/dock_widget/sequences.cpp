@@ -13,16 +13,21 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 
-		App::HUB().connect<App::Events::SystemLoad, &Sequences::_onSystemLoad>( this );
-		App::REG().on_destroy<Core::Struct::Topology>().connect<&Sequences::_onSystemDestroy>( this );
+		_systemLoadConnection = App::HUB().connect<App::Events::SystemLoad, &Sequences::_onSystemLoad>( this );
+		_systemDestroyedConnection
+			= App::REG().on_destroy<Core::Struct::Topology>().connect<&Sequences::_onSystemDestroy>( this );
 
 		// Refresh widget when selection changed.
-		App::REG().on_update<App::System::Selection>().connect<&Sequences::_onUpdateSelection>( this );
+		_selectionUpdatedConnection
+			= App::REG().on_update<App::System::Selection>().connect<&Sequences::_onUpdateSelection>( this );
 
 		// Refresh widget when colors changed.
-		App::REG().on_construct<App::Scene::ColorLayout>().connect<&Sequences::_onColorsChanged>( this );
-		App::REG().on_update<App::Scene::ColorLayout>().connect<&Sequences::_onColorsChanged>( this );
-		App::REG().on_update<Renderer::Color::Layout>().connect<&Sequences::_onColorsPresetChanged>( this );
+		_colorLayoutConstructedConnection
+			= App::REG().on_construct<App::Scene::ColorLayout>().connect<&Sequences::_onColorsChanged>( this );
+		_colorLayoutUpdatedConnection
+			= App::REG().on_update<App::Scene::ColorLayout>().connect<&Sequences::_onColorsChanged>( this );
+		_colorPresetUpdatedConnection
+			= App::REG().on_update<Renderer::Color::Layout>().connect<&Sequences::_onColorsPresetChanged>( this );
 	}
 
 	void Sequences::_onSystemLoad( const App::Events::SystemLoad & p_e )

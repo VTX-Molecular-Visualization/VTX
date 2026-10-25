@@ -125,12 +125,20 @@ namespace VTX::UI::QT::Widget
 		centralWidget()->setFocus();
 
 		// Connect events.
-		App::HUB().connect<App::Events::ApplicationError, &MainWindow::_onApplicationError>( this );
-		App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
-		App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>( this );
-		App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
-		App::HUB().connect<App::Events::UpdateAvailable, &MainWindow::_onUpdateAvailable>( this );
-		App::HUB().connect<App::Events::RendererResize, &MainWindow::_onRendererResize>( this );
+		_applicationErrorConnection
+			= App::HUB().connect<App::Events::ApplicationError, &MainWindow::_onApplicationError>( this );
+		_blockingOperationStartConnection
+			= App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
+		_blockingOperationProgressConnection
+			= App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>(
+				this
+			);
+		_blockingOperationEndConnection
+			= App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
+		_updateAvailableConnection
+			= App::HUB().connect<App::Events::UpdateAvailable, &MainWindow::_onUpdateAvailable>( this );
+		_rendererResizeConnection
+			= App::HUB().connect<App::Events::RendererResize, &MainWindow::_onRendererResize>( this );
 	}
 
 	MainWindow::~MainWindow()

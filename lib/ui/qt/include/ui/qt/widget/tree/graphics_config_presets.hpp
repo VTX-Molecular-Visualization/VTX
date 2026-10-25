@@ -19,28 +19,16 @@ namespace VTX::UI::QT::Widget::Tree
 			_connectAppliedPresetUpdates( App::REG() );
 		}
 
-		~GraphicsConfigPresets() override { _disconnectAppliedPresetUpdates( App::REG() ); }
-
 	  private:
 		void _connectAppliedPresetUpdates( Registry & p_reg )
 		{
-			p_reg.on_construct<App::Scene::GraphicsConfig>().connect<&GraphicsConfigPresets::_onSceneGraphicsConfig>(
-				this
-			);
-			p_reg.on_update<App::Scene::GraphicsConfig>().connect<&GraphicsConfigPresets::_onSceneGraphicsConfig>(
-				this
-			);
+			_appliedPresetConstructedConnection = p_reg.on_construct<App::Scene::GraphicsConfig>()
+													  .connect<&GraphicsConfigPresets::_onSceneGraphicsConfig>( this );
+			_appliedPresetUpdatedConnection
+				= p_reg.on_update<App::Scene::GraphicsConfig>().connect<&GraphicsConfigPresets::_onSceneGraphicsConfig>(
+					this
+				);
 			_restoreCurrentSceneGraphicsConfig( p_reg );
-		}
-
-		void _disconnectAppliedPresetUpdates( Registry & p_reg )
-		{
-			p_reg.on_construct<App::Scene::GraphicsConfig>().disconnect<&GraphicsConfigPresets::_onSceneGraphicsConfig>(
-				this
-			);
-			p_reg.on_update<App::Scene::GraphicsConfig>().disconnect<&GraphicsConfigPresets::_onSceneGraphicsConfig>(
-				this
-			);
 		}
 
 		void _restoreCurrentSceneGraphicsConfig( Registry & p_reg )
@@ -54,6 +42,9 @@ namespace VTX::UI::QT::Widget::Tree
 
 		void _onSceneGraphicsConfig( Registry & p_reg, const Entity p_e )
 		{ _setAppliedPreset( p_reg.get<App::Scene::GraphicsConfig>( p_e ).preset ); }
+
+		VTX::Util::EventHub::ScopedConnection _appliedPresetConstructedConnection;
+		VTX::Util::EventHub::ScopedConnection _appliedPresetUpdatedConnection;
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

@@ -8,6 +8,7 @@
 #include "ui/qt/widget/selection.hpp"
 #include "ui/qt/widget/viewpoint.hpp"
 #include <QToolButton>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -35,6 +36,9 @@ namespace VTX::UI::QT::DockWidget
 
 		bool _hasSystemSelection() const;
 		void _onSystemSelectionUpdated( Registry &, Entity );
+
+		VTX::Util::EventHub::ScopedConnection _selectionUpdatedConnection;
+		VTX::Util::EventHub::ScopedConnection _systemDestroyedConnection;
 	};
 
 } // namespace VTX::UI::QT::DockWidget

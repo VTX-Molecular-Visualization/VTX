@@ -57,20 +57,28 @@ namespace VTX::UI::QT::DockWidget
 		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
 		_layout->addWidget( _filler );
 
-		App::REG().on_construct<Renderer::Camera>().connect<&Scene::_onCameraConstruct>( this );
+		_cameraConstructedConnection
+			= App::REG().on_construct<Renderer::Camera>().connect<&Scene::_onCameraConstruct>( this );
 
-		App::HUB().connect<App::Events::SystemLoad, &Scene::_onSystemLoad>( this );
-		App::REG().on_destroy<Core::Struct::Topology>().connect<&Scene::_onSystemDestroy>( this );
-		App::REG().on_update<App::System::Visibility>().connect<&Scene::_onUpdateVisibility>( this );
-		App::REG().on_update<App::System::Selection>().connect<&Scene::_onUpdateSelection>( this );
-		App::REG().on_construct<App::Trajectory::Player>().connect<&Scene::_onTrajectoryCreated>( this );
-		App::REG().on_destroy<App::Trajectory::Player>().connect<&Scene::_onTrajectoryDestroyed>( this );
+		_systemLoadConnection = App::HUB().connect<App::Events::SystemLoad, &Scene::_onSystemLoad>( this );
+		_systemDestroyedConnection
+			= App::REG().on_destroy<Core::Struct::Topology>().connect<&Scene::_onSystemDestroy>( this );
+		_visibilityUpdatedConnection
+			= App::REG().on_update<App::System::Visibility>().connect<&Scene::_onUpdateVisibility>( this );
+		_selectionUpdatedConnection
+			= App::REG().on_update<App::System::Selection>().connect<&Scene::_onUpdateSelection>( this );
+		_trajectoryCreatedConnection
+			= App::REG().on_construct<App::Trajectory::Player>().connect<&Scene::_onTrajectoryCreated>( this );
+		_trajectoryDestroyedConnection
+			= App::REG().on_destroy<App::Trajectory::Player>().connect<&Scene::_onTrajectoryDestroyed>( this );
 
-		App::HUB().connect<Events::SelectionLocked, &Scene::_onSelectionLocked>( this );
-		App::HUB().connect<Events::TreeViewModeChanged, &Scene::_onTreeViewModeChanged>( this );
+		_selectionLockedConnection = App::HUB().connect<Events::SelectionLocked, &Scene::_onSelectionLocked>( this );
+		_treeViewModeChangedConnection
+			= App::HUB().connect<Events::TreeViewModeChanged, &Scene::_onTreeViewModeChanged>( this );
 
-		App::HUB().connect<App::Events::ThreadProgress, &Scene::_onThreadProgress>( this );
-		App::HUB().connect<App::Events::ThreadTerminated, &Scene::_onThreadTerminated>( this );
+		_threadProgressConnection = App::HUB().connect<App::Events::ThreadProgress, &Scene::_onThreadProgress>( this );
+		_threadTerminatedConnection
+			= App::HUB().connect<App::Events::ThreadTerminated, &Scene::_onThreadTerminated>( this );
 
 		_onSelectionLocked( Events::SelectionLocked { UI_ACTIONS().isChecked( Action::Selection::LOCK ) } );
 	}

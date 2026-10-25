@@ -77,9 +77,11 @@ namespace VTX::UI::QT::Widget
 		timer->start( 1000 );
 
 		// Update renderering mode.
-		App::HUB().connect<App::Events::PostRender, &StatusBar::_updateGPUState>( this );
-		App::HUB().connect<App::Events::RendererResize, &StatusBar::_updateResolution>( this );
-		App::HUB().connect<App::Events::PythonInitialized, &StatusBar::_pythonInitialized>( this );
+		_postRenderConnection = App::HUB().connect<App::Events::PostRender, &StatusBar::_updateGPUState>( this );
+		_rendererResizeConnection
+			= App::HUB().connect<App::Events::RendererResize, &StatusBar::_updateResolution>( this );
+		_pythonInitializedConnection
+			= App::HUB().connect<App::Events::PythonInitialized, &StatusBar::_pythonInitialized>( this );
 	}
 
 	void StatusBar::_updateGPUState( const App::Events::PostRender & p_e )

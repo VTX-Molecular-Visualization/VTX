@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QToolButton>
 #include <app/events.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -52,6 +53,10 @@ namespace VTX::UI::QT::Widget
 		void _updateResolution( const App::Events::RendererResize & p_e );
 		void _setCurrentFPS();
 		void _pythonInitialized( const App::Events::PythonInitialized & );
+
+		VTX::Util::EventHub::ScopedConnection _postRenderConnection;
+		VTX::Util::EventHub::ScopedConnection _rendererResizeConnection;
+		VTX::Util::EventHub::ScopedConnection _pythonInitializedConnection;
 	};
 
 } // namespace VTX::UI::QT::Widget

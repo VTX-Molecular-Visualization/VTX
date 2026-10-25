@@ -27,7 +27,8 @@ namespace VTX::UI::QT::Widget::Tree
 			auto & reg			   = App::REG();
 			_onConstructConnection = reg.on_construct<P>().template connect<&BaseTreePreset::_addPreset>( this );
 			_onDestroyConnection   = reg.on_destroy<P>().template connect<&BaseTreePreset::_removePreset>( this );
-			App::HUB().connect<App::Events::PresetRename<P>, &BaseTreePreset::_onPresetRename>( this );
+			_onRenameConnection
+				= App::HUB().connect<App::Events::PresetRename<P>, &BaseTreePreset::_onPresetRename>( this );
 
 			// Connect double click to apply the preset.
 			W::connect(
@@ -45,13 +46,6 @@ namespace VTX::UI::QT::Widget::Tree
 					App::ACTION().execute<App::Action::Preset::Apply<P>>( entity );
 				}
 			);
-		}
-
-		~BaseTreePreset() override
-		{
-			_onConstructConnection.release();
-			_onDestroyConnection.release();
-			App::HUB().disconnectAllOf( *this );
 		}
 
 	  protected:
@@ -110,8 +104,8 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Connections to App.
 		 */
-		Util::EventHub::Connection _onConstructConnection;
-		Util::EventHub::Connection _onDestroyConnection;
+		VTX::Util::EventHub::ScopedConnection _onConstructConnection;
+		VTX::Util::EventHub::ScopedConnection _onDestroyConnection;
 
 		/**
 		 * @brief Add a preset to the tree.
@@ -181,6 +175,8 @@ namespace VTX::UI::QT::Widget::Tree
 			font.setBold( p_applied );
 			p_item->setFont( 0, font );
 		}
+
+		VTX::Util::EventHub::ScopedConnection _onRenameConnection;
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

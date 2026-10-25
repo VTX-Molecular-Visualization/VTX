@@ -11,6 +11,7 @@
 #include <QString>
 #include <array>
 #include <cstddef>
+#include <util/event_hub.hpp>
 #include <util/types.hpp>
 
 namespace VTX::UI::QT::Menu
@@ -29,6 +30,8 @@ namespace VTX::UI::QT::Menu
 		void _addThemeAction( const QString &, Style::E_THEME );
 		void _syncTheme();
 		void _onThemeChanged( const Events::ThemeChanged & );
+
+		VTX::Util::EventHub::ScopedConnection _themeChangedConnection;
 	};
 
 } // namespace VTX::UI::QT::Menu

@@ -54,18 +54,13 @@ namespace VTX::UI::QT::Widget
 			{ App::ACTION().execute<App::Action::Camera::RenameViewPoint>( _entity, _lineName->text().toStdString() ); }
 		);
 
-		App::HUB().connect<App::Events::ViewPointRenamed, &ViewPoint::_onViewPointRenamed>( this );
+		_viewPointRenamedConnection
+			= App::HUB().connect<App::Events::ViewPointRenamed, &ViewPoint::_onViewPointRenamed>( this );
 		_connTransformChanged
 			= App::REG().on_update<Util::Math::Transform>().connect<&ViewPoint::_transformUpdated>( this );
 
 		_setName();
 		_setTransform();
-	}
-
-	ViewPoint::~ViewPoint()
-	{
-		_connTransformChanged.release();
-		App::HUB().disconnectAllOf( *this );
 	}
 
 	void ViewPoint::_setName()

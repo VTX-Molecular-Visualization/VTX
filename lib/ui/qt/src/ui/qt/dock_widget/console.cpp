@@ -152,8 +152,6 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( _commandLauncher );
 	}
 
-	Console::~Console() { _logConnection.release(); }
-
 	void Console::log( const VTX::Util::LogInfo & p_logInfo )
 	{
 		if ( p_logInfo.message == "\n" )

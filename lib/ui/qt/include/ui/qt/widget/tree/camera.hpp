@@ -25,7 +25,6 @@ namespace VTX::UI::QT::Widget::Tree
 		 * @brief Constructor.
 		 */
 		Camera( Entity p_entity, QWidget * p_parent );
-		~Camera() override;
 
 	  private:
 		/**
@@ -41,8 +40,8 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Connections to App.
 		 */
-		Util::EventHub::Connection _onConstructConnection;
-		Util::EventHub::Connection _onDestroyConnection;
+		VTX::Util::EventHub::ScopedConnection _onConstructConnection;
+		VTX::Util::EventHub::ScopedConnection _onDestroyConnection;
 
 		/**
 		 * @brief Handle viewpoint addition to update the tree.
@@ -58,6 +57,8 @@ namespace VTX::UI::QT::Widget::Tree
 		 * @brief Handle viewpoint rename to update the tree.
 		 */
 		void _onViewPointRenamed( const App::Events::ViewPointRenamed & p_event );
+
+		VTX::Util::EventHub::ScopedConnection _viewPointRenamedConnection;
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

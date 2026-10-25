@@ -36,7 +36,7 @@ namespace VTX::UI::QT::Menu
 
 		_syncTheme();
 		connect( this, &QMenu::aboutToShow, this, &Theme::_syncTheme );
-		App::HUB().connect<Events::ThemeChanged, &Theme::_onThemeChanged>( this );
+		_themeChangedConnection = App::HUB().connect<Events::ThemeChanged, &Theme::_onThemeChanged>( this );
 	}
 
 	void Theme::_addThemeAction( const QString & p_label, const Style::E_THEME p_theme )

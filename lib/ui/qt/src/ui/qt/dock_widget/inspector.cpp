@@ -166,8 +166,10 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
-		App::REG().on_update<App::System::Selection>().connect<&Inspector::_onSystemSelectionUpdated>( this );
-		App::REG().on_destroy<Core::Struct::Topology>().connect<&Inspector::_onSystemSelectionUpdated>( this );
+		_selectionUpdatedConnection
+			= App::REG().on_update<App::System::Selection>().connect<&Inspector::_onSystemSelectionUpdated>( this );
+		_systemDestroyedConnection
+			= App::REG().on_destroy<Core::Struct::Topology>().connect<&Inspector::_onSystemSelectionUpdated>( this );
 	}
 
 	void Inspector::_clear()

@@ -64,13 +64,13 @@ namespace VTX::UI::QT::Widget::Tree
 		_frameSpinBox->installEventFilter( this );
 
 		// Connect to trajectory updates
-		App::REG().on_update<App::Trajectory::Player>().connect<&TrajectorySettings::_onTrajectoryUpdated>( this );
+		_trajectoryUpdatedConnection
+			= App::REG().on_update<App::Trajectory::Player>().connect<&TrajectorySettings::_onTrajectoryUpdated>(
+				this
+			);
 
 		_refresh();
 	}
-
-	TrajectorySettings::~TrajectorySettings()
-	{ App::REG().on_update<App::Trajectory::Player>().disconnect<&TrajectorySettings::_onTrajectoryUpdated>( this ); }
 
 	void TrajectorySettings::_onPlayerModeChanged( int p_index )
 	{

@@ -18,6 +18,7 @@
 #include <string_view>
 #include <thread>
 #include <util/ecs.hpp>
+#include <util/event_hub.hpp>
 #include <util/filesystem.hpp>
 #include <util/thread/thread_manager.hpp>
 #include <utility>
@@ -30,22 +31,12 @@ namespace
 	{
 		TrajectoryPlayerLifecycleObserver()
 		{
-			App::REG().on_construct<App::Trajectory::Player>().connect<&TrajectoryPlayerLifecycleObserver::onConstruct>(
-				this
-			);
-			App::REG().on_destroy<App::Trajectory::Player>().connect<&TrajectoryPlayerLifecycleObserver::onDestroy>(
-				this
-			);
-		}
-
-		~TrajectoryPlayerLifecycleObserver()
-		{
-			App::REG()
-				.on_construct<App::Trajectory::Player>()
-				.disconnect<&TrajectoryPlayerLifecycleObserver::onConstruct>( this );
-			App::REG().on_destroy<App::Trajectory::Player>().disconnect<&TrajectoryPlayerLifecycleObserver::onDestroy>(
-				this
-			);
+			_constructConnection = App::REG()
+									   .on_construct<App::Trajectory::Player>()
+									   .connect<&TrajectoryPlayerLifecycleObserver::onConstruct>( this );
+			_destroyConnection	 = App::REG()
+									   .on_destroy<App::Trajectory::Player>()
+									   .connect<&TrajectoryPlayerLifecycleObserver::onDestroy>( this );
 		}
 
 		void onConstruct( Registry &, const Entity ) { constructCount++; }
@@ -54,6 +45,9 @@ namespace
 
 		uint constructCount = 0;
 		uint destroyCount	= 0;
+
+		Util::EventHub::ScopedConnection _constructConnection;
+		Util::EventHub::ScopedConnection _destroyConnection;
 	};
 
 	bool waitUntil( const std::function<bool()> & p_predicate )

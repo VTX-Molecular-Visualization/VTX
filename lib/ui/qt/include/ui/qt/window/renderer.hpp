@@ -9,6 +9,7 @@
 #include <QWindow>
 #include <app/input/input_manager.hpp>
 #include <optional>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Window
 {
@@ -67,6 +68,8 @@ namespace VTX::UI::QT::Window
 		std::optional<App::Input::InputManager::Action> _getKeyboardAction( int ) const;
 		QPoint											_toDevicePixels( const QPointF & ) const;
 		void											_onKBLayoutChange( const Events::KeyboardLayoutChanged & );
+
+		VTX::Util::EventHub::ScopedConnection _keyboardLayoutChangedConnection;
 	};
 
 } // namespace VTX::UI::QT::Window

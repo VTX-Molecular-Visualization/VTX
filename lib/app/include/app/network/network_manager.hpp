@@ -21,7 +21,6 @@ namespace VTX::App::Network
 		using DownloadId = uint64_t;
 
 		NetworkManager();
-		~NetworkManager();
 
 		/**
 		 * @brief Download a file from a URL and save it to a specified filename.
@@ -74,6 +73,8 @@ namespace VTX::App::Network
 		 * @brief Connection for update events to dispatch completed downloads.
 		 */
 		void _onUpdate( const Events::Update & );
+
+		Util::EventHub::ScopedConnection _updateConnection;
 	};
 
 } // namespace VTX::App::Network

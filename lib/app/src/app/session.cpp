@@ -81,17 +81,17 @@ namespace VTX::App
 		/**
 		 * @brief Held while waiting for the update check result on the main thread.
 		 */
-		Util::EventHub::Connection updateCheckConnection;
+		Util::EventHub::ScopedConnection updateCheckConnection;
 
 		/**
 		 * @brief Held while waiting for the update download result on the main thread.
 		 */
-		Util::EventHub::Connection updateDownloadConnection;
+		Util::EventHub::ScopedConnection updateDownloadConnection;
 
 		/**
 		 * @brief Held while waiting for the update download progress on the main thread.
 		 */
-		Util::EventHub::Connection updateDownloadProgressConnection;
+		Util::EventHub::ScopedConnection updateDownloadProgressConnection;
 	};
 
 	void Session::handleStartupActivation()
@@ -172,6 +172,8 @@ namespace VTX::App
 			}
 		);
 
+		_impl->updateCheckConnection.release();
+
 		_impl->updateCheckConnection = HUB().connect<Events::Update, &Session::_onUpdateCheckResult>( this );
 	}
 
@@ -183,7 +185,7 @@ namespace VTX::App
 		}
 
 		_impl->updateCheckInProgress = false;
-		HUB().disconnect( _impl->updateCheckConnection );
+		_impl->updateCheckConnection.release();
 
 		if ( _impl->updateCheckFailed )
 		{
@@ -276,7 +278,10 @@ namespace VTX::App
 			);
 			_impl->updateDownloadThreadId = downloadThread.getId();
 
+			_impl->updateDownloadConnection.release();
+
 			_impl->updateDownloadConnection = HUB().connect<Events::Update, &Session::_onUpdateDownloadResult>( this );
+			_impl->updateDownloadProgressConnection.release();
 			_impl->updateDownloadProgressConnection
 				= HUB().connect<Events::Update, &Session::_onUpdateDownloadProgress>( this );
 		}
@@ -294,8 +299,8 @@ namespace VTX::App
 			return;
 		}
 
-		HUB().disconnect( _impl->updateDownloadConnection );
-		HUB().disconnect( _impl->updateDownloadProgressConnection );
+		_impl->updateDownloadConnection.release();
+		_impl->updateDownloadProgressConnection.release();
 
 		if ( not _impl->updateDownloadSucceeded )
 		{

@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QPointer>
 #include <app/ecs.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -17,7 +18,6 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		Controller( Entity, QWidget * );
-		~Controller() override;
 
 	  private:
 		const Entity _entity;
@@ -32,6 +32,8 @@ namespace VTX::UI::QT::Widget
 		QPointer<EditableSlider> _sliderElasticityFactor;
 
 		void _setController();
+
+		VTX::Util::EventHub::ScopedConnection _controllerUpdatedConnection;
 	};
 } // namespace VTX::UI::QT::Widget
 #endif

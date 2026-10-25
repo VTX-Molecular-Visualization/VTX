@@ -115,13 +115,11 @@ namespace VTX::UI::QT::Widget
 			{ App::ACTION().execute<App::Action::Controller::SetElasticityFactor>( p_value ); }
 		);
 
-		App::REG().on_update<App::Setting::Controller>().connect<&Controller::_setController>( this );
+		_controllerUpdatedConnection
+			= App::REG().on_update<App::Setting::Controller>().connect<&Controller::_setController>( this );
 
 		_setController();
 	}
-
-	Controller::~Controller()
-	{ App::REG().on_update<App::Setting::Controller>().disconnect<&Controller::_setController>( this ); }
 
 	void Controller::_setController()
 	{

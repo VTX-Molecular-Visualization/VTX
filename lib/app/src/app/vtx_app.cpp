@@ -112,6 +112,16 @@ namespace VTX::App
 			VTX_ERROR( "Unknown exception during thread manager cleanup" );
 		}
 
+		if ( ECS::hasCtx<Network::NetworkManager>() )
+		{
+			ECS::removeCtx<Network::NetworkManager>();
+		}
+
+		if ( ECS::hasCtx<Session>() )
+		{
+			ECS::removeCtx<Session>();
+		}
+
 		LOGGER::stop();
 	}
 

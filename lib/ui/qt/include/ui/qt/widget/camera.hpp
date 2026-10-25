@@ -5,6 +5,7 @@
 #include "ui/qt/widget/transform.hpp"
 #include <QGroupBox>
 #include <app/ecs.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -15,7 +16,6 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		Camera( Entity, QWidget * );
-		~Camera() override;
 
 	  private:
 		const Entity _entity;
@@ -27,6 +27,9 @@ namespace VTX::UI::QT::Widget
 
 		void _setTransform();
 		void _setCamera();
+
+		VTX::Util::EventHub::ScopedConnection _transformChangedConnection;
+		VTX::Util::EventHub::ScopedConnection _cameraUpdatedConnection;
 	};
 } // namespace VTX::UI::QT::Widget
 #endif

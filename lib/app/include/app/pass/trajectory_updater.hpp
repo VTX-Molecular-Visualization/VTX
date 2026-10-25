@@ -3,6 +3,7 @@
 
 #include "app/ecs.hpp"
 #include "app/pass/pass_manager.hpp"
+#include <util/event_hub.hpp>
 
 namespace VTX::App::Pass
 {
@@ -30,6 +31,8 @@ namespace VTX::App::Pass
 		 * @brief Stop threaded loader.
 		 */
 		void _stopLoader( Entity );
+
+		Util::EventHub::ScopedConnection _loaderDestroyedConnection;
 	};
 } // namespace VTX::App::Pass
 #endif

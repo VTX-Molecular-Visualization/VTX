@@ -25,20 +25,36 @@ namespace VTX::App::Pass
 		auto & hub = HUB();
 
 		// System.
-		hub.connect<Events::SystemLoad, &SystemUpdater::_onSystemLoad>( this );
-		hub.connect<Events::TrajectoryCurrentFrameChange, &SystemUpdater::_onTrajectoryCurrentFrameChange>( this );
-		reg.on_update<Core::Struct::Topology>().connect<&SystemUpdater::_onUpdateTopology>( this );
-		reg.on_update<Util::Math::Transform>().connect<&SystemUpdater::_onUpdateTransform>( this );
-		reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateVisibility>( this );
-		reg.on_update<System::Selection>().connect<&SystemUpdater::_onUpdateSelection>( this );
-		reg.on_update<System::Representation>().connect<&SystemUpdater::_onUpdateRepresentation>( this );
-		reg.on_update<System::Color>().connect<&SystemUpdater::_onUpdateColor>( this );
-		reg.on_destroy<Core::Struct::Topology>().connect<&SystemUpdater::_onDestroySystem>( this );
+		_systemLoadConnection = hub.connect<Events::SystemLoad, &SystemUpdater::_onSystemLoad>( this );
+		_trajectoryFrameChangedConnection
+			= hub.connect<Events::TrajectoryCurrentFrameChange, &SystemUpdater::_onTrajectoryCurrentFrameChange>(
+				this
+			);
+		_topologyUpdatedConnection
+			= reg.on_update<Core::Struct::Topology>().connect<&SystemUpdater::_onUpdateTopology>( this );
+		_transformUpdatedConnection
+			= reg.on_update<Util::Math::Transform>().connect<&SystemUpdater::_onUpdateTransform>( this );
+		_visibilityUpdatedConnection
+			= reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateVisibility>( this );
+		_selectionUpdatedConnection
+			= reg.on_update<System::Selection>().connect<&SystemUpdater::_onUpdateSelection>( this );
+		_representationUpdatedConnection
+			= reg.on_update<System::Representation>().connect<&SystemUpdater::_onUpdateRepresentation>( this );
+		_colorUpdatedConnection = reg.on_update<System::Color>().connect<&SystemUpdater::_onUpdateColor>( this );
+		_systemDestroyedConnection
+			= reg.on_destroy<Core::Struct::Topology>().connect<&SystemUpdater::_onDestroySystem>( this );
 
 		// Representation preset.
-		reg.on_construct<Renderer::Representation>().connect<&SystemUpdater::_onConstructRepresentationPreset>( this );
-		reg.on_update<Renderer::Representation>().connect<&SystemUpdater::_onUpdateRepresentationPreset>( this );
-		reg.on_destroy<Renderer::Representation>().connect<&SystemUpdater::_onDestroyRepresentationPreset>( this );
+		_representationPresetConstructedConnection
+			= reg.on_construct<Renderer::Representation>().connect<&SystemUpdater::_onConstructRepresentationPreset>(
+				this
+			);
+		_representationPresetUpdatedConnection
+			= reg.on_update<Renderer::Representation>().connect<&SystemUpdater::_onUpdateRepresentationPreset>( this );
+		_representationPresetDestroyedConnection
+			= reg.on_destroy<Renderer::Representation>().connect<&SystemUpdater::_onDestroyRepresentationPreset>(
+				this
+			);
 	}
 
 	Renderer::Cache::System::Data SystemUpdater::_getSystemData(

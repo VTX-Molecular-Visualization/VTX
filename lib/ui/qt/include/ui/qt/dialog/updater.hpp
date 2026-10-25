@@ -6,6 +6,7 @@
 #include <QPointer>
 #include <QProgressBar>
 #include <QPushButton>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Dialog
 {
@@ -16,7 +17,6 @@ namespace VTX::UI::QT::Dialog
 	{
 	  public:
 		Updater( const App::Events::UpdateAvailable & );
-		~Updater() override;
 
 	  private:
 		void _onUpdateDownloadProgress( const App::Events::UpdateDownloadProgress & );
@@ -30,6 +30,10 @@ namespace VTX::UI::QT::Dialog
 		QPointer<QDialogButtonBox> _buttonBox;
 		QPointer<QPushButton>	   _restartButton;
 		QPointer<QProgressBar>	   _progressBar;
+
+		VTX::Util::EventHub::ScopedConnection _downloadProgressConnection;
+		VTX::Util::EventHub::ScopedConnection _readyToRestartConnection;
+		VTX::Util::EventHub::ScopedConnection _downloadFailedConnection;
 	};
 
 } // namespace VTX::UI::QT::Dialog

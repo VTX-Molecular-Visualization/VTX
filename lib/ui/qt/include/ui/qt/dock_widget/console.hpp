@@ -30,7 +30,6 @@ namespace VTX::UI::QT::DockWidget
 		 * @brief Constructor.
 		 */
 		Console( QWidget * p_parent );
-		~Console() override;
 
 		/**
 		 * @brief Add a log row.
@@ -44,12 +43,6 @@ namespace VTX::UI::QT::DockWidget
 
 	  private:
 		/**
-		 * @brief Callback id for log printing, to disconnect on destruction.
-		 * Useful because logs can be printed after deletion.
-		 */
-		VTX::Util::EventHub::Connection _logConnection;
-
-		/**
 		 * @brief Display logs.
 		 */
 		QPointer<QTextBrowser> _textEdit = nullptr;
@@ -58,6 +51,12 @@ namespace VTX::UI::QT::DockWidget
 		 * @brief Python command launcher.
 		 */
 		QPointer<Widget::CommandLauncher> _commandLauncher;
+
+		/**
+		 * @brief Callback id for log printing, to disconnect on destruction.
+		 * Useful because logs can be printed after deletion.
+		 */
+		VTX::Util::EventHub::ScopedConnection _logConnection;
 	};
 
 } // namespace VTX::UI::QT::DockWidget

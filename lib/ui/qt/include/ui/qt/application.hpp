@@ -9,6 +9,7 @@
 #include <app/events.hpp>
 #include <app/vtx_app.hpp>
 #include <util/chrono.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT
 {
@@ -79,6 +80,7 @@ namespace VTX::UI::QT
 		 */
 		void _postQtStartup();
 
+		VTX::Util::EventHub::ScopedConnection _applicationStopConnection;
 	};
 
 	/**

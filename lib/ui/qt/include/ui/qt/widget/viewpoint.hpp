@@ -23,7 +23,6 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		ViewPoint( Entity, QWidget * p_parent = nullptr );
-		~ViewPoint() override;
 
 	  private:
 		const Entity _entity;
@@ -32,12 +31,14 @@ namespace VTX::UI::QT::Widget
 		QPointer<QLineEdit>	  _lineName;
 		QPointer<Transform>	  _transform;
 
-		Util::EventHub::Connection _connTransformChanged;
+		VTX::Util::EventHub::ScopedConnection _connTransformChanged;
 
 		void _setName();
 		void _setTransform();
 		void _onViewPointRenamed( const App::Events::ViewPointRenamed & );
 		void _transformUpdated( Registry &, Entity );
+
+		VTX::Util::EventHub::ScopedConnection _viewPointRenamedConnection;
 	};
 } // namespace VTX::UI::QT::Widget
 

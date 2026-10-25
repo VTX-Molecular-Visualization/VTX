@@ -19,20 +19,16 @@ namespace VTX::UI::QT::Widget::Tree
 			_connectAppliedPresetUpdates( App::REG() );
 		}
 
-		~ColorLayoutPresets() override { _disconnectAppliedPresetUpdates( App::REG() ); }
-
 	  private:
 		void _connectAppliedPresetUpdates( Registry & p_reg )
 		{
-			p_reg.on_construct<App::Scene::ColorLayout>().connect<&ColorLayoutPresets::_onSceneColorLayout>( this );
-			p_reg.on_update<App::Scene::ColorLayout>().connect<&ColorLayoutPresets::_onSceneColorLayout>( this );
+			_appliedPresetConstructedConnection
+				= p_reg.on_construct<App::Scene::ColorLayout>().connect<&ColorLayoutPresets::_onSceneColorLayout>(
+					this
+				);
+			_appliedPresetUpdatedConnection
+				= p_reg.on_update<App::Scene::ColorLayout>().connect<&ColorLayoutPresets::_onSceneColorLayout>( this );
 			_restoreCurrentSceneColorLayout( p_reg );
-		}
-
-		void _disconnectAppliedPresetUpdates( Registry & p_reg )
-		{
-			p_reg.on_construct<App::Scene::ColorLayout>().disconnect<&ColorLayoutPresets::_onSceneColorLayout>( this );
-			p_reg.on_update<App::Scene::ColorLayout>().disconnect<&ColorLayoutPresets::_onSceneColorLayout>( this );
 		}
 
 		void _restoreCurrentSceneColorLayout( Registry & p_reg )
@@ -46,6 +42,9 @@ namespace VTX::UI::QT::Widget::Tree
 
 		void _onSceneColorLayout( Registry & p_reg, const Entity p_e )
 		{ _setAppliedPreset( p_reg.get<App::Scene::ColorLayout>( p_e ).preset ); }
+
+		VTX::Util::EventHub::ScopedConnection _appliedPresetConstructedConnection;
+		VTX::Util::EventHub::ScopedConnection _appliedPresetUpdatedConnection;
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

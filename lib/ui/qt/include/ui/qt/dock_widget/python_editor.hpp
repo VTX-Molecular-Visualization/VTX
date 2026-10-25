@@ -8,6 +8,7 @@
 #include <QPointer>
 #include <QRegularExpression>
 #include <QSyntaxHighlighter>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -68,7 +69,6 @@ namespace VTX::UI::QT::DockWidget
 	{
 	  public:
 		PythonEditor( QWidget * p_parent );
-		~PythonEditor() override;
 
 	  private:
 		/**
@@ -93,6 +93,8 @@ namespace VTX::UI::QT::DockWidget
 
 		void _onScriptSelected( const Events::ScriptSelected & p_event );
 		void _saveAndRun();
+
+		VTX::Util::EventHub::ScopedConnection _scriptSelectedConnection;
 	};
 } // namespace VTX::UI::QT::DockWidget
 

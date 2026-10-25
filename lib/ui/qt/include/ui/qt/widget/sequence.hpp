@@ -59,7 +59,7 @@ namespace VTX::UI::QT::Widget
 		};
 
 		std::unique_ptr<ResidueSequencer, Del> _sequencer;
-		Util::EventHub::ScopedConnection	   _modeChange;
+		VTX::Util::EventHub::ScopedConnection  _modeChange;
 
 		void _sequenceModeChange( const Events::SequenceResIdChanged & );
 

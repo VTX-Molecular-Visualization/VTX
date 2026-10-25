@@ -64,7 +64,8 @@ namespace VTX::UI::QT::Widget
 		_resizeTimer.setSingleShot( true );
 		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
 
-		App::HUB().connect<App::Events::RendererResize, &Renderer::_onRendererResize>( this );
+		_rendererResizeConnection
+			= App::HUB().connect<App::Events::RendererResize, &Renderer::_onRendererResize>( this );
 		App::RENDERER().onReady += [ this ]( const VTX::Renderer::StructInfos & )
 		{
 			_rendererReady = true;

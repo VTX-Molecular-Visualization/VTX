@@ -79,19 +79,15 @@ namespace VTX::UI::QT::Widget::Tree
 		connect( _btnSettings, &QPushButton::clicked, this, &TrajectoryPlayer::_onSettingsClicked );
 
 		// Connect to trajectory updates
-		App::REG().on_update<App::Trajectory::Player>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
-		App::REG().on_update<App::Trajectory::Loader>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
-		App::HUB().connect<App::Events::ThreadProgress, &TrajectoryPlayer::_onTrajectoryLoadingProgress>( this );
+		_playerUpdatedConnection
+			= App::REG().on_update<App::Trajectory::Player>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
+		_loaderUpdatedConnection
+			= App::REG().on_update<App::Trajectory::Loader>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
+		_loadingProgressConnection
+			= App::HUB().connect<App::Events::ThreadProgress, &TrajectoryPlayer::_onTrajectoryLoadingProgress>( this );
 
 		// Initial state
 		_refresh();
-	}
-
-	TrajectoryPlayer::~TrajectoryPlayer()
-	{
-		App::HUB().disconnectAllOf( *this );
-		App::REG().on_update<App::Trajectory::Player>().disconnect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
-		App::REG().on_update<App::Trajectory::Loader>().disconnect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
 	}
 
 	std::array<QIcon, 4> TrajectoryPlayer::_getIcons()

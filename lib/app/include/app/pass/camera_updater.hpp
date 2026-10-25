@@ -11,6 +11,7 @@
 #include <deque>
 #include <renderer/camera.hpp>
 #include <util/constants.hpp>
+#include <util/event_hub.hpp>
 #include <util/math/transform.hpp>
 
 namespace VTX::App::Pass
@@ -32,7 +33,6 @@ namespace VTX::App::Pass
 		 * @brief Constructor.
 		 */
 		CameraUpdater( const Entity & );
-		~CameraUpdater() override;
 
 		/**
 		 * @brief Update each frame.
@@ -157,6 +157,10 @@ namespace VTX::App::Pass
 		 */
 		void _onUpdateCamera();
 
+		Util::EventHub::ScopedConnection _controllerUpdatedConnection;
+		Util::EventHub::ScopedConnection _cameraUpdatedConnection;
+		Util::EventHub::ScopedConnection _animationStartConnection;
+		Util::EventHub::ScopedConnection _transformChangedConnection;
 	}; // namespace VTX::App::Pass
 } // namespace VTX::App::Pass
 

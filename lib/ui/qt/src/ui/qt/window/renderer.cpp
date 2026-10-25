@@ -44,7 +44,10 @@ namespace
 namespace VTX::UI::QT::Window
 {
 	Renderer::Renderer() : _inputManager( App::INPUT() )
-	{ App::HUB().connect<Events::KeyboardLayoutChanged, &Renderer::_onKBLayoutChange>( this ); }
+	{
+		_keyboardLayoutChangedConnection
+			= App::HUB().connect<Events::KeyboardLayoutChanged, &Renderer::_onKBLayoutChange>( this );
+	}
 
 	void Renderer::keyPressEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, true ); }
 

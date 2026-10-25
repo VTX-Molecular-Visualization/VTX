@@ -286,12 +286,6 @@ namespace VTX::UI::QT::Widget
 		_connMetadataChanged = App::REG().on_update<IO::Metadata>().connect<&Selection::_metadataUpdated>( this );
 	}
 
-	Selection::~Selection()
-	{
-		_connTransformChanged.release();
-		_connMetadataChanged.release();
-	}
-
 	void Selection::_transformUpdated( Registry & p_reg, Entity p_entity )
 	{
 		if ( !_transform || std::find( _entities.begin(), _entities.end(), p_entity ) == _entities.end() )
