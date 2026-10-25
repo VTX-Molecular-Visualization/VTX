@@ -24,6 +24,11 @@ namespace VTX::App::Action
 	 * @brief Concept for action that can be threadable.
 	 */
 
+	template<typename T, typename... Args>
+	concept ThreadableAction = requires( T t, Util::Thread::ThreadData thrData, Args &&... args ) {
+		{ T( thrData ) };
+	};
+
 	class QueuedAction;
 
 	/**
@@ -57,6 +62,7 @@ namespace VTX::App::Action
 		 * @brief Execute an action of type A with the given arguments.
 		 */
 		template<typename A, typename... Args>
+			requires( not ThreadableAction<A, Args...> )
 		void execute( Args &&... p_args ) const
 		{
 			A a;
@@ -66,6 +72,30 @@ namespace VTX::App::Action
 		/**
 		 * @brief Execute the given action, priorizing multithreading except when there is no gui.
 		 */
+		template<typename A, typename... Args>
+			requires ThreadableAction<A, Args...>
+		void execute( Args &&... p_args ) const
+		{
+			if ( _noThread() )
+			{
+				A a;
+				execute( a, std::forward<Args>( p_args )... );
+			}
+			else
+			{
+				THREAD().createThread(
+					[... args = std::forward<Args>( p_args ) ](
+						Util::Thread::StopToken p_token, Util::Thread::BaseThread & p_thr
+					) mutable
+					{
+						A action( Util::Thread::ThreadData { std::move( p_token ), p_thr } );
+						action.execute( std::move( args )... );
+						return 0;
+					}
+				);
+			}
+		}
+
 		/**
 		 * @brief Execute the given action right away.
 		 */
@@ -98,6 +128,8 @@ namespace VTX::App::Action
 
 		std::unique_ptr<_Data, Del> _attributesPtr;
 		float						_skipTime = 0.f;
+
+		bool _noThread() const noexcept;
 	};
 
 	/**

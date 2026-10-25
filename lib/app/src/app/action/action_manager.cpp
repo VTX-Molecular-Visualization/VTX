@@ -11,7 +11,7 @@ namespace VTX::App::Action
 
 	struct ActionManager::_Data
 	{
-		bool					 noGui		  = false;
+		bool					 noThread	  = false;
 		std::atomic_bool		 shuttingDown = false;
 		std::thread::id			 mainThreadId = std::this_thread::get_id();
 		std::queue<QueuedAction> actions;
@@ -63,7 +63,7 @@ namespace VTX::App::Action
 
 	void ActionManager::subscribe( QueuedAction p_action )
 	{
-		if ( _attributesPtr->noGui || _attributesPtr->mainThreadId == std::this_thread::get_id() )
+		if ( _noThread() || _attributesPtr->mainThreadId == std::this_thread::get_id() )
 		{
 			if ( _attributesPtr->shuttingDown )
 			{
@@ -89,6 +89,8 @@ namespace VTX::App::Action
 			std::swap( actions, _attributesPtr->actions );
 		}
 	}
+
+	bool ActionManager::_noThread() const noexcept { return _attributesPtr->noThread; }
 
 	QueuedAction::Waiter QueuedAction::getWaiter() { return Waiter( _ptr, _state ); }
 } // namespace VTX::App::Action
