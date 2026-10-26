@@ -10,6 +10,7 @@ namespace VTX::UI::QT::Widget
 {
 	/**
 	 * @brief A widget must inherit from a QWidget.
+	 * CRTP pattern.
 	 */
 	template<typename W>
 	concept ConceptWidget = std::is_base_of_v<QWidget, W>;
@@ -22,6 +23,14 @@ namespace VTX::UI::QT::Widget
 	class BaseWidget : public W
 	{
 	  public:
+		/**
+		 * @brief Check if widget is of type T.
+		 */
+		template<typename Type>
+		static bool is()
+		{ return W::objectName() == VTX::Util::typeName<Type>(); }
+
+	  protected:
 		/**
 		 * @brief Construct widget and set its object name from its type.
 		 */
@@ -45,13 +54,6 @@ namespace VTX::UI::QT::Widget
 				VTX_TRACE( "Widget deleted" );
 			}
 		}
-
-		/**
-		 * @brief Check if widget is of type T.
-		 */
-		template<typename Type>
-		bool is() const
-		{ return W::objectName() == VTX::Util::typeName<Type>(); }
 	};
 
 } // namespace VTX::UI::QT::Widget

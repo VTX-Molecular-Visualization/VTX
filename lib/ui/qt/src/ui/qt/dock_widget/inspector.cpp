@@ -14,6 +14,7 @@
 #include <QFontDatabase>
 #include <QLabel>
 #include <QToolButton>
+#include <algorithm>
 #include <app/action/selection.hpp>
 #include <app/services.hpp>
 #include <app/system/selection.hpp>
@@ -207,15 +208,10 @@ namespace VTX::UI::QT::DockWidget
 
 	bool Inspector::_hasSystemSelection() const
 	{
-		for ( const Entity entity : App::REG().view<App::System::Selection>() )
-		{
-			if ( App::REG().get<App::System::Selection>( entity ).atoms.any() )
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return std::ranges::any_of(
+			App::REG().view<App::System::Selection>(),
+			[]( const Entity entity ) { return App::REG().get<App::System::Selection>( entity ).atoms.any(); }
+		);
 	}
 
 	void Inspector::_onSystemSelectionUpdated( Registry &, Entity )

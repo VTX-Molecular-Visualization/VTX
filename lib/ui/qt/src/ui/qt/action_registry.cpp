@@ -65,7 +65,7 @@ namespace VTX::UI::QT
 
 	bool ActionRegistry::isChecked( const std::string_view p_key ) const
 	{
-		QAction * const action = getAction( p_key );
+		const QAction * const action = getAction( p_key );
 		if ( action == nullptr )
 		{
 			VTX_ERROR( "Unable to read checked state of unregistered UI action: {}", p_key );
@@ -100,7 +100,7 @@ namespace VTX::UI::QT
 		}
 	}
 
-	QAction * ActionRegistry::addTo( QWidget & p_widget, const std::string_view p_key )
+	QAction * ActionRegistry::addTo( QWidget & p_widget, const std::string_view p_key ) const
 	{
 		QAction * const action = getAction( p_key );
 		if ( action == nullptr )
@@ -113,7 +113,7 @@ namespace VTX::UI::QT
 		return action;
 	}
 
-	QAction * ActionRegistry::addTo( QMenu & p_menu, const std::string_view p_key )
+	QAction * ActionRegistry::addTo( QMenu & p_menu, const std::string_view p_key ) const
 	{
 		QAction * const action = getAction( p_key );
 		if ( action == nullptr )
@@ -126,7 +126,7 @@ namespace VTX::UI::QT
 		return action;
 	}
 
-	QAction * ActionRegistry::addTo( QToolBar & p_toolbar, const std::string_view p_key )
+	QAction * ActionRegistry::addTo( QToolBar & p_toolbar, const std::string_view p_key ) const
 	{
 		QAction * const action = getAction( p_key );
 		if ( action == nullptr )

@@ -228,7 +228,7 @@ namespace VTX::UI::QT::Util
 			case QEvent::MouseButtonRelease: mouseClicked( static_cast<QMouseEvent *>( e ) ); break;
 			default: break;
 			}
-			return QWidget::event( e );
+			return QPushButton::event( e );
 		}
 
 	  private:
@@ -288,7 +288,7 @@ namespace VTX::UI::QT::Util
 		}
 	}
 
-	LabelWithHelper::operator QWidget *() { return container; }
+	LabelWithHelper::operator QWidget *() const { return container; }
 
 	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label )
 	{

@@ -82,7 +82,7 @@ namespace VTX::UI::QT::Style
 	QPixmap CodepointIconEngine::pixmap( const QSize & p_size, QIcon::Mode p_mode, QIcon::State p_state )
 	{
 		qreal dpr = 1.0;
-		if ( QScreen * s = QGuiApplication::primaryScreen() )
+		if ( const QScreen * s = QGuiApplication::primaryScreen() )
 		{
 			dpr = s->devicePixelRatio();
 		}

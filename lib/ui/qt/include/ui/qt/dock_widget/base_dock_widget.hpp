@@ -18,6 +18,7 @@ namespace VTX::UI::QT::DockWidget
 
 	/**
 	 * @brief Abstract class that describes dock widget sizes, margins, and scrollbars.
+	 * CRTP pattern.
 	 * @tparam T is the derived class type.
 	 * @tparam HSA is the vertical scroll area flag.
 	 * @tparam VSA is the horizontal scroll area flag.
@@ -26,7 +27,11 @@ namespace VTX::UI::QT::DockWidget
 	template<typename T, bool VSA = 1, bool HSA = 0, ConceptLayout L = QVBoxLayout>
 	class BaseDockWidget : public Widget::BaseWidget<T, QDockWidget>
 	{
-	  public:
+	  protected:
+		QPointer<QScrollArea> _scrollArea;
+		QPointer<QWidget>	  _root;
+		QPointer<L>			  _layout;
+
 		BaseDockWidget( QWidget * const p_parent, const QString & p_title ) :
 			Widget::BaseWidget<T, QDockWidget>( p_parent )
 		{
@@ -76,11 +81,6 @@ namespace VTX::UI::QT::DockWidget
 		}
 
 		~BaseDockWidget() override = default;
-
-	  protected:
-		QPointer<QScrollArea> _scrollArea;
-		QPointer<QWidget>	  _root;
-		QPointer<L>			  _layout;
 	};
 } // namespace VTX::UI::QT::DockWidget
 

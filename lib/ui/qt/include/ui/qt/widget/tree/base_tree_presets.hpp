@@ -132,7 +132,7 @@ namespace VTX::UI::QT::Widget::Tree
 		{
 			assert( _entityToItemMap.contains( p_e ) );
 
-			QTreeWidgetItem * const presetItem = _entityToItemMap.at( p_e );
+			const QTreeWidgetItem * const presetItem = _entityToItemMap.at( p_e );
 			delete presetItem;
 			_entityToItemMap.erase( p_e );
 			if ( _appliedPreset == p_e )

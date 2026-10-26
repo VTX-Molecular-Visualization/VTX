@@ -14,6 +14,14 @@ namespace VTX::UI::QT::Widget::Tree
 	{
 	  public:
 		/**
+		 * @brief Override size hints to adapt height to content.
+		 */
+		QSize minimumSizeHint() const override { return QSize( 0, 0 ); }
+
+		QSize sizeHint() const override { return QSize( QAbstractScrollArea::sizeHint().width(), _contentHeight() ); }
+
+	  protected:
+		/**
 		 * @brief Default UI settings.
 		 */
 		BaseTree( QWidget * const p_parent ) : Widget::BaseWidget<T, W>( p_parent )
@@ -35,13 +43,6 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 
 		~BaseTree() override = default;
-
-		/**
-		 * @brief Override size hints to adapt height to content.
-		 */
-		QSize minimumSizeHint() const override { return QSize( 0, 0 ); }
-
-		QSize sizeHint() const override { return QSize( QWidget::sizeHint().width(), _contentHeight() ); }
 
 	  private:
 		/**

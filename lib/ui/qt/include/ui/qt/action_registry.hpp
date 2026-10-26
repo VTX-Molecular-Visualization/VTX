@@ -88,17 +88,17 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Add a registered action to a widget.
 		 */
-		QAction * addTo( QWidget &, std::string_view );
+		QAction * addTo( QWidget &, std::string_view ) const;
 
 		/**
 		 * @brief Add a registered action to a menu.
 		 */
-		QAction * addTo( QMenu &, std::string_view );
+		QAction * addTo( QMenu &, std::string_view ) const;
 
 		/**
 		 * @brief Add a registered action to a toolbar.
 		 */
-		QAction * addTo( QToolBar &, std::string_view );
+		QAction * addTo( QToolBar &, std::string_view ) const;
 
 	  private:
 		/**

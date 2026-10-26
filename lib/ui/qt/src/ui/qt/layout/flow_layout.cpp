@@ -147,7 +147,7 @@ namespace VTX::UI::QT::Layout
 		}
 		else if ( p_parent->isWidgetType() )
 		{
-			QWidget * p_pw = static_cast<QWidget *>( p_parent );
+			const QWidget * p_pw = static_cast<QWidget *>( p_parent );
 			return p_pw->style()->pixelMetric( p_pm, nullptr, p_pw );
 		}
 		else

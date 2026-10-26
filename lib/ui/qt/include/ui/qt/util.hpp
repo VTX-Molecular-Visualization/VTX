@@ -33,7 +33,7 @@ namespace VTX::UI::QT::Util
 		{ _filteredTypes.emplace( p_type ); }
 
 		EventEater( std::set<QEvent::Type> p_types, QWidget * const p_parent = nullptr ) :
-			QObject( p_parent ), _filteredTypes( p_types )
+			QObject( p_parent ), _filteredTypes( std::move( p_types ) )
 		{
 		}
 
@@ -127,7 +127,7 @@ namespace VTX::UI::QT::Util
 		LabelWithHelper( const char * p_label, const char * p_helper, const E_QUESTIONMARK_POSITION & p_postion );
 		QPointer<QWidget> container = nullptr;
 		QLabel *		  label		= nullptr;
-						  operator QWidget *();
+						  operator QWidget *() const;
 	};
 
 	// Create a standardized separator with a slightly larger label on its left. Aim to split form sections.
