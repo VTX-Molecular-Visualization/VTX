@@ -12,7 +12,7 @@ namespace
 {
 	void _clear( QItemSelectionModel * const p_view )
 	{
-		QSignalBlocker blocker( p_view );
+		const QSignalBlocker blocker( p_view );
 		p_view->clearSelection();
 		if ( auto * view = qobject_cast<QAbstractItemView *>( p_view->parent() ) )
 		{

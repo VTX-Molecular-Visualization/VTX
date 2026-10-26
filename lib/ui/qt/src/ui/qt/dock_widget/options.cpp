@@ -159,9 +159,9 @@ namespace VTX::UI::QT::DockWidget
 			_comboBoxFont->setItemData( i++, QFont( fontName, Style::DEFAULT_FONT_SIZE ), Qt::FontRole );
 		}
 
-		QSignalBlocker blocker( _comboBoxFont );
-		const auto &   accessibility	 = App::ECS::getFirstComponent<App::Setting::Accessibility>();
-		const bool	   forceDyslexicFont = accessibility.forceDyslexicFont;
+		const QSignalBlocker blocker( _comboBoxFont );
+		const auto &		 accessibility	   = App::ECS::getFirstComponent<App::Setting::Accessibility>();
+		const bool			 forceDyslexicFont = accessibility.forceDyslexicFont;
 		_comboBoxFont->setCurrentText(
 			forceDyslexicFont ? SETTINGS().value( SETTING_KEY_FONT, Style::DEFAULT_FONT_FAMILY ).toString()
 							  : STYLE().getCurrentFontFamily()
@@ -263,7 +263,7 @@ namespace VTX::UI::QT::DockWidget
 		for ( int l = 0; l < toUnderlying( Widget::KB_LAYOUT::COUNT ); l++ )
 		{
 			const Widget::KB_LAYOUT kbLayout   = static_cast<Widget::KB_LAYOUT>( l );
-			QString					layoutName = QString::fromStdString( Util::Enum::enumName( kbLayout ).data() );
+			const QString			layoutName = QString::fromStdString( Util::Enum::enumName( kbLayout ).data() );
 			_comboBoxKBLayout->addItem( layoutName, QVariant::fromValue( kbLayout ) );
 		}
 
@@ -320,7 +320,7 @@ namespace VTX::UI::QT::DockWidget
 		_refreshFoldersInfos();
 
 		// Settings.
-		QSignalBlocker b( _checkBoxVSync ); // Do not emit, opengl widget already knows.
+		const QSignalBlocker b( _checkBoxVSync ); // Do not emit, opengl widget already knows.
 		_checkBoxVSync->setChecked( SETTINGS().value( SETTING_KEY_VSYNC, Renderer::VSYNC_DEFAULT ).toBool() );
 		_checkBoxSavePower->setChecked( SETTINGS().value( SETTING_KEY_SAVE_POWER, SAVE_POWER_DEFAULT ).toBool() );
 
@@ -364,7 +364,7 @@ namespace VTX::UI::QT::DockWidget
 		const int index = _comboBoxTheme->findData( theme );
 		if ( index != -1 )
 		{
-			QSignalBlocker blocker( _comboBoxTheme );
+			const QSignalBlocker blocker( _comboBoxTheme );
 			_comboBoxTheme->setCurrentIndex( index );
 		}
 	}

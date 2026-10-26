@@ -220,8 +220,8 @@ namespace VTX::UI::QT::Dialog
 				_previewTimer->stop();
 
 				// Pop file dialog.
-				QString filters = _comboBoxFormat->currentIndex() == 0 ? "PNG (*.png)" : "JPEG (*.jpg *.jpeg)";
-				QString path	= QFileDialog::getSaveFileName( this, "Save image", _lastExportFolder, filters );
+				const QString filters = _comboBoxFormat->currentIndex() == 0 ? "PNG (*.png)" : "JPEG (*.jpg *.jpeg)";
+				const QString path	  = QFileDialog::getSaveFileName( this, "Save image", _lastExportFolder, filters );
 				if ( path.isEmpty() )
 				{
 					return;
@@ -260,11 +260,11 @@ namespace VTX::UI::QT::Dialog
 		);
 
 		{
-			QSignalBlocker b( _spinBoxWidth );
-			QSignalBlocker b2( _spinBoxHeight );
-			QSignalBlocker b3( _comboBoxFormat );
-			QSignalBlocker b4( _sliderBackgroundOpacity );
-			QSignalBlocker b5( _comboBoxResolution );
+			const QSignalBlocker b( _spinBoxWidth );
+			const QSignalBlocker b2( _spinBoxHeight );
+			const QSignalBlocker b3( _comboBoxFormat );
+			const QSignalBlocker b4( _sliderBackgroundOpacity );
+			const QSignalBlocker b5( _comboBoxResolution );
 
 			if ( SETTINGS().contains( SETTING_KEY_WIDTH ) )
 			{
@@ -305,8 +305,8 @@ namespace VTX::UI::QT::Dialog
 		const int height = _comboBoxResolution->itemData( p_resolutionIndex, Qt::UserRole + 1 ).toInt();
 
 		// Update size.
-		QSignalBlocker blockerWidth( _spinBoxWidth );
-		QSignalBlocker blockerHeight( _spinBoxHeight );
+		const QSignalBlocker blockerWidth( _spinBoxWidth );
+		const QSignalBlocker blockerHeight( _spinBoxHeight );
 		_spinBoxWidth->setValue( width );
 		_spinBoxHeight->setValue( height );
 
@@ -324,7 +324,7 @@ namespace VTX::UI::QT::Dialog
 		const double ratio = double( width ) / height;
 
 		_labelRatioValue->setText( QString::number( ratio, 'f', 2 ) );
-		QSignalBlocker blocker( _sliderRatio );
+		const QSignalBlocker blocker( _sliderRatio );
 		_sliderRatio->setValue( int( ratio * 10000 ) );
 		_schedulePreviewUpdate();
 	}
@@ -337,7 +337,7 @@ namespace VTX::UI::QT::Dialog
 		const int width	 = _spinBoxWidth->value();
 		const int height = int( double( width ) / ratio );
 
-		QSignalBlocker blockerHeight( _spinBoxHeight );
+		const QSignalBlocker blockerHeight( _spinBoxHeight );
 		_spinBoxHeight->setValue( height );
 		_labelRatioValue->setText( QString::number( ratio, 'f', 2 ) );
 		_schedulePreviewUpdate();

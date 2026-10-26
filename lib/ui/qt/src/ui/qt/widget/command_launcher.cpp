@@ -54,7 +54,7 @@ namespace VTX::UI::QT::Widget
 
 		// We do not want to register the same command over and over as it give the impression that the browsing doesn't
 		// work from the user perspective.
-		std::string command = text().toStdString();
+		const std::string command = text().toStdString();
 		if ( _history.empty() || command != _history.last() )
 		{
 			_history.add( text().toStdString() );

@@ -89,12 +89,13 @@ namespace VTX::UI::QT::Style
 		// Load theme from settings.
 		try
 		{
-			QString		  themeName = SETTINGS().value( SETTING_KEY_THEME, "" ).toString();
+			const QString themeName = SETTINGS().value( SETTING_KEY_THEME, "" ).toString();
 			const E_THEME theme
 				= themeName.isEmpty() ? DEFAULT_THEME : Util::Enum::enumCast<E_THEME>( themeName.toStdString() );
 			const bool forceDyslexicFont = App::ECS::getFirstComponent<App::Setting::Accessibility>().forceDyslexicFont;
-			QString fontName = forceDyslexicFont ? DYSLEXIC_FONT_FAMILY
-												 : SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
+			const QString fontName		 = forceDyslexicFont
+											   ? DYSLEXIC_FONT_FAMILY
+											   : SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
 			setFontFamily( fontName );
 			setTheme( theme );
 		}

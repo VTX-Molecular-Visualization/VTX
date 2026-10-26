@@ -51,7 +51,7 @@ namespace VTX::UI::QT::Widget
 				this,
 				[ this ]( const double p_value )
 				{
-					QSignalBlocker blocker( _slider );
+					const QSignalBlocker blocker( _slider );
 					_slider->setValue( std::lround( p_value * 100.0f ) );
 					emit valueChanged( p_value );
 				}

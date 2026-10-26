@@ -101,7 +101,7 @@ namespace VTX::UI::QT::Widget
 
 	void Camera::_setTransform()
 	{
-		QSignalBlocker blocker( _transform );
+		const QSignalBlocker blocker( _transform );
 
 		auto & transform = App::REG().get<Util::Math::Transform>( _entity );
 		_transform->setTransform( transform );
@@ -109,9 +109,9 @@ namespace VTX::UI::QT::Widget
 
 	void Camera::_setCamera()
 	{
-		QSignalBlocker blocker1( _sliderFov );
-		QSignalBlocker blocker2( _sliderNear );
-		QSignalBlocker blocker3( _sliderFar );
+		const QSignalBlocker blocker1( _sliderFov );
+		const QSignalBlocker blocker2( _sliderNear );
+		const QSignalBlocker blocker3( _sliderFar );
 
 		auto & camera = App::REG().get<Renderer::Camera>( _entity );
 		_sliderFov->setValue( camera.fov );

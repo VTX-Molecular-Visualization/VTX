@@ -39,8 +39,8 @@ namespace VTX::UI::QT::Model
 			return 1;
 		}
 
-		E_SYSTEM_ITEM item;
-		Index		  index;
+		E_SYSTEM_ITEM item {};
+		Index		  index {};
 		unpack( p_parent.internalId(), item, index );
 
 		switch ( item )
@@ -103,8 +103,8 @@ namespace VTX::UI::QT::Model
 			return {};
 		}
 
-		E_SYSTEM_ITEM item;
-		Index		  index;
+		E_SYSTEM_ITEM item {};
+		Index		  index {};
 		unpack( p_index.internalId(), item, index );
 
 		const auto & data = App::REG().get<Core::Struct::Topology>( _system );
@@ -116,10 +116,10 @@ namespace VTX::UI::QT::Model
 			{
 			case E_SYSTEM_ITEM::SYSTEM:
 			{
-				const auto & metadata	= App::REG().get<IO::Metadata>( _system );
-				QString		 systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
-											  ? QString::fromStdString( metadata.path.stem().string() )
-											  : QString::fromStdString( metadata.pdbIDCode );
+				const auto &  metadata	 = App::REG().get<IO::Metadata>( _system );
+				const QString systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
+											   ? QString::fromStdString( metadata.path.stem().string() )
+											   : QString::fromStdString( metadata.pdbIDCode );
 
 				return systemName;
 			}
@@ -227,8 +227,8 @@ namespace VTX::UI::QT::Model
 			return createIndex( p_row, p_column, pack( E_SYSTEM_ITEM::SYSTEM, 0 ) );
 		}
 
-		E_SYSTEM_ITEM item;
-		Index		  index;
+		E_SYSTEM_ITEM item {};
+		Index		  index {};
 		unpack( p_parent.internalId(), item, index );
 
 		switch ( item )
@@ -303,8 +303,8 @@ namespace VTX::UI::QT::Model
 			return {};
 		}
 
-		E_SYSTEM_ITEM item;
-		Index		  index;
+		E_SYSTEM_ITEM item {};
+		Index		  index {};
 		unpack( p_index.internalId(), item, index );
 
 		const auto & data = App::REG().get<Core::Struct::Topology>( _system );
@@ -375,7 +375,7 @@ namespace VTX::UI::QT::Model
 				}
 
 				const auto & residues = data.categoryResidues[ category ];
-				const auto	 it		  = std::find( residues.begin(), residues.end(), residue );
+				const auto	 it		  = std::ranges::find( residues, residue );
 				if ( it == residues.end() )
 				{
 					return {};
@@ -455,7 +455,7 @@ namespace VTX::UI::QT::Model
 		const Index						  p_index
 	) const
 	{
-		quintptr id = pack( p_type, p_index );
+		const quintptr id = pack( p_type, p_index );
 		return createIndex( p_row, 0, id );
 	}
 

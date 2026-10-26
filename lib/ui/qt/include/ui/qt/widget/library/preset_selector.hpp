@@ -218,7 +218,7 @@ namespace VTX::UI::QT::Widget::Library
 		void _refreshComboBox( Registry &, Entity )
 		{
 			using namespace App;
-			QSignalBlocker blocker( _comboBox );
+			const QSignalBlocker blocker( _comboBox );
 
 			const Entity currentPreset = getCurrentPreset();
 			_comboBox->clear();

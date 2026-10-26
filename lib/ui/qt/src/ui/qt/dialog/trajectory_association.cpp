@@ -32,9 +32,9 @@ namespace VTX::UI::QT::Dialog
 		{
 			auto & metadata = App::REG().get<IO::Metadata>( it_entity );
 
-			QString systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
-									 ? QString::fromStdString( metadata.path.stem().string() )
-									 : QString::fromStdString( metadata.pdbIDCode );
+			const QString systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
+										   ? QString::fromStdString( metadata.path.stem().string() )
+										   : QString::fromStdString( metadata.pdbIDCode );
 
 			_cbSystem->addItem( systemName, QVariant::fromValue( it_entity ) );
 		}

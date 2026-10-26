@@ -5,15 +5,11 @@ namespace VTX::UI::QT::Layout
 
 	FlowLayout::FlowLayout( QWidget * p_parent, int p_margin, int p_hSpacing, int p_vSpacing ) :
 		QLayout( p_parent ), _hSpace( p_hSpacing ), _vSpace( p_vSpacing )
-	{
-		setContentsMargins( p_margin, p_margin, p_margin, p_margin );
-	}
+	{ setContentsMargins( p_margin, p_margin, p_margin, p_margin ); }
 
 	FlowLayout::FlowLayout( int p_margin, int p_hSpacing, int p_vSpacing ) :
 		_hSpace( p_hSpacing ), _vSpace( p_vSpacing )
-	{
-		setContentsMargins( p_margin, p_margin, p_margin, p_margin );
-	}
+	{ setContentsMargins( p_margin, p_margin, p_margin, p_margin ); }
 
 	FlowLayout::~FlowLayout() { qDeleteAll( _itemList ); }
 
@@ -91,22 +87,22 @@ namespace VTX::UI::QT::Layout
 			size = size.expandedTo( p_item->minimumSize() );
 		}
 
-		const QMargins margins = contentsMargins();
-		// size += QSize( margins.left() + margins.right(), margins.top() + margins.bottom() );
+		// const QMargins margins = contentsMargins();
+		//  size += QSize( margins.left() + margins.right(), margins.top() + margins.bottom() );
 		return size;
 	}
 
 	int FlowLayout::_doLayout( const QRect & p_rect, bool p_testOnly ) const
 	{
-		int left;
-		int top;
-		int right;
-		int bottom;
+		int left {};
+		int top {};
+		int right {};
+		int bottom {};
 		getContentsMargins( &left, &top, &right, &bottom );
-		QRect effectiveRect = p_rect.adjusted( +left, +top, -right, -bottom );
-		int	  x				= effectiveRect.x();
-		int	  y				= effectiveRect.y();
-		int	  lineHeight	= 0;
+		const QRect effectiveRect = p_rect.adjusted( +left, +top, -right, -bottom );
+		int			x			  = effectiveRect.x();
+		int			y			  = effectiveRect.y();
+		int			lineHeight	  = 0;
 		for ( QLayoutItem * p_item : std::as_const( _itemList ) )
 		{
 			const QWidget * p_wid  = p_item->widget();

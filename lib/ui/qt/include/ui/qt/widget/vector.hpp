@@ -99,7 +99,7 @@ namespace VTX::UI::QT::Widget
 		{
 			for ( int i = 0; i < N; i++ )
 			{
-				QSignalBlocker blocker( _spinBoxes[ i ] );
+				const QSignalBlocker blocker( _spinBoxes[ i ] );
 				if constexpr ( std::is_integral_v<Scalar> )
 				{
 					static_cast<QSpinBox *>( _spinBoxes[ i ] )->setValue( p_v[ i ] );
@@ -113,7 +113,7 @@ namespace VTX::UI::QT::Widget
 
 		V value() const
 		{
-			V v;
+			V v {};
 			for ( int i = 0; i < N; i++ )
 			{
 				if constexpr ( std::is_integral_v<Scalar> )

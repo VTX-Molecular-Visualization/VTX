@@ -92,7 +92,7 @@ namespace VTX::UI::QT::Widget
 		void setPosition( const Vec3f & p_position )
 		{
 			assert( _position );
-			QSignalBlocker blocker( _position );
+			const QSignalBlocker blocker( _position );
 			_position->setValue( p_position );
 		}
 
@@ -100,14 +100,14 @@ namespace VTX::UI::QT::Widget
 		{
 			using namespace VTX::Util::Math;
 			assert( _rotation );
-			QSignalBlocker blocker( _rotation );
+			const QSignalBlocker blocker( _rotation );
 			_rotation->setValue( degrees( eulerAngles( p_rotation ) ) );
 		}
 
 		void setScale( const Vec3f & p_scale )
 		{
 			assert( _scale );
-			QSignalBlocker blocker( _scale );
+			const QSignalBlocker blocker( _scale );
 			_scale->setValue( p_scale );
 		}
 

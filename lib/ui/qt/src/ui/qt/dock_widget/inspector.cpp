@@ -220,7 +220,7 @@ namespace VTX::UI::QT::DockWidget
 
 	void Inspector::_onSystemSelectionUpdated( Registry &, Entity )
 	{
-		Util::ScopedChrono timer( "Inspector::_onSystemSelectionUpdated" );
+		const Util::ScopedChrono timer( "Inspector::_onSystemSelectionUpdated" );
 
 		if ( not _hasSystemSelection() )
 		{

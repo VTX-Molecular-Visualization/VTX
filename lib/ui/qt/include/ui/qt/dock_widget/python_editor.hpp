@@ -24,11 +24,11 @@ namespace VTX::UI::QT::DockWidget
 			keyword.setForeground( QColor( "#569CD6" ) );
 			keyword.setFontWeight( QFont::Bold );
 
-			QStringList keywords
+			const QStringList keywords
 				= { "def",	  "class", "import",  "from",	"if",	"elif", "else", "for",	 "and",	 "or", "while",
 					"return", "try",   "require", "except", "with", "as",	"True", "False", "None", "vtx" };
 
-			for ( auto & k : keywords )
+			for ( const auto & k : keywords )
 			{
 				_rules.emplace_back( "\\b" + k + "\\b", keyword );
 			}

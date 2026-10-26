@@ -83,8 +83,8 @@ namespace VTX::UI::QT::Dialog
 				pdb		 = Util::String::trim( pdb );
 				if ( pdb.length() == 4 )
 				{
-					FilePath path = App::SESSION().getCacheDir()
-									/ ( pdb + std::string( VTX::App::RCSB_PDB_DOWNLOAD_FILE_EXTENSION ) );
+					const FilePath path = App::SESSION().getCacheDir()
+										  / ( pdb + std::string( VTX::App::RCSB_PDB_DOWNLOAD_FILE_EXTENSION ) );
 					if ( std::filesystem::exists( path ) )
 					{
 						// Show radio buttons.
@@ -191,7 +191,7 @@ namespace VTX::UI::QT::Dialog
 
 	void Download::_loadHistory( const QString & p_key, QComboBox * const p_comboBox )
 	{
-		QStringList history = SETTINGS().value( p_key ).toStringList();
+		const QStringList history = SETTINGS().value( p_key ).toStringList();
 		p_comboBox->addItems( history );
 	}
 } // namespace VTX::UI::QT::Dialog

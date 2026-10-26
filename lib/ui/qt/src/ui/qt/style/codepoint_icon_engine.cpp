@@ -51,7 +51,7 @@ namespace VTX::UI::QT::Style
 		}
 
 		QPainterPath path = raw.pathForGlyph( glyphs[ 0 ] );
-		QRectF		 br	  = path.boundingRect();
+		const QRectF br	  = path.boundingRect();
 		if ( br.isEmpty() )
 		{
 			p_painter->restore();

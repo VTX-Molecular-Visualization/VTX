@@ -29,7 +29,7 @@ namespace VTX::UI::QT::Widget
 
 			_groupbox = new QGroupBox( this );
 			_groupbox->setVisible( false );
-			auto * layout	  = new QVBoxLayout( _groupbox );
+			new QVBoxLayout( _groupbox );
 			auto * mainLayout = new QVBoxLayout( this );
 
 			mainLayout->setContentsMargins( 0, 0, 0, 0 );

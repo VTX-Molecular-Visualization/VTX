@@ -85,7 +85,7 @@ namespace VTX::UI::QT::Menu
 		{
 			const auto & metadata = reg.get<IO::Metadata>( entity );
 
-			QString name = QString::fromStdString( metadata.name );
+			const QString name = QString::fromStdString( metadata.name );
 
 			const auto systemState = App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
 			if ( systemState == App::System::E_SELECTION_STATE::FULL )

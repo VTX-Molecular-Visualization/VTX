@@ -1,5 +1,6 @@
 #include "ui/qt/validator.hpp"
 #include <string>
+#include <utility>
 
 namespace VTX::UI::QT
 {
@@ -7,24 +8,26 @@ namespace VTX::UI::QT
 		QValidator( p_parent ), _min( std::move( p_min ) ), _max( std::move( p_max ) )
 	{
 	}
+
 	QUInt64Validator::QUInt64Validator( QObject * p_parent ) : QValidator( p_parent ) {}
+
 	QValidator::State QUInt64Validator::validate( QString & input, int & pos ) const
 	{
 		if ( input.isEmpty() )
 		{
 			return State::Acceptable;
 		}
-		for ( auto & char_it : input )
+		for ( const auto & char_it : std::as_const( input ) )
 		{
 			if ( char_it < '0' || char_it > '9' )
 			{
 				return State::Invalid;
 			}
 		}
-		std::string str = input.toStdString();
+		// const std::string str = input.toStdString();
 		try
 		{
-			uint64_t unused = std::stoull( str );
+			// const uint64_t unused = std::stoull( str );
 		}
 		catch ( std::invalid_argument & )
 		{
