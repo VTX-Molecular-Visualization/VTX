@@ -37,33 +37,34 @@ extern "C"
 
 namespace
 {
-/**
- * @brief On windows, the console returns before the text is returned. The behavior is tight to the Windows OS : a
+	/**
+	 * @brief On windows, the console returns before the text is returned. The behavior is tight to the Windows OS : a
 
- * * console starts a new process and returns, then the process writes stuff in the console. It makes the help text
- * appear
- * after where the user expect the cursor to be, making it look like it is stuck even though it is not. To
- * work around this, we add an "enter" input after we flush the stdcout to have a fresh cursor after the help text. All
- * this stuff is pointless on linux as the console waits for the process to finish before returning hand.
- */
-void unblockParentConsole()
-{
+	 * * console starts a new process and returns, then the process writes stuff in the console. It makes the help text
+	 * appear
+	 * after where the user expect the cursor to be, making it look like it is stuck even though it is not. To
+	 * work around this, we add an "enter" input after we flush the stdcout to have a fresh cursor after the help text.
+	 All
+	 * this stuff is pointless on linux as the console waits for the process to finish before returning hand.
+	 */
+	void unblockParentConsole()
+	{
 #ifdef _WIN32
-	std::cout.flush();
-	// Inject Enter to unblock the cmd.exe prompt that fired before our output.
-	INPUT_RECORD ir						= {};
-	ir.EventType						= KEY_EVENT;
-	ir.Event.KeyEvent.bKeyDown			= TRUE;
-	ir.Event.KeyEvent.wRepeatCount		= 1;
-	ir.Event.KeyEvent.wVirtualKeyCode	= VK_RETURN;
-	ir.Event.KeyEvent.wVirtualScanCode	= MapVirtualKey( VK_RETURN, MAPVK_VK_TO_VSC );
-	ir.Event.KeyEvent.uChar.UnicodeChar = L'\r';
+		std::cout.flush();
+		// Inject Enter to unblock the cmd.exe prompt that fired before our output.
+		INPUT_RECORD ir						= {};
+		ir.EventType						= KEY_EVENT;
+		ir.Event.KeyEvent.bKeyDown			= TRUE;
+		ir.Event.KeyEvent.wRepeatCount		= 1;
+		ir.Event.KeyEvent.wVirtualKeyCode	= VK_RETURN;
+		ir.Event.KeyEvent.wVirtualScanCode	= MapVirtualKey( VK_RETURN, MAPVK_VK_TO_VSC );
+		ir.Event.KeyEvent.uChar.UnicodeChar = L'\r';
 
-	DWORD written {};
-	WriteConsoleInput( GetStdHandle( STD_INPUT_HANDLE ), &ir, 1, &written );
+		DWORD written {};
+		WriteConsoleInput( GetStdHandle( STD_INPUT_HANDLE ), &ir, 1, &written );
 #endif
-}
-}
+	}
+} // namespace
 
 int main( int p_argc, char * p_argv[] )
 {
@@ -101,9 +102,9 @@ int main( int p_argc, char * p_argv[] )
 		if ( hasParentConsole || argss.debug )
 		{
 			FILE * stream = nullptr;
-			std::ignore = freopen_s( &stream, "CONOUT$", "w", stdout );
-			std::ignore = freopen_s( &stream, "CONOUT$", "w", stderr );
-			std::ignore = freopen_s( &stream, "CONIN$", "r", stdin );
+			std::ignore	  = freopen_s( &stream, "CONOUT$", "w", stdout );
+			std::ignore	  = freopen_s( &stream, "CONOUT$", "w", stderr );
+			std::ignore	  = freopen_s( &stream, "CONIN$", "r", stdin );
 		}
 #endif
 

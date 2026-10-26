@@ -1,11 +1,17 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_SETTINGS_DIALOG__
 #define __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_SETTINGS_DIALOG__
 
+#include "tool/mdprep/gateway/form_data.hpp"
+#include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
+#include <memory>
 #include <optional>
 #include <util/concepts.hpp>
+#include <utility>
 #include <variant>
 
 class QWidget;
+class QDialog;
+class QComboBox;
 class QLineEdit;
 class QDoubleSpinBox;
 class QPushButton;

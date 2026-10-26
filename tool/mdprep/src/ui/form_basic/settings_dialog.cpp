@@ -1,3 +1,7 @@
+#include "tool/mdprep/ui/form_basic/settings_dialog.hpp"
+#include "tool/mdprep/gateway/form_data.hpp"
+#include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
+#include "tool/mdprep/ui/shared.hpp"
 #include <memory>
 #include <qboxlayout.h>
 #include <qcombobox.h>
@@ -6,14 +10,8 @@
 #include <qpushbutton.h>
 #include <qspinbox.h>
 #include <ui/qt/helper.hpp>
-//
 #include <ui/qt/util.hpp>
-//
-#include "tool/mdprep/gateway/form_data.hpp"
-#include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
-#include "tool/mdprep/ui/shared.hpp"
-//
-#include "tool/mdprep/ui/form_basic/settings_dialog.hpp"
+#include <utility>
 
 namespace VTX::Tool::Mdprep::ui::form_basic
 {
@@ -121,7 +119,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 				p_uiObjects.fieldBoxShape->addItem( QString::fromStdString( it_shapeStr ) );
 			}
 		}
-		if ( p_data->boxShapeIdx < static_cast<size_t>( p_uiObjects.fieldBoxShape->count() ) )
+		if ( std::cmp_less( p_data->boxShapeIdx, p_uiObjects.fieldBoxShape->count() ) )
 		{
 			p_uiObjects.fieldBoxShape->setCurrentIndex( static_cast<int>( p_data->boxShapeIdx ) );
 		}
