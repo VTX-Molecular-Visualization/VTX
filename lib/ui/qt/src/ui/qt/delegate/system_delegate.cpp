@@ -28,7 +28,7 @@ namespace VTX::UI::QT::Delegate
 	) const
 	{
 		const App::System::E_SELECTION_STATE selectionState = static_cast<App::System::E_SELECTION_STATE>(
-			p_index.data( Model::SystemModel::Roles::SelectionStateRole ).toInt()
+			p_index.data( toUnderlying( Model::SystemModel::Roles::SelectionStateRole ) ).toInt()
 		);
 
 		QStyleOptionViewItem option = p_option;
@@ -56,16 +56,18 @@ namespace VTX::UI::QT::Delegate
 
 		// Visibility.
 		const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(
-			p_index.data( Model::SystemModel::Roles::VisibleRole ).toInt()
+			p_index.data( toUnderlying( Model::SystemModel::Roles::VisibleRole ) ).toInt()
 		);
 		pinButtons[ toUnderlying( ACTION::VISIBILITY ) ] = visible == App::System::E_VISIBLE_STATE::HIDDEN;
 
 		// Color scheme.
-		const bool isColorSchemeRoot = p_index.data( Model::SystemModel::Roles::ColorSchemeRootRole ).toBool();
+		const bool isColorSchemeRoot
+			= p_index.data( toUnderlying( Model::SystemModel::Roles::ColorSchemeRootRole ) ).toBool();
 		pinButtons[ toUnderlying( ACTION::COLOR_SCHEME ) ] = isColorSchemeRoot;
 
 		// Representation.
-		const bool isRepresentationRoot = p_index.data( Model::SystemModel::Roles::RepresentationRootRole ).toBool();
+		const bool isRepresentationRoot
+			= p_index.data( toUnderlying( Model::SystemModel::Roles::RepresentationRootRole ) ).toBool();
 		pinButtons[ toUnderlying( ACTION::REPRESENTATION ) ] = isRepresentationRoot;
 
 		// Paint buttons.

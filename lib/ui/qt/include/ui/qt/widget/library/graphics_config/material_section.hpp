@@ -47,12 +47,12 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 
 		Entity _currentPreset;
 
-		QPointer<QListWidget>															_listMaterials;
-		QPointer<EditableSlider>														_sliderMetallic;
-		QPointer<EditableSlider>														_sliderRoughness;
-		QPointer<EditableSlider>														_sliderEmissiveIntensity;
-		QPointer<EditableSlider>														_sliderTextureScale;
-		std::array<TextureWidgets, size_t( VTX::Renderer::Material::E_TEXTURE::COUNT )> _textureWidgets;
+		QPointer<QListWidget>	 _listMaterials;
+		QPointer<EditableSlider> _sliderMetallic;
+		QPointer<EditableSlider> _sliderRoughness;
+		QPointer<EditableSlider> _sliderEmissiveIntensity;
+		QPointer<EditableSlider> _sliderTextureScale;
+		std::array<TextureWidgets, static_cast<size_t>( VTX::Renderer::Material::E_TEXTURE::COUNT )> _textureWidgets;
 	};
 } // namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 

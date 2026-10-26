@@ -69,7 +69,7 @@ namespace VTX::UI::QT::Model
 				return 0;
 			}
 
-			return int( data.categoryResidues[ index ].size() );
+			return static_cast<int>( data.categoryResidues[ index ].size() );
 		}
 		case E_SYSTEM_ITEM::CHAIN:
 		{
@@ -174,8 +174,8 @@ namespace VTX::UI::QT::Model
 			}
 			}
 
-		case ItemRole: return toUnderlying( item );
-		case SelectionStateRole:
+		case Roles::ItemRole: return toUnderlying( item );
+		case Roles::SelectionStateRole:
 			return toUnderlying( App::Helper::System::getSelectionState( { _system, item, index } ) );
 		case Qt::DecorationRole:
 			switch ( item )
@@ -201,9 +201,11 @@ namespace VTX::UI::QT::Model
 				return {};
 			}
 			}
-		case VisibleRole: return toUnderlying( App::Helper::System::getVisibleState( { _system, item, index } ) );
-		case ColorSchemeRootRole: return App::Helper::System::isColorSchemeRoot( { _system, item, index } );
-		case RepresentationRootRole: return App::Helper::System::isRepresentationRoot( { _system, item, index } );
+		case Roles::VisibleRole:
+			return toUnderlying( App::Helper::System::getVisibleState( { _system, item, index } ) );
+		case Roles::ColorSchemeRootRole: return App::Helper::System::isColorSchemeRoot( { _system, item, index } );
+		case Roles::RepresentationRootRole:
+			return App::Helper::System::isRepresentationRoot( { _system, item, index } );
 		default: return {};
 		}
 	}

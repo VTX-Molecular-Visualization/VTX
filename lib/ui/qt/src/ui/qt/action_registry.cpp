@@ -24,7 +24,7 @@ namespace VTX::UI::QT
 			return nullptr;
 		}
 
-		const bool hasHandler = bool( p_handler );
+		const bool hasHandler = static_cast<bool>( p_handler );
 		if ( hasHandler )
 		{
 			_handlers[ actionId ] = std::move( p_handler );

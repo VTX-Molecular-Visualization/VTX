@@ -24,6 +24,22 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		/**
+		 * @brief Destructor.
+		 */
+		~BaseWidget() override
+		{
+			try
+			{
+				// toStdString() can throw.
+				VTX_TRACE( "Widget deleted: {}", W::objectName().toStdString() );
+			}
+			catch ( ... )
+			{
+				VTX_TRACE( "Widget deleted" );
+			}
+		}
+
+		/**
 		 * @brief Check if widget is of type T.
 		 */
 		template<typename Type>
@@ -40,19 +56,6 @@ namespace VTX::UI::QT::Widget
 			const auto name = VTX::Util::typeName<T>();
 			W::setObjectName( name );
 			VTX_TRACE( "Widget created: {}", name );
-		}
-
-		~BaseWidget() override
-		{
-			try
-			{
-				// toStdString() can throw.
-				VTX_TRACE( "Widget deleted: {}", W::objectName().toStdString() );
-			}
-			catch ( ... )
-			{
-				VTX_TRACE( "Widget deleted" );
-			}
 		}
 	};
 

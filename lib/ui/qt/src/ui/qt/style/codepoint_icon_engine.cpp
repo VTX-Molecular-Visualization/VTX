@@ -87,7 +87,10 @@ namespace VTX::UI::QT::Style
 			dpr = s->devicePixelRatio();
 		}
 
-		QPixmap pm( QSize( int( std::ceil( p_size.width() * dpr ) ), int( std::ceil( p_size.height() * dpr ) ) ) );
+		QPixmap pm( QSize(
+			static_cast<int>( std::ceil( p_size.width() * dpr ) ),
+			static_cast<int>( std::ceil( p_size.height() * dpr ) )
+		) );
 		pm.setDevicePixelRatio( dpr );
 		pm.fill( Qt::transparent );
 

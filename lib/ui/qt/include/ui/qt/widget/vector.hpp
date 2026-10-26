@@ -201,14 +201,6 @@ namespace VTX::UI::QT::Widget
 			}
 		}
 
-		void setEnabled( const bool p_enable )
-		{
-			for ( int i = 0; i < N; i++ )
-			{
-				_spinBoxes[ i ]->setEnabled( p_enable );
-			}
-		}
-
 		void setReadOnly( const bool p_readOnly )
 		{
 			for ( int i = 0; i < N; i++ )

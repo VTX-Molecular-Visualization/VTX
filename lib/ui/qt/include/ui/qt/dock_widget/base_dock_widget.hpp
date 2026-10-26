@@ -27,6 +27,9 @@ namespace VTX::UI::QT::DockWidget
 	template<typename T, bool VSA = 1, bool HSA = 0, ConceptLayout L = QVBoxLayout>
 	class BaseDockWidget : public Widget::BaseWidget<T, QDockWidget>
 	{
+	  public:
+		~BaseDockWidget() override = default;
+
 	  protected:
 		QPointer<QScrollArea> _scrollArea;
 		QPointer<QWidget>	  _root;
@@ -79,8 +82,6 @@ namespace VTX::UI::QT::DockWidget
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 			_layout->setSpacing( 0 );
 		}
-
-		~BaseDockWidget() override = default;
 	};
 } // namespace VTX::UI::QT::DockWidget
 

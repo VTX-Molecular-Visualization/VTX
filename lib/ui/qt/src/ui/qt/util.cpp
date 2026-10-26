@@ -96,17 +96,10 @@ namespace VTX::UI::QT::Util
 		{
 			switch ( e->type() )
 			{
-			case QEvent::HoverEnter:
-				hoverEnter( static_cast<QHoverEvent *>( e ) );
-				return true;
-				break;
-			case QEvent::HoverLeave:
-				hoverLeave( e );
-				return true;
-				break;
-			default: break;
+			case QEvent::HoverEnter: hoverEnter( static_cast<QHoverEvent *>( e ) ); return true;
+			case QEvent::HoverLeave: hoverLeave( e ); return true;
+			default: return QWidget::event( e );
 			}
-			return QWidget::event( e );
 		}
 
 		// Refresh the themed border/background colours when the OS theme (and thus the palette) changes.

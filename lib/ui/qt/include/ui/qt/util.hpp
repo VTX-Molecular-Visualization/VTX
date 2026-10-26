@@ -118,11 +118,12 @@ namespace VTX::UI::QT::Util
 	class LabelWithHelper
 	{
 	  public:
-		enum class E_QUESTIONMARK_POSITION
+		enum class E_QUESTIONMARK_POSITION : uint8_t
 		{
 			left,
 			right
 		};
+
 		LabelWithHelper() = default;
 		LabelWithHelper( const char * p_label, const char * p_helper, const E_QUESTIONMARK_POSITION & p_postion );
 		QPointer<QWidget> container = nullptr;

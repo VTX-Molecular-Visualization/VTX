@@ -244,8 +244,8 @@ namespace VTX::UI::QT::Widget
 				{
 					const auto & [ chainId, resIdx ] = _oIdData.ruleIndex2residueIndex.at( p_index );
 					out.chainIndex					 = chainId;
-					auto & chainName		   = topology.chainNames[ out.chainIndex ];
-					out.chainName			   = std::string_view( chainName.data(), chainName.size() );
+					auto & chainName				 = topology.chainNames[ out.chainIndex ];
+					out.chainName					 = std::string_view( chainName.data(), chainName.size() );
 					if ( resIdx < topology.residueSymbols.size() )
 					{
 						const auto symbol = topology.residueSymbols[ resIdx ];
@@ -313,8 +313,8 @@ namespace VTX::UI::QT::Widget
 			{
 				const auto & [ chainId, resIdx ] = _oIdData.ruleIndex2residueIndex.at( it_searchIndex );
 				p_chainIndex					 = chainId;
-				auto & chainName		   = topology.chainNames[ chainId ];
-				p_chainName				   = std::string_view( chainName.data(), chainName.size() );
+				auto & chainName				 = topology.chainNames[ chainId ];
+				p_chainName						 = std::string_view( chainName.data(), chainName.size() );
 			}
 		}
 
@@ -337,7 +337,7 @@ namespace VTX::UI::QT::Widget
 		QAbstractScrollArea( p_parent ), _system( p_system ), _sequencer( new ResidueSequencer( p_system ) ),
 		_modeChange( App::HUB().connect<Events::SequenceResIdChanged, &Sequence::_sequenceModeChange>( this ) )
 	{
-		QFont f( Style::DEFAULT_FONT_FAMILY_SEQUENCE, 10 );
+		QFont f( Style::DEFAULT_FONT_FAMILY_SEQUENCE.toString(), 10 );
 		f.setStyleHint( QFont::Monospace );
 		setFont( f );
 		setMouseTracking( true );

@@ -144,7 +144,8 @@ namespace VTX::UI::QT::Dialog
 					}
 					else
 					{
-						VTX_ERROR( "URL does not contain {}", _PDB_ID_TEMPLATE );
+						// TODO: Use fmt formater for QString.
+						VTX_ERROR( "URL does not contain {}", _PDB_ID_TEMPLATE.toString().toStdString() );
 						return;
 					}
 				}

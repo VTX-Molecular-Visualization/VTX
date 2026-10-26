@@ -13,6 +13,8 @@ namespace VTX::UI::QT::Widget::Tree
 	class BaseTree : public Widget::BaseWidget<T, W>
 	{
 	  public:
+		~BaseTree() override = default;
+
 		/**
 		 * @brief Override size hints to adapt height to content.
 		 */
@@ -41,8 +43,6 @@ namespace VTX::UI::QT::Widget::Tree
 			W::connect( this, &QTreeView::expanded, this, [ this ]( const QModelIndex & ) { W::updateGeometry(); } );
 			W::connect( this, &QTreeView::collapsed, this, [ this ]( const QModelIndex & ) { W::updateGeometry(); } );
 		}
-
-		~BaseTree() override = default;
 
 	  private:
 		/**

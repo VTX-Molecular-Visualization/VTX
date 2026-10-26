@@ -26,7 +26,7 @@ namespace VTX::UI::QT::Model
 		/**
 		 * @brief Roles for data retrieval.
 		 */
-		enum Roles : uint8_t
+		enum Roles
 		{
 			// SYSTEM, CHAIN, RESIDUE, ATOM.
 			ItemRole = Qt::UserRole + 1,
@@ -58,7 +58,7 @@ namespace VTX::UI::QT::Model
 		/**
 		 * @brief Data retrieval (display, roles, etc.).
 		 */
-		QVariant data( const QModelIndex & p_index, int p_role = Qt::DisplayRole ) const override;
+		QVariant data( const QModelIndex & p_index, int p_role ) const override;
 
 		/**
 		 * @brief Create index for given row/column/parent.
