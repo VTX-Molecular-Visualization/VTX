@@ -1,6 +1,7 @@
 #include "ui/qt/widget/camera.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/actionable_push_button.hpp"
 #include "ui/qt/widget/expandable_tool_bar.hpp"
@@ -16,47 +17,48 @@ namespace VTX::UI::QT::Widget
 		QGroupBox( "Camera", p_parent ), _entity( p_entity )
 	{
 		// Layout.
-		auto * layout = new QVBoxLayout( this );
+		auto * layout = Helper::makeQObject<QVBoxLayout>( this );
 
 		// Projection.
-		auto * labelProjection	 = new QLabel( "Projection", this );
-		auto * toolbarProjection = new ExpandableToolBar( this );
+		auto * labelProjection	 = Helper::makeQObject<QLabel>( "Projection", this );
+		auto * toolbarProjection = Helper::makeQObject<ExpandableToolBar>( this );
 		toolbarProjection->addAction( Action::Camera::PERSPECTIVE );
 		toolbarProjection->addAction( Action::Camera::ORTHOGRAPHIC );
 		layout->addWidget( labelProjection );
 		layout->addWidget( toolbarProjection );
 
 		// Fov.
-		auto * labelFov = new QLabel( "Field of view", this );
-		_sliderFov		= new EditableSlider( Qt::Orientation::Horizontal, this );
+		auto * labelFov = Helper::makeQObject<QLabel>( "Field of view", this );
+		_sliderFov		= Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		_sliderFov->setMinimum( Renderer::FOV_MIN );
 		_sliderFov->setMaximum( Renderer::FOV_MAX );
 		layout->addWidget( labelFov );
 		layout->addWidget( _sliderFov );
 
 		// Near.
-		auto * labelNear = new QLabel( "Near plane", this );
-		_sliderNear		 = new EditableSlider( Qt::Orientation::Horizontal, this );
+		auto * labelNear = Helper::makeQObject<QLabel>( "Near plane", this );
+		_sliderNear		 = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		_sliderNear->setMinimum( Renderer::NEAR_CLIP_MIN );
 		_sliderNear->setMaximum( Renderer::NEAR_CLIP_MAX );
 		layout->addWidget( labelNear );
 		layout->addWidget( _sliderNear );
 
 		// Far.
-		auto * labelFar = new QLabel( "Far plane", this );
-		_sliderFar		= new EditableSlider( Qt::Orientation::Horizontal, this );
+		auto * labelFar = Helper::makeQObject<QLabel>( "Far plane", this );
+		_sliderFar		= Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		_sliderFar->setMinimum( Renderer::FAR_CLIP_MIN );
 		_sliderFar->setMaximum( Renderer::FAR_CLIP_MAX );
 		layout->addWidget( labelFar );
 		layout->addWidget( _sliderFar );
 
 		// Transform widget.
-		_transform = new Transform( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
+		_transform = Helper::makeQObject<Transform>( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
 		layout->addWidget( _transform );
 
 		// Save viewpoint button.
-		auto * buttonSaveViewpoint
-			= new ActionablePushButton( UI_ACTIONS().getAction( Action::Camera::SAVE_VIEWPOINT ), this );
+		auto * buttonSaveViewpoint = Helper::makeQObject<ActionablePushButton>(
+			UI_ACTIONS().getAction( Action::Camera::SAVE_VIEWPOINT ), this
+		);
 		layout->addWidget( buttonSaveViewpoint );
 
 		// Connect.

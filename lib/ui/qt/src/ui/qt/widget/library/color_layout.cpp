@@ -21,11 +21,11 @@ namespace VTX::UI::QT::Widget::Library
 		setTitle( "Edit color layout" );
 
 		// Search bar.
-		auto * searchBar = new QLineEdit( this );
+		auto * searchBar = Helper::makeQObject<QLineEdit>( this );
 		searchBar->setPlaceholderText( "TODO" );
 		addWidget( searchBar );
 
-		_checkBoxHideNonUsual = new QCheckBox( "Hide non usual", this );
+		_checkBoxHideNonUsual = Helper::makeQObject<QCheckBox>( "Hide non usual", this );
 		addWidget( _checkBoxHideNonUsual );
 
 		_buttons.resize( COLOR_LAYOUT_SIZE );
@@ -45,7 +45,7 @@ namespace VTX::UI::QT::Widget::Library
 		_createGroupBox( "Custom", LAYOUT_OFFSET_CUSTOM, LAYOUT_COUNT_CUSTOM );
 
 		// Randomize.
-		auto * const buttonRandomize = new QPushButton( "Randomize", this );
+		auto * const buttonRandomize = Helper::makeQObject<QPushButton>( "Randomize", this );
 		connect(
 			buttonRandomize,
 			&QPushButton::clicked,
@@ -97,7 +97,7 @@ namespace VTX::UI::QT::Widget::Library
 	)
 	{
 		auto * groupBox = new QGroupBox( QString::fromUtf8( p_title ) );
-		auto * layout	= new Layout::FlowLayout( groupBox );
+		auto * layout	= Helper::makeQObject<Layout::FlowLayout>( groupBox );
 
 		// Create buttons.
 		size_t offset = 0;
@@ -105,7 +105,7 @@ namespace VTX::UI::QT::Widget::Library
 		{
 			// QString text = p_text ? QString::fromStdString( p_text[ offset ].data() ) : QString::number( i );
 
-			_buttons[ i ] = new ColorPicker( groupBox );
+			_buttons[ i ] = Helper::makeQObject<ColorPicker>( groupBox );
 			_buttons[ i ]->setFixedSize( _BUTTON_SIZE, _BUTTON_SIZE );
 
 			if ( not p_text.empty() )
@@ -160,7 +160,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		auto * groupBox = static_cast<QGroupBox *>( _buttons[ p_start ]->parentWidget() );
 		delete groupBox->layout();
-		auto * layout = new Layout::FlowLayout( groupBox );
+		auto * layout = Helper::makeQObject<Layout::FlowLayout>( groupBox );
 
 		size_t count = 0;
 		for ( size_t i = p_start; i < p_start + p_count; ++i )

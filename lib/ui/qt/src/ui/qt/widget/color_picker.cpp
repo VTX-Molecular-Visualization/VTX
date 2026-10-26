@@ -5,7 +5,7 @@
 
 namespace VTX::UI::QT::Widget
 {
-	ColorPicker::ColorPicker( QWidget * const p_parent )
+	ColorPicker::ColorPicker( QWidget * const p_parent ) : QPushButton( p_parent )
 	{
 		connect(
 			this,

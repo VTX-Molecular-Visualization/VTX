@@ -76,7 +76,7 @@ namespace VTX::UI::QT::Menu
 				auto * subMenu = QMenu::addMenu( p_label );
 				for ( ColorIndex i = 0; i < Color::LAYOUT_COUNT_CUSTOM; ++i )
 				{
-					auto * wa	= new QWidgetAction( subMenu );
+					auto * wa	= Helper::makeQObject<QWidgetAction>( subMenu );
 					auto * item = new ColorItem( QT::Helper::toQColor( colorlayout.getCustomColor( i ) ) );
 					item->setMinimumSize( 120, 24 );
 					const Selected selected = { p_scheme, static_cast<ColorIndex>( Color::LAYOUT_OFFSET_CUSTOM + i ) };
@@ -129,7 +129,7 @@ namespace VTX::UI::QT::Menu
 				auto * const customSecondaryStructureMenu = QMenu::addMenu( "Custom" );
 				for ( ColorIndex i = 0; i < Color::LAYOUT_COUNT_CUSTOM; ++i )
 				{
-					auto * wa	= new QWidgetAction( customSecondaryStructureMenu );
+					auto * wa	= Helper::makeQObject<QWidgetAction>( customSecondaryStructureMenu );
 					auto * item = new ColorItem( QT::Helper::toQColor( colorlayout.getCustomColor( i ) ) );
 					item->setMinimumSize( 120, 24 );
 					const SecondaryStructureSelected selected
@@ -159,9 +159,7 @@ namespace VTX::UI::QT::Menu
 		{
 		  public:
 			ColorItem( const QColor & c, QWidget * const parent = nullptr ) : QWidget( parent ), _color( c )
-			{
-				setMinimumHeight( 24 );
-			}
+			{ setMinimumHeight( 24 ); }
 
 		  protected:
 			void paintEvent( QPaintEvent * ) override

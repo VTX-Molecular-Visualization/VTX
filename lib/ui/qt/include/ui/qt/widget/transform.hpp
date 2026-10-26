@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_WIDGET_TRANSFORM__
 #define __VTX_UI_QT_WIDGET_TRANSFORM__
 
+#include "ui/qt/helper.hpp"
 #include "ui/qt/widget/vector.hpp"
 #include <QLabel>
 #include <QPointer>
@@ -40,14 +41,14 @@ namespace VTX::UI::QT::Widget
 		{
 			using namespace VTX::Util::Math;
 
-			auto * layout = new QVBoxLayout( this );
+			auto * layout = Helper::makeQObject<QVBoxLayout>( this );
 			layout->setContentsMargins( 0, 0, 0, 0 );
 
 			// Position vector.
 			if ( ( p_flags & E_FLAG::POSITION ) != E_FLAG::NONE )
 			{
-				_position = new Widget::Vector<Vec3f>( this );
-				layout->addWidget( new QLabel( "Position", this ) );
+				_position = Helper::makeQObject<Widget::Vector<Vec3f>>( this );
+				layout->addWidget( Helper::makeQObject<QLabel>( "Position", this ) );
 				layout->addWidget( _position );
 				connect(
 					_position,
@@ -59,11 +60,11 @@ namespace VTX::UI::QT::Widget
 			// Rotation vector.
 			if ( ( p_flags & E_FLAG::ROTATION ) != E_FLAG::NONE )
 			{
-				_rotation = new Widget::Vector<Vec3f>( this );
+				_rotation = Helper::makeQObject<Widget::Vector<Vec3f>>( this );
 				_rotation->setRange( Vec3f( -360 ), Vec3f( 360 ) );
 				_rotation->setDecimals( 0 );
 				_rotation->setSuffix( QChar( 0x00B0 ) );
-				layout->addWidget( new QLabel( "Rotation", this ) );
+				layout->addWidget( Helper::makeQObject<QLabel>( "Rotation", this ) );
 				layout->addWidget( _rotation );
 				connect(
 					_rotation,
@@ -75,8 +76,8 @@ namespace VTX::UI::QT::Widget
 			// Scale vector.
 			if ( ( p_flags & E_FLAG::SCALE ) != E_FLAG::NONE )
 			{
-				_scale = new Widget::Vector<Vec3f>( this );
-				layout->addWidget( new QLabel( "Scale", this ) );
+				_scale = Helper::makeQObject<Widget::Vector<Vec3f>>( this );
+				layout->addWidget( Helper::makeQObject<QLabel>( "Scale", this ) );
 				layout->addWidget( _scale );
 				connect(
 					_scale, &Widget::Vector<Vec3f>::valueEdited, [ this ]() { emit scaleChanged( _scale->value() ); }

@@ -1,4 +1,5 @@
 #include "ui/qt/widget/library/graphics_config_widget.hpp"
+#include "ui/qt/helper.hpp"
 #include <app/services.hpp>
 
 namespace VTX::UI::QT::Widget::Library
@@ -7,23 +8,24 @@ namespace VTX::UI::QT::Widget::Library
 	{
 		setTitle( "Edit render settings" );
 
-		_backgroundSection = new GraphicsConfig::BackgroundSection( presetGroupBox() );
+		_backgroundSection = Helper::makeQObject<GraphicsConfig::BackgroundSection>( presetGroupBox() );
 		addWidget( _backgroundSection );
-		_lightingSection = new GraphicsConfig::LightingSection( presetGroupBox() );
+		_lightingSection = Helper::makeQObject<GraphicsConfig::LightingSection>( presetGroupBox() );
 		addWidget( _lightingSection );
-		_ssaoSection = new GraphicsConfig::SSAOSection( presetGroupBox() );
+		_ssaoSection = Helper::makeQObject<GraphicsConfig::SSAOSection>( presetGroupBox() );
 		addWidget( _ssaoSection );
-		_selectionSection = new GraphicsConfig::SelectionSection( presetGroupBox() );
+		_selectionSection = Helper::makeQObject<GraphicsConfig::SelectionSection>( presetGroupBox() );
 		addWidget( _selectionSection );
-		_outlineSection = new GraphicsConfig::OutlineSection( presetGroupBox() );
+		_outlineSection = Helper::makeQObject<GraphicsConfig::OutlineSection>( presetGroupBox() );
 		addWidget( _outlineSection );
-		_fogSection = new GraphicsConfig::FogSection( presetGroupBox() );
+		_fogSection = Helper::makeQObject<GraphicsConfig::FogSection>( presetGroupBox() );
 		addWidget( _fogSection );
-		_chromaticAberrationSection = new GraphicsConfig::ChromaticAberrationSection( presetGroupBox() );
+		_chromaticAberrationSection
+			= Helper::makeQObject<GraphicsConfig::ChromaticAberrationSection>( presetGroupBox() );
 		addWidget( _chromaticAberrationSection );
-		_pixelizeSection = new GraphicsConfig::PixelizeSection( presetGroupBox() );
+		_pixelizeSection = Helper::makeQObject<GraphicsConfig::PixelizeSection>( presetGroupBox() );
 		addWidget( _pixelizeSection );
-		_crtSection = new GraphicsConfig::CRTSection( presetGroupBox() );
+		_crtSection = Helper::makeQObject<GraphicsConfig::CRTSection>( presetGroupBox() );
 		addWidget( _crtSection );
 	}
 

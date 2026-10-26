@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_WIDGET_EDITABLE_SLIDER__
 #define __VTX_UI_QT_WIDGET_EDITABLE_SLIDER__
 
+#include "ui/qt/helper.hpp"
 #include <QDoubleSpinBox>
 #include <QHBoxLayout>
 #include <QPointer>
@@ -20,14 +21,14 @@ namespace VTX::UI::QT::Widget
 	  public:
 		explicit EditableSlider( Qt::Orientation p_orientation, QWidget * const p_parent ) : QWidget( p_parent )
 		{
-			_slider	 = new QSlider( p_orientation, this );
-			_spinbox = new QDoubleSpinBox( this );
+			_slider	 = Helper::makeQObject<QSlider>( p_orientation, this );
+			_spinbox = Helper::makeQObject<QDoubleSpinBox>( this );
 
 			_slider->setSingleStep( 1 );
 			_spinbox->setSingleStep( 0.01 );
 			_spinbox->setDecimals( 2 );
 
-			auto * layout = new QHBoxLayout( this );
+			auto * layout = Helper::makeQObject<QHBoxLayout>( this );
 			layout->setContentsMargins( 0, 0, 0, 0 );
 			// layout->setSpacing( 0 );
 

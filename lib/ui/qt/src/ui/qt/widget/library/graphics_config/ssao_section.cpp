@@ -1,4 +1,5 @@
 #include "ui/qt/widget/library/graphics_config/ssao_section.hpp"
+#include "ui/qt/helper.hpp"
 #include <QLabel>
 #include <QSignalBlocker>
 #include <app/arguments.hpp>
@@ -9,15 +10,15 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 {
 	namespace
 	{
-		float _scaleFromUi( const int p_index ) { return p_index == 1 ? 2.f : 1.f; }
+		constexpr float _scaleFromUi( const int p_index ) { return p_index == 1 ? 2.f : 1.f; }
 
-		int _scaleToUi( const float p_value ) { return p_value == 2.f ? 1 : 0; }
+		constexpr int _scaleToUi( const float p_value ) { return p_value == 2.f ? 1 : 0; }
 	} // namespace
 
 	SSAOSection::SSAOSection( QWidget * const p_parent ) : Section( "Shadows", p_parent )
 	{
 		using namespace Renderer;
-		_comboBoxMethod = new QComboBox( this );
+		_comboBoxMethod = Helper::makeQObject<QComboBox>( this );
 		addWidget( _comboBoxMethod );
 		constexpr std::string_view METHOD_STR[ int( E_SSAO_METHOD::COUNT ) ]
 			= { "SSAO", "SSAO line", "SAO", "BMGTAO", "HBAO" };
@@ -26,20 +27,20 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 			_comboBoxMethod->addItem( METHOD_STR[ i ].data() );
 		}
 
-		_comboBoxScale = new QComboBox( this );
+		_comboBoxScale = Helper::makeQObject<QComboBox>( this );
 		addWidget( _comboBoxScale );
 		_comboBoxScale->addItem( "Normal" );
 		_comboBoxScale->addItem( "Downscale" );
 		_comboBoxMethod->setVisible( App::ARGS().debug );
 		_comboBoxScale->setVisible( App::ARGS().debug );
 
-		addWidget( new QLabel( "Intensity", this ) );
-		_sliderIntensity = new EditableSlider( Qt::Orientation::Horizontal, this );
+		addWidget( Helper::makeQObject<QLabel>( "Intensity", this ) );
+		_sliderIntensity = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderIntensity );
 		_sliderIntensity->setMinimum( SSAO_INTENSITY_MIN );
 		_sliderIntensity->setMaximum( SSAO_INTENSITY_MAX );
-		addWidget( new QLabel( "Blur size", this ) );
-		_sliderBlurSize = new EditableSlider( Qt::Orientation::Horizontal, this );
+		addWidget( Helper::makeQObject<QLabel>( "Blur size", this ) );
+		_sliderBlurSize = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderBlurSize );
 		_sliderBlurSize->setMinimum( BLUR_SIZE_MIN );
 		_sliderBlurSize->setMaximum( BLUR_SIZE_MAX );

@@ -7,7 +7,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	SelectionSection::SelectionSection( QWidget * const p_parent ) : Section( "Selection", p_parent )
 	{
 		using namespace Renderer;
-		_colorPicker = new ColorPicker( this );
+		_colorPicker = Helper::makeQObject<ColorPicker>( this );
 		addWidget( _colorPicker );
 		connect(
 			this,

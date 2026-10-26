@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_WIDGET_HIDEABLE_GROUP_BOX__
 #define __VTX_UI_QT_WIDGET_HIDEABLE_GROUP_BOX__
 
+#include "ui/qt/helper.hpp"
 #include <QGroupBox>
 #include <QPointer>
 #include <QToolButton>
@@ -19,7 +20,7 @@ namespace VTX::UI::QT::Widget
 	  public:
 		explicit HideableGroupBox( const QString & p_title, QWidget * const p_parent ) : QWidget( p_parent )
 		{
-			_toggleButton = new QToolButton( this );
+			_toggleButton = Helper::makeQObject<QToolButton>( this );
 			_toggleButton->setText( p_title );
 			_toggleButton->setCheckable( true );
 			_toggleButton->setChecked( false );
@@ -27,10 +28,10 @@ namespace VTX::UI::QT::Widget
 			_toggleButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
 			_toggleButton->setArrowType( Qt::RightArrow );
 
-			_groupbox = new QGroupBox( this );
+			_groupbox = Helper::makeQObject<QGroupBox>( this );
 			_groupbox->setVisible( false );
-			new QVBoxLayout( _groupbox );
-			auto * mainLayout = new QVBoxLayout( this );
+			_groupbox->setLayout( Helper::makeQObject<QVBoxLayout>( _groupbox ) );
+			auto * mainLayout = Helper::makeQObject<QVBoxLayout>( this );
 
 			mainLayout->setContentsMargins( 0, 0, 0, 0 );
 			// mainLayout->setSpacing( 0 );

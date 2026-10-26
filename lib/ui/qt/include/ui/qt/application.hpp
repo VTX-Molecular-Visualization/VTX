@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <app/events.hpp>
 #include <app/vtx_app.hpp>
+#include <memory>
 #include <util/chrono.hpp>
 #include <util/event_hub.hpp>
 
@@ -71,7 +72,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Splash screen displayed during startup.
 		 */
-		QPointer<QSplashScreen> _splashScreen;
+		std::unique_ptr<QSplashScreen> _splashScreen;
 
 		/**
 		 * @brief Init application after Qt startup (create main window, OpenGL context, etc.).

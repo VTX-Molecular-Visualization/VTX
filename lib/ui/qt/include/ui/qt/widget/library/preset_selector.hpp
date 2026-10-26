@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_WIDGET_PRESET_SELECTOR__
 #define __VTX_UI_QT_WIDGET_PRESET_SELECTOR__
 
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
@@ -59,15 +60,15 @@ namespace VTX::UI::QT::Widget::Library
 	  public:
 		PresetSelector( QWidget * const p_parent ) : BasePresetSelector( p_parent )
 		{
-			auto * layout = new QVBoxLayout( this );
+			auto * layout = Helper::makeQObject<QVBoxLayout>( this );
 			setTitle( "Presets" );
 
 			// layout->setContentsMargins( 0, 0, 0, 0 );
 
-			_comboBox = new QComboBox( this );
+			_comboBox = Helper::makeQObject<QComboBox>( this );
 			layout->addWidget( _comboBox );
 
-			auto * toolbar = new QToolBar( this );
+			auto * toolbar = Helper::makeQObject<QToolBar>( this );
 			toolbar->setMovable( false );
 			toolbar->setFloatable( false );
 			toolbar->setToolButtonStyle( Qt::ToolButtonIconOnly );
@@ -78,10 +79,10 @@ namespace VTX::UI::QT::Widget::Library
 
 			layout->addWidget( toolbar );
 
-			_lineRename = new QLineEdit( this );
+			_lineRename = Helper::makeQObject<QLineEdit>( this );
 			layout->addWidget( _lineRename );
 
-			auto * bApply = new QPushButton( "Apply", this );
+			auto * bApply = Helper::makeQObject<QPushButton>( "Apply", this );
 			bApply->setIcon( STYLE().iconFromCodepoint( Style::Icons::APPLY ) );
 			bApply->setToolTip( "Apply this preset" );
 			bApply->setStatusTip( "Apply this preset to the whole scene" );
@@ -200,7 +201,7 @@ namespace VTX::UI::QT::Widget::Library
 			const QString &		   p_tip
 		)
 		{
-			auto * const button = new QToolButton( &p_toolbar );
+			auto * const button = Helper::makeQObject<QToolButton>( &p_toolbar );
 			button->setText( p_text );
 			button->setIcon( STYLE().iconFromCodepoint( p_icon ) );
 			button->setToolTip( p_tip );

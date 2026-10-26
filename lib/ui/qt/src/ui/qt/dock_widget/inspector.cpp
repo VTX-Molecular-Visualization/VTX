@@ -30,13 +30,13 @@ namespace VTX::UI::QT::DockWidget
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SELECTION ) );
 
-		_lockButton = new QToolButton( this );
+		_lockButton = Helper::makeQObject<QToolButton>( this );
 		_lockButton->setDefaultAction( UI_ACTIONS().getAction( Action::Selection::LOCK ) );
 		_lockButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
 		_lockButton->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
 		_layout->addWidget( _lockButton );
 
-		_filler = new QWidget( this );
+		_filler = Helper::makeQObject<QWidget>( this );
 		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
 		_layout->addWidget( _filler );
 
@@ -95,7 +95,7 @@ namespace VTX::UI::QT::DockWidget
 					}
 
 					_clear();
-					_graphicsConfigWidget = new Widget::Library::GraphicsConfigWidget( this );
+					_graphicsConfigWidget = Helper::makeQObject<Widget::Library::GraphicsConfigWidget>( this );
 					if ( hasPreset )
 					{
 						_graphicsConfigWidget->setCurrentPreset( preset );
@@ -123,7 +123,7 @@ namespace VTX::UI::QT::DockWidget
 					}
 
 					_clear();
-					_colorLayoutWidget = new Widget::Library::ColorLayout( this );
+					_colorLayoutWidget = Helper::makeQObject<Widget::Library::ColorLayout>( this );
 					if ( hasPreset )
 					{
 						_colorLayoutWidget->setCurrentPreset( preset );
@@ -151,7 +151,7 @@ namespace VTX::UI::QT::DockWidget
 					}
 
 					_clear();
-					_representationWidget = new Widget::Library::Representation( this );
+					_representationWidget = Helper::makeQObject<Widget::Library::Representation>( this );
 					if ( hasPreset )
 					{
 						_representationWidget->setCurrentPreset( preset );
@@ -236,7 +236,7 @@ namespace VTX::UI::QT::DockWidget
 		//}
 
 		_clear();
-		_selectionListWidget = new Widget::Selection( this );
+		_selectionListWidget = Helper::makeQObject<Widget::Selection>( this );
 		_layout->insertWidget( _layout->indexOf( _filler ), _selectionListWidget );
 	}
 

@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET__
 #define __VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET__
 
+#include "ui/qt/helper.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include <QBoxLayout>
@@ -47,7 +48,7 @@ namespace VTX::UI::QT::DockWidget
 			// Scroll area.
 			if constexpr ( VSA or HSA )
 			{
-				_scrollArea = new QScrollArea( this );
+				_scrollArea = Helper::makeQObject<QScrollArea>( this );
 				QDockWidget::setWidget( _scrollArea );
 				_scrollArea->setWidgetResizable( true );
 
@@ -68,17 +69,17 @@ namespace VTX::UI::QT::DockWidget
 					_scrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 				}
 				_scrollArea->setFrameShape( QFrame::NoFrame );
-				_root = new QWidget( _scrollArea );
+				_root = Helper::makeQObject<QWidget>( _scrollArea );
 				_scrollArea->setWidget( _root );
 			}
 			else
 			{
-				_root = new QWidget( this );
+				_root = Helper::makeQObject<QWidget>( this );
 				QDockWidget::setWidget( _root );
 			}
 
 			// Root widget and layout.
-			_layout = new L( _root );
+			_layout = Helper::makeQObject<L>( _root );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 			_layout->setSpacing( 0 );
 		}

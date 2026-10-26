@@ -1,4 +1,5 @@
 #include "ui/qt/widget/library/graphics_config/material_section.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include <QFileDialog>
@@ -15,11 +16,11 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	{
 		using namespace Renderer;
 
-		auto * const layout = new QVBoxLayout( this );
+		auto * const layout = Helper::makeQObject<QVBoxLayout>( this );
 		layout->setContentsMargins( 0, 0, 0, 0 );
 
-		layout->addWidget( new QLabel( "Material", this ) );
-		_listMaterials = new QListWidget( this );
+		layout->addWidget( Helper::makeQObject<QLabel>( "Material", this ) );
+		_listMaterials = Helper::makeQObject<QListWidget>( this );
 		_listMaterials->setSelectionMode( QAbstractItemView::SingleSelection );
 		_listMaterials->setSortingEnabled( true );
 		layout->addWidget( _listMaterials );
@@ -33,26 +34,26 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 			item->setData( Qt::UserRole, QVariant::fromValue<Entity>( entity ) );
 		}
 
-		layout->addWidget( new QLabel( "Metallic", this ) );
-		_sliderMetallic = new EditableSlider( Qt::Orientation::Horizontal, this );
+		layout->addWidget( Helper::makeQObject<QLabel>( "Metallic", this ) );
+		_sliderMetallic = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		layout->addWidget( _sliderMetallic );
 		_sliderMetallic->setMinimum( MATERIAL_METALLIC_MIN );
 		_sliderMetallic->setMaximum( MATERIAL_METALLIC_MAX );
 
-		layout->addWidget( new QLabel( "Roughness", this ) );
-		_sliderRoughness = new EditableSlider( Qt::Orientation::Horizontal, this );
+		layout->addWidget( Helper::makeQObject<QLabel>( "Roughness", this ) );
+		_sliderRoughness = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		layout->addWidget( _sliderRoughness );
 		_sliderRoughness->setMinimum( MATERIAL_ROUGHNESS_MIN );
 		_sliderRoughness->setMaximum( MATERIAL_ROUGHNESS_MAX );
 
-		layout->addWidget( new QLabel( "Emissive intensity", this ) );
-		_sliderEmissiveIntensity = new EditableSlider( Qt::Orientation::Horizontal, this );
+		layout->addWidget( Helper::makeQObject<QLabel>( "Emissive intensity", this ) );
+		_sliderEmissiveIntensity = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		layout->addWidget( _sliderEmissiveIntensity );
 		_sliderEmissiveIntensity->setMinimum( MATERIAL_EMISSIVE_INTENSITY_MIN );
 		_sliderEmissiveIntensity->setMaximum( MATERIAL_EMISSIVE_INTENSITY_MAX );
 
-		layout->addWidget( new QLabel( "Texture scale", this ) );
-		_sliderTextureScale = new EditableSlider( Qt::Orientation::Horizontal, this );
+		layout->addWidget( Helper::makeQObject<QLabel>( "Texture scale", this ) );
+		_sliderTextureScale = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		layout->addWidget( _sliderTextureScale );
 		_sliderTextureScale->setMinimum( MATERIAL_TEXTURE_SCALE_MIN );
 		_sliderTextureScale->setMaximum( MATERIAL_TEXTURE_SCALE_MAX );
@@ -67,19 +68,19 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 			auto &					  widgets	  = _textureWidgets[ i ];
 			const QString			  label		  = QString::fromUtf8( TEXTURE_LABELS[ i ].data() );
 
-			widgets.label = new QLabel( label, this );
+			widgets.label = Helper::makeQObject<QLabel>( label, this );
 			layout->addWidget( widgets.label );
-			widgets.pathWidget		= new QWidget( this );
-			auto * const pathLayout = new QHBoxLayout( widgets.pathWidget );
+			widgets.pathWidget		= Helper::makeQObject<QWidget>( this );
+			auto * const pathLayout = Helper::makeQObject<QHBoxLayout>( widgets.pathWidget );
 			pathLayout->setContentsMargins( 0, 0, 0, 0 );
-			widgets.linePath = new QLineEdit( widgets.pathWidget );
+			widgets.linePath = Helper::makeQObject<QLineEdit>( widgets.pathWidget );
 			widgets.linePath->setReadOnly( true );
-			auto * const buttonBrowse = new QPushButton( widgets.pathWidget );
+			auto * const buttonBrowse = Helper::makeQObject<QPushButton>( widgets.pathWidget );
 			buttonBrowse->setIcon( STYLE().iconFromCodepoint( Style::Icons::OPEN ) );
 			buttonBrowse->setToolTip( "Open " + label.toLower() );
 			buttonBrowse->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Preferred );
 			buttonBrowse->setMinimumWidth( 0 );
-			widgets.buttonClear = new QPushButton( widgets.pathWidget );
+			widgets.buttonClear = Helper::makeQObject<QPushButton>( widgets.pathWidget );
 			widgets.buttonClear->setIcon( STYLE().iconFromCodepoint( Style::Icons::DELETE ) );
 			widgets.buttonClear->setToolTip( "Remove " + label.toLower() );
 			widgets.buttonClear->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Preferred );

@@ -1,4 +1,5 @@
 #include "ui/qt/dialog/updater.hpp"
+#include "ui/qt/helper.hpp"
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QProgressBar>
@@ -19,7 +20,7 @@ namespace VTX::UI::QT::Dialog
 		setFixedSize( 800, 600 );
 
 		// Layout.
-		auto * layout = new QVBoxLayout( this );
+		auto * layout = Helper::makeQObject<QVBoxLayout>( this );
 		setLayout( layout );
 
 		// Title.
@@ -32,7 +33,7 @@ namespace VTX::UI::QT::Dialog
 		layout->addWidget( labelTitle );
 
 		// Changelog.
-		auto * browser = new QTextBrowser( this );
+		auto * browser = Helper::makeQObject<QTextBrowser>( this );
 		browser->document()->setDocumentMargin( 10 );
 		browser->setHtml( QString::fromStdString( p_e.changelog ) );
 		layout->addWidget( browser );
@@ -50,20 +51,20 @@ namespace VTX::UI::QT::Dialog
 		labelSize->setAlignment( Qt::AlignRight );
 		layout->addWidget( labelSize );
 
-		_progressBar = new QProgressBar( this );
+		_progressBar = Helper::makeQObject<QProgressBar>( this );
 		_progressBar->setRange( 0, 100 );
 		_progressBar->setValue( 0 );
 		_progressBar->setTextVisible( true );
 		_progressBar->setFormat( "Downloading update... %p%" );
 		layout->addWidget( _progressBar );
 
-		_buttonBox = new QDialogButtonBox(
+		_buttonBox = Helper::makeQObject<QDialogButtonBox>(
 			QDialogButtonBox::StandardButton::Close | QDialogButtonBox::StandardButton::Apply, this
 		);
 		layout->addWidget( _buttonBox );
 		QPushButton * const applyButton = _buttonBox->button( QDialogButtonBox::Apply );
 
-		_restartButton = new QPushButton( "Restart", this );
+		_restartButton = Helper::makeQObject<QPushButton>( "Restart", this );
 		layout->addWidget( _restartButton );
 
 		connect( _buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );

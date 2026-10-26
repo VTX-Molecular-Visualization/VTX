@@ -1,5 +1,6 @@
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/application.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include <QActionGroup>
@@ -143,7 +144,7 @@ namespace VTX::UI::QT
 
 	QAction * ActionRegistry::_createAction( const App::UI::DescAction & p_action, const std::string_view p_key )
 	{
-		auto * const qAction = new QAction( Q_APP() );
+		auto * const qAction = Helper::makeQObject<QAction>( Q_APP() );
 		qAction->setObjectName( QString::fromUtf8( p_key.data(), int( p_key.size() ) ) );
 
 		VTX_TRACE( "UI action created: {}", p_key );
@@ -156,7 +157,7 @@ namespace VTX::UI::QT
 			auto * qActionGroup = Q_APP()->findChild<QActionGroup *>( QString::fromStdString( *p_action.group ) );
 			if ( not qActionGroup )
 			{
-				qActionGroup = new QActionGroup( Q_APP() );
+				qActionGroup = Helper::makeQObject<QActionGroup>( Q_APP() );
 				qActionGroup->setObjectName( QString::fromStdString( *p_action.group ) );
 			}
 

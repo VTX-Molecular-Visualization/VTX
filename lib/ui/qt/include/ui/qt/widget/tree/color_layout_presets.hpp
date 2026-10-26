@@ -3,6 +3,7 @@
 
 #include "ui/qt/widget/tree/base_tree_presets.hpp"
 #include <app/scene/color_layout.hpp>
+#include <memory>
 #include <renderer/color.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
@@ -13,7 +14,7 @@ namespace VTX::UI::QT::Widget::Tree
 	  public:
 		ColorLayoutPresets( QWidget * const p_parent ) : BaseTreePreset<VTX::Renderer::Color::Layout>( p_parent )
 		{
-			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Color layouts" ) );
+			addTopLevelItem( std::make_unique<QTreeWidgetItem>( QStringList() << "Color layouts" ).release() );
 			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::COLOR_LAYOUT ) );
 			_restoreExpansionState( SETTING_KEY_COLOR_LAYOUT_PRESETS_EXPANDED );
 			_connectAppliedPresetUpdates( App::REG() );

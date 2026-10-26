@@ -1,6 +1,7 @@
 #include "ui/qt/dialog/export_image.hpp"
 #include "app/action/io.hpp"
 #include "app/services.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include <QDialogButtonBox>
 #include <QFileDialog>
@@ -13,6 +14,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <array>
+#include <memory>
 #include <renderer/renderer.hpp>
 #include <string_view>
 #include <util/image.hpp>
@@ -60,19 +62,19 @@ namespace VTX::UI::QT::Dialog
 		setWindowTitle( "Export image" );
 		setFixedSize( 500, 540 );
 
-		auto * layout = new QVBoxLayout( this );
+		auto * layout = Helper::makeQObject<QVBoxLayout>( this );
 
 		// Resolution.
 		auto * groupResolution		 = new QGroupBox( "Resolution" );
-		auto * layoutGroupResolution = new QVBoxLayout();
+		auto * layoutGroupResolution = Helper::makeQObject<QVBoxLayout>( groupResolution );
 		groupResolution->setLayout( layoutGroupResolution );
 		groupResolution->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Maximum );
-		auto * layoutPresetSize = new QHBoxLayout();
+		auto layoutPresetSize = std::make_unique<QHBoxLayout>();
 
 		layoutPresetSize->setAlignment( Qt::AlignmentFlag::AlignLeft );
 
-		auto * labelResolution = new QLabel( "Preset", this );
-		_comboBoxResolution	   = new QComboBox( this );
+		auto * labelResolution = Helper::makeQObject<QLabel>( "Preset", this );
+		_comboBoxResolution	   = Helper::makeQObject<QComboBox>( this );
 		_comboBoxResolution->addItem( "-select-" );
 		_comboBoxResolution->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
 
@@ -104,14 +106,14 @@ namespace VTX::UI::QT::Dialog
 		layoutPresetSize->addWidget( _comboBoxResolution );
 
 		// Size widgets.
-		auto * labelWidth = new QLabel( "Width", this );
-		_spinBoxWidth	  = new QSpinBox( this );
+		auto * labelWidth = Helper::makeQObject<QLabel>( "Width", this );
+		_spinBoxWidth	  = Helper::makeQObject<QSpinBox>( this );
 		_spinBoxWidth->setMinimum( 100 );
 		_spinBoxWidth->setMaximum( maxTextureSize );
 		_spinBoxWidth->setSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed );
 
-		auto * labelHeight = new QLabel( "Height", this );
-		_spinBoxHeight	   = new QSpinBox( this );
+		auto * labelHeight = Helper::makeQObject<QLabel>( "Height", this );
+		_spinBoxHeight	   = Helper::makeQObject<QSpinBox>( this );
 		_spinBoxHeight->setMinimum( 100 );
 		_spinBoxHeight->setMaximum( maxTextureSize );
 		_spinBoxHeight->setSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed );
@@ -125,15 +127,15 @@ namespace VTX::UI::QT::Dialog
 		layoutPresetSize->addWidget( _spinBoxHeight );
 
 		// Ratio widgets.
-		auto * layoutRatio = new QHBoxLayout( this );
+		auto layoutRatio = std::make_unique<QHBoxLayout>();
 		layoutRatio->setAlignment( Qt::AlignmentFlag::AlignCenter );
 
-		auto * labelRatio = new QLabel( "Ratio", this );
+		auto * labelRatio = Helper::makeQObject<QLabel>( "Ratio", this );
 		labelRatio->setToolTip( "Adjust height from ratio (ratio = width / height)" );
 
-		_labelRatioValue = new QLabel( this );
+		_labelRatioValue = Helper::makeQObject<QLabel>( this );
 
-		_sliderRatio = new QSlider( Qt::Orientation::Horizontal, this );
+		_sliderRatio = Helper::makeQObject<QSlider>( Qt::Orientation::Horizontal, this );
 		_sliderRatio->setMinimum( int( RATIO_MIN * 10000 ) );
 		_sliderRatio->setMaximum( int( RATIO_MAX * 10000 ) );
 
@@ -143,16 +145,16 @@ namespace VTX::UI::QT::Dialog
 		layoutRatio->addWidget( _sliderRatio );
 		layoutRatio->addWidget( _labelRatioValue );
 
-		layoutGroupResolution->addLayout( layoutPresetSize );
-		layoutGroupResolution->addLayout( layoutRatio );
+		layoutGroupResolution->addLayout( layoutPresetSize.release() );
+		layoutGroupResolution->addLayout( layoutRatio.release() );
 
 		// Format.
 		auto * groupFormat	= new QGroupBox( "Format" );
-		auto * layoutFormat = new QVBoxLayout( this );
+		auto * layoutFormat = Helper::makeQObject<QVBoxLayout>( groupFormat );
 		groupFormat->setLayout( layoutFormat );
 		groupFormat->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Maximum );
 
-		_comboBoxFormat = new QComboBox( this );
+		_comboBoxFormat = Helper::makeQObject<QComboBox>( this );
 		_comboBoxFormat->addItem( QString::fromUtf8( FORMATS[ 0 ] ) );
 		_comboBoxFormat->addItem( QString::fromUtf8( FORMATS[ 1 ] ) );
 
@@ -161,44 +163,44 @@ namespace VTX::UI::QT::Dialog
 		);
 
 		// Background opacity.
-		auto * layoutBackgroundOpacity = new QHBoxLayout( this );
-		_labelBackgroundOpacity		   = new QLabel( "Background opacity", this );
-		_sliderBackgroundOpacity	   = new QSlider( Qt::Orientation::Horizontal, this );
+		auto layoutBackgroundOpacity = std::make_unique<QHBoxLayout>();
+		_labelBackgroundOpacity		 = Helper::makeQObject<QLabel>( "Background opacity", this );
+		_sliderBackgroundOpacity	 = Helper::makeQObject<QSlider>( Qt::Orientation::Horizontal, this );
 		_sliderBackgroundOpacity->setMinimum( 0 );
 		_sliderBackgroundOpacity->setMaximum( 100 );
 		_sliderBackgroundOpacity->setValue( 100 );
 
 		connect( _sliderBackgroundOpacity, &QSlider::valueChanged, this, &ExportImage::_onBackgroundOpacity );
 
-		_labelBackgroundOpacityValue = new QLabel( this );
+		_labelBackgroundOpacityValue = Helper::makeQObject<QLabel>( this );
 
 		layoutBackgroundOpacity->addWidget( _labelBackgroundOpacity );
 		layoutBackgroundOpacity->addWidget( _sliderBackgroundOpacity );
 		layoutBackgroundOpacity->addWidget( _labelBackgroundOpacityValue );
 
 		layoutFormat->addWidget( _comboBoxFormat );
-		layoutFormat->addLayout( layoutBackgroundOpacity );
+		layoutFormat->addLayout( layoutBackgroundOpacity.release() );
 
 		// Preview.
 		auto * groupPreview	 = new QGroupBox( "Preview" );
-		auto * layoutPreview = new QHBoxLayout( this );
+		auto * layoutPreview = Helper::makeQObject<QHBoxLayout>( groupPreview );
 		layoutPreview->setAlignment( Qt::AlignmentFlag::AlignCenter );
 		groupPreview->setLayout( layoutPreview );
 		groupPreview->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Expanding );
 		_previewContainer = groupPreview;
 
-		_preview = new QLabel( this );
+		_preview = Helper::makeQObject<QLabel>( this );
 		_preview->setAlignment( Qt::AlignmentFlag::AlignCenter );
 		_preview->setSizePolicy( QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed );
 		layoutPreview->addWidget( _preview );
 
-		_previewTimer = new QTimer( this );
+		_previewTimer = Helper::makeQObject<QTimer>( this );
 		_previewTimer->setSingleShot( true );
 		_previewTimer->setInterval( PREVIEW_DEBOUNCE_MS );
 		connect( _previewTimer, &QTimer::timeout, this, &ExportImage::_updatePreview );
 
 		// Buttons.
-		QDialogButtonBox * buttonBox = new QDialogButtonBox(
+		QDialogButtonBox * buttonBox = Helper::makeQObject<QDialogButtonBox>(
 			QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Save, this
 		);
 

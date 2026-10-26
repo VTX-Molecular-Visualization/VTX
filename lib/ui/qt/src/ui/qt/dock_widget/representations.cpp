@@ -1,8 +1,10 @@
 #include "ui/qt/dock_widget/representations.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/library/representation.hpp"
+#include <memory>
 #include <util/factories.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -13,9 +15,11 @@ namespace VTX::UI::QT::DockWidget
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::REPRESENTATION ) );
 
-		auto * const representationWidget = new Widget::Library::Representation( this );
+		auto * const representationWidget = Helper::makeQObject<Widget::Library::Representation>( this );
 		_layout->addWidget( representationWidget );
-		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+		_layout->addSpacerItem(
+			std::make_unique<QSpacerItem>( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ).release()
+		);
 	}
 
 } // namespace VTX::UI::QT::DockWidget

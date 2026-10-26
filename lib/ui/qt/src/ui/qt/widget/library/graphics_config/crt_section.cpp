@@ -1,4 +1,5 @@
 #include "ui/qt/widget/library/graphics_config/crt_section.hpp"
+#include "ui/qt/helper.hpp"
 #include <QLabel>
 #include <QSignalBlocker>
 
@@ -12,8 +13,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 				  const QString & p_label, QPointer<EditableSlider> & p_slider, const float p_min, const float p_max
 			  )
 		{
-			addWidget( new QLabel( p_label, this ) );
-			p_slider = new EditableSlider( Qt::Orientation::Horizontal, this );
+			addWidget( Helper::makeQObject<QLabel>( p_label, this ) );
+			p_slider = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 			addWidget( p_slider );
 			p_slider->setMinimum( p_min );
 			p_slider->setMaximum( p_max );

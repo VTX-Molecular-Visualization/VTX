@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_UTIL__
 #define __VTX_UI_QT_UTIL__
 
+#include "ui/qt/helper.hpp"
 #include <QBitmap>
 #include <QColor>
 #include <QComboBox>
@@ -92,18 +93,18 @@ namespace VTX::UI::QT::Util
 	static void setDynamicProperty( QWidget * const p_widget, const char * const p_property )
 	{ setDynamicProperty( p_widget, p_property, true ); }
 
-	static Qt::CheckState getCheckState( const bool p_boolValue )
+	static constexpr Qt::CheckState getCheckState( const bool p_boolValue )
 	{ return p_boolValue ? Qt::CheckState::Checked : Qt::CheckState::Unchecked; }
 
 	static void filterEventOnWidget( QWidget * const p_widget, const QEvent::Type & p_eventType )
 	{
-		EventEater * const eater = new EventEater( p_eventType, p_widget );
+		EventEater * const eater = Helper::makeQObject<EventEater>( p_eventType, p_widget );
 		p_widget->installEventFilter( eater );
 	}
 
 	static void filterEventOnWidget( QWidget * const p_widget, const std::set<QEvent::Type> & p_eventTypes )
 	{
-		EventEater * const eater = new EventEater( p_eventTypes, p_widget );
+		EventEater * const eater = Helper::makeQObject<EventEater>( p_eventTypes, p_widget );
 		p_widget->installEventFilter( eater );
 	}
 
@@ -145,10 +146,10 @@ namespace VTX::UI::QT::Util
 
 	  public:
 		ObjectOwnership() = default;
-		ObjectOwnership( QObject * ) noexcept;
+		ObjectOwnership( QObject * );
 		void release() noexcept;
 
-		ObjectOwnership & operator=( QObject * ) noexcept;
+		ObjectOwnership & operator=( QObject * );
 
 		~ObjectOwnership();
 		ObjectOwnership( ObjectOwnership && ) noexcept;
@@ -159,7 +160,7 @@ namespace VTX::UI::QT::Util
 
 	// Extract uint64 number from input textbox, or UINT64_MAX if the number couldn't be red. Do nothing if src is
 	// nullptr.
-	void get( const QLineEdit * p_src, uint64_t & p_dest ) noexcept;
+	void get( const QLineEdit * p_src, uint64_t & p_dest );
 
 } // namespace VTX::UI::QT::Util
 

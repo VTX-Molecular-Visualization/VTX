@@ -1,6 +1,7 @@
 #include "ui/qt/dock_widget/scene.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
@@ -38,10 +39,10 @@ namespace VTX::UI::QT::DockWidget
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SCENE ) );
 
-		_treeGraphicsConfigPresets = new Widget::Tree::GraphicsConfigPresets( this );
-		_treeColorLayoutPresets	   = new Widget::Tree::ColorLayoutPresets( this );
-		_treeRepresentationPresets = new Widget::Tree::RepresentationPresets( this );
-		_treeScripts			   = new Widget::Tree::Scripts( this );
+		_treeGraphicsConfigPresets = Helper::makeQObject<Widget::Tree::GraphicsConfigPresets>( this );
+		_treeColorLayoutPresets	   = Helper::makeQObject<Widget::Tree::ColorLayoutPresets>( this );
+		_treeRepresentationPresets = Helper::makeQObject<Widget::Tree::RepresentationPresets>( this );
+		_treeScripts			   = Helper::makeQObject<Widget::Tree::Scripts>( this );
 
 		_layout->addWidget( _treeGraphicsConfigPresets );
 		_layout->addWidget( _treeColorLayoutPresets );
@@ -53,7 +54,7 @@ namespace VTX::UI::QT::DockWidget
 		selection.add( _treeColorLayoutPresets->selectionModel(), E_SELECTION_GROUP::COLOR_LAYOUT );
 		selection.add( _treeRepresentationPresets->selectionModel(), E_SELECTION_GROUP::REPRESENTATION );
 
-		_filler = new QWidget( this );
+		_filler = Helper::makeQObject<QWidget>( this );
 		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
 		_layout->addWidget( _filler );
 
@@ -85,7 +86,7 @@ namespace VTX::UI::QT::DockWidget
 
 	void Scene::_onCameraConstruct( Registry &, Entity p_e )
 	{
-		_treeCamera = new Widget::Tree::Camera( p_e, this );
+		_treeCamera = Helper::makeQObject<Widget::Tree::Camera>( p_e, this );
 		SELECTION().add( _treeCamera->selectionModel(), E_SELECTION_GROUP::CAMERA );
 		_layout->insertWidget( _layout->indexOf( _filler ), _treeCamera );
 		_setSelectionEnabled( _treeCamera, not UI_ACTIONS().isChecked( Action::Selection::LOCK ) );
@@ -94,7 +95,7 @@ namespace VTX::UI::QT::DockWidget
 	void Scene::_onSystemLoad( const App::Events::SystemLoad & p_e )
 	{
 		const auto entity = p_e.system;
-		auto *	   tree	  = new Widget::Tree::System( entity, this );
+		auto *	   tree	  = Helper::makeQObject<Widget::Tree::System>( entity, this );
 
 		tree->setSelectionMode( QAbstractItemView::NoSelection );
 
@@ -170,7 +171,7 @@ namespace VTX::UI::QT::DockWidget
 			delete _mapTrajTreeWidgets[ p_entity ];
 			_mapTrajTreeWidgets.erase( p_entity );
 		}
-		auto * player = new Widget::Tree::TrajectoryPlayer( p_entity, this );
+		auto * player = Helper::makeQObject<Widget::Tree::TrajectoryPlayer>( p_entity, this );
 		_mapTrajTreeWidgets.emplace( p_entity, player );
 		_layout->insertWidget( _layout->indexOf( _mapSystemTreeWidgets[ p_entity ] ), player );
 	}
@@ -190,7 +191,7 @@ namespace VTX::UI::QT::DockWidget
 	{
 		if ( not _mapThreadWidgets.contains( p_event.id ) )
 		{
-			_mapThreadWidgets.emplace( p_event.id, new Widget::Thread( this ) );
+			_mapThreadWidgets.emplace( p_event.id, Helper::makeQObject<Widget::Thread>( this ) );
 			_layout->insertWidget( _layout->indexOf( _filler ), _mapThreadWidgets[ p_event.id ] );
 
 			connect(

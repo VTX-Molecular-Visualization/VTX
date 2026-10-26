@@ -3,6 +3,7 @@
 
 #include "ui/qt/widget/tree/base_tree_presets.hpp"
 #include <app/scene/graphics_config.hpp>
+#include <memory>
 #include <renderer/graphics_config.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
@@ -13,7 +14,7 @@ namespace VTX::UI::QT::Widget::Tree
 	  public:
 		GraphicsConfigPresets( QWidget * const p_parent ) : BaseTreePreset<VTX::Renderer::GraphicsConfig>( p_parent )
 		{
-			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Graphics" ) );
+			addTopLevelItem( std::make_unique<QTreeWidgetItem>( QStringList() << "Graphics" ).release() );
 			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::GRAPHICS_CONFIG ) );
 			_restoreExpansionState( SETTING_KEY_GRAPHICS_CONFIG_PRESETS_EXPANDED );
 			_connectAppliedPresetUpdates( App::REG() );

@@ -1,6 +1,7 @@
 #include "ui/qt/menu/selection.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include <app/action/scene.hpp>
 #include <app/helper/system.hpp>
@@ -59,7 +60,7 @@ namespace VTX::UI::QT::Menu
 		// UI_ACTIONS().addTo( *this, Action::Selection::SOLO );
 		addSeparator();
 
-		_colorSchemeMenu = new ColorScheme( this );
+		_colorSchemeMenu = Helper::makeQObject<ColorScheme>( this );
 		connect(
 			_colorSchemeMenu,
 			&ColorScheme::selected,
@@ -69,7 +70,7 @@ namespace VTX::UI::QT::Menu
 		);
 		addMenu( _colorSchemeMenu );
 
-		_representationMenu = new Representation( this );
+		_representationMenu = Helper::makeQObject<Representation>( this );
 		connect(
 			_representationMenu,
 			&Representation::selected,

@@ -1,4 +1,5 @@
 #include "ui/qt/dialog/download.hpp"
+#include "ui/qt/helper.hpp"
 #include <QButtonGroup>
 #include <QDialogButtonBox>
 #include <QLabel>
@@ -11,6 +12,7 @@
 #include <app/action/scene.hpp>
 #include <app/constants.hpp>
 #include <app/session.hpp>
+#include <memory>
 
 namespace
 {
@@ -27,23 +29,23 @@ namespace VTX::UI::QT::Dialog
 		// TODO: try size policy?
 		setFixedSize( 300, 180 );
 
-		auto * layout = new QVBoxLayout( this );
+		auto * layout = Helper::makeQObject<QVBoxLayout>( this );
 
 		// URL.
-		auto * labelURL = new QLabel( "Server URL", this );
-		_comboBoxURL	= new QComboBox( this );
+		auto * labelURL = Helper::makeQObject<QLabel>( "Server URL", this );
+		_comboBoxURL	= Helper::makeQObject<QComboBox>( this );
 		_comboBoxURL->setEditable( true );
 		_comboBoxURL->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
 
 		// PDB id.
-		auto * labelPDB = new QLabel( "PDB id", this );
-		_comboBoxPDB	= new QComboBox( this );
+		auto * labelPDB = Helper::makeQObject<QLabel>( "PDB id", this );
+		_comboBoxPDB	= Helper::makeQObject<QComboBox>( this );
 		_comboBoxPDB->setEditable( true );
 		_comboBoxPDB->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
 		_comboBoxPDB->setFocus();
 
 		// Buttons.
-		auto * buttonBox = new QDialogButtonBox(
+		auto * buttonBox = Helper::makeQObject<QDialogButtonBox>(
 			QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open, this
 		);
 
@@ -51,10 +53,10 @@ namespace VTX::UI::QT::Dialog
 		// QLabel * labelCache = new QLabel( "File found", this );
 
 		// Radio buttons.
-		auto * buttonGroup		= new QButtonGroup( this );
-		auto * layoutCacheRadio = new QHBoxLayout();
-		_radioButtonOpen		= new QRadioButton( "Open from cache" );
-		_radioButtonDownload	= new QRadioButton( "Download" );
+		auto * buttonGroup		= Helper::makeQObject<QButtonGroup>( this );
+		auto   layoutCacheRadio = std::make_unique<QHBoxLayout>();
+		_radioButtonOpen		= Helper::makeQObject<QRadioButton>( "Open from cache", this );
+		_radioButtonDownload	= Helper::makeQObject<QRadioButton>( "Download", this );
 		buttonGroup->addButton( _radioButtonOpen );
 		buttonGroup->addButton( _radioButtonDownload );
 		layoutCacheRadio->addWidget( _radioButtonOpen );
@@ -65,7 +67,7 @@ namespace VTX::UI::QT::Dialog
 		layout->addWidget( _comboBoxURL );
 		layout->addWidget( labelPDB );
 		layout->addWidget( _comboBoxPDB );
-		layout->addLayout( layoutCacheRadio );
+		layout->addLayout( layoutCacheRadio.release() );
 		layout->addWidget( buttonBox );
 
 		// Callbacks.

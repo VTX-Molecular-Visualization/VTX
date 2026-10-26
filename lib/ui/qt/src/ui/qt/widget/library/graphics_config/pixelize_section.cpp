@@ -1,4 +1,5 @@
 #include "ui/qt/widget/library/graphics_config/pixelize_section.hpp"
+#include "ui/qt/helper.hpp"
 #include <QLabel>
 #include <QSignalBlocker>
 
@@ -7,14 +8,14 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	PixelizeSection::PixelizeSection( QWidget * const p_parent ) : Section( "Pixelize", p_parent )
 	{
 		using namespace Renderer;
-		addWidget( new QLabel( "Size", this ) );
-		_sliderSize = new EditableSlider( Qt::Orientation::Horizontal, this );
+		addWidget( Helper::makeQObject<QLabel>( "Size", this ) );
+		_sliderSize = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderSize );
 		_sliderSize->setMinimum( PIXELIZE_SIZE_MIN );
 		_sliderSize->setMaximum( PIXELIZE_SIZE_MAX );
 		_sliderSize->setStep( 1 );
 		_sliderSize->setDecimals( 0 );
-		_checkBoxBackground = new QCheckBox( "Background", this );
+		_checkBoxBackground = Helper::makeQObject<QCheckBox>( "Background", this );
 		addWidget( _checkBoxBackground );
 
 		connect(

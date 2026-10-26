@@ -26,6 +26,7 @@ namespace VTX::UI::QT::Model
 		/**
 		 * @brief Roles for data retrieval.
 		 */
+		// NOLINTNEXTLINE(performance-enum-size,cppcoreguidelines-use-enum-class)
 		enum Roles
 		{
 			// SYSTEM, CHAIN, RESIDUE, ATOM.

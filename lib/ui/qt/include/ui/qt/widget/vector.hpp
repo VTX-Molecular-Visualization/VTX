@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_WIDGET_VECTOR__
 #define __VTX_UI_QT_WIDGET_VECTOR__
 
+#include "ui/qt/helper.hpp"
 #include <QDoubleSpinBox>
 #include <QEvent>
 #include <QHBoxLayout>
@@ -36,14 +37,14 @@ namespace VTX::UI::QT::Widget
 
 		Vector( QWidget * const p_parent ) : IVector( p_parent )
 		{
-			auto * lay = new QHBoxLayout( this );
+			auto * lay = Helper::makeQObject<QHBoxLayout>( this );
 			lay->setContentsMargins( 0, 0, 0, 0 );
 
 			for ( int i = 0; i < N; i++ )
 			{
 				if constexpr ( std::is_integral_v<Scalar> )
 				{
-					auto * sb = new QSpinBox( this );
+					auto * sb = Helper::makeQObject<QSpinBox>( this );
 					sb->setRange( TypeLowest<Scalar>, TypeMax<Scalar> );
 					sb->setPrefix( QString( PREFIX[ i ] ) + ": " );
 
@@ -51,7 +52,7 @@ namespace VTX::UI::QT::Widget
 				}
 				else
 				{
-					auto * sb = new QDoubleSpinBox( this );
+					auto * sb = Helper::makeQObject<QDoubleSpinBox>( this );
 					sb->setRange( TypeLowest<Scalar>, TypeMax<Scalar> );
 					sb->setPrefix( QString( PREFIX[ i ] ) + ": " );
 					sb->setDecimals( 2 );

@@ -1,4 +1,5 @@
 #include "ui/qt/widget/library/graphics_config/chromatic_aberration_section.hpp"
+#include "ui/qt/helper.hpp"
 #include <QLabel>
 #include <QSignalBlocker>
 
@@ -6,9 +7,9 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 {
 	namespace
 	{
-		float _toUi( const float p_value ) { return -p_value * 100.f; }
+		constexpr float _toUi( const float p_value ) { return -p_value * 100.f; }
 
-		float _fromUi( const float p_value ) { return -p_value / 100.f; }
+		constexpr float _fromUi( const float p_value ) { return -p_value / 100.f; }
 	} // namespace
 
 	ChromaticAberrationSection::ChromaticAberrationSection( QWidget * const p_parent ) :
@@ -17,18 +18,18 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		using namespace Renderer;
 		const float minimum = _toUi( CHROMAB_RGB_MAX );
 		const float maximum = _toUi( CHROMAB_RGB_MIN );
-		addWidget( new QLabel( "Red", this ) );
-		_sliderRed = new EditableSlider( Qt::Orientation::Horizontal, this );
+		addWidget( Helper::makeQObject<QLabel>( "Red", this ) );
+		_sliderRed = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderRed );
 		_sliderRed->setMinimum( minimum );
 		_sliderRed->setMaximum( maximum );
-		addWidget( new QLabel( "Green", this ) );
-		_sliderGreen = new EditableSlider( Qt::Orientation::Horizontal, this );
+		addWidget( Helper::makeQObject<QLabel>( "Green", this ) );
+		_sliderGreen = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderGreen );
 		_sliderGreen->setMinimum( minimum );
 		_sliderGreen->setMaximum( maximum );
-		addWidget( new QLabel( "Blue", this ) );
-		_sliderBlue = new EditableSlider( Qt::Orientation::Horizontal, this );
+		addWidget( Helper::makeQObject<QLabel>( "Blue", this ) );
+		_sliderBlue = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderBlue );
 		_sliderBlue->setMinimum( minimum );
 		_sliderBlue->setMaximum( maximum );

@@ -1,5 +1,6 @@
 #include "ui/qt/dock_widget/sequences.hpp"
 #include "app/scene/color_layout.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include <app/events.hpp>
 #include <app/services.hpp>
@@ -33,7 +34,7 @@ namespace VTX::UI::QT::DockWidget
 	void Sequences::_onSystemLoad( const App::Events::SystemLoad & p_e )
 	{
 		const auto entity		  = p_e.system;
-		auto *	   sequenceWidget = new Widget::Sequence( entity, this );
+		auto *	   sequenceWidget = Helper::makeQObject<Widget::Sequence>( entity, this );
 
 		// Create Widget.
 		assert( not _mapSequenceWidgets.contains( entity ) );

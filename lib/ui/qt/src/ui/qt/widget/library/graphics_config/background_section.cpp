@@ -18,9 +18,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	namespace
 	{
 		std::string _normalizedPathString( const FilePath & p_path )
-		{
-			return std::filesystem::absolute( p_path ).lexically_normal().string();
-		}
+		{ return std::filesystem::absolute( p_path ).lexically_normal().string(); }
 
 		float _exposureMultiplierFromEv( const float p_value ) { return Util::Math::exp2( p_value ); }
 
@@ -38,20 +36,20 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		setChecked( true );
 		freeze( true );
 
-		auto * const backgroundModeWidget = new QWidget( this );
-		auto * const backgroundModeLayout = new QHBoxLayout( backgroundModeWidget );
+		auto * const backgroundModeWidget = Helper::makeQObject<QWidget>( this );
+		auto * const backgroundModeLayout = Helper::makeQObject<QHBoxLayout>( backgroundModeWidget );
 		backgroundModeLayout->setContentsMargins( 0, 0, 0, 0 );
-		_radioBackgroundColor		= new QRadioButton( "Color", backgroundModeWidget );
-		_radioBackgroundEnvironment = new QRadioButton( "Environment map", backgroundModeWidget );
+		_radioBackgroundColor		= Helper::makeQObject<QRadioButton>( "Color", backgroundModeWidget );
+		_radioBackgroundEnvironment = Helper::makeQObject<QRadioButton>( "Environment map", backgroundModeWidget );
 		backgroundModeLayout->addWidget( _radioBackgroundColor );
 		backgroundModeLayout->addWidget( _radioBackgroundEnvironment );
 		addWidget( backgroundModeWidget );
 
-		_colorPicker = new ColorPicker( this );
+		_colorPicker = Helper::makeQObject<ColorPicker>( this );
 		addWidget( _colorPicker );
 		_colorPicker->setText( "Color" );
 
-		_listEnvironmentMaps = new QListWidget( this );
+		_listEnvironmentMaps = Helper::makeQObject<QListWidget>( this );
 		_listEnvironmentMaps->setSelectionMode( QAbstractItemView::SingleSelection );
 		_listEnvironmentMaps->setSortingEnabled( true );
 		_listEnvironmentMaps->setIconSize( QSize( 192, 96 ) );
@@ -59,17 +57,17 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_listEnvironmentMaps->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 		addWidget( _listEnvironmentMaps );
 
-		auto * const environmentPathWidget = new QWidget( this );
-		auto * const environmentPathLayout = new QHBoxLayout( environmentPathWidget );
+		auto * const environmentPathWidget = Helper::makeQObject<QWidget>( this );
+		auto * const environmentPathLayout = Helper::makeQObject<QHBoxLayout>( environmentPathWidget );
 		environmentPathLayout->setContentsMargins( 0, 0, 0, 0 );
-		_lineEnvironmentPath = new QLineEdit( environmentPathWidget );
+		_lineEnvironmentPath = Helper::makeQObject<QLineEdit>( environmentPathWidget );
 		_lineEnvironmentPath->setReadOnly( true );
-		_buttonEnvironmentBrowse = new QPushButton( environmentPathWidget );
+		_buttonEnvironmentBrowse = Helper::makeQObject<QPushButton>( environmentPathWidget );
 		_buttonEnvironmentBrowse->setIcon( STYLE().iconFromCodepoint( Style::Icons::OPEN ) );
 		_buttonEnvironmentBrowse->setToolTip( "Open environment map" );
 		_buttonEnvironmentBrowse->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Preferred );
 		_buttonEnvironmentBrowse->setMinimumWidth( 0 );
-		_buttonEnvironmentClear = new QPushButton( environmentPathWidget );
+		_buttonEnvironmentClear = Helper::makeQObject<QPushButton>( environmentPathWidget );
 		_buttonEnvironmentClear->setIcon( STYLE().iconFromCodepoint( Style::Icons::DELETE ) );
 		_buttonEnvironmentClear->setToolTip( "Remove environment map" );
 		_buttonEnvironmentClear->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Preferred );
@@ -79,9 +77,9 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		environmentPathLayout->addWidget( _buttonEnvironmentClear );
 		addWidget( environmentPathWidget );
 
-		_labelEnvironmentRotation = new QLabel( "Environment rotation", this );
+		_labelEnvironmentRotation = Helper::makeQObject<QLabel>( "Environment rotation", this );
 		addWidget( _labelEnvironmentRotation );
-		_sliderEnvironmentRotation = new EditableSlider( Qt::Orientation::Horizontal, this );
+		_sliderEnvironmentRotation = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderEnvironmentRotation );
 		_sliderEnvironmentRotation->setMinimum( Util::Math::degrees( ENVIRONMENT_ROTATION_MIN ) );
 		_sliderEnvironmentRotation->setMaximum( Util::Math::degrees( ENVIRONMENT_ROTATION_MAX ) );
@@ -89,9 +87,9 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_sliderEnvironmentRotation->setDecimals( 1 );
 		_sliderEnvironmentRotation->setSuffix( "°" );
 
-		_labelSkyboxIntensity = new QLabel( "Intensity", this );
+		_labelSkyboxIntensity = Helper::makeQObject<QLabel>( "Intensity", this );
 		addWidget( _labelSkyboxIntensity );
-		_sliderSkyboxIntensity = new EditableSlider( Qt::Orientation::Horizontal, this );
+		_sliderSkyboxIntensity = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderSkyboxIntensity );
 		_sliderSkyboxIntensity->setMinimum( TONE_MAPPING_EXPOSURE_EV_MIN );
 		_sliderSkyboxIntensity->setMaximum( TONE_MAPPING_EXPOSURE_EV_MAX );
@@ -99,9 +97,9 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_sliderSkyboxIntensity->setDecimals( 2 );
 		_sliderSkyboxIntensity->setSuffix( "EV" );
 
-		_labelIblIntensity = new QLabel( "Reflections", this );
+		_labelIblIntensity = Helper::makeQObject<QLabel>( "Reflections", this );
 		addWidget( _labelIblIntensity );
-		_sliderIblIntensity = new EditableSlider( Qt::Orientation::Horizontal, this );
+		_sliderIblIntensity = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderIblIntensity );
 		_sliderIblIntensity->setMinimum( TONE_MAPPING_EXPOSURE_EV_MIN );
 		_sliderIblIntensity->setMaximum( TONE_MAPPING_EXPOSURE_EV_MAX );
@@ -226,8 +224,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 			const QString  path			 = QString::fromStdString( _normalizedPathString( entry.path() ) );
 			const FilePath thumbnailPath = FilePath( entry.path() ).replace_extension( ".png" );
 			auto * const   item			 = new QListWidgetItem(
-				   QIcon( QString::fromStdString( thumbnailPath.string() ) ), QString {}, _listEnvironmentMaps
-			   );
+				QIcon( QString::fromStdString( thumbnailPath.string() ) ), QString {}, _listEnvironmentMaps
+			);
 			item->setData( Qt::UserRole, path );
 			item->setSizeHint( QSize( 208, 104 ) );
 			item->setToolTip( QString::fromStdString( displayPath.string() ) + "\n" + path );

@@ -8,15 +8,15 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	OutlineSection::OutlineSection( QWidget * const p_parent ) : Section( "Outline", p_parent )
 	{
 		using namespace Renderer;
-		_colorPicker = new ColorPicker( this );
+		_colorPicker = Helper::makeQObject<ColorPicker>( this );
 		addWidget( _colorPicker );
-		addWidget( new QLabel( "Sensitivity", this ) );
-		_sliderSensitivity = new EditableSlider( Qt::Orientation::Horizontal, this );
+		addWidget( Helper::makeQObject<QLabel>( "Sensitivity", this ) );
+		_sliderSensitivity = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderSensitivity );
 		_sliderSensitivity->setMinimum( OUTLINE_SENSITIVITY_MIN );
 		_sliderSensitivity->setMaximum( OUTLINE_SENSITIVITY_MAX );
-		addWidget( new QLabel( "Thickness", this ) );
-		_sliderThickness = new EditableSlider( Qt::Orientation::Horizontal, this );
+		addWidget( Helper::makeQObject<QLabel>( "Thickness", this ) );
+		_sliderThickness = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderThickness );
 		_sliderThickness->setMinimum( OUTLINE_THICKNESS_MIN );
 		_sliderThickness->setMaximum( OUTLINE_THICKNESS_MAX );

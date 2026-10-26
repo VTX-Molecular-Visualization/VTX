@@ -1,4 +1,5 @@
 #include "ui/qt/dock_widget/python_editor.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
@@ -16,15 +17,15 @@ namespace VTX::UI::QT::DockWidget
 	{
 		setAllowedAreas( Qt::TopDockWidgetArea | Qt::RightDockWidgetArea );
 
-		auto * const toolbar = new QToolBar( _root );
+		auto * const toolbar = Helper::makeQObject<QToolBar>( _root );
 		toolbar->setMovable( false );
 		toolbar->setFloatable( false );
 		toolbar->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
 		_runAction = toolbar->addAction( STYLE().iconFromCodepoint( Style::Icons::SCRIPT_RUN ), "Run" );
 		_runAction->setEnabled( false );
 
-		_textEdit	 = new QPlainTextEdit( _root );
-		_highlighter = new PythonHighlighter( _textEdit->document() );
+		_textEdit	 = Helper::makeQObject<QPlainTextEdit>( _root );
+		_highlighter = Helper::makeQObject<PythonHighlighter>( _textEdit->document() );
 		_layout->addWidget( toolbar );
 		_layout->addWidget( _textEdit );
 

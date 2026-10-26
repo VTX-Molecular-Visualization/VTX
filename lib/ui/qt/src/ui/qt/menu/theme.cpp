@@ -1,6 +1,7 @@
 #include "ui/qt/menu/theme.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/main_window.hpp"
@@ -25,7 +26,7 @@ namespace VTX::UI::QT::Menu
 	{
 		setTitle( "Theme" );
 
-		_actionGroup = new QActionGroup( this );
+		_actionGroup = Helper::makeQObject<QActionGroup>( this );
 		_actionGroup->setExclusive( true );
 
 		_addThemeAction( "System", Style::E_THEME::SYSTEM );

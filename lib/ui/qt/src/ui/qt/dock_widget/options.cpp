@@ -3,6 +3,7 @@
 #include "ui/qt/actions.hpp"
 #include "ui/qt/application.hpp"
 #include "ui/qt/events.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/model/system_model.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
@@ -22,6 +23,7 @@
 #include <app/services.hpp>
 #include <app/session.hpp>
 #include <app/setting/accessibility.hpp>
+#include <memory>
 #include <string>
 #include <ui/qt/widget/sequence.hpp>
 #include <util/enum.hpp>
@@ -54,9 +56,9 @@ namespace VTX::UI::QT::DockWidget
 
 		// Tree.
 		auto * groupBoxTree = new QGroupBox( "System tree" );
-		auto * layoutTree	= new QVBoxLayout( groupBoxTree );
+		auto * layoutTree	= Helper::makeQObject<QVBoxLayout>( groupBoxTree );
 
-		_comboBoxTreeViewMode = new QComboBox( this );
+		_comboBoxTreeViewMode = Helper::makeQObject<QComboBox>( this );
 		_comboBoxTreeViewMode->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxTreeViewMode->setMinimumWidth( 0 );
 
@@ -88,9 +90,9 @@ namespace VTX::UI::QT::DockWidget
 
 		// Sequence.
 		auto * groupBoxSeq = new QGroupBox( "Sequence viewer" );
-		auto * layoutSeq   = new QVBoxLayout( groupBoxSeq );
+		auto * layoutSeq   = Helper::makeQObject<QVBoxLayout>( groupBoxSeq );
 
-		_comboBoxSeqViewMode = new QComboBox( this );
+		_comboBoxSeqViewMode = Helper::makeQObject<QComboBox>( this );
 		_comboBoxSeqViewMode->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxSeqViewMode->setMinimumWidth( 0 );
 
@@ -123,9 +125,9 @@ namespace VTX::UI::QT::DockWidget
 		// Display.
 		// Theme.
 		auto * groupBoxDisplay = new QGroupBox( "Display" );
-		auto * layoutDisplay   = new QVBoxLayout( groupBoxDisplay );
+		auto * layoutDisplay   = Helper::makeQObject<QVBoxLayout>( groupBoxDisplay );
 
-		_comboBoxTheme = new QComboBox( this );
+		_comboBoxTheme = Helper::makeQObject<QComboBox>( this );
 		_comboBoxTheme->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxTheme->setMinimumWidth( 0 );
 
@@ -148,7 +150,7 @@ namespace VTX::UI::QT::DockWidget
 		layoutDisplay->addWidget( _comboBoxTheme );
 
 		// Font.
-		_comboBoxFont = new QComboBox( this );
+		_comboBoxFont = Helper::makeQObject<QComboBox>( this );
 		_comboBoxFont->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxFont->setMinimumWidth( 0 );
 
@@ -184,18 +186,18 @@ namespace VTX::UI::QT::DockWidget
 
 		// Reset layout.
 		auto * buttonResetLayout
-			= new ActionablePushButton( UI_ACTIONS().getAction( Action::Theme::RESET_LAYOUT ), this );
+			= Helper::makeQObject<ActionablePushButton>( UI_ACTIONS().getAction( Action::Theme::RESET_LAYOUT ), this );
 		buttonResetLayout->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		buttonResetLayout->setMinimumWidth( 0 );
 		layoutDisplay->addWidget( buttonResetLayout );
 
 		// Accessibility.
 		auto * groupBoxAccessibility = new QGroupBox( "Accessibility" );
-		auto * layoutAccessibility	 = new QVBoxLayout( groupBoxAccessibility );
+		auto * layoutAccessibility	 = Helper::makeQObject<QVBoxLayout>( groupBoxAccessibility );
 
-		layoutAccessibility->addWidget( new QLabel( "Color", this ) );
+		layoutAccessibility->addWidget( Helper::makeQObject<QLabel>( "Color", this ) );
 
-		_comboBoxColorAccessibilityMode = new QComboBox( this );
+		_comboBoxColorAccessibilityMode = Helper::makeQObject<QComboBox>( this );
 		_comboBoxColorAccessibilityMode->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxColorAccessibilityMode->setMinimumWidth( 0 );
 		_comboBoxColorAccessibilityMode->addItem(
@@ -226,7 +228,7 @@ namespace VTX::UI::QT::DockWidget
 			}
 		);
 
-		_checkBoxForceDyslexicFont = new QCheckBox( "Dyslexia-friendly font", this );
+		_checkBoxForceDyslexicFont = Helper::makeQObject<QCheckBox>( "Dyslexia-friendly font", this );
 		_checkBoxForceDyslexicFont->setToolTip( "Use OpenDyslexic as the application font" );
 		_checkBoxForceDyslexicFont->setWhatsThis( _checkBoxForceDyslexicFont->toolTip() );
 		_checkBoxForceDyslexicFont->setChecked( forceDyslexicFont );
@@ -257,8 +259,8 @@ namespace VTX::UI::QT::DockWidget
 
 		// Inputs.
 		auto * groupBoxInputs = new QGroupBox( "Inputs" );
-		auto * layoutInputs	  = new QVBoxLayout( groupBoxInputs );
-		_comboBoxKBLayout	  = new QComboBox( this );
+		auto * layoutInputs	  = Helper::makeQObject<QVBoxLayout>( groupBoxInputs );
+		_comboBoxKBLayout	  = Helper::makeQObject<QComboBox>( this );
 		_comboBoxKBLayout->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxKBLayout->setMinimumWidth( 0 );
 
@@ -287,8 +289,8 @@ namespace VTX::UI::QT::DockWidget
 
 		// Graphics.
 		auto * groupBoxGraphics = new QGroupBox( "Graphics" );
-		auto * layoutGraphics	= new QVBoxLayout( groupBoxGraphics );
-		_checkBoxVSync			= new QCheckBox( "Vertical synchronization", this );
+		auto * layoutGraphics	= Helper::makeQObject<QVBoxLayout>( groupBoxGraphics );
+		_checkBoxVSync			= Helper::makeQObject<QCheckBox>( "Vertical synchronization", this );
 		_checkBoxVSync->setToolTip( "Synchronize the frame rate with the screen refresh rate" );
 		_checkBoxVSync->setWhatsThis( "Synchronize the frame rate with the screen refresh rate" );
 
@@ -301,7 +303,7 @@ namespace VTX::UI::QT::DockWidget
 
 		layoutGraphics->addWidget( _checkBoxVSync );
 
-		_checkBoxSavePower = new QCheckBox( "Save GPU power", this );
+		_checkBoxSavePower = Helper::makeQObject<QCheckBox>( "Save GPU power", this );
 		_checkBoxSavePower->setToolTip( "Render frame only on update" );
 		_checkBoxSavePower->setWhatsThis( "Render frame only on update" );
 
@@ -323,7 +325,9 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( groupBoxInputs );
 		_layout->addWidget( groupBoxGraphics );
 		_layout->addWidget( groupBoxDiskUsage );
-		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+		_layout->addSpacerItem(
+			std::make_unique<QSpacerItem>( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ).release()
+		);
 
 		_refreshFoldersInfos();
 
@@ -382,7 +386,7 @@ namespace VTX::UI::QT::DockWidget
 	QGroupBox * Options::_createDiskUsageGroupBox()
 	{
 		auto * groupBox = new QGroupBox( "Disk usage" );
-		auto * layout	= new QVBoxLayout( groupBox );
+		auto * layout	= Helper::makeQObject<QVBoxLayout>( groupBox );
 
 		_addDiskUsageRow( layout, "Data", App::SESSION().getCacheDir(), _labelCacheSize );
 		_addDiskUsageRow( layout, "HDRI", App::SESSION().getHdriDir(), _labelHdriSize );
@@ -399,8 +403,8 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<QLabel> & p_labelSize
 	)
 	{
-		auto * layoutRow  = new QHBoxLayout();
-		auto * buttonOpen = new QPushButton( this );
+		auto   layoutRow  = std::make_unique<QHBoxLayout>();
+		auto * buttonOpen = Helper::makeQObject<QPushButton>( this );
 
 		buttonOpen->setIcon( STYLE().iconFromCodepoint( Style::Icons::OPEN ) );
 		buttonOpen->setToolTip( QString( "Open %1 folder" ).arg( p_title.toLower() ) );
@@ -414,13 +418,13 @@ namespace VTX::UI::QT::DockWidget
 			[ p_path ]() { QDesktopServices::openUrl( QUrl::fromLocalFile( QDir( p_path ).absolutePath() ) ); }
 		);
 
-		p_labelSize = new QLabel( this );
+		p_labelSize = Helper::makeQObject<QLabel>( this );
 		p_labelSize->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		p_labelSize->setMinimumWidth( 0 );
 
 		layoutRow->addWidget( p_labelSize );
 		layoutRow->addWidget( buttonOpen );
-		p_layout->addLayout( layoutRow );
+		p_layout->addLayout( layoutRow.release() );
 	}
 
 	void Options::_refreshFolderInfos(

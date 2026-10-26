@@ -1,5 +1,6 @@
 #include "ui/qt/widget/controller.hpp"
 #include "ui/qt/actions.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/expandable_tool_bar.hpp"
 #include <QLabel>
@@ -15,20 +16,20 @@ namespace VTX::UI::QT::Widget
 	Controller::Controller( const Entity p_entity, QWidget * const p_parent ) :
 		QGroupBox( "Controller", p_parent ), _entity( p_entity )
 	{
-		auto * layout = new QVBoxLayout( this );
+		auto * layout = Helper::makeQObject<QVBoxLayout>( this );
 
-		auto * labelMode   = new QLabel( "Mode", this );
-		auto * toolbarMode = new ExpandableToolBar( this );
+		auto * labelMode   = Helper::makeQObject<QLabel>( "Mode", this );
+		auto * toolbarMode = Helper::makeQObject<ExpandableToolBar>( this );
 		toolbarMode->addAction( Action::Camera::TRACKBALL );
 		toolbarMode->addAction( Action::Camera::FREEFLY );
 		layout->addWidget( labelMode );
 		layout->addWidget( toolbarMode );
 
-		_checkBoxInvertY = new QCheckBox( "Invert mouse Y", this );
+		_checkBoxInvertY = Helper::makeQObject<QCheckBox>( "Invert mouse Y", this );
 		layout->addWidget( _checkBoxInvertY );
 
-		auto * labelTranslationSpeed = new QLabel( "Translation speed", this );
-		_sliderTranslationSpeed		 = new EditableSlider( Qt::Orientation::Horizontal, this );
+		auto * labelTranslationSpeed = Helper::makeQObject<QLabel>( "Translation speed", this );
+		_sliderTranslationSpeed		 = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		_sliderTranslationSpeed->setMinimum( App::Setting::TRANSLATION_SPEED_MIN );
 		_sliderTranslationSpeed->setMaximum( App::Setting::TRANSLATION_SPEED_MAX );
 		_sliderTranslationSpeed->setStep( 1.f );
@@ -36,8 +37,8 @@ namespace VTX::UI::QT::Widget
 		layout->addWidget( labelTranslationSpeed );
 		layout->addWidget( _sliderTranslationSpeed );
 
-		auto * labelRotationSpeed = new QLabel( "Rotation speed", this );
-		_sliderRotationSpeed	  = new EditableSlider( Qt::Orientation::Horizontal, this );
+		auto * labelRotationSpeed = Helper::makeQObject<QLabel>( "Rotation speed", this );
+		_sliderRotationSpeed	  = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		_sliderRotationSpeed->setMinimum( App::Setting::ROTATION_SPEED_MIN );
 		_sliderRotationSpeed->setMaximum( App::Setting::ROTATION_SPEED_MAX );
 		_sliderRotationSpeed->setStep( 0.1f );
@@ -45,8 +46,8 @@ namespace VTX::UI::QT::Widget
 		layout->addWidget( labelRotationSpeed );
 		layout->addWidget( _sliderRotationSpeed );
 
-		auto * labelAccelerationFactor = new QLabel( "Acceleration factor", this );
-		_sliderAccelerationFactor	   = new EditableSlider( Qt::Orientation::Horizontal, this );
+		auto * labelAccelerationFactor = Helper::makeQObject<QLabel>( "Acceleration factor", this );
+		_sliderAccelerationFactor	   = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		_sliderAccelerationFactor->setMinimum( App::Setting::ACCELERATION_FACTOR_MIN );
 		_sliderAccelerationFactor->setMaximum( App::Setting::ACCELERATION_FACTOR_MAX );
 		_sliderAccelerationFactor->setStep( 0.1f );
@@ -54,8 +55,8 @@ namespace VTX::UI::QT::Widget
 		layout->addWidget( labelAccelerationFactor );
 		layout->addWidget( _sliderAccelerationFactor );
 
-		auto * labelDecelerationFactor = new QLabel( "Deceleration factor", this );
-		_sliderDecelerationFactor	   = new EditableSlider( Qt::Orientation::Horizontal, this );
+		auto * labelDecelerationFactor = Helper::makeQObject<QLabel>( "Deceleration factor", this );
+		_sliderDecelerationFactor	   = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		_sliderDecelerationFactor->setMinimum( App::Setting::DECELERATION_FACTOR_MIN );
 		_sliderDecelerationFactor->setMaximum( App::Setting::DECELERATION_FACTOR_MAX );
 		_sliderDecelerationFactor->setStep( 0.1f );
@@ -63,11 +64,11 @@ namespace VTX::UI::QT::Widget
 		layout->addWidget( labelDecelerationFactor );
 		layout->addWidget( _sliderDecelerationFactor );
 
-		_checkBoxElasticityActive = new QCheckBox( "Elasticity", this );
+		_checkBoxElasticityActive = Helper::makeQObject<QCheckBox>( "Elasticity", this );
 		layout->addWidget( _checkBoxElasticityActive );
 
-		_labelElasticityFactor	= new QLabel( "Elasticity factor", this );
-		_sliderElasticityFactor = new EditableSlider( Qt::Orientation::Horizontal, this );
+		_labelElasticityFactor	= Helper::makeQObject<QLabel>( "Elasticity factor", this );
+		_sliderElasticityFactor = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		_sliderElasticityFactor->setMinimum( App::Setting::ELASTICITY_FACTOR_MIN );
 		_sliderElasticityFactor->setMaximum( App::Setting::ELASTICITY_FACTOR_MAX );
 		_sliderElasticityFactor->setStep( 0.1f );

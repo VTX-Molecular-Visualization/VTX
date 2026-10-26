@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_WIDGET_LIBRARY_BASE_PRESET_WIDGET__
 
 #include "preset_selector.hpp"
+#include "ui/qt/helper.hpp"
 #include <QGroupBox>
 #include <QVBoxLayout>
 
@@ -14,11 +15,11 @@ namespace VTX::UI::QT::Widget::Library
 	  public:
 		BasePresetWidget( QWidget * const p_parent ) : QWidget( p_parent )
 		{
-			_presetSelector = new PresetSelector<P>( this );
-			_groupboxPreset = new QGroupBox( this );
-			_groupboxPreset->setLayout( new QVBoxLayout() );
+			_presetSelector = Helper::makeQObject<PresetSelector<P>>( this );
+			_groupboxPreset = Helper::makeQObject<QGroupBox>( this );
+			_groupboxPreset->setLayout( Helper::makeQObject<QVBoxLayout>( _groupboxPreset ) );
 
-			_layout = new QVBoxLayout( this );
+			_layout = Helper::makeQObject<QVBoxLayout>( this );
 			setLayout( _layout );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 

@@ -1,4 +1,5 @@
 #include "ui/qt/util.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/resources.hpp"
 #include "ui/qt/validator.hpp"
 #include <QAction>
@@ -13,6 +14,7 @@
 #include <QScrollArea>
 #include <QToolButton>
 #include <algorithm>
+#include <memory>
 
 namespace VTX::UI::QT::Util
 {
@@ -41,7 +43,7 @@ namespace VTX::UI::QT::Util
 	{
 		for ( int i = 0; i < p_enumSize; i++ )
 		{
-			QAction * const action = new QAction( QString::fromStdString( p_names[ i ] ), &p_menu );
+			QAction * const action = Helper::makeQObject<QAction>( QString::fromStdString( p_names[ i ] ), &p_menu );
 			action->setData( i );
 			action->setCheckable( p_actionCheckable );
 
@@ -63,10 +65,10 @@ namespace VTX::UI::QT::Util
 			// Reading the palette keeps it following the OS theme (light/dark) automatically.
 			setAttribute( Qt::WA_TranslucentBackground );
 
-			auto * outerLayout = new QVBoxLayout( this );
+			auto * outerLayout = Helper::makeQObject<QVBoxLayout>( this );
 			outerLayout->setContentsMargins( { 0, 0, 0, 0 } );
 
-			_frame = new QWidget( this );
+			_frame = Helper::makeQObject<QWidget>( this );
 			_frame->setObjectName( "questionMarkPopupFrame" );
 			outerLayout->addWidget( _frame );
 
@@ -121,7 +123,7 @@ namespace VTX::UI::QT::Util
 
 	  private:
 		// Paint the inner frame with the theme background and a rounded border in the theme foreground.
-		void _applyThemeStyle() noexcept
+		void _applyThemeStyle()
 		{
 			const QColor background = palette().color( QPalette::Window );
 			const QColor foreground = palette().color( QPalette::WindowText );
@@ -144,11 +146,11 @@ namespace VTX::UI::QT::Util
 		// Side length of the clickable question-mark button, in pixels.
 		static constexpr int BUTTON_SIDE = 16;
 
-		Popup *	 popup	= new Popup( this );
+		Popup *	 popup	= Helper::makeQObject<Popup>( this );
 		QLabel * _label = nullptr;
 
 	  public:
-		QHoverableQuestionMark( const char * const p_popupText )
+		QHoverableQuestionMark( const char * const p_popupText, QWidget * const p_parent ) : QPushButton( p_parent )
 		{
 			// Render the help affordance as a bold "?" glyph rather than an icon. The old resource
 			// ":/sprite/citations_icon_hovered.png" was removed (turning this flat button invisible), and a
@@ -175,7 +177,7 @@ namespace VTX::UI::QT::Util
 			// Large reports (e.g. raw gromacs output) used to grow the tooltip off-screen. Wrap the text in
 			// a scroll area so the popup stays bounded and the overflow is scrollable instead. Keep the scroll
 			// area and label transparent so the popup's themed frame background shows through uniformly.
-			auto * const scrollArea = new QScrollArea( popup->contentHost() );
+			auto * const scrollArea = Helper::makeQObject<QScrollArea>( popup->contentHost() );
 			scrollArea->setWidget( _label );
 			scrollArea->setWidgetResizable( true );
 			scrollArea->setFrameShape( QFrame::NoFrame );
@@ -185,7 +187,7 @@ namespace VTX::UI::QT::Util
 			_label->setAttribute( Qt::WA_TranslucentBackground );
 
 			// Inset the content from the rounded border so text never overlaps the corners.
-			auto * const layout = new QVBoxLayout( popup->contentHost() );
+			auto * const layout = Helper::makeQObject<QVBoxLayout>( popup->contentHost() );
 			layout->setContentsMargins( { 10, 8, 10, 8 } );
 			layout->addWidget( scrollArea );
 		}
@@ -265,8 +267,9 @@ namespace VTX::UI::QT::Util
 		const E_QUESTIONMARK_POSITION & p_postion
 	) : container( new QWidget ), label( new QLabel( p_label ) )
 	{
-		QHBoxLayout *			 layout		  = new QHBoxLayout( container );
-		QHoverableQuestionMark * questionMark = new QHoverableQuestionMark( p_helper );
+		QHBoxLayout *			 layout = Helper::makeQObject<QHBoxLayout>( container );
+		QHoverableQuestionMark * questionMark
+			= Helper::makeQObject<QHoverableQuestionMark>( p_helper, container.data() );
 		layout->setContentsMargins( { 0, 0, 0, 0 } );
 
 		if ( p_postion == E_QUESTIONMARK_POSITION::left )
@@ -285,34 +288,36 @@ namespace VTX::UI::QT::Util
 
 	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label )
 	{
-		QHBoxLayout * qLilLayout = new QHBoxLayout;
-		p_dest->addLayout( qLilLayout );
+		auto		 qLilLayoutOwner = std::make_unique<QHBoxLayout>();
+		auto * const qLilLayout		 = qLilLayoutOwner.get();
+		p_dest->addLayout( qLilLayoutOwner.release() );
 		QLabel * qlabel = new QLabel( p_label );
 		QFont	 font	= qlabel->font();
 		font.setPointSize( font.pointSize() + 4 );
 		qlabel->setFont( font );
-		auto * const qLine = new QFrame;
+		auto qLine = std::make_unique<QFrame>();
 		qLine->setFrameShape( QFrame::HLine );
 		qLine->setFrameShadow( QFrame::Sunken );
 		qLilLayout->addWidget( qlabel );
-		qLilLayout->addWidget( qLine, 1 );
+		qLilLayout->addWidget( qLine.release(), 1 );
 	}
 
 	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip )
 	{
-		QLineEdit * out = new QLineEdit();
-		out->setValidator( new VTX::UI::QT::QUInt64Validator( out ) );
+		auto			  outOwner = std::make_unique<QLineEdit>();
+		QLineEdit * const out	   = outOwner.get();
+		out->setValidator( Helper::makeQObject<VTX::UI::QT::QUInt64Validator>( out ) );
 
 		p_dest->addRow(
 			VTX::UI::QT::Util::LabelWithHelper(
 				p_label, p_tooltip, VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 			),
-			out
+			outOwner.release()
 		);
 		return out;
 	}
 
-	ObjectOwnership::ObjectOwnership( QObject * p_ ) noexcept : _obj( p_ ) {}
+	ObjectOwnership::ObjectOwnership( QObject * const p_ ) : _obj( p_ ) {}
 
 	void ObjectOwnership::release() noexcept { _obj.clear(); }
 
@@ -326,7 +331,7 @@ namespace VTX::UI::QT::Util
 
 	ObjectOwnership::ObjectOwnership( ObjectOwnership && p_ ) noexcept : _obj( p_._obj ) { p_.release(); }
 
-	ObjectOwnership & ObjectOwnership::operator=( QObject * p_ ) noexcept
+	ObjectOwnership & ObjectOwnership::operator=( QObject * const p_ )
 	{
 		if ( not _obj.isNull() )
 		{
@@ -354,7 +359,7 @@ namespace VTX::UI::QT::Util
 		return *this;
 	}
 
-	void get( const QLineEdit * p_src, uint64_t & p_dest ) noexcept
+	void get( const QLineEdit * const p_src, uint64_t & p_dest )
 	{
 		if ( p_src == nullptr )
 		{

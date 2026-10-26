@@ -3,11 +3,16 @@
 
 #include <QColor>
 #include <QLocale>
+#include <QObject>
 #include <QString>
 #include <QtGlobal>
+#include <concepts>
+#include <memory>
+#include <stdexcept>
 #include <string_view>
 #include <type_traits>
 #include <util/color/rgba.hpp>
+#include <utility>
 
 namespace VTX::UI::QT::Helper
 {

@@ -8,20 +8,20 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	FogSection::FogSection( QWidget * const p_parent ) : Section( "Fog", p_parent )
 	{
 		using namespace Renderer;
-		_colorPicker = new ColorPicker( this );
+		_colorPicker = Helper::makeQObject<ColorPicker>( this );
 		addWidget( _colorPicker );
-		addWidget( new QLabel( "Near", this ) );
-		_sliderNear = new EditableSlider( Qt::Orientation::Horizontal, this );
+		addWidget( Helper::makeQObject<QLabel>( "Near", this ) );
+		_sliderNear = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderNear );
 		_sliderNear->setMinimum( FOG_NEAR_MIN );
 		_sliderNear->setMaximum( FOG_NEAR_MAX );
-		addWidget( new QLabel( "Far", this ) );
-		_sliderFar = new EditableSlider( Qt::Orientation::Horizontal, this );
+		addWidget( Helper::makeQObject<QLabel>( "Far", this ) );
+		_sliderFar = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderFar );
 		_sliderFar->setMinimum( FOG_FAR_MIN );
 		_sliderFar->setMaximum( FOG_FAR_MAX );
-		addWidget( new QLabel( "Density", this ) );
-		_sliderDensity = new EditableSlider( Qt::Orientation::Horizontal, this );
+		addWidget( Helper::makeQObject<QLabel>( "Density", this ) );
+		_sliderDensity = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderDensity );
 		_sliderDensity->setMinimum( FOG_DENSITY_MIN );
 		_sliderDensity->setMaximum( FOG_DENSITY_MAX );

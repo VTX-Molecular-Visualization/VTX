@@ -14,6 +14,7 @@
 #include <app/ecs.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
+#include <memory>
 #include <renderer/renderer.hpp>
 #include <ui/qt/actions.hpp>
 #include <util/event_hub.hpp>
@@ -28,7 +29,7 @@ namespace VTX::UI::QT
 		using namespace Resources;
 		using namespace App;
 
-		_splashScreen = new QSplashScreen( QPixmap( QString::fromUtf8( Resources::SPRITE_SPLASH ) ) );
+		_splashScreen = std::make_unique<QSplashScreen>( QPixmap( QString::fromUtf8( Resources::SPRITE_SPLASH ) ) );
 		_splashScreen->show();
 
 		// Application info.

@@ -115,7 +115,7 @@ namespace VTX::UI::QT::DockWidget
 		setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
 
 		// Log area.
-		_textEdit = new QTextBrowser( _root );
+		_textEdit = Helper::makeQObject<QTextBrowser>( _root );
 		_textEdit->setReadOnly( true );
 		_textEdit->setWordWrapMode( QTextOption::WrapAnywhere );
 		_textEdit->setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAsNeeded );
@@ -135,7 +135,7 @@ namespace VTX::UI::QT::DockWidget
 			[ & ]( const QPoint & p_pos )
 			{
 				QMenu			menu( this );
-				QAction * const clearAction = new QAction( "Clear", &menu );
+				QAction * const clearAction = Helper::makeQObject<QAction>( "Clear", &menu );
 				connect( clearAction, &QAction::triggered, this, &Console::clear );
 				menu.addAction( clearAction );
 				menu.exec( _textEdit->mapToGlobal( p_pos ) );
@@ -146,7 +146,7 @@ namespace VTX::UI::QT::DockWidget
 		_logConnection = App::HUB().connect<Util::LogInfo, &Console::log>( this );
 
 		// Command launcher.
-		_commandLauncher = new UI::QT::Widget::CommandLauncher( this );
+		_commandLauncher = Helper::makeQObject<UI::QT::Widget::CommandLauncher>( this );
 
 		_layout->addWidget( _textEdit );
 		_layout->addWidget( _commandLauncher );

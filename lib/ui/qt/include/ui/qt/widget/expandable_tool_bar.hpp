@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_WIDGET_EXPANDABLE_TOOL_BAR__
 
 #include "ui/qt/action_registry.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include <QHBoxLayout>
 #include <QPointer>
@@ -20,7 +21,7 @@ namespace VTX::UI::QT::Widget
 	  public:
 		explicit ExpandableToolBar( QWidget * const p_parent ) : QWidget( p_parent )
 		{
-			_layout = new QHBoxLayout( this );
+			_layout = Helper::makeQObject<QHBoxLayout>( this );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 		}
 
@@ -68,7 +69,7 @@ namespace VTX::UI::QT::Widget
 
 		void _addButton( QAction & p_action )
 		{
-			auto * btn = new QToolButton( this );
+			auto * btn = Helper::makeQObject<QToolButton>( this );
 			btn->setDefaultAction( &p_action );
 			btn->setToolButtonStyle( _style );
 			btn->setIconSize( _iconSize );

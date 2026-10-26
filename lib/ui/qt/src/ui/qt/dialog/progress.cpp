@@ -1,5 +1,6 @@
 #include "ui/qt/dialog/progress.hpp"
 #include "ui/qt/application.hpp"
+#include "ui/qt/helper.hpp"
 #include <QPushButton>
 
 namespace VTX::UI::QT::Dialog
@@ -24,7 +25,7 @@ namespace VTX::UI::QT::Dialog
 
 		if ( p_onCancel.has_value() )
 		{
-			setCancelButton( new QPushButton( "Cancel", this ) );
+			setCancelButton( Helper::makeQObject<QPushButton>( "Cancel", this ) );
 			std::function<void( void )> & onCancel = p_onCancel.value();
 			connect( this, &QProgressDialog::canceled, [ &onCancel ]() { onCancel(); } );
 		}
