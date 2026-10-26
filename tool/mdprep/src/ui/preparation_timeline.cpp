@@ -72,7 +72,7 @@ namespace VTX::Tool::Mdprep::ui
 			const char * why;
 		};
 
-		const auto g_steps = std::to_array<StepInfo>( {
+		constexpr auto g_steps = std::to_array<StepInfo>( {
 			{ "pdb2gmx — topology",
 			  "Converts the input structure into a GROMACS topology and coordinate file, assigning the selected force "
 			  "field and adding hydrogens." },

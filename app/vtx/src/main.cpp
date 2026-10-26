@@ -35,6 +35,8 @@ extern "C"
 }
 #endif
 
+namespace
+{
 /**
  * @brief On windows, the console returns before the text is returned. The behavior is tight to the Windows OS : a
 
@@ -44,7 +46,7 @@ extern "C"
  * work around this, we add an "enter" input after we flush the stdcout to have a fresh cursor after the help text. All
  * this stuff is pointless on linux as the console waits for the process to finish before returning hand.
  */
-static void unblockParentConsole()
+void unblockParentConsole()
 {
 #ifdef _WIN32
 	std::cout.flush();
@@ -60,6 +62,7 @@ static void unblockParentConsole()
 	DWORD written {};
 	WriteConsoleInput( GetStdHandle( STD_INPUT_HANDLE ), &ir, 1, &written );
 #endif
+}
 }
 
 int main( int p_argc, char * p_argv[] )

@@ -1,6 +1,8 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_UI_REPORT__
 #define __VTX_TOOL_TOOLS_MDPREP_UI_REPORT__
 
+#include <QPointer>
+#include <memory>
 #include <util/event_hub.hpp>
 
 class QVBoxLayout;

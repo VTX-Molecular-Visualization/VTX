@@ -1,6 +1,7 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_UI_GROMACS_FIELD_PLACER__
 #define __VTX_TOOL_TOOLS_MDPREP_UI_GROMACS_FIELD_PLACER__
 
+#include "tool/mdprep/ui/shared.hpp"
 #include <array>
 #include <optional>
 

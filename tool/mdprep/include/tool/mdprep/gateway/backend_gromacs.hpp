@@ -1,6 +1,7 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_GATEWAY_BACKEND_GROMACS__
 #define __VTX_TOOL_TOOLS_MDPREP_GATEWAY_BACKEND_GROMACS__
 
+#include "tool/mdprep/gateway/shared.hpp"
 #include <array>
 #include <optional>
 #include <stack>
@@ -13,6 +14,7 @@
 namespace VTX::Tool::Mdprep::Gateway
 {
 	struct EngineSpecificCommonInformation;
+	struct MdParameters;
 }
 
 namespace VTX::Tool::Mdprep::Gateway::Gromacs

@@ -1,8 +1,10 @@
 #ifndef __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_FORM_BASIC__
 #define __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_FORM_BASIC__
 
+#include <array>
 #include <functional>
 #include <optional>
+#include <ui/qt/util.hpp>
 //
 #include "tool/mdprep/ui/form_basic/data.hpp"
 //

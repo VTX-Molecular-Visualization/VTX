@@ -1,24 +1,20 @@
-#include <latch>
-#include <ui/qt/helper.hpp>
-//
-#include <QPointer>
-#include <QTimer>
-//
-#include <util/event_hub.hpp>
-#include <util/sentry.hpp>
-//
-#include <app/action/action_manager.hpp>
-#include <app/services.hpp>
-#include <app/system/visibility.hpp>
-#include <ui/qt/util.hpp>
-#include <util/thread/base_thread.hpp>
-//
+#include "tool/mdprep/ui/report.hpp"
 #include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/input_checker.hpp"
 #include "tool/mdprep/ui/shared.hpp"
+#include <QPointer>
+#include <QTimer>
+#include <app/action/action_manager.hpp>
+#include <app/services.hpp>
+#include <app/system/visibility.hpp>
+#include <latch>
 #include <tool/mdprep/gateway/form_data.hpp>
-//
-#include "tool/mdprep/ui/report.hpp"
+#include <ui/qt/helper.hpp>
+#include <ui/qt/util.hpp>
+#include <util/event_hub.hpp>
+#include <util/sentry.hpp>
+#include <util/thread/base_thread.hpp>
+#include <utility>
 
 namespace VTX::Tool::Mdprep::ui
 {
@@ -80,11 +76,9 @@ namespace VTX::Tool::Mdprep::ui
 				_deleteContainer();
 				_deleteLayout();
 
-				_currentLayout = p_other._currentLayout;
-
 				p_other._removeContainerFromLayout();
 				p_other._deleteContainer();
-				p_other._currentLayout = nullptr;
+				_currentLayout = std::exchange( p_other._currentLayout, nullptr );
 
 				if ( not _currentLayout.isNull() )
 				{
@@ -218,7 +212,7 @@ namespace VTX::Tool::Mdprep::ui
 			_inputChecker.checkInputs( p_params );
 		}
 
-		void relocate( const QPointer<QVBoxLayout> p_ ) { _manager.relocate( std::move( p_ ) ); }
+		void relocate( QPointer<QVBoxLayout> p_ ) { _manager.relocate( std::move( p_ ) ); }
 
 		void relocate( ReportManager & p_ ) { _manager.relocate( p_._impl->_manager ); }
 

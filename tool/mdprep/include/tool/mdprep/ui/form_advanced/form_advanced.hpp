@@ -5,6 +5,7 @@
 #include "tool/mdprep/ui/form_advanced/shared.hpp"
 #include <array>
 #include <functional>
+#include <ui/qt/util.hpp>
 
 class QLineEdit;
 class QComboBox;
