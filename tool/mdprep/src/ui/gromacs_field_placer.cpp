@@ -1,4 +1,5 @@
 #include <qformlayout.h>
+#include <memory>
 #include <qspinbox.h>
 #include <thread>
 #include <ui/qt/util.hpp>
@@ -45,7 +46,7 @@ namespace VTX::Tool::Mdprep::ui
 
 	GromacsFieldPlacer::GromacsFieldPlacer( Gateway::Gromacs::MdSettings & p_ ) : _specificData( &p_ )
 	{
-		_uiObjects._fieldConc = new QDoubleSpinBox;
+		_uiObjects._fieldConc = std::make_unique<QDoubleSpinBox>().release();
 		_toDeleteObjects[ 0 ] = _uiObjects._fieldConc;
 		_uiObjects._fieldConc->setDecimals( 2 );
 		_uiObjects._fieldConc->setSingleStep( 0.01 );
@@ -103,5 +104,9 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	void get( const GromacsFieldPlacer &, EngineSpecificCommonInformation & p_out ) { Gateway::Gromacs::get( p_out ); }
+	namespace
+	{
+		void get( const GromacsFieldPlacer &, EngineSpecificCommonInformation & p_out )
+		{ Gateway::Gromacs::get( p_out ); }
+	} // namespace
 } // namespace VTX::Tool::Mdprep::ui

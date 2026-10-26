@@ -31,7 +31,10 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	}
 
-	std::string format( const double & p_ ) { return fmt::format( "{:.1f}", p_ ); }
+	namespace
+	{
+		std::string format( const double & p_ ) { return fmt::format( "{:.1f}", p_ ); }
+	} // namespace
 
 	void prepareJob(
 		const CumulativeOuputFiles & p_previousJobsOutputs,

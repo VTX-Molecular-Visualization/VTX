@@ -16,18 +16,21 @@
 
 namespace VTX::Tool::Mdprep::Gateway::Gromacs
 {
-	backends::Gromacs::E_EDITCONF_BOX_SHAPE translate( const E_BOX_SHAPE & p_ ) noexcept
+	namespace
 	{
-		switch ( p_ )
+		constexpr backends::Gromacs::E_EDITCONF_BOX_SHAPE translate( const E_BOX_SHAPE & p_ ) noexcept
 		{
-		case E_BOX_SHAPE::dodecahedron: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::dodecahedron;
-		case E_BOX_SHAPE::cubic: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::cubic;
-		case E_BOX_SHAPE::octahedron: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::octahedron;
-		case E_BOX_SHAPE::triclinic: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::triclinic;
-		case E_BOX_SHAPE::COUNT: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::COUNT;
-		default: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::dodecahedron;
+			switch ( p_ )
+			{
+			case E_BOX_SHAPE::dodecahedron: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::dodecahedron;
+			case E_BOX_SHAPE::cubic: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::cubic;
+			case E_BOX_SHAPE::octahedron: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::octahedron;
+			case E_BOX_SHAPE::triclinic: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::triclinic;
+			case E_BOX_SHAPE::COUNT: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::COUNT;
+			default: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::dodecahedron;
+			}
 		}
-	}
+	} // namespace
 
 	void boxShapeCollection( std::vector<std::string> & p_out )
 	{
@@ -38,15 +41,18 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		}
 	}
 
-	backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE translate( const E_BOX_DIMENSION_MODE & p_ ) noexcept
+	namespace
 	{
-		switch ( p_ )
+		constexpr backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE translate( const E_BOX_DIMENSION_MODE & p_ ) noexcept
 		{
-		case E_BOX_DIMENSION_MODE::distance: return backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE ::distance;
-		case E_BOX_DIMENSION_MODE::size: return backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE ::size;
-		default: return backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE ::distance;
+			switch ( p_ )
+			{
+			case E_BOX_DIMENSION_MODE::distance: return backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE ::distance;
+			case E_BOX_DIMENSION_MODE::size: return backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE ::size;
+			default: return backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE ::distance;
+			}
 		}
-	}
+	} // namespace
 
 	void boxDimensionModeCollection( std::vector<std::string> & p_ )
 	{

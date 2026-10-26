@@ -79,44 +79,44 @@ namespace VTX::Tool::Mdprep
 				_screen.emplace( screenWidget, _paramaeters );
 			}
 		};
+
+		App::UI::DescAction openMdPrepAction()
+		{
+			App::UI::DescAction action;
+			action.key		= ACTION_OPEN_MDPREP;
+			action.name		= "MdPrep";
+			action.tip		= "Prepare Molecular Dynamic Simulation";
+			action.icon		= "sprite/icon_tool_mdprep_mainButton.png";
+			action.shortcut = "ctrl+alt+M";
+			return action;
+		}
+
+		void openMdPrep()
+		{
+			static MainWindow * win			= nullptr;
+			bool				justCreated = false;
+			if ( win == nullptr )
+			{
+				auto & mainWindow = UI::QT::MAIN_WINDOW();
+				win				  = mainWindow.createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
+				justCreated		  = true;
+			}
+
+			if ( win->isHidden() or justCreated ) // A justCreated window is not hidden but we need to size it and show
+			// it properly
+			{
+				win->resize( win->PREFERRED_SIZE );
+				win->show();
+				QTimer::singleShot(
+					0, [ win = win ] { win->raise(); }
+				); // The widget is not raised consistently on the same loop
+			}
+			else
+			{
+				win->hide();
+			}
+		}
 	} // namespace
-
-	App::UI::DescAction openMdPrepAction()
-	{
-		App::UI::DescAction action;
-		action.key		= ACTION_OPEN_MDPREP;
-		action.name		= "MdPrep";
-		action.tip		= "Prepare Molecular Dynamic Simulation";
-		action.icon		= "sprite/icon_tool_mdprep_mainButton.png";
-		action.shortcut = "ctrl+alt+M";
-		return action;
-	}
-
-	void openMdPrep()
-	{
-		static MainWindow * win			= nullptr;
-		bool				justCreated = false;
-		if ( win == nullptr )
-		{
-			auto & mainWindow = UI::QT::MAIN_WINDOW();
-			win				  = mainWindow.createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
-			justCreated		  = true;
-		}
-
-		if ( win->isHidden() or justCreated ) // A justCreated window is not hidden but we need to size it and show
-		// it properly
-		{
-			win->resize( win->PREFERRED_SIZE );
-			win->show();
-			QTimer::singleShot(
-				0, [ win = win ] { win->raise(); }
-			); // The widget is not raised consistently on the same loop
-		}
-		else
-		{
-			win->hide();
-		}
-	}
 
 	MdPrep::MdPrep() = default;
 

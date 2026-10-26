@@ -44,7 +44,7 @@ extern "C"
  * work around this, we add an "enter" input after we flush the stdcout to have a fresh cursor after the help text. All
  * this stuff is pointless on linux as the console waits for the process to finish before returning hand.
  */
-void unblockParentConsole()
+static void unblockParentConsole()
 {
 #ifdef _WIN32
 	std::cout.flush();

@@ -14,15 +14,18 @@
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 #ifndef _WINDOWS
-	size_t strnlen_s( const char * p_str, size_t p_cnt )
+	namespace
 	{
-		size_t out = 0;
-		while ( p_str[ out ] != '\0' && out < p_cnt )
+		constexpr size_t strnlen_s( const char * p_str, size_t p_cnt )
 		{
-			out++;
+			size_t out = 0;
+			while ( p_str[ out ] != '\0' && out < p_cnt )
+			{
+				out++;
+			}
+			return out;
 		}
-		return out;
-	}
+	} // namespace
 #endif
 
 	FilePath defaultFfDirectoryPath() { return App::SESSION().getDataDir() / "tools" / "mdprep" / "gromacs" / "top"; }

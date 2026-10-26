@@ -48,7 +48,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const MdParametersStepData * p_data )
 		{
 			QWidget *			label	= nullptr;
-			const QFormLayout * qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
+			QFormLayout * const qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
 
 			VTX::Tool::Mdprep::ui::get( E_COMMON_FIELDS_DOUBLE::dt, label, p_uiObjects.fieldDt );
 			qLayout->addRow( label, p_uiObjects.fieldDt );
@@ -66,7 +66,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const MinimizationData * p_data )
 		{
 			QWidget *			label	= nullptr;
-			const QFormLayout * qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
+			QFormLayout * const qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
 
 			VTX::Tool::Mdprep::ui::get(
 				E_COMMON_FIELDS_DOUBLE::minimizationEnergyBreakpoint, label, p_uiObjects.fieldMinEnergyBreakpoint
@@ -84,7 +84,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		template<typename UiData>
 		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const SystemData * p_data )
 		{
-			const QFormLayout * qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
+			QFormLayout * const qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
 			QWidget *			w		= nullptr;
 			// Engine info is optional : without it, the comboboxes are simply left empty.
 			const Gateway::EngineSpecificCommonInformation * const engineInfo

@@ -59,7 +59,7 @@ namespace VTX::UI::QT::Helper
 	 */
 	template<typename T, typename... Args>
 		requires std::derived_from<T, QObject>
-	[[nodiscard]] T * makeQObject( Args &&... p_args )
+	T * makeQObject( Args &&... p_args )
 	{
 		auto object = std::make_unique<T>( std::forward<Args>( p_args )... );
 
@@ -69,18 +69,18 @@ namespace VTX::UI::QT::Helper
 		}
 
 		// Qt parent now owns the object.
-		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		return object.release();
 	}
 
 	template<typename T, typename... Args>
 		requires std::derived_from<T, QLayout>
-	[[nodiscard]] T * makeChildLayout( QBoxLayout & p_parent, Args &&... p_args )
+	T * makeChildLayout( QBoxLayout & p_parent, Args &&... p_args )
 	{
 		auto layout = std::make_unique<T>( std::forward<Args>( p_args )... );
 
 		p_parent.addLayout( layout.get() );
 
+		// Qt parent now owns the object.
 		return layout.release();
 	}
 

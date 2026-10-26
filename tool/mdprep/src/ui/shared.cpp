@@ -1,4 +1,5 @@
 #include <qgridlayout.h>
+#include <memory>
 #include <qlineedit.h>
 #include <qspinbox.h>
 #include <ui/qt/helper.hpp>
@@ -51,7 +52,7 @@ namespace VTX::Tool::Mdprep::ui
 			break;
 		default: break;
 		}
-		p_field = new QComboBox;
+		p_field = std::make_unique<QComboBox>().release();
 	}
 
 	void get( const E_COMMON_FIELDS_DOUBLE & p_enum, QWidget *& p_label, QDoubleSpinBox *& field )
@@ -65,7 +66,7 @@ namespace VTX::Tool::Mdprep::ui
 				"minimization but with reduced result stability.",
 				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 			);
-			field = new QDoubleSpinBox;
+			field = std::make_unique<QDoubleSpinBox>().release();
 			field->setMinimum( 1e-4 );
 			field->setMaximum( 1e1 );
 			field->setSingleStep( 1e-3 );
@@ -77,7 +78,7 @@ namespace VTX::Tool::Mdprep::ui
 				"Energy delta between steps from which the minimization is considered <i>converged</i>.",
 				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 			);
-			field = new QDoubleSpinBox;
+			field = std::make_unique<QDoubleSpinBox>().release();
 			field->setMinimum( 1e-1 );
 			field->setMaximum( 1e6 );
 			field->setSingleStep( 1e2 );
@@ -91,7 +92,7 @@ namespace VTX::Tool::Mdprep::ui
 				"C-H bonds length to remain constant throughout the simulation.",
 				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
 			);
-			field = new QDoubleSpinBox;
+			field = std::make_unique<QDoubleSpinBox>().release();
 			field->setMinimum( 1e-3 );
 			field->setMaximum( 1. );
 			field->setSingleStep( 1e-3 );
@@ -134,7 +135,7 @@ namespace VTX::Tool::Mdprep::ui
 
 		default: break;
 		}
-		p_field = new QLineEdit;
+		p_field = std::make_unique<QLineEdit>().release();
 		p_field->setValidator( VTX::UI::QT::Helper::makeQObject<VTX::UI::QT::QUInt64Validator>( p_field ) );
 	}
 

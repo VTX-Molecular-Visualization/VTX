@@ -91,50 +91,53 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		return std::string_view( this->forcefieldFolderPath ).substr( filenamePos, extensionPos - filenamePos );
 	}
 
-	void parse( const std::string & p_user_str, E_INTERACTIVE_KEYWORD & p_out ) noexcept
+	namespace
 	{
-		if ( p_user_str == "HIS" )
+		constexpr void parse( const std::string & p_user_str, E_INTERACTIVE_KEYWORD & p_out ) noexcept
 		{
-			p_out = E_INTERACTIVE_KEYWORD::his;
-			return;
-		};
-		if ( p_user_str == "LYS" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::lys;
-			return;
-		};
-		if ( p_user_str == "ASP" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::asp;
-			return;
-		};
-		if ( p_user_str == "GLN" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::gln;
-			return;
-		};
-		if ( p_user_str == "GLU" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::glu;
-			return;
-		};
-		if ( p_user_str == "ARG" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::arg;
-			return;
-		};
-		if ( p_user_str == "TER" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::ter;
-			return;
-		};
-		if ( p_user_str == "SS" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::ss;
-			return;
-		};
-		p_out = E_INTERACTIVE_KEYWORD::none;
-	}
+			if ( p_user_str == "HIS" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::his;
+				return;
+			};
+			if ( p_user_str == "LYS" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::lys;
+				return;
+			};
+			if ( p_user_str == "ASP" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::asp;
+				return;
+			};
+			if ( p_user_str == "GLN" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::gln;
+				return;
+			};
+			if ( p_user_str == "GLU" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::glu;
+				return;
+			};
+			if ( p_user_str == "ARG" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::arg;
+				return;
+			};
+			if ( p_user_str == "TER" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::ter;
+				return;
+			};
+			if ( p_user_str == "SS" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::ss;
+				return;
+			};
+			p_out = E_INTERACTIVE_KEYWORD::none;
+		}
+	} // namespace
 
 	parseReport parsePdb2gmxUserScript( const std::string_view & p_script, Pdb2gmxInputs & p_args )
 	{
