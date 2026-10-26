@@ -15,6 +15,7 @@
 #include <QToolButton>
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 namespace VTX::UI::QT::Util
 {
@@ -331,7 +332,10 @@ namespace VTX::UI::QT::Util
 		}
 	}
 
-	ObjectOwnership::ObjectOwnership( ObjectOwnership && p_ ) noexcept : _obj( p_._obj ) { p_.release(); }
+	ObjectOwnership::ObjectOwnership( ObjectOwnership && p_ ) noexcept :
+		_obj( std::exchange( p_._obj, QPointer<QObject> {} ) )
+	{
+	}
 
 	ObjectOwnership & ObjectOwnership::operator=( QObject * const p_ )
 	{
