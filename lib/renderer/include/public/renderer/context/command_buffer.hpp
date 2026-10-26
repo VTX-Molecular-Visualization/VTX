@@ -266,13 +266,13 @@ namespace VTX::Renderer::Context
 
 		PayloadBuffer() = default;
 
-		std::size_t size() const { return _size; }
+		std::size_t size() const noexcept { return _size; }
 
 		bool empty() const { return _size == 0; }
 
-		std::byte * data() { return _data.get(); }
+		std::byte * data() noexcept { return _data.get(); }
 
-		const std::byte * data() const { return _data.get(); }
+		const std::byte * data() const noexcept { return _data.get(); }
 
 		std::byte operator[]( const std::size_t p_index ) const
 		{
@@ -443,7 +443,7 @@ namespace VTX::Renderer::Context
 
 		bool containsPass( const Desc::Key & p_pass ) const { return passIDByName.contains( p_pass ); }
 
-		const PassCommandRange & passRange( const PassID p_passID ) const
+		const PassCommandRange & passRange( const PassID p_passID ) const noexcept
 		{
 			assert( p_passID < passes.size() );
 			return passes[ p_passID ];
@@ -475,13 +475,13 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Clear current dirty pass list.
 		 */
-		void clearDirtyPasses() { onDirtyPassIDs.clear(); }
+		void clearDirtyPasses() noexcept { onDirtyPassIDs.clear(); }
 
 		/**
 		 * @brief Get a payload from its offset.
 		 */
 		template<typename T>
-		T & getPayload( const PayloadOffset p_offset )
+		T & getPayload( const PayloadOffset p_offset ) noexcept
 		{
 			static_assert( std::is_trivially_copyable_v<T> and std::is_trivially_copy_constructible_v<T> );
 			static_assert( alignof( T ) <= PayloadBuffer::ALIGNMENT );
@@ -497,7 +497,7 @@ namespace VTX::Renderer::Context
 		 * @brief Get a const payload from its offset.
 		 */
 		template<typename T>
-		const T & getPayload( const PayloadOffset p_offset ) const
+		const T & getPayload( const PayloadOffset p_offset ) const noexcept
 		{
 			static_assert( std::is_trivially_copyable_v<T> and std::is_trivially_copy_constructible_v<T> );
 			static_assert( alignof( T ) <= PayloadBuffer::ALIGNMENT );

@@ -5,7 +5,9 @@
 #include "app/ecs.hpp"
 #include "app/pipeline.hpp"
 #include "app/tool/base_tool.hpp"
+#include <exception>
 #include <memory>
+#include <util/logger.hpp>
 #include <vector>
 
 namespace VTX::App
@@ -35,9 +37,18 @@ namespace VTX::App
 		/**
 		 * @brief Main loop update function (called from gui thread).
 		 */
-		void update( const float p_deltaTime, const float p_elapsedTime )
+		void update( const float p_deltaTime, const float p_elapsedTime ) noexcept
+		try
 		{
 			_pipeline.process( ECS::getCtx<Util::Monitoring::Stats>(), p_deltaTime, p_elapsedTime );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Application update failed: {}", p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Unknown application update failure" );
 		}
 
 		/**
@@ -45,9 +56,7 @@ namespace VTX::App
 		 */
 		template<typename T>
 		void addTool()
-		{
-			_tools.emplace_back( std::make_unique<T>() );
-		}
+		{ _tools.emplace_back( std::make_unique<T>() ); }
 
 		/**
 		 * @brief Start application services (logger, event hub, etc.).

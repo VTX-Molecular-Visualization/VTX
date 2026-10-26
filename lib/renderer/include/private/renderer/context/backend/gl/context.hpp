@@ -178,7 +178,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 
-		void swapBuffers() const { SwapBuffers( _hdc ); }
+		void swapBuffers() const noexcept { SwapBuffers( _hdc ); }
 
 		bool isDefaultFramebufferSrgb() const { return _defaultFramebufferSrgb; }
 
@@ -333,7 +333,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		void makeCurrent() const { throw std::runtime_error( "macOS OpenGL context is not initialized" ); }
 
-		void swapBuffers() const {}
+		void swapBuffers() const noexcept {}
 
 		bool isDefaultFramebufferSrgb() const { return false; }
 
@@ -575,7 +575,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			VTX_TRACE( "[EGL] eglMakeCurrent succeeded" );
 		}
 
-		void swapBuffers() const { eglSwapBuffers( _display, _surface ); }
+		void swapBuffers() const noexcept { eglSwapBuffers( _display, _surface ); }
 
 		bool isDefaultFramebufferSrgb() const { return _defaultFramebufferSrgb; }
 

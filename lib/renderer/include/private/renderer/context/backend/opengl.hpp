@@ -80,7 +80,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Swap buffers.
 		 */
-		void swap() const { _glContext.swapBuffers(); }
+		void swap() const noexcept { _glContext.swapBuffers(); }
 
 		/**
 		 * @brief Set data to a buffer.

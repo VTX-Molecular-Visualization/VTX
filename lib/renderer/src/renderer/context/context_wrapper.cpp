@@ -219,22 +219,31 @@ namespace VTX::Renderer::Context
 		);
 	}
 
-	void ContextWrapper::execute( std::span<const PassID> p_passIDs ) const noexcept
+	void ContextWrapper::execute( const std::span<const PassID> p_passIDs ) const noexcept
 	{
-		std::visit(
-			[ & ]( const auto & p_exec )
+		assert( not _impl->executor.valueless_by_exception() );
+
+		const auto executePasses = [ & ]( const auto & p_exec ) noexcept
+		{
+			for ( const PassID passID : p_passIDs )
 			{
-				using T = std::remove_cvref_t<decltype( p_exec )>;
-				if constexpr ( not std::is_same_v<T, std::monostate> )
-				{
-					for ( const PassID passID : p_passIDs )
-					{
-						_executeRange( p_exec, _impl->commands, _impl->commands.passRange( passID ).commands );
-					}
-				}
-			},
-			_impl->executor
-		);
+				_executeRange( p_exec, _impl->commands, _impl->commands.passRange( passID ).commands );
+			}
+		};
+
+		// Avoid std::visit to stay noexcept.
+		if ( const auto * executor = std::get_if<Executor::OpenGL>( &_impl->executor ) )
+		{
+			executePasses( *executor );
+		}
+		else if ( const auto * nullExecutor = std::get_if<Executor::Null>( &_impl->executor ) )
+		{
+			executePasses( *nullExecutor );
+		}
+		else if ( _impl->executor.valueless_by_exception() )
+		{
+			VTX_ERROR( "Cannot execute render commands: executor has no value" );
+		}
 	}
 
 	void ContextWrapper::build( const Desc::RenderQueue & p_renderQueue, const Desc::Resources & p_resources )
