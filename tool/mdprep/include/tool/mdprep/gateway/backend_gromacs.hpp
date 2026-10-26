@@ -69,11 +69,11 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		MdStep		   prod { .nstxout_compressed = 100 };
 	};
 
-	void boxShapeCollection( std::vector<std::string> & ) noexcept;
-	void boxDimensionModeCollection( std::vector<std::string> & ) noexcept;
-	void waterModelCollection( std::vector<std::string> & ) noexcept;
+	void boxShapeCollection( std::vector<std::string> & );
+	void boxDimensionModeCollection( std::vector<std::string> & );
+	void waterModelCollection( std::vector<std::string> & );
 
-	void get( EngineSpecificCommonInformation & ) noexcept;
+	void get( EngineSpecificCommonInformation & );
 
 	class JobManager
 	{
@@ -81,11 +81,11 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		JobManager() = delete;
 		JobManager( MdSettings & );
 
-		void checkInputs( const MdParameters & ) noexcept;
-		void startPreparation( const MdParameters & ) noexcept;
+		void checkInputs( const MdParameters & );
+		void startPreparation( const MdParameters & );
 
 		bool		isResultAvailable() const noexcept;
-		CheckReport lastResult() const noexcept;
+		CheckReport lastResult() const;
 
 	  private:
 		CheckReport				_report;

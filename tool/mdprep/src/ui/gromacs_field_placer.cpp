@@ -29,7 +29,7 @@ namespace VTX::Tool::Mdprep::ui
 				return;
 			}
 			int					  rowToTakeOut = 0;
-			QFormLayout::ItemRole _tmp;
+			QFormLayout::ItemRole _tmp {};
 			p_dest->getWidgetPosition( p_field, &rowToTakeOut, &_tmp );
 			if ( rowToTakeOut > -1 )
 			{
@@ -60,7 +60,9 @@ namespace VTX::Tool::Mdprep::ui
 		_uiObjects._fieldConc->hide();
 		_uiObjects._labelConc->hide();
 	}
+
 	void GromacsFieldPlacer::assign( FormLayouts p_layouts ) noexcept { _layouts.emplace( std::move( p_layouts ) ); }
+
 	void GromacsFieldPlacer::activate() noexcept
 	{
 		if ( not _layouts )
@@ -76,9 +78,11 @@ namespace VTX::Tool::Mdprep::ui
 		if ( _layouts->advancedParametersSystemPrepartion )
 		{
 			setWidgetRowVisibility(
-				_layouts->advancedParametersSystemPrepartion, _uiObjects._labelConc, _uiObjects._fieldConc, true );
+				_layouts->advancedParametersSystemPrepartion, _uiObjects._labelConc, _uiObjects._fieldConc, true
+			);
 		}
 	}
+
 	void GromacsFieldPlacer::deactivate() noexcept
 	{
 		if ( not _layouts )
@@ -94,11 +98,11 @@ namespace VTX::Tool::Mdprep::ui
 		if ( _layouts->advancedParametersSystemPrepartion )
 		{
 			setWidgetRowVisibility(
-				_layouts->advancedParametersSystemPrepartion, _uiObjects._labelConc, _uiObjects._fieldConc, false );
+				_layouts->advancedParametersSystemPrepartion, _uiObjects._labelConc, _uiObjects._fieldConc, false
+			);
 		}
 	}
+
 	void get( const GromacsFieldPlacer &, EngineSpecificCommonInformation & p_out ) noexcept
-	{
-		Gateway::Gromacs::get( p_out );
-	}
+	{ Gateway::Gromacs::get( p_out ); }
 } // namespace VTX::Tool::Mdprep::ui

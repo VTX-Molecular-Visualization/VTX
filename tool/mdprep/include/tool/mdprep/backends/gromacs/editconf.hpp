@@ -23,7 +23,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		triclinic,
 		COUNT
 	};
-	std::string string( const E_EDITCONF_BOX_SHAPE & ) noexcept;
+	std::string string( const E_EDITCONF_BOX_SHAPE & );
 	enum class E_EDITCONF_BOX_DIMENSION_MODE
 	{
 		distance // uses the distance from the solute to the box to determine box's size
@@ -32,7 +32,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		,
 		COUNT
 	};
-	std::string string( const E_EDITCONF_BOX_DIMENSION_MODE & ) noexcept;
+	std::string string( const E_EDITCONF_BOX_DIMENSION_MODE & );
 	enum class E_EDITCONF_PURPOSE
 	{
 		setup_box,
@@ -58,12 +58,12 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		const FilePath &		 p_root,
 		const std::string_view & p_folderName,
 		EditconfInstructions &
-	) noexcept;
+	);
 
 	// Convert editconf instructions to gromacs command
 	//  Do not perform filesystem check
 	//  Does nothing if in or out is empty
-	void convert( const EditconfInstructions &, GromacsJobData & ) noexcept;
+	void convert( const EditconfInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 

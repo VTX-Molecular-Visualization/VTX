@@ -46,12 +46,12 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		const FilePath &		 p_root,
 		const std::string_view & p_folderName,
 		GromppInstructions &
-	) noexcept;
+	);
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.
 	//    Does not perform filesystem check on input gro
-	void convert( const GromppInstructions &, GromacsJobData & ) noexcept;
+	void convert( const GromppInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 

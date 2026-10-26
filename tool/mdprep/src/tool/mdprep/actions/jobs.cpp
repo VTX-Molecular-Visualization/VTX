@@ -40,7 +40,8 @@ namespace VTX::Tool::Mdprep::Actions
 			goto theEnd;
 		}
 		{
-			FilePath dest { p_instr.rootDir / "your_system.pdb" }; // TODO bad design (see backend_gromacs.cpp:convert)
+			const FilePath dest { p_instr.rootDir
+								  / "your_system.pdb" }; // TODO bad design (see backend_gromacs.cpp:convert)
 
 			App::Action::IO::WriteVisible a;
 			App::ACTION().execute( a, FilePath( dest ) );
@@ -49,9 +50,9 @@ namespace VTX::Tool::Mdprep::Actions
 				goto theEnd;
 			}
 			backends::Gromacs::prepareStructure( _impl->thrData, dest, p_instr );
-			FilePath							 resultDir = p_instr.rootDir / "md_ready";
-			backends::Gromacs::MdInstructions	 packInstructions;
-			const backends::Gromacs::ErrorReport packReport
+			const FilePath							resultDir = p_instr.rootDir / "md_ready";
+			const backends::Gromacs::MdInstructions packInstructions;
+			const backends::Gromacs::ErrorReport	packReport
 				= backends::Gromacs::pack( resultDir, p_instr.outputs, p_instr.mdInstructions );
 			if ( packReport.error )
 			{
@@ -106,7 +107,7 @@ namespace VTX::Tool::Mdprep::Actions
 		_impl->waiter.count_down();
 	}
 
-	void StartPreparation::wait() noexcept
+	void StartPreparation::wait()
 	{
 		if ( _impl )
 		{
@@ -142,11 +143,11 @@ namespace VTX::Tool::Mdprep::Actions
 			_impl->thrData.thrRef->get().setProgressText( "Checking system for MD" );
 		}
 		{
-			FilePath					  dest { p_gmxIntructions.rootDir / "test.pdb" };
+			const FilePath				  dest { p_gmxIntructions.rootDir / "test.pdb" };
 			App::Action::IO::WriteVisible a;
 			App::ACTION().execute( a, FilePath( dest ) );
 
-			backends::Gromacs::SystemTester tester(
+			const backends::Gromacs::SystemTester tester(
 				dest,
 				p_gmxIntructions.pdb2gmx.forcefields[ p_gmxIntructions.pdb2gmx.forcefieldIndex ],
 				p_gmxIntructions.pdb2gmx.water
@@ -165,7 +166,7 @@ namespace VTX::Tool::Mdprep::Actions
 		_impl->waiter.count_down();
 	}
 
-	void CheckSystem::wait() noexcept
+	void CheckSystem::wait()
 	{
 		if ( _impl )
 		{

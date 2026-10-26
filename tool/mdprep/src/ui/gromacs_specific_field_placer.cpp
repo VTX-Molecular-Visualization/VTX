@@ -23,6 +23,7 @@
 namespace VTX::Tool::Mdprep::ui
 {
 	GromacsMdStepFieldPlacer::GromacsMdStepFieldPlacer( Gateway::Gromacs::MdStep & p_data ) : _data( &p_data ) {}
+
 	void GromacsMdStepFieldPlacer::placeFields( QFormLayout * p_layout ) noexcept
 	{
 		_field_nstvout = VTX::UI::QT::Util::addUInt64Field(
@@ -50,6 +51,7 @@ namespace VTX::Tool::Mdprep::ui
 			_field_nstxout_compressed->setText( QString::number( _data->nstxout_compressed.value() ) );
 		}
 	}
+
 	void GromacsMdStepFieldPlacer::apply() noexcept
 	{
 		_data->nstvout	 = _field_nstvout->text().toUInt();
@@ -62,6 +64,7 @@ namespace VTX::Tool::Mdprep::ui
 	}
 
 	GromacsSystemFieldPlacer::GromacsSystemFieldPlacer( Gateway::Gromacs::SystemSettings & p_ ) : _data( &p_ ) {}
+
 	namespace
 	{
 		inline void createInt64HiddenField( QWidget * const p_parent, QLineEdit *& p_field, const double & p_default )
@@ -72,6 +75,7 @@ namespace VTX::Tool::Mdprep::ui
 			p_field->hide();
 		}
 	} // namespace
+
 	void GromacsSystemFieldPlacer::placeFields( QFormLayout * p_layout ) noexcept
 	{
 		_targetLayout = p_layout;
@@ -92,7 +96,8 @@ namespace VTX::Tool::Mdprep::ui
 			}
 		}
 		QObject::connect(
-			_boxFields.fieldBoxSizeMode, &QComboBox::currentIndexChanged, [ & ] { this->_updateBoxSizeMode(); } );
+			_boxFields.fieldBoxSizeMode, &QComboBox::currentIndexChanged, [ & ] { this->_updateBoxSizeMode(); }
+		);
 
 		_boxFields.fieldDistance = new QDoubleSpinBox( _targetLayout->parentWidget() );
 		_boxFields.fieldDistance->setMinimum( 0. );
@@ -109,6 +114,7 @@ namespace VTX::Tool::Mdprep::ui
 		createInt64HiddenField( _targetLayout->parentWidget(), _boxFields.fieldAngleY, _data->boxAngles[ 1 ] );
 		createInt64HiddenField( _targetLayout->parentWidget(), _boxFields.fieldAngleZ, _data->boxAngles[ 2 ] );
 	}
+
 	void GromacsSystemFieldPlacer::apply() noexcept
 	{
 		_data->boxSizeMode		  = _boxFields.fieldBoxSizeMode->currentIndex();
@@ -120,6 +126,7 @@ namespace VTX::Tool::Mdprep::ui
 		_data->boxAngles[ 1 ]	  = _boxFields.fieldAngleY->text().toInt();
 		_data->boxAngles[ 2 ]	  = _boxFields.fieldAngleZ->text().toInt();
 	}
+
 	void GromacsSystemFieldPlacer::update( const EngineSpecificCommonInformationFieldUpdate & p_info ) noexcept
 	{
 		if ( p_info.field != E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape
@@ -147,26 +154,32 @@ namespace VTX::Tool::Mdprep::ui
 			{
 				_addDistanceField();
 			}
-			else if ( static_cast<Gateway::Gromacs::E_BOX_DIMENSION_MODE>( _boxFields.fieldBoxSizeMode->currentIndex() )
-					  == Gateway::Gromacs::E_BOX_DIMENSION_MODE::size )
+			else if (
+				static_cast<Gateway::Gromacs::E_BOX_DIMENSION_MODE>( _boxFields.fieldBoxSizeMode->currentIndex() )
+				== Gateway::Gromacs::E_BOX_DIMENSION_MODE::size
+			)
 			{
 				_addSizeOnlyX();
 			}
 			break;
 		}
 	}
+
 	void GromacsSystemFieldPlacer::_updateBoxSizeMode() noexcept
 	{
-		update( EngineSpecificCommonInformationFieldUpdate {
-			.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxDimensionMode,
-			.newValue = static_cast<size_t>( _boxFields.fieldBoxSizeMode->currentIndex() ) } );
+		update(
+			EngineSpecificCommonInformationFieldUpdate {
+				.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxDimensionMode,
+				.newValue = static_cast<size_t>( _boxFields.fieldBoxSizeMode->currentIndex() ) }
+		);
 	}
+
 	namespace
 	{
 		void removeField( QFormLayout * p_from, QWidget * p_what ) noexcept
 		{
 			int					  rowToTakeOutIndex = INT32_MAX;
-			QFormLayout::ItemRole _tmp;
+			QFormLayout::ItemRole _tmp {};
 			p_from->getWidgetPosition( p_what, &rowToTakeOutIndex, &_tmp );
 			if ( rowToTakeOutIndex == INT32_MAX || rowToTakeOutIndex == -1 )
 			{
@@ -177,6 +190,7 @@ namespace VTX::Tool::Mdprep::ui
 			stuffTakenOut.labelItem->widget()->hide();
 		}
 	} // namespace
+
 	void GromacsSystemFieldPlacer::_removeFields() noexcept
 	{
 		removeField( _targetLayout, _boxFields.fieldBoxSizeMode );
@@ -190,6 +204,7 @@ namespace VTX::Tool::Mdprep::ui
 		removeField( _targetLayout, _boxFields.fieldAngleY );
 		removeField( _targetLayout, _boxFields.fieldAngleZ );
 	}
+
 	void GromacsSystemFieldPlacer::_addDimensionModeField() noexcept
 	{
 		_boxFields.fieldBoxSizeMode->show();
@@ -206,6 +221,7 @@ namespace VTX::Tool::Mdprep::ui
 			_boxFields.fieldBoxSizeMode
 		);
 	}
+
 	void GromacsSystemFieldPlacer::_addDistanceField() noexcept
 	{
 		_boxFields.fieldDistance->show();
@@ -218,6 +234,7 @@ namespace VTX::Tool::Mdprep::ui
 			_boxFields.fieldDistance
 		);
 	}
+
 	void GromacsSystemFieldPlacer::_addSizeOnlyX() noexcept
 	{
 		_boxFields.fieldSizeX->show();
@@ -230,6 +247,7 @@ namespace VTX::Tool::Mdprep::ui
 			_boxFields.fieldSizeX
 		);
 	}
+
 	void GromacsSystemFieldPlacer::_addSizeXYZ() noexcept
 	{
 		_boxFields.containerSizeXYZ = new QWidget;
@@ -250,6 +268,7 @@ namespace VTX::Tool::Mdprep::ui
 			_boxFields.containerSizeXYZ
 		);
 	}
+
 	void GromacsSystemFieldPlacer::_addAnglesXYZ() noexcept
 	{
 		_boxFields.containerAngleXYZ = new QWidget;

@@ -55,7 +55,7 @@ void unblockParentConsole() noexcept
 	ir.Event.KeyEvent.wVirtualScanCode	= MapVirtualKey( VK_RETURN, MAPVK_VK_TO_VSC );
 	ir.Event.KeyEvent.uChar.UnicodeChar = L'\r';
 
-	DWORD written;
+	DWORD written {};
 	WriteConsoleInput( GetStdHandle( STD_INPUT_HANDLE ), &ir, 1, &written );
 #endif
 }
@@ -88,7 +88,7 @@ int main( int p_argc, char * p_argv[] )
 #pragma comment( linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup" )
 		// Attach to parent console if launched from CLI (cmd/PowerShell).
 		// Falls through silently if launched from Explorer (no parent console).
-		bool hasParentConsole = AttachConsole( ATTACH_PARENT_PROCESS );
+		const bool hasParentConsole = AttachConsole( ATTACH_PARENT_PROCESS );
 		if ( not hasParentConsole && argss.debug )
 		{
 			AllocConsole();

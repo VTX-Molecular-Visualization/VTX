@@ -136,14 +136,14 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		const FilePath &		 p_root,
 		const std::string_view & p_folderName,
 		Pdb2gmxInstructions &
-	) noexcept;
+	);
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.
 	//    Does nothing if the forcefieldIndex refer to a non-existing forcefield
 	//    Does not perform filesystem check on input pdb
 	//    If the outputDir is empty, will create a output directory in the current working directory and use it.
-	void convert( const Pdb2gmxInstructions &, GromacsJobData & ) noexcept;
+	void convert( const Pdb2gmxInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 

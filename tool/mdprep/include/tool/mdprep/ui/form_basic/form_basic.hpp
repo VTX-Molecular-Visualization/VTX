@@ -50,9 +50,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		 * @brief Change information related to the current engine.
 		 * @param Data
 		 */
-		void update( const EngineSpecificCommonInformation & p_data ) noexcept;
+		void update( const EngineSpecificCommonInformation & p_data );
 
-		void get( MdParameters & ) const noexcept;
+		void get( MdParameters & ) const;
 		void get( FormLayouts & ) const noexcept;
 
 	  private:
@@ -91,9 +91,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		IonicFields			  _fieldsIons;
 		EventManager		  _eventManager;
 
-		void _createAndPlaceUiItems( QWidget * p_container ) noexcept;
-		void _loadValues( const MdParameters & p_defaults ) noexcept;
-		void _setupSlots() noexcept;
+		void _createAndPlaceUiItems( QWidget * p_container );
+		void _loadValues( const MdParameters & p_defaults );
+		void _setupSlots();
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic
 #endif

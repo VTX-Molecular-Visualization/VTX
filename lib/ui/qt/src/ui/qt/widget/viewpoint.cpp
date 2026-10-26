@@ -66,13 +66,13 @@ namespace VTX::UI::QT::Widget
 
 	void ViewPoint::_setName()
 	{
-		QSignalBlocker blocker( _lineName );
+		const QSignalBlocker blocker( _lineName );
 		_lineName->setText( QString::fromStdString( App::REG().get<App::Generic::Name>( _entity ).name ) );
 	}
 
 	void ViewPoint::_setTransform()
 	{
-		QSignalBlocker blocker( _transform );
+		const QSignalBlocker blocker( _transform );
 		_transform->setTransform( App::REG().get<Util::Math::Transform>( _entity ) );
 	}
 

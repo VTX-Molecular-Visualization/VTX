@@ -79,7 +79,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_setupSlots();
 	}
 
-	void FormBasic::update( const EngineSpecificCommonInformation & p_data ) noexcept
+	void FormBasic::update( const EngineSpecificCommonInformation & p_data )
 	{
 		Gateway::EngineSpecificCommonInformation * info = nullptr;
 		_data->get( info );
@@ -104,7 +104,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			QLineEdit **   p_out_durationNumber,
 			QComboBox **   p_out_durationUnit,
 			QPushButton ** p_out_buttonSettings
-		) noexcept
+		)
 		{
 			*p_out_durationNumber	   = addUInt64Field( p_dest, p_label, p_tooltip );
 			QWidget * qWidgetRightCell = new QWidget;
@@ -154,9 +154,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			QComboBox *		 p_fieldUnit
 		)
 		{
-			double	 durationPicoSeconds = p_dt * p_stepNumber;
-			uint8_t	 timeUnitIdx		 = 0;
-			uint64_t duration			 = 0;
+			const double durationPicoSeconds = p_dt * p_stepNumber;
+			uint8_t		 timeUnitIdx		 = 0;
+			uint64_t	 duration			 = 0;
 			if ( durationPicoSeconds < 1e0 )
 			{
 				timeUnitIdx = 0;
@@ -180,7 +180,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		}
 	} // namespace
 
-	void FormBasic::_createAndPlaceUiItems( QWidget * p_container ) noexcept
+	void FormBasic::_createAndPlaceUiItems( QWidget * p_container )
 	{
 		_uiObjects._parent				  = p_container;
 		QVBoxLayout * _IntermediateLayout = new QVBoxLayout( p_container );
@@ -272,7 +272,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		qMainLayout->addStretch( 1 );
 	}
 
-	void FormBasic::_loadValues( const MdParameters & p_defaults ) noexcept
+	void FormBasic::_loadValues( const MdParameters & p_defaults )
 	{
 		_uiObjects._fieldStepNumberMinimization->setText( QString::number( p_defaults.minimization.stepNumber ) );
 		figureBestValueUnitRelation(
@@ -295,7 +295,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		);
 	}
 
-	void FormBasic::_setupSlots() noexcept
+	void FormBasic::_setupSlots()
 	{
 		_eventManager.setMinimizationSettings( _uiObjects._buttonMinimizationSettings );
 		_eventManager.setNvtSettings( _uiObjects._buttonEquilibrationNvtSettings );
@@ -340,7 +340,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 	} // namespace
 
-	void FormBasic::get( MdParameters & p_in ) const noexcept
+	void FormBasic::get( MdParameters & p_in ) const
 	{
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );

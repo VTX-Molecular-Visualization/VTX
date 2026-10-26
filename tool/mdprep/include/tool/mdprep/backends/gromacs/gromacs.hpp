@@ -49,11 +49,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	 * @param p_structurePdb
 	 * @param
 	 */
-	void prepareStructure(
-		VTX::Util::Thread::ThreadData &,
-		const FilePath & p_structurePdb,
-		GromacsInstructions &
-	) noexcept;
+	void prepareStructure( VTX::Util::Thread::ThreadData &, const FilePath & p_structurePdb, GromacsInstructions & );
 
 	/**
 	 * @brief Use prepared structure to deliver a ready-to-use directory to start MD from

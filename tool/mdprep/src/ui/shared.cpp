@@ -157,7 +157,7 @@ namespace VTX::Tool::Mdprep::ui
 
 	namespace
 	{
-		auto g_IonicChargeValues = std::to_array<std::string_view>( { "-2", "-1", "+1", "+2" } );
+		const auto g_IonicChargeValues = std::to_array<std::string_view>( { "-2", "-1", "+1", "+2" } );
 
 		// Validator class that enforce Chemical symbol user input
 		class QChemicalSymbolValidator : public QValidator

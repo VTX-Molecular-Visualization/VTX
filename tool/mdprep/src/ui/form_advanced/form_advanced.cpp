@@ -183,7 +183,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		QHBoxLayout * layout = new QHBoxLayout;
 		p_target->addLayout( layout );
 
-		VTX::UI::QT::Util::LabelWithHelper label(
+		const VTX::UI::QT::Util::LabelWithHelper label(
 			"Not finding what you need ?",
 			"Pushing the button will open the simulation parameter file template so you can edit more advanced "
 			"options. Do it only if you know what you are doing.",

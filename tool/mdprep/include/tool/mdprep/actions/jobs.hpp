@@ -20,7 +20,7 @@ namespace VTX::Tool::Mdprep::Actions
 		StartPreparation( VTX::Util::Thread::ThreadData );
 
 		void execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions );
-		void wait() noexcept;
+		void wait();
 
 	  private:
 		struct _Impl;
@@ -43,7 +43,7 @@ namespace VTX::Tool::Mdprep::Actions
 		CheckSystem( VTX::Util::Thread::ThreadData );
 
 		void execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions );
-		void wait() noexcept;
+		void wait();
 
 	  private:
 		struct _Impl;

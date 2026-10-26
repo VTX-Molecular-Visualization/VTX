@@ -11,13 +11,13 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		const FilePath &			 p_root,
 		const std::string_view &	 p_folderName,
 		GromppInstructions &		 p_instructions
-	) noexcept
+	)
 	{
 		if ( fs::exists( p_root ) && fs::is_directory( p_root ) == false )
 		{
 			return; // This scenario shouldn't happen
 		}
-		FilePath jobDir = p_root / p_folderName;
+		const FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
 		if ( const auto * const fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".gro" ) )
@@ -32,8 +32,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 		case E_GROMPP_STEP::em:
 		{
-			FilePath	mdpTemplate = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "minim.mdp";
-			std::string mdpContent	= getFileContent( mdpTemplate );
+			const FilePath mdpTemplate = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "minim.mdp";
+			std::string	   mdpContent  = getFileContent( mdpTemplate );
 			replace( mdpContent, "${emtol}", fmt::format( "{:0.01f}", p_instructions.min.emtol ) );
 			replace( mdpContent, "${emstep}", fmt::format( "{:0.03f}", p_instructions.min.emstep ) );
 			replace( mdpContent, "${nsteps}", fmt::format( "{}", p_instructions.min.nsteps ) );
@@ -43,7 +43,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 		case E_GROMPP_STEP::ions:
 		{
-			FilePath mdpTemplate = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "ions.mdp";
+			const FilePath mdpTemplate = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "ions.mdp";
 			if ( fs::exists( mdpTemplate ) == false )
 			{
 				return;
@@ -55,7 +55,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 		case E_GROMPP_STEP::posres:
 		{
-			FilePath mdpTemplate = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "posres.mdp";
+			const FilePath mdpTemplate = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "posres.mdp";
 			if ( fs::exists( mdpTemplate ) == false )
 			{
 				return;
@@ -71,18 +71,18 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		p_instructions.inputTop = p_previousJobsOutputs.lastUncompiledTop;
 	}
 
-	void convert( const GromppInstructions & p_in, GromacsJobData & p_out ) noexcept
+	void convert( const GromppInstructions & p_in, GromacsJobData & p_out )
 	{
-		p_out.arguments.push_back( "grompp" );
-		p_out.arguments.push_back( "-f" );
+		p_out.arguments.emplace_back( "grompp" );
+		p_out.arguments.emplace_back( "-f" );
 		p_out.arguments.push_back( p_in.inputMdp.string() );
-		p_out.arguments.push_back( "-c" );
+		p_out.arguments.emplace_back( "-c" );
 		p_out.arguments.push_back( p_in.inputGro.string() );
-		p_out.arguments.push_back( "-r" );
+		p_out.arguments.emplace_back( "-r" );
 		p_out.arguments.push_back( p_in.inputGro.string() );
-		p_out.arguments.push_back( "-p" );
+		p_out.arguments.emplace_back( "-p" );
 		p_out.arguments.push_back( p_in.inputTop.string() );
-		p_out.arguments.push_back( "-po" );
+		p_out.arguments.emplace_back( "-po" );
 		p_out.arguments.push_back( p_in.outputMdp.string() );
 		if ( p_in.step == E_GROMPP_STEP::em ) // When in posres mode, we don't want anything else than the .top file
 		{
@@ -90,17 +90,17 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 		if ( p_in.step == E_GROMPP_STEP::em || p_in.step == E_GROMPP_STEP::posres )
 		{
-			p_out.arguments.push_back( "-pp" );
+			p_out.arguments.emplace_back( "-pp" );
 			p_out.arguments.push_back( p_in.outputTop.string() );
 			setLastArgumentAsExpectedOutputFile( p_out );
 		}
-		p_out.arguments.push_back( "-o" );
+		p_out.arguments.emplace_back( "-o" );
 		p_out.arguments.push_back( p_in.outputTpr.string() );
 		if ( p_in.step != E_GROMPP_STEP::posres ) // When in posres mode, we don't want anything else than the .top file
 		{
 			setLastArgumentAsExpectedOutputFile( p_out );
 		}
-		p_out.arguments.push_back( "-maxwarn" );
-		p_out.arguments.push_back( "1" );
+		p_out.arguments.emplace_back( "-maxwarn" );
+		p_out.arguments.emplace_back( "1" );
 	}
 } // namespace VTX::Tool::Mdprep::backends::Gromacs

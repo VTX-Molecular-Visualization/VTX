@@ -25,13 +25,13 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		const FilePath &		 p_root,
 		const std::string_view & p_folderName,
 		SolvateInstructions &
-	) noexcept;
+	);
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.
 	//    Does not perform filesystem check on input gro
 	//    If the output_gro is empty, will use the input filename root and append "solv"
-	void convert( const SolvateInstructions &, GromacsJobData & ) noexcept;
+	void convert( const SolvateInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 

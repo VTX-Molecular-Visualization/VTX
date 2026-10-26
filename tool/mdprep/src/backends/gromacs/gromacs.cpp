@@ -85,7 +85,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			Instruction &		  p_stepIn,
 			const char *		  p_stepName,
 			int &				  stepNum
-		) noexcept
+		)
 		{
 			const int displayIndex = stepNum;
 			App::THREAD().dispatch( [ event = Gateway::PreparationStepStarted { displayIndex, p_stepName } ]() mutable
@@ -98,7 +98,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			auto & currentJobData = p_in.jobData[ stepNum ];
 			stepNum++;
 			convert( p_stepIn, currentJobData );
-			FilePath gmxExe = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath();
+			const FilePath gmxExe = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath();
 			submitGromacsJob( gmxExe, jobDir, currentJobData );
 			currentJobData.postJobRoutine( jobDir, currentJobData, p_in.outputs );
 			checkJobResults( currentJobData );
@@ -157,7 +157,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		VTX::Util::Thread::ThreadData & p_thrData,
 		const FilePath &				p_structurePdb,
 		GromacsInstructions &			p_in
-	) noexcept
+	)
 	{
 		p_in.fileStem		  = p_structurePdb.stem().string();
 		p_in.pdb2gmx.inputPdb = p_structurePdb;
@@ -284,7 +284,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		_Impl( const FilePath & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
 			_testData( TestData { p_structurePdb, p_ff, p_w } )
 		{
-			FilePath rootDir = createRootDir();
+			const FilePath rootDir = createRootDir();
 			try
 			{
 				Pdb2gmxInstructions inst;

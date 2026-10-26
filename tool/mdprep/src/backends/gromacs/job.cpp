@@ -8,15 +8,15 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	namespace
 	{
 
-		void fillMissingString( const QByteArray & from, std::string & to ) noexcept { to += from.toStdString(); }
+		void fillMissingString( const QByteArray & from, std::string & to ) { to += from.toStdString(); }
 
 		void simpleProcessManagement( QProcess & p_proc, GromacsJobData & p_args )
 		{
 			auto drain = [ & ]
 			{
-				QByteArray bufErr	= p_proc.readAllStandardError();
-				QByteArray bufOut	= p_proc.readAllStandardOutput();
-				auto	   channels = p_args.channelsLocker.open();
+				const QByteArray bufErr	  = p_proc.readAllStandardError();
+				const QByteArray bufOut	  = p_proc.readAllStandardOutput();
+				auto			 channels = p_args.channelsLocker.open();
 				fillMissingString( bufErr, channels->stderr_ );
 				fillMissingString( bufOut, channels->stdout_ );
 			};
@@ -33,9 +33,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	void submitGromacsJob( const FilePath & p_gmxExe, const FilePath & p_workingDirectory, GromacsJobData & p_args )
 	{
-		QString		pgm { p_gmxExe.string().data() };
-		QStringList qtArgs;
-		std::string command = p_gmxExe.string();
+		const QString pgm { p_gmxExe.string().data() };
+		QStringList	  qtArgs;
+		std::string	  command = p_gmxExe.string();
 		for ( auto & arg : p_args.arguments )
 		{
 			qtArgs << QString( arg.c_str() );

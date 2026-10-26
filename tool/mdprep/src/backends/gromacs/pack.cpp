@@ -36,7 +36,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			const std::vector<std::pair<const char *, std::string>> & p_replaceText
 		)
 		{
-			FilePath templateFile = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "nvt.mdp";
+			const FilePath templateFile = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "nvt.mdp";
 			if ( fs::exists( p_template ) )
 			{
 				std::string templateFileContent = getFileContent( p_template );
@@ -97,7 +97,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			fs::create_directories( p_dest );
 		}
-		FilePath templateFile = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "runMD.py";
+		const FilePath templateFile = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "runMD.py";
 		if ( fs::exists( templateFile ) )
 		{
 			std::string templateFileContent = getFileContent( templateFile );

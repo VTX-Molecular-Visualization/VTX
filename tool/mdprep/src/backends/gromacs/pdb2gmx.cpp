@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstring>
 #include <fstream>
 #include <re2/re2.h>
@@ -84,9 +85,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	std::string_view forcefield::getName() const
 	{
-		size_t filenamePos
+		const size_t filenamePos
 			= this->forcefieldFolderPath.find( FilePath( this->forcefieldFolderPath ).filename().string() );
-		size_t extensionPos = this->forcefieldFolderPath.size() - ( sizeof( g_ff_suffix ) - 1 );
+		const size_t extensionPos = this->forcefieldFolderPath.size() - ( sizeof( g_ff_suffix ) - 1 );
 		return std::string_view { std::next( this->forcefieldFolderPath.begin(), filenamePos ),
 								  std::next( this->forcefieldFolderPath.begin(), extensionPos ) };
 	}
@@ -147,7 +148,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		std::string_view::const_iterator currentPos		= p_script.begin();
-		std::string_view::const_iterator nextNewlinePos = std::find( p_script.begin(), p_script.end(), '\n' );
+		std::string_view::const_iterator nextNewlinePos = std::ranges::find( p_script, '\n' );
 		if ( nextNewlinePos != p_script.end() )
 		{
 			nextNewlinePos++;
@@ -160,7 +161,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		while ( currentPos != p_script.end() )
 		{
-			std::string lineBuf {
+			const std::string lineBuf {
 				currentPos, nextNewlinePos
 			}; // We need to used this buffer because the regex match function doesn't stop at the en of a string view
 			   // iterator but rather at the end of the entire super-string. So we need to copy the string data on a
@@ -233,13 +234,13 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		const FilePath &		 p_root,
 		const std::string_view & p_folderName,
 		Pdb2gmxInstructions &	 p_instructions
-	) noexcept
+	)
 	{
 		if ( fs::exists( p_root ) && fs::is_directory( p_root ) == false )
 		{
 			return; // This scenario shouldn't happen
 		}
-		FilePath jobDir = p_root / p_folderName;
+		const FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
 		p_instructions.outputDir = jobDir.string();
@@ -322,19 +323,19 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			{
 				return; // if no top file is found it's the checkRslt's responsibility to report it
 			}
-			FilePath tmpFile = App::SESSION().getAppTmpFolder() / "vtxgmxtopfiletmp";
+			const FilePath tmpFile = App::SESSION().getAppTmpFolder() / "vtxgmxtopfiletmp";
 			fs::create_directories( tmpFile.parent_path() );
 			if ( fs::exists( tmpFile ) )
 			{
 				fs::remove( tmpFile );
 			}
 			{
-				std::string fileStem = topFile.stem().string();
+				std::string	  fileStem = topFile.stem().string();
 				RE2			  itpÎncludePattern { fmt::format( R"(#include +("|<)({}.*\.\w\w\w)("|>).*)", fileStem ) };
 				std::ifstream fileStrm { topFile };
 				std::ofstream outStrm { tmpFile };
-				std::string	  jobDirString = p_jobDir.string();
-				std::string	  line;
+				const std::string jobDirString = p_jobDir.string();
+				std::string		  line;
 				while ( std::getline( fileStrm, line ) )
 				{
 					std::string fileName;
@@ -354,7 +355,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	} // namespace
 
-	void convert( const Pdb2gmxInstructions & p_in, GromacsJobData & p_out ) noexcept
+	void convert( const Pdb2gmxInstructions & p_in, GromacsJobData & p_out )
 	{
 		if ( p_in.forcefields.empty() )
 		{
@@ -381,34 +382,34 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		fs::create_directories( outputDir );
 		p_out.arguments.clear();
 
-		p_out.arguments.push_back( "pdb2gmx" );
-		p_out.arguments.push_back( "-f" );
+		p_out.arguments.emplace_back( "pdb2gmx" );
+		p_out.arguments.emplace_back( "-f" );
 		p_out.arguments.push_back( p_in.inputPdb.string() );
-		p_out.arguments.push_back( "-o" );
+		p_out.arguments.emplace_back( "-o" );
 		p_out.arguments.push_back( ( outputDir / ( p_in.fileStem + ".gro" ) ).make_preferred().string() );
 		setLastArgumentAsExpectedOutputFile( p_out );
-		p_out.arguments.push_back( "-p" );
+		p_out.arguments.emplace_back( "-p" );
 		p_out.arguments.push_back( ( outputDir / ( p_in.fileStem + ".top" ) ).make_preferred().string() );
 		setLastArgumentAsExpectedOutputFile( p_out );
-		p_out.arguments.push_back( "-i" );
+		p_out.arguments.emplace_back( "-i" );
 		p_out.arguments.push_back( ( outputDir / ( p_in.fileStem + ".itp" ) ).make_preferred().string() );
 		// .itp won't be among the expected output as mulitple files will be produced by multiple chains, giving an
 		// "unpredictible" result. Also the file is not usefull for us so far
-		p_out.arguments.push_back( "-n" );
+		p_out.arguments.emplace_back( "-n" );
 		p_out.arguments.push_back( ( outputDir / ( p_in.fileStem + ".ndx" ) ).make_preferred().string() );
 		setLastArgumentAsExpectedOutputFile( p_out );
-		p_out.arguments.push_back( "-ff" );
+		p_out.arguments.emplace_back( "-ff" );
 		auto ffName = p_in.forcefields.at( p_in.forcefieldIndex ).getName();
-		p_out.arguments.push_back( std::string( ffName.data(), ffName.size() ) );
-		p_out.arguments.push_back( "-water" );
-		p_out.arguments.push_back( string( p_in.water ) );
+		p_out.arguments.emplace_back( ffName.data(), ffName.size() );
+		p_out.arguments.emplace_back( "-water" );
+		p_out.arguments.emplace_back( string( p_in.water ) );
 
 		if ( p_in.customParameter.has_value() )
 		{
 			FilePath batchFile = App::SESSION().getAppTmpFolder() / ( p_in.fileStem + "_pdb2gmx_batch.txt" );
 			fs::create_directories( batchFile.parent_path() );
 			writeBatchFile( batchFile, *p_in.customParameter );
-			p_out.arguments.push_back( "-batch" );
+			p_out.arguments.emplace_back( "-batch" );
 			p_out.arguments.push_back( batchFile.make_preferred().string() );
 		}
 

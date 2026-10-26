@@ -37,7 +37,7 @@ namespace VTX::UI::QT::Widget::Tree
 		// Get groove geometry.
 		QStyleOptionSlider opt;
 		initStyleOption( &opt );
-		QRect grooveRect = style()->subControlRect( QStyle::CC_Slider, &opt, QStyle::SC_SliderGroove, this );
+		const QRect grooveRect = style()->subControlRect( QStyle::CC_Slider, &opt, QStyle::SC_SliderGroove, this );
 
 		// Map frame ranges to segments so a single loaded frame remains visible.
 		const double pixelPerValue = static_cast<double>( grooveRect.width() ) / valueCount;
@@ -49,7 +49,7 @@ namespace VTX::UI::QT::Widget::Tree
 		xEnd   = std::min( xEnd, grooveRect.x() + grooveRect.width() );
 
 		// Paint the overlay.
-		QRect overlay( xStart, grooveRect.y(), xEnd - xStart, grooveRect.height() );
+		const QRect overlay( xStart, grooveRect.y(), xEnd - xStart, grooveRect.height() );
 
 		QPainter painter( this );
 		painter.setClipRect( grooveRect );

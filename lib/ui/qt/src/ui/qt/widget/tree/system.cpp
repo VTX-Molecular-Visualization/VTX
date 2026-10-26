@@ -63,12 +63,12 @@ namespace VTX::UI::QT::Widget::Tree
 			&QTreeView::expanded,
 			[ this ]( const QModelIndex & p_index )
 			{
-				QModelIndex parent	 = p_index.parent();
-				const int	rowCount = model()->rowCount( parent );
+				const QModelIndex parent   = p_index.parent();
+				const int		  rowCount = model()->rowCount( parent );
 
 				for ( int r = 0; r < rowCount; r++ )
 				{
-					QModelIndex sibling = model()->index( r, 0, parent );
+					const QModelIndex sibling = model()->index( r, 0, parent );
 
 					if ( sibling != p_index && isExpanded( sibling ) )
 					{
@@ -92,8 +92,8 @@ namespace VTX::UI::QT::Widget::Tree
 			[ this ]( const QModelIndex & p_index )
 			{
 				const auto &				model = getSystemModel();
-				Core::Struct::E_SYSTEM_ITEM item;
-				Index						index;
+				Core::Struct::E_SYSTEM_ITEM item {};
+				Index						index {};
 				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
 				const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(
@@ -118,7 +118,7 @@ namespace VTX::UI::QT::Widget::Tree
 				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
 				// Get current scheme.
-				std::optional<Renderer::E_COLOR_SCHEME> scheme
+				const std::optional<Renderer::E_COLOR_SCHEME> scheme
 					= App::Helper::System::getColorScheme( { _system, item, index } );
 				const auto secondaryStructureScheme
 					= App::Helper::System::getSecondaryStructureColorScheme( { _system, item, index } );
@@ -167,12 +167,12 @@ namespace VTX::UI::QT::Widget::Tree
 			[ this ]( const QModelIndex & p_index )
 			{
 				const auto &				model = getSystemModel();
-				Core::Struct::E_SYSTEM_ITEM item;
-				Index						index;
+				Core::Struct::E_SYSTEM_ITEM item {};
+				Index						index {};
 				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
 				// Get current representation.
-				std::optional<Entity> representation
+				const std::optional<Entity> representation
 					= App::Helper::System::getRepresentation( { _system, item, index } );
 
 				Menu::Representation  menu( this, representation );
@@ -304,8 +304,8 @@ namespace VTX::UI::QT::Widget::Tree
 		using namespace App;
 		using namespace Core::Struct;
 
-		E_SYSTEM_ITEM item;
-		Index		  itemIndex;
+		E_SYSTEM_ITEM item {};
+		Index		  itemIndex {};
 		Model::SystemModel::unpack( p_index.internalId(), item, itemIndex );
 
 		return App::Helper::System::getSelectionState( { _system, item, itemIndex } )
@@ -317,8 +317,8 @@ namespace VTX::UI::QT::Widget::Tree
 		using namespace App;
 		using namespace Core::Struct;
 
-		E_SYSTEM_ITEM item;
-		Index		  itemIndex;
+		E_SYSTEM_ITEM item {};
+		Index		  itemIndex {};
 		Model::SystemModel::unpack( p_index.internalId(), item, itemIndex );
 
 		switch ( item )
