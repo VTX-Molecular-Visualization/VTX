@@ -89,13 +89,20 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			QFormLayout * qLayout = new QFormLayout;
 			p_qMainLayout->addLayout( qLayout );
 			QWidget * w = nullptr;
+			// Engine info is optional : without it, the comboboxes are simply left empty.
+			const Gateway::EngineSpecificCommonInformation * const engineInfo
+				= p_uiObjects.engineInfo.has_value() ? &p_uiObjects.engineInfo.value() : nullptr;
+
 			get( E_COMMON_FIELDS_COMBOBOX ::bioForcefield, w, p_uiObjects.fieldForceFieldBio );
-			for ( auto & it_bioFf : p_uiObjects.engineInfo->bioForcefieldCollection )
+			if ( engineInfo != nullptr )
 			{
-				p_uiObjects.fieldForceFieldBio->addItem( QString::fromStdString( it_bioFf ) );
-				if ( it_bioFf == p_data->forcefieldBio )
+				for ( auto & it_bioFf : engineInfo->bioForcefieldCollection )
 				{
-					p_uiObjects.fieldForceFieldBio->setCurrentIndex( p_uiObjects.fieldForceFieldBio->count() - 1 );
+					p_uiObjects.fieldForceFieldBio->addItem( QString::fromStdString( it_bioFf ) );
+					if ( it_bioFf == p_data->forcefieldBio )
+					{
+						p_uiObjects.fieldForceFieldBio->setCurrentIndex( p_uiObjects.fieldForceFieldBio->count() - 1 );
+					}
 				}
 			}
 			qLayout->addRow( w, p_uiObjects.fieldForceFieldBio );
@@ -105,9 +112,12 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			qLayout->addRow( w, p_uiObjects.fieldForceFieldChem );
 
 			get( E_COMMON_FIELDS_COMBOBOX::boxShape, w, p_uiObjects.fieldBoxShape );
-			for ( auto & it_shapeStr : p_uiObjects.engineInfo->boxShapeCollection )
+			if ( engineInfo != nullptr )
 			{
-				p_uiObjects.fieldBoxShape->addItem( QString::fromStdString( it_shapeStr ) );
+				for ( auto & it_shapeStr : engineInfo->boxShapeCollection )
+				{
+					p_uiObjects.fieldBoxShape->addItem( QString::fromStdString( it_shapeStr ) );
+				}
 			}
 			if ( p_data->boxShapeIdx < static_cast<size_t>( p_uiObjects.fieldBoxShape->count() ) )
 			{
@@ -116,12 +126,15 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			qLayout->addRow( w, p_uiObjects.fieldBoxShape );
 
 			get( E_COMMON_FIELDS_COMBOBOX ::waterModel, w, p_uiObjects.fieldWaterModel );
-			for ( auto & it_waterModelsStr : p_uiObjects.engineInfo->waterModels )
+			if ( engineInfo != nullptr )
 			{
-				p_uiObjects.fieldWaterModel->addItem( QString::fromStdString( it_waterModelsStr ) );
-				if ( it_waterModelsStr == p_data->waterModel )
+				for ( auto & it_waterModelsStr : engineInfo->waterModels )
 				{
-					p_uiObjects.fieldWaterModel->setCurrentIndex( p_uiObjects.fieldWaterModel->count() - 1 );
+					p_uiObjects.fieldWaterModel->addItem( QString::fromStdString( it_waterModelsStr ) );
+					if ( it_waterModelsStr == p_data->waterModel )
+					{
+						p_uiObjects.fieldWaterModel->setCurrentIndex( p_uiObjects.fieldWaterModel->count() - 1 );
+					}
 				}
 			}
 			qLayout->addRow( w, p_uiObjects.fieldWaterModel );

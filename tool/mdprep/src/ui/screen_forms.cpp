@@ -119,18 +119,18 @@ namespace VTX::Tool::Mdprep::ui
 	void ScreenForms::_updateMdEngine( int idx )
 	{
 		_mdEngineCurrentIdx = idx;
-		if ( not _mdEngines[ _mdEngineCurrentIdx ].has_value() )
+		auto & mdEngine		= _mdEngines[ _mdEngineCurrentIdx ];
+		if ( not mdEngine.has_value() )
 		{
-			_mdEngines[ _mdEngineCurrentIdx ].emplace();
+			mdEngine.emplace();
 			VTX::Tool::Mdprep::ui::get(
-				static_cast<VTX::Tool::Mdprep::ui::E_MD_ENGINE>( _mdEngineCurrentIdx ),
-				_mdEngines[ _mdEngineCurrentIdx ].value()
+				static_cast<VTX::Tool::Mdprep::ui::E_MD_ENGINE>( _mdEngineCurrentIdx ), mdEngine.value()
 			);
 		}
 		{
 			_formEngine = VTX::Tool::Mdprep::ui::MdEngineFieldPlacer();
-			_mdEngines[ _mdEngineCurrentIdx ]->get( _formEngine );
-			_mdEngines[ _mdEngineCurrentIdx ]->get( _jobManager );
+			mdEngine->get( _formEngine );
+			mdEngine->get( _jobManager );
 
 			// The form doesn't actually know if the report ui must be relocated. Therefore it is handled here.
 			ReportManager _newReportManager { _jobManager };
@@ -162,10 +162,11 @@ namespace VTX::Tool::Mdprep::ui
 
 	void ScreenForms::_updateForm()
 	{
-		if ( _mdEngines[ _mdEngineCurrentIdx ].has_value() )
+		const auto & mdEngine = _mdEngines[ _mdEngineCurrentIdx ];
+		if ( mdEngine.has_value() )
 		{
 			VTX::Tool::Mdprep::ui::EngineSpecificCommonInformation engineSpecificData;
-			VTX::Tool::Mdprep::ui::get( _mdEngines[ _mdEngineCurrentIdx ].value(), engineSpecificData );
+			VTX::Tool::Mdprep::ui::get( mdEngine.value(), engineSpecificData );
 			_currentForm.update( engineSpecificData );
 		}
 	}
@@ -206,8 +207,14 @@ namespace VTX::Tool::Mdprep::ui
 
 	void ScreenForms::_startPreparation()
 	{
-		Gateway::EngineJobManager jobManager;
-		_mdEngines[ _mdEngineCurrentIdx ]->get( jobManager );
+		const auto & mdEngine = _mdEngines[ _mdEngineCurrentIdx ];
+		if ( not mdEngine.has_value() )
+		{
+			return; // No MD engine selected/initialized yet : nothing to prepare.
+		}
+
+		Gateway::EngineJobManager jobManager {};
+		mdEngine->get( jobManager );
 
 		Gateway::MdParameters param;
 		_currentForm.get( param );
