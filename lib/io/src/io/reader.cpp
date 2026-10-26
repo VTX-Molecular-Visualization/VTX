@@ -223,10 +223,9 @@ namespace VTX::IO
 				bool  isFirstAtomInResidue = true;
 				Index previousAtomIndex	   = INVALID_INDEX;
 
-				for ( chemfiles::Residue::const_iterator it = _currentResidue->cbegin(); it != _currentResidue->cend();
-					  ++it )
+				for ( const size_t atom : *_currentResidue )
 				{
-					const Index atomIndex = static_cast<Index>( *it );
+					const Index atomIndex = static_cast<Index>( atom );
 
 					if ( not isFirstAtomInResidue && atomIndex != previousAtomIndex + 1 )
 					{
@@ -452,10 +451,9 @@ namespace VTX::IO
 				Residue residue { .sourceResidueIndex = sourceResidueIndex };
 				residue.atomIndexes.reserve( _currentResidue->size() );
 
-				for ( chemfiles::Residue::const_iterator it = _currentResidue->cbegin(); it != _currentResidue->cend();
-					  ++it )
+				for ( const size_t atom : *_currentResidue )
 				{
-					const Index atomIndex = static_cast<Index>( *it );
+					const Index atomIndex = static_cast<Index>( atom );
 					if ( atomIndex >= static_cast<Index>( _currentFrame.size() ) )
 					{
 						VTX_WARNING( "Residue {} references invalid atom {}", sourceResidueIndex, atomIndex );
