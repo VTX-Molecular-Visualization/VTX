@@ -2,6 +2,7 @@
 #include <app/session.hpp>
 #include <cstdio>
 #include <string>
+#include <tuple>
 #include <util/types.hpp>
 #include <vector>
 
@@ -97,9 +98,9 @@ int main( int p_argc, char * p_argv[] )
 		if ( hasParentConsole || argss.debug )
 		{
 			FILE * stream = nullptr;
-			freopen_s( &stream, "CONOUT$", "w", stdout );
-			freopen_s( &stream, "CONOUT$", "w", stderr );
-			freopen_s( &stream, "CONIN$", "r", stdin );
+			std::ignore = freopen_s( &stream, "CONOUT$", "w", stdout );
+			std::ignore = freopen_s( &stream, "CONOUT$", "w", stderr );
+			std::ignore = freopen_s( &stream, "CONIN$", "r", stdin );
 		}
 #endif
 
@@ -155,13 +156,13 @@ int main( int p_argc, char * p_argv[] )
 	}
 	catch ( const std::exception & p_e )
 	{
-		std::fputs( "Unhandled exception: ", stderr );
-		std::fputs( p_e.what(), stderr );
+		std::ignore = std::fputs( "Unhandled exception: ", stderr );
+		std::ignore = std::fputs( p_e.what(), stderr );
 		return EXIT_FAILURE;
 	}
 	catch ( ... )
 	{
-		std::fputs( "Unhandled unknown exception", stderr );
+		std::ignore = std::fputs( "Unhandled unknown exception", stderr );
 		return EXIT_FAILURE;
 	}
 }
