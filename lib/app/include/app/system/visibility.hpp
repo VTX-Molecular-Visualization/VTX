@@ -27,7 +27,7 @@ namespace VTX::App::System
 		Util::Math::BitSet atoms;
 	};
 
-	bool isAnythingVisible() noexcept; 
+	bool isAnythingVisible();
 
 } // namespace VTX::App::System
 

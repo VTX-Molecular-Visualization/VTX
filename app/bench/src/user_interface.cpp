@@ -309,7 +309,7 @@ namespace VTX::Bench
 
 			// ImGui::Checkbox( "Force update", &p_renderer->forceUpdate );
 
-			ImGui::Text( fmt::format( "{} FPS", static_cast<int>( ImGui::GetIO().Framerate ) ).c_str() );
+			ImGui::TextUnformatted( fmt::format( "{} FPS", static_cast<int>( ImGui::GetIO().Framerate ) ).c_str() );
 
 			ImGui::EndMainMenuBar();
 		}
@@ -777,7 +777,7 @@ namespace VTX::Bench
 			ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
 			// uint idFinalOuput = id;
 			// ImNodes::BeginInputAttribute( id++ );
-			ImGui::Text( "out" );
+			ImGui::TextUnformatted( "out" );
 			ImNodes::EndInputAttribute();
 			ImNodes::PopAttributeFlag();
 

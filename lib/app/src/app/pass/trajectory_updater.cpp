@@ -7,6 +7,7 @@
 #include <cmath>
 #include <core/struct/trajectory.hpp>
 #include <optional>
+#include <util/logger.hpp>
 #include <utility>
 
 namespace VTX::App::Pass
@@ -20,9 +21,23 @@ namespace VTX::App::Pass
 	TrajectoryUpdater::~TrajectoryUpdater()
 	{
 		_loaderDestroyedConnection.release();
-		for ( const Entity entity : REG().view<Trajectory::Loader>() )
+		try
 		{
-			_stopLoader( entity );
+			for ( const Entity entity : REG().view<Trajectory::Loader>() )
+			{
+				try
+				{
+					_stopLoader( entity );
+				}
+				catch ( ... )
+				{
+					VTX_ERROR( "Failed to stop a trajectory loader during cleanup." );
+				}
+			}
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Failed to enumerate trajectory loaders during cleanup." );
 		}
 	}
 

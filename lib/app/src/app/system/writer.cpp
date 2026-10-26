@@ -16,16 +16,20 @@ namespace VTX::App::System
 		std::vector<IO::Writer::WriteArgs::System> systems;
 	};
 
-	class SelectedAtomFilter
+	namespace
 	{
-	  public:
-		SelectedAtomFilter( const System::Selection & p_ ) : _selection( p_ ) {}
+		class SelectedAtomFilter
+		{
+		  public:
+			SelectedAtomFilter( const System::Selection & p_ ) : _selection( p_ ) {}
 
-		bool operator()( const size_t & p_atomIdx ) const noexcept { return _selection.get().atoms.test( p_atomIdx ); }
+			bool operator()( const size_t & p_atomIdx ) const noexcept
+			{ return _selection.get().atoms.test( p_atomIdx ); }
 
-	  private:
-		std::reference_wrapper<const System::Selection> _selection;
-	};
+		  private:
+			std::reference_wrapper<const System::Selection> _selection;
+		};
+	} // namespace
 
 	SelectionWriter::SelectionWriter( FilePath p_dest ) : _ptr( new _impl( std::move( p_dest ) ) )
 	{
@@ -57,16 +61,20 @@ namespace VTX::App::System
 		std::vector<IO::Writer::WriteArgs::System> systems;
 	};
 
-	class VisibleAtomFilter
+	namespace
 	{
-	  public:
-		VisibleAtomFilter( const System::Visibility & p_ ) : _visibility( p_ ) {}
+		class VisibleAtomFilter
+		{
+		  public:
+			VisibleAtomFilter( const System::Visibility & p_ ) : _visibility( p_ ) {}
 
-		bool operator()( const size_t & p_atomIdx ) const noexcept { return _visibility.get().atoms.test( p_atomIdx ); }
+			bool operator()( const size_t & p_atomIdx ) const noexcept
+			{ return _visibility.get().atoms.test( p_atomIdx ); }
 
-	  private:
-		std::reference_wrapper<const System::Visibility> _visibility;
-	};
+		  private:
+			std::reference_wrapper<const System::Visibility> _visibility;
+		};
+	} // namespace
 
 	VisibleWriter::VisibleWriter( FilePath p_dest ) : _ptr( new _impl( std::move( p_dest ) ) )
 	{

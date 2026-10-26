@@ -4,7 +4,7 @@
 
 namespace VTX::App::System
 {
-	bool isAnythingVisible() noexcept
+	bool isAnythingVisible()
 	{
 		bool somethingVisible = false;
 		for ( auto entity : App::REG().view<Visibility>() )

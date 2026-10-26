@@ -1,4 +1,4 @@
-WarningsAsErrors: ''
+WarningsAsErrors: '*'
 
 Checks: >
   *,
@@ -88,3 +88,4 @@ Checks: >
 CheckOptions:
   cppcoreguidelines-rvalue-reference-param-not-moved.AllowPartialMove: true
   cppcoreguidelines-rvalue-reference-param-not-moved.IgnoreNonDeducedTemplateTypes: true
+  bugprone-exception-escape.CheckMoveMemberFunctions: false
