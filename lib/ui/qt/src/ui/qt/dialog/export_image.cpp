@@ -70,7 +70,7 @@ namespace VTX::UI::QT::Dialog
 		auto * layoutGroupResolution = Helper::makeQObject<QVBoxLayout>( groupResolution );
 		groupResolution->setLayout( layoutGroupResolution );
 		groupResolution->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Maximum );
-		auto layoutPresetSize = std::make_unique<QHBoxLayout>();
+		auto * layoutPresetSize = Helper::makeChildLayout<QHBoxLayout>( *layoutGroupResolution );
 
 		layoutPresetSize->setAlignment( Qt::AlignmentFlag::AlignLeft );
 
@@ -129,7 +129,7 @@ namespace VTX::UI::QT::Dialog
 		layoutPresetSize->addWidget( _spinBoxHeight );
 
 		// Ratio widgets.
-		auto layoutRatio = std::make_unique<QHBoxLayout>();
+		auto * layoutRatio = Helper::makeChildLayout<QHBoxLayout>( *layoutGroupResolution );
 		layoutRatio->setAlignment( Qt::AlignmentFlag::AlignCenter );
 
 		auto * labelRatio = Helper::makeQObject<QLabel>( "Ratio", this );
@@ -147,9 +147,6 @@ namespace VTX::UI::QT::Dialog
 		layoutRatio->addWidget( _sliderRatio );
 		layoutRatio->addWidget( _labelRatioValue );
 
-		layoutGroupResolution->addLayout( layoutPresetSize.release() );
-		layoutGroupResolution->addLayout( layoutRatio.release() );
-
 		// Format.
 		auto * groupFormat	= new QGroupBox( "Format" );
 		auto * layoutFormat = Helper::makeQObject<QVBoxLayout>( groupFormat );
@@ -164,10 +161,12 @@ namespace VTX::UI::QT::Dialog
 			_comboBoxFormat, QOverload<int>::of( &QComboBox::currentIndexChanged ), this, &ExportImage::_onFormat
 		);
 
+		layoutFormat->addWidget( _comboBoxFormat );
+
 		// Background opacity.
-		auto layoutBackgroundOpacity = std::make_unique<QHBoxLayout>();
-		_labelBackgroundOpacity		 = Helper::makeQObject<QLabel>( "Background opacity", this );
-		_sliderBackgroundOpacity	 = Helper::makeQObject<QSlider>( Qt::Orientation::Horizontal, this );
+		auto * layoutBackgroundOpacity = Helper::makeChildLayout<QHBoxLayout>( *layoutFormat );
+		_labelBackgroundOpacity		   = Helper::makeQObject<QLabel>( "Background opacity", this );
+		_sliderBackgroundOpacity	   = Helper::makeQObject<QSlider>( Qt::Orientation::Horizontal, this );
 		_sliderBackgroundOpacity->setMinimum( 0 );
 		_sliderBackgroundOpacity->setMaximum( 100 );
 		_sliderBackgroundOpacity->setValue( 100 );
@@ -179,9 +178,6 @@ namespace VTX::UI::QT::Dialog
 		layoutBackgroundOpacity->addWidget( _labelBackgroundOpacity );
 		layoutBackgroundOpacity->addWidget( _sliderBackgroundOpacity );
 		layoutBackgroundOpacity->addWidget( _labelBackgroundOpacityValue );
-
-		layoutFormat->addWidget( _comboBoxFormat );
-		layoutFormat->addLayout( layoutBackgroundOpacity.release() );
 
 		// Preview.
 		auto * groupPreview	 = new QGroupBox( "Preview" );

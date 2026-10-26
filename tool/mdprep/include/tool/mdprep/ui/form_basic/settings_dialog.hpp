@@ -16,8 +16,7 @@ namespace VTX::Tool::Mdprep::Gateway
 	struct EngineSpecificCommonInformation;
 	struct MinimizationData;
 	struct SystemData;
-	class MdEngineFieldPlacer;
-} // namespace VTX::Tool::Mdprep::Gateway
+}// namespace VTX::Tool::Mdprep::Gateway
 
 namespace VTX::Tool::Mdprep::ui::form_basic
 {

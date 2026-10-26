@@ -95,9 +95,10 @@ int main( int p_argc, char * p_argv[] )
 		}
 		if ( hasParentConsole || argss.debug )
 		{
-			freopen_s( (FILE **)stdout, "CONOUT$", "w", stdout );
-			freopen_s( (FILE **)stderr, "CONOUT$", "w", stderr );
-			freopen_s( (FILE **)stdin, "CONIN$", "r", stdin );
+			FILE * stream = nullptr;
+			freopen_s( &stream, "CONOUT$", "w", stdout );
+			freopen_s( &stream, "CONOUT$", "w", stderr );
+			freopen_s( &stream, "CONIN$", "r", stdin );
 		}
 #endif
 

@@ -94,7 +94,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_connectSettingsManager();
 	}
 
-	void EventManager::setSystemMsg( QVBoxLayout * p_ ) noexcept
+	void EventManager::setSystemMsg( QVBoxLayout * p_ )
 	{
 		_uiObjects._layoutSystemCheckMsg = p_;
 		ReportManager * report			 = nullptr;

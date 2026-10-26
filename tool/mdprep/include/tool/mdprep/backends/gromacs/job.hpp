@@ -43,7 +43,6 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		JobReport																		  report;
 		std::function<void( const FilePath &, GromacsJobData &, CumulativeOuputFiles & )> postJobRoutine
 			= []( const FilePath &, GromacsJobData &, CumulativeOuputFiles & ) {};
-		bool operator==( const GromacsJobData & ) const noexcept = default;
 	};
 
 	/**

@@ -44,7 +44,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 			const int &	   p_precision
 		)
 		{
-			QDoubleSpinBox * out = new QDoubleSpinBox;
+			QDoubleSpinBox * out = VTX::UI::QT::Helper::makeQObject<QDoubleSpinBox>( p_dest->parentWidget() );
 			out->setDecimals( p_precision );
 			out->setSingleStep( p_step );
 			out->setRange( p_min, p_max );
@@ -138,10 +138,8 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 	{
 		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, "System Preparation" );
 
-		QHBoxLayout * systemReportButtonLayout = new QHBoxLayout;
-		_uiObjects._systemReportLayout		   = new QVBoxLayout;
-		p_target->addLayout( systemReportButtonLayout );
-		systemReportButtonLayout->addLayout( _uiObjects._systemReportLayout );
+		QHBoxLayout * systemReportButtonLayout = VTX::UI::QT::Helper::makeChildLayout<QHBoxLayout>( *p_target );
+		_uiObjects._systemReportLayout = VTX::UI::QT::Helper::makeChildLayout<QVBoxLayout>( *systemReportButtonLayout );
 		_uiObjects._buttonStartInputCheck
 			= VTX::UI::QT::Helper::makeQObject<QPushButton>( "Check System", p_target->parentWidget() );
 		systemReportButtonLayout->addWidget( _uiObjects._buttonStartInputCheck );
@@ -165,8 +163,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		VTX::Tool::Mdprep::ui::get( E_COMMON_FIELDS_COMBOBOX ::waterModel, label, _uiObjects._fieldSystemWaterModel );
 		_uiObjects._layoutSystemPreparation->addRow( label, _uiObjects._fieldSystemWaterModel );
 
-		QFormLayout * boxLayout = new QFormLayout;
-		p_target->addLayout( boxLayout );
+		QFormLayout * boxLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_target );
 		VTX::Tool::Mdprep::ui::get( E_COMMON_FIELDS_COMBOBOX ::boxShape, label, _uiObjects._fieldSystemBoxShape );
 		boxLayout->addRow( label, _uiObjects._fieldSystemBoxShape );
 
@@ -183,8 +180,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 	{
 		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, "" );
 
-		QHBoxLayout * layout = new QHBoxLayout;
-		p_target->addLayout( layout );
+		QHBoxLayout * layout = VTX::UI::QT::Helper::makeChildLayout<QHBoxLayout>( *p_target );
 
 		const VTX::UI::QT::Util::LabelWithHelper label(
 			"Not finding what you need ?",

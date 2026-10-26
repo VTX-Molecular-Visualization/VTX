@@ -88,8 +88,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		const size_t filenamePos
 			= this->forcefieldFolderPath.find( FilePath( this->forcefieldFolderPath ).filename().string() );
 		const size_t extensionPos = this->forcefieldFolderPath.size() - ( sizeof( g_ff_suffix ) - 1 );
-		return std::string_view { std::next( this->forcefieldFolderPath.begin(), filenamePos ),
-								  std::next( this->forcefieldFolderPath.begin(), extensionPos ) };
+		return std::string_view( this->forcefieldFolderPath ).substr( filenamePos, extensionPos - filenamePos );
 	}
 
 	void parse( const std::string & p_user_str, E_INTERACTIVE_KEYWORD & p_out ) noexcept

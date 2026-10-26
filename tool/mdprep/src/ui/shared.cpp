@@ -241,14 +241,16 @@ namespace VTX::Tool::Mdprep::ui
 		_uiObjects.cationCharge = VTX::UI::QT::Helper::makeQObject<QComboBox>( _uiObjects.container );
 		for ( const auto & it_chrgStr : g_IonicChargeValues )
 		{
-			if ( std::stol( it_chrgStr.data() ) > 0 )
+			const long	  chrg	  = std::stol( std::string( it_chrgStr ) );
+			const QString chrgStr = QUtf8StringView( it_chrgStr ).toString();
+			if ( chrg > 0 )
 			{
-				_uiObjects.cationCharge->addItem( QString( it_chrgStr.data() ) );
+				_uiObjects.cationCharge->addItem( chrgStr );
 			}
 
-			if ( std::stol( it_chrgStr.data() ) < 0 )
+			if ( chrg < 0 )
 			{
-				_uiObjects.anionCharge->addItem( QString( it_chrgStr.data() ) );
+				_uiObjects.anionCharge->addItem( chrgStr );
 			}
 		}
 
@@ -273,14 +275,15 @@ namespace VTX::Tool::Mdprep::ui
 
 		for ( const auto & it_chrgStr : g_IonicChargeValues )
 		{
-			const long chrg = std::stol( it_chrgStr.data() );
+			const long	  chrg	  = std::stol( std::string( it_chrgStr ) );
+			const QString chrgStr = QUtf8StringView( it_chrgStr ).toString();
 			if ( chrg == p_defaults.anionCharge )
 			{
-				_uiObjects.anionCharge->setCurrentText( it_chrgStr.data() );
+				_uiObjects.anionCharge->setCurrentText( chrgStr );
 			}
 			if ( chrg == p_defaults.cationCharge )
 			{
-				_uiObjects.cationCharge->setCurrentText( it_chrgStr.data() );
+				_uiObjects.cationCharge->setCurrentText( chrgStr );
 			}
 		}
 	}

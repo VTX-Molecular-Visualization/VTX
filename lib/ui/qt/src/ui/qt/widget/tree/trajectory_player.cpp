@@ -29,7 +29,7 @@ namespace VTX::UI::QT::Widget::Tree
 		mainLayout->setSpacing( 0 );
 
 		// Control bar (horizontal)
-		auto controlBar = std::make_unique<QHBoxLayout>();
+		auto * controlBar = Helper::makeChildLayout<QHBoxLayout>( *mainLayout );
 		controlBar->setContentsMargins( 4, 2, 4, 2 );
 		controlBar->setSpacing( 4 );
 
@@ -67,8 +67,6 @@ namespace VTX::UI::QT::Widget::Tree
 		_btnSettings->setCheckable( true );
 		_btnSettings->setToolTip( tr( "Settings" ) );
 		controlBar->addWidget( _btnSettings );
-
-		mainLayout->addLayout( controlBar.release() );
 
 		// Settings panel (initially hidden)
 		_settings = Helper::makeQObject<TrajectorySettings>( _system, this );

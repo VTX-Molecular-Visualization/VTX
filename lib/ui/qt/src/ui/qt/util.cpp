@@ -292,11 +292,9 @@ namespace VTX::UI::QT::Util
 
 	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label )
 	{
-		auto		 qLilLayoutOwner = std::make_unique<QHBoxLayout>();
-		auto * const qLilLayout		 = qLilLayoutOwner.get();
-		p_dest->addLayout( qLilLayoutOwner.release() );
-		QLabel * qlabel = new QLabel( p_label );
-		QFont	 font	= qlabel->font();
+		auto * const qLilLayout = Helper::makeChildLayout<QHBoxLayout>( *p_dest );
+		QLabel *	 qlabel		= new QLabel( p_label );
+		QFont		 font		= qlabel->font();
 		font.setPointSize( font.pointSize() + 4 );
 		qlabel->setFont( font );
 		auto qLine = std::make_unique<QFrame>();

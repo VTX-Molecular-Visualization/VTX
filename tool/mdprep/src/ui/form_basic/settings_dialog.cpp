@@ -48,8 +48,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const MdParametersStepData * p_data )
 		{
 			QWidget *	  label	  = nullptr;
-			QFormLayout * qLayout = new QFormLayout;
-			p_qMainLayout->addLayout( qLayout );
+			QFormLayout * qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
 
 			VTX::Tool::Mdprep::ui::get( E_COMMON_FIELDS_DOUBLE::dt, label, p_uiObjects.fieldDt );
 			qLayout->addRow( label, p_uiObjects.fieldDt );
@@ -67,8 +66,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const MinimizationData * p_data )
 		{
 			QWidget *	  label	  = nullptr;
-			QFormLayout * qLayout = new QFormLayout;
-			p_qMainLayout->addLayout( qLayout );
+			QFormLayout * qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
 
 			VTX::Tool::Mdprep::ui::get(
 				E_COMMON_FIELDS_DOUBLE::minimizationEnergyBreakpoint, label, p_uiObjects.fieldMinEnergyBreakpoint
@@ -86,9 +84,8 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		template<typename UiData>
 		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const SystemData * p_data )
 		{
-			QFormLayout * qLayout = new QFormLayout;
-			p_qMainLayout->addLayout( qLayout );
-			QWidget * w = nullptr;
+			QFormLayout * qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
+			QWidget *	  w		  = nullptr;
 			// Engine info is optional : without it, the comboboxes are simply left empty.
 			const Gateway::EngineSpecificCommonInformation * const engineInfo
 				= p_uiObjects.engineInfo.has_value() ? &p_uiObjects.engineInfo.value() : nullptr;
@@ -150,8 +147,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		// The variant part
 		std::visit( [ & ]( auto p_ ) { setupUi( qMainLayout, _uiObjects, p_ ); }, _data );
 
-		QFormLayout * qEngineSpecificLayout = new QFormLayout;
-		qMainLayout->addLayout( qEngineSpecificLayout );
+		QFormLayout * qEngineSpecificLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *qMainLayout );
 
 		_engineFieldPlacer.placeFields( qEngineSpecificLayout );
 
@@ -177,8 +173,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		}
 
 		qMainLayout->addSpacerItem( std::make_unique<QSpacerItem>( 0, 20 ).release() );
-		QHBoxLayout * qButtonLayout = new QHBoxLayout;
-		qMainLayout->addLayout( qButtonLayout );
+		QHBoxLayout * qButtonLayout = VTX::UI::QT::Helper::makeChildLayout<QHBoxLayout>( *qMainLayout );
 		qButtonLayout->addStretch( 1 );
 		_uiObjects.buttonApply	= VTX::UI::QT::Helper::makeQObject<QPushButton>( "Apply", _uiObjects.container );
 		_uiObjects.buttonCancel = VTX::UI::QT::Helper::makeQObject<QPushButton>( "Cancel", _uiObjects.container );

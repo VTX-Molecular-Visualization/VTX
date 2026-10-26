@@ -404,7 +404,7 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<QLabel> & p_labelSize
 	)
 	{
-		auto   layoutRow  = std::make_unique<QHBoxLayout>();
+		auto * layoutRow  = Helper::makeChildLayout<QHBoxLayout>( *p_layout );
 		auto * buttonOpen = Helper::makeQObject<QPushButton>( this );
 
 		buttonOpen->setIcon( STYLE().iconFromCodepoint( Style::Icons::OPEN ) );
@@ -425,7 +425,6 @@ namespace VTX::UI::QT::DockWidget
 
 		layoutRow->addWidget( p_labelSize );
 		layoutRow->addWidget( buttonOpen );
-		p_layout->addLayout( layoutRow.release() );
 	}
 
 	void Options::_refreshFolderInfos(

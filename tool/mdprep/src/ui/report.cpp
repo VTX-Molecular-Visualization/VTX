@@ -100,7 +100,7 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			_removeContainerFromLayout();
 			_deleteContainer();
-			_currentLayout = p_;
+			_currentLayout = std::move( p_ );
 
 			if ( not _lastUiReport.content.container.isNull() )
 			{
@@ -218,7 +218,7 @@ namespace VTX::Tool::Mdprep::ui
 			_inputChecker.checkInputs( p_params );
 		}
 
-		void relocate( const QPointer<QVBoxLayout> p_ ) { _manager.relocate( p_ ); }
+		void relocate( const QPointer<QVBoxLayout> p_ ) { _manager.relocate( std::move( p_ ) ); }
 
 		void relocate( ReportManager & p_ ) { _manager.relocate( p_._impl->_manager ); }
 

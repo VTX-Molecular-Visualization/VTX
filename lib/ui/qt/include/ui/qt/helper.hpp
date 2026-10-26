@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_HELPER__
 #define __VTX_UI_QT_HELPER__
 
+#include <QBoxLayout>
 #include <QColor>
 #include <QLocale>
 #include <QObject>
@@ -70,6 +71,17 @@ namespace VTX::UI::QT::Helper
 		// Qt parent now owns the object.
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		return object.release();
+	}
+
+	template<typename T, typename... Args>
+		requires std::derived_from<T, QLayout>
+	[[nodiscard]] T * makeChildLayout( QBoxLayout & p_parent, Args &&... p_args )
+	{
+		auto layout = std::make_unique<T>( std::forward<Args>( p_args )... );
+
+		p_parent.addLayout( layout.get() );
+
+		return layout.release();
 	}
 
 } // namespace VTX::UI::QT::Helper

@@ -42,8 +42,8 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			p_parent->layout();
 		}
-		p_parent->setLayout( new QVBoxLayout );
-		QWidget * mainWidget = VTX::UI::QT::Helper::makeQObject<QWidget>( p_parent );
+		auto * const _			= VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( p_parent );
+		QWidget *	 mainWidget = VTX::UI::QT::Helper::makeQObject<QWidget>( p_parent );
 		p_parent->layout()->addWidget( mainWidget );
 		mainWidget->setContentsMargins( { 0, 0, 0, 0 } );
 
@@ -51,8 +51,7 @@ namespace VTX::Tool::Mdprep::ui
 		qLayoutWindow->setContentsMargins( 0, 0, 0, 0 );
 		qLayoutWindow->addSpacerItem( std::make_unique<QSpacerItem>( 0, 10 ).release() );
 
-		QHBoxLayout * qLayoutCentering = new QHBoxLayout;
-		qLayoutWindow->addLayout( qLayoutCentering );
+		QHBoxLayout * qLayoutCentering = VTX::UI::QT::Helper::makeChildLayout<QHBoxLayout>( *qLayoutWindow );
 
 		// following content is meant to be moved eventually
 		_w_mdEngine = VTX::UI::QT::Helper::makeQObject<QComboBox>( mainWidget );
@@ -64,9 +63,8 @@ namespace VTX::Tool::Mdprep::ui
 
 		qLayoutCentering->addStretch( 1 );
 
-		QFormLayout * qLayoutFormEngine = new QFormLayout;
-		qLayoutCentering->addLayout( qLayoutFormEngine );
-		QLabel * qLabelMdEngine = VTX::UI::QT::Helper::makeQObject<QLabel>( "Choose your MD engine", mainWidget );
+		QFormLayout * qLayoutFormEngine = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *qLayoutCentering );
+		QLabel *	  qLabelMdEngine = VTX::UI::QT::Helper::makeQObject<QLabel>( "Choose your MD engine", mainWidget );
 		{
 			auto font = qLabelMdEngine->font();
 			font.setPointSize( font.pointSize() + 2 );
@@ -96,14 +94,14 @@ namespace VTX::Tool::Mdprep::ui
 		QLabel *			qExplainatoryText = VTX::UI::QT::Helper::makeQObject<QLabel>( mainWidget );
 		static const char * buttonLabel		  = "Prepare system";
 		qExplainatoryText->setText(
-			QString::asprintf(
-				"Pushing the <i>%s</i> button will use every <b>visible</b> object(s) of the system to "
+			QString::fromUtf8(
+				"Pushing the <i>%1</i> button will use every <b>visible</b> object(s) of the system to "
 				"<b>prepare</b> a Molecular Dynamics Simulation using selected parameters.<br><u>Be wary :</u> <i>VTX "
 				"doesn't support "
 				"yet</i> automatic MD preparation for <b>small organic molecule</b>. Hence, any visible "
-				"non-biological entity is likely cause preparation failure. Please mind the automatic check result.",
-				buttonLabel
+				"non-biological entity is likely cause preparation failure. Please mind the automatic check result."
 			)
+				.arg( buttonLabel )
 		);
 		qExplainatoryText->setWordWrap( true );
 		qExplainatoryText->setContentsMargins( { 10, 10, 5, 5 } );

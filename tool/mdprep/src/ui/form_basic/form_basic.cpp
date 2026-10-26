@@ -189,7 +189,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_toDeleteObjects[ 0 ]			  = _IntermediateLayout;
 		_uiObjects._container			  = VTX::UI::QT::Helper::makeQObject<QWidget>( p_container );
 		_toDeleteObjects[ 1 ]			  = _uiObjects._container;
-		QWidget * label					  = new QWidget;
+		QWidget * label					  = nullptr;
 
 		_IntermediateLayout->setContentsMargins( { 0, 0, 0, 0 } );
 		_IntermediateLayout->addWidget( _uiObjects._container );
@@ -202,8 +202,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		qMainLayout->addWidget( _uiObjects._buttonInputCheck );
 		_eventManager.setInputCheck( _uiObjects._buttonInputCheck );
 
-		QHBoxLayout * qLayoutForceField = new QHBoxLayout;
-		qMainLayout->addLayout( qLayoutForceField );
+		QHBoxLayout * qLayoutForceField = VTX::UI::QT::Helper::makeChildLayout<QHBoxLayout>( *qMainLayout );
 		createSettingButton( &_uiObjects._buttonSystemSettings, _uiObjects._container );
 		_uiObjects._labelSystemCheckMsgContainer = VTX::UI::QT::Helper::makeQObject<QWidget>( _uiObjects._container );
 		_uiObjects._layoutSystemCheckMsg
@@ -216,8 +215,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		qMainLayout->addSpacerItem( std::make_unique<QSpacerItem>( 0, 10 ).release() );
 		VTX::UI::QT::Util::addLabeledHLineSeparator( qMainLayout, "MD Duration" );
 
-		QFormLayout * qFormSteps = new QFormLayout;
-		qMainLayout->addLayout( qFormSteps );
+		QFormLayout * qFormSteps = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *qMainLayout );
 
 		VTX::Tool::Mdprep::ui::get(
 			E_COMMON_FIELDS_UINT64::stepNumberMinimization, label, _uiObjects._fieldStepNumberMinimization

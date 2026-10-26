@@ -105,7 +105,7 @@ namespace VTX::Tool::TopologyEditor
 					action->setData( static_cast<uint>( entity ) );
 				}
 
-				QAction * const selected = menu.exec( QCursor::pos() );
+				const QAction * const selected = menu.exec( QCursor::pos() );
 				if ( selected == nullptr )
 				{
 					return;

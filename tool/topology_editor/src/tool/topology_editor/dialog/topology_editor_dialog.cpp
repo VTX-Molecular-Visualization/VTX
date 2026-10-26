@@ -96,7 +96,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 
 		std::string_view _atomSymbol( const Core::ChemDB::Atom::SYMBOL p_symbol )
 		{
-			const size_t index = size_t( p_symbol );
+			const size_t index = static_cast<size_t>( p_symbol );
 			if ( index >= Core::ChemDB::Atom::SYMBOL_STR.size() )
 			{
 				return Core::ChemDB::Atom::SYMBOL_STR[ 0 ];
@@ -106,7 +106,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 
 		std::string_view _residueSymbol( const Core::ChemDB::Residue::SYMBOL p_symbol )
 		{
-			const size_t index = size_t( p_symbol );
+			const size_t index = static_cast<size_t>( p_symbol );
 			if ( index >= Core::ChemDB::Residue::SYMBOL_STR.size() )
 			{
 				return Core::ChemDB::Residue::SYMBOL_STR[ 0 ];
@@ -116,7 +116,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 
 		std::string_view _bondOrder( const Core::ChemDB::Bond::ORDER p_order )
 		{
-			const size_t index = size_t( p_order );
+			const size_t index = static_cast<size_t>( p_order );
 			if ( index >= Core::ChemDB::Bond::ORDER_STR.size() )
 			{
 				return Core::ChemDB::Bond::ORDER_STR[ 0 ];
@@ -152,7 +152,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		rootLayout->setContentsMargins( 10, 10, 10, 10 );
 		rootLayout->setSpacing( 8 );
 
-		auto * const topBar = new QHBoxLayout;
+		auto * const topBar = VTX::UI::QT::Helper::makeChildLayout<QHBoxLayout>( *rootLayout );
 		topBar->setSpacing( 8 );
 		auto * const systemLabel = VTX::UI::QT::Helper::makeQObject<QLabel>( "System", this );
 		_systemName				 = VTX::UI::QT::Helper::makeQObject<QLabel>( this );
@@ -163,7 +163,6 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		topBar->addWidget( _systemName, 1 );
 		topBar->addWidget( _systemStatus );
 		topBar->addStretch();
-		rootLayout->addLayout( topBar );
 
 		auto * const mainSplitter = VTX::UI::QT::Helper::makeQObject<QSplitter>( Qt::Horizontal, this );
 		rootLayout->addWidget( mainSplitter, 1 );
@@ -261,7 +260,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		}
 		inspectorLayout->addRow( "Type", _selectedType );
 		inspectorLayout->addRow( "Name", _selectedName );
-		for ( int propertyIndex = 0; propertyIndex < int( _propertyLabels.size() ); ++propertyIndex )
+		for ( int propertyIndex = 0; propertyIndex < static_cast<int>( _propertyLabels.size() ); ++propertyIndex )
 		{
 			_propertyLabels[ propertyIndex ] = VTX::UI::QT::Helper::makeQObject<QLabel>( inspectorGroup );
 			_propertyValues[ propertyIndex ] = VTX::UI::QT::Helper::makeQObject<QLineEdit>( inspectorGroup );
@@ -296,7 +295,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 					_clearSelectionInspector();
 					return;
 				}
-				_updateSelectionInspector( Core::Struct::E_SYSTEM_ITEM::CHAIN, Index( p_row ) );
+				_updateSelectionInspector( Core::Struct::E_SYSTEM_ITEM::CHAIN, static_cast<Index>( p_row ) );
 			}
 		);
 		connect(
@@ -310,7 +309,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 					_clearSelectionInspector();
 					return;
 				}
-				_updateSelectionInspector( Core::Struct::E_SYSTEM_ITEM::RESIDUE, Index( p_row ) );
+				_updateSelectionInspector( Core::Struct::E_SYSTEM_ITEM::RESIDUE, static_cast<Index>( p_row ) );
 			}
 		);
 		connect(
@@ -324,7 +323,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 					_clearSelectionInspector();
 					return;
 				}
-				_updateSelectionInspector( Core::Struct::E_SYSTEM_ITEM::ATOM, Index( p_row ) );
+				_updateSelectionInspector( Core::Struct::E_SYSTEM_ITEM::ATOM, static_cast<Index>( p_row ) );
 			}
 		);
 		connect(
@@ -338,7 +337,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 					_clearSelectionInspector();
 					return;
 				}
-				_updateBondInspector( Index( p_row ) );
+				_updateBondInspector( static_cast<Index>( p_row ) );
 			}
 		);
 		connect(
@@ -435,7 +434,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			_selectedName->clear();
 		}
 
-		for ( int propertyIndex = 0; propertyIndex < int( _propertyLabels.size() ); ++propertyIndex )
+		for ( int propertyIndex = 0; propertyIndex < static_cast<int>( _propertyLabels.size() ); ++propertyIndex )
 		{
 			if ( _propertyLabels[ propertyIndex ] )
 			{
@@ -456,7 +455,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		const QString & p_value
 	)
 	{
-		if ( p_index < 0 || p_index >= int( _propertyLabels.size() ) )
+		if ( p_index < 0 || p_index >= static_cast<int>( _propertyLabels.size() ) )
 		{
 			return;
 		}
@@ -491,17 +490,19 @@ namespace VTX::Tool::TopologyEditor::Dialog
 	void TopologyEditorDialog::_populateChainsTable()
 	{
 		const auto & topology = App::REG().get<Core::Struct::Topology>( _system );
-		_chainsTable->setRowCount( int( topology.getChainCount() ) );
+		_chainsTable->setRowCount( static_cast<int>( topology.getChainCount() ) );
 		for ( Index chain = 0; chain < topology.getChainCount(); ++chain )
 		{
-			_chainsTable->setItem( int( chain ), 0, _item( _textOrDash( topology.getChainName( chain ) ) ).release() );
 			_chainsTable->setItem(
-				int( chain ),
+				static_cast<int>( chain ), 0, _item( _textOrDash( topology.getChainName( chain ) ) ).release()
+			);
+			_chainsTable->setItem(
+				static_cast<int>( chain ),
 				1,
 				_readonlyItem( UI::QT::Helper::formatNumber( topology.getChainResidueCount( chain ) ) ).release()
 			);
 			_chainsTable->setItem(
-				int( chain ),
+				static_cast<int>( chain ),
 				2,
 				_readonlyItem( UI::QT::Helper::formatNumber( topology.getChainAtomCount( chain ) ) ).release()
 			);
@@ -513,30 +514,32 @@ namespace VTX::Tool::TopologyEditor::Dialog
 	void TopologyEditorDialog::_populateResiduesTable()
 	{
 		const auto & topology = App::REG().get<Core::Struct::Topology>( _system );
-		_residuesTable->setRowCount( int( topology.getResidueCount() ) );
+		_residuesTable->setRowCount( static_cast<int>( topology.getResidueCount() ) );
 		for ( Index residue = 0; residue < topology.getResidueCount(); ++residue )
 		{
 			const Index chain = topology.getResidueChainIndex( residue );
 			_residuesTable->setItem(
-				int( residue ), 0, _readonlyItem( UI::QT::Helper::formatNumber( residue ) ).release()
+				static_cast<int>( residue ), 0, _readonlyItem( UI::QT::Helper::formatNumber( residue ) ).release()
 			);
 			_residuesTable->setItem(
-				int( residue ), 1, _readonlyItem( _textOrDash( topology.getChainName( chain ) ) ).release()
+				static_cast<int>( residue ), 1, _readonlyItem( _textOrDash( topology.getChainName( chain ) ) ).release()
 			);
 			_residuesTable->setItem(
-				int( residue ), 2, _item( _textOrDash( topology.getResidueName( residue ) ) ).release()
+				static_cast<int>( residue ), 2, _item( _textOrDash( topology.getResidueName( residue ) ) ).release()
 			);
 			_residuesTable->setItem(
-				int( residue ),
+				static_cast<int>( residue ),
 				3,
 				_item( QString::fromStdString( std::string( _residueSymbol( topology.getResidueSymbol( residue ) ) ) ) )
 					.release()
 			);
 			_residuesTable->setItem(
-				int( residue ), 4, _item( QString::number( topology.getResidueOriginalId( residue ) ) ).release()
+				static_cast<int>( residue ),
+				4,
+				_item( QString::number( topology.getResidueOriginalId( residue ) ) ).release()
 			);
 			_residuesTable->setItem(
-				int( residue ),
+				static_cast<int>( residue ),
 				5,
 				_readonlyItem(
 					QString::fromStdString(
@@ -546,7 +549,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 					.release()
 			);
 			_residuesTable->setItem(
-				int( residue ),
+				static_cast<int>( residue ),
 				6,
 				_readonlyItem( UI::QT::Helper::formatNumber( topology.getResidueAtomCount( residue ) ) ).release()
 			);
@@ -558,27 +561,37 @@ namespace VTX::Tool::TopologyEditor::Dialog
 	void TopologyEditorDialog::_populateAtomsTable()
 	{
 		const auto & topology = App::REG().get<Core::Struct::Topology>( _system );
-		_atomsTable->setRowCount( int( topology.getAtomCount() ) );
+		_atomsTable->setRowCount( static_cast<int>( topology.getAtomCount() ) );
 		const auto populate = [ & ]( const Core::Struct::FrameView p_positions )
 		{
 			for ( Index atom = 0; atom < topology.getAtomCount(); ++atom )
 			{
 				const Index residue		  = topology.getAtomResidueIndex( atom );
 				const Index atomInResidue = atom - topology.getResidueFirstAtom( residue ) + 1;
-				_atomsTable->setItem( int( atom ), 0, _readonlyItem( UI::QT::Helper::formatNumber( atom ) ).release() );
 				_atomsTable->setItem(
-					int( atom ), 1, _readonlyItem( _textOrDash( topology.getResidueName( residue ) ) ).release()
+					static_cast<int>( atom ), 0, _readonlyItem( UI::QT::Helper::formatNumber( atom ) ).release()
 				);
 				_atomsTable->setItem(
-					int( atom ), 2, _readonlyItem( UI::QT::Helper::formatNumber( atomInResidue ) ).release()
+					static_cast<int>( atom ),
+					1,
+					_readonlyItem( _textOrDash( topology.getResidueName( residue ) ) ).release()
 				);
-				_atomsTable->setItem( int( atom ), 3, _item( _textOrDash( topology.getAtomName( atom ) ) ).release() );
+				_atomsTable->setItem(
+					static_cast<int>( atom ),
+					2,
+					_readonlyItem( UI::QT::Helper::formatNumber( atomInResidue ) ).release()
+				);
+				_atomsTable->setItem(
+					static_cast<int>( atom ), 3, _item( _textOrDash( topology.getAtomName( atom ) ) ).release()
+				);
 				const auto originalAtomIndex = topology.getAtomOriginalIndex( atom );
 				_atomsTable->setItem(
-					int( atom ), 4, _item( originalAtomIndex ? QString::number( *originalAtomIndex ) : "-" ).release()
+					static_cast<int>( atom ),
+					4,
+					_item( originalAtomIndex ? QString::number( *originalAtomIndex ) : "-" ).release()
 				);
 				_atomsTable->setItem(
-					int( atom ),
+					static_cast<int>( atom ),
 					5,
 					_item( QString::fromStdString( std::string( _atomSymbol( topology.getAtomSymbol( atom ) ) ) ) )
 						.release()
@@ -587,13 +600,13 @@ namespace VTX::Tool::TopologyEditor::Dialog
 				const bool	hasPosition = atom < p_positions.size();
 				const Vec3f position	= hasPosition ? p_positions[ atom ] : Vec3f {};
 				_atomsTable->setItem(
-					int( atom ), 6, _item( hasPosition ? QString::number( position.x ) : "-" ).release()
+					static_cast<int>( atom ), 6, _item( hasPosition ? QString::number( position.x ) : "-" ).release()
 				);
 				_atomsTable->setItem(
-					int( atom ), 7, _item( hasPosition ? QString::number( position.y ) : "-" ).release()
+					static_cast<int>( atom ), 7, _item( hasPosition ? QString::number( position.y ) : "-" ).release()
 				);
 				_atomsTable->setItem(
-					int( atom ), 8, _item( hasPosition ? QString::number( position.z ) : "-" ).release()
+					static_cast<int>( atom ), 8, _item( hasPosition ? QString::number( position.z ) : "-" ).release()
 				);
 			}
 		};
@@ -608,15 +621,19 @@ namespace VTX::Tool::TopologyEditor::Dialog
 	void TopologyEditorDialog::_populateBondsTable()
 	{
 		const auto & topology = App::REG().get<Core::Struct::Topology>( _system );
-		_bondsTable->setRowCount( int( topology.getBondCount() ) );
+		_bondsTable->setRowCount( static_cast<int>( topology.getBondCount() ) );
 		for ( Index bond = 0; bond < topology.getBondCount(); ++bond )
 		{
 			const Index firstAtom  = topology.getBondFirstAtom( bond );
 			const Index secondAtom = topology.getBondSecondAtom( bond );
-			_bondsTable->setItem( int( bond ), 0, _readonlyItem( QString::number( firstAtom ) ).release() );
-			_bondsTable->setItem( int( bond ), 1, _readonlyItem( QString::number( secondAtom ) ).release() );
 			_bondsTable->setItem(
-				int( bond ),
+				static_cast<int>( bond ), 0, _readonlyItem( QString::number( firstAtom ) ).release()
+			);
+			_bondsTable->setItem(
+				static_cast<int>( bond ), 1, _readonlyItem( QString::number( secondAtom ) ).release()
+			);
+			_bondsTable->setItem(
+				static_cast<int>( bond ),
 				2,
 				_item( QString::fromStdString( std::string( _bondOrder( topology.getBondOrder( bond ) ) ) ) ).release()
 			);
@@ -767,6 +784,8 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			);
 			break;
 		}
+
+		default: break;
 		}
 	}
 

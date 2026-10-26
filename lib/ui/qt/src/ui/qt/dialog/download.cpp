@@ -52,9 +52,14 @@ namespace VTX::UI::QT::Dialog
 		// Cache found label.
 		// QLabel * labelCache = new QLabel( "File found", this );
 
+		layout->addWidget( labelURL );
+		layout->addWidget( _comboBoxURL );
+		layout->addWidget( labelPDB );
+		layout->addWidget( _comboBoxPDB );
+
 		// Radio buttons.
 		auto * buttonGroup		= Helper::makeQObject<QButtonGroup>( this );
-		auto   layoutCacheRadio = std::make_unique<QHBoxLayout>();
+		auto * layoutCacheRadio = Helper::makeChildLayout<QHBoxLayout>( *layout );
 		_radioButtonOpen		= Helper::makeQObject<QRadioButton>( "Open from cache", this );
 		_radioButtonDownload	= Helper::makeQObject<QRadioButton>( "Download", this );
 		buttonGroup->addButton( _radioButtonOpen );
@@ -63,11 +68,6 @@ namespace VTX::UI::QT::Dialog
 		layoutCacheRadio->addWidget( _radioButtonDownload );
 
 		// Layout.
-		layout->addWidget( labelURL );
-		layout->addWidget( _comboBoxURL );
-		layout->addWidget( labelPDB );
-		layout->addWidget( _comboBoxPDB );
-		layout->addLayout( layoutCacheRadio.release() );
 		layout->addWidget( buttonBox );
 
 		// Callbacks.

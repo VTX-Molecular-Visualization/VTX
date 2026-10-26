@@ -52,7 +52,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void setNptSettings( QPushButton * ) noexcept;
 		void setProductionSettings( QPushButton * ) noexcept;
 		void setSystemSettings( QPushButton * ) noexcept;
-		void setSystemMsg( QVBoxLayout * ) noexcept;
+		void setSystemMsg( QVBoxLayout * );
 		void performFirstInputCheck();
 
 	  private:
