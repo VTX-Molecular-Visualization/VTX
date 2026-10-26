@@ -8,7 +8,7 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	Representations::Representations( QWidget * p_parent ) : BaseDockWidget( p_parent, "Representations" )
+	Representations::Representations( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Representations" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::REPRESENTATION ) );

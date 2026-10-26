@@ -27,7 +27,7 @@ namespace
 
 namespace VTX::UI::QT::ToolButton
 {
-	ResolutionSelector::ResolutionSelector( QWidget * p_parent ) : QToolButton( p_parent )
+	ResolutionSelector::ResolutionSelector( QWidget * const p_parent ) : QToolButton( p_parent )
 	{
 		setPopupMode( QToolButton::InstantPopup );
 		setAutoRaise( true );

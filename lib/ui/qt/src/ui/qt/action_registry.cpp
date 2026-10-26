@@ -15,7 +15,7 @@
 namespace VTX::UI::QT
 {
 
-	QAction * ActionRegistry::registerAction( const App::UI::DescAction & p_action, const ActionHandler p_handler )
+	QAction * ActionRegistry::registerAction( const App::UI::DescAction & p_action, ActionHandler p_handler )
 	{
 		const std::string actionId = key( p_action );
 		if ( actionId.empty() )

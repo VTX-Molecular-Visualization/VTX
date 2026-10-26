@@ -13,7 +13,7 @@ namespace VTX::UI::QT::Menu
 	class File : public Widget::BaseWidget<File, QMenu>
 	{
 	  public:
-		File( QWidget * p_parent ) : BaseWidget( p_parent )
+		File( QWidget * const p_parent ) : BaseWidget( p_parent )
 		{
 			setTitle( "File" );
 

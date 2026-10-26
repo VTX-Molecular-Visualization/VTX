@@ -16,7 +16,7 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Default UI settings.
 		 */
-		BaseTree( QWidget * p_parent ) : Widget::BaseWidget<T, W>( p_parent )
+		BaseTree( QWidget * const p_parent ) : Widget::BaseWidget<T, W>( p_parent )
 		{
 			W::setHeaderHidden( true );
 			W::setItemsExpandable( true );

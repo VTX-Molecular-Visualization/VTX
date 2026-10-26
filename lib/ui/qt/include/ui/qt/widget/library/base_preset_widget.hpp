@@ -12,7 +12,7 @@ namespace VTX::UI::QT::Widget::Library
 	class BasePresetWidget : public QWidget
 	{
 	  public:
-		BasePresetWidget( QWidget * p_parent ) : QWidget( p_parent )
+		BasePresetWidget( QWidget * const p_parent ) : QWidget( p_parent )
 		{
 			_presetSelector = new PresetSelector<P>( this );
 			_groupboxPreset = new QGroupBox( this );

@@ -21,7 +21,7 @@ namespace VTX::UI::QT::Menu
 		}
 	} // namespace
 
-	Theme::Theme( QWidget * p_parent ) : BaseWidget( p_parent )
+	Theme::Theme( QWidget * const p_parent ) : BaseWidget( p_parent )
 	{
 		setTitle( "Theme" );
 

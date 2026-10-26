@@ -139,7 +139,7 @@ namespace VTX::UI::QT::Delegate
 	}
 
 	QWidget * SystemDelegate::createEditor(
-		QWidget *					 p_parent,
+		QWidget * const				 p_parent,
 		const QStyleOptionViewItem & p_option,
 		const QModelIndex &			 p_index
 	) const

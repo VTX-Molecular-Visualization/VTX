@@ -8,7 +8,7 @@
 namespace VTX::UI::QT::DockWidget
 {
 
-	ColorLayouts::ColorLayouts( QWidget * p_parent ) : BaseDockWidget( p_parent, "Colors" )
+	ColorLayouts::ColorLayouts( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Colors" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::COLOR_LAYOUT ) );

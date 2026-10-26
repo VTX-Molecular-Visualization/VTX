@@ -27,7 +27,8 @@ namespace VTX::UI::QT::DockWidget
 	class BaseDockWidget : public Widget::BaseWidget<T, QDockWidget>
 	{
 	  public:
-		BaseDockWidget( QWidget * p_parent, QString && p_title ) : Widget::BaseWidget<T, QDockWidget>( p_parent )
+		BaseDockWidget( QWidget * const p_parent, const QString & p_title ) :
+			Widget::BaseWidget<T, QDockWidget>( p_parent )
 		{
 			QDockWidget::setWindowTitle( p_title );
 			QDockWidget::setMinimumSize( Style::MINIMUM_DOCK_PANEL_WIDTH, Style::MINIMUM_DOCK_PANEL_HEIGHT );

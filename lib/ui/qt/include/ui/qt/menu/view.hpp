@@ -12,7 +12,7 @@ namespace VTX::UI::QT::Menu
 	class View : public Widget::BaseWidget<View, QMenu>
 	{
 	  public:
-		View( QWidget * p_parent ) : BaseWidget( p_parent )
+		View( QWidget * const p_parent ) : BaseWidget( p_parent )
 		{
 			setTitle( "View" );
 			connect( this, &QMenu::aboutToShow, this, [ this ]() { MAIN_WINDOW().populateViewMenu( *this ); } );

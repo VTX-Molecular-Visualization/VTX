@@ -14,7 +14,7 @@ namespace VTX::UI::QT::Menu
 	class Help : public Widget::BaseWidget<Help, QMenu>
 	{
 	  public:
-		Help( QWidget * p_parent ) : BaseWidget( p_parent )
+		Help( QWidget * const p_parent ) : BaseWidget( p_parent )
 		{
 			setTitle( "Help" );
 

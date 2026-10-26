@@ -3,7 +3,7 @@
 namespace VTX::UI::QT::Layout
 {
 
-	FlowLayout::FlowLayout( QWidget * p_parent, int p_margin, int p_hSpacing, int p_vSpacing ) :
+	FlowLayout::FlowLayout( QWidget * const p_parent, int p_margin, int p_hSpacing, int p_vSpacing ) :
 		QLayout( p_parent ), _hSpace( p_hSpacing ), _vSpace( p_vSpacing )
 	{ setContentsMargins( p_margin, p_margin, p_margin, p_margin ); }
 

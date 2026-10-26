@@ -35,7 +35,7 @@ namespace VTX::UI::QT::Menu
 		};
 
 		ColorScheme(
-			QWidget *														  p_parent,
+			QWidget * const													  p_parent,
 			const std::optional<Renderer::E_COLOR_SCHEME>					  p_scheme					 = std::nullopt,
 			const std::optional<Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE> p_secondaryStructureScheme = std::nullopt
 		) : BaseWidget( p_parent )
@@ -158,7 +158,7 @@ namespace VTX::UI::QT::Menu
 		class ColorItem : public QWidget
 		{
 		  public:
-			ColorItem( const QColor & c, QWidget * parent = nullptr ) : QWidget( parent ), _color( c )
+			ColorItem( const QColor & c, QWidget * const parent = nullptr ) : QWidget( parent ), _color( c )
 			{
 				setMinimumHeight( 24 );
 			}

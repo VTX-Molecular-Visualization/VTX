@@ -17,7 +17,7 @@
 namespace VTX::UI::QT::Widget
 {
 
-	StatusBar::StatusBar( QWidget * p_parent ) : QStatusBar( p_parent )
+	StatusBar::StatusBar( QWidget * const p_parent ) : QStatusBar( p_parent )
 	{
 		// Python status.
 		_python = new QLabel( this );

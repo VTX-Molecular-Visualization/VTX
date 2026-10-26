@@ -1,4 +1,4 @@
-﻿#include <QContextMenuEvent>
+#include <QContextMenuEvent>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
@@ -333,7 +333,7 @@ namespace VTX::UI::QT::Widget
 		} _oIdData;
 	};
 
-	Sequence::Sequence( const Entity p_system, QWidget * p_parent ) :
+	Sequence::Sequence( const Entity p_system, QWidget * const p_parent ) :
 		QAbstractScrollArea( p_parent ), _system( p_system ), _sequencer( new ResidueSequencer( p_system ) ),
 		_modeChange( App::HUB().connect<Events::SequenceResIdChanged, &Sequence::_sequenceModeChange>( this ) )
 	{

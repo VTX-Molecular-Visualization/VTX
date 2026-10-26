@@ -33,7 +33,7 @@ namespace VTX::UI::QT::DockWidget
 		}
 	} // namespace
 
-	Scene::Scene( QWidget * p_parent ) : BaseDockWidget( p_parent, "Scene" )
+	Scene::Scene( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Scene" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SCENE ) );

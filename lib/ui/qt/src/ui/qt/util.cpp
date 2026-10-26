@@ -52,7 +52,7 @@ namespace VTX::UI::QT::Util
 	class Popup : public QWidget
 	{
 	  public:
-		Popup( QWidget * p_parent ) : QWidget( p_parent )
+		Popup( QWidget * const p_parent ) : QWidget( p_parent )
 		{
 			setWindowFlag( Qt::ToolTip );
 			setObjectName( "questionMarkPopup" );

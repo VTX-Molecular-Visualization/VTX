@@ -74,7 +74,7 @@ namespace VTX::UI::QT::Widget
 		 * @brief Create a menu from type.
 		 */
 		template<typename M>
-		M * const createMenu()
+		M * createMenu()
 		{
 			M * const menu = new M( menuBar() );
 			menuBar()->addMenu( menu );
@@ -94,7 +94,7 @@ namespace VTX::UI::QT::Widget
 		 * @brief Create a toolbar from type.
 		 */
 		template<typename TB>
-		TB * const createToolBar()
+		TB * createToolBar()
 		{
 			TB * const toolBar = new TB( this );
 			addToolBar( toolBar );
@@ -105,7 +105,7 @@ namespace VTX::UI::QT::Widget
 		 * @brief Create a dock widget from type in the given area.
 		 */
 		template<typename DW>
-		DW * const createDockWidget( const Qt::DockWidgetArea p_area )
+		DW * createDockWidget( const Qt::DockWidgetArea p_area )
 		{
 			QDockWidget * other = nullptr;
 			for ( QDockWidget * w : findChildren<QDockWidget *>() )

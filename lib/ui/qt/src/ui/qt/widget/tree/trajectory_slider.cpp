@@ -8,7 +8,7 @@
 namespace VTX::UI::QT::Widget::Tree
 {
 
-	TrajectorySlider::TrajectorySlider( Qt::Orientation p_orientation, QWidget * p_parent ) :
+	TrajectorySlider::TrajectorySlider( Qt::Orientation p_orientation, QWidget * const p_parent ) :
 		QSlider( p_orientation, p_parent )
 	{
 	}

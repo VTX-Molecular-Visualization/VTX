@@ -36,7 +36,7 @@ namespace VTX::UI::QT::Menu
 		}
 	} // namespace
 
-	Selection::Selection( QWidget * p_parent ) : BaseWidget( p_parent )
+	Selection::Selection( QWidget * const p_parent ) : BaseWidget( p_parent )
 	{
 		setTitle( "Selection" );
 

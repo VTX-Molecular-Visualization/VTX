@@ -18,7 +18,8 @@ namespace VTX::UI::QT::Widget
 	class SplashScreen : public QWidget
 	{
 	  public:
-		SplashScreen( QWidget * p_parent = nullptr ) : QWidget( nullptr, Qt::SplashScreen | Qt::FramelessWindowHint )
+		SplashScreen( QWidget * const p_parent = nullptr ) :
+			QWidget( nullptr, Qt::SplashScreen | Qt::FramelessWindowHint )
 		{
 			using namespace Resources;
 

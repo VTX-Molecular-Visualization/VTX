@@ -18,7 +18,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	using namespace VTX::Tool::Mdprep::Gateway;
 
 	SettingsDialog::SettingsDialog(
-		QWidget *												p_parent,
+		QWidget * const											p_parent,
 		const char *											p_title,
 		SupportedData											p_dataFields,
 		MdEngineSpecificFieldPlacer								p_engineFieldPlacer,
@@ -123,7 +123,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		}
 	} // namespace
 
-	void SettingsDialog::_setupUi( QWidget * p_parent, const char * p_title )
+	void SettingsDialog::_setupUi( QWidget * const p_parent, const char * p_title )
 	{
 		_uiObjects.container = new QDialog( p_parent );
 		_uiObjects.container->setWindowTitle( p_title );

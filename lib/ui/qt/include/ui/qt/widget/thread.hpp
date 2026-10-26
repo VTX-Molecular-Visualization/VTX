@@ -22,7 +22,7 @@ namespace VTX::UI::QT::Widget
 		Q_OBJECT
 
 	  public:
-		Thread( QWidget * p_parent )
+		Thread( QWidget * const p_parent )
 		{
 			auto * layout = new QHBoxLayout( this );
 			layout->setContentsMargins( 0, 0, 0, 0 );

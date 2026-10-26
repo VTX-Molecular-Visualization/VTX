@@ -18,7 +18,7 @@ namespace VTX::UI::QT::Widget
 		Q_OBJECT
 
 	  public:
-		explicit EditableSlider( Qt::Orientation p_orientation, QWidget * p_parent ) : QWidget( p_parent )
+		explicit EditableSlider( Qt::Orientation p_orientation, QWidget * const p_parent ) : QWidget( p_parent )
 		{
 			_slider	 = new QSlider( p_orientation, this );
 			_spinbox = new QDoubleSpinBox( this );

@@ -18,7 +18,7 @@ namespace VTX::UI::QT::Menu
 		Q_OBJECT
 
 	  public:
-		Representation( QWidget * p_parent, const std::optional<Entity> p_representation = std::nullopt ) :
+		Representation( QWidget * const p_parent, const std::optional<Entity> p_representation = std::nullopt ) :
 			BaseWidget( p_parent )
 		{
 			setTitle( "Representation" );

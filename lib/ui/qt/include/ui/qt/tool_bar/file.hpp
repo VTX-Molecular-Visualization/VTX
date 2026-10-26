@@ -13,7 +13,7 @@ namespace VTX::UI::QT::ToolBar
 	class File : public Widget::BaseWidget<File, QToolBar>
 	{
 	  public:
-		File( QWidget * p_parent ) : BaseWidget( p_parent )
+		File( QWidget * const p_parent ) : BaseWidget( p_parent )
 		{
 			setWindowTitle( "File" );
 

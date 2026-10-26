@@ -5,7 +5,7 @@
 
 namespace VTX::UI::QT::Widget
 {
-	ColorPicker::ColorPicker( QWidget * p_parent )
+	ColorPicker::ColorPicker( QWidget * const p_parent )
 	{
 		connect(
 			this,
@@ -39,7 +39,7 @@ namespace VTX::UI::QT::Widget
 		);
 	}
 
-	ColorPicker::ColorPicker( const QColor & p_color, QWidget * p_parent ) : ColorPicker( p_parent )
+	ColorPicker::ColorPicker( const QColor & p_color, QWidget * const p_parent ) : ColorPicker( p_parent )
 	{ setColor( p_color ); }
 
 	void ColorPicker::setColor( const QColor & p_color )

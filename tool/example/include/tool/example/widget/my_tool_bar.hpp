@@ -14,7 +14,7 @@ namespace VTX::Tool::Example::Widget
 	class MyToolBar : public UI::QT::Widget::BaseWidget<MyToolBar, QToolBar>
 	{
 	  public:
-		MyToolBar( QWidget * p_parent ) : BaseWidget( p_parent )
+		MyToolBar( QWidget * const p_parent ) : BaseWidget( p_parent )
 		{
 			setWindowTitle( "My ToolBar" );
 

@@ -12,7 +12,7 @@
 
 namespace VTX::UI::QT::Widget
 {
-	Controller::Controller( const Entity p_entity, QWidget * p_parent ) :
+	Controller::Controller( const Entity p_entity, QWidget * const p_parent ) :
 		QGroupBox( "Controller", p_parent ), _entity( p_entity )
 	{
 		auto * layout = new QVBoxLayout( this );
@@ -123,13 +123,13 @@ namespace VTX::UI::QT::Widget
 
 	void Controller::_setController()
 	{
-		QSignalBlocker blockerInvertY( _checkBoxInvertY );
-		QSignalBlocker blockerElasticityActive( _checkBoxElasticityActive );
-		QSignalBlocker blockerTranslationSpeed( _sliderTranslationSpeed );
-		QSignalBlocker blockerRotationSpeed( _sliderRotationSpeed );
-		QSignalBlocker blockerAccelerationFactor( _sliderAccelerationFactor );
-		QSignalBlocker blockerDecelerationFactor( _sliderDecelerationFactor );
-		QSignalBlocker blockerElasticityFactor( _sliderElasticityFactor );
+		const QSignalBlocker blockerInvertY( _checkBoxInvertY );
+		const QSignalBlocker blockerElasticityActive( _checkBoxElasticityActive );
+		const QSignalBlocker blockerTranslationSpeed( _sliderTranslationSpeed );
+		const QSignalBlocker blockerRotationSpeed( _sliderRotationSpeed );
+		const QSignalBlocker blockerAccelerationFactor( _sliderAccelerationFactor );
+		const QSignalBlocker blockerDecelerationFactor( _sliderDecelerationFactor );
+		const QSignalBlocker blockerElasticityFactor( _sliderElasticityFactor );
 
 		const auto & controller = App::REG().get<App::Setting::Controller>( _entity );
 		_checkBoxInvertY->setChecked( controller.invertY );

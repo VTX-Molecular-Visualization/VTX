@@ -37,7 +37,7 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 	} // namespace
 
-	System::System( const Entity p_system, QWidget * p_parent ) :
+	System::System( const Entity p_system, QWidget * const p_parent ) :
 		Widget::Tree::BaseTree<System, QTreeView>( p_parent ), _system( p_system )
 	{
 		setExpandsOnDoubleClick( false );

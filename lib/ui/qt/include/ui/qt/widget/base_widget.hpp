@@ -25,7 +25,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Construct widget and set its object name from its type.
 		 */
-		explicit BaseWidget( QWidget * p_parent ) : W( p_parent )
+		explicit BaseWidget( QWidget * const p_parent ) : W( p_parent )
 		{
 			// Set object name.
 			const auto name = VTX::Util::typeName<T>();

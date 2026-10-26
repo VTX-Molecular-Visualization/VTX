@@ -11,7 +11,7 @@ namespace VTX::UI::QT::Menu
 	class Tool : public Widget::BaseWidget<Tool, QMenu>
 	{
 	  public:
-		Tool( QWidget * p_parent ) : BaseWidget( p_parent ) { setTitle( "Tool" ); }
+		Tool( QWidget * const p_parent ) : BaseWidget( p_parent ) { setTitle( "Tool" ); }
 
 	  private:
 	};

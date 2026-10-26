@@ -4,8 +4,8 @@
 
 namespace VTX::UI::QT
 {
-	QUInt64Validator::QUInt64Validator( uint64_t p_min, uint64_t p_max, QObject * p_parent ) :
-		QValidator( p_parent ), _min( std::move( p_min ) ), _max( std::move( p_max ) )
+	QUInt64Validator::QUInt64Validator( const uint64_t p_min, const uint64_t p_max, QObject * const p_parent ) :
+		QValidator( p_parent ), _min( p_min ), _max( p_max )
 	{
 	}
 

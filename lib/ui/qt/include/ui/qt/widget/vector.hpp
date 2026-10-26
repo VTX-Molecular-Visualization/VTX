@@ -14,7 +14,7 @@ namespace VTX::UI::QT::Widget
 		Q_OBJECT
 
 	  public:
-		IVector( QWidget * p_parent ) : QWidget( p_parent ) {}
+		IVector( QWidget * const p_parent ) : QWidget( p_parent ) {}
 
 		~IVector() override = default;
 
@@ -34,7 +34,7 @@ namespace VTX::UI::QT::Widget
 		static_assert( std::is_arithmetic_v<Scalar>, "Vector widget requires numeric scalar" );
 		static_assert( not std::is_unsigned_v<Scalar>, "Unsigned glm::uvec* not supported" );
 
-		Vector( QWidget * p_parent ) : IVector( p_parent )
+		Vector( QWidget * const p_parent ) : IVector( p_parent )
 		{
 			auto * lay = new QHBoxLayout( this );
 			lay->setContentsMargins( 0, 0, 0, 0 );

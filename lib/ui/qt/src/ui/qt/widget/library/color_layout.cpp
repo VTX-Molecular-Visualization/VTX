@@ -12,7 +12,7 @@
 namespace VTX::UI::QT::Widget::Library
 {
 
-	ColorLayout::ColorLayout( QWidget * p_parent ) : BasePresetWidget( p_parent )
+	ColorLayout::ColorLayout( QWidget * const p_parent ) : BasePresetWidget( p_parent )
 	{
 		using namespace Renderer;
 		using namespace Core::ChemDB;

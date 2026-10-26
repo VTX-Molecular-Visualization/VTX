@@ -11,7 +11,7 @@
 namespace VTX::UI::QT::Widget::Tree
 {
 
-	TrajectorySettings::TrajectorySettings( Entity p_system, QWidget * p_parent ) :
+	TrajectorySettings::TrajectorySettings( Entity p_system, QWidget * const p_parent ) :
 		QWidget( p_parent ), _system( p_system )
 	{
 		auto * formLayout = new QFormLayout( this );

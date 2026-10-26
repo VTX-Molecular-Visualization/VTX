@@ -9,7 +9,7 @@
 namespace VTX::UI::QT::Widget
 {
 
-	CommandLauncher::CommandLauncher( QWidget * p_parent ) : BaseWidget( p_parent )
+	CommandLauncher::CommandLauncher( QWidget * const p_parent ) : BaseWidget( p_parent )
 	{
 		setPlaceholderText( "help()" );
 		_setupCompleter();

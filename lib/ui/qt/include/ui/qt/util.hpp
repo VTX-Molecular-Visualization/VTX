@@ -29,10 +29,10 @@ namespace VTX::UI::QT::Util
 		Q_OBJECT
 
 	  public:
-		EventEater( QEvent::Type p_type, QWidget * p_parent = nullptr ) : QObject( p_parent )
+		EventEater( QEvent::Type p_type, QWidget * const p_parent = nullptr ) : QObject( p_parent )
 		{ _filteredTypes.emplace( p_type ); }
 
-		EventEater( std::set<QEvent::Type> p_types, QWidget * p_parent = nullptr ) :
+		EventEater( std::set<QEvent::Type> p_types, QWidget * const p_parent = nullptr ) :
 			QObject( p_parent ), _filteredTypes( p_types )
 		{
 		}

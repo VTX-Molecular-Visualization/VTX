@@ -13,7 +13,7 @@ namespace VTX::UI::QT::ToolBar
 	class Camera : public Widget::BaseWidget<Camera, QToolBar>
 	{
 	  public:
-		Camera( QWidget * p_parent ) : BaseWidget( p_parent )
+		Camera( QWidget * const p_parent ) : BaseWidget( p_parent )
 		{
 			setWindowTitle( "Camera" );
 

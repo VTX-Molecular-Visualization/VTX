@@ -110,7 +110,7 @@ namespace VTX::UI::QT::DockWidget
 		}
 	} // namespace
 
-	Console::Console( QWidget * p_parent ) : BaseDockWidget( p_parent, "Console" )
+	Console::Console( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Console" )
 	{
 		setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
 

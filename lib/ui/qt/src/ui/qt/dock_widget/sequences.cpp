@@ -9,7 +9,7 @@
 
 namespace VTX::UI::QT::DockWidget
 {
-	Sequences::Sequences( QWidget * p_parent ) : BaseDockWidget( p_parent, "Sequence" )
+	Sequences::Sequences( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Sequence" )
 	{
 		setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
 

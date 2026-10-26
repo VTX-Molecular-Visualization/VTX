@@ -34,7 +34,7 @@ namespace VTX::UI::QT::Widget::Library
 		Q_OBJECT
 
 	  public:
-		BasePresetSelector( QWidget * p_parent ) : QGroupBox( p_parent ) {}
+		BasePresetSelector( QWidget * const p_parent ) : QGroupBox( p_parent ) {}
 
 		~BasePresetSelector() override = default;
 
@@ -57,7 +57,7 @@ namespace VTX::UI::QT::Widget::Library
 	class PresetSelector : public BasePresetSelector
 	{
 	  public:
-		PresetSelector( QWidget * p_parent ) : BasePresetSelector( p_parent )
+		PresetSelector( QWidget * const p_parent ) : BasePresetSelector( p_parent )
 		{
 			auto * layout = new QVBoxLayout( this );
 			setTitle( "Presets" );

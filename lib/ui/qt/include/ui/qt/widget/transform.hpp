@@ -36,7 +36,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Build UI and connect signals.
 		 */
-		Transform( QWidget * p_parent, const E_FLAG p_flags = E_FLAG::ALL ) : QWidget( p_parent )
+		Transform( QWidget * const p_parent, const E_FLAG p_flags = E_FLAG::ALL ) : QWidget( p_parent )
 		{
 			using namespace VTX::Util::Math;
 

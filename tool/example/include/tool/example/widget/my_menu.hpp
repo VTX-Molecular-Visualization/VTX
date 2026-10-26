@@ -13,7 +13,7 @@ namespace VTX::Tool::Example::Widget
 	class MyMenu : public UI::QT::Widget::BaseWidget<MyMenu, QMenu>
 	{
 	  public:
-		MyMenu( QWidget * p_parent ) : BaseWidget( p_parent )
+		MyMenu( QWidget * const p_parent ) : BaseWidget( p_parent )
 		{
 			setWindowTitle( "My Menu" );
 

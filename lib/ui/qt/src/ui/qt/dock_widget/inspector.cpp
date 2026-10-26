@@ -1,4 +1,4 @@
-﻿#include "ui/qt/dock_widget/inspector.hpp"
+#include "ui/qt/dock_widget/inspector.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
 #include "ui/qt/events.hpp"
@@ -23,7 +23,7 @@
 
 namespace VTX::UI::QT::DockWidget
 {
-	Inspector::Inspector( QWidget * p_parent ) : BaseDockWidget( p_parent, "Selection" )
+	Inspector::Inspector( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Selection" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SELECTION ) );

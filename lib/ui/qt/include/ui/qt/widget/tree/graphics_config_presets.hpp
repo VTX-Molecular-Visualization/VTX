@@ -11,7 +11,7 @@ namespace VTX::UI::QT::Widget::Tree
 	class GraphicsConfigPresets : public Widget::Tree::BaseTreePreset<VTX::Renderer::GraphicsConfig>
 	{
 	  public:
-		GraphicsConfigPresets( QWidget * p_parent ) : BaseTreePreset<VTX::Renderer::GraphicsConfig>( p_parent )
+		GraphicsConfigPresets( QWidget * const p_parent ) : BaseTreePreset<VTX::Renderer::GraphicsConfig>( p_parent )
 		{
 			addTopLevelItem( new QTreeWidgetItem( QStringList() << "Graphics" ) );
 			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::GRAPHICS_CONFIG ) );

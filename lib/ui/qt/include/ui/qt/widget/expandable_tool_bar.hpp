@@ -18,7 +18,7 @@ namespace VTX::UI::QT::Widget
 	class ExpandableToolBar : public QWidget
 	{
 	  public:
-		explicit ExpandableToolBar( QWidget * p_parent ) : QWidget( p_parent )
+		explicit ExpandableToolBar( QWidget * const p_parent ) : QWidget( p_parent )
 		{
 			_layout = new QHBoxLayout( this );
 			_layout->setContentsMargins( 0, 0, 0, 0 );

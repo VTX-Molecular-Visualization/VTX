@@ -17,7 +17,7 @@ namespace VTX::UI::QT::Widget
 		Q_OBJECT
 
 	  public:
-		explicit HideableGroupBox( const QString & p_title, QWidget * p_parent ) : QWidget( p_parent )
+		explicit HideableGroupBox( const QString & p_title, QWidget * const p_parent ) : QWidget( p_parent )
 		{
 			_toggleButton = new QToolButton( this );
 			_toggleButton->setText( p_title );

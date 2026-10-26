@@ -15,7 +15,7 @@
 
 namespace VTX::UI::QT::Widget::Tree
 {
-	Camera::Camera( const Entity p_entity, QWidget * p_parent ) : BaseTree( p_parent ), _entity( p_entity )
+	Camera::Camera( const Entity p_entity, QWidget * const p_parent ) : BaseTree( p_parent ), _entity( p_entity )
 	{
 		setExpandsOnDoubleClick( true );
 

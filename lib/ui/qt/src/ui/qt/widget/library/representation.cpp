@@ -4,7 +4,7 @@
 namespace VTX::UI::QT::Widget::Library
 {
 
-	Representation::Representation( QWidget * p_parent ) : BasePresetWidget( p_parent )
+	Representation::Representation( QWidget * const p_parent ) : BasePresetWidget( p_parent )
 	{
 		using namespace Renderer;
 

@@ -54,7 +54,7 @@ namespace VTX::Tool::Mdprep::ui
 		Util::EventHub::ScopedConnection					_preparationEndConnection;
 
 		void _updateMdEngine( int idx ) noexcept;
-		void _setupUi( QWidget * p_parent ) noexcept;
+		void _setupUi( QWidget * p_parent );
 		void _updateForm() noexcept;
 		void _setFormBasic() noexcept;
 		void _setFormAdvanced() noexcept;

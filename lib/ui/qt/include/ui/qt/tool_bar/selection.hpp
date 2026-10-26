@@ -23,7 +23,7 @@ namespace VTX::UI::QT::ToolBar
 	class Selection : public Widget::BaseWidget<Selection, QToolBar>
 	{
 	  public:
-		Selection( QWidget * p_parent ) : BaseWidget( p_parent )
+		Selection( QWidget * const p_parent ) : BaseWidget( p_parent )
 		{
 			setWindowTitle( "Selection" );
 

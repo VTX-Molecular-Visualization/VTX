@@ -64,7 +64,7 @@ namespace VTX::Tool::Mdprep::ui
 	GromacsSystemFieldPlacer::GromacsSystemFieldPlacer( Gateway::Gromacs::SystemSettings & p_ ) : _data( &p_ ) {}
 	namespace
 	{
-		inline void createInt64HiddenField( QWidget * p_parent, QLineEdit *& p_field, const double & p_default )
+		inline void createInt64HiddenField( QWidget * const p_parent, QLineEdit *& p_field, const double & p_default )
 		{
 			p_field = new QLineEdit( p_parent );
 			p_field->setValidator( new VTX::UI::QT::QUInt64Validator( p_field ) );

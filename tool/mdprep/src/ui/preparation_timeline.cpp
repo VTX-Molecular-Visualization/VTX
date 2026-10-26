@@ -115,7 +115,8 @@ namespace VTX::Tool::Mdprep::ui
 	class StepNode : public QFrame
 	{
 	  public:
-		StepNode( const QString & p_title, const QString & p_why, QWidget * p_parent = nullptr ) : QFrame( p_parent )
+		StepNode( const QString & p_title, const QString & p_why, QWidget * const p_parent = nullptr ) :
+			QFrame( p_parent )
 		{
 			setObjectName( "mdprepStepNode" );
 
@@ -303,7 +304,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	};
 
-	PreparationTimeline::PreparationTimeline( QWidget * p_parent ) :
+	PreparationTimeline::PreparationTimeline( QWidget * const p_parent ) :
 		BaseDockWidget( p_parent, "MD Preparation – Timeline" )
 	{
 		setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );

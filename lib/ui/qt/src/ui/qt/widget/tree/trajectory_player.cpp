@@ -18,7 +18,8 @@
 namespace VTX::UI::QT::Widget::Tree
 {
 
-	TrajectoryPlayer::TrajectoryPlayer( Entity p_system, QWidget * p_parent ) : QWidget( p_parent ), _system( p_system )
+	TrajectoryPlayer::TrajectoryPlayer( Entity p_system, QWidget * const p_parent ) :
+		QWidget( p_parent ), _system( p_system )
 	{
 		// Main vertical layout
 		auto * mainLayout = new QVBoxLayout( this );

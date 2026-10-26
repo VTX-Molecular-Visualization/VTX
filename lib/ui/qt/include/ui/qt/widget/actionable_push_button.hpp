@@ -11,7 +11,8 @@ namespace VTX::UI::QT::Widget
 	class ActionablePushButton : public QPushButton
 	{
 	  public:
-		explicit ActionablePushButton( const QAction * const p_action, QWidget * p_parent ) : QPushButton( p_parent )
+		explicit ActionablePushButton( const QAction * const p_action, QWidget * const p_parent ) :
+			QPushButton( p_parent )
 		{
 			this->setText( p_action->text() );
 			this->setIcon( p_action->icon() );

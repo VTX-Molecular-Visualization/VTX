@@ -22,7 +22,7 @@
 
 namespace VTX::UI::QT::Widget
 {
-	Renderer::Renderer( QWidget * p_parent ) : BaseWidget( p_parent )
+	Renderer::Renderer( QWidget * const p_parent ) : BaseWidget( p_parent )
 	{
 		setAcceptDrops( true );
 		_backgroundLogo = QPixmap( Resources::SPRITE_LOGO.data() );

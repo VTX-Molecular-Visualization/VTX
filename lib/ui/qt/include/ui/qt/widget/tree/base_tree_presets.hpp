@@ -20,7 +20,7 @@ namespace VTX::UI::QT::Widget::Tree
 	  public:
 		using W = Widget::Tree::BaseTree<BaseTreePreset<P>>;
 
-		BaseTreePreset( QWidget * p_parent ) : W( p_parent )
+		BaseTreePreset( QWidget * const p_parent ) : W( p_parent )
 		{
 			W::setExpandsOnDoubleClick( true );
 

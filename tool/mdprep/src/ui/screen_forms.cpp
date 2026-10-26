@@ -28,13 +28,13 @@
 namespace VTX::Tool::Mdprep::ui
 {
 
-	ScreenForms::ScreenForms( QWidget * p_parent, Gateway::MdParameters & p_data ) : _dataPtr( &p_data )
+	ScreenForms::ScreenForms( QWidget * const p_parent, Gateway::MdParameters & p_data ) : _dataPtr( &p_data )
 	{
 		_setupUi( p_parent );
 		_setupSlots();
 	}
 
-	void ScreenForms::_setupUi( QWidget * p_parent ) noexcept
+	void ScreenForms::_setupUi( QWidget * const p_parent )
 	{
 		if ( p_parent->layout() )
 		{
