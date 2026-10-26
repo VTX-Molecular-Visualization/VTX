@@ -42,101 +42,105 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		}
 	}
 
-	namespace
+	void SettingsDialog::_setupDataUi(
+		QVBoxLayout * const				   p_qMainLayout,
+		UiData &						   p_uiObjects,
+		const MdParametersStepData * const p_data
+	)
 	{
-		template<typename UiData>
-		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const MdParametersStepData * p_data )
+		QWidget *			label	= nullptr;
+		QFormLayout * const qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
+
+		VTX::Tool::Mdprep::ui::get( E_COMMON_FIELDS_DOUBLE::dt, label, p_uiObjects.fieldDt );
+		qLayout->addRow( label, p_uiObjects.fieldDt );
+
+		p_uiObjects.fieldDt->setValue( p_data->dt );
+
+		VTX::Tool::Mdprep::ui::get(
+			E_COMMON_FIELDS_UINT64::coordinateSaveInterval, label, p_uiObjects.fieldSaveInterval
+		);
+		qLayout->addRow( label, p_uiObjects.fieldSaveInterval );
+		p_uiObjects.fieldSaveInterval->setText( QString::number( p_data->nsteps ) );
+	}
+
+	void SettingsDialog::_setupDataUi(
+		QVBoxLayout * const			   p_qMainLayout,
+		UiData &					   p_uiObjects,
+		const MinimizationData * const p_data
+	)
+	{
+		QWidget *			label	= nullptr;
+		QFormLayout * const qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
+
+		VTX::Tool::Mdprep::ui::get(
+			E_COMMON_FIELDS_DOUBLE::minimizationEnergyBreakpoint, label, p_uiObjects.fieldMinEnergyBreakpoint
+		);
+		qLayout->addRow( label, p_uiObjects.fieldMinEnergyBreakpoint );
+		p_uiObjects.fieldMinEnergyBreakpoint->setValue( p_data->energyBreakpoint );
+
+		VTX::Tool::Mdprep::ui::get( E_COMMON_FIELDS_DOUBLE::minimizationStepSize, label, p_uiObjects.fieldMinStepSize );
+		qLayout->addRow( label, p_uiObjects.fieldMinStepSize );
+		p_uiObjects.fieldMinStepSize->setValue( p_data->stepSize );
+	}
+
+	void SettingsDialog::_setupDataUi(
+		QVBoxLayout * const		 p_qMainLayout,
+		UiData &				 p_uiObjects,
+		const SystemData * const p_data
+	)
+	{
+		QFormLayout * const qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
+		QWidget *			w		= nullptr;
+		// Engine info is optional : without it, the comboboxes are simply left empty.
+		const Gateway::EngineSpecificCommonInformation * const engineInfo
+			= p_uiObjects.engineInfo.has_value() ? &p_uiObjects.engineInfo.value() : nullptr;
+
+		get( E_COMMON_FIELDS_COMBOBOX ::bioForcefield, w, p_uiObjects.fieldForceFieldBio );
+		if ( engineInfo != nullptr )
 		{
-			QWidget *			label	= nullptr;
-			QFormLayout * const qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
-
-			VTX::Tool::Mdprep::ui::get( E_COMMON_FIELDS_DOUBLE::dt, label, p_uiObjects.fieldDt );
-			qLayout->addRow( label, p_uiObjects.fieldDt );
-
-			p_uiObjects.fieldDt->setValue( p_data->dt );
-
-			VTX::Tool::Mdprep::ui::get(
-				E_COMMON_FIELDS_UINT64::coordinateSaveInterval, label, p_uiObjects.fieldSaveInterval
-			);
-			qLayout->addRow( label, p_uiObjects.fieldSaveInterval );
-			p_uiObjects.fieldSaveInterval->setText( QString::number( p_data->nsteps ) );
-		}
-
-		template<typename UiData>
-		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const MinimizationData * p_data )
-		{
-			QWidget *			label	= nullptr;
-			QFormLayout * const qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
-
-			VTX::Tool::Mdprep::ui::get(
-				E_COMMON_FIELDS_DOUBLE::minimizationEnergyBreakpoint, label, p_uiObjects.fieldMinEnergyBreakpoint
-			);
-			qLayout->addRow( label, p_uiObjects.fieldMinEnergyBreakpoint );
-			p_uiObjects.fieldMinEnergyBreakpoint->setValue( p_data->energyBreakpoint );
-
-			VTX::Tool::Mdprep::ui::get(
-				E_COMMON_FIELDS_DOUBLE::minimizationStepSize, label, p_uiObjects.fieldMinStepSize
-			);
-			qLayout->addRow( label, p_uiObjects.fieldMinStepSize );
-			p_uiObjects.fieldMinStepSize->setValue( p_data->stepSize );
-		}
-
-		template<typename UiData>
-		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const SystemData * p_data )
-		{
-			QFormLayout * const qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
-			QWidget *			w		= nullptr;
-			// Engine info is optional : without it, the comboboxes are simply left empty.
-			const Gateway::EngineSpecificCommonInformation * const engineInfo
-				= p_uiObjects.engineInfo.has_value() ? &p_uiObjects.engineInfo.value() : nullptr;
-
-			get( E_COMMON_FIELDS_COMBOBOX ::bioForcefield, w, p_uiObjects.fieldForceFieldBio );
-			if ( engineInfo != nullptr )
+			for ( const auto & it_bioFf : engineInfo->bioForcefieldCollection )
 			{
-				for ( const auto & it_bioFf : engineInfo->bioForcefieldCollection )
+				p_uiObjects.fieldForceFieldBio->addItem( QString::fromStdString( it_bioFf ) );
+				if ( it_bioFf == p_data->forcefieldBio )
 				{
-					p_uiObjects.fieldForceFieldBio->addItem( QString::fromStdString( it_bioFf ) );
-					if ( it_bioFf == p_data->forcefieldBio )
-					{
-						p_uiObjects.fieldForceFieldBio->setCurrentIndex( p_uiObjects.fieldForceFieldBio->count() - 1 );
-					}
+					p_uiObjects.fieldForceFieldBio->setCurrentIndex( p_uiObjects.fieldForceFieldBio->count() - 1 );
 				}
 			}
-			qLayout->addRow( w, p_uiObjects.fieldForceFieldBio );
-
-			get( E_COMMON_FIELDS_COMBOBOX::chemForcefield, w, p_uiObjects.fieldForceFieldChem );
-			p_uiObjects.fieldForceFieldChem->addItem( "Not supported by VTX yet" );
-			qLayout->addRow( w, p_uiObjects.fieldForceFieldChem );
-
-			get( E_COMMON_FIELDS_COMBOBOX::boxShape, w, p_uiObjects.fieldBoxShape );
-			if ( engineInfo != nullptr )
-			{
-				for ( const auto & it_shapeStr : engineInfo->boxShapeCollection )
-				{
-					p_uiObjects.fieldBoxShape->addItem( QString::fromStdString( it_shapeStr ) );
-				}
-			}
-			if ( p_data->boxShapeIdx < static_cast<size_t>( p_uiObjects.fieldBoxShape->count() ) )
-			{
-				p_uiObjects.fieldBoxShape->setCurrentIndex( static_cast<int>( p_data->boxShapeIdx ) );
-			}
-			qLayout->addRow( w, p_uiObjects.fieldBoxShape );
-
-			get( E_COMMON_FIELDS_COMBOBOX ::waterModel, w, p_uiObjects.fieldWaterModel );
-			if ( engineInfo != nullptr )
-			{
-				for ( const auto & it_waterModelsStr : engineInfo->waterModels )
-				{
-					p_uiObjects.fieldWaterModel->addItem( QString::fromStdString( it_waterModelsStr ) );
-					if ( it_waterModelsStr == p_data->waterModel )
-					{
-						p_uiObjects.fieldWaterModel->setCurrentIndex( p_uiObjects.fieldWaterModel->count() - 1 );
-					}
-				}
-			}
-			qLayout->addRow( w, p_uiObjects.fieldWaterModel );
 		}
-	} // namespace
+		qLayout->addRow( w, p_uiObjects.fieldForceFieldBio );
+
+		get( E_COMMON_FIELDS_COMBOBOX::chemForcefield, w, p_uiObjects.fieldForceFieldChem );
+		p_uiObjects.fieldForceFieldChem->addItem( "Not supported by VTX yet" );
+		qLayout->addRow( w, p_uiObjects.fieldForceFieldChem );
+
+		get( E_COMMON_FIELDS_COMBOBOX::boxShape, w, p_uiObjects.fieldBoxShape );
+		if ( engineInfo != nullptr )
+		{
+			for ( const auto & it_shapeStr : engineInfo->boxShapeCollection )
+			{
+				p_uiObjects.fieldBoxShape->addItem( QString::fromStdString( it_shapeStr ) );
+			}
+		}
+		if ( p_data->boxShapeIdx < static_cast<size_t>( p_uiObjects.fieldBoxShape->count() ) )
+		{
+			p_uiObjects.fieldBoxShape->setCurrentIndex( static_cast<int>( p_data->boxShapeIdx ) );
+		}
+		qLayout->addRow( w, p_uiObjects.fieldBoxShape );
+
+		get( E_COMMON_FIELDS_COMBOBOX ::waterModel, w, p_uiObjects.fieldWaterModel );
+		if ( engineInfo != nullptr )
+		{
+			for ( const auto & it_waterModelsStr : engineInfo->waterModels )
+			{
+				p_uiObjects.fieldWaterModel->addItem( QString::fromStdString( it_waterModelsStr ) );
+				if ( it_waterModelsStr == p_data->waterModel )
+				{
+					p_uiObjects.fieldWaterModel->setCurrentIndex( p_uiObjects.fieldWaterModel->count() - 1 );
+				}
+			}
+		}
+		qLayout->addRow( w, p_uiObjects.fieldWaterModel );
+	}
 
 	void SettingsDialog::_setupUi( QWidget * const p_parent, const char * p_title )
 	{
@@ -145,7 +149,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		QVBoxLayout * qMainLayout = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( _uiObjects.container );
 
 		// The variant part
-		std::visit( [ & ]( auto p_ ) { setupUi( qMainLayout, _uiObjects, p_ ); }, _data );
+		std::visit( [ & ]( auto p_ ) { _setupDataUi( qMainLayout, _uiObjects, p_ ); }, _data );
 
 		QFormLayout * qEngineSpecificLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *qMainLayout );
 
@@ -188,34 +192,28 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		QPushButton::connect( _uiObjects.buttonCancel, &QPushButton::clicked, [ & ]() { this->_cancelChanges(); } );
 	}
 
-	namespace
+	void SettingsDialog::_applyDataChange( const UiData & p_uiObjects, MinimizationData * const p_data )
 	{
-		template<typename UiData>
-		void applyChange( const UiData & p_uiObjects, MinimizationData * p_data )
-		{
-			p_data->energyBreakpoint = p_uiObjects.fieldMinEnergyBreakpoint->value();
-			p_data->stepSize		 = p_uiObjects.fieldMinStepSize->value();
-		}
+		p_data->energyBreakpoint = p_uiObjects.fieldMinEnergyBreakpoint->value();
+		p_data->stepSize		 = p_uiObjects.fieldMinStepSize->value();
+	}
 
-		template<typename UiData>
-		void applyChange( const UiData & p_uiObjects, MdParametersStepData * p_data )
-		{
-			p_data->dt	   = p_uiObjects.fieldDt->value();
-			p_data->nsteps = p_uiObjects.fieldSaveInterval->text().toUInt();
-		}
+	void SettingsDialog::_applyDataChange( const UiData & p_uiObjects, MdParametersStepData * const p_data )
+	{
+		p_data->dt	   = p_uiObjects.fieldDt->value();
+		p_data->nsteps = p_uiObjects.fieldSaveInterval->text().toUInt();
+	}
 
-		template<typename UiData>
-		void applyChange( const UiData & p_uiObjects, SystemData * p_data )
-		{
-			p_data->forcefieldBio = p_uiObjects.fieldForceFieldBio->currentText().toStdString();
-			p_data->boxShapeIdx	  = p_uiObjects.fieldBoxShape->currentIndex();
-			p_data->waterModel	  = p_uiObjects.fieldWaterModel->currentText().toStdString();
-		}
-	} // namespace
+	void SettingsDialog::_applyDataChange( const UiData & p_uiObjects, SystemData * const p_data )
+	{
+		p_data->forcefieldBio = p_uiObjects.fieldForceFieldBio->currentText().toStdString();
+		p_data->boxShapeIdx	  = p_uiObjects.fieldBoxShape->currentIndex();
+		p_data->waterModel	  = p_uiObjects.fieldWaterModel->currentText().toStdString();
+	}
 
 	void SettingsDialog::_applyChanges()
 	{
-		std::visit( [ & ]( auto p_ ) { applyChange( _uiObjects, p_ ); }, _data );
+		std::visit( [ & ]( auto p_ ) { _applyDataChange( _uiObjects, p_ ); }, _data );
 		_applyVisitor.applied();
 		_engineFieldPlacer.apply();
 		_uiObjects.container->close();

@@ -9,6 +9,7 @@ class QWidget;
 class QLineEdit;
 class QDoubleSpinBox;
 class QPushButton;
+class QVBoxLayout;
 
 namespace VTX::Tool::Mdprep::Gateway
 {
@@ -16,7 +17,7 @@ namespace VTX::Tool::Mdprep::Gateway
 	struct EngineSpecificCommonInformation;
 	struct MinimizationData;
 	struct SystemData;
-}// namespace VTX::Tool::Mdprep::Gateway
+} // namespace VTX::Tool::Mdprep::Gateway
 
 namespace VTX::Tool::Mdprep::ui::form_basic
 {
@@ -114,10 +115,20 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		MdEngineSpecificFieldPlacer _engineFieldPlacer;
 		ApplyVisitor				_applyVisitor;
 
-		void _setupUi( QWidget * p_parent, const char * p_title );
-		void _setupSlots();
-		void _applyChanges();
-		void _cancelChanges() const;
+		void		_setupUi( QWidget * p_parent, const char * p_title );
+		static void _setupDataUi(
+			QVBoxLayout *				 p_qMainLayout,
+			UiData &					 p_uiObjects,
+			const MdParametersStepData * p_data
+		);
+		static void _setupDataUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const MinimizationData * p_data );
+		static void _setupDataUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const SystemData * p_data );
+		static void _applyDataChange( const UiData & p_uiObjects, MinimizationData * p_data );
+		static void _applyDataChange( const UiData & p_uiObjects, MdParametersStepData * p_data );
+		static void _applyDataChange( const UiData & p_uiObjects, SystemData * p_data );
+		void		_setupSlots();
+		void		_applyChanges();
+		void		_cancelChanges() const;
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic
 
