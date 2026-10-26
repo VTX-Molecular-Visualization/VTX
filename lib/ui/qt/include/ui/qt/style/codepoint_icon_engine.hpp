@@ -13,7 +13,7 @@ namespace VTX::UI::QT::Style
 	/**
 	 * @brief Default font family for icons.
 	 */
-	const QString DEFAULT_FONT_FAMILY_ICONS = "Material Symbols Outlined";
+	constexpr QUtf8StringView DEFAULT_FONT_FAMILY_ICONS { "Material Symbols Outlined" };
 
 	/**
 	 * @brief Custom QIconEngine to repaint icons with the current theme color.

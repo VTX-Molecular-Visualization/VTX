@@ -93,10 +93,14 @@ namespace VTX::UI::QT::Style
 			const E_THEME theme
 				= themeName.isEmpty() ? DEFAULT_THEME : Util::Enum::enumCast<E_THEME>( themeName.toStdString() );
 			const bool forceDyslexicFont = App::ECS::getFirstComponent<App::Setting::Accessibility>().forceDyslexicFont;
-			const QString fontName		 = forceDyslexicFont
-											   ? DYSLEXIC_FONT_FAMILY
-											   : SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
-			setFontFamily( fontName );
+			if ( forceDyslexicFont )
+			{
+				setFontFamily( DYSLEXIC_FONT_FAMILY );
+			}
+			else
+			{
+				setFontFamily( SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY.toString() ).toString() );
+			}
 			setTheme( theme );
 		}
 		catch ( const std::exception & p_e )
@@ -128,9 +132,9 @@ namespace VTX::UI::QT::Style
 		_currentTheme = p_theme;
 	}
 
-	void StyleManager::setFontFamily( const QString & p_fontName )
+	void StyleManager::setFontFamily( const QAnyStringView p_fontName )
 	{
-		QFont appFont( p_fontName, DEFAULT_FONT_SIZE );
+		QFont appFont( p_fontName.toString(), DEFAULT_FONT_SIZE );
 		appFont.setStyleHint( QFont::Monospace );
 		Q_APP()->setFont( appFont );
 	}

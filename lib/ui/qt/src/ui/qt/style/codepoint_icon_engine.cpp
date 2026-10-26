@@ -35,7 +35,7 @@ namespace VTX::UI::QT::Style
 		default: break;
 		}
 
-		QFont f( DEFAULT_FONT_FAMILY_ICONS );
+		QFont f( DEFAULT_FONT_FAMILY_ICONS.toString() );
 		f.setStyleStrategy( QFont::NoFontMerging );
 		f.setHintingPreference( QFont::PreferNoHinting );
 

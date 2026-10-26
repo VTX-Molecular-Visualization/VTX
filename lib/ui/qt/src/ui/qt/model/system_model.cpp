@@ -168,9 +168,12 @@ namespace VTX::UI::QT::Model
 					return "-";
 				}
 			}
+			default:
+			{
+				return {};
+			}
 			}
 
-			return {};
 		case ItemRole: return toUnderlying( item );
 		case SelectionStateRole:
 			return toUnderlying( App::Helper::System::getSelectionState( { _system, item, index } ) );
@@ -193,7 +196,7 @@ namespace VTX::UI::QT::Model
 			{
 				return STYLE().iconFromCodepoint( Icons::RESIDUE );
 			}
-			case E_SYSTEM_ITEM::ATOM:
+			default:
 			{
 				return {};
 			}

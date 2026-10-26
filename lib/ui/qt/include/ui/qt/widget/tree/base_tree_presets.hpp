@@ -49,7 +49,7 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 
 	  protected:
-		void _restoreExpansionState( const QString & p_settingKey )
+		void _restoreExpansionState( const QAnyStringView p_settingKey )
 		{
 			assert( W::topLevelItem( 0 ) != nullptr );
 

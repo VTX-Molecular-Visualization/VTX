@@ -16,7 +16,7 @@ namespace VTX::UI::QT
 	/**
 	 * @brief Group of item that can be selected together.
 	 */
-	enum struct E_SELECTION_GROUP
+	enum struct E_SELECTION_GROUP : uint8_t
 	{
 		GRAPHICS_CONFIG,
 		COLOR_LAYOUT,
@@ -77,12 +77,7 @@ namespace VTX::UI::QT
 		 * @brief Select item.
 		 */
 		template<Core::Struct::E_SYSTEM_ITEM ITEM, typename S>
-		void select(
-			const Entity p_ent,
-			const S &			   p_data,
-			const bool			   p_selected = true,
-			const bool			   p_append	  = false
-		)
+		void select( const Entity p_ent, const S & p_data, const bool p_selected = true, const bool p_append = false )
 		{
 			using namespace App::Action;
 

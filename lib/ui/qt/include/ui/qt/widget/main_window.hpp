@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_WIDGET_MAIN_WINDOW__
 #define __VTX_UI_QT_WIDGET_MAIN_WINDOW__
 
+#include "ui/qt/helper.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include "ui/qt/widget/renderer.hpp"
 #include "ui/qt/widget/status_bar.hpp"
@@ -76,7 +77,7 @@ namespace VTX::UI::QT::Widget
 		template<typename M>
 		M * createMenu()
 		{
-			M * const menu = new M( menuBar() );
+			M * const menu = Helper::makeQObject<M>( menuBar() );
 			menuBar()->addMenu( menu );
 			return menu;
 		}
@@ -96,7 +97,7 @@ namespace VTX::UI::QT::Widget
 		template<typename TB>
 		TB * createToolBar()
 		{
-			TB * const toolBar = new TB( this );
+			TB * const toolBar = Helper::makeQObject<TB>( this );
 			addToolBar( toolBar );
 			return toolBar;
 		}
@@ -116,7 +117,7 @@ namespace VTX::UI::QT::Widget
 				}
 			}
 
-			DW * const dockWidget = new DW( this );
+			DW * const dockWidget = Helper::makeQObject<DW>( this );
 			if ( restoreDockWidget( dockWidget ) )
 			{
 				return dockWidget;

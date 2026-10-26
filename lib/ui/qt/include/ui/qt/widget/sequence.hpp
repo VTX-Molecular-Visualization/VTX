@@ -21,7 +21,7 @@ namespace VTX::UI::QT::Widget
 	  public:
 		Sequence( Entity, QWidget * );
 
-		enum struct Mode : int
+		enum struct Mode : uint8_t
 		{
 			OriginalResId	= 0,
 			contiguousResId = 1,

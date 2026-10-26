@@ -16,7 +16,7 @@ namespace VTX::UI::QT::Delegate
 		Q_OBJECT
 
 	  public:
-		enum struct ACTION : int
+		enum struct ACTION : uint8_t
 		{
 			VISIBILITY = 0,
 			COLOR_SCHEME,

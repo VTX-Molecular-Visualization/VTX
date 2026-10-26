@@ -21,7 +21,6 @@ namespace VTX::UI::QT::Helper
 	 */
 	VTX::Util::Color::Rgba fromQColor( const QColor & );
 	QColor				   toQColor( const VTX::Util::Color::Rgba & );
-	QString				   toQString( std::string_view );
 
 	/**
 	 * @brief Format number with current locale.
@@ -47,6 +46,25 @@ namespace VTX::UI::QT::Helper
 		{
 			return QLocale().toString( static_cast<qulonglong>( p_value ) );
 		}
+	}
+
+	/**
+	 * @brief QObject factory, returning a non-owning pointer.
+	 */
+	template<typename T, typename... Args>
+		requires std::derived_from<T, QObject>
+	[[nodiscard]] T * makeQObject( Args &&... p_args )
+	{
+		auto object = std::make_unique<T>( std::forward<Args>( p_args )... );
+
+		if ( object->parent() == nullptr )
+		{
+			throw std::logic_error( "makeQObject: object has no parent" );
+		}
+
+		// Qt parent now owns the object.
+		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+		return object.release();
 	}
 
 } // namespace VTX::UI::QT::Helper

@@ -32,7 +32,7 @@
 
 namespace
 {
-	const QString _TEXT_DISK_USAGE = "%1 : %2";
+	constexpr QUtf8StringView _TEXT_DISK_USAGE { "%1 : %2" };
 
 	VTX::UI::QT::ActionRegistry::ActionParams _themeParams( const VTX::UI::QT::Style::E_THEME p_theme )
 	{
@@ -163,7 +163,7 @@ namespace VTX::UI::QT::DockWidget
 		const auto &		 accessibility	   = App::ECS::getFirstComponent<App::Setting::Accessibility>();
 		const bool			 forceDyslexicFont = accessibility.forceDyslexicFont;
 		_comboBoxFont->setCurrentText(
-			forceDyslexicFont ? SETTINGS().value( SETTING_KEY_FONT, Style::DEFAULT_FONT_FAMILY ).toString()
+			forceDyslexicFont ? SETTINGS().value( SETTING_KEY_FONT, Style::DEFAULT_FONT_FAMILY.toString() ).toString()
 							  : STYLE().getCurrentFontFamily()
 		);
 
@@ -240,7 +240,15 @@ namespace VTX::UI::QT::DockWidget
 				const bool forceDyslexicFont = p_state == Qt::Checked;
 				App::ACTION().execute<App::Action::Accessibility::SetForceDyslexicFont>( forceDyslexicFont );
 				_comboBoxFont->setEnabled( not forceDyslexicFont );
-				STYLE().setFontFamily( forceDyslexicFont ? Style::DYSLEXIC_FONT_FAMILY : _comboBoxFont->currentText() );
+
+				if ( forceDyslexicFont )
+				{
+					STYLE().setFontFamily( Style::DYSLEXIC_FONT_FAMILY );
+				}
+				else
+				{
+					STYLE().setFontFamily( _comboBoxFont->currentText() );
+				}
 			}
 		);
 

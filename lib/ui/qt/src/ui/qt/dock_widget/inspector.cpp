@@ -2,6 +2,7 @@
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
 #include "ui/qt/events.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
@@ -65,14 +66,14 @@ namespace VTX::UI::QT::DockWidget
 					_clear();
 					if ( hasPreset )
 					{
-						_viewPointWidget = new Widget::ViewPoint( preset, this );
+						_viewPointWidget = Helper::makeQObject<Widget::ViewPoint>( preset, this );
 						_layout->insertWidget( _layout->indexOf( _filler ), _viewPointWidget );
 					}
 					else
 					{
 						const auto [ ent, _ ]	= App::ECS::getFirstEntityWithComponents<Renderer::Camera>();
-						auto * cameraWidget		= new Widget::Camera( ent, this );
-						auto * controllerWidget = new Widget::Controller( ent, this );
+						auto * cameraWidget		= Helper::makeQObject<Widget::Camera>( ent, this );
+						auto * controllerWidget = Helper::makeQObject<Widget::Controller>( ent, this );
 						_layout->insertWidget( _layout->indexOf( _filler ), cameraWidget );
 						_layout->insertWidget( _layout->indexOf( _filler ), controllerWidget );
 					}

@@ -19,5 +19,4 @@ namespace VTX::UI::QT::Helper
 	Util::Color::Rgba fromQColor( const QColor & p_color )
 	{ return Util::Color::Rgba( p_color.redF(), p_color.greenF(), p_color.blueF(), p_color.alphaF() ); }
 
-	QString toQString( const std::string_view p_str ) { return QString::fromUtf8( p_str ); }
 } // namespace VTX::UI::QT::Helper

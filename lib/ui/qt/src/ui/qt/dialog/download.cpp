@@ -14,13 +14,9 @@
 
 namespace
 {
-	const QString _PDB_ID_TEMPLATE
-		= QString::fromUtf8( VTX::App::SYSTEM_REPLACEMENT_TOKEN.data(), VTX::App::SYSTEM_REPLACEMENT_TOKEN.size() );
-	const QString _DEFAULT_URL = QString::fromUtf8(
-		VTX::App::RCSB_PDB_DOWNLOAD_URL_TEMPLATE.data(),
-		VTX::App::RCSB_PDB_DOWNLOAD_URL_TEMPLATE.size()
-	);
-	const uint _MAX_HISTORY_SIZE = 10;
+	constexpr QUtf8StringView _PDB_ID_TEMPLATE { VTX::App::SYSTEM_REPLACEMENT_TOKEN };
+	constexpr QUtf8StringView _DEFAULT_URL { VTX::App::RCSB_PDB_DOWNLOAD_URL_TEMPLATE };
+	constexpr uint			  _MAX_HISTORY_SIZE = 10;
 } // namespace
 
 namespace VTX::UI::QT::Dialog
@@ -148,7 +144,7 @@ namespace VTX::UI::QT::Dialog
 					}
 					else
 					{
-						VTX_ERROR( "URL does not contain {}", _PDB_ID_TEMPLATE.toStdString() );
+						VTX_ERROR( "URL does not contain {}", _PDB_ID_TEMPLATE );
 						return;
 					}
 				}
@@ -168,13 +164,14 @@ namespace VTX::UI::QT::Dialog
 		_loadHistory( SETTING_KEY_PDB, _comboBoxPDB );
 
 		// FIXME: Avoid losing default url if not in history.
-		if ( _comboBoxURL->findText( _DEFAULT_URL ) == -1 )
+		const QString defaultUrl = _DEFAULT_URL.toString();
+		if ( _comboBoxURL->findText( defaultUrl ) == -1 )
 		{
-			_comboBoxURL->addItem( _DEFAULT_URL );
+			_comboBoxURL->addItem( defaultUrl );
 		}
 	}
 
-	void Download::_saveHistory( const QString & p_key, const QString & p_value )
+	void Download::_saveHistory( const QUtf8StringView p_key, const QString & p_value )
 	{
 		QStringList history = SETTINGS().value( p_key ).toStringList();
 		// Remove duplicates.
@@ -189,7 +186,7 @@ namespace VTX::UI::QT::Dialog
 		SETTINGS().setValue( p_key, history );
 	}
 
-	void Download::_loadHistory( const QString & p_key, QComboBox * const p_comboBox )
+	void Download::_loadHistory( const QUtf8StringView p_key, QComboBox * const p_comboBox )
 	{
 		const QStringList history = SETTINGS().value( p_key ).toStringList();
 		p_comboBox->addItems( history );

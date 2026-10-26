@@ -49,7 +49,7 @@ namespace VTX::UI::QT::DockWidget
 		// Print log and insert links.
 		void _insertLogText( QTextCursor & p_cursor, const QString & p_text, const QTextCharFormat & p_format )
 		{
-			static const QRegularExpression linkRegex( Helper::toQString( ::VTX::App::LOG_LINK_REGEX ) );
+			static const QRegularExpression linkRegex( QString::fromUtf8( VTX::App::LOG_LINK_REGEX ) );
 
 			qsizetype						current = 0;
 			QRegularExpressionMatchIterator matches = linkRegex.globalMatch( p_text );

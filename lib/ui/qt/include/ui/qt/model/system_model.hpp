@@ -17,7 +17,7 @@ namespace VTX::UI::QT::Model
 	class SystemModel : public QAbstractItemModel
 	{
 	  public:
-		enum struct ViewMode : int
+		enum struct ViewMode : uint8_t
 		{
 			ByChain,
 			ByCategory
@@ -26,7 +26,7 @@ namespace VTX::UI::QT::Model
 		/**
 		 * @brief Roles for data retrieval.
 		 */
-		enum Roles
+		enum Roles : uint8_t
 		{
 			// SYSTEM, CHAIN, RESIDUE, ATOM.
 			ItemRole = Qt::UserRole + 1,

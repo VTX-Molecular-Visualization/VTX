@@ -23,8 +23,8 @@ namespace VTX::UI::QT::Dialog
 		QString				   _url;
 		QString				   _pdb;
 
-		void _saveHistory( const QString & p_key, const QString & p_value );
-		void _loadHistory( const QString & p_key, QComboBox * p_comboBox );
+		void _saveHistory( QUtf8StringView p_key, const QString & p_value );
+		void _loadHistory( QUtf8StringView p_key, QComboBox * p_comboBox );
 	};
 
 } // namespace VTX::UI::QT::Dialog

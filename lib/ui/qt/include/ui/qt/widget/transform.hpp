@@ -23,7 +23,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Flags to enable/disable component.
 		 */
-		enum struct E_FLAG : uint16_t
+		enum struct E_FLAG : uint8_t
 		{
 			VTX_ENUM_ENABLE_BITMASK,
 			NONE	 = 0,
