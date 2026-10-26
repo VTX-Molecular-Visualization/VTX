@@ -15,7 +15,7 @@ namespace VTX::Tool::Mdprep::ui
 
 	class MdEngineFieldPlacer;
 	class MdEngineSpecificFieldPlacer;
-	enum class E_FIELD_SECTION;
+	enum class E_FIELD_SECTION : uint8_t;
 
 	class MdEngine;
 	void get( const MdEngine & p_engine, Gateway::EngineSpecificCommonInformation & p_info ) noexcept;

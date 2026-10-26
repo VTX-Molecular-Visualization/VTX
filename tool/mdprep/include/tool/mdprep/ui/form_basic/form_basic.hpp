@@ -29,7 +29,7 @@ namespace VTX::Tool::Mdprep::ui
 	struct FormLayouts;
 	class InputChecker;
 	class IonicFields;
-	enum class E_FIELD_SECTION;
+	enum class E_FIELD_SECTION : uint8_t;
 } // namespace VTX::Tool::Mdprep::ui
 
 namespace VTX::Tool::Mdprep::ui::form_basic

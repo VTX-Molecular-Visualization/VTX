@@ -22,7 +22,7 @@ namespace VTX::Tool::Mdprep::ui
 	class ReportManager;
 	class MdEngineFieldPlacer;
 	class MdEngineSpecificFieldPlacer;
-	enum class E_FIELD_SECTION;
+	enum class E_FIELD_SECTION : uint8_t;
 
 	// Class responsible for setting up the form screens, allowing user to fill it and start the processing
 	class ScreenForms

@@ -8,11 +8,12 @@ namespace VTX::Tool::Mdprep::Gateway
 	struct MdParameters;
 	struct EngineSpecificCommonInformation;
 } // namespace VTX::Tool::Mdprep::Gateway
+
 namespace VTX::Tool::Mdprep::ui
 {
 	class ReportManager;
 	class MdEngineSpecificFieldPlacer;
-	enum class E_FIELD_SECTION;
+	enum class E_FIELD_SECTION : uint8_t;
 } // namespace VTX::Tool::Mdprep::ui
 
 namespace VTX::Tool::Mdprep::ui::form_basic
@@ -44,6 +45,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			ReportManager *							 reportManager;
 			SpecificFieldsPlacerCallback			 specificFieldsCallback;
 		};
+
 		_Data _data;
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic
