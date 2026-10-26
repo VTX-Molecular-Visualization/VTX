@@ -6,13 +6,14 @@
 #include <app/services.hpp>
 #include <array>
 #include <util/event_hub.hpp>
+#include <utility>
 
 namespace
 {
 	using Action	   = VTX::App::Input::InputManager::Action;
 	using BindingTable = std::array<std::optional<Action>, 256>;
 
-	const BindingTable _QWERTY_BINDINGS = []()
+	constexpr BindingTable _QWERTY_BINDINGS = []()
 	{
 		BindingTable bindings;
 		bindings[ Qt::Key_W ] = Action::MoveFront;
@@ -26,7 +27,7 @@ namespace
 		return bindings;
 	}();
 
-	const BindingTable _AZERTY_BINDINGS = []()
+	constexpr BindingTable _AZERTY_BINDINGS = []()
 	{
 		BindingTable bindings;
 		bindings[ Qt::Key_Z ] = Action::MoveFront;
@@ -157,7 +158,7 @@ namespace VTX::UI::QT::Window
 
 	std::optional<App::Input::InputManager::Action> Renderer::_getKeyboardAction( const int p_key ) const
 	{
-		if ( p_key < 0 || p_key >= static_cast<int>( _QWERTY_BINDINGS.size() ) )
+		if ( p_key < 0 || std::cmp_greater_equal( p_key, _QWERTY_BINDINGS.size() ) )
 		{
 			return std::nullopt;
 		}

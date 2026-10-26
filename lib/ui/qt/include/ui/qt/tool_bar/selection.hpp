@@ -17,6 +17,7 @@
 #include <string_view>
 #include <util/event_hub.hpp>
 #include <util/types.hpp>
+#include <utility>
 
 namespace VTX::UI::QT::ToolBar
 {
@@ -77,7 +78,7 @@ namespace VTX::UI::QT::ToolBar
 					return;
 				}
 
-				const bool isCurrent = toUnderlying( p_granularity ) == granularity;
+				const bool isCurrent = std::cmp_equal( toUnderlying( p_granularity ), granularity );
 				action->setChecked( isCurrent );
 				if ( isCurrent )
 				{

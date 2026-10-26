@@ -45,7 +45,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		);
 		void _changeTexture( VTX::Renderer::Material::E_TEXTURE, const FilePath & );
 
-		Entity _currentPreset;
+		Entity _currentPreset = InvalidEntity;
 
 		QPointer<QListWidget>	 _listMaterials;
 		QPointer<EditableSlider> _sliderMetallic;

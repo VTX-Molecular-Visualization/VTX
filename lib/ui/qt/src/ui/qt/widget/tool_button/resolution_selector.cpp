@@ -76,8 +76,8 @@ namespace VTX::UI::QT::ToolButton
 				QRegularExpressionMatchIterator it = numberRegex.globalMatch( customResolutionInput->text() );
 				while ( it.hasNext() && count < 2 )
 				{
-					bool					 ok	   = false;
-					const unsigned long long value = it.next().captured().toULongLong( &ok );
+					bool		   ok	 = false;
+					const uint64_t value = it.next().captured().toULongLong( &ok );
 					if ( not ok || value == 0 )
 					{
 						return;

@@ -21,7 +21,7 @@ namespace VTX::UI::QT::Widget
 {
 	namespace
 	{
-		constexpr Index MAX_SELECTION_LIST_LINE_NB = 100;
+		constexpr int MAX_SELECTION_LIST_LINE_NB = 100;
 
 		void _addSelectionLine( QListWidget & p_list, const QString & p_text )
 		{
@@ -231,7 +231,7 @@ namespace VTX::UI::QT::Widget
 				{
 					const Index	  originalResidueId = topology.getResidueOriginalId( residue );
 					const QString residueName		= QString::fromStdString( topology.getResidueName( residue ) )
-													  + QString::asprintf( "%i", originalResidueId );
+													  + QString::number( originalResidueId );
 					const auto	  residueState
 						= App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::RESIDUE, residue } );
 					if ( residueState == App::System::E_SELECTION_STATE::FULL )
@@ -259,7 +259,7 @@ namespace VTX::UI::QT::Widget
 								*_list,
 								systemName + "/" + chainName + "/" + residueName + "/"
 									+ QString::fromStdString( topology.getAtomName( atom ) )
-									+ ( originalIndex ? QString::asprintf( ":%i", originalIndex.value() ) : "" )
+									+ ( originalIndex ? QString( ":%1" ).arg( originalIndex.value() ) : "" )
 							);
 						}
 					}

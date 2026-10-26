@@ -42,7 +42,7 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Layout.
 		 */
-		QVBoxLayout * _layout;
+		QVBoxLayout * _layout = nullptr;
 
 		/**
 		 * @brief Selection anchor used for shift selection.
