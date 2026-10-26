@@ -72,11 +72,11 @@ namespace VTX::UI::QT::Style
 		// ("windows11", "windowsvista", "Windows", "Fusion")
 		Q_APP()->setStyle( "Fusion" );
 
-		QFontDatabase::addApplicationFont( FONT_MATERIAL_SYMBOLS.data() );
-		QFontDatabase::addApplicationFont( FONT_INTER.data() );
-		QFontDatabase::addApplicationFont( FONT_LIBERATION_MONO.data() );
-		QFontDatabase::addApplicationFont( FONT_CASCADIA_CODE.data() );
-		QFontDatabase::addApplicationFont( FONT_OPEN_DYSLEXIC.data() );
+		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_MATERIAL_SYMBOLS ) );
+		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_INTER ) );
+		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_LIBERATION_MONO ) );
+		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_CASCADIA_CODE ) );
+		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_OPEN_DYSLEXIC ) );
 
 		// Linux only?
 		// QIcon::setThemeName( "Material Symbols Outlined" );
@@ -109,7 +109,7 @@ namespace VTX::UI::QT::Style
 
 	StyleManager::~StyleManager()
 	{
-		const QString themeName = Util::Enum::enumName( _currentTheme ).data();
+		const QString themeName = QString::fromUtf8( Util::Enum::enumName( _currentTheme ) );
 		SETTINGS().setValue( SETTING_KEY_THEME, themeName );
 		if ( not App::ECS::getFirstComponent<App::Setting::Accessibility>().forceDyslexicFont )
 		{

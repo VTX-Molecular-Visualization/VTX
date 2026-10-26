@@ -11,7 +11,7 @@ namespace VTX::UI::QT::Dialog
 		setWindowFlags( Qt::Window | Qt::FramelessWindowHint );
 
 		// Set text.
-		setLabelText( p_text.data() );
+		setLabelText( QString::fromUtf8( p_text ) );
 		setFixedSize( 300, 100 );
 
 		// Set options.

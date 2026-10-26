@@ -32,9 +32,9 @@ namespace VTX::UI::QT::Style
 	constexpr float	  DEFAULT_SIZE_SCALE		   = 0.85f;
 	constexpr int	  DEFAULT_FONT_SIZE			   = 10;
 	constexpr E_THEME DEFAULT_THEME				   = E_THEME::DARK;
-	const QString	  DEFAULT_FONT_FAMILY		   = Resources::FONT_CASCADIA_MONO_FAMILY.data();
-	const QString	  DEFAULT_FONT_FAMILY_SEQUENCE = Resources::FONT_LIBERATION_MONO_FAMILY.data();
-	const QString	  DYSLEXIC_FONT_FAMILY		   = Resources::FONT_OPEN_DYSLEXIC_FAMILY.data();
+	const QString	  DEFAULT_FONT_FAMILY		   = QString::fromUtf8( Resources::FONT_CASCADIA_MONO_FAMILY );
+	const QString	  DEFAULT_FONT_FAMILY_SEQUENCE = QString::fromUtf8( Resources::FONT_LIBERATION_MONO_FAMILY );
+	const QString	  DYSLEXIC_FONT_FAMILY		   = QString::fromUtf8( Resources::FONT_OPEN_DYSLEXIC_FAMILY );
 	constexpr int	  MINIMUM_DOCK_PANEL_WIDTH	   = 200;
 	constexpr int	  MINIMUM_DOCK_PANEL_HEIGHT	   = 50;
 	constexpr int	  DEFAULT_LATERAL_DOCK_WIDTH   = 250;

@@ -50,9 +50,7 @@ namespace VTX::UI::QT
 		 */
 		template<typename T>
 		void addTool()
-		{
-			_app.addTool<T>();
-		}
+		{ _app.addTool<T>(); }
 
 	  private:
 		/**
@@ -86,7 +84,7 @@ namespace VTX::UI::QT
 	/**
 	 * @brief Get the QApplication instance.
 	 */
-	inline static QApplication * const Q_APP() { return qApp; }
+	inline static QApplication * Q_APP() { return qApp; }
 } // namespace VTX::UI::QT
 
 #endif

@@ -96,7 +96,7 @@ namespace VTX::UI::QT::Widget::Library
 		std::span<const std::string_view> p_tip
 	)
 	{
-		auto * groupBox = new QGroupBox( QString::fromStdString( p_title.data() ) );
+		auto * groupBox = new QGroupBox( QString::fromUtf8( p_title ) );
 		auto * layout	= new Layout::FlowLayout( groupBox );
 
 		// Create buttons.
@@ -111,7 +111,7 @@ namespace VTX::UI::QT::Widget::Library
 			if ( not p_text.empty() )
 			{
 				// First letter in uppercase.
-				QString text = QString::fromStdString( p_text[ offset ].data() );
+				QString text = QString::fromUtf8( p_text[ offset ] );
 				text		 = text.toLower();
 				text[ 0 ]	 = text[ 0 ].toUpper();
 				_buttons[ i ]->setText( text );
@@ -119,8 +119,8 @@ namespace VTX::UI::QT::Widget::Library
 
 			if ( not p_tip.empty() )
 			{
-				_buttons[ i ]->setToolTip( QString::fromStdString( p_tip[ offset ].data() ) );
-				_buttons[ i ]->setStatusTip( QString::fromStdString( p_tip[ offset ].data() ) );
+				_buttons[ i ]->setToolTip( QString::fromUtf8( p_tip[ offset ] ) );
+				_buttons[ i ]->setStatusTip( QString::fromUtf8( p_tip[ offset ] ) );
 			}
 
 			// Connect picker.

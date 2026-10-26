@@ -263,7 +263,7 @@ namespace VTX::UI::QT::DockWidget
 		for ( int l = 0; l < toUnderlying( Widget::KB_LAYOUT::COUNT ); l++ )
 		{
 			const Widget::KB_LAYOUT kbLayout   = static_cast<Widget::KB_LAYOUT>( l );
-			const QString			layoutName = QString::fromStdString( Util::Enum::enumName( kbLayout ).data() );
+			const QString			layoutName = QString::fromUtf8( Util::Enum::enumName( kbLayout ) );
 			_comboBoxKBLayout->addItem( layoutName, QVariant::fromValue( kbLayout ) );
 		}
 

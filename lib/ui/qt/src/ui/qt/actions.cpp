@@ -281,10 +281,11 @@ namespace VTX::UI::QT::Action
 
 		p_registry.registerAction(
 			Help::documentationAction(),
-			handler( []() { QDesktopServices::openUrl( QUrl( App::URL_DOCUMENTATION.data() ) ); } )
+			handler( []() { QDesktopServices::openUrl( QUrl( QString::fromUtf8( App::URL_DOCUMENTATION ) ) ); } )
 		);
 		p_registry.registerAction(
-			Help::reportAction(), handler( []() { QDesktopServices::openUrl( QUrl( App::URL_REPORT.data() ) ); } )
+			Help::reportAction(),
+			handler( []() { QDesktopServices::openUrl( QUrl( QString::fromUtf8( App::URL_REPORT ) ) ); } )
 		);
 		p_registry.registerAction(
 			Help::checkUpdatesAction(),

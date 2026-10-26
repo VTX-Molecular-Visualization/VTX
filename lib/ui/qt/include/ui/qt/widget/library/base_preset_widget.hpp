@@ -32,7 +32,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		Entity currentPreset() const { return _presetSelector->getCurrentPreset(); }
 
-		QGroupBox * const presetGroupBox() const { return _groupboxPreset; }
+		QGroupBox * presetGroupBox() const { return _groupboxPreset; }
 
 		void addWidget( QWidget * const p_widget ) { _groupboxPreset->layout()->addWidget( p_widget ); }
 

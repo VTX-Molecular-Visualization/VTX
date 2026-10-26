@@ -90,8 +90,7 @@ namespace VTX::UI::QT::Dialog
 				continue;
 			}
 
-			QString text
-				= QString::fromUtf8( resolution.name.data(), static_cast<qsizetype>( resolution.name.size() ) );
+			QString text = QString::fromUtf8( resolution.name );
 			text += QString( " (%1x%2)" ).arg( resolution.width ).arg( resolution.height );
 			_comboBoxResolution->addItem( text );
 			const int itemIndex = _comboBoxResolution->count() - 1;
@@ -154,8 +153,8 @@ namespace VTX::UI::QT::Dialog
 		groupFormat->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Maximum );
 
 		_comboBoxFormat = new QComboBox( this );
-		_comboBoxFormat->addItem( FORMATS[ 0 ].data() );
-		_comboBoxFormat->addItem( FORMATS[ 1 ].data() );
+		_comboBoxFormat->addItem( QString::fromUtf8( FORMATS[ 0 ] ) );
+		_comboBoxFormat->addItem( QString::fromUtf8( FORMATS[ 1 ] ) );
 
 		connect(
 			_comboBoxFormat, QOverload<int>::of( &QComboBox::currentIndexChanged ), this, &ExportImage::_onFormat

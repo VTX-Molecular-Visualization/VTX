@@ -41,10 +41,7 @@ namespace VTX::UI::QT::ToolButton
 			const size_t height = preset.height;
 
 			QAction * const action = menu->addAction(
-				QString( "%1 (%2x%3)" )
-					.arg( QString::fromUtf8( preset.name.data(), static_cast<qsizetype>( preset.name.size() ) ) )
-					.arg( width )
-					.arg( height )
+				QString( "%1 (%2x%3)" ).arg( QString::fromUtf8( preset.name ) ).arg( width ).arg( height )
 			);
 
 			connect(

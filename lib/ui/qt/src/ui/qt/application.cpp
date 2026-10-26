@@ -28,24 +28,24 @@ namespace VTX::UI::QT
 		using namespace Resources;
 		using namespace App;
 
-		_splashScreen = new QSplashScreen( QPixmap( Resources::SPRITE_SPLASH.data() ) );
+		_splashScreen = new QSplashScreen( QPixmap( QString::fromUtf8( Resources::SPRITE_SPLASH ) ) );
 		_splashScreen->show();
 
 		// Application info.
 		const std::string version	  = std::to_string( VERSION_MAJOR ) + "." + std::to_string( VERSION_MINOR ) + "."
 										+ std::to_string( VERSION_PATCH );
-		std::string displayName = APPLICATION_DISPLAY_NAME.data() + std::string( " " ) + version + "-beta";
+		std::string		  displayName = APPLICATION_DISPLAY_NAME.data() + std::string( " " ) + version + "-beta";
 		if ( ARGS().debug )
 		{
 			displayName += " (Debug)";
 		}
 
-		setWindowIcon( QIcon( QPixmap( SPRITE_LOGO.data() ) ) );
+		setWindowIcon( QIcon( QPixmap( QString::fromUtf8( SPRITE_LOGO ) ) ) );
 		setApplicationDisplayName( QString::fromStdString( displayName ) );
-		setApplicationName( QString::fromStdString( APPLICATION_NAME.data() ) );
+		setApplicationName( QString::fromUtf8( APPLICATION_NAME ) );
 		setApplicationVersion( QString::fromStdString( version ) );
-		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME.data() ) );
-		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN.data() ) );
+		setOrganizationName( QString::fromUtf8( ORGANIZATION_NAME ) );
+		setOrganizationDomain( QString::fromUtf8( ORGANIZATION_DOMAIN ) );
 
 		// Connect quit.
 		connect(
