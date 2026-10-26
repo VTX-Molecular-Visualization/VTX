@@ -90,7 +90,7 @@ namespace VTX::UI::QT::Util
 				hide();
 			}
 
-			void hoverEnter( QHoverEvent * p_event )
+			void hoverEnter( QEvent * p_event )
 			{
 				_hovered = true;
 				QWidget::event( p_event );
@@ -101,7 +101,7 @@ namespace VTX::UI::QT::Util
 			{
 				switch ( e->type() )
 				{
-				case QEvent::HoverEnter: hoverEnter( static_cast<QHoverEvent *>( e ) ); return true;
+				case QEvent::HoverEnter: hoverEnter( e ); return true;
 				case QEvent::HoverLeave: hoverLeave( e ); return true;
 				default: return QWidget::event( e );
 				}
@@ -219,14 +219,10 @@ namespace VTX::UI::QT::Util
 			}
 
 		  protected:
-			bool event( QEvent * const e ) override
+			void mouseReleaseEvent( QMouseEvent * const p_event ) override
 			{
-				switch ( e->type() )
-				{
-				case QEvent::MouseButtonRelease: mouseClicked( static_cast<QMouseEvent *>( e ) ); break;
-				default: break;
-				}
-				return QPushButton::event( e );
+				mouseClicked( p_event );
+				QPushButton::mouseReleaseEvent( p_event );
 			}
 
 		  private:

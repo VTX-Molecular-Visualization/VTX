@@ -46,14 +46,15 @@ namespace VTX::UI::QT::Widget::Tree
 		setIndentation( 12 );
 
 		// Model.
-		setModel( Helper::makeQObject<Model::SystemModel>( p_system, this ) );
+		_model = Helper::makeQObject<Model::SystemModel>( p_system, this );
+		setModel( _model );
 
 		// Selection is rendered from app state, not from Qt selection.
 		setSelectionMode( QAbstractItemView::NoSelection );
 		setSelectionBehavior( QAbstractItemView::SelectRows );
 
 		// Delegate.
-		auto * const delegate = Helper::makeQObject<Delegate::SystemDelegate>( p_system, this );
+		auto * const delegate = Helper::makeQObject<Delegate::SystemDelegate>( p_system, *_model, this );
 		setItemDelegate( delegate );
 
 		// One expanded at a time.
@@ -293,7 +294,7 @@ namespace VTX::UI::QT::Widget::Tree
 		p_option.rect			 = visualRect( p_index );
 		const bool isBranchClick = p_e->pos().x() < p_option.rect.left();
 
-		const auto * delegate = static_cast<const Delegate::SystemDelegate *>( itemDelegateForIndex( p_index ) );
+		const auto * delegate = qobject_cast<const Delegate::SystemDelegate *>( itemDelegateForIndex( p_index ) );
 		const bool	 actionButtonClick = p_e->button() == Qt::LeftButton && delegate != nullptr
 										 && delegate->hitsButton( p_option, p_index, p_e->pos() );
 		return delegate != nullptr && not isBranchClick && not actionButtonClick;

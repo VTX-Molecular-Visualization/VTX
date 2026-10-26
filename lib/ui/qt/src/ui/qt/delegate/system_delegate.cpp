@@ -12,8 +12,11 @@
 namespace VTX::UI::QT::Delegate
 {
 
-	SystemDelegate::SystemDelegate( const Entity p_system, QObject * p_parent ) :
-		QStyledItemDelegate( p_parent ), _system( p_system )
+	SystemDelegate::SystemDelegate(
+		const Entity			   p_system,
+		const Model::SystemModel & p_model,
+		QObject * const			   p_parent
+	) : QStyledItemDelegate( p_parent ), _system( p_system ), _model( p_model )
 	{
 		_icons[ 0 ] = STYLE().iconFromCodepoint( Style::Icons::VISIBILITY_OFF );
 		_icons[ 1 ] = STYLE().iconFromCodepoint( Style::Icons::COLOR_LAYOUT );
@@ -97,10 +100,10 @@ namespace VTX::UI::QT::Delegate
 		const QModelIndex &			 p_index
 	)
 	{
-		if ( p_event->type() == QEvent::MouseButtonPress || p_event->type() == QEvent::MouseButtonDblClick )
+		auto * const e = dynamic_cast<QMouseEvent *>( p_event );
+		if ( e != nullptr
+			 && ( p_event->type() == QEvent::MouseButtonPress || p_event->type() == QEvent::MouseButtonDblClick ) )
 		{
-			auto * e = static_cast<QMouseEvent *>( p_event );
-
 			const int hit = _hitTestButton( p_option, p_index, e->pos() );
 			if ( hit < 0 )
 			{
@@ -222,9 +225,8 @@ namespace VTX::UI::QT::Delegate
 
 	QIcon SystemDelegate::_displayModeIcon( const QModelIndex & p_index ) const
 	{
-		const auto * const model = static_cast<const Model::SystemModel *>( p_index.model() );
 		return STYLE().iconFromCodepoint(
-			model->getViewMode() == Model::SystemModel::ViewMode::ByCategory ? Style::Icons::CATEGORY
+			_model.getViewMode() == Model::SystemModel::ViewMode::ByCategory ? Style::Icons::CATEGORY
 																			 : Style::Icons::CHAIN
 		);
 	}

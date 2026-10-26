@@ -159,7 +159,7 @@ namespace VTX::UI::QT::Widget::Library
 	{
 		using namespace VTX::Core::ChemDB;
 
-		auto * groupBox = static_cast<QGroupBox *>( _buttons[ p_start ]->parentWidget() );
+		auto * groupBox = qobject_cast<QGroupBox *>( _buttons[ p_start ]->parentWidget() );
 		std::unique_ptr<QLayout> { groupBox->layout() }.reset();
 		auto * layout = Helper::makeQObject<Layout::FlowLayout>( groupBox );
 

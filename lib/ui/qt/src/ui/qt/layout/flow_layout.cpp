@@ -147,12 +147,12 @@ namespace VTX::UI::QT::Layout
 		}
 		else if ( p_parent->isWidgetType() )
 		{
-			const QWidget * p_pw = static_cast<QWidget *>( p_parent );
+			const QWidget * p_pw = qobject_cast<QWidget *>( p_parent );
 			return p_pw->style()->pixelMetric( p_pm, nullptr, p_pw );
 		}
 		else
 		{
-			return static_cast<QLayout *>( p_parent )->spacing();
+			return qobject_cast<QLayout *>( p_parent )->spacing();
 		}
 	}
 } // namespace VTX::UI::QT::Layout

@@ -21,9 +21,9 @@ namespace VTX::UI::QT::Widget::Tree
 	  public:
 		System( Entity, QWidget * );
 
-		Model::SystemModel & getSystemModel() { return *static_cast<Model::SystemModel *>( model() ); }
+		Model::SystemModel & getSystemModel() { return *_model; }
 
-		const Model::SystemModel & getSystemModel() const { return *static_cast<Model::SystemModel *>( model() ); }
+		const Model::SystemModel & getSystemModel() const { return *_model; }
 
 		void setViewMode( Model::SystemModel::ViewMode p_mode );
 
@@ -38,6 +38,8 @@ namespace VTX::UI::QT::Widget::Tree
 		 * @brief Entity to display.
 		 */
 		const Entity _system;
+
+		Model::SystemModel * _model = nullptr;
 
 		/**
 		 * @brief Layout.

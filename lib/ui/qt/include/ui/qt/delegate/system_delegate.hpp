@@ -6,6 +6,11 @@
 #include <app/ecs.hpp>
 #include <util/types.hpp>
 
+namespace VTX::UI::QT::Model
+{
+	class SystemModel;
+} // namespace VTX::UI::QT::Model
+
 namespace VTX::UI::QT::Delegate
 {
 	/**
@@ -28,7 +33,7 @@ namespace VTX::UI::QT::Delegate
 		/**
 		 * @brief Constructor.
 		 */
-		SystemDelegate( Entity, QObject * );
+		SystemDelegate( Entity, const Model::SystemModel &, QObject * );
 
 		/**
 		 * @brief Override: paint the system item with custom visuals.
@@ -82,6 +87,8 @@ namespace VTX::UI::QT::Delegate
 		 * @brief Entity to display.
 		 */
 		Entity _system;
+
+		const Model::SystemModel & _model;
 
 		static constexpr int ICON_SIZE = 15;
 		static constexpr int SPACING   = 4;
